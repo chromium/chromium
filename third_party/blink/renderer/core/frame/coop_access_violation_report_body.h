@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_COOP_ACCESS_VIOLATION_REPORT_BODY_H_
 
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
 

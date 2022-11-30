@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package cast.utils;
+
+option optimize_for = LITE_RUNTIME;
+
+// Test request.
+message TestRequest {
+  string foo = 1;
+}
+
+// Test response.
+message TestResponse {
+  string bar = 1;
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -36,6 +35,9 @@ class FtlSignalStrategy : public SignalStrategy {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<FtlDeviceIdProvider> device_id_provider,
       SignalingTracker* signaling_tracker = nullptr);
+
+  FtlSignalStrategy(const FtlSignalStrategy&) = delete;
+  FtlSignalStrategy& operator=(const FtlSignalStrategy&) = delete;
 
   // Note that pending outgoing messages will be silently dropped when the
   // signal strategy is being deleted. If you want to send last minute messages,
@@ -73,8 +75,6 @@ class FtlSignalStrategy : public SignalStrategy {
   class Core;
 
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(FtlSignalStrategy);
 };
 
 }  // namespace remoting

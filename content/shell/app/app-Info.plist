@@ -26,5 +26,7 @@
 	<true/>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Content Shell may use Bluetooth to implement Web Platform features.</string>
 </dict>
 </plist>

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
 
@@ -40,8 +40,8 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
   // an input field associated with the button.
   virtual void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<std::u16string>& reply) {}
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) {}
 
   // Called when notification settings button is clicked. The |handled| argument
   // indicates whether the notification delegate already handled the operation.
@@ -52,6 +52,9 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
   virtual void OnNotificationDisplayed(
       const std::string& notification_id,
       const DisplaySource source) {}
+
+  // Called when the message view associated with `notification_id` is hovered.
+  virtual void OnMessageViewHovered(const std::string& notification_id) {}
 
   // Called when the notification center is shown or hidden.
   virtual void OnCenterVisibilityChanged(Visibility visibility) {}

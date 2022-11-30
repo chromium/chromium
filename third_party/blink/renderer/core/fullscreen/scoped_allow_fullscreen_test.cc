@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ TEST(ScopedAllowFullscreenTest, DestructResetsState) {
 
 TEST(ScopedAllowFullscreenTest, DestructResetsStateToPrevious) {
   ScopedAllowFullscreen scope(ScopedAllowFullscreen::kOrientationChange);
-  { ScopedAllowFullscreen scope(ScopedAllowFullscreen::kOrientationChange); }
+  { ScopedAllowFullscreen scope2(ScopedAllowFullscreen::kOrientationChange); }
 
   EXPECT_EQ(ScopedAllowFullscreen::kOrientationChange,
             ScopedAllowFullscreen::FullscreenAllowedReason().value());

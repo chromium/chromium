@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.networkingPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: networkingPrivate */
+/**
+ * @fileoverview Externs generated from namespace: networkingPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.networkingPrivate = {};
@@ -274,6 +277,7 @@ chrome.networkingPrivate.ManagedCertificatePattern;
  *   AnonymousIdentity: (string|undefined),
  *   ClientCertPattern: (!chrome.networkingPrivate.CertificatePattern|undefined),
  *   ClientCertPKCS11Id: (string|undefined),
+ *   ClientCertProvisioningProfileId: (string|undefined),
  *   ClientCertRef: (string|undefined),
  *   ClientCertType: (string|undefined),
  *   Identity: (string|undefined),
@@ -296,6 +300,7 @@ chrome.networkingPrivate.EAPProperties;
  *   AnonymousIdentity: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertPattern: (!chrome.networkingPrivate.ManagedCertificatePattern|undefined),
  *   ClientCertPKCS11Id: (!chrome.networkingPrivate.ManagedDOMString|undefined),
+ *   ClientCertProvisioningProfileId: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertRef: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertType: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   Identity: (!chrome.networkingPrivate.ManagedDOMString|undefined),
@@ -374,6 +379,7 @@ chrome.networkingPrivate.ManagedXAUTHProperties;
  *   AuthenticationType: string,
  *   ClientCertPattern: (!chrome.networkingPrivate.CertificatePattern|undefined),
  *   ClientCertPKCS11Id: (string|undefined),
+ *   ClientCertProvisioningProfileId: (string|undefined),
  *   ClientCertRef: (string|undefined),
  *   ClientCertType: (string|undefined),
  *   EAP: (!chrome.networkingPrivate.EAPProperties|undefined),
@@ -393,6 +399,7 @@ chrome.networkingPrivate.IPSecProperties;
  *   AuthenticationType: !chrome.networkingPrivate.ManagedDOMString,
  *   ClientCertPattern: (!chrome.networkingPrivate.ManagedCertificatePattern|undefined),
  *   ClientCertPKCS11Id: (!chrome.networkingPrivate.ManagedDOMString|undefined),
+ *   ClientCertProvisioningProfileId: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertRef: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertType: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   EAP: (!chrome.networkingPrivate.ManagedEAPProperties|undefined),
@@ -516,6 +523,7 @@ chrome.networkingPrivate.ManagedVerifyX509;
  *   Cipher: (string|undefined),
  *   ClientCertPKCS11Id: (string|undefined),
  *   ClientCertPattern: (!chrome.networkingPrivate.CertificatePattern|undefined),
+ *   ClientCertProvisioningProfileId: (string|undefined),
  *   ClientCertRef: (string|undefined),
  *   ClientCertType: (string|undefined),
  *   CompLZO: (string|undefined),
@@ -560,6 +568,7 @@ chrome.networkingPrivate.OpenVPNProperties;
  *   Cipher: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertPKCS11Id: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertPattern: (!chrome.networkingPrivate.ManagedCertificatePattern|undefined),
+ *   ClientCertProvisioningProfileId: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertRef: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   ClientCertType: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   CompLZO: (!chrome.networkingPrivate.ManagedDOMString|undefined),
@@ -694,6 +703,8 @@ chrome.networkingPrivate.ManagedCellularProperties;
 /**
  * @typedef {{
  *   ActivationState: (!chrome.networkingPrivate.ActivationStateType|undefined),
+ *   EID: (string|undefined),
+ *   ICCID: (string|undefined),
  *   NetworkTechnology: (string|undefined),
  *   RoamingState: (string|undefined),
  *   Scanning: (boolean|undefined),
@@ -793,7 +804,7 @@ chrome.networkingPrivate.VPNStateProperties;
  *   Passphrase: (string|undefined),
  *   SSID: (string|undefined),
  *   Security: (string|undefined),
- *   SignalStrength: (number|undefined),
+ *   SignalStrength: (number|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiProperties;
@@ -811,7 +822,7 @@ chrome.networkingPrivate.WiFiProperties;
  *   Passphrase: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   SSID: (!chrome.networkingPrivate.ManagedDOMString|undefined),
  *   Security: !chrome.networkingPrivate.ManagedDOMString,
- *   SignalStrength: (number|undefined),
+ *   SignalStrength: (number|undefined)
  * }}
  */
 chrome.networkingPrivate.ManagedWiFiProperties;
@@ -824,7 +835,7 @@ chrome.networkingPrivate.ManagedWiFiProperties;
  *   HexSSID: (string|undefined),
  *   Security: string,
  *   SignalStrength: (number|undefined),
- *   SSID: (string|undefined),
+ *   SSID: (string|undefined)
  * }}
  */
 chrome.networkingPrivate.WiFiStateProperties;
@@ -933,20 +944,6 @@ chrome.networkingPrivate.NetworkStateProperties;
  * }}
  */
 chrome.networkingPrivate.DeviceStateProperties;
-
-/**
- * @typedef {{
- *   certificate: string,
- *   intermediateCertificates: (!Array<string>|undefined),
- *   publicKey: string,
- *   nonce: string,
- *   signedData: string,
- *   deviceSerial: string,
- *   deviceSsid: string,
- *   deviceBssid: string
- * }}
- */
-chrome.networkingPrivate.VerificationProperties;
 
 /**
  * @typedef {{
@@ -1153,55 +1150,6 @@ chrome.networkingPrivate.startDisconnect = function(networkGuid, callback) {};
  *     been sent. See note     for $(ref:startConnect).
  */
 chrome.networkingPrivate.startActivate = function(networkGuid, carrier, callback) {};
-
-/**
- * Verifies that the device is a trusted device.
- * @param {!chrome.networkingPrivate.VerificationProperties} properties
- *     Properties of the destination to use in verifying that it     is a
- *     trusted device.
- * @param {function(boolean): void} callback A callback function that indicates
- *     whether or not the device     is a trusted device.
- * @deprecated Use networking.castPrivate API.
- */
-chrome.networkingPrivate.verifyDestination = function(properties, callback) {};
-
-/**
- * Verifies that the device is a trusted device and encrypts supplied data with
- * device public key.
- * @param {!chrome.networkingPrivate.VerificationProperties} properties
- *     Properties of the destination to use in verifying that it     is a
- *     trusted device.
- * @param {string} data A string containing the base64-encoded data to encrypt.
- * @param {function(string): void} callback A callback function that receives
- *     base64-encoded encrypted     data to send to a trusted device.
- * @deprecated Use networking.castPrivate API.
- */
-chrome.networkingPrivate.verifyAndEncryptData = function(properties, data, callback) {};
-
-/**
- * Deprecated. Enables TDLS for WiFi traffic with a specified peer if available.
- * @param {string} ip_or_mac_address The IP or MAC address of the peer with
- *     which to     enable a TDLS connection. |enabled| If true, enable TDLS,
- *     otherwise disable TDLS.
- * @param {boolean} enabled
- * @param {function(string): void=} callback A callback function that receives a
- *     string with an error or     the current TDLS status. 'Failed' indicates
- *     that the request failed     (e.g. MAC address lookup failed). 'Timeout'
- *     indicates that the lookup     timed out. Otherwise a valid status is
- *     returned (see     $(ref:getWifiTDLSStatus)).
- * @deprecated True
- */
-chrome.networkingPrivate.setWifiTDLSEnabledState = function(ip_or_mac_address, enabled, callback) {};
-
-/**
- * Deprecated. Returns the current TDLS status for the specified peer.
- * @param {string} ip_or_mac_address The IP or MAC address of the peer.
- * @param {function(string): void} callback A callback function that receives a
- *     string with the current     TDLS status which can be 'Connected',
- *     'Disabled', 'Disconnected',     'Nonexistent', or 'Unknown'.
- * @deprecated True
- */
-chrome.networkingPrivate.getWifiTDLSStatus = function(ip_or_mac_address, callback) {};
 
 /**
  * Returns captive portal status for the network matching 'networkGuid'.

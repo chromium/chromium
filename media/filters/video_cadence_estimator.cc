@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ VideoCadenceEstimator::Cadence ConstructCadence(int k, int n) {
 VideoCadenceEstimator::VideoCadenceEstimator(
     base::TimeDelta minimum_time_until_max_drift)
     : cadence_hysteresis_threshold_(
-          base::TimeDelta::FromMilliseconds(kMinimumCadenceDurationMs)),
+          base::Milliseconds(kMinimumCadenceDurationMs)),
       minimum_time_until_max_drift_(minimum_time_until_max_drift),
       is_variable_frame_rate_(false) {
   Reset();

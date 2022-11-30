@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,6 @@ android_java_prebuilt("accessibility_test_framework_java") {
 
   jar_path = "lib/accessibility-test-framework.jar"
   deps = [
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:com_android_support_support_core_ui_java",
     "//third_party/hamcrest:hamcrest_core_java",
   ]

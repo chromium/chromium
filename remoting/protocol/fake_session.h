@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/protocol/fake_stream_socket.h"
@@ -18,8 +18,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 extern const char kTestJid[];
 
@@ -28,6 +27,10 @@ class FakeAuthenticator;
 class FakeSession : public Session {
  public:
   FakeSession();
+
+  FakeSession(const FakeSession&) = delete;
+  FakeSession& operator=(const FakeSession&) = delete;
+
   ~FakeSession() override;
 
   void SimulateConnection(FakeSession* peer);
@@ -62,13 +65,13 @@ class FakeSession : public Session {
   // Called by the |peer_| to deliver incoming |transport_info|.
   void ProcessTransportInfo(std::unique_ptr<jingle_xmpp::XmlElement> transport_info);
 
-  EventHandler* event_handler_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
   std::unique_ptr<SessionConfig> config_;
 
   std::string jid_;
 
   std::unique_ptr<FakeAuthenticator> authenticator_;
-  Transport* transport_;
+  raw_ptr<Transport> transport_;
 
   ErrorCode error_ = OK;
   bool closed_ = false;
@@ -79,11 +82,8 @@ class FakeSession : public Session {
   std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> attachments_;
 
   base::WeakPtrFactory<FakeSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSession);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_SESSION_H_

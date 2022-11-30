@@ -1,1 +1,1 @@
-CONSOLE ERROR: line 1: Error: <svg> attribute viewBox: Unexpected end of attribute. Expected number, "".
+CONSOLE ERROR: Error: <svg> attribute viewBox: Unexpected end of attribute. Expected number, "".

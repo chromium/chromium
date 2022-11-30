@@ -1,0 +1,70 @@
+This is a testharness.js-based test.
+Found 66 tests; 55 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Setup service workers
+PASS same-origin, window.open with no service worker
+PASS same-origin, window.open with fallback
+PASS same-origin, window.open with passthrough
+PASS same-origin, window.open with change-request
+PASS same-origin, window.open with navpreload
+PASS same-site, window.open with no service worker
+PASS same-site, window.open with fallback
+PASS same-site, window.open with passthrough
+PASS same-site, window.open with change-request
+PASS same-site, window.open with navpreload
+PASS cross-site, window.open with no service worker
+PASS cross-site, window.open with fallback
+PASS cross-site, window.open with passthrough
+PASS cross-site, window.open with change-request
+PASS cross-site, window.open with navpreload
+PASS same-origin, window.open with no service worker and same-site redirect
+PASS same-origin, window.open with fallback and same-site redirect
+PASS same-origin, window.open with passthrough and same-site redirect
+PASS same-origin, window.open with change-request and same-site redirect
+PASS same-origin, window.open with navpreload and same-site redirect
+PASS same-origin, window.open with no service worker and cross-site redirect
+PASS same-origin, window.open with fallback and cross-site redirect
+PASS same-origin, window.open with passthrough and cross-site redirect
+PASS same-origin, window.open with change-request and cross-site redirect
+PASS same-origin, window.open with navpreload and cross-site redirect
+PASS same-origin, window.open with no service worker, cross-site redirect, and same-origin redirect
+PASS same-origin, window.open with fallback, cross-site redirect, and same-origin redirect
+PASS same-origin, window.open with passthrough, cross-site redirect, and same-origin redirect
+PASS same-origin, window.open with change-request, cross-site redirect, and same-origin redirect
+PASS same-origin, window.open with navpreload, cross-site redirect, and same-origin redirect
+PASS same-origin, nested window.open with cross-site middle frame and no service worker
+PASS same-origin, nested window.open with cross-site middle frame and fallback service worker
+PASS same-origin, nested window.open with cross-site middle frame and passthrough service worker
+PASS same-origin, nested window.open with cross-site middle frame and change-request service worker
+PASS same-origin, nested window.open with cross-site middle frame and navpreload service worker
+PASS same-origin, nested set location with cross-site middle frame and no service worker
+PASS same-origin, nested set location with cross-site middle frame and fallback service worker
+FAIL same-origin, nested set location with cross-site middle frame and passthrough service worker assert_not_equals: SameSite=Strict cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL same-origin, nested set location with cross-site middle frame and change-request service worker assert_not_equals: SameSite=Strict cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+PASS same-origin, nested set location with cross-site middle frame and navpreload service worker
+PASS same-origin, form post with no service worker
+PASS same-origin, form post with fallback
+PASS same-origin, form post with passthrough
+PASS same-origin, form post with change-request
+PASS same-site, form post with no service worker
+PASS same-site, form post with fallback
+PASS same-site, form post with passthrough
+PASS same-site, form post with change-request
+FAIL cross-site, form post with no service worker assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL cross-site, form post with fallback assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL cross-site, form post with passthrough assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+PASS cross-site, form post with change-request
+PASS same-origin, form post with no service worker and same-site redirect
+PASS same-origin, form post with fallback and same-site redirect
+PASS same-origin, form post with passthrough and same-site redirect
+PASS same-origin, form post with change-request and same-site redirect
+FAIL same-origin, form post with no service worker and cross-site redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL same-origin, form post with fallback and cross-site redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL same-origin, form post with passthrough and cross-site redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+PASS same-origin, form post with change-request and cross-site redirect
+FAIL same-origin, form post with no service worker, cross-site redirect, and same-origin redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL same-origin, form post with fallback, cross-site redirect, and same-origin redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+FAIL same-origin, form post with passthrough, cross-site redirect, and same-origin redirect assert_not_equals: Unspecified-SameSite cookies are not sent with cross-site requests. got disallowed value "COOKIE_VALUE"
+PASS same-origin, form post with change-request, cross-site redirect, and same-origin redirect
+PASS Cleanup service workers
+Harness: the test ran to completion.
+

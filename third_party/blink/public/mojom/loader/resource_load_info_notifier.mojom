@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@ module blink.mojom;
 
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
-import "url/mojom/url.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
 // This interface is used to notify loading stats of the resource.
 interface ResourceLoadInfoNotifier {
@@ -24,10 +25,9 @@ interface ResourceLoadInfoNotifier {
 
   // Called to notify the response has been received.
   NotifyResourceResponseReceived(int64 request_id,
-                                 url.mojom.Url response_url,
+                                 url.mojom.SchemeHostPort final_response_url,
                                  network.mojom.URLResponseHead head,
-                                 network.mojom.RequestDestination request_destination,
-                                 int32 previews_state);
+                                 network.mojom.RequestDestination request_destination);
 
   // Called to notify the transfer size is updated.
   NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);

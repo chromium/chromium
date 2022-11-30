@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -21,7 +21,7 @@ void HandwritingRecognizerImpl::Create(
     handwriting::mojom::HandwritingRecognitionService::
         CreateHandwritingRecognizerCallback callback) {
   std::move(callback).Run(
-      handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+      handwriting::mojom::CreateHandwritingRecognizerResult::kNotSupported,
       mojo::NullRemote());
 }
 
@@ -32,7 +32,7 @@ void HandwritingRecognizerImpl::GetPrediction(
     std::vector<handwriting::mojom::HandwritingStrokePtr> strokes,
     handwriting::mojom::HandwritingHintsPtr hints,
     GetPredictionCallback callback) {
-  std::move(callback).Run(base::nullopt);
+  std::move(callback).Run(absl::nullopt);
 }
 
 }  // namespace content

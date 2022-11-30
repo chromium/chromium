@@ -1,0 +1,3 @@
+EVENT_OBJECT_REORDER on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE
+EVENT_OBJECT_SHOW on <div#described-by-dialog> role=ROLE_SYSTEM_DIALOG
+IA2_EVENT_TEXT_INSERTED on <#document> role=ROLE_SYSTEM_DOCUMENT value~=[doc-url] FOCUSED,FOCUSABLE new_text={'<obj>' start=0 end=1}

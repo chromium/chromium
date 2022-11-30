@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ constexpr char kActivationWarningConsoleMessage[] =
     "https://www.chromestatus.com/feature/5738264052891648";
 
 // Console message to be displayed on disallowing subframe.
-constexpr char kDisallowSubframeConsoleMessageFormat[] =
+constexpr char kDisallowChildFrameConsoleMessageFormat[] =
     "Chrome blocked resource %s on this site because this site tends to show "
     "ads that interrupt, distract, mislead, or prevent user control. Learn "
     "more at https://www.chromestatus.com/feature/5738264052891648";

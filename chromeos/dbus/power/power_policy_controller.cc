@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,8 +42,10 @@ PowerPolicyController* g_power_policy_controller = nullptr;
 #define APPEND_DELAYS(str, delays, prefix)                                 \
   {                                                                        \
     APPEND_DELAY(str, delays, screen_dim_ms, prefix "_screen_dim_ms");     \
+    APPEND_DELAY(str, delays, quick_dim_ms, prefix "_quick_dim_ms");       \
     APPEND_DELAY(str, delays, screen_off_ms, prefix "_screen_off_ms");     \
     APPEND_DELAY(str, delays, screen_lock_ms, prefix "_screen_lock_ms");   \
+    APPEND_DELAY(str, delays, quick_lock_ms, prefix "_quick_lock_ms");     \
     APPEND_DELAY(str, delays, idle_warning_ms, prefix "_idle_warning_ms"); \
     APPEND_DELAY(str, delays, idle_ms, prefix "_idle_ms");                 \
   }
@@ -143,18 +145,17 @@ const char PowerPolicyController::kPrefsReason[] = "Prefs";
 
 // static
 bool PowerPolicyController::GetPeakShiftDayConfigs(
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     std::vector<PeakShiftDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value* entries =
-      value.FindKeyOfType({"entries"}, base::Value::Type::LIST);
+  const base::Value::List* entries = value.FindList({"entries"});
   if (!entries) {
     return false;
   }
 
-  for (const base::Value& item : entries->GetList()) {
+  for (const base::Value& item : *entries) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* start_time_hour =
@@ -198,18 +199,17 @@ bool PowerPolicyController::GetPeakShiftDayConfigs(
 
 // static
 bool PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     std::vector<AdvancedBatteryChargeModeDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value* entries =
-      value.FindKeyOfType({"entries"}, base::Value::Type::LIST);
+  const base::Value::List* entries = value.FindList({"entries"});
   if (!entries) {
     return false;
   }
 
-  for (const base::Value& item : entries->GetList()) {
+  for (const base::Value& item : *entries) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* charge_start_time_hour = item.FindPathOfType(
@@ -351,6 +351,11 @@ std::string PowerPolicyController::GetPolicyDebugString(
     StringAppendF(&str, "usb_power_share=%d ", policy.usb_power_share());
   }
 
+  if (policy.has_send_feedback_if_undimmed()) {
+    StringAppendF(&str, "send_feedback_if_undimmed=%d ",
+                  policy.send_feedback_if_undimmed());
+  }
+
   if (policy.has_reason())
     StringAppendF(&str, "reason=\"%s\" ", policy.reason().c_str());
   base::TrimWhitespaceASCII(str, base::TRIM_TRAILING, &str);
@@ -455,6 +460,28 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
   delays->set_idle_warning_ms(values.battery_idle_warning_delay_ms);
   delays->set_idle_ms(values.battery_idle_delay_ms);
 
+  // Sets quick_dim_ms and send_feedback_if_undimmed for prefs_policy_.
+  if (values.battery_quick_dim_delay_ms >= 0) {
+    prefs_policy_.mutable_battery_delays()->set_quick_dim_ms(
+        values.battery_quick_dim_delay_ms);
+  }
+  if (values.ac_quick_dim_delay_ms >= 0) {
+    prefs_policy_.mutable_ac_delays()->set_quick_dim_ms(
+        values.ac_quick_dim_delay_ms);
+  }
+  if (values.battery_quick_lock_delay_ms >= 0) {
+    prefs_policy_.mutable_battery_delays()->set_quick_lock_ms(
+        values.battery_quick_lock_delay_ms);
+  }
+  if (values.ac_quick_lock_delay_ms >= 0) {
+    prefs_policy_.mutable_ac_delays()->set_quick_lock_ms(
+        values.ac_quick_lock_delay_ms);
+  }
+  if (values.send_feedback_if_undimmed.has_value()) {
+    prefs_policy_.set_send_feedback_if_undimmed(
+        values.send_feedback_if_undimmed.value());
+  }
+
   lock_ms = delays->screen_off_ms() + kScreenLockAfterOffDelayMs;
   if (values.enable_auto_screen_lock && delays->screen_off_ms() > 0 &&
       (delays->screen_lock_ms() <= 0 || lock_ms < delays->screen_lock_ms()) &&
@@ -522,6 +549,17 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
 
   prefs_policy_.set_usb_power_share(values.usb_power_share);
 
+  if (values.adaptive_charging_enabled.has_value()) {
+    prefs_policy_.set_adaptive_charging_enabled(
+        values.adaptive_charging_enabled.value());
+    if (values.adaptive_charging_enabled.value()) {
+      prefs_policy_.set_adaptive_charging_min_probability(
+          values.adaptive_charging_min_probability);
+      prefs_policy_.set_adaptive_charging_hold_percent(
+          values.adaptive_charging_hold_percent);
+    }
+  }
+
   prefs_were_set_ = true;
   SendCurrentPolicy();
 }
@@ -532,7 +570,7 @@ base::TimeDelta PowerPolicyController::GetMaxPolicyAutoScreenLockDelay() {
   }
   int ac_delay = prefs_policy_.ac_delays().screen_lock_ms();
   int battery_delay = prefs_policy_.battery_delays().screen_lock_ms();
-  return base::TimeDelta::FromMilliseconds(std::max(ac_delay, battery_delay));
+  return base::Milliseconds(std::max(ac_delay, battery_delay));
 }
 
 int PowerPolicyController::AddScreenWakeLock(WakeLockReason reason,

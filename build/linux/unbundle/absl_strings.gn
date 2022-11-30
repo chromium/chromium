@@ -1,0 +1,93 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_cord") {
+  packages = [ "absl_cord" ]
+}
+
+pkg_config("system_absl_strings") {
+  packages = [ "absl_strings" ]
+}
+
+pkg_config("system_absl_str_format") {
+  packages = [ "absl_str_format" ]
+}
+
+shim_headers("cord_shim") {
+  root_path = "."
+  prefix = "absl/strings/"
+  headers = [ "cord.h" ]
+}
+
+source_set("cord") {
+  deps = [ ":cord_shim" ]
+  public_configs = [ ":system_absl_cord" ]
+}
+
+shim_headers("strings_shim") {
+  root_path = "."
+  prefix = "absl/strings/"
+  headers = [
+    "ascii.h",
+    "charconv.h",
+    "escaping.h",
+    "match.h",
+    "numbers.h",
+    "str_cat.h",
+    "str_join.h",
+    "str_replace.h",
+    "str_split.h",
+    "string_view.h",
+    "strip.h",
+    "substitute.h",
+  ]
+}
+
+source_set("strings") {
+  deps = [ ":strings_shim" ]
+  public_configs = [ ":system_absl_strings" ]
+}
+
+shim_headers("str_format_shim") {
+  root_path = "."
+  prefix = "absl/strings/"
+  headers = [ "str_format.h" ]
+}
+
+source_set("str_format") {
+  deps = [ ":str_format_shim" ]
+  public_configs = [ ":system_absl_str_format" ]
+}
+
+source_set("ascii_test") {
+}
+source_set("cord_buffer_test") {
+}
+source_set("cord_data_edge_test") {
+}
+source_set("cord_rep_btree_navigator_test") {
+}
+source_set("cord_rep_btree_reader_test") {
+}
+source_set("cord_rep_btree_test") {
+}
+source_set("cord_rep_crc_test") {
+}
+source_set("cordz_functions_test") {
+}
+source_set("cordz_info_statistics_test") {
+}
+source_set("cordz_info_test") {
+}
+source_set("cordz_test") {
+}
+source_set("cordz_update_scope_test") {
+}
+source_set("cordz_update_tracker_test") {
+}
+source_set("match_test") {
+}
+source_set("str_replace_test") {
+}
+source_set("string_view_test") {
+}

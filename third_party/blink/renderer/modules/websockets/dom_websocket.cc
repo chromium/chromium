@@ -41,8 +41,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_string_sequence.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -57,13 +56,13 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/websockets/close_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -82,23 +81,32 @@ DOMWebSocket::EventQueue::~EventQueue() = default;
 void DOMWebSocket::EventQueue::Dispatch(Event* event) {
   switch (state_) {
     case kActive:
+<<<<<<< HEAD
       DCHECK(events_.IsEmpty());
       DCHECK(target_->GetExecutionContext());
       target_->DispatchEvent(*event, "DOMWebSocket::EventQueue::Dispatch");
+||||||| 80c960997e61f
+      DCHECK(events_.IsEmpty());
+      DCHECK(target_->GetExecutionContext());
+      target_->DispatchEvent(*event);
+=======
+      DCHECK(events_.empty());
+      target_->DispatchEvent(*event);
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       break;
     case kPaused:
     case kUnpausePosted:
       events_.push_back(event);
       break;
     case kStopped:
-      DCHECK(events_.IsEmpty());
+      DCHECK(events_.empty());
       // Do nothing.
       break;
   }
 }
 
 bool DOMWebSocket::EventQueue::IsEmpty() const {
-  return events_.IsEmpty();
+  return events_.empty();
 }
 
 void DOMWebSocket::EventQueue::Pause() {
@@ -115,8 +123,8 @@ void DOMWebSocket::EventQueue::Unpause() {
   state_ = kUnpausePosted;
   target_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&EventQueue::UnpauseTask, WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, WTF::BindOnce(&EventQueue::UnpauseTask,
+                                          WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::EventQueue::ContextDestroyed() {
@@ -137,16 +145,23 @@ void DOMWebSocket::EventQueue::DispatchQueuedEvents() {
 
   HeapDeque<Member<Event>> events;
   events.Swap(events_);
-  while (!events.IsEmpty()) {
+  while (!events.empty()) {
     if (state_ == kStopped || state_ == kPaused || state_ == kUnpausePosted)
       break;
     DCHECK_EQ(state_, kActive);
+<<<<<<< HEAD
     DCHECK(target_->GetExecutionContext());
     target_->DispatchEvent(*events.TakeFirst(), "DOMWebSocket::EventQueue::DispatchQueuedEvents");
+||||||| 80c960997e61f
+    DCHECK(target_->GetExecutionContext());
+    target_->DispatchEvent(*events.TakeFirst());
+=======
+    target_->DispatchEvent(*events.TakeFirst());
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     // |this| can be stopped here.
   }
   if (state_ == kPaused || state_ == kUnpausePosted) {
-    while (!events_.IsEmpty())
+    while (!events_.empty())
       events.push_back(events_.TakeFirst());
     events.Swap(events_);
   }
@@ -204,14 +219,17 @@ void DOMWebSocket::LogError(const String& message) {
 DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
                                    const String& url,
                                    ExceptionState& exception_state) {
-  StringOrStringSequence protocols;
-  return Create(context, url, protocols, exception_state);
+  return Create(
+      context, url,
+      MakeGarbageCollected<V8UnionStringOrStringSequence>(Vector<String>()),
+      exception_state);
 }
 
-DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
-                                   const String& url,
-                                   const StringOrStringSequence& protocols,
-                                   ExceptionState& exception_state) {
+DOMWebSocket* DOMWebSocket::Create(
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionStringOrStringSequence* protocols,
+    ExceptionState& exception_state) {
   if (url.IsNull()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
@@ -222,16 +240,18 @@ DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
   DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
   websocket->UpdateStateIfNeeded();
 
-  if (protocols.IsNull()) {
-    Vector<String> protocols_vector;
-    websocket->Connect(url, protocols_vector, exception_state);
-  } else if (protocols.IsString()) {
-    Vector<String> protocols_vector;
-    protocols_vector.push_back(protocols.GetAsString());
-    websocket->Connect(url, protocols_vector, exception_state);
-  } else {
-    DCHECK(protocols.IsStringSequence());
-    websocket->Connect(url, protocols.GetAsStringSequence(), exception_state);
+  DCHECK(protocols);
+  switch (protocols->GetContentType()) {
+    case V8UnionStringOrStringSequence::ContentType::kString: {
+      Vector<String> protocols_vector;
+      protocols_vector.push_back(protocols->GetAsString());
+      websocket->Connect(url, protocols_vector, exception_state);
+      break;
+    }
+    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+      websocket->Connect(url, protocols->GetAsStringSequence(),
+                         exception_state);
+      break;
   }
 
   if (exception_state.HadException())
@@ -287,8 +307,9 @@ void DOMWebSocket::PostBufferedAmountUpdateTask() {
   buffered_amount_update_task_pending_ = true;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebSocket)
-      ->PostTask(FROM_HERE, WTF::Bind(&DOMWebSocket::BufferedAmountUpdateTask,
-                                      WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&DOMWebSocket::BufferedAmountUpdateTask,
+                               WrapWeakPersistent(this)));
 }
 
 void DOMWebSocket::BufferedAmountUpdateTask() {

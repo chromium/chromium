@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
+
+struct FrameInfo;
 
 // This class is used to process the frames in order of initiation.
 // So regardless of which order frames are terminated, the  callback function
@@ -41,7 +43,7 @@ class CC_EXPORT FrameSorter {
 
   using InOrderBeginFramesCallback =
       base::RepeatingCallback<void(const viz::BeginFrameArgs&,
-                                   bool /*is_dropped*/)>;
+                                   const FrameInfo&)>;
   explicit FrameSorter(InOrderBeginFramesCallback callback);
   ~FrameSorter();
 
@@ -53,7 +55,11 @@ class CC_EXPORT FrameSorter {
 
   // The results can be added in any order. However, the frame must have been
   // added by an earlier call to |AddNewFrame()|.
-  void AddFrameResult(const viz::BeginFrameArgs& args, bool is_dropped);
+  void AddFrameResult(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
+
+  // Check if a frame has been previously reported as dropped.
+  bool IsAlreadyReportedDropped(const viz::BeginFrameId& id) const;
 
   void Reset();
 
@@ -70,8 +76,9 @@ class CC_EXPORT FrameSorter {
 
   // State of each frame in terms of ack expectation.
   std::map<viz::BeginFrameId, FrameState> frame_states_;
+  std::map<viz::BeginFrameId, FrameInfo> frame_infos_;
 
-  base::Optional<uint64_t> current_source_id_;
+  absl::optional<uint64_t> current_source_id_;
 };
 
 }  // namespace cc

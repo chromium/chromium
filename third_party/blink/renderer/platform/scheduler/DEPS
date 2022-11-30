@@ -8,12 +8,12 @@ include_rules = [
   # Dependencies.
   "+base/atomic_sequence_num.h",
   "+base/atomicops.h",
+  "+base/barrier_closure.h",
   "+base/callback_helpers.h",
   "+base/cancelable_callback.h",
   "+base/command_line.h",
   "+base/compiler_specific.h",
   "+base/containers/circular_deque.h",
-  "+base/containers/small_map.h",
   "+base/feature_list.h",
   "+base/format_macros.h",
   "+base/gtest_prod_util.h",
@@ -26,24 +26,24 @@ include_rules = [
   "+base/metrics/histogram_functions.h",
   "+base/metrics/histogram_macros.h",
   "+base/observer_list.h",
-  "+base/optional.h",
   "+base/pending_task.h",
   "+base/profiler/sample_metadata.h",
   "+base/run_loop.h",
   "+base/sequence_checker.h",
-  "+base/single_thread_task_runner.h",
+  "+base/task/single_thread_task_runner.h",
   "+base/strings/string_number_conversions.h",
   "+base/synchronization/atomic_flag.h",
   "+base/synchronization/cancellation_flag.h",
   "+base/synchronization/lock.h",
+  "+base/task/common/lazy_now.h",
   "+base/task/common/scoped_defer_task_posting.h",
   "+base/task/common/task_annotator.h",
-  "+base/task/sequence_manager/lazy_now.h",
   "+base/task/sequence_manager/sequence_manager.h",
   "+base/task/sequence_manager/task_queue.h",
   "+base/task/sequence_manager/time_domain.h",
   "+base/task/simple_task_executor.h",
   "+base/task/task_executor.h",
+  "+base/task/task_features.h",
   "+base/task/task_traits.h",
   "+base/threading/platform_thread.h",
   "+base/threading/sequenced_task_runner_handle.h",
@@ -55,6 +55,9 @@ include_rules = [
 
   "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
   "+third_party/blink/renderer/platform/bindings/parkable_string_manager.h",
+  "+third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h",
+  "+third_party/blink/renderer/platform/heap/garbage_collected.h",
+  "+third_party/blink/renderer/platform/heap/persistent.h",
   "+third_party/blink/renderer/platform/instrumentation",
   "+third_party/blink/renderer/platform/platform_export.h",
   "+third_party/blink/renderer/platform/runtime_enabled_features.h",
@@ -71,7 +74,10 @@ specific_include_rules = {
     "+components/ukm/test_ukm_recorder.h",
     "+testing",
   ],
- "sequence_manager_fuzzer.cc": [
-   '+testing/libfuzzer/proto/lpm_interface.h'
- ],
+  "sequence_manager_fuzzer.cc": [
+    '+testing/libfuzzer/proto/lpm_interface.h'
+  ],
+  "event_loop.cc": [
+    "+third_party/blink/renderer/platform/bindings/script_forbidden_scope.h",
+  ]
 }

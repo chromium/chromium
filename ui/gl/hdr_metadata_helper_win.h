@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,44 +9,45 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-#include <memory>
-#include <utility>
-#include <vector>
-
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_switching_observer.h"
 
 namespace gl {
 
 // This is a very hacky way to get the display characteristics.
 // It should be replaced by something that actually knows which
 // display is going to be used for, well, display.
-class GL_EXPORT HDRMetadataHelperWin {
+class GL_EXPORT HDRMetadataHelperWin : ui::GpuSwitchingObserver {
  public:
   explicit HDRMetadataHelperWin(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
-  ~HDRMetadataHelperWin();
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+
+  HDRMetadataHelperWin(const HDRMetadataHelperWin&) = delete;
+  HDRMetadataHelperWin& operator=(const HDRMetadataHelperWin&) = delete;
+
+  ~HDRMetadataHelperWin() override;
 
   // Return the metadata for the display, if available.  Must call
   // UpdateDisplayMetadata first.
-  base::Optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
+  absl::optional<DXGI_HDR_METADATA_HDR10> GetDisplayMetadata();
 
   // Query the display metadata from all monitors. In the event of monitor
   // hot plugging, the metadata should be updated again.
-  void UpdateDisplayMetadata(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device);
+  void UpdateDisplayMetadata();
 
   // Convert |hdr_metadata| to DXGI's metadata format.
   static DXGI_HDR_METADATA_HDR10 HDRMetadataToDXGI(
       const gfx::HDRMetadata& hdr_metadata);
 
+  // Implements GpuSwitchingObserver
+  void OnDisplayAdded() override;
+  void OnDisplayRemoved() override;
+
  private:
-
-  base::Optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(HDRMetadataHelperWin);
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  absl::optional<DXGI_HDR_METADATA_HDR10> hdr_metadata_;
 };
 
 }  // namespace gl

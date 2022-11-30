@@ -14,6 +14,12 @@
   <message name="IDS_FILE_SYSTEM_PROVIDER_MANY_UNRESPONSIVE_WARNING" desc="A warning shown in a notification that more than one operations are taking longer than expected.">
     Some operations are taking longer than expected. Do you want to abort them?
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_COPY_TO_SHARED_DRIVE" desc="Confirmation dialog message when copying a file to a shared location.">
+    Copying this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME">$1</ph>'.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_MOVE_TO_SHARED_DRIVE" desc="Confirmation dialog message when moving a file to a shared location.">
+    Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME">$1</ph>'.
+  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_CONFIRM_TD_MEMBERS_LOSE_ACCESS" desc="Part of message in the confirmation dialog box when moving a file out of a Team Drive.">
     Members of '<ph name="SOURCE_NAME">$1</ph>' will lose access unless these items are shared with them.
   </message>
@@ -68,6 +74,9 @@
   <message name="IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL" desc="A label for the 'My files' root which is parent of Downloads, Linux and Android files. Use sentence case.">
     My files
   </message>
+  <message name="IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL" desc="A label for the 'All' root of media views.">
+    All
+  </message>
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL" desc="A label for the 'Images' root of media views.">
     Images
   </message>
@@ -76,6 +85,51 @@
   </message>
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL" desc="A label for the 'Audio' root of media views.">
     Audio
+  </message>
+  <message name="IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL" desc="A label for the 'Documents' root of media views.">
+    Documents
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_ON" desc="Message read by Chromevox/screenreader when curtain filter in Recent become active.">
+    <ph name="FILTER_NAME">$1<ex>Audio</ex></ph> filter is on.
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_OFF" desc="Message read by Chromevox/screenreader when curtain filter in Recent become inactive.">
+    <ph name="FILTER_NAME">$1<ex>Vidoes</ex></ph> filter is off.
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_VIEW_FILTER_RESET" desc="Message read by Chromevox/screenreader when the filter in Recent is reset to All.">
+    Filter is reset.
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_TODAY" desc="Time period heading label for Today in Recent view.">
+    Today
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_YESTERDAY" desc="Time period heading label for Yesterday in Recent view.">
+    Yesterday
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_WEEK" desc="Time period heading label for This Week in Recent view.">
+    Earlier this week
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_MONTH" desc="Time period heading label for This Month in Recent view.">
+    Earlier this month
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_THIS_YEAR" desc="Time period heading label for This Year in Recent view.">
+    Earlier this year
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_TIME_HEADING_OLDER" desc="Time period heading label for Older in Recent view.">
+    Older
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_EMPTY_FOLDER" desc="Empty state message for all filter in Recent view.">
+    No recent files
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_EMPTY_IMAGES_FOLDER" desc="Empty state message for image filter in Recent view.">
+    No recent images
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_EMPTY_AUDIO_FOLDER" desc="Empty state message for audio filter in Recent view.">
+    No recent audio files
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_EMPTY_VIDEOS_FOLDER" desc="Empty state message for video filter in Recent view.">
+    No recent videos
+  </message>
+  <message name="IDS_FILE_BROWSER_RECENT_EMPTY_DOCUMENTS_FOLDER" desc="Empty state message for document filter in Recent view.">
+    No recent documents
   </message>
   <message name="IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL" desc="Parallels local directory label.">
     Windows files
@@ -89,14 +143,17 @@
   <message name="IDS_FILE_BROWSER_DOCPROVIDER_ROOT_LABEL_WITH_SUMMARY" desc="A label for a documents provider root, which has both title and summary.">
     <ph name="ROOT_TITLE">$1<ex>MyCloudProvider</ex></ph> (<ph name="ROOT_SUMMARY">$2<ex>me@example.com</ex></ph>)
   </message>
-  <!-- TODO (oto@): remove this msg as part of files-ng clean up process. -->
   <message name="IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING" desc="Warning displayed to user when viewing downloads folder.">
-    <ph name="BEGIN_BOLD">&lt;strong&gt;</ph>Caution:<ph name="END_BOLD">&lt;/strong&gt;</ph>  These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK">&lt;a href="javascript://"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    Caution: These files are temporary and may be automatically deleted to free up disk space.
   </message>
+  <message name="IDS_FILE_BROWSER_LEARN_MORE_LABEL" desc="A label for the 'Learn more' button to get more information about a banner.">
+    Learn more
+  </message>
+  <!-- TODO (crbug.com/1228128): Remove IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING_FILESNG once migrated to new banner framework. -->
   <message name="IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING_FILESNG" desc="Warning displayed to user when viewing downloads folder.">
     Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK">&lt;a href="javascript://"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_NAME_COLUMN_LABEL" desc="Name column label.">
+  <message name="IDS_FILE_BROWSER_NAME_COLUMN_LABEL" desc="Name column label." meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_FILE_BROWSER_SIZE_COLUMN_LABEL" desc="Size column label.">
@@ -238,9 +295,6 @@
     Unable to view Linux files
   </message>
 
-  <message name="IDS_FILE_BROWSER_EMPTY_FOLDER" desc="Label shown in an empty folder.">
-    Nothing to see here...
-  </message>
   <message name="IDS_FILE_BROWSER_NEW_FOLDER_BUTTON_LABEL" desc="Label on the 'New folder' button.">
     New folder
   </message>
@@ -274,6 +328,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED" desc="Error message when an archive mount operation failed.">
     Could not open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>"
+  </message>
+  <message name="IDS_FILE_BROWSER_ARCHIVE_MOUNT_INVALID_PATH" desc="Error message when trying to mount an archive from an unsupported path.">
+    Could not open "<ph name="PATH">$1<ex>zipfile.zip</ex></ph>" from this location. Please copy to "My files" to open.
   </message>
   <message name="IDS_FILE_BROWSER_UNMOUNT_FAILED" desc="Title of the error dialog when device unmount operation failed.">
    <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Don't remove your device just yet!<ph name="END_BOLD">&lt;/b&gt;</ph>
@@ -316,13 +373,16 @@
     Open
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GDOC" desc="Title of the action to open a Google Docs document.">
-    Docs
+    Google Docs
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GSHEET" desc="Title of the action to open a Google Spreadsheets document.">
-    Sheets
+    Google Sheets
   </message>
   <message name="IDS_FILE_BROWSER_TASK_OPEN_GSLIDES" desc="Title of the action to open a Google Slides document.">
-    Slides
+    Google Slides
+  </message>
+  <message name="IDS_FILE_BROWSER_TASK_OPEN_OFFICE" desc="Title of the action to open an office document in the Office app">
+    Office
   </message>
   <message name="IDS_FILE_BROWSER_TASK_LISTEN" desc="Title of the action to play an audio file.">
     Listen
@@ -368,141 +428,6 @@
     An error occured during installation of your Linux application.
   </message>
 
-  <message name="IDS_FILE_BROWSER_GALLERY_NO_IMAGES" desc="In the Gallery, the message that there are no images in this directory.">
-    No images in this directory.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ITEMS_SELECTED" desc="In the Gallery, the message showing the selected item count.">
-    <ph name="COUNT">$1<ex>3</ex></ph> items selected
-  </message>
-
-  <message name="IDS_FILE_BROWSER_GALLERY_THUMBNAIL" desc="In the Gallery, the title on the button that switches to the thumbnail view.">
-    Thumbnail view
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_SLIDE" desc="In the Gallery, the title on the button that switches to the slide view.">
-    Slide view
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_SLIDESHOW" desc="In the Gallery, the title on the button that starts the slide show.">
-    Slideshow
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_DELETE" desc="In the Gallery, the title on the button that deletes selected images.">
-    Delete
-  </message>
-
-  <message name="IDS_FILE_BROWSER_GALLERY_EDIT" desc="In the Gallery, the title on the button shows/hides editing buttons.">
-    Edit
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_PRINT" desc="In the Gallery, the title on the button showing the print dialog for the current image or video.">
-    Print
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_SHARE" desc="In the Gallery, the title on the button that lets the user share a photo.">
-    Share
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_EXIT" desc="In the Gallery, the title on the button that exits edit mode.">
-    Exit
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ENTER_WHEN_DONE" desc="In the Gallery, the text in a floating panel that prompts the user to press enter when they are done with the changes to a photo.">
-    Press Enter when done
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_AUTOFIX" desc="In the Gallery, the title on the button that applies the Auto-Fix filter to a photo.">
-    Auto-fix
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_FIXED" desc="In the Gallery, the text in a floating panel that notifies that the photo has been automatically fixed.">
-    Fixed
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_CROP" desc="In the Gallery, the title on the button that cuts out a rectangular fragment from a photo">
-    Crop
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ASPECT_RATIO_1_1" desc="Button label to fix aspect to 1:1 ratio when cropping.">
-    1x1
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ASPECT_RATIO_6_4" desc="Button label to fix aspect to 6:4 ratio when cropping.">
-    6x4
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ASPECT_RATIO_7_5" desc="Button label to fix aspect to 7:5 ratio when cropping.">
-    7x5
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ASPECT_RATIO_16_9" desc="Button label to fix aspect to 16:9 ratio when cropping.">
-    16x9
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_RESIZE" desc="In the Gallery, the title on the button that resize a photo.">
-    Resize
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_FIXRATIO" desc="Togglable Button to fix the ratio of width/height input field when resizing.">
-    Fix ratio
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_HEIGHT" desc="Input field to set the new size for height.">
-    Height
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_INVALIDVALUE" desc="In the Gallery, the message informing that the input value is invalid.">
-    Input value is invalid.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_WIDTH" desc="Input field to set the new size for width.">
-    Width
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_EXPOSURE" desc="In the Gallery, the title on the button that applies the Brightness/Contrast filter to a photo.">
-    Brightness
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_BRIGHTNESS" desc="In the Gallery, the text next to the Brightness slider.">
-    Brightness
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_CONTRAST" desc="In the Gallery, the text next to the Contrast slider.">
-    Contrast
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ROTATE_LEFT" desc="In the Gallery, the title on the button that rotates the photo 90 degrees to the left (counterclockwise).">
-    Left
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_ROTATE_RIGHT" desc="In the Gallery, the title on the button that rotates the photo 90 degrees to the right (clockwise).">
-    Right
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_UNDO" desc="In the Gallery, the text on the button that reverts the most recent operation.">
-    Undo
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_REDO" desc="In the Gallery, the text on the button that performs again the operation that has been recently reverted.">
-    Redo
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_DONE" desc="In the Gallery, the text on the button that commit image edit.">
-    DONE
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_FILE_EXISTS" desc="In the Gallery, the message informing that file already exists when attempting to rename.">
-    File already exists
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_SAVED" meaning="saved to disk" desc="In the Gallery, the message informing that editing saved successfully.">
-    Saved
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_SAVE_FAILED" desc="In the Gallery, the message informing that it failed to save editing image.">
-    Failed to save image.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_OVERWRITE_ORIGINAL" desc="In the Gallery, text on the button to overwrite original file along with the edited copy.">
-    Overwrite original
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_OVERWRITE_BUBBLE" desc="In the Gallery, text in the bubble informing user about saving and overwriting original file.">
-    Your edits are saved automatically.<ph name="BREAKS">&lt;br&gt;&lt;br&gt;<ex>&lt;br&gt;&lt;br&gt;</ex></ph>To keep a copy of the original image, uncheck "Overwrite original"
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_OVERWRITE_BUBBLE_CLOSE" desc="In the Gallery, close button on the bubble notifying user of overwriting original file.">
-    Close
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_READONLY_AND_NON_WRITABLE_FORMAT_WARNING" desc="In the Gallery, message informing that all edits will be saved to Downloads directory since the directory is readonly and the file is non-writable format of Gallery.">
-    Cannot save to <ph name="FOLDER_NAME">$1<ex>readonly-dir</ex></ph>. All edits will be saved to <ph name="DOWNLOADS_FOLDER">$2<ex>Downloads/fallbackdir</ex></ph> in the Downloads folder.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_READONLY_WARNING" desc="In the Gallery, message informing that directory is readonly, and edited files will be saved to Downloads directory.">
-    Cannot save to <ph name="FOLDER_NAME">$1<ex>readonly-dir</ex></ph>. Edited images will be saved in the Downloads folder.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_NON_WRITABLE_FORMAT_WARNING" desc="In the Gallery, message informing that Gallery cannot overwrite to the original file and all edits will be saved to a copy.">
-    All edits will be saved to <ph name="DOWNLOADS_FOLDER">$1<ex>Downloads/fallbackdir</ex></ph>.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_IMAGE_ERROR" desc="In the Gallery, message informing that the image failed to load.">
-    This file could not be displayed.
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_ERROR" desc="In the Audio Player, message informing that the file could not be played.">
-    This file could not be played.
-  </message>
-  <message name="IDS_FILE_BROWSER_GALLERY_IMAGE_OFFLINE" desc="In the Gallery, message informing that the image could be displayed in the offline mode.">
-    This image is not available offline.
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_OFFLINE" desc="In the Audio Player, message informing that the audio file could not be played in the offline mode.">
-    This file is not available offline.
-  </message>
-
   <message name="IDS_FILE_BROWSER_RECOVERED_FILES_FROM_GOOGLE_DRIVE_DIRECTORY_NAME" desc="The name of the direcotry which stores files recovered from Google Drive directory when the locally stored Google Drive data is found to be broken.">
     Recovered files from Google Drive
   </message>
@@ -542,13 +467,16 @@
     Delete
   </message>
   <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_BUTTON_LABEL" desc="Context menu item that moves the currently-selected file(s) to the trash / recycle bin.">
-    Move to Trash
+    Move to trash
   </message>
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_BUTTON_LABEL" desc="Context menu item that restores the currently-selected file(s) from the trash / recycle bin.">
     Restore from trash
   </message>
   <message name="IDS_FILE_BROWSER_EMPTY_TRASH_BUTTON_LABEL" desc="Context menu item that empties (permanently deletes all items in) the trash / recycle bin.">
-    Empty Trash
+    Empty trash now
+  </message>
+  <message name="IDS_FILE_BROWSER_TRASH_NUDGE_LABEL" desc="Shown when a user trashes a file for the the first time">
+    Deleted files are now moved to trash
   </message>
   <message name="IDS_FILE_BROWSER_PASTE_BUTTON_LABEL" desc="Context menu item that pastes the file(s) in the clipboard.">
     Paste
@@ -565,26 +493,14 @@
   <message name="IDS_FILE_BROWSER_CUT_BUTTON_LABEL" desc="Context menu item that cuts the currently-selected file(s) to the clipboard.">
     Cut
   </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_ALL_BUTTON_LABEL" desc="Menu item label, showing dialog to extract content from a zip file.">
+    Extract all
+  </message>
   <message name="IDS_FILE_BROWSER_OPEN_WITH_BUTTON_LABEL" desc="Menu item label, showing dialog to choose extension to open selected files or directories.">
     Open with...
   </message>
-  <message name="IDS_FILE_BROWSER_MORE_ACTIONS_BUTTON_LABEL" desc="Menu item label, showing dialog to choose extension to open/share/pack/etc... selected files or directories.">
-    More actions
-  </message>
   <message name="IDS_FILE_BROWSER_GO_TO_FILE_LOCATION_BUTTON_LABEL" desc="Menu item label, navigating the user to the file's containing folder.">
     Go to file location
-  </message>
-  <message name="IDS_FILE_BROWSER_OPEN_WITH_VERB_BUTTON_LABEL" desc="Verb that describe the action of opening one or more files or directories with the given extension.">
-    Open with <ph name="EXTENSION_NAME">$1<ex>Gallery</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_ADD_TO_VERB_BUTTON_LABEL" desc="Verb that describes the uploading or addition of one or multiple files or directories to the given extension.">
-    Add to <ph name="EXTENSION_NAME">$1<ex>Evernote</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_PACK_WITH_VERB_BUTTON_LABEL" desc="Verb that describes the packing or archiving of one or multiple files or directories with the given extension.">
-    Pack with <ph name="EXTENSION_NAME">$1<ex>ZIP</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_SHARE_WITH_VERB_BUTTON_LABEL" desc="Verb that describes the action of sharing/attaching/sending files with the given application.">
-    Share with <ph name="EXTENSION_NAME">$1<ex>GMail</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_ZIP_SELECTION_BUTTON_LABEL" desc="Menu item label, showing dialog to create zip file for selected files.">
     Zip selection
@@ -592,11 +508,11 @@
   <message name="IDS_FILE_BROWSER_SET_WALLPAPER_BUTTON_LABEL" desc="The context menu item to set wallpaper.">
     Set as wallpaper
   </message>
-  <message name="IDS_FILE_BROWSER_PIN_FOLDER_BUTTON_LABEL" desc="Menu item label, pinning the selected folder to the left nav.">
-    Pin folder
+  <message name="IDS_FILE_BROWSER_PIN_FOLDER_BUTTON_LABEL" desc="Menu item label, add the selected folder to the left nav.">
+    Add to sidebar
   </message>
-  <message name="IDS_FILE_BROWSER_UNPIN_FOLDER_BUTTON_LABEL" desc="Menu item label, unpinning the selected folder from the left nav.">
-    Unpin folder
+  <message name="IDS_FILE_BROWSER_UNPIN_FOLDER_BUTTON_LABEL" desc="Menu item label, remove the selected folder from the left nav.">
+    Remove from sidebar
   </message>
   <message name="IDS_FILE_BROWSER_SELECT_ALL_COMMAND_LABEL" desc="Menu item label, select all files and folders in the right view">
     Select all
@@ -609,6 +525,9 @@
   </message>
   <message name="IDS_FILE_BROWSER_MANAGE_IN_DRIVE_BUTTON_LABEL" desc="Menu item's label, showing dialog to open the selected Google Drive files in the Drive webpage for managing sharing permissions, etc.">
     Manage in Drive
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_MANAGE_MIRRORSYNC_LABEL" desc="Menu item's label, shows dialog to manage MirrorSync settings and currently syncing folders.">
+    Manage synced folders
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_WITH_LINUX_BUTTON_LABEL" desc="Label for menu that will share a folder with the crostini Linux container.">
     Share with Linux
@@ -625,8 +544,14 @@
   <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE" desc="Body of the dialog shown to users when they try to open a file with an application in a virtual machine, but the file is not in a directory shared into the VM.">
     To open files with <ph name="APP_NAME">$1<ex>Paint (Windows)</ex></ph>, first move them to the Windows files folder.
   </message>
-  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE" desc="Body of the dialog shown to users when they try to open a file with an application in a virtual machine, but the file is on an external drive so isn't accessile from with the VM.">
+  <message name="IDS_FILE_BROWSER_UNABLE_TO_OPEN_WITH_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE" desc="Body of the dialog shown to users when they try to open a file with an application in a virtual machine, but the file is on an external drive so isn't accessible from within the VM.">
     To open files with <ph name="APP_NAME">$1<ex>Paint (Windows)</ex></ph>, first copy them to the Windows files folder.
+  </message>
+  <message name="IDS_FILE_BROWSER_UNABLE_TO_DROP_IN_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE" desc="Body of the dialog shown to users when they try to drag and drop a file to Parallels, but the file is not in a directory shared into the VM. Do not translate 'Parallels Desktop'">
+    To drop files in Parallels Desktop, the file must be moved to Windows files.
+  </message>
+  <message name="IDS_FILE_BROWSER_UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE" desc="Body of the dialog shown to users when they try to drag and drop a file to Parallels, but the file is on an external drive so isn't accessible from within the VM. Do not translate 'Parallels Desktop'">
+    To drop files in Parallels Desktop, the file must be copied to Windows files.
   </message>
   <message name="IDS_FILE_BROWSER_TOGGLE_HIDDEN_FILES_COMMAND_LABEL" desc="Label for menu or button with checkmark that toggles visibility of hidden files.">
     Show hidden files
@@ -652,93 +577,6 @@
   <message name="IDS_FILE_BROWSER_FILE_LIST_CHANGED_TO_THUMBNAIL_VIEW" desc="Message spoken by ChromeVox/screen reader after clicking on button to switch to thumbnail view mode.">
     File list has changed to thumbnail view.
   </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TITLE" desc="Title of the cloud import feature.">
-    Cloud backup
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_DESTINATION_FOLDER" desc="Title of the cloud import destination folder.">
-    Chrome OS Cloud backup
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_DESCRIPTION" desc="Short description of the cloud import feature.">
-    Back up your media device’s photos and videos to Google Drive.
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_START" desc="Tooltip of the toolbar button that starts backup.">
-    Backup your photos and videos
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_SHOW_DETAILS" desc="Tooltip for button that shows details panel.">
-    Show Cloud backup details
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_COMMAND" desc="Label of button on details panel that invokes cloud import feature.">
-    Back up
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_CANCEL_COMMAND" desc="Label of button on details panel that cancels an active import.">
-    Cancel
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_ONE_FILE" desc="Cloud import 1 new photo.">
-    1 new photo
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_MULTIPLE_FILES" desc="Cloud import multiple new photos.">
-    <ph name="FILE_COUNT">$1<ex>5</ex></ph> new photos
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_SCANNING" desc="Cloud import scanning status message.">
-    Scanning your media device...
-    <ph name="LINE_BREAK1">&lt;br&gt;</ph>
-    <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph> found
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_SCANNING" desc="Cloud import scanning tooltip.">
-    Scanning your media device...
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_NO_MEDIA" desc="Cloud import no-new-media-found status message. Shown after backup is completed and when a search for new files to backup produces no result.">
-    All backed up to <ph name="BEGIN_LINK">&lt;a is='action-link' class='destination-link'&gt;</ph>Google Drive!<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_NO_MEDIA" desc="Cloud import no-new-media-found tooltip. Shown after backup is completed and when a search for new files to backup produces no result.">
-    All backed up!
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_INSUFFICIENT_CLOUD_SPACE" desc="Cloud import insufficient cloud space status message.">
-    <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph> found.
-    <ph name="LINE_BREAK1">&lt;br&gt;</ph>
-    Your Google Drive quota isn't large enough. Additional <ph name="FILE_SIZE">$2<ex>5 MB</ex></ph> needed.
-    <ph name="LINE_BREAK2">&lt;br&gt;</ph>
-    Try selecting fewer photos.
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_INSUFFICIENT_CLOUD_SPACE" desc="Cloud import insufficient cloud space tooltip.">
-    Your Google Drive quota isn't large enough.
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_INSUFFICIENT_LOCAL_SPACE" desc="Cloud import insufficient local space status message.">
-    <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph> found.
-    <ph name="LINE_BREAK1">&lt;br&gt;</ph>
-    Not enough space available in local storage. Additional <ph name="FILE_SIZE">$2<ex>5 MB</ex></ph> needed.
-    <ph name="LINE_BREAK2">&lt;br&gt;</ph>
-    Try selecting fewer photos.
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_INSUFFICIENT_LOCAL_SPACE" desc="Cloud import insufficient local space tooltip.">
-    Not enough space available in local storage.
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_READY" desc="Cloud import ready status message.">
-    <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph> found
-    <ph name="LINE_BREAK1">&lt;br&gt;</ph>
-    Ready to back up to <ph name="BEGIN_LINK">&lt;a is='action-link' class='destination-link'&gt;</ph>Google Drive<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_READY" desc="Cloud import ready tooltip.">
-    Ready to backup <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_IMPORTING" desc="Cloud import active-backup status. Message shown when importing is in progress">
-    Backing up <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph> to <ph name="BEGIN_LINK">&lt;a is='action-link' class='destination-link'&gt;</ph>Google Drive<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_IMPORTING" desc="Cloud import active-backup tooltip.">
-    Backing up <ph name="FILE_COUNT">$1<ex>5 new photos</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_STATUS_DONE" desc="Cloud import backup is complete status.">
-    <ph name="FILE_COUNT">$1<ex>5</ex></ph> photos backed up to <ph name="BEGIN_LINK">&lt;a is='action-link' class='destination-link'&gt;</ph>Google Drive<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_ERROR_ITEM" desc="Cloud import error message for a file it couldn't back up.">
-    Couldn't back up <ph name="FILE_NAME">$1<ex>photo.jpg</ex></ph>
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_TOOLTIP_DONE" desc="Cloud import backup is complete tooltip.">
-    <ph name="FILE_COUNT">$1<ex>5</ex></ph> photos backed up
-  </message>
-  <message name="IDS_FILE_BROWSER_CLOUD_IMPORT_ITEMS_REMAINING" desc="File Manager status message.">
-    Importing <ph name="FILE_COUNT">$1<ex>5</ex></ph> files...
-  </message>
   <message name="IDS_FILE_BROWSER_COPY_FILE_NAME" desc="File Manager status message.">
     Copying <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
   </message>
@@ -750,6 +588,18 @@
   </message>
   <message name="IDS_FILE_BROWSER_COPY_ITEMS_REMAINING_LONG" desc="File Manager status message including destination folder when copying multiple files or folders. 'Item' is used here as a generic term for file or directory.">
     Copying <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_FILESYSTEM_ERROR" desc="File Manager error message.">
+    Extract operation failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_FILE_NAME" desc="File Manager status message.">
+    Extracting <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
+  </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_ITEMS_REMAINING" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    Extracting <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items...
+  </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_FILE_NAME_LONG" desc="File Manager status message including destination folder when extracting one file.">
+    Extracting <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph> to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_TIME_REMAINING_ESTIMATE"
            desc="The progress panel message indicating estimate of remaining time of a file operation. The time will be in 1 part (hour or minute) like '2 hours' or '3 min'.">
@@ -768,17 +618,26 @@
   <message name="IDS_FILE_BROWSER_COPY_FILESYSTEM_ERROR" desc="File Manager error message.">
     Copy operation failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
   </message>
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_UNEXPECTED_ERROR" desc="File manager error whilst emptying trash">
+    Failed to empty the trash.
+  </message>
   <message name="IDS_FILE_BROWSER_COPY_UNEXPECTED_ERROR" desc="File Manager error message.">
     Copy operation failed, unexpected error: <ph name="ERROR_MESSAGE">$1<ex>Could not copy</ex></ph>
   </message>
   <message name="IDS_FILE_BROWSER_FILE_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="FILE_NAME">$1<ex>big.xz</ex></ph> copied.
   </message>
+  <message name="IDS_FILE_BROWSER_FILE_EXTRACTED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="FILE_NAME">$1<ex>big.xz</ex></ph> extracted.
+  </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items
   </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS_COPIED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items copied.
+  </message>
+  <message name="IDS_FILE_BROWSER_FILE_ITEMS_EXTRACTED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items extracted.
   </message>
   <message name="IDS_FILE_BROWSER_FILE_ITEMS_MOVED" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved.
@@ -841,7 +700,13 @@
     Google Drive was unable to sync "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" right now. Google Drive will try again later.
   </message>
   <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE" desc="File Manager status message shown when the drive sync is failed because it runs out the space in Google Drive server.">
-    "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" was not uploaded. There is not enough free space in your Google Drive.
+    There is not enough free space in your Google Drive to complete the upload.
+  </message>
+  <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION" desc="File Manager status message shown when the drive sync is failed because the user's organization runs out the space in Google Drive server.">
+    Your organization requires more storage to complete the upload.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL" desc="File Manager menu storage meter message indicating the user's organization has run out of quota.">
+    Org storage full
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ERROR" desc="File Manager error message when sharing a file or a directory on Drive fails because of internet connection problems.">
     Sharing failed. Check your connection and try again later.
@@ -855,17 +720,38 @@
   <message name="IDS_FILE_BROWSER_DELETE_ERROR" desc="Message informing about error while deleting an item or items.">
     An error occurred. Some items may not have been deleted.
   </message>
-  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
-    Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"...
+  <message name="IDS_FILE_BROWSER_RESTORING_FROM_TRASH_FILE_NAME" desc="File Manager status message shown when restoring items from trash / recycle bin.">
+    Restoring "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>"
   </message>
-  <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
-    Restoring <ph name="COUNT">$1<ex>10</ex></ph> items...
+  <message name="IDS_FILE_BROWSER_RESTORING_FROM_TRASH_ITEMS_REMAINING" desc="File Manager status message shown when restoring items from trash / recycle bin. 'Item' is used here as a generic term for file or directory.">
+    Restoring <ph name="COUNT">$1<ex>10</ex></ph> items
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_TRASH_FILE_NAME" desc="When a file has been successfully restored.">
+    <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> restored
+  </message>
+  <message name="IDS_FILE_BROWSER_RESTORE_TRASH_MANY_ITEMS" desc="Shown when a number of files have been successfully restored.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items restored
   </message>
   <message name="IDS_FILE_BROWSER_TRASH_DELETED_FOREVER" desc="Message informing that items in the trash / recycle bin are deleted forever after 30 days.">
-    Items in the trash are deleted forever after 30 days.
+    Files in the trash for more than 30 days will be automatically deleted.
   </message>
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
     An error occurred. Some items may not have been restored.
+  </message>
+  <message name="IDS_FILE_BROWSER_TRASH_UNEXPECTED_ERROR" desc="Message informing about error while sending an item to the trash / recycle bin.">
+    An error occurred. Some items may not have been trashed.
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILE_ERROR_TITLE" desc="Title of message informing users they can't open files from the Trash folder">
+    This item is in your trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILE_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
+    Restore the item or drag it to a new folder outside of trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_TITLE" desc="Title of message informing users they can't open files from the Trash folder">
+    These items are in your trash
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
+    Restore the items or drag them to a new folder outside of trash
   </message>
   <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
     <ph name="COUNT">$1<ex>10</ex></ph> errors.
@@ -906,6 +792,9 @@
   <message name="IDS_FILE_BROWSER_PENDING_LABEL" desc="Pending label.">
     Pending
   </message>
+  <message name="IDS_FILE_BROWSER_SCANNING_LABEL" desc="Scanning label.">
+    Scanning
+  </message>
   <message name="IDS_FILE_BROWSER_SEARCH_TEXT_LABEL" desc="Search text field label.">
     Search
   </message>
@@ -935,6 +824,13 @@
     New folder
   </message>
 
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_FOLDER_TITLE" desc="Text used for the title when navigating to the Trash folder and it has no contents">
+    Nothing in trash
+  </message>
+  <message name="IDS_FILE_BROWSER_EMPTY_TRASH_FOLDER_DESC" desc="Text used for the description when navigating to the Trash folder and it has no contents">
+    Move items you don't need to trash
+  </message>
+
  <message name="IDS_FILE_BROWSER_CONFIRM_DELETE_ONE" desc="Asks the user if they are sure they want to delete a single file.">
    Are you sure you want to delete "<ph name="FILE_NAME">$1<ex>file.txt</ex></ph>"?
  </message>
@@ -942,17 +838,44 @@
    Are you sure you want to delete <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items?
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ONE" desc="Confirm to a user that they have deleted a single file and offer to undo">
-   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> deleted
+   <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> moved to trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_SOME" desc="Confirm to a user that they have deleted multiple files and offer to undo">
-   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items deleted
+   <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items moved to trash
+ </message>
+ <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME" desc="Showing progress that a single item is being moved to trash.">
+   Moving <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> to the trash
+ </message>
+ <message name="IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING" desc="Showing progress that multiple items are being moved to trash.">
+   Moving <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items to the trash
  </message>
  <message name="IDS_FILE_BROWSER_UNDO_DELETE_ACTION_LABEL" desc="Undo label shown on toast to undo delete operation">
    Undo
  </message>
- <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
-   Are you sure you want to empty Trash?
+ <message name="IDS_FILE_BROWSER_RESTORE_ACTION_LABEL" desc="Restore label shown on dialog when trying to open files that are in Trash">
+   Restore
  </message>
+ <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH_TITLE" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
+   Permanently delete these files?
+ </message>
+ <message name="IDS_FILE_BROWSER_CONFIRM_EMPTY_TRASH_DESC" desc="Asks the user if they are sure they want to empty the trash / recylce bin.">
+   All items in trash will be deleted and you won't be able to restore them.
+ </message>
+ <message name="IDS_FILE_BROWSER_EMPTY_TRASH_DELETE_FOREVER" desc="Button label the users confirms empty trash">
+  Delete forever
+ </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_SINGLE_ITEM" desc="Dialog title to show to a user when the item they're trying to restore is missing its parent">
+    To restore this item, drag it to a new folder outside of trash. The original folder "<ph name="PARENT_FOLDER_NAME">$1<ex>Parent folder name</ex></ph>" for this item has been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_MULTIPLE_ITEMS_SAME_PARENTS" desc="Dialog title to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder outside of trash. The original folder "<ph name="PARENT_FOLDER_NAME">$1<ex>Parent folder name</ex></ph>" for these item has been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_MULTIPLE_ITEMS_DIFFERENT_PARENTS" desc="Dialog description to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder outside of trash. The original folders for these items have been deleted.
+  </message>
+  <message name="IDS_FILE_BROWSER_CANT_RESTORE_TRASHED_SOME_ITEMS" desc="Dialog title to show a user that all the files they've selected to restore can't be as the parent folder has been removed.">
+    To restore these items, drag them to a new folder. The original folders for some of these items have been deleted.
+  </message>
 
   <message name="IDS_FILE_BROWSER_UNKNOWN_FILESYSTEM_WARNING" desc="Displayed when device contents cannot be read because filesystem is unknown.">
     This device cannot be opened because its filesystem was not recognized.
@@ -1107,6 +1030,9 @@
   <message name="IDS_FILE_BROWSER_METADATA_BOX_FILE_LOCATION" desc="Label for file location.">
     File location
   </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_ORIGINAL_LOCATION" desc="Label for items original location.">
+    Original location
+  </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_FILE_PATH" desc="Label for file path.">
     Path
   </message>
@@ -1170,6 +1096,12 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE" desc="Message informing the user that they can make files available offline.">
     You can make files available offline for access when you don't have an internet connection.
   </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_TITLE" desc="Message title of banner informing user they can make files available offline.">
+    Make files available offline
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_SUBTITLE" desc="Message title of banner informing user they can make files available offline.">
+    Select a file, and toggle <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> on for offline access to your files.
+  </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
     Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
   </message>
@@ -1230,8 +1162,17 @@
   <message name="IDS_FILE_BROWSER_DRIVE_VISIT_DRIVE_GOOGLE_COM" desc="Menu item, redirecting user to drive.google.com">
     Go to drive.google.com...
   </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_SPACE_AVAILABLE_LONG" desc="Text showing space left on Google Drive">
-    Google Drive space left: <ph name="SPACE_AVAILABLE">$1<ex>400 MB</ex></ph>.
+  <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_LOW" desc="Text showing individual space left on Google Drive">
+    Storage low <ph name="REMAINING_PERCENTAGE">$1<ex>12</ex></ph>% left of your <ph name="TOTAL_SPACE">$2<ex>10 TB</ex></ph> individual storage.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_WARNING_QUOTA_OVER" desc="Word prepended to 'drive quota over' warning messages exclusively for screen readers to make up for warning icons that are not picked up by them">
+    Warning
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_INDIVIDUAL_QUOTA_OVER" desc="Text informing users that their Google Drive individual quota has been exceeded">
+    You’ve used all your individual Google Workspace storage.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_QUOTA_OVER" desc="Text informing users that their Google Drive organization quota has been exceeded">
+    <ph name="ORGANIZATION_NAME">$1<ex>Jane's Flowers</ex></ph> has used all of its Google Workspace storage.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_BUY_MORE_SPACE_LINK" desc="Text on the link, offering user to buy more space on Google Drive">
     Buy more storage
@@ -1271,11 +1212,17 @@
   <message name="IDS_FILE_BROWSER_DRIVE_WELCOME_DISMISS" desc="In the Welcome to Google Drive banner, a text on the button to dismiss the banner.">
     Dismiss
   </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE" desc="In the Holding Space welcome banner, title of banner.">
-    Create a shortcut for your files
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS" desc="In the Holding Space welcome banner, text on the button to dismiss the banner.">
+    Got it
   </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT" desc="In the Holding Space welcome banner, text of the welcome message.">
-    Right-click a file, and select "Pin to shelf" for quick access to your files in shelf.
+    Right-click a file, and select "<ph name="PIN_COMMAND">$1<ex>Pin to quick files</ex></ph>" for quick access to your files in shelf.
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
+    Touch &amp; hold a file and tap <ph name="ICON">&lt;span class='icon'&gt;&lt;/span&gt;</ph>, and select "<ph name="PIN_COMMAND">$1<ex>Pin to quick files</ex></ph>" for quick access to your files in shelf.
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TITLE" desc="In the Holding Space welcome banner, title of banner.">
+    Create a shortcut for your files
   </message>
   <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_TITLE" desc="In the Google Photos welcome banner, title of banner.">
     Easily access Google Photos
@@ -1286,20 +1233,14 @@
   <message name="IDS_FILE_BROWSER_PHOTOS_WELCOME_DISMISS" desc="In the Google Photos welcome banner, a text on the button to dismiss the banner.">
     Got it
   </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE" desc="In the Holding Space welcome banner, text of the welcome message in tablet mode.">
-    Touch &amp; hold a file and tap <ph name="ICON">$1</ph>, and select "Pin to shelf" for quick access to your files in shelf.
-  </message>
-  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS" desc="In the Holding Space welcome banner, text on the button to dismiss the banner.">
-    Got it
-  </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_FILE" desc="Message shown when user tries to open file, which we can't handle.">
-    This file type is not supported. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
+    This file type is not supported. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on ChromeOS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_EXECUTABLE" desc="Message shown when user tries to open a windows executable file, which we can't handle.">
-    This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
+    This file is designed for a PC using Windows software. This is not compatible with your device which runs ChromeOS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on ChromeOS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_DMG" desc="Message shown when user tries to open a windows executable file, which we can't handle.">
-    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on Chrome OS.
+    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs ChromeOS. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn More<ph name="END_LINK_HELP">&lt;/a&gt;</ph> about opening files on ChromeOS.
   </message>
   <message name="IDS_FILE_BROWSER_NO_TASK_FOR_CRX_TITLE" desc="Message shown when a user tries to open a *.crx file, which we don't handle in the Files app.">
     Wait just a sec
@@ -1365,26 +1306,17 @@
   <message name="IDS_FILE_BROWSER_AUDIO_FILE_TYPE" desc="Audio file type">
     <ph name="AUDIO_TYPE">$1<ex>mp3</ex></ph> audio
   </message>
+  <message name="IDS_FILE_BROWSER_ARCHIVE_FILE_TYPE" desc="Archive file type">
+    <ph name="ARCHIVE_TYPE">$1<ex>ZIP</ex></ph> archive
+  </message>
   <message name="IDS_FILE_BROWSER_HTML_DOCUMENT_FILE_TYPE" desc="HTML document file type">
     HTML document
   </message>
-  <message name="IDS_FILE_BROWSER_ZIP_ARCHIVE_FILE_TYPE" desc="Zip archive file type">
-    Zip archive
-  </message>
-  <message name="IDS_FILE_BROWSER_RAR_ARCHIVE_FILE_TYPE" desc="RAR archive file type">
-    RAR archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_ARCHIVE_FILE_TYPE" desc="Tar archive file type">
-    Tar archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_BZIP2_ARCHIVE_FILE_TYPE" desc="Bzip2 compressed tar archive file type">
-    Bzip2 compressed tar archive
-  </message>
-  <message name="IDS_FILE_BROWSER_TAR_GZIP_ARCHIVE_FILE_TYPE" desc="Gzip compressed tar archive file type">
-    Gzip compressed tar archive
-  </message>
   <message name="IDS_FILE_BROWSER_PLAIN_TEXT_FILE_TYPE" desc="Plain text file type">
     Plain text
+  </message>
+  <message name="IDS_FILE_BROWSER_CSV_TEXT_FILE_TYPE" desc="CSV file type">
+    CSV text
   </message>
   <message name="IDS_FILE_BROWSER_PDF_DOCUMENT_FILE_TYPE" desc="PDF document file type">
     PDF document
@@ -1437,19 +1369,13 @@
     This file type is not supported. Please visit the Chrome Web Store to find an app that can open this type of file.
   </message>
   <message name="IDS_FILE_BROWSER_ERROR_VIEWING_FILE_FOR_DMG" desc="Error message when user attempts to open a dmg file in the Files app via Downloads panel.">
-    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. Please search the Chrome Web Store for a suitable replacement app.
+    This file is designed for a computer using Macintosh software. This is not compatible with your device which runs ChromeOS. Please search the Chrome Web Store for a suitable replacement app.
   </message>
   <message name="IDS_FILE_BROWSER_ERROR_VIEWING_FILE_FOR_EXECUTABLE" desc="Error message when user attempts to open a exe file in the Files app via Downloads panel.">
-    This file is designed for a PC using Windows software. This is not compatible with your device which runs Chrome OS. Please search the Chrome Web Store for a suitable replacement app.
+    This file is designed for a PC using Windows software. This is not compatible with your device which runs ChromeOS. Please search the Chrome Web Store for a suitable replacement app.
   </message>
   <message name="IDS_FILE_BROWSER_ERROR_UNRESOLVABLE_FILE" desc="Error message when the file attempted to open from Downloads panel was not found under paths managed by file manager.">
     This file has wandered off somewhere. Please check your download location setting and try again.
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_PLAYER_TITLE" desc="Title of the Audio Player window.">
-    Audio Player
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_PLAYER_DEFAULT_ARTIST" desc="In the Audio Player window, default artist name used when artist name is unknown.">
-    Unknown Artist
   </message>
 
   <message name="IDS_FILE_BROWSER_FILE_ERROR_GENERIC" desc="In the File Manager, the error message when the file operation failed.">
@@ -1500,9 +1426,6 @@
   <message name="IDS_FILE_BROWSER_THUMBNAIL_VIEW_TOOLTIP" desc="Tooltip for the Thumbnail View button.">
     Thumbnail view
   </message>
-  <message name="IDS_FILE_BROWSER_SHARE_BUTTON_TOOLTIP" desc="Tooltip for the button which provides share options in the Files app.">
-    More actions
-  </message>
   <message name="IDS_FILE_BROWSER_SORT_BUTTON_TOOLTIP" desc="Tooltip for the button which provides sort options in the Files app.">
     Sort options
   </message>
@@ -1533,6 +1456,9 @@
   <message name="IDS_FILE_BROWSER_SPACE_AVAILABLE" desc="Menu item showing space left for storage.">
     <ph name="SPACE_AVAILABLE">$1<ex>4.8 GB</ex></ph> available
   </message>
+  <message name="IDS_FILE_BROWSER_SPACE_USED" desc="Menu item showing space used for storage.">
+    <ph name="SPACE_USED">$1<ex>4.8 GB</ex></ph> used
+  </message>
   <message name="IDS_FILE_BROWSER_WAITING_FOR_SPACE_INFO" desc="Menu item, saying that FileBrowser is waiting for space information for storage. When actual data arrives, this item will be replaced with IDS_FILE_BROWSER_SPACE_AVAILABLE">
     Waiting for space info...
   </message>
@@ -1562,6 +1488,12 @@
   </message>
 
 <!-- Holding space -->
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space.">
+    Pin to quick files
+  </message>
+  <message name="IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL" desc="Label for the command which unpins one or more files from the holding space.">
+    Unpin from quick files
+  </message>
   <message name="IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL" desc="Label for the command which pins one or more files to the holding space in the shelf.">
     Pin to shelf
   </message>
@@ -1595,52 +1527,77 @@
     Volume slider
   </message>
 
-<!-- Audio Player -->
-  <message name="IDS_AUDIO_PLAYER_SHUFFLE_BUTTON_LABEL" desc="Label for the Shuffle button of audio player.">
-    Shuffle
+<!-- Data Leak Prevention -->
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST" desc="A toast informing the user that copying a file is blocked by the administrator.">
+    Pasting this file is blocked by administrator policy
   </message>
-  <message name="IDS_AUDIO_PLAYER_REPEAT_BUTTON_LABEL" desc="Label for the Repeat button of audio player">
-    Repeat
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST_PLURAL" desc="A toast informing the user that copying files is blocked by the administrator.">
+    Pasting <ph name="COUNT">$1<ex>10</ex></ph> files is blocked by administrator policy
   </message>
-  <message name="IDS_AUDIO_PLAYER_OPEN_PLAY_LIST_BUTTON_LABEL" desc="Label for a button which is used to open play list in audio player.">
-    Open play list
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_MOVE_TOAST" desc="A toast informing the user that moving a file is blocked by the administrator.">
+    Moving this file is blocked by administrator policy
   </message>
-  <message name="IDS_AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL" desc="Label for an expand button which is used to show/hide artwork.">
-    Artwork
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_MOVE_TOAST_PLURAL" desc="A toast informing the user that moving files is blocked by the administrator.">
+    Moving <ph name="COUNT">$1<ex>10</ex></ph> files is blocked by administrator policy
   </message>
-
-<!-- Video Player -->
-  <message name="IDS_VIDEO_PLAYER_PLAY_THIS_COMPUTER" desc="In the video player app, message of menu item which is shown at the top of the list of Chromecasts. This menuitem is to play the video on this computer (locally), intead of on TVs with Chromecast.">
-    This computer
+  <message name="IDS_FILE_BROWSER_DLP_TOAST_BUTTON_LABEL" desc="Toast button label, learn more about data leak prevention policies.">
+    Learn more
   </message>
-  <message name="IDS_VIDEO_PLAYER_PLAYING_ON" desc="In the video player app, message is shown ahead of the name of the current chromecast which plays the video now. For example, if this message is 'Playing on' and the Chromecast name is 'Foocast', 'Playing on Foocast' is shown.">
-    Playing on
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS" desc="Context menu item that shows the DLP restriction details for the selected file.">
+    Review admin policy
   </message>
-  <message name="IDS_VIDEO_PLAYER_PLAY_ON" desc="In the video player app, message is shown above the list of cast devices. The user will select one of them to play the current video on selected device.">
-    Play on
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP" desc="Tooltip of the data leak prevention managed icon.">
+    This file is confidential and subject to restrictions by administrator policy.
   </message>
-  <message name="IDS_VIDEO_PLAYER_VIDEO_FILE_UNSUPPORTED" desc="In the video player app, message informing that the video could not be played.">
-    This file could not be played.
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP_LINK" desc="Managed icon tooltip link label, learn more about data leak prevention policies.">
+    Learn more
   </message>
-  <message name="IDS_VIDEO_PLAYER_VIDEO_FILE_UNSUPPORTED_FOR_CAST" desc="Error message which is shown when the video which an user tried to play is not supported by the current cast device.">
-    Sorry, this video is not supported by your cast device.
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP_DESC" desc="Managed icon tooltip a11y explanation text.">
+    Learn more about these restrictions
   </message>
-  <message name="IDS_VIDEO_PLAYER_PLAYBACK_ERROR" desc="In the video player app, message informing that an error occurred while playing the movie.">
-    An error occurred. Click to restart from the beginning.
+  <message name="IDS_FILE_BROWSER_DLP_FILE_PICKER_BANNER" desc="Message informing the user that some files cannot be chosen for upload or opening due to DLP restrictions.">
+    Administrator policy restricts access to some files.
   </message>
-  <message name="IDS_VIDEO_PLAYER_LOOPED_MODE" desc="In the video player app, message informing that the movie will be played in a loop.">
-    This video will keep playing until the cows come home.
+  <message name="IDS_FILE_BROWSER_DLP_FILE_SAVER_BANNER" desc="Message informing the user that some locations cannot be chosen to save downloaded files to due to DLP restrictions.">
+    Administrator policy restricts saving to some locations.
   </message>
-  <message name="IDS_VIDEO_PLAYER_FULL_SCREEN_BUTTON_LABEL" desc="Label for a button which is used to enter full screen mode in video player.">
-    Full screen
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_TITLE" desc="The title of the DLP restriction details modal.">
+    Administrator policy
   </message>
-  <message name="IDS_VIDEO_PLAYER_EXIT_FULL_SCREEN_BUTTON_LABEL" desc="Label for a button which is used to exit full screen mode in video player.">
-    Exit full screen
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_MESSAGE" desc="The description text of the DLP restriction details modal.">
+    This file is confidential and subject to administrator policy. The following file access and transfer actions apply.
   </message>
-  <message name="IDS_VIDEO_PLAYER_ENABLE_SUBTITLES_BUTTON_LABEL" desc="Label for a button which is used to enable subtitles in video player.">
-    Enable subtitles
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_BLOCK" desc="The message shown for blocked destinations and components in the DLP restriction details modal.">
+    Administrator policy prevents:
   </message>
-  <message name="IDS_VIDEO_PLAYER_DISABLE_SUBTITLES_BUTTON_LABEL" desc="Label for a button which is used to disable subtitles in video player.">
-    Disable subtitles
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_WARN" desc="The message shown for warned destinations and components in the DLP restriction details modal.">
+    Administrator policy doesn't recommend:
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_REPORT" desc="The message shown for reported destinations and components in the DLP restriction details modal.">
+    Administrator monitors:
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_ACCESS" desc="The message shown for the list of DLP restricted destinations.">
+    File access by <ph name="RESTRICTED_DESTINATIONS">$1<ex>https://google.com</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL" desc="The message shown when a wildcard is given in as a restricted destination.">
+    File access by all urls
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_ACCESS_ALL_EXCEPT" desc="The message shown when a wildcard is given in as a restricted destination but some destinations should be excluded.">
+    File access by all urls except <ph name="NON_RESTRICTED_DESTINATIONS">$1<ex>https://google.com</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS_FILE_TRANSFER" desc="The message shown for the list of DLP restricted components.">
+    File transfer to <ph name="RESTRICTED_COMPONENTS">$1<ex>removable storage</ex></ph>
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_REMOVABLE" desc="Removable storage component label.">
+    removable storage
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_PLAY" desc="Play component label.">
+    Play
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_LINUX" desc="Linux component label.">
+    Linux
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_VM" desc="PluginVM component label.">
+    virtual machine
   </message>
 </grit-part>

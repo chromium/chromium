@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,6 @@ import("//chromecast/chromecast.gni")
 
 group("utility") {
   public_deps = [ ":utility_base" ]
-
-  if (chromecast_branding == "public") {
-    public_deps += [ ":simple_client" ]
-  }
 }
 
 cast_source_set("utility_base") {

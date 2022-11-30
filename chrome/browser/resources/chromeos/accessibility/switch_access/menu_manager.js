@@ -1,6 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {ArrayUtil} from '../common/array_util.js';
+import {EventHandler} from '../common/event_handler.js';
 
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
@@ -32,7 +35,7 @@ export class MenuManager {
     /** @private {!EventHandler} */
     this.clickHandler_ = new EventHandler(
         [], chrome.automation.EventType.CLICKED,
-        this.onButtonClicked_.bind(this));
+        event => this.onButtonClicked_(event));
   }
 
   static get instance() {
@@ -132,9 +135,9 @@ export class MenuManager {
     SwitchAccess.findNodeMatching(
         {
           role: chrome.automation.RoleType.MENU,
-          attributes: {className: 'SwitchAccessMenuView'}
+          attributes: {className: 'SwitchAccessMenuView'},
         },
-        this.jumpToMenuAutomationNode_.bind(this));
+        node => this.jumpToMenuAutomationNode_(node));
   }
 
   /** @private */
@@ -161,9 +164,9 @@ export class MenuManager {
           node,
           [
             chrome.automation.EventType.CHILDREN_CHANGED,
-            chrome.automation.EventType.LOCATION_CHANGED
+            chrome.automation.EventType.LOCATION_CHANGED,
           ],
-          this.jumpToMenuAutomationNode_.bind(this, node), {listenOnce: true})
+          () => this.jumpToMenuAutomationNode_(node), {listenOnce: true})
           .start();
       return;
     }

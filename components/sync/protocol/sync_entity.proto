@@ -1,0 +1,219 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/entity_specifics.proto";
+import "components/sync/protocol/unique_position.proto";
+
+message SyncEntity {
+  // This item's identifier.  In a commit of a new item, this will be a
+  // client-generated ID.  If the commit succeeds, the server will generate
+  // a globally unique ID and return it to the committing client in the
+  // CommitResponse.EntryResponse.  In the context of a GetUpdatesResponse,
+  // |id_string| is always the server generated ID.  The original
+  // client-generated ID is preserved in the |originator_client_id| field.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  optional string id_string = 1;
+
+  // An id referencing this item's parent in the hierarchy.  In a
+  // CommitMessage, it is accepted for this to be a client-generated temporary
+  // ID if there was a new created item with that ID appearing earlier
+  // in the message.  In all other situations, it is a server ID.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  //
+  // Starting with M99, this field is optional and used for legacy bookmarks
+  // only:
+  // 1. When processing GetUpdatesResponse, it is unused for modern data created
+  //    or reuploaded by M94 or above, which populates the parent's GUID in
+  //    BookmarkSpecifics (which is sufficient).
+  // 2. When issuing CommitMessage, the field is populated for compatibility
+  //    with clients before M99.
+  optional string parent_id_string = 2;
+
+  reserved 3;
+  reserved "old_parent_id";
+
+  // The version of this item -- a monotonically increasing value that is
+  // maintained by for each item.  If zero in a CommitMessage, the server
+  // will interpret this entity as a newly-created item and generate a
+  // new server ID and an initial version number.  If nonzero in a
+  // CommitMessage, this item is treated as an update to an existing item, and
+  // the server will use |id_string| to locate the item.  Then, if the item's
+  // current version on the server does not match |version|, the commit will
+  // fail for that item.  The server will not update it, and will return
+  // a result code of CONFLICT.  In a GetUpdatesResponse, |version| is
+  // always positive and indentifies the revision of the item data being sent
+  // to the client.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  // WARNING: This field used to be required before M60. Any client before this
+  // will fail to deserialize if this field is missing.
+  optional int64 version = 4;
+
+  // Last modification time, in milliseconds since Unix epoch.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  optional int64 mtime = 5;
+
+  // Creation time, in milliseconds since Unix epoch.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  optional int64 ctime = 6;
+
+  // The name of this item.
+  // Historical note:
+  //   Since November 2010, this value is no different from non_unique_name.
+  //   Before then, server implementations would maintain a unique-within-parent
+  //   value separate from its base, "non-unique" value.  Clients had not
+  //   depended on the uniqueness of the property since November 2009; it was
+  //   removed from Chromium by http://codereview.chromium.org/371029 .
+  // Present in both GetUpdatesResponse and CommitMessage.
+  // WARNING: This field used to be required before M60. Any client before this
+  // will fail to deserialize if this field is missing.
+  optional string name = 7;
+
+  // The name of this item.  Same as |name|.
+  // |non_unique_name| should take precedence over the |name| value if both
+  // are supplied.  For efficiency, clients and servers should avoid setting
+  // this redundant value.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  optional string non_unique_name = 8;
+
+  reserved 9;
+  reserved "sync_timestamp";
+
+  // If present, this tag identifies this item as being a uniquely
+  // instanced item.  The server ensures that there is never more
+  // than one entity in a user's store with the same tag value.
+  // This value is used to identify and find e.g. the "Google Chrome" settings
+  // folder without relying on it existing at a particular path, or having
+  // a particular name, in the data store.
+  //
+  // This variant of the tag is created by the server, so clients can't create
+  // an item with a tag using this field.
+  //
+  // Use client_defined_unique_tag if you want to create one from the client.
+  //
+  // An item can't have both a client_defined_unique_tag and
+  // a server_defined_unique_tag.
+  //
+  // Present only in GetUpdatesResponse.
+  optional string server_defined_unique_tag = 10;
+
+  reserved 11;
+  reserved "BookmarkData";
+  reserved 12;
+  reserved "bookmark_folder";
+  reserved 13;
+  reserved "bookmark_url";
+  reserved 14;
+  reserved "bookmark_favicon";
+
+  // Ancient fields, predecessors for |unique_position|, deprecated with M26 and
+  // still supported to deal with old incoming data. See field |unique_position|
+  // for details as well as the data-upgrading implementation in
+  // GetUniquePositionFromSyncEntity().
+  optional int64 position_in_parent = 15 [deprecated = true];
+  optional string insert_after_item_id = 16 [deprecated = true];
+
+  reserved 17;
+  reserved "extended_attributes";
+
+  // If true, indicates that this item has been (or should be) deleted.
+  // Present in both GetUpdatesResponse and CommitMessage.
+  optional bool deleted = 18 [default = false];
+
+  // A unique ID that identifies the the sync client who initially committed
+  // this entity.  This value corresponds to |cache_guid| in CommitMessage.
+  // This field, along with |originator_client_item_id|, can be used to
+  // reunite the original with its official committed version in the case
+  // where a client does not receive or process the commit response for
+  // some reason.
+  //
+  // Present only in GetUpdatesResponse.
+  //
+  // This field is also used in determining the unique identifier used in
+  // bookmarks' unique_position field.
+  optional string originator_cache_guid = 19;
+
+  // Item ID as generated by the client that initially created this entity. Used
+  // exclusively for bookmarks (other datatypes use client_defined_unique_tag).
+  // There are three generation of bookmarks that have populated this field
+  // differently, depending on which version of the browser created the
+  // bookmark:
+  // 1. For bookmarks created before M44 (2015), the field got populated with an
+  //    ID that is locally unique, but not globally unique (usually a negative
+  //    number).
+  // 2. For bookmarks created between M45 and M51, both inclusive, the field got
+  //    populated with a globally unique GUID in uppercase form.
+  // 3. For bookmarks created with M52 or above, the field gets populated with
+  //    a globally unique GUID in lowercase form.
+  //
+  // Present only in GetUpdatesResponse.
+  optional string originator_client_item_id = 20;
+
+  // Extensible container for datatype-specific data.
+  // This became available in version 23 of the protocol.
+  optional EntitySpecifics specifics = 21;
+
+  // Indicate whether this is a folder or not. Available in version 23+.
+  optional bool folder = 22 [default = false];
+
+  // A client defined unique hash for this entity.
+  // Similar to server_defined_unique_tag.
+  //
+  // When initially committing an entity, a client can request that the entity
+  // is unique per that account. To do so, the client should specify a
+  // client_defined_unique_tag. At most one entity per tag value may exist.
+  // per account. The server will enforce uniqueness on this tag
+  // and fail attempts to create duplicates of this tag.
+  // Will be returned in any updates for this entity.
+  //
+  // The difference between server_defined_unique_tag and
+  // client_defined_unique_tag is the creator of the entity. Server defined
+  // tags are entities created by the server at account creation,
+  // while client defined tags are entities created by the client at any time.
+  //
+  // During GetUpdates, a sync entity update will come back with ONE of:
+  // a) Originator and cache id - If client committed the item as non "unique"
+  // b) Server tag - If server committed the item as unique
+  // c) Client tag - If client committed the item as unique
+  //
+  // May be present in CommitMessages for the initial creation of an entity.
+  // If present in Commit updates for the entity, it will be ignored.
+  //
+  // May be returned in GetUpdatesMessage and sent up in CommitMessage.
+  optional string client_defined_unique_tag = 23;
+
+  reserved 24;
+  reserved "ordinal_in_parent";
+
+  // Introduced in M26, represents ordering among entities, in practice used for
+  // bookmarks only. Clients should not assume it is always populated in
+  // GetUpdatesMessage due to the following caveats:
+  // 1. Tombstones and permanent folders do not populate it (ordering is
+  //    irrelevant).
+  // 2. It may remain unset by future versions of the client, as long as the
+  //    field with the same name is populated inside BookmarkSpecifics. M94 and
+  //    above populate both for backward compatibility reasons, but when support
+  //    for M93 is retired, modern clients at the time may stop populating this
+  //    field.
+  // 3. Very old data (last committed by M25 or below, before the field was
+  //    introduced) does not include this field, and in that case the legacy
+  //    fields |position_in_parent| or |insert_after_item_id| must be honored
+  //    instead.
+  //
+  // May be returned in GetUpdatesMessage and sent up in CommitMessage.
+  optional UniquePosition unique_position = 25;
+
+  // This used to be a list of sync attachment IDs, but it was never launched
+  // and the code has been removed as of M66.
+  reserved 26;
+  reserved "attachment_id";
+}

@@ -1,14 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_CONTROLS_PROGRESS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace media_session {
+struct MediaPosition;
+}  // namespace media_session
 
 namespace views {
 class ProgressBar;
@@ -22,7 +26,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
  public:
   METADATA_HEADER(MediaControlsProgressView);
   explicit MediaControlsProgressView(
-      base::RepeatingCallback<void(double)> seek_callback);
+      base::RepeatingCallback<void(double)> seek_callback,
+      bool is_modern_notification = false);
   MediaControlsProgressView(const MediaControlsProgressView&) = delete;
   MediaControlsProgressView& operator=(const MediaControlsProgressView&) =
       delete;
@@ -32,6 +37,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
 
   void SetForegroundColor(SkColor color);
   void SetBackgroundColor(SkColor color);
+  void SetTextColor(SkColor color);
 
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -48,9 +54,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
 
   void HandleSeeking(const gfx::Point& location);
 
-  views::ProgressBar* progress_bar_;
-  views::Label* progress_time_;
-  views::Label* duration_;
+  raw_ptr<views::ProgressBar> progress_bar_;
+  raw_ptr<views::Label> progress_time_;
+  raw_ptr<views::Label> duration_;
+
+  const bool is_modern_notification_;
 
   // Timer to continually update the progress.
   base::RepeatingTimer update_progress_timer_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "ppapi/c/trusted/ppb_url_loader_trusted.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
@@ -39,6 +38,9 @@ class PPAPI_PROXY_EXPORT URLLoaderResource : public PluginResource,
                     PP_Instance instance,
                     int pending_main_document_loader_id,
                     const URLResponseInfoData& data);
+
+  URLLoaderResource(const URLLoaderResource&) = delete;
+  URLLoaderResource& operator=(const URLLoaderResource&) = delete;
 
   ~URLLoaderResource() override;
 
@@ -139,8 +141,6 @@ class PPAPI_PROXY_EXPORT URLLoaderResource : public PluginResource,
 
   // The response info if we've received it.
   scoped_refptr<URLResponseInfoResource> response_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderResource);
 };
 
 }  // namespace proxy

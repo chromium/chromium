@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 
+#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -72,14 +73,14 @@ base::FilePath GetReferenceFilesDir() {
 base::FilePath GetToolForPlatform(const std::string& tool_name) {
   base::FilePath tools_dir =
       GetReferenceFilesDir().Append(FILE_PATH_LITERAL("tools"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return tools_dir
       .Append(FILE_PATH_LITERAL("win"))
       .AppendASCII(tool_name)
       .AddExtension(FILE_PATH_LITERAL("exe"));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return tools_dir.Append(FILE_PATH_LITERAL("mac")).AppendASCII(tool_name);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return tools_dir.Append(FILE_PATH_LITERAL("linux")).AppendASCII(tool_name);
 #else
   CHECK(false) << "Can't retrieve tool " << tool_name << " on this platform.";
@@ -150,7 +151,6 @@ bool PollingWaitUntil(const std::string& javascript,
   std::string result;
 
   while (base::Time::Now() - start_time < timeout) {
-    std::string result;
     if (!content::ExecuteScriptAndExtractString(tab_contents, javascript,
                                                 &result)) {
       LOG(ERROR) << "Failed to execute javascript " << javascript;
@@ -175,6 +175,24 @@ bool PollingWaitUntil(const std::string& javascript,
       << "Timed out while waiting for " << javascript
       << " to evaluate to " << evaluates_to << "; last result was '" << result
       << "'";
+  return false;
+}
+
+bool PollingWaitUntilClosureEvaluatesTrue(
+    base::RepeatingCallback<bool()> closure,
+    content::WebContents* tab_contents,
+    base::TimeDelta poll_interval) {
+  base::Time start_time = base::Time::Now();
+  base::TimeDelta timeout = TestTimeouts::action_max_timeout();
+  while (base::Time::Now() - start_time < timeout) {
+    if (closure.Run())
+      return true;
+    // Sleep a bit here to keep this loop from spinlocking too badly.
+    if (!SleepInJavascript(tab_contents, poll_interval.InMilliseconds())) {
+      LOG(ERROR) << "Failed to sleep.";
+    }
+  }
+  LOG(ERROR) << "Timed out while waiting for closure to evaluate true";
   return false;
 }
 

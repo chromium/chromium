@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,33 +7,28 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/ax_event_counter.h"
 
 using base::StartsWith;
 
 // Test params:
-//  - bool : whether to enable account storage feature or not.
+//  - bool : when true, the test is setup for users that sync their passwords.
 class PasswordBubbleBrowserTest
     : public SupportsTestDialog<ManagePasswordsTest>,
       public testing::WithParamInterface<bool> {
  public:
-  PasswordBubbleBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        password_manager::features::kEnablePasswordsAccountStorage, GetParam());
-  }
-
+  PasswordBubbleBrowserTest() = default;
   ~PasswordBubbleBrowserTest() override = default;
 
   void ShowUi(const std::string& name) override {
+    ConfigurePasswordSync(GetParam());
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
       SetupPendingPassword();
@@ -44,8 +39,7 @@ class PasswordBubbleBrowserTest
                           base::CompareCase::SENSITIVE)) {
       // Set test form to be account-stored. Otherwise, there is no indicator.
       test_form()->in_store =
-          GetParam() ? password_manager::PasswordForm::Store::kAccountStore
-                     : password_manager::PasswordForm::Store::kProfileStore;
+          password_manager::PasswordForm::Store::kAccountStore;
       SetupManagingPasswords();
       ExecuteManagePasswordsCommand();
     } else if (StartsWith(name, "AutoSignin", base::CompareCase::SENSITIVE)) {
@@ -72,12 +66,7 @@ class PasswordBubbleBrowserTest
       return;
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_PendingPasswordBubble) {
@@ -108,16 +97,20 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_MoveToAccountStoreBubble) {
-  if (!GetParam()) {
-    return;  // No moving bubble available without the flag.
-  }
+  // This test isn't relevant for sync'ing users.
+  if (GetParam())
+    return;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
-  ShowUi("ManagePasswordBubble");
-  // TODO(crbug.com/1082217): This should only produce one event
-  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+  // This needs to show a password bubble that does not trigger as a user
+  // gesture in order to fire an alert event. See
+  // LocationBarBubbleDelegateView's calls to SetAccessibleRole().
+  ShowUi("AutomaticPasswordBubble");
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, testing::Bool());

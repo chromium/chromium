@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -25,6 +25,10 @@ class UnloadController : public WebContentsCollection::Observer,
                          public TabStripModelObserver {
  public:
   explicit UnloadController(Browser* browser);
+
+  UnloadController(const UnloadController&) = delete;
+  UnloadController& operator=(const UnloadController&) = delete;
+
   ~UnloadController() override;
 
   // Returns true if |contents| can be cleanly closed. When |browser_| is being
@@ -124,7 +128,7 @@ class UnloadController : public WebContentsCollection::Observer,
     return !on_close_confirmed_.is_null();
   }
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   WebContentsCollection web_contents_collection_;
 
@@ -153,8 +157,6 @@ class UnloadController : public WebContentsCollection::Observer,
   base::RepeatingCallback<void(bool)> on_close_confirmed_;
 
   base::WeakPtrFactory<UnloadController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UnloadController);
 };
 
 #endif  // CHROME_BROWSER_UI_UNLOAD_CONTROLLER_H_

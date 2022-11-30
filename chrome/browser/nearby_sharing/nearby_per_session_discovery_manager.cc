@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -18,7 +19,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace {
-base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
+absl::optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     const TransferMetadata& transfer_metadata) {
   switch (transfer_metadata.status()) {
     case TransferMetadata::Status::kAwaitingLocalConfirmation:
@@ -80,7 +81,7 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kMediaDownloading:
     case TransferMetadata::Status::kExternalProviderLaunched:
       // Ignore all other transfer status updates.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -102,7 +103,7 @@ NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
 }
 
 NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
-  UnregisterSendSurface();
+  StopDiscovery(base::DoNothing());
   observers_set_.Clear();
   nearby_sharing_service_->RemoveObserver(this);
   base::UmaHistogramEnumeration(
@@ -131,7 +132,7 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
                   << TransferMetadata::StatusToString(
                          transfer_metadata.status());
 
-  base::Optional<nearby_share::mojom::TransferStatus> status =
+  absl::optional<nearby_share::mojom::TransferStatus> status =
       GetTransferStatus(transfer_metadata);
 
   if (!status) {
@@ -166,11 +167,10 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
 
   // Dedup by the more stable device ID if possible.
   if (share_target.device_id) {
-    auto it = std::find_if(discovered_share_targets_.begin(),
-                           discovered_share_targets_.end(),
-                           [&share_target](const auto& id_share_target_pair) {
-                             return share_target.device_id ==
-                                    id_share_target_pair.second.device_id;
+    auto it =
+        base::ranges::find(discovered_share_targets_, share_target.device_id,
+                           [](const auto& id_share_target_pair) {
+                             return id_share_target_pair.second.device_id;
                            });
 
     if (it != discovered_share_targets_.end()) {
@@ -214,7 +214,9 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 void NearbyPerSessionDiscoveryManager::StartDiscovery(
     mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
     StartDiscoveryCallback callback) {
-  if (nearby_sharing_service_->IsTransferring()) {
+  if (nearby_sharing_service_->IsTransferring() ||
+      nearby_sharing_service_->IsScanning() ||
+      nearby_sharing_service_->IsConnecting()) {
     // Is there is currently a file transfer ongoing, return early with the
     // corresponding error code.
     std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::
@@ -242,8 +244,18 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
     UpdateFurthestDiscoveryProgressIfNecessary(
         DiscoveryProgress::kFailedToStartDiscovery);
     share_target_listener_.reset();
-    std::move(callback).Run(
-        nearby_share::mojom::StartDiscoveryResult::kErrorGeneric);
+
+    nearby_share::mojom::StartDiscoveryResult errorStatus;
+    switch (status) {
+      case NearbySharingService::StatusCodes::kNoAvailableConnectionMedium:
+        errorStatus =
+            nearby_share::mojom::StartDiscoveryResult::kNoConnectionMedium;
+        break;
+      default:
+        errorStatus = nearby_share::mojom::StartDiscoveryResult::kErrorGeneric;
+    }
+    std::move(callback).Run(errorStatus);
+
     return;
   }
 
@@ -255,6 +267,23 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
   // get updates even if Discovery is stopped.
   registered_as_send_surface_ = true;
   std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::kSuccess);
+}
+
+void NearbyPerSessionDiscoveryManager::StopDiscovery(
+    base::OnceClosure callback) {
+  if (registered_as_send_surface_) {
+    NearbySharingService::StatusCodes status =
+        nearby_sharing_service_->UnregisterSendSurface(this, this);
+    base::UmaHistogramEnumeration(
+        "Nearby.Share.Discovery.UnregisterSendSurface", status);
+    if (status != NearbySharingService::StatusCodes::kOk) {
+      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
+    }
+    registered_as_send_surface_ = false;
+  }
+
+  share_target_listener_.reset();
+  std::move(callback).Run();
 }
 
 void NearbyPerSessionDiscoveryManager::SelectShareTarget(
@@ -344,21 +373,6 @@ void NearbyPerSessionDiscoveryManager::GetPayloadPreview(
   }
 
   std::move(callback).Run(std::move(payload_preview));
-}
-
-void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {
-  if (registered_as_send_surface_) {
-    NearbySharingService::StatusCodes status =
-        nearby_sharing_service_->UnregisterSendSurface(this, this);
-    base::UmaHistogramEnumeration(
-        "Nearby.Share.Discovery.UnregisterSendSurface", status);
-    if (status != NearbySharingService::StatusCodes::kOk) {
-      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
-    }
-    registered_as_send_surface_ = false;
-  }
-
-  share_target_listener_.reset();
 }
 
 void NearbyPerSessionDiscoveryManager::OnNearbyProcessStopped() {

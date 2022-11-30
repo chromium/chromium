@@ -1,0 +1,89 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+closure_library_dir =
+    "//third_party/chromevox/third_party/closure-library/closure/goog"
+
+jsbundler_modules = [
+  "//third_party/chromevox/third_party/closure-library/closure/bin/build/depstree.py",
+  "//third_party/chromevox/third_party/closure-library/closure/bin/build/source.py",
+  "//third_party/chromevox/third_party/closure-library/closure/bin/build/treescan.py",
+  "//third_party/rjsmin/rjsmin.py",
+]
+
+template("run_jsbundler") {
+  assert(defined(invoker.mode))
+  assert(defined(invoker.sources))
+  if (defined(invoker.modules)) {
+    modules = invoker.modules
+  } else {
+    modules = []
+  }
+  if (defined(invoker.rewrite_rules)) {
+    rewrite_rules = invoker.rewrite_rules
+  } else {
+    rewrite_rules = []
+  }
+
+  action(target_name) {
+    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/jsbundler.py"
+    inputs = jsbundler_modules
+    sources = invoker.sources
+    if (defined(invoker.output_file)) {
+      if (defined(invoker.modules)) {
+        depfile = "$target_out_dir/" +
+                  get_path_info(invoker.output_file, "name") + ".d"
+      }
+      outputs = [ invoker.output_file ]
+    } else {
+      assert(!defined(invoker.modules))
+      stampfile = "$target_out_dir/${target_name}_copy.stamp"
+      outputs = [ stampfile ]
+    }
+    args = [
+      "-m",
+      invoker.mode,
+    ]
+    if (defined(depfile)) {
+      args += [
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+      ]
+    }
+    if (defined(stampfile)) {
+      args += [
+        "--stampfile",
+        rebase_path(stampfile, root_build_dir),
+      ]
+    }
+    if (defined(invoker.output_file)) {
+      args += [
+        "-o",
+        rebase_path(invoker.output_file, root_build_dir),
+      ]
+    }
+    if (defined(invoker.dest_dir)) {
+      args += [
+        "-d",
+        rebase_path(invoker.dest_dir, root_build_dir),
+      ]
+    }
+    foreach(module, modules) {
+      args += [
+        "-M",
+        rebase_path(module, root_build_dir),
+      ]
+    }
+    foreach(rule, rewrite_rules) {
+      args += [
+        "-w",
+        rule,
+      ]
+    }
+    args += rebase_path(sources, root_build_dir)
+  }
+}

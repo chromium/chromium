@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -27,14 +27,14 @@ class MEDIA_EXPORT BitstreamConverter
  public:
   // Describes the result of Analyze(). Not all analyses are implemented or
   // enabled across mp4::BitstreamConverter implementations, hence the use of
-  // base::Optional<>.
+  // absl::optional<>.
   struct MEDIA_EXPORT AnalysisResult {
     AnalysisResult();
     AnalysisResult(const AnalysisResult&);
     ~AnalysisResult();
 
-    base::Optional<bool> is_conformant;
-    base::Optional<bool> is_keyframe;
+    absl::optional<bool> is_conformant;
+    absl::optional<bool> is_keyframe;
   };
 
   // Converts a single frame/buffer |frame_buf| into the output format.

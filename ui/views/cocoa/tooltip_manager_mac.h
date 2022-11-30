@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 #define UI_VIEWS_COCOA_TOOLTIP_MANAGER_MAC_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/tooltip_manager.h"
 
 namespace remote_cocoa {
@@ -20,6 +20,10 @@ namespace views {
 class TooltipManagerMac : public TooltipManager {
  public:
   explicit TooltipManagerMac(remote_cocoa::mojom::NativeWidgetNSWindow* bridge);
+
+  TooltipManagerMac(const TooltipManagerMac&) = delete;
+  TooltipManagerMac& operator=(const TooltipManagerMac&) = delete;
+
   ~TooltipManagerMac() override;
 
   // TooltipManager:
@@ -29,10 +33,8 @@ class TooltipManagerMac : public TooltipManager {
   void TooltipTextChanged(View* view) override;
 
  private:
-  remote_cocoa::mojom::NativeWidgetNSWindow*
+  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_;  // Weak. Owned by the owner of this.
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipManagerMac);
 };
 
 }  // namespace views

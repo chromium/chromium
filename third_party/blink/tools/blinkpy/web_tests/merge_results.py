@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Classes for merging web tests results directories together.
@@ -35,8 +35,14 @@ import os
 import pprint
 import re
 import shutil
+import sys
 import tempfile
 import types
+
+BLINK_TOOLS_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
+if BLINK_TOOLS_PATH not in sys.path:
+    sys.path.append(BLINK_TOOLS_PATH)
 
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_utils import configure_logging
@@ -161,8 +167,8 @@ class JSONMerger(Merger):
         Merger.__init__(self)
 
         self.add_helper(
-            TypeMatch(types.ListType, types.TupleType), self.merge_listlike)
-        self.add_helper(TypeMatch(types.DictType), self.merge_dictlike)
+            TypeMatch(list, tuple), self.merge_listlike)
+        self.add_helper(TypeMatch(dict), self.merge_dictlike)
 
     def fallback_matcher(self, objs, name=None):
         raise MergeFailure("No merge helper found!", name, objs)
@@ -210,7 +216,7 @@ class JSONMerger(Merger):
                 dict_mid.setdefault(key, []).append(dobj[key])
 
         dict_out = dicts[0].__class__({})
-        for k, v in dict_mid.iteritems():
+        for k, v in dict_mid.items():
             assert v
             if len(v) == 1:
                 dict_out[k] = v[0]
@@ -295,9 +301,9 @@ class MergeFilesMatchingContents(MergeFiles):
                 nonmatching.append(filename)
 
         if nonmatching:
-            raise MergeFailure(
-                '\n'.join(['File contents don\'t match:'] + nonmatching),
-                out_filename, to_merge)
+            # TODO: revert this once crbug/1353056 is fixed
+            _log.warning('\n'.join(['File contents don\'t match:'] +
+                                   nonmatching))
 
         self.filesystem.write_binary_file(out_filename, data)
 
@@ -321,6 +327,13 @@ class MergeFilesKeepFiles(MergeFiles):
     def __call__(self, out_filename, to_merge):
         for i, filename in enumerate(to_merge):
             self.filesystem.copyfile(filename, "%s_%i" % (out_filename, i))
+
+
+class IgnoreFiles(MergeFiles):
+    def __call__(self, out_filename, to_merge):
+        _log.warning('Ignoring merge to %s:', out_filename)
+        for filename in sorted(to_merge):
+            _log.warning('  %s', filename)
 
 
 class MergeFilesJSONP(MergeFiles):
@@ -350,7 +363,7 @@ class MergeFilesJSONP(MergeFiles):
             before_0, new_json_data_0, after_0 = self.load_jsonp(
                 self.filesystem.open_binary_file_for_reading(to_merge[0]))
         except ValueError as e:
-            raise MergeFailure(e.message, to_merge[0], None)
+            raise MergeFailure(str(e), to_merge[0], None)
 
         input_data = [new_json_data_0]
         for filename_n in to_merge[1:]:
@@ -358,7 +371,7 @@ class MergeFilesJSONP(MergeFiles):
                 before_n, new_json_data_n, after_n = self.load_jsonp(
                     self.filesystem.open_binary_file_for_reading(filename_n))
             except ValueError as e:
-                raise MergeFailure(e.message, filename_n, None)
+                raise MergeFailure(str(e), filename_n, None)
 
             if before_0 != before_n:
                 raise MergeFailure(
@@ -389,15 +402,15 @@ class MergeFilesJSONP(MergeFiles):
         """
         in_data = fd.read()
 
-        begin = in_data.find('{')
-        end = in_data.rfind('}') + 1
+        begin = in_data.find(b'{')
+        end = in_data.rfind(b'}') + 1
 
         before = in_data[:begin]
         data = in_data[begin:end]
         after = in_data[end:]
 
         # If just a JSON file, use json.load to get better error message output.
-        if before == '' and after == '':
+        if before == b'' and after == b'':
             fd.seek(0)
             json_data = json.load(fd)
         else:
@@ -413,9 +426,9 @@ class MergeFilesJSONP(MergeFiles):
         other non-JSON data.
         """
         fd.write(before)
-        fd.write(
-            re.subn('\\s+\n', '\n',
-                    json.dumps(json_data, indent=2, sort_keys=True))[0])
+        fd.write(json.dumps(json_data,
+                            separators=(",", ":"),
+                            sort_keys=True).encode('utf-8'))
         fd.write(after)
 
 
@@ -492,7 +505,7 @@ class DirMerger(Merger):
 
         # Go through each file and try to merge it.
         # partial_file_path is the file relative to the directories.
-        for partial_file_path, in_dirs in sorted(files.iteritems()):
+        for partial_file_path, in_dirs in sorted(files.items()):
             out_path = self.filesystem.join(output_dir, partial_file_path)
             if self.filesystem.exists(out_path):
                 raise MergeFailure('File %s already exist in output.',
@@ -628,6 +641,8 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(
             FilenameRegexMatch(r'wptserve_stderr\.txt$'),
             MergeFilesKeepFiles(self.filesystem))
+        self.add_helper(FilenameRegexMatch(r'wptserve_stdout\.txt$'),
+                        MergeFilesKeepFiles(self.filesystem))
         # keep chromedriver log for webdriver tests
         self.add_helper(FilenameRegexMatch(r'chromedriver\.log$'),
                         MergeFilesKeepFiles(self.filesystem))
@@ -635,6 +650,13 @@ class WebTestDirMerger(DirMerger):
         # keep system log for tests on fuchsia platform. See ./port/fuchsia.py
         self.add_helper(FilenameRegexMatch(r'system_log$'),
                         MergeFilesKeepFiles(self.filesystem))
+
+        # Despite the extension, wptreport files are not true JSON files. They
+        # actually contain newline-delimited JSON objects (one per retry/repeat
+        # iteration). These reports are already uploaded to ResultDB, so there's
+        # no need to save them in CAS.
+        self.add_helper(FilenameRegexMatch(r'wpt_reports.*\.json$'),
+                        IgnoreFiles(self.filesystem))
 
         # These JSON files have "result style" JSON in them.
         results_json_file_merger = MergeFilesJSONP(
@@ -680,13 +702,34 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
         return
 
     layout_test_results = fs.join(directory, 'layout-test-results')
-    merged_output_json = fs.join(directory, 'output.json')
     if (fs.exists(layout_test_results)
             and not fs.remove_contents(layout_test_results)):
         raise IOError(('Unable to remove output directory %s contents!\n'
                        'See log output for errors.') % layout_test_results)
-    if fs.exists(merged_output_json):
-        fs.remove(merged_output_json)
+
+    profraw = fs.join(directory, 'profraw')
+    if (fs.exists(profraw) and not fs.remove_contents(profraw)):
+        raise IOError(('Unable to remove output directory %s contents!\n'
+                       'See log output for errors.') % profraw)
+
+    merged_output_jsons = ['output.json', 'run_histories.json']
+    for output_json in merged_output_jsons:
+        output_json_fullpath = fs.join(directory, output_json)
+        if fs.exists(output_json_fullpath):
+            fs.remove(output_json_fullpath)
+
+    # Fuchsia specific additional logs to be cleaned. Check if 'ffx_log' exists
+    # or not first, otherwise webgpu_blink_web_tests will hang forever.
+    # TODO: work with fuchsia team to remove this special case
+    if fs.exists(fs.join(directory, 'ffx_log')):
+        fuchsia_log_files = [
+            f for f in fs.listdir(directory)
+            if fs.isfile(fs.join(directory, f))
+        ]
+        for file_name in fuchsia_log_files:
+            path = fs.join(directory, file_name)
+            if fs.exists(path):
+                fs.remove(path)
 
 
 def mark_missing_shards(summary_json,
@@ -738,7 +781,7 @@ def mark_missing_shards(summary_json,
         json_contents_merged['missing_shards'] = missing_shards
 
         with filesystem.open_binary_file_for_writing(merged_output_json) as f:
-            MergeFilesJSONP.dump_jsonp(f, '', json_contents_merged, '')
+            MergeFilesJSONP.dump_jsonp(f, b'', json_contents_merged, b'')
 
 
 def find_shard_output_path(index, task_id, input_directories):
@@ -965,3 +1008,6 @@ directory. The script will be given the arguments plus
 
         logging.info('Running post merge script %r', post_script)
         os.execlp(post_script)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "printing/backend/ipp_handlers.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "printing/backend/cups_printer.h"
 
@@ -16,10 +17,7 @@ void NoOpHandler(const CupsOptionProvider& printer,
 void TextHandler(const CupsOptionProvider& printer,
                  const char* attribute_name,
                  AdvancedCapabilities* capabilities) {
-  capabilities->emplace_back();
-  AdvancedCapability& capability = capabilities->back();
-  capability.name = attribute_name;
-  capability.type = AdvancedCapability::Type::kString;
+  capabilities->emplace_back(attribute_name, AdvancedCapability::Type::kString);
   // TODO(crbug.com/964919): Set defaults.
 }
 
@@ -33,10 +31,9 @@ void NumberHandler(const CupsOptionProvider& printer,
 void BooleanHandler(const CupsOptionProvider& printer,
                     const char* attribute_name,
                     AdvancedCapabilities* capabilities) {
-  capabilities->emplace_back();
+  capabilities->emplace_back(attribute_name,
+                             AdvancedCapability::Type::kBoolean);
   AdvancedCapability& capability = capabilities->back();
-  capability.name = attribute_name;
-  capability.type = AdvancedCapability::Type::kBoolean;
   ipp_attribute_t* attr_default = printer.GetDefaultOptionValue(attribute_name);
   capability.default_value = attr_default && ippGetBoolean(attr_default, 0);
 }
@@ -48,9 +45,8 @@ void KeywordHandler(const CupsOptionProvider& printer,
   if (!attr)
     return;
 
-  capabilities->emplace_back();
+  capabilities->emplace_back(attribute_name, AdvancedCapability::Type::kString);
   AdvancedCapability& capability = capabilities->back();
-  capability.name = attribute_name;
   ipp_attribute_t* attr_default = printer.GetDefaultOptionValue(attribute_name);
   if (attr_default) {
     const char* value = ippGetString(attr_default, 0, nullptr);
@@ -75,9 +71,8 @@ void EnumHandler(const CupsOptionProvider& printer,
   if (!attr)
     return;
 
-  capabilities->emplace_back();
+  capabilities->emplace_back(attribute_name, AdvancedCapability::Type::kString);
   AdvancedCapability& capability = capabilities->back();
-  capability.name = attribute_name;
   ipp_attribute_t* attr_default = printer.GetDefaultOptionValue(attribute_name);
   capability.default_value =
       base::NumberToString(attr_default ? ippGetInteger(attr_default, 0) : 0);
@@ -108,11 +103,9 @@ void MultivalueEnumHandler(int none_value,
     if (value == none_value || value == 0)
       continue;
 
-    capabilities->emplace_back();
-    AdvancedCapability& capability = capabilities->back();
-    capability.name =
-        std::string(attribute_name) + "/" + base::NumberToString(value);
-    capability.type = AdvancedCapability::Type::kBoolean;
+    capabilities->emplace_back(
+        base::StrCat({attribute_name, "/", base::NumberToString(value)}),
+        AdvancedCapability::Type::kBoolean);
     // TODO(crbug.com/964919): Set defaults.
   }
 }

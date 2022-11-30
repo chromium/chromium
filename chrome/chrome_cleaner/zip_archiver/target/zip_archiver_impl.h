@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ class ZipArchiverImpl : public mojom::ZipArchiver {
  public:
   ZipArchiverImpl(mojo::PendingReceiver<mojom::ZipArchiver> receiver,
                   base::OnceClosure connection_error_handler);
+
+  ZipArchiverImpl(const ZipArchiverImpl&) = delete;
+  ZipArchiverImpl& operator=(const ZipArchiverImpl&) = delete;
+
   ~ZipArchiverImpl() override;
 
   void Archive(mojo::PlatformHandle src_file_handle,
@@ -27,8 +31,6 @@ class ZipArchiverImpl : public mojom::ZipArchiver {
 
  private:
   mojo::Receiver<mojom::ZipArchiver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipArchiverImpl);
 };
 
 }  // namespace chrome_cleaner

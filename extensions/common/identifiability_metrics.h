@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_COMMON_IDENTIFIABILITY_METRICS_H_
 #define EXTENSIONS_COMMON_IDENTIFIABILITY_METRICS_H_
-
-#include <string>
 
 #include "extensions/common/extension_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

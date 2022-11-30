@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenExitWaiter::OobeScreenExitWaiter(OobeScreenId target_screen)
     : target_screen_(target_screen) {}
@@ -26,7 +26,7 @@ void OobeScreenExitWaiter::Wait() {
   }
   ASSERT_FALSE(run_loop_);
 
-  oobe_ui_observer_.Add(GetOobeUI());
+  oobe_ui_observation_.Observe(GetOobeUI());
 
   state_ = State::WAITING_FOR_SCREEN_EXIT;
 
@@ -38,7 +38,7 @@ void OobeScreenExitWaiter::Wait() {
 
   ASSERT_EQ(State::DONE, state_);
 
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
 }
 
 void OobeScreenExitWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
@@ -49,7 +49,7 @@ void OobeScreenExitWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
 }
 
 void OobeScreenExitWaiter::OnDestroyingOobeUI() {
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
   EndWait();
 }
 
@@ -67,4 +67,4 @@ void OobeScreenExitWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

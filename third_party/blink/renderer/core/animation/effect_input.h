@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class CORE_EXPORT EffectInput {
                                           ExceptionState&);
 
   // Implements "Processing a keyframes argument" from the web-animations spec.
-  // https://drafts.csswg.org/web-animations/#processing-a-keyframes-argument
+  // https://w3.org/TR/web-animations-1/#processing-a-keyframes-argument
   static StringKeyframeVector ParseKeyframesArgument(
       Element*,
       const ScriptValue& keyframes,
@@ -48,4 +48,4 @@ class CORE_EXPORT EffectInput {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_EFFECT_INPUT_H_

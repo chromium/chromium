@@ -177,8 +177,8 @@ Additionally, it allows interaction with specific UI elements by name, which is
 both easier and less prone to breaking than specifying a position in space.
 
 
-[readme]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/README.md
-[adding_new_tests]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/adding_new_tests.md
+[readme]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/README.md
+[adding_new_tests]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/adding_new_tests.md
 [junit4_wiki_parameterization]: https://github.com/junit-team/junit4/wiki/parameterized-tests
-[parameter_set_source]: https://chromium.googlesource.com/chromium/src/+/master/base/test/android/javatests/src/org/chromium/base/test/params/ParameterSet.java
+[parameter_set_source]: https://chromium.googlesource.com/chromium/src/+/main/base/test/android/javatests/src/org/chromium/base/test/params/ParameterSet.java
 [junit4_wiki_rules]: https://github.com/junit-team/junit4/wiki/rules

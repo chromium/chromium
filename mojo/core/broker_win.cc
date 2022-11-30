@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,8 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
   }
 
   Channel::MessagePtr message =
-      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read));
+      Channel::Message::Deserialize(buffer, static_cast<size_t>(bytes_read),
+                                    Channel::HandlePolicy::kAcceptHandles);
   if (!message || message->payload_size() < sizeof(BrokerMessageHeader)) {
     LOG(ERROR) << "Invalid broker message";
 

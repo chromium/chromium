@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -18,7 +19,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/test_utils.h"
-#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -216,8 +216,8 @@ class PhishingDOMFeatureExtractorTest : public ChromeRenderViewTest {
   void RemoveIframe() {
     blink::WebLocalFrame* main_frame = GetMainFrame();
     ASSERT_TRUE(main_frame);
-    main_frame->ExecuteScript(blink::WebString(
-        "document.body.removeChild(document.getElementById('frame1'));"));
+    main_frame->ExecuteScript(blink::WebScriptSource(blink::WebString(
+        "document.body.removeChild(document.getElementById('frame1'));")));
   }
 
   bool success_;
@@ -380,7 +380,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
       "<form action=\"http://host1.com/submit\"></form>"
       "<a href=\"http://www.host1.com/reset\">link</a>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_nested_url.spec()) +
+      base::EscapeForHTML(iframe1_nested_url.spec()) +
       "\"></iframe></head></html>");
   GURL iframe1_url(urlprefix + iframe1_html);
   // iframe1 is on host1.com too.
@@ -400,8 +400,8 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubFrames) {
       "<html><body><input type=text>"
       "<a href=\"info.html\">link</a>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_url.spec()) + "\"></iframe><iframe src=\"" +
-      net::EscapeForHTML(iframe2_url.spec()) + "\"></iframe></body></html>");
+      base::EscapeForHTML(iframe1_url.spec()) + "\"></iframe><iframe src=\"" +
+      base::EscapeForHTML(iframe2_url.spec()) + "\"></iframe></body></html>");
   // The entire html is hosted on host.com
   url_iframe_map["info.html"] = "host.com";
 
@@ -455,27 +455,27 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(6)))
+      .WillOnce(Return(now + base::Milliseconds(6)))
       // Time check after the next 10 elements.  This is over the chunk
       // time limit, so a continuation task will be posted.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(12)))
+      .WillOnce(Return(now + base::Milliseconds(12)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(22)))
+      .WillOnce(Return(now + base::Milliseconds(22)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(24)))
+      .WillOnce(Return(now + base::Milliseconds(24)))
       // Time check after the next 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(30)))
+      .WillOnce(Return(now + base::Milliseconds(30)))
       // Time check after the next 10 elements.  This will trigger another
       // continuation task.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(36)))
+      .WillOnce(Return(now + base::Milliseconds(36)))
       // Time check at the start of the third chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(46)))
+      .WillOnce(Return(now + base::Milliseconds(46)))
       // Time check after resuming iteration for the third chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(48)))
+      .WillOnce(Return(now + base::Milliseconds(48)))
       // Time check after the last 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(54)))
+      .WillOnce(Return(now + base::Milliseconds(54)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(56)));
+      .WillOnce(Return(now + base::Milliseconds(56)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -502,15 +502,15 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 10 elements.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(300)))
+      .WillOnce(Return(now + base::Milliseconds(300)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(350)))
+      .WillOnce(Return(now + base::Milliseconds(350)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(360)))
+      .WillOnce(Return(now + base::Milliseconds(360)))
       // Time check after the next 10 elements.  This is over the limit.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(600)))
+      .WillOnce(Return(now + base::Milliseconds(600)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(620)));
 
   features.Clear();
   ResetTest();
@@ -541,13 +541,13 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
       // the feature extractor returns control to the message loop.
       .WillOnce(DoAll(
           Invoke(this, &PhishingDOMFeatureExtractorTest::ScheduleRemoveIframe),
-          Return(now + base::TimeDelta::FromMilliseconds(21))))
+          Return(now + base::Milliseconds(21))))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(25)))
+      .WillOnce(Return(now + base::Milliseconds(25)))
       // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(27)))
+      .WillOnce(Return(now + base::Milliseconds(27)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(33)));
+      .WillOnce(Return(now + base::Milliseconds(33)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -558,7 +558,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
   std::string html(
       "<html><head></head><body>"
       "<iframe src=\"" +
-      net::EscapeForHTML(iframe1_url.spec()) +
+      base::EscapeForHTML(iframe1_url.spec()) +
       "\" id=\"frame1\"></iframe>"
       "<form></form></body></html>");
   ExtractFeatures("host.com", html, &features);

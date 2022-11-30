@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,11 +23,12 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/style/typography.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -40,9 +40,6 @@ IncognitoMenuView::IncognitoMenuView(views::Button* anchor_button,
   DCHECK(browser->profile()->IsIncognitoProfile());
   GetViewAccessibility().OverrideName(GetAccessibleWindowTitle());
 
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::INCOGNITO_WINDOW_COUNT);
-
   base::RecordAction(base::UserMetricsAction("IncognitoMenu_Show"));
 }
 
@@ -53,14 +50,14 @@ void IncognitoMenuView::BuildMenu() {
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile());
 
-  ui::ThemedVectorIcon header_art_icon(
-      &kIncognitoMenuArtIcon, ui::NativeTheme::kColorId_AvatarHeaderArt);
+  ui::ThemedVectorIcon header_art_icon(&kIncognitoMenuArtIcon,
+                                       ui::kColorAvatarHeaderArt);
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/base::nullopt,
-      ui::ImageModel::FromVectorIcon(
-          kIncognitoProfileIcon, ui::NativeTheme::kColorId_AvatarIconIncognito),
+      /*edit_button=*/absl::nullopt,
+      ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+                                     ui::kColorAvatarIconIncognito),
       l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE),
       incognito_window_count > 1
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
@@ -68,29 +65,11 @@ void IncognitoMenuView::BuildMenu() {
           : std::u16string(),
       header_art_icon);
 
-#if defined(OS_WIN)
-  if (ProfileShortcutManager::IsFeatureEnabled() &&
-      base::FeatureList::IsEnabled(
-          features::kEnableIncognitoShortcutOnDesktop)) {
-    // TODO(crbug.com/1113162): Add desktop shortcut icon to the menu entry.
-    AddFeatureButton(
-        l10n_util::GetStringUTF16(
-            IDS_INCOGNITO_PROFILE_MENU_CREATE_SHORTCUT_BUTTON),
-        base::BindRepeating(&IncognitoMenuView::OnCreateShortcutButtonClicked,
-                            base::Unretained(this)));
-  }
-#endif
-
-  const bool new_menu_design =
-      base::FeatureList::IsEnabled(features::kNewProfilePicker);
-
   AddFeatureButton(
-      l10n_util::GetStringUTF16(
-          new_menu_design ? IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW
-                          : IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON),
+      l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_CLOSE_BUTTON_NEW),
       base::BindRepeating(&IncognitoMenuView::OnExitButtonClicked,
                           base::Unretained(this)),
-      new_menu_design ? vector_icons::kCloseIcon : kCloseAllIcon);
+      vector_icons::kCloseIcon);
 }
 
 std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
@@ -99,19 +78,6 @@ std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(
           browser()->profile()));
 }
-
-#if defined(OS_WIN)
-void IncognitoMenuView::OnCreateShortcutButtonClicked() {
-  RecordClick(ActionableItem::kCreateIncognitoShortcutButton);
-  ProfileShortcutManager* shortcut_manager =
-      g_browser_process->profile_manager()->profile_shortcut_manager();
-
-  DCHECK(shortcut_manager);
-  if (shortcut_manager)
-    shortcut_manager->CreateIncognitoProfileShortcut(
-        browser()->profile()->GetPath());
-}
-#endif
 
 void IncognitoMenuView::OnExitButtonClicked() {
   RecordClick(ActionableItem::kExitProfileButton);

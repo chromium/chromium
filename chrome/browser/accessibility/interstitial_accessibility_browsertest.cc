@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InterstitialAccessibilityBrowserTest,
                        TestSSLInterstitialAccessibility) {
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -67,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialAccessibilityBrowserTest,
   ASSERT_TRUE(https_server_mismatched_.Start());
 
   // Navigate to a page with an SSL error on it.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_mismatched_.GetURL("/ssl/blank_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_mismatched_.GetURL("/ssl/blank_page.html")));
 
   // Ensure that we got an interstitial page.
   ASSERT_FALSE(web_contents->IsCrashed());

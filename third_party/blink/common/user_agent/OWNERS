@@ -1,4 +1,4 @@
-mkwst@chromium.org
+file://components/embedder_support/OWNERS
 
 per-file *.typemap=set noparent
 per-file *.typemap=file://ipc/SECURITY_OWNERS

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test allowlist is [self wildcard_origin]. assert_array_equals: expected property 0 to be "https://*.web-platform.test:8444" but got "https://%2A.web-platform.test:8444" (expected array ["https://*.web-platform.test:8444", "https://web-platform.test:8444"] got ["https://%2A.web-platform.test:8444", "https://web-platform.test:8444"])
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is allowed on same-origin subframe
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is allowed on same-origin subframe even with allow attribute
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is disallowed on cross-origin subframe
+FAIL Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is allowed on cross-origin subframe allow attribute assert_true: fullscreen expected true got false
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is disallowed on another cross-origin subframe
+FAIL Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is allowed on another cross-origin subframe allow attribute assert_true: fullscreen expected true got false
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is disallowed on cross-origin subframe with wildcard allow attribute
+PASS Permissions-Policy: fullscreen=("https://*.web-platform.test:8444") -- test fullscreen is disallowed on another cross-origin subframe with wildcard allow attribute
+Harness: the test ran to completion.
+

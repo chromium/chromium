@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -46,7 +47,7 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
 
    private:
-    NetworkChangeNotifierMac* const net_config_watcher_;
+    const raw_ptr<NetworkChangeNotifierMac> net_config_watcher_;
   };
 
  private:
@@ -68,8 +69,8 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
 
   // These must be constructed before config_watcher_ to ensure
   // the lock is in a valid state when Forwarder::Init is called.
-  ConnectionType connection_type_;
-  bool connection_type_initialized_;
+  ConnectionType connection_type_ = CONNECTION_UNKNOWN;
+  bool connection_type_initialized_ = false;
   mutable base::Lock connection_type_lock_;
   mutable base::ConditionVariable initial_connection_type_cv_;
   base::ScopedCFTypeRef<SCNetworkReachabilityRef> reachability_;

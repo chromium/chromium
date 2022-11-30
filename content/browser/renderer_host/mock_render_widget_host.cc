@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/mock_render_widget_host.h"
+
+#include <memory>
 
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -22,8 +24,8 @@ void MockRenderWidgetHost::OnTouchEventAck(
 }
 
 void MockRenderWidgetHost::DisableGestureDebounce() {
-  input_router_.reset(new InputRouterImpl(this, this, fling_scheduler_.get(),
-                                          InputRouter::Config()));
+  input_router_ = std::make_unique<InputRouterImpl>(
+      this, this, fling_scheduler_.get(), InputRouter::Config());
 }
 
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
@@ -35,30 +37,30 @@ void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
 }
 
 void MockRenderWidgetHost::SetupForInputRouterTest() {
-  input_router_.reset(new MockInputRouter(this));
+  input_router_ = std::make_unique<MockInputRouter>(this);
 }
 
 // static
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id) {
-  return Create(frame_tree, delegate, agent_scheduling_group, routing_id,
-                TestRenderWidgetHost::CreateStubWidgetRemote());
+  return Create(frame_tree, delegate, std::move(site_instance_group),
+                routing_id, TestRenderWidgetHost::CreateStubWidgetRemote());
 }
 
 // static
 std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget) {
   DCHECK(pending_blink_widget);
-  return base::WrapUnique(
-      new MockRenderWidgetHost(frame_tree, delegate, agent_scheduling_group,
-                               routing_id, std::move(pending_blink_widget)));
+  return base::WrapUnique(new MockRenderWidgetHost(
+      frame_tree, delegate, std::move(site_instance_group), routing_id,
+      std::move(pending_blink_widget)));
 }
 
 blink::mojom::WidgetInputHandler*
@@ -73,13 +75,13 @@ void MockRenderWidgetHost::NotifyNewContentRenderingTimeoutForTesting() {
 MockRenderWidgetHost::MockRenderWidgetHost(
     FrameTree* frame_tree,
     RenderWidgetHostDelegate* delegate,
-    AgentSchedulingGroupHost& agent_scheduling_group,
+    base::SafeRef<SiteInstanceGroup> site_instance_group,
     int routing_id,
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget)
     : RenderWidgetHostImpl(frame_tree,
                            /*self_owned=*/false,
                            delegate,
-                           agent_scheduling_group,
+                           std::move(site_instance_group),
                            routing_id,
                            /*hidden=*/false,
                            /*renderer_initiated_creation=*/false,

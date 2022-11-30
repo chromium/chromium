@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
@@ -24,16 +25,16 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_permissions_panel.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_summary_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_constants/constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,7 +42,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -54,15 +54,12 @@
 
 namespace {
 
-// The color of the separator used inside the dialog - should match the app
-// list's ash::kDialogSeparatorColor
-constexpr SkColor kDialogSeparatorColor = SkColorSetRGB(0xD1, 0xD1, 0xD1);
 constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
 
 }  // namespace
 
 bool CanPlatformShowAppInfoDialog() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return false;
 #else
   return true;
@@ -71,9 +68,8 @@ bool CanPlatformShowAppInfoDialog() {
 
 bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_system_web_app = web_app::WebAppProvider::Get(profile)
-                               ->system_web_app_manager()
-                               .IsSystemWebApp(extension_id);
+  bool is_system_web_app =
+      ash::SystemWebAppManager::Get(profile)->IsSystemWebApp(extension_id);
   if (is_system_web_app) {
     return false;
   }
@@ -114,13 +110,16 @@ void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
   }
 }
 
+base::WeakPtr<AppInfoDialog>& AppInfoDialog::GetLastDialogForTesting() {
+  static base::NoDestructor<base::WeakPtr<AppInfoDialog>> last_dialog;
+  return *last_dialog;
+}
+
 AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
     : profile_(profile), app_id_(app->id()) {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
-
-  const int kHorizontalSeparatorHeight = 1;
 
   // Make a vertically stacked view of all the panels we want to display in the
   // dialog.
@@ -138,7 +137,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When Google Play Store is enabled and the Settings app is available, show
   // the "Manage supported links" link for Chrome.
-  if (app->id() == extension_misc::kChromeAppId &&
+  if (app->id() == app_constants::kChromeAppId &&
       arc::IsArcPlayStoreEnabledForProfile(profile)) {
     const ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
     if (arc_app_list_prefs &&
@@ -159,23 +158,21 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   dialog_body->ClipHeightTo(kMaxDialogHeight, kMaxDialogHeight);
   dialog_body->SetContents(std::move(dialog_body_contents));
 
-  auto dialog_header = std::make_unique<AppInfoHeaderPanel>(profile, app);
-  dialog_header->SetBorder(views::CreateSolidSidedBorder(
-      0, 0, kHorizontalSeparatorHeight, 0, kDialogSeparatorColor));
-  dialog_header_ = AddChildView(std::move(dialog_header));
+  dialog_header_ =
+      AddChildView(std::make_unique<AppInfoHeaderPanel>(profile, app));
 
   dialog_body_ = AddChildView(std::move(dialog_body));
   layout->SetFlexForView(dialog_body_, 1);
 
   auto dialog_footer = AppInfoFooterPanel::CreateFooterPanel(profile, app);
-  if (dialog_footer) {
-    dialog_footer->SetBorder(views::CreateSolidSidedBorder(
-        kHorizontalSeparatorHeight, 0, 0, 0, kDialogSeparatorColor));
+  if (dialog_footer)
     dialog_footer_ = AddChildView(std::move(dialog_footer));
-  }
 
-  // Close the dialog if the app is uninstalled, or if the profile is destroyed.
+  // Close the dialog if the app is uninstalled, unloaded, or if the profile is
+  // destroyed.
   StartObservingExtensionRegistry();
+
+  GetLastDialogForTesting() = AsWeakPtr();
 }
 
 AppInfoDialog::~AppInfoDialog() {
@@ -197,6 +194,29 @@ void AppInfoDialog::StopObservingExtensionRegistry() {
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
+}
+
+void AppInfoDialog::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  constexpr int kHorizontalSeparatorHeight = 1;
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorSeparator);
+  dialog_header_->SetBorder(views::CreateSolidSidedBorder(
+      gfx::Insets::TLBR(0, 0, kHorizontalSeparatorHeight, 0), color));
+  if (dialog_footer_) {
+    dialog_footer_->SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(kHorizontalSeparatorHeight, 0, 0, 0), color));
+  }
+}
+
+void AppInfoDialog::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  if (extension->id() != app_id_)
+    return;
+
+  Close();
 }
 
 void AppInfoDialog::OnExtensionUninstalled(

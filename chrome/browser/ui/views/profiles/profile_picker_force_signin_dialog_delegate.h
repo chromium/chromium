@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class GURL;
@@ -54,7 +55,7 @@ class ProfilePickerForceSigninDialogDelegate
   void DisplayErrorMessage();
 
   // content::WebContentsDelegate
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
   // ChromeWebModalDialogManagerDelegate
@@ -73,13 +74,12 @@ class ProfilePickerForceSigninDialogDelegate
   // to the ProfilePickerForceSigninDialogDelegate.
   void OnDialogDestroyed();
 
-  // views::DialogDelegate:
+  // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
-  ProfilePickerForceSigninDialogHost* host_;  // Not owned.
-  views::WebView* web_view_;                  // Owned by the view hierarchy.
+  raw_ptr<ProfilePickerForceSigninDialogHost> host_;  // Not owned.
+  raw_ptr<views::WebView> web_view_;  // Owned by the view hierarchy.
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_

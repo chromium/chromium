@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,8 @@ enum Origin {
   // Obsolete: ORIGIN_OFFLINE = 14,
   ORIGIN_NAVIGATION_PREDICTOR = 15,
   ORIGIN_ISOLATED_PRERENDER = 16,
-  ORIGIN_MAX = 17,
+  ORIGIN_SAME_ORIGIN_SPECULATION = 17,
+  ORIGIN_MAX = 18,
 };
 
 // Return a human-readable name for |origin|.

@@ -1,0 +1,37 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_API_H_
+#define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_API_H_
+
+#import <UIKit/UIKit.h>
+
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_configuration.h"
+
+namespace ios {
+namespace provider {
+
+// Returns true if user feedback is supported.
+bool IsUserFeedbackSupported();
+
+// Returns a view controller to present to the user to collect their
+// feedback. The information required to construct the user feedback
+// and the objects used to interact with the application are passed
+// via the `configuration` object.
+//
+// This function must only be called if `IsUserFeedbackSupported()`
+// returns true.
+UIViewController* CreateUserFeedbackViewController(
+    UserFeedbackConfiguration* configuration);
+
+// Uploads all pending user feedbacks.
+//
+// This function must only be called if `IsUserFeedbackSupported()`
+// returns true.
+void UploadAllPendingUserFeedback();
+
+}  // namespace provider
+}  // namespace ios
+
+#endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_API_H_

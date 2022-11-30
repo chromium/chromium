@@ -1,4 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 // Use of this source code is governed by the Apache License, Version 2.0.
 // See the COPYING file for details.
@@ -9,6 +13,7 @@
  * @nocompile
  */
 
+self.CLOSURE_BASE_PATH =
 self.CLOSURE_BASE_PATH = '../../';
 importScripts('../../bootstrap/webworkers.js');
 importScripts('../../base.js');
@@ -20,10 +25,11 @@ goog.require('goog.messaging.PortCaller');
 goog.require('goog.messaging.PortChannel');
 
 function startListening() {
-  var caller =
+  const caller =
       new goog.messaging.PortCaller(new goog.messaging.PortChannel(self));
 
   caller.dial('main').registerService('sendToFrame', function(msg) {
+    'use strict';
     msg.push('worker2');
     caller.dial('frame').send('sendToWorker1', msg);
   }, true);

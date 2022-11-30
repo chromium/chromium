@@ -1,0 +1,3 @@
+Tests that Page.disable() works with a fenced frame page.
+Frame navigated to https://127.0.0.1:8443/inspector-protocol/fenced-frame/resources/page-with-title.php
+

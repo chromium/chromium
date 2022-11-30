@@ -1,21 +1,20 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
@@ -27,14 +26,14 @@
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace syncer {
 
 class EngineComponentsFactory;
 class HttpPostProviderFactory;
-class JsEventHandler;
+class KeyDerivationParams;
+class Nigori;
 class SyncEngineHost;
 struct SyncStatus;
 
@@ -45,20 +44,24 @@ struct SyncStatus;
 class SyncEngine : public ModelTypeConfigurer {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(ModelType, std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(ModelType, base::Value::List)>;
   using HttpPostProviderFactoryGetter =
       base::OnceCallback<std::unique_ptr<HttpPostProviderFactory>()>;
 
   // Utility struct for holding initialization options.
   struct InitParams {
     InitParams();
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     InitParams(InitParams&& other);
+
     ~InitParams();
 
-    SyncEngineHost* host = nullptr;
+    raw_ptr<SyncEngineHost> host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
-    WeakHandle<JsEventHandler> event_handler;
     GURL service_url;
     SyncEngine::HttpPostProviderFactoryGetter http_factory_getter;
     CoreAccountInfo authenticated_account_info;
@@ -67,12 +70,13 @@ class SyncEngine : public ModelTypeConfigurer {
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
   };
 
   SyncEngine();
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
+
   ~SyncEngine() override;
 
   // Kicks off asynchronous initialization. Optionally deletes sync data during
@@ -111,25 +115,26 @@ class SyncEngine : public ModelTypeConfigurer {
   // browser from the cloud / sync servers.
   virtual void StartSyncingWithServer() = 0;
 
+  // Starts handling incoming standalone invalidations. This method must be
+  // called when data types are configured.
+  virtual void StartHandlingInvalidations() = 0;
+
   // Asynchronously set a new passphrase for encryption. Note that it is an
   // error to call SetEncryptionPassphrase under the following circumstances:
   // - An explicit passphrase has already been set
   // - We have pending keys.
-  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
+  virtual void SetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params) = 0;
 
-  // Use the provided passphrase to asynchronously attempt decryption. If new
-  // encrypted keys arrive during the asynchronous call, OnPassphraseRequired
-  // may be triggered at a later time. It is an error to call this when there
-  // are no pending keys.
-  virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
+  // Use the provided decryption key to asynchronously attempt decryption. If
+  // new encrypted keys arrive during the asynchronous call,
+  // OnPassphraseRequired may be triggered at a later time. It is an error to
+  // call this when there are no pending keys.
+  virtual void SetExplicitPassphraseDecryptionKey(
+      std::unique_ptr<Nigori> key) = 0;
 
-  // Legacy bootstrap tokens stored in preferences.
-  // TODO(crbug.com/1010397): Delete this API together with the preferences.
-  virtual void SetEncryptionBootstrapToken(const std::string& token) = 0;
-  virtual void SetKeystoreEncryptionBootstrapToken(
-      const std::string& token) = 0;
-
-  // Analogous to SetDecryptionPassphrase but specifically for
+  // Analogous to SetExplicitPassphraseDecryptionKey() but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
   // allow decrypting pending Nigori keys. Notifies observers of the result of
   // the operation via OnTrustedVaultKeyAccepted if the provided keys
@@ -177,11 +182,8 @@ class SyncEngine : public ModelTypeConfigurer {
   // Enables/Disables invalidations for session sync related datatypes.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
-  // Returns a ListValue representing Nigori node.
+  // Returns a Value::List representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace syncer

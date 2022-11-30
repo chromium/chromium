@@ -1,0 +1,136 @@
+diff --git a/components-chromium/iron-collapse/iron-collapse.d.ts b/components-chromium/iron-collapse/iron-collapse.d.ts
+index ba7cf2165f095..fb091bd6c5520 100644
+--- a/components-chromium/iron-collapse/iron-collapse.d.ts
++++ b/components-chromium/iron-collapse/iron-collapse.d.ts
+@@ -69,7 +69,7 @@ interface IronCollapseElement extends IronResizableBehavior, LegacyElementMixin,
+   /**
+    * Set opened to true to show the collapse element and to false to hide it.
+    */
+-  opened: boolean|null|undefined;
++  opened: boolean;
+ 
+   /**
+    * When true, the element is transitioning its opened state. When false,
+diff --git a/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts b/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
+index 8dc9834e50cc9..3f76923548e7f 100644
+--- a/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
++++ b/components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts
+@@ -104,6 +104,15 @@ interface IronIconsetSvgElement extends LegacyElementMixin, HTMLElement {
+    */
+   applyIcon(element: Element|null, iconName: string): Element|null;
+ 
++  /**
++   * Produce installable clone of the SVG element matching `id` in this
++   * iconset, or `undefined` if there is no matching element.
++   * @param iconName Name of the icon to apply.
++   * @param targetIsRTL Whether the target element is RTL.
++   * @return Returns an installable clone of the SVG element matching `id`.
++   */
++  createIcon(iconName: string, targetIsRTL: boolean): Element|null;
++
+   /**
+    * Remove an icon from the given element by undoing the changes effected
+    * by `applyIcon`.
+diff --git a/components-chromium/iron-list/iron-list.d.ts b/components-chromium/iron-list/iron-list.d.ts
+index e469a76eccfbf..06629b5b15945 100644
+--- a/components-chromium/iron-list/iron-list.d.ts
++++ b/components-chromium/iron-list/iron-list.d.ts
+@@ -574,6 +574,7 @@ interface IronListElement extends Templatizer, IronResizableBehavior, IronScroll
+   readonly _estRowsInView: any;
+   readonly _physicalRows: any;
+   readonly _scrollOffset: any;
++  preserveFocus: boolean;
+   attached(): void;
+   detached(): void;
+ 
+diff --git a/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts b/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
+index a1a4c1fdc485c..67634c9abb81c 100644
+--- a/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
++++ b/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
+@@ -23,7 +23,7 @@ interface IronOverlayBehaviorImpl {
+   /**
+    * True if the overlay is currently displayed.
+    */
+-  opened: boolean|null|undefined;
++  opened: boolean;
+ 
+   /**
+    * True if the overlay was canceled when it was last closed.
+diff --git a/components-chromium/paper-spinner/paper-spinner-behavior.d.ts b/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
+index e6b510ce1ffda..da0718c12503f 100644
+--- a/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
++++ b/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
+@@ -15,7 +15,7 @@ interface PaperSpinnerBehavior {
+   /**
+    * Displays the spinner.
+    */
+-  active: boolean|null|undefined;
++  active: boolean;
+ 
+   /**
+    * Alternative text content for accessibility support.
+diff --git a/components-chromium/paper-tooltip/paper-tooltip.d.ts b/components-chromium/paper-tooltip/paper-tooltip.d.ts
+index ed159e50ca1dd..7ef18f0bc7cc8 100644
+--- a/components-chromium/paper-tooltip/paper-tooltip.d.ts
++++ b/components-chromium/paper-tooltip/paper-tooltip.d.ts
+@@ -118,7 +118,7 @@ interface PaperTooltipElement extends LegacyElementMixin, HTMLElement {
+    * that your animationConfig has the exact format below.
+    */
+   animationConfig: object|null|undefined;
+-  _showing: boolean|null|undefined;
++  _showing: boolean;
+   hostAttributes: object|null;
+ 
+   /**
+@@ -126,7 +126,7 @@ interface PaperTooltipElement extends LegacyElementMixin, HTMLElement {
+    * either the element given by the `for` attribute, or the immediate parent
+    * of the tooltip.
+    */
+-  readonly target: any;
++  target: any;
+   attached(): void;
+   detached(): void;
+ 
+diff --git a/components-chromium/polymer/lib/elements/dom-repeat.d.ts b/components-chromium/polymer/lib/elements/dom-repeat.d.ts
+index 3941f763e1271..8caf1e381d759 100644
+--- a/components-chromium/polymer/lib/elements/dom-repeat.d.ts
++++ b/components-chromium/polymer/lib/elements/dom-repeat.d.ts
+@@ -287,6 +287,16 @@ declare class DomRepeat extends
+   modelForElement(el: HTMLElement): TemplateInstanceBase|null;
+ }
+ 
++interface DomRepeatItem<M> {
++  model: {
++    item: M,
++    index: number,
++  }
++}
++
++/** Event interface for dom-repeat events. */
++export type DomRepeatEvent<M, E extends Event = Event> = DomRepeatItem<M>&E;
++
+ declare global {
+ 
+   interface HTMLElementTagNameMap {
+diff --git a/components-chromium/polymer/polymer.d.ts b/components-chromium/polymer/polymer.d.ts
+index 588b7ee0df247..83213a66d8239 100644
+--- a/components-chromium/polymer/polymer.d.ts
++++ b/components-chromium/polymer/polymer.d.ts
+@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
+ import * as gestures from './lib/utils/gestures.js';
+ 
+ export {DomIf} from './lib/elements/dom-if.js';
+-export {DomRepeat} from './lib/elements/dom-repeat.js';
++export {DomRepeat, DomRepeatEvent} from './lib/elements/dom-repeat.js';
+ export {mixinBehaviors} from './lib/legacy/class.js';
+ export {OptionalMutableDataBehavior} from './lib/legacy/mutable-data-behavior.js';
+ export {Polymer} from './lib/legacy/polymer-fn.js';
+@@ -26,8 +26,6 @@ export {html} from './lib/utils/html-tag.js';
+ export {dedupingMixin} from './lib/utils/mixin.js';
+ export {get, matches, translate} from './lib/utils/path.js';
+ export {afterNextRender, beforeNextRender} from './lib/utils/render-status.js';
+-export {useShadow} from './lib/utils/settings.js';
+ export {TemplateInstanceBase, templatize} from './lib/utils/templatize.js';
+ export {PolymerElement} from './polymer-element.js';
+-export {Base} from './polymer-legacy.js';
+ export {gestures};

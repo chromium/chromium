@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,7 @@ Status MobileEmulationOverrideManager::OnEvent(
     const std::string& method,
     const base::DictionaryValue& params) {
   if (method == "Page.frameNavigated") {
-    const base::Value* unused_value;
-    if (!params.Get("frame.parentId", &unused_value))
+    if (!params.FindPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
   }
   return Status(kOk);
@@ -57,29 +56,26 @@ Status MobileEmulationOverrideManager::ApplyOverrideIfNeeded() {
   if (!overridden_device_metrics_)
     return Status(kOk);
 
-  base::DictionaryValue params;
-  params.SetInteger("width", overridden_device_metrics_->width);
-  params.SetInteger("height", overridden_device_metrics_->height);
-  params.SetDouble("deviceScaleFactor",
-                   overridden_device_metrics_->device_scale_factor);
-  params.SetBoolean("mobile", overridden_device_metrics_->mobile);
-  params.SetBoolean("fitWindow", overridden_device_metrics_->fit_window);
-  params.SetBoolean("textAutosizing",
-                    overridden_device_metrics_->text_autosizing);
-  params.SetDouble("fontScaleFactor",
-                   overridden_device_metrics_->font_scale_factor);
+  base::Value::Dict params;
+  params.Set("width", overridden_device_metrics_->width);
+  params.Set("height", overridden_device_metrics_->height);
+  params.Set("deviceScaleFactor",
+             overridden_device_metrics_->device_scale_factor);
+  params.Set("mobile", overridden_device_metrics_->mobile);
+  params.Set("fitWindow", overridden_device_metrics_->fit_window);
+  params.Set("textAutosizing", overridden_device_metrics_->text_autosizing);
+  params.Set("fontScaleFactor", overridden_device_metrics_->font_scale_factor);
   Status status = client_->SendCommand("Page.setDeviceMetricsOverride", params);
   if (status.IsError())
     return status;
 
   if (overridden_device_metrics_->touch) {
-    base::DictionaryValue emulate_touch_params;
-    emulate_touch_params.SetBoolean("enabled", true);
+    base::Value::Dict emulate_touch_params;
+    emulate_touch_params.Set("enabled", true);
     status = client_->SendCommand("Emulation.setTouchEmulationEnabled",
                                   emulate_touch_params);
     if (status.IsError())
       return status;
-
   }
 
   return Status(kOk);

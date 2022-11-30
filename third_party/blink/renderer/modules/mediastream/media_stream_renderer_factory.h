@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_RENDERER_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_RENDERER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_video_renderer.h"
@@ -27,6 +26,11 @@ class WebLocalFrame;
 class MODULES_EXPORT MediaStreamRendererFactory {
  public:
   MediaStreamRendererFactory();
+
+  MediaStreamRendererFactory(const MediaStreamRendererFactory&) = delete;
+  MediaStreamRendererFactory& operator=(const MediaStreamRendererFactory&) =
+      delete;
+
   virtual ~MediaStreamRendererFactory();
 
   virtual scoped_refptr<WebMediaStreamVideoRenderer> GetVideoRenderer(
@@ -40,9 +44,6 @@ class MODULES_EXPORT MediaStreamRendererFactory {
       WebLocalFrame* web_frame,
       const WebString& device_id,
       base::RepeatingCallback<void()> on_render_error_callback);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamRendererFactory);
 };
 
 }  // namespace blink

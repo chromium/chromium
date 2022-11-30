@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {
@@ -24,17 +23,25 @@ enum ProcessOutputType {
   PROCESS_OUTPUT_TYPE_EXIT
 };
 
-using ProcessOutputCallback = base::RepeatingCallback<
-    void(ProcessOutputType, const std::string&, base::OnceClosure)>;
+using ProcessOutputCallback =
+    base::RepeatingCallback<void(ProcessOutputType, const std::string&)>;
 
 // Observes output on |out_fd| and invokes |callback| when some output is
 // detected. It assumes UTF8 output.
 class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
  public:
   ProcessOutputWatcher(int out_fd, const ProcessOutputCallback& callback);
+
+  ProcessOutputWatcher(const ProcessOutputWatcher&) = delete;
+  ProcessOutputWatcher& operator=(const ProcessOutputWatcher&) = delete;
+
   ~ProcessOutputWatcher();
 
   void Start();
+  void AckOutput();
+  base::WeakPtr<ProcessOutputWatcher> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   // Called when |process_output_file_| is readable without blocking.
@@ -52,9 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
 
   // Processes new |read_buffer_| state and notifies observer about new process
   // output.
-  void ReportOutput(ProcessOutputType type,
-                    size_t new_bytes_count,
-                    base::OnceClosure callback);
+  void ReportOutput(ProcessOutputType type, size_t new_bytes_count);
 
   char read_buffer_[4096];
   // Maximum read buffer content size.
@@ -68,10 +73,10 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
 
   // Callback that will be invoked when some output is detected.
   ProcessOutputCallback on_read_callback_;
+  // Count of unacked outputs sent.
+  int unacked_outputs_ = 0;
 
   base::WeakPtrFactory<ProcessOutputWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessOutputWatcher);
 };
 
 }  // namespace chromeos

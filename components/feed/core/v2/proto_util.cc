@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -14,18 +15,26 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_entry_point_data.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/reading_list/features/reading_list_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
 namespace feed {
 namespace {
+using feedwire::Capability;
+
 feedwire::Version::Architecture GetBuildArchitecture() {
 #if defined(ARCH_CPU_X86_64)
   return feedwire::Version::X86_64;
@@ -84,7 +93,7 @@ feedwire::Version GetPlatformVersionMessage() {
   result.set_major(major);
   result.set_minor(minor);
   result.set_revision(revision);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
 #endif
   return result;
@@ -103,13 +112,14 @@ feedwire::Version GetAppVersionMessage(const ChromeInfo& chrome_info) {
     result.set_revision(static_cast<int32_t>(numbers[3]));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
 #endif
   return result;
 }
 
 feedwire::Request CreateFeedQueryRequest(
+    const StreamType& stream_type,
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
@@ -118,24 +128,98 @@ feedwire::Request CreateFeedQueryRequest(
   request.set_request_version(feedwire::Request::FEED_QUERY);
 
   feedwire::FeedRequest& feed_request = *request.mutable_feed_request();
-  feed_request.add_client_capability(feedwire::Capability::BASE_UI);
-  feed_request.add_client_capability(feedwire::Capability::CARD_MENU);
-  feed_request.add_client_capability(feedwire::Capability::LOTTIE_ANIMATIONS);
-  feed_request.add_client_capability(
-      feedwire::Capability::LONG_PRESS_CARD_MENU);
-  // Add Share capability if sharing is turned on.
-  if (base::FeatureList::IsEnabled(kFeedShare)) {
-    feed_request.add_client_capability(feedwire::Capability::SHARE);
+
+  for (Capability capability :
+       {Capability::CARD_MENU, Capability::LOTTIE_ANIMATIONS,
+        Capability::LONG_PRESS_CARD_MENU, Capability::SHARE,
+        Capability::OPEN_IN_INCOGNITO, Capability::DISMISS_COMMAND,
+        Capability::INFINITE_FEED, Capability::PREFETCH_METADATA,
+        Capability::REQUEST_SCHEDULE, Capability::UI_THEME_V2,
+        Capability::UNDO_FOR_DISMISS_COMMAND}) {
+    feed_request.add_client_capability(capability);
   }
+
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
+
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
-    feed_request.add_client_capability(feedwire::Capability::HEART);
+    feed_request.add_client_capability(Capability::HEART);
+  }
+  if (request_metadata.autoplay_enabled) {
+    feed_request.add_client_capability(Capability::INLINE_VIDEO_AUTOPLAY);
+  }
+  if (request_metadata.autoplay_enabled ||
+      base::FeatureList::IsEnabled(kFeedVideoInlinePlayback)) {
+    feed_request.add_client_capability(Capability::OPEN_VIDEO_COMMAND);
+  }
+
+  if (base::FeatureList::IsEnabled(kFeedStamp)) {
+    feed_request.add_client_capability(Capability::SILK_AMP_OPEN_COMMAND);
+    feed_request.add_client_capability(Capability::AMP_STORY_PLAYER);
+    feed_request.add_client_capability(Capability::AMP_GROUP_DATASTORE);
+  }
+
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    feed_request.add_client_capability(Capability::READ_LATER);
+  } else {
+    feed_request.add_client_capability(Capability::DOWNLOAD_LINK);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Note that the Crow feature is referenced as THANK_CREATOR within the feed.
+  if (base::FeatureList::IsEnabled(kShareCrowButton)) {
+    feed_request.add_client_capability(Capability::THANK_CREATOR);
+  }
+#endif
+
+  if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
+    feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);
+  }
+
+  if (base::FeatureList::IsEnabled(kInfoCardAcknowledgementTracking)) {
+    feed_request.add_client_capability(
+        Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING);
+  }
+
+  switch (request_metadata.tab_group_enabled_state) {
+    case TabGroupEnabledState::kNone:
+      feed_request.add_client_capability(Capability::OPEN_IN_TAB);
+      break;
+    case TabGroupEnabledState::kReplaced:
+      feed_request.add_client_capability(Capability::OPEN_IN_NEW_TAB_IN_GROUP);
+      break;
+    case TabGroupEnabledState::kBoth:
+      feed_request.add_client_capability(Capability::OPEN_IN_TAB);
+      feed_request.add_client_capability(Capability::OPEN_IN_NEW_TAB_IN_GROUP);
+      break;
   }
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);
+  switch (request_metadata.content_order) {
+    case ContentOrder::kReverseChron:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT);
+      break;
+    case ContentOrder::kGrouped:
+      query.set_order_by(
+          feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
+      break;
+    case ContentOrder::kUnspecified:
+      break;
+  }
+
+  // Set the feed entry point based on the stream type.
+  feedwire::FeedEntryPointData& entry_point =
+      *query.mutable_feed_entry_point_data();
+  if (stream_type.IsForYou()) {
+    entry_point.set_feed_entry_point_source_value(
+        feedwire::FeedEntryPointSource::CHROME_DISCOVER_FEED);
+  } else if (stream_type.IsWebFeed()) {
+    entry_point.set_feed_entry_point_source_value(
+        feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
+  }
 
   // |consistency_token|, for action reporting, is only applicable to signed-in
   // requests. The presence of |client_instance_id|, also signed-in only, can be
@@ -162,6 +246,29 @@ void SetNoticeCardAcknowledged(feedwire::Request* request,
         ->mutable_chrome_fulfillment_info()
         ->set_notice_card_acknowledged(true);
   }
+}
+
+void SetInfoCardTrackingStates(feedwire::Request* request,
+                               const RequestMetadata& request_metadata) {
+  for (const auto& state : request_metadata.info_card_tracking_states) {
+    request->mutable_feed_request()
+        ->mutable_feed_query()
+        ->mutable_chrome_fulfillment_info()
+        ->add_info_card_tracking_state()
+        ->CopyFrom(state);
+  }
+}
+
+// Set the chrome_feature_usage.times_followed_from_web_page_menu
+// from the request_metadata.followed_from_web_page_menu_count.
+void SetTimesFollowedFromWebPageMenu(feedwire::Request* request,
+                                     const RequestMetadata& request_metadata) {
+  request->mutable_feed_request()
+      ->mutable_feed_query()
+      ->mutable_chrome_fulfillment_info()
+      ->mutable_chrome_feature_usage()
+      ->set_times_followed_from_web_page_menu(
+          request_metadata.followed_from_web_page_menu_count);
 }
 
 }  // namespace
@@ -214,9 +321,9 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
 
   client_info.set_locale(request_metadata.language_tag);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   client_info.set_platform_type(feedwire::ClientInfo::ANDROID_ID);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   client_info.set_platform_type(feedwire::ClientInfo::IOS);
 #endif
   client_info.set_app_type(feedwire::ClientInfo::CHROME_ANDROID);
@@ -236,16 +343,31 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
         request_metadata.session_id);
   }
 
+  client_info.mutable_chrome_client_info()->set_start_surface(
+      request_metadata.chrome_info.start_surface);
   return client_info;
 }
 
 feedwire::Request CreateFeedQueryRefreshRequest(
+    const StreamType& stream_type,
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token) {
-  feedwire::Request request = CreateFeedQueryRequest(
-      request_reason, request_metadata, consistency_token, std::string());
+  feedwire::Request request =
+      CreateFeedQueryRequest(stream_type, request_reason, request_metadata,
+                             consistency_token, std::string());
+  if (stream_type.IsWebFeed()) {
+    // A special token that requests content for followed Web Feeds.
+    constexpr char kChromeFollowToken[] = "\"\004\022\002\b5*\tFollowing";
+    request.mutable_feed_request()
+        ->mutable_feed_query()
+        ->mutable_web_feed_token()
+        ->mutable_web_feed_token()
+        ->set_web_feed_token(kChromeFollowToken);
+  }
   SetNoticeCardAcknowledged(&request, request_metadata);
+  SetInfoCardTrackingStates(&request, request_metadata);
+  SetTimesFollowedFromWebPageMenu(&request, request_metadata);
   return request;
 }
 
@@ -253,9 +375,9 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
     const RequestMetadata& request_metadata,
     const std::string& consistency_token,
     const std::string& next_page_token) {
-  return CreateFeedQueryRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL,
-                                request_metadata, consistency_token,
-                                next_page_token);
+  return CreateFeedQueryRequest(
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::NEXT_PAGE_SCROLL,
+      request_metadata, consistency_token, next_page_token);
 }
 
 }  // namespace feed

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ WorkletAnimationOptions::WorkletAnimationOptions(
     : data_(data) {}
 
 std::unique_ptr<cc::AnimationOptions> WorkletAnimationOptions::Clone() const {
-  return std::make_unique<WorkletAnimationOptions>(this->data_);
+  return std::make_unique<WorkletAnimationOptions>(data_);
 }
 
 WorkletAnimationOptions::~WorkletAnimationOptions() {}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
@@ -68,6 +69,9 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
         pending_loop_(nullptr) {
   }
 
+  GalleryWatchManagerTest(const GalleryWatchManagerTest&) = delete;
+  GalleryWatchManagerTest& operator=(const GalleryWatchManagerTest&) = delete;
+
   ~GalleryWatchManagerTest() override {}
 
   void SetUp() override {
@@ -91,7 +95,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
         chrome_apps::MediaGalleriesPermission::kReadPermission);
     extension_ = AddMediaGalleriesApp("read", read_permissions, profile_.get());
 
-    manager_.reset(new GalleryWatchManager);
+    manager_ = std::make_unique<GalleryWatchManager>();
     manager_->AddObserver(profile_.get(), this);
   }
 
@@ -110,6 +114,10 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
     // because TestUserManager uses TestingBrowserProcess in its destructor.
     test_user_manager_.reset();
 #endif
+
+    // Make sure any pending network events are run before the
+    // NetworkConnectionTracker is cleared.
+    task_environment_.RunUntilIdle();
 
     // The MediaFileSystemRegistry owned by the TestingBrowserProcess must be
     // destroyed before the StorageMonitor because it calls
@@ -204,15 +212,13 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
 #endif
 
-  storage_monitor::TestStorageMonitor* monitor_;
+  raw_ptr<storage_monitor::TestStorageMonitor> monitor_;
   std::unique_ptr<TestingProfile> profile_;
-  MediaGalleriesPreferences* gallery_prefs_;
+  raw_ptr<MediaGalleriesPreferences> gallery_prefs_;
 
   bool expect_gallery_changed_;
   bool expect_gallery_watch_dropped_;
-  base::RunLoop* pending_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManagerTest);
+  raw_ptr<base::RunLoop> pending_loop_;
 };
 
 // TODO(crbug.com/936065): Flaky on ChromeOS.
@@ -240,7 +246,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
 }
 
 // TODO(crbug.com/1183482): Flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AddAndRemoveTwoWatches DISABLED_AddAndRemoveTwoWatches
 #else
 #define MAYBE_AddAndRemoveTwoWatches AddAndRemoveTwoWatches
@@ -291,7 +297,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_AddAndRemoveTwoWatches) {
 }
 
 // TODO(crbug.com/1182867): Flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveAllWatches DISABLED_RemoveAllWatches
 #else
 #define MAYBE_RemoveAllWatches RemoveAllWatches
@@ -325,7 +331,8 @@ TEST_F(GalleryWatchManagerTest, MAYBE_RemoveAllWatches) {
 }
 
 // Fails on Mac: crbug.com/1183212
-#if defined(OS_MAC)
+// Fails on Chrome OS: crbug.com/1207878
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_DropWatchOnGalleryRemoved DISABLED_DropWatchOnGalleryRemoved
 #else
 #define MAYBE_DropWatchOnGalleryRemoved DropWatchOnGalleryRemoved
@@ -361,7 +368,7 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryPermissionRevoked) {
 }
 
 // TODO(crbug.com/1183212): flaky on mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DropWatchOnStorageRemoved DISABLED_DropWatchOnStorageRemoved
 #else
 #define MAYBE_DropWatchOnStorageRemoved DropWatchOnStorageRemoved
@@ -388,7 +395,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
 #else
 #define MAYBE_TestWatchOperation TestWatchOperation

@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of the goog.ui.tree.TreeNode class.
@@ -23,7 +15,9 @@
 goog.provide('goog.ui.tree.TreeNode');
 
 goog.forwardDeclare('goog.ui.tree.TreeControl');
-goog.require('goog.ui.tree.BaseNode');  // circular
+goog.require('goog.ui.tree.BaseNode');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.html.SafeHtml');  // circular
 
 
 
@@ -39,6 +33,7 @@ goog.require('goog.ui.tree.BaseNode');  // circular
  * @extends {goog.ui.tree.BaseNode}
  */
 goog.ui.tree.TreeNode = function(content, opt_config, opt_domHelper) {
+  'use strict';
   goog.ui.tree.BaseNode.call(this, content, opt_config, opt_domHelper);
 };
 goog.inherits(goog.ui.tree.TreeNode, goog.ui.tree.BaseNode);
@@ -50,12 +45,13 @@ goog.inherits(goog.ui.tree.TreeNode, goog.ui.tree.BaseNode);
  * @override
  */
 goog.ui.tree.TreeNode.prototype.getTree = function() {
+  'use strict';
   if (this.tree) {
     return this.tree;
   }
-  var parent = this.getParent();
+  const parent = this.getParent();
   if (parent) {
-    var tree = parent.getTree();
+    const tree = parent.getTree();
     if (tree) {
       this.setTreeInternal(tree);
       return tree;
@@ -71,18 +67,19 @@ goog.ui.tree.TreeNode.prototype.getTree = function() {
  * @override
  */
 goog.ui.tree.TreeNode.prototype.getCalculatedIconClass = function() {
-  var expanded = this.getExpanded();
-  var expandedIconClass = this.getExpandedIconClass();
+  'use strict';
+  const expanded = this.getExpanded();
+  const expandedIconClass = this.getExpandedIconClass();
   if (expanded && expandedIconClass) {
     return expandedIconClass;
   }
-  var iconClass = this.getIconClass();
+  const iconClass = this.getIconClass();
   if (!expanded && iconClass) {
     return iconClass;
   }
 
   // fall back on default icons
-  var config = this.getConfig();
+  const config = this.getConfig();
   if (this.hasChildren()) {
     if (expanded && config.cssExpandedFolderIcon) {
       return config.cssTreeIcon + ' ' + config.cssExpandedFolderIcon;

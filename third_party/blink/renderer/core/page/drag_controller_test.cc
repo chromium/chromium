@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,13 +33,14 @@ class DragMockChromeClient : public RenderingTestChromeClient {
                      const WebDragData&,
                      DragOperationsMask,
                      const SkBitmap& drag_image,
-                     const gfx::Point& drag_image_offset) override {
+                     const gfx::Vector2d& cursor_offset,
+                     const gfx::Rect& drag_obj_rect) override {
     last_drag_image_size = gfx::Size(drag_image.width(), drag_image.height());
-    last_drag_image_offset = drag_image_offset;
+    last_cursor_offset = cursor_offset;
   }
 
   gfx::Size last_drag_image_size;
-  gfx::Point last_drag_image_offset;
+  gfx::Vector2d last_cursor_offset;
 };
 
 class DragControllerTest : public RenderingTest {
@@ -72,10 +73,10 @@ TEST_F(DragControllerTest, DragImageForSelectionUsesPageScaleFactor) {
   const std::unique_ptr<DragImage> image2(
       DragController::DragImageForSelection(GetFrame(), 0.75f));
 
-  EXPECT_GT(image1->Size().Width(), 0);
-  EXPECT_GT(image1->Size().Height(), 0);
-  EXPECT_EQ(image1->Size().Width() * 2, image2->Size().Width());
-  EXPECT_EQ(image1->Size().Height() * 2, image2->Size().Height());
+  EXPECT_GT(image1->Size().width(), 0);
+  EXPECT_GT(image1->Size().height(), 0);
+  EXPECT_EQ(image1->Size().width() * 2, image2->Size().width());
+  EXPECT_EQ(image1->Size().height() * 2, image2->Size().height());
 }
 
 class DragControllerSimTest : public SimTest {};
@@ -100,7 +101,7 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
   DataObject* object = DataObject::Create();
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
-      object, FloatPoint(10, 10), FloatPoint(10, 10),
+      object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
                                       kDragOperationMove));
 
@@ -140,7 +141,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   DataObject* object = DataObject::Create();
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
-      object, FloatPoint(10, 10), FloatPoint(10, 10),
+      object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
                                       kDragOperationMove));
 
@@ -190,12 +191,12 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
 
   // The top of the node should be visible but the bottom should be outside the
   // viewport.
-  FloatRect expected_selection(0, node_margin_top, node_width,
-                               viewport_height_css - node_margin_top);
+  gfx::RectF expected_selection(0, node_margin_top, node_width,
+                                viewport_height_css - node_margin_top);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   auto selection_image(DragController::DragImageForSelection(GetFrame(), 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  gfx::Size expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // Scroll 500 css px down so the top of the node is outside the viewport.
@@ -206,11 +207,11 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 0, node_width, viewport_height_css);
+  expected_selection = gfx::RectF(0, 0, node_width, viewport_height_css);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   selection_image = DragController::DragImageForSelection(GetFrame(), 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // Scroll 800 css px down so the top of the node is outside the viewport and
@@ -218,12 +219,12 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsToViewport) {
   scroll_offset = 800;
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 0, node_width,
-                                 node_height + node_margin_top - scroll_offset);
+  expected_selection = gfx::RectF(
+      0, 0, node_width, node_height + node_margin_top - scroll_offset);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(GetFrame()));
   selection_image = DragController::DragImageForSelection(GetFrame(), 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
 
@@ -262,10 +263,10 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
 
   // The iframe's selection rect is in the frame's local coordinates and should
   // not include the iframe's margin.
-  FloatRect expected_selection(0, 5, 30, 20);
+  gfx::RectF expected_selection(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   auto selection_image(DragController::DragImageForSelection(child_frame, 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
+  gfx::Size expected_image_size = gfx::ToRoundedSize(expected_selection.size());
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The iframe's selection rect is in the frame's local coordinates and should
@@ -274,10 +275,10 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 5, 30, 20);
+  expected_selection = gfx::RectF(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = gfx::ToRoundedSize(expected_selection.size());
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The parent frame's scroll offset of 210 should cause the iframe content to
@@ -286,10 +287,10 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   scroll_offset = 210;
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 10, 30, 15);
+  expected_selection = gfx::RectF(0, 10, 30, 15);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = gfx::ToRoundedSize(expected_selection.size());
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // Scrolling the iframe should shift the content so it is further under the
@@ -298,10 +299,10 @@ TEST_F(DragControllerTest, DragImageForSelectionClipsChildFrameToViewport) {
   child_frame.View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, iframe_scroll_offset),
       mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 10, 30, 8);
+  expected_selection = gfx::RectF(0, 10, 30, 8);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
+  expected_image_size = gfx::ToRoundedSize(expected_selection.size());
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
 
@@ -343,11 +344,11 @@ TEST_F(DragControllerTest,
 
   // The iframe's selection rect is in the frame's local coordinates and should
   // not include the iframe's margin.
-  FloatRect expected_selection(0, 5, 30, 20);
+  gfx::RectF expected_selection(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   auto selection_image(DragController::DragImageForSelection(child_frame, 1));
-  IntSize expected_image_size(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  gfx::Size expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The iframe's selection rect is in the frame's local coordinates and should
@@ -356,11 +357,11 @@ TEST_F(DragControllerTest,
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 5, 30, 20);
+  expected_selection = gfx::RectF(0, 5, 30, 20);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // The parent frame's scroll offset of 210 should cause the iframe content to
@@ -369,11 +370,11 @@ TEST_F(DragControllerTest,
   scroll_offset = 210;
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 10, 30, 15);
+  expected_selection = gfx::RectF(0, 10, 30, 15);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 
   // Scrolling the iframe should shift the content so it is further under the
@@ -382,11 +383,11 @@ TEST_F(DragControllerTest,
   child_frame.View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, iframe_scroll_offset),
       mojom::blink::ScrollType::kProgrammatic);
-  expected_selection = FloatRect(0, 10, 30, 8);
+  expected_selection = gfx::RectF(0, 10, 30, 8);
   EXPECT_EQ(expected_selection, DragController::ClippedSelection(child_frame));
   selection_image = DragController::DragImageForSelection(child_frame, 1);
-  expected_image_size = IntSize(RoundedIntSize(expected_selection.Size()));
-  expected_image_size.Scale(page_scale_factor);
+  expected_image_size = gfx::ToRoundedSize(
+      gfx::ScaleSize(expected_selection.size(), page_scale_factor));
   EXPECT_EQ(expected_image_size, selection_image->Size());
 }
 
@@ -421,18 +422,16 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
-  IntSize expected_image_size = IntSize(50, 40);
-  expected_image_size.Scale(page_scale_factor);
-  EXPECT_EQ(expected_image_size,
-            IntSize(GetChromeClient().last_drag_image_size));
+  gfx::Size expected_image_size =
+      gfx::Size(50 * page_scale_factor, 40 * page_scale_factor);
+  EXPECT_EQ(expected_image_size, GetChromeClient().last_drag_image_size);
   // The drag image has a margin of 2px which should offset the selection
   // image by 2px from the dragged location of (5, 10).
-  IntPoint expected_offset = IntPoint(5, 10 - 2);
-  expected_offset.Scale(page_scale_factor, page_scale_factor);
-  EXPECT_EQ(expected_offset,
-            IntPoint(GetChromeClient().last_drag_image_offset));
+  gfx::Vector2d expected_offset(5 * page_scale_factor,
+                                (10 - 2) * page_scale_factor);
+  EXPECT_EQ(expected_offset, GetChromeClient().last_cursor_offset);
 }
 
 TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
@@ -467,25 +466,23 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
-  IntSize link_image_size = IntSize(GetChromeClient().last_drag_image_size);
+  gfx::Size link_image_size = GetChromeClient().last_drag_image_size;
   // The drag link image should be a textual representation of the drag url in a
   // system font (see: DragImageForLink in DragController.cpp) and should not be
   // an empty image.
-  EXPECT_GT(link_image_size.Area(), 0u);
+  EXPECT_GT(link_image_size.Area64(), 0u);
   // Unlike the drag image in DragImageOffsetWithPageScaleFactor, the link
   // image is not offset by margin because the link image is not based on the
   // link's painting but instead is a generated image of the link's url. Because
   // link_image_size is already scaled, no additional scaling is expected.
-  IntPoint expected_offset = IntPoint(link_image_size.Width() / 2, 2);
+  gfx::Vector2d expected_offset(link_image_size.width() / 2, 2);
   // The offset is mapped using integers which can introduce rounding errors
   // (see TODO in DragController::DoSystemDrag) so we accept values near our
   // expectation until more precise offset mapping is available.
-  EXPECT_NEAR(expected_offset.X(), GetChromeClient().last_drag_image_offset.x(),
-              1);
-  EXPECT_NEAR(expected_offset.Y(), GetChromeClient().last_drag_image_offset.y(),
-              1);
+  EXPECT_NEAR(expected_offset.x(), GetChromeClient().last_cursor_offset.x(), 1);
+  EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_cursor_offset.y(), 1);
 }
 
 }  // namespace blink

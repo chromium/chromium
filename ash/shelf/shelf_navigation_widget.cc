@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,17 +20,25 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -39,7 +47,7 @@ namespace {
 
 // The duration of the back button opacity animation.
 constexpr base::TimeDelta kButtonOpacityAnimationDuration =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Returns the bounds for the first button shown in this view (the back
 // button in tablet mode, the home button otherwise).
@@ -134,6 +142,58 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
 
  private:
   ui::ThroughputTracker tracker_;
+};
+
+class BackgroundLayerDelegate : public ui::LayerDelegate {
+ public:
+  BackgroundLayerDelegate(ui::Layer* layer, views::View* shelf_view)
+      : layer_(layer), shelf_view_(shelf_view) {}
+  BackgroundLayerDelegate(const BackgroundLayerDelegate&) = delete;
+  BackgroundLayerDelegate& operator=(const BackgroundLayerDelegate&) = delete;
+  ~BackgroundLayerDelegate() override {}
+
+  void SetBackgroundColor(SkColor color) {
+    background_color_ = color;
+    layer_->SchedulePaint(layer_->PaintableRegion());
+  }
+
+ private:
+  // views::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    ui::PaintRecorder recorder(context, layer_->size());
+    gfx::Canvas* canvas = recorder.canvas();
+
+    // Get the corner radius from `layer_`.
+    gfx::RoundedCornersF corner_radii = layer_->rounded_corner_radii();
+
+    // cc::PaintFlags flags for the background.
+    cc::PaintFlags flags;
+    flags.setColor(background_color_);
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawRoundRect(gfx::Rect(layer_->size()), corner_radii.upper_left(),
+                          flags);
+
+    // Don't draw highlight border if the shelf widget is showing.
+    if (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app())
+      return;
+
+    views::HighlightBorder::PaintBorderToCanvas(
+        canvas, *shelf_view_, gfx::Rect(layer_->size()), corner_radii,
+        views::HighlightBorder::Type::kHighlightBorder2, false);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {
+    layer_->SchedulePaint(layer_->bounds());
+  }
+
+  ui::Layer* const layer_;
+  views::View* const shelf_view_;
+
+  // The background color of `layer_`. Note that this value has to be updated by
+  // SetBackgroundColor() and the default value should never be drawn.
+  SkColor background_color_ = SK_ColorRED;
 };
 
 }  // namespace
@@ -245,18 +305,27 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
                                         public views::WidgetDelegate {
  public:
   Delegate(Shelf* shelf, ShelfView* shelf_view);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   ~Delegate() override;
 
   // Initializes the view.
   void Init(ui::Layer* parent_layer);
 
+  // Updates the layout and visibility of `opaque_background_`.
   void UpdateOpaqueBackground();
+
+  // Updates the color of `opaque_background_`.
+  void UpdateBackgroundColor();
 
   // views::View:
   FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+  void OnThemeChanged() override;
 
   // views::AccessiblePaneView:
   View* GetDefaultFocusableChild() override;
@@ -276,6 +345,8 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
  private:
   void SetParentLayer(ui::Layer* layer);
 
+  void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
+
   BackButton* back_button_ = nullptr;
   HomeButton* home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
@@ -285,15 +356,26 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
   // A background layer that may be visible depending on shelf state.
   ui::Layer opaque_background_;
 
-  Shelf* shelf_ = nullptr;
+  // The layer delegate that helps drawing the highlight border on
+  // `opaque_background_`.
+  std::unique_ptr<BackgroundLayerDelegate> background_delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
+  Shelf* shelf_ = nullptr;
 };
 
 ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
-    : opaque_background_(ui::LAYER_SOLID_COLOR), shelf_(shelf) {
+    : opaque_background_(features::IsDarkLightModeEnabled()
+                             ? ui::LAYER_TEXTURED
+                             : ui::LAYER_SOLID_COLOR),
+      shelf_(shelf) {
   SetOwnedByWidget(true);
-  set_owned_by_client();
+
+  if (features::IsDarkLightModeEnabled()) {
+    background_delegate_ = std::make_unique<BackgroundLayerDelegate>(
+        &opaque_background_, shelf_view);
+    opaque_background_.set_delegate(background_delegate_.get());
+    opaque_background_.SetFillsBoundsOpaquely(false);
+  }
 
   set_allow_deactivate_on_esc(true);
 
@@ -309,8 +391,18 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
   home_button_->set_context_menu_controller(shelf_view);
   home_button_->SetSize(gfx::Size(control_size, control_size));
 
-  GetViewAccessibility().OverrideNextFocus(shelf->hotseat_widget());
-  GetViewAccessibility().OverridePreviousFocus(shelf->GetStatusAreaWidget());
+  // Ensure widgets are represented in accessibility.
+  if (shelf->hotseat_widget()) {
+    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kChildrenChanged, true);
+  }
+
+  if (shelf->GetStatusAreaWidget()) {
+    shelf->GetStatusAreaWidget()->GetRootView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kChildrenChanged, true);
+  }
+
+  RefreshAccessibilityWidgetNextPreviousFocus(shelf->shelf_widget());
   opaque_background_.SetName("shelfNavigation/Background");
 }
 
@@ -318,11 +410,10 @@ ShelfNavigationWidget::Delegate::~Delegate() = default;
 
 void ShelfNavigationWidget::Delegate::Init(ui::Layer* parent_layer) {
   SetParentLayer(parent_layer);
-  UpdateOpaqueBackground();
 }
 
 void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
-  opaque_background_.SetColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+  UpdateBackgroundColor();
 
   // Hide background if no buttons should be shown.
   if (!IsHomeButtonShown() &&
@@ -338,17 +429,26 @@ void ShelfNavigationWidget::Delegate::UpdateOpaqueBackground() {
 
   opaque_background_.SetVisible(true);
 
-  int radius = ShelfConfig::Get()->control_border_radius();
+  float radius = ShelfConfig::Get()->control_border_radius();
   gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
   if (opaque_background_.rounded_corner_radii() != rounded_corners)
     opaque_background_.SetRoundedCornerRadius(rounded_corners);
 
   // The opaque background does not show up when there are two buttons.
   gfx::Rect opaque_background_bounds =
-      GetFirstButtonBounds(shelf_->IsHorizontalAlignment());
+      GetMirroredRect(GetFirstButtonBounds(shelf_->IsHorizontalAlignment()));
   opaque_background_.SetBounds(opaque_background_bounds);
   opaque_background_.SetBackgroundBlur(
       ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+}
+
+void ShelfNavigationWidget::Delegate::UpdateBackgroundColor() {
+  SkColor background_color =
+      ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget());
+  if (background_delegate_)
+    background_delegate_->SetBackgroundColor(background_color);
+  else
+    opaque_background_.SetColor(background_color);
 }
 
 bool ShelfNavigationWidget::Delegate::CanActivate() const {
@@ -367,11 +467,8 @@ void ShelfNavigationWidget::Delegate::GetAccessibleNodeData(
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 
-  ShelfWidget* shelf_widget =
-      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget();
-  GetViewAccessibility().OverrideNextFocus(shelf_widget->hotseat_widget());
-  GetViewAccessibility().OverridePreviousFocus(
-      shelf_widget->status_area_widget());
+  RefreshAccessibilityWidgetNextPreviousFocus(
+      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget());
 }
 
 void ShelfNavigationWidget::Delegate::ReorderChildLayers(
@@ -385,6 +482,11 @@ void ShelfNavigationWidget::Delegate::OnBoundsChanged(
   UpdateOpaqueBackground();
 }
 
+void ShelfNavigationWidget::Delegate::OnThemeChanged() {
+  views::AccessiblePaneView::OnThemeChanged();
+  UpdateBackgroundColor();
+}
+
 views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
   return default_last_focusable_child_ ? GetLastFocusableChild()
                                        : GetFirstFocusableChild();
@@ -393,6 +495,12 @@ views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
 void ShelfNavigationWidget::Delegate::SetParentLayer(ui::Layer* layer) {
   layer->Add(&opaque_background_);
   ReorderLayers();
+}
+
+void ShelfNavigationWidget::Delegate::
+    RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf) {
+  GetViewAccessibility().OverrideNextFocus(shelf->hotseat_widget());
+  GetViewAccessibility().OverridePreviousFocus(shelf->status_area_widget());
 }
 
 ShelfNavigationWidget::TestApi::TestApi(ShelfNavigationWidget* widget)
@@ -465,7 +573,7 @@ void ShelfNavigationWidget::Initialize(aura::Window* container) {
 void ShelfNavigationWidget::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsMouseWheelEvent()) {
     ui::MouseWheelEvent* mouse_wheel_event = event->AsMouseWheelEvent();
-    shelf_->ProcessMouseWheelEvent(mouse_wheel_event, /*from_touchpad=*/false);
+    shelf_->ProcessMouseWheelEvent(mouse_wheel_event);
     return;
   }
 
@@ -529,7 +637,7 @@ void ShelfNavigationWidget::CalculateTargetBounds() {
                      nav_size.width());
   }
   target_bounds_ = gfx::Rect(nav_origin, nav_size);
-  clip_rect_ = CalculateClipRect();
+  clip_rect_after_rtl_ = CalculateClipRectAfterRTL();
 }
 
 gfx::Rect ShelfNavigationWidget::GetTargetBounds() const {
@@ -565,7 +673,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
   // Use the same duration for all parts of the upcoming animation.
   const base::TimeDelta animation_duration =
       animate ? ShelfConfig::Get()->shelf_animation_duration()
-              : base::TimeDelta::FromMilliseconds(0);
+              : base::Milliseconds(0);
 
   const HotseatState target_hotseat_state =
       layout_manager->CalculateHotseatState(layout_manager->visibility_state(),
@@ -584,7 +692,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
     nav_animation_setter.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-    base::Optional<ui::AnimationThroughputReporter> reporter;
+    absl::optional<ui::AnimationThroughputReporter> reporter;
     if (animate) {
       reporter.emplace(nav_animation_setter.GetAnimator(),
                        shelf_->GetNavigationWidgetAnimationReportCallback(
@@ -597,7 +705,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
   }
 
   if (update_bounds)
-    GetLayer()->SetClipRect(clip_rect_);
+    GetLayer()->SetClipRect(clip_rect_after_rtl_);
 
   views::View* const back_button = delegate_->back_button();
   UpdateButtonVisibility(back_button, back_button_shown, animate,
@@ -655,7 +763,7 @@ void ShelfNavigationWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 gfx::Rect ShelfNavigationWidget::GetVisibleBounds() const {
-  return gfx::Rect(target_bounds_.origin(), clip_rect_.size());
+  return gfx::Rect(target_bounds_.origin(), clip_rect_after_rtl_.size());
 }
 
 void ShelfNavigationWidget::PrepareForGettingFocus(bool last_element) {
@@ -702,7 +810,7 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
   opacity_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  base::Optional<ui::AnimationThroughputReporter> reporter;
+  absl::optional<ui::AnimationThroughputReporter> reporter;
   if (animate) {
     reporter.emplace(opacity_settings.GetAnimator(),
                      metrics_reporter->GetReportCallback(target_hotseat_state));
@@ -714,30 +822,48 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
   button->layer()->SetOpacity(visible ? 1.0f : 0.0f);
 }
 
-gfx::Rect ShelfNavigationWidget::CalculateClipRect() const {
-  if (Shell::Get()->IsInTabletMode())
-    return gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
+gfx::Rect ShelfNavigationWidget::CalculateClipRectAfterRTL() const {
+  gfx::Rect clip_bounds;
+  if (Shell::Get()->IsInTabletMode()) {
+    clip_bounds = gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
+  } else {
+    clip_bounds = gfx::Rect(target_bounds_.size());
+  }
 
-  return gfx::Rect(target_bounds_.size());
+  // Bounds will be used to set a layer clip rect, and thus need to be modified
+  // for RTL - avoid using `GetMirroredRect()` method, as it would use the
+  // current widget/root view bounds instead of target bounds.
+  if (base::i18n::IsRTL()) {
+    clip_bounds.set_x(target_bounds_.width() - clip_bounds.right());
+  }
+  return clip_bounds;
 }
 
 gfx::Size ShelfNavigationWidget::CalculateIdealSize(
     bool only_visible_area) const {
-  if (!ShelfConfig::Get()->shelf_controls_shown())
+  const bool home_button_shown = IsHomeButtonShown();
+  const bool back_button_shown =
+      IsBackButtonShown(shelf_->IsHorizontalAlignment());
+  if (!home_button_shown && !back_button_shown)
     return gfx::Size();
 
-  int control_button_number;
+  int controls_space = 0;
+  const int control_size = ShelfConfig::Get()->control_size();
+
   if (Shell::Get()->IsInTabletMode() && !only_visible_area) {
     // There are home button and back button. So the maximum is 2.
-    control_button_number = 2;
+    controls_space = control_size * 2 + ShelfConfig::Get()->button_spacing();
   } else {
-    control_button_number = CalculateButtonCount();
+    // Use CalculatePreferredSize here to take the launcher nudge label into
+    // consider.
+    controls_space += home_button_shown
+                          ? GetHomeButton()->CalculatePreferredSize().width()
+                          : 0;
+    controls_space += back_button_shown ? control_size : 0;
+    controls_space +=
+        (CalculateButtonCount() - 1) * ShelfConfig::Get()->button_spacing();
   }
 
-  const int control_size = ShelfConfig::Get()->control_size();
-  int controls_space =
-      control_button_number * control_size +
-      (control_button_number - 1) * ShelfConfig::Get()->button_spacing();
   const int major_axis_spacing =
       2 * ShelfConfig::Get()->control_button_edge_spacing(
               shelf_->IsHorizontalAlignment());

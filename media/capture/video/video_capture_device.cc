@@ -1,15 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/video_capture_device.h"
 
+#include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/i18n/timezone.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace media {
 
@@ -59,6 +62,14 @@ operator=(VideoCaptureDevice::Client::Buffer&& other) = default;
 
 VideoCaptureDevice::~VideoCaptureDevice() = default;
 
+void VideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    uint32_t crop_version,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
+}
+
 void VideoCaptureDevice::GetPhotoState(GetPhotoStateCallback callback) {}
 
 void VideoCaptureDevice::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
@@ -78,10 +89,7 @@ PowerLineFrequency VideoCaptureDevice::GetPowerLineFrequencyForLocation() {
       "CR", "CU", "DO", "EC", "FM", "GT", "GU", "GY", "HN", "HT", "JP",
       "KN", "KR", "KY", "MS", "MX", "NI", "PA", "PE", "PF", "PH", "PR",
       "PW", "SA", "SR", "SV", "TT", "TW", "UM", "US", "VG", "VI", "VE"};
-  const char** countries_using_60Hz_end =
-      countries_using_60Hz + base::size(countries_using_60Hz);
-  if (std::find(countries_using_60Hz, countries_using_60Hz_end,
-                current_country) == countries_using_60Hz_end) {
+  if (!base::Contains(countries_using_60Hz, current_country)) {
     return PowerLineFrequency::FREQUENCY_50HZ;
   }
   return PowerLineFrequency::FREQUENCY_60HZ;

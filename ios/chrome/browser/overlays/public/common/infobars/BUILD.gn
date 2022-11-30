@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,14 +10,14 @@ source_set("infobars") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/badges:util",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
   ]
 }

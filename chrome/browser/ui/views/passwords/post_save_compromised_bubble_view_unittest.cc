@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 
 namespace {
@@ -19,7 +20,7 @@ class PostSaveCompromisedBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  PostSaveCompromisedBubbleView* view_;
+  raw_ptr<PostSaveCompromisedBubbleView> view_;
 };
 
 void PostSaveCompromisedBubbleViewTest::CreateViewAndShow(

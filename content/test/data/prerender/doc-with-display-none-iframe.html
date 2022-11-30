@@ -1,0 +1,14 @@
+<!doctype html>
+<body>
+<script>
+let resolveLoad;
+const loaded = new Promise(resolve => {
+  resolveLoad = resolve;
+});
+</script>
+<div>
+hello
+</div>
+<iframe src="/empty.html" style="display: none;" onload="resolveLoad();">
+</iframe>
+</body>

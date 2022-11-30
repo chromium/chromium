@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -18,6 +17,7 @@
 #include "net/base/backoff_entry_serializer_fuzzer_input.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -35,21 +35,21 @@ class ProtoTranslator {
     return PolicyFromProto(input_.policy());
   }
   base::Time parse_time() const {
-    return base::Time() +
-           base::TimeDelta::FromMicroseconds(input_.parse_time());
+    return base::Time() + base::Microseconds(input_.parse_time());
+  }
+  base::TimeTicks parse_time_ticks() const {
+    return base::TimeTicks() + base::Microseconds(input_.parse_time());
   }
   base::Time serialize_time() const {
-    return base::Time() +
-           base::TimeDelta::FromMicroseconds(input_.serialize_time());
+    return base::Time() + base::Microseconds(input_.serialize_time());
   }
   base::TimeTicks now_ticks() const {
-    return base::TimeTicks() +
-           base::TimeDelta::FromMicroseconds(input_.now_ticks());
+    return base::TimeTicks() + base::Microseconds(input_.now_ticks());
   }
-  base::Optional<base::Value> serialized_entry() const {
+  absl::optional<base::Value> serialized_entry() const {
     json_proto::JsonProtoConverter converter;
     std::string json_array = converter.Convert(input_.serialized_entry());
-    base::Optional<base::Value> value = base::JSONReader::Read(json_array);
+    absl::optional<base::Value> value = base::JSONReader::Read(json_array);
     return value;
   }
 
@@ -87,7 +87,7 @@ class MockClock : public base::TickClock {
 // we check that the parsed BackoffEntry values are equivalent.
 void TestDeserialize(const ProtoTranslator& translator) {
   // Attempt to convert the json_proto.ArrayValue to a base::Value.
-  base::Optional<base::Value> value = translator.serialized_entry();
+  absl::optional<base::Value> value = translator.serialized_entry();
   if (!value)
     return;
   DCHECK(value->is_list());
@@ -95,26 +95,25 @@ void TestDeserialize(const ProtoTranslator& translator) {
   BackoffEntry::Policy policy = translator.policy();
 
   MockClock clock;
-  clock.SetNow(translator.now_ticks());
+  clock.SetNow(translator.parse_time_ticks());
 
   // Attempt to deserialize a BackoffEntry.
   std::unique_ptr<BackoffEntry> entry =
-      BackoffEntrySerializer::DeserializeFromValue(*value, &policy, &clock,
-                                                   translator.parse_time());
+      BackoffEntrySerializer::DeserializeFromList(
+          value->GetList(), &policy, &clock, translator.parse_time());
   if (!entry)
     return;
 
-  std::unique_ptr<base::Value> reserialized =
-      BackoffEntrySerializer::SerializeToValue(*entry, translator.parse_time());
-  CHECK(reserialized);
+  base::Value::List reserialized =
+      BackoffEntrySerializer::SerializeToList(*entry, translator.parse_time());
 
   // Due to fuzzy interpretation in BackoffEntrySerializer::
-  // DeserializeFromValue, we cannot assert that |*reserialized == *value|.
+  // DeserializeFromList, we cannot assert that |*reserialized == *value|.
   // Rather, we can deserialize |reserialized| and check that some weaker
   // properties are preserved.
   std::unique_ptr<BackoffEntry> entry_reparsed =
-      BackoffEntrySerializer::DeserializeFromValue(
-          *reserialized, &policy, &clock, translator.parse_time());
+      BackoffEntrySerializer::DeserializeFromList(reserialized, &policy, &clock,
+                                                  translator.parse_time());
   CHECK(entry_reparsed);
   CHECK_EQ(entry_reparsed->failure_count(), entry->failure_count());
   CHECK_LE(entry_reparsed->GetReleaseTime(), entry->GetReleaseTime());
@@ -129,19 +128,17 @@ void TestSerialize(const ProtoTranslator& translator) {
 
   // Serialize the BackoffEntry.
   BackoffEntry native_entry(&policy);
-  std::unique_ptr<base::Value> serialized =
-      BackoffEntrySerializer::SerializeToValue(native_entry,
-                                               translator.serialize_time());
-  CHECK(serialized);
+  base::Value::List serialized = BackoffEntrySerializer::SerializeToList(
+      native_entry, translator.serialize_time());
 
   MockClock clock;
   clock.SetNow(translator.now_ticks());
 
   // Deserialize it.
   std::unique_ptr<BackoffEntry> deserialized_entry =
-      BackoffEntrySerializer::DeserializeFromValue(*serialized, &policy, &clock,
-                                                   translator.parse_time());
-  // Even though SerializeToValue was successful, we're not guaranteed to have a
+      BackoffEntrySerializer::DeserializeFromList(serialized, &policy, &clock,
+                                                  translator.parse_time());
+  // Even though SerializeToList was successful, we're not guaranteed to have a
   // |deserialized_entry|. One reason deserialization may fail is if the parsed
   // |absolute_release_time_us| is below zero.
   if (!deserialized_entry)

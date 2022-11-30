@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,8 +6,6 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
 
 assert(is_linux, "This file should only be referenced on Linux")
-
-assert(gtk_version == 3 || gtk_version == 4)
 
 # GN doesn't check visibility for configs so we give this an obviously internal
 # name to discourage random targets from accidentally depending on this and
@@ -22,44 +20,26 @@ pkg_config("gtk_internal_config") {
   if (gtk_version == 3) {
     packages += [ "gtk+-3.0" ]
   } else {
+    assert(gtk_version == 4)
     packages += [ "gtk4" ]
   }
 }
 
 group("gtk") {
   visibility = [
-    # These are the only directories that should depend on GTK.
-    "//ui/gtk:*",
-    "//ui/gtk/x",
-
-    # This should probably be moved into //ui/gtk.
-    "//ui/ozone/platform/wayland",
-
-    # These are all for WebRTC.
+    # These are allow-listed for WebRTC builds.  Nothing in else should depend
+    # on GTK.
     "//examples:peerconnection_client",
     "//remoting/host:common",
     "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/file_transfer",
     "//remoting/host/it2me:common",
-    "//remoting/host/it2me:remote_assistance_host",
+    "//remoting/host/it2me:main",
     "//remoting/host/linux",
+    "//remoting/host/remote_open_url:common",
     "//remoting/test:it2me_standalone_host_main",
     "//webrtc/examples:peerconnection_client",
   ]
 
   public_configs = [ ":gtk_internal_config" ]
-}
-
-# Depend on "gtkprint" to get this.
-pkg_config("gtkprint_internal_config") {
-  if (gtk_version == 3) {
-    packages = [ "gtk+-unix-print-3.0" ]
-  } else {
-    packages = [ "gtk4-unix-print" ]
-  }
-}
-
-group("gtkprint") {
-  visibility = [ "//ui/gtk:*" ]
-  public_configs = [ ":gtkprint_internal_config" ]
 }

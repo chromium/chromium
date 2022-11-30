@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_ANCHOR_UTIL_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "ui/views/bubble/bubble_border.h"
 
@@ -19,10 +20,10 @@ namespace bubble_anchor_util {
 
 struct AnchorConfiguration {
   // The bubble anchor view.
-  views::View* anchor_view = nullptr;
+  raw_ptr<views::View> anchor_view = nullptr;
 
   // The view to be highlighted, or null if it should not be used.
-  views::Button* highlighted_button = nullptr;
+  raw_ptr<views::Button> highlighted_button = nullptr;
 
   // The arrow position for the bubble.
   views::BubbleBorder::Arrow bubble_arrow = views::BubbleBorder::TOP_LEFT;
@@ -36,6 +37,10 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 // Returns the anchor configuration for the permission bubble.
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser);
+
+// Returns the anchor configuration for bubbles that are aligned to the app menu
+// button.
+AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser);
 
 }  // namespace bubble_anchor_util
 

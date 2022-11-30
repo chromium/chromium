@@ -1,511 +1,109 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/common/features.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
 
 assert(enable_extensions, "enable extensions check failed")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "extensions"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    js_out_files = [ "extensions.rollup.js" ]
-    js_module_in_files = [ "extensions.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-      "../../../../ui/webui/resources:preprocess",
-    ]
-    excludes = [ "chrome://resources/js/cr.m.js" ]
-  }
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "extensions"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "checkup_image_dark.svg",
-    "checkup_image.svg",
-    "extensions.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    resource_path_rewrites = [ "extensions.rollup.js|extensions.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
-  }
-}
+  static_files = [ "extensions.html" ]
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "drag_and_drop_handler.js",
-    "extensions.js",
-    "item_behavior.js",
-    "item_util.js",
-    "keyboard_shortcut_delegate.js",
-    "navigation_helper.js",
-    "service.js",
-    "shortcut_util.js",
-  ]
-
-  if (is_chromeos_ash) {
-    in_files += [ "kiosk_browser_proxy.js" ]
-  }
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "checkup.js",
-    "code_section.js",
-    "activity_log/activity_log_history_item.js",
-    "activity_log/activity_log_history.js",
-    "activity_log/activity_log.js",
-    "activity_log/activity_log_stream_item.js",
-    "activity_log/activity_log_stream.js",
-    "detail_view.js",
-    "drop_overlay.js",
-    "error_page.js",
-    "host_permissions_toggle_list.js",
-    "icons.js",
-    "install_warnings_dialog.js",
-    "item.js",
-    "item_list.js",
-    "keyboard_shortcuts.js",
-    "load_error.js",
-    "manager.js",
-    "options_dialog.js",
-    "pack_dialog_alert.js",
-    "pack_dialog.js",
-    "runtime_host_permissions.js",
-    "runtime_hosts_dialog.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "shortcut_input.js",
-    "sidebar.js",
-    "toggle_row.js",
-    "toolbar.js",
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "activity_log/activity_log.ts",
+    "activity_log/activity_log_history.ts",
+    "activity_log/activity_log_history_item.ts",
+    "activity_log/activity_log_stream.ts",
+    "activity_log/activity_log_stream_item.ts",
+    "code_section.ts",
+    "detail_view.ts",
+    "drop_overlay.ts",
+    "error_page.ts",
+    "host_permissions_toggle_list.ts",
+    "install_warnings_dialog.ts",
+    "item.ts",
+    "item_list.ts",
+    "keyboard_shortcuts.ts",
+    "load_error.ts",
+    "manager.ts",
+    "options_dialog.ts",
+    "pack_dialog.ts",
+    "pack_dialog_alert.ts",
+    "restricted_sites_dialog.ts",
+    "runtime_host_permissions.ts",
+    "runtime_hosts_dialog.ts",
+    "shortcut_input.ts",
+    "sidebar.ts",
+    "site_permissions_by_site.ts",
+    "site_permissions_edit_permissions_dialog.ts",
+    "site_permissions_edit_url_dialog.ts",
+    "site_permissions_list.ts",
+    "site_permissions_site_group.ts",
+    "site_permissions.ts",
+    "toggle_row.ts",
+    "toolbar.ts",
   ]
 
   if (is_chromeos_ash) {
-    in_files += [ "kiosk_dialog.js" ]
+    web_component_files += [ "kiosk_dialog.ts" ]
   }
-}
 
-group("closure_compile") {
-  deps = [
-    ":extensions_module_resources",
-    "activity_log:closure_compile_module",
-  ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "activity_log:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "checkup.js",
-    "code_section.js",
-    "detail_view.js",
-    "drop_overlay.js",
-    "error_page.js",
-    "host_permissions_toggle_list.js",
-    "icons.js",
-    "install_warnings_dialog.js",
-    "item.js",
-    "item_list.js",
-    "keyboard_shortcuts.js",
-    "load_error.js",
-    "manager.js",
-    "options_dialog.js",
-    "pack_dialog.js",
-    "pack_dialog_alert.js",
-    "runtime_host_permissions.js",
-    "runtime_hosts_dialog.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "shortcut_input.js",
-    "sidebar.js",
-    "toggle_row.js",
-    "toolbar.js",
+  non_web_component_files = [
+    "drag_and_drop_handler.ts",
+    "extensions.ts",
+    "item_mixin.ts",
+    "item_util.ts",
+    "keyboard_shortcut_delegate.ts",
+    "navigation_helper.ts",
+    "service.ts",
+    "shortcut_util.ts",
+    "site_settings_mixin.ts",
+    "url_util.ts",
   ]
 
   if (is_chromeos_ash) {
-    js_files += [ "kiosk_dialog.js" ]
+    non_web_component_files += [ "kiosk_browser_proxy.ts" ]
   }
-}
 
-grit("resources") {
-  defines = chrome_grit_defines
+  icons_html_files = [ "icons.html" ]
 
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/extensions_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/extensions_resources.h",
-    "grit/extensions_resources_map.cc",
-    "grit/extensions_resources_map.h",
-    "extensions_resources.pak",
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
   ]
-  output_dir = "$root_gen_dir/chrome"
-}
 
-js_type_check("extensions_module_resources") {
-  is_polymer3 = true
-  deps = [
-    ":checkup",
-    ":code_section",
-    ":detail_view",
-    ":drag_and_drop_handler",
-    ":drop_overlay",
-    ":error_page",
-    ":host_permissions_toggle_list",
-    ":install_warnings_dialog",
-    ":item",
-    ":item_behavior",
-    ":item_list",
-    ":item_util",
-    ":keyboard_shortcut_delegate",
-    ":keyboard_shortcuts",
-    ":kiosk_browser_proxy",
-    ":load_error",
-    ":manager",
-    ":navigation_helper",
-    ":options_dialog",
-    ":pack_dialog",
-    ":pack_dialog_alert",
-    ":runtime_host_permissions",
-    ":runtime_hosts_dialog",
-    ":service",
-    ":shortcut_input",
-    ":shortcut_util",
-    ":sidebar",
-    ":toggle_row",
-    ":toolbar",
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/activity_log_private.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/developer_private.d.ts",
+    "//tools/typescript/definitions/management.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
   ]
   if (is_chromeos_ash) {
-    deps += [ ":kiosk_dialog" ]
+    ts_definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   }
-}
-
-js_library("checkup") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-}
 
-js_library("code_section") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("detail_view") {
-  deps = [
-    ":item",
-    ":item_behavior",
-    ":item_util",
-    ":navigation_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("drop_overlay") {
-  deps = [
-    ":drag_and_drop_handler",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
-  ]
-}
-
-js_library("drag_and_drop_handler") {
-  deps = [
-    ":service",
-    "//ui/webui/resources/js/cr/ui:drag_wrapper.m",
-  ]
-}
-
-js_library("error_page") {
-  deps = [
-    ":code_section",
-    ":item_util",
-    ":navigation_helper",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [
-    "$externs_path/developer_private.js",
-    "$externs_path/metrics_private.js",
-  ]
-}
-
-js_library("host_permissions_toggle_list") {
-  deps = [ ":item" ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("install_warnings_dialog") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m" ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("item") {
-  deps = [
-    ":item_behavior",
-    ":item_util",
-    ":navigation_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("item_behavior") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("item_list") {
-  deps = [
-    ":checkup",
-    ":item",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [
-    "$externs_path/developer_private.js",
-    "$externs_path/metrics_private.js",
-  ]
-}
-
-js_library("item_util") {
-  deps = [
-    ":navigation_helper",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("keyboard_shortcut_delegate") {
-  deps = []
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("keyboard_shortcuts") {
-  deps = [
-    ":item_behavior",
-    ":keyboard_shortcut_delegate",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-  ]
-  externs_list = [
-    "$externs_path/developer_private.js",
-    "$externs_path/metrics_private.js",
-  ]
-}
-
-js_library("kiosk_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("kiosk_dialog") {
-    deps = [
-      ":item_behavior",
-      ":kiosk_browser_proxy",
-      "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    ]
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "extensions"
+    optimize_webui_out_files = [ "extensions.rollup.js" ]
+    optimize_webui_in_files = [ "extensions.js" ]
+    optimize_webui_excludes = [ "chrome://resources/js/cr.m.js" ]
+    optimize_webui_resource_paths_rewrites =
+        [ "extensions.rollup.js|extensions.js" ]
   }
-}
-
-js_library("load_error") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("manager") {
-  deps = [
-    ":detail_view",
-    ":item",
-    ":item_list",
-    ":item_util",
-    ":keyboard_shortcuts",
-    ":kiosk_browser_proxy",
-    ":load_error",
-    ":navigation_helper",
-    ":service",
-    ":sidebar",
-    ":toolbar",
-    "activity_log:activity_log",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("navigation_helper") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("options_dialog") {
-  deps = [
-    ":item_behavior",
-    ":navigation_helper",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("pack_dialog") {
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("pack_dialog_alert") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("runtime_host_permissions") {
-  deps = [
-    ":item",
-    ":runtime_hosts_dialog",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("runtime_hosts_dialog") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("service") {
-  deps = [
-    ":error_page",
-    ":item",
-    ":keyboard_shortcut_delegate",
-    ":load_error",
-    ":navigation_helper",
-    ":pack_dialog",
-    ":toolbar",
-    "activity_log:activity_log",
-    "activity_log:activity_log_history",
-    "activity_log:activity_log_stream",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/activity_log_private.js",
-                   "$externs_path/developer_private.js",
-                   "$externs_path/management.js",
-                   "$externs_path/metrics_private.js",
-                 ]
-}
-
-js_library("shortcut_input") {
-  deps = [
-    ":keyboard_shortcut_delegate",
-    ":shortcut_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-  externs_list = [ "$externs_path/developer_private.js" ]
-}
-
-js_library("shortcut_util") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("sidebar") {
-  deps = [
-    ":navigation_helper",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("toggle_row") {
-}
-
-js_library("toolbar") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
 }

@@ -110,6 +110,16 @@ TEST(LayoutUnitTest, LayoutUnitFloat) {
   EXPECT_NEAR(LayoutUnit(345634.12335f).ToFloat(), 345634.12335f, kTolerance);
   EXPECT_NEAR(LayoutUnit(-345634.12335f).ToFloat(), -345634.12335f, kTolerance);
   EXPECT_NEAR(LayoutUnit(-345634).ToFloat(), -345634.0f, kTolerance);
+
+  using Limits = std::numeric_limits<float>;
+  // Larger than Max()
+  EXPECT_EQ(LayoutUnit::Max(), LayoutUnit(Limits::max()));
+  EXPECT_EQ(LayoutUnit::Max(), LayoutUnit(Limits::infinity()));
+  // Smaller than Min()
+  EXPECT_EQ(LayoutUnit::Min(), LayoutUnit(Limits::lowest()));
+  EXPECT_EQ(LayoutUnit::Min(), LayoutUnit(-Limits::infinity()));
+
+  EXPECT_EQ(LayoutUnit(), LayoutUnit::Clamp(Limits::quiet_NaN()));
 }
 
 TEST(LayoutUnitTest, LayoutUnitRounding) {
@@ -265,6 +275,24 @@ TEST(LayoutUnitTest, LayoutUnitDivision) {
             (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(2)).ToInt());
   EXPECT_EQ(kIntMaxForLayoutUnit,
             (LayoutUnit(kIntMaxForLayoutUnit) / LayoutUnit(0.5)).ToInt());
+}
+
+TEST(LayoutUnitTest, LayoutUnitMulDiv) {
+  const LayoutUnit kMaxValue = LayoutUnit::Max();
+  const LayoutUnit kMinValue = LayoutUnit::Min();
+  const LayoutUnit kEpsilon = LayoutUnit().AddEpsilon();
+  EXPECT_EQ(kMaxValue, kMaxValue.MulDiv(kMaxValue, kMaxValue));
+  EXPECT_EQ(kMinValue, kMinValue.MulDiv(kMinValue, kMinValue));
+  EXPECT_EQ(kMinValue, kMaxValue.MulDiv(kMinValue, kMaxValue));
+  EXPECT_EQ(kMaxValue, kMinValue.MulDiv(kMinValue, kMaxValue));
+  EXPECT_EQ(kMinValue + kEpsilon * 2, kMaxValue.MulDiv(kMaxValue, kMinValue));
+
+  EXPECT_EQ(kMaxValue, kMaxValue.MulDiv(LayoutUnit(2), kEpsilon));
+  EXPECT_EQ(kMinValue, kMinValue.MulDiv(LayoutUnit(2), kEpsilon));
+
+  const LayoutUnit kLargerInt(16384);
+  const LayoutUnit kLargerInt2(32768);
+  EXPECT_EQ(LayoutUnit(8192), kLargerInt.MulDiv(kLargerInt, kLargerInt2));
 }
 
 TEST(LayoutUnitTest, LayoutUnitCeil) {

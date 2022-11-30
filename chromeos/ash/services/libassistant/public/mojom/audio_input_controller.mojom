@@ -1,0 +1,51 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Interface managing Libassistant audio input, allowing Libassistant to open
+// the microphone both for hotword detection ('ok google') as well for the
+// actual voice queries.
+// The Libassistant service will be responsible for opening/closing its own
+// audio streams.
+// This controller is hosted in the Libassistant mojom service, and will be
+// invoked from the browser process.
+interface AudioInputController {
+
+  // Called when the user manually opens/closes the microphone, for example by
+  // pressing the microphone icon in the Assistant UI.
+  SetMicOpen(bool mic_open);
+
+  // Called when the user enables/disables hotword detection.
+  SetHotwordEnabled(bool enable);
+
+  // Set/Unset the device id that should be used for voice queries.
+  // The device-id provided must be a valid audio device id (or null to remove
+  // the configured device-id).
+  SetDeviceId(string? device_id);
+
+  // Set/Unset the device id that should be used for the hotword detection.
+  // The device-id provided must be a valid audio device id (or null to remove
+  // the configured device-id).
+  SetHotwordDeviceId(string? device_id);
+
+  // Called when the user opens/closes the lid.
+  // When the lid is closed no audio should be recorded.
+  // This is initially set to |kClosed|.
+  SetLidState(LidState new_state);
+
+  // TODO(jeroendh): It doesn't really make sense that our browser thread must
+  // inform the Libassistant mojom service that Libassistant has
+  // started/stopped a conversation.
+  // However, this is required until we migrate the conversation listening APIs
+  // to the Libassistant mojom service.
+  OnConversationTurnStarted();
+};
+
+// Whether the lid of the current device is open or closed.
+// If the device has no lid it is considered to be open.
+enum LidState {
+  kOpen,
+  kClosed,
+};

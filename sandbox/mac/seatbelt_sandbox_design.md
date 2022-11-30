@@ -80,7 +80,7 @@ continue its execution into the ChromeMain function.
 
 Both the main Chromium executable and all of the bundled Chromium Helper
 executables contain [a minimal amount of
-code](https://source.chromium.org/chromium/chromium/src/+/master:chrome/app/chrome_exe_main_mac.cc;drc=05219ddeb8130389da9ad634ba3e021a70bff393).
+code](https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chrome_exe_main_mac.cc;drc=05219ddeb8130389da9ad634ba3e021a70bff393).
 The bulk of the code lives in the Chromium Framework library, which is
 `dlopen()`ed at runtime to call `ChromeMain()`, after applying the sandbox.
 
@@ -109,7 +109,7 @@ implementing the profiles for each process type.
 ## Sandbox Design
 
 The V1 sandbox code lives in
-[sandbox_mac.mm](https://source.chromium.org/chromium/chromium/src/+/master:services/service_manager/sandbox/mac/sandbox_mac.mm;l=1;drc=efd8e880522dc1df3b8883648513016fab3d3956).
+[sandbox_mac.mm](https://source.chromium.org/chromium/chromium/src/+/main:services/service_manager/sandbox/mac/sandbox_mac.mm;l=1;drc=efd8e880522dc1df3b8883648513016fab3d3956).
 This file will continue to exist until the V1 sandbox is removed for all process
 types. Chromium now uses the V2 sandbox for all process types except the GPU
 process.

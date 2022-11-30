@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,9 @@ class ParseCallback {
  public:
   explicit ParseCallback(const base::android::JavaParamRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
+
+  ParseCallback(const ParseCallback&) = delete;
+  ParseCallback& operator=(const ParseCallback&) = delete;
 
   ~ParseCallback() {}
 
@@ -116,8 +119,6 @@ class ParseCallback {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jcallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParseCallback);
 };
 
 }  // namespace

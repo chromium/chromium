@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
+import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -45,7 +46,6 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
     private final WebContents mWebContents;
     private final JourneyLogger mJourneyLogger;
     private final PaymentRequestSpec mSpec;
-    private final boolean mGoogleBridgeEligible;
     private final PaymentOptions mOptions;
     private String mSupportedMethod = "https://www.chromium.org";
 
@@ -78,7 +78,6 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
         mDetails.total = new PaymentItem();
         mOptions = new PaymentOptions();
         mSpec = Mockito.mock(PaymentRequestSpec.class);
-        mGoogleBridgeEligible = false;
     }
 
     /**
@@ -102,8 +101,9 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
 
         PaymentRequest request = new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, this));
-        request.init(mClient, mMethodData, mDetails, mOptions, mGoogleBridgeEligible);
+                        -> new PaymentRequestService(
+                                mRenderFrameHost, client, onClosed, /*delegate=*/this, () -> null));
+        request.init(mClient, mMethodData, mDetails, mOptions);
         return request;
     }
 
@@ -194,5 +194,10 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
         Mockito.doReturn(context).when(weakContext).get();
         Mockito.doReturn(weakContext).when(window).getContext();
         return window;
+    }
+
+    @Override
+    public PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
+        return null;
     }
 }

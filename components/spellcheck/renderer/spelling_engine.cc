@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 SpellingEngine* CreateNativeSpellingEngine(
     service_manager::LocalInterfaceProvider* embedder_provider) {
   DCHECK(embedder_provider);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, always return a HunspellEngine. This is a simplification to
   // avoid needing an async Mojo call to the browser process to determine which
   // languages are supported by the native spell checker. Returning a
@@ -29,13 +29,11 @@ SpellingEngine* CreateNativeSpellingEngine(
   // during native spell checking. It also doesn't affect Hunspell, since these
   // languages are skipped during the Hunspell check.
   return new HunspellEngine(embedder_provider);
-#endif  // defined(OS_WIN)
-
-#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#elif BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   return new PlatformSpellingEngine(embedder_provider);
-#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-
-#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+#elif BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   return new HunspellEngine(embedder_provider);
-#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+#else
+  return nullptr;
+#endif
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/util.h"
@@ -52,7 +52,7 @@ void XServerClipboard::Init(x11::Connection* connection,
   static const char* const kAtomNames[] = {"CLIPBOARD",        "INCR",
                                            "SELECTION_STRING", "TARGETS",
                                            "TIMESTAMP",        "UTF8_STRING"};
-  static const int kNumAtomNames = base::size(kAtomNames);
+  static const int kNumAtomNames = std::size(kAtomNames);
 
   x11::Future<x11::InternAtomReply> futures[kNumAtomNames];
   for (size_t i = 0; i < kNumAtomNames; i++)
@@ -93,7 +93,7 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
   // Currently only UTF-8 is supported.
   if (mime_type != kMimeTypeTextUtf8)
     return;
-  if (!StringIsUtf8(data.c_str(), data.length())) {
+  if (!base::IsStringUTF8AllowingNoncharacters(data)) {
     LOG(ERROR) << "ClipboardEvent: data is not UTF-8 encoded.";
     return;
   }
@@ -133,8 +133,7 @@ void XServerClipboard::OnSetSelectionOwnerNotify(x11::Atom selection,
   // A reasonable timeout allows for misbehaving apps that don't respond
   // quickly to our requests.
   if (!get_selections_time_.is_null() &&
-      (base::TimeTicks::Now() - get_selections_time_) <
-          base::TimeDelta::FromSeconds(5)) {
+      (base::TimeTicks::Now() - get_selections_time_) < base::Seconds(5)) {
     // TODO(lambroslambrou): Instead of ignoring this notification, cancel any
     // pending request operations and ignore the resulting events, before
     // dispatching new requests here.
@@ -257,7 +256,7 @@ void XServerClipboard::SendTargetsResponse(x11::Window requestor,
       .property = property,
       .type = x11::Atom::ATOM,
       .format = CHAR_BIT * sizeof(x11::Atom),
-      .data_len = base::size(targets),
+      .data_len = std::size(targets),
       .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
           &targets[0], sizeof(targets)),
   });
@@ -299,7 +298,7 @@ void XServerClipboard::SendStringResponse(x11::Window requestor,
         .property = property,
         .type = target,
         .format = 8,
-        .data_len = data_.size(),
+        .data_len = static_cast<uint32_t>(data_.size()),
         .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
             data_.data(), data_.size()),
     });

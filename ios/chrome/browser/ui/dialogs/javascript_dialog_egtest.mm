@@ -1,32 +1,32 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "base/ios/ios_util.h"
-#include "base/strings/stringprintf.h"
+#import "base/bind.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
-#include "ios/testing/earl_grey/disabled_test_macros.h"
+#import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -152,7 +152,7 @@ std::string GetLinkPageContents(const GURL& on_load_url) {
                             on_load_url.spec().c_str(), kLinkPageLinkText);
 }
 
-// Helper function that returns a text/html HttpResponse using |content|.
+// Helper function that returns a text/html HttpResponse using `content`.
 std::unique_ptr<net::test_server::HttpResponse> GetHttpResponseWithContent(
     const std::string& content) {
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
@@ -181,7 +181,7 @@ std::unique_ptr<net::test_server::HttpResponse> LoadPageWithLinkToOnLoadPage(
   return GetHttpResponseWithContent(GetLinkPageContents(on_load_page_url));
 }
 
-// Waits for a JavaScript dialog from |url| with |message| to be shown or
+// Waits for a JavaScript dialog from `url` with `message` to be shown or
 // hidden.
 void WaitForJavaScriptDialog(const GURL& url,
                              const char* message,
@@ -222,7 +222,7 @@ void WaitForJavaScriptDialog(const GURL& url,
       assertWithMatcher:visibility_matcher];
 }
 
-// Types |input| in the prompt.
+// Types `input` in the prompt.
 void TypeInPrompt(NSString* input) {
   id<GREYMatcher> text_field_matcher = grey_allOf(
       grey_kindOfClass([UITextField class]),
@@ -452,7 +452,13 @@ void TapSuppressDialogsButton() {
 // Tests to ensure crbug.com/658260 does not regress.
 // Tests that if an alert should be called when settings are displays, the alert
 // waits for the dismiss of the settings.
-- (void)testShowJavaScriptBehindSettings {
+- (void)MAYBE_testShowJavaScriptBehindSettings {
+// TODO(crbug.com/1209340): test failing on ipad device
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
+  }
+#endif
   // Load the alert test page.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);
   [ChromeEarlGrey loadURL:kURL];

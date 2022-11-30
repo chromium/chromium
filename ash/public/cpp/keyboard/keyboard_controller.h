@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -119,6 +118,10 @@ class ASH_PUBLIC_EXPORT KeyboardController {
 
   // Returns current key repeat settings, derived from the active user's prefs.
   virtual KeyRepeatSettings GetKeyRepeatSettings() = 0;
+
+  // Return true if pressing the top row of the keyboard sends F<number> keys,
+  // rather than media keys (back/forward/refresh/etc.)
+  virtual bool AreTopRowKeysFunctionKeys() = 0;
 
  protected:
   static KeyboardController* g_instance_;

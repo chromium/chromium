@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,11 @@
 class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
  public:
   RenderViewContextMenuMacCocoaBrowserTest() {}
+
+  RenderViewContextMenuMacCocoaBrowserTest(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
+  RenderViewContextMenuMacCocoaBrowserTest& operator=(
+      const RenderViewContextMenuMacCocoaBrowserTest&) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -42,9 +47,6 @@ class RenderViewContextMenuMacCocoaBrowserTest : public InProcessBrowserTest {
 
   base::scoped_nsobject<NSMutableArray> filteredItems_;
   base::scoped_nsobject<NSTextField> textField_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderViewContextMenuMacCocoaBrowserTest);
 };
 
 // Confirm that the private classes used to filter Safari's redundant Services

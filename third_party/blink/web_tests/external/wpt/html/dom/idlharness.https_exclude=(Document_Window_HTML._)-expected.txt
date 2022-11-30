@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-Found 1417 tests; 1385 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1402 tests; 1372 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
 PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: original interface mixin defined
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Partial interface HTMLAnchorElement: original interface defined
@@ -54,8 +56,6 @@ PASS Partial interface HTMLOListElement: original interface defined
 PASS Partial interface HTMLOListElement: member names are unique
 PASS Partial interface HTMLParagraphElement: original interface defined
 PASS Partial interface HTMLParagraphElement: member names are unique
-PASS Partial interface HTMLParamElement: original interface defined
-PASS Partial interface HTMLParamElement: member names are unique
 PASS Partial interface HTMLPreElement: original interface defined
 PASS Partial interface HTMLPreElement: member names are unique
 PASS Partial interface HTMLStyleElement: original interface defined
@@ -79,17 +79,15 @@ PASS Partial interface Window: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot[2]: member names are unique
 PASS Partial interface UIEvent: member names are unique
+PASS Partial interface MouseEvent: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
+PASS Partial dictionary UIEventInit: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
 PASS Document includes DocumentAndElementEventHandlers: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes DocumentOrShadowRoot: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
 PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
@@ -131,9 +129,6 @@ PASS ElementInternals includes ARIAMixin: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
@@ -142,6 +137,7 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
 PASS DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
 PASS Worker includes AbstractWorker: member names are unique
 PASS SharedWorker includes AbstractWorker: member names are unique
@@ -149,27 +145,32 @@ PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
 PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
 PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
 PASS Element includes ARIAMixin: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
 PASS SVGElement includes GlobalEventHandlers: member names are unique
 PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
 PASS SVGElement includes SVGElementInstance: member names are unique
 PASS SVGElement includes HTMLOrSVGElement: member names are unique
-PASS SVGElement includes ElementCSSInlineStyle: member names are unique
 PASS SVGGraphicsElement includes SVGTests: member names are unique
 PASS SVGSVGElement includes SVGFitToViewBox: member names are unique
 PASS SVGSVGElement includes WindowEventHandlers: member names are unique
 PASS SVGImageElement includes SVGURIReference: member names are unique
 PASS SVGScriptElement includes SVGURIReference: member names are unique
-PASS SVGAElement includes SVGURIReference: member names are unique
-FAIL SVGAElement includes HTMLHyperlinkElementUtils: member names are unique assert_true: member href is unique expected true got false
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
+PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
 PASS DocumentFragment includes NonElementParentNode: member names are unique
-PASS DocumentFragment includes ParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
 PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
 PASS RadioNodeList interface: existence and properties of interface object
 PASS RadioNodeList interface object length
 PASS RadioNodeList interface object name
@@ -430,6 +431,8 @@ PASS CanvasRenderingContext2D interface: attribute canvas
 PASS CanvasRenderingContext2D interface: operation getContextAttributes()
 PASS CanvasRenderingContext2D interface: operation save()
 PASS CanvasRenderingContext2D interface: operation restore()
+PASS CanvasRenderingContext2D interface: operation reset()
+PASS CanvasRenderingContext2D interface: operation isContextLost()
 PASS CanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS CanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -446,6 +449,7 @@ PASS CanvasRenderingContext2D interface: attribute strokeStyle
 PASS CanvasRenderingContext2D interface: attribute fillStyle
 PASS CanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS CanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS CanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS CanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS CanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS CanvasRenderingContext2D interface: attribute shadowOffsetY
@@ -476,9 +480,9 @@ PASS CanvasRenderingContext2D interface: operation measureText(DOMString)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS CanvasRenderingContext2D interface: operation createImageData(long, long)
+PASS CanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
 PASS CanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS CanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
+PASS CanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
 PASS CanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS CanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS CanvasRenderingContext2D interface: attribute lineWidth
@@ -492,6 +496,12 @@ PASS CanvasRenderingContext2D interface: attribute font
 PASS CanvasRenderingContext2D interface: attribute textAlign
 PASS CanvasRenderingContext2D interface: attribute textBaseline
 PASS CanvasRenderingContext2D interface: attribute direction
+PASS CanvasRenderingContext2D interface: attribute letterSpacing
+PASS CanvasRenderingContext2D interface: attribute fontKerning
+PASS CanvasRenderingContext2D interface: attribute fontStretch
+PASS CanvasRenderingContext2D interface: attribute fontVariantCaps
+PASS CanvasRenderingContext2D interface: attribute textRendering
+PASS CanvasRenderingContext2D interface: attribute wordSpacing
 PASS CanvasRenderingContext2D interface: operation closePath()
 PASS CanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)
@@ -499,6 +509,7 @@ PASS CanvasRenderingContext2D interface: operation quadraticCurveTo(unrestricted
 PASS CanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS CanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS CanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS CanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CanvasRenderingContext2D must be primary interface of document.createElement("canvas").getContext("2d")
@@ -507,6 +518,8 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getContextAttributes()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "save()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "restore()" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "reset()" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "isContextLost()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "scale(unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling scale(unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "rotate(unrestricted double)" with the proper type
@@ -531,6 +544,8 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling createLinearGradient(double, double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createRadialGradient(double, double, double, double, double, double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createRadialGradient(double, double, double, double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createConicGradient(double, double, double)" with the proper type
+PASS CanvasRenderingContext2D interface: calling createConicGradient(double, double, double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createPattern(CanvasImageSource, DOMString)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createPattern(CanvasImageSource, DOMString) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "shadowOffsetX" with the proper type
@@ -583,12 +598,12 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(long, long)" with the proper type
-PASS CanvasRenderingContext2D interface: calling createImageData(long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(long, long, optional ImageDataSettings)" with the proper type
+PASS CanvasRenderingContext2D interface: calling createImageData(long, long, optional ImageDataSettings) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "createImageData(ImageData)" with the proper type
 PASS CanvasRenderingContext2D interface: calling createImageData(ImageData) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getImageData(long, long, long, long)" with the proper type
-PASS CanvasRenderingContext2D interface: calling getImageData(long, long, long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "getImageData(long, long, long, long, optional ImageDataSettings)" with the proper type
+PASS CanvasRenderingContext2D interface: calling getImageData(long, long, long, long, optional ImageDataSettings) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "putImageData(ImageData, long, long)" with the proper type
 PASS CanvasRenderingContext2D interface: calling putImageData(ImageData, long, long) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "putImageData(ImageData, long, long, long, long, long, long)" with the proper type
@@ -605,6 +620,12 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textAlign" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textBaseline" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "direction" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "letterSpacing" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontKerning" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontStretch" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontVariantCaps" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textRendering" with the proper type
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "wordSpacing" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "closePath()" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "moveTo(unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling moveTo(unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
@@ -618,6 +639,8 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: calling arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)" with the proper type
 PASS CanvasRenderingContext2D interface: calling rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
+PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))" with the proper type
+PASS CanvasRenderingContext2D interface: calling roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>)) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)" with the proper type
 PASS CanvasRenderingContext2D interface: calling arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean) on document.createElement("canvas").getContext("2d") with too few arguments must throw TypeError
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)" with the proper type
@@ -663,11 +686,13 @@ PASS ImageData interface: existence and properties of interface prototype object
 PASS ImageData interface: attribute width
 PASS ImageData interface: attribute height
 PASS ImageData interface: attribute data
+PASS ImageData interface: attribute colorSpace
 PASS ImageData must be primary interface of new ImageData(10, 10)
 PASS Stringification of new ImageData(10, 10)
 PASS ImageData interface: new ImageData(10, 10) must inherit property "width" with the proper type
 PASS ImageData interface: new ImageData(10, 10) must inherit property "height" with the proper type
 FAIL ImageData interface: new ImageData(10, 10) must inherit property "data" with the proper type assert_inherits: property "data" found on object expected in prototype chain
+PASS ImageData interface: new ImageData(10, 10) must inherit property "colorSpace" with the proper type
 PASS Path2D interface: existence and properties of interface object
 PASS Path2D interface object length
 PASS Path2D interface object name
@@ -682,6 +707,7 @@ PASS Path2D interface: operation quadraticCurveTo(unrestricted double, unrestric
 PASS Path2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS Path2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS Path2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS ImageBitmapRenderingContext interface: existence and properties of interface object
@@ -703,6 +729,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
+PASS OffscreenCanvas interface: attribute oncontextlost
+PASS OffscreenCanvas interface: attribute oncontextrestored
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name
@@ -713,6 +741,8 @@ PASS OffscreenCanvasRenderingContext2D interface: operation commit()
 PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
+PASS OffscreenCanvasRenderingContext2D interface: operation reset()
+PASS OffscreenCanvasRenderingContext2D interface: operation isContextLost()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -729,6 +759,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute strokeStyle
 PASS OffscreenCanvasRenderingContext2D interface: attribute fillStyle
 PASS OffscreenCanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS OffscreenCanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetY
@@ -755,9 +786,9 @@ PASS OffscreenCanvasRenderingContext2D interface: operation measureText(DOMStrin
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long)
+PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
 PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
+PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: attribute lineWidth
@@ -771,6 +802,12 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
+PASS OffscreenCanvasRenderingContext2D interface: attribute letterSpacing
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
+PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
+PASS OffscreenCanvasRenderingContext2D interface: attribute wordSpacing
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)
@@ -778,9 +815,12 @@ PASS OffscreenCanvasRenderingContext2D interface: operation quadraticCurveTo(unr
 PASS OffscreenCanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
-PASS CustomElementRegistry interface: existence and properties of interface object
+FAIL CustomElementRegistry interface: existence and properties of interface object assert_throws_js: interface object didn't throw TypeError when called as a constructor function "function() {
+                new interface_object();
+            }" did not throw
 PASS CustomElementRegistry interface object length
 PASS CustomElementRegistry interface object name
 PASS CustomElementRegistry interface: existence and properties of interface prototype object
@@ -806,6 +846,14 @@ PASS ElementInternals interface: attribute validationMessage
 PASS ElementInternals interface: operation checkValidity()
 PASS ElementInternals interface: operation reportValidity()
 PASS ElementInternals interface: attribute labels
+PASS UserActivation interface: existence and properties of interface object
+PASS UserActivation interface object length
+PASS UserActivation interface object name
+PASS UserActivation interface: existence and properties of interface prototype object
+PASS UserActivation interface: existence and properties of interface prototype object's "constructor" property
+PASS UserActivation interface: existence and properties of interface prototype object's @@unscopables property
+PASS UserActivation interface: attribute hasBeenActive
+PASS UserActivation interface: attribute isActive
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name
@@ -975,6 +1023,7 @@ PASS Navigator interface object name
 PASS Navigator interface: existence and properties of interface prototype object
 PASS Navigator interface: existence and properties of interface prototype object's "constructor" property
 PASS Navigator interface: existence and properties of interface prototype object's @@unscopables property
+PASS Navigator interface: attribute userActivation
 PASS Navigator interface: attribute appCodeName
 PASS Navigator interface: attribute appName
 PASS Navigator interface: attribute appVersion
@@ -995,9 +1044,11 @@ PASS Navigator interface: attribute cookieEnabled
 PASS Navigator interface: attribute plugins
 PASS Navigator interface: attribute mimeTypes
 PASS Navigator interface: operation javaEnabled()
+PASS Navigator interface: attribute pdfViewerEnabled
 PASS Navigator interface: attribute hardwareConcurrency
 PASS Navigator must be primary interface of window.navigator
 PASS Stringification of window.navigator
+PASS Navigator interface: window.navigator must inherit property "userActivation" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appCodeName" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appName" with the proper type
 PASS Navigator interface: window.navigator must inherit property "appVersion" with the proper type
@@ -1020,7 +1071,49 @@ PASS Navigator interface: window.navigator must inherit property "cookieEnabled"
 PASS Navigator interface: window.navigator must inherit property "plugins" with the proper type
 PASS Navigator interface: window.navigator must inherit property "mimeTypes" with the proper type
 PASS Navigator interface: window.navigator must inherit property "javaEnabled()" with the proper type
+PASS Navigator interface: window.navigator must inherit property "pdfViewerEnabled" with the proper type
 PASS Navigator interface: window.navigator must inherit property "hardwareConcurrency" with the proper type
+PASS PluginArray interface: existence and properties of interface object
+PASS PluginArray interface object length
+PASS PluginArray interface object name
+PASS PluginArray interface: existence and properties of interface prototype object
+PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
+PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS PluginArray interface: operation refresh()
+PASS PluginArray interface: attribute length
+PASS PluginArray interface: operation item(unsigned long)
+PASS PluginArray interface: operation namedItem(DOMString)
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS MimeTypeArray interface object length
+PASS MimeTypeArray interface object name
+PASS MimeTypeArray interface: existence and properties of interface prototype object
+PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeTypeArray interface: attribute length
+PASS MimeTypeArray interface: operation item(unsigned long)
+PASS MimeTypeArray interface: operation namedItem(DOMString)
+PASS Plugin interface: existence and properties of interface object
+PASS Plugin interface object length
+PASS Plugin interface object name
+PASS Plugin interface: existence and properties of interface prototype object
+PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
+PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
+PASS Plugin interface: attribute name
+PASS Plugin interface: attribute description
+PASS Plugin interface: attribute filename
+PASS Plugin interface: attribute length
+PASS Plugin interface: operation item(unsigned long)
+PASS Plugin interface: operation namedItem(DOMString)
+PASS MimeType interface: existence and properties of interface object
+PASS MimeType interface object length
+PASS MimeType interface object name
+PASS MimeType interface: existence and properties of interface prototype object
+PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
+PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
+PASS MimeType interface: attribute type
+PASS MimeType interface: attribute description
+PASS MimeType interface: attribute suffixes
+PASS MimeType interface: attribute enabledPlugin
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -1082,75 +1175,6 @@ PASS EventSource interface: new EventSource("http://invalid") must inherit prope
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onmessage" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onerror" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "close()" with the proper type
-PASS WebSocket interface: existence and properties of interface object
-PASS WebSocket interface object length
-PASS WebSocket interface object name
-PASS WebSocket interface: existence and properties of interface prototype object
-PASS WebSocket interface: existence and properties of interface prototype object's "constructor" property
-PASS WebSocket interface: existence and properties of interface prototype object's @@unscopables property
-PASS WebSocket interface: attribute url
-PASS WebSocket interface: constant CONNECTING on interface object
-PASS WebSocket interface: constant CONNECTING on interface prototype object
-PASS WebSocket interface: constant OPEN on interface object
-PASS WebSocket interface: constant OPEN on interface prototype object
-PASS WebSocket interface: constant CLOSING on interface object
-PASS WebSocket interface: constant CLOSING on interface prototype object
-PASS WebSocket interface: constant CLOSED on interface object
-PASS WebSocket interface: constant CLOSED on interface prototype object
-PASS WebSocket interface: attribute readyState
-PASS WebSocket interface: attribute bufferedAmount
-PASS WebSocket interface: attribute onopen
-PASS WebSocket interface: attribute onerror
-PASS WebSocket interface: attribute onclose
-PASS WebSocket interface: attribute extensions
-PASS WebSocket interface: attribute protocol
-PASS WebSocket interface: operation close(optional unsigned short, optional USVString)
-PASS WebSocket interface: attribute onmessage
-PASS WebSocket interface: attribute binaryType
-PASS WebSocket interface: operation send(USVString)
-PASS WebSocket interface: operation send(Blob)
-PASS WebSocket interface: operation send(ArrayBuffer)
-PASS WebSocket interface: operation send(ArrayBufferView)
-PASS WebSocket must be primary interface of new WebSocket("wss://nonexistent.web-platform.test")
-PASS Stringification of new WebSocket("wss://nonexistent.web-platform.test")
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "url" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CONNECTING" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "OPEN" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CLOSING" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CLOSED" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "readyState" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "bufferedAmount" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onopen" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onerror" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onclose" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "extensions" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "protocol" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "close(optional unsigned short, optional USVString)" with the proper type
-PASS WebSocket interface: calling close(optional unsigned short, optional USVString) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onmessage" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "binaryType" with the proper type
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(USVString)" with the proper type
-PASS WebSocket interface: calling send(USVString) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(Blob)" with the proper type
-PASS WebSocket interface: calling send(Blob) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(ArrayBuffer)" with the proper type
-PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(ArrayBufferView)" with the proper type
-PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
-PASS CloseEvent interface: existence and properties of interface object
-PASS CloseEvent interface object length
-PASS CloseEvent interface object name
-PASS CloseEvent interface: existence and properties of interface prototype object
-PASS CloseEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS CloseEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS CloseEvent interface: attribute wasClean
-PASS CloseEvent interface: attribute code
-PASS CloseEvent interface: attribute reason
-PASS CloseEvent must be primary interface of new CloseEvent("close")
-PASS Stringification of new CloseEvent("close")
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "wasClean" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "code" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "reason" with the proper type
 PASS MessageChannel interface: existence and properties of interface object
 PASS MessageChannel interface object length
 PASS MessageChannel interface object name
@@ -1166,7 +1190,7 @@ PASS MessagePort interface: existence and properties of interface prototype obje
 PASS MessagePort interface: existence and properties of interface prototype object's "constructor" property
 PASS MessagePort interface: existence and properties of interface prototype object's @@unscopables property
 PASS MessagePort interface: operation postMessage(any, sequence<object>)
-PASS MessagePort interface: operation postMessage(any, optional PostMessageOptions)
+PASS MessagePort interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS MessagePort interface: operation start()
 PASS MessagePort interface: operation close()
 PASS MessagePort interface: attribute onmessage
@@ -1193,7 +1217,7 @@ PASS Worker interface: existence and properties of interface prototype object's 
 PASS Worker interface: existence and properties of interface prototype object's @@unscopables property
 PASS Worker interface: operation terminate()
 PASS Worker interface: operation postMessage(any, sequence<object>)
-PASS Worker interface: operation postMessage(any, optional PostMessageOptions)
+PASS Worker interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS Worker interface: attribute onmessage
 FAIL Worker interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
 PASS Worker interface: attribute onerror
@@ -1284,49 +1308,10 @@ PASS External must be primary interface of window.external
 PASS Stringification of window.external
 PASS External interface: window.external must inherit property "AddSearchProvider()" with the proper type
 PASS External interface: window.external must inherit property "IsSearchProviderInstalled()" with the proper type
-PASS PluginArray interface: existence and properties of interface object
-PASS PluginArray interface object length
-PASS PluginArray interface object name
-PASS PluginArray interface: existence and properties of interface prototype object
-PASS PluginArray interface: existence and properties of interface prototype object's "constructor" property
-PASS PluginArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS PluginArray interface: operation refresh()
-PASS PluginArray interface: attribute length
-PASS PluginArray interface: operation item(unsigned long)
-PASS PluginArray interface: operation namedItem(DOMString)
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS MimeTypeArray interface object length
-PASS MimeTypeArray interface object name
-PASS MimeTypeArray interface: existence and properties of interface prototype object
-PASS MimeTypeArray interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeTypeArray interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeTypeArray interface: attribute length
-PASS MimeTypeArray interface: operation item(unsigned long)
-PASS MimeTypeArray interface: operation namedItem(DOMString)
-PASS Plugin interface: existence and properties of interface object
-PASS Plugin interface object length
-PASS Plugin interface object name
-PASS Plugin interface: existence and properties of interface prototype object
-PASS Plugin interface: existence and properties of interface prototype object's "constructor" property
-PASS Plugin interface: existence and properties of interface prototype object's @@unscopables property
-PASS Plugin interface: attribute name
-PASS Plugin interface: attribute description
-PASS Plugin interface: attribute filename
-PASS Plugin interface: attribute length
-PASS Plugin interface: operation item(unsigned long)
-PASS Plugin interface: operation namedItem(DOMString)
-PASS MimeType interface: existence and properties of interface object
-PASS MimeType interface object length
-PASS MimeType interface object name
-PASS MimeType interface: existence and properties of interface prototype object
-PASS MimeType interface: existence and properties of interface prototype object's "constructor" property
-PASS MimeType interface: existence and properties of interface prototype object's @@unscopables property
-PASS MimeType interface: attribute type
-PASS MimeType interface: attribute description
-PASS MimeType interface: attribute suffixes
-PASS MimeType interface: attribute enabledPlugin
 PASS SVGElement interface: attribute onabort
 PASS SVGElement interface: attribute onauxclick
+PASS SVGElement interface: attribute onbeforeinput
+PASS SVGElement interface: attribute onbeforematch
 PASS SVGElement interface: attribute onblur
 PASS SVGElement interface: attribute oncancel
 PASS SVGElement interface: attribute oncanplay
@@ -1334,7 +1319,9 @@ PASS SVGElement interface: attribute oncanplaythrough
 PASS SVGElement interface: attribute onchange
 PASS SVGElement interface: attribute onclick
 PASS SVGElement interface: attribute onclose
+PASS SVGElement interface: attribute oncontextlost
 PASS SVGElement interface: attribute oncontextmenu
+PASS SVGElement interface: attribute oncontextrestored
 PASS SVGElement interface: attribute oncuechange
 PASS SVGElement interface: attribute ondblclick
 PASS SVGElement interface: attribute ondrag
@@ -1374,11 +1361,11 @@ PASS SVGElement interface: attribute onratechange
 PASS SVGElement interface: attribute onreset
 PASS SVGElement interface: attribute onresize
 PASS SVGElement interface: attribute onscroll
-FAIL SVGElement interface: attribute onsecuritypolicyviolation assert_true: The prototype object must have a property "onsecuritypolicyviolation" expected true got false
+PASS SVGElement interface: attribute onsecuritypolicyviolation
 PASS SVGElement interface: attribute onseeked
 PASS SVGElement interface: attribute onseeking
 PASS SVGElement interface: attribute onselect
-FAIL SVGElement interface: attribute onslotchange assert_true: The prototype object must have a property "onslotchange" expected true got false
+PASS SVGElement interface: attribute onslotchange
 PASS SVGElement interface: attribute onstalled
 PASS SVGElement interface: attribute onsubmit
 PASS SVGElement interface: attribute onsuspend

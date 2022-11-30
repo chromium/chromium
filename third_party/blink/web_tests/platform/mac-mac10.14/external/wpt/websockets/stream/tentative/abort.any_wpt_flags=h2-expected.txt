@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS abort before constructing should prevent connection
+PASS abort during handshake should work
+PASS abort after connect should do nothing
+Harness: the test ran to completion.
+

@@ -45,7 +45,8 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -88,7 +89,7 @@ SVGUseElement::SVGUseElement(Document& document)
   AddToPropertyMap(width_);
   AddToPropertyMap(height_);
 
-  AttachShadowRootInternal(ShadowRootType::kClosed);
+  CreateUserAgentShadowRoot();
 }
 
 SVGUseElement::~SVGUseElement() = default;
@@ -206,16 +207,10 @@ void SVGUseElement::UpdateTargetReference() {
     return;
   }
 
-  auto* context_document = &GetDocument();
-  if (GetDocument().ImportsController()) {
-    // For @imports from HTML imported Documents, we use the
-    // context document for getting origin and ResourceFetcher to use the
-    // main Document's origin, while using the element document for
-    // CompleteURL() to use imported Documents' base URLs.
-    context_document =
-        To<LocalDOMWindow>(GetDocument().GetExecutionContext())->document();
-  }
+  if (element_url_.ProtocolIsData())
+    UseCounter::Count(GetDocument(), WebFeature::kDataUrlInSvgUse);
 
+  auto* context_document = &GetDocument();
   ExecutionContext* execution_context = context_document->GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = localName();
@@ -373,41 +368,70 @@ String SVGUseElement::title() const {
   return String();
 }
 
-static void AssociateCorrespondingElements(SVGElement& target_root,
-                                           SVGElement& instance_root) {
-  auto target_range =
-      Traversal<SVGElement>::InclusiveDescendantsOf(target_root);
-  auto target_iterator = target_range.begin();
-  for (SVGElement& instance :
-       Traversal<SVGElement>::InclusiveDescendantsOf(instance_root)) {
-    DCHECK(!instance.CorrespondingElement());
-    instance.SetCorrespondingElement(&*target_iterator);
-    ++target_iterator;
+static void PostProcessInstanceElement(SVGElement& target,
+                                       SVGElement& instance) {
+  // Transfer non-markup event listeners.
+  if (EventTargetData* data = target.GetEventTargetData()) {
+    data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
+        &instance);
   }
-  DCHECK(!(target_iterator != target_range.end()));
+  // Set up the corresponding element association.
+  instance.SetCorrespondingElement(&target);
+  // Setup the mapping from the target element back to the instance.
+  target.AddInstance(&instance);
 }
 
-// We don't walk the target tree element-by-element, and clone each element,
-// but instead use cloneNode(deep=true). This is an optimization for the common
-// case where <use> doesn't contain disallowed elements (ie. <foreignObject>).
-// Though if there are disallowed elements in the subtree, we have to remove
-// them.  For instance: <use> on <g> containing <foreignObject> (indirect
-// case).
-static inline void RemoveDisallowedElementsFromSubtree(SVGElement& subtree) {
-  DCHECK(!subtree.isConnected());
-  Element* element = ElementTraversal::FirstWithin(subtree);
-  while (element) {
-    if (IsDisallowedElement(*element)) {
-      Element* next =
-          ElementTraversal::NextSkippingChildren(*element, &subtree);
-      // The subtree is not in document so this won't generate events that could
-      // mutate the tree.
-      element->parentNode()->RemoveChild(element);
-      element = next;
+static void PostProcessInstanceTree(SVGElement& target_root,
+                                    SVGElement& instance_root) {
+  DCHECK(!instance_root.isConnected());
+  // We checked this before creating the cloned subtree.
+  DCHECK(!IsDisallowedElement(instance_root));
+  // Handle the root(s). (Always allowed and SVGElements.)
+  PostProcessInstanceElement(target_root, instance_root);
+
+  // The subtrees defined by |target_root| and |instance_root| should be
+  // isomorphic at this point, so we can walk both trees simultaneously to be
+  // able to create the corresponding element mapping.
+  //
+  // We don't walk the target tree element-by-element, and clone each element,
+  // but instead use cloneNode(deep=true). This is an optimization for the
+  // common case where <use> doesn't contain disallowed elements
+  // (ie. <foreignObject>).  Though if there are disallowed elements in the
+  // subtree, we have to remove them. For instance: <use> on <g> containing
+  // <foreignObject> (indirect case).
+  // We do that at the same time as the association back to the corresponding
+  // element is performed to avoid having instance elements in a half-way
+  // inconsistent state.
+  Element* target_element = ElementTraversal::FirstWithin(target_root);
+  Element* instance_element = ElementTraversal::FirstWithin(instance_root);
+  while (target_element) {
+    DCHECK(instance_element);
+    DCHECK(!IsA<SVGElement>(*instance_element) ||
+           !To<SVGElement>(*instance_element).CorrespondingElement());
+    if (IsDisallowedElement(*target_element)) {
+      Element* instance_next = ElementTraversal::NextSkippingChildren(
+          *instance_element, &instance_root);
+      // The subtree is not in the document so this won't generate events that
+      // could mutate the tree.
+      instance_element->parentNode()->RemoveChild(instance_element);
+
+      // Since the target subtree isn't mutated, it can just be traversed in
+      // the normal way (without saving next traversal target).
+      target_element =
+          ElementTraversal::NextSkippingChildren(*target_element, &target_root);
+      instance_element = instance_next;
     } else {
-      element = ElementTraversal::Next(*element, &subtree);
+      if (auto* svg_instance_element =
+              DynamicTo<SVGElement>(instance_element)) {
+        PostProcessInstanceElement(To<SVGElement>(*target_element),
+                                   *svg_instance_element);
+      }
+      target_element = ElementTraversal::Next(*target_element, &target_root);
+      instance_element =
+          ElementTraversal::Next(*instance_element, &instance_root);
     }
   }
+  DCHECK(!instance_element);
 }
 
 static void MoveChildrenToReplacementElement(ContainerNode& source_root,
@@ -420,7 +444,8 @@ static void MoveChildrenToReplacementElement(ContainerNode& source_root,
 }
 
 SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
-  SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren());
+  SVGElement* instance_root =
+      &To<SVGElement>(target_root.CloneWithChildren(CloneChildrenFlag::kClone));
   if (IsA<SVGSymbolElement>(target_root)) {
     // Spec: The referenced 'symbol' and its contents are deep-cloned into
     // the generated tree, with the exception that the 'symbol' is replaced
@@ -440,8 +465,6 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
     instance_root = svg_element;
   }
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
-  AssociateCorrespondingElements(target_root, *instance_root);
-  RemoveDisallowedElementsFromSubtree(*instance_root);
   return instance_root;
 }
 
@@ -453,28 +476,21 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   if (IsDisallowedElement(target) || HasCycleUseReferencing(*this, target))
     return;
 
-  // Set up root SVG element in shadow tree.
-  // Clone the target subtree into the shadow tree, not handling <use> and
-  // <symbol> yet.
-  UseShadowRoot().AppendChild(CreateInstanceTree(target));
+  // Create the initial clone of the |target| subtree. Handles transformation
+  // of <symbol> to <svg>.
+  SVGElement* instance_root = CreateInstanceTree(target);
+
+  // Remove disallowed elements, clone event handlers and set up the
+  // association with the corresponding/target element.
+  PostProcessInstanceTree(target, *instance_root);
+
+  // Finally attach to the tree.
+  UseShadowRoot().AppendChild(instance_root);
 
   // Assure shadow tree building was successful.
   DCHECK(InstanceRoot());
   DCHECK_EQ(InstanceRoot()->GeneratingUseElement(), this);
   DCHECK_EQ(InstanceRoot()->CorrespondingElement(), &target);
-
-  for (SVGElement& instance :
-       Traversal<SVGElement>::DescendantsOf(UseShadowRoot())) {
-    SVGElement* corresponding_element = instance.CorrespondingElement();
-    // Transfer non-markup event listeners.
-    if (EventTargetData* data = corresponding_element->GetEventTargetData()) {
-      data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
-          &instance);
-    }
-    // Setup the mapping from the corresponding (original) element back to the
-    // instance.
-    corresponding_element->MapInstanceToElement(&instance);
-  }
 }
 
 void SVGUseElement::DetachShadowTree() {
@@ -485,7 +501,7 @@ void SVGUseElement::DetachShadowTree() {
 
 LayoutObject* SVGUseElement::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout) {
-  return new LayoutSVGTransformableContainer(this);
+  return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
 }
 
 static bool IsDirectReference(const SVGElement& element) {
@@ -569,13 +585,13 @@ bool SVGUseElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
-FloatRect SVGUseElement::GetBBox() {
+gfx::RectF SVGUseElement::GetBBox() {
   DCHECK(GetLayoutObject());
   auto& transformable_container =
       To<LayoutSVGTransformableContainer>(*GetLayoutObject());
   // Don't apply the additional translation if the oBB is invalid.
   if (!transformable_container.IsObjectBoundingBoxValid())
-    return FloatRect();
+    return gfx::RectF();
 
   // TODO(fs): Preferably this would just use objectBoundingBox() (and hence
   // don't need to override SVGGraphicsElement::getBBox at all) and be
@@ -583,8 +599,8 @@ FloatRect SVGUseElement::GetBBox() {
   // additional quirks. The problem stems from including the additional
   // translation directly on the LayoutObject corresponding to the
   // SVGUseElement.
-  FloatRect bbox = transformable_container.ObjectBoundingBox();
-  bbox.Move(transformable_container.AdditionalTranslation());
+  gfx::RectF bbox = transformable_container.ObjectBoundingBox();
+  bbox.Offset(transformable_container.AdditionalTranslation());
   return bbox;
 }
 
@@ -611,8 +627,9 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
 
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::Bind(&SVGUseElement::DispatchPendingEvent,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&SVGUseElement::DispatchPendingEvent,
+                                 WrapPersistent(this)));
   }
 }
 

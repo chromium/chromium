@@ -1,0 +1,24 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// We expect `MLModel` serves as an umbrella interface and the Model Loader API
+// will be the first one using it. It will also be a good counterpart of the
+// `MLGraph` used in the WebNN API.
+//
+// Explainer of Model Loader API:
+//   https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+// Spec of the WebNN API:
+//   https://webmachinelearning.github.io/webnn/
+
+[
+  SecureContext,
+  RuntimeEnabled=MachineLearningModelLoader
+] interface MLModel {
+  [CallWith=ScriptState, RaisesException] Promise<record<DOMString, MLTensor>>
+      compute(record<DOMString, MLTensor> inputs);
+
+  [CallWith=ScriptState] sequence<MLTensorInfo> inputs();
+
+  [CallWith=ScriptState] sequence<MLTensorInfo> outputs();
+};

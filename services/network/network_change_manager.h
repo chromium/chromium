@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define SERVICES_NETWORK_NETWORK_CHANGE_MANAGER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -33,6 +31,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
   explicit NetworkChangeManager(
       std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier);
 
+  NetworkChangeManager(const NetworkChangeManager&) = delete;
+  NetworkChangeManager& operator=(const NetworkChangeManager&) = delete;
+
   ~NetworkChangeManager() override;
 
   // Binds a NetworkChangeManager receiver to this object. Mojo messages
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
       mojo::PendingRemote<mojom::NetworkChangeManagerClient> client_remote)
       override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   void OnNetworkChanged(
       bool dns_changed,
       bool ip_address_changed,
@@ -68,8 +69,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
   mojo::ReceiverSet<mojom::NetworkChangeManager> receivers_;
   std::vector<mojo::Remote<mojom::NetworkChangeManagerClient>> clients_;
   mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeManager);
 };
 
 }  // namespace network

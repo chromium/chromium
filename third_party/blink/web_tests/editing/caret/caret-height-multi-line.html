@@ -33,7 +33,7 @@ test(function () {
   sel.collapse(line2, 0);
   let caretHeight2 = internals.absoluteCaretBounds().height;
 
-  assert_equals(caretHeight1, caretHeight2);
+  assert_approx_equals(caretHeight1, caretHeight2, 1);
 }, 'The caret height should be the same in every line');
 
 test(function () {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "base/time/clock.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
@@ -34,10 +33,6 @@ const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
 }
 
 std::string ComposeOwnerName(PolicyInvalidationScope scope) {
-  if (!base::FeatureList::IsEnabled(features::kInvalidatorUniqueOwnerName)) {
-    return "RemoteCommands";
-  }
-
   switch (scope) {
     case PolicyInvalidationScope::kUser:
       return "RemoteCommands.User";

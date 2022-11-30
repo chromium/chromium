@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/common/constants.h"
@@ -32,14 +31,15 @@ const char* const kValidSchemes[] = {
 // static
 bool FrameNavigationState::allow_extension_scheme_ = false;
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameNavigationState)
+DOCUMENT_USER_DATA_KEY_IMPL(FrameNavigationState);
 
-FrameNavigationState::FrameNavigationState(content::RenderFrameHost*) {}
+FrameNavigationState::FrameNavigationState(content::RenderFrameHost* rfh)
+    : content::DocumentUserData<FrameNavigationState>(rfh) {}
 FrameNavigationState::~FrameNavigationState() = default;
 
 // static
 bool FrameNavigationState::IsValidUrl(const GURL& url) {
-  for (unsigned i = 0; i < base::size(kValidSchemes); ++i) {
+  for (unsigned i = 0; i < std::size(kValidSchemes); ++i) {
     if (url.scheme() == kValidSchemes[i])
       return true;
   }
@@ -53,12 +53,14 @@ bool FrameNavigationState::CanSendEvents() const {
   return !error_occurred_ && IsValidUrl(url_);
 }
 
-void FrameNavigationState::StartTrackingDocumentLoad(const GURL& url,
-                                                     bool is_same_document,
-                                                     bool is_error_page) {
+void FrameNavigationState::StartTrackingDocumentLoad(
+    const GURL& url,
+    bool is_same_document,
+    bool is_from_back_forward_cache,
+    bool is_error_page) {
   error_occurred_ = is_error_page;
   url_ = url;
-  if (!is_same_document) {
+  if (!is_same_document && !is_from_back_forward_cache) {
     is_loading_ = true;
     is_parsing_ = true;
   }

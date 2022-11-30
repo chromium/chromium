@@ -1,24 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 
-#include "base/i18n/rtl.h"
-#include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
+#import "base/i18n/rtl.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/components/ui_util/dynamic_type_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/ui_util/dynamic_type_util.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,14 +31,17 @@ namespace {
 // Width of search field.
 const CGFloat kSearchFieldLarge = 432;
 const CGFloat kSearchFieldSmall = 343;
+const CGFloat kSearchFieldSmallMin = 304;
 const CGFloat kSearchFieldMinMargin = 8;
+
+const CGFloat kTopSpacingMaterial = 24;
 
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 48;
 const CGFloat kShrunkDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
-// and added to |kDoodleTopMarginOther| on non Regular x Regular form factors.
+// and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
 
 // Top margin for the search field
@@ -47,8 +52,6 @@ const CGFloat kShrunkLogoSearchFieldTopMargin = 22;
 const CGFloat kNTPSearchFieldBottomPadding = 18;
 const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
 
-const CGFloat kTopSpacingMaterial = 24;
-
 // Height for the logo and doodle frame.
 const CGFloat kGoogleSearchDoodleHeight = 120;
 
@@ -58,27 +61,28 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 
 // Height for the shrunk logo frame.
 // TODO(crbug.com/1170491): clean up post-launch.
-const CGFloat kGoogleSearchLogoShrunkHeight = 34;
+const CGFloat kGoogleSearchLogoShrunkHeight = 36;
 
-// Height for the doodle frame when Google is not the default search engine.
-const CGFloat kNonGoogleSearchDoodleHeight = 60;
+// The size of the symbol image.
+const CGFloat kSymbolContentSuggestionsPointSize = 18;
 }
 
 namespace content_suggestions {
 
-const int kSearchFieldBackgroundColor = 0xF1F3F4;
 const CGFloat kHintTextScale = 0.15;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
-CGFloat doodleHeight(BOOL logoIsShowing,
-                     BOOL doodleIsShowing,
-                     UITraitCollection* traitCollection) {
-  if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing) {
-    return kNonGoogleSearchDoodleHeight;
+CGFloat DoodleHeight(BOOL logo_is_showing,
+                     BOOL doodle_is_showing,
+                     UITraitCollection* trait_collection) {
+  // For users with non-Google default search engine, there is no doodle.
+  if (!IsRegularXRegularSizeClass(trait_collection) && !logo_is_showing) {
+    return 0;
   }
 
-  if (ShouldShrinkLogoForStartSurface() && logoIsShowing) {
-    if (doodleIsShowing || IsIPadIdiom()) {
+  if (ShouldShrinkLogoForStartSurface() && logo_is_showing) {
+    if (doodle_is_showing ||
+        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return kGoogleSearchDoodleShrunkHeight;
     } else {
       return kGoogleSearchLogoShrunkHeight;
@@ -88,116 +92,147 @@ CGFloat doodleHeight(BOOL logoIsShowing,
   return kGoogleSearchDoodleHeight;
 }
 
-CGFloat doodleTopMargin(BOOL toolbarPresent,
-                        CGFloat topInset,
-                        UITraitCollection* traitCollection) {
-  if (IsRegularXRegularSizeClass(traitCollection))
+CGFloat DoodleTopMargin(CGFloat top_inset,
+                        UITraitCollection* trait_collection) {
+  if (IsRegularXRegularSizeClass(trait_collection))
     return kDoodleTopMarginRegularXRegular;
-  if (IsCompactHeight(traitCollection))
-    return topInset;
-  CGFloat topMargin =
-      topInset +
+  if (IsCompactHeight(trait_collection) && !ShouldShrinkLogoForStartSurface())
+    return top_inset;
+  CGFloat top_margin =
+      top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
-  if (ShouldShrinkLogoForStartSurface()) {
-    topMargin += kShrunkDoodleTopMarginOther;
+  if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(trait_collection)) {
+    top_margin += kShrunkDoodleTopMarginOther;
   } else {
-    topMargin += kDoodleTopMarginOther;
+    top_margin += kDoodleTopMarginOther;
   }
-  return topMargin;
+  return top_margin;
 }
 
-CGFloat searchFieldTopMargin() {
+CGFloat SearchFieldTopMargin() {
   return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
                                            : kSearchFieldTopMargin;
 }
 
-CGFloat searchFieldWidth(CGFloat superviewWidth,
-                         UITraitCollection* traitCollection) {
-  if (!IsCompactWidth(traitCollection) && !IsCompactHeight(traitCollection))
+CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
+  if (!IsCompactWidth(trait_collection) && !IsCompactHeight(trait_collection))
     return kSearchFieldLarge;
 
   // Special case for narrow sizes.
-  return MIN(kSearchFieldSmall, superviewWidth - kSearchFieldMinMargin * 2);
+  return std::max(
+      kSearchFieldSmallMin,
+      std::min(kSearchFieldSmall, width - kSearchFieldMinMargin * 2));
 }
 
-CGFloat heightForLogoHeader(BOOL logoIsShowing,
-                            BOOL doodleIsShowing,
-                            BOOL promoCanShow,
-                            BOOL toolbarPresent,
-                            CGFloat topInset,
-                            UITraitCollection* traitCollection) {
-  CGFloat bottomPadding = ShouldShowReturnToMostRecentTabForStartSurface()
-                              ? kNTPShrunkLogoSearchFieldBottomPadding
-                              : kNTPSearchFieldBottomPadding;
-  CGFloat headerHeight =
-      doodleTopMargin(toolbarPresent, topInset, traitCollection) +
-      doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
-      searchFieldTopMargin() +
+CGFloat HeightForLogoHeader(BOOL logo_is_showing,
+                            BOOL doodle_is_showing,
+                            CGFloat top_inset,
+                            UITraitCollection* trait_collection) {
+  CGFloat header_height =
+      DoodleTopMargin(top_inset, trait_collection) +
+      DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
+      SearchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
-      bottomPadding;
-  if (!IsRegularXRegularSizeClass(traitCollection)) {
-    return headerHeight;
+      HeaderBottomPadding();
+  if (!IsRegularXRegularSizeClass(trait_collection)) {
+    return header_height;
   }
-  if (!logoIsShowing) {
+  if (!logo_is_showing) {
     // Returns sufficient vertical space for the Identity Disc to be
     // displayed.
     return ntp_home::kIdentityAvatarDimension +
            2 * ntp_home::kIdentityAvatarMargin;
   }
-  if (!promoCanShow) {
-    headerHeight += kTopSpacingMaterial;
-  }
 
-  return headerHeight;
+  header_height += kTopSpacingMaterial;
+
+  return header_height;
 }
 
-void configureSearchHintLabel(UILabel* searchHintLabel,
-                              UIView* searchTapTarget) {
-  [searchHintLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [searchTapTarget addSubview:searchHintLabel];
+CGFloat HeaderBottomPadding() {
+  return ShouldShowReturnToMostRecentTabForStartSurface()
+             ? kNTPShrunkLogoSearchFieldBottomPadding
+             : kNTPSearchFieldBottomPadding;
+}
 
-  [searchHintLabel setText:l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)];
+void ConfigureSearchHintLabel(UILabel* search_hint_label,
+                              UIView* search_tab_target) {
+  [search_hint_label setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [search_tab_target addSubview:search_hint_label];
+
+  [search_hint_label setText:l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)];
   if (base::i18n::IsRTL()) {
-    [searchHintLabel setTextAlignment:NSTextAlignmentRight];
+    [search_hint_label setTextAlignment:NSTextAlignmentRight];
   }
-  searchHintLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  searchHintLabel.adjustsFontForContentSizeCategory = YES;
-  searchHintLabel.textAlignment = NSTextAlignmentCenter;
+  search_hint_label.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  search_hint_label.adjustsFontForContentSizeCategory = YES;
+  search_hint_label.textAlignment = NSTextAlignmentCenter;
 }
 
-void configureVoiceSearchButton(UIButton* voiceSearchButton,
-                                UIView* searchTapTarget) {
-  [voiceSearchButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [searchTapTarget addSubview:voiceSearchButton];
+void ConfigureVoiceSearchButton(UIButton* voice_search_button,
+                                UIView* search_tab_target) {
+  [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [search_tab_target addSubview:voice_search_button];
 
-  [voiceSearchButton setAdjustsImageWhenHighlighted:NO];
+  [voice_search_button setAdjustsImageWhenHighlighted:NO];
 
-  UIImage* micImage = [[UIImage imageNamed:@"location_bar_voice"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  [voiceSearchButton setImage:micImage forState:UIControlStateNormal];
-  voiceSearchButton.tintColor = [UIColor colorNamed:kGrey500Color];
-  [voiceSearchButton setAccessibilityLabel:l10n_util::GetNSString(
-                                               IDS_IOS_ACCNAME_VOICE_SEARCH)];
-  [voiceSearchButton setAccessibilityIdentifier:@"Voice Search"];
+  UIImage* mic_image =
+      UseSymbols() ? DefaultSymbolWithPointSize(
+                         kMicrophoneSymbol, kSymbolContentSuggestionsPointSize)
+                   : [UIImage imageNamed:@"location_bar_voice"];
+  mic_image =
+      [mic_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  if (@available(iOS 13.4, *)) {
-      voiceSearchButton.pointerInteractionEnabled = YES;
-      // Make the pointer shape fit the location bar's semi-circle end shape.
-      voiceSearchButton.pointerStyleProvider =
-          CreateLiftEffectCirclePointerStyleProvider();
-  }
+  [voice_search_button setImage:mic_image forState:UIControlStateNormal];
+  voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
+                                                 IDS_IOS_ACCNAME_VOICE_SEARCH)];
+  [voice_search_button setAccessibilityIdentifier:@"Voice Search"];
+
+  voice_search_button.pointerInteractionEnabled = YES;
+  // Make the pointer shape fit the location bar's semi-circle end shape.
+  voice_search_button.pointerStyleProvider =
+      CreateLiftEffectCirclePointerStyleProvider();
 }
 
-UIView* nearestAncestor(UIView* view, Class aClass) {
+void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
+  lens_button.translatesAutoresizingMaskIntoConstraints = NO;
+  [search_tap_target addSubview:lens_button];
+
+  if (@available(iOS 16, *)) {
+  } else {
+    // Set adjustsImageWhenHighlighted on ios 15 and lower.
+    lens_button.adjustsImageWhenHighlighted = NO;
+  }
+
+  UIImage* camera_image =
+      UseSymbols() ? CustomSymbolWithPointSize(
+                         kCameraLensSymbol, kSymbolContentSuggestionsPointSize)
+                   : [UIImage imageNamed:@"location_bar_camera_lens"];
+  camera_image =
+      [camera_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  [lens_button setImage:camera_image forState:UIControlStateNormal];
+  lens_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
+  lens_button.accessibilityIdentifier = @"Lens";
+
+  lens_button.pointerInteractionEnabled = YES;
+  // Make the pointer shape fit the location bar's semi-circle end shape.
+  lens_button.pointerStyleProvider =
+      CreateLiftEffectCirclePointerStyleProvider();
+}
+
+UIView* NearestAncestor(UIView* view, Class of_class) {
   if (!view) {
     return nil;
   }
-  if ([view isKindOfClass:aClass]) {
+  if ([view isKindOfClass:of_class]) {
     return view;
   }
-  return nearestAncestor([view superview], aClass);
+  return NearestAncestor([view superview], of_class);
 }
 
 }  // namespace content_suggestions

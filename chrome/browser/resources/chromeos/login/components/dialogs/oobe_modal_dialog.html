@@ -1,0 +1,93 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
+
+<link rel="import" href="../behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../buttons/oobe_text_button.html">
+<link rel="import" href="../common_styles/common_styles.html">
+
+<!--
+OOBE Modal Dialog
+
+Implements the 'OOBE Modal Dialog' according to MD specs.
+
+The dialog provides two properties that can be set directly from HTML.
+  - titleKey - ID of the localized string to be used for the title.
+  - contentKey - ID of the localized string to be used for the content.
+
+  Alternatively, one can set their own title and content into the 'title'
+  and 'content' slots.
+
+  Buttons are optional and go into the 'buttons' slot. If none are specified,
+  a default button with the text 'Close' will be shown. Users might want to
+  trigger some action on their side by using 'on-close=myMethod'.
+-->
+<dom-module id="oobe-modal-dialog">
+  <template>
+    <style include="oobe-common-styles">
+      :host {
+        --cr-dialog-title-slot-padding-bottom:
+            var(--oobe-modal-dialog-title-slot-padding-bottom, 8px);
+        --cr-dialog-width: var(--oobe-modal-dialog-width, 552px);
+        --cr-primary-text-color: var(--oobe-header-text-color);
+        --cr-secondary-text-color: var(--oobe-text-color);
+        --cr-dialog-top-container-min-height : 0;
+        flex: 1 1 auto;
+      }
+
+      #modalDialogTitle {
+        @apply --oobe-modal-dialog-header-font;
+        margin: 0;
+        user-select: none;
+      }
+
+      #contentContainer {
+        height: var(--oobe-modal-dialog-content-height);
+        @apply --oobe-default-font;
+        padding-bottom:
+            var(--oobe-modal-dialog-content-slot-padding-bottom, 12px);
+        padding-inline-end:
+            var(--oobe-modal-dialog-content-slot-padding-end, 20px);
+        padding-inline-start:
+            var(--oobe-modal-dialog-content-slot-padding-start, 20px);
+      }
+    </style>
+    <cr-dialog id="modalDialog" on-close="onClose_">
+      <!-- Title -->
+      <div id="modalDialogTitle" slot="title" hidden="[[shouldHideTitleRow]]">
+        <slot name="title">
+          <template is="dom-if" if="[[titleKey]]">
+            [[i18nDynamic(locale, titleKey)]]
+          </template>
+        </slot>
+      </div>
+      <!-- Content to be shown -->
+      <div id="contentContainer" slot="body"
+          class="flex-grow layout vertical not-resizable">
+        <slot name="content">
+          <template is="dom-if" if="[[contentKey]]">
+            [[i18nDynamic(locale, contentKey)]]
+          </template>
+        </slot>
+      </div>
+      <!-- Close Button -->
+      <div id="buttonContainer" slot="button-container"
+          hidden="[[shouldHideCloseButton]]"
+          class="layout horizontal">
+        <slot name="buttons">
+          <oobe-text-button inverse id="closeButton" on-click="hideDialog"
+              text-key="oobeModalDialogClose">
+          </oobe-text-button>
+        </slot>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="oobe_modal_dialog.js"></script>
+</dom-module>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 namespace ash {
 
-// Screen state as communicated by D-Bus signals from powerd about backlight
-// brightness changes.
-enum class ScreenState {
+// Screen backlight state as communicated by D-Bus signals from powerd about
+// backlight brightness changes.
+enum class ScreenBacklightState {
   // The screen is on.
   ON,
   // The screen is off.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_fifo.h"
@@ -24,12 +23,16 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                               public media::AudioConverter::InputCallback {
  public:
   AudioTrackOpusEncoder(OnEncodedAudioCB on_encoded_audio_cb,
-                        int32_t bits_per_second,
+                        uint32_t bits_per_second,
                         bool vbr_enabled = true);
+
+  AudioTrackOpusEncoder(const AudioTrackOpusEncoder&) = delete;
+  AudioTrackOpusEncoder& operator=(const AudioTrackOpusEncoder&) = delete;
 
   void OnSetFormat(const media::AudioParameters& params) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
                    base::TimeTicks capture_time) override;
+  void Shutdown() override {}
 
  private:
   ~AudioTrackOpusEncoder() override;
@@ -43,7 +46,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                       uint32_t frames_delayed) override;
 
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
-  const int32_t bits_per_second_;
+  const uint32_t bits_per_second_;
 
   // Opus operates in VBR or constrained VBR modes even when a fixed bitrate
   // is specified, unless 'hard' CBR is explicitly enabled by disabling VBR
@@ -66,8 +69,6 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<float[]> buffer_;
 
   OpusEncoder* opus_encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackOpusEncoder);
 };
 
 }  // namespace blink

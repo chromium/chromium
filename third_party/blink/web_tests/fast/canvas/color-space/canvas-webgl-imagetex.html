@@ -34,9 +34,9 @@ function render(gl, imageData) {
   gl.bindTexture(gl.TEXTURE_2D, tex);
   {
     // TODO(yiyix): Add test for imagedata with storageFormat uint16.
-    if (imageData.getSettings().storageFormat == 'uint8') {
+    if (imageData.storageFormat == 'uint8') {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 64, 0, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-    } else if (imageData.getSettings().storageFormat == 'float32') {
+    } else if (imageData.storageFormat == 'float32') {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, 64, 64, 0, gl.RGBA, gl.FLOAT, imageData);
     }
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

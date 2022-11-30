@@ -1,28 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-#include "base/ios/ios_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "build/build_config.h"
+#import "build/build_config.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,6 +65,7 @@ id<GREYMatcher> AddBookmarkButton() {
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [ChromeEarlGrey clearBookmarks];
+  [BookmarkEarlGrey clearBookmarksPositionCache];
 }
 
 // Tear down called once per test.
@@ -119,14 +119,6 @@ id<GREYMatcher> AddBookmarkButton() {
                                                      newFolderEnabled:YES];
 }
 
-// TODO(crbug.com/781445): Re-enable this test on 32-bit.
-#if defined(ARCH_CPU_64_BITS)
-#define MAYBE_testSwipeToDeleteDisabledInEditMode \
-  testSwipeToDeleteDisabledInEditMode
-#else
-#define MAYBE_testSwipeToDeleteDisabledInEditMode \
-  FLAKY_testSwipeToDeleteDisabledInEditMode
-#endif
 - (void)testSwipeToDeleteDisabledInEditMode {
   // TODO(crbug.com/851227): On non Compact Width  the bookmark cell is being
   // deleted by grey_swipeFastInDirection.
@@ -215,11 +207,6 @@ id<GREYMatcher> AddBookmarkButton() {
 
 // Verify Edit Text functionality on single URL selection.
 - (void)testEditTextOnSingleURL {
-  // TODO(crbug.com/1049972): Re-enable on iOS 12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"EG1 Fails on iOS 12.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -344,7 +331,9 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Select URL.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"French URL"),
+                                          grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Tap cancel after modifying the url.
@@ -389,12 +378,7 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Verify general pasteboard has the URL copied.
-  ConditionBlock condition = ^{
-    return !![[UIPasteboard generalPasteboard].string
-        containsString:@"www.a.fr"];
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(10, condition),
-             @"Waiting for URL to be copied to pasteboard.");
+  [ChromeEarlGrey verifyStringCopied:@"www.a.fr"];
 
   // Verify edit mode is closed (context bar back to default state).
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
@@ -447,8 +431,7 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All functionality on multiple url selection.
-// TODO(crbug.com/816699): Re-enable this test on simulators.
-- (void)FLAKY_testContextMenuForMultipleURLOpenAll {
+- (void)testContextMenuForMultipleURLOpenAll {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -490,8 +473,7 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Verify the Open All in Incognito functionality on multiple url selection.
-// TODO(crbug.com/816699): Re-enable this test on simulators.
-- (void)FLAKY_testContextMenuForMultipleURLOpenAllInIncognito {
+- (void)testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -565,11 +547,9 @@ id<GREYMatcher> AddBookmarkButton() {
 
   // Open a bookmark in an incognito tab from a normal session (through a long
   // press).
-  BOOL newMenusEnabled = [ChromeEarlGrey isNativeContextMenusEnabled];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
       performAction:grey_longPress()];
-  [[EarlGrey
-      selectElementWithMatcher:OpenLinkInIncognitoButton(newMenusEnabled)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
 
   // Verify there is 1 incognito tab created and no new normal tab created.
@@ -611,8 +591,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // long press).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Second URL")]
       performAction:grey_longPress()];
-  [[EarlGrey
-      selectElementWithMatcher:OpenLinkInIncognitoButton(newMenusEnabled)]
+  [[EarlGrey selectElementWithMatcher:OpenLinkInIncognitoButton()]
       performAction:grey_tap()];
 
   // Verify a new incognito tab is created.
@@ -1050,13 +1029,6 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 - (void)testSwipeDownToDismissFromPushedVC {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
-
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -1136,6 +1108,11 @@ id<GREYMatcher> AddBookmarkButton() {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
+  // TODO(crbug.com/1285974).
+  if ([ChromeEarlGrey isNewOverflowMenuEnabled])
+    EARL_GREY_TEST_DISABLED(
+        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
+
   GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);
 
   std::map<GURL, std::string> responses;
@@ -1147,16 +1124,16 @@ id<GREYMatcher> AddBookmarkButton() {
 
   // Open bookmark panel in a second window
   [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
 
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openBookmarksInWindowWithNumber:1];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   // Load url in first window and bookmark it.
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [ChromeEarlGrey loadURL:URL1 inWindowWithNumber:0];
-  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:0];
   [ChromeEarlGreyUI tapToolsMenuButton:AddBookmarkButton()];
 
   // Assert it appeared in second window's list.
@@ -1166,8 +1143,7 @@ id<GREYMatcher> AddBookmarkButton() {
       assertWithMatcher:grey_notNil()];
 
   // Open bookmark panel in first window also.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
-  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openBookmarksInWindowWithNumber:0];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(

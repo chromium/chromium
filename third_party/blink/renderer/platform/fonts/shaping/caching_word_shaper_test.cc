@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
-class CachingWordShaperTest : public testing::Test {
+class CachingWordShaperTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
@@ -29,7 +29,6 @@ class CachingWordShaperTest : public testing::Test {
     cache = std::make_unique<ShapeCache>();
   }
 
-  base::test::TaskEnvironment task_environment_;
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
   Font font;
@@ -217,19 +216,19 @@ TEST_F(CachingWordShaperTest, SegmentEmojiSequences) {
   std::vector<std::string> test_strings = {
       // A family followed by a couple with heart emoji sequence,
       // the latter including a variation selector.
-      u8"\U0001f468\u200D\U0001f469\u200D\U0001f467\u200D\U0001f466\U0001f469"
-      u8"\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      "\U0001f468\u200D\U0001f469\u200D\U0001f467\u200D\U0001f466\U0001f469"
+      "\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
       // Pirate flag
-      u8"\U0001F3F4\u200D\u2620\uFE0F",
+      "\U0001F3F4\u200D\u2620\uFE0F",
       // Pilot, judge sequence
-      u8"\U0001f468\U0001f3fb\u200D\u2696\uFE0F\U0001f468\U0001f3fb\u200D\u2708"
-      u8"\uFE0F",
+      "\U0001f468\U0001f3fb\u200D\u2696\uFE0F\U0001f468\U0001f3fb\u200D\u2708"
+      "\uFE0F",
       // Woman, Kiss, Man sequence
-      u8"\U0001f469\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
+      "\U0001f469\u200D\u2764\uFE0F\u200D\U0001f48b\u200D\U0001f468",
       // Signs of horns with skin tone modifier
-      u8"\U0001f918\U0001f3fb",
+      "\U0001f918\U0001f3fb",
       // Man, dark skin tone, red hair
-      u8"\U0001f468\U0001f3ff\u200D\U0001f9b0"};
+      "\U0001f468\U0001f3ff\u200D\U0001f9b0"};
 
   for (auto test_string : test_strings) {
     String emoji_string = String::FromUTF8(test_string);
@@ -273,7 +272,7 @@ TEST_F(CachingWordShaperTest, SegmentEmojiSubdivisionFlags) {
                         0xDC73, 0xDB40, 0xDC63, 0xDB40, 0xDC74, 0xDB40, 0xDC7F,
                         0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40,
                         0xDC65, 0xDB40, 0xDC6E, 0xDB40, 0xDC67, 0xDB40, 0xDC7F};
-  TextRun text_run(kStr, base::size(kStr));
+  TextRun text_run(kStr, std::size(kStr));
 
   scoped_refptr<const ShapeResult> word_result;
   CachingWordShapeIterator iterator(cache.get(), text_run, &font);
@@ -361,7 +360,7 @@ TEST_F(CachingWordShaperTest, TextOrientationFallbackShouldNotInFallbackList) {
   ASSERT_TRUE(vertical_mixed_font.CanShapeWordByWord());
 
   CachingWordShaper shaper(vertical_mixed_font);
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
   HashSet<const SimpleFontData*> fallback_fonts;
   ASSERT_GT(shaper.Width(text_run, &fallback_fonts, &glyph_bounds), 0);
   EXPECT_EQ(0u, fallback_fonts.size());
@@ -371,12 +370,12 @@ TEST_F(CachingWordShaperTest, GlyphBoundsWithSpaces) {
   CachingWordShaper shaper(font);
 
   TextRun periods(reinterpret_cast<const LChar*>(".........."), 10);
-  FloatRect periods_glyph_bounds;
+  gfx::RectF periods_glyph_bounds;
   float periods_width = shaper.Width(periods, nullptr, &periods_glyph_bounds);
 
   TextRun periods_and_spaces(
       reinterpret_cast<const LChar*>(". . . . . . . . . ."), 19);
-  FloatRect periods_and_spaces_glyph_bounds;
+  gfx::RectF periods_and_spaces_glyph_bounds;
   float periods_and_spaces_width = shaper.Width(
       periods_and_spaces, nullptr, &periods_and_spaces_glyph_bounds);
 
@@ -386,8 +385,8 @@ TEST_F(CachingWordShaperTest, GlyphBoundsWithSpaces) {
 
   // The glyph bounds of periods and spaces should be longer than the glyph
   // bounds of periods alone.
-  ASSERT_GT(periods_and_spaces_glyph_bounds.Width(),
-            periods_glyph_bounds.Width());
+  ASSERT_GT(periods_and_spaces_glyph_bounds.width(),
+            periods_glyph_bounds.width());
 }
 
 }  // namespace blink

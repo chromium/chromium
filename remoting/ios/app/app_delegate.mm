@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,10 +31,6 @@
 #include "remoting/ios/app/notification_presenter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-
-static NSString* const kTosUrl = @"https://policies.google.com/terms";
-static NSString* const kPrivacyPolicyUrl =
-    @"https://policies.google.com/privacy";
 
 @interface AppDelegate ()<FirstLaunchViewControllerDelegate> {
   FirstLaunchViewPresenter* _firstLaunchViewPresenter;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define PPAPI_PROXY_PPP_MOUSE_LOCK_PROXY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/ppp_mouse_lock.h"
 #include "ppapi/proxy/interface_proxy.h"
@@ -17,6 +16,10 @@ namespace proxy {
 class PPP_MouseLock_Proxy : public InterfaceProxy {
  public:
   PPP_MouseLock_Proxy(Dispatcher* dispatcher);
+
+  PPP_MouseLock_Proxy(const PPP_MouseLock_Proxy&) = delete;
+  PPP_MouseLock_Proxy& operator=(const PPP_MouseLock_Proxy&) = delete;
+
   ~PPP_MouseLock_Proxy() override;
 
   static const PPP_MouseLock* GetProxyInterface();
@@ -32,8 +35,6 @@ class PPP_MouseLock_Proxy : public InterfaceProxy {
   // pointer so we don't have to retrieve it from the dispatcher each time.
   // In the host, this value is always NULL.
   const PPP_MouseLock* ppp_mouse_lock_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_MouseLock_Proxy);
 };
 
 }  // namespace proxy

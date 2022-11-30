@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,29 @@
 
 #include <stddef.h>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using content::BrowserThread;
@@ -47,23 +55,47 @@ FileManagerPrivateCancelDialogFunction::Run() {
 
 ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
   using extensions::api::file_manager_private::SelectFile::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::vector<GURL> file_paths;
   file_paths.emplace_back(params->selected_path);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+  const storage::FileSystemURL file_system_url =
+      file_system_context->CrackURLInFirstPartyContext(file_paths.back());
 
   file_manager::util::GetSelectedFileInfoLocalPathOption option =
       file_manager::util::NO_LOCAL_PATH_RESOLUTION;
   if (params->should_return_local_path) {
-    option = params->for_opening ?
-        file_manager::util::NEED_LOCAL_PATH_FOR_OPENING :
-        file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
+    option = params->for_opening
+                 ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
+                 : file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
   }
 
-  ChromeExtensionFunctionDetails chrome_details(this);
+  if (file_manager::util::IsDriveLocalPath(profile, file_system_url.path()) &&
+      file_manager::file_tasks::IsOfficeFile(file_system_url.path()) &&
+      params->for_opening) {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_manager::file_tasks::kUseOutsideDriveMetricName,
+        file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
+            FILE_PICKER_SELECTION);
+    auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile);
+    drive_service->ForceReSyncFile(
+        file_system_url.path(),
+        base::BindOnce(
+            &file_manager::util::GetSelectedFileInfo, render_frame_host(),
+            profile, file_paths, option,
+            base::BindOnce(&FileManagerPrivateSelectFileFunction::
+                               GetSelectedFileInfoResponse,
+                           this, params->for_opening, params->index)));
+    return RespondLater();
+  }
+
   file_manager::util::GetSelectedFileInfo(
-      render_frame_host(), chrome_details.GetProfile(), file_paths, option,
+      render_frame_host(), profile, file_paths, option,
       base::BindOnce(
           &FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse,
           this, params->for_opening, params->index));
@@ -81,27 +113,63 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
   }
   SelectFileDialogExtension::OnFileSelected(GetFileDialogRoutingID(this),
                                             files[0], index);
-  ChromeExtensionFunctionDetails chrome_details(this);
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(
-              chrome_details.GetProfile())) {
+              Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection({files[0]}, for_open);
   }
   Respond(NoArguments());
 }
 
+FileManagerPrivateSelectFilesFunction::FileManagerPrivateSelectFilesFunction() =
+    default;
+FileManagerPrivateSelectFilesFunction::
+    ~FileManagerPrivateSelectFilesFunction() = default;
+
 ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   using extensions::api::file_manager_private::SelectFiles::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::vector<GURL> file_urls;
-  for (size_t i = 0; i < params->selected_paths.size(); ++i)
-    file_urls.emplace_back(params->selected_paths[i]);
+  should_return_local_path_ = params->should_return_local_path;
 
-  ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+
+  std::vector<base::FilePath> resync_paths;
+  for (const auto& selected_path : params->selected_paths) {
+    file_urls_.emplace_back(selected_path);
+    const storage::FileSystemURL file_system_url =
+        file_system_context->CrackURLInFirstPartyContext(file_urls_.back());
+
+    if (file_manager::util::IsDriveLocalPath(profile, file_system_url.path()) &&
+        file_manager::file_tasks::IsOfficeFile(file_system_url.path())) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kUseOutsideDriveMetricName,
+          file_manager::file_tasks::OfficeFilesUseOutsideDriveHook::
+              FILE_PICKER_SELECTION);
+      resync_paths.push_back(file_system_url.path());
+    }
+  }
+  resync_files_remaining_ = resync_paths.size();
+  if (!resync_paths.empty()) {
+    auto* drive_service = drive::util::GetIntegrationServiceByProfile(profile);
+    if (drive_service) {
+      for (const auto& path : resync_paths) {
+        drive_service->ForceReSyncFile(
+            path,
+            base::BindOnce(&FileManagerPrivateSelectFilesFunction::OnReSyncFile,
+                           this));
+      }
+      return RespondLater();
+    }
+  }
+
   file_manager::util::GetSelectedFileInfo(
-      render_frame_host(), chrome_details.GetProfile(), file_urls,
+      render_frame_host(), Profile::FromBrowserContext(browser_context()),
+      file_urls_,
       params->should_return_local_path
           ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
           : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
@@ -109,6 +177,22 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
           &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
           this, true));
   return RespondLater();
+}
+
+void FileManagerPrivateSelectFilesFunction::OnReSyncFile() {
+  DCHECK(resync_files_remaining_ > 0);
+  if (--resync_files_remaining_ > 0) {
+    return;
+  }
+  file_manager::util::GetSelectedFileInfo(
+      render_frame_host(), Profile::FromBrowserContext(browser_context()),
+      file_urls_,
+      should_return_local_path_
+          ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
+          : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
+      base::BindOnce(
+          &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
+          this, true));
 }
 
 void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
@@ -122,10 +206,9 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
 
   SelectFileDialogExtension::OnMultiFilesSelected(GetFileDialogRoutingID(this),
                                                   files);
-  ChromeExtensionFunctionDetails chrome_details(this);
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(
-              chrome_details.GetProfile())) {
+              Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection(files, for_open);
   }
   Respond(NoArguments());
@@ -134,7 +217,7 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetAndroidPickerAppsFunction::Run() {
   using extensions::api::file_manager_private::GetAndroidPickerApps::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   auto* intent_helper = ARC_GET_INSTANCE_FOR_METHOD(
@@ -214,9 +297,8 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
     auto it = icons->find(arc::ArcIntentHelperBridge::ActivityName(
         handler->package_name, handler->activity_name));
     if (it != icons->end()) {
-      app.icon_set = std::make_unique<api::file_manager_private::IconSet>();
-      app.icon_set->icon32x32_url =
-          std::make_unique<std::string>(it->second.icon16_dataurl->data.spec());
+      app.icon_set.emplace();
+      app.icon_set->icon32x32_url = it->second.icon16_dataurl->data.spec();
     }
     results.push_back(std::move(app));
   }
@@ -227,7 +309,7 @@ void FileManagerPrivateGetAndroidPickerAppsFunction::OnIconsLoaded(
 ExtensionFunction::ResponseAction
 FileManagerPrivateSelectAndroidPickerAppFunction::Run() {
   using extensions::api::file_manager_private::SelectAndroidPickerApp::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Though the user didn't select an actual file, we generate a virtual file

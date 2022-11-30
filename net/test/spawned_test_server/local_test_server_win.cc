@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ bool LocalTestServer::LaunchPython(
     const base::FilePath& testserver_path,
     const std::vector<base::FilePath>& python_path) {
   base::CommandLine python_command(base::CommandLine::NO_PROGRAM);
-  if (!GetPythonCommand(&python_command))
+  if (!GetPython3Command(&python_command))
     return false;
 
   python_command.AppendArgPath(testserver_path);

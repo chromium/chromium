@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../ui/accessibility/platform/ichromeaccessible.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -116,23 +124,28 @@ EXTERN_C const IID IID_IChromeAccessibleDelegate;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IChromeAccessibleDelegate * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IChromeAccessibleDelegate * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IChromeAccessibleDelegate * This);
         
+        DECLSPEC_XFGVIRT(IChromeAccessibleDelegate, put_bulkFetchResult)
         /* [id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_bulkFetchResult )( 
             IChromeAccessibleDelegate * This,
             /* [in] */ LONG requestID,
             /* [in] */ BSTR resultJson);
         
+        DECLSPEC_XFGVIRT(IChromeAccessibleDelegate, put_hitTestResult)
         /* [id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_hitTestResult )( 
             IChromeAccessibleDelegate * This,
             /* [in] */ LONG requestID,
@@ -213,24 +226,29 @@ EXTERN_C const IID IID_IChromeAccessible;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IChromeAccessible * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IChromeAccessible * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IChromeAccessible * This);
         
+        DECLSPEC_XFGVIRT(IChromeAccessible, get_bulkFetch)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_bulkFetch )( 
             IChromeAccessible * This,
             /* [in] */ BSTR inputJson,
             /* [in] */ LONG requestID,
             /* [in] */ IChromeAccessibleDelegate *delegate);
         
+        DECLSPEC_XFGVIRT(IChromeAccessible, get_hitTest)
         /* [id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_hitTest )( 
             IChromeAccessible * This,
             /* [in] */ LONG screenPhysicalPixelX,

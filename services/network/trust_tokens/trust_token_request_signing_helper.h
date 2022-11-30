@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,14 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace network {
@@ -28,7 +29,7 @@ namespace internal {
 // Given a string representation of a Trust Tokens Signed-Headers header,
 // returns the list of header names given in the header, or nullopt on parsing
 // error.
-base::Optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
+absl::optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
     base::StringPiece header);
 
 }  // namespace internal
@@ -73,7 +74,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // the normative source of the domain separator's value (currently the design
   // doc).
   static constexpr uint8_t kRequestSigningDomainSeparator[] = {
-      'T', 'r', 'u', 's', 't', 'T', 'o', 'k', 'e', 'n', 'V', '2'};
+      'T', 'r', 'u', 's', 't', 'T', 'o', 'k', 'e', 'n', 'V', '3'};
 
   struct Params {
     // Refer to fields' comments for their semantics.
@@ -82,7 +83,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
            std::vector<std::string> additional_headers_to_sign,
            bool should_add_timestamp,
            mojom::TrustTokenSignRequestData sign_request_data,
-           base::Optional<std::string> possibly_unsafe_additional_signing_data);
+           absl::optional<std::string> possibly_unsafe_additional_signing_data);
 
     // Minimal convenience constructor. Other fields have reasonable defaults,
     // but it's necessary to have |issuer| and |toplevel| at construction time
@@ -135,7 +136,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
     // Otherwise, the value will be attached in the
     // Sec-Trust-Tokens-Additional-Signing-Data header and the header name will
     // be added to the list of headers to sign.
-    base::Optional<std::string> possibly_unsafe_additional_signing_data;
+    absl::optional<std::string> possibly_unsafe_additional_signing_data;
   };
 
   // Class Signer is responsible for the actual generation of signatures over
@@ -145,7 +146,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
     virtual ~Signer() = default;
 
     // Returns a one-shot signature over the given data, or an error.
-    virtual base::Optional<std::vector<uint8_t>> Sign(
+    virtual absl::optional<std::vector<uint8_t>> Sign(
         base::span<const uint8_t> key,
         base::span<const uint8_t> data) = 0;
 
@@ -157,7 +158,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
 
     // Returns the short-form name of the signing algorithm that this Signer
     // uses.
-    virtual std::string GetAlgorithmIdentifier() = 0;
+    virtual std::string GetAlgorithmIdentifier() const = 0;
   };
 
   // Creates a request signing helper with behavior determined by |params|,
@@ -238,7 +239,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   //
   // REQUIRES: Every issuer in |signatures_per_issuer| must have a corresponding
   // redemption record in |records_per_issuer|.
-  base::Optional<std::string>
+  absl::optional<std::string>
   BuildSignatureHeaderIfAtLeastOneSignatureIsPresent(
       const base::flat_map<SuitableTrustTokenOrigin,
                            TrustTokenRedemptionRecord>& records_per_issuer,
@@ -248,12 +249,12 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // Returns a signature over |request|'s pertinent data (public key,
   // user-specified headers and, possibly, destination URL), or nullopt in case
   // of internal error.
-  base::Optional<std::vector<uint8_t>> GetSignature(
+  absl::optional<std::vector<uint8_t>> GetSignature(
       net::URLRequest* request,
       const TrustTokenRedemptionRecord& record,
       const std::vector<std::string>& headers_to_sign);
 
-  TrustTokenStore* token_store_;
+  raw_ptr<TrustTokenStore> token_store_;
 
   Params params_;
 

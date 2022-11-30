@@ -1,0 +1,6 @@
+Test that Fetch.requestPaused at reponse stage contains response status text
+Intercepted response status code: 200
+Intercepted response status text: 'OK'
+Finished navigation
+Response status text: 'OK'
+

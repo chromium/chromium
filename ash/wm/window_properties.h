@@ -1,9 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_WM_WINDOW_PROPERTIES_H_
 #define ASH_WM_WINDOW_PROPERTIES_H_
+
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ui/base/class_property.h"
@@ -20,6 +22,11 @@ class WindowState;
 // Shell-specific window property keys; some keys are exported for use in tests.
 
 // Alphabetical sort.
+
+// A property key indicating a unique WebAuthn request id for ash to locate the
+// window initiating the request.
+ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
+    kWebAuthnRequestId;
 
 // A property key to indicate whether this window is temporarily hidden because
 // of the window dragging.

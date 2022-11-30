@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 
 namespace base {
-
-class Value;
 
 class BASE_EXPORT JSONWriter {
  public:
@@ -37,19 +37,22 @@ class BASE_EXPORT JSONWriter {
     OPTIONS_PRETTY_PRINT = 1 << 2,
   };
 
+  JSONWriter(const JSONWriter&) = delete;
+  JSONWriter& operator=(const JSONWriter&) = delete;
+
   // Given a root node, generates a JSON string and puts it into |json|.
   // The output string is overwritten and not appended.
   //
   // TODO(tc): Should we generate json if it would be invalid json (e.g.,
-  // |node| is not a DictionaryValue/ListValue or if there are inf/-inf float
+  // |node| is not a dictionary/list Value or if there are inf/-inf float
   // values)? Return true on success and false on failure.
-  static bool Write(const Value& node,
+  static bool Write(ValueView node,
                     std::string* json,
                     size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Same as above but with |options| which is a bunch of JSONWriter::Options
   // bitwise ORed together. Return true on success and false on failure.
-  static bool WriteWithOptions(const Value& node,
+  static bool WriteWithOptions(ValueView node,
                                int options,
                                std::string* json,
                                size_t max_depth = internal::kAbsoluteMaxDepth);
@@ -61,7 +64,14 @@ class BASE_EXPORT JSONWriter {
 
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
-  bool BuildJSONString(const Value& node, size_t depth);
+  bool BuildJSONString(absl::monostate node, size_t depth);
+  bool BuildJSONString(bool node, size_t depth);
+  bool BuildJSONString(int node, size_t depth);
+  bool BuildJSONString(double node, size_t depth);
+  bool BuildJSONString(StringPiece node, size_t depth);
+  bool BuildJSONString(const Value::BlobStorage& node, size_t depth);
+  bool BuildJSONString(const Value::Dict& node, size_t depth);
+  bool BuildJSONString(const Value::List& node, size_t depth);
 
   // Adds space to json_string_ for the indent level.
   void IndentLine(size_t depth);
@@ -71,15 +81,13 @@ class BASE_EXPORT JSONWriter {
   bool pretty_print_;
 
   // Where we write JSON data as we generate it.
-  std::string* json_string_;
+  raw_ptr<std::string> json_string_;
 
   // Maximum depth to write.
   const size_t max_depth_;
 
   // The number of times the writer has recursed (current stack depth).
   size_t stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSONWriter);
 };
 
 }  // namespace base

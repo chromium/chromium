@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -89,6 +89,11 @@ MOCK_METHOD5(ExportDMABUFImageQueryMESA,
                         int* fourcc,
                         int* num_planes,
                         EGLuint64KHR* modifiers));
+MOCK_METHOD4(ExportVkImageANGLE,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLImageKHR image,
+                        void* vk_image,
+                        void* vk_image_create_info));
 MOCK_METHOD5(GetCompositorTimingANDROID,
              EGLBoolean(EGLDisplay dpy,
                         EGLSurface surface,
@@ -180,6 +185,10 @@ MOCK_METHOD4(QueryContext,
                         EGLint attribute,
                         EGLint* value));
 MOCK_METHOD2(QueryDebugKHR, EGLBoolean(EGLint attribute, EGLAttrib* value));
+MOCK_METHOD3(QueryDeviceAttribEXT,
+             EGLBoolean(EGLDeviceEXT device,
+                        EGLint attribute,
+                        EGLAttrib* value));
 MOCK_METHOD3(QueryDevicesEXT,
              EGLBoolean(EGLint max_devices,
                         EGLDeviceEXT* devices,
@@ -188,6 +197,20 @@ MOCK_METHOD2(QueryDeviceStringEXT,
              const char*(EGLDeviceEXT device, EGLint name));
 MOCK_METHOD3(QueryDisplayAttribANGLE,
              EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
+MOCK_METHOD3(QueryDisplayAttribEXT,
+             EGLBoolean(EGLDisplay dpy, EGLint attribute, EGLAttrib* value));
+MOCK_METHOD4(QueryDmaBufFormatsEXT,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLint max_formats,
+                        EGLint* formats,
+                        EGLint* num_formats));
+MOCK_METHOD6(QueryDmaBufModifiersEXT,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLint format,
+                        EGLint max_modifiers,
+                        EGLuint64KHR* modifiers,
+                        EGLBoolean* external_only,
+                        EGLint* num_modifiers));
 MOCK_METHOD4(QueryStreamKHR,
              EGLBoolean(EGLDisplay dpy,
                         EGLStreamKHR stream,

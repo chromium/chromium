@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #import "ios/net/cookies/system_cookie_store.h"
 
 #import <Foundation/Foundation.h>
-
-#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -21,10 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
@@ -287,4 +281,4 @@ REGISTER_TYPED_TEST_SUITE_P(SystemCookieStoreTest,
 
 }  // namespace net
 
-#endif  // IOS_NET_COOKIES_SYSTEM_COOKIE_STORE_UNITTEST_TEMPLATE_H
+#endif  // IOS_NET_COOKIES_SYSTEM_COOKIE_STORE_UNITTEST_TEMPLATE_H_

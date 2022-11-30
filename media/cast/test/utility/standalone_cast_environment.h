@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_CAST_TEST_UTILITY_STANDALONE_CAST_ENVIRONMENT_H_
 #define MEDIA_CAST_TEST_UTILITY_STANDALONE_CAST_ENVIRONMENT_H_
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/cast_environment.h"
@@ -24,6 +23,10 @@ class StandaloneCastEnvironment : public CastEnvironment,
  public:
   StandaloneCastEnvironment();
 
+  StandaloneCastEnvironment(const StandaloneCastEnvironment&) = delete;
+  StandaloneCastEnvironment& operator=(const StandaloneCastEnvironment&) =
+      delete;
+
   // Stops all threads backing the task runners, blocking the caller until
   // complete.
   void Shutdown();
@@ -34,8 +37,6 @@ class StandaloneCastEnvironment : public CastEnvironment,
   base::Thread main_thread_;
   base::Thread audio_thread_;
   base::Thread video_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(StandaloneCastEnvironment);
 };
 
 }  // namespace cast

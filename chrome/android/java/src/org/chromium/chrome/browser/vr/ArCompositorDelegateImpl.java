@@ -1,11 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.vr;
-
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -22,17 +26,32 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
 
     ArCompositorDelegateImpl(WebContents webContents) {
         mActivity = ChromeActivity.fromWebContents(webContents);
-        mCompositorViewHolder = mActivity.getCompositorViewHolder();
+
+        Supplier<CompositorViewHolder> compositorViewHolderSupplier =
+                mActivity.getCompositorViewHolderSupplier();
+        mCompositorViewHolder = compositorViewHolderSupplier.get();
         mCompositorView = mCompositorViewHolder.getCompositorView();
     }
 
     @Override
-    public void setOverlayImmersiveArMode(boolean enabled) {
-        mCompositorView.setOverlayImmersiveArMode(enabled);
+    public void setOverlayImmersiveArMode(boolean enabled, boolean domSurfaceNeedsConfiguring) {
+        mCompositorView.setOverlayImmersiveArMode(enabled, domSurfaceNeedsConfiguring);
     }
 
     @Override
     public void dispatchTouchEvent(MotionEvent ev) {
         mCompositorViewHolder.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    @NonNull
+    public ViewGroup getArSurfaceParent() {
+        // the ar_view_holder is a FrameLayout, up-cast to a ViewGroup.
+        return (ViewGroup) mActivity.findViewById(R.id.ar_view_holder);
+    }
+
+    @Override
+    public boolean shouldToggleArSurfaceParentVisibility() {
+        return true;
     }
 }

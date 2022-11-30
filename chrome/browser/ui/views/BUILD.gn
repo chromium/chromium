@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,7 @@ component("views") {
     "accelerator_table.cc",
     "accelerator_table.h",
     "chrome_views_export.h",
+    "chrome_widget_sublevel.h",
     "event_utils.cc",
     "event_utils.h",
     "tab_icon_view_model.h",
@@ -31,6 +32,8 @@ component("views") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//components/keep_alive_registry",
+    "//components/services/app_service/public/mojom",
+    "//components/services/screen_ai/buildflags",
     "//components/vector_icons",
     "//content/public/browser",
     "//printing/buildflags",
@@ -45,4 +48,23 @@ component("views") {
   if (is_chromeos_ash) {
     deps += [ "//ash" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "global_media_controls/media_dialog_ui_for_test.h" ]
+  sources = [ "global_media_controls/media_dialog_ui_for_test.cc" ]
+  deps = [
+    ":views",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//components/global_media_controls:global_media_controls",
+    "//components/media_message_center:media_message_center",
+    "//components/media_router/browser:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
 }

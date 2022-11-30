@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/mac_util.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -38,8 +39,10 @@ void DictionaryEntryToValue(const void* key, const void* value, void* context) {
 void ArrayEntryToValue(const void* value, void* context) {
   std::unique_ptr<base::Value> converted =
       PropertyToValue(static_cast<CFPropertyListRef>(value));
-  if (converted)
-    static_cast<base::ListValue*>(context)->Append(std::move(converted));
+  if (converted) {
+    static_cast<base::ListValue*>(context)->GetList().Append(
+        base::Value::FromUniquePtrValue(std::move(converted)));
+  }
 }
 
 }  // namespace
@@ -49,8 +52,8 @@ std::unique_ptr<base::Value> PropertyToValue(CFPropertyListRef property) {
     return std::make_unique<base::Value>();
 
   if (CFBooleanRef boolean = CFCast<CFBooleanRef>(property)) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(static_cast<bool>(CFBooleanGetValue(boolean))));
+    return std::make_unique<base::Value>(
+        static_cast<bool>(CFBooleanGetValue(boolean)));
   }
 
   if (CFNumberRef number = CFCast<CFNumberRef>(property)) {
@@ -59,19 +62,18 @@ std::unique_ptr<base::Value> PropertyToValue(CFPropertyListRef property) {
     if (CFNumberIsFloatType(number)) {
       double double_value = 0.0;
       if (CFNumberGetValue(number, kCFNumberDoubleType, &double_value)) {
-        return std::unique_ptr<base::Value>(new base::Value(double_value));
+        return std::make_unique<base::Value>(double_value);
       }
     } else {
       int int_value = 0;
       if (CFNumberGetValue(number, kCFNumberIntType, &int_value)) {
-        return std::unique_ptr<base::Value>(new base::Value(int_value));
+        return std::make_unique<base::Value>(int_value);
       }
     }
   }
 
   if (CFStringRef string = CFCast<CFStringRef>(property)) {
-    return std::unique_ptr<base::Value>(
-        new base::Value(base::SysCFStringRefToUTF8(string)));
+    return std::make_unique<base::Value>(base::SysCFStringRefToUTF8(string));
   }
 
   if (CFDictionaryRef dict = CFCast<CFDictionaryRef>(property)) {

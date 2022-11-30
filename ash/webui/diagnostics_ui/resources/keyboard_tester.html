@@ -1,0 +1,66 @@
+<style>
+  #dialog {
+    --cr-dialog-width: min(calc(100% - 80px), 1400px);
+  }
+
+  [slot='title'] {
+    font-family: var(--diagnostics-google-sans-font-family);
+  }
+
+  #diagram-border {
+    border: 1px solid var(--google-blue-600);
+    border-radius: 8px;
+    padding: 6px;
+  }
+
+  #help {
+    align-self: center;
+    flex-grow: 1;
+  }
+
+  a[href] {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
+
+  cr-toast iron-icon {
+    --iron-icon-fill-color: var(--cros-toast-icon-color);
+    margin-inline-end: 12px;
+  }
+</style>
+<cr-dialog id="dialog" show-close-button on-close="handleClose">
+  <div slot="title">[[i18n('keyboardTesterTitle')]]</div>
+  <div slot="body">
+    <p>[[i18n('keyboardTesterInstruction')]]</p>
+    <template is="dom-if" if="[[layoutIsKnown_]]">
+      <div id="diagram-border">
+        <keyboard-diagram
+            id="diagram"
+            mechanical-layout="[[diagramMechanicalLayout_]]"
+            physical-layout="[[diagramPhysicalLayout_]]"
+            region-code="[[keyboard.regionCode]]"
+            show-assistant-key="[[keyboard.hasAssistantKey]]"
+            show-number-pad="[[showNumberPad_]]"
+            top-row-keys="[[topRowKeys_]]"
+            top-right-key="[[diagramTopRightKey_]]">
+        </keyboard-diagram>
+      </div>
+    </template>
+    <cr-toast id="lostFocusToast">
+      <iron-icon icon="diagnostics:window"></iron-icon>
+      <!--
+        Though the message refers to "other windows", it also applies when
+        the user opens the launcher, but not if they just click another element
+        of the system UI (e.g. opening the quick settings).
+      -->
+      <span>[[i18n('keyboardTesterFocusLossMessage')]]</span>
+    </cr-toast>
+  </div>
+  <div slot="button-container">
+    <div id="help" inner-h-t-m-l="[[i18nAdvanced('keyboardTesterHelpLink')]]"></div>
+
+    <cr-button class="action-button" on-click="close">
+      [[i18n('inputTesterDone')]]
+    </cr-button>
+  </div>
+</cr-dialog>

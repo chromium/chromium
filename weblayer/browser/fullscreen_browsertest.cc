@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/callback.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"
 #include "weblayer/public/fullscreen_delegate.h"

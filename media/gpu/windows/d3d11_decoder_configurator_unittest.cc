@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,8 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
                                          bool encrypted) {
     VideoDecoderConfig result;
     result.Initialize(
-        kUnknownVideoCodec,  // It doesn't matter because it won't be used.
+        VideoCodec::kUnknown,  // It doesn't matter because it won't
+                               // be used.
         profile, VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
         kNoTransformation, size, {}, {}, {},
         encrypted ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);
@@ -42,9 +43,11 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     prefs.enable_zero_copy_dxgi_video = zero_copy_enabled;
     gpu::GpuDriverBugWorkarounds workarounds;
     workarounds.disable_dxgi_zero_copy_video = false;
+    VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
     auto media_log = std::make_unique<NullMediaLog>();
-    return D3D11DecoderConfigurator::Create(prefs, workarounds, config,
-                                            bit_depth, media_log.get());
+    return D3D11DecoderConfigurator::Create(
+        prefs, workarounds, config, bit_depth, chroma_sampling, media_log.get(),
+        false /*use_shared_handle*/);
   }
 };
 

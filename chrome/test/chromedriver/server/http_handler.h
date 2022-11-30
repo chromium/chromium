@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -81,6 +79,10 @@ class HttpHandler {
               const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
               const std::string& url_base,
               int adb_port);
+
+  HttpHandler(const HttpHandler&) = delete;
+  HttpHandler& operator=(const HttpHandler&) = delete;
+
   ~HttpHandler();
 
   void Handle(const net::HttpServerRequestInfo& request,
@@ -133,6 +135,18 @@ class HttpHandler {
                           int connection_id,
                           const net::HttpServerRequestInfo& info);
 
+  void OnWebSocketMessage(HttpServer* http_server,
+                          int connection_id,
+                          const std::string& data);
+
+  void OnWebSocketResponseOnCmdThread(HttpServer* http_server,
+                                      int connection_id,
+                                      const std::string& data);
+
+  void OnWebSocketResponseOnSessionThread(HttpServer* http_server,
+                                          int connection_id,
+                                          const std::string& data);
+
   void OnClose(HttpServer* http_server, int connection_id);
 
   void SendWebSocketRejectResponse(HttpServer* http_server,
@@ -143,6 +157,7 @@ class HttpHandler {
   base::ThreadChecker thread_checker_;
   base::RepeatingClosure quit_func_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner_;
   std::string url_base_;
   bool received_shutdown_;
   scoped_refptr<URLRequestContextGetter> context_getter_;
@@ -158,8 +173,6 @@ class HttpHandler {
   std::unique_ptr<DeviceManager> device_manager_;
 
   base::WeakPtrFactory<HttpHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpHandler);
 };
 
 namespace internal {

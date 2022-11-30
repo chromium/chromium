@@ -1,16 +1,10 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("sync") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    # TODO(crbug.com/850428): Move consent_auditor_factory.* back to
-    # ios/chrome/browser/consent_auditor, when it does not depend on
-    # UserEventService anymore. Currently this is not possible due to a
-    # BUILD.gn depedency.
-    "consent_auditor_factory.cc",
-    "consent_auditor_factory.h",
     "device_info_sync_service_factory.h",
     "device_info_sync_service_factory.mm",
     "ios_chrome_sync_client.h",
@@ -21,10 +15,6 @@ source_set("sync") {
     "ios_trusted_vault_client.mm",
     "ios_user_event_service_factory.cc",
     "ios_user_event_service_factory.h",
-    "model_type_store_service_factory.cc",
-    "model_type_store_service_factory.h",
-    "profile_sync_service_factory.cc",
-    "profile_sync_service_factory.h",
     "send_tab_to_self_sync_service_factory.h",
     "send_tab_to_self_sync_service_factory.mm",
     "session_sync_service_factory.h",
@@ -33,12 +23,15 @@ source_set("sync") {
     "sync_invalidations_service_factory.mm",
     "sync_observer_bridge.h",
     "sync_observer_bridge.mm",
+    "sync_service_factory.h",
+    "sync_service_factory.mm",
     "sync_setup_service.cc",
     "sync_setup_service.h",
     "sync_setup_service_factory.cc",
     "sync_setup_service_factory.h",
   ]
   deps = [
+    ":model_type_store_service_factory",
     "//base",
     "//components/autofill/core/browser",
     "//components/browser_sync",
@@ -57,7 +50,6 @@ source_set("sync") {
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sessions",
-    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync",
     "//components/sync_device_info",
@@ -71,6 +63,7 @@ source_set("sync") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",
+    "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/gcm",
@@ -78,20 +71,20 @@ source_set("sync") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
     "//ios/chrome/browser/passwords:store_factory",
-    "//ios/chrome/browser/policy",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:trusted_vault",
+    "//ios/chrome/browser/signin:trusted_vault_factory",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/sync/sessions",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/undo",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
     "//ios/web",
     "//ios/web/public/session",
     "//net",
@@ -108,18 +101,55 @@ source_set("sync") {
   ]
 }
 
+source_set("model_type_store_service_factory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "model_type_store_service_factory.cc",
+    "model_type_store_service_factory.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/ios",
+    "//components/sync",
+    "//ios/chrome/browser/browser_state",
+  ]
+}
+
+source_set("sync_error_browser_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "sync_error_browser_agent.h",
+    "sync_error_browser_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_sync_service_utils.cc",
+    "mock_sync_service_utils.h",
     "sync_setup_service_mock.cc",
     "sync_setup_service_mock.h",
   ]
   deps = [
     ":sync",
     "//base",
+    "//components/consent_auditor:test_support",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sync",
+    "//components/sync:test_support",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/common",
@@ -134,8 +164,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_chrome_synced_tab_delegate_unittest.mm",
-    "profile_sync_service_factory_unittest.cc",
     "session_sync_service_factory_unittest.cc",
+    "sync_service_factory_unittest.cc",
   ]
   deps = [
     ":sync",
@@ -145,6 +175,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/webdata_services",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",

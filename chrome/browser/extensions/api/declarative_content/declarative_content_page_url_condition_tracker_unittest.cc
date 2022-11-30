@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -27,10 +26,19 @@ using testing::UnorderedElementsAreArray;
 
 class DeclarativeContentPageUrlConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentPageUrlConditionTrackerTest(
+      const DeclarativeContentPageUrlConditionTrackerTest&) = delete;
+  DeclarativeContentPageUrlConditionTrackerTest& operator=(
+      const DeclarativeContentPageUrlConditionTrackerTest&) = delete;
+
  protected:
   class Delegate : public ContentPredicateEvaluator::Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
 
     std::set<content::WebContents*>& evaluation_requests() {
       return evaluation_requests_;
@@ -49,8 +57,6 @@ class DeclarativeContentPageUrlConditionTrackerTest
 
    private:
     std::set<content::WebContents*> evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   DeclarativeContentPageUrlConditionTrackerTest()
@@ -79,13 +85,11 @@ class DeclarativeContentPageUrlConditionTrackerTest
   void CreatePredicateImpl(const std::string& value,
                            std::unique_ptr<const ContentPredicate>* predicate) {
     std::string error;
-    *predicate = tracker_.CreatePredicate(
-        nullptr, *base::test::ParseJsonDeprecated(value), &error);
+    *predicate =
+        tracker_.CreatePredicate(nullptr, base::test::ParseJson(value), &error);
     EXPECT_EQ("", error);
     ASSERT_TRUE(*predicate);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentPageUrlConditionTrackerTest);
 };
 
 TEST(DeclarativeContentPageUrlPredicateTest, WrongPageUrlDatatype) {
@@ -93,8 +97,8 @@ TEST(DeclarativeContentPageUrlPredicateTest, WrongPageUrlDatatype) {
   std::string error;
   std::unique_ptr<DeclarativeContentPageUrlPredicate> predicate =
       DeclarativeContentPageUrlPredicate::Create(
-          nullptr, matcher.condition_factory(),
-          *base::test::ParseJsonDeprecated("[]"), &error);
+          nullptr, matcher.condition_factory(), base::test::ParseJson("[]"),
+          &error);
   EXPECT_THAT(error, HasSubstr("invalid type"));
   EXPECT_FALSE(predicate);
 
@@ -107,8 +111,7 @@ TEST(DeclarativeContentPageUrlPredicateTest, PageUrlPredicate) {
   std::unique_ptr<DeclarativeContentPageUrlPredicate> predicate =
       DeclarativeContentPageUrlPredicate::Create(
           nullptr, matcher.condition_factory(),
-          *base::test::ParseJsonDeprecated("{\"hostSuffix\": \"example.com\"}"),
-          &error);
+          base::test::ParseJson("{\"hostSuffix\": \"example.com\"}"), &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(predicate);
 
@@ -119,7 +122,7 @@ TEST(DeclarativeContentPageUrlPredicateTest, PageUrlPredicate) {
 
   EXPECT_THAT(matcher.MatchURL(GURL("http://google.com/")),
               ElementsAre(/*empty*/));
-  std::set<url_matcher::URLMatcherConditionSet::ID> page_url_matches =
+  std::set<base::MatcherStringPattern::ID> page_url_matches =
       matcher.MatchURL(GURL("http://www.example.com/foobar"));
   EXPECT_THAT(
       page_url_matches,

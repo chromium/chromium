@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -46,13 +46,18 @@ class ThemeSyncableService : public syncer::SyncableService,
   class Observer : public base::CheckedObserver {
    public:
     // Called when theme sync gets started. Observers that register after theme
-    // sync gets started are called right away when they register.
+    // sync gets started are never called, they should check
+    // GetThemeSyncStartState() before registering, instead.
     virtual void OnThemeSyncStarted(ThemeSyncState state) = 0;
   };
 
   // `profile` may be nullptr in tests (and is the one used by theme_service,
   // otherwise).
   ThemeSyncableService(Profile* profile, ThemeService* theme_service);
+
+  ThemeSyncableService(const ThemeSyncableService&) = delete;
+  ThemeSyncableService& operator=(const ThemeSyncableService&) = delete;
+
   ~ThemeSyncableService() override;
 
   static syncer::ModelType model_type() { return syncer::THEMES; }
@@ -64,22 +69,25 @@ class ThemeSyncableService : public syncer::SyncableService,
   void RemoveObserver(Observer* observer);
   void NotifyOnSyncStartedForTesting(ThemeSyncState startup_state);
 
+  // Returns the theme sync startup state or nullopt if it has not started yet.
+  absl::optional<ThemeSyncState> GetThemeSyncStartState();
+
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
-  // Client tag and tile of theme node in sync.
-  static const char kCurrentThemeClientTag[];
-  static const char kCurrentThemeNodeTitle[];
+  // Client tag and title of the single theme sync_pb::SyncEntity of an account.
+  static const char kSyncEntityClientTag[];
+  static const char kSyncEntityTitle[];
 
  private:
   static bool AreThemeSpecificsEqual(
@@ -107,14 +115,14 @@ class ThemeSyncableService : public syncer::SyncableService,
       sync_pb::ThemeSpecifics* theme_specifics) const;
 
   // Updates theme specifics in sync to |theme_specifics|.
-  base::Optional<syncer::ModelError> ProcessNewTheme(
+  absl::optional<syncer::ModelError> ProcessNewTheme(
       syncer::SyncChange::SyncChangeType change_type,
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  void NotifyOnSyncStarted();
+  void NotifyOnSyncStarted(ThemeSyncState startup_state);
 
-  Profile* const profile_;
-  ThemeService* const theme_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ThemeService> theme_service_;
 
   base::ObserverList<Observer> observer_list_;
 
@@ -126,13 +134,11 @@ class ThemeSyncableService : public syncer::SyncableService,
   bool use_system_theme_by_default_;
 
   // Captures the state of theme sync after initial data merge.
-  ThemeSyncState startup_state_ = ThemeSyncState::kFailed;
+  absl::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
 
   FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeSyncableService);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_

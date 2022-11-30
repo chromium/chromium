@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_PROGRAMMATIC_SCROLL_ANIMATOR_H_
 
 #include <memory>
+#include "base/time/time.h"
+#include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ScrollableArea;
-class CompositorScrollOffsetAnimationCurve;
 
 // ProgrammaticScrollAnimator manages scroll offset animations ("smooth
 // scrolls") triggered by web APIs such as "scroll-behavior: smooth" which are
@@ -45,7 +46,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;
   }
-  void TickAnimation(double monotonic_time) override;
+  void TickAnimation(base::TimeTicks monotonic_time) override;
   void UpdateCompositorAnimations() override;
   void NotifyCompositorAnimationFinished(int group_id) override;
   void NotifyCompositorAnimationAborted(int group_id) override {}
@@ -54,13 +55,13 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   void Trace(Visitor*) const override;
 
  private:
-  void NotifyOffsetChanged(const ScrollOffset&);
+  mojom::blink::ScrollType GetScrollType() const;
   void AnimationFinished();
 
   Member<ScrollableArea> scrollable_area_;
-  std::unique_ptr<CompositorScrollOffsetAnimationCurve> animation_curve_;
+  std::unique_ptr<cc::ScrollOffsetAnimationCurve> animation_curve_;
   ScrollOffset target_offset_;
-  double start_time_;
+  base::TimeTicks start_time_;
   // is_sequenced_scroll_ is true for the entire duration of an animated scroll
   // as well as during an instant scroll if that scroll is part of a sequence.
   // It resets to false at the end of the scroll. It controls whether we should

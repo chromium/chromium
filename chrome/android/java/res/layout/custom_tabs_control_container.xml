@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -19,13 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/custom_tabs_control_container_height" />
         <ImageView
-            android:id="@+id/toolbar_shadow"
-            android:src="@drawable/toolbar_shadow"
+            android:id="@+id/toolbar_hairline"
+            android:src="@drawable/toolbar_hairline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/custom_tabs_control_container_height"
             android:scaleType="fitXY"
-            tools:ignore="ContentDescription" />
+            android:importantForAccessibility="no" />
         <ViewStub
             android:id="@+id/find_toolbar_stub"
             android:inflatedId="@+id/find_toolbar"

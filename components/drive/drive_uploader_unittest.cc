@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,19 +15,18 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/drive/service/dummy_drive_service.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using google_apis::ApiErrorCode;
 using google_apis::CancelCallbackOnce;
-using google_apis::DRIVE_NO_CONNECTION;
-using google_apis::DRIVE_OTHER_ERROR;
-using google_apis::DriveApiErrorCode;
 using google_apis::FileResource;
 using google_apis::HTTP_CONFLICT;
 using google_apis::HTTP_CREATED;
@@ -36,6 +35,8 @@ using google_apis::HTTP_PRECONDITION;
 using google_apis::HTTP_RESUME_INCOMPLETE;
 using google_apis::HTTP_SUCCESS;
 using google_apis::InitiateUploadCallback;
+using google_apis::NO_CONNECTION;
+using google_apis::OTHER_ERROR;
 using google_apis::ProgressCallback;
 using google_apis::UploadRangeResponse;
 using google_apis::drive::UploadRangeCallback;
@@ -57,7 +58,7 @@ const int64_t kUploadChunkSize = 1024 * 1024 * 1024;
 const char kTestETag[] = "test_etag";
 
 CancelCallbackOnce SendMultipartUploadResult(
-    DriveApiErrorCode response_code,
+    ApiErrorCode response_code,
     int64_t content_length,
     google_apis::FileResourceCallback callback,
     google_apis::ProgressCallback progress_callback) {
@@ -72,8 +73,7 @@ CancelCallbackOnce SendMultipartUploadResult(
 
   // MultipartUploadXXXFile is an asynchronous function, so don't callback
   // directly.
-  std::unique_ptr<FileResource> entry;
-  entry = std::make_unique<FileResource>();
+  auto entry = std::make_unique<FileResource>();
   entry->set_md5_checksum(kTestDummyMd5);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -217,16 +217,16 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
     UploadRangeResponse response;
     std::unique_ptr<FileResource> entry;
     if (received_bytes_ == expected_content_length_) {
-      DriveApiErrorCode response_code =
-          upload_location == kTestUploadNewFileURL ?
-          HTTP_CREATED : HTTP_SUCCESS;
+      ApiErrorCode response_code = upload_location == kTestUploadNewFileURL
+                                       ? HTTP_CREATED
+                                       : HTTP_SUCCESS;
       response = UploadRangeResponse(response_code, -1, -1);
 
       entry = std::make_unique<FileResource>();
       entry->set_md5_checksum(kTestDummyMd5);
     } else {
-      response = UploadRangeResponse(
-          HTTP_RESUME_INCOMPLETE, 0, received_bytes_);
+      response =
+          UploadRangeResponse(HTTP_RESUME_INCOMPLETE, 0, received_bytes_);
     }
     // ResumeUpload is an asynchronous function, so don't callback directly.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -299,8 +299,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
       const UploadNewFileOptions& options,
       InitiateUploadCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), NO_CONNECTION, GURL()));
     return CancelCallbackOnce();
   }
 
@@ -311,8 +310,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
       const UploadExistingFileOptions& options,
       InitiateUploadCallback callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, GURL()));
+        FROM_HERE, base::BindOnce(std::move(callback), NO_CONNECTION, GURL()));
     return CancelCallbackOnce();
   }
 
@@ -339,8 +337,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
       google_apis::FileResourceCallback callback,
       google_apis::ProgressCallback progress_callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, nullptr));
+        FROM_HERE, base::BindOnce(std::move(callback), NO_CONNECTION, nullptr));
     return CancelCallbackOnce();
   }
 
@@ -353,8 +350,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
       google_apis::FileResourceCallback callback,
       google_apis::ProgressCallback progress_callback) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), DRIVE_NO_CONNECTION, nullptr));
+        FROM_HERE, base::BindOnce(std::move(callback), NO_CONNECTION, nullptr));
     return CancelCallbackOnce();
   }
 };
@@ -399,8 +395,7 @@ class MockDriveServiceNoConnectionAtResume : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       UploadRangeResponse(DRIVE_NO_CONNECTION, -1, -1),
-                       nullptr));
+                       UploadRangeResponse(NO_CONNECTION, -1, -1), nullptr));
     return CancelCallbackOnce();
   }
 };
@@ -414,8 +409,7 @@ class MockDriveServiceNoConnectionAtGetUploadStatus : public DummyDriveService {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       UploadRangeResponse(DRIVE_NO_CONNECTION, -1, -1),
-                       nullptr));
+                       UploadRangeResponse(NO_CONNECTION, -1, -1), nullptr));
     return CancelCallbackOnce();
   }
 };
@@ -437,7 +431,7 @@ TEST_F(DriveUploaderTest, UploadExisting0KB) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(temp_dir_.GetPath(), 0,
                                                    &local_path, &data));
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -471,7 +465,7 @@ TEST_F(DriveUploaderTest, UploadExisting512KB) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 512 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -507,7 +501,7 @@ TEST_F(DriveUploaderTest, UploadExisting2MB) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 2 * 1024 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -543,7 +537,7 @@ TEST_F(DriveUploaderTest, InitiateUploadFail) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 2 * 1024 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = HTTP_SUCCESS;
+  ApiErrorCode error = HTTP_SUCCESS;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -558,7 +552,7 @@ TEST_F(DriveUploaderTest, InitiateUploadFail) {
       google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(DRIVE_NO_CONNECTION, error);
+  EXPECT_EQ(NO_CONNECTION, error);
   EXPECT_TRUE(upload_location.is_empty());
   EXPECT_FALSE(entry);
 }
@@ -569,7 +563,7 @@ TEST_F(DriveUploaderTest, MultipartUploadFail) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 512 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = HTTP_SUCCESS;
+  ApiErrorCode error = HTTP_SUCCESS;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -584,7 +578,7 @@ TEST_F(DriveUploaderTest, MultipartUploadFail) {
       google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(DRIVE_NO_CONNECTION, error);
+  EXPECT_EQ(NO_CONNECTION, error);
   EXPECT_TRUE(upload_location.is_empty());
   EXPECT_FALSE(entry);
 }
@@ -595,7 +589,7 @@ TEST_F(DriveUploaderTest, InitiateUploadNoConflict) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 512 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -605,13 +599,10 @@ TEST_F(DriveUploaderTest, InitiateUploadNoConflict) {
                          mojo::NullRemote());
   UploadExistingFileOptions options;
   options.etag = kTestETag;
-  uploader.UploadExistingFile(kTestInitiateUploadResourceId,
-                              local_path,
-                              kTestMimeType,
-                              options,
-                              test_util::CreateCopyResultCallback(
-                                  &error, &upload_location, &entry),
-                              google_apis::ProgressCallback());
+  uploader.UploadExistingFile(
+      kTestInitiateUploadResourceId, local_path, kTestMimeType, options,
+      test_util::CreateCopyResultCallback(&error, &upload_location, &entry),
+      google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(HTTP_SUCCESS, error);
@@ -625,7 +616,7 @@ TEST_F(DriveUploaderTest, MultipartUploadConflict) {
       temp_dir_.GetPath(), 512 * 1024, &local_path, &data));
   const std::string kDestinationETag("destination_etag");
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -635,13 +626,10 @@ TEST_F(DriveUploaderTest, MultipartUploadConflict) {
                          mojo::NullRemote());
   UploadExistingFileOptions options;
   options.etag = kDestinationETag;
-  uploader.UploadExistingFile(kTestInitiateUploadResourceId,
-                              local_path,
-                              kTestMimeType,
-                              options,
-                              test_util::CreateCopyResultCallback(
-                                  &error, &upload_location, &entry),
-                              google_apis::ProgressCallback());
+  uploader.UploadExistingFile(
+      kTestInitiateUploadResourceId, local_path, kTestMimeType, options,
+      test_util::CreateCopyResultCallback(&error, &upload_location, &entry),
+      google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(HTTP_CONFLICT, error);
@@ -655,7 +643,7 @@ TEST_F(DriveUploaderTest, InitiateUploadConflict) {
       temp_dir_.GetPath(), 2 * 1024 * 1024, &local_path, &data));
   const std::string kDestinationETag("destination_etag");
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -681,7 +669,7 @@ TEST_F(DriveUploaderTest, ResumeUploadFail) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 2 * 1024 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = HTTP_SUCCESS;
+  ApiErrorCode error = HTTP_SUCCESS;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -696,7 +684,7 @@ TEST_F(DriveUploaderTest, ResumeUploadFail) {
       google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(DRIVE_NO_CONNECTION, error);
+  EXPECT_EQ(NO_CONNECTION, error);
   EXPECT_EQ(GURL(kTestUploadExistingFileURL), upload_location);
 }
 
@@ -706,7 +694,7 @@ TEST_F(DriveUploaderTest, GetUploadStatusFail) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 2 * 1024 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = HTTP_SUCCESS;
+  ApiErrorCode error = HTTP_SUCCESS;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -714,20 +702,18 @@ TEST_F(DriveUploaderTest, GetUploadStatusFail) {
   DriveUploader uploader(&mock_service,
                          base::ThreadTaskRunnerHandle::Get().get(),
                          mojo::NullRemote());
-  uploader.ResumeUploadFile(GURL(kTestUploadExistingFileURL),
-                            local_path,
-                            kTestMimeType,
-                            test_util::CreateCopyResultCallback(
-                                &error, &upload_location, &entry),
-                            google_apis::ProgressCallback());
+  uploader.ResumeUploadFile(
+      GURL(kTestUploadExistingFileURL), local_path, kTestMimeType,
+      test_util::CreateCopyResultCallback(&error, &upload_location, &entry),
+      google_apis::ProgressCallback());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(DRIVE_NO_CONNECTION, error);
+  EXPECT_EQ(NO_CONNECTION, error);
   EXPECT_TRUE(upload_location.is_empty());
 }
 
 TEST_F(DriveUploaderTest, NonExistingSourceFile) {
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -753,7 +739,7 @@ TEST_F(DriveUploaderTest, ResumeUpload) {
   ASSERT_TRUE(test_util::CreateFileOfSpecifiedSize(
       temp_dir_.GetPath(), 1024 * 1024, &local_path, &data));
 
-  DriveApiErrorCode error = DRIVE_OTHER_ERROR;
+  ApiErrorCode error = OTHER_ERROR;
   GURL upload_location;
   std::unique_ptr<FileResource> entry;
 
@@ -857,7 +843,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
     }
 
    private:
-    MockDriveServiceForBatchProcessing* service;
+    raw_ptr<MockDriveServiceForBatchProcessing> service;
   };
 
  public:
@@ -886,7 +872,7 @@ TEST_F(DriveUploaderTest, BatchProcessing) {
                          mojo::NullRemote());
 
   struct {
-    DriveApiErrorCode error;
+    ApiErrorCode error;
     GURL resume_url;
     std::unique_ptr<FileResource> file;
     UploadCompletionCallback callback() {
@@ -942,7 +928,7 @@ TEST_F(DriveUploaderTest, BatchProcessingWithError) {
                          mojo::NullRemote());
 
   struct {
-    DriveApiErrorCode error;
+    ApiErrorCode error;
     GURL resume_url;
     std::unique_ptr<FileResource> file;
     UploadCompletionCallback callback() {

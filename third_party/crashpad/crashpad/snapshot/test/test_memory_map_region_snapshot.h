@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/memory_map_region_snapshot.h"
 
 namespace crashpad {
@@ -28,6 +27,11 @@ namespace test {
 class TestMemoryMapRegionSnapshot final : public MemoryMapRegionSnapshot {
  public:
   TestMemoryMapRegionSnapshot();
+
+  TestMemoryMapRegionSnapshot(const TestMemoryMapRegionSnapshot&) = delete;
+  TestMemoryMapRegionSnapshot& operator=(const TestMemoryMapRegionSnapshot&) =
+      delete;
+
   ~TestMemoryMapRegionSnapshot() override;
 
   void SetMindumpMemoryInfo(const MINIDUMP_MEMORY_INFO& mmi);
@@ -37,8 +41,6 @@ class TestMemoryMapRegionSnapshot final : public MemoryMapRegionSnapshot {
 
  private:
   MINIDUMP_MEMORY_INFO memory_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMemoryMapRegionSnapshot);
 };
 
 }  // namespace test

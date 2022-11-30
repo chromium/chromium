@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,9 @@ constexpr exception_behavior_t kMachExceptionCodes = MACH_EXCEPTION_CODES;
 
 //! \brief An exception type to use for simulated exceptions.
 constexpr exception_type_t kMachExceptionSimulated = 'CPsx';
+
+//! \brief An exception type to use for uncaught NSExceptions.
+constexpr exception_type_t kMachExceptionFromNSException = 'CPnx';
 
 //! \brief A const version of `thread_state_t`.
 //!

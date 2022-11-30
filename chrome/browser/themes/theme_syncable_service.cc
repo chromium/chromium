@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/adapters.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
@@ -17,7 +19,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/extensions/sync_helper.h"
 #include "components/sync/model/sync_change_processor.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -36,8 +38,9 @@ bool IsTheme(const extensions::Extension* extension,
 
 }  // namespace
 
-const char ThemeSyncableService::kCurrentThemeClientTag[] = "current_theme";
-const char ThemeSyncableService::kCurrentThemeNodeTitle[] = "Current Theme";
+// "Current" is part of the name for historical reasons, shouldn't be changed.
+const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
+const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
@@ -66,8 +69,6 @@ void ThemeSyncableService::OnThemeChanged() {
 void ThemeSyncableService::AddObserver(
     ThemeSyncableService::Observer* observer) {
   observer_list_.AddObserver(observer);
-  if (sync_processor_)
-    observer->OnThemeSyncStarted(startup_state_);
 }
 
 void ThemeSyncableService::RemoveObserver(
@@ -77,8 +78,12 @@ void ThemeSyncableService::RemoveObserver(
 
 void ThemeSyncableService::NotifyOnSyncStartedForTesting(
     ThemeSyncState startup_state) {
-  startup_state_ = startup_state;
-  NotifyOnSyncStarted();
+  NotifyOnSyncStarted(startup_state);
+}
+
+absl::optional<ThemeSyncableService::ThemeSyncState>
+ThemeSyncableService::GetThemeSyncStartState() {
+  return startup_state_;
 }
 
 void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
@@ -86,7 +91,7 @@ void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
                                                            std::move(done));
 }
 
-base::Optional<syncer::ModelError>
+absl::optional<syncer::ModelError>
 ThemeSyncableService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
@@ -111,30 +116,29 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
     // Current theme is unsyncable - don't overwrite from sync data, and don't
     // save the unsyncable theme to sync data.
-    NotifyOnSyncStarted();
-    return base::nullopt;
+    NotifyOnSyncStarted(ThemeSyncState::kFailed);
+    return absl::nullopt;
   }
 
   // Find the last SyncData that has theme data and set the current theme from
   // it. If SyncData doesn't have a theme, but there is a current theme, it will
   // not reset it.
-  for (auto sync_data = initial_sync_data.rbegin();
-       sync_data != initial_sync_data.rend(); ++sync_data) {
-    if (sync_data->GetSpecifics().has_theme()) {
+  for (const syncer::SyncData& sync_data : base::Reversed(initial_sync_data)) {
+    if (sync_data.GetSpecifics().has_theme()) {
       if (!HasNonDefaultTheme(current_specifics) ||
-          HasNonDefaultTheme(sync_data->GetSpecifics().theme())) {
-        startup_state_ = MaybeSetTheme(current_specifics, *sync_data);
-        NotifyOnSyncStarted();
-        return base::nullopt;
+          HasNonDefaultTheme(sync_data.GetSpecifics().theme())) {
+        ThemeSyncState startup_state =
+            MaybeSetTheme(current_specifics, sync_data);
+        NotifyOnSyncStarted(startup_state);
+        return absl::nullopt;
       }
     }
   }
 
   // No theme specifics are found. Create one according to current theme.
-  base::Optional<syncer::ModelError> error =
+  absl::optional<syncer::ModelError> error =
       ProcessNewTheme(syncer::SyncChange::ACTION_ADD, current_specifics);
-  startup_state_ = ThemeSyncState::kApplied;
-  NotifyOnSyncStarted();
+  NotifyOnSyncStarted(ThemeSyncState::kApplied);
   return error;
 }
 
@@ -154,14 +158,13 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
   syncer::SyncDataList list;
   sync_pb::EntitySpecifics entity_specifics;
   if (GetThemeSpecificsFromCurrentTheme(entity_specifics.mutable_theme())) {
-    list.push_back(syncer::SyncData::CreateLocalData(kCurrentThemeClientTag,
-                                                     kCurrentThemeNodeTitle,
-                                                     entity_specifics));
+    list.push_back(syncer::SyncData::CreateLocalData(
+        kSyncEntityClientTag, kSyncEntityTitle, entity_specifics));
   }
   return list;
 }
 
-base::Optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
+absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -195,18 +198,17 @@ base::Optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   sync_pb::ThemeSpecifics current_specifics;
   if (!GetThemeSpecificsFromCurrentTheme(&current_specifics)) {
     // Current theme is unsyncable, so don't overwrite it.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Set current theme from the theme specifics of the last change of type
   // |ACTION_ADD| or |ACTION_UPDATE|.
-  for (auto theme_change = change_list.rbegin();
-       theme_change != change_list.rend(); ++theme_change) {
-    if (theme_change->sync_data().GetSpecifics().has_theme() &&
-        (theme_change->change_type() == syncer::SyncChange::ACTION_ADD ||
-            theme_change->change_type() == syncer::SyncChange::ACTION_UPDATE)) {
-      MaybeSetTheme(current_specifics, theme_change->sync_data());
-      return base::nullopt;
+  for (const syncer::SyncChange& theme_change : base::Reversed(change_list)) {
+    if (theme_change.sync_data().GetSpecifics().has_theme() &&
+        (theme_change.change_type() == syncer::SyncChange::ACTION_ADD ||
+         theme_change.change_type() == syncer::SyncChange::ACTION_UPDATE)) {
+      MaybeSetTheme(current_specifics, theme_change.sync_data());
+      return absl::nullopt;
     }
   }
 
@@ -391,18 +393,17 @@ bool ThemeSyncableService::HasNonDefaultTheme(
          theme_specifics.has_autogenerated_theme();
 }
 
-base::Optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
+absl::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
     syncer::SyncChange::SyncChangeType change_type,
     const sync_pb::ThemeSpecifics& theme_specifics) {
   syncer::SyncChangeList changes;
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
 
-  changes.push_back(
-      syncer::SyncChange(FROM_HERE, change_type,
-                         syncer::SyncData::CreateLocalData(
-                             kCurrentThemeClientTag, kCurrentThemeNodeTitle,
-                             entity_specifics)));
+  changes.emplace_back(
+      FROM_HERE, change_type,
+      syncer::SyncData::CreateLocalData(kSyncEntityClientTag, kSyncEntityTitle,
+                                        entity_specifics));
 
   DVLOG(1) << "Update theme specifics from current theme: "
       << changes.back().ToString();
@@ -410,7 +411,10 @@ base::Optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   return sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
 }
 
-void ThemeSyncableService::NotifyOnSyncStarted() {
+void ThemeSyncableService::NotifyOnSyncStarted(ThemeSyncState startup_state) {
+  // Keep the state for later calls to GetThemeSyncStartState().
+  startup_state_ = startup_state;
+
   for (Observer& observer : observer_list_)
-    observer.OnThemeSyncStarted(startup_state_);
+    observer.OnThemeSyncStarted(startup_state);
 }

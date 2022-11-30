@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -67,7 +68,7 @@ class ServiceWorkerCacheWriter::ReadResponseHeadCallbackAdapter
 
   void DidReadResponseHead(int result,
                            network::mojom::URLResponseHeadPtr response_head,
-                           base::Optional<mojo_base::BigBuffer>) {
+                           absl::optional<mojo_base::BigBuffer>) {
     result_ = result;
     if (!owner_)
       return;
@@ -450,7 +451,7 @@ int ServiceWorkerCacheWriter::DoReadDataForCompare(int result) {
       return net::ERR_FAILED;
     }
     result = ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
-                            data_to_read_.get(), len_to_read_);
+                            data_to_read_, len_to_read_);
   }
   return result;
 }
@@ -685,8 +686,7 @@ int ServiceWorkerCacheWriter::ReadResponseHead(
   return adapter->result();
 }
 
-class ServiceWorkerCacheWriter::DataPipeReader
-    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
+class ServiceWorkerCacheWriter::DataPipeReader {
  public:
   DataPipeReader(storage::mojom::ServiceWorkerResourceReader* reader,
                  ServiceWorkerCacheWriter* owner,
@@ -699,20 +699,21 @@ class ServiceWorkerCacheWriter::DataPipeReader
   // Reads the body up to |num_bytes| bytes. |callback| is always called
   // asynchronously.
   using ReadCallback = base::OnceCallback<void(int /* result */)>;
-  void Read(net::IOBuffer* buffer, int num_bytes, ReadCallback callback) {
+  void Read(scoped_refptr<net::IOBuffer> buffer,
+            int num_bytes,
+            ReadCallback callback) {
     DCHECK(buffer);
-    buffer_ = buffer;
+    buffer_ = std::move(buffer);
     num_bytes_to_read_ = num_bytes;
     callback_ = std::move(callback);
 
     if (!data_.is_valid()) {
-      // This is the initial call of Read(). Call ReadData() to get a data pipe
-      // to read the body.
-      DCHECK(!receiver_.is_bound());
-      reader_->ReadData(
-          -1, receiver_.BindNewPipeAndPassRemote(),
-          base::BindOnce(&ServiceWorkerCacheWriter::DataPipeReader::OnReadData,
-                         weak_factory_.GetWeakPtr()));
+      // This is the initial call of Read(). Call PrepareReadData() to get a
+      // data pipe to read the body.
+      reader_->PrepareReadData(
+          -1, base::BindOnce(
+                  &ServiceWorkerCacheWriter::DataPipeReader::OnReadDataPrepared,
+                  weak_factory_.GetWeakPtr()));
       return;
     }
     task_runner_->PostTask(
@@ -738,7 +739,7 @@ class ServiceWorkerCacheWriter::DataPipeReader
     owner_->AsyncDoLoop(num_bytes_to_read_);
   }
 
-  void OnReadData(mojo::ScopedDataPipeConsumerHandle data) {
+  void OnReadDataPrepared(mojo::ScopedDataPipeConsumerHandle data) {
     // An invalid handle can be returned when creating a data pipe fails on the
     // other side of the endpoint.
     if (!data) {
@@ -753,22 +754,21 @@ class ServiceWorkerCacheWriter::DataPipeReader
                        &ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
                        weak_factory_.GetWeakPtr()));
     ReadInternal(MOJO_RESULT_OK);
-  }
 
-  // storage::mojom::ServiceWorkerDataPipeStateNotifier override:
-  void OnComplete(int32_t status) override {
-    // TODO(https://crbug.com/1055677): notify of errors.
+    // TODO(https://crbug.com/1055677): provide a callback to notify of errors
+    // if any.
+    reader_->ReadData({});
   }
 
   // Parameters set on Read().
-  net::IOBuffer* buffer_ = nullptr;
+  scoped_refptr<net::IOBuffer> buffer_;
   uint32_t num_bytes_to_read_ = 0;
   ReadCallback callback_;
 
   // |reader_| is safe to be kept as a rawptr because |owner_| owns |this| and
   // |reader_|, and |owner_| keeps |reader_| until it's destroyed.
-  storage::mojom::ServiceWorkerResourceReader* const reader_;
-  ServiceWorkerCacheWriter* const owner_;
+  const raw_ptr<storage::mojom::ServiceWorkerResourceReader> reader_;
+  const raw_ptr<ServiceWorkerCacheWriter> owner_;
 
   // Mojo data pipe and the watcher is set up when Read() is called for the
   // first time.
@@ -776,16 +776,13 @@ class ServiceWorkerCacheWriter::DataPipeReader
   mojo::SimpleWatcher watcher_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
-      this};
-
   base::WeakPtrFactory<DataPipeReader> weak_factory_{this};
 };
 
 int ServiceWorkerCacheWriter::ReadDataHelper(
     storage::mojom::ServiceWorkerResourceReader* reader,
     std::unique_ptr<DataPipeReader>& data_pipe_reader,
-    net::IOBuffer* buf,
+    scoped_refptr<net::IOBuffer> buf,
     int buf_len) {
   if (!data_pipe_reader) {
     data_pipe_reader = std::make_unique<DataPipeReader>(

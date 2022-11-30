@@ -1,14 +1,16 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_H_
 #define CC_BENCHMARKS_MICRO_BENCHMARK_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/benchmarks/micro_benchmark.h"
 
 namespace base {
@@ -19,7 +21,7 @@ class Value;
 namespace cc {
 
 class LayerTreeHost;
-class LayerTreeHostImpl;
+
 class CC_EXPORT MicroBenchmarkController {
  public:
   explicit MicroBenchmarkController(LayerTreeHost* host);
@@ -32,18 +34,18 @@ class CC_EXPORT MicroBenchmarkController {
 
   // Returns the id of the benchmark on success, 0 otherwise.
   int ScheduleRun(const std::string& micro_benchmark_name,
-                  std::unique_ptr<base::Value> value,
+                  base::Value settings,
                   MicroBenchmark::DoneCallback callback);
   // Returns true if the message was successfully delivered and handled.
-  bool SendMessage(int id, std::unique_ptr<base::Value> value);
+  bool SendMessage(int id, base::Value message);
 
-  void ScheduleImplBenchmarks(LayerTreeHostImpl* host_impl);
+  std::vector<std::unique_ptr<MicroBenchmarkImpl>> CreateImplBenchmarks() const;
 
  private:
   void CleanUpFinishedBenchmarks();
   int GetNextIdAndIncrement();
 
-  LayerTreeHost* host_;
+  raw_ptr<LayerTreeHost> host_;
   std::vector<std::unique_ptr<MicroBenchmark>> benchmarks_;
   static int next_id_;
   scoped_refptr<base::SingleThreadTaskRunner> main_controller_task_runner_;

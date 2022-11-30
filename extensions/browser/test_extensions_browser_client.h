@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -45,6 +46,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void set_extension_system_factory(ExtensionSystemProvider* factory) {
     extension_system_factory_ = factory;
   }
+  void set_pref_service(PrefService* pref_service) {
+    pref_service_ = pref_service;
+  }
   void set_extension_cache(std::unique_ptr<ExtensionCache> extension_cache) {
     extension_cache_ = std::move(extension_cache);
   }
@@ -76,9 +80,26 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) override;
+
+  content::BrowserContext* GetRedirectedContextInIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) override;
+  content::BrowserContext* GetContextForRegularAndIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) override;
+  content::BrowserContext* GetRegularProfile(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) override;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetUserIdHashFromContext(
       content::BrowserContext* context) override;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsFromMainProfile(content::BrowserContext* context) override;
 #endif
   bool IsGuestSession(content::BrowserContext* context) const override;
   bool IsExtensionIncognitoEnabled(
@@ -96,9 +117,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) override;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
 
   bool AllowCrossRendererResourceLoad(
       const network::ResourceRequest& request,
@@ -135,7 +155,7 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args,
+      base::Value::List args,
       bool dispatch_to_off_the_record_profiles) override;
   ExtensionCache* GetExtensionCache() override;
   bool IsBackgroundUpdateAllowed() override;
@@ -154,17 +174,20 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
  private:
   // Not owned.
-  content::BrowserContext* main_context_ = nullptr;
+  raw_ptr<content::BrowserContext> main_context_ = nullptr;
   // Not owned.
-  content::BrowserContext* incognito_context_ = nullptr;
+  raw_ptr<content::BrowserContext> incognito_context_ = nullptr;
   // Not owned.
-  content::BrowserContext* lock_screen_context_ = nullptr;
+  raw_ptr<content::BrowserContext> lock_screen_context_ = nullptr;
 
   // Not owned.
-  ProcessManagerDelegate* process_manager_delegate_ = nullptr;
+  raw_ptr<ProcessManagerDelegate> process_manager_delegate_ = nullptr;
 
   // Not owned.
-  ExtensionSystemProvider* extension_system_factory_ = nullptr;
+  raw_ptr<ExtensionSystemProvider> extension_system_factory_ = nullptr;
+
+  // Not owned.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

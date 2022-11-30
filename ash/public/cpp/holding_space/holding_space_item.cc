@@ -1,14 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/strcat.h"
+#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
-#include "base/util/values/values_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -30,6 +33,41 @@ constexpr char kVersionPath[] = "version";
 
 }  // namespace
 
+// HoldingSpaceItem::InProgressCommand -----------------------------------------
+
+HoldingSpaceItem::InProgressCommand::InProgressCommand(
+    HoldingSpaceCommandId command_id,
+    int label_id,
+    const gfx::VectorIcon* icon,
+    Handler handler)
+    : command_id(command_id),
+      label_id(label_id),
+      icon(icon),
+      handler(std::move(handler)) {
+  DCHECK(holding_space_util::IsInProgressCommand(command_id));
+}
+
+HoldingSpaceItem::InProgressCommand::InProgressCommand(
+    const InProgressCommand& other)
+    : command_id(other.command_id),
+      label_id(other.label_id),
+      icon(other.icon),
+      handler(other.handler) {}
+
+HoldingSpaceItem::InProgressCommand::~InProgressCommand() = default;
+
+HoldingSpaceItem::InProgressCommand&
+HoldingSpaceItem::InProgressCommand::operator=(const InProgressCommand& other) =
+    default;
+
+bool HoldingSpaceItem::InProgressCommand::operator==(
+    const InProgressCommand& other) const {
+  return command_id == other.command_id && label_id == other.label_id &&
+         icon == other.icon && handler == other.handler;
+}
+
+// HoldingSpaceItem ------------------------------------------------------------
+
 HoldingSpaceItem::~HoldingSpaceItem() {
   deletion_callback_list_.Notify();
 }
@@ -37,7 +75,10 @@ HoldingSpaceItem::~HoldingSpaceItem() {
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
          file_system_url_ == rhs.file_system_url_ && text_ == rhs.text_ &&
-         *image_ == *rhs.image_;
+         secondary_text_ == rhs.secondary_text_ &&
+         secondary_text_color_ == rhs.secondary_text_color_ &&
+         *image_ == *rhs.image_ && progress_ == rhs.progress_ &&
+         in_progress_commands_ == rhs.in_progress_commands_;
 }
 
 // static
@@ -46,13 +87,67 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
     const base::FilePath& file_path,
     const GURL& file_system_url,
     ImageResolver image_resolver) {
+  return CreateFileBackedItem(type, file_path, file_system_url,
+                              HoldingSpaceProgress(),
+                              std::move(image_resolver));
+}
+
+// static
+std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
+    Type type,
+    const base::FilePath& file_path,
+    const GURL& file_system_url,
+    const HoldingSpaceProgress& progress,
+    ImageResolver image_resolver) {
   DCHECK(!file_system_url.is_empty());
 
   // Note: std::make_unique does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, /*id=*/base::UnguessableToken::Create().ToString(), file_path,
-      file_system_url, file_path.BaseName().LossyDisplayName(),
-      std::move(image_resolver).Run(type, file_path)));
+      file_system_url, std::move(image_resolver).Run(type, file_path),
+      progress));
+}
+
+// static
+bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
+  switch (type) {
+    case Type::kArcDownload:
+    case Type::kDownload:
+    case Type::kLacrosDownload:
+      return true;
+    case Type::kDiagnosticsLog:
+    case Type::kDriveSuggestion:
+    case Type::kLocalSuggestion:
+    case Type::kNearbyShare:
+    case Type::kPhoneHubCameraRoll:
+    case Type::kPinnedFile:
+    case Type::kPrintedPdf:
+    case Type::kScan:
+    case Type::kScreenRecording:
+    case Type::kScreenshot:
+      return false;
+  }
+}
+
+// static
+bool HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::Type type) {
+  switch (type) {
+    case Type::kDriveSuggestion:
+    case Type::kLocalSuggestion:
+      return true;
+    case Type::kArcDownload:
+    case Type::kDiagnosticsLog:
+    case Type::kDownload:
+    case Type::kLacrosDownload:
+    case Type::kNearbyShare:
+    case Type::kPhoneHubCameraRoll:
+    case Type::kPinnedFile:
+    case Type::kPrintedPdf:
+    case Type::kScan:
+    case Type::kScreenRecording:
+    case Type::kScreenshot:
+      return false;
+  }
 }
 
 // static
@@ -61,17 +156,17 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
     const base::DictionaryValue& dict,
     ImageResolver image_resolver) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const Type type = static_cast<Type>(dict.FindIntPath(kTypePath).value());
+  const Type type = DeserializeType(dict);
   const base::FilePath file_path = DeserializeFilePath(dict);
 
   // NOTE: `std::make_unique` does not work with private constructors.
   return base::WrapUnique(new HoldingSpaceItem(
       type, DeserializeId(dict), file_path,
-      /*file_system_url=*/GURL(), file_path.BaseName().LossyDisplayName(),
-      std::move(image_resolver).Run(type, file_path)));
+      /*file_system_url=*/GURL(),
+      std::move(image_resolver).Run(type, file_path), HoldingSpaceProgress()));
 }
 
 // static
@@ -79,7 +174,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 // serialization versions are supported, care must be taken to handle each.
 const std::string& HoldingSpaceItem::DeserializeId(
     const base::DictionaryValue& dict) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const std::string* id = dict.FindStringPath(kIdPath);
@@ -93,14 +188,25 @@ const std::string& HoldingSpaceItem::DeserializeId(
 // serialization versions are supported, care must be taken to handle each.
 base::FilePath HoldingSpaceItem::DeserializeFilePath(
     const base::DictionaryValue& dict) {
-  const base::Optional<int> version = dict.FindIntPath(kVersionPath);
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const base::Optional<base::FilePath> file_path =
-      util::ValueToFilePath(dict.FindPath(kFilePathPath));
+  const absl::optional<base::FilePath> file_path =
+      base::ValueToFilePath(dict.FindPath(kFilePathPath));
   DCHECK(file_path.has_value());
 
   return file_path.value();
+}
+
+// static
+// NOTE: This method must remain in sync with `Serialize()`. If multiple
+// serialization versions are supported, care must be taken to handle each.
+HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
+    const base::DictionaryValue& dict) {
+  const absl::optional<int> version = dict.FindIntPath(kVersionPath);
+  DCHECK(version.has_value() && version.value() == kVersion);
+
+  return static_cast<Type>(dict.FindIntPath(kTypePath).value());
 }
 
 // NOTE: This method must remain in sync with `Deserialize()`. The
@@ -111,7 +217,7 @@ base::DictionaryValue HoldingSpaceItem::Serialize() const {
   dict.SetIntPath(kVersionPath, kVersion);
   dict.SetIntPath(kTypePath, static_cast<int>(type_));
   dict.SetStringPath(kIdPath, id_);
-  dict.SetPath(kFilePathPath, util::FilePathToValue(file_path_));
+  dict.SetPath(kFilePathPath, base::FilePathToValue(file_path_));
   return dict;
 }
 
@@ -120,22 +226,107 @@ base::CallbackListSubscription HoldingSpaceItem::AddDeletionCallback(
   return deletion_callback_list_.Add(std::move(callback));
 }
 
-bool HoldingSpaceItem::IsFinalized() const {
+bool HoldingSpaceItem::IsInitialized() const {
   return !file_system_url_.is_empty();
 }
 
-void HoldingSpaceItem::Finalize(const GURL& file_system_url) {
-  DCHECK(!IsFinalized());
+void HoldingSpaceItem::Initialize(const GURL& file_system_url) {
+  DCHECK(!IsInitialized());
   DCHECK(!file_system_url.is_empty());
   file_system_url_ = file_system_url;
 }
 
-void HoldingSpaceItem::UpdateBackingFile(const base::FilePath& file_path,
-                                         const GURL& file_system_url) {
+bool HoldingSpaceItem::SetBackingFile(const base::FilePath& file_path,
+                                      const GURL& file_system_url) {
+  if (file_path_ == file_path && file_system_url_ == file_system_url)
+    return false;
+
   file_path_ = file_path;
   file_system_url_ = file_system_url;
-  text_ = file_path.BaseName().LossyDisplayName();
   image_->UpdateBackingFilePath(file_path);
+
+  return true;
+}
+
+std::u16string HoldingSpaceItem::GetText() const {
+  return text_.value_or(file_path_.BaseName().LossyDisplayName());
+}
+
+bool HoldingSpaceItem::SetText(const absl::optional<std::u16string>& text) {
+  if (text_ == text)
+    return false;
+
+  text_ = text;
+  return true;
+}
+
+bool HoldingSpaceItem::SetSecondaryText(
+    const absl::optional<std::u16string>& secondary_text) {
+  if (secondary_text_ == secondary_text)
+    return false;
+
+  secondary_text_ = secondary_text;
+  return true;
+}
+
+bool HoldingSpaceItem::SetSecondaryTextColor(
+    const absl::optional<cros_styles::ColorName>& secondary_text_color) {
+  if (secondary_text_color_ == secondary_text_color)
+    return false;
+
+  secondary_text_color_ = secondary_text_color;
+  return true;
+}
+
+std::u16string HoldingSpaceItem::GetAccessibleName() const {
+  if (accessible_name_)
+    return accessible_name_.value();
+
+  const std::u16string text = GetText();
+
+  if (!secondary_text_)
+    return text;
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_HOLDING_SPACE_ITEM_A11Y_NAME_AND_TOOLTIP, text,
+      secondary_text_.value());
+}
+
+bool HoldingSpaceItem::SetAccessibleName(
+    const absl::optional<std::u16string>& accessible_name) {
+  if (accessible_name_ == accessible_name)
+    return false;
+
+  accessible_name_ = accessible_name;
+  return true;
+}
+
+bool HoldingSpaceItem::SetProgress(const HoldingSpaceProgress& progress) {
+  // NOTE: Progress can only be updated for in progress items.
+  if (progress_ == progress || progress_.IsComplete())
+    return false;
+
+  progress_ = progress;
+
+  if (progress_.IsComplete())
+    in_progress_commands_.clear();
+
+  return true;
+}
+
+bool HoldingSpaceItem::SetInProgressCommands(
+    std::vector<InProgressCommand> in_progress_commands) {
+  DCHECK(base::ranges::all_of(in_progress_commands,
+                              [](const InProgressCommand& in_progress_command) {
+                                return holding_space_util::IsInProgressCommand(
+                                    in_progress_command.command_id);
+                              }));
+
+  if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands)
+    return false;
+
+  in_progress_commands_ = in_progress_commands;
+  return true;
 }
 
 void HoldingSpaceItem::InvalidateImage() {
@@ -145,12 +336,20 @@ void HoldingSpaceItem::InvalidateImage() {
 
 bool HoldingSpaceItem::IsScreenCapture() const {
   switch (type_) {
-    case HoldingSpaceItem::Type::kScreenshot:
-    case HoldingSpaceItem::Type::kScreenRecording:
+    case Type::kScreenRecording:
+    case Type::kScreenshot:
       return true;
-    case HoldingSpaceItem::Type::kDownload:
-    case HoldingSpaceItem::Type::kNearbyShare:
-    case HoldingSpaceItem::Type::kPinnedFile:
+    case Type::kArcDownload:
+    case Type::kDiagnosticsLog:
+    case Type::kDownload:
+    case Type::kDriveSuggestion:
+    case Type::kLacrosDownload:
+    case Type::kLocalSuggestion:
+    case Type::kNearbyShare:
+    case Type::kPhoneHubCameraRoll:
+    case Type::kPinnedFile:
+    case Type::kPrintedPdf:
+    case Type::kScan:
       return false;
   }
 }
@@ -159,13 +358,13 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
-                                   const std::u16string& text,
-                                   std::unique_ptr<HoldingSpaceImage> image)
+                                   std::unique_ptr<HoldingSpaceImage> image,
+                                   const HoldingSpaceProgress& progress)
     : type_(type),
       id_(id),
       file_path_(file_path),
       file_system_url_(file_system_url),
-      text_(text),
-      image_(std::move(image)) {}
+      image_(std::move(image)),
+      progress_(progress) {}
 
 }  // namespace ash

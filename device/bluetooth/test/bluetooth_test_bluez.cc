@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,9 @@ namespace {
 void GetValueCallback(
     base::OnceClosure quit_closure,
     BluetoothLocalGattService::Delegate::ValueCallback value_callback,
+    absl::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
-  std::move(value_callback).Run(value);
+  std::move(value_callback).Run(error_code, value);
   std::move(quit_closure).Run();
 }
 
@@ -160,8 +161,7 @@ BluetoothDevice* BluetoothTestBlueZ::SimulateClassicDevice() {
 void BluetoothTestBlueZ::SimulateLocalGattCharacteristicValueReadRequest(
     BluetoothDevice* from_device,
     BluetoothLocalGattCharacteristic* characteristic,
-    BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-    base::OnceClosure error_callback) {
+    BluetoothLocalGattService::Delegate::ValueCallback value_callback) {
   bluez::BluetoothLocalGattCharacteristicBlueZ* characteristic_bluez =
       static_cast<bluez::BluetoothLocalGattCharacteristicBlueZ*>(
           characteristic);
@@ -184,9 +184,7 @@ void BluetoothTestBlueZ::SimulateLocalGattCharacteristicValueReadRequest(
   characteristic_provider->GetValue(
       GetDevicePath(from_device),
       base::BindOnce(&GetValueCallback, run_loop.QuitClosure(),
-                     std::move(value_callback)),
-      base::BindOnce(&ClosureCallback, run_loop.QuitClosure(),
-                     std::move(error_callback)));
+                     std::move(value_callback)));
   run_loop.Run();
 }
 
@@ -264,8 +262,7 @@ void BluetoothTestBlueZ::
 void BluetoothTestBlueZ::SimulateLocalGattDescriptorValueReadRequest(
     BluetoothDevice* from_device,
     BluetoothLocalGattDescriptor* descriptor,
-    BluetoothLocalGattService::Delegate::ValueCallback value_callback,
-    base::OnceClosure error_callback) {
+    BluetoothLocalGattService::Delegate::ValueCallback value_callback) {
   bluez::BluetoothLocalGattDescriptorBlueZ* descriptor_bluez =
       static_cast<bluez::BluetoothLocalGattDescriptorBlueZ*>(descriptor);
   bluez::FakeBluetoothGattManagerClient* fake_bluetooth_gatt_manager_client =
@@ -286,9 +283,7 @@ void BluetoothTestBlueZ::SimulateLocalGattDescriptorValueReadRequest(
   descriptor_provider->GetValue(
       GetDevicePath(from_device),
       base::BindOnce(&GetValueCallback, run_loop.QuitClosure(),
-                     std::move(value_callback)),
-      base::BindOnce(&ClosureCallback, run_loop.QuitClosure(),
-                     std::move(error_callback)));
+                     std::move(value_callback)));
   run_loop.Run();
 }
 

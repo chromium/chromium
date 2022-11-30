@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 #define REMOTING_IOS_SESSION_REMOTING_CLIENT_SESSION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/protocol/connection_to_host.h"
@@ -16,10 +15,15 @@ namespace remoting {
 
 class ChromotingClientRuntime;
 
-class RemotingClientSessonDelegate : public ChromotingSession::Delegate {
+class RemotingClientSessionDelegate : public ChromotingSession::Delegate {
  public:
-  RemotingClientSessonDelegate(RemotingClient* client);
-  ~RemotingClientSessonDelegate() override;
+  RemotingClientSessionDelegate(RemotingClient* client);
+
+  RemotingClientSessionDelegate(const RemotingClientSessionDelegate&) = delete;
+  RemotingClientSessionDelegate& operator=(const RemotingClientSessionDelegate&) =
+      delete;
+
+  ~RemotingClientSessionDelegate() override;
 
   // ChromotingSession::Delegate implementation
   void OnConnectionState(protocol::ConnectionToHost::State state,
@@ -39,15 +43,13 @@ class RemotingClientSessonDelegate : public ChromotingSession::Delegate {
   void HandleExtensionMessage(const std::string& type,
                               const std::string& message) override;
 
-  base::WeakPtr<RemotingClientSessonDelegate> GetWeakPtr();
+  base::WeakPtr<RemotingClientSessionDelegate> GetWeakPtr();
 
  private:
   ChromotingClientRuntime* runtime_;
   __weak id client_;
 
-  base::WeakPtrFactory<RemotingClientSessonDelegate> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingClientSessonDelegate);
+  base::WeakPtrFactory<RemotingClientSessionDelegate> weak_factory_;
 };
 
 }  // namespace remoting

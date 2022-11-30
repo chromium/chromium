@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/component_updater/component_installer.h"
@@ -70,7 +71,7 @@ class CRLSetData {
  private:
   void UpdateCRLSetOnUI(const std::string& crl_set_bytes);
 
-  network::mojom::NetworkService* network_service_ = nullptr;
+  raw_ptr<network::mojom::NetworkService> network_service_ = nullptr;
   base::FilePath crl_set_path_;
 };
 
@@ -91,7 +92,7 @@ void CRLSetData::UpdateCRLSetOnUI(const std::string& crl_set_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   network::mojom::NetworkService* network_service =
-      network_service_ ? network_service_ : content::GetNetworkService();
+      network_service_ ? network_service_.get() : content::GetNetworkService();
   network_service->UpdateCRLSet(base::as_bytes(base::make_span(crl_set_bytes)),
                                 base::DoNothing());
 }
@@ -112,7 +113,7 @@ void CRLSetPolicy::ReconfigureAfterNetworkRestart() {
   g_crl_set_data.Get().ConfigureNetworkService();
 }
 
-bool CRLSetPolicy::VerifyInstallation(const base::DictionaryValue& manifest,
+bool CRLSetPolicy::VerifyInstallation(const base::Value& manifest,
                                       const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kCRLSetFile));
 }
@@ -126,17 +127,16 @@ bool CRLSetPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result CRLSetPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
 
 void CRLSetPolicy::OnCustomUninstall() {}
 
-void CRLSetPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void CRLSetPolicy::ComponentReady(const base::Version& version,
+                                  const base::FilePath& install_dir,
+                                  base::Value manifest) {
   g_crl_set_data.Get().set_crl_set_path(install_dir.Append(kCRLSetFile));
   g_crl_set_data.Get().ConfigureNetworkService();
 }

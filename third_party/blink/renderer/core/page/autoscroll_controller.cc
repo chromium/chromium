@@ -48,7 +48,7 @@ namespace blink {
 
 // Delay time in second for start autoscroll if pointer is in border edge of
 // scrollable element.
-constexpr base::TimeDelta kAutoscrollDelay = base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kAutoscrollDelay = base::Seconds(0.2);
 
 static const int kNoMiddleClickAutoscrollRadius = 15;
 
@@ -96,6 +96,10 @@ AutoscrollController::AutoscrollController(Page& page) : page_(&page) {}
 
 void AutoscrollController::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
+  visitor->Trace(autoscroll_layout_object_);
+  visitor->Trace(pressed_layout_object_);
+  visitor->Trace(horizontal_autoscroll_layout_box_);
+  visitor->Trace(vertical_autoscroll_layout_box_);
 }
 
 bool AutoscrollController::SelectionAutoscrollInProgress() const {
@@ -163,23 +167,8 @@ void AutoscrollController::StopAutoscrollIfNeeded(LayoutObject* layout_object) {
   autoscroll_type_ = kNoAutoscroll;
 }
 
-void AutoscrollController::UpdateAutoscrollLayoutObject() {
-  if (!autoscroll_layout_object_)
-    return;
-
-  LayoutObject* layout_object = autoscroll_layout_object_;
-
-  while (layout_object && !(layout_object->IsBox() &&
-                            To<LayoutBox>(layout_object)->CanAutoscroll()))
-    layout_object = layout_object->Parent();
-
-  autoscroll_layout_object_ = DynamicTo<LayoutBox>(layout_object);
-  if (!autoscroll_layout_object_)
-    autoscroll_type_ = kNoAutoscroll;
-}
-
 void AutoscrollController::UpdateDragAndDrop(Node* drop_target_node,
-                                             const FloatPoint& event_position,
+                                             const gfx::PointF& event_position,
                                              base::TimeTicks event_time) {
   if (!drop_target_node || !drop_target_node->GetLayoutObject()) {
     StopAutoscroll();
@@ -218,7 +207,7 @@ void AutoscrollController::UpdateDragAndDrop(Node* drop_target_node,
   }
 
   drag_and_drop_autoscroll_reference_position_ =
-      PhysicalOffset::FromFloatPointRound(event_position) + offset;
+      PhysicalOffset::FromPointFRound(event_position) + offset;
 
   if (autoscroll_type_ == kNoAutoscroll) {
     autoscroll_type_ = kAutoscrollForDragAndDrop;
@@ -250,8 +239,8 @@ bool CanScrollDirection(LayoutBox* layout_box,
         page->GetVisualViewport().MaximumScrollOffset();
     can_scroll =
         can_scroll || (orientation == ScrollOrientation::kHorizontalScroll
-                           ? maximum_scroll_offset.Width() > 0
-                           : maximum_scroll_offset.Height() > 0);
+                           ? maximum_scroll_offset.x() > 0
+                           : maximum_scroll_offset.y() > 0);
   }
 
   return can_scroll;
@@ -259,7 +248,7 @@ bool CanScrollDirection(LayoutBox* layout_box,
 
 void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
     LocalFrame* frame,
-    const FloatPoint& position_global,
+    const gfx::PointF& position_global,
     bool is_middle_button) {
   if (!MiddleClickAutoscrollInProgress())
     return;
@@ -282,22 +271,22 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
   if (!view)
     return;
 
-  FloatSize distance =
-      (position_global - middle_click_autoscroll_start_pos_global_)
-          .ScaledBy(1 / frame->DevicePixelRatio());
+  gfx::Vector2dF distance = gfx::ScaleVector2d(
+      position_global - middle_click_autoscroll_start_pos_global_,
+      1 / frame->DevicePixelRatio());
 
-  if (fabs(distance.Width()) <= kNoMiddleClickAutoscrollRadius)
-    distance.SetWidth(0);
-  if (fabs(distance.Height()) <= kNoMiddleClickAutoscrollRadius)
-    distance.SetHeight(0);
+  if (fabs(distance.x()) <= kNoMiddleClickAutoscrollRadius)
+    distance.set_x(0);
+  if (fabs(distance.y()) <= kNoMiddleClickAutoscrollRadius)
+    distance.set_y(0);
 
   const float kExponent = 2.2f;
   const float kMultiplier = -0.000008f;
-  const int x_signum = (distance.Width() < 0) ? -1 : (distance.Width() > 0);
-  const int y_signum = (distance.Height() < 0) ? -1 : (distance.Height() > 0);
+  const int x_signum = (distance.x() < 0) ? -1 : (distance.x() > 0);
+  const int y_signum = (distance.y() < 0) ? -1 : (distance.y() > 0);
   gfx::Vector2dF velocity(
-      pow(fabs(distance.Width()), kExponent) * kMultiplier * x_signum,
-      pow(fabs(distance.Height()), kExponent) * kMultiplier * y_signum);
+      pow(fabs(distance.x()), kExponent) * kMultiplier * x_signum,
+      pow(fabs(distance.y()), kExponent) * kMultiplier * y_signum);
 
   bool can_scroll_vertically =
       vertical_autoscroll_possible
@@ -331,7 +320,9 @@ void AutoscrollController::HandleMouseReleaseForMiddleClickAutoscroll(
   if (!MiddleClickAutoscrollInProgress())
     return;
 
-  if (!frame->IsMainFrame())
+  // We only want to execute this event once per event dispatch loop so
+  // we restrict to processing it only on the local root.
+  if (!frame->IsLocalRoot())
     return;
 
   if (middle_click_mode_ == kMiddleClickInitial && is_middle_button)
@@ -359,8 +350,8 @@ bool AutoscrollController::MiddleClickAutoscrollInProgress() const {
 void AutoscrollController::StartMiddleClickAutoscroll(
     LocalFrame* frame,
     LayoutBox* scrollable,
-    const FloatPoint& position,
-    const FloatPoint& position_global) {
+    const gfx::PointF& position,
+    const gfx::PointF& position_global) {
   DCHECK(RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled());
   DCHECK(scrollable);
   // We don't want to trigger the autoscroll or the middleClickAutoscroll if
@@ -439,7 +430,7 @@ void AutoscrollController::StartMiddleClickAutoscroll(
   }
   page_->GetChromeClient().SetCursorOverridden(true);
   page_->GetChromeClient().AutoscrollStart(
-      position.ScaledBy(1 / frame->DevicePixelRatio()), frame);
+      gfx::ScalePoint(position, 1 / frame->DevicePixelRatio()), frame);
 }
 
 void AutoscrollController::Animate() {
@@ -458,7 +449,7 @@ void AutoscrollController::Animate() {
       autoscroll_layout_object_->CalculateAutoscrollDirection(
           event_handler.LastKnownMousePositionInRootFrame());
   PhysicalOffset selection_point =
-      PhysicalOffset::FromFloatPointRound(
+      PhysicalOffset::FromPointFRound(
           event_handler.LastKnownMousePositionInRootFrame()) +
       offset;
   switch (autoscroll_type_) {

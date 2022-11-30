@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,9 @@
 #include <map>
 #include <memory>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -34,6 +35,9 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   PersistentSampleMap(uint64_t id,
                       PersistentHistogramAllocator* allocator,
                       Metadata* meta);
+
+  PersistentSampleMap(const PersistentSampleMap&) = delete;
+  PersistentSampleMap& operator=(const PersistentSampleMap&) = delete;
 
   ~PersistentSampleMap() override;
 
@@ -93,15 +97,13 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
 
   // The allocator that manages histograms inside persistent memory. This is
   // owned externally and is expected to live beyond the life of this object.
-  PersistentHistogramAllocator* allocator_;
+  raw_ptr<PersistentHistogramAllocator> allocator_;
 
   // The object that manages sample records inside persistent memory. This is
   // owned by the |allocator_| object (above) and so, like it, is expected to
   // live beyond the life of this object. This value is lazily-initialized on
   // first use via the GetRecords() accessor method.
-  PersistentSampleMapRecords* records_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSampleMap);
+  raw_ptr<PersistentSampleMapRecords> records_ = nullptr;
 };
 
 }  // namespace base

@@ -18,7 +18,7 @@
 test(function(t)
 {
     var axMenuList = accessibilityController.accessibleElementById("menulist");
-    assert_equals(axMenuList.role, "AXRole: AXPopUpButton");
+    assert_equals(axMenuList.role, "AXRole: AXComboBoxSelect");
     var axMenuListPopup = axMenuList.childAtIndex(0);
     assert_equals(axMenuListPopup.role, "AXRole: AXMenuListPopup");
     assert_equals(axMenuListPopup.childrenCount, 7);

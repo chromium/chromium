@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 
@@ -28,8 +27,11 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const base::FilePath& external_policy_info_path,
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+  MachineLevelUserCloudPolicyStore(const MachineLevelUserCloudPolicyStore&) =
+      delete;
+  MachineLevelUserCloudPolicyStore& operator=(
+      const MachineLevelUserCloudPolicyStore&) = delete;
   ~MachineLevelUserCloudPolicyStore() override;
 
   // Creates a MachineLevelUserCloudPolicyStore instance. |external_policy_path|
@@ -39,7 +41,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const std::string& machine_client_id,
       const base::FilePath& external_policy_dir,
       const base::FilePath& policy_dir,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   // override DesktopCloudPolicyStore
@@ -81,8 +82,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
 
   DMToken machine_dm_token_;
   std::string machine_client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStore);
 };
 
 }  // namespace policy

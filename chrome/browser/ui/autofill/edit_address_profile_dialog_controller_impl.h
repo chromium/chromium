@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -29,25 +30,38 @@ class EditAddressProfileDialogControllerImpl
   ~EditAddressProfileDialogControllerImpl() override;
 
   // Sets up the controller and offers to edit the |profile| before saving it.
-  // |address_profile_save_prompt_callback| will be invoked once the user makes
-  // a decision with respect to the offer-to-edit prompt.
+  // If `original_profile` is not nullptr, this indicates that this dialog is
+  // opened from an update prompt. The originating prompt (save or update) will
+  // be re-opened once the user makes a decision with respect to the
+  // offer-to-edit prompt.
   void OfferEdit(const AutofillProfile& profile,
+                 const AutofillProfile* original_profile,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;
+  std::u16string GetOkButtonLabel() const override;
   const AutofillProfile& GetProfileToEdit() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       const AutofillProfile& profile_with_edits) override;
   void OnDialogClosed() override;
 
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+
  private:
   explicit EditAddressProfileDialogControllerImpl(
       content::WebContents* web_contents);
   friend class content::WebContentsUserData<
       EditAddressProfileDialogControllerImpl>;
+
+  // Remove the |dialog_view_| and hide the dialog.
+  void HideDialog();
+
+  // nullptr if no dialog is currently shown.
+  raw_ptr<AutofillBubbleBase> dialog_view_ = nullptr;
 
   // Callback to run once the user makes a decision with respect to saving the
   // address profile currently being edited.
@@ -58,7 +72,10 @@ class EditAddressProfileDialogControllerImpl
   // before saving.
   AutofillProfile address_profile_to_edit_;
 
-  AutofillBubbleBase* edit_dialog_ = nullptr;
+  // If not nullptr, this dialog was opened from an update prompt. Contains the
+  // details of the address profile that will be updated if the user accepts
+  // that update prompt from which this edit dialog was opened..
+  absl::optional<AutofillProfile> original_profile_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

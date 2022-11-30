@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser.h"
 #include "chrome/browser/thumbnail/generator/jni_headers/ThumbnailGenerator_jni.h"
@@ -77,6 +78,15 @@ void ThumbnailGenerator::OnVideoThumbnailRetrieved(
   // Scale the bitmap before sending back to Java.
   ScaleDownBitmap(icon_size, std::move(thumbnail),
                   base::BindOnce(&OnThumbnailScaled, std::move(java_callback)));
+
+  // We want to delete |parser| but can't do it immediately because current
+  // stack contains functions that belong to ThumbnailMediaParser and the
+  // VideoDecoder that the parser owens. This would cause use-after-free.
+  // That's why |parser|'s destruction is postponed till the current task
+  // is completed and the call stack doesn't have frames referencing memory
+  // owned by |parser|
+  base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE,
+                                                     std::move(parser));
 }
 
 void ThumbnailGenerator::RetrieveThumbnail(

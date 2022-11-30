@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,14 +32,16 @@ class IsolatedWorldCspBrowserTest : public ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("eval.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv2", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
+      << message_;
 }
 
 // Test that a Manifest V3 content script can't use eval.
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV3) {
   GURL url = embedded_test_server()->GetURL("eval.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv3", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
+      << message_;
 }
 
 // Test that a Manifest V2 content script can navigate to a javascript url by
@@ -47,7 +49,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, Eval_ManifestV3) {
 IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("js-url.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv2", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
+      << message_;
 }
 
 // Test that a Manifest V3 content script can't navigate to a javascript url
@@ -61,11 +64,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
       "Refused to run the JavaScript URL because it violates the following "
-      "Content Security Policy directive: \"script-src 'self'\".*");
+      "Content Security Policy directive: \"script-src 'self' "
+      "'wasm-unsafe-eval'\".*");
 
   GURL url = embedded_test_server()->GetURL("js-url.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv3", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
+      << message_;
   console_observer.Wait();
 
   // Also ensure the page title wasn't changed.
@@ -78,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest,
                        RemoteScriptSrc_ManifestV2) {
   GURL url = embedded_test_server()->GetURL("remote-script.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv2", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv2", {.page_url = url.spec().c_str()}))
+      << message_;
 }
 
 // Test that a Manifest V3 content script can't execute a remote script even if
@@ -87,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest,
                        RemoteScriptSrc_ManifestV3) {
   GURL url = embedded_test_server()->GetURL("remote-script.com",
                                             "/page_with_script_src_csp.html");
-  ASSERT_TRUE(RunExtensionSubtest("mv3", url.spec())) << message_;
+  ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
+      << message_;
 }
 
 }  // namespace extensions

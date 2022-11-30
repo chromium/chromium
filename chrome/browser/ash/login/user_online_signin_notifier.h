@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 
-namespace chromeos {
+namespace ash {
 
 // Checks when online signin conditions are met for any login screen pods and
 // notifies observers.
@@ -51,6 +51,6 @@ class UserOnlineSigninNotifier {
   base::WeakPtrFactory<UserOnlineSigninNotifier> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_USER_ONLINE_SIGNIN_NOTIFIER_H_

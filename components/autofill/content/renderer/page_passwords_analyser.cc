@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -166,10 +169,11 @@ void TrackElementId(const WebElement& element,
 // example if an invalid attribute is added), but these cases are assumed
 // to be rare, and are ignored for the sake of simplicity.
 // The id of |node| will additionally be added to the corresponding |ids| set.
+template <typename RendererId>
 bool TrackElementByRendererIdIfUntracked(
     const WebElement& element,
-    const uint32_t renderer_id,
-    std::set<uint32_t>* skip_renderer_ids,
+    const RendererId renderer_id,
+    std::set<RendererId>* skip_renderer_ids,
     std::map<std::string, std::vector<WebNode>>* nodes_for_id) {
   if (skip_renderer_ids->count(renderer_id))
     return true;
@@ -183,8 +187,8 @@ bool TrackElementByRendererIdIfUntracked(
 // analysis.
 std::vector<FormInputCollection> ExtractFormsForAnalysis(
     const WebDocument& document,
-    std::set<uint32_t>* skip_form_ids,
-    std::set<uint32_t>* skip_control_ids,
+    std::set<FormRendererId>* skip_form_ids,
+    std::set<FieldRendererId>* skip_control_ids,
     PageFormAnalyserLogger* logger) {
   std::vector<FormInputCollection> form_input_collections;
 
@@ -198,8 +202,8 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
     // Collect all the inputs in the form.
     for (const WebFormControlElement& input : form.GetFormControlElements()) {
       if (TrackElementByRendererIdIfUntracked(
-              input, input.UniqueRendererFormControlId(), skip_control_ids,
-              &nodes_for_id))
+              input, FieldRendererId(input.UniqueRendererFormControlId()),
+              skip_control_ids, &nodes_for_id))
         continue;
       // We are only interested in a subset of input elements -- those likely
       // to be username or password fields.
@@ -211,19 +215,21 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
         inputs_with_forms.insert(input);
       }
     }
-    TrackElementByRendererIdIfUntracked(form, form.UniqueRendererFormId(),
-                                        skip_form_ids, &nodes_for_id);
+    TrackElementByRendererIdIfUntracked(
+        form, FormRendererId(form.UniqueRendererFormId()), skip_form_ids,
+        &nodes_for_id);
   }
 
   // Check for password fields that are not contained inside forms.
   auto password_inputs = document.QuerySelectorAll("input[type=\"password\"]");
   for (unsigned i = 0; i < password_inputs.size(); ++i) {
-    const WebInputElement* input_element =
-        ToWebInputElement(&password_inputs[i]);
-    if (!input_element || input_element->IsNull())
+    const WebInputElement input_element =
+        password_inputs[i].DynamicTo<WebInputElement>();
+    if (input_element.IsNull())
       continue;
     if (TrackElementByRendererIdIfUntracked(
-            password_inputs[i], input_element->UniqueRendererFormControlId(),
+            password_inputs[i],
+            FieldRendererId(input_element.UniqueRendererFormControlId()),
             skip_control_ids, &nodes_for_id))
       continue;
     // Any password fields inside <form> elements will have been skipped,
@@ -237,14 +243,16 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   // inside forms.
   std::string selector = "input:not([type])";
   for (const char* text_type : kTypeTextAttributes)
-    selector += ", input[type=\"" + std::string(text_type) + "\"]";
+    base::StrAppend(&selector, {", input[type=\"", text_type, "\"]"});
   auto text_inputs = document.QuerySelectorAll(WebString::FromUTF8(selector));
   for (const WebElement& text_input : text_inputs) {
-    const WebInputElement* input_element = ToWebInputElement(&text_input);
-    if (!input_element || input_element->IsNull())
+    const WebInputElement input_element =
+        text_input.DynamicTo<WebInputElement>();
+    if (input_element.IsNull())
       continue;
     TrackElementByRendererIdIfUntracked(
-        text_input, input_element->UniqueRendererFormControlId(),
+        text_input,
+        FieldRendererId(input_element.UniqueRendererFormControlId()),
         skip_control_ids, &nodes_for_id);
   }
   // Warn against elements sharing an id attribute. Duplicate id attributes both
@@ -292,7 +300,7 @@ void InferUsernameField(
     WebElement control(label.CorrespondingControl());
     if (!control.IsNull() && control.IsFormControlElement()) {
       WebFormControlElement form_control(control.To<WebFormControlElement>());
-      auto found = std::find(inputs.begin(), inputs.end(), form_control);
+      auto found = base::ranges::find(inputs, form_control);
       if (found != inputs.end()) {
         std::string label_content(
             base::UTF16ToUTF8(form_util::FindChildText(label)));
@@ -326,7 +334,7 @@ void GuessAutocompleteAttributesForPasswordFields(
   switch (password_count) {
     case 3:
       (*autocomplete_suggestions)[password_inputs[0]] = "current-password";
-      FALLTHROUGH;  // To match the last two password fields.
+      [[fallthrough]];  // To match the last two password fields.
     case 2:
       (*autocomplete_suggestions)[password_inputs[password_count - 2]] =
           "new-password";
@@ -430,9 +438,9 @@ void AnalyseForm(const FormInputCollection& form_input_collection,
 }  // namespace
 
 // Out-of-line definitions to keep [chromium-style] happy.
-PagePasswordsAnalyser::PagePasswordsAnalyser() {}
+PagePasswordsAnalyser::PagePasswordsAnalyser() = default;
 
-PagePasswordsAnalyser::~PagePasswordsAnalyser() {}
+PagePasswordsAnalyser::~PagePasswordsAnalyser() = default;
 
 void PagePasswordsAnalyser::Reset() {
   skip_control_element_renderer_ids_.clear();

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,14 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/values.h"
+#include "base/win/sid.h"
+#include "sandbox/win/src/app_container.h"
+#include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/security_level.h"
-#include "sandbox/win/src/sid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -29,29 +30,32 @@ class PolicyBase;
 class PolicyDiagnostic final : public PolicyInfo {
  public:
   // This should quickly copy what it needs from PolicyBase.
-  PolicyDiagnostic(PolicyBase* policy);
+  explicit PolicyDiagnostic(PolicyBase* policy);
+
+  PolicyDiagnostic(const PolicyDiagnostic&) = delete;
+  PolicyDiagnostic& operator=(const PolicyDiagnostic&) = delete;
+
   ~PolicyDiagnostic() override;
   const char* JsonString() override;
 
  private:
   // |json_string_| is lazily constructed.
   std::unique_ptr<std::string> json_string_;
-  std::vector<uint32_t> process_ids_;
+  uint32_t process_id_;
   TokenLevel lockdown_level_ = USER_LAST;
-  JobLevel job_level_ = JOB_NONE;
+  JobLevel job_level_ = JobLevel::kNone;
   IntegrityLevel desired_integrity_level_ = INTEGRITY_LEVEL_LAST;
   MitigationFlags desired_mitigations_ = 0;
-  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
-  std::unique_ptr<Sid> app_container_sid_ = nullptr;
+  absl::optional<base::win::Sid> app_container_sid_;
   // Only populated if |app_container_sid_| is present.
-  std::vector<Sid> capabilities_;
+  std::vector<base::win::Sid> capabilities_;
   // Only populated if |app_container_sid_| is present.
-  std::vector<Sid> initial_capabilities_;
-  // Cannot have both |lowbox_sid_| and |app_container_sid_|. May have neither.
-  std::unique_ptr<Sid> lowbox_sid_ = nullptr;
-  std::unique_ptr<PolicyGlobal> policy_rules_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyDiagnostic);
+  std::vector<base::win::Sid> initial_capabilities_;
+  AppContainerType app_container_type_ = AppContainerType::kNone;
+  std::unique_ptr<PolicyGlobal> policy_rules_;
+  bool is_csrss_connected_ = false;
+  HandleMap handles_to_close_;
+  std::string tag_;
 };
 
 }  // namespace sandbox

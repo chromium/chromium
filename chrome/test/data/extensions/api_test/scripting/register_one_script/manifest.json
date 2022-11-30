@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Test extension which registers one persistent script",
+  "version": "0.1",
+  "description": "Used for a test that ensures that requests matching dynamic
+                  scripts are resumed if the extension is quickly unloaded",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://hostperms.com/*"]
+}

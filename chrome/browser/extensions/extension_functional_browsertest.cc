@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   GURL extension_url = extension->GetResourceURL("file.html");
 
   // Load the extension in two unrelated tabs.
-  ui_test_utils::NavigateToURL(browser(), extension_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -109,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   // Sanity-check test setup: 2 frames share a renderer process, but are not in
   // a related browsing instance.
   content::RenderFrameHost* tab1 =
-      browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame();
   content::RenderFrameHost* tab2 =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetMainFrame();
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
   EXPECT_EQ(tab1->GetProcess(), tab2->GetProcess());
   EXPECT_FALSE(
       tab1->GetSiteInstance()->IsRelatedSiteInstance(tab2->GetSiteInstance()));
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
     ASSERT_TRUE(did_create_popup);
     content::WebContents* popup_window = new_window_observer.GetWebContents();
     EXPECT_TRUE(WaitForLoadStop(popup_window));
-    tab1_popup = popup_window->GetMainFrame();
+    tab1_popup = popup_window->GetPrimaryMainFrame();
   }
   EXPECT_EQ(GURL(url::kAboutBlankURL), tab1_popup->GetLastCommittedURL());
 
@@ -149,8 +149,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
-  auto* download_manager =
-      content::BrowserContext::GetDownloadManager(profile());
+  auto* download_manager = profile()->GetDownloadManager();
   content::DownloadTestObserverTerminal download_observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);

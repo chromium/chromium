@@ -1,12 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -36,37 +37,41 @@ class NetMetricsLogUploaderTest : public testing::Test {
         }));
   }
 
+  NetMetricsLogUploaderTest(const NetMetricsLogUploaderTest&) = delete;
+  NetMetricsLogUploaderTest& operator=(const NetMetricsLogUploaderTest&) =
+      delete;
+
   void CreateAndOnUploadCompleteReuseUploader() {
     ReportingInfo reporting_info;
     reporting_info.set_attempt_count(10);
-    uploader_.reset(new NetMetricsLogUploader(
+    uploader_ = std::make_unique<NetMetricsLogUploader>(
         test_shared_url_loader_factory_, GURL("https://dummy_server"),
         "dummy_mime", MetricsLogUploader::UMA,
         base::BindRepeating(
             &NetMetricsLogUploaderTest::OnUploadCompleteReuseUploader,
-            base::Unretained(this))));
+            base::Unretained(this)));
     uploader_->UploadLog("initial_dummy_data", "initial_dummy_hash",
                          "initial_dummy_signature", reporting_info);
   }
 
   void CreateUploaderAndUploadToSecureURL(const std::string& url) {
     ReportingInfo dummy_reporting_info;
-    uploader_.reset(new NetMetricsLogUploader(
+    uploader_ = std::make_unique<NetMetricsLogUploader>(
         test_shared_url_loader_factory_, GURL(url), "dummy_mime",
         MetricsLogUploader::UMA,
         base::BindRepeating(&NetMetricsLogUploaderTest::DummyOnUploadComplete,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
     uploader_->UploadLog("dummy_data", "dummy_hash", "dummy_signature",
                          dummy_reporting_info);
   }
 
   void CreateUploaderAndUploadToInsecureURL() {
     ReportingInfo dummy_reporting_info;
-    uploader_.reset(new NetMetricsLogUploader(
+    uploader_ = std::make_unique<NetMetricsLogUploader>(
         test_shared_url_loader_factory_, GURL("http://dummy_insecure_server"),
         "dummy_mime", MetricsLogUploader::UMA,
         base::BindRepeating(&NetMetricsLogUploaderTest::DummyOnUploadComplete,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
     std::string compressed_message;
     // Compress the data since the encryption code expects a compressed log,
     // and tries to decompress it before encrypting it.
@@ -118,8 +123,6 @@ class NetMetricsLogUploaderTest : public testing::Test {
   base::RunLoop loop_;
   std::string upload_data_;
   net::HttpRequestHeaders headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetMetricsLogUploaderTest);
 };
 
 void CheckReportingInfoHeader(net::HttpRequestHeaders headers,

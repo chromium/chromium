@@ -26,7 +26,7 @@ BEGIN
       VALUE "OriginalFilename",	"libxml2.dll\0"
       VALUE "ProductName",	"libxml2\0"
       VALUE "ProductVersion",	LIBXML_DOTTED_VERSION "\0"
-      VALUE "Comments",		"For more information visit http://xmlsoft.org/\0"
+      VALUE "Comments",		"For more information visit https://gitlab.gnome.org/GNOME/libxml2\0"
     END
   END
   BLOCK "VarFileInfo"

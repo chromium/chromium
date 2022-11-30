@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,20 @@
 
 namespace query_tiles {
 
+// Helper class to shuffle a vector of tiles beginning at the |start| position.
+class TileShuffler {
+ public:
+  TileShuffler() = default;
+  TileShuffler(const TileShuffler& other) = delete;
+  TileShuffler& operator=(const TileShuffler& other) = delete;
+
+  virtual void Shuffle(std::vector<Tile>* tiles, int start) const;
+};
+
 // Function to sort a vector of tiles based on their score in |tile_stats|. If
 // a tile ID doesn't exists in |tile_stats|, a new entry will be created and
 // a score will be calculated. If a tile ID in |tile_stats| doesn't show up in
-// |tiles|, it will be removed.
+// |tiles|, it will be removed if the tile isn't clicked recently.
 // To calculate scores for new tiles, ordering from the server response will
 // be taken into consideration. As the server has already ordered tiles
 // according to their importance.
@@ -40,6 +50,10 @@ double CalculateTileScore(const TileStats& tile_stats, base::Time current_time);
 
 // Checks whether a tile ID is for trending tile.
 bool IsTrendingTile(const std::string& tile_id);
+
+// Shuffle tiles from position |TileConfig::GetTileShufflePosition()|
+// so that low score tiles has a chance to be seen.
+void ShuffleTiles(std::vector<Tile>* tiles, const TileShuffler& shuffer);
 
 }  // namespace query_tiles
 

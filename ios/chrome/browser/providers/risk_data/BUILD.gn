@@ -1,0 +1,9 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chromium_risk_data") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_risk_data.mm" ]
+  deps = [ "//ios/public/provider/chrome/browser/risk_data:risk_data_api" ]
+}

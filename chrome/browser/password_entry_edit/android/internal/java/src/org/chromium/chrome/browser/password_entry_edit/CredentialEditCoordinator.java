@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,14 +66,13 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     }
 
     void setCredential(String displayUrlOrAppName, String username, String password,
-            String displayFederationOrigin) {
+            String displayFederationOrigin, boolean isInsecureCredential) {
         mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, displayUrlOrAppName)
                          .with(FEDERATION_ORIGIN, displayFederationOrigin)
                          .build();
         mMediator.initialize(mModel);
-        mMediator.setCredential(username, password);
+        mMediator.setCredential(username, password, isInsecureCredential);
     }
 
     void setExistingUsernames(String[] existingUsernames) {
@@ -93,6 +92,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     @Override
     public void onStartFragment() {
         CredentialEditCoordinator.setupModelChangeProcessor(mModel, mFragmentView);
+        mModel.set(UI_ACTION_HANDLER, mMediator);
     }
 
     @Override

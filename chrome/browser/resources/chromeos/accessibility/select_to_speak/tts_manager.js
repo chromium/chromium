@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * The wrapper for Select-to-speak's text-to-speech features.
  */
+
 export class TtsManager {
   constructor() {
     /**
@@ -20,6 +21,12 @@ export class TtsManager {
     this.clientTtsOptions_ = /** @type {!chrome.tts.TtsOptions} */ ({});
 
     /**
+     * The fallback voice to use if TTS fails.
+     * @private {string|undefined}
+     */
+    this.fallbackVoice_ = undefined;
+
+    /**
      * The current char index to the |this.text_| indicating the current spoken
      * word. For example, if |this.text_| is "hello world" and TTS is speaking
      * the second word, the |this.currentCharIndex_| should be 6.
@@ -32,6 +39,11 @@ export class TtsManager {
      * @private {boolean}
      */
     this.isSpeaking_ = false;
+
+    /**
+     * Whether the last TTS request was made with a network voice.
+     */
+    this.isNetworkVoice_ = false;
 
     /**
      * Function to be called when STS finishes a pausing request.
@@ -52,14 +64,19 @@ export class TtsManager {
    * Sets TtsManager with the parameters and starts reading |text|.
    * @param {string} text The text to read.
    * @param {!chrome.tts.TtsOptions} ttsOptions The options for TTS.
+   * @param {boolean} networkVoice Whether a network voice is specified for TTS.
+   * @param {string|undefined} fallbackVoice A voice to use if to retry if TTS
+   *     fails.
    */
-  speak(text, ttsOptions) {
+  speak(text, ttsOptions, networkVoice, fallbackVoice) {
     if (ttsOptions.enqueued) {
       console.warn('TtsManager does not support a queue of utterances.');
       return;
     }
     this.cleanTtsState_();
     this.text_ = text;
+    this.isNetworkVoice_ = networkVoice;
+    this.fallbackVoice_ = fallbackVoice;
     this.startSpeakingTextWithOffset_(0, false /* resume */, ttsOptions);
   }
 
@@ -76,8 +93,22 @@ export class TtsManager {
         /** @type {!chrome.tts.TtsOptions} */ (Object.assign({}, ttsOptions));
     // Saves a copy of the ttsOptions for resume.
     Object.assign(this.clientTtsOptions_, ttsOptions);
-    modifiedOptions.onEvent = (event) => {
+    modifiedOptions.onEvent = event => {
       switch (event.type) {
+        case chrome.tts.EventType.ERROR:
+          if (this.isNetworkVoice_) {
+            // Retry with local voice. Use modifiedOptions to preserve
+            // word and character indices.
+            console.warn('Network TTS error, retrying with local voice');
+            const localOptions = /** @type {!chrome.tts.TtsOptions} */ (
+                Object.assign({}, modifiedOptions));
+            localOptions.voiceName = this.fallbackVoice_;
+            if (this.text_) {
+              this.speak(
+                  this.text_, localOptions, /*networkVoice=*/ false, undefined);
+            }
+          }
+          break;
         case chrome.tts.EventType.START:
           this.isSpeaking_ = true;
           // Find the first non-space char index in text, or 0 if the text is
@@ -92,7 +123,7 @@ export class TtsManager {
           }
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.START,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.END:
@@ -100,7 +131,7 @@ export class TtsManager {
           this.currentCharIndex_ = text.length + offset;
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.END,
-            charIndex: this.currentCharIndex_
+            charIndex: this.currentCharIndex_,
           });
           break;
         case chrome.tts.EventType.WORD:
@@ -109,7 +140,7 @@ export class TtsManager {
           TtsManager.sendEventToOptions(ttsOptions, {
             type: chrome.tts.EventType.WORD,
             charIndex: this.currentCharIndex_,
-            length: event.length
+            length: event.length,
           });
           break;
         case chrome.tts.EventType.INTERRUPTED:
@@ -120,7 +151,7 @@ export class TtsManager {
           if (this.pauseCompleteCallback_) {
             TtsManager.sendEventToOptions(ttsOptions, {
               type: chrome.tts.EventType.PAUSE,
-              charIndex: this.currentCharIndex_
+              charIndex: this.currentCharIndex_,
             });
             this.pauseCompleteCallback_();
             break;
@@ -147,7 +178,7 @@ export class TtsManager {
    * @return {!Promise}
    */
   pause() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.pauseCompleteCallback_ = () => {
         this.pauseCompleteCallback_ = null;
         resolve();
@@ -172,7 +203,7 @@ export class TtsManager {
     if (this.text_.slice(this.currentCharIndex_).trim().length === 0) {
       TtsManager.sendEventToOptions(ttsOptions, {
         type: chrome.tts.EventType.ERROR,
-        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT
+        errorMessage: TtsManager.ErrorMessage.RESUME_WITH_EMPTY_CONTENT,
       });
       return;
     }
@@ -193,6 +224,7 @@ export class TtsManager {
     this.currentCharIndex_ = 0;
     this.pauseCompleteCallback_ = null;
     this.isSpeaking_ = false;
+    this.isNetworkVoice_ = false;
   }
 
   /**

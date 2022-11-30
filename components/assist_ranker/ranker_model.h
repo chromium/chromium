@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace assist_ranker {
 
 class RankerModelProto;
@@ -17,6 +15,10 @@ class RankerModelProto;
 class RankerModel {
  public:
   RankerModel();
+
+  RankerModel(const RankerModel&) = delete;
+  RankerModel& operator=(const RankerModel&) = delete;
+
   ~RankerModel();
 
   // Returns a new ranker model constructed from |data|.
@@ -36,8 +38,6 @@ class RankerModel {
  private:
   // The underlying ranker model proto.
   std::unique_ptr<RankerModelProto> proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(RankerModel);
 };
 
 }  // namespace assist_ranker

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ std::unique_ptr<ProtocolEvent> NormalGetUpdatesRequestEvent::Clone() const {
       is_retry_, request_);
 }
 
-NormalGetUpdatesRequestEvent::~NormalGetUpdatesRequestEvent() {}
+NormalGetUpdatesRequestEvent::~NormalGetUpdatesRequestEvent() = default;
 
 base::Time NormalGetUpdatesRequestEvent::GetTimestamp() const {
   return timestamp_;
@@ -58,14 +58,15 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
     if (!details.empty())
       details.append("\n");
     details.append(base::StringPrintf(
-        "Nudged types: %s", ModelTypeSetToString(nudged_types_).c_str()));
+        "Nudged types: %s", ModelTypeSetToDebugString(nudged_types_).c_str()));
   }
 
   if (!notified_types_.Empty()) {
     if (!details.empty())
       details.append("\n");
-    details.append(base::StringPrintf(
-        "Notified types: %s", ModelTypeSetToString(notified_types_).c_str()));
+    details.append(
+        base::StringPrintf("Notified types: %s",
+                           ModelTypeSetToDebugString(notified_types_).c_str()));
   }
 
   if (!refresh_requested_types_.Empty()) {
@@ -73,7 +74,7 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
       details.append("\n");
     details.append(base::StringPrintf(
         "Refresh requested types: %s",
-        ModelTypeSetToString(refresh_requested_types_).c_str()));
+        ModelTypeSetToDebugString(refresh_requested_types_).c_str()));
   }
 
   if (is_retry_) {
@@ -87,7 +88,9 @@ std::string NormalGetUpdatesRequestEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue>
 NormalGetUpdatesRequestEvent::GetProtoMessage(bool include_specifics) const {
-  return ClientToServerMessageToValue(request_, include_specifics);
+  return ClientToServerMessageToValue(
+      request_, {.include_specifics = include_specifics,
+                 .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer

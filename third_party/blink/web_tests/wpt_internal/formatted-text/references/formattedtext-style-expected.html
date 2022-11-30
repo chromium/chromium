@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    h3 {
+      margin: 0px;
+    }
+    div {
+      width: 500px;
+      height: 100px;
+      border: 1px solid black;
+      font: 20px Arial;
+      vertical-align: top;
+      margin-bottom: 2px;
+    }
+
+    span {
+      vertical-align: top;
+    }
+
+    .ib {
+      width: 100px;
+      height: 70px;
+      display: inline-block;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <h3>Test Font Related Styles</h3>
+  <div id="target1">
+    <span>Hello World !</span>
+  </div>
+  <script>
+    function makeRun(id, prop, value) {
+      document.getElementById(id).innerHTML += " <span style='" + prop + ":"
+        + value + "' >" + prop + ":" + value + "</span>";
+    }
+    function testFontRelatedStyles() {
+      makeRun("target1", 'color', 'blue')
+      makeRun("target1", 'text-decoration', 'underline')
+      makeRun("target1", 'text-decoration', 'line-through')
+      makeRun("target1", 'font-family', 'Times New Roman')
+      makeRun("target1", 'font-kerning', 'none')
+      makeRun("target1", 'font-kerning', 'normal')
+      makeRun("target1", 'font-size', '10px')
+      document.getElementById("target1").innerHTML += " <span style='text-decoration:underline; text-decoration-thickness:1em; text-underline-offset:0px; font-size:25px;'>1em</span>"
+    };
+    testFontRelatedStyles();
+  </script>
+
+  <div id="target7" style="height:30px;">
+  </div>
+  <script>
+    function testFontRelatedStyles2() {
+      makeRun("target7", 'font-weight', 'bold')
+    };
+    testFontRelatedStyles2();
+  </script>
+
+  <div id="target8" style="height:30px;">
+  </div>
+  <script>
+    function testFontRelatedStyles3() {
+      makeRun("target8", 'font-stretch', 'condensed')
+      makeRun("target8", 'font-variant-caps', 'small-caps');
+    };
+    testFontRelatedStyles3();
+  </script>
+
+  <div id="target9" style="height:30px;">
+  </div>
+  <script>
+    function testFontRelatedStyles4() {
+      makeRun("target9", 'font-style', 'italic')
+    };
+    testFontRelatedStyles4();
+  </script>
+
+  <h3>Test RTL</h3>
+  <DIV style="direction:rtl; height:30px;"><span>Hello World !</span></DIV>
+
+  <h3>Test align</h3>
+  <DIV style="text-align:center; height:50px;">
+    <span>
+      Hello World ! Hello World ! Hello World ! Hello World ! Hello World !
+    </span>
+  </DIV>
+
+  <h3>Test Writing-Mode</h3>
+  <DIV class="ib" style="writing-mode:vertical-lr">
+    ABC DEF GHI JKL MNO PQR
+  </DIV>
+  <DIV class="ib" style="writing-mode:vertical-rl">
+    ABC DEF GHI JKL MNO PQR
+  </DIV>
+  <DIV class="ib" style="writing-mode:vertical-rl; text-orientation: upright;">
+    ABC DEF GHI JKL MNO PQR
+  </DIV>
+</body>
+</html>

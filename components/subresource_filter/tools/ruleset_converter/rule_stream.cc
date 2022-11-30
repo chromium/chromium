@@ -1,12 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "components/subresource_filter/core/common/unindexed_ruleset.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
@@ -83,7 +85,7 @@ class FilterListRuleInputStream : public RuleInputStream {
       if (rule_type != url_pattern_index::proto::RULE_TYPE_UNSPECIFIED)
         return rule_type;
       if (!IsTrivialParseError(parser_.parse_error())) {
-        std::cerr << parser_.parse_error() << std::endl;
+        LOG(ERROR) << parser_.parse_error();
       }
       // TODO(pkalinnikov): Export the number of processed/skipped rules.
     }
@@ -146,7 +148,7 @@ class ProtobufRuleInputStream : public RuleInputStream {
   explicit ProtobufRuleInputStream(std::unique_ptr<std::istream> input) {
     std::string buffer = ReadStreamToString(input.get());
     CHECK(rules_.ParseFromString(buffer));
-    impl_.reset(new ProtobufRuleInputStreamImpl(rules_));
+    impl_ = std::make_unique<ProtobufRuleInputStreamImpl>(rules_);
   }
 
   url_pattern_index::proto::RuleType FetchNextRule() override {
@@ -209,9 +211,10 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
   explicit UnindexedRulesetRuleInputStream(
       std::unique_ptr<std::istream> input) {
     ruleset_ = ReadStreamToString(input.get());
-    ruleset_input_.reset(new google::protobuf::io::ArrayInputStream(
-        ruleset_.data(), ruleset_.size()));
-    ruleset_reader_.reset(new UnindexedRulesetReader(ruleset_input_.get()));
+    ruleset_input_ = std::make_unique<google::protobuf::io::ArrayInputStream>(
+        ruleset_.data(), ruleset_.size());
+    ruleset_reader_ =
+        std::make_unique<UnindexedRulesetReader>(ruleset_input_.get());
   }
 
   url_pattern_index::proto::RuleType FetchNextRule() override {
@@ -239,7 +242,7 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
 
   bool ReadNextChunk() {
     if (ruleset_reader_->ReadNextChunk(&rules_chunk_)) {
-      impl_.reset(new ProtobufRuleInputStreamImpl(rules_chunk_));
+      impl_ = std::make_unique<ProtobufRuleInputStreamImpl>(rules_chunk_);
       return true;
     }
     impl_.reset();
@@ -355,6 +358,12 @@ static_assert(kChrome54To58ElementTypes &
               "Wrong M54 element types.");
 static_assert(!(kChrome54To58ElementTypes &
                 url_pattern_index::proto::ELEMENT_TYPE_WEBSOCKET),
+              "Wrong M54 element types.");
+static_assert(!(kChrome54To58ElementTypes &
+                url_pattern_index::proto::ELEMENT_TYPE_WEBTRANSPORT),
+              "Wrong M54 element types.");
+static_assert(!(kChrome54To58ElementTypes &
+                url_pattern_index::proto::ELEMENT_TYPE_WEBBUNDLE),
               "Wrong M54 element types.");
 static_assert(!(kChrome54To58ElementTypes &
                 url_pattern_index::proto::ELEMENT_TYPE_POPUP),

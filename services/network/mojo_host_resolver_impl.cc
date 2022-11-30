@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 
@@ -27,7 +29,7 @@ class MojoHostResolverImpl::Job {
   Job(MojoHostResolverImpl* resolver_service,
       net::HostResolver* resolver,
       const std::string& hostname,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool is_ex,
       const net::NetLogWithSource& net_log,
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
@@ -45,7 +47,7 @@ class MojoHostResolverImpl::Job {
   // Mojo disconnect handler.
   void OnMojoDisconnect();
 
-  MojoHostResolverImpl* resolver_service_;
+  raw_ptr<MojoHostResolverImpl> resolver_service_;
   // This Job's iterator in |resolver_service_|, so the Job may be removed on
   // completion.
   std::list<Job>::iterator iter_;
@@ -65,14 +67,15 @@ MojoHostResolverImpl::~MojoHostResolverImpl() {
 
 void MojoHostResolverImpl::Resolve(
     const std::string& hostname,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     bool is_ex,
     mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
         client) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  pending_jobs_.emplace_front(this, resolver_, hostname, network_isolation_key,
-                              is_ex, net_log_, std::move(client));
+  pending_jobs_.emplace_front(this, resolver_, hostname,
+                              network_anonymization_key, is_ex, net_log_,
+                              std::move(client));
   auto job = pending_jobs_.begin();
   job->set_iter(job);
   job->Start();
@@ -87,7 +90,7 @@ MojoHostResolverImpl::Job::Job(
     MojoHostResolverImpl* resolver_service,
     net::HostResolver* resolver,
     const std::string& hostname,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     bool is_ex,
     const net::NetLogWithSource& net_log,
     mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
@@ -103,7 +106,7 @@ MojoHostResolverImpl::Job::Job(
     parameters.dns_query_type = net::DnsQueryType::A;
   request_ =
       resolver->CreateRequest(net::HostPortPair(hostname_, 0),
-                              network_isolation_key, net_log, parameters);
+                              network_anonymization_key, net_log, parameters);
 }
 
 void MojoHostResolverImpl::Job::Start() {
@@ -125,8 +128,7 @@ void MojoHostResolverImpl::Job::OnResolveDone(int result) {
 
   std::vector<net::IPAddress> result_addresses;
   if (request_->GetAddressResults()) {
-    for (const auto& endpoint :
-         request_->GetAddressResults().value().endpoints()) {
+    for (const auto& endpoint : request_->GetAddressResults()->endpoints()) {
       result_addresses.push_back(endpoint.address());
     }
   }

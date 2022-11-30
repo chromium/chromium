@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -54,6 +52,12 @@ using BlobWriteCallback =
 class IndexedDBExternalObjectChangeRecord {
  public:
   IndexedDBExternalObjectChangeRecord(const std::string& object_store_data_key);
+
+  IndexedDBExternalObjectChangeRecord(
+      const IndexedDBExternalObjectChangeRecord&) = delete;
+  IndexedDBExternalObjectChangeRecord& operator=(
+      const IndexedDBExternalObjectChangeRecord&) = delete;
+
   ~IndexedDBExternalObjectChangeRecord();
 
   const std::string& object_store_data_key() const {
@@ -72,7 +76,6 @@ class IndexedDBExternalObjectChangeRecord {
  private:
   std::string object_store_data_key_;
   std::vector<IndexedDBExternalObject> external_objects_;
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBExternalObjectChangeRecord);
 };
 
 // Reports that the recovery and/or active journals have been processed, and

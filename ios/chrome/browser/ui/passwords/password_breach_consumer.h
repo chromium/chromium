@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 
 // Sets the respective state in the consumer.
 - (void)setTitleString:(NSString*)titleString
-            subtitleString:(NSString*)subtitleString
-       primaryActionString:(NSString*)primaryActionString
-    primaryActionAvailable:(BOOL)primaryActionAvailable;
+           subtitleString:(NSString*)subtitleString
+      primaryActionString:(NSString*)primaryActionString
+    secondaryActionString:(NSString*)secondaryActionString;
 
 @end
 

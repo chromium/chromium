@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+import("//third_party/libaom/options.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("logging_proto") {
@@ -16,19 +17,25 @@ proto_library("logging_proto") {
 # Common code shared by all cast components.
 source_set("common") {
   sources = [
+    "cast_callbacks.h",
     "cast_config.cc",
     "cast_config.h",
     "cast_environment.cc",
     "cast_environment.h",
     "common/clock_drift_smoother.cc",
     "common/clock_drift_smoother.h",
+    "common/encoded_frame.cc",
+    "common/encoded_frame.h",
     "common/expanded_value_base.h",
-    "common/frame_id.cc",
     "common/frame_id.h",
-    "common/rtp_time.cc",
+    "common/openscreen_conversion_helpers.cc",
+    "common/openscreen_conversion_helpers.h",
     "common/rtp_time.h",
+    "common/sender_encoded_frame.cc",
+    "common/sender_encoded_frame.h",
     "common/transport_encryption_handler.cc",
     "common/transport_encryption_handler.h",
+    "common/video_frame_factory.h",
     "constants.h",
     "logging/encoding_event_subscriber.cc",
     "logging/encoding_event_subscriber.h",
@@ -54,6 +61,7 @@ source_set("common") {
     ":logging_proto",
     "//base",
     "//crypto",
+    "//media",
     "//net",
     "//third_party/zlib",
   ]
@@ -62,6 +70,9 @@ source_set("common") {
     # The generated headers reference headers within protobuf_lite, so
     # dependencies must be able to find those headers too.
     ":logging_proto",
+    "//components/openscreen_platform",
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:sender",
   ]
 }
 
@@ -117,49 +128,32 @@ source_set("net") {
   public_deps = [ ":common" ]
 }
 
-source_set("sender") {
+source_set("encoding") {
   sources = [
-    "cast_sender.h",
-    "cast_sender_impl.cc",
-    "cast_sender_impl.h",
-    "sender/audio_encoder.cc",
-    "sender/audio_encoder.h",
-    "sender/audio_sender.cc",
-    "sender/audio_sender.h",
-    "sender/congestion_control.cc",
-    "sender/congestion_control.h",
-    "sender/external_video_encoder.cc",
-    "sender/external_video_encoder.h",
-    "sender/fake_software_video_encoder.cc",
-    "sender/fake_software_video_encoder.h",
-    "sender/frame_sender.cc",
-    "sender/frame_sender.h",
-    "sender/performance_metrics_overlay.cc",
-    "sender/performance_metrics_overlay.h",
-    "sender/sender_encoded_frame.cc",
-    "sender/sender_encoded_frame.h",
-    "sender/size_adaptable_video_encoder_base.cc",
-    "sender/size_adaptable_video_encoder_base.h",
-    "sender/software_video_encoder.h",
-    "sender/video_encoder.cc",
-    "sender/video_encoder.h",
-    "sender/video_encoder_impl.cc",
-    "sender/video_encoder_impl.h",
-    "sender/video_frame_factory.h",
-    "sender/video_sender.cc",
-    "sender/video_sender.h",
-    "sender/vp8_encoder.cc",
-    "sender/vp8_encoder.h",
-    "sender/vp8_quantizer_parser.cc",
-    "sender/vp8_quantizer_parser.h",
+    "encoding/audio_encoder.cc",
+    "encoding/audio_encoder.h",
+    "encoding/external_video_encoder.cc",
+    "encoding/external_video_encoder.h",
+    "encoding/fake_software_video_encoder.cc",
+    "encoding/fake_software_video_encoder.h",
+    "encoding/size_adaptable_video_encoder_base.cc",
+    "encoding/size_adaptable_video_encoder_base.h",
+    "encoding/software_video_encoder.h",
+    "encoding/video_encoder.cc",
+    "encoding/video_encoder.h",
+    "encoding/video_encoder_impl.cc",
+    "encoding/video_encoder_impl.h",
+    "encoding/vpx_encoder.cc",
+    "encoding/vpx_encoder.h",
+    "encoding/vpx_quantizer_parser.cc",
+    "encoding/vpx_quantizer_parser.h",
   ]
 
   deps = [
     ":common",
-    ":net",
     "//base",
     "//media",
-    "//media/capture:capture_base",
+    "//third_party/libaom:libaom_buildflags",
     "//third_party/libvpx",
     "//third_party/opus",
     "//ui/gfx/geometry",
@@ -168,8 +162,8 @@ source_set("sender") {
   # iOS and OS X encoders
   if (is_apple) {
     sources += [
-      "sender/h264_vt_encoder.cc",
-      "sender/h264_vt_encoder.h",
+      "encoding/h264_vt_encoder.cc",
+      "encoding/h264_vt_encoder.h",
     ]
 
     frameworks = [
@@ -180,27 +174,81 @@ source_set("sender") {
       "VideoToolbox.framework",
     ]
   }
+
+  if (enable_libaom) {
+    sources += [
+      "encoding/av1_encoder.cc",
+      "encoding/av1_encoder.h",
+    ]
+
+    deps += [ "//third_party/libaom" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//third_party/re2" ]
+  }
 }
 
-source_set("receiver") {
+# TODO(https://crbug.com/1327074): should be split into multiple source sets
+# once the new Open Screen frame sender implementation is added.
+source_set("sender") {
   sources = [
-    "cast_receiver.h",
-    "net/rtp/cast_message_builder.cc",
-    "net/rtp/cast_message_builder.h",
-    "net/rtp/frame_buffer.cc",
-    "net/rtp/frame_buffer.h",
-    "net/rtp/framer.cc",
-    "net/rtp/framer.h",
-    "net/rtp/receiver_stats.cc",
-    "net/rtp/receiver_stats.h",
-    "receiver/audio_decoder.cc",
-    "receiver/audio_decoder.h",
-    "receiver/cast_receiver_impl.cc",
-    "receiver/cast_receiver_impl.h",
-    "receiver/frame_receiver.cc",
-    "receiver/frame_receiver.h",
-    "receiver/video_decoder.cc",
-    "receiver/video_decoder.h",
+    "cast_sender.h",
+    "cast_sender_impl.cc",
+    "cast_sender_impl.h",
+    "sender/audio_sender.cc",
+    "sender/audio_sender.h",
+    "sender/congestion_control.cc",
+    "sender/congestion_control.h",
+    "sender/frame_sender.cc",
+    "sender/frame_sender.h",
+    "sender/frame_sender_impl.cc",
+    "sender/frame_sender_impl.h",
+    "sender/openscreen_frame_sender.cc",
+    "sender/openscreen_frame_sender.h",
+    "sender/performance_metrics_overlay.cc",
+    "sender/performance_metrics_overlay.h",
+    "sender/video_sender.cc",
+    "sender/video_sender.h",
+  ]
+
+  deps = [
+    ":common",
+    ":encoding",
+    ":net",
+    "//base",
+    "//components/openscreen_platform",
+    "//media",
+    "//media/capture:capture_base",
+    "//third_party/openscreen/src/cast/streaming:sender",
+    "//ui/gfx/geometry",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//third_party/re2" ]
+  }
+}
+
+source_set("test_receiver") {
+  testonly = true
+  sources = [
+    "test/receiver/audio_decoder.cc",
+    "test/receiver/audio_decoder.h",
+    "test/receiver/cast_message_builder.cc",
+    "test/receiver/cast_message_builder.h",
+    "test/receiver/cast_receiver.h",
+    "test/receiver/cast_receiver_impl.cc",
+    "test/receiver/cast_receiver_impl.h",
+    "test/receiver/frame_buffer.cc",
+    "test/receiver/frame_buffer.h",
+    "test/receiver/frame_receiver.cc",
+    "test/receiver/frame_receiver.h",
+    "test/receiver/framer.cc",
+    "test/receiver/framer.h",
+    "test/receiver/receiver_stats.cc",
+    "test/receiver/receiver_stats.h",
+    "test/receiver/video_decoder.cc",
+    "test/receiver/video_decoder.h",
   ]
 
   deps = [
@@ -220,14 +268,24 @@ static_library("test_support") {
   sources = [
     "test/fake_receiver_time_offset_estimator.cc",
     "test/fake_receiver_time_offset_estimator.h",
+    "test/fake_video_encode_accelerator_factory.cc",
+    "test/fake_video_encode_accelerator_factory.h",
     "test/loopback_transport.cc",
     "test/loopback_transport.h",
     "test/mock_cast_transport.cc",
     "test/mock_cast_transport.h",
+    "test/mock_paced_packet_sender.cc",
+    "test/mock_paced_packet_sender.h",
+    "test/mock_rtp_payload_feedback.cc",
+    "test/mock_rtp_payload_feedback.h",
+    "test/rtp_packet_builder.cc",
+    "test/rtp_packet_builder.h",
     "test/skewed_single_thread_task_runner.cc",
     "test/skewed_single_thread_task_runner.h",
     "test/skewed_tick_clock.cc",
     "test/skewed_tick_clock.h",
+    "test/test_rtcp_packet_builder.cc",
+    "test/test_rtcp_packet_builder.h",
     "test/utility/audio_utility.cc",
     "test/utility/audio_utility.h",
     "test/utility/barcode.cc",
@@ -251,11 +309,13 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":common",
     ":net",
-    ":receiver",
     ":sender",
+    ":test_receiver",
     "//base/test:test_support",
     "//media",
+    "//media:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
@@ -265,11 +325,7 @@ static_library("test_support") {
 
   # FFMPEG software video decoders are not available on Android and/or
   # Chromecast content_shell builds.
-  #
-  # TODO(miu): There *are* hardware decoder APIs available via FFMPEG, and we
-  # should use those for the Android receiver.  See media's BUILD.gn for usage
-  # details.  http://crbug.com/558714
-  if (!is_android && !is_chromecast) {
+  if (!is_android && !is_castos) {
     sources += [
       "test/fake_media_source.cc",
       "test/fake_media_source.h",
@@ -283,69 +339,59 @@ test("cast_unittests") {
 
   sources = [
     "common/expanded_value_base_unittest.cc",
-    "common/rtp_time_unittest.cc",
+    "common/openscreen_conversion_helpers_unittest.cc",
+    "encoding/audio_encoder_unittest.cc",
+    "encoding/external_video_encoder_unittest.cc",
+    "encoding/video_encoder_unittest.cc",
+    "encoding/vpx_quantizer_parser_unittest.cc",
     "logging/encoding_event_subscriber_unittest.cc",
     "logging/receiver_time_offset_estimator_impl_unittest.cc",
     "logging/simple_event_subscriber_unittest.cc",
     "logging/stats_event_subscriber_unittest.cc",
     "net/cast_transport_impl_unittest.cc",
-    "net/pacing/mock_paced_packet_sender.cc",
-    "net/pacing/mock_paced_packet_sender.h",
     "net/pacing/paced_sender_unittest.cc",
     "net/rtcp/receiver_rtcp_event_subscriber_unittest.cc",
     "net/rtcp/rtcp_builder_unittest.cc",
     "net/rtcp/rtcp_unittest.cc",
     "net/rtcp/rtcp_utility_unittest.cc",
-
-    # TODO(miu): The following two are test utility modules.  Rename/move the
-    # files.
-    "net/rtcp/test_rtcp_packet_builder.cc",
-    "net/rtcp/test_rtcp_packet_builder.h",
-    "net/rtp/cast_message_builder_unittest.cc",
-    "net/rtp/frame_buffer_unittest.cc",
-    "net/rtp/framer_unittest.cc",
-    "net/rtp/mock_rtp_payload_feedback.cc",
-    "net/rtp/mock_rtp_payload_feedback.h",
     "net/rtp/packet_storage_unittest.cc",
-    "net/rtp/receiver_stats_unittest.cc",
-    "net/rtp/rtp_packet_builder.cc",
-    "net/rtp/rtp_packet_builder.h",
     "net/rtp/rtp_packetizer_unittest.cc",
     "net/rtp/rtp_parser_unittest.cc",
     "net/udp_packet_pipe_unittest.cc",
     "net/udp_transport_unittest.cc",
-    "receiver/audio_decoder_unittest.cc",
-    "receiver/frame_receiver_unittest.cc",
-    "receiver/video_decoder_unittest.cc",
-    "sender/audio_encoder_unittest.cc",
     "sender/audio_sender_unittest.cc",
     "sender/congestion_control_unittest.cc",
-    "sender/external_video_encoder_unittest.cc",
-    "sender/fake_video_encode_accelerator_factory.cc",
-    "sender/fake_video_encode_accelerator_factory.h",
-    "sender/video_encoder_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "sender/vp8_quantizer_parser_unittest.cc",
     "test/end2end_unittest.cc",
+    "test/receiver/audio_decoder_unittest.cc",
+    "test/receiver/cast_message_builder_unittest.cc",
+    "test/receiver/frame_buffer_unittest.cc",
+    "test/receiver/frame_receiver_unittest.cc",
+    "test/receiver/framer_unittest.cc",
+    "test/receiver/receiver_stats_unittest.cc",
+    "test/receiver/video_decoder_unittest.cc",
     "test/utility/audio_utility_unittest.cc",
     "test/utility/barcode_unittest.cc",
   ]
 
   deps = [
     ":common",
+    ":encoding",
     ":net",
-    ":receiver",
     ":sender",
+    ":test_receiver",
     ":test_support",
     "//base",
     "//base:cfi_buildflags",
     "//base/test:test_support",
+    "//components/openscreen_platform",
     "//media:test_support",
     "//media/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:sender",
     "//third_party/opus",
   ]
 
@@ -359,13 +405,13 @@ test("cast_unittests") {
   }
 
   if (is_apple) {
-    sources += [ "sender/h264_vt_encoder_unittest.cc" ]
+    sources += [ "encoding/h264_vt_encoder_unittest.cc" ]
 
     deps += [ "//third_party/ffmpeg" ]
   }
 }
 
-if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
   # This is a target for the collection of cast development tools.  They are
   # not built/linked into the Chromium browser.
   group("testing_tools") {
@@ -386,8 +432,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     deps = [
       ":common",
       ":net",
-      ":receiver",
       ":sender",
+      ":test_receiver",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -424,8 +470,8 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       ":common",
       ":net",
       ":network_simulation_model_proto",
-      ":receiver",
       ":sender",
+      ":test_receiver",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -464,6 +510,7 @@ if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       "//base",
       "//build/win:default_exe_manifest",
       "//net",
+      "//third_party/openscreen/src/cast/streaming:common",
     ]
   }
 } else {  # !(is_win || is_mac || is_linux || is_chromeos_lacros)
@@ -477,6 +524,7 @@ if (is_linux || is_chromeos_lacros) {
     sources = [ "test/utility/tap_proxy.cc" ]
 
     deps = [
+      ":common",
       ":test_support",
       "//base",
       "//base/test:test_support",
@@ -484,20 +532,4 @@ if (is_linux || is_chromeos_lacros) {
       "//net",
     ]
   }
-}
-
-# Projects external to Chromium can build cast_sender and/or cast_receiver to
-# produce libraries to link with their applications.  Chromium targets should
-# not reference these.
-
-static_library("cast_sender") {
-  complete_static_lib = true
-  configs -= [ "//build/config/compiler:thin_archive" ]
-  deps = [ ":sender" ]
-}
-
-static_library("cast_receiver") {
-  complete_static_lib = true
-  configs -= [ "//build/config/compiler:thin_archive" ]
-  deps = [ ":receiver" ]
 }

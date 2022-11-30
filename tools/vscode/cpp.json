@@ -1,0 +1,38 @@
+{
+  // This file contains snippets that might be useful to you for Chrome
+  // development.
+  "Chrome Header": {
+    "prefix": "hdr",
+    "body": [
+      "// Copyright ${CURRENT_YEAR} The Chromium Authors",
+      "// Use of this source code is governed by a BSD-style license that can be",
+      "// found in the LICENSE file.",
+      "${0:",
+      "#ifndef ${TM_FILEPATH/(^\\/.*\\/src\\/)|([^a-zA-Z0-9])|([a-zA-Z0-9])/${2:+_}${3:/upcase}/g}_",
+      "#define ${TM_FILEPATH/(^\\/.*\\/src\\/)|([^a-zA-Z0-9])|([a-zA-Z0-9])/${2:+_}${3:/upcase}/g}_",
+      "",
+      "#endif  // ${TM_FILEPATH/(^\\/.*\\/src\\/)|([^a-zA-Z0-9])|([a-zA-Z0-9])/${2:+_}${3:/upcase}/g}_}",
+    ]
+  },
+  "Chrome Copyright": {
+    "prefix": "copyright",
+    "body": [
+      "// Copyright ${CURRENT_YEAR} The Chromium Authors",
+      "// Use of this source code is governed by a BSD-style license that can be",
+      "// found in the LICENSE file.",
+    ]
+  },
+  "Chrome Log": {
+    "prefix": "log",
+    "body": "LOG(ERROR) << \"${1:message}\";",
+    "description": "Chrome Log output to console"
+  },
+  "Stack trace": {
+    "prefix": "st",
+    "body": "base::debug::StackTrace().Print();"
+  },
+  "Stack trace header": {
+    "prefix": "sth",
+    "body": "#include \"base/debug/stack_trace.h\""
+  }
+}

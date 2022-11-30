@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ enum class ThreadType {
   // Aggregate them into a single item for clarity and split out if necessary.
   kRendererOtherBlinkThread = 6,
 
-  kCount = 7,
+  kMaxValue = kRendererOtherBlinkThread,
 };
 
 }  // namespace scheduling_metrics

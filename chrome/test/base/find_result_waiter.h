@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,8 +53,9 @@ class FindResultWaiter : public find_in_page::FindResultObserver {
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  ScopedObserver<find_in_page::FindTabHelper, find_in_page::FindResultObserver>
-      observer_{this};
+  base::ScopedObservation<find_in_page::FindTabHelper,
+                          find_in_page::FindResultObserver>
+      observation_{this};
 
   // We will at some point (before final update) be notified of the ordinal and
   // we need to preserve it so we can send it later.

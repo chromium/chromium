@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,15 +27,16 @@ class NavigationBlockerDecider
   NavigationBlockerDecider(web::WebState* web_state)
       : web::WebStatePolicyDecider(web_state) {}
 
-  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
-                                    const RequestInfo& request_info) override {
-    return PolicyDecision::Cancel();
+  NavigationBlockerDecider(const NavigationBlockerDecider&) = delete;
+  NavigationBlockerDecider& operator=(const NavigationBlockerDecider&) = delete;
+
+  void ShouldAllowRequest(NSURLRequest* request,
+                          RequestInfo request_info,
+                          PolicyDecisionCallback callback) override {
+    std::move(callback).Run(PolicyDecision::Cancel());
   }
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationBlockerDecider);
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(NavigationBlockerDecider)

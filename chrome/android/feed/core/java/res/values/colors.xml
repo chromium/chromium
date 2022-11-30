@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <!-- TODO(crbug.com/1039415): Remove these feed-specific colors. -->
-  <!-- Feed text colors -->
-  <color name="feed_default_text_color">@color/modern_grey_900</color>
-  <color name="feed_default_text_color_secondary">@color/modern_grey_700</color>
-  <color name="feed_default_text_color_dark">@android:color/white</color>
-  <color name="feed_default_text_color_secondary_dark">@color/modern_grey_500</color>
 </resources>

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,9 +43,9 @@
       counter->AddTime(sample); \
     } while (0)
 
-#define CACHE_HISTOGRAM_TIMES(name, sample) CACHE_HISTOGRAM_CUSTOM_TIMES( \
-    name, sample, base::TimeDelta::FromMilliseconds(1), \
-    base::TimeDelta::FromSeconds(10), 50)
+#define CACHE_HISTOGRAM_TIMES(name, sample)                         \
+  CACHE_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                               base::Seconds(10), 50)
 
 #define CACHE_HISTOGRAM_ENUMERATION(name, sample, boundary_value) do { \
     base::HistogramBase* counter = base::LinearHistogram::FactoryGet( \
@@ -95,7 +95,7 @@
       case net::REMOVED_MEDIA_CACHE:                                 \
       default:                                                       \
         NOTREACHED();                                                \
-        FALLTHROUGH;                                                 \
+        [[fallthrough]];                                                 \
       case net::DISK_CACHE:                                          \
       case net::APP_CACHE:                                           \
       case net::SHADER_CACHE:                                        \
@@ -104,6 +104,7 @@
         break;                                                       \
       case net::GENERATED_BYTE_CODE_CACHE:                           \
       case net::GENERATED_NATIVE_CODE_CACHE:                         \
+      case net::GENERATED_WEBUI_BYTE_CODE_CACHE:                     \
         break;                                                       \
     }                                                                \
   }

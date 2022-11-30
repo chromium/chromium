@@ -12,21 +12,21 @@ which are [processed differently][native resources].
 [native resources]: https://www.chromium.org/developers/tools-we-use-in-chromium/grit/grit-users-guide
 
 The steps consume the following files as inputs:
-* AndroidManifest.xml
-  * Including AndroidManifest.xml files from libraries, which get merged
+* `AndroidManifest.xml`
+  * Including `AndroidManifest.xml` files from libraries, which get merged
     together
 * res/ directories
 
 The steps produce the following intermediate files:
-* R.srcjar (contains R.java files)
-* R.txt
-* .resources.zip
+* `R.srcjar` (contains `R.java` files)
+* `R.txt`
+* `.resources.zip`
 
-The steps produce the following files within an .apk:
-* AndroidManifest.xml (a binary xml file)
-* resources.arsc (contains all values and configuration metadata)
-* res/** (drawables and layouts)
-* classes.dex (just a small portion of classes from generated R.java files)
+The steps produce the following files within an `.apk`:
+* `AndroidManifest.xml` (a binary xml file)
+* `resources.arsc` (contains all values and configuration metadata)
+* `res/**` (drawables and layouts)
+* `classes.dex` (just a small portion of classes from generated `R.java` files)
 
 
 ## The Build Steps
@@ -38,56 +38,78 @@ following steps:
 
 Inputs:
 * GN target metadata
-* Other .build_config files
+* Other `.build_config.json` files
 
 Outputs:
-* Target-specific .build_config file
+* Target-specific `.build_config.json` file
 
-write_build_config.py is run to record target metadata needed by future steps.
+`write_build_config.py` is run to record target metadata needed by future steps.
 For more details, see [build_config.md](build_config.md).
 
 
 ### 2. Prepares resources:
 
 Inputs:
-* Target-specific build\_config file
-* Target-specific Resource dirs (res/ directories)
-* resources.zip files from dependencies (used to generate the R.txt/java files)
+* Target-specific `.build_config.json` file
+* Files listed as `sources`
 
 Outputs:
-* Target-specific resources.zip (containing only resources in the
-  target-specific resource dirs, no dependant resources here).
-* Target-specific R.txt
-  * Contains a list of resources and their ids (including of dependencies).
-* Target-specific R.java .srcjar
-  * See [What are R.java files and how are they generated](
-  #how-r_java-files-are-generated)
+* Target-specific `resources.zip` (contains all resources listed in `sources`).
+* Target-specific `R.txt` (list of all resources, including dependencies).
 
-prepare\_resources.py zips up the target-specific resource dirs and generates
-R.txt and R.java .srcjars. No optimizations, crunching, etc are done on the
-resources.
+`prepare_resources.py` zips up the target-specific resource files and generates
+`R.txt`. No optimizations, crunching, etc are done on the resources.
 
-**The following steps apply only to apk targets (not library targets).**
+**The following steps apply only to apk & bundle targets (not to library
+targets).**
 
-### 3. Finalizes apk resources:
+### 3. Create target-specific R.java files
 
 Inputs:
-* Target-specific build\_config file
-* Dependencies' resources.zip files
+* `R.txt` from dependencies.
+
+Outputs:
+* Target-specific (placeholder) `R.java` file.
+
+A target-specific `R.java` is generated for each `android_library()` target that
+sets `resources_package`. Resource IDs are not known at this phase, so all
+values are set as placeholders. This copy of `R` classes are discarded and
+replaced with new copies at step 4.
+
+Example placeholder R.java file:
+```java
+package org.chromium.mypackage;
+
+public final class R {
+    public static class anim  {
+        public static int abc_fade_in = 0;
+        public static int abc_fade_out = 0;
+        ...
+    }
+    ...
+}
+```
+
+### 4. Finalizes apk resources:
+
+Inputs:
+* Target-specific `.build_config.json` file
+* Dependencies' `R.txt` files
+* Dependencies' `resources.zip` files
 
 Output:
-* Packaged resources zip (named foo.ap_) containing:
-  * AndroidManifest.xml (as binary xml)
-  * resources.arsc
-  * res/**
-* Final R.txt
+* Packaged `resources zip` (named `foo.ap_`) containing:
+  * `AndroidManifest.xml` (as binary xml)
+  * `resources.arsc`
+  * `res/**`
+* Final `R.txt`
   * Contains a list of resources and their ids (including of dependencies).
-* Final R.java .srcjar
-  * See [What are R.java files and how are they generated](
+* Final `R.java` files
+  * See [What are `R.java` files and how are they generated](
   #how-r_java-files-are-generated)
 
 
-#### 3(a). Compiles resources:
+#### 4(a). Compiles resources:
 
 For each library / resources target your apk depends on, the following happens:
 * Use a regex (defined in the apk target) to remove select resources (optional).
@@ -102,27 +124,34 @@ For each library / resources target your apk depends on, the following happens:
   dependency).
 
 
-#### 3(b). Links resources:
+#### 4(b). Links resources:
 
-After each dependency is compiled into an intermediate .zip, all those zips are
-linked by the aapt2 link command which does the following:
+After each dependency is compiled into an intermediate `.zip`, all those zips
+are linked by the `aapt2 link` command which does the following:
 * Use the order of dependencies supplied so that some resources clober each
   other.
-* Compile the AndroidManifest.xml to binary xml (references to resources are now
-  using ids rather than the string names)
-* Create a resources.arsc file that has the name and values of string
+* Compile the `AndroidManifest.xml` to binary xml (references to resources are
+  now using ids rather than the string names)
+* Create a `resources.arsc` file that has the name and values of string
   resources as well as the name and path of non-string resources (ie. layouts
   and drawables).
 * Combine the compiled resources into one packaged resources apk (a zip file
-  with an .ap\_ extension) that has all the resources related files.
+  with an `.ap_` extension) that has all the resources related files.
 
 
-#### 3(c). Optimizes resources:
+#### 4(c). Optimizes resources:
 
-This step obfuscates / strips resources names from the resources.arsc so that
-they can be looked up only by their numeric ids (assigned in the compile
-resources step). Access to resources via `Resources.getIdentifier()` no longer
-work unless resources are [allowlisted](#adding-resources-to-the-allowlist).
+Targets can opt into the following optimizations:
+1) Resource name collapsing: Maps all resources to the same name. Access to
+   resources via `Resources.getIdentifier()` no longer work unless resources are
+   [allowlisted](#adding-resources-to-the-allowlist).
+2) Resource filename obfuscation: Renames resource file paths from e.g.:
+   `res/drawable/something.png` to `res/a`. Rename mapping is stored alongside
+   APKs / bundles in a `.pathmap` file. Renames are based on hashes, and so are
+   stable between builds (unless a new hash collision occurs).
+3) Unused resource removal: Referenced resources are extracted from the
+   optimized `.dex` and `AndroidManifest.xml`. Resources that are directly or
+   indirectly used by these files are removed.
 
 ## App Bundles and Modules:
 
@@ -184,9 +213,9 @@ The first two bytes of a resource id is the package id. For regular apks, this
 is `0x7f`. However, Webview is a shared library which gets loaded into other
 apks. The package id for webview resources is assigned dynamically at runtime.
 When webview is loaded it calls this [R file's][Base Module R.java File]
-onResourcesLoaded function to have the correct package id. When deobfuscating
-webview resource ids, disregard the first two bytes in the id when looking it up
-in the `R.txt` file.
+`onResourcesLoaded()` function to have the correct package id. When
+deobfuscating webview resource ids, disregard the first two bytes in the id when
+looking it up in the `R.txt` file.
 
 Monochrome, when loaded as webview, rewrites the package ids of resources used
 by the webview portion to the correct value at runtime, otherwise, its resources
@@ -196,15 +225,20 @@ have package id `0x7f` when run as a regular apk.
 
 ## How R.java files are generated
 
-R.java is a list of static classes, each with multiple static fields containing
-ids. These ids are used in java code to reference resources in the apk.
+`R.java` contain a set of nested static classes, each with static fields
+containing ids. These ids are used in java code to reference resources in
+the apk.
 
-There are three types of R.java files in Chrome.
-1. Base Module Root R.java Files
-2. DFM Root R.java Files
-3. Source R.java Files
+There are three types of `R.java` files in Chrome.
+1. Root / Base Module `R.java` Files
+2. DFM `R.java` Files
+3. Per-Library `R.java` Files
 
-Example Base Module Root R.java File
+### Root / Base Module `R.java` Files
+Contain base android resources. All `R.java` files can access base module
+resources through inheritance.
+
+Example Root / Base Module `R.java` File:
 ```java
 package gen.base_module;
 
@@ -219,10 +253,12 @@ public final class R {
     }
 }
 ```
-Base module root R.java files contain base android resources. All R.java files
-can access base module resources through inheritance.
 
-Example DFM Root R.java File
+### DFM `R.java` Files
+Extend base module root `R.java` files. This allows DFMs to access their own
+resources as well as the base module's resources.
+
+Example DFM Root `R.java` File
 ```java
 package gen.vr_module;
 
@@ -234,27 +270,20 @@ public final class R {
     }
 }
 ```
-DFM root R.java files extend base module root R.java files. This allows DFMs to
-access their own resources as well as the base module's resources.
 
-Example Source R.java File
+### Per-Library `R.java` Files
+Generated for each `android_library()` target that sets `resources_package`.
+First a placeholder copy is generated in the `android_library()` step, and then
+a final copy is created during finalization.
+
+Example final per-library `R.java`:
 ```java
 package org.chromium.chrome.vr;
 
 public final class R {
     public static final class anim extends
-            gen.base_module.R.anim {}
+            gen.vr_module.R.anim {}
     public static final class animator extends
-            gen.base_module.R.animator {}
+            gen.vr_module.R.animator {}
 }
 ```
-Source R.java files extend root R.java files and have no resources of their own.
-Developers can import these R.java files to access resources in the apk.
-
-The R.java file generated via the prepare resources step above has temporary ids
-which are not marked `final`. That R.java file is only used so that javac can
-compile the java code that references R.*.
-
-The R.java generated during the finalize apk resources step has
-permanent ids. These ids are marked as `final` (except webview resources that
-need to be [rewritten at runtime](#webview-resource-ids)).

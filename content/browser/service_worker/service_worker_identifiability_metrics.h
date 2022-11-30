@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_info.h"
-#include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 
@@ -30,7 +29,7 @@ struct VersionIdentifiabilityInfo {
 // Used to emit a UKM event to associate each worker with each client that it
 // has the potential to communicate with (whether or not they actually do). Only
 // created when the identifiability study is active.
-class CONTENT_EXPORT ServiceWorkerIdentifiabilityMetrics
+class ServiceWorkerIdentifiabilityMetrics
     : public ServiceWorkerContextCoreObserver {
  public:
   ServiceWorkerIdentifiabilityMetrics();

@@ -1,89 +1,110 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'app-management-plugin-vm-detail-view',
+import '../pin_to_shelf_item.js';
+import 'chrome://resources/cr_components/app_management/icons.html.js';
+import 'chrome://resources/cr_components/app_management/permission_item.js';
+import '../shared_style.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
-  behaviors: [
-    app_management.AppManagementStoreClient,
-    WebUIListenerBehavior,
-  ],
+import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * @private {App}
-     */
-    app_: Object,
+import {Router} from '../../../../router.js';
+import {routes} from '../../../os_route.js';
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
 
-    /**
-     * Whether the camera permissions should be shown.
-     * @private {boolean}
-     */
-    showCameraPermissions_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPluginVmCameraPermissions');
+import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const AppManagementPluginVmDetailViewElementBase = mixinBehaviors(
+    [AppManagementStoreClient, WebUIListenerBehavior], PolymerElement);
+
+/** @polymer */
+class AppManagementPluginVmDetailViewElement extends
+    AppManagementPluginVmDetailViewElementBase {
+  static get is() {
+    return 'app-management-plugin-vm-detail-view';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * @private {App}
+       */
+      app_: Object,
+
+      /** @private {boolean} */
+      showDialog_: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    /**
-     * Whether the microphone permissions should be shown.
-     * @private {boolean}
-     */
-    showMicrophonePermissions_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showPluginVmMicrophonePermissions');
-      },
-    },
+      /** @private {string} */
+      dialogText_: String,
 
-    /** @private {boolean} */
-    showDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {Element} */
+      pendingPermissionItem_: Object,
+    };
+  }
 
-    /** @private {string} */
-    dialogText_: String,
+  constructor() {
+    super();
 
-    /** @private {Element} */
-    pendingPermissionItem_: Object,
-  },
+    /** @private {!PluginVmBrowserProxy}  */
+    this.pluginVmBrowserProxy_ = PluginVmBrowserProxyImpl.getInstance();
+  }
 
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // When the state is changed, get the new selected app and assign it to
     // |app_|
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
-  },
+  }
 
   /** @private */
   onSharedPathsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
+    Router.getInstance().navigateTo(
+        routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS,
         new URLSearchParams({'id': this.app_.id}));
-  },
+  }
 
   /** @private */
   onSharedUsbDevicesClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
+    Router.getInstance().navigateTo(
+        routes.APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES,
         new URLSearchParams({'id': this.app_.id}));
-  },
+  }
 
   /**
    * @param {!Event} e
    * @private
    */
-  onPermissionChanged_: async function(e) {
-    this.pendingPermissionItem_ = /** @type {Element} */ (e.target);
+  async onPermissionChanged_(e) {
+    this.pendingPermissionItem_ =
+        /** @type {AppManamentPermissionItemElement} */ (e.target);
     switch (e.target.permissionType) {
-      case 'CAMERA':
+      case 'kCamera':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogCameraLabel');
         break;
-      case 'MICROPHONE':
+      case 'kMicrophone':
         this.dialogText_ =
             loadTimeData.getString('pluginVmPermissionDialogMicrophoneLabel');
         break;
@@ -92,23 +113,28 @@ Polymer({
     }
 
     const requiresRelaunch =
-        await settings.PluginVmBrowserProxyImpl.getInstance()
-            .isRelaunchNeededForNewPermissions();
+        await this.pluginVmBrowserProxy_.isRelaunchNeededForNewPermissions();
     if (requiresRelaunch) {
       this.showDialog_ = true;
     } else {
       this.pendingPermissionItem_.syncPermission();
     }
-  },
+  }
 
-  onRelaunchTap_: function() {
+  /** @private */
+  onRelaunchTap_() {
     this.pendingPermissionItem_.syncPermission();
-    settings.PluginVmBrowserProxyImpl.getInstance().relaunchPluginVm();
+    this.pluginVmBrowserProxy_.relaunchPluginVm();
     this.showDialog_ = false;
-  },
+  }
 
-  onCancel_: function() {
+  /** @private */
+  onCancel_() {
     this.pendingPermissionItem_.resetToggle();
     this.showDialog_ = false;
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementPluginVmDetailViewElement.is,
+    AppManagementPluginVmDetailViewElement);

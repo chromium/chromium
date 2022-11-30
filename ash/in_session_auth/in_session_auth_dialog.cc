@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,8 +58,8 @@ InSessionAuthDialog::InSessionAuthDialog(
   gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
   int horizontal_inset_dp = (bounds.width() - preferred_size.width()) / 2;
   int bottom_inset_dp = bounds.height() - kTopInsetDp - preferred_size.height();
-  bounds.Inset(horizontal_inset_dp, kTopInsetDp, horizontal_inset_dp,
-               bottom_inset_dp);
+  bounds.Inset(gfx::Insets::TLBR(kTopInsetDp, horizontal_inset_dp,
+                                 bottom_inset_dp, horizontal_inset_dp));
   widget_->SetBounds(bounds);
 
   widget_->Show();

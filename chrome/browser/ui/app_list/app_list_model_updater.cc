@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -18,14 +18,11 @@ int g_next_unique_model_id = ash::kAppListProfileIdStartFrom;
 AppListModelUpdater::AppListModelUpdater()
     : model_id_(g_next_unique_model_id++) {}
 
-std::vector<ChromeSearchResult*>
-AppListModelUpdater::GetPublishedSearchResultsForTest() {
-  return std::vector<ChromeSearchResult*>();
-}
+AppListModelUpdater::~AppListModelUpdater() = default;
 
-// static
-syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
-    const std::vector<ChromeAppListItem*>& top_level_items) {
+syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
+  const std::vector<ChromeAppListItem*>& top_level_items = GetTopLevelItems();
+
   // Sort the top level items by their positions.
   std::vector<ChromeAppListItem*> sorted_items(top_level_items);
   std::sort(sorted_items.begin(), sorted_items.end(),
@@ -64,6 +61,11 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
   if (sorted_items.empty())
     return syncer::StringOrdinal::CreateInitialOrdinal();
   return sorted_items.back()->position().CreateAfter();
+}
+
+std::vector<ChromeSearchResult*>
+AppListModelUpdater::GetPublishedSearchResultsForTest() {
+  return std::vector<ChromeSearchResult*>();
 }
 
 // static

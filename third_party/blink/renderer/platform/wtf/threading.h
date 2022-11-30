@@ -34,7 +34,7 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -43,14 +43,15 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 WTF_EXPORT base::PlatformThreadId CurrentThread();
 #else
 // On Android gettid(3) uses a faster TLS model than thread_local.
+// On Windows GetCurrentThreadId() directly pick TID from TEB.
 inline base::PlatformThreadId CurrentThread() {
   return base::PlatformThread::CurrentId();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 
 #if DCHECK_IS_ON()
 WTF_EXPORT bool IsBeforeThreadCreated();
@@ -58,7 +59,6 @@ WTF_EXPORT void WillCreateThread();
 WTF_EXPORT void SetIsBeforeThreadCreatedForTest();
 #endif
 
-class AtomicStringTable;
 struct ICUConverterWrapper;
 
 class WTF_EXPORT Threading {
@@ -66,9 +66,9 @@ class WTF_EXPORT Threading {
 
  public:
   Threading();
+  Threading(const Threading&) = delete;
+  Threading& operator=(const Threading&) = delete;
   ~Threading();
-
-  AtomicStringTable& GetAtomicStringTable() { return *atomic_string_table_; }
 
   ICUConverterWrapper& CachedConverterICU() { return *cached_converter_icu_; }
 
@@ -77,24 +77,21 @@ class WTF_EXPORT Threading {
   // Must be called on the main thread before any callers to wtfThreadData().
   static void Initialize();
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   static size_t ThreadStackSize();
 #endif
 
  private:
-  std::unique_ptr<AtomicStringTable> atomic_string_table_;
   std::unique_ptr<ICUConverterWrapper> cached_converter_icu_;
 
   base::PlatformThreadId thread_id_;
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   size_t thread_stack_size_ = 0u;
 #endif
 
   static ThreadSpecific<Threading>* static_data_;
   friend Threading& WtfThreading();
-
-  DISALLOW_COPY_AND_ASSIGN(Threading);
 };
 
 inline Threading& WtfThreading() {

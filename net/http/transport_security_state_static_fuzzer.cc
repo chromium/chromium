@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,8 @@ class TransportSecurityStateStaticFuzzer {
     state->enable_static_pins_ = true;
     TransportSecurityState::STSState sts_result;
     TransportSecurityState::PKPState pkp_result;
-    return state->GetStaticDomainState(input, &sts_result, &pkp_result);
+    return state->GetStaticSTSState(input, &sts_result) ||
+           state->GetStaticPKPState(input, &pkp_result);
   }
 
   bool FuzzStaticExpectCTState(TransportSecurityState* state,

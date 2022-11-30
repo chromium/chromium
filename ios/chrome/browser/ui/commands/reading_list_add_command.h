@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,19 @@
 #import <Foundation/Foundation.h>
 
 class GURL;
+@class URLWithTitle;
 
 @interface ReadingListAddCommand : NSObject
 
-@property(nonatomic, readonly) const GURL& URL;
-@property(copy, nonatomic, readonly) NSString* title;
+@property(nonatomic, readonly) NSArray<URLWithTitle*>* URLs;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithURL:(const GURL&)URL
                       title:(NSString*)title NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URL
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 

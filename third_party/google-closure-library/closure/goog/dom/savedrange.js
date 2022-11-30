@@ -1,36 +1,32 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A generic interface for saving and restoring ranges.
  */
 
 
+goog.provide('goog.dom.AbstractSavedCaretRange');
 goog.provide('goog.dom.SavedRange');
 
-goog.forwardDeclare('goog.dom.AbstractRange');
 goog.require('goog.Disposable');
 goog.require('goog.log');
+goog.requireType('goog.dom.AbstractRange');
 
 
 
 /**
  * Abstract interface for a saved range.
+ * // TODO(user): rename to AbstractSavedRange?
  * @constructor
  * @extends {goog.Disposable}
+ * @abstract
  */
 goog.dom.SavedRange = function() {
+  'use strict';
   goog.Disposable.call(this);
 };
 goog.inherits(goog.dom.SavedRange, goog.Disposable);
@@ -52,6 +48,7 @@ goog.dom.SavedRange.logger_ = goog.log.getLogger('goog.dom.SavedRange');
  * @return {goog.dom.AbstractRange} The restored range.
  */
 goog.dom.SavedRange.prototype.restore = function(opt_stayAlive) {
+  'use strict';
   if (this.isDisposed()) {
     goog.log.error(
         goog.dom.SavedRange.logger_,
@@ -65,10 +62,60 @@ goog.dom.SavedRange.prototype.restore = function(opt_stayAlive) {
   return range;
 };
 
-
 /**
  * Internal method to restore the saved range.
  * @return {goog.dom.AbstractRange} The restored range.
  * @protected
  */
 goog.dom.SavedRange.prototype.restoreInternal = goog.abstractMethod;
+
+/**
+ * Abstract interface for a range saved using carets.
+ * @constructor
+ * @extends {goog.dom.SavedRange}
+ * @abstract
+ */
+goog.dom.AbstractSavedCaretRange = function() {
+  'use strict';
+  goog.dom.SavedRange.call(this);
+};
+goog.inherits(goog.dom.AbstractSavedCaretRange, goog.dom.SavedRange);
+
+/**
+ * Gets the range that this SavedCaretRage represents, without selecting it
+ * or removing the carets from the DOM.
+ * @return {goog.dom.AbstractRange?} An abstract range.
+ */
+goog.dom.AbstractSavedCaretRange.prototype.toAbstractRange =
+    goog.abstractMethod;
+
+/**
+ * Gets carets.
+ * @param {boolean} start If true, returns the start caret. Otherwise, get the
+ *     end caret.
+ * @return {?Element} The start or end caret in the given document.
+ * @abstract
+ */
+goog.dom.AbstractSavedCaretRange.prototype.getCaret = function(start) {};
+
+/**
+ * Removes the carets from the current restoration document.
+ * @param {!goog.dom.AbstractRange=} opt_range A range whose offsets have
+ *     already been adjusted for caret removal; it will be adjusted if it is
+ *     also affected by post-removal operations, such as text node
+ *     normalization.
+ * @return {?goog.dom.AbstractRange|undefined} The adjusted range, if opt_range
+ *     was provided.
+ * @abstract
+ */
+goog.dom.AbstractSavedCaretRange.prototype.removeCarets = function(
+    opt_range) {};
+
+
+/**
+ * Sets the document where the range will be restored.
+ * @param {!Document} doc An HTML document.
+ * @abstract
+ */
+goog.dom.AbstractSavedCaretRange.prototype.setRestorationDocument = function(
+    doc) {};

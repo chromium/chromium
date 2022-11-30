@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -23,6 +22,9 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
   explicit VideoDecoderWrapper(MediaPipelineBackend::VideoDecoder* decoder);
   // Create a VideoDecoderWrapper that's already been revoked.
   VideoDecoderWrapper();
+
+  VideoDecoderWrapper(const VideoDecoderWrapper&) = delete;
+  VideoDecoderWrapper& operator=(const VideoDecoderWrapper&) = delete;
 
   ~VideoDecoderWrapper() override;
 
@@ -41,8 +43,6 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
 
   MediaPipelineBackend::VideoDecoder* decoder_;
   std::unique_ptr<RevokedVideoDecoder> revoked_video_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderWrapper);
 };
 
 }  // namespace media

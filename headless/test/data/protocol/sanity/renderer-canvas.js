@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,18 +31,15 @@
         </body>
       </html>`);
 
-  await virtualTimeController.grantInitialTime(500, 1000,
-    null,
-    async () => {
-      const ctx = await virtualTimeController.captureScreenshot();
-      const rgba = ctx.getImageData(0, 0, 1, 1).data;
-      testRunner.log(`rgba @(0,0): ${rgba}`);
-      // Expected rgba @(25,25): 255,0,0,255
-      const rgba2 = ctx.getImageData(25, 25, 1, 1).data;
-      testRunner.log(`rgba @(25,25): ${rgba2}`);
-      testRunner.completeTest();
-    }
-  );
 
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://example.com/');
+  await virtualTimeController.grantTime(500);
+  const ctx = await virtualTimeController.captureScreenshot();
+  const rgba = ctx.getImageData(0, 0, 1, 1).data;
+  testRunner.log(`rgba @(0,0): ${rgba}`);
+  // Expected rgba @(25,25): 255,0,0,255
+  const rgba2 = ctx.getImageData(25, 25, 1, 1).data;
+  testRunner.log(`rgba @(25,25): ${rgba2}`);
+  testRunner.completeTest();
 })

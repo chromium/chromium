@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +17,7 @@ TEST(SwitchUtilsTest, RemoveSwitches) {
       FILE_PATH_LITERAL("--make-default-browser"),
       FILE_PATH_LITERAL("--foo"),
       FILE_PATH_LITERAL("--bar")};
-  base::CommandLine cmd_line(base::size(argv), argv);
+  base::CommandLine cmd_line(std::size(argv), argv);
   EXPECT_FALSE(cmd_line.GetCommandLineString().empty());
 
   base::CommandLine::SwitchMap switches = cmd_line.GetSwitches();
@@ -30,7 +29,7 @@ TEST(SwitchUtilsTest, RemoveSwitches) {
   EXPECT_TRUE(cmd_line.HasSwitch("bar"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(SwitchUtilsTest, RemoveSwitchesFromString) {
   // All these command line args (except foo and bar) will
   // be removed after RemoveSwitchesForAutostart:
@@ -58,7 +57,7 @@ TEST(SwitchUtilsTest, RemovePrefetchSwitch) {
       FILE_PATH_LITERAL("--foo"),
       FILE_PATH_LITERAL("/prefetch:1"),
       FILE_PATH_LITERAL("--bar")};
-  base::CommandLine cmd_line(base::size(argv), argv);
+  base::CommandLine cmd_line(std::size(argv), argv);
   EXPECT_FALSE(cmd_line.GetCommandLineString().empty());
 
   base::CommandLine::SwitchMap switches = cmd_line.GetSwitches();
@@ -77,7 +76,7 @@ TEST(SwitchUtilsTest, RemovePrefetchSwitchAndNormalSwitch) {
       FILE_PATH_LITERAL("/prefetch:1"),
       FILE_PATH_LITERAL("--force-first-run"),
       FILE_PATH_LITERAL("--bar")};
-  base::CommandLine cmd_line(base::size(argv), argv);
+  base::CommandLine cmd_line(std::size(argv), argv);
   EXPECT_FALSE(cmd_line.GetCommandLineString().empty());
 
   base::CommandLine::SwitchMap switches = cmd_line.GetSwitches();
@@ -88,4 +87,4 @@ TEST(SwitchUtilsTest, RemovePrefetchSwitchAndNormalSwitch) {
   EXPECT_TRUE(cmd_line.HasSwitch("foo"));
   EXPECT_TRUE(cmd_line.HasSwitch("bar"));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

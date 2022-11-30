@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,12 +17,12 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpMethod;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
+namespace ash {
 
-namespace chromeos {
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpMethod;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kPasswordChangePageTemplate[] =
     "<html><body onload='document.forms[0].submit();'>"
@@ -207,4 +207,4 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest, DetectPingSuccess) {
   WaitForPasswordChangeDetected();
 }
 
-}  // namespace chromeos
+}  // namespace ash

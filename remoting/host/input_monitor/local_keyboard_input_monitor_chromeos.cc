@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
@@ -23,12 +22,22 @@ namespace remoting {
 
 namespace {
 
+bool IsInjectedByCrd(const ui::PlatformEvent& event) {
+  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+}
+
 class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
  public:
   LocalKeyboardInputMonitorChromeos(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       LocalInputMonitor::KeyPressedCallback key_pressed_callback);
+
+  LocalKeyboardInputMonitorChromeos(const LocalKeyboardInputMonitorChromeos&) =
+      delete;
+  LocalKeyboardInputMonitorChromeos& operator=(
+      const LocalKeyboardInputMonitorChromeos&) = delete;
+
   ~LocalKeyboardInputMonitorChromeos() override;
 
  private:
@@ -36,6 +45,10 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
    public:
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          LocalInputMonitor::KeyPressedCallback on_key_event_callback);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() override;
 
     void Start();
@@ -47,15 +60,11 @@ class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
    private:
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
     LocalInputMonitor::KeyPressedCallback key_pressed_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Task runner on which ui::events are received.
   scoped_refptr<base::SingleThreadTaskRunner> input_task_runner_;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalKeyboardInputMonitorChromeos);
 };
 
 LocalKeyboardInputMonitorChromeos::LocalKeyboardInputMonitorChromeos(
@@ -100,6 +109,11 @@ void LocalKeyboardInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  // Do not pass on events remotely injected by CRD, as we're supposed to
+  // monitor for local input only.
+  if (IsInjectedByCrd(event))
+    return;
+
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_KEY_PRESSED) {
     ui::DomCode dom_code = ui::CodeFromNative(event);

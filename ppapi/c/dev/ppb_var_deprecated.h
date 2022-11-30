@@ -1,9 +1,9 @@
-/* Copyright (c) 2010 The Chromium Authors. All rights reserved.
+/* Copyright 2010 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
-#ifndef PPAPI_C_PPB_VAR_DEPRECATED_H_
-#define PPAPI_C_PPB_VAR_DEPRECATED_H_
+#ifndef PPAPI_C_DEV_PPB_VAR_DEPRECATED_H_
+#define PPAPI_C_DEV_PPB_VAR_DEPRECATED_H_
 
 #include "ppapi/c/dev/deprecated_bool.h"
 #include "ppapi/c/pp_instance.h"
@@ -250,5 +250,5 @@ struct PPB_Var_Deprecated {
  * @}
  * End addtogroup PPB
  */
-#endif  /* PPAPI_C_PPB_VAR_DEPRECATED_H_ */
+#endif  // PPAPI_C_DEV_PPB_VAR_DEPRECATED_H_
 

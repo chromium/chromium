@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ntp_snippets/category_rankers/constant_category_ranker.h"
 
-#include "base/macros.h"
 #include "components/ntp_snippets/category.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,10 +12,10 @@ namespace ntp_snippets {
 
 class ConstantCategoryRankerTest : public testing::Test {
  public:
-  ConstantCategoryRankerTest()
-      : unused_remote_category_id_(
-            static_cast<int>(KnownCategories::LAST_KNOWN_REMOTE_CATEGORY) + 1) {
-  }
+  ConstantCategoryRankerTest() = default;
+  ConstantCategoryRankerTest(const ConstantCategoryRankerTest&) = delete;
+  ConstantCategoryRankerTest& operator=(const ConstantCategoryRankerTest&) =
+      delete;
 
   int GetUnusedRemoteCategoryID() { return unused_remote_category_id_++; }
 
@@ -44,9 +43,8 @@ class ConstantCategoryRankerTest : public testing::Test {
 
  private:
   ConstantCategoryRanker ranker_;
-  int unused_remote_category_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstantCategoryRankerTest);
+  int unused_remote_category_id_ =
+      static_cast<int>(KnownCategories::LAST_KNOWN_REMOTE_CATEGORY) + 1;
 };
 
 TEST_F(ConstantCategoryRankerTest, ShouldSortRemoteCategoriesByWhenAdded) {

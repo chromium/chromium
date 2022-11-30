@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,13 +27,14 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 #define COMPONENTS_UPDATE_CLIENT_COMPONENT_PATCHER_H_
 
-#include <memory>
-
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/update_client/component_unpacker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+// TODO(crbug.com/1349158): Remove this class once Puffin patches are fully
+// implemented.
 
 namespace base {
 class FilePath;
@@ -68,6 +69,9 @@ class ComponentPatcher : public base::RefCountedThreadSafe<ComponentPatcher> {
                    scoped_refptr<CrxInstaller> installer,
                    scoped_refptr<Patcher> patcher);
 
+  ComponentPatcher(const ComponentPatcher&) = delete;
+  ComponentPatcher& operator=(const ComponentPatcher&) = delete;
+
   // Starts patching files. This member function returns immediately, after
   // posting a task to do the patching. When patching has been completed,
   // |callback| will be called with the error codes if any error codes were
@@ -92,11 +96,9 @@ class ComponentPatcher : public base::RefCountedThreadSafe<ComponentPatcher> {
   scoped_refptr<CrxInstaller> installer_;
   scoped_refptr<Patcher> patcher_;
   Callback callback_;
-  std::unique_ptr<base::ListValue> commands_;
-  base::ListValue::const_iterator next_command_;
+  absl::optional<base::Value::List> commands_;
+  base::Value::List::const_iterator next_command_;
   scoped_refptr<DeltaUpdateOp> current_operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentPatcher);
 };
 
 }  // namespace update_client

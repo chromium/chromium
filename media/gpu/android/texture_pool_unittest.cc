@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "media/gpu/android/mock_abstract_texture.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"

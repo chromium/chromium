@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 
 #include <stddef.h>
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/system_impl_export.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 namespace core {
@@ -28,14 +26,14 @@ namespace core {
 // offsets for convenience.
 class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
  public:
-  enum class Type {
-    kReadOnly,
-    kWritable,
-  };
-
   PlatformSharedMemoryMapping(base::subtle::PlatformSharedMemoryRegion* region,
                               size_t offset,
                               size_t length);
+
+  PlatformSharedMemoryMapping(const PlatformSharedMemoryMapping&) = delete;
+  PlatformSharedMemoryMapping& operator=(const PlatformSharedMemoryMapping&) =
+      delete;
+
   ~PlatformSharedMemoryMapping();
 
   bool IsValid() const;
@@ -44,13 +42,10 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
   size_t GetLength() const;
 
  private:
-  const Type type_;
-  const size_t offset_;
-  const size_t length_;
-  void* base_ = nullptr;
-  std::unique_ptr<base::SharedMemoryMapping> mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSharedMemoryMapping);
+  absl::variant<absl::monostate,
+                base::ReadOnlySharedMemoryMapping,
+                base::WritableSharedMemoryMapping>
+      mapping_;
 };
 
 }  // namespace core

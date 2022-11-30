@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -47,10 +48,8 @@ PasswordAutoSignInView::PasswordAutoSignInView(
           views::Button::PressedCallback(),
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
           form.username_value, &form,
-          content::BrowserContext::GetDefaultStoragePartition(
-              controller_.GetProfile())
-              ->GetURLLoaderFactoryForBrowserProcess()
-              .get(),
+          GetURLLoaderForMainFrame(web_contents).get(),
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
           views::style::STYLE_HINT, views::style::STYLE_PRIMARY));
   credential->SetEnabled(false);
 
@@ -91,6 +90,5 @@ void PasswordAutoSignInView::OnTimer() {
 }
 
 base::TimeDelta PasswordAutoSignInView::GetTimeout() {
-  return base::TimeDelta::FromSeconds(
-      PasswordAutoSignInView::auto_signin_toast_timeout_);
+  return base::Seconds(PasswordAutoSignInView::auto_signin_toast_timeout_);
 }

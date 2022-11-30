@@ -1,10 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -13,16 +14,15 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quic/core/crypto/proof_source.h"
-#include "net/third_party/quiche/src/quic/core/crypto/proof_verifier.h"
-#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using std::string;
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 // TestProofVerifierCallback is a simple callback for a quic::ProofVerifier that
@@ -45,9 +45,9 @@ class TestProofVerifierCallback : public quic::ProofVerifierCallback {
   }
 
  private:
-  TestCompletionCallback* const comp_callback_;
-  bool* const ok_;
-  string* const error_details_;
+  const raw_ptr<TestCompletionCallback> comp_callback_;
+  const raw_ptr<bool> ok_;
+  const raw_ptr<string> error_details_;
 };
 
 // RunVerification runs |verifier->VerifyProof| and asserts that the result
@@ -67,8 +67,8 @@ void RunVerification(quic::ProofVerifier* verifier,
   string error_details;
   std::unique_ptr<quic::ProofVerifyContext> verify_context(
       quic::test::crypto_test_utils::ProofVerifyContextForTesting());
-  std::unique_ptr<TestProofVerifierCallback> callback(
-      new TestProofVerifierCallback(&comp_callback, &ok, &error_details));
+  auto callback = std::make_unique<TestProofVerifierCallback>(
+      &comp_callback, &ok, &error_details);
 
   quic::QuicAsyncStatus status = verifier->VerifyProof(
       hostname, port, server_config, quic_version, chlo_hash, certs, "", proof,
@@ -95,13 +95,14 @@ class TestCallback : public quic::ProofSource::Callback {
   explicit TestCallback(
       bool* called,
       bool* ok,
-      quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* chain,
+      quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* chain,
       quic::QuicCryptoProof* proof)
       : called_(called), ok_(ok), chain_(chain), proof_(proof) {}
 
   void Run(
       bool ok,
-      const quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>& chain,
+      const quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>&
+          chain,
       const quic::QuicCryptoProof& proof,
       std::unique_ptr<quic::ProofSource::Details> /* details */) override {
     *ok_ = ok;
@@ -111,10 +112,11 @@ class TestCallback : public quic::ProofSource::Callback {
   }
 
  private:
-  bool* called_;
-  bool* ok_;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* chain_;
-  quic::QuicCryptoProof* proof_;
+  raw_ptr<bool> called_;
+  raw_ptr<bool> ok_;
+  raw_ptr<quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>>
+      chain_;
+  raw_ptr<quic::QuicCryptoProof> proof_;
 };
 
 class ProofTest : public ::testing::TestWithParam<quic::ParsedQuicVersion> {};
@@ -142,17 +144,16 @@ TEST_P(ProofTest, Verify) {
   bool called = false;
   bool first_called = false;
   bool ok, first_ok;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> first_chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> first_chain;
   string error_details;
   quic::QuicCryptoProof proof, first_proof;
   quic::QuicSocketAddress server_addr;
   quic::QuicSocketAddress client_addr;
 
-  std::unique_ptr<quic::ProofSource::Callback> cb(
-      new TestCallback(&called, &ok, &chain, &proof));
-  std::unique_ptr<quic::ProofSource::Callback> first_cb(
-      new TestCallback(&first_called, &first_ok, &first_chain, &first_proof));
+  auto cb = std::make_unique<TestCallback>(&called, &ok, &chain, &proof);
+  auto first_cb = std::make_unique<TestCallback>(&first_called, &first_ok,
+                                                 &first_chain, &first_proof);
 
   // GetProof here expects the async method to invoke the callback
   // synchronously.
@@ -208,8 +209,8 @@ class TestingSignatureCallback : public quic::ProofSource::SignatureCallback {
   }
 
  private:
-  bool* ok_out_;
-  std::string* signature_out_;
+  raw_ptr<bool> ok_out_;
+  raw_ptr<std::string> signature_out_;
 };
 
 }  // namespace
@@ -223,8 +224,10 @@ TEST_P(ProofTest, TlsSignature) {
 
   quic::QuicSocketAddress client_address;
 
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain =
-      source->GetCertChain(server_address, client_address, hostname);
+  bool cert_matched_sni;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain =
+      source->GetCertChain(server_address, client_address, hostname,
+                           &cert_matched_sni);
   ASSERT_GT(chain->certs.size(), 0ul);
 
   // Generate a value to be signed similar to the example in TLS 1.3 section
@@ -280,13 +283,12 @@ TEST_P(ProofTest, UseAfterFree) {
   const string chlo_hash = "proof nonce bytes";
   bool called = false;
   bool ok;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain;
+  quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain> chain;
   string error_details;
   quic::QuicCryptoProof proof;
   quic::QuicSocketAddress server_addr;
   quic::QuicSocketAddress client_addr;
-  std::unique_ptr<quic::ProofSource::Callback> cb(
-      new TestCallback(&called, &ok, &chain, &proof));
+  auto cb = std::make_unique<TestCallback>(&called, &ok, &chain, &proof);
 
   // GetProof here expects the async method to invoke the callback
   // synchronously.
@@ -306,5 +308,4 @@ TEST_P(ProofTest, UseAfterFree) {
   }
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

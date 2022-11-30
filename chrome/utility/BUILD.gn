@@ -1,13 +1,15 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/crypto.gni")
 import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/assistant/assistant.gni")
+import("//chrome/services/speech/buildflags/buildflags.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
+import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -35,15 +37,19 @@ static_library("utility") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
-    "//chrome/services/machine_learning",
     "//chrome/services/qrcode_generator",
+    "//chrome/services/speech/buildflags",
+    "//components/heap_profiling/in_process",
+    "//components/metrics:child_call_stack_profile_builder",
     "//components/mirroring/service:mirroring_service",
     "//components/paint_preview/buildflags",
+    "//components/password_manager/services/csv_password:lib",
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
     "//components/services/language_detection",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
+    "//components/services/screen_ai/buildflags",
     "//components/services/unzip:lib",
     "//components/strings",
     "//components/url_formatter",
@@ -71,6 +77,10 @@ static_library("utility") {
       "//components/services/quarantine",
       "//components/services/quarantine/public/mojom",
     ]
+  }
+
+  if (!is_ios && !is_android) {
+    deps += [ "//components/password_manager/services/password_strength:lib" ]
   }
 
   if (is_mac) {
@@ -101,11 +111,16 @@ static_library("utility") {
         "importer/safari_importer.h",
         "importer/safari_importer.mm",
       ]
-    } else {
+    }
+    if (!is_mac && !is_fuchsia) {
+      # NSS decryptor depends on system NSS that is not available on MacOS or
+      # Fuchsia.
       sources += [
         "importer/nss_decryptor.cc",
         "importer/nss_decryptor.h",
       ]
+
+      deps += [ "//crypto:buildflags" ]
     }
     if (is_win) {
       sources += [
@@ -118,14 +133,19 @@ static_library("utility") {
         "importer/nss_decryptor_win.cc",
         "importer/nss_decryptor_win.h",
       ]
+
+      deps += [ "//services/proxy_resolver_win" ]
     }
     deps += [
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
-      "//chrome/services/speech:lib",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
     ]
+  }
+
+  if (enable_screen_ai_service) {
+    deps += [ "//components/services/screen_ai" ]
   }
 
   if (enable_extensions) {
@@ -149,35 +169,50 @@ static_library("utility") {
       libs = [ "esent.lib" ]
       ldflags += [ "/DELAYLOAD:esent.dll" ]
 
-      deps += [ "//chrome/services/util_win:lib" ]
+      deps += [
+        "//chrome/services/util_win:lib",
+        "//components/device_signals/core/common/mojom",
+      ]
     }
 
-    if (is_win || is_mac) {
-      deps += [ "//components/wifi" ]
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/services/system_signals" ]
     }
   }
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/services/recording",
+      "//ash/services/ime:lib",
+      "//ash/services/ime/public/mojom",
       "//chrome/services/file_util",
       "//chrome/services/sharing",
-      "//chromeos/assistant:buildflags",
-      "//chromeos/components/local_search_service:local_search_service",
-      "//chromeos/components/local_search_service/public/mojom",
-      "//chromeos/services/ime:lib",
-      "//chromeos/services/ime/public/mojom",
-      "//chromeos/services/nearby/public/mojom:mojom",
+      "//chromeos/ash/components/assistant:buildflags",
+      "//chromeos/ash/components/local_search_service",
+      "//chromeos/ash/components/local_search_service/public/mojom",
+      "//chromeos/ash/components/trash_service",
+      "//chromeos/ash/components/trash_service/public/mojom",
+      "//chromeos/ash/services/nearby/public/mojom:mojom",
+      "//chromeos/ash/services/quick_pair",
+      "//chromeos/ash/services/recording",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]
 
     if (enable_cros_libassistant) {
       deps += [
-        "//chromeos/services/assistant/audio_decoder:lib",
-        "//chromeos/services/assistant/public/mojom",
+        "//chromeos/ash/services/assistant/audio_decoder:lib",
+        "//chromeos/ash/services/assistant/public/mojom",
+        "//chromeos/ash/services/libassistant",
+        "//chromeos/ash/services/libassistant/public/mojom",
       ]
     }
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/components/quick_answers/public/cpp",
+      "//chromeos/components/quick_answers/public/mojom",
+    ]
   }
 
   if (use_nss_certs) {
@@ -185,10 +220,8 @@ static_library("utility") {
       "importer/nss_decryptor_system_nss.cc",
       "importer/nss_decryptor_system_nss.h",
     ]
-    deps += [
-      "//crypto",
-      "//crypto:platform",
-    ]
+    deps += [ "//crypto" ]
+    configs += [ "//build/config/linux/nss" ]
   }
 
   if (enable_basic_printing) {
@@ -197,21 +230,15 @@ static_library("utility") {
       "//components/services/print_compositor/public/mojom",
     ]
 
+    # TODO(crbug.com/1302871): Simplify this. Is `!is_android` sufficient?
+    if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+      deps += [ "//chrome/services/printing:lib" ]
+    }
+
     if (is_chromeos_ash) {
       deps += [
         "//chrome/services/ipp_parser",
         "//chrome/services/ipp_parser/public/mojom",
-      ]
-    }
-  }
-
-  if (enable_print_preview) {
-    deps += [ "//chrome/services/printing:lib" ]
-
-    if (is_win) {
-      sources += [
-        "printing_handler.cc",
-        "printing_handler.h",
       ]
     }
   }
@@ -225,5 +252,9 @@ static_library("utility") {
 
   if (is_android || enable_extensions) {
     deps += [ "//chrome/services/media_gallery_util:lib" ]
+  }
+
+  if (enable_browser_speech_service) {
+    deps += [ "//chrome/services/speech:lib" ]
   }
 }

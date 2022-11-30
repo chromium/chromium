@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
@@ -28,6 +29,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -38,65 +41,57 @@
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/skia/include/ports/SkTypeface_mac.h"
 #endif
 
 namespace blink {
+namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Getting the system font render style takes a significant amount of time on
+// Linux because looking up fonts using fontconfig can be very slow. We fetch
+// the render style for each font family and text size, while it's very
+// unlikely that different text sizes for the same font family will have
+// different render styles. In addition, sometimes the font family name is not
+// normalized, so we may look up both "Arial" and "arial" which causes an
+// additional fontconfig lookup. This feature enables normalizing the font
+// family name and not using the text size for looking up the system render
+// style, which will hopefully result in a large decrease in the number of slow
+// fontconfig lookups.
+BASE_FEATURE(kOptimizeLinuxFonts,
+             "OptimizeLinuxFonts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+}  // namespace
 
 FontPlatformData::FontPlatformData(WTF::HashTableDeletedValueType)
-    : text_size_(0),
-      synthetic_bold_(false),
-      synthetic_italic_(false),
-      avoid_embedded_bitmaps_(false),
-      orientation_(FontOrientation::kHorizontal),
-      is_hash_table_deleted_value_(true)
-{
-}
+    : is_hash_table_deleted_value_(true) {}
 
-FontPlatformData::FontPlatformData()
-    : text_size_(0),
-      synthetic_bold_(false),
-      synthetic_italic_(false),
-      avoid_embedded_bitmaps_(false),
-      orientation_(FontOrientation::kHorizontal),
-      is_hash_table_deleted_value_(false)
-{
-}
-
-FontPlatformData::FontPlatformData(float size,
-                                   bool synthetic_bold,
-                                   bool synthetic_italic,
-                                   FontOrientation orientation)
-    : text_size_(size),
-      synthetic_bold_(synthetic_bold),
-      synthetic_italic_(synthetic_italic),
-      avoid_embedded_bitmaps_(false),
-      orientation_(orientation),
-      is_hash_table_deleted_value_(false)
-{
-}
+FontPlatformData::FontPlatformData() = default;
 
 FontPlatformData::FontPlatformData(const FontPlatformData& source)
     : typeface_(source.typeface_),
-#if !defined(OS_WIN) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
       family_(source.family_),
 #endif
       text_size_(source.text_size_),
       synthetic_bold_(source.synthetic_bold_),
       synthetic_italic_(source.synthetic_italic_),
       avoid_embedded_bitmaps_(source.avoid_embedded_bitmaps_),
-      orientation_(source.orientation_),
-#if !defined(OS_MAC)
-      style_(source.style_),
+      text_rendering_(source.text_rendering_),
+      orientation_(source.orientation_)
+#if !BUILDFLAG(IS_MAC)
+      ,
+      style_(source.style_)
 #endif
-      harfbuzz_face_(nullptr),
-      is_hash_table_deleted_value_(false) {
+{
 }
 
 FontPlatformData::FontPlatformData(const FontPlatformData& src, float text_size)
     : FontPlatformData(src.typeface_,
-#if !defined(OS_WIN) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
                        src.family_.data(),
 #else
                        std::string(),
@@ -104,6 +99,7 @@ FontPlatformData::FontPlatformData(const FontPlatformData& src, float text_size)
                        text_size,
                        src.synthetic_bold_,
                        src.synthetic_italic_,
+                       src.text_rendering_,
                        src.orientation_) {
 }
 
@@ -112,22 +108,34 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
                                    float text_size,
                                    bool synthetic_bold,
                                    bool synthetic_italic,
+                                   TextRenderingMode text_rendering,
                                    FontOrientation orientation)
     : typeface_(typeface),
-#if !defined(OS_WIN) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
       family_(family),
 #endif
       text_size_(text_size),
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
-      avoid_embedded_bitmaps_(false),
-      orientation_(orientation),
-      is_hash_table_deleted_value_(false) {
-#if !defined(OS_MAC)
+      text_rendering_(text_rendering),
+      orientation_(orientation) {
+#if !BUILDFLAG(IS_MAC)
   style_ = WebFontRenderStyle::GetDefault();
-  auto system_style =
-#if !defined(OS_WIN)
-      QuerySystemRenderStyle(family_, text_size_, typeface_->fontStyle());
+#if !BUILDFLAG(IS_WIN)
+  WebFontRenderStyle system_style;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  bool override_font_name_and_size =
+      base::FeatureList::IsEnabled(kOptimizeLinuxFonts);
+#else
+  bool override_font_name_and_size = false;
+#endif
+  if (override_font_name_and_size) {
+    system_style = QuerySystemRenderStyle(
+        FontFamilyName().Utf8(), 0, typeface_->fontStyle(), text_rendering);
+  } else {
+    system_style = QuerySystemRenderStyle(
+        family, text_size, typeface_->fontStyle(), text_rendering);
+  }
 
   // In web tests, ignore system preference for subpixel positioning,
   // or explicitly disable if requested.
@@ -138,7 +146,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
             : 0;
   }
 #else
-     QuerySystemForRenderStyle();
+  auto system_style = QuerySystemForRenderStyle();
 #endif
   style_.OverrideWith(system_style);
 #endif
@@ -146,34 +154,11 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
 
 FontPlatformData::~FontPlatformData() = default;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 CTFontRef FontPlatformData::CtFont() const {
   return SkTypeface_GetCTFontRef(typeface_.get());
 }
 #endif
-
-const FontPlatformData& FontPlatformData::operator=(
-    const FontPlatformData& other) {
-  // Check for self-assignment.
-  if (this == &other)
-    return *this;
-
-  typeface_ = other.typeface_;
-#if !defined(OS_WIN) && !defined(OS_MAC)
-  family_ = other.family_;
-#endif
-  text_size_ = other.text_size_;
-  synthetic_bold_ = other.synthetic_bold_;
-  synthetic_italic_ = other.synthetic_italic_;
-  avoid_embedded_bitmaps_ = other.avoid_embedded_bitmaps_;
-  harfbuzz_face_ = nullptr;
-  orientation_ = other.orientation_;
-#if !defined(OS_MAC)
-  style_ = other.style_;
-#endif
-
-  return *this;
-}
 
 bool FontPlatformData::operator==(const FontPlatformData& a) const {
   // If either of the typeface pointers are null then we test for pointer
@@ -188,11 +173,12 @@ bool FontPlatformData::operator==(const FontPlatformData& a) const {
          is_hash_table_deleted_value_ == a.is_hash_table_deleted_value_ &&
          synthetic_bold_ == a.synthetic_bold_ &&
          synthetic_italic_ == a.synthetic_italic_ &&
-         avoid_embedded_bitmaps_ == a.avoid_embedded_bitmaps_
-#if !defined(OS_MAC)
-         && style_ == a.style_
+         avoid_embedded_bitmaps_ == a.avoid_embedded_bitmaps_ &&
+         text_rendering_ == a.text_rendering_ &&
+#if !BUILDFLAG(IS_MAC)
+         style_ == a.style_ &&
 #endif
-         && orientation_ == a.orientation_;
+         orientation_ == a.orientation_;
 }
 
 SkFontID FontPlatformData::UniqueID() const {
@@ -200,9 +186,9 @@ SkFontID FontPlatformData::UniqueID() const {
 }
 
 String FontPlatformData::FontFamilyName() const {
-  DCHECK(this->Typeface());
+  DCHECK(Typeface());
   SkTypeface::LocalizedStrings* font_family_iterator =
-      this->Typeface()->createFamilyNameIterator();
+      Typeface()->createFamilyNameIterator();
   SkTypeface::LocalizedString localized_string;
   while (font_family_iterator->next(&localized_string) &&
          !localized_string.fString.size()) {
@@ -217,11 +203,14 @@ SkTypeface* FontPlatformData::Typeface() const {
 }
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  return &harfbuzz_face_.GetOrCreate(const_cast<FontPlatformData*>(this));
+#else
   if (!harfbuzz_face_)
-    harfbuzz_face_ =
-        HarfBuzzFace::Create(const_cast<FontPlatformData*>(this), UniqueID());
+    harfbuzz_face_ = HarfBuzzFace::Create(const_cast<FontPlatformData*>(this));
 
   return harfbuzz_face_.get();
+#endif
 }
 
 bool FontPlatformData::HasSpaceInLigaturesOrKerning(
@@ -250,23 +239,22 @@ unsigned FontPlatformData::GetHash() const {
   return h;
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 bool FontPlatformData::FontContainsCharacter(UChar32 character) {
-  SkFont font;
-  SetupSkFont(&font);
-  return font.unicharToGlyph(character);
+  return CreateSkFont().unicharToGlyph(character);
 }
 #endif
 
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 // static
 WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     const std::string& family,
     float text_size,
-    SkFontStyle font_style) {
+    SkFontStyle font_style,
+    TextRenderingMode text_rendering) {
   WebFontRenderStyle result;
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // If the font name is missing (i.e. probably a web font) or the sandbox is
   // disabled, use the system defaults.
   if (family.length() && Platform::Current()->GetSandboxSupport()) {
@@ -276,25 +264,46 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
         family.data(), text_size, is_bold, is_italic,
         FontCache::DeviceScaleFactor(), &result);
   }
+
+  // If `text-rendering: geometric-precision`, use subpixel positioning.
+  // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+  //
+  // TODO(crbug.com/1327530): For now, do this only for Linux/Cros to minimize
+  // the impact, and because they're the only platform that adjust these
+  // settings by different device scale factors. See the doc link in the crbug.
+  if (text_rendering == TextRenderingMode::kGeometricPrecision &&
+      result.use_anti_alias) {
+    result.use_subpixel_positioning = true;
+    result.use_hinting = false;
+    // 0 means HINTING_NONE, see |ConvertHinting| in font_service_app.cc.
+    result.hint_style = 0;
+  }
 #endif
 
   return result;
 }
 
-void FontPlatformData::SetupSkFont(SkFont* font,
-                                   float device_scale_factor,
-                                   const FontDescription*) const {
-  style_.ApplyToSkFont(font, device_scale_factor);
+SkFont FontPlatformData::CreateSkFont(bool should_use_subpixel_positioning,
+                                      const FontDescription*) const {
+  SkFont font;
+  style_.ApplyToSkFont(&font, should_use_subpixel_positioning);
 
   const float ts = text_size_ >= 0 ? text_size_ : 12;
-  font->setSize(SkFloatToScalar(ts));
-  font->setTypeface(typeface_);
-  font->setEmbolden(synthetic_bold_);
-  font->setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
+  font.setSize(SkFloatToScalar(ts));
+  font.setTypeface(typeface_);
+  font.setEmbolden(synthetic_bold_);
+  font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
-  font->setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
+  font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
+
+  return font;
 }
 #endif
+
+scoped_refptr<OpenTypeVerticalData> FontPlatformData::CreateVerticalData()
+    const {
+  return OpenTypeVerticalData::CreateUnscaled(typeface_);
+}
 
 IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
   DCHECK(typeface_);
@@ -346,5 +355,23 @@ String FontPlatformData::GetPostScriptName() const {
   bool success = typeface_->getPostScriptName(&postscript_name);
   return success ? postscript_name.c_str() : String();
 }
+
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+// --
+
+FontPlatformData::ThreadSpecificHarfBuzzFace::ThreadSpecificHarfBuzzFace() =
+    default;
+FontPlatformData::ThreadSpecificHarfBuzzFace::~ThreadSpecificHarfBuzzFace() =
+    default;
+
+HarfBuzzFace& FontPlatformData::ThreadSpecificHarfBuzzFace::GetOrCreate(
+    FontPlatformData* platform_data) {
+  base::AutoLock guard(lock_);
+  const auto result = map_.insert(CurrentThread(), nullptr);
+  if (result.is_new_entry)
+    result.stored_value->value = HarfBuzzFace::Create(platform_data);
+  return *result.stored_value->value;
+}
+#endif
 
 }  // namespace blink

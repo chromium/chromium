@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,35 +23,18 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId KioskAutolaunchScreenView::kScreenId;
-
-KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   KioskAppManager::Get()->AddObserver(this);
 }
 
 KioskAutolaunchScreenHandler::~KioskAutolaunchScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
-
   KioskAppManager::Get()->RemoveObserver(this);
 }
 
 void KioskAutolaunchScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
   UpdateKioskApp();
-  ShowScreen(kScreenId);
-}
-
-void KioskAutolaunchScreenHandler::SetDelegate(
-    KioskAutolaunchScreen* delegate) {
-  delegate_ = delegate;
-  if (page_is_ready())
-    Initialize();
+  ShowInWebUI();
 }
 
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
@@ -67,15 +50,15 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
     return;
   }
 
-  base::DictionaryValue app_info;
-  app_info.SetString("appName", app.name);
+  base::Value::Dict app_info;
+  app_info.Set("appName", app.name);
 
   std::string icon_url("chrome://theme/IDR_APP_DEFAULT_ICON");
   if (!app.icon.isNull())
     icon_url = webui::GetBitmapDataUrl(*app.icon.bitmap());
 
-  app_info.SetString("appIconUrl", icon_url);
-  CallJS("login.AutolaunchScreen.updateApp", app_info);
+  app_info.Set("appIconUrl", icon_url);
+  CallExternalAPI("updateApp", std::move(app_info));
 }
 
 void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
@@ -87,37 +70,19 @@ void KioskAutolaunchScreenHandler::DeclareLocalizedValues(
   builder->Add("autolaunchCancelButton", IDS_CANCEL);
 }
 
-void KioskAutolaunchScreenHandler::Initialize() {
-  if (!page_is_ready() || !delegate_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void KioskAutolaunchScreenHandler::RegisterMessages() {
-  AddCallback("autolaunchVisible",
-              &KioskAutolaunchScreenHandler::HandleOnVisible);
-  AddCallback("autolaunchOnCancel",
-              &KioskAutolaunchScreenHandler::HandleOnCancel);
-  AddCallback("autolaunchOnConfirm",
-              &KioskAutolaunchScreenHandler::HandleOnConfirm);
-}
-
 void KioskAutolaunchScreenHandler::HandleOnCancel() {
   KioskAppManager::Get()->RemoveObserver(this);
   KioskAppManager::Get()->SetEnableAutoLaunch(false);
-  if (delegate_)
-    delegate_->OnExit(false);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
   KioskAppManager::Get()->RemoveObserver(this);
   KioskAppManager::Get()->SetEnableAutoLaunch(true);
-  if (delegate_)
-    delegate_->OnExit(true);
+}
+
+void KioskAutolaunchScreenHandler::DeclareJSCallbacks() {
+  AddCallback("autolaunchVisible",
+              &KioskAutolaunchScreenHandler::HandleOnVisible);
 }
 
 void KioskAutolaunchScreenHandler::HandleOnVisible() {

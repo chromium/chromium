@@ -28,11 +28,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -79,6 +78,8 @@ class WTF_EXPORT TextCodec {
 
  public:
   TextCodec() = default;
+  TextCodec(const TextCodec&) = delete;
+  TextCodec& operator=(const TextCodec&) = delete;
   virtual ~TextCodec();
 
   struct EncodeIntoResult {
@@ -127,8 +128,6 @@ class WTF_EXPORT TextCodec {
   static uint32_t GetUnencodableReplacement(unsigned code_point,
                                             UnencodableHandling,
                                             UnencodableReplacementArray);
-
-  DISALLOW_COPY_AND_ASSIGN(TextCodec);
 };
 
 typedef void (*EncodingNameRegistrar)(const char* alias, const char* name);

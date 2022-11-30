@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/media_browsertest.h"
 #include "chrome/browser/media/test_license_server.h"
 #include "chrome/browser/media/wv_test_license_server_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_launcher_utils.h"
@@ -38,7 +38,7 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -56,7 +56,6 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 // To add a new variant, make sure you also update:
 // - media/test/data/eme_player_js/globals.js
 // - media/test/data/eme_player_js/player_utils.js
-// - AddExternalClearKey() in chrome_key_systems.cc
 // - CreateCdmInstance() in clear_key_cdm.cc
 const char kExternalClearKeyMessageTypeTestKeySystem[] =
     "org.chromium.externalclearkey.messagetypetest";
@@ -85,17 +84,23 @@ const char kUnknownSession[] = "UnknownSession";
 
 // EME-specific test results and errors.
 const char kUnitTestSuccess[] = "UNIT_TEST_SUCCESS";
-const char kEmeUnitTestFailure[] = "UNIT_TEST_FAILURE";
+const char16_t kEmeUnitTestFailure16[] = u"UNIT_TEST_FAILURE";
 const char kEmeNotSupportedError[] = "NOTSUPPORTEDERROR";
-const char kEmeGenerateRequestFailed[] = "EME_GENERATEREQUEST_FAILED";
-const char kEmeSessionNotFound[] = "EME_SESSION_NOT_FOUND";
-const char kEmeLoadFailed[] = "EME_LOAD_FAILED";
+const char16_t kEmeNotSupportedError16[] = u"NOTSUPPORTEDERROR";
+const char16_t kEmeGenerateRequestFailed[] = u"EME_GENERATEREQUEST_FAILED";
+const char16_t kEmeSessionNotFound16[] = u"EME_SESSION_NOT_FOUND";
+const char16_t kEmeLoadFailed[] = u"EME_LOAD_FAILED";
 const char kEmeUpdateFailed[] = "EME_UPDATE_FAILED";
-const char kEmeErrorEvent[] = "EME_ERROR_EVENT";
-const char kEmeMessageUnexpectedType[] = "EME_MESSAGE_UNEXPECTED_TYPE";
-const char kEmeRenewalMissingHeader[] = "EME_RENEWAL_MISSING_HEADER";
+const char16_t kEmeUpdateFailed16[] = u"EME_UPDATE_FAILED";
+const char16_t kEmeErrorEvent[] = u"EME_ERROR_EVENT";
+const char16_t kEmeMessageUnexpectedType[] = u"EME_MESSAGE_UNEXPECTED_TYPE";
+const char16_t kEmeRenewalMissingHeader[] = u"EME_RENEWAL_MISSING_HEADER";
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 const char kEmeSessionClosedAndError[] = "EME_SESSION_CLOSED_AND_ERROR";
+const char kEmeSessionNotFound[] = "EME_SESSION_NOT_FOUND";
+#if BUILDFLAG(IS_CHROMEOS)
+const char kEmeUnitTestFailure[] = "UNIT_TEST_FAILURE";
+#endif
 #endif
 
 const char kDefaultEmePlayer[] = "eme_player.html";
@@ -176,7 +181,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
   void RunSimpleEncryptedMediaTest(const std::string& media_file,
                                    const std::string& key_system,
                                    SrcType src_type) {
-    std::string expected_title = media::kEnded;
+    std::string expected_title = media::kEndedTitle;
     if (!IsPlayBackPossible(key_system)) {
       expected_title = kEmeUpdateFailed;
     }
@@ -229,7 +234,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
         GetServerConfig(key_system);
     if (!config)
       return;
-    license_server_.reset(new TestLicenseServer(std::move(config)));
+    license_server_ = std::make_unique<TestLicenseServer>(std::move(config));
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(license_server_->Start());
@@ -265,25 +270,29 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
   // We want to fail quickly when a test fails because an error is encountered.
   void AddWaitForTitles(content::TitleWatcher* title_watcher) override {
     MediaBrowserTest::AddWaitForTitles(title_watcher);
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeUnitTestFailure));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeNotSupportedError));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeGenerateRequestFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeSessionNotFound));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeLoadFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeUpdateFailed));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeErrorEvent));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeMessageUnexpectedType));
-    title_watcher->AlsoWaitForTitle(
-        base::ASCIIToUTF16(kEmeRenewalMissingHeader));
+    title_watcher->AlsoWaitForTitle(kEmeUnitTestFailure16);
+    title_watcher->AlsoWaitForTitle(kEmeNotSupportedError16);
+    title_watcher->AlsoWaitForTitle(kEmeGenerateRequestFailed);
+    title_watcher->AlsoWaitForTitle(kEmeSessionNotFound16);
+    title_watcher->AlsoWaitForTitle(kEmeLoadFailed);
+    title_watcher->AlsoWaitForTitle(kEmeUpdateFailed16);
+    title_watcher->AlsoWaitForTitle(kEmeErrorEvent);
+    title_watcher->AlsoWaitForTitle(kEmeMessageUnexpectedType);
+    title_watcher->AlsoWaitForTitle(kEmeRenewalMissingHeader);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MediaBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "EncryptedMediaHdcpPolicyCheck");
+
+    // Persistent license is supported on ChromeOS when protected media
+    // identifier is allowed which involves a user action. Use this switch to
+    // always allow the identifier for testing purpose. Note that the test page
+    // is hosted on "127.0.0.1". See net::EmbeddedTestServer for details.
+    command_line->AppendSwitchASCII(
+        switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -303,14 +312,19 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       command_line->AppendSwitch(switches::kDisableWebSecurity);
     }
 
+    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kChromeWhatsNewUI};
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     if (IsExternalClearKey(key_system)) {
       RegisterClearKeyCdm(command_line);
-      std::vector<base::Feature> enabled_features = {
-          media::kExternalClearKeyForTesting};
-      scoped_feature_list_.InitWithFeatures(enabled_features, {});
+      enabled_features.push_back(media::kExternalClearKeyForTesting);
     }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -329,9 +343,6 @@ class ECKEncryptedMediaTest : public EncryptedMediaTestBase,
   // e.g. kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
     // Since we do not test playback, arbitrarily choose a test file and source
     // type.
     RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
@@ -366,10 +377,7 @@ class ECKEncryptedMediaOutputProtectionTest
       public testing::WithParamInterface<const char*> {
  public:
   void TestOutputProtection(bool create_recorder_before_media_keys) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // QueryOutputProtectionStatus() is known to fail on Linux Chrome OS builds.
     std::string expected_title = kEmeUnitTestFailure;
 #else
@@ -402,9 +410,6 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
   // e.g. kExternalClearKeyFileIOTestKeySystem is used to test file IO.
   void TestNonPlaybackCases(const std::string& key_system,
                             const std::string& expected_title) {
-    // Make sure the Clear Key CDM is properly registered in CdmRegistry.
-    EXPECT_TRUE(IsLibraryCdmRegistered(media::kClearKeyCdmGuid));
-
     // Since we do not test playback, arbitrarily choose a test file and source
     // type.
     RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm", key_system,
@@ -421,22 +426,12 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-// Tests encrypted media playback with a combination of parameters:
-// - char*: Key system name.
-// - SrcType: Use MSE or SRC.
-//
-// Note:
-// 1. Only parameterized (*_P) tests can be used. Non-parameterized (*_F)
-// tests will crash at GetParam().
-// 2. For key systems backed by library CDMs, the latest CDM interface version
-// supported by both the CDM and Chromium will be used.
-class EncryptedMediaTest
-    : public EncryptedMediaTestBase,
-      public testing::WithParamInterface<std::tuple<const char*, SrcType>> {
+// A base class for parameterized encrypted media tests. Subclasses must
+// override `CurrentKeySystem()` and `CurrentSourceType()`.
+class ParameterizedEncryptedMediaTestBase : public EncryptedMediaTestBase {
  public:
-  std::string CurrentKeySystem() { return std::get<0>(GetParam()); }
-
-  SrcType CurrentSourceType() { return std::get<1>(GetParam()); }
+  virtual std::string CurrentKeySystem() = 0;
+  virtual SrcType CurrentSourceType() = 0;
 
   void TestSimplePlayback(const std::string& encrypted_media) {
     RunSimpleEncryptedMediaTest(encrypted_media, CurrentKeySystem(),
@@ -448,7 +443,7 @@ class EncryptedMediaTest
     RunEncryptedMediaTest(kDefaultEmePlayer, encrypted_media,
                           CurrentKeySystem(), CurrentSourceType(),
                           kNoSessionToLoad, false, PlayCount::TWICE,
-                          media::kEnded);
+                          media::kEndedTitle);
   }
 
   void RunInvalidResponseTest() {
@@ -462,21 +457,14 @@ class EncryptedMediaTest
     RunEncryptedMediaTest("encrypted_frame_size_change.html",
                           "frame_size_change-av_enc-v.webm", CurrentKeySystem(),
                           CurrentSourceType(), kNoSessionToLoad, false,
-                          PlayCount::ONCE, media::kEnded);
+                          PlayCount::ONCE, media::kEndedTitle);
   }
 
   void TestConfigChange(ConfigChangeType config_change_type) {
-    // TODO(xhwang): Even when config change or playback is not supported we
-    // still start Chrome only to return directly here. We probably should not
-    // run these test cases at all. See http://crbug.com/693288
-    if (CurrentSourceType() != SrcType::MSE) {
-      DVLOG(0) << "Config change only happens when using MSE.";
-      return;
-    }
-    if (!IsPlayBackPossible(CurrentKeySystem())) {
-      DVLOG(0) << "Skipping test - ConfigChange test requires video playback.";
-      return;
-    }
+    DCHECK_EQ(CurrentSourceType(), SrcType::MSE)
+        << "Config change only happens when using MSE.";
+    DCHECK(IsPlayBackPossible(CurrentKeySystem()))
+        << "ConfigChange test requires video playback.";
 
     base::StringPairs query_params;
     query_params.emplace_back("keySystem", CurrentKeySystem());
@@ -484,7 +472,7 @@ class EncryptedMediaTest
         "configChangeType",
         base::NumberToString(static_cast<int>(config_change_type)));
     RunEncryptedMediaTestPage("mse_config_change.html", CurrentKeySystem(),
-                              query_params, media::kEnded);
+                              query_params, media::kEndedTitle);
   }
 
   void TestPolicyCheck() {
@@ -504,14 +492,9 @@ class EncryptedMediaTest
 
   void TestDifferentContainers(const std::string& video_media_file,
                                const std::string& audio_media_file) {
-    // MP4 without MSE is not support yet, http://crbug.com/170793.
-    if (CurrentSourceType() != SrcType::MSE) {
-      DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-      return;
-    }
-
+    DCHECK_EQ(CurrentSourceType(), SrcType::MSE);
     RunEncryptedMediaMultipleFileTest(CurrentKeySystem(), video_media_file,
-                                      audio_media_file, media::kEnded);
+                                      audio_media_file, media::kEndedTitle);
   }
 
   void DisableEncryptedMedia() {
@@ -526,6 +509,34 @@ class EncryptedMediaTest
   }
 };
 
+// Tests encrypted media playback with a combination of parameters:
+// - char*: Key system name.
+// - SrcType: Use MSE or SRC.
+//
+// Note:
+// 1. Only parameterized (*_P) tests can be used. Non-parameterized (*_F)
+// tests will crash at GetParam().
+// 2. For key systems backed by library CDMs, the latest CDM interface version
+// supported by both the CDM and Chromium will be used.
+class EncryptedMediaTest
+    : public ParameterizedEncryptedMediaTestBase,
+      public testing::WithParamInterface<std::tuple<const char*, SrcType>> {
+ public:
+  std::string CurrentKeySystem() override { return std::get<0>(GetParam()); }
+  SrcType CurrentSourceType() override { return std::get<1>(GetParam()); }
+};
+
+// Similar to EncryptedMediaTest, but the source type is always MSE. This is
+// needed because many tests can only work with MSE (not with SRC), e.g.
+// encrypted MP4, see http://crbug.com/170793. Use this class for those tests so
+// we don't have to start the test and then skip it.
+class MseEncryptedMediaTest : public ParameterizedEncryptedMediaTestBase,
+                              public testing::WithParamInterface<const char*> {
+ public:
+  std::string CurrentKeySystem() override { return GetParam(); }
+  SrcType CurrentSourceType() override { return SrcType::MSE; }
+};
+
 using ::testing::Combine;
 using ::testing::Values;
 
@@ -533,6 +544,10 @@ INSTANTIATE_TEST_SUITE_P(MSE_ClearKey,
                          EncryptedMediaTest,
                          Combine(Values(kClearKeyKeySystem),
                                  Values(SrcType::MSE)));
+
+INSTANTIATE_TEST_SUITE_P(MSE_ClearKey,
+                         MseEncryptedMediaTest,
+                         Values(kClearKeyKeySystem));
 
 // External Clear Key is currently only used on platforms that use library CDMs.
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -545,6 +560,10 @@ INSTANTIATE_TEST_SUITE_P(MSE_ExternalClearKey,
                          EncryptedMediaTest,
                          Combine(Values(kExternalClearKeyKeySystem),
                                  Values(SrcType::MSE)));
+
+INSTANTIATE_TEST_SUITE_P(MSE_ExternalClearKey,
+                         MseEncryptedMediaTest,
+                         Values(kExternalClearKeyKeySystem));
 #else   // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 // To reduce test time, only run ClearKey SRC tests when we are not running
 // ExternalClearKey SRC tests.
@@ -559,6 +578,10 @@ INSTANTIATE_TEST_SUITE_P(MSE_Widevine,
                          EncryptedMediaTest,
                          Combine(Values(kWidevineKeySystem),
                                  Values(SrcType::MSE)));
+
+INSTANTIATE_TEST_SUITE_P(MSE_Widevine,
+                         MseEncryptedMediaTest,
+                         Values(kWidevineKeySystem));
 #endif  // #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
@@ -590,57 +613,56 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - Playback_Multiple test requires playback.";
-    return;
-  }
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "Playback_Multiple test requires playback.";
+
   TestMultiplePlayback("bear-320x240-av_enc-av.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
   TestSimplePlayback("bear-flac-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
   TestSimplePlayback("bear-opus-cenc.mp4");
 }
 
 // TODO(crbug.com/1045393): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        DISABLED_Playback_VideoOnly_MP4_VP9) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
+// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
+  DISABLED_Playback_VideoOnly_WebM_VP9Profile2
+#else
+#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
+  Playback_VideoOnly_WebM_VP9Profile2
+#endif
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       Playback_VideoOnly_WebM_VP9Profile2) {
+                       MAYBE_Playback_VideoOnly_WebM_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9Profile2) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
+// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  DISABLED_Playback_VideoOnly_MP4_VP9Profile2
+#else
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  Playback_VideoOnly_MP4_VP9Profile2
+#endif
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
+                       MAYBE_Playback_VideoOnly_MP4_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
+
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
@@ -649,93 +671,83 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
   TestSimplePlayback("bear-av1-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1_10bit) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
+                       Playback_VideoOnly_MP4_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
 }
+
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, InvalidResponseKeyError) {
   RunInvalidResponseTest();
 }
 
-// Strictly speaking this is not an "encrypted" media test. Keep it here for
-// completeness.
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
+// This is not really an "encrypted" media test. Keep it here for completeness.
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "ConfigChange test requires video playback.";
+
   TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, ConfigChangeVideo_ClearToEncrypted) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
+                       ConfigChangeVideo_ClearToEncrypted) {
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "ConfigChange test requires video playback.";
+
   TestConfigChange(ConfigChangeType::CLEAR_TO_ENCRYPTED);
 }
 
 // TODO(crbug.com/1045376): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        DISABLED_ConfigChangeVideo_EncryptedToClear) {
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "ConfigChange test requires video playback.";
+
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_CLEAR);
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        ConfigChangeVideo_EncryptedToEncrypted) {
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "ConfigChange test requires video playback.";
+
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_ENCRYPTED);
 }
 
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - FrameSizeChange test requires video playback.";
-    return;
-  }
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "FrameSizeChange test requires video playback.";
+
   TestFrameSizeChange();
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, PolicyCheck) {
-  // There is no need to run this test twice for the same key system.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test.";
-    return;
-  }
-
+// Only use MSE since this is independent to the demuxer.
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, PolicyCheck) {
   TestPolicyCheck();
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, RemoveTemporarySession) {
-  if (!IsPlayBackPossible(CurrentKeySystem())) {
-    DVLOG(0) << "Skipping test - RemoveTemporarySession test requires license "
-                "server.";
-    return;
-  }
-
-  // Although this test doesn't play anything, there is no need to run it
-  // twice for the same key system.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test.";
-    return;
-  }
+// Only use MSE since this is independent to the demuxer.
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, RemoveTemporarySession) {
+  if (!IsPlayBackPossible(CurrentKeySystem()))
+    GTEST_SKIP() << "RemoveTemporarySession test requires license server.";
 
   base::StringPairs query_params{{"keySystem", CurrentKeySystem()}};
   RunEncryptedMediaTestPage("eme_remove_session_test.html", CurrentKeySystem(),
-                            query_params, media::kEnded);
+                            query_params, media::kEndedTitle);
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, EncryptedMediaDisabled) {
+// Only use MSE since this is independent to the demuxer.
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, EncryptedMediaDisabled) {
   DisableEncryptedMedia();
 
   // Clear Key key system is always supported.
   std::string expected_title = media::IsClearKey(CurrentKeySystem())
-                                   ? media::kEnded
+                                   ? media::kEndedTitle
                                    : kEmeNotSupportedError;
 
   RunEncryptedMediaTest(kDefaultEmePlayer, "bear-a_enc-a.webm",
@@ -745,62 +757,49 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, EncryptedMediaDisabled) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4) {
   TestSimplePlayback("bear-640x360-v_frag-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_MDAT) {
-  // MP4 without MSE is not support yet, http://crbug.com/170793.
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_MDAT) {
   TestSimplePlayback("bear-640x360-v_frag-cenc-mdat.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBCS) {
-  if (CurrentSourceType() != SrcType::MSE) {
-    DVLOG(0) << "Skipping test; Can only play MP4 encrypted streams by MSE.";
-    return;
-  }
-
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Encryption_CBCS) {
   TestSimplePlayback("bear-640x360-v_frag-cbcs.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        Playback_EncryptedVideo_MP4_ClearAudio_WEBM) {
   TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
                           "bear-320x240-audio-only.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        Playback_ClearVideo_WEBM_EncryptedAudio_MP4) {
   TestDifferentContainers("bear-320x240-video-only.webm",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4) {
   TestDifferentContainers("bear-320x240-v_enc-v.webm",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC) {
   TestDifferentContainers("bear-640x360-v_frag-cbcs.mp4",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
                        Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS) {
   TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
                           "bear-640x360-a_frag-cbcs.mp4");
 }
+
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -817,7 +816,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
 }
 
 // TODO(1019187): Failing on win7.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
 #else
 #define MAYBE_CDMCrashDuringDecode CDMCrashDuringDecode
@@ -846,7 +845,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, PlatformVerificationTest) {
 #endif
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
   TestPlaybackCase(kExternalClearKeyMessageTypeTestKeySystem, kNoSessionToLoad,
-                   media::kEnded);
+                   media::kEndedTitle);
 
   int num_received_message_types = 0;
   EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
@@ -862,7 +861,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadPersistentLicense) {
   TestPlaybackCase(kExternalClearKeyKeySystem, kPersistentLicense,
-                   media::kEnded);
+                   media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadUnknownSession) {
@@ -874,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadSessionAfterClose) {
   base::StringPairs query_params{{"keySystem", kExternalClearKeyKeySystem}};
   RunEncryptedMediaTestPage("eme_load_session_after_close_test.html",
                             kExternalClearKeyKeySystem, query_params,
-                            media::kEnded);
+                            media::kEndedTitle);
 }
 
 const char kExternalClearKeyDecryptOnlyKeySystem[] =
@@ -898,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_CBCS) {
   // 'cbcs' decryption is only supported on CDM 10 or later as long as
   // the appropriate buildflag is enabled.
   std::string expected_result =
-      GetCdmInterfaceVersion() >= 10 ? media::kEnded : media::kError;
+      GetCdmInterfaceVersion() >= 10 ? media::kEndedTitle : media::kErrorTitle;
   RunEncryptedMediaTest(kDefaultEmePlayer, "bear-640x360-v_frag-cbcs.mp4",
                         kExternalClearKeyDecryptOnlyKeySystem, SrcType::MSE,
                         kNoSessionToLoad, false, PlayCount::ONCE,
@@ -910,26 +909,26 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_CBCS) {
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENC) {
   RunEncryptedMediaMultipleFileTest(
       kExternalClearKeyKeySystem, "bear-640x360-v_frag-cenc.mp4",
-      "bear-640x360-a_frag-cenc.mp4", media::kEnded);
+      "bear-640x360-a_frag-cenc.mp4", media::kEndedTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBC1) {
   RunEncryptedMediaMultipleFileTest(kExternalClearKeyKeySystem,
                                     "bear-640x360-v_frag-cbc1.mp4",
-                                    std::string(), media::kError);
+                                    std::string(), media::kErrorTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENS) {
   RunEncryptedMediaMultipleFileTest(kExternalClearKeyKeySystem,
                                     "bear-640x360-v_frag-cens.mp4",
-                                    std::string(), media::kError);
+                                    std::string(), media::kErrorTitle);
 }
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBCS) {
   // 'cbcs' decryption is only supported on CDM 10 or later as long as
   // the appropriate buildflag is enabled.
   std::string expected_result =
-      GetCdmInterfaceVersion() >= 10 ? media::kEnded : media::kError;
+      GetCdmInterfaceVersion() >= 10 ? media::kEndedTitle : media::kErrorTitle;
   RunEncryptedMediaMultipleFileTest(
       kExternalClearKeyKeySystem, "bear-640x360-v_frag-cbcs.mp4",
       "bear-640x360-a_frag-cbcs.mp4", expected_result);
@@ -955,11 +954,10 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
 #else
 #define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #endif
-
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
   base::StringPairs empty_query_params;
-  RunMediaTestPage("multiple_cdm_types.html", empty_query_params, media::kEnded,
-                   true);
+  RunMediaTestPage("multiple_cdm_types.html", empty_query_params,
+                   media::kEndedTitle, true);
 }
 
 // Output Protection Tests. Run with different capture inputs. "monitor"
@@ -1001,6 +999,6 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
   base::StringPairs query_params{{"keySystem", kExternalClearKeyKeySystem}};
   RunEncryptedMediaTestPage("eme_load_session_after_close_test.html",
                             kExternalClearKeyKeySystem, query_params,
-                            media::kEnded);
+                            media::kEndedTitle);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

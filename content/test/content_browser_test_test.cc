@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/location.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +26,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,32 +52,22 @@ namespace content {
 // TODO(mac): figure out why symbolization doesn't happen in the renderer.
 // http://crbug.com/521456
 // TODO(win): send PDB files for component build. http://crbug.com/521459
-#if !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
-    !(defined(COMPONENT_BUILD) && defined(OS_WIN))
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_MAC) && !(defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN))
 
 namespace {
-
-const char* kSwitchesToCopy[] = {
-#if defined(USE_OZONE)
-    // Keep the kOzonePlatform switch that the Ozone must use.
-    switches::kOzonePlatform,
-#endif
-    // Some tests use custom cmdline that doesn't hold switches from previous
-    // cmdline. Only a couple of switches are copied. That can result in
-    // incorrect initialization of a process. For example, the work that we do
-    // to have use_x11 && use_ozone, requires UseOzonePlatform feature flag to
-    // be passed to all the process to ensure correct path is chosen.
-    // TODO(https://crbug.com/1096425): update this comment once USE_X11 goes
-    // away.
-    switches::kEnableFeatures,
-    switches::kDisableFeatures,
-};
 
 base::CommandLine CreateCommandLine() {
   const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
   base::CommandLine command_line = base::CommandLine(cmdline.GetProgram());
+#if defined(USE_OZONE)
+  const char* kSwitchesToCopy[] = {
+      // Keep the kOzonePlatform switch that the Ozone must use.
+      switches::kOzonePlatform,
+  };
   command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                                base::size(kSwitchesToCopy));
+                                std::size(kSwitchesToCopy));
+#endif
   return command_line;
 }
 
@@ -89,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_ShouldntRun) {
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
   content::RenderProcessHostWatcher renderer_shutdown_observer(
-      shell()->web_contents()->GetMainFrame()->GetProcess(),
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   EXPECT_FALSE(NavigateToURL(shell(), GetWebUIURL("crash")));
@@ -100,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 
 // Non-Windows sanitizer builds do not symbolize stack traces internally, so use
 // this macro to avoid looking for symbols from the stack trace.
-#if !defined(OS_WIN) &&                                       \
+#if !BUILDFLAG(IS_WIN) &&                                     \
     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
      defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))
 #define USE_EXTERNAL_SYMBOLIZER 1
@@ -109,10 +100,15 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 #endif
 
 // Tests that browser tests print the callstack when a child process crashes.
-IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RendererCrashCallStack) {
+// TODO(https://crbug.com/1317397): Enable this test on Fuchsia once the test
+// expectations have been updated.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RendererCrashCallStack DISABLED_RendererCrashCallStack
+#else
+#define MAYBE_RendererCrashCallStack RendererCrashCallStack
+#endif
+IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
@@ -134,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RendererCrashCallStack) {
   // "#0 0x0000007ea911 (...content_browsertests+0x7ea910)"
   std::string crash_string =
 #if !USE_EXTERNAL_SYMBOLIZER
-      "content::RenderFrameImpl::HandleRendererDebugURL";
+      "blink::LocalFrameMojoHandler::HandleRendererDebugURL";
 #else
       "#0 ";
 #endif
@@ -158,21 +154,27 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
 
 // Tests that browser tests print the callstack on asserts.
 // Disabled on Windows crbug.com/1034784
-#if defined(OS_WIN)
+// TODO(https://crbug.com/1317397): Enable this test on Fuchsia once the test
+// expectations have been updated.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_BrowserCrashCallStack DISABLED_BrowserCrashCallStack
 #else
 #define MAYBE_BrowserCrashCallStack BrowserCrashCallStack
 #endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_BrowserCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
                              "ContentBrowserTest.MANUAL_BrowserCrash");
   new_test.AppendSwitch(switches::kRunManualTestsFlag);
   new_test.AppendSwitch(switches::kSingleProcessTests);
+  // A browser process immediate crash can race the initialization of the
+  // network service process and leave the process hanging, so run the network
+  // service in-process.
+  new_test.AppendSwitchASCII(switches::kEnableFeatures,
+                             features::kNetworkServiceInProcess.name);
+
   std::string output;
   base::GetAppOutputAndError(new_test, &output);
 
@@ -211,7 +213,10 @@ IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_CrashTest) {
 }
 
 // This is disabled due to flakiness: https://crbug.com/1086372
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RunMockTests DISABLED_RunMockTests
+#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// This is disabled because it fails on bionic: https://crbug.com/1202220
 #define MAYBE_RunMockTests DISABLED_RunMockTests
 #else
 #define MAYBE_RunMockTests RunMockTests
@@ -236,31 +241,30 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
   base::GetAppOutputAndError(command_line, &output);
 
   // Validate the resulting JSON file is the expected output.
-  base::Optional<base::Value> root =
+  absl::optional<base::Value::Dict> root =
       base::test_launcher_utils::ReadSummary(path);
   ASSERT_TRUE(root);
 
-  base::Value* val = root->FindDictKey("test_locations");
-  ASSERT_TRUE(val);
-  EXPECT_EQ(3u, val->DictSize());
+  base::Value::Dict* dict = root->FindDict("test_locations");
+  ASSERT_TRUE(dict);
+  EXPECT_EQ(3u, dict->size());
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestLocations(
-      val, "MockContentBrowserTest"));
+      *dict, "MockContentBrowserTest"));
 
-  val = root->FindListKey("per_iteration_data");
-  ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  base::Value::List* list = root->FindList("per_iteration_data");
+  ASSERT_TRUE(list);
+  ASSERT_EQ(1u, list->size());
 
-  base::Value* iteration_val = &(val->GetList()[0]);
-  ASSERT_TRUE(iteration_val);
-  ASSERT_TRUE(iteration_val->is_dict());
-  EXPECT_EQ(3u, iteration_val->DictSize());
+  base::Value::Dict* iteration_dict = (*list)[0].GetIfDict();
+  ASSERT_TRUE(iteration_dict);
+  EXPECT_EQ(3u, iteration_dict->size());
   // We expect the result to be stripped of disabled prefix.
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.PassTest", "SUCCESS", 0u));
+      *iteration_dict, "MockContentBrowserTest.PassTest", "SUCCESS", 0u));
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.FailTest", "FAILURE", 1u));
+      *iteration_dict, "MockContentBrowserTest.FailTest", "FAILURE", 1u));
   EXPECT_TRUE(base::test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockContentBrowserTest.CrashTest", "CRASH", 0u));
+      *iteration_dict, "MockContentBrowserTest.CrashTest", "CRASH", 0u));
 }
 
 #endif
@@ -268,13 +272,25 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
 class ContentBrowserTestSanityTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_FALSE(ran_);
+
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     if (std::string(test_info->name()) == "SingleProcess")
       command_line->AppendSwitch(switches::kSingleProcess);
   }
 
+  void SetUp() override {
+    ASSERT_FALSE(ran_);
+    BrowserTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override { ASSERT_FALSE(ran_); }
+
   void Test() {
+    ASSERT_FALSE(ran_);
+    ran_ = true;
+
     GURL url = GetTestUrl(".", "simple_page.html");
 
     std::u16string expected_title(u"OK");
@@ -283,6 +299,18 @@ class ContentBrowserTestSanityTest : public ContentBrowserTest {
     std::u16string title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, title);
   }
+
+  void TearDownOnMainThread() override { ASSERT_TRUE(ran_); }
+
+  void TearDown() override {
+    ASSERT_TRUE(ran_);
+    BrowserTestBase::TearDown();
+  }
+
+ private:
+  // Verify that Test() is invoked once and only once between SetUp and TearDown
+  // phases.
+  bool ran_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, Basic) {
@@ -295,14 +323,18 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, SingleProcess) {
 
 namespace {
 
-const base::Feature kTestFeatureForBrowserTest1{
-    "TestFeatureForBrowserTest1", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureForBrowserTest2{
-    "TestFeatureForBrowserTest2", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeatureForBrowserTest3{
-    "TestFeatureForBrowserTest3", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureForBrowserTest4{
-    "TestFeatureForBrowserTest4", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeatureForBrowserTest1,
+             "TestFeatureForBrowserTest1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureForBrowserTest2,
+             "TestFeatureForBrowserTest2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureForBrowserTest3,
+             "TestFeatureForBrowserTest3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureForBrowserTest4,
+             "TestFeatureForBrowserTest4",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -313,12 +345,15 @@ class ContentBrowserTestScopedFeatureListTest : public ContentBrowserTest {
                                           {kTestFeatureForBrowserTest4});
   }
 
+  ContentBrowserTestScopedFeatureListTest(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+  ContentBrowserTestScopedFeatureListTest& operator=(
+      const ContentBrowserTestScopedFeatureListTest&) = delete;
+
   ~ContentBrowserTestScopedFeatureListTest() override {}
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentBrowserTestScopedFeatureListTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTestScopedFeatureListTest,
@@ -354,11 +389,19 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
   EXPECT_LT(run_timeout->timeout, TestTimeouts::test_launcher_timeout());
 
   static auto& static_on_timeout_cb = run_timeout->on_timeout;
+#if defined(__clang__) && defined(_MSC_VER)
   EXPECT_FATAL_FAILURE(static_on_timeout_cb.Run(FROM_HERE),
                        "RunLoop::Run() timed out. Timeout set at "
                        // We don't test the line number but it would be present.
-                       "ProxyRunTestOnMainThreadLoop@../../content/public/test/"
+                       "ProxyRunTestOnMainThreadLoop@content\\public\\test\\"
                        "browser_test_base.cc:");
+#else
+  EXPECT_FATAL_FAILURE(static_on_timeout_cb.Run(FROM_HERE),
+                       "RunLoop::Run() timed out. Timeout set at "
+                       // We don't test the line number but it would be present.
+                       "ProxyRunTestOnMainThreadLoop@content/public/test/"
+                       "browser_test_base.cc:");
+#endif
 }
 
 }  // namespace content

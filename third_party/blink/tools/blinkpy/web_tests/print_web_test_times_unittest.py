@@ -38,7 +38,8 @@ class PrintWebTestTimesTest(unittest.TestCase):
         fs = host.filesystem
         artifacts_directory = host.port_factory.get().artifacts_directory()
         if files:
-            fs.files = files
+            for path, contents in files.items():
+                fs.write_text_file(path, contents)
         else:
             fs.write_text_file(
                 fs.join(artifacts_directory, 'times_ms.json'), """

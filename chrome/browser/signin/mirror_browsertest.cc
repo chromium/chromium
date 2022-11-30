@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,13 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
@@ -34,35 +36,47 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
+#endif
 
 namespace {
 
-// A delegate to insert a user generated X-Chrome-Connected header
-// to a specifict URL.
+// A delegate to insert a user generated X-Chrome-Connected header to a specific
+// URL.
 class HeaderModifyingThrottle : public blink::URLLoaderThrottle {
  public:
   HeaderModifyingThrottle() = default;
+
+  HeaderModifyingThrottle(const HeaderModifyingThrottle&) = delete;
+  HeaderModifyingThrottle& operator=(const HeaderModifyingThrottle&) = delete;
+
   ~HeaderModifyingThrottle() override = default;
 
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
     request->headers.SetHeader(signin::kChromeConnectedHeader, "User Data");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeaderModifyingThrottle);
 };
 
 class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
  public:
   explicit ThrottleContentBrowserClient(const GURL& watch_url)
       : watch_url_(watch_url) {}
+
+  ThrottleContentBrowserClient(const ThrottleContentBrowserClient&) = delete;
+  ThrottleContentBrowserClient& operator=(const ThrottleContentBrowserClient&) =
+      delete;
+
   ~ThrottleContentBrowserClient() override = default;
 
   // ContentBrowserClient overrides:
@@ -81,8 +95,6 @@ class ThrottleContentBrowserClient : public ChromeContentBrowserClient {
 
  private:
   const GURL watch_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottleContentBrowserClient);
 };
 
 // Subclass of DiceManageAccountBrowserTest with Mirror enabled.
@@ -137,12 +149,12 @@ class MirrorBrowserTest : public InProcessBrowserTest {
 };
 
 // Verify the following items:
-// 1- X-Chrome-Connected is appended on Google domains if account
-//    consistency is enabled and access is secure.
-// 2- The header is stripped in case a request is redirected from a Gooogle
+// 1- X-Chrome-Connected is appended on Google domains if account consistency is
+//    enabled and access is secure.
+// 2- The header is stripped in case a request is redirected from a Google
 //    domain to non-google domain.
-// 3- The header is NOT stripped in case it is added directly by the page
-//    and not because it was on a secure Google domain.
+// 3- The header is NOT stripped in case it is added directly by the page and
+//    not because it was on a secure Google domain.
 // This is a regression test for crbug.com/588492.
 IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   browser()->profile()->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
@@ -174,15 +186,16 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   root_http = root_http.AppendASCII("mirror_request_header");
 
   struct TestCase {
-    GURL original_url;  // The URL from which the request begins.
+    // The URL from which the request begins.
+    GURL original_url;
     // The path to which navigation is redirected.
     std::string redirected_to_path;
-    bool inject_header;  // Should X-Chrome-Connected header be injected to the
-                         // original request.
-    bool original_url_expects_header;       // Expectation: The header should be
-                                            // visible in original URL.
-    bool redirected_to_url_expects_header;  // Expectation: The header should be
-                                            // visible in redirected URL.
+    // Should X-Chrome-Connected header be injected to the original request.
+    bool inject_header;
+    // Expectation: The header should be visible in original URL.
+    bool original_url_expects_header;
+    // Expectation: The header should be visible in redirected URL.
+    bool redirected_to_url_expects_header;
   };
 
   std::vector<TestCase> all_tests;
@@ -225,7 +238,8 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
       old_browser_client = content::SetBrowserClientForTesting(&browser_client);
 
     // Navigate to first url.
-    ui_test_utils::NavigateToURL(browser(), test_case.original_url);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), test_case.original_url));
 
     if (test_case.inject_header)
       content::SetBrowserClientForTesting(old_browser_client);
@@ -268,5 +282,110 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest,
 IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorExtensionConsent_GetAuthToken) {
   RunExtensionConsentTest(extensions::WebAuthFlow::GET_AUTH_TOKEN, true);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Tests the behavior of Chrome when it receives a Mirror response from Gaia:
+// - listens to all network responses coming from Gaia with
+//   `signin::HeaderModificationDelegate`.
+// - parses the Mirror response header with
+// `signin::BuildManageAccountsParams()`
+// - triggers dialogs based on the action specified in the header, with
+//   `ProcessMirrorHeader`
+// The tests don't display real dialogs. Instead they use the
+// `FakeAccountManagerUI` and only check that the dialogs were triggered.
+class MirrorResponseBrowserTest : public InProcessBrowserTest {
+ public:
+  MirrorResponseBrowserTest(const MirrorResponseBrowserTest&) = delete;
+  MirrorResponseBrowserTest& operator=(const MirrorResponseBrowserTest&) =
+      delete;
+
+ protected:
+  ~MirrorResponseBrowserTest() override = default;
+
+  MirrorResponseBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  // Navigates to Gaia and receives a response with the specified
+  // "X-Chrome-Manage-Accounts" header.
+  void ReceiveManageAccountsHeader(
+      const base::flat_map<std::string, std::string>& header_params) {
+    std::vector<std::string> parts;
+    for (const auto& [key, value] : header_params) {
+      // "=" must be escaped as "%3D" for the embedded server.
+      const char kEscapedEquals[] = "%3D";
+      parts.push_back(key + kEscapedEquals + value);
+    }
+    std::string path = std::string("/set-header?X-Chrome-Manage-Accounts: ") +
+                       base::JoinString(parts, ",");
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path)));
+  }
+
+  // InProcessBrowserTest:
+  void SetUp() override {
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    const GURL& base_url = https_server_.base_url();
+    command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
+    command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
+    command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.StartAcceptingConnections();
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  net::EmbeddedTestServer https_server_;
+  net::test_server::EmbeddedTestServerHandle https_server_handle_;
+};
+
+// Tests that the "Add Account" dialog is shown when receiving "ADDSESSION" from
+// Gaia.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, AddSession) {
+  FakeAccountManagerUIDialogWaiter dialog_waiter(
+      GetFakeAccountManagerUI(),
+      FakeAccountManagerUIDialogWaiter::Event::kAddAccount);
+  ReceiveManageAccountsHeader({{"action", "ADDSESSION"}});
+  dialog_waiter.Wait();
+}
+
+// Tests that the "Settings"" dialog is shown when receiving "DEFAULT" from
+// Gaia.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Settings) {
+  FakeAccountManagerUIDialogWaiter dialog_waiter(
+      GetFakeAccountManagerUI(),
+      FakeAccountManagerUIDialogWaiter::Event::kSettings);
+  ReceiveManageAccountsHeader({{"action", "DEFAULT"}});
+  dialog_waiter.Wait();
+}
+
+// Tests that the "Reauth" dialog is shown when receiving an email from Gaia.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Reauth) {
+  FakeAccountManagerUIDialogWaiter dialog_waiter(
+      GetFakeAccountManagerUI(),
+      FakeAccountManagerUIDialogWaiter::Event::kReauth);
+  ReceiveManageAccountsHeader(
+      {{"action", "ADDSESSION"}, {"email", "user@example.com"}});
+  dialog_waiter.Wait();
+}
+
+// Tests that incognito browser is opened when receiving "INCOGNITO" from Gaia.
+IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ReceiveManageAccountsHeader({{"action", "INCOGNITO"}});
+  Browser* incognito_browser = browser_change_observer.Wait();
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace

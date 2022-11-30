@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -18,7 +17,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 namespace dom_distiller {
 namespace {
@@ -51,7 +50,7 @@ class DistilledPageJsTest : public content::ContentBrowserTest {
 };
 
 // Pincher is only used on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define MAYBE_Pinch DISABLED_Pinch
 #else
 #define MAYBE_Pinch Pinch
@@ -61,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(DistilledPageJsTest, MAYBE_Pinch) {
 }
 
 // FontSizeSlider is only used on Desktop.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FontSizeSlider DISABLED_FontSizeSlider
 #else
 #define MAYBE_FontSizeSlider FontSizeSlider

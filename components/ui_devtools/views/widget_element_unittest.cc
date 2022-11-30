@@ -1,10 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/widget_element.h"
 
-#include "components/ui_devtools/Protocol.h"
+#include <memory>
+
+#include "components/ui_devtools/protocol.h"
+#include "components/ui_devtools/root_element.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/views/view_element.h"
 #include "ui/views/test/views_test_base.h"
@@ -17,10 +20,26 @@ namespace {
 const std::string kWidgetName = "A test widget";
 }
 
+class MockWidgetElementDelegate : public MockUIElementDelegate {
+ public:
+  MockWidgetElementDelegate() = default;
+  MockWidgetElementDelegate(const MockWidgetElementDelegate&) = delete;
+  MockWidgetElementDelegate& operator=(const MockWidgetElementDelegate&) =
+      delete;
+  ~MockWidgetElementDelegate() override = default;
+
+  UIElement* root_element() { return &root_element_; }
+
+ private:
+  RootElement root_element_{this};
+};
+
 class WidgetElementTest : public views::ViewsTestBase {
  public:
-  WidgetElementTest() {}
-  ~WidgetElementTest() override {}
+  WidgetElementTest() = default;
+  WidgetElementTest(const WidgetElementTest&) = delete;
+  WidgetElementTest& operator=(const WidgetElementTest&) = delete;
+  ~WidgetElementTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
@@ -31,8 +50,10 @@ class WidgetElementTest : public views::ViewsTestBase {
     params.name = kWidgetName;
     widget_->Init(std::move(params));
 
-    delegate_.reset(new testing::NiceMock<MockUIElementDelegate>);
-    element_.reset(new WidgetElement(widget_, delegate_.get(), nullptr));
+    delegate_ =
+        std::make_unique<testing::NiceMock<MockWidgetElementDelegate>>();
+    element_ =
+        std::make_unique<WidgetElement>(widget_, delegate_.get(), nullptr);
     // The widget element will delete the ViewElement in |OnWillRemoveView|
     // TODO(lgrey): I think probably WidgetElement should do this itself
     // rather than making the DOMAgent (or test)  put the tree together.
@@ -41,22 +62,30 @@ class WidgetElementTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    if (widget())
+      CloseWidget();
     views::ViewsTestBase::TearDown();
   }
 
  protected:
   views::Widget* widget() { return widget_; }
+  void CloseWidget() {
+    widget_->CloseNow();
+    widget_ = nullptr;
+  }
   WidgetElement* element() { return element_.get(); }
-  MockUIElementDelegate* delegate() { return delegate_.get(); }
+  MockWidgetElementDelegate* delegate() { return delegate_.get(); }
+  void AddWidgetElementToTree() {
+    element_->set_parent(delegate_->root_element());
+    delegate_->root_element()->AddChild(element_.get());
+  }
 
  private:
   views::Widget* widget_ = nullptr;
   std::unique_ptr<WidgetElement> element_;
-  std::unique_ptr<MockUIElementDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetElementTest);
+  std::unique_ptr<MockWidgetElementDelegate> delegate_;
 };
+
 TEST_F(WidgetElementTest, SettingsBoundsOnWidgetCallsDelegate) {
   // Once for the root view, and once for the widget.
   EXPECT_CALL(*delegate(), OnUIElementBoundsChanged(_))
@@ -128,6 +157,34 @@ TEST_F(WidgetElementTest, GetNodeWindowAndScreenBounds) {
       element()->GetNodeWindowAndScreenBounds();
   EXPECT_EQ(widget()->GetNativeWindow(), window_and_bounds.first);
   EXPECT_EQ(widget()->GetWindowBoundsInScreen(), window_and_bounds.second);
+}
+
+TEST_F(WidgetElementTest, TrackNonParentedElementLifetime) {
+  ASSERT_TRUE(widget());
+  EXPECT_FALSE(element()->parent());
+  // While closing the widget, the widget element and its children should be
+  // removed as well.
+  // Remove the root view element.
+  EXPECT_CALL(*delegate(), OnUIElementRemoved(_));
+  // Remove the widget element.
+  EXPECT_CALL(*delegate(), OnUIElementRemoved(element()));
+  CloseWidget();
+}
+
+TEST_F(WidgetElementTest, TrackParentedElementLifetime) {
+  ASSERT_TRUE(widget());
+  AddWidgetElementToTree();
+  UIElement* root = delegate()->root_element();
+  EXPECT_EQ(root, element()->parent());
+  EXPECT_EQ(1u, root->children().size());
+
+  // Remove the root view element.
+  EXPECT_CALL(*delegate(), OnUIElementRemoved(_));
+  // Remove the widget element.
+  EXPECT_CALL(*delegate(), OnUIElementRemoved(element()));
+  CloseWidget();
+  // After closing the widget, the element tree should only has the root.
+  EXPECT_EQ(0u, root->children().size());
 }
 
 }  // namespace ui_devtools

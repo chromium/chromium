@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -198,8 +198,8 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
 
         data_pipe_getter->Read(
             std::move(pipe_producer_handle),
-            WTF::Bind(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
-                      WrapWeakPersistent(this)));
+            WTF::BindOnce(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
+                          WrapWeakPersistent(this)));
         DataPipeBytesConsumer::CompletionNotifier* completion_notifier =
             nullptr;
         data_pipe_consumer_ = MakeGarbageCollected<DataPipeBytesConsumer>(

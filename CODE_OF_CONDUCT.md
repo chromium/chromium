@@ -32,10 +32,9 @@ they are doing - politely bringing their behavior to their attention is
 encouraged.
 
 If you are uncomfortable speaking up, or feel that your concerns are not being
-duly considered, you can email community@chromium.org, dpranke@chromium.org, or
-groby@chromium.org to request involvement from a community manager. All
-concerns shared with community managers will be kept confidential, but you may
-also submit an anonymous report [here](https://docs.google.com/a/google.com/forms/d/e/1FAIpQLSe-LDjW9eIJ-TpI2poZxnGtU-SvUWkFZc8x0aiKGY1s7NKPdA/viewform?c=0&w=1).
+duly considered, you can email community@chromium.org to request involvement
+from a community manager. All concerns shared with community managers will be
+kept confidential, but you may also submit an anonymous report [here](https://docs.google.com/a/google.com/forms/d/e/1FAIpQLSe-LDjW9eIJ-TpI2poZxnGtU-SvUWkFZc8x0aiKGY1s7NKPdA/viewform?c=0&w=1).
 Please note that without a way to contact you, an anonymous report may be
 difficult to act on. You may also create a throwaway account to report. In
 cases where a public response is deemed necessary, the identities of victims

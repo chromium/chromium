@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #include <windows.h>
 #include <dbghelp.h>
 
+#include <iterator>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_annotation_writer.h"
 #include "minidump/minidump_simple_string_dictionary_writer.h"
@@ -155,9 +155,9 @@ TEST(MinidumpModuleCrashpadInfoWriter, FullModule) {
                 sizeof(MinidumpSimpleStringDictionaryEntry) +
                 sizeof(MinidumpAnnotationList) + 2 +  // padding
                 sizeof(MinidumpAnnotation) + sizeof(MinidumpUTF8String) +
-                base::size(kEntry) + 2 +  // padding
-                sizeof(MinidumpUTF8String) + base::size(kKey) +
-                sizeof(MinidumpUTF8String) + base::size(kValue) +
+                std::size(kEntry) + 2 +  // padding
+                sizeof(MinidumpUTF8String) + std::size(kKey) +
+                sizeof(MinidumpUTF8String) + std::size(kValue) +
                 sizeof(MinidumpUTF8String) + annotation.name.size() + 1 +
                 sizeof(MinidumpByteArray) + annotation.value.size());
 

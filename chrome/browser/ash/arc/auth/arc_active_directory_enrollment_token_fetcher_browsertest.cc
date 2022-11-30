@@ -1,27 +1,27 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
-#include "components/arc/arc_util.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/user_manager/user_manager.h"
@@ -32,6 +32,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,8 +52,8 @@ constexpr char kNotYetFetched[] = "NOT-YET-FETCHED";
 using Status = ArcActiveDirectoryEnrollmentTokenFetcher::Status;
 
 std::string GetDmServerUrl() {
-  policy ::BrowserPolicyConnectorChromeOS* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->device_management_service()
       ->configuration()
       ->GetDMServerUrl();
@@ -234,6 +235,12 @@ void FinishSamlResponseJob(const network::ResourceRequest& request,
 class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
     : public InProcessBrowserTest,
       public ArcSupportHost::ErrorDelegate {
+ public:
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+  ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest& operator=(
+      const ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest&) = delete;
+
  protected:
   ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() = default;
   ~ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest() override = default;
@@ -266,9 +273,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // ArcActiveDirectoryEnrollmentTokenFetcher will succeed to fetch the DM
   // token.
   void StoreCorrectDmToken() {
-    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
-        chromeos::FakeCryptohomeClient::GetStubSystemSalt());
-    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
+        ash::FakeCryptohomeMiscClient::GetStubSystemSalt());
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
     // Store a fake DM token.
     base::RunLoop run_loop;
     auto dm_token_storage = std::make_unique<policy::DMTokenStorage>(
@@ -289,9 +296,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // Does not store a correct DM token.
   // ArcActiveDirectoryEnrollmentTokenFetcher will fail to fetch the DM token.
   void FailDmToken() {
-    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
+    ash::FakeCryptohomeMiscClient::Get()->set_system_salt(
         std::vector<uint8_t>());
-    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   }
 
   void FetchEnrollmentToken(base::RunLoop* run_loop,
@@ -367,10 +374,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   void OnWindowClosed() override {}
   void OnRetryClicked() override {}
   void OnSendFeedbackClicked() override {}
+  void OnRunNetworkTestsClicked() override {}
 
   std::unique_ptr<ArcSupportHost> support_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest);
 };
 
 // Non-SAML flow fetches valid enrollment token and user id.

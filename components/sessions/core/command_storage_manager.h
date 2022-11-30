@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sessions/core/sessions_export.h"
 
 namespace sessions {
@@ -54,13 +55,10 @@ class SESSIONS_EXPORT CommandStorageManager {
   // `kOther`, then it is a path to a directory. The actual file name used
   // depends upon the type. Once SessionType can be removed, this logic can
   // standardize on that of `kOther`.
-  //
-  // See CommandStorageBackend for details on `use_marker`.
   CommandStorageManager(
       SessionType type,
       const base::FilePath& path,
       CommandStorageManagerDelegate* delegate,
-      bool use_marker = false,
       bool enable_crypto = false,
       const std::vector<uint8_t>& decryption_key = {},
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner = nullptr);
@@ -151,12 +149,12 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   // Whether the backend file should be recreated the next time we send
   // over the commands.
-  bool pending_reset_;
+  bool pending_reset_ = true;
 
   // The number of commands sent to the backend before doing a reset.
   int commands_since_reset_ = 0;
 
-  CommandStorageManagerDelegate* delegate_;
+  raw_ptr<CommandStorageManagerDelegate> delegate_;
 
   // TaskRunner all backend tasks are run on. This is a SequencedTaskRunner as
   // all tasks *must* be processed in the order they are scheduled.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -31,8 +32,8 @@ FakeRemoteGattService::FakeRemoteGattService(
 FakeRemoteGattService::~FakeRemoteGattService() = default;
 
 bool FakeRemoteGattService::AllResponsesConsumed() {
-  return std::all_of(
-      characteristics_.begin(), characteristics_.end(), [](const auto& e) {
+  return base::ranges::all_of(
+      characteristics_, [](const auto& e) {
         return static_cast<FakeRemoteGattCharacteristic*>(e.second.get())
             ->AllResponsesConsumed();
       });
@@ -41,14 +42,11 @@ bool FakeRemoteGattService::AllResponsesConsumed() {
 std::string FakeRemoteGattService::AddFakeCharacteristic(
     const device::BluetoothUUID& characteristic_uuid,
     mojom::CharacteristicPropertiesPtr properties) {
-  CharacteristicMap::iterator it;
-  bool inserted;
-
   // Attribute instance Ids need to be unique.
   std::string new_characteristic_id = base::StringPrintf(
       "%s_%zu", GetIdentifier().c_str(), ++last_characteristic_id_);
 
-  std::tie(it, inserted) = characteristics_.emplace(
+  auto [it, inserted] = characteristics_.emplace(
       new_characteristic_id, std::make_unique<FakeRemoteGattCharacteristic>(
                                  new_characteristic_id, characteristic_uuid,
                                  std::move(properties), this));

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,10 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
  public:
   FeaturePodsContainerView(UnifiedSystemTrayController* controller,
                            bool initially_expanded);
+
+  FeaturePodsContainerView(const FeaturePodsContainerView&) = delete;
+  FeaturePodsContainerView& operator=(const FeaturePodsContainerView&) = delete;
+
   ~FeaturePodsContainerView() override;
 
   // Add a FeaturePodButton as a child view and if it's visible add it to the
@@ -52,6 +56,9 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
 
   // Make sure button is visible by switching page if needed.
   void EnsurePageWithButton(views::View* button);
+
+  // PaginationModelObserver
+  void SelectedPageChanged(int old_selected, int new_selected) override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -122,8 +129,6 @@ class ASH_EXPORT FeaturePodsContainerView : public views::View,
   // A view model that contains all visible feature pod buttons.
   // Used to calculate required number of pages.
   views::ViewModelT<FeaturePodButton> visible_buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodsContainerView);
 };
 
 }  // namespace ash

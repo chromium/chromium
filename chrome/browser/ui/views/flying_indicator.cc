@@ -1,13 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/flying_indicator.h"
 
+#include "base/memory/ptr_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -17,12 +19,9 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
-static constexpr base::TimeDelta kFadeInDuration =
-    base::TimeDelta::FromMilliseconds(100);
-static constexpr base::TimeDelta kFlyDuration =
-    base::TimeDelta::FromMilliseconds(580);
-static constexpr base::TimeDelta kFadeOutDuration =
-    base::TimeDelta::FromMilliseconds(100);
+static constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(100);
+static constexpr base::TimeDelta kFlyDuration = base::Milliseconds(580);
+static constexpr base::TimeDelta kFadeOutDuration = base::Milliseconds(100);
 }  // namespace
 
 // static
@@ -41,14 +40,11 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
                                  base::OnceClosure done_callback)
     : start_(start),
       target_(target),
-      animation_(
-          std::vector<gfx::MultiAnimation::Part>{
-              gfx::MultiAnimation::Part(kFadeInDuration,
-                                        gfx::Tween::Type::LINEAR),
-              gfx::MultiAnimation::Part(kFlyDuration, gfx::Tween::Type::LINEAR),
-              gfx::MultiAnimation::Part(kFadeOutDuration,
-                                        gfx::Tween::Type::LINEAR)},
-          gfx::MultiAnimation::kDefaultTimerInterval),
+      animation_(std::vector<gfx::MultiAnimation::Part>{
+          gfx::MultiAnimation::Part(kFadeInDuration, gfx::Tween::Type::LINEAR),
+          gfx::MultiAnimation::Part(kFlyDuration, gfx::Tween::Type::LINEAR),
+          gfx::MultiAnimation::Part(kFadeOutDuration,
+                                    gfx::Tween::Type::LINEAR)}),
       done_callback_(std::move(done_callback)) {
   animation_.set_delegate(this);
   animation_.set_continuous(false);
@@ -58,11 +54,11 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
           target, views::BubbleBorder::Arrow::FLOAT,
           views::BubbleBorder::Shadow::STANDARD_SHADOW);
 
-  const ui::ThemeProvider* theme_provider = target_->GetThemeProvider();
+  const auto* color_provider = target_->GetColorProvider();
   const SkColor foreground_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
+      color_provider->GetColor(kColorFlyingIndicatorForeground);
   const SkColor background_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR);
+      color_provider->GetColor(kColorFlyingIndicatorBackground);
 
   // Set the bubble properties.
   bubble_view->SetAccessibleRole(ax::mojom::Role::kNone);
@@ -91,7 +87,7 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   views::BubbleDialogDelegateView* const bubble_view_ptr = bubble_view.get();
   widget_ =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
-  scoped_observation_.Observe(widget_);
+  scoped_observation_.Observe(widget_.get());
 
   // Set required frame properties.
   views::BubbleFrameView* const frame_view =

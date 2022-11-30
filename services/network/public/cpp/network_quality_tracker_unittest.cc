@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -34,6 +35,11 @@ class TestEffectiveConnectionTypeObserver
         effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN) {
     tracker_->AddEffectiveConnectionTypeObserver(this);
   }
+
+  TestEffectiveConnectionTypeObserver(
+      const TestEffectiveConnectionTypeObserver&) = delete;
+  TestEffectiveConnectionTypeObserver& operator=(
+      const TestEffectiveConnectionTypeObserver&) = delete;
 
   ~TestEffectiveConnectionTypeObserver() override {
     tracker_->RemoveEffectiveConnectionTypeObserver(this);
@@ -76,13 +82,11 @@ class TestEffectiveConnectionTypeObserver
 
  private:
   size_t num_notifications_;
-  NetworkQualityTracker* tracker_;
+  raw_ptr<NetworkQualityTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   net::EffectiveConnectionType expected_effective_connection_type_;
   net::EffectiveConnectionType effective_connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEffectiveConnectionTypeObserver);
 };
 
 class TestRTTAndThroughputEstimatesObserver
@@ -94,6 +98,11 @@ class TestRTTAndThroughputEstimatesObserver
         downstream_throughput_kbps_(std::numeric_limits<int32_t>::max()) {
     tracker_->AddRTTAndThroughputEstimatesObserver(this);
   }
+
+  TestRTTAndThroughputEstimatesObserver(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
+  TestRTTAndThroughputEstimatesObserver& operator=(
+      const TestRTTAndThroughputEstimatesObserver&) = delete;
 
   ~TestRTTAndThroughputEstimatesObserver() override {
     tracker_->RemoveRTTAndThroughputEstimatesObserver(this);
@@ -152,15 +161,13 @@ class TestRTTAndThroughputEstimatesObserver
 
  private:
   size_t num_notifications_;
-  NetworkQualityTracker* tracker_;
+  raw_ptr<NetworkQualityTracker> tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   base::TimeDelta http_rtt_;
   base::TimeDelta transport_rtt_;
   int32_t downstream_throughput_kbps_;
   base::TimeDelta http_rtt_notification_wait_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRTTAndThroughputEstimatesObserver);
 };
 
 }  // namespace
@@ -180,6 +187,10 @@ class NetworkQualityTrackerTest : public testing::Test {
     rtt_throughput_observer_ =
         std::make_unique<TestRTTAndThroughputEstimatesObserver>(tracker_.get());
   }
+
+  NetworkQualityTrackerTest(const NetworkQualityTrackerTest&) = delete;
+  NetworkQualityTrackerTest& operator=(const NetworkQualityTrackerTest&) =
+      delete;
 
   ~NetworkQualityTrackerTest() override {}
 
@@ -214,8 +225,6 @@ class NetworkQualityTrackerTest : public testing::Test {
   std::unique_ptr<TestEffectiveConnectionTypeObserver> ect_observer_;
   std::unique_ptr<TestRTTAndThroughputEstimatesObserver>
       rtt_throughput_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityTrackerTest);
 };
 
 TEST_F(NetworkQualityTrackerTest, ECTObserverNotified) {
@@ -229,9 +238,8 @@ TEST_F(NetworkQualityTrackerTest, ECTObserverNotified) {
             effective_connection_type_observer()->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   base::RunLoop().RunUntilIdle();
@@ -244,9 +252,8 @@ TEST_F(NetworkQualityTrackerTest, ECTObserverNotified) {
             effective_connection_type_observer()->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1800), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(75, network_quality_tracker()->GetDownstreamThroughputKbps());
   base::RunLoop().RunUntilIdle();
@@ -266,9 +273,8 @@ TEST_F(NetworkQualityTrackerTest, ECTObserverNotifiedUnknown) {
             effective_connection_type_observer()->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   base::RunLoop().RunUntilIdle();
@@ -292,13 +298,11 @@ TEST_F(NetworkQualityTrackerTest, RttThroughputObserverNotified) {
   EXPECT_EQ(1u, rtt_throughput_observer()->num_notifications());
 
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_3G);
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(450));
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(450));
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   rtt_throughput_observer()->VerifyNetworkQualityMatchesWithTracker();
@@ -306,13 +310,11 @@ TEST_F(NetworkQualityTrackerTest, RttThroughputObserverNotified) {
 
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_2G);
   rtt_throughput_observer()->VerifyNetworkQualityMatchesWithTracker();
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(1800));
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(1800));
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1800), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(75, network_quality_tracker()->GetDownstreamThroughputKbps());
   EXPECT_EQ(3u, rtt_throughput_observer()->num_notifications());
@@ -329,9 +331,8 @@ TEST_F(NetworkQualityTrackerTest, ECTObserverNotifiedOnAddition) {
             effective_connection_type_observer()->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   EXPECT_EQ(1u, effective_connection_type_observer()->num_notifications());
@@ -345,13 +346,11 @@ TEST_F(NetworkQualityTrackerTest, ECTObserverNotifiedOnAddition) {
 
 TEST_F(NetworkQualityTrackerTest, RttThroughputObserverNotifiedOnAddition) {
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_3G);
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(450));
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(450));
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   rtt_throughput_observer()->VerifyNetworkQualityMatchesWithTracker();
@@ -366,13 +365,11 @@ TEST_F(NetworkQualityTrackerTest, RttThroughputObserverNotifiedOnAddition) {
   // Simulate a network quality change.
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_2G);
 
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(1800));
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(1800));
   // Typical RTT and downlink values when effective connection type is 2G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1800), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(75, network_quality_tracker()->GetDownstreamThroughputKbps());
 
@@ -398,9 +395,8 @@ TEST_F(NetworkQualityTrackerTest, UnregisteredECTObserverNotNotified) {
             effective_connection_type_observer()->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
 
@@ -412,9 +408,8 @@ TEST_F(NetworkQualityTrackerTest, UnregisteredECTObserverNotNotified) {
       net::EFFECTIVE_CONNECTION_TYPE_2G);
   EXPECT_EQ(net::EFFECTIVE_CONNECTION_TYPE_2G,
             effective_connection_type_observer()->effective_connection_type());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1800), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(75, network_quality_tracker()->GetDownstreamThroughputKbps());
   EXPECT_EQ(2u, effective_connection_type_observer()->num_notifications());
@@ -428,13 +423,11 @@ TEST_F(NetworkQualityTrackerTest, UnregisteredRttThroughputbserverNotNotified) {
   // Simulate a network quality change.
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_3G);
 
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(450));
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(450));
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(450), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(400, network_quality_tracker()->GetDownstreamThroughputKbps());
   rtt_throughput_observer()->VerifyNetworkQualityMatchesWithTracker();
@@ -447,11 +440,9 @@ TEST_F(NetworkQualityTrackerTest, UnregisteredRttThroughputbserverNotNotified) {
 
   // Simulate an another network quality change.
   SimulateEffectiveConnectionTypeChange(net::EFFECTIVE_CONNECTION_TYPE_2G);
-  rtt_throughput_observer()->WaitForNotification(
-      base::TimeDelta::FromMilliseconds(1800));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
-            network_quality_tracker()->GetHttpRTT());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  rtt_throughput_observer()->WaitForNotification(base::Milliseconds(1800));
+  EXPECT_EQ(base::Milliseconds(1800), network_quality_tracker()->GetHttpRTT());
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_tracker()->GetTransportRTT());
   EXPECT_EQ(75, network_quality_tracker()->GetDownstreamThroughputKbps());
   rtt_throughput_observer()->VerifyNetworkQualityMatchesWithTracker();

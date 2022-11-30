@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,21 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/optional.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 namespace switches {
+
+#if !BUILDFLAG(IS_WIN)
 
 TEST(OptimizationGuideSwitchesTest, ParseHintsFetchOverrideFromCommandLine) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kFetchHintsOverride,
                                                             "whatever.com");
 
-  base::Optional<std::vector<std::string>> parsed_hosts =
+  absl::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_TRUE(parsed_hosts.has_value());
@@ -30,7 +33,7 @@ TEST(OptimizationGuideSwitchesTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kFetchHintsOverride, "whatever.com, whatever-2.com, ,");
 
-  base::Optional<std::vector<std::string>> parsed_hosts =
+  absl::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_TRUE(parsed_hosts.has_value());
@@ -41,7 +44,7 @@ TEST(OptimizationGuideSwitchesTest,
 
 TEST(OptimizationGuideSwitchesTest,
      ParseHintsFetchOverrideFromCommandLineNoSwitch) {
-  base::Optional<std::vector<std::string>> parsed_hosts =
+  absl::optional<std::vector<std::string>> parsed_hosts =
       ParseHintsFetchOverrideFromCommandLine();
 
   EXPECT_FALSE(parsed_hosts.has_value());
@@ -103,99 +106,8 @@ TEST(OptimizationGuideSwitchesTest,
   EXPECT_EQ(nullptr, parsed_config);
 }
 
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetSwitchNotSet) {
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
 
-  EXPECT_EQ(base::nullopt, file_path_and_metadata);
-  EXPECT_FALSE(IsModelOverridePresent());
-}
-
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetEmptyInput) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(kModelOverride);
-
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-
-  EXPECT_EQ(base::nullopt, file_path_and_metadata);
-}
-
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetBadInput) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kModelOverride,
-                                                            "whatever");
-
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-
-  EXPECT_EQ(base::nullopt, file_path_and_metadata);
-}
-
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetInvalidOptimizationTarget) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kModelOverride, "notanoptimizationtarget:somefilepath");
-
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-
-  EXPECT_EQ(base::nullopt, file_path_and_metadata);
-}
-
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetOneFilePath) {
-  optimization_guide::proto::Any metadata;
-  metadata.set_type_url("sometypeurl");
-  std::string encoded_metadata;
-  metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kModelOverride,
-      "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:somefilepath:" + encoded_metadata);
-
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-
-  EXPECT_EQ("somefilepath", file_path_and_metadata->first);
-  EXPECT_EQ("sometypeurl", file_path_and_metadata->second->type_url());
-}
-
-TEST(OptimizationGuideSwitchesTest,
-     GetModelOverrideForOptimizationTargetMultipleFilePath) {
-  optimization_guide::proto::Any metadata;
-  metadata.set_type_url("sometypeurl");
-  std::string encoded_metadata;
-  metadata.SerializeToString(&encoded_metadata);
-  base::Base64Encode(encoded_metadata, &encoded_metadata);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      kModelOverride,
-      "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:somefilepath,OPTIMIZATION_TARGET_"
-      "PAGE_TOPICS:otherfilepath:" +
-          encoded_metadata);
-
-  base::Optional<
-      std::pair<std::string, base::Optional<optimization_guide::proto::Any>>>
-      file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-          optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  EXPECT_EQ("somefilepath", file_path_and_metadata->first);
-
-  file_path_and_metadata = GetModelOverrideForOptimizationTarget(
-      optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS);
-  EXPECT_EQ("otherfilepath", file_path_and_metadata->first);
-  EXPECT_EQ("sometypeurl", file_path_and_metadata->second->type_url());
-}
+#endif
 
 }  // namespace switches
 }  // namespace optimization_guide

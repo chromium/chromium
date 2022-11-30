@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,12 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // directions.
 //
 // See third_party/blink/public/common/tokens/tokens.h for more details.
+
+////////////////////////////////////////////////////////////////////////////////
+// DOCUMENT TOKENS
+struct DocumentToken {
+  mojo_base.mojom.UnguessableToken value;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
@@ -88,6 +94,14 @@ union WorkletToken {
 // their own section, in alphabetical order. If adding a new token here, please
 // keep the following list in alphabetic order.
 
+struct AttributionSrcToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+struct ClipboardSequenceNumberToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
 union ExecutionContextToken {
   LocalFrameToken local_frame_token;
   DedicatedWorkerToken dedicated_worker_token;
@@ -105,4 +119,9 @@ struct PortalToken {
 
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
+};
+
+union WebGPUExecutionContextToken {
+  DocumentToken document_token;
+  DedicatedWorkerToken dedicated_worker_token;
 };

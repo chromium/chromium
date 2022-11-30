@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <list>
 
+#include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -52,6 +52,9 @@ struct ClassInfo {
 // WARNING: this class may be used on multiple threads.
 class ClassRegistrar {
  public:
+  ClassRegistrar(const ClassRegistrar&) = delete;
+  ClassRegistrar& operator=(const ClassRegistrar&) = delete;
+
   ~ClassRegistrar();
 
   static ClassRegistrar* GetInstance();
@@ -93,8 +96,6 @@ class ClassRegistrar {
   int registered_count_;
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClassRegistrar);
 };
 
 ClassRegistrar::~ClassRegistrar() {}
@@ -143,7 +144,7 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
     auto last_error = ::GetLastError();
     base::debug::Alias(&last_error);
     wchar_t name_copy[64];
-    base::wcslcpy(name_copy, name.c_str(), base::size(name_copy));
+    base::wcslcpy(name_copy, name.c_str(), std::size(name_copy));
     base::debug::Alias(name_copy);
     PCHECK(atom);
   }

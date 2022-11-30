@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,6 @@ MockImageResourceObserver::MockImageResourceObserver(
       image_notify_finished_count_(0),
       image_width_on_image_notify_finished_(0) {
   content_->AddObserver(this);
-}
-
-MockImageResourceObserver::~MockImageResourceObserver() {
-  RemoveAsObserver();
 }
 
 void MockImageResourceObserver::RemoveAsObserver() {
@@ -52,6 +48,11 @@ void MockImageResourceObserver::ImageNotifyFinished(
 bool MockImageResourceObserver::ImageNotifyFinishedCalled() const {
   DCHECK_LE(image_notify_finished_count_, 1);
   return image_notify_finished_count_;
+}
+
+void MockImageResourceObserver::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

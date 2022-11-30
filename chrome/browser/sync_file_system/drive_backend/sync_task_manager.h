@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/task_dependency_manager.h"
@@ -74,6 +73,10 @@ class SyncTaskManager {
   SyncTaskManager(base::WeakPtr<Client> client,
                   size_t maximum_background_task,
                   const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  SyncTaskManager(const SyncTaskManager&) = delete;
+  SyncTaskManager& operator=(const SyncTaskManager&) = delete;
+
   virtual ~SyncTaskManager();
 
   // This needs to be called to start task scheduling.
@@ -127,17 +130,16 @@ class SyncTaskManager {
 
  private:
   struct PendingTask {
-    // TODO: Change |wrapped_once_closure| to base::OnceTask if
-    // std::priority_queue supports move-only type. In the meantime, we can
-    // wrap a base::OnceClosure via AdaptCallbackForRepeating.
-    base::RepeatingClosure wrapped_once_closure;
+    base::OnceClosure closure;
     Priority priority;
     int64_t seq;
 
     PendingTask();
     PendingTask(base::OnceClosure task, Priority pri, int seq);
-    PendingTask(const PendingTask& other);
     ~PendingTask();
+
+    PendingTask(PendingTask&& other);
+    PendingTask& operator=(PendingTask&& other);
   };
 
   struct PendingTaskComparator {
@@ -205,11 +207,9 @@ class SyncTaskManager {
   TaskDependencyManager dependency_manager_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncTaskManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncTaskManager);
 };
 
 }  // namespace drive_backend

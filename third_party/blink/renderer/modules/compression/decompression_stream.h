@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class DecompressionStream final : public ScriptWrappable {
                                      ExceptionState&);
   DecompressionStream(ScriptState*, const AtomicString&, ExceptionState&);
 
+  DecompressionStream(const DecompressionStream&) = delete;
+  DecompressionStream& operator=(const DecompressionStream&) = delete;
+
   ReadableStream* readable() const;
   WritableStream* writable() const;
 
@@ -27,8 +30,6 @@ class DecompressionStream final : public ScriptWrappable {
 
  private:
   Member<TransformStream> transform_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecompressionStream);
 };
 
 }  // namespace blink

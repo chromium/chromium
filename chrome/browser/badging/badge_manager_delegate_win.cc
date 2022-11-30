@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,14 @@ namespace badging {
 namespace {
 
 // Determines the badge contents and alt text.
-// base::nullopt if the badge is not set.
+// absl::nullopt if the badge is not set.
 // otherwise a pair (badge_content, badge_alt_text), based on the content of the
 // badge.
-base::Optional<std::pair<std::string, std::string>> GetBadgeContentAndAlt(
-    const base::Optional<BadgeManager::BadgeValue>& badge) {
+absl::optional<std::pair<std::string, std::string>> GetBadgeContentAndAlt(
+    const absl::optional<BadgeManager::BadgeValue>& badge) {
   // If there is no badge, there is no contents or alt text.
   if (!badge)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string badge_string = badging::GetBadgeString(badge.value());
   // There are 3 different cases when the badge has a value:
@@ -87,7 +87,7 @@ void BadgeManagerDelegateWin::OnAppBadgeUpdated(const web_app::AppId& app_id) {
 bool BadgeManagerDelegateWin::IsAppBrowser(Browser* browser,
                                            const std::string& app_id) {
   return browser->app_controller() &&
-         browser->app_controller()->GetAppId() == app_id &&
+         browser->app_controller()->app_id() == app_id &&
          browser->profile() == profile();
 }
 

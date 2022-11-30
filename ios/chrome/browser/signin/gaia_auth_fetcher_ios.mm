@@ -1,16 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
+#import "ios/chrome/browser/signin/gaia_auth_fetcher_ios.h"
 
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
-#include "ios/web/public/browser_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ios/web/public/browser_state.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,14 +55,6 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   SetPendingFetch(true);
   bool should_use_xml_http_request = IsMultiloginUrl(gaia_gurl);
   bridge_->Fetch(gaia_gurl, headers, body, should_use_xml_http_request);
-}
-
-void GaiaAuthFetcherIOS::CancelRequest() {
-  if (!HasPendingFetch()) {
-    return;
-  }
-  bridge_->Cancel();
-  GaiaAuthFetcher::CancelRequest();
 }
 
 void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,

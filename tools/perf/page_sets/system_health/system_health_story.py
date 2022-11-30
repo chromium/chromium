@@ -1,11 +1,13 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import six
 
 from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 
-from telemetry.page import page
+from telemetry.page import page as page_module
 from telemetry.page import shared_page_state
 from telemetry.util import wpr_modes
 
@@ -22,12 +24,12 @@ class _SystemHealthSharedState(shared_page_state.SharedPageState):
      disabling stories temporarily use story expectations in ./expectations.py.
   """
 
-  def CanRunOnBrowser(self, browser_info, story):
-    if (browser_info.browser_type.startswith('android-webview') and
-        story.WEBVIEW_NOT_SUPPORTED):
+  def CanRunOnBrowser(self, browser_info, page):
+    if (browser_info.browser_type.startswith('android-webview')
+        and page.WEBVIEW_NOT_SUPPORTED):
       return False
 
-    if story.TAGS and story_tags.WEBGL in story.TAGS:
+    if page.TAGS and story_tags.WEBGL in page.TAGS:
       return browser_info.HasWebGLSupport()
     return True
 
@@ -46,9 +48,9 @@ class _MetaSystemHealthStory(type):
     return cls.__dict__.get('ABSTRACT_STORY', False)
 
 
-class SystemHealthStory(page.Page):
+class SystemHealthStory(
+    six.with_metaclass(_MetaSystemHealthStory, page_module.Page)):
   """Abstract base class for System Health user stories."""
-  __metaclass__ = _MetaSystemHealthStory
 
   # The full name of a single page story has the form CASE:GROUP:PAGE:[VERSION]
   # (e.g. 'load:search:google' or 'load:search:google:2018').
@@ -123,4 +125,3 @@ class SystemHealthStory(page.Page):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
     self._DidLoadDocument(action_runner)
     self._Measure(action_runner)
-

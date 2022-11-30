@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,13 @@ enum SampleFormat {
   kSampleFormatAc3,         // Compressed AC3 bitstream.
   kSampleFormatEac3,        // Compressed E-AC3 bitstream.
   kSampleFormatMpegHAudio,  // Compressed MPEG-H audio bitstream.
+  kSampleFormatPlanarU8,    // Unsigned 8-bit w/ bias of 128 planar.
+  kSampleFormatDts,         // Compressed DTS audio bitstream.
+  kSampleFormatDtsxP2,      // Compressed DTSX audio bitstream.
+  kSampleFormatIECDts,      // IEC-61937 encapsulated DTS audio bitstream.
 
   // Must always be equal to largest value ever logged.
-  kSampleFormatMax = kSampleFormatMpegHAudio,
+  kSampleFormatMax = kSampleFormatIECDts,
 };
 
 // Returns the number of bytes used per channel for the specified

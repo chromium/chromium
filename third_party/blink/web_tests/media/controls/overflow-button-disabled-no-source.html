@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-<title>Test that the overflow menu is shown but disabled with no source.</title>
+<title>Test that the overflow menu is disabled with no source.</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../media-controls.js"></script>
-<video controls width=400 controlsList=nodownload disablePictureInPicture></video>
+<video controls width=400 controlsList="noplaybackrate nodownload" disablePictureInPicture></video>
 <script>
 async_test(t => {
   const video = document.querySelector('video');

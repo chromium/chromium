@@ -32,15 +32,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index.h"
-#include "third_party/blink/renderer/bindings/modules/v8/idb_object_store_or_idb_index_or_idb_cursor.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
@@ -52,9 +50,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -63,6 +60,8 @@ class ExceptionState;
 class IDBCursor;
 struct IDBDatabaseMetadata;
 class IDBValue;
+class V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
+class ScriptState;
 
 class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                                   public ActiveScriptWrappable<IDBRequest>,
@@ -70,7 +69,8 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using Source = IDBObjectStoreOrIDBIndexOrIDBCursor;
+  using Source = V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
+
   // Container for async tracing state.
   //
   // The documentation for TRACE_EVENT_NESTABLE_ASYNC_{BEGIN,END} suggests
@@ -116,14 +116,14 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
     // Used to transfer the trace end event state to an IDBRequest.
     AsyncTraceState(AsyncTraceState&& other) {
       DCHECK(IsEmpty());
-      this->trace_event_name_ = other.trace_event_name_;
-      this->id_ = other.id_;
+      trace_event_name_ = other.trace_event_name_;
+      id_ = other.id_;
       other.trace_event_name_ = nullptr;
     }
     AsyncTraceState& operator=(AsyncTraceState&& rhs) {
       DCHECK(IsEmpty());
-      this->trace_event_name_ = rhs.trace_event_name_;
-      this->id_ = rhs.id_;
+      trace_event_name_ = rhs.trace_event_name_;
+      id_ = rhs.id_;
       rhs.trace_event_name_ = nullptr;
       return *this;
     }
@@ -176,11 +176,14 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                             IDBTransaction* source,
                             AsyncTraceState);
   static IDBRequest* Create(ScriptState*,
-                            const Source&,
+                            const Source*,
                             IDBTransaction*,
                             AsyncTraceState);
 
-  IDBRequest(ScriptState*, const Source&, IDBTransaction*, AsyncTraceState);
+  IDBRequest(ScriptState* script_state,
+             const Source* source,
+             IDBTransaction* transaction,
+             AsyncTraceState metrics);
   ~IDBRequest() override;
 
   void Trace(Visitor*) const override;
@@ -188,7 +191,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   v8::Isolate* GetIsolate() const { return isolate_; }
   ScriptValue result(ScriptState*, ExceptionState&);
   DOMException* error(ExceptionState&) const;
-  void source(ScriptState*, Source&) const;
+  const Source* source(ScriptState* script_state) const;
   IDBTransaction* transaction() const { return transaction_.Get(); }
 
   bool isResultDirty() const { return result_dirty_; }
@@ -271,6 +274,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                       std::unique_ptr<IDBValue>);
   void HandleResponse(std::unique_ptr<IDBValue>);
   void HandleResponse(Vector<std::unique_ptr<IDBValue>>);
+  void HandleResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void HandleResponse(int64_t);
   void HandleResponse();
   void HandleResponse(
@@ -384,11 +388,12 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                        std::unique_ptr<IDBValue>);
   void EnqueueResponse(std::unique_ptr<IDBValue>);
   void EnqueueResponse(Vector<std::unique_ptr<IDBValue>>);
+  void EnqueueResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void EnqueueResponse();
 
   void ClearPutOperationBlobs() { transit_blob_handles_.clear(); }
 
-  Source source_;
+  Member<const Source> source_;
   Member<IDBAny> result_;
   Member<DOMException> error_;
 

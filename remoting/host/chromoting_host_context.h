@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -56,6 +56,9 @@ class ChromotingHostContext {
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  ChromotingHostContext(const ChromotingHostContext&) = delete;
+  ChromotingHostContext& operator=(const ChromotingHostContext&) = delete;
+
   ~ChromotingHostContext();
 
   std::unique_ptr<ChromotingHostContext> Copy();
@@ -93,6 +96,8 @@ class ChromotingHostContext {
       const;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory();
+
+  policy::ManagementService* management_service();
 
  private:
   ChromotingHostContext(
@@ -132,8 +137,6 @@ class ChromotingHostContext {
   // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingHostContext);
 };
 
 }  // namespace remoting

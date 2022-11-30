@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +40,9 @@ enum TestSyncServiceState {
 // Profile client for testing that gets fake Profile information and services.
 class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
  public:
+  TestProfileClient(const TestProfileClient&) = delete;
+  TestProfileClient& operator=(const TestProfileClient&) = delete;
+
   ~TestProfileClient() override = default;
 
   TestProfileClient(int number_of_profiles,
@@ -53,8 +56,10 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_NOT_ENABLED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        // Mimic sync-the-feature being disabled.
-        sync_service_->SetFirstSetupComplete(false);
+        // Set an arbitrary disable reason to mimic sync feature being unable to
+        // start.
+        sync_service_->SetDisableReasons(
+            syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
         break;
 
       case SYNC_FEATURE_ENABLED:
@@ -70,12 +75,7 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
       case SYNC_FEATURE_ENABLED_BUT_PAUSED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
         // Mimic the user signing out from content are (sync paused).
-        sync_service_->SetAuthError(
-            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                    CREDENTIALS_REJECTED_BY_CLIENT));
-        sync_service_->SetTransportState(
-            syncer::SyncService::TransportState::PAUSED);
+        sync_service_->SetPersistentAuthErrorWithWebSignout();
 
         CHECK(sync_service_->GetUserSettings()->IsSyncRequested());
         CHECK(sync_service_->GetDisableReasons().Empty());
@@ -122,8 +122,6 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
   std::unique_ptr<syncer::TestSyncService> sync_service_;
   const int number_of_profiles_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileClient);
 };
 
 TEST(DemographicMetricsProviderTest,
@@ -247,8 +245,7 @@ TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_FeatureDisabled) {
   // Disable demographics reporting feature.
   base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndDisableFeature(
-      DemographicMetricsProvider::kDemographicMetricsReporting);
+  local_feature.InitAndDisableFeature(kDemographicMetricsReporting);
 
   base::HistogramTester histogram;
 

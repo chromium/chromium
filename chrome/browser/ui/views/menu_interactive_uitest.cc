@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "ui/views/controls/menu/menu_controller.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/test/ui_controls.h"
@@ -28,6 +29,10 @@
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/accessibility/platform/ax_platform_node.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 namespace views {
@@ -48,6 +53,9 @@ class TestButton : public Button {
 class MenuControllerUITest : public InProcessBrowserTest {
  public:
   MenuControllerUITest() {}
+
+  MenuControllerUITest(const MenuControllerUITest&) = delete;
+  MenuControllerUITest& operator=(const MenuControllerUITest&) = delete;
 
   // This method creates a MenuRunner, MenuItemView, etc, adds two menu
   // items, shows the menu so that it can calculate the position of the first
@@ -96,26 +104,31 @@ class MenuControllerUITest : public InProcessBrowserTest {
   }
 
  protected:
-  MenuItemView* first_item_ = nullptr;
+  raw_ptr<MenuItemView> first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.
   gfx::Point mouse_pos_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerUITest);
 };
 
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::kAXModeComplete);
+#endif
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11) {
+    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
+  }
 #endif
 
   // Create a parent widget.
   Widget* widget = new views::Widget;
   Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
   params.bounds = {0, 0, 200, 200};
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(
       NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget);
 #endif
@@ -198,12 +211,20 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 // TODO(davidbienvenu): If possible, get test working for linux and
 // mac. Only status_icon_win runs a menu with a null parent widget
 // currently.
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
+  // This test is extremely flaky on WIN10_20H2, so disable.
+  // TODO(crbug.com/1225346) Investigate why it's so flaky on that version of
+  // Windows.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN10_20H2) {
+    GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
+  }
   // Going into full screen mode prevents pre-test focus and mouse position
   // state from affecting test, and helps ui_controls function correctly.
   chrome::ToggleFullscreenMode(browser());
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::kAXModeComplete);
   MenuDelegate menu_delegate;
   MenuItemView* menu_item = new MenuItemView(&menu_delegate);
   AXEventCounter ax_counter(views::AXEventManager::Get());
@@ -237,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuPopupEnd), 1);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kMenuEnd), 1);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace test
 }  // namespace views

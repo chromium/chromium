@@ -1,5 +1,5 @@
-/* Copyright (c) 2014, Cisco Systems, INC
-   Written by XiangMingZhu WeiZhou MinPeng YanWang
+/* Copyright (c) 2014-2020, Cisco Systems, INC
+   Written by XiangMingZhu WeiZhou MinPeng YanWang FrancisQuiers
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -42,7 +42,7 @@
 #define MAX_FRAME_SIZE              384             /* subfr_length * nb_subfr = ( 0.005 * 16000 + 16 ) * 4 = 384 */
 
 #define QA                          25
-#define N_BITS_HEAD_ROOM            2
+#define N_BITS_HEAD_ROOM            3
 #define MIN_RSHIFTS                 -16
 #define MAX_RSHIFTS                 (32 - QA)
 
@@ -59,7 +59,7 @@ void silk_burg_modified_sse4_1(
     int                         arch                /* I    Run-time architecture                                       */
 )
 {
-    opus_int         k, n, s, lz, rshifts, rshifts_extra, reached_max_gain;
+    opus_int         k, n, s, lz, rshifts, reached_max_gain;
     opus_int32       C0, num, nrg, rc_Q31, invGain_Q30, Atmp_QA, Atmp1, tmp1, tmp2, x1, x2;
     const opus_int16 *x_ptr;
     opus_int32       C_first_row[ SILK_MAX_ORDER_LPC ];
@@ -68,6 +68,7 @@ void silk_burg_modified_sse4_1(
     opus_int32       CAf[ SILK_MAX_ORDER_LPC + 1 ];
     opus_int32       CAb[ SILK_MAX_ORDER_LPC + 1 ];
     opus_int32       xcorr[ SILK_MAX_ORDER_LPC ];
+    opus_int64       C0_64;
 
     __m128i FIRST_3210, LAST_3210, ATMP_3210, TMP1_3210, TMP2_3210, T1_3210, T2_3210, PTR_3210, SUBFR_3210, X1_3210, X2_3210;
     __m128i CONST1 = _mm_set1_epi32(1);
@@ -75,23 +76,18 @@ void silk_burg_modified_sse4_1(
     celt_assert( subfr_length * nb_subfr <= MAX_FRAME_SIZE );
 
     /* Compute autocorrelations, added over subframes */
-    silk_sum_sqr_shift( &C0, &rshifts, x, nb_subfr * subfr_length );
-    if( rshifts > MAX_RSHIFTS ) {
-        C0 = silk_LSHIFT32( C0, rshifts - MAX_RSHIFTS );
-        silk_assert( C0 > 0 );
-        rshifts = MAX_RSHIFTS;
+    C0_64 = silk_inner_prod16( x, x, subfr_length*nb_subfr, arch );
+    lz = silk_CLZ64(C0_64);
+    rshifts = 32 + 1 + N_BITS_HEAD_ROOM - lz;
+    if (rshifts > MAX_RSHIFTS) rshifts = MAX_RSHIFTS;
+    if (rshifts < MIN_RSHIFTS) rshifts = MIN_RSHIFTS;
+
+    if (rshifts > 0) {
+        C0 = (opus_int32)silk_RSHIFT64(C0_64, rshifts );
     } else {
-        lz = silk_CLZ32( C0 ) - 1;
-        rshifts_extra = N_BITS_HEAD_ROOM - lz;
-        if( rshifts_extra > 0 ) {
-            rshifts_extra = silk_min( rshifts_extra, MAX_RSHIFTS - rshifts );
-            C0 = silk_RSHIFT32( C0, rshifts_extra );
-        } else {
-            rshifts_extra = silk_max( rshifts_extra, MIN_RSHIFTS - rshifts );
-            C0 = silk_LSHIFT32( C0, -rshifts_extra );
-        }
-        rshifts += rshifts_extra;
+        C0 = silk_LSHIFT32((opus_int32)C0_64, -rshifts );
     }
+
     CAb[ 0 ] = CAf[ 0 ] = C0 + silk_SMMUL( SILK_FIX_CONST( FIND_LPC_COND_FAC, 32 ), C0 ) + 1;                                /* Q(-rshifts) */
     silk_memset( C_first_row, 0, SILK_MAX_ORDER_LPC * sizeof( opus_int32 ) );
     if( rshifts > 0 ) {
@@ -99,7 +95,7 @@ void silk_burg_modified_sse4_1(
             x_ptr = x + s * subfr_length;
             for( n = 1; n < D + 1; n++ ) {
                 C_first_row[ n - 1 ] += (opus_int32)silk_RSHIFT64(
-                    silk_inner_prod16_aligned_64( x_ptr, x_ptr + n, subfr_length - n, arch ), rshifts );
+                    silk_inner_prod16( x_ptr, x_ptr + n, subfr_length - n, arch ), rshifts );
             }
         }
     } else {
@@ -203,8 +199,11 @@ void silk_burg_modified_sse4_1(
                     C_first_row[ k ] = silk_MLA( C_first_row[ k ], x1, x_ptr[ n - k - 1 ]            ); /* Q( -rshifts ) */
                     C_last_row[ k ]  = silk_MLA( C_last_row[ k ],  x2, x_ptr[ subfr_length - n + k ] ); /* Q( -rshifts ) */
                     Atmp1 = silk_RSHIFT_ROUND( Af_QA[ k ], QA - 17 );                                   /* Q17 */
-                    tmp1 = silk_MLA( tmp1, x_ptr[ n - k - 1 ],            Atmp1 );                      /* Q17 */
-                    tmp2 = silk_MLA( tmp2, x_ptr[ subfr_length - n + k ], Atmp1 );                      /* Q17 */
+                    /* We sometimes get overflows in the multiplications (even beyond +/- 2^32),
+                       but they cancel each other and the real result seems to always fit in a 32-bit
+                       signed integer. This was determined experimentally, not theoretically (unfortunately). */
+                    tmp1 = silk_MLA_ovflw( tmp1, x_ptr[ n - k - 1 ],            Atmp1 );                      /* Q17 */
+                    tmp2 = silk_MLA_ovflw( tmp2, x_ptr[ subfr_length - n + k ], Atmp1 );                      /* Q17 */
                 }
 
                 tmp1 = -tmp1;                /* Q17 */
@@ -350,7 +349,7 @@ void silk_burg_modified_sse4_1(
         if( rshifts > 0 ) {
             for( s = 0; s < nb_subfr; s++ ) {
                 x_ptr = x + s * subfr_length;
-                C0 -= (opus_int32)silk_RSHIFT64( silk_inner_prod16_aligned_64( x_ptr, x_ptr, D, arch ), rshifts );
+                C0 -= (opus_int32)silk_RSHIFT64( silk_inner_prod16( x_ptr, x_ptr, D, arch ), rshifts );
             }
         } else {
             for( s = 0; s < nb_subfr; s++ ) {
@@ -374,4 +373,28 @@ void silk_burg_modified_sse4_1(
         *res_nrg = silk_SMLAWW( nrg, silk_SMMUL( SILK_FIX_CONST( FIND_LPC_COND_FAC, 32 ), C0 ), -tmp1 );/* Q( -rshifts ) */
         *res_nrg_Q = -rshifts;
     }
+
+#ifdef OPUS_CHECK_ASM
+    {
+        opus_int32 res_nrg_c = 0;
+        opus_int res_nrg_Q_c = 0;
+        opus_int32 A_Q16_c[ MAX_LPC_ORDER ] = {0};
+
+        silk_burg_modified_c(
+            &res_nrg_c,
+            &res_nrg_Q_c,
+            A_Q16_c,
+            x,
+            minInvGain_Q30,
+            subfr_length,
+            nb_subfr,
+            D,
+            0
+        );
+
+        silk_assert( *res_nrg == res_nrg_c );
+        silk_assert( *res_nrg_Q == res_nrg_Q_c );
+        silk_assert( !memcmp( A_Q16, A_Q16_c, D * sizeof( *A_Q16 ) ) );
+    }
+#endif
 }

@@ -83,7 +83,7 @@ function testCaretRectInTextArea(id, length, characterIndex, direction, writingM
             caretRange = last - first;
         caretRange = Math.abs(caretRange);
 
-        if (caretRange != originalLength - 1) {
+        if (caretRange > originalLength - 1 || caretRange < originalLength - 2) {
             succeed = false;
             --originalLength;
             testFailed("test id: " + id + " (text width: " + originalLength + " != caretRange: " + caretRange + ")," +

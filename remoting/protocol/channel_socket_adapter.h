@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "net/base/net_errors.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 // TODO(zhihuang):Replace #include by forward declaration once proper
 // inheritance is defined for cricket::IceTransportInternal and
@@ -24,8 +25,7 @@
 #include "third_party/webrtc/rtc_base/socket_address.h"
 #include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // TransportChannelSocketAdapter implements P2PDatagramSocket interface on
 // top of cricket::IceTransportInternal. It is used by IceTransport to provide
@@ -33,10 +33,15 @@ namespace protocol {
 class TransportChannelSocketAdapter : public P2PDatagramSocket,
                                       public sigslot::has_slots<> {
  public:
-  // Doesn't take ownership of the |channel|. The |channel| must outlive
+  // Doesn't take ownership of |ice_transport|. |ice_transport| must outlive
   // this adapter.
   explicit TransportChannelSocketAdapter(
       cricket::IceTransportInternal* ice_transport);
+
+  TransportChannelSocketAdapter(const TransportChannelSocketAdapter&) = delete;
+  TransportChannelSocketAdapter& operator=(
+      const TransportChannelSocketAdapter&) = delete;
+
   ~TransportChannelSocketAdapter() override;
 
   // Sets callback that should be called when the adapter is being
@@ -66,9 +71,7 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   void OnWritableState(rtc::PacketTransportInternal* transport);
   void OnChannelDestroyed(cricket::IceTransportInternal* ice_transport);
 
-  base::ThreadChecker thread_checker_;
-
-  cricket::IceTransportInternal* channel_;
+  raw_ptr<cricket::IceTransportInternal> channel_;
 
   base::OnceClosure destruction_callback_;
 
@@ -80,12 +83,11 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   scoped_refptr<net::IOBuffer> write_buffer_;
   int write_buffer_size_;
 
-  int closed_error_code_;
+  int closed_error_code_ = net::OK;
 
-  DISALLOW_COPY_AND_ASSIGN(TransportChannelSocketAdapter);
+  THREAD_CHECKER(thread_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CHANNEL_SOCKET_ADAPTER_H_

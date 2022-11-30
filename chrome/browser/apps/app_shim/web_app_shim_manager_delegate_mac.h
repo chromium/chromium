@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,25 @@
 
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 
+#include "base/callback.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace apps {
+struct AppLaunchParams;
+}
+
 namespace web_app {
+
+using BrowserAppLauncherForTesting =
+    base::RepeatingCallback<content::WebContents*(
+        const apps::AppLaunchParams& params)>;
+
+// Test helper that hooking calls to BrowserAppLauncher::LaunchAppWithParams
+void SetBrowserAppLauncherForTesting(
+    const BrowserAppLauncherForTesting& launcher);
 
 class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
  public:
@@ -27,6 +45,8 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   void LaunchApp(Profile* profile,
                  const AppId& app_id,
                  const std::vector<base::FilePath>& files,
+                 const std::vector<GURL>& urls,
+                 const GURL& override_url,
                  chrome::mojom::AppShimLoginItemRestoreState
                      login_item_restore_state) override;
   void LaunchShim(Profile* profile,
@@ -35,6 +55,8 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
                   apps::ShimLaunchedCallback launched_callback,
                   apps::ShimTerminatedCallback terminated_callback) override;
   bool HasNonBookmarkAppWindowsOpen() override;
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+  GetAppShortcutsMenuItemInfos(Profile* profile, const AppId& app_id) override;
 
  private:
   // Return true if |fallback_delegate_| should be used instead of |this|.

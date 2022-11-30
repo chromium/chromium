@@ -1,10 +1,12 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -27,11 +29,43 @@ component("shell_dialogs") {
     "shell_dialogs_export.h",
   ]
 
-  if (is_linux || is_chromeos) {
+  defines = [ "SHELL_DIALOGS_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//skia",
+    "//ui/base",
+    "//ui/strings",
+    "//url",
+  ]
+
+  if (is_chromeos || is_castos || is_cast_android) {
+    sources += [ "shell_dialog_stub.cc" ]
+  }
+
+  if (is_linux && !is_castos) {
     sources += [
+      "select_file_dialog_linux.cc",
+      "select_file_dialog_linux.h",
+      "select_file_dialog_linux_kde.cc",
+      "select_file_dialog_linux_kde.h",
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
     ]
+    deps += [
+      "//components/dbus/thread_linux",
+      "//ui/linux:linux_ui",
+    ]
+    if (use_dbus) {
+      defines += [ "USE_DBUS" ]
+      sources += [
+        "select_file_dialog_linux_portal.cc",
+        "select_file_dialog_linux_portal.h",
+      ]
+      deps += [ "//dbus" ]
+    }
   }
 
   if (is_mac) {
@@ -49,20 +83,9 @@ component("shell_dialogs") {
       "execute_select_file_win.h",
       "select_file_dialog_win.cc",
       "select_file_dialog_win.h",
+      "select_file_utils_win.h",
     ]
   }
-
-  defines = [ "SHELL_DIALOGS_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//skia",
-    "//ui/base",
-    "//ui/strings",
-    "//url",
-  ]
 
   if (use_aura) {
     if (is_mac) {
@@ -130,8 +153,8 @@ test("shell_dialogs_unittests") {
 
   if (is_win) {
     sources += [
-      "execute_select_file_win_unittest.cc",
       "select_file_dialog_win_unittest.cc",
+      "select_file_utils_win_unittest.cc",
     ]
   }
 
@@ -163,5 +186,8 @@ source_set("test_support") {
     "fake_select_file_dialog.h",
   ]
   public_deps = [ ":shell_dialogs" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 }

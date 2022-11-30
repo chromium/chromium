@@ -1,12 +1,15 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/abi.gni")
+import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
-import("//build/util/version.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/modules/buildflags.gni")
+import("//chrome/version.gni")
+import("//device/vr/buildflags/buildflags.gni")
 
 if (!defined(default_trichrome_certdigest)) {
   default_trichrome_certdigest =
@@ -25,6 +28,12 @@ declare_args() {
   # WIP: Enable synchronized proguard for Trichrome. (http://crbug.com/901465)
   # Only affects trichrome targets when !is_java_debug.
   enable_trichrome_synchronized_proguard = false
+
+  # By default, Trichrome channels are compiled using separate package names.
+  # Set this to 'true' to compile Trichrome channels using the Stable channel's
+  # package name. This currently only affects builds with `android_channel =
+  # "beta"`.
+  use_stable_package_name_for_trichrome = false
 }
 
 trichrome_jinja_variables = [
@@ -33,6 +42,7 @@ trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
   "use32bitAbi=android:use32bitAbi=\"true\"",
+  "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
 ]
 
 trichrome_synchronized_proguard =
@@ -55,12 +65,10 @@ template("trichrome_library_apk_tmpl") {
     # leave out the build hooks and let them get compiled into each APK. Later
     # this should probably be in the library.
     no_build_hooks = true
+    include_size_info = is_official_build
 
     alternative_android_sdk_dep = webview_framework_dep
     if (trichrome_synchronized_proguard) {
-      # TODO(crbug.com/956839): Remove this once R8 fixes the class merging
-      # and/or inlining bugs.
-      disable_r8_outlining = true
       if (defined(invoker.webview_target) && defined(invoker.chrome_target)) {
         shared_resources_allowlist_locales = locales
         static_library_dependent_targets = [
@@ -90,32 +98,47 @@ template("trichrome_library_apk_tmpl") {
     uncompress_dex = true
     version_name = chrome_version_name
 
+    _use_stable_package_name_for_trichrome =
+        use_stable_package_name_for_trichrome && android_channel == "beta"
     if (android_64bit_target_cpu) {
       if (invoker.is_64_bit_browser) {
         if (invoker.include_32_bit_webview) {
-          version_code = trichrome_64_32_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_64_32_beta_version_code
+          } else {
+            version_code = trichrome_64_32_version_code
+          }
         } else {
-          version_code = trichrome_64_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_64_beta_version_code
+          } else {
+            version_code = trichrome_64_version_code
+          }
         }
       } else {
         if (invoker.include_64_bit_webview) {
-          version_code = trichrome_32_64_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_32_64_beta_version_code
+          } else {
+            version_code = trichrome_32_64_version_code
+          }
         } else {
-          version_code = trichrome_32_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_32_beta_version_code
+          } else {
+            version_code = trichrome_32_version_code
+          }
         }
       }
     } else {
-      version_code = trichrome_version_code
+      if (_use_stable_package_name_for_trichrome) {
+        version_code = trichrome_beta_version_code
+      } else {
+        version_code = trichrome_version_code
+      }
     }
 
     min_sdk_version = 29
-
-    if (trichrome_synchronized_proguard) {
-      product_version_resources_dep =
-          "//chrome/android:product_version_resources"
-    } else {
-      generate_buildconfig_java = false
-    }
 
     # TODO(torne): using icon_resources just to get a temporary icon
     deps = [
@@ -123,10 +146,12 @@ template("trichrome_library_apk_tmpl") {
       "//third_party/icu:icu_assets",
     ]
 
-    _native_lib_file =
-        rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-    native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-    native_lib_version_rule = "//build/util:chrome_version_json"
+    if (trichrome_synchronized_proguard) {
+      build_config_include_product_version_resource = true
+      deps += [ "//chrome/android:product_version_resources" ]
+    } else {
+      omit_dex = true
+    }
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
@@ -176,32 +201,29 @@ template("trichrome_library_apk_tmpl") {
           [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
     }
 
-    # http://crbug.com/1042107.
-    if (is_component_build) {
-      main_component_library = "libmonochrome.cr.so"
-    }
+    if (enable_arcore) {
+      _libarcore_dir = get_label_info(
+                           "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
+                           "target_out_dir") + "/com_google_ar_core_java/jni"
+      not_needed([ "_libarcore_dir" ])
 
-    if (!is_java_debug) {
-      proguard_enabled = true
-      proguard_configs = [
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-        "//chrome/android/proguard/trichrome.flags",
-      ]
-      if (trichrome_synchronized_proguard) {
-        proguard_configs += [
-          "//chrome/android/proguard/static_library_dex_reference_workarounds.flags",
-          "//base/android/proguard/enable_obfuscation.flags",
-        ]
-      } else {
-        # Disabling all obfuscation for the Trichrome library as a temporary
-        # workaround for crbug.com/1012842. There were naming conflicts between
-        # Library and Chrome, since each Proguard run doesn't know about the
-        # other, and thus handed out the first names (a, b, c) to both.
-        proguard_enable_obfuscation = false
+      _arcore_extra_deps = [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
+      not_needed([ "_arcore_extra_deps" ])
+
+      if (_include_primary_support) {
+        loadable_modules +=
+            [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
+        deps += _arcore_extra_deps
+      }
+      if (_include_secondary_support) {
+        if (enable_arcore) {
+          secondary_abi_loadable_modules += [
+            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
+          ]
+          deps += _arcore_extra_deps
+        }
       }
     }
-    deps += [ "//chrome/android:trichrome_dummy_resources" ]
   }
 }
 
@@ -209,13 +231,7 @@ template("trichrome_library_apk_tmpl") {
 # parameters, and is used by SuperSize-archive to create multi-container .size
 # files. This is used to support SuperSize on Trichrome.
 template("write_ssargs_trichrome") {
-  if (target_cpu == "arm64" || target_cpu == "x64") {
-    # Ignore secondary abi libmonochrome in library apk in favor of primary one
-    # in TrichromeWebView.
-    _library_args = " --no-native"
-  } else {
-    _library_args = ""
-  }
+  _extra_args = " --abi-filter $android_app_abi"
 
   # Base names (i.e., no full path) are used because .ssargs files specifies
   # files using paths relative to itself. It is expected for |ssargs_path| to
@@ -223,10 +239,9 @@ template("write_ssargs_trichrome") {
   # by SuperSize.
   _lines = [
     "# Written by build target \"${target_name}.\"",
-    "Library -f ${invoker.trichrome_library_basename}$_library_args",
-    "# Add --no-native to Chrome as workaround for crbug.com/1103271.",
-    "Chrome -f ${invoker.trichrome_chrome_basename} --no-native",
-    "WebView -f ${invoker.trichrome_webview_basename}",
+    "Library -f ${invoker.trichrome_library_basename}$_extra_args --no-java",
+    "Chrome -f ${invoker.trichrome_chrome_basename}$_extra_args",
+    "WebView -f ${invoker.trichrome_webview_basename}$_extra_args",
   ]
 
   write_file(invoker.ssargs_path, _lines)

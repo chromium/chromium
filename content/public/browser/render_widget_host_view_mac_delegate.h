@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,11 +55,6 @@ struct DidOverscrollParams;
 // method if implemented. Return YES if the event is fully handled, or NO if
 // normal processing should take place.
 - (BOOL)handleEvent:(NSEvent*)event;
-
-// Returns whether the specified NSEvent should never be handled as a key
-// equivalent by the webcontents, because it corresponds to a system hotkey that
-// webcontent should not be able to override.
-- (BOOL)webContentShouldHandleKeyEquivalent:(NSEvent*)theEvent;
 
 // Provides validation of user interface items. If the return value is NO, then
 // the delegate is unaware of that item and |valid| is undefined.  Otherwise,

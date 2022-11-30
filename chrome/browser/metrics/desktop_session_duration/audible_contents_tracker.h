@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -26,6 +27,10 @@ class AudibleContentsTracker : public BrowserListObserver,
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Invoked when a first audio source starts playing after a period of no
@@ -34,14 +39,15 @@ class AudibleContentsTracker : public BrowserListObserver,
 
     // Invoked when all audio sources stop playing.
     virtual void OnAudioEnd() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Creates an audible contents tracker that dispatches its messages to the
   // provided |observer|.
   explicit AudibleContentsTracker(Observer* observer);
+
+  AudibleContentsTracker(const AudibleContentsTracker&) = delete;
+  AudibleContentsTracker& operator=(const AudibleContentsTracker&) = delete;
+
   ~AudibleContentsTracker() override;
 
  private:
@@ -63,12 +69,10 @@ class AudibleContentsTracker : public BrowserListObserver,
   void AddAudibleWebContents(content::WebContents* web_contents);
   void RemoveAudibleWebContents(content::WebContents* web_contents);
 
-  Observer* observer_;
+  raw_ptr<Observer> observer_;
 
   // The set of WebContents that are currently playing audio.
   std::set<content::WebContents*> audible_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleContentsTracker);
 };
 
 }  // namespace metrics

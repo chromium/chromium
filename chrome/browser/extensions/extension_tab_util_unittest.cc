@@ -1,59 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_tab_util.h"
 
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
-#include "chrome/common/extensions/api/tabs.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
-
-namespace {
-
-class ExtensionTabUtilTestDelegate : public ExtensionTabUtil::Delegate {
- public:
-  ExtensionTabUtilTestDelegate() {}
-  ~ExtensionTabUtilTestDelegate() override {}
-
-  // ExtensionTabUtil::Delegate
-  ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
-      const Extension* extension) override {
-    return ExtensionTabUtil::kScrubTabUrlToOrigin;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTabUtilTestDelegate);
-};
-
-}  // namespace
-
-// Test that the custom GetScrubTabBehavior delegate works - in this test it
-// always returns kScrubTabUrlToOrigin
-TEST(ExtensionTabUtilTest, Delegate) {
-  ExtensionTabUtil::SetPlatformDelegate(
-      std::make_unique<ExtensionTabUtilTestDelegate>());
-
-  // Build an extension that passes the permission checks for the generic
-  // GetScrubTabBehavior
-  auto extension = ExtensionBuilder("test").AddPermission("tabs").Build();
-
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
-  EXPECT_EQ(ExtensionTabUtil::kScrubTabUrlToOrigin,
-            scrub_tab_behavior.committed_info);
-  EXPECT_EQ(ExtensionTabUtil::kScrubTabUrlToOrigin,
-            scrub_tab_behavior.pending_info);
-
-  // Unset the delegate.
-  ExtensionTabUtil::SetPlatformDelegate(nullptr);
-}
 
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
   auto extension = ExtensionBuilder("Extension with tabs permission")
@@ -200,6 +156,16 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {
     EXPECT_EQ(kDevtoolsURL, url);
     EXPECT_TRUE(error.empty());
   }
+}
+
+TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnChromeUntrusted) {
+  const std::string kChromeUntrustedURL("chrome-untrusted://terminal/");
+  auto extension = ExtensionBuilder("none").Build();
+  std::string error;
+  GURL url;
+  EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
+      kChromeUntrustedURL, extension.get(), &url, &error));
+  EXPECT_EQ(tabs_constants::kCannotNavigateToChromeUntrusted, error);
 }
 
 }  // namespace extensions

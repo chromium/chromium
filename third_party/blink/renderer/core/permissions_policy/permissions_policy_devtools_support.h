@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DEVTOOLS_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_DEVTOOLS_SUPPORT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -20,6 +20,12 @@ enum class PermissionsPolicyBlockReason {
   // or in iframe attribute.
   kHeader,
   kIframeAttribute,
+  // All permissions are disabled by default for fenced frames, irrespective of
+  // headers.
+  kInFencedFrameTree,
+  // Feature is not specified in an Isolated App's Web App Manifest and will be
+  // disabled.
+  kInIsolatedApp,
 };
 
 struct PermissionsPolicyBlockLocator {
@@ -31,8 +37,8 @@ struct PermissionsPolicyBlockLocator {
 };
 
 // Traces the root reason for a feature to be disabled in a frame.
-// Returns base::nullopt when the feature is enabled in the frame.
-CORE_EXPORT base::Optional<PermissionsPolicyBlockLocator>
+// Returns absl::nullopt when the feature is enabled in the frame.
+CORE_EXPORT absl::optional<PermissionsPolicyBlockLocator>
 TracePermissionsPolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
 
 }  // namespace blink

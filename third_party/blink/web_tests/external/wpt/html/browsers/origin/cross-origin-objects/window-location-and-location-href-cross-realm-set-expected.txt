@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Same-origin window.location getter throws TypeError in holder's realm on invalid |this| value
+PASS Same-origin location.href getter throws TypeError in holder's realm on invalid |this| value
+PASS Cross-origin location.href getter throws SecurityError in lexical realm
+PASS Same-origin window.location setter throws TypeError in holder's realm on invalid |this| value
+PASS Same-origin location.href setter throws TypeError in holder's realm on invalid |this| value
+FAIL Cross-origin window.location setter throws TypeError in lexical realm on invalid |this| value assert_throws_js: function "() => { Object.create(crossOriginWindow).location = URL_VALID; }" did not throw
+FAIL Cross-origin location.href setter throws TypeError in lexical realm on invalid |this| value assert_throws_js: function "() => { Object.create(crossOriginWindow.location).href = URL_VALID; }" did not throw
+PASS Same-origin window.location` setter throws TypeError in holder's realm on non-coercible URL argument
+PASS Same-origin location.href setter throws TypeError in holder's realm on non-coercible URL argument
+PASS Cross-origin window.location setter throws TypeError in lexical realm on non-coercible URL argument
+PASS Cross-origin location.href setter throws TypeError in lexical realm on non-coercible URL argument
+Harness: the test ran to completion.
+

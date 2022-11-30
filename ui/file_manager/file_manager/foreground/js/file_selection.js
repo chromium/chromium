@@ -1,26 +1,26 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
-// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {AllowedPaths} from '../../common/js/volume_manager_types.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {constants} from './constants.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {util} from '../../common/js/util.js';
+import {AllowedPaths} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {DirectoryModel} from './directory_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * The current selection object.
  */
-/* #export */ class FileSelection {
+export class FileSelection {
   /**
    * @param {!Array<number>} indexes
    * @param {!Array<Entry>} entries
@@ -146,7 +146,7 @@
 /**
  * This object encapsulates everything related to current selection.
  */
-/* #export */ class FileSelectionHandler extends cr.EventTarget {
+export class FileSelectionHandler extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!FileOperationManager} fileOperationManager
@@ -241,9 +241,9 @@
         indexes.length <
             FileSelectionHandler.NUMBER_OF_ITEMS_HEAVY_TO_COMPUTE) {
       // The previous selection change happened a while ago and there is few
-      // selected items, so computation is lightweight. Update the UI without
-      // delay.
-      updateDelay = 0;
+      // selected items, so computation is lightweight. Update the UI with
+      // 1 millisecond of delay.
+      updateDelay = 1;
     }
 
     const selection = this.selection;
@@ -252,7 +252,7 @@
       this.updateFileSelectionAsync_(selection);
     }, updateDelay);
 
-    cr.dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
+    dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
   }
 
   /**
@@ -274,7 +274,7 @@
 
       this.nextThrottledEventTime_ =
           Date.now() + FileSelectionHandler.UPDATE_DELAY;
-      cr.dispatchSimpleEvent(
+      dispatchSimpleEvent(
           this, FileSelectionHandler.EventType.CHANGE_THROTTLED);
     });
   }
@@ -331,7 +331,7 @@ FileSelectionHandler.EventType = {
    * If multiple changes are happened during the term, only one CHANGE_THROTTLED
    * event is dispatched.
    */
-  CHANGE_THROTTLED: 'changethrottled'
+  CHANGE_THROTTLED: 'changethrottled',
 };
 
 /**

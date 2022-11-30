@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,23 +11,20 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
-#include "chromeos/services/nearby/public/mojom/sharing.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc.mojom-forward.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/mdns_responder.mojom-forward.h"
 #include "services/network/public/mojom/p2p.mojom-forward.h"
 
-namespace location {
-namespace nearby {
-namespace connections {
+namespace location::nearby::connections {
 class NearbyConnections;
-}  // namespace connections
-}  // namespace nearby
-}  // namespace location
+}  // namespace location::nearby::connections
 
 namespace sharing {
 
@@ -38,8 +35,7 @@ class SharingImpl : public mojom::Sharing {
   using NearbyConnectionsMojom =
       location::nearby::connections::mojom::NearbyConnections;
   using NearbyConnections = location::nearby::connections::NearbyConnections;
-  using NearbyConnectionsDependenciesPtr =
-      location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr;
+  using NearbyDependenciesPtr = sharing::mojom::NearbyDependenciesPtr;
 
   SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver,
               scoped_refptr<base::SequencedTaskRunner> io_task_runner);
@@ -49,7 +45,7 @@ class SharingImpl : public mojom::Sharing {
 
   // mojom::Sharing:
   void Connect(
-      NearbyConnectionsDependenciesPtr deps,
+      NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver) override;
@@ -58,11 +54,31 @@ class SharingImpl : public mojom::Sharing {
  private:
   friend class SharingImplTest;
 
+  // These values are used for metrics. Entries should not be renumbered and
+  // numeric values should never be reused. If entries are added, kMaxValue
+  // should be updated.
+  enum class MojoDependencyName {
+    kNearbyConnections = 0,
+    kBluetoothAdapter = 1,
+    kSocketManager = 2,
+    kMdnsResponder = 3,
+    kIceConfigFetcher = 4,
+    kWebRtcSignalingMessenger = 5,
+    kCrosNetworkConfig = 6,
+    kFirewallHoleFactory = 7,
+    kTcpSocketFactory = 8,
+    kMaxValue = kTcpSocketFactory
+  };
+
   void DoShutDown(bool is_expected);
-  void NearbyConnectionsDisconnected();
+  void OnDisconnect(MojoDependencyName mojo_dependency_name);
+  void InitializeNearbySharedRemotes(NearbyDependenciesPtr deps);
+  std::string GetMojoDependencyName(MojoDependencyName dependency_name);
 
   mojo::Receiver<mojom::Sharing> receiver_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
+  std::unique_ptr<location::nearby::NearbySharedRemotes> nearby_shared_remotes_;
 
   std::unique_ptr<NearbyConnections> nearby_connections_;
 

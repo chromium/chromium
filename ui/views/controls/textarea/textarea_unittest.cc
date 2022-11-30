@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/events/event.h"
@@ -30,6 +33,10 @@ namespace {
 class TextareaTest : public test::TextfieldTest {
  public:
   TextareaTest() = default;
+
+  TextareaTest(const TextareaTest&) = delete;
+  TextareaTest& operator=(const TextareaTest&) = delete;
+
   ~TextareaTest() override = default;
 
   // TextfieldTest:
@@ -71,10 +78,7 @@ class TextareaTest : public test::TextfieldTest {
     SendKeyEvent(ui::VKEY_END, shift, TestingNativeMac());
   }
 
-  Textarea* textarea_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextareaTest);
+  raw_ptr<Textarea> textarea_ = nullptr;
 };
 
 }  // namespace
@@ -90,17 +94,17 @@ TEST_F(TextareaTest, MAYBE_InsertNewlineTest) {
     SendKeyEvent(static_cast<ui::KeyboardCode>(ui::VKEY_A + i));
     SendKeyEvent(ui::VKEY_RETURN);
   }
-  EXPECT_STR_EQ("a\nb\nc\nd\ne\n", textarea_->GetText());
+  EXPECT_EQ(u"a\nb\nc\nd\ne\n", textarea_->GetText());
 }
 
 TEST_F(TextareaTest, PasteNewlineTest) {
-  const std::string& kText = "abc\n   \n";
-  textarea_->SetText(base::ASCIIToUTF16(kText));
+  const std::u16string kText = u"abc\n   \n";
+  textarea_->SetText(kText);
   textarea_->SelectAll(false);
   textarea_->ExecuteCommand(Textfield::kCopy, 0);
   textarea_->SetText(std::u16string());
   textarea_->ExecuteCommand(Textfield::kPaste, 0);
-  EXPECT_STR_EQ(kText, textarea_->GetText());
+  EXPECT_EQ(kText, textarea_->GetText());
 }
 
 // Re-enable when crbug.com/1163587 is fixed.
@@ -163,16 +167,16 @@ TEST_F(TextareaTest, LineSelection) {
 
   // Select line towards right.
   SendEndEvent(true);
-  EXPECT_STR_EQ("67 89", textarea_->GetSelectedText());
+  EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
 
   // Select line towards left. On Mac, the existing selection should be extended
   // to cover the whole line.
   SendHomeEvent(true);
 
   if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
-    EXPECT_STR_EQ("34567 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
   else
-    EXPECT_STR_EQ("345", textarea_->GetSelectedText());
+    EXPECT_EQ(u"345", textarea_->GetSelectedText());
 
   EXPECT_TRUE(textarea_->GetSelectedRange().is_reversed());
 
@@ -180,19 +184,19 @@ TEST_F(TextareaTest, LineSelection) {
   SendEndEvent(true);
 
   if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
-    EXPECT_STR_EQ("34567 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
   else
-    EXPECT_STR_EQ("67 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
 
   EXPECT_FALSE(textarea_->GetSelectedRange().is_reversed());
 }
 
 // Disabled on Mac for crbug.com/1171826.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MoveUpDownAndModifySelection DISABLED_MoveUpDownAndModifySelection
 #else
 #define MAYBE_MoveUpDownAndModifySelection MoveUpDownAndModifySelection
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 TEST_F(TextareaTest, MAYBE_MoveUpDownAndModifySelection) {
   textarea_->SetText(u"12\n34567 89");
   textarea_->SetEditableSelectionRange(gfx::Range(6));

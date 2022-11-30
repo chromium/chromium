@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <map>
 #include <string>
+#include <type_traits>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/lib/binder_map_internal.h"
 
@@ -62,11 +62,17 @@ class BinderMapWithContext {
   // If |Add()| is called multiple times for the same interface, the most
   // recent one replaces any existing binder.
   template <typename Interface>
-  void Add(BinderType<Interface> binder,
+  void Add(std::common_type_t<BinderType<Interface>> binder,
            scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     binders_[Interface::Name_] = std::make_unique<
         internal::GenericCallbackBinderWithContext<ContextType>>(
         Traits::MakeGenericBinder(std::move(binder)), std::move(task_runner));
+  }
+
+  // Returns true if this map contains a binder for `Interface` receivers.
+  template <typename Interface>
+  bool Contains() {
+    return binders_.find(Interface::Name_) != binders_.end();
   }
 
   // Attempts to bind the |receiver| using one of the registered binders in
@@ -79,7 +85,7 @@ class BinderMapWithContext {
   // will be left intact for the caller.
   //
   // This method is only usable when ContextType is void.
-  bool TryBind(mojo::GenericPendingReceiver* receiver) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TryBind(mojo::GenericPendingReceiver* receiver) {
     static_assert(IsVoidContext::value,
                   "TryBind() must be called with a context value when "
                   "ContextType is non-void.");
@@ -93,8 +99,8 @@ class BinderMapWithContext {
 
   // Like above, but passes |context| to the binder if one exists. Only usable
   // when ContextType is non-void.
-  bool TryBind(ContextValueType context,
-               mojo::GenericPendingReceiver* receiver) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TryBind(ContextValueType context,
+                             mojo::GenericPendingReceiver* receiver) {
     static_assert(!IsVoidContext::value,
                   "TryBind() must be called without a context value when "
                   "ContextType is void.");

@@ -1,0 +1,20 @@
+<!--
+@BLINK-DENY:description
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="test">
+  <div id="t1">foo</div>
+</body>
+</html>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelector('#test').setAttribute("aria-labelledby", "t1");
+      document.title='done';
+    }, 50);
+  });
+</script>

@@ -1,11 +1,11 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 
 # Dice is supported on the platform (but not necessarily enabled).
-enable_dice_support = is_linux || is_chromeos_lacros || is_mac || is_win
+enable_dice_support = is_linux || is_mac || is_win || is_fuchsia
 
 # Mirror is enabled and other account consistency mechanisms are not available.
-enable_mirror = is_android || is_ios
+enable_mirror = is_android || is_chromeos || is_ios

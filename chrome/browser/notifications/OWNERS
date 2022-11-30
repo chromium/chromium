@@ -1,7 +1,6 @@
 dewittj@chromium.org
 dimich@chromium.org
 knollr@chromium.org
-mukai@chromium.org
 peter@chromium.org
 yoshiki@chromium.org
 
@@ -15,3 +14,5 @@ per-file *_mac*=rsesek@chromium.org
 per-file *_win*=finnur@chromium.org
 
 per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
+
+per-file *notification_channels_provider_android*=file://components/content_settings/OWNERS

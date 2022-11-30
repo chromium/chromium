@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview An alternative imageless button renderer that uses CSS3 rather
@@ -34,6 +26,7 @@ goog.require('goog.ui.INLINE_BLOCK_CLASSNAME');
 goog.require('goog.ui.MenuButton');
 goog.require('goog.ui.MenuButtonRenderer');
 goog.require('goog.ui.registry');
+goog.requireType('goog.ui.ControlContent');
 
 
 
@@ -47,6 +40,7 @@ goog.require('goog.ui.registry');
  * @final
  */
 goog.ui.Css3MenuButtonRenderer = function() {
+  'use strict';
   goog.ui.MenuButtonRenderer.call(this);
 };
 goog.inherits(goog.ui.Css3MenuButtonRenderer, goog.ui.MenuButtonRenderer);
@@ -63,6 +57,7 @@ goog.ui.Css3MenuButtonRenderer.CSS_CLASS = goog.getCssName('goog-css3-button');
 
 /** @override */
 goog.ui.Css3MenuButtonRenderer.prototype.getContentElement = function(element) {
+  'use strict';
   if (element) {
     var captionElem = goog.dom.getElementsByTagNameAndClass(
         '*', goog.getCssName(this.getCssClass(), 'caption'), element)[0];
@@ -81,6 +76,7 @@ goog.ui.Css3MenuButtonRenderer.prototype.getContentElement = function(element) {
  * @override
  */
 goog.ui.Css3MenuButtonRenderer.prototype.canDecorate = function(element) {
+  'use strict';
   return element.tagName == goog.dom.TagName.DIV;
 };
 
@@ -103,6 +99,7 @@ goog.ui.Css3MenuButtonRenderer.prototype.canDecorate = function(element) {
  * @override
  */
 goog.ui.Css3MenuButtonRenderer.prototype.createButton = function(content, dom) {
+  'use strict';
   var baseClass = this.getCssClass();
   var inlineBlock = goog.ui.INLINE_BLOCK_CLASSNAME + ' ';
   return dom.createDom(
@@ -128,6 +125,7 @@ goog.ui.Css3MenuButtonRenderer.prototype.createButton = function(content, dom) {
  * @override
  */
 goog.ui.Css3MenuButtonRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.Css3MenuButtonRenderer.CSS_CLASS;
 };
 
@@ -138,6 +136,7 @@ goog.ui.Css3MenuButtonRenderer.prototype.getCssClass = function() {
 // giving goog-css3-menu-button here.
 goog.ui.registry.setDecoratorByClassName(
     goog.getCssName('goog-css3-menu-button'), function() {
+      'use strict';
       return new goog.ui.MenuButton(
           null, null, goog.ui.Css3MenuButtonRenderer.getInstance());
     });

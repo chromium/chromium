@@ -91,7 +91,7 @@ and it is discounted from malloc and the blue columns.
 
 <!-- TODO(primiano): Improve this. https://crbug.com/??? -->
 
-[oilpan]:     /third_party/blink/renderer/platform/heap/BlinkGCDesign.md
+[oilpan]:     /third_party/blink/renderer/platform/heap/BlinkGCAPIReference.md
 [discardable]:base/memory/discardable_memory.h
 [cc-memory]:  probe-cc.md
 [gpu-memory]: probe-gpu.md
@@ -161,7 +161,7 @@ or take a look at one of the existing examples such as
 [tracing@chromium.org][mailtracing] for questions and support.
 
 [dp-slides]:   https://docs.google.com/presentation/d/1GI3HY3Mm5-Mvp6eZyVB0JiaJ-u3L1MMJeKHJg4lxjEI/present?slide=id.g995514d5c_1_45
-[malloc-dp]:   https://chromium.googlesource.com/chromium/src.git/+/master/base/trace_event/malloc_dump_provider.cc
+[malloc-dp]:   https://chromium.googlesource.com/chromium/src.git/+/main/base/trace_event/malloc_dump_provider.cc
 [hotlist]:     https://code.google.com/p/chromium/issues/list?q=label:Hotlist-MemoryInfra
 [mailtracing]: mailto:tracing@chromium.org
 
@@ -169,15 +169,15 @@ or take a look at one of the existing examples such as
 
 Architectural:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfmp0cW1VcE5XVWNxZndxelV5T19kT2NFSndYZlNFbkFpc3pSa2VDN0hlMm8">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfmp0cW1VcE5XVWNxZndxelV5T19kT2NFSndYZlNFbkFpc3pSa2VDN0hlMm8&resourcekey=0-ROo3GFIuBBIGakbTlSKZuw">
 </iframe>
 
 Chrome-side design docs:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfndSa2dleUQtMnZDeWpPZk1JV0QtbVM5STkwWms4YThzQ0pGTmU1QU9kNVk">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfndSa2dleUQtMnZDeWpPZk1JV0QtbVM5STkwWms4YThzQ0pGTmU1QU9kNVk&resourcekey=0-_pVIubJkVbp5xAPQ0WKsvA">
 </iframe>
 
 Catapult-side design docs:
 
-<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfm10bXd5YmRNWUpKOElOWS0xdU1tMmV1S3F4aHo0ZDJLTmtGRy1qVnQtVWM">
+<iframe width="100%" height="300px" src="https://docs.google.com/a/google.com/embeddedfolderview?id=0B3KuDeqD-lVJfm10bXd5YmRNWUpKOElOWS0xdU1tMmV1S3F4aHo0ZDJLTmtGRy1qVnQtVWM&resourcekey=0-GvJpfCIKyDiXaERBTvoKhg">
 </iframe>

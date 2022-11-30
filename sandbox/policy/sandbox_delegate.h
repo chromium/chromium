@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,12 @@
 
 #include "base/process/process.h"
 #include "build/build_config.h"
-#include "sandbox/policy/sandbox_type.h"
 
 namespace sandbox {
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
+
 class TargetPolicy;
 
 namespace policy {
@@ -20,11 +23,18 @@ class SandboxDelegate {
  public:
   virtual ~SandboxDelegate() {}
 
-  // Returns the SandboxType to enforce on the process, or
-  // SandboxType::kNoSandbox to run without a sandbox policy.
-  virtual SandboxType GetSandboxType() = 0;
+  // Returns the Sandbox to enforce on the process, or
+  // Sandbox::kNoSandbox to run without a sandbox policy.
+  virtual sandbox::mojom::Sandbox GetSandboxType() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  // Returns a tag for the sandbox. All targets with the same tag will share
+  // their FixedPolicy configuration - the delegate can call
+  // FixedPolicy::IsFixed() to skip setting this configuration after the first
+  // such policy has been configured. Provide an empty string to force every
+  // policy to be unique.
+  virtual std::string GetSandboxTag() = 0;
+
   // Whether to disable the default policy specified in
   // AddPolicyForSandboxedProcess.
   virtual bool DisableDefaultPolicy() = 0;
@@ -34,6 +44,8 @@ class SandboxDelegate {
   virtual bool GetAppContainerId(std::string* appcontainer_id) = 0;
 
   // Called right before spawning the process. Returns false on failure.
+  // Methods in FixedPolicy only need to be called if IsFixed() returns
+  // false.
   virtual bool PreSpawnTarget(TargetPolicy* policy) = 0;
 
   // Called right after the process is launched, but before its thread is run.
@@ -45,7 +57,7 @@ class SandboxDelegate {
   // Whether this process will be compatible with Control-flow Enforcement
   // Technology (CET) / Hardware-enforced Stack Protection.
   virtual bool CetCompatible() = 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace policy

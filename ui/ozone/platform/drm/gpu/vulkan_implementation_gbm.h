@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace ui {
 class VulkanImplementationGbm : public gpu::VulkanImplementation {
  public:
   VulkanImplementationGbm();
+
+  VulkanImplementationGbm(const VulkanImplementationGbm&) = delete;
+  VulkanImplementationGbm& operator=(const VulkanImplementationGbm&) = delete;
+
   ~VulkanImplementationGbm() override;
 
   // VulkanImplementation:
@@ -39,12 +43,14 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
                                           VkSemaphore vk_semaphore) override;
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
+      gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferType memory_buffer_type) override;
   std::unique_ptr<gpu::VulkanImage> CreateImageFromGpuMemoryHandle(
       gpu::VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_formae) override;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
 
  private:
   gpu::VulkanInstance vulkan_instance_;
@@ -52,8 +58,6 @@ class VulkanImplementationGbm : public gpu::VulkanImplementation {
   PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR
       vkGetPhysicalDeviceExternalFencePropertiesKHR_ = nullptr;
   PFN_vkGetFenceFdKHR vkGetFenceFdKHR_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationGbm);
 };
 
 }  // namespace ui

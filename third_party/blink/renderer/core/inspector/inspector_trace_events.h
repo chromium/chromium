@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -26,6 +25,11 @@
 
 namespace base {
 class UnguessableToken;
+}
+
+namespace gfx {
+class RectF;
+class QuadF;
 }
 
 namespace v8 {
@@ -48,9 +52,7 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-struct FetchInitiatorInfo;
-class FloatRect;
-class GraphicsLayer;
+class Frame;
 class HitTestLocation;
 class HitTestRequest;
 class HitTestResult;
@@ -63,12 +65,13 @@ struct LayoutObjectWithDepth;
 class LocalFrame;
 class LocalFrameView;
 class Node;
-struct PhysicalRect;
 class QualifiedName;
 enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
+struct ResourceLoaderOptions;
 class ResourceRequest;
+class ResourceRequestHead;
 class ResourceResponse;
 class StyleChangeReasonForTracing;
 class StyleImage;
@@ -86,14 +89,17 @@ class CORE_EXPORT InspectorTraceEvents
     : public GarbageCollected<InspectorTraceEvents> {
  public:
   InspectorTraceEvents() = default;
+  InspectorTraceEvents(const InspectorTraceEvents&) = delete;
+  InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
   void WillSendRequest(DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
-                       const FetchInitiatorInfo&,
+                       const ResourceLoaderOptions&,
                        ResourceType,
-                       RenderBlockingBehavior);
+                       RenderBlockingBehavior,
+                       base::TimeTicks timestamp);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
@@ -135,9 +141,6 @@ class CORE_EXPORT InspectorTraceEvents
   void FrameStartedLoading(LocalFrame*);
 
   void Trace(Visitor*) const {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InspectorTraceEvents);
 };
 
 // Helper macros for emitting devtools.timeline events, taking the name of the
@@ -169,7 +172,7 @@ class CORE_EXPORT InspectorTraceEvents
 namespace inspector_layout_event {
 void BeginData(perfetto::TracedValue context, LocalFrameView*);
 void EndData(perfetto::TracedValue context,
-             const Vector<LayoutObjectWithDepth>&);
+             const HeapVector<LayoutObjectWithDepth>&);
 }  // namespace inspector_layout_event
 
 namespace inspector_schedule_style_invalidation_tracking_event {
@@ -294,7 +297,7 @@ extern const char kTextControlChanged[];
 extern const char kSvgChanged[];
 extern const char kScrollbarChanged[];
 extern const char kDisplayLock[];
-extern CORE_EXPORT const char kCanvasFormattedTextRunChange[];
+extern const char kDevtools[];
 }  // namespace layout_invalidation_reason
 
 // LayoutInvalidationReasonForTracing is strictly for tracing. Blink logic must
@@ -321,6 +324,14 @@ void Data(perfetto::TracedValue context,
           uint64_t identifier,
           LocalFrame*,
           const ResourceRequest&,
+          RenderBlockingBehavior);
+}
+
+namespace inspector_change_render_blocking_behavior_event {
+void Data(perfetto::TracedValue context,
+          DocumentLoader*,
+          uint64_t identifier,
+          const ResourceRequestHead&,
           RenderBlockingBehavior);
 }
 
@@ -414,26 +425,33 @@ namespace inspector_xhr_load_event {
 void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 }
 
+// We use this for two distincts types of paint-related events:
+//  1. A timed event showing how long we spent painting a LocalFrameView,
+//     including any iframes. The quad associated with this event is the cull
+//     rect used when painting the LocalFrameView.
+//  2. An instant event for each cc::Layer which had damage. The quad
+//     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
-          LayoutObject*,
-          const PhysicalRect& clip_rect,
-          const GraphicsLayer*);
+          Frame*,
+          const LayoutObject*,
+          const gfx::QuadF& quad,
+          int layer_id);
 }
 
 namespace inspector_paint_image_event {
 void Data(perfetto::TracedValue context,
           const LayoutImage&,
-          const FloatRect& src_rect,
-          const FloatRect& dest_rect);
+          const gfx::RectF& src_rect,
+          const gfx::RectF& dest_rect);
 void Data(perfetto::TracedValue context,
           const LayoutObject&,
           const StyleImage&);
 void Data(perfetto::TracedValue context,
           Node*,
           const StyleImage&,
-          const FloatRect& src_rect,
-          const FloatRect& dest_rect);
+          const gfx::RectF& src_rect,
+          const gfx::RectF& dest_rect);
 void Data(perfetto::TracedValue context,
           const LayoutObject*,
           const ImageResourceContent&);
@@ -451,7 +469,7 @@ namespace inspector_scroll_layer_event {
 void Data(perfetto::TracedValue context, LayoutObject*);
 }
 
-namespace inspector_update_layer_tree_event {
+namespace inspector_pre_paint_event {
 void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
@@ -468,35 +486,35 @@ void Data(perfetto::TracedValue context,
           const String& url);
 }
 
+namespace inspector_deserialize_script_event {
+void Data(perfetto::TracedValue context,
+          uint64_t identifier,
+          const String& url);
+}
+
 namespace inspector_compile_script_event {
 
-struct V8CacheResult {
-  struct ProduceResult {
-    explicit ProduceResult(int cache_size);
-    int cache_size;
-  };
-  struct ConsumeResult {
-    ConsumeResult(v8::ScriptCompiler::CompileOptions consume_options,
-                  int cache_size,
-                  bool rejected);
-    v8::ScriptCompiler::CompileOptions consume_options;
-    int cache_size;
-    bool rejected;
-  };
-  V8CacheResult() = default;
-  V8CacheResult(base::Optional<ProduceResult>, base::Optional<ConsumeResult>);
-
-  base::Optional<ProduceResult> produce_result;
-  base::Optional<ConsumeResult> consume_result;
+struct V8ConsumeCacheResult {
+  V8ConsumeCacheResult(int cache_size, bool rejected);
+  int cache_size;
+  bool rejected;
 };
 
 void Data(perfetto::TracedValue context,
           const String& url,
           const WTF::TextPosition&,
-          const V8CacheResult&,
+          absl::optional<V8ConsumeCacheResult>,
+          bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);
 }  // namespace inspector_compile_script_event
+
+namespace inspector_produce_script_cache_event {
+void Data(perfetto::TracedValue context,
+          const String& url,
+          const WTF::TextPosition&,
+          int cache_size);
+}
 
 namespace inspector_function_call_event {
 void Data(perfetto::TracedValue context,
@@ -509,7 +527,7 @@ void Data(perfetto::TracedValue context);
 }
 
 namespace inspector_invalidate_layout_event {
-void Data(perfetto::TracedValue context, LocalFrame*);
+void Data(perfetto::TracedValue context, LocalFrame*, DOMNodeId);
 }
 
 namespace inspector_recalculate_styles_event {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,17 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -30,11 +33,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.isNextAfterSibling;
@@ -42,36 +45,44 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewInRootMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildRequiredDataPiece;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
+import android.os.Build;
 import android.widget.RadioButton;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
-import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto.RequiredField;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.R;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,13 +94,14 @@ import java.util.Collections;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantPersonalDataManagerTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "form_target_website.html";
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
+    private AutofillTestHelper mAutofillHelper;
 
     private WebContents getWebContents() {
         return mTestRule.getWebContents();
@@ -97,66 +109,63 @@ public class AutofillAssistantPersonalDataManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(
-                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
-                        mTestRule.getTestServer().getURL(TEST_PAGE),
-                        /* startImmediately = */ true));
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
+        mAutofillHelper = new AutofillTestHelper();
     }
 
     /**
      * Add a contact with Autofill Assistant UI and fill it into the form.
      */
-    @Test
-    @MediumTest
-    public void testCreateAndEnterProfile() throws Exception {
+    public void testCreateAndEnterContact(boolean pdmEnabled) throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> PersonalDataManager.setAutofillProfileEnabled(pdmEnabled));
+
         ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setContactDetails(
+                                                 ContactDetailsProto.newBuilder()
+                                                         .setContactDetailsName("contact")
+                                                         .setRequestPayerName(true)
+                                                         .setRequestPayerEmail(true)
+                                                         .setRequestPayerPhone(false)
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires first name", 3))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires last name", 5))
+                                                         .addRequiredDataPiece(
+                                                                 buildRequiredDataPiece(
+                                                                         "Requires email", 9)))
+                                         .setRequestTermsAndConditions(false))
+                         .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setCollectUserData(
-                                CollectUserDataProto.newBuilder()
-                                        .setContactDetails(ContactDetailsProto.newBuilder()
-                                                                   .setContactDetailsName("contact")
-                                                                   .setRequestPayerName(true)
-                                                                   .setRequestPayerEmail(true)
-                                                                   .setRequestPayerPhone(false))
-                                        .setRequestTermsAndConditions(false))
-                        .build());
-        list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder()
                                         .setName("contact")
-                                        .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name")))
+                                        .setFormFieldElement(toCssSelector("#profile_name"))
                                         .addRequiredFields(
-                                                RequiredField.newBuilder()
-                                                        .setValueExpression("7")
-                                                        .setElement(SelectorProto.newBuilder().addFilters(
-                                                                SelectorProto.Filter.newBuilder()
-                                                                        .setCssSelector(
-                                                                                "#profile_name"))))
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(7))
+                                                        .setElement(toCssSelector("#profile_name"))
+                                                        .setForced(true))
                                         .addRequiredFields(
-                                                RequiredField.newBuilder()
-                                                        .setValueExpression("9")
-                                                        .setElement(
-                                                                SelectorProto.newBuilder().addFilters(
-                                                                        SelectorProto.Filter
-                                                                                .newBuilder()
-                                                                                .setCssSelector(
-                                                                                        "#email")))))
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(9))
+                                                        .setElement(toCssSelector("#email"))
+                                                        .setForced(true)))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -168,20 +177,56 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
-        onView(withContentDescription("Name*")).perform(typeText("John Doe"));
+        onView(withContentDescription("Name*")).perform(typeText("John"));
         waitUntilViewMatchesCondition(
                 withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
         onView(withContentDescription("Email*")).perform(typeText("johndoe@google.com"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
-        waitUntilViewMatchesCondition(withText("Continue"), isEnabled());
-        onView(withId(R.id.contact_summary))
-                .check(matches(allOf(withText("johndoe@google.com"), isDisplayed())));
-        onView(withText("Continue")).perform(click());
+        // First round: Missing name piece.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
+        onView(allOf(isDisplayed(), hasSibling(withId(R.id.contact_summary)),
+                       withId(R.id.incomplete_error)))
+                .check(matches(withText(mTestRule.getActivity().getString(
+                        R.string.autofill_assistant_payment_information_missing))));
+        onView(withText("Contact info")).perform(click());
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), hasSibling(withId(R.id.contact_full)),
+                                              withId(R.id.incomplete_error)),
+                anyOf(withText("Requires first name"), withText("Requires last name")));
+        onView(withContentDescription("Edit contact info")).perform(scrollTo(), click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Name*")).perform(typeText(" Doe"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
+                .perform(scrollTo(), click());
+        // Second round: Complete.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_full)),
+                allOf(withText(containsString("John Doe")),
+                        withText(containsString("johndoe@google.com"))));
+        waitUntilViewMatchesCondition(
+                allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)),
+                not(isDisplayed()));
+        onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateAndEnterContactProfileWithPDMEnabled() throws Exception {
+        testCreateAndEnterContact(/* pdmEnabled= */ true);
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateAndEnterContactProfileWithPDMDisabled() throws Exception {
+        testCreateAndEnterContact(/* pdmEnabled= */ false);
     }
 
     /**
@@ -193,7 +238,7 @@ public class AutofillAssistantPersonalDataManagerTest {
     public void testCreateAndEditProfileMultipleTimes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -204,10 +249,9 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -261,7 +305,7 @@ public class AutofillAssistantPersonalDataManagerTest {
     public void testExternalAddAndEnterProfile() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -272,22 +316,19 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -297,7 +338,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         mHelper.addDummyProfile("John Doe", "johndoe@google.com");
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -316,7 +357,7 @@ public class AutofillAssistantPersonalDataManagerTest {
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -327,36 +368,33 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
-        onView(withText("Continue")).check(matches(isEnabled()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
+        onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Add new entry that is not supposed to be selected.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(withText(containsString("Adam West")), isDisplayed());
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withText("Continue"), isEnabled());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -373,11 +411,13 @@ public class AutofillAssistantPersonalDataManagerTest {
     @MediumTest
     public void testExternalDeleteProfile() throws Exception {
         String profileIdA = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdA, /* count= */ 1, /* date= */ 1000);
         String profileIdB = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -388,20 +428,19 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("adamdoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("adamdoe@google.com"));
         // Delete first profile, expect second to be selected.
         mHelper.deleteProfile(profileIdA);
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("bertadoe@google.com"), isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("bertadoe@google.com"));
         // Delete second profile, expect nothing to be selected.
         mHelper.deleteProfile(profileIdB);
         waitUntilViewMatchesCondition(
@@ -415,12 +454,14 @@ public class AutofillAssistantPersonalDataManagerTest {
     @Test
     @MediumTest
     public void testEditOfSelectedProfile() throws Exception {
-        mHelper.addDummyProfile("Adam West", "adamwest@google.com");
-        mHelper.addDummyProfile("John Doe", "johndoe@google.com");
+        String profileIdA = mHelper.addDummyProfile("Adam West", "adamwest@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdA, /* count= */ 1, /* date= */ 1000);
+        String profileIdB = mHelper.addDummyProfile("John Doe", "johndoe@google.com");
+        mAutofillHelper.setProfileUseStatsForTesting(profileIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
                                         .setContactDetails(ContactDetailsProto.newBuilder()
@@ -431,38 +472,39 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setRequestTermsAndConditions(false))
                         .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setUseAddress(
                                 UseAddressProto.newBuilder().setName("contact").setFormFieldElement(
-                                        SelectorProto.newBuilder().addFilters(
-                                                SelectorProto.Filter.newBuilder().setCssSelector(
-                                                        "#profile_name"))))
+                                        toCssSelector("#profile_name")))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
 
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("adamwest@google.com"), isDisplayed()));
-        onView(withText("Continue")).check(matches(isEnabled()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("adamwest@google.com"));
+        onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Select John Doe.
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(withText(containsString("John Doe")), isDisplayed());
+        waitUntilViewMatchesCondition(
+                withText(containsString("John Doe")), isDisplayingAtLeast(90));
         onView(withText(containsString("John Doe"))).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         // Edit John Doe to Jane Doe (does not collapse the list after editing).
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(withText(containsString("John Doe")), isDisplayed());
+        waitUntilViewMatchesCondition(
+                allOf(withContentDescription("Edit contact info"),
+                        isNextAfterSibling(hasDescendant(withText(containsString("John Doe"))))),
+                isDisplayingAtLeast(90));
         onView(allOf(withContentDescription("Edit contact info"),
                        isNextAfterSibling(hasDescendant(withText(containsString("John Doe"))))))
                 .perform(click());
@@ -492,6 +534,7 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1247243, https://crbug.com/1249164#c2")
     public void testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
@@ -500,29 +543,25 @@ public class AutofillAssistantPersonalDataManagerTest {
         int year = Calendar.getInstance().get(Calendar.YEAR);
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
                                                      .setRequestTermsAndConditions(false))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setUseCard(
-                                 org.chromium.chrome.browser.autofill_assistant.proto
-                                         .UseCreditCardProto.newBuilder()
-                                         .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#card_number"))))
+        list.add(ActionProto.newBuilder()
+                         .setUseCard(org.chromium.chrome.browser.autofill_assistant.proto
+                                             .UseCreditCardProto.newBuilder()
+                                             .setFormFieldElement(toCssSelector("#card_number")))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -550,7 +589,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
         onView(allOf(withId(org.chromium.chrome.R.id.spinner), withChild(withText("Select"))))
-                .perform(click());
+                .perform(scrollTo(), click());
         onData(anything())
                 .atPosition(1 /* address of Adam, 0 is SELECT (empty) */)
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
@@ -580,7 +619,7 @@ public class AutofillAssistantPersonalDataManagerTest {
     @MediumTest
     public void testExternalAddCreditCard() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
@@ -588,10 +627,9 @@ public class AutofillAssistantPersonalDataManagerTest {
                          .build());
         // No UseCreditCardAction, that is tested in PaymentTest.
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -616,20 +654,19 @@ public class AutofillAssistantPersonalDataManagerTest {
     @MediumTest
     public void testExternalAddCreditCardWithoutBillingZip() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
                                          .setRequestPaymentMethod(true)
                                          .setBillingAddressName("billing_address")
-                                         .setRequireBillingPostalCode(true)
-                                         .setBillingPostalCodeMissingText("Missing Billing Code")
+                                         .addRequiredBillingAddressDataPiece(
+                                                 buildRequiredDataPiece("Requires Billing Zip", 35))
                                          .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -640,8 +677,14 @@ public class AutofillAssistantPersonalDataManagerTest {
         String profileId =
                 mHelper.addDummyProfile("John Doe", "johndoe@google.com", /* postcode= */ "");
         mHelper.addDummyCreditCard(profileId);
-        waitUntilViewMatchesCondition(allOf(withText("Missing Billing Code"),
-                                              isDescendantOfA(withId(R.id.payment_method_summary))),
+        waitUntilViewMatchesCondition(
+                allOf(withText(mTestRule.getActivity().getString(
+                              R.string.autofill_assistant_payment_information_missing)),
+                        isDescendantOfA(withId(R.id.payment_method_summary))),
+                isDisplayed());
+        onView(withText("Payment method")).perform(click());
+        waitUntilViewMatchesCondition(allOf(withText("Requires Billing Zip"),
+                                              isDescendantOfA(withId(R.id.payment_method_full))),
                 isDisplayed());
         onView(withContentDescription("Continue")).check(matches(not(isEnabled())));
 
@@ -655,13 +698,13 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1183594")
+    @DisabledTest(message = "https://crbug.com/1183594")
     public void testExternalAddExpiredCreditCard() throws Exception {
         // Add address for card.
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@google.com");
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
@@ -669,10 +712,9 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                      .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -682,11 +724,13 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         CreditCard card = new CreditCard("", "https://example.com", /* isLocal= */ true,
                 /* isCached= */ true, "John Doe", "4111111111111111", "1111", "12", "2000", "visa",
-                org.chromium.chrome.autofill_assistant.R.drawable.visa_card, profileId,
+                org.chromium.components.autofill_assistant.R.drawable.visa_card, profileId,
                 /* serverId= */ "");
         mHelper.setCreditCard(card);
-        waitUntilViewMatchesCondition(allOf(withText("Card is expired"),
-                                              isDescendantOfA(withId(R.id.payment_method_summary))),
+        waitUntilViewMatchesCondition(
+                allOf(withText(mTestRule.getActivity().getString(
+                              R.string.autofill_assistant_payment_information_missing)),
+                        isDescendantOfA(withId(R.id.payment_method_summary))),
                 isDisplayed());
         onView(withContentDescription("Continue")).check(matches(not(isEnabled())));
 
@@ -727,26 +771,25 @@ public class AutofillAssistantPersonalDataManagerTest {
     @Test
     @MediumTest
     public void testExternalDeleteCreditCard() throws Exception {
-        String profileId;
+        String profileIdA = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
+        String cardIdA = mHelper.addDummyCreditCard(profileIdA, "4111111111111111");
+        mAutofillHelper.setCreditCardUseStatsForTesting(cardIdA, /* count= */ 1, /* date= */ 1000);
 
-        profileId = mHelper.addDummyProfile("Adam Doe", "adamdoe@google.com");
-        String cardIdA = mHelper.addDummyCreditCard(profileId, "4111111111111111");
-
-        profileId = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
-        String cardIdB = mHelper.addDummyCreditCard(profileId, "5555555555554444");
+        String profileIdB = mHelper.addDummyProfile("Berta Doe", "bertadoe@google.com");
+        String cardIdB = mHelper.addDummyCreditCard(profileIdB, "5555555555554444");
+        mAutofillHelper.setCreditCardUseStatsForTesting(cardIdB, /* count= */ 1, /* date= */ 0);
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
                                                      .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -795,17 +838,16 @@ public class AutofillAssistantPersonalDataManagerTest {
                 profileId, "4111111111111111", /* isLocal = */ false));
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
                                                      .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -816,7 +858,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
 
         onView(withText("Payment method")).perform(click());
-        waitUntilViewMatchesCondition(withContentDescription("Edit card"), isDisplayed());
+        waitUntilViewMatchesCondition(withContentDescription("Edit card"), isCompletelyDisplayed());
         onView(withContentDescription("Edit card")).perform(click());
         waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());
         // TODO(b/155624806) edit billing address and fill/check values on test website.
@@ -829,10 +871,12 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1163659")
-    public void testCreateShippingAddressAndCreditCard() {
+    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.O,
+            message = "Times out on Android P+ emulators: https://crbug.com/1219046")
+    public void
+    testCreateShippingAddressAndCreditCard() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
@@ -840,10 +884,9 @@ public class AutofillAssistantPersonalDataManagerTest {
                                                      .setRequestTermsAndConditions(false))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -852,7 +895,11 @@ public class AutofillAssistantPersonalDataManagerTest {
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("Shipping address"), isCompletelyDisplayed());
-        onView(allOf(withText("Add address"), isDisplayed())).perform(click());
+        waitUntilViewMatchesCondition(
+                allOf(withText("Add address"), withEffectiveVisibility(Visibility.VISIBLE)),
+                isEnabled());
+        onView(allOf(withText("Add address"), withEffectiveVisibility(Visibility.VISIBLE)))
+                .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
         onView(withContentDescription("Name*")).perform(scrollTo(), typeText("John Doe"));
@@ -861,22 +908,13 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         onView(withText("Done")).perform(scrollTo(), click());
-
-        addCreditCardAndSelectAddress();
-        int tryNumber = 0;
-        int maxRetries = 3;
-        while (!hasAddress() && tryNumber++ < maxRetries) {
-            // If the new address is not yet present, we first need to close the popup dialog.
-            Espresso.pressBack();
-            onView(withText("Cancel")).perform(scrollTo(), click());
-            addCreditCardAndSelectAddress();
-        }
-        assertThat(tryNumber, lessThan(maxRetries));
-    }
-
-    private void addCreditCardAndSelectAddress() {
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        // Wait for the address to appear in the UI. From this point on it should be available in
+        // the CreditCard editor.
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_summary)), withId(R.id.full_name)),
+                allOf(withText("John Doe"), isCompletelyDisplayed()));
         waitUntilViewMatchesCondition(
                 allOf(withId(R.id.section_title_add_button_label), withText("Add card")),
                 isCompletelyDisplayed());
@@ -887,16 +925,8 @@ public class AutofillAssistantPersonalDataManagerTest {
         Espresso.closeSoftKeyboard();
         onView(allOf(withId(org.chromium.chrome.R.id.spinner), withChild(withText("Select"))))
                 .perform(scrollTo(), click());
-    }
-
-    private boolean hasAddress() {
-        try {
-            waitUntilViewInRootMatchesCondition(withText(containsString("John Doe")),
-                    withDecorView(withClassName(containsString("Popup"))), isDisplayed());
-            return true;
-        } catch (AssertionError e) {
-            return false;
-        }
+        waitUntilViewInRootMatchesCondition(withText(containsString("John Doe")),
+                withDecorView(withClassName(containsString("Popup"))), isDisplayed());
     }
 
     /**
@@ -904,30 +934,31 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    public void testCreateAndEnterAddress() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1272997")
+    public void testCreateAndEnterShippingAddress() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setCollectUserData(CollectUserDataProto.newBuilder()
-                                                     .setShippingAddressName("shipping")
-                                                     .setRequestTermsAndConditions(false))
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(
+                                 CollectUserDataProto.newBuilder()
+                                         .setShippingAddressName("shipping")
+                                         .addRequiredShippingAddressDataPiece(
+                                                 buildRequiredDataPiece("Requires valid state", 34))
+                                         .setRequestTermsAndConditions(false))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setUseAddress(
-                                 UseAddressProto.newBuilder()
-                                         .setName("shipping")
-                                         .setFormFieldElement(SelectorProto.newBuilder().addFilters(
-                                                 SelectorProto.Filter.newBuilder().setCssSelector(
-                                                         "#address_name"))))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(
+                ActionProto.newBuilder()
+                        .setUseAddress(UseAddressProto.newBuilder()
+                                               .setName("shipping")
+                                               .setFormFieldElement(toCssSelector("#address_name")))
+                        .build());
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -944,22 +975,149 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("Street address*"))
                 .perform(scrollTo(), typeText("123 Main St"));
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
-        onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("Invalid"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
-        waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
+        // First round: Invalid state.
         waitUntilViewMatchesCondition(
-                allOf(withParent(withId(R.id.address_summary)), withId(R.id.full_name)),
+                withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_summary)), withId(R.id.incomplete_error)),
+                allOf(withText(mTestRule.getActivity().getString(
+                              R.string.autofill_assistant_payment_information_missing)),
+                        isDisplayed()));
+        onView(withText("Shipping address")).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.address_full), isDisplayed());
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_full)), withId(R.id.incomplete_error)),
+                allOf(withText("Requires valid state"), isDisplayed()));
+        onView(withContentDescription("Edit address")).perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
+        Espresso.closeSoftKeyboard();
+        onView(withContentDescription("State*"))
+                .perform(scrollTo(), clearText(), typeText("California"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
+                .perform(scrollTo(), click());
+        // Second round: Complete.
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
+        waitUntilViewMatchesCondition(
+                allOf(withParent(withId(R.id.address_full)), withId(R.id.full_name)),
                 allOf(withText("John Doe"), isCompletelyDisplayed()));
-        onView(withText("Continue")).perform(click());
+        onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "address_name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "street"), is("123 Main St"));
         assertThat(getElementValue(getWebContents(), "zip"), is("1234"));
         assertThat(getElementValue(getWebContents(), "state"), is("California"));
+    }
+
+    /**
+     * Tests a form requiring contact, billing and shipping. Creating a contact will add an entry
+     * to shipping which is selected. Creating a credit card + billing address will add a new entry
+     * to shipping address which should not be selected. Select the billing address in shipping.
+     */
+    @Test
+    @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
+    public void testCreateContactAndCreditCard() {
+        // The Current year is the default selection for expiration year of the credit card.
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setContactDetails(ContactDetailsProto.newBuilder()
+                                                                   .setContactDetailsName("contact")
+                                                                   .setRequestPayerEmail(true))
+                                        .setRequestPaymentMethod(true)
+                                        .setBillingAddressName("billing_address")
+                                        .setShippingAddressName("shipping_address")
+                                        .setRequestTermsAndConditions(false))
+                        .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(
+                allOf(withId(R.id.section_title_add_button_label), withText("Add contact info")),
+                isCompletelyDisplayed());
+        onView(allOf(withId(R.id.section_title_add_button_label), withText("Add contact info")))
+                .perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Email*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Email*")).perform(typeText("johndoe@google.com"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
+                .perform(scrollTo(), click());
+        waitUntilViewMatchesCondition(
+                allOf(withId(R.id.section_title_add_button_label), withText("Add card")),
+                isCompletelyDisplayed());
+        onView(allOf(withId(R.id.section_title_add_button_label), withText("Add card")))
+                .perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Card number*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Card number*")).perform(typeText("4111111111111111"));
+        waitUntilViewMatchesCondition(
+                withContentDescription("Name on card*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Name on card*")).perform(typeText("John Doe"));
+        Espresso.closeSoftKeyboard(); // Close keyboard, not to hide the Spinners.
+        onView(allOf(withId(org.chromium.chrome.R.id.spinner),
+                       withChild(withText(String.valueOf(year)))))
+                .perform(click());
+        onData(anything())
+                .atPosition(2 /* select 2 years in the future, 0 is the current year */)
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+        onView(allOf(withId(org.chromium.chrome.R.id.spinner), withChild(withText("Select"))))
+                .perform(scrollTo(), click());
+        onData(anything())
+                .atPosition(1 /* Add Address, 0 is Select (empty) */)
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .perform(click());
+        Espresso.closeSoftKeyboard();
+        waitUntilViewMatchesCondition(
+                withContentDescription("Street address*"), allOf(isDisplayed(), isEnabled()));
+        onView(withContentDescription("Street address*"))
+                .perform(scrollTo(), typeText("123 Main St"));
+        onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
+        onView(withContentDescription("State*")).perform(scrollTo(), typeText("CA"));
+        onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("94043"));
+        Espresso.closeSoftKeyboard();
+        onView(withText("Done")).perform(scrollTo(), click());
+        waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());
+        onView(withText("Done")).perform(scrollTo(), click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
+        waitUntilViewMatchesCondition(withText("Shipping address"), isDisplayed());
+        onView(withText("Shipping address")).perform(scrollTo(), click());
+        onView(allOf(withId(R.id.full_address),
+                       withParent(allOf(withId(R.id.address_full),
+                               isNextAfterSibling(
+                                       allOf(instanceOf(RadioButton.class), isChecked()))))))
+                .check(matches(withText("United States")));
+        waitUntilViewMatchesCondition(
+                allOf(withId(R.id.full_name), withText("John Doe"),
+                        withParent(isNextAfterSibling(instanceOf(RadioButton.class)))),
+                isDisplayingAtLeast(90));
+        onView(allOf(withId(R.id.full_name), withText("John Doe"),
+                       withParent(isNextAfterSibling(instanceOf(RadioButton.class)))))
+                .perform(click());
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

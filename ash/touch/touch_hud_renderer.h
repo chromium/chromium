@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {
@@ -28,6 +27,10 @@ class TouchPointView;
 class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
  public:
   explicit TouchHudRenderer(views::Widget* parent_widget);
+
+  TouchHudRenderer(const TouchHudRenderer&) = delete;
+  TouchHudRenderer& operator=(const TouchHudRenderer&) = delete;
+
   ~TouchHudRenderer() override;
 
   // Called to clear touch points and traces from the screen.
@@ -47,8 +50,6 @@ class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
 
   // A map of touch ids to TouchPointView.
   std::map<int, TouchPointView*> points_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchHudRenderer);
 };
 
 }  // namespace ash

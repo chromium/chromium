@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class GURL;
 namespace content {
 
 class RenderFrameHost;
-struct ServiceWorkerVersionInfo;
+struct ServiceWorkerVersionBaseInfo;
 
 // Lazily constructed by the corresponding renderer when the Content Index API
 // is triggered.
@@ -29,13 +29,18 @@ class CONTENT_EXPORT ContentIndexServiceImpl
       mojo::PendingReceiver<blink::mojom::ContentIndexService> receiver);
 
   static void CreateForWorker(
-      const ServiceWorkerVersionInfo& info,
+      const ServiceWorkerVersionBaseInfo& info,
       mojo::PendingReceiver<blink::mojom::ContentIndexService> receiver);
 
   ContentIndexServiceImpl(
       const url::Origin& origin,
       scoped_refptr<ContentIndexContextImpl> content_index_context,
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
+      bool is_top_level_context);
+
+  ContentIndexServiceImpl(const ContentIndexServiceImpl&) = delete;
+  ContentIndexServiceImpl& operator=(const ContentIndexServiceImpl&) = delete;
+
   ~ContentIndexServiceImpl() override;
 
   // blink::mojom::ContentIndexService implementation.
@@ -59,8 +64,7 @@ class CONTENT_EXPORT ContentIndexServiceImpl
   url::Origin origin_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentIndexServiceImpl);
+  bool is_top_level_context_;
 };
 
 }  // namespace content

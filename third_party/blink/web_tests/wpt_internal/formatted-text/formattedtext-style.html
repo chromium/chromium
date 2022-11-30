@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<link rel="match" href="references/formattedtext-style-expected.html">
+<!-- Mac/GPU tests will have slightly different underline/strikethrough rendering -->
+<meta name=fuzzy content="maxDifference=255;totalPixels=12">
+<html>
+<head>
+  <style>
+    h3 {
+      margin: 0px;
+    }
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    function makeContext(id) {
+      var canvas = document.getElementById(id);
+      var context = canvas.getContext("2d", { alpha: true });
+      context.fillStyle = "#000000";
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#FFFFFF";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.font = "20px Arial";
+      return context;
+    }
+    function styledRun(prop) {
+      return {text: prop, style: prop};
+    }
+  </script>
+  <h3>Test Font Related Styles</h3>
+  <canvas width=500 height=100 id="target1"></canvas>
+  <script>
+    function testFontRelatedStyles() {
+      var context = makeContext("target1");
+
+      var text = ['Hello World !'];
+      text.push(" ", styledRun('color:blue'));
+      text.push(" ", styledRun('text-decoration:underline'));
+      text.push(" ", styledRun('text-decoration:line-through'));
+      text.push(" ", styledRun('font-family:Times New Roman'));
+      text.push(" ", styledRun('font-kerning:none'));
+      text.push(" ", styledRun('font-kerning:normal'));
+      text.push(" ", styledRun('font-size:10px'));
+
+      // Test font-size-dependant lengths
+      text.push(" ", {text: "1em", style: 'text-decoration:underline; text-decoration-thickness:1em; text-underline-offset:0px; font-size:25px;'});
+
+      var cft = FormattedText.format(text, null, 500);
+      context.drawFormattedText(cft, 0, 0, 500);
+    };
+    testFontRelatedStyles();
+  </script>
+  <canvas width=500 height=30 id="target7"></canvas>
+  <script>
+    function testFontRelatedStyles2() {
+      var context = makeContext("target7");
+      var text = [];
+      text.push(" ", styledRun('font-weight:bold'));
+
+      var cft = FormattedText.format(text, null, 500);
+      context.drawFormattedText(cft, 0, 0);
+    };
+    testFontRelatedStyles2();
+  </script>
+  <canvas width=500 height=30 id="target8"></canvas>
+  <script>
+    function testFontRelatedStyles3() {
+      var context = makeContext("target8");
+      var text = [];
+      text.push(" ", styledRun('font-stretch:condensed'));
+      text.push(" ", styledRun('font-variant-caps:small-caps'));
+
+      var cft = FormattedText.format(text, null, 500);
+      context.drawFormattedText(cft, 0, 0);
+    };
+    testFontRelatedStyles3();
+  </script>
+  <canvas width=500 height=30 id="target9"></canvas>
+  <script>
+    function testFontRelatedStyles3() {
+      var context = makeContext("target9");
+      var text = [];
+      text.push(" ", styledRun('font-style:italic'));
+
+      var cft = FormattedText.format(text, null, 500);
+      context.drawFormattedText(cft, 0, 0);
+    };
+    testFontRelatedStyles3();
+  </script>
+
+  <h3>Test RTL</h3>
+  <canvas width=500 height=30 id="target2"></canvas>
+  <script>
+    {
+      var context = makeContext("target2");
+      var text = 'Hello World !';
+      var styles = "direction: rtl; width: 500px;";
+
+      var cft = FormattedText.format(text, styles, 500);
+      context.drawFormattedText(cft, 0, 0);
+    }
+  </script>
+
+  <h3>Test align</h3>
+  <canvas width=500 height=50 id="target3"></canvas>
+  <script>
+    {
+      var context = makeContext("target3");
+      var text = 'Hello World ! Hello World ! Hello World ! Hello World ! Hello World !';
+      var styles = 'text-align: center; width: 500px';
+
+      var cft = FormattedText.format(text, styles, 500);
+      context.drawFormattedText(cft, 0, 0);
+    }
+  </script>
+
+  <h3>Test Writing-Mode</h3>
+  <canvas width=100 height=70 id="target4" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target4");
+      var text = 'ABC DEF GHI JKL MNO PQR';
+      var styles = 'width: 100px; writing-mode: vertical-lr;';
+
+      var cft = FormattedText.format(text, styles, 100, 70);
+      context.drawFormattedText(cft, 0, 0);
+    }
+  </script>
+  <canvas width=100 height=70 id="target5" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target5");
+      var text = 'ABC DEF GHI JKL MNO PQR';
+      var styles = 'width: 100px; writing-mode: vertical-rl;';
+
+      var cft = FormattedText.format(text, styles, 100, 70);
+      context.drawFormattedText(cft, 0, 0);
+    }
+  </script>
+  <canvas width=100 height=70 id="target6" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target6");
+      var text = 'ABC DEF GHI JKL MNO PQR';
+      var styles = 'width: 100px; writing-mode: vertical-rl; text-orientation: upright;';
+
+      var cft = FormattedText.format(text, styles, 100, 70);
+      context.drawFormattedText(cft, 0, 0);
+    }
+  </script>
+</body>
+</html>

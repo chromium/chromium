@@ -48,7 +48,7 @@ String CSSBorderImageSliceValue::CustomCSSText() const {
 
 bool CSSBorderImageSliceValue::Equals(
     const CSSBorderImageSliceValue& other) const {
-  return fill_ == other.fill_ && DataEquivalent(slices_, other.slices_);
+  return fill_ == other.fill_ && base::ValuesEquivalent(slices_, other.slices_);
 }
 
 void CSSBorderImageSliceValue::TraceAfterDispatch(

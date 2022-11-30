@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,28 +15,16 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/test_audio_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector;
-  ignore_result(connector.InitWithNewPipeAndPassReceiver());
-  return connector;
-}
-
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "";
-}
-
-}  // namespace
 
 namespace chromecast {
 namespace media {
@@ -53,7 +41,7 @@ using testing::StrictMock;
 ::media::AudioParameters GetAudioParams() {
   return ::media::AudioParameters(
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, 48000, 1024);
+      ::media::ChannelLayoutConfig::Stereo(), 48000, 1024);
 }
 
 void SignalPull(
@@ -109,17 +97,19 @@ class MockMediaAudioOutputStream : public ::media::AudioOutputStream {
 
 class MockCastAudioManager : public CastAudioManager {
  public:
-  explicit MockCastAudioManager(
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+  MockCastAudioManager(
+      CastAudioManagerHelper::Delegate* delegate,
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      external_service_support::ExternalConnector* connector)
       : CastAudioManager(
             std::make_unique<::media::TestAudioThread>(),
             nullptr,
+            delegate,
             base::BindRepeating(&MockCastAudioManager::GetCmaBackendFactory,
                                 base::Unretained(this)),
-            base::BindRepeating(&DummyGetSessionId),
             media_task_runner,
             media_task_runner,
-            CreateConnector(),
+            connector,
             true /* use_mixer */) {
     ON_CALL(*this, ReleaseOutputStream(_))
         .WillByDefault(
@@ -149,7 +139,7 @@ class CastAudioMixerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     mock_manager_.reset(new StrictMock<MockCastAudioManager>(
-        task_environment_.GetMainThreadTaskRunner()));
+        &delegate_, task_environment_.GetMainThreadTaskRunner(), &connector_));
     mock_mixer_stream_.reset(new StrictMock<MockMediaAudioOutputStream>());
 
     ON_CALL(*mock_manager_, MakeMixerOutputStream(_))
@@ -173,11 +163,13 @@ class CastAudioMixerTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<MockCastAudioManager> mock_manager_;
   std::unique_ptr<MockMediaAudioOutputStream> mock_mixer_stream_;
 
   // Saved params passed to |mock_mixer_stream_|.
   ::media::AudioOutputStream::AudioSourceCallback* source_callback_;
+  MockCastAudioManagerHelperDelegate delegate_;
 };
 
 TEST_F(CastAudioMixerTest, Volume) {
@@ -412,7 +404,7 @@ TEST_F(CastAudioMixerTest, Delay) {
 
   // |delay| is the same because the Mixer and stream are
   // using the same AudioParameters.
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(1000);
+  base::TimeDelta delay = base::Microseconds(1000);
   EXPECT_CALL(source, OnMoreData(delay, _, 0, _));
   SignalPull(source_callback_, delay);
 

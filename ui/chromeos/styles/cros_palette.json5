@@ -1,0 +1,121 @@
+/* Copyright 2020 The Chromium Authors
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Chrome OS color palette.
+ *
+ * All colors used in Chrome OS WebUIs and System Web Apps should be specified
+ * here.
+ */
+{
+  options: {
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
+    ColorMappings: {
+      set_name: 'LegacySemantic'
+    },
+  },
+  colors: {
+    google_blue_50: "#e8f0fe",
+    google_blue_100: "#d2e3fc",
+    google_blue_200: "#aecbfa",
+    google_blue_300: "#8ab4f8",
+    google_blue_400: "#669df6",
+    google_blue_500: "#4285f4",
+    google_blue_600: "#1a73e8",
+    google_blue_700: "#1967d2",
+    google_blue_800: "#185abc",
+    google_blue_900: "#174ea6",
+
+    google_green_50: "#e6f4ea",
+    google_green_100: "#ceead6",
+    google_green_200: "#a8dab5",
+    google_green_300: "#81c995",
+    google_green_400: "#5bb974",
+    google_green_500: "#34a853",
+    google_green_600: "#1e8e3e",
+    google_green_700: "#188038",
+    google_green_800: "#137333",
+    google_green_900: "#0d652d",
+
+    google_grey_50: "#f8f9fa",
+    google_grey_100: "#f1f3f4",
+    google_grey_200: "#e8eaed",
+    google_grey_300: "#dadce0",
+    google_grey_400: "#bdc1c6",
+    google_grey_500: "#9aa0a6",
+    google_grey_600: "#80868b",
+    google_grey_700: "#5f6368",
+    google_grey_800: "#3c4043",
+    google_grey_900: "#202124",
+
+    google_red_50: "#fce8e6",
+    google_red_100: "#fad2cf",
+    google_red_200: "#f6aea9",
+    google_red_300: "#f28b82",
+    google_red_400: "#ee675c",
+    google_red_500: "#ea4335",
+    google_red_600: "#d93025",
+    google_red_700: "#c5221f",
+    google_red_800: "#b31412",
+    google_red_900: "#a50e0e",
+
+    google_yellow_50: "#fef7e0",
+    google_yellow_100: "#feefc3",
+    google_yellow_200: "#fde293",
+    google_yellow_300: "#fdd663",
+    google_yellow_400: "#fcc934",
+    google_yellow_500: "#fbbc04",
+    google_yellow_600: "#f9ab00",
+    google_yellow_700: "#f29900",
+    google_yellow_800: "#ea8600",
+    google_yellow_900: "#e37400",
+
+    google_orange_50: "#feefe3",
+    google_orange_100: "#fedfc8",
+    google_orange_200: "#fdc69c",
+    google_orange_300: "#fcad70",
+    google_orange_400: "#fa903e",
+    google_orange_500: "#fa7b17",
+    google_orange_600: "#e8710a",
+    google_orange_700: "#d56e0c",
+    google_orange_800: "#c26401",
+    google_orange_900: "#b06000",
+
+    google_pink_50: "#fde7f3",
+    google_pink_100: "#fdcfe8",
+    google_pink_200: "#fba9d6",
+    google_pink_300: "#ff8bcb",
+    google_pink_400: "#ff63b8",
+    google_pink_500: "#f439a0",
+    google_pink_600: "#e52592",
+    google_pink_700: "#d01884",
+    google_pink_800: "#b80672",
+    google_pink_900: "#9c166b",
+
+    google_purple_50: "#f3e8fd",
+    google_purple_100: "#e9d2fd",
+    google_purple_200: "#d7aefb",
+    google_purple_300: "#c58af9",
+    google_purple_400: "#af5cf7",
+    google_purple_500: "#a142f4",
+    google_purple_600: "#9334e6",
+    google_purple_700: "#8430ce",
+    google_purple_800: "#7627bb",
+    google_purple_900: "#681da8",
+
+    google_cyan_50: "#e4f7fb",
+    google_cyan_100: "#cbf0f8",
+    google_cyan_200: "#a1e4f2",
+    google_cyan_300: "#78d9ec",
+    google_cyan_400: "#4ecde6",
+    google_cyan_500: "#24c1e0",
+    google_cyan_600: "#12b5cb",
+    google_cyan_700: "#129eaf",
+    google_cyan_800: "#098591",
+    google_cyan_900: "#007b83",
+  }
+}

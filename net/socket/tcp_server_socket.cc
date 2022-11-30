@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/tcp_server_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -23,7 +24,7 @@ TCPServerSocket::TCPServerSocket(NetLog* net_log, const NetLogSource& source)
                                       source)) {}
 
 TCPServerSocket::TCPServerSocket(std::unique_ptr<TCPSocket> socket)
-    : socket_(std::move(socket)), pending_accept_(false) {}
+    : socket_(std::move(socket)) {}
 
 int TCPServerSocket::AdoptSocket(SocketDescriptor socket) {
   return socket_->AdoptUnconnectedSocket(socket);
@@ -112,8 +113,8 @@ int TCPServerSocket::ConvertAcceptedSocket(
   if (output_accepted_address)
     *output_accepted_address = accepted_address_;
 
-  output_accepted_socket->reset(
-      new TCPClientSocket(std::move(temp_accepted_socket), accepted_address_));
+  *output_accepted_socket = std::make_unique<TCPClientSocket>(
+      std::move(temp_accepted_socket), accepted_address_);
 
   return OK;
 }

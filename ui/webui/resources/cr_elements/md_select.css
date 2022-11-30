@@ -1,0 +1,82 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./cr_shared_vars.css.js
+ * #import=//resources/polymer/v3_0/paper-styles/color.js
+ * #css_wrapper_metadata_end */
+
+.md-select {
+  --md-arrow-width: 10px;
+  --md-select-bg-color: var(--google-grey-100);
+  --md-select-focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+  --md-select-option-bg-color: white;
+  --md-select-side-padding: 8px;
+  --md-select-text-color: var(--cr-primary-text-color);
+
+  -webkit-appearance: none;
+  background: url(chrome://resources/images/arrow_down.svg)
+      calc(100% - var(--md-select-side-padding))
+      center no-repeat;
+  background-color: var(--md-select-bg-color);
+  background-size: var(--md-arrow-width);
+  border: none;
+  border-radius: 4px;
+  color: var(--md-select-text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  max-width: 100%;
+  outline: none;
+  padding-bottom: 6px;
+  /* Ensures 3px space between text and arrow */
+  padding-inline-end: calc(var(--md-select-side-padding) +
+      var(--md-arrow-width) + 3px);
+  padding-inline-start: var(--md-select-side-padding);
+  padding-top: 6px;
+  width: var(--md-select-width, 200px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .md-select {
+    --md-select-bg-color: rgba(0, 0, 0, .3);
+    --md-select-focus-shadow-color:
+        rgba(var(--google-blue-300-rgb), .5);
+    --md-select-option-bg-color: var(--google-grey-900-white-4-percent);
+    background-image: url(chrome://resources/images/dark/arrow_down.svg);
+  }
+}
+
+/* Makes sure anything within the dropdown menu has a background. */
+.md-select :-webkit-any(option, optgroup) {
+  background-color: var(--md-select-option-bg-color);
+}
+
+.md-select[disabled] {
+  opacity: var(--cr-disabled-opacity);
+  pointer-events: none;
+}
+
+.md-select:focus {
+  box-shadow: 0 0 0 2px var(--md-select-focus-shadow-color);
+}
+
+@media (forced-colors: active) {
+  .md-select:focus {
+    /* Use outline instead of box-shadow (which does not work) in Windows
+       HCM. */
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
+/* Should not have an outline if opened by mouse click. */
+.md-select:active {
+  box-shadow: none;
+}
+
+:host-context([dir=rtl]) .md-select {
+  background-position-x: var(--md-select-side-padding);
+}

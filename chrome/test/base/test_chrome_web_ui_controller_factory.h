@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
 
 // A test implementation of ChromeWebUIControllerFactory that provides a
 // registry to override CreateWebUIControllerForURL() by host.
@@ -24,6 +25,10 @@ class TestChromeWebUIControllerFactory : public ChromeWebUIControllerFactory {
     virtual std::unique_ptr<content::WebUIController> NewWebUI(
         content::WebUI* web_ui,
         const GURL& url) = 0;
+
+    // Override this method to customize `source` for the newly created WebUI
+    // controller.
+    virtual void DataSourceOverrides(content::WebUIDataSource* source) {}
 
    protected:
     virtual ~WebUIProvider();

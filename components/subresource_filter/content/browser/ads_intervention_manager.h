@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 
-#include <memory>
-
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -86,10 +86,10 @@ class AdsInterventionManager {
       mojom::AdsViolation ads_violation);
 
   // Returns the last active ads intervention written to metadata,
-  // otherwise base::nullopt is returned. When retrieving ads interventions
+  // otherwise absl::nullopt is returned. When retrieving ads interventions
   // for a navigation, should_record_metrics should be true to record
   // per-navigation ads intervention metrics.
-  base::Optional<LastAdsIntervention> GetLastAdsIntervention(
+  absl::optional<LastAdsIntervention> GetLastAdsIntervention(
       const GURL& url) const;
 
   // Returns whether the subresource filter should activate for
@@ -103,9 +103,9 @@ class AdsInterventionManager {
  private:
   // The SubresourceFilterContentSettingsManager is guaranteed to outlive the
   // AdsInterventionManager. Both are bound to the profile.
-  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
+  raw_ptr<SubresourceFilterContentSettingsManager> settings_manager_ = nullptr;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace subresource_filter

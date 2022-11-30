@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,7 +117,8 @@ TEST_F(WebAppOriginAssociationParserImplTest,
             ASSERT_TRUE(!association);
             ASSERT_FALSE(errors.empty());
             ASSERT_EQ(1u, errors.size());
-            EXPECT_EQ("Line: 1, column: 6, Syntax error.", errors[0]->message);
+            EXPECT_NE(std::string::npos,
+                      errors[0]->message.find("Line: 1, column: 6,"));
 
             histogram_tester_.ExpectBucketCount(
                 kParseResultHistogram,

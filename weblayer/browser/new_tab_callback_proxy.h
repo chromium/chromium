@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "weblayer/public/new_tab_delegate.h"
 
 namespace weblayer {
@@ -20,16 +20,18 @@ class TabImpl;
 class NewTabCallbackProxy : public NewTabDelegate {
  public:
   NewTabCallbackProxy(JNIEnv* env, jobject obj, TabImpl* tab);
+
+  NewTabCallbackProxy(const NewTabCallbackProxy&) = delete;
+  NewTabCallbackProxy& operator=(const NewTabCallbackProxy&) = delete;
+
   ~NewTabCallbackProxy() override;
 
   // NewTabDelegate:
   void OnNewTab(Tab* tab, NewTabType type) override;
 
  private:
-  TabImpl* tab_;
+  raw_ptr<TabImpl> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabCallbackProxy);
 };
 
 }  // namespace weblayer

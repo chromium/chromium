@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,21 +15,21 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/upgrade_detector/installed_version_monitor.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #endif
 
 namespace {
 
 base::FilePath GetDefaultMonitorLocation() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return base::mac::OuterBundlePath();
 #else
   return base::PathService::CheckedGet(base::DIR_EXE);
@@ -55,7 +55,7 @@ void DirectoryMonitor::Start(Callback on_change_callback) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
   watcher_ = std::make_unique<base::FilePathWatcher>();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The normal Watch risks triggering a macOS Catalina+ consent dialog, so use
   // a trivial watch here.
   const base::FilePathWatcher::Type watch_type =

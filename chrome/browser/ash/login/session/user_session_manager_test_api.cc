@@ -1,12 +1,12 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 
-#include "chromeos/login/auth/stub_authenticator_builder.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 UserSessionManagerTestApi::UserSessionManagerTestApi(
@@ -39,5 +39,10 @@ void UserSessionManagerTestApi::SetAttemptRestartClosureInTests(
   session_manager_->SetAttemptRestartClosureInTests(attempt_restart_closure);
 }
 
+OnboardingUserActivityCounter*
+UserSessionManagerTestApi::get_onboarding_user_activity_counter() {
+  return session_manager_->onboarding_user_activity_counter_.get();
+}
+
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

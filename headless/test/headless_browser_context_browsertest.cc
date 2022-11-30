@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/headless_browser.h"
@@ -67,22 +69,22 @@ class HeadlessBrowserContextIsolationTest
   }
 
   void RunDevTooledTest() override {
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client_.get(),
         base::BindOnce(
             &HeadlessBrowserContextIsolationTest::OnFirstLoadComplete,
-            base::Unretained(this))));
+            base::Unretained(this)));
     devtools_client_->GetPage()->Navigate(
         embedded_test_server()->GetURL("/hello.html").spec());
   }
 
   void OnFirstLoadComplete() {
     EXPECT_TRUE(load_observer_->navigation_succeeded());
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client2_.get(),
         base::BindOnce(
             &HeadlessBrowserContextIsolationTest::OnSecondLoadComplete,
-            base::Unretained(this))));
+            base::Unretained(this)));
     devtools_client2_->GetPage()->Navigate(
         embedded_test_server()->GetURL("/hello.html").spec());
   }
@@ -145,8 +147,8 @@ class HeadlessBrowserContextIsolationTest
   }
 
  private:
-  HeadlessBrowserContext* browser_context_;
-  HeadlessWebContents* web_contents2_;
+  raw_ptr<HeadlessBrowserContext> browser_context_;
+  raw_ptr<HeadlessWebContents> web_contents2_;
   std::unique_ptr<HeadlessDevToolsClient> devtools_client2_;
   std::unique_ptr<LoadObserver> load_observer_;
 };
@@ -181,8 +183,7 @@ class HeadlessBrowserUserDataDirTest : public HeadlessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, Do) {
-  // Allow IO from the main thread.
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   EXPECT_TRUE(embedded_test_server()->Start());
 
@@ -207,8 +208,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserUserDataDirTest, Do) {
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, IncognitoMode) {
   // We do not want to bother with posting tasks to create a temp dir.
-  // Just allow IO from main thread for now.
-  base::ThreadRestrictions::SetIOAllowed(true);
+  // Just allow blocking from main thread for now.
+  base::ScopedAllowBlockingForTesting allow_blocking;
 
   EXPECT_TRUE(embedded_test_server()->Start());
 
@@ -235,6 +236,52 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, IncognitoMode) {
   // Similar to test above, but now we are in incognito mode,
   // so nothing should be written to this directory.
   EXPECT_TRUE(base::IsDirectoryEmpty(user_data_dir.GetPath()));
+}
+
+class HeadlessBrowserTestWithUserDataDirAndMaybeIncognito
+    : public HeadlessBrowserTest,
+      public testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+
+    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+  }
+
+ protected:
+  bool incognito() { return GetParam(); }
+
+  const base::FilePath& user_data_dir() const {
+    return user_data_dir_.GetPath();
+  }
+
+ private:
+  base::ScopedTempDir user_data_dir_;
+};
+
+INSTANTIATE_TEST_SUITE_P(HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                         HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                         testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithUserDataDirAndMaybeIncognito,
+                       IncognitoSwitch) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  HeadlessBrowserContext* browser_context = browser()
+                                                ->CreateBrowserContextBuilder()
+                                                .SetUserDataDir(user_data_dir())
+                                                .SetIncognitoMode(incognito())
+                                                .Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
+          .Build();
+
+  EXPECT_TRUE(WaitForLoad(web_contents));
+
+  EXPECT_EQ(incognito(), base::IsDirectoryEmpty(user_data_dir()));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ContextWebPreferences) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,8 @@ TEST_F(BlocklistCheckTest, BlocklistedMalware) {
   BlocklistCheck check(blocklist(), extension_);
   runner_.RunUntilComplete(&check);
 
-  EXPECT_THAT(runner_.errors(),
-              testing::UnorderedElementsAre(PreloadCheck::BLOCKLISTED_ID));
+  EXPECT_THAT(runner_.errors(), testing::UnorderedElementsAre(
+                                    PreloadCheck::Error::kBlocklistedId));
   EXPECT_TRUE(check.GetErrorMessage().empty());
 }
 

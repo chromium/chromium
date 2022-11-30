@@ -1,13 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_DISPLAY_TEST_TEST_SCREEN_H_
 #define UI_DISPLAY_TEST_TEST_SCREEN_H_
 
-#include <vector>
-
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
 
@@ -22,22 +19,29 @@ namespace test {
 // will NOT be notified ever.
 class TestScreen : public ScreenBase {
  public:
-  TestScreen();
+  static constexpr gfx::Rect kDefaultScreenBounds = gfx::Rect(0, 0, 800, 600);
+
+  static TestScreen* Get();
+
+  // TODO(weili): Split this into a protected no-argument constructor for
+  // subclass uses and the public one with gfx::Size argument.
+  explicit TestScreen(bool create_display = true);
+  TestScreen(const TestScreen&) = delete;
+  TestScreen& operator=(const TestScreen&) = delete;
   ~TestScreen() override;
 
   // Sets the fake cursor location for the TestScreen.
   void set_cursor_screen_point(const gfx::Point& point);
 
-  // Screen:
+  // ScreenBase:
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override;
   Display GetDisplayNearestWindow(gfx::NativeWindow window) const override;
+  void SetCursorScreenPointForTesting(const gfx::Point& point) override;
 
  private:
   gfx::Point cursor_screen_point_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreen);
 };
 
 }  // namespace test

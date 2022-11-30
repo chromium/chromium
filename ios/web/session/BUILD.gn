@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,8 @@ source_set("session") {
   sources = [
     "crw_session_certificate_policy_cache_storage.mm",
     "crw_session_storage.mm",
+    "crw_session_user_data.h",
+    "crw_session_user_data.mm",
     "session_certificate_policy_cache_impl.h",
     "session_certificate_policy_cache_impl.mm",
     "session_certificate_policy_cache_storage_builder.h",

@@ -1,0 +1,266 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Holding Space histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="HoldingSpaceItemAction">
+  <variant name="Cancel" summary="The user cancelled the item."/>
+  <variant name="Copy" summary="The user copied the item."/>
+  <variant name="Drag" summary="The user dragged the item."/>
+  <variant name="Launch" summary="The user launched the item."/>
+  <variant name="Pause" summary="The user paused the item."/>
+  <variant name="Pin" summary="The user pinned the item."/>
+  <variant name="Remove" summary="The user removed the item."/>
+  <variant name="Resume" summary="The user resumed the item."/>
+  <variant name="ShowInFolder"
+      summary="The user showed the item in its folder."/>
+  <variant name="Unpin" summary="The user unpinned the item."/>
+</variants>
+
+<variants name="HoldingSpaceItemType">
+  <variant name="All" summary="Includes all item types."/>
+  <variant name="ArcDownload" summary="Items backed by an ARC download file."/>
+  <variant name="DiagnosticsLog"
+      summary="Items backed by a diagnostics log file."/>
+  <variant name="Download"
+      summary="Items backed by a download file originating from Ash Chrome."/>
+  <variant name="DriveSuggestion"
+      summary="Items backed by a suggested Drive file."/>
+  <variant name="LacrosDownload"
+      summary="Items backed by a download file originating from Lacros
+               Chrome."/>
+  <variant name="LocalSuggestion"
+      summary="Items backed by a suggested local file."/>
+  <variant name="NearbyShare" summary="Items backed by a nearby shared file."/>
+  <variant name="PhoneHubCameraRoll"
+      summary="Recent photos and videos taken on connected Android phone."/>
+  <variant name="PinnedFile" summary="Items pinned explicitly by the user."/>
+  <variant name="PrintedPdf" summary="Items backed by a printed PDF file."/>
+  <variant name="Scan" summary="Items backed by a scanned file."/>
+  <variant name="ScreenRecording"
+      summary="Items backed by a screen recording file."/>
+  <variant name="Screenshot" summary="Items backed by a screenshot file."/>
+</variants>
+
+<histogram name="HoldingSpace.Animation.BubbleResize.Smoothness" units="%"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the smoothness of the holding space bubble resize animation. Note
+    that smoothness is expected be be between 0 and 100 (inclusively) with 100
+    representing ideal smoothness of &gt;= 60 frames per second. This histogram
+    is emitted when the resize animation ends.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Animation.PodResize.Smoothness" units="%"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the smoothness of the holding space pod resize animation. Note that
+    smoothness is expected be be between 0 and 100 (inclusively) with 100
+    representing ideal smoothness of &gt;= 60 frames per second. This histogram
+    is emitted when the resize animation ends.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Downloads.Action.All"
+    enum="HoldingSpaceDownloadsAction" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the downloads header in holding space UI at the
+    moment the action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.FilesAppChip.Action.All"
+    enum="HoldingSpaceFilesAppChipAction" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the Files app chip in holding space UI at the
+    moment the action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on an item in holding space UI at the moment the
+    action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.{action}" enum="HoldingSpaceItemType"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the type of item in holding space UI for which an action was taken
+    at the moment the action is performed. {action}
+  </summary>
+  <token key="action" variants="HoldingSpaceItemAction"/>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Action.{action}.Extension"
+    enum="HoldingSpaceExtension" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the extension of an item in holding space UI for which an action was
+    taken at the moment the action is performed. {action}
+  </summary>
+  <token key="action" variants="HoldingSpaceItemAction"/>
+</histogram>
+
+<histogram name="HoldingSpace.Item.Count.{type}" units="items"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the count of all visible items of a specific type in holding space
+    at the moment holding space UI is shown. {type}
+  </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
+<histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records a failure to launch a holding space item of a specific type at the
+    moment of failure.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.FailureToLaunch.Extension"
+    enum="HoldingSpaceExtension" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records a failure to launch a holding space item backed by file of a
+    specific extension at the moment of failure.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.FailureToLaunch.Reason"
+    enum="HoldingSpaceItemFailureToLaunchReason" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the reason for failing to launch a holding space item at the moment
+    of failure.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Item.TotalCount.{type}" units="items"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the total count of all items of a specific type in holding space on
+    startup and as additions/removals take place. Note that this histogram is
+    emitted no more than once every thirty seconds. {type}
+  </summary>
+  <token key="type" variants="HoldingSpaceItemType"/>
+</histogram>
+
+<histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the holding space pod in the shelf at the moment
+    the action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Suggestions.Action.All"
+    enum="HoldingSpaceSuggestionsAction" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records an action taken on the suggestions header in holding space UI at the
+    moment the action is performed.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstAdd" units="ms"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time from when the holding space feature first became available
+    to when the user first added an item to holding space.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.TimeFromFirstAvailabilityToFirstEntry" units="ms"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time from when the holding space feature first became available
+    to when the user first entered holding space.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.TimeFromFirstEntryToFirstPin" units="ms"
+    expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time from when the user first entered holding space to when the
+    user first pinned a file. Note that this may be zero if the user pinned
+    their first file prior to having entered holding space.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.UserPreferences.PreviewsEnabled"
+    enum="BooleanEnabled" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether the user has previews enabled. Note that this histogram is
+    emitted once per user session at start up.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.UserPreferences.SuggestionsExpanded"
+    enum="BooleanExpanded" expires_after="2023-04-01">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether the user has suggestions expanded. Note that this histogram
+    is emitted once per user session at start up.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,10 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TEST_FAKE_LAYER_TREE_HOST_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_HOST_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/test/stub_layer_tree_host_client.h"
 
 namespace cc {
@@ -26,7 +27,7 @@ class FakeLayerTreeHostClient : public StubLayerTreeHostClient {
 
  private:
   bool software_comp_ = true;
-  LayerTreeHost* host_ = nullptr;
+  raw_ptr<LayerTreeHost> host_ = nullptr;
 };
 
 }  // namespace cc

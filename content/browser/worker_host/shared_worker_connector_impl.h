@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,12 @@ class CONTENT_EXPORT SharedWorkerConnectorImpl
     : public blink::mojom::SharedWorkerConnector {
  public:
   static void Create(
-      GlobalFrameRoutingId client_render_frame_host_id,
+      GlobalRenderFrameHostId client_render_frame_host_id,
       mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver);
 
  private:
   explicit SharedWorkerConnectorImpl(
-      GlobalFrameRoutingId client_render_frame_host_id);
+      GlobalRenderFrameHostId client_render_frame_host_id);
 
   // blink::mojom::SharedWorkerConnector methods:
   void Connect(
@@ -37,7 +37,7 @@ class CONTENT_EXPORT SharedWorkerConnectorImpl
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       ukm::SourceId client_ukm_source_id) override;
 
-  const GlobalFrameRoutingId client_render_frame_host_id_;
+  const GlobalRenderFrameHostId client_render_frame_host_id_;
 };
 
 }  // namespace content

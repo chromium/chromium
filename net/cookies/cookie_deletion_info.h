@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <set>
 #include <string>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key_collection.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -110,14 +111,14 @@ struct NET_EXPORT CookieDeletionInfo {
   SessionControl session_control = SessionControl::IGNORE_CONTROL;
 
   // If has a value then cookie.Host() must equal |host|.
-  base::Optional<std::string> host;
+  absl::optional<std::string> host;
 
   // If has a value then cookie.Name() must equal |name|.
-  base::Optional<std::string> name;
+  absl::optional<std::string> name;
 
   // If has a value then will match if the cookie being evaluated would be
   // included for a request of |url|.
-  base::Optional<GURL> url;
+  absl::optional<GURL> url;
 
   // If this is not empty then any cookie with a domain/ip contained in this
   // will be deleted (assuming other fields match).
@@ -138,7 +139,13 @@ struct NET_EXPORT CookieDeletionInfo {
   std::set<std::string> domains_and_ips_to_ignore;
 
   // Used only for testing purposes.
-  base::Optional<std::string> value_for_testing;
+  absl::optional<std::string> value_for_testing;
+
+  // Cookie partition collection. Partitioned cookies are not deleted if their
+  // partition key is not in the collection. By default, it clears cookies in
+  // all partitions.
+  CookiePartitionKeyCollection cookie_partition_key_collection =
+      CookiePartitionKeyCollection::ContainsAll();
 };
 
 }  // namespace net

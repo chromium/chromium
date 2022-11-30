@@ -1,56 +1,52 @@
-/*
- * Copyright (C) 2011 Google Inc. All rights reserved.
- * Copyright (C) 2011 Ericsson AB. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1.  Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- * 2.  Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_H_
 
 #include <memory>
+
+#include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+static const char kContentHintStringNone[] = "";
+static const char kContentHintStringAudioSpeech[] = "speech";
+static const char kContentHintStringAudioMusic[] = "music";
+static const char kContentHintStringVideoMotion[] = "motion";
+static const char kContentHintStringVideoDetail[] = "detail";
+static const char kContentHintStringVideoText[] = "text";
+
 class AudioSourceProvider;
 class ImageCapture;
+class MediaConstraints;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
-class ScriptPromiseResolver;
 class ScriptState;
+
+String ContentHintToString(
+    const WebMediaStreamTrack::ContentHintType& content_hint);
+
+String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state);
 
 class MODULES_EXPORT MediaStreamTrack
     : public EventTargetWithInlineData,
-      public ActiveScriptWrappable<MediaStreamTrack>,
-      public MediaStreamSource::Observer {
+      public ActiveScriptWrappable<MediaStreamTrack> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -60,96 +56,113 @@ class MODULES_EXPORT MediaStreamTrack
     virtual void TrackChangedState() = 0;
   };
 
-  MediaStreamTrack(ExecutionContext*, MediaStreamComponent*);
-  MediaStreamTrack(ExecutionContext*,
-                   MediaStreamComponent*,
-                   base::OnceClosure callback);
-  MediaStreamTrack(ExecutionContext*,
-                   MediaStreamComponent*,
-                   MediaStreamSource::ReadyState,
-                   base::OnceClosure callback);
-  ~MediaStreamTrack() override;
+  // For carrying data to the FromTransferredState method.
+  struct TransferredValues {
+    const WrapperTypeInfo* track_impl_subtype;
+    base::UnguessableToken session_id;
+    base::UnguessableToken transfer_id;
+    String kind;
+    String id;
+    String label;
+    bool enabled;
+    bool muted;
+    WebMediaStreamTrack::ContentHintType content_hint;
+    MediaStreamSource::ReadyState ready_state;
+    // Set only if
+    // track_impl_subtype->IsSubclass(BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo())
+    absl::optional<uint32_t> crop_version;
+  };
+
+  // See SetFromTransferredStateImplForTesting in ./test/transfer_test_utils.h.
+  using FromTransferredStateImplForTesting =
+      base::RepeatingCallback<MediaStreamTrack*(const TransferredValues&)>;
+
+  // Create a MediaStreamTrack instance as a result of a transfer into this
+  // context, eg when receiving a postMessage() with an MST in the transfer
+  // list.
+  // TODO(https://crbug.com/1288839): Implement to recreate MST after transfer
+  static MediaStreamTrack* FromTransferredState(ScriptState* script_state,
+                                                const TransferredValues& data);
 
   // MediaStreamTrack.idl
-  String kind() const;
-  String id() const;
-  String label() const;
-  bool enabled() const;
-  void setEnabled(bool);
-  bool muted() const;
-  String ContentHint() const;
-  void SetContentHint(const String&);
-  String readyState() const;
-  virtual MediaStreamTrack* clone(ScriptState*);
-  void stopTrack(ExecutionContext*);
-  MediaTrackCapabilities* getCapabilities() const;
-  MediaTrackConstraints* getConstraints() const;
-  MediaTrackSettings* getSettings() const;
-  ScriptPromise applyConstraints(ScriptState*, const MediaTrackConstraints*);
+  virtual String kind() const = 0;
+  virtual String id() const = 0;
+  virtual String label() const = 0;
+  virtual bool enabled() const = 0;
+  virtual void setEnabled(bool) = 0;
+  virtual bool muted() const = 0;
+  virtual String ContentHint() const = 0;
+  virtual String readyState() const = 0;
+  virtual void SetContentHint(const String&) = 0;
+  virtual void stopTrack(ExecutionContext*) = 0;
+  virtual MediaStreamTrack* clone(ExecutionContext*) = 0;
+  virtual MediaTrackCapabilities* getCapabilities() const = 0;
+  virtual MediaTrackConstraints* getConstraints() const = 0;
+  virtual MediaTrackSettings* getSettings() const = 0;
+  virtual CaptureHandle* getCaptureHandle() const = 0;
+  virtual ScriptPromise applyConstraints(ScriptState*,
+                                         const MediaTrackConstraints*) = 0;
 
-  // This function is called when constrains have been successfully applied.
-  // Called from UserMediaRequest when it succeeds. It is not IDL-exposed.
-  void SetConstraints(const MediaConstraints&);
+  virtual void applyConstraints(ScriptPromiseResolver*,
+                                const MediaTrackConstraints*) = 0;
+  virtual void SetConstraints(const MediaConstraints&) = 0;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(capturehandlechange, kCapturehandlechange)
 
-  // Returns the enum value of the ready state.
-  MediaStreamSource::ReadyState GetReadyState() { return ready_state_; }
+  virtual MediaStreamSource::ReadyState GetReadyState() = 0;
 
-  MediaStreamComponent* Component() const { return component_; }
-  bool Ended() const;
+  virtual MediaStreamComponent* Component() const = 0;
+  virtual bool Ended() const = 0;
 
-  void RegisterMediaStream(MediaStream*);
-  void UnregisterMediaStream(MediaStream*);
+  virtual void RegisterMediaStream(MediaStream*) = 0;
+  virtual void UnregisterMediaStream(MediaStream*) = 0;
 
   // EventTarget
-  const AtomicString& InterfaceName() const override;
-  ExecutionContext* GetExecutionContext() const override;
+  const AtomicString& InterfaceName() const override = 0;
+  ExecutionContext* GetExecutionContext() const override = 0;
+  void AddedEventListener(const AtomicString&,
+                          RegisteredEventListener&) override = 0;
 
   // ScriptWrappable
-  bool HasPendingActivity() const final;
+  bool HasPendingActivity() const override = 0;
 
-  std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
-      int context_sample_rate);
+  virtual std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
+      int context_sample_rate) = 0;
 
-  ImageCapture* GetImageCapture() { return image_capture_; }
+  virtual ImageCapture* GetImageCapture() = 0;
+  virtual absl::optional<const MediaStreamDevice> device() const = 0;
+  // This function is called on the track by the serializer once it has been
+  // serialized for transfer to another context.
+  // Prepares the track for a potentially cross-renderer transfer. After this
+  // is called, the track will be in an ended state and no longer usable.
+  virtual void BeingTransferred(const base::UnguessableToken& transfer_id) = 0;
 
-  void AddObserver(Observer*);
+#if !BUILDFLAG(IS_ANDROID)
+  // Only relevant for focusable streams (FocusableMediaStreamTrack).
+  // When called on one of these, it signals that Conditional Focus
+  // no longer applies - the browser will now decide whether
+  // the captured display surface should be captured. Later calls to
+  // FocusableMediaStreamTrack.focus() will now raise an exception.
+  virtual void CloseFocusWindowOfOpportunity() = 0;
+#endif
 
-  void Trace(Visitor*) const override;
+  virtual void AddObserver(Observer*) = 0;
+
+  void Trace(Visitor* visitor) const override {
+    EventTargetWithInlineData::Trace(visitor);
+  }
 
  private:
-  friend class CanvasCaptureMediaStreamTrack;
-
-  // MediaStreamSourceObserver
-  void SourceChangedState() override;
-
-  void PropagateTrackEnded();
-  void applyConstraintsImageCapture(ScriptPromiseResolver*,
-                                    const MediaTrackConstraints*);
-
-  std::string GetTrackLogString() const;
-
-  // Ensures that |feature_handle_for_scheduler_| is initialized.
-  void EnsureFeatureHandleForScheduler();
-
-  void setReadyState(MediaStreamSource::ReadyState ready_state);
-
-  // This handle notifies the scheduler about a live media stream track
-  // associated with a frame. The handle should be destroyed when the track
-  // is stopped.
-  FrameScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
-
-  MediaStreamSource::ReadyState ready_state_;
-  HeapHashSet<Member<MediaStream>> registered_media_streams_;
-  bool is_iterating_registered_media_streams_ = false;
-  Member<MediaStreamComponent> component_;
-  Member<ImageCapture> image_capture_;
-  WeakMember<ExecutionContext> execution_context_;
-  HeapHashSet<WeakMember<Observer>> observers_;
+  // Friend in order to allow setting a new impl for FromTransferredState.
+  friend void SetFromTransferredStateImplForTesting(
+      FromTransferredStateImplForTesting impl);
+  // Provides access to the global mock impl of FromTransferredState. Set to
+  // base::NullCallback() to restore the real impl.
+  static FromTransferredStateImplForTesting&
+  GetFromTransferredStateImplForTesting();
 };
 
 typedef HeapVector<Member<MediaStreamTrack>> MediaStreamTrackVector;

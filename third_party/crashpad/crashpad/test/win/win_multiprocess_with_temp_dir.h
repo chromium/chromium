@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "test/scoped_temp_dir.h"
 #include "test/win/win_multiprocess.h"
 
@@ -40,6 +39,10 @@ class WinMultiprocessWithTempDir : public WinMultiprocess {
  public:
   WinMultiprocessWithTempDir();
 
+  WinMultiprocessWithTempDir(const WinMultiprocessWithTempDir&) = delete;
+  WinMultiprocessWithTempDir& operator=(const WinMultiprocessWithTempDir&) =
+      delete;
+
  protected:
   void WinMultiprocessParentBeforeChild() override;
   void WinMultiprocessParentAfterChild(HANDLE child) override;
@@ -51,6 +54,11 @@ class WinMultiprocessWithTempDir : public WinMultiprocess {
   class ScopedEnvironmentVariable {
    public:
     explicit ScopedEnvironmentVariable(const wchar_t* name);
+
+    ScopedEnvironmentVariable(const ScopedEnvironmentVariable&) = delete;
+    ScopedEnvironmentVariable& operator=(const ScopedEnvironmentVariable&) =
+        delete;
+
     ~ScopedEnvironmentVariable();
 
     std::wstring GetValue() const;
@@ -65,14 +73,10 @@ class WinMultiprocessWithTempDir : public WinMultiprocess {
     std::wstring original_value_;
     const wchar_t* name_;
     bool was_defined_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedEnvironmentVariable);
   };
 
   std::unique_ptr<ScopedTempDir> temp_dir_;
   ScopedEnvironmentVariable temp_dir_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(WinMultiprocessWithTempDir);
 };
 
 }  // namespace test

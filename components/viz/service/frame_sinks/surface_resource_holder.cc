@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,10 +43,10 @@ void SurfaceResourceHolder::RefResources(
 }
 
 void SurfaceResourceHolder::UnrefResources(
-    const std::vector<ReturnedResource>& resources) {
+    std::vector<ReturnedResource> resources) {
   std::vector<ReturnedResource> resources_available_to_return;
 
-  for (const auto& resource : resources) {
+  for (auto& resource : resources) {
     // We don't handle reserved resources here.
     if (resource.id >= kVizReservedRangeStartId)
       continue;
@@ -61,15 +61,14 @@ void SurfaceResourceHolder::UnrefResources(
     if (resource.sync_token.HasData())
       ref.sync_token = resource.sync_token;
     if (ref.refs_holding_resource_alive == 0) {
-      ReturnedResource returned = resource;
-      returned.sync_token = ref.sync_token;
-      returned.count = ref.refs_received_from_child;
-      resources_available_to_return.push_back(returned);
+      resource.sync_token = ref.sync_token;
+      resource.count = ref.refs_received_from_child;
+      resources_available_to_return.push_back(std::move(resource));
       resource_id_info_map_.erase(count_it);
     }
   }
 
-  client_->ReturnResources(resources_available_to_return);
+  client_->ReturnResources(std::move(resources_available_to_return));
 }
 
 }  // namespace viz

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,6 @@ namespace blink {
 // static
 std::unique_ptr<InterpolableAspectRatio> InterpolableAspectRatio::MaybeCreate(
     const StyleAspectRatio& aspect_ratio) {
-  if (!RuntimeEnabledFeatures::CSSAspectRatioInterpolationEnabled())
-    return nullptr;
-
   // Auto aspect ratio cannot be interpolated to / from.
   if (aspect_ratio.IsAuto())
     return nullptr;
@@ -23,17 +20,17 @@ std::unique_ptr<InterpolableAspectRatio> InterpolableAspectRatio::MaybeCreate(
 }
 
 InterpolableAspectRatio::InterpolableAspectRatio(
-    const FloatSize& aspect_ratio) {
+    const gfx::SizeF& aspect_ratio) {
   // The StyleAspectRatio::IsAuto check in MaybeCreate should return true if we
   // have a degenerate aspect ratio.
-  DCHECK(aspect_ratio.Height() > 0 && aspect_ratio.Width() > 0);
+  DCHECK(aspect_ratio.height() > 0 && aspect_ratio.width() > 0);
 
   value_ = std::make_unique<InterpolableNumber>(
-      log(aspect_ratio.Width() / aspect_ratio.Height()));
+      log(aspect_ratio.width() / aspect_ratio.height()));
 }
 
-FloatSize InterpolableAspectRatio::GetRatio() const {
-  return FloatSize(exp(To<InterpolableNumber>(*value_).Value()), 1);
+gfx::SizeF InterpolableAspectRatio::GetRatio() const {
+  return gfx::SizeF(exp(To<InterpolableNumber>(*value_).Value()), 1);
 }
 
 void InterpolableAspectRatio::Scale(double scale) {

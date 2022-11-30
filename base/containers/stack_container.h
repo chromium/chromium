@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 #define BASE_CONTAINERS_STACK_CONTAINER_H_
 
 #include <stddef.h>
-
+#include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -31,11 +33,12 @@ namespace base {
 // be sure to reserve() in the container up to the stack buffer size. Otherwise
 // the container will allocate a small array which will "use up" the stack
 // buffer.
-template<typename T, size_t stack_capacity>
-class StackAllocator : public std::allocator<T> {
+template <typename T, size_t stack_capacity, typename FallbackAllocator>
+class StackAllocator : public FallbackAllocator {
  public:
-  typedef typename std::allocator<T>::pointer pointer;
-  typedef typename std::allocator<T>::size_type size_type;
+  using pointer = typename std::allocator_traits<FallbackAllocator>::pointer;
+  using size_type =
+      typename std::allocator_traits<FallbackAllocator>::size_type;
 
   // Backing store for the allocator. The container owner is responsible for
   // maintaining this for as long as any containers using this allocator are
@@ -45,7 +48,9 @@ class StackAllocator : public std::allocator<T> {
     }
 
     // Casts the buffer in its right type.
+    NO_SANITIZE("cfi-unrelated-cast")
     T* stack_buffer() { return reinterpret_cast<T*>(stack_buffer_); }
+    NO_SANITIZE("cfi-unrelated-cast")
     const T* stack_buffer() const {
       return reinterpret_cast<const T*>(&stack_buffer_);
     }
@@ -66,13 +71,13 @@ class StackAllocator : public std::allocator<T> {
   // Used by containers when they want to refer to an allocator of type U.
   template<typename U>
   struct rebind {
-    typedef StackAllocator<U, stack_capacity> other;
+    typedef StackAllocator<U, stack_capacity, FallbackAllocator> other;
   };
 
   // For the straight up copy c-tor, we can share storage.
-  StackAllocator(const StackAllocator<T, stack_capacity>& rhs)
-      : std::allocator<T>(), source_(rhs.source_) {
-  }
+  StackAllocator(
+      const StackAllocator<T, stack_capacity, FallbackAllocator>& rhs)
+      : source_(rhs.source_) {}
 
   // ISO C++ requires the following constructor to be defined,
   // and std::vector in VC++2008SP1 Release fails with an error
@@ -83,8 +88,8 @@ class StackAllocator : public std::allocator<T> {
   // for Us.
   // TODO: If we were fancy pants, perhaps we could share storage
   // iff sizeof(T) == sizeof(U).
-  template <typename U, size_t other_capacity>
-  StackAllocator(const StackAllocator<U, other_capacity>& other)
+  template <typename U, size_t other_capacity, typename FA>
+  StackAllocator(const StackAllocator<U, other_capacity, FA>& other)
       : source_(nullptr) {}
 
   // This constructor must exist. It creates a default allocator that doesn't
@@ -104,7 +109,7 @@ class StackAllocator : public std::allocator<T> {
       source_->used_stack_buffer_ = true;
       return source_->stack_buffer();
     } else {
-      return std::allocator<T>::allocate(n);
+      return std::allocator_traits<FallbackAllocator>::allocate(*this, n);
     }
   }
 
@@ -114,11 +119,12 @@ class StackAllocator : public std::allocator<T> {
     if (source_ && p == source_->stack_buffer())
       source_->used_stack_buffer_ = false;
     else
-      std::allocator<T>::deallocate(p, n);
+      std::allocator_traits<FallbackAllocator>::deallocate(*this, p, n);
   }
 
  private:
-  Source* source_;
+  // `source_` is not a raw_ptr<T> for performance reasons: on-stack pointee.
+  RAW_PTR_EXCLUSION Source* source_;
 };
 
 // A wrapper around STL containers that maintains a stack-sized buffer that the
@@ -133,12 +139,12 @@ class StackAllocator : public std::allocator<T> {
 // WATCH OUT: the ContainerType MUST use the proper StackAllocator for this
 // type. This object is really intended to be used only internally. You'll want
 // to use the wrappers below for different types.
-template<typename TContainerType, int stack_capacity>
+template <typename TContainerType, int stack_capacity>
 class StackContainer {
  public:
-  typedef TContainerType ContainerType;
-  typedef typename ContainerType::value_type ContainedType;
-  typedef StackAllocator<ContainedType, stack_capacity> Allocator;
+  using ContainerType = TContainerType;
+  using ContainedType = typename ContainerType::value_type;
+  using Allocator = typename ContainerType::allocator_type;
 
   // Allocator must be constructed before the container!
   StackContainer() : allocator_(&stack_data_), container_(allocator_) {
@@ -174,7 +180,7 @@ class StackContainer {
 
  protected:
   typename Allocator::Source stack_data_;
-  Allocator allocator_;
+  NO_UNIQUE_ADDRESS Allocator allocator_;
   ContainerType container_;
 };
 
@@ -210,29 +216,34 @@ auto end(const StackContainer<TContainerType, stack_capacity>& stack_container)
 //   StackVector<int, 16> foo;
 //   foo->push_back(22);  // we have overloaded operator->
 //   foo[0] = 10;         // as well as operator[]
-template<typename T, size_t stack_capacity>
-class StackVector : public StackContainer<
-    std::vector<T, StackAllocator<T, stack_capacity> >,
-    stack_capacity> {
+template <typename T,
+          size_t stack_capacity,
+          typename FallbackAllocator = std::allocator<T>>
+class StackVector
+    : public StackContainer<
+          std::vector<T, StackAllocator<T, stack_capacity, FallbackAllocator>>,
+          stack_capacity> {
  public:
-  StackVector() : StackContainer<
-      std::vector<T, StackAllocator<T, stack_capacity> >,
-      stack_capacity>() {
-  }
+  StackVector()
+      : StackContainer<
+            std::vector<T,
+                        StackAllocator<T, stack_capacity, FallbackAllocator>>,
+            stack_capacity>() {}
 
   // We need to put this in STL containers sometimes, which requires a copy
   // constructor. We can't call the regular copy constructor because that will
   // take the stack buffer from the original. Here, we create an empty object
   // and make a stack buffer of its own.
-  StackVector(const StackVector<T, stack_capacity>& other)
+  StackVector(const StackVector<T, stack_capacity, FallbackAllocator>& other)
       : StackContainer<
-            std::vector<T, StackAllocator<T, stack_capacity> >,
+            std::vector<T,
+                        StackAllocator<T, stack_capacity, FallbackAllocator>>,
             stack_capacity>() {
     this->container().assign(other->begin(), other->end());
   }
 
-  StackVector<T, stack_capacity>& operator=(
-      const StackVector<T, stack_capacity>& other) {
+  StackVector<T, stack_capacity, FallbackAllocator>& operator=(
+      const StackVector<T, stack_capacity, FallbackAllocator>& other) {
     this->container().assign(other->begin(), other->end());
     return *this;
   }

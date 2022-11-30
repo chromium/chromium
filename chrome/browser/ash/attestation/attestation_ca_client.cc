@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,12 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -71,7 +73,7 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
   // network::mojom::ProxyLookupClient:
   void OnProxyLookupComplete(
       int32_t net_error,
-      const base::Optional<net::ProxyInfo>& proxy_info) override {
+      const absl::optional<net::ProxyInfo>& proxy_info) override {
     LOG_IF(WARNING, !proxy_info.has_value())
         << " Error determining the proxy information: " << net_error;
     // Assume there is a proxy if failing to get proxy information.
@@ -89,13 +91,13 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
     CHECK(network_context);
   }
   void Start(network::mojom::NetworkContext* network_context, const GURL& url) {
-    const net::NetworkIsolationKey network_isolation_key =
-        net::NetworkIsolationKey::CreateTransient();
+    const net::NetworkAnonymizationKey network_isolation_key =
+        net::NetworkAnonymizationKey::CreateTransient();
     mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
         receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(
         &CAProxyLookupClient::OnProxyLookupComplete, base::Unretained(this),
-        net::ERR_ABORTED, base::nullopt));
+        net::ERR_ABORTED, absl::nullopt));
 
     network_context->LookUpProxyForURL(url, network_isolation_key,
                                        std::move(proxy_lookup_client));
@@ -253,8 +255,8 @@ void AttestationCAClient::CheckIfAnyProxyPresent(
         g_browser_process->system_network_context_manager()->GetContext();
   }
 
-  CAProxyLookupClient::LookUpProxyForURL(network_context, url.GetOrigin(),
-                                         std::move(callback));
+  CAProxyLookupClient::LookUpProxyForURL(
+      network_context, url.DeprecatedGetOriginAsURL(), std::move(callback));
 }
 
 }  // namespace attestation

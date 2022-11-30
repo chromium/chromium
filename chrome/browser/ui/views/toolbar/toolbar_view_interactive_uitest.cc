@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -70,7 +69,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
   bool found_reload = false;
   bool found_location_bar = false;
   bool found_app_menu = false;
-  const views::View* view = NULL;
+  const views::View* view = nullptr;
   while (view != first_view) {
     focus_manager->AdvanceFocus(false);
     view = focus_manager->GetFocusedView();
@@ -92,7 +91,7 @@ void ToolbarViewTest::RunToolbarCycleFocusTest(Browser* browser) {
 
   // Now press Shift-Tab to cycle backwards.
   std::vector<int> reverse_ids;
-  view = NULL;
+  view = nullptr;
   while (view != first_view) {
     focus_manager->AdvanceFocus(true);
     view = focus_manager->GetFocusedView();
@@ -138,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonUpdate) {
   // Navigate to title1.html. Back button should be enabled.
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(toolbar_button_provider->GetBackButton()->GetEnabled());
 
   // Delete old navigations. Back button will be disabled.
@@ -159,24 +158,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
   EXPECT_NE(nullptr, extensions_container);
 }
 
-class GuestToolbarViewTest : public ToolbarViewTest,
-                             public ::testing::WithParamInterface<bool> {
- public:
-  GuestToolbarViewTest() : is_ephemeral_(GetParam()) {
-    // Update for platforms which don't support ephemeral Guest profiles.
-    if (!TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_)) {
-      is_ephemeral_ = false;
-    }
-  }
-
- protected:
-  bool is_ephemeral_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // TODO(crbug.com/991596): Setup test profiles properly for CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ExtensionsToolbarContainerForGuest \
@@ -185,10 +166,10 @@ class GuestToolbarViewTest : public ToolbarViewTest,
 #define MAYBE_ExtensionsToolbarContainerForGuest \
   ExtensionsToolbarContainerForGuest
 #endif
-IN_PROC_BROWSER_TEST_P(GuestToolbarViewTest,
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
                        MAYBE_ExtensionsToolbarContainerForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
+  profiles::SwitchToGuestProfile();
   ui_test_utils::WaitForBrowserToOpen();
   Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
       ProfileManager::GetGuestProfilePath());
@@ -199,13 +180,5 @@ IN_PROC_BROWSER_TEST_P(GuestToolbarViewTest,
       BrowserView::GetBrowserViewForBrowser(target_browser)
           ->toolbar()
           ->extensions_container();
-  // Ephemeral Guest profiles support extensions and OTR Guest profiles don't.
-  if (is_ephemeral_)
-    EXPECT_NE(nullptr, extensions_container);
-  else
-    EXPECT_EQ(nullptr, extensions_container);
+  EXPECT_EQ(nullptr, extensions_container);
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
-                         GuestToolbarViewTest,
-                         /*is_ephemeral=*/testing::Bool());

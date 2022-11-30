@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -71,7 +70,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
       const WebString& new_method,
       const WebURLResponse& passed_redirect_response,
       bool& report_raw_headers,
-      std::vector<std::string>* removed_headers) {
+      std::vector<std::string>* removed_headers,
+      bool insecure_scheme_was_upgraded) {
     return true;
   }
 
@@ -110,11 +110,13 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   // will be generated in devtools console if this flag is set to true.
   // TODO(crbug.com/798625): use different callback for subresources
   // with responses blocked due to document protection.
-  virtual void DidFinishLoading(base::TimeTicks finish_time,
-                                int64_t total_encoded_data_length,
-                                int64_t total_encoded_body_length,
-                                int64_t total_decoded_body_length,
-                                bool should_report_corb_blocking) {}
+  virtual void DidFinishLoading(
+      base::TimeTicks finish_time,
+      int64_t total_encoded_data_length,
+      int64_t total_encoded_body_length,
+      int64_t total_decoded_body_length,
+      bool should_report_corb_blocking,
+      absl::optional<bool> pervasive_payload_requested = absl::nullopt) {}
 
   // Called when the load completes with an error.
   // |finish_time| indicating the time in which the response failed.
@@ -135,4 +137,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_CLIENT_H_

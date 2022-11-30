@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,8 @@ CC_BASE_EXPORT extern const char kCompositedLayerBorders[];
 CC_BASE_EXPORT extern const char kUIEnableLayerLists[];
 
 CC_BASE_EXPORT extern const char kEnableClippedImageScaling[];
+
+CC_BASE_EXPORT extern const char kAnimatedImageResume[];
 
 // Test related.
 CC_BASE_EXPORT extern const char kCCLayerTreeTestNoTimeout[];

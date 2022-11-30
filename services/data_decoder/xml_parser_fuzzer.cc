@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@
 namespace {
 
 void OnParseXml(base::OnceClosure quit_loop,
-                base::Optional<base::Value> value,
-                const base::Optional<std::string>& error) {
+                absl::optional<base::Value> value,
+                const absl::optional<std::string>& error) {
   std::move(quit_loop).Run();
 }
 
@@ -38,6 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::SingleThreadTaskExecutor main_thread_task_executor;
   base::RunLoop run_loop;
   xml_parser.Parse(std::string(data_ptr, size),
+                   data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
                    base::BindOnce(&OnParseXml, run_loop.QuitClosure()));
   run_loop.Run();
 

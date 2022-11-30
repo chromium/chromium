@@ -1,0 +1,60 @@
+<script src=../priorities/resources/common.js></script>
+<script src=../resources/testharness.js></script>
+<script src=../resources/testharnessreport.js></script>
+
+<script>
+  const resource_url = new URL('../resources/dummy.txt', location);
+
+  const tests = [
+    // fetch("url", request_init) tests
+    {description: 'fetch() with URL and request_init whose priority is "high" must have no effect on resource load priority', request_info: `${resource_url}?1`, request_init: {priority: 'high'}, expected_priority: kHigh},
+    {description: 'fetch() with URL and request_init whose priority is "auto" must have no effect on resource load priority', request_info: `${resource_url}?2`, request_init: {priority: 'auto'}, expected_priority: kHigh},
+    {description: 'fetch() with URL and request_init whose priority is missing must have no effect on resource load priority', request_info: `${resource_url}?3`, request_init: {}, expected_priority: kHigh},
+    {description: 'fetch() with URL and request_init whose priority is "low" must be fetched with kLow resource load priority', request_info: `${resource_url}?4`, request_init: {priority: 'low'}, expected_priority: kLow},
+    // fetch(Request, request_init) tests
+    {
+      description: 'fetch() with Request whose priority is "low" and request_init whose priority is "high" must have no effect on resource load priority',
+      request_info: new Request(`${resource_url}?5`, {priority: 'low'}),
+      request_init: {priority: 'high'},
+      expected_priority: kHigh
+    },
+    {
+      description: 'fetch() with Request whose priority is "high" and request_init whose priority is "low" must be fetched with kLow resource load priority',
+      request_info: new Request(`${resource_url}?6`, {priority: 'high'}),
+      request_init: {priority: 'low'},
+      expected_priority: kLow
+    },
+    // fetch(Request) tests
+    {
+      description: 'fetch() with Request whose priority is "high" and no request_init must have no effect on resource load priority',
+      request_info: new Request(`${resource_url}?7`, {priority: 'high'}),
+      expected_priority: kHigh
+    },
+    {
+      description: 'fetch() with Request whose priority is "auto" and no request_init must have no effect on resource load priority',
+      request_info: new Request(`${resource_url}?8`, {priority: 'auto'}),
+      expected_priority: kHigh
+    },
+    {
+      description: 'fetch() with Request whose priority is missing and no request_init must have no effect on resource load priority',
+      request_info: new Request(`${resource_url}?9`),
+      expected_priority: kHigh
+    },
+    {
+      description: 'fetch() with Request whose priority is "low" and no request_init must be fetched with kLow resource load priority',
+      request_info: new Request(`${resource_url}?10`, {priority: 'low'}),
+      expected_priority: kLow
+    }
+  ];
+
+  for (const test of tests) {
+    promise_test(async () => {
+      const url = test.request_info instanceof Request ?
+                    test.request_info.url : test.request_info;
+      const priorityPromise = internals.getInitialResourcePriority(url, document);
+      const response = await fetch(test.request_info, test.request_init);
+      const load_priority = await priorityPromise;
+      assert_equals(load_priority, test.expected_priority);
+    }, test.description);
+  }
+</script>

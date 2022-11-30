@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,16 @@ namespace vr {
 class VR_UI_EXPORT Oval : public Rect {
  public:
   Oval();
+
+  Oval(const Oval&) = delete;
+  Oval& operator=(const Oval&) = delete;
+
   ~Oval() override;
 
  private:
   void OnSizeAnimated(const gfx::SizeF& size,
                       int target_property_id,
                       gfx::KeyframeModel* keyframe_model) override;
-
-  DISALLOW_COPY_AND_ASSIGN(Oval);
 };
 
 }  // namespace vr

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
 
@@ -177,13 +178,12 @@ class CORE_EXPORT InspectorAgentState {
       // TODO(johannes): It'd be nice to avoid copying; unfortunately
       // it didn't seem easy to return map_.Keys().
       Vector<WTF::String> keys;
-      for (const WTF::String& s : map_.Keys())
-        keys.push_back(s);
+      WTF::CopyKeysToVector(map_, keys);
       return keys;
     }
 
     // O(1) shortcut for Keys().empty().
-    bool IsEmpty() const { return map_.IsEmpty(); }
+    bool IsEmpty() const { return map_.empty(); }
 
     // Returns the value for a given |key|, or the default value if
     // the key wasn't set.
@@ -284,4 +284,4 @@ class CORE_EXPORT InspectorAgentState {
 };
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_SESSION_STATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_SESSION_STATE_H_

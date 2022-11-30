@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CLEAN_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOGS_DIALOG_BLOCKING_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_
-#define IOS_CLEAN_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOGS_DIALOG_BLOCKING_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_
+#define IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -20,6 +20,10 @@ class JavaScriptDialogBlockingState
     : public web::WebStateUserData<JavaScriptDialogBlockingState>,
       public web::WebStateObserver {
  public:
+  JavaScriptDialogBlockingState(const JavaScriptDialogBlockingState&) = delete;
+  JavaScriptDialogBlockingState& operator=(
+      const JavaScriptDialogBlockingState&) = delete;
+
   ~JavaScriptDialogBlockingState() override;
 
   // Whether to show the blocking option for the next JavaScript dialog from its
@@ -57,8 +61,6 @@ class JavaScriptDialogBlockingState
   web::NavigationItem* blocked_item_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogBlockingState);
 };
 
-#endif  // IOS_CLEAN_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOGS_DIALOG_BLOCKING_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_DIALOGS_JAVA_SCRIPT_DIALOG_BLOCKING_STATE_H_

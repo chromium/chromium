@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -42,6 +41,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
 
+  MOCK_METHOD(bool, IsAutoSignInEnabled, (), (const, override));
   MOCK_METHOD(void,
               PromptUserToMovePasswordToAccount,
               (std::unique_ptr<PasswordFormManagerForUI>),
@@ -80,16 +80,13 @@ class PasswordManagerClientHelperTest : public testing::Test {
   PasswordManagerClientHelperTest() : helper_(&client_) {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kWasAutoSignInFirstRunExperienceShown, false);
-    prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableAutosignin,
-                                           true);
     prefs_.SetBoolean(prefs::kWasAutoSignInFirstRunExperienceShown, false);
-    prefs_.SetBoolean(prefs::kCredentialsEnableAutosignin, true);
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(&prefs_));
 
     ON_CALL(*client(), GetIdentityManager)
         .WillByDefault(Return(identity_test_environment()->identity_manager()));
-    identity_test_environment()->SetUnconsentedPrimaryAccount(
-        kGaiaAccountEmail);
+    identity_test_environment()->SetPrimaryAccount(
+        kGaiaAccountEmail, signin::ConsentLevel::kSignin);
   }
   ~PasswordManagerClientHelperTest() override = default;
 
@@ -108,6 +105,7 @@ class PasswordManagerClientHelperTest : public testing::Test {
 };
 
 TEST_F(PasswordManagerClientHelperTest, PromptAutosigninAfterSuccessfulLogin) {
+  EXPECT_CALL(*client(), IsAutoSignInEnabled).WillOnce(Return(true));
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin);
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
 
@@ -217,9 +215,8 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveForNonOptedInUserIfRefusedTooManyTimes) {
   base::test::ScopedFeatureList account_storage_feature;
-  account_storage_feature.InitAndEnableFeatureWithParameters(
-      features::kEnablePasswordsAccountStorage,
-      {{features::kMaxMoveToAccountOffersForNonOptedInUser, "1"}});
+  account_storage_feature.InitAndEnableFeature(
+      features::kEnablePasswordsAccountStorage);
   ON_CALL(*client()->GetPasswordFeatureManager(),
           ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
@@ -236,10 +233,10 @@ TEST_F(PasswordManagerClientHelperTest,
   helper()->NotifySuccessfulLoginWithExistingPassword(
       CreateFormManager(&form, /*is_movable=*/true));
 
-  // If the previous move was refused and the max is 1, shouldn't offer anymore.
+  // If the previous 5 moves were refused, shouldn't offer anymore.
   EXPECT_CALL(*client()->GetPasswordFeatureManager(),
               GetMoveOfferedToNonOptedInUserCount)
-      .WillOnce(Return(1));
+      .WillOnce(Return(5));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   helper()->NotifySuccessfulLoginWithExistingPassword(
       CreateFormManager(&form, /*is_movable=*/true));

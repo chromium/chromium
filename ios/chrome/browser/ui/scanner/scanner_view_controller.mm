@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#include "base/logging.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "ios/chrome/browser/ui/commands/load_query_commands.h"
-#include "ios/chrome/browser/ui/scanner/scanner_alerts.h"
-#include "ios/chrome/browser/ui/scanner/scanner_presenting.h"
-#include "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
-#include "ios/chrome/browser/ui/scanner/scanner_view.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "base/logging.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
+#import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
+#import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
+#import "ios/chrome/browser/ui/scanner/scanner_view.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,7 +58,7 @@ using base::UserMetricsAction;
 
   [self.view addSubview:self.scannerView];
 
-  // Constraints for |self.scannerView|.
+  // Constraints for `self.scannerView`.
   [self.scannerView setTranslatesAutoresizingMaskIntoConstraints:NO];
   [NSLayoutConstraint activateConstraints:@[
     [[self.scannerView leadingAnchor]
@@ -192,8 +191,8 @@ using base::UserMetricsAction;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// Requests the torch mode to be set to |mode| by the |self.cameraController|
-// and the icon of the torch button to be changed by the |self.scannerView|.
+// Requests the torch mode to be set to `mode` by the `self.cameraController`
+// and the icon of the torch button to be changed by the `self.scannerView`.
 - (void)setTorchMode:(AVCaptureTorchMode)mode {
   [self.cameraController setTorchMode:mode];
 }
@@ -227,12 +226,16 @@ using base::UserMetricsAction;
               l10n_util::GetNSString(
                   IDS_IOS_SCANNER_SCANNED_ACCESSIBILITY_ANNOUNCEMENT)]) {
     DCHECK(_result);
+    __weak ScannerViewController* weakSelf = self;
     [self dismissForReason:scannerViewController::SCAN_COMPLETE
             withCompletion:^{
-              [self.queryLoader loadQuery:_result
-                              immediately:self.loadResultImmediately];
+              [weakSelf dismissForReasonCompletion];
             }];
   }
+}
+
+- (void)dismissForReasonCompletion {
+  [self.queryLoader loadQuery:_result immediately:self.loadResultImmediately];
 }
 
 #pragma mark - CameraControllerDelegate

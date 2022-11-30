@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
@@ -110,7 +111,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
       entry->Close();
       task_environment_.RunUntilIdle();
     }
-    ASSERT_EQ(base::size(kCacheEntries),
+    ASSERT_EQ(std::size(kCacheEntries),
               static_cast<size_t>(backend_->GetEntryCount()));
   }
 
@@ -122,7 +123,9 @@ class HttpCacheDataRemoverTest : public testing::Test {
     request_info.method = "GET";
     request_info.network_isolation_key =
         net::NetworkIsolationKey(kOrigin, kOrigin);
-    return cache_->GenerateCacheKeyForTest(&request_info);
+    request_info.network_anonymization_key = net::NetworkAnonymizationKey(
+        net::SchemefulSite(kOrigin), net::SchemefulSite(kOrigin));
+    return *cache_->GenerateCacheKeyForRequest(&request_info);
   }
 
   void RemoveData(mojom::ClearDataFilterPtr filter,
@@ -172,7 +175,7 @@ class HttpCacheDataRemoverTest : public testing::Test {
   disk_cache::Backend* backend_ = nullptr;
 
  private:
-  net::HttpCache* cache_;
+  raw_ptr<net::HttpCache> cache_;
 };
 
 class HttpCacheDataRemoverSplitCacheTest : public HttpCacheDataRemoverTest {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,18 +53,20 @@ void AccessibilityMainHandler::OnJavascriptDisallowed() {
 }
 
 void AccessibilityMainHandler::HandleA11yPageReady(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   SendScreenReaderStateChanged();
 }
 
 void AccessibilityMainHandler::HandleCheckAccessibilityImageLabels(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   // When the user tries to enable the feature, show the modal dialog. The
   // dialog will disable the feature again if it is not accepted.
   content::WebContents* web_contents = web_ui()->GetWebContents();
-  content::RenderWidgetHostView* view =
-      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
+  content::RenderWidgetHostView* view = web_contents->GetPrimaryMainFrame()
+                                            ->GetRenderViewHost()
+                                            ->GetWidget()
+                                            ->GetView();
   gfx::Rect rect = view->GetViewBounds();
   auto model = std::make_unique<AccessibilityLabelsBubbleModel>(
       Profile::FromWebUI(web_ui()), web_contents, true /* enable always */);

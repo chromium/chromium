@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,32 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "ui/gfx/ca_layer_result.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/overlay_priority_hint.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
 namespace cc {
 class DisplayResourceProvider;
+}
+
+namespace gpu {
+class SharedImageInterface;
 }
 
 namespace viz {
@@ -43,12 +49,15 @@ class RendererSettings;
 // for overlay processing that each platform needs to implement.
 class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
  public:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
+  using PlatformOverlayCandidate = CALayerOverlay;
   using CandidateList = CALayerOverlayList;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
+  using PlatformOverlayCandidate = DCLayerOverlay;
   using CandidateList = DCLayerOverlayList;
 #else
   // Default.
+  using PlatformOverlayCandidate = OverlayCandidate;
   using CandidateList = OverlayCandidateList;
 #endif
 
@@ -67,6 +76,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // default values for the primary plane, this is a partial list of
   // OverlayCandidate.
   struct VIZ_SERVICE_EXPORT OutputSurfaceOverlayPlane {
+    OutputSurfaceOverlayPlane();
+    OutputSurfaceOverlayPlane(const OutputSurfaceOverlayPlane&);
+    OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
+    ~OutputSurfaceOverlayPlane();
     // Display's rotation information.
     gfx::OverlayTransform transform;
     // Rect on the display to position to. This takes in account of Display's
@@ -83,11 +96,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
     bool enable_blending;
-    // TODO(weiliangc): Should be replaced by SharedImage mailbox.
-    // Gpu fence to wait for before overlay is ready for display.
-    unsigned gpu_fence_id;
+    // Opacity of the overlay independent of buffer alpha. When rendered:
+    // src-alpha = |opacity| * buffer-component-alpha.
+    float opacity;
     // Mailbox corresponding to the buffer backing the primary plane.
     gpu::Mailbox mailbox;
+    // Hints for overlay prioritization.
+    gfx::OverlayPriorityHint priority_hint;
+    // Specifies the rounded corners.
+    gfx::RRectF rounded_corners;
+    // Optional damage rect. If none is provided the damage is assumed to be
+    // |resource_size| (full damage).
+    absl::optional<gfx::Rect> damage_rect;
   };
 
   // TODO(weiliangc): Eventually the asymmetry between primary plane and
@@ -99,6 +119,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const gfx::BufferFormat& buffer_format,
       const gfx::ColorSpace& color_space,
       bool has_alpha,
+      float opacity,
       const gpu::Mailbox& mailbox);
 
   static std::unique_ptr<OverlayProcessorInterface> CreateOverlayProcessor(
@@ -109,6 +130,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       gpu::SharedImageInterface* shared_image_interface,
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings);
+
+  OverlayProcessorInterface(const OverlayProcessorInterface&) = delete;
+  OverlayProcessorInterface& operator=(const OverlayProcessorInterface&) =
+      delete;
 
   virtual ~OverlayProcessorInterface() = default;
 
@@ -129,7 +154,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   virtual void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
-      const SkMatrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
@@ -140,20 +165,19 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // For Mac, if we successfully generated a candidate list for CALayerOverlay,
   // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the base::Optional instance so the instance can be reset.
+  // to the absl::optional instance so the instance can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   virtual void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are
-  // later sent over to the GPU thread by GLRenderer or SkiaRenderer. This
-  // helper function will be called by DirectRenderer to take these overlay
-  // candidates inside overlay processor to avoid sending over DirectRenderer
-  // implementation. This is overridden by each platform that is ready to send
-  // overlay candidates inside |OverlayProcessor|. Must be called before
-  // ScheduleOverlays().
+  // later sent over to the GPU thread by SkiaRenderer. This helper function
+  // will be called by DirectRenderer to take these overlay candidates inside
+  // overlay processor to avoid sending over DirectRenderer implementation. This
+  // is overridden by each platform that is ready to send overlay candidates
+  // inside |OverlayProcessor|. Must be called before ScheduleOverlays().
   virtual void TakeOverlayCandidates(CandidateList* candidate_list) {}
 
   // TODO(weiliangc): Make it pure virtual after it is implemented by every
@@ -176,11 +200,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // If true, video capture is enabled for this frame.
   virtual void SetIsVideoCaptureEnabled(bool enabled) {}
 
+  // If true, page fullscreen mode is enabled for this frame.
+  virtual void SetIsPageFullscreen(bool enabled) {}
+
+  virtual gfx::CALayerResult GetCALayerErrorCode() const;
+
  protected:
   OverlayProcessorInterface() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorInterface);
 };
 
 }  // namespace viz

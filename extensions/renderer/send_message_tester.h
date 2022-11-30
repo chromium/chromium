@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -23,6 +23,10 @@ class SendMessageTester {
                     ScriptContext* script_context,
                     int next_port_id,
                     const std::string& api_namespace);
+
+  SendMessageTester(const SendMessageTester&) = delete;
+  SendMessageTester& operator=(const SendMessageTester&) = delete;
+
   ~SendMessageTester();
 
   // Whether we expect the port to be open or closed at the end of the call.
@@ -32,18 +36,24 @@ class SendMessageTester {
   };
 
   // Tests the sendMessage API with the specified expectations.
-  void TestSendMessage(const std::string& args,
-                       const std::string& expected_message,
-                       const MessageTarget& expected_target,
-                       PortStatus expected_port_status);
+  v8::Local<v8::Value> TestSendMessage(const std::string& args,
+                                       const std::string& expected_message,
+                                       const MessageTarget& expected_target,
+                                       PortStatus expected_port_status);
 
   // Tests the sendRequest API with the specified expectations.
-  void TestSendRequest(const std::string& args,
-                       const std::string& expected_message,
-                       const MessageTarget& expected_target,
-                       PortStatus expected_port_status);
+  v8::Local<v8::Value> TestSendRequest(const std::string& args,
+                                       const std::string& expected_message,
+                                       const MessageTarget& expected_target,
+                                       PortStatus expected_port_status);
 
-  // Tests the connect API with the specified expectaions.
+  // Tests the sendNativeMessage API with the specified expectations.
+  v8::Local<v8::Value> TestSendNativeMessage(
+      const std::string& args,
+      const std::string& expected_message,
+      const std::string& expected_application_name);
+
+  // Tests the connect API with the specified expectations.
   void TestConnect(const std::string& args,
                    const std::string& expected_channel,
                    const MessageTarget& expected_target);
@@ -52,6 +62,7 @@ class SendMessageTester {
   enum Method {
     SEND_REQUEST,
     SEND_MESSAGE,
+    SEND_NATIVE_MESSAGE,
   };
 
   // Common handler for testing sendMessage and sendRequest.
@@ -59,14 +70,13 @@ class SendMessageTester {
                                 const std::string& expected_message,
                                 const MessageTarget& expected_target,
                                 PortStatus expected_port_status,
-                                Method method);
+                                Method method,
+                                v8::Local<v8::Value>& out_value);
 
   TestIPCMessageSender* ipc_sender_;
   ScriptContext* script_context_;
   int next_port_id_;
   std::string api_namespace_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendMessageTester);
 };
 
 }  // namespace extensions

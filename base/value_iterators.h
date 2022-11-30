@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -63,6 +63,14 @@ class BASE_EXPORT dict_iterator {
   BASE_EXPORT friend bool operator!=(const dict_iterator& lhs,
                                      const dict_iterator& rhs);
 
+  // Currently, there is no easy way to friend Value::Dict. Once dictionary
+  // storage is updated to not require a proxy iterator, the implementation can
+  // be folded into //base/values.h and a standard friend declaration can be
+  // used instead.
+  const DictStorage::iterator& GetUnderlyingIteratorDoNotUse() {
+    return dict_iter_;
+  }
+
  private:
   DictStorage::iterator dict_iter_;
 };
@@ -109,6 +117,14 @@ class BASE_EXPORT const_dict_iterator {
   BASE_EXPORT friend bool operator!=(const const_dict_iterator& lhs,
                                      const const_dict_iterator& rhs);
 
+  // Currently, there is no easy way to friend Value::Dict. Once dictionary
+  // storage is updated to not require a proxy iterator, the implementation can
+  // be folded into //base/values.h and a standard friend declaration can be
+  // used instead.
+  const DictStorage::const_iterator& GetUnderlyingIteratorDoNotUse() {
+    return dict_iter_;
+  }
+
  private:
   DictStorage::const_iterator dict_iter_;
 };
@@ -134,6 +150,8 @@ class BASE_EXPORT dict_iterator_proxy {
 
   explicit dict_iterator_proxy(DictStorage* storage);
 
+  size_type size() const;
+
   iterator begin();
   const_iterator begin() const;
   iterator end();
@@ -150,7 +168,7 @@ class BASE_EXPORT dict_iterator_proxy {
   const_reverse_iterator crend() const;
 
  private:
-  DictStorage* storage_;
+  raw_ptr<DictStorage> storage_;
 };
 
 // This class wraps the various const |begin| and |end| methods of the
@@ -173,6 +191,8 @@ class BASE_EXPORT const_dict_iterator_proxy {
 
   explicit const_dict_iterator_proxy(const DictStorage* storage);
 
+  size_type size() const;
+
   const_iterator begin() const;
   const_iterator end() const;
 
@@ -185,7 +205,7 @@ class BASE_EXPORT const_dict_iterator_proxy {
   const_reverse_iterator crend() const;
 
  private:
-  const DictStorage* storage_;
+  raw_ptr<const DictStorage> storage_;
 };
 }  // namespace detail
 

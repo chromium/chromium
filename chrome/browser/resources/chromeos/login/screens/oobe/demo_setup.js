@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,85 +7,134 @@
  * screen.
  */
 
-'use strict';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/progress_list_item.js';
 
-(function() {
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const DemoSetupUIState = {
   PROGRESS: 'progress',
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'demo-setup-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const DemoSetupScreenBase = mixinBehaviors(
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @polymer
+ */
+class DemoSetupScreen extends DemoSetupScreenBase {
+  static get is() {
+    return 'demo-setup-element';
+  }
 
-  EXTERNAL_API: ['setCurrentSetupStep', 'onSetupSucceeded', 'onSetupFailed'],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** Object mapping step strings to step indices */
-    setupSteps_: {
-      type: Object,
-      value() {
-        return /** @type {!Object} */ (loadTimeData.getValue('demoSetupSteps'));
-      }
-    },
+  static get properties() {
+    return {
+      /** Object mapping step strings to step indices */
+      setupSteps_: {
+        type: Object,
+        value() {
+          return /** @type {!Object} */ (
+              loadTimeData.getValue('demoSetupSteps'));
+        },
+      },
 
-    /** Which step index is currently running in Demo Mode setup. */
-    currentStepIndex_: {
-      type: Number,
-      value: -1,
-    },
+      /** Which step index is currently running in Demo Mode setup. */
+      currentStepIndex_: {
+        type: Number,
+        value: -1,
+      },
 
-    /** Error message displayed on demoSetupErrorDialog screen. */
-    errorMessage_: {
-      type: String,
-      value: '',
-    },
+      /** Error message displayed on demoSetupErrorDialog screen. */
+      errorMessage_: {
+        type: String,
+        value: '',
+      },
 
-    /** Whether powerwash is required in case of a setup error. */
-    isPowerwashRequired_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /** Whether powerwash is required in case of a setup error. */
+      isPowerwashRequired_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.initializeLoginScreen('DemoSetupScreen');
+  }
 
   defaultUIStep() {
-    return UIState.PROGRESS;
-  },
+    return DemoSetupUIState.PROGRESS;
+  }
 
-  UI_STEPS: UIState,
+  get UI_STEPS() {
+    return DemoSetupUIState;
+  }
 
-  ready() {
-    this.initializeLoginScreen('DemoSetupScreen', {
-      resetAllowed: false,
-    });
-  },
+  /** Overridden from LoginScreenBehavior. */
+  // clang-format off
+  get EXTERNAL_API() {
+    return ['setCurrentSetupStep',
+            'onSetupSucceeded',
+            'onSetupFailed'];
+  }
+  // clang-format on
+
 
   onBeforeShow() {
     this.reset();
-  },
+  }
 
   /** Resets demo setup flow to the initial screen and starts setup. */
   reset() {
-    this.setUIStep(UIState.PROGRESS);
+    this.setUIStep(DemoSetupUIState.PROGRESS);
     this.userActed('start-setup');
-  },
+  }
 
   /** Called after resources are updated. */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * Called at the beginning of a setup step.
@@ -96,12 +145,12 @@ Polymer({
     if (this.setupSteps_.hasOwnProperty(currentStep)) {
       this.currentStepIndex_ = this.setupSteps_[currentStep];
     }
-  },
+  }
 
   /** Called when demo mode setup succeeded. */
   onSetupSucceeded() {
     this.errorMessage_ = '';
-  },
+  }
 
   /**
    * Called when demo mode setup failed.
@@ -112,8 +161,8 @@ Polymer({
   onSetupFailed(message, isPowerwashRequired) {
     this.errorMessage_ = message;
     this.isPowerwashRequired_ = isPowerwashRequired;
-    this.setUIStep(UIState.ERROR);
-  },
+    this.setUIStep(DemoSetupUIState.ERROR);
+  }
 
   /**
    * Retry button click handler.
@@ -121,7 +170,7 @@ Polymer({
    */
   onRetryClicked_() {
     this.reset();
-  },
+  }
 
   /**
    * Powerwash button click handler.
@@ -129,7 +178,7 @@ Polymer({
    */
   onPowerwashClicked_() {
     this.userActed('powerwash');
-  },
+  }
 
   /**
    * Close button click handler.
@@ -137,10 +186,11 @@ Polymer({
    */
   onCloseClicked_() {
     // TODO(wzang): Remove this after crbug.com/900640 is fixed.
-    if (this.isPowerwashRequired_)
+    if (this.isPowerwashRequired_) {
       return;
+    }
     this.userActed('close-setup');
-  },
+  }
 
   /**
    * Whether a given step should be rendered on the UI.
@@ -150,7 +200,7 @@ Polymer({
    */
   shouldShowStep_(stepName, setupSteps) {
     return setupSteps.hasOwnProperty(stepName);
-  },
+  }
 
   /**
    * Whether a given step is active.
@@ -160,8 +210,8 @@ Polymer({
    * @private
    */
   stepIsActive_(stepName, setupSteps, currentStepIndex) {
-    return currentStepIndex == setupSteps[stepName];
-  },
+    return currentStepIndex === setupSteps[stepName];
+  }
 
   /**
    * Whether a given step is completed.
@@ -172,7 +222,7 @@ Polymer({
    */
   stepIsCompleted_(stepName, setupSteps, currentStepIndex) {
     return currentStepIndex > setupSteps[stepName];
-  },
+  }
+}
 
-});
-})();
+customElements.define(DemoSetupScreen.is, DemoSetupScreen);

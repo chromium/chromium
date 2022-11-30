@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -27,17 +26,25 @@ struct NotificationMessage;
 class NotificationClient final {
  public:
   using NotificationCallback =
-      base::OnceCallback<void(base::Optional<NotificationMessage>)>;
+      base::OnceCallback<void(absl::optional<NotificationMessage>)>;
 
   explicit NotificationClient(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner);
+
+  NotificationClient(const NotificationClient&) = delete;
+  NotificationClient& operator=(const NotificationClient&) = delete;
+
   ~NotificationClient();
 
   // Fetches notifications from the server and calls |callback| with the
   // best matched notification. If notifications failed to fetch or no matching
-  // notification is found then base::nullopt will be returned. |callback| will
+  // notification is found then absl::nullopt will be returned. |callback| will
   // be silently dropped if |this| is deleted before the notification is
   // fetched.
+  // |user_email| is used to determine if the notification is available to the
+  // user during percentage rollout. If |user_email| is empty (i.e. user not
+  // logged in), the notification percentage must be exactly 100 for the
+  // notification to become available.
   void GetNotification(const std::string& user_email,
                        NotificationCallback callback);
 
@@ -48,17 +55,18 @@ class NotificationClient final {
   NotificationClient(std::unique_ptr<JsonFetcher> fetcher,
                      const std::string& current_platform,
                      const std::string& current_version,
+                     const std::string& current_os_version,
                      const std::string& locale,
                      bool should_ignore_dev_messages);
 
   void OnRulesFetched(const std::string& user_email,
                       NotificationCallback callback,
-                      base::Optional<base::Value> rules);
+                      absl::optional<base::Value> rules);
 
   // Returns non-empty NotificationMessage if the rule is parsed successfully
   // and the rule should apply to the user. |message_text| and |link_text| will
   // not be set and caller needs to call FetchTranslatedText to fill them up.
-  base::Optional<NotificationMessage> ParseAndMatchRule(
+  absl::optional<NotificationMessage> ParseAndMatchRule(
       const base::Value& rule,
       const std::string& user_email,
       std::string* out_message_text_filename,
@@ -66,16 +74,15 @@ class NotificationClient final {
 
   void FetchTranslatedTexts(const std::string& message_text_filename,
                             const std::string& link_text_filename,
-                            base::Optional<NotificationMessage> partial_message,
+                            absl::optional<NotificationMessage> partial_message,
                             NotificationCallback done);
 
   std::unique_ptr<JsonFetcher> fetcher_;
   std::string current_platform_;
   std::string current_version_;
+  std::string current_os_version_;
   std::string locale_;
   bool should_ignore_dev_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationClient);
 };
 
 }  // namespace remoting

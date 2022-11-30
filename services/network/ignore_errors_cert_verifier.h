@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,10 @@
 #define SERVICES_NETWORK_IGNORE_ERRORS_CERT_VERIFIER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
 #include "net/base/completion_once_callback.h"
 #include "net/cert/cert_verifier.h"
 #include "services/network/public/cpp/spki_hash_set.h"
@@ -41,6 +39,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IgnoreErrorsCertVerifier
   IgnoreErrorsCertVerifier(std::unique_ptr<net::CertVerifier> verifier,
                            SPKIHashSet allowlist);
 
+  IgnoreErrorsCertVerifier(const IgnoreErrorsCertVerifier&) = delete;
+  IgnoreErrorsCertVerifier& operator=(const IgnoreErrorsCertVerifier&) = delete;
+
   ~IgnoreErrorsCertVerifier() override;
 
   // Verify skips certificate verification and returns OK if any of the
@@ -61,8 +62,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IgnoreErrorsCertVerifier
 
   std::unique_ptr<net::CertVerifier> verifier_;
   SPKIHashSet allowlist_;
-
-  DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsCertVerifier);
 };
 
 }  // namespace network

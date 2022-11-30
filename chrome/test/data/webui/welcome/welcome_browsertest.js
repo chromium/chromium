@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ GEN('#include "content/public/test/browser_test.h"');
 const WelcomeBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overridden by subclasses';
+    throw new Error('this is abstract and should be overridden by subclasses');
   }
 
   /** @override */
@@ -28,7 +28,6 @@ const WelcomeBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var WelcomeAppChooserTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -40,7 +39,6 @@ TEST_F('WelcomeAppChooserTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeWelcomeAppTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -52,7 +50,6 @@ TEST_F('WelcomeWelcomeAppTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeSigninViewTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -64,11 +61,10 @@ TEST_F('WelcomeSigninViewTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeNavigationBehaviorTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://welcome/test_loader.html?module=welcome/navigation_behavior_test.js';
+    return 'chrome://welcome/test_loader.html?module=welcome/navigation_mixin_test.js';
   }
 };
 
@@ -76,7 +72,6 @@ TEST_F('WelcomeNavigationBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeModuleMetricsTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -88,7 +83,6 @@ TEST_F('WelcomeModuleMetricsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeSetAsDefaultTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {
@@ -100,7 +94,6 @@ TEST_F('WelcomeSetAsDefaultTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var WelcomeNtpBackgroundTest = class extends WelcomeBrowserTest {
   /** @override */
   get browsePreload() {

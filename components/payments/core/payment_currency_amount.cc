@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,27 +17,31 @@ static const char kPaymentCurrencyAmountValue[] = "value";
 
 }  // namespace
 
-bool PaymentCurrencyAmountFromDictionaryValue(
-    const base::DictionaryValue& dictionary_value,
+bool PaymentCurrencyAmountFromValueDict(
+    const base::Value::Dict& dictionary_value,
     mojom::PaymentCurrencyAmount* amount) {
-  if (!dictionary_value.GetString(kPaymentCurrencyAmountCurrency,
-                                  &amount->currency)) {
+  const std::string* currency =
+      dictionary_value.FindString(kPaymentCurrencyAmountCurrency);
+  if (!currency) {
     return false;
   }
+  amount->currency = *currency;
 
-  if (!dictionary_value.GetString(kPaymentCurrencyAmountValue,
-                                  &amount->value)) {
+  const std::string* value =
+      dictionary_value.FindString(kPaymentCurrencyAmountValue);
+  if (!value) {
     return false;
   }
+  amount->value = *value;
 
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> PaymentCurrencyAmountToDictionaryValue(
+base::Value::Dict PaymentCurrencyAmountToValueDict(
     const mojom::PaymentCurrencyAmount& amount) {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kPaymentCurrencyAmountCurrency, amount.currency);
-  result->SetString(kPaymentCurrencyAmountValue, amount.value);
+  base::Value::Dict result;
+  result.Set(kPaymentCurrencyAmountCurrency, amount.currency);
+  result.Set(kPaymentCurrencyAmountValue, amount.value);
 
   return result;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "cc/trees/browser_controls_params.h"
 #include "content/common/content_export.h"
-#include "content/common/frame_messages.h"
 #include "ipc/ipc_message_macros.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
@@ -26,7 +25,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::EmulatedScreenType,
 IPC_ENUM_TRAITS_MAX_VALUE(device::mojom::ScreenOrientationLockType,
                           device::mojom::ScreenOrientationLockType::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScreenOrientation,
-                          blink::mojom::ScreenOrientation::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(display::mojom::ScreenOrientation,
+                          display::mojom::ScreenOrientation::kMaxValue)
 
 #endif  // CONTENT_COMMON_COMMON_PARAM_TRAITS_MACROS_H_

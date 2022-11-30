@@ -1,17 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -36,6 +45,9 @@ namespace {
 class TestObserver : public mojom::VideoDetectorObserver {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
 
   void Bind(mojo::PendingReceiver<mojom::VideoDetectorObserver> receiver) {
     receiver_.Bind(std::move(receiver));
@@ -69,8 +81,6 @@ class TestObserver : public mojom::VideoDetectorObserver {
   base::circular_deque<bool> states_;
 
   mojo::Receiver<mojom::VideoDetectorObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -78,18 +88,19 @@ class TestObserver : public mojom::VideoDetectorObserver {
 class VideoDetectorTest : public testing::Test {
  public:
   VideoDetectorTest()
-      : frame_sink_manager_(&shared_bitmap_manager_),
-        surface_aggregator_(frame_sink_manager_.surface_manager(),
-                            nullptr,
+      : surface_aggregator_(frame_sink_manager_.surface_manager(),
+                            &resource_provider_,
                             false,
                             false) {}
+
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
 
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
     mock_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
-        base::Time() + base::TimeDelta::FromSeconds(1),
-        base::TimeTicks() + base::TimeDelta::FromSeconds(1));
+        base::Time() + base::Seconds(1), base::TimeTicks() + base::Seconds(1));
 
     detector_ = frame_sink_manager_.CreateVideoDetectorForTesting(
         mock_task_runner_->GetMockTickClock(), mock_task_runner_);
@@ -142,15 +153,17 @@ class VideoDetectorTest : public testing::Test {
           render_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
       quad->SetNew(
           shared_quad_state, gfx::Rect(0, 0, 10, 10), gfx::Rect(0, 0, 5, 5),
-          SurfaceRange(base::nullopt, frame_sink->last_activated_surface_id()),
-          SK_ColorMAGENTA, /*stretch_content_to_fill_bounds=*/false);
+          SurfaceRange(absl::nullopt, frame_sink->last_activated_surface_id()),
+          SkColors::kMagenta, /*stretch_content_to_fill_bounds=*/false);
     }
     root_frame_sink_->SubmitCompositorFrame(
         root_frame_sink_->last_activated_local_surface_id(), std::move(frame));
   }
 
   void SendUpdate(CompositorFrameSinkSupport* frame_sink,
-                  const gfx::Rect& damage) {
+                  const gfx::Rect& damage,
+                  bool may_contain_video,
+                  bool use_per_quad_damage) {
     LocalSurfaceId local_surface_id =
         frame_sink->last_activated_local_surface_id();
     if (!local_surface_id.is_valid()) {
@@ -159,8 +172,12 @@ class VideoDetectorTest : public testing::Test {
       allocator->GenerateId();
       local_surface_id = allocator->GetCurrentLocalSurfaceId();
     }
-    frame_sink->SubmitCompositorFrame(local_surface_id,
-                                      MakeDamagedCompositorFrame(damage));
+    frame_sink->SubmitCompositorFrame(
+        local_surface_id,
+        use_per_quad_damage
+            ? MakeDamagedCompositorFrameWithPerQuadDamage(damage,
+                                                          may_contain_video)
+            : MakeDamagedCompositorFrame(damage, may_contain_video));
   }
 
   // Report updates to |client| of area |damage| at a rate of
@@ -168,12 +185,14 @@ class VideoDetectorTest : public testing::Test {
   // immediately and time will have advanced by |duration| upon returning.
   void SendUpdates(CompositorFrameSinkSupport* frame_sink,
                    const gfx::Rect& damage,
+                   bool may_contain_video,
+                   bool use_per_quad_damage,
                    int updates_per_second,
                    base::TimeDelta duration) {
     const base::TimeDelta time_between_updates =
-        base::TimeDelta::FromSecondsD(1.0 / updates_per_second);
+        base::Seconds(1.0 / updates_per_second);
     for (base::TimeDelta d; d < duration; d += time_between_updates) {
-      SendUpdate(frame_sink, damage);
+      SendUpdate(frame_sink, damage, may_contain_video, use_per_quad_damage);
       CreateDisplayFrame();
       AdvanceTime(std::min(time_between_updates, duration - d));
     }
@@ -187,32 +206,61 @@ class VideoDetectorTest : public testing::Test {
                                             true /* report_activation */);
     auto frame_sink = std::make_unique<CompositorFrameSinkSupport>(
         &frame_sink_client_, &frame_sink_manager_, frame_sink_id, is_root);
-    SendUpdate(frame_sink.get(), gfx::Rect());
+    SendUpdate(frame_sink.get(), gfx::Rect(), /*may_contain_video*/ false,
+               /*use_per_quad_damage*/ false);
     return frame_sink;
   }
 
-  VideoDetector* detector_;
+  raw_ptr<VideoDetector> detector_;
   TestObserver observer_;
 
   scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_;
 
- private:
-  CompositorFrame MakeDamagedCompositorFrame(const gfx::Rect& damage) {
+ protected:
+  CompositorFrame MakeDamagedCompositorFrame(const gfx::Rect& damage,
+                                             bool may_contain_video) {
     constexpr gfx::Rect kFrameSinkRect(10000, 10000);
-    return CompositorFrameBuilder()
-        .AddRenderPass(kFrameSinkRect, damage)
-        .Build();
+    auto frame =
+        CompositorFrameBuilder().AddRenderPass(kFrameSinkRect, damage).Build();
+    frame.metadata.may_contain_video = may_contain_video;
+
+    return frame;
   }
 
+  CompositorFrame MakeDamagedCompositorFrameWithPerQuadDamage(
+      const gfx::Rect& damage,
+      bool may_contain_video) {
+    constexpr gfx::Rect kFrameSinkRect(10000, 10000);
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kFrameSinkRect)
+                               .AddTextureQuad(kFrameSinkRect, ResourceId(1234))
+                               .SetQuadDamageRect(kFrameSinkRect))
+            .PopulateResources()
+            .Build();
+    frame.metadata.may_contain_video = may_contain_video;
+
+    return frame;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_;
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
+  DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;
   std::unique_ptr<CompositorFrameSinkSupport> root_frame_sink_;
   std::set<CompositorFrameSinkSupport*> embedded_clients_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
+class VideoDetectorIncludeNonVideoTest : public VideoDetectorTest {
+ public:
+  VideoDetectorIncludeNonVideoTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kVideoDetectorIgnoreNonVideos);
+  }
 };
 
 constexpr gfx::Rect VideoDetectorTest::kMinRect;
@@ -228,8 +276,9 @@ TEST_F(VideoDetectorTest, DontReportWhenDamageTooSmall) {
     // Send damages with a smaller width than |kMinRect|. Make sure video
     // activity isn't detected.
     gfx::Rect rect = kMinRect;
-    rect.Inset(0, 0, 1, 0);
-    SendUpdates(frame_sink.get(), rect, 2 * kMinFps, 2 * kMinDuration);
+    rect.Inset(gfx::Insets::TLBR(0, 0, 0, 1));
+    SendUpdates(frame_sink.get(), rect, /*may_contain_video=*/true,
+                /*use_per_quad_damage=*/false, 2 * kMinFps, 2 * kMinDuration);
     EXPECT_TRUE(observer_.IsEmpty());
   }
 
@@ -237,8 +286,9 @@ TEST_F(VideoDetectorTest, DontReportWhenDamageTooSmall) {
     // Send damages with a smaller height than |kMinRect|. Make sure video
     // activity isn't detected.
     gfx::Rect rect = kMinRect;
-    rect.Inset(0, 0, 1, 0);
-    SendUpdates(frame_sink.get(), rect, 2 * kMinFps, 2 * kMinDuration);
+    rect.Inset(gfx::Insets::TLBR(0, 0, 0, 1));
+    SendUpdates(frame_sink.get(), rect, /*may_contain_video=*/true,
+                /*use_per_quad_damage=*/false, 2 * kMinFps, 2 * kMinDuration);
     EXPECT_TRUE(observer_.IsEmpty());
   }
 }
@@ -247,7 +297,8 @@ TEST_F(VideoDetectorTest, DontReportWhenDamageTooSmall) {
 TEST_F(VideoDetectorTest, DontReportWhenFramerateTooLow) {
   std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
   EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, kMinFps - 5, 2 * kMinDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, kMinFps - 5, 2 * kMinDuration);
   EXPECT_TRUE(observer_.IsEmpty());
 }
 
@@ -256,10 +307,12 @@ TEST_F(VideoDetectorTest, DontReportWhenFramerateTooLow) {
 TEST_F(VideoDetectorTest, DontReportWhenNotPlayingLongEnough) {
   std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
   EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, 2 * kMinFps, 0.5 * kMinDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, 2 * kMinFps, 0.5 * kMinDuration);
   EXPECT_TRUE(observer_.IsEmpty());
 
-  SendUpdates(frame_sink.get(), kMinRect, 2 * kMinFps, 0.6 * kMinDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, 2 * kMinFps, 0.6 * kMinDuration);
   EXPECT_TRUE(observer_.PopState());
   EXPECT_TRUE(observer_.IsEmpty());
 }
@@ -269,26 +322,46 @@ TEST_F(VideoDetectorTest, DontReportWhenNotPlayingLongEnough) {
 TEST_F(VideoDetectorTest, DontReportWhenClientHidden) {
   std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
 
-  SendUpdates(frame_sink.get(), kMinRect, kMinFps + 5, 2 * kMinDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, kMinFps + 5, 2 * kMinDuration);
   EXPECT_TRUE(observer_.IsEmpty());
 
   // Make the client visible.
   observer_.Reset();
   AdvanceTime(kTimeout);
   EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, kMinFps + 5, 2 * kMinDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, kMinFps + 5, 2 * kMinDuration);
   EXPECT_TRUE(observer_.PopState());
   EXPECT_TRUE(observer_.IsEmpty());
+}
+
+TEST_F(VideoDetectorTest, DoesNotReportNonVideoFrames) {
+  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
+  std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
+  EmbedClient(frame_sink.get());
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
+              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
+  EXPECT_TRUE(observer_.IsEmpty());
+}
+
+TEST_F(VideoDetectorIncludeNonVideoTest, ReportNonVideoFramesWhenFeatureIsOff) {
+  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
+  std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
+  EmbedClient(frame_sink.get());
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/false,
+              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
+  EXPECT_FALSE(observer_.IsEmpty());
 }
 
 // Turn video activity on and off. Make sure the observers are notified
 // properly.
 TEST_F(VideoDetectorTest, ReportStartAndStop) {
-  const base::TimeDelta kDuration =
-      kMinDuration + base::TimeDelta::FromMilliseconds(100);
+  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
   std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
   EmbedClient(frame_sink.get());
-  SendUpdates(frame_sink.get(), kMinRect, kMinFps + 5, kDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
   EXPECT_TRUE(observer_.PopState());
   EXPECT_TRUE(observer_.IsEmpty());
 
@@ -297,7 +370,8 @@ TEST_F(VideoDetectorTest, ReportStartAndStop) {
   EXPECT_TRUE(observer_.IsEmpty());
 
   // Start playing again.
-  SendUpdates(frame_sink.get(), kMinRect, kMinFps + 5, kDuration);
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/false, kMinFps + 5, kDuration);
   EXPECT_TRUE(observer_.PopState());
   EXPECT_TRUE(observer_.IsEmpty());
 
@@ -317,15 +391,30 @@ TEST_F(VideoDetectorTest, ReportOnceForMultipleClients) {
   // Even if there's video playing in both clients, the observer should only
   // receive a single notification.
   constexpr int fps = 2 * kMinFps;
-  constexpr base::TimeDelta time_between_updates =
-      base::TimeDelta::FromSecondsD(1.0 / fps);
+  constexpr base::TimeDelta time_between_updates = base::Seconds(1.0 / fps);
   for (base::TimeDelta d; d < 2 * kMinDuration; d += time_between_updates) {
-    SendUpdate(frame_sink1.get(), kMinRect);
-    SendUpdate(frame_sink2.get(), kMinRect);
+    SendUpdate(frame_sink1.get(), kMinRect, /*may_contain_video=*/true,
+               /*use_per_quad_damage=*/false);
+    SendUpdate(frame_sink2.get(), kMinRect, /*may_contain_video=*/true,
+               /*use_per_quad_damage=*/false);
     AdvanceTime(time_between_updates);
     CreateDisplayFrame();
   }
   EXPECT_TRUE(observer_.PopState());
+  EXPECT_TRUE(observer_.IsEmpty());
+}
+
+TEST_F(VideoDetectorTest, ReportBasedOnPerQuadDamage) {
+  const base::TimeDelta kDuration = kMinDuration + base::Milliseconds(100);
+  std::unique_ptr<CompositorFrameSinkSupport> frame_sink = CreateFrameSink();
+  EmbedClient(frame_sink.get());
+  SendUpdates(frame_sink.get(), kMinRect, /*may_contain_video=*/true,
+              /*use_per_quad_damage=*/true, kMinFps + 5, kDuration);
+  EXPECT_TRUE(observer_.PopState());
+  EXPECT_TRUE(observer_.IsEmpty());
+
+  AdvanceTime(kTimeout);
+  EXPECT_FALSE(observer_.PopState());
   EXPECT_TRUE(observer_.IsEmpty());
 }
 

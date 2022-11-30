@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -37,6 +38,10 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
       mojo::PendingAssociatedReceiver<mojom::JsToBrowserMessaging> receiver,
       WebMessageHostFactory* factory,
       const OriginMatcher& origin_matcher);
+
+  JsToBrowserMessaging(const JsToBrowserMessaging&) = delete;
+  JsToBrowserMessaging& operator=(const JsToBrowserMessaging&) = delete;
+
   ~JsToBrowserMessaging() override;
 
   void OnBackForwardCacheStateChanged();
@@ -51,9 +56,9 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
  private:
   class ReplyProxyImpl;
 
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   std::unique_ptr<ReplyProxyImpl> reply_proxy_;
-  WebMessageHostFactory* connection_factory_;
+  raw_ptr<WebMessageHostFactory> connection_factory_;
   OriginMatcher origin_matcher_;
   mojo::AssociatedReceiver<mojom::JsToBrowserMessaging> receiver_{this};
   std::unique_ptr<WebMessageHost> host_;
@@ -61,8 +66,6 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   std::string origin_string_;
   bool is_main_frame_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(JsToBrowserMessaging);
 };
 
 }  // namespace js_injection

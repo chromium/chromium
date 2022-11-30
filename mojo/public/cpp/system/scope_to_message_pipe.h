@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "mojo/public/cpp/system/system_export.h"
@@ -22,6 +21,10 @@ namespace internal {
 class MOJO_CPP_SYSTEM_EXPORT MessagePipeScoperBase {
  public:
   explicit MessagePipeScoperBase(ScopedMessagePipeHandle pipe);
+
+  MessagePipeScoperBase(const MessagePipeScoperBase&) = delete;
+  MessagePipeScoperBase& operator=(const MessagePipeScoperBase&) = delete;
+
   virtual ~MessagePipeScoperBase();
 
   static void StartWatchingPipe(std::unique_ptr<MessagePipeScoperBase> scoper);
@@ -29,8 +32,6 @@ class MOJO_CPP_SYSTEM_EXPORT MessagePipeScoperBase {
  private:
   ScopedMessagePipeHandle pipe_;
   SimpleWatcher pipe_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeScoperBase);
 };
 
 template <typename T>
@@ -39,12 +40,14 @@ class MessagePipeScoper : public MessagePipeScoperBase {
   explicit MessagePipeScoper(T scoped_object, ScopedMessagePipeHandle pipe)
       : MessagePipeScoperBase(std::move(pipe)),
         scoped_object_(std::move(scoped_object)) {}
+
+  MessagePipeScoper(const MessagePipeScoper&) = delete;
+  MessagePipeScoper& operator=(const MessagePipeScoper&) = delete;
+
   ~MessagePipeScoper() override = default;
 
  private:
   T scoped_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePipeScoper);
 };
 
 }  // namespace internal

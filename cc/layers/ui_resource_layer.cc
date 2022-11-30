@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,26 +18,25 @@ scoped_refptr<UIResourceLayer> UIResourceLayer::Create() {
 }
 
 UIResourceLayer::UIResourceLayer()
-    : uv_top_left_(0.f, 0.f), uv_bottom_right_(1.f, 1.f) {
-  vertex_opacity_[0] = 1.0f;
-  vertex_opacity_[1] = 1.0f;
-  vertex_opacity_[2] = 1.0f;
-  vertex_opacity_[3] = 1.0f;
+    : resource_id_(0), uv_top_left_(0.f, 0.f), uv_bottom_right_(1.f, 1.f) {
+  auto& vo = vertex_opacity_.Write(*this);
+  vo[0] = vo[1] = vo[2] = vo[3] = 1.0f;
 }
 
 UIResourceLayer::~UIResourceLayer() = default;
 
 std::unique_ptr<LayerImpl> UIResourceLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return UIResourceLayerImpl::Create(tree_impl, id());
 }
 
 void UIResourceLayer::SetUV(const gfx::PointF& top_left,
                             const gfx::PointF& bottom_right) {
-  if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
+  if (uv_top_left_.Read(*this) == top_left &&
+      uv_bottom_right_.Read(*this) == bottom_right)
     return;
-  uv_top_left_ = top_left;
-  uv_bottom_right_ = bottom_right;
+  uv_top_left_.Write(*this) = top_left;
+  uv_bottom_right_.Write(*this) = bottom_right;
   SetNeedsCommit();
 }
 
@@ -49,15 +48,16 @@ void UIResourceLayer::SetVertexOpacity(float bottom_left,
   // 1--2
   // |  |
   // 0--3
-  if (vertex_opacity_[0] == bottom_left &&
-      vertex_opacity_[1] == top_left &&
-      vertex_opacity_[2] == top_right &&
-      vertex_opacity_[3] == bottom_right)
+  const auto& old_vertex_opacity = vertex_opacity_.Read(*this);
+  if (old_vertex_opacity[0] == bottom_left &&
+      old_vertex_opacity[1] == top_left && old_vertex_opacity[2] == top_right &&
+      old_vertex_opacity[3] == bottom_right)
     return;
-  vertex_opacity_[0] = bottom_left;
-  vertex_opacity_[1] = top_left;
-  vertex_opacity_[2] = top_right;
-  vertex_opacity_[3] = bottom_right;
+  auto& vertex_opacity = vertex_opacity_.Write(*this);
+  vertex_opacity[0] = bottom_left;
+  vertex_opacity[1] = top_left;
+  vertex_opacity[2] = top_right;
+  vertex_opacity[3] = bottom_right;
   SetNeedsCommit();
 }
 
@@ -70,11 +70,11 @@ void UIResourceLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // Recreate the resource held against the new LTH.
   RecreateUIResourceIdFromBitmap();
 
-  UpdateDrawsContent(HasDrawableContent());
+  SetDrawsContent(HasDrawableContent());
 }
 
 void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
-  bitmap_ = bitmap;
+  bitmap_.Write(*this) = bitmap;
   if (!layer_tree_host())
     return;
   SetUIResourceIdInternal(
@@ -85,42 +85,45 @@ void UIResourceLayer::SetUIResourceId(UIResourceId resource_id) {
   // Even if the ID is not changing we should drop the bitmap. The ID is 0 when
   // there's no layer tree. When setting an id (even if to 0), we should no
   // longer keep the bitmap.
-  bitmap_.reset();
-  if (resource_id_ == resource_id)
+  bitmap_.Write(*this).reset();
+  if (resource_id_.Read(*this) == resource_id)
     return;
   SetUIResourceIdInternal(resource_id);
 }
 
 bool UIResourceLayer::HasDrawableContent() const {
-  return resource_id_ && Layer::HasDrawableContent();
+  return resource_id_.Read(*this) && Layer::HasDrawableContent();
 }
 
-void UIResourceLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void UIResourceLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
   UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
 
-  layer_impl->SetUIResourceId(resource_id_);
-  if (resource_id_) {
-    DCHECK(layer_tree_host());
-
-    gfx::Size image_size =
-        layer_tree_host()->GetUIResourceManager()->GetUIResourceSize(
-            resource_id_);
-    layer_impl->SetImageBounds(image_size);
-    layer_impl->SetUV(uv_top_left_, uv_bottom_right_);
-    layer_impl->SetVertexOpacity(vertex_opacity_);
+  UIResourceId resource_id = resource_id_.Read(*this);
+  layer_impl->SetUIResourceId(resource_id);
+  if (resource_id) {
+    auto iter = commit_state.ui_resource_sizes.find(resource_id);
+    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                 ? gfx::Size()
+                                 : iter->second;
+    layer_impl->SetImageBounds(image_bounds);
+    layer_impl->SetUV(uv_top_left_.Read(*this), uv_bottom_right_.Read(*this));
+    layer_impl->SetVertexOpacity(vertex_opacity_.Read(*this));
   }
 }
 
 void UIResourceLayer::RecreateUIResourceIdFromBitmap() {
-  if (!bitmap_.empty())
-    SetBitmap(bitmap_);
+  if (!bitmap_.Read(*this).empty())
+    SetBitmap(bitmap_.Read(*this));
 }
 
 void UIResourceLayer::SetUIResourceIdInternal(UIResourceId resource_id) {
-  resource_id_ = resource_id;
-  UpdateDrawsContent(HasDrawableContent());
+  resource_id_.Write(*this) = resource_id;
+  SetDrawsContent(HasDrawableContent());
   SetNeedsCommit();
 }
 

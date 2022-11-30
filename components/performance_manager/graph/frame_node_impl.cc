@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -25,20 +26,18 @@ using PriorityAndReason = execution_context_priority::PriorityAndReason;
 FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              PageNodeImpl* page_node,
                              FrameNodeImpl* parent_frame_node,
-                             int frame_tree_node_id,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
-                             int32_t browsing_instance_id,
-                             int32_t site_instance_id)
+                             content::BrowsingInstanceId browsing_instance_id,
+                             content::SiteInstanceId site_instance_id)
     : parent_frame_node_(parent_frame_node),
       page_node_(page_node),
       process_node_(process_node),
-      frame_tree_node_id_(frame_tree_node_id),
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
       browsing_instance_id_(browsing_instance_id),
       site_instance_id_(site_instance_id),
-      render_frame_host_proxy_(content::GlobalFrameRoutingId(
+      render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->render_process_host_proxy()
               .render_process_host_id()
               .value(),
@@ -54,6 +53,8 @@ FrameNodeImpl::~FrameNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_worker_nodes_.empty());
   DCHECK(opened_page_nodes_.empty());
+  DCHECK(embedded_page_nodes_.empty());
+  DCHECK(!execution_context_);
 }
 
 void FrameNodeImpl::Bind(
@@ -130,11 +131,6 @@ ProcessNodeImpl* FrameNodeImpl::process_node() const {
   return process_node_;
 }
 
-int FrameNodeImpl::frame_tree_node_id() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_tree_node_id_;
-}
-
 int FrameNodeImpl::render_frame_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_id_;
@@ -145,12 +141,12 @@ const blink::LocalFrameToken& FrameNodeImpl::frame_token() const {
   return frame_token_;
 }
 
-int32_t FrameNodeImpl::browsing_instance_id() const {
+content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browsing_instance_id_;
 }
 
-int32_t FrameNodeImpl::site_instance_id() const {
+content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
 }
@@ -168,6 +164,12 @@ const base::flat_set<FrameNodeImpl*>& FrameNodeImpl::child_frame_nodes() const {
 const base::flat_set<PageNodeImpl*>& FrameNodeImpl::opened_page_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return opened_page_nodes_;
+}
+
+const base::flat_set<PageNodeImpl*>& FrameNodeImpl::embedded_page_nodes()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return embedded_page_nodes_;
 }
 
 mojom::LifecycleState FrameNodeImpl::lifecycle_state() const {
@@ -231,7 +233,7 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
-const base::Optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
+const absl::optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The viewport intersection of the main frame is not tracked.
   DCHECK(!IsMainFrame());
@@ -243,31 +245,28 @@ FrameNode::Visibility FrameNodeImpl::visibility() const {
   return visibility_.value();
 }
 
+uint64_t FrameNodeImpl::resident_set_kb_estimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_estimate_;
+}
+
 void FrameNodeImpl::SetIsCurrent(bool is_current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_current_.SetAndMaybeNotify(this, is_current);
 
-#if DCHECK_IS_ON()
-  // We maintain an invariant that of all sibling nodes with the same
-  // |frame_tree_node_id|, at most one may be current.
-  if (is_current) {
-    const base::flat_set<FrameNodeImpl*>* siblings = nullptr;
-    if (parent_frame_node_) {
-      siblings = &parent_frame_node_->child_frame_nodes();
-    } else {
-      siblings = &page_node_->main_frame_nodes();
-    }
-
-    size_t current_siblings = 0;
-    for (auto* frame : *siblings) {
-      if (frame->frame_tree_node_id() == frame_tree_node_id_ &&
-          frame->is_current()) {
-        ++current_siblings;
-      }
-    }
-    DCHECK_EQ(1u, current_siblings);
-  }
-#endif
+  // TODO(crbug.com/1211368): We maintain an invariant that of all sibling
+  // frame nodes in the same FrameTreeNode, at most one may be current. We used
+  // to save the RenderFrameHost's `frame_tree_node_id` at FrameNode creation
+  // time to check this invariant, but prerendering RenderFrameHost's can be
+  // moved to a new FrameTreeNode when they're activated so the
+  // `frame_tree_node_id` can go out of date. Because of this,
+  // RenderFrameHost::GetFrameTreeNodeId() is being deprecated. (See the
+  // discussion at crbug.com/1179502 and in the comment thread at
+  // https://chromium-review.googlesource.com/c/chromium/src/+/2966195/comments/58550eac_5795f790
+  // for more details.) We need to find another way to check this invariant
+  // here. (altimin suggests simply relying on RFH::GetLifecycleState to
+  // correctly track "active" frame nodes instead of using "current", and not
+  // checking this invariant.)
 }
 
 void FrameNodeImpl::SetIsHoldingWebLock(bool is_holding_weblock) {
@@ -299,6 +298,11 @@ void FrameNodeImpl::SetViewportIntersection(
 void FrameNodeImpl::SetVisibility(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   visibility_.SetAndMaybeNotify(this, visibility);
+}
+
+void FrameNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  resident_set_kb_estimate_ = rss_estimate;
 }
 
 void FrameNodeImpl::OnNavigationCommitted(const GURL& url, bool same_document) {
@@ -387,6 +391,28 @@ void FrameNodeImpl::RemoveOpenedPage(base::PassKey<PageNodeImpl>,
   DCHECK_EQ(1u, removed);
 }
 
+void FrameNodeImpl::AddEmbeddedPage(base::PassKey<PageNodeImpl>,
+                                    PageNodeImpl* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(page_node);
+  DCHECK_NE(page_node_, page_node);
+  DCHECK(graph()->NodeInGraph(page_node));
+  DCHECK_EQ(this, page_node->embedder_frame_node());
+  bool inserted = embedded_page_nodes_.insert(page_node).second;
+  DCHECK(inserted);
+}
+
+void FrameNodeImpl::RemoveEmbeddedPage(base::PassKey<PageNodeImpl>,
+                                       PageNodeImpl* page_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(page_node);
+  DCHECK_NE(page_node_, page_node);
+  DCHECK(graph()->NodeInGraph(page_node));
+  DCHECK_EQ(this, page_node->embedder_frame_node());
+  size_t removed = embedded_page_nodes_.erase(page_node);
+  DCHECK_EQ(1u, removed);
+}
+
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return parent_frame_node();
@@ -402,22 +428,17 @@ const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   return process_node();
 }
 
-int FrameNodeImpl::GetFrameTreeNodeId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_tree_node_id();
-}
-
 const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_token();
 }
 
-int32_t FrameNodeImpl::GetBrowsingInstanceId() const {
+content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browsing_instance_id();
 }
 
-int32_t FrameNodeImpl::GetSiteInstanceId() const {
+content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id();
 }
@@ -454,6 +475,23 @@ const base::flat_set<const PageNode*> FrameNodeImpl::GetOpenedPageNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return UpcastNodeSet<PageNode>(opened_page_nodes());
+}
+
+bool FrameNodeImpl::VisitEmbeddedPageNodes(
+    const PageNodeVisitor& visitor) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto* page_impl : embedded_page_nodes()) {
+    const PageNode* page = page_impl;
+    if (!visitor.Run(page))
+      return false;
+  }
+  return true;
+}
+
+const base::flat_set<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return UpcastNodeSet<PageNode>(embedded_page_nodes());
 }
 
 FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
@@ -529,7 +567,7 @@ bool FrameNodeImpl::IsAudible() const {
   return is_audible();
 }
 
-const base::Optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
+const absl::optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return viewport_intersection();
@@ -538,6 +576,11 @@ const base::Optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
 FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return visibility();
+}
+
+uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resident_set_kb_estimate();
 }
 
 void FrameNodeImpl::AddChildFrame(FrameNodeImpl* child_frame_node) {
@@ -589,8 +632,7 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
 
   DCHECK(child_frame_nodes_.empty());
 
-  // Sever opener relationships.
-  SeverOpenedPagesAndMaybeReparent();
+  SeverPageRelationshipsAndMaybeReparent();
 
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
@@ -611,32 +653,50 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
                                     render_frame_id_, this);
 }
 
-void FrameNodeImpl::SeverOpenedPagesAndMaybeReparent() {
+void FrameNodeImpl::RemoveNodeAttachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  execution_context_.reset();
+}
+
+void FrameNodeImpl::SeverPageRelationshipsAndMaybeReparent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Copy |opened_page_nodes_| as we'll be modifying it in this loop: when we
-  // call PageNodeImpl::(Set|Clear)OpenerFrameNodeAndOpenedType() this will call
-  // back into this frame node and call RemoveOpenedPage().
-  base::flat_set<PageNodeImpl*> opened_nodes = opened_page_nodes_;
-  for (auto* opened_node : opened_nodes) {
-    auto opened_type = opened_node->opened_type();
-
-    // Reparent opened pages to this frame's parent to maintain the relationship
-    // between the frame trees for bookkeeping. For the relationship to be
-    // finally severed one of the frame trees must completely disappear, or it
-    // must be explicitly severed (this can happen with portals).
+  // Be careful when iterating: when we call
+  // PageNodeImpl::(Set|Clear)(Opener|Embedder)FrameNode() this will call
+  // back into this frame node and call Remove(Opened|Embedded)Page(), which
+  // modifies |opened_page_nodes_| and |embedded_page_nodes_|.
+  //
+  // We also reparent related pages to this frame's parent to maintain the
+  // relationship between the distinct frame trees for bookkeeping. For the
+  // relationship to be finally severed one of the frame trees must completely
+  // disappear, or it must be explicitly severed (this can happen with
+  // portals).
+  while (!opened_page_nodes_.empty()) {
+    auto* opened_node = *opened_page_nodes_.begin();
     if (parent_frame_node_) {
-      opened_node->SetOpenerFrameNodeAndOpenedType(parent_frame_node_,
-                                                   opened_type);
+      opened_node->SetOpenerFrameNode(parent_frame_node_);
     } else {
-      // There's no new parent, so simply clear the opener.
-      opened_node->ClearOpenerFrameNodeAndOpenedType();
+      opened_node->ClearOpenerFrameNode();
     }
+    DCHECK(!base::Contains(opened_page_nodes_, opened_node));
   }
 
-  // Expect each page node to have called RemoveOpenedPage(), and for this to
+  while (!embedded_page_nodes_.empty()) {
+    auto* embedded_node = *embedded_page_nodes_.begin();
+    auto embedding_type = embedded_node->embedding_type();
+    if (parent_frame_node_) {
+      embedded_node->SetEmbedderFrameNodeAndEmbeddingType(parent_frame_node_,
+                                                          embedding_type);
+    } else {
+      embedded_node->ClearEmbedderFrameNodeAndEmbeddingType();
+    }
+    DCHECK(!base::Contains(embedded_page_nodes_, embedded_node));
+  }
+
+  // Expect each page node to have called RemoveEmbeddedPage(), and for this to
   // now be empty.
   DCHECK(opened_page_nodes_.empty());
+  DCHECK(embedded_page_nodes_.empty());
 }
 
 FrameNodeImpl* FrameNodeImpl::GetFrameTreeRoot() const {

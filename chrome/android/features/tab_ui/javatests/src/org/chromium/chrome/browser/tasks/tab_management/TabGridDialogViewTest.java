@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,21 +25,25 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * DummyUiActivity Tests for the {@link TabGridDialogView}.
+ * BlankUiTestActivity Tests for the {@link TabGridDialogView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabGridDialogViewTest extends DummyUiActivityTestCase {
+public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private int mToolbarHeight;
     private int mTopMargin;
     private int mSideMargin;
@@ -55,7 +59,6 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDummyParent = new FrameLayout(getActivity());
             getActivity().setContentView(mDummyParent);
@@ -272,6 +275,7 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1036552")
     public void testDialog_ZoomInZoomOut() {
         // TODO(crbug.com/1075677): figure out a stable way to separate different stages of the
         // animation so that we can verify the alpha and view hierarchy of the animation-related
@@ -346,6 +350,7 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1036552")
     public void testDialog_ZoomInFadeOut() {
         // Setup the animation with a dummy animation source view.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -448,6 +453,34 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
             Assert.assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
             Assert.assertFalse(mTabGridDialogContainer.isFocused());
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testHideDialog_InvokeVisibilityListener() throws TimeoutException {
+        CallbackHelper visibilityCallback = new CallbackHelper();
+        mTabGridDialogView.setVisibilityListener(new VisibilityListener() {
+            @Override
+            public void finishedHidingDialogView() {
+                visibilityCallback.notifyCalled();
+            }
+        });
+        // Setup the the basic animation.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTabGridDialogView.setupDialogAnimation(null); });
+
+        // Show the dialog.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabGridDialogView.showDialog(); });
+        // Wait for show to finish.
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> Criteria.checkThat(
+                                mTabGridDialogView.getCurrentDialogAnimatorForTesting(),
+                                Matchers.nullValue()));
+
+        // Hide the dialog.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabGridDialogView.hideDialog(); });
+        visibilityCallback.waitForNext();
     }
 
     private void mockDialogStatus(boolean isShowing) {

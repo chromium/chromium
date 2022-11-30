@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,9 @@ class VirtualKeyboardApiTest : public ShellApiTest {
  public:
   VirtualKeyboardApiTest() {}
 
+  VirtualKeyboardApiTest(const VirtualKeyboardApiTest&) = delete;
+  VirtualKeyboardApiTest& operator=(const VirtualKeyboardApiTest&) = delete;
+
   ~VirtualKeyboardApiTest() override = default;
 
   void SetUp() override {
@@ -40,8 +43,6 @@ class VirtualKeyboardApiTest : public ShellApiTest {
  private:
   std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>>
       feature_session_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(VirtualKeyboardApiTest, Test) {

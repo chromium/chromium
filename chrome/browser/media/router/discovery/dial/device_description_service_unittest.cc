@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +32,9 @@ DialDeviceData CreateDialDeviceData(int num) {
       GURL(base::StringPrintf("http://192.168.1.%d/dd.xml", num)),
       base::Time::Now());
   device_data.set_label(base::StringPrintf("Device label %d", num));
+  net::IPAddress address;
+  CHECK(address.AssignFromIPLiteral(base::StringPrintf("192.168.1.%d", num)));
+  device_data.set_ip_address(address);
   return device_data;
 }
 
@@ -79,7 +84,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
                   bool expired) {
     DeviceDescriptionService::CacheEntry cache_entry;
     cache_entry.expire_time =
-        base::Time::Now() + (expired ? -1 : 1) * base::TimeDelta::FromHours(12);
+        base::Time::Now() + (expired ? -1 : 1) * base::Hours(12);
     cache_entry.description_data = description_data;
     description_cache_[device_label] = cache_entry;
   }

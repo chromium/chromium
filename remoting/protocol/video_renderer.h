@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_VIDEO_RENDERER_H_
-#define REMOTING_CLIENT_VIDEO_RENDERER_H_
+#ifndef REMOTING_PROTOCOL_VIDEO_RENDERER_H_
+#define REMOTING_PROTOCOL_VIDEO_RENDERER_H_
 
 namespace remoting {
 
@@ -26,7 +26,7 @@ class VideoStub;
 // TODO(sergeyu): Reconsider this design.
 class VideoRenderer {
  public:
-  virtual ~VideoRenderer() {}
+  virtual ~VideoRenderer() = default;
 
   // Initializes the video renderer. This allows the renderer to be initialized
   // after it is constructed. Returns true if initialization succeeds and false
@@ -53,4 +53,4 @@ class VideoRenderer {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_CLIENT_VIDEO_RENDERER_H_
+#endif  // REMOTING_PROTOCOL_VIDEO_RENDERER_H_

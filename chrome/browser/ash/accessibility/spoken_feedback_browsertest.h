@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ using ::extensions::api::braille_display_private::StubBrailleController;
 class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
  public:
   LoggedInSpokenFeedbackTest();
+
+  LoggedInSpokenFeedbackTest(const LoggedInSpokenFeedbackTest&) = delete;
+  LoggedInSpokenFeedbackTest& operator=(const LoggedInSpokenFeedbackTest&) =
+      delete;
+
   ~LoggedInSpokenFeedbackTest() override;
 
   // InProcessBrowserTest:
@@ -30,6 +35,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   // Simulate key press event.
   void SendKeyPress(ui::KeyboardCode key);
   void SendKeyPressWithControl(ui::KeyboardCode key);
+  void SendKeyPressWithControlAndAlt(ui::KeyboardCode key);
   void SendKeyPressWithShift(ui::KeyboardCode key);
   void SendKeyPressWithSearchAndShift(ui::KeyboardCode key);
   void SendKeyPressWithSearch(ui::KeyboardCode key);
@@ -48,8 +54,11 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   void StablizeChromeVoxState();
 
+  void ExecuteCommandHandlerCommand(std::string command);
+
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
+  void ImportJSModuleForChromeVox(std::string name, std::string path);
 
   test::SpeechMonitor sm_;
 
@@ -57,8 +66,6 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggedInSpokenFeedbackTest);
 };
 
 }  // namespace ash

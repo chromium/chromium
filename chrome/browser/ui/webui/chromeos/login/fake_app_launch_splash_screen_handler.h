@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
   void ShowNetworkConfigureUI() override {}
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+  void ContinueAppLaunch() override {}
 
   KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);
@@ -33,5 +34,11 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeAppLaunchSplashScreenHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_FAKE_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_

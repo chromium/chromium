@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+import "components/segmentation_platform/public/proto/types.proto";
+
+// Contains storage related information about a particular signal useful for
+// determining eligibility for model evaluation and DB cleanups.
+message SignalStorageConfig {
+  // The name hash of the user action/histogram or the metric hash of the ukm
+  // event.
+  optional uint64 name_hash = 1;
+
+  // The event hash of the ukm event. Only filled if signal type is UKM_EVENT.
+  optional uint64 event_hash = 5;
+
+  // The type of the signal.
+  optional SignalType signal_type = 2;
+
+  // Number of seconds to store a particular signal.
+  optional int64 storage_length_s = 3;
+
+  // Set to the first time we received a model that required collecting this
+  // signal, in seconds from windows epoch.
+  optional int64 collection_start_time_s = 4;
+}
+
+// Top level message for the signal storage config containing all signals across
+// different models.
+message SignalStorageConfigs {
+  // The list of all signal configs.
+  repeated SignalStorageConfig signals = 1;
+}

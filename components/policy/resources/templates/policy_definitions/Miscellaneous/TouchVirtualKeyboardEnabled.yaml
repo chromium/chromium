@@ -1,0 +1,26 @@
+caption: Enable virtual keyboard
+desc: |-
+  Controls the on-screen keyboard, acting as a supplementary policy to the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy.
+
+        If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is True or if the Enable on-screen keyboard ChromeOS setting is on, this policy has no effect.
+
+        If the <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME">VirtualKeyboardEnabled</ph> policy is False or not set and the Enable on-screen keyboard ChromeOS setting is off, this policy has the following effect:
+        If this policy is not set, the on-screen keyboard is displayed when the device is in tablet mode.
+        If this policy is set to True, the on-screen keyboard is always displayed.
+        If this policy is set to False, the on-screen keyboard is never displayed.
+
+        The on-screen keyboard may change to a compact layout depending on the input method.
+
+        If you set the policy, users can't change it.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- rsadam@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:37-
+tags: []
+type: main

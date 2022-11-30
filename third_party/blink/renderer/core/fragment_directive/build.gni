@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_fragment_directive = [
+  "css_selector_directive.cc",
+  "css_selector_directive.h",
+  "css_selector_fragment_anchor.cc",
+  "css_selector_fragment_anchor.h",
+  "same_block_word_iterator.cc",
+  "same_block_word_iterator.h",
+  "fragment_directive.cc",
+  "fragment_directive.h",
+  "fragment_directive_utils.cc",
+  "fragment_directive_utils.h",
+  "selector_fragment_anchor.cc",
+  "selector_fragment_anchor.h",
+  "text_directive.cc",
+  "text_directive.h",
+  "text_fragment_anchor.cc",
+  "text_fragment_anchor.h",
+  "text_fragment_anchor_metrics.cc",
+  "text_fragment_anchor_metrics.h",
+  "text_fragment_finder.cc",
+  "text_fragment_finder.h",
+  "text_fragment_selector.cc",
+  "text_fragment_selector.h",
+  "text_fragment_selector_generator.cc",
+  "text_fragment_selector_generator.h",
+  "text_fragment_handler.cc",
+  "text_fragment_handler.h",
+]
+
+blink_core_tests_fragment_directive = [
+  "css_selector_fragment_anchor_test.cc",
+  "same_block_word_iterator_test.cc",
+  "text_fragment_anchor_metrics_test.cc",
+  "text_fragment_anchor_test.cc",
+  "text_fragment_finder_test.cc",
+  "text_fragment_generation_navigation_test.cc",
+  "text_fragment_handler_test.cc",
+  "text_fragment_selector_generator_test.cc",
+  "text_fragment_selector_test.cc",
+]

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,9 +60,6 @@ const char kMetricRemoteCommandInvalidationsRegistrationResult[] =
 const char kMetricUserRemoteCommandReceived[] =
     "Enterprise.UserRemoteCommand.Received";
 
-const char kMetricUserUnsignedRemoteCommandReceived[] =
-    "Enterprise.UserRemoteCommand.Received.Unsigned";
-
 // Expands to:
 // Enterprise.UserRemoteCommand.Executed.CommandEchoTest
 // Enterprise.UserRemoteCommand.Executed.DeviceReboot
@@ -78,32 +75,13 @@ const char kMetricUserUnsignedRemoteCommandReceived[] =
 // Enterprise.UserRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.UserRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.UserRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.UserRemoteCommand.Executed.DeviceResetEuicc
+// Enterprise.UserRemoteCommand.Executed.BrowserRotateAttestationCredential
 const char kMetricUserRemoteCommandExecutedTemplate[] =
     "Enterprise.UserRemoteCommand.Executed.%s";
 
-// Expands to:
-// Enterprise.UserRemoteCommand.Executed.Unsigned.CommandEchoTest
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceReboot
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceScreenshot
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceSetVolume
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceStartCrdSession
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceFetchStatus
-// Enterprise.UserRemoteCommand.Executed.Unsigned.UserArcCommand
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceWipeUsers
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceRefreshEnterpriseMachineCertificate
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceRemotePowerwash
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceGetAvailableDiagnosticRoutines
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
-// Enterprise.UserRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
-// Enterprise.UserRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
-const char kMetricUserUnsignedRemoteCommandExecutedTemplate[] =
-    "Enterprise.UserRemoteCommand.Executed.Unsigned.%s";
-
 const char kMetricDeviceRemoteCommandReceived[] =
     "Enterprise.DeviceRemoteCommand.Received";
-
-const char kMetricDeviceUnsignedRemoteCommandReceived[] =
-    "Enterprise.DeviceRemoteCommand.Received.Unsigned";
 
 // Expands to:
 // Enterprise.DeviceRemoteCommand.Executed.CommandEchoTest
@@ -120,32 +98,13 @@ const char kMetricDeviceUnsignedRemoteCommandReceived[] =
 // Enterprise.DeviceRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.DeviceRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.DeviceRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.DeviceRemoteCommand.Executed.DeviceResetEuicc
+// Enterprise.DeviceRemoteCommand.Executed.BrowserRotateAttestationCredential
 const char kMetricDeviceRemoteCommandExecutedTemplate[] =
     "Enterprise.DeviceRemoteCommand.Executed.%s";
 
-// Expands to:
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.CommandEchoTest
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceReboot
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceScreenshot
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceSetVolume
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceStartCrdSession
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceFetchStatus
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.UserArcCommand
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceWipeUsers
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceRefreshEnterpriseMachineCertificate
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceRemotePowerwash
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceGetAvailableDiagnosticRoutines
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
-// Enterprise.DeviceRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
-const char kMetricDeviceUnsignedRemoteCommandExecutedTemplate[] =
-    "Enterprise.DeviceRemoteCommand.Executed.Unsigned.%s";
-
 const char kMetricCBCMRemoteCommandReceived[] =
     "Enterprise.CBCMRemoteCommand.Received";
-
-const char kMetricCBCMUnsignedRemoteCommandReceived[] =
-    "Enterprise.CBCMRemoteCommand.Received.Unsigned";
 
 // Expands to:
 // Enterprise.CBCMRemoteCommand.Executed.CommandEchoTest
@@ -162,35 +121,18 @@ const char kMetricCBCMUnsignedRemoteCommandReceived[] =
 // Enterprise.CBCMRemoteCommand.Executed.DeviceRunDiagnosticRoutine
 // Enterprise.CBCMRemoteCommand.Executed.DeviceGetDiagnosticRoutineUpdate
 // Enterprise.CBCMRemoteCommand.Executed.BrowserClearBrowsingData
+// Enterprise.CBCMRemoteCommand.Executed.DeviceResetEuicc
+// Enterprise.CBCMRemoteCommand.Executed.BrowserRotateAttestationCredential
 const char kMetricCBCMRemoteCommandExecutedTemplate[] =
     "Enterprise.CBCMRemoteCommand.Executed.%s";
 
-// Expands to:
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.CommandEchoTest
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceReboot
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceScreenshot
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceSetVolume
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceStartCrdSession
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceFetchStatus
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.UserArcCommand
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceWipeUsers
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceRefreshEnterpriseMachineCertificate
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceRemotePowerwash
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceGetAvailableDiagnosticRoutines
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceRunDiagnosticRoutine
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.DeviceGetDiagnosticRoutineUpdate
-// Enterprise.CBCMRemoteCommand.Executed.Unsigned.BrowserClearBrowsingData
-const char kMetricCBCMUnsignedRemoteCommandExecutedTemplate[] =
-    "Enterprise.CBCMRemoteCommand.Executed.Unsigned.%s";
-
-const char kUMAPsmHashDanceComparison[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison";
-const char kUMAPsmHashDanceDifferentResultsComparison[] =
-    "Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison";
 const char kUMAPsmSuccessTime[] =
     "Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime";
-const char kUMAPsmRequestStatus[] =
-    "Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus";
+const char kUMAPsmResult[] = "Enterprise.AutoEnrollmentPsmResult";
+const char kUMAPsmNetworkErrorCode[] =
+    "Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode";
+const char kUMAPsmDmServerRequestStatus[] =
+    "Enterprise.AutoEnrollmentPsmDmServerRequestStatus";
 
 const char kUMAHashDanceSuccessTime[] =
     "Enterprise.AutoEnrollmentHashDanceSuccessTime";
@@ -198,12 +140,12 @@ const char kUMAHashDanceProtocolTime[] =
     "Enterprise.AutoEnrollmentProtocolTime";
 const char kUMAHashDanceBucketDownloadTime[] =
     "Enterprise.AutoEnrollmentBucketDownloadTime";
-const char kUMAHashDanceExtraTime[] = "Enterprise.AutoEnrollmentExtraTime";
 const char kUMAHashDanceRequestStatus[] =
     "Enterprise.AutoEnrollmentRequestStatus";
 const char kUMAHashDanceNetworkErrorCode[] =
     "Enterprise.AutoEnrollmentRequestNetworkErrorCode";
-const char kUMAHashDanceSuffixInitialEnrollment[] = ".InitialEnrollment";
-const char kUMAHashDanceSuffixFRE[] = ".ForcedReenrollment";
+
+const char kUMASuffixInitialEnrollment[] = ".InitialEnrollment";
+const char kUMASuffixFRE[] = ".ForcedReenrollment";
 
 }  // namespace policy

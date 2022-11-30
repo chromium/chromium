@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Copyright 2014 Blake Embrey (hello@blakeembrey.com)
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
@@ -7,41 +7,46 @@
 #define THIRD_PARTY_LIBURLPATTERN_PATTERN_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/liburlpattern/options.h"
-
-// NOTE: This code is a work-in-progress.  It is not ready for production use.
 
 namespace liburlpattern {
 
+// Numeric values are set such that more restrictive values come last.  This
+// is important for comparison routines in calling code, like URLPattern.
 enum class PartType {
-  // A fixed, non-variable part of the pattern.  Consists of kChar and
-  // kEscapedChar Tokens.
-  kFixed,
-
-  // A part with a custom regular expression.
-  kRegex,
+  // A part that matches any character to the end of the input string.
+  kFullWildcard = 0,
 
   // A part that matches any character to the next segment separator.
-  kSegmentWildcard,
+  kSegmentWildcard = 1,
 
-  // A part that matches any character to the end of the input string.
-  kFullWildcard,
+  // A part with a custom regular expression.
+  kRegex = 2,
+
+  // A fixed, non-variable part of the pattern.  Consists of kChar and
+  // kEscapedChar Tokens.
+  kFixed = 3,
 };
 
+// Numeric values are set such that more restrictive values come last.  This
+// is important for comparison routines in calling code, like URLPattern.
 enum class Modifier {
-  // No modifier.
-  kNone,
+  // The `*` modifier.
+  kZeroOrMore = 0,
 
   // The `?` modifier.
-  kOptional,
-
-  // The `*` modifier.
-  kZeroOrMore,
+  kOptional = 1,
 
   // The `+` modifier.
-  kOneOrMore,
+  kOneOrMore = 2,
+
+  // No modifier.
+  kNone = 3,
 };
 
 // A structure representing one part of a parsed Pattern.  A full Pattern
@@ -81,6 +86,10 @@ struct COMPONENT_EXPORT(LIBURLPATTERN) Part {
        std::string suffix,
        Modifier modifier);
   Part() = default;
+
+  // Returns true if the `name` member is a custom name; e.g. for a `:foo`
+  // group.
+  bool HasCustomName() const;
 };
 
 COMPONENT_EXPORT(LIBURLPATTERN)
@@ -126,6 +135,24 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
 
   const std::vector<Part>& PartList() const { return part_list_; }
 
+  // Returns true if the pattern can match input strings using `DirectMatch()`.
+  bool CanDirectMatch() const;
+
+  // Attempts to match the pattern against the given `input` string directly
+  // without using a regular expression.  Only some patterns support this
+  // feature.  The caller must only call `DirectMatch()` if `CanDirectMatch()`
+  // returns true.
+  //
+  // `DirectMatch()` returns true if the pattern matches `input` and false
+  // otherwise.  If the `group_list_out` pointer is provided then the vector
+  // is populated with name:value pairs for matched pattern groups.  If a
+  // group had an optional modifier and it did not match any input characters
+  // then its `group_list_out` value will be std::nullopt.
+  bool DirectMatch(absl::string_view input,
+                   std::vector<std::pair<absl::string_view,
+                                         absl::optional<absl::string_view>>>*
+                       group_list_out) const;
+
  private:
   // Compute the expected size of the string that will be returned by
   // GenerateRegexString().
@@ -136,6 +163,10 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
   size_t DelimiterListLength() const;
   void AppendEndsWith(std::string& append_target) const;
   size_t EndsWithLength() const;
+
+  // Utility methods to help with direct matching.
+  bool IsOnlyFullWildcard() const;
+  bool IsOnlyFixedText() const;
 
   std::vector<Part> part_list_;
   Options options_;

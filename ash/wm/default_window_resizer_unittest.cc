@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,12 +20,16 @@ namespace ash {
 class DefaultWindowResizerTest : public AshTestBase {
  public:
   DefaultWindowResizerTest() = default;
+
+  DefaultWindowResizerTest(const DefaultWindowResizerTest&) = delete;
+  DefaultWindowResizerTest& operator=(const DefaultWindowResizerTest&) = delete;
+
   ~DefaultWindowResizerTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
 
-    UpdateDisplay("1000x1000");
+    UpdateDisplay("1200x1000");
 
     delegate_.set_minimum_size(gfx::Size(10, 10));
     delegate_.set_maximum_size(gfx::Size(500, 500));
@@ -53,9 +57,6 @@ class DefaultWindowResizerTest : public AshTestBase {
   aura::test::TestWindowDelegate delegate_;
   std::unique_ptr<aura::Window> aspect_ratio_window_;
   base::HistogramTester histograms_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultWindowResizerTest);
 };
 
 // Tests window resizing with a square aspect ratio.

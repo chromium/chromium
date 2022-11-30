@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <windows.h>
 #include <winhttp.h>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
@@ -19,6 +18,10 @@ namespace credential_provider {
 class WindowStationTraits {
  public:
   using Handle = HWINSTA;
+
+  WindowStationTraits() = delete;
+  WindowStationTraits(const WindowStationTraits&) = delete;
+  WindowStationTraits& operator=(const WindowStationTraits&) = delete;
 
   static bool CloseHandle(HWINSTA handle) {
     return ::CloseWindowStation(handle) != FALSE;
@@ -31,9 +34,6 @@ class WindowStationTraits {
   static HWINSTA NullHandle() {
     return nullptr;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WindowStationTraits);
 };
 
 typedef base::win::GenericScopedHandle<WindowStationTraits,
@@ -46,6 +46,10 @@ class DesktopTraits {
  public:
   using Handle = HDESK;
 
+  DesktopTraits() = delete;
+  DesktopTraits(const DesktopTraits&) = delete;
+  DesktopTraits& operator=(const DesktopTraits&) = delete;
+
   static bool CloseHandle(HDESK handle) {
     return ::CloseDesktop(handle) != FALSE;
   }
@@ -57,9 +61,6 @@ class DesktopTraits {
   static HDESK NullHandle() {
     return nullptr;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DesktopTraits);
 };
 
 typedef base::win::GenericScopedHandle<DesktopTraits,
@@ -72,6 +73,10 @@ class WinHttpTraits {
  public:
   using Handle = HINTERNET;
 
+  WinHttpTraits() = delete;
+  WinHttpTraits(const WinHttpTraits&) = delete;
+  WinHttpTraits& operator=(const WinHttpTraits&) = delete;
+
   static bool CloseHandle(HINTERNET handle) {
     return ::WinHttpCloseHandle(handle) != FALSE;
   }
@@ -83,9 +88,6 @@ class WinHttpTraits {
   static HINTERNET NullHandle() {
     return nullptr;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WinHttpTraits);
 };
 
 typedef base::win::GenericScopedHandle<WinHttpTraits,

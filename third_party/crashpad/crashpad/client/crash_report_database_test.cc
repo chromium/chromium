@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,10 @@
 #include "util/file/file_io.h"
 #include "util/file/filesystem.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "util/mac/xattr.h"
+#endif
+
 namespace crashpad {
 namespace test {
 namespace {
@@ -31,6 +35,9 @@ namespace {
 class CrashReportDatabaseTest : public testing::Test {
  public:
   CrashReportDatabaseTest() {}
+
+  CrashReportDatabaseTest(const CrashReportDatabaseTest&) = delete;
+  CrashReportDatabaseTest& operator=(const CrashReportDatabaseTest&) = delete;
 
  protected:
   // testing::Test:
@@ -125,8 +132,6 @@ class CrashReportDatabaseTest : public testing::Test {
  private:
   ScopedTempDir temp_dir_;
   std::unique_ptr<CrashReportDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabaseTest);
 };
 
 TEST_F(CrashReportDatabaseTest, Initialize) {
@@ -182,6 +187,41 @@ TEST_F(CrashReportDatabaseTest, Initialize) {
       path().DirName().Append(FILE_PATH_LITERAL("not_a_database"));
   db = CrashReportDatabase::InitializeWithoutCreating(non_database_path);
   EXPECT_FALSE(db);
+}
+
+TEST_F(CrashReportDatabaseTest, Settings) {
+  // Initialize three databases and ensure settings.dat isn't created yet.
+  ASSERT_TRUE(db());
+
+  base::FilePath settings_path =
+      path().Append(FILE_PATH_LITERAL("settings.dat"));
+  EXPECT_FALSE(FileExists(settings_path));
+
+  std::unique_ptr<CrashReportDatabase> db2 =
+      CrashReportDatabase::Initialize(path());
+  ASSERT_TRUE(db2);
+  EXPECT_FALSE(FileExists(settings_path));
+
+  std::unique_ptr<CrashReportDatabase> db3 =
+      CrashReportDatabase::Initialize(path());
+  ASSERT_TRUE(db3);
+  EXPECT_FALSE(FileExists(settings_path));
+
+  // Ensure settings.dat exists after getter.
+  Settings* settings = db3->GetSettings();
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(FileExists(settings_path));
+
+  time_t last_upload_attempt_time = 42;
+  ASSERT_TRUE(settings->SetLastUploadAttemptTime(last_upload_attempt_time));
+
+  // Ensure the first two databases read the same value.
+  ASSERT_TRUE(
+      db2->GetSettings()->GetLastUploadAttemptTime(&last_upload_attempt_time));
+  EXPECT_EQ(last_upload_attempt_time, 42);
+  ASSERT_TRUE(
+      db()->GetSettings()->GetLastUploadAttemptTime(&last_upload_attempt_time));
+  EXPECT_EQ(last_upload_attempt_time, 42);
 }
 
 TEST_F(CrashReportDatabaseTest, NewCrashReport) {
@@ -475,6 +515,46 @@ TEST_F(CrashReportDatabaseTest, DuelingUploads) {
             CrashReportDatabase::kNoError);
 }
 
+#if BUILDFLAG(IS_IOS)
+TEST_F(CrashReportDatabaseTest, InterruptedIOSUploads) {
+  CrashReportDatabase::Report report;
+  CreateCrashReport(&report);
+
+  std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report;
+  EXPECT_EQ(db()->GetReportForUploading(report.uuid, &upload_report),
+            CrashReportDatabase::kNoError);
+
+  // Set upload_start_time to 10 minutes ago.
+  time_t ten_minutes_ago = time(nullptr) - 10 * 60;
+  ASSERT_TRUE(
+      WriteXattrTimeT(report.file_path,
+                      "org.chromium.crashpad.database.upload_start_time",
+                      ten_minutes_ago));
+
+  std::vector<CrashReportDatabase::Report> reports;
+  EXPECT_EQ(db()->GetPendingReports(&reports), CrashReportDatabase::kNoError);
+  ASSERT_EQ(reports.size(), 1u);
+  reports.clear();
+  EXPECT_EQ(db()->GetCompletedReports(&reports), CrashReportDatabase::kNoError);
+  EXPECT_TRUE(reports.empty());
+
+  // Getting a stale report will automatically skip it.
+  std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report_2;
+  EXPECT_EQ(db()->GetReportForUploading(report.uuid, &upload_report_2),
+            CrashReportDatabase::kReportNotFound);
+  EXPECT_FALSE(upload_report_2);
+
+  // Confirm report was moved from pending to completed.
+  EXPECT_EQ(db()->GetPendingReports(&reports), CrashReportDatabase::kNoError);
+  EXPECT_TRUE(reports.empty());
+  EXPECT_EQ(db()->GetCompletedReports(&reports), CrashReportDatabase::kNoError);
+  ASSERT_EQ(reports.size(), 1u);
+
+  EXPECT_EQ(db()->RecordUploadComplete(std::move(upload_report), std::string()),
+            CrashReportDatabase::kReportNotFound);
+}
+#endif
+
 TEST_F(CrashReportDatabaseTest, UploadAlreadyUploaded) {
   CrashReportDatabase::Report report;
   CreateCrashReport(&report);
@@ -674,10 +754,6 @@ TEST_F(CrashReportDatabaseTest, RequestUpload) {
 }
 
 TEST_F(CrashReportDatabaseTest, Attachments) {
-#if defined(OS_APPLE) || defined(OS_WIN)
-  // Attachments aren't supported on Mac and Windows yet.
-  GTEST_SKIP();
-#else
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
   ASSERT_EQ(db()->PrepareNewCrashReport(&new_report),
             CrashReportDatabase::kNoError);
@@ -716,16 +792,9 @@ TEST_F(CrashReportDatabaseTest, Attachments) {
   char result_buffer[sizeof(test_data)];
   result_attachments["some_file"]->Read(result_buffer, sizeof(result_buffer));
   EXPECT_EQ(memcmp(test_data, result_buffer, sizeof(test_data)), 0);
-#endif
 }
 
 TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
-#if defined(OS_APPLE) || defined(OS_WIN)
-  // Attachments aren't supported on Mac and Windows yet.
-  GTEST_SKIP();
-#else
-  // TODO: This is using paths that are specific to the generic implementation
-  // and will need to be generalized for Mac and Windows.
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
   ASSERT_EQ(db()->PrepareNewCrashReport(&new_report),
             CrashReportDatabase::kNoError);
@@ -747,30 +816,48 @@ TEST_F(CrashReportDatabaseTest, OrphanedAttachments) {
 
   ASSERT_TRUE(LoggingRemoveFile(report.file_path));
 
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+  // CrashReportDatabaseMac stores metadata in xattrs and does not have .meta
+  // files.
+  // CrashReportDatabaseWin stores metadata in a global metadata file and not
+  // per report.
   ASSERT_TRUE(LoggingRemoveFile(base::FilePath(
       report.file_path.RemoveFinalExtension().value() + ".meta")));
+#endif
 
   ASSERT_EQ(db()->LookUpCrashReport(uuid, &report),
             CrashReportDatabase::kReportNotFound);
 
+#if BUILDFLAG(IS_WIN)
+  const std::wstring uuid_string = uuid.ToWString();
+#else
+  const std::string uuid_string = uuid.ToString();
+#endif
   base::FilePath report_attachments_dir(
-      path().Append("attachments").Append(uuid.ToString()));
-  base::FilePath file_path1(report_attachments_dir.Append("file1"));
-  base::FilePath file_path2(report_attachments_dir.Append("file2"));
+      path().Append(FILE_PATH_LITERAL("attachments")).Append(uuid_string));
+  base::FilePath file_path1(
+      report_attachments_dir.Append(FILE_PATH_LITERAL("file1")));
+  base::FilePath file_path2(
+      report_attachments_dir.Append(FILE_PATH_LITERAL("file2")));
   EXPECT_TRUE(FileExists(file_path1));
   EXPECT_TRUE(FileExists(file_path1));
 
+#if BUILDFLAG(IS_WIN)
+  // On Windows, reports removed from metadata are counted, even if the file
+  // is not on the disk.
+  EXPECT_EQ(db()->CleanDatabase(0), 1);
+#else
   EXPECT_EQ(db()->CleanDatabase(0), 0);
+#endif
 
   EXPECT_FALSE(FileExists(file_path1));
   EXPECT_FALSE(FileExists(file_path2));
   EXPECT_FALSE(FileExists(report_attachments_dir));
-#endif
 }
 
 // This test uses knowledge of the database format to break it, so it only
 // applies to the unfified database implementation.
-#if !defined(OS_APPLE) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 TEST_F(CrashReportDatabaseTest, CleanBrokenDatabase) {
   // Remove report files if metadata goes missing.
   CrashReportDatabase::Report report;
@@ -828,15 +915,14 @@ TEST_F(CrashReportDatabaseTest, CleanBrokenDatabase) {
 
   ASSERT_TRUE(LoggingWriteFile(
       handle.get(), &expired_timestamp, sizeof(expired_timestamp)));
-  ASSERT_TRUE(LoggingCloseFile(handle.get()));
-  ignore_result(handle.release());
+  ASSERT_TRUE(LoggingCloseFile(handle.release()));
 
   EXPECT_EQ(db()->CleanDatabase(0), 1);
 
   EXPECT_FALSE(PathExists(report.file_path));
   EXPECT_FALSE(PathExists(metadata3));
 }
-#endif  // !OS_APPLE && !OS_WIN
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
 
 TEST_F(CrashReportDatabaseTest, TotalSize_MainReportOnly) {
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
@@ -860,10 +946,6 @@ TEST_F(CrashReportDatabaseTest, TotalSize_MainReportOnly) {
 }
 
 TEST_F(CrashReportDatabaseTest, GetReportSize_RightSizeWithAttachments) {
-#if defined(OS_APPLE) || defined(OS_WIN)
-  // Attachments aren't supported on Mac and Windows yet.
-  return;
-#else
   std::unique_ptr<CrashReportDatabase::NewReport> new_report;
   ASSERT_EQ(db()->PrepareNewCrashReport(&new_report),
             CrashReportDatabase::kNoError);
@@ -895,7 +977,6 @@ TEST_F(CrashReportDatabaseTest, GetReportSize_RightSizeWithAttachments) {
   EXPECT_EQ(report.total_size,
             sizeof(main_report_data) + sizeof(attachment_1_data) +
                 sizeof(attachment_2_data));
-#endif
 }
 
 }  // namespace

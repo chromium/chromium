@@ -1,0 +1,636 @@
+# TODO(crbug.com/1326643):
+# ../../chrome/browser/ui/views/page_info/accuracy_tip_bubble_view_browsertest.cc:368: Failure
+# Value of: hats_service->hats_next_dialog_exists_for_testing()
+#   Actual: false
+# Expected: true
+-AccuracyTipBubbleViewBrowserTest.SurveyShownAfterShowingTip
+
+# TODO(crbug.com/1326645):
+# triggerDOMChangesOnTabsUpdated: API Test Error in triggerDOMChangesOnTabsUpdated
+# Actual: tabs.remove
+# Expected: blinkRequestResource XMLHttpRequest
+-ActivityLogApiTest.TriggerEvent
+
+# TODO(crbug.com/1311019): [hid_manager_impl.cc(28)] Check failed: hid_service_]
+-All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/0
+-All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/1
+-All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/0
+-All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/1
+-All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/0
+-All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/1
+
+# TODO(crbug.com/1326647): Comparison of a couple of very long strings in spanish has an unexpected
+# diff
+-AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
+
+# TODO(crbug.com/1326648):
+# ../../chrome/browser/ui/views/frame/browser_view_browsertest.cc:343: Failure
+# Expected equality of these values:
+#   browser_view()->GetAccessibleWindowTitle()
+#     Which is: u"about:blank - Chromium"
+#   delegate_observer->GetTitle()
+#     Which is: u"Dialog Title"
+-BrowserViewTest.GetAccessibleTabModalDialogTitle
+
+# TODO(crbug.com/1325504): [html_media_element.cc(4705)] SetError: {code=4,
+# message="MEDIA_ELEMENT_ERROR: Media load rejected by URL safety check"}
+-All/DeclarativeNetRequestBrowserTest.PacRequestsBypassRules/0
+-All/DeclarativeNetRequestBrowserTest.PacRequestsBypassRules/1
+-ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___browser_switch
+-ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___nacl
+-ChromeURLDataManagerWebUITrustedTypesTest.NoTrustedTypesViolation/chrome___sandbox
+-HistoryClustersMetricsBrowserTest.IndirectNavigation
+-HttpProxyScriptBrowserTest.Verify
+-LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithPrediction
+-LoadingPredictorBrowserTestWithProxy.PrepareForPageLoadWithoutPrediction
+-MyIpAddressProxyScriptBrowserTest.Verify
+-SCTReportingServiceWithPersistenceBrowserTest.PersistedReportClearedOnClearBrowsingHistory
+
+# TODO(crbug.com/1326652):
+# ../../chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.cc:518: Failure
+# Expected equality of these values:
+#   *value->FindString(field_key)
+#     Which is: "B9045A713CAED5DFF3D3B783E98D1CE5778D8BC331EE4119D707072312AF06A7"
+#   expected_value.value()
+#     Which is: "E061612733D5D991F3BD676A51F77B1F0C824282909B7C1C89BD1612FC52E073"
+-ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/0
+-ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/1
+-ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/2
+-ContentAnalysisDelegateBlockingSettingBrowserTest.BlockLargeFiles/3
+
+# TODO(crbug.com/1326657): #manageCertificates not found, so click can't fire
+-CrSettingsSecurityPageTest.All
+
+# TODO(crbug.com/1326662):
+# ../../chrome/browser/devtools/devtools_browsertest.cc:186: Failure
+# Expected equality of these values:
+#   "[OK]"
+#   result
+#     Which is: "[FAILED] Expected: ''Abbf'', but was ''''"
+-DevToolsTest.TestDispatchKeyEventShowsAutoFill
+
+# TODO(crbug.com/1326663): Unsupported keySystem
+-EncryptedMediaSupportedTypesExternalClearKeyTest.EncryptionScheme
+-EncryptedMediaSupportedTypesExternalClearKeyTest.Robustness
+-EncryptedMediaSupportedTypesExternalClearKeyTest.SessionType
+
+# TODO(crbug.com/1326667): WebGL blocked when it should be allowed
+-ExtensionWebstoreGetWebGLStatusTest.Allowed
+
+# TODO(crbug.com/1326669): Minimizing window not yet supported
+# Value of: new_window->window()->IsMinimized()
+#   Actual: false
+# Expected: true
+-ExtensionWindowCreateTest.AcceptState
+
+# TODO(crbug.com/1326670) Crash because KERN: channel (5583773) has 3501 messages
+-ExtractorBrowserTest.ExtractBigFile
+-ExtractorBrowserTest.ExtractTarXz
+-ExtractorBrowserTest.ZeroByteFile
+
+# TODO(crbug.com/1326595): Page title count expected to be 1, but it is 0
+-BackForwardCacheSiteDetailsBrowserTest.MemoryDetailsForBackForwardCache
+-FencedFrameSiteDetailsBrowserTest.MemoryDetailsForFencedFrame
+-PrerenderSiteDetailsBrowserTest.MemoryDetailsForPrerender
+
+# TODO(crbug.com/1326672): Timed out waiting for tab title
+-TaskManagerBrowserTest.IdleWakeups
+
+# TODO(crbug.com/1326675): Cancel button should be focused, but nothing is focused
+-FolderUploadConfirmationViewTest.InitiallyFocusesCancel
+
+# TODO(crbug.com/1326678): Dialog not focused as expected
+-ExternalProtocolDialogBrowserTest.TestFocus
+
+# TODO(crbug.com/1326681):
+# ../../chrome/browser/infobars/infobars_browsertest.cc:215: Failure
+# Unexpected infobar hung_plugin
+-InfoBarUiTest.InvokeUi_multiple_infobars
+
+# TODO(crbug.com/1326969): Expects click to deselect text, but click seems like it might not be
+# hitting the right location
+-OmniboxPopupContentsViewTest.ClickOmnibox
+-OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+
+# TODO(crbug.com/1325427): [paint_preview_compositor_collection_impl.cc(97)] Check failed:
+# SkFontMgr::RefDefault()->countFamilies()
+-PaintPreviewCompositorBrowserTest.CompositorCreate
+-PaintPreviewCompositorBrowserTest.KillWithActiveCompositors
+-PaintPreviewCompositorBrowserTest.MultipleCompositorCreate
+-PaintPreviewCompositorBrowserTest.TestInitializationSuccess
+
+# TODO(crbug.com/1325427): Empty font list
+-ExtensionApiTest.FontSettings
+-ExtensionApiTest.FontSettingsIncognito
+-ExtensionLoadingTest.RuntimeValidWhileDevToolsOpen
+-ExtensionWebRequestApiTest.WebRequestPacRequestProtection
+-ExtensionWebRequestApiTest.WebSocketRequestOnWorker
+
+# TODO(crbug.com/1326971):
+# ../../chrome/browser/privacy_budget/privacy_budget_browsertest.cc:505: Failure
+# Value of: base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)
+#   Actual: false
+# Expected: true
+-PrivacyBudgetFieldtrialConfigTest.LoadsSettingsFromFieldTrialConfig
+
+# TODO(crbug.com/1326641): [backend_impl.cc(1705)] Check failed: hash & mask_ ==
+# cache_entry->entry()->Data()->hash & mask_ (63255 vs. 61987)
+-ProcessManagementTest.ProcessOverflow
+-IsolatedAppTest.SessionStorage
+
+# TODO(crbug.com/1316169): Google profile signin not supported yet
+-CrSettingsPeoplePageTest.All
+-ProfileCustomizationBubbleBrowserTest.InvokeUi_default
+-ProfileCustomizationBubbleBrowserTest.IPH
+-ProfileCustomizationDialogBrowserTest.IPH
+-ProfileHelperTest.OpenNewWindowForProfile
+-ProfileMenuViewExtensionsTest.CloseIPH
+-ProfileWindowBrowserTest.OpenBrowserWindowForProfileWithSigninRequired
+
+# TODO(crbug.com/1326978):
+# [remote_test_server.cc(43)] getting an unexpected server type TYPE_BASIC_AUTH_PROXY
+# Linux is set to the same type, but it never gets to this line, not sure why yet.
+-ProxyBrowserTest.BasicAuthWSConnect
+-ProxyBrowserTest.ProxyAuthHTTP
+-ProxyBrowserTest.ProxyAuthHTTPS
+
+# TODO(crbug.com/1325420): Sharing handler is null. Probably because remote copy isn't supported on
+# fuchsia yet.
+-RemoteCopyBrowserTest.ImageUrl
+-RemoteCopyBrowserTest.Text
+-RemoteCopyBrowserTest.TextThenImageUrl
+
+# TODO(crbug.com/1326640):
+# [FAIL] nestedWebContents: API Test Error in nestedWebContents
+# Actual: 1
+# Expected: 2
+-ScriptingAPITest.NestedWebContents
+
+# TODO(crbug.com/1325495): [thread_restrictions.cc(105)] Check failed: !*GetBlockingDisallowedTls().
+# Function marked as blocking was called from a scope that disallows blocking!
+-SessionRestoreTest.RestoreAfterClosingTabbedBrowserWithAppAndLaunching
+
+# TODO(crbug.com/1326637) [account_fetcher_service.cc(387)] Failed to get UserInfo for
+# gaia_id_for_test_example.com, network error
+-SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync
+-SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync_ExtensionTheme
+-SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync_SkipCustomization
+-SigninInterceptFirstRunExperienceDialogBrowserTest.AcceptSync_SyncPassphrase
+-SigninInterceptFirstRunExperienceDialogBrowserTest.DeclineSync
+-SigninInterceptFirstRunExperienceDialogBrowserTest.ForcedIntercept
+-SigninInterceptFirstRunExperienceDialogBrowserTest.ForcedIntercept_ProfileColorPolicy
+-SigninInterceptFirstRunExperienceDialogBrowserTest.ProfileColorPolicy
+-SigninInterceptFirstRunExperienceDialogBrowserTest.SyncDisabled
+-SigninInterceptFirstRunExperienceDialogBrowserTest.SyncSettings
+
+# TODO(crbug.com/1326980): Actual function call count doesn't match
+# EXPECT_CALL(*mock_hats_service_,
+#   LaunchSurvey(kHatsSurveyTriggerTrustSafetyTrustedSurface, _, _, expected_product_specific_data,
+#   _))...
+# Expected: to be called once
+# Actual: never called - unsatisfied and active
+-TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_Interaction
+-TrustSafetySentimentServiceBrowserTest.PageInfoTriggersSurvey_NoInteraction
+
+# TODO(crbug.com/1316203): JS error. Probalby because usb isn't supported yet
+-UsbInternalsTest.WebUIValueRenderTest
+
+# TODO(crbug.com/1309290): Fail with ERR_INTERNET_DISCONNECTED
+-InMemoryApp/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-InMemoryApp/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-InMemoryApp/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-InMemoryApp/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-InMemoryApp/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-InMemoryApp/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-InMemoryApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-InMemoryApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-IncognitoProfileMainNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-OnDiskApp/NetworkContextConfigurationBrowserTest.CacheIsolation/1
+-OnDiskApp/NetworkContextConfigurationBrowserTest.CookiesEnabled/0
+-OnDiskApp/NetworkContextConfigurationBrowserTest.DiskCache/0
+-OnDiskApp/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-OnDiskApp/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-OnDiskApp/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-OnDiskApp/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-OnDiskApp/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-OnDiskApp/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-OnDiskApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-OnDiskApp/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-OnDiskApp/NetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel/0
+-OnDiskApp/NetworkContextConfigurationReportingAndNelBrowserTest.PersistReportingAndNel/1
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-OnDiskAppWithIncognitoProfile/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-ProfileMainNetworkContext/NetworkContextConfigurationBrowserTest.CacheIsolation/0
+-ProfileMainNetworkContext/NetworkContextConfigurationBrowserTest.CacheIsolation/1
+-ProfileMainNetworkContext/NetworkContextConfigurationBrowserTest.DiskCache/0
+-ProfileMainNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-ProfileMainNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-ProfileMainNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-ProfileMainNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-ProfileMainNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-ProfileMainNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-ProfileMainNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-ProfileMainNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-ProfileNetworkContextServiceDiskCacheBrowsertest.DiskCacheLocation
+-SafeBrowsingNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-SafeBrowsingNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-SafeBrowsingNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-SafeBrowsingNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-SafeBrowsingNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-SafeBrowsingNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-SafeBrowsingNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-SafeBrowsingNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-SystemNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/0
+-SystemNetworkContext/NetworkContextConfigurationDataPacBrowserTest.DataPac/1
+-SystemNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/0
+-SystemNetworkContext/NetworkContextConfigurationHttpPacBrowserTest.HttpPac/1
+-SystemNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-SystemNetworkContext/NetworkContextConfigurationManagedProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+-SystemNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/0
+-SystemNetworkContext/NetworkContextConfigurationProxySettingsBrowserTest.MaxConnectionsPerProxy/1
+
+# TODO(crbug.com/1298019): Metrics histogram not yet supported
+-All/NetworkRequestMetricsBrowserTest.CancelBeforeHeaders/1
+-All/NetworkRequestMetricsBrowserTest.CancelBeforeHeaders/2
+-All/NetworkRequestMetricsBrowserTest.CancelBeforeHeaders/3
+-All/NetworkRequestMetricsBrowserTest.CancelDuringBody/0
+-All/NetworkRequestMetricsBrowserTest.CancelDuringBody/1
+-All/NetworkRequestMetricsBrowserTest.CancelDuringBody/2
+-All/NetworkRequestMetricsBrowserTest.CancelDuringBody/3
+-All/NetworkRequestMetricsBrowserTest.Download/1
+-All/NetworkRequestMetricsBrowserTest.FileURLError/1
+-All/NetworkRequestMetricsBrowserTest.FileURLError/2
+-All/NetworkRequestMetricsBrowserTest.FileURLError/3
+-All/NetworkRequestMetricsBrowserTest.FileURLSuccess/0
+-All/NetworkRequestMetricsBrowserTest.FileURLSuccess/1
+-All/NetworkRequestMetricsBrowserTest.FileURLSuccess/2
+-All/NetworkRequestMetricsBrowserTest.FileURLSuccess/3
+-All/NetworkRequestMetricsBrowserTest.InterruptedBeforeHeaders/1
+-All/NetworkRequestMetricsBrowserTest.InterruptedBeforeHeaders/2
+-All/NetworkRequestMetricsBrowserTest.InterruptedBeforeHeaders/3
+-All/NetworkRequestMetricsBrowserTest.InterruptedCancelDuringBody/0
+-All/NetworkRequestMetricsBrowserTest.InterruptedCancelDuringBody/1
+-All/NetworkRequestMetricsBrowserTest.InterruptedCancelDuringBody/2
+-All/NetworkRequestMetricsBrowserTest.InterruptedCancelDuringBody/3
+-All/NetworkRequestMetricsBrowserTest.NetErrorBeforeHeaders/1
+-All/NetworkRequestMetricsBrowserTest.NetErrorBeforeHeaders/2
+-All/NetworkRequestMetricsBrowserTest.NetErrorBeforeHeaders/3
+-All/NetworkRequestMetricsBrowserTest.NetErrorDuringBody/0
+-All/NetworkRequestMetricsBrowserTest.NetErrorDuringBody/1
+-All/NetworkRequestMetricsBrowserTest.NetErrorDuringBody/2
+-All/NetworkRequestMetricsBrowserTest.NetErrorDuringBody/3
+-All/NetworkRequestMetricsBrowserTest.SuccessWithBody/0
+-All/NetworkRequestMetricsBrowserTest.SuccessWithBody/1
+-All/NetworkRequestMetricsBrowserTest.SuccessWithBody/2
+-All/NetworkRequestMetricsBrowserTest.SuccessWithBody/3
+-All/NetworkRequestMetricsBrowserTest.SuccessWithEmptyBody/0
+-All/NetworkRequestMetricsBrowserTest.SuccessWithEmptyBody/1
+-All/NetworkRequestMetricsBrowserTest.SuccessWithEmptyBody/2
+-All/NetworkRequestMetricsBrowserTest.SuccessWithEmptyBody/3
+-CommerceHintAddToCartPatternTest.AddToCartByForm
+-CommerceHintAddToCartPatternTest.AddToCartByURL
+-CommerceHintAgentFencedFrameTest.VisitCartInFencedFrame
+-CommerceHintAgentPortalBrowserTest.VisitCartInPortal
+-CommerceHintAgentTest.AddToCartByForm
+-CommerceHintAgentTest.AddToCartByForm_WithLink
+-CommerceHintAgentTest.AddToCartByForm_WithWrongLink
+-CommerceHintAgentTest.AddToCartByURL
+-CommerceHintAgentTest.AddToCartByURL_XHR
+-CommerceHintAgentTest.ExtractCart_ProductIDFromComponent
+-CommerceHintAgentTest.ExtractCart_ScriptFromComponent
+-CommerceHintAgentTest.ExtractCart_ScriptFromResource
+-CommerceHintAgentTest.PurchaseByForm
+-CommerceHintAgentTest.PurchaseByURL
+-CommerceHintAgentTest.VisitCart
+-CommerceHintAgentTest.VisitCart_GeneralPattern_FromComponent
+-CommerceHintAgentTest.VisitCart_PerDomain_FromComponent
+-CommerceHintAgentTest.VisitCheckout
+-CommerceHintCacaoTest.Passed
+-CommerceHintCheckoutPatternTest.VisitCheckout
+-CommerceHintMaxCountTest.ExtractCart
+-CommerceHintOptimizeRendererDisabledTest.Rejected
+-CommerceHintOptimizeRendererTest.CartExtractionSkipped
+-CommerceHintPurchaseButtonPatternTest.PurchaseByForm
+-CommerceHintPurchaseURLPatternTest.PurchaseByURL
+-CommerceHintSkippAddToCartTest.AddToCartByForm
+-CommerceHintTimeoutTest.ExtractCart
+-CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_AllowedTextResource
+-CorbAndCorsExtensionBrowserTest.ContentScriptVsHostBlockedByPolicy_NoSniffXml
+-CorbAndCorsExtensionBrowserTest.ContentScript_CorsAllowedByServer_NoPermissionToTarget
+-CorbAndCorsExtensionBrowserTest.ContentScript_CorsIgnoredByServer_NoPermissionToTarget
+-CorbAndCorsExtensionBrowserTest.ExtensionWithNoHttpPermissions
+-CorbAndCorsExtensionBrowserTest.FromBackgroundPage_ActiveTabPermission_SpanningMode
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedAfterSniffing
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_AllowedTextResource_SubdomainPermissions
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_SameOrigin
+-CorbAndCorsExtensionBrowserTest.FromProgrammaticContentScript_UnloadedExtension
+-PrivateNetworkAccessWithFeatureEnabledBrowserTest.DoesNotRecordAddressSpaceFeatureForBlockedRequests
+-ProcessMemoryMetricsEmitterTest.FetchAndEmitMetrics
+-ProcessMemoryMetricsEmitterTest.FetchAndEmitMetricsWithExtensions
+-ProcessMemoryMetricsEmitterTest.FetchDuringTrace
+-ProcessMemoryMetricsEmitterTest.ForegroundAndBackgroundPages
+-RecordLanguagesMetricsBrowserTest.ContentLanguageEmpty
+-RecordLanguagesMetricsBrowserTest.ContentLanguageMatchTopMostAcceptLanguage
+-RecordLanguagesMetricsBrowserTest.ContentLanguageMatchesAnyAcceptLanguage
+-RecordLanguagesMetricsBrowserTest.ContentLanguageIsWildcard
+-RecordLanguagesMetricsBrowserTest.IframeBothParentAndChildContentLanguageIsEmpty
+-RecordLanguagesMetricsBrowserTest.IframeContentLanguageChildDifferFromParent
+-RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageAreStar
+-RecordLanguagesMetricsBrowserTest.IframeParentAndChildContentLanguageHasSameValue
+-RecordLanguagesMetricsBrowserTest.IframeParentContentLanguageIsEmptyAndChildContentLanguageHasValue
+-RecordLanguagesMetricsBrowserTest.IframeParentContentLanuageIsStarAndChildContentLanguageHasValue
+-RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsEmpty
+-RecordLanguagesMetricsBrowserTest.IframeParentHasConentLanguageAndChildContentLanguageIsStar
+-RecordLanguagesMetricsBrowserTest.LargeAcceptLanguageList
+-RssLinksFetcherTest.FetchSuccessfulFromBody
+-RssLinksFetcherTest.FetchSuccessfulFromHead
+-StartupMetricsTest.ReportsValues
+
+# TODO(crbug.com/1251347): Bluetooth not yet supported
+-BluetoothApiTest.DeviceEvents
+-BluetoothApiTest.DeviceInfo
+-BluetoothApiTest.Discovery
+-BluetoothApiTest.DiscoveryCallback
+-BluetoothApiTest.DiscoveryInProgress
+-BluetoothApiTest.GetAdapterState
+-BluetoothApiTest.GetDevice
+-BluetoothApiTest.GetDevices
+-BluetoothApiTest.OnAdapterStateChanged
+-BluetoothPrivateApiTest.CancelPairing
+-BluetoothPrivateApiTest.Connect
+-BluetoothPrivateApiTest.DisconnectAll
+-BluetoothPrivateApiTest.DiscoveryFilter
+-BluetoothPrivateApiTest.ForgetDevice
+-BluetoothPrivateApiTest.NoBluetoothAdapter
+-BluetoothPrivateApiTest.Pair
+-BluetoothPrivateApiTest.PasskeyPairing
+-BluetoothPrivateApiTest.PincodePairing
+-BluetoothPrivateApiTest.SetAdapterState
+
+# TODO(crbug.com/1326988): GPU process isn't usable
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/0
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/1
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/2
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/3
+-RestoreOnStartupPolicyTestInstance/RestoreOnStartupPolicyTest.RunTest/4
+
+# TODO(crbug.com/1295538): Not implemented reached in static IconLoader::IconGroup
+# IconLoader::GroupForFilepath(const base::FilePath &)
+-ChromeMimeHandlerViewTest.ActivatePostMessageSupportOnce
+-ChromeMimeHandlerViewTest.BackgroundPage
+-ChromeMimeHandlerViewTest.Basic
+-ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithUserActivation
+-ChromeMimeHandlerViewTest.BeforeUnloadEnabled_WithoutUserActivation
+-ChromeMimeHandlerViewTest.BeforeUnload_NoDialog
+-ChromeMimeHandlerViewTest.BeforeUnload_ShowDialog
+-ChromeMimeHandlerViewTest.DataUrl
+-ChromeMimeHandlerViewTest.DoNotLoadInSandboxedFrame
+-ChromeMimeHandlerViewTest.EmbedWithInitialCrossOriginFrame
+-ChromeMimeHandlerViewTest.EmbedWithInitialFrameAcceptBeforeUnloadDialog
+-ChromeMimeHandlerViewTest.Embedded
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlEmbed
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlLong
+-ChromeMimeHandlerViewTest.EmbeddedDataUrlObject
+-ChromeMimeHandlerViewTest.EmbeddedThenPrint
+-ChromeMimeHandlerViewTest.EmbedderFrameRemovedNoCrash
+-ChromeMimeHandlerViewTest.Iframe
+-ChromeMimeHandlerViewTest.MimeHandlerViewInDisplayNoneFrameForGoogleApps
+-ChromeMimeHandlerViewTest.NonAsciiHeaders
+-ChromeMimeHandlerViewTest.PostMessage
+-ChromeMimeHandlerViewTest.RejectPointLock
+-ChromeMimeHandlerViewTest.SingleRequest
+-ChromeMimeHandlerViewTest.TargetBlankAnchor
+-DownloadTest.DownloadErrorReadonlyFolder
+-IconLoaderBrowserTest.LoadGroup
+-IconModuleTest.All
+-SaveAsCompleteHtml/SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
+-SavePackageDeepScanningBrowserTest.Allowed
+-SavePackageDeepScanningBrowserTest.Blocked
+-SavePackageDeepScanningBrowserTest.DiscardAfterWarning
+-SavePackageDeepScanningBrowserTest.KeepAfterWarning
+-SavePackageDeepScanningBrowserTest.OpenNow
+
+# TODO(crbug.com/1292144): Attempts to spawn a python3 process
+-All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/0
+-All/MediaEngagementAutoplayBrowserTest.PreloadedDataAndHighVisits/1
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/0
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Allowed/1
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/0
+-All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/1
+
+# TODO(crbug.com/1278123): PWA not supported yet
+-AppSessionRestoreTest.RestoreAppMinimized
+-AppSessionRestoreTest.RestoreMaximizedApp
+-AppSettingsAppTest.All
+-AppWindowApiTest.OnMaximizedEvent
+-AppWindowApiTest.OnMinimizedEvent
+-AppWindowApiTest.OnRestoredEvent
+-IntentChipButtonAppIconBrowserTest.ShowsAppIconInChip
+-IntentChipButtonBrowserTest.IconVisibilityAfterTabSwitching
+-IntentChipButtonBrowserTest.NavigationToInScopeLinkShowsIntentChip
+-IntentChipButtonBrowserTest.NavigationToOutOfScopeLinkDoesNotShowsIntentChip
+-IntentChipButtonBrowserTest.ShowsIntentChipCollapsed
+-IntentChipButtonBrowserTest.ShowsIntentPickerWhenMultipleApps
+-IntentChipButtonIPHBubbleBrowserTest.ShowAndCloseIPH
+-IntentChipButtonSkipIntentPickerBrowserTest.ClickingChipOpensApp
+-IntentChipButtonSkipIntentPickerBrowserTest.ShowsIntentChipCollapsed
+-IntentChipButtonSkipIntentPickerBrowserTest.ShowsIntentPickerWhenMultipleApps
+
+# TODO(crbug.com/1326984): These tests pass when run locally
+-AdsPageLoadMetricsObserverResourceBrowserTest.HeavyAdInterventionFired_ReportsToAllChildren
+-All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/1
+-All/ChromeMultiProfileStartupBrowserTestBase.PostProfileInitInvocation/3
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/0
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Background/2
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/2
+-All/MediaHistoryBrowserTest.RecordWatchtime_VideoOnly/0
+-All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/0
+-All/PermissionPromptBubbleViewBrowserTest.ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest/1
+-All/ReportingBrowserTest.CrashReportUnresponsive/1
+-All/SubresourceFilterWebSocketBrowserTest.BlockWebSocket/0
+-All/SubresourceFilterWebSocketBrowserTest.BlockWebSocket/1
+-ChromeBackForwardCacheBrowserTest.DoNotShowSameSiteSubframeInTaskManager
+-ChromeBackForwardCacheBrowserTest.ShowCrossSiteOOPIFInTaskManager
+-ChromeBackForwardCacheBrowserTest.ShowMainFrameInTaskManager
+-ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/1
+-ChromeBrowserCloudManagementEnrollmentTest/ChromeBrowserCloudManagementEnrollmentTest.Test/3
+-ChromeTracingDelegateBrowserTestFromCommandLine.IgnoreThrottle
+-ChromeTracingDelegateBrowserTestFromCommandLine.ScenarioFromCommandLine
+-ContentScriptApiTest.ContentScriptExtensionProcess
+-CookieControlsBubbleViewTest.InvokeUi_NotWorkingClicked
+-CookieControlsBubbleViewTest.NotWorkingClicked
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_aria_allowed_attr
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_aria_required_attr
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_audio_caption
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_button_name
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_definition_list
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_document_title
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_marquee
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_meta_viewport_large
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_scope_attr_valid
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_table_fake_caption
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_td_has_header
+-CrExtensionsA11yTestWithMultipleExensions.WithExtensions_video_description
+-CrSettingsBasicPageTest.BasicPage
+-EncryptedMediaSupportedTypesClearKeyTest.Video_MP4
+-EncryptedMediaSupportedTypesClearKeyTest.Video_WebM
+-ExtensionApiTabTest.UpdateWindowResize
+-FetchBehaviorTests/ContentVerifierHashTest.FetchFailureWithDefaultResourceExtension/0
+-FetchBehaviorTests/ContentVerifierHashTest.FetchFailureWithDefaultResourceExtension/1
+-FileSystemApiTest.FileSystemApiRetainDirectoryEntry
+-InProcessBrowserTest.RunsScheduledLayoutOnAnchoredBubbles
+-InlineLoginHelperBrowserTest.InvokeUi_default
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter1
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter2
+-InlineLoginHelperBrowserTest.SigninCreatesSyncStarter4
+-InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
+-InlineLoginHelperBrowserTest.WithAuthCode
+-InspectUITest.LaunchUIDevtools
+-MediaEngagementBrowserTest.RecordSingleVisitOnSameOrigin
+-MediaEngagementBrowserTest.SessionMultipleTabsClosingParent
+-MediaEngagementBrowserTest.SessionNewTabNavigateSameURLWithOpener_Typed
+-MediaEngagementBrowserTest.SessionNewTabSameOrigin
+-MessagingApiTest.Messaging
+-NetworkConnectionTrackerBrowserTest.SimulateNetworkServiceCrash
+-OutOfMemoryReporterPrerenderBrowserTest.NotReportedOnPrerenderPage
+-OutOfMemoryReporterPrerenderBrowserTest.ReportedOnActivatedPrerenderPage
+-PaymentRequestCanMakePaymentMetricsWithBasicCardDisabledTest.Called_False_Shown_UserAborted
+-PaymentRequestContactAddressUseStatsTest.RecordUse
+-PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest.RecordUse
+-PredictionManagerBrowserTest.ModelsAndFeaturesStoreInitialized
+-PredictionManagerBrowserTest.PredictionModelFetchFailed
+-PredictionManagerNoUserPermissionsTest.FieldTrialsNotPassedWhenNoUserPermissions
+-SafetyTipPageInfoBubbleViewDigitalAssetLinksBrowserTest.NoShowOnDigitalAssetLinkMatch
+-SaveUpdateAddressProfileBubbleControllerImplTest.CloseTabWhileBubbleIsOpen
+-SessionRestorePageLoadMetricsBrowserTest.RestoreForeignSession
+-SessionRestorePageLoadMetricsBrowserTest.MultipleSessionRestores
+-SessionRestorePageLoadMetricsBrowserTest.RestoreForeignTab
+-SingleProcessBrowserTest.Test
+-TabRestoreTest.RestoreGroupWithUnloadHandlerRejected
+-TranslateModelServiceBrowserTest.LanguageDetectionWithBackgroundTab
+-WebAudioBrowserTest.VerifyDynamicsCompressorFingerprint
+-WebNavigationApiBackForwardCacheTest.ForwardBack
+
+# TODO(crbug.com/1326983): These tests time out, root cause hasn't been established yet
+-ChromeMojoProxyResolverFactoryBrowserTest.DestroyAndCreateService
+-ChromeMojoProxyResolverFactoryBrowserTest.DestroyFactory
+-ChromeMojoProxyResolverFactoryBrowserTest.ServiceLifecycle
+-ChromePasswordProtectionServiceSyncBrowserTest.GSuitePasswordAlertMode
+-ChromeSitePerProcessTest.PopupWindowFocus
+-ClientHintsBrowserTest.SwitchAcceptCHInvalid
+-ClientHintsBrowserTest.SwitchAppliesStorage
+-ClientHintsBrowserTest.SwitchAppliesStorageOneOrigin
+-ClientHintsBrowserTest.SwitchNotJson
+-ClientHintsBrowserTest.SwitchOriginNotSecure
+-ContentVerifierTest.UnreadableContentScriptFailsContentVerification
+-ContextMenuBrowserTest.OpenProfileNoneReferrer
+-DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/0
+-DestroyProfileOnBrowserClose/ProfileHelperTestWithDestroyProfile.DeleteInactiveProfile/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteAllProfiles/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.DeleteInactiveProfile/1
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/0
+-DestroyProfileOnBrowserClose/ProfileManagerBrowserTest.EphemeralProfile/1
+-DiceWebSigninInterceptionBubbleBrowserTest.ProfileKeepAlive
+-ExtensionDialogTest.TextInputViaKeyEvent
+-IsolateOriginsPrintBrowserTest.PrintIsolatedSubframe
+-MediaEngagementPreloadBrowserTest.EnsureSingletonListIsLoaded
+-NetworkingPrivateServiceClientApiTest.OnNetworkListChangedEvent
+-NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventConnect
+-NetworkingPrivateServiceClientApiTest.OnNetworksChangedEventDisconnect
+-NetworkingPrivateServiceClientApiTest.RequestNetworkScan
+-OutOfMemoryReporterBrowserTest.MemoryExhaust
+-PortalOutOfMemoryReporterBrowserTest.ReportForActivatedPortal
+-ProxySettingsApiTest.ProxyEventsParseError
+-ServiceWorkerTest.MimeHandlerView
+-StartupMetricsTest.ReportsValues
+-WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsDisabled
+-WebViewTests/WebViewTest.DownloadCookieIsolation_CrossSession/SiteIsolationForGuestsEnabled
+-WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsDisabled
+-WebViewTests/WebViewTest.NoPrerenderer/SiteIsolationForGuestsEnabled
+
+# TODO(crbug.com/1326982): Crashed with no info
+-InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
+-OutOfProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
+-VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
+
+# TODO(crbug.com/1349540): Missing various services, see bug for more info.
+-ProfileKeyedServiceBrowserTest.SystemProfileParent_NeededServices
+
+# TODO(crbug.com/1349546) Pref is missing for PrivacyPage JS test. The exact missing pref is not
+# yet identified.
+-CrSettingsPrivacyPageTest.PrivacyPageTests
+
+# TODO(crbug.com/1271639): Undiagnosed failures
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/0
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/1
+-All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettings/2
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/0
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrinting/1
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/0
+-All/SystemAccessProcessServicePrintBrowserTest.StartPrintingSpoolingSharedMemoryError/1
+-BackForwardCachePrintBrowserTest.DisableCaching
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/0
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/1
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/2
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/3
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/4
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/5
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/6
+-Chunked/ChunkedPolicyPrefsTest.PolicyToPrefsMapping/7
+-CollectedCookiesViewsMetricsTest.BlockAllowSite
+-CollectedCookiesViewsMetricsTest.BlockClearOnExit
+-CollectedCookiesViewsMetricsTest.DeleteFolder
+-CollectedCookiesViewsMetricsTest.OpenDialog
+-CollectedCookiesViewsMetricsTest.RemoveButton
+-DesktopCaptureApiTest.ChooseDesktopMedia
+-DesktopCaptureApiTest.Delegation
+-PDFExtensionSubmitFormTest.SubmitForm
+-PDFExtensionTest.Metrics
+-PDFExtensionTest.SelectAllShortcut
+-PdfToPwgRasterBrowserTest.TestSuccessColor
+-PdfToPwgRasterBrowserTest.TestSuccessLongDuplex
+-PdfToPwgRasterBrowserTest.TestSuccessMono
+-PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
+-PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
+-PrintBrowserTest.LazyLoadedIframeFetched
+-PrintBrowserTest.LazyLoadedImagesFetched
+-PrintBrowserTest.LegacyLayoutEngineFallback
+-PrintBrowserTest.MultipagePrint
+-PrintBrowserTest.NoScrolling
+-PrintBrowserTest.NoScrollingVerticalRl
+-PrintBrowserTest.PrintNup
+-PrintBrowserTest.ResetPageScaleAfterPrintPreview
+-PrintBrowserTest.SelectionContainsIframe
+-PrintBrowserTest.WindowDotPrint
+-PrintExtensionBrowserTest.PrintOptionPage
+-PrintPreviewDialogControllerBrowserTest.PdfPluginDisabled
+-PrintPreviewDialogControllerBrowserTest.PrintPreviewPdfAccessibility
+-ReduceUserAgentPlatformBrowserTest.NavigatorPlatform
+-ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestPacRequestProtection/0
+-SitePerProcessPrintBrowserTest.BasicPrint
+-SitePerProcessPrintBrowserTest.MultipagePrint
+-SitePerProcessPrintBrowserTest.PrintNup
+-SitePerProcessPrintBrowserTest.SubframeUnavailableBeforePrint
+-SitePerProcessPrintBrowserTest.SubframeUnavailableDuringPrint
+-SitePerProcessPrintExtensionBrowserTest.PrintOptionPage
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingDocumentDoneAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRenderDocumentAccessDenied
+-SystemAccessProcessSandboxedServicePrintBrowserTest.StartPrintingRepeatedAccessDenied

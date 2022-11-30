@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -47,6 +49,9 @@ class TestRulesetService : public subresource_filter::RulesetService {
                                            base_dir,
                                            blocking_task_runner) {}
 
+  TestRulesetService(const TestRulesetService&) = delete;
+  TestRulesetService& operator=(const TestRulesetService&) = delete;
+
   ~TestRulesetService() override = default;
 
   using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
@@ -69,18 +74,19 @@ class TestRulesetService : public subresource_filter::RulesetService {
 
  private:
   UnindexedRulesetInfo unindexed_ruleset_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetService);
 };
 
 class SubresourceFilterMockComponentUpdateService
     : public component_updater::MockComponentUpdateService {
  public:
   SubresourceFilterMockComponentUpdateService() = default;
-  ~SubresourceFilterMockComponentUpdateService() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterMockComponentUpdateService);
+  SubresourceFilterMockComponentUpdateService(
+      const SubresourceFilterMockComponentUpdateService&) = delete;
+  SubresourceFilterMockComponentUpdateService& operator=(
+      const SubresourceFilterMockComponentUpdateService&) = delete;
+
+  ~SubresourceFilterMockComponentUpdateService() override = default;
 };
 
 subresource_filter::Configuration CreateConfigUsingRulesetFlavor(
@@ -97,6 +103,11 @@ namespace component_updater {
 class SubresourceFilterComponentInstallerTest : public PlatformTest {
  public:
   SubresourceFilterComponentInstallerTest() = default;
+
+  SubresourceFilterComponentInstallerTest(
+      const SubresourceFilterComponentInstallerTest&) = delete;
+  SubresourceFilterComponentInstallerTest& operator=(
+      const SubresourceFilterComponentInstallerTest&) = delete;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -150,12 +161,11 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   }
 
   void LoadSubresourceFilterRuleset(int ruleset_format) {
-    std::unique_ptr<base::DictionaryValue> manifest(new base::DictionaryValue);
-    manifest->SetInteger(
+    base::Value manifest(base::Value::Type::DICTIONARY);
+    manifest.SetIntKey(
         SubresourceFilterComponentInstallerPolicy::kManifestRulesetFormatKey,
         ruleset_format);
-    ASSERT_TRUE(
-        policy_->VerifyInstallation(*manifest, component_install_dir()));
+    ASSERT_TRUE(policy_->VerifyInstallation(manifest, component_install_dir()));
     const base::Version expected_version(kTestRulesetVersion);
     policy_->ComponentReady(expected_version, component_install_dir(),
                             std::move(manifest));
@@ -176,9 +186,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   std::unique_ptr<SubresourceFilterComponentInstallerPolicy> policy_;
   TestingPrefServiceSimple pref_service_;
 
-  TestRulesetService* test_ruleset_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterComponentInstallerTest);
+  raw_ptr<TestRulesetService> test_ruleset_service_ = nullptr;
 };
 
 TEST_F(SubresourceFilterComponentInstallerTest,

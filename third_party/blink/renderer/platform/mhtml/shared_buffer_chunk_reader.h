@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_SHARED_BUFFER_CHUNK_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_SHARED_BUFFER_CHUNK_READER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -46,6 +45,8 @@ class SharedBufferChunkReader final {
                           const Vector<char>& separator);
   SharedBufferChunkReader(scoped_refptr<const SharedBuffer>,
                           const char* separator);
+  SharedBufferChunkReader(const SharedBufferChunkReader&) = delete;
+  SharedBufferChunkReader& operator=(const SharedBufferChunkReader&) = delete;
 
   void SetSeparator(const Vector<char>&);
   void SetSeparator(const char*);
@@ -72,9 +73,6 @@ class SharedBufferChunkReader final {
   bool reached_end_of_file_;
   Vector<char> separator_;
   uint32_t separator_index_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferChunkReader);
 };
 
 }  // namespace blink

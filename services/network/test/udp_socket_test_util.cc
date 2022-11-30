@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
-
-namespace test {
+namespace network::test {
 
 UDPSocketTestHelper::UDPSocketTestHelper(mojo::Remote<mojom::UDPSocket>* socket)
     : socket_(socket) {}
@@ -28,7 +26,7 @@ int UDPSocketTestHelper::ConnectSync(const net::IPEndPoint& remote_addr,
   socket_->get()->Connect(
       remote_addr, std::move(options),
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& local_addr) {
+          [&](int result, const absl::optional<net::IPEndPoint>& local_addr) {
             net_error = result;
             if (local_addr) {
               *local_addr_out = local_addr.value();
@@ -47,7 +45,7 @@ int UDPSocketTestHelper::BindSync(const net::IPEndPoint& local_addr,
   socket_->get()->Bind(
       local_addr, std::move(options),
       base::BindLambdaForTesting(
-          [&](int result, const base::Optional<net::IPEndPoint>& local_addr) {
+          [&](int result, const absl::optional<net::IPEndPoint>& local_addr) {
             net_error = result;
             if (local_addr) {
               *local_addr_out = local_addr.value();
@@ -149,8 +147,8 @@ int UDPSocketTestHelper::LeaveGroupSync(const net::IPAddress& group_address) {
 
 UDPSocketListenerImpl::ReceivedResult::ReceivedResult(
     int net_error_arg,
-    const base::Optional<net::IPEndPoint>& src_addr_arg,
-    base::Optional<std::vector<uint8_t>> data_arg)
+    const absl::optional<net::IPEndPoint>& src_addr_arg,
+    absl::optional<std::vector<uint8_t>> data_arg)
     : net_error(net_error_arg),
       src_addr(src_addr_arg),
       data(std::move(data_arg)) {}
@@ -180,23 +178,21 @@ void UDPSocketListenerImpl::WaitForReceivedResults(size_t count) {
 
 void UDPSocketListenerImpl::OnReceived(
     int32_t result,
-    const base::Optional<net::IPEndPoint>& src_addr,
-    base::Optional<base::span<const uint8_t>> data) {
+    const absl::optional<net::IPEndPoint>& src_addr,
+    absl::optional<base::span<const uint8_t>> data) {
   // OnReceive() API contracts specifies that this method will not be called
   // with a |result| that is > 0.
   DCHECK_GE(0, result);
   DCHECK(result < 0 || data);
 
   results_.emplace_back(result, src_addr,
-                        data ? base::make_optional(std::vector<uint8_t>(
+                        data ? absl::make_optional(std::vector<uint8_t>(
                                    data.value().begin(), data.value().end()))
-                             : base::nullopt);
+                             : absl::nullopt);
   if (results_.size() == expected_receive_count_) {
     expected_receive_count_ = 0;
     run_loop_->Quit();
   }
 }
 
-}  // namespace test
-
-}  // namespace network
+}  // namespace network::test

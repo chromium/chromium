@@ -1,0 +1,71 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.diagnostics.mojom;
+
+enum RoutineType {
+  kBatteryCharge,
+  kBatteryDischarge,
+  kCpuCache,
+  kCpuStress,
+  kCpuFloatingPoint,
+  kCpuPrime,
+  kMemory,
+  kLanConnectivity,
+  kSignalStrength,
+  kGatewayCanBePinged,
+  kHasSecureWiFiConnection,
+  kDnsResolverPresent,
+  kDnsLatency,
+  kDnsResolution,
+  kCaptivePortal,
+  kHttpFirewall,
+  kHttpsFirewall,
+  kHttpsLatency,
+  kArcHttp,
+  kArcPing,
+  kArcDnsResolution
+};
+
+enum StandardRoutineResult {
+  kTestPassed,
+  kTestFailed,
+  kExecutionError,
+  kUnableToRun,
+};
+
+struct PowerRoutineResult {
+  StandardRoutineResult simple_result;
+  double percent_change;
+  uint32 time_elapsed_seconds;
+};
+
+union RoutineResult {
+  StandardRoutineResult simple_result;
+  PowerRoutineResult power_result;
+};
+
+struct RoutineResultInfo {
+  RoutineType type;
+  RoutineResult result;
+};
+
+// Implemented by clients in order to receive the results of a requested
+// routine.
+interface RoutineRunner {
+  // OnRoutineResult is called once to return the result of the routine.
+  OnRoutineResult(RoutineResultInfo info);
+};
+
+// Enables clients to run diagnostic routines to test the status of various
+// components on the system. This API is exposed to the Diagnostics SWA.
+interface SystemRoutineController {
+  // Gets the list of supported routines on the device.
+  GetSupportedRoutines() => (array<RoutineType> routines);
+
+  // Runs routine |type|. The result is returned via the RoutineRunner |runner|.
+  // If the client closes the |remote|, cancellation of the associated routine
+  // is attempted.
+  RunRoutine(RoutineType type, pending_remote<RoutineRunner> runner);
+};

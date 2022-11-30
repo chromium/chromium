@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,24 @@
 
 #include "base/feature_list.h"
 #include "base/mac/bundle_locations.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/cocoa/task_manager_mac_table_view.h"
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/cocoa/controls/button_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
@@ -57,8 +56,9 @@ NSString* ColumnIdentifier(int id) {
 
 @implementation TaskManagerWindowController
 
-- (id)initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
-                  tableModel:(task_manager::TaskManagerTableModel*)tableModel {
+- (instancetype)
+    initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
+                tableModel:(task_manager::TaskManagerTableModel*)tableModel {
   base::scoped_nsobject<NSWindow> window = [self createAndLayOutWindow];
   if ((self = [super initWithWindow:window])) {
     _taskManagerMac = taskManagerMac;
@@ -99,9 +99,9 @@ NSString* ColumnIdentifier(int id) {
         _currentSortDescriptor;
     std::stable_sort(_viewToModelMap.begin(), _viewToModelMap.end(),
                      [tableModel, currentSortDescriptor](int a, int b) {
-                       int aStart, aLength;
+                       size_t aStart, aLength;
                        tableModel->GetRowsGroupRange(a, &aStart, &aLength);
-                       int bStart, bLength;
+                       size_t bStart, bLength;
                        tableModel->GetRowsGroupRange(b, &bStart, &bLength);
                        if (aStart == bStart) {
                          // The two rows are in the same group, sort so that
@@ -127,39 +127,21 @@ NSString* ColumnIdentifier(int id) {
 }
 
 - (void)reloadData {
-  [self reloadDataWithRows:0 addedAtIndex:0];
+  [self reloadDataWithRowsAdded:0 addedAtIndex:0];
 }
 
-- (void)reloadDataWithRows:(int)addedRows addedAtIndex:(int)addedRowIndex {
-  // Store old view indices, and the model indices they map to.
+- (std::vector<size_t>)getModelSelection {
   NSIndexSet* viewSelection = [_tableView selectedRowIndexes];
-  std::vector<int> modelSelection;
+  std::vector<size_t> modelSelection;
   for (NSUInteger i = [viewSelection lastIndex];
        i != NSNotFound;
        i = [viewSelection indexLessThanIndex:i]) {
     modelSelection.push_back(_viewToModelMap[i]);
   }
+  return modelSelection;
+}
 
-  // Adjust for any added or removed rows.
-  if (addedRows != 0) {
-    for (int& selectedItem : modelSelection) {
-      if (addedRowIndex > selectedItem) {
-        // Nothing to do; added/removed items are beyond the selected item.
-        continue;
-      }
-
-      if (addedRows > 0) {
-        selectedItem += addedRows;
-      } else {
-        int removedRows = -addedRows;
-        if (addedRowIndex + removedRows <= selectedItem)
-          selectedItem -= removedRows;
-        else
-          selectedItem = -1;  // The item was removed.
-      }
-    }
-  }
-
+- (void)reloadDataWithModelSelection:(std::vector<size_t>)modelSelection {
   // Sort.
   [self sortShuffleArray];
 
@@ -168,13 +150,40 @@ NSString* ColumnIdentifier(int id) {
 
   // Reload the selection.
   NSMutableIndexSet* indexSet = [NSMutableIndexSet indexSet];
-  for (auto selectedItem : modelSelection) {
-    if (selectedItem != -1)
-      [indexSet addIndex:_modelToViewMap[selectedItem]];
-  }
+  for (auto selectedItem : modelSelection)
+    [indexSet addIndex:_modelToViewMap[selectedItem]];
   [_tableView selectRowIndexes:indexSet byExtendingSelection:NO];
 
   [self adjustSelectionAndEndProcessButton];
+}
+
+- (void)reloadDataWithRowsAdded:(size_t)addedRows
+                   addedAtIndex:(size_t)addedRowIndex {
+  std::vector<size_t> modelSelection = [self getModelSelection];
+
+  // Adjust for any added rows.
+  for (size_t& selectedItem : modelSelection) {
+    if (selectedItem >= addedRowIndex)
+      selectedItem += addedRows;
+  }
+
+  [self reloadDataWithModelSelection:std::move(modelSelection)];
+}
+
+- (void)reloadDataWithRowsRemoved:(size_t)removedRows
+                   removedAtIndex:(size_t)removedRowIndex {
+  std::vector<size_t> modelSelection = [self getModelSelection];
+
+  // Adjust for any removed rows.
+  std::vector<size_t> newModelSelection;
+  for (size_t selectedItem : modelSelection) {
+    if (selectedItem < removedRowIndex)
+      newModelSelection.push_back(selectedItem);
+    else if (selectedItem >= removedRowIndex + removedRows)
+      newModelSelection.push_back(selectedItem - removedRows);
+  }
+
+  [self reloadDataWithModelSelection:std::move(newModelSelection)];
 }
 
 - (task_manager::TableSortDescriptor)sortDescriptor {
@@ -249,9 +258,9 @@ NSString* ColumnIdentifier(int id) {
 
   // Create the button that terminates the selected process in the table.
   _endProcessButton =
-      [ButtonUtils buttonWithTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_KILL)
-                            action:@selector(killSelectedProcesses:)
-                            target:self];
+      [NSButton buttonWithTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_KILL)
+                         target:self
+                         action:@selector(killSelectedProcesses:)];
   [_endProcessButton setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];
   [_endProcessButton sizeToFit];
   NSRect buttonFrame = [_endProcessButton frame];
@@ -282,8 +291,9 @@ NSString* ColumnIdentifier(int id) {
 
   // Create the table view. The data source and delegate are connected in
   // the designated initializer.
-  base::scoped_nsobject<NSTableView> tableView(
-      [[NSTableView alloc] initWithFrame:NSMakeRect(0, 0, 400, 200)]);
+  base::scoped_nsobject<TaskManagerMacTableView> tableView(
+      [[TaskManagerMacTableView alloc]
+          initWithFrame:NSMakeRect(0, 0, 400, 200)]);
   [tableView setAllowsColumnReordering:NO];
   [tableView setAllowsMultipleSelection:YES];
   // No autosaving, since column identifiers are IDS_ values which are not
@@ -313,9 +323,19 @@ NSString* ColumnIdentifier(int id) {
   NSTableHeaderCell* headerCell = [column.get() headerCell];
   id dataCell = [column.get() dataCell];
 
-  NSTextAlignment textAlignment = (columnData.align == ui::TableColumn::LEFT)
-                                      ? NSLeftTextAlignment
-                                      : NSRightTextAlignment;
+  NSTextAlignment textAlignment;
+  // There are no "leading" and "trailing" constants in `NSTextAlignment` so do
+  // it manually.
+  if ([NSApp userInterfaceLayoutDirection] ==
+      NSUserInterfaceLayoutDirectionRightToLeft) {
+    textAlignment = (columnData.align == ui::TableColumn::LEFT)
+                        ? NSTextAlignmentRight
+                        : NSTextAlignmentLeft;
+  } else {
+    textAlignment = (columnData.align == ui::TableColumn::LEFT)
+                        ? NSTextAlignmentLeft
+                        : NSTextAlignmentRight;
+  }
 
   NSString* columnTitle = l10n_util::GetNSStringWithFixup(columnData.id);
   [headerCell setStringValue:columnTitle];
@@ -476,9 +496,9 @@ NSString* ColumnIdentifier(int id) {
     if (!_tableModel->IsTaskKillable(modelIndex))
       allSelectionRowsAreKillableTasks = false;
 
-    int groupStart, groupLength;
+    size_t groupStart, groupLength;
     _tableModel->GetRowsGroupRange(modelIndex, &groupStart, &groupLength);
-    for (int j = 0; j < groupLength; ++j)
+    for (size_t j = 0; j < groupLength; ++j)
       [groupIndexes addIndex:_modelToViewMap[groupStart + j]];
   }
 
@@ -605,7 +625,7 @@ NSString* ColumnIdentifier(int id) {
     NSSortDescriptor* initialDescriptor = [column sortDescriptorPrototype];
     if ([newDescriptor ascending] == [initialDescriptor ascending]) {
       _withinSortDescriptorsDidChange = YES;
-      [_tableView setSortDescriptors:[NSArray array]];
+      [_tableView setSortDescriptors:@[]];
       newDescriptor = nil;
       _withinSortDescriptorsDidChange = NO;
     }
@@ -648,8 +668,9 @@ TaskManagerMac::TaskManagerMac()
   table_model_.SetObserver(this);  // Hook up the ui::TableModelObserver.
   table_model_.RetrieveSavedColumnsSettingsAndUpdateTable();
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &TaskManagerMac::OnAppTerminating, base::Unretained(this)));
 }
 
 // static
@@ -667,16 +688,16 @@ void TaskManagerMac::OnModelChanged() {
   [window_controller_ reloadData];
 }
 
-void TaskManagerMac::OnItemsChanged(int start, int length) {
+void TaskManagerMac::OnItemsChanged(size_t start, size_t length) {
   [window_controller_ reloadData];
 }
 
-void TaskManagerMac::OnItemsAdded(int start, int length) {
-  [window_controller_ reloadDataWithRows:length addedAtIndex:start];
+void TaskManagerMac::OnItemsAdded(size_t start, size_t length) {
+  [window_controller_ reloadDataWithRowsAdded:length addedAtIndex:start];
 }
 
-void TaskManagerMac::OnItemsRemoved(int start, int length) {
-  [window_controller_ reloadDataWithRows:-length addedAtIndex:start];
+void TaskManagerMac::OnItemsRemoved(size_t start, size_t length) {
+  [window_controller_ reloadDataWithRowsRemoved:length removedAtIndex:start];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -712,7 +733,8 @@ void TaskManagerMac::WindowWasClosed() {
 
 NSImage* TaskManagerMac::GetImageForRow(int row) {
   const NSSize kImageSize = NSMakeSize(16.0, 16.0);
-  NSImage* image = gfx::NSImageFromImageSkia(table_model_.GetIcon(row));
+  NSImage* image =
+      gfx::NSImageFromImageSkia(table_model_.GetIcon(row).Rasterize(nullptr));
   if (image)
     image.size = kImageSize;
   else
@@ -721,10 +743,7 @@ NSImage* TaskManagerMac::GetImageForRow(int row) {
   return image;
 }
 
-void TaskManagerMac::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+void TaskManagerMac::OnAppTerminating() {
   Hide();
 }
 
@@ -752,11 +771,15 @@ namespace chrome {
 
 // Declared in browser_dialogs.h.
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return task_manager::TaskManagerMac::Show();
+  return base::FeatureList::IsEnabled(features::kViewsTaskManager)
+             ? ShowTaskManagerViews(browser)
+             : task_manager::TaskManagerMac::Show();
 }
 
 void HideTaskManager() {
-  task_manager::TaskManagerMac::Hide();
+  base::FeatureList::IsEnabled(features::kViewsTaskManager)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

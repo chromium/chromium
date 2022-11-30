@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -35,6 +34,10 @@ class BASE_EXPORT PersistentHistogramStorage {
   PersistentHistogramStorage(StringPiece allocator_name,
                              StorageDirManagement storage_dir_management);
 
+  PersistentHistogramStorage(const PersistentHistogramStorage&) = delete;
+  PersistentHistogramStorage& operator=(const PersistentHistogramStorage&) =
+      delete;
+
   ~PersistentHistogramStorage();
 
   // The storage directory isn't always known during initial construction so
@@ -59,8 +62,6 @@ class BASE_EXPORT PersistentHistogramStorage {
   // but can be set to true by the caller who decides to throw away its
   // histogram data.
   bool disabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramStorage);
 };
 
 }  // namespace base

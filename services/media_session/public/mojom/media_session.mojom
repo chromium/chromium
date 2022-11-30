@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 12
+// Next MinVersion: 16
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -35,6 +35,8 @@ enum MediaSessionAction {
   [MinVersion=11] kToggleMicrophone,
   [MinVersion=11] kToggleCamera,
   [MinVersion=11] kHangUp,
+  [MinVersion=12] kRaise,
+  [MinVersion=13] kSetMute,
 };
 
 [Stable, Extensible]
@@ -109,6 +111,7 @@ struct MediaPosition {
   mojo_base.mojom.TimeDelta duration;
   mojo_base.mojom.TimeDelta position;
   mojo_base.mojom.TimeTicks last_updated_time;
+  [MinVersion=13] bool end_of_media;
 };
 
 [Stable, Extensible]
@@ -123,6 +126,13 @@ enum CameraState {
   kUnknown,
   kTurnedOn,
   kTurnedOff,
+};
+
+[Stable]
+struct RemotePlaybackMetadata {
+  string video_codec;
+  string audio_codec;
+  bool remote_playback_disabled;
 };
 
 // Contains state information about a MediaSession.
@@ -187,6 +197,15 @@ struct MediaSessionInfo {
 
   // Tracks whether the camera is turned on in WebRTC sessions.
   [MinVersion=11] CameraState camera_state;
+
+  // Tracks whether the media player is muted.
+  [MinVersion=12] bool muted;
+
+  // Tracks whether the associated WebContents has a presentation.
+  [MinVersion=14] bool has_presentation;
+
+  // Stores the Media metadata used for Remote Playback.
+  [MinVersion=15] RemotePlaybackMetadata? remote_playback_metadata;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -229,7 +248,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 21
+// Next Method ID: 23
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -325,4 +344,11 @@ interface MediaSession {
 
   // Hang up a WebRTC session.
   [MinVersion=11] HangUp@20();
+
+  // Display the source of the MediaSession (e.g. show the tab or the
+  // application).
+  [MinVersion=12] Raise@21();
+
+  // Mute or unmute the media player.
+  [MinVersion=13] SetMute@22(bool mute);
 };

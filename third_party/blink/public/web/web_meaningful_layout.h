@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,4 +23,4 @@ enum class WebMeaningfulLayout {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEANINGFUL_LAYOUT_H_

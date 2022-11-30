@@ -1,16 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cert/asn1_util.h"
 
-#include "net/cert/internal/parse_certificate.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-
-namespace asn1 {
+namespace net::asn1 {
 
 namespace {
 
@@ -106,24 +105,23 @@ bool SeekToExtensions(der::Input in,
   if (!tbs_cert_parser.SkipTag(der::kSequence))
     return false;
   // issuerUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 1, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 1,
+                                       &present)) {
     return false;
   }
   // subjectUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 2, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 2,
+                                       &present)) {
     return false;
   }
 
-  der::Input extensions;
+  absl::optional<der::Input> extensions;
   if (!tbs_cert_parser.ReadOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 3, &extensions,
-          &present)) {
+          der::kTagConstructed | der::kTagContextSpecific | 3, &extensions)) {
     return false;
   }
 
-  if (!present) {
+  if (!extensions) {
     *extensions_present = false;
     return true;
   }
@@ -136,7 +134,7 @@ bool SeekToExtensions(der::Input in,
 
   // |extensions| was EXPLICITly tagged, so we still need to remove the
   // ASN.1 SEQUENCE header.
-  der::Parser explicit_extensions_parser(extensions);
+  der::Parser explicit_extensions_parser(extensions.value());
   if (!explicit_extensions_parser.ReadSequence(extensions_parser))
     return false;
 
@@ -180,14 +178,6 @@ bool ExtractExtensionWithOID(base::StringPiece cert,
 
   *out_extension_present = false;
   return true;
-}
-
-bool HasExtensionWithOID(base::StringPiece cert, der::Input extension_oid) {
-  bool extension_present;
-  ParsedExtension extension;
-  return ExtractExtensionWithOID(cert, extension_oid, &extension_present,
-                                 &extension) &&
-         extension_present;
 }
 
 }  // namespace
@@ -243,15 +233,6 @@ bool ExtractSubjectPublicKeyFromSPKI(base::StringPiece spki,
     return false;
   *spk_out = spk.AsStringPiece();
   return true;
-}
-
-bool HasTLSFeatureExtension(base::StringPiece cert) {
-  // kTLSFeatureExtensionOID is the DER encoding of the OID for the
-  // X.509 TLS Feature Extension.
-  static const uint8_t kTLSFeatureExtensionOID[] = {0x2B, 0x06, 0x01, 0x05,
-                                                    0x05, 0x07, 0x01, 0x18};
-
-  return HasExtensionWithOID(cert, der::Input(kTLSFeatureExtensionOID));
 }
 
 bool HasCanSignHttpExchangesDraftExtension(base::StringPiece cert) {
@@ -347,6 +328,4 @@ bool ExtractExtensionFromDERCert(base::StringPiece cert,
   return true;
 }
 
-} // namespace asn1
-
-} // namespace net
+}  // namespace net::asn1

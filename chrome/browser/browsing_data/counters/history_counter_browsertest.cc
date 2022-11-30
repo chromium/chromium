@@ -1,15 +1,19 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/browsing_data/core/counters/history_counter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -53,9 +57,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
   void SetTime(base::Time time) { time_ = time; }
 
-  void RevertTimeInDays(int days) {
-    time_ -= base::TimeDelta::FromDays(days);
-  }
+  void RevertTimeInDays(int days) { time_ -= base::Days(days); }
 
   void SetHistoryDeletionPref(bool value) {
     browser()->profile()->GetPrefs()->SetBoolean(
@@ -68,7 +70,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
   }
 
   void WaitForCounting() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -116,7 +118,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  history::HistoryService* history_service_;
+  raw_ptr<history::HistoryService> history_service_;
   std::unique_ptr<history::FakeWebHistoryService> fake_web_history_service_;
   base::Time time_;
 
@@ -160,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, DuplicateVisits) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -208,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PrefChanged) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -255,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, PeriodChanged) {
       GetHistoryService(),
       base::BindRepeating(&HistoryCounterTest::GetRealWebHistoryService,
                           base::Unretained(this), base::Unretained(profile)),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -298,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
       base::BindRepeating(&HistoryCounterTest::GetFakeWebHistoryService,
                           base::Unretained(this), base::Unretained(profile),
                           false),
-      ProfileSyncServiceFactory::GetForProfile(profile));
+      SyncServiceFactory::GetForProfile(profile));
 
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
@@ -319,10 +321,8 @@ IN_PROC_BROWSER_TEST_F(HistoryCounterTest, Synced) {
   // No entries locally. There are some entries in Sync, but they are out of the
   // time range.
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
-  service->AddSyncedVisit(
-      "www.google.com", GetCurrentTime() - base::TimeDelta::FromHours(2));
-  service->AddSyncedVisit(
-      "www.chrome.com", GetCurrentTime() - base::TimeDelta::FromHours(2));
+  service->AddSyncedVisit("www.google.com", GetCurrentTime() - base::Hours(2));
+  service->AddSyncedVisit("www.chrome.com", GetCurrentTime() - base::Hours(2));
   service->SetupFakeResponse(true /* success */, net::HTTP_OK);
   counter.Restart();
   WaitForCounting();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,18 +16,17 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/visitedlink/common/visitedlink_common.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -101,6 +100,10 @@ class VisitedLinkWriter : public VisitedLinkCommon {
                     bool suppress_rebuild,
                     const base::FilePath& filename,
                     int32_t default_table_size);
+
+  VisitedLinkWriter(const VisitedLinkWriter&) = delete;
+  VisitedLinkWriter& operator=(const VisitedLinkWriter&) = delete;
+
   ~VisitedLinkWriter() override;
 
   // Must be called immediately after object creation. Nothing else will work
@@ -397,11 +400,11 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 
   // Reference to the browser context that this object belongs to
   // (it knows the path to where the data is stored)
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // Client owns the delegate and is responsible for it being valid through
   // the life time this VisitedLinkWriter.
-  VisitedLinkDelegate* delegate_;
+  raw_ptr<VisitedLinkDelegate> delegate_;
 
   // VisitedLinkEventListener to handle incoming events.
   std::unique_ptr<Listener> listener_;
@@ -436,7 +439,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // guaranteed to be executed after the opening.
   // The class owns both the |file_| pointer and the pointer pointed
   // by |*file_|.
-  FILE** file_ = nullptr;
+  raw_ptr<FILE*> file_ = nullptr;
 
   // If true, will try to persist the hash table to disk. Will rebuild from
   // VisitedLinkDelegate::RebuildTable if there are disk corruptions.
@@ -479,8 +482,6 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   bool suppress_rebuild_ = false;
 
   base::WeakPtrFactory<VisitedLinkWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VisitedLinkWriter);
 };
 
 // NOTE: These methods are defined inline here, so we can share the compilation

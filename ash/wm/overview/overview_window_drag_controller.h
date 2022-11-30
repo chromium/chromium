@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,17 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/point_f.h"
+
+namespace ui {
+class PresentationTimeRecorder;
+}
 
 namespace ash {
 
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
-class PresentationTimeRecorder;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -91,6 +93,11 @@ class ASH_EXPORT OverviewWindowDragController {
   OverviewWindowDragController(OverviewSession* overview_session,
                                OverviewItem* item,
                                bool is_touch_dragging);
+
+  OverviewWindowDragController(const OverviewWindowDragController&) = delete;
+  OverviewWindowDragController& operator=(const OverviewWindowDragController&) =
+      delete;
+
   ~OverviewWindowDragController();
 
   void InitiateDrag(const gfx::PointF& location_in_screen);
@@ -111,9 +118,11 @@ class ASH_EXPORT OverviewWindowDragController {
 
   OverviewItem* item() { return item_; }
 
-  DragBehavior current_drag_behavior() { return current_drag_behavior_; }
-
   bool is_touch_dragging() const { return is_touch_dragging_; }
+
+  DragBehavior current_drag_behavior_for_testing() const {
+    return current_drag_behavior_;
+  }
 
  private:
   enum NormalDragAction {
@@ -229,11 +238,10 @@ class ASH_EXPORT OverviewWindowDragController {
   bool did_move_ = false;
 
   // Records the presentation time of window drag operation in overview mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
-  SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(OverviewWindowDragController);
+  SplitViewController::SnapPosition snap_position_ =
+      SplitViewController::SnapPosition::kNone;
 };
 
 }  // namespace ash

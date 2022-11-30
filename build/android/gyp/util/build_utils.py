@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,11 +14,13 @@ import logging
 import os
 import pipes
 import re
+import shlex
 import shutil
 import stat
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__),
@@ -35,8 +37,6 @@ DIR_SOURCE_ROOT = os.path.relpath(
 JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 JAVAC_PATH = os.path.join(JAVA_HOME, 'bin', 'javac')
 JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
-RT_JAR_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'extras',
-                           'java_8', 'jre', 'lib', 'rt.jar')
 
 try:
   string_types = basestring
@@ -189,7 +189,7 @@ class CalledProcessError(Exception):
   exits with a non-zero exit code."""
 
   def __init__(self, cwd, args, output):
-    super(CalledProcessError, self).__init__()
+    super().__init__()
     self.cwd = cwd
     self.args = args
     self.output = output
@@ -253,6 +253,7 @@ def CheckOutput(args,
   if not cwd:
     cwd = os.getcwd()
 
+  logging.info('CheckOutput: %s', ' '.join(args))
   child = subprocess.Popen(args,
       stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
   stdout, stderr = child.communicate()
@@ -278,18 +279,31 @@ def CheckOutput(args,
 
   has_stdout = print_stdout and stdout
   has_stderr = print_stderr and stderr
-  if fail_on_output and (has_stdout or has_stderr):
-    MSG = """\
-Command failed because it wrote to {}.
-You can often set treat_warnings_as_errors=false to not treat output as \
-failure (useful when developing locally)."""
+  if has_stdout or has_stderr:
     if has_stdout and has_stderr:
       stream_string = 'stdout and stderr'
     elif has_stdout:
       stream_string = 'stdout'
     else:
       stream_string = 'stderr'
-    raise CalledProcessError(cwd, args, MSG.format(stream_string))
+
+    if fail_on_output:
+      MSG = """
+Command failed because it wrote to {}.
+You can often set treat_warnings_as_errors=false to not treat output as \
+failure (useful when developing locally)."""
+      raise CalledProcessError(cwd, args, MSG.format(stream_string))
+
+    MSG = """
+The above {} output was from:
+{}
+"""
+    if sys.version_info.major == 2:
+      joined_args = ' '.join(args)
+    else:
+      joined_args = shlex.join(args)
+
+    sys.stderr.write(MSG.format(stream_string, joined_args))
 
   return stdout
 
@@ -366,10 +380,43 @@ def ExtractAll(zip_path, path=None, no_clobber=True, pattern=None,
   return extracted
 
 
+def HermeticDateTime(timestamp=None):
+  """Returns a constant ZipInfo.date_time tuple.
+
+  Args:
+    timestamp: Unix timestamp to use for files in the archive.
+
+  Returns:
+    A ZipInfo.date_time tuple for Jan 1, 2001, or the given timestamp.
+  """
+  if not timestamp:
+    return (2001, 1, 1, 0, 0, 0)
+  utc_time = time.gmtime(timestamp)
+  return (utc_time.tm_year, utc_time.tm_mon, utc_time.tm_mday, utc_time.tm_hour,
+          utc_time.tm_min, utc_time.tm_sec)
+
+
 def HermeticZipInfo(*args, **kwargs):
-  """Creates a ZipInfo with a constant timestamp and external_attr."""
+  """Creates a zipfile.ZipInfo with a constant timestamp and external_attr.
+
+  If a date_time value is not provided in the positional or keyword arguments,
+  the default value from HermeticDateTime is used.
+
+  Args:
+    See zipfile.ZipInfo.
+
+  Returns:
+    A zipfile.ZipInfo.
+  """
+  # The caller may have provided a date_time either as a positional parameter
+  # (args[1]) or as a keyword parameter. Use the default hermetic date_time if
+  # none was provided. Note that even if date_time is set, it can be None.
+  date_time = kwargs.get('date_time')
+  if len(args) >= 2:
+    date_time = args[1]
+  if not date_time:
+    kwargs['date_time'] = HermeticDateTime()
   ret = zipfile.ZipInfo(*args, **kwargs)
-  ret.date_time = (2001, 1, 1, 0, 0, 0)
   ret.external_attr = (0o644 << 16)
   return ret
 
@@ -378,7 +425,8 @@ def AddToZipHermetic(zip_file,
                      zip_path,
                      src_path=None,
                      data=None,
-                     compress=None):
+                     compress=None,
+                     date_time=None):
   """Adds a file to the given ZipFile with a hard-coded modified time.
 
   Args:
@@ -388,6 +436,7 @@ def AddToZipHermetic(zip_file,
     data: File data as a string.
     compress: Whether to enable compression. Default is taken from ZipFile
         constructor.
+    date_time: The last modification date and time for the archive member.
   """
   assert (src_path is None) != (data is None), (
       '|src_path| and |data| are mutually exclusive.')
@@ -395,7 +444,7 @@ def AddToZipHermetic(zip_file,
     zipinfo = zip_path
     zip_path = zipinfo.filename
   else:
-    zipinfo = HermeticZipInfo(filename=zip_path)
+    zipinfo = HermeticZipInfo(filename=zip_path, date_time=date_time)
 
   _CheckZipPath(zip_path)
 
@@ -432,8 +481,12 @@ def AddToZipHermetic(zip_file,
   zip_file.writestr(zipinfo, data, compress_type)
 
 
-def DoZip(inputs, output, base_dir=None, compress_fn=None,
-          zip_prefix_path=None):
+def DoZip(inputs,
+          output,
+          base_dir=None,
+          compress_fn=None,
+          zip_prefix_path=None,
+          timestamp=None):
   """Creates a zip file from a list of files.
 
   Args:
@@ -443,6 +496,7 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None,
     compress_fn: Applied to each input to determine whether or not to compress.
         By default, items will be |zipfile.ZIP_STORED|.
     zip_prefix_path: Path prepended to file path in zip file.
+    timestamp: Unix timestamp to use for files in the archive.
   """
   if base_dir is None:
     base_dir = '.'
@@ -461,12 +515,17 @@ def DoZip(inputs, output, base_dir=None, compress_fn=None,
   if not isinstance(output, zipfile.ZipFile):
     out_zip = zipfile.ZipFile(output, 'w')
 
+  date_time = HermeticDateTime(timestamp)
   try:
     for zip_path, fs_path in input_tuples:
       if zip_prefix_path:
         zip_path = os.path.join(zip_prefix_path, zip_path)
       compress = compress_fn(zip_path) if compress_fn else None
-      AddToZipHermetic(out_zip, zip_path, src_path=fs_path, compress=compress)
+      AddToZipHermetic(out_zip,
+                       zip_path,
+                       src_path=fs_path,
+                       compress=compress,
+                       date_time=date_time)
   finally:
     if output is not out_zip:
       out_zip.close()
@@ -607,8 +666,8 @@ def WriteDepfile(depfile_path, first_gn_output, inputs=None):
   # Ninja does not support multiple outputs in depfiles.
   with open(depfile_path, 'w') as depfile:
     depfile.write(first_gn_output.replace(' ', '\\ '))
-    depfile.write(': ')
-    depfile.write(' '.join(i.replace(' ', '\\ ') for i in inputs))
+    depfile.write(': \\\n ')
+    depfile.write(' \\\n '.join(i.replace(' ', '\\ ') for i in inputs))
     depfile.write('\n')
 
 

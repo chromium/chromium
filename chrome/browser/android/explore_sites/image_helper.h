@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,6 +25,10 @@ enum class ImageJobType { kSiteIcon, kCategoryImage };
 class ImageHelper {
  public:
   ImageHelper();
+
+  ImageHelper(const ImageHelper&) = delete;
+  ImageHelper& operator=(const ImageHelper&) = delete;
+
   virtual ~ImageHelper();
 
   // Compose a single site icon and return via |callback|.
@@ -57,8 +60,6 @@ class ImageHelper {
   int last_used_job_id_;
 
   base::WeakPtrFactory<ImageHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageHelper);
 };
 
 }  // namespace explore_sites

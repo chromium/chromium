@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/numerics/math_constants.h"
+#include "base/time/time.h"
 #include "base/win/core_winrt_util.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/mojom/sensor.mojom.h"
@@ -210,7 +211,7 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMilliseconds(minimum_report_interval_ms);
+  return base::Milliseconds(minimum_report_interval_ms);
 }
 
 template <wchar_t const* runtime_class_id,
@@ -295,7 +296,7 @@ void PlatformSensorReaderWinrtBase<
                   << logging::SystemErrorCodeToString(hr);
     }
 
-    reading_callback_token_ = base::nullopt;
+    reading_callback_token_ = absl::nullopt;
   }
 }
 
@@ -344,6 +345,11 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
   if (!has_received_first_sample_ ||
       (abs(lux - last_reported_lux_) >=
        (last_reported_lux_ * kLuxPercentThreshold))) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.als.value = lux;
     reading.als.timestamp = timestamp_delta.InSecondsF();
@@ -417,6 +423,11 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kAxisThreshold) ||
       (abs(y - last_reported_y_) >= kAxisThreshold) ||
       (abs(z - last_reported_z_) >= kAxisThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Accelerometer exposes acceleration as
     // proportional and in the same direction as the force of gravity.
     // The generic sensor interface exposes acceleration simply as
@@ -497,6 +508,11 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     // Windows.Devices.Sensors.Gyrometer exposes angular velocity as degrees,
     // but the generic sensor interface uses radians so the data must be
     // converted.
@@ -576,6 +592,11 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kMicroteslaThreshold) ||
       (abs(y - last_reported_y_) >= kMicroteslaThreshold) ||
       (abs(z - last_reported_z_) >= kMicroteslaThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.magn.x = x;
     reading.magn.y = y;
@@ -654,6 +675,11 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
       (abs(x - last_reported_x_) >= kDegreeThreshold) ||
       (abs(y - last_reported_y_) >= kDegreeThreshold) ||
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     SensorReading reading;
     reading.orientation_euler.x = x;
     reading.orientation_euler.y = y;
@@ -762,6 +788,11 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   auto angle =
       abs(GetAngleBetweenOrientationSamples(reading, last_reported_sample));
   if (!has_received_first_sample_ || (angle >= kRadianThreshold)) {
+    base::AutoLock autolock(lock_);
+    if (!client_) {
+      return S_OK;
+    }
+
     client_->OnReadingUpdated(reading);
 
     last_reported_sample = reading;

@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("concierge") {
+  defines = [ "IS_CONCIERGE_IMPL" ]
+  public_deps = [ "//chromeos/ash/components/dbus/arc:arc_proto" ]
+  deps = [
+    ":concierge_proto",
+    "//base",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+
+  sources = [
+    "concierge_client.cc",
+    "concierge_client.h",
+    "fake_concierge_client.cc",
+    "fake_concierge_client.h",
+  ]
+}
+
+config("concierge_config") {
+  include_dirs = [ "${root_gen_dir}/chromeos/ash/components/dbus" ]
+}
+
+proto_library("concierge_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto",
+  ]
+  extra_configs = [ ":concierge_config" ]
+  proto_deps = [ "//chromeos/ash/components/dbus/arc:arc_proto" ]
+  import_dirs = [ "//third_party/cros_system_api/dbus" ]
+  proto_out_dir = "chromeos/ash/components/dbus/concierge"
+}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/elf/elf_dynamic_array_reader.h"
 #include "snapshot/elf/elf_symbol_table_reader.h"
 #include "util/misc/address_types.h"
@@ -46,6 +45,9 @@ class ElfImageReader {
   //! ElfImageReader::Notes() or ElfImageReader::NotesWithNameAndType().
   class NoteReader {
    public:
+    NoteReader(const NoteReader&) = delete;
+    NoteReader& operator=(const NoteReader&) = delete;
+
     ~NoteReader();
 
     //! \brief The return value for NextNote().
@@ -111,11 +113,13 @@ class ElfImageReader {
     bool use_filter_;
     bool is_valid_;
     bool retry_;
-
-    DISALLOW_COPY_AND_ASSIGN(NoteReader);
   };
 
   ElfImageReader();
+
+  ElfImageReader(const ElfImageReader&) = delete;
+  ElfImageReader& operator=(const ElfImageReader&) = delete;
+
   ~ElfImageReader();
 
   //! \brief Initializes the reader.
@@ -285,8 +289,6 @@ class ElfImageReader {
   InitializationStateDcheck initialized_;
   InitializationState dynamic_array_initialized_;
   InitializationState symbol_table_initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElfImageReader);
 };
 
 }  // namespace crashpad

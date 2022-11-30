@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,15 +22,15 @@ class SaveCardInfobarModalInteractionHandler
   SaveCardInfobarModalInteractionHandler();
   ~SaveCardInfobarModalInteractionHandler() override;
 
-  // Instructs the handler to update the credentials with |cardholder_name|,
-  // |expiration_date_month|, and |expiration_date_year|. Replaces
+  // Instructs the handler to update the credentials with `cardholder_name`,
+  // `expiration_date_month`, and `expiration_date_year`. Replaces
   // MainButtonTapped.
   virtual void UpdateCredentials(InfoBarIOS* infobar,
                                  std::u16string cardholder_name,
                                  std::u16string expiration_date_month,
                                  std::u16string expiration_date_year);
 
-  // Instructs the handler to load |url| through the delegate.
+  // Instructs the handler to load `url` through the delegate.
   virtual void LoadURL(InfoBarIOS* infobar, GURL url);
 
   // InfobarModalInteractionHandler:
@@ -42,7 +42,7 @@ class SaveCardInfobarModalInteractionHandler
   std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
   CreateModalInstaller() override;
 
-  // Returns the SaveCard delegate from |infobar|.
+  // Returns the SaveCard delegate from `infobar`.
   autofill::AutofillSaveCardInfoBarDelegateMobile* GetInfoBarDelegate(
       InfoBarIOS* infobar);
 };

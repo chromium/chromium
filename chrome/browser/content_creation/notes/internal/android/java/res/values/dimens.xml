@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="note_width">280dp</dimen>
+    <dimen name="note_side_padding">20dp</dimen>
+
+    <dimen name="note_corner_radius">12dp</dimen>
+
+    <dimen name="focused_note_elevation">12dp</dimen>
+
+    <dimen name="note_title_min_top_margin">64dp</dimen>
+    <dimen name="note_title_top_margin_offset">640dp</dimen>
+
+    <dimen name="min_dialog_height">424dp</dimen>
+</resources>

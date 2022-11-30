@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/audio/audio_device.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 
@@ -24,6 +24,10 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
  public:
   AudioManagerChromeOS(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerChromeOS(const AudioManagerChromeOS&) = delete;
+  AudioManagerChromeOS& operator=(const AudioManagerChromeOS&) = delete;
+
   ~AudioManagerChromeOS() override;
 
   // AudioManager implementation.
@@ -45,6 +49,21 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   bool IsDefault(const std::string& device_id, bool is_input) override;
   enum CRAS_CLIENT_TYPE GetClientType() override;
 
+  // Stores information about the system audio processing effects and
+  // properties that are provided by the system audio processing module (APM).
+  struct SystemAudioProcessingInfo {
+    bool aec_supported = false;
+    int32_t aec_group_id = ash::CrasAudioHandler::kSystemAecGroupIdNotAvailable;
+    bool ns_supported = false;
+    bool agc_supported = false;
+  };
+
+  // Produces AudioParameters for the system, including audio processing
+  // capabilities tailored for the system,
+  static AudioParameters GetStreamParametersForSystem(
+      int user_buffer_size,
+      const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info);
+
  protected:
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
@@ -54,11 +73,8 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   // Get default output buffer size for this board.
   int GetDefaultOutputBufferSizePerBoard();
 
-  // Get if system AEC is supported or not for this board.
-  bool GetSystemAecSupportedPerBoard();
-
-  // Get what the system AEC group ID is for this board.
-  int32_t GetSystemAecGroupIdPerBoard();
+  // Get any system APM effects that are supported for this board.
+  SystemAudioProcessingInfo GetSystemApmEffectsSupportedPerBoard();
 
   void GetAudioDeviceNamesImpl(bool is_input, AudioDeviceNames* device_names);
 
@@ -77,10 +93,9 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
                                               base::WaitableEvent* event);
   void GetDefaultOutputBufferSizeOnMainThread(int32_t* buffer_size,
                                               base::WaitableEvent* event);
-  void GetSystemAecSupportedOnMainThread(bool* system_aec_supported,
-                                         base::WaitableEvent* event);
-  void GetSystemAecGroupIdOnMainThread(int32_t* group_id,
-                                       base::WaitableEvent* event);
+  void GetSystemApmEffectsSupportedOnMainThread(
+      SystemAudioProcessingInfo* system_apm_info,
+      base::WaitableEvent* event);
 
   void WaitEventOrShutdown(base::WaitableEvent* event);
 
@@ -95,8 +110,6 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   base::WeakPtr<AudioManagerChromeOS> weak_this_;
 
   base::WeakPtrFactory<AudioManagerChromeOS> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerChromeOS);
 };
 
 }  // namespace media

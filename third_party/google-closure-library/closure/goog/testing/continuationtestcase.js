@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Defines test classes for tests that can wait for conditions.
@@ -102,6 +94,7 @@ goog.require('goog.testing.asserts');
  * @final
  */
 goog.testing.ContinuationTestCase = function(opt_name) {
+  'use strict';
   goog.testing.TestCase.call(this, opt_name);
 
   /**
@@ -144,6 +137,7 @@ goog.testing.ContinuationTestCase.prototype.currentTest_ = null;
  */
 goog.testing.ContinuationTestCase.prototype.enableWaitFunctions_ = function(
     enable) {
+  'use strict';
   if (enable) {
     goog.exportSymbol(
         'waitForCondition', goog.bind(this.waitForCondition, this));
@@ -160,6 +154,7 @@ goog.testing.ContinuationTestCase.prototype.enableWaitFunctions_ = function(
 
 /** @override */
 goog.testing.ContinuationTestCase.prototype.runTests = function() {
+  'use strict';
   this.enableWaitFunctions_(true);
   goog.testing.ContinuationTestCase.superClass_.runTests.call(this);
 };
@@ -167,6 +162,7 @@ goog.testing.ContinuationTestCase.prototype.runTests = function() {
 
 /** @override */
 goog.testing.ContinuationTestCase.prototype.finalize = function() {
+  'use strict';
   this.enableWaitFunctions_(false);
   goog.testing.ContinuationTestCase.superClass_.finalize.call(this);
 };
@@ -174,6 +170,7 @@ goog.testing.ContinuationTestCase.prototype.finalize = function() {
 
 /** @override */
 goog.testing.ContinuationTestCase.prototype.cycleTests = function() {
+  'use strict';
   // Get the next test in the queue.
   if (!this.currentTest_) {
     this.currentTest_ = this.createNextTest_();
@@ -195,6 +192,7 @@ goog.testing.ContinuationTestCase.prototype.cycleTests = function() {
  * @private
  */
 goog.testing.ContinuationTestCase.prototype.createNextTest_ = function() {
+  'use strict';
   var test = this.next();
   if (!test) {
     return null;
@@ -217,6 +215,7 @@ goog.testing.ContinuationTestCase.prototype.createNextTest_ = function() {
  * @private
  */
 goog.testing.ContinuationTestCase.prototype.finishTest_ = function() {
+  'use strict';
   var err = this.currentTest_.getError();
   if (err) {
     this.recordError(this.currentTest_.name, err);
@@ -240,6 +239,7 @@ goog.testing.ContinuationTestCase.prototype.finishTest_ = function() {
  * @private
  */
 goog.testing.ContinuationTestCase.prototype.runNextStep_ = function() {
+  'use strict';
   if (this.locked_) {
     // Attempting to run a step before the previous step has finished. Try again
     // after that step has released the lock.
@@ -255,8 +255,10 @@ goog.testing.ContinuationTestCase.prototype.runNextStep_ = function() {
   }
 
   // Find the next step that is not in a wait state.
-  var stepIndex =
-      goog.array.findIndex(phase, function(step) { return !step.waiting; });
+  var stepIndex = phase.findIndex(function(step) {
+    'use strict';
+    return !step.waiting;
+  });
 
   if (stepIndex < 0) {
     // All active steps are currently waiting. Return until one wakes up.
@@ -302,6 +304,7 @@ goog.testing.ContinuationTestCase.prototype.runNextStep_ = function() {
  */
 goog.testing.ContinuationTestCase.prototype.waitForTimeout = function(
     continuation, opt_duration) {
+  'use strict';
   var step = this.addStep_(continuation);
   step.setTimeout(
       goog.bind(this.handleComplete_, this, step), opt_duration || 0);
@@ -319,7 +322,7 @@ goog.testing.ContinuationTestCase.prototype.waitForTimeout = function(
  */
 goog.testing.ContinuationTestCase.prototype.waitForEvent = function(
     eventTarget, eventType, continuation) {
-
+  'use strict';
   var step = this.addStep_(continuation);
 
   var duration = goog.testing.ContinuationTestCase.MAX_TIMEOUT;
@@ -344,7 +347,7 @@ goog.testing.ContinuationTestCase.prototype.waitForEvent = function(
  */
 goog.testing.ContinuationTestCase.prototype.waitForCondition = function(
     condition, continuation, opt_interval, opt_maxTimeout) {
-
+  'use strict';
   var interval = opt_interval || 100;
   var timeout = opt_maxTimeout || goog.testing.ContinuationTestCase.MAX_TIMEOUT;
 
@@ -361,6 +364,7 @@ goog.testing.ContinuationTestCase.prototype.waitForCondition = function(
  * @private
  */
 goog.testing.ContinuationTestCase.prototype.addStep_ = function(func) {
+  'use strict';
   if (!this.currentTest_) {
     throw new Error('Cannot add test steps outside of a running test.');
   }
@@ -380,6 +384,7 @@ goog.testing.ContinuationTestCase.prototype.addStep_ = function(func) {
  * @private
  */
 goog.testing.ContinuationTestCase.prototype.handleComplete_ = function(step) {
+  'use strict';
   step.clearTimeout();
   step.waiting = false;
   this.runNextStep_();
@@ -395,7 +400,9 @@ goog.testing.ContinuationTestCase.prototype.handleComplete_ = function(step) {
  */
 goog.testing.ContinuationTestCase.prototype.handleTimeout_ = function(
     step, duration) {
+  'use strict';
   step.ref = function() {
+    'use strict';
     fail('Continuation timed out after ' + duration + 'ms.');
   };
 
@@ -422,7 +429,7 @@ goog.testing.ContinuationTestCase.prototype.handleTimeout_ = function(
  */
 goog.testing.ContinuationTestCase.prototype.testCondition_ = function(
     step, condition, startTime, interval, timeout) {
-
+  'use strict';
   var duration = goog.now() - startTime;
 
   if (condition()) {
@@ -464,6 +471,7 @@ goog.testing.ContinuationTestCase.prototype.testCondition_ = function(
  */
 goog.testing.ContinuationTestCase.ContinuationTest = function(
     setUp, test, tearDown) {
+  'use strict';
   // This test container has a name, but no evaluation function or scope.
   goog.testing.TestCase.Test.call(this, test.name, function() {}, null);
 
@@ -507,6 +515,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.error_ = null;
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.getError =
     function() {
+  'use strict';
   return this.error_;
 };
 
@@ -519,6 +528,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.getError =
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.setError =
     function(e) {
+  'use strict';
   this.error_ = this.error_ || e;
 };
 
@@ -529,6 +539,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.setError =
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.getCurrentPhase =
     function() {
+  'use strict';
   if (this.setUp_.length) {
     return this.setUp_;
   }
@@ -552,6 +563,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.getCurrentPhase =
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.addStep = function(
     step) {
+  'use strict';
   var phase = this.getCurrentPhase();
   if (phase) {
     phase.push(step);
@@ -567,6 +579,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.addStep = function(
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype
     .cancelCurrentPhase = function() {
+  'use strict';
   this.cancelPhase_(this.getCurrentPhase());
 };
 
@@ -577,6 +590,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.cancelTestPhase =
     function() {
+  'use strict';
   this.cancelPhase_(this.setUp_);
   this.cancelPhase_(this.test_);
 };
@@ -589,6 +603,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.cancelTestPhase =
  */
 goog.testing.ContinuationTestCase.ContinuationTest.prototype.cancelPhase_ =
     function(phase) {
+  'use strict';
   while (phase && phase.length) {
     var step = phase.pop();
     if (step instanceof goog.testing.ContinuationTestCase.Step) {
@@ -612,6 +627,7 @@ goog.testing.ContinuationTestCase.ContinuationTest.prototype.cancelPhase_ =
  * @final
  */
 goog.testing.ContinuationTestCase.Step = function(name, ref, opt_scope) {
+  'use strict';
   goog.testing.TestCase.Test.call(this, name, ref, opt_scope);
 };
 goog.inherits(
@@ -663,7 +679,7 @@ goog.testing.ContinuationTestCase.Step.prototype.timeout_;
  */
 goog.testing.ContinuationTestCase.Step.prototype.setTimeout = function(
     func, duration) {
-
+  'use strict';
   this.clearTimeout();
 
   var setTimeout = goog.testing.ContinuationTestCase.Step.protectedSetTimeout_;
@@ -675,6 +691,7 @@ goog.testing.ContinuationTestCase.Step.prototype.setTimeout = function(
  * Clears the current timeout if it is active.
  */
 goog.testing.ContinuationTestCase.Step.prototype.clearTimeout = function() {
+  'use strict';
   if (this.timeout_) {
     var clear = goog.testing.ContinuationTestCase.Step.protectedClearTimeout_;
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostConnectorTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // Navigate to the enclosed <iframe>.
-  FrameTreeNode* iframe = web_contents()->GetFrameTree()->root()->child_at(0);
+  FrameTreeNode* iframe =
+      web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   GURL frame_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(iframe, frame_url));
 

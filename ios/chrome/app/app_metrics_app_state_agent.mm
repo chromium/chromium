@@ -1,14 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,6 +22,14 @@
 
 // Observed app state.
 @property(nonatomic, weak) AppState* appState;
+
+// This flag is set when the first scene has activated since the startup, and
+// never reset during the app's lifetime.
+@property(nonatomic, assign) BOOL firstSceneHasActivated;
+
+// This flag is set when the first scene has connected since the startup, and
+// never reset during the app's lifetime.
+@property(nonatomic, assign) BOOL firstSceneHasConnected;
 
 @end
 
@@ -40,40 +51,53 @@
   [sceneState addObserver:self];
 }
 
-- (void)appStateDidExitSafeMode:(AppState*)appState {
-  DCHECK(self.appState.lastTimeInForeground.is_null());
-  // Log session start. This normally happens in
-  // sceneState:transitionedToActivationLevel:, but is skipped in safe mode.
-  [self handleSessionStart];
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (previousInitStage == InitStageSafeMode) {
+    // Log session start if the app is already foreground
+    if (self.appState.foregroundScenes.count > 0) {
+      [self handleSessionStart];
+    }
+  }
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.isInSafeMode) {
-    // Don't log any metrics at safe mode. Wait for AppStateObserver's
-    // -appStateDidExitSafeMode to log session start.
+  if (!self.firstSceneHasConnected) {
+    self.appState.startupInformation.firstSceneConnectionTime =
+        base::TimeTicks::Now();
+    self.firstSceneHasConnected = YES;
+  }
+
+  if (self.appState.initStage <= InitStageSafeMode) {
     return;
+  }
+
+  if (level >= SceneActivationLevelForegroundActive) {
+    if (!self.firstSceneHasActivated) {
+      self.firstSceneHasActivated = YES;
+      [MetricsMediator logStartupDuration:self.appState.startupInformation
+                    connectionInformation:sceneState.controller];
+    }
   }
 
   if (level >= SceneActivationLevelForegroundInactive &&
       self.appState.lastTimeInForeground.is_null()) {
     [self handleSessionStart];
   } else if (level <= SceneActivationLevelBackground) {
-    for (SceneState* scene in self.appState.connectedScenes) {
-      if (scene.activationLevel > SceneActivationLevelBackground) {
-        // One scene has gone background, but at least one other is still
-        // foreground. Consider the session ongoing.
-        return;
-      }
+    // Do not consider the app as brackgrounded when there are still scenes on
+    // the foreground.
+    if (self.appState.foregroundScenes.count > 0) {
+      return;
     }
-
     if (self.appState.lastTimeInForeground.is_null()) {
       // This method will be called multiple times, once per scene, if multiple
       // scenes go background simulatneously (for example, if two windows were
       // in split screen and the user swiped to go home). Only log the session
-      // duration once.
+      // duration once. This also makes sure that the first scene that ramps up
+      // to foreground doesn't end the session.
       return;
     }
 
@@ -101,8 +125,7 @@
 
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
 
   IOSProfileSessionDurationsService* psdService = [self psdService];
   if (psdService) {

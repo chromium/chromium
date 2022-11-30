@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,11 +38,15 @@ std::ostream& operator<<(std::ostream& out, const ClientStatus& status) {
   }
   if (status.details_.has_unexpected_error_info()) {
     auto& error_info = status.details_.unexpected_error_info();
-    out << error_info.source_file() << ":" << error_info.source_line_number();
+    out << " " << error_info.source_file() << ":"
+        << error_info.source_line_number();
     if (!error_info.js_exception_classname().empty()) {
-      out << " JS error " << error_info.js_exception_classname() << " at "
-          << error_info.js_exception_line_number() << ":"
-          << error_info.js_exception_column_number();
+      out << " JS error " << error_info.js_exception_classname();
+      if (!error_info.js_exception_line_numbers().empty() &&
+          !error_info.js_exception_column_numbers().empty()) {
+        out << " at " << error_info.js_exception_line_numbers(0) << ":"
+            << error_info.js_exception_column_numbers(0);
+      }
     }
   }
 #endif
@@ -141,6 +145,45 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case ProcessedActionStatusProto::PASSWORD_ORIGIN_MISMATCH:
       out << "PASSWORD_ORIGIN_MISMATCH";
+      break;
+    case ProcessedActionStatusProto::TOO_MANY_OPTION_VALUES_FOUND:
+      out << "TOO_MANY_OPTION_VALUES_FOUND";
+      break;
+    case ProcessedActionStatusProto::INVALID_TARGET:
+      out << "INVALID_TARGET";
+      break;
+    case ProcessedActionStatusProto::ELEMENT_POSITION_NOT_FOUND:
+      out << "ELEMENT_POSITION_NOT_FOUND";
+      break;
+    case ProcessedActionStatusProto::CLIENT_MEMORY_KEY_NOT_AVAILABLE:
+      out << "CLIENT_MEMORY_KEY_NOT_AVAILABLE";
+      break;
+    case ProcessedActionStatusProto::EMPTY_VALUE_EXPRESSION_RESULT:
+      out << "EMPTY_VALUE_EXPRESSION_RESULT";
+      break;
+    case ProcessedActionStatusProto::NO_RENDER_FRAME:
+      out << "NO_RENDER_FRAME";
+      break;
+    case ProcessedActionStatusProto::USER_DATA_REQUEST_FAILED:
+      out << "USER_DATA_REQUEST_FAILED";
+      break;
+    case ProcessedActionStatusProto::JS_FORCED_ROUNDTRIP:
+      out << "JS_FORCED_ROUNDTRIP";
+      break;
+    case ProcessedActionStatusProto::QR_CODE_SCAN_CANCELLED:
+      out << "QR_CODE_SCAN_CANCELLED";
+      break;
+    case ProcessedActionStatusProto::QR_CODE_SCAN_FAILURE:
+      out << "QR_CODE_SCAN_FAILURE";
+      break;
+    case ProcessedActionStatusProto::QR_CODE_SCAN_CAMERA_ERROR:
+      out << "QR_CODE_SCAN_CAMERA_ERROR";
+      break;
+    case ProcessedActionStatusProto::XML_PARSE_INCORRECT_DATA:
+      out << "XML_PARSE_INCORRECT_DATA";
+      break;
+    case ProcessedActionStatusProto::XML_PARSE_SIGNED_DATA:
+      out << "XML_PARSE_SIGNED_DATA";
       break;
 
       // Intentionally no default case to make compilation fail if a new value

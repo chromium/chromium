@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/c/pp_instance.h"
@@ -44,6 +42,10 @@ class PPAPI_HOST_EXPORT PpapiHost : public IPC::Sender, public IPC::Listener {
   // (AddHostFactoryFilter) and instance messages (AddInstanceMessageFilter)
   // after construction.
   PpapiHost(IPC::Sender* sender, const PpapiPermissions& perms);
+
+  PpapiHost(const PpapiHost&) = delete;
+  PpapiHost& operator=(const PpapiHost&) = delete;
+
   ~PpapiHost() override;
 
   const PpapiPermissions& permissions() const { return permissions_; }
@@ -140,11 +142,9 @@ class PPAPI_HOST_EXPORT PpapiHost : public IPC::Sender, public IPC::Listener {
   typedef std::map<int, std::unique_ptr<ResourceHost>> PendingHostResourceMap;
   PendingHostResourceMap pending_resource_hosts_;
   int next_pending_resource_host_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiHost);
 };
 
 }  // namespace host
 }  // namespace ppapi
 
-#endif  // PPAPI_HOST_PPAPIE_HOST_H_
+#endif  // PPAPI_HOST_PPAPI_HOST_H_

@@ -21,7 +21,7 @@ before continuing by setting the environment variable `DEPOT_TOOLS_UPDATE=0`.
 ~/chrome/src $ COMMIT_DATE=$(git log -n 1 --pretty=format:%ci)
 
 # Check out depot_tools revision from the same time:
-~/depot_tools $ git checkout $(git rev-list -n 1 --before="$COMMIT_DATE" master)
+~/depot_tools $ git checkout $(git rev-list -n 1 --before="$COMMIT_DATE" main)
 ~/depot_tools $ export DEPOT_TOOLS_UPDATE=0
 ```
 
@@ -83,7 +83,7 @@ You may also need to disable goma (if enabled).
 When returning to a normal checkout, you may need to undo some of the changes
 above:
 
-*   Restore `depot_tools` to the `master` branch.
+*   Restore `depot_tools` to the `main` branch.
 *   Clean up any `_bad_scm/` directories in the directory containing `.gclient`.
 *   Revert your `.gclient` file if `gclient` changed it:
 

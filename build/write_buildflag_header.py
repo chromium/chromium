@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 
 import optparse
 import os
+import re
 import shlex
-import sys
 
 
 class Options:
@@ -39,10 +39,12 @@ def GetOptions():
                     help="Name of the response file containing the flags.")
   cmdline_options, cmdline_flags = parser.parse_args()
 
-  # Compute header guard by replacing some chars with _ and upper-casing.
+  # Compute a valid C++ header guard by replacing non valid chars with '_',
+  # upper-casing everything and prepending '_' if first symbol is digit.
   header_guard = cmdline_options.output.upper()
-  header_guard = \
-      header_guard.replace('/', '_').replace('\\', '_').replace('.', '_')
+  if header_guard[0].isdigit():
+    header_guard = '_' + header_guard
+  header_guard = re.sub('[^\w]', '_', header_guard)
   header_guard += '_'
 
   # The actual output file is inside the gen dir.
@@ -83,7 +85,7 @@ def WriteHeader(options):
 
     output_file.write('\n#ifndef %s\n' % options.header_guard)
     output_file.write('#define %s\n\n' % options.header_guard)
-    output_file.write('#include "build/buildflag.h"\n\n')
+    output_file.write('#include "build/buildflag.h" // IWYU pragma: export\n\n')
 
     for pair in options.flags:
       output_file.write('#define BUILDFLAG_INTERNAL_%s() (%s)\n' % pair)
@@ -91,13 +93,5 @@ def WriteHeader(options):
     output_file.write('\n#endif  // %s\n' % options.header_guard)
 
 
-if os.name == 'nt':
-  major, minor, build, platform, service_pack = sys.getwindowsversion()
-  # Windows 10 will be 6.2 on Python 2 and 10.0 on Python 3. This check
-  # handles both.
-  if major < 6 or (major == 6 and minor < 2):
-    raise Exception(
-        'Unsupported OS. Building Chromium requires Windows 10. %s detected.' %
-        str(sys.getwindowsversion()))
 options = GetOptions()
 WriteHeader(options)

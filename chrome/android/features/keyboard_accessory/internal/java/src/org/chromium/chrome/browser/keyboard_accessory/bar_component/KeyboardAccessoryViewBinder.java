@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ class KeyboardAccessoryViewBinder {
         /**
          * Called when the ViewHolder is bound.
          * @param item The {@link BarItem} that this ViewHolder represents.
-         * @param item The {@link View} that this ViewHolder binds the bar item to.
+         * @param view The {@link View} that this ViewHolder binds the bar item to.
          */
         protected abstract void bind(T item, V view);
 

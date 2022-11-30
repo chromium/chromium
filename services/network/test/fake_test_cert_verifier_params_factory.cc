@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
@@ -35,6 +36,9 @@ FakeTestCertVerifierParamsFactory::GetCertVerifierParams() {
 
 void FakeTestCertVerifierParamsFactory::Verify(
     const ::net::CertVerifier::RequestParams& params,
+    uint32_t netlog_source_type,
+    uint32_t netlog_source_id,
+    base::TimeTicks netlog_source_start_time,
     mojo::PendingRemote<cert_verifier::mojom::CertVerifierRequest>
         cert_verifier_request) {
   mojo::Remote<cert_verifier::mojom::CertVerifierRequest> request(

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "uuid.mojom" ]
+  webui_module_path = "/"
 
   cpp_typemaps = [
     {
@@ -48,6 +49,7 @@ mojom("deprecated_experimental_interfaces") {
     "adapter.mojom",
     "device.mojom",
   ]
+  webui_module_path = "/"
 
   public_deps = [ ":mojom" ]
 
@@ -62,6 +64,6 @@ mojom("deprecated_experimental_interfaces") {
     "//chrome/browser/ui/webui/bluetooth_internals:*",
 
     # Nearby Sharing feature
-    "//chromeos/services/nearby/public/mojom:*",
+    "//chromeos/ash/services/nearby/public/mojom:*",
   ]
 }

@@ -1,0 +1,7 @@
+// dot -Tpng third_party/blink/renderer/modules/csspaint/images/PaintWorklet_Paint.png.dot > third_party/blink/renderer/modules/csspaint/images/PaintWorklet_Paint.png
+// When making modifications run the above command to regenerate the diagram
+
+digraph {
+  label = "Workflow of main thread paint worklet";
+  "CSSPaintImageGeneratorImpl\::Paint" -> "PaintWorklet\::Paint" -> FindAvaiableGlobalScope -> FindDefinition -> "CSSPaintDefinition\::Paint";
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
  public:
   CardNameFixFlowViewBridge(CardNameFixFlowController* controller,
                             UIViewController* base_view_controller);
+
+  CardNameFixFlowViewBridge(const CardNameFixFlowViewBridge&) = delete;
+  CardNameFixFlowViewBridge& operator=(const CardNameFixFlowViewBridge&) =
+      delete;
+
   ~CardNameFixFlowViewBridge() override;
 
   // CardNameFixFlowView:
@@ -47,22 +52,20 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
   UIViewController* view_controller_;
 
  private:
-  // The controller |this| queries for logic and state.
+  // The controller `this` queries for logic and state.
   CardNameFixFlowController* controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
   __weak UIViewController* presenting_view_controller_;
 
   base::WeakPtrFactory<CardNameFixFlowViewBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowViewBridge);
 };
 
 }  // namespace autofill
 
 @interface CardNameFixFlowViewController : UITableViewController
 
-// Designated initializer. |bridge| must not be null.
+// Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:(autofill::CardNameFixFlowViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MockAssistantViewDelegate
               OnDialogPlateContentsCommitted,
               (const std::string&),
               (override));
-
-  MOCK_METHOD(void, OnHostViewVisibilityChanged, (bool), (override));
 
   MOCK_METHOD(void,
               OnNotificationButtonPressed,

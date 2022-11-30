@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,34 +53,9 @@
   return YES;
 }
 
-// On 10.10, this prevents the window server from treating the title bar as an
-// unconditionally-draggable region, and allows -[BridgedContentView hitTest:]
-// to choose case-by-case whether to take a mouse event or let it turn into a
-// window drag. Not needed for newer macOS. See r549802 for details.
-- (NSRect)_draggableFrame NS_DEPRECATED_MAC(10_10, 10_11) {
-  return NSZeroRect;
-}
-
 @end
 
 @implementation BrowserNativeWidgetWindow
-
-// Prevent detached tabs from glitching when the window is partially offscreen.
-// See https://crbug.com/1095717 for details.
-// This is easy to get wrong so scope very tightly to only disallow large
-// vertical jumps.
-- (NSRect)constrainFrameRect:(NSRect)rect toScreen:(NSScreen*)screen {
-  NSRect proposed = [super constrainFrameRect:rect toScreen:screen];
-  // This boils down to: use the small threshold when we're not avoiding a
-  // Dock on the bottom, and the big threshold otherwise.
-  static constexpr CGFloat kBigThreshold = 200;
-  static constexpr CGFloat kSmallThreshold = 50;
-  const CGFloat yDelta = NSMaxY(proposed) - NSMaxY(rect);
-  if (yDelta > kBigThreshold ||
-      (yDelta > kSmallThreshold && NSMinY(proposed) == 0))
-    return rect;
-  return proposed;
-}
 
 // NSWindow (PrivateAPI) overrides.
 

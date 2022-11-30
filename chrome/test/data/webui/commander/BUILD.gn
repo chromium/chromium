@@ -1,34 +1,38 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://commander/=../../chrome/browser/resources/commander/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "../tsconfig_base.json"
+  path_mappings = [
+    "chrome://commander/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/commander/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "commander_app_test.ts",
+    "test_commander_browser_proxy.ts",
+  ]
   deps = [
-    ":commander_app_test",
-    ":test_commander_browser_proxy",
+    "..:build_ts",
+    "//chrome/browser/resources/commander:build_ts",
   ]
 }
 
-js_library("commander_app_test") {
-  deps = [
-    ":test_commander_browser_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/commander:app",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
+generate_grd("build_grdp") {
+  grd_prefix = "webui_commander"
+  out_grd = "$target_gen_dir/resources.grdp"
 
-js_library("test_commander_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/commander:browser_proxy",
-  ]
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "commander"
 }

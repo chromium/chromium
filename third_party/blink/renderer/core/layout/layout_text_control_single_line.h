@@ -57,7 +57,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestPhase) final;
 
   int TextBlockWidth() const;
 
@@ -68,7 +68,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   // shouldn't affect outside of the INPUT box.  So we ignore child overflow.
   void AddLayoutOverflowFromChildren() final { NOT_DESTROYED(); }
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }
@@ -102,4 +102,4 @@ class LayoutTextControlInnerEditor : public LayoutBlockFlow {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_SINGLE_LINE_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,16 +119,16 @@ class NET_EXPORT UploadFileElementReader : public UploadElementReader {
   const uint64_t range_length_;
   const base::Time expected_modification_time_;
   std::unique_ptr<FileStream> file_stream_;
-  uint64_t content_length_;
-  uint64_t bytes_remaining_;
+  uint64_t content_length_ = 0;
+  uint64_t bytes_remaining_ = 0;
 
   // File information. Only valid during GET_FILE_INFO_COMPLETE state.
   base::File::Info file_info_;
 
-  State next_state_;
+  State next_state_ = State::IDLE;
   CompletionOnceCallback pending_callback_;
   // True if Init() was called while an async operation was in progress.
-  bool init_called_while_operation_pending_;
+  bool init_called_while_operation_pending_ = false;
 
   base::WeakPtrFactory<UploadFileElementReader> weak_ptr_factory_{this};
 };

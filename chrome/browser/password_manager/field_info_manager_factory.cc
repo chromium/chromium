@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "content/public/browser/browser_context.h"
 
 using password_manager::FieldInfoManager;
@@ -29,9 +28,7 @@ FieldInfoManager* FieldInfoManagerFactory::GetForBrowserContext(
 }
 
 FieldInfoManagerFactory::FieldInfoManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FieldInfoManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FieldInfoManagerFactory") {
   DependsOn(PasswordStoreFactory::GetInstance());
 }
 

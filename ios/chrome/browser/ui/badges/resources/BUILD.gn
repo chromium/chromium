@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,14 @@ imageset("incognito_badge") {
     "incognito_badge.imageset/Contents.json",
     "incognito_badge.imageset/incognito_badge@2x.png",
     "incognito_badge.imageset/incognito_badge@3x.png",
+  ]
+}
+
+imageset("incognito_badge_ios14") {
+  sources = [
+    "incognito_badge_ios14.imageset/Contents.json",
+    "incognito_badge_ios14.imageset/incognito_badge_ios14@2x.png",
+    "incognito_badge_ios14.imageset/incognito_badge_ios14@3x.png",
   ]
 }
 

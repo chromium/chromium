@@ -1,14 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
 
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -50,7 +54,7 @@ class DOMTimerTest : public RenderingTest {
     auto* mock_clock = test_task_runner->GetMockClock();
     auto* mock_tick_clock = test_task_runner->GetMockTickClock();
     auto now_ticks = test_task_runner->NowTicks();
-    window_performance->SetClocksForTesting(mock_clock, mock_tick_clock);
+    window_performance->SetTickClockForTesting(mock_tick_clock);
     window_performance->ResetTimeOriginForTesting(now_ticks);
     GetDocument().GetSettings()->SetScriptEnabled(true);
     auto* loader = GetDocument().Loader();
@@ -60,8 +64,9 @@ class DOMTimerTest : public RenderingTest {
   }
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
-    return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(expr))
-        ->RunScriptAndReturnValue(GetDocument().domWindow());
+    return ClassicScript::CreateUnspecifiedScript(expr)
+        ->RunScriptAndReturnValue(GetDocument().domWindow())
+        .GetSuccessValueOrEmpty();
   }
 
   Vector<double> ToDoubleArray(v8::Local<v8::Value> value,
@@ -77,12 +82,95 @@ class DOMTimerTest : public RenderingTest {
   }
 
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
-    ScriptSourceCode script(script_text);
-    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
-        GetDocument().domWindow());
+    ClassicScript::CreateUnspecifiedScript(String(script_text))
+        ->RunScript(GetDocument().domWindow());
     platform()->RunUntilIdle();
   }
 };
+
+class DOMTimerTestWithSetTimeoutWithout1MsClampPolicyOverride
+    : public DOMTimerTest {
+ public:
+  DOMTimerTestWithSetTimeoutWithout1MsClampPolicyOverride() = default;
+
+  void SetUp() override {
+    DOMTimerTest::SetUp();
+    features::ClearSetTimeoutWithout1MsClampPolicyOverrideCacheForTesting();
+  }
+
+  void TearDown() override {
+    features::ClearSetTimeoutWithout1MsClampPolicyOverrideCacheForTesting();
+    DOMTimerTest::TearDown();
+  }
+
+  // This should only be called once per test, and prior to the
+  // DomTimer logic actually parsing the policy switch.
+  void SetPolicyOverride(bool enabled) {
+    DCHECK(!scoped_command_line_.GetProcessCommandLine()->HasSwitch(
+        switches::kSetTimeoutWithout1MsClampPolicy));
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kSetTimeoutWithout1MsClampPolicy,
+        enabled ? switches::kSetTimeoutWithout1MsClampPolicy_ForceEnable
+                : switches::kSetTimeoutWithout1MsClampPolicy_ForceDisable);
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_F(DOMTimerTestWithSetTimeoutWithout1MsClampPolicyOverride,
+       PolicyForceEnable) {
+  SetPolicyOverride(/* enabled = */ true);
+  EXPECT_TRUE(blink::features::IsSetTimeoutWithoutClampEnabled());
+}
+
+TEST_F(DOMTimerTestWithSetTimeoutWithout1MsClampPolicyOverride,
+       PolicyForceDisable) {
+  SetPolicyOverride(/* enabled = */ false);
+  EXPECT_FALSE(blink::features::IsSetTimeoutWithoutClampEnabled());
+}
+
+class DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride
+    : public DOMTimerTest {
+ public:
+  DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride() = default;
+
+  void SetUp() override {
+    DOMTimerTest::SetUp();
+    features::ClearUnthrottledNestedTimeoutOverrideCacheForTesting();
+  }
+
+  void TearDown() override {
+    features::ClearUnthrottledNestedTimeoutOverrideCacheForTesting();
+    DOMTimerTest::TearDown();
+  }
+
+  // This should only be called once per test, and prior to the
+  // DomTimer logic actually parsing the policy switch.
+  void SetPolicyOverride(bool enabled) {
+    DCHECK(!scoped_command_line_.GetProcessCommandLine()->HasSwitch(
+        switches::kUnthrottledNestedTimeoutPolicy));
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kUnthrottledNestedTimeoutPolicy,
+        enabled ? switches::kUnthrottledNestedTimeoutPolicy_ForceEnable
+                : switches::kUnthrottledNestedTimeoutPolicy_ForceDisable);
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_F(DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride,
+       PolicyForceEnable) {
+  SetPolicyOverride(/* enabled = */ true);
+  EXPECT_TRUE(blink::features::IsMaxUnthrottledTimeoutNestingLevelEnabled());
+}
+
+TEST_F(DOMTimerTestWithMaxUnthrottledTimeoutNestingLevelPolicyOverride,
+       PolicyForceDisable) {
+  SetPolicyOverride(/* enabled = */ false);
+  EXPECT_FALSE(blink::features::IsMaxUnthrottledTimeoutNestingLevelEnabled());
+}
 
 const char* const kSetTimeout0ScriptText =
     "var last = performance.now();"
@@ -93,14 +181,30 @@ const char* const kSetTimeout0ScriptText =
     "}"
     "setTimeout(setTimeoutCallback, 0);";
 
-TEST_F(DOMTimerTest, DISABLED_setTimeout_ZeroIsNotClampedToOne) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSetTimeoutWithoutClamp);
 
   ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
 
   EXPECT_THAT(time, DoubleNear(0., kThreshold));
+}
+
+TEST_F(DOMTimerTest, setTimeout_ZeroIsClampedToOne) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSetTimeoutWithoutClamp);
+
+  ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
+
+  double time = ToDoubleValue(EvalExpression("elapsed"), scope);
+
+  EXPECT_THAT(time, DoubleNear(1., kThreshold));
 }
 
 const char* const kSetTimeoutNestedScriptText =
@@ -118,13 +222,38 @@ const char* const kSetTimeoutNestedScriptText =
     "setTimeout(nestSetTimeouts, 1);";
 
 TEST_F(DOMTimerTest, setTimeout_ClampsAfter4Nestings) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
 
   ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
 
   auto times(ToDoubleArray(EvalExpression("times"), scope));
 
   EXPECT_THAT(times, ElementsAreArray(kExpectedTimings));
+}
+
+TEST_F(DOMTimerTest, setTimeout_ClampsAfter5Nestings) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "6"}});
+
+  ExecuteScriptAndWaitUntilIdle(kSetTimeoutNestedScriptText);
+
+  auto times(ToDoubleArray(EvalExpression("times"), scope));
+
+  EXPECT_THAT(times, ElementsAreArray({
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(4., kThreshold),
+                     }));
 }
 
 const char* const kSetIntervalScriptText =
@@ -141,7 +270,11 @@ const char* const kSetIntervalScriptText =
     "}, 1);";
 
 TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
 
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
 
@@ -150,8 +283,33 @@ TEST_F(DOMTimerTest, setInterval_ClampsAfter4Iterations) {
   EXPECT_THAT(times, ElementsAreArray(kExpectedTimings));
 }
 
+TEST_F(DOMTimerTest, setInterval_ClampsAfter5Iterations) {
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMaxUnthrottledTimeoutNestingLevel, {{"nesting", "6"}});
+
+  ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
+
+  auto times(ToDoubleArray(EvalExpression("times"), scope));
+
+  EXPECT_THAT(times, ElementsAreArray({
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(1., kThreshold),
+                         DoubleNear(4., kThreshold),
+                     }));
+}
+
 TEST_F(DOMTimerTest, setInterval_NestingResetsForLaterCalls) {
-  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  v8::HandleScope scope(GetPage().GetAgentGroupScheduler().Isolate());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kMaxUnthrottledTimeoutNestingLevel);
 
   ExecuteScriptAndWaitUntilIdle(kSetIntervalScriptText);
 

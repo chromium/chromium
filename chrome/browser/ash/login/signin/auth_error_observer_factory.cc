@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,13 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 AuthErrorObserverFactory::AuthErrorObserverFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AuthErrorObserver",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+    : ProfileKeyedServiceFactory("AuthErrorObserver") {
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
 }
 
@@ -42,4 +39,4 @@ KeyedService* AuthErrorObserverFactory::BuildServiceInstanceFor(
   return new AuthErrorObserver(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

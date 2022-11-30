@@ -1,10 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
-
-import "mojo/public/mojom/base/string16.mojom";
 
 // The renderer uses this interface to ask the browser process about content
 // settings for whether features are allowed to be used by the worker.

@@ -1,14 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "content/common/pepper_plugin.mojom.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_sync_message_filter.h"
@@ -35,6 +34,9 @@ class PepperHungPluginFilter
       public IPC::MessageFilter {
  public:
   PepperHungPluginFilter();
+
+  PepperHungPluginFilter(const PepperHungPluginFilter&) = delete;
+  PepperHungPluginFilter& operator=(const PepperHungPluginFilter&) = delete;
 
   // The |hung_host| is the mojo channel to inform the browser about the new
   // hung status.
@@ -112,8 +114,6 @@ class PepperHungPluginFilter
   bool hung_plugin_showing_ = false;
 
   bool timer_task_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperHungPluginFilter);
 };
 
 }  // namespace content

@@ -1,0 +1,8 @@
+<!doctype html>
+<title>Do not apply ::first-letter to -webkit-text-security</title>
+<link rel="match" href="first-letter-ref.html">
+<style>
+  #obfuscated { -webkit-text-security: circle; }
+  #obfuscated::first-letter { font-size: 100px; }
+</style>
+<div id="obfuscated">PASS</div>

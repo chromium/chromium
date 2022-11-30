@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_frame_request_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class CORE_EXPORT FrameCallback : public GarbageCollected<FrameCallback>,
  public:
   virtual void Trace(Visitor* visitor) const {}
   const char* NameInHeapSnapshot() const override { return "FrameCallback"; }
-  virtual ~FrameCallback() = default;
+  ~FrameCallback() override = default;
   virtual void Invoke(double) = 0;
 
   int Id() const { return id_; }
@@ -35,7 +36,7 @@ class CORE_EXPORT FrameCallback : public GarbageCollected<FrameCallback>,
     use_legacy_time_base_ = use_legacy_time_base;
   }
 
-  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
  protected:
   FrameCallback() = default;
@@ -44,7 +45,7 @@ class CORE_EXPORT FrameCallback : public GarbageCollected<FrameCallback>,
   int id_ = 0;
   bool is_cancelled_ = false;
   bool use_legacy_time_base_ = false;
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
 };
 
 // |V8FrameCallback| is an adapter class for the conversion from
@@ -63,8 +64,7 @@ class CORE_EXPORT V8FrameCallback : public FrameCallback {
   Member<V8FrameRequestCallback> callback_;
 };
 
-class GC_PLUGIN_IGNORE("crbug.com/841830")
-    CORE_EXPORT FrameRequestCallbackCollection final : public NameClient {
+class CORE_EXPORT FrameRequestCallbackCollection final : public NameClient {
   DISALLOW_NEW();
 
  public:

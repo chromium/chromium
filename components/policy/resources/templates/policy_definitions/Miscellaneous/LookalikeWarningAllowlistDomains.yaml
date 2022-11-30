@@ -1,0 +1,32 @@
+caption: Suppress lookalike domain warnings on domains
+desc: |-
+  This policy prevents the display of lookalike URL warnings on the sites listed. These warnings are typically shown on sites that <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> believes might be trying to spoof another site the user is familiar with.
+
+         If the policy is enabled and set to one or more domains, no lookalike warnings pages will be shown when the user visits pages on that domain.
+
+         If the policy is not set, or set to an empty list, warnings may appear on any site the user visits.
+
+         A hostname can be allowed with a complete host match, or any domain match. For example, a URL like "https://foo.example.com/bar" may have warnings suppressed if this list includes either "foo.example.com" or "example.com".
+example_value:
+- foo.example.com
+- example.org
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- file://chrome/browser/lookalikes/OWNERS
+- jdeblasio@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:86-
+- chrome_os:86-
+- android:86-
+tags:
+- system-security
+- website-sharing
+type: list

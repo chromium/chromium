@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("formatted_text") {
+  sources = [
+    "formatted_text.cc",
+    "formatted_text.h",
+    "formatted_text_run.cc",
+    "formatted_text_run.h",
+    "formatted_text_style.cc",
+    "formatted_text_style.h",
+  ]
+}

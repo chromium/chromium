@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,28 @@
 #include <cstddef>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class HostStub;
 class PairingResponse;
 
-// HostControlDispatcher dispatches incoming messages on the control
-// channel to HostStub or ClipboardStub, and also implements ClientStub and
-// CursorShapeStub for outgoing messages.
+// HostControlDispatcher dispatches incoming messages on the control channel to
+// HostStub or ClipboardStub, and also implements ClientStub and CursorShapeStub
+// for outgoing messages.
 class HostControlDispatcher : public ChannelDispatcherBase,
                               public ClientStub {
  public:
   HostControlDispatcher();
+
+  HostControlDispatcher(const HostControlDispatcher&) = delete;
+  HostControlDispatcher& operator=(const HostControlDispatcher&) = delete;
+
   ~HostControlDispatcher() override;
 
   // ClientStub implementation.
@@ -35,7 +38,6 @@ class HostControlDispatcher : public ChannelDispatcherBase,
   void DeliverHostMessage(const ExtensionMessage& message) override;
   void SetVideoLayout(const VideoLayout& layout) override;
   void SetTransportInfo(const TransportInfo& transport_info) override;
-  void OpenUrl(const OpenUrlRequest& open_url_request) override;
 
   // ClipboardStub implementation for sending clipboard data to client.
   void InjectClipboardEvent(const ClipboardEvent& event) override;
@@ -52,8 +54,8 @@ class HostControlDispatcher : public ChannelDispatcherBase,
     clipboard_stub_ = clipboard_stub;
   }
 
-  // Sets the HostStub that will be called for each incoming control
-  // message. |host_stub| must outlive this object.
+  // Sets the HostStub that will be called for each incoming control message.
+  // |host_stub| must outlive this object.
   void set_host_stub(HostStub* host_stub) { host_stub_ = host_stub; }
 
   // Sets the maximum size of outgoing messages, which defaults to 64KiB. This
@@ -68,16 +70,13 @@ class HostControlDispatcher : public ChannelDispatcherBase,
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> buffer) override;
 
-  ClipboardStub* clipboard_stub_ = nullptr;
-  HostStub* host_stub_ = nullptr;
-  // 64 KiB is the default message size expected to be supported in absence of
-  // a higher value negotiated via SDP.
+  raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
+  raw_ptr<HostStub> host_stub_ = nullptr;
+  // 64 KiB is the default message size expected to be supported in absence of a
+  // higher value negotiated via SDP.
   std::size_t max_message_size_ = 64 * 1024;
-
-  DISALLOW_COPY_AND_ASSIGN(HostControlDispatcher);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_CONTROL_DISPATCHER_H_

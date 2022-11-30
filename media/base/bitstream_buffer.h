@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
@@ -38,32 +36,34 @@ class MEDIA_EXPORT BitstreamBuffer {
   // When not provided, |presentation_timestamp| will be
   // |media::kNoTimestamp|.
   BitstreamBuffer(int32_t id,
-                  base::subtle::PlatformSharedMemoryRegion region,
-                  size_t size,
-                  off_t offset = 0,
-                  base::TimeDelta presentation_timestamp = kNoTimestamp);
-
-  // As above, creating by unwrapping a base::UnsafeSharedMemoryRegion.
-  BitstreamBuffer(int32_t id,
                   base::UnsafeSharedMemoryRegion region,
                   size_t size,
-                  off_t offset = 0,
+                  uint64_t offset = 0,
                   base::TimeDelta presentation_timestamp = kNoTimestamp);
 
   // Move operations are allowed.
   BitstreamBuffer(BitstreamBuffer&&);
   BitstreamBuffer& operator=(BitstreamBuffer&&);
 
+  BitstreamBuffer(const BitstreamBuffer&) = delete;
+  BitstreamBuffer& operator=(const BitstreamBuffer&) = delete;
+
   ~BitstreamBuffer();
 
-  // Produce an equivalent DecoderBuffer. This consumes region(), even if
+  // Produce an equivalent DecoderBuffer. This may consume region(), even if
   // nullptr is returned.
   //
   // This method is only intended to be used by VDAs that are being converted to
   // use DecoderBuffer.
   //
+  // The 2 arg variant adds |offset| to the internal offset and will then use
+  // |size| bytes at that location. This is allowed to go beyond the size of the
+  // buffer specified in the constructor, but it does ensure it does not go
+  // beyond the size of the shared memory region.
+  //
   // TODO(sandersd): Remove once all VDAs are converted.
   scoped_refptr<DecoderBuffer> ToDecoderBuffer();
+  scoped_refptr<DecoderBuffer> ToDecoderBuffer(off_t offset, size_t size);
 
   // TODO(crbug.com/813845): As this is only used by Android, include
   // EncryptionScheme and optional EncryptionPattern when updating for Android.
@@ -71,22 +71,18 @@ class MEDIA_EXPORT BitstreamBuffer {
                              const std::string& iv,
                              const std::vector<SubsampleEntry>& subsamples);
 
-  // Taking the region invalides the one in this BitstreamBuffer.
-  base::subtle::PlatformSharedMemoryRegion TakeRegion() {
-    return std::move(region_);
-  }
+  // Taking the region invalidates the one in this BitstreamBuffer.
+  base::UnsafeSharedMemoryRegion TakeRegion() { return std::move(region_); }
 
   // If a region needs to be taken from a const BitstreamBuffer, it must be
   // duplicated. This function makes that explicit.
   // TODO(crbug.com/793446): this is probably only needed by legacy IPC, and can
   // be removed once that is converted to the new shared memory API.
-  base::subtle::PlatformSharedMemoryRegion DuplicateRegion() const {
+  base::UnsafeSharedMemoryRegion DuplicateRegion() const {
     return region_.Duplicate();
   }
 
-  const base::subtle::PlatformSharedMemoryRegion& region() const {
-    return region_;
-  }
+  const base::UnsafeSharedMemoryRegion& region() const { return region_; }
 
   int32_t id() const { return id_; }
 
@@ -95,15 +91,11 @@ class MEDIA_EXPORT BitstreamBuffer {
   size_t size() const { return size_; }
 
   // The offset to the start of actual bitstream data in the shared memory.
-  off_t offset() const { return offset_; }
+  uint64_t offset() const { return offset_; }
 
   // The timestamp is only valid if it's not equal to |media::kNoTimestamp|.
   base::TimeDelta presentation_timestamp() const {
     return presentation_timestamp_;
-  }
-
-  void set_region(base::subtle::PlatformSharedMemoryRegion region) {
-    region_ = std::move(region);
   }
 
   // The following methods come from SetDecryptionSettings().
@@ -113,9 +105,9 @@ class MEDIA_EXPORT BitstreamBuffer {
 
  private:
   int32_t id_;
-  base::subtle::PlatformSharedMemoryRegion region_;
+  base::UnsafeSharedMemoryRegion region_;
   size_t size_;
-  off_t offset_;
+  uint64_t offset_;
 
   // Note: Not set by all clients.
   base::TimeDelta presentation_timestamp_;
@@ -130,8 +122,6 @@ class MEDIA_EXPORT BitstreamBuffer {
   std::vector<SubsampleEntry> subsamples_;  // clear/cypher sizes
 
   friend struct IPC::ParamTraits<media::BitstreamBuffer>;
-
-  DISALLOW_COPY_AND_ASSIGN(BitstreamBuffer);
 };
 
 }  // namespace media

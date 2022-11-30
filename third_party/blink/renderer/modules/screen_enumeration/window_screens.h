@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@ class LocalDOMWindow;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
-class Screens;
+class ScreenDetails;
 
-// Supplements LocalDOMWindow with a Screens interface.
-// https://github.com/webscreens/window-placement
+// Supplements LocalDOMWindow with a ScreenDetails interface.
+// https://w3c.github.io/window-placement/
 class WindowScreens final : public GarbageCollected<WindowScreens>,
                             public ExecutionContextLifecycleObserver,
                             public Supplement<LocalDOMWindow> {
@@ -31,30 +31,30 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
   explicit WindowScreens(LocalDOMWindow* window);
 
   // Web-exposed interface:
-  static ScriptPromise getScreens(ScriptState* script_state,
-                                  LocalDOMWindow& window,
-                                  ExceptionState& exception_state);
+  static ScriptPromise getScreenDetails(ScriptState* script_state,
+                                        LocalDOMWindow& window,
+                                        ExceptionState& exception_state);
 
   // ExecutionContextLifecycleObserver:
   void ContextDestroyed() override;
 
   void Trace(Visitor* visitor) const override;
 
-  Screens* screens() { return screens_; }
+  ScreenDetails* screen_details() { return screen_details_; }
 
  private:
   // Returns the supplement, creating one as needed.
   static WindowScreens* From(LocalDOMWindow* window);
 
   // Requests permission to resolve the returned Screens interface promise.
-  ScriptPromise GetScreens(ScriptState* script_state,
-                           ExceptionState& exception_state);
+  ScriptPromise GetScreenDetails(ScriptState* script_state,
+                                 ExceptionState& exception_state);
 
   // Handles the permission request result, to reject or resolve the promise.
   void OnPermissionRequestComplete(ScriptPromiseResolver* resolver,
                                    mojom::blink::PermissionStatus status);
 
-  Member<Screens> screens_;
+  Member<ScreenDetails> screen_details_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 

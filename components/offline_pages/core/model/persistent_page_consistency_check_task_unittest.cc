@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,14 +50,14 @@ class PersistentPageConsistencyCheckTaskTest : public ModelTaskTestBase {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ClearExpiredPersistentPages DISABLED_ClearExpiredPersistentPages
 #else
 #define MAYBE_ClearExpiredPersistentPages ClearExpiredPersistentPages
 #endif
 TEST_F(PersistentPageConsistencyCheckTaskTest,
        MAYBE_ClearExpiredPersistentPages) {
-  base::Time expire_time = base::Time::Now() - base::TimeDelta::FromDays(400);
+  base::Time expire_time = base::Time::Now() - base::Days(400);
 
   // |page{1,4}| will be marked as missing file.
   // |page{2,5}| will be deleted from DB, since they've been expired for longer
@@ -119,7 +119,7 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ClearExpiredPersistentPagesByFilePath \
   DISABLED_ClearExpiredPersistentPagesByFilePath
 #else
@@ -128,7 +128,7 @@ TEST_F(PersistentPageConsistencyCheckTaskTest,
 #endif
 TEST_F(PersistentPageConsistencyCheckTaskTest,
        MAYBE_ClearExpiredPersistentPagesByFilePath) {
-  base::Time expire_time = base::Time::Now() - base::TimeDelta::FromDays(400);
+  base::Time expire_time = base::Time::Now() - base::Days(400);
   // |page| will be deleted from DB, since it's been expired for longer than
   // threshold.
   generator()->SetSystemDownloadId(kArchivePublishedWithoutDownloadId);

@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "MappedURL",
+  "version": "0.1",
+  "permissions": ["tabs", "webNavigation"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": ["*://*/*"]
+}

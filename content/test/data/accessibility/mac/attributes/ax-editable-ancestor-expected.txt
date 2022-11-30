@@ -1,0 +1,8 @@
+editable.accessibilityAttributeValue(AXEditableAncestor)=:2
+editable.accessibilityAttributeNames.has(AXEditableAncestor)='yes'
+not_applicable.accessibilityAttributeValue(AXEditableAncestor)=NULL
+not_applicable.accessibilityAttributeNames.has(AXEditableAncestor)='no'
+p.accessibilityAttributeValue(AXEditableAncestor)=:5
+p.accessibilityAttributeNames.has(AXEditableAncestor)='yes'
+document.accessibilityAttributeNames.has(AXEditableAncestor)='no'
+document.accessibilityAttributeValue(AXEditableAncestor)=NULL

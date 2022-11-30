@@ -1,0 +1,34 @@
+caption: Crostini Ansible playbook
+desc: |-
+  Provides an Ansible playbook that should be executed in the default Crostini container.
+
+        This policy allows to provide an Ansible playbook to be applied to the default Crostini container if it is available on the given device and allowed by policies.
+
+        The size of the data must not exceed 1MB (1000000 bytes) and must be encoded in YAML. The cryptographic hash is used to verify the integrity of the download.
+
+        The configuration is downloaded and cached. It will be re-downloaded whenever the URL or the hash changes.
+
+        If you set the policy, users can't change it. If not set, users can continue using default Crostini container in its ongoing configuration if Crostini is allowed by policies.
+example_value:
+  hash: deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef
+  url: https://example.com/ansibleplaybook
+features:
+  dynamic_refresh: true
+  per_profile: false
+max_size: 1000000
+owners:
+- aoldemeier@chromium.org
+- okalitova@chromium.org
+schema:
+  properties:
+    hash:
+      description: The SHA-256 hash of the Ansible playbook.
+      type: string
+    url:
+      description: The URL from which the Ansible playbook can be downloaded.
+      type: string
+  type: object
+supported_on:
+- chrome_os:80-
+tags: []
+type: external

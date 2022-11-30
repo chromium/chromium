@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/values.h"
-#include "components/arc/arc_prefs.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
@@ -50,7 +50,7 @@ TEST_F(DefaultGeolocationPolicyHandlerTest, BlockGeolocation) {
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(arc::prefs::kArcLocationServiceEnabled, &value));
-  EXPECT_TRUE(base::Value(false).Equals(value));
+  EXPECT_EQ(base::Value(false), *value);
 }
 
 TEST_F(DefaultGeolocationPolicyHandlerTest, AskGeolocation) {

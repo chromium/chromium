@@ -1,20 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ui.favicon;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 /**
  * Utilities to deal with favicons.
@@ -22,32 +24,34 @@ import org.chromium.ui.base.ViewUtils;
 public class FaviconUtils {
     /**
      * Creates a {@link RoundedIconGenerator} to generate circular {@link Bitmap}s of favicons.
-     * @param resources The {@link Resources} for accessing color and dimen resources.
+     * @param context The {@link Context} for accessing color and dimen resources.
      * @return A {@link RoundedIconGenerator} that uses the default circle icon style. Intended
      *         for monograms, e.g. a circle with character(s) in the center.
      */
-    public static RoundedIconGenerator createCircularIconGenerator(Resources resources) {
+    public static RoundedIconGenerator createCircularIconGenerator(Context context) {
+        Resources resources = context.getResources();
         int displayedIconSize = resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
         int cornerRadius = displayedIconSize / 2;
         int textSize = resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
         return new RoundedIconGenerator(displayedIconSize, displayedIconSize, cornerRadius,
-                getIconColor(resources), textSize);
+                getIconColor(context), textSize);
     }
 
     /**
      * Creates a {@link RoundedIconGenerator} to generate rounded rectangular {@link Bitmap}s of
      * favicons.
-     * @param resources The {@link Resources} for accessing color and dimen resources.
+     * @param context The {@link Context} for accessing color and dimen resources.
      * @return A {@link RoundedIconGenerator} that uses the default rounded rectangle icon
      *         style. Intended for monograms, e.g. a rounded rectangle with character(s) in the
      *         center.
      */
-    public static RoundedIconGenerator createRoundedRectangleIconGenerator(Resources resources) {
+    public static RoundedIconGenerator createRoundedRectangleIconGenerator(Context context) {
+        Resources resources = context.getResources();
         int displayedIconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         int cornerRadius = resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius);
         int textSize = resources.getDimensionPixelSize(R.dimen.default_favicon_icon_text_size);
         return new RoundedIconGenerator(displayedIconSize, displayedIconSize, cornerRadius,
-                getIconColor(resources), textSize);
+                getIconColor(context), textSize);
     }
 
     /**
@@ -78,8 +82,16 @@ public class FaviconUtils {
      * @param iconSize Width and height of the returned icon in px.
      * @return A {@link Drawable} to be displayed as the favicon.
      */
+    public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, GURL url,
+            @ColorInt int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
+            int iconSize) {
+        return getIconDrawableWithoutFilter(
+                icon, url.getSpec(), fallbackColor, iconGenerator, resources, iconSize);
+    }
+
+    @Deprecated // Use GURL variant instead.
     public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, String url,
-            int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
+            @ColorInt int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
             int iconSize) {
         if (icon == null) {
             iconGenerator.setBackgroundColor(fallbackColor);
@@ -104,7 +116,7 @@ public class FaviconUtils {
      * @param iconSize Width and height of the returned icon.
      * @return A {@link Drawable} to be displayed as the favicon.
      */
-    public static Drawable getIconDrawableWithFilter(@Nullable Bitmap icon, @Nullable String url,
+    public static Drawable getIconDrawableWithFilter(@Nullable Bitmap icon, @Nullable GURL url,
             RoundedIconGenerator iconGenerator,
             FaviconHelper.DefaultFaviconHelper defaultFaviconHelper, Resources resources,
             int iconSize) {
@@ -120,7 +132,7 @@ public class FaviconUtils {
                 resources, Bitmap.createScaledBitmap(icon, iconSize, iconSize, true));
     }
 
-    private static int getIconColor(Resources resources) {
-        return ApiCompatibilityUtils.getColor(resources, R.color.default_favicon_background_color);
+    private static int getIconColor(Context context) {
+        return context.getColor(R.color.default_favicon_background_color);
     }
 }

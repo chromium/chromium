@@ -1,11 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {LRUCache} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/lru_cache.m.js';
-// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
-// clang-format on
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
+import {LRUCache} from './lru_cache.js';
 
 /**
  * Client used to connect to the remote ImageLoader extension. Client class runs
@@ -17,7 +15,7 @@
  *
  * @constructor
  */
-/* #export */ function ImageLoaderClient() {
+export function ImageLoaderClient() {
   /**
    * @type {number}
    * @private

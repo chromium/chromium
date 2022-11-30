@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,24 +10,24 @@
 #include <vector>
 
 #include "android_webview/browser/aw_content_browser_client.h"
+#include "android_webview/browser/safe_browsing/aw_ping_manager_factory.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_blocking_page.h"
-#include "android_webview/browser/safe_browsing/aw_safe_browsing_subresource_helper.h"
 #include "android_webview/common/aw_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
-#include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/ping_manager.h"
+#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 using content::BrowserThread;
@@ -36,16 +36,6 @@ using content::WebContents;
 namespace android_webview {
 
 namespace {
-
-std::string GetProtocolConfigClientName() {
-  // Return a webview specific client name, see crbug.com/732373 for details.
-  return "android_webview";
-}
-
-// UMA_HISTOGRAM_* macros expand to a lot of code, so wrap this in a helper.
-void RecordIsWebViewViewable(bool isViewable) {
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.WebView.Viewable", isViewable);
-}
 
 network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
@@ -69,7 +59,7 @@ AwSafeBrowsingUIManager::AwSafeBrowsingUIManager() {
 
   network_context_ =
       std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir,
+          user_data_dir, /*trigger_migration=*/false,
           base::BindRepeating(CreateDefaultNetworkContextParams));
 }
 
@@ -79,17 +69,16 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
     const UnsafeResource& resource) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebContents* web_contents = resource.web_contents_getter.Run();
+  WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   // Check the size of the view
   UIManagerClient* client = UIManagerClient::FromWebContents(web_contents);
   if (!client || !client->CanShowInterstitial()) {
-    RecordIsWebViewViewable(false);
     OnBlockingPageDone(std::vector<UnsafeResource>{resource}, false,
                        web_contents, resource.url.GetWithEmptyPath(),
                        false /* showed_interstitial */);
     return;
   }
-  RecordIsWebViewViewable(true);
   safe_browsing::BaseUIManager::DisplayBlockingPage(resource);
 }
 
@@ -116,23 +105,14 @@ int AwSafeBrowsingUIManager::GetErrorUiType(
   return client->GetErrorUiType();
 }
 
-void AwSafeBrowsingUIManager::SendSerializedThreatDetails(
+void AwSafeBrowsingUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,
-    const std::string& serialized) {
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ping_manager_) {
-    // Lazy creation of ping manager, needs to happen on IO thread.
-    ping_manager_ = ::safe_browsing::PingManager::Create(
-        safe_browsing::GetV4ProtocolConfig(GetProtocolConfigClientName(),
-                                           false /* disable_auto_update */));
-  }
-
-  if (!serialized.empty()) {
-    DVLOG(1) << "Sending serialized threat details";
-    ping_manager_->ReportThreatDetails(network_context_->GetURLLoaderFactory(),
-                                       serialized);
-  }
+  DVLOG(1) << "Sending threat details";
+  safe_browsing::AwPingManagerFactory::GetForBrowserContext(browser_context)
+      ->ReportThreatDetails(std::move(report));
 }
 
 safe_browsing::BaseBlockingPage*
@@ -140,7 +120,9 @@ AwSafeBrowsingUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource) {
-  AwSafeBrowsingSubresourceHelper::CreateForWebContents(contents);
+  // The AwWebResourceRequest can't be provided yet, since the navigation hasn't
+  // started. Once it has, it will be provided via
+  // AwSafeBrowsingBlockingPage::CreatedErrorPageNavigation.
   AwSafeBrowsingBlockingPage* blocking_page =
       AwSafeBrowsingBlockingPage::CreateBlockingPage(
           this, contents, blocked_url, unsafe_resource, nullptr);
@@ -156,6 +138,11 @@ void AwSafeBrowsingUIManager::CreateURLLoaderFactoryForIO(
   url_loader_factory_params->is_corb_enabled = false;
   network_context_->GetNetworkContext()->CreateURLLoaderFactory(
       std::move(receiver), std::move(url_loader_factory_params));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AwSafeBrowsingUIManager::GetURLLoaderFactory() {
+  return network_context_->GetURLLoaderFactory();
 }
 
 }  // namespace android_webview

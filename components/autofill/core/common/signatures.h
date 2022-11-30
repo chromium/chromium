@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/strings/string_piece.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 
 namespace autofill {
 
@@ -19,8 +17,8 @@ struct FormData;
 struct FormFieldData;
 
 namespace internal {
-using FormSignatureType = ::util::IdTypeU64<class FormSignatureMarker>;
-using FieldSignatureType = ::util::IdTypeU32<class FieldSignatureMarker>;
+using FormSignatureType = ::base::IdTypeU64<class FormSignatureMarker>;
+using FieldSignatureType = ::base::IdTypeU32<class FieldSignatureMarker>;
 }  // namespace internal
 
 // The below strong aliases are defined as subclasses instead of typedefs in
@@ -54,10 +52,10 @@ uint64_t StrToHash64Bit(base::StringPiece str);
 uint32_t StrToHash32Bit(base::StringPiece str);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
-int64_t HashFormSignature(autofill::FormSignature form_signature);
+int64_t HashFormSignature(FormSignature form_signature);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
-int64_t HashFieldSignature(autofill::FieldSignature field_signature);
+int64_t HashFieldSignature(FieldSignature field_signature);
 
 }  // namespace autofill
 

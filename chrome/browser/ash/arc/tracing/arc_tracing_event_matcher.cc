@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 namespace arc {
 
 ArcTracingEventMatcher::ArcTracingEventMatcher() = default;
+ArcTracingEventMatcher::~ArcTracingEventMatcher() = default;
 
 ArcTracingEventMatcher::ArcTracingEventMatcher(const std::string& data) {
   std::string::size_type position = data.find(':');
@@ -79,16 +80,16 @@ bool ArcTracingEventMatcher::Match(const ArcTracingEvent& event) const {
   return true;
 }
 
-base::Optional<int64_t> ArcTracingEventMatcher::ReadAndroidEventInt64(
+absl::optional<int64_t> ArcTracingEventMatcher::ReadAndroidEventInt64(
     const ArcTracingEvent& event) const {
   if (!name_prefix_match_ || (event.GetName().find(name_) != 0))
-    return base::nullopt;
+    return absl::nullopt;
 
   int64_t value = 0;
   if (!base::StringToInt64(event.GetName().data() + name_.size(), &value))
-    return base::nullopt;
+    return absl::nullopt;
 
-  return base::make_optional(value);
+  return absl::make_optional(value);
 }
 
 }  // namespace arc

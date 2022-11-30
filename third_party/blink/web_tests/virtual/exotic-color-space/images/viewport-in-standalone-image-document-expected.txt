@@ -1,3 +1,0 @@
-This tests that a standalone image document has viewport settings.
-
-PASS

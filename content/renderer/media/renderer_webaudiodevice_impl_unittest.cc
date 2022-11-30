@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
 using testing::_;
 
@@ -37,21 +39,23 @@ media::AudioParameters MockGetOutputDeviceParameters(
     const base::UnguessableToken& session_id,
     const std::string& device_id) {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::CHANNEL_LAYOUT_STEREO,
+                                media::ChannelLayoutConfig::Stereo(),
                                 kHardwareSampleRate, kHardwareBufferSize);
 }
 
 class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
  public:
   RendererWebAudioDeviceImplUnderTest(
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayout layout,
-      int channels,
+      int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
       const base::UnguessableToken& session_id)
       : RendererWebAudioDeviceImpl(
+            sink_descriptor,
             layout,
-            channels,
+            number_of_output_channels,
             latency_hint,
             callback,
             session_id,
@@ -63,45 +67,34 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
 
 class RendererWebAudioDeviceImplTest
     : public blink::WebAudioDevice::RenderCallback,
-      public blink::WebAudioDeviceFactory,
+      public blink::AudioDeviceFactory,
       public testing::Test {
  protected:
   RendererWebAudioDeviceImplTest() {}
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
+    blink::WebAudioSinkDescriptor
+        sink_descriptor(blink::WebString::FromASCII(std::string()));
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
+        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
         base::UnguessableToken());
-    webaudio_device_->SetSuspenderTaskRunnerForTesting(
+    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void SetupDevice(media::ChannelLayout layout, int channels) {
-    webaudio_device_.reset(new RendererWebAudioDeviceImplUnderTest(
-        layout, channels,
+    blink::WebAudioSinkDescriptor
+        sink_descriptor(blink::WebString::FromASCII(std::string()));
+    webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
+        sink_descriptor, layout, channels,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
-        this, base::UnguessableToken()));
-    webaudio_device_->SetSuspenderTaskRunnerForTesting(
+        this, base::UnguessableToken());
+    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
-  MOCK_METHOD2(CreateAudioCapturerSource,
-               scoped_refptr<media::AudioCapturerSource>(
-                   const blink::LocalFrameToken&,
-                   const media::AudioSourceParameters&));
-  MOCK_METHOD3(
-      CreateFinalAudioRendererSink,
-      scoped_refptr<media::AudioRendererSink>(const blink::LocalFrameToken&,
-                                              const media::AudioSinkParameters&,
-                                              base::TimeDelta));
-  MOCK_METHOD3(CreateSwitchableAudioRendererSink,
-               scoped_refptr<media::SwitchableAudioRendererSink>(
-                   blink::WebAudioDeviceSourceType,
-                   const blink::LocalFrameToken&,
-                   const media::AudioSinkParameters&));
-
-  scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
+  scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
       blink::WebAudioDeviceSourceType render_token,
       const blink::LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params) override {

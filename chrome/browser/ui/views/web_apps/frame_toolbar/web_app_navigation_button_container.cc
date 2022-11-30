@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,30 +12,32 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
 namespace {
 
-constexpr int kPaddingBetweenNavigationButtons = 9;
+constexpr int kPaddingBetweenNavigationButtons = 5;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr int kWebAppFrameLeftMargin = 4;
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr int kWebAppFrameLeftMargin = 2;
 #else
-constexpr int kWebAppFrameLeftMargin = 9;
+constexpr int kWebAppFrameLeftMargin = 7;
 #endif
 
 template <class BaseClass>
@@ -46,7 +48,7 @@ class WebAppToolbarButton : public BaseClass {
   WebAppToolbarButton& operator=(const WebAppToolbarButton&) = delete;
   ~WebAppToolbarButton() override = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool ShouldUseWindowsIconsForMinimalUI() const {
     return base::win::GetVersion() >= base::win::Version::WIN10;
   }
@@ -105,7 +107,7 @@ WebAppToolbarBackButton::WebAppToolbarBackButton(PressedCallback callback,
           browser) {}
 
 const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ShouldUseWindowsIconsForMinimalUI()) {
     return ui::TouchUiController::Get()->touch_ui()
                ? &kBackArrowWindowsTouchIcon
@@ -132,7 +134,7 @@ class WebAppToolbarReloadButton : public WebAppToolbarButton<ReloadButton> {
 };
 
 const gfx::VectorIcon* WebAppToolbarReloadButton::GetAlternativeIcon() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ShouldUseWindowsIconsForMinimalUI()) {
     const bool is_reload = visible_mode() == ReloadButton::Mode::kReload;
     if (ui::TouchUiController::Get()->touch_ui()) {
@@ -151,12 +153,13 @@ END_METADATA
 }  // namespace
 
 WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
-    BrowserView* browser_view)
+    BrowserView* browser_view,
+    ToolbarButtonProvider* toolbar_button_provider)
     : browser_(browser_view->browser()) {
   views::BoxLayout& layout =
       *SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, kWebAppFrameLeftMargin),
+          gfx::Insets::VH(0, kWebAppFrameLeftMargin),
           kPaddingBetweenNavigationButtons));
   // Right align to clip the leftmost items first when not enough space.
   layout.set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
@@ -174,8 +177,7 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
       browser_));
   back_button_->set_tag(IDC_BACK);
 
-  const bool is_browser_focus_mode = browser_->is_focus_mode();
-  SetInsetsForWebAppToolbarButton(back_button_, is_browser_focus_mode);
+  ConfigureWebAppToolbarButton(back_button_, toolbar_button_provider);
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
   chrome::AddCommandObserver(browser_, IDC_BACK, this);
 
@@ -185,7 +187,7 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
         browser_->command_controller()));
     reload_button_->set_tag(IDC_RELOAD);
 
-    SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
+    ConfigureWebAppToolbarButton(reload_button_, toolbar_button_provider);
     views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
     chrome::AddCommandObserver(browser_, IDC_RELOAD, this);
   }

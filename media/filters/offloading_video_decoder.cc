@@ -1,14 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/filters/offloading_video_decoder.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/sequenced_task_runner.h"
+#include "base/containers/contains.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
@@ -24,13 +26,16 @@ class CancellationHelper {
       : cancellation_flag_(std::make_unique<base::AtomicFlag>()),
         decoder_(std::move(decoder)) {}
 
+  CancellationHelper(const CancellationHelper&) = delete;
+  CancellationHelper& operator=(const CancellationHelper&) = delete;
+
   // Safe to call from any thread.
   void Cancel() { cancellation_flag_->Set(); }
 
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               VideoDecoder::DecodeCB decode_cb) {
     if (cancellation_flag_->IsSet()) {
-      std::move(decode_cb).Run(DecodeStatus::ABORTED);
+      std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
       return;
     }
 
@@ -43,7 +48,7 @@ class CancellationHelper {
     // want to run |reset_cb| before we've reset the cancellation flag or the
     // client may end up issuing another Reset() before this code runs.
     decoder_->Reset(base::DoNothing());
-    cancellation_flag_.reset(new base::AtomicFlag());
+    cancellation_flag_ = std::make_unique<base::AtomicFlag>();
     std::move(reset_cb).Run();
   }
 
@@ -52,8 +57,6 @@ class CancellationHelper {
  private:
   std::unique_ptr<base::AtomicFlag> cancellation_flag_;
   std::unique_ptr<OffloadableVideoDecoder> decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(CancellationHelper);
 };
 
 OffloadingVideoDecoder::OffloadingVideoDecoder(
@@ -75,10 +78,6 @@ OffloadingVideoDecoder::~OffloadingVideoDecoder() {
     offload_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
 }
 
-bool OffloadingVideoDecoder::IsOptimizedForRTC() const {
-  return helper_->decoder()->IsOptimizedForRTC();
-}
-
 VideoDecoderType OffloadingVideoDecoder::GetDecoderType() const {
   // This call is expected to be static and safe to call from any thread.
   return helper_->decoder()->GetDecoderType();
@@ -96,8 +95,7 @@ void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const bool disable_offloading =
       config.is_encrypted() ||
       config.coded_size().width() < min_offloading_width_ ||
-      std::find(supported_codecs_.begin(), supported_codecs_.end(),
-                config.codec()) == supported_codecs_.end();
+      !base::Contains(supported_codecs_, config.codec());
 
   if (initialized_) {
     initialized_ = false;

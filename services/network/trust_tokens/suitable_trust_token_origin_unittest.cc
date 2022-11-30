@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@ TEST(SuitableTrustTokenOrigin, Suitable) {
   auto suitable_url = GURL("https://suitable-origin.example");
   auto suitable_origin = url::Origin::Create(suitable_url);
 
-  base::Optional<SuitableTrustTokenOrigin> created_from_url =
+  absl::optional<SuitableTrustTokenOrigin> created_from_url =
       SuitableTrustTokenOrigin::Create(suitable_url);
 
   ASSERT_TRUE(created_from_url);
   EXPECT_EQ(created_from_url->origin(), suitable_origin);
 
-  base::Optional<SuitableTrustTokenOrigin> created_from_origin =
+  absl::optional<SuitableTrustTokenOrigin> created_from_origin =
       SuitableTrustTokenOrigin::Create(suitable_origin);
   ASSERT_TRUE(created_from_origin);
   EXPECT_EQ(created_from_origin->origin(), suitable_origin);

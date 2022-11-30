@@ -1,28 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_PHONEHUB_ONBOARDING_VIEW_H_
 #define ASH_SYSTEM_PHONEHUB_ONBOARDING_VIEW_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-
-namespace chromeos {
-namespace phonehub {
-class OnboardingUiTracker;
-}  // namespace phonehub
-}  // namespace chromeos
 
 namespace ash {
 
 class PhoneHubInterstitialView;
+
+namespace phonehub {
+class OnboardingUiTracker;
+}
 
 // An additional entry point UI to ask the existing multidevice users to opt in
 // and set up the Phone feature on this device. Note that this class handles
@@ -39,7 +35,7 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
   // The different onboarding flows that are supported.
   enum OnboardingFlow { kExistingMultideviceUser = 0, kNewMultideviceUser };
 
-  OnboardingView(chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker,
+  OnboardingView(phonehub::OnboardingUiTracker* onboarding_ui_tracker,
                  Delegate* delegate,
                  OnboardingFlow onboarding_flow);
   OnboardingView(const OnboardingView&) = delete;
@@ -59,7 +55,7 @@ class ASH_EXPORT OnboardingView : public PhoneHubContentView {
   // Owned by view hierarchy.
   PhoneHubInterstitialView* main_view_ = nullptr;
 
-  chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
+  phonehub::OnboardingUiTracker* onboarding_ui_tracker_ = nullptr;
   Delegate* delegate_ = nullptr;
 };
 

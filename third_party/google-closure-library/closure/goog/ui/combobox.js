@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A combo box control that allows user input with
@@ -44,7 +36,11 @@ goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.MenuSeparator');
 goog.require('goog.ui.registry');
-goog.require('goog.userAgent');
+goog.requireType('goog.events.BrowserEvent');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.events.KeyEvent');
+goog.requireType('goog.ui.ControlContent');
+goog.requireType('goog.ui.MenuItemRenderer');
 
 
 
@@ -59,6 +55,7 @@ goog.require('goog.userAgent');
  * @constructor
  */
 goog.ui.ComboBox = function(opt_domHelper, opt_menu, opt_labelInput) {
+  'use strict';
   goog.ui.Component.call(this, opt_domHelper);
 
   this.labelInput_ = opt_labelInput || new goog.ui.LabelInput();
@@ -69,7 +66,6 @@ goog.ui.ComboBox = function(opt_domHelper, opt_menu, opt_labelInput) {
   this.setupMenu_();
 };
 goog.inherits(goog.ui.ComboBox, goog.ui.Component);
-goog.tagUnsealableClass(goog.ui.ComboBox);
 
 
 /**
@@ -207,6 +203,7 @@ goog.ui.ComboBox.prototype.useDropdownArrow_ = false;
  * @override
  */
 goog.ui.ComboBox.prototype.createDom = function() {
+  'use strict';
   this.input_ = this.getDomHelper().createDom(goog.dom.TagName.INPUT, {
     name: this.fieldName_,
     type: goog.dom.InputType.TEXT,
@@ -237,6 +234,7 @@ goog.ui.ComboBox.prototype.createDom = function() {
  *     combo box.
  */
 goog.ui.ComboBox.prototype.setEnabled = function(enabled) {
+  'use strict';
   this.enabled_ = enabled;
   this.labelInput_.setEnabled(enabled);
   goog.dom.classlist.enable(
@@ -249,12 +247,14 @@ goog.ui.ComboBox.prototype.setEnabled = function(enabled) {
  * @return {boolean} Whether the menu item is enabled.
  */
 goog.ui.ComboBox.prototype.isEnabled = function() {
+  'use strict';
   return this.enabled_;
 };
 
 
 /** @override */
 goog.ui.ComboBox.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.ComboBox.superClass_.enterDocument.call(this);
 
   var handler = this.getHandler();
@@ -284,6 +284,7 @@ goog.ui.ComboBox.prototype.enterDocument = function() {
 
 /** @override */
 goog.ui.ComboBox.prototype.exitDocument = function() {
+  'use strict';
   this.keyHandler_.dispose();
   delete this.keyHandler_;
   this.inputHandler_.dispose();
@@ -298,12 +299,14 @@ goog.ui.ComboBox.prototype.exitDocument = function() {
  * @override
  */
 goog.ui.ComboBox.prototype.canDecorate = function() {
+  'use strict';
   return false;
 };
 
 
 /** @override */
 goog.ui.ComboBox.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.ComboBox.superClass_.disposeInternal.call(this);
 
   this.clearDismissTimer_();
@@ -322,6 +325,7 @@ goog.ui.ComboBox.prototype.disposeInternal = function() {
  * Dismisses the menu and resets the value of the edit field.
  */
 goog.ui.ComboBox.prototype.dismiss = function() {
+  'use strict';
   this.clearDismissTimer_();
   this.hideMenu_();
   this.menu_.setHighlightedIndex(-1);
@@ -333,6 +337,7 @@ goog.ui.ComboBox.prototype.dismiss = function() {
  * @param {goog.ui.MenuItem} item Menu item to add to the menu.
  */
 goog.ui.ComboBox.prototype.addItem = function(item) {
+  'use strict';
   this.menu_.addChild(item, true);
   this.visibleCount_ = -1;
 };
@@ -344,6 +349,7 @@ goog.ui.ComboBox.prototype.addItem = function(item) {
  * @param {number} n Index at which to insert the menu item.
  */
 goog.ui.ComboBox.prototype.addItemAt = function(item, n) {
+  'use strict';
   this.menu_.addChildAt(item, n, true);
   this.visibleCount_ = -1;
 };
@@ -354,6 +360,7 @@ goog.ui.ComboBox.prototype.addItemAt = function(item, n) {
  * @param {goog.ui.MenuItem} item The menu item to remove.
  */
 goog.ui.ComboBox.prototype.removeItem = function(item) {
+  'use strict';
   var child = this.menu_.removeChild(item, true);
   if (child) {
     child.dispose();
@@ -366,6 +373,7 @@ goog.ui.ComboBox.prototype.removeItem = function(item) {
  * Remove all of the items from the ComboBox menu
  */
 goog.ui.ComboBox.prototype.removeAllItems = function() {
+  'use strict';
   for (var i = this.getItemCount() - 1; i >= 0; --i) {
     this.removeItem(this.getItemAt(i));
   }
@@ -377,6 +385,7 @@ goog.ui.ComboBox.prototype.removeAllItems = function() {
  * @param {number} n Index of item.
  */
 goog.ui.ComboBox.prototype.removeItemAt = function(n) {
+  'use strict';
   var child = this.menu_.removeChildAt(n, true);
   if (child) {
     child.dispose();
@@ -391,6 +400,7 @@ goog.ui.ComboBox.prototype.removeItemAt = function(n) {
  * @return {goog.ui.MenuItem?} Reference to the menu item.
  */
 goog.ui.ComboBox.prototype.getItemAt = function(n) {
+  'use strict';
   return /** @type {goog.ui.MenuItem?} */ (this.menu_.getChildAt(n));
 };
 
@@ -401,6 +411,7 @@ goog.ui.ComboBox.prototype.getItemAt = function(n) {
  * @return {number} Number of items in the menu for this combobox.
  */
 goog.ui.ComboBox.prototype.getItemCount = function() {
+  'use strict';
   return this.menu_.getChildCount();
 };
 
@@ -409,6 +420,7 @@ goog.ui.ComboBox.prototype.getItemCount = function() {
  * @return {goog.ui.Menu} The menu that pops up.
  */
 goog.ui.ComboBox.prototype.getMenu = function() {
+  'use strict';
   return this.menu_;
 };
 
@@ -417,6 +429,7 @@ goog.ui.ComboBox.prototype.getMenu = function() {
  * @return {Element} The input element.
  */
 goog.ui.ComboBox.prototype.getInputElement = function() {
+  'use strict';
   return this.input_;
 };
 
@@ -426,6 +439,7 @@ goog.ui.ComboBox.prototype.getInputElement = function() {
  *     focus/blur state of the input box.
  */
 goog.ui.ComboBox.prototype.getLabelInput = function() {
+  'use strict';
   return this.labelInput_;
 };
 
@@ -435,6 +449,7 @@ goog.ui.ComboBox.prototype.getLabelInput = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.getNumberOfVisibleItems_ = function() {
+  'use strict';
   if (this.visibleCount_ == -1) {
     var count = 0;
     for (var i = 0, n = this.menu_.getChildCount(); i < n; i++) {
@@ -456,6 +471,7 @@ goog.ui.ComboBox.prototype.getNumberOfVisibleItems_ = function() {
  *     the combo box menu.
  */
 goog.ui.ComboBox.prototype.setMatchFunction = function(matchFunction) {
+  'use strict';
   this.matchFunction_ = matchFunction;
 };
 
@@ -464,6 +480,7 @@ goog.ui.ComboBox.prototype.setMatchFunction = function(matchFunction) {
  * @return {Function} The match function for the combox box.
  */
 goog.ui.ComboBox.prototype.getMatchFunction = function() {
+  'use strict';
   return this.matchFunction_;
 };
 
@@ -473,6 +490,7 @@ goog.ui.ComboBox.prototype.getMatchFunction = function() {
  * @param {string} text The default text for the combo box.
  */
 goog.ui.ComboBox.prototype.setDefaultText = function(text) {
+  'use strict';
   this.defaultText_ = text;
   if (this.labelInput_) {
     this.labelInput_.setLabel(this.defaultText_);
@@ -484,6 +502,7 @@ goog.ui.ComboBox.prototype.setDefaultText = function(text) {
  * @return {string} text The default text for the combox box.
  */
 goog.ui.ComboBox.prototype.getDefaultText = function() {
+  'use strict';
   return this.defaultText_;
 };
 
@@ -493,6 +512,7 @@ goog.ui.ComboBox.prototype.getDefaultText = function() {
  * @param {string} fieldName The field name for the combo box.
  */
 goog.ui.ComboBox.prototype.setFieldName = function(fieldName) {
+  'use strict';
   this.fieldName_ = fieldName;
 };
 
@@ -501,6 +521,7 @@ goog.ui.ComboBox.prototype.setFieldName = function(fieldName) {
  * @return {string} The field name for the combo box.
  */
 goog.ui.ComboBox.prototype.getFieldName = function() {
+  'use strict';
   return this.fieldName_;
 };
 
@@ -512,6 +533,7 @@ goog.ui.ComboBox.prototype.getFieldName = function() {
  * @param {boolean} useDropdownArrow True to use the dropdown arrow.
  */
 goog.ui.ComboBox.prototype.setUseDropdownArrow = function(useDropdownArrow) {
+  'use strict';
   this.useDropdownArrow_ = !!useDropdownArrow;
 };
 
@@ -521,6 +543,7 @@ goog.ui.ComboBox.prototype.setUseDropdownArrow = function(useDropdownArrow) {
  * @param {string} value The new value.
  */
 goog.ui.ComboBox.prototype.setValue = function(value) {
+  'use strict';
   if (this.labelInput_.getValue() != value) {
     this.labelInput_.setValue(value);
     this.handleInputChange_();
@@ -532,6 +555,7 @@ goog.ui.ComboBox.prototype.setValue = function(value) {
  * @return {string} The current value of the combo box.
  */
 goog.ui.ComboBox.prototype.getValue = function() {
+  'use strict';
   return this.labelInput_.getValue();
 };
 
@@ -540,7 +564,7 @@ goog.ui.ComboBox.prototype.getValue = function() {
  * @return {string} HTML escaped token.
  */
 goog.ui.ComboBox.prototype.getToken = function() {
-  // TODO(user): Remove HTML escaping and fix the existing calls.
+  'use strict';
   return goog.string.htmlEscape(this.getTokenText_());
 };
 
@@ -551,6 +575,7 @@ goog.ui.ComboBox.prototype.getToken = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.getTokenText_ = function() {
+  'use strict';
   // TODO(user): Implement multi-input such that getToken returns a substring
   // of the whole input delimited by commas.
   return goog.string.trim(this.labelInput_.getValue().toLowerCase());
@@ -561,6 +586,7 @@ goog.ui.ComboBox.prototype.getTokenText_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.setupMenu_ = function() {
+  'use strict';
   var sm = this.menu_;
   sm.setVisible(false);
   sm.setAllowAutoFocus(false);
@@ -577,6 +603,7 @@ goog.ui.ComboBox.prototype.setupMenu_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.maybeShowMenu_ = function(showAll) {
+  'use strict';
   var isVisible = this.menu_.isVisible();
   var numVisibleItems = this.getNumberOfVisibleItems_();
 
@@ -608,6 +635,7 @@ goog.ui.ComboBox.prototype.maybeShowMenu_ = function(showAll) {
  * @protected
  */
 goog.ui.ComboBox.prototype.positionMenu = function() {
+  'use strict';
   if (this.menu_ && this.menu_.isVisible()) {
     var position = new goog.positioning.MenuAnchoredPosition(
         this.getElement(), goog.positioning.Corner.BOTTOM_START, true);
@@ -622,6 +650,7 @@ goog.ui.ComboBox.prototype.positionMenu = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.showMenu_ = function() {
+  'use strict';
   this.menu_.setVisible(true);
   goog.dom.classlist.add(
       goog.asserts.assert(this.getElement()),
@@ -634,6 +663,7 @@ goog.ui.ComboBox.prototype.showMenu_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.hideMenu_ = function() {
+  'use strict';
   this.menu_.setVisible(false);
   goog.dom.classlist.remove(
       goog.asserts.assert(this.getElement()),
@@ -646,6 +676,7 @@ goog.ui.ComboBox.prototype.hideMenu_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.clearDismissTimer_ = function() {
+  'use strict';
   if (this.dismissTimer_) {
     goog.Timer.clear(this.dismissTimer_);
     this.dismissTimer_ = null;
@@ -659,6 +690,7 @@ goog.ui.ComboBox.prototype.clearDismissTimer_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.onComboMouseDown_ = function(e) {
+  'use strict';
   // We only want this event on the element itself or the input or the button.
   if (this.enabled_ &&
       (e.target == this.getElement() || e.target == this.input_ ||
@@ -669,10 +701,6 @@ goog.ui.ComboBox.prototype.onComboMouseDown_ = function(e) {
     } else {
       goog.log.fine(this.logger_, 'Opening dropdown');
       this.maybeShowMenu_(true);
-      if (goog.userAgent.OPERA) {
-        // select() doesn't focus <input> elements in Opera.
-        this.input_.focus();
-      }
       this.input_.select();
       this.menu_.setMouseButtonPressed(true);
       // Stop the click event from stealing focus
@@ -690,6 +718,7 @@ goog.ui.ComboBox.prototype.onComboMouseDown_ = function(e) {
  * @private
  */
 goog.ui.ComboBox.prototype.onDocClicked_ = function(e) {
+  'use strict';
   if (!goog.dom.contains(
           this.menu_.getElement(), /** @type {Node} */ (e.target))) {
     this.dismiss();
@@ -703,6 +732,7 @@ goog.ui.ComboBox.prototype.onDocClicked_ = function(e) {
  * @private
  */
 goog.ui.ComboBox.prototype.onMenuSelected_ = function(e) {
+  'use strict';
   var item = /** @type {!goog.ui.MenuItem} */ (e.target);
   // Stop propagation of the original event and redispatch to allow the menu
   // select to be cancelled at this level. i.e. if a menu item should cause
@@ -730,6 +760,7 @@ goog.ui.ComboBox.prototype.onMenuSelected_ = function(e) {
  * @private
  */
 goog.ui.ComboBox.prototype.onInputBlur_ = function(e) {
+  'use strict';
   this.clearDismissTimer_();
   this.dismissTimer_ = goog.Timer.callOnce(
       this.dismiss, goog.ui.ComboBox.BLUR_DISMISS_TIMER_MS, this);
@@ -745,6 +776,7 @@ goog.ui.ComboBox.prototype.onInputBlur_ = function(e) {
  * @suppress {visibility} performActionInternal
  */
 goog.ui.ComboBox.prototype.handleKeyEvent = function(e) {
+  'use strict';
   var isMenuVisible = this.menu_.isVisible();
 
   // Give the menu a chance to handle the event.
@@ -801,6 +833,7 @@ goog.ui.ComboBox.prototype.handleKeyEvent = function(e) {
  * @private
  */
 goog.ui.ComboBox.prototype.onInputEvent_ = function(e) {
+  'use strict';
   // If the key event is text-modifying, update the menu.
   goog.log.fine(
       this.logger_, 'Key is modifying: ' + this.labelInput_.getValue());
@@ -814,6 +847,7 @@ goog.ui.ComboBox.prototype.onInputEvent_ = function(e) {
  * @private
  */
 goog.ui.ComboBox.prototype.handleInputChange_ = function() {
+  'use strict';
   var token = this.getTokenText_();
   this.setItemVisibilityFromToken_(token);
   if (goog.dom.getActiveElement(this.getDomHelper().getDocument()) ==
@@ -838,6 +872,7 @@ goog.ui.ComboBox.prototype.handleInputChange_ = function() {
  * @private
  */
 goog.ui.ComboBox.prototype.setItemVisibilityFromToken_ = function(token) {
+  'use strict';
   var isVisibleItem = false;
   var count = 0;
   var recheckHidden = !this.matchFunction_(token, this.lastToken_);
@@ -881,6 +916,7 @@ goog.ui.ComboBox.prototype.setItemVisibilityFromToken_ = function(token) {
  * @private
  */
 goog.ui.ComboBox.prototype.setItemHighlightFromToken_ = function(token) {
+  'use strict';
   if (token == '') {
     this.menu_.setHighlightedIndex(-1);
     return;
@@ -909,6 +945,7 @@ goog.ui.ComboBox.prototype.setItemHighlightFromToken_ = function(token) {
  * @private
  */
 goog.ui.ComboBox.prototype.isItemSticky_ = function(item) {
+  'use strict';
   return typeof item.isSticky == 'function' && item.isSticky();
 };
 
@@ -928,16 +965,17 @@ goog.ui.ComboBox.prototype.isItemSticky_ = function(item) {
  */
 goog.ui.ComboBoxItem = function(
     content, opt_data, opt_domHelper, opt_renderer) {
+  'use strict';
   goog.ui.ComboBoxItem.base(
       this, 'constructor', content, opt_data, opt_domHelper, opt_renderer);
 };
 goog.inherits(goog.ui.ComboBoxItem, goog.ui.MenuItem);
-goog.tagUnsealableClass(goog.ui.ComboBoxItem);
 
 
 // Register a decorator factory function for goog.ui.ComboBoxItems.
 goog.ui.registry.setDecoratorByClassName(
     goog.getCssName('goog-combobox-item'), function() {
+      'use strict';
       // ComboBoxItem defaults to using MenuItemRenderer.
       return new goog.ui.ComboBoxItem(null);
     });
@@ -957,6 +995,7 @@ goog.ui.ComboBoxItem.prototype.isSticky_ = false;
  * @param {boolean} sticky Whether the menu item should be sticky.
  */
 goog.ui.ComboBoxItem.prototype.setSticky = function(sticky) {
+  'use strict';
   this.isSticky_ = sticky;
 };
 
@@ -965,6 +1004,7 @@ goog.ui.ComboBoxItem.prototype.setSticky = function(sticky) {
  * @return {boolean} Whether the menu item is sticky.
  */
 goog.ui.ComboBoxItem.prototype.isSticky = function() {
+  'use strict';
   return this.isSticky_;
 };
 
@@ -974,6 +1014,7 @@ goog.ui.ComboBoxItem.prototype.isSticky = function() {
  * @param {string} token The token.
  */
 goog.ui.ComboBoxItem.prototype.setFormatFromToken = function(token) {
+  'use strict';
   if (this.isEnabled()) {
     var caption = this.getCaption();
     var index = caption.toLowerCase().indexOf(token);

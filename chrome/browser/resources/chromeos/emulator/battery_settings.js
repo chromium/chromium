@@ -1,21 +1,21 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './icons.js';
 import './shared_styles.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({
@@ -68,7 +68,7 @@ Polymer({
             type: 'DedicatedCharger',
             port: 0,
             connected: false,
-            power: 'high'
+            power: 'high',
           },
           {
             id: '1',
@@ -76,7 +76,7 @@ Polymer({
             type: 'DedicatedCharger',
             port: 0,
             connected: false,
-            power: 'high'
+            power: 'high',
           },
           {
             id: '2',
@@ -85,7 +85,7 @@ Polymer({
             port: 0,
             connected: false,
             power: 'low',
-            variablePower: true
+            variablePower: true,
           },
           {
             id: '3',
@@ -94,7 +94,7 @@ Polymer({
             port: 0,
             connected: false,
             power: 'low',
-            variablePower: true
+            variablePower: true,
           },
           {
             id: '4',
@@ -102,7 +102,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 0,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '5',
@@ -110,7 +110,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 1,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '6',
@@ -118,7 +118,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 2,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
           {
             id: '7',
@@ -126,7 +126,7 @@ Polymer({
             type: 'DualRoleUSB',
             port: 3,
             connected: false,
-            power: 'low'
+            power: 'low',
           },
         ];
       },
@@ -154,8 +154,9 @@ Polymer({
 
   onBatteryPercentChange(e) {
     this.percent = parseInt(e.target.value, 10);
-    if (!isNaN(this.percent))
+    if (!isNaN(this.percent)) {
       chrome.send('updateBatteryPercent', [this.percent]);
+    }
   },
 
   /**
@@ -169,8 +170,9 @@ Polymer({
   batteryStateChanged(batteryState) {
     // Find the index of the selected battery state.
     var index = this.batteryStateOptions.indexOf(batteryState);
-    if (index < 0)
+    if (index < 0) {
       return;
+    }
     chrome.send('updateBatteryState', [index]);
   },
 
@@ -184,14 +186,16 @@ Polymer({
 
   onTimeUntilEmptyChange(e) {
     this.timeUntilEmpty = parseInt(e.target.value, 10);
-    if (!isNaN(this.timeUntilEmpty))
+    if (!isNaN(this.timeUntilEmpty)) {
       chrome.send('updateTimeToEmpty', [this.timeUntilEmpty]);
+    }
   },
 
   onTimeUntilFullChange(e) {
     this.timeUntilFull = parseInt(e.target.value, 10);
-    if (!isNaN(this.timeUntilFull))
+    if (!isNaN(this.timeUntilFull)) {
       chrome.send('updateTimeToFull', [this.timeUntilFull]);
+    }
   },
 
   onPowerChanged(e) {
@@ -238,8 +242,9 @@ Polymer({
   },
 
   canBecomeSource(source, selectedId, powerSourceOptionsChange) {
-    if (!source.connected || !this.isDualRole(source))
+    if (!source.connected || !this.isDualRole(source)) {
       return false;
+    }
     return !this.powerSourceOptions.some(function(source) {
       return source.connected && source.type == 'DedicatedCharger';
     });

@@ -1,13 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/check.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "base/containers/span.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {
@@ -21,20 +23,41 @@ SingleFileTarReader::SingleFileTarReader(Delegate* delegate)
 
 SingleFileTarReader::~SingleFileTarReader() = default;
 
-bool SingleFileTarReader::ExtractChunk() {
-  int bytes_read =
-      delegate_->ReadTarFile(buffer_.data(), buffer_.size(), &error_id_);
-  if (bytes_read < 0) {
-    return false;
-  }
+SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
+  // Drain as much of the data as we can fit into the buffer.
+  base::span<char> storage = base::make_span(buffer_);
+  size_t bytes_read = 0;
+  bool pipe_drained = false;
+  do {
+    uint32_t num_bytes = static_cast<uint32_t>(storage.size());
+    const Result result =
+        delegate_->ReadTarFile(storage.data(), &num_bytes, &error_id_);
+    switch (result) {
+      case Result::kFailure:
+        return result;
+
+      case Result::kSuccess:
+        if (num_bytes == 0) {
+          pipe_drained = true;
+        } else {
+          storage = storage.subspan(num_bytes);
+          bytes_read += num_bytes;
+        }
+        break;
+
+      case Result::kShouldWait:
+        pipe_drained = true;
+        break;
+    }
+  } while (!pipe_drained && !storage.empty());
 
   int offset = 0;
 
   // We haven't read the header.
-  if (total_bytes_ == 0) {
+  if (!total_bytes_.has_value()) {
     if (bytes_read < 512) {
       error_id_ = error::kUnzipInvalidArchive;
-      return false;
+      return Result::kFailure;
     }
 
     // TODO(tetsui): check the file header checksum
@@ -46,24 +69,28 @@ bool SingleFileTarReader::ExtractChunk() {
     offset += 512;
   }
 
+  DCHECK(total_bytes_.has_value());
+
   // A tar file always has a padding at the end of the file. As they should not
   // be included in the output, we should take the minimum of the actual
   // remaining bytes versus the bytes read.
-  uint64_t bytes_written =
-      std::min<uint64_t>(total_bytes_ - curr_bytes_, bytes_read - offset);
+  uint64_t bytes_written = std::min<uint64_t>(
+      total_bytes_.value() - curr_bytes_, bytes_read - offset);
   if (!delegate_->WriteContents(buffer_.data() + offset, bytes_written,
                                 &error_id_)) {
-    return false;
+    return Result::kFailure;
   }
   curr_bytes_ += bytes_written;
 
   // TODO(tetsui): check it's the end of the file
 
-  return true;
+  return Result::kSuccess;
 }
 
 bool SingleFileTarReader::IsComplete() const {
-  return total_bytes_ > 0 && total_bytes_ == curr_bytes_;
+  if (!total_bytes_.has_value())
+    return false;
+  return total_bytes_.value() == curr_bytes_;
 }
 
 // static

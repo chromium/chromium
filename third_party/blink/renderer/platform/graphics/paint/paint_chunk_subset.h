@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_CHUNK_SUBSET_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -13,6 +14,8 @@ namespace blink {
 
 // Provides access to a subset of paint chunks in a PaintArtifact.
 class PaintChunkSubset {
+  DISALLOW_NEW();
+
  public:
   // An empty subset.
   PaintChunkSubset() = default;
@@ -117,7 +120,7 @@ class PaintChunkSubset {
   }
 
   bool IsEmpty() const {
-    return UsesSubsetIndices() ? subset_indices_.IsEmpty()
+    return UsesSubsetIndices() ? subset_indices_.empty()
                                : begin_index_ == end_index_;
   }
 
@@ -148,6 +151,8 @@ class PaintChunkSubset {
     return sizeof(*this) + subset_indices_.CapacityInBytes();
   }
 
+  std::unique_ptr<JSONArray> ToJSON() const;
+
  private:
   bool UsesSubsetIndices() const { return begin_index_ == kNotFound; }
 
@@ -160,6 +165,9 @@ class PaintChunkSubset {
 };
 
 using PaintChunkIterator = PaintChunkSubset::Iterator;
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
+                                         const PaintChunkSubset&);
 
 }  // namespace blink
 

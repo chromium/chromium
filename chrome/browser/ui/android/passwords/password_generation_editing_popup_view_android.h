@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -24,7 +23,12 @@ class PasswordGenerationEditingPopupViewAndroid
  public:
   // Builds the UI for the |controller|.
   explicit PasswordGenerationEditingPopupViewAndroid(
-      PasswordGenerationPopupController* controller);
+      base::WeakPtr<PasswordGenerationPopupController> controller);
+
+  PasswordGenerationEditingPopupViewAndroid(
+      const PasswordGenerationEditingPopupViewAndroid&) = delete;
+  PasswordGenerationEditingPopupViewAndroid& operator=(
+      const PasswordGenerationEditingPopupViewAndroid&) = delete;
 
   // Called from JNI when the popup was dismissed.
   void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -34,22 +38,20 @@ class PasswordGenerationEditingPopupViewAndroid
   virtual ~PasswordGenerationEditingPopupViewAndroid();
 
   // PasswordGenerationPopupView implementation.
-  void Show() override;
+  bool Show() override;
   void Hide() override;
   void UpdateState() override;
-  void UpdateBoundsAndRedrawPopup() override;
+  bool UpdateBoundsAndRedrawPopup() override;
   void PasswordSelectionUpdated() override;
 
   // Weak pointer to the controller.
-  PasswordGenerationPopupController* controller_;
+  base::WeakPtr<PasswordGenerationPopupController> controller_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
   // Popup view to be anchored to the container.
   ui::ViewAndroid::ScopedAnchorView popup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationEditingPopupViewAndroid);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_PASSWORD_GENERATION_EDITING_POPUP_VIEW_ANDROID_H_

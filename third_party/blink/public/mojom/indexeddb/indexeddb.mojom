@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,10 @@ const int32 kIDBWrapThreshold = 65536;
 // in chunks of keys or values.  This constant is the max number of keys/values
 // returned per IDBDatabaseGetAllResultSink::Receive call.
 const int32 kIDBGetAllChunkSize = 1000;
+
+// The maximum input array length of BatchGetAll.
+// Use 10000 for now as a reasonable threshold.
+const uint32 kIDBBatchGetAllMaxInputSize = 10000;
 
 enum IDBCursorDirection {
   Next,
@@ -311,17 +315,6 @@ union IDBTransactionPutResult {
   IDBKey key;
 };
 
-union IDBTransactionPutAllResult {
-  IDBError error_result;  // |error| is reserved, so call this |error_result|.
-  array<IDBKey> keys;
-};
-
-struct IDBPutParams {
-  IDBValue value;
-  IDBKey key;
-  array<IDBIndexKeys> index_keys;
-};
-
 interface IDBTransaction {
   CreateObjectStore(int64 object_store_id,
                     mojo_base.mojom.String16 name,
@@ -334,9 +327,6 @@ interface IDBTransaction {
       IDBPutMode mode,
       array<IDBIndexKeys> index_keys)
     => (IDBTransactionPutResult result);
-  PutAll(int64 object_store_id,
-    array<IDBPutParams> put_params)
-    => (IDBTransactionPutAllResult result);
   Commit(int64 num_errors_handled);
 };
 
@@ -363,6 +353,12 @@ interface IDBDatabaseGetAllResultSink {
   OnError(IDBError error);
 };
 
+// The result of BatchGetAll is a two dimensional array.
+union IDBDatabaseBatchGetAllResult {
+  IDBError error_result;
+  array<array<IDBReturnValue>> values;
+};
+
 struct IDBDatabaseOpenCursorValue {
   pending_associated_remote<IDBCursor> cursor;
   IDBKey key;
@@ -387,6 +383,14 @@ interface IDBDatabase {
                     IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
+  // Batch several `GetAll`s together
+  // `max_count` is the maximum count of returned values of each key_range
+  BatchGetAll(int64 transaction_id,
+              int64 object_store_id,
+              int64 index_id,
+              array<IDBKeyRange> key_ranges,
+              uint32 max_count)
+    => (IDBDatabaseBatchGetAllResult result);
   Get(int64 transaction_id,
       int64 object_store_id,
       int64 index_id,

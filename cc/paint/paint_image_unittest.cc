@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,14 @@
 #include "cc/test/skia_common.h"
 #include "cc/test/test_paint_worklet_input.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace cc {
 
 TEST(PaintImageTest, DecodesCorrectFrames) {
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3))};
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3))};
   sk_sp<FakePaintImageGenerator> generator =
       sk_make_sp<FakePaintImageGenerator>(SkImageInfo::MakeN32Premul(10, 10),
                                           frames);
@@ -34,7 +35,7 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   SkImageInfo info = SkImageInfo::MakeN32Premul(10, 10);
   std::vector<size_t> memory(info.computeMinByteSize());
   image.Decode(memory.data(), &info, nullptr, 1u,
-               PaintImage::kDefaultGeneratorClientId);
+               PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();
@@ -43,7 +44,7 @@ TEST(PaintImageTest, DecodesCorrectFrames) {
   info.makeColorType(kRGB_565_SkColorType);
   memory = std::vector<size_t>(info.computeMinByteSize());
   image.Decode(memory.data(), &info, nullptr, 1u,
-               PaintImage::kDefaultGeneratorClientId);
+               PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);
   EXPECT_EQ(generator->frames_decoded().count(1u), 1u);
   generator->reset_frames_decoded();
@@ -98,7 +99,7 @@ TEST(PaintImageTest, DecodeToYuv420NoAlpha) {
   ASSERT_EQ(yuva_pixmap_info, image_yuva_pixmap_info);
 
   image.DecodeYuv(pixmaps, 1u /* frame_index */,
-                  PaintImage::kDefaultGeneratorClientId);
+                  PaintImage::GetNextGeneratorClientId());
   ASSERT_EQ(yuv_generator->frames_decoded().size(), 1u);
   EXPECT_EQ(yuv_generator->frames_decoded().count(1u), 1u);
   yuv_generator->reset_frames_decoded();

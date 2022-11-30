@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/url_rewrite/browser",
+  "+components/url_rewrite/mojom",
+  "+mojo/public",
+  "+third_party/cast_core",
+]

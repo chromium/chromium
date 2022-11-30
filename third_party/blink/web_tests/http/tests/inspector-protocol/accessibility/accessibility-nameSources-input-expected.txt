@@ -1,5 +1,10 @@
 Tests name sources in inputs.
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#text1
     ignored : false
     name : {
@@ -33,6 +38,7 @@ Tests name sources in inputs.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -90,6 +96,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#text2
     ignored : false
     name : {
@@ -127,6 +138,7 @@ Tests name sources in inputs.
         value : text2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -184,6 +196,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text3-title
@@ -243,6 +260,7 @@ Tests name sources in inputs.
         value : text3-placeholder
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -300,6 +318,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text4-title
@@ -373,6 +396,7 @@ Tests name sources in inputs.
         value : label-for-text4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -442,6 +466,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text5-title
@@ -524,6 +553,7 @@ Tests name sources in inputs.
         value : text5-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -581,6 +611,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text6-title
@@ -679,6 +714,7 @@ Tests name sources in inputs.
         value : labelledby-for-text6
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -749,6 +785,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text7-title
@@ -806,6 +847,7 @@ Tests name sources in inputs.
         value : label-wrapping-text7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -875,6 +917,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#text8
     ignored : false
     name : {
@@ -908,6 +955,7 @@ Tests name sources in inputs.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -965,6 +1013,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text9-title
@@ -1042,6 +1095,7 @@ Tests name sources in inputs.
         value : label-for-text9 label-wrapping-text9
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1115,6 +1169,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text10-title
@@ -1188,6 +1247,7 @@ Tests name sources in inputs.
         value : label-wrapping-text10
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1257,6 +1317,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#text11
     ignored : false
     name : {
@@ -1310,6 +1375,7 @@ Tests name sources in inputs.
         value : first-label-for-text11 second-label-for-text11
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1383,6 +1449,11 @@ Tests name sources in inputs.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     description : {
         type : computedString
         value : text12-title
@@ -1433,6 +1504,7 @@ Tests name sources in inputs.
         value : text12-aria-placeholder
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

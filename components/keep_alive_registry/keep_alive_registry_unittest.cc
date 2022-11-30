@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -50,7 +51,7 @@ class KeepAliveRegistryTest : public testing::Test,
   int on_restart_forbidden_call_count_;
   int start_keep_alive_call_count_;
   int stop_keep_alive_call_count_;
-  KeepAliveRegistry* registry_;
+  raw_ptr<KeepAliveRegistry> registry_;
 };
 
 // Test the IsKeepingAlive state and when we interact with the browser with
@@ -84,13 +85,13 @@ TEST_F(KeepAliveRegistryTest, DoubleKeepAliveTest) {
   EXPECT_EQ(0, stop_keep_alive_call_count_);
   std::unique_ptr<ScopedKeepAlive> keep_alive_1, keep_alive_2;
 
-  keep_alive_1.reset(new ScopedKeepAlive(KeepAliveOrigin::CHROME_APP_DELEGATE,
-                                         KeepAliveRestartOption::DISABLED));
+  keep_alive_1 = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
   ASSERT_EQ(1, start_keep_alive_call_count_--);  // decrement to ack
   EXPECT_TRUE(registry_->IsKeepingAlive());
 
-  keep_alive_2.reset(new ScopedKeepAlive(KeepAliveOrigin::CHROME_APP_DELEGATE,
-                                         KeepAliveRestartOption::DISABLED));
+  keep_alive_2 = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
   // We should not increment the count twice
   EXPECT_EQ(0, start_keep_alive_call_count_);
   EXPECT_TRUE(registry_->IsKeepingAlive());
@@ -115,13 +116,13 @@ TEST_F(KeepAliveRegistryTest, RestartOptionTest) {
   EXPECT_EQ(0, on_restart_forbidden_call_count_);
 
   // With a normal keep alive, restart should not be allowed
-  keep_alive.reset(new ScopedKeepAlive(KeepAliveOrigin::CHROME_APP_DELEGATE,
-                                       KeepAliveRestartOption::DISABLED));
+  keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
   ASSERT_EQ(1, on_restart_forbidden_call_count_--);  // decrement to ack
 
   // Restart should not be allowed if all KA don't allow it.
-  keep_alive_restart.reset(new ScopedKeepAlive(
-      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::ENABLED));
+  keep_alive_restart = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::ENABLED);
   EXPECT_EQ(0, on_restart_allowed_call_count_);
 
   // Now restart should be allowed, the only one left allows it.
@@ -135,6 +136,70 @@ TEST_F(KeepAliveRegistryTest, RestartOptionTest) {
   // Make sure all calls were checked.
   EXPECT_EQ(0, on_restart_allowed_call_count_);
   EXPECT_EQ(0, on_restart_forbidden_call_count_);
+}
+
+// Check that KeepAliveState is changed on attempting restarting,
+// if the remaining keepalive is only RestartOption::ENABLED.
+TEST_F(KeepAliveRegistryTest, AttemptRestarting) {
+  std::unique_ptr<ScopedKeepAlive> keep_alive, keep_alive_restart;
+
+  EXPECT_EQ(0, on_restart_allowed_call_count_);
+  EXPECT_EQ(0, on_restart_forbidden_call_count_);
+
+  // With a normal keep alive, restart should not be allowed
+  keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
+  ASSERT_EQ(1, start_keep_alive_call_count_--);  // decrement to ack
+  ASSERT_EQ(1, on_restart_forbidden_call_count_--);
+
+  // Restart should not be allowed if all KA don't allow it.
+  keep_alive_restart = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::ENABLED);
+  // No state change.
+  EXPECT_EQ(0, start_keep_alive_call_count_);
+  EXPECT_EQ(0, on_restart_allowed_call_count_);
+
+  // Now restart should be allowed, the only one left allows it.
+  keep_alive.reset();
+  EXPECT_EQ(0, start_keep_alive_call_count_);
+  ASSERT_EQ(1, on_restart_allowed_call_count_--);
+  EXPECT_TRUE(registry_->IsRestartAllowed());
+
+  // Trigger the restarting procedure.
+  registry_->SetRestarting();
+  ASSERT_EQ(1, stop_keep_alive_call_count_);
+}
+
+TEST_F(KeepAliveRegistryTest,
+       AttemptRestartingBeforeDestroyingDisabledKeepAlive) {
+  std::unique_ptr<ScopedKeepAlive> keep_alive, keep_alive_restart;
+
+  EXPECT_EQ(0, on_restart_allowed_call_count_);
+  EXPECT_EQ(0, on_restart_forbidden_call_count_);
+
+  // With a normal keep alive, restart should not be allowed
+  keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
+  ASSERT_EQ(1, start_keep_alive_call_count_--);  // decrement to ack
+  ASSERT_EQ(1, on_restart_forbidden_call_count_--);
+
+  // Restart should not be allowed if all KA don't allow it.
+  keep_alive_restart = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::ENABLED);
+  // No state change.
+  EXPECT_EQ(0, start_keep_alive_call_count_);
+  EXPECT_EQ(0, on_restart_allowed_call_count_);
+
+  // Trigger the restarting procedure, during normal keep alive is still
+  // active.
+  registry_->SetRestarting();
+  EXPECT_EQ(0, stop_keep_alive_call_count_);
+
+  // Now restart should be allowed, the only one left allows it.
+  // This also updates KeepAliveState.
+  keep_alive.reset();
+  ASSERT_EQ(1, stop_keep_alive_call_count_--);
+  ASSERT_EQ(1, on_restart_allowed_call_count_--);
 }
 
 TEST_F(KeepAliveRegistryTest, WouldRestartWithoutTest) {

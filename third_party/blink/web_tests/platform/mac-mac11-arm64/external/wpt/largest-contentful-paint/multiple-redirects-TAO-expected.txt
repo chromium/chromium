@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Cross-origin images with passing/failing TAO should/shouldn't have its renderTime set. assert_between_exclusive: loadTime should be between the lower bound and the current time expected a number greater than 72.09999999962747 and less than 80.59999999962747 but got 72.099
+Harness: the test ran to completion.
+

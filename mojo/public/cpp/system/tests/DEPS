@@ -1,0 +1,4 @@
+include_rules = [
+  "+mojo/core/embedder",
+  "+mojo/core/test",
+]

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
 
@@ -31,13 +31,17 @@ enum class RestrictionPolicy {
 using IsEnterpriseFunction = base::OnceCallback<bool()>;
 
 // A container for all of the client state which is used for filtering studies.
-struct ClientFilterableState {
+struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   static Study::Platform GetCurrentPlatform();
 
   // base::Version used in {min,max}_os_version filtering.
   static base::Version GetOSVersion();
 
   explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function);
+
+  ClientFilterableState(const ClientFilterableState&) = delete;
+  ClientFilterableState& operator=(const ClientFilterableState&) = delete;
+
   ~ClientFilterableState();
 
   // Whether this is an enterprise client. Always false on android, iOS, and
@@ -59,16 +63,16 @@ struct ClientFilterableState {
   base::Version os_version;
 
   // The Channel for this Chrome installation.
-  Study::Channel channel;
+  Study::Channel channel = Study::UNKNOWN;
 
   // The hardware form factor that Chrome is running on.
-  Study::FormFactor form_factor;
+  Study::FormFactor form_factor = Study::DESKTOP;
 
   // The CPU architecture on which Chrome is running.
-  Study::CpuArchitecture cpu_architecture;
+  Study::CpuArchitecture cpu_architecture = Study::X86_64;
 
   // The OS on which Chrome is running.
-  Study::Platform platform;
+  Study::Platform platform = Study::PLATFORM_WINDOWS;
 
   // The named hardware configuration that Chrome is running on -- used to
   // identify models of devices.
@@ -92,9 +96,7 @@ struct ClientFilterableState {
   // evaluate it if needed (i.e. if a study is filtering by enterprise) and at
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
-  mutable base::Optional<bool> is_enterprise_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientFilterableState);
+  mutable absl::optional<bool> is_enterprise_;
 };
 
 }  // namespace variations

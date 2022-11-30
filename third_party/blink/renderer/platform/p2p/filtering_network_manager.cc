@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,28 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/media_permission.h"
+#include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 FilteringNetworkManager::FilteringNetworkManager(
-    rtc::NetworkManager* network_manager,
+    IpcNetworkManager* network_manager,
     media::MediaPermission* media_permission,
     bool allow_mdns_obfuscation)
-    : network_manager_(network_manager),
+    : FilteringNetworkManager(network_manager->AsWeakPtrForSignalingThread(),
+                              media_permission,
+                              allow_mdns_obfuscation) {}
+
+// DO NOT dereference/check `network_manager_for_signaling_thread` in the ctor!
+// Doing so would bind its WeakFactory to the constructing thread (main thread)
+// instead of the thread `this` lives in (signaling thread).
+FilteringNetworkManager::FilteringNetworkManager(
+    base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread,
+    media::MediaPermission* media_permission,
+    bool allow_mdns_obfuscation)
+    : network_manager_for_signaling_thread_(
+          std::move(network_manager_for_signaling_thread)),
       media_permission_(media_permission),
       allow_mdns_obfuscation_(allow_mdns_obfuscation) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -53,10 +66,11 @@ void FilteringNetworkManager::Initialize() {
 void FilteringNetworkManager::StartUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(started_permission_check_);
+  DCHECK(network_manager_for_signaling_thread_);
 
   if (start_updating_time_.is_null()) {
     start_updating_time_ = base::TimeTicks::Now();
-    network_manager_->SignalNetworksChanged.connect(
+    network_manager_for_signaling_thread_->SignalNetworksChanged.connect(
         this, &FilteringNetworkManager::OnNetworksChanged);
   }
 
@@ -64,7 +78,7 @@ void FilteringNetworkManager::StartUpdating() {
   // StartUpdating, in case the update signal is fired synchronously.
   pending_network_update_ = true;
   ++start_count_;
-  network_manager_->StartUpdating();
+  network_manager_for_signaling_thread_->StartUpdating();
   // If we have not sent the first update, which implies we have not received
   // the first network update from the base network manager, we wait until the
   // base network manager signals a network change for us to populate the
@@ -76,32 +90,41 @@ void FilteringNetworkManager::StartUpdating() {
 
 void FilteringNetworkManager::StopUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  network_manager_->StopUpdating();
+  if (network_manager_for_signaling_thread_)
+    network_manager_for_signaling_thread_->StopUpdating();
   DCHECK_GT(start_count_, 0);
   --start_count_;
 }
 
-void FilteringNetworkManager::GetNetworks(NetworkList* networks) const {
+std::vector<const rtc::Network*> FilteringNetworkManager::GetNetworks() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  networks->clear();
+  std::vector<const rtc::Network*> networks;
 
-  if (enumeration_permission() == ENUMERATION_ALLOWED)
-    NetworkManagerBase::GetNetworks(networks);
+  if (enumeration_permission() == ENUMERATION_ALLOWED) {
+    for (const rtc::Network* network : GetNetworksInternal()) {
+      networks.push_back(const_cast<rtc::Network*>(network));
+    }
+  }
 
-  VLOG(3) << "GetNetworks() returns " << networks->size() << " networks.";
+  VLOG(3) << "GetNetworks() returns " << networks.size() << " networks.";
+  return networks;
 }
 
 webrtc::MdnsResponderInterface* FilteringNetworkManager::GetMdnsResponder()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (!network_manager_for_signaling_thread_)
+    return nullptr;
+
   // mDNS responder is set to null if we have the enumeration permission or the
   // mDNS obfuscation of IPs is disallowed.
   if (enumeration_permission() == ENUMERATION_ALLOWED ||
-      !allow_mdns_obfuscation_)
+      !allow_mdns_obfuscation_) {
     return nullptr;
+  }
 
-  return network_manager_->GetMdnsResponder();
+  return network_manager_for_signaling_thread_->GetMdnsResponder();
 }
 
 void FilteringNetworkManager::CheckPermission() {
@@ -115,10 +138,12 @@ void FilteringNetworkManager::CheckPermission() {
   // Request for media permission asynchronously.
   media_permission_->HasPermission(
       media::MediaPermission::AUDIO_CAPTURE,
-      WTF::Bind(&FilteringNetworkManager::OnPermissionStatus, GetWeakPtr()));
+      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                    GetWeakPtr()));
   media_permission_->HasPermission(
       media::MediaPermission::VIDEO_CAPTURE,
-      WTF::Bind(&FilteringNetworkManager::OnPermissionStatus, GetWeakPtr()));
+      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                    GetWeakPtr()));
 }
 
 void FilteringNetworkManager::OnPermissionStatus(bool granted) {
@@ -141,29 +166,33 @@ void FilteringNetworkManager::OnPermissionStatus(bool granted) {
 
 void FilteringNetworkManager::OnNetworksChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(network_manager_for_signaling_thread_);
+
   pending_network_update_ = false;
 
   // Update the default local addresses.
   rtc::IPAddress ipv4_default;
   rtc::IPAddress ipv6_default;
-  network_manager_->GetDefaultLocalAddress(AF_INET, &ipv4_default);
-  network_manager_->GetDefaultLocalAddress(AF_INET6, &ipv6_default);
+  network_manager_for_signaling_thread_->GetDefaultLocalAddress(AF_INET,
+                                                                &ipv4_default);
+  network_manager_for_signaling_thread_->GetDefaultLocalAddress(AF_INET6,
+                                                                &ipv6_default);
   set_default_local_addresses(ipv4_default, ipv6_default);
 
   // Copy and merge the networks. Fire a signal if the permission status is
   // known.
-  NetworkList networks;
-  network_manager_->GetNetworks(&networks);
-  NetworkList copied_networks;
+  std::vector<const rtc::Network*> networks =
+      network_manager_for_signaling_thread_->GetNetworks();
+  std::vector<std::unique_ptr<rtc::Network>> copied_networks;
   copied_networks.reserve(networks.size());
-  for (rtc::Network* network : networks) {
+  for (const rtc::Network* network : networks) {
     auto copied_network = std::make_unique<rtc::Network>(*network);
     copied_network->set_default_local_address_provider(this);
     copied_network->set_mdns_responder_provider(this);
-    copied_networks.push_back(copied_network.release());
+    copied_networks.push_back(std::move(copied_network));
   }
   bool changed;
-  MergeNetworkList(copied_networks, &changed);
+  MergeNetworkList(std::move(copied_networks), &changed);
   // We wait until our permission status is known before firing a network
   // change signal, so that the listener(s) don't miss out on receiving a
   // full network list.
@@ -206,8 +235,9 @@ void FilteringNetworkManager::FireEventIfStarted() {
   //
   // TODO(crbug.com/787254): Use Frame-based TaskRunner here.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, WTF::Bind(&FilteringNetworkManager::SendNetworksChangedSignal,
-                           GetWeakPtr()));
+      FROM_HERE,
+      WTF::BindOnce(&FilteringNetworkManager::SendNetworksChangedSignal,
+                    GetWeakPtr()));
 
   sent_first_update_ = true;
 }

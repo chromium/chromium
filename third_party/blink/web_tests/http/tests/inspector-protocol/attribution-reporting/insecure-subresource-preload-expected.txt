@@ -1,0 +1,12 @@
+Test that an untrustworthy attributionsrc triggers an issue when the img is preloaded.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : wss://example.test
+            violatingNodeId : <number>
+            violationType : UntrustworthyReportingOrigin
+        }
+    }
+}
+

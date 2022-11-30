@@ -1,0 +1,11 @@
+{
+  metadata: {
+    namespace: "securitypolicyviolation_disposition_names",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "enforce",
+    "report",
+  ],
+}

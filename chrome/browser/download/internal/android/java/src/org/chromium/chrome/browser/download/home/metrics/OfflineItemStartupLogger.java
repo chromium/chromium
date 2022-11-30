@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class OfflineItemStartupLogger implements OfflineItemFilterObserver {
     /** Creates a new {@link OfflineItemStartupLogger} instance. */
     public OfflineItemStartupLogger(
             DownloadManagerUiConfig config, OfflineItemFilterSource source) {
-        mAllowedToLog = !config.isOffTheRecord;
+        mAllowedToLog = !OTRProfileID.isOffTheRecord(config.otrProfileID);
         mSource = source;
         mSource.addObserver(this);
 
@@ -74,19 +75,19 @@ public class OfflineItemStartupLogger implements OfflineItemFilterObserver {
             }
         }
 
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Android.DownloadManager.InitialCount.Total", mSource.getItems().size());
 
         for (Entry<Integer /* Filters.FilterType */, Integer /* Count */> count :
                 counts.entrySet()) {
-            RecordHistogram.recordCountHistogram("Android.DownloadManager.InitialCount."
+            RecordHistogram.recordCount1MHistogram("Android.DownloadManager.InitialCount."
                             + UmaUtils.getSuffixForFilter(count.getKey()),
                     count.getValue());
         }
 
         for (Entry<Integer /* Filters.FilterType */, Integer /* Count */> count :
                 viewedCounts.entrySet()) {
-            RecordHistogram.recordCountHistogram("Android.DownloadManager.InitialCount.Viewed."
+            RecordHistogram.recordCount1MHistogram("Android.DownloadManager.InitialCount.Viewed."
                             + UmaUtils.getSuffixForFilter(count.getKey()),
                     count.getValue());
         }

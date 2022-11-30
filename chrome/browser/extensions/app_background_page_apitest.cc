@@ -1,16 +1,20 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
@@ -46,7 +50,7 @@
 #include "components/nacl/browser/nacl_process_host.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -61,6 +65,11 @@ class BackgroundContentsCreationObserver
     observation_.Observe(
         BackgroundContentsServiceFactory::GetForProfile(profile));
   }
+
+  BackgroundContentsCreationObserver(
+      const BackgroundContentsCreationObserver&) = delete;
+  BackgroundContentsCreationObserver& operator=(
+      const BackgroundContentsCreationObserver&) = delete;
 
   ~BackgroundContentsCreationObserver() override = default;
 
@@ -78,8 +87,34 @@ class BackgroundContentsCreationObserver
   base::ScopedObservation<BackgroundContentsService,
                           BackgroundContentsServiceObserver>
       observation_{this};
+};
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsCreationObserver);
+class BackgroundContentsClosedObserver
+    : protected BackgroundContentsServiceObserver {
+ public:
+  explicit BackgroundContentsClosedObserver(Profile* profile) {
+    observation_.Observe(
+        BackgroundContentsServiceFactory::GetForProfile(profile));
+  }
+
+  BackgroundContentsClosedObserver(const BackgroundContentsClosedObserver&) =
+      delete;
+  BackgroundContentsClosedObserver& operator=(
+      const BackgroundContentsClosedObserver&) = delete;
+
+  ~BackgroundContentsClosedObserver() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+ protected:
+  void OnBackgroundContentsClosed() override { run_loop_.Quit(); }
+
+ private:
+  base::RunLoop run_loop_;
+
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      observation_{this};
 };
 
 }  // namespace
@@ -171,21 +206,14 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
   }
 
  private:
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 }  // namespace
 
-// Flaky test disabled on Mac (http://crbug.com/95139), Windows
-// and Linux (http://crbug.com/1044265).
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
+// This test is meaningless if background mode is not enabled.
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, Basic) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -204,6 +232,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
       embedded_test_server()->port());
 
   base::FilePath app_dir;
+  BackgroundContentsClosedObserver closed_observer(browser()->profile());
   ASSERT_TRUE(CreateApp(app_manifest, &app_dir));
   ASSERT_TRUE(LoadExtension(app_dir));
   // Background mode should not be active until a background page is created.
@@ -211,8 +240,10 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_Basic) {
   ASSERT_TRUE(RunExtensionTest("app_background_page/basic")) << message_;
   // The test closes the background contents, so we should fall back to no
   // background mode at the end.
-  ASSERT_TRUE(VerifyBackgroundMode(false));
+  closed_observer.Wait();
+  EXPECT_TRUE(VerifyBackgroundMode(false));
 }
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, LacksPermission) {
   std::string app_manifest = base::StringPrintf(
@@ -468,14 +499,7 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenTwoPagesWithManifest) {
   UnloadExtension(extension->id());
 }
 
-// TODO(https://crbug.com/1124033): Fails on LaCrOS bot.
-// TODO(https://crbug.com/1186442): Fails on linux-ozone-rel bot.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
-#define MAYBE_OpenPopupFromBGPage DISABLED_OpenPopupFromBGPage
-#else
-#define MAYBE_OpenPopupFromBGPage OpenPopupFromBGPage
-#endif
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, MAYBE_OpenPopupFromBGPage) {
+IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenPopupFromBGPage) {
   std::string app_manifest = base::StringPrintf(
       "{"
       "  \"name\": \"App\","
@@ -617,7 +641,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, UnloadExtensionWhileHidden) {
 IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
   extensions::ProcessManager* manager =
       extensions::ProcessManager::Get(browser()->profile());
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   LaunchTestingApp();
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
@@ -635,7 +660,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
       manager->GetLazyKeepaliveActivities(extension());
   EXPECT_THAT(activities, testing::UnorderedElementsAre(api_activity));
 
-  ExtensionTestMessageListener created1_listener("created_module:1", true);
+  ExtensionTestMessageListener created1_listener("created_module:1",
+                                                 ReplyBehavior::kWillReply);
   ready_listener.Reply("create_module");
   EXPECT_TRUE(created1_listener.WaitUntilSatisfied());
 
@@ -646,7 +672,8 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
   EXPECT_THAT(activities,
               testing::UnorderedElementsAre(api_activity, pepper_api_activity));
 
-  ExtensionTestMessageListener created2_listener("created_module:2", true);
+  ExtensionTestMessageListener created2_listener("created_module:2",
+                                                 ReplyBehavior::kWillReply);
   created1_listener.Reply("create_module");
   EXPECT_TRUE(created2_listener.WaitUntilSatisfied());
 
@@ -659,10 +686,11 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
                                             pepper_api_activity));
 
   // Tear-down both modules.
-  ExtensionTestMessageListener destroyed1_listener("destroyed_module", true);
+  ExtensionTestMessageListener destroyed1_listener("destroyed_module",
+                                                   ReplyBehavior::kWillReply);
   created2_listener.Reply("destroy_module");
   EXPECT_TRUE(destroyed1_listener.WaitUntilSatisfied());
-  ExtensionTestMessageListener destroyed2_listener("destroyed_module", false);
+  ExtensionTestMessageListener destroyed2_listener("destroyed_module");
   destroyed1_listener.Reply("destroy_module");
   EXPECT_TRUE(destroyed2_listener.WaitUntilSatisfied());
 
@@ -671,20 +699,6 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, BackgroundKeepaliveActive) {
   EXPECT_EQ(0, manager->GetLazyKeepaliveCount(extension()));
   activities = manager->GetLazyKeepaliveActivities(extension());
   EXPECT_TRUE(activities.empty());
-}
-
-// Verify that we can create a NaCl module by adding the <embed> to the
-// background page, without having to e.g. touch emebed.lastError to
-// trigger the module to load.
-// Disabled due to http://crbug.com/371059.
-IN_PROC_BROWSER_TEST_F(AppBackgroundPageNaClTest, DISABLED_CreateNaClModule) {
-  ExtensionTestMessageListener ready_listener("ready", true);
-  LaunchTestingApp();
-  EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  ExtensionTestMessageListener created_listener("created_module:1", false);
-  ready_listener.Reply("create_module_without_hack");
-  EXPECT_TRUE(created_listener.WaitUntilSatisfied());
 }
 
 #endif  //  BUILDFLAG(ENABLE_NACL)

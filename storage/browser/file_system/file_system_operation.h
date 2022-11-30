@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/process/process.h"
+#include "base/types/pass_key.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/blob/blob_reader.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -24,14 +26,12 @@ class Time;
 }
 
 namespace storage {
-class ShareableFileReference;
-}
 
-namespace storage {
-
+class CopyOrMoveHookDelegate;
 class FileSystemContext;
 class FileSystemURL;
 class FileWriterDelegate;
+class ShareableFileReference;
 
 // The interface class for FileSystemOperation implementations.
 //
@@ -57,12 +57,14 @@ class FileWriterDelegate;
 class FileSystemOperation {
  public:
   COMPONENT_EXPORT(STORAGE_BROWSER)
-  static FileSystemOperation* Create(
+  static std::unique_ptr<FileSystemOperation> Create(
       const FileSystemURL& url,
       FileSystemContext* file_system_context,
       std::unique_ptr<FileSystemOperationContext> operation_context);
 
-  virtual ~FileSystemOperation() {}
+  FileSystemOperation(const FileSystemOperation&) = delete;
+  FileSystemOperation& operator=(const FileSystemOperation&) = delete;
+  virtual ~FileSystemOperation() = default;
 
   // Used for CreateFile(), etc. |result| is the return code of the operation.
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
@@ -73,9 +75,11 @@ class FileSystemOperation {
       base::OnceCallback<void(base::File::Error result,
                               const base::File::Info& file_info)>;
 
-  // Used for OpenFile(). |on_close_callback| will be called after the file is
-  // closed in the child process. It can be null, if no operation is needed on
-  // closing a file.
+  // Used for OpenFile(). File system implementations can specify an
+  // `on_close_callback` if an operation is needed after closing a file. If
+  // non-null, OpenFile() callers must run the callback (on the IO thread)
+  // after the file closes. If the file is duped, the callback should not be run
+  // until all dups of the file have been closed.
   using OpenFileCallback =
       base::OnceCallback<void(base::File file,
                               base::OnceClosure on_close_callback)>;
@@ -123,87 +127,6 @@ class FileSystemOperation {
   // fails some of the operations.
   enum ErrorBehavior { ERROR_BEHAVIOR_ABORT, ERROR_BEHAVIOR_SKIP };
 
-  // Used for progress update callback for Copy().
-  //
-  // BEGIN_COPY_ENTRY is fired for each copy creation beginning (for both
-  // file and directory).
-  // The |source_url| is the URL of the source entry. |size| should not be
-  // used.
-  //
-  // END_COPY_ENTRY is fired for each copy creation finishing (for both
-  // file and directory).
-  // The |source_url| is the URL of the source entry. The |destination_url| is
-  // the URL of the destination entry. |size| should not be used.
-  //
-  // PROGRESS is fired periodically during file copying (not fired for
-  // directory copy).
-  // The |source_url| is the URL of the source file. |size| is the number
-  // of cumulative copied bytes for the currently copied file.
-  // Both at beginning and ending of file copying, PROGRESS event should be
-  // called. At beginning, |size| should be 0. At ending, |size| should be
-  // the size of the file.
-  //
-  // Here is an example callback sequence of recursive copy. Suppose
-  // there are a/b/c.txt (100 bytes) and a/b/d.txt (200 bytes), and trying to
-  // copy a to x recursively, then the progress update sequence will be:
-  //
-  // BEGIN_COPY_ENTRY a  (starting create "a" directory in x/).
-  // END_COPY_ENTRY a x/a (creating "a" directory in x/ is finished).
-  //
-  // BEGIN_COPY_ENTRY a/b (starting create "b" directory in x/a).
-  // END_COPY_ENTRY a/b x/a/b (creating "b" directory in x/a/ is finished).
-  //
-  // BEGIN_COPY_ENTRY a/b/c.txt (starting to copy "c.txt" in x/a/b/).
-  // PROGRESS a/b/c.txt 0 (The first PROGRESS's |size| should be 0).
-  // PROGRESS a/b/c.txt 10
-  //    :
-  // PROGRESS a/b/c.txt 90
-  // PROGRESS a/b/c.txt 100 (The last PROGRESS's |size| should be the size of
-  //                         the file).
-  // END_COPY_ENTRY a/b/c.txt x/a/b/c.txt (copying "c.txt" is finished).
-  //
-  // BEGIN_COPY_ENTRY a/b/d.txt (starting to copy "d.txt" in x/a/b).
-  // PROGRESS a/b/d.txt 0 (The first PROGRESS's |size| should be 0).
-  // PROGRESS a/b/d.txt 10
-  //    :
-  // PROGRESS a/b/d.txt 190
-  // PROGRESS a/b/d.txt 200 (The last PROGRESS's |size| should be the size of
-  //                         the file).
-  // END_COPY_ENTRY a/b/d.txt x/a/b/d.txt (copy "d.txt" is finished).
-  //
-  // Note that event sequence of a/b/c.txt and a/b/d.txt can be interlaced,
-  // because they can be done in parallel. Also PROGRESS events are optional,
-  // so they may not be appeared.
-  // All the progress callback invocation should be done before StatusCallback
-  // given to the Copy is called. Especially if an error is found before first
-  // progres callback invocation, the progress callback may NOT invoked for the
-  // copy.
-  //
-  // Note for future extension. Currently this callback is only supported on
-  // Copy(). We can extend this to Move(), because Move() is sometimes
-  // implemented as "copy then delete."
-  // In more precise, Move() usually can be implemented either 1) by updating
-  // the metadata of resource (e.g. root of moving directory tree), or 2) by
-  // copying directory tree and them removing the source tree.
-  // For 1)'s case, we can simply add BEGIN_MOVE_ENTRY and END_MOVE_ENTRY
-  // for root directory.
-  // For 2)'s case, we can add BEGIN_DELETE_ENTRY and END_DELETE_ENTRY for each
-  // entry.
-  // For both cases, we probably won't need to use PROGRESS event because
-  // these operations should be done quickly (at least much faster than copying
-  // usually).
-  enum CopyProgressType {
-    BEGIN_COPY_ENTRY,
-    END_COPY_ENTRY,
-    PROGRESS,
-    ERROR_COPY_ENTRY
-  };
-  using CopyProgressCallback =
-      base::RepeatingCallback<void(CopyProgressType type,
-                                   const FileSystemURL& source_url,
-                                   const FileSystemURL& destination_url,
-                                   int64_t size)>;
-
   // Used for CopyFileLocal() to report progress update.
   // |size| is the cumulative copied bytes for the copy.
   // At the beginning the progress callback should be called with |size| = 0,
@@ -211,17 +134,44 @@ class FileSystemOperation {
   // set to the copied file size.
   using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
-  // The option for copy or move operation.
-  enum CopyOrMoveOption {
-    // No additional operation.
-    OPTION_NONE,
-
+  // The possible options for copy or move operations. Used as an EnumSet to
+  // allow multiple options to be specified.
+  enum class CopyOrMoveOption {
     // Preserves last modified time if possible. If the operation to update
     // last modified time is not supported on the file system for the
     // destination file, this option would be simply ignored (i.e. Copy would
     // be successfully done without preserving last modified time).
-    OPTION_PRESERVE_LAST_MODIFIED,
+    kPreserveLastModified,
+
+    // Preserves permissions of the destination file. If the operation to update
+    // permissions is not supported on the file system for the destination file,
+    // this option will simply be ignored (i.e. Copy would be successfully done
+    // without preserving permissions of the destination file).
+    kPreserveDestinationPermissions,
+
+    // Forces the copy or move operation to use the cross-filesystem
+    // implementation.
+    kForceCrossFilesystem,
+
+    // Removes copied files that result in an error (potentially a
+    // cancellation), as these files are potentially partial/corrupted.
+    // Directories are not removed recursively, as it can lead to data loss
+    // (e.g. user changing the content of the destination folder during a copy
+    // or a move). Therefore, all successfully copied entries are preserved.
+    // The removal is best-effort: depending on the origin of the error,
+    // removing the destination file can fail.
+    // This option can impact cross-filesystem moves since they are implemented
+    // as copy + delete (only the copy step is impacted), but not
+    // same-filesystem moves where the file paths are just renamed.
+    kRemovePartiallyCopiedFilesOnError,
+
+    kFirst = kPreserveLastModified,
+    kLast = kRemovePartiallyCopiedFilesOnError
   };
+
+  using CopyOrMoveOptionSet = base::EnumSet<CopyOrMoveOption,
+                                            CopyOrMoveOption::kFirst,
+                                            CopyOrMoveOption::kLast>;
 
   // Fields requested for the GetMetadata method. Used as a bitmask.
   enum GetMetadataField {
@@ -267,9 +217,9 @@ class FileSystemOperation {
   // comment for details.
   // |error_behavior| specifies whether this continues operation after it
   // failed an operation or not.
-  // |progress_callback| is periodically called to report the progress
-  // update. See also the comment of CopyProgressCallback. This callback is
-  // optional.
+  // |copy_or_move_hook_delegate|'s functions are periodically called to report
+  // the current state of the operation. See also the comments of
+  // CopyOrMoveHookDelegate. |copy_or_move_hook_delegate| is required.
   //
   // For recursive case this internally creates new FileSystemOperations and
   // calls:
@@ -279,17 +229,23 @@ class FileSystemOperation {
   //   CopyInForeignFile and CreateDirectory on dest filesystem
   //   for cross-filesystem case.
   //
-  virtual void Copy(const FileSystemURL& src_path,
-                    const FileSystemURL& dest_path,
-                    CopyOrMoveOption option,
-                    ErrorBehavior error_behavior,
-                    const CopyProgressCallback& progress_callback,
-                    StatusCallback callback) = 0;
+  virtual void Copy(
+      const FileSystemURL& src_path,
+      const FileSystemURL& dest_path,
+      CopyOrMoveOptionSet options,
+      ErrorBehavior error_behavior,
+      std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
+      StatusCallback callback) = 0;
 
   // Moves a file or directory from |src_path| to |dest_path|. A new file
   // or directory is created at |dest_path| as needed.
   // |option| specifies the minor behavior of Copy(). See CopyOrMoveOption's
   // comment for details.
+  // |error_behavior| specifies whether this continues operation after it
+  // failed an operation or not.
+  // |copy_or_move_hook_delegate|'s functions are periodically called to report
+  // the current state of the operation. See also the comments of
+  // CopyOrMoveHookDelegate. |copy_or_move_hook_delegate| is required.
   //
   // For recursive case this internally creates new FileSystemOperations and
   // calls:
@@ -301,10 +257,13 @@ class FileSystemOperation {
   //
   // TODO(crbug.com/171284): Restore directory timestamps after the Move
   //                         operation.
-  virtual void Move(const FileSystemURL& src_path,
-                    const FileSystemURL& dest_path,
-                    CopyOrMoveOption option,
-                    StatusCallback callback) = 0;
+  virtual void Move(
+      const FileSystemURL& src_path,
+      const FileSystemURL& dest_path,
+      CopyOrMoveOptionSet options,
+      ErrorBehavior error_behavior,
+      std::unique_ptr<CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
+      StatusCallback callback) = 0;
 
   // Checks if a directory is present at |path|.
   virtual void DirectoryExists(const FileSystemURL& path,
@@ -388,7 +347,7 @@ class FileSystemOperation {
   //
   // This function is used only by Pepper as of writing.
   virtual void OpenFile(const FileSystemURL& path,
-                        int file_flags,
+                        uint32_t file_flags,
                         OpenFileCallback callback) = 0;
 
   // Creates a local snapshot file for a given |path| and returns the
@@ -455,7 +414,7 @@ class FileSystemOperation {
   //
   virtual void CopyFileLocal(const FileSystemURL& src_url,
                              const FileSystemURL& dest_url,
-                             CopyOrMoveOption option,
+                             CopyOrMoveOptionSet options,
                              const CopyFileProgressCallback& progress_callback,
                              StatusCallback callback) = 0;
 
@@ -476,7 +435,7 @@ class FileSystemOperation {
   //
   virtual void MoveFileLocal(const FileSystemURL& src_url,
                              const FileSystemURL& dest_url,
-                             CopyOrMoveOption option,
+                             CopyOrMoveOptionSet options,
                              StatusCallback callback) = 0;
 
   // Synchronously gets the platform path for the given |url|.
@@ -511,6 +470,13 @@ class FileSystemOperation {
     kOperationGetLocalPath,
     kOperationCancel,
   };
+
+  FileSystemOperation() = default;
+
+  // Allows subclasses to call the FileSystemOperationImpl constructor.
+  static base::PassKey<FileSystemOperation> CreatePassKey() {
+    return base::PassKey<FileSystemOperation>();
+  }
 };
 
 }  // namespace storage

@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1340068511406764697">Du måste ange ett postnummer, till exempel <ph name="EXAMPLE" />. Om du inte vet vilket postnummer du har tar du reda på det <ph name="BEGIN_LINK" />här<ph name="END_LINK" />.</translation>
-<translation id="2053553514270667976">ZIP</translation>
+<translation id="2053553514270667976">Postnummer</translation>
 <translation id="2096368010154057602">Departement</translation>
 <translation id="2577522251608256362">Stadsdel</translation>
 <translation id="3050787670591910834">Du måste ange ett postnummer, till exempel <ph name="EXAMPLE" />.</translation>

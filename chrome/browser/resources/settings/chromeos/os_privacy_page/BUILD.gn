@@ -1,83 +1,109 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":os_privacy_page.m",
-    ":peripheral_data_access_protection_dialog.m",
+    ":metrics_consent_toggle_button",
+    ":os_privacy_page",
+    ":peripheral_data_access_protection_dialog",
+    ":privacy_hub_browser_proxy",
+    ":privacy_hub_page",
+    ":smart_privacy_page",
   ]
 }
 
-js_library("os_privacy_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/os_privacy_page.m.js" ]
+js_library("os_privacy_page") {
   deps = [
-    ":peripheral_data_access_browser_proxy.m",
-    ":peripheral_data_access_protection_dialog.m",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    ":metrics_consent_toggle_button",
+    ":peripheral_data_access_browser_proxy",
+    ":peripheral_data_access_protection_dialog",
+    ":privacy_hub_browser_proxy",
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "..:route_observer_behavior",
     "../..:router",
-    "../os_people_page:lock_screen.m",
-    "../os_people_page:lock_state_behavior.m",
+    "../os_people_page:lock_screen",
+    "../os_people_page:lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":os_privacy_page_module" ]
+  externs_list = chrome_extension_public_externs
 }
 
-js_library("peripheral_data_access_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_browser_proxy.m.js" ]
+js_library("metrics_consent_browser_proxy") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("peripheral_data_access_protection_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_protection_dialog.m.js" ]
+js_library("peripheral_data_access_browser_proxy") {
   deps = [
-    "../../prefs:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("peripheral_data_access_protection_dialog") {
+  deps = [
+    "..:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":peripheral_data_access_protection_dialog_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":modulize",
-    ":os_privacy_page_module",
-    ":peripheral_data_access_protection_dialog_module",
+js_library("smart_privacy_page") {
+  deps = [
+    "..:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
-polymer_modulizer("os_privacy_page") {
-  js_file = "os_privacy_page.js"
-  html_file = "os_privacy_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
+js_library("privacy_hub_page") {
+  deps = [
+    ":media_devices_proxy",
+    ":metrics_consent_toggle_button",
+    ":privacy_hub_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
-polymer_modulizer("peripheral_data_access_protection_dialog") {
-  js_file = "peripheral_data_access_protection_dialog.js"
-  html_file = "peripheral_data_access_protection_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
+js_library("metrics_consent_toggle_button") {
+  deps = [
+    ":metrics_consent_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
-js_modulizer("modulize") {
-  input_files = [ "peripheral_data_access_browser_proxy.js" ]
-  namespace_rewrites = os_settings_namespace_rewrites
+js_library("media_devices_proxy") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("privacy_hub_browser_proxy") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "metrics_consent_toggle_button.js",
+    "os_privacy_page.js",
+    "peripheral_data_access_protection_dialog.js",
+    "privacy_hub_page.js",
+    "smart_privacy_page.js",
+  ]
 }

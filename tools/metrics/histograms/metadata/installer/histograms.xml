@@ -1,0 +1,80 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Installer histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="InstallerDownloadSources">
+  <variant name="HttpPeer" summary="Download Source: HTTP Peer"/>
+  <variant name="HttpServer" summary="Download Source: HTTP Server"/>
+  <variant name="HttpsServer" summary="Download Source: HTTPS Server"/>
+</variants>
+
+<histogram name="Installer.DevModeErrorCodes" enum="UpdateEngineErrorCode"
+    expires_after="M85">
+  <owner>zeuthen@chromium.org</owner>
+  <summary>Errors from update_engine process when running in dev mode.</summary>
+</histogram>
+
+<histogram name="Installer.PowerwashCount" units="powerwashes"
+    expires_after="2023-04-10">
+  <owner>kimjae@chromium.org</owner>
+  <owner>chromeos-core-services@chromium.org</owner>
+  <summary>
+    The number of times a Chrome OS device has been powerwashed (factory reset)
+    without subsequently going through recovery and/or changing the dev mode
+    switch. Reported once after each powerwash.
+  </summary>
+</histogram>
+
+<histogram name="Installer.PowerwashDays" units="powerwashdays"
+    expires_after="2023-02-12">
+  <owner>qianwan@google.com</owner>
+  <owner>chromeos-data@google.com</owner>
+  <summary>
+    How many calendar(UTC) days that powerwash occurred before the date that the
+    metric is recorded. The histogram is recorded on the next restart after
+    powerwash. The purpose of this metric is to get the date when the powerwash
+    happened. This histogram is 1 based instead of 0 based and 1 means the
+    device was restarted immediately after powerwash completed. The value for
+    marjority cases is 1, but some edge cases may greater than 1 which means the
+    device was shutdown immediately (by user manually) after the powerwash
+    completed and then restarted more than 1 days later. The powerwash date and
+    the metric recorded date are all get from client device.
+  </summary>
+</histogram>
+
+<histogram name="Installer.Recovery.Reason" enum="ChromeOSRecoveryReason"
+    expires_after="2023-04-10">
+  <owner>kimjae@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The reason for entering recovery mode immediately prior to a recovery.
+
+    This is reported on reboot after a successful recovery.
+
+    This metric is specific to Chrome OS.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

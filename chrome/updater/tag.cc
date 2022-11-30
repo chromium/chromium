@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 #include <map>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/lib_util.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace tagging {
@@ -84,7 +85,7 @@ constexpr base::StringPiece kAppArgInstallerData = "installerdata";
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
 
-base::Optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
+absl::optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return AppArgs::NeedsAdmin::kNo;
 
@@ -94,18 +95,18 @@ base::Optional<AppArgs::NeedsAdmin> ParseNeedsAdminEnum(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("prefers", str))
     return AppArgs::NeedsAdmin::kPrefers;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-// Returns base::nullopt if parsing failed.
-base::Optional<bool> ParseBool(base::StringPiece str) {
+// Returns absl::nullopt if parsing failed.
+absl::optional<bool> ParseBool(base::StringPiece str) {
   if (base::EqualsCaseInsensitiveASCII("false", str))
     return false;
 
   if (base::EqualsCaseInsensitiveASCII("true", str))
     return true;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // A custom comparator functor class for the parse tables.
@@ -118,22 +119,22 @@ ErrorCode ParseBundleName(base::StringPiece value, TagArgs* args) {
   if (value.empty())
     return ErrorCode::kGlobal_BundleNameCannotBeWhitespace;
 
-  args->bundle_name = value.as_string();
+  args->bundle_name = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseInstallationId(base::StringPiece value, TagArgs* args) {
-  args->installation_id = value.as_string();
+  args->installation_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseBrandCode(base::StringPiece value, TagArgs* args) {
-  args->brand_code = value.as_string();
+  args->brand_code = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseClientId(base::StringPiece value, TagArgs* args) {
-  args->client_id = value.as_string();
+  args->client_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -142,12 +143,12 @@ ErrorCode ParseOmahaExperimentLabels(base::StringPiece value, TagArgs* args) {
   if (value.empty())
     return ErrorCode::kGlobal_ExperimentLabelsCannotBeWhitespace;
 
-  args->experiment_labels = value.as_string();
+  args->experiment_labels = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseReferralId(base::StringPiece value, TagArgs* args) {
-  args->referral_id = value.as_string();
+  args->referral_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -170,12 +171,12 @@ ErrorCode ParseBrowserType(base::StringPiece value, TagArgs* args) {
 ErrorCode ParseLanguage(base::StringPiece value, TagArgs* args) {
   // Even if we don't support the language, we want to pass it to the
   // installer. Omaha will pick its language later. See http://b/1336966.
-  args->language = value.as_string();
+  args->language = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseFlighting(base::StringPiece value, TagArgs* args) {
-  const base::Optional<bool> flighting = ParseBool(value);
+  const absl::optional<bool> flighting = ParseBool(value);
   if (!flighting.has_value())
     return ErrorCode::kGlobal_FlightingValueIsNotABoolean;
 
@@ -193,7 +194,7 @@ ErrorCode ParseUsageStats(base::StringPiece value, TagArgs* args) {
   } else if (tristate == 1) {
     args->usage_stats_enable = true;
   } else if (tristate == 2) {
-    args->usage_stats_enable = base::nullopt;
+    args->usage_stats_enable = absl::nullopt;
   } else {
     return ErrorCode::kGlobal_UsageStatsValueIsInvalid;
   }
@@ -239,7 +240,7 @@ const GlobalParseTable& GetTable() {
 namespace app_attributes {
 
 ErrorCode ParseAdditionalParameters(base::StringPiece value, AppArgs* args) {
-  args->ap = value.as_string();
+  args->ap = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -248,7 +249,7 @@ ErrorCode ParseExperimentLabels(base::StringPiece value, AppArgs* args) {
   if (value.empty())
     return ErrorCode::kApp_ExperimentLabelsCannotBeWhitespace;
 
-  args->experiment_labels = value.as_string();
+  args->experiment_labels = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -257,7 +258,7 @@ ErrorCode ParseAppName(base::StringPiece value, AppArgs* args) {
   if (value.empty())
     return ErrorCode::kApp_AppNameCannotBeWhitespace;
 
-  args->app_name = value.as_string();
+  args->app_name = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -271,12 +272,12 @@ ErrorCode ParseNeedsAdmin(base::StringPiece value, AppArgs* args) {
 }
 
 ErrorCode ParseInstallDataIndex(base::StringPiece value, AppArgs* args) {
-  args->install_data_index = value.as_string();
+  args->install_data_index = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseUntrustedData(base::StringPiece value, AppArgs* args) {
-  args->untrusted_data = value.as_string();
+  args->untrusted_data = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -308,7 +309,7 @@ namespace installer_data_attributes {
 // index to |current_app_index|.
 ErrorCode FindAppIdInTagArgs(base::StringPiece value,
                              TagArgs* args,
-                             base::Optional<size_t>* current_app_index) {
+                             absl::optional<size_t>* current_app_index) {
   if (!base::IsStringASCII(value))
     return ErrorCode::kApp_AppIdIsNotValid;
 
@@ -327,13 +328,13 @@ ErrorCode FindAppIdInTagArgs(base::StringPiece value,
 
 ErrorCode ParseInstallerData(base::StringPiece value,
                              TagArgs* args,
-                             base::Optional<size_t>* current_app_index) {
+                             absl::optional<size_t>* current_app_index) {
   if (!current_app_index->has_value())
     return ErrorCode::
         kAppInstallerData_InstallerDataCannotBeSpecifiedBeforeAppId;
 
   args->apps[current_app_index->value()].encoded_installer_data =
-      value.as_string();
+      std::string(value);
 
   return ErrorCode::kSuccess;
 }
@@ -346,7 +347,7 @@ ErrorCode ParseInstallerData(base::StringPiece value,
 using ParseInstallerDataAttributeFunPtr =
     ErrorCode (*)(base::StringPiece value,
                   TagArgs* args,
-                  base::Optional<size_t>* current_app_index);
+                  absl::optional<size_t>* current_app_index);
 
 using InstallerDataParseTable = std::map<base::StringPiece,
                                          ParseInstallerDataAttributeFunPtr,
@@ -392,9 +393,15 @@ std::vector<Attribute> Split(base::StringPiece query_string,
       base::StringPiece value =
           base::TrimWhitespaceASCII(attribute_string.substr(separate_pos + 1),
                                     base::TrimPositions::TRIM_ALL);
-      attributes.emplace_back(name, unescape_value
-                                        ? updater::UnescapeURLComponent(value)
-                                        : value.as_string());
+      attributes.emplace_back(
+          name,
+          unescape_value
+              ? base::UnescapeURLComponent(
+                    value, base::UnescapeRule::SPACES |
+                               base::UnescapeRule::
+                                   URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+                               base::UnescapeRule::PATH_SEPARATORS)
+              : std::string{value});
     }
   }
   return attributes;
@@ -448,7 +455,7 @@ ErrorCode ParseTag(base::StringPiece tag, TagArgs* args) {
 ErrorCode ParseAppInstallerDataArgs(base::StringPiece app_installer_data_args,
                                     TagArgs* args) {
   // The currently tracked app index to apply installer data to.
-  base::Optional<size_t> current_app_index;
+  absl::optional<size_t> current_app_index;
 
   // Installer data is assumed to be URL-encoded, so we don't unescape it.
   bool unescape_value = false;
@@ -486,20 +493,20 @@ AppArgs::AppArgs(base::StringPiece app_id)
 }
 
 AppArgs::~AppArgs() = default;
-AppArgs::AppArgs(AppArgs& other) = default;
-AppArgs& AppArgs::operator=(AppArgs& other) = default;
-AppArgs::AppArgs(AppArgs&& other) = default;
-AppArgs& AppArgs::operator=(AppArgs&& other) = default;
+AppArgs::AppArgs(const AppArgs&) = default;
+AppArgs& AppArgs::operator=(const AppArgs&) = default;
+AppArgs::AppArgs(AppArgs&&) = default;
+AppArgs& AppArgs::operator=(AppArgs&&) = default;
 
 TagArgs::TagArgs() = default;
 TagArgs::~TagArgs() = default;
-TagArgs::TagArgs(TagArgs& other) = default;
-TagArgs& TagArgs::operator=(TagArgs& other) = default;
-TagArgs::TagArgs(TagArgs&& other) = default;
-TagArgs& TagArgs::operator=(TagArgs&& other) = default;
+TagArgs::TagArgs(const TagArgs&) = default;
+TagArgs& TagArgs::operator=(const TagArgs&) = default;
+TagArgs::TagArgs(TagArgs&&) = default;
+TagArgs& TagArgs::operator=(TagArgs&&) = default;
 
 ErrorCode Parse(base::StringPiece tag,
-                base::Optional<base::StringPiece> app_installer_data_args,
+                absl::optional<base::StringPiece> app_installer_data_args,
                 TagArgs* args) {
   if (!IsValidArgs(tag))
     return ErrorCode::kTagIsInvalid;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ std::unique_ptr<MockInvalidation> MockInvalidation::Build(
       new MockInvalidation(false, version, payload));
 }
 
-MockInvalidation::~MockInvalidation() {}
+MockInvalidation::~MockInvalidation() = default;
 
 bool MockInvalidation::IsUnknownVersion() const {
   return is_unknown_version_;

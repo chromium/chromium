@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@
 #include "remoting/protocol/ice_config.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -57,10 +56,15 @@ constexpr char kGetIceConfigPath[] = "/v1/networktraversal:geticeconfig";
 }  // namespace
 
 RemotingIceConfigRequest::RemotingIceConfigRequest(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    OAuthTokenGetter* oauth_token_getter)
     : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
-                   nullptr,
-                   url_loader_factory) {}
+                   oauth_token_getter,
+                   url_loader_factory) {
+  // |oauth_token_getter| is allowed to be null if the caller wants the request
+  // to be unauthenticated.
+  make_authenticated_requests_ = oauth_token_getter != nullptr;
+}
 
 RemotingIceConfigRequest::~RemotingIceConfigRequest() = default;
 
@@ -72,19 +76,15 @@ void RemotingIceConfigRequest::Send(OnIceConfigCallback callback) {
 
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
-  request_config->authenticated = false;
   request_config->path = kGetIceConfigPath;
   request_config->request_message =
       std::make_unique<apis::v1::GetIceConfigRequest>();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Use the default Chrome API key for ChromeOS as the only host instance
-  // which runs there is used for the ChromeOS Enterprise Kiosk mode
-  // scenario.  If we decide to implement a remote access host for ChromeOS,
-  // then we will need a way for the caller to provide an API key.
-  request_config->api_key = google_apis::GetAPIKey();
-#else
-  request_config->api_key = google_apis::GetRemotingAPIKey();
-#endif
+  if (!make_authenticated_requests_) {
+    // TODO(joedow): Remove this after we no longer have any clients/hosts which
+    // call this API in an unauthenticated fashion.
+    request_config->authenticated = false;
+    request_config->api_key = google_apis::GetRemotingAPIKey();
+  }
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(base::BindOnce(
@@ -108,5 +108,4 @@ void RemotingIceConfigRequest::OnResponse(
   std::move(on_ice_config_callback_).Run(IceConfig::Parse(*response));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,21 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class BluetoothChooserContext;
 class Profile;
 
-class BluetoothChooserContextFactory
-    : public BrowserContextKeyedServiceFactory {
+namespace permissions {
+class BluetoothChooserContext;
+}
+
+class BluetoothChooserContextFactory : public ProfileKeyedServiceFactory {
  public:
-  static BluetoothChooserContext* GetForProfile(Profile* profile);
+  static permissions::BluetoothChooserContext* GetForProfile(Profile* profile);
+  static permissions::BluetoothChooserContext* GetForProfileIfExists(
+      Profile* profile);
   static BluetoothChooserContextFactory* GetInstance();
 
   // Move-only class.
@@ -30,11 +33,10 @@ class BluetoothChooserContextFactory
   BluetoothChooserContextFactory();
   ~BluetoothChooserContextFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation:
+  // BrowserContextKeyedServiceFactory implementation:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_BLUETOOTH_CHOOSER_CONTEXT_FACTORY_H_

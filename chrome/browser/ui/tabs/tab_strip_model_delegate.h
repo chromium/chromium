@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class GURL;
@@ -55,7 +56,7 @@ class TabStripModelDelegate {
       const GURL& url,
       int index,
       bool foreground,
-      base::Optional<tab_groups::TabGroupId> group = base::nullopt) = 0;
+      absl::optional<tab_groups::TabGroupId> group = absl::nullopt) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
   // be added to it. Its size and position are reflected in |window_bounds|.
@@ -92,15 +93,16 @@ class TabStripModelDelegate {
   // Returns whether some contents can be duplicated.
   virtual bool CanDuplicateContentsAt(int index) = 0;
 
+  // Returns whether tabs can be highlighted. This may return false due to tab
+  // dragging in process, for instance.
+  virtual bool IsTabStripEditable() = 0;
+
   // Duplicates the contents at the provided index and places it into a new tab.
   virtual void DuplicateContentsAt(int index) = 0;
 
   // Move the contents at the provided indices into the specified window.
   virtual void MoveToExistingWindow(const std::vector<int>& indices,
                                     int browser_index) = 0;
-
-  // Get the list of existing windows that tabs can be moved to.
-  virtual std::vector<std::u16string> GetExistingWindowsForMoveMenu() = 0;
 
   // Returns whether the contents at |indices| can be moved from the current
   // tabstrip to a different window.
@@ -118,8 +120,15 @@ class TabStripModelDelegate {
   // Creates an entry in the historical tab database for the specified
   // WebContents. Returns the tab's unique SessionID if a historical tab was
   // created.
-  virtual base::Optional<SessionID> CreateHistoricalTab(
+  virtual absl::optional<SessionID> CreateHistoricalTab(
       content::WebContents* contents) = 0;
+
+  // Creates an entry in the historical group database for the specified
+  // |group|.
+  virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
+
+  // Notifies the tab restore service that the group is no longer closing.
+  virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 
   // Runs any unload listeners associated with the specified WebContents
   // before it is closed. If there are unload listeners that need to be run,
@@ -137,6 +146,39 @@ class TabStripModelDelegate {
   // Returns whether favicon should be shown.
   virtual bool ShouldDisplayFavicon(
       content::WebContents* web_contents) const = 0;
+
+  // Returns whether the delegate allows reloading of WebContents.
+  virtual bool CanReload() const = 0;
+
+  // Adds the specified WebContents to read later.
+  virtual void AddToReadLater(content::WebContents* web_contents) = 0;
+
+  // Returns whether the tabstrip supports the read later feature.
+  virtual bool SupportsReadLater() = 0;
+
+  // Gives the delegate an opportunity to cache (take ownership) of
+  // WebContents before they are destroyed. The delegate takes ownership by way
+  // of using std::move() on the `owned_contents` and resetting `remove_reason`
+  // to kCached. It is expected that any WebContents the delegate takes
+  // ownership of remain valid until the next message is pumped. In other
+  // words, the delegate must not immediately destroy any of the supplied
+  // WebContents.
+  // TODO(https://crbug.com/1234332): Provide active web contents.
+  virtual void CacheWebContents(
+      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+          web_contents) = 0;
+
+  // Follows a web feed for the specified WebContents.
+  virtual void FollowSite(content::WebContents* web_contents) = 0;
+
+  // Unfollows a web feed for the specified WebContents.
+  virtual void UnfollowSite(content::WebContents* web_contents) = 0;
+
+  // Returns whether this tab strip model is for a web app.
+  virtual bool IsForWebApp() = 0;
+
+  // Copies the URL of the given WebContents.
+  virtual void CopyURL(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

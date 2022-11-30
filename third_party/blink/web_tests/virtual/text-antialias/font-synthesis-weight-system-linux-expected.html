@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>CSS Test: font-synthesis-weight: none disables fake bold</title>
+<!--Garuda is only available in Regular style in the Linux set of test fonts that are used as system fonts in Linux testing-->
+<style>
+    .test {
+        font-family: Garuda;
+        font-size: 3em;
+    }
+</style>
+
+<p>Test passes if the two lines below are identical (the second line is <em>not bold</em>), and there is no red.</p>
+<section class="test">
+    <p>ข้อความฟิลเลอร์</p>
+    <p class="nosynth">ข้อความฟิลเลอร์</p>
+</section>

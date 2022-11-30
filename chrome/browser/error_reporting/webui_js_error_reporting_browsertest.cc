@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
@@ -25,7 +24,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -141,20 +139,11 @@ class WebUIJSErrorReportingTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSendWebUIJavaScriptErrorReports,
-        {{features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-          "false"}});
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
  protected:
   // NoErrorsAfterNavigation needs a second embedded test server to serve up
   // its error page, since embedded_test_server() is in use by the
   // MockCrashEndpoint.
   net::test_server::EmbeddedTestServer error_page_test_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   const GURL error_url_;
 };
 
@@ -239,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), error_url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url_));
   endpoint.WaitForReport();
   endpoint.clear_last_report();
 
@@ -307,4 +296,20 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, NoErrorsAfterNavigation) {
   // Count should not change.
   EXPECT_THAT(endpoint.all_reports(), SizeIs(1));
   EXPECT_EQ(mock_processor.processor().send_count(), 1);
+}
+
+// Test that using the real variation::GetExperimentListString() system works.
+// We don't know the list of experiments we are in, so we don't know precisely
+// what to expect, but we shouldn't fail to send.
+IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ExperimentListSmokeTest) {
+  MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor mock_processor(endpoint);
+  mock_processor.processor().set_use_real_experiment_list();
+
+  NavigateParams navigate(browser(), error_url_, ui::PAGE_TRANSITION_TYPED);
+  ui_test_utils::NavigateToURL(&navigate);
+
+  MockCrashEndpoint::Report report = endpoint.WaitForReport();
+  EXPECT_THAT(report.query, HasSubstr("num-experiments=")) << report;
+  EXPECT_THAT(report.query, HasSubstr("variations=")) << report;
 }

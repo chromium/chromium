@@ -1,14 +1,62 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 
-#include "media/base/status_codes.h"
-#include "media/gpu/windows/hresult_status_debug_device.h"
+#include "media/base/media_serializers.h"
 #include "ui/gfx/color_space_win.h"
 
 namespace media {
+namespace {
+
+// Only define this method in debug mode.
+#if !defined(NDEBUG)
+
+void AddDebugMessages(D3D11Status* error, ComD3D11Device device) {
+  // MSDN says that this needs to be casted twice, then GetMessage should
+  // be called with a malloc.
+  Microsoft::WRL::ComPtr<ID3D11Debug> debug_layer;
+  if (!SUCCEEDED(device.As(&debug_layer)))
+    return;
+
+  Microsoft::WRL::ComPtr<ID3D11InfoQueue> message_layer;
+  if (!SUCCEEDED(debug_layer.As(&message_layer)))
+    return;
+
+  uint64_t messages_count = message_layer->GetNumStoredMessages();
+  if (messages_count == 0)
+    return;
+
+  std::vector<std::string> messages(messages_count, "");
+  for (uint64_t i = 0; i < messages_count; i++) {
+    SIZE_T size;
+    message_layer->GetMessage(i, nullptr, &size);
+    D3D11_MESSAGE* message = reinterpret_cast<D3D11_MESSAGE*>(malloc(size));
+    if (!message)  // probably OOM - so just stop trying to get more.
+      return;
+    message_layer->GetMessage(i, message, &size);
+    messages.emplace_back(message->pDescription);
+    free(message);
+  }
+
+  error->WithData("debug_info", messages);
+}
+
+D3D11Status DebugStatus(D3D11Status&& status, ComD3D11Device device) {
+  AddDebugMessages(&status, device);
+  return std::move(status);
+}
+
+#else
+
+D3D11Status DebugStatus(D3D11Status&& status, ComD3D11Device device) {
+  return std::move(status);
+}
+
+#endif  // !defined(NDEBUG)
+
+}  // namespace
 
 VideoProcessorProxy::~VideoProcessorProxy() {}
 
@@ -17,7 +65,7 @@ VideoProcessorProxy::VideoProcessorProxy(
     ComD3D11DeviceContext d3d11_device_context)
     : video_device_(video_device), device_context_(d3d11_device_context) {}
 
-Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
+D3D11Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
   processor_enumerator_.Reset();
   video_processor_.Reset();
 
@@ -40,24 +88,24 @@ Status VideoProcessorProxy::Init(uint32_t width, uint32_t height) {
   HRESULT hr = video_device_->CreateVideoProcessorEnumerator(
       &desc, &processor_enumerator_);
   if (!SUCCEEDED(hr)) {
-    return Status(StatusCode::kCreateVideoProcessorEnumeratorFailed)
-        .AddCause(D3D11HresultToStatus(hr, device));
+    return DebugStatus({D3D11Status::Codes::kCreateDecoderOutputViewFailed, hr},
+                       device);
   }
 
   hr = video_device_->CreateVideoProcessor(processor_enumerator_.Get(), 0,
                                            &video_processor_);
   if (!SUCCEEDED(hr)) {
-    return Status(StatusCode::kCreateVideoProcessorFailed)
-        .AddCause(D3D11HresultToStatus(hr, device));
+    return DebugStatus({D3D11Status::Codes::kCreateVideoProcessorFailed, hr},
+                       device);
   }
 
   hr = device_context_.As(&video_context_);
   if (!SUCCEEDED(hr)) {
-    return Status(StatusCode::kQueryVideoContextFailed)
-        .AddCause(D3D11HresultToStatus(hr, device));
+    return DebugStatus({D3D11Status::Codes::kQueryVideoContextFailed, hr},
+                       device);
   }
 
-  return OkStatus();
+  return D3D11Status::Codes::kOk;
 }
 
 HRESULT VideoProcessorProxy::CreateVideoProcessorOutputView(
@@ -120,8 +168,8 @@ void VideoProcessorProxy::SetStreamHDRMetadata(
     return;
 
   // TODO: we shouldn't do this unless we also set the display metadata.
-  video_context2->VideoProcessorSetOutputHDRMetaData(
-      video_processor_.Get(), DXGI_HDR_METADATA_TYPE_HDR10,
+  video_context2->VideoProcessorSetStreamHDRMetaData(
+      video_processor_.Get(), 0, DXGI_HDR_METADATA_TYPE_HDR10,
       sizeof(stream_metadata), &stream_metadata);
 }
 

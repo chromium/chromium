@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,12 @@
 #define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace storage {
-
-class BigIOBuffer;
 
 // Creates and owns a service worker disk cacke entry.
 class DiskEntryCreator {
@@ -127,10 +126,8 @@ class ServiceWorkerResourceReaderImpl
 
   // mojom::ServiceWorkerResourceReader implementations:
   void ReadResponseHead(ReadResponseHeadCallback callback) override;
-  void ReadData(
-      int64_t size,
-      mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
-      ReadDataCallback callback) override;
+  void PrepareReadData(int64_t size, PrepareReadDataCallback callback) override;
+  void ReadData(ReadDataCallback callback) override;
 
  private:
   class DataReader;
@@ -165,6 +162,7 @@ class ServiceWorkerResourceReaderImpl
   enum class State {
     kIdle,
     kReadResponseHeadStarted,
+    kReadDataPrepared,
     kReadDataStarted,
     kCacheEntryOpened,
     kResponseInfoRead,

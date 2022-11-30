@@ -122,6 +122,8 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
                    FullscreenRequestType type,
                    const FullscreenOptions* options,
                    ScriptPromiseResolver* resolver);
+    PendingRequest(const PendingRequest&) = delete;
+    PendingRequest& operator=(const PendingRequest&) = delete;
     virtual ~PendingRequest();
     virtual void Trace(Visitor* visitor) const;
 
@@ -135,8 +137,6 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
     FullscreenRequestType type_;
     Member<const FullscreenOptions> options_;
     Member<ScriptPromiseResolver> resolver_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingRequest);
   };
   using PendingRequests = HeapVector<Member<PendingRequest>>;
   PendingRequests pending_requests_;

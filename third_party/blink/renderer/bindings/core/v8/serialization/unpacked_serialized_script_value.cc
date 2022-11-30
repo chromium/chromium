@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -19,7 +19,7 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
     : value_(std::move(value)) {
   value_->RegisterMemoryAllocatedWithCurrentScriptContext();
   auto& array_buffer_contents = value_->array_buffer_contents_array_;
-  if (!array_buffer_contents.IsEmpty()) {
+  if (!array_buffer_contents.empty()) {
     array_buffers_.Grow(array_buffer_contents.size());
     std::transform(array_buffer_contents.begin(), array_buffer_contents.end(),
                    array_buffers_.begin(),
@@ -32,7 +32,7 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
   }
 
   auto& image_bitmap_contents = value_->image_bitmap_contents_array_;
-  if (!image_bitmap_contents.IsEmpty()) {
+  if (!image_bitmap_contents.empty()) {
     image_bitmaps_.Grow(image_bitmap_contents.size());
     std::transform(
         image_bitmap_contents.begin(), image_bitmap_contents.end(),

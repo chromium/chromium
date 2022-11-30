@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,17 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
+#include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/wayland/fuzzer/actions.pb.h"
 #include "components/exo/wayland/server.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/exo/test/exo_test_base.h"
-#endif
 
 namespace exo {
 namespace wayland_fuzzer {
 namespace {
 
-// Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
-// which is unavailable on other platforms so then ExoTestBaseViews instead.
-using TestBase =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    test::ExoTestBase
-#else
-    test::ExoTestBaseViews
-#endif
-    ;
+// Use ExoTestBase because Server starts to depends on ash::Shell.
+using TestBase = test::ExoTestBase;
 
 class WaylandFuzzerTest : public TestBase {
  protected:
@@ -45,6 +35,7 @@ class WaylandFuzzerTest : public TestBase {
     TestBase::SetUp();
     display_ = std::make_unique<exo::Display>();
     server_ = wayland::Server::Create(display_.get());
+    server_->StartWithDefaultPath(base::DoNothing());
   }
 
   void TearDown() override {
@@ -82,8 +73,8 @@ TEST_F(WaylandFuzzerTest, MakeSureItWorks) {
                                  base::BindOnce(&RunHarness, &harness, &event));
   // For this action sequence we need two dispatches. The first will bind the
   // registry, the second is for the callback.
-  server_->Dispatch(base::TimeDelta::FromSeconds(5));
-  server_->Dispatch(base::TimeDelta::FromSeconds(5));
+  server_->Dispatch(base::Seconds(5));
+  server_->Dispatch(base::Seconds(5));
   server_->Flush();
   event.Wait();
 

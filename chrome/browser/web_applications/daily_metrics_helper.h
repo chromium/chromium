@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_DAILY_METRICS_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_DAILY_METRICS_HELPER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -19,7 +19,7 @@ struct DailyInteraction {
   GURL start_url;
   // Implied bool used = true;
   bool installed = false;
-  base::Optional<int> install_source;
+  absl::optional<int> install_source;
   int effective_display_mode = 0;
   bool promotable = false;
   // Durations and sessions emitted iff non-zero.

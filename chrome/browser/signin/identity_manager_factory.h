@@ -1,16 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace signin {
 class IdentityManager;
@@ -20,7 +17,7 @@ class Profile;
 
 // Singleton that owns all IdentityManager instances and associates them with
 // Profiles.
-class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
+class IdentityManagerFactory : public ProfileKeyedServiceFactory {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -37,6 +34,9 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
 
   // Returns an instance of the IdentityManagerFactory singleton.
   static IdentityManagerFactory* GetInstance();
+
+  IdentityManagerFactory(const IdentityManagerFactory&) = delete;
+  IdentityManagerFactory& operator=(const IdentityManagerFactory&) = delete;
 
   // Ensures that IdentityManagerFactory and the factories on which it depends
   // are built.
@@ -62,8 +62,6 @@ class IdentityManagerFactory : public BrowserContextKeyedServiceFactory {
   // List of observers. Checks that list is empty on destruction.
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_H_

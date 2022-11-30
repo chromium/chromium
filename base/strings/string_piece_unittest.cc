@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -193,8 +193,7 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
   ASSERT_EQ(d.data(), nullptr);
   ASSERT_EQ(d.begin(), d.end());
 
-  ASSERT_GE(a.max_size(), a.capacity());
-  ASSERT_GE(a.capacity(), a.size());
+  ASSERT_GE(a.max_size(), a.size());
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckFind) {
@@ -296,8 +295,6 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find(c.data(), 9, 0), 9U);
   ASSERT_EQ(a.find(c.data(), Piece::npos, 0), Piece::npos);
   ASSERT_EQ(b.find(c.data(), Piece::npos, 0), Piece::npos);
-  ASSERT_EQ(a.find(d.data(), 12, 0), 12U);
-  ASSERT_EQ(a.find(e.data(), 17, 0), 17U);
   // empty string nonsense
   ASSERT_EQ(d.find(b.data(), 4, 0), Piece::npos);
   ASSERT_EQ(e.find(b.data(), 7, 0), Piece::npos);
@@ -306,20 +303,9 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find(c.data(), 9), 23U);
   ASSERT_EQ(a.find(c.data(), Piece::npos), Piece::npos);
   ASSERT_EQ(b.find(c.data(), Piece::npos), Piece::npos);
-  ASSERT_EQ(a.find(d.data(), 12), 12U);
-  ASSERT_EQ(a.find(e.data(), 17), 17U);
   // empty string nonsense
   ASSERT_EQ(d.find(b.data(), 4), Piece::npos);
   ASSERT_EQ(e.find(b.data(), 7), Piece::npos);
-
-  ASSERT_EQ(d.find(d.data(), 4, 0),
-            std::string().find(std::string().data(), 4, 0));
-  ASSERT_EQ(d.find(e.data(), 4, 1),
-            std::string().find(std::string().data(), 4, 1));
-  ASSERT_EQ(e.find(d.data(), 4, 2),
-            std::string().find(std::string().data(), 4, 2));
-  ASSERT_EQ(e.find(e.data(), 4, 3),
-            std::string().find(std::string().data(), 4, 3));
 
   ASSERT_EQ(a.rfind(b), 0U);
   ASSERT_EQ(a.rfind(b, 1), 0U);
@@ -374,16 +360,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.rfind(c.data(), 1U, 0), 1U);
   ASSERT_EQ(a.rfind(c.data(), 0U, 0), 0U);
   ASSERT_EQ(b.rfind(c.data(), 0U, 0), 0U);
-  ASSERT_EQ(a.rfind(d.data(), 12, 0), 12U);
-  ASSERT_EQ(a.rfind(e.data(), 17, 0), 17U);
   ASSERT_EQ(d.rfind(b.data(), 4, 0), 0U);
   ASSERT_EQ(e.rfind(b.data(), 7, 0), 0U);
-
-  // empty string nonsense
-  ASSERT_EQ(d.rfind(d.data(), 4), std::string().rfind(std::string()));
-  ASSERT_EQ(e.rfind(d.data(), 7), std::string().rfind(std::string()));
-  ASSERT_EQ(d.rfind(e.data(), 4), std::string().rfind(std::string()));
-  ASSERT_EQ(e.rfind(e.data(), 7), std::string().rfind(std::string()));
 
   std::basic_string<TypeParam> one_two_three_four(
       TestFixture::as_string("one,two:three;four"));
@@ -421,6 +399,10 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find_first_not_of(f), 0U);
   ASSERT_EQ(a.find_first_not_of(d), 0U);
   ASSERT_EQ(a.find_first_not_of(e), 0U);
+  ASSERT_EQ(a.find_first_not_of(d, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(e, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(d, a.size()), Piece::npos);
+  ASSERT_EQ(a.find_first_not_of(e, a.size()), Piece::npos);
   // empty string nonsense
   ASSERT_EQ(d.find_first_not_of(a), Piece::npos);
   ASSERT_EQ(e.find_first_not_of(a), Piece::npos);
@@ -654,12 +636,11 @@ TEST(StringPiece16Test, CheckSTL) {
   ASSERT_EQ(f.size(), 6U);
 }
 
-
-
 TEST(StringPiece16Test, CheckConversion) {
-  // Make sure that we can convert from UTF8 to UTF16 and back. We use a two
-  // byte character (G clef) to test this.
-  ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16("\xf0\x9d\x84\x9e")), "\xf0\x9d\x84\x9e");
+  // Make sure that we can convert from UTF8 to UTF16 and back. We use a
+  // character (G clef) outside the BMP to test this.
+  const char* kTest = "\U0001D11E";
+  ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16(kTest)), kTest);
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckConstructors) {
@@ -863,6 +844,48 @@ TEST(StringPieceTest, Substr) {
   static_assert(piece.substr() == piece, "");
   static_assert(piece.substr(0) == piece, "");
   static_assert(piece.substr(0, 99) == piece, "");
+}
+
+TEST(StringPieceTest, Find) {
+  constexpr StringPiece foobar("foobar", 6);
+  constexpr StringPiece foo = foobar.substr(0, 3);
+  constexpr StringPiece bar = foobar.substr(3);
+
+  // find
+  static_assert(foobar.find(bar, 0) == 3, "");
+  static_assert(foobar.find('o', 0) == 1, "");
+  static_assert(foobar.find("ox", 0, 1) == 1, "");
+  static_assert(foobar.find("ox", 0) == StringPiece::npos, "");
+
+  // rfind
+  static_assert(foobar.rfind(bar, 5) == 3, "");
+  static_assert(foobar.rfind('o', 5) == 2, "");
+  static_assert(foobar.rfind("ox", 5, 1) == 2, "");
+  static_assert(foobar.rfind("ox", 5) == StringPiece::npos, "");
+
+  // find_first_of
+  static_assert(foobar.find_first_of(foo, 2) == 2, "");
+  static_assert(foobar.find_first_of('o', 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2, 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2) == 2, "");
+
+  // find_last_of
+  static_assert(foobar.find_last_of(foo, 5) == 2, "");
+  static_assert(foobar.find_last_of('o', 5) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5, 2) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5) == 2, "");
+
+  // find_first_not_of
+  static_assert(foobar.find_first_not_of(foo, 2) == 3, "");
+  static_assert(foobar.find_first_not_of('o', 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2, 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2) == 3, "");
+
+  // find_last_not_of
+  static_assert(foobar.find_last_not_of(bar, 5) == 2, "");
+  static_assert(foobar.find_last_not_of('a', 4) == 3, "");
+  static_assert(foobar.find_last_not_of("ox", 2, 2) == 0, "");
+  static_assert(foobar.find_last_not_of("ox", 2) == 0, "");
 }
 
 }  // namespace base

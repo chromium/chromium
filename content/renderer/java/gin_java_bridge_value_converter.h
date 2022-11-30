@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/renderer/v8_value_converter.h"
 
@@ -16,6 +15,11 @@ namespace content {
 class GinJavaBridgeValueConverter : public content::V8ValueConverter::Strategy {
  public:
   CONTENT_EXPORT GinJavaBridgeValueConverter();
+
+  GinJavaBridgeValueConverter(const GinJavaBridgeValueConverter&) = delete;
+  GinJavaBridgeValueConverter& operator=(const GinJavaBridgeValueConverter&) =
+      delete;
+
   CONTENT_EXPORT ~GinJavaBridgeValueConverter() override;
 
   CONTENT_EXPORT v8::Local<v8::Value> ToV8Value(
@@ -38,8 +42,6 @@ class GinJavaBridgeValueConverter : public content::V8ValueConverter::Strategy {
 
  private:
   std::unique_ptr<V8ValueConverter> converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeValueConverter);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,32 +7,43 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_performance_measure_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_observer_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
+namespace {
+constexpr int kTimeOrigin = 1;
+constexpr int kEvent1Time = 123;
+constexpr int kEvent1PageshowStart = 456;
+constexpr int kEvent1PageshowEnd = 789;
+constexpr int kEvent2Time = 321;
+constexpr int kEvent2PageshowStart = 654;
+constexpr int kEvent2PageshowEnd = 987;
+}  // namespace
 
 class TestPerformance : public Performance {
  public:
   explicit TestPerformance(ScriptState* script_state)
-      : Performance(base::TimeTicks(),
+      : Performance(base::TimeTicks() + base::Milliseconds(kTimeOrigin),
                     ExecutionContext::From(script_state)
                         ->CrossOriginIsolatedCapability(),
                     ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kPerformanceTimeline)) {}
+                        ->GetTaskRunner(TaskType::kPerformanceTimeline)),
+        execution_context_(ExecutionContext::From(script_state)) {}
   ~TestPerformance() override = default;
 
-  ExecutionContext* GetExecutionContext() const override { return nullptr; }
+  ExecutionContext* GetExecutionContext() const override {
+    return execution_context_.Get();
+  }
 
   int NumActiveObservers() { return active_observers_.size(); }
 
@@ -42,7 +53,13 @@ class TestPerformance : public Performance {
     return HasObserverFor(entry_type);
   }
 
-  void Trace(Visitor* visitor) const override { Performance::Trace(visitor); }
+  void Trace(Visitor* visitor) const override {
+    Performance::Trace(visitor);
+    visitor->Trace(execution_context_);
+  }
+
+ private:
+  Member<ExecutionContext> execution_context_;
 };
 
 class PerformanceTest : public PageTestBase {
@@ -69,13 +86,37 @@ class PerformanceTest : public PageTestBase {
     return observer_->performance_entries_.size();
   }
 
-  static bool AllowsTimingRedirect(
-      const Vector<ResourceResponse>& redirect_chain,
-      const ResourceResponse& final_response,
-      const SecurityOrigin& initiator_security_origin,
-      ExecutionContext* context) {
-    return Performance::AllowsTimingRedirect(
-        redirect_chain, final_response, initiator_security_origin, context);
+  PerformanceEntryVector PerformanceEntriesInObserver() {
+    return observer_->performance_entries_;
+  }
+
+  void CheckBackForwardCacheRestoration(PerformanceEntryVector entries) {
+    // Expect there are 2 back forward cache restoration entries.
+    EXPECT_EQ(2, std::count_if(entries.begin(), entries.end(),
+                               [](const PerformanceEntry* e) -> bool {
+                                 return e->entryType() ==
+                                        "back-forward-cache-restoration";
+                               }));
+
+    // Retain only back forward cache restoration entries.
+    entries.erase(std::remove_if(entries.begin(), entries.end(),
+                                 [](const PerformanceEntry* e) -> bool {
+                                   return e->entryType() !=
+                                          "back-forward-cache-restoration";
+                                 }),
+                  entries.end());
+
+    BackForwardCacheRestoration* b1 =
+        static_cast<BackForwardCacheRestoration*>(entries[0].Get());
+    EXPECT_EQ(kEvent1Time - kTimeOrigin, b1->startTime());
+    EXPECT_EQ(kEvent1PageshowStart - kTimeOrigin, b1->pageshowEventStart());
+    EXPECT_EQ(kEvent1PageshowEnd - kTimeOrigin, b1->pageshowEventEnd());
+
+    BackForwardCacheRestoration* b2 =
+        static_cast<BackForwardCacheRestoration*>(entries[1].Get());
+    EXPECT_EQ(kEvent2Time - kTimeOrigin, b2->startTime());
+    EXPECT_EQ(kEvent2PageshowStart - kTimeOrigin, b2->pageshowEventStart());
+    EXPECT_EQ(kEvent2PageshowEnd - kTimeOrigin, b2->pageshowEventEnd());
   }
 
   Persistent<TestPerformance> base_;
@@ -125,10 +166,9 @@ TEST_F(PerformanceTest, AddLongTaskTiming) {
   Initialize(scope.GetScriptState());
 
   // Add a long task entry, but no observer registered.
-  base_->AddLongTaskTiming(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1234),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(5678), "window",
-      "same-origin", "www.foo.com/bar", "", "");
+  base_->AddLongTaskTiming(base::TimeTicks() + base::Seconds(1234),
+                           base::TimeTicks() + base::Seconds(5678), "window",
+                           "same-origin", "www.foo.com/bar", "", "");
   EXPECT_FALSE(base_->HasPerformanceObserverFor(PerformanceEntry::kLongTask));
   EXPECT_EQ(0, NumPerformanceEntriesInObserver());  // has no effect
 
@@ -142,54 +182,44 @@ TEST_F(PerformanceTest, AddLongTaskTiming) {
 
   EXPECT_TRUE(base_->HasPerformanceObserverFor(PerformanceEntry::kLongTask));
   // Add a long task entry
-  base_->AddLongTaskTiming(
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(1234),
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(5678), "window",
-      "same-origin", "www.foo.com/bar", "", "");
+  base_->AddLongTaskTiming(base::TimeTicks() + base::Seconds(1234),
+                           base::TimeTicks() + base::Seconds(5678), "window",
+                           "same-origin", "www.foo.com/bar", "", "");
   EXPECT_EQ(1, NumPerformanceEntriesInObserver());  // added an entry
 }
 
-TEST_F(PerformanceTest, AllowsTimingRedirect) {
-  // When there are no cross-origin redirects.
-  AtomicString origin_domain = "http://127.0.0.1:8000";
-  Vector<ResourceResponse> redirect_chain;
-  KURL url(origin_domain + "/foo.html");
-  ResourceResponse redirect_response1(url);
-  ResourceResponse redirect_response2(url);
-  redirect_chain.push_back(redirect_response1);
-  redirect_chain.push_back(redirect_response2);
-  scoped_refptr<const SecurityOrigin> security_origin =
-      SecurityOrigin::Create(url);
-  // When finalResponse is an empty object.
-  ResourceResponse empty_final_response;
-  EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, empty_final_response,
-                                    *security_origin.get(),
-                                    GetExecutionContext()));
-  ResourceResponse final_response(url);
-  EXPECT_TRUE(AllowsTimingRedirect(redirect_chain, final_response,
-                                   *security_origin.get(),
-                                   GetExecutionContext()));
-  // When there exist cross-origin redirects.
-  AtomicString cross_origin_domain = "http://126.0.0.1:8000";
-  KURL redirect_url(cross_origin_domain + "/bar.html");
-  ResourceResponse redirect_response3(redirect_url);
-  redirect_chain.push_back(redirect_response3);
-  EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
-                                    *security_origin.get(),
-                                    GetExecutionContext()));
+TEST_F(PerformanceTest, BackForwardCacheRestoration) {
+  V8TestingScope scope;
+  Initialize(scope.GetScriptState());
 
-  // When cross-origin redirect opts in, but the final response doesn't.
-  redirect_chain.back().SetHttpHeaderField(http_names::kTimingAllowOrigin,
-                                           origin_domain);
-  EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
-                                    *security_origin.get(),
-                                    GetExecutionContext()));
-  // When cross-origin redirect opts in, and the final response has as well.
-  final_response.SetHttpHeaderField(http_names::kTimingAllowOrigin,
-                                    origin_domain);
-  EXPECT_TRUE(AllowsTimingRedirect(redirect_chain, final_response,
-                                   *security_origin.get(),
-                                   GetExecutionContext()));
+  NonThrowableExceptionState exception_state;
+  PerformanceObserverInit* options = PerformanceObserverInit::Create();
+
+  Vector<String> entry_type_vec;
+  entry_type_vec.push_back("back-forward-cache-restoration");
+  options->setEntryTypes(entry_type_vec);
+  observer_->observe(options, exception_state);
+
+  EXPECT_TRUE(base_->HasPerformanceObserverFor(
+      PerformanceEntry::kBackForwardCacheRestoration));
+
+  base_->AddBackForwardCacheRestoration(
+      base::TimeTicks() + base::Milliseconds(kEvent1Time),
+      base::TimeTicks() + base::Milliseconds(kEvent1PageshowStart),
+      base::TimeTicks() + base::Milliseconds(kEvent1PageshowEnd));
+
+  base_->AddBackForwardCacheRestoration(
+      base::TimeTicks() + base::Milliseconds(kEvent2Time),
+      base::TimeTicks() + base::Milliseconds(kEvent2PageshowStart),
+      base::TimeTicks() + base::Milliseconds(kEvent2PageshowEnd));
+
+  auto entries = PerformanceEntriesInObserver();
+  CheckBackForwardCacheRestoration(entries);
+
+  entries = base_->getEntries();
+  CheckBackForwardCacheRestoration(entries);
+
+  entries = base_->getEntriesByType("back-forward-cache-restoration");
+  CheckBackForwardCacheRestoration(entries);
 }
-
 }  // namespace blink

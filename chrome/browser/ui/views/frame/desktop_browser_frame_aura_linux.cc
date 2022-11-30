@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "ui/views/widget/widget.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
     BrowserFrame* browser_frame,
@@ -27,7 +28,7 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
           base::Unretained(this)));
 }
 
-DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() {}
+DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
 
 views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
   views::Widget::InitParams params;
@@ -51,24 +52,46 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
                             ? std::string(kX11WindowRoleBrowser)
                             : std::string(kX11WindowRolePopup);
   params.remove_standard_frame = UseCustomFrame();
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+
+  if ((browser.is_type_app() || browser.is_type_app_popup()) &&
+      browser.profile()) {
+    params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
+        browser.app_name(), browser.profile()->GetPath());
+  } else {
+    params.wayland_app_id = params.wm_class_name;
+  }
 
   return params;
 }
 
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
+  // If the platform does not support server side decorations, ignore the user
+  // preference and return true.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_server_side_window_decorations) {
+    return true;
+  }
+
   // Normal browser windows get a custom frame (per the user's preference).
   if (use_custom_frame_pref_.GetValue() && browser_view()->GetIsNormalType()) {
     return true;
   }
 
   // Hosted app windows get a custom frame (if the desktop PWA experimental
-  // feature is enabled).
-  return browser_view()->GetIsWebAppType();
+  // feature is enabled), or if the window is picture in picture.
+  return browser_view()->GetIsWebAppType() ||
+         browser_view()->GetIsPictureInPictureType();
 }
 
 void DesktopBrowserFrameAuraLinux::TabDraggingKindChanged(
     TabDragKind tab_drag_kind) {
   host_->TabDraggingKindChanged(tab_drag_kind);
+}
+
+bool DesktopBrowserFrameAuraLinux::ShouldDrawRestoredFrameShadow() const {
+  return host_->SupportsClientFrameShadow() && UseCustomFrame();
 }
 
 void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
@@ -77,6 +100,7 @@ void DesktopBrowserFrameAuraLinux::OnUseCustomChromeFrameChanged() {
                                       ? views::Widget::FrameType::kForceCustom
                                       : views::Widget::FrameType::kForceNative);
   browser_frame()->FrameTypeChanged();
+  host_->UpdateFrameHints();
 }
 
 NativeBrowserFrame* NativeBrowserFrameFactory::Create(

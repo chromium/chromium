@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that modifying stylesheet text with multiple @import at-rules does not crash.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <head>
@@ -42,7 +42,7 @@
   ElementsTestRunner.nodeWithId('inspected', nodeFound);
 
   function nodeFound(node) {
-    TestRunner.cssModel.matchedStylesPromise(node.id).then(matchedStylesCallback);
+    TestRunner.cssModel.getMatchedStyles(node.id).then(matchedStylesCallback);
   }
 
   var styleSheetId;

@@ -12,8 +12,7 @@
       }
     </style>
     <div id="creditCardsHeading" class="list-item column-header"
-        hidden$="[[
-          !showAnyPaymentMethods_(creditCards, upiIds, enableUpiIds_)]]">
+        hidden$="[[!showAnyPaymentMethods_]]">
       <div class="type-column">$i18n{creditCardType}</div>
       <div class="expiration-column">$i18n{creditCardExpiration}</div>
     </div>
@@ -23,9 +22,7 @@
         </settings-credit-card-list-entry>
       </template>
     </div>
-    <template is="dom-if"
-        if="[[
-          showCreditCardUpiSeparator_(creditCards, upiIds, enableUpiIds_)]]">
+    <template is="dom-if" if="[[showCreditCardUpiSeparator_]]">
       <div class="list-separator"></div>
     </template>
     <template is="dom-if" if="[[showUpiIds_(upiIds, enableUpiIds_)]]">
@@ -37,7 +34,6 @@
       </div>
     </template>
     <div id="noPaymentMethodsLabel" class="list-item"
-        hidden$="[[
-          showAnyPaymentMethods_(creditCards, upiIds, enableUpiIds_)]]">
+        hidden$="[[showAnyPaymentMethods_]]">
       $i18n{noPaymentMethodsFound}
     </div>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,11 +60,11 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 // properties.
 @interface CRWNavigationItemStorage : NSObject <NSCoding>
 
-@property(nonatomic, assign) GURL URL;
-@property(nonatomic, assign) GURL virtualURL;
+@property(nonatomic, assign) const GURL& URL;
+@property(nonatomic, assign) const GURL& virtualURL;
 @property(nonatomic, assign) web::Referrer referrer;
 @property(nonatomic, assign) base::Time timestamp;
-@property(nonatomic, assign) std::u16string title;
+@property(nonatomic, assign) const std::u16string& title;
 @property(nonatomic, assign) web::PageDisplayState displayState;
 @property(nonatomic, assign) BOOL shouldSkipRepostFormConfirmation;
 @property(nonatomic, assign) web::UserAgentType userAgentType;

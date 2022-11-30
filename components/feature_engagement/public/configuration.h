@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
-
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -102,7 +98,62 @@ struct SessionRateImpact {
 
   // In the case of the Type |EXPLICIT|, this is the list of affected
   // base::Feature names.
-  base::Optional<std::vector<std::string>> affected_features;
+  absl::optional<std::vector<std::string>> affected_features;
+};
+
+// BlockedBy describes which features the |blocked_by| of a given
+// FeatureConfig should affect. It can affect either |ALL| (default), |NONE|,
+// or an |EXPLICIT| list of the features. In the latter case, a list of affected
+// features is given as their base::Feature name.
+struct BlockedBy {
+ public:
+  enum class Type {
+    ALL = 0,      // Affects all other features.
+    NONE = 1,     // Affects no other features.
+    EXPLICIT = 2  // Affects only features in |affected_features|.
+  };
+
+  BlockedBy();
+  BlockedBy(const BlockedBy& other);
+  ~BlockedBy();
+
+  // Describes which features are impacted.
+  Type type{Type::ALL};
+
+  // In the case of the Type |EXPLICIT|, this is the list of affected
+  // base::Feature names.
+  absl::optional<std::vector<std::string>> affected_features;
+};
+
+// Blocking describes which features the |blocking| of a given FeatureConfig
+// should affect. It can affect either |ALL| (default) or |NONE|.
+struct Blocking {
+ public:
+  enum class Type {
+    ALL = 0,   // Affects all other features.
+    NONE = 1,  // Affects no other features.
+  };
+
+  Blocking();
+  Blocking(const Blocking& other);
+  ~Blocking();
+
+  // Describes which features are impacted.
+  Type type{Type::ALL};
+};
+
+// A SnoozeParams describes the parameters for snoozable options of in-product
+// help.
+struct SnoozeParams {
+ public:
+  // The maximum number of times an in-product-help can be snoozed.
+  uint32_t max_limit{0};
+  // The minimum time interval between snoozes.
+  uint32_t snooze_interval{0};
+
+  SnoozeParams();
+  SnoozeParams(const SnoozeParams& other);
+  ~SnoozeParams();
 };
 
 bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs);
@@ -137,6 +188,12 @@ struct FeatureConfig {
   // Which features the showing this in-product help impacts.
   SessionRateImpact session_rate_impact;
 
+  // Which features the current in-product help is blocked by.
+  BlockedBy blocked_by;
+
+  // Which features the current in-product help is blocking.
+  Blocking blocking;
+
   // Number of days the in-product help has been available must fit this
   // comparison.
   Comparator availability;
@@ -146,7 +203,10 @@ struct FeatureConfig {
   // Tracker::ShouldTriggerHelpUI(...) always returns false, but if all
   // other conditions are met, it will still be recorded as having been
   // shown in the internal database and through UMA.
-  bool tracking_only;
+  bool tracking_only{false};
+
+  // Snoozing parameter to decide if in-product help should be shown.
+  SnoozeParams snooze_params;
 };
 
 bool operator==(const FeatureConfig& lhs, const FeatureConfig& rhs);
@@ -159,6 +219,9 @@ class Configuration {
  public:
   // Convenience alias for typical implementations of Configuration.
   using ConfigMap = std::map<std::string, FeatureConfig>;
+
+  Configuration(const Configuration&) = delete;
+  Configuration& operator=(const Configuration&) = delete;
 
   virtual ~Configuration() = default;
 
@@ -180,9 +243,6 @@ class Configuration {
 
  protected:
   Configuration() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Configuration);
 };
 
 }  // namespace feature_engagement

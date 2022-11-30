@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,5 +20,6 @@ source_set("tokens_headers") {
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/common:common_export",
+    "//ui/base/clipboard:clipboard",
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,17 @@
 #include "ui/display/test/display_manager_test_api.h"
 
 namespace ash {
+
+namespace {
+
+void StartKioskSession() {
+  SessionInfo info;
+  info.is_running_in_app_mode = true;
+  info.state = session_manager::SessionState::ACTIVE;
+  Shell::Get()->session_controller()->SetSessionInfo(info);
+}
+
+}  // namespace
 
 class BackGestureEventHandlerTest : public AshTestBase {
  public:
@@ -107,11 +118,16 @@ class BackGestureEventHandlerTest : public AshTestBase {
   void GenerateBackSequence() {
     GetEventGenerator()->GestureScrollSequence(
         gfx::Point(0, 100), gfx::Point(kSwipingDistanceForGoingBack + 10, 100),
-        base::TimeDelta::FromMilliseconds(100), 3);
+        base::Milliseconds(100), 3);
   }
 
   TestShellDelegate* GetShellDelegate() {
     return static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate());
+  }
+
+  void SendFullscreenEvent(WindowState* window_state) {
+    const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+    window_state->OnWMEvent(&fullscreen_event);
   }
 
   aura::Window* top_window() { return top_window_.get(); }
@@ -138,7 +154,7 @@ TEST_F(BackGestureEventHandlerTest, SwipingFromLeftEdgeToGoBack) {
   const gfx::Point start(0, 100);
   generator->GestureScrollSequence(
       start, gfx::Point(kSwipingDistanceForGoingBack - 10, 100),
-      base::TimeDelta::FromMilliseconds(100), 3);
+      base::Milliseconds(100), 3);
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
 
@@ -146,7 +162,7 @@ TEST_F(BackGestureEventHandlerTest, SwipingFromLeftEdgeToGoBack) {
   // should go to previous page.
   generator->GestureScrollSequence(
       start, gfx::Point(kSwipingDistanceForGoingBack + 10, 100),
-      base::TimeDelta::FromMilliseconds(100), 3);
+      base::Milliseconds(100), 3);
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
 }
@@ -164,7 +180,7 @@ TEST_F(BackGestureEventHandlerTest, FlingFromLeftEdgeToGoBack) {
   // X-velocity here will be 800 dips/seconds.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureScrollSequence(gfx::Point(0, 0), gfx::Point(16, 0),
-                                   base::TimeDelta::FromMilliseconds(20),
+                                   base::Milliseconds(20),
                                    /*steps=*/1);
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
@@ -173,7 +189,7 @@ TEST_F(BackGestureEventHandlerTest, FlingFromLeftEdgeToGoBack) {
   // |kFlingVelocityForGoingBack| should go to previous page. X-velocity here
   // will be 1600 dips/seconds.
   generator->GestureScrollSequence(gfx::Point(0, 0), gfx::Point(16, 0),
-                                   base::TimeDelta::FromMilliseconds(1),
+                                   base::Milliseconds(1),
                                    /*steps=*/1);
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
@@ -184,7 +200,7 @@ TEST_F(BackGestureEventHandlerTest, FlingFromLeftEdgeToGoBack) {
   // will be 800 dips/seconds and drag distance is 160, which is larger than
   // |kSwipingDistanceForGoingBack|.
   generator->GestureScrollSequence(gfx::Point(0, 0), gfx::Point(160, 0),
-                                   base::TimeDelta::FromMilliseconds(200),
+                                   base::Milliseconds(200),
                                    /*steps=*/1);
   EXPECT_EQ(2, target_back_press.accelerator_count());
   EXPECT_EQ(2, target_back_release.accelerator_count());
@@ -204,7 +220,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
   WindowState::Get(top_window())->Unminimize();
   ASSERT_FALSE(WindowState::Get(top_window())->IsMinimized());
   auto* shell = Shell::Get();
-  shell->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_TRUE(shell->overview_controller()->InOverviewSession());
   GenerateBackSequence();
   // Should trigger go back instead of minimize the window since it is in
@@ -213,9 +229,9 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
 
   // Swipe back at overview mode without opened window should still trigger
   // going back.
-  shell->overview_controller()->EndOverview();
+  ExitOverview();
   ResetTopWindow();
-  shell->overview_controller()->StartOverview();
+  EnterOverview();
   GenerateBackSequence();
   EXPECT_EQ(2, target_back_release.accelerator_count());
   EXPECT_TRUE(shell->app_list_controller()->IsHomeScreenVisible());
@@ -280,7 +296,7 @@ TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   gfx::Point start(0, 100);
   gfx::Point update_and_end(200, 100);
@@ -290,11 +306,26 @@ TEST_F(BackGestureEventHandlerTest, CancelOnScreenRotation) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_RELEASED);
   // Left edge swipe back should be cancelled due to screen rotation, so the
   // fling event with velocity larger than |kFlingVelocityForGoingBack| above
   // will not trigger actual going back.
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+}
+
+// Tests that there is no crash when destroying the window during drag the
+// back gesture affordance from the left edge.
+TEST_F(BackGestureEventHandlerTest, DestroyWindowDuringDrag) {
+  ui::TestAcceleratorTarget target_back_press, target_back_release;
+  RegisterBackPressAndRelease(&target_back_press, &target_back_release);
+
+  gfx::Point start(0, 100);
+  gfx::Point update_and_end(200, 100);
+  SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
+  SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
+  ResetTopWindow();
   EXPECT_EQ(0, target_back_press.accelerator_count());
   EXPECT_EQ(0, target_back_release.accelerator_count());
 }
@@ -311,8 +342,10 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
 
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
-  split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      window2.get(), SplitViewController::SnapPosition::kSecondary);
   ASSERT_TRUE(split_view_controller->InSplitViewMode());
   ASSERT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
@@ -331,8 +364,7 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
             0.33f * display_bounds.width());
   EXPECT_LE(split_view_controller->divider_position(),
             0.5f * display_bounds.width());
-  generator->GestureScrollSequence(start, end,
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+  generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
   EXPECT_EQ(1, target_back_press.accelerator_count());
@@ -347,8 +379,7 @@ TEST_F(BackGestureEventHandlerTest, DragFromSplitViewDivider) {
   // triggered.
   start = divider_bounds.CenterPoint();
   end = gfx::Point(0.67f * display_bounds.width(), start.y());
-  generator->GestureScrollSequence(start, end,
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+  generator->GestureScrollSequence(start, end, base::Milliseconds(100), 3);
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
   EXPECT_GT(split_view_controller->divider_position(),
@@ -376,19 +407,19 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
 
   // Start overview first and then snap window in splitview to make sure
   // window activation order remains the same.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(left_window.get(),
-                                    SplitViewController::LEFT);
-  split_view_controller->SnapWindow(right_window.get(),
-                                    SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      left_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      right_window.get(), SplitViewController::SnapPosition::kSecondary);
 
   // Set the screen orientation to LANDSCAPE_PRIMARY.
   test_api.SetDisplayRotation(display::Display::ROTATE_0,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapePrimary);
+            chromeos::OrientationType::kLandscapePrimary);
 
   ASSERT_EQ(right_window.get(), window_util::GetActiveWindow());
   gfx::Point start(0, 10);
@@ -423,7 +454,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_180,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kLandscapeSecondary);
+            chromeos::OrientationType::kLandscapeSecondary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
@@ -451,7 +482,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitPrimary);
+            chromeos::OrientationType::kPortraitPrimary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
@@ -484,7 +515,7 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
-            OrientationLockType::kPortraitSecondary);
+            chromeos::OrientationType::kPortraitSecondary);
 
   SendTouchEvent(start, ui::ET_TOUCH_PRESSED);
   SendTouchEvent(update_and_end, ui::ET_TOUCH_MOVED);
@@ -517,8 +548,7 @@ TEST_F(BackGestureEventHandlerTest, FullscreenedWindow) {
   RegisterBackPressAndRelease(&target_back_press, &target_back_release);
 
   WindowState* window_state = WindowState::Get(top_window());
-  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
-  window_state->OnWMEvent(&fullscreen_event);
+  SendFullscreenEvent(window_state);
   EXPECT_TRUE(window_state->IsFullscreen());
 
   GenerateBackSequence();
@@ -534,6 +564,35 @@ TEST_F(BackGestureEventHandlerTest, FullscreenedWindow) {
   EXPECT_EQ(1, target_back_release.accelerator_count());
 }
 
+// Tests the back gesture behavior in the Kiosk session.
+TEST_F(BackGestureEventHandlerTest, KioskSession) {
+  StartKioskSession();
+
+  ui::TestAcceleratorTarget target_back_press, target_back_release;
+  RegisterBackPressAndRelease(&target_back_press, &target_back_release);
+
+  // Make the test window fullscreen to emulate a real Kiosk session, since in
+  // the Kiosk session an app window is always fullscreen.
+  WindowState* window_state = WindowState::Get(top_window());
+  SendFullscreenEvent(window_state);
+  EXPECT_TRUE(window_state->IsFullscreen());
+
+  GenerateBackSequence();
+  // First back gesture should not let the window exit fullscreen mode, as we do
+  // it with a fullscreen window oppened in a user session.
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+
+  GenerateBackSequence();
+  // Second back gesture should not minimize the window, as we do it with a
+  // fullscreen window oppened in a user session.
+  EXPECT_FALSE(window_util::ShouldMinimizeTopWindowOnBack());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+}
+
 // Tests the back gesture behavior on a ARC fullscreened window.
 TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   ui::TestAcceleratorTarget target_back_press, target_back_release;
@@ -542,8 +601,7 @@ TEST_F(BackGestureEventHandlerTest, ARCFullscreenedWindow) {
   RecreateTopWindow(AppType::ARC_APP);
 
   WindowState* window_state = WindowState::Get(top_window());
-  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
-  window_state->OnWMEvent(&fullscreen_event);
+  SendFullscreenEvent(window_state);
   ASSERT_TRUE(window_state->IsFullscreen());
 
   auto shelf_visible_hotseat_extended = [this]() -> bool {
@@ -616,10 +674,10 @@ TEST_F(BackGestureEventHandlerTest,
   std::unique_ptr<aura::Window> right_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(left_window.get(),
-                                    SplitViewController::LEFT);
-  split_view_controller->SnapWindow(right_window.get(),
-                                    SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      left_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      right_window.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
 
@@ -644,8 +702,8 @@ TEST_F(BackGestureEventHandlerTest,
   gfx::Point start = gfx::Point(divider_bounds.CenterPoint().x(), 10);
   gfx::Point end =
       gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
-  GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 3);
+  GetEventGenerator()->GestureScrollSequence(start, end,
+                                             base::Milliseconds(100), 3);
   // Virtual keyboard should be closed.
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
@@ -659,8 +717,8 @@ TEST_F(BackGestureEventHandlerTest,
   start = gfx::Point(divider_bounds.CenterPoint().x(),
                      keyboard_bounds.CenterPoint().y());
   end = gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
-  GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 3);
+  GetEventGenerator()->GestureScrollSequence(start, end,
+                                             base::Milliseconds(100), 3);
   // Nothing should happen.
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
@@ -684,7 +742,7 @@ TEST_F(BackGestureEventHandlerTest, BackGestureWithAndroidKeyboardTest) {
   ASSERT_TRUE(keyboard);
   // Fakes showing the keyboard.
   keyboard->OnArcInputMethodBoundsChanged(gfx::Rect(400, 400));
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
   // Unfortunately we cannot hook this all the wall up to see if the Android IME
   // is hidden, but we can check that back key events are generated and the top
@@ -707,10 +765,10 @@ TEST_F(BackGestureEventHandlerTest,
   std::unique_ptr<aura::Window> right_window = CreateTestWindow();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->SnapWindow(left_window.get(),
-                                    SplitViewController::LEFT);
-  split_view_controller->SnapWindow(right_window.get(),
-                                    SplitViewController::RIGHT);
+  split_view_controller->SnapWindow(
+      left_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller->SnapWindow(
+      right_window.get(), SplitViewController::SnapPosition::kSecondary);
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
 
@@ -724,7 +782,7 @@ TEST_F(BackGestureEventHandlerTest,
   keyboard_bounds.set_y(keyboard_bounds.bottom() - 200);
   keyboard_bounds.set_height(200);
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
   // Start drag from splitview divider bar position outside VK bounds.
   gfx::Rect divider_bounds =
@@ -733,8 +791,8 @@ TEST_F(BackGestureEventHandlerTest,
   gfx::Point start = gfx::Point(divider_bounds.CenterPoint().x(), 10);
   gfx::Point end =
       gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
-  GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 3);
+  GetEventGenerator()->GestureScrollSequence(start, end,
+                                             base::Milliseconds(100), 3);
   // Virtual keyboard should be closed. But Unfortunately we cannot hook
   // this all the wall up to see if the Android IME is hidden, but we can check
   // that back key events are generated and we're still in both snapped split
@@ -748,12 +806,12 @@ TEST_F(BackGestureEventHandlerTest,
   target_back_press.ResetCounts();
   target_back_release.ResetCounts();
   keyboard->OnArcInputMethodBoundsChanged(keyboard_bounds);
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
   start = gfx::Point(divider_bounds.CenterPoint().x(),
                      keyboard_bounds.CenterPoint().y());
   end = gfx::Point(start.x() + kSwipingDistanceForGoingBack + 10, start.y());
-  GetEventGenerator()->GestureScrollSequence(
-      start, end, base::TimeDelta::FromMilliseconds(100), 3);
+  GetEventGenerator()->GestureScrollSequence(start, end,
+                                             base::Milliseconds(100), 3);
   // Nothing should happen.
   EXPECT_EQ(SplitViewController::State::kBothSnapped,
             split_view_controller->state());
@@ -770,7 +828,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 1:
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press and release the second
   // finger.
@@ -783,7 +841,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 2:
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -798,7 +856,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
   wm::ActivateWindow(top_window());
   GetShellDelegate()->SetShouldWaitForTouchAck(
       /*should_wait_for_touch_ack=*/true);
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press and release the second
   // finger.
@@ -811,7 +869,7 @@ TEST_F(BackGestureEventHandlerTest, IgnoreSecondFinger) {
 
   // Scenario 4:
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -831,7 +889,7 @@ TEST_F(BackGestureEventHandlerTest, CancelledEventOnSecondFinger) {
   const gfx::Point end_point(200, 100);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   // Without releasing the first finger, now press the second finger.
   generator->PressTouchId(1);
@@ -851,7 +909,7 @@ TEST_F(BackGestureEventHandlerTest, CancelledEventOnSecondFinger) {
   Shell::Get()->back_gesture_event_handler()->OnTouchEvent(&event);
 
   wm::ActivateWindow(top_window());
-  generator->PressTouchId(0, base::make_optional(start_point));
+  generator->PressTouchId(0, absl::make_optional(start_point));
   generator->MoveTouch(end_point);
   generator->ReleaseTouchId(0);
   // Test that back should still be able to be performed.

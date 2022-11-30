@@ -1,0 +1,55 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Interface managing Libassistant Speaker Id Enrollment.
+// This controller is hosted in the Libassistant mojom service, and will be
+// invoked from the browser process.
+interface SpeakerIdEnrollmentController {
+  // Starts speaker id enrollment.
+  // Upon start, enrollment will first check for existing cloud utterances. If
+  // none are found, 4 hotword utterances (HEYG/OKG) will be collected, uploaded
+  // and then re-fetched for speaker id model generation. If user has existing
+  // cloud utterances, enrollment will jump forward to fetching & speaker id
+  // model generation. During the process |client| will be invoked multiple
+  // times to report the current status.
+  StartSpeakerIdEnrollment(
+    string user_gaia_id,
+    // If true, enrollment skips Cloud Enrollment (e.g. for when user
+    // explicictly requests voice match re-training).
+    bool skip_cloud_enrollment,
+    pending_remote<SpeakerIdEnrollmentClient> client);
+
+  // Stops speaker id enrollment (if one is active). No-op of no speaker id
+  // enrollment is in progress. The client passed into the start method will
+  // *not* get invoked as a result of calling stop, but it can still be invoked
+  // for other in-the-air updates.
+  StopSpeakerIdEnrollment();
+
+  // Queries speaker id enrollment status for user for given user.
+  GetSpeakerIdEnrollmentStatus(string user_gaia_id) =>
+    (SpeakerIdEnrollmentStatus status);
+};
+
+// Client interface  that will be informed of all speaker id enrollment updates.
+interface SpeakerIdEnrollmentClient {
+  // Listening for hotword.
+  OnListeningHotword();
+
+  // Hotword utterance detected. Processing utterance.
+  OnProcessingHotword();
+
+  // The enrollment completed successfully.
+  OnSpeakerIdEnrollmentDone();
+
+  // Enrollment failed.
+  OnSpeakerIdEnrollmentFailure();
+};
+
+// Defines speaker id enrollment status for a single user.
+struct SpeakerIdEnrollmentStatus {
+  // Whether or not a model exists for user.
+  bool user_model_exists = false;
+};

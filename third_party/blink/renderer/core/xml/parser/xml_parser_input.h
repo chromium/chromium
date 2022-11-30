@@ -42,7 +42,7 @@ class XMLParserInput {
  public:
   explicit XMLParserInput(const String& source)
       : source_(source), encoding_(nullptr), data_(nullptr), size_(0) {
-    if (source_.IsEmpty())
+    if (source_.empty())
       return;
 
     const UChar kBOM = 0xFEFF;
@@ -73,4 +73,4 @@ class XMLParserInput {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_PARSER_INPUT_H_

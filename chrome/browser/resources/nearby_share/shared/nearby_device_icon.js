@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,38 @@
  * type.
  */
 
-Polymer({
-  is: 'nearby-device-icon',
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.html.js';
 
-  properties: {
-    /**
-     * The share target to show the icon for. Expected to start as null, then
-     * change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.ShareTarget}
-     */
-    shareTarget: {
-      type: Object,
-      value: null,
-    },
-  },
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './nearby_device_icon.html.js';
+
+/** @polymer */
+export class NearbyDeviceIconElement extends PolymerElement {
+  static get is() {
+    return 'nearby-device-icon';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The share target to show the icon for. Expected to start as null, then
+       * change to a valid object before this component is shown.
+       * @type {?nearbyShare.mojom.ShareTarget}
+       */
+      shareTarget: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
 
   /**
    * @return {string}
@@ -41,5 +59,7 @@ Polymer({
       default:
         return 'nearby-share:laptop';
     }
-  },
-});
+  }
+}
+
+customElements.define(NearbyDeviceIconElement.is, NearbyDeviceIconElement);

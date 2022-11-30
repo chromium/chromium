@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "base/memory/raw_ptr.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -34,6 +35,11 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
       : ChromeTemplateURLServiceClient(history_service),
         search_term_(search_term) {}
 
+  TestingTemplateURLServiceClient(const TestingTemplateURLServiceClient&) =
+      delete;
+  TestingTemplateURLServiceClient& operator=(
+      const TestingTemplateURLServiceClient&) = delete;
+
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    TemplateURLID id,
                                    const std::u16string& term) override {
@@ -41,9 +47,7 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
   }
 
  private:
-  std::u16string* search_term_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingTemplateURLServiceClient);
+  raw_ptr<std::u16string> search_term_;
 };
 
 }  // namespace
@@ -62,6 +66,17 @@ void SetManagedDefaultSearchPreferences(const TemplateURLData& managed_data,
 void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
   profile->GetTestingPrefService()->RemoveManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+}
+
+void SetRecommendedDefaultSearchPreferences(const TemplateURLData& data,
+                                            bool enabled,
+                                            TestingProfile* profile) {
+  auto dict = TemplateURLDataToDictionary(data);
+  dict->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
+
+  profile->GetTestingPrefService()->SetRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+      std::move(dict));
 }
 
 std::unique_ptr<TemplateURL> CreateTestTemplateURL(
@@ -91,13 +106,17 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
   return std::make_unique<TemplateURL>(data);
 }
 
-TemplateURLServiceTestUtil::TemplateURLServiceTestUtil() {
-  // Make unique temp directory.
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-  profile_.reset(new TestingProfile(temp_dir_.GetPath()));
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
+    : TemplateURLServiceTestUtil(TestingProfile::TestingFactories()) {}
+
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
+    const TestingProfile::TestingFactories& testing_factories) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactories(testing_factories);
+  profile_ = profile_builder.Build();
 
   scoped_refptr<WebDatabaseService> web_database_service =
-      new WebDatabaseService(temp_dir_.GetPath().AppendASCII("webdata"),
+      new WebDatabaseService(profile_->GetPath().AppendASCII("webdata"),
                              base::ThreadTaskRunnerHandle::Get(),
                              base::ThreadTaskRunnerHandle::Get());
   web_database_service->AddTable(
@@ -157,7 +176,7 @@ void TemplateURLServiceTestUtil::ClearModel() {
 void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
-  model_.reset(new TemplateURLService(
+  model_ = std::make_unique<TemplateURLService>(
       profile()->GetPrefs(),
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
@@ -166,8 +185,7 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      base::BindLambdaForTesting(
-          [&] { ++dsp_set_to_google_callback_count_; })));
+      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load)

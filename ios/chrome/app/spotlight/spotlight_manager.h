@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 class ChromeBrowserState;
 
-// Allows Chrome to add the bookmarks of |bookmarkModel| in the systemwide
+// Allows Chrome to add the bookmarks of `bookmarkModel` in the systemwide
 // Spotlight search index.
 // Bookmarks are added, removed or updated in Spotlight based on
 // BookmarkModelObserver notification.
@@ -21,8 +21,8 @@ class ChromeBrowserState;
 
 // Creates a SpotlightManager tracking and indexing various browser state
 // elements such as most actives and bookmarks.
-// |browserState| must not be nil.
-// There should be only one SpotlightManager observing |browserState|.
+// `browserState` must not be nil.
+// There should be only one SpotlightManager observing `browserState`.
 + (SpotlightManager*)spotlightManagerWithBrowserState:
     (ChromeBrowserState*)browserState;
 

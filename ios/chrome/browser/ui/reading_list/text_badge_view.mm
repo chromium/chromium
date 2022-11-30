@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,7 +25,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
 @property(nonatomic, strong) UILabel* label;
 // The margin between the sides of the label and the badge.
 @property(nonatomic, assign, readonly) CGFloat labelHorizontalMargin;
-// Indicate whether |label| has been added as a subview of the TextBadgeView.
+// Indicate whether `label` has been added as a subview of the TextBadgeView.
 @property(nonatomic, assign) BOOL didAddSubviews;
 @end
 
@@ -54,7 +53,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
 
 #pragma mark - UIView overrides
 
-// Override |willMoveToSuperview| to add view properties to the view hierarchy
+// Override `willMoveToSuperview` to add view properties to the view hierarchy
 // and set the badge's appearance.
 - (void)willMoveToSuperview:(UIView*)newSuperview {
   if (!self.didAddSubviews) {

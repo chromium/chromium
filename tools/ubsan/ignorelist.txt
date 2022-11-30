@@ -1,0 +1,57 @@
+#############################################################################
+# UBSan ignorelist.
+
+#############################################################################
+# YASM does some funny things that UBsan doesn't like.
+# https://crbug.com/489901
+src:*/third_party/yasm/*
+
+#############################################################################
+# Ignore system libraries.
+src:*/usr/*
+
+#############################################################################
+# V8 UBsan supressions
+
+# Bug v8:8735: PropertyCallbackInfo<void> vs PropertyCallbackInfo<T>.
+fun:*v8*internal*PropertyCallbackArguments*CallAccessorSetter*
+fun:*v8*internal*PropertyCallbackArguments*BasicCallNamedGetterCallback*
+fun:*v8*internal*InvokeAccessorGetterCallback*
+
+# Bug v8:8735: WeakCallbackInfo<void> vs. WeakCallbackInfo<T>.
+fun:*v8*internal*GlobalHandles*PendingPhantomCallback*Invoke*
+fun:*v8*internal*GlobalHandles*Node*PostGarbageCollectionProcessing*
+
+#############################################################################
+# Undefined arithmetic that can be safely ignored.
+src:*/ppapi/shared_impl/id_assignment.h
+
+#############################################################################
+# ICU supressions. Mostly hash functions where integer overflow is OK.
+fun:*hashEntry*
+fun:*LocaleCacheKey*hashCode*
+fun:*google*protobuf*hash*
+fun:*(hash|Hash)*
+
+#############################################################################
+# Bounds ignorelist.
+# Array at the end of struct pattern:
+# Maybe UBSan itself can be improved here?
+# e.g.
+# struct blah {
+#   int a;
+#   char foo[2]; // not actually 2
+# }
+src:*/net/disk_cache/blockfile/backend_impl.cc
+src:*/net/disk_cache/blockfile/entry_impl.cc
+src:*/third_party/icu/source/common/rbbi.cpp
+src:*/third_party/icu/source/common/rbbitblb.cpp
+src:*/third_party/icu/source/common/ucmndata.c
+
+#############################################################################
+# Delete in destructor on a this where this == nullptr
+fun:*re2*RegexpD*
+
+#############################################################################
+# Harmless float division by zero.
+fun:*RendererFrameManager*CullUnlockedFrames*

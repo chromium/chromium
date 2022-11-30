@@ -1,0 +1,57 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/android_nocompile.gni")
+import("//build/config/android/rules.gni")
+
+missing_symbol_generated_importer_template_nocompile_source =
+    "//build/android/java/test/missing_symbol/Importer.template"
+
+template("missing_symbol_test") {
+  # Not named "_java" to prevent target from being considered a classpath dep.
+  _helper_target_name = string_replace("${target_name}__helper", "java", "")
+
+  group(_helper_target_name) {
+    # Make group() depend on dependencies that |target_name| cannot find so that
+    # the missing symbol resolver can find and suggest the missing GN dep.
+    deps = invoker.deps
+  }
+
+  android_library(target_name) {
+    sources = [ "//tools/android/errorprone_plugin/test/src/org/chromium/tools/errorprone/plugin/Empty.java" ]
+    not_needed(invoker,
+               [
+                 "sources",
+                 "importer_srcjar_deps",
+               ])
+    if (enable_android_nocompile_tests) {
+      if (defined(invoker.sources)) {
+        sources += invoker.sources
+      }
+      if (defined(invoker.importer_srcjar_deps)) {
+        srcjar_deps = invoker.importer_srcjar_deps
+      }
+    }
+
+    deps = [ ":${_helper_target_name}" ]
+  }
+}
+
+# missing_symbol_test() template wrapper which generates importer class.
+template("missing_symbol_generated_importer_test") {
+  _importer_generator_target = "${target_name}__importer_javagen"
+  java_cpp_template(_importer_generator_target) {
+    sources = [ missing_symbol_generated_importer_template_nocompile_source ]
+    defines = [
+      "_IMPORTER_PACKAGE=${invoker.importer_package}",
+      "_IMPORTEE_PACKAGE=${invoker.imported_package}",
+      "_IMPORTEE_CLASS_NAME=${invoker.imported_class_name}",
+    ]
+  }
+
+  missing_symbol_test(target_name) {
+    importer_srcjar_deps = [ ":${_importer_generator_target}" ]
+    forward_variables_from(invoker, [ "deps" ])
+  }
+}

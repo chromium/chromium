@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utility for fast string concatenation.
@@ -29,6 +21,7 @@ goog.provide('goog.string.StringBuffer');
  * @constructor
  */
 goog.string.StringBuffer = function(opt_a1, var_args) {
+  'use strict';
   if (opt_a1 != null) {
     this.append.apply(this, arguments);
   }
@@ -50,6 +43,7 @@ goog.string.StringBuffer.prototype.buffer_ = '';
  * @param {*} s String to set.
  */
 goog.string.StringBuffer.prototype.set = function(s) {
+  'use strict';
   this.buffer_ = '' + s;
 };
 
@@ -67,6 +61,7 @@ goog.string.StringBuffer.prototype.set = function(s) {
  * @suppress {duplicate}
  */
 goog.string.StringBuffer.prototype.append = function(a1, opt_a2, var_args) {
+  'use strict';
   // Use a1 directly to avoid arguments instantiation for single-arg case.
   this.buffer_ += String(a1);
   if (opt_a2 != null) {  // second argument is undefined (null == undefined)
@@ -82,6 +77,7 @@ goog.string.StringBuffer.prototype.append = function(a1, opt_a2, var_args) {
  * Clears the internal buffer.
  */
 goog.string.StringBuffer.prototype.clear = function() {
+  'use strict';
   this.buffer_ = '';
 };
 
@@ -90,6 +86,7 @@ goog.string.StringBuffer.prototype.clear = function() {
  * @return {number} the length of the current contents of the buffer.
  */
 goog.string.StringBuffer.prototype.getLength = function() {
+  'use strict';
   return this.buffer_.length;
 };
 
@@ -99,5 +96,6 @@ goog.string.StringBuffer.prototype.getLength = function() {
  * @override
  */
 goog.string.StringBuffer.prototype.toString = function() {
+  'use strict';
   return this.buffer_;
 };

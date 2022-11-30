@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -132,12 +133,10 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
   // Note: |user_script_manager| can be null in tests.
   if (user_script_manager &&
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    UserScriptLoader* user_script_loader =
-        user_script_manager->manifest_script_loader();
-    mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension_id_);
-    if (!user_script_loader->HasLoadedScripts(host_id)) {
+    ExtensionUserScriptLoader* user_script_loader =
+        user_script_manager->GetUserScriptLoaderForExtension(extension_id_);
+    if (!user_script_loader->HasLoadedScripts()) {
       ContentScriptLoadWaiter waiter(user_script_loader);
-      waiter.RestrictToHostID(host_id);
       waiter.Wait();
     }
   }
@@ -157,9 +156,15 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
 
   content::BrowserContext* context_to_use =
       IncognitoInfo::IsSplitMode(&extension)
-          ? browser_context_
+          ? browser_context_.get()
           : Profile::FromBrowserContext(browser_context_)->GetOriginalProfile();
-  ExtensionBackgroundPageWaiter(context_to_use, extension).Wait();
+
+  // If possible, wait for the extension's background context to be loaded.
+  std::string reason_unused;
+  if (ExtensionBackgroundPageWaiter::CanWaitFor(extension, reason_unused)) {
+    ExtensionBackgroundPageWaiter(context_to_use, extension)
+        .WaitForBackgroundInitialized();
+  }
 
   // TODO(devlin): Should this use |context_to_use|? Or should
   // WaitForExtensionViewsToLoad check both contexts if one is OTR?
@@ -333,16 +338,24 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
     const Extension& extension) {
   if (ignore_manifest_warnings_)
     return true;
+
   const std::vector<InstallWarning>& install_warnings =
       extension.install_warnings();
-  if (install_warnings.empty())
+  std::string install_warnings_string;
+  for (const InstallWarning& warning : install_warnings) {
+    // Don't fail on the manifest v2 deprecation warning in tests for now.
+    // TODO(https://crbug.com/1269161): Stop skipping this warning when all
+    // tests are updated to MV3.
+    if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
+      continue;
+    install_warnings_string += "  " + warning.message + "\n";
+  }
+
+  if (install_warnings_string.empty())
     return true;
 
-  std::string install_warnings_message = "Unexpected warnings for extension:\n";
-  for (const InstallWarning& warning : install_warnings)
-    install_warnings_message += "  " + warning.message + "\n";
-
-  ADD_FAILURE() << install_warnings_message;
+  ADD_FAILURE() << "Unexpected warnings for extension:\n"
+                << install_warnings_string;
   return false;
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 #include <cups/ppd.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -19,6 +22,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/print_job_constants.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
 #include "url/gurl.h"
@@ -40,7 +44,7 @@ WEAK_CUPS_FN(httpConnect2);
 
 // Timeout for establishing a CUPS connection.  It is expected that cupsd is
 // able to start and respond on all systems within this duration.
-constexpr base::TimeDelta kCupsTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kCupsTimeout = base::Seconds(5);
 
 // CUPS default max copies value (parsed from kCupsMaxCopies PPD attribute).
 constexpr int32_t kDefaultMaxCopies = 9999;
@@ -569,21 +573,54 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
                           base::StringPiece locale,
                           base::StringPiece printer_capabilities,
                           PrinterSemanticCapsAndDefaults* printer_info) {
-  base::FilePath ppd_file_path;
-  if (!base::CreateTemporaryFile(&ppd_file_path))
+  // A file created while in a sandbox will be automatically deleted once all
+  // handles to it have been closed.  This precludes the use of multiple
+  // operations against a file path.
+  //
+  // Underlying CUPS libraries process the PPD using standard I/O file
+  // descriptors, so `FILE` stream APIs that don't support that are not an
+  // option (e.g., can't use fmemopen()).
+  //
+  // Previous attempts to just read & write with a single disk `FILE` stream
+  // demonstrated occasional data corruption in the wild, so resort to working
+  // directly with lower-level file descriptors.
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir))
     return false;
 
-  if (!base::WriteFile(ppd_file_path, printer_capabilities)) {
-    base::DeleteFile(ppd_file_path);
+  base::FilePath ppd_file_path;
+  base::ScopedFD ppd_fd =
+      base::CreateAndOpenFdForTemporaryFileInDir(temp_dir, &ppd_file_path);
+  if (!ppd_fd.is_valid())
+    return false;
+
+  // Unlike Windows, POSIX platforms do not have the ability to mark files as
+  // "delete on close". So just delete `ppd_file_path` here. The file is still
+  // accessible via `ppd_fd`.
+  if (!base::DeleteFile(ppd_file_path))
+    return false;
+
+  if (!base::WriteFileDescriptor(ppd_fd.get(), printer_capabilities) ||
+      lseek(ppd_fd.get(), 0, SEEK_SET) == -1) {
     return false;
   }
 
-  ppd_file_t* ppd = ppdOpenFile(ppd_file_path.value().c_str());
+  // We release ownership of `ppd_fd` here because ppdOpenFd() assumes ownership
+  // of it in all but one case (see below).
+  int unowned_ppd_fd = ppd_fd.release();
+  ppd_file_t* ppd = ppdOpenFd(unowned_ppd_fd);
   if (!ppd) {
     int line = 0;
     ppd_status_t ppd_status = ppdLastError(&line);
     LOG(ERROR) << "Failed to open PDD file: error " << ppd_status << " at line "
                << line << ", " << ppdErrorString(ppd_status);
+    if (ppd_status == PPD_FILE_OPEN_ERROR) {
+      // Normally ppdOpenFd assumes ownership of the file descriptor we give it,
+      // regardless of success or failure. The one exception is when it fails
+      // with PPD_FILE_OPEN_ERROR. In that case ownership is retained by the
+      // caller, so we must explicitly close it.
+      close(unowned_ppd_fd);
+    }
     return false;
   }
 
@@ -666,7 +703,6 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   }
 
   ppdClose(ppd);
-  base::DeleteFile(ppd_file_path);
 
   *printer_info = caps;
   return true;

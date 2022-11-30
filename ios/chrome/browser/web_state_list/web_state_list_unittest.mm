@@ -1,19 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
-#include "base/macros.h"
-#include "base/supports_user_data.h"
+#import "base/supports_user_data.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +29,9 @@ const char kURL3[] = "https://chromium.org/3";
 class WebStateListTestObserver : public WebStateListObserver {
  public:
   WebStateListTestObserver() = default;
+
+  WebStateListTestObserver(const WebStateListTestObserver&) = delete;
+  WebStateListTestObserver& operator=(const WebStateListTestObserver&) = delete;
 
   // Reset statistics whether events have been called.
   void ResetStatistics() {
@@ -120,8 +122,6 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_activated_called_ = false;
   bool batch_operation_started_ = false;
   bool batch_operation_ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTestObserver);
 };
 
 // A fake NavigationManager used to test opener-opened relationship in the
@@ -129,6 +129,9 @@ class WebStateListTestObserver : public WebStateListObserver {
 class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
+
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
 
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
@@ -154,8 +157,6 @@ class FakeNavigationManager : public web::FakeNavigationManager {
   void GoToIndex(int index) override { last_committed_item_index = index; }
 
   int last_committed_item_index = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -165,6 +166,9 @@ class WebStateListTest : public PlatformTest {
   WebStateListTest() : web_state_list_(&web_state_list_delegate_) {
     web_state_list_.AddObserver(&observer_);
   }
+
+  WebStateListTest(const WebStateListTest&) = delete;
+  WebStateListTest& operator=(const WebStateListTest&) = delete;
 
   ~WebStateListTest() override { web_state_list_.RemoveObserver(&observer_); }
 
@@ -196,9 +200,6 @@ class WebStateListTest : public PlatformTest {
         WebStateList::kInvalidIndex, std::move(web_state),
         WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTest);
 };
 
 // Tests that empty() matches count() != 0.

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
@@ -22,6 +21,10 @@ class TsSectionCetsPssh : public TsSection {
       base::RepeatingCallback<void(const std::vector<uint8_t>&)>;
 
   explicit TsSectionCetsPssh(RegisterPsshBoxesCB register_pssh_boxes_cb);
+
+  TsSectionCetsPssh(const TsSectionCetsPssh&) = delete;
+  TsSectionCetsPssh& operator=(const TsSectionCetsPssh&) = delete;
+
   ~TsSectionCetsPssh() override;
 
   // TsSection implementation.
@@ -33,11 +36,9 @@ class TsSectionCetsPssh : public TsSection {
 
  private:
   const RegisterPsshBoxesCB register_pssh_boxes_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsSectionCetsPssh);
 };
 
 }  // namespace mp2t
 }  // namespace media
 
-#endif
+#endif  // MEDIA_FORMATS_MP2T_TS_SECTION_CETS_PSSH_H_

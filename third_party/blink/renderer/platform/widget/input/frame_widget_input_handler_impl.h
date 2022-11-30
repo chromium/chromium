@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -46,8 +47,10 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       base::WeakPtr<WidgetBase> widget,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       scoped_refptr<MainThreadEventQueue> input_event_queue);
+  FrameWidgetInputHandlerImpl(const FrameWidgetInputHandlerImpl&) = delete;
+  FrameWidgetInputHandlerImpl& operator=(const FrameWidgetInputHandlerImpl&) =
+      delete;
   ~FrameWidgetInputHandlerImpl() override;
 
   void AddImeTextSpansToExistingText(
@@ -66,6 +69,8 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void DeleteSurroundingTextInCodePoints(int32_t before,
                                          int32_t after) override;
   void SetEditableSelectionOffsets(int32_t start, int32_t end) override;
+  void HandleStylusWritingGestureAction(
+      mojom::blink::StylusWritingGestureDataPtr gesture_data) override;
   void ExecuteEditCommand(const String& command, const String& value) override;
   void Undo() override;
   void Redo() override;
@@ -80,15 +85,20 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void SelectAll() override;
   void CollapseSelection() override;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
-#if defined(OS_ANDROID)
-  void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
-#endif  // defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
+                         bool should_show_handle,
+                         bool should_show_context_menu,
+                         SelectAroundCaretCallback callback) override;
+#endif  // BUILDFLAG(IS_ANDROID)
   void AdjustSelectionByCharacterOffset(
       int32_t start,
       int32_t end,
       blink::mojom::SelectionMenuBehavior selection_menu_behavior) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent) override;
-  void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect) override;
+  void ScrollFocusedEditableNodeIntoView() override;
+  void WaitForPageScaleAnimationForTesting(
+      WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point) override;
 
  private:
@@ -122,15 +132,14 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       const char* command,
       UpdateState state);
 
+  bool ThreadedCompositingEnabled() { return input_event_queue_ != nullptr; }
+
   // These should only be accessed on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       main_thread_frame_widget_input_handler_;
 
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameWidgetInputHandlerImpl);
 };
 
 }  // namespace blink

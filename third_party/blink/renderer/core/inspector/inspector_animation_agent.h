@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Animation.h"
+#include "third_party/blink/renderer/core/inspector/protocol/animation.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-inspector.h"
 
@@ -26,6 +26,8 @@ class CORE_EXPORT InspectorAnimationAgent final
   InspectorAnimationAgent(InspectedFrames*,
                           InspectorCSSAgent*,
                           v8_inspector::V8InspectorSession*);
+  InspectorAnimationAgent(const InspectorAnimationAgent&) = delete;
+  InspectorAnimationAgent& operator=(const InspectorAnimationAgent&) = delete;
 
   // Base agent methods.
   void Restore() override;
@@ -91,7 +93,6 @@ class CORE_EXPORT InspectorAnimationAgent final
   HashSet<String> cleared_animations_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Double playback_rate_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorAnimationAgent);
 };
 
 }  // namespace blink

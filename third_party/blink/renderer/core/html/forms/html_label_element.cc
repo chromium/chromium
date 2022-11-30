@@ -146,10 +146,9 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
     // event, then there's no need for us to do anything.
     if (!element)
       return;
-    if (evt.target()) {
-      Node* target_node = evt.target()->ToNode();
-      if (target_node &&
-          element->IsShadowIncludingInclusiveAncestorOf(*target_node))
+    Node* target_node = evt.target() ? evt.target()->ToNode() : nullptr;
+    if (target_node) {
+      if (element->IsShadowIncludingInclusiveAncestorOf(*target_node))
         return;
 
       if (IsInInteractiveContent(target_node))
@@ -184,16 +183,18 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
             !frame->GetEventHandler()
                  .GetSelectionController()
                  .MouseDownWasSingleClickInSelection() &&
-            evt.target()->ToNode()->CanStartSelection())
+            target_node->CanStartSelection()) {
           is_label_text_selected = true;
-        // If selection is there and is single click i.e. text is
-        // selected by dragging over label text, then return.
-        // Click count >=2, meaning double click or triple click,
-        // should pass click event to control element.
-        // Only in case of drag, *neither* we pass the click event,
-        // *nor* we focus the control element.
-        if (is_label_text_selected && mouse_event->ClickCount() == 1)
-          return;
+
+          // If selection is there and is single click i.e. text is
+          // selected by dragging over label text, then return.
+          // Click count >=2, meaning double click or triple click,
+          // should pass click event to control element.
+          // Only in case of drag, *neither* we pass the click event,
+          // *nor* we focus the control element.
+          if (mouse_event->ClickCount() == 1)
+            return;
+        }
       }
     }
 
@@ -206,7 +207,7 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
-        element->focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                                    mojom::blink::FocusType::kMouse, nullptr));
       }
     }
@@ -233,10 +234,10 @@ bool HTMLLabelElement::WillRespondToMouseClickEvents() {
   return HTMLElement::WillRespondToMouseClickEvents();
 }
 
-void HTMLLabelElement::focus(const FocusParams& params) {
+void HTMLLabelElement::Focus(const FocusParams& params) {
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);
   if (IsFocusable()) {
-    HTMLElement::focus(params);
+    HTMLElement::Focus(params);
     return;
   }
 
@@ -245,7 +246,7 @@ void HTMLLabelElement::focus(const FocusParams& params) {
 
   // To match other browsers, always restore previous selection.
   if (HTMLElement* element = control()) {
-    element->focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
+    element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
                                params.source_capabilities, params.options));
   }
 }

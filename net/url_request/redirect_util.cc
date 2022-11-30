@@ -1,11 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/url_request/redirect_util.h"
 
+#include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -17,8 +21,8 @@ void RedirectUtil::UpdateHttpRequest(
     const GURL& original_url,
     const std::string& original_method,
     const RedirectInfo& redirect_info,
-    const base::Optional<std::vector<std::string>>& removed_headers,
-    const base::Optional<net::HttpRequestHeaders>& modified_headers,
+    const absl::optional<std::vector<std::string>>& removed_headers,
+    const absl::optional<net::HttpRequestHeaders>& modified_headers,
     HttpRequestHeaders* request_headers,
     bool* should_clear_upload) {
   DCHECK(request_headers);
@@ -72,8 +76,7 @@ void RedirectUtil::UpdateHttpRequest(
   //
   // TODO(jww): This is a layering violation and should be refactored somewhere
   // up into //net's embedder. https://crbug.com/471397
-  if (!url::Origin::Create(redirect_info.new_url)
-           .IsSameOriginWith(url::Origin::Create(original_url)) &&
+  if (!url::IsSameOriginWith(redirect_info.new_url, original_url) &&
       request_headers->HasHeader(HttpRequestHeaders::kOrigin)) {
     request_headers->SetHeader(HttpRequestHeaders::kOrigin,
                                url::Origin().Serialize());
@@ -84,16 +87,51 @@ void RedirectUtil::UpdateHttpRequest(
 }
 
 // static
-base::Optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
+absl::optional<std::string> RedirectUtil::GetReferrerPolicyHeader(
     const HttpResponseHeaders* response_headers) {
   if (!response_headers)
-    return base::nullopt;
+    return absl::nullopt;
   std::string referrer_policy_header;
   if (!response_headers->GetNormalizedHeader("Referrer-Policy",
                                              &referrer_policy_header)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return referrer_policy_header;
+}
+
+// static
+scoped_refptr<HttpResponseHeaders> RedirectUtil::SynthesizeRedirectHeaders(
+    const GURL& redirect_destination,
+    ResponseCode response_code,
+    const std::string& redirect_reason,
+    const HttpRequestHeaders& request_headers) {
+  std::string header_string = base::StringPrintf(
+      "HTTP/1.1 %i Internal Redirect\n"
+      "Location: %s\n"
+      "Cross-Origin-Resource-Policy: Cross-Origin\n"
+      "Non-Authoritative-Reason: %s",
+      response_code, redirect_destination.spec().c_str(),
+      redirect_reason.c_str());
+
+  std::string http_origin;
+  if (request_headers.GetHeader("Origin", &http_origin)) {
+    // If this redirect is used in a cross-origin request, add CORS headers to
+    // make sure that the redirect gets through. Note that the destination URL
+    // is still subject to the usual CORS policy, i.e. the resource will only
+    // be available to web pages if the server serves the response with the
+    // required CORS response headers.
+    header_string += base::StringPrintf(
+        "\n"
+        "Access-Control-Allow-Origin: %s\n"
+        "Access-Control-Allow-Credentials: true",
+        http_origin.c_str());
+  }
+
+  auto fake_headers = base::MakeRefCounted<HttpResponseHeaders>(
+      HttpUtil::AssembleRawHeaders(header_string));
+  DCHECK(fake_headers->IsRedirect(nullptr));
+
+  return fake_headers;
 }
 
 }  // namespace net

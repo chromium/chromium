@@ -1,0 +1,61 @@
+diff --git a/ntt_parameters.h b/ntt_parameters.h
+index eba9579ab87ca..dc56ab62dd666 100644
+--- a/ntt_parameters.h
++++ b/ntt_parameters.h
+@@ -34,7 +34,7 @@ template <typename ModularInt>
+ void FillWithEveryPower(const ModularInt& base, unsigned int n,
+                         std::vector<ModularInt>* row,
+                         const typename ModularInt::Params* params) {
+-  for (int i = 0; i < n; i++) {
++  for (unsigned int i = 0; i < n; i++) {
+     (*row)[i].AddInPlace(base.ModExp(i, params), params);
+   }
+ }
+@@ -183,7 +183,7 @@ rlwe::StatusOr<NttParameters<ModularInt>> InitializeNttParameters(
+   // Abort if log_n is non-positive.
+   if (log_n <= 0) {
+     return absl::InvalidArgumentError("log_n must be positive");
+-  } else if (log_n > kMaxLogNumCoeffs) {
++  } else if (static_cast<Uint64>(log_n) > kMaxLogNumCoeffs) {
+     return absl::InvalidArgumentError(absl::StrCat(
+         "log_n, ", log_n, ", must be less than ", kMaxLogNumCoeffs, "."));
+   }
+diff --git a/sample_error.h b/sample_error.h
+index 7d570c5cd2e7a..b1f19eb952551 100644
+--- a/sample_error.h
++++ b/sample_error.h
+@@ -57,7 +57,7 @@ static rlwe::StatusOr<std::vector<ModularInt>> SampleFromErrorDistribution(
+   Uint64 k;
+   typename ModularInt::Int coefficient;
+ 
+-  for (int i = 0; i < num_coeffs; i++) {
++  for (unsigned int i = 0; i < num_coeffs; i++) {
+     coefficient = modulus_params->modulus;
+     k = variance << 1;
+ 
+diff --git a/symmetric_encryption.h b/symmetric_encryption.h
+index 987e86f7a9823..06dabb89502d4 100644
+--- a/symmetric_encryption.h
++++ b/symmetric_encryption.h
+@@ -630,9 +630,9 @@ class SymmetricRlweKey {
+   const typename ModularInt::Params* ModulusParams() const {
+     return modulus_params_;
+   }
+-  const unsigned int BitsPerCoeff() const { return log_t_; }
+-  const Uint64 Variance() const { return variance_; }
+-  const unsigned int LogT() const { return log_t_; }
++  unsigned int BitsPerCoeff() const { return log_t_; }
++  Uint64 Variance() const { return variance_; }
++  unsigned int LogT() const { return log_t_; }
+   const ModularInt& PlaintextModulus() const { return t_mod_; }
+   const typename ModularInt::Params* PlaintextModulusParams() const {
+     return plaintext_modulus_params_;
+@@ -941,7 +941,7 @@ rlwe::StatusOr<std::vector<typename ModularInt::Int>> Decrypt(
+   Polynomial<ModularInt> key_powers = key.Key();
+   unsigned int ciphertext_len = ciphertext.Len();
+ 
+-  for (int i = 0; i < ciphertext_len; i++) {
++  for (unsigned int i = 0; i < ciphertext_len; i++) {
+     // Extract component i.
+     RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> ci, ciphertext.Component(i));
+ 

@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Text line 1'
+++++++++++inlineTextBox name='Text line 1'
+++++++++lineBreak name='<newline>'
+++++++++++inlineTextBox name='<newline>'
+++++++++staticText name='Text line 2'
+++++++++++inlineTextBox name='Text line 2'

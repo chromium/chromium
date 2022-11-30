@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,6 +27,11 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   SoftwareOutputDeviceOzone(
       std::unique_ptr<ui::PlatformWindowSurface> platform_window_surface,
       std::unique_ptr<ui::SurfaceOzoneCanvas> surface_ozone);
+
+  SoftwareOutputDeviceOzone(const SoftwareOutputDeviceOzone&) = delete;
+  SoftwareOutputDeviceOzone& operator=(const SoftwareOutputDeviceOzone&) =
+      delete;
+
   ~SoftwareOutputDeviceOzone() override;
 
   void Resize(const gfx::Size& viewport_pixel_size,
@@ -36,6 +40,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   void EndPaint() override;
   void OnSwapBuffers(SwapBuffersCallback swap_ack_callback) override;
   int MaxFramesPending() const override;
+  bool SupportsOverridePlatformSize() const override;
 
  private:
   // This object should outlive |surface_ozone_|. Ending its lifetime may
@@ -43,8 +48,6 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceOzone
   std::unique_ptr<ui::PlatformWindowSurface> platform_window_surface_;
 
   std::unique_ptr<ui::SurfaceOzoneCanvas> surface_ozone_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputDeviceOzone);
 };
 
 }  // namespace viz

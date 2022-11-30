@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "cc/cc_export.h"
 
 namespace base {
@@ -31,6 +29,10 @@ class CC_EXPORT SchedulerSettings {
   // compositor, and enabled for renderers (unless there are too few cores).
   bool main_frame_before_activation_enabled = false;
 
+  // Whether a BeginMainFrame should be issued while there is a previous commit
+  // still waiting to be processed.
+  bool main_frame_before_commit_enabled = false;
+
   // Whether commits should happen directly to the active tree, skipping the
   // pending tree. This is turned on only for the UI compositor (and in some
   // tests).
@@ -39,19 +41,18 @@ class CC_EXPORT SchedulerSettings {
   // This is enabled for android-webview.
   bool using_synchronous_renderer_compositor = false;
 
-  // This is used to determine whether some begin-frames should be skipped
-  // (either in the main-thread or the compositor-thread) if previous frames
-  // have had high latency. It is disabled by default.
-  bool enable_impl_latency_recovery = false;
-  bool enable_main_latency_recovery = false;
-
   // Turning this on effectively disables pipelining of compositor frame
   // production stages by waiting for each stage to complete before producing
-  // the frame. Turning this on also disables latency-recovery. This is enabled
-  // for headless-mode and some tests, and disabled elsewhere by default.
+  // the frame. This is enabled for headless-mode and some tests, and disabled
+  // elsewhere by default.
   bool wait_for_all_pipeline_stages_before_draw = false;
 
   int maximum_number_of_failed_draws_before_draw_is_forced = 3;
+
+  // Whether to disable the limit by which frames are drawn. If this is set,
+  // draws are not throttled when pending frames exceed the allowed maximum, as
+  // they would be under the default settings.
+  bool disable_frame_rate_limit = false;
 
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };

@@ -1,20 +1,37 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/websockets/websocket_connector_impl.h"
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace content {
 
 namespace {
+
+url::Origin MaybeTreatLocalOriginAsOpaque(const url::Origin& origin) {
+  if (base::Contains(url::GetLocalSchemes(), origin.scheme()) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAllowFileAccessFromFiles)) {
+    // For local origins we should use an opaque origin unless
+    // "--allow-file-access-from-files" is specified. This should have been
+    // done in content::RenderFrameHost. See https://crbug.com/1206736 for
+    // details.
+    return origin.DeriveNewOpaqueOrigin();
+  }
+  return origin;
+}
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("websocket_stream", R"(
         semantics {
@@ -47,7 +64,7 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     const net::IsolationInfo& isolation_info)
     : process_id_(process_id),
       frame_id_(frame_id),
-      origin_(origin),
+      origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info) {}
 
 WebSocketConnectorImpl::~WebSocketConnectorImpl() = default;
@@ -56,9 +73,10 @@ void WebSocketConnectorImpl::Connect(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    const base::Optional<std::string>& user_agent,
+    const absl::optional<std::string>& user_agent,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
-        handshake_client) {
+        handshake_client,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
@@ -74,7 +92,8 @@ void WebSocketConnectorImpl::Connect(
         frame,
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
                        site_for_cookies, isolation_info_, process_id_,
-                       frame_id_, origin_, options),
+                       frame_id_, origin_, options,
+                       std::move(throttling_profile_id)),
         url, site_for_cookies, user_agent, std::move(handshake_client));
     return;
   }
@@ -90,7 +109,7 @@ void WebSocketConnectorImpl::Connect(
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id_, frame_id_),
-      mojo::NullRemote(), mojo::NullRemote());
+      mojo::NullRemote(), mojo::NullRemote(), std::move(throttling_profile_id));
 }
 
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
@@ -101,6 +120,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     int frame_id,
     const url::Origin& origin,
     uint32_t options,
+    absl::optional<base::UnguessableToken> throttling_profile_id,
     const GURL& url,
     std::vector<network::mojom::HttpHeaderPtr> additional_headers,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -121,7 +141,8 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
           process_id, frame_id),
-      std::move(auth_handler), std::move(trusted_header_client));
+      std::move(auth_handler), std::move(trusted_header_client),
+      std::move(throttling_profile_id));
 }
 
 }  // namespace content

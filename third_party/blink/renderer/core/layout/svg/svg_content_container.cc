@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
@@ -97,17 +98,21 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
 
 bool SVGContentContainer::HitTest(HitTestResult& result,
                                   const HitTestLocation& location,
-                                  HitTestAction hit_test_action) const {
+                                  HitTestPhase phase) const {
   PhysicalOffset accumulated_offset;
   for (LayoutObject* child = children_.LastChild(); child;
        child = child->PreviousSibling()) {
     if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
-      if (foreign_object->NodeAtPointFromSVG(
-              result, location, accumulated_offset, hit_test_action))
+      if (foreign_object->NodeAtPointFromSVG(result, location,
+                                             accumulated_offset, phase))
+        return true;
+    } else if (auto* ng_foreign_object =
+                   DynamicTo<LayoutNGSVGForeignObject>(child)) {
+      if (ng_foreign_object->NodeAtPointFromSVG(result, location,
+                                                accumulated_offset, phase))
         return true;
     } else {
-      if (child->NodeAtPoint(result, location, accumulated_offset,
-                             hit_test_action))
+      if (child->NodeAtPoint(result, location, accumulated_offset, phase))
         return true;
     }
   }
@@ -116,15 +121,16 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
 
 // Update a bounding box taking into account the validity of the other bounding
 // box.
-static inline void UpdateObjectBoundingBox(FloatRect& object_bounding_box,
-                                           bool& object_bounding_box_valid,
-                                           FloatRect other_bounding_box) {
+static inline void UpdateObjectBoundingBox(
+    gfx::RectF& object_bounding_box,
+    bool& object_bounding_box_valid,
+    const gfx::RectF& other_bounding_box) {
   if (!object_bounding_box_valid) {
     object_bounding_box = other_bounding_box;
     object_bounding_box_valid = true;
     return;
   }
-  object_bounding_box.UniteEvenIfEmpty(other_bounding_box);
+  object_bounding_box.UnionEvenIfEmpty(other_bounding_box);
 }
 
 static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
@@ -133,6 +139,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
 
   if (object.IsSVGText())
     return To<LayoutSVGText>(object).IsObjectBoundingBoxValid();
+  if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(object))
+    return ng_text->IsObjectBoundingBoxValid();
 
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
@@ -141,6 +149,8 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
 
   if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(object))
     return foreign_object->IsObjectBoundingBoxValid();
+  if (auto* ng_foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object))
+    return ng_foreign_object->IsObjectBoundingBoxValid();
 
   if (object.IsSVGImage())
     return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
@@ -148,12 +158,12 @@ static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
   return false;
 }
 
-static FloatRect ObjectBoundsForPropagation(const LayoutObject& object) {
-  FloatRect bounds = object.ObjectBoundingBox();
+static gfx::RectF ObjectBoundsForPropagation(const LayoutObject& object) {
+  gfx::RectF bounds = object.ObjectBoundingBox();
   // The local-to-parent transform for <foreignObject> contains a zoom inverse,
   // so we need to apply zoom to the bounding box that we use for propagation to
   // be in the correct coordinate space.
-  if (IsA<LayoutSVGForeignObject>(object))
+  if (object.IsSVGForeignObjectIncludingNG())
     bounds.Scale(object.StyleRef().EffectiveZoom());
   return bounds;
 }
@@ -161,8 +171,8 @@ static FloatRect ObjectBoundsForPropagation(const LayoutObject& object) {
 bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
 
-  FloatRect object_bounding_box;
-  FloatRect stroke_bounding_box;
+  gfx::RectF object_bounding_box;
+  gfx::RectF stroke_bounding_box;
   for (LayoutObject* current = children_.FirstChild(); current;
        current = current->NextSibling()) {
     // Don't include elements that are not rendered.
@@ -172,7 +182,7 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
     UpdateObjectBoundingBox(
         object_bounding_box, object_bounding_box_valid,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
-    stroke_bounding_box.Unite(transform.MapRect(current->StrokeBoundingBox()));
+    stroke_bounding_box.Union(transform.MapRect(current->StrokeBoundingBox()));
   }
 
   bool changed = false;

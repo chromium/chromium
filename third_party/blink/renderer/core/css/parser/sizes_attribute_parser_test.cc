@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,6 @@ TEST(SizesAttributeParserTest, Basic) {
   data.device_pixel_ratio = 2.0;
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
-  data.default_font_size = 16;
   data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
@@ -165,7 +164,6 @@ TEST(SizesAttributeParserTest, FloatViewportWidth) {
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
   data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
-  data.default_font_size = 16;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 
       //# sourceURL=console-viewport-stick-to-bottom-onload.js
     `);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
 
-  var viewport = Console.ConsoleView.instance()._viewport;
+  var viewport = Console.ConsoleView.instance().viewport;
   ConsoleTestRunner.waitForConsoleMessagesPromise(150);
   await ConsoleTestRunner.waitForPendingViewportUpdates();
 

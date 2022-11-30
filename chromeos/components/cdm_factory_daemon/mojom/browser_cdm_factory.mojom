@@ -1,0 +1,53 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This defines the mojo interface used between the Chrome browser and Chrome
+// GPU process, as well as between the ash-chrome browser and lacros-chrome
+// browser process for creating a CDM factory that will utilizes native HW
+// backed DRM protection for ChromeOS.
+
+// Next MinVersion: 2
+
+module chromeos.cdm.mojom;
+
+import "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom";
+import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom";
+import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Next Method ID: 5
+// Used for the connection between browser (receiver) and GPU (remote) process;
+// or between the ash (receiver) and lacros (remote) browser processes; or
+// between the GPU (receiver) and OOP video decoder (remote) processes as a
+// proxy back to the browser.
+[Stable, Uuid="7b6bba3b-5ff8-42c7-a802-40a848945b16",
+ ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
+interface BrowserCdmFactory {
+  // Used to create CdmFactory interfaces which are then used to create a CDM
+  // interface. |key_system| should specify what key system we are using,
+  // currently only com.widevine.alpha is supported. Returns null if we can't
+  // get the interface from the daemon.
+  CreateFactory@0(string key_system) => (pending_remote<CdmFactory>? factory);
+
+  // Creates a new OutputProtection interface to be used for passing into the
+  // CreateCdm call in CdmFactory.
+  GetOutputProtection@1(pending_receiver<OutputProtection> output_protection);
+
+  // Returns binary configuration data used for setting up HW decrypt+decode. If
+  // successful, |success| will be true and |config_data| will be valid.
+  // Otherwise |success| will be false and |config_data| should not be used.
+  GetHwConfigData@2() => (bool success, array<uint8> config_data);
+
+  // Returns an array of the screen resolutions of all the connected displays.
+  GetScreenResolutions@3() => (array<gfx.mojom.Size> resolutions);
+
+  // Returns the wrapped key for injecting into the video decoder when doing ARC
+  // playback. This mirrors the ContentDecryptionModule::GetHwKeyData call as
+  // they serve the same purpose (Chrome will invoke this one for Android
+  // playback and ContentDecryptionModule::GetHwKeyData for Chrome playback).
+  [MinVersion=1]
+  GetAndroidHwKeyData@4(array<uint8> key_id, array<uint8> hw_identifier) =>
+      (DecryptStatus status, array<uint8> key_data);
+};

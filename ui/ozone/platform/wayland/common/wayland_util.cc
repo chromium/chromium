@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -154,6 +154,14 @@ gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
       child_bounds.size());
 }
 
+gfx::RectF TranslateBoundsToParentCoordinatesF(
+    const gfx::RectF& child_bounds,
+    const gfx::RectF& parent_bounds) {
+  return gfx::RectF(
+      (child_bounds.origin() - parent_bounds.origin().OffsetFromOrigin()),
+      child_bounds.size());
+}
+
 gfx::Rect TranslateBoundsToTopLevelCoordinates(const gfx::Rect& child_bounds,
                                                const gfx::Rect& parent_bounds) {
   return gfx::Rect(
@@ -169,17 +177,69 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
       return WL_OUTPUT_TRANSFORM_FLIPPED;
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL:
       return WL_OUTPUT_TRANSFORM_FLIPPED_180;
+    // gfx::OverlayTransform and Wayland buffer transforms rotate in opposite
+    // directions relative to each other, so swap 90 and 270.
+    // TODO(rivr): Currently all wl_buffers are created without y inverted, so
+    // this may need to be revisited if that changes.
     case gfx::OVERLAY_TRANSFORM_ROTATE_90:
-      return WL_OUTPUT_TRANSFORM_90;
+      return WL_OUTPUT_TRANSFORM_270;
     case gfx::OVERLAY_TRANSFORM_ROTATE_180:
       return WL_OUTPUT_TRANSFORM_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_270:
-      return WL_OUTPUT_TRANSFORM_270;
+      return WL_OUTPUT_TRANSFORM_90;
     default:
       break;
   }
   NOTREACHED();
   return WL_OUTPUT_TRANSFORM_NORMAL;
+}
+
+gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
+                                 const gfx::SizeF& bounds,
+                                 wl_output_transform transform) {
+  gfx::RectF result = rect;
+  switch (transform) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+      result.set_x(bounds.width() - rect.x() - rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+      result.set_x(rect.y());
+      result.set_y(rect.x());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+      result.set_y(bounds.height() - rect.y() - rect.height());
+      break;
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+      result.set_x(bounds.height() - rect.y() - rect.height());
+      result.set_y(bounds.width() - rect.x() - rect.width());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_90:
+      result.set_x(rect.y());
+      result.set_y(bounds.width() - rect.x() - rect.width());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    case WL_OUTPUT_TRANSFORM_180:
+      result.set_x(bounds.width() - rect.x() - rect.width());
+      result.set_y(bounds.height() - rect.y() - rect.height());
+      break;
+    case WL_OUTPUT_TRANSFORM_270:
+      result.set_x(bounds.height() - rect.y() - rect.height());
+      result.set_y(rect.x());
+      result.set_width(rect.height());
+      result.set_height(rect.width());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return result;
 }
 
 gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
@@ -230,9 +290,9 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
   return result;
 }
 
-gfx::Size ApplyWaylandTransform(const gfx::Size& size,
-                                wl_output_transform transform) {
-  gfx::Size result = size;
+gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
+                                 wl_output_transform transform) {
+  gfx::SizeF result = size;
   switch (transform) {
     case WL_OUTPUT_TRANSFORM_NORMAL:
     case WL_OUTPUT_TRANSFORM_FLIPPED:
@@ -253,11 +313,6 @@ gfx::Size ApplyWaylandTransform(const gfx::Size& size,
   return result;
 }
 
-bool IsMenuType(ui::PlatformWindowType type) {
-  return type == ui::PlatformWindowType::kMenu ||
-         type == ui::PlatformWindowType::kPopup;
-}
-
 ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface) {
   if (!surface)
     return nullptr;
@@ -272,12 +327,10 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
                                            ui::WaylandWindow* parent_window) {
   DCHECK(window);
   DCHECK(parent_window);
-  DCHECK_EQ(window->buffer_scale(), parent_window->buffer_scale());
+  DCHECK_EQ(window->window_scale(), parent_window->window_scale());
   DCHECK_EQ(window->ui_scale(), parent_window->ui_scale());
-  return gfx::ScaleToRoundedRect(
-      wl::TranslateBoundsToParentCoordinates(window->GetBounds(),
-                                             parent_window->GetBounds()),
-      1.0 / window->buffer_scale());
+  return wl::TranslateBoundsToParentCoordinates(
+      window->GetBoundsInDIP(), parent_window->GetBoundsInDIP());
 }
 
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
@@ -293,13 +346,24 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
   return rects;
 }
 
-SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale) {
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale) {
   SkScalar sk_scale = SkFloatToScalar(1.0f / scale);
-  gfx::Transform transform;
-  transform.Scale(sk_scale, sk_scale);
   SkPath path_in_dips;
-  path_in_pixels.transform(SkMatrix(transform.matrix()), &path_in_dips);
+  path_in_pixels.transform(SkMatrix::Scale(sk_scale, sk_scale), &path_in_dips);
   return path_in_dips;
+}
+
+void SkColorToWlArray(const SkColor& color, wl_array& array) {
+  SkColor4f precise_color = SkColor4f::FromColor(color);
+  SkColorToWlArray(precise_color, array);
+}
+
+void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
+  for (float component : color.array()) {
+    float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
+    DCHECK(ptr);
+    *ptr = component;
+  }
 }
 
 }  // namespace wl

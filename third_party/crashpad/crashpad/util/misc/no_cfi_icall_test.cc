@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "util/win/get_function.h"
@@ -49,7 +49,7 @@ TEST(NoCfiIcall, SameDSOICall) {
 }
 
 TEST(NoCfiIcall, CrossDSOICall) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const NoCfiIcall<decltype(GetCurrentProcessId)*> call(
       GET_FUNCTION_REQUIRED(L"kernel32.dll", GetCurrentProcessId));
   ASSERT_TRUE(call);
@@ -62,7 +62,7 @@ TEST(NoCfiIcall, CrossDSOICall) {
 }
 
 TEST(NoCfiIcall, Args) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   static const NoCfiIcall<decltype(snprintf)*> call(
       dlsym(RTLD_NEXT, "snprintf"));
   ASSERT_TRUE(call);

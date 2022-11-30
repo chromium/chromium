@@ -1,0 +1,190 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.download;
+
+import android.content.Context;
+import android.text.style.ClickableSpan;
+import android.view.View;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/**
+ * Dialog for confirming that user want to download a file that already exists on disk, using the
+ * default model dialog from ModalDialogManager.
+ */
+public class DuplicateDownloadDialog {
+    /**
+     * Events related to the duplicate download dialog, used for UMA reporting.
+     * These values are persisted to logs. Entries should not be renumbered and
+     * numeric values should never be reused.
+     */
+    @IntDef({DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW,
+            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM,
+            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL,
+            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED,
+            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS})
+    private @interface DuplicateDownloadDialogEvent {
+        int DUPLICATE_DOWNLOAD_DIALOG_SHOW = 0;
+        int DUPLICATE_DOWNLOAD_DIALOG_CONFIRM = 1;
+        int DUPLICATE_DOWNLOAD_DIALOG_CANCEL = 2;
+        int DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED = 3;
+        int DUPLICATE_DOWNLOAD_DIALOG_DISMISS = 4;
+
+        int COUNT = 5;
+    }
+
+    private ModalDialogManager mModalDialogManager;
+    private PropertyModel mPropertyModel;
+
+    /**
+     * Called to show a warning dialog for duplicate download.
+     * @param context Context for showing the dialog.
+     * @param modalDialogManager Manager for managing the modal dialog.
+     * @param filePath Path of the download file.
+     * @param pageUrl URL of the page, empty for file downloads.
+     * @param totalBytes Total bytes of the file.
+     * @param duplicateExists Whether a duplicate download is in progress.
+     * @param otrProfileID Off the record profile ID.
+     * @param callback Callback to run when confirming the download, true for accept the download,
+     *         false otherwise.
+     */
+    public void show(Context context, ModalDialogManager modalDialogManager, String filePath,
+            String pageUrl, long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID,
+            Callback<Boolean> callback) {
+        mModalDialogManager = modalDialogManager;
+        mPropertyModel =
+                new PropertyModel
+                        .Builder(ModalDialogProperties.ALL_KEYS)
+
+                        .with(ModalDialogProperties.CONTROLLER,
+                                getController(context, modalDialogManager, pageUrl, callback))
+                        .with(ModalDialogProperties.TITLE,
+                                context.getResources().getString(pageUrl.isEmpty()
+                                                ? R.string.duplicate_download_dialog_title
+                                                : R.string.duplicate_page_download_dialog_title))
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                getClickableSpan(context, filePath, pageUrl, totalBytes,
+                                        duplicateExists, otrProfileID))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                context.getResources().getString(
+                                        R.string.duplicate_download_dialog_confirm_text))
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                context.getResources().getString(R.string.cancel))
+                        .build();
+
+        if (DownloadDialogUtils.shouldShowIncognitoWarning(
+                    OTRProfileID.isOffTheRecord(otrProfileID))) {
+            mPropertyModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2,
+                    context.getResources().getString(R.string.download_location_incognito_warning));
+        }
+
+        modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);
+        recordDuplicateDownloadDialogEvent(
+                !pageUrl.isEmpty(), DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_SHOW);
+    }
+
+    @NonNull
+    private ModalDialogProperties.Controller getController(Context context,
+            ModalDialogManager modalDialogManager, String pageUrl, Callback<Boolean> callback) {
+        return new ModalDialogProperties.Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                boolean isConfirm = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
+                if (callback != null) {
+                    callback.onResult(isConfirm);
+                }
+                modalDialogManager.dismissDialog(model,
+                        isConfirm ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                  : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
+                        isConfirm ? DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CONFIRM
+                                  : DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_CANCEL);
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
+                    return;
+                }
+                if (callback != null
+                        && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
+                    callback.onResult(false);
+                    recordDuplicateDownloadDialogEvent(!pageUrl.isEmpty(),
+                            DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_DISMISS);
+                }
+                if (context instanceof AsyncInitializationActivity) {
+                    NewDownloadTab.closeExistingNewDownloadTab(
+                            ((AsyncInitializationActivity) context).getWindowAndroid());
+                }
+            }
+        };
+    }
+
+    /**
+     * Called to close the dialog.
+     * @param isOfflinePage Whether this is an offline page download.
+     */
+    private void closeDialog(boolean isOfflinePage) {
+        mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
+        recordDuplicateDownloadDialogEvent(
+                isOfflinePage, DuplicateDownloadDialogEvent.DUPLICATE_DOWNLOAD_DIALOG_LINK_CLICKED);
+    }
+
+    /**
+     * Gets the clickable span to display on the dialog.
+     * @param context Context for showing the dialog.
+     * @param filePath Path of the download file. Or the actual page URL for offline page download.
+     * @param pageUrl URL of the page, formatted for better display and empty for file downloads.
+     * @param totalBytes Total bytes of the file.
+     * @param duplicateExists Whether a duplicate download is in progress.
+     * @param otrProfileID Off the record profile ID.
+     */
+    private CharSequence getClickableSpan(Context context, String filePath, String pageUrl,
+            long totalBytes, boolean duplicateExists, OTRProfileID otrProfileID) {
+        if (pageUrl.isEmpty()) {
+            DuplicateDownloadClickableSpan span =
+                    new DuplicateDownloadClickableSpan(context, filePath,
+                            ()
+                                    -> this.closeDialog(false),
+                            otrProfileID, DownloadOpenSource.DUPLICATE_DOWNLOAD_DIALOG);
+            String template = context.getString(R.string.duplicate_download_dialog_text);
+            return DownloadUtils.getDownloadMessageText(
+                    context, template, filePath, true, totalBytes, (ClickableSpan) span);
+        }
+        return DownloadUtils.getOfflinePageMessageText(
+                context, filePath, duplicateExists, new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        closeDialog(true);
+                        DownloadUtils.openPageUrl(context, filePath);
+                    }
+                });
+    }
+
+    /**
+     * Collects duplicate download dialog UI event metrics.
+     * @param isOfflinePage Whether this is an offline page download.
+     * @param event The UI event to collect.
+     */
+    private static void recordDuplicateDownloadDialogEvent(
+            boolean isOfflinePage, @DuplicateDownloadDialogEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(isOfflinePage
+                        ? "Download.DuplicateDialogEvent.OfflinePage"
+                        : "Download.DuplicateDialogEvent.Download",
+                event, DuplicateDownloadDialogEvent.COUNT);
+    }
+}

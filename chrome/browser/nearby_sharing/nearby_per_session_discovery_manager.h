@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Handles a single nearby device discovery session. Holds all discovered share
 // targets for the user to choose from and provides callbacks for when they are
@@ -50,6 +50,7 @@ class NearbyPerSessionDiscoveryManager
   void StartDiscovery(
       mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
       StartDiscoveryCallback callback) override;
+  void StopDiscovery(base::OnceClosure callback) override;
   void SelectShareTarget(const base::UnguessableToken& share_target_id,
                          SelectShareTargetCallback callback) override;
   void GetPayloadPreview(GetPayloadPreviewCallback callback) override;
@@ -75,9 +76,6 @@ class NearbyPerSessionDiscoveryManager
     kMaxValue = kStartedSend
   };
 
-  // Unregisters this class from the NearbySharingService.
-  void UnregisterSendSurface();
-
   // Used for metrics. Changes |furthest_progress_| to |progress| if |progress|
   // is further along in the discovery flow than |furthest_progress_|.
   void UpdateFurthestDiscoveryProgressIfNecessary(DiscoveryProgress progress);
@@ -98,8 +96,8 @@ class NearbyPerSessionDiscoveryManager
       DiscoveryProgress::kDiscoveryNotAttempted;
 
   // Used for metrics. Tracks the time when StartDiscovery() is called, or
-  // base::nullopt if never called.
-  base::Optional<base::TimeTicks> discovery_start_time_;
+  // absl::nullopt if never called.
+  absl::optional<base::TimeTicks> discovery_start_time_;
 
   // Used for metrics. Tracks the total number devices discovered and lost in a
   // given discovery session.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 class CAPTURE_EXPORT TokenManager {
  public:
   static constexpr char kServerTokenPath[] = "/run/camera_tokens/server/token";
+  static constexpr char kServerSensorClientTokenPath[] =
+      "/run/camera_tokens/server/sensor_client_token";
   static constexpr char kTestClientTokenPath[] =
       "/run/camera_tokens/testing/token";
   static constexpr std::array<cros::mojom::CameraClientType, 3>
@@ -31,6 +33,7 @@ class CAPTURE_EXPORT TokenManager {
   ~TokenManager();
 
   bool GenerateServerToken();
+  bool GenerateServerSensorClientToken();
 
   bool GenerateTestClientToken();
 
@@ -41,13 +44,14 @@ class CAPTURE_EXPORT TokenManager {
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
   bool AuthenticateServer(const base::UnguessableToken& token);
+  bool AuthenticateServerSensorClient(const base::UnguessableToken& token);
 
   // Authenticates client with the given |type| and |token|. When |type| is
   // cros::mojom::CameraClientType::UNKNOWN, it tries to figure out the actual
   // client type by the supplied |token|. If authentication succeeds, it returns
   // the authenticated type of the client. If authentication fails,
-  // base::nullopt is returned.
-  base::Optional<cros::mojom::CameraClientType> AuthenticateClient(
+  // absl::nullopt is returned.
+  absl::optional<cros::mojom::CameraClientType> AuthenticateClient(
       cros::mojom::CameraClientType type,
       const base::UnguessableToken& token);
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@ namespace chrome {
 namespace {
 
 constexpr base::TimeDelta kMinTimeSinceLastLogBufferSend =
-    base::TimeDelta::FromMilliseconds(100);
-constexpr base::TimeDelta kSendLogBufferDelay =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(100);
+constexpr base::TimeDelta kSendLogBufferDelay = base::Milliseconds(200);
 
 // There can be only one registered WebRtcLogMessageDelegate, and so this class
 // abstracts away that detail, so that we can set callbacks more than once. It

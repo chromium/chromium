@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,9 @@ extern const char kZucchini[];
 
 namespace switches {
 
-extern const char kDelay[];
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
+extern const char kStartupEventHandle[];
 extern const char kUserExperiment[];
 
 extern const char kCleanupForDowngradeOperation[];

@@ -45,7 +45,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     return false;
 
   String command_name = Behavior().InterpretKeyEvent(*evt);
-  const EditorCommand command = this->CreateCommand(command_name);
+  const EditorCommand command = CreateCommand(command_name);
 
   if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
     // WebKit doesn't have enough information about mode to decide how
@@ -53,7 +53,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     // so we leave it upon WebCore to either handle them immediately
     // (e.g. Tab that changes focus) or let a keypress event be generated
     // (e.g. Tab that inserts a Tab character, or Enter).
-    if (command.IsTextInsertion() || command_name.IsEmpty())
+    if (command.IsTextInsertion() || command_name.empty())
       return false;
     return command.Execute(evt);
   }
@@ -66,9 +66,13 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
 
   // If EditContext is active, redirect text to EditContext, otherwise, send
   // text to the focused element.
-  auto* edit_context =
-      GetFrame().GetInputMethodController().GetActiveEditContext();
-  if (edit_context) {
+  if (auto* edit_context =
+          GetFrame().GetInputMethodController().GetActiveEditContext()) {
+    if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+                                      key_event->text) !=
+        DispatchEventResult::kNotCanceled)
+      return true;
+
     WebString text(WTF::String(key_event->text));
     edit_context->InsertText(text);
     return true;

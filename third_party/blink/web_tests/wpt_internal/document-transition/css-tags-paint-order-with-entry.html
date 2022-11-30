@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: css tags generate pseudo elements in paint order</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="css-tags-paint-order-with-entry-ref.html">
+<meta name="fuzzy" content="css-tags-paint-order-with-entry-ref.html:0-120;0-300">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+div { contain: paint; }
+#one {
+  background: green;
+  width: 100px;
+  height: 100px;
+  position: relative;
+  z-index: 1;
+  page-transition-tag: one;
+}
+#two {
+  background: yellow;
+  width: 100px;
+  height: 100px;
+  page-transition-tag: two;
+}
+#three {
+  background: blue;
+  width: 100px;
+  height: 100px;
+  page-transition-tag: three;
+}
+#four {
+  position: absolute;
+  background: lightgreen;
+  width: 100px;
+  height: 100px;
+  top: 50px;
+  left: 275px;
+  page-transition-tag: four;
+}
+
+.hidden {
+  background: pink;
+  width: 10px;
+  height: 10px;
+  page-transition-tag: hidden;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+
+html::page-transition-container(one) {
+  animation: unset;
+  transform: unset;
+  position: absolute;
+  top: 50px;
+  left: 50px;
+}
+html::page-transition-container(two) {
+  animation: unset;
+  transform: unset;
+  position: absolute;
+  top: 50px;
+  left: 125px;
+}
+html::page-transition-container(three) {
+  animation: unset;
+  transform: unset;
+  position: absolute;
+  top: 50px;
+  left: 200px;
+}
+html::page-transition-incoming-image(four) {
+  animation: unset;
+  opacity: 1;
+}
+
+html::page-transition-incoming-image(one),
+html::page-transition-incoming-image(two),
+html::page-transition-incoming-image(three) { animation: unset; opacity: 0; }
+
+html::page-transition-outgoing-image(one),
+html::page-transition-outgoing-image(two),
+html::page-transition-outgoing-image(three) { animation: unset; opacity: 1; }
+
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+
+</style>
+
+<div id=one></div>
+<div id=two></div>
+<div id=three></div>
+
+<div id=hidden class=hidden></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    const f = document.createElement("div");
+    f.id = "four";
+    document.body.appendChild(f);
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

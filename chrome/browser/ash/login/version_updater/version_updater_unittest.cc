@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,31 +7,30 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 
 using testing::_;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -39,10 +38,8 @@ constexpr int kDownloadTimeInSeconds = 50 * 60;
 constexpr int kVerifyingTimeInSeconds = 5 * 60;
 constexpr int kFinalizingTimeInSeconds = 5 * 60;
 
-constexpr const char kNetworkGuid[] = "test_network";
-
 MATCHER_P(TimeLeftEq, time_in_seconds, "") {
-  return arg.total_time_left == base::TimeDelta::FromSeconds(time_in_seconds);
+  return arg.total_time_left == base::Seconds(time_in_seconds);
 }
 
 MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
@@ -54,6 +51,9 @@ MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
 class VersionUpdaterUnitTest : public testing::Test {
  public:
   VersionUpdaterUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
+  VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
 
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
@@ -75,36 +75,20 @@ class VersionUpdaterUnitTest : public testing::Test {
     ++checks_count_;
   }
 
-  void SetUpMockNetworkPortalDetector() {
-    network_portal_detector::SetNetworkPortalDetector(
-        mock_network_portal_detector_.get());
-  }
-
-  void SetUpFakeNetworkPortalDetector() {
-    fake_network_portal_detector_->SetDefaultNetworkForTesting(kNetworkGuid);
-    network_portal_detector::SetNetworkPortalDetector(
-        fake_network_portal_detector_.get());
-  }
-
   // testing::Test:
   void SetUp() override {
     // Initialize objects needed by VersionUpdater.
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
-    // `mock_network_portal_detector_->IsEnabled()` will always return false.
     mock_network_portal_detector_ =
         std::make_unique<MockNetworkPortalDetector>();
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
         .Times(AnyNumber())
         .WillRepeatedly(Return(false));
-
-    // `fake_network_portal_detector_->IsEnabled()` will always return true.
-    fake_network_portal_detector_ =
-        std::make_unique<NetworkPortalDetectorTestImpl>();
+    network_portal_detector::SetNetworkPortalDetector(
+        mock_network_portal_detector_.get());
 
     mock_delegate_ = std::make_unique<MockVersionUpdaterDelegate>();
     version_updater_ = std::make_unique<VersionUpdater>(mock_delegate_.get());
@@ -114,25 +98,34 @@ class VersionUpdaterUnitTest : public testing::Test {
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    // We need to stop observing `NetworkPortalDetector` before call
-    // `DBusThreadManager::Shutdown()`, so destroy `version_updater_` now.
+
     version_updater_.reset();
     mock_delegate_.reset();
 
     network_portal_detector::InitializeForTesting(nullptr);
-    NetworkHandler::Shutdown();
+    network_handler_test_helper_.reset();
 
-    // It will delete `fake_update_engine_client_`.
-    DBusThreadManager::Shutdown();
+    UpdateEngineClient::Shutdown();
+  }
+
+  void StartNetworkCheck() {
+    EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(1);
+    EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
+    version_updater_->StartNetworkCheck();
+  }
+
+  std::string ConfigureWiFi(const std::string& state) {
+    network_handler_test_helper_->ResetDevicesAndServices();
+    return network_handler_test_helper_->ConfigureWiFi(state);
   }
 
  protected:
   std::unique_ptr<VersionUpdater> version_updater_;
 
   // Accessory objects needed by VersionUpdater.
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<MockVersionUpdaterDelegate> mock_delegate_;
   std::unique_ptr<MockNetworkPortalDetector> mock_network_portal_detector_;
-  std::unique_ptr<NetworkPortalDetectorTestImpl> fake_network_portal_detector_;
   FakeUpdateEngineClient* fake_update_engine_client_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -142,15 +135,10 @@ class VersionUpdaterUnitTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 
   int checks_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterUnitTest);
 };
 
 TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -164,10 +152,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesNoUpdate) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesAvailableUpdate) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -193,10 +178,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesAvailableUpdate) {
 // Simple time left test case expectation which does not cover using download
 // speed estimation.
 TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -222,8 +204,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
     EXPECT_CALL(*mock_delegate_,
                 UpdateInfoChanged(TimeLeftEq(time_left - seconds - 1)));
   }
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_downloading));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_downloading));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // VERIFYING starts.
@@ -243,8 +224,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
       *mock_delegate_,
       UpdateInfoChanged(TimeLeftEq(time_left - kVerifyingTimeInSeconds)))
       .Times(over_time + 1);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromSeconds(time_spent_on_verifying));
+  task_environment_.FastForwardBy(base::Seconds(time_spent_on_verifying));
   Mock::VerifyAndClearExpectations(&mock_delegate_);
 
   // FINALIZING starts.
@@ -261,10 +241,7 @@ TEST_F(VersionUpdaterUnitTest, TimeLeftExpectation) {
 }
 
 TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
 
@@ -288,7 +265,7 @@ TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   EXPECT_CALL(*mock_delegate_,
               UpdateInfoChanged(DowloadingTimeLeftEq(false, 0)));
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   status.set_progress(0.01);
   EXPECT_CALL(*mock_delegate_,
@@ -298,10 +275,7 @@ TEST_F(VersionUpdaterUnitTest, SimpleTimeLeftExpectationDownloadinStage) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnUpdateAvailable) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -320,10 +294,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnUpdateAvailable) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnDownloading) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -344,10 +315,7 @@ TEST_F(VersionUpdaterUnitTest, HandlesCancelUpdateOnDownloading) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandleUpdateError) {
-  SetUpMockNetworkPortalDetector();
-
-  EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  version_updater_->StartNetworkCheck();
+  StartNetworkCheck();
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -367,32 +335,57 @@ TEST_F(VersionUpdaterUnitTest, HandleUpdateError) {
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesPortalOnline) {
-  SetUpFakeNetworkPortalDetector();
+  EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
+      .WillOnce(Return(true));
 
+  // StartNetworkCheck will call PortalStateChanged with update_info.state
+  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  EXPECT_CALL(*mock_delegate_,
+              UpdateErrorMessage(NetworkState::PortalState::kUnknown,
+                                 NetworkError::ERROR_STATE_OFFLINE, _))
+      .Times(1);
+  EXPECT_CALL(*mock_delegate_, ShowErrorMessage()).Times(1);
+  EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(2);
+  std::string path = ConfigureWiFi(shill::kStateIdle);
   version_updater_->StartNetworkCheck();
+  Mock::VerifyAndClearExpectations(&mock_delegate_);
 
+  // Setting the default network state to online will trigger
+  // PortalStateChanged with update_info.state == STATE_ERROR and
+  // PortalState == kOnline.
   EXPECT_CALL(*mock_delegate_, PrepareForUpdateCheck()).Times(1);
-  fake_network_portal_detector_->SetDetectionResultsForTesting(
-      kNetworkGuid, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 200);
-  fake_network_portal_detector_->NotifyObserversForTesting();
+  EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(1);
+  network_handler_test_helper_->SetServiceProperty(
+      path, shill::kStateProperty, base::Value(shill::kStateOnline));
 }
 
 TEST_F(VersionUpdaterUnitTest, HandlesPortalError) {
-  SetUpFakeNetworkPortalDetector();
+  EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
+      .WillOnce(Return(true));
 
-  version_updater_->StartNetworkCheck();
-
-  // Name of the network is empty because of implementation
-  // SetDefaultNetworkForTesting (and it's not easy to fix it).
-  EXPECT_CALL(
-      *mock_delegate_,
-      UpdateErrorMessage(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
-                         NetworkError::ERROR_STATE_PORTAL, ""))
+  // StartNetworkCheck will call PortalStateChanged with update_info.state
+  // == STATE_FIRST_PORTAL_CHECK with an unknown portal state.
+  EXPECT_CALL(*mock_delegate_,
+              UpdateErrorMessage(NetworkState::PortalState::kUnknown,
+                                 NetworkError::ERROR_STATE_OFFLINE, _))
       .Times(1);
-  EXPECT_CALL(*mock_delegate_, DelayErrorMessage()).Times(1);
-  fake_network_portal_detector_->SetDetectionResultsForTesting(
-      kNetworkGuid, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 204);
-  fake_network_portal_detector_->NotifyObserversForTesting();
+  EXPECT_CALL(*mock_delegate_, ShowErrorMessage()).Times(1);
+  EXPECT_CALL(*mock_delegate_, UpdateInfoChanged(_)).Times(2);
+  std::string path = ConfigureWiFi(shill::kStateIdle);
+  std::string ssid = network_handler_test_helper_->GetServiceStringProperty(
+      path, shill::kSSIDProperty);
+  version_updater_->StartNetworkCheck();
+  Mock::VerifyAndClearExpectations(&mock_delegate_);
+
+  // Setting the default network state to redirect-found will trigger
+  // PortalStateChanged with update_info.state == STATE_ERROR and
+  // PortalState == kPortal.
+  EXPECT_CALL(*mock_delegate_,
+              UpdateErrorMessage(NetworkState::PortalState::kPortal,
+                                 NetworkError::ERROR_STATE_PORTAL, ssid))
+      .Times(1);
+  network_handler_test_helper_->SetServiceProperty(
+      path, shill::kStateProperty, base::Value(shill::kStateRedirectFound));
 }
 
-}  // namespace chromeos
+}  // namespace ash

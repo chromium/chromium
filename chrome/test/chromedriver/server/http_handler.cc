@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"  // For CHECK macros.
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,12 +39,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "url/url_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -66,13 +67,82 @@ bool w3cMode(const std::string& session_id,
   return kW3CDefault;
 }
 
-net::HttpServerResponseInfo createWebSocketRejectResponse(
+net::HttpServerResponseInfo CreateWebSocketRejectResponse(
     net::HttpStatusCode code,
     const std::string& msg) {
   net::HttpServerResponseInfo response(code);
   response.AddHeader("X-WebSocket-Reject-Reason", msg);
   return response;
 }
+
+void SendWebSocketResponseOnCmdThread(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id,
+    const std::string& data) {
+  io_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendOverWebSocket,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void SendWebSocketResponseOnSessionThread(
+    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id,
+    const std::string& data) {
+  cmd_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SendWebSocketResponseOnCmdThread, io_task_runner,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void CloseWebSocketOnCmdThread(
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id) {
+  io_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&HttpServer::Close,
+                                base::Unretained(http_server), connection_id));
+}
+
+void CloseWebSocketOnSessionThread(
+    scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    HttpServer* http_server,
+    int connection_id) {
+  cmd_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&CloseWebSocketOnCmdThread, io_task_runner,
+                                base::Unretained(http_server), connection_id));
+}
+
+void AddBidiConnectionOnSessionThread(int connection_id,
+                                      SendTextFunc send_response,
+                                      CloseFunc close_connection) {
+  Session* session = GetThreadLocalSession();
+  // session == nullptr is a valid case: ExecuteQuit has already been handled
+  // in the session thread but the following
+  // TerminateSessionThreadOnCommandThread has not yet been executed (the latter
+  // destroys the session thread) The connection has already been accepted by
+  // the CMD thread but soon it will be closed. We don't need to do anything.
+  if (session != nullptr) {
+    session->AddBidiConnection(connection_id, std::move(send_response),
+                               std::move(close_connection));
+  }
+}
+
+void RemoveBidiConnectionOnSessionThread(int connection_id) {
+  Session* session = GetThreadLocalSession();
+  // session == nullptr is a valid case: ExecuteQuit has already been handled
+  // in the session thread but the following
+  // TerminateSessionThreadOnCommandThread has not yet been executed (the latter
+  // destroys the session thread)
+  if (session != nullptr) {
+    session->RemoveBidiConnection(connection_id);
+  }
+}
+
 }  // namespace
 
 // WrapperURLLoaderFactory subclasses mojom::URLLoaderFactory as non-mojo, cross
@@ -84,6 +154,9 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : url_loader_factory_(std::move(url_loader_factory)),
         network_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  WrapperURLLoaderFactory(const WrapperURLLoaderFactory&) = delete;
+  WrapperURLLoaderFactory& operator=(const WrapperURLLoaderFactory&) = delete;
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -116,8 +189,6 @@ class WrapperURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // Runner for URLRequestContextGetter network thread.
   scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperURLLoaderFactory);
 };
 
 CommandMapping::CommandMapping(HttpMethod method,
@@ -151,9 +222,10 @@ HttpHandler::HttpHandler(
     int adb_port)
     : quit_func_(quit_func),
       io_task_runner_(io_task_runner),
+      cmd_task_runner_(cmd_task_runner),
       url_base_(url_base),
       received_shutdown_(false) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
   context_getter_ = new URLRequestContextGetter(io_task_runner_);
@@ -262,6 +334,20 @@ HttpHandler::HttpHandler(
           kGet, "session/:sessionId/element/active",
           WrapToCommand("GetActiveElement",
                         base::BindRepeating(&ExecuteGetActiveElement))),
+      CommandMapping(
+          kGet, "session/:sessionId/element/:id/shadow",
+          WrapToCommand("GetElementShadowRoot",
+                        base::BindRepeating(&ExecuteGetElementShadowRoot))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/element",
+          WrapToCommand(
+              "FindChildElementFromShadowRoot",
+              base::BindRepeating(&ExecuteFindChildElementFromShadowRoot, 50))),
+      CommandMapping(
+          kPost, "session/:sessionId/shadow/:id/elements",
+          WrapToCommand("FindChildElementsFromShadowRoot",
+                        base::BindRepeating(
+                            &ExecuteFindChildElementsFromShadowRoot, 50))),
       CommandMapping(
           kPost, "session/:sessionId/element",
           WrapToCommand("FindElement",
@@ -841,6 +927,13 @@ HttpHandler::HttpHandler(
                             &ExecuteWebAuthnCommand,
                             base::BindRepeating(&ExecuteSetUserVerified)))),
 
+      // Extensions for Secure Payment Confirmation API:
+      // https://w3c.github.io/secure-payment-confirmation/#sctn-automation
+      CommandMapping(
+          kPost, "session/:sessionId/secure-payment-confirmation/set-mode",
+          WrapToCommand("SetSPCTransactionMode",
+                        base::BindRepeating(&ExecuteSetSPCTransactionMode))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",
@@ -932,6 +1025,10 @@ HttpHandler::HttpHandler(
           WrapToCommand("SetSinkToUse",
                         base::BindRepeating(&ExecuteSetSinkToUse))),
       VendorPrefixedCommandMapping(
+          kPost, "session/:sessionId/%s/cast/start_desktop_mirroring",
+          WrapToCommand("StartDesktopMirroring",
+                        base::BindRepeating(&ExecuteStartDesktopMirroring))),
+      VendorPrefixedCommandMapping(
           kPost, "session/:sessionId/%s/cast/start_tab_mirroring",
           WrapToCommand("StartTabMirroring",
                         base::BindRepeating(&ExecuteStartTabMirroring))),
@@ -972,7 +1069,8 @@ HttpHandler::HttpHandler(
           WrapToCommand("SendCommandFromWebSocket",
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
   };
-  command_map_.reset(new CommandMap(commands, commands + base::size(commands)));
+  command_map_ =
+      std::make_unique<CommandMap>(commands, commands + std::size(commands));
 }
 
 HttpHandler::~HttpHandler() {}
@@ -1085,7 +1183,7 @@ void HttpHandler::HandleCommand(
     return;
   }
   // Pass host instead for potential WebSocketUrl if it's a new session
-  iter->command.Run(params,
+  iter->command.Run(params.GetDict(),
                     internal::IsNewSession(*iter)
                         ? request.GetHeaderValue("host")
                         : session_id,
@@ -1166,109 +1264,133 @@ HttpHandler::PrepareStandardResponse(
   std::unique_ptr<net::HttpServerResponseInfo> response;
   switch (status.code()) {
     case kOk:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_OK));
+      response = std::make_unique<net::HttpServerResponseInfo>(net::HTTP_OK);
       break;
     // error codes
     case kElementClickIntercepted:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kElementNotInteractable:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidArgument:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidCookieDomain:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidElementState:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSelector:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSessionId:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kJavaScriptError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kMoveTargetOutOfBounds:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kNoSuchAlert:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchCookie:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchElement:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchFrame:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchWindow:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kScriptTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kSessionNotCreated:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kStaleElementReference:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnableToSetCookie:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnexpectedAlertOpen:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnknownCommand:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kUnknownError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnsupportedOperation:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kTargetDetached:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     // TODO(kereliuk): evaluate the usage of these as they relate to the spec
     case kElementNotVisible:
     case kXPathLookupError:
     case kNoSuchExecutionContext:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kChromeNotReachable:
     case kDisconnected:
     case kForbidden:
     case kTabCrashed:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
+      break;
+    case kNoSuchShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
+      break;
+    case kDetachedShadowRoot:
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     default:
       DCHECK(false);
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
   }
 
@@ -1277,11 +1399,11 @@ HttpHandler::PrepareStandardResponse(
 
   base::DictionaryValue body_params;
   if (status.IsError()){
-    std::unique_ptr<base::DictionaryValue> inner_params(
-        new base::DictionaryValue());
-    inner_params->SetString("error", StatusCodeToString(status.code()));
-    inner_params->SetString("message", status.message());
-    inner_params->SetString("stacktrace", status.stack_trace());
+    base::Value* inner_params =
+        body_params.SetKey("value", base::Value(base::Value::Type::DICTIONARY));
+    inner_params->SetStringKey("error", StatusCodeToString(status.code()));
+    inner_params->SetStringKey("message", status.message());
+    inner_params->SetStringKey("stacktrace", status.stack_trace());
     // According to
     // https://www.w3.org/TR/2018/REC-webdriver1-20180605/#dfn-annotated-unexpected-alert-open-error
     // error UnexpectedAlertOpen should contain 'data.text' with alert text
@@ -1290,18 +1412,18 @@ HttpHandler::PrepareStandardResponse(
       auto first = message.find("{");
       auto last = message.find_last_of("}");
       if (first == std::string::npos || last == std::string::npos) {
-        inner_params->SetString("data.text", "");
+        inner_params->SetStringPath("data.text", "");
       } else {
         std::string alertText = message.substr(first, last - first);
         auto colon = alertText.find(":");
         if (colon != std::string::npos && alertText.size() > (colon + 2))
           alertText = alertText.substr(colon + 2);
-        inner_params->SetString("data.text", alertText);
+        inner_params->SetStringPath("data.text", alertText);
       }
     }
-    body_params.SetDictionary("value", std::move(inner_params));
   } else {
-    body_params.Set("value", std::move(value));
+    body_params.SetKey("value",
+                       base::Value::FromUniquePtrValue(std::move(value)));
   }
 
   std::string body;
@@ -1347,11 +1469,125 @@ void HttpHandler::OnWebSocketRequest(HttpServer* http_server,
   } else {
     session_connection_map_[session_id] = connection_id;
     connection_session_map_[connection_id] = session_id;
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HttpServer::AcceptWebSocket,
-                       base::Unretained(http_server), connection_id, info));
+
+    auto thread_it = session_thread_map_.find(session_id);
+    // check first that the session thread is still alive
+    if (thread_it != session_thread_map_.end()) {
+      auto send_response_from_seq = base::BindRepeating(
+          &SendWebSocketResponseOnSessionThread, cmd_task_runner_,
+          io_task_runner_, base::Unretained(http_server), connection_id);
+
+      auto close_from_seq = base::BindRepeating(
+          &CloseWebSocketOnSessionThread, cmd_task_runner_, io_task_runner_,
+          base::Unretained(http_server), connection_id);
+
+      thread_it->second->thread()->task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AddBidiConnectionOnSessionThread, connection_id,
+                         std::move(send_response_from_seq),
+                         std::move(close_from_seq)));
+
+      io_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HttpServer::AcceptWebSocket,
+                         base::Unretained(http_server), connection_id, info));
+    } else {
+      std::string err_msg = "session not found session_id=" + session_id;
+      VLOG(0) << "HttpHandler WebSocketRequest error " << err_msg;
+      SendWebSocketRejectResponse(http_server, connection_id,
+                                  net::HTTP_BAD_REQUEST, err_msg);
+    }
   }
+}
+
+void HttpHandler::OnWebSocketMessage(HttpServer* http_server,
+                                     int connection_id,
+                                     const std::string& data) {
+  base::RepeatingCallback<void(const Status&)> send_error = base::BindRepeating(
+      [](HttpServer* http_server, int connection_id, const std::string& data,
+         scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+         const Status& status) {
+        base::Value::Dict msg_dict;
+        msg_dict.Set("message", status.message());
+        msg_dict.Set("error", StatusCodeToString(status.code()));
+        absl::optional<base::Value> value =
+            base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+        if (value && value->is_dict()) {
+          absl::optional<int> msg_id = value->GetDict().FindInt("id");
+          if (msg_id) {
+            msg_dict.Set("id", *msg_id);
+          } else {
+            LOG(WARNING) << "BiDi command has no id";
+          }
+        } else {
+          LOG(WARNING) << "BiDi command is not a JSON map";
+        }
+        std::string error_message;
+        if (base::JSONWriter::Write(msg_dict, &error_message)) {
+          io_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(&HttpServer::SendOverWebSocket,
+                                        base::Unretained(http_server),
+                                        connection_id, error_message));
+        } else {
+          LOG(WARNING) << "unable to serialize BiDi error message";
+        }
+      },
+      http_server, connection_id, data, io_task_runner_);
+
+  auto it = connection_session_map_.find(connection_id);
+  if (it == connection_session_map_.end()) {
+    // Session was terminated but the connection is not yet closed
+    send_error.Run(Status{kNoSuchFrame, "session not found"});
+    return;
+  }
+
+  std::string session_id = it->second;
+
+  base::Value::Dict params;
+  params.Set("bidiCommand", data);
+
+  auto callback = base::BindRepeating(
+      [](base::RepeatingCallback<void(const Status&)> send_error,
+         const Status& status, std::unique_ptr<base::Value>,
+         const std::string& session_id, bool) {
+        if (status.IsOk()) {
+          return;
+        }
+        switch (status.code()) {
+          case kInvalidSessionId: {
+            // ExecuteSessionCommandOnSessionThread can return this error status
+            send_error.Run(Status{
+                kNoSuchFrame, "session not found session_id=" + session_id});
+            break;
+          }
+          default: {
+            send_error.Run(status);
+            break;
+          }
+        }
+      },
+      send_error);
+  auto cmd = WrapToCommand("ExecuteBidiCommand",
+                           base::BindRepeating(&ExecuteBidiCommand));
+  cmd.Run(params, session_id, std::move(callback));
+}
+
+void HttpHandler::OnWebSocketResponseOnCmdThread(HttpServer* http_server,
+                                                 int connection_id,
+                                                 const std::string& data) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpServer::SendOverWebSocket,
+                     base::Unretained(http_server), connection_id, data));
+}
+
+void HttpHandler::OnWebSocketResponseOnSessionThread(HttpServer* http_server,
+                                                     int connection_id,
+                                                     const std::string& data) {
+  cmd_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HttpHandler::OnWebSocketResponseOnCmdThread, WeakPtr(),
+                     base::Unretained(http_server), connection_id, data));
 }
 
 void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
@@ -1359,8 +1595,17 @@ void HttpHandler::OnClose(HttpServer* http_server, int connection_id) {
   if (it == connection_session_map_.end()) {
     return;
   }
-  session_connection_map_[it->second] = -1;
+  std::string session_id = it->second;
+  session_connection_map_[session_id] = -1;
   connection_session_map_.erase(it);
+
+  auto thread_it = session_thread_map_.find(session_id);
+  // check first that the session thread is still alive
+  if (thread_it != session_thread_map_.end()) {
+    thread_it->second->thread()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RemoveBidiConnectionOnSessionThread, connection_id));
+  }
 }
 
 void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
@@ -1371,7 +1616,7 @@ void HttpHandler::SendWebSocketRejectResponse(HttpServer* http_server,
       FROM_HERE,
       base::BindOnce(&HttpServer::SendResponse, base::Unretained(http_server),
                      connection_id,
-                     createWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
+                     CreateWebSocketRejectResponse(net::HTTP_BAD_REQUEST, msg),
                      TRAFFIC_ANNOTATION_FOR_TESTS));
 }
 

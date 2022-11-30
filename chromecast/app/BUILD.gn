@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,9 +12,10 @@ cast_source_set("app") {
     "cast_main_delegate.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":cast_crash_client",
-    "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/browser",
@@ -31,7 +32,7 @@ cast_source_set("app") {
   ]
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     deps += [ "//components/crash/core/app" ]
   }
 }
@@ -117,8 +118,6 @@ cast_source_set("unittests") {
 grit("resources") {
   source = "//chromecast/app/resources/shell_resources.grd"
 
-  resource_ids = "//chromecast/app/resources/resource_ids"
-
   outputs = [
     "grit/shell_resources.h",
     "shell_resources.pak",
@@ -127,7 +126,6 @@ grit("resources") {
 
 grit("chromecast_settings") {
   source = "//chromecast/app/resources/chromecast_settings.grd"
-  resource_ids = "//chromecast/app/resources/resource_ids"
 
   outputs = [ "grit/chromecast_settings.h" ]
   foreach(locale, cast_locales) {

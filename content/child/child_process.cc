@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,13 @@
 
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -20,6 +22,7 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/cpu_time_metrics.h"
 #include "content/common/mojo_core_library_support.h"
+#include "content/common/process_visibility_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -30,29 +33,42 @@
 #include "base/test/clang_profiling.h"
 #endif
 
-#if defined(OS_ANDROID)
-#include "components/power_scheduler/power_scheduler.h"
-#endif
-
 namespace content {
 
 namespace {
 base::LazyInstance<base::ThreadLocalPointer<ChildProcess>>::DestructorAtExit
     g_lazy_child_process_tls = LAZY_INSTANCE_INITIALIZER;
+
+class ChildIOThread : public base::Thread {
+ public:
+  ChildIOThread() : base::Thread("Chrome_ChildIOThread") {}
+  ChildIOThread(const ChildIOThread&) = delete;
+  ChildIOThread(ChildIOThread&&) = delete;
+  ChildIOThread& operator=(const ChildIOThread&) = delete;
+  ChildIOThread& operator=(ChildIOThread&&) = delete;
+
+  void Run(base::RunLoop* run_loop) override {
+    base::ScopedClosureRunner unregister_thread_closure;
+    if (base::HangWatcher::IsIOThreadHangWatchingEnabled()) {
+      unregister_thread_closure = base::HangWatcher::RegisterThread(
+          base::HangWatcher::ThreadType::kIOThread);
+    }
+    base::Thread::Run(run_loop);
+  }
+};
 }
 
-ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
-                           const std::string& thread_pool_name,
+ChildProcess::ChildProcess(base::ThreadType io_thread_type,
                            std::unique_ptr<base::ThreadPoolInstance::InitParams>
                                thread_pool_init_params)
     : ref_count_(0),
       shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
-      io_thread_("Chrome_ChildIOThread") {
+      io_thread_(std::make_unique<ChildIOThread>()) {
   DCHECK(!g_lazy_child_process_tls.Pointer()->Get());
   g_lazy_child_process_tls.Pointer()->Set(this);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   const bool is_embedded_in_browser_process =
@@ -71,44 +87,62 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   }
 #endif
 
-  // Initialize ThreadPoolInstance if not already done. A ThreadPoolInstance may
-  // already exist when ChildProcess is instantiated in the browser process or
-  // in a test process.
-  if (!base::ThreadPoolInstance::Get()) {
-    if (thread_pool_init_params) {
-      base::ThreadPoolInstance::Create(thread_pool_name);
-      base::ThreadPoolInstance::Get()->Start(*thread_pool_init_params.get());
-    } else {
-      base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-          thread_pool_name);
-    }
-
-    DCHECK(base::ThreadPoolInstance::Get());
+  // Start ThreadPoolInstance if not already done. A ThreadPoolInstance
+  // should already exist, and may already be running when ChildProcess is
+  // instantiated in the browser process or in a test process.
+  //
+  // There are 3 possibilities:
+  //
+  // 1. ChildProcess is actually being constructed on a thread in the browser
+  //    process (eg. for single-process mode). The ThreadPool was already
+  //    started on the main thread, but this happened before the ChildProcess
+  //    thread was created, which creates a happens-before relationship. So
+  //    it's safe to check WasStartedUnsafe().
+  // 2. ChildProcess is being constructed in a test. The ThreadPool was
+  //    already started by TaskEnvironment on the main thread. Depending on
+  //    the test, ChildProcess might be constructed on the main thread or
+  //    another thread that was created after the test start. Either way, it's
+  //    safe to check WasStartedUnsafe().
+  // 3. ChildProcess is being constructed in a subprocess from ContentMain, on
+  //    the main thread. This is the same thread that created the ThreadPool
+  //    so it's safe to check WasStartedUnsafe().
+  //
+  // Note that the only case we expect WasStartedUnsafe() to return true
+  // should be running on the main thread. So if there's a logic error and a
+  // stale read causes WasStartedUnsafe() to return false after the
+  // ThreadPool was started, Start() will correctly DCHECK as it's called on the
+  // wrong thread. (The result never flips from true to false so a stale read
+  // should never return true.)
+  auto* thread_pool = base::ThreadPoolInstance::Get();
+  DCHECK(thread_pool);
+  if (!thread_pool->WasStartedUnsafe()) {
+    if (thread_pool_init_params)
+      thread_pool->Start(*thread_pool_init_params.get());
+    else
+      thread_pool->StartWithDefaultParams();
     initialized_thread_pool_ = true;
   }
 
-  tracing::InitTracingPostThreadPoolStartAndFeatureList();
+  tracing::InitTracingPostThreadPoolStartAndFeatureList(
+      /* enable_consumer */ false);
 
-#if defined(OS_ANDROID)
+  // Ensure the visibility tracker is created on the main thread.
+  ProcessVisibilityTracker::GetInstance();
+
+#if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();
-  // For child processes, this requires allowing of the sched_setaffinity()
-  // syscall in the sandbox (baseline_policy_android.cc). When this call is
-  // removed, the sandbox allowlist should be updated too.
-  power_scheduler::PowerScheduler::GetInstance()->Setup();
 #endif
 
   // We can't recover from failing to start the IO thread.
   base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
-  thread_options.priority = io_thread_priority;
-#if defined(OS_ANDROID)
+  thread_options.thread_type = io_thread_type;
+// TODO(1329208): Figure out whether IS_ANDROID can be lifted here.
+#if BUILDFLAG(IS_ANDROID)
   // TODO(reveman): Remove this in favor of setting it explicitly for each type
   // of process.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBlinkCompositorUseDisplayThreadPriority)) {
-    thread_options.priority = base::ThreadPriority::DISPLAY;
-  }
+  thread_options.thread_type = base::ThreadType::kCompositing;
 #endif
-  CHECK(io_thread_.StartWithOptions(thread_options));
+  CHECK(io_thread_->StartWithOptions(std::move(thread_options)));
 }
 
 ChildProcess::~ChildProcess() {
@@ -132,7 +166,8 @@ ChildProcess::~ChildProcess() {
   }
 
   g_lazy_child_process_tls.Pointer()->Set(nullptr);
-  io_thread_.Stop();
+  io_thread_->Stop();
+  io_thread_.reset();
 
   if (initialized_thread_pool_) {
     DCHECK(base::ThreadPoolInstance::Get());

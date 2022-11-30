@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // Displays a waiting UI.
 // It displays an activity indicator with an optional colored background.
 // The activity indicator appears after a delay, starting from the moment
-// |startWaiting| is called.
+// `startWaiting` is called.
 @interface HomeWaitingView : UIView
 
 - (instancetype)initWithFrame:(CGRect)frame backgroundColor:(UIColor*)color;
@@ -23,7 +23,7 @@
 - (void)startWaiting;
 
 // Call this method when this view is removed from the visible view hierarchy.
-// |completion| will be called when this view is done animating out.
+// `completion` will be called when this view is done animating out.
 - (void)stopWaitingWithCompletion:(ProceduralBlock)completion;
 
 @end

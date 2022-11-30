@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,8 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
   void SetDismissalCallbacksEnabled(bool enabled);
   bool AreDismissalCallbacksEnabled() const;
 
-  // Simulates the dismissal of overlay UI for |reason|.  If dismissal callbacks
-  // are enabled, triggers execution of |request|'s OverlayDismissalCallback.
+  // Simulates the dismissal of overlay UI for `reason`.  If dismissal callbacks
+  // are enabled, triggers execution of `request`'s OverlayDismissalCallback.
   void SimulateDismissalForRequest(OverlayRequest* request,
                                    OverlayDismissalReason reason);
 
@@ -67,6 +67,7 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
                      OverlayDismissalCallback dismissal_callback) override;
   void HideOverlayUI(OverlayRequest* request) override;
   void CancelOverlayUI(OverlayRequest* request) override;
+  void SetUIDisabled(bool disabled) override;
 
  private:
   // Struct used to store state for the fake presentation context.

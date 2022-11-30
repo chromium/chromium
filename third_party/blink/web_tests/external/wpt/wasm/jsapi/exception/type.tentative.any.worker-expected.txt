@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL [] exception.type is not a function
+FAIL [i32 i64] exception.type is not a function
+FAIL [i32 i64 f32 f64] exception.type is not a function
+Harness: the test ran to completion.
+

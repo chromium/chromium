@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
@@ -24,25 +23,26 @@ namespace chromeos {
 class AssistantOptInUI : public ui::WebDialogUI {
  public:
   explicit AssistantOptInUI(content::WebUI* web_ui);
+
+  AssistantOptInUI(const AssistantOptInUI&) = delete;
+  AssistantOptInUI& operator=(const AssistantOptInUI&) = delete;
+
   ~AssistantOptInUI() override;
 
   // Called when the dialog is closed.
   void OnDialogClosed();
 
  private:
-  // Called when the webui has been initialized.
-  void Initialize();
-
-  JSCallsContainer js_calls_container_;
   AssistantOptInFlowScreenHandler* assistant_handler_ptr_;
   base::WeakPtrFactory<AssistantOptInUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInUI);
 };
 
 // Dialog delegate for the assistant optin page.
 class AssistantOptInDialog : public SystemWebDialogDelegate {
  public:
+  AssistantOptInDialog(const AssistantOptInDialog&) = delete;
+  AssistantOptInDialog& operator=(const AssistantOptInDialog&) = delete;
+
   // Shows the assistant optin dialog.
   static void Show(ash::FlowType type = ash::FlowType::kConsentFlow,
                    ash::AssistantSetup::StartAssistantOptInFlowCallback
@@ -67,14 +67,10 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:
-  GURL CreateAssistantOptInURL(ash::FlowType type);
-
   AssistantOptInUI* assistant_ui_ = nullptr;
 
   // Callback to run if the flow is completed.
   ash::AssistantSetup::StartAssistantOptInFlowCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInDialog);
 };
 
 }  // namespace chromeos

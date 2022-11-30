@@ -52,11 +52,12 @@ class ColorInputType final : public InputType,
   void DidChooseColor(const Color&) override;
   void DidEndChooser() override;
   Element& OwnerElement() const override;
-  IntRect ElementRectRelativeToViewport() const override;
+  gfx::Rect ElementRectRelativeToLocalRoot() const override;
   Color CurrentColor() override;
   bool ShouldShowSuggestions() const override;
   Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const override;
   ColorChooserClient* GetColorChooserClient() override;
+  bool TypeMismatchFor(const String&) const;
 
  private:
   InputTypeView* CreateView() override;
@@ -69,10 +70,11 @@ class ColorInputType final : public InputType,
   void CreateShadowSubtree() override;
   void DidSetValue(const String&, bool value_changed) override;
   void HandleDOMActivateEvent(Event&) override;
+  ControlPart AutoAppearance() const override;
+  void OpenPopupView() override;
   void ClosePopupView() override;
   bool HasOpenedPopup() const override;
   bool ShouldRespectListAttribute() override;
-  bool TypeMismatchFor(const String&) const override;
   void WarnIfValueIsInvalid(const String&) const override;
   void UpdateView() override;
   AXObject* PopupRootAXObject() override;
@@ -81,6 +83,13 @@ class ColorInputType final : public InputType,
   HTMLElement* ShadowColorSwatch() const;
 
   Member<ColorChooser> chooser_;
+};
+
+template <>
+struct DowncastTraits<ColorInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsColorInputType();
+  }
 };
 
 }  // namespace blink

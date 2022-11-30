@@ -13,23 +13,19 @@
 
 <script>
 var givenScrollDelta = 2;
-var givenScrollLeft = 2;
 // Page scrolls 87.5% of window size (excluding scrollbars).
-var expectedScrollTop = document.documentElement.clientHeight * 0.875;
-var expectedScrollLeft = document.documentElement.clientWidth * 0.875;
+var expectedScrollTop = (
+  document.documentElement.clientHeight * MIN_FRACTION_TO_STEP_WHEN_PAGING
+);
+var expectedScrollLeft = (
+  document.documentElement.clientWidth * MIN_FRACTION_TO_STEP_WHEN_PAGING
+);
 var last_event = null;
 var source = GestureSourceType.MOUSE_INPUT;
 const numTicks = givenScrollDelta / pixelsPerTick();
 const expectedWheelDelta = numTicks * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 
-// There is some minor inconsistency between main and compositor threads in
-// which direction they round so allow up to one pixel of slack.
-function approx_equal(a, b) {
-  return Math.abs(a - b) < 1;
-}
-
-function mousewheelHandler(e)
-{
+function mousewheelHandler(e) {
     assert_equals(last_event, null);
     last_event = e;
 }
@@ -38,13 +34,27 @@ promise_test(async () => {
     document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
     // Wheel event will scroll by one page
-    await smoothScrollWithXY(givenScrollDelta, givenScrollDelta, 100, 110, source, SPEED_INSTANT, false, true);
-    await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollLeft; });
-    await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
+    await smoothScrollWithXY(
+      givenScrollDelta, givenScrollDelta, 100, 110, source,
+      SPEED_INSTANT, false, true
+    );
+    await waitForAnimationEndTimeBased(() => {
+      return document.scrollingElement.scrollLeft;
+    });
+    await waitForAnimationEndTimeBased(() => {
+      return document.scrollingElement.scrollTop;
+    });
 
-    await conditionHolds( () => {
-        return approx_equal(document.scrollingElement.scrollLeft, window.expectedScrollLeft) &&
-               approx_equal(document.scrollingElement.scrollTop, window.expectedScrollTop);
+    // There is some minor inconsistency between main and compositor threads in
+    // which direction they round so allow up to one pixel of slack.
+    await conditionHolds(() => {
+      return (
+        approx_equals(
+          document.scrollingElement.scrollLeft, expectedScrollLeft, 1
+        ) &&
+        approx_equals(
+          document.scrollingElement.scrollTop, expectedScrollTop, 1
+      ));
     });
 
     // When a user operates the device for scrolling to down, wheelDeltaX is negative, otherwise positive.

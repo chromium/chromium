@@ -68,9 +68,8 @@ void Step::Optimize() {
   HeapVector<Member<Predicate>> remaining_predicates;
   for (const auto& predicate : predicates_) {
     if ((!predicate->IsContextPositionSensitive() ||
-         GetNodeTest().MergedPredicates().IsEmpty()) &&
-        !predicate->IsContextSizeSensitive() &&
-        remaining_predicates.IsEmpty()) {
+         GetNodeTest().MergedPredicates().empty()) &&
+        !predicate->IsContextSizeSensitive() && remaining_predicates.empty()) {
       GetNodeTest().MergedPredicates().push_back(predicate);
     } else {
       remaining_predicates.push_back(predicate);
@@ -84,8 +83,8 @@ bool OptimizeStepPair(Step* first, Step* second) {
       first->GetNodeTest().GetKind() == Step::NodeTest::kAnyNodeTest &&
       !first->predicates_.size() &&
       !first->GetNodeTest().MergedPredicates().size()) {
-    DCHECK(first->GetNodeTest().Data().IsEmpty());
-    DCHECK(first->GetNodeTest().NamespaceURI().IsEmpty());
+    DCHECK(first->GetNodeTest().Data().empty());
+    DCHECK(first->GetNodeTest().NamespaceURI().empty());
 
     // Optimize the common case of "//" AKA
     // /descendant-or-self::node()/child::NodeTest to /descendant::NodeTest.
@@ -173,7 +172,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
     case Step::NodeTest::kProcessingInstructionNodeTest: {
       const AtomicString& name = node_test.Data();
       return node->getNodeType() == Node::kProcessingInstructionNode &&
-             (name.IsEmpty() || node->nodeName() == name);
+             (name.empty() || node->nodeName() == name);
     }
     case Step::NodeTest::kAnyNodeTest:
       return true;
@@ -190,8 +189,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
           return false;
 
         if (name == g_star_atom)
-          return namespace_uri.IsEmpty() ||
-                 attr->namespaceURI() == namespace_uri;
+          return namespace_uri.empty() || attr->namespaceURI() == namespace_uri;
 
         if (attr->GetDocument().IsHTMLDocument() && attr->ownerElement() &&
             attr->ownerElement()->IsHTMLElement() && namespace_uri.IsNull() &&
@@ -215,7 +213,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
         return false;
 
       if (name == g_star_atom) {
-        return namespace_uri.IsEmpty() ||
+        return namespace_uri.empty() ||
                namespace_uri == element->namespaceURI();
       }
 
@@ -295,7 +293,7 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
     case kParentAxis:
       if (auto* attr = DynamicTo<Attr>(context)) {
         Element* n = attr->ownerElement();
-        if (NodeMatches(evaluation_context, n, kParentAxis, GetNodeTest()))
+        if (n && NodeMatches(evaluation_context, n, kParentAxis, GetNodeTest()))
           nodes.Append(n);
       } else {
         ContainerNode* n = context->parentNode();
@@ -306,7 +304,8 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
 
     case kAncestorAxis: {
       Node* n = context;
-      if (auto* attr = DynamicTo<Attr>(context)) {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         n = attr->ownerElement();
         if (NodeMatches(evaluation_context, n, kAncestorAxis, GetNodeTest()))
           nodes.Append(n);
@@ -342,8 +341,9 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
       nodes.MarkSorted(false);
       return;
 
-    case kFollowingAxis:
-      if (auto* attr = DynamicTo<Attr>(context)) {
+    case kFollowingAxis: {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         for (Node& p : NodeTraversal::StartsAfter(*attr->ownerElement())) {
           if (NodeMatches(evaluation_context, &p, kFollowingAxis,
                           GetNodeTest()))
@@ -364,9 +364,11 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
         }
       }
       return;
+    }
 
     case kPrecedingAxis: {
-      if (auto* attr = DynamicTo<Attr>(context))
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement())
         context = attr->ownerElement();
 
       Node* n = context;
@@ -450,7 +452,8 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
                       GetNodeTest()))
         nodes.Append(context);
       Node* n = context;
-      if (auto* attr = DynamicTo<Attr>(context)) {
+      auto* attr = DynamicTo<Attr>(context);
+      if (attr && attr->ownerElement()) {
         n = attr->ownerElement();
         if (NodeMatches(evaluation_context, n, kAncestorOrSelfAxis,
                         GetNodeTest()))

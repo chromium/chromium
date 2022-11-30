@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/base/features.h"
@@ -65,10 +67,13 @@ class LayerTreeHostClientForTesting;
 // thread, but be aware that ending the test is an asynchronous process.
 class LayerTreeTest : public testing::Test, public TestHooks {
  public:
+  // TODO(kylechar): This shouldn't be SkiaRenderer/GL for platforms with no GL
+  // support.
+  static constexpr viz::RendererType kDefaultRendererType =
+      viz::RendererType::kSkiaGL;
+
   std::string TestTypeToString() {
     switch (renderer_type_) {
-      case viz::RendererType::kGL:
-        return "GL";
       case viz::RendererType::kSkiaGL:
         return "Skia GL";
       case viz::RendererType::kSkiaVk:
@@ -102,6 +107,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void PostReturnDeferMainFrameUpdateToMainThread(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void PostDeferringCommitsStatusToMainThread(bool is_deferring_commits);
   void PostSetNeedsCommitToMainThread();
   void PostSetNeedsUpdateLayersToMainThread();
   void PostSetNeedsRedrawToMainThread();
@@ -120,7 +126,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
  protected:
   explicit LayerTreeTest(
-      viz::RendererType renderer_type = viz::RendererType::kGL);
+      viz::RendererType renderer_type = kDefaultRendererType);
 
   void SkipAllocateInitialLocalSurfaceId();
   const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
@@ -143,6 +149,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     initial_root_bounds_ = bounds;
   }
 
+  virtual void CleanupBeforeDestroy() {}
   virtual void AfterTest() {}
   virtual void WillBeginTest();
   virtual void BeginTest() = 0;
@@ -192,30 +199,21 @@ class LayerTreeTest : public testing::Test, public TestHooks {
       scoped_refptr<viz::RasterContextProvider> worker_context_provider);
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayControllerOnThread() override;
-  std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread(
+  std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override;
-  // Override this and call the base class to change what viz::ContextProvider
-  // will be used, such as to prevent sharing the context with the
-  // LayerTreeFrameSink. Or override it and create your own OutputSurface to
-  // change what type of OutputSurface is used, such as a real OutputSurface for
-  // pixel tests or a software-compositing OutputSurface.
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider) override;
+  std::unique_ptr<viz::OutputSurface> CreateSoftwareOutputSurfaceOnThread()
+      override;
 
   base::SingleThreadTaskRunner* image_worker_task_runner() const {
     return image_worker_->task_runner().get();
   }
 
+  size_t NumCallsToWaitForProtectedSequenceCompletion() const;
+
   void UseBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
     begin_frame_source_ = begin_frame_source;
   }
 
-  bool use_skia_renderer() const {
-    return renderer_type_ == viz::RendererType::kSkiaGL ||
-           renderer_type_ == viz::RendererType::kSkiaVk ||
-           renderer_type_ == viz::RendererType::kSkiaDawn;
-  }
   bool use_software_renderer() const {
     return renderer_type_ == viz::RendererType::kSoftware;
   }
@@ -223,13 +221,12 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return renderer_type_ == viz::RendererType::kSkiaVk;
   }
   bool use_d3d12() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return renderer_type_ == viz::RendererType::kSkiaDawn;
 #else
     return false;
 #endif
   }
-  bool use_swangle() const;
 
   const viz::RendererType renderer_type_;
 
@@ -250,6 +247,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void DispatchReturnDeferMainFrameUpdate(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void DispatchDeferringCommitsStatus(bool is_deferring_commits);
   void DispatchSetNeedsCommit();
   void DispatchSetNeedsUpdateLayers();
   void DispatchSetNeedsRedraw();
@@ -286,7 +284,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
   int timeout_seconds_ = 0;
 
-  viz::BeginFrameSource* begin_frame_source_ = nullptr;  // NOT OWNED.
+  raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;  // NOT OWNED.
 
   std::unique_ptr<LayerTreeTestLayerTreeFrameSinkClient>
       layer_tree_frame_sink_client_;

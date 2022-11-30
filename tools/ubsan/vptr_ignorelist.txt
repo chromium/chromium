@@ -1,0 +1,126 @@
+#############################################################################
+# UBSan vptr ignorelist.
+# Function and type based ignorelisting use a mangled name, and it is especially
+# tricky to represent C++ types. For now, any possible changes by name manglings
+# are simply represented as wildcard expressions of regexp, and thus it might be
+# over-ignorelisted.
+
+#############################################################################
+# Identical layouts.
+# If base and derived classes have identifical memory layouts (i.e., the same
+# object size) and both have no virtual functions, we ignorelist them as there
+# would be not much security implications.
+
+fun:*LifecycleNotifier*addObserver*
+fun:*LifecycleNotifier*removeObserver*
+fun:*toWebInputElement*
+type:*base*MessageLoopForIO*
+type:*BlockRefType*
+type:*SkAutoTUnref*
+type:*WDResult*
+type:*ExecutionContext*
+type:*WebInputElement*
+type:*WebFormControlElement*
+
+# Avoid identical layout cases for 86 different classes in InspectorTypeBuilder,
+# all of which are guarded using COMPILER_ASSERT on the object size. Two more
+# types are also ignorelisted due to the template class (JSONArray <-> Array<T>).
+
+src:*InspectorTypeBuilder.h*
+type:*TypeBuilder*
+type:*JSONArray*
+
+#############################################################################
+# Base class's constructor accesses a derived class's member.
+
+fun:*DoublyLinkedListNode*
+type:*content*WebUIExtensionData*
+
+# RenderFrameObserverTracker<T>::RenderFrameObserverTracker()
+fun:*content*RenderFrameObserverTracker*RenderFrame*
+
+# RenderViewObserverTracker<T>::RenderViewObserverTracker()
+fun:*content*RenderViewObserverTracker*RenderView*
+
+#############################################################################
+# Base class's destructor accesses a derived class.
+
+fun:*DatabaseContext*contextDestroyed*
+
+# FIXME: Cannot handle template function LifecycleObserver<>::SetContext,
+# so exclude source file for now.
+src:*lifecycle_observer.h*
+
+#############################################################################
+# static_cast into itself in the constructor.
+
+fun:*RefCountedGarbageCollected*makeKeepAlive*
+fun:*ThreadSafeRefCountedGarbageCollected*makeKeepAlive*
+
+#############################################################################
+# Accessing data in destructors where the class has virtual inheritances.
+
+type:*content*RenderWidgetHost*
+
+# Match mangled name for X::~X().
+fun:*content*RenderThreadImplD*
+fun:*content*RenderViewHostImplD*
+fun:*content*UtilityThreadImplD*
+
+#############################################################################
+# Using raw pointer values.
+#
+# A raw pointer value (16) is used to infer the field offset by
+# GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET.
+
+src:*/third_party/protobuf/src/google/protobuf/compiler/plugin.pb.cc
+src:*/third_party/protobuf/src/google/protobuf/compiler/cpp/cpp_message.cc
+src:*/third_party/protobuf/src/google/protobuf/descriptor.pb.cc
+
+#############################################################################
+# Avoid link errors.
+# Ubsan vptr needs typeinfo on the target class, but it looks like typeinfo is
+# not avaiable if the class is not exported.  For now, simply ignorelisted to
+# avoid link errors; e.g., undefined reference to 'typeinfo for [CLASS_NAME]'.
+
+# obj/ppapi/libppapi_proxy.a(obj/ppapi/proxy/ppapi_proxy.proxy_channel.o):../../ppapi/proxy/proxy_channel.cc:__unnamed_53: error: undefined reference to 'typeinfo for IPC::TestSink'
+src:*/ppapi/proxy/proxy_channel.cc
+
+# obj/chrome/libbrowser.a(obj/chrome/browser/net/browser.predictor.o):../../chrome/browser/net/predictor.cc:__unnamed_577: error: undefined reference to 'typeinfo for ProxyAdvisor'
+src:*/chrome/browser/net/predictor.cc
+
+# obj/third_party/libwebm/libwebm.a(obj/third_party/libwebm/source/libwebm.mkvmuxer.o)(.data.rel..L__unnamed_2+0x18): error: undefined reference to 'typeinfo for mkvparser::IMkvReader'
+src:*/third_party/libwebm/source/mkvmuxer.cpp
+
+#############################################################################
+# LLVM is not UBSan vptr clean.
+src:*third_party/swiftshader/third_party/LLVM*
+
+#############################################################################
+# UBSan yields false positives in SwiftShader's libEGL when objects created in
+# libGLESv2 from classes derived from libEGL base classes are used within
+# libEGL. UBSan wrongly detects that the libGLESv2 classes are not derived from
+# libEGL classes because libEGL doesn't know about libGLESv2 classes.
+# See crbug.com/722349, crbug.com/736624.
+type:*egl*Context*
+type:*egl*Surface*
+type:*gl*Surface*
+type:*gl*Object*
+type:*sw*FrameBuffer*
+
+#############################################################################
+# UBSan seems to be emit false positives when virtual base classes are
+# involved, see e.g. crbug.com/448102.
+
+type:*v8*internal*OFStream*
+
+#############################################################################
+# UBsan is unable to handle static_cast<A*>(nullptr) and crashes on SIGSEGV.
+#
+
+# static_cast<StartPageService*> in StartPageServiceFactory::GetForProfile.
+type:*StartPageService*
+
+# Remove once function attribute level ignorelisting is implemented.
+# See crbug.com/476063.
+fun:*forbidGCDuringConstruction*

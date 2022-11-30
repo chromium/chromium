@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
@@ -109,7 +108,7 @@ uint16_t BluetoothDeviceCast::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceCast::GetName() const {
+absl::optional<std::string> BluetoothDeviceCast::GetName() const {
   return name_;
 }
 
@@ -134,12 +133,12 @@ bool BluetoothDeviceCast::IsConnecting() const {
   return pending_connect_;
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
   // TODO(slan): Plumb this from the type_to_data field of ScanResult.
   return BluetoothDevice::GetInquiryRSSI();
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
   // TODO(slan): Remove if we do not need this.
   return BluetoothDevice::GetInquiryTxPower();
 }
@@ -175,19 +174,17 @@ void BluetoothDeviceCast::SetConnectionLatency(
 }
 
 void BluetoothDeviceCast::Connect(PairingDelegate* pairing_delegate,
-                                  base::OnceClosure callback,
-                                  ConnectErrorCallback error_callback) {
+                                  ConnectCallback callback) {
   // This method is used only for Bluetooth classic.
   NOTIMPLEMENTED() << __func__ << " Only BLE functionality is supported.";
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::Pair(PairingDelegate* pairing_delegate,
-                               base::OnceClosure callback,
-                               ConnectErrorCallback error_callback) {
+                               ConnectCallback callback) {
   // TODO(slan): Implement this or delegate to lower level.
   NOTIMPLEMENTED();
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::SetPinCode(const std::string& pincode) {
@@ -245,7 +242,7 @@ bool BluetoothDeviceCast::UpdateWithScanResult(
   DVLOG(3) << __func__;
   bool changed = false;
 
-  base::Optional<std::string> result_name = result.Name();
+  absl::optional<std::string> result_name = result.Name();
 
   // Advertisements for the same device can use different names. For now, the
   // last name wins. An empty string represents no name.
@@ -296,7 +293,7 @@ bool BluetoothDeviceCast::SetConnected(bool connected) {
   // Update state in the base class. This will cause pending callbacks to be
   // fired.
   if (!was_connected && connected) {
-    DidConnectGatt();
+    DidConnectGatt(/*error_code=*/absl::nullopt);
     remote_device_->GetServices(base::BindOnce(
         &BluetoothDeviceCast::OnGetServices, weak_factory_.GetWeakPtr()));
   } else if (was_connected && !connected) {
@@ -348,7 +345,7 @@ bool BluetoothDeviceCast::UpdateCharacteristicValue(
 }
 
 void BluetoothDeviceCast::CreateGattConnectionImpl(
-    base::Optional<BluetoothUUID> service_uuid) {
+    absl::optional<BluetoothUUID> service_uuid) {
   DVLOG(2) << __func__ << " " << pending_connect_;
   if (pending_connect_)
     return;
@@ -368,7 +365,7 @@ void BluetoothDeviceCast::OnConnect(
   DVLOG(2) << __func__ << " success:" << success;
   pending_connect_ = false;
   if (!success) {
-    DidFailToConnectGatt(ERROR_FAILED);
+    DidConnectGatt(ERROR_FAILED);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/gtest_util.h"
@@ -17,6 +16,10 @@
 namespace base {
 
 class MessagePumpIOSForIOTest : public testing::Test {
+ public:
+  MessagePumpIOSForIOTest(const MessagePumpIOSForIOTest&) = delete;
+  MessagePumpIOSForIOTest& operator=(const MessagePumpIOSForIOTest&) = delete;
+
  protected:
   MessagePumpIOSForIOTest() = default;
   ~MessagePumpIOSForIOTest() override = default;
@@ -43,9 +46,6 @@ class MessagePumpIOSForIOTest : public testing::Test {
 
   int pipefds_[2];
   int alternate_pipefds_[2];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpIOSForIOTest);
 };
 
 namespace {

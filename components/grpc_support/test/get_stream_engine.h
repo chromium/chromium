@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GRPC_SUPPORT_TEST_GET_REQUEST_CONTEXT_GETTER_H_
-#define COMPONENTS_GRPC_SUPPORT_TEST_GET_REQUEST_CONTEXT_GETTER_H_
+#ifndef COMPONENTS_GRPC_SUPPORT_TEST_GET_STREAM_ENGINE_H_
+#define COMPONENTS_GRPC_SUPPORT_TEST_GET_STREAM_ENGINE_H_
 
 struct stream_engine;
 
@@ -28,4 +28,4 @@ void ShutdownTestStreamEngine();
 
 }  // namespace grpc_support
 
-#endif  // COMPONENTS_GRPC_SUPPORT_TEST_GET_REQUEST_CONTEXT_GETTER_H_
+#endif  // COMPONENTS_GRPC_SUPPORT_TEST_GET_STREAM_ENGINE_H_

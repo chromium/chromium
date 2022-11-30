@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_TEST_MEDIA_START_STOP_OBSERVER_H_
 #define CONTENT_PUBLIC_TEST_MEDIA_START_STOP_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -24,6 +23,10 @@ class MediaStartStopObserver : public WebContentsObserver {
   };
 
   MediaStartStopObserver(WebContents* web_contents, Type type);
+
+  MediaStartStopObserver(const MediaStartStopObserver&) = delete;
+  MediaStartStopObserver& operator=(const MediaStartStopObserver&) = delete;
+
   ~MediaStartStopObserver() override;
 
   // WebContentsObserver implementation.
@@ -41,8 +44,6 @@ class MediaStartStopObserver : public WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   const Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStartStopObserver);
 };
 
 }  // namespace content

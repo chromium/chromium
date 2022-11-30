@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ LayoutUnit ViewFragmentationContext::RemainingLogicalHeightAt(
     LayoutUnit block_offset) {
   LayoutUnit page_logical_height = view_->PageLogicalHeight();
   return page_logical_height - IntMod(block_offset, page_logical_height);
+}
+
+void ViewFragmentationContext::Trace(Visitor* visitor) const {
+  visitor->Trace(view_);
+  FragmentationContext::Trace(visitor);
 }
 
 }  // namespace blink

@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_bubble_wrapper.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -18,26 +19,28 @@ namespace ash {
 
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
                                      TrayBubbleView* bubble_view,
-                                     bool is_persistent)
-    : tray_(tray), bubble_view_(bubble_view), is_persistent_(is_persistent) {
+                                     bool event_handling)
+    : tray_(tray), bubble_view_(bubble_view), event_handling_(event_handling) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
-  tray_->UpdateBubbleViewArrow(bubble_view_);
   bubble_view_->InitializeAndShowBubble();
 
-  tray->tray_event_filter()->AddBubble(this);
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    Shell::Get()->app_list_controller()->DismissAppList();
 
-  if (!is_persistent_)
+  if (event_handling_) {
+    tray->tray_event_filter()->AddBubble(this);
     Shell::Get()->activation_client()->AddObserver(this);
+  }
 }
 
 TrayBubbleWrapper::~TrayBubbleWrapper() {
-  if (!is_persistent_)
+  if (event_handling_) {
     Shell::Get()->activation_client()->RemoveObserver(this);
-
-  tray_->tray_event_filter()->RemoveBubble(this);
+    tray_->tray_event_filter()->RemoveBubble(this);
+  }
   if (bubble_widget_) {
     auto* transient_manager = ::wm::TransientWindowManager::GetOrCreate(
         bubble_widget_->GetNativeWindow());
@@ -87,6 +90,10 @@ void TrayBubbleWrapper::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {
   if (!gained_active)
+    return;
+
+  // Check for the CloseBubble() lock.
+  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated())
     return;
 
   views::Widget* bubble_widget = bubble_view()->GetWidget();

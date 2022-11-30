@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 namespace policy {
 
-ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(NULL) {}
+ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(nullptr) {}
 
 ProxyPolicyProvider::~ProxyPolicyProvider() {
   DCHECK(!delegate_);
@@ -26,7 +26,7 @@ void ProxyPolicyProvider::SetDelegate(ConfigurationPolicyProvider* delegate) {
     delegate_->AddObserver(this);
     OnUpdatePolicy(delegate_);
   } else {
-    UpdatePolicy(std::unique_ptr<PolicyBundle>(new PolicyBundle()));
+    UpdatePolicy(std::make_unique<PolicyBundle>());
   }
 }
 
@@ -36,7 +36,7 @@ void ProxyPolicyProvider::Shutdown() {
   // Just drop the delegate without propagating updates here.
   if (delegate_) {
     delegate_->RemoveObserver(this);
-    delegate_ = NULL;
+    delegate_ = nullptr;
   }
   ConfigurationPolicyProvider::Shutdown();
 }

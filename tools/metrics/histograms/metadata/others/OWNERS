@@ -1,0 +1,23 @@
+# When sending a CL with metrics for review, if a member of
+# METRIC_REVIEWER_OWNERS is a good choice of reviewer, please send the CL to
+# them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
+# can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
+per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+
+# For display, mouse, and input related histograms.
+# Primary reviewers
+jimmyxgong@chromium.org
+# Secondary reviewers
+zentaro@chromium.org
+# For Conversions.* histograms:
+johnidel@chromium.org
+# For Compositor*, Gpu.*, Graphics* and Viz.* histograms:
+jonross@chromium.org
+# For Privacy* and WebsiteSettings.* histograms:
+dullweber@chromium.org
+# For PerformanceMonitor.* histograms:
+olivierli@chromium.org
+# For BootTime.*, Uptime.*, UserManager.*, TimeZone.* histograms:
+alemate@chromium.org
+# For AccessCodeCast.* histograms:
+bzielinski@google.com

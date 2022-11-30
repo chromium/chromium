@@ -1,26 +1,33 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
-#include <bitset>
 #include <iosfwd>
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "chrome/browser/web_applications/components/web_app_chromeos_data.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_system_web_app_data.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "chrome/browser/web_applications/isolation_data.h"
+#include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_chromeos_data.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_sources.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -41,10 +48,13 @@ class WebApp {
 
   const AppId& app_id() const { return app_id_; }
 
-  // UTF8 encoded application name.
-  const std::string& name() const { return name_; }
-  // UTF8 encoded long application description (a full application name).
-  const std::string& description() const { return description_; }
+  // UTF8 encoded application name. This name is not translated, use
+  // WebAppRegistrar.GetAppShortName to get the translated name.
+  const std::string& untranslated_name() const { return name_; }
+  // UTF8 encoded long application description (a full application name). This
+  // description is not translated, use WebAppRegistrar.GetAppDescription to get
+  // the translated description.
+  const std::string& untranslated_description() const { return description_; }
 
   const GURL& start_url() const { return start_url_; }
 
@@ -54,14 +64,24 @@ class WebApp {
 
   const GURL& scope() const { return scope_; }
 
-  const base::Optional<SkColor>& theme_color() const { return theme_color_; }
-  const base::Optional<SkColor>& background_color() const {
+  const absl::optional<SkColor>& theme_color() const { return theme_color_; }
+  const absl::optional<SkColor>& dark_mode_theme_color() const {
+    return dark_mode_theme_color_;
+  }
+
+  const absl::optional<SkColor>& background_color() const {
     return background_color_;
+  }
+
+  const absl::optional<SkColor>& dark_mode_background_color() const {
+    return dark_mode_background_color_;
   }
 
   DisplayMode display_mode() const { return display_mode_; }
 
-  DisplayMode user_display_mode() const { return user_display_mode_; }
+  absl::optional<UserDisplayMode> user_display_mode() const {
+    return user_display_mode_;
+  }
 
   const std::vector<DisplayMode>& display_mode_override() const {
     return display_mode_override_;
@@ -72,7 +92,7 @@ class WebApp {
     return user_launch_ordinal_;
   }
 
-  const base::Optional<WebAppChromeOsData>& chromeos_data() const {
+  const absl::optional<WebAppChromeOsData>& chromeos_data() const {
     return chromeos_data_;
   }
 
@@ -80,7 +100,9 @@ class WebApp {
     ClientData();
     ~ClientData();
     ClientData(const ClientData& client_data);
-    base::Optional<WebAppSystemWebAppData> system_web_app_data;
+    base::Value AsDebugValue() const;
+
+    absl::optional<ash::SystemWebAppData> system_web_app_data;
   };
 
   const ClientData& client_data() const { return client_data_; }
@@ -92,12 +114,17 @@ class WebApp {
   // a part of user's app library.
   bool is_locally_installed() const { return is_locally_installed_; }
   // Sync-initiated installation produces a stub app awaiting for full
-  // installation process. The |is_in_sync_install| app has only app_id,
-  // launch_url and sync_fallback_data fields defined, no icons. If online
-  // install succeeds, icons get downloaded and all the fields get their values.
-  // If online install fails, we do the fallback installation to generate icons
-  // using |sync_fallback_data| fields.
-  bool is_in_sync_install() const { return is_in_sync_install_; }
+  // installation process. The |is_from_sync_and_pending_installation| app has
+  // only app_id, launch_url and sync_fallback_data fields defined, no icons. If
+  // online install succeeds, icons get downloaded and all the fields get their
+  // values. If online install fails, we do the fallback installation to
+  // generate icons using |sync_fallback_data| fields.
+  bool is_from_sync_and_pending_installation() const {
+    return is_from_sync_and_pending_installation_;
+  }
+
+  // Represents whether the web app is being uninstalled.
+  bool is_uninstalling() const { return is_uninstalling_; }
 
   // Represents the last time the Badging API was used.
   const base::Time& last_badging_time() const { return last_badging_time_; }
@@ -105,14 +132,18 @@ class WebApp {
   const base::Time& last_launch_time() const { return last_launch_time_; }
   // Represents the time when this app is installed.
   const base::Time& install_time() const { return install_time_; }
+  // Represents the time when this app is updated.
+  const base::Time& manifest_update_time() const {
+    return manifest_update_time_;
+  }
 
   // Represents the "icons" field in the manifest.
-  const std::vector<WebApplicationIconInfo>& icon_infos() const {
-    return icon_infos_;
+  const std::vector<apps::IconInfo>& manifest_icons() const {
+    return manifest_icons_;
   }
 
   // Represents which icon sizes we successfully downloaded from the
-  // |icon_infos| for the given |purpose|.
+  // |manifest_icons| for the given |purpose|.
   const SortedSizesPx& downloaded_icon_sizes(IconPurpose purpose) const;
 
   // Represents whether the icons for the web app are generated by Chrome due to
@@ -121,7 +152,15 @@ class WebApp {
 
   const apps::FileHandlers& file_handlers() const { return file_handlers_; }
 
-  const base::Optional<apps::ShareTarget>& share_target() const {
+  ApiApprovalState file_handler_approval_state() const {
+    return file_handler_approval_state_;
+  }
+
+  OsIntegrationState file_handler_os_integration_state() const {
+    return file_handler_os_integration_state_;
+  }
+
+  const absl::optional<apps::ShareTarget>& share_target() const {
     return share_target_;
   }
 
@@ -133,10 +172,37 @@ class WebApp {
     return protocol_handlers_;
   }
 
+  const base::flat_set<std::string>& allowed_launch_protocols() const {
+    return allowed_launch_protocols_;
+  }
+
+  const base::flat_set<std::string>& disallowed_launch_protocols() const {
+    return disallowed_launch_protocols_;
+  }
+
+  // URL within scope to launch for a "show on lock screen" action. Valid iff
+  // this is considered a lock-screen-capable app.
+  const GURL& lock_screen_start_url() const { return lock_screen_start_url_; }
+
+  // URL within scope to launch for a "new note" action. Valid iff this is
+  // considered a note-taking app.
+  const GURL& note_taking_new_note_url() const {
+    return note_taking_new_note_url_;
+  }
+
   const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
 
   RunOnOsLoginMode run_on_os_login_mode() const {
     return run_on_os_login_mode_;
+  }
+
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state()
+      const {
+    return run_on_os_login_os_integration_state_;
+  }
+
+  bool window_controls_overlay_enabled() const {
+    return window_controls_overlay_enabled_;
   }
 
   // While local |name| and |theme_color| may vary from device to device, the
@@ -149,27 +215,29 @@ class WebApp {
     ~SyncFallbackData();
     // Copyable and move-assignable to support Copy-on-Write with Commit.
     SyncFallbackData(const SyncFallbackData& sync_fallback_data);
+    SyncFallbackData(SyncFallbackData&& sync_fallback_data) noexcept;
     SyncFallbackData& operator=(SyncFallbackData&& sync_fallback_data);
 
+    base::Value AsDebugValue() const;
+
     std::string name;
-    base::Optional<SkColor> theme_color;
+    absl::optional<SkColor> theme_color;
     GURL scope;
-    std::vector<WebApplicationIconInfo> icon_infos;
+    std::vector<apps::IconInfo> icon_infos;
   };
   const SyncFallbackData& sync_fallback_data() const {
     return sync_fallback_data_;
   }
 
   // Represents the "shortcuts" field in the manifest.
-  const std::vector<WebApplicationShortcutsMenuItemInfo>&
-  shortcuts_menu_item_infos() const {
+  const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos()
+      const {
     return shortcuts_menu_item_infos_;
   }
 
   // Represents which shortcuts menu icon sizes we successfully downloaded for
-  // each WebAppShortcutsMenuItemInfo.shortcuts_menu_icon_infos.
-  const std::vector<std::vector<SquareSizePx>>&
-  downloaded_shortcuts_menu_icons_sizes() const {
+  // each WebAppShortcutsMenuItemInfo.shortcuts_menu_manifest_icons.
+  const std::vector<IconSizes>& downloaded_shortcuts_menu_icons_sizes() const {
     return downloaded_shortcuts_menu_icons_sizes_;
   }
 
@@ -177,129 +245,315 @@ class WebApp {
 
   const GURL& manifest_url() const { return manifest_url_; }
 
+  const absl::optional<std::string>& manifest_id() const {
+    return manifest_id_;
+  }
+
+  bool IsStorageIsolated() const { return is_storage_isolated_; }
+
+  const absl::optional<LaunchHandler>& launch_handler() const {
+    return launch_handler_;
+  }
+
+  const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
+
+  const blink::ParsedPermissionsPolicy& permissions_policy() const {
+    return permissions_policy_;
+  }
+
+  absl::optional<webapps::WebappInstallSource> install_source_for_metrics()
+      const {
+    return install_source_for_metrics_;
+  }
+
+  const absl::optional<int64_t>& app_size_in_bytes() const {
+    return app_size_in_bytes_;
+  }
+  const absl::optional<int64_t>& data_size_in_bytes() const {
+    return data_size_in_bytes_;
+  }
+
+  struct ExternalManagementConfig {
+    ExternalManagementConfig();
+    ~ExternalManagementConfig();
+    ExternalManagementConfig(
+        const ExternalManagementConfig& external_management_config);
+    ExternalManagementConfig& operator=(
+        ExternalManagementConfig&& external_management_config);
+
+    base::Value::Dict AsDebugValue() const;
+
+    bool is_placeholder = false;
+    base::flat_set<GURL> install_urls;
+  };
+
+  using ExternalConfigMap =
+      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>;
+
+  const ExternalConfigMap& management_to_external_config_map() const {
+    return management_to_external_config_map_;
+  }
+
+  const absl::optional<blink::Manifest::TabStrip> tab_strip() const {
+    return tab_strip_;
+  }
+
+  // Only used on Mac.
+  bool always_show_toolbar_in_fullscreen() const {
+    return always_show_toolbar_in_fullscreen_;
+  }
+
+  const absl::optional<proto::WebAppOsIntegrationState>&
+  current_os_integration_states() const {
+    return current_os_integration_states_;
+  }
+
+  // If present, signals that this app is an Isolated Web App, and contains
+  // IWA-specific information like bundle location.
+  const absl::optional<IsolationData>& isolation_data() const {
+    return isolation_data_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
-  void AddSource(Source::Type source);
-  void RemoveSource(Source::Type source);
+  void AddSource(WebAppManagement::Type source);
+  void RemoveSource(WebAppManagement::Type source);
   bool HasAnySources() const;
-  bool HasOnlySource(Source::Type source) const;
+  bool HasOnlySource(WebAppManagement::Type source) const;
+  WebAppSources GetSources() const;
 
   bool IsSynced() const;
-  bool IsDefaultApp() const;
+  bool IsPreinstalledApp() const;
   bool IsPolicyInstalledApp() const;
   bool IsSystemApp() const;
-  bool CanUserUninstallExternalApp() const;
+  bool IsWebAppStoreInstalledApp() const;
+  bool IsSubAppInstalledApp() const;
+  bool IsKioskInstalledApp() const;
+  bool CanUserUninstallWebApp() const;
   bool WasInstalledByUser() const;
   // Returns the highest priority source. AppService assumes that every app has
   // just one install source.
-  Source::Type GetHighestPrioritySource() const;
+  WebAppManagement::Type GetHighestPrioritySource() const;
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
-  void SetStartUrl(const GURL& launch_url);
-  void SetLaunchQueryParams(base::Optional<std::string> launch_query_params);
+  void SetStartUrl(const GURL& start_url);
+  void SetLaunchQueryParams(absl::optional<std::string> launch_query_params);
   void SetScope(const GURL& scope);
-  void SetThemeColor(base::Optional<SkColor> theme_color);
-  void SetBackgroundColor(base::Optional<SkColor> background_color);
+  void SetThemeColor(absl::optional<SkColor> theme_color);
+  void SetDarkModeThemeColor(absl::optional<SkColor> theme_color);
+  void SetBackgroundColor(absl::optional<SkColor> background_color);
+  void SetDarkModeBackgroundColor(absl::optional<SkColor> background_color);
   void SetDisplayMode(DisplayMode display_mode);
-  void SetUserDisplayMode(DisplayMode user_display_mode);
+  void SetUserDisplayMode(UserDisplayMode user_display_mode);
   void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
   void SetUserPageOrdinal(syncer::StringOrdinal page_ordinal);
   void SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal);
-  void SetWebAppChromeOsData(base::Optional<WebAppChromeOsData> chromeos_data);
+  void SetWebAppChromeOsData(absl::optional<WebAppChromeOsData> chromeos_data);
   void SetIsLocallyInstalled(bool is_locally_installed);
-  void SetIsInSyncInstall(bool is_in_sync_install);
-  void SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos);
+  void SetIsFromSyncAndPendingInstallation(
+      bool is_from_sync_and_pending_installation);
+  void SetIsUninstalling(bool is_uninstalling);
+  void SetManifestIcons(std::vector<apps::IconInfo> manifest_icons);
   // Performs sorting and uniquifying of |sizes| if passed as vector.
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
   void SetShortcutsMenuItemInfos(
-      std::vector<WebApplicationShortcutsMenuItemInfo>
-          shortcuts_menu_item_infos);
-  void SetDownloadedShortcutsMenuIconsSizes(
-      std::vector<std::vector<SquareSizePx>> icon_sizes);
+      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos);
+  void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
-  void SetShareTarget(base::Optional<apps::ShareTarget> share_target);
+  void SetFileHandlerApprovalState(ApiApprovalState approval_state);
+  void SetFileHandlerOsIntegrationState(
+      OsIntegrationState os_integration_state);
+  void SetShareTarget(absl::optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
+  void SetAllowedLaunchProtocols(
+      base::flat_set<std::string> allowed_launch_protocols);
+  void SetDisallowedLaunchProtocols(
+      base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
+  void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
+  void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
+  void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
+  void SetManifestId(const absl::optional<std::string>& manifest_id);
+  void SetWindowControlsOverlayEnabled(bool enabled);
+  void SetStorageIsolated(bool is_storage_isolated);
+  void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
+  void SetParentAppId(const absl::optional<AppId>& parent_app_id);
+  void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
+  void SetInstallSourceForMetrics(
+      absl::optional<webapps::WebappInstallSource> install_source);
+  void SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes);
+  void SetDataSizeInBytes(absl::optional<int64_t> data_size_in_bytes);
+  void SetWebAppManagementExternalConfigMap(
+      ExternalConfigMap management_to_external_config_map);
+  void SetTabStrip(absl::optional<blink::Manifest::TabStrip> tab_strip);
+  void SetCurrentOsIntegrationStates(
+      absl::optional<proto::WebAppOsIntegrationState>
+          current_os_integration_states);
+  void SetIsolationData(IsolationData isolation_data);
+
+  void AddPlaceholderInfoToManagementExternalConfigMap(
+      WebAppManagement::Type source_type,
+      bool is_placeholder);
+
+  // This adds an install_url per management type (source) for the
+  // WebAppManagementToInstallURLsMap.
+  void AddInstallURLToManagementExternalConfigMap(WebAppManagement::Type type,
+                                                  GURL install_url);
+
+  // Encapsulate the addition of install_url and is_placeholder information
+  // for cases where both need to be added.
+  void AddExternalSourceInformation(WebAppManagement::Type source_type,
+                                    GURL install_url,
+                                    bool is_placeholder);
+
+  bool RemoveInstallUrlForSource(WebAppManagement::Type type, GURL install_url);
+
+  // Only used on Mac, determines if the toolbar should be permanently shown
+  // when in fullscreen.
+  void SetAlwaysShowToolbarInFullscreen(bool show);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
+  base::Value AsDebugValue() const;
 
  private:
-  using Sources = std::bitset<Source::kMaxValue + 1>;
-  bool HasAnySpecifiedSourcesAndNoOtherSources(Sources specified_sources) const;
-
   friend class WebAppDatabase;
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
   AppId app_id_;
 
   // This set always contains at least one source.
-  Sources sources_;
+  WebAppSources sources_;
 
   std::string name_;
   std::string description_;
   GURL start_url_;
-  base::Optional<std::string> launch_query_params_;
-  // TODO(loyso): Implement IsValid() function that verifies that the start_url
-  // is within the scope.
+  absl::optional<std::string> launch_query_params_;
   GURL scope_;
-  base::Optional<SkColor> theme_color_;
-  base::Optional<SkColor> background_color_;
-  DisplayMode display_mode_;
-  DisplayMode user_display_mode_;
+  absl::optional<SkColor> theme_color_;
+  absl::optional<SkColor> dark_mode_theme_color_;
+  absl::optional<SkColor> background_color_;
+  absl::optional<SkColor> dark_mode_background_color_;
+  DisplayMode display_mode_ = DisplayMode::kUndefined;
+  absl::optional<UserDisplayMode> user_display_mode_ = absl::nullopt;
   std::vector<DisplayMode> display_mode_override_;
   syncer::StringOrdinal user_page_ordinal_;
   syncer::StringOrdinal user_launch_ordinal_;
-  base::Optional<WebAppChromeOsData> chromeos_data_;
+  absl::optional<WebAppChromeOsData> chromeos_data_;
   bool is_locally_installed_ = true;
-  bool is_in_sync_install_ = false;
-  std::vector<WebApplicationIconInfo> icon_infos_;
+  bool is_from_sync_and_pending_installation_ = false;
+  // Note: This field is not persisted in the database.
+  // TODO(crbug.com/1162477): Add this field to the protocol buffer file and
+  // other places to save it to the database, and then make sure to continue
+  // uninstallation on startup if any web apps have this field set to true.
+  bool is_uninstalling_ = false;
+  std::vector<apps::IconInfo> manifest_icons_;
   SortedSizesPx downloaded_icon_sizes_any_;
-  // TODO (crbug.com/1114638): Monochrome icons are not currently downloaded.
   SortedSizesPx downloaded_icon_sizes_monochrome_;
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
-  std::vector<std::vector<SquareSizePx>> downloaded_shortcuts_menu_icons_sizes_;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
+  std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
-  base::Optional<apps::ShareTarget> share_target_;
+  absl::optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  base::flat_set<std::string> allowed_launch_protocols_;
+  base::flat_set<std::string> disallowed_launch_protocols_;
+  apps::UrlHandlers url_handlers_;
+  GURL lock_screen_start_url_;
+  GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
+  base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
+  // Tracks if the app run on os login mode has been registered with the OS.
+  // This might go out of sync with actual OS integration status, as Chrome does
+  // not actively monitor OS registries.
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   SyncFallbackData sync_fallback_data_;
-  apps::UrlHandlers url_handlers_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
-  // New fields must be added to |operator==| and |operator<<|.
+  absl::optional<std::string> manifest_id_;
+  // The state of the user's approval of the app's use of the File Handler API.
+  ApiApprovalState file_handler_approval_state_ =
+      ApiApprovalState::kRequiresPrompt;
+  // Tracks whether file handling has been or should be enabled at the OS level.
+  // This might go out of sync with actual OS integration status, as Chrome does
+  // not actively monitor OS registries.
+  OsIntegrationState file_handler_os_integration_state_ =
+      OsIntegrationState::kDisabled;
+  bool window_controls_overlay_enabled_ = false;
+  bool is_storage_isolated_ = false;
+  absl::optional<LaunchHandler> launch_handler_;
+  absl::optional<AppId> parent_app_id_;
+  blink::ParsedPermissionsPolicy permissions_policy_;
+  // The source of the latest install, used for logging metrics. WebAppRegistrar
+  // provides range validation. Optional only to support legacy installations,
+  // since this used to be tracked as a pref. It might also be null if the value
+  // read from the database is not recognized by this client.
+  absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
+
+  absl::optional<int64_t> app_size_in_bytes_;
+  absl::optional<int64_t> data_size_in_bytes_;
+
+  // Maps WebAppManagement::Type to config values for externally installed apps,
+  // like is_placeholder and install URLs.
+  ExternalConfigMap management_to_external_config_map_;
+
+  absl::optional<blink::Manifest::TabStrip> tab_strip_;
+
+  // Only used on Mac.
+  bool always_show_toolbar_in_fullscreen_ = true;
+
+  absl::optional<proto::WebAppOsIntegrationState>
+      current_os_integration_states_ = absl::nullopt;
+
+  absl::optional<IsolationData> isolation_data_;
+
+  // New fields must be added to:
+  //  - |operator==|
+  //  - AsDebugValue()
+  //  - WebAppDatabase::CreateWebApp()
+  //  - WebAppDatabase::CreateWebAppProto()
+  //  - CreateRandomWebApp()
+  //  - WebAppTest.EmptyAppAsDebugValue
+  //  - WebAppTest.SampleAppAsDebugValue
+  //  - web_app.proto
+  // If parsed from manifest, also add to:
+  //  - ManifestUpdateTask::IsUpdateNeededForManifest()
+  //  - SetWebAppManifestFields()
 };
 
 // For logging and debug purposes.
-std::ostream& operator<<(std::ostream& out,
-                         const WebApp::SyncFallbackData& sync_fallback_data);
 std::ostream& operator<<(std::ostream& out, const WebApp& app);
 
 bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
 bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
+
+bool operator==(const WebApp::ExternalManagementConfig& management_config1,
+                const WebApp::ExternalManagementConfig& management_config2);
+bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
+                const WebApp::ExternalManagementConfig& management_config2);
 
 }  // namespace web_app
 

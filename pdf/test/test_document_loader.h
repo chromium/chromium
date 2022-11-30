@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,21 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "pdf/document_loader.h"
-#include "pdf/range_set.h"
+#include "base/memory/raw_ptr.h"
+#include "pdf/loader/document_loader.h"
+#include "pdf/loader/range_set.h"
 
 namespace chrome_pdf {
 
 // Loads test PDFs from pdf/test/data.
 class TestDocumentLoader : public DocumentLoader {
  public:
-  // |pdf_name| is the base name for a PDF file.
+  // `pdf_name` is the base name for a PDF file.
   TestDocumentLoader(Client* client,
                      const base::FilePath::StringType& pdf_name);
   ~TestDocumentLoader() override;
 
-  // Simulates loading up to |max_bytes| more data, returning `true` if there is
+  // Simulates loading up to `max_bytes` more data, returning `true` if there is
   // more data to load (that is, IsDocumentComplete() returns `false`).
   bool SimulateLoadData(uint32_t max_bytes);
 
@@ -40,7 +41,7 @@ class TestDocumentLoader : public DocumentLoader {
   void ClearPendingRequests() override;
 
  private:
-  Client* const client_;
+  const raw_ptr<Client> client_;
   std::string pdf_data_;
 
   // Not using ChunkStream, for more fine-grained control over request size.

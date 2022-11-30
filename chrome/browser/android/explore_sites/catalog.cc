@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ std::unique_ptr<NTPCatalog> NTPCatalog::create(const base::Value& json) {
     return nullptr;
 
   std::vector<NTPCatalog::Category> catalog_categories;
-  for (const auto& category : categories->GetList()) {
+  for (const auto& category : categories->GetListDeprecated()) {
     if (!category.is_dict()) {
       return nullptr;
     }

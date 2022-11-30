@@ -1,0 +1,9 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="aspect-ratio">
+<g id="Shape 1">
+<path d="M5.5 6.5H9.5V8.5H7.5V10.5H5.5V6.5Z" fill="#E8EAED"/>
+<path d="M14.5 9.5H12.5V11.5H10.5V13.5H14.5V9.5Z" fill="#E8EAED"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M4 3H16C17.1046 3 18 3.89543 18 5V15C18 16.1046 17.1046 17 16 17H4C2.89543 17 2 16.1046 2 15V5C2 3.89543 2.89543 3 4 3ZM4 5V15H16V5H4Z" fill="#E8EAED"/>
+</g>
+</g>
+</svg>

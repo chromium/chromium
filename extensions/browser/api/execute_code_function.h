@@ -1,16 +1,19 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 #define EXTENSIONS_BROWSER_API_EXECUTE_CODE_FUNCTION_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -20,6 +23,9 @@ namespace extensions {
 class ExecuteCodeFunction : public ExtensionFunction {
  public:
   ExecuteCodeFunction();
+
+  ExecuteCodeFunction(const ExecuteCodeFunction&) = delete;
+  ExecuteCodeFunction& operator=(const ExecuteCodeFunction&) = delete;
 
  protected:
   ~ExecuteCodeFunction() override;
@@ -54,8 +60,8 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // Called when contents from the loaded file have been localized.
   void DidLoadAndLocalizeFile(const std::string& file,
-                              bool success,
-                              std::unique_ptr<std::string> data);
+                              std::vector<std::unique_ptr<std::string>> data,
+                              absl::optional<std::string> load_error);
 
   const mojom::HostID& host_id() const { return host_id_; }
   void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }
@@ -74,9 +80,9 @@ class ExecuteCodeFunction : public ExtensionFunction {
   // |DeleteInjectionDetails|, since the two types are compatible; the value
   // of |run_at| defaults to |RUN_AT_NONE|.
   std::unique_ptr<api::extension_types::InjectDetails> details_;
-  base::Optional<InitResult> init_result_;
+  absl::optional<InitResult> init_result_;
   // Set iff |init_result_| == FAILURE, holds the error string.
-  base::Optional<std::string> init_error_;
+  absl::optional<std::string> init_error_;
 
  private:
   void OnExecuteCodeFinished(std::vector<ScriptExecutor::FrameResult> results);
@@ -95,8 +101,6 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // The ID of the root frame to inject into.
   int root_frame_id_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(ExecuteCodeFunction);
 };
 
 }  // namespace extensions

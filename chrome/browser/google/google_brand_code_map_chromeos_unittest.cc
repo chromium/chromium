@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,14 @@ using google_brand::chromeos::GetRlzBrandCode;
 TEST(GoogleBrandCodeMapTest, GetRlzBrandCode) {
   // If the static brand code is in the map, |GetRlzBrandCode| returns a
   // variation based on the enrollment status and market segment.
-  EXPECT_EQ("BMGD", GetRlzBrandCode("NPEC", base::nullopt));
+  EXPECT_EQ("BMGD", GetRlzBrandCode("NPEC", absl::nullopt));
   EXPECT_EQ("YETH", GetRlzBrandCode("NPEC", policy::MarketSegment::EDUCATION));
   EXPECT_EQ("XAWJ", GetRlzBrandCode("NPEC", policy::MarketSegment::ENTERPRISE));
   EXPECT_EQ("XAWJ", GetRlzBrandCode("NPEC", policy::MarketSegment::UNKNOWN));
 
   // If the static brand code is not in the map, |GetRlzBrandCode| always
   // returns the static brand code.
-  EXPECT_EQ("AAAA", GetRlzBrandCode("AAAA", base::nullopt));
+  EXPECT_EQ("AAAA", GetRlzBrandCode("AAAA", absl::nullopt));
   EXPECT_EQ("AAAA", GetRlzBrandCode("AAAA", policy::MarketSegment::UNKNOWN));
   EXPECT_EQ("AAAA", GetRlzBrandCode("AAAA", policy::MarketSegment::EDUCATION));
   EXPECT_EQ("AAAA", GetRlzBrandCode("AAAA", policy::MarketSegment::ENTERPRISE));

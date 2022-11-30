@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ SSLStatus::SSLStatus(const SSLStatus& other)
       certificate(other.certificate),
       cert_status(other.cert_status),
       content_status(other.content_status),
-      cert_status_host(other.cert_status_host),
-      user_data(other.user_data ? other.user_data->Clone() : nullptr) {}
+      cert_status_host(other.cert_status_host) {}
 
 SSLStatus& SSLStatus::operator=(SSLStatus other) {
   security_style = other.security_style;
@@ -25,7 +24,6 @@ SSLStatus& SSLStatus::operator=(SSLStatus other) {
   cert_status = other.cert_status;
   content_status = other.content_status;
   cert_status_host = other.cert_status_host;
-  user_data = other.user_data ? other.user_data->Clone() : nullptr;
   return *this;
 }
 

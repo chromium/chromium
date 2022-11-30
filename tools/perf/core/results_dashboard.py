@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,17 +12,24 @@
 
 import calendar
 import datetime
-import httplib
 import json
 import os
 import subprocess
 import sys
 import time
 import traceback
-import urllib
-import urllib2
 import zlib
 import logging
+
+import six
+import six.moves.urllib.error  # pylint: disable=import-error
+import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.request  # pylint: disable=import-error
+
+if six.PY2:
+  import httplib  # pylint: disable=wrong-import-order,import-error
+else:
+  import http.client as httplib  # pylint: disable=import-error
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
@@ -53,13 +60,15 @@ class SendResultsFatalException(SendResultException):
 
 def LuciAuthTokenGeneratorCallback():
   args = ['luci-auth', 'token']
-  p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  p = subprocess.Popen(args,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       universal_newlines=True)
   if p.wait() == 0:
-    return p.stdout.read()
-  else:
-    raise RuntimeError(
-        'Error generating authentication token.\nStdout: %s\nStder:%s' %
-        (p.stdout.read(), p.stderr.read()))
+    return p.stdout.read().strip()
+  raise RuntimeError(
+      'Error generating authentication token.\nStdout: %s\nStder:%s' %
+      (p.stdout.read(), p.stderr.read()))
 
 
 def SendResults(data, data_label, url, send_as_histograms=False,
@@ -90,7 +99,7 @@ def SendResults(data, data_label, url, send_as_histograms=False,
   # instance. So sleep before retrying again. (
   # For more details, see crbug.com/867379.
   wait_before_next_retry_in_seconds = 15
-  for i in xrange(1, num_retries + 1):
+  for i in range(1, num_retries + 1):
     try:
       logging.info(
           'Sending %s result of %s to dashboard (attempt %i out of %i).' %
@@ -146,18 +155,13 @@ def MakeHistogramSetWithDiagnostics(histograms_file,
   if max_bytes:
     add_diagnostics_args.extend(['--max_bytes', max_bytes])
 
-  stdio_url = _MakeStdioUrl(test_name, buildername, buildnumber)
-  if stdio_url:
-    add_diagnostics_args.extend(['--log_urls_k', 'Buildbot stdio'])
-    add_diagnostics_args.extend(['--log_urls_v', stdio_url])
-
   build_status_url = _MakeBuildStatusUrl(
       project, buildbucket, buildername, buildnumber)
   if build_status_url:
     add_diagnostics_args.extend(['--build_urls_k', 'Build Status'])
     add_diagnostics_args.extend(['--build_urls_v', build_status_url])
 
-  for k, v in revisions_dict.iteritems():
+  for k, v in revisions_dict.items():
     add_diagnostics_args.extend((k, v))
 
   add_diagnostics_args.append(histograms_file)
@@ -222,8 +226,6 @@ def MakeListOfPoints(charts, bot, test_name, project, buildbucket, buildername,
       # calculated revision column values so that these can be overwritten.
       result['supplemental_columns'].update(revision_columns)
       result['supplemental_columns'].update(
-          _GetStdioUriColumn(test_name, buildername, buildnumber))
-      result['supplemental_columns'].update(
           _GetBuildStatusUriColumn(project, buildbucket, buildername,
                                    buildnumber))
       result['supplemental_columns'].update(supplemental_columns)
@@ -280,8 +282,6 @@ def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, project,
       supplemental[key.replace('a_', '', 1)] = supplemental_dict[key]
 
   supplemental.update(
-      _GetStdioUriColumn(test_name, buildername, buildnumber))
-  supplemental.update(
       _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber))
 
   # TODO(sullivan): The android recipe sends "test_name.reference"
@@ -303,19 +303,6 @@ def MakeDashboardJsonV1(chart_json, revision_dict, test_name, bot, project,
   return fields
 
 
-def _MakeStdioUrl(test_name, buildername, buildnumber):
-  """Returns a string url pointing to buildbot stdio log."""
-  # TODO(780914): Link to logdog instead of buildbot.
-  if not buildername or not buildnumber:
-    return ''
-
-  return '%sbuilders/%s/builds/%s/steps/%s/logs/stdio' % (
-      _GetBuildBotUrl(),
-      urllib.quote(buildername),
-      urllib.quote(str(buildnumber)),
-      urllib.quote(test_name))
-
-
 def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
   if not (buildername and buildnumber):
     return None
@@ -324,18 +311,10 @@ def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
   if not buildbucket:
     buildbucket = 'ci'
   return 'https://ci.chromium.org/ui/p/%s/builders/%s/%s/%s' % (
-      urllib.quote(project),
-      urllib.quote(buildbucket),
-      urllib.quote(buildername),
-      urllib.quote(str(buildnumber)))
-
-
-def _GetStdioUriColumn(test_name, buildername, buildnumber):
-  """Gets a supplemental column containing buildbot stdio link."""
-  url = _MakeStdioUrl(test_name, buildername, buildnumber)
-  if not url:
-    return {}
-  return _CreateLinkColumn('stdio_uri', 'Buildbot stdio', url)
+      six.moves.urllib.parse.quote(project),
+      six.moves.urllib.parse.quote(buildbucket),
+      six.moves.urllib.parse.quote(buildername),
+      six.moves.urllib.parse.quote(str(buildnumber)))
 
 
 def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
@@ -349,12 +328,6 @@ def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
 def _CreateLinkColumn(name, label, url):
   """Returns a column containing markdown link to show on dashboard."""
   return {'a_' + name: '[%s](%s)' % (label, url)}
-
-
-def _GetBuildBotUrl():
-  """Gets the buildbot URL which contains hostname and master name."""
-  return os.environ.get('BUILDBOT_BUILDBOTURL',
-                        'http://build.chromium.org/p/chromium/')
 
 
 def _GetTimestamp():
@@ -387,10 +360,12 @@ def _RevisionNumberColumns(data, prefix):
       # branch in the chromium/src repo.
       revision_supplemental_columns[prefix + 'commit_pos'] = revision
   except ValueError:
+    logging.warning('Revision has non-integer value: "%s".', data['rev'])
     # The dashboard requires ordered integer revision numbers. If the revision
-    # is not an integer, assume it's a git hash and send a timestamp.
+    # is not an integer or None, assume it's a git hash and send a timestamp.
     revision = _GetTimestamp()
-    revision_supplemental_columns[prefix + 'chromium'] = data['rev']
+    if data['rev'] is not None:
+      revision_supplemental_columns[prefix + 'chromium'] = data['rev']
 
   # An explicit data['point_id'] overrides the default behavior.
   if 'point_id' in data:
@@ -402,7 +377,7 @@ def _RevisionNumberColumns(data, prefix):
       revision_supplemental_columns[prefix + key] = data[key]
 
   # If possible, also send the git hash.
-  if 'git_revision' in data and data['git_revision'] != 'undefined':
+  if 'git_revision' in data and data['git_revision'] not in [None, 'undefined']:
     revision_supplemental_columns[prefix + 'chromium'] = data['git_revision']
 
   return revision, revision_supplemental_columns
@@ -455,14 +430,15 @@ def _SendResultsJson(url, results_json, token_generator_callback):
   """
   # When data is provided to urllib2.Request, a POST is sent instead of GET.
   # The data must be in the application/x-www-form-urlencoded format.
-  data = urllib.urlencode({'data': results_json})
-  req = urllib2.Request(url + SEND_RESULTS_PATH, data)
+  data = six.moves.urllib.parse.urlencode({'data': results_json})
+  req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH, data)
   try:
     oauth_token = token_generator_callback()
     req.headers['Authorization'] = 'Bearer %s' % oauth_token
 
-    urllib2.urlopen(req, timeout=60 * 5)
-  except (urllib2.HTTPError, urllib2.URLError, httplib.HTTPException):
+    six.moves.urllib.request.urlopen(req, timeout=60 * 5)
+  except (six.moves.urllib.error.HTTPError, six.moves.urllib.error.URLError,
+          httplib.HTTPException):
     error = traceback.format_exc()
 
     if 'HTTPError: 400' in error:
@@ -489,7 +465,7 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
   try:
     oauth_token = token_generator_callback()
 
-    data = zlib.compress(histogramset_json)
+    data = zlib.compress(histogramset_json.encode('utf-8'))
     headers = {
         'Authorization': 'Bearer %s' % oauth_token,
         'User-Agent': 'perf-uploader/1.0'
@@ -497,7 +473,7 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
 
     http = httplib2.Http()
 
-    response, _ = http.request(
+    response, content = http.request(
       url + SEND_HISTOGRAMS_PATH, method='POST', body=data, headers=headers)
 
     # A 500 is presented on an exception on the dashboard side, timeout,
@@ -506,10 +482,21 @@ def _SendHistogramJson(url, histogramset_json, token_generator_callback):
     if response.status in (403, 500):
       raise SendResultsRetryException('HTTP Response %d: %s' % (
           response.status, response.reason))
-    elif response.status != 200:
+    if response.status != 200:
       raise SendResultsFatalException('HTTP Response %d: %s' % (
           response.status, response.reason))
+
   except httplib.ResponseNotReady:
     raise SendResultsRetryException(traceback.format_exc())
   except httplib2.HttpLib2Error:
     raise SendResultsRetryException(traceback.format_exc())
+
+  try:
+    token = json.loads(content).get('token')
+    if not token:
+      logging.warning(
+          'Error fetching upload completion token: Badly formatted token dict.')
+    else:
+      logging.info('Upload completion token created. Token id: %s' % token)
+  except Exception as e:  # pylint: disable=broad-except
+    logging.warning('Error fetching upload completion token: %s' % e)

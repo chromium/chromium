@@ -10,6 +10,7 @@ if ($cors_arg != "false") {
 if (strtolower($_GET["credentials"]) == "true") {
     header("Access-Control-Allow-Credentials: true");
 }
+header("Timing-Allow-Origin: http://127.0.0.1:8000");
 ?>
 <!DOCTYPE html>
 <html>

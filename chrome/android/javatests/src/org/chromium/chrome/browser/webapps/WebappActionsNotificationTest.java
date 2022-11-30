@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.webapps;
 
-import android.annotation.TargetApi;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -17,25 +16,38 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
+import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 
 /**
  * Tests for a standalone Web App notification governed by {@link WebappActionsNotificationManager}.
@@ -43,22 +55,44 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.M) // NotificationManager.getActiveNotifications
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 public class WebappActionsNotificationTest {
     private static final String WEB_APP_PATH = "/chrome/test/data/banners/manifest_test_page.html";
 
     @Rule
     public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
+                    (BrowserServicesIntentDataProvider intentDataProvider,
+                            CustomTabNightModeStateController nightModeController,
+                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                            TopUiThemeColorProvider topUiThemeColorProvider,
+                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                            -> new BaseCustomTabActivityModule(intentDataProvider,
+                                    nightModeController, intentIgnoringCriterion,
+                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+
+    @Rule
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain().around(mActivityTestRule).around(mModuleOverridesRule);
+
+    private EmbeddedTestServer mTestServer;
+
     @Before
     public void startWebapp() {
+        Context appContext = InstrumentationRegistry.getInstrumentation()
+                                     .getTargetContext()
+                                     .getApplicationContext();
+        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mActivityTestRule.startWebappActivity(mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_URL, mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)));
+                WebappConstants.EXTRA_URL, mTestServer.getURL(WEB_APP_PATH)));
     }
 
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "crbug/1267965")
     public void testNotification_openInChrome() throws Exception {
         Notification notification = getWebappNotification();
 
@@ -85,10 +119,8 @@ public class WebappActionsNotificationTest {
     }
 
     @Test
-    /*
-      @SmallTest
-      @Feature({"Webapps"})
-    */
+    @SmallTest
+    @Feature({"Webapps"})
     @DisabledTest(message = "crbug.com/774491")
     public void testNotification_copyUrl() throws Exception {
         Notification notification = getWebappNotification();

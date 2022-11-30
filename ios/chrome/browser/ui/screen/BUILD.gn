@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("screen_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "screen_provider.h",
+    "screen_provider.mm",
+  ]
+  deps = [
+    ":screen_type",
+    "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+  ]
+}
+
+source_set("screen_provider_protected") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "screen_provider+protected.h" ]
+  deps = [ ":screen_provider" ]
+}
+
+source_set("screen_type") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "screen_type.h" ]
+}

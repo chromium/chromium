@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_PARTS_H_
 
 #include "base/supports_user_data.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -33,4 +34,4 @@ class CONTENT_EXPORT MHTMLExtraParts : public base::SupportsUserData::Data {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_DATA_H_
+#endif  // CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_PARTS_H_

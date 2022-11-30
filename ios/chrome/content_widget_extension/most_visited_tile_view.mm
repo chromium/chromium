@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import <NotificationCenter/NotificationCenter.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -37,15 +37,8 @@ const CGFloat kTileWidth = 73;
   self = [super initWithFrame:CGRectZero];
   if (self) {
     UIVibrancyEffect* labelEffect = nil;
-    if (@available(iOS 13, *)) {
-      labelEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-    }
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    else {
-      labelEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-    }
-#endif
+    labelEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
     DCHECK(labelEffect);
 
     UIVisualEffectView* titleLabelEffectView =

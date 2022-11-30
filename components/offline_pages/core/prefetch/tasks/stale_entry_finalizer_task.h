@@ -1,14 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_STALE_ENTRY_FINALIZER_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_STALE_ENTRY_FINALIZER_TASK_H_
 
-#include <vector>
-
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -32,6 +30,10 @@ class StaleEntryFinalizerTask : public Task {
 
   StaleEntryFinalizerTask(PrefetchDispatcher* prefetch_dispatcher,
                           PrefetchStore* prefetch_store);
+
+  StaleEntryFinalizerTask(const StaleEntryFinalizerTask&) = delete;
+  StaleEntryFinalizerTask& operator=(const StaleEntryFinalizerTask&) = delete;
+
   ~StaleEntryFinalizerTask() override;
 
   // Will be set to true upon after an error-free run.
@@ -42,15 +44,14 @@ class StaleEntryFinalizerTask : public Task {
   void OnFinished(Result result);
 
   // Not owned.
-  PrefetchDispatcher* prefetch_dispatcher_;
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;
 
   // Prefetch store to execute against. Not owned.
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchStore> prefetch_store_;
 
   Result final_status_ = Result::NO_MORE_WORK;
 
   base::WeakPtrFactory<StaleEntryFinalizerTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StaleEntryFinalizerTask);
 };
 
 }  // namespace offline_pages

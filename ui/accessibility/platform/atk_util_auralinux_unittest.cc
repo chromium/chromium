@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ namespace ui {
 
 class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
  public:
-  AtkUtilAuraLinuxTest() {
-    AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
+  AtkUtilAuraLinuxTest() : ax_mode_setter_(kAXModeComplete) {
     // We need to create a platform node in order to install it as the root
     // ATK node. The ATK bridge will complain if we try to use it without a
     // root node installed.
@@ -26,7 +25,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     Init(root);
 
     TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
     if (!wrapper)
       NOTREACHED();
     AXPlatformNodeAuraLinux::SetApplication(wrapper->ax_platform_node());
@@ -34,16 +33,25 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     AtkUtilAuraLinux::GetInstance()->InitializeForTesting();
   }
 
-  ~AtkUtilAuraLinuxTest() override {
-    TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
-    if (!wrapper)
-      NOTREACHED();
-    g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
-  }
+  ~AtkUtilAuraLinuxTest() override = default;
 
   AtkUtilAuraLinuxTest(const AtkUtilAuraLinuxTest&) = delete;
   AtkUtilAuraLinuxTest& operator=(const AtkUtilAuraLinuxTest&) = delete;
+
+  void TearDown() override {
+    TestAXNodeWrapper* wrapper =
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+    if (!wrapper)
+      NOTREACHED();
+    g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
+
+    AXPlatformNodeTest::TearDown();
+    // These tests set AtSpiReady to true. Reset to initial state.
+    AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(false);
+  }
+
+ private:
+  ScopedAXModeSetter ax_mode_setter_;
 };
 
 TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {
@@ -70,7 +78,7 @@ TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {
   EXPECT_EQ(keyval_seen, 55);
 
   TestAXNodeWrapper* wrapper =
-      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
   DCHECK(wrapper);
   AXMode prev_mode = wrapper->ax_platform_node()->ax_mode_;
   // Disables AX mode.

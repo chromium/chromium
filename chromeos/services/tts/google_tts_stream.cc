@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,16 @@ void HandleLibraryLogging(int severity, const char* message) {
 
 GoogleTtsStream::GoogleTtsStream(
     TtsService* owner,
-    mojo::PendingReceiver<mojom::GoogleTtsStream> receiver)
-    : owner_(owner), stream_receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<mojom::GoogleTtsStream> receiver,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> factory)
+    : owner_(owner),
+      stream_receiver_(this, std::move(receiver)),
+      tts_player_(
+          std::move(factory),
+          media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                 media::ChannelLayoutConfig::Mono(),
+                                 kDefaultSampleRate,
+                                 kDefaultBufferSize)) {
   bool loaded = libchrometts_.Load(kLibchromettsPath);
   if (!loaded) {
     LOG(ERROR) << "Unable to load libchrometts.so.";
@@ -52,15 +60,19 @@ GoogleTtsStream::GoogleTtsStream(
   }
 
   stream_receiver_.set_disconnect_handler(base::BindOnce(
-      [](TtsService* owner) {
+      [](TtsService* owner, mojo::Receiver<mojom::GoogleTtsStream>* receiver) {
         // The remote which lives in component extension js has been
         // disconnected due to destruction or error.
+        receiver->reset();
         owner->MaybeExit();
       },
-      owner));
+      owner, &stream_receiver_));
 }
 
-GoogleTtsStream::~GoogleTtsStream() = default;
+GoogleTtsStream::~GoogleTtsStream() {
+  if (!is_in_process_teardown_)
+    libchrometts_.GoogleTtsShutdown();
+}
 
 bool GoogleTtsStream::IsBound() const {
   return stream_receiver_.is_bound();
@@ -107,7 +119,7 @@ void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
     return;
   }
 
-  owner_->Play(std::move(callback));
+  tts_player_.Play(std::move(callback));
   is_buffering_ = true;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -117,27 +129,27 @@ void GoogleTtsStream::Speak(const std::vector<uint8_t>& text_jspb,
 }
 
 void GoogleTtsStream::Stop() {
-  owner_->Stop();
+  tts_player_.Stop();
   is_buffering_ = false;
 }
 
 void GoogleTtsStream::SetVolume(float volume) {
-  owner_->SetVolume(volume);
+  tts_player_.SetVolume(volume);
 }
 
 void GoogleTtsStream::Pause() {
-  owner_->Pause();
+  tts_player_.Pause();
 }
 
 void GoogleTtsStream::Resume() {
-  owner_->Resume();
+  tts_player_.Resume();
 }
 
 void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   if (!is_buffering_)
     return;
 
-  TtsService::AudioBuffer buf;
+  TtsPlayer::AudioBuffer buf;
   buf.frames.resize(libchrometts_.GoogleTtsGetFramesInAudioBuffer());
   size_t frames_in_buf = 0;
   const int status =
@@ -149,16 +161,15 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
   buf.char_index = -1;
   buf.is_first_buffer = is_first_buffer;
 
-  owner_->AddAudioBuffer(std::move(buf));
+  tts_player_.AddAudioBuffer(std::move(buf));
 
   for (size_t timepoint_index = 0;
        timepoint_index < libchrometts_.GoogleTtsGetTimepointsCount();
        timepoint_index++) {
-    owner_->AddExplicitTimepoint(
+    tts_player_.AddExplicitTimepoint(
         libchrometts_.GoogleTtsGetTimepointsCharIndexAtIndex(timepoint_index),
-        base::TimeDelta::FromSecondsD(
-            libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
-                timepoint_index)));
+        base::Seconds(libchrometts_.GoogleTtsGetTimepointsTimeInSecsAtIndex(
+            timepoint_index)));
   }
 
   // Ensure we always clean up given status 0 (done) or -1 (error).

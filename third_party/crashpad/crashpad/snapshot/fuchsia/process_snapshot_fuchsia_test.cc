@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "snapshot/fuchsia/memory_map_region_snapshot_fuchsia.h"
+#include "snapshot/fuchsia/process_snapshot_fuchsia.h"
 
 #include <dbghelp.h>
 #include <zircon/syscalls.h>
 
+#include <iterator>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
-#include "snapshot/fuchsia/process_snapshot_fuchsia.h"
+#include "snapshot/fuchsia/memory_map_region_snapshot_fuchsia.h"
 #include "test/multiprocess_exec.h"
 #include "util/fuchsia/koid_utilities.h"
 #include "util/fuchsia/scoped_task_suspend.h"
@@ -56,7 +57,7 @@ CRASHPAD_CHILD_TEST_MAIN(AddressSpaceChildTestMain) {
   // correctly.
   for (const auto& t : kTestMappingPermAndSizes) {
     zx_handle_t vmo = ZX_HANDLE_INVALID;
-    const size_t size = t.pages * PAGE_SIZE;
+    const size_t size = t.pages * zx_system_get_page_size();
     zx_status_t status = zx_vmo_create(size, 0, &vmo);
     ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
     status = zx_vmo_replace_as_executable(vmo, ZX_HANDLE_INVALID, &vmo);
@@ -103,12 +104,16 @@ class AddressSpaceTest : public MultiprocessExec {
   AddressSpaceTest() : MultiprocessExec() {
     SetChildTestMainFunction("AddressSpaceChildTestMain");
   }
+
+  AddressSpaceTest(const AddressSpaceTest&) = delete;
+  AddressSpaceTest& operator=(const AddressSpaceTest&) = delete;
+
   ~AddressSpaceTest() {}
 
  private:
   void MultiprocessParent() override {
-    uintptr_t test_addresses[base::size(kTestMappingPermAndSizes)];
-    for (size_t i = 0; i < base::size(test_addresses); ++i) {
+    uintptr_t test_addresses[std::size(kTestMappingPermAndSizes)];
+    for (size_t i = 0; i < std::size(test_addresses); ++i) {
       ASSERT_TRUE(ReadFileExactly(
           ReadPipeHandle(), &test_addresses[i], sizeof(test_addresses[i])));
     }
@@ -118,11 +123,11 @@ class AddressSpaceTest : public MultiprocessExec {
     ProcessSnapshotFuchsia process_snapshot;
     ASSERT_TRUE(process_snapshot.Initialize(*ChildProcess()));
 
-    for (size_t i = 0; i < base::size(test_addresses); ++i) {
+    for (size_t i = 0; i < std::size(test_addresses); ++i) {
       const auto& t = kTestMappingPermAndSizes[i];
       EXPECT_TRUE(HasSingleMatchingMapping(process_snapshot.MemoryMap(),
                                            test_addresses[i],
-                                           t.pages * PAGE_SIZE,
+                                           t.pages * zx_system_get_page_size(),
                                            t.minidump_perm))
           << base::StringPrintf(
                  "index %zu, zircon_perm 0x%x, minidump_perm 0x%x",
@@ -131,8 +136,6 @@ class AddressSpaceTest : public MultiprocessExec {
                  t.minidump_perm);
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSpaceTest);
 };
 
 TEST(ProcessSnapshotFuchsiaTest, AddressSpaceMapping) {
@@ -171,6 +174,10 @@ class InvalidStackPointerTest : public MultiprocessExec {
     SetExpectedChildTermination(kTerminationNormal,
                                 ZX_TASK_RETCODE_SYSCALL_KILL);
   }
+
+  InvalidStackPointerTest(const InvalidStackPointerTest&) = delete;
+  InvalidStackPointerTest& operator=(const InvalidStackPointerTest&) = delete;
+
   ~InvalidStackPointerTest() {}
 
  private:
@@ -215,8 +222,6 @@ class InvalidStackPointerTest : public MultiprocessExec {
     // As we've corrupted the child, don't let it run again.
     ASSERT_EQ(ChildProcess()->kill(), ZX_OK);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(InvalidStackPointerTest);
 };
 
 // This is a test for a specific failure detailed in

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ enum class ToolbarContainerOrientation { kTopToBottom, kBottomToTop };
 @property(nonatomic, strong) NSArray<UIViewController*>* toolbars;
 
 // The height range of the overall stack.  It is calculated using the collapsed
-// and expanded heights of the views managed by |toolbars|.
+// and expanded heights of the views managed by `toolbars`.
 @property(nonatomic, readonly)
     const toolbar_container::HeightRange& heightRange;
 

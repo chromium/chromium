@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_DELEGATE_H_
 #define COMPONENTS_SESSIONS_CONTENT_SESSION_TAB_HELPER_DELEGATE_H_
-
-#include <string>
 
 #include "components/sessions/core/sessions_export.h"
 

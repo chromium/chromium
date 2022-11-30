@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,9 @@ void InitResourceBundleRendererSide() {
   ui::ResourceBundle::InitSharedInstanceWithPakFileRegion(base::File(pak_fd),
                                                           pak_region);
 
-  std::pair<int, ui::ScaleFactor> extra_paks[] = {
-      {kAndroidWebViewMainPakDescriptor, ui::SCALE_FACTOR_NONE},
-      {kAndroidWebView100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
+  std::pair<int, ui::ResourceScaleFactor> extra_paks[] = {
+      {kAndroidWebViewMainPakDescriptor, ui::kScaleFactorNone},
+      {kAndroidWebView100PercentPakDescriptor, ui::k100Percent}};
 
   for (const auto& pak_info : extra_paks) {
     pak_fd = global_descriptors->Get(pak_info.first);

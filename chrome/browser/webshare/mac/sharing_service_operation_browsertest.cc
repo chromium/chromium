@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,21 +36,21 @@ class SharingServiceOperationBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SharingServiceOperationBrowserTest,
                        ShareIllegalFilename) {
   const std::string script =
-      "share_multiple_custom_files_url('../sample.csv', '..sample.csv')";
+      "share_multiple_custom_files_url('sample.csv', '..sample.csv')";
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::vector<base::FilePath> file_paths;
 
-  ui_test_utils::NavigateToURL(browser(), GetAppUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppUrl()));
   SharingServiceOperation::SetSharePickerCallbackForTesting(
       base::BindLambdaForTesting(
           [](content::WebContents* in_contents,
              const std::vector<base::FilePath>& file_paths,
              const std::string& text, const std::string& title, const GURL& url,
              blink::mojom::ShareService::ShareCallback close_callback) {
-            EXPECT_EQ(file_paths[0].BaseName().value(), "_._sample.csv");
+            EXPECT_EQ(file_paths[0].BaseName().value(), "sample.csv");
             EXPECT_EQ(file_paths[1].BaseName().value(), "_.sample.csv");
             std::move(close_callback).Run(blink::mojom::ShareError::OK);
           }));

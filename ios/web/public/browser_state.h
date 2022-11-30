@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -33,7 +34,6 @@ class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
 namespace web {
-enum class CookieBlockingMode;
 class CertificatePolicyCache;
 class NetworkContextOwner;
 class URLDataManagerIOS;
@@ -82,26 +82,15 @@ class BrowserState : public base::SupportsUserData {
   GetSharedURLLoaderFactory();
 
   // Safely cast a base::SupportsUserData to a BrowserState. Returns nullptr
-  // if |supports_user_data| is not a BrowserState.
+  // if `supports_user_data` is not a BrowserState.
   static BrowserState* FromSupportsUserData(
       base::SupportsUserData* supports_user_data);
 
-  // Updates |cors_exempt_header_list| field of the given |param| to register
+  // Updates `cors_exempt_header_list` field of the given `param` to register
   // headers that are used in content for special purpose and should not be
   // blocked by CORS checks.
   virtual void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params) {}
-
-  // Returns the current cookie blocking mode for this browser state.
-  CookieBlockingMode GetCookieBlockingMode() const;
-
-  // Sets the cookie blocking mode for this browser state. This will only affect
-  // WebStates that are loaded after this mode is set. WebStates with live web
-  // content will not have the mode correctly setup until they are reloaded.
-  // Some tasks here may be asynchronous, so |callback| will be called after
-  // the cookie blocking mode is set correctly. This may happen immediately.
-  void SetCookieBlockingMode(CookieBlockingMode cookie_blocking_mode,
-                             base::OnceClosure callback);
 
  protected:
   BrowserState();
@@ -126,7 +115,7 @@ class BrowserState : public base::SupportsUserData {
       shared_url_loader_factory_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 
-  // Owns the network::NetworkContext that backs |url_loader_factory_|. Created
+  // Owns the network::NetworkContext that backs `url_loader_factory_`. Created
   // on the UI thread, destroyed on the IO thread.
   std::unique_ptr<NetworkContextOwner> network_context_owner_;
 
@@ -134,8 +123,6 @@ class BrowserState : public base::SupportsUserData {
   // Created and destroyed on the IO thread, and should be accessed only from
   // the IO thread.
   URLDataManagerIOSBackend* url_data_manager_ios_backend_;
-
-  CookieBlockingMode cookie_blocking_mode_;
 };
 
 }  // namespace web

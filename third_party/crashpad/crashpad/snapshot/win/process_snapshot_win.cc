@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
 #include <wchar.h>
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "util/misc/from_pointer_cast.h"
@@ -45,8 +45,7 @@ ProcessSnapshotWin::ProcessSnapshotWin()
       annotations_simple_map_(),
       snapshot_time_(),
       options_(),
-      initialized_() {
-}
+      initialized_() {}
 
 ProcessSnapshotWin::~ProcessSnapshotWin() {
 }
@@ -63,25 +62,7 @@ bool ProcessSnapshotWin::Initialize(
   if (!process_reader_.Initialize(process, suspension_state))
     return false;
 
-  if (exception_information_address != 0) {
-    ExceptionInformation exception_information = {};
-    if (!process_reader_.Memory()->Read(exception_information_address,
-                                        sizeof(exception_information),
-                                        &exception_information)) {
-      LOG(WARNING) << "ReadMemory ExceptionInformation failed";
-      return false;
-    }
-
-    exception_.reset(new internal::ExceptionSnapshotWin());
-    if (!exception_->Initialize(&process_reader_,
-                                exception_information.thread_id,
-                                exception_information.exception_pointers)) {
-      exception_.reset();
-      return false;
-    }
-  }
-
-
+  client_id_.InitializeToZero();
   system_.Initialize(&process_reader_);
 
   if (process_reader_.Is64Bit()) {
@@ -96,10 +77,31 @@ bool ProcessSnapshotWin::Initialize(
   InitializeUnloadedModules();
 
   GetCrashpadOptionsInternal(&options_);
+  uint32_t* budget_remaining_pointer =
+      options_.gather_indirectly_referenced_memory == TriState::kEnabled
+          ? &options_.indirectly_referenced_memory_cap
+          : nullptr;
 
-  InitializeThreads(
-      options_.gather_indirectly_referenced_memory == TriState::kEnabled,
-      options_.indirectly_referenced_memory_cap);
+  if (exception_information_address != 0) {
+    ExceptionInformation exception_information = {};
+    if (!process_reader_.Memory()->Read(exception_information_address,
+                                        sizeof(exception_information),
+                                        &exception_information)) {
+      LOG(WARNING) << "ReadMemory ExceptionInformation failed";
+      return false;
+    }
+
+    exception_.reset(new internal::ExceptionSnapshotWin());
+    if (!exception_->Initialize(&process_reader_,
+                                exception_information.thread_id,
+                                exception_information.exception_pointers,
+                                budget_remaining_pointer)) {
+      exception_.reset();
+      return false;
+    }
+  }
+
+  InitializeThreads(budget_remaining_pointer);
 
   for (const MEMORY_BASIC_INFORMATION64& mbi :
        process_reader_.GetProcessInfo().MemoryInfo()) {
@@ -239,15 +241,9 @@ const ProcessMemory* ProcessSnapshotWin::Memory() const {
   return process_reader_.Memory();
 }
 
-void ProcessSnapshotWin::InitializeThreads(
-    bool gather_indirectly_referenced_memory,
-    uint32_t indirectly_referenced_memory_cap) {
+void ProcessSnapshotWin::InitializeThreads(uint32_t* budget_remaining_pointer) {
   const std::vector<ProcessReaderWin::Thread>& process_reader_threads =
       process_reader_.Threads();
-  uint32_t* budget_remaining_pointer = nullptr;
-  uint32_t budget_remaining = indirectly_referenced_memory_cap;
-  if (gather_indirectly_referenced_memory)
-    budget_remaining_pointer = &budget_remaining;
   for (const ProcessReaderWin::Thread& process_reader_thread :
        process_reader_threads) {
     auto thread = std::make_unique<internal::ThreadSnapshotWin>();
@@ -335,7 +331,7 @@ void ProcessSnapshotWin::InitializeUnloadedModules() {
           uet.TimeDateStamp,
           base::WideToUTF8(base::WStringPiece(
               uet.ImageName,
-              wcsnlen(uet.ImageName, base::size(uet.ImageName))))));
+              wcsnlen(uet.ImageName, std::size(uet.ImageName))))));
     }
   }
 }
@@ -535,9 +531,9 @@ WinVMSize ProcessSnapshotWin::DetermineSizeOfEnvironmentBlock(
   env_block.resize(
       static_cast<unsigned int>(bytes_read / sizeof(env_block[0])));
   static constexpr wchar_t terminator[] = {0, 0};
-  size_t at = env_block.find(std::wstring(terminator, base::size(terminator)));
+  size_t at = env_block.find(std::wstring(terminator, std::size(terminator)));
   if (at != std::wstring::npos)
-    env_block.resize(at + base::size(terminator));
+    env_block.resize(at + std::size(terminator));
 
   return env_block.size() * sizeof(env_block[0]);
 }

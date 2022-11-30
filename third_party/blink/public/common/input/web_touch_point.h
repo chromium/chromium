@@ -57,4 +57,4 @@ class BLINK_COMMON_EXPORT WebTouchPoint : public WebPointerProperties {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_TOUCH_POINT_H_

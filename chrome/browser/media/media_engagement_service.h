@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "components/history/core/browser/history_service.h"
@@ -52,6 +51,10 @@ class MediaEngagementService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit MediaEngagementService(Profile* profile);
+
+  MediaEngagementService(const MediaEngagementService&) = delete;
+  MediaEngagementService& operator=(const MediaEngagementService&) = delete;
+
   ~MediaEngagementService() override;
 
   // Returns the engagement score of |origin|.
@@ -111,13 +114,13 @@ class MediaEngagementService : public KeyedService,
   base::flat_map<content::WebContents*, MediaEngagementContentsObserver*>
       contents_observers_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Clear any data for a specific origin.
   void Clear(const url::Origin& origin);
 
   // An internal clock for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::vector<MediaEngagementScore> GetAllStoredScores() const;
 
@@ -134,8 +137,6 @@ class MediaEngagementService : public KeyedService,
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementService);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SERVICE_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,19 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class OptimizationGuideLogger;
 class PrefService;
 
 namespace network {
-class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -41,8 +41,8 @@ enum class HintsFetcherRequestStatus {
   kSuccess,
   // Fetch request was sent but no response received.
   kResponseError,
-  // Fetch request not sent because of offline network status.
-  kNetworkOffline,
+  // DEPRECATED: Fetch request not sent because of offline network status.
+  kDeprecatedNetworkOffline,
   // Fetch request not sent because fetcher was busy with another request.
   kFetcherBusy,
   // Fetch request not sent because the host and URL lists were empty.
@@ -59,7 +59,7 @@ enum class HintsFetcherRequestStatus {
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
 using HintsFetchedCallback = base::OnceCallback<void(
-    base::Optional<std::unique_ptr<proto::GetHintsResponse>>)>;
+    absl::optional<std::unique_ptr<proto::GetHintsResponse>>)>;
 
 // A class to handle requests for optimization hints from a remote Optimization
 // Guide Service.
@@ -71,7 +71,11 @@ class HintsFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& optimization_guide_service_url,
       PrefService* pref_service,
-      network::NetworkConnectionTracker* network_connection_tracker);
+      OptimizationGuideLogger* optimization_guide_logger);
+
+  HintsFetcher(const HintsFetcher&) = delete;
+  HintsFetcher& operator=(const HintsFetcher&) = delete;
+
   virtual ~HintsFetcher();
 
   // Requests hints from the Optimization Guide Service if a request for them is
@@ -91,6 +95,7 @@ class HintsFetcher {
       const base::flat_set<optimization_guide::proto::OptimizationType>&
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
+      const std::string& locale,
       HintsFetchedCallback hints_fetched_callback);
 
   // Set |time_clock_| for testing.
@@ -99,6 +104,16 @@ class HintsFetcher {
   // Clear all the hosts and expiration times from the
   // HintsFetcherHostsSuccessfullyFetched dictionary pref.
   static void ClearHostsSuccessfullyFetched(PrefService* pref_service);
+
+  // Clear the given host from the HintsFetcherHostsSuccessfullyFetched
+  // dictionary pref.
+  static void ClearSingleFetchedHost(PrefService* pref_service,
+                                     const std::string& host);
+
+  // Adds a fetched host at the given time. Used only for testing.
+  static void AddFetchedHostForTesting(PrefService* pref_service,
+                                       const std::string& host,
+                                       base::Time time);
 
   // Return whether the host was covered by a hints fetch and any returned hints
   // would not have expired.
@@ -127,6 +142,11 @@ class HintsFetcher {
   // in the pref.
   void UpdateHostsSuccessfullyFetched(base::TimeDelta valid_duration);
 
+  // Returns the subset of URLs from |urls| for which the URL is considered
+  // valid and can be included in a hints fetch.
+  std::vector<GURL> GetSizeLimitedURLsForFetching(
+      const std::vector<GURL>& urls) const;
+
   // Returns the subset of hosts from |hosts| for which the hints should be
   // refreshed. The count of returned hosts is limited to
   // features::MaxHostsForOptimizationGuideServiceHintsFetch().
@@ -148,17 +168,13 @@ class HintsFetcher {
   optimization_guide::proto::RequestContext request_context_;
 
   // A reference to the PrefService for this profile. Not owned.
-  PrefService* pref_service_ = nullptr;
-
-  // Listens to changes around the network connection. Not owned. Guaranteed to
-  // outlive |this|.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Holds the hosts being requested by the hints fetcher.
   std::vector<std::string> hosts_fetched_;
 
   // Clock used for recording time that the hints fetch occurred.
-  const base::Clock* time_clock_;
+  raw_ptr<const base::Clock> time_clock_;
 
   // Used for creating an |active_url_loader_| when needed for request hints.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -167,9 +183,10 @@ class HintsFetcher {
   // retrieving hints from the remote Optimization Guide Service.
   base::TimeTicks hints_fetch_start_time_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Owned by OptimizationGuideKeyedService and outlives |this|.
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
-  DISALLOW_COPY_AND_ASSIGN(HintsFetcher);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace optimization_guide

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -23,6 +22,9 @@ class WtsTerminalMonitor {
  public:
   // The console terminal ID.
   static const char kConsole[];
+
+  WtsTerminalMonitor(const WtsTerminalMonitor&) = delete;
+  WtsTerminalMonitor& operator=(const WtsTerminalMonitor&) = delete;
 
   virtual ~WtsTerminalMonitor();
 
@@ -51,9 +53,6 @@ class WtsTerminalMonitor {
 
  protected:
   WtsTerminalMonitor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WtsTerminalMonitor);
 };
 
 }  // namespace remoting

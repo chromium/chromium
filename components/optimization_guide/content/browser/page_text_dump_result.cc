@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace optimization_guide {
 
@@ -34,14 +35,14 @@ void PageTextDumpResult::AddFrameTextDumpResult(
   frame_results_.emplace(frame_result);
 }
 
-base::Optional<std::string> PageTextDumpResult::GetAMPTextContent() const {
+absl::optional<std::string> PageTextDumpResult::GetAMPTextContent() const {
   if (empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // AMP frames are sorted in beginning, so if there are none then return null.
   if (!frame_results_.begin()->amp_frame()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> amp_text;
@@ -59,15 +60,15 @@ base::Optional<std::string> PageTextDumpResult::GetAMPTextContent() const {
   return base::JoinString(amp_text, " ");
 }
 
-base::Optional<std::string> PageTextDumpResult::GetMainFrameTextContent()
+absl::optional<std::string> PageTextDumpResult::GetMainFrameTextContent()
     const {
   if (empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Mainframes are sorted to the end.
   if (frame_results_.rbegin()->amp_frame()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // There should only be one mainframe.
@@ -75,10 +76,10 @@ base::Optional<std::string> PageTextDumpResult::GetMainFrameTextContent()
   return *frame_results_.rbegin()->utf8_contents();
 }
 
-base::Optional<std::string> PageTextDumpResult::GetAllFramesTextContent()
+absl::optional<std::string> PageTextDumpResult::GetAllFramesTextContent()
     const {
   if (empty()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> text;
@@ -98,7 +99,7 @@ FrameTextDumpResult::FrameTextDumpResult(const FrameTextDumpResult&) = default;
 // static
 FrameTextDumpResult FrameTextDumpResult::Initialize(
     mojom::TextDumpEvent event,
-    content::GlobalFrameRoutingId rfh_id,
+    content::GlobalRenderFrameHostId rfh_id,
     bool amp_frame,
     int unique_navigation_id) {
   FrameTextDumpResult result;
@@ -114,7 +115,10 @@ FrameTextDumpResult FrameTextDumpResult::CompleteWithContents(
   DCHECK(!IsCompleted());
 
   FrameTextDumpResult copy = *this;
+  // Always trim whitespace from |contents| because it can non-deterministically
+  // have trailing whitespace which makes testing and parsing harder.
   copy.contents_ = contents;
+  base::TrimWhitespace(contents, base::TRIM_ALL, &(copy.contents_.value()));
   return copy;
 }
 
@@ -122,9 +126,9 @@ bool FrameTextDumpResult::IsCompleted() const {
   return !!contents();
 }
 
-base::Optional<std::string> FrameTextDumpResult::utf8_contents() const {
+absl::optional<std::string> FrameTextDumpResult::utf8_contents() const {
   if (!contents_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return base::UTF16ToUTF8(*contents_);
 }

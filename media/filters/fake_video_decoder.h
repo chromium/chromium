@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/callback_holder.h"
@@ -38,6 +37,9 @@ class FakeVideoDecoder : public VideoDecoder {
                    int decoding_delay,
                    int max_parallel_decoding_requests,
                    const BytesDecodedCB& bytes_decoded_cb);
+
+  FakeVideoDecoder(const FakeVideoDecoder&) = delete;
+  FakeVideoDecoder& operator=(const FakeVideoDecoder&) = delete;
 
   ~FakeVideoDecoder() override;
 
@@ -99,7 +101,9 @@ class FakeVideoDecoder : public VideoDecoder {
   virtual scoped_refptr<VideoFrame> MakeVideoFrame(const DecoderBuffer& buffer);
 
   // Callback for updating |total_bytes_decoded_|.
-  void OnFrameDecoded(int buffer_size, DecodeCB decode_cb, Status status);
+  void OnFrameDecoded(int buffer_size,
+                      DecodeCB decode_cb,
+                      DecoderStatus status);
 
   // Runs |decode_cb| or puts it to |held_decode_callbacks_| depending on
   // current value of |hold_decode_|.
@@ -140,8 +144,6 @@ class FakeVideoDecoder : public VideoDecoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVideoDecoder);
 };
 
 }  // namespace media

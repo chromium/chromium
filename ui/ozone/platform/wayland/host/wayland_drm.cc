@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,57 @@
 #include "base/logging.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 
 namespace ui {
 
+namespace {
+constexpr uint32_t kMinVersion = 2;
+}
+
+// static
+constexpr char WaylandDrm::kInterfaceName[];
+
+// static
+void WaylandDrm::Instantiate(WaylandConnection* connection,
+                             wl_registry* registry,
+                             uint32_t name,
+                             const std::string& interface,
+                             uint32_t version) {
+  CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
+                                      << "\" but got \"" << interface << "\"";
+
+  auto* buffer_factory = connection->wayland_buffer_factory();
+  if (buffer_factory->wayland_drm_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
+    return;
+  }
+
+  auto wl_drm = wl::Bind<struct wl_drm>(registry, name, version);
+  if (!wl_drm) {
+    LOG(ERROR) << "Failed to bind wl_drm";
+    return;
+  }
+  buffer_factory->wayland_drm_ =
+      std::make_unique<WaylandDrm>(wl_drm.release(), connection);
+}
+
 WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
     : wl_drm_(drm), connection_(connection) {
-  static const wl_drm_listener kDrmListener = {
-      &WaylandDrm::Device,
-      &WaylandDrm::Format,
-      &WaylandDrm::Authenticated,
-      &WaylandDrm::Capabilities,
+  static constexpr wl_drm_listener kDrmListener = {
+      &Device,
+      &Format,
+      &Authenticated,
+      &Capabilities,
   };
   wl_drm_add_listener(wl_drm_.get(), &kDrmListener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   // A roundtrip after binding guarantees that the client has received all
   // supported formats and capabilities of the device.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 WaylandDrm::~WaylandDrm() = default;
@@ -38,7 +70,7 @@ bool WaylandDrm::SupportsDrmPrime() const {
   return authenticated_ && !!wl_drm_;
 }
 
-void WaylandDrm::CreateBuffer(base::ScopedFD fd,
+void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
                               const gfx::Size& size,
                               const std::vector<uint32_t>& strides,
                               const std::vector<uint32_t>& offsets,
@@ -59,9 +91,15 @@ void WaylandDrm::CreateBuffer(base::ScopedFD fd,
   wl::Object<wl_buffer> buffer(wl_drm_create_prime_buffer(
       wl_drm_.get(), fd.get(), size.width(), size.height(), format, offset[0],
       stride[0], offset[1], stride[1], offset[2], stride[2]));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   std::move(callback).Run(std::move(buffer));
+}
+
+bool WaylandDrm::CanCreateBufferImmed() const {
+  // Unlike the WaylandZwpLinuxDmabuf, the WaylandDrm always creates wl_buffers
+  // immediately.
+  return true;
 }
 
 void WaylandDrm::HandleDrmFailure(const std::string& error) {
@@ -94,6 +132,11 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
     return;
   }
 
+  if (drmGetNodeTypeFromFd(drm_fd.get()) != DRM_NODE_PRIMARY) {
+    DrmDeviceAuthenticated(wl_drm_.get());
+    return;
+  }
+
   drm_magic_t magic;
   memset(&magic, 0, sizeof(magic));
   if (drmGetMagic(drm_fd.get(), &magic)) {
@@ -102,11 +145,11 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
   }
 
   wl_drm_authenticate(wl_drm_.get(), magic);
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   // Do the roundtrip to make sure the server processes this request and
   // authenticates us.
-  wl_display_roundtrip(connection_->display());
+  connection_->RoundTripQueue();
 }
 
 void WaylandDrm::DrmDeviceAuthenticated(struct wl_drm* wl_drm) {

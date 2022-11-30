@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
+import "third_party/blink/public/mojom/quota/quota_types.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+
+// Information used to locate a bucket's data on disk or in databases.
+//
+// The information in a BucketLocator does not change throughout the bucket's
+// lifetime.
+//
+// Note: A BucketLocator should never be received from the renderer for they
+// cannot be trusted. BucketLocator should only be passed from more trusted to
+// less trusted processes.
+struct BucketLocator {
+  // If null, `is_default` should be true and this refers to the default bucket.
+  BucketId? id;
+  blink.mojom.StorageKey storage_key;
+  blink.mojom.StorageType type;
+  bool is_default;
+};

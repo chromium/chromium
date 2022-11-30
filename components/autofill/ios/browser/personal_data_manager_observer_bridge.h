@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 // PersonalDataManagerObserver is used by PersonalDataManager to informs its
@@ -33,6 +32,12 @@ class PersonalDataManagerObserverBridge : public PersonalDataManagerObserver {
  public:
   explicit PersonalDataManagerObserverBridge(
       id<PersonalDataManagerObserver> delegate);
+
+  PersonalDataManagerObserverBridge(const PersonalDataManagerObserverBridge&) =
+      delete;
+  PersonalDataManagerObserverBridge& operator=(
+      const PersonalDataManagerObserverBridge&) = delete;
+
   ~PersonalDataManagerObserverBridge() override;
 
   // PersonalDataManagerObserver implementation.
@@ -41,8 +46,6 @@ class PersonalDataManagerObserverBridge : public PersonalDataManagerObserver {
 
  private:
   __weak id<PersonalDataManagerObserver> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersonalDataManagerObserverBridge);
 };
 
 }  // namespace autofill

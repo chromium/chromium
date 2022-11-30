@@ -1,0 +1,8 @@
+android.webkit.WebView focusable scrollable
+++android.view.View
+++++android.view.View
+++++++android.widget.Spinner clickable expanded name='Custom selectmenu button'
+++++++android.widget.ListView role_description='list box' clickable collection state_description='3 items' item_count=3 row_count=3
+++++++++android.view.View clickable collection_item focusable focused selected name='Option 1' state_description='in list, item 1 of 3'
+++++++++android.view.View clickable collection_item focusable name='Option 2' state_description='in list, item 2 of 3' item_index=1 row_index=1
+++++++++android.view.View clickable collection_item focusable name='Option 3' state_description='in list, item 3 of 3' item_index=2 row_index=2

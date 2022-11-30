@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <random>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
@@ -25,7 +24,7 @@ namespace blink {
 TEST(IDBMojomTraitsTest, IDBKeyBinary) {
   // Generate test data.
   std::mt19937 rng(5);
-  size_t test_data_size = 10000;
+  wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
   scoped_refptr<SharedBuffer> input_data =
@@ -56,7 +55,7 @@ TEST(IDBMojomTraitsTest, IDBKeyBinary) {
 TEST(IDBMojomTraitsTest, IDBValue) {
   // Generate test data.
   std::mt19937 rng(5);
-  size_t test_data_size = 10000;
+  wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
   scoped_refptr<SharedBuffer> input_data =

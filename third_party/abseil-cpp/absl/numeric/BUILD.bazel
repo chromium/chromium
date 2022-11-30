@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
@@ -35,6 +34,20 @@ cc_library(
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
+    ],
+)
+
+cc_binary(
+    name = "bits_benchmark",
+    testonly = 1,
+    srcs = ["bits_benchmark.cc"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":bits",
+        "//absl/base:core_headers",
+        "//absl/random",
+        "@com_github_google_benchmark//:benchmark_main",
     ],
 )
 

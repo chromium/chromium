@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@ import "services/video_capture/public/mojom/devices_changed_observer.mojom";
 import "services/video_capture/public/mojom/producer.mojom";
 import "services/video_capture/public/mojom/virtual_device.mojom";
 
-enum DeviceAccessResultCode {
-  NOT_INITIALIZED,
-  SUCCESS,
-  ERROR_DEVICE_NOT_FOUND
-};
+[EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
 
+// TODO(crbug.com/1344751): remove this deprecated interface.
+// This interface is executed in the Video Capture Utility process.
+// It is used from the Browser process.
 // Enables access to a set of video capture devices.
 // Typical operation is to first call GetDeviceInfos() to obtain
 // information about available devices. The |device_id| of the infos can
@@ -38,7 +38,7 @@ interface DeviceFactory {
   // |device_receiver| has been (asynchronously) discarded a subsequent call to
   // CreateDevice() would succeed if it were to deny access while still in use.
   CreateDevice(string device_id, pending_receiver<Device> device_receiver)
-      => (DeviceAccessResultCode result_code);
+      => (media.mojom.VideoCaptureError result_code);
 
   // Creates a new virtual capture device, which will be exposed by the device
   // factory using the given |device_info|. The returned |virtual_device| is to
@@ -54,7 +54,6 @@ interface DeviceFactory {
   AddSharedMemoryVirtualDevice(
       media.mojom.VideoCaptureDeviceInfo device_info,
       pending_remote<Producer> producer,
-      bool send_buffer_handles_to_producer_as_raw_file_descriptors,
       pending_receiver<SharedMemoryVirtualDevice> virtual_device_receiver);
 
   // Similar to AddSharedMemoryVirtualDevice() but for virtual devices that
@@ -77,4 +76,9 @@ interface DeviceFactory {
   RegisterVirtualDevicesChangedObserver(
       pending_remote<DevicesChangedObserver> observer,
       bool raise_event_if_virtual_devices_already_present);
+
+  // Notify the capture service about change of the GPU adapter used in
+  // the GPU process.
+  [EnableIf=is_win]
+  OnGpuInfoUpdate(gpu.mojom.Luid luid);
 };

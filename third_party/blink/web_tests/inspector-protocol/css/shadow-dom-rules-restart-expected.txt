@@ -8,7 +8,8 @@ DevTools session #2:
 Dumping #inner node styles in shadow root:
 Dumping matched rules: 
 *.red* {    regular
-    color: red;
+    color: red; @[0:8-0:19]
+    color: red; @[undefined-undefined]
 }
 Dumping inherited rules: 
 

@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import logging
 
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
@@ -91,7 +93,7 @@ class FlakyTests(Command):
                 continue
 
             for line in expectations.expectation_lines(
-                    only_ignore_very_flaky=True):
+                    only_consider_very_flaky=True):
                 # TODO(ojan): Find a way to merge specifiers instead of removing build types.
                 # We can't just union because some specifiers will change the meaning of others.
                 # For example, it's not clear how to merge [ Mac Release ] with [ Linux Debug ].
@@ -121,5 +123,5 @@ class FlakyTests(Command):
             ','.join(test_names)
         expectations_string = '\n'.join(line.to_string() for line in lines)
 
-        print self.OUTPUT % (self.HEADER, expectations_string,
-                             flakiness_dashboard_url)
+        print(self.OUTPUT %
+              (self.HEADER, expectations_string, flakiness_dashboard_url))

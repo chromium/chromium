@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define ASH_SYSTEM_ACCESSIBILITY_FLOATING_MENU_BUTTON_H_
 
 #include "ash/system/tray/tray_constants.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace gfx {
@@ -59,10 +59,6 @@ class FloatingMenuButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void OnThemeChanged() override;
 
  private:
@@ -81,7 +77,9 @@ BEGIN_VIEW_BUILDER(/* no export */, FloatingMenuButton, views::ImageButton)
 VIEW_BUILDER_PROPERTY(bool, A11yTogglable)
 VIEW_BUILDER_PROPERTY(bool, DrawHighlight)
 VIEW_BUILDER_PROPERTY(bool, Toggled)
-VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&, VectorIcon)
+VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&,
+                      VectorIcon,
+                      const gfx::VectorIcon&)
 END_VIEW_BUILDER
 
 }  // namespace ash

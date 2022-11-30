@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/scheme_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace {
 
@@ -41,15 +41,34 @@ SchemePageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-SchemePageLoadMetricsObserver::OnCommit(
+SchemePageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // This observer is interested in comparing performance among HTTP and HTTPS.
+  // Including prerendering cases can be another factor to differentiate
+  // performance, and it will be a noise for the original goal.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SchemePageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   // Capture committed transition type.
   transition_ = navigation_handle->GetPageTransition();
   if (navigation_handle->GetURL().scheme() == url::kHttpScheme ||
       navigation_handle->GetURL().scheme() == url::kHttpsScheme) {
     return CONTINUE_OBSERVING;
   }
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SchemePageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in events that are dispatched only for the primary
+  // page or preprocessed by PageLoadTracker to be per-outermost page. So, no
+  // need to forward events at the observer layer.
   return STOP_OBSERVING;
 }
 
@@ -121,7 +140,7 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // Record understat metrics for the time to first contentful paint.
   static constexpr const int kUnderStatRecordingIntervalsSeconds[] = {1, 2, 5,
                                                                       8, 10};
-  static_assert(base::size(kUnderStatRecordingIntervalsSeconds) ==
+  static_assert(std::size(kUnderStatRecordingIntervalsSeconds) ==
                     static_cast<int>(PageLoadTimingUnderStat::kMaxValue),
                 " mismatch in  array length and enum size");
 
@@ -139,10 +158,10 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         PageLoadTimingUnderStat::kTotal);
   }
 
-  for (size_t index = 0;
-       index < base::size(kUnderStatRecordingIntervalsSeconds); ++index) {
-    base::TimeDelta threshold(base::TimeDelta::FromSeconds(
-        kUnderStatRecordingIntervalsSeconds[index]));
+  for (size_t index = 0; index < std::size(kUnderStatRecordingIntervalsSeconds);
+       ++index) {
+    base::TimeDelta threshold(
+        base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
     if (fcp <= threshold) {
       base::UmaHistogramEnumeration(
           GetDelegate().GetUrl().scheme() == url::kHttpScheme

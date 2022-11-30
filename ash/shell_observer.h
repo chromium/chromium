@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ class ASH_EXPORT ShellObserver {
   // Invoked after a non-primary root window is created.
   virtual void OnRootWindowAdded(aura::Window* root_window) {}
 
+  // Invoked when a root window is about to be shutdown.
+  virtual void OnRootWindowWillShutdown(aura::Window* root_window) {}
+
   // Invoked when the shelf alignment in |root_window| is changed.
   virtual void OnShelfAlignmentChanged(aura::Window* root_window,
                                        ShelfAlignment old_alignment) {}
@@ -31,9 +34,6 @@ class ASH_EXPORT ShellObserver {
   // keyboard) in |root_window| changed.
   // This notification is not fired when shelf bounds changed.
   virtual void OnUserWorkAreaInsetsChanged(aura::Window* root_window) {}
-
-  // Invoked when the shelf auto-hide behavior in |root_window| is changed.
-  virtual void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) {}
 
   // Invoked when entering or exiting fullscreen mode in |container|.
   // |container| is always the active desk container.

@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_MASKED_TARGETER_DELEGATE_H_
 #define UI_VIEWS_MASKED_TARGETER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/views_export.h"
@@ -25,6 +24,10 @@ class View;
 class VIEWS_EXPORT MaskedTargeterDelegate : public ViewTargeterDelegate {
  public:
   MaskedTargeterDelegate() = default;
+
+  MaskedTargeterDelegate(const MaskedTargeterDelegate&) = delete;
+  MaskedTargeterDelegate& operator=(const MaskedTargeterDelegate&) = delete;
+
   ~MaskedTargeterDelegate() override = default;
 
   // Sets the hit-test mask for the view which implements this interface,
@@ -35,9 +38,6 @@ class VIEWS_EXPORT MaskedTargeterDelegate : public ViewTargeterDelegate {
   // ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,
                          const gfx::Rect& rect) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MaskedTargeterDelegate);
 };
 
 }  // namespace views

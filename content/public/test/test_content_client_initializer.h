@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CONTENT_PUBLIC_TEST_TEST_CONTENT_CLIENT_INITIALIZER_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace network {
 class TestNetworkConnectionTracker;
@@ -25,9 +23,17 @@ class TestRenderViewHostFactory;
 // Initializes various objects needed to run unit tests that use content::
 // objects. Currently this includes setting up the notification service,
 // creating and setting the content client and the content browser client.
+// Note this isn't needed by any unit test binary that uses UnitTestTestSuite,
+// this is only for unit tests that run in other test suites or ones that run
+// in browser test binaries for per-test process isolation.
 class TestContentClientInitializer {
  public:
   TestContentClientInitializer();
+
+  TestContentClientInitializer(const TestContentClientInitializer&) = delete;
+  TestContentClientInitializer& operator=(const TestContentClientInitializer&) =
+      delete;
+
   ~TestContentClientInitializer();
 
   // Enables switching RenderViewHost creation to use the test version instead
@@ -44,8 +50,6 @@ class TestContentClientInitializer {
   std::unique_ptr<MockRenderProcessHostFactory> rph_factory_;
   std::unique_ptr<MockAgentSchedulingGroupHostFactory> asgh_factory_;
   std::unique_ptr<TestRenderViewHostFactory> test_render_view_host_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContentClientInitializer);
 };
 
 }  // namespace content

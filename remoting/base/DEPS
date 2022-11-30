@@ -4,6 +4,7 @@ include_rules = [
   "+mojo/core/embedder",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/breakpad",
   "+third_party/google_trust_services",
@@ -12,3 +13,10 @@ include_rules = [
   "+third_party/zlib",
   "+ui/base",
 ]
+
+specific_include_rules = {
+  "chromeos_remoting_test_suite.*": [
+    "+ui/aura",
+    "+ui/gl/test",
+  ]
+}

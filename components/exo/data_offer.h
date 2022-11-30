@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "ui/base/class_property.h"
@@ -48,6 +47,10 @@ class DataOffer final : public ui::PropertyHandler {
   using AsyncSendDataCallback = base::OnceCallback<void(SendDataCallback)>;
 
   DataOffer(DataOfferDelegate* delegate);
+
+  DataOffer(const DataOffer&) = delete;
+  DataOffer& operator=(const DataOffer&) = delete;
+
   ~DataOffer() override;
 
   void AddObserver(DataOfferObserver* observer);
@@ -126,21 +129,21 @@ class DataOffer final : public ui::PropertyHandler {
   bool finished_;
 
   base::WeakPtrFactory<DataOffer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataOffer);
 };
 
 class ScopedDataOffer {
  public:
   ScopedDataOffer(DataOffer* data_offer, DataOfferObserver* observer);
+
+  ScopedDataOffer(const ScopedDataOffer&) = delete;
+  ScopedDataOffer& operator=(const ScopedDataOffer&) = delete;
+
   ~ScopedDataOffer();
   DataOffer* get() { return data_offer_; }
 
  private:
   DataOffer* const data_offer_;
   DataOfferObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDataOffer);
 };
 
 }  // namespace exo

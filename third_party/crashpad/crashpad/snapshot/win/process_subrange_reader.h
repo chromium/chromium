@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/win/address_types.h"
 #include "util/win/checked_win_address_range.h"
@@ -35,6 +34,10 @@ class ProcessReaderWin;
 class ProcessSubrangeReader {
  public:
   ProcessSubrangeReader();
+
+  ProcessSubrangeReader(const ProcessSubrangeReader&) = delete;
+  ProcessSubrangeReader& operator=(const ProcessSubrangeReader&) = delete;
+
   ~ProcessSubrangeReader();
 
   //! \brief Initializes the object.
@@ -105,8 +108,6 @@ class ProcessSubrangeReader {
   CheckedWinAddressRange range_;
   ProcessReaderWin* process_reader_;  // weak
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSubrangeReader);
 };
 
 }  // namespace crashpad

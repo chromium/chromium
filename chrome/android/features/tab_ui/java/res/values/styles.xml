@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <resources>
     <style name="TabGridDialogTitleTheme">
-        <item name="colorControlNormal">@color/divider_line_bg_color</item>
+        <item name="colorControlNormal">@macro/divider_line_bg_color</item>
         <item name="colorControlActivated">@color/filled_button_bg_color</item>
         <item name="colorControlHighlight">@color/filled_button_bg_color</item>
     </style>
+
+    <style name="TabThumbnailPlaceHolderStyle">
+        <item name="colorTileBase">?attr/colorSurface</item>
+        <item name="elevationTileBase">@dimen/default_elevation_1</item>
+    </style>
+
+    <style name="TabThumbnailPlaceHolderStyle.Selected">
+        <item name="colorTileBase">?attr/colorOnPrimary</item>
+        <item name="elevationTileBase">@dimen/default_elevation_0</item>
+    </style>
+
+    <style name="SearchShortcutChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
+        <item name="chipColor">@color/chip_background_color</item>
+    </style>
+
 </resources>

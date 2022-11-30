@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,9 @@ void SessionSyncTestHelper::AddWindowSpecifics(
   sync_pb::SessionWindow* window = header->add_window();
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
-  window->set_browser_type(sync_pb::SessionWindow_BrowserType_TYPE_TABBED);
-  for (auto iter = tab_list.begin(); iter != tab_list.end(); ++iter) {
-    window->add_tab(iter->id());
+  window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
+  for (const SessionID& tab_id : tab_list) {
+    window->add_tab(tab_id.id());
   }
 }
 
@@ -57,22 +57,21 @@ void SessionSyncTestHelper::VerifySyncedSession(
 
   // We assume the window id's are in increasing order.
   int i = 1;
-  for (auto win_iter = windows.begin(); win_iter != windows.end();
-       ++win_iter, ++i) {
+  for (const std::vector<SessionID>& window : windows) {
     sessions::SessionWindow* win_ptr;
     auto map_iter = session.windows.find(SessionID::FromSerializedValue(i));
-    if (map_iter != session.windows.end())
+    if (map_iter != session.windows.end()) {
       win_ptr = &map_iter->second->wrapped_window;
-    else
+    } else {
       FAIL();
-    ASSERT_EQ(win_iter->size(), win_ptr->tabs.size());
+    }
+    ASSERT_EQ(window.size(), win_ptr->tabs.size());
     ASSERT_EQ(0, win_ptr->selected_tab_index);
     ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
     int j = 0;
-    for (auto tab_iter = (*win_iter).begin(); tab_iter != (*win_iter).end();
-         ++tab_iter, ++j) {
+    for (const SessionID& tab_id : window) {
       sessions::SessionTab* tab = win_ptr->tabs[j].get();
-      ASSERT_EQ(*tab_iter, tab->tab_id);
+      ASSERT_EQ(tab_id, tab->tab_id);
       ASSERT_EQ(1U, tab->navigations.size());
       ASSERT_EQ(1, tab->tab_visual_index);
       ASSERT_EQ(0, tab->current_navigation_index);
@@ -84,7 +83,9 @@ void SessionSyncTestHelper::VerifySyncedSession(
       ASSERT_EQ(tab->navigations[0].title(), base::ASCIIToUTF16(kTitle));
       ASSERT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
           tab->navigations[0].transition_type(), ui::PAGE_TRANSITION_TYPED));
+      j++;
     }
+    i++;
   }
 }
 
@@ -104,6 +105,7 @@ sync_pb::SessionSpecifics SessionSyncTestHelper::BuildTabSpecifics(
   specifics.set_session_tag(tag);
   specifics.set_tab_node_id(tab_node_id);
   sync_pb::SessionTab* tab = specifics.mutable_tab();
+  tab->set_window_id(window_id.id());
   tab->set_tab_id(tab_id.id());
   tab->set_tab_visual_index(1);
   tab->set_current_navigation_index(0);

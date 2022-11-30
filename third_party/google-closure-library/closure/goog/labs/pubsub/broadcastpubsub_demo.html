@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+  <title>goog.labs.pubsub.BroadcastPubSub</title>
+  <link rel="stylesheet" href="../../demos/css/demo.css">
+  <style>
+    table {
+      border: 1px solid #666;
+      background: lightblue;
+      margin: 1em auto;
+    }
+    td {
+      text-align: center;
+      padding: 0 0.5em 0.5em 0.5em;
+    }
+  </style>
+  <script src="../../base.js"></script>
+  <script>
+goog.require('goog.History');
+goog.require('goog.debug.DivConsole');
+goog.require('goog.dom');
+goog.require('goog.events');
+goog.require('goog.history.EventType');
+goog.require('goog.labs.pubsub.BroadcastPubSub');
+goog.require('goog.log');
+goog.require('goog.object');
+goog.require('goog.string');
+  </script>
+</head>
+
+<body>
+  <h1>goog.labs.pubsub.BroadcastPubSub</h1>
+    <p>Demonstration of publishing capabilities across tabs using
+      BroadcastPubSub. There are two instances of BroadcastPubSub on this page
+      which you can use to subscribe.</p>
+  <p><em>You should open this page in multiple windows and subscribe in the
+      windows you want to receive updates in.</em></p>
+  <p><button onclick="window.open(window.location, '_blank')">New Window</button></p>
+  <fieldset>
+    <legend>BroadcastPubSub Instance #1</legend>
+    <p>
+      Value to publish from BroadcastPubSub #1:
+      <input type="text" id="broadcastPubSub1Value" value="foo">
+      <button onclick="publish(broadcastPubSub1, broadcastPubSub1Value)">Publish</button>
+    </p>
+    <p>
+      <button onclick="unsubscribe(broadcastPubSub1, updateBroadcastPubSub1Text)">
+        Unsubscribe
+      </button>
+      <button onclick="subscribe(broadcastPubSub1, updateBroadcastPubSub1Text)">Subscribe</button>
+      <button onclick="subscribeOnce(broadcastPubSub1, updateBroadcastPubSub1Text)">
+        Subscribe Once
+      </button>
+    </p>
+    <p>
+      Last message seen by BroadcastPubSub #1:
+      <input type="text" id="broadcastPubSub1Display">
+    </p>
+  </fieldset>
+  <fieldset>
+    <legend>BroadcastPubSub Instance #2</legend>
+    <p>
+      Value to publish from BroadcastPubSub #2:
+      <input type="text" id="broadcastPubSub2Value" value="bar">
+      <button onclick="publish(broadcastPubSub2, broadcastPubSub2Value)">Publish</button>
+    </p>
+    <p>
+      <button onclick="unsubscribe(broadcastPubSub2, updateBroadcastPubSub2Text)">
+        Unsubscribe
+      </button>
+      <button onclick="subscribe(broadcastPubSub2, updateBroadcastPubSub2Text)">Subscribe</button>
+      <button onclick="subscribeOnce(broadcastPubSub2, updateBroadcastPubSub2Text)">
+        Subscribe Once
+      </button>
+    </p>
+    <p>
+      Last message seen by BroadcastPubSub #2:
+      <input type="text" id="broadcastPubSub2Display">
+    </p>
+  </fieldset>
+  <fieldset class="goog-debug-panel">
+    <legend>Event Log</legend>
+    <div id="log"></div>
+  </fieldset>
+
+  <script>
+var logger = goog.log.getLogger('demo');
+var logConsole = new goog.debug.DivConsole(goog.dom.getElement('log'));
+logConsole.setCapturing(true);
+
+var broadcastPubSub1Value = goog.dom.getElement('broadcastPubSub1Value');
+var broadcastPubSub2Value = goog.dom.getElement('broadcastPubSub2Value');
+var broadcastPubSub1Display = goog.dom.getElement('broadcastPubSub1Display');
+var broadcastPubSub2Display = goog.dom.getElement('broadcastPubSub2Display');
+
+goog.log.info(logger, 'initializing local storage');
+var broadcastPubSub1 = new goog.labs.pubsub.BroadcastPubSub();
+var broadcastPubSub2 = new goog.labs.pubsub.BroadcastPubSub();
+
+function subscribe(sps, fn) {
+  goog.log.info(logger, goog.string.subs('subscribing to "bc_demo"'));
+  sps.subscribe('bc_demo', fn);
+}
+
+function unsubscribe(sps, fn) {
+  goog.log.info(logger, goog.string.subs('unsubscribing to "bc_demo"'));
+  sps.unsubscribe('bc_demo', fn);
+}
+
+function subscribeOnce(sps, fn) {
+  goog.log.info(logger, goog.string.subs('subscribing once to "bc_demo"'));
+  sps.subscribeOnce('bc_demo', fn);
+}
+
+function publish(sps, ele) {
+  goog.log.info(logger, goog.string.subs('publishing "%s"', ele.value));
+  sps.publish('bc_demo', ele.value);
+}
+
+function updateBroadcastPubSub1Text(val) {
+  goog.log.info(logger, goog.string.subs('bc1 received "%s"', val));
+  broadcastPubSub1Display.value = val;
+}
+
+function updateBroadcastPubSub2Text(val) {
+  goog.log.info(logger, goog.string.subs('bc2 received "%s"', val));
+  broadcastPubSub2Display.value = val;
+}
+
+  </script>
+
+</body>
+</html>

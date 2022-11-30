@@ -31,11 +31,12 @@ import logging
 import re
 
 from blinkpy.web_tests.port.driver import DeviceFailure, DriverInput, DriverOutput
-from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_results import TestResult, build_test_result
-from blinkpy.web_tests.models import testharness_results
 
 _log = logging.getLogger(__name__)
+
+SKIA_GOLD_CORPUS = 'blink-web-tests'
 
 
 def run_single_test(port, options, results_directory, worker_name, driver,
@@ -76,7 +77,6 @@ class SingleTestRunner(object):
                                    or self._options.repeat_each > 1
                                    or self._options.iterations > 1)
         TestResult.results_directory = self._results_directory
-        TestResult.filesystem = port.host.filesystem
 
     def _expected_driver_output(self):
         return DriverOutput(
@@ -96,10 +96,14 @@ class SingleTestRunner(object):
         image_hash = None
         if self._should_fetch_expected_checksum():
             image_hash = self._port.expected_checksum(self._test_name)
+            if image_hash:
+                image_hash = image_hash.decode("ascii", "replace")
 
         args = self._port.args_for_test(self._test_name)
         test_name = self._port.name_for_test(self._test_name)
-        return DriverInput(test_name, self._timeout_ms, image_hash, args)
+        wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
+        return DriverInput(test_name, self._timeout_ms, image_hash,
+                           wpt_print_mode, args)
 
     def run(self):
         # WPT crash tests do not have baselines, so even when re-baselining we
@@ -121,31 +125,14 @@ class SingleTestRunner(object):
         driver_output = self._driver.run_test(self._driver_input())
         expected_driver_output = self._expected_driver_output()
         failures = self._handle_error(driver_output)
-
-        test_result = build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
-        return test_result
+        return self._build_test_result(driver_output, failures)
 
     def _run_compare_test(self):
-        """Runs the signle test and returns test result."""
+        """Runs the single test and returns test result."""
         driver_output = self._driver.run_test(self._driver_input())
         expected_driver_output = self._expected_driver_output()
         failures = self._compare_output(expected_driver_output, driver_output)
-
-        return build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
+        return self._build_test_result(driver_output, failures)
 
     def _run_rebaseline(self):
         """Similar to _run_compare_test(), but has the side effect of updating
@@ -168,15 +155,24 @@ class SingleTestRunner(object):
             reported_failures = all_failures
 
         self._update_or_add_new_baselines(driver_output, all_failures)
+        return self._build_test_result(driver_output, reported_failures)
 
-        return build_test_result(
-            driver_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=reported_failures,
-            test_run_time=driver_output.test_time,
-            pid=driver_output.pid,
-            crash_site=driver_output.crash_site)
+    def _build_test_result(self, driver_output, failures, **kwargs):
+        kwargs.setdefault('test_run_time', driver_output.test_time)
+        kwargs.setdefault('pid', driver_output.pid)
+        kwargs.setdefault('crash_site', driver_output.crash_site)
+        return build_test_result(driver_output,
+                                 self._test_name,
+                                 retry_attempt=self._retry_attempt,
+                                 failures=failures,
+                                 typ_host=self._port.typ_host(),
+                                 **kwargs)
+
+    def _convert_to_str(self, data):
+        if data:
+            return data.decode('utf8', 'replace')
+        else:
+            return ''
 
     def _update_or_add_new_baselines(self, driver_output, failures):
         """Updates or adds new baselines for the test if necessary."""
@@ -196,7 +192,7 @@ class SingleTestRunner(object):
         #    Note that the created baseline might be redundant, but users can
         #    optimize them later with optimize-baselines.
         if self._is_all_pass_testharness_text_not_needing_baseline(
-                driver_output.text):
+                self._convert_to_str(driver_output.text)):
             driver_output.text = None
         self._save_baseline_data(
             driver_output.text, '.txt',
@@ -407,13 +403,14 @@ class SingleTestRunner(object):
 
         if driver_output.text:
             if self._is_all_pass_testharness_text_not_needing_baseline(
-                    driver_output.text):
+                    self._convert_to_str(driver_output.text)):
                 if self._report_extra_baseline(
                         driver_output, '.txt',
                         'is a all-pass testharness test'):
                     # TODO(wangxianzhu): Make this a failure.
                     pass
-            elif testharness_results.is_testharness_output(driver_output.text):
+            elif testharness_results.is_testharness_output(
+                    self._convert_to_str(driver_output.text)):
                 # We only need -expected.txt for a testharness test when we
                 # expect it to fail or produce additional console output (when
                 # -expected.txt is optional), so don't report missing
@@ -467,13 +464,16 @@ class SingleTestRunner(object):
         """Returns (testharness_completed, testharness_failures)."""
         if not driver_output.text:
             return False, []
-        if expected_driver_output.text:
+        if not testharness_results.is_testharness_output(
+                self._convert_to_str(driver_output.text)):
+            return False, []
+        if self._options.ignore_testharness_expected_txt:
+            expected_driver_output.text = b''
+        elif expected_driver_output.text:
             # Will compare text if there is expected text.
             return False, []
-        if not testharness_results.is_testharness_output(driver_output.text):
-            return False, []
         if not testharness_results.is_testharness_output_passing(
-                driver_output.text):
+                self._convert_to_str(driver_output.text)):
             return True, [
                 test_failures.FailureTestHarnessAssertion(
                     driver_output, expected_driver_output)
@@ -487,10 +487,12 @@ class SingleTestRunner(object):
         return text and '{\n  "layers": [' in text
 
     def _compare_text(self, expected_driver_output, driver_output):
-        expected_text = expected_driver_output.text
-        actual_text = driver_output.text
-        if not expected_text or not actual_text:
+
+        if not expected_driver_output.text or not driver_output.text:
             return []
+
+        expected_text = expected_driver_output.text.decode('utf8', 'replace')
+        actual_text = driver_output.text.decode('utf8', 'replace')
 
         normalized_actual_text = self._get_normalized_output_text(actual_text)
         # Assuming expected_text is already normalized.
@@ -507,7 +509,7 @@ class SingleTestRunner(object):
 
         def remove_ng_text(results):
             processed = re.sub(
-                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox)',
+                r'LayoutNG(BlockFlow|ListItem|TableCell|FlexibleBox|View)',
                 r'Layout\1', results)
             # LayoutTableCaption doesn't override LayoutBlockFlow::GetName, so
             # render tree dumps have "LayoutBlockFlow" for captions.
@@ -517,7 +519,7 @@ class SingleTestRunner(object):
 
         def is_ng_name_mismatch(expected, actual):
             if not re.search(
-                    "LayoutNG(BlockFlow|ListItem|TableCaption|TableCell|FlexibleBox)",
+                    "LayoutNG(BlockFlow|ListItem|TableCaption|TableCell|FlexibleBox|View)",
                     actual):
                 return False
             if (not self._is_render_tree(actual)
@@ -597,23 +599,57 @@ class SingleTestRunner(object):
         if not driver_output.image or not driver_output.image_hash:
             return []
 
+        # Do a dry run upload to Skia Gold, ignoring any of its output, for
+        # data collection to see if we can switch to using Gold for web tests
+        # in the future.
+        try:
+            gold_keys = self._port.skia_gold_json_keys()
+            gold_session = (
+                self._port.skia_gold_session_manager().GetSkiaGoldSession(
+                    gold_keys, corpus=SKIA_GOLD_CORPUS))
+            gold_properties = self._port.skia_gold_properties()
+            use_luci = not gold_properties.local_pixel_tests
+            img_path = self._filesystem.join(
+                str(self._port.skia_gold_temp_dir()),
+                '%s.png' % self._test_name.replace('/', '_'))
+            self._filesystem.write_binary_file(img_path, driver_output.image)
+            status, error = gold_session.RunComparison(name=self._test_name,
+                                                       png_file=img_path,
+                                                       use_luci=use_luci)
+            _log.debug('Ran Skia Gold dry run, got status %s and error %s',
+                       status, error)
+        except Exception as e:
+            _log.warning(
+                'Got exception while dry running Skia Gold. This can be '
+                'safely ignored unless you are actively working with Gold: %s',
+                e)
+
         if driver_output.image_hash != expected_driver_output.image_hash:
-            diff, err_str = self._port.diff_image(expected_driver_output.image,
-                                                  driver_output.image)
+            max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
+                self._test_name)
+            diff, stats, err_str = self._port.diff_image(
+                expected_driver_output.image,
+                driver_output.image,
+                max_channel_diff=max_channel_diff,
+                max_pixels_diff=max_pixels_diff)
 
             if diff:
                 driver_output.image_diff = diff
+            if stats:
+                driver_output.image_diff_stats = stats
 
             if err_str:
                 _log.error('  %s : %s', self._test_name, err_str)
-                driver_output.error = (driver_output.error or '') + err_str
+                driver_output.error = (driver_output.error
+                                       or b'') + err_str.encode(
+                                           'utf8', 'replace')
 
             if diff or err_str:
                 return [
                     test_failures.FailureImageHashMismatch(
                         driver_output, expected_driver_output)
                 ]
-            else:
+            elif not max_pixels_diff:
                 # See https://bugs.webkit.org/show_bug.cgi?id=69444 for why this
                 # isn't a full failure.
                 _log.warning('  %s -> pixel hash failed (but diff passed)',
@@ -633,19 +669,11 @@ class SingleTestRunner(object):
         # failures if needed.
         compare_text_failures = self._compare_output(expected_text_output,
                                                      test_output)
-
         # If the test crashed, or timed out,  or a leak was detected, there's no point
         # in running the reference at all. This can save a lot of execution time if we
         # have a lot of crashes or timeouts.
         if test_output.crash or test_output.timeout or test_output.leak:
-            return build_test_result(
-                test_output,
-                self._test_name,
-                retry_attempt=self._retry_attempt,
-                failures=compare_text_failures,
-                test_run_time=test_output.test_time,
-                pid=test_output.pid,
-                crash_site=test_output.crash_site)
+            return self._build_test_result(test_output, compare_text_failures)
 
         # A reftest can have multiple match references and multiple mismatch references;
         # the test fails if any mismatch matches and all of the matches don't match.
@@ -656,18 +684,18 @@ class SingleTestRunner(object):
         expected_output = None
         reference_test_names = []
         reftest_failures = []
+        wpt_print_mode = self._port.is_wpt_print_reftest(self._test_name)
         args = self._port.args_for_test(self._test_name)
-
         # sort self._reference_files to put mismatch tests first
         for expectation, reference_filename in sorted(self._reference_files):
             reference_test_name = self._port.relative_test_filename(
                 reference_filename)
             reference_test_names.append(reference_test_name)
-            driver_input = DriverInput(
-                reference_test_name,
-                self._timeout_ms,
-                image_hash=test_output.image_hash,
-                args=args)
+            driver_input = DriverInput(reference_test_name,
+                                       self._timeout_ms,
+                                       image_hash=test_output.image_hash,
+                                       wpt_print_mode=wpt_print_mode,
+                                       args=args)
             expected_output = self._driver.run_test(driver_input)
             total_test_time += expected_output.test_time
             reftest_failures = self._compare_output_with_reference(
@@ -692,16 +720,11 @@ class SingleTestRunner(object):
                 reference_file[0] for reference_file in self._reference_files
             ]))
 
-        return build_test_result(
-            test_output,
-            self._test_name,
-            retry_attempt=self._retry_attempt,
-            failures=failures,
-            test_run_time=total_test_time,
-            reftest_type=reftest_type,
-            pid=test_output.pid,
-            crash_site=test_output.crash_site,
-            references=reference_test_names)
+        return self._build_test_result(test_output,
+                                       failures,
+                                       test_run_time=total_test_time,
+                                       reftest_type=reftest_type,
+                                       references=reference_test_names)
 
     def _compare_output_with_reference(self, reference_driver_output,
                                        actual_driver_output,
@@ -738,18 +761,21 @@ class SingleTestRunner(object):
         elif reference_driver_output.image_hash != actual_driver_output.image_hash:
             max_channel_diff, max_pixels_diff = self._port.get_wpt_fuzzy_metadata(
                 self._test_name)
-            diff, err_str = self._port.diff_image(
+            diff, stats, err_str = self._port.diff_image(
                 reference_driver_output.image,
                 actual_driver_output.image,
                 max_channel_diff=max_channel_diff,
                 max_pixels_diff=max_pixels_diff)
             if diff:
                 actual_driver_output.image_diff = diff
+            if stats:
+                actual_driver_output.image_diff_stats = stats
 
             if err_str:
                 _log.error(err_str)
                 actual_driver_output.error = (actual_driver_output.error
-                                              or '') + err_str
+                                              or b'') + err_str.encode(
+                                                  'utf8', 'replace')
 
             if diff or err_str:
                 failures.append(
@@ -759,7 +785,7 @@ class SingleTestRunner(object):
             elif err_str:
                 # TODO(rmhasan) Should we include this error message in the artifacts ?
                 _log.error('  %s : %s', self._test_name, err_str)
-            else:
+            elif not max_pixels_diff:
                 _log.warning(
                     "  %s -> ref test hashes didn't match but diff passed",
                     self._test_name)

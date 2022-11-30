@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 class TemplateURLService;
 
 // Extensions need to know data about the current default search provider. This
-// class observes that change and writes the necessary data to |NSUserDefaults|.
+// class observes that change and writes the necessary data to `NSUserDefaults`.
 class ExtensionSearchEngineDataUpdater : public TemplateURLServiceObserver {
  public:
   explicit ExtensionSearchEngineDataUpdater(TemplateURLService* urlService);

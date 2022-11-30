@@ -1,71 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @const {string} filesSpinnerTemplate
- */
-const filesSpinnerTemplate = `
-  <style>
-    :host([hidden]) {
-      display: none !important;
-    }
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    :host {
-      display: flex;
-      height: 24px;
-      margin: 12px;
-      width: 24px;
-    }
-
-    svg {
-      animation: rotate 1.67s linear infinite;
-      transform-origin: 50% 50%;
-    }
-
-    @keyframes rotate {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    circle {
-      animation: spin 1.34s ease infinite;
-      stroke-dasharray: 65;
-      stroke-linecap: round;
-      stroke-width: 3px;
-      stroke: var(--google-blue-600, #1a73e8);
-      transform-origin: 50% 50%;
-    }
-
-    @keyframes spin {
-      0% {
-        stroke-dashoffset: 64;
-      }
-
-      58% {
-        stroke-dashoffset: 19;
-        transform: rotate(50deg);
-      }
-
-      to {
-        stroke-dashoffset: 64;
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-
-  <svg width='24' height='24' viewBox='0 0 24 24'>
-    <circle cx='12' cy='12' r='10' fill='none'></circle>
-  </svg>
-`;
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * FilesSpinner.
  */
-/* #export */ class FilesSpinner extends HTMLElement {
+export class FilesSpinner extends HTMLElement {
   constructor() {
-    super().attachShadow({mode: 'open'}).innerHTML = filesSpinnerTemplate;
+    super();
+
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
   }
 
   /**

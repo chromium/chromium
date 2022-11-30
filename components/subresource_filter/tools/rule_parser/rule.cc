@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 
 namespace subresource_filter {
@@ -106,7 +105,8 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
   }
 
   for (const std::string& domain : domains) {
-    url_pattern_index::proto::DomainListItem* list_item = result.add_domains();
+    url_pattern_index::proto::DomainListItem* list_item =
+        result.add_initiator_domains();
     if (domain.empty())
       continue;
     if (domain[0] == '~') {
@@ -295,7 +295,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
       break;
     case url_pattern_index::proto::SOURCE_TYPE_FIRST_PARTY:
       source_type_string = "~";
-      FALLTHROUGH;
+      [[fallthrough]];
     case url_pattern_index::proto::SOURCE_TYPE_THIRD_PARTY:
       source_type_string += "third-party";
       options.push_back(std::move(source_type_string));
@@ -307,9 +307,9 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   if (rule.match_case())
     options.push_back("match-case");
 
-  if (rule.domains_size()) {
+  if (rule.initiator_domains_size()) {
     std::string domains = "domain=";
-    DomainListJoin(rule.domains(), '|', &domains);
+    DomainListJoin(rule.initiator_domains(), '|', &domains);
     options.push_back(std::move(domains));
   }
 

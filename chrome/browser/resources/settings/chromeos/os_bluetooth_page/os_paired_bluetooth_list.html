@@ -1,0 +1,32 @@
+<style include="settings-shared">
+  :host {
+    --settings-row-min-height: 64px;
+  }
+
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+<div id="container" class="layout vertical flex" scrollable
+    no-bottom-scroll-border>
+  <iron-list items="[[devices]]" scroll-target="container" preserve-focus>
+    <template>
+      <os-settings-paired-bluetooth-list-item
+          device="[[item]]"
+          tabindex$="[[tabIndex]]"
+          last-focused="{{lastFocused_}}"
+          iron-list-tab-index="[[tabIndex]]"
+          item-index="[[index]]"
+          list-size="[[devices.length]]"
+          on-managed-tooltip-state-change="onManagedTooltipStateChange_">
+      </os-settings-paired-bluetooth-list-item>
+    </template>
+  </iron-list>
+
+  <paper-tooltip id="tooltip"
+      manual-mode
+      position="top"
+      aria-hidden="true">
+    $i18n{bluetoothManaged}
+  </paper-tooltip>
+</div>

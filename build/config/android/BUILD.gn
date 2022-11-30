@@ -1,8 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -41,52 +41,41 @@ config("compiler") {
   }
 
   ldflags = [
-    # Don't allow visible symbols from libgcc or libc++ to be
-    # re-exported.
-    "-Wl,--exclude-libs=libgcc.a",
-
     # Don't allow visible symbols from libraries that contain
     # assembly code with symbols that aren't hidden properly.
     # http://crbug.com/448386
     "-Wl,--exclude-libs=libvpx_assembly_arm.a",
   ]
 
-  # TODO(crbug.com/1184398): Move to compiler-rt when we are ready.
-  ldflags += [ "--rtlib=libgcc" ]
   if (current_cpu == "arm64") {
-    # For outline atomics on AArch64 (can't pass this unconditionally
-    # due to unused flag warning on other targets).
-    cflags += [ "--rtlib=libgcc" ]
+    # Reduce the page size from 65536 in order to reduce binary size slightly
+    # by shrinking the alignment gap between segments. This also causes all
+    # segments to be mapped adjacently, which breakpad relies on.
+    ldflags += [ "-Wl,-z,max-page-size=4096" ]
   }
+
+  if (current_cpu == "arm64") {
+    if (arm_control_flow_integrity == "standard") {
+      cflags += [ "-mbranch-protection=standard" ]
+    } else if (arm_control_flow_integrity == "pac") {
+      cflags += [ "-mbranch-protection=pac-ret" ]
+    }
+  }
+
+  # Instead of using an unwind lib from the toolchain,
+  # buildtools/third_party/libunwind will be built and used directly.
+  ldflags += [ "--unwindlib=none" ]
 
   # $compile_api_level corresponds to the API level used for the sysroot path
   # calculation in //build/config/android/config.gni
-  if (current_cpu == "arm") {
-    abi_target = "arm-linux-androideabi"
-    compile_api_level = android32_ndk_api_level
-  } else if (current_cpu == "x86") {
-    abi_target = "i686-linux-android"
-    compile_api_level = android32_ndk_api_level
-  } else if (current_cpu == "arm64") {
-    abi_target = "aarch64-linux-android"
-    compile_api_level = android64_ndk_api_level
-  } else if (current_cpu == "x64") {
-    # Place holder for x64 support, not tested.
-    # TODO: Enable clang support for Android x64. http://crbug.com/539781
-    abi_target = "x86_64-linux-android"
-    compile_api_level = android64_ndk_api_level
-  } else if (current_cpu == "mipsel") {
-    abi_target = "mipsel-linux-android"
-    compile_api_level = android32_ndk_api_level
-  } else if (current_cpu == "mips64el") {
-    # Place holder for mips64 support, not tested.
-    abi_target = "mips64el-linux-android"
+  if (android_64bit_target_cpu) {
     compile_api_level = android64_ndk_api_level
   } else {
-    assert(false, "Architecture not supported")
+    compile_api_level = android32_ndk_api_level
   }
-  cflags += [ "--target=$abi_target$compile_api_level" ]
-  ldflags += [ "--target=$abi_target$compile_api_level" ]
+
+  cflags += [ "--target=$android_abi_target$compile_api_level" ]
+  ldflags += [ "--target=$android_abi_target$compile_api_level" ]
 
   # Assign any flags set for the C compiler to asmflags so that they are sent
   # to the assembler.
@@ -98,11 +87,8 @@ config("compiler") {
 # that is Android-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  # Let the linker find libgcc.a.
-  ldflags = [ "--gcc-toolchain=" +
-              rebase_path(android_toolchain_root, root_build_dir) ]
-
   libs = []
+  ldflags = []
 
   # On 64-bit platforms, the only symbols provided by libandroid_support.a are
   # strto{d,f,l,ul}_l. These symbols are not used by our libc++, and newer NDKs
@@ -110,11 +96,6 @@ config("runtime_library") {
   # on this library on 32-bit platforms.
   if (current_cpu == "arm" || current_cpu == "x86") {
     libs += [ "android_support" ]
-  }
-
-  # arm builds of libc++ starting in NDK r12 depend on unwind.
-  if (current_cpu == "arm") {
-    libs += [ "unwind" ]
   }
 
   if (current_cpu == "arm" && arm_version == 6) {
@@ -148,6 +129,27 @@ config("lld_pack_relocations") {
   ldflags = [ "-Wl,--pack-dyn-relocs=android" ]
 }
 
+config("lld_relr_relocations") {
+  # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
+  # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
+  ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
+}
+
+config("lld_branch_target_hardening") {
+  # Config opts a shared library into BTI linker hardening. This
+  # is an opt-in config (rather than default-enabled) to avoid
+  # interfering with the V8 CFI bots (crbug.com/1334614).
+  if (current_cpu == "arm64") {
+    if (arm_control_flow_integrity == "standard") {
+      # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
+      # in their .gnu.note section implicitly results in the final
+      # binary losing Branch Target Identification (BTI) support.
+      # Issue a warning if this happens.
+      ldflags = [ "-Wl,-z,force-bti" ]
+    }
+  }
+}
+
 # Used for instrumented build to generate the orderfile.
 config("default_orderfile_instrumentation") {
   if (use_order_profiling) {
@@ -160,10 +162,20 @@ config("default_orderfile_instrumentation") {
   }
 }
 
+config("jni_include_dir") {
+  include_dirs = [ jni_headers_dir ]
+}
+
 if (current_toolchain == default_toolchain) {
   pool("goma_javac_pool") {
     # Override action_pool when goma is enabled for javac.
     depth = 10000
+  }
+
+  # nocompile tests share output directory to avoid them all needing to rebuild
+  # things. But this also means they can't run in parallel.
+  pool("nocompile_pool") {
+    depth = 1
   }
 
   # When defined, this pool should be used instead of link_pool for command

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace tab_count_metrics {
 
@@ -30,7 +29,7 @@ namespace tab_count_metrics {
 // entry for the new suffixes and marking the old suffixes obsolete.
 constexpr size_t kTabCountBucketMins[] = {0, 1, 2, 3, 5, 8, 20, 40};
 
-constexpr const char* kTabBucketNamePrefix[]{".ByTabCount", ".ByLiveTabCount"};
+constexpr const char* kTabBucketNamePrefix[]{".ByTabCount", ".ByLiveTabCount2"};
 
 // Text for the tab count portion of metric names. These need to be kept
 // in sync with |kTabCountBucketMins|.
@@ -41,9 +40,9 @@ constexpr const char* kTabCountBucketNames[]{
 std::string HistogramName(const std::string prefix,
                           bool live_tabs_only,
                           size_t bucket) {
-  static_assert(base::size(kTabCountBucketMins) == kNumTabCountBuckets,
+  static_assert(std::size(kTabCountBucketMins) == kNumTabCountBuckets,
                 "kTabCountBucketMins must have kNumTabCountBuckets elements.");
-  static_assert(base::size(kTabCountBucketNames) == kNumTabCountBuckets,
+  static_assert(std::size(kTabCountBucketNames) == kNumTabCountBuckets,
                 "kTabCountBucketNames must have kNumTabCountBuckets elements.");
   DCHECK_LT(bucket, kNumTabCountBuckets);
   DCHECK(prefix.length());

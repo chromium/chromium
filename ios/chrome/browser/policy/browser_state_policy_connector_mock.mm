@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/policy/browser_state_policy_connector_mock.h"
 
-#include "components/policy/core/common/policy_service_impl.h"
-#include "components/policy/core/common/schema_registry.h"
+#import "components/policy/core/common/policy_service_impl.h"
+#import "components/policy/core/common/schema_registry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

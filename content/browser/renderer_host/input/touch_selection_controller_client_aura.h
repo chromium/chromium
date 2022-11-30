@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -27,6 +27,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
       public TouchSelectionControllerClientManager {
  public:
   explicit TouchSelectionControllerClientAura(RenderWidgetHostViewAura* rwhva);
+
+  TouchSelectionControllerClientAura(
+      const TouchSelectionControllerClientAura&) = delete;
+  TouchSelectionControllerClientAura& operator=(
+      const TouchSelectionControllerClientAura&) = delete;
+
   ~TouchSelectionControllerClientAura() override;
 
   // Called when |rwhva_|'s window is moved, to update the quick menu's
@@ -98,7 +104,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   std::u16string GetSelectedText() override;
 
   // Not owned, non-null for the lifetime of this object.
-  RenderWidgetHostViewAura* rwhva_;
+  raw_ptr<RenderWidgetHostViewAura> rwhva_;
 
   class InternalClient final : public TouchSelectionControllerClient {
    public:
@@ -118,12 +124,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
     void DidScroll() override;
 
    private:
-    RenderWidgetHostViewAura* rwhva_;
+    raw_ptr<RenderWidgetHostViewAura> rwhva_;
   } internal_client_;
 
   // Keep track of which client interface to use.
-  TouchSelectionControllerClient* active_client_;
-  TouchSelectionMenuClient* active_menu_client_;
+  raw_ptr<TouchSelectionControllerClient> active_client_;
+  raw_ptr<TouchSelectionMenuClient> active_menu_client_;
   gfx::SelectionBound manager_selection_start_;
   gfx::SelectionBound manager_selection_end_;
 
@@ -140,8 +146,6 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
 
   // An event observer that deactivates touch selection on certain input events.
   std::unique_ptr<EnvEventObserver> env_event_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientAura);
 };
 
 }  // namespace content

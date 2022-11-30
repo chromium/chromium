@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <memory>
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -50,7 +50,7 @@ class TestPaintWorklet : public PaintWorklet {
 class PaintWorkletTest : public PageTestBase {
  public:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     test_paint_worklet_ =
         MakeGarbageCollected<TestPaintWorklet>(*GetDocument().domWindow());
     proxy_ = test_paint_worklet_->CreateGlobalScope();
@@ -121,8 +121,9 @@ class PaintWorkletTest : public PageTestBase {
 TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
   PaintWorkletGlobalScope* global_scope = GetProxy()->global_scope();
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("registerPaint('foo', class { paint() { } });"))
-      ->RunScriptOnWorkerOrWorklet(*global_scope);
+      "registerPaint('foo', class { paint() { } });")
+      ->RunScriptOnScriptState(
+          global_scope->ScriptController()->GetScriptState());
 
   CSSPaintDefinition* definition = global_scope->FindDefinition("foo");
   ASSERT_TRUE(definition);
@@ -130,7 +131,7 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
   ImageResourceObserver* observer = GetImageResourceObserver();
   ASSERT_TRUE(observer);
 
-  const FloatSize container_size(100, 100);
+  const gfx::SizeF container_size(100, 100);
   const LayoutObject& layout_object =
       static_cast<const LayoutObject&>(*observer);
   float zoom = layout_object.StyleRef().EffectiveZoom();
@@ -140,8 +141,7 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
           definition->NativeInvalidationProperties(),
           definition->CustomInvalidationProperties());
   scoped_refptr<Image> image = PaintGeneratedImage::Create(
-      definition->Paint(container_size, zoom, style_map, nullptr,
-                        1.0 /* device_scale_factor */),
+      definition->Paint(container_size, zoom, style_map, nullptr),
       container_size);
   EXPECT_NE(image, nullptr);
 }
@@ -153,8 +153,9 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
 TEST_F(PaintWorkletTest, SinglyRegisteredDocumentDefinitionNotUsed) {
   PaintWorkletGlobalScope* global_scope = GetProxy()->global_scope();
   ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("registerPaint('foo', class { paint() { } });"))
-      ->RunScriptOnWorkerOrWorklet(*global_scope);
+      "registerPaint('foo', class { paint() { } });")
+      ->RunScriptOnScriptState(
+          global_scope->ScriptController()->GetScriptState());
 
   CSSPaintImageGeneratorImpl* generator =
       static_cast<CSSPaintImageGeneratorImpl*>(
@@ -252,7 +253,7 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(
@@ -273,21 +274,21 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
         paint() {}
       });)JS";
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(foo0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("foo"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo1))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(foo1)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   // foo0 and foo1 have the same name but different definitions, therefore
   // this definition must become invalid.
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(bar))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(bar)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("bar"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
@@ -298,8 +299,8 @@ TEST_P(MainOrOffThreadPaintWorkletTest, ConsistentGlobalScopeOnMainThread) {
   if (!RuntimeEnabledFeatures::OffMainThreadCSSPaintEnabled())
     EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(1);
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(bar))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(bar)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
 }
@@ -309,13 +310,15 @@ TEST_P(MainOrOffThreadPaintWorkletTest, AllGlobalScopesMustBeCreated) {
       MakeGarbageCollected<PaintWorklet>(*GetFrame().DomWindow());
   paint_worklet_to_test->ResetIsPaintOffThreadForTesting();
 
-  EXPECT_TRUE(paint_worklet_to_test->GetGlobalScopesForTesting().IsEmpty());
+  EXPECT_TRUE(paint_worklet_to_test->GetGlobalScopesForTesting().empty());
 
   std::unique_ptr<PaintWorkletPaintDispatcher> dispatcher =
       std::make_unique<PaintWorkletPaintDispatcher>();
   Persistent<PaintWorkletProxyClient> proxy_client =
       MakeGarbageCollected<PaintWorkletProxyClient>(
-          1, paint_worklet_to_test, dispatcher->GetWeakPtr(), nullptr);
+          1, paint_worklet_to_test,
+          GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+          dispatcher->GetWeakPtr(), nullptr);
   paint_worklet_to_test->SetProxyClientForTesting(proxy_client);
 
   while (paint_worklet_to_test->NeedsToCreateGlobalScopeForTesting()) {
@@ -360,7 +363,7 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(
@@ -394,14 +397,14 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
       });)JS";
 
   // Definition invalidated before cross thread check
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(foo0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("foo"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo1))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(foo1)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
@@ -419,14 +422,14 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
   // Definition invalidated by cross thread check
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(bar0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(bar0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("bar"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(bar0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(bar0)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
 
@@ -446,8 +449,8 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("bar"));
 
   // Definition invalidated by second main thread call after cross thread check
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(loo0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(loo0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("loo"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("loo"));
@@ -465,8 +468,8 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("loo"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(loo1))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(loo1)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   // Although the first main thread call and the cross thread definition are the
   // same, the second main thread call differs so the definition must become
@@ -474,8 +477,8 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("loo"));
 
   // Definition invalidated by cross thread check before second main thread call
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(gar0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(gar0)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("gar"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("gar"));
@@ -492,8 +495,8 @@ TEST_F(PaintWorkletTest, ConsistentGlobalScopeCrossThread) {
 
   EXPECT_FALSE(paint_worklet_to_test->GetDocumentDefinitionMap().at("gar"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(gar0))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(gar0)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   // Although the main thread definitions were the same, the definition sent
   // cross thread differed from the main thread definitions so it must stay
@@ -517,7 +520,7 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
   EXPECT_CALL(*observer, PaintImageGeneratorReady).Times(0);
 
   Vector<Persistent<PaintWorkletGlobalScope>> global_scopes;
-  for (size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
+  for (wtf_size_t i = 0; i < PaintWorklet::kNumGlobalScopesPerThread; ++i) {
     paint_worklet_to_test->AddGlobalScopeForTesting();
     global_scopes.push_back(
         PaintWorkletGlobalScopeProxy::From(
@@ -530,14 +533,14 @@ TEST_F(PaintWorkletTest, GeneratorNotifiedAfterAllRegistrations) {
         paint() {}
       });)JS";
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[0]);
+  ClassicScript::CreateUnspecifiedScript(foo)->RunScriptOnScriptState(
+      global_scopes[0]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(global_scopes[0]->FindDefinition("foo"));
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 
-  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(foo))
-      ->RunScriptOnWorkerOrWorklet(*global_scopes[1]);
+  ClassicScript::CreateUnspecifiedScript(foo)->RunScriptOnScriptState(
+      global_scopes[1]->ScriptController()->GetScriptState());
 
   EXPECT_TRUE(paint_worklet_to_test->GetDocumentDefinitionMap().at("foo"));
 

@@ -1,24 +1,29 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
+#include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace performance_manager {
 
@@ -43,31 +48,63 @@ constexpr uint32_t BackgroundTabLoadingPolicy::kMinSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kMaxSimultaneousTabLoads;
 constexpr uint32_t BackgroundTabLoadingPolicy::kCoresPerSimultaneousTabLoad;
 
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
+                                      bool has_notification_permission)
+    : page_node(std::move(page_node)),
+      has_notification_permission(has_notification_permission) {}
+
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    PageNodeAndNotificationPermission(
+        const PageNodeAndNotificationPermission&
+            page_node_and_notification_permission) = default;
+
+BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission::
+    ~PageNodeAndNotificationPermission() = default;
+
 void ScheduleLoadForRestoredTabs(
     std::vector<content::WebContents*> web_contents_vector) {
-  std::vector<base::WeakPtr<PageNode>> weakptr_page_nodes;
-  weakptr_page_nodes.reserve(web_contents_vector.size());
-  for (auto* content : web_contents_vector) {
-    weakptr_page_nodes.push_back(
-        PerformanceManager::GetPageNodeForWebContents(content));
+  std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+      page_node_and_notification_permission_vector;
+  page_node_and_notification_permission_vector.reserve(
+      web_contents_vector.size());
+  for (content::WebContents* content : web_contents_vector) {
+    content::PermissionController* permission_controller =
+        content->GetBrowserContext()->GetPermissionController();
+
+    // Cannot use GetPermissionStatusForCurrentDocument() because the navigation
+    // hasn't been committed in the RenderFrameHost yet, as evidenced by the
+    // DCHECK below.
+    DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
+    DCHECK_NE(content->GetLastCommittedURL(), GURL());
+
+    bool has_notifications_permission =
+        permission_controller
+            ->GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::NOTIFICATIONS,
+                url::Origin::Create(content->GetLastCommittedURL()))
+            .status == blink::mojom::PermissionStatus::GRANTED;
+
+    BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission
+        page_node_and_notification_permission(
+            PerformanceManager::GetPrimaryPageNodeForWebContents(content),
+            has_notifications_permission);
+
+    page_node_and_notification_permission_vector.push_back(
+        page_node_and_notification_permission);
   }
   performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(
-                     [](std::vector<base::WeakPtr<PageNode>> weakptr_page_nodes,
-                        performance_manager::Graph* graph) {
-                       std::vector<PageNode*> page_nodes;
-                       page_nodes.reserve(weakptr_page_nodes.size());
-                       for (auto page_node : weakptr_page_nodes) {
-                         // If the PageNode has been deleted before
-                         // BackgroundTabLoading starts restoring it, then there
-                         // is no need to restore it.
-                         if (PageNode* raw_page = page_node.get())
-                           page_nodes.push_back(raw_page);
-                       }
-                       BackgroundTabLoadingPolicy::GetInstance()
-                           ->ScheduleLoadForRestoredTabs(std::move(page_nodes));
-                     },
-                     std::move(weakptr_page_nodes)));
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<
+                 BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+                 page_node_and_notification_permission_vector,
+             performance_manager::Graph* graph) {
+            BackgroundTabLoadingPolicy::GetInstance()
+                ->ScheduleLoadForRestoredTabs(
+                    std::move(page_node_and_notification_permission_vector));
+          },
+          std::move(page_node_and_notification_permission_vector)));
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy()
@@ -98,7 +135,8 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   switch (page_node->GetLoadingState()) {
     // Loading is complete or stalled.
     case PageNode::LoadingState::kLoadingNotStarted:
@@ -117,6 +155,16 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading starts.
     case PageNode::LoadingState::kLoading: {
+      if (previous_state == PageNode::LoadingState::kLoadedBusy) {
+        // The PageNode remained in |page_nodes_loading_| when it transitioned
+        // from |kLoading| to |kLoadedBusy|, so no change is necessary when it
+        // transitions back to |kLoading|.
+        DCHECK(base::Contains(page_nodes_loading_, page_node));
+        DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+        DCHECK(!FindPageNodeToLoadData(page_node));
+        return;
+      }
+
       // The PageNode started loading because of this policy or because of
       // external factors (e.g. user-initiated). In either case, remove the
       // PageNode from the set of PageNodes for which a load needs to be
@@ -135,9 +183,11 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading is progressing.
     case PageNode::LoadingState::kLoadedBusy: {
-      // This PageNode should have been added to |page_nodes_loading_| when it
+      // The PageNode should have been added to |page_nodes_loading_| when it
       // transitioned to |kLoading|.
       DCHECK(base::Contains(page_nodes_loading_, page_node));
+      DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+      DCHECK(!FindPageNodeToLoadData(page_node));
       return;
     }
   }
@@ -153,19 +203,40 @@ void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
 }
 
 void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
-    std::vector<PageNode*> page_nodes) {
-  for (auto* page_node : page_nodes) {
-    // Put the |page_node| in the queue for loading.
-    DCHECK(!FindPageNodeToLoadData(page_node));
-    DCHECK(
-        TabPropertiesDecorator::Data::FromPageNode(page_node)->IsInTabStrip());
+    std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+        page_node_and_permission_vector) {
+  const size_t page_nodes_to_load_initial_size = page_nodes_to_load_.size();
 
-    page_nodes_to_load_.push_back(
-        std::make_unique<PageNodeToLoadData>(page_node));
+  for (auto page_node_and_permission : page_node_and_permission_vector) {
+    PageNode* page_node = page_node_and_permission.page_node.get();
+    if (!page_node)
+      continue;
+
+    DCHECK_EQ(page_node->GetType(), PageType::kTab);
+    DCHECK(!FindPageNodeToLoadData(page_node));
+    DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+
+    // A visible page starts loading as soon as its created. It shouldn't be
+    // added to the list of pages to load.
+    DCHECK_EQ(base::Contains(page_nodes_loading_, page_node),
+              page_node->IsVisible());
+    if (base::Contains(page_nodes_loading_, page_node))
+      continue;
+
+    // Put the page in the queue for loading.
+    page_nodes_to_load_.push_back(std::make_unique<PageNodeToLoadData>(
+        page_node, /* has_notification_permission=*/page_node_and_permission
+                       .has_notification_permission));
   }
 
-  for (auto& page_node_to_load_data : page_nodes_to_load_) {
-    SetUsedInBackgroundAsync(page_node_to_load_data.get());
+  // Asynchronously determine whether pages added to `page_nodes_to_load_` are
+  // used in background. Do this after all pages have been added to
+  // `page_nodes_to_load_`, otherwise the policy may start loading pages without
+  // knowing about all the tabs that must be loaded (see
+  // `OnUsedInBackgroundAvailable()`).
+  for (size_t i = page_nodes_to_load_initial_size;
+       i < page_nodes_to_load_.size(); ++i) {
+    SetUsedInBackgroundAsync(page_nodes_to_load_[i].get());
   }
 }
 
@@ -193,13 +264,18 @@ BackgroundTabLoadingPolicy* BackgroundTabLoadingPolicy::GetInstance() {
 }
 
 BackgroundTabLoadingPolicy::PageNodeToLoadData::PageNodeToLoadData(
-    PageNode* page_node)
-    : page_node(page_node) {}
+    PageNode* page_node,
+    bool has_notification_permission)
+    : page_node(page_node),
+      has_notification_permission(has_notification_permission) {}
+
 BackgroundTabLoadingPolicy::PageNodeToLoadData::~PageNodeToLoadData() = default;
 
 struct BackgroundTabLoadingPolicy::ScoredTabComparator {
   bool operator()(const std::unique_ptr<PageNodeToLoadData>& tab0,
                   const std::unique_ptr<PageNodeToLoadData>& tab1) {
+    DCHECK(tab0->score.has_value());
+    DCHECK(tab1->score.has_value());
     // Greater scores sort first.
     return tab0->score > tab1->score;
   }
@@ -267,10 +343,16 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
     return;
   }
 
-  // TODO(crbug.com/1071100): Use real |used_in_bg| data from the database.
-  DCHECK(!page_node_to_load_data->used_in_bg.has_value());
-  page_node_to_load_data->used_in_bg = false;
-  ++tabs_scored_;
+  SiteDataReader* reader = GetSiteDataReader(page_node.get());
+
+  // A tab can't play audio until it has been visible at least once so
+  // UsesAudioInBackground() is ignored.
+  page_node_to_load_data->updates_title_or_favicon_in_bg =
+      reader && (reader->UpdatesFaviconInBackground() !=
+                     SiteFeatureUsage::kSiteFeatureNotInUse ||
+                 reader->UpdatesTitleInBackground() !=
+                     SiteFeatureUsage::kSiteFeatureNotInUse);
+
   ScoreTab(page_node_to_load_data);
   DispatchNotifyAllTabsScoredIfNeeded();
 }
@@ -295,15 +377,24 @@ void BackgroundTabLoadingPolicy::OnMemoryPressure(
   }
 }
 
+SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
+    const PageNode* page_node) const {
+  auto* data = SiteDataRecorder::Data::FromPageNode(page_node);
+  if (!data)
+    return nullptr;
+  return data->reader();
+}
+
 void BackgroundTabLoadingPolicy::ScoreTab(
     PageNodeToLoadData* page_node_to_load_data) {
-  DCHECK_EQ(page_node_to_load_data->score, 0.0f);
+  DCHECK(!page_node_to_load_data->score.has_value());
   float score = 0.0f;
 
   // Give higher priorities to tabs used in the background, and lowest
   // priority to internal tabs. Apps and pinned tabs are simply treated as
   // normal tabs.
-  if (page_node_to_load_data->used_in_bg == true) {
+  if (page_node_to_load_data->has_notification_permission ||
+      page_node_to_load_data->updates_title_or_favicon_in_bg.value()) {
     score = 2;
   } else if (!page_node_to_load_data->page_node->GetMainFrameUrl().SchemeIs(
                  content::kChromeUIScheme)) {
@@ -316,18 +407,27 @@ void BackgroundTabLoadingPolicy::ScoreTab(
       page_node_to_load_data->page_node->GetTimeSinceLastVisibilityChange()
           .InSecondsF());
 
+  ++tabs_scored_;
   page_node_to_load_data->score = score;
 }
 
 void BackgroundTabLoadingPolicy::SetUsedInBackgroundAsync(
     PageNodeToLoadData* page_node_to_load_data) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
-          weak_factory_.GetWeakPtr(),
-          std::move(PageNodeImpl::FromNode(page_node_to_load_data->page_node))
-              ->GetWeakPtr()));
+  const PageNode* page_node = page_node_to_load_data->page_node.get();
+  SiteDataReader* reader = GetSiteDataReader(page_node);
+  auto callback =
+      base::BindOnce(&BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
+                     weak_factory_.GetWeakPtr(),
+                     PageNodeImpl::FromNode(page_node)->GetWeakPtr());
+
+  // The tab won't have a reader if it doesn't have an URL tracked in the
+  // site data database.
+  if (!reader) {
+    std::move(callback).Run();
+    return;
+  }
+
+  reader->RegisterDataLoadedCallback(std::move(callback));
 }
 
 void BackgroundTabLoadingPolicy::DispatchNotifyAllTabsScoredIfNeeded() {
@@ -343,6 +443,10 @@ void BackgroundTabLoadingPolicy::NotifyAllTabsScored() {
 }
 
 void BackgroundTabLoadingPolicy::InitiateLoad(const PageNode* page_node) {
+  // The page shouldn't already be loading.
+  DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+  DCHECK(!base::Contains(page_nodes_loading_, page_node));
+
   // Mark |page_node| as load initiated. Ensure that InitiateLoad is only called
   // for a PageNode that is tracked by the policy.
   ErasePageNodeToLoadData(page_node);
@@ -369,6 +473,10 @@ void BackgroundTabLoadingPolicy::MaybeLoadSomeTabs() {
 }
 
 size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
+  // Can't load tabs until all tabs have been scored.
+  if (tabs_scored_ < page_nodes_to_load_.size())
+    return 0U;
+
   // This takes into account all tabs currently loading across the browser,
   // including ones that BackgroundTabLoadingPolicy isn't explicitly managing.
   // This ensures that BackgroundTabLoadingPolicy respects user interaction
@@ -391,6 +499,7 @@ size_t BackgroundTabLoadingPolicy::GetMaxNewTabLoads() const {
 
 void BackgroundTabLoadingPolicy::LoadNextTab() {
   DCHECK(!page_nodes_to_load_.empty());
+  DCHECK_EQ(tabs_scored_, page_nodes_to_load_.size());
 
   // Find the next PageNode to load.
   while (!page_nodes_to_load_.empty()) {
@@ -409,20 +518,18 @@ void BackgroundTabLoadingPolicy::LoadNextTab() {
 size_t BackgroundTabLoadingPolicy::GetFreePhysicalMemoryMib() const {
   if (free_memory_mb_for_testing_ != 0)
     return free_memory_mb_for_testing_;
-  constexpr int64_t kMibibytesInBytes = 1 << 20;
-  int64_t free_mem =
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
-  DCHECK_GE(free_mem, 0);
-  return free_mem;
+  constexpr uint64_t kMibibytesInBytes = 1 << 20;
+  return base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
 }
 
 void BackgroundTabLoadingPolicy::ErasePageNodeToLoadData(
     const PageNode* page_node) {
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
     if (page_node_to_load_data->page_node == page_node) {
-      if (page_node_to_load_data->used_in_bg.has_value()) {
+      if (page_node_to_load_data->score.has_value()) {
         // If the PageNode has already been scored, remove it from the
         // |tabs_scored_| count.
+        DCHECK_GT(tabs_scored_, 0U);
         --tabs_scored_;
         base::Erase(page_nodes_to_load_, page_node_to_load_data);
       } else {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -21,6 +20,9 @@ class PagePlaceholderTabHelper
     : public web::WebStateUserData<PagePlaceholderTabHelper>,
       public web::WebStateObserver {
  public:
+  PagePlaceholderTabHelper(const PagePlaceholderTabHelper&) = delete;
+  PagePlaceholderTabHelper& operator=(const PagePlaceholderTabHelper&) = delete;
+
   ~PagePlaceholderTabHelper() override;
 
   // Displays placeholder between DidStartNavigation and PageLoaded
@@ -60,10 +62,13 @@ class PagePlaceholderTabHelper
   void AddPlaceholder();
   void RemovePlaceholder();
 
-  // Adds the given |snapshot| image to the |web_state_|'s view. The
-  // |web_state_|'s view must be visible, and it must be in a view hierarchy
+  // Adds the given `snapshot` image to the `web_state_`'s view. The
+  // `web_state_`'s view must be visible, and it must be in a view hierarchy
   // that has the Content Area named guide.
   void DisplaySnapshotImage(UIImage* snapshot);
+
+  // Display image in a placeholder after retrieval from SnapshotTabHelper.
+  void OnImageRetrieved(UIImage* image);
 
   // WebState this tab helper is attached to.
   web::WebState* web_state_ = nullptr;
@@ -80,8 +85,6 @@ class PagePlaceholderTabHelper
   base::WeakPtrFactory<PagePlaceholderTabHelper> weak_factory_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PagePlaceholderTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_PAGE_PLACEHOLDER_TAB_HELPER_H_

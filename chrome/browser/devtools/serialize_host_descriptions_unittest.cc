@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,53 +10,56 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
+using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 namespace {
 
 HostDescriptionNode GetNodeWithLabel(const char* name, int label) {
-  HostDescriptionNode node = {name, std::string(), base::DictionaryValue()};
-  node.representation.SetInteger("label", label);
+  HostDescriptionNode node = {name, std::string(),
+                              base::Value(base::Value::Type::DICTIONARY)};
+  node.representation.SetIntKey("label", label);
   return node;
 }
 
 // Returns the list of children of |arg|.
-const base::Value* GetChildren(const base::Value& arg) {
-  const base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(arg.GetAsDictionary(&dict));
+absl::optional<base::Value::List> GetChildren(const base::Value& arg) {
+  EXPECT_TRUE(arg.is_dict());
+  const base::Value::Dict& dict = arg.GetDict();
 
-  const base::Value* children = nullptr;
-  if (!dict->Get("children", &children))
-    return nullptr;
+  const base::Value* children = dict.Find("children");
+  if (!children)
+    return absl::nullopt;
   EXPECT_EQ(base::Value::Type::LIST, children->type());
-  return children;
+  return children->GetList().Clone();
 }
 
 // Checks that |arg| is a description of a node with label |l|.
 bool CheckLabel(const base::Value& arg, int l) {
-  const base::DictionaryValue* dict = nullptr;
-  EXPECT_TRUE(arg.GetAsDictionary(&dict));
-  int result = 0;
-  if (!dict->GetInteger("label", &result))
+  EXPECT_TRUE(arg.is_dict());
+  const base::Value::Dict& dict = arg.GetDict();
+  absl::optional<int> result = dict.FindInt("label");
+  if (!result)
     return false;
-  return l == result;
+  return l == *result;
 }
 
 // Matches every |arg| with label |label| and checks that it has no children.
 MATCHER_P(EmptyNode, label, "") {
   if (!CheckLabel(arg, label))
     return false;
-  EXPECT_FALSE(GetChildren(arg));
+  EXPECT_EQ(GetChildren(arg), absl::nullopt);
   return true;
 }
 
 }  // namespace
 
 TEST(SerializeHostDescriptionTest, Empty) {
-  base::ListValue result =
+  base::Value::List result =
       SerializeHostDescriptions(std::vector<HostDescriptionNode>(), "123");
-  EXPECT_THAT(result.base::Value::GetList(), ::testing::IsEmpty());
+  EXPECT_THAT(result, ::testing::IsEmpty());
 }
 
 // Test serializing a forest of stubs (no edges).
@@ -65,9 +68,9 @@ TEST(SerializeHostDescriptionTest, Stubs) {
   nodes.emplace_back(GetNodeWithLabel("1", 1));
   nodes.emplace_back(GetNodeWithLabel("2", 2));
   nodes.emplace_back(GetNodeWithLabel("3", 3));
-  base::ListValue result =
+  base::Value::List result =
       SerializeHostDescriptions(std::move(nodes), "children");
-  EXPECT_THAT(result.GetList(),
+  EXPECT_THAT(result,
               UnorderedElementsAre(EmptyNode(1), EmptyNode(2), EmptyNode(3)));
 }
 
@@ -80,12 +83,12 @@ TEST(SerializeHostDescriptionTest, SameNames) {
   nodes.emplace_back(GetNodeWithLabel("B", 4));
   nodes.emplace_back(GetNodeWithLabel("C", 5));
 
-  base::ListValue result =
+  base::Value::List result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
   // Only the first node called "A", and both nodes "B" and "C" should be
   // returned.
-  EXPECT_THAT(result.GetList(),
+  EXPECT_THAT(result,
               UnorderedElementsAre(EmptyNode(1), EmptyNode(4), EmptyNode(5)));
 }
 
@@ -101,22 +104,22 @@ namespace {
 MATCHER(Node2, "") {
   if (!CheckLabel(arg, 2))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(EmptyNode(4)));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(EmptyNode(4))));
   return true;
 }
 
 MATCHER(Node5, "") {
   if (!CheckLabel(arg, 5))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(Node2()));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(Node2())));
   return true;
 }
 
 MATCHER(Node0, "") {
   if (!CheckLabel(arg, 0))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(),
-              UnorderedElementsAre(EmptyNode(1), EmptyNode(3), EmptyNode(6)));
+  EXPECT_THAT(GetChildren(arg), Optional(UnorderedElementsAre(
+                                    EmptyNode(1), EmptyNode(3), EmptyNode(6))));
   return true;
 }
 
@@ -134,9 +137,8 @@ TEST(SerializeHostDescriptionTest, Forest) {
   nodes[1].parent_name = "0";
   nodes[3].parent_name = "0";
 
-  base::ListValue result =
+  base::Value::List result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
-  EXPECT_THAT(result.base::Value::GetList(),
-              UnorderedElementsAre(Node0(), Node5()));
+  EXPECT_THAT(result, UnorderedElementsAre(Node0(), Node5()));
 }

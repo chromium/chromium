@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -114,6 +114,24 @@
 # (These are construted from dns_test_util's kWellFormedEsniKeys.)
 "\xff\x9f\x00\x01\x00\x00\x00\xFF\xff\x03\x00\x01\x00\x33\xff\x00\x24\x00\x1d\x00\x20\xed\xed\xc8\x68\xc1\x71\xd6\x9e\xa9\xf0\xa2\xc9\xf5\xa9\xdc\xcf\xf9\xb8\xed\x15\x5c\xc4\x5a\xec\x6f\xb2\x86\x14\xb7\x71\x1b\x7c\x00\x02"
 "\xff\x9f\x00\x01\x00\x00\x00\xFF\xff\x03\x00\x01\x00\x33\xff\x00\x24\x00\x1d\x00\x20\xed\xed\xc8\x68\xc1\x71\xd6\x9e\xa9\xf0\xa2\xc9\xf5\xa9\xdc\xcf\xf9\xb8\xed\x15\x5c\xc4\x5a\xec\x6f\xb2\x86\x14\xb7\x71\x1b\x7c\x00\x02\x13\x01\x01\x04\x00\x00"
+
+# OptRecordRdata containing an EDE opt.
+"\x00\x0f\x00\x0b\x00\x0eWORCESTER"
+"\x00\x0f\x00\x09\x00\x15CONCORD"
+# OptRecordRdata containing an EDE opt with a non-existent opt code.
+"\x00\x0f\x00\x08\x00\x44BOSTON"
+# OptRecordRdata containing an EDE opt with specified length
+# shorter than provided data.
+"\x00\x0f\x00\x04\x00\x12WACHUSETT"
+# OptRecordRdata containing a Padding opt.
+"\x00\x0c\x00\x09LEXINGTON"
+"\x00\x0c\x00\x02\x00\x00"
+# OptRecordRdata containing an EDE opt with Non-UTF-8 extra text.
+"\x00\x0f\x00\x06\x00\x44\xb1\x05\xf0\x0d"
+# OptRecordRdata containing an EDE opt with insufficient data size.
+"\x00\x0f\x00\x01\x00"
+# OptRecordRdata containing an EDE opt with data length longer than data.
+"\x00\x0f\x00\x06\x00\x03AB"
 
 # This part has been generated with testing/libfuzzer/dictionary_generator.py
 # using net_dns_record_fuzzer binary, RFC 1034 and RFC 1035.
@@ -888,4 +906,3 @@
 "(EXPERIMENTAL)"
 "RDLENGTH"
 "NIC.ARPA"
-

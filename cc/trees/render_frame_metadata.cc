@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,11 @@ bool RenderFrameMetadata::operator==(const RenderFrameMetadata& other) const {
          external_page_scale_factor == other.external_page_scale_factor &&
          top_controls_height == other.top_controls_height &&
          top_controls_shown_ratio == other.top_controls_shown_ratio &&
-#if defined(OS_ANDROID)
+         previous_surfaces_visual_update_duration ==
+             other.previous_surfaces_visual_update_duration &&
+         current_surface_visual_update_duration ==
+             other.current_surface_visual_update_duration &&
+#if BUILDFLAG(IS_ANDROID)
          bottom_controls_height == other.bottom_controls_height &&
          bottom_controls_shown_ratio == other.bottom_controls_shown_ratio &&
          top_controls_min_height_offset ==

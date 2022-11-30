@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,12 @@
 #include <utility>
 
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace content {
@@ -171,8 +175,7 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
   net::CookieOptions net_options;
   net_options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-  net_options.set_same_party_cookie_context_type(
-      net::CookieOptions::SamePartyCookieContextType::kSameParty);
+  net_options.set_same_party_context(net::SamePartyContext::MakeInclusive());
   // It doesn't matter which we choose here, since both SameParty and SameSite
   // semantics should allow this access. But we make a choice to be explicit.
   net_options.set_is_in_nontrivial_first_party_set(true);
@@ -183,7 +186,10 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
           net::CookieAccessParams{
               access_semantics,
               network::IsUrlPotentiallyTrustworthy(url_),
-              net::cookie_util::GetSamePartyStatus(cookie, net_options),
+              net::cookie_util::GetSamePartyStatus(
+                  cookie, net_options,
+                  base::FeatureList::IsEnabled(
+                      net::features::kSamePartyAttributeEnabled)),
           })
       .status.IsInclude();
 }

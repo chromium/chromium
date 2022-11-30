@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,72 +14,35 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/assistant/util/resource_util.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/assistant/conversation_starter.h"
-#include "ash/public/cpp/assistant/conversation_starters_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
-using chromeos::assistant::features::IsBetterOnboardingEnabled;
-using chromeos::assistant::features::IsConversationStartersV2Enabled;
-using chromeos::assistant::prefs::AssistantOnboardingMode;
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
+using assistant::prefs::AssistantOnboardingMode;
 
 // Conversation starters -------------------------------------------------------
 
 constexpr int kMaxNumOfConversationStarters = 3;
-
-bool IsAllowed(const ConversationStarter& conversation_starter) {
-  using Permission = ConversationStarter::Permission;
-
-  if (conversation_starter.RequiresPermission(Permission::kUnknown))
-    return false;
-
-  if (conversation_starter.RequiresPermission(Permission::kRelatedInfo) &&
-      !AssistantState::Get()->context_enabled().value_or(false)) {
-    return false;
-  }
-
-  return true;
-}
-
-AssistantSuggestion ToAssistantSuggestion(
-    const ConversationStarter& conversation_starter) {
-  AssistantSuggestion suggestion;
-  suggestion.id = base::UnguessableToken::Create();
-  suggestion.type = AssistantSuggestionType::kConversationStarter;
-  suggestion.text = conversation_starter.label();
-
-  if (conversation_starter.action_url().has_value())
-    suggestion.action_url = conversation_starter.action_url().value();
-
-  if (conversation_starter.icon_url().has_value())
-    suggestion.icon_url = conversation_starter.icon_url().value();
-
-  return suggestion;
-}
 
 }  // namespace
 
 // AssistantSuggestionsControllerImpl ------------------------------------------
 
 AssistantSuggestionsControllerImpl::AssistantSuggestionsControllerImpl() {
-  // In conversation starters V2, we only update conversation starters when the
-  // Assistant UI is becoming visible so as to maximize freshness.
-  if (!IsConversationStartersV2Enabled())
-    UpdateConversationStarters();
-
+  UpdateConversationStarters();
   assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
@@ -104,28 +67,8 @@ void AssistantSuggestionsControllerImpl::OnAssistantControllerDestroying() {
 void AssistantSuggestionsControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
-  if (IsConversationStartersV2Enabled()) {
-    // When Assistant is starting a session, we update our cache of conversation
-    // starters so that they are as fresh as possible. Note that we may need to
-    // modify this logic later if latency becomes a concern.
-    if (assistant::util::IsStartingSession(new_visibility, old_visibility)) {
-      UpdateConversationStarters();
-      return;
-    }
-    // When Assistant is finishing a session, we clear our cache of conversation
-    // starters so that, when the next session begins, we won't show stale
-    // conversation starters while we fetch fresh ones.
-    if (assistant::util::IsFinishingSession(new_visibility)) {
-      conversation_starters_weak_factory_.InvalidateWeakPtrs();
-      model_.SetConversationStarters({});
-    }
-    return;
-  }
-
-  DCHECK(!IsConversationStartersV2Enabled());
-
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   // When Assistant is finishing a session, we update our cache of conversation
   // starters so that they're fresh for the next launch.
   if (assistant::util::IsFinishingSession(new_visibility))
@@ -138,80 +81,15 @@ void AssistantSuggestionsControllerImpl::OnAssistantContextEnabled(
   // Assistant UI is visible.
   DCHECK_NE(AssistantVisibility::kVisible,
             AssistantUiController::Get()->GetModel()->visibility());
-
-  // In conversation starters V2, we only update conversation starters when
-  // Assistant UI is becoming visible so as to maximize freshness.
-  if (IsConversationStartersV2Enabled())
-    return;
-
   UpdateConversationStarters();
 }
 
 void AssistantSuggestionsControllerImpl::OnAssistantOnboardingModeChanged(
     AssistantOnboardingMode onboarding_mode) {
-  // Onboarding suggestions are only applicable if the feature is enabled.
-  if (IsBetterOnboardingEnabled())
-    UpdateOnboardingSuggestions();
+  UpdateOnboardingSuggestions();
 }
 
 void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
-  // If conversation starters V2 is enabled, we'll fetch a fresh set of
-  // conversation starters from the server.
-  if (IsConversationStartersV2Enabled()) {
-    FetchConversationStarters();
-    return;
-  }
-  // Otherwise we'll use a locally provided set of conversation starters.
-  ProvideConversationStarters();
-}
-
-void AssistantSuggestionsControllerImpl::FetchConversationStarters() {
-  DCHECK(IsConversationStartersV2Enabled());
-
-  // Invalidate any requests that are already in flight.
-  conversation_starters_weak_factory_.InvalidateWeakPtrs();
-
-  // Fetch a fresh set of conversation starters from the server (via the
-  // dedicated ConversationStartersClient).
-  ConversationStartersClient::Get()->FetchConversationStarters(base::BindOnce(
-      [](const base::WeakPtr<AssistantSuggestionsControllerImpl>& self,
-         std::vector<ConversationStarter>&& conversation_starters) {
-        if (!self)
-          return;
-
-        // Remove any conversation starters which we determine to not be allowed
-        // based on the required permissions that they specify. Note that this
-        // no-ops if the collection is empty.
-        base::EraseIf(conversation_starters,
-                      [](const ConversationStarter& conversation_starter) {
-                        return !IsAllowed(conversation_starter);
-                      });
-
-        // When the server doesn't respond with any conversation starters that
-        // we can present, we'll fallback to the locally provided set.
-        if (conversation_starters.empty()) {
-          self->ProvideConversationStarters();
-          return;
-        }
-
-        // The number of conversation starters should not exceed our maximum.
-        while (conversation_starters.size() > kMaxNumOfConversationStarters)
-          conversation_starters.pop_back();
-
-        // We need to transform our conversation starters into the type that is
-        // understood by the suggestions model...
-        std::vector<AssistantSuggestion> suggestions;
-        std::transform(conversation_starters.begin(),
-                       conversation_starters.end(),
-                       std::back_inserter(suggestions), ToAssistantSuggestion);
-
-        // ...and we update our cache.
-        self->model_.SetConversationStarters(std::move(suggestions));
-      },
-      conversation_starters_weak_factory_.GetWeakPtr()));
-}
-
-void AssistantSuggestionsControllerImpl::ProvideConversationStarters() {
   std::vector<AssistantSuggestion> conversation_starters;
 
   // Adds a conversation starter for the given |message_id| and |action_url|.
@@ -228,12 +106,6 @@ void AssistantSuggestionsControllerImpl::ProvideConversationStarters() {
   // Always show the "What can you do?" conversation starter.
   AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHAT_CAN_YOU_DO);
 
-  // If enabled, always show the "What's on my screen?" conversation starter.
-  if (AssistantState::Get()->context_enabled().value_or(false)) {
-    AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN,
-                           assistant::util::CreateWhatsOnMyScreenDeepLink());
-  }
-
   // The rest of the conversation starters will be shuffled...
   std::vector<int> shuffled_message_ids;
 
@@ -242,6 +114,7 @@ void AssistantSuggestionsControllerImpl::ProvideConversationStarters() {
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_PLAY_MUSIC);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SEND_AN_EMAIL);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SET_A_REMINDER);
+  shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_TELL_ME_A_JOKE);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_CALENDAR);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_THE_WEATHER);
 
@@ -259,8 +132,6 @@ void AssistantSuggestionsControllerImpl::ProvideConversationStarters() {
 }
 
 void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
-  DCHECK(IsBetterOnboardingEnabled());
-
   auto CreateIconResourceLink = [](int message_id) {
     switch (message_id) {
       case IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_CONVERSION:
@@ -295,7 +166,7 @@ void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
 
   std::vector<AssistantSuggestion> onboarding_suggestions;
 
-  using chromeos::assistant::AssistantBetterOnboardingType;
+  using assistant::AssistantBetterOnboardingType;
   auto AddSuggestion = [&CreateIconResourceLink, &onboarding_suggestions](
                            int message_id, AssistantBetterOnboardingType type) {
     onboarding_suggestions.emplace_back();

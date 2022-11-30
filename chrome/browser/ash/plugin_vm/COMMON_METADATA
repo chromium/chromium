@@ -1,0 +1,11 @@
+monorail: {
+  project: "chromium"
+  component: "UI>Shell>Containers>PluginVM"
+}
+buganizer: {
+  component_id: 658562  # ChromeOS > Software > Guest OS
+}
+buganizer_public: {  # Shared with partners but not actually public.
+  component_id: 327040  # ChromeOS > External > Parallels.
+}
+team_email: "clumptini@google.com"

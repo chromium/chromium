@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -119,7 +119,7 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
 // Use a UI type message loop on macOS, because it doesn't seem to schedule
 // callbacks with enough precision to drive our fake audio output. See
 // https://crbug.com/1014646 for more details.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
 #endif
       hashing_enabled_(false),
@@ -231,11 +231,15 @@ PipelineStatus PipelineIntegrationTestBase::WaitUntilEndedOrError() {
 }
 
 void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
-  DCHECK_NE(status, PIPELINE_OK);
+  DCHECK(status != PIPELINE_OK);
   pipeline_status_ = status;
   pipeline_->Stop();
   if (on_error_closure_)
     std::move(on_error_closure_).Run();
+}
+
+void PipelineIntegrationTestBase::OnFallback(PipelineStatus status) {
+  DCHECK(status != PIPELINE_OK);
 }
 
 void PipelineIntegrationTestBase::SetCreateRendererCB(
@@ -277,8 +281,8 @@ PipelineStatus PipelineIntegrationTestBase::StartInternal(
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).WillRepeatedly(Return());
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
   CreateDemuxer(std::move(data_source));
 
   if (cdm_context) {
@@ -406,7 +410,7 @@ void PipelineIntegrationTestBase::Stop() {
 }
 
 void PipelineIntegrationTestBase::FailTest(PipelineStatus status) {
-  DCHECK_NE(PIPELINE_OK, status);
+  DCHECK(status != PIPELINE_OK);
   OnError(status);
 }
 
@@ -424,7 +428,7 @@ void PipelineIntegrationTestBase::QuitAfterCurrentTimeTask(
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), quit_time,
                      std::move(quit_closure)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 }
 
 bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
@@ -438,7 +442,7 @@ bool PipelineIntegrationTestBase::WaitUntilCurrentTimeIsAfter(
       FROM_HERE,
       base::BindOnce(&PipelineIntegrationTestBase::QuitAfterCurrentTimeTask,
                      base::Unretained(this), wait_time, run_loop.QuitClosure()),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
   RunUntilQuitOrEndedOrError(&run_loop);
 
@@ -463,33 +467,33 @@ void PipelineIntegrationTestBase::CreateDemuxer(
 }
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRenderer(
-    base::Optional<RendererFactoryType> factory_type) {
+    absl::optional<RendererType> renderer_type) {
   if (create_renderer_cb_)
-    return create_renderer_cb_.Run(factory_type);
+    return create_renderer_cb_.Run(renderer_type);
 
-  return CreateDefaultRenderer(factory_type);
+  return CreateDefaultRenderer(renderer_type);
 }
 
 std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
-    base::Optional<RendererFactoryType> factory_type) {
-  if (factory_type && *factory_type != RendererFactoryType::kDefault) {
-    DVLOG(1) << __func__ << ": factory_type not supported";
+    absl::optional<RendererType> renderer_type) {
+  if (renderer_type && *renderer_type != RendererType::kDefault) {
+    DVLOG(1) << __func__ << ": renderer_type not supported";
     return nullptr;
   }
 
   // Simulate a 60Hz rendering sink.
-  video_sink_.reset(new NullVideoSink(
-      clockless_playback_, base::TimeDelta::FromSecondsD(1.0 / 60),
+  video_sink_ = std::make_unique<NullVideoSink>(
+      clockless_playback_, base::Seconds(1.0 / 60),
       base::BindRepeating(&PipelineIntegrationTestBase::OnVideoFramePaint,
                           base::Unretained(this)),
-      task_environment_.GetMainThreadTaskRunner()));
+      task_environment_.GetMainThreadTaskRunner());
 
   // Disable frame dropping if hashing is enabled.
-  std::unique_ptr<VideoRenderer> video_renderer(new VideoRendererImpl(
+  auto video_renderer = std::make_unique<VideoRendererImpl>(
       task_environment_.GetMainThreadTaskRunner(), video_sink_.get(),
       base::BindRepeating(&CreateVideoDecodersForTest, &media_log_,
                           prepend_video_decoders_cb_),
-      false, &media_log_, nullptr));
+      false, &media_log_, nullptr, 0);
 
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
@@ -497,13 +501,14 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
     audio_sink_ =
         new NullAudioSink(task_environment_.GetMainThreadTaskRunner());
   } else {
-    ChannelLayout output_layout =
-        mono_output_ ? CHANNEL_LAYOUT_MONO : CHANNEL_LAYOUT_STEREO;
+    ChannelLayoutConfig output_layout_config =
+        mono_output_ ? ChannelLayoutConfig::Mono()
+                     : ChannelLayoutConfig::Stereo();
 
     clockless_audio_sink_ = new ClocklessAudioSink(
         OutputDeviceInfo("", OUTPUT_DEVICE_STATUS_OK,
                          AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                         output_layout, 44100, 512)));
+                                         output_layout_config, 44100, 512)));
 
     // Say "not optimized for hardware parameters" to disallow renderer
     // resampling. Hashed tests need this avoid platform dependent floating
@@ -514,7 +519,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
     }
   }
 
-  std::unique_ptr<AudioRenderer> audio_renderer(new AudioRendererImpl(
+  auto audio_renderer = std::make_unique<AudioRendererImpl>(
       task_environment_.GetMainThreadTaskRunner(),
       (clockless_playback_)
           ? static_cast<AudioRendererSink*>(clockless_audio_sink_.get())
@@ -522,7 +527,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
       base::BindRepeating(&CreateAudioDecodersForTest, &media_log_,
                           task_environment_.GetMainThreadTaskRunner(),
                           prepend_audio_decoders_cb_),
-      &media_log_, nullptr));
+      &media_log_, 0, nullptr);
   if (hashing_enabled_) {
     if (clockless_playback_)
       clockless_audio_sink_->StartAudioHashForTesting();
@@ -533,9 +538,9 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
   static_cast<AudioRendererImpl*>(audio_renderer.get())
       ->SetPlayDelayCBForTesting(std::move(audio_play_delay_cb_));
 
-  std::unique_ptr<RendererImpl> renderer_impl(
-      new RendererImpl(task_environment_.GetMainThreadTaskRunner(),
-                       std::move(audio_renderer), std::move(video_renderer)));
+  std::unique_ptr<RendererImpl> renderer_impl = std::make_unique<RendererImpl>(
+      task_environment_.GetMainThreadTaskRunner(), std::move(audio_renderer),
+      std::move(video_renderer));
 
   // Prevent non-deterministic buffering state callbacks from firing (e.g., slow
   // machine, valgrind).
@@ -609,6 +614,14 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithEncryptedMedia(
 PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
     TestMediaSource* source,
     uint8_t test_type,
+    CreateAudioDecodersCB prepend_audio_decoders_cb) {
+  prepend_audio_decoders_cb_ = prepend_audio_decoders_cb;
+  return StartPipelineWithMediaSource(source, test_type, nullptr);
+}
+
+PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
+    TestMediaSource* source,
+    uint8_t test_type,
     FakeEncryptedMedia* encrypted_media) {
   ParseTestTypeFlags(test_type);
 
@@ -627,8 +640,8 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
   EXPECT_CALL(*this, OnVideoNaturalSizeChange(_)).Times(AnyNumber());
   EXPECT_CALL(*this, OnVideoOpacityChange(_)).Times(AtMost(1));
   EXPECT_CALL(*this, OnVideoFrameRateChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnAudioDecoderChange(_)).Times(AnyNumber());
-  EXPECT_CALL(*this, OnVideoDecoderChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnAudioPipelineInfoChange(_)).Times(AnyNumber());
+  EXPECT_CALL(*this, OnVideoPipelineInfoChange(_)).Times(AnyNumber());
 
   base::RunLoop run_loop;
 

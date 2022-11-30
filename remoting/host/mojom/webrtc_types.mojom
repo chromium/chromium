@@ -1,0 +1,88 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// WebRTC structures which are shared over IPC between chromoting processes.
+
+// A subset of the WebRTC DesktopCaptureOptions used by CRD:
+// //third_party/webrtc/modules/desktop_capture/desktop_capture_options.h
+struct DesktopCaptureOptions {
+  bool use_update_notifications;
+  bool detect_updated_region;
+
+  [EnableIf=is_win]
+  bool allow_directx_capturer;
+};
+
+// Original WebRTC enum can be found at:
+// //third_party/webrtc/modules/desktop_capture/desktop_capturer.h
+enum DesktopCaptureResult {
+  // The frame was captured successfully.
+  kSuccess = 0,
+  // There was a temporary error, trying again will eventually succeed.
+  kErrorTemporary = 1,
+  // Capture failed and will not succeed if retried.
+  kErrorPermanent = 2,
+};
+
+// A subset of the fields present in webrtc::DesktopFrame used to provide
+// captured frame data between processes.
+struct DesktopFrame {
+  // ID of the shared memory buffer containing the pixel data. This ID must have
+  // already been passed to the network process as part of the create shared
+  // memory region notification, otherwise the frame data cannot be retrieved.
+  int32 shared_buffer_id;
+
+  // Width of a single row of pixels in bytes.
+  int32 stride;
+
+  // Dimensions of the buffer in pixels.
+  DesktopSize size;
+
+  // Set of rects representing changed area of the desktop.
+  array<DesktopRect> dirty_region;
+
+  // Time spent in capture. Unit is in milliseconds.
+  int64 capture_time_ms;
+
+  // DPI for this frame.
+  DesktopVector dpi;
+
+  // ID of the capturer used to generate the frame, specific values for this
+  // field can be found in:
+  // //third_party/webrtc/modules/desktop_capture/desktop_capture_types.h
+  uint32 capturer_id;
+};
+
+// Original WebRTC class can be found at:
+// //third_party/webrtc/modules/desktop_capture/desktop_geometry.h
+struct DesktopRect {
+  int32 left;
+  int32 top;
+  int32 right;
+  int32 bottom;
+};
+
+// Original WebRTC class can be found at:
+// //third_party/webrtc/modules/desktop_capture/desktop_geometry.h
+struct DesktopSize {
+  int32 width;
+  int32 height;
+};
+
+// Original WebRTC class can be found at:
+// //third_party/webrtc/modules/desktop_capture/desktop_geometry.h
+struct DesktopVector {
+  int32 x;
+  int32 y;
+};
+
+// Original WebRTC class can be found at:
+// //third_party/webrtc/modules/desktop_capture/mouse_cursor.h
+struct MouseCursor {
+  DesktopSize image_size;
+  array<uint8> image_data;
+  DesktopVector hotspot;
+};

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -241,18 +241,18 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
       BluetoothDevice::ClampPower(rssi),
       // Android uses -1 to indicate no advertising flags.
       // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getAdvertiseFlags()
-      advertisement_flags == -1 ? base::nullopt
-                                : base::make_optional(advertisement_flags),
+      advertisement_flags == -1 ? absl::nullopt
+                                : absl::make_optional(advertisement_flags),
       advertised_bluetooth_uuids,
       // Android uses INT32_MIN to indicate no Advertised Tx Power.
       // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-      tx_power == INT32_MIN ? base::nullopt
-                            : base::make_optional(clamped_tx_power),
+      tx_power == INT32_MIN ? absl::nullopt
+                            : absl::make_optional(clamped_tx_power),
       service_data_map, manufacturer_data_map);
 
   for (auto& observer : observers_) {
-    base::Optional<std::string> device_name_opt = device_android->GetName();
-    base::Optional<std::string> advertisement_name_opt;
+    absl::optional<std::string> device_name_opt = device_android->GetName();
+    absl::optional<std::string> advertisement_name_opt;
     if (local_name)
       advertisement_name_opt = ConvertJavaStringToUTF8(env, local_name);
 
@@ -261,9 +261,9 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
         BluetoothDevice::ClampPower(rssi),
         // Android uses INT32_MIN to indicate no Advertised Tx Power.
         // https://developer.android.com/reference/android/bluetooth/le/ScanRecord.html#getTxPowerLevel()
-        tx_power == INT32_MIN ? base::nullopt
-                              : base::make_optional(clamped_tx_power),
-        base::nullopt, /* TODO(crbug.com/588083) Implement appearance */
+        tx_power == INT32_MIN ? absl::nullopt
+                              : absl::make_optional(clamped_tx_power),
+        absl::nullopt, /* TODO(crbug.com/588083) Implement appearance */
         advertised_bluetooth_uuids, service_data_map, manufacturer_data_map);
   }
 
@@ -291,13 +291,13 @@ void BluetoothAdapterAndroid::PurgeTimedOutDevices() {
         FROM_HERE,
         base::BindOnce(&BluetoothAdapterAndroid::PurgeTimedOutDevices,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kActivePollInterval));
+        base::Milliseconds(kActivePollInterval));
   } else {
     ui_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BluetoothAdapterAndroid::RemoveTimedOutDevices,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kPassivePollInterval));
+        base::Milliseconds(kPassivePollInterval));
   }
 }
 
@@ -384,7 +384,7 @@ void BluetoothAdapterAndroid::StartScanWithFilter(
           FROM_HERE,
           base::BindOnce(&BluetoothAdapterAndroid::PurgeTimedOutDevices,
                          weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kPurgeDelay));
+          base::Milliseconds(kPurgeDelay));
     }
   } else {
     DVLOG(1) << "StartScanWithFilter: Fails: !isPowered";

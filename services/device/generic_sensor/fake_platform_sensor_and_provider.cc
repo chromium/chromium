@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,20 @@ FakePlatformSensor::FakePlatformSensor(
       .WillByDefault(
           Invoke([this](const PlatformSensorConfiguration& configuration) {
             SensorReading reading;
-            // Only mocking the shared memory update for AMBIENT_LIGHT type is
-            // enough.
-            if (GetType() == mojom::SensorType::AMBIENT_LIGHT) {
-              // Set the shared buffer value as frequency for testing purpose.
-              reading.als.value = configuration.frequency();
-              UpdateSharedBufferAndNotifyClients(reading);
+            // Only mocking the shared memory update for AMBIENT_LIGHT and
+            // PRESSURE type is enough.
+            // Set the shared buffer value as frequency for testing purpose.
+            switch (GetType()) {
+              case mojom::SensorType::AMBIENT_LIGHT:
+                reading.als.value = configuration.frequency();
+                AddNewReading(reading);
+                break;
+              case mojom::SensorType::PRESSURE:
+                reading.pressure.value = configuration.frequency();
+                AddNewReading(reading);
+                break;
+              default:
+                break;
             }
             return true;
           }));
@@ -56,6 +64,10 @@ double FakePlatformSensor::GetMaximumSupportedFrequency() {
 
 double FakePlatformSensor::GetMinimumSupportedFrequency() {
   return 1.0;
+}
+
+void FakePlatformSensor::AddNewReading(const SensorReading& reading) {
+  UpdateSharedBufferAndNotifyClients(reading);
 }
 
 FakePlatformSensorProvider::FakePlatformSensorProvider() {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
       // RenderWidgetHostInputEventRouter attached to the RenderWidgetHostImpl.
 
       DCHECK(host_->delegate());
-      DCHECK(host_->delegate()->IsWidgetForMainFrame(host_));
+      DCHECK(host_->delegate()->IsWidgetForPrimaryMainFrame(host_));
       DCHECK(host_->delegate()->GetInputEventRouter());
 
       std::unique_ptr<WebInputEvent> wheel_evt_ptr = web_wheel.Clone();
@@ -130,7 +130,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
 
 base::TimeDelta SyntheticGestureTargetBase::PointerAssumedStoppedTime()
     const {
-  return base::TimeDelta::FromMilliseconds(kPointerAssumedStoppedTimeMs);
+  return base::Milliseconds(kPointerAssumedStoppedTimeMs);
 }
 
 float SyntheticGestureTargetBase::GetSpanSlopInDips() const {

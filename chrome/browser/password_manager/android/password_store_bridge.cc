@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,19 +53,23 @@ PasswordStoreBridge::PasswordStoreBridge(
 
 PasswordStoreBridge::~PasswordStoreBridge() = default;
 
-void PasswordStoreBridge::InsertPasswordCredential(
+void PasswordStoreBridge::InsertPasswordCredentialForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential) {
-  password_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+  profile_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
 }
 
 bool PasswordStoreBridge::EditPassword(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential,
     const base::android::JavaParamRef<jstring>& new_password) {
-  return saved_passwords_presenter_.EditPassword(
-      ConvertJavaObjectToPasswordForm(env, credential),
-      ConvertJavaStringToUTF16(env, new_password));
+  password_manager::CredentialUIEntry original_credential(
+      ConvertJavaObjectToPasswordForm(env, credential));
+  password_manager::CredentialUIEntry updated_credential = original_credential;
+  updated_credential.password = ConvertJavaStringToUTF16(env, new_password);
+  return saved_passwords_presenter_.EditSavedCredentials(original_credential,
+                                                         updated_credential) ==
+         password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
 }
 
 jint PasswordStoreBridge::GetPasswordStoreCredentialsCount(JNIEnv* env) const {
@@ -89,7 +93,8 @@ void PasswordStoreBridge::GetAllCredentials(
 }
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  password_store_->ClearStore(
+  profile_store_->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time::Max(),
       base::BindOnce(&PasswordStoreBridge::OnPasswordStoreCleared,
                      weak_factory_.GetWeakPtr()));
 }

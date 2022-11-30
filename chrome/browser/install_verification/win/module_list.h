@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,14 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
-
 struct ModuleInfo;
 
 // Manages a list of HMODULEs, releasing them upon destruction.
 class ModuleList {
  public:
+  ModuleList(const ModuleList&) = delete;
+  ModuleList& operator=(const ModuleList&) = delete;
+
   ~ModuleList();
 
   // Attempts to AddRef each HMODULE in |snapshot|. If a module was unloaded
@@ -44,8 +45,6 @@ class ModuleList {
   ModuleList();
 
   std::vector<HMODULE> modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleList);
 };
 
 #endif  // CHROME_BROWSER_INSTALL_VERIFICATION_WIN_MODULE_LIST_H_

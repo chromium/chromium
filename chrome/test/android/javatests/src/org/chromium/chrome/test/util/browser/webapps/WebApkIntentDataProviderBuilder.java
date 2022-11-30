@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@ package org.chromium.chrome.test.util.browser.webapps;
 import android.content.Intent;
 import android.graphics.Color;
 
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebApkDistributor;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebApkIntentDataProviderFactory;
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +23,10 @@ public class WebApkIntentDataProviderBuilder {
     private String mWebApkPackageName;
     private String mUrl;
     private String mScope;
-    private @WebDisplayMode int mDisplayMode = WebDisplayMode.STANDALONE;
+    private @DisplayMode.EnumType int mDisplayMode = DisplayMode.STANDALONE;
     private String mManifestUrl;
     private int mWebApkVersionCode;
+    private String mManifestId;
 
     public WebApkIntentDataProviderBuilder(String webApkPackageName, String url) {
         mWebApkPackageName = webApkPackageName;
@@ -36,7 +37,7 @@ public class WebApkIntentDataProviderBuilder {
         mScope = scope;
     }
 
-    public void setDisplayMode(@WebDisplayMode int displayMode) {
+    public void setDisplayMode(@DisplayMode.EnumType int displayMode) {
         mDisplayMode = displayMode;
     }
 
@@ -48,17 +49,27 @@ public class WebApkIntentDataProviderBuilder {
         mWebApkVersionCode = versionCode;
     }
 
+    public void setWebApkManifestId(String manifestId) {
+        mManifestId = manifestId;
+    }
+
+    private String manifestId() {
+        if (mManifestId == null) {
+            return mUrl;
+        }
+        return mManifestId;
+    }
+
     /**
      * Builds {@link BrowserServicesIntentDataProvider} object using options that have been set.
      */
     public BrowserServicesIntentDataProvider build() {
         return WebApkIntentDataProviderFactory.create(new Intent(), mUrl, mScope, null, null, null,
                 null, mDisplayMode, ScreenOrientationLockType.DEFAULT, ShortcutSource.UNKNOWN,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING,
-                ShortcutHelper.MANIFEST_COLOR_INVALID_OR_MISSING, Color.WHITE,
+                ColorUtils.INVALID_COLOR, ColorUtils.INVALID_COLOR, Color.WHITE,
                 false /* isPrimaryIconMaskable */, false /* isSplashIconMaskable */,
-                mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl,
-                WebApkDistributor.BROWSER,
+                mWebApkPackageName, /* shellApkVersion */ 1, mManifestUrl, mUrl, manifestId(),
+                null /*appKey*/, WebApkDistributor.BROWSER,
                 new HashMap<String, String>() /* iconUrlToMurmur2HashMap */, null,
                 false /* forceNavigation */, false /* isSplashProvidedByWebApk */, null,
                 new ArrayList<>() /* shortcutItems */, mWebApkVersionCode);

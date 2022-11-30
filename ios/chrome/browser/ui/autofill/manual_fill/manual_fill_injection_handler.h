@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@ class WebStateList;
 // TODO(crbug.com/1116980): Convert ManualFillInjectionHandler to browser agent.
 @interface ManualFillInjectionHandler : NSObject <ManualFillContentInjector>
 
-// Returns a handler using the |WebStateList| to inject JS to the active web
-// state and |securityAlertPresenter| to present alerts.
+// Returns a handler using the `WebStateList` to inject JS to the active web
+// state and `securityAlertPresenter` to present alerts.
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler

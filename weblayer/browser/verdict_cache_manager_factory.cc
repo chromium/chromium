@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
 namespace weblayer {
@@ -34,9 +35,11 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory()
 
 KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  BrowserContextImpl* context_impl = static_cast<BrowserContextImpl*>(context);
   return new safe_browsing::VerdictCacheManager(
-      nullptr /* history service */,
-      HostContentSettingsMapFactory::GetForBrowserContext(context));
+      /*history_service=*/nullptr,
+      HostContentSettingsMapFactory::GetForBrowserContext(context),
+      context_impl->pref_service(), /*sync_observer=*/nullptr);
 }
 
 }  // namespace weblayer

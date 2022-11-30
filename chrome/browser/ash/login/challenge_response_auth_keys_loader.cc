@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,19 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_provider/certificate_provider.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -37,13 +38,13 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr base::TimeDelta kDefaultMaximumExtensionLoadWaitingTime =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
   DCHECK(ProfileHelper::IsSigninProfileInitialized());
@@ -60,7 +61,7 @@ base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
     return {};
 
   base::flat_set<std::string> extension_ids;
-  for (const auto& item : pref->GetValue()->DictItems())
+  for (const auto item : pref->GetValue()->DictItems())
     extension_ids.insert(item.first);
   return extension_ids;
 }
@@ -84,7 +85,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
     std::vector<std::string>* spki_items,
     base::flat_set<std::string>* extension_ids) {
   const base::Value known_user_value =
-      user_manager::known_user::GetChallengeResponseKeys(account_id);
+      user_manager::KnownUser(g_browser_process->local_state())
+          .GetChallengeResponseKeys(account_id);
   std::vector<DeserializedChallengeResponseKey>
       deserialized_challenge_response_keys;
   DeserializeChallengeResponseKeyFromKnownUser(
@@ -105,8 +107,8 @@ void LoadStoredChallengeResponseSpkiKeysForUser(
 // The sign-in profile is used since it's where the needed extensions are
 // installed (e.g., for the smart card based login they are force-installed via
 // the DeviceLoginScreenExtensions admin policy).
-CertificateProviderService* GetCertificateProviderService() {
-  return CertificateProviderServiceFactory::GetForBrowserContext(
+chromeos::CertificateProviderService* GetCertificateProviderService() {
+  return chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
       ProfileHelper::GetSigninProfile());
 }
 
@@ -117,7 +119,7 @@ std::vector<ChallengeResponseKey::SignatureAlgorithm> MakeAlgorithmListFromSsl(
   std::vector<ChallengeResponseKey::SignatureAlgorithm>
       challenge_response_algorithms;
   for (auto ssl_algorithm : ssl_algorithms) {
-    base::Optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
+    absl::optional<ChallengeResponseKey::SignatureAlgorithm> algorithm =
         GetChallengeResponseKeyAlgorithmFromSsl(ssl_algorithm);
     if (algorithm)
       challenge_response_algorithms.push_back(*algorithm);
@@ -165,8 +167,8 @@ class ExtensionLoadObserver final
 
   explicit ExtensionLoadObserver(base::TimeDelta maximum_waiting_time)
       : maximum_waiting_time_(maximum_waiting_time) {
-    process_manager_observer_.Add(GetProcessManager());
-    extension_registry_observer_.Add(GetExtensionRegistry());
+    process_manager_observation_.Observe(GetProcessManager());
+    extension_registry_observation_.Observe(GetExtensionRegistry());
   }
   ExtensionLoadObserver(const ExtensionLoadObserver&) = delete;
   ExtensionLoadObserver& operator=(const ExtensionLoadObserver&) = delete;
@@ -209,7 +211,8 @@ class ExtensionLoadObserver final
   }
 
   void OnShutdown(extensions::ExtensionRegistry* registry) override {
-    extension_registry_observer_.Remove(registry);
+    DCHECK(extension_registry_observation_.IsObservingSource(registry));
+    extension_registry_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
 
@@ -222,15 +225,16 @@ class ExtensionLoadObserver final
   }
 
   void OnProcessManagerShutdown(extensions::ProcessManager* manager) override {
-    process_manager_observer_.Remove(manager);
+    DCHECK(process_manager_observation_.IsObservingSource(manager));
+    process_manager_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
 
   // extensions::ExtensionHostObserver
 
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override {
-    DCHECK(extension_host_observer_.IsObserving(host));
-    extension_host_observer_.Remove(host);
+    DCHECK(extension_host_observations_.IsObservingSource(host));
+    extension_host_observations_.RemoveObservation(host);
     StopWaitingOnExtension(host->extension_id());
   }
 
@@ -306,8 +310,8 @@ class ExtensionLoadObserver final
     }
 
     // Observe first load of background page.
-    if (!extension_host_observer_.IsObserving(extension_host)) {
-      extension_host_observer_.Add(extension_host);
+    if (!extension_host_observations_.IsObservingSource(extension_host)) {
+      extension_host_observations_.AddObservation(extension_host);
     }
   }
 
@@ -337,13 +341,15 @@ class ExtensionLoadObserver final
   // Ids of all extensions that are necessary but not yet ready.
   base::flat_set<std::string> extensions_waited_for_;
 
-  ScopedObserver<extensions::ProcessManager, extensions::ProcessManagerObserver>
-      process_manager_observer_{this};
-  ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
-      extension_host_observer_{this};
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ProcessManager,
+                          extensions::ProcessManagerObserver>
+      process_manager_observation_{this};
+  base::ScopedMultiSourceObservation<extensions::ExtensionHost,
+                                     extensions::ExtensionHostObserver>
+      extension_host_observations_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionLoadObserver> weak_ptr_factory_{this};
 };
@@ -363,7 +369,7 @@ bool ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
 ChallengeResponseAuthKeysLoader::ChallengeResponseAuthKeysLoader()
     : maximum_extension_load_waiting_time_(
           kDefaultMaximumExtensionLoadWaitingTime) {
-  profile_subscription_.Add(GetProfile());
+  profile_subscription_.Observe(GetProfile());
 }
 
 ChallengeResponseAuthKeysLoader::~ChallengeResponseAuthKeysLoader() = default;
@@ -401,7 +407,8 @@ void ChallengeResponseAuthKeysLoader::LoadAvailableKeys(
 void ChallengeResponseAuthKeysLoader::OnProfileWillBeDestroyed(
     Profile* profile) {
   profile_is_destroyed_ = true;
-  profile_subscription_.Remove(profile);
+  DCHECK(profile_subscription_.IsObservingSource(profile));
+  profile_subscription_.Reset();
 }
 
 void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
@@ -415,7 +422,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<CertificateProvider> cert_provider =
+  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
       GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
@@ -433,7 +440,7 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
     std::move(callback).Run(/*challenge_response_keys=*/{});
     return;
   }
-  CertificateProviderService* const cert_provider_service =
+  chromeos::CertificateProviderService* const cert_provider_service =
       GetCertificateProviderService();
   std::vector<ChallengeResponseKey> filtered_keys;
   // Filter those of the currently available cryptographic keys that can be used
@@ -466,4 +473,4 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts(
   std::move(callback).Run(std::move(filtered_keys));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,0 +1,1 @@
+AXFocusedUIElementChanged on AXButton AXTitle='Press Me'

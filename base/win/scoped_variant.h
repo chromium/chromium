@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -43,7 +42,8 @@ class BASE_EXPORT ScopedVariant {
 
   // Creates a new integral type variant and assigns the value to
   // VARIANT.lVal (32 bit sized field).
-  explicit ScopedVariant(long value, VARTYPE vt = VT_I4);
+  explicit ScopedVariant(long value,  // NOLINT(runtime/int)
+                         VARTYPE vt = VT_I4);
 
   // Creates a new integral type variant for the int type and assigns the value
   // to VARIANT.lVal (32 bit sized field).
@@ -71,6 +71,9 @@ class BASE_EXPORT ScopedVariant {
 
   // Moves the wrapped variant into another ScopedVariant.
   ScopedVariant(ScopedVariant&& var);
+
+  ScopedVariant(const ScopedVariant&) = delete;
+  ScopedVariant& operator=(const ScopedVariant&) = delete;
 
   ~ScopedVariant();
 
@@ -179,7 +182,6 @@ class BASE_EXPORT ScopedVariant {
   // Use the Compare method instead.
   bool operator==(const ScopedVariant& var) const;
   bool operator!=(const ScopedVariant& var) const;
-  DISALLOW_COPY_AND_ASSIGN(ScopedVariant);
 };
 
 }  // namespace win

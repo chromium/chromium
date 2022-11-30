@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 // This file includes a template and some samples for text-coded
 // traffic_annotation. For more description on each field, please refer to:
-// tools/traffic_annotation/traffic_annotation.proto
+// chrome/browser/privacy/traffic_annotation.proto
 // and
 // out/Debug/gen/components/policy/proto/chrome_settings.proto
 // For more information on policies, please refer to:

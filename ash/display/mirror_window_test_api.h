@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
 namespace aura {
@@ -24,6 +23,10 @@ namespace ash {
 class MirrorWindowTestApi {
  public:
   MirrorWindowTestApi() {}
+
+  MirrorWindowTestApi(const MirrorWindowTestApi&) = delete;
+  MirrorWindowTestApi& operator=(const MirrorWindowTestApi&) = delete;
+
   ~MirrorWindowTestApi() {}
 
   std::vector<aura::WindowTreeHost*> GetHosts() const;
@@ -40,9 +43,6 @@ class MirrorWindowTestApi {
 
   const aura::Window* GetCursorWindow() const;
   gfx::Point GetCursorLocation() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MirrorWindowTestApi);
 };
 
 }  // namespace ash

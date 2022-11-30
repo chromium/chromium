@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,10 @@
 #include "ui/gl/gl_image_ref_counted_memory.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/gl_image_io_surface.h"
 #endif
@@ -71,10 +72,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
                       const gfx::Size& size,
                       gfx::BufferFormat format)
       : mapped_(false), bytes_(bytes), size_(size), format_(format) {}
-
-  static GpuMemoryBufferImpl* FromClientBuffer(ClientBuffer buffer) {
-    return reinterpret_cast<GpuMemoryBufferImpl*>(buffer);
-  }
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
@@ -109,9 +106,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
   }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
-  }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -127,7 +121,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat format_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
  public:
   IOSurfaceGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
@@ -137,10 +131,6 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
 
   ~IOSurfaceGpuMemoryBuffer() override {
     CFRelease(iosurface_);
-  }
-
-  static IOSurfaceGpuMemoryBuffer* FromClientBuffer(ClientBuffer buffer) {
-    return reinterpret_cast<IOSurfaceGpuMemoryBuffer*>(buffer);
   }
 
   // Overridden from gfx::GpuMemoryBuffer:
@@ -175,9 +165,6 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
     NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
   }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
-  }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -192,7 +179,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   const gfx::Size size_;
   gfx::BufferFormat format_;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 class CommandBufferCheckLostContext : public CommandBufferDirect {
  public:
@@ -252,12 +239,12 @@ GLManager::~GLManager() {
 std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (use_iosurface_memory_buffers_) {
     return base::WrapUnique<gfx::GpuMemoryBuffer>(
         new IOSurfaceGpuMemoryBuffer(size, format));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
   auto bytes = base::RefCountedBytes::TakeVector(&data);
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
@@ -354,7 +341,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
     context_group = new gles2::ContextGroup(
         gpu_preferences_, true, mailbox_manager_, nullptr /* memory_tracker */,
         translator_cache_.get(), &completeness_cache_, feature_info,
-        options.bind_generates_resource, &image_manager_, options.image_factory,
+        options.bind_generates_resource, options.image_factory,
         nullptr /* progress_reporter */, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);
@@ -372,7 +359,8 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   command_buffer_->set_handler(decoder_.get());
 
-  surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                                gfx::Size());
   ASSERT_TRUE(surface_.get() != nullptr)
       << "could not create offscreen surface";
 
@@ -435,13 +423,13 @@ size_t GLManager::GetSharedMemoryBytesAllocated() const {
 }
 
 void GLManager::SetupBaseContext() {
-  if (use_count_) {
-    #if defined(OS_ANDROID)
+  if (!use_count_) {
+#if BUILDFLAG(IS_ANDROID)
     base_share_group_ =
         new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
     gfx::Size size(4, 4);
     base_surface_ = new scoped_refptr<gl::GLSurface>(
-        gl::init::CreateOffscreenGLSurface(size));
+        gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), size));
     base_context_ = new scoped_refptr<gl::GLContext>(gl::init::CreateGLContext(
         base_share_group_->get(), base_surface_->get(),
         gl::GLContextAttribs()));
@@ -495,68 +483,6 @@ void GLManager::SetGpuControlClient(GpuControlClient*) {
 
 const Capabilities& GLManager::GetCapabilities() const {
   return capabilities_;
-}
-
-int32_t GLManager::CreateImage(ClientBuffer buffer,
-                               size_t width,
-                               size_t height) {
-  gfx::Size size(width, height);
-  scoped_refptr<gl::GLImage> gl_image;
-
-#if defined(OS_MAC)
-  if (use_iosurface_memory_buffers_) {
-    IOSurfaceGpuMemoryBuffer* gpu_memory_buffer =
-        IOSurfaceGpuMemoryBuffer::FromClientBuffer(buffer);
-    unsigned internalformat =
-        gl::BufferFormatToGLInternalFormat(gpu_memory_buffer->GetFormat());
-    scoped_refptr<gl::GLImageIOSurface> image(
-        gl::GLImageIOSurface::Create(size, internalformat));
-    if (!image->Initialize(gpu_memory_buffer->iosurface(),
-                           gfx::GenericSharedMemoryId(1),
-                           gfx::BufferFormat::BGRA_8888)) {
-      return -1;
-    }
-    gl_image = image;
-  }
-#endif  // defined(OS_MAC)
-
-  if (use_native_pixmap_memory_buffers_) {
-    gfx::GpuMemoryBuffer* gpu_memory_buffer =
-        reinterpret_cast<gfx::GpuMemoryBuffer*>(buffer);
-    DCHECK(gpu_memory_buffer);
-    if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
-      gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
-      gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-      gl_image =
-          gpu_memory_buffer_factory_->AsImageFactory()
-              ->CreateImageForGpuMemoryBuffer(std::move(handle), size, format,
-                                              gpu::kDisplayCompositorClientId,
-                                              gpu::kNullSurfaceHandle);
-      if (!gl_image)
-        return -1;
-    }
-  }
-
-  if (!gl_image) {
-    GpuMemoryBufferImpl* gpu_memory_buffer =
-        GpuMemoryBufferImpl::FromClientBuffer(buffer);
-
-    gfx::BufferFormat format = gpu_memory_buffer->GetFormat();
-    auto image = base::MakeRefCounted<gl::GLImageRefCountedMemory>(size);
-    if (!image->Initialize(gpu_memory_buffer->bytes(), format)) {
-      return -1;
-    }
-    gl_image = image;
-  }
-
-  static int32_t next_id = 1;
-  int32_t new_id = next_id++;
-  image_manager_.AddImage(gl_image.get(), new_id);
-  return new_id;
-}
-
-void GLManager::DestroyImage(int32_t id) {
-  image_manager_.RemoveImage(id);
 }
 
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {
@@ -615,10 +541,6 @@ void GLManager::WaitSyncToken(const gpu::SyncToken& sync_token) {
 bool GLManager::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {
   NOTREACHED();
   return false;
-}
-
-void GLManager::SetDisplayTransform(gfx::OverlayTransform transform) {
-  NOTREACHED();
 }
 
 ContextType GLManager::GetContextType() const {

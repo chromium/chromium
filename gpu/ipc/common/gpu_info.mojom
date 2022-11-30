@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import "gpu/ipc/common/dx_diag_node.mojom";
 import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gl/mojom/gpu_preference.mojom";
 
 [EnableIf=supports_vulkan]
 import "gpu/ipc/common/vulkan_info.mojom";
@@ -30,6 +31,7 @@ struct GpuDevice {
   int32 cuda_compute_capability_major;
   [EnableIf=is_win]
   Luid luid;
+  gl.mojom.GpuPreference gpu_preference;
 };
 
 // gpu::VideoCodecProfile
@@ -64,6 +66,14 @@ enum VideoCodecProfile {
   AV1PROFILE_PROFILE_PRO,
   DOLBYVISION_PROFILE8,
   DOLBYVISION_PROFILE9,
+  HEVCPROFILE_REXT,
+  HEVCPROFILE_HIGH_THROUGHPUT,
+  HEVCPROFILE_MULTIVIEW_MAIN,
+  HEVCPROFILE_SCALABLE_MAIN,
+  HEVCPROFILE_3D_MAIN,
+  HEVCPROFILE_SCREEN_EXTENDED,
+  HEVCPROFILE_SCALABLE_REXT,
+  HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED,
 };
 
 // gpu::VideoDecodeAcceleratorSupportedProfile
@@ -170,7 +180,8 @@ struct GpuInfo {
   [EnableIf=is_win]
   OverlayInfo overlay_info;
 
-  VideoDecodeAcceleratorCapabilities video_decode_accelerator_capabilities;
+  array<VideoDecodeAcceleratorSupportedProfile>
+    video_decode_accelerator_supported_profiles;
   array<VideoEncodeAcceleratorSupportedProfile>
     video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
@@ -178,8 +189,8 @@ struct GpuInfo {
   array<ImageDecodeAcceleratorSupportedProfile>
     image_decode_accelerator_supported_profiles;
 
-  bool oop_rasterization_supported;
   bool subpixel_font_rendering;
+  uint32 visibility_callback_call_count;
 
   [EnableIf=supports_vulkan]
   VulkanInfo? vulkan_info;

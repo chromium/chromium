@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -21,8 +22,6 @@
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,7 +29,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -60,8 +58,7 @@ void HistogramProbe(error_page::DnsProbeStatus status,
 
 network::mojom::NetworkContext* GetNetworkContextForProfile(
     content::BrowserContext* context) {
-  return content::BrowserContext::GetDefaultStoragePartition(context)
-      ->GetNetworkContext();
+  return context->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 mojo::Remote<network::mojom::DnsConfigChangeManager>
@@ -99,6 +96,10 @@ class DnsProbeServiceImpl
       const NetworkContextGetter& network_context_getter,
       const DnsConfigChangeManagerGetter& dns_config_change_manager_getter,
       const base::TickClock* tick_clock);
+
+  DnsProbeServiceImpl(const DnsProbeServiceImpl&) = delete;
+  DnsProbeServiceImpl& operator=(const DnsProbeServiceImpl&) = delete;
+
   ~DnsProbeServiceImpl() override;
 
   // DnsProbeService implementation:
@@ -160,11 +161,9 @@ class DnsProbeServiceImpl
   std::unique_ptr<DnsProbeRunner> google_config_runner_;
 
   // Time source for cache expiry.
-  const base::TickClock* tick_clock_;  // Not owned.
+  raw_ptr<const base::TickClock> tick_clock_;  // Not owned.
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DnsProbeServiceImpl);
 };
 
 DnsProbeServiceImpl::DnsProbeServiceImpl(content::BrowserContext* context)
@@ -235,9 +234,9 @@ void DnsProbeServiceImpl::SetUpCurrentConfigRunner() {
   current_config_overrides.attempts = 1;
 
   if (current_config_secure_dns_mode_ == net::SecureDnsMode::kSecure) {
-    if (!secure_dns_config.servers().empty()) {
-      current_config_overrides.dns_over_https_servers.emplace(
-          secure_dns_config.servers());
+    if (!secure_dns_config.doh_servers().servers().empty()) {
+      current_config_overrides.dns_over_https_config =
+          secure_dns_config.doh_servers();
     }
     current_config_overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
   } else {
@@ -368,8 +367,7 @@ bool DnsProbeServiceImpl::CachedResultIsExpired() const {
   if (state_ != STATE_RESULT_CACHED)
     return false;
 
-  const base::TimeDelta kMaxResultAge =
-      base::TimeDelta::FromMilliseconds(kMaxResultAgeMs);
+  const base::TimeDelta kMaxResultAge = base::Milliseconds(kMaxResultAgeMs);
   return tick_clock_->NowTicks() - probe_start_time_ > kMaxResultAge;
 }
 
@@ -407,21 +405,16 @@ DnsProbeServiceFactory* DnsProbeServiceFactory::GetInstance() {
 }
 
 DnsProbeServiceFactory::DnsProbeServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "DnsProbeService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Create separate service for incognito profiles.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 DnsProbeServiceFactory::~DnsProbeServiceFactory() {}
 
 KeyedService* DnsProbeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new DnsProbeServiceImpl(context);
-}
-
-content::BrowserContext* DnsProbeServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Create separate service for incognito profiles.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 // static

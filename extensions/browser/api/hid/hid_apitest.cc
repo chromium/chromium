@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,17 +18,21 @@
 #include "extensions/shell/browser/shell_extensions_api_client.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
+#include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using base::ThreadTaskRunnerHandle;
-using device::FakeHidManager;
-using device::HidReportDescriptor;
+namespace extensions {
+
+namespace {
+
+using ::base::ThreadTaskRunnerHandle;
+using ::device::FakeHidManager;
+using ::device::HidReportDescriptor;
 
 const char* const kTestDeviceGuids[] = {"A", "B", "C", "D", "E"};
 const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3", "4", "5"};
@@ -37,16 +41,51 @@ const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3", "4", "5"};
 // feature reports. The first implements usage page 0xFF00 and has a single
 // report without and ID. The second implements usage page 0xFF01 and has a
 // single report with ID 1.
-const uint8_t kReportDescriptor[] = {0x06, 0x00, 0xFF, 0x08, 0xA1, 0x01, 0x15,
-                                     0x00, 0x26, 0xFF, 0x00, 0x75, 0x08, 0x95,
-                                     0x08, 0x08, 0x81, 0x02, 0x08, 0x91, 0x02,
-                                     0x08, 0xB1, 0x02, 0xC0};
+const uint8_t kReportDescriptor[] = {
+    0x06, 0x00, 0xFF,  // Usage Page (Vendor Defined 0xFF00)
+    0x08,              // Usage
+    0xA1, 0x01,        // Collection (Application)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x26, 0xFF, 0x00,  //   Logical Maximum (255)
+    0x75, 0x08,        //   Report Size (8)
+    0x95, 0x08,        //   Report Count (8)
+    0x08,              //   Usage
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,
+                       //   No Null Position)
+    0x08,              //   Usage
+    0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,
+                       //   No Null Position,Non-volatile)
+    0x08,              //   Usage
+    0xB1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred
+                       //   State,No Null Position,Non-volatile)
+    0xC0,              // End Collection
+};
 const uint8_t kReportDescriptorWithIDs[] = {
-    0x06, 0x01, 0xFF, 0x08, 0xA1, 0x01, 0x15, 0x00, 0x26,
-    0xFF, 0x00, 0x85, 0x01, 0x75, 0x08, 0x95, 0x08, 0x08,
-    0x81, 0x02, 0x08, 0x91, 0x02, 0x08, 0xB1, 0x02, 0xC0};
+    0x06, 0x01, 0xFF,  // Usage Page (Vendor Defined 0xFF01)
+    0x08,              // Usage
+    0xA1, 0x01,        // Collection (Application)
+    0x15, 0x00,        //   Logical Minimum (0)
+    0x26, 0xFF, 0x00,  //   Logical Maximum (255)
+    0x85, 0x01,        //   Report ID (1)
+    0x75, 0x08,        //   Report Size (8)
+    0x95, 0x08,        //   Report Count (8)
+    0x08,              //   Usage
+    0x81, 0x02,        //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,
+                       //   No Null Position)
+    0x08,              //   Usage
+    0x91, 0x02,        //   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,
+                       //   No Null Position,Non-volatile)
+    0x08,              //   Usage
+    0xB1, 0x02,        //   Feature (Data,Var,Abs,No Wrap,Linear,Preferred
+                       //   State,No Null Position,Non-volatile)
+    0xC0,              // End Collection
+};
 
-namespace extensions {
+// Device IDs for the device granted permission by the manifest.
+constexpr uint16_t kTestVendorId = 0x18D1;
+constexpr uint16_t kTestProductId = 0x58F0;
+
+}  // namespace
 
 class TestDevicePermissionsPrompt
     : public DevicePermissionsPrompt,
@@ -120,12 +159,12 @@ class HidApiTest : public ShellApiTest {
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
 
-    AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], 0x18D1, 0x58F0,
-              false, "A");
-    AddDevice(kTestDeviceGuids[1], kTestPhysicalDeviceIds[1], 0x18D1, 0x58F0,
-              true, "B");
-    AddDevice(kTestDeviceGuids[2], kTestPhysicalDeviceIds[2], 0x18D1, 0x58F1,
-              false, "C");
+    AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], kTestVendorId,
+              kTestProductId, false, "A");
+    AddDevice(kTestDeviceGuids[1], kTestPhysicalDeviceIds[1], kTestVendorId,
+              kTestProductId, true, "B");
+    AddDevice(kTestDeviceGuids[2], kTestPhysicalDeviceIds[2], kTestVendorId,
+              kTestProductId + 1, false, "C");
   }
 
   void AddDevice(const std::string& device_guid,
@@ -179,8 +218,8 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, HidApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/hid/add_event"));
@@ -188,17 +227,17 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceAdded) {
 
   // Add a blocked device first so that the test will fail if a notification is
   // received.
-  AddDevice(kTestDeviceGuids[3], kTestPhysicalDeviceIds[3], 0x18D1, 0x58F1,
-            false, "A");
-  AddDevice(kTestDeviceGuids[4], kTestPhysicalDeviceIds[4], 0x18D1, 0x58F0,
-            false, "A");
+  AddDevice(kTestDeviceGuids[3], kTestPhysicalDeviceIds[3], kTestVendorId,
+            kTestProductId + 1, false, "A");
+  AddDevice(kTestDeviceGuids[4], kTestPhysicalDeviceIds[4], kTestVendorId,
+            kTestProductId, false, "A");
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
   EXPECT_EQ("success", result_listener.message());
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
-  ExtensionTestMessageListener load_listener("loaded", false);
-  ExtensionTestMessageListener result_listener("success", false);
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
   ASSERT_TRUE(LoadApp("api_test/hid/remove_event"));
@@ -214,20 +253,78 @@ IN_PROC_BROWSER_TEST_F(HidApiTest, OnDeviceRemoved) {
 }
 
 IN_PROC_BROWSER_TEST_F(HidApiTest, GetUserSelectedDevices) {
-  ExtensionTestMessageListener open_listener("opened_device", false);
+  ExtensionTestMessageListener open_listener("opened_device");
 
   TestExtensionsAPIClient test_api_client;
   ASSERT_TRUE(LoadApp("api_test/hid/get_user_selected_devices"));
   ASSERT_TRUE(open_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener remove_listener("removed", false);
+  ExtensionTestMessageListener remove_listener("removed");
   GetFakeHidManager()->RemoveDevice(kTestDeviceGuids[0]);
   ASSERT_TRUE(remove_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener add_listener("added", false);
-  AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], 0x18D1, 0x58F0,
-            true, "A");
+  ExtensionTestMessageListener add_listener("added");
+  AddDevice(kTestDeviceGuids[0], kTestPhysicalDeviceIds[0], kTestVendorId,
+            kTestProductId, true, "A");
   ASSERT_TRUE(add_listener.WaitUntilSatisfied());
+}
+
+namespace {
+
+device::mojom::HidDeviceInfoPtr CreateDeviceWithOneCollection(
+    const std::string& guid) {
+  auto device_info = device::mojom::HidDeviceInfo::New();
+  device_info->guid = guid;
+  device_info->vendor_id = kTestVendorId;
+  device_info->product_id = kTestProductId;
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage =
+      device::mojom::HidUsageAndPage::New(1, device::mojom::kPageVendor);
+  device_info->collections.push_back(std::move(collection));
+  return device_info;
+}
+
+device::mojom::HidDeviceInfoPtr CreateDeviceWithTwoCollections(
+    const std::string guid) {
+  auto device_info = CreateDeviceWithOneCollection(guid);
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage =
+      device::mojom::HidUsageAndPage::New(2, device::mojom::kPageVendor);
+  collection->output_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  device_info->collections.push_back(std::move(collection));
+  return device_info;
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(HidApiTest, DeviceAddedChangedRemoved) {
+  constexpr char kTestGuid[] = "guid";
+
+  ExtensionTestMessageListener load_listener("loaded");
+  ExtensionTestMessageListener add_listener("added", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener change_listener("changed");
+  ExtensionTestMessageListener result_listener("success");
+  result_listener.set_failure_message("failure");
+
+  ASSERT_TRUE(LoadApp("api_test/hid/add_change_remove"));
+  ASSERT_TRUE(load_listener.WaitUntilSatisfied());
+
+  // Add a device with one collection.
+  GetFakeHidManager()->AddDevice(CreateDeviceWithOneCollection(kTestGuid));
+  ASSERT_TRUE(add_listener.WaitUntilSatisfied());
+
+  // Update the device info to add a second collection. No event is generated,
+  // so we will reply to the |add_listener| to signal to the test that the
+  // change is complete.
+  GetFakeHidManager()->ChangeDevice(CreateDeviceWithTwoCollections(kTestGuid));
+  add_listener.Reply("device info updated");
+  ASSERT_TRUE(change_listener.WaitUntilSatisfied());
+
+  // Remove the device.
+  GetFakeHidManager()->RemoveDevice(kTestGuid);
+  ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+  EXPECT_EQ("success", result_listener.message());
 }
 
 }  // namespace extensions

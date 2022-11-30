@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ class DISPLAY_EXPORT UwpTextScaleFactor {
   // it out with SetImplementationForTesting().
   static UwpTextScaleFactor* Instance();
 
+  UwpTextScaleFactor(const UwpTextScaleFactor&) = delete;
+  UwpTextScaleFactor& operator=(const UwpTextScaleFactor&) = delete;
+
   virtual ~UwpTextScaleFactor();
 
   // Retrieves the Windows Text Zoom scale factor. Guaranteed to be >= 1.
@@ -62,9 +65,6 @@ class DISPLAY_EXPORT UwpTextScaleFactor {
   // The observers that need to be notified when a display is modified, added
   // or removed.
   base::ObserverList<Observer> observer_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UwpTextScaleFactor);
 };
 
 }  // namespace win

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/viz/common/features.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -35,36 +34,15 @@ namespace content {
 
 namespace {
 
-enum class CompositorImplMode {
-  kNormal,
-  kSkiaRenderer,
-};
-
-class CompositorImplBrowserTest
-    : public testing::WithParamInterface<CompositorImplMode>,
-      public ContentBrowserTest {
+class CompositorImplBrowserTest : public ContentBrowserTest {
  public:
   CompositorImplBrowserTest() {}
 
-  void SetUp() override {
-    std::vector<base::Feature> features;
-
-    switch (GetParam()) {
-      case CompositorImplMode::kNormal:
-        break;
-      case CompositorImplMode::kSkiaRenderer:
-        features = std::vector<base::Feature>({features::kUseSkiaRenderer});
-        break;
-    }
-
-    AppendFeatures(&features);
-    scoped_feature_list_.InitWithFeatures(features, {});
-
-    ContentBrowserTest::SetUp();
-  }
+  CompositorImplBrowserTest(const CompositorImplBrowserTest&) = delete;
+  CompositorImplBrowserTest& operator=(const CompositorImplBrowserTest&) =
+      delete;
 
   virtual std::string GetTestUrl() { return "/title1.html"; }
-  virtual void AppendFeatures(std::vector<base::Feature>* features) {}
 
  protected:
   void SetUpOnMainThread() override {
@@ -92,16 +70,7 @@ class CompositorImplBrowserTest
     return static_cast<RenderWidgetHostViewAndroid*>(
         web_contents()->GetRenderWidgetHostView());
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorImplBrowserTest);
 };
-
-INSTANTIATE_TEST_SUITE_P(P,
-                         CompositorImplBrowserTest,
-                         ::testing::Values(CompositorImplMode::kNormal,
-                                           CompositorImplMode::kSkiaRenderer));
 
 class CompositorImplLowEndBrowserTest : public CompositorImplBrowserTest {
  public:
@@ -112,10 +81,6 @@ class CompositorImplLowEndBrowserTest : public CompositorImplBrowserTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(P,
-                         CompositorImplLowEndBrowserTest,
-                         ::testing::Values(CompositorImplMode::kNormal));
-
 // RunLoop implementation that calls glFlush() every second until it observes
 // OnContextLost().
 class ContextLostRunLoop : public viz::ContextLostObserver {
@@ -124,6 +89,10 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
+
+  ContextLostRunLoop(const ContextLostRunLoop&) = delete;
+  ContextLostRunLoop& operator=(const ContextLostRunLoop&) = delete;
+
   ~ContextLostRunLoop() override { context_provider_->RemoveObserver(this); }
 
   void RunUntilContextLost() {
@@ -141,27 +110,31 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   }
 
  private:
   // viz::LostContextProvider:
   void OnContextLost() override { did_lose_context_ = true; }
 
-  viz::ContextProvider* const context_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
 // RunLoop implementation that runs until it observes a swap with size.
 class CompositorSwapRunLoop {
  public:
   CompositorSwapRunLoop(CompositorImpl* compositor) : compositor_(compositor) {
+    static_cast<Compositor*>(compositor_)
+        ->SetDidSwapBuffersCallbackEnabled(true);
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::BindRepeating(
         &CompositorSwapRunLoop::DidSwap, base::Unretained(this)));
   }
+
+  CompositorSwapRunLoop(const CompositorSwapRunLoop&) = delete;
+  CompositorSwapRunLoop& operator=(const CompositorSwapRunLoop&) = delete;
+
   ~CompositorSwapRunLoop() {
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::DoNothing());
   }
@@ -174,13 +147,11 @@ class CompositorSwapRunLoop {
     run_loop_.Quit();
   }
 
-  CompositorImpl* compositor_;
+  raw_ptr<CompositorImpl> compositor_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);
 };
 
-IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
+IN_PROC_BROWSER_TEST_F(CompositorImplLowEndBrowserTest,
                        CompositorImplDropsResourcesOnBackground) {
   auto* rwhva = render_widget_host_view_android();
   auto* compositor = compositor_impl();
@@ -216,30 +187,15 @@ IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
   EXPECT_TRUE(rwhva->HasValidFrame());
 }
 
-IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTest,
                        CompositorImplReceivesSwapCallbacks) {
-  // OOP-R is required for this test to succeed with SkDDL, but is disabled on
-  // Android L and lower.
-  if (GetParam() == CompositorImplMode::kSkiaRenderer &&
-      base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
   CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
 }
 
 // This test waits for a presentation feedback token to arrive from the GPU. If
 // this test is timing out then it demonstrates a bug.
-IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTest,
                        CompositorImplReceivesPresentationTimeCallbacks) {
-  // OOP-R is required for this test to succeed with SkDDL, but is disabled on
-  // Android L and lower.
-  if (GetParam() == CompositorImplMode::kSkiaRenderer &&
-      base::android::BuildInfo::GetInstance()->sdk_int() <
-          base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-
   // Presentation feedback occurs after the GPU has presented content to the
   // display. This is later than the buffers swap.
   base::RunLoop loop;
@@ -279,7 +235,7 @@ class CompositorImplBrowserTestRefreshRate
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTestRefreshRate, VideoPreference) {
+IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTestRefreshRate, VideoPreference) {
   window()->SetTestHooks(this);
   expected_refresh_rate_ = 60.f;
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -287,10 +243,6 @@ IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTestRefreshRate, VideoPreference) {
   run_loop_.reset();
   window()->SetTestHooks(nullptr);
 }
-
-INSTANTIATE_TEST_SUITE_P(P,
-                         CompositorImplBrowserTestRefreshRate,
-                         ::testing::Values(CompositorImplMode::kNormal));
 
 }  // namespace
 }  // namespace content

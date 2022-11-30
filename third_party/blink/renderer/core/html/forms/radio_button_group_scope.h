@@ -21,9 +21,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_RADIO_BUTTON_GROUP_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_RADIO_BUTTON_GROUP_SCOPE_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
@@ -46,6 +46,8 @@ class RadioButtonGroupScope {
   unsigned GroupSizeFor(const HTMLInputElement*) const;
 
  private:
+  RadioButtonGroup* FindGroupByName(const AtomicString&) const;
+
   using NameToGroupMap = HeapHashMap<AtomicString, Member<RadioButtonGroup>>;
   Member<NameToGroupMap> name_to_group_map_;
 };

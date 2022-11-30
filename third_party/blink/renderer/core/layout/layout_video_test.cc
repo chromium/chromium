@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ TEST_F(LayoutVideoTest, PosterSizeWithNormal) {
 
   int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
-                  .Width();
+                  .width();
   EXPECT_EQ(width, 10);
 }
 
@@ -64,7 +64,7 @@ TEST_F(LayoutVideoTest, PosterSizeWithZoom) {
 
   int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
-                  .Width();
+                  .width();
   EXPECT_EQ(width, 15);
 }
 
@@ -86,7 +86,7 @@ TEST_F(LayoutVideoTest, PosterSizeAfterPlay) {
   // element width
   int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
-                  .Width();
+                  .width();
   EXPECT_EQ(width, 10);
 }
 
@@ -109,7 +109,7 @@ TEST_F(LayoutVideoTest, DefaultPosterImageSize) {
   // Width should be the default video width, NOT poster image width
   int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
                   ->AbsoluteBoundingBoxRect()
-                  .Width();
+                  .width();
   EXPECT_NE(width, 10);
   EXPECT_EQ(width, LayoutVideo::kDefaultWidth);
 }

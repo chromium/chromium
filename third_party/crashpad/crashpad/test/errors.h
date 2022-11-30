@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ std::string ErrnoMessage(int err, const std::string& base = std::string());
 //!     a colon.
 std::string ErrnoMessage(const std::string& base = std::string());
 
-#if defined(OS_WIN) || DOXYGEN
+#if BUILDFLAG(IS_WIN) || DOXYGEN
 //! \brief Formats an error message using `GetLastError()`.
 //!
 //! The returned string will combine the \a base string, if supplied, with a

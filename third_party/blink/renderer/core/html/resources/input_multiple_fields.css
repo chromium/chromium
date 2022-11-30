@@ -1,4 +1,4 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -15,7 +15,7 @@ input[type="month" i],
 input[type="time" i],
 input[type="week" i] {
     align-items: center;
-    display: -webkit-inline-flex;
+    display: inline-flex;
     font-family: monospace;
     overflow: hidden;
     padding: 0;
@@ -54,33 +54,6 @@ input::-webkit-datetime-edit-year-field {
     display: inline;
     font: inherit !important;
     padding: 1px;
-}
-
-/* Remove focus ring from fields and use highlight color */
-input::-webkit-datetime-edit-ampm-field:focus-visible,
-input::-webkit-datetime-edit-day-field:focus-visible,
-input::-webkit-datetime-edit-hour-field:focus-visible,
-input::-webkit-datetime-edit-millisecond-field:focus-visible,
-input::-webkit-datetime-edit-minute-field:focus-visible,
-input::-webkit-datetime-edit-month-field:focus-visible,
-input::-webkit-datetime-edit-second-field:focus-visible,
-input::-webkit-datetime-edit-week-field:focus-visible,
-input::-webkit-datetime-edit-year-field:focus-visible {
-    background-color: highlight;
-    color: highlighttext;
-    outline: none;
-}
-
-input::-webkit-datetime-edit-year-field[disabled],
-input::-webkit-datetime-edit-month-field[disabled],
-input::-webkit-datetime-edit-week-field[disabled],
-input::-webkit-datetime-edit-day-field[disabled],
-input::-webkit-datetime-edit-ampm-field[disabled],
-input::-webkit-datetime-edit-hour-field[disabled],
-input::-webkit-datetime-edit-millisecond-field[disabled],
-input::-webkit-datetime-edit-minute-field[disabled],
-input::-webkit-datetime-edit-second-field[disabled] {
-    color: GrayText;
 }
 
 /* If you update padding, border, or margin in the following ruleset, update

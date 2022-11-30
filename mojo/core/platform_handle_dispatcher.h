@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MOJO_CORE_PLATFORM_HANDLE_DISPATCHER_H_
 #define MOJO_CORE_PLATFORM_HANDLE_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"
@@ -19,6 +18,9 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformHandleDispatcher : public Dispatcher {
  public:
   static scoped_refptr<PlatformHandleDispatcher> Create(
       PlatformHandle platform_handle);
+
+  PlatformHandleDispatcher(const PlatformHandleDispatcher&) = delete;
+  PlatformHandleDispatcher& operator=(const PlatformHandleDispatcher&) = delete;
 
   PlatformHandle TakePlatformHandle();
 
@@ -51,8 +53,6 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformHandleDispatcher : public Dispatcher {
   bool in_transit_ = false;
   bool is_closed_ = false;
   PlatformHandle platform_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformHandleDispatcher);
 };
 
 }  // namespace core

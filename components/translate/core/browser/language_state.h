@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace translate {
 
@@ -24,6 +24,10 @@ class TranslateDriver;
 class LanguageState {
  public:
   explicit LanguageState(TranslateDriver* driver);
+
+  LanguageState(const LanguageState&) = delete;
+  LanguageState& operator=(const LanguageState&) = delete;
+
   ~LanguageState();
 
   // Should be called when the page did a new navigation (whether it is a main
@@ -50,12 +54,12 @@ class LanguageState {
   bool InTranslateNavigation() const;
 
   // Returns true if the current page in the associated tab has been translated.
-  bool IsPageTranslated() const { return original_lang_ != current_lang_; }
+  bool IsPageTranslated() const { return source_lang_ != current_lang_; }
 
-  // Returns the original language represented as a lowercase alphabetic string
+  // Returns the source language represented as a lowercase alphabetic string
   // of length 0 to 3 or "zh-CN" or "zh-TW".
-  const std::string& original_language() const { return original_lang_; }
-  void SetOriginalLanguage(const std::string& language);
+  const std::string& source_language() const { return source_lang_; }
+  void SetSourceLanguage(const std::string& language);
 
   // Returns the current language represented as a lowercase alphabetic string
   // of length 0 to 3 or "zh-CN" or "zh-TW".
@@ -86,14 +90,21 @@ class LanguageState {
   // language.
   bool HasLanguageChanged() const;
 
-  std::string href_translate() const { return href_translate_; }
+  const std::string& href_translate() const { return href_translate_; }
   bool navigation_from_google() const { return navigation_from_google_; }
 
-  std::string GetPredefinedTargetLanguage() const {
+  const std::string& GetPredefinedTargetLanguage() const {
     return predefined_target_language_;
   }
-  void SetPredefinedTargetLanguage(const std::string& language) {
+  void SetPredefinedTargetLanguage(const std::string& language,
+                                   bool should_auto_translate) {
     predefined_target_language_ = language;
+    should_auto_translate_to_predefined_target_language_ =
+        should_auto_translate;
+  }
+
+  bool should_auto_translate_to_predefined_target_language() const {
+    return should_auto_translate_to_predefined_target_language_;
   }
 
  private:
@@ -103,19 +114,19 @@ class LanguageState {
   bool is_page_translated_;
 
   // The languages this page is in. Note that current_lang_ is different from
-  // original_lang_ when the page has been translated.
+  // source_lang_ when the page has been translated.
   // Note that these might be empty if the page language has not been determined
   // yet.
-  std::string original_lang_;
+  std::string source_lang_;
   std::string current_lang_;
 
   // Same as above but for the previous page.
-  std::string prev_original_lang_;
+  std::string prev_source_lang_;
   std::string prev_current_lang_;
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  TranslateDriver* translate_driver_;
+  raw_ptr<TranslateDriver> translate_driver_;
 
   // Whether it is OK to offer to translate the page. Translation is not offered
   // if we cannot determine the source language. In addition, some pages
@@ -157,7 +168,9 @@ class LanguageState {
   // Target language set by client.
   std::string predefined_target_language_;
 
-  DISALLOW_COPY_AND_ASSIGN(LanguageState);
+  // Indicates that the page should be automatically translated to
+  // |predefined_target_language_| if possible.
+  bool should_auto_translate_to_predefined_target_language_ = false;
 };
 
 }  // namespace translate

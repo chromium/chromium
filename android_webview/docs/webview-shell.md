@@ -1,9 +1,11 @@
 # System WebView Shell
 
+[TOC]
+
 ![WebView Shell](images/webview_shell.png)
 
-WebView team maintains a "shell"&mdash;a thin interface over the WebView
-APIs&mdash;to exercise WebView functionality. The System WebView Shell (AKA
+WebView team maintains a "shell"—a thin interface over the WebView
+APIs—to exercise WebView functionality. The System WebView Shell (AKA
 "shell browser," "WebView shell") is a standalone app implemented [in
 chromium](/android_webview/tools/system_webview_shell/). While often used for
 manual testing, we also use the shell for automated tests (see our [layout and
@@ -74,6 +76,40 @@ $ out/Default/bin/system_webview_shell_apk --help
 **Note:** `system_webview_shell_apk` does not support modifying CLI flags. See
 https://crbug.com/959425. Instead, you should modify WebView's flags by
 following [commandline-flags.md](./commandline-flags.md).
+***
+
+## Prebuilt APKs
+
+We maintain a **public** archive of prebuilt WebView shell APKs. This saves you
+the effort of setting up a chromium checkout just for the sake of compiling this
+test app. You can download a prebuilt APK from this cloud storage bucket:
+https://storage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/
+
+1. Click on the "name" column header **twice**. This will force the page to sort
+   the newest builds toward the top. Click the folder with the largest number,
+   ignoring the `LAST_CHANGE` and `refs_heads_main-*/` folders.
+     * Your WebView shell version **does not** need to match your device's
+       WebView version. We recommend using the latest WebView shell build
+       regardless of your WebView version to make sure you have the latest
+       features and bug fixes of the shell app itself.
+1. Click `chrome-android.zip` to download the archived APKs. Unzip this and look
+   for a file named `SystemWebViewShell.apk`.
+1. Now you can install this like any other APK:
+
+     ```sh
+     # Install adb if it's not already installed:
+     $ which adb || sudo apt install adb
+
+     # Replace this path with the path to your downloaded APK
+     $ adb install -d -r ~/Downloads/chrome-android/SystemWebViewShell.apk
+     ```
+
+*** note
+**Note:** on the Android emulator, this may fail to install and print the
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE: Package ... signatures do not match
+previously installed version` error message. This may require switching to a
+physical device or compiling the WebView shell from source (see the
+troubleshooting steps below).
 ***
 
 ## Troubleshooting

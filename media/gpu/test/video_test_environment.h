@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -50,8 +50,9 @@ class VideoTestEnvironment : public ::testing::Environment {
  public:
   VideoTestEnvironment();
   // Features are overridden by given features in this environment.
-  VideoTestEnvironment(const std::vector<base::Feature>& enabled_features,
-                       const std::vector<base::Feature>& disabled_features);
+  VideoTestEnvironment(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
   virtual ~VideoTestEnvironment();
 
   // ::testing::Environment implementation.

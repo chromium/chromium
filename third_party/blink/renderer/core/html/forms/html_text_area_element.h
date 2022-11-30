@@ -44,16 +44,22 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   bool ShouldWrapText() const { return wrap_ != kNoWrap; }
 
-  String value() const override;
-  void setValue(
+  String Value() const override;
+  void SetValue(
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
-          TextControlSetValueSelection::kSetSelectionToEnd) override;
+          TextControlSetValueSelection::kSetSelectionToEnd,
+      WebAutofillState = WebAutofillState::kNotFilled) override;
+  String valueForBinding() const { return Value(); }
+  void setValueForBinding(const String&);
   String defaultValue() const;
   void setDefaultValue(const String&);
-  int textLength() const { return value().length(); }
+  int textLength() const { return Value().length(); }
 
+  // Sets the suggested value and puts the element into
+  // WebAutofillState::kPreviewed state if |value| is non-empty, or
+  // WebAutofillState::kNotFilled otherwise.
   void SetSuggestedValue(const String& value) override;
 
   // For ValidityState
@@ -66,14 +72,14 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void setCols(unsigned);
   void setRows(unsigned);
 
+  String DefaultToolTip() const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, SanitizeUserInputValue);
 
   enum WrapMethod { kNoWrap, kSoftWrap, kHardWrap };
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  // FIXME: Author shadows should be allowed
-  // https://bugs.webkit.org/show_bug.cgi?id=92608
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*) const;
@@ -82,14 +88,15 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void SetNonDirtyValue(const String&, TextControlSetValueSelection);
   void SetValueCommon(const String&,
                       TextFieldEventBehavior,
-                      TextControlSetValueSelection);
+                      TextControlSetValueSelection,
+                      WebAutofillState autofill_state);
 
   bool IsPlaceholderVisible() const override { return is_placeholder_visible_; }
   void SetPlaceholderVisibility(bool) override;
   bool SupportsPlaceholder() const override { return true; }
   String GetPlaceholderValue() const final;
   void UpdatePlaceholderText() override;
-  bool IsEmptyValue() const override { return value().IsEmpty(); }
+  bool IsEmptyValue() const override { return Value().empty(); }
 
   bool IsOptionalFormControl() const override {
     return !IsRequiredFormControl();
@@ -119,15 +126,14 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
-  bool TypeShouldForceLegacyLayout() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void AppendToFormData(FormData&) override;
   void ResetImpl() override;
   bool HasCustomFocusLogic() const override;
   bool MayTriggerVirtualKeyboard() const override;
   bool IsKeyboardFocusable() const override;
-  void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
-                                        const FocusOptions*) override;
+  void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
+                              const FocusOptions*) override;
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 

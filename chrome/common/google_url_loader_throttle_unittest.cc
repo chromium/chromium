@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/base/device_form_factor.h"
 #endif
 
@@ -31,61 +32,13 @@ class GoogleURLLoaderThrottleTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_ANDROID)
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleHomepage) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
+#if BUILDFLAG(IS_ANDROID)
 
-  network::ResourceRequest request;
-  request.url = GURL("https://www.google.com");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_NE(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleSearch) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
-
-  network::ResourceRequest request;
-  request.url = GURL("https://www.google.com/search?q=test");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_NE(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, DarkSearchGoogleSource) {
-  scoped_feature_list().Reset();
-  scoped_feature_list().InitAndEnableFeature(features::kAndroidDarkSearch);
-  GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ true,
-                                   /* is_tab_large_enough= */ false,
-                                   chrome::mojom::DynamicParams());
-
-  network::ResourceRequest request;
-  request.url = GURL("https://code.google.com/");
-  bool defer = false;
-
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(std::string::npos, request.url.spec().find("cs=1"));
-}
-
-TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForLargeScreen) {
+TEST_F(GoogleURLLoaderThrottleTest, RequestDesktopHeaderForLargeScreen) {
   scoped_feature_list().Reset();
   scoped_feature_list().InitAndEnableFeature(
       features::kRequestDesktopSiteForTablets);
   GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ false,
                                    /* is_tab_large_enough= */ true,
                                    chrome::mojom::DynamicParams());
 
@@ -105,12 +58,11 @@ TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForLargeScreen) {
   }
 }
 
-TEST_F(GoogleURLLoaderThrottleTest, ReuqestDesktopHeaderForSmallScreen) {
+TEST_F(GoogleURLLoaderThrottleTest, RequestDesktopHeaderForSmallScreen) {
   scoped_feature_list().Reset();
   scoped_feature_list().InitAndEnableFeature(
       features::kRequestDesktopSiteForTablets);
   GoogleURLLoaderThrottle throttle(/* client_header= */ "",
-                                   /* night_mode_enabled= */ false,
                                    /* is_tab_large_enough= */ false,
                                    chrome::mojom::DynamicParams());
 

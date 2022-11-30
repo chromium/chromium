@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,14 @@ struct NET_EXPORT CookieAccessResult {
   CookieAccessResult(CookieAccessResult&& cookie_access_result);
 
   ~CookieAccessResult();
+
+  bool operator==(const CookieAccessResult& other) const {
+    return status == other.status &&
+           effective_same_site == other.effective_same_site &&
+           access_semantics == other.access_semantics &&
+           is_allowed_to_access_secure_cookies ==
+               other.is_allowed_to_access_secure_cookies;
+  }
 
   CookieInclusionStatus status;
   CookieEffectiveSameSite effective_same_site =

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/scoped_propvariant.h"
@@ -261,6 +261,9 @@ class EventListener
     DCHECK(platform_sensor_reader_);
   }
 
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+
   static Microsoft::WRL::ComPtr<ISensorEvents> CreateInstance(
       PlatformSensorReaderWin32* platform_sensor_reader) {
     Microsoft::WRL::ComPtr<EventListener> event_listener =
@@ -346,10 +349,8 @@ class EventListener
   }
 
  private:
-  PlatformSensorReaderWin32* const platform_sensor_reader_;
+  const raw_ptr<PlatformSensorReaderWin32> platform_sensor_reader_;
   SensorReading last_sensor_reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 // static
@@ -371,11 +372,11 @@ std::unique_ptr<PlatformSensorReaderWinBase> PlatformSensorReaderWin32::Create(
                                    min_interval.Receive());
   if (SUCCEEDED(hr) && min_interval.get().vt == VT_UI4) {
     params->min_reporting_interval =
-        base::TimeDelta::FromMilliseconds(min_interval.get().ulVal);
+        base::Milliseconds(min_interval.get().ulVal);
   }
 
   GUID interests[] = {SENSOR_EVENT_STATE_CHANGED, SENSOR_EVENT_DATA_UPDATED};
-  hr = sensor->SetEventInterest(interests, base::size(interests));
+  hr = sensor->SetEventInterest(interests, std::size(interests));
   if (FAILED(hr))
     return nullptr;
 
@@ -490,7 +491,8 @@ bool PlatformSensorReaderWin32::SetReportingInterval(
 
 HRESULT PlatformSensorReaderWin32::SensorReadingChanged(
     ISensorDataReport* report,
-    SensorReading* reading) const {
+    SensorReading* reading) {
+  base::AutoLock autolock(lock_);
   if (!client_)
     return E_FAIL;
 
@@ -501,6 +503,7 @@ HRESULT PlatformSensorReaderWin32::SensorReadingChanged(
 }
 
 void PlatformSensorReaderWin32::SensorError() {
+  base::AutoLock autolock(lock_);
   if (client_)
     client_->OnSensorError();
 }

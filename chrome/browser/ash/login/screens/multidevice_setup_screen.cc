@@ -1,22 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
-#include "chrome/browser/chromeos/multidevice_setup/oobe_completion_tracker_factory.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 
-namespace chromeos {
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
+namespace ash {
 namespace {
 
 constexpr const char kAcceptedSetupUserAction[] = "setup-accepted";
@@ -35,19 +39,16 @@ std::string MultiDeviceSetupScreen::GetResultString(Result result) {
 }
 
 MultiDeviceSetupScreen::MultiDeviceSetupScreen(
-    MultiDeviceSetupScreenView* view,
+    base::WeakPtr<MultiDeviceSetupScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(MultiDeviceSetupScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-MultiDeviceSetupScreen::~MultiDeviceSetupScreen() {
-  view_->Bind(nullptr);
-}
+MultiDeviceSetupScreen::~MultiDeviceSetupScreen() = default;
 
 void MultiDeviceSetupScreen::TryInitSetupClient() {
   if (!setup_client_) {
@@ -57,9 +58,10 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
   }
 }
 
-bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* /*context*/) {
+bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
   // Only attempt the setup flow for non-guest users.
-  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
+  if (context.skip_post_login_screens_for_tests ||
+      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -83,7 +85,9 @@ bool MultiDeviceSetupScreen::MaybeSkip(WizardContext* /*context*/) {
 }
 
 void MultiDeviceSetupScreen::ShowImpl() {
-  view_->Show();
+  if (view_) {
+    view_->Show();
+  }
 
   // Record that user was presented with setup flow to prevent spam
   // notifications from suggesting setup in the future.
@@ -94,11 +98,11 @@ void MultiDeviceSetupScreen::ShowImpl() {
   oobe_completion_tracker->MarkOobeShown();
 }
 
-void MultiDeviceSetupScreen::HideImpl() {
-  view_->Hide();
-}
+void MultiDeviceSetupScreen::HideImpl() {}
 
-void MultiDeviceSetupScreen::OnUserAction(const std::string& action_id) {
+void MultiDeviceSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
   if (action_id == kAcceptedSetupUserAction) {
     RecordMultiDeviceSetupOOBEUserChoiceHistogram(
         MultiDeviceSetupOOBEUserChoice::kAccepted);
@@ -108,7 +112,7 @@ void MultiDeviceSetupScreen::OnUserAction(const std::string& action_id) {
         MultiDeviceSetupOOBEUserChoice::kDeclined);
     exit_callback_.Run(Result::NEXT);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
     NOTREACHED();
   }
 }
@@ -118,4 +122,4 @@ void MultiDeviceSetupScreen::RecordMultiDeviceSetupOOBEUserChoiceHistogram(
   UMA_HISTOGRAM_ENUMERATION("MultiDeviceSetup.OOBE.UserChoice", value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

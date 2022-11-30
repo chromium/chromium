@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -39,8 +40,8 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -48,7 +49,7 @@
 namespace blink {
 
 struct SameSizeAsShadowRoot : public DocumentFragment, public TreeScope {
-  Member<void*> member[2];
+  Member<void*> member[3];
   unsigned flags[1];
 };
 
@@ -56,15 +57,21 @@ ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 
 ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
     : DocumentFragment(nullptr, kCreateShadowRoot),
-      TreeScope(*this, document),
+      TreeScope(
+          *this,
+          document,
+          static_cast<V8ObservableArrayCSSStyleSheet::SetAlgorithmCallback>(
+              &ShadowRoot::OnAdoptedStyleSheetSet),
+          static_cast<V8ObservableArrayCSSStyleSheet::DeleteAlgorithmCallback>(
+              &ShadowRoot::OnAdoptedStyleSheetDelete)),
       style_sheet_list_(nullptr),
       child_shadow_root_count_(0),
       type_(static_cast<unsigned>(type)),
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
-      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kAuto)),
+      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
       needs_dir_auto_attribute_update_(false),
-      supports_name_based_slot_assignment_(false),
+      has_focusgroup_attribute_on_descendant_(false),
       unused_(0) {}
 
 ShadowRoot::~ShadowRoot() = default;
@@ -105,9 +112,28 @@ String ShadowRoot::innerHTML() const {
   return CreateMarkup(this, kChildrenOnly);
 }
 
+// This forwards to the TreeScope implementation.
+void ShadowRoot::OnAdoptedStyleSheetSet(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    Member<CSSStyleSheet>& sheet,
+    ExceptionState& exception_state) {
+  TreeScope::OnAdoptedStyleSheetSet(script_state, observable_array, index,
+                                    sheet, exception_state);
+}
+
+// This forwards to the TreeScope implementation.
+void ShadowRoot::OnAdoptedStyleSheetDelete(
+    ScriptState* script_state,
+    V8ObservableArrayCSSStyleSheet& observable_array,
+    uint32_t index,
+    ExceptionState& exception_state) {
+  TreeScope::OnAdoptedStyleSheetDelete(script_state, observable_array, index,
+                                       exception_state);
+}
+
 String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
-  DCHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-      GetExecutionContext()));
   ClosedRootsSet include_closed_roots;
   if (options->hasClosedRoots()) {
     for (auto& shadow_root : options->closedRoots()) {
@@ -225,21 +251,17 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   return *style_sheet_list_;
 }
 
-void ShadowRoot::EnableNameBasedSlotAssignment() {
-  DCHECK(IsUserAgent());
-  supports_name_based_slot_assignment_ = true;
-  // Mark that the document contains a shadow tree since we rely on slotchange
-  // events.
-  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
-}
-
-bool ShadowRoot::SupportsNameBasedSlotAssignment() const {
-  return !IsUserAgent() || supports_name_based_slot_assignment_;
+void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
+  DCHECK(!registry_);
+  DCHECK(!registry ||
+         RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  registry_ = registry;
 }
 
 void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
+  visitor->Trace(registry_);
   TreeScope::Trace(visitor);
   DocumentFragment::Trace(visitor);
 }

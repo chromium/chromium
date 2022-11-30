@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,17 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bitstream_buffer.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "media/gpu/v4l2/v4l2_jpeg_encode_accelerator.h"
 #include "media/parsers/jpeg_parser.h"
 
 namespace {
@@ -54,11 +52,17 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
  public:
   V4L2JpegEncodeAccelerator(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);
+
+  V4L2JpegEncodeAccelerator(const V4L2JpegEncodeAccelerator&) = delete;
+  V4L2JpegEncodeAccelerator& operator=(const V4L2JpegEncodeAccelerator&) =
+      delete;
+
   ~V4L2JpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
-  chromeos_camera::JpegEncodeAccelerator::Status Initialize(
-      chromeos_camera::JpegEncodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) override;
   size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) override;
   void Encode(scoped_refptr<media::VideoFrame> video_frame,
               int quality,
@@ -72,6 +76,10 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
                         BitstreamBuffer* exif_buffer) override;
 
  private:
+  void InitializeOnTaskRunner(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      InitCB init_cb);
+
   // Record for input buffers.
   struct I420BufferRecord {
     I420BufferRecord();
@@ -105,11 +113,12 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
               scoped_refptr<VideoFrame> output_frame,
               int32_t task_id,
               int quality,
-              BitstreamBuffer* exif_buffer);
+              base::WritableSharedMemoryMapping exif_mapping);
     JobRecord(scoped_refptr<VideoFrame> input_frame,
               int quality,
-              BitstreamBuffer* exif_buffer,
-              BitstreamBuffer output_buffer);
+              int32_t task_id,
+              base::WritableSharedMemoryMapping exif_mapping,
+              base::WritableSharedMemoryMapping output_mapping);
     ~JobRecord();
 
     // Input frame buffer.
@@ -124,16 +133,12 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     // Encode task ID.
     int32_t task_id;
     // Memory mapped from |output_buffer|.
-    UnalignedSharedMemory output_shm;
-    // Offset used for |output_shm|.
-    off_t output_offset;
+    base::WritableSharedMemoryMapping output_mapping;
 
     // Memory mapped from |exif_buffer|.
-    // It contains EXIF data to be inserted into JPEG image. If it's nullptr,
-    // the JFIF APP0 segment will be inserted.
-    std::unique_ptr<UnalignedSharedMemory> exif_shm;
-    // Offset used for |exif_shm|.
-    off_t exif_offset;
+    // It contains EXIF data to be inserted into JPEG image. If `IsValid()` is
+    // false, the JFIF APP0 segment will be inserted.
+    base::WritableSharedMemoryMapping exif_mapping;
   };
 
   // TODO(wtlee): To be deprecated. (crbug.com/944705)
@@ -175,7 +180,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     size_t FinalizeJpegImage(uint8_t* dst_ptr,
                              const JpegBufferRecord& output_buffer,
                              size_t buffer_size,
-                             std::unique_ptr<UnalignedSharedMemory> exif_shm);
+                             base::WritableSharedMemoryMapping exif_mapping);
 
     bool SetInputBufferFormat(gfx::Size coded_size);
     bool SetOutputBufferFormat(gfx::Size coded_size, size_t buffer_size);
@@ -292,7 +297,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     // Add JPEG Marks if needed. Add EXIF section by |exif_shm|.
     size_t FinalizeJpegImage(scoped_refptr<VideoFrame> output_frame,
                              size_t buffer_size,
-                             std::unique_ptr<UnalignedSharedMemory> exif_shm);
+                             base::WritableSharedMemoryMapping exif_mapping);
 
     bool SetInputBufferFormat(gfx::Size coded_size,
                               const VideoFrameLayout& input_layout);
@@ -330,7 +335,7 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     V4L2JpegEncodeAccelerator* parent_;
 
     // Layout that represents the input data.
-    base::Optional<VideoFrameLayout> device_input_layout_;
+    absl::optional<VideoFrameLayout> device_input_layout_;
 
     // The V4L2Device this class is operating upon.
     scoped_refptr<V4L2Device> device_;
@@ -426,8 +431,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   base::WeakPtr<V4L2JpegEncodeAccelerator> weak_ptr_;
   // Weak factory for producing weak pointers on the child thread.
   base::WeakPtrFactory<V4L2JpegEncodeAccelerator> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2JpegEncodeAccelerator);
 };
 
 }  // namespace media

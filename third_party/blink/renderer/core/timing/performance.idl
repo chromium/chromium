@@ -65,16 +65,14 @@ interface Performance : EventTarget {
 
     // TODO(foolip): There is no spec for the Memory Info API, see blink-dev:
     // https://groups.google.com/a/chromium.org/d/msg/blink-dev/g5YRCGpC9vs/b4OJz71NmPwJ
-    [Exposed=Window, Measure] readonly attribute MemoryInfo memory;
+    [Exposed=Window, Measure, CallWith=ScriptState] readonly attribute MemoryInfo memory;
 
-    [MeasureAs=MeasureMemory, Exposed=Window, CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
-
-    // JS Self-Profiling API
-    // https://github.com/WICG/js-self-profiling/
-    [MeasureAs=JSSelfProfiling, CallWith=ScriptState, RuntimeEnabled=ExperimentalJSProfiler, RaisesException] Promise<Profiler> profile(ProfilerInitOptions options);
+    // The API is not exposed to DedicatedWorker because the memory usage of
+    // a dedicated worker is included in the result of the API call in Window.
+    [MeasureAs=MeasureMemory, Exposed=(Window,ServiceWorker,SharedWorker), CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException, CrossOriginIsolated] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
 
     // Event Timing
-    [Exposed=Window, SameObject, SaveSameObject, RuntimeEnabled=EventTiming] readonly attribute EventCounts eventCounts;
+    [Exposed=Window, SameObject, SaveSameObject] readonly attribute EventCounts eventCounts;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

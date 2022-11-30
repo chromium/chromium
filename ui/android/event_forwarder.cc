@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,10 +124,10 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
 void EventForwarder::OnDragEvent(JNIEnv* env,
                                  const JavaParamRef<jobject>& jobj,
                                  jint action,
-                                 jint x,
-                                 jint y,
-                                 jint screen_x,
-                                 jint screen_y,
+                                 jfloat x,
+                                 jfloat y,
+                                 jfloat screen_x,
+                                 jfloat screen_y,
                                  const JavaParamRef<jobjectArray>& j_mimeTypes,
                                  const JavaParamRef<jstring>& j_content) {
   float dip_scale = view_->GetDipScale();

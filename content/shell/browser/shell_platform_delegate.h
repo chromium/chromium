@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "ui/display/screen.h"
 #endif
 
 class GURL;
@@ -47,6 +48,10 @@ class ShellPlatformDelegate {
   // Called from the Shell destructor to let each platform do any necessary
   // cleanup.
   virtual void CleanUp(Shell* shell);
+
+  // Called from the Shell destructor after destroying the last one. This is
+  // usually a good time to call Shell::Shutdown().
+  virtual void DidCloseLastWindow();
 
   // Links the WebContents into the newly created window.
   virtual void SetContents(Shell* shell);
@@ -93,24 +98,24 @@ class ShellPlatformDelegate {
   // destruction. Returns false if the Shell should destroy itself.
   virtual bool DestroyShell(Shell* shell);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the native window. Valid after calling CreatePlatformWindow().
   virtual gfx::NativeWindow GetNativeWindow(Shell* shell);
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Activate (make key) the native window, and focus the web contents.
   virtual void ActivateContents(Shell* shell, WebContents* contents);
 
-  virtual void DidNavigateMainFramePostCommit(Shell* shell,
-                                              WebContents* contents);
+  virtual void DidNavigatePrimaryMainFramePostCommit(Shell* shell,
+                                                     WebContents* contents);
 
   virtual bool HandleKeyboardEvent(Shell* shell,
                                    WebContents* source,
                                    const NativeWebKeyboardEvent& event);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ToggleFullscreenModeForTab(Shell* shell,
                                   WebContents* web_contents,
                                   bool enter_fullscreen);
@@ -126,7 +131,7 @@ class ShellPlatformDelegate {
 #endif
 
  protected:
-#if defined(USE_AURA) && !defined(TOOLKIT_VIEWS)
+#if defined(USE_AURA) && !defined(SHELL_USE_TOOLKIT_VIEWS)
   // Helper to avoid duplicating aura's ShellPlatformDelegate in web tests. If
   // this hack gets expanded to become more expansive then we should just
   // duplicate the aura ShellPlatformDelegate code to the web test code impl in
@@ -135,6 +140,9 @@ class ShellPlatformDelegate {
 #endif
 
  private:
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+#endif
   // Data held for each Shell instance, since there is one ShellPlatformDelegate
   // for the whole browser process (shared across Shells). This is defined for
   // each platform implementation.

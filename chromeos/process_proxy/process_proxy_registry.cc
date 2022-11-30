@@ -1,15 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/process_proxy/process_proxy_registry.h"
-#include "base/strings/string_number_conversions.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace chromeos {
 
@@ -123,14 +125,15 @@ bool ProcessProxyRegistry::OpenProcess(const base::CommandLine& cmdline,
   return true;
 }
 
-bool ProcessProxyRegistry::SendInput(const std::string& id,
-                                     const std::string& data) {
+void ProcessProxyRegistry::SendInput(const std::string& id,
+                                     const std::string& data,
+                                     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::map<std::string, ProcessProxyInfo>::iterator it = proxy_map_.find(id);
   if (it == proxy_map_.end())
-    return false;
-  return it->second.proxy->Write(data);
+    return std::move(callback).Run(false);
+  it->second.proxy->Write(data, std::move(callback));
 }
 
 bool ProcessProxyRegistry::CloseProcess(const std::string& id) {
@@ -194,7 +197,7 @@ bool ProcessProxyRegistry::EnsureWatcherThreadStarted() {
   // TODO(tbarzic): Change process output watcher to watch for fd readability on
   //    FILE thread, and move output reading to worker thread instead of
   //    spinning a new thread.
-  watcher_thread_.reset(new base::Thread(kWatcherThreadName));
+  watcher_thread_ = std::make_unique<base::Thread>(kWatcherThreadName);
   return watcher_thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 }

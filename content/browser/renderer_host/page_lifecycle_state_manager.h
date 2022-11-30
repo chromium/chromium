@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_LIFECYCLE_STATE_MANAGER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/input/one_shot_timeout_monitor.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,8 +19,9 @@ namespace content {
 
 class RenderViewHostImpl;
 
-// A class responsible for managing the main lifecycle state of the blink::Page
-// and communicating in to the RenderView. 1:1 with RenderViewHostImpl.
+// A class responsible for managing the main lifecycle state of the
+// `blink::Page` and communicating in to the `blink::WebView`. 1:1 with
+// `RenderViewHostImpl`.
 class CONTENT_EXPORT PageLifecycleStateManager {
  public:
   class CONTENT_EXPORT TestDelegate {
@@ -35,11 +38,11 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   explicit PageLifecycleStateManager(
       RenderViewHostImpl* render_view_host_impl,
-      blink::mojom::PageVisibilityState web_contents_visibility_state);
+      blink::mojom::PageVisibilityState frame_tree_visibility);
   ~PageLifecycleStateManager();
 
   void SetIsFrozen(bool frozen);
-  void SetWebContentsVisibility(
+  void SetFrameTreeVisibility(
       blink::mojom::PageVisibilityState visibility_state);
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
@@ -105,28 +108,30 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   bool did_receive_back_forward_cache_ack_ = false;
 
-  // This represents the visibility set by |SetVisibility|, which is web
-  // contents visibility state. Effective visibility, i.e. per-page visibility
-  // is computed based on |is_in_back_forward_cache_| and
-  // |web_contents_visibility_|.
-  blink::mojom::PageVisibilityState web_contents_visibility_;
+  // This represents the frame tree visibility (same as web contents visibility
+  // state for primary frame tree, hidden for prerendering frame tree) which is
+  // set by |SetFrameTreeVisibility|. Effective visibility, i.e. per-page
+  // visibility is computed based on |is_in_back_forward_cache_| and
+  // |frame_tree_visibility_|.
+  blink::mojom::PageVisibilityState frame_tree_visibility_;
 
   blink::mojom::PagehideDispatch pagehide_dispatch_ =
       blink::mojom::PagehideDispatch::kNotDispatched;
 
-  RenderViewHostImpl* render_view_host_impl_;
+  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 
   // This is the per-page state computed based on web contents / tab lifecycle
   // states, i.e. |is_set_frozen_called_|, |is_in_back_forward_cache_| and
-  // |web_contents_visibility_|.
+  // |frame_tree_visibility_|.
   blink::mojom::PageLifecycleStatePtr last_acknowledged_state_;
 
   // This is the per-page state that is sent to renderer most lately.
   blink::mojom::PageLifecycleStatePtr last_state_sent_to_renderer_;
 
-  std::unique_ptr<OneShotTimeoutMonitor> back_forward_cache_timeout_monitor_;
+  base::OneShotTimer back_forward_cache_timeout_monitor_;
 
-  TestDelegate* test_delegate_{nullptr};
+  raw_ptr<TestDelegate> test_delegate_{nullptr};
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };

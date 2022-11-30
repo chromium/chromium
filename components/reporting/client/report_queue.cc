@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -26,7 +26,7 @@ namespace reporting {
 
 namespace {
 
-StatusOr<std::string> ValueToJson(const base::Value& record) {
+StatusOr<std::string> ValueToJson(base::Value::Dict record) {
   std::string json_record;
   if (!base::JSONWriter::Write(record, &json_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -36,7 +36,7 @@ StatusOr<std::string> ValueToJson(const base::Value& record) {
 }
 
 StatusOr<std::string> ProtoToString(
-    const google::protobuf::MessageLite* record) {
+    std::unique_ptr<const google::protobuf::MessageLite> record) {
   std::string protobuf_record;
   if (!record->SerializeToString(&protobuf_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -45,31 +45,34 @@ StatusOr<std::string> ProtoToString(
   }
   return protobuf_record;
 }
-
 }  // namespace
 
 ReportQueue::~ReportQueue() = default;
 
-void ReportQueue::Enqueue(base::StringPiece record,
+void ReportQueue::Enqueue(std::string record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  AddRecord(record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(
+                        [](std::string record) -> StatusOr<std::string> {
+                          return std::move(record);
+                        },
+                        std::move(record)),
+                    priority, std::move(callback));
 }
 
-void ReportQueue::Enqueue(const base::Value& record,
+void ReportQueue::Enqueue(base::Value::Dict record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string json_record, callback,
-                                     ValueToJson(record));
-  AddRecord(json_record, priority, std::move(callback));
+  AddProducedRecord(base::BindOnce(&ValueToJson, std::move(record)), priority,
+                    std::move(callback));
 }
 
-void ReportQueue::Enqueue(const google::protobuf::MessageLite* record,
-                          Priority priority,
-                          ReportQueue::EnqueueCallback callback) const {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string protobuf_record, callback,
-                                     ProtoToString(record));
-  AddRecord(protobuf_record, priority, std::move(callback));
+void ReportQueue::Enqueue(
+    std::unique_ptr<const google::protobuf::MessageLite> record,
+    Priority priority,
+    ReportQueue::EnqueueCallback callback) const {
+  AddProducedRecord(base::BindOnce(&ProtoToString, std::move(record)), priority,
+                    std::move(callback));
 }
 
 }  // namespace reporting

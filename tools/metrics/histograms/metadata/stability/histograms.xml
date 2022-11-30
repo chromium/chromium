@@ -1,0 +1,590 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Stability histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="StandbyBucket">
+  <variant name="Active"/>
+  <variant name="Frequent"/>
+  <variant name="Rare"/>
+  <variant name="Restricted"/>
+  <variant name="Unknown"/>
+  <variant name="Unsupported"/>
+  <variant name="WorkingSet"/>
+</variants>
+
+<histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
+    expires_after="2023-02-12">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete. Recorded when the task finished callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.MinidumpUploadingTime.{StandbyBucket}"
+    units="ms" expires_after="2022-11-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete grouped by {StandbyBucket} state. Recorded when the task finished
+    callback is invoked. The {StandbyBucket} corresponds to the standby bucket
+    (UsageStatsManager.getAppStandbyBucket) chrome was placed into when metrics
+    was uploaded.
+  </summary>
+  <token key="StandbyBucket" variants="StandbyBucket"/>
+</histogram>
+
+<histogram name="Stability.Android.OomKillReverseRank" units="rank"
+    expires_after="2023-01-15">
+  <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the reverse rank of a child process when it is killed by android if
+    applicable. Chrome on Android ranks some child processes and provides hints
+    to android that it should kill from lowest to highest ranked. The lowest
+    ranked process has reverse rank 0. This is a measure how good the hints to
+    android are; if hints were perfect, then all android kills should have
+    reverse rank 0.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.OomKillReverseRankSuccess"
+    enum="BooleanSuccess" expires_after="2020-04-10">
+  <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Getting value for OomKillReverseRank may fail. Recorded when an applicable
+    child process is killed by android.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.ProcessedCrashCounts"
+    enum="AndroidProcessedCrashCounts" expires_after="never">
+<!-- expires-never: Critical stability metric that includes OOM rate. -->
+
+  <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>wnwen@chromium.org</owner>
+  <summary>
+    Individual enum counts specific conditions of child process terminations.
+    There are too many individual states to enumerate into a single histogram,
+    so this effectively does the aggregration that normally happens on the
+    server side in the client instead. The benefit is this is easily extensible
+    in the future, and downside is that it does not allow additional server side
+    analysis. Note a single child process termination may fall into multiple
+    enums.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.ProcessedRealMinidumps"
+    enum="AndroidProcessedMinidumps" expires_after="2023-05-24">
+  <owner>wnwen@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the number of non-simulated minidumps processed by Crashpad, split
+    by process type. This metric is similar to one that could be computed
+    server-side based on received crash uploads; but the client-side metric also
+    includes any minidumps that were not successfully uploaded.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Android.RendererCrash" enum="Boolean"
+    expires_after="2023-03-05">
+  <owner>wnwen@chromium.org</owner>
+  <summary>
+    Counts renderer crashes including OOMs. Android only. Mirrors old stability
+    proto renderer crashes.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Stability.Android.SystemExitReason"
+    enum="AndroidProcessExitReason" expires_after="2023-03-19">
+  <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>wnwen@chromium.org</owner>
+  <summary>
+    Reason given by Android ActivityManager for the exit of the process, only
+    recorded in Android R+. Recorded on the next browser startup for browser
+    exits, or right after the process died for child processes.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.Autofill"
+    enum="BadMessageReasonAutofill" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by auto-fill. -->
+
+  <owner>vollick@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Count of processes killed because they sent a bad IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.Chrome"
+    enum="BadMessageReasonChrome" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by //chrome. -->
+
+  <owner>creis@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Count of processes killed by chrome/browser because they sent an IPC that
+    couldn't be properly handled. Categories are the reasons (code locations)
+    for the kills.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.Content"
+    enum="BadMessageReasonContent" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by //content. -->
+
+  <owner>jam@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Count of child processes killed because they sent an IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.Extensions"
+    enum="BadMessageReasonExtensions" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by //extensions. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Count of extension processes killed because they sent an IPC that couldn't
+    be properly handled. Categories are the reasons (code locations) for the
+    kills.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.GuestView"
+    enum="BadMessageReasonGuestView" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by GuestView. -->
+
+  <owner>mcnee@chromium.org</owner>
+  <owner>wjmaclean@chromium.org</owner>
+  <summary>
+    Count of processes killed because they sent a bad IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from M85 to M97; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.NaCl"
+    enum="BadMessageReasonNaCl" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by NaCl. -->
+
+  <owner>creis@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Count of processes killed because they sent a NaCl IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from 2020-11-01 to 2021-12-07; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BadMessageTerminated.PasswordManager"
+    enum="BadMessageReasonPasswordManager" expires_after="never">
+<!-- expires-never: Monitoring renderer kills triggered by password manager. -->
+
+  <owner>creis@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Count of processes killed because they sent a bad IPC that couldn't be
+    properly handled. Categories are the reasons (code locations) for the kills.
+
+    Warning: this histogram was expired from M85 to M97; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Stability.BrowserExitCodes" enum="WindowsExitCode"
+    expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>siggi@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    Records the exit code of the browser process (on Windows) from the previous
+    launch. On crash, the exit code will indicate the exception code of the
+    crash. This is emitted in stability data with the first report on a
+    subsequent launch. Note: Due to https://crbug.com/805754, the enum labels
+    for RESULT_CODE_* are off by 1 for M56 and earlier.
+  </summary>
+</histogram>
+
+<histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
+    enum="ShownAfterCrashingReason" expires_after="2023-08-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logs the reason that a crashed subframe was shown. Logged at most once per
+    crash, and only if the subframe was hidden when it crashed and became
+    visible later.
+  </summary>
+</histogram>
+
+<histogram name="Stability.ChildFrameCrash.TabMarkedForReload"
+    enum="BooleanMarkedForReload" expires_after="2023-08-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Logs whether or not a tab is marked for reload when a cross-process subframe
+    crashes. Logged once per subframe process crash.
+  </summary>
+</histogram>
+
+<histogram name="Stability.ChildFrameCrash.TabMarkedForReload.Visibility"
+    enum="FrameVisibility" expires_after="2023-08-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <summary>
+    Logs the visibility of a subframe when a subframe process crashes and the
+    corresponding tab is marked for reload. This indicates whether the crashed
+    subframe was visible or scrolled out of view at the time of crash.
+  </summary>
+</histogram>
+
+<histogram name="Stability.ChildFrameCrash.Visibility" enum="CrashVisibility"
+    expires_after="2023-08-09">
+  <owner>alexmos@chromium.org</owner>
+  <owner>boliu@chromium.org</owner>
+  <owner>lfg@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    Logged after detecting that a sad subframe is shown (logged at most once per
+    crash).
+  </summary>
+</histogram>
+
+<histogram name="Stability.Counts2" enum="StabilityEventType"
+    expires_after="never">
+<!--
+  expires-never: Critical stability metrics. go/chrome-browser-guardrail-metrics.
+  -->
+
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Collects various counters related to stability. The majority of them are
+    crash types.
+  </summary>
+</histogram>
+
+<histogram name="Stability.DebugScenario.Navigation" enum="DebugScenario"
+    expires_after="2023-02-19">
+  <owner>nasko@chromium.org</owner>
+  <owner>altimin@chromium.org</owner>
+  <summary>
+    Logged at the time when a complex debugging scenario is encountered. The
+    enum value is the type of scenario encountered. This metric will give us two
+    benefits: 1. It will tell us the magnitute of the scenario being debugged
+    since crash reports are throttled client side and cannot presently expess
+    magnitude. 2. If the client is configured to report traces based on this
+    metric, it will upload Chrometto trace for analysis by developers.
+  </summary>
+</histogram>
+
+<histogram name="Stability.DumpWithoutCrashingStatus"
+    enum="DumpWithoutCrashingStatus" expires_after="never">
+<!-- expires-never: Used for monitoring the throttling frequency of
+     DumpWithoutCrashing. -->
+
+  <owner>dcheng@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <owner>adkushwa@microsoft.com</owner>
+  <summary>
+    Keeps a count of number of times uploading the dump was throttled when
+    calling DumpWithoutCrashing.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
+    expires_after="2023-02-19">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Counts &quot;pageloads&quot; by type. This is recorded when a page stops
+    loading, i.e. from WebContentsObserver::DidStopLoading. The sum of all
+    buckets of this histogram should be equal to the &quot;Total pageloads&quot;
+    shown on Stability dashboards and can be used to diagnose changes to this
+    value.
+  </summary>
+</histogram>
+
+<histogram
+    name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentFilesCount"
+    units="counts" expires_after="M89">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of unsent files. Emitted when the stability is recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Stability.Internals.FileMetricsProvider.BrowserMetrics.UnsentSamplesCount"
+    units="samples" expires_after="M89">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
+    hasn't been enabled since the previous stability recorded. This is different
+    than the previous browser run because one file was just uploaded before the
+    stability is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Internals.SystemCrashCount" units="crashes"
+    expires_after="2023-02-26">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    Number of times a browser crash was detected, where the browser was last
+    known to be alive in a Windows system session that terminated abnormally.
+  </summary>
+</histogram>
+
+<histogram name="Stability.IOS.Crashpad.Initialized" enum="BooleanSuccess"
+    expires_after="2023-05-03">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Records whether Crashpad init was successful. Recorded on every app startup.
+  </summary>
+</histogram>
+
+<histogram name="Stability.IOS.Experimental.Counts2"
+    enum="IOSStabilityUserVisibleTerminationType" expires_after="2023-05-03">
+  <owner>ajuma@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Recorded when iOS app has started after a crash caused by system signal or
+    hang. Not recorded when app has started after UTE / XTE or started after
+    Chrome update. See go/bling-stability-101 for information about signal
+    crashes, hangs, UTEs and XTEs. This metric intends to complement
+    Stability.Counts. Stability.Counts does include UTEs / XTEs and thus is a
+    noisy metric which significantly overcounts user-visible crashes.
+    Stability.IOS.Experimental.Counts2 is not recorded on OOM crashes, so it
+    does not represent all user-visible crashes, but OOMs are so rare in Chrome
+    for iOS that Stability.IOS.Experimental.Counts2 is still a good proxy for
+    user-visible crashes. IOS.MetricKit.ForegroundExitData includes OOM crashes
+    (iOS 14 and higher) and can be used in conjunction with this metric.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
+    expires_after="2023-04-27">
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The number of tabs opened in the previous session when the app starts after
+    {Event}. Can be used to understand if there is a correlation between
+    increase of number of tabs and decline in stability. iOS Only.
+  </summary>
+  <token key="Event">
+    <variant name="CleanShutdown" summary="a clean shutdown"/>
+    <variant name="Crash"
+        summary="a crash. This metric is a superset of these 3 metrics:
+                 Stability.iOS.TabCountBeforeFreeze,
+                 Stability.iOS.TabCountBeforeSignalCrash,
+                 Stability.iOS.TabCountBeforeUTE"/>
+    <variant name="Freeze" summary="a UI thread freeze"/>
+    <variant name="SignalCrash" summary="a signal crash"/>
+    <variant name="UTE" summary="a crash (UTE or XTE)"/>
+  </token>
+</histogram>
+
+<histogram name="Stability.IOS.UTE.AppWillTerminateWasCalledInForeground"
+    enum="Boolean" expires_after="2023-10-04">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Recorded on iOS when applicationWillTerminate callback is called when app is
+    in the foreground. When this happens the app will not write clean exit
+    beacon and shutdown will not be clean.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.AvailableStorage" units="KB"
+    expires_after="2021-10-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Number of kilobytes available for &quot;important&quot; data. When an iOS
+    device is critically low on space, actions generally assumed to succeed can
+    fail. In extreme cases, this could potentially include writing the
+    &quot;unclean shutdown&quot; bit to signal a clean shutdown. Logged on
+    application launch if the last session terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
+    expires_after="2023-10-04">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The last known battery charge before a crash occurred. This will only be
+    logged for devices which were last known to be in the &quot;unplugged&quot;
+    state because the intention is to identify devices which may have died
+    leading to unexpected terminations. Logged on application launch if the last
+    session terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.DeviceThermalState"
+    enum="IOSDeviceThermalState" expires_after="2023-10-04">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The thermal state of the device when a crash occured. Logged on application
+    launch if the last session terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.HasPossibleExplanation"
+    enum="BooleanHasPossibleExplanation" expires_after="2023-02-26">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Indicates whether or not one of the Stability.iOS.UTE.* metrics could
+    explain the cause of the UTE which terminated the previous session. Logged
+    on application launch if the last session terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.MobileSessionAppState" enum="IOSAppState"
+    expires_after="2023-03-19">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Recorded when app starts after Unexplained Termination Event (UTE) or
+    Explained Termination Event (XTE). Values other than Active indicate that
+    prefs::kLastSessionExitedCleanly was not properly stored.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived"
+    enum="AppWillTerminateReceived" expires_after="2023-03-19">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Recorded when app starts after Unexplained Termination Event (UTE) or
+    Explained Termination Event (XTE). UTEs/XTEs can happen when app did not
+    finish writing prefs. This histogram should help to understand if prefs did
+    not get written during normal app termination sequence when
+    ApplicationWillTerminate notification was called.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.MobileSessionOOMShutdownHint"
+    enum="OOMShutdownHint" expires_after="2023-04-27">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    Recorded when app starts after Unexplained Termination Event (UTE) or
+    Explained Termination Event (XTE). UTEs/XTEs can be caused by large memory
+    allocations and this histogram provides information which memory heavy
+    operation has being performed before UTE/XTE.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.OSRestartedAfterPreviousSession"
+    enum="BooleanRebooted" expires_after="2023-10-04">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    true if OS was restarted after the previous session. Logged on application
+    launch if the last session terminated in an unclean state. If this is false
+    then UTE was not caused by OS restart or shutdown.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.OSVersion" enum="VersionComparison"
+    expires_after="2023-04-27">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Logged on the session following a crash with the result of a comparison
+    between the OS version of the session which crashed and the current OS
+    version. Logged on application launch if the last session terminated in an
+    unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.iOS.UTE.TimeBetweenUTEAndNextLaunch" units="ms"
+    expires_after="2023-04-27">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The estimated amount of time between when a crash occurred and when the user
+    relaunched the application. Logged on application launch if the last session
+    terminated in an unclean state.
+  </summary>
+</histogram>
+
+<histogram name="Stability.MobileSessionShutdownType"
+    enum="MobileSessionShutdownType" expires_after="2023-02-26">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    Type of the shutdown. This histogram is recorded at startup and logs a
+    sample for the previous session. A clean shutdown is one where the app
+    enters the background before being killed. Other shutdowns are all some sort
+    of crash. The absence of a crash log indicates that the app was killed by
+    the OS, normally due to memory pressure. If memory pressure is extremely
+    high, the app may not have had a chance to response to a memory warning
+    before being killed. For first launch after upgrade, the crash reports may
+    be discarded before this histogram is written to so it's not possible to
+    determine if there's a valid crash log present or not.
+  </summary>
+</histogram>
+
+<histogram name="Stability.MobileSessionShutdownType2"
+    enum="MobileSessionShutdownType" expires_after="2023-02-26">
+  <owner>justincohen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Type of the shutdown. This histogram is recorded after processing Crashpad
+    intermediate dumps, and is otherwise identical to
+    Stability.MobileSessionShutdownType, which is recorded at startup and before
+    Crashpad dumps are processed. Because this histogram is not recorded in time
+    for the initial stability log, the histogram will appear in a log that lists
+    the current Chrome version (and other browser metadata), not the Chrome
+    version at the time the crash occurred. The earlier histogram
+    Stability.MobileSessionShutdownType should be in the stability log, which
+    will list the Chrome version at the time of the crash.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

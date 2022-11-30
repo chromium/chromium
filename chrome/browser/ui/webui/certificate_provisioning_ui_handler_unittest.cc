@@ -1,32 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/values_test_util.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_test_helpers.h"
-#include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_scheduler.h"
-#include "chrome/browser/ash/cert_provisioning/mock_cert_provisioning_worker.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/crosapi/mojom/cert_provisioning.mojom.h"
+#include "components/policy/core/browser/cloud/message_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_listener_observer.h"
 #include "crypto/nss_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
@@ -34,11 +36,9 @@ namespace cert_provisioning {
 
 namespace {
 
-using ::testing::Return;
-using ::testing::ReturnPointee;
-using ::testing::ReturnRef;
-using ::testing::SaveArg;
-using ::testing::StrictMock;
+using ::base::test::RunOnceCallback;
+using ::testing::ElementsAre;
+using ::testing::Invoke;
 using ::testing::UnorderedElementsAre;
 
 // Extracted from a X.509 certificate using the command:
@@ -54,7 +54,9 @@ constexpr char kDerEncodedSpkiBase64[] =
     "GVTJuPo4VToGd+ZhS7QvsY38nAYG57fMnzzs5jjMF042AzzWiMt9gGbeuqCE6LXqFuSJYPo+"
     "TLaN7pwQx68PK5pd/lv58B7jjxCIAai0BX1rV6bl/Am3EukhTSuIcQiTr5c1G4E6bKwIDAQAB";
 
-// Display-formatted version of |kDerEncodedSpkiBase64|.
+// Display-formatted version of |kDerEncodedSpkiBase64|. (The number of bits in
+// the public exponent used to be calculated by num_bytes*8, now it is the
+// actual number of used bits.)
 constexpr char kFormattedPublicKey[] = R"(Modulus (2048 bits):
   D6 76 BB AF A5 A2 68 BE 6C 96 CC 87 23 B6 C4 A4
 FE 5A 77 D7 DF B3 34 F4 98 18 BC C9 CD 37 84 9A
@@ -73,35 +75,21 @@ A3 7B A7 04 31 EB C3 CA E6 97 7F 96 FE 7C 07 B8
 E3 C4 22 00 6A 2D 01 5F 5A D5 E9 B9 7F 02 6D C4
 BA 48 53 4A E2 1C 42 24 EB E5 CD 46 E0 4E 9B 2B
 
-  Public Exponent (24 bits):
+  Public Exponent (17 bits):
   01 00 01)";
 
 // Test values for creating CertProfile for MockCertProvisioningWorker.
-constexpr char kCertProfileVersion[] = "cert_profile_version_1";
-constexpr base::TimeDelta kCertProfileRenewalPeriod =
-    base::TimeDelta::FromSeconds(0);
 constexpr char kDeviceCertProfileId[] = "device_cert_profile_1";
 constexpr char kDeviceCertProfileName[] = "Device Certificate Profile 1";
 constexpr char kUserCertProfileId[] = "user_cert_profile_1";
 constexpr char kUserCertProfileName[] = "User Certificate Profile 1";
-
-void SetupMockCertProvisioningWorker(
-    ash::cert_provisioning::MockCertProvisioningWorker* worker,
-    ash::cert_provisioning::CertProvisioningWorkerState state,
-    const std::string* public_key,
-    ash::cert_provisioning::CertProfile& cert_profile) {
-  EXPECT_CALL(*worker, GetState).WillRepeatedly(Return(state));
-  EXPECT_CALL(*worker, GetLastUpdateTime).WillRepeatedly(Return(base::Time()));
-  EXPECT_CALL(*worker, GetPublicKey).WillRepeatedly(ReturnPointee(public_key));
-  ON_CALL(*worker, GetCertProfile).WillByDefault(ReturnRef(cert_profile));
-}
 
 // Recursively visits all strings in |value| and replaces placeholders such as
 // "$0" with the corresponding message from |messages|.
 void FormatDictRecurse(base::Value* value,
                        const std::vector<std::string>& messages) {
   if (value->is_dict()) {
-    for (const auto& child : value->DictItems())
+    for (const auto child : value->DictItems())
       FormatDictRecurse(&child.second, messages);
     return;
   }
@@ -135,58 +123,51 @@ base::Value FormatJsonDict(const base::StringPiece input,
 base::Value GetByProfileId(const base::Value& all_processes,
                            const std::string& profile_id) {
   for (const base::Value& process : all_processes.GetList()) {
-    if (profile_id == *process.FindStringKey("certProfileId"))
+    if (profile_id == *process.GetDict().FindString("certProfileId"))
       return process.Clone();
   }
   return base::Value();
 }
 
-class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
+class FakeMojoCertProvisioning : public crosapi::mojom::CertProvisioning {
  public:
-  explicit CertificateProvisioningUiHandlerTestBase(bool user_is_affiliated)
-      : profile_helper_for_testing_(user_is_affiliated) {
-    base::Base64Decode(kDerEncodedSpkiBase64, &der_encoded_spki_);
-
-    web_contents_ =
-        content::WebContents::Create(content::WebContents::CreateParams(
-            profile_helper_for_testing_.GetProfile()));
-    web_ui_.set_web_contents(web_contents_.get());
-
-    EXPECT_CALL(scheduler_for_user_, GetWorkers)
-        .WillRepeatedly(ReturnRef(user_workers_));
-    EXPECT_CALL(scheduler_for_user_, GetFailedCertProfileIds)
-        .WillRepeatedly(ReturnRef(user_failed_workers_));
-    EXPECT_CALL(scheduler_for_user_, AddObserver(_))
-        .WillOnce(SaveArg<0>(&scheduler_observer_for_user_));
-    EXPECT_CALL(scheduler_for_user_, RemoveObserver(_)).Times(1);
-
-    if (user_is_affiliated) {
-      EXPECT_CALL(scheduler_for_device_, GetWorkers)
-          .WillRepeatedly(ReturnRef(device_workers_));
-      EXPECT_CALL(scheduler_for_device_, GetFailedCertProfileIds)
-          .WillRepeatedly(ReturnRef(device_failed_workers_));
-      EXPECT_CALL(scheduler_for_device_, AddObserver(_))
-          .WillOnce(SaveArg<0>(&scheduler_observer_for_device_));
-      EXPECT_CALL(scheduler_for_device_, RemoveObserver(_)).Times(1);
-    }
-
-    auto handler = std::make_unique<CertificateProvisioningUiHandler>(
-        GetProfile(), &scheduler_for_user_, &scheduler_for_device_);
-    handler_ = handler.get();
-    web_ui_.AddMessageHandler(std::move(handler));
+  void AddObserver(mojo::PendingRemote<crosapi::mojom::CertProvisioningObserver>
+                       observer) override {
+    observer_ = mojo::Remote<crosapi::mojom::CertProvisioningObserver>(
+        std::move(observer));
   }
 
-  ~CertificateProvisioningUiHandlerTestBase() override {}
+  void GetStatus(GetStatusCallback callback) override {
+    std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> result;
+    for (auto& process : status_) {
+      result.push_back(process->Clone());
+    }
+    std::move(callback).Run(std::move(result));
+  }
 
-  CertificateProvisioningUiHandlerTestBase(
-      const CertificateProvisioningUiHandlerTestBase& other) = delete;
-  CertificateProvisioningUiHandlerTestBase& operator=(
-      const CertificateProvisioningUiHandlerTestBase& other) = delete;
+  void UpdateOneProcess(const std::string& cert_profile_id) override {}
 
+  mojo::Remote<crosapi::mojom::CertProvisioningObserver> observer_;
+  std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status_;
+};
+
+class CertificateProvisioningUiHandlerTest : public ::testing::Test {
+ public:
   void SetUp() override {
     // Required for public key (SubjectPublicKeyInfo) formatting that is being
     // done in the UI handler.
     crypto::EnsureNSSInit();
+
+    testing_profile_ = TestingProfile::Builder().Build();
+
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(testing_profile_.get()));
+    web_ui_.set_web_contents(web_contents_.get());
+
+    auto handler = std::make_unique<CertificateProvisioningUiHandler>(
+        &mojo_cert_provisioning_);
+    handler_ = handler.get();
+    web_ui_.AddMessageHandler(std::move(handler));
   }
 
   // Use in ASSERT_NO_FATAL_FAILURE.
@@ -203,7 +184,8 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
       return;
     out_profile_ids->clear();
     for (const base::Value& process : out_all_processes->GetList()) {
-      const std::string* profile_id = process.FindStringKey("certProfileId");
+      const std::string* profile_id =
+          process.GetDict().FindString("certProfileId");
       ASSERT_TRUE(profile_id);
       out_profile_ids->push_back(*profile_id);
     }
@@ -216,9 +198,9 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
     content::TestWebUIListenerObserver result_waiter(
         &web_ui_, "certificate-provisioning-processes-changed");
 
-    base::ListValue args;
+    base::Value::List args;
     web_ui_.HandleReceivedMessage("refreshCertificateProvisioningProcessses",
-                                  &args);
+                                  args);
 
     result_waiter.Wait();
     ASSERT_NO_FATAL_FAILURE(ExtractCertProvisioningProcesses(
@@ -226,54 +208,19 @@ class CertificateProvisioningUiHandlerTestBase : public ::testing::Test {
   }
 
  protected:
-  Profile* GetProfile() { return profile_helper_for_testing_.GetProfile(); }
-
-  std::string der_encoded_spki_;
-
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ash::cert_provisioning::ProfileHelperForTesting profile_helper_for_testing_;
 
-  ash::cert_provisioning::WorkerMap user_workers_;
-  base::flat_map<ash::cert_provisioning::CertProfileId,
-                 ash::cert_provisioning::FailedWorkerInfo>
-      user_failed_workers_;
-  StrictMock<ash::cert_provisioning::MockCertProvisioningScheduler>
-      scheduler_for_user_;
-  ash::cert_provisioning::CertProvisioningSchedulerObserver*
-      scheduler_observer_for_user_ = nullptr;
-
-  ash::cert_provisioning::WorkerMap device_workers_;
-  base::flat_map<ash::cert_provisioning::CertProfileId,
-                 ash::cert_provisioning::FailedWorkerInfo>
-      device_failed_workers_;
-  StrictMock<ash::cert_provisioning::MockCertProvisioningScheduler>
-      scheduler_for_device_;
-  ash::cert_provisioning::CertProvisioningSchedulerObserver*
-      scheduler_observer_for_device_ = nullptr;
+  // TestingProfileManager testing_profile_manager_;
+  std::unique_ptr<TestingProfile> testing_profile_;
 
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   // Owned by |web_ui_|.
-  CertificateProvisioningUiHandler* handler_;
-};
+  raw_ptr<CertificateProvisioningUiHandler> handler_ = nullptr;
 
-class CertificateProvisioningUiHandlerTest
-    : public CertificateProvisioningUiHandlerTestBase {
- public:
-  CertificateProvisioningUiHandlerTest()
-      : CertificateProvisioningUiHandlerTestBase(/*user_is_affiilated=*/false) {
-  }
-  ~CertificateProvisioningUiHandlerTest() override = default;
-};
-
-class CertificateProvisioningUiHandlerAffiliatedTest
-    : public CertificateProvisioningUiHandlerTestBase {
- public:
-  CertificateProvisioningUiHandlerAffiliatedTest()
-      : CertificateProvisioningUiHandlerTestBase(/*user_is_affiilated=*/true) {}
-  ~CertificateProvisioningUiHandlerAffiliatedTest() override = default;
+  FakeMojoCertProvisioning mojo_cert_provisioning_;
 };
 
 TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
@@ -283,36 +230,24 @@ TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
   EXPECT_TRUE(all_processes.GetList().empty());
 }
 
-TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
-  ash::cert_provisioning::CertProfile user_cert_profile(
-      kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker =
-      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(
-      user_cert_worker.get(),
-      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
-  user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
+TEST_F(CertificateProvisioningUiHandlerTest, HasOneProcess) {
+  auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+  process_0->cert_profile_id = kUserCertProfileId;
+  process_0->cert_profile_name = kUserCertProfileName;
+  process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
+  process_0->last_update_time = base::Time();
+  process_0->state =
+      crosapi::mojom::CertProvisioningProcessState::kKeypairGenerated;
+  process_0->did_fail = false;
+  process_0->is_device_wide = false;
+  process_0->last_backend_server_error = nullptr;
+  mojo_cert_provisioning_.status_.push_back(std::move(process_0));
 
-  ash::cert_provisioning::CertProfile device_cert_profile(
-      kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto device_cert_worker =
-      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(
-      device_cert_worker.get(),
-      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, device_cert_profile);
-  device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
-
-  // Only the user worker is expected to be displayed in the UI, because the
-  // user is not affiliated.
   base::Value all_processes;
   std::vector<std::string> profile_ids;
   ASSERT_NO_FATAL_FAILURE(
       RefreshCertProvisioningProcesses(&all_processes, &profile_ids));
-  ASSERT_THAT(profile_ids, UnorderedElementsAre(kUserCertProfileId));
+  ASSERT_THAT(profile_ids, ElementsAre(kUserCertProfileId));
   EXPECT_EQ(
       GetByProfileId(all_processes, kUserCertProfileId),
       FormatJsonDict(
@@ -323,38 +258,47 @@ TEST_F(CertificateProvisioningUiHandlerTest, HasProcesses) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING)}));
 }
 
-TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
-  ash::cert_provisioning::CertProfile user_cert_profile(
-      kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker =
-      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(
-      user_cert_worker.get(),
-      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
-  user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
+TEST_F(CertificateProvisioningUiHandlerTest, HasTwoProcesses) {
+  {
+    auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_0->cert_profile_id = kUserCertProfileId;
+    process_0->cert_profile_name = kUserCertProfileName;
+    process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
+    process_0->last_update_time = base::Time();
+    process_0->state =
+        crosapi::mojom::CertProvisioningProcessState::kKeypairGenerated;
+    process_0->did_fail = false;
+    process_0->is_device_wide = false;
+    process_0->last_backend_server_error = nullptr;
+    mojo_cert_provisioning_.status_.push_back(std::move(process_0));
+  }
 
-  ash::cert_provisioning::CertProfile device_cert_profile(
-      kDeviceCertProfileId, kDeviceCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto device_cert_worker =
-      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(
-      device_cert_worker.get(),
-      ash::cert_provisioning::CertProvisioningWorkerState::kFailed,
-      &der_encoded_spki_, device_cert_profile);
-  device_workers_[kDeviceCertProfileId] = std::move(device_cert_worker);
+  {
+    auto process_1 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_1->cert_profile_id = kDeviceCertProfileId;
+    process_1->cert_profile_name = kDeviceCertProfileName;
+    process_1->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
+    process_1->last_update_time = base::Time();
+    process_1->state =
+        crosapi::mojom::CertProvisioningProcessState::kKeyRegistered;
+    process_1->did_fail = true;
+    process_1->is_device_wide = true;
+    base::Time time1;
+    EXPECT_TRUE(base::Time::FromString("15 May 2010 10:00:00 GMT", &time1));
+    process_1->last_backend_server_error =
+        crosapi::mojom::CertProvisioningBackendServerError::New(
+            time1, policy::DM_STATUS_REQUEST_INVALID);
+    mojo_cert_provisioning_.status_.push_back(std::move(process_1));
+  }
 
-  // Both user and device-wide workers are expected to be displayed in the UI,
-  // because the user is affiliated.
   base::Value all_processes;
   std::vector<std::string> profile_ids;
   ASSERT_NO_FATAL_FAILURE(
@@ -372,11 +316,22 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
                IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_PREPARING_CSR_WAITING)}));
+
+  std::string last_unsuccessful_message =
+      base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_DMSERVER_ERROR_MESSAGE,
+          policy::FormatDeviceManagementStatus(
+              policy::DM_STATUS_REQUEST_INVALID),
+          u"Sat, 15 May 2010 10:00:00 GMT"));
+
+  // The second process failed, stateId should contain the state before failure,
+  // status should contain a failure text.
   EXPECT_EQ(
       GetByProfileId(all_processes, kDeviceCertProfileId),
       FormatJsonDict(
@@ -385,13 +340,15 @@ TEST_F(CertificateProvisioningUiHandlerAffiliatedTest, HasProcessesAffiliated) {
                "certProfileName": "$1",
                "isDeviceWide": true,
                "publicKey": "$2",
-               "stateId": 10,
+               "stateId": 4,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": "$4"
              })",
           {kDeviceCertProfileId, kDeviceCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
-               IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_FAILURE)}));
+               IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_FAILURE),
+           last_unsuccessful_message}));
 }
 
 TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
@@ -402,34 +359,34 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
   // considered allowed by the UI handler.
   ASSERT_NO_FATAL_FAILURE(
       RefreshCertProvisioningProcesses(&all_processes, &profile_ids));
-  ASSERT_THAT(profile_ids, UnorderedElementsAre());
+  ASSERT_THAT(profile_ids, ElementsAre());
   EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
 
-  ash::cert_provisioning::CertProfile user_cert_profile(
-      kUserCertProfileId, kUserCertProfileName, kCertProfileVersion,
-      /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
-  auto user_cert_worker =
-      std::make_unique<ash::cert_provisioning::MockCertProvisioningWorker>();
-  SetupMockCertProvisioningWorker(
-      user_cert_worker.get(),
-      ash::cert_provisioning::CertProvisioningWorkerState::kKeypairGenerated,
-      &der_encoded_spki_, user_cert_profile);
-  user_workers_[kUserCertProfileId] = std::move(user_cert_worker);
+  {
+    auto process_0 = crosapi::mojom::CertProvisioningProcessStatus::New();
+    process_0->cert_profile_id = kUserCertProfileId;
+    process_0->cert_profile_name = kUserCertProfileName;
+    process_0->public_key = base::Base64Decode(kDerEncodedSpkiBase64).value();
+    process_0->last_update_time = base::Time();
+    process_0->state =
+        crosapi::mojom::CertProvisioningProcessState::kKeypairGenerated;
+    process_0->did_fail = false;
+    process_0->is_device_wide = false;
+    process_0->last_backend_server_error = nullptr;
+    mojo_cert_provisioning_.status_.push_back(std::move(process_0));
+  }
 
-  // The user worker triggers an update
+  // The mojo service triggers an update.
   content::TestWebUIListenerObserver result_waiter_1(
       &web_ui_, "certificate-provisioning-processes-changed");
+  mojo_cert_provisioning_.observer_->OnStateChanged();
 
-  scheduler_observer_for_user_->OnVisibleStateChanged();
-
-  EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
   result_waiter_1.Wait();
+  EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
+
   ASSERT_NO_FATAL_FAILURE(ExtractCertProvisioningProcesses(
       result_waiter_1.args(), &all_processes, &profile_ids));
-
-  // Only the user worker is expected to be displayed in the UI, because the
-  // user is not affiliated.
-  ASSERT_THAT(profile_ids, UnorderedElementsAre(kUserCertProfileId));
+  ASSERT_THAT(profile_ids, ElementsAre(kUserCertProfileId));
 
   EXPECT_EQ(
       GetByProfileId(all_processes, kUserCertProfileId),
@@ -441,7 +398,8 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
                "publicKey": "$2",
                "stateId": 1,
                "status": "$3",
-               "timeSinceLastUpdate": ""
+               "timeSinceLastUpdate": "",
+               "lastUnsuccessfulMessage": ""
              })",
           {kUserCertProfileId, kUserCertProfileName, kFormattedPublicKey,
            l10n_util::GetStringUTF8(
@@ -449,15 +407,10 @@ TEST_F(CertificateProvisioningUiHandlerTest, Updates) {
 
   content::TestWebUIListenerObserver result_waiter_2(
       &web_ui_, "certificate-provisioning-processes-changed");
-  scheduler_observer_for_user_->OnVisibleStateChanged();
-  // Another update does not trigger a UI update for the holdoff time.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(299));
-  EXPECT_EQ(0U, handler_->ReadAndResetUiRefreshCountForTesting());
+  mojo_cert_provisioning_.observer_->OnStateChanged();
 
-  // When the holdoff time has elapsed, an UI update is triggered.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
-  EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
   result_waiter_2.Wait();
+  EXPECT_EQ(1U, handler_->ReadAndResetUiRefreshCountForTesting());
 
   base::Value all_processes_2;
   ASSERT_NO_FATAL_FAILURE(ExtractCertProvisioningProcesses(

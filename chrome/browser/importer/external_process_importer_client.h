@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -47,6 +45,10 @@ class ExternalProcessImporterClient
       const importer::SourceProfile& source_profile,
       uint16_t items,
       InProcessImporterBridge* bridge);
+
+  ExternalProcessImporterClient(const ExternalProcessImporterClient&) = delete;
+  ExternalProcessImporterClient& operator=(
+      const ExternalProcessImporterClient&) = delete;
 
   // Launches the task to start the external process.
   void Start();
@@ -146,8 +148,6 @@ class ExternalProcessImporterClient
 
   // Used to receive progress updates from the importer.
   mojo::Receiver<chrome::mojom::ProfileImportObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterClient);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_EXTERNAL_PROCESS_IMPORTER_CLIENT_H_

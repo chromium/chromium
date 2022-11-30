@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,7 +37,13 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   // registration without waiting for the controlled clients to unload.
   ServiceWorkerUnregisterJob(ServiceWorkerContextCore* context,
                              const GURL& scope,
+                             const blink::StorageKey& key,
                              bool is_immediate);
+
+  ServiceWorkerUnregisterJob(const ServiceWorkerUnregisterJob&) = delete;
+  ServiceWorkerUnregisterJob& operator=(const ServiceWorkerUnregisterJob&) =
+      delete;
+
   ~ServiceWorkerUnregisterJob() override;
 
   // Registers a callback to be called when the job completes (whether
@@ -60,14 +67,13 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                       blink::ServiceWorkerStatusCode status);
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
   const GURL scope_;
+  const blink::StorageKey key_;
   const bool is_immediate_;
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_ = false;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUnregisterJob);
 };
 }  // namespace content
 

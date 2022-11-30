@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 
@@ -45,6 +44,10 @@ class SensorDeviceManager : public UdevWatcher::Observer {
   };
 
   explicit SensorDeviceManager(base::WeakPtr<Delegate> delegate);
+
+  SensorDeviceManager(const SensorDeviceManager&) = delete;
+  SensorDeviceManager& operator=(const SensorDeviceManager&) = delete;
+
   ~SensorDeviceManager() override;
 
   // Starts monitoring sensor-related udev events, and enumerates existing
@@ -79,8 +82,6 @@ class SensorDeviceManager : public UdevWatcher::Observer {
   base::WeakPtr<Delegate> delegate_;
 
   scoped_refptr<base::SequencedTaskRunner> delegate_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorDeviceManager);
 };
 
 }  // namespace device

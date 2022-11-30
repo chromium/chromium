@@ -1,15 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import * as wrappedVolumeManagerCommon from '../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
-// #import {str} from '../../common/js/util.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {str} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
@@ -18,7 +17,7 @@
  * @final
  * @implements {VolumeInfo}
  */
-/* #export */ class VolumeInfoImpl {
+export class VolumeInfoImpl {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType The type of the volume.
    * @param {string} volumeId ID of the volume.
@@ -26,7 +25,7 @@
    * @param {(string|undefined)} error The error if an error is found.
    * @param {(string|undefined)} deviceType The type of device
    *     ('usb'|'sd'|'optical'|'mobile'|'unknown') (as defined in
-   *     chromeos/disks/disk_mount_manager.cc). Can be undefined.
+   *     chromeos/ash/components/disks/disk_mount_manager.cc). Can be undefined.
    * @param {(string|undefined)} devicePath Identifier of the device that the
    *     volume belongs to. Can be undefined.
    * @param {boolean} isReadOnly True if the volume is read only.
@@ -52,12 +51,14 @@
    * @param {(string|undefined)} remoteMountPath The path on the remote host
    *     where this volume is mounted, for crostini this is the user's homedir
    *     (/home/<username>).
+   * @param {(chrome.fileManagerPrivate.VmType|undefined)} vmType If this is a
+   *     GuestOS volume, the type of the VM which owns the volume.
    */
   constructor(
       volumeType, volumeId, fileSystem, error, deviceType, devicePath,
       isReadOnly, isReadOnlyRemovableDevice, profile, label, providerId,
       hasMedia, configurable, watchable, source, diskFileSystemType, iconSet,
-      driveLabel, remoteMountPath) {
+      driveLabel, remoteMountPath, vmType) {
     this.volumeType_ = volumeType;
     this.volumeId_ = volumeId;
     this.fileSystem_ = fileSystem;
@@ -65,6 +66,7 @@
     this.displayRoot_ = null;
     this.sharedDriveDisplayRoot_ = null;
     this.computersDisplayRoot_ = null;
+    this.vmType_ = vmType;
 
     /**
      * @private {?FilesAppEntry} an entry to be used as prefix of this volume on
@@ -292,6 +294,14 @@
 
   set prefixEntry(entry) {
     this.prefixEntry_ = entry;
+  }
+
+  /**
+   * @type {chrome.fileManagerPrivate.VmType|undefined} If this is a GuestOS
+   *     volume, the type of the VM which owns this volume.
+   */
+  get vmType() {
+    return this.vmType_;
   }
 
   /**

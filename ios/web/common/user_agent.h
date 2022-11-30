@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <string>
 
-#import <UIKit/UIKit.h>
-
 namespace web {
 
 // Enum type specifying a user agent's type.
@@ -16,13 +14,10 @@ enum class UserAgentType : short {
   // Used for pages that are generated for app-specific URLs.
   NONE = 0,
 
-  // The default user agent type. The user agent used will depend on the size of
-  // the application window.
+  // The default user agent type. The default user agent will be determined by
+  // the WebClient.
   AUTOMATIC,
 
-  // TODO(crbug.com/1025227): Update comments.
-  // The default user agent type if kUseDefaultUserAgentInWebClient isn't
-  // enabled.
   // Used to specify a mobile browser user agent.
   MOBILE,
 
@@ -30,10 +25,10 @@ enum class UserAgentType : short {
   DESKTOP
 };
 
-// Returns a string representation of |type|.
+// Returns a string representation of `type`.
 std::string GetUserAgentTypeDescription(UserAgentType type);
 
-// Returns a UserAgentType with the given description.  If |description| doesn't
+// Returns a UserAgentType with the given description.  If `description` doesn't
 // correspond with a UserAgentType, UserAgentType::NONE will be returned.
 UserAgentType GetUserAgentTypeWithDescription(const std::string& description);
 

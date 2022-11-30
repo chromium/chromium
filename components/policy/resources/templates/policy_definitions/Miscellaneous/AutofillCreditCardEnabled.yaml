@@ -1,0 +1,29 @@
+caption: Enable AutoFill for credit cards
+desc: |-
+  Setting the policy to True or leaving it unset means users can control autofill suggestions for credit cards in the UI.
+
+        Setting the policy to False means autofill never suggests or fills credit card information, nor will it save additional credit card information that users might submit while browsing the web.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable AutoFill for credit cards
+  value: true
+- caption: Disable AutoFill for credit cards
+  value: false
+owners:
+- caitkp@chromium.org
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:63-
+- chrome_os:63-
+- android:63-
+- ios:88-
+tags: []
+type: main

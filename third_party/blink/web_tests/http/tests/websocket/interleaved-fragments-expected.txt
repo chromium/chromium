@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 15: WebSocket connection to 'ws://localhost:8880/interleaved-fragments' failed: Received start of new message but previous message is unfinished.
 Test whether WebSocket rejects interleaved fragmented frames.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

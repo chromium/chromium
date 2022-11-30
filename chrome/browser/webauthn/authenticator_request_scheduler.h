@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,6 @@
 #define CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_
 
 #include <memory>
-#include <string>
-
-#include "base/macros.h"
 
 class ChromeAuthenticatorRequestDelegate;
 
@@ -26,6 +23,11 @@ class WebContents;
 class AuthenticatorRequestScheduler {
  public:
   AuthenticatorRequestScheduler() = default;
+
+  AuthenticatorRequestScheduler(const AuthenticatorRequestScheduler&) = delete;
+  AuthenticatorRequestScheduler& operator=(
+      const AuthenticatorRequestScheduler&) = delete;
+
   ~AuthenticatorRequestScheduler() = default;
 
   // Returns a nullptr delegate if there is already an ongoing request in the
@@ -37,9 +39,6 @@ class AuthenticatorRequestScheduler {
   // nullptr if there is none.
   static ChromeAuthenticatorRequestDelegate* GetRequestDelegate(
       content::WebContents* web_contents);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestScheduler);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_AUTHENTICATOR_REQUEST_SCHEDULER_H_

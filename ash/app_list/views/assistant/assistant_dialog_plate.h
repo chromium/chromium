@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,8 @@
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/component_export.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -50,13 +49,17 @@ class ASH_EXPORT AssistantDialogPlate
       public AssistantUiModelObserver,
       public AssistantButtonListener {
  public:
+  METADATA_HEADER(AssistantDialogPlate);
+
   explicit AssistantDialogPlate(AssistantViewDelegate* delegate);
+  AssistantDialogPlate(const AssistantDialogPlate&) = delete;
+  AssistantDialogPlate& operator=(const AssistantDialogPlate&) = delete;
   ~AssistantDialogPlate() override;
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
+  void OnThemeChanged() override;
 
   // AssistantButtonListener:
   void OnButtonPressed(AssistantButtonId button_id) override;
@@ -76,8 +79,8 @@ class ASH_EXPORT AssistantDialogPlate
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
   // Returns the first focusable view or nullptr to defer to views::FocusSearch.
   views::View* FindFirstFocusableView();
@@ -112,8 +115,6 @@ class ASH_EXPORT AssistantDialogPlate
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantDialogPlate);
 };
 
 }  // namespace ash

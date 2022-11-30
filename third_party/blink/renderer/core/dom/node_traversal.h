@@ -36,7 +36,7 @@
 
 namespace blink {
 
-class NodeTraversal {
+class CORE_EXPORT NodeTraversal {
   STATIC_ONLY(NodeTraversal);
 
  public:
@@ -61,9 +61,8 @@ class NodeTraversal {
   }
 
   // Like next, but skips children and starts with the next sibling.
-  CORE_EXPORT static Node* NextSkippingChildren(const Node&);
-  CORE_EXPORT static Node* NextSkippingChildren(const Node&,
-                                                const Node* stay_within);
+  static Node* NextSkippingChildren(const Node&);
+  static Node* NextSkippingChildren(const Node&, const Node* stay_within);
 
   static Node* FirstWithin(const Node& current) { return current.firstChild(); }
 
@@ -89,19 +88,20 @@ class NodeTraversal {
                                  const Node* stay_within = nullptr);
 
   // Pre-order traversal including the pseudo-elements.
-  CORE_EXPORT static Node* PreviousIncludingPseudo(
-      const Node&,
-      const Node* stay_within = nullptr);
-  CORE_EXPORT static Node* NextIncludingPseudo(
+  static Node* PreviousIncludingPseudo(const Node&,
+                                       const Node* stay_within = nullptr);
+  static Node* NextIncludingPseudo(const Node&,
+                                   const Node* stay_within = nullptr);
+  // See comment for |FlatTreeTraversal::PreviousAbsoluteSibling| for details.
+  static Node* PreviousAbsoluteSiblingIncludingPseudo(
       const Node&,
       const Node* stay_within = nullptr);
   static Node* NextIncludingPseudoSkippingChildren(
       const Node&,
       const Node* stay_within = nullptr);
 
-  CORE_EXPORT static Node* NextAncestorSibling(const Node&);
-  CORE_EXPORT static Node* NextAncestorSibling(const Node&,
-                                               const Node* stay_within);
+  static Node* NextAncestorSibling(const Node&);
+  static Node* NextAncestorSibling(const Node&, const Node* stay_within);
   static Node& HighestAncestorOrSelf(const Node&);
 
   // Children traversal.
@@ -243,4 +243,4 @@ inline Node* NodeTraversal::ChildAtTemplate(NodeType& parent, unsigned index) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_TRAVERSAL_H_

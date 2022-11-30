@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
@@ -14,13 +13,14 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -55,8 +55,12 @@ void WorkerModuleScriptFetcher::Fetch(
   if (worker_main_script_load_params) {
     DCHECK_EQ(level_, ModuleGraphLevel::kTopLevelModuleFetch);
 
-    fetch_params.MutableResourceRequest().SetInspectorId(
-        CreateUniqueIdentifier());
+    auto identifier = CreateUniqueIdentifier();
+    if (global_scope_->IsServiceWorkerGlobalScope()) {
+      global_scope_->SetMainResoureIdentifier(identifier);
+    }
+
+    fetch_params.MutableResourceRequest().SetInspectorId(identifier);
     worker_main_script_loader_ = MakeGarbageCollected<WorkerMainScriptLoader>();
     worker_main_script_loader_->Start(
         fetch_params, std::move(worker_main_script_load_params),
@@ -112,8 +116,11 @@ void WorkerModuleScriptFetcher::NotifyClient(
     ModuleType module_type,
     const ParkableString& source_text,
     const ResourceResponse& response,
-    SingleCachedMetadataHandler* cache_handler) {
+    CachedMetadataHandler* cache_handler) {
   HeapVector<Member<ConsoleMessage>> error_messages;
+
+  const KURL response_url = response.ResponseUrl();
+
   if (level_ == ModuleGraphLevel::kTopLevelModuleFetch) {
     // TODO(nhiroki, hiroshige): Access to WorkerGlobalScope in module loaders
     // is a layering violation. Also, updating WorkerGlobalScope ('module map
@@ -123,7 +130,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
     // (https://crbug.com/845285)
 
     // Ensure redirects don't affect SecurityOrigin.
-    const KURL response_url = response.CurrentRequestUrl();
     DCHECK(fetch_client_settings_object_fetcher_->GetProperties()
                .GetFetchClientSettingsObject()
                .GetSecurityOrigin()
@@ -168,20 +174,18 @@ void WorkerModuleScriptFetcher::NotifyClient(
 
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
-        response_url, response_referrer_policy, response.AddressSpace(),
-        ContentSecurityPolicy::ParseHeaders(
+        response_url, response_referrer_policy,
+        ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
-        response_origin_trial_tokens.get(), response.AppCacheID());
+        response_origin_trial_tokens.get());
   }
-
 
   // <spec step="12.7">Asynchronously complete the perform the fetch steps with
   // response.</spec>
-  const KURL& url = response.CurrentRequestUrl();
   // Create an external module script where base_url == source_url.
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
-      /*source_url=*/url, /*base_url=*/url,
+      /*source_url=*/response_url, /*base_url=*/response_url,
       ScriptSourceLocationType::kExternalFile, module_type, source_text,
       cache_handler));
 }
@@ -211,8 +215,7 @@ void WorkerModuleScriptFetcher::OnStartLoadingBody(
     error_messages.push_back(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kError, message,
-        resource_response.CurrentRequestUrl().GetString(), /*loader=*/nullptr,
-        -1));
+        resource_response.ResponseUrl().GetString(), /*loader=*/nullptr, -1));
     worker_main_script_loader_->Cancel();
     client_->NotifyFetchFinishedError(error_messages);
     return;

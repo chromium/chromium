@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,15 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "build/build_config.h"
+#include "components/download/public/background_service/download_params.h"
 #include "net/http/http_response_headers.h"
-#include "storage/browser/blob/blob_data_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "storage/browser/blob/blob_data_handle.h"
+#endif
 
 namespace download {
 
@@ -22,9 +27,11 @@ struct CompletionInfo {
   // to retrieve data.
   base::FilePath path;
 
+#if !BUILDFLAG(IS_IOS)
   // The blob data handle that contains download data.
   // Will be available after the download is completed in incognito mode.
-  base::Optional<storage::BlobDataHandle> blob_handle;
+  absl::optional<storage::BlobDataHandle> blob_handle;
+#endif
 
   // Download file size in bytes.
   uint64_t bytes_downloaded = 0u;
@@ -43,6 +50,9 @@ struct CompletionInfo {
   // An optional base::HexEncoded SHA-256 hash (if available) of the file
   // contents.  If empty there is no available hash value.
   std::string hash256;
+
+  // The custom data sent back to clients when download is completed or failed.
+  DownloadParams::CustomData custom_data;
 
   CompletionInfo();
   CompletionInfo(
@@ -70,7 +80,7 @@ struct DownloadMetaData {
 
   // Info about successfully completed download, or null for in-progress
   // download. Failed download will not be persisted and exposed as meta data.
-  base::Optional<CompletionInfo> completion_info;
+  absl::optional<CompletionInfo> completion_info;
 
   DownloadMetaData();
   ~DownloadMetaData();

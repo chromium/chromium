@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Открыть приложение "Файлы"</translation>
 <translation id="1122869341872663659">Результатов поиска по запросу "<ph name="QUERY" />": <ph name="N" /></translation>
 <translation id="1195667586424773550">Перетащить ссылку в адресную строку вкладки</translation>
-<translation id="1204450209689312104">Открыть новое окно в режиме инкогнито</translation>
 <translation id="1251638888133819822">Включить или отключить полноэкранную лупу</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /> <ph name="SEPARATOR1" /> <ph name="MODIFIER2" /> <ph name="SEPARATOR2" /> <ph name="MODIFIER3" /> <ph name="SEPARATOR3" /> <ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Перейти к концу строки</translation>
 <translation id="1499072997694708844">Закрыть любое поисковое окно или остановить загрузку текущей страницы</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
+<translation id="1516966594427080024">Открыть новое окно в режиме инкогнито</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затем <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1652741121070700329">Перейти к началу предыдущего слова</translation>
 <translation id="1679841710523778799">Увеличить яркость</translation>
 <translation id="168356808214100546">Нажать и удерживать клавишу <ph name="ALT" />, нажимать <ph name="TAB" />, пока не откроется нужное окно.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Прокрутить веб-страницу вниз</translation>
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
 <translation id="2574014812750545982">Восстановить исходный масштаб страницы</translation>
-<translation id="2596078834055697711">Сделать скриншот окна</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затем <ph name="TAB" /> или <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Обновить страницу</translation>
 <translation id="2764005613199379871">Переместить курсор в адресную строку.</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">Ярлыки</translation>
 <translation id="3084301071537457911">Выделить следующий объект на панели запуска</translation>
 <translation id="309173601632226815">Выделить кнопку запуска на панели запуска</translation>
-<translation id="3105917916468784889">Скриншот</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Курсор в адресную строку</translation>
 <translation id="3256109297135787951">Снять выделение с объекта на панели запуска.</translation>
 <translation id="3288816184963444640">Закрыть активное окно</translation>
+<translation id="3322797428033495633">Перейти к окну "Картинка в картинке"</translation>
+<translation id="3350805006883559974">Переместить активное окно наверх</translation>
 <translation id="3407560819924487926">Открыть диспетчер задач</translation>
+<translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3422679037938588196">Перейти к предыдущему совпадению в строке поиска</translation>
 <translation id="353037708190149633">Сохранить все страницы, открытые в текущем окне, в закладках (в новой папке)</translation>
 <translation id="355103131818127604">Открыть ссылку в новой фоновой вкладке</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">запятая</translation>
 <translation id="3976863468609830880">Открыть последний значок на панели запуска</translation>
 <translation id="3994783594793697310">Восстановить исходный масштаб экрана</translation>
+<translation id="4026837045671473537">Включить режим инверсии цветов</translation>
 <translation id="4026843240379844265">Переместить активное окно между экранами</translation>
 <translation id="4035482366624727273">Выделить весь контент на странице</translation>
 <translation id="4060703249685950734">Открыть последнюю закрытую вкладку или последнее закрытое окно</translation>
@@ -108,13 +111,12 @@
 <translation id="4556221320735744018">Открыть страницу справки по быстрым клавишам</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /> <ph name="SEPARATOR1" /> <ph name="BACK1" /> или <ph name="CTRL2" /> <ph name="SEPARATOR2" /> <ph name="SHIFT" /> <ph name="SEPARATOR3" /> <ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Открыть панель состояния (на которой расположено изображение профиля)</translation>
-<translation id="4642092649622328492">Сделать скриншот части экрана</translation>
 <translation id="4698850295812410683">Показать инструменты стилуса</translation>
 <translation id="4801989101741319327">Перейти к концу следующего слова</translation>
 <translation id="4866066940972151697">Включить рабочий стол справа</translation>
 <translation id="4916163929714267752">Открыть ссылку в новом окне</translation>
 <translation id="492453977506755176">Клавиша режима съемки</translation>
-<translation id="5030659775136592441">Открыть диспетчер закладок</translation>
+<translation id="5030659775136592441">Открыть менеджер закладок</translation>
 <translation id="5034421018520995080">Перейти к верхней части экрана</translation>
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="5104462712192763270">Сохранить страницу</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Выделить текст до начала строки</translation>
 <translation id="5316716239522500219">Дублировать изображения на мониторах</translation>
 <translation id="539072479502328326">Включить или отключить закрепленную лупу</translation>
+<translation id="5466615362193675484">Показать или скрыть меню для изменения размера режима блокировки</translation>
 <translation id="5541719484267030947">Нажать <ph name="ESC" /> при перетаскивании вкладки</translation>
 <translation id="5554139136362089836">Искать на странице</translation>
 <translation id="5563050856984839829">Нажать <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и перейти по ссылке</translation>
 <translation id="561814908794220892">Открыть веб-страницу в новой вкладке</translation>
 <translation id="5620219513321115856">Переместить активное окно на рабочий стол справа</translation>
+<translation id="5699366815052349604">Назначить в качестве активного окна всем рабочим столам</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Открыть ссылку в этой вкладке</translation>
 <translation id="5757474750054631686">Приглушить подсветку клавиатуры (для клавиатур с подсветкой)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Повернуть окно</translation>
 <translation id="5926306472221400972">Сделать снимок всего экрана</translation>
 <translation id="6022924867608035986">Удалить текст из окна поиска</translation>
-<translation id="6045998054441862242">Включить режим высокой контрастности</translation>
 <translation id="6052614013050385269">Нажать на ссылку правой кнопкой мыши</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6143669479988153888">Увеличить масштаб страницы</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">Посмотреть исходный код страницы</translation>
 <translation id="6321940490215594447">Открыть страницу "История"</translation>
 <translation id="6340769215862220182">Увеличить масштаб экрана</translation>
+<translation id="634687982629734605">Переключаться между панелью состояния (расположенной рядом с изображением профиля), панелью запуска, адресной строкой, панелью закладок (если видна), открытой веб-страницей и панелью скачанных файлов (если видна). Если отображается фокусируемое диалоговое окно, переместите фокус на него.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Выделить текст до конца строки</translation>
 <translation id="6425378783626925378">Нажать значок на панели запуска (1-8)</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">Вернуть вкладку в исходное положение</translation>
 <translation id="6474744297082284761">Уменьшить масштаб (когда включена закрепленная или полноэкранная лупа)</translation>
 <translation id="649811797655257835">Выбрать файл и нажать <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Открыть или закрыть виджет "Календарь"</translation>
 <translation id="6551886416582667425">Сделать скриншот/запись видео части экрана</translation>
 <translation id="6556040137485212400">Открыть окно, которое не использовалось дольше других.</translation>
 <translation id="666343722268997814">Открыть меню для выделенного объекта, нажав правую кнопку мыши</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">Очистить историю</translation>
 <translation id="8130528849632411619">Перейти к началу документа</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> или <ph name="E" /></translation>
-<translation id="8232835244134740473">Переключаться между панелью состояния (расположенной рядом с изображением профиля), панелью запуска, адресной строкой, панелью закладок (если видна), открытой веб-страницей и панелью загрузок (если видна).</translation>
 <translation id="8234414138295101081">Повернуть экран на 90 градусов</translation>
 <translation id="8241665785394195545">правая скобка</translation>
 <translation id="8264941229485248811">Показать или скрыть инспектор инструментов разработчика</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Перетащить ссылку в пустую область на панели вкладок</translation>
 <translation id="8389638407792712197">Открыть новое окно</translation>
 <translation id="8429696719963529183">Использовать функциональные клавиши (от F1 до F12)</translation>
-<translation id="8537650670971624753">Выйти из режима поиска</translation>
 <translation id="85690795166292698">Открыть ссылку в новой вкладке</translation>
 <translation id="8609384513243082612">Открыть новую вкладку</translation>
 <translation id="8644639153978066712">Показать скрытые файлы в приложении "Файлы"</translation>
 <translation id="8717459106217102612">Выбрать предыдущее слово или букву</translation>
 <translation id="8727232706774971183">Посмотреть уведомления</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /> <ph name="SEPARATOR1" /> <ph name="SEARCH" /> <ph name="SEPARATOR2" /> клавиши от 1 до 8</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8881584919399569791">Переместить активное окно на рабочий стол слева</translation>
 <translation id="88986195241502842">На страницу вниз</translation>
 <translation id="8924883688469390268">Переключиться на предыдущего пользователя</translation>
+<translation id="8941626538514548667">Перейти к веб-контенту в браузере</translation>
 <translation id="8977648847395357314">Выбрать текст в адресной строке</translation>
 <translation id="8982190978301344584">Показать меню со списком доступных редакторов метода ввода</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> клавиши от 1 до 8</translation>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,11 @@ using SetAppDescriptionsCallback =
     base::RepeatingCallback<void(const std::vector<AppDescription>&)>;
 
 // Sets a delegate on future Java PaymentRequests that returns the given values
-// for queries about system state. If |use_delegate| is false, it disables the
-// use of a testing delegate, returning to the production one.
+// for queries about system state.
 void SetUseDelegateOnPaymentRequestForTesting(
-    bool use_delegate,
     bool is_incognito,
     bool is_valid_ssl,
     bool prefs_can_make_payment,
-    bool skip_ui_for_basic_card,
     const std::string& twa_package_name);
 
 // Gets the WebContents of the Expandable Payment Handler for testing purpose,
@@ -41,14 +38,15 @@ bool ClickPaymentHandlerSecurityIconForTest();
 // Click the close button on the Payment Handler UI. Returns true on success.
 bool ClickPaymentHandlerCloseButtonForTest();
 
-// Confirms payment in minimal UI. Returns true on success.
-bool ConfirmMinimalUIForTest();
-
-// Dismisses the minimal UI. Returns true on success.
-bool DismissMinimalUIForTest();
+// Closes the payment dialog, if any. Returns true on success.
+bool CloseDialogForTest();
 
 // Returns true when running on Android M or L.
 bool IsAndroidMarshmallowOrLollipopForTest();
+
+// Clicks on the 'opt out' link in the SPC dialog, if available. Returns true on
+// success, false if the opt out link wasn't being shown.
+bool ClickSecurePaymentConfirmationOptOutForTest();
 
 // Sets an observer on future Java PaymentRequests that will call these
 // callbacks when the events occur.
@@ -59,11 +57,12 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_has_enrolled_instrument_returned,
     base::RepeatingClosure on_show_instruments_ready,
     SetAppDescriptionsCallback set_app_descriptions,
+    base::RepeatingClosure on_error_displayed,
     base::RepeatingClosure on_not_supported_error,
     base::RepeatingClosure on_connection_terminated,
     base::RepeatingClosure on_abort_called,
     base::RepeatingClosure on_complete_called,
-    base::RepeatingClosure on_minimal_ui_ready);
+    base::RepeatingClosure on_ui_displayed);
 
 }  // namespace payments
 

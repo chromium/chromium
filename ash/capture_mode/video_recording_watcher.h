@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "ash/display/cursor_window_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/window_dimmer.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
@@ -33,6 +33,8 @@ class CursorManager;
 namespace ash {
 
 class CaptureModeController;
+class CaptureModeDemoToolsController;
+class RecordingOverlayController;
 class RecordedWindowRootObserver;
 
 // An instance of this class is created while video recording is in progress to
@@ -61,11 +63,32 @@ class ASH_EXPORT VideoRecordingWatcher
       CaptureModeController* controller,
       aura::Window* window_being_recorded,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
-          cursor_capture_overlay);
+          cursor_capture_overlay,
+      bool projector_mode);
   ~VideoRecordingWatcher() override;
 
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
+  bool is_in_projector_mode() const { return is_in_projector_mode_; }
   bool should_paint_layer() const { return should_paint_layer_; }
+  bool is_shutting_down() const { return is_shutting_down_; }
+
+  // Toggles the Projector mode's overlay widget on or off. Can only be called
+  // if |is_in_projector_mode()| is true.
+  void ToggleRecordingOverlayEnabled();
+
+  // Clean up prior to deletion.
+  void ShutDown();
+
+  // Returns the current parent window for the on-capture-surface widgets such
+  // as `CaptureModeCameraController::camera_preview_widget_` and
+  // `CaptureModeDemoToolsController::demo_tools_widget_` when recording is in
+  // progress.
+  aura::Window* GetOnCaptureSurfaceWidgetParentWindow() const;
+
+  // Returns the bounds within which the on-capture-surface widgets such as
+  // capture mode preview and capture mode demo tools will be confined when
+  // recording is in progress.
+  gfx::Rect GetCaptureSurfaceConfineBounds() const;
 
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
@@ -102,6 +125,7 @@ class ASH_EXPORT VideoRecordingWatcher
   void OnDimmedWindowParentChanged(aura::Window* dimmed_window) override;
 
   // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
 
   // TabletModeObserver:
@@ -110,6 +134,11 @@ class ASH_EXPORT VideoRecordingWatcher
 
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
+
+  // Returns the `partial_region_bounds_` clamped to the bounds of the
+  // `current_root_`. It should only be called if `recording_source_` is
+  // `kRegion`.
+  gfx::Rect GetEffectivePartialRegionBounds() const;
 
   bool IsWindowDimmedForTesting(aura::Window* window) const;
 
@@ -120,11 +149,16 @@ class ASH_EXPORT VideoRecordingWatcher
 
   void SendThrottledWindowSizeChangedNowForTesting();
 
+  CaptureModeDemoToolsController* demo_tools_controller_for_testing() {
+    return demo_tools_controller_.get();
+  }
+
  protected:
   // ui::LayerOwner:
   void SetLayer(std::unique_ptr<ui::Layer> layer) override;
 
  private:
+  friend class CaptureModeTestApi;
   friend class RecordedWindowRootObserver;
 
   // Called by |RecordedWindowRootObserver| to notify us with a hierarchy change
@@ -177,6 +211,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // push the current size of the window being recorded to the service.
   void OnWindowSizeChangeThrottleTimerFiring();
 
+  // Returns the bounds that should be used for the recording overlay widget
+  // relative to its parent |window_being_recorded_|.
+  gfx::Rect GetOverlayWidgetBounds() const;
+
   CaptureModeController* const controller_;
   wm::CursorManager* const cursor_manager_;
   aura::Window* const window_being_recorded_;
@@ -216,13 +254,16 @@ class ASH_EXPORT VideoRecordingWatcher
   // Stores the location of the most recent throttled mouse event (i.e. received
   // while the |cursor_events_throttle_timer_| was running). The location is in
   // the |window_being_recorded_| coordinates.
-  base::Optional<gfx::PointF> throttled_cursor_location_;
+  absl::optional<gfx::PointF> throttled_cursor_location_;
 
   // Resizing a window can generate many intermediate steps, and it would be
   // inefficient to push all of them to the recording service, causing a
   // repeated reconfiguration of the video encoder. This timer is used to
   // throttle such events.
   base::OneShotTimer window_size_change_throttle_timer_;
+
+  // True if the current in progress recording is for a Projector mode session.
+  const bool is_in_projector_mode_;
 
   // True if we force hiding the cursor overlay. This happens when we record a
   // fullscreen, or a partial screen region, and the software-composited cursor
@@ -242,6 +283,10 @@ class ASH_EXPORT VideoRecordingWatcher
   // to take a partial screenshot.
   gfx::Rect partial_region_bounds_;
 
+  // Controls and owns the overlay widget, which is used to host Projector mode
+  // recording overlay contents such as annotations.
+  std::unique_ptr<RecordingOverlayController> recording_overlay_controller_;
+
   // Maintains window dimmers where each is mapped by the window it dims. These
   // are created for the windows that are above the |window_being_recorded_| in
   // z-order on the same display so as to clearly show they're not being
@@ -252,6 +297,12 @@ class ASH_EXPORT VideoRecordingWatcher
   // If |window_being_recorded_| is not a root window, we must make a request to
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
+
+  std::unique_ptr<CaptureModeDemoToolsController> demo_tools_controller_;
+
+  // True if the shutting down process has been triggered. We want to keep
+  // `is_shutting_down_` as the last member variable in this class.
+  bool is_shutting_down_ = false;
 };
 
 }  // namespace ash

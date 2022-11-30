@@ -1,0 +1,6 @@
+Name: os_str_bytes
+URL: https://crates.io/crates/os_str_bytes
+Description: Utilities for converting between byte sequences and platform-native strings
+Version: 6.0.0
+Security Critical: no
+License: Apache 2.0

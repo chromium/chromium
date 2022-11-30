@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// These values represent the `mode` attribute of the fenced frame element. Keep
+// this values in sync with the conditions in `GetModeAttributeValue()` in
+// `html_fenced_frame_element.cc`.
+enum FencedFrameMode {
+  kDefault = 0,
+  kOpaqueAds = 1,
+};
+
+// The `FencedFrameOwnerHost` interface is used by the HTMLFencedFrameElement in
+// the renderer process that hosts the "outer" frame tree. It is used to
+// interact with the backing `content::FencedFrame` in the browser process which
+// hosts an "inner" frame tree via Multiple Page Architecture.
+interface FencedFrameOwnerHost {
+  // Navigates the main frame of the fenced frame's frame tree, to `url`.
+  // TODO(crbug.com/1243568): Document the restrictions on the types of URLs
+  // that `url` can represent, once these restrictions are made.
+  Navigate(url.mojom.Url url, mojo_base.mojom.TimeTicks navigation_start_time);
+};
+
+enum ReportingDestination {
+  kBuyer,
+  kSeller,
+  kComponentSeller,
+  kSharedStorageSelectUrl
+};
+
+struct FencedFrameReporting {
+  // If this is an "opaque-ads" mode fenced frame, there might be an associated
+  // reporting metadata. This is a map from destination type to reporting
+  // metadata which in turn is a map from the event type (registered by the
+  // associated worklet) to the reporting url.
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  map <ReportingDestination, map<string, url.mojom.Url>> metadata;
+};

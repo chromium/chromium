@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
 // This class allows users to confirm sync signin in cases where signin is
@@ -26,6 +25,7 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
 
   OneClickSigninDialogView(const OneClickSigninDialogView&) = delete;
   OneClickSigninDialogView& operator=(const OneClickSigninDialogView&) = delete;
+  ~OneClickSigninDialogView() override;
 
   // Show the one-click signin dialog if not already showing.
   static void ShowDialog(const std::u16string& email,
@@ -52,8 +52,6 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
       std::unique_ptr<OneClickSigninLinksDelegate> delegate,
       base::OnceCallback<void(bool)> confirmed_callback);
 
-  ~OneClickSigninDialogView() override;
-
  private:
   friend class OneClickSigninDialogViewTest;
 
@@ -68,5 +66,10 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
   // The bubble, if we're showing one.
   static OneClickSigninDialogView* dialog_view_;
 };
+
+BEGIN_VIEW_BUILDER(, OneClickSigninDialogView, views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, OneClickSigninDialogView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SYNC_ONE_CLICK_SIGNIN_DIALOG_VIEW_H_

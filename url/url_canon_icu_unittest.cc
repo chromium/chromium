@@ -1,15 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "url/url_canon_icu.h"
 
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
-#include "url/url_canon_icu.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
 
@@ -38,7 +39,7 @@ class UConvScoper {
   UConverter* converter() const { return converter_; }
 
  private:
-  UConverter* converter_;
+  raw_ptr<UConverter> converter_;
 };
 
 TEST(URLCanonIcuTest, ICUCharsetConverter) {
@@ -59,7 +60,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
       "hello\xa7\x41%26%231758%3B\xa6\x6eworld"},
   };
 
-  for (size_t i = 0; i < base::size(icu_cases); i++) {
+  for (size_t i = 0; i < std::size(icu_cases); i++) {
     UConvScoper conv(icu_cases[i].encoding);
     ASSERT_TRUE(conv.converter() != NULL);
     ICUCharsetConverter converter(conv.converter());
@@ -91,7 +92,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
     RawCanonOutput<static_size> output;
     converter.ConvertFromUTF16(input.c_str(), static_cast<int>(input.length()),
                                &output);
-    EXPECT_EQ(input.length(), static_cast<size_t>(output.length()));
+    EXPECT_EQ(input.length(), output.length());
   }
 }
 
@@ -117,7 +118,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       "?q=Chinese%26%2365319%3B"},
   };
 
-  for (size_t i = 0; i < base::size(query_cases); i++) {
+  for (size_t i = 0; i < std::size(query_cases); i++) {
     Component out_comp;
 
     UConvScoper conv(query_cases[i].encoding);

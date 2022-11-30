@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,7 @@ CalleeInfo = collections.namedtuple('CalleeInfo',
 CallerInfo = collections.namedtuple('CallerInfo', ('caller_symbol', 'count'))
 
 
-class Clustering(object):
+class Clustering:
   """Cluster symbols.
 
   We are given a list of the first function calls, ordered by
@@ -69,7 +69,7 @@ class Clustering(object):
   FAR_DISTANCE = 1000
   MAX_CLUSTER_SIZE = 4096  # 4k pages on android.
 
-  class _Cluster(object):
+  class _Cluster:
     def __init__(self, syms, size):
       assert len(set(syms)) == len(syms), 'Duplicated symbols in cluster'
       self._syms = syms
@@ -173,7 +173,7 @@ class Clustering(object):
     neighbors = []
     for sym_list in sym_lists:
       for i, s in enumerate(sym_list):
-        for j in xrange(i + 1, min(i + self.NEIGHBOR_DISTANCE, len(sym_list))):
+        for j in range(i + 1, min(i + self.NEIGHBOR_DISTANCE, len(sym_list))):
           if s == sym_list[j]:
             # Free functions that are static inline seem to be the only
             # source of these duplicates.
@@ -265,7 +265,7 @@ def _GetOffsetSymbolName(processor, dump_offset):
   dump_offset_to_symbol_info = \
       processor.GetDumpOffsetToSymboInfolIncludingWhitelist()
   offset_to_primary = processor.OffsetToPrimaryMap()
-  idx = dump_offset / 2
+  idx = dump_offset // 2
   assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
       'Dump offset out of binary range')
   symbol_info = dump_offset_to_symbol_info[idx]
@@ -294,17 +294,17 @@ def _GetSymbolsCallGraph(profiles, processor):
   # |process_type| can be : browser, renderer, gpu-process, etc.
   for process_type in offsets_graph:
     for process in offsets_graph[process_type]:
-      process = sorted(process, key=lambda k: long(k['index']))
+      process = sorted(process, key=lambda k: int(k['index']))
       graph_list = []
       for el in process:
-        index = long(el['index'])
+        index = int(el['index'])
         callee_symbol = _GetOffsetSymbolName(processor,
-                                             long(el['callee_offset']))
+                                             int(el['callee_offset']))
         misses = 0
         caller_and_count = []
         for bucket in el['caller_and_count']:
-          caller_offset = long(bucket['caller_offset'])
-          count = long(bucket['count'])
+          caller_offset = int(bucket['caller_offset'])
+          count = int(bucket['count'])
           if caller_offset == 0:
             misses += count
             continue
@@ -345,7 +345,7 @@ def _ClusterOffsetsFromCallGraph(profiles, processor):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = [s for s in renderer_clustering]
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
@@ -390,7 +390,7 @@ def _ClusterOffsetsLists(profiles, processor, limit_cluster_size=False):
     other_clustering = []
 
   # Start with the renderer cluster to favor rendering performance.
-  final_ordering = [s for s in renderer_clustering]
+  final_ordering = list(renderer_clustering)
   seen = set(final_ordering)
   final_ordering.extend(s for s in browser_clustering if s not in seen)
   seen |= set(browser_clustering)
@@ -412,5 +412,4 @@ def ClusterOffsets(profiles, processor, limit_cluster_size=False,
 """
   if not call_graph:
     return _ClusterOffsetsLists(profiles, processor, limit_cluster_size)
-  else:
-    return _ClusterOffsetsFromCallGraph(profiles, processor)
+  return _ClusterOffsetsFromCallGraph(profiles, processor)

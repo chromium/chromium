@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("typecd") {
+  defines = [ "IS_TYPECD_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_typecd_client.cc",
+    "fake_typecd_client.h",
+    "typecd_client.cc",
+    "typecd_client.h",
+  ]
+}

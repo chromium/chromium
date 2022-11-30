@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,13 @@ static constexpr int kMaximumWidth = 512;
 class TestVectorIcon : public VectorIcon {
  public:
   explicit TestVectorIcon(int maximum_width) : VectorIcon(maximum_width) {}
+
+  TestVectorIcon(const TestVectorIcon&) = delete;
+  TestVectorIcon& operator=(const TestVectorIcon&) = delete;
+
   ~TestVectorIcon() override {}
 
   UiTexture* GetTexture() const override { return VectorIcon::GetTexture(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestVectorIcon);
 };
 
 }  // namespace

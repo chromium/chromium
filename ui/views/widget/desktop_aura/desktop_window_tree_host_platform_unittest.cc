@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,22 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace views {
 
@@ -32,6 +40,10 @@ class TestWidgetObserver : public WidgetObserver {
     DCHECK(widget_);
     widget_->AddObserver(this);
   }
+
+  TestWidgetObserver(const TestWidgetObserver&) = delete;
+  TestWidgetObserver& operator=(const TestWidgetObserver&) = delete;
+
   ~TestWidgetObserver() override {
     // This might have been destroyed by the widget destroying delegate call.
     if (widget_)
@@ -89,24 +101,27 @@ class TestWidgetObserver : public WidgetObserver {
     run_loop_->Quit();
   }
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   std::unique_ptr<base::RunLoop> run_loop_;
   bool on_widget_destroying_ = false;
   bool visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetObserver);
 };
 
-std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
+std::unique_ptr<Widget> CreateWidgetWithNativeWidgetWithParams(
+    Widget::InitParams params) {
   std::unique_ptr<Widget> widget(new Widget);
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.delegate = nullptr;
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.remove_standard_frame = true;
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
-  params.bounds = gfx::Rect(100, 100, 100, 100);
   widget->Init(std::move(params));
   return widget;
+}
+
+std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.remove_standard_frame = true;
+  params.bounds = gfx::Rect(100, 100, 100, 100);
+  return CreateWidgetWithNativeWidgetWithParams(std::move(params));
 }
 
 }  // namespace
@@ -114,10 +129,13 @@ std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
 class DesktopWindowTreeHostPlatformTest : public ViewsTestBase {
  public:
   DesktopWindowTreeHostPlatformTest() {}
-  ~DesktopWindowTreeHostPlatformTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostPlatformTest);
+  DesktopWindowTreeHostPlatformTest(const DesktopWindowTreeHostPlatformTest&) =
+      delete;
+  DesktopWindowTreeHostPlatformTest& operator=(
+      const DesktopWindowTreeHostPlatformTest&) = delete;
+
+  ~DesktopWindowTreeHostPlatformTest() override {}
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, CallOnNativeWidgetDestroying) {
@@ -161,12 +179,14 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 
   // Pretend a PlatformWindow enters the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized);
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kUnknown,
+                                      ui::PlatformWindowState::kMinimized);
 
   EXPECT_FALSE(widget->GetNativeWindow()->IsVisible());
 
   // Pretend a PlatformWindow exits the minimized state.
-  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kNormal);
+  host_platform->OnWindowStateChanged(ui::PlatformWindowState::kMinimized,
+                                      ui::PlatformWindowState::kNormal);
   EXPECT_TRUE(widget->GetNativeWindow()->IsVisible());
 }
 
@@ -179,30 +199,35 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(host_platform);
-  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
+  if (!host_platform->platform_window()->ShouldUpdateWindowShape())
     return;
 
   auto* content_window =
       DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(content_window);
-  // alpha_shape for the layer of content window is updated from the
-  // |NonClientView::GetWindowMask|.
   EXPECT_FALSE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
-  EXPECT_TRUE(content_window->layer()->alpha_shape());
+  // SetClipPath for the layer of the content window is updated from it.
+  EXPECT_FALSE(host_platform->GetWindowMaskForClipping().isEmpty());
+  EXPECT_FALSE(widget->GetLayer()->FillsBoundsCompletely());
 
-  // When fullscreen mode, alpha_shape is set to empty since there is no
+  // When fullscreen mode, clip_path_ is set to empty since there is no
   // |NonClientView::GetWindowMask|.
-  host_platform->SetFullscreen(true);
+  host_platform->SetFullscreen(true, display::kInvalidDisplayId);
   widget->SetBounds(gfx::Rect(800, 800));
   EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
-  EXPECT_FALSE(content_window->layer()->alpha_shape());
+  EXPECT_TRUE(host_platform->GetWindowMaskForClipping().isEmpty());
+  EXPECT_TRUE(widget->GetLayer()->FillsBoundsCompletely());
 }
 
 // A Widget that allows setting the min/max size for the widget.
 class CustomSizeWidget : public Widget {
  public:
   CustomSizeWidget() = default;
+
+  CustomSizeWidget(const CustomSizeWidget&) = delete;
+  CustomSizeWidget& operator=(const CustomSizeWidget&) = delete;
+
   ~CustomSizeWidget() override = default;
 
   void set_min_size(const gfx::Size& size) { min_size_ = size; }
@@ -215,8 +240,6 @@ class CustomSizeWidget : public Widget {
  private:
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomSizeWidget);
 };
 
 TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithMinMax) {
@@ -260,7 +283,7 @@ class ResizeObserver : public aura::WindowTreeHostObserver {
   }
 
  private:
-  aura::WindowTreeHost* const host_;
+  const raw_ptr<aura::WindowTreeHost> host_;
   int resize_count_ = 0;
   int bounds_change_count_ = 0;
 };
@@ -286,62 +309,72 @@ TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithUnchangedSize) {
   EXPECT_EQ(0, observer.resize_count());
 }
 
-class DesktopWindowTreeHostPlatformHighDPITest
-    : public DesktopWindowTreeHostPlatformTest {
- public:
-  DesktopWindowTreeHostPlatformHighDPITest() = default;
-  ~DesktopWindowTreeHostPlatformHighDPITest() override = default;
-
- private:
-  void SetUp() override {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
-
-    DesktopWindowTreeHostPlatformTest::SetUp();
+TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
+  bool context_is_also_parent = false;
+#if defined(USE_OZONE)
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .set_parent_for_non_top_level_windows) {
+    context_is_also_parent = true;
   }
-};
-
-// Tests that the window shape is updated properly from the
-// |NonClientView::GetWindowMask| in HighDPI.
-TEST_F(DesktopWindowTreeHostPlatformHighDPITest, VerifyWindowShapeInHighDPI) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+#endif
+  auto widget = CreateWidgetWithNativeWidget();
   widget->Show();
+
+  Widget::InitParams widget_2_params(Widget::InitParams::TYPE_MENU);
+  widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
+  widget_2_params.parent = widget->GetNativeWindow();
+  auto widget2 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_2_params));
+  widget2->Show();
 
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(host_platform);
-  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
-    return;
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  EXPECT_EQ(host_platform->window_children_.size(), 1u);
 
-  auto* content_window =
-      DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
-          widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(content_window);
-  // Check device scale factor.
-  EXPECT_EQ(host_platform->device_scale_factor(), 2.0);
+  auto* host_platform2 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget2->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  EXPECT_EQ(host_platform2->window_parent_, host_platform);
+  EXPECT_EQ(*host_platform->window_children_.begin(), host_platform2);
 
-  // alpha_shape for the layer of content window is updated from the
-  // |NonClientView::GetWindowMask|.
-  SkPath path_in_pixels = host_platform->GetWindowMaskForWindowShapeInPixels();
-  EXPECT_FALSE(path_in_pixels.isEmpty());
+  Widget::InitParams widget_3_params(Widget::InitParams::TYPE_MENU);
+  widget_3_params.bounds = gfx::Rect(120, 120, 50, 80);
+  widget_3_params.parent = widget->GetNativeWindow();
+  auto widget3 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_3_params));
+  widget3->Show();
 
-  // Converts path to DIPs and calculates expected region from it.
-  SkPath path_in_dips;
-  path_in_pixels.transform(
-      SkMatrix(host_platform->GetInverseRootTransform().matrix()),
-      &path_in_dips);
-  SkRegion region;
-  region.setRect(path_in_dips.getBounds().round());
-  SkRegion expected_region;
-  expected_region.setPath(path_in_dips, region);
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  EXPECT_EQ(host_platform->window_children_.size(), 2u);
 
-  SkRegion shape_region;
-  for (auto& bound : *(content_window->layer()->alpha_shape()))
-    shape_region.op(gfx::RectToSkIRect(bound), SkRegion::Op::kUnion_Op);
+  auto* host_platform3 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget3->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  EXPECT_EQ(host_platform3->window_parent_, host_platform);
+  EXPECT_NE(host_platform->window_children_.find(host_platform3),
+            host_platform->window_children_.end());
 
-  // Test that region from alpha_shape is same as the expected region from path
-  // in DIPs.
-  EXPECT_EQ(shape_region, expected_region);
+  Widget::InitParams widget_4_params(Widget::InitParams::TYPE_TOOLTIP);
+  widget_4_params.bounds = gfx::Rect(105, 105, 10, 10);
+  widget_4_params.context = widget->GetNativeWindow();
+  auto widget4 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_4_params));
+  widget4->Show();
+
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  auto* host_platform4 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget4->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  if (context_is_also_parent) {
+    EXPECT_EQ(host_platform->window_children_.size(), 3u);
+    EXPECT_EQ(host_platform4->window_parent_, host_platform);
+    EXPECT_NE(host_platform->window_children_.find(host_platform4),
+              host_platform->window_children_.end());
+  } else {
+    EXPECT_EQ(host_platform4->window_parent_, nullptr);
+    EXPECT_EQ(host_platform->window_children_.size(), 2u);
+    EXPECT_NE(host_platform->window_children_.find(host_platform3),
+              host_platform->window_children_.end());
+  }
 }
 
 }  // namespace views

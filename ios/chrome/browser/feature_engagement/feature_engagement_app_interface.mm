@@ -1,23 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/memory/singleton.h"
+#import "base/bind.h"
+#import "base/memory/singleton.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/feature_engagement/test/test_tracker.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/translate/core/browser/translate_prefs.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/feature_engagement/test/test_tracker.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -59,6 +59,9 @@ class ScopedFeatureListHolder {
     return base::Singleton<ScopedFeatureListHolder>::get();
   }
 
+  ScopedFeatureListHolder(const ScopedFeatureListHolder&) = delete;
+  ScopedFeatureListHolder& operator=(const ScopedFeatureListHolder&) = delete;
+
   // Creates and returns new scoped feature list. List stays alive until
   // DestroyLists() is called. Allows to push multiple features via scoped
   // feature list as required by some FeatureEngagement tests.
@@ -75,8 +78,6 @@ class ScopedFeatureListHolder {
   ScopedFeatureListHolder() = default;
   std::vector<std::unique_ptr<ScopedFeatureList>> scoped_feature_lists_;
   friend struct base::DefaultSingletonTraits<ScopedFeatureListHolder>;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFeatureListHolder);
 };
 
 }  // namespace
@@ -187,6 +188,71 @@ class ScopedFeatureListHolder {
       .InitAndEnableFeatureWithParameters(
           feature_engagement::kIPHLongPressToolbarTipFeature,
           long_press_tip_params);
+  return LoadFeatureEngagementTracker();
+}
+
++ (BOOL)enableDefaultSiteViewTipTriggering {
+  std::map<std::string, std::string> default_site_view_tip_params;
+
+  default_site_view_tip_params["availability"] = "any";
+  default_site_view_tip_params["session_rate"] = "<3";
+  default_site_view_tip_params["event_used"] =
+      "name:default_site_view_used;comparator:==0;window:720;storage:720";
+  default_site_view_tip_params["event_trigger"] =
+      "name:default_site_view_shown;comparator:==0;window:720;storage:720";
+  default_site_view_tip_params["event_1"] =
+      "name:desktop_version_requested;comparator:>=3;window:60;storage:60";
+
+  ScopedFeatureListHolder::GetInstance()
+      ->CreateList()
+      .InitAndEnableFeatureWithParameters(
+          feature_engagement::kIPHDefaultSiteViewFeature,
+          default_site_view_tip_params);
+  return LoadFeatureEngagementTracker();
+}
+
++ (BOOL)enablePasswordSuggestionsTipTriggering {
+  std::map<std::string, std::string> password_suggestions_tip_params;
+
+  password_suggestions_tip_params["availability"] = "any";
+  password_suggestions_tip_params["session_rate"] = "any";
+  password_suggestions_tip_params["event_used"] =
+      "name:password_suggestions_shown;comparator:==0;window:90;"
+      "storage:360";
+  password_suggestions_tip_params["event_trigger"] =
+      "name:password_suggestions_iph_triggered;comparator:==0;window:1825;"
+      "storage:1825";
+
+  ScopedFeatureListHolder::GetInstance()
+      ->CreateList()
+      .InitAndEnableFeatureWithParameters(
+          feature_engagement::kIPHPasswordSuggestionsFeature,
+          password_suggestions_tip_params);
+
+  return LoadFeatureEngagementTracker();
+}
+
++ (BOOL)enableOverflowMenuTipTriggering {
+  std::map<std::string, std::string> overflow_menu_tip_params;
+
+  overflow_menu_tip_params["availability"] = "any";
+  overflow_menu_tip_params["session_rate"] = "any";
+  overflow_menu_tip_params["event_used"] =
+      "name:popup_menu_tip_used;comparator:==0;window:180;"
+      "storage:360";
+  overflow_menu_tip_params["event_trigger"] =
+      "name:popup_menu_tip_triggered;comparator:==0;window:1825;"
+      "storage:1825";
+  overflow_menu_tip_params["event_lockout"] =
+      "name:overflow_menu_no_horizontal_scroll_or_action;comparator:>=2;window:"
+      "180;storage:360";
+
+  ScopedFeatureListHolder::GetInstance()
+      ->CreateList()
+      .InitAndEnableFeatureWithParameters(
+          feature_engagement::kIPHOverflowMenuTipFeature,
+          overflow_menu_tip_params);
+
   return LoadFeatureEngagementTracker();
 }
 

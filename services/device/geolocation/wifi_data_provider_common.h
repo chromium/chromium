@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
@@ -38,6 +37,9 @@ class WifiDataProviderCommon : public WifiDataProvider {
   };
 
   WifiDataProviderCommon();
+
+  WifiDataProviderCommon(const WifiDataProviderCommon&) = delete;
+  WifiDataProviderCommon& operator=(const WifiDataProviderCommon&) = delete;
 
   // WifiDataProvider implementation
   void StartDataProvider() override;
@@ -74,8 +76,6 @@ class WifiDataProviderCommon : public WifiDataProvider {
 
   // Holder for delayed tasks; takes care of cleanup.
   base::WeakPtrFactory<WifiDataProviderCommon> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommon);
 };
 
 }  // namespace device

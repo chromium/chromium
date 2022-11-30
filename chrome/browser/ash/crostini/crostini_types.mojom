@@ -1,0 +1,46 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crostini.mojom;
+
+// Keep this in sync with CrostiniInstallerState in enums.xml
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum InstallerState {
+  kStart = 0,                // Just started installation
+  kInstallImageLoader = 1,   // Loading the Termina VM component.
+  kCreateDiskImage = 2,      // Creating the image for the Termina VM.
+  kStartTerminaVm = 3,       // Starting the Termina VM.
+  kStartLxd = 4,             // Starting LXD.
+  kCreateContainer = 5,      // Creating the container inside the Termina VM.
+  kSetupContainer = 6,       // Setting up the container inside the Termina VM.
+  kStartContainer = 7,       // Starting the container inside the Termina VM.
+  //kFetchSshKeys = 8,         // Fetch ssh keys from concierge.
+  //kMountContainer = 9,       // Do sshfs mount of container.
+  kConfigureContainer = 10,  // Configuring the container inside the Termina VM.
+};
+
+enum InstallerError {
+  kNone,
+  kErrorLoadingTermina,
+  kNeedUpdate,
+  kErrorCreatingDiskImage,
+  kErrorStartingTermina,
+  kErrorStartingLxd,
+  kErrorStartingContainer,
+  kErrorOffline,
+  // kErrorFetchingSshKeys,
+  // kErrorMountingContainer,
+  kErrorSettingUpContainer,
+  kErrorInsufficientDiskSpace,
+  kErrorConfiguringContainer,
+  kErrorCreateContainer,
+  kErrorUnknown,
+};
+
+struct DiskSliderTick {
+  int64 value;        // Size in bytes.
+  string label;       // Localised human-readable value e.g. 4.6GB.
+  string aria_value;  // Value for e.g. screen readers.
+};

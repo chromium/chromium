@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
@@ -29,6 +28,11 @@ using url_pattern_index::UrlPattern;
 class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
  public:
   SubresourceFilterIndexedRulesetTest() { Reset(); }
+
+  SubresourceFilterIndexedRulesetTest(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
+  SubresourceFilterIndexedRulesetTest& operator=(
+      const SubresourceFilterIndexedRulesetTest&) = delete;
 
  protected:
   LoadPolicy GetLoadPolicy(base::StringPiece url,
@@ -87,20 +91,17 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
 
   void Finish() {
     indexer_->Finish();
-    matcher_.reset(
-        new IndexedRulesetMatcher(indexer_->data(), indexer_->size()));
+    matcher_ = std::make_unique<IndexedRulesetMatcher>(indexer_->data(),
+                                                       indexer_->size());
   }
 
   void Reset() {
     matcher_.reset(nullptr);
-    indexer_.reset(new RulesetIndexer);
+    indexer_ = std::make_unique<RulesetIndexer>();
   }
 
   std::unique_ptr<RulesetIndexer> indexer_;
   std::unique_ptr<IndexedRulesetMatcher> matcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterIndexedRulesetTest);
 };
 
 TEST_F(SubresourceFilterIndexedRulesetTest, EmptyRuleset) {
@@ -129,15 +130,36 @@ TEST_F(SubresourceFilterIndexedRulesetTest, SimpleBlocklist) {
             GetLoadPolicy("http://example.org?param=image1"));
 }
 
+TEST_F(SubresourceFilterIndexedRulesetTest, SimpleBlocklistSubdocument) {
+  ASSERT_TRUE(AddSimpleRule("?param="));
+  Finish();
+
+  EXPECT_EQ(LoadPolicy::ALLOW, GetLoadPolicy("https://example.com"));
+  EXPECT_EQ(LoadPolicy::DISALLOW,
+            GetLoadPolicy("http://example.org?param=image1",
+                          /*document_origin=*/"", testing::kSubdocument));
+}
+
 TEST_F(SubresourceFilterIndexedRulesetTest, SimpleAllowlist) {
   ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
   Finish();
 
   // This should not return EXPLICITLY_ALLOW because there is no corresponding
   // blocklist rule for the allowlist rule. To optimize speed, allowlist rules
-  // are only checked if a rule was matched with a blocklist rule.
+  // are only checked if a rule was matched with a blocklist rule unless it
+  // is a subdocument resource.
   EXPECT_EQ(LoadPolicy::ALLOW,
             GetLoadPolicy("https://example.com?filter_out=true"));
+}
+
+TEST_F(SubresourceFilterIndexedRulesetTest, SimpleAllowlistSubdocument) {
+  ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
+  Finish();
+
+  // Verify allowlist rules are always checked for subdocument element types.
+  EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
+            GetLoadPolicy("https://example.com?filter_out=true",
+                          /*document_origin=*/"", testing::kSubdocument));
 }
 
 TEST_F(SubresourceFilterIndexedRulesetTest,
@@ -148,6 +170,17 @@ TEST_F(SubresourceFilterIndexedRulesetTest,
 
   EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
             GetLoadPolicy("https://example.com?filter_out=true"));
+}
+
+TEST_F(SubresourceFilterIndexedRulesetTest,
+       SimpleAllowlistWithMatchingBlocklistSubdocument) {
+  ASSERT_TRUE(AddSimpleRule("example.com/?filter_out="));
+  ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
+  Finish();
+
+  EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
+            GetLoadPolicy("https://example.com?filter_out=true",
+                          /*document_origin=*/"", testing::kSubdocument));
 }
 
 // Ensure patterns containing non-ascii characters are disallowed.
@@ -193,12 +226,12 @@ TEST_F(SubresourceFilterIndexedRulesetTest, NonAsciiDomain) {
   std::string non_ascii_domain = base::WideToUTF8(L"\x0491\x0493.com");
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
-  testing::AddDomains({non_ascii_domain}, &rule);
+  testing::AddInitiatorDomains({non_ascii_domain}, &rule);
   ASSERT_FALSE(AddUrlRule(rule));
 
   rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
   std::string non_ascii_excluded_domain = "~" + non_ascii_domain;
-  testing::AddDomains({non_ascii_excluded_domain}, &rule);
+  testing::AddInitiatorDomains({non_ascii_excluded_domain}, &rule);
   ASSERT_FALSE(AddUrlRule(rule));
 
   Finish();
@@ -220,7 +253,7 @@ TEST_F(SubresourceFilterIndexedRulesetTest, PercentEncodedDomain) {
   std::string percent_encoded_host = "%2C.com";
 
   auto rule = MakeUrlRule(UrlPattern(kUrl, testing::kSubstring));
-  testing::AddDomains({percent_encoded_host}, &rule);
+  testing::AddInitiatorDomains({percent_encoded_host}, &rule);
   ASSERT_TRUE(AddUrlRule(rule));
   Finish();
 

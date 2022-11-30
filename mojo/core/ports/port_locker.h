@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/core/ports/port_ref.h"
 
 namespace mojo {
@@ -29,6 +29,10 @@ class PortLocker {
   // |PortRef*|s. The sequence may be reordered by this constructor, and upon
   // return, all referenced ports' locks are held.
   PortLocker(const PortRef** port_refs, size_t num_ports);
+
+  PortLocker(const PortLocker&) = delete;
+  PortLocker& operator=(const PortLocker&) = delete;
+
   ~PortLocker();
 
   // Provides safe access to a PortRef's Port. Note that in release builds this
@@ -58,16 +62,21 @@ class PortLocker {
 #endif
 
  private:
-  const PortRef** const port_refs_;
+  // `port_refs_` is not a raw_ptr<T> for performance reasons: PortLocker is
+  // usually short-lived (e.g. allocated on the stack) + the stack (not on the
+  // heap).
+  RAW_PTR_EXCLUSION const PortRef** const port_refs_;
   const size_t num_ports_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortLocker);
 };
 
 // Convenience wrapper for a PortLocker that locks a single port.
-class SinglePortLocker {
+class COMPONENT_EXPORT(MOJO_CORE_PORTS) SinglePortLocker {
  public:
   explicit SinglePortLocker(const PortRef* port_ref);
+
+  SinglePortLocker(const SinglePortLocker&) = delete;
+  SinglePortLocker& operator=(const SinglePortLocker&) = delete;
+
   ~SinglePortLocker();
 
   Port* port() const { return locker_.GetPort(*port_ref_); }
@@ -75,8 +84,6 @@ class SinglePortLocker {
  private:
   const PortRef* port_ref_;
   PortLocker locker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinglePortLocker);
 };
 
 }  // namespace ports

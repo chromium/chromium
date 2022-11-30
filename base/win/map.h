@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <wrl/implements.h>
 
 #include <map>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/win/vector.h"
 #include "base/win/winrt_foundation_helpers.h"
 
@@ -343,7 +344,8 @@ class Map
   }
 
   IFACEMETHODIMP Insert(AbiK key, AbiV value, boolean* replaced) override {
-    *replaced = !InsertOrAssign(map_, key, std::move(value)).second;
+    auto [it, inserted] = map_.insert_or_assign(key, std::move(value));
+    *replaced = !inserted;
     NotifyMapChanged(*replaced ? ABI::Windows::Foundation::Collections::
                                      CollectionChange_ItemChanged
                                : ABI::Windows::Foundation::Collections::
@@ -365,8 +367,7 @@ class Map
   IFACEMETHODIMP Clear() override {
     map_.clear();
     NotifyMapChanged(
-        ABI::Windows::Foundation::Collections::CollectionChange_Reset,
-        0);  // NOLINT(modernize-use-nullptr): AbiK may not be a pointer.
+        ABI::Windows::Foundation::Collections::CollectionChange_Reset, 0);
     return S_OK;
   }
 

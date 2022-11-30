@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_EXO_PARTS_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace ash {
 class ArcOverlayManager;
@@ -22,6 +20,9 @@ class ExoParts {
   // Creates ExoParts. Returns null if exo should not be created.
   static std::unique_ptr<ExoParts> CreateIfNecessary();
 
+  ExoParts(const ExoParts&) = delete;
+  ExoParts& operator=(const ExoParts&) = delete;
+
   ~ExoParts();
 
  private:
@@ -29,8 +30,6 @@ class ExoParts {
 
   std::unique_ptr<ash::ArcOverlayManager> arc_overlay_manager_;
   std::unique_ptr<exo::WaylandServerController> wayland_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExoParts);
 };
 
 #endif  // CHROME_BROWSER_EXO_PARTS_H_

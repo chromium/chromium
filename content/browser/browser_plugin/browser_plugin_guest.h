@@ -1,43 +1,24 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// A BrowserPluginGuest is the browser side of a browser <--> embedder
-// renderer channel. A BrowserPlugin (a WebPlugin) is on the embedder
-// renderer side of browser <--> embedder renderer communication.
-//
-// BrowserPluginGuest lives on the UI thread of the browser process. Any
-// messages about the guest render process that the embedder might be interested
-// in receiving should be listened for here.
-//
-// BrowserPluginGuest is a WebContentsObserver for the guest WebContents.
-// BrowserPluginGuest operates under the assumption that the guest will be
-// accessible through only one RenderViewHost for the lifetime of
-// the guest WebContents. Thus, cross-process navigation is not supported.
 
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_GUEST_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_GUEST_H_
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
-#include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
-#include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
-#include "ui/base/ime/mojom/text_input_state.mojom.h"
 
 namespace content {
-class RenderWidgetHostViewBase;
 class WebContentsImpl;
 
 // A browser plugin guest provides functionality for WebContents to operate in
-// the guest role and implements guest-specific overrides for ViewHostMsg_*
-// messages.
+// the guest role.
 //
 // When a guest is initially created, it is in an unattached state. That is,
 // it is not visible anywhere and has no embedder WebContents assigned.
@@ -46,13 +27,13 @@ class WebContentsImpl;
 // CreateNewWindow. The newly created guest will live in the same partition,
 // which means it can share storage and can script this guest.
 //
-// Note: in --site-per-process, all IPCs sent out from this class will be
-// dropped on the floor since we don't have a BrowserPlugin.
 // TODO(wjmaclean): Get rid of "BrowserPlugin" in the name of this class.
 // Perhaps "InnerWebContentsGuestConnector"?
-class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
-                                          public WebContentsObserver {
+class BrowserPluginGuest : public WebContentsObserver {
  public:
+  BrowserPluginGuest(const BrowserPluginGuest&) = delete;
+  BrowserPluginGuest& operator=(const BrowserPluginGuest&) = delete;
+
   ~BrowserPluginGuest() override;
 
   // The WebContents passed into the factory method here has not been
@@ -68,32 +49,23 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   static void CreateInWebContents(WebContentsImpl* web_contents,
                                   BrowserPluginGuestDelegate* delegate);
 
-  // Returns whether the given WebContents is a BrowserPlugin guest.
-  static bool IsGuest(WebContentsImpl* web_contents);
-
   // BrowserPluginGuest::Init is called after the associated guest WebContents
-  // initializes. If this guest cannot navigate without being attached to a
-  // container, then this call is a no-op. For guest types that can be
-  // navigated, this call adds the associated RenderWdigetHostViewGuest to the
-  // view hierarchy and sets up the appropriate
-  // blink::RendererPreferences so that this guest can navigate and resize
-  // offscreen.
+  // initializes. This sets up the appropriate blink::RendererPreferences so
+  // that this guest can navigate and resize offscreen.
   void Init();
-
-  // Returns a WeakPtr to this BrowserPluginGuest.
-  base::WeakPtr<BrowserPluginGuest> AsWeakPtr();
 
   // Creates a new guest WebContentsImpl with the provided |params| with |this|
   // as the |opener|.
-  WebContentsImpl* CreateNewGuestWindow(
+  std::unique_ptr<WebContentsImpl> CreateNewGuestWindow(
       const WebContents::CreateParams& params);
 
   // WebContentsObserver implementation.
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  void RenderProcessGone(base::TerminationStatus status) override;
-#if defined(OS_MAC)
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+#if BUILDFLAG(IS_MAC)
   // On MacOS X popups are painted by the browser process. We handle them here
   // so that they are positioned correctly.
   void ShowPopupMenu(
@@ -108,42 +80,17 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
       bool allow_multiple_selection);
 #endif
 
-  // GuestHost implementation.
-  void WillDestroy() override;
-
-  // Exposes the protected web_contents() from WebContentsObserver.
   WebContentsImpl* GetWebContents() const;
 
-  gfx::Point GetScreenCoordinates(const gfx::Point& relative_position) const;
-
- protected:
+ private:
   // BrowserPluginGuest is a WebContentsObserver of |web_contents| and
   // |web_contents| has to stay valid for the lifetime of BrowserPluginGuest.
-  // Constructor protected for testing.
   BrowserPluginGuest(WebContentsImpl* web_contents,
                      BrowserPluginGuestDelegate* delegate);
 
- private:
   void InitInternal(WebContentsImpl* owner_web_contents);
 
-  // Sets the focus state of the current RenderWidgetHostView.
-  void SetFocus(bool focused, blink::mojom::FocusType focus_type);
-
-  void SendTextInputTypeChangedToView(RenderWidgetHostViewBase* guest_rwhv);
-
-  WebContentsImpl* owner_web_contents_;
-
-  // BrowserPluginGuest::Init can only be called once. This flag allows it to
-  // exit early if it's already been called.
-  bool initialized_;
-
-  // Text input type states.
-  // Using scoped_ptr to avoid including the header file: view_messages.h.
-  ui::mojom::TextInputStatePtr last_text_input_state_;
-
-  BrowserPluginGuestDelegate* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginGuest);
+  const raw_ptr<BrowserPluginGuestDelegate> delegate_;
 };
 
 }  // namespace content

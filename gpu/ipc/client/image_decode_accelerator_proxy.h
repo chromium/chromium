@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_CLIENT_IMAGE_DECODE_ACCELERATOR_PROXY_H_
 #define GPU_IPC_CLIENT_IMAGE_DECODE_ACCELERATOR_PROXY_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/client/image_decode_accelerator_interface.h"
@@ -50,6 +50,11 @@ class GPU_EXPORT ImageDecodeAcceleratorProxy
     : public ImageDecodeAcceleratorInterface {
  public:
   ImageDecodeAcceleratorProxy(GpuChannelHost* host, int32_t route_id);
+
+  ImageDecodeAcceleratorProxy(const ImageDecodeAcceleratorProxy&) = delete;
+  ImageDecodeAcceleratorProxy& operator=(const ImageDecodeAcceleratorProxy&) =
+      delete;
+
   ~ImageDecodeAcceleratorProxy() override;
 
   // Determines if |image_metadata| corresponds to an image that can be decoded
@@ -89,13 +94,11 @@ class GPU_EXPORT ImageDecodeAcceleratorProxy
       bool needs_mips) override;
 
  private:
-  GpuChannelHost* const host_;
+  const raw_ptr<GpuChannelHost> host_;
   const int32_t route_id_;
 
   base::Lock lock_;
   uint64_t next_release_count_ GUARDED_BY(lock_) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorProxy);
 };
 
 }  // namespace gpu

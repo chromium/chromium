@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurfaceCharacterization.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
@@ -36,13 +35,18 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
         : provider_(provider) {
       provider_->SecondaryCBDrawBegin(std::move(draw_context));
     }
+
+    ScopedSecondaryCBDraw(const ScopedSecondaryCBDraw&) = delete;
+    ScopedSecondaryCBDraw& operator=(const ScopedSecondaryCBDraw&) = delete;
+
     ~ScopedSecondaryCBDraw() { provider_->SecondaryCMBDrawSubmitted(); }
 
    private:
     AwVulkanContextProvider* const provider_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSecondaryCBDraw);
   };
+
+  AwVulkanContextProvider(const AwVulkanContextProvider&) = delete;
+  AwVulkanContextProvider& operator=(const AwVulkanContextProvider&) = delete;
 
   static scoped_refptr<AwVulkanContextProvider> Create(
       AwDrawFn_InitVkParams* params);
@@ -56,7 +60,7 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   void EnqueueSecondaryCBSemaphores(
       std::vector<VkSemaphore> semaphores) override;
   void EnqueueSecondaryCBPostSubmitTask(base::OnceClosure closure) override;
-  base::Optional<uint32_t> GetSyncCpuMemoryLimit() const override;
+  absl::optional<uint32_t> GetSyncCpuMemoryLimit() const override;
 
   VkDevice device() { return globals_->device_queue->GetVulkanDevice(); }
   VkQueue queue() { return globals_->device_queue->GetVulkanQueue(); }
@@ -92,8 +96,6 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   sk_sp<GrVkSecondaryCBDrawContext> draw_context_;
   std::vector<base::OnceClosure> post_submit_tasks_;
   std::vector<VkSemaphore> post_submit_semaphores_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwVulkanContextProvider);
 };
 
 }  // namespace android_webview

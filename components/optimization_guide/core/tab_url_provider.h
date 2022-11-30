@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@ namespace optimization_guide {
 class TabUrlProvider {
  public:
   virtual ~TabUrlProvider() = default;
+  TabUrlProvider(const TabUrlProvider&) = delete;
+  TabUrlProvider& operator=(const TabUrlProvider&) = delete;
 
   // Returns URLS of tabs that are considered active for the user, as
   // represented by |profile|. Tabs are considered active if they were last

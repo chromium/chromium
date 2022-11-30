@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Tests that search across files works with formatted scripts.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function nonFormattedFunction() { var  i = 2 + 2; var a = 4; return a + i; }
@@ -29,14 +29,14 @@
   }
 
   async function didShowScriptSource(frame) {
-    scriptSource = frame._uiSourceCode;
+    scriptSource = frame.uiSourceCode();
     var matches =
         await scriptSource.searchInContent('magic-string', true, false);
     TestRunner.addResult('Pre-format search results:');
     SourcesTestRunner.dumpSearchMatches(matches);
     shouldRequestContent = true;
     TestRunner.addSniffer(
-        Sources.ScriptFormatterEditorAction.prototype, '_updateButton',
+        Sources.ScriptFormatterEditorAction.prototype, 'updateButton',
         uiSourceCodeScriptFormatted);
     scriptFormatter.toggleFormatScriptSource();
   }

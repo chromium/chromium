@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -33,6 +32,10 @@ enum class HighlighterGestureType;
 class HighlighterResultView : public views::View {
  public:
   HighlighterResultView();
+
+  HighlighterResultView(const HighlighterResultView&) = delete;
+  HighlighterResultView& operator=(const HighlighterResultView&) = delete;
+
   ~HighlighterResultView() override;
 
   static views::UniqueWidgetPtr Create(aura::Window* root_window);
@@ -47,8 +50,6 @@ class HighlighterResultView : public views::View {
 
   std::unique_ptr<ui::Layer> result_layer_;
   std::unique_ptr<base::OneShotTimer> animation_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HighlighterResultView);
 };
 
 }  // namespace ash

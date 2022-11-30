@@ -39,7 +39,7 @@ class BrowserTestDriverTest(unittest.TestCase):
         port = TestPort(MockHost())
         driver = BrowserTestDriver(port, 0)
         driver._server_process = MockServerProcess(
-            lines=['StdinPath: /foo/bar', '#EOF'])
+            lines=[b'StdinPath: /foo/bar', b'#EOF'])
         content_block = driver._read_block(0)
-        self.assertEqual(content_block.stdin_path, '/foo/bar')
+        self.assertEqual(content_block.stdin_path, b'/foo/bar')
         driver._stdin_directory = None

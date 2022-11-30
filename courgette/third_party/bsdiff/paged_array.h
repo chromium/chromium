@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include <iterator>
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/memory.h"
 
 namespace courgette {
@@ -166,6 +166,10 @@ class PagedArray {
   using iterator = PagedArray_iterator<ThisType, T>;
 
   PagedArray() = default;
+
+  PagedArray(const PagedArray&) = delete;
+  PagedArray& operator=(const PagedArray&) = delete;
+
   ~PagedArray() { clear(); }
 
   iterator begin() { return iterator(this, 0); }
@@ -236,8 +240,6 @@ class PagedArray {
   T** pages_ = nullptr;
   size_t size_ = 0U;
   size_t page_count_ = 0U;
-
-  DISALLOW_COPY_AND_ASSIGN(PagedArray);
 };
 
 }  // namespace courgette

@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/background_fetch/storage/image_helpers.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/image/image.h"
@@ -65,7 +65,7 @@ void DeserializeIcon(std::unique_ptr<std::string> serialized_icon,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&DeserializeAndConvertIcon, std::move(serialized_icon)),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 }  // namespace background_fetch

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
+#include "components/prefs/pref_name_set.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 #include "services/preferences/tracked/hash_store_contents.h"
@@ -86,11 +86,16 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         unprotected_store_migration_complete_(false),
         protected_store_migration_complete_(false) {}
 
+  TrackedPreferencesMigrationTest(const TrackedPreferencesMigrationTest&) =
+      delete;
+  TrackedPreferencesMigrationTest& operator=(
+      const TrackedPreferencesMigrationTest&) = delete;
+
   void SetUp() override { Reset(); }
 
   void Reset() {
-    std::set<std::string> unprotected_pref_names;
-    std::set<std::string> protected_pref_names;
+    PrefNameSet unprotected_pref_names;
+    PrefNameSet protected_pref_names;
     unprotected_pref_names.insert(kUnprotectedPref);
     unprotected_pref_names.insert(kPreviouslyProtectedPref);
     protected_pref_names.insert(kProtectedPref);
@@ -153,11 +158,13 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
-        pref_hash_store.reset(new PrefHashStoreImpl(kSeed, kDeviceId, false));
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, false);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         store = protected_prefs_.get();
-        pref_hash_store.reset(new PrefHashStoreImpl(kSeed, kDeviceId, true));
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, true);
         break;
     }
     DCHECK(store);
@@ -327,11 +334,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         ASSERT_TRUE(unprotected_prefs_);
-        unprotected_prefs_->RemovePath(key, NULL);
+        unprotected_prefs_->RemovePath(key);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         ASSERT_TRUE(protected_prefs_);
-        protected_prefs_->RemovePath(key, NULL);
+        protected_prefs_->RemovePath(key);
         break;
     }
   }
@@ -374,8 +381,6 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   bool protected_store_migration_complete_;
 
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedPreferencesMigrationTest);
 };
 
 // static

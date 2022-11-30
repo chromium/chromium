@@ -25,10 +25,15 @@
 
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 
+#include "third_party/blink/renderer/core/css/font_size_functions.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+constexpr float kDefaultFontSizeFallback = 16.0;
 
 // We aim to match IE here.
 // -IE uses a font based on the encoding as the default font for form controls.
@@ -40,8 +45,21 @@ namespace blink {
 // IE uses MS Shell Dlg there, which we render incorrectly at certain pixel
 // sizes (e.g. 15px). So, for now we just use Arial.
 const AtomicString& LayoutThemeFontProvider::DefaultGUIFont() {
-  DEFINE_STATIC_LOCAL(const AtomicString, font_face, ("Arial"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, font_face, ("Arial"));
   return font_face;
+}
+
+float LayoutThemeFontProvider::DefaultFontSize(const Document* document) {
+  const Settings* settings = document ? document->GetSettings() : nullptr;
+
+  // The default font size setting may be uninitialized in some cases, like
+  // in the calendar picker of an <input type=date> widget.
+  if (!settings || !settings->GetDefaultFontSize())
+    return kDefaultFontSizeFallback;
+
+  static const unsigned keyword = FontSizeFunctions::InitialKeywordSize();
+  static const bool is_monospace = false;
+  return FontSizeFunctions::FontSizeForKeyword(document, keyword, is_monospace);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,9 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/heap/blink_gc.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-
-#if BUILDFLAG(USE_V8_OILPAN)
-#include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
-#endif  // !USE_V8_OILPAN
 
 namespace blink {
 
@@ -39,7 +35,7 @@ template <typename Callback>
 void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
                         const std::string dump_prefix,
                         Callback callback) {
-  int dump_prefix_depth =
+  auto dump_prefix_depth =
       std::count(dump_prefix.begin(), dump_prefix.end(), '/');
   for (auto& it : dump.allocator_dumps()) {
     const std::string& key = it.first;
@@ -52,7 +48,6 @@ void IterateMemoryDumps(base::trace_event::ProcessMemoryDump& dump,
 
 void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
                        const std::string dump_prefix) {
-#if BUILDFLAG(USE_V8_OILPAN)
   size_t custom_space_count = 0;
   IterateMemoryDumps(
       dump, dump_prefix + "CustomSpace",
@@ -60,14 +55,6 @@ void CheckSpacesInDump(base::trace_event::ProcessMemoryDump& dump,
         custom_space_count++;
       });
   EXPECT_EQ(CustomSpaces::CreateCustomSpaces().size(), custom_space_count);
-#else  // !USE_V8_OILPAN
-#define CheckArena(name)                  \
-  EXPECT_NE(dump.allocator_dumps().end(), \
-            dump.allocator_dumps().find(dump_prefix + #name "Arena"));
-
-  FOR_EACH_ARENA(CheckArena)
-#undef CheckArena
-#endif  // !USE_V8_OILPAN
 }
 
 }  // namespace
@@ -118,7 +105,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerLightDump) {
 
   size_t workers_found = 0;
   for (const auto& kvp : dump->allocator_dumps()) {
-    if (kvp.first.find("blink_gc/workers/heap") != std::string::npos) {
+    if (kvp.first.find("blink_gc/workers/") != std::string::npos) {
       workers_found++;
       CheckBasicHeapDumpStructure(dump->GetAllocatorDump(kvp.first));
     }
@@ -137,13 +124,13 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
           BlinkGCMemoryDumpProvider::HeapType::kBlinkWorkerThread));
   dump_provider->OnMemoryDump(args, dump.get());
 
-  // There should be no main thread heap dump available.
-  ASSERT_EQ(nullptr, dump->GetAllocatorDump("blink_gc/main/heap"));
+  const std::string worker_path_prefix = "blink_gc/workers";
+  const std::string worker_path_suffix = "/heap";
 
   // Find worker suffix.
   std::string worker_suffix;
   for (const auto& kvp : dump->allocator_dumps()) {
-    if (kvp.first.find("blink_gc/workers/heap/worker_0x") !=
+    if (kvp.first.find(worker_path_prefix + "/worker_0x") !=
         std::string::npos) {
       auto start_pos = kvp.first.find("_0x");
       auto end_pos = kvp.first.find("/", start_pos);
@@ -151,7 +138,7 @@ TEST_F(BlinkGCMemoryDumpProviderTest, WorkerDetailedDump) {
     }
   }
   std::string worker_base_path =
-      "blink_gc/workers/heap/worker_" + worker_suffix;
+      worker_path_prefix + "/worker_" + worker_suffix + worker_path_suffix;
   CheckBasicHeapDumpStructure(dump->GetAllocatorDump(worker_base_path));
 
   IterateMemoryDumps(*dump, worker_base_path + "/",

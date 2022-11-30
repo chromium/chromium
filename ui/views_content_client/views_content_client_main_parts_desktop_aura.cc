@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ namespace {
 class ViewsContentClientMainPartsDesktopAura
     : public ViewsContentClientMainPartsAura {
  public:
-  ViewsContentClientMainPartsDesktopAura(
-      const content::MainFunctionParams& content_params,
+  explicit ViewsContentClientMainPartsDesktopAura(
       ViewsContentClient* views_content_client);
   ViewsContentClientMainPartsDesktopAura(
       const ViewsContentClientMainPartsDesktopAura&) = delete;
@@ -27,33 +26,39 @@ class ViewsContentClientMainPartsDesktopAura
 
   // ViewsContentClientMainPartsAura:
   int PreMainMessageLoopRun() override;
+  void PostMainMessageLoopRun() override;
+
+ private:
+  std::unique_ptr<display::Screen> screen_;
 };
 
 ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
-    const content::MainFunctionParams& content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(content_params, views_content_client) {
-}
+    : ViewsContentClientMainPartsAura(views_content_client) {}
 
 int ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
 
-  views::CreateDesktopScreen();
+  screen_ = views::CreateDesktopScreen();
 
   views_content_client()->OnPreMainMessageLoopRun(browser_context(), nullptr);
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
+void ViewsContentClientMainPartsDesktopAura::PostMainMessageLoopRun() {
+  screen_.reset();
+
+  ViewsContentClientMainPartsAura::PostMainMessageLoopRun();
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(
-    const content::MainFunctionParams& content_params,
-    ViewsContentClient* views_content_client) {
+ViewsContentClientMainParts::Create(ViewsContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsDesktopAura>(
-      content_params, views_content_client);
+      views_content_client);
 }
 
 }  // namespace ui

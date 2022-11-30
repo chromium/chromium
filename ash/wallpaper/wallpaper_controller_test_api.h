@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 
 namespace ash {
 
@@ -16,15 +15,12 @@ class WallpaperControllerImpl;
 class ASH_EXPORT WallpaperControllerTestApi {
  public:
   explicit WallpaperControllerTestApi(WallpaperControllerImpl* controller);
-  virtual ~WallpaperControllerTestApi();
 
-  // Creates and sets a new wallpaper that causes the prominent color of the
-  // |controller_| to be a valid (i.e. not kInvalidWallpaperColor) color. The
-  // WallpaperControllerObservers should be notified as well. This assumes the
-  // default DARK-MUTED luma-saturation ranges are in effect.
-  //
-  // The expected prominent color is returned.
-  SkColor ApplyColorProducingWallpaper();
+  WallpaperControllerTestApi(const WallpaperControllerTestApi&) = delete;
+  WallpaperControllerTestApi& operator=(const WallpaperControllerTestApi&) =
+      delete;
+
+  virtual ~WallpaperControllerTestApi();
 
   // Simulates starting the fullscreen wallpaper preview.
   void StartWallpaperPreview();
@@ -34,10 +30,13 @@ class ASH_EXPORT WallpaperControllerTestApi {
   // set as the actual user wallpaper.
   void EndWallpaperPreview(bool confirm_preview_wallpaper);
 
+  // Force a specific set of `calculated_colors` to be set to
+  // WallpaperController. Cancels any ongoing requests to calculate wallpaper
+  // colors.
+  void SetCalculatedColors(const WallpaperCalculatedColors& calculated_colors);
+
  private:
   WallpaperControllerImpl* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerTestApi);
 };
 
 }  // namespace ash

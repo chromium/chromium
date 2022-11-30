@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -41,6 +40,8 @@ class CSSPreloadScanner {
 
  public:
   CSSPreloadScanner();
+  CSSPreloadScanner(const CSSPreloadScanner&) = delete;
+  CSSPreloadScanner& operator=(const CSSPreloadScanner&) = delete;
   ~CSSPreloadScanner();
 
   void Reset();
@@ -57,6 +58,8 @@ class CSSPreloadScanner {
             const PreloadRequest::ExclusionInfo*);
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
+  void SetInBody(bool in_body) { in_body_ = in_body; }
+  void SetMediaMatches(bool media_matches) { media_matches_ = media_matches; }
 
  private:
   enum State {
@@ -69,6 +72,8 @@ class CSSPreloadScanner {
     kAfterRule,
     kRuleValue,
     kAfterRuleValue,
+    kMaybeLayerValue,
+    kAfterMaybeLayerValue,
     kDoneParsingImportRules,
   };
 
@@ -84,22 +89,28 @@ class CSSPreloadScanner {
   void EmitRule(const SegmentedString&);
 
   bool HasFinishedRuleValue() const;
+  bool CanPreloadImportRule() const;
 
   State state_ = kInitial;
   StringBuilder rule_;
   StringBuilder rule_value_;
+  // maybe_layer_value_ stores the layer declaration, if any; otherwise, it may
+  // store part of the media condition. This is currently fine since we can't
+  // handle media conditions yet (crbug.com/1277771).
+  StringBuilder maybe_layer_value_;
+  bool has_trailing_contents_ = false;
 
   network::mojom::ReferrerPolicy referrer_policy_ =
       network::mojom::ReferrerPolicy::kDefault;
+  bool in_body_ = false;
+  bool media_matches_ = true;
 
   // Below members only non-null during scan()
   PreloadRequestStream* requests_ = nullptr;
   const KURL* predicted_base_element_url_ = nullptr;
   const PreloadRequest::ExclusionInfo* exclusion_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSPreloadScanner);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_CSS_PRELOAD_SCANNER_H_

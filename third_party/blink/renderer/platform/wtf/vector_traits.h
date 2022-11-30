@@ -64,10 +64,6 @@ struct VectorTraitsBase {
     static const bool value = IsTraceable<T>::value;
   };
 
-  // Vectors do not support deleting values.
-  static constexpr bool kCanHaveDeletedValue = false;
-  static bool IsDeletedValue(const T& value) { return false; }
-
   // The kCanTraceConcurrently value is used by Oilpan concurrent marking.
   // Only type for which VectorTraits<T>::kCanTraceConcurrently is true can
   // be traced on a concurrent thread.
@@ -153,10 +149,6 @@ struct VectorTraits<std::pair<First, Second>> {
         IsTraceableInCollectionTrait<FirstTraits>::value ||
         IsTraceableInCollectionTrait<SecondTraits>::value;
   };
-
-  // Vectors do not support deleting values.
-  static constexpr bool kCanHaveDeletedValue = false;
-  static bool IsDeletedValue(std::pair<First, Second> value) { return false; }
 
   static constexpr bool kCanTraceConcurrently = false;
 };

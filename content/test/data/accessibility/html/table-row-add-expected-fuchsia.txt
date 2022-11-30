@@ -1,0 +1,32 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=4 number_of_columns=2
+++++++++TABLE_ROW
+++++++++++CELL label='Row1' cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Row1'
+++++++++++++++UNKNOWN label='Row1'
+++++++++++CELL label='Foo1' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Foo1'
+++++++++++++++UNKNOWN label='Foo1'
+++++++++TABLE_ROW row_index=1
+++++++++++CELL label='Row2' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Row2'
+++++++++++++++UNKNOWN label='Row2'
+++++++++++CELL label='Foo2' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Foo2'
+++++++++++++++UNKNOWN label='Foo2'
+++++++++TABLE_ROW row_index=2
+++++++++++CELL label='Row3' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Row3'
+++++++++++++++UNKNOWN label='Row3'
+++++++++++CELL label='Foo3' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Foo3'
+++++++++++++++UNKNOWN label='Foo3'
+++++++++TABLE_ROW row_index=3
+++++++++++CELL label='Row4' cell_row_index=3 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Row4'
+++++++++++++++UNKNOWN label='Row4'
+++++++++++CELL label='Foo4' cell_row_index=3 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++STATIC_TEXT label='Foo4'
+++++++++++++++UNKNOWN label='Foo4'

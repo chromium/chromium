@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -19,7 +19,7 @@
 @interface TestingSuccessfulReauthTimeAccessor
     : NSObject <SuccessfulReauthTimeAccessor> {
   // Object storing the time of a fake previous successful re-authentication
-  // to be used by the |ReauthenticationModule|.
+  // to be used by the `ReauthenticationModule`.
   NSDate* _successfulReauthTime;
 }
 

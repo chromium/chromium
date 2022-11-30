@@ -1,14 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.metrics;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.BuildConfig;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -248,6 +252,10 @@ import javax.annotation.concurrent.GuardedBy;
     @Nullable
     private UmaRecorder mDelegate;
 
+    @GuardedBy("mRwLock")
+    @Nullable
+    private List<Callback<String>> mUserActionCallbacksForTesting;
+
     /**
      * Sets the current delegate to {@code recorder}. Forwards and clears all cached metrics if
      * {@code recorder} is not {@code null}.
@@ -266,6 +274,9 @@ import javax.annotation.concurrent.GuardedBy;
         try {
             previous = mDelegate;
             mDelegate = recorder;
+            if (BuildConfig.IS_FOR_TEST) {
+                swapUserActionCallbacksForTesting(previous, recorder);
+            }
             if (recorder == null) {
                 return previous;
             }
@@ -537,6 +548,11 @@ import javax.annotation.concurrent.GuardedBy;
                     assert false : "Too many user actions in cache";
                     mDroppedUserActionCount++;
                 }
+                if (mUserActionCallbacksForTesting != null) {
+                    for (int i = 0; i < mUserActionCallbacksForTesting.size(); i++) {
+                        mUserActionCallbacksForTesting.get(i).onResult(name);
+                    }
+                }
                 return; // Skip the lock downgrade.
             }
             // Downgrade by acquiring read lock before releasing write lock
@@ -552,6 +568,93 @@ import javax.annotation.concurrent.GuardedBy;
             mDelegate.recordUserAction(name, elapsedRealtimeMillis);
         } finally {
             mRwLock.readLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public int getHistogramValueCountForTesting(String name, int sample) {
+        mRwLock.readLock().lock();
+        try {
+            if (mDelegate != null) return mDelegate.getHistogramValueCountForTesting(name, sample);
+
+            Histogram histogram = mHistogramByName.get(name);
+            if (histogram == null) return 0;
+            int sampleCount = 0;
+            synchronized (histogram) {
+                for (int i = 0; i < histogram.mSamples.size(); i++) {
+                    if (histogram.mSamples.get(i) == sample) sampleCount++;
+                }
+            }
+            return sampleCount;
+        } finally {
+            mRwLock.readLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public int getHistogramTotalCountForTesting(String name) {
+        mRwLock.readLock().lock();
+        try {
+            if (mDelegate != null) return mDelegate.getHistogramTotalCountForTesting(name);
+
+            Histogram histogram = mHistogramByName.get(name);
+            if (histogram == null) return 0;
+            synchronized (histogram) {
+                return histogram.mSamples.size();
+            }
+        } finally {
+            mRwLock.readLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public void addUserActionCallbackForTesting(Callback<String> callback) {
+        mRwLock.writeLock().lock();
+        try {
+            if (mUserActionCallbacksForTesting == null) {
+                mUserActionCallbacksForTesting = new ArrayList<>();
+            }
+            mUserActionCallbacksForTesting.add(callback);
+            if (mDelegate != null) mDelegate.addUserActionCallbackForTesting(callback);
+        } finally {
+            mRwLock.writeLock().unlock();
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    public void removeUserActionCallbackForTesting(Callback<String> callback) {
+        mRwLock.writeLock().lock();
+        try {
+            if (mUserActionCallbacksForTesting == null) {
+                assert false : "Attempting to remove a user action callback without previously "
+                               + "registering any.";
+                return;
+            }
+            mUserActionCallbacksForTesting.remove(callback);
+            if (mDelegate != null) mDelegate.removeUserActionCallbackForTesting(callback);
+        } finally {
+            mRwLock.writeLock().unlock();
+        }
+    }
+
+    @SuppressLint("VisibleForTests")
+    @GuardedBy("mRwLock")
+    private void swapUserActionCallbacksForTesting(
+            @Nullable UmaRecorder previousRecorder, @Nullable UmaRecorder newRecorder) {
+        if (mUserActionCallbacksForTesting == null) return;
+
+        for (int i = 0; i < mUserActionCallbacksForTesting.size(); i++) {
+            if (previousRecorder != null) {
+                previousRecorder.removeUserActionCallbackForTesting(
+                        mUserActionCallbacksForTesting.get(i));
+            }
+            if (newRecorder != null) {
+                newRecorder.addUserActionCallbackForTesting(mUserActionCallbacksForTesting.get(i));
+            }
         }
     }
 }

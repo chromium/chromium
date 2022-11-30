@@ -32,12 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_MAIN_THREAD_DEBUGGER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
@@ -45,10 +42,11 @@ namespace blink {
 
 class ErrorEvent;
 class LocalFrame;
+class ScriptState;
 class SecurityOrigin;
 class SourceLocation;
 
-class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
+class CORE_EXPORT MainThreadDebugger final : public ThreadDebuggerCommonImpl {
  public:
   class ClientMessageLoop {
     USING_FAST_MALLOC(ClientMessageLoop);
@@ -61,6 +59,8 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
   };
 
   explicit MainThreadDebugger(v8::Isolate*);
+  MainThreadDebugger(const MainThreadDebugger&) = delete;
+  MainThreadDebugger& operator=(const MainThreadDebugger&) = delete;
   ~MainThreadDebugger() override;
 
   static MainThreadDebugger* Instance();
@@ -120,7 +120,6 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
   static MainThreadDebugger* instance_;
   std::unique_ptr<DocumentLifecycle::PostponeTransitionScope>
       postponed_transition_scope_;
-  DISALLOW_COPY_AND_ASSIGN(MainThreadDebugger);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/json_writer.h"
 #include "base/pickle.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
+#include "base/values.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,20 +27,33 @@ ScopedClipboardWriter::ScopedClipboardWriter(
 
 ScopedClipboardWriter::~ScopedClipboardWriter() {
   static constexpr size_t kMaxRepresentations = 1 << 12;
-  DCHECK(objects_.empty() || platform_representations_.empty())
-      << "Portable and Platform representations should not be written on the "
-         "same write.";
   DCHECK(platform_representations_.size() < kMaxRepresentations);
-  if (!objects_.empty()) {
-    Clipboard::GetForCurrentThread()->WritePortableRepresentations(
-        buffer_, objects_, std::move(data_src_));
-  } else if (!platform_representations_.empty()) {
-    Clipboard::GetForCurrentThread()->WritePlatformRepresentations(
-        buffer_, std::move(platform_representations_), std::move(data_src_));
+  // If the metadata format type is not empty then create a JSON payload and
+  // write to the clipboard.
+  if (!registered_formats_.empty()) {
+    std::string custom_format_json;
+    base::Value registered_formats_value(base::Value::Type::DICTIONARY);
+    for (const auto& item : registered_formats_)
+      registered_formats_value.SetStringKey(item.first, item.second);
+    base::JSONWriter::Write(registered_formats_value, &custom_format_json);
+    Clipboard::ObjectMapParams parameters;
+    parameters.push_back(Clipboard::ObjectMapParam(custom_format_json.begin(),
+                                                   custom_format_json.end()));
+    objects_[Clipboard::PortableFormat::kWebCustomFormatMap] = parameters;
+  }
+  if (!objects_.empty() || !platform_representations_.empty()) {
+    Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
+        buffer_, objects_, std::move(platform_representations_),
+        std::move(data_src_));
   }
 
   if (confidential_)
     Clipboard::GetForCurrentThread()->MarkAsConfidential();
+}
+
+void ScopedClipboardWriter::SetDataSource(
+    std::unique_ptr<DataTransferEndpoint> data_src) {
+  data_src_ = std::move(data_src);
 }
 
 void ScopedClipboardWriter::WriteText(const std::u16string& text) {
@@ -115,9 +131,9 @@ void ScopedClipboardWriter::WriteHyperlink(const std::u16string& anchor_text,
 
   // Construct the hyperlink.
   std::string html = "<a href=\"";
-  html += net::EscapeForHTML(url);
+  html += base::EscapeForHTML(url);
   html += "\">";
-  html += net::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
+  html += base::EscapeForHTML(base::UTF16ToUTF8(anchor_text));
   html += "</a>";
   WriteHTML(base::UTF8ToUTF16(html), std::string());
 }
@@ -176,15 +192,48 @@ void ScopedClipboardWriter::WritePickledData(
 void ScopedClipboardWriter::WriteData(const std::u16string& format,
                                       mojo_base::BigBuffer data) {
   RecordWrite(ClipboardFormatMetric::kData);
-  platform_representations_.push_back(
-      {base::UTF16ToUTF8(format), std::move(data)});
+  // Windows / X11 clipboards enter an unrecoverable state after registering
+  // some amount of unique formats, and there's no way to un-register these
+  // formats. For these clipboards, use a conservative limit to avoid
+  // registering too many formats, as:
+  // (1) Other native applications may also register clipboard formats.
+  // (2) Malicious sites can write more than the hard limit defined on
+  // Windows(16k). (3) Chrome also registers other clipboard formats.
+  //
+  // There will be a custom format map which contains a JSON payload that will
+  // have a mapping of custom format MIME type to web custom format.
+  // There can only be 100 custom format per write and it will be
+  // registered when the web authors request for a custom format.
+  if (counter_ >= ui::kMaxRegisteredClipboardFormats)
+    return;
+  std::string format_in_ascii = base::UTF16ToASCII(format);
+  if (registered_formats_.find(format_in_ascii) == registered_formats_.end()) {
+    std::string web_custom_format_string =
+        ClipboardFormatType::WebCustomFormatName(counter_);
+    registered_formats_[format_in_ascii] = web_custom_format_string;
+    counter_++;
+    platform_representations_.push_back(
+        {web_custom_format_string, std::move(data)});
+  }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ScopedClipboardWriter::WriteEncodedDataTransferEndpointForTesting(
+    const std::string& json) {
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(Clipboard::ObjectMapParam(json.begin(), json.end()));
+  objects_[Clipboard::PortableFormat::kEncodedDataTransferEndpoint] =
+      parameters;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();
   platform_representations_.clear();
+  registered_formats_.clear();
   bitmap_.reset();
   confidential_ = false;
+  counter_ = 0;
 }
 
 }  // namespace ui

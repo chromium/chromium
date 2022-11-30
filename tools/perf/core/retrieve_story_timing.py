@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -112,10 +112,9 @@ def _run_query(query):
   stdout, stderr = p.communicate()
   if p.returncode == 0:
     return json.loads(stdout)
-  else:
-    raise RuntimeError(
-        'Error generating authentication token.\nStdout: %s\nStder:%s' %
-        (stdout, stderr))
+  raise RuntimeError(
+      'Error generating authentication token.\nStdout: %s\nStder:%s' %
+      (stdout, stderr))
 
 
 def FetchStoryTimingDataForSingleBuild(configurations, build_number):

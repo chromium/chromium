@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,14 +8,14 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
-  # Note: this setting is ignored if is_chrome_branded.
-  # TODO(thakis): It's strange this is called "_like_official_build" but then
-  # checks is_chrome_branded, not is_official_build.
-  fieldtrial_testing_like_official_build = is_chrome_branded
+  # Note: For Chrome-branded Android builds, this is always considered as set to
+  # true (see below). This is done to avoid the binary size impact (~40 KiB) on
+  # Android.
+  disable_fieldtrial_testing_config = false
 }
 
 fieldtrial_testing_enabled =
-    !fieldtrial_testing_like_official_build && !is_chrome_branded
+    !disable_fieldtrial_testing_config && !(is_android && is_chrome_branded)
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -68,14 +68,19 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     ":service",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
     "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/field_trial_config",
     "//components/variations/proto",
+    "//components/version_info",
     "//components/web_resource:test_support",
     "//net",
     "//net:test_support",

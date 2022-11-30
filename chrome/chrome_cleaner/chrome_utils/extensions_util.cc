@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
@@ -30,6 +29,7 @@
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/os/system_util.h"
 #include "chrome/chrome_cleaner/parsers/parser_utils/parse_tasks_remaining_counter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // TODO(crbug.com/981388): See if there's anything that isn't used from
 // system_report_component.cc that can be removed from this file.
@@ -74,7 +74,7 @@ const wchar_t kMasterPreferencesFileName[] = L"master_preferences";
 void GetForcelistPoliciesForAccessMask(
     REGSAM access_mask,
     std::vector<ExtensionPolicyRegistryEntry>* policies) {
-  for (size_t i = 0; i < base::size(extension_forcelist_keys); ++i) {
+  for (size_t i = 0; i < std::size(extension_forcelist_keys); ++i) {
     base::win::RegistryValueIterator forcelist_it(
         extension_forcelist_keys[i].hkey, extension_forcelist_keys[i].path,
         access_mask);
@@ -102,8 +102,8 @@ void GetExtensionSettingsPoliciesFromParsedJson(
     std::vector<ExtensionPolicyRegistryEntry>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
     ContentType type,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 
@@ -120,13 +120,13 @@ void GetExtensionSettingsPoliciesFromParsedJson(
 
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : *extension_settings) {
+  for (auto entry : extension_settings->DictItems()) {
     const std::wstring& extension_id = base::UTF8ToWide(entry.first);
-    const std::unique_ptr<base::Value>& settings_value = entry.second;
+    const base::Value& settings_value = entry.second;
 
-    if (settings_value->is_dict()) {
-      base::Value* installation_mode =
-          settings_value->FindKey(kExtensionSettingsInstallationModeName);
+    if (settings_value.is_dict()) {
+      const base::Value* installation_mode =
+          settings_value.FindKey(kExtensionSettingsInstallationModeName);
       if (installation_mode && installation_mode->GetString() ==
                                    kExtensionSettingsForceInstalledValue) {
         policies->emplace_back(
@@ -142,7 +142,7 @@ void GetExtensionSettingsPoliciesForAccessMask(
     JsonParserAPI* json_parser,
     std::vector<ExtensionPolicyRegistryEntry>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter) {
-  for (size_t i = 0; i < base::size(extension_settings_keys); ++i) {
+  for (size_t i = 0; i < std::size(extension_settings_keys); ++i) {
     RegKeyPath key(extension_settings_keys[i].hkey,
                    extension_settings_keys[i].path, access_mask);
     std::wstring extension_settings;
@@ -172,8 +172,8 @@ void GetDefaultExtensionsFromParsedJson(
     const base::FilePath& extensions_file,
     std::vector<ExtensionPolicyFile>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 
@@ -189,7 +189,7 @@ void GetDefaultExtensionsFromParsedJson(
 
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : *default_extensions) {
+  for (auto entry : default_extensions->DictItems()) {
     std::wstring extension_id = base::UTF8ToWide(entry.first);
     if (!base::Contains(default_extension_whitelist, extension_id)) {
       policies->emplace_back(extension_id, extensions_file, saved_json);
@@ -201,8 +201,8 @@ void GetMasterPreferencesExtensionsFromParsedJson(
     const base::FilePath& extensions_file,
     std::vector<ExtensionPolicyFile>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter,
-    base::Optional<base::Value> json,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json,
+    const absl::optional<std::string>& error) {
   base::ScopedClosureRunner closure(
       base::BindOnce(&ParseTasksRemainingCounter::Decrement, counter.get()));
 
@@ -225,7 +225,7 @@ void GetMasterPreferencesExtensionsFromParsedJson(
   extension_settings->GetAsDictionary(&extension_settings_dictionary);
   scoped_refptr<RefValue> saved_json =
       base::WrapRefCounted(new RefValue(json->Clone()));
-  for (const auto& entry : *extension_settings_dictionary) {
+  for (auto entry : extension_settings_dictionary->DictItems()) {
     std::wstring extension_id = base::UTF8ToWide(entry.first);
     policies->emplace_back(extension_id, extensions_file, saved_json);
   }

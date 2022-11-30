@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 
 #include "base/feature_list.h"
 #include "base/hash/md5.h"
-#include "base/stl_util.h"
+#include "base/rand_util.h"
 #include "base/sys_byteorder.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
-#include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
@@ -75,7 +75,7 @@ const char* ParseHash(const char* begin,
   // At this point we've successfully consumed a hash, so parse it.
   bool parsed = false;
   hash = WTF::HexCharactersToUInt(reinterpret_cast<const unsigned char*>(begin),
-                                  cur - begin, WTF::NumberParsingOptions::kNone,
+                                  cur - begin, WTF::NumberParsingOptions(),
                                   &parsed);
   DCHECK(parsed);
 
@@ -95,7 +95,7 @@ bool MarkNameIsTrigger(const String& mark_name) {
 
 String GenerateFullTrigger(const String& site, const String& mark_name) {
   DCHECK(MarkNameIsTrigger(mark_name));
-  return site + "-" + mark_name.Substring(base::size(kTriggerPrefix) - 1);
+  return site + "-" + mark_name.Substring(std::size(kTriggerPrefix) - 1);
 }
 
 }  // namespace
@@ -130,7 +130,7 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   // are permitted to be included in background traces. See crbug.com/1181774.
 
   // If there's no allow-list, then bail early.
-  if (GetSiteMarkHashMap().IsEmpty())
+  if (GetSiteMarkHashMap().empty())
     return;
 
   // Only support http and https origins to actual remote servers.
@@ -142,12 +142,10 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
     return;
   }
 
-  // Get the hash of the site (eTLD+1) in an encoded format (friendly for
-  // converting to ASCII, and matching the format in which URLs will be encoded
-  // prior to hashing in the Finch list).
-  String this_site =
-      EncodeWithURLEscapeSequences(network_utils::GetDomainAndRegistry(
-          origin->Host(), network_utils::kIncludePrivateRegistries));
+  // Get the hash of the domain in an encoded format (friendly for converting to
+  // ASCII, and matching the format in which URLs will be encoded prior to
+  // hashing in the Finch list).
+  String this_site = EncodeWithURLEscapeSequences(origin->Domain());
   uint32_t this_site_hash = MD5Hash32(this_site.Ascii());
 
   // Get the allow-list for this site, if there is one.
@@ -158,6 +156,18 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
     site_ = this_site;
     site_hash_ = this_site_hash;
   }
+
+  // Extract a unique ID for the ExecutionContext, using the UnguessableToken
+  // associated with it. This squishes the 128 bits of token down into a 32-bit
+  // ID.
+  auto token = context->GetExecutionContextToken();
+  uint64_t merged = token.value().GetHighForSerialization() ^
+                    token.value().GetLowForSerialization();
+  execution_context_id_ = static_cast<uint32_t>(merged & 0xffffffff) ^
+                          static_cast<uint32_t>((merged >> 32) & 0xffffffff);
+
+  // Generate a random sequence number offset to be used by this context.
+  sequence_number_offset_ = static_cast<uint32_t>(base::RandUint64());
 }
 
 BackgroundTracingHelper::~BackgroundTracingHelper() = default;
@@ -167,26 +177,42 @@ void BackgroundTracingHelper::MaybeEmitBackgroundTracingPerformanceMarkEvent(
   if (!mark_hashes_)
     return;
 
-  // Get the hashed mark name.
+  // Get the mark name in ASCII.
   const String& mark_name = mark.name();
   std::string mark_name_ascii = mark_name.Ascii();
-  uint32_t mark_hash = MD5Hash32(mark_name_ascii);
+
+  // Parse the mark and the sequence number, if any.
+  uint32_t mark_hash = 0;
+  uint32_t sequence_number = 0;
+  GetMarkHashAndSequenceNumber(mark_name_ascii, sequence_number_offset_,
+                               &mark_hash, &sequence_number);
 
   // See if the mark hash is in the permitted list.
   if (!mark_hashes_->Contains(mark_hash))
     return;
 
-  // Emit the trace event. We emit hashes and strings to facilitate local trace
+  // Emit the trace events. We emit hashes and strings to facilitate local trace
   // consumption. However, the strings will be stripped and only the hashes
   // shipped externally.
-  TRACE_EVENT("blink", "performance.mark", [&](perfetto::EventContext ctx) {
+
+  auto event_lambda = [&](perfetto::EventContext ctx) {
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* data = event->set_chrome_hashed_performance_mark();
     data->set_site_hash(site_hash_);
     data->set_site(site_.Ascii());
     data->set_mark_hash(mark_hash);
     data->set_mark(mark_name_ascii);
-  });
+    data->set_execution_context_id(execution_context_id_);
+    data->set_sequence_number(sequence_number);
+  };
+
+  // For additional context, also emit a paired event marking *when* the
+  // performance.mark was actually created.
+  TRACE_EVENT_INSTANT("blink", "performance.mark.created", event_lambda);
+
+  // Emit an event with the actual timestamp associated with the mark.
+  TRACE_EVENT_INSTANT("blink", "performance.mark", mark.UnsafeTimeForTraces(),
+                      event_lambda);
 
   // If this is a slow-reports trigger then fire it.
   if (MarkNameIsTrigger(mark_name)) {
@@ -218,6 +244,34 @@ BackgroundTracingHelper::GetMarkHashSetForSiteHash(uint32_t site_hash) {
 }
 
 // static
+size_t BackgroundTracingHelper::GetSequenceNumberPos(base::StringPiece string) {
+  // Extract any trailing integers.
+  size_t cursor = string.size();
+  while (cursor > 0) {
+    char c = string[cursor - 1];
+    if (c < '0' || c > '9')
+      break;
+    --cursor;
+  }
+
+  // A valid suffix must have 1 or more integers.
+  if (cursor == string.size())
+    return 0;
+
+  // A valid suffix must be preceded by an underscore and at least one prefix
+  // character.
+  if (cursor < 2)
+    return 0;
+
+  // A valid suffix must be preceded by an underscore.
+  if (string[cursor - 1] != '_')
+    return 0;
+
+  // Return the location of the underscore.
+  return cursor - 1;
+}
+
+// static
 uint32_t BackgroundTracingHelper::MD5Hash32(base::StringPiece string) {
   base::MD5Digest digest;
   base::MD5Sum(string.data(), string.size(), &digest);
@@ -225,6 +279,38 @@ uint32_t BackgroundTracingHelper::MD5Hash32(base::StringPiece string) {
   DCHECK_GE(sizeof(digest.a), sizeof(value));
   memcpy(&value, digest.a, sizeof(value));
   return base::NetToHost32(value);
+}
+
+// static
+void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
+    base::StringPiece mark_name,
+    uint32_t sequence_number_offset,
+    uint32_t* mark_hash,
+    uint32_t* sequence_number) {
+  *sequence_number = 0;
+
+  // Extract a sequence number suffix, if it exists.
+  size_t sequence_number_pos = GetSequenceNumberPos(mark_name);
+  if (sequence_number_pos != 0) {
+    // Parse the suffix.
+    auto suffix = mark_name.substr(sequence_number_pos + 1);
+    bool result = false;
+    int seq_num = WTF::CharactersToInt(
+        reinterpret_cast<const unsigned char*>(suffix.data()), suffix.size(),
+        WTF::NumberParsingOptions(), &result);
+    if (result) {
+      // Cap the sequence number to an easily human-consumable size. It is fine
+      // for this calculation to overflow.
+      *sequence_number =
+          (static_cast<uint32_t>(seq_num) + sequence_number_offset) % 1000;
+    }
+
+    // Remove the suffix from the mark name.
+    mark_name = mark_name.substr(0, sequence_number_pos);
+  }
+
+  // Hash the mark name.
+  *mark_hash = MD5Hash32(mark_name);
 }
 
 // static

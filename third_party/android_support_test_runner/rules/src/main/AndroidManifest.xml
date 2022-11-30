@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="android.support.test.rule">
+
+    <uses-sdk
+            android:minSdkVersion="8" android:targetSdkVersion= "23"/>
+
+</manifest>

@@ -1,10 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/image_button.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
 #include "ui/views/border.h"
 #include "ui/views/style/platform_style.h"
@@ -22,6 +22,9 @@ class Parent : public views::View {
  public:
   Parent() = default;
 
+  Parent(const Parent&) = delete;
+  Parent& operator=(const Parent&) = delete;
+
   void ChildPreferredSizeChanged(views::View* view) override {
     pref_size_changed_calls_++;
   }
@@ -30,8 +33,6 @@ class Parent : public views::View {
 
  private:
   int pref_size_changed_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Parent);
 };
 
 }  // namespace
@@ -128,7 +129,7 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   // The image should be painted at the top-left corner.
   EXPECT_EQ(gfx::Point(), button.ComputeImagePaintPosition(image));
 
-  button.SetBorder(views::CreateEmptyBorder(10, 5, 0, 0));
+  button.SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(10, 5, 0, 0)));
   EXPECT_EQ(gfx::Point(5, 10), button.ComputeImagePaintPosition(image));
 
   button.SetBorder(NullBorder());
@@ -138,7 +139,7 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   button.SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
   button.SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
   EXPECT_EQ(gfx::Point(15, 10), button.ComputeImagePaintPosition(image));
-  button.SetBorder(views::CreateEmptyBorder(10, 10, 0, 0));
+  button.SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(10, 10, 0, 0)));
   EXPECT_EQ(gfx::Point(20, 15), button.ComputeImagePaintPosition(image));
 
   // The entire button's size should take the border into account.

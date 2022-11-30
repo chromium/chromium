@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -34,6 +34,10 @@ class NavigationObserver : public content::NotificationObserver,
                            public ExtensionRegistryObserver {
  public:
   explicit NavigationObserver(Profile* profile);
+
+  NavigationObserver(const NavigationObserver&) = delete;
+  NavigationObserver& operator=(const NavigationObserver&) = delete;
+
   ~NavigationObserver() override;
 
   // content::NotificationObserver
@@ -55,7 +59,7 @@ class NavigationObserver : public content::NotificationObserver,
   void PromptToEnableExtensionIfNecessary(
       content::NavigationController* nav_controller);
 
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result);
+  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
@@ -64,14 +68,15 @@ class NavigationObserver : public content::NotificationObserver,
 
   content::NotificationRegistrar registrar_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The UI used to confirm enabling extensions.
   std::unique_ptr<ExtensionInstallPrompt> extension_install_prompt_;
 
   // The data we keep track of when prompting to enable extensions.
   std::string in_progress_prompt_extension_id_;
-  content::NavigationController* in_progress_prompt_navigation_controller_;
+  raw_ptr<content::NavigationController>
+      in_progress_prompt_navigation_controller_;
 
   // The extension ids we've already prompted the user about.
   std::set<std::string> prompted_extensions_;
@@ -80,8 +85,6 @@ class NavigationObserver : public content::NotificationObserver,
       extension_registry_observation_{this};
 
   base::WeakPtrFactory<NavigationObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationObserver);
 };
 
 }  // namespace extensions

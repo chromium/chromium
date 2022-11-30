@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/tick_clock.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
-#include "cc/test/fake_compositor_frame_reporting_controller.h"
 
 namespace cc {
 
@@ -21,28 +20,20 @@ FakeCompositorTimingHistory::Create(
     bool using_synchronous_renderer_compositor) {
   std::unique_ptr<RenderingStatsInstrumentation>
       rendering_stats_instrumentation = RenderingStatsInstrumentation::Create();
-  std::unique_ptr<CompositorFrameReportingController> reporting_controller =
-      std::make_unique<FakeCompositorFrameReportingController>();
   return base::WrapUnique(new FakeCompositorTimingHistory(
       using_synchronous_renderer_compositor,
-      std::move(rendering_stats_instrumentation),
-      std::move(reporting_controller)));
+      std::move(rendering_stats_instrumentation)));
 }
 
 FakeCompositorTimingHistory::FakeCompositorTimingHistory(
     bool using_synchronous_renderer_compositor,
     std::unique_ptr<RenderingStatsInstrumentation>
-        rendering_stats_instrumentation,
-    std::unique_ptr<CompositorFrameReportingController> reporting_controller)
+        rendering_stats_instrumentation)
     : CompositorTimingHistory(using_synchronous_renderer_compositor,
                               CompositorTimingHistory::NULL_UMA,
-                              rendering_stats_instrumentation.get(),
-                              reporting_controller.get()),
+                              rendering_stats_instrumentation.get()),
       rendering_stats_instrumentation_owned_(
-          std::move(rendering_stats_instrumentation)),
-      reporting_controller_owned_(std::move(reporting_controller)) {
-  reporting_controller_owned_->SetDroppedFrameCounter(&dropped_counter);
-}
+          std::move(rendering_stats_instrumentation)) {}
 
 FakeCompositorTimingHistory::~FakeCompositorTimingHistory() = default;
 
@@ -149,14 +140,16 @@ TestScheduler::TestScheduler(
     const SchedulerSettings& scheduler_settings,
     int layer_tree_host_id,
     base::SingleThreadTaskRunner* task_runner,
-    std::unique_ptr<CompositorTimingHistory> compositor_timing_history)
+    std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
+    CompositorFrameReportingController* compositor_frame_reporting_controller,
+    power_scheduler::PowerModeArbiter* power_mode_arbiter)
     : Scheduler(client,
                 scheduler_settings,
                 layer_tree_host_id,
                 task_runner,
                 std::move(compositor_timing_history),
-                nullptr,
-                nullptr),
+                compositor_frame_reporting_controller,
+                power_mode_arbiter),
       now_src_(now_src) {}
 
 base::TimeTicks TestScheduler::Now() const {

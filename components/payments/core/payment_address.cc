@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,24 +25,24 @@ static const char kAddressSortingCode[] = "sortingCode";
 
 }  // namespace
 
-std::unique_ptr<base::DictionaryValue> PaymentAddressToDictionaryValue(
+base::Value::Dict PaymentAddressToValueDict(
     const mojom::PaymentAddress& address) {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kAddressCountry, address.country);
-  auto address_line_list = std::make_unique<base::ListValue>();
+  base::Value::Dict result;
+  result.Set(kAddressCountry, address.country);
+  base::Value address_line_list(base::Value::Type::LIST);
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
-      address_line_list->AppendString(address_line_string);
+      address_line_list.Append(address_line_string);
   }
-  result->Set(kAddressAddressLine, std::move(address_line_list));
-  result->SetString(kAddressRegion, address.region);
-  result->SetString(kAddressCity, address.city);
-  result->SetString(kAddressDependentLocality, address.dependent_locality);
-  result->SetString(kAddressPostalCode, address.postal_code);
-  result->SetString(kAddressSortingCode, address.sorting_code);
-  result->SetString(kAddressOrganization, address.organization);
-  result->SetString(kAddressRecipient, address.recipient);
-  result->SetString(kAddressPhone, address.phone);
+  result.Set(kAddressAddressLine, std::move(address_line_list));
+  result.Set(kAddressRegion, address.region);
+  result.Set(kAddressCity, address.city);
+  result.Set(kAddressDependentLocality, address.dependent_locality);
+  result.Set(kAddressPostalCode, address.postal_code);
+  result.Set(kAddressSortingCode, address.sorting_code);
+  result.Set(kAddressOrganization, address.organization);
+  result.Set(kAddressRecipient, address.recipient);
+  result.Set(kAddressPhone, address.phone);
 
   return result;
 }

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -15,11 +16,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
-#include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -39,14 +41,14 @@ GURL GetServerRedirectURL(const net::EmbeddedTestServer* server,
   return server->GetURL(
       hostname,
       "/server-redirect?" +
-          net::EscapeQueryParamValue(destination.spec(), /*use_plus=*/false));
+          base::EscapeQueryParamValue(destination.spec(), /*use_plus=*/false));
 }
 
 class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
  protected:
   virtual bool ShouldEnableCrossOriginPortals() const { return false; }
 
-  void SetUp() override {
+  PortalNavigationThrottleBrowserTest() {
     if (ShouldEnableCrossOriginPortals()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{blink::features::kPortals,
@@ -57,7 +59,6 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
           /*enabled_features=*/{blink::features::kPortals},
           /*disabled_features=*/{blink::features::kPortalsCrossOrigin});
     }
-    ContentBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -77,17 +78,17 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
   WebContentsImpl* GetWebContents() {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
-  RenderFrameHostImpl* GetMainFrame() {
-    return GetWebContents()->GetMainFrame();
+  RenderFrameHostImpl* GetPrimaryMainFrame() {
+    return GetWebContents()->GetPrimaryMainFrame();
   }
 
   Portal* InsertAndWaitForPortal(const GURL& url,
                                  bool expected_to_succeed = true) {
     TestNavigationObserver navigation_observer(/*web_contents=*/nullptr, 1);
     navigation_observer.StartWatchingNewWebContents();
-    PortalCreatedObserver portal_created_observer(GetMainFrame());
+    PortalCreatedObserver portal_created_observer(GetPrimaryMainFrame());
     EXPECT_TRUE(ExecJs(
-        GetMainFrame(),
+        GetPrimaryMainFrame(),
         base::StringPrintf("var portal = document.createElement('portal');\n"
                            "portal.src = '%s';\n"
                            "document.body.appendChild(portal);",
@@ -108,7 +109,7 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
     TestNavigationObserver navigation_observer(portal->GetPortalContents(),
                                                number_of_navigations);
     EXPECT_TRUE(
-        ExecJs(GetMainFrame(),
+        ExecJs(GetPrimaryMainFrame(),
                base::StringPrintf(
                    "document.querySelector('body > portal').src = '%s';",
                    url.spec().c_str())));
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   EXPECT_NE(portal, nullptr);
 
   std::string result =
-      EvalJs(GetMainFrame(),
+      EvalJs(GetPrimaryMainFrame(),
              "document.querySelector('body > portal').activate()"
              ".then(() => 'activated', e => e.message)")
           .ExtractString();
@@ -376,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     console_observer.Wait();
     EXPECT_THAT(console_observer.GetMessageAt(0u),
                 ::testing::HasSubstr("data"));
-    SleepWithRunLoop(base::TimeDelta::FromSeconds(3), FROM_HERE);
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }
 
@@ -384,12 +385,68 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     WebContentsConsoleObserver console_observer(GetWebContents());
     console_observer.SetPattern("*avigat*");
     EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
-                       "location.href = 'ftp://user:pass@example.com/';"));
+                       "location.href = 'ftp://example.com/';"));
     console_observer.Wait();
     EXPECT_THAT(console_observer.GetMessageAt(0u), ::testing::HasSubstr("ftp"));
-    SleepWithRunLoop(base::TimeDelta::FromSeconds(3), FROM_HERE);
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }
+
+  {
+    // Credentialed subresource requests are blocked no matter what scheme is
+    // used.
+    WebContentsConsoleObserver console_observer(GetWebContents());
+    console_observer.SetPattern(
+        "*Subresource requests whose URLs contain embedded credentials (e.g. "
+        "`https://user:pass@host/`) are blocked.*");
+    EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
+                       "location.href = 'ftp://user:pass@example.com/';"));
+    console_observer.Wait();
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
+    EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
+  }
+}
+
+class PortalNavigationThrottleFencedFrameBrowserTest
+    : public PortalNavigationThrottleBrowserTest {
+ public:
+  PortalNavigationThrottleFencedFrameBrowserTest() = default;
+  ~PortalNavigationThrottleFencedFrameBrowserTest() override = default;
+  PortalNavigationThrottleFencedFrameBrowserTest(
+      const PortalNavigationThrottleFencedFrameBrowserTest&) = delete;
+
+  PortalNavigationThrottleFencedFrameBrowserTest& operator=(
+      const PortalNavigationThrottleFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleFencedFrameBrowserTest,
+                       SameOriginInitialNavigation) {
+  ASSERT_TRUE(NavigateToURL(
+      GetWebContents(),
+      embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  Portal* portal = InsertAndWaitForPortal(
+      embedded_test_server()->GetURL("portal.test", "/title2.html"));
+  EXPECT_NE(portal, nullptr);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  RenderFrameHostImplWrapper fenced_frame_host(
+      fenced_frame_test_helper().CreateFencedFrame(
+          portal->GetPortalContents()->GetPrimaryMainFrame(),
+          fenced_frame_url));
+
+  // A fenced frame's FrameTree embedded inside a portal is not considered to be
+  // portal frame tree.
+  FrameTreeNode* fenced_frame_root_node = fenced_frame_host->frame_tree_node();
+  EXPECT_FALSE(fenced_frame_root_node->frame_tree()->IsPortal());
 }
 
 }  // namespace

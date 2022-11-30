@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // The dialog informing the user they are about to be logged out or locked
 // because they removed their security token (smart card).
@@ -23,13 +23,13 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
   // `accept_callback`: Callback when the user accepts the dialog.
   // `windows_closing_callback`: Callback when the window closes for any reason.
   // `behavior`: Determines the displayed strings. Needs to be
-  // chromeos::login::SecurityTokenSessionController::Behavior::kLogout or
-  // chromeos::login::SecurityTokenSessionController::Behavior::kLock.
+  // ash::login::SecurityTokenSessionController::Behavior::kLogout or
+  // ash::login::SecurityTokenSessionController::Behavior::kLock.
   // `domain`: The domain the device is enrolled in.
   SecurityTokenSessionRestrictionView(
       base::TimeDelta duration,
       base::OnceClosure accept_callback,
-      chromeos::login::SecurityTokenSessionController::Behavior behavior,
+      ash::login::SecurityTokenSessionController::Behavior behavior,
       const std::string& domain);
   SecurityTokenSessionRestrictionView(
       const SecurityTokenSessionRestrictionView& other) = delete;
@@ -40,7 +40,7 @@ class SecurityTokenSessionRestrictionView : public AppDialogView {
  private:
   void UpdateLabel();
 
-  const chromeos::login::SecurityTokenSessionController::Behavior behavior_;
+  const ash::login::SecurityTokenSessionController::Behavior behavior_;
   const base::TickClock* clock_;
   const std::string domain_;
   base::TimeTicks end_time_;

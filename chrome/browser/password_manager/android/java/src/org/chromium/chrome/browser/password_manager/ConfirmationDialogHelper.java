@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.password_manager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -59,9 +62,15 @@ public class ConfirmationDialogHelper implements DialogInterface.OnClickListener
         Context context = mContext.get();
         if (context == null) return;
         mConfirmedCallback = confirmedCallback;
-        mConfirmationDialog = new AlertDialog.Builder(context, R.style.Theme_Chromium_AlertDialog)
-                                      .setTitle(title)
-                                      .setMessage(message)
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        View body = inflater.inflate(R.layout.confirmation_dialog_view, null);
+        TextView titleView = body.findViewById(R.id.confirmation_dialog_title);
+        titleView.setText(title);
+        TextView messageView = body.findViewById(R.id.confirmation_dialog_message);
+        messageView.setText(message);
+        mConfirmationDialog = builder.setView(body)
                                       .setNegativeButton(R.string.cancel, null)
                                       .setPositiveButton(confirmButtonTextId, this)
                                       .create();

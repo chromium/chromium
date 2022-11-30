@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -17,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 constexpr char kTestProfileName[] = "user@gmail.com";
+constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 constexpr char kTestGaiaId[] = "1234567890";
 
 class AmbientClientImplTest : public testing::Test {
@@ -25,21 +28,23 @@ class AmbientClientImplTest : public testing::Test {
   ~AmbientClientImplTest() override = default;
 
   void SetUp() override {
-    ambient_client_ = std::make_unique<AmbientClientImpl>();
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     profile_ = profile_manager_->CreateTestingProfile(
-        kTestProfileName, /*prefs=*/{}, base::UTF8ToUTF16(kTestProfileName),
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        kTestProfileName, /*prefs=*/{}, kTestProfileName16,
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
+    image_downloader_ = std::make_unique<ash::TestImageDownloader>();
+
+    ambient_client_ = std::make_unique<AmbientClientImpl>();
   }
 
   void TearDown() override {
@@ -52,6 +57,7 @@ class AmbientClientImplTest : public testing::Test {
   }
 
  protected:
+  AmbientClientImpl& ambient_client() { return *ambient_client_; }
   TestingProfile* profile() { return profile_; }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -66,16 +72,17 @@ class AmbientClientImplTest : public testing::Test {
     MaybeMakeAccountAsPrimaryAccount(account_id);
   }
 
- private:
+  ash::TestImageDownloader& image_downloader() { return *image_downloader_; }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
+ private:
   void MaybeMakeAccountAsPrimaryAccount(const AccountId& account_id) {
     if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSignin)) {
-      identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(
-          account_id.GetUserEmail());
+      identity_test_env()->MakePrimaryAccountAvailable(
+          account_id.GetUserEmail(), signin::ConsentLevel::kSignin);
     }
   }
 
@@ -87,6 +94,7 @@ class AmbientClientImplTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  std::unique_ptr<ash::TestImageDownloader> image_downloader_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
 };
 
@@ -108,4 +116,33 @@ TEST_F(AmbientClientImplTest, DisallowedByEmailDomain) {
   AddAndLoginUser(
       AccountId::FromUserEmailGaiaId("user@gmailtest.com", kTestGaiaId));
   EXPECT_FALSE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
+}
+
+TEST_F(AmbientClientImplTest, DownloadImage) {
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AddAndLoginUser(AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId));
+  ambient_client().DownloadImage("test_url", base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(image_downloader().last_request_headers().IsEmpty());
+  std::string out;
+  image_downloader().last_request_headers().GetHeader("Authorization", &out);
+  EXPECT_EQ("Bearer access_token", out);
+}
+
+TEST_F(AmbientClientImplTest, DownloadImageMultipleTimes) {
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AddAndLoginUser(AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId));
+  // make sure multiple images can download at the same time.
+  ambient_client().DownloadImage("test_url_1", base::DoNothing());
+  ambient_client().DownloadImage("test_url_2", base::DoNothing());
+  ambient_client().DownloadImage("test_url_3", base::DoNothing());
+
+  EXPECT_EQ(3u, ambient_client().token_fetchers_for_testing().size());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0u, ambient_client().token_fetchers_for_testing().size());
 }

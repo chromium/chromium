@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests scroll rectangles support in in Layers3DViewxScroll rectangles\n`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <div style="transform: translateZ(100px);height:20px;width:30px;" onmousewheel=""></div>
       <div id="touchable" style="transform:translateZ(100px);height:20px;width:20px;overflow:scroll;">
@@ -23,8 +23,9 @@
 
   TestRunner.addResult('Scroll rectangles');
   LayersTestRunner.layerTreeModel().layerTree().forEachLayer(layer => {
-    if (layer._scrollRects.length > 0)
-      TestRunner.addObject(layer._scrollRects);
+    const scrollRects = layer.scrollRects();
+    if (scrollRects.length > 0)
+      TestRunner.addObject(scrollRects);
   });
   TestRunner.completeTest();
 

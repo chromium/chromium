@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"
@@ -45,6 +44,11 @@ class VaapiImageDecodeAcceleratorWorker
   // internal state. Returns nullptr if initialization fails.
   static std::unique_ptr<VaapiImageDecodeAcceleratorWorker> Create();
 
+  VaapiImageDecodeAcceleratorWorker(const VaapiImageDecodeAcceleratorWorker&) =
+      delete;
+  VaapiImageDecodeAcceleratorWorker& operator=(
+      const VaapiImageDecodeAcceleratorWorker&) = delete;
+
   ~VaapiImageDecodeAcceleratorWorker() override;
 
   // gpu::ImageDecodeAcceleratorWorker implementation.
@@ -69,8 +73,6 @@ class VaapiImageDecodeAcceleratorWorker
 
   SEQUENCE_CHECKER(main_sequence_checker_);
   SEQUENCE_CHECKER(io_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiImageDecodeAcceleratorWorker);
 };
 
 }  // namespace media

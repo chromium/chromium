@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -59,9 +61,11 @@ public class TabObserverTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabObserver = new TestTabObserver();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTab.addObserver(mTabObserver);
-        mActivity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab = mActivityTestRule.getActivity().getActivityTab();
+            mTab.addObserver(mTabObserver);
+            mActivity = mActivityTestRule.getActivity();
+        });
     }
 
     @Test
@@ -76,14 +80,15 @@ public class TabObserverTest {
         int interactableCallCount = interactabilityHelper.getCallCount();
 
         // Enter tab switcher mode and make sure the event is triggered.
-        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.showOverview(false));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> layoutManager.showLayout(LayoutType.TAB_SWITCHER, false));
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         interactableCallCount = interactabilityHelper.getCallCount();
         assertFalse("Tab should not be interactable.", mTab.isUserInteractable());
 
         // Exit tab switcher and wait for event again.
-        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.hideOverview(false));
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, LayoutType.BROWSING, false);
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         assertTrue("Tab should be interactable.", mTab.isUserInteractable());
@@ -109,7 +114,9 @@ public class TabObserverTest {
     @Test
     @SmallTest
     public void testTabDetach_observerUnregistered() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mTab.updateAttachment(null, null));
-        assertFalse(mTab.hasObserver(mTabObserver));
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab.updateAttachment(null, null);
+            assertFalse(mTab.hasObserver(mTabObserver));
+        });
     }
 }

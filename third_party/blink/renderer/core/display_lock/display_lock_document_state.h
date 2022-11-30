@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -51,8 +52,17 @@ class CORE_EXPORT DisplayLockDocumentState final
   void RegisterDisplayLockActivationObservation(Element*);
   void UnregisterDisplayLockActivationObservation(Element*);
 
+  // Returns true if we have activatable locks.
+  // This compares LockedDisplayLockCount() and
+  // DisplayLockBlockingAllActivationCount().
+  bool HasActivatableLocks() const;
+
   // Returns true if all activatable locks have been forced.
   bool ActivatableDisplayLocksForced() const;
+
+  // Notifications for elements entering/exiting top layer.
+  void ElementAddedToTopLayer(Element*);
+  void ElementRemovedFromTopLayer(Element*);
 
   class CORE_EXPORT ScopedForceActivatableDisplayLocks {
     STACK_ALLOCATED();
@@ -75,6 +85,13 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   // Notify the display locks that selection was removed.
   void NotifySelectionRemoved();
+
+  // Notify the display locks that shared elements have changed.
+  void NotifySharedElementPseudoTreeChanged();
+
+  // Updates only the ancestor locks of the shared element transition elements.
+  // This is an optimization to be used by the display lock context.
+  void UpdateSharedElementAncestorLocks();
 
   // This is called when the forced scope is created or destroyed in
   // |ScopedForcedUpdate::Impl|. This is used to ensure that we can create new
@@ -99,8 +116,19 @@ class CORE_EXPORT DisplayLockDocumentState final
       const Node* node,
       bool self_was_forced,
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
-  void EndNodeForcedScope(
+  void BeginRangeForcedScope(
+      const Range* range,
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
+  void EndForcedScope(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
+  bool HasForcedScopes() const {
+    return forced_node_infos_.size() > 0 || forced_range_infos_.size() > 0;
+  }
+
+  // This is called to make sure that any of the currently forced locks allow at
+  // least the specified phase for updates. This is used when a scope is
+  // created, for example, to update StyleAndLayoutTree, but then is upgraded to
+  // update Layout instead.
+  void EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase phase);
 
   // Forces the lock on the given element, if it isn't yet forced but appears on
   // the ancestor chain for the forced element (which was set via
@@ -109,26 +137,58 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   class ForcedNodeInfo {
     DISALLOW_NEW();
-
    public:
     ForcedNodeInfo(const Node* node,
                    bool self_forced,
                    DisplayLockUtilities::ScopedForcedUpdate::Impl* chain)
-        : node(node), self_forced(self_forced), chain(chain) {}
+        : chain_(chain), node_(node), self_forced_(self_forced) {}
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(node);
-      visitor->Trace(chain);
+    void ForceLockIfNeeded(Element* new_locked_element);
+    DisplayLockUtilities::ScopedForcedUpdate::Impl* Chain() const {
+      return chain_;
     }
 
-    Member<const Node> node;
-    bool self_forced;
-    Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain;
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(chain_);
+      visitor->Trace(node_);
+    }
+
+   private:
+    Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain_;
+    Member<const Node> node_;
+    bool self_forced_;
+  };
+
+  class ForcedRangeInfo {
+    DISALLOW_NEW();
+
+   public:
+    ForcedRangeInfo(const Range* range,
+                    DisplayLockUtilities::ScopedForcedUpdate::Impl* chain)
+        : chain_(chain), range_(range) {}
+
+    void ForceLockIfNeeded(Element* new_locked_element);
+    DisplayLockUtilities::ScopedForcedUpdate::Impl* Chain() const {
+      return chain_;
+    }
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(chain_);
+      visitor->Trace(range_);
+    }
+
+   private:
+    Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain_;
+    Member<const Range> range_;
   };
 
   void NotifyPrintingOrPreviewChanged();
 
   base::TimeTicks GetLockUpdateTimestamp();
+
+  static constexpr float kViewportMarginPercentage = 150.f;
+
+  void IssueForcedRenderWarning(Element*);
 
  private:
   IntersectionObserver& EnsureIntersectionObserver();
@@ -136,14 +196,22 @@ class CORE_EXPORT DisplayLockDocumentState final
   void ProcessDisplayLockActivationObservation(
       const HeapVector<Member<IntersectionObserverEntry>>&);
 
-  void ForceLockIfNeededForInfo(Element*, ForcedNodeInfo*);
-
   void ScheduleAnimation();
+
+  // Mark element's ancestor contexts as having a top layer element. If at least
+  // one of the contexts skips its descendants, this return true. Otherwise, it
+  // returns false.
+  bool MarkAncestorContextsHaveTopLayerElement(Element*);
 
   Member<Document> document_;
 
   Member<IntersectionObserver> intersection_observer_ = nullptr;
   HeapHashSet<WeakMember<DisplayLockContext>> display_lock_contexts_;
+
+  // Contains all of the currently forced node infos, each of which represents
+  // the node that caused the scope to be created.
+  HeapVector<ForcedNodeInfo> forced_node_infos_;
+  HeapVector<ForcedRangeInfo> forced_range_infos_;
 
   int locked_display_lock_count_ = 0;
   int display_lock_blocking_all_activation_count_ = 0;
@@ -151,13 +219,11 @@ class CORE_EXPORT DisplayLockDocumentState final
   // If greater than 0, then the activatable locks are forced.
   int activatable_display_locks_forced_ = 0;
 
-  // Contains all of the currently forced node infos, each of which represents
-  // the node that caused the scope to be created.
-  HeapVector<ForcedNodeInfo> forced_node_info_;
-
   bool printing_ = false;
 
   base::TimeTicks last_lock_update_timestamp_ = base::TimeTicks();
+
+  unsigned forced_render_warnings_ = 0;
 };
 
 }  // namespace blink
@@ -167,5 +233,7 @@ class CORE_EXPORT DisplayLockDocumentState final
 // This is needed to allocate it in HeapVector directly.
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::DisplayLockDocumentState::ForcedNodeInfo)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::DisplayLockDocumentState::ForcedRangeInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_DOCUMENT_STATE_H_

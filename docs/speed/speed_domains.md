@@ -16,7 +16,7 @@ memory for idle and backgrounded tabs.
  * [Mailing List](https://groups.google.com/a/chromium.org/forum/#!forum/memory-dev)
  * Performance-Memory [Bug
    Queue](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Performance%3DMemory)
- * [Docs](https://chromium.googlesource.com/chromium/src/+/master/docs/memory)
+ * [Docs](https://chromium.googlesource.com/chromium/src/+/main/docs/memory)
 
 ## Power
 
@@ -49,7 +49,7 @@ interact with a website.
 ## Responsiveness
 
 Responsiveness domain focuses on making sure all websites have smooth transitions
-by serving 60fps, and that the click to action time is not noticible.
+by serving 60fps, and that the click to action time is not noticeable.
 
  * Performance-Responsiveness [Bug
    Queue](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Performance%3DResponsiveness)

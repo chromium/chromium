@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -164,7 +164,7 @@ public class DownloadItem {
         offlineItem.totalSizeBytes = downloadInfo.getBytesTotalSize();
         offlineItem.receivedBytes = downloadInfo.getBytesReceived();
         offlineItem.isResumable = downloadInfo.isResumable();
-        offlineItem.pageUrl = downloadInfo.getUrl();
+        offlineItem.url = downloadInfo.getUrl();
         offlineItem.originalUrl = downloadInfo.getOriginalUrl();
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
         offlineItem.otrProfileId = OTRProfileID.serialize(downloadInfo.getOTRProfileId());
@@ -180,7 +180,6 @@ public class DownloadItem {
         offlineItem.completionTimeMs = item.getEndTime();
         offlineItem.externallyRemoved = item.hasBeenExternallyRemoved();
         offlineItem.canRename = item.getDownloadInfo().state() == DownloadState.COMPLETE;
-        offlineItem.schedule = downloadInfo.getOfflineItemSchedule();
         switch (downloadInfo.state()) {
             case DownloadState.IN_PROGRESS:
                 offlineItem.state = downloadInfo.isPaused() ? OfflineItemState.PAUSED
@@ -197,7 +196,7 @@ public class DownloadItem {
             case DownloadState.INTERRUPTED:
                 @ResumeMode
                 int resumeMode = DownloadUtils.getResumeMode(
-                        downloadInfo.getUrl(), downloadInfo.getFailState());
+                        downloadInfo.getUrl().getSpec(), downloadInfo.getFailState());
                 if (resumeMode == ResumeMode.INVALID || resumeMode == ResumeMode.USER_RESTART) {
                     // Fail but can restart from the beginning. The UI should let the user to retry.
                     offlineItem.state = OfflineItemState.INTERRUPTED;

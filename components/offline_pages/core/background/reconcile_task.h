@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/save_page_request.h"
@@ -40,7 +41,7 @@ class ReconcileTask : public Task {
   void UpdateCompleted(UpdateRequestsResult update_result);
 
   // Member variables, all pointers are not owned here.
-  RequestQueueStore* store_;
+  raw_ptr<RequestQueueStore> store_;
   // Callback to complete the task.
   RequestQueueStore::UpdateCallback callback_;
   // Allows us to pass a weak pointer to callbacks.

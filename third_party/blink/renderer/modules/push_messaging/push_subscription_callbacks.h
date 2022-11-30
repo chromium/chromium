@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_SUBSCRIPTION_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_SUBSCRIPTION_CALLBACKS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -30,6 +29,11 @@ class PushSubscriptionCallbacks final
   PushSubscriptionCallbacks(
       ScriptPromiseResolver* resolver,
       ServiceWorkerRegistration* service_worker_registration);
+
+  PushSubscriptionCallbacks(const PushSubscriptionCallbacks&) = delete;
+  PushSubscriptionCallbacks& operator=(const PushSubscriptionCallbacks&) =
+      delete;
+
   ~PushSubscriptionCallbacks() override;
 
   // WebCallbacks<S, T> interface.
@@ -39,8 +43,6 @@ class PushSubscriptionCallbacks final
  private:
   Persistent<ScriptPromiseResolver> resolver_;
   Persistent<ServiceWorkerRegistration> service_worker_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushSubscriptionCallbacks);
 };
 
 }  // namespace blink

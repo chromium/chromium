@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -6,8 +6,6 @@
 #define IOS_TESTING_SCOPED_BLOCK_SWIZZLER_H_
 
 #include <objc/runtime.h>
-
-#include "base/macros.h"
 
 // Helper class that replaces a method implementation with a given block.
 // ScopedBlockSwizzler automatically swizzles when it is constructed and
@@ -21,6 +19,16 @@ class ScopedBlockSwizzler {
   // |selector| that does not exist on the |target| class.
   ScopedBlockSwizzler(Class target, SEL selector, id block);
 
+  // Constructs a new ScopedBlockSwizzler object and replaces the implementation
+  // of |selector| on the |target| class with the given |block|.
+  // |class_method| specifies if the swizzled method is a class method (YES) or
+  // an instance method (NO). This can be use to disambiguate if the class
+  // contains both method types with the same selector.
+  ScopedBlockSwizzler(Class target, SEL selector, id block, BOOL class_method);
+
+  ScopedBlockSwizzler(const ScopedBlockSwizzler&) = delete;
+  ScopedBlockSwizzler& operator=(const ScopedBlockSwizzler&) = delete;
+
   // Destroys the ScopedBlockSwizzler object, removing the swizzled method and
   // reinstalling the original method implementation.
   virtual ~ScopedBlockSwizzler();
@@ -33,8 +41,6 @@ class ScopedBlockSwizzler {
   // The original implementation of the swizzled method, saved so that it can be
   // reinstalled when this object goes out of scope.
   IMP original_imp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBlockSwizzler);
 };
 
 #endif  // IOS_TESTING_SCOPED_BLOCK_SWIZZLER_H_

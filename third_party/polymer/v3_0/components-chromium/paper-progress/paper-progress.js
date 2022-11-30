@@ -9,7 +9,6 @@ part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
 import '../polymer/polymer_bundled.min.js';
-import '../iron-flex-layout/iron-flex-layout.js';
 import '../paper-styles/color.js';
 
 import {IronRangeBehavior} from '../iron-range-behavior/iron-range-behavior.js';
@@ -74,7 +73,6 @@ The following mixins are available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|---------
-`--paper-progress-container` | Mixin applied to container | `{}`
 `--paper-progress-transition-duration` | Duration of the transition | `0.08s`
 `--paper-progress-transition-timing-function` | The timing function for the transition | `ease`
 `--paper-progress-transition-delay` | delay for the transition | `0s`
@@ -105,7 +103,6 @@ Polymer({
       }
 
       #progressContainer {
-        @apply --paper-progress-container;
         position: relative;
       }
 
@@ -118,7 +115,11 @@ Polymer({
       #primaryProgress,
       #secondaryProgress,
       .indeterminate::after {
-        @apply --layout-fit;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
       }
 
       #progressContainer,
@@ -142,7 +143,6 @@ Polymer({
 
       #primaryProgress,
       #secondaryProgress {
-        @apply --layout-fit;
         transform-origin: left center;
         transform: scaleX(0);
         will-change: transform;

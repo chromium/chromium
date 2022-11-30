@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,23 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
-#include "base/optional.h"
+#include "base/guid.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"
+#include "url/gurl.h"
 
 TabGroup::TabGroup(TabGroupController* controller,
                    const tab_groups::TabGroupId& id,
@@ -64,7 +71,6 @@ void TabGroup::AddTab() {
   if (tab_count_ == 0) {
     controller_->CreateTabGroup(id_);
     TabGroupChange::VisualsChange visuals;
-    visuals.old_visuals = nullptr;
     controller_->ChangeTabGroupVisuals(id_, visuals);
   }
   controller_->ChangeTabGroupContents(id_);
@@ -88,26 +94,35 @@ bool TabGroup::IsCustomized() const {
   return is_customized_;
 }
 
-base::Optional<int> TabGroup::GetFirstTab() const {
+bool TabGroup::IsSaved() const {
+  // TODO(dljames): Retrieving the service factory each time we want to check
+  // the saved status of a tab group is expensive computationally. Find a way to
+  // simplify this.
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  return backend && backend->model() && backend->model()->Contains(id());
+}
+
+absl::optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
     if (controller_->GetTabGroupForTab(i) == id_)
       return i;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<int> TabGroup::GetLastTab() const {
+absl::optional<int> TabGroup::GetLastTab() const {
   for (int i = controller_->GetTabCount() - 1; i >= 0; --i) {
     if (controller_->GetTabGroupForTab(i) == id_)
       return i;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 gfx::Range TabGroup::ListTabs() const {
-  base::Optional<int> maybe_first_tab = GetFirstTab();
+  absl::optional<int> maybe_first_tab = GetFirstTab();
   if (!maybe_first_tab)
     return gfx::Range();
 
@@ -123,4 +138,36 @@ gfx::Range TabGroup::ListTabs() const {
   }
 
   return gfx::Range(first_tab, last_tab + 1);
+}
+
+void TabGroup::SaveGroup() {
+  std::vector<SavedTabGroupTab> tabs;
+  const gfx::Range tab_range = ListTabs();
+  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents = controller_->GetWebContentsAt(i);
+    const GURL& url = web_contents->GetVisibleURL();
+    tabs.emplace_back(
+        SavedTabGroupTab(url, saved_group_guid)
+            .SetTitle(web_contents->GetTitle())
+            .SetFavicon(favicon::TabFaviconFromWebContents(web_contents)));
+  }
+
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  if (!backend || !backend->model())
+    return;
+  SavedTabGroup saved_tab_group(visual_data_->title(), visual_data_->color(),
+                                tabs, saved_group_guid, id_);
+  backend->model()->Add(saved_tab_group);
+}
+
+void TabGroup::UnsaveGroup() {
+  is_saved_ = false;
+
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  if (!backend || !backend->model())
+    return;
+  backend->model()->Remove(id_);
 }

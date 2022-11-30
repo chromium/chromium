@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module cert_verifier.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 
@@ -14,28 +15,53 @@ import "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom
 // objects should be instantiated.
 struct CertVerifierCreationParams {
   // Specifies the path to the directory where NSS will store its database.
-  [EnableIf=is_chromeos]
+  // Example: /home/chronos/u-<hash>
+  [EnableIf=is_chromeos_ash]
   mojo_base.mojom.FilePath? nss_path;
+
+  // Specifies the path to the software NSS database.
+  // Example: /home/chronos/u-<hash>/.pki/nssdb
+  [EnableIf=is_chromeos_lacros]
+  mojo_base.mojom.FilePath? nss_full_path;
 
   // This is used in combination with nss_path, to ensure that the NSS database
   // isn't opened multiple times for NetworkContexts in the same profie.
-  [EnableIf=is_chromeos]
+  [EnableIf=is_chromeos_ash]
   string username_hash;
-
-  // Specifies which cert verifier implementation to use.
-  //   kDefault - Decided by base::Feature
-  //   kBuiltin - Use CertVerifyProcBuiltin
-  //   kSystem  - Use the system CertVerifyProc implementation
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  enum CertVerifierImpl {kDefault, kBuiltin, kSystem};
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  CertVerifierImpl use_builtin_cert_verifier = kDefault;
 
   // Parameters for the cert verifier comparison trial. This is a temporary
   // interface and embedders should not use it.
   // See https://crbug.com/649026
   [EnableIf=is_trial_comparison_cert_verifier_supported]
   TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
+};
+
+// Parameters for the CertVerifierServiceFactory. As opposed to
+// CertVerifierCreationParams, which can vary for each CertVerifier created,
+// the CertVerifierServiceParams are fixed and all CertVerifiers created by the
+// factory will be created with the same service parameters.
+struct CertVerifierServiceParams {
+  [EnableIf=is_chrome_root_store_supported]
+  bool use_chrome_root_store;
+};
+
+// Serialized copy of the Chrome Root store.
+struct ChromeRootStore {
+  // Serialized proto of type chrome_root_store::RootStore.
+  mojo_base.mojom.BigBuffer serialized_proto_root_store;
+};
+
+// Information about a certificate in the Chrome Root Store
+struct ChromeRootCertInfo {
+  // Human-readable name for the certificate.
+  string name;
+  string sha256hash_hex;
+};
+
+// Information about the Chrome Root Store
+struct ChromeRootStoreInfo {
+  int64 version;
+  array<ChromeRootCertInfo> root_cert_info;
 };
 
 // Parent interface for the CertVerifierProcess. Hands out new
@@ -46,4 +72,16 @@ interface CertVerifierServiceFactory {
   // cert_verifier::MojoCertVerifier.
   GetNewCertVerifier(pending_receiver<CertVerifierService> receiver,
                      CertVerifierCreationParams? creation_params);
+
+  // Returns the parameters that the service was configured with.
+  GetServiceParamsForTesting() => (CertVerifierServiceParams service_params);
+
+  // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
+  // new version.
+  [EnableIf=is_chrome_root_store_supported]
+  UpdateChromeRootStore(ChromeRootStore new_root_store);
+
+  // Returns information about the current Chrome Root Store.
+  [EnableIf=is_chrome_root_store_supported]
+  GetChromeRootStoreInfo() => (ChromeRootStoreInfo root_store_info);
 };

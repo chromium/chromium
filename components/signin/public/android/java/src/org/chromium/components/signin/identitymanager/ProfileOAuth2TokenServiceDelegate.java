@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,19 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountTrackerService;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
+
+import java.util.List;
 
 /**
  * Java instance for the native ProfileOAuth2TokenServiceDelegate.
@@ -55,36 +58,16 @@ final class ProfileOAuth2TokenServiceDelegate {
     private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
 
-    private ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
-            AccountTrackerService accountTrackerService,
-            AccountManagerFacade accountManagerFacade) {
+    @VisibleForTesting
+    @CalledByNative
+    ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
+            AccountTrackerService accountTrackerService) {
         assert nativeProfileOAuth2TokenServiceDelegate
                 != 0 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
         assert accountTrackerService != null : "accountTrackerService should not be null!";
         mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
         mAccountTrackerService = accountTrackerService;
-        mAccountManagerFacade = accountManagerFacade;
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    static ProfileOAuth2TokenServiceDelegate create(long nativeProfileOAuth2TokenServiceDelegate,
-            AccountTrackerService accountTrackerService,
-            AccountManagerFacade accountManagerFacade) {
-        return new ProfileOAuth2TokenServiceDelegate(nativeProfileOAuth2TokenServiceDelegate,
-                accountTrackerService, accountManagerFacade);
-    }
-
-    /**
-     * Called by the native method
-     * ProfileOAuth2TokenServiceDelegate::GetSystemAccountNames()
-     * to list the active account names on device.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    String[] getSystemAccountNames() {
-        return AccountUtils.toAccountNames(mAccountManagerFacade.tryGetGoogleAccounts())
-                .toArray(new String[0]);
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
     }
 
     /**
@@ -99,28 +82,30 @@ final class ProfileOAuth2TokenServiceDelegate {
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
-        final Account account = AccountUtils.findAccountByName(
-                mAccountManagerFacade.tryGetGoogleAccounts(), accountEmail);
-        if (account == null) {
-            ThreadUtils.postOnUiThread(() -> {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                        null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
-            });
-            return;
-        }
-        String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-        getAccessToken(account, oauth2Scope, new GetAccessTokenCallback() {
-            @Override
-            public void onGetTokenSuccess(AccessTokenData token) {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
-                        token.getToken(), token.getExpirationTimeSecs(), false, nativeCallback);
+        mAccountManagerFacade.getAccounts().then(accounts -> {
+            final Account account = AccountUtils.findAccountByName(accounts, accountEmail);
+            if (account == null) {
+                ThreadUtils.postOnUiThread(() -> {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
+                            null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
+                });
+                return;
             }
+            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
+            getAccessToken(account, oauth2Scope, new GetAccessTokenCallback() {
+                @Override
+                public void onGetTokenSuccess(AccessTokenData token) {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
+                            token.getToken(), token.getExpirationTimeSecs(), false, nativeCallback);
+                }
 
-            @Override
-            public void onGetTokenFailure(boolean isTransientError) {
-                ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(null,
-                        AccessTokenData.NO_KNOWN_EXPIRATION_TIME, isTransientError, nativeCallback);
-            }
+                @Override
+                public void onGetTokenFailure(boolean isTransientError) {
+                    ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(null,
+                            AccessTokenData.NO_KNOWN_EXPIRATION_TIME, isTransientError,
+                            nativeCallback);
+                }
+            });
         });
     }
 
@@ -167,20 +152,22 @@ final class ProfileOAuth2TokenServiceDelegate {
     @VisibleForTesting
     @CalledByNative
     boolean hasOAuth2RefreshToken(String accountName) {
-        return mAccountManagerFacade.isCachePopulated()
-                && AccountUtils.findAccountByName(
-                           mAccountManagerFacade.tryGetGoogleAccounts(), accountName)
-                != null;
+        Promise<List<Account>> promise = mAccountManagerFacade.getAccounts();
+        return promise.isFulfilled()
+                && AccountUtils.findAccountByName(promise.getResult(), accountName) != null;
     }
 
     @VisibleForTesting
     @CalledByNative
-    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String accountId) {
+    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
         ThreadUtils.assertOnUiThread();
         mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
             ProfileOAuth2TokenServiceDelegateJni.get()
                     .reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                            mNativeProfileOAuth2TokenServiceDelegate, accountId);
+                            mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
+                            AccountUtils.toAccountNames(accounts).toArray(new String[0]));
         });
     }
 
@@ -199,6 +186,7 @@ final class ProfileOAuth2TokenServiceDelegate {
         void onOAuth2TokenFetched(String authToken, long expirationTimeSecs,
                 boolean isTransientError, long nativeCallback);
         void reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId);
+                long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId,
+                String[] deviceAccountNames);
     }
 }

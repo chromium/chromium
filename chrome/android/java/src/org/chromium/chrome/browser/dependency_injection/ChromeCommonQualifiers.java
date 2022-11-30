@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,4 +17,5 @@ public interface ChromeCommonQualifiers {
     String DECOR_VIEW = "DECOR_VIEW";
     String IS_PROMOTABLE_TO_TAB_BOOLEAN = "IS_PROMOTABLE_TO_TAB_BOOLEAN";
     String SAVED_INSTANCE_SUPPLIER = "SAVED_INSTANCE_SUPPLIER";
+    String ACTIVITY_TYPE = "ACTIVITY_TYPE";
 }

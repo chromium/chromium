@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,13 +33,22 @@ typedef enum {
 // the user is successfully signed in.
 typedef enum {
   POST_SIGNIN_ACTION_NONE,
-  POST_SIGNIN_ACTION_START_SYNC,
+  POST_SIGNIN_ACTION_COMMIT_SYNC,
 } PostSignInAction;
+
+// Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert
+// the enum value to point.
+enum class IdentityAvatarSize {
+  TableViewIcon,  // 30 pt.
+  SmallSize,      // 32 pt.
+  Regular,        // 40 pt.
+  Large,          // 48 pt.
+};
 
 namespace signin_ui {
 
 // Completion callback for a sign-in operation.
-// |success| is YES if the operation was successful.
+// `success` is YES if the operation was successful.
 typedef void (^CompletionCallback)(BOOL success);
 
 }  // namespace signin_ui

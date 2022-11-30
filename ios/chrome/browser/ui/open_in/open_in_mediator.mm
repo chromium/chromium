@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,7 +44,7 @@
     _baseViewController = baseViewController;
     _browser = browser;
     _webStateList = browser->GetWebStateList();
-    // Set the delegates for all existing webstates in the |_webStateList|.
+    // Set the delegates for all existing webstates in the `_webStateList`.
     for (int i = 0; i < _webStateList->count(); i++) {
       web::WebState* webState = _webStateList->GetWebStateAt(i);
       OpenInTabHelper::FromWebState(webState)->SetDelegate(self);
@@ -61,7 +61,7 @@
 
 - (void)disableAll {
   for (const auto& element : _openInControllersForWebStates)
-    [element.second disable];
+    [element.second detachFromWebState];
   _openInControllersForWebStates.clear();
 }
 
@@ -86,8 +86,8 @@
 
 #pragma mark - OpenInTabHelperDelegate
 
-// Creates OpenInController and set its base view to the |webState| view. Then
-// enables the OpenIn view for the |webState|.
+// Creates OpenInController and set its base view to the `webState` view. Then
+// enables the OpenIn view for the `webState`.
 - (void)enableOpenInForWebState:(web::WebState*)webState
                 withDocumentURL:(const GURL&)documentURL
               suggestedFileName:(NSString*)suggestedFileName {
@@ -96,8 +96,8 @@
         initWithBaseViewController:_baseViewController
                   URLLoaderFactory:webState->GetBrowserState()
                                        ->GetSharedURLLoaderFactory()
-                          webState:webState];
-    openInController.browser = _browser;
+                          webState:webState
+                           browser:_browser];
     _openInControllersForWebStates[webState] = openInController;
   }
   OpenInController* controller = _openInControllersForWebStates[webState];
@@ -106,7 +106,7 @@
                   suggestedFilename:suggestedFileName];
 }
 
-// Disables the openIn view for the |webState|.
+// Disables the openIn view for the `webState`.
 - (void)disableOpenInForWebState:(web::WebState*)webState {
   if (_openInControllersForWebStates[webState])
     [_openInControllersForWebStates[webState] disable];

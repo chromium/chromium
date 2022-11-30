@@ -1,33 +1,31 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
 #import <Foundation/Foundation.h>
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/send_tab_to_self/ios_send_tab_to_self_infobar_delegate.h"
-#include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/ios_send_tab_to_self_infobar_delegate.h"
+#import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -46,27 +44,6 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
 }
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {}
-
-void SendTabToSelfBrowserAgent::SendCurrentTabToDevice(
-    NSString* target_device_id) {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  if (!web_state) {
-    return;
-  }
-
-  web::NavigationItem* current_item =
-      web_state->GetNavigationManager()->GetLastCommittedItem();
-  if (!current_item) {
-    return;
-  }
-
-  GURL url = current_item->GetURL();
-  std::string title = base::UTF16ToUTF8(current_item->GetTitle());
-  base::Time navigation_time = current_item->GetTimestamp();
-  std::string target_device = base::SysNSStringToUTF8(target_device_id);
-
-  model_->AddEntry(url, title, navigation_time, target_device);
-}
 
 void SendTabToSelfBrowserAgent::SendTabToSelfModelLoaded() {
   // TODO(crbug.com/949756): Push changes that happened before the model was

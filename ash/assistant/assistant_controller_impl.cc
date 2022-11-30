@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,20 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/android_intent_helper.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/utility/screenshot_controller.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_feedback.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -37,6 +38,8 @@ AssistantControllerImpl::AssistantControllerImpl() {
   // and be notified of any accessibility status changes in the future to
   // provide an opportunity to turn on/off A11Y features.
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  color_mode_observer_.Observe(DarkLightModeControllerImpl::Get());
 
   NotifyConstructed();
 }
@@ -62,18 +65,23 @@ void AssistantControllerImpl::BindReceiver(
   assistant_volume_control_receiver_.Bind(std::move(receiver));
 }
 
-void AssistantControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+void AssistantControllerImpl::SetAssistant(assistant::Assistant* assistant) {
   assistant_ = assistant;
 
   // Provide reference to sub-controllers.
   assistant_alarm_timer_controller_.SetAssistant(assistant);
   assistant_interaction_controller_.SetAssistant(assistant);
   assistant_notification_controller_.SetAssistant(assistant);
-  assistant_screen_context_controller_.SetAssistant(assistant);
   assistant_ui_controller_.SetAssistant(assistant);
 
   OnAccessibilityStatusChanged();
+
+  bool dark_mode_enabled = false;
+  if (ash::features::IsProductivityLauncherEnabled() ||
+      ash::features::IsDarkLightModeEnabled()) {
+    dark_mode_enabled = DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  }
+  OnColorModeChanged(dark_mode_enabled);
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)
@@ -85,7 +93,7 @@ void AssistantControllerImpl::SendAssistantFeedback(
     bool assistant_debug_info_allowed,
     const std::string& feedback_description,
     const std::string& screenshot_png) {
-  chromeos::assistant::AssistantFeedback assistant_feedback;
+  assistant::AssistantFeedback assistant_feedback;
   assistant_feedback.assistant_debug_info_allowed =
       assistant_debug_info_allowed;
   assistant_feedback.description = feedback_description;
@@ -104,7 +112,7 @@ void AssistantControllerImpl::DownloadImage(
     ImageDownloader::DownloadCallback callback) {
   constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
       net::DefineNetworkTrafficAnnotation("image_downloader", R"(
-            "semantics: {
+            semantics {
               sender: "Google Assistant"
               description:
                 "The Google Assistant requires dynamic loading of images to "
@@ -114,13 +122,17 @@ void AssistantControllerImpl::DownloadImage(
                 "Generally triggered in direct response to a user issued "
                 "query. A single query may necessitate the downloading of "
                 "multiple images."
+              data: "None."
               destination: GOOGLE_OWNED_SERVICE
             }
-            "policy": {
+            policy {
               cookies_allowed: NO
               setting:
                 "The Google Assistant can be enabled/disabled in Chrome "
                 "Settings and is subject to eligibility requirements."
+              policy_exception_justification:
+                "The users can disable this feature. This does not send/store "
+                "user data."
             })");
 
   ImageDownloader::Get()->Download(url, kNetworkTrafficAnnotationTag,
@@ -140,6 +152,13 @@ void AssistantControllerImpl::RemoveObserver(
 void AssistantControllerImpl::OpenUrl(const GURL& url,
                                       bool in_background,
                                       bool from_server) {
+  // app_list search result will be opened by `OpenUrl()`. However, the
+  // `assistant_` may not be ready. Show a toast to indicate it.
+  if (!assistant_) {
+    assistant_ui_controller_.ShowUnboundErrorToast();
+    return;
+  }
+
   if (assistant::util::IsDeepLinkUrl(url)) {
     NotifyDeepLinkReceived(url);
     return;
@@ -158,14 +177,7 @@ void AssistantControllerImpl::OpenUrl(const GURL& url,
   if (IsAndroidIntent(url)) {
     android_helper->LaunchAndroidIntent(url.spec());
   } else {
-    // The new tab should be opened with a user activation since the user
-    // interacted with the Assistant to open the url. |in_background| describes
-    // the relationship between |url| and Assistant UI, not the browser. As
-    // such, the browser will always be instructed to open |url| in a new
-    // browser tab and Assistant UI state will be updated downstream to respect
-    // |in_background|.
-    NewWindowDelegate::GetInstance()->NewTabWithUrl(
-        url, /*from_user_interaction=*/true);
+    assistant::AssistantBrowserDelegate::Get()->OpenUrl(url);
   }
   NotifyUrlOpened(url, from_server);
 }
@@ -197,18 +209,18 @@ void AssistantControllerImpl::OnDeepLinkReceived(
     }
     case DeepLinkType::kFeedback:
       NewWindowDelegate::GetInstance()->OpenFeedbackPage(
-          /*from_assistant=*/true);
+          NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant);
 
       // Close the assistant UI so that the feedback page is visible.
       assistant_ui_controller_.CloseUi(
-          chromeos::assistant::AssistantExitPoint::kUnspecified);
+          assistant::AssistantExitPoint::kUnspecified);
       break;
     case DeepLinkType::kScreenshot:
       // We close the UI before taking the screenshot as it's probably not the
       // user's intention to include the Assistant in the picture.
       assistant_ui_controller_.CloseUi(
-          chromeos::assistant::AssistantExitPoint::kScreenshot);
-      Shell::Get()->screenshot_controller()->TakeScreenshotForAllRootWindows();
+          assistant::AssistantExitPoint::kScreenshot);
+      CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
       break;
     case DeepLinkType::kTaskManager:
       // Open task manager window.
@@ -219,11 +231,9 @@ void AssistantControllerImpl::OnDeepLinkReceived(
     case DeepLinkType::kLists:
     case DeepLinkType::kNotes:
     case DeepLinkType::kOnboarding:
-    case DeepLinkType::kProactiveSuggestions:
     case DeepLinkType::kQuery:
     case DeepLinkType::kReminders:
     case DeepLinkType::kSettings:
-    case DeepLinkType::kWhatsOnMyScreen:
       // No action needed.
       break;
   }
@@ -271,6 +281,13 @@ void AssistantControllerImpl::OnAccessibilityStatusChanged() {
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
 }
 
+void AssistantControllerImpl::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!assistant_)
+    return;
+
+  assistant_->OnColorModeChanged(dark_mode_enabled);
+}
+
 bool AssistantControllerImpl::IsAssistantReady() const {
   return !!assistant_;
 }
@@ -311,16 +328,16 @@ void AssistantControllerImpl::NotifyUrlOpened(const GURL& url,
 }
 
 void AssistantControllerImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
-  if (status == chromeos::assistant::AssistantStatus::NOT_READY)
+    assistant::AssistantStatus status) {
+  if (status == assistant::AssistantStatus::NOT_READY)
     assistant_ui_controller_.CloseUi(
-        chromeos::assistant::AssistantExitPoint::kUnspecified);
+        assistant::AssistantExitPoint::kUnspecified);
 }
 
 void AssistantControllerImpl::OnLockedFullScreenStateChanged(bool enabled) {
   if (enabled)
     assistant_ui_controller_.CloseUi(
-        chromeos::assistant::AssistantExitPoint::kUnspecified);
+        assistant::AssistantExitPoint::kUnspecified);
 }
 
 void AssistantControllerImpl::BindVolumeControl(

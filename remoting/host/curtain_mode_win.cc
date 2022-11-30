@@ -1,13 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/curtain_mode.h"
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
 
 #include <windows.h>
@@ -18,11 +17,11 @@ class CurtainModeWin : public CurtainMode {
  public:
   CurtainModeWin();
 
+  CurtainModeWin(const CurtainModeWin&) = delete;
+  CurtainModeWin& operator=(const CurtainModeWin&) = delete;
+
   // Overriden from CurtainMode.
   bool Activate() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeWin);
 };
 
 CurtainModeWin::CurtainModeWin() {

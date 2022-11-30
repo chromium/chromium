@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -64,11 +64,16 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   // user for accidentally sharing their screen and gives them the option to
   // prevent their screen from being shared.
   //
+  // |includable_web_contents_filter| is used to restrict any
+  // DesktopMediaList::Type::kWebContents sources. It should return true if a
+  // given WebContents is a valid target, or false if it should be excluded.
+  //
   // Note that |done_callback| is called only if the dialog completes normally.
   // If an instance of this class is destroyed while the dialog is visible, the
   // dialog will be cleaned up, but |done_callback| will not be invoked.
   void Show(const Params& params,
             const std::vector<DesktopMediaList::Type>& sources,
+            DesktopMediaList::WebContentsFilter includable_web_contents_filter,
             DoneCallback done_callback);
 
   // content::WebContentsObserver overrides.
@@ -87,7 +92,7 @@ class DesktopMediaPickerController : private content::WebContentsObserver {
   DoneCallback done_callback_;
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists_;
   std::unique_ptr<DesktopMediaPicker> picker_;
-  DesktopMediaPickerFactory* picker_factory_;
+  raw_ptr<DesktopMediaPickerFactory> picker_factory_;
   base::WeakPtrFactory<DesktopMediaPickerController> weak_factory_{this};
 };
 

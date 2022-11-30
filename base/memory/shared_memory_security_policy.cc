@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <atomic>
+#include <limits>
 
 #include "base/bits.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/checked_math.h"
-#include "base/optional.h"
-#include "base/process/process_metrics.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -19,10 +20,10 @@ namespace {
 
 // Note: pointers are 32 bits on all architectures in NaCl. See
 // https://bugs.chromium.org/p/nativeclient/issues/detail?id=1162
-#if defined(ARCH_CPU_32_BITS) || defined(OS_NACL)
+#if defined(ARCH_CPU_32_BITS) || BUILDFLAG(IS_NACL)
 // No effective limit on 32-bit, since there simply isn't enough address space
 // for ASLR to be particularly effective.
-constexpr size_t kTotalMappedSizeLimit = -1;
+constexpr size_t kTotalMappedSizeLimit = std::numeric_limits<size_t>::max();
 #elif defined(ARCH_CPU_64_BITS)
 // 32 GB of mappings ought to be enough for anybody.
 constexpr size_t kTotalMappedSizeLimit = 32ULL * 1024 * 1024 * 1024;
@@ -30,8 +31,8 @@ constexpr size_t kTotalMappedSizeLimit = 32ULL * 1024 * 1024 * 1024;
 
 static std::atomic_size_t total_mapped_size_;
 
-base::Optional<size_t> AlignWithPageSize(size_t size) {
-#if defined(OS_WIN)
+absl::optional<size_t> AlignWithPageSize(size_t size) {
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/210609): Matches alignment requirements defined in
   // platform_shared_memory_region_win.cc:PlatformSharedMemoryRegion::Create.
   // Remove this when NaCl is gone.
@@ -39,12 +40,12 @@ base::Optional<size_t> AlignWithPageSize(size_t size) {
   const size_t page_size = std::max(kSectionSize, GetPageSize());
 #else
   const size_t page_size = GetPageSize();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   size_t rounded_size = bits::AlignUp(size, page_size);
 
   // Fail on overflow.
   if (rounded_size < size)
-    return base::nullopt;
+    return absl::nullopt;
 
   return rounded_size;
 }
@@ -57,7 +58,7 @@ bool SharedMemorySecurityPolicy::AcquireReservationForMapping(size_t size) {
       total_mapped_size_.load(std::memory_order_relaxed);
   size_t total_mapped_size;
 
-  base::Optional<size_t> page_aligned_size = AlignWithPageSize(size);
+  absl::optional<size_t> page_aligned_size = AlignWithPageSize(size);
 
   if (!page_aligned_size)
     return false;
@@ -85,7 +86,7 @@ void SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_t size) {
   // that's required.
   // Note #2: |size| should never overflow when aligned to page size, since
   // this should only be called if AcquireReservationForMapping() returned true.
-  base::Optional<size_t> page_aligned_size = AlignWithPageSize(size);
+  absl::optional<size_t> page_aligned_size = AlignWithPageSize(size);
   total_mapped_size_.fetch_sub(*page_aligned_size, std::memory_order_relaxed);
 }
 

@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/common/user_agent.h"
 
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "base/test/scoped_feature_list.h"
-#include "ios/web/common/features.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/strings/stringprintf.h"
+#import "base/system/sys_info.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/web/common/features.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "ui/base/device_form_factor.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,9 +37,6 @@ using UserAgentTest = PlatformTest;
 
 // Tests conversions between UserAgentType values and their descriptions
 TEST_F(UserAgentTest, UserAgentTypeDescription) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kUseDefaultUserAgentInWebClient);
-
   const std::string kMobileDescription("MOBILE");
   const std::string kDesktopDescription("DESKTOP");
   const std::string kAutomaticDescription("AUTOMATIC");
@@ -59,14 +56,10 @@ TEST_F(UserAgentTest, UserAgentTypeDescription) {
             GetUserAgentTypeWithDescription(kNoneDescription));
   EXPECT_EQ(UserAgentType::NONE,
             GetUserAgentTypeWithDescription(kInvalidDescription));
-
-  // The kUseDefaultUserAgentInWebClient feature is only available on iOS 13+.
-  if (@available(iOS 13, *)) {
-    EXPECT_EQ(kAutomaticDescription,
-              GetUserAgentTypeDescription(UserAgentType::AUTOMATIC));
-    EXPECT_EQ(UserAgentType::AUTOMATIC,
-              GetUserAgentTypeWithDescription(kAutomaticDescription));
-  }
+  EXPECT_EQ(kAutomaticDescription,
+            GetUserAgentTypeDescription(UserAgentType::AUTOMATIC));
+  EXPECT_EQ(UserAgentType::AUTOMATIC,
+            GetUserAgentTypeWithDescription(kAutomaticDescription));
 }
 
 // Tests the mobile user agent returned for a specific product.

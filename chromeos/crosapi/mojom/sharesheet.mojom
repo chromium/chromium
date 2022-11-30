@@ -1,0 +1,49 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/app_service_types.mojom";
+
+// The source from which the sharesheet was launched from.
+// Based on sharesheet::LaunchSource.
+[Stable, Extensible]
+enum SharesheetLaunchSource {
+  [Default] kUnknown = 0,
+  kWebShare = 3,
+  kOmniboxShare = 5,
+};
+
+// The result from showing a sharesheet bubble.
+[Stable, Extensible]
+enum SharesheetResult {
+  kSuccess,            // Successfully passed data to selected target.
+  kCancel,             // Share was cancelled before completion.
+  kErrorAlreadyOpen,   // Share failed because the sharesheet is already open.
+  kErrorWindowClosed,  // Parent window closed before sharesheet could be shown.
+};
+
+// Interacts with the Sharesheet service. Implemented in ash-chrome.
+// Next version: 2
+// Next method id: 3
+[Stable, Uuid="be0b8049-1fdd-4ba7-a980-997b8c59420e"]
+interface Sharesheet {
+  // Displays the dialog (aka bubble) for sharing content (or files) with
+  // other applications and targets. |intent| contains the list of the
+  // files/content to be shared.
+  ShowBubble@0(
+      string window_id,
+      SharesheetLaunchSource source,
+      Intent intent) => (SharesheetResult sharesheet_result);
+
+  // Functions like ShowBubble(), except this invokes a callback when the bubble
+  // is closed instead of SharesheetResult.
+  [MinVersion=1] ShowBubbleWithOnClosed@1(
+      string window_id,
+      SharesheetLaunchSource source,
+      Intent intent) => ();
+
+  // Closes the Sharesheet dialog associated with the window ID.
+  [MinVersion=1] CloseBubble@2(string window_id);
+};

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -77,7 +77,7 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
     parser.add_option(
         '--desktop-runtime',
         default='openxr',
-        choices=vr_state.WindowsSharedVrPageState.DESKTOP_RUNTIMES.keys(),
+        choices=list(vr_state.WindowsSharedVrPageState.DESKTOP_RUNTIMES.keys()),
         help='Which VR runtime to use on Windows. Defaults to %default')
     parser.add_option(
         '--use-real-runtime',

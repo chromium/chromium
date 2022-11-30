@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <fts.h>
 #include <sys/stat.h>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_enumerator.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -38,15 +38,14 @@ struct FTSCloser {
 //
 // TODO(crbug/1037824): Measure the battery usage to find an optimal value for
 // this.
-constexpr base::TimeDelta kRegularScanInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kRegularScanInterval = base::Seconds(5);
 
 // This value is used to handle the delay caused by timekeeper when reading the
 // ctime values. For more information, please read the comments inside
 // IsModified function.
 //
 // This value MUST NOT exceed |kRegularScanInterval|.
-constexpr base::TimeDelta kCtimeCorrection = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCtimeCorrection = base::Seconds(1);
 
 // Returns ctime for the file |path| using stat(2).
 // If stat fails for some reason, e.g., the file does not exists, then it

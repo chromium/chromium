@@ -1,27 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_ITEM_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_session_controller.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 
-class Profile;
-
-namespace media_message_center {
-class MediaNotificationController;
-}  // namespace media_message_center
+namespace global_media_controls {
+class MediaItemManager;
+}  // namespace global_media_controls
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+class Profile;
 
 // Represents the media notification shown in the Global Media Controls dialog
 // for a Cast session. It is responsible for showing/hiding a
@@ -38,8 +41,7 @@ class CastMediaNotificationItem
 
   CastMediaNotificationItem(
       const media_router::MediaRoute& route,
-      media_message_center::MediaNotificationController*
-          notification_controller,
+      global_media_controls::MediaItemManager* item_manager,
       std::unique_ptr<CastMediaSessionController> session_controller,
       Profile* profile);
   CastMediaNotificationItem(const CastMediaNotificationItem&) = delete;
@@ -51,14 +53,21 @@ class CastMediaNotificationItem
   void SetView(media_message_center::MediaNotificationView* view) override;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
+  void SeekTo(base::TimeDelta time) override;
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
+  void SetVolume(float volume) override;
+  void SetMute(bool mute) override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(
       media_router::mojom::MediaStatusPtr status) override;
 
   void OnRouteUpdated(const media_router::MediaRoute& route);
+
+  // Stops the cast session and logs UMA about the stop cast action.
+  void StopCasting(
+      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
 
   // Returns a pending remote bound to |this|. This should not be called more
   // than once per instance.
@@ -70,6 +79,7 @@ class CastMediaNotificationItem
   }
   Profile* profile() { return profile_; }
   bool is_active() const { return is_active_; }
+  bool route_is_local() const { return route_is_local_; }
 
   base::WeakPtr<CastMediaNotificationItem> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -124,17 +134,21 @@ class CastMediaNotificationItem
   // The notification is shown when active.
   bool is_active_ = true;
 
-  media_message_center::MediaNotificationController* const
-      notification_controller_;
-  media_message_center::MediaNotificationView* view_ = nullptr;
-  Profile* const profile_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
+  raw_ptr<media_message_center::MediaNotificationView> view_ = nullptr;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<CastMediaSessionController> session_controller_;
   const media_router::MediaRoute::Id media_route_id_;
+  // True if the route is started from the |profile_| on the current device.
+  const bool route_is_local_;
   ImageDownloader image_downloader_;
   media_session::MediaMetadata metadata_;
   std::vector<media_session::mojom::MediaSessionAction> actions_;
   media_session::mojom::MediaSessionInfoPtr session_info_;
+  media_session::MediaPosition media_position_;
+  bool is_muted_ = false;
+  float volume_ = 0.0;
   mojo::Receiver<media_router::mojom::MediaStatusObserver> observer_receiver_{
       this};
   base::WeakPtrFactory<CastMediaNotificationItem> weak_ptr_factory_{this};

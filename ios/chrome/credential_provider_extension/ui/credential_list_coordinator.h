@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 @interface CredentialListCoordinator : NSObject
 
 // Default initializer. When the coordinator is started it will present on
-// |baseViewController|. |serviceIdentifiers| will be used to prioritize data,
+// `baseViewController`. `serviceIdentifiers` will be used to prioritize data,
 // can be nil.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController

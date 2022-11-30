@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
+#include "base/strings/escape.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
@@ -18,12 +18,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "net/base/escape.h"
 #include "net/http/http_response_headers.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "content/public/browser/plugin_service.h"
+#include "content/public/common/webplugininfo.h"
 #endif
 
 namespace {
@@ -33,42 +33,37 @@ class PdfWebContentsLifetimeHelper
     : public content::WebContentsUserData<PdfWebContentsLifetimeHelper> {
  public:
   explicit PdfWebContentsLifetimeHelper(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
+      : content::WebContentsUserData<PdfWebContentsLifetimeHelper>(
+            *web_contents) {}
 
   base::WeakPtr<PdfWebContentsLifetimeHelper> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
   void NavigateIFrameToPlaceholder(const content::OpenURLParams& url_params) {
-    web_contents_->OpenURL(url_params);
+    GetWebContents().OpenURL(url_params);
   }
 
  private:
   friend class content::WebContentsUserData<PdfWebContentsLifetimeHelper>;
 
-  content::WebContents* const web_contents_;
   base::WeakPtrFactory<PdfWebContentsLifetimeHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfWebContentsLifetimeHelper);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Returns true if the PDF plugin for |navigation_handle| is enabled. Optionally
 // also sets |is_stale| to true if the plugin list needs a reload.
 bool IsPDFPluginEnabled(content::NavigationHandle* navigation_handle,
                         bool* is_stale) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  int process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-  int routing_id = web_contents->GetMainFrame()->GetRoutingID();
-
   content::WebPluginInfo plugin_info;
   return content::PluginService::GetInstance()->GetPluginInfo(
-      process_id, routing_id, navigation_handle->GetURL(),
-      web_contents->GetMainFrame()->GetLastCommittedOrigin(), kPDFMimeType,
-      false /* allow_wildcard */, is_stale, &plugin_info,
-      nullptr /* actual_mime_type */);
+      navigation_handle->GetWebContents()->GetBrowserContext(),
+      navigation_handle->GetURL(), kPDFMimeType, false /* allow_wildcard */,
+      is_stale, &plugin_info, nullptr /* actual_mime_type */);
 }
 #endif
 
@@ -152,7 +147,7 @@ void PDFIFrameNavigationThrottle::OnPluginsLoaded(
 void PDFIFrameNavigationThrottle::LoadPlaceholderHTML() {
   // Prepare the params to navigate to the placeholder.
   std::string html = GetPDFPlaceholderHTML(navigation_handle()->GetURL());
-  GURL data_url("data:text/html," + net::EscapePath(html));
+  GURL data_url("data:text/html," + base::EscapePath(html));
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.url = data_url;

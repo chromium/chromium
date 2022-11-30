@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,8 +29,6 @@ IMAGE_DECODING = Tag(
                        'rasterization) to compare YUV and RGB'))
 KEY_DESKTOP_MOVE = Tag(
     'key_desktop_move', 'Key desktop move stories')
-KEY_HIT_TEST = Tag(
-    'key_hit_test', 'Key hit test stories')
 KEY_SILK = Tag(
     'key_silk', 'Key silk stories')
 KEY_NOOP = Tag(
@@ -39,12 +37,12 @@ KEY_IDLE_POWER = Tag(
     'key_idle_power', 'Key idle power stories')
 MAPS = Tag(
     'maps', 'Maps stories')
-MOTIONMARK = Tag(
-    'motionmark', 'Motionmark benchmark stories')
+MOTIONMARK = Tag('motionmark',
+                 'Motionmark benchmark stories (fixed complexity)')
+MOTIONMARK_RAMP = Tag('motionmark_ramp',
+                      'Motionmark benchmark stories (ramped complexity)')
 PATHOLOGICAL_MOBILE_SITES = Tag(
     'pathological_mobile_sites', 'Pathological mobile sites')
-POLYMER = Tag(
-    'polymer', 'Polymer stories')
 REPAINT_DESKTOP = Tag(
     'repaint_desktop', 'Repaint desktop stories')
 # Representative story_tags are the cluster representatives of benchamrks
@@ -73,8 +71,6 @@ TOUGH_COMPOSITOR = Tag(
     'tough_compositor', 'Tough compositor stories')
 TOUGH_FILTERS = Tag(
     'tough_filters', 'Tough filters stories')
-TOUGH_IMAGE_DECODE = Tag(
-    'tough_image_decode', 'Tough image decode stories')
 TOUGH_PATH_RENDERING = Tag(
     'tough_path_rendering', 'Tough path rendering stories')
 TOUGH_PINCH_ZOOM = Tag(
@@ -83,6 +79,8 @@ TOUGH_PINCH_ZOOM_MOBILE = Tag(
     'tough_pinch_zoom_mobile', 'Tough pinch zoom mobile stories')
 TOUGH_SCHEDULING = Tag(
     'tough_scheduling', 'Tough scheduling stories')
+TOUGH_SCROLLBAR_SCROLLING = Tag('tough_scrollbar_scrolling',
+                                'Tough Scrollbar Scrolling stories')
 TOUGH_SCROLLING = Tag(
     'tough_scrolling', 'Tough scrolling stories')
 TOUGH_TEXTURE_UPLOAD = Tag(

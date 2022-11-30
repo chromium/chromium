@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,7 +18,7 @@ namespace filename_generation {
 
 #define FPL FILE_PATH_LITERAL
 #define HTML_EXTENSION ".html"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define FPL_HTML_EXTENSION L".html"
 #else
 #define FPL_HTML_EXTENSION ".html"
@@ -58,13 +57,13 @@ static const struct {
 };
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestEnsureHtmlExtension DISABLED_TestEnsureHtmlExtension
 #else
 #define MAYBE_TestEnsureHtmlExtension TestEnsureHtmlExtension
 #endif
 TEST(FilenameGenerationTest, MAYBE_TestEnsureHtmlExtension) {
-  for (size_t i = 0; i < base::size(kExtensionTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kExtensionTestCases); ++i) {
     base::FilePath original = base::FilePath(kExtensionTestCases[i].page_title);
     base::FilePath expected =
         base::FilePath(kExtensionTestCases[i].expected_name);
@@ -75,7 +74,7 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureHtmlExtension) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestEnsureMimeExtension DISABLED_TestEnsureMimeExtension
 #else
 #define MAYBE_TestEnsureMimeExtension TestEnsureMimeExtension
@@ -89,11 +88,11 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
     {FPL("filename.html"), FPL("filename.html"), "text/html"},
     {FPL("filename.htm"), FPL("filename.htm"), "text/html"},
     {FPL("filename.xhtml"), FPL("filename.xhtml"), "text/html"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {FPL("filename"), FPL("filename.htm"), "text/html"},
-#else  // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
     {FPL("filename"), FPL("filename.html"), "text/html"},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     {FPL("filename.html"), FPL("filename.html"), "text/xml"},
     {FPL("filename.xml"), FPL("filename.xml"), "text/xml"},
     {FPL("filename"), FPL("filename.xml"), "text/xml"},
@@ -111,7 +110,7 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
     {FPL("filename.abc"), FPL("filename.abc"), "unknown/unknown"},
     {FPL("filename"), FPL("filename"), "unknown/unknown"},
   };
-  for (uint32_t i = 0; i < base::size(kExtensionTests); ++i) {
+  for (uint32_t i = 0; i < std::size(kExtensionTests); ++i) {
     base::FilePath original = base::FilePath(kExtensionTests[i].page_title);
     base::FilePath expected = base::FilePath(kExtensionTests[i].expected_name);
     std::string mime_type(kExtensionTests[i].contents_mime_type);
@@ -160,13 +159,13 @@ static const struct GenerateFilenameTestCase {
 };
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestGenerateFilename DISABLED_TestGenerateFilename
 #else
 #define MAYBE_TestGenerateFilename TestGenerateFilename
 #endif
 TEST(FilenameGenerationTest, MAYBE_TestGenerateFilename) {
-  for (size_t i = 0; i < base::size(kGenerateFilenameCases); ++i) {
+  for (size_t i = 0; i < std::size(kGenerateFilenameCases); ++i) {
     base::FilePath save_name = GenerateFilename(
         kGenerateFilenameCases[i].page_title,
         GURL(kGenerateFilenameCases[i].page_url),
@@ -190,7 +189,7 @@ TEST(FilenameGenerationTest, TestBasicTruncation) {
 
 // The file path will only be truncated o the platforms that have known
 // encoding. Otherwise no truncation will be performed.
-#if defined(OS_WIN) || defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
   // The file name length is truncated to max_length.
   EXPECT_TRUE(TruncateFilename(&truncated_path, max_length));
   EXPECT_EQ(size_t(max_length), truncated_path.BaseName().value().size());

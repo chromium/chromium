@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -58,8 +58,9 @@ component("url") {
 
   defines = [ "IS_URL_IMPL" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//base/third_party/dynamic_annotations",
     "//ipc:param_traits",
   ]
@@ -129,7 +130,7 @@ if (is_android) {
 
   android_library("url_java") {
     sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
-    deps = [ "//base:base_java" ]
+    deps = [ "//base:jni_java" ]
   }
 
   android_library("gurl_java") {
@@ -140,7 +141,11 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url/mojom:url_mojom_gurl_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -148,7 +153,7 @@ if (is_android) {
   android_library("origin_java") {
     sources = [ "android/java/src/org/chromium/url/Origin.java" ]
     deps = [
-      "//base:base_java",
+      "//base:jni_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/mojom/base:base_java",
       "//url/mojom:url_mojom_origin_java",
@@ -210,10 +215,6 @@ test("url_unittests") {
     "//testing/gtest",
   ]
 
-  if (!is_ios) {
-    sources += [ "mojom/url_gurl_mojom_traits_unittest.cc" ]
-  }
-
   if (use_platform_icu_alternatives) {
     # Unit tests that are not supported by the current ICU alternatives on Android.
     if (is_android) {
@@ -238,8 +239,15 @@ test("url_unittests") {
   }
 
   if (!is_ios) {
+    sources += [
+      "mojom/scheme_host_port_mojom_traits_unittest.cc",
+      "mojom/url_gurl_mojom_traits_unittest.cc",
+    ]
     deps += [
       "//mojo/core/embedder",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//url/ipc:url_ipc_unittests",
+      "//url/mojom:mojom_traits",
       "//url/mojom:test_url_mojom_gurl",
     ]
   }
@@ -288,18 +296,30 @@ if (is_android) {
         [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
     deps = [
       ":gurl_java",
-      "//base:base_java",
       "//base:base_java_test_support",
+      "//base:jni_java",
     ]
   }
 
+  # Targets depending on gurl_junit_test_support do not need to bypass platform
+  # checks.
   android_library("gurl_junit_test_support") {
     testonly = true
     sources = [ "android/test/java/src/org/chromium/url/JUnitTestGURLs.java" ]
     deps = [ ":gurl_java" ]
   }
 
-  android_library("gurl_javatests") {
+  # Unlike gurl_junit_test_support targets depending on gurl_junit_shadows must
+  # bypass platform checks.
+  robolectric_library("gurl_junit_shadows") {
+    sources = [ "android/test/java/src/org/chromium/url/ShadowGURL.java" ]
+    deps = [
+      ":gurl_java",
+      ":gurl_junit_test_support",
+    ]
+  }
+
+  android_library("gurl_java_unit_tests") {
     testonly = true
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTest.java",
@@ -311,6 +331,7 @@ if (is_android) {
       ":gurl_junit_test_support",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//base:jni_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
@@ -318,6 +339,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//url/mojom:url_mojom_gurl_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
@@ -328,5 +350,18 @@ if (is_android) {
     testonly = true
     sources =
         [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
+  }
+
+  robolectric_library("gurl_junit_tests") {
+    sources = [ "android/junit/src/org/chromium/url/ShadowGURLTest.java" ]
+    deps = [
+      ":gurl_java",
+      ":gurl_junit_shadows",
+      ":gurl_junit_test_support",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//base/test:test_support_java",
+      "//third_party/junit",
+    ]
   }
 }

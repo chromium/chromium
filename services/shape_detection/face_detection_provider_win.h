@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -24,6 +23,10 @@ class FaceDetectionProviderWin
     : public shape_detection::mojom::FaceDetectionProvider {
  public:
   FaceDetectionProviderWin();
+
+  FaceDetectionProviderWin(const FaceDetectionProviderWin&) = delete;
+  FaceDetectionProviderWin& operator=(const FaceDetectionProviderWin&) = delete;
+
   ~FaceDetectionProviderWin() override;
 
   static void Create(
@@ -48,8 +51,6 @@ class FaceDetectionProviderWin
 
   mojo::SelfOwnedReceiverRef<mojom::FaceDetectionProvider> receiver_;
   base::WeakPtrFactory<FaceDetectionProviderWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionProviderWin);
 };
 
 }  // namespace shape_detection

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_SHELF_SHELF_WINDOW_WATCHER_ITEM_DELEGATE_H_
 
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -19,6 +18,12 @@ namespace ash {
 class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
  public:
   ShelfWindowWatcherItemDelegate(const ShelfID& id, aura::Window* window);
+
+  ShelfWindowWatcherItemDelegate(const ShelfWindowWatcherItemDelegate&) =
+      delete;
+  ShelfWindowWatcherItemDelegate& operator=(
+      const ShelfWindowWatcherItemDelegate&) = delete;
+
   ~ShelfWindowWatcherItemDelegate() override;
 
  private:
@@ -38,8 +43,6 @@ class ShelfWindowWatcherItemDelegate : public ShelfItemDelegate {
 
   // The window associated with this item. Not owned.
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWindowWatcherItemDelegate);
 };
 
 }  // namespace ash

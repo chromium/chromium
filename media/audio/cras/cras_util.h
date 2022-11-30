@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,40 +11,46 @@
 #include <string>
 #include <vector>
 
+#include "media/base/media_export.h"
+
 namespace media {
 
 enum class DeviceType { kInput, kOutput };
 
 struct CrasDevice {
   CrasDevice();
-  explicit CrasDevice(const cras_ionode_info* node,
-                      const cras_iodev_info* dev,
-                      DeviceType type);
-  explicit CrasDevice(const std::vector<cras_ionode_info>& nodes,
-                      const cras_iodev_info* dev,
-                      DeviceType type);
+  explicit CrasDevice(struct libcras_node_info* node, DeviceType type);
+
   DeviceType type;
   uint64_t id;
-  int32_t active;
+  uint32_t dev_idx;
+  uint32_t max_supported_channels;
+  bool plugged;
+  bool active;
+  std::string node_type;
   std::string name;
   std::string dev_name;
 };
 
-// Enumerates all devices of |type|.
-std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
+class MEDIA_EXPORT CrasUtil {
+ public:
+  CrasUtil();
 
-// Returns if there is a keyboard mic in CRAS.
-bool CrasHasKeyboardMic();
+  virtual ~CrasUtil();
 
-// Returns if system AEC is supported in CRAS.
-int CrasGetAecSupported();
+  // Enumerates all devices of |type|.
+  virtual std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
-// Returns the system AEC group ID. If no group ID is specified, -1 is
-// returned.
-int CrasGetAecGroupId();
+  // Returns if system AEC is supported in CRAS.
+  virtual int CrasGetAecSupported();
 
-// Returns the default output buffer size.
-int CrasGetDefaultOutputBufferSize();
+  // Returns the system AEC group ID. If no group ID is specified, -1 is
+  // returned.
+  virtual int CrasGetAecGroupId();
+
+  // Returns the default output buffer size.
+  virtual int CrasGetDefaultOutputBufferSize();
+};
 
 }  // namespace media
 

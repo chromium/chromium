@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,11 @@ weblayer_resource_exclusion_exceptions = [
 
   # Used for the translate infobar
   "${_material_package}/design_layout_tab_*",
+
+  # Referenced by Widget.Material3.AutoCompleteTextView. For context:
+  # https://crbug.com/1298549
+  "${_material_package}/layout/m3_auto_complete_simple_item.xml",
+  "${_material_package}/layout/mtrl_auto_complete_simple_item.xml",
 ]
 
 # Copied from chrome_public_apk_tmpl.gni.
@@ -22,15 +27,13 @@ weblayer_resource_values_filter_rules = [
   "${_material_package}:[Bb]ottomSheet",
   "${_material_package}:[Bb]uttonToggleGroup",
   "${_material_package}:[Cc]alendar",
-  "${_material_package}:[Cc]ardView",
-  "${_material_package}:\b[Cc]hip",
   "${_material_package}:design_snackbar",
   "${_material_package}:[Ff]loatingActionButton",
   "${_material_package}:[Mm]aterialAlertDialog",
   "${_material_package}:mtrl_alert",
   "${_material_package}:mtrl_slider",
   "${_material_package}:[Nn]avigationView",
-  "${_material_package}:picker",
+  "${_material_package}:[Pp]icker",
   "${_material_package}:[Ss]nackbar",
   "${_material_package}:[Ss]lider",
   "${_material_package}:[Tt]oolbarLayout",
@@ -49,7 +52,8 @@ weblayer_resource_exclusion_regex +=
 # Instead of manually filtering, unused resource removal would be better:
 # https://crbug.com/636448
 weblayer_resource_exclusion_regex += "|${_material_package}/layout"
-weblayer_resource_exclusion_regex += "|${_material_package}/color.*(choice|chip_|card_|calendar_|bottom_nav_|slider_)"
+weblayer_resource_exclusion_regex +=
+    "|${_material_package}/color.*(calendar_|bottom_nav_|slider_)"
 weblayer_resource_exclusion_regex +=
     "|${_material_package}/drawable.*design_snackbar"
 weblayer_resource_exclusion_regex += "|${_material_package}/xml.*badge_"

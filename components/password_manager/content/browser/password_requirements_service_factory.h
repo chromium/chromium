@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_BROWSER_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -31,6 +30,11 @@ class PasswordRequirementsServiceFactory
   static PasswordRequirementsService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  PasswordRequirementsServiceFactory(
+      const PasswordRequirementsServiceFactory&) = delete;
+  PasswordRequirementsServiceFactory& operator=(
+      const PasswordRequirementsServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       PasswordRequirementsServiceFactory>;
@@ -41,8 +45,6 @@ class PasswordRequirementsServiceFactory
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordRequirementsServiceFactory);
 };
 
 }  // namespace password_manager

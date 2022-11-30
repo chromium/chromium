@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
+#include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,11 +22,13 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/display/win/dpi.h"
@@ -35,7 +38,7 @@
 namespace {
 
 // The default system font name.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kDefaultFontName[] = "Segoe UI";
 #endif
 
@@ -47,23 +50,26 @@ class LayoutProviderTest : public testing::Test {
  public:
   LayoutProviderTest() {}
 
+  LayoutProviderTest(const LayoutProviderTest&) = delete;
+  LayoutProviderTest& operator=(const LayoutProviderTest&) = delete;
+
  protected:
   static void SetUpTestSuite() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::win::EnableHighDPISupport();
 #endif
     gfx::InitializeFonts();
+    // Some previous test may have left the default font description set to an
+    // unexpected state.
+    gfx::FontList::SetDefaultFontDescription(std::string());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LayoutProviderTest);
 };
 
 // Check whether the system is in the default configuration. This test will fail
 // if some system-wide settings are changed. Other tests rely on these default
 // settings and were the cause of many flaky tests.
 TEST_F(LayoutProviderTest, EnsuresDefaultSystemSettings) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Ensures anti-aliasing is activated.
   BOOL antialiasing = TRUE;
   BOOL result = SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &antialiasing, 0);
@@ -115,7 +121,7 @@ TEST_F(LayoutProviderTest, EnsuresDefaultSystemSettings) {
 // these tests ever fail it probably means something in the old UI will have
 // changed by mistake.
 // https://crbug.com/961938
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LegacyFontSizeConstants DISABLED_LegacyFontSizeConstants
 #else
 #define MAYBE_LegacyFontSizeConstants LegacyFontSizeConstants
@@ -124,7 +130,7 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   gfx::FontList label_font = rb.GetFontListWithDelta(ui::kLabelFontSizeDelta);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(16, label_font.GetHeight());
   EXPECT_EQ(13, label_font.GetBaseline());
 #else
@@ -134,7 +140,7 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
   EXPECT_EQ(12, label_font.GetFontSize());
   EXPECT_EQ(9, label_font.GetCapHeight());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(7, label_font.GetExpectedTextWidth(1));
 #else
   EXPECT_EQ(6, label_font.GetExpectedTextWidth(1));
@@ -142,12 +148,12 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
 
   gfx::FontList title_font = rb.GetFontListWithDelta(ui::kTitleFontSizeDelta);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(15, title_font.GetFontSize());
   EXPECT_EQ(20, title_font.GetHeight());
   EXPECT_EQ(17, title_font.GetBaseline());
   EXPECT_EQ(11, title_font.GetCapHeight());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   EXPECT_EQ(14, title_font.GetFontSize());
   EXPECT_EQ(17, title_font.GetHeight());
   EXPECT_EQ(14, title_font.GetBaseline());
@@ -159,7 +165,7 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
   EXPECT_EQ(11, title_font.GetCapHeight());
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(7, title_font.GetExpectedTextWidth(1));
 #else
   EXPECT_EQ(8, title_font.GetExpectedTextWidth(1));
@@ -173,7 +179,7 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
       rb.GetFontList(ui::ResourceBundle::MediumBoldFont);
   gfx::FontList large_font = rb.GetFontList(ui::ResourceBundle::LargeFont);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(12, small_font.GetFontSize());
   EXPECT_EQ(13, base_font.GetFontSize());
   EXPECT_EQ(13, bold_font.GetFontSize());
@@ -198,7 +204,7 @@ TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
 // TypographyProvider must add 4 instead. We do this so that Chrome adapts
 // correctly to _non-standard_ system font configurations on user machines.
 TEST_F(LayoutProviderTest, RequestFontBySize) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr int kBase = 13;
 #else
   constexpr int kBase = 12;
@@ -210,7 +216,7 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   constexpr int kBody2 = 12;                 // Leading 20.
   constexpr int kButton = 12;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr gfx::Font::Weight kButtonWeight = gfx::Font::Weight::BOLD;
 #else
   constexpr gfx::Font::Weight kButtonWeight = gfx::Font::Weight::MEDIUM;
@@ -235,9 +241,9 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   EXPECT_EQ(kHeadline, headline_font.GetFontSize());
 
 // Headline leading not specified (multiline should be rare).
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(25, headline_font.GetHeight());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(27, headline_font.GetHeight());
 #else
   EXPECT_EQ(24, headline_font.GetHeight());
@@ -246,9 +252,9 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   EXPECT_EQ(kTitle, title_font.GetFontSize());
 
 // Title font leading should be 22.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(19, title_font.GetHeight());  // i.e. Add 3 to obtain line height.
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(20, title_font.GetHeight());  // Add 2.
 #else
   EXPECT_EQ(18, title_font.GetHeight());  // Add 4.
@@ -257,9 +263,9 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   EXPECT_EQ(kBody1, body1_font.GetFontSize());
 
 // Body1 font leading should be 20.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(16, body1_font.GetHeight());  // Add 4.
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(18, body1_font.GetHeight());
 #else  // Linux.
   EXPECT_EQ(17, body1_font.GetHeight());  // Add 3.
@@ -268,7 +274,7 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   EXPECT_EQ(kBody2, body2_font.GetFontSize());
 
 // Body2 font leading should be 20.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(16, body2_font.GetHeight());
 #else
   EXPECT_EQ(15, body2_font.GetHeight());  // Other platforms: Add 5.
@@ -277,7 +283,7 @@ TEST_F(LayoutProviderTest, RequestFontBySize) {
   EXPECT_EQ(kButton, button_font.GetFontSize());
 
 // Button leading not specified (shouldn't be needed: no multiline buttons).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(16, button_font.GetHeight());
 #else
   EXPECT_EQ(15, button_font.GetHeight());
@@ -298,7 +304,7 @@ TEST_F(LayoutProviderTest, FontSizeRelativeToBase) {
 
 // Everything's measured relative to a default-constructed FontList.
 // On Mac, subtract one since that is 13pt instead of 12pt.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const int twelve = gfx::FontList().GetFontSize() - 1;
 #else
   const int twelve = gfx::FontList().GetFontSize();
@@ -340,9 +346,10 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
   } kExpectedIncreases[] = {{CONTEXT_HEADLINE, 4, 8},
                             {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
                             {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
-                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5}};
+                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
+                            {views::style::CONTEXT_BUTTON_MD, 0, 1}};
 
-  for (size_t i = 0; i < base::size(kExpectedIncreases); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedIncreases); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
     const auto& increase = kExpectedIncreases[i];
     const gfx::FontList& font = views::style::GetFont(increase.context, kStyle);
@@ -350,13 +357,6 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
     EXPECT_GE(increase.max, line_spacing - font.GetHeight());
     EXPECT_LE(increase.min, line_spacing - font.GetHeight());
   }
-
-  // Buttons should specify zero line height (i.e. use the font's height) so
-  // buttons have flexibility to configure their own spacing.
-  EXPECT_EQ(0,
-            views::style::GetLineHeight(views::style::CONTEXT_BUTTON, kStyle));
-  EXPECT_EQ(
-      0, views::style::GetLineHeight(views::style::CONTEXT_BUTTON_MD, kStyle));
 }
 
 // Ensure that line heights reported in a default bot configuration match the
@@ -384,7 +384,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
       {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
       {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}};
 
-  for (size_t i = 0; i < base::size(kHarmonyHeights); ++i) {
+  for (size_t i = 0; i < std::size(kHarmonyHeights); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
     EXPECT_EQ(kHarmonyHeights[i].line_height,
               views::style::GetLineHeight(kHarmonyHeights[i].context, kStyle));

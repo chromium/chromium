@@ -1,0 +1,89 @@
+{
+  include: [
+    "inspect/client.shard.cml",
+    "syslog/client.shard.cml",
+    "vulkan/client.shard.cml",
+  ],
+  program: {
+    runner: "elf",
+    binary: "cast_runner_exe",
+    args: [ "--enable-cfv2" ],
+    // TODO(crbug.com/1280703): Remove once web_instance is a CFv2 component.
+    lifecycle: { stop_event: "notify" },
+  },
+  capabilities: [
+    {
+      protocol: [
+        "chromium.cast.DataReset",
+        "fuchsia.sys.Runner",
+        "fuchsia.web.Debug",
+        "fuchsia.web.FrameHost",
+      ]
+    }
+  ],
+  expose: [
+    {
+      protocol: [
+        "chromium.cast.DataReset",
+        "fuchsia.sys.Runner",
+        "fuchsia.web.Debug",
+        "fuchsia.web.FrameHost",
+      ],
+      from: "self",
+    }
+  ],
+  use: [
+    {
+      directory: "config-data",
+      rights: [ "r*" ],
+      path: "/config/data",
+    },
+    {
+      protocol: [
+        // Capabilities to be passed to WebEngine instances.
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.kernel.VmexResource",
+        "fuchsia.legacymetrics.MetricsRecorder",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.media.SessionAudioConsumerFactory",
+        "fuchsia.mediacodec.CodecFactory",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.settings.Display",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Loader",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.input3.Keyboard",
+        "fuchsia.ui.scenic.Scenic",
+      ]
+    },
+    {
+      // Optional capabilities to be passed to WebEngine instances.
+      protocol: [
+        "fuchsia.camera3.DeviceWatcher",
+        "fuchsia.media.Audio",
+        "fuchsia.media.drm.PlayReady",
+        "fuchsia.media.drm.Widevine",
+        "fuchsia.tracing.perfetto.ProducerConnector",
+      ],
+      availability: "optional"
+    },
+    {
+      storage: "cache",
+      path: "/cache",
+    },
+  ]
+}

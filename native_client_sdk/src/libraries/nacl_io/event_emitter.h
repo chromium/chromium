@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef LIBRARIES_NACL_IO_EVENT_EMITTER_H_
@@ -40,6 +40,9 @@ class EventEmitter : public sdk_util::RefObject {
  public:
   EventEmitter();
 
+  EventEmitter(const EventEmitter&) = delete;
+  EventEmitter& operator=(const EventEmitter&) = delete;
+
   // This returns a snapshot, to ensure the status doesn't change from
   // fetch to use, hold the lock and call GetEventStatus_Locked.
   uint32_t GetEventStatus() {
@@ -71,7 +74,6 @@ class EventEmitter : public sdk_util::RefObject {
   uint32_t event_status_;
   sdk_util::SimpleLock emitter_lock_;
   EventListenerMap_t listeners_;
-  DISALLOW_COPY_AND_ASSIGN(EventEmitter);
 };
 
 }  // namespace nacl_io

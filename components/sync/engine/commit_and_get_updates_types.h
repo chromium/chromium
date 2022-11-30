@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
@@ -30,6 +29,10 @@ enum class SyncCommitError {
 
 struct CommitRequestData {
   CommitRequestData();
+
+  CommitRequestData(const CommitRequestData&) = delete;
+  CommitRequestData& operator=(const CommitRequestData&) = delete;
+
   ~CommitRequestData();
 
   // Fields sent to the sync server.
@@ -45,9 +48,6 @@ struct CommitRequestData {
   int64_t sequence_number = 0;
   std::string specifics_hash;
   base::Time unsynced_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommitRequestData);
 };
 
 // Represents a successfully committed item.
@@ -60,10 +60,6 @@ struct CommitResponseData {
   ~CommitResponseData();
 
   std::string id;
-  // The sync id that was sent in the request. Non-empty only if different from
-  // |id|. It could be different because the server can change the sync id
-  // (e.g. for newly created bookmarks),
-  std::string id_in_request;
   ClientTagHash client_tag_hash;
   int64_t sequence_number = 0;
   int64_t response_version = 0;

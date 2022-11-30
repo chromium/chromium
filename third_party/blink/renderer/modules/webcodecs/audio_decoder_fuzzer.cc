@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,6 +36,9 @@ DEFINE_TEXT_PROTO_FUZZER(
     return page_holder.release();
   }();
 
+  // Request a full GC upon returning.
+  auto scoped_gc = MakeScopedGarbageCollectionRequest();
+
   //
   // NOTE: GC objects that need to survive iterations of the loop below
   // must be Persistent<>!
@@ -53,14 +55,16 @@ DEFINE_TEXT_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
-    Persistent<FakeFunction> error_function =
-        FakeFunction::Create(script_state, "error");
+    Persistent<ScriptFunction> error_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("error"));
     Persistent<V8WebCodecsErrorCallback> error_callback =
-        V8WebCodecsErrorCallback::Create(error_function->Bind());
-    Persistent<FakeFunction> output_function =
-        FakeFunction::Create(script_state, "output");
-    Persistent<V8AudioFrameOutputCallback> output_callback =
-        V8AudioFrameOutputCallback::Create(output_function->Bind());
+        V8WebCodecsErrorCallback::Create(error_function->V8Function());
+    Persistent<ScriptFunction> output_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("output"));
+    Persistent<V8AudioDataOutputCallback> output_callback =
+        V8AudioDataOutputCallback::Create(output_function->V8Function());
 
     Persistent<AudioDecoderInit> audio_decoder_init =
         MakeGarbageCollected<AudioDecoderInit>();
@@ -73,11 +77,17 @@ DEFINE_TEXT_PROTO_FUZZER(
     if (audio_decoder) {
       for (auto& invocation : proto.invocations()) {
         switch (invocation.Api_case()) {
-          case wc_fuzzer::AudioDecoderApiInvocation::kConfigure:
-            audio_decoder->configure(
-                MakeAudioDecoderConfig(invocation.configure()),
-                IGNORE_EXCEPTION_FOR_TESTING);
+          case wc_fuzzer::AudioDecoderApiInvocation::kConfigure: {
+            AudioDecoderConfig* config =
+                MakeAudioDecoderConfig(invocation.configure());
+
+            // Use the same config to fuzz isConfigSupported().
+            AudioDecoder::isConfigSupported(script_state, config,
+                                            IGNORE_EXCEPTION_FOR_TESTING);
+
+            audio_decoder->configure(config, IGNORE_EXCEPTION_FOR_TESTING);
             break;
+          }
           case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
             audio_decoder->decode(
                 MakeEncodedAudioChunk(invocation.decode().chunk()),
@@ -104,15 +114,6 @@ DEFINE_TEXT_PROTO_FUZZER(
       }
     }
   }
-
-  // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
-  //
-  // Multiple GCs may be required to ensure everything is collected (due to
-  // a chain of persistent handles), so some objects may not be collected until
-  // a subsequent iteration. This is slow enough as is, so we compromise on one
-  // major GC, as opposed to the 5 used in V8GCController for unit tests.
-  V8PerIsolateData::MainThreadIsolate()->RequestGarbageCollectionForTesting(
-      v8::Isolate::kFullGarbageCollection);
 }
 
 }  // namespace blink

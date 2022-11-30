@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {
@@ -32,6 +32,10 @@ class SSLClientAuthObserver {
       const content::BrowserContext* browser_context,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_request_info,
       std::unique_ptr<content::ClientCertificateDelegate> delegate);
+
+  SSLClientAuthObserver(const SSLClientAuthObserver&) = delete;
+  SSLClientAuthObserver& operator=(const SSLClientAuthObserver&) = delete;
+
   virtual ~SSLClientAuthObserver();
 
   // UI should implement this to close the dialog.
@@ -72,11 +76,9 @@ class SSLClientAuthObserver {
 
   static std::set<SSLClientAuthObserver*>& GetActiveObservers();
 
-  const content::BrowserContext* browser_context_;
+  raw_ptr<const content::BrowserContext> browser_context_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientAuthObserver);
 };
 
 #endif  // CHROME_BROWSER_SSL_SSL_CLIENT_AUTH_OBSERVER_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ struct TranslateErrorDetails {
   GURL url;
 
   // Translation error type
-  TranslateErrors::Type error;
+  TranslateErrors error;
 };
 
 }  // namespace translate

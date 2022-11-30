@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_POWER_MONITOR_POWER_MONITOR_MESSAGE_BROADCASTER_H_
 #define SERVICES_DEVICE_POWER_MONITOR_POWER_MONITOR_MESSAGE_BROADCASTER_H_
 
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +21,12 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
                                        public device::mojom::PowerMonitor {
  public:
   PowerMonitorMessageBroadcaster();
+
+  PowerMonitorMessageBroadcaster(const PowerMonitorMessageBroadcaster&) =
+      delete;
+  PowerMonitorMessageBroadcaster& operator=(
+      const PowerMonitorMessageBroadcaster&) = delete;
+
   ~PowerMonitorMessageBroadcaster() override;
 
   void Bind(mojo::PendingReceiver<device::mojom::PowerMonitor> receiver);
@@ -40,8 +45,7 @@ class PowerMonitorMessageBroadcaster : public base::PowerStateObserver,
  private:
   mojo::ReceiverSet<device::mojom::PowerMonitor> receivers_;
   mojo::RemoteSet<device::mojom::PowerMonitorClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorMessageBroadcaster);
+  bool on_battery_power_ = false;
 };
 
 }  // namespace device

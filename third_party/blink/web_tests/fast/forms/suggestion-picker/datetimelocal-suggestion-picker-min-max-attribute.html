@@ -1,51 +1,45 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 <script src="resources/suggestion-picker-common.js"></script>
-</head>
+
 <body style="background-color: #bbbbbb;">
-<p id="description"></p>
-<div id="console"></div>
-<input type=datetime-local id=datetime-local value="2012-11-20T12:00" min="2012-11-20T06:00" max="2012-11-21T12:00" list=suggestions>
+<input type=datetime-local value="2012-11-20T12:00" min="2012-11-20T06:00" max="2012-11-21T12:00" list=suggestions>
 <datalist id=suggestions>
-    <option>2012-11-19T18:00</option>
-    <option>2012-11-20T00:00</option>
-    <option>2012-11-20T06:00</option>
-    <option>2012-11-20T12:00</option>
-    <option>2012-11-20T18:00</option>
-    <option>2012-11-21T00:00</option>
-    <option>2012-11-21T06:00</option>
-    <option>2012-11-21T12:00</option>
-    <option>2012-11-21T18:00</option>
-    <option>2012-11-22T00:00</option>
+  <option>2012-11-19T18:00</option>
+  <option>2012-11-20T00:00</option>
+  <option>2012-11-20T06:00</option>
+  <option>2012-11-20T12:00</option>
+  <option>2012-11-20T18:00</option>
+  <option>2012-11-21T00:00</option>
+  <option>2012-11-21T06:00</option>
+  <option>2012-11-21T12:00</option>
+  <option>2012-11-21T18:00</option>
+  <option>2012-11-22T00:00</option>
 </datalist>
+  
 <script>
-description('Tests that min/max attributes filter out suggestions as expected.');
+window.onload = () => {
+  const element = document.querySelector('input');
+  promise_test(() => {
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-debug('Check that page popup doesn\'t exist at first.');
-shouldBeNull('document.getElementById("mock-page-popup")');
+      assert_equals(entryValues().length, 7);
+      assert_equals(entryValues()[0], '2012-11-20T06:00');
+      assert_equals(entryValues()[1], '2012-11-20T12:00');
+      assert_equals(entryValues()[2], '2012-11-20T18:00');
+      assert_equals(entryValues()[3], '2012-11-21T00:00');
+      assert_equals(entryValues()[4], '2012-11-21T06:00');
+      assert_equals(entryValues()[5], '2012-11-21T12:00');
+      assert_equals(entryValues()[6], '@openCalendarPicker');
 
-window.onload = function() {
-    openPicker(document.getElementById('datetime-local'), test);
+      return attemptToClosePicker(element);
+    });
+  },'min/max attributes filter out suggestions');
 };
-
-function test() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '7');
-    shouldBeEqualToString('entryValues()[0]', '2012-11-20T06:00');
-    shouldBeEqualToString('entryValues()[1]', '2012-11-20T12:00');
-    shouldBeEqualToString('entryValues()[2]', '2012-11-20T18:00');
-    shouldBeEqualToString('entryValues()[3]', '2012-11-21T00:00');
-    shouldBeEqualToString('entryValues()[4]', '2012-11-21T06:00');
-    shouldBeEqualToString('entryValues()[5]', '2012-11-21T12:00');
-    shouldBeEqualToString('entryValues()[6]', '@openCalendarPicker');
-
-    finishJSTest();
-}
-
 </script>
-</body>
-</html>

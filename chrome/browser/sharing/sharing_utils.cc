@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace {
@@ -87,10 +88,10 @@ bool IsSyncDisabledForSharing(syncer::SyncService* sync_service) {
   return false;
 }
 
-base::Optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
+absl::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
     const syncer::DeviceInfo& device_info) {
   if (!device_info.sharing_info())
-    return base::nullopt;
+    return absl::nullopt;
 
   chrome_browser_sharing::FCMChannelConfiguration fcm_configuration;
   auto& vapid_target_info = device_info.sharing_info()->vapid_target_info;

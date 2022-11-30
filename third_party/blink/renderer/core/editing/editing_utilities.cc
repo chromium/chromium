@@ -25,8 +25,10 @@
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -74,9 +76,8 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -300,9 +301,9 @@ int16_t ComparePositions(const Position& a, const Position& b) {
   int16_t bias = 0;
   if (node_a == node_b) {
     if (has_descendent_a)
-      bias = -1;
-    else if (has_descendent_b)
       bias = 1;
+    else if (has_descendent_b)
+      bias = -1;
   }
 
   int16_t result =
@@ -353,10 +354,16 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   for (const Node& ancestor : NodeTraversal::InclusiveAncestorsOf(node)) {
     if (!(ancestor.IsHTMLElement() || ancestor.IsDocumentNode()))
       continue;
+
+    if (auto* element = DynamicTo<Element>(&ancestor)) {
+      if (element->editContext())
+          return true;
+    }
+
     const ComputedStyle* style = ancestor.GetComputedStyle();
     if (!style)
       continue;
-    switch (style->UserModify()) {
+    switch (style->UsedUserModify()) {
       case EUserModify::kReadOnly:
         return false;
       case EUserModify::kReadWrite:
@@ -369,7 +376,7 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
   return false;
 }
 
-bool HasEditableStyle(const Node& node) {
+bool IsEditable(const Node& node) {
   // TODO(editing-dev): We shouldn't check editable style in inactive documents.
   // We should hoist this check in the call stack, replace it by a DCHECK of
   // active document and ultimately cleanup the code paths with inactive
@@ -380,7 +387,7 @@ bool HasEditableStyle(const Node& node) {
   return HasEditableLevel(node, kEditable);
 }
 
-bool HasRichlyEditableStyle(const Node& node) {
+bool IsRichlyEditable(const Node& node) {
   // TODO(editing-dev): We shouldn't check editable style in inactive documents.
   // We should hoist this check in the call stack, replace it by a DCHECK of
   // active document and ultimately cleanup the code paths with inactive
@@ -391,36 +398,16 @@ bool HasRichlyEditableStyle(const Node& node) {
   return HasEditableLevel(node, kRichlyEditable);
 }
 
-// This method is copied from WebElement::IsEditable.
-// TODO(dglazkov): Remove. Consumers of this code should use
-// Node:hasEditableStyle.  http://crbug.com/612560
-bool IsEditableElement(const Node& node) {
-  if (HasEditableStyle(node))
-    return true;
-
-  if (auto* text_control = ToTextControlOrNull(&node)) {
-    if (!text_control->IsDisabledOrReadOnly())
-      return true;
-  }
-
-  if (auto* element = DynamicTo<Element>(&node)) {
-    return EqualIgnoringASCIICase(
-        element->FastGetAttribute(html_names::kRoleAttr), "textbox");
-  }
-
-  return false;
-}
-
 bool IsRootEditableElement(const Node& node) {
-  return HasEditableStyle(node) && node.IsElementNode() &&
-         (!node.parentNode() || !HasEditableStyle(*node.parentNode()) ||
+  return IsEditable(node) && node.IsElementNode() &&
+         (!node.parentNode() || !IsEditable(*node.parentNode()) ||
           !node.parentNode()->IsElementNode() ||
           &node == node.GetDocument().body());
 }
 
 Element* RootEditableElement(const Node& node) {
   const Element* result = nullptr;
-  for (const Node* n = &node; n && HasEditableStyle(*n); n = n->parentNode()) {
+  for (const Node* n = &node; n && IsEditable(*n); n = n->parentNode()) {
     if (auto* element = DynamicTo<Element>(n))
       result = element;
     if (node.GetDocument().body() == n)
@@ -442,7 +429,7 @@ ContainerNode* HighestEditableRoot(const Position& position) {
 
   ContainerNode* node = highest_root->parentNode();
   while (node) {
-    if (HasEditableStyle(*node))
+    if (IsEditable(*node))
       highest_root = node;
     if (IsA<HTMLBodyElement>(*node))
       break;
@@ -475,7 +462,7 @@ bool IsEditablePosition(const Position& position) {
 
   if (node->IsDocumentNode())
     return false;
-  return HasEditableStyle(*node);
+  return IsEditable(*node);
 }
 
 bool IsEditablePosition(const PositionInFlatTree& p) {
@@ -490,7 +477,7 @@ bool IsRichlyEditablePosition(const Position& p) {
   if (IsDisplayInsideTable(node))
     node = node->parentNode();
 
-  return HasRichlyEditableStyle(*node);
+  return IsRichlyEditable(*node);
 }
 
 Element* RootEditableElementOf(const Position& p) {
@@ -651,7 +638,7 @@ PositionTemplate<Strategy> FirstEditablePositionAfterPositionInRootAlgorithm(
   // position falls before highestRoot.
   if (position.CompareTo(PositionTemplate<Strategy>::FirstPositionInNode(
           highest_root)) == -1 &&
-      HasEditableStyle(highest_root))
+      IsEditable(highest_root))
     return PositionTemplate<Strategy>::FirstPositionInNode(highest_root);
 
   PositionTemplate<Strategy> editable_position = position;
@@ -786,6 +773,14 @@ int FindNextBoundaryOffset(const String& str, int current) {
   }
   return current + machine.FinalizeAndGetBoundaryOffset();
 }
+
+// Explicit instantiation to avoid link error for the usage in EditContext.
+template int FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
+    const String& str,
+    int current);
+template int FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
+    const String& str,
+    int current);
 
 int PreviousGraphemeBoundaryOf(const Node& node, int current) {
   // TODO(yosin): Need to support grapheme crossing |Node| boundary.
@@ -1172,7 +1167,7 @@ Element* EnclosingElementWithTag(const Position& p,
     auto* ancestor = DynamicTo<Element>(runner);
     if (!ancestor)
       continue;
-    if (root && !HasEditableStyle(*ancestor))
+    if (root && !IsEditable(*ancestor))
       continue;
     if (ancestor->HasTagName(tag_name))
       return ancestor;
@@ -1195,12 +1190,12 @@ static Node* EnclosingNodeOfTypeAlgorithm(const PositionTemplate<Strategy>& p,
     return nullptr;
 
   ContainerNode* const root =
-      rule == kCannotCrossEditingBoundary ? HighestEditableRoot(p) : nullptr;
+      rule == kCannotCrossEditingBoundary ? RootEditableElementOf(p) : nullptr;
   for (Node* n = p.AnchorNode(); n; n = Strategy::Parent(*n)) {
     // Don't return a non-editable node if the input position was editable,
     // since the callers from editing will no doubt want to perform editing
     // inside the returned node.
-    if (root && !HasEditableStyle(*n))
+    if (root && !IsEditable(*n))
       continue;
     if (node_is_of_type(n))
       return n;
@@ -1234,7 +1229,7 @@ Node* HighestEnclosingNodeOfType(const Position& p,
       rule == kCannotCrossEditingBoundary ? HighestEditableRoot(p) : nullptr;
   for (Node* n = p.ComputeContainerNode(); n && n != stay_within;
        n = n->parentNode()) {
-    if (root && !HasEditableStyle(*n))
+    if (root && !IsEditable(*n))
       continue;
     if (node_is_of_type(n))
       highest = n;
@@ -1331,6 +1326,14 @@ HTMLSpanElement* CreateTabSpanElement(Document& document) {
   return CreateTabSpanElement(document, nullptr);
 }
 
+static bool IsInPlaceholder(const TextControlElement& text_control,
+                            const Position& position) {
+  const auto* const placeholder_element = text_control.PlaceholderElement();
+  if (!placeholder_element)
+    return false;
+  return placeholder_element->contains(position.ComputeContainerNode());
+}
+
 // Returns user-select:contain boundary element of specified position.
 // Because of we've not yet implemented "user-select:contain", we consider
 // following elements having "user-select:contain"
@@ -1341,6 +1344,8 @@ HTMLSpanElement* CreateTabSpanElement(Document& document) {
 // See http:/crbug.com/658129
 static Element* UserSelectContainBoundaryOf(const Position& position) {
   if (auto* text_control = EnclosingTextControl(position)) {
+    if (IsInPlaceholder(*text_control, position))
+      return nullptr;
     // for <input readonly>. See http://crbug.com/185089
     return text_control->InnerEditorElement();
   }
@@ -1365,7 +1370,7 @@ PositionWithAffinity PositionRespectingEditingBoundary(
     return hit_test_result.GetPosition();
 
   const LayoutObject* editable_object = editable_element->GetLayoutObject();
-  if (!editable_object)
+  if (!editable_object || !editable_object->VisibleToHitTesting())
     return PositionWithAffinity();
 
   // TODO(yosin): Is this kIgnoreTransforms correct here?
@@ -1386,23 +1391,23 @@ PositionWithAffinity AdjustForEditingBoundary(
     return position_with_affinity;
   const Position& position = position_with_affinity.GetPosition();
   const Node& node = *position.ComputeContainerNode();
-  if (HasEditableStyle(node))
+  if (IsEditable(node))
     return position_with_affinity;
   // TODO(yosin): Once we fix |MostBackwardCaretPosition()| to handle
   // positions other than |kOffsetInAnchor|, we don't need to use
   // |adjusted_position|, e.g. <outer><inner contenteditable> with position
   // before <inner> vs. outer@0[1].
   // [1] editing/selection/click-outside-editable-div.html
-  const Position& adjusted_position = HasEditableStyle(*position.AnchorNode())
+  const Position& adjusted_position = IsEditable(*position.AnchorNode())
                                           ? position.ToOffsetInAnchor()
                                           : position;
   const Position& forward =
       MostForwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*forward.ComputeContainerNode()))
+  if (IsEditable(*forward.ComputeContainerNode()))
     return PositionWithAffinity(forward);
   const Position& backward =
       MostBackwardCaretPosition(adjusted_position, kCanCrossEditingBoundary);
-  if (HasEditableStyle(*backward.ComputeContainerNode()))
+  if (IsEditable(*backward.ComputeContainerNode()))
     return PositionWithAffinity(backward);
   return PositionWithAffinity(adjusted_position,
                               position_with_affinity.Affinity());
@@ -1666,7 +1671,7 @@ wtf_size_t ComputeDistanceToRightGraphemeBoundary(const Position& position) {
       position.ComputeOffsetInContainerNode());
 }
 
-FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
+gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
 }
 
@@ -1685,7 +1690,7 @@ const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
   node.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  if (!HasRichlyEditableStyle(node))
+  if (!IsRichlyEditable(node))
     return nullptr;
   const EphemeralRange& range =
       FirstEphemeralRangeOf(node.GetDocument()
@@ -1740,7 +1745,7 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
 
   InputEvent* before_input_event;
 
-  if (HasRichlyEditableStyle(*target) || !data_transfer) {
+  if (IsRichlyEditable(*target) || !data_transfer) {
     before_input_event = InputEvent::CreateBeforeInput(
         input_type, data_transfer, InputTypeIsCancelable(input_type),
         InputEvent::EventIsComposing::kNotComposing,
@@ -1770,8 +1775,8 @@ static bool IsEmptyNonEditableNodeInEditable(const Node& node) {
   // Flat Tree:
   //   <host><div ce><span1>unedittable</span></div></host>
   // e.g. editing/shadow/breaking-editing-boundaries.html
-  return !NodeTraversal::HasChildren(node) && !HasEditableStyle(node) &&
-         node.parentNode() && HasEditableStyle(*node.parentNode());
+  return !NodeTraversal::HasChildren(node) && !IsEditable(node) &&
+         node.parentNode() && IsEditable(*node.parentNode());
 }
 
 // TODO(yosin): We should not use |IsEmptyNonEditableNodeInEditable()| in

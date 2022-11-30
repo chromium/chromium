@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/common/api/serial.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/serial.mojom.h"
 
 namespace extensions {
 
@@ -26,7 +24,10 @@ class ViscaWebcam : public Webcam {
  public:
   ViscaWebcam();
 
-  using OpenCompleteCallback = base::Callback<void(bool)>;
+  ViscaWebcam(const ViscaWebcam&) = delete;
+  ViscaWebcam& operator=(const ViscaWebcam&) = delete;
+
+  using OpenCompleteCallback = base::RepeatingCallback<void(bool)>;
 
   // Open and initialize the web camera. This is done by the following three
   // steps (in order): 1. Open the serial port; 2. Request address; 3. Clear the
@@ -48,7 +49,7 @@ class ViscaWebcam : public Webcam {
   };
 
   using CommandCompleteCallback =
-      base::Callback<void(bool, const std::vector<char>&)>;
+      base::RepeatingCallback<void(bool, const std::vector<char>&)>;
 
   // Private because WebCam is base::RefCounted.
   ~ViscaWebcam() override;
@@ -144,8 +145,6 @@ class ViscaWebcam : public Webcam {
   // store the current value of pan and tilt positions.
   int pan_ = 0;
   int tilt_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ViscaWebcam);
 };
 
 }  // namespace extensions

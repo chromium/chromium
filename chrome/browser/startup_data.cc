@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/common/channel_info.h"
@@ -17,13 +18,11 @@
 #include "components/metrics/version_utils.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_builder.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
@@ -33,9 +32,6 @@
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"
 #include "chrome/browser/profiles/pref_service_builder_utils.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_pref_store.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -98,7 +94,7 @@ void StartupData::RecordCoreSystemProfile() {
       system_profile, /* complete */ false);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void StartupData::CreateProfilePrefService() {
   key_ = std::make_unique<ProfileKey>(GetProfilePath());
   PreProfilePrefServiceInit();
@@ -180,9 +176,10 @@ void StartupData::CreateServicesInternal() {
       std::move(schema_registry), browser_policy_connector->GetChromeSchema(),
       browser_policy_connector->GetSchemaRegistry());
 
-  user_cloud_policy_manager_ = CreateUserCloudPolicyManager(
+  user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
       path, schema_registry_service_->registry(),
-      true /* force_immediate_policy_load */, io_task_runner);
+      true /* force_immediate_policy_load */, io_task_runner,
+      base::BindRepeating(&content::GetNetworkConnectionTracker));
 
   profile_policy_connector_ = policy::CreateAndInitProfilePolicyConnector(
       schema_registry_service_->registry(),

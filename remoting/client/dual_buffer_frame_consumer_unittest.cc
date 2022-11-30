@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,10 +70,10 @@ class DualBufferFrameConsumerTest : public testing::Test {
 };
 
 void DualBufferFrameConsumerTest::SetUp() {
-  consumer_.reset(new DualBufferFrameConsumer(
+  consumer_ = std::make_unique<DualBufferFrameConsumer>(
       base::BindRepeating(&DualBufferFrameConsumerTest::OnFrameReceived,
                           base::Unretained(this)),
-      nullptr, protocol::FrameConsumer::FORMAT_RGBA));
+      nullptr, protocol::FrameConsumer::FORMAT_RGBA);
 }
 
 void DualBufferFrameConsumerTest::OnFrameReceived(

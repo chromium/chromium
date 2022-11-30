@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -48,6 +49,8 @@ SkColorType BitmapFormatToSkColorType(BitmapFormat bitmap_format) {
       return kRGB_565_SkColorType;
     case BITMAP_FORMAT_NO_CONFIG:
     default:
+      SCOPED_CRASH_KEY_NUMBER("gfx", "bitmap_format",
+                              static_cast<int>(bitmap_format));
       CHECK_NE(bitmap_format, bitmap_format);
       return kUnknown_SkColorType;
   }
@@ -130,7 +133,7 @@ SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap) {
   // compositor relies on this.
   SkPixmap src = WrapJavaBitmapAsPixmap(jbitmap);
   const size_t min_row_bytes = src.info().minRowBytes();
-  const size_t row_bytes = base::bits::Align(min_row_bytes, 4u);
+  const size_t row_bytes = base::bits::AlignUp(min_row_bytes, size_t{4});
 
   SkBitmap skbitmap;
   skbitmap.allocPixels(src.info(), row_bytes);

@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PREDICATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PREDICATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
@@ -120,6 +119,8 @@ class Union final : public Expression {
 class Predicate final : public GarbageCollected<Predicate> {
  public:
   explicit Predicate(Expression*);
+  Predicate(const Predicate&) = delete;
+  Predicate& operator=(const Predicate&) = delete;
   void Trace(Visitor*) const;
 
   bool Evaluate(EvaluationContext&) const;
@@ -133,7 +134,6 @@ class Predicate final : public GarbageCollected<Predicate> {
 
  private:
   Member<Expression> expr_;
-  DISALLOW_COPY_AND_ASSIGN(Predicate);
 };
 
 }  // namespace xpath

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include "ash/assistant/model/assistant_notification_model.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "base/bind.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "base/time/time.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 
@@ -23,8 +24,8 @@ bool HasExpired(const AssistantNotificationExpiryMonitor::AssistantNotification*
 }
 
 // Returns the minimum of the base::Time instances that actually have a value.
-base::Optional<base::Time> Min(base::Optional<base::Time> left,
-                               base::Optional<base::Time> right) {
+absl::optional<base::Time> Min(absl::optional<base::Time> left,
+                               absl::optional<base::Time> right) {
   if (!left.has_value())
     return right;
 
@@ -41,6 +42,10 @@ class AssistantNotificationExpiryMonitor::Observer
  public:
   explicit Observer(AssistantNotificationExpiryMonitor* monitor)
       : monitor_(monitor) {}
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() override = default;
 
   void OnNotificationAdded(const AssistantNotification& notification) override {
@@ -63,8 +68,6 @@ class AssistantNotificationExpiryMonitor::Observer
 
  private:
   AssistantNotificationExpiryMonitor* const monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 AssistantNotificationExpiryMonitor::AssistantNotificationExpiryMonitor(
@@ -78,7 +81,7 @@ AssistantNotificationExpiryMonitor::~AssistantNotificationExpiryMonitor() =
     default;
 
 void AssistantNotificationExpiryMonitor::UpdateTimer() {
-  base::Optional<base::TimeDelta> timeout = GetTimerTimeout();
+  absl::optional<base::TimeDelta> timeout = GetTimerTimeout();
   if (timeout) {
     timer_.Start(
         FROM_HERE, timeout.value(),
@@ -90,17 +93,17 @@ void AssistantNotificationExpiryMonitor::UpdateTimer() {
   }
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 AssistantNotificationExpiryMonitor::GetTimerTimeout() const {
-  base::Optional<base::Time> endtime = GetTimerEndTime();
+  absl::optional<base::Time> endtime = GetTimerEndTime();
   if (endtime)
     return endtime.value() - base::Time::Now();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<base::Time> AssistantNotificationExpiryMonitor::GetTimerEndTime()
+absl::optional<base::Time> AssistantNotificationExpiryMonitor::GetTimerEndTime()
     const {
-  base::Optional<base::Time> result = base::nullopt;
+  absl::optional<base::Time> result = absl::nullopt;
   for (const AssistantNotification* notification : GetNotifications())
     result = Min(result, notification->expiry_time);
   return result;

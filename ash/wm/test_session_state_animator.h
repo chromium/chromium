@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/session_state_animator.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -26,6 +25,10 @@ namespace ash {
 class TestSessionStateAnimator : public SessionStateAnimator {
  public:
   TestSessionStateAnimator();
+
+  TestSessionStateAnimator(const TestSessionStateAnimator&) = delete;
+  TestSessionStateAnimator& operator=(const TestSessionStateAnimator&) = delete;
+
   ~TestSessionStateAnimator() override;
 
   int last_animation_epoch() { return last_animation_epoch_; }
@@ -71,10 +74,12 @@ class TestSessionStateAnimator : public SessionStateAnimator {
                                   AnimationSpeed speed,
                                   base::OnceClosure callback) override;
   AnimationSequence* BeginAnimationSequence(
-      base::OnceClosure callback) override;
+      AnimationCallback callback) override;
   bool IsWallpaperHidden() const override;
   void ShowWallpaper() override;
   void HideWallpaper() override;
+
+  void AbortAnimations(int container_mask);
 
  private:
   class AnimationSequence;
@@ -154,8 +159,6 @@ class TestSessionStateAnimator : public SessionStateAnimator {
 
   // Tracks whether the wallpaper is hidden or not.
   bool is_wallpaper_hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSessionStateAnimator);
 };
 
 }  // namespace ash

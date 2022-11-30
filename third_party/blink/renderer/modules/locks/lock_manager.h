@@ -1,20 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_LOCKS_LOCK_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_LOCKS_LOCK_MANAGER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
-#include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_string_sequence.h"
+#include "third_party/blink/public/mojom/locks/lock_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_options.h"
 #include "third_party/blink/renderer/modules/locks/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -38,6 +36,9 @@ class LockManager final : public ScriptWrappable,
   static LockManager* locks(NavigatorBase&);
 
   explicit LockManager(NavigatorBase&);
+
+  LockManager(const LockManager&) = delete;
+  LockManager& operator=(const LockManager&) = delete;
 
   ScriptPromise request(ScriptState*,
                         const String& name,
@@ -65,6 +66,10 @@ class LockManager final : public ScriptWrappable,
   // is destroyed. See https://crbug.com/798500 for an example.
   void OnLockReleased(Lock*);
 
+  // Sets the LockManager remote
+  void SetManager(mojo::PendingRemote<mojom::blink::LockManager> manager,
+                  ExecutionContext* execution_context);
+
  private:
   class LockRequestImpl;
 
@@ -74,10 +79,22 @@ class LockManager final : public ScriptWrappable,
   void RemovePendingRequest(LockRequestImpl*);
   bool IsPendingRequest(LockRequestImpl*);
 
+  void QueryImpl(ScriptPromiseResolver* resolver);
+  void RequestImpl(ScriptPromiseResolver* resolver,
+                   const LockOptions* options,
+                   const String& name,
+                   V8LockGrantedCallback* callback,
+                   mojom::blink::LockMode mode);
+
   // Query the ContentSettingsClient to ensure access is allowed from
-  // this context. The first call invokes a synchronous IPC call, but
-  // the result is cached for subsequent accesses.
-  bool AllowLocks(ScriptState* script_state);
+  // this context. This invokes an asynchronous IPC call.
+  // The result is cached for subsequent accesses.
+  void CheckStorageAccessAllowed(ExecutionContext* context,
+                                 ScriptPromiseResolver* resolver,
+                                 base::OnceCallback<void()> callback);
+  void DidCheckStorageAccessAllowed(ScriptPromiseResolver* resolver,
+                                    base::OnceCallback<void()> callback,
+                                    bool allow_access);
 
   HeapHashSet<Member<LockRequestImpl>> pending_requests_;
   HeapHashSet<Member<Lock>> held_locks_;
@@ -85,9 +102,7 @@ class LockManager final : public ScriptWrappable,
   HeapMojoRemote<mojom::blink::LockManager> service_;
   HeapMojoRemote<mojom::blink::FeatureObserver> observer_;
 
-  base::Optional<bool> cached_allowed_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockManager);
+  absl::optional<bool> cached_allowed_;
 };
 
 }  // namespace blink

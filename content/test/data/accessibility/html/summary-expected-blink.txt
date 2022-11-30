@@ -1,12 +1,29 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer ignored
-++++++details
-++++++++genericContainer ignored
-++++++++++disclosureTriangle collapsed name='details tag'
-++++++++++++listMarker ignored
+rootWebArea htmlTag='#document'
+++genericContainer ignored htmlTag='html'
+++++genericContainer ignored htmlTag='body'
+++++++details htmlTag='details'
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++disclosureTriangle collapsed htmlTag='summary' name='details tag'
+++++++++++++listMarker ignored htmlTag='::marker'
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
-++++++++genericContainer ignored invisible
-++++++++++paragraph ignored invisible
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++paragraph ignored invisible htmlTag='p'
+++++++++++++staticText ignored invisible name='The details tag specifies additional details that the user can view or hide on demand.'
+++++++++++staticText ignored invisible name='<newline>  '
+++++++details htmlTag='details'
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++disclosureTriangle collapsed description='details #2' htmlTag='summary' name='name' descriptionFrom=summary
+++++++++++++listMarker ignored htmlTag='::marker'
+++++++++++++++staticText ignored name='%E2%96%B8 '
+++++++++++++staticText name='details #2'
+++++++++++++++inlineTextBox name='details #2'
+++++++++genericContainer ignored htmlTag='slot'
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++staticText ignored invisible name='<newline>    '
+++++++++++paragraph ignored invisible htmlTag='p'
+++++++++++++staticText ignored invisible name='Paragraph#2'
+++++++++++staticText ignored invisible name='<newline>  '

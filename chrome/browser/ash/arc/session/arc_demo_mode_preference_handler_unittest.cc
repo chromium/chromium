@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class ArcDemoModePreferenceHandlerTest : public testing::Test {
   void SetUp() override {
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kDemoModeConfig,
-        static_cast<int>(chromeos::DemoSession::DemoModeConfig::kNone));
+        static_cast<int>(ash::DemoSession::DemoModeConfig::kNone));
     handler_ = base::WrapUnique<ArcDemoModePreferenceHandler>(
         new ArcDemoModePreferenceHandler(
             base::BindOnce(
@@ -62,7 +62,7 @@ TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefOnline) {
 
   pref_service()->SetInteger(
       prefs::kDemoModeConfig,
-      static_cast<int>(chromeos::DemoSession::DemoModeConfig::kOnline));
+      static_cast<int>(ash::DemoSession::DemoModeConfig::kOnline));
 
   EXPECT_TRUE(handler_was_called());
 }
@@ -72,20 +72,9 @@ TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefOnline_NoArcVm) {
 
   pref_service()->SetInteger(
       prefs::kDemoModeConfig,
-      static_cast<int>(chromeos::DemoSession::DemoModeConfig::kOnline));
+      static_cast<int>(ash::DemoSession::DemoModeConfig::kOnline));
 
   EXPECT_FALSE(handler_was_called());
-}
-
-TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefOffline) {
-  SetArcVmEnabled();
-  EXPECT_FALSE(handler_was_called());
-
-  pref_service()->SetInteger(
-      prefs::kDemoModeConfig,
-      static_cast<int>(chromeos::DemoSession::DemoModeConfig::kOffline));
-
-  EXPECT_TRUE(handler_was_called());
 }
 
 TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefNone) {
@@ -94,7 +83,7 @@ TEST_F(ArcDemoModePreferenceHandlerTest, DemoPrefNone) {
 
   pref_service()->SetInteger(
       prefs::kDemoModeConfig,
-      static_cast<int>(chromeos::DemoSession::DemoModeConfig::kNone));
+      static_cast<int>(ash::DemoSession::DemoModeConfig::kNone));
 
   EXPECT_FALSE(handler_was_called());
 }

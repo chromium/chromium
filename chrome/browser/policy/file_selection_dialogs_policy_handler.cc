@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,10 @@ FileSelectionDialogsPolicyHandler::~FileSelectionDialogsPolicyHandler() {}
 void FileSelectionDialogsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
-  bool allow_dialogs;
-  const base::Value* value = policies.GetValue(policy_name());
-  if (value && value->GetAsBoolean(&allow_dialogs)) {
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value) {
+    bool allow_dialogs = value->GetBool();
     prefs->SetBoolean(prefs::kAllowFileSelectionDialogs, allow_dialogs);
     // Disallow selecting the download location if file dialogs are disabled.
     if (!allow_dialogs)

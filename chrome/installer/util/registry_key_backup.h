@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <windows.h>
 
 #include <memory>
-
-#include "base/macros.h"
 
 // A container for a registry key, its values, and its subkeys.  We don't use
 // more obvious methods for various reasons:
@@ -22,6 +20,10 @@
 class RegistryKeyBackup {
  public:
   RegistryKeyBackup();
+
+  RegistryKeyBackup(const RegistryKeyBackup&) = delete;
+  RegistryKeyBackup& operator=(const RegistryKeyBackup&) = delete;
+
   ~RegistryKeyBackup();
 
   // Recursively reads |key_path| into this instance.  Backing up a non-existent
@@ -41,8 +43,6 @@ class RegistryKeyBackup {
 
   // The values and subkeys of the backed-up key.
   std::unique_ptr<KeyData> key_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyBackup);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_KEY_BACKUP_H_

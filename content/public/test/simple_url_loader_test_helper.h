@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -21,6 +20,11 @@ namespace content {
 class SimpleURLLoaderTestHelper {
  public:
   SimpleURLLoaderTestHelper();
+
+  SimpleURLLoaderTestHelper(const SimpleURLLoaderTestHelper&) = delete;
+  SimpleURLLoaderTestHelper& operator=(const SimpleURLLoaderTestHelper&) =
+      delete;
+
   ~SimpleURLLoaderTestHelper();
 
   // Returns a BodyAsStringCallback for use with a SimpleURLLoader. May be
@@ -49,8 +53,6 @@ class SimpleURLLoaderTestHelper {
   std::unique_ptr<std::string> response_body_;
 
   base::WeakPtrFactory<SimpleURLLoaderTestHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderTestHelper);
 };
 
 }  // namespace content

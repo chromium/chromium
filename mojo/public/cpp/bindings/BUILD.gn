@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,6 +40,7 @@ component("bindings_base") {
     "clone_traits.h",
     "connection_group.cc",
     "connection_group.h",
+    "default_construct_traits.h",
     "deprecated_interface_types_forward.h",
     "disconnect_reason.h",
     "enum_traits.h",
@@ -72,7 +73,11 @@ component("bindings_base") {
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
     "lib/pending_remote_state.h",
+    "lib/proxy_to_responder.cc",
+    "lib/proxy_to_responder.h",
     "lib/scoped_interface_endpoint_handle.cc",
+    "lib/send_message_helper.cc",
+    "lib/send_message_helper.h",
     "lib/serialization.h",
     "lib/serialization_forward.h",
     "lib/serialization_util.h",
@@ -93,6 +98,8 @@ component("bindings_base") {
     "map_traits_stl.h",
     "message.h",
     "message_header_validator.h",
+    "message_metadata_helpers.h",
+    "optional_as_pointer.h",
     "scoped_interface_endpoint_handle.h",
     "scoped_message_error_crash_key.cc",
     "scoped_message_error_crash_key.h",
@@ -103,6 +110,7 @@ component("bindings_base") {
     "struct_forward.h",
     "struct_ptr.h",
     "struct_traits.h",
+    "tracing_helpers.h",
     "type_converter.h",
     "union_traits.h",
   ]
@@ -128,7 +136,6 @@ component("bindings_base") {
 component("bindings") {
   sources = [
     "associated_interface_ptr_info.h",
-    "associated_interface_request.h",
     "associated_receiver.h",
     "associated_receiver_set.h",
     "associated_remote.h",
@@ -138,13 +145,12 @@ component("bindings") {
     "callback_helpers.h",
     "connection_error_callback.h",
     "connector.h",
+    "generic_pending_associated_receiver.cc",
+    "generic_pending_associated_receiver.h",
     "generic_pending_receiver.cc",
     "generic_pending_receiver.h",
     "interface_endpoint_client.h",
     "interface_endpoint_controller.h",
-    "interface_ptr.h",
-    "interface_ptr_info.h",
-    "interface_request.h",
     "lib/associated_interface_ptr_state.cc",
     "lib/associated_interface_ptr_state.h",
     "lib/associated_receiver.cc",
@@ -210,6 +216,7 @@ component("bindings") {
     "sync_event_watcher.h",
     "sync_handle_registry.h",
     "sync_handle_watcher.h",
+    "thread_safe_proxy.h",
     "unique_associated_receiver_set.h",
     "unique_ptr_impl_ref_traits.h",
     "unique_receiver_set.h",
@@ -222,7 +229,7 @@ component("bindings") {
     ]
   }
 
-  if (enable_ipc_fuzzer && !is_nacl_nonsfi) {
+  if (enable_ipc_fuzzer) {
     sources += [
       "lib/message_dumper.cc",
       "message_dumper.h",
@@ -233,7 +240,6 @@ component("bindings") {
     ":bindings_base",
     ":struct_traits",
     "//base",
-    "//base/util/type_safety",
     "//ipc:message_support",
     "//ipc:param_traits",
     "//mojo/public/cpp/system",
@@ -254,6 +260,19 @@ source_set("struct_traits") {
     "string_traits.h",
     "struct_traits.h",
     "union_traits.h",
+  ]
+}
+
+# This is provided as a separate target so other targets can use Mojo bindings
+# without necessarily linking to protobuf.
+source_set("protobuf_support") {
+  public = [
+    "array_traits_protobuf.h",
+    "map_traits_protobuf.h",
+  ]
+  public_deps = [
+    ":bindings",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
@@ -279,7 +298,5 @@ if (!is_ios) {
       "//third_party/blink/renderer/platform:platform_export",
       "//third_party/blink/renderer/platform/wtf",
     ]
-
-    public_configs = [ "//third_party/blink/renderer:config" ]
   }
 }

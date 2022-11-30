@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 
@@ -30,6 +29,10 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
                    APIRequestHandler* request_handler,
                    APIEventHandler* event_handler,
                    ExceptionHandler* exception_handler);
+
+  APIBindingJSUtil(const APIBindingJSUtil&) = delete;
+  APIBindingJSUtil& operator=(const APIBindingJSUtil&) = delete;
+
   ~APIBindingJSUtil() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -129,8 +132,6 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
 
   // The exception handler. Guaranteed to outlive this object.
   ExceptionHandler* const exception_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingJSUtil);
 };
 
 }  // namespace extensions

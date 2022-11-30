@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ANDROID_VR_UI_FACTORY_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace vr {
 
@@ -31,6 +29,10 @@ struct UiInitialState;
 class UiFactory {
  public:
   UiFactory() {}
+
+  UiFactory(const UiFactory&) = delete;
+  UiFactory& operator=(const UiFactory&) = delete;
+
   virtual ~UiFactory() {}
 
   virtual std::unique_ptr<UiInterface> Create(
@@ -40,9 +42,6 @@ class UiFactory {
       std::unique_ptr<TextInputDelegate> text_input_delegate,
       std::unique_ptr<AudioDelegate> audio_delegate,
       const UiInitialState& ui_initial_state) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UiFactory);
 };
 
 // Creates a UI factory appropriate for the current build.  Bundle builds will

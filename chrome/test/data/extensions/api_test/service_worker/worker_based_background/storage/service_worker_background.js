@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,52 +93,48 @@ var testOnStorageChanged = function(storageArea) {
   }
 };
 
-var localKey = '_local_key';
-var localValue = 'this is a local value';
-var syncKey = '_sync_key';
-var syncValue = 'this is a sync value';
+let namespaces = [
+  {
+    storage_area: chrome.storage.local,
+    key: '_local_key',
+    value: 'this is a local value',
+  },
+  {
+    storage_area: chrome.storage.sync,
+    key: '_sync_key',
+    value: 'this is a sync value',
+  },
+  {
+    'storage_area': chrome.storage.session,
+    'key': '_session_key',
+    'value': 'this is a session value',
+  }
+];
 
-chrome.test.runTests([
-  function testLocalSet() {
-    testSetStorage(chrome.storage.local, localKey, localValue);
-  },
-  function testLocalGet() {
-    testGetStorage(chrome.storage.local, localKey, localValue);
-  },
-  function testLocalGetBytesInUse() {
-    testGetStorageBytesInUse(chrome.storage.local, localKey);
-  },
-  function testLocalRemove() {
-    testRemoveStorage(chrome.storage.local, localKey);
-  },
-  function testLocalClearSetup() {
-    testSetStorage(chrome.storage.local, localKey, localValue);
-  },
-  function testLocalClear() {
-    testClearStorage(chrome.storage.local, localKey);
-  },
-  function testLocalOnStorageChanged() {
-    testOnStorageChanged(chrome.storage.local);
-  },
-  function testSyncSet() {
-    testSetStorage(chrome.storage.sync, syncKey, syncValue);
-  },
-  function testSyncGet() {
-    testGetStorage(chrome.storage.sync, syncKey, syncValue);
-  },
-  function testSyncGetBytesInUse() {
-    testGetStorageBytesInUse(chrome.storage.sync, syncKey);
-  },
-  function testSyncRemove() {
-    testRemoveStorage(chrome.storage.sync, syncKey);
-  },
-  function testSyncClearSetup() {
-    testSetStorage(chrome.storage.sync, syncKey, syncValue);
-  },
-  function testSyncClear() {
-    testClearStorage(chrome.storage.sync, syncKey);
-  },
-  function testSyncOnStorageChanged() {
-    testOnStorageChanged(chrome.storage.sync);
-  },
-]);
+let tests = [];
+for (const namespace of namespaces) {
+  tests.push(
+      function testSet() {
+        testSetStorage(namespace.storage_area, namespace.key, namespace.value);
+      },
+      function testGet() {
+        testGetStorage(namespace.storage_area, namespace.key, namespace.value);
+      },
+      function testGetBytesInUse() {
+        testGetStorageBytesInUse(namespace.storage_area, namespace.key);
+      },
+      function testRemove() {
+        testRemoveStorage(namespace.storage_area, namespace.key);
+      },
+      function testClearSetup() {
+        testSetStorage(namespace.storage_area, namespace.key, namespace.value);
+      },
+      function testClear() {
+        testClearStorage(namespace.storage_area, namespace.key);
+      },
+      function testChanges() {
+        testOnStorageChanged(namespace.storage_area);
+      })
+}
+
+chrome.test.runTests(tests);

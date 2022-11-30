@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<script>
+window.onload = () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.body.setAttribute('border', '20');
+    document.documentElement.removeAttribute('class');
+  }));
+};
+</script>
+<frameset border="6" rows="50%,*" cols="50%,*">
+<frame></frame>
+<frame></frame>
+<frame></frame>
+<frame></frame>
+</frameset>
+</html>

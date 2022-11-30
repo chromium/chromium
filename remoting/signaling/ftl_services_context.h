@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,8 @@ namespace remoting {
 class FtlServicesContext final {
  public:
   // Exposed for testing.
-  static constexpr base::TimeDelta kBackoffInitialDelay =
-      base::TimeDelta::FromSeconds(1);
-  static constexpr base::TimeDelta kBackoffMaxDelay =
-      base::TimeDelta::FromMinutes(1);
+  static constexpr base::TimeDelta kBackoffInitialDelay = base::Seconds(1);
+  static constexpr base::TimeDelta kBackoffMaxDelay = base::Minutes(1);
 
   static const net::BackoffEntry::Policy& GetBackoffPolicy();
   static std::string GetServerEndpoint();

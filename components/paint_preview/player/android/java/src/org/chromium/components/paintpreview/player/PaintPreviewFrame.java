@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,6 +86,30 @@ class PaintPreviewFrame {
 
     Rect[] getSubFrameClips() {
         return mSubFrameClips;
+    }
+
+    /**
+     *
+     * @param checkDirectChildren Should direct children of this frame be considered.
+     * @return Whether this frame has any scrollable descendants.
+     */
+    boolean hasScrollableDescendants(boolean checkDirectChildren) {
+        if (mSubFrameClips == null || mSubFrames == null) {
+            return false;
+        }
+
+        for (int i = 0; i < mSubFrames.length; i++) {
+            PaintPreviewFrame subFrame = mSubFrames[i];
+            Rect subFrameClip = mSubFrameClips[i];
+            if (checkDirectChildren) {
+                if (subFrame.mContentWidth > subFrameClip.width()
+                        || subFrame.mContentHeight > subFrameClip.height()) {
+                    return true;
+                }
+            }
+            if (subFrame.hasScrollableDescendants(true)) return true;
+        }
+        return false;
     }
 
     @Override

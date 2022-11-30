@@ -1,33 +1,40 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
-#include "base/files/scoped_temp_dir.h"
-#include "components/omnibox/browser/test_location_bar_model.h"
-#include "components/variations/variations_ids_provider.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/favicon/favicon_service_factory.h"
-#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "components/omnibox/browser/test_location_bar_model.h"
+#import "components/variations/scoped_variations_ids_provider.h"
+#import "components/variations/variations_ids_provider.h"
+#import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,15 +69,13 @@ namespace {
 
 class LocationBarCoordinatorTest : public PlatformTest {
  protected:
-  LocationBarCoordinatorTest() : web_state_list_(&web_state_list_delegate_) {}
+  LocationBarCoordinatorTest()
+      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
 
     TestChromeBrowserState::Builder test_cbs_builder;
-
-    ASSERT_TRUE(state_dir_.CreateUniqueTempDir());
-    test_cbs_builder.SetPath(state_dir_.GetPath());
 
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -87,21 +92,44 @@ class LocationBarCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(browser_state_->CreateHistoryService());
 
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+
+    SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
     web_state->SetCurrentURL(GURL("http://test/"));
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_FORCE_INDEX,
-                                   WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        0, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
+        WebStateOpener());
+
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+
+    id mockQrScannerCommandHandler =
+        OCMProtocolMock(@protocol(QRScannerCommands));
+    [dispatcher startDispatchingToTarget:mockQrScannerCommandHandler
+                             forProtocol:@protocol(QRScannerCommands)];
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
 
     delegate_ = [[TestToolbarCoordinatorDelegate alloc] init];
 
@@ -115,22 +143,16 @@ class LocationBarCoordinatorTest : public PlatformTest {
     // Started coordinator has to be stopped before WebStateList destruction.
     [coordinator_ stop];
 
-    VariationsIdsProvider::GetInstance()->ResetForTesting();
-
     PlatformTest::TearDown();
   }
 
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir state_dir_;
-
   web::WebTaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   std::unique_ptr<Browser> browser_;
+  SceneState* scene_state_;
   TestToolbarCoordinatorDelegate* delegate_;
 };
 
@@ -145,7 +167,7 @@ TEST_F(LocationBarCoordinatorTest, Stops) {
 // Removes the existing WebState to ensure that nothing breaks when there is no
 // active WebState.
 TEST_F(LocationBarCoordinatorTest, RemoveLastWebState) {
-  web_state_list_.CloseWebStateAt(0, 0);
+  browser_->GetWebStateList()->CloseWebStateAt(0, 0);
 }
 
 // Calls -loadGURLFromLocationBar:transition: with https://www.google.com/ URL.
@@ -161,9 +183,10 @@ TEST_F(LocationBarCoordinatorTest, LoadGoogleUrl) {
   WindowOpenDisposition disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
-                            postContent:nil
-                             transition:transition
-                            disposition:disposition];
+                                 postContent:nil
+                                  transition:transition
+                                 disposition:disposition
+      destination_url_entered_without_scheme:false];
 
   FakeUrlLoadingBrowserAgent* url_loader =
       FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -195,9 +218,10 @@ TEST_F(LocationBarCoordinatorTest, LoadNonGoogleUrl) {
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
   [coordinator_ start];
   [coordinator_ loadGURLFromLocationBar:url
-                            postContent:nil
-                             transition:transition
-                            disposition:disposition];
+                                 postContent:nil
+                                  transition:transition
+                                 disposition:disposition
+      destination_url_entered_without_scheme:false];
 
   FakeUrlLoadingBrowserAgent* url_loader =
       FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(

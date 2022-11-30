@@ -1,10 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_NOTIFICATION_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -41,13 +46,13 @@ class ExtensionRequestNotification
 
  private:
   // message_center::NotificationObserver
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
   void Close(bool by_user) override;
 
   std::unique_ptr<message_center::Notification> notification_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const NotifyType notify_type_ = kApproved;
   const ExtensionIds extension_ids_;
   NotificationCloseCallback callback_;

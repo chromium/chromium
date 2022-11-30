@@ -1,0 +1,7 @@
+This is a placeholder file to track the latest QA qualified version of Lacros on
+different channels, and it is meant to be consumed by pupr to locate the release
+candidates of RootFS-Lacros and uprev the corresponding ebuild files.
+
+The content of this file is expected to be a plain canonical Chrome version, and
+the file is supposed to be updated in branches automatically by a bot, so please
+do not update it manually unless you know what you're doing.

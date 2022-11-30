@@ -1,15 +1,18 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/browser/resources/chromeos/crostini_installer/",
+                    "js_module_root=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/crostini_installer/",
+                            root_build_dir),
                     "js_module_root=./gen/chrome/browser/resources/chromeos/crostini_installer/",
+                    "browser_resolver_prefix_replacements=\"chrome://crostini-installer/=./\"",
                   ]
   deps = [
     ":app",
@@ -27,17 +30,11 @@ js_library("app") {
 
 js_library("browser_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }
 
-polymer_modulizer("app") {
-  js_file = "app.js"
-  html_file = "app.html"
-  html_type = "v3-ready"
-}
-
-group("polymer3_elements") {
-  public_deps = [ ":app_module" ]
+html_to_js("web_components") {
+  js_files = [ "app.js" ]
 }

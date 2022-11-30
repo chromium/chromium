@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ void ProcessRestoreCommands(
     scoped_refptr<content::SessionStorageNamespace> session_storage_namespace;
     if (!session_tab.session_storage_persistent_id.empty()) {
       session_storage_namespace =
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
+          browser_context->GetDefaultStoragePartition()
               ->GetDOMStorageContext()
               ->RecreateSessionStorage(
                   session_tab.session_storage_persistent_id);

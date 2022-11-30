@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace chromeos {
 
@@ -33,7 +34,7 @@ class ExternalFileURLUtilTest : public testing::Test {
 
   storage::FileSystemURL CreateExpectedURL(const base::FilePath& path) {
     return storage::FileSystemURL::CreateForTest(
-        url::Origin::Create(GURL("chrome-extension://xxx")),
+        blink::StorageKey::CreateFromStringForTesting("chrome-extension://xxx"),
         storage::kFileSystemTypeExternal,
         base::FilePath("arc-documents-provider").Append(path), "",
         storage::kFileSystemTypeArcDocumentsProvider, base::FilePath(), "",
@@ -102,7 +103,7 @@ TEST_F(ExternalFileURLUtilTest, VirtualPathToExternalFileURL) {
                              "foo/bar%20%22%23%3C%3E%3F%60%7B%7D.txt");
 
   // (U+3000) IDEOGRAPHIC SPACE and (U+1F512) LOCK are examples of characters
-  // potentially used for URL spoofing. Those are blacklisted from unescaping
+  // potentially used for URL spoofing. Those are blocklisted from unescaping
   // when a URL is displayed, but this should not prevent it from being
   // unescaped when converting a URL to a virtual file path. See
   // crbug.com/585422 for detail.

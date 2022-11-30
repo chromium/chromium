@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   using GetPINCallback =
       base::OnceCallback<void(uint32_t current_min_pin_length,
                               uint32_t new_min_pin_length,
-                              base::Optional<int64_t> attempts)>;
+                              absl::optional<int64_t> attempts)>;
 
   // FinishedCallback is called multiple times once an attempt has completed.
   // This can be called prior to |GetPINCallback| if the touched authenticator
@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
       FinishedCallback finished_callback,
       std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =
           std::make_unique<FidoDiscoveryFactory>());
+
+  SetPINRequestHandler(const SetPINRequestHandler&) = delete;
+  SetPINRequestHandler& operator=(const SetPINRequestHandler&) = delete;
+
   ~SetPINRequestHandler() override;
 
   // ProvidePIN may be called after |get_pin_callback| has been used to indicate
@@ -91,10 +95,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   void OnTouch(FidoAuthenticator* authenticator);
   void RequestRetries();
   void OnRetriesResponse(CtapDeviceResponseCode status,
-                         base::Optional<pin::RetriesResponse> response);
+                         absl::optional<pin::RetriesResponse> response);
 
   void OnSetPINComplete(CtapDeviceResponseCode status,
-                        base::Optional<pin::EmptyResponse> response);
+                        absl::optional<pin::EmptyResponse> response);
 
   State state_ = State::kWaitingForTouch;
   GetPINCallback get_pin_callback_;
@@ -102,12 +106,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   // authenticator_ is the authenticator that was selected by the initial touch.
   // The pointed-at object is owned by the |FidoRequestHandlerBase| superclass
   // of this class.
-  FidoAuthenticator* authenticator_ = nullptr;
+  raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<SetPINRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetPINRequestHandler);
 };
 
 }  // namespace device

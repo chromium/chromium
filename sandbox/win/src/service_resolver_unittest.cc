@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/bit_cast.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/resolver.h"
 #include "sandbox/win/src/sandbox_utils.h"
@@ -30,7 +30,7 @@ class ResolverThunkTest {
 
  protected:
   // Holds the address of the fake target.
-  void* fake_target_;
+  raw_ptr<void> fake_target_;
 };
 
 // This is the concrete resolver used to perform service-call type functions
@@ -41,6 +41,9 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
   // The service resolver needs a child process to write to.
   explicit ResolverThunkTestImpl(bool relaxed)
       : T(::GetCurrentProcess(), relaxed) {}
+
+  ResolverThunkTestImpl(const ResolverThunkTestImpl&) = delete;
+  ResolverThunkTestImpl& operator=(const ResolverThunkTestImpl&) = delete;
 
   sandbox::ServiceResolverThunk* resolver() { return this; }
 
@@ -63,8 +66,6 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
 
     return ret;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThunkTestImpl);
 };
 
 typedef ResolverThunkTestImpl<sandbox::ServiceResolverThunk> WinXpResolverTest;
@@ -95,8 +96,8 @@ void CheckJump(void* source, void* target) {
   Code* patched = reinterpret_cast<Code*>(source);
   EXPECT_EQ(kJump32, patched->jump);
 
-  ULONG source_addr = bit_cast<ULONG>(source);
-  ULONG target_addr = bit_cast<ULONG>(target);
+  ULONG source_addr = base::bit_cast<ULONG>(source);
+  ULONG target_addr = base::bit_cast<ULONG>(target);
   EXPECT_EQ(target_addr + 19 - source_addr, patched->delta);
 #endif
 }
@@ -152,7 +153,7 @@ std::unique_ptr<ResolverThunkTest> GetTestResolver(bool relaxed) {
   return std::make_unique<WinXpResolverTest>(relaxed);
 #else
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     if (os_info->version() >= base::win::Version::WIN10)
       return std::make_unique<Wow64W10ResolverTest>(relaxed);
     if (os_info->version() >= base::win::Version::WIN8)

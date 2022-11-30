@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestDetailsUpdate;
+import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 
 import java.nio.ByteBuffer;
@@ -122,24 +123,13 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    @Nullable
-    public String getCountryCode() {
-        return JniPaymentAppJni.get().getCountryCode(mNativeObject);
-    }
-
-    @Override
-    public boolean canMakePayment() {
-        return JniPaymentAppJni.get().canMakePayment(mNativeObject);
+    public boolean hasEnrolledInstrument() {
+        return JniPaymentAppJni.get().hasEnrolledInstrument(mNativeObject);
     }
 
     @Override
     public boolean canPreselect() {
         return JniPaymentAppJni.get().canPreselect(mNativeObject);
-    }
-
-    @Override
-    public boolean isUserGestureRequiredToSkipUi() {
-        return JniPaymentAppJni.get().isUserGestureRequiredToSkipUi(mNativeObject);
     }
 
     @Override
@@ -171,22 +161,6 @@ public class JniPaymentApp extends PaymentApp {
     public void abortPaymentApp(AbortCallback callback) {
         mAbortCallback = callback;
         JniPaymentAppJni.get().abortPaymentApp(mNativeObject, this);
-    }
-
-    @Override
-    public boolean isReadyForMinimalUI() {
-        return JniPaymentAppJni.get().isReadyForMinimalUI(mNativeObject);
-    }
-
-    @Override
-    @Nullable
-    public String accountBalance() {
-        return JniPaymentAppJni.get().accountBalance(mNativeObject);
-    }
-
-    @Override
-    public void disableShowingOwnUI() {
-        JniPaymentAppJni.get().disableShowingOwnUI(mNativeObject);
     }
 
     @Override
@@ -230,6 +204,13 @@ public class JniPaymentApp extends PaymentApp {
         return mPaymentAppType;
     }
 
+    @Override
+    public PaymentResponse setAppSpecificResponseFields(PaymentResponse response) {
+        byte[] byteResult = JniPaymentAppJni.get().setAppSpecificResponseFields(
+                mNativeObject, response.serialize());
+        return PaymentResponse.deserialize(ByteBuffer.wrap(byteResult));
+    }
+
     @NativeMethods
     interface Natives {
         String[] getInstrumentMethodNames(long nativeJniPaymentApp);
@@ -239,22 +220,18 @@ public class JniPaymentApp extends PaymentApp {
         boolean handlesPayerName(long nativeJniPaymentApp);
         boolean handlesPayerEmail(long nativeJniPaymentApp);
         boolean handlesPayerPhone(long nativeJniPaymentApp);
-        String getCountryCode(long nativeJniPaymentApp);
-        boolean canMakePayment(long nativeJniPaymentApp);
+        boolean hasEnrolledInstrument(long nativeJniPaymentApp);
         boolean canPreselect(long nativeJniPaymentApp);
-        boolean isUserGestureRequiredToSkipUi(long nativeJniPaymentApp);
         void invokePaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
         void updateWith(long nativeJniPaymentApp, ByteBuffer responseByteBuffer);
         void onPaymentDetailsNotUpdated(long nativeJniPaymentApp);
         boolean isWaitingForPaymentDetailsUpdate(long nativeJniPaymentApp);
         void abortPaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
-        boolean isReadyForMinimalUI(long nativeJniPaymentApp);
-        String accountBalance(long nativeJniPaymentApp);
-        void disableShowingOwnUI(long nativeJniPaymentApp);
         String getApplicationIdentifierToHide(long nativeJniPaymentApp);
         String[] getApplicationIdentifiersThatHideThisApp(long nativeJniPaymentApp);
         long getUkmSourceId(long nativeJniPaymentApp);
         void setPaymentHandlerHost(long nativeJniPaymentApp, PaymentHandlerHost paymentHandlerHost);
         void freeNativeObject(long nativeJniPaymentApp);
+        byte[] setAppSpecificResponseFields(long nativeJniPaymentApp, ByteBuffer paymentResponse);
     }
 }

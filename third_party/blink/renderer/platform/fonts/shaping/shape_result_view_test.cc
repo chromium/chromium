@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <unicode/uscript.h>
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
@@ -13,10 +14,11 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
-class ShapeResultViewTest : public testing::Test {
+class ShapeResultViewTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
@@ -30,6 +32,22 @@ class ShapeResultViewTest : public testing::Test {
   Font font;
 };
 
+// http://crbug.com/1221008
+TEST_F(ShapeResultViewTest,
+       ExpandRangeToIncludePartialGlyphsWithCombiningCharacter) {
+  String string(u"abc\u0E35\u0E35\u0E35\u0E35");
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, TextDirection::kLtr);
+  scoped_refptr<const ShapeResultView> view = ShapeResultView::Create(
+      result.get(), result->StartIndex(), result->EndIndex());
+  unsigned from = 0;
+  unsigned end = string.length();
+  view->ExpandRangeToIncludePartialGlyphs(&from, &end);
+  EXPECT_EQ(0u, from);
+  EXPECT_EQ(string.length(), end);
+}
+
 TEST_F(ShapeResultViewTest, LatinSingleView) {
   String string =
       To16Bit("Test run with multiple words and breaking opportunities.", 56);
@@ -41,8 +59,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "Test run with multiple"
-  ShapeResultView::Segment segment = {result.get(), 0, 22};
-  auto first4 = ShapeResultView::Create(&segment, 1);
+  ShapeResultView::Segment segments[] = {{result.get(), 0, 22}};
+  auto first4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(first4->StartIndex(), 0u);
   EXPECT_EQ(first4->NumCharacters(), 22u);
@@ -54,8 +72,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(first4_glyphs, glyphs, 0u, 22u));
 
   // Test view in the middle of the result: "multiple words and breaking"
-  segment = {result.get(), 14, 41};
-  auto middle4 = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 14, 41};
+  auto middle4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(middle4->StartIndex(), 14u);
   EXPECT_EQ(middle4->NumCharacters(), 27u);
@@ -67,8 +85,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(middle4_glyphs, glyphs, 14u, 27u));
 
   // Test view at the end of the result: "breaking opportunities."
-  segment = {result.get(), 33, 56};
-  auto last2 = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 33, 56};
+  auto last2 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(last2->StartIndex(), 33u);
   EXPECT_EQ(last2->NumCharacters(), 23u);
@@ -90,8 +108,8 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "عربى"
-  ShapeResultView::Segment segment = {result.get(), 0, 4};
-  auto first_word = ShapeResultView::Create(&segment, 1);
+  ShapeResultView::Segment segments[] = {{result.get(), 0, 4}};
+  auto first_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> first_glyphs;
   first_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&first_glyphs));
 
@@ -114,8 +132,8 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   EXPECT_TRUE(CompareResultGlyphs(first_glyphs, glyphs, 3u, 7u));
 
   // Test view at the end of the result: "نص"
-  segment = {result.get(), 4, 7};
-  auto last_word = ShapeResultView::Create(&segment, 1);
+  segments[0] = {result.get(), 4, 7};
+  auto last_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> last_glyphs;
   last_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&last_glyphs));
 
@@ -194,7 +212,7 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
       {result.get(), 5, 8},    // " wo"
       {result.get(), 9, 12},   // "ld!"
   };
-  auto composite_view = ShapeResultView::Create(&segments[0], 5);
+  auto composite_view = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> view_glyphs;
   composite_view->ForEachGlyph(0, AddGlyphInfo,
                                static_cast<void*>(&view_glyphs));
@@ -274,7 +292,7 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
       {result.get(), 4, 5},    // " "
       {result.get(), 0, 4}     // "Test"
   };
-  auto composite_view = ShapeResultView::Create(&segments[0], 4);
+  auto composite_view = ShapeResultView::Create(segments);
 
   EXPECT_EQ(composite_view->StartIndex(), composite_copy->StartIndex());
   EXPECT_EQ(composite_view->NumCharacters(), reference_result->NumCharacters());
@@ -317,9 +335,9 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
   composite_copy->ForEachGlyph(0, AddGlyphInfo,
                                static_cast<void*>(&reference_glyphs));
 
-  ShapeResultView::Segment segments[4] = {{result_a.get(), 0, 22},
-                                          {result_b.get(), 0, 7}};
-  auto composite_view = ShapeResultView::Create(&segments[0], 2);
+  ShapeResultView::Segment segments[] = {{result_a.get(), 0, 22},
+                                         {result_b.get(), 0, 7}};
+  auto composite_view = ShapeResultView::Create(segments);
 
   EXPECT_EQ(composite_view->StartIndex(), 0u);
   EXPECT_EQ(composite_view->NumCharacters(), reference_result->NumCharacters());
@@ -350,6 +368,124 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
       ShapeResultView::Create(view1.get(), 5, 19);
   EXPECT_EQ(view2->NumCharacters(), 14u);
   EXPECT_EQ(view2->NumGlyphs(), 14u);
+}
+
+TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
+  String string = u"\u2067\u2022\u0020";
+  TextDirection direction = TextDirection::kRtl;
+  LayoutUnit symbol_width = LayoutUnit(7);
+  scoped_refptr<const ShapeResult> result =
+      ShapeResult::CreateForSpaces(&font, direction, 1, 2, symbol_width);
+
+  ShapeResultView::Segment segments[] = {{result.get(), 1, 2}};
+  auto shape_result_view = ShapeResultView::Create(segments);
+  scoped_refptr<ShapeResult> shape_result =
+      shape_result_view->CreateShapeResult();
+
+  Vector<CharacterRange> ranges;
+  shape_result->IndividualCharacterRanges(&ranges);
+}
+
+TEST_F(ShapeResultViewTest, SpacesInLTR) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1160582
+TEST_F(ShapeResultViewTest, SpacesInRTL) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1255310
+TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// https://crbug.com/1304876
+// In a text containing only Latin characters and without ligatures (or where
+// ligatures are not close to the end of the view), PreviousSafeToBreakOffset in
+// some cases used to return the length of the view, rather than a position into
+// the view.
+TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
+  HarfBuzzShaper shaper("Blah bla test something. ");
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, TextDirection::kLtr);
+
+  // Used to be 14 - 9 = 5, which is before the start of the view.
+  auto view1 = ShapeResultView::Create(result.get(), 9, 14);
+  EXPECT_EQ(view1->PreviousSafeToBreakOffset(14), 14u);
+
+  // Used to be 25 - 9 = 16, which is inside the view's range, but not the last
+  // safe offset.
+  auto view2 = ShapeResultView::Create(result.get(), 9, 25);
+  EXPECT_EQ(view2->PreviousSafeToBreakOffset(24), 24u);
 }
 
 }  // namespace blink

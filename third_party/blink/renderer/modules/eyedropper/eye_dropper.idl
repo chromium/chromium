@@ -1,19 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/EyeDropper/explainer.md
 
-[Exposed=Window, RuntimeEnabled=EyeDropperAPI]
-interface EyeDropper : EventTarget {
-  [CallWith=ScriptState] constructor();
+[
+  Exposed=Window,
+  SecureContext,
+  RuntimeEnabled=EyeDropperAPI
+] interface EyeDropper {
+  [CallWith=ExecutionContext] constructor();
 
-  Promise<void> open();
-  void close();
-
-  readonly attribute boolean opened;
-
-  // Event handler attributes
-  attribute EventHandler oncolorselect;
-  attribute EventHandler onclose;
+  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open(
+      optional ColorSelectionOptions options = {});
 };

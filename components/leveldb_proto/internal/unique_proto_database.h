@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) UniqueProtoDatabase {
   virtual void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
+  virtual void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   virtual void LoadKeys(Callbacks::LoadKeysCallback callback);

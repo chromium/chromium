@@ -1,18 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/commands/apply_style_command.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -125,11 +128,10 @@ TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
       ->Apply();
   EXPECT_EQ(
       "<svg>"
-      "<foreignObject>"
-      "<div style=\"text-align: right;\">|1</div>"
+      "<foreignObject>|1"
       "</foreignObject>"
       "<foreignObject>"
-      "<div style=\"text-align: right;\">2</div><b></b>"
+      " 2<b></b>"
       "</foreignObject>"
       "</svg>",
       GetSelectionTextFromBody());
@@ -154,5 +156,75 @@ TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
 
   EXPECT_EQ("<div style=\"text-align: center;\">|<br>x</div>",
             GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1199902
+TEST_F(ApplyStyleCommandTest, StyledInlineElementIsActuallyABlock) {
+  InsertStyleElement("sub { display: block; }");
+  Selection().SetSelection(SetSelectionTextToBody("^<sub>a</sub>|"),
+                           SetSelectionOptions());
+  GetDocument().setDesignMode("on");
+  Element* styled_inline_element = GetDocument().QuerySelector("sub");
+  bool remove_only = true;
+  // Shouldn't crash.
+  MakeGarbageCollected<ApplyStyleCommand>(styled_inline_element, remove_only)
+      ->Apply();
+  EXPECT_EQ("^a|", GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/1239729
+TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
+  GetDocument().setDesignMode("on");
+  SetBodyContent("a<select multiple><option></option></select>b");
+
+  Element* body = GetDocument().body();
+  Element* select = GetDocument().QuerySelector("select");
+  Element* option = GetDocument().QuerySelector("option");
+  EXPECT_FALSE(EditingIgnoresContent(*body));
+  EXPECT_TRUE(EditingIgnoresContent(*select));
+  EXPECT_FALSE(EditingIgnoresContent(*option));
+
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(body, 0))
+                               .Extend(Position(option, 0))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kFontStyle, "italic",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatItalic)
+      ->Apply();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ("|a<select multiple><option></option></select>b",
+            GetSelectionTextFromBody());
+#else
+  EXPECT_EQ("<i>^a<select multiple><option>|</option></select></i>b",
+            GetSelectionTextFromBody());
+#endif
+}
+
+// This is a regression test for https://crbug.com/1246190
+TEST_F(ApplyStyleCommandTest, RemoveEmptyItalic) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("i {display: inline-block; width: 1px; height: 1px}");
+  SetBodyContent("<div><input><i></i>&#x20;</div>A");
+
+  Element* div = GetDocument().QuerySelector("div");
+  Element* i = GetDocument().QuerySelector("i");
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(i, 0)).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(div),
+      InputEvent::InputType::kFormatRemove);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("<div><input>| </div>A", GetSelectionTextFromBody());
 }
 }  // namespace blink

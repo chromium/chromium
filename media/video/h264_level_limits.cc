@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/video/h264_level_limits.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/numerics/checked_math.h"
 #include "media/video/h264_parser.h"
 
 namespace media {
@@ -142,7 +142,7 @@ bool CheckH264LevelLimits(VideoCodecProfile profile,
   return true;
 }
 
-base::Optional<uint8_t> FindValidH264Level(VideoCodecProfile profile,
+absl::optional<uint8_t> FindValidH264Level(VideoCodecProfile profile,
                                            uint32_t bitrate,
                                            uint32_t framerate,
                                            uint32_t framesize_in_mbs) {
@@ -162,7 +162,7 @@ base::Optional<uint8_t> FindValidH264Level(VideoCodecProfile profile,
       return level;
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace media

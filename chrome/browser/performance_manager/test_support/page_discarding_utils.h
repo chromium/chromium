@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -32,8 +33,9 @@ class LenientMockPageDiscarder
   MOCK_METHOD1(DiscardPageNodeImpl, bool(const PageNode* page_node));
 
  private:
-  void DiscardPageNode(const PageNode* page_node,
-                       base::OnceCallback<void(bool)> post_discard_cb) override;
+  void DiscardPageNodes(
+      const std::vector<const PageNode*>& page_nodes,
+      base::OnceCallback<void(bool)> post_discard_cb) override;
 };
 using MockPageDiscarder = ::testing::StrictMock<LenientMockPageDiscarder>;
 
@@ -55,20 +57,18 @@ class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
   PageNodeImpl* page_node() { return page_node_.get(); }
   ProcessNodeImpl* process_node() { return process_node_.get(); }
   FrameNodeImpl* frame_node() { return main_frame_node_.get(); }
-  SystemNodeImpl* system_node() { return system_node_.get(); }
+  SystemNodeImpl* system_node() { return graph()->GetSystemNodeImpl(); }
   void ResetFrameNode() { main_frame_node_.reset(); }
   testing::MockPageDiscarder* discarder() { return mock_discarder_; }
 
  private:
-  testing::MockPageDiscarder* mock_discarder_;
+  raw_ptr<testing::MockPageDiscarder> mock_discarder_;
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
   performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>
       process_node_;
   performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
       main_frame_node_;
-  performance_manager::TestNodeWrapper<performance_manager::SystemNodeImpl>
-      system_node_;
 };
 
 // Make sure that |page_node| is discardable.

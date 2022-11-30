@@ -1,13 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_STICKY_AD_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_STICKY_AD_DETECTOR_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 
@@ -38,22 +37,22 @@ class LocalFrame;
 class CORE_EXPORT StickyAdDetector {
  public:
   StickyAdDetector() = default;
+  StickyAdDetector(const StickyAdDetector&) = delete;
+  StickyAdDetector& operator=(const StickyAdDetector&) = delete;
   ~StickyAdDetector() = default;
 
-  void MaybeFireDetection(LocalFrame* main_frame);
+  void MaybeFireDetection(LocalFrame* outermost_main_frame);
 
  private:
-  void OnLargeStickyAdDetected(LocalFrame* main_frame);
+  void OnLargeStickyAdDetected(LocalFrame* outermost_main_frame);
 
-  base::Optional<base::Time> last_detection_time_;
+  absl::optional<base::Time> last_detection_time_;
 
   DOMNodeId candidate_id_;
   int candidate_height_;
-  int candidate_start_main_frame_scroll_offset_;
+  int candidate_start_outermost_main_frame_scroll_position_;
 
   bool done_detection_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyAdDetector);
 };
 
 }  // namespace blink

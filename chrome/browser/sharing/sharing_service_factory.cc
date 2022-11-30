@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -26,13 +27,12 @@
 #include "chrome/browser/sharing/vapid_key_manager.h"
 #include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -71,13 +71,13 @@ SharingService* SharingServiceFactory::GetForBrowserContext(
 }
 
 SharingServiceFactory::SharingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          kServiceName,
-          BrowserContextDependencyManager::GetInstance()) {
+    // Sharing features are disabled in incognito.
+    : ProfileKeyedServiceFactory(kServiceName) {
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
 }
 
@@ -87,13 +87,12 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
+      SyncServiceFactory::GetForProfile(profile);
 
   if (!sync_service)
     return nullptr;
 
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-  // TODO(knollr): Find a better place for this.
   PrecompilePhoneNumberRegexesAsync();
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
@@ -113,7 +112,7 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
           instance_id_service->driver(), sync_service);
 
   auto web_push_sender = std::make_unique<WebPushSender>(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);
@@ -151,15 +150,6 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
       std::move(sharing_device_registration), std::move(sharing_message_sender),
       std::move(device_source), std::move(handler_registry),
       std::move(fcm_handler), sync_service);
-}
-
-content::BrowserContext* SharingServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Sharing features are disabled in incognito.
-  if (context->IsOffTheRecord())
-    return nullptr;
-
-  return context;
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {

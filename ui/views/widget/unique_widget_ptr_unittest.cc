@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -47,13 +48,13 @@ class UniqueWidgetPtrTest : public ViewsTestBase, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override {
     ASSERT_NE(widget_, nullptr);
     ASSERT_EQ(widget_, widget);
-    ASSERT_TRUE(widget_observation_.IsObservingSource(widget_));
+    ASSERT_TRUE(widget_observation_.IsObservingSource(widget_.get()));
     widget_observation_.Reset();
     widget_ = nullptr;
   }
 
  private:
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 

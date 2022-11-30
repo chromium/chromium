@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cast_streaming.mojom;
+
+import "media/mojo/mojom/renderer.mojom";
+
+// Used by the controller in the browser process to pass a Renderer message pipe
+// to the web renderer so the browser process can remotely control playback on
+// behalf of the user.
+interface RendererController {
+  // Provides the Renderer mojo pipe through which all remote user-sourced
+  // playback commands will be sent. Rather than relying on local commands as is
+  // standard with a renderer, the remote user's phone / laptop / device
+  // controlling a Cast Streaming session will send these commands to which the
+  // receiver must respond.
+  //
+  // The callback for this method is sent when the renderer-process
+  // PlaybackCommandForwardingRenderer takes ownership of |renderer|.
+  SetPlaybackController(pending_receiver<media.mojom.Renderer> renderer) => ();
+};

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include <unordered_set>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "net/nqe/effective_connection_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -31,7 +32,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
     ParamsForNetworkQuality(size_t max_delayable_requests,
                             double non_delayable_weight,
                             bool delay_requests_on_multiplexed_connections,
-                            base::Optional<base::TimeDelta> max_queuing_time);
+                            absl::optional<base::TimeDelta> max_queuing_time);
 
     ParamsForNetworkQuality(const ParamsForNetworkQuality& other);
 
@@ -50,14 +51,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
 
     // The maximum duration for which a request is queued after after which the
     // request is dispatched to the network.
-    base::Optional<base::TimeDelta> max_queuing_time;
+    absl::optional<base::TimeDelta> max_queuing_time;
 
     // If a non-delayable request is in-flight, then delayable requests are
     // proactively throttled for duration =
     // http_rtt_multiplier_for_proactive_throttling multiplied by current HTTP
     // RTT estimate. The throttling duration is computed since the start of the
     // most recent non-delayable request.
-    base::Optional<double> http_rtt_multiplier_for_proactive_throttling;
+    absl::optional<double> http_rtt_multiplier_for_proactive_throttling;
   };
 
   ResourceSchedulerParamsManager();
@@ -73,6 +74,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   explicit ResourceSchedulerParamsManager(
       const ParamsForNetworkQualityContainer&
           params_for_network_quality_container);
+
+  ResourceSchedulerParamsManager& operator=(
+      const ResourceSchedulerParamsManager&) = delete;
 
   ~ResourceSchedulerParamsManager();
 
@@ -93,7 +97,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
 
   // Returns the maximum time for which the browser initiated traffic can be
   // paused when there are active P2P connections.
-  const base::Optional<base::TimeDelta>& max_wait_time_p2p_connections() const {
+  const absl::optional<base::TimeDelta>& max_wait_time_p2p_connections() const {
     return max_wait_time_p2p_connections_;
   }
 
@@ -107,36 +111,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   base::TimeDelta
   TimeToPauseHeavyBrowserInitiatedRequestsAfterEndOfP2PConnections();
 
-  // Returns the maximum time for which the browser initiated traffic can be
-  // paused when the radio signal is weak.
-  const base::Optional<base::TimeDelta>& max_weak_signal_throttling_duration()
-      const {
-    return max_weak_signal_throttling_duration_;
-  }
-
-  // Returns the time for which the browser initiated traffic has a chance to
-  // run when the radio signal is weak.
-  const base::Optional<base::TimeDelta>& weak_signal_unthrottle_duration()
-      const {
-    return weak_signal_unthrottle_duration_;
-  }
-
  private:
   // The number of delayable requests in-flight for different ranges of the
   // network quality.
   ParamsForNetworkQualityContainer params_for_network_quality_container_;
 
-  const base::Optional<base::TimeDelta> max_wait_time_p2p_connections_;
+  const absl::optional<base::TimeDelta> max_wait_time_p2p_connections_;
 
   const std::set<int32_t> throttled_traffic_annotation_hashes_;
 
-  const base::Optional<base::TimeDelta> max_weak_signal_throttling_duration_;
-
-  const base::Optional<base::TimeDelta> weak_signal_unthrottle_duration_;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_ASSIGN(ResourceSchedulerParamsManager);
 };
 
 }  // namespace network

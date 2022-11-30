@@ -1,13 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +27,10 @@ class DataDecoderService : public mojom::DataDecoderService {
   DataDecoderService();
   explicit DataDecoderService(
       mojo::PendingReceiver<mojom::DataDecoderService> receiver);
+
+  DataDecoderService(const DataDecoderService&) = delete;
+  DataDecoderService& operator=(const DataDecoderService&) = delete;
+
   ~DataDecoderService() override;
 
   // May be used to establish a latent DataDecoderService binding for this
@@ -96,8 +97,6 @@ class DataDecoderService : public mojom::DataDecoderService {
       web_bundle_parser_factory_binder_;
   base::RepeatingCallback<void(mojo::PendingReceiver<mojom::WebBundler>)>
       web_bundler_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataDecoderService);
 };
 
 }  // namespace data_decoder

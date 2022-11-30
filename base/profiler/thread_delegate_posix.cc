@@ -1,85 +1,35 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/profiler/thread_delegate_posix.h"
 
 #include <inttypes.h>
 #include <pthread.h>
 #include <stdio.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/profiler/thread_delegate_posix.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+#include "base/profiler/stack_base_address_posix.h"
 #endif
 
 namespace base {
-
-namespace {
-
-#if defined(OS_ANDROID)
-base::Optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
-  char line[1024];
-  base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
-  uintptr_t stack_addr = reinterpret_cast<uintptr_t>(line);
-  if (!fp)
-    return base::nullopt;
-  while (fgets(line, sizeof(line), fp.get()) != nullptr) {
-    uintptr_t start, end;
-    if (sscanf(line, "%" SCNxPTR "-%" SCNxPTR, &start, &end) == 2) {
-      if (start <= stack_addr && stack_addr < end)
-        return end;
-    }
-  }
-  return base::nullopt;
-}
-#endif
-
-uintptr_t GetThreadStackBaseAddressImpl(
-    SamplingProfilerThreadToken thread_token) {
-  pthread_attr_t attr;
-  pthread_getattr_np(thread_token.pthread_id, &attr);
-  // See crbug.com/617730 for limitations of this approach on Linux.
-  void* address;
-  size_t size;
-  pthread_attr_getstack(&attr, &address, &size);
-  pthread_attr_destroy(&attr);
-  const uintptr_t base_address = reinterpret_cast<uintptr_t>(address) + size;
-  return base_address;
-}
-
-base::Optional<uintptr_t> GetThreadStackBaseAddress(
-    SamplingProfilerThreadToken thread_token) {
-#if defined(OS_ANDROID)
-  // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps
-  // to find the main thread base address, and throws SIGABRT when it fails to
-  // read or parse the file. So, try to read the maps to get the main thread
-  // stack base and cache the result. Other thread base addresses are sourced
-  // from pthread state so are cheap to get.
-  const bool is_main_thread = thread_token.id == GetCurrentProcId();
-  if (is_main_thread) {
-    static const base::Optional<uintptr_t> main_thread_base_address =
-        GetAndroidMainThreadStackBaseAddressImpl();
-    return main_thread_base_address;
-  }
-#endif
-  return GetThreadStackBaseAddressImpl(thread_token);
-}
-
-}  // namespace
-
 // static
 std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
     SamplingProfilerThreadToken thread_token) {
-  base::Optional<uintptr_t> base_address =
-      GetThreadStackBaseAddress(thread_token);
+  absl::optional<uintptr_t> base_address;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  base_address = thread_token.stack_base_address;
+#else
+  base_address =
+      GetThreadStackBaseAddress(thread_token.id, thread_token.pthread_id);
   if (!base_address)
     return nullptr;
+#endif
   return base::WrapUnique(
       new ThreadDelegatePosix(thread_token.id, *base_address));
 }

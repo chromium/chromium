@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ namespace views {
 
 namespace {
 
-constexpr base::TimeDelta kFadeDuration =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kFadeDuration = base::Milliseconds(1000);
 constexpr base::TimeDelta kHalfFadeDuration = kFadeDuration / 2;
 
 class TestWidgetFadeAnimator : public WidgetFadeAnimator {

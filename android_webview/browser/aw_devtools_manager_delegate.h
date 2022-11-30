@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace android_webview {
@@ -20,15 +19,17 @@ namespace android_webview {
 class AwDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
  public:
   AwDevToolsManagerDelegate();
+
+  AwDevToolsManagerDelegate(const AwDevToolsManagerDelegate&) = delete;
+  AwDevToolsManagerDelegate& operator=(const AwDevToolsManagerDelegate&) =
+      delete;
+
   ~AwDevToolsManagerDelegate() override;
 
   // content::DevToolsManagerDelegate implementation.
   std::string GetTargetDescription(content::WebContents* web_contents) override;
   std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwDevToolsManagerDelegate);
 };
 
 } //  namespace android_webview

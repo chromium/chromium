@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 
 #include "components/content_settings/android/content_settings_jni_headers/CookieControlsBridge_jni.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/permissions/permissions_client.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content_settings {
 
@@ -26,8 +27,7 @@ CookieControlsBridge::CookieControlsBridge(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
   content::BrowserContext* original_context =
-      browser_context::BrowserContextFromJavaHandle(
-          joriginal_browser_context_handle);
+      content::BrowserContextFromJavaHandle(joriginal_browser_context_handle);
   auto* permissions_client = permissions::PermissionsClient::Get();
   controller_ = std::make_unique<CookieControlsController>(
       permissions_client->GetCookieSettings(web_contents->GetBrowserContext()),
@@ -91,7 +91,7 @@ jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* context =
-      browser_context::BrowserContextFromJavaHandle(jbrowser_context_handle);
+      content::BrowserContextFromJavaHandle(jbrowser_context_handle);
   return permissions::PermissionsClient::Get()
       ->GetCookieSettings(context)
       ->ShouldBlockThirdPartyCookies();

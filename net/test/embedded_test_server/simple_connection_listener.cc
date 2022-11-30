@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "net/socket/stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 SimpleConnectionListener::SimpleConnectionListener(
     int expected_connections,
@@ -39,5 +38,4 @@ void SimpleConnectionListener::WaitForConnections() {
 void SimpleConnectionListener::OnResponseCompletedSuccessfully(
     std::unique_ptr<StreamSocket> socket) {}
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server

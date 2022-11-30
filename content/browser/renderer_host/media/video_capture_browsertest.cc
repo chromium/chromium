@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
@@ -24,7 +26,7 @@
 #include "media/capture/video_capture_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -50,10 +52,14 @@ class MockVideoCaptureControllerEventHandler
                     int buffer_id));
   MOCK_METHOD2(OnBufferDestroyed,
                void(const VideoCaptureControllerID&, int buffer_id));
+  MOCK_METHOD2(OnNewCropVersion,
+               void(const VideoCaptureControllerID&, uint32_t crop_version));
   MOCK_METHOD3(OnBufferReady,
                void(const VideoCaptureControllerID& id,
                     const ReadyBuffer& fullsized_buffer,
                     const std::vector<ReadyBuffer>& downscaled_buffers));
+  MOCK_METHOD1(OnFrameWithEmptyRegionCapture,
+               void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnEnded, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(OnError,
@@ -133,6 +139,9 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
       scoped_feature_list_.InitAndDisableFeature(features::kMojoVideoCapture);
     }
   }
+
+  VideoCaptureBrowserTest(const VideoCaptureBrowserTest&) = delete;
+  VideoCaptureBrowserTest& operator=(const VideoCaptureBrowserTest&) = delete;
 
   ~VideoCaptureBrowserTest() override {}
 
@@ -232,8 +241,10 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 
   TestParams params_;
-  MediaStreamManager* media_stream_manager_ = nullptr;
-  VideoCaptureManager* video_capture_manager_ = nullptr;
+  raw_ptr<MediaStreamManager, DanglingUntriaged> media_stream_manager_ =
+      nullptr;
+  raw_ptr<VideoCaptureManager, DanglingUntriaged> video_capture_manager_ =
+      nullptr;
   base::UnguessableToken session_id_;
   const VideoCaptureControllerID stub_client_id_ =
       base::UnguessableToken::Create();
@@ -241,9 +252,6 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
@@ -264,7 +272,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 }
 
 // Flaky on MSAN. https://crbug.com/840294
-#if defined(MEMORY_SANITIZER) || defined(OS_MAC)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_ReceiveFramesFromFakeCaptureDevice \
   DISABLED_ReceiveFramesFromFakeCaptureDevice
 #else
@@ -273,13 +281,6 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
 #endif
 IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                        MAYBE_ReceiveFramesFromFakeCaptureDevice) {
-#if defined(OS_MAC)
-  if (base::mac::IsOS10_12()) {
-    // Flaky on MacOS 10.12. https://crbug.com/938074
-    return;
-  }
-#endif
-
   // Only fake device with index 2 delivers MJPEG.
   if (params_.exercise_accelerated_jpeg_decoding &&
       params_.device_index_to_use != 2) {
@@ -329,9 +330,9 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
             received_frame_info.timestamp = buffer.frame_info->timestamp;
             received_frame_infos.emplace_back(received_frame_info);
 
-            const media::VideoFrameFeedback kArbitraryFeedback =
-                media::VideoFrameFeedback(0.5, 60.0,
-                                          std::numeric_limits<int>::max());
+            const media::VideoCaptureFeedback kArbitraryFeedback =
+                media::VideoCaptureFeedback(0.5, 60.0,
+                                            std::numeric_limits<int>::max());
             controller_->ReturnBuffer(id, &mock_controller_event_handler_,
                                       buffer.buffer_id, kArbitraryFeedback);
 
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
       FROM_HERE,
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,
-          base::Unretained(this), base::DoNothing::Once()));
+          base::Unretained(this), base::DoNothing()));
   run_loop.Run();
 
   EXPECT_FALSE(must_wait_for_gpu_decode_to_start);

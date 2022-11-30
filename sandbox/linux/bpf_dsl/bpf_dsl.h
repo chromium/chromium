@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/cons.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
@@ -155,6 +154,8 @@ class SANDBOX_EXPORT Arg {
 
   Arg(const Arg& arg) : num_(arg.num_), mask_(arg.mask_) {}
 
+  Arg& operator=(const Arg&) = delete;
+
   // Returns an Arg representing the current argument, but after
   // bitwise-and'ing it with |rhs|.
   friend Arg operator&(const Arg& lhs, uint64_t rhs) {
@@ -176,8 +177,6 @@ class SANDBOX_EXPORT Arg {
 
   int num_;
   uint64_t mask_;
-
-  DISALLOW_ASSIGN(Arg);
 };
 
 // If begins a conditional result expression predicated on the
@@ -187,6 +186,9 @@ SANDBOX_EXPORT Elser If(BoolExpr cond, ResultExpr then_result);
 class SANDBOX_EXPORT Elser {
  public:
   Elser(const Elser& elser);
+
+  Elser& operator=(const Elser&) = delete;
+
   ~Elser();
 
   // ElseIf extends the conditional result expression with another
@@ -207,7 +209,6 @@ class SANDBOX_EXPORT Elser {
   friend Elser If(BoolExpr, ResultExpr);
   template <typename T>
   friend Caser<T> Switch(const Arg<T>&);
-  DISALLOW_ASSIGN(Elser);
 };
 
 // Switch begins a switch expression dispatched according to the
@@ -219,6 +220,9 @@ template <typename T>
 class SANDBOX_EXPORT Caser {
  public:
   Caser(const Caser<T>& caser) : arg_(caser.arg_), elser_(caser.elser_) {}
+
+  Caser& operator=(const Caser&) = delete;
+
   ~Caser() {}
 
   // Case adds a single-value "case" clause to the switch.
@@ -241,7 +245,6 @@ class SANDBOX_EXPORT Caser {
 
   template <typename U>
   friend Caser<U> Switch(const Arg<U>&);
-  DISALLOW_ASSIGN(Caser);
 };
 
 // Recommended usage is to put

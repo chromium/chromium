@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/background_sync/background_sync_controller_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -24,7 +26,7 @@
 // static
 const char BackgroundSyncControllerImpl::kFieldTrialName[] = "BackgroundSync";
 const char BackgroundSyncControllerImpl::kDisabledParameterName[] = "disabled";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char BackgroundSyncControllerImpl::kRelyOnAndroidNetworkDetection[] =
     "rely_on_android_network_detection";
 #endif
@@ -65,11 +67,12 @@ BackgroundSyncControllerImpl::~BackgroundSyncControllerImpl() = default;
 void BackgroundSyncControllerImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (content_type != ContentSettingsType::BACKGROUND_SYNC &&
-      content_type != ContentSettingsType::PERIODIC_BACKGROUND_SYNC) {
+  if (!content_type_set.Contains(ContentSettingsType::BACKGROUND_SYNC) &&
+      !content_type_set.Contains(
+          ContentSettingsType::PERIODIC_BACKGROUND_SYNC)) {
     return;
   }
 
@@ -78,9 +81,8 @@ void BackgroundSyncControllerImpl::OnContentSettingChanged(
     if (!IsContentSettingBlocked(origin))
       continue;
 
-    auto* storage_partition =
-        content::BrowserContext::GetStoragePartitionForUrl(
-            browser_context_, origin.GetURL(), /* can_create= */ false);
+    auto* storage_partition = browser_context_->GetStoragePartitionForUrl(
+        origin.GetURL(), /* can_create= */ false);
     if (!storage_partition)
       continue;
 
@@ -103,7 +105,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     content::BackgroundSyncParameters* parameters) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (delegate_->ShouldDisableBackgroundSync())
     parameters->disable = true;
 #endif
@@ -112,17 +114,17 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
   if (!variations::GetVariationParams(kFieldTrialName, &field_params))
     return;
 
-  if (base::LowerCaseEqualsASCII(field_params[kDisabledParameterName],
-                                 "true")) {
+  if (base::EqualsCaseInsensitiveASCII(field_params[kDisabledParameterName],
+                                       "true")) {
     parameters->disable = true;
   }
 
-  if (base::LowerCaseEqualsASCII(field_params[kKeepBrowserAwakeParameterName],
-                                 "true")) {
+  if (base::EqualsCaseInsensitiveASCII(
+          field_params[kKeepBrowserAwakeParameterName], "true")) {
     parameters->keep_browser_awake_till_events_complete = true;
   }
 
-  if (base::LowerCaseEqualsASCII(
+  if (base::EqualsCaseInsensitiveASCII(
           field_params[kSkipPermissionsCheckParameterName], "true")) {
     parameters->skip_permissions_check_for_testing = true;
   }
@@ -149,8 +151,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     int initial_retry_delay_sec;
     if (base::StringToInt(field_params[kInitialRetryParameterName],
                           &initial_retry_delay_sec)) {
-      parameters->initial_retry_delay =
-          base::TimeDelta::FromSeconds(initial_retry_delay_sec);
+      parameters->initial_retry_delay = base::Seconds(initial_retry_delay_sec);
     }
   }
 
@@ -167,7 +168,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMinSyncRecoveryTimeName],
                           &min_sync_recovery_time_sec)) {
       parameters->min_sync_recovery_time =
-          base::TimeDelta::FromSeconds(min_sync_recovery_time_sec);
+          base::Seconds(min_sync_recovery_time_sec);
     }
   }
 
@@ -176,7 +177,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMaxSyncEventDurationName],
                           &max_sync_event_duration_sec)) {
       parameters->max_sync_event_duration =
-          base::TimeDelta::FromSeconds(max_sync_event_duration_sec);
+          base::Seconds(max_sync_event_duration_sec);
     }
   }
 
@@ -185,17 +186,17 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     if (base::StringToInt(field_params[kMinPeriodicSyncEventsInterval],
                           &min_periodic_sync_events_interval_sec)) {
       parameters->min_periodic_sync_events_interval =
-          base::TimeDelta::FromSeconds(min_periodic_sync_events_interval_sec);
+          base::Seconds(min_periodic_sync_events_interval_sec);
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Check if the delegate explicitly disabled this feature.
   if (delegate_->ShouldDisableAndroidNetworkDetection()) {
     parameters->rely_on_android_network_detection = false;
   } else if (base::Contains(field_params, kRelyOnAndroidNetworkDetection)) {
-    if (base::LowerCaseEqualsASCII(field_params[kRelyOnAndroidNetworkDetection],
-                                   "true")) {
+    if (base::EqualsCaseInsensitiveASCII(
+            field_params[kRelyOnAndroidNetworkDetection], "true")) {
       parameters->rely_on_android_network_detection = true;
     }
   }
@@ -254,7 +255,7 @@ void BackgroundSyncControllerImpl::ScheduleBrowserWakeUpWithDelay(
   if (delegate_->IsProfileOffTheRecord())
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegate_->ScheduleBrowserWakeUpWithDelay(sync_type, delay);
 #endif
 }
@@ -266,7 +267,7 @@ void BackgroundSyncControllerImpl::CancelBrowserWakeup(
   if (delegate_->IsProfileOffTheRecord())
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegate_->CancelBrowserWakeup(sync_type);
 #endif
 }
@@ -280,11 +281,11 @@ base::TimeDelta BackgroundSyncControllerImpl::SnapToMaxOriginFrequency(
   DCHECK_GE(min_interval, 0);
 
   if (min_interval < min_gap_for_origin)
-    return base::TimeDelta::FromMilliseconds(min_gap_for_origin);
+    return base::Milliseconds(min_gap_for_origin);
   if (min_interval % min_gap_for_origin == 0)
-    return base::TimeDelta::FromMilliseconds(min_interval);
-  return base::TimeDelta::FromMilliseconds(
-      (min_interval / min_gap_for_origin + 1) * min_gap_for_origin);
+    return base::Milliseconds(min_interval);
+  return base::Milliseconds((min_interval / min_gap_for_origin + 1) *
+                            min_gap_for_origin);
 }
 
 base::TimeDelta BackgroundSyncControllerImpl::ApplyMinGapForOrigin(
@@ -366,7 +367,7 @@ base::TimeDelta BackgroundSyncControllerImpl::GetNextEventDelay(
 
 std::unique_ptr<content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
 BackgroundSyncControllerImpl::CreateBackgroundSyncEventKeepAlive() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Not needed on Android.
   return nullptr;
 #else

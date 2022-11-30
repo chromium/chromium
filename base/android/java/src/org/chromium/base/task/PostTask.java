@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,6 +116,14 @@ public class PostTask {
         } else {
             postTask(taskTraits, task);
         }
+    }
+
+    /**
+     * Returns true if the task can be executed immediately (i.e. the current thread is the same as
+     * the one corresponding to the SingleThreadTaskRunner)
+     */
+    public static boolean canRunTaskImmediately(TaskTraits taskTraits) {
+        return getTaskExecutorForTraits(taskTraits).canRunTaskImmediately(taskTraits);
     }
 
     /**

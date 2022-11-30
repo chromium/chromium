@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -18,6 +17,10 @@ namespace ui {
 class EVENTS_EXPORT KeyEventAndroid {
  public:
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
+
+  KeyEventAndroid(const KeyEventAndroid&) = delete;
+  KeyEventAndroid& operator=(const KeyEventAndroid&) = delete;
+
   ~KeyEventAndroid();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
@@ -27,8 +30,6 @@ class EVENTS_EXPORT KeyEventAndroid {
   // The Java reference to the key event.
   base::android::ScopedJavaGlobalRef<jobject> event_;
   int key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyEventAndroid);
 };
 
 }  // namespace ui

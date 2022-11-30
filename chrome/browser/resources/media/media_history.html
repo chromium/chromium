@@ -4,7 +4,6 @@
   <title>Media History</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
   <style>
     html,
     body {
@@ -16,19 +15,20 @@
       width: 100%;
     }
 
-    tabbox {
+    cr-tab-box {
+      display: none;
       padding-top: 10px;
     }
 
-    tab {
+    div[slot='tab'] {
       -webkit-user-select: none;
     }
 
-    body tabpanels {
+    body div[slot='panel'] {
       box-shadow: none;
     }
 
-    tabpanel {
+    div[slot='panel'] {
       padding: 10px;
     }
 
@@ -81,134 +81,99 @@
   </style>
 </head>
 <body>
-  <tabbox id="tabbox">
-    <tabs>
-      <tab id="stats">Stats</tab>
-      <tab id="origins">Origins</tab>
-      <tab id="playbacks">Playbacks</tab>
-      <tab id="sessions">Sessions</tab>
-    </tabs>
-    <tabpanels>
-      <tabpanel>
-        <h1>Media History</h1>
-        <button class="copy-all-to-clipboard">Copy all to clipboard</button>
-        <table>
-          <thead>
-            <tr id="stats-table-header">
-              <th>
-                Table Name
-              </th>
-              <th>
-                Row Count
-              </th>
-            </tr>
-          </thead>
-          <tbody id="stats-table-body">
-          </tbody>
-        </table>
-      </tabpanel>
-      <tabpanel>
-        <h1>Origins</h1>
-        <button class="copy-all-to-clipboard">Copy all to clipboard</button>
-        <table id="origins-table">
-          <thead>
-            <tr>
-              <th sort-key="origin">
-                Origin
-              </th>
-              <th sort-key="lastUpdatedTime">
-                Last Updated
-              </th>
-              <th sort-key="cachedAudioVideoWatchtime" class="sort-column" sort-reverse>
-                Audio + Video Watchtime (secs, cached)
-              </th>
-              <th sort-key="actualAudioVideoWatchtime">
-                Audio + Video Watchtime (secs, actual)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </tabpanel>
-      <tabpanel>
-        <h1>Playbacks</h1>
-        <p>
-          The playbacks table stores playbacks that happened on a page. These
-          can be of any type and there is one playback stored for each player
-          per page.
-        </p>
-        <button class="copy-all-to-clipboard">Copy all to clipboard</button>
-        <table id="playbacks-table">
-          <thead>
-            <tr>
-              <th sort-key="url">
-                URL
-              </th>
-              <th sort-key="lastUpdatedTime" class="sort-column" sort-reverse>
-                Last Updated
-              </th>
-              <th sort-key="hasAudio">
-                Has Audio
-              </th>
-              <th sort-key="hasVideo">
-                Has Video
-              </th>
-              <th sort-key="watchtime">
-                Watchtime (secs)
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </tabpanel>
-      <tabpanel>
-        <h1>Sessions</h1>
-        <p>
-          The sessions table stores media sessions that had media playback that
-          had both an audio and video track. There is only one session recorded
-          for the lifetime of the page.
-        </p>
-        <button class="copy-all-to-clipboard">Copy all to clipboard</button>
-        <table id="sessions-table">
-          <thead>
-            <tr>
-              <th sort-key="url">
-                URL
-              </th>
-              <th sort-key="lastUpdatedTime" class="sort-column" sort-reverse>
-                Last Updated
-              </th>
-              <th sort-key="position">
-                Position (secs)
-              </th>
-              <th sort-key="duration">
-                Duration (secs)
-              </th>
-              <th sort-key="metadata.title">
-                Title
-              </th>
-              <th sort-key="metadata.artist">
-                Artist
-              </th>
-              <th sort-key="metadata.album">
-                Album
-              </th>
-              <th sort-key="metadata.sourceTitle">
-                Source Title
-              </th>
-              <th data-key="artwork">
-                Artwork
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </tabpanel>
-    </tabpanels>
-  </tabbox>
+  <cr-tab-box id="tabbox">
+    <div slot="tab" id="stats">Stats</div>
+    <div slot="tab" id="origins">Origins</div>
+    <div slot="tab" id="playbacks">Playbacks</div>
+    <div slot="tab" id="sessions">Sessions</div>
+    <div slot="panel">
+      <h1>Media History</h1>
+      <button class="copy-all-to-clipboard">Copy all to clipboard</button>
+      <table>
+        <thead>
+          <tr id="stats-table-header">
+            <th>Table Name</th>
+            <th>Row Count</th>
+          </tr>
+        </thead>
+        <tbody id="stats-table-body">
+        </tbody>
+      </table>
+    </div>
+    <div slot="panel">
+      <h1>Origins</h1>
+      <button class="copy-all-to-clipboard">Copy all to clipboard</button>
+      <table id="origins-table">
+        <thead>
+          <tr>
+            <th sort-key="origin">Origin</th>
+            <th sort-key="lastUpdatedTime">Last Updated</th>
+            <th sort-key="cachedAudioVideoWatchtime" class="sort-column"
+                sort-reverse>
+              Audio + Video Watchtime (secs, cached)
+            </th>
+            <th sort-key="actualAudioVideoWatchtime">
+              Audio + Video Watchtime (secs, actual)
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <div slot="panel">
+      <h1>Playbacks</h1>
+      <p>
+        The playbacks table stores playbacks that happened on a page. These
+        can be of any type and there is one playback stored for each player
+        per page.
+      </p>
+      <button class="copy-all-to-clipboard">Copy all to clipboard</button>
+      <table id="playbacks-table">
+        <thead>
+          <tr>
+            <th sort-key="url">URL</th>
+            <th sort-key="lastUpdatedTime" class="sort-column" sort-reverse>
+              Last Updated
+            </th>
+            <th sort-key="hasAudio">Has Audio</th>
+            <th sort-key="hasVideo">Has Video</th>
+            <th sort-key="watchtime">Watchtime (secs)</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <div slot="panel">
+      <h1>Sessions</h1>
+      <p>
+        The sessions table stores media sessions that had media playback that
+        had both an audio and video track. There is only one session recorded
+        for the lifetime of the page.
+      </p>
+      <button class="copy-all-to-clipboard">Copy all to clipboard</button>
+      <table id="sessions-table">
+        <thead>
+          <tr>
+            <th sort-key="url">URL</th>
+            <th sort-key="lastUpdatedTime" class="sort-column" sort-reverse>
+              Last Updated
+            </th>
+            <th sort-key="position">Position (secs)</th>
+            <th sort-key="duration">Duration (secs)</th>
+            <th sort-key="metadata.title">Title</th>
+            <th sort-key="metadata.artist">Artist</th>
+            <th sort-key="metadata.album">Album</th>
+            <th sort-key="metadata.sourceTitle">Source Title</th>
+            <th data-key="artwork">Artwork</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </cr-tab-box>
 
   <template id="data-row">
     <tr>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -21,7 +21,7 @@ DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
     : local_state_(local_state),
       service_account_identity_subscription_(
           CrosSettings::Get()->AddSettingsObserver(
-              kServiceAccountIdentity,
+              ash::kServiceAccountIdentity,
               base::BindRepeating(&DeviceOAuth2TokenStoreChromeOS::
                                       OnServiceAccountIdentityChanged,
                                   base::Unretained(this)))) {}
@@ -47,7 +47,7 @@ void DeviceOAuth2TokenStoreChromeOS::Init(InitCallback callback) {
 
 CoreAccountId DeviceOAuth2TokenStoreChromeOS::GetAccountId() const {
   std::string email;
-  CrosSettings::Get()->GetString(kServiceAccountIdentity, &email);
+  CrosSettings::Get()->GetString(ash::kServiceAccountIdentity, &email);
   return CoreAccountId::FromEmail(email);
 }
 

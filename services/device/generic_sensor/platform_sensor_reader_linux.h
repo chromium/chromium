@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,9 @@ class SensorReader {
       const SensorInfoLinux& sensor_info,
       base::WeakPtr<PlatformSensorLinux> sensor);
 
+  SensorReader(const SensorReader&) = delete;
+  SensorReader& operator=(const SensorReader&) = delete;
+
   virtual ~SensorReader();
 
   // Starts fetching data based on strategy this reader has chosen.
@@ -48,8 +51,6 @@ class SensorReader {
 
   // Indicates if reading is active.
   bool is_reading_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorReader);
 };
 
 }  // namespace device

@@ -1,6 +1,0 @@
-Policy delegate: attempt to load feed://127.0.0.1:8000/security/resources/feed.xml with navigation type 'link clicked'
-< rdar://problem/5329440> REGRESSION: Clicking links with the feed:// protocol in Safari 3 does nothing
-This test is to see if a feed URL can be followed from a link on a page.
-
-
-Test Finished.

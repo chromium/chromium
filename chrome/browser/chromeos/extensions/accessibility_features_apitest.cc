@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -100,7 +100,7 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
       return ash::prefs::kDockedMagnifierEnabled;
     if (feature == "dictation")
       return ash::prefs::kAccessibilityDictationEnabled;
-    return NULL;
+    return nullptr;
   }
 
   // Initializes preferences before running the test extension.
@@ -164,17 +164,17 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
                        const std::vector<std::string>& disabled_features,
                        std::string* result) {
     base::DictionaryValue test_arg;
-    test_arg.SetString(kTestNameKey, test_name);
+    test_arg.SetStringKey(kTestNameKey, test_name);
 
-    std::unique_ptr<base::ListValue> enabled_list(new base::ListValue);
+    base::ListValue enabled_list;
     for (size_t i = 0; i < enabled_features.size(); ++i)
-      enabled_list->AppendString(enabled_features[i]);
-    test_arg.Set(kEnabledFeaturesKey, std::move(enabled_list));
+      enabled_list.Append(enabled_features[i]);
+    test_arg.SetKey(kEnabledFeaturesKey, std::move(enabled_list));
 
-    std::unique_ptr<base::ListValue> disabled_list(new base::ListValue);
+    base::ListValue disabled_list;
     for (size_t i = 0; i < disabled_features.size(); ++i)
-      disabled_list->AppendString(disabled_features[i]);
-    test_arg.Set(kDisabledFeaturesKey, std::move(disabled_list));
+      disabled_list.Append(disabled_features[i]);
+    test_arg.SetKey(kDisabledFeaturesKey, std::move(disabled_list));
 
     return base::JSONWriter::Write(test_arg, result);
   }
@@ -215,17 +215,17 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
-  EXPECT_TRUE(RunExtensionTest({.name = GetTestExtensionPath(),
-                                .custom_arg = test_arg.c_str(),
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, PRE_Get_ComponentApp) {
-  EXPECT_FALSE(RunExtensionTest({.name = GetTestExtensionPath(),
-                                 .custom_arg = "{}",
-                                 .load_as_component = true,
-                                 .launch_as_platform_app = true}))
+  EXPECT_FALSE(
+      RunExtensionTest(GetTestExtensionPath(),
+                       {.custom_arg = "{}", .launch_as_platform_app = true},
+                       {.load_as_component = true}))
       << message_;
 }
 
@@ -262,10 +262,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Get_ComponentApp) {
   std::string test_arg;
   ASSERT_TRUE(GenerateTestArg("getterTest", enabled_features, disabled_features,
                               &test_arg));
-  EXPECT_TRUE(RunExtensionTest({.name = GetTestExtensionPath(),
-                                .custom_arg = test_arg.c_str(),
-                                .load_as_component = true,
-                                .launch_as_platform_app = true}))
+  EXPECT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true},
+      {.load_as_component = true}))
       << message_;
 }
 
@@ -309,9 +309,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityFeaturesApiTest, Set) {
                               &test_arg));
 
   // The test extension attempts to flip all feature values.
-  ASSERT_TRUE(RunExtensionTest({.name = GetTestExtensionPath(),
-                                .custom_arg = test_arg.c_str(),
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      GetTestExtensionPath(),
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 
   // The test tries to flip the feature states.
@@ -359,9 +359,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFeaturesApiTest, ObserveFeatures) {
   // time, when gets all expected events. This is done so the extension is
   // running when the accessibility features are flipped; otherwise, the
   // extension may not see events.
-  ASSERT_TRUE(RunExtensionTest({.name = kTestExtensionPathReadPermission,
-                                .custom_arg = test_arg.c_str(),
-                                .launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      kTestExtensionPathReadPermission,
+      {.custom_arg = test_arg.c_str(), .launch_as_platform_app = true}))
       << message_;
 
   // This should flip all features.

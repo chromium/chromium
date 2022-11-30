@@ -1,0 +1,3 @@
+specific_include_rules = {
+  'post_message_counter_unittest.cc': [ "+components/ukm/test_ukm_recorder.h" ]
+}

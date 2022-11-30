@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "android_webview/common/aw_content_client.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -30,16 +29,16 @@ std::string AwDevToolsManagerDelegate::GetTargetDescription(
   if (!bvr)
     return "";
   base::DictionaryValue description;
-  description.SetBoolean("attached", bvr->attached_to_window());
-  description.SetBoolean("never_attached", !bvr->was_attached());
-  description.SetBoolean("visible", bvr->IsVisible());
+  description.SetBoolKey("attached", bvr->attached_to_window());
+  description.SetBoolKey("never_attached", !bvr->was_attached());
+  description.SetBoolKey("visible", bvr->IsVisible());
   gfx::Rect screen_rect = bvr->GetScreenRect();
-  description.SetInteger("screenX", screen_rect.x());
-  description.SetInteger("screenY", screen_rect.y());
-  description.SetBoolean("empty", screen_rect.size().IsEmpty());
+  description.SetIntKey("screenX", screen_rect.x());
+  description.SetIntKey("screenY", screen_rect.y());
+  description.SetBoolKey("empty", screen_rect.size().IsEmpty());
   if (!screen_rect.size().IsEmpty()) {
-    description.SetInteger("width", screen_rect.width());
-    description.SetInteger("height", screen_rect.height());
+    description.SetIntKey("width", screen_rect.width());
+    description.SetIntKey("height", screen_rect.height());
   }
   std::string json;
   base::JSONWriter::Write(description, &json);

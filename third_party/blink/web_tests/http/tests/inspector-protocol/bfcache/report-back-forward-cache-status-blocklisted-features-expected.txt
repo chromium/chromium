@@ -1,0 +1,44 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : IdleManager
+            type : SupportPending
+        }
+    ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : IdleManager
+                type : SupportPending
+            }
+        ]
+        url : https://devtools.test:8443/inspector-protocol/resources/empty.html
+    }
+}
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : HTTPStatusNotOK
+            type : Circumstantial
+        }
+    ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : HTTPStatusNotOK
+                type : Circumstantial
+            }
+        ]
+        url : http://127.0.0.1:8000/inspector-protocol/bfcache/chrome://version
+    }
+}
+

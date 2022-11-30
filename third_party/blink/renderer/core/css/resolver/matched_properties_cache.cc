@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
@@ -89,6 +89,10 @@ bool CachedMatchedProperties::DependenciesEqual(
   }
   if (parent_computed_style->Direction() != state.ParentStyle()->Direction())
     return false;
+  if (parent_computed_style->UsedColorScheme() !=
+      state.ParentStyle()->UsedColorScheme()) {
+    return false;
+  }
   if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
     if (parent_computed_style->InheritedVariables() !=
         state.ParentStyle()->InheritedVariables()) {
@@ -142,8 +146,14 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].types_.tree_order !=
         matched_properties_types[i].tree_order)
       return false;
+    if (properties[i].types_.layer_order !=
+        matched_properties_types[i].layer_order)
+      return false;
     if (properties[i].types_.valid_property_filter !=
         matched_properties_types[i].valid_property_filter)
+      return false;
+    if (properties[i].types_.is_inline_style !=
+        matched_properties_types[i].is_inline_style)
       return false;
   }
   return true;
@@ -158,14 +168,13 @@ void MatchedPropertiesCache::Add(const Key& key,
                                  const ComputedStyle& style,
                                  const ComputedStyle& parent_style) {
   DCHECK(key.IsValid());
-  Cache::AddResult add_result = cache_.insert(key.hash_, nullptr);
-  if (add_result.is_new_entry || !add_result.stored_value->value) {
-    add_result.stored_value->value =
-        MakeGarbageCollected<CachedMatchedProperties>();
-  }
 
-  CachedMatchedProperties* cache_item = add_result.stored_value->value.Get();
-  if (!add_result.is_new_entry)
+  Member<CachedMatchedProperties>& cache_item =
+      cache_.insert(key.hash_, nullptr).stored_value->value;
+
+  if (!cache_item)
+    cache_item = MakeGarbageCollected<CachedMatchedProperties>();
+  else
     cache_item->Clear();
 
   cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
@@ -202,9 +211,13 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.TextAutosizingMultiplier() != 1)
     return false;
-  // -internal-light-dark() values in UA sheets have different computed values
-  // based on the used value of color-scheme.
-  if (style.HasNonInheritedLightDarkValue())
+  if (style.HasContainerRelativeUnits())
+    return false;
+  // Avoiding cache for ::highlight styles, and the originating styles they are
+  // associated with, because the style depends on the highlight names involved
+  // and they're not cached.
+  if (style.HasPseudoElementStyle(kPseudoIdHighlight) ||
+      style.StyleType() == kPseudoIdHighlight)
     return false;
   return true;
 }
@@ -221,6 +234,18 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // SetChildHasExplicitInheritance on the parent style.
   if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
     return false;
+
+  // Do not cache computed styles for shadow root children which have a
+  // different UserModify value than its shadow host.
+  //
+  // UserModify is modified to not inherit from the shadow host for shadow root
+  // children. That means that if we get a MatchedPropertiesCache match for a
+  // style stored for a shadow root child against a non shadow root child, we
+  // would end up with an incorrect match.
+  if (IsAtShadowBoundary(&state.GetElement()) &&
+      style.UserModify() != parent_style.UserModify()) {
+    return false;
+  }
 
   return true;
 }

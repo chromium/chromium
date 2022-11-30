@@ -1,15 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 
-#include <memory>
-
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
+
+namespace ui {
+class Event;
+}  // namespace ui
 
 namespace views {
 
@@ -21,6 +24,10 @@ class VIEWS_EXPORT ToggleButton : public Button {
   METADATA_HEADER(ToggleButton);
 
   explicit ToggleButton(PressedCallback callback = PressedCallback());
+
+  ToggleButton(const ToggleButton&) = delete;
+  ToggleButton& operator=(const ToggleButton&) = delete;
+
   ~ToggleButton() override;
 
   // AnimateIsOn() animates the state change to |is_on|; SetIsOn() doesn't.
@@ -28,23 +35,36 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void SetIsOn(bool is_on);
   bool GetIsOn() const;
 
-  void SetThumbOnColor(const base::Optional<SkColor>& thumb_on_color);
-  base::Optional<SkColor> GetThumbOnColor() const;
-  void SetThumbOffColor(const base::Optional<SkColor>& thumb_off_color);
-  base::Optional<SkColor> GetThumbOffColor() const;
-  void SetTrackOnColor(const base::Optional<SkColor>& track_on_color);
-  base::Optional<SkColor> GetTrackOnColor() const;
-  void SetTrackOffColor(const base::Optional<SkColor>& track_off_color);
-  base::Optional<SkColor> GetTrackOffColor() const;
+  void SetThumbOnColor(const absl::optional<SkColor>& thumb_on_color);
+  absl::optional<SkColor> GetThumbOnColor() const;
+  void SetThumbOffColor(const absl::optional<SkColor>& thumb_off_color);
+  absl::optional<SkColor> GetThumbOffColor() const;
+  void SetTrackOnColor(const absl::optional<SkColor>& track_on_color);
+  absl::optional<SkColor> GetTrackOnColor() const;
+  void SetTrackOffColor(const absl::optional<SkColor>& track_off_color);
+  absl::optional<SkColor> GetTrackOffColor() const;
 
   void SetAcceptsEvents(bool accepts_events);
   bool GetAcceptsEvents() const;
 
   // views::View:
+  void AddLayerBeneathView(ui::Layer* layer) override;
+  void RemoveLayerBeneathView(ui::Layer* layer) override;
   gfx::Size CalculatePreferredSize() const override;
+
+ protected:
+  // views::View:
+  void OnThemeChanged() override;
+
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override;
+
+  // Returns the path to draw the focus ring around for this ToggleButton.
+  SkPath GetFocusRingPath() const;
 
  private:
   friend class TestToggleButton;
+  class FocusRingHighlightPathGenerator;
   class ThumbView;
 
   // Calculates and returns the bounding box for the track.
@@ -61,33 +81,24 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::View:
   bool CanAcceptEvent(const ui::Event& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   void OnBlur() override;
 
   // Button:
-  void NotifyClick(const ui::Event& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override;
-  std::unique_ptr<InkDrop> CreateInkDrop() override;
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
-  SkColor GetInkDropBaseColor() const override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   gfx::SlideAnimation slide_animation_{this};
-  ThumbView* thumb_view_;
-  base::Optional<SkColor> track_on_color_;
-  base::Optional<SkColor> track_off_color_;
+  raw_ptr<ThumbView> thumb_view_;
+  absl::optional<SkColor> track_on_color_;
+  absl::optional<SkColor> track_off_color_;
 
   // When false, this button won't accept input. Different from View::SetEnabled
   // in that the view retains focus when this is false but not when disabled.
   bool accepts_events_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggleButton);
 };
 
 }  // namespace views

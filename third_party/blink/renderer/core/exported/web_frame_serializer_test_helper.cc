@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,18 +52,20 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   if (!only_body_parts) {
     WebThreadSafeData header_result = WebFrameSerializer::GenerateMHTMLHeader(
         boundary, frame, &mhtml_delegate);
-    mhtml.Append(header_result.Data(), header_result.size());
+    mhtml.Append(header_result.Data(),
+                 static_cast<unsigned>(header_result.size()));
   }
 
   WebThreadSafeData body_result =
       WebFrameSerializer::GenerateMHTMLParts(boundary, frame, &mhtml_delegate);
-  mhtml.Append(body_result.Data(), body_result.size());
+  mhtml.Append(body_result.Data(), static_cast<unsigned>(body_result.size()));
 
   if (!only_body_parts) {
     scoped_refptr<RawData> footer_data = RawData::Create();
     MHTMLArchive::GenerateMHTMLFooterForTesting(boundary,
                                                 *footer_data->MutableData());
-    mhtml.Append(footer_data->data(), footer_data->length());
+    mhtml.Append(footer_data->data(),
+                 static_cast<unsigned>(footer_data->length()));
   }
 
   String mhtml_string = mhtml.ToString();
@@ -71,7 +73,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
     // Validate the generated MHTML.
     MHTMLParser parser(SharedBuffer::Create(mhtml_string.Characters8(),
                                             size_t(mhtml_string.length())));
-    EXPECT_FALSE(parser.ParseArchive().IsEmpty())
+    EXPECT_FALSE(parser.ParseArchive().empty())
         << "Generated MHTML is not well formed";
   }
   return mhtml_string;

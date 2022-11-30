@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_token.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -82,7 +83,7 @@ void SyncTaskToken::clear_task_blocker() {
 }
 
 void SyncTaskToken::InitializeTaskLog(const std::string& task_description) {
-  task_log_.reset(new TaskLogger::TaskLog);
+  task_log_ = std::make_unique<TaskLogger::TaskLog>();
   task_log_->start_time = base::TimeTicks::Now();
   task_log_->task_description = task_description;
 

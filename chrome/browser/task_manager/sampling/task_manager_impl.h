@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,16 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "content/public/browser/global_routing_id.h"
 #include "gpu/ipc/common/memory_stats.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -33,12 +32,15 @@
 
 namespace task_manager {
 
+class CrosapiTaskProviderAsh;
 class SharedSampler;
 
 // Defines a concrete implementation of the TaskManagerInterface.
 class TaskManagerImpl : public TaskManagerInterface,
                         public TaskProviderObserver {
  public:
+  TaskManagerImpl(const TaskManagerImpl&) = delete;
+  TaskManagerImpl& operator=(const TaskManagerImpl&) = delete;
   ~TaskManagerImpl() override;
 
   static TaskManagerImpl* GetInstance();
@@ -99,11 +101,14 @@ class TaskManagerImpl : public TaskManagerInterface,
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void TaskIdsListToBeInvalidated() override;
+#endif
 
-  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
-                                             int route_id,
-                                             int64_t recv_bytes,
-                                             int64_t sent_bytes);
+  void UpdateAccumulatedStatsNetworkForRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int64_t recv_bytes,
+      int64_t sent_bytes);
 
  private:
   using PidToTaskGroupMap =
@@ -124,9 +129,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   void StartUpdating() override;
   void StopUpdating() override;
 
-  // Lookup a task by child_id and possibly route_id.
-  Task* GetTaskByRoute(int child_id, int route_id) const;
-
+  // Lookup a task by the global render frame host id. The empty
+  // GlobalRenderFrameHostId works as well, which would lead to the task
+  // being attributed to the browser process.
+  Task* GetTaskByRoute(
+      content::GlobalRenderFrameHostId render_frame_host_id) const;
 
   PidToTaskGroupMap* GetVmPidToTaskGroupMap(Task::Type type);
   TaskGroup* GetTaskGroupByTaskId(TaskId task_id) const;
@@ -145,6 +152,10 @@ class TaskManagerImpl : public TaskManagerInterface,
   // from the non-VM map |task_groups_by_proc_id_| as there can be conflicting
   // PIDs.
   PidToTaskGroupMap arc_vm_task_groups_by_proc_id_;
+
+  // Map Lacros TaskGroups received from crosapi by the IDs of the processes
+  // they represent.
+  PidToTaskGroupMap crosapi_task_groups_by_proc_id_;
 
   // Map each task by its ID to the TaskGroup on which it resides.
   // Keys are unique but values will have duplicates (i.e. multiple tasks
@@ -174,6 +185,11 @@ class TaskManagerImpl : public TaskManagerInterface,
   // A sampler shared with all instances of TaskGroup that hold ARC tasks and
   // calculates memory footprint for all processes at once.
   std::unique_ptr<ArcSharedSampler> arc_shared_sampler_;
+
+  // Task provider handling crosapi task data.
+  // Once CrosapiTaskProvider is created and added to the task_providers_, it
+  // should never be removed from task_providers_ unless in the destructor.
+  CrosapiTaskProviderAsh* crosapi_task_provider_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // This will be set to true while there are observers and the task manager is
@@ -185,7 +201,6 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool waiting_for_memory_dump_;
 
   base::WeakPtrFactory<TaskManagerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerImpl);
 };
 
 }  // namespace task_manager

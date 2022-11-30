@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,8 @@ void CastNavigationUIData::SetAppPropertiesForWebContents(
   DCHECK(web_contents);
   web_contents->SetUserData(kUserDataKey,
                             std::make_unique<SessionIdUserData>(session_id));
-  CastSessionIdMap::SetAppProperties(session_id, is_audio_app, web_contents);
+  CastSessionIdMap::GetInstance()->SetAppProperties(session_id, is_audio_app,
+                                                    web_contents);
 }
 
 // static

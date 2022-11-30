@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -27,21 +26,6 @@
 
 namespace media {
 
-static bool IsFloatAudioSupported() {
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() < base::android::SDK_VERSION_LOLLIPOP)
-    return false;
-
-  // Vivo devices up until Lollipop used their own Audio Mixer which does not
-  // support float audio output. https://crbug.com/737188.
-  if (build_info->sdk_int() == base::android::SDK_VERSION_LOLLIPOP &&
-      base::EqualsCaseInsensitiveASCII(build_info->manufacturer(), "vivo")) {
-    return false;
-  }
-
-  return true;
-}
-
 OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
                                            const AudioParameters& params,
                                            SLint32 stream_type)
@@ -56,8 +40,7 @@ OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
       muted_(false),
       volume_(1.0),
       samples_per_second_(params.sample_rate()),
-      sample_format_(IsFloatAudioSupported() ? kSampleFormatF32
-                                             : kSampleFormatS16),
+      sample_format_(kSampleFormatF32),
       bytes_per_frame_(params.GetBytesPerFrame(sample_format_)),
       buffer_size_bytes_(params.GetBytesPerBuffer(sample_format_)),
       performance_mode_(SL_ANDROID_PERFORMANCE_NONE),
@@ -74,29 +57,15 @@ OpenSLESOutputStream::OpenSLESOutputStream(AudioManagerAndroid* manager,
 
   audio_bus_ = AudioBus::Create(params);
 
-  if (sample_format_ == kSampleFormatF32) {
-    float_format_.formatType = SL_ANDROID_DATAFORMAT_PCM_EX;
-    float_format_.numChannels = static_cast<SLuint32>(params.channels());
-    // Despite the name, this field is actually the sampling rate in millihertz.
-    float_format_.sampleRate =
-        static_cast<SLuint32>(samples_per_second_ * 1000);
-    float_format_.bitsPerSample = float_format_.containerSize =
-        SampleFormatToBitsPerChannel(sample_format_);
-    float_format_.endianness = SL_BYTEORDER_LITTLEENDIAN;
-    float_format_.channelMask =
-        ChannelCountToSLESChannelMask(params.channels());
-    float_format_.representation = SL_ANDROID_PCM_REPRESENTATION_FLOAT;
-    return;
-  }
-
-  format_.formatType = SL_DATAFORMAT_PCM;
-  format_.numChannels = static_cast<SLuint32>(params.channels());
-  // Despite the name, this field is actually the sampling rate in millihertz :|
-  format_.samplesPerSec = static_cast<SLuint32>(samples_per_second_ * 1000);
-  format_.bitsPerSample = format_.containerSize =
+  float_format_.formatType = SL_ANDROID_DATAFORMAT_PCM_EX;
+  float_format_.numChannels = static_cast<SLuint32>(params.channels());
+  // Despite the name, this field is actually the sampling rate in millihertz.
+  float_format_.sampleRate = static_cast<SLuint32>(samples_per_second_ * 1000);
+  float_format_.bitsPerSample = float_format_.containerSize =
       SampleFormatToBitsPerChannel(sample_format_);
-  format_.endianness = SL_BYTEORDER_LITTLEENDIAN;
-  format_.channelMask = ChannelCountToSLESChannelMask(params.channels());
+  float_format_.endianness = SL_BYTEORDER_LITTLEENDIAN;
+  float_format_.channelMask = ChannelCountToSLESChannelMask(params.channels());
+  float_format_.representation = SL_ANDROID_PCM_REPRESENTATION_FLOAT;
 }
 
 OpenSLESOutputStream::~OpenSLESOutputStream() {
@@ -161,8 +130,7 @@ void OpenSLESOutputStream::Start(AudioSourceCallback* callback) {
   // we're continuing on from this previous position.
   uint32_t position_in_ms = 0;
   LOG_ON_FAILURE_AND_RETURN((*player_)->GetPosition(player_, &position_in_ms));
-  delay_calculator_.SetBaseTimestamp(
-      base::TimeDelta::FromMilliseconds(position_in_ms));
+  delay_calculator_.SetBaseTimestamp(base::Milliseconds(position_in_ms));
   delay_calculator_.AddFrames(audio_bus_->frames());
 
   started_ = true;
@@ -296,10 +264,7 @@ bool OpenSLESOutputStream::CreatePlayer() {
       SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,
       static_cast<SLuint32>(kMaxNumOfBuffersInQueue)};
   SLDataSource audio_source;
-  if (sample_format_ == kSampleFormatF32)
-    audio_source = {&simple_buffer_queue, &float_format_};
-  else
-    audio_source = {&simple_buffer_queue, &format_};
+  audio_source = {&simple_buffer_queue, &float_format_};
 
   // Audio sink configuration.
   SLDataLocator_OutputMix locator_output_mix = {SL_DATALOCATOR_OUTPUTMIX,
@@ -314,7 +279,7 @@ bool OpenSLESOutputStream::CreatePlayer() {
   LOG_ON_FAILURE_AND_RETURN(
       (*engine)->CreateAudioPlayer(
           engine, player_object_.Receive(), &audio_source, &audio_sink,
-          base::size(interface_id), interface_id, interface_required),
+          std::size(interface_id), interface_id, interface_required),
       false);
 
   // Create AudioPlayer and specify SL_IID_ANDROIDCONFIGURATION.
@@ -436,18 +401,10 @@ void OpenSLESOutputStream::FillBufferQueueNoLock() {
   // raw float, the data must be clipped and sanitized since it may come
   // from an untrusted source such as NaCl.
   audio_bus_->Scale(muted_ ? 0.0f : volume_);
-  if (sample_format_ == kSampleFormatS16) {
-    audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
-        frames_filled,
-        reinterpret_cast<int16_t*>(audio_data_[active_buffer_index_]));
-  } else {
-    DCHECK_EQ(sample_format_, kSampleFormatF32);
-
-    // We skip clipping since that occurs at the shared memory boundary.
-    audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
-        frames_filled,
-        reinterpret_cast<float*>(audio_data_[active_buffer_index_]));
-  }
+  // We skip clipping since that occurs at the shared memory boundary.
+  audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
+      frames_filled,
+      reinterpret_cast<float*>(audio_data_[active_buffer_index_]));
 
   delay_calculator_.AddFrames(frames_filled);
   const int num_filled_bytes = frames_filled * bytes_per_frame_;
@@ -498,10 +455,10 @@ void OpenSLESOutputStream::CacheHardwareLatencyIfNeeded() {
 
 base::TimeDelta OpenSLESOutputStream::AdjustPositionForHardwareLatency(
     uint32_t position_in_ms) {
-  base::TimeDelta position = base::TimeDelta::FromMilliseconds(position_in_ms);
+  base::TimeDelta position = base::Milliseconds(position_in_ms);
 
   if (position <= hardware_latency_)
-    return base::TimeDelta::FromMilliseconds(0);
+    return base::Milliseconds(0);
 
   return position - hardware_latency_;
 }

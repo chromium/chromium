@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_pcm_encoder.h"
 
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -40,7 +40,7 @@ void AudioTrackPcmEncoder::EncodeAudio(
   std::string encoded_data_string;
   encoded_data_string.resize(input_bus->frames() * input_bus->channels() *
                              sizeof(float));
-  char* encoded_data_ptr = base::data(encoded_data_string);
+  char* encoded_data_ptr = std::data(encoded_data_string);
   input_bus->ToInterleaved<media::Float32SampleTypeTraits>(
       input_bus->frames(), reinterpret_cast<float*>(encoded_data_ptr));
 

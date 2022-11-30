@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -30,6 +29,11 @@
 class DurableStorageBrowserTest : public InProcessBrowserTest {
  public:
   DurableStorageBrowserTest() = default;
+
+  DurableStorageBrowserTest(const DurableStorageBrowserTest&) = delete;
+  DurableStorageBrowserTest& operator=(const DurableStorageBrowserTest&) =
+      delete;
+
   ~DurableStorageBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine*) override;
@@ -37,7 +41,9 @@ class DurableStorageBrowserTest : public InProcessBrowserTest {
 
  protected:
   content::RenderFrameHost* GetRenderFrameHost(Browser* browser) {
-    return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+    return browser->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetRenderFrameHost() {
@@ -85,9 +91,6 @@ class DurableStorageBrowserTest : public InProcessBrowserTest {
   }
 
   GURL url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DurableStorageBrowserTest);
 };
 
 void DurableStorageBrowserTest::SetUpCommandLine(
@@ -104,13 +107,13 @@ void DurableStorageBrowserTest::SetUpOnMainThread() {
 }
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, QueryNonBookmarkedPage) {
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   EXPECT_FALSE(CheckPermission());
   EXPECT_EQ("prompt", CheckPermissionUsingPermissionApi());
 }
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, RequestNonBookmarkedPage) {
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   EXPECT_FALSE(RequestPermission());
 }
 
@@ -118,20 +121,20 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, QueryBookmarkedPage) {
   // Documents that the current behavior is to return "default" if script
   // hasn't requested the durable permission, even if it would be autogranted.
   Bookmark();
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   EXPECT_FALSE(CheckPermission());
   EXPECT_EQ("prompt", CheckPermissionUsingPermissionApi());
 }
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, RequestBookmarkedPage) {
   Bookmark();
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   EXPECT_TRUE(RequestPermission());
 }
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, BookmarkThenUnbookmark) {
   Bookmark();
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
 
   EXPECT_TRUE(RequestPermission());
   EXPECT_TRUE(CheckPermission());
@@ -152,13 +155,13 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, BookmarkThenUnbookmark) {
 }
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, FirstTabSeesResult) {
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
 
   EXPECT_FALSE(CheckPermission());
   EXPECT_EQ("prompt", CheckPermissionUsingPermissionApi());
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
   Bookmark();
 
   EXPECT_TRUE(RequestPermission());
@@ -170,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, FirstTabSeesResult) {
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, Incognito) {
   Browser* browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(browser, url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url_));
 
   Bookmark(browser);
   EXPECT_TRUE(RequestPermission(GetRenderFrameHost(browser)));
@@ -184,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, SessionOnly) {
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
   Bookmark();
-  ui_test_utils::NavigateToURL(browser(), url_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_));
 
   EXPECT_FALSE(RequestPermission());
   EXPECT_FALSE(CheckPermission());

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@
 namespace WTF {
 
 String CreateCanonicalUUIDString() {
-  std::string uuid = base::GenerateGUID();
-  return String::FromUTF8(uuid.data(), uuid.length());
+  String uuid(base::GenerateGUID());
+  DCHECK(uuid.IsLowerASCII());
+  return uuid;
 }
 
 bool IsValidUUID(const String& uuid) {

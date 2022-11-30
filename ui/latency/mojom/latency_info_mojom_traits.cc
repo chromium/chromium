@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,23 +108,17 @@ StructTraits<ui::mojom::LatencyInfoDataView,
 }
 
 // static
-float StructTraits<ui::mojom::LatencyInfoDataView,
-                   ui::LatencyInfo>::scroll_update_delta(const ui::LatencyInfo&
-                                                             info) {
-  return info.scroll_update_delta();
-}
-
-// static
-float StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::
-    predicted_scroll_update_delta(const ui::LatencyInfo& info) {
-  return info.predicted_scroll_update_delta();
-}
-
-// static
 int64_t
 StructTraits<ui::mojom::LatencyInfoDataView,
              ui::LatencyInfo>::gesture_scroll_id(const ui::LatencyInfo& info) {
   return info.gesture_scroll_id();
+}
+
+// static
+int64_t
+StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::touch_trace_id(
+    const ui::LatencyInfo& info) {
+  return info.touch_trace_id();
 }
 
 // static
@@ -139,9 +133,8 @@ bool StructTraits<ui::mojom::LatencyInfoDataView, ui::LatencyInfo>::Read(
   out->began_ = data.began();
   out->terminated_ = data.terminated();
   out->source_event_type_ = MojoSourceEventTypeToUI(data.source_event_type());
-  out->scroll_update_delta_ = data.scroll_update_delta();
-  out->predicted_scroll_update_delta_ = data.predicted_scroll_update_delta();
   out->gesture_scroll_id_ = data.gesture_scroll_id();
+  out->touch_trace_id_ = data.touch_trace_id();
 
   return true;
 }
@@ -174,9 +167,6 @@ EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::ToMojom(
     case ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT:
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT;
-    case ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT:
-      return ui::mojom::LatencyComponentType::
-          INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT;
     case ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT:
       return ui::mojom::LatencyComponentType::
           INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT;
@@ -244,10 +234,6 @@ bool EnumTraits<ui::mojom::LatencyComponentType, ui::LatencyComponentType>::
     case ui::mojom::LatencyComponentType::
         INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT:
       *output = ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT;
-      return true;
-    case ui::mojom::LatencyComponentType::
-        INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT:
-      *output = ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT;
       return true;
   }
   return false;

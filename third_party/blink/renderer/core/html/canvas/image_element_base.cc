@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
 
@@ -47,7 +48,11 @@ bool ImageElementBase::IsImageElement() const {
 
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& default_object_size) {
+    const gfx::SizeF& default_object_size,
+    const AlphaDisposition alpha_disposition) {
+  // UnpremultiplyAlpha is not implemented yet.
+  DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
+
   ImageResourceContent* image_content = CachedImage();
   if (!GetImageLoader().ImageComplete() || !image_content) {
     *status = kIncompleteSourceImageStatus;
@@ -60,12 +65,23 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
   }
 
   scoped_refptr<Image> source_image = image_content->GetImage();
+
+  if (!source_image->width() || !source_image->height()) {
+    *status = kZeroSizeImageSourceStatus;
+    return nullptr;
+  }
+
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
-    FloatSize image_size = svg_image->ConcreteObjectSize(default_object_size);
+    gfx::SizeF image_size = svg_image->ConcreteObjectSize(default_object_size);
+    if (!image_size.width() || !image_size.height()) {
+      *status = kZeroSizeImageSourceStatus;
+      return nullptr;
+    }
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
-        GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()));
+        GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()),
+        GetElement().GetDocument().GetPreferredColorScheme());
   }
 
   *status = kNormalSourceImageStatus;
@@ -76,20 +92,20 @@ bool ImageElementBase::WouldTaintOrigin() const {
   return CachedImage() && !CachedImage()->IsAccessAllowed();
 }
 
-FloatSize ImageElementBase::ElementSize(
-    const FloatSize& default_object_size,
+gfx::SizeF ImageElementBase::ElementSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
   ImageResourceContent* image_content = CachedImage();
   if (!image_content || !image_content->HasImage())
-    return FloatSize();
+    return gfx::SizeF();
   Image* image = image_content->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image))
     return svg_image->ConcreteObjectSize(default_object_size);
-  return FloatSize(image->Size(respect_orientation));
+  return gfx::SizeF(image->Size(respect_orientation));
 }
 
-FloatSize ImageElementBase::DefaultDestinationSize(
-    const FloatSize& default_object_size,
+gfx::SizeF ImageElementBase::DefaultDestinationSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
   return ElementSize(default_object_size, respect_orientation);
 }
@@ -110,10 +126,10 @@ bool ImageElementBase::IsOpaque() const {
   return image->CurrentFrameKnownToBeOpaque();
 }
 
-IntSize ImageElementBase::BitmapSourceSize() const {
+gfx::Size ImageElementBase::BitmapSourceSize() const {
   ImageResourceContent* image = CachedImage();
   if (!image)
-    return IntSize();
+    return gfx::Size();
   // This method is called by ImageBitmap when creating and cropping the image.
   // Return un-oriented size because the cropping must happen before
   // orienting.
@@ -121,9 +137,9 @@ IntSize ImageElementBase::BitmapSourceSize() const {
 }
 
 static bool HasDimensionsForImage(SVGImage* svg_image,
-                                  base::Optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions* options) {
-  if (!svg_image->ConcreteObjectSize(FloatSize()).IsEmpty())
+  if (!svg_image->ConcreteObjectSize(gfx::SizeF()).IsEmpty())
     return true;
   if (crop_rect)
     return true;
@@ -134,7 +150,7 @@ static bool HasDimensionsForImage(SVGImage* svg_image,
 
 ScriptPromise ImageElementBase::CreateImageBitmap(
     ScriptState* script_state,
-    base::Optional<IntRect> crop_rect,
+    absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   ImageResourceContent* image_content = CachedImage();
@@ -166,7 +182,11 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
       return ScriptPromise();
     }
     // The following function only works on SVGImages (as checked above).
-    return ImageBitmap::CreateAsync(this, crop_rect, script_state, options);
+    return ImageBitmap::CreateAsync(
+        this, crop_rect, script_state,
+        GetElement().GetDocument().GetTaskRunner(TaskType::kInternalDefault),
+        GetElement().GetDocument().GetPreferredColorScheme(), exception_state,
+        options);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

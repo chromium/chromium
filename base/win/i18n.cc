@@ -1,10 +1,12 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/win/i18n.h"
 
 #include <windows.h>
+
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
@@ -31,7 +33,7 @@ bool GetPreferredUILanguageList(GetPreferredUILanguages_Fn function,
   }
 
   std::wstring buffer(buffer_length, '\0');
-  if (!function(call_flags, &language_count, base::data(buffer),
+  if (!function(call_flags, &language_count, std::data(buffer),
                 &buffer_length) ||
       !language_count) {
     DPCHECK(!language_count) << "Failed getting preferred UI languages.";

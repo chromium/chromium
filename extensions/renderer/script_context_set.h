@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,14 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context_set_iterable.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
-
+#include "v8/include/v8-forward.h"
 class GURL;
 
 namespace blink {
@@ -47,6 +46,9 @@ class ScriptContextSet : public ScriptContextSetIterable {
       // Set of the IDs of extensions that are active in this process.
       // Must outlive this. TODO(kalman): Combine this and |extensions|.
       ExtensionIdSet* active_extension_ids);
+
+  ScriptContextSet(const ScriptContextSet&) = delete;
+  ScriptContextSet& operator=(const ScriptContextSet&) = delete;
 
   ~ScriptContextSet() override;
 
@@ -121,7 +123,8 @@ class ScriptContextSet : public ScriptContextSetIterable {
       const Extension* extension,
       int32_t world_id,
       const GURL& url,
-      const blink::WebSecurityOrigin& origin);
+      const blink::WebSecurityOrigin& origin,
+      mojom::ViewType view_type);
 
   // Weak reference to all installed Extensions that are also active in this
   // process.
@@ -133,8 +136,6 @@ class ScriptContextSet : public ScriptContextSetIterable {
   // Whether the script context set is associated with the renderer active on
   // the Chrome OS lock screen.
   bool is_lock_screen_context_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptContextSet);
 };
 
 }  // namespace extensions

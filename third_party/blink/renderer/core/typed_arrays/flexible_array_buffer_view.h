@@ -1,15 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_FLEXIBLE_ARRAY_BUFFER_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_FLEXIBLE_ARRAY_BUFFER_VIEW_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -22,9 +21,8 @@ class CORE_EXPORT FlexibleArrayBufferView {
 
  public:
   FlexibleArrayBufferView() = default;
-  FlexibleArrayBufferView(const FlexibleArrayBufferView&) = default;
-  FlexibleArrayBufferView(FlexibleArrayBufferView&&) = default;
-  FlexibleArrayBufferView(v8::Local<v8::ArrayBufferView> array_buffer_view) {
+  explicit FlexibleArrayBufferView(
+      v8::Local<v8::ArrayBufferView> array_buffer_view) {
     SetContents(array_buffer_view);
   }
   ~FlexibleArrayBufferView() = default;
@@ -36,18 +34,6 @@ class CORE_EXPORT FlexibleArrayBufferView {
     full_ = nullptr;
     small_data_ = nullptr;
     small_length_ = 0;
-  }
-
-  void SetContents(v8::Local<v8::ArrayBufferView> array_buffer_view) {
-    DCHECK(IsNull());
-    size_t size = array_buffer_view->ByteLength();
-    if (size <= sizeof small_buffer_) {
-      array_buffer_view->CopyContents(small_buffer_, size);
-      small_data_ = small_buffer_;
-      small_length_ = size;
-    } else {
-      full_ = V8ArrayBufferView::ToImpl(array_buffer_view);
-    }
   }
 
   // Returns true if this object represents IDL null.
@@ -73,13 +59,23 @@ class CORE_EXPORT FlexibleArrayBufferView {
     return IsFull() ? full_->byteLength() : small_length_;
   }
 
-  unsigned DeprecatedByteLengthAsUnsigned() const {
-    DCHECK(!IsNull());
-    return IsFull() ? base::checked_cast<unsigned>(full_->byteLength())
-                    : base::checked_cast<unsigned>(small_length_);
+ private:
+  void SetContents(v8::Local<v8::ArrayBufferView> array_buffer_view) {
+    DCHECK(IsNull());
+    size_t size = array_buffer_view->ByteLength();
+    if (size <= sizeof small_buffer_) {
+      array_buffer_view->CopyContents(small_buffer_, size);
+      small_data_ = small_buffer_;
+      small_length_ = size;
+    } else {
+      NonThrowableExceptionState exception_state;
+      full_ = NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<MaybeShared<
+          DOMArrayBufferView>>>::NativeValue(array_buffer_view->GetIsolate(),
+                                             array_buffer_view, exception_state)
+                  .Get();
+    }
   }
 
- private:
   DOMArrayBufferView* full_ = nullptr;
 
   // If the contents of the given v8::ArrayBufferView are small enough to fit

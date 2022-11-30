@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/shelf_component.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -66,6 +66,10 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   };
 
   HotseatWidget();
+
+  HotseatWidget(const HotseatWidget&) = delete;
+  HotseatWidget& operator=(const HotseatWidget&) = delete;
+
   ~HotseatWidget() override;
 
   // Returns whether the hotseat background should be shown.
@@ -169,7 +173,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // manual user intervention (dragging the hotseat into its extended state).
   // This will return |false| after any visible change in the shelf
   // configuration.
-  bool is_manually_extended() { return is_manually_extended_; }
+  bool is_manually_extended() const { return is_manually_extended_; }
 
   void set_manually_extended(bool value) { is_manually_extended_ = value; }
 
@@ -221,7 +225,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // The set of inputs that impact this widget's layout. The assumption is that
   // this widget needs a relayout if, and only if, one or more of these has
   // changed.
-  base::Optional<LayoutInputs> layout_inputs_;
+  absl::optional<LayoutInputs> layout_inputs_;
 
   gfx::Rect target_bounds_;
 
@@ -232,7 +236,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   HotseatState state_ = HotseatState::kNone;
 
   // Indicates the type of the hotseat state transition in progress.
-  base::Optional<StateTransition> state_transition_in_progress_;
+  absl::optional<StateTransition> state_transition_in_progress_;
 
   Shelf* shelf_ = nullptr;
 
@@ -257,8 +261,6 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // on the non visible portion of the hotseat, or events that reach the hotseat
   // during an animation.
   std::unique_ptr<aura::ScopedWindowTargeter> hotseat_window_targeter_;
-
-  DISALLOW_COPY_AND_ASSIGN(HotseatWidget);
 };
 
 }  // namespace ash

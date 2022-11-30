@@ -2,7 +2,7 @@
 <protocol name="aura_shell">
 
   <copyright>
-    Copyright 2017 The Chromium Authors.
+    Copyright 2017 The Chromium Authors
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="17">
+  <interface name="zaura_shell" version="42">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -93,9 +93,74 @@
       </description>
       <arg name="id" type="uint" summary="ID of a single bug fix"/>
     </event>
+
+    <event name="desks_changed" since="22">
+      <description summary="sends names of desks">
+        Notifies when there is a change in global desks state. This is emitted on
+        desk name changes, desk addition/removal or desks are reordered.
+        "desk_names" argument contains the set of null terminated strings as names of desks.
+      </description>
+      <arg name="desk_names" type="array" summary="an array of existing desks' names"/>
+    </event>
+    <event name="desk_activation_changed" since="22">
+      <description summary="sends the index of the active desk">
+        Notifies when there is a change of the active desk.
+      </description>
+      <arg name="active_desk_index" type="int" summary="index of the active desk"/>
+    </event>
+
+    <!-- Version 24 additions -->
+    <event name="activated" since="24">
+      <description summary="activated surface changed">
+	Notifies client that the activated surface changed.
+      </description>
+      <arg name="gained_active" type="object" interface="wl_surface" allow-null="true"/>
+      <arg name="lost_active" type="object" interface="wl_surface" allow-null="true"/>
+    </event>
+
+    <!-- Version 26 additions -->
+    <request name="surface_submission_in_pixel_coordinates" since="26">
+      <description summary="surfaces will be submitted in pixel coordinates">
+        [Deprecated] Informs the server that when submitting surfaces, this
+        client will not use wl_surface_set_buffer_scale to report the scales,
+        nor will it apply scale via vp_viewporter. Instead the server should
+        apply an appropriate scale transform to have the submitted buffers
+        composited correctly.
+      </description>
+    </request>
+
+    <request name="get_aura_toplevel_for_xdg_toplevel" since="27">
+      <description summary="get aura toplevel">
+  Retrieve the aura toplevel interface for a given xdg toplevel interface
+      </description>
+      <arg name="id" type="new_id" interface="zaura_toplevel"
+	   summary="the new aura toplevel interface id"/>
+      <arg name="toplevel" type="object" interface="xdg_toplevel"/>
+    </request>
+
+    <request name="get_aura_popup_for_xdg_popup" since="28">
+      <description summary="get aura popup">
+        Retrieve the aura popup interface for the given xdg popup interface
+      </description>
+      <arg name="id" type="new_id" interface="zaura_popup"
+	    summary="the aura popup interface id"/>
+      <arg name="popup" type="object" interface="xdg_popup"/>
+    </request>
+
+    <request name="release" type="destructor" since="38">
+      <description summary="release zaura_shell object">
+	Using this request a client can tell the server that it is not going to
+	use the zaura_shell object anymore. This does not affect any other objects.
+
+  This is named "release" because "destroy" is a special named function used for
+  freeing wl_proxy objects. Naming it "destroy" will cause marshalling errors
+  when running on lower versioned hosts. All "release" requests here should be
+  renamed to "destroy" if we move to aura-shell v2.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_surface" version="17">
+  <interface name="zaura_surface" version="38">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -112,7 +177,9 @@
 
     <request name="set_frame">
       <description summary="request a frame for surface">
-	Suggests a surface should use a specific frame.
+        [Deprecated] Suggests a surface should use a specific frame. Deprecated
+        since M105. See the set_decoration method on zaura_toplevel and
+        zaura_popup.
       </description>
       <arg name="type" type="uint" summary="the new frame type"/>
     </request>
@@ -205,12 +272,12 @@
 
     <request name="activate" since="9">
       <description summary="Indicate that this window wants to be the active window">
-	Make this the active window. This usually implies something like
-	restacking this surface to the foreground. The compositor is free to
-	ignore this request if it deems the client to be misbehaving. Typically
-	this request will only be honoured in response to some user driven
-	event, such as executing an application or opening a file in a window
-	that already exists.
+        [Deprecated] Make this the active window. This usually implies something
+        like restacking this surface to the foreground. The compositor is free
+        to ignore this request if it deems the client to be misbehaving.
+        Typically this request will only be honoured in response to some user
+        driven event, such as executing an application or opening a file in a
+        window that already exists.
       </description>
     </request>
 
@@ -326,9 +393,150 @@
         Unlocking happends while dragging a maximized window.
       </description>
     </event>
+
+    <!-- Version 18 additions -->
+    <request name="set_window_session_id" since="18">
+      <description summary="set surface window session id">
+          Set window session id to the surface.
+      </description>
+      <arg name="id" type="int" summary="window session id"/>
+    </request>
+
+    <!-- Version 19 additions -->
+    <request name="set_can_go_back" since="19">
+      <description summary="Set the minimize-on-back-gesture behavior.">
+        Sets that the surface can go back as per its navigation list.
+        This allows the server to react to by minimizing the window upon a
+        system wide back gesture.
+      </description>
+    </request>
+
+    <request name="unset_can_go_back" since="19">
+      <description summary="Unset the minimize-on-back-gesture behavior.">
+        Unsets that the surface can go back as per its navigation list.
+        See above.
+      </description>
+    </request>
+
+    <!-- Version 20 additions -->
+    <request name="set_pip" since="20">
+      <description summary="Set pip for the surface.">
+        Requests that the surface is set to Picture-in-Picture (PIP).
+      </description>
+    </request>
+
+    <request name="unset_pip" since="20">
+      <description summary="Unset pip for the surface.">
+        Requests that the surface is unset from Picture-in-Picture (PIP).
+      </description>
+    </request>
+
+    <request name="set_aspect_ratio" since="20">
+      <description summary="Set aspect ratio for the surface.">
+        Sets the aspect ratio of the surface.
+      </description>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </request>
+
+    <!-- Version 21 additions -->
+    <enum name="occlusion_state">
+      <description summary="surface occlusion state">
+	Describes the occlusion state of a surface.
+      </description>
+      <entry name="unknown" value="0" summary="The surface's occlusion state isn't tracked"/>
+      <entry name="visible" value="1" summary="The surface is visible"/>
+      <entry name="occluded" value="2" summary="The surface is occluded"/>
+      <entry name="hidden" value="3" summary="The surface is not visible"/>
+    </enum>
+
+    <event name="occlusion_state_changed" since="21">
+      <description summary="Notify the client that the occlusion state changed">
+	Notifies the client that the occlusion state of a window has changed. Clients
+	will only receive these messages if they previously request occlusion tracking
+  via set_occlusion_tracking for a particular surface.
+      </description>
+      <arg name="mode" type="uint" enum="occlusion_state"/>
+    </event>
+
+    <!-- Version 22 additions -->
+    <request name="move_to_desk" since="22">
+        <description summary="move to desk">
+        If |index| equals -1, requests that the server toggles whether client
+        is visible on all workspaces.
+        If |index| is not -1, requests that the server moves the client to the desk at
+        |index|.
+      </description>
+      <arg name="index" type="int"/>
+    </request>
+
+    <event name="desk_changed" since="22">
+      <description summary="window desk state changed">
+        Notifies when there is a change in the desk state of a window.
+        This is emitted when a window is moved to another desk or
+        when its assigned-to-all-desks state changes.
+      </description>
+      <arg name="state" type="int" summary="index of desk or -1 for a window assigned to all desks"/>
+    </event>
+
+    <!-- Version 23 additions -->
+    <request name="set_initial_workspace" since="23">
+      <description summary="initial workspace for restore">
+        If |initial_workspace| equals '-1', a window is restored and visible on all workspaces,
+        Otherwise, set the initial workspace to restore the window to the corresponding workspace.
+        This is not double buffered and must be set before attaching a buffer.
+      </description>
+      <arg name="initial_workspace" type="string" summary="intial workspace for restoring or '-1' for visible on all workspaces"/>
+    </request>
+
+    <!-- Version 25 additions -->
+    <request name="set_pin" since="25">
+      <description summary="pin a window (trusted or not)">
+	Requests that a window is pinned which means that the system does not allow
+  the user to leave the window until an exit criteria is met.
+
+	This is a request to get the window pinned so that the user cannot get to any
+	other window / application. There are two modes:
+  A. trusted is 0 - which is slightly less restrictive and allows the user to
+  get out of the window by a predefined way of authentication.
+  B. trusted is not 0 in which case a trusted application was locking down the
+  system and needs to unlock. This is used for e.g. School tests.
+      </description>
+      <arg name="trusted" type="int" summary="0 for non trusted"/>
+    </request>
+
+    <request name="unset_pin" since="25">
+      <description summary="unpin a window">
+	Requests that the user can leave a previously pinned window.
+
+	This is a request to unpin a previously pinned window. It does not matter if
+  the window was locked with the trusted state or not.
+      </description>
+    </request>
+
+    <event name="start_throttle" since="29">
+      <description summary="start throttling on the surface">
+        Informs the client to start throttling on the surface.
+      </description>
+    </event>
+    <event name="end_throttle" since="29">
+      <description summary="end throttling on the surface">
+        Informs the client to end throttling on the surface.
+      </description>
+    </event>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_surface">
+	Destroy the zaura_surface object. A client should destroy this object when the
+  role is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_output" version="6">
+  <interface name="zaura_output" version="38">
     <description summary="aura shell interface to a wl_output">
       An additional interface to a wl_output object, which allows the
       client to access aura shell specific functionality for output.
@@ -430,6 +638,357 @@
       </description>
       <arg name="scale" type="uint" enum="scale_factor" summary="output device scale factor"/>
     </event>
- </interface>
 
+    <!-- Version 33 additions -->
+
+    <event name="insets" since="33">
+      <description summary="advertise the insets for the output">
+        This event describes the insets for the output in logical screen
+        coordinates, from which the work area can be calculated.
+
+        This event is sent before wl_output.done, after which the client would
+        apply the change.
+      </description>
+      <arg name="top" type="int"/>
+      <arg name="left" type="int"/>
+      <arg name="bottom" type="int"/>
+      <arg name="right" type="int"/>
+    </event>
+
+    <!-- Version 34 additions -->
+
+    <event name="logical_transform" since="34">
+      <description summary="advertise the output's logical transform">
+        This event describes the logical transform for the output. Whereas
+        wl_output.geometry's transform corresponds to the display's panel
+        rotation, the logical transform corresponds to the display's logical
+        rotation.
+
+        This event is sent before wl_output.done, after which the client would
+        apply the change.
+      </description>
+      <arg name="transform" type="int" enum="wl_output.transform"/>
+    </event>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_output">
+	Destroy this zaura_shell object.
+
+	Destroying a bound zaura_shell object while there are zaura_surfaces
+	still alive created by this zaura_shell object instance is illegal
+	and will result in a protocol error.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
+  </interface>
+
+  <interface name="zaura_toplevel" version="42">
+    <description summary="aura shell interface to the toplevel shell">
+      An interface to the toplevel shell, which allows the
+      client to access shell specific functionality.
+    </description>
+
+    <enum name="orientation_lock">
+      <description summary="orientation lock request">
+  Defines orientation request when a surface is in fullscreen.
+      </description>
+      <entry name="none" value="1" summary="no orientation lock"/>
+      <entry name="portrait" value="2" summary="primary or secondary portrait"/>
+      <entry name="landscape" value="3" summary="primary or secondary landscape"/>
+      <entry name="current" value="4" summary="keep current orientation"/>
+      <entry name="portrait_primary" value="5" summary="primary portrait"/>
+      <entry name="landscape_primary" value="6" summary="primary landscape"/>
+      <entry name="portrait_secondary" value="7" summary="secondary portrait"/>
+      <entry name="landscape_secondary" value="8" summary="secondary landscape"/>
+    </enum>
+
+    <request name="set_orientation_lock" since="26">
+      <description summary="set orientation lock for a remote surface">
+  Request a specific orientation behavior when this surface is in fullscreen.
+      </description>
+      <arg name="orientation_lock" type="uint" enum="orientation_lock"/>
+    </request>
+    <request name="surface_submission_in_pixel_coordinates" since="28">
+      <description summary="surface will be submitted in pixel coordinates">
+        Informs the server that when submitting this surface, this client will not
+        use wl_surface_set_buffer_scale to report the scales, nor will it apply
+        scale via vp_viewporter. Instead the server should apply an appropriate
+        scale transform for the submitted buffers to be composited correctly.
+      </description>
+    </request>
+
+    <request name="set_supports_screen_coordinates" since="29">
+      <description summary="enables screen coordinates in window bounds">
+	Requesting this will enable screen coordinates in surfaces
+	associated with aura_toplevel including sub surfaces and popup
+	windows who added this toplevel as a parent. This should be
+	set before first commit.
+      </description>
+    </request>
+
+    <request name="set_window_bounds" since="29">
+      <description summary="set window size and position">
+	Request a new location and bounds of the surface in DP screen
+	coordinates.  The size will be applied to visible bounds used
+	in set_geometry.  The output is a hint for the compositor to
+	determine which output the window should move to.  These
+	parameters are just a request and the compositor may ignore,
+	adjust the size and position based on the rule imposed by the
+	window manager, or may preserve it for future operations. For
+	example, the compositor will not allow a position outside of
+	the output, or the compositor may just store it if the
+	toplevel surface is in maximiezd state, and may use it upon
+	unmaximized.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="output" type="object" interface="wl_output" summary="the output"/>
+    </request>
+
+    <event name="configure" since="29">
+      <description summary="suggest a surface change">
+        A configuration change that also includes the window origin in screen coordinates.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="states" type="array"/>
+    </event>
+
+    <enum name="state">
+      <description summary="supplemental aura states to xdg states">
+        The states that are contained here are supplemental to the states
+        defined in the XDG shell and specific aura windows.
+      </description>
+
+      <!-- Offset by 100 to prevent collision with new XDG states. -->
+      <entry name="immersive" value="100" since="36">
+        <description summary="immersive mode with hidden title bar and shelf">
+          User can access system UIs such as the shelf and window frame
+          by pointing to, or swiping over, the screen edge.
+        </description>
+      </entry>
+      <entry name="minimized" value="101" since="36">
+        <description summary="surface is minimized">
+          The window has been minimized.
+        </description>
+      </entry>
+      <entry name="snapped_primary" value="102" since="38">
+        <description summary="window is snapped in primary position">
+          The window is snapped to the left if the display is in landscape mode
+          and at the top in portrait mode.
+        </description>
+      </entry>
+      <entry name="snapped_secondary" value="103" since="38">
+        <description summary="window is snapped in secondary position">
+          The window is snapped to the right if the display is in landscape mode
+          and at the bottom in portrait mode.
+        </description>
+      </entry>
+      <entry name="floated" value="104" since="38">
+        <description summary="window is floated on top">
+          The window is floated on top of other windows. One floated window is
+          allowed per desk. Floating a window when there is already a floated
+          window on the same desk will unfloat the floated window.
+        </description>
+      </entry>
+    </enum>
+
+    <event name="origin_change" since="29">
+      <description summary="window origin change">
+        A notification sent when the window origin has changed. Unlike a configure,
+        this does not imply the client needs to resize. The values are in screen
+        coordinates.
+      </description>
+      <arg name="x" type="int" />
+      <arg name="y" type="int" />
+    </event>
+
+    <request name="set_restore_info" since="30">
+      <description summary="set session id and restore id">
+      Request session id and restore id of a newly created browser window.
+      Set the information used by compositor to restore the toplevel
+      surface state, such as window position, window state, upon creation.
+      This is not double buffered and must be set before sending first commit.
+      </description>
+      <arg name="restore_session_id" type="int" summary="unique browser session id"/>
+      <arg name="restore_window_id" type="int" summary="restore browser window id"/>
+    </request>
+
+    <!-- Version 31 additions -->
+    <request name="set_system_modal" since="31">
+      <description summary="make window a system modal">
+        Requests that the toplevel surface should become a system modal. The
+        compositor will prevent other windows from receiving events. If there
+        are multiple system modal surfaces, the compositor will decide which
+        one to receive events.
+      </description>
+    </request>
+
+    <request name="unset_system_modal" since="31">
+      <description summary="unset window system modal state">
+        Requests that the system modal state of the toplevel surface will be
+        unset. The compositor will then allow other windows to recieve events.
+      </description>
+    </request>
+
+    <request name="set_restore_info_with_window_id_source" since="32">
+      <description summary="set session id and restore window id source">
+      Request session id and restore id of the window. Set the information used by compositor to restore the toplevel surface state, such as window position, window state, upon creation. This is not double buffered and must be set before sending first commit. This is different from set_restore_info, used for clients that create multiple windows associated with restore_id_source.
+      </description>
+      <arg name="restore_session_id" type="int" summary="unique browser session id"/>
+      <arg name="restore_window_id_source" type="string" summary="restore window id source"/>
+    </request>
+
+    <request name="set_decoration" since="35">
+      <description summary="request a decoration for surface">
+        Clients are allowed to request a particular decoration for a
+        zaura_toplevel. The server is not required to honor this request. See
+        decoration_type for available options. Available since M105.
+      </description>
+      <arg name="type" type="uint" summary="the new frame type"/>
+    </request>
+
+    <enum name="decoration_type">
+      <description summary="different decoration types">
+	Decoration types are used to modify the surface (e.g. drop shadow).
+      </description>
+      <entry name="none" value="0" summary="no frame"/>
+      <entry name="normal" value="1" summary="caption with shadow"/>
+      <entry name="shadow" value="2" summary="shadow only"/>
+    </enum>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_toplevel">
+	Destroy this zaura_toplevel object. A client should call destroy when the role
+  is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
+
+    <!-- Version 39 additions -->
+    <request name="set_float" since="39">
+      <description summary="float the surface on top">
+        This is a request to place the surface above others.
+      </description>
+    </request>
+    <request name="unset_float" since="39">
+      <description summary="unset the surface float">
+        Request that the surface resets floating.
+      </description>
+    </request>
+
+    <!-- version 40 additions -->
+    <request name="set_z_order" since="40">
+      <description summary="set z order for window">
+        Sets the z order for a toplevel surface. See z_order_level for available options.
+      </description>
+      <arg name="z_order" type="uint" summary="z order value for the window"/>
+    </request>
+
+    <enum name="z_order_level">
+      <description summary="z order levels for windows">
+        Different z order levels that are used to set the z order for a toplevel surface.
+      </description>
+      <entry name="normal" value="0" summary="the default level for windows"/>
+      <entry name="floating_window" value="1" summary="a floating window z-ordered above other normal windows"/>
+      <entry name="floating_ui_element" value="2" summary="used to show non-window style UIs that are shown above floating windows"/>
+      <entry name="security_surface" value="3" summary="cannot be interfered with or covered up"/>
+    </enum>
+
+    <!-- version 41 additions -->
+    <request name="set_origin" since="41">
+      <description summary="set window position in DPs">
+         Request a new location for the surface in device-independent pixels
+         (DPs), relative to the top-left corner of the given output.
+
+         A null output means whichever output currently contains the surface.
+
+         These parameters are just a request and the compositor may ignore
+         them, adjust them due to rules imposed by the window manager, or
+         preserve them for future operations. For example, the compositor will
+         not allow a position outside of the output; or the compositor may just
+         store it if the toplevel surface is in maximized state, and may use it
+         upon unmaximize.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="output" type="object" interface="wl_output" allow-null="true"
+           summary="output to contain the surface"/>
+    </request>
+
+    <request name="activate" since="42">
+      <description summary="activates the window">
+        Activates this window. This is equivalent to bringing the window to the
+        foreground. The compositor is free to ignore this request if it deems
+        the client to be misbehaving.
+      </description>
+    </request>
+
+    <request name="deactivate" since="42">
+      <description summary="deactivates the window">
+        Deactivates this window. This is equivalent to requesting that the
+        window not be the foreground window. The exact behavior is
+        compositor-defined. The compositor is free to ignore this request
+        if it deems the client to be misbehaving.
+      </description>
+    </request>
+  </interface>
+
+  <interface name="zaura_popup" version="38">
+    <description summary="aura shell interface to the popup shell">
+      An interface to the popup shell, which allows the
+      client to access shell specific functionality.
+    </description>
+
+   <request name="surface_submission_in_pixel_coordinates" since="28">
+      <description summary="surface will be submitted in pixel coordinates">
+        Informs the server that when submitting this surface, this client will not
+        use wl_surface_set_buffer_scale to report the scales, nor will it apply
+        scale via vp_viewporter. Instead the server should apply an appropriate
+        scale transform for the submitted buffers to be composited correctly.
+      </description>
+    </request>
+
+    <request name="set_decoration" since="35">
+      <description summary="request a decoration for surface">
+        Clients are allowed to request a particular decoration for a
+        zaura_toplevel. The server is not required to honor this request. See
+        decoration_type for available options. Available since M105.
+      </description>
+      <arg name="type" type="uint" summary="the new frame type"/>
+    </request>
+
+    <enum name="decoration_type">
+      <description summary="different decoration types">
+	Decoration types are used to modify the surface (e.g. drop shadow).
+      </description>
+      <entry name="none" value="0" summary="no frame"/>
+      <entry name="normal" value="1" summary="caption with shadow"/>
+      <entry name="shadow" value="2" summary="shadow only"/>
+    </enum>
+
+    <request name="set_menu" since="37">
+      <description summary="set popup type to menu">
+        Set popup type to menu
+      </description>
+    </request>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_popup">
+	This request destroys the zaura_popup. A client should call destroy when the
+  role is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
+  </interface>
 </protocol>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import android.os.StrictMode;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
@@ -64,9 +65,8 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         String changeIntentAction = getRestrictionChangeIntentAction();
         if (changeIntentAction == null) return;
 
-        mContext.registerReceiver(mAppRestrictionsChangedReceiver,
-                new IntentFilter(changeIntentAction), null,
-                new Handler(ThreadUtils.getUiThreadLooper()));
+        ContextUtils.registerNonExportedBroadcastReceiver(mContext, mAppRestrictionsChangedReceiver,
+                new IntentFilter(changeIntentAction), new Handler(ThreadUtils.getUiThreadLooper()));
     }
 
     /**
@@ -86,7 +86,6 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
         long startTime = System.currentTimeMillis();
         final Bundle bundle = getApplicationRestrictions(mContext.getPackageName());
-        recordStartTimeHistogram(startTime);
         StrictMode.setThreadPolicy(policy);
 
         notifySettingsAvailable(bundle);
@@ -108,13 +107,6 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         }
     }
 
-    // Extracted to allow stubbing, since it calls a static that can't easily be stubbed
-    @VisibleForTesting
-    protected void recordStartTimeHistogram(long startTime) {
-        // TODO(aberent): Re-implement once we understand why the previous implementation was giving
-        // random crashes (https://crbug.com/535043)
-    }
-
     /**
      * Restrictions to be used during tests. Subsequent attempts to retrieve the restrictions will
      * return the provided bundle instead.
@@ -128,5 +120,10 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         Log.d(TAG, "Test Restrictions: %s",
                 (policies == null ? null : policies.keySet().toArray()));
         sTestRestrictions = policies;
+    }
+
+    /** Returns whether any restrictions were set using {@link #setTestRestrictions}. */
+    public static boolean hasTestRestrictions() {
+        return sTestRestrictions != null;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 template <typename T>
@@ -26,6 +26,9 @@ class AppModalDialogQueue {
 
   // Returns the singleton instance.
   static AppModalDialogQueue* GetInstance();
+
+  AppModalDialogQueue(const AppModalDialogQueue&) = delete;
+  AppModalDialogQueue& operator=(const AppModalDialogQueue&) = delete;
 
   // Adds a modal dialog to the queue. If there are no other dialogs in the
   // queue, the dialog will be shown immediately. Once it is shown, the
@@ -81,13 +84,11 @@ class AppModalDialogQueue {
 
   // The currently active app-modal dialog box. nullptr if there is no active
   // app-modal dialog box.
-  AppModalDialogController* active_dialog_;
+  raw_ptr<AppModalDialogController> active_dialog_;
 
   // Stores if |ShowModalDialog()| is currently being called on an app-modal
   // dialog.
   bool showing_modal_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogQueue);
 };
 
 }  // namespace javascript_dialogs

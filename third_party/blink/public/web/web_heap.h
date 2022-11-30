@@ -35,17 +35,17 @@
 
 namespace blink {
 
-class WebHeap {
+class BLINK_EXPORT WebHeap {
  public:
   using AllocationHook = void (*)(uint8_t*, size_t, const char*);
   using FreeHook = void (*)(uint8_t*);
 
   // These APIs are only for testing purposes and should not be used
   // outside of tests.
-  BLINK_EXPORT static void CollectGarbageForTesting();
-  BLINK_EXPORT static void CollectAllGarbageForTesting();
+  static void CollectGarbageForTesting();
+  static void CollectAllGarbageForTesting();
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_HEAP_H_

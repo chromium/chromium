@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,14 +87,16 @@ function run() {
    * and calls getFileTasks again.
    *
    * @param {string} entry File entry for which getFileTasks was called.
-   * @param {Array<Object>} tasks List of found task objects.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks List of
+   *     found task objects.
    */
 
-  function onGotNonDefaultTasks(entry, tasks) {
-    if (!tasks) {
+  function onGotNonDefaultTasks(entry, resultingTasks) {
+    if (!resultingTasks || !resultingTasks.tasks) {
       onError('Failed getting tasks for ' + entry.fullPath);
       return;
     }
+    const tasks = resultingTasks.tasks;
     if (tasks.length != 1) {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);
@@ -102,10 +104,11 @@ function run() {
     // Task could be default from an explicit file extension match
     // but if matched on MIME type we need to set the task as default
     chrome.fileManagerPrivate.setDefaultTask(
-        tasks[0].taskId, [entry], [],
-        function() {
+      tasks[0].descriptor, [entry], [], function() {
           if (chrome.runtime.lastError) {
-            onError('Failed to set a task to default: ' + tasks[0].taskId);
+            const {appId, taskType, actionId} = tasks[0].descriptor;
+            onError(`Failed to set a task to default: ${appId}|${taskType}|${
+                actionId}`);
             return;
           }
           chrome.fileManagerPrivate.getFileTasks([entry],
@@ -119,27 +122,31 @@ function run() {
    * are found, they are executed.
    *
    * @param {!Entry} entry File entry for which getFileTasks was called.
-   * @param {Array<Object>} tasks List of found task objects.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks List of
+   *     found task objects.
    */
-  function onGotTasks(entry, tasks) {
-    if (!tasks) {
+  function onGotTasks(entry, resultingTasks) {
+    if (!resultingTasks || !resultingTasks.tasks) {
       onError('Failed getting tasks for ' + entry.fullPath);
       return;
     }
+    const tasks = resultingTasks.tasks;
+
     if (tasks.length != 1) {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);
     }
+    const {appId, taskType, actionId} = tasks[0].descriptor;
+    const taskId = `${appId}|${taskType}|${actionId}`;
     if (!tasks[0].isDefault) {
-      onError('Task "' + tasks[0].taskId + '" is not default for "' +
-          entry.fullPath + '"');
+      onError(`Task "${taskId}" is not default for "${entry.fullPath}"`);
     }
 
-    foundTasks.push({id: tasks[0].taskId, entry: entry});
+    foundTasks.push({descriptor: tasks[0].descriptor, entry: entry});
 
     if (foundTasks.length == kTestPaths.length) {
       foundTasks.forEach(function(task) {
-        chrome.fileManagerPrivate.executeTask(task.id, [task.entry],
+        chrome.fileManagerPrivate.executeTask(task.descriptor, [task.entry],
             onExecuteTask.bind(null, task.entry));
       });
     }

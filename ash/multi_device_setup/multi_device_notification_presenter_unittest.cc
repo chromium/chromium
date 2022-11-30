@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -20,8 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/token.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/fake_message_center.h"
@@ -33,12 +33,17 @@ namespace {
 
 const char kTestUserEmail[] = "test@example.com";
 const char kTestHostDeviceName[] = "Test Device";
+const char16_t kTestHostDeviceName16[] = u"Test Device";
 // This is the expected return value from GetChromeOSDeviceName() in tests.
-const char kTestDeviceType[] = "Chrome device";
+const char16_t kTestDeviceType[] = u"Chrome device";
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
   TestMessageCenter() = default;
+
+  TestMessageCenter(const TestMessageCenter&) = delete;
+  TestMessageCenter& operator=(const TestMessageCenter&) = delete;
+
   ~TestMessageCenter() override = default;
 
   // message_center::FakeMessageCenter:
@@ -78,7 +83,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     EXPECT_TRUE(notification_);
     EXPECT_EQ(id, notification_->id());
     for (auto& observer : observer_list())
-      observer.OnNotificationClicked(id, base::nullopt, base::nullopt);
+      observer.OnNotificationClicked(id, absl::nullopt, absl::nullopt);
   }
 
   void ClickOnNotificationButton(const std::string& id,
@@ -86,13 +91,11 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     EXPECT_TRUE(notification_);
     EXPECT_EQ(id, notification_->id());
     for (auto& observer : observer_list())
-      observer.OnNotificationClicked(id, button_index, base::nullopt);
+      observer.OnNotificationClicked(id, button_index, absl::nullopt);
   }
 
  private:
   std::unique_ptr<message_center::Notification> notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenter);
 };
 
 }  // namespace
@@ -101,12 +104,17 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
  public:
   MultiDeviceNotificationPresenterTest() = default;
 
+  MultiDeviceNotificationPresenterTest(
+      const MultiDeviceNotificationPresenterTest&) = delete;
+  MultiDeviceNotificationPresenterTest& operator=(
+      const MultiDeviceNotificationPresenterTest&) = delete;
+
   void SetUp() override {
     fake_multidevice_setup_ =
-        std::make_unique<chromeos::multidevice_setup::FakeMultiDeviceSetup>();
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetup>();
     auto delegate = std::make_unique<TestShellDelegate>();
     delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
-        &chromeos::multidevice_setup::MultiDeviceSetupBase::BindReceiver,
+        &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
         base::Unretained(fake_multidevice_setup_.get())));
     NoSessionAshTestBase::SetUp(std::move(delegate));
 
@@ -220,8 +228,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
     std::u16string message = l10n_util::GetStringFUTF16(
-        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
-        base::ASCIIToUTF16(kTestDeviceType));
+        IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE, kTestDeviceType);
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());
   }
@@ -287,7 +294,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
   TestSystemTrayClient* test_system_tray_client_;
   TestMessageCenter test_message_center_;
-  std::unique_ptr<chromeos::multidevice_setup::FakeMultiDeviceSetup>
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetup>
       fake_multidevice_setup_;
   std::unique_ptr<MultiDeviceNotificationPresenter> notification_presenter_;
 
@@ -306,25 +313,25 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
             IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_TITLE);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::
           kExistingUserHostSwitchedNotificationVisible:
         title = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_TITLE,
-            base::ASCIIToUTF16(kTestHostDeviceName));
+            kTestHostDeviceName16);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::
           kExistingUserNewChromebookNotificationVisible:
         title = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_TITLE,
-            base::ASCIIToUTF16(kTestHostDeviceName));
+            kTestHostDeviceName16);
         message = l10n_util::GetStringFUTF16(
             IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_MESSAGE,
-            base::ASCIIToUTF16(kTestDeviceType));
+            kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::kNoNotificationVisible:
         NOTREACHED();
@@ -332,8 +339,6 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceNotificationPresenterTest);
 };
 
 TEST_F(MultiDeviceNotificationPresenterTest, NotSignedIntoAccount) {

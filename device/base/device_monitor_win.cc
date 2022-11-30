@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/message_window.h"
@@ -59,6 +58,10 @@ class DeviceMonitorMessageWindow {
     return g_message_window;
   }
 
+  DeviceMonitorMessageWindow(const DeviceMonitorMessageWindow&) = delete;
+  DeviceMonitorMessageWindow& operator=(const DeviceMonitorMessageWindow&) =
+      delete;
+
   DeviceMonitorWin* GetForDeviceInterface(const GUID& device_interface) {
     std::unique_ptr<DeviceMonitorWin>& device_monitor =
         device_monitors_[device_interface];
@@ -83,7 +86,7 @@ class DeviceMonitorMessageWindow {
   }
 
   bool Init() {
-    window_.reset(new base::win::MessageWindow());
+    window_ = std::make_unique<base::win::MessageWindow>();
     if (!window_->CreateNamed(
             base::BindRepeating(&DeviceMonitorMessageWindow::HandleMessage,
                                 base::Unretained(this)),
@@ -150,8 +153,6 @@ class DeviceMonitorMessageWindow {
   DeviceMonitorWin all_device_monitor_;
   std::unique_ptr<base::win::MessageWindow> window_;
   HDEVNOTIFY notify_handle_ = NULL;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorMessageWindow);
 };
 
 void DeviceMonitorWin::Observer::OnDeviceAdded(

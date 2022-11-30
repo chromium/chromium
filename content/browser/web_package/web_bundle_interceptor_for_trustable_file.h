@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,7 @@ class WebBundleInterceptorForTrustableFile final
   std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory_;
 
   GURL primary_url_;
-  web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
+  absl::optional<std::string> metadata_error_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

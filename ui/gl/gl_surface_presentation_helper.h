@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define UI_GL_GL_SURFACE_PRESENTATION_HELPER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"
@@ -35,16 +35,18 @@ class GL_EXPORT GLSurfacePresentationHelper {
     ScopedSwapBuffers(GLSurfacePresentationHelper* helper,
                       GLSurface::PresentationCallback callback,
                       int frame_id);
+
+    ScopedSwapBuffers(const ScopedSwapBuffers&) = delete;
+    ScopedSwapBuffers& operator=(const ScopedSwapBuffers&) = delete;
+
     ~ScopedSwapBuffers();
 
     void set_result(gfx::SwapResult result) { result_ = result; }
     gfx::SwapResult result() const { return result_; }
 
    private:
-    GLSurfacePresentationHelper* const helper_;
+    const raw_ptr<GLSurfacePresentationHelper> helper_;
     gfx::SwapResult result_ = gfx::SwapResult::SWAP_ACK;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSwapBuffers);
   };
 
   explicit GLSurfacePresentationHelper(gfx::VSyncProvider* vsync_provider);
@@ -52,6 +54,11 @@ class GL_EXPORT GLSurfacePresentationHelper {
   // For using fixed VSync provider.
   GLSurfacePresentationHelper(const base::TimeTicks timebase,
                               const base::TimeDelta interval);
+
+  GLSurfacePresentationHelper(const GLSurfacePresentationHelper&) = delete;
+  GLSurfacePresentationHelper& operator=(const GLSurfacePresentationHelper&) =
+      delete;
+
   ~GLSurfacePresentationHelper();
 
   void OnMakeCurrent(GLContext* context, GLSurface* surface);
@@ -83,6 +90,7 @@ class GL_EXPORT GLSurfacePresentationHelper {
   bool GetFrameTimestampInfoIfAvailable(const Frame& frame,
                                         base::TimeTicks* timestamp,
                                         base::TimeDelta* interval,
+                                        base::TimeTicks* writes_done,
                                         uint32_t* flags);
 
   // Check |pending_frames_| and run presentation callbacks.
@@ -97,21 +105,19 @@ class GL_EXPORT GLSurfacePresentationHelper {
 
   void ScheduleCheckPendingFrames(bool align_with_next_vsync);
 
-  gfx::VSyncProvider* const vsync_provider_;
+  const raw_ptr<gfx::VSyncProvider> vsync_provider_;
   scoped_refptr<GLContext> gl_context_;
-  GLSurface* surface_ = nullptr;
+  raw_ptr<GLSurface> surface_ = nullptr;
   scoped_refptr<GPUTimingClient> gpu_timing_client_;
   base::circular_deque<Frame> pending_frames_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
   bool check_pending_frame_scheduled_ = false;
   bool gl_fence_supported_ = false;
-  EGLTimestampClient* egl_timestamp_client_ = nullptr;
+  raw_ptr<EGLTimestampClient> egl_timestamp_client_ = nullptr;
   bool update_vsync_pending_ = false;
 
   base::WeakPtrFactory<GLSurfacePresentationHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfacePresentationHelper);
 };
 
 }  // namespace gl

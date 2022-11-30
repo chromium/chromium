@@ -1,12 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_TEST_TEST_UTILS_H_
 #define UI_COMPOSITOR_TEST_TEST_UTILS_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -26,9 +26,9 @@ void CheckApproximatelyEqual(const gfx::RoundedCornersF& lhs,
 
 // Runs a RunLoop until the next frame is presented with an optional timeout.
 // Returns true if a frame is presented. Otherwise, returns false.
-bool WaitForNextFrameToBePresented(
+[[nodiscard]] bool WaitForNextFrameToBePresented(
     ui::Compositor* compositor,
-    base::Optional<base::TimeDelta> timeout = base::nullopt) WARN_UNUSED_RESULT;
+    absl::optional<base::TimeDelta> timeout = absl::nullopt);
 
 }  // namespace ui
 

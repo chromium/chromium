@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <size
+                android:width="@dimen/quick_action_search_widget_dino_size"
+                android:height="@dimen/quick_action_search_widget_dino_size" />
+            <corners android:radius="@dimen/quick_action_search_widget_dino_corner_radius" />
+            <solid android:color="@color/default_chip_ripple_color" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/default_bg_color_baseline" />
+            <size
+                android:width="@dimen/quick_action_search_widget_dino_size"
+                android:height="@dimen/quick_action_search_widget_dino_size" />
+            <corners android:radius="@dimen/quick_action_search_widget_dino_corner_radius" />
+        </shape>
+    </item>
+</ripple>

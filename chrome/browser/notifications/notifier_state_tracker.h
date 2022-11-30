@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #endif
@@ -70,7 +71,7 @@ class NotifierStateTracker : public KeyedService
 #endif
 
   // The profile which owns this object.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Prefs listener for disabled_extension_id.
   StringListPrefMember disabled_extension_id_pref_;
@@ -80,9 +81,9 @@ class NotifierStateTracker : public KeyedService
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // An observer to listen when extension is uninstalled.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 #endif
 };
 

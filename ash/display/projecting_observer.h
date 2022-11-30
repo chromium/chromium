@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace ash {
@@ -19,6 +18,10 @@ class ASH_EXPORT ProjectingObserver
   // |display_configurator| must outlive this instance. May be null in tests.
   explicit ProjectingObserver(
       display::DisplayConfigurator* display_configurator);
+
+  ProjectingObserver(const ProjectingObserver&) = delete;
+  ProjectingObserver& operator=(const ProjectingObserver&) = delete;
+
   ~ProjectingObserver() override;
 
   // DisplayConfigurator::Observer implementation:
@@ -27,6 +30,9 @@ class ASH_EXPORT ProjectingObserver
 
   // ash::ShellObserver implementation:
   void OnCastingSessionStartedOrStopped(bool started) override;
+
+  // Returns whether device is projecting (docked).
+  bool is_projecting() const { return is_projecting_; }
 
  private:
   friend class ProjectingObserverTest;
@@ -46,7 +52,7 @@ class ASH_EXPORT ProjectingObserver
   // Number of outstanding casting sessions.
   int casting_session_count_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(ProjectingObserver);
+  bool is_projecting_ = false;
 };
 
 }  // namespace ash

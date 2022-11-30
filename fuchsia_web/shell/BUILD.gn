@@ -1,0 +1,136 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//build/config/fuchsia/generate_runner_scripts.gni")
+import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+
+# Nothing else should depend on these targets except the final component.
+visibility = [ ":*" ]
+
+group("shell") {
+  testonly = true
+  visibility += [
+    "//chrome/test:*",
+    "//content/test:*",
+    "//fuchsia_web:gn_all",
+  ]
+  deps = [
+    ":cast_streaming_shell",
+    ":web_engine_shell",
+  ]
+}
+
+source_set("remote_debugging_port") {
+  sources = [
+    "remote_debugging_port.cc",
+    "remote_debugging_port.h",
+  ]
+  deps = [ "//base" ]
+}
+
+fuchsia_component("web_engine_shell_component") {
+  testonly = true
+  manifest = "web_engine_shell.cmx"
+  data_deps = [ ":web_engine_shell_exec" ]
+}
+
+fuchsia_package("web_engine_shell_pkg") {
+  testonly = true
+
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
+  package_name = "web_engine_shell"
+  deps = [ ":web_engine_shell_component" ]
+}
+
+fuchsia_package_installer("web_engine_shell") {
+  testonly = true
+  package = ":web_engine_shell_pkg"
+  package_name = "web_engine_shell"
+  package_deps = [
+    [
+      "//fuchsia_web/webengine:web_engine",
+      "web_engine",
+    ],
+    [
+      "//fuchsia_web/webengine:web_engine_with_webui",
+      "web_engine_with_webui",
+    ],
+  ]
+}
+
+executable("web_engine_shell_exec") {
+  testonly = true
+  sources = [ "web_engine_shell.cc" ]
+
+  data = [ "data" ]
+
+  deps = [
+    ":remote_debugging_port",
+    "//base",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webinstance_host/",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//url",
+  ]
+}
+
+fuchsia_component("cast_streaming_shell_component") {
+  testonly = true
+  manifest = "cast_streaming_shell.cmx"
+  data_deps = [ ":cast_streaming_shell_exe" ]
+}
+
+fuchsia_package("cast_streaming_shell_pkg") {
+  testonly = true
+  package_name = "cast_streaming_shell"
+  deps = [ ":cast_streaming_shell_component" ]
+}
+
+fuchsia_package_installer("cast_streaming_shell") {
+  testonly = true
+  package = ":cast_streaming_shell_pkg"
+  package_name = "cast_streaming_shell"
+  package_deps = [ [
+        "//fuchsia_web/webengine:web_engine",
+        "web_engine",
+      ] ]
+}
+
+executable("cast_streaming_shell_exe") {
+  testonly = true
+  sources = [ "cast_streaming_shell.cc" ]
+
+  data = [
+    "cast_streaming_shell_data",
+    rebase_path("//media/test/data/bear-1280x720.ivf"),
+  ]
+
+  deps = [
+    ":remote_debugging_port",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast/message_port:message_port",
+    "//components/cast_streaming/test:test_sender_using_net_sockets",
+    "//fuchsia_web/cast_streaming",
+    "//fuchsia_web/common",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine:switches",
+    "//fuchsia_web/webinstance_host",
+    "//media",
+    "//media/gpu/test:test_helpers",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//url",
+  ]
+}

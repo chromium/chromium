@@ -34,7 +34,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -58,11 +57,12 @@ class JSONObject;
 
 class PLATFORM_EXPORT JSONValue {
   USING_FAST_MALLOC(JSONValue);
-  DISALLOW_COPY_AND_ASSIGN(JSONValue);
 
  public:
   static const int kMaxDepth = 1000;
 
+  JSONValue(const JSONValue&) = delete;
+  JSONValue& operator=(const JSONValue&) = delete;
   virtual ~JSONValue() = default;
 
   static std::unique_ptr<JSONValue> Null() {
@@ -229,6 +229,12 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
     if (!value || value->GetType() != kTypeArray)
       return nullptr;
     return static_cast<JSONArray*>(value);
+  }
+
+  static const JSONArray* Cast(const JSONValue* value) {
+    if (!value || value->GetType() != kTypeArray)
+      return nullptr;
+    return static_cast<const JSONArray*>(value);
   }
 
   static std::unique_ptr<JSONArray> From(std::unique_ptr<JSONValue> value) {

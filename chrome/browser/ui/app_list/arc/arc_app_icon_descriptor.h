@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 
 struct ArcAppIconDescriptor {
-  ArcAppIconDescriptor(int dip_size, ui::ScaleFactor scale_factor);
+  ArcAppIconDescriptor(int dip_size, ui::ResourceScaleFactor scale_factor);
 
   // Returns raw icon size in pixels.
   int GetSizeInPixels() const;
@@ -26,7 +26,7 @@ struct ArcAppIconDescriptor {
   bool operator<(const ArcAppIconDescriptor& other) const;
 
   int dip_size;
-  ui::ScaleFactor scale_factor;
+  ui::ResourceScaleFactor scale_factor;
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_ICON_DESCRIPTOR_H_

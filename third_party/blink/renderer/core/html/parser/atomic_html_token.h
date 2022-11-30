@@ -28,15 +28,103 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+
+// TODO(https://crbug.com/1338583): enable on android.
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/core/html_element_attribute_name_lookup_trie.h"  // nogncheck
+#endif
 
 namespace blink {
+
+// Controls whether attribute name lookup uses LookupHTMLAttributeName().
+CORE_EXPORT extern bool g_use_html_attribute_name_lookup;
+
+class AtomicHTMLToken;
+
+// HTMLTokenName represents a parsed token name (the local name of a
+// QualifiedName). The token name contains the local name as an AtomicString and
+// if the name is a valid html tag name, an HTMLTag. As this class is created
+// from tokenized input, it does not know the namespace, the namespace is
+// determined later in parsing (see HTMLTreeBuilder and HTMLStackItem).
+class CORE_EXPORT HTMLTokenName {
+ public:
+  explicit HTMLTokenName(html_names::HTMLTag tag) : tag_(tag) {
+    if (tag != html_names::HTMLTag::kUnknown)
+      local_name_ = html_names::TagToQualifedName(tag).LocalName();
+  }
+
+  // Returns an HTMLTokenName for the specified string. This function looks up
+  // the HTMLTag from the supplied string.
+  static HTMLTokenName FromLocalName(const AtomicString& local_name) {
+    if (local_name.empty())
+      return HTMLTokenName(html_names::HTMLTag::kUnknown);
+
+    if (local_name.Is8Bit()) {
+      return HTMLTokenName(
+          lookupHTMLTag(local_name.Characters8(), local_name.length()),
+          local_name);
+    }
+    return HTMLTokenName(
+        lookupHTMLTag(local_name.Characters16(), local_name.length()),
+        local_name);
+  }
+
+  bool operator==(const HTMLTokenName& other) const {
+    return other.local_name_ == local_name_;
+  }
+
+  bool IsValidHTMLTag() const { return tag_ != html_names::HTMLTag::kUnknown; }
+
+  html_names::HTMLTag GetHTMLTag() const { return tag_; }
+
+  const AtomicString& GetLocalName() const { return local_name_; }
+
+ private:
+  // For access to constructor.
+  friend class AtomicHTMLToken;
+
+  explicit HTMLTokenName(html_names::HTMLTag tag, const AtomicString& name)
+      : tag_(tag), local_name_(name) {
+#if DCHECK_IS_ON()
+    if (tag == html_names::HTMLTag::kUnknown) {
+      // If the tag is unknown, then `name` must either be empty, or not
+      // identify any other HTMLTag.
+      if (!name.empty()) {
+        if (name.Is8Bit()) {
+          DCHECK_EQ(html_names::HTMLTag::kUnknown,
+                    lookupHTMLTag(name.Characters8(), name.length()));
+        } else {
+          DCHECK_EQ(html_names::HTMLTag::kUnknown,
+                    lookupHTMLTag(name.Characters16(), name.length()));
+        }
+      }
+    }
+#endif
+  }
+
+  // This constructor is intended for use by AtomicHTMLToken when it is known
+  // the string is not a known html tag.
+  explicit HTMLTokenName(const AtomicString& name)
+      : HTMLTokenName(html_names::HTMLTag::kUnknown, name) {}
+
+  // Store both the tag and the name. The tag is enough to lookup the name, but
+  // enough code makes use of the name that's it's worth caching (this performs
+  // a bit better than using a variant for the two and looking up on demand).
+  html_names::HTMLTag tag_;
+  AtomicString local_name_;
+};
 
 class CORE_EXPORT AtomicHTMLToken {
   STACK_ALLOCATED();
@@ -49,15 +137,22 @@ class CORE_EXPORT AtomicHTMLToken {
 
   HTMLToken::TokenType GetType() const { return type_; }
 
+  // TODO(sky): for consistency, rename to GetLocalName().
   const AtomicString& GetName() const {
     DCHECK(UsesName());
-    return name_;
+    return name_.GetLocalName();
   }
 
-  void SetName(const AtomicString& name) {
+  void SetTokenName(const HTMLTokenName& name) {
     DCHECK(UsesName());
     name_ = name;
   }
+
+  html_names::HTMLTag GetHTMLTag() const { return name_.GetHTMLTag(); }
+
+  bool IsValidHTMLTag() const { return name_.IsValidHTMLTag(); }
+
+  const HTMLTokenName& GetTokenName() const { return name_; }
 
   bool SelfClosing() const {
     DCHECK(type_ == HTMLToken::kStartTag || type_ == HTMLToken::kEndTag);
@@ -71,12 +166,12 @@ class CORE_EXPORT AtomicHTMLToken {
     return FindAttributeInVector(attributes_, attribute_name);
   }
 
-  Vector<Attribute>& Attributes() {
+  Vector<Attribute, kAttributePrealloc>& Attributes() {
     DCHECK(UsesAttributes());
     return attributes_;
   }
 
-  const Vector<Attribute>& Attributes() const {
+  const Vector<Attribute, kAttributePrealloc>& Attributes() const {
     DCHECK(UsesAttributes());
     return attributes_;
   }
@@ -103,13 +198,13 @@ class CORE_EXPORT AtomicHTMLToken {
     return doctype_data_->system_identifier_;
   }
 
-  explicit AtomicHTMLToken(HTMLToken& token) : type_(token.GetType()) {
+  explicit AtomicHTMLToken(HTMLToken& token)
+      : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
       case HTMLToken::kUninitialized:
         NOTREACHED();
         break;
       case HTMLToken::DOCTYPE:
-        name_ = AtomicString(token.GetName());
         doctype_data_ = token.ReleaseDoctypeData();
         break;
       case HTMLToken::kEndOfFile:
@@ -117,94 +212,95 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kStartTag:
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
-        if (const AtomicString& tag_name =
-                lookupHTMLTag(token.GetName().data(), token.GetName().size()))
-          name_ = tag_name;
-        else
-          name_ = AtomicString(token.GetName());
-        InitializeAttributes(token.Attributes());
+        const HTMLToken::AttributeList& attributes = token.Attributes();
+
+        // This limit is set fairly arbitrarily; the main point is to avoid
+        // DDoS opportunities or similar with O(n²) behavior by setting lots
+        // of attributes.
+        const int kMinimumNumAttributesToDedupWithHash = 10;
+
+        if (attributes.size() >= kMinimumNumAttributesToDedupWithHash) {
+          InitializeAttributes</*DedupWithHash=*/true>(token.Attributes());
+        } else if (attributes.size()) {
+          InitializeAttributes</*DedupWithHash=*/false>(token.Attributes());
+        }
         break;
       }
       case HTMLToken::kCharacter:
       case HTMLToken::kComment:
         if (token.IsAll8BitData())
-          data_ = String::Make8BitFrom16BitSource(token.Data());
+          data_ = token.Data().AsString8();
         else
-          data_ = String(token.Data());
+          data_ = token.Data().AsString();
         break;
     }
   }
 
-  explicit AtomicHTMLToken(const CompactHTMLToken& token)
-      : type_(token.GetType()) {
-    switch (type_) {
-      case HTMLToken::kUninitialized:
-        NOTREACHED();
-        break;
-      case HTMLToken::DOCTYPE:
-        name_ = AtomicString(token.Data());
-        doctype_data_ = std::make_unique<DoctypeData>();
-        doctype_data_->has_public_identifier_ = true;
-        token.PublicIdentifier().AppendTo(doctype_data_->public_identifier_);
-        doctype_data_->has_system_identifier_ = true;
-        token.SystemIdentifier().AppendTo(doctype_data_->system_identifier_);
-        doctype_data_->force_quirks_ = token.DoctypeForcesQuirks();
-        break;
-      case HTMLToken::kEndOfFile:
-        break;
-      case HTMLToken::kStartTag:
-        attributes_.ReserveInitialCapacity(token.Attributes().size());
-        for (const CompactHTMLToken::Attribute& attribute :
-             token.Attributes()) {
-          QualifiedName name(g_null_atom, AtomicString(attribute.GetName()),
-                             g_null_atom);
-          // FIXME: This is N^2 for the number of attributes.
-          if (!FindAttributeInVector(attributes_, name)) {
-            attributes_.push_back(
-                Attribute(name, AtomicString(attribute.Value())));
-          } else {
-            duplicate_attribute_ = true;
-          }
-        }
-        FALLTHROUGH;
-      case HTMLToken::kEndTag:
-        self_closing_ = token.SelfClosing();
-        name_ = AtomicString(token.Data());
-        break;
-      case HTMLToken::kCharacter:
-      case HTMLToken::kComment:
-        data_ = token.Data();
-        break;
-    }
-  }
-
-  explicit AtomicHTMLToken(HTMLToken::TokenType type) : type_(type) {}
+  explicit AtomicHTMLToken(HTMLToken::TokenType type)
+      : type_(type), name_(html_names::HTMLTag::kUnknown) {}
 
   AtomicHTMLToken(HTMLToken::TokenType type,
-                  const AtomicString& name,
+                  html_names::HTMLTag tag,
                   const Vector<Attribute>& attributes = Vector<Attribute>())
-      : type_(type),
-        name_(name),
-        attributes_(attributes) {
+      : type_(type), name_(tag), attributes_(attributes) {
     DCHECK(UsesName());
   }
+
+  AtomicHTMLToken(HTMLToken::TokenType type,
+                  const HTMLTokenName& name,
+                  const Vector<Attribute>& attributes = Vector<Attribute>())
+      : type_(type), name_(name), attributes_(attributes) {
+    DCHECK(UsesName());
+  }
+
+  AtomicHTMLToken(const AtomicHTMLToken&) = delete;
+  AtomicHTMLToken& operator=(const AtomicHTMLToken&) = delete;
 
 #ifndef NDEBUG
   void Show() const;
 #endif
 
  private:
-  HTMLToken::TokenType type_;
+  static HTMLTokenName HTMLTokenNameFromToken(const HTMLToken& token) {
+    switch (token.GetType()) {
+      case HTMLToken::DOCTYPE:
+        // Doctype name may be empty, but not start/end tags.
+        if (token.GetName().IsEmpty())
+          return HTMLTokenName(html_names::HTMLTag::kUnknown);
+        [[fallthrough]];
+      case HTMLToken::kStartTag:
+      case HTMLToken::kEndTag: {
+        const html_names::HTMLTag html_tag =
+            lookupHTMLTag(token.GetName().data(), token.GetName().size());
+        if (html_tag != html_names::HTMLTag::kUnknown)
+          return HTMLTokenName(html_tag);
+        return HTMLTokenName(token.GetName().AsAtomicString());
+      }
+      default:
+        return HTMLTokenName(html_names::HTMLTag::kUnknown);
+    }
+  }
 
-  void InitializeAttributes(const HTMLToken::AttributeList& attributes);
-  QualifiedName NameForAttribute(const HTMLToken::Attribute&) const;
+  // Sets up and deduplicates attributes.
+  //
+  // We can deduplicate attributes in two ways; using a hash table
+  // (DedupWithHash=true) or by simple linear scanning (DedupWithHash=false).
+  // If we don't have many attributes, the linear scan is cheaper than
+  // setting up and searching in a hash table, even though the big-O
+  // complexity is higher. Thus, we use the hash table only if the caller
+  // expects a lot of attributes.
+  template <bool DedupWithHash>
+  ALWAYS_INLINE void InitializeAttributes(
+      const HTMLToken::AttributeList& attributes);
 
   bool UsesName() const;
 
   bool UsesAttributes() const;
 
+  HTMLToken::TokenType type_;
+
   // "name" for DOCTYPE, StartTag, and EndTag
-  AtomicString name_;
+  HTMLTokenName name_;
 
   // "data" for Comment, "characters" for Character
   String data_;
@@ -217,43 +313,69 @@ class CORE_EXPORT AtomicHTMLToken {
 
   bool duplicate_attribute_ = false;
 
-  Vector<Attribute> attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicHTMLToken);
+  Vector<Attribute, kAttributePrealloc> attributes_;
 };
 
-inline void AtomicHTMLToken::InitializeAttributes(
+template <bool DedupWithHash>
+void AtomicHTMLToken::InitializeAttributes(
     const HTMLToken::AttributeList& attributes) {
   wtf_size_t size = attributes.size();
-  if (!size)
-    return;
 
-  attributes_.clear();
+  // Track which attributes have already been inserted to avoid N^2
+  // behavior with repeated linear searches when populating `attributes_`.
+  std::conditional_t<DedupWithHash, HashSet<AtomicString>, int>
+      added_attributes;
+  if constexpr (DedupWithHash) {
+    added_attributes.ReserveCapacityForSize(size);
+  }
+
+  // This is only called once, so `attributes_` should be empty.
+  DCHECK(attributes_.empty());
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
-    if (attribute.NameAsVector().IsEmpty())
+    if (attribute.NameIsEmpty())
       continue;
 
+#if DCHECK_IS_ON()
     attribute.NameRange().CheckValid();
     attribute.ValueRange().CheckValid();
+#endif
 
-    AtomicString value(attribute.ValueAsVector());
-    // attribute.ValueAsVector.data() is null for attributes with no values, but
+    QualifiedName name = g_null_name;
+#if !BUILDFLAG(IS_ANDROID)
+    if (g_use_html_attribute_name_lookup) {
+      name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
+                                     attribute.NameBuffer().size());
+    }
+#endif
+    if (name == g_null_name) {
+      name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
+    }
+
+    if constexpr (DedupWithHash) {
+      if (!added_attributes.insert(name.LocalName()).is_new_entry) {
+        duplicate_attribute_ = true;
+        continue;
+      }
+    } else {
+      if (base::Contains(attributes_, name.LocalName(),
+                         &Attribute::LocalName)) {
+        duplicate_attribute_ = true;
+        continue;
+      }
+    }
+
+    // The string pointer in |value| is null for attributes with no values, but
     // the null atom is used to represent absence of attributes; attributes with
     // no values have the value set to an empty atom instead.
-    if (value == g_null_atom) {
+    AtomicString value(attribute.GetValue());
+    if (value.IsNull()) {
       value = g_empty_atom;
     }
-    const QualifiedName& name = NameForAttribute(attribute);
-    // FIXME: This is N^2 for the number of attributes.
-    if (!FindAttributeInVector(attributes_, name)) {
-      attributes_.push_back(Attribute(name, value));
-    } else {
-      duplicate_attribute_ = true;
-    }
+    attributes_.UncheckedAppend(Attribute(std::move(name), std::move(value)));
   }
 }
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_ATOMIC_HTML_TOKEN_H_

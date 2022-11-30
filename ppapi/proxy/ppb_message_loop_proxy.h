@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ppapi/proxy/interface_proxy.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/ppb_message_loop_shared.h"
@@ -31,6 +30,10 @@ class PPAPI_PROXY_EXPORT MessageLoopResource : public MessageLoopShared {
   // Construct the one MessageLoopResource for the main thread. This must be
   // invoked on the main thread.
   explicit MessageLoopResource(ForMainThread);
+
+  MessageLoopResource(const MessageLoopResource&) = delete;
+  MessageLoopResource& operator=(const MessageLoopResource&) = delete;
+
   ~MessageLoopResource() override;
 
   // Resource overrides.
@@ -113,19 +116,18 @@ class PPAPI_PROXY_EXPORT MessageLoopResource : public MessageLoopShared {
   // created (when it's associated with a thread), we keep tasks posted here
   // until that happens. Once the loop_ is created, this is unused.
   std::vector<TaskInfo> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopResource);
 };
 
 class PPB_MessageLoop_Proxy : public InterfaceProxy {
  public:
   explicit PPB_MessageLoop_Proxy(Dispatcher* dispatcher);
+
+  PPB_MessageLoop_Proxy(const PPB_MessageLoop_Proxy&) = delete;
+  PPB_MessageLoop_Proxy& operator=(const PPB_MessageLoop_Proxy&) = delete;
+
   ~PPB_MessageLoop_Proxy() override;
 
   static const PPB_MessageLoop_1_0* GetInterface();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PPB_MessageLoop_Proxy);
 };
 
 }  // namespace proxy

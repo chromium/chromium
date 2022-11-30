@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_OFFLOADING_VIDEO_DECODER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
@@ -85,10 +84,13 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
   OffloadingVideoDecoder(int min_offloading_width,
                          std::vector<VideoCodec> supported_codecs,
                          std::unique_ptr<OffloadableVideoDecoder> decoder);
+
+  OffloadingVideoDecoder(const OffloadingVideoDecoder&) = delete;
+  OffloadingVideoDecoder& operator=(const OffloadingVideoDecoder&) = delete;
+
   ~OffloadingVideoDecoder() override;
 
   // VideoDecoder implementation.
-  bool IsOptimizedForRTC() const override;
   VideoDecoderType GetDecoderType() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
@@ -124,8 +126,6 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<OffloadingVideoDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OffloadingVideoDecoder);
 };
 
 }  // namespace media

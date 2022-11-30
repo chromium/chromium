@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -34,10 +35,12 @@ std::unique_ptr<Notification> CreateNotification(bool wifi_enabled) {
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kWifiToggleNotificationId,
       std::u16string(), l10n_util::GetStringUTF16(string_id),
-      gfx::Image(network_icon::GetImageForWiFiEnabledState(wifi_enabled)),
+      ui::ImageModel::FromImageSkia(
+          network_icon::GetImageForWiFiEnabledState(wifi_enabled)),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierWifiToggle),
+                                 kNotifierWifiToggle,
+                                 NotificationCatalogName::kWifiToggle),
       message_center::RichNotificationData(), nullptr);
   return notification;
 }
@@ -67,8 +70,9 @@ void WifiToggleNotificationController::RequestToggleWifi() {
   if (!wifi)
     return;
   bool enabled = wifi->device_state == DeviceStateType::kEnabled;
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      enabled ? UMA_STATUS_AREA_DISABLE_WIFI : UMA_STATUS_AREA_ENABLE_WIFI);
+  base::RecordAction(
+      enabled ? base::UserMetricsAction("StatusArea_Network_WifiDisabled")
+              : base::UserMetricsAction("StatusArea_Network_WifiEnabled"));
   model->SetNetworkTypeEnabledState(NetworkType::kWiFi, !enabled);
 
   // Create a new notification with the new state.

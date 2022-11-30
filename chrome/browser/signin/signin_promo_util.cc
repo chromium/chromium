@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,8 @@ bool ShouldShowPromo(Profile* profile) {
   // primary profile.
   Profile* original_profile = profile->GetOriginalProfile();
 
-  // Don't show for supervised profiles.
-  if (original_profile->IsSupervised())
+  // Don't show for supervised child profiles.
+  if (original_profile->IsChild())
     return false;
 
   // Don't show if sign-in is not allowed.

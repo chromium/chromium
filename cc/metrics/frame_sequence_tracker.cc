@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -33,7 +36,14 @@
 
 namespace cc {
 
-using ThreadType = FrameSequenceMetrics::ThreadType;
+namespace {
+
+constexpr char kTraceCategory[] =
+    "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
+
+}  // namespace
+
+using ThreadType = FrameInfo::SmoothEffectDrivingThread;
 
 // In the |TRACKER_TRACE_STREAM|, we mod the numbers such as frame sequence
 // number, or frame token, such that the debug string is not too long.
@@ -64,6 +74,10 @@ const char* FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
       return "CanvasAnimation";
     case FrameSequenceTrackerType::kJSAnimation:
       return "JSAnimation";
+    case FrameSequenceTrackerType::kSETMainThreadAnimation:
+      return "SETMainThreadAnimation";
+    case FrameSequenceTrackerType::kSETCompositorAnimation:
+      return "SETCompositorAnimation";
     case FrameSequenceTrackerType::kMaxType:
       return "";
   }
@@ -81,7 +95,7 @@ FrameSequenceTracker::FrameSequenceTracker(
   // TODO(crbug.com/1158439): remove the trace event once the validation is
   // completed.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
+      kTraceCategory, "TrackerValidation", TRACE_ID_LOCAL(this),
       base::TimeTicks::Now(), "name", GetFrameSequenceTrackerTypeName(type));
 }
 
@@ -97,9 +111,10 @@ FrameSequenceTracker::FrameSequenceTracker(
 }
 
 FrameSequenceTracker::~FrameSequenceTracker() {
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
-      base::TimeTicks::Now());
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
+      kTraceCategory, "TrackerValidation", TRACE_ID_LOCAL(this),
+      base::TimeTicks::Now(), "aborted_main", aborted_main_frame_,
+      "no_damage_main", no_damage_draw_main_frames_);
   CleanUp();
 }
 
@@ -142,7 +157,8 @@ void FrameSequenceTracker::ReportBeginImplFrame(
   DCHECK(!compositor_frame_submitted_) << TRACKER_DCHECK_MSG;
 
   UpdateTrackedFrameData(&begin_impl_frame_data_, args.frame_id.source_id,
-                         args.frame_id.sequence_number);
+                         args.frame_id.sequence_number,
+                         args.frames_throttled_since_last);
   impl_throughput().frames_expected +=
       begin_impl_frame_data_.previous_sequence_delta;
 #if DCHECK_IS_ON()
@@ -183,12 +199,12 @@ void FrameSequenceTracker::ReportBeginMainFrame(
   }
 #endif
 
-  DCHECK_EQ(awaiting_main_response_sequence_, 0u) << TRACKER_DCHECK_MSG;
   last_processed_main_sequence_latency_ = 0;
-  awaiting_main_response_sequence_ = args.frame_id.sequence_number;
+  pending_main_sequences_.push_back(args.frame_id.sequence_number);
 
   UpdateTrackedFrameData(&begin_main_frame_data_, args.frame_id.source_id,
-                         args.frame_id.sequence_number);
+                         args.frame_id.sequence_number,
+                         args.frames_throttled_since_last);
   if (!first_received_main_sequence_ ||
       first_received_main_sequence_ <= last_no_main_damage_sequence_) {
     first_received_main_sequence_ = args.frame_id.sequence_number;
@@ -228,16 +244,11 @@ void FrameSequenceTracker::ReportMainFrameProcessed(
 
   if (first_received_main_sequence_ &&
       args.frame_id.sequence_number >= first_received_main_sequence_) {
-    if (awaiting_main_response_sequence_) {
-      DCHECK_EQ(awaiting_main_response_sequence_, args.frame_id.sequence_number)
-          << TRACKER_DCHECK_MSG;
-    }
     DCHECK_EQ(last_processed_main_sequence_latency_, 0u) << TRACKER_DCHECK_MSG;
     last_processed_main_sequence_ = args.frame_id.sequence_number;
     last_processed_main_sequence_latency_ =
         std::max(last_started_impl_sequence_, last_processed_impl_sequence_) -
         args.frame_id.sequence_number;
-    awaiting_main_response_sequence_ = 0;
   }
 }
 
@@ -285,7 +296,7 @@ void FrameSequenceTracker::ReportSubmitFrame(
   TRACKER_TRACE_STREAM << "s(" << frame_token % kDebugStrMod << ")";
   had_impl_frame_submitted_between_commits_ = true;
   metrics()->NotifySubmitForJankReporter(
-      FrameSequenceMetrics::ThreadType::kCompositor, frame_token,
+      FrameInfo::SmoothEffectDrivingThread::kCompositor, frame_token,
       ack.frame_id.sequence_number);
 
   const bool main_changes_after_sequence_started =
@@ -310,7 +321,7 @@ void FrameSequenceTracker::ReportSubmitFrame(
                                   kDebugStrMod
                            << ")";
       metrics()->NotifySubmitForJankReporter(
-          FrameSequenceMetrics::ThreadType::kMain, frame_token,
+          FrameInfo::SmoothEffectDrivingThread::kMain, frame_token,
           origin_args.frame_id.sequence_number);
 
       last_submitted_main_sequence_ = origin_args.frame_id.sequence_number;
@@ -333,6 +344,16 @@ void FrameSequenceTracker::ReportFrameEnd(
   if (ShouldIgnoreBeginFrameSource(args.frame_id.source_id))
     return;
 
+  // We only update the `pending_main_sequences` when the frame has successfully
+  // submitted, or when we determine that it has no damage. See
+  // ReportMainFrameCausedNoDamage. We do not do this in
+  // NotifyMainFrameProcessed, as that can occur during Commit, and we may yet
+  // determine at Draw that there was no damage.
+  while (!pending_main_sequences_.empty() &&
+         pending_main_sequences_.front() <=
+             main_args.frame_id.sequence_number) {
+    pending_main_sequences_.pop_front();
+  }
   TRACKER_TRACE_STREAM << "e(" << args.frame_id.sequence_number % kDebugStrMod
                        << ","
                        << main_args.frame_id.sequence_number % kDebugStrMod
@@ -373,7 +394,7 @@ void FrameSequenceTracker::ReportFrameEnd(
         << TRACKER_DCHECK_MSG;
     --impl_throughput().frames_expected;
     metrics()->NotifyNoUpdateForJankReporter(
-        FrameSequenceMetrics::ThreadType::kCompositor,
+        FrameInfo::SmoothEffectDrivingThread::kCompositor,
         args.frame_id.sequence_number, args.interval);
 #if DCHECK_IS_ON()
     ++impl_throughput().frames_processed;
@@ -444,11 +465,6 @@ void FrameSequenceTracker::ReportFramePresented(
   if (ignored_frame_tokens_.contains(frame_token))
     return;
 
-  uint32_t impl_frames_produced = 0;
-  uint32_t main_frames_produced = 0;
-  uint32_t impl_frames_ontime = 0;
-  uint32_t main_frames_ontime = 0;
-
   const auto vsync_interval =
       (feedback.interval.is_zero() ? viz::BeginFrameArgs::DefaultInterval()
                                    : feedback.interval);
@@ -464,19 +480,17 @@ void FrameSequenceTracker::ReportFramePresented(
                 impl_throughput().frames_produced)
           << TRACKER_DCHECK_MSG;
       ++impl_throughput().frames_ontime;
-      ++impl_frames_ontime;
     }
 
     DCHECK_LT(impl_throughput().frames_produced,
               impl_throughput().frames_expected)
         << TRACKER_DCHECK_MSG;
     ++impl_throughput().frames_produced;
-    ++impl_frames_produced;
     if (metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
       metrics()->AdvanceTrace(feedback.timestamp);
     }
 
-    metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kCompositor,
+    metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kCompositor,
                            frame_token, feedback.timestamp, vsync_interval);
   }
 
@@ -493,12 +507,11 @@ void FrameSequenceTracker::ReportFramePresented(
                 main_throughput().frames_expected)
           << TRACKER_DCHECK_MSG;
       ++main_throughput().frames_produced;
-      ++main_frames_produced;
       if (metrics()->GetEffectiveThread() == ThreadType::kMain) {
         metrics()->AdvanceTrace(feedback.timestamp);
       }
 
-      metrics()->ComputeJank(FrameSequenceMetrics::ThreadType::kMain,
+      metrics()->ComputeJank(FrameInfo::SmoothEffectDrivingThread::kMain,
                              frame_token, feedback.timestamp, vsync_interval);
     }
     if (main_frames_.size() < size_before_erase) {
@@ -508,7 +521,6 @@ void FrameSequenceTracker::ReportFramePresented(
                   main_throughput().frames_produced)
             << TRACKER_DCHECK_MSG;
         ++main_throughput().frames_ontime;
-        ++main_frames_ontime;
       }
     }
     last_frame_presentation_timestamp_ = feedback.timestamp;
@@ -530,7 +542,7 @@ void FrameSequenceTracker::ReportFramePresented(
                                  ? viz::BeginFrameArgs::DefaultInterval()
                                  : feedback.interval;
       DCHECK(!interval.is_zero()) << TRACKER_DCHECK_MSG;
-      constexpr base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(1);
+      constexpr base::TimeDelta kEpsilon = base::Milliseconds(1);
       int64_t frames = (difference + kEpsilon).IntDiv(interval);
       metrics_->add_checkerboarded_frames(frames);
     }
@@ -573,7 +585,8 @@ void FrameSequenceTracker::ReportImplFrameCausedNoDamage(
 }
 
 void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool aborted) {
   if (termination_status_ != TerminationStatus::kActive)
     return;
 
@@ -594,17 +607,28 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
   if (last_no_main_damage_sequence_ == args.frame_id.sequence_number)
     return;
 
-  // It is possible for |awaiting_main_response_sequence_| to be zero here if a
-  // commit had already happened before (e.g. B(x)E(x)N(x)). So check that case
-  // here.
-  if (awaiting_main_response_sequence_) {
-    DCHECK_EQ(awaiting_main_response_sequence_, args.frame_id.sequence_number)
-        << TRACKER_DCHECK_MSG;
-  } else {
-    DCHECK_EQ(last_processed_main_sequence_, args.frame_id.sequence_number)
-        << TRACKER_DCHECK_MSG;
+  auto initial_pending_size = pending_main_sequences_.size();
+  while (!pending_main_sequences_.empty() &&
+         pending_main_sequences_.front() <= args.frame_id.sequence_number) {
+    pending_main_sequences_.pop_front();
   }
-  awaiting_main_response_sequence_ = 0;
+  // If we didn't remove any `pending_main_sequences`, then we have previously
+  // submitted a CompositorFrame with damage for `args.frame_id.sequence_number`
+  // and the sequence is being re-used on a subsequent Impl frame. Which just
+  // happens to have no damage.
+  //
+  // This can occur when there is a Compositor Animation that is offscreen, and
+  // when we are awaiting the next BeginMainFrame to be Committed and Activated.
+  //
+  // We do not change the `main_throughput` expectations when the sequence is
+  // re-used.
+  if (pending_main_sequences_.size() == initial_pending_size)
+    return;
+
+  if (aborted)
+    ++aborted_main_frame_;
+  else
+    ++no_damage_draw_main_frames_;
 
   DCHECK_GT(main_throughput().frames_expected, 0u) << TRACKER_DCHECK_MSG;
   DCHECK_GT(main_throughput().frames_expected,
@@ -615,15 +639,15 @@ void FrameSequenceTracker::ReportMainFrameCausedNoDamage(
   last_no_main_damage_sequence_ = args.frame_id.sequence_number;
   --main_throughput().frames_expected;
   metrics()->NotifyNoUpdateForJankReporter(
-      FrameSequenceMetrics::ThreadType::kMain, args.frame_id.sequence_number,
-      args.interval);
+      FrameInfo::SmoothEffectDrivingThread::kMain,
+      args.frame_id.sequence_number, args.interval);
 
   DCHECK_GE(main_throughput().frames_expected, main_frames_.size())
       << TRACKER_DCHECK_MSG;
 
   // Could be 0 if there were a pause frame production.
   if (begin_main_frame_data_.previous_sequence != 0) {
-    DCHECK_EQ(begin_main_frame_data_.previous_sequence,
+    DCHECK_GE(begin_main_frame_data_.previous_sequence,
               args.frame_id.sequence_number)
         << TRACKER_DCHECK_MSG;
   }
@@ -639,12 +663,15 @@ void FrameSequenceTracker::PauseFrameProduction() {
   reset_all_state_ = true;
 }
 
-void FrameSequenceTracker::UpdateTrackedFrameData(TrackedFrameData* frame_data,
-                                                  uint64_t source_id,
-                                                  uint64_t sequence_number) {
+void FrameSequenceTracker::UpdateTrackedFrameData(
+    TrackedFrameData* frame_data,
+    uint64_t source_id,
+    uint64_t sequence_number,
+    uint64_t throttled_frame_count) {
   if (frame_data->previous_sequence &&
       frame_data->previous_source == source_id) {
-    uint32_t current_latency = sequence_number - frame_data->previous_sequence;
+    uint32_t current_latency =
+        sequence_number - frame_data->previous_sequence - throttled_frame_count;
     DCHECK_GT(current_latency, 0u) << TRACKER_DCHECK_MSG;
     frame_data->previous_sequence_delta = current_latency;
   } else {
@@ -694,6 +721,12 @@ std::unique_ptr<FrameSequenceMetrics> FrameSequenceTracker::TakeMetrics() {
 void FrameSequenceTracker::CleanUp() {
   if (metrics_)
     metrics_->ReportLeftoverData();
+}
+
+void FrameSequenceTracker::AddSortedFrame(const viz::BeginFrameArgs& args,
+                                          const FrameInfo& frame_info) {
+  if (metrics_)
+    metrics_->AddSortedFrame(args, frame_info);
 }
 
 FrameSequenceTracker::CheckerboardingData::CheckerboardingData() = default;

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/pickle.h"
 #include "extensions/common/permissions/api_permission_set.h"
 
 namespace base {
-class PickleIterator;
 class Value;
 }
 
@@ -24,6 +21,10 @@ namespace extensions {
 class ManifestPermission {
  public:
   ManifestPermission();
+
+  ManifestPermission(const ManifestPermission&) = delete;
+  ManifestPermission& operator=(const ManifestPermission&) = delete;
+
   virtual ~ManifestPermission();
 
   // The manifest key this permission applies to.
@@ -74,19 +75,6 @@ class ManifestPermission {
 
   // Returns true if |rhs| is equal to this.
   bool Equal(const ManifestPermission* rhs) const;
-
-  // IPC functions
-  // Writes this into the given IPC message |m|.
-  void Write(base::Pickle* m) const;
-
-  // Reads from the given IPC message |m|.
-  bool Read(const base::Pickle* m, base::PickleIterator* iter);
-
-  // Logs this permission.
-  void Log(std::string* log) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ManifestPermission);
 };
 
 }  // namespace extensions

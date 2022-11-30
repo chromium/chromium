@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -122,7 +123,6 @@ class MockGCMDriver : public gcm::GCMDriver {
   MOCK_METHOD1(RemoveAccountMapping, void(const CoreAccountId& account_id));
   MOCK_METHOD0(GetLastTokenFetchTime, base::Time());
   MOCK_METHOD1(SetLastTokenFetchTime, void(const base::Time& time));
-  MOCK_METHOD1(WakeFromSuspendForHeartbeat, void(bool wake));
   MOCK_METHOD0(GetInstanceIDHandlerInternal, InstanceIDHandler*());
   MOCK_METHOD2(AddHeartbeatInterval,
                void(const std::string& scope, int interval_ms));
@@ -441,16 +441,15 @@ TEST_F(FCMNetworkHandlerTest, ShouldScheduleTokenValidationAndActOnNewToken) {
 
   // Adjust timers and check that validation will happen in time.
   // The old token was invalid, so token listener should be informed.
-  const base::TimeDelta time_to_validation = base::TimeDelta::FromHours(24);
-  task_runner->FastForwardBy(time_to_validation -
-                             base::TimeDelta::FromSeconds(1));
+  const base::TimeDelta time_to_validation = base::Hours(24);
+  task_runner->FastForwardBy(time_to_validation - base::Seconds(1));
   // But when it is time, validation happens.
   EXPECT_CALL(*mock_instance_id(), GetToken)
       .WillOnce(WithArg<4>(Invoke([](InstanceID::GetTokenCallback callback) {
         std::move(callback).Run("token_new", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_on_token_callback, Run("token_new")).Times(1);
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(FCMNetworkHandlerTest,
@@ -474,9 +473,8 @@ TEST_F(FCMNetworkHandlerTest,
 
   // Adjust timers and check that validation will happen in time.
   // The old token is valid, so no token listener should be informed.
-  const base::TimeDelta time_to_validation = base::TimeDelta::FromHours(24);
-  task_runner->FastForwardBy(time_to_validation -
-                             base::TimeDelta::FromSeconds(1));
+  const base::TimeDelta time_to_validation = base::Hours(24);
+  task_runner->FastForwardBy(time_to_validation - base::Seconds(1));
 
   // But when it is time, validation happens.
   EXPECT_CALL(*mock_instance_id(), GetToken)
@@ -484,22 +482,18 @@ TEST_F(FCMNetworkHandlerTest,
         std::move(callback).Run("token", InstanceID::Result::SUCCESS);
       })));
   EXPECT_CALL(mock_on_token_callback, Run).Times(0);
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner->FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(FCMNetworkHandlerTestWithTTL, ShouldProvideTTLWithSyncSenderID) {
-  EXPECT_CALL(
-      *mock_instance_id(),
-      GetToken(_, _, Eq(base::TimeDelta::FromSeconds(kTimeToLiveInSeconds)), _,
-               _));
+  EXPECT_CALL(*mock_instance_id(),
+              GetToken(_, _, Eq(base::Seconds(kTimeToLiveInSeconds)), _, _));
   MakeHandler(/*sender_id=*/"8181035976")->StartListening();
 }
 
 TEST_F(FCMNetworkHandlerTestWithTTL, ShouldProvideTTLWithPolicySenderID) {
-  EXPECT_CALL(
-      *mock_instance_id(),
-      GetToken(_, _, Eq(base::TimeDelta::FromSeconds(kTimeToLiveInSeconds)), _,
-               _));
+  EXPECT_CALL(*mock_instance_id(),
+              GetToken(_, _, Eq(base::Seconds(kTimeToLiveInSeconds)), _, _));
   MakeHandler(/*sender_id=*/"1013309121859")->StartListening();
 }
 

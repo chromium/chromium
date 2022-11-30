@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -19,7 +21,7 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     content::BrowserContext* context = browser()->profile();
-    renderer_.reset(new content::MockRenderProcessHost(context));
+    renderer_ = std::make_unique<content::MockRenderProcessHost>(context);
     SpellCheckHostChromeImpl::Create(
         renderer_->GetID(), spell_check_host_.BindNewPipeAndPassReceiver());
   }

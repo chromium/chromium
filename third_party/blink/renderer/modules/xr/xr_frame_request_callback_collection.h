@@ -1,12 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_
 
+#include <memory>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -16,7 +21,7 @@ class XRFrame;
 class XRSession;
 
 namespace probe {
-class AsyncTaskId;
+class AsyncTaskContext;
 }
 
 class XRFrameRequestCallbackCollection final
@@ -24,6 +29,7 @@ class XRFrameRequestCallbackCollection final
       public NameClient {
  public:
   explicit XRFrameRequestCallbackCollection(ExecutionContext*);
+  ~XRFrameRequestCallbackCollection() override = default;
 
   using CallbackId = int;
   CallbackId RegisterCallback(V8XRFrameRequestCallback*);
@@ -50,7 +56,7 @@ class XRFrameRequestCallbackCollection final
   using CallbackFrameRequestMap =
       HeapHashMap<CallbackId, Member<V8XRFrameRequestCallback>>;
   using CallbackAsyncTaskMap =
-      HashMap<CallbackId, std::unique_ptr<probe::AsyncTaskId>>;
+      HashMap<CallbackId, std::unique_ptr<probe::AsyncTaskContext>>;
 
   CallbackFrameRequestMap callback_frame_requests_;
   CallbackAsyncTaskMap callback_async_tasks_;
@@ -67,4 +73,4 @@ class XRFrameRequestCallbackCollection final
 
 }  // namespace blink
 
-#endif  // FrameRequestCallbackCollection_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_

@@ -26,14 +26,16 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/frame_edge_info.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
+#include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
-#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "ui/base/cursor/cursor.h"
 
 namespace blink {
 
@@ -48,14 +50,17 @@ static int AdjustSizeToRemainingSize(int current,
   return base::checked_cast<int>(temp_product.ValueOrDie());
 }
 
-LayoutFrameSet::LayoutFrameSet(HTMLFrameSetElement* frame_set)
-    : LayoutBox(frame_set), is_resizing_(false) {
+LayoutFrameSet::LayoutFrameSet(Element* element) : LayoutBox(element) {
+  DCHECK(IsA<HTMLFrameSetElement>(element));
   SetInline(false);
 }
 
 LayoutFrameSet::~LayoutFrameSet() = default;
 
-LayoutFrameSet::GridAxis::GridAxis() : split_being_resized_(kNoSplit) {}
+void LayoutFrameSet::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBox::Trace(visitor);
+}
 
 HTMLFrameSetElement* LayoutFrameSet::FrameSet() const {
   NOT_DESTROYED();
@@ -69,31 +74,25 @@ void LayoutFrameSet::Paint(const PaintInfo& paint_info) const {
 
 void LayoutFrameSet::GridAxis::Resize(int size) {
   sizes_.resize(size);
-  deltas_.resize(size);
-  deltas_.Fill(0);
-
-  // To track edges for resizability and borders, we need to be (size + 1). This
-  // is because a parent frameset may ask us for information about our left/top/
-  // right/bottom edges in order to make its own decisions about what to do. We
-  // are capable of tainting that parent frameset's borders, so we have to cache
-  // this info.
-  prevent_resize_.resize(size + 1);
-  allow_border_.resize(size + 1);
 }
 
 void LayoutFrameSet::LayOutAxis(GridAxis& axis,
                                 const Vector<HTMLDimension>& grid,
+                                const Vector<int>& deltas,
                                 int available_len) {
   NOT_DESTROYED();
+  DCHECK_EQ(axis.sizes_.size(), deltas.size());
+
   available_len = max(available_len, 0);
 
-  int* grid_layout = axis.sizes_.data();
+  DCHECK_EQ(axis.sizes_.size(), deltas.size());
 
-  if (grid.IsEmpty()) {
-    grid_layout[0] = available_len;
+  if (grid.empty()) {
+    axis.sizes_[0] = LayoutUnit(available_len);
     return;
   }
 
+  Vector<int> grid_layout(axis.sizes_.size());
   int grid_len = axis.sizes_.size();
   DCHECK(grid_len);
 
@@ -112,7 +111,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // Count the total length of all of the fixed columns/rows -> totalFixed.
     // Count the number of columns/rows which are fixed -> countFixed.
     if (grid[i].IsAbsolute()) {
-      grid_layout[i] = clampTo<int>(max(grid[i].Value() * effective_zoom, 0.0));
+      grid_layout[i] = ClampTo<int>(max(grid[i].Value() * effective_zoom, 0.0));
       total_fixed += grid_layout[i];
       count_fixed++;
     }
@@ -122,7 +121,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // countPercent.
     if (grid[i].IsPercentage()) {
       grid_layout[i] =
-          clampTo<int>(max(grid[i].Value() * available_len / 100., 0.0));
+          ClampTo<int>(max(grid[i].Value() * available_len / 100., 0.0));
       total_percent += grid_layout[i];
       count_percent++;
     }
@@ -131,7 +130,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // totalRelative. Count the number of columns/rows which are relative ->
     // countRelative.
     if (grid[i].IsRelative()) {
-      total_relative += clampTo<int>(max(grid[i].Value(), 1.0));
+      total_relative += ClampTo<int>(max(grid[i].Value(), 1.0));
       count_relative++;
     }
   }
@@ -178,13 +177,15 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
   // NOTE: the relative value of 0* is treated as 1*.
   if (count_relative) {
     int last_relative = 0;
-    int remaining_relative = remaining_len;
+    int64_t remaining_relative = remaining_len;
 
     for (int i = 0; i < grid_len; ++i) {
       if (grid[i].IsRelative()) {
-        grid_layout[i] =
-            (max(grid[i].Value(), 1.) * remaining_relative) / total_relative;
+        grid_layout[i] = ClampTo<int>(
+            (ClampTo<int>(max(grid[i].Value(), 1.)) * remaining_relative) /
+            total_relative);
         remaining_len -= grid_layout[i];
+        DCHECK_GE(remaining_len, 0);
         last_relative = i;
       }
     }
@@ -274,129 +275,52 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   // now we have the final layout, distribute the delta over it
   bool worked = true;
-  int* grid_delta = axis.deltas_.data();
   for (int i = 0; i < grid_len; ++i) {
-    if (grid_layout[i] && grid_layout[i] + grid_delta[i] <= 0)
+    if (grid_layout[i] && grid_layout[i] + deltas[i] <= 0)
       worked = false;
-    grid_layout[i] += grid_delta[i];
+    grid_layout[i] += deltas[i];
   }
   // if the deltas broke something, undo them
   if (!worked) {
     for (int i = 0; i < grid_len; ++i)
-      grid_layout[i] -= grid_delta[i];
-    axis.deltas_.Fill(0);
-  }
-}
-
-void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return;
-  // FIXME: We should only recompute the edge info with respect to the frame
-  // that changed and its adjacent frame(s) instead of recomputing the edge info
-  // for the entire frameset.
-  ComputeEdgeInfo();
-}
-
-void LayoutFrameSet::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
-                                      int r,
-                                      int c) {
-  NOT_DESTROYED();
-  if (edge_info.AllowBorder(kLeftFrameEdge))
-    cols_.allow_border_[c] = true;
-  if (edge_info.AllowBorder(kRightFrameEdge))
-    cols_.allow_border_[c + 1] = true;
-  if (edge_info.PreventResize(kLeftFrameEdge))
-    cols_.prevent_resize_[c] = true;
-  if (edge_info.PreventResize(kRightFrameEdge))
-    cols_.prevent_resize_[c + 1] = true;
-
-  if (edge_info.AllowBorder(kTopFrameEdge))
-    rows_.allow_border_[r] = true;
-  if (edge_info.AllowBorder(kBottomFrameEdge))
-    rows_.allow_border_[r + 1] = true;
-  if (edge_info.PreventResize(kTopFrameEdge))
-    rows_.prevent_resize_[r] = true;
-  if (edge_info.PreventResize(kBottomFrameEdge))
-    rows_.prevent_resize_[r + 1] = true;
-}
-
-void LayoutFrameSet::ComputeEdgeInfo() {
-  NOT_DESTROYED();
-  rows_.prevent_resize_.Fill(FrameSet()->NoResize());
-  rows_.allow_border_.Fill(false);
-  cols_.prevent_resize_.Fill(FrameSet()->NoResize());
-  cols_.allow_border_.Fill(false);
-
-  LayoutObject* child = FirstChild();
-  if (!child)
-    return;
-
-  size_t rows = rows_.sizes_.size();
-  size_t cols = cols_.sizes_.size();
-  for (size_t r = 0; r < rows; ++r) {
-    for (size_t c = 0; c < cols; ++c) {
-      FrameEdgeInfo edge_info;
-      if (child->IsFrameSet())
-        edge_info = To<LayoutFrameSet>(child)->EdgeInfo();
-      else
-        edge_info = To<LayoutFrame>(child)->EdgeInfo();
-      FillFromEdgeInfo(edge_info, r, c);
-      child = child->NextSibling();
-      if (!child)
-        return;
-    }
-  }
-}
-
-FrameEdgeInfo LayoutFrameSet::EdgeInfo() const {
-  NOT_DESTROYED();
-  FrameEdgeInfo result(FrameSet()->NoResize(), true);
-
-  int rows = FrameSet()->TotalRows();
-  int cols = FrameSet()->TotalCols();
-  if (rows && cols) {
-    result.SetPreventResize(kLeftFrameEdge, cols_.prevent_resize_[0]);
-    result.SetAllowBorder(kLeftFrameEdge, cols_.allow_border_[0]);
-    result.SetPreventResize(kRightFrameEdge, cols_.prevent_resize_[cols]);
-    result.SetAllowBorder(kRightFrameEdge, cols_.allow_border_[cols]);
-    result.SetPreventResize(kTopFrameEdge, rows_.prevent_resize_[0]);
-    result.SetAllowBorder(kTopFrameEdge, rows_.allow_border_[0]);
-    result.SetPreventResize(kBottomFrameEdge, rows_.prevent_resize_[rows]);
-    result.SetAllowBorder(kBottomFrameEdge, rows_.allow_border_[rows]);
+      grid_layout[i] -= deltas[i];
   }
 
-  return result;
+  for (int i = 0; i < grid_len; ++i)
+    axis.sizes_[i] = LayoutUnit(grid_layout[i]);
 }
 
 void LayoutFrameSet::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  if (!Parent()->IsFrameSet() && !GetDocument().Printing()) {
+  if (!Parent()->IsFrameSet()) {
     SetWidth(LayoutUnit(View()->ViewWidth()));
     SetHeight(LayoutUnit(View()->ViewHeight()));
   }
 
   unsigned cols = FrameSet()->TotalCols();
   unsigned rows = FrameSet()->TotalRows();
+  const Vector<int>& rows_deltas = FrameSet()->RowDeltas();
+  const Vector<int>& cols_deltas = FrameSet()->ColDeltas();
 
   if (rows_.sizes_.size() != rows || cols_.sizes_.size() != cols) {
     rows_.Resize(rows);
     cols_.Resize(cols);
   }
 
-  LayoutUnit border_thickness(FrameSet()->Border());
-  LayOutAxis(rows_, FrameSet()->RowLengths(),
+  LayoutUnit border_thickness(FrameSet()->Border(StyleRef()));
+  LayOutAxis(rows_, FrameSet()->RowLengths(), rows_deltas,
              (Size().Height() - (rows - 1) * border_thickness).ToInt());
-  LayOutAxis(cols_, FrameSet()->ColLengths(),
+  LayOutAxis(cols_, FrameSet()->ColLengths(), cols_deltas,
              (Size().Width() - (cols - 1) * border_thickness).ToInt());
 
   PositionFrames();
 
   LayoutBox::UpdateLayout();
 
-  ComputeEdgeInfo();
+  cols_.allow_border_ = FrameSet()->AllowBorderColumns();
+  rows_.allow_border_ = FrameSet()->AllowBorderRows();
 
   UpdateAfterLayout();
 
@@ -421,7 +345,7 @@ void LayoutFrameSet::PositionFrames() {
   int rows = FrameSet()->TotalRows();
   int cols = FrameSet()->TotalCols();
 
-  int border_thickness = FrameSet()->Border();
+  int border_thickness = FrameSet()->Border(StyleRef());
   LayoutSize size;
   LayoutPoint position;
   for (int r = 0; r < rows; r++) {
@@ -456,148 +380,33 @@ void LayoutFrameSet::PositionFrames() {
   ClearNeedsLayoutOnHiddenFrames(child);
 }
 
-void LayoutFrameSet::StartResizing(GridAxis& axis, int position) {
-  NOT_DESTROYED();
-  int split = HitTestSplit(axis, position);
-  if (split == kNoSplit || axis.prevent_resize_[split]) {
-    axis.split_being_resized_ = kNoSplit;
-    return;
-  }
-  axis.split_being_resized_ = split;
-  axis.split_resize_offset_ = position - SplitPosition(axis, split);
-}
-
-void LayoutFrameSet::ContinueResizing(GridAxis& axis, int position) {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return;
-  if (axis.split_being_resized_ == kNoSplit)
-    return;
-  int current_split_position = SplitPosition(axis, axis.split_being_resized_);
-  int delta = (position - current_split_position) - axis.split_resize_offset_;
-  if (!delta)
-    return;
-  axis.deltas_[axis.split_being_resized_ - 1] += delta;
-  axis.deltas_[axis.split_being_resized_] -= delta;
-  SetNeedsLayoutAndFullPaintInvalidation(
-      layout_invalidation_reason::kSizeChanged);
-}
-
-bool LayoutFrameSet::UserResize(const MouseEvent& evt) {
-  NOT_DESTROYED();
-  if (!is_resizing_) {
-    if (NeedsLayout())
-      return false;
-    if (evt.type() == event_type_names::kMousedown &&
-        evt.button() ==
-            static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-      FloatPoint local_pos =
-          AbsoluteToLocalFloatPoint(FloatPoint(evt.AbsoluteLocation()));
-      StartResizing(cols_, local_pos.X());
-      StartResizing(rows_, local_pos.Y());
-      if (cols_.split_being_resized_ != kNoSplit ||
-          rows_.split_being_resized_ != kNoSplit) {
-        SetIsResizing(true);
-        return true;
-      }
-    }
-  } else {
-    if (evt.type() == event_type_names::kMousemove ||
-        (evt.type() == event_type_names::kMouseup &&
-         evt.button() ==
-             static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      FloatPoint local_pos =
-          AbsoluteToLocalFloatPoint(FloatPoint(evt.AbsoluteLocation()));
-      ContinueResizing(cols_, local_pos.X());
-      ContinueResizing(rows_, local_pos.Y());
-      if (evt.type() == event_type_names::kMouseup &&
-          evt.button() ==
-              static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-        SetIsResizing(false);
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-void LayoutFrameSet::SetIsResizing(bool is_resizing) {
-  NOT_DESTROYED();
-  is_resizing_ = is_resizing;
-  if (LocalFrame* frame = GetFrame()) {
-    frame->GetEventHandler().SetResizingFrameSet(is_resizing ? FrameSet()
-                                                             : nullptr);
-  }
-}
-
-bool LayoutFrameSet::CanResizeRow(const IntPoint& p) const {
-  NOT_DESTROYED();
-  int r = HitTestSplit(rows_, p.Y());
-  return r != kNoSplit && !rows_.prevent_resize_[r];
-}
-
-bool LayoutFrameSet::CanResizeColumn(const IntPoint& p) const {
-  NOT_DESTROYED();
-  int c = HitTestSplit(cols_, p.X());
-  return c != kNoSplit && !cols_.prevent_resize_[c];
-}
-
-int LayoutFrameSet::SplitPosition(const GridAxis& axis, int split) const {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return 0;
-
-  int border_thickness = FrameSet()->Border();
-
-  int size = axis.sizes_.size();
-  if (!size)
-    return 0;
-
-  int position = 0;
-  for (int i = 0; i < split && i < size; ++i)
-    position += axis.sizes_[i] + border_thickness;
-  return position - border_thickness;
-}
-
-int LayoutFrameSet::HitTestSplit(const GridAxis& axis, int position) const {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return kNoSplit;
-
-  int border_thickness = FrameSet()->Border();
-  if (border_thickness <= 0)
-    return kNoSplit;
-
-  size_t size = axis.sizes_.size();
-  if (!size)
-    return kNoSplit;
-
-  int split_position = axis.sizes_[0];
-  for (size_t i = 1; i < size; ++i) {
-    if (position >= split_position &&
-        position < split_position + border_thickness)
-      return i;
-    split_position += border_thickness + axis.sizes_[i];
-  }
-  return kNoSplit;
-}
-
 bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsFrame() || child->IsFrameSet();
 }
 
+void LayoutFrameSet::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
+  LayoutBox::AddChild(new_child, before_child);
+  FrameSet()->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
+void LayoutFrameSet::RemoveChild(LayoutObject* child) {
+  LayoutBox::RemoveChild(child);
+  if (!DocumentBeingDestroyed())
+    FrameSet()->DirtyEdgeInfoAndFullPaintInvalidation();
+}
+
 CursorDirective LayoutFrameSet::GetCursor(const PhysicalOffset& point,
                                           ui::Cursor& cursor) const {
   NOT_DESTROYED();
-  IntPoint rounded_point = RoundedIntPoint(point);
-  if (CanResizeRow(rounded_point)) {
+  gfx::Point rounded_point = ToRoundedPoint(point);
+  if (FrameSet()->CanResizeRow(rounded_point)) {
     cursor = RowResizeCursor();
     return kSetCursor;
   }
-  if (CanResizeColumn(rounded_point)) {
+  if (FrameSet()->CanResizeColumn(rounded_point)) {
     cursor = ColumnResizeCursor();
     return kSetCursor;
   }

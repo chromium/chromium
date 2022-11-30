@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,9 @@ class ASH_EXPORT SystemTrayTestApi {
   // Returns true if the view exists in the bubble and is visible.
   // If |open_tray| is true, it also opens system tray bubble.
   bool IsBubbleViewVisible(int view_id, bool open_tray);
+
+  // If the view is in a scroll contents, scrolls the bubble to shown the view.
+  void ScrollToShowView(int view_id);
 
   // Clicks the view |view_id|.
   void ClickBubbleView(int view_id);

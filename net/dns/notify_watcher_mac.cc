@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,31 +13,7 @@
 
 namespace net {
 
-namespace {
-
-// Registers a dummy file descriptor to workaround a bug in libnotify
-// in macOS 10.12
-// See https://bugs.chromium.org/p/chromium/issues/detail?id=783148.
-class NotifyFileDescriptorsGlobalsHolder {
- public:
-  NotifyFileDescriptorsGlobalsHolder() {
-    int notify_fd = -1;
-    int notify_token = -1;
-    notify_register_file_descriptor("notify_file_descriptor_holder", &notify_fd,
-                                    0, &notify_token);
-  }
-};
-
-void HoldNotifyFileDescriptorsGlobals() {
-  if (base::mac::IsAtMostOS10_12()) {
-    static NotifyFileDescriptorsGlobalsHolder holder;
-  }
-}
-}  // namespace
-
-NotifyWatcherMac::NotifyWatcherMac() : notify_fd_(-1), notify_token_(-1) {
-  HoldNotifyFileDescriptorsGlobals();
-}
+NotifyWatcherMac::NotifyWatcherMac() : notify_fd_(-1), notify_token_(-1) {}
 
 NotifyWatcherMac::~NotifyWatcherMac() {
   Cancel();

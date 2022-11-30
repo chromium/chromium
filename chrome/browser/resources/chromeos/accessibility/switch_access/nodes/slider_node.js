@@ -1,7 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventGenerator} from '../../common/event_generator.js';
+import {KeyCode} from '../../common/key_code.js';
 import {SAConstants, SwitchAccessMenuAction} from '../switch_access_constants.js';
 
 import {BasicNode} from './basic_node.js';
@@ -17,7 +19,7 @@ export class SliderNode extends BasicNode {
    */
   constructor(baseNode, parent) {
     super(baseNode, parent);
-    this.isCustomSlider_ = !!baseNode.htmlAttributes.role;
+    this.isCustomSlider_ = Boolean(baseNode.htmlAttributes.role);
   }
 
   /** @override */
@@ -47,5 +49,5 @@ export class SliderNode extends BasicNode {
 
 BasicNode.creators.push({
   predicate: baseNode => baseNode.role === chrome.automation.RoleType.SLIDER,
-  creator: (node, parent) => new SliderNode(node, parent)
+  creator: (node, parent) => new SliderNode(node, parent),
 });

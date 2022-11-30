@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Module to generate a test file with random calls to the Web Bluetooth API."""
@@ -164,7 +164,7 @@ def _GenerateSequenceOfRandomTokens():
     """
     result = random.choice(BASE_TOKENS)
 
-    for _ in xrange(random.randint(1, MAX_NUM_OF_TOKENS)):
+    for _ in range(random.randint(1, MAX_NUM_OF_TOKENS)):
         # Get random token.
         token = random.choice(TOKENS)
 

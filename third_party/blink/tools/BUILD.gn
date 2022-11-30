@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,59 +6,60 @@
 group("wpt_tests_isolate") {
   testonly = true
   data = [
-    "//testing/scripts/common.py",
+    # Include the test runner.
     "//testing/scripts/wpt_common.py",
-    "//testing/xvfb.py",
+    "//third_party/blink/tools/run_wpt_tests.py",
 
     # WPT tooling
     "//third_party/wpt_tools/",
 
-    # Include blinkpy tools for setting up expectations.
-    "//third_party/blink/tools/build_wpt_metadata.py",
+    # Include blinkpy tools for setting up expectations and uploading results to
+    # ResultDB.
+    "//third_party/blink/tools/wpt_process_results.py",
     "//third_party/blink/tools/blinkpy/",
-    "//third_party/catapult/third_party/typ/",
 
-    # The web_tests/external directory contains all WPT components including
-    # the test runner codebase, manifest file, and the tests themselves.
+    # Imported by some code in blinkpy.
+    "//build/skia_gold_common/",
+
+    # The web_tests/external directory contains manifest file and public WPTs.
     "//third_party/blink/web_tests/external/",
 
-    # Include a single file from wpt_internal only to initialize that directory.
-    # We don't need to run these tests but still need to create a MANIFEST here.
-    # See crbug.com/1018829 for more details.
-    "//third_party/blink/web_tests/wpt_internal/README",
+    # The web_tests/wpt_internal directory contains internal WPTs
+    "//third_party/blink/web_tests/wpt_internal/",
+    "//third_party/blink/web_tests/wptrunner.blink.ini",
 
-    # Include the results viewer
-    "//third_party/blink/web_tests/fast/harness/results.html",
-
-    # Include the various Test Expectations files.
-    "//third_party/blink/web_tests/ASANExpectations",
-    "//third_party/blink/web_tests/LeakExpectations",
-    "//third_party/blink/web_tests/MSANExpectations",
-    "//third_party/blink/web_tests/NeverFixTests",
-    "//third_party/blink/web_tests/SlowTests",
-    "//third_party/blink/web_tests/StaleTestExpectations",
-    "//third_party/blink/web_tests/TestExpectations",
-    "//third_party/blink/web_tests/VirtualTestSuites",
-    "//third_party/blink/web_tests/WPTOverrideExpectations",
+    # Include the root vpython spec.
+    "//.vpython3",
   ]
-  data_deps = [ ":wpt_tests_mojo_bindings" ]
+  data_deps = [
+    ":wpt_tests_mojo_bindings",
+    "//testing:test_scripts_shared",
+    "//third_party/catapult/third_party/typ:typ",
+    "//tools/imagediff",
+  ]
   if (is_win) {
     data_deps += [ "//build/win:copy_cdb_to_output" ]
   }
-  if (!is_android) {
-    data += [ "//testing/scripts/run_wpt_tests.py" ]
-  }
 }
 
-group("wpt_tests_android_isolate") {
-  testonly = true
-  data_deps = [ "//third_party/blink/tools:wpt_tests_isolate" ]
-  data = [
-    "//third_party/blink/web_tests/android/WeblayerWPTExpectations",
-    "//third_party/blink/web_tests/android/ChromiumWPTExpectations",
-    "//third_party/blink/web_tests/android/WebviewWPTExpectations",
-    "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
-  ]
+if (is_android) {
+  group("wpt_tests_android_isolate") {
+    testonly = true
+    data = [
+      # Emulator
+      "//build/android/pylib/",
+
+      # Android-specific expectations
+      "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
+      "//third_party/blink/web_tests/android/WPTSmokeTestCases",
+    ]
+    data_deps = [
+      ":wpt_tests_isolate",
+      "//build/android:devil_chromium_py",
+      "//build/android:test_runner_py",
+      "//third_party/catapult/devil:devil",
+    ]
+  }
 }
 
 group("wpt_tests_base_mojo_bindings") {
@@ -89,4 +90,17 @@ group("wpt_tests_mojo_bindings") {
     "//skia/public/mojom:mojom_js_data_deps",
     "//third_party/blink/public/mojom:mojom_platform_js_data_deps",
   ]
+}
+
+group("blink_pytype") {
+  testonly = true
+
+  data = [
+    "//third_party/blink/tools/run_pytype.py",
+
+    "//testing/unexpected_passes_common/",
+    "//third_party/blink/tools/blinkpy/web_tests/stale_expectation_removal/",
+  ]
+
+  data_deps = [ "//testing:pytype_dependencies" ]
 }

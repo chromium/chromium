@@ -1,16 +1,20 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_android)
+
 mojom("mojo_bindings") {
   sources = [ "new_tab_page.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings",
-    "//mojo/public/mojom/base",
     "//skia/public/mojom",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//ui/webui/resources/cr_components/most_visited:mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

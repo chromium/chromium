@@ -1,14 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/modules/presentation/presentation_metrics.h"
+#endif
 
 namespace blink {
 
@@ -31,10 +36,16 @@ PresentationConnectionCallbacks::PresentationConnectionCallbacks(
 void PresentationConnectionCallbacks::HandlePresentationResponse(
     mojom::blink::PresentationConnectionResultPtr result,
     mojom::blink::PresentationErrorPtr error) {
-  if (!resolver_->GetExecutionContext() ||
-      resolver_->GetExecutionContext()->IsContextDestroyed()) {
+  DCHECK(resolver_);
+
+  ScriptState* const script_state = resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     script_state)) {
     return;
   }
+
+  ScriptState::Scope script_state_scope(script_state);
 
   if (result) {
     DCHECK(result->connection_remote);
@@ -68,12 +79,26 @@ void PresentationConnectionCallbacks::OnSuccess(
                     std::move(connection_receiver));
 
   resolver_->Resolve(connection_);
+#if BUILDFLAG(IS_ANDROID)
+  PresentationMetrics::RecordPresentationConnectionResult(request_, true);
+#endif
 }
 
 void PresentationConnectionCallbacks::OnError(
     const mojom::blink::PresentationError& error) {
-  resolver_->Reject(CreatePresentationError(error));
+  resolver_->Reject(CreatePresentationError(
+      resolver_->GetScriptState()->GetIsolate(), error));
   connection_ = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+  // These two error types are not recorded because it's likely that they don't
+  // represent an actual error.
+  if (error.error_type !=
+          mojom::blink::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED &&
+      error.error_type !=
+          mojom::blink::PresentationErrorType::NO_PRESENTATION_FOUND) {
+    PresentationMetrics::RecordPresentationConnectionResult(request_, false);
+  }
+#endif
 }
 
 }  // namespace blink

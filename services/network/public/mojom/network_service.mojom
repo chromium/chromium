@@ -1,20 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
-import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "services/network/public/mojom/cookie_manager.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
@@ -24,11 +25,10 @@ import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
-import "services/network/public/mojom/url_loader.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
-import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "url/mojom/origin.mojom";
@@ -37,13 +37,11 @@ import "url/mojom/url.mojom";
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
 
+[EnableIf=is_ct_supported]
+import "services/network/public/mojom/ct_log_info.mojom";
+
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
-  // List of supported auth schemes. Unrecognized schemes are ignored.
-  // The default value of this field (an empty list) does not match default
-  // behavior of NetworkService when no HttpAuthStaticParams is specified.
-  array<string> supported_schemes;
-
   // File name the GSSAPI library to load. Only supported on platforms where an
   // external GSSAPI library is necessary for Kerberos/SPNEGO support. See the
   // |use_external_gssapi| variable definition in //net/BUILD.gn for details on
@@ -53,6 +51,15 @@ struct HttpAuthStaticParams {
 
 // Values for configurating HTTP authentication that can be changed as needed.
 struct HttpAuthDynamicParams {
+  // List of allowed auth schemes. Unrecognized schemes are ignored.
+  array<string>? allowed_schemes;
+
+  // List of origins patterns that are allowed the use of all the HTTP auth
+  // schemes recognized and supported by the browser regardless of
+  // `allowed_schemes`. The accepted format is documented at
+  // http://www.chromium.org/administrators/url-blocklist-filter-format.
+  array<string> patterns_allowed_to_use_all_schemes;
+
   // Comma / semi-colon delimited allowlist of server origins which the network
   // service may send the default credentials for NTLM or Negotiate
   // authentication.
@@ -89,22 +96,6 @@ struct HttpAuthDynamicParams {
   bool basic_over_http_enabled = true;
 };
 
-// Values for configuring OSCrypt.
-[EnableIf=needs_crypt_config]
-struct CryptConfig {
-  // Force OSCrypt to use a specific linux password store.
-  string store;
-
-  // The product name to use for permission prompts.
-  string product_name;
-
-  // Controls whether preference on using or ignoring backends is used.
-  bool should_use_preference;
-
-  // Preferences are stored in a separate file in the user data directory.
-  mojo_base.mojom.FilePath user_data_path;
-};
-
 // Represents the value of a single environment variable.
 struct EnvironmentVariable {
   string name;
@@ -123,14 +114,38 @@ struct NetworkServiceParams {
   // An URLLoaderFactory can provide its own URLLoaderNetworkServiceObserver
   // but if it does not, this default will be used.
   pending_remote<URLLoaderNetworkServiceObserver> default_observer;
+
+  // A boolean provided by the Browser Process in order to plumb into the
+  // First-Party Sets attribute during NetworkService::Initialize().
+  bool first_party_sets_enabled;
 };
 
-// Information about how logging should be configured.
-// Corresponds to logging::LoggingSettings.
-[EnableIf=is_chromeos]
-struct LoggingSettings {
-  uint32 logging_dest;
-  handle<platform> log_file_descriptor;
+// Configuration settings for SCT Auditing.
+[EnableIf=is_ct_supported]
+struct SCTAuditingConfiguration {
+  // The sampling rate for SCT auditing reports.
+  double sampling_rate;
+
+  // How long Chrome will wait before assuming a new SCT has been ingested by
+  // the log.
+  mojo_base.mojom.TimeDelta log_expected_ingestion_delay;
+
+  // The maximum random delay that may be added to
+  // |log_expected_ingestion_delay|.
+  mojo_base.mojom.TimeDelta log_max_ingestion_random_delay;
+
+  // The URL where reports should be sent.
+  url.mojom.Url report_uri;
+
+  // An annotated URL template for hashdance lookup queries. $1 should be in
+  // place of the "length" parameter, and $2 in place of the "prefix" parameter.
+  url.mojom.Url hashdance_lookup_uri;
+
+  // Traffic annotation for the report request.
+  MutableNetworkTrafficAnnotationTag traffic_annotation;
+
+  // Traffic annotation for the hashdance lookup query.
+  MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation;
 };
 
 // Implemented by the network service. The browser process sends messages to
@@ -138,15 +153,12 @@ struct LoggingSettings {
 //
 // This is a trusted interface that only the browser process should have access
 // to. It must not be sent to any untrusted process like a renderer process.
+// The network sandbox may be disabled (to kNoSandbox) by policy, and may not
+// be available on all platforms.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNetwork]
 interface NetworkService {
   // Sets the parameters and initializes the service.
   SetParams(NetworkServiceParams params);
-
-  // Reinitializes the Network Service's logging with the given settings. This
-  // is needed on Chrome OS, which switches to a log file in the user's home
-  // directory once they log in.
-  [EnableIf=is_chromeos]
-  ReinitializeLogging(LoggingSettings settings);
 
   // Starts observing the NetLog event stream and writing entries to |file|.
   // |constants| is a legend used for decoding constant values in the log; it
@@ -171,6 +183,7 @@ interface NetworkService {
   SetSSLKeyLogFile(mojo_base.mojom.File file);
 
   // Creates a new network context with the given parameters.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   CreateNetworkContext(pending_receiver<NetworkContext> context,
                        NetworkContextParams params);
 
@@ -180,13 +193,13 @@ interface NetworkService {
   // https://tools.ietf.org/html/rfc1034#section-5.3.1 for definition of a stub
   // resolver.
   //
-  // |dns_over_https_servers| is an optional list of DNS over HTTPS servers.
-  // DnsTransactions will by default follow the behavior of |secure_dns_mode|.
+  // `dns_over_https_config` provides zero or more DNS over HTTPS servers.
+  // DnsTransactions will by default follow the behavior of `secure_dns_mode`.
   // In SECURE mode, only DoH lookups will be performed. In AUTOMATIC mode,
   // DoH lookups to available servers will be performed first, and insecure
   // lookups will be used as a fallback. In OFF mode, only insecure lookups will
   // be performed. When insecure lookups are performed, they will be sent by
-  // the async resolver first if |insecure_dns_client_enabled| is true and
+  // the async resolver first if `insecure_dns_client_enabled` is true and
   // then by the system resolver as a fallback.
   //
   // DNS over HTTPS will use the primary NetworkContext, so can only be enabled
@@ -194,9 +207,15 @@ interface NetworkService {
   // limitation, this method can be called at any time to change DNS
   // configuration, though calling it will fail any DNS lookups that have
   // already been started.
+  //
+  // `additional_dns_types_enabled` controls whether additional DNS query types,
+  // e.g. HTTPS (DNS type 65) will be allowed besides the traditional A and AAAA
+  // queries when a request is being made via insecure DNS. Has no effect on
+  // Secure DNS which always allows additional types.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             SecureDnsMode secure_dns_mode,
-                            array<DnsOverHttpsServer>? dns_over_https_servers);
+                            DnsOverHttpsConfig dns_over_https_config,
+                            bool additional_dns_types_enabled);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.
@@ -259,31 +278,8 @@ interface NetworkService {
   // Notification that the certificate database has been modified.
   OnCertDBChanged();
 
-  // Sets up OSCrypt for the network service process. Must be called before
-  // encrypted cookies can be read or set.
-  [EnableIf=needs_crypt_config]
-  SetCryptConfig(CryptConfig crypt_config);
-
   // Send the encryption key to the network service to use for AES encryption.
-  [EnableIf=is_mac]
-  SetEncryptionKey(string encryption_key);
-
-  // Send the encryption key to the network service to use for AES encryption.
-  [EnableIf=is_win]
-  SetEncryptionKey(string encryption_key);
-
-  // Notifies |request_initiator_origin_lock| enforcement code that |process_id|
-  // is proxying requests on behalf of a plugin from
-  // |allowed_request_initiator| origin.
-  //
-  // TODO(lukasza, kmoon): https://crbug.com/702993: Remove the code here once
-  // PDF support doesn't depend on PPAPI anymore.
-  AddAllowedRequestInitiatorForPlugin(
-      int32 process_id,
-      url.mojom.Origin allowed_request_initiator);
-
-  // Reverts AddAllowedRequestInitiatorForPlugin.
-  RemoveSecurityExceptionsForPlugin(int32 process_id);
+  SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
 
   // Called when the system is low on memory.
   OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
@@ -313,16 +309,29 @@ interface NetworkService {
   ClearSCTAuditingCache();
 
   // Configures SCT auditing.
-  // This allows the embedder to specify whether SCT auditing should be enabled,
-  // what sampling rate to use on reports, and which URLLoaderFactory to use for
-  // sending reports.
-  // TODO(cthomp): Document what happens if the URLLoaderFactory is destroyed.
   [EnableIf=is_ct_supported]
-  ConfigureSCTAuditing(bool enabled,
-                       double sampling_rate,
-                       url.mojom.Url report_uri,
-                       MutableNetworkTrafficAnnotationTag traffic_annotation,
-                       pending_remote<network.mojom.URLLoaderFactory> factory);
+  ConfigureSCTAuditing(SCTAuditingConfiguration configuration);
+
+  // Updates the log list used for CT verification. `update_time` should
+  // contain the timestamp that the log list was considered fresh/current, in
+  // order to ensure that CT is not enforced if the log list is too out of
+  // date.
+  [EnableIf=is_ct_supported]
+  UpdateCtLogList(array<CTLogInfo> log_list,
+                  mojo_base.mojom.Time update_time) => ();
+
+  // Updates the list of popular SCTs queried during CT hashdance auditing.
+  [EnableIf=is_ct_supported]
+  UpdateCtKnownPopularSCTs(array<array<uint8>> sct_hashes) => ();
+
+  // Disables or enables CT Enforcement.
+  [EnableIf=is_ct_supported]
+  SetCtEnforcementEnabled(bool enabled) => ();
+
+  // Updates the key pinnning pin list. `update_time` should contain the
+  // timestamp that the pins list was considered fresh/current, in order to
+  // ensure that key pinning is not enforced if the list is too out of date.
+  UpdateKeyPinsList(PinList pin_list, mojo_base.mojom.Time update_time);
 
   // Calls base::debug::DumpWithoutCrashing for the network process.
   // TODO(http://crbug.com/934317): Remove this once done debugging renderer
@@ -334,14 +343,24 @@ interface NetworkService {
   // environments.
   BindTestInterface(pending_receiver<NetworkServiceTest> receiver);
 
-  // Sets the preloaded First-Party Sets data. |raw_sets| is the JSON-encoded
-  // string representation of a collection of set declarations according to the
-  // format specified in this document:
-  // https://github.com/privacycg/first-party-sets
-  // Note that by setting the preloaded First-Party Sets, any previous notion of
-  // preloaded First-Party Sets is cleared. This method can be partially
-  // successful in the event of malformed input (which also clears previously-
-  // known First-Party Sets), but does nothing if given non-JSON input or JSON
-  // which is not a dictionary.
-  SetPreloadedFirstPartySets(string raw_sets);
+  // Sets the global First-Party Sets data.
+  //
+  // Only the first call can have any effect, subsequent invocations are
+  // ignored.
+  SetFirstPartySets(GlobalFirstPartySets sets);
+
+  // Sets the list of ports which will be permitted even if they normally would
+  // be restricted.
+  SetExplicitlyAllowedPorts(array<uint16> ports);
+
+  // Parses response headers and returns a structured version to the caller.
+  // This call originates from the browser process. Used for navigations when
+  // the URLLoader didn't provide ParsedHeader in the first place. This happens
+  // when the raw headers represent untrustworthy input and the URLLoader used
+  // lives in a non-sandboxed process. It can also happen from some exotic
+  // URLLoader where parsing hasn't been implemented.
+  // In particular, this is used for request served from WebBundle,
+  // Extensions, etc.
+  ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
+      => (ParsedHeaders parsed_headers);
 };

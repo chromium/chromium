@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_CONSTANTS_H_
 #define EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_CONSTANTS_H_
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 
 namespace extensions {
 namespace declarative_net_request {
 
 // Permission name.
-extern const char kAPIPermission[];
+extern const char kDeclarativeNetRequestPermission[];
 
 // Feedback permission name.
 extern const char kFeedbackAPIPermission[];
@@ -23,7 +23,7 @@ constexpr int kMinValidID = 1;
 constexpr int kMinValidPriority = 1;
 
 using RulesetID =
-    ::util::IdType<class RulesetIDTag, int, -2 /* invalid value */>;
+    ::base::IdType<class RulesetIDTag, int, -2 /* invalid value */>;
 
 constexpr RulesetID kMinValidStaticRulesetID(1);
 constexpr RulesetID kDynamicRulesetID(0);
@@ -47,8 +47,14 @@ extern const char kRegexFilterKey[];
 extern const char kIsUrlFilterCaseSensitiveKey[];
 extern const char kDomainsKey[];
 extern const char kExcludedDomainsKey[];
+extern const char kInitiatorDomainsKey[];
+extern const char kExcludedInitiatorDomainsKey[];
+extern const char kRequestDomainsKey[];
+extern const char kExcludedRequestDomainsKey[];
 extern const char kResourceTypesKey[];
 extern const char kExcludedResourceTypesKey[];
+extern const char kRequestMethodsKey[];
+extern const char kExcludedRequestMethodsKey[];
 extern const char kDomainTypeKey[];
 extern const char kRuleActionTypeKey[];
 extern const char kRedirectPath[];
@@ -76,6 +82,7 @@ extern const char kQueryTransformRemoveParamsKey[];
 extern const char kQueryTransformAddReplaceParamsKey[];
 extern const char kQueryKeyKey[];
 extern const char kQueryValueKey[];
+extern const char kQueryReplaceOnlyKey[];
 extern const char kRegexSubstitutionKey[];
 extern const char kRegexSubstitutionPath[];
 extern const char kRequestHeadersKey[];
@@ -85,6 +92,8 @@ extern const char kResponseHeadersPath[];
 extern const char kHeaderNameKey[];
 extern const char kHeaderOperationKey[];
 extern const char kHeaderValueKey[];
+extern const char kTabIdsKey[];
+extern const char kExcludedTabIdsKey[];
 
 }  // namespace declarative_net_request
 }  // namespace extensions

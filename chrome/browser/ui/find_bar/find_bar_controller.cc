@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -111,17 +110,16 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
         find_in_page::FindTabHelper::FromWebContents(web_contents_);
     if (find_tab_helper) {
       find_tab_helper->set_selected_range(find_bar_->GetSelectedRange());
-      find_tab_observer_.Remove(find_tab_helper);
+      DCHECK(find_tab_observation_.IsObservingSource(find_tab_helper));
+      find_tab_observation_.Reset();
     }
   }
 
-  web_contents_ = contents;
   find_in_page::FindTabHelper* find_tab_helper =
-      web_contents_
-          ? find_in_page::FindTabHelper::FromWebContents(web_contents_)
-          : nullptr;
+      contents ? find_in_page::FindTabHelper::FromWebContents(contents)
+               : nullptr;
   if (find_tab_helper)
-    find_tab_observer_.Add(find_tab_helper);
+    find_tab_observation_.Observe(find_tab_helper);
 
   // Hide any visible find window from the previous tab if a NULL tab contents
   // is passed in or if the find UI is not active in the new tab.
@@ -129,6 +127,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
       (!find_tab_helper || !find_tab_helper->find_ui_active())) {
     find_bar_->Hide(false);
   }
+
+  web_contents_ = contents;
 
   if (!web_contents_)
     return;

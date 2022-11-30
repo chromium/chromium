@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,6 +53,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         service_(network::NetworkService::CreateForTesting()),
         cert_verifier_service_impl_(
+            /*params=*/nullptr,
             cert_verifier_service_remote_.BindNewPipeAndPassReceiver()) {}
   ~NetworkServiceIntegrationTest() override = default;
 
@@ -146,7 +147,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
 };
 
 // CRLSets are not supported on iOS and Android system verifiers.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 class NetworkServiceCRLSetTest : public NetworkServiceIntegrationTest {
  public:
@@ -368,10 +369,10 @@ TEST_F(NetworkServiceCRLSetTest, CRLSetDoesNotDowngrade) {
               net::CERT_STATUS_REVOKED);
 }
 
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/860189): AIA tests fail on iOS
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE(test_name) DISABLED_##test_name
 #else
 #define MAYBE(test_name) test_name

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
@@ -19,24 +21,28 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
-    Browser* browser)
+    BrowserView* browser_view)
     : ToolbarIconContainerView(
-          /*uses_highlight=*/!browser->profile()->IsIncognitoProfile()),
-      avatar_(new AvatarToolbarButton(browser, this)),
-      browser_(browser) {
+          /*uses_highlight=*/!browser_view->browser()
+              ->profile()
+              ->IsIncognitoProfile()),
+      avatar_(new AvatarToolbarButton(browser_view, this)),
+      browser_(browser_view->browser()) {
   PageActionIconParams params;
   params.types_enabled = {
       PageActionIconType::kManagePasswords,
       PageActionIconType::kLocalCardMigration,
       PageActionIconType::kSaveCard,
+      PageActionIconType::kVirtualCardManualFallback,
+      PageActionIconType::kVirtualCardEnroll,
   };
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAddressProfileSavePrompt)) {
@@ -49,7 +55,7 @@ ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
   params.icon_label_bubble_delegate = this;
   params.page_action_icon_delegate = this;
   params.button_observer = this;
-  AddMainButton(avatar_);
+  AddMainItem(avatar_);
 
   // Since the insertion point for icons before the avatar button, we don't
   // initialize until after the avatar button has been added.
@@ -83,7 +89,7 @@ SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleInkDropColor()
 
 SkColor ToolbarAccountIconContainerView::GetIconLabelBubbleBackgroundColor()
     const {
-  return GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  return GetColorProvider()->GetColor(kColorToolbar);
 }
 
 float ToolbarAccountIconContainerView::GetPageActionInkDropVisibleOpacity()
@@ -110,10 +116,11 @@ void ToolbarAccountIconContainerView::OnThemeChanged() {
   UpdateAllIcons();
 }
 
-void ToolbarAccountIconContainerView::AddPageActionIcon(views::View* icon) {
+void ToolbarAccountIconContainerView::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
   // Add the page action icons to the end of the container, just before the
   // avatar icon.
-  AddChildViewAt(icon, GetIndexOf(avatar_));
+  AddChildViewAt(std::move(icon), GetIndexOf(avatar_).value());
 }
 
 BEGIN_METADATA(ToolbarAccountIconContainerView, ToolbarIconContainerView)

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/tts.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/mojom/tts.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_platform.h"
 
@@ -146,9 +148,44 @@ bool TtsPlatformImplChromeOs::IsSpeaking() {
   return false;
 }
 
+void TtsPlatformImplChromeOs::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {
+  // Move all Espeak voices to the end.
+  auto partition_point = std::stable_partition(
+      voices.begin(), voices.end(), [](const content::VoiceData& voice) {
+        return voice.engine_id !=
+               extension_misc::kEspeakSpeechSynthesisExtensionId;
+      });
+
+  // Move all native voices to the end, before Espeak voices.
+  std::stable_partition(
+      voices.begin(), partition_point,
+      [](const content::VoiceData& voice) { return !voice.native; });
+}
+
+void TtsPlatformImplChromeOs::RefreshVoices() {
+  // Android voices can be updated silently.
+  // If it happens, we can't return the latest voices here, but below
+  // eventually calls TtsController::VoicesChanged.
+  auto* const arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+
+  arc::mojom::TtsInstance* tts = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->tts(), RefreshVoices);
+  if (!tts)
+    return;
+
+  tts->RefreshVoices();
+}
+
+content::ExternalPlatformDelegate*
+TtsPlatformImplChromeOs::GetExternalPlatformDelegate() {
+  return nullptr;
+}
+
 // static
-TtsPlatformImplChromeOs*
-TtsPlatformImplChromeOs::GetInstance() {
+TtsPlatformImplChromeOs* TtsPlatformImplChromeOs::GetInstance() {
   static base::NoDestructor<TtsPlatformImplChromeOs> tts_platform;
   return tts_platform.get();
 }

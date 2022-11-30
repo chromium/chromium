@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,19 @@ class D3D11Texture2DMock
   MOCK_STDCALL_METHOD1(SetEvictionPriority, void(UINT));
   MOCK_STDCALL_METHOD0(GetEvictionPriority, UINT());
   MOCK_STDCALL_METHOD1(GetDesc, void(D3D11_TEXTURE2D_DESC*));
+};
+
+class D3D11MultithreadMock
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ID3D11Multithread> {
+ public:
+  D3D11MultithreadMock();
+  ~D3D11MultithreadMock() override;
+  MOCK_STDCALL_METHOD0(Enter, void());
+  MOCK_STDCALL_METHOD0(GetMultithreadProtected, BOOL());
+  MOCK_STDCALL_METHOD0(Leave, void());
+  MOCK_STDCALL_METHOD1(SetMultithreadProtected, BOOL(BOOL));
 };
 
 class D3D11BufferMock

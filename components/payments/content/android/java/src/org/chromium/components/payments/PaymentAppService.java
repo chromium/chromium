@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,8 +113,14 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        public void onPaymentAppCreationError(String errorMessage) {
-            mDelegate.onPaymentAppCreationError(errorMessage);
+        public void onPaymentAppCreationError(
+                String errorMessage, @AppCreationFailureReason int errorReason) {
+            mDelegate.onPaymentAppCreationError(errorMessage, errorReason);
+        }
+
+        @Override
+        public void setCanMakePaymentEvenWithoutApps() {
+            mDelegate.setCanMakePaymentEvenWithoutApps();
         }
 
         @Override
@@ -133,6 +139,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
             }
 
             mDelegate.onDoneCreatingPaymentApps(PaymentAppService.this);
+        }
+
+        @Override
+        public CSPChecker getCSPChecker() {
+            return mDelegate.getCSPChecker();
         }
     }
 

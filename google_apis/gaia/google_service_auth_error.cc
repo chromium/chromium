@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,9 @@ GoogleServiceAuthError::GoogleServiceAuthError(State state,
 GoogleServiceAuthError::GoogleServiceAuthError(
     const GoogleServiceAuthError& other) = default;
 
+GoogleServiceAuthError& GoogleServiceAuthError::operator=(
+    const GoogleServiceAuthError& other) = default;
+
 // static
 GoogleServiceAuthError
     GoogleServiceAuthError::FromConnectionError(int error) {
@@ -76,6 +79,20 @@ GoogleServiceAuthError GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
   GoogleServiceAuthError error(INVALID_GAIA_CREDENTIALS);
   error.invalid_gaia_credentials_reason_ = reason;
   return error;
+}
+
+// static
+GoogleServiceAuthError GoogleServiceAuthError::FromServiceUnavailable(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SERVICE_UNAVAILABLE, error_message);
+}
+
+// static
+GoogleServiceAuthError
+GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+                                error_message);
 }
 
 // static
@@ -106,6 +123,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
     case REQUEST_CANCELED:
     case UNEXPECTED_SERVICE_RESPONSE:
     case SERVICE_ERROR:
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
       return true;
     case NUM_STATES:
       return false;
@@ -154,6 +172,9 @@ std::string GoogleServiceAuthError::ToString() const {
     case SERVICE_ERROR:
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return base::StringPrintf("Service responded with error: '%s'",
+                                error_message_.c_str());
     case NUM_STATES:
       NOTREACHED();
       return std::string();
@@ -163,6 +184,10 @@ std::string GoogleServiceAuthError::ToString() const {
 bool GoogleServiceAuthError::IsPersistentError() const {
   if (state_ == GoogleServiceAuthError::NONE) return false;
   return !IsTransientError();
+}
+
+bool GoogleServiceAuthError::IsScopePersistentError() const {
+  return state_ == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR;
 }
 
 bool GoogleServiceAuthError::IsTransientError() const {

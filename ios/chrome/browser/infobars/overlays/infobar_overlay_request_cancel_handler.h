@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_REQUEST_CANCEL_HANDLER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 
@@ -24,7 +24,7 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
   // Returns the InfoBar that the corresponding request was configured with.
   InfoBarIOS* infobar() const { return infobar_; }
 
-  // Called when the infobar triggering |request| was replaced in its manager.
+  // Called when the infobar triggering `request` was replaced in its manager.
   // Default implementation does nothing.
   virtual void HandleReplacement(InfoBarIOS* replacement);
 
@@ -48,8 +48,9 @@ class InfobarOverlayRequestCancelHandler : public OverlayRequestCancelHandler {
 
    private:
     InfobarOverlayRequestCancelHandler* cancel_handler_ = nullptr;
-    ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-        scoped_observer_;
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        scoped_observation_{this};
   };
 
   InfoBarIOS* infobar_ = nullptr;

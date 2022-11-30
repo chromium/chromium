@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
@@ -116,6 +117,21 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
 }
 
+IN_PROC_BROWSER_TEST_F(PolicyTest,
+                       ViewSourceDisabledByDeveloperToolsAvailability) {
+  // Verifies that entry points to ViewSource can be disabled by setting the
+  // DeveloperToolsAvailability policy.
+
+  // Disable devtools via policy.
+  PolicyMap policies;
+  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
+  UpdateProviderPolicy(policies);
+  // Verify that it's not possible to ViewSource.
+  EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_VIEW_SOURCE));
+}
+
 IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
   // Verifies that when DeveloperToolsDisabled policy is set, the "dev mode"
   // in chrome://extensions is actively turned off and the checkbox
@@ -128,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
   const char define_helpers_js[] =
       R"(function getToolbar() {
            const manager = document.querySelector('extensions-manager');
-           return manager.$$('extensions-toolbar');
+           return manager.shadowRoot.querySelector('extensions-toolbar');
          }
 
          function getToggle() {
@@ -146,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
       "getControls().hasAttribute('expanded')";
 
   // Navigate to the extensions frame and enabled "Developer mode"
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIExtensionsURL)));
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

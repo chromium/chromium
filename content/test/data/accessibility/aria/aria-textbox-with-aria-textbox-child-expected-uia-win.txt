@@ -1,0 +1,27 @@
+Document
+++Edit Name='not editable' Value.Value='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++++Group IsControlElement=false
+++++++Text Name='Foo'
+++++Edit Name='nested, not editable, rich' Value.Value='Bar'
+++++++Group IsControlElement=false
+++++++++Text Name='Bar'
+++++Edit Name='nested, not editable, plain' Value.Value='Bar'
+++++++Text Name='Bar'
+++++Edit Name='nested, editable, rich' Value.Value='Baz'
+++++++Group IsControlElement=false
+++++++++Text Name='Baz'
+++++Edit Name='nested, editable, plain' Value.Value='Baz'
+++++++Text Name='Baz'
+++Edit Name='editable' Value.Value='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++++Group IsControlElement=false
+++++++Text Name='Foo'
+++++Edit Name='nested, not editable, rich' Value.Value='Bar'
+++++++Group IsControlElement=false
+++++++++Text Name='Bar'
+++++Edit Name='nested, not editable, plain' Value.Value='Bar'
+++++++Text Name='Bar'
+++++Edit Name='nested, editable, rich' Value.Value='Baz'
+++++++Group IsControlElement=false
+++++++++Text Name='Baz'
+++++Edit Name='nested, editable, plain' Value.Value='Baz'
+++++++Text Name='Baz'

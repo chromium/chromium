@@ -1,0 +1,32 @@
+caption: Mode of the Assistant onboarding experience
+default: Default
+desc: |-
+  This policy controls the mode of the Assistant onboarding experience.
+
+        If the policy is unset or is set to <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT">"Default"</ph>, the default mode of the Assistant onboarding experience is used.
+        If the policy is set to <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION">"Education"</ph>, the EDU mode of the Assistant onboarding experience is used.
+example_value: Default
+features:
+  cloud_only: true
+  dynamic_refresh: false
+  per_profile: true
+  unlisted: true
+items:
+- caption: Use the default mode of the Assistant onboarding experience
+  name: Default
+  value: Default
+- caption: Use the EDU mode of the Assistant onboarding experience
+  name: Education
+  value: Education
+owners:
+- xiaohuic@chromium.org
+- croissant-eng@google.com
+schema:
+  enum:
+  - Default
+  - Education
+  type: string
+supported_on:
+- chrome_os:85-
+tags: []
+type: string-enum

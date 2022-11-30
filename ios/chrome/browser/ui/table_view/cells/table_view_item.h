@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@
 
 // The accessory type to display on the trailing edge of the cell.
 @property(nonatomic, assign) UITableViewCellAccessoryType accessoryType;
+
+// The accessory view to display on the trailing edge of the cell. Overrides
+// the value of the `accessoryType` property.
+@property(nonatomic, strong) UIView* accessoryView;
 
 // Whether custom separator should be used. The separator can replace the
 // separator provided by UITableViewCell. It is a 0.5pt high line. Default is

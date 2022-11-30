@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,14 @@ static const int32_t kMaxId = 100;
 class AXTestSmallBankUniqueId : public AXUniqueId {
  public:
   AXTestSmallBankUniqueId();
+
+  AXTestSmallBankUniqueId(const AXTestSmallBankUniqueId&) = delete;
+  AXTestSmallBankUniqueId& operator=(const AXTestSmallBankUniqueId&) = delete;
+
   ~AXTestSmallBankUniqueId() override;
 
  private:
   friend class AXUniqueId;
-  DISALLOW_COPY_AND_ASSIGN(AXTestSmallBankUniqueId);
 };
 
 AXTestSmallBankUniqueId::AXTestSmallBankUniqueId() : AXUniqueId(kMaxId) {}

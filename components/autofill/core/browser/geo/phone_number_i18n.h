@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
-
-#include "base/compiler_specific.h"
 
 namespace i18n {
 namespace phonenumbers {
@@ -53,14 +50,14 @@ bool IsPossiblePhoneNumber(const std::string& phone_number,
 // |default_region| if |value| has an international country code, for example).
 // This is an internal function, exposed in the header file so that it can be
 // tested.
-bool ParsePhoneNumber(const std::u16string& value,
-                      const std::string& default_region,
-                      std::u16string* country_code,
-                      std::u16string* city_code,
-                      std::u16string* number,
-                      std::string* inferred_region,
-                      ::i18n::phonenumbers::PhoneNumber* i18n_number)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool ParsePhoneNumber(
+    const std::u16string& value,
+    const std::string& default_region,
+    std::u16string* country_code,
+    std::u16string* city_code,
+    std::u16string* number,
+    std::string* inferred_region,
+    ::i18n::phonenumbers::PhoneNumber* i18n_number);
 
 // Normalizes phone number, by changing digits in the extended fonts
 // (such as \xFF1x) into '0'-'9'. Also strips out non-digit characters.
@@ -75,11 +72,11 @@ std::u16string NormalizePhoneNumber(const std::u16string& value,
 // |whole_number| - constructed whole number.
 // Separator characters are stripped before parsing the digits.
 // Returns true if parsing was successful, false otherwise.
-bool ConstructPhoneNumber(const std::u16string& country_code,
-                          const std::u16string& city_code,
-                          const std::u16string& number,
-                          const std::string& default_region,
-                          std::u16string* whole_number) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ConstructPhoneNumber(const std::u16string& country_code,
+                                        const std::u16string& city_code,
+                                        const std::u16string& number,
+                                        const std::string& default_region,
+                                        std::u16string* whole_number);
 
 // Returns true if |number_a| and |number_b| parse to the same phone number in
 // the given |region|.
@@ -120,7 +117,9 @@ std::string FormatPhoneForResponse(const std::string& phone_number,
 // The cached phone number, does parsing only once, improves performance.
 class PhoneObject {
  public:
-  PhoneObject(const std::u16string& number, const std::string& default_region);
+  PhoneObject(const std::u16string& number,
+              const std::string& default_region,
+              bool infer_country_code);
   PhoneObject(const PhoneObject&);
   PhoneObject();
   ~PhoneObject();

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
-#include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -42,11 +42,16 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // top-to-bottom, left-to-right order (or mirrored for RTL).
   std::vector<HoldingSpaceItemView*> GetHoldingSpaceItemViews();
 
+  // Returns the `holding_space_tray_` associated with this bubble.
+  HoldingSpaceTray* tray() { return holding_space_tray_; }
+
  private:
   class ChildBubbleContainer;
 
-  // Return the maximum height available for the holding space bubble.
-  int CalculateMaxHeight() const;
+  // Return the maximum height available for the top-level holding space bubble
+  // and child bubble container respectively.
+  int CalculateTopLevelBubbleMaxHeight() const;
+  int CalculateChildBubbleContainerMaxHeight() const;
 
   void UpdateBubbleBounds();
 
@@ -63,12 +68,13 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   // The owner of this class.
   HoldingSpaceTray* const holding_space_tray_;
 
-  // The singleton delegate for `HoldingSpaceItemView`s that implements support
+  // The singleton delegate for holding space views that implements support
   // for context menu, drag-and-drop, and multiple selection.
-  HoldingSpaceItemViewDelegate delegate_{this};
+  HoldingSpaceViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
-  ChildBubbleContainer* child_bubble_container_;
+  views::View* header_ = nullptr;
+  ChildBubbleContainer* child_bubble_container_ = nullptr;
   std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;

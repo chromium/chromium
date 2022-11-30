@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ std::unique_ptr<favicon_base::LargeIconResult> LargeIconCache::GetCachedResult(
     return CloneLargeIconResult(*iter->second->result.get());
   }
 
-  return std::unique_ptr<favicon_base::LargeIconResult>();
+  return nullptr;
 }
 
 std::unique_ptr<favicon_base::LargeIconResult>

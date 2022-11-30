@@ -5,7 +5,6 @@
 <translation id="104962181688258143">ගොනු යෙදුම විවෘත කරන්න</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> සඳහා සෙවීම් ප්‍රතිඵල <ph name="N" />ක් සංදර්ශනය කරමින්</translation>
 <translation id="1195667586424773550">පටිත්තේ ලිපින තීරුවට සබැඳිය අදින්න</translation>
-<translation id="1204450209689312104">අප්‍රසිද්ධ ප්‍රකාරයේ නව කවුළුවක් විවෘත කරන්න</translation>
 <translation id="1251638888133819822">සම්පූර්ණ තිර විශාලකය ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">පිට වීම</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">පේළියේ අවසානයට යන්න</translation>
 <translation id="1499072997694708844">කිසියම් විවෘත සොයා ගැනීමේ කවුළුවක් වසන්න, නැති නම් ඔබේ වත්මන් පිටුව පූරණ කිරීම නවත්වන්න</translation>
 <translation id="1510238584712386396">දියත්කරණය</translation>
+<translation id="1516966594427080024">අප්‍රසිද්ධ ප්‍රකාරයේ නව කවුළුවක් විවෘත කරන්න</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, අනතුරුව <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
 <translation id="1652741121070700329">පෙර වචනයේ ආරම්භයට යන්න</translation>
 <translation id="1679841710523778799">දීප්තිය වැඩි කරන්න</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ඔබාගෙන සිට, ඔබට විවෘත කිරීමට අවශ්‍ය කවුළුව වෙත පැමිණෙන තෙක් <ph name="TAB" /> තට්ටු කර, අනතුරුව මුදා හරින්න.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">වෙබ් පිටුව පහළට අනුචලනය කරන්න</translation>
 <translation id="2530896289327917474">කැරට් බ්‍රවුස් කිරීම ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2574014812750545982">පිටුවෙහි විශාලන මට්ටම යළි පිහිටුවන්න</translation>
-<translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, අනතුරුව <ph name="TAB" /> හෝ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">ඔබේ වත්මන් පිටුව නැවත පූරණය කරන්න</translation>
 <translation id="2764005613199379871">සෙවීම් ලිපින තීරුවෙහි අවධානය යොමු කරන්න</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">කෙටි මං</translation>
 <translation id="3084301071537457911">ඔබේ රාක්කයෙහි මීළඟ අයිතමය උද්දීපනය කරන්න</translation>
 <translation id="309173601632226815">ඔබේ රාක්කයෙහි දියත්කරණ බොත්තම උද්දීපනය කරන්න</translation>
-<translation id="3105917916468784889">තිරපිටපත් ගන්න</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ලිපින බාර් එක ෆෝකස් කරන්න</translation>
 <translation id="3256109297135787951">ඔබේ රාක්කයෙහි අයිතමයකින් උද්දීපනය ඉවත් කරන්න</translation>
 <translation id="3288816184963444640">වත්මන් කවුළුව වසන්න</translation>
+<translation id="3322797428033495633">පින්තූරය-තුළ-පින්තූරය කවුළුව නාභිගත කරන්න</translation>
+<translation id="3350805006883559974">සක්‍රිය කවුළුව ඉහළින් පා කරන්න</translation>
 <translation id="3407560819924487926">කාර්ය කළමනාකරු ගෙන එන්න</translation>
+<translation id="3417835166382867856">ටැබ සොයන්න</translation>
 <translation id="3422679037938588196">ඔබේ සෙවීම සඳහා පෙර ගැළපුමට යන්න</translation>
 <translation id="353037708190149633">නව ෆෝල්ඩරයක පිටුසන් ලෙස ඔබේ වත්මන් කවුළුවෙහි සියලු විවෘත පිටු සුරකින්න</translation>
 <translation id="355103131818127604">පසුබිමේ නව පටිත්තක සබැඳිය විවෘත කරන්න</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">කොමාව</translation>
 <translation id="3976863468609830880">ඔබේ රාක්කයෙහි අන්තිම නිරූපකය ක්ලික් කරන්න</translation>
 <translation id="3994783594793697310">සංදර්ශකයේ විශාලන මට්ටම යළි පිහිටුවන්න</translation>
+<translation id="4026837045671473537">වර්ණ අපවර්තන ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4026843240379844265">සංදර්ශක අතර සක්‍රිය කවුළුව ගෙන යන්න</translation>
 <translation id="4035482366624727273">පිටුවෙහි සියල්ල තෝරන්න</translation>
 <translation id="4060703249685950734">ඔබ වැසූ අවසන් පටිත්ත හෝ කවුළුව යළි විවෘත කරන්න</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">යතුරු පුවරු කෙටිමං සහායක බලන්න</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> හෝ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">තත්ත්ව ප්‍රදේශය විවෘත කරන්න (ඔබේ ගිණුමේ පින්තූරය දිස් වන)</translation>
-<translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
 <translation id="4698850295812410683">පන්හිඳ මෙවලම් පෙන්වන්න</translation>
 <translation id="4801989101741319327">මීළඟ වචනයේ අවසානය වෙත ගෙන යන්න</translation>
 <translation id="4866066940972151697">දකුණට ඇති මේසය ක්‍රියාත්මක කරන්න</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">පේළියේ ආරම්භයට පෙළ තෝරන්න</translation>
 <translation id="5316716239522500219">කැඩපත් මොනිටරය</translation>
 <translation id="539072479502328326">ඈදුණු විශාලකය ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="5466615362193675484">අගුලු ප්‍රකාරය ප්‍රතිප්‍රමාණ කිරීමට මෙනුව ටොගල කරන්න</translation>
 <translation id="5541719484267030947">පටිත්ත ඇදගෙන යාමේදී, <ph name="ESC" /> ඔබන්න</translation>
 <translation id="5554139136362089836">වත්මන් පිටුව සොයන්න</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="561814908794220892">නව පටිත්තක වෙබ් පිටුව විවෘත කරන්න</translation>
 <translation id="5620219513321115856">ක්‍රියාකාරී කවුණු දකුණේ ඇති මේසයට ගෙන යන්න</translation>
+<translation id="5699366815052349604">සියලු මේසවලට සක්‍රිය කවුළුව පවරන්න</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> හෝ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">පටිත්තෙහි සබැඳිය විවෘත කරන්න</translation>
 <translation id="5757474750054631686">යතුරු පුවරුව අඳුරු කරන්න (පසු ආලෝකන යතුරු පුවරු සඳහා පමණි)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">කවුළුව කරකවන්න</translation>
 <translation id="5926306472221400972">පූර්ණ තිරයේ තිර රුවක් ගන්න</translation>
 <translation id="6022924867608035986">සෙවුම් කොටු පෙළ හිස් කරන්න</translation>
-<translation id="6045998054441862242">අධි විභේදන ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="6052614013050385269">සබැඳියක් දකුණු-ක්ලික් කරන්න</translation>
 <translation id="6129953537138746214">හිඩස</translation>
 <translation id="6143669479988153888">පිටුවෙහි විශාලනය කරන්න</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">පිටු මූලාශ්‍රය බලන්න</translation>
 <translation id="6321940490215594447">ඉතිහාසය පිටුව විවෘත කරන්න</translation>
 <translation id="6340769215862220182">සංදර්ශකයේ විශාලනය</translation>
+<translation id="634687982629734605">මේවා අතර නාභිගත කිරීම මාරු කරන්න: තත්ත්ව ප්‍රදේශය (ඔබගේ ගිණුමේ පින්තූරය දිස් වන) දියත්කරණය, ලිපින තීරුව, පිටුසන් තීරුව (දෘශ්‍යමාන නම්) විවෘත වෙබ් අඩවිය, සහ බාගැනීම් තීරුව (දෘශ්‍යමාන නම්) නාභිගත කළ හැකි සංවාදයක් සංදර්ශනය වන්නේ නම්, ඒ වෙනුවට නාභිගත කිරීම එතැනට ගෙන යන්න.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">පේළියේ අවසානයට පෙළ තෝරන්න</translation>
 <translation id="6425378783626925378">ඔබේ රාක්කයෙහි නිරූපක 1-8 ක්ලික් කරන්න</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">මුල් පිහිටුමට පටිත්ත ආපසු එවන්න</translation>
 <translation id="6474744297082284761">විශාලනය අඩු කිරීම (ඈදා ඇති විට හෝ පූර්ණ තිර විශාලක සබල විට)</translation>
 <translation id="649811797655257835">ගොනුව තෝරා, <ph name="SPACE" /> ඔබන්න</translation>
+<translation id="6515089016094047210">දින දර්ශන විජට් විවෘත කරන්න හෝ වසන්න.</translation>
 <translation id="6551886416582667425">අර්ධ තිර රුව/පටිගත කිරීම ලබා ගන්න</translation>
 <translation id="6556040137485212400">දිගුකාලීන කාලයක් සඳහා භාවිතයට නොගත් කවුළුව විවෘත කරන්න</translation>
 <translation id="666343722268997814">උද්දීපිත අයිතමය සඳහා දකුණු-ක්ලික් මෙනුව විවෘත කරන්න</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">පිරික්සුම් දත්ත හිස් කරන්න</translation>
 <translation id="8130528849632411619">ලේඛනයේ ආරම්භයට යන්න</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> හෝ <ph name="E" /></translation>
-<translation id="8232835244134740473">අතර නාභිගත කිරීම මාරු කරන්න: තත්ත්ව ප්‍රදේශය (ඔබේ ගිණුමේ පින්තූරය දිස් වන) දියත්කරණ ලිපින තීරුවේ පිටුසන් තීරුව (දෘශ්‍යමාන නම්) බාගැනීම් තීරුව විවෘත වෙබ් අඩවිය (දෘශ්‍යමාන නම්)</translation>
 <translation id="8234414138295101081">තිරය අංශක 90ක් කරකවන්න</translation>
 <translation id="8241665785394195545">වරහන් දකුණ</translation>
 <translation id="8264941229485248811">සංවර්ධක මෙවලම් පරීක්ෂක පෙන්වන්න හෝ සඟවන්න</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">පටිති තීරුවෙහි හිස් ප්‍රදේශයකට සබැඳිය අදින්න</translation>
 <translation id="8389638407792712197">නව කවුළුව විවෘත කරන්න</translation>
 <translation id="8429696719963529183">F යතුරු භාවිතා කරන්න (F1 සිට F12)</translation>
-<translation id="8537650670971624753">සෙවීමේ ආකාරයෙන් ඉවත් වන්න</translation>
 <translation id="85690795166292698">සබැඳිය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="8609384513243082612">නව පටිත්ත විවෘත කරන්න</translation>
 <translation id="8644639153978066712">ගොනු යෙදුමෙහි සැඟවුණු ගොනු පෙන්වන්න</translation>
 <translation id="8717459106217102612">පෙර වචනය හෝ අකුර තෝරන්න</translation>
 <translation id="8727232706774971183">ඔබේ දැනුම්දීම් බලන්න</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 සිට 8</translation>
 <translation id="8855885154700222542">සම්පූර්ණ තිරයේ යතුර</translation>
 <translation id="8881584919399569791">ක්‍රියාකාරී කවුණු වමේ ඇති මේසයට ගෙන යන්න</translation>
 <translation id="88986195241502842">පිටුව පහළට</translation>
 <translation id="8924883688469390268">පෙර පරිශීලකයා වෙත මාරු වන්න</translation>
+<translation id="8941626538514548667">බ්‍රව්සරයේ වෙබ් අන්තර්ගතය කෙරෙහි අවධානය යොමු කරන්න</translation>
 <translation id="8977648847395357314">ලිපින තීරුව තුළ ඇති අන්තර්ගතය තෝරන්න</translation>
 <translation id="8982190978301344584">ලබා ගත හැකි IME ලැයිස්තුවක් සංදර්ශනය කරන මෙනුව පෙන්වන්න</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 සිට 8</translation>

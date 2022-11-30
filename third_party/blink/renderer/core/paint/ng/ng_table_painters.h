@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,12 @@
 
 namespace blink {
 
+class BoxDecorationData;
 class LayoutBox;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
 struct PhysicalOffset;
+struct PhysicalRect;
 
 class NGTablePainter {
   STACK_ALLOCATED();
@@ -25,14 +27,15 @@ class NGTablePainter {
     DCHECK(fragment_.IsTableNG());
   }
 
+  bool WillCheckColumnBackgrounds();
+
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintCollapsedBorders(const PaintInfo&,
                              const PhysicalOffset&,
-                             const IntRect& visual_rect);
+                             const gfx::Rect& visual_rect);
 
  private:
   const NGPhysicalBoxFragment& fragment_;
@@ -49,12 +52,11 @@ class NGTableSectionPainter {
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintColumnsBackground(const PaintInfo&,
-                              const PhysicalOffset& section_offset,
+                              const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
                               const NGTableFragmentData::ColumnGeometries&);
 
@@ -72,18 +74,17 @@ class NGTableRowPainter {
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
   void PaintTablePartBackgroundIntoCells(
       const PaintInfo& paint_info,
       const LayoutBox& table_part,
       const PhysicalRect& table_part_paint_rect,
-      const PhysicalOffset& row_offset);
+      const PhysicalOffset& row_paint_offset);
 
   void PaintColumnsBackground(const PaintInfo&,
-                              const PhysicalOffset& row_offset,
+                              const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
                               const NGTableFragmentData::ColumnGeometries&);
 
@@ -99,14 +100,14 @@ class NGTableCellPainter {
       : fragment_(table_cell_fragment) {}
 
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const PhysicalOffset&,
-                                    const DisplayItemClient& client,
-                                    const IntRect& visual_rect);
+                                    const PhysicalRect&,
+                                    const BoxDecorationData&);
 
-  void PaintBackgroundForTablePart(const PaintInfo& paint_info,
-                                   const LayoutBox& table_part,
-                                   const PhysicalRect& table_part_paint_rect,
-                                   const PhysicalOffset& table_cell_offset);
+  void PaintBackgroundForTablePart(
+      const PaintInfo& paint_info,
+      const LayoutBox& table_part,
+      const PhysicalRect& table_part_paint_rect,
+      const PhysicalOffset& table_cell_paint_offset);
 
  private:
   const NGPhysicalBoxFragment& fragment_;

@@ -1,0 +1,10 @@
+specific_include_rules = {
+  # Our rust tests are built in a separate binary than other Mojo unit tests.
+  # We need to initialize Mojo, so allow references to Mojo embedder code. This
+  # is fine since this file is only used in tests. Hopefully this won't always
+  # needed, e.g. if we can build Rust and C++ tests into the same binary or
+  # otherwise share initialization code.
+  "test_support.cc": [
+    "+mojo/core/embedder",
+  ]
+}

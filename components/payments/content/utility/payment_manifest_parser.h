@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/payments/content/web_app_manifest.h"
@@ -112,6 +111,10 @@ class PaymentManifestParser {
                               std::unique_ptr<std::vector<WebAppIcon>>)>;
 
   explicit PaymentManifestParser(std::unique_ptr<ErrorLogger> log);
+
+  PaymentManifestParser(const PaymentManifestParser&) = delete;
+  PaymentManifestParser& operator=(const PaymentManifestParser&) = delete;
+
   ~PaymentManifestParser();
 
   void ParsePaymentMethodManifest(const GURL& manifest_url,
@@ -160,8 +163,6 @@ class PaymentManifestParser {
 
   std::unique_ptr<ErrorLogger> log_;
   base::WeakPtrFactory<PaymentManifestParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParser);
 };
 
 }  // namespace payments

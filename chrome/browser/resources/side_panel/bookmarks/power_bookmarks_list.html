@@ -1,0 +1,65 @@
+<style include="cr-icons cr-hidden-style">
+  :host {
+    --price-tracking-discount-color: var(--google-green-800);
+    --price-tracking-original-color: var(--cr-secondary-text-color);
+    --price-tracking-chip-background: var(--google-green-50);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --price-tracking-discount-color: white;
+      --price-tracking-original-color: var(--google-green-200);
+      --price-tracking-chip-background: var(--google-green-900);
+    }
+  }
+
+  .chip-discounted {
+    --power-bookmark-chip-background: var(--price-tracking-chip-background);
+  }
+
+  .icon-discounted {
+    background-color: var(--price-tracking-discount-color);
+  }
+
+  .icon-tracked {
+    --power-bookmark-chip-icon-image: url(../images/bookmarks_icon_tracked.svg);
+  }
+
+  .price-discounted {
+    color: var(--price-tracking-discount-color);
+    font-weight: 500;
+  }
+
+  .price-original {
+    color: var(--price-tracking-original-color);
+    text-decoration: line-through;
+  }
+</style>
+
+<template is="dom-repeat"
+    items="[[getShownBookmarks_(topLevelBookmarks_, activeFolder_)]]"
+    id="powerBookmarksContainer">
+  <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+      description="[[getBookmarkDescription_(item, descriptions_.*)]]"
+      compact="[[compact_]]"
+      on-row-clicked="onRowClicked_">
+    <div slot="extra-content-container">
+      <template is="dom-if"
+          if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
+        <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
+          <power-bookmark-chip class="chip-discounted">
+            <div class="icon icon-tracked icon-discounted"></div>
+            <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
+            <div class="price-original">[[getPreviousPrice_(item)]]</div>
+          </power-bookmark-chip>
+        </template>
+        <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
+          <power-bookmark-chip>
+            <div class="icon icon-tracked"></div>
+            <div>[[getCurrentPrice_(item)]]</div>
+          </power-bookmark-chip>
+        </template>
+      </template>
+    </div>
+  </power-bookmark-row>
+</template>

@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/network_profile_bubble.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -16,12 +15,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -44,8 +44,8 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   void LinkClicked(const ui::Event&);
 
   // Used for loading pages.
-  content::PageNavigator* navigator_;
-  Profile* profile_;
+  raw_ptr<content::PageNavigator> navigator_;
+  raw_ptr<Profile> profile_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,8 +63,6 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
       std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE)));
   learn_more->SetCallback(base::BindRepeating(
       &NetworkProfileBubbleView::LinkClicked, base::Unretained(this)));
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::NETWORK_SHARE_PROFILE_WARNING);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

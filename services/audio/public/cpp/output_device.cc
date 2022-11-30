@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/threading/thread_restrictions.h"
 #include "media/audio/audio_output_device_thread_callback.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 
@@ -73,7 +73,7 @@ void OutputDevice::StreamCreated(
       audio_parameters_, std::move(shared_memory_region), render_callback_);
   audio_thread_ = std::make_unique<media::AudioDeviceThread>(
       audio_callback_.get(), std::move(socket_handle), "audio::OutputDevice",
-      base::ThreadPriority::REALTIME_AUDIO);
+      base::ThreadType::kRealtimeAudio);
 }
 
 void OutputDevice::OnConnectionError() {

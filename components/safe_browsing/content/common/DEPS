@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/safe_browsing/core/common",
+  "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
+  "+third_party/skia/include",
+  "+skia/ext",
+  "+ui/gfx",
+]

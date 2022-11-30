@@ -2,11 +2,12 @@ prefix=
 exec_prefix=
 libdir=${pcfiledir}
 includedir=${pcfiledir}/include
-
+modules=@WITH_MODULES@
 
 Name: libXML
 Version: @VERSION@
 Description: libXML library version2.
 Requires:
-Libs: -L${libdir} -lxml2 @ICU_LIBS@ @THREAD_LIBS@ @Z_LIBS@ @LZMA_LIBS@ @ICONV_LIBS@ @M_LIBS@ @LIBS@
-Cflags: -I${includedir} @XML_INCLUDEDIR@ @XML_CFLAGS@
+Libs: -L${libdir} @XML_LIBS@
+Libs.private: @XML_PRIVATE_LIBS@ @LIBS@
+Cflags: @XML_INCLUDEDIR@ @XML_CFLAGS@

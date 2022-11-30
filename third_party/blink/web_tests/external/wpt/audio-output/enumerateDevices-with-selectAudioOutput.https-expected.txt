@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL enumerateDevices() returns no audiooutput devices before permission grant assert_equals: number of audiooutput devices. expected 0 but got 3
+FAIL selectAudioOutput() promise_test: Unhandled rejection with value: object "TypeError: navigator.mediaDevices.selectAudioOutput is not a function"
+FAIL enumerateDevices() after selectAudioOutput() assert_equals: number of audiooutput devices. expected 1 but got 3
+Harness: the test ran to completion.
+

@@ -1,0 +1,6 @@
+Name: cargo-platform
+URL: https://crates.io/crates/cargo-platform
+Description: Cargo's representation of a target platform.
+Version: 0.1.2
+Security Critical: no
+License: Apache 2.0

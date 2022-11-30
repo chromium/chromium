@@ -6,6 +6,8 @@
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
 </script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
@@ -17,7 +19,7 @@ testRunner.waitUntilDone();
 <script>
 let descriptionContainer = document.getElementById('description');
 var colorControl = document.getElementById('color');
-openPicker(colorControl, openPickerCallback, openPickerCallback);
+openPickerDeprecatedJsTest(colorControl, openPickerCallback, openPickerCallback);
 
 function openPickerCallback() {
   if (internals.pagePopupWindow) {

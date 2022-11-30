@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/policy_constants.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/mac/scoped_cftyperef.h"
@@ -45,91 +46,73 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
   const PolicyMap& map = service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (!map.empty()) {
-    base::DictionaryValue dict;
-    for (auto it = map.begin(); it != map.end(); ++it)
-      dict.SetKey(it->first, it->second.value()->Clone());
+    base::Value::Dict dict;
+    for (const auto& it : map)
+      dict.Set(it.first, it.second.value_unsafe()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
+#if BUILDFLAG(IS_WIN)
+    LOG(WARNING) << "From: " << kRegistryChromePolicyKey;
+#endif
   }
   return map.empty();
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 CFPropertyListRef ValueToProperty(const base::Value& value) {
   switch (value.type()) {
     case base::Value::Type::NONE:
       return kCFNull;
 
-    case base::Value::Type::BOOLEAN: {
-      bool bool_value;
-      if (value.GetAsBoolean(&bool_value))
-        return bool_value ? kCFBooleanTrue : kCFBooleanFalse;
-      break;
-    }
+    case base::Value::Type::BOOLEAN:
+      return value.GetBool() ? kCFBooleanTrue : kCFBooleanFalse;
 
     case base::Value::Type::INTEGER: {
-      int int_value;
-      if (value.GetAsInteger(&int_value)) {
-        return CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType,
-                              &int_value);
-      }
-      break;
+      const int int_value = value.GetInt();
+      return CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &int_value);
     }
 
     case base::Value::Type::DOUBLE: {
-      double double_value;
-      if (value.GetAsDouble(&double_value)) {
-        return CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType,
-                              &double_value);
-      }
-      break;
+      const double double_value = value.GetDouble();
+      return CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType,
+                            &double_value);
     }
 
     case base::Value::Type::STRING: {
-      std::string string_value;
-      if (value.GetAsString(&string_value))
-        return base::SysUTF8ToCFStringRef(string_value).release();
-      break;
+      const std::string& string_value = value.GetString();
+      return base::SysUTF8ToCFStringRef(string_value).release();
     }
 
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* dict_value;
-      if (value.GetAsDictionary(&dict_value)) {
-        // |dict| is owned by the caller.
-        CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
-            kCFAllocatorDefault, dict_value->size(),
-            &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-        for (base::DictionaryValue::Iterator iterator(*dict_value);
-             !iterator.IsAtEnd(); iterator.Advance()) {
-          // CFDictionaryAddValue() retains both |key| and |value|, so make sure
-          // the references are balanced.
-          base::ScopedCFTypeRef<CFStringRef> key(
-              base::SysUTF8ToCFStringRef(iterator.key()));
-          base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
-              ValueToProperty(iterator.value()));
-          if (cf_value)
-            CFDictionaryAddValue(dict, key, cf_value);
-        }
-        return dict;
+      // |dict| is owned by the caller.
+      CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
+          kCFAllocatorDefault, value.DictSize(), &kCFTypeDictionaryKeyCallBacks,
+          &kCFTypeDictionaryValueCallBacks);
+      for (const auto key_value_pair : value.DictItems()) {
+        // CFDictionaryAddValue() retains both |key| and |value|, so make sure
+        // the references are balanced.
+        base::ScopedCFTypeRef<CFStringRef> key(
+            base::SysUTF8ToCFStringRef(key_value_pair.first));
+        base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
+            ValueToProperty(key_value_pair.second));
+        if (cf_value)
+          CFDictionaryAddValue(dict, key, cf_value);
       }
-      break;
+      return dict;
     }
 
     case base::Value::Type::LIST: {
-      const base::ListValue* list;
-      if (value.GetAsList(&list)) {
-        CFMutableArrayRef array =
-            CFArrayCreateMutable(NULL, list->GetSize(), &kCFTypeArrayCallBacks);
-        for (const auto& entry : *list) {
-          // CFArrayAppendValue() retains |cf_value|, so make sure the reference
-          // created by ValueToProperty() is released.
-          base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
-              ValueToProperty(entry));
-          if (cf_value)
-            CFArrayAppendValue(array, cf_value);
-        }
-        return array;
+      const base::Value::List& list = value.GetList();
+      CFMutableArrayRef array =
+          CFArrayCreateMutable(NULL, list.size(), &kCFTypeArrayCallBacks);
+      for (const base::Value& entry : list) {
+        // CFArrayAppendValue() retains |cf_value|, so make sure the reference
+        // created by ValueToProperty() is released.
+        base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
+            ValueToProperty(entry));
+        if (cf_value)
+          CFArrayAppendValue(array, cf_value);
       }
-      break;
+      return array;
     }
 
     case base::Value::Type::BINARY:
@@ -137,23 +120,18 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       // because there's no equivalent JSON type, and policy values can only
       // take valid JSON values.
       break;
-
-    // TODO(crbug.com/859477): Remove after root cause is found.
-    case base::Value::Type::DEAD:
-      CHECK(false);
-      break;
   }
 
   return NULL;
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace policy
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyBundle& bundle) {
   os << "{" << std::endl;
-  for (auto iter = bundle.begin(); iter != bundle.end(); ++iter)
-    os << "  \"" << iter->first << "\": " << *iter->second << "," << std::endl;
+  for (const auto& entry : bundle)
+    os << "  \"" << entry.first << "\": " << entry.second << "," << std::endl;
   os << "}";
   return os;
 }
@@ -204,7 +182,7 @@ std::ostream& operator<<(std::ostream& os, const policy::PolicyMap::Entry& e) {
   return os << "{" << std::endl
             << "  \"level\": " << e.level << "," << std::endl
             << "  \"scope\": " << e.scope << "," << std::endl
-            << "  \"value\": " << *e.value() << "}";
+            << "  \"value\": " << *e.value_unsafe() << "}";
 }
 
 std::ostream& operator<<(std::ostream& os, const policy::PolicyNamespace& ns) {

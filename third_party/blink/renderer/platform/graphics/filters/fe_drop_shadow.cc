@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
 
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_gaussian_blur.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -42,23 +43,23 @@ FEDropShadow::FEDropShadow(Filter* filter,
       shadow_color_(shadow_color),
       shadow_opacity_(shadow_opacity) {}
 
-FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
-                                  const FloatPoint& offset,
-                                  const FloatRect& rect) {
-  FloatRect offset_rect = rect;
-  offset_rect.MoveBy(offset);
-  FloatRect blurred_rect =
+gfx::RectF FEDropShadow::MapEffect(const gfx::SizeF& std_deviation,
+                                   const gfx::PointF& offset,
+                                   const gfx::RectF& rect) {
+  gfx::RectF offset_rect = rect;
+  offset_rect.Offset(offset.OffsetFromOrigin());
+  gfx::RectF blurred_rect =
       FEGaussianBlur::MapEffect(std_deviation, offset_rect);
-  return UnionRect(blurred_rect, rect);
+  return gfx::UnionRects(blurred_rect, rect);
 }
 
-FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {
-  const Filter* filter = this->GetFilter();
+gfx::RectF FEDropShadow::MapEffect(const gfx::RectF& rect) const {
+  const Filter* filter = GetFilter();
   DCHECK(filter);
-  FloatPoint offset(filter->ApplyHorizontalScale(dx_),
-                    filter->ApplyVerticalScale(dy_));
-  FloatSize std_error(filter->ApplyHorizontalScale(std_x_),
-                      filter->ApplyVerticalScale(std_y_));
+  gfx::PointF offset(filter->ApplyHorizontalScale(dx_),
+                     filter->ApplyVerticalScale(dy_));
+  gfx::SizeF std_error(filter->ApplyHorizontalScale(std_x_),
+                       filter->ApplyVerticalScale(std_y_));
   return MapEffect(std_error, offset, rect);
 }
 
@@ -71,12 +72,13 @@ sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
   float std_y = GetFilter()->ApplyVerticalScale(std_y_);
   Color color = AdaptColorToOperatingInterpolationSpace(
       shadow_color_.CombineWithAlpha(shadow_opacity_));
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   return sk_make_sp<DropShadowPaintFilter>(
       SkFloatToScalar(dx), SkFloatToScalar(dy), SkFloatToScalar(std_x),
-      SkFloatToScalar(std_y), color.Rgb(),
+      SkFloatToScalar(std_y), SkColor4f::FromColor(color.Rgb()),
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
-      std::move(input), base::OptionalOrNullptr(crop_rect));
+      std::move(input), base::OptionalToPtr(crop_rect));
 }
 
 WTF::TextStream& FEDropShadow::ExternalRepresentation(WTF::TextStream& ts,

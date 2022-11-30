@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.DigitalGoods;
-import org.chromium.payments.mojom.DigitalGoods.AcknowledgeResponse;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
-import org.chromium.payments.mojom.DigitalGoods.ListPurchasesResponse;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
+import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 
@@ -37,7 +36,7 @@ class FakeDigitalGoods implements DigitalGoods {
     }
 
     @Override
-    public void getDetails(String[] itemIds, GetDetailsResponse callback) {
+    public void getDetails(String[] itemIds, GetDetails_Response callback) {
         // Figure out the size of the results array.
         int size = 0;
         for (String id: itemIds) {
@@ -54,11 +53,13 @@ class FakeDigitalGoods implements DigitalGoods {
     }
 
     @Override
-    public void acknowledge(
-            String purchaseToken, boolean makeAvailableAgain, AcknowledgeResponse callback) {}
+    public void listPurchases(ListPurchases_Response callback) {}
 
     @Override
-    public void listPurchases(ListPurchasesResponse callback) {}
+    public void listPurchaseHistory(ListPurchaseHistory_Response callback) {}
+
+    @Override
+    public void consume(String purchaseToken, Consume_Response callback) {}
 
     @Override
     public void close() {}

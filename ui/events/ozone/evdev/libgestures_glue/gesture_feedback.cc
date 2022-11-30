@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
@@ -49,19 +48,14 @@ std::string DumpGesturePropertyValue(GesturesProp* property) {
   switch (property->type()) {
     case GesturePropertyProvider::PT_INT:
       return DumpArrayProperty(property->GetIntValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_SHORT:
       return DumpArrayProperty(property->GetShortValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_BOOL:
       return DumpArrayProperty(property->GetBoolValue(), "%d");
-      break;
     case GesturePropertyProvider::PT_STRING:
       return "\"" + property->GetStringValue() + "\"";
-      break;
     case GesturePropertyProvider::PT_REAL:
       return DumpArrayProperty(property->GetDoubleValue(), "%lf");
-      break;
     default:
       NOTREACHED();
       break;

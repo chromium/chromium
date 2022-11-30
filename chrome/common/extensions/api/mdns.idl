@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ namespace mdns {
     // Immediately issues a multicast DNS query for all service types.
     // |callback| is invoked immediately. At a later time, queries will be
     // sent, and any service events will be fired.
-    static void forceDiscovery(VoidCallback callback);
+    [supportsPromises] static void forceDiscovery(VoidCallback callback);
   };
 
   interface Properties {

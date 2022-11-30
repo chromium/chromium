@@ -1,15 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
@@ -67,7 +65,7 @@ TEST_P(ConvertToWebRtcVideoFrameBufferParamTest, ToI420) {
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ConvertToWebRtcVideoFrameBufferParamTest,
     ConvertToWebRtcVideoFrameBufferParamTest,
     ::testing::ValuesIn(TestParams()),
@@ -76,37 +74,6 @@ INSTANTIATE_TEST_CASE_P(
           {media::VideoFrame::StorageTypeToString(std::get<0>(info.param)), "_",
            media::VideoPixelFormatToString(std::get<1>(info.param))});
     });
-
-TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420DownScaleGmb) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndDisableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
-  const gfx::Size kCodedSize(1280, 960);
-  const gfx::Rect kVisibleRect(0, 120, 1280, 720);
-  const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
-  auto gmb_frame =
-      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
-                      media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-
-  // The adapter should report width and height from the natural size for
-  // VideoFrame backed by GpuMemoryBuffer.
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_buffer =
-      ConvertToWebRtcVideoFrameBuffer(std::move(gmb_frame), resources);
-  EXPECT_EQ(gmb_frame_buffer->width(), kNaturalSize.width());
-  EXPECT_EQ(gmb_frame_buffer->height(), kNaturalSize.height());
-
-  // The I420 frame should have the same size as the natural size
-  auto i420_frame = gmb_frame_buffer->ToI420();
-  ASSERT_TRUE(i420_frame);
-  EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
-  EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
-  auto* get_i420_frame = gmb_frame_buffer->GetI420();
-  ASSERT_TRUE(get_i420_frame);
-  EXPECT_EQ(get_i420_frame->width(), kNaturalSize.width());
-  EXPECT_EQ(get_i420_frame->height(), kNaturalSize.height());
-}
 
 TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
   const gfx::Size kCodedSize(1280, 960);
@@ -136,9 +103,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
 
 TEST(ConvertToWebRtcVideoFrameBufferTest,
      Nv12WrapsGmbWhenNoScalingNeeededWithFeature) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndEnableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   // Same size as visible rect so no scaling.
@@ -166,7 +130,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
   EXPECT_EQ(nv12_frame->height(), kNaturalSize.height());
 
   // Even though we have an NV12 frame, ToI420 should return an I420 frame.
-  EXPECT_FALSE(gmb_frame_buffer->GetI420());
   auto i420_frame = gmb_frame_buffer->ToI420();
   ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
@@ -174,9 +137,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
 }
 
 TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
-  base::test::ScopedFeatureList scoped_feautre_list;
-  scoped_feautre_list.InitAndEnableFeature(
-      blink::features::kWebRtcLibvpxEncodeNV12);
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
@@ -203,7 +163,6 @@ TEST(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
   EXPECT_EQ(nv12_frame->height(), kNaturalSize.height());
 
   // Even though we have an NV12 frame, ToI420 should return an I420 frame.
-  EXPECT_FALSE(gmb_frame_buffer->GetI420());
   auto i420_frame = gmb_frame_buffer->ToI420();
   ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
@@ -309,12 +268,13 @@ TEST(ConvertToWebRtcVideoFrameBufferTest,
                       media::VideoFrame::STORAGE_OWNED_MEMORY,
                       media::VideoPixelFormat::PIXEL_FORMAT_ARGB);
   // fill mock image with whilte color.
-  memset(memory_frame->data(media::VideoFrame::kARGBPlane), 0xFF,
+  memset(memory_frame->writable_data(media::VideoFrame::kARGBPlane), 0xFF,
          kCodedSize.GetArea() * 4);
 
   // Should call texture conversion.
   resources->ExpectCreateFrameWithRealImplementation();
-  resources->ExpectCreateTemporaryFrameWithRealImplementation();
+  resources->ExpectCreateTemporaryVectorBufferWithRealImplementation();
+  resources->ExpectReleaseTemporaryVectorBufferWithRealImplementation();
   EXPECT_CALL(*resources, ConstructVideoFrameFromTexture(_))
       .WillOnce(Return(memory_frame));
 

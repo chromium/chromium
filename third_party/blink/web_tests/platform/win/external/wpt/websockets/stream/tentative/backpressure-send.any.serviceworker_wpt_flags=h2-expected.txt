@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL backpressure should be applied to sent messages promise_test: Unhandled rejection with value: object "NetworkError: A network error occurred"
+Harness: the test ran to completion.
+

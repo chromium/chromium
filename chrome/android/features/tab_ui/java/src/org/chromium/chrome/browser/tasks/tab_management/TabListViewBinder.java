@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,7 +35,7 @@ class TabListViewBinder {
             String title = model.get(TabProperties.TITLE);
             ((TextView) fastView.findViewById(R.id.title)).setText(title);
         } else if (TabProperties.FAVICON == propertyKey) {
-            Drawable favicon = model.get(TabProperties.FAVICON);
+            Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
             ImageView faviconView = (ImageView) fastView.findViewById(R.id.start_icon);
             faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
             faviconView.setImageDrawable(favicon);
@@ -52,24 +51,12 @@ class TabListViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                if (model.get(TabProperties.IS_SELECTED)) {
-                    fastView.findViewById(R.id.selected_view_below_lollipop)
-                            .setBackgroundResource(selectedTabBackground);
-                    fastView.findViewById(R.id.selected_view_below_lollipop)
-                            .setVisibility(View.VISIBLE);
-                } else {
-                    fastView.findViewById(R.id.selected_view_below_lollipop)
-                            .setVisibility(View.GONE);
-                }
-            } else {
-                Resources res = view.getResources();
-                Resources.Theme theme = view.getContext().getTheme();
-                Drawable drawable = new InsetDrawable(
-                        ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
-                        (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
-                view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
-            }
+            Resources res = view.getResources();
+            Resources.Theme theme = view.getContext().getTheme();
+            Drawable drawable = new InsetDrawable(
+                    ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
+                    (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
+            view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
             if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
                 view.setOnClickListener(null);

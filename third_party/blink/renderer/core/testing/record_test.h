@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_RECORD_TEST_H_
 
 #include <utility>
-#include "base/optional.h"
-#include "third_party/blink/renderer/bindings/core/v8/boolean_or_byte_string_byte_string_record.h"
-#include "third_party/blink/renderer/bindings/core/v8/float_or_string_element_record.h"
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class V8UnionBooleanOrByteStringByteStringRecord;
+class V8UnionFloatOrStringElementRecord;
 
 class RecordTest final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -28,8 +30,8 @@ class RecordTest final : public ScriptWrappable {
   Vector<std::pair<String, int32_t>> getStringLongRecord();
 
   void setNullableStringLongRecord(
-      const base::Optional<Vector<std::pair<String, int32_t>>>& arg);
-  base::Optional<Vector<std::pair<String, int32_t>>>
+      const absl::optional<Vector<std::pair<String, int32_t>>>& arg);
+  absl::optional<Vector<std::pair<String, int32_t>>>
   getNullableStringLongRecord();
 
   Vector<std::pair<String, String>> GetByteStringByteStringRecord();
@@ -48,15 +50,17 @@ class RecordTest final : public ScriptWrappable {
   Vector<std::pair<String, Vector<String>>>
   returnStringByteStringSequenceRecord();
 
-  bool unionReceivedARecord(const BooleanOrByteStringByteStringRecord& arg);
+  bool unionReceivedARecord(
+      const V8UnionBooleanOrByteStringByteStringRecord* arg);
 
-  void setFloatOrStringElementRecord(const FloatOrStringElementRecord&) {}
+  void setFloatOrStringElementRecord(const V8UnionFloatOrStringElementRecord*) {
+  }
 
   void Trace(Visitor*) const override;
 
  private:
   Vector<std::pair<String, int32_t>> string_long_record_;
-  base::Optional<Vector<std::pair<String, int32_t>>>
+  absl::optional<Vector<std::pair<String, int32_t>>>
       nullable_string_long_record_;
   Vector<std::pair<String, String>> byte_string_byte_string_record_;
   HeapVector<std::pair<String, Member<Element>>> string_element_record_;

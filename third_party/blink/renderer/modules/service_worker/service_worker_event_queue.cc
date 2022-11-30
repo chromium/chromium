@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ void ServiceWorkerEventQueue::EnqueueNormal(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    base::Optional<base::TimeDelta> custom_timeout) {
+    absl::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<Event>(
       event_id, Event::Type::Normal, std::move(start_callback),
       std::move(abort_callback), std::move(custom_timeout)));
@@ -89,7 +89,7 @@ void ServiceWorkerEventQueue::EnqueuePending(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    base::Optional<base::TimeDelta> custom_timeout) {
+    absl::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<Event>(
       event_id, Event::Type::Pending, std::move(start_callback),
       std::move(abort_callback), std::move(custom_timeout)));
@@ -99,7 +99,7 @@ void ServiceWorkerEventQueue::EnqueueOffline(
     int event_id,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    base::Optional<base::TimeDelta> custom_timeout) {
+    absl::optional<base::TimeDelta> custom_timeout) {
   EnqueueEvent(std::make_unique<ServiceWorkerEventQueue::Event>(
       event_id, ServiceWorkerEventQueue::Event::Type::Offline,
       std::move(start_callback), std::move(abort_callback),
@@ -144,7 +144,7 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
       std::make_unique<EventInfo>(
           tick_clock_->NowTicks() +
               event->custom_timeout.value_or(kEventTimeout),
-          WTF::Bind(std::move(event->abort_callback), event->event_id)));
+          WTF::BindOnce(std::move(event->abort_callback), event->event_id)));
 
   auto& queue = event->type == Event::Type::Offline ? queued_offline_events_
                                                     : queued_online_events_;
@@ -236,7 +236,7 @@ void ServiceWorkerEventQueue::SetIdleDelay(base::TimeDelta idle_delay) {
   base::TimeDelta delta_until_idle =
       new_idle_callback_time - tick_clock_->NowTicks();
 
-  if (delta_until_idle <= base::TimeDelta::FromSeconds(0)) {
+  if (delta_until_idle <= base::Seconds(0)) {
     // The new idle delay is shorter than the previous idle delay, and the idle
     // time has been already passed. Let's run the idle callback immediately.
     TriggerIdleCallback();
@@ -288,7 +288,7 @@ void ServiceWorkerEventQueue::UpdateStatus() {
     }
     // Shut down the worker as soon as possible since the worker may have gone
     // into bad state.
-    SetIdleDelay(base::TimeDelta::FromSeconds(0));
+    SetIdleDelay(base::Seconds(0));
   }
 }
 
@@ -300,8 +300,8 @@ void ServiceWorkerEventQueue::ScheduleIdleCallback(base::TimeDelta delay) {
   // before |this| is destroyed at ServiceWorkerGlobalScope::Dispose().
   idle_callback_handle_ = PostDelayedCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::Bind(&ServiceWorkerEventQueue::TriggerIdleCallback,
-                WTF::Unretained(this)),
+      WTF::BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback,
+                    WTF::Unretained(this)),
       delay);
 }
 
@@ -356,7 +356,7 @@ ServiceWorkerEventQueue::Event::Event(
     ServiceWorkerEventQueue::Event::Type type,
     StartCallback start_callback,
     AbortCallback abort_callback,
-    base::Optional<base::TimeDelta> custom_timeout)
+    absl::optional<base::TimeDelta> custom_timeout)
     : event_id(event_id),
       type(type),
       start_callback(std::move(start_callback)),

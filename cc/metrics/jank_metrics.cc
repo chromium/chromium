@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -19,29 +20,29 @@ namespace cc {
 
 namespace {
 
+constexpr uint64_t kMaxNoUpdateFrameQueueLength = 100;
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
 constexpr int kMaximumJankHistogramIndex = 2 * kBuiltinSequenceNum;
 constexpr int kMaximumStaleHistogramIndex = kBuiltinSequenceNum;
 
-constexpr base::TimeDelta kStaleHistogramMin =
-    base::TimeDelta::FromMicroseconds(1);
-constexpr base::TimeDelta kStaleHistogramMax =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kStaleHistogramMin = base::Microseconds(1);
+constexpr base::TimeDelta kStaleHistogramMax = base::Milliseconds(1000);
 constexpr int kStaleHistogramBucketCount = 200;
 
-constexpr bool IsValidJankThreadType(FrameSequenceMetrics::ThreadType type) {
-  return type == FrameSequenceMetrics::ThreadType::kCompositor ||
-         type == FrameSequenceMetrics::ThreadType::kMain;
+constexpr bool IsValidJankThreadType(
+    FrameInfo::SmoothEffectDrivingThread type) {
+  return type == FrameInfo::SmoothEffectDrivingThread::kCompositor ||
+         type == FrameInfo::SmoothEffectDrivingThread::kMain;
 }
 
-const char* GetJankThreadTypeName(FrameSequenceMetrics::ThreadType type) {
+const char* GetJankThreadTypeName(FrameInfo::SmoothEffectDrivingThread type) {
   DCHECK(IsValidJankThreadType(type));
 
   switch (type) {
-    case FrameSequenceMetrics::ThreadType::kCompositor:
+    case FrameInfo::SmoothEffectDrivingThread::kCompositor:
       return "Compositor";
-    case FrameSequenceMetrics::ThreadType::kMain:
+    case FrameInfo::SmoothEffectDrivingThread::kMain:
       return "Main";
     default:
       NOTREACHED();
@@ -49,13 +50,13 @@ const char* GetJankThreadTypeName(FrameSequenceMetrics::ThreadType type) {
   }
 }
 
-int GetIndexForJankMetric(FrameSequenceMetrics::ThreadType thread_type,
+int GetIndexForJankMetric(FrameInfo::SmoothEffectDrivingThread thread_type,
                           FrameSequenceTrackerType type) {
   DCHECK(IsValidJankThreadType(thread_type));
-  if (thread_type == FrameSequenceMetrics::ThreadType::kMain)
+  if (thread_type == FrameInfo::SmoothEffectDrivingThread::kMain)
     return static_cast<int>(type);
 
-  DCHECK_EQ(thread_type, FrameSequenceMetrics::ThreadType::kCompositor);
+  DCHECK_EQ(thread_type, FrameInfo::SmoothEffectDrivingThread::kCompositor);
   return static_cast<int>(type) + kBuiltinSequenceNum;
 }
 
@@ -85,7 +86,7 @@ std::string GetMaxStaleHistogramName(FrameSequenceTrackerType type) {
 }  // namespace
 
 JankMetrics::JankMetrics(FrameSequenceTrackerType tracker_type,
-                         FrameSequenceMetrics::ThreadType effective_thread)
+                         FrameInfo::SmoothEffectDrivingThread effective_thread)
     : tracker_type_(tracker_type), effective_thread_(effective_thread) {
   DCHECK(IsValidJankThreadType(effective_thread));
 }
@@ -101,10 +102,17 @@ void JankMetrics::AddSubmitFrame(uint32_t frame_token,
 
 void JankMetrics::AddFrameWithNoUpdate(uint32_t sequence_number,
                                        base::TimeDelta frame_interval) {
+  DCHECK_LE(queue_frame_id_and_interval_.size(), kMaxNoUpdateFrameQueueLength);
+
   // If a frame does not cause an increase in expected frames, it will be
   // recorded here and later subtracted from the presentation interval that
   // includes this frame.
   queue_frame_id_and_interval_.push({sequence_number, frame_interval});
+
+  // This prevents the no-update frame queue from growing infinitely on an idle
+  // page.
+  if (queue_frame_id_and_interval_.size() > kMaxNoUpdateFrameQueueLength)
+    queue_frame_id_and_interval_.pop();
 }
 
 void JankMetrics::AddPresentedFrame(
@@ -141,9 +149,18 @@ void JankMetrics::AddPresentedFrame(
   base::TimeDelta no_update_time;  // The frame time spanned by the frames that
                                    // have no updates
 
-  // Compute the presentation delay contributed by no-update frames that began
-  // BEFORE (i.e. have smaller sequence number than) the current presented
-  // frame.
+  // If |queue_frame_id_and_interval_| contains an excessive amount of no-update
+  // frames, it indicates that the current presented frame is most likely the
+  // first presentation after a long idle period. Such frames are excluded from
+  // jank/stale calculation because they usually have little impact on
+  // smoothness perception, and |queue_frame_id_and_interval_| does not hold
+  // enough data to accurately estimate the effective frame delta.
+  bool will_ignore_current_frame =
+      queue_frame_id_and_interval_.size() == kMaxNoUpdateFrameQueueLength;
+
+  // Compute the presentation delay contributed by no-update frames that
+  // began BEFORE (i.e. have smaller sequence number than) the current
+  // presented frame.
   while (!queue_frame_id_and_interval_.empty() &&
          queue_frame_id_and_interval_.front().first < presented_frame_id) {
     auto id_and_interval = queue_frame_id_and_interval_.front();
@@ -160,10 +177,15 @@ void JankMetrics::AddPresentedFrame(
 
   // Exclude the presentation delay introduced by no-update frames. If this
   // exclusion results in negative frame delta, treat the frame delta as 0.
-  base::TimeDelta current_frame_delta = current_presentation_timestamp -
-                                        last_presentation_timestamp_ -
-                                        no_update_time;
-  const base::TimeDelta zero_delta = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta zero_delta = base::Milliseconds(0);
+
+  // Setting the current_frame_delta to zero conveniently excludes the current
+  // frame to be ignored from jank/stale calculation.
+  base::TimeDelta current_frame_delta = (will_ignore_current_frame)
+                                            ? zero_delta
+                                            : current_presentation_timestamp -
+                                                  last_presentation_timestamp_ -
+                                                  no_update_time;
 
   // Guard against the situation when the physical presentation interval is
   // shorter than |no_update_time|. For example, consider two BeginFrames A and
@@ -236,6 +258,29 @@ void JankMetrics::ReportJankMetrics(int frames_expected) {
       base::LinearHistogram::FactoryGet(
           GetJankHistogramName(tracker_type_, jank_thread_name), 1, 100, 101,
           base::HistogramBase::kUmaTargetedHistogramFlag));
+
+  const bool is_animation =
+      ShouldReportForAnimation(tracker_type_, effective_thread_);
+
+  // Jank reporter's effective thread is guaranteed to be identical to that of
+  // the owning FrameSequenceMetrics instance.
+  const bool is_interaction = ShouldReportForInteraction(
+      tracker_type_, effective_thread_, effective_thread_);
+
+  if (is_animation) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllAnimations",
+                             jank_percent);
+  }
+
+  if (is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllInteractions",
+                             jank_percent);
+  }
+
+  if (is_animation || is_interaction) {
+    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllSequences",
+                             jank_percent);
+  }
 
   // Report the max staleness metrics
   STATIC_HISTOGRAM_POINTER_GROUP(

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
@@ -87,9 +87,8 @@ bool MediaPipelineBackendForMixer::Start(int64_t start_pts) {
 
   int64_t effective_start_pts =
       (IsIgnorePtsMode() ? INT64_MIN : start_playback_pts_us_);
-  bool start_playback_asap = !av_sync_;
-  if (audio_decoder_ &&
-      !audio_decoder_->Start(effective_start_pts, start_playback_asap)) {
+  if (audio_decoder_ && !audio_decoder_->Start(effective_start_pts,
+                                               static_cast<bool>(av_sync_))) {
     return false;
   }
 

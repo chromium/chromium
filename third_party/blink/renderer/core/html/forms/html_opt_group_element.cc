@@ -34,15 +34,25 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
+namespace {
+
+bool CanAssignToOptGroupSlot(const Node& node) {
+  return node.HasTagName(html_names::kOptionTag) ||
+         node.HasTagName(html_names::kHrTag);
+}
+
+}  // namespace
+
 HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
     : HTMLElement(html_names::kOptgroupTag, document) {
-  EnsureUserAgentShadowRoot();
+  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
+      SlotAssignmentMode::kManual);
 }
 
 // An explicit empty destructor should be in html_opt_group_element.cc, because
@@ -51,12 +61,6 @@ HTMLOptGroupElement::HTMLOptGroupElement(Document& document)
 // msvc tries to expand the destructor and causes
 // a compile error because of lack of ComputedStyle definition.
 HTMLOptGroupElement::~HTMLOptGroupElement() = default;
-
-// static
-bool HTMLOptGroupElement::CanAssignToOptGroupSlot(const Node& node) {
-  return node.HasTagName(html_names::kOptionTag) ||
-         node.HasTagName(html_names::kHrTag);
-}
 
 bool HTMLOptGroupElement::IsDisabledFormControl() const {
   return FastHasAttribute(html_names::kDisabledAttr);
@@ -168,9 +172,19 @@ void HTMLOptGroupElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   label->SetInlineStyleProperty(CSSPropertyID::kMinHeight, label_min_height);
   label->SetIdAttribute(shadow_element_names::kIdOptGroupLabel);
   root.AppendChild(label);
+  opt_group_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  root.AppendChild(opt_group_slot_);
+}
 
-  root.AppendChild(
-      HTMLSlotElement::CreateUserAgentCustomAssignSlot(GetDocument()));
+void HTMLOptGroupElement::ManuallyAssignSlots() {
+  HeapVector<Member<Node>> opt_group_nodes;
+  for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+    if (!child.IsSlotable())
+      continue;
+    if (CanAssignToOptGroupSlot(child))
+      opt_group_nodes.push_back(child);
+  }
+  opt_group_slot_->Assign(opt_group_nodes);
 }
 
 void HTMLOptGroupElement::UpdateGroupLabel() {
@@ -185,6 +199,11 @@ HTMLDivElement& HTMLOptGroupElement::OptGroupLabelElement() const {
       shadow_element_names::kIdOptGroupLabel);
   CHECK(!element || IsA<HTMLDivElement>(element));
   return *To<HTMLDivElement>(element);
+}
+
+void HTMLOptGroupElement::Trace(Visitor* visitor) const {
+  visitor->Trace(opt_group_slot_);
+  HTMLElement::Trace(visitor);
 }
 
 }  // namespace blink

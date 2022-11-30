@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -18,37 +19,13 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// Alert states for a tab. Any number of these (or none) may apply at once.
-enum class TabAlertState {
-  MEDIA_RECORDING,        // Audio/Video being recorded, consumed by tab.
-  TAB_CAPTURING,          // Tab contents being captured.
-  AUDIO_PLAYING,          // Audible audio is playing from the tab.
-  AUDIO_MUTING,           // Tab audio is being muted.
-  BLUETOOTH_CONNECTED,    // Tab is connected to a BT Device.
-  BLUETOOTH_SCAN_ACTIVE,  // Tab is actively scanning for BT devices.
-  USB_CONNECTED,          // Tab is connected to a USB device.
-  HID_CONNECTED,          // Tab is connected to a HID device.
-  SERIAL_CONNECTED,       // Tab is connected to a serial device.
-  PIP_PLAYING,            // Tab contains a video in Picture-in-Picture mode.
-  DESKTOP_CAPTURING,      // Desktop contents being recorded, consumed by tab.
-  VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
-};
-
-enum class TabMutedReason {
-  NONE,                    // The tab has never been muted or unmuted.
-  CONTEXT_MENU,            // Mute/Unmute chosen from tab context menu.
-  EXTENSION,               // Mute state changed via extension API.
-  CONTENT_SETTING,         // The sound content setting was set to BLOCK.
-  CONTENT_SETTING_CHROME,  // Mute toggled on chrome:// URL.
-};
-
 struct LastMuteMetadata
     : public content::WebContentsUserData<LastMuteMetadata> {
   TabMutedReason reason = TabMutedReason::NONE;
   std::string extension_id;  // Only valid when |reason| is EXTENSION.
 
  private:
-  explicit LastMuteMetadata(content::WebContents* contents) {}
+  explicit LastMuteMetadata(content::WebContents* contents);
   friend class content::WebContentsUserData<LastMuteMetadata>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
@@ -84,6 +61,20 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index);
 // Returns true if the sites at the |indices| in |tab_strip| are all muted.
 bool AreAllSitesMuted(const TabStripModel& tab_strip,
                       const std::vector<int>& indices);
+
+// Returns the follow state of the site at |index| in |tab_strip|.
+TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
+                                         const int index);
+
+// Returns the aggregated follow state of all the sites at the |indices| in
+// |tab_strip|. The aggregated follow state is computed as:
+// * kUnknown if at least one site is in kUnknown state.
+// * kFollowed if all sites are in kFollowed state.
+// * kNotFollowed if no site is in kUnknown state and at least one site is in
+//   kNotFollowed state.
+TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(
+    const TabStripModel& tab_strip,
+    const std::vector<int>& indices);
 
 }  // namespace chrome
 

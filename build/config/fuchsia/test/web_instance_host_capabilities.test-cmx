@@ -1,0 +1,8 @@
+{
+  "sandbox": {
+    "services": [
+      "fuchsia.sys.Environment",
+      "fuchsia.sys.Loader"
+    ]
+  }
+}

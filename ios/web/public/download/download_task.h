@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,18 @@
 #import <Foundation/Foundation.h>
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
 
-namespace net {
-class URLFetcherResponseWriter;
-}  // namespace net
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace web {
 
@@ -25,9 +27,10 @@ class DownloadTaskObserver;
 class WebState;
 
 // Provides API for a single browser download task. This is the model class that
-// stores all the state for a download. Must be used on the UI thread.
+// stores all the state for a download. Sequence-affine.
 class DownloadTask {
  public:
+  // Possible state of the Download Task.
   enum class State {
     // Download has not started yet.
     kNotStarted = 0,
@@ -40,7 +43,17 @@ class DownloadTask {
 
     // Download is completely finished.
     kComplete,
+
+    // Download has failed but can be resumed
+    kFailed,
+
+    // Downkoad has failed but cannot be resumed
+    kFailedNotResumable,
   };
+
+  // Type of the callback invoked when the downloaded data has been read
+  // from disk.
+  using ResponseDataReadCallback = base::OnceCallback<void(NSData* data)>;
 
   // Returns WebState which requested this download.
   virtual WebState* GetWebState() = 0;
@@ -48,22 +61,31 @@ class DownloadTask {
   // Returns the download task state.
   virtual State GetState() const = 0;
 
-  // Starts the download. |writer| allows clients to perform in-memory or
-  // in-file downloads and must not be null. Start() can only be called if
-  // DownloadTask is not in progress.
-  virtual void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) = 0;
+  // Starts the download and save it to `path`. If `path` is null, the data
+  // downloaded will be saved to a temporary location and deleted when the
+  // task is destroyed. Otherwise, upon success, the ownership of the file
+  // will be transferred to the caller. The task will take care of creating
+  // the directory structure required to save the file (or will fail with an
+  // error if this is not possible).
+  virtual void Start(const base::FilePath& path) = 0;
 
   // Cancels the download.
   virtual void Cancel() = 0;
 
-  // Response writer, which was passed to Start(). Can be used to obtain the
-  // download data.
-  virtual net::URLFetcherResponseWriter* GetResponseWriter() const = 0;
+  // Reads the downloaded data from the saved path, and call `callback` on
+  // the calling sequence with it. If the download was done to a temporary
+  // location, the read will fail if the `DownloadTask` is deleted before
+  // `callback` is called. In that case, you may want to have the `callback`
+  // take ownership of the task.
+  virtual void GetResponseData(ResponseDataReadCallback callback) const = 0;
+
+  // Returns the path to the downloaded data, if saved to disk.
+  virtual const base::FilePath& GetResponsePath() const = 0;
 
   // Unique indentifier for this task. Also can be used to resume unfinished
   // downloads after the application relaunch (see example in DownloadController
   // class comments).
-  virtual NSString* GetIndentifier() const = 0;
+  virtual NSString* GetIdentifier() const = 0;
 
   // The URL that the download request originally attempted to fetch. This may
   // differ from the final download URL if there were redirects.
@@ -108,7 +130,7 @@ class DownloadTask {
   virtual std::string GetMimeType() const = 0;
 
   // Suggested name for the downloaded file.
-  virtual std::u16string GetSuggestedFilename() const = 0;
+  virtual base::FilePath GenerateFileName() const = 0;
 
   // Returns true if the last download operation was fully or partially
   // performed while the application was not active.
@@ -120,9 +142,11 @@ class DownloadTask {
   virtual void RemoveObserver(DownloadTaskObserver* observer) = 0;
 
   DownloadTask() = default;
-  virtual ~DownloadTask() = default;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadTask);
+  DownloadTask(const DownloadTask&) = delete;
+  DownloadTask& operator=(const DownloadTask&) = delete;
+
+  virtual ~DownloadTask() = default;
 };
 
 }  // namespace web

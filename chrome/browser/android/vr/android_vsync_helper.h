@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_ANDROID_VR_ANDROID_VSYNC_HELPER_H_
 
 #include <jni.h>
-#include <utility>
 
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace vr {
@@ -19,6 +17,10 @@ class AndroidVSyncHelper {
  public:
   using Callback = base::RepeatingCallback<void(base::TimeTicks)>;
   explicit AndroidVSyncHelper(Callback callback);
+
+  AndroidVSyncHelper(const AndroidVSyncHelper&) = delete;
+  AndroidVSyncHelper& operator=(const AndroidVSyncHelper&) = delete;
+
   ~AndroidVSyncHelper();
   void OnVSync(JNIEnv* env,
                const base::android::JavaParamRef<jobject>& obj,
@@ -41,8 +43,6 @@ class AndroidVSyncHelper {
   bool vsync_requested_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> j_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVSyncHelper);
 };
 
 }  // namespace vr

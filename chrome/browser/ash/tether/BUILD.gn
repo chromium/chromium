@@ -1,0 +1,23 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("tether") {
+  sources = [
+    "fake_tether_service.cc",
+    "fake_tether_service.h",
+    "tether_service.cc",
+    "tether_service.h",
+    "tether_service_factory.cc",
+    "tether_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}

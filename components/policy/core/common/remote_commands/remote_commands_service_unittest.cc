@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,35 +6,41 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
+#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/tick_clock.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
-#include "components/policy/core/common/remote_commands/test_remote_command_job.h"
-#include "components/policy/core/common/remote_commands/testing_remote_commands_server.h"
+#include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
+#include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
+using testing::NiceMock;
 using testing::Return;
 using testing::ReturnNew;
+using testing::StrictMock;
 
 namespace policy {
 
@@ -43,76 +49,295 @@ namespace {
 namespace em = enterprise_management;
 
 const char kDMToken[] = "dmtoken";
-const char kTestPayload[] = "_testing_payload_";
-const int kTestCommandExecutionTimeInSeconds = 1;
-const int kTestClientServerCommunicationDelayInSeconds = 3;
+const int kTestEchoCommandExecutionTimeInSeconds = 1;
+const char kDeviceId[] = "acme-device";
 
-void ExpectSucceededJob(const std::string& expected_payload,
-                        const em::RemoteCommandResult& command_result) {
-  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
-            command_result.result());
-  EXPECT_EQ(expected_payload, command_result.payload());
-}
+#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
 
-void ExpectIgnoredJob(const em::RemoteCommandResult& command_result) {
-  EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_IGNORED,
-            command_result.result());
-}
-
-}  // namespace
-
-// Mocked RemoteCommand factory to allow us to build test commands.
-class MockTestRemoteCommandFactory : public RemoteCommandsFactory {
+// Builder class that constructs a |RemoteCommand|.
+class CommandBuilder {
  public:
-  MockTestRemoteCommandFactory() {
-    ON_CALL(*this, BuildTestCommand())
-        .WillByDefault(ReturnNew<TestRemoteCommandJob>(
-            true,
-            base::TimeDelta::FromSeconds(kTestCommandExecutionTimeInSeconds)));
+  CommandBuilder() = default;
+  CommandBuilder(const CommandBuilder&) = delete;
+  CommandBuilder& operator=(const CommandBuilder&) = delete;
+  CommandBuilder(CommandBuilder&&) = default;
+  CommandBuilder& operator=(CommandBuilder&&) = default;
+  ~CommandBuilder() = default;
+
+  em::RemoteCommand Build() { return result_; }
+
+  CommandBuilder& WithId(int id) {
+    result_.set_command_id(id);
+    return *this;
   }
 
-  MOCK_METHOD0(BuildTestCommand, TestRemoteCommandJob*());
+  CommandBuilder& WithoutId() {
+    result_.clear_command_id();
+    return *this;
+  }
+
+  CommandBuilder& WithType(em::RemoteCommand::Type type) {
+    result_.set_type(type);
+    return *this;
+  }
+
+  CommandBuilder& WithoutType() {
+    result_.clear_type();
+    return *this;
+  }
+
+  CommandBuilder& WithPayload(const std::string& payload) {
+    result_.set_payload(payload);
+    return *this;
+  }
+
+  CommandBuilder& WithTargetDeviceId(const std::string& value) {
+    result_.set_target_device_id(value);
+    return *this;
+  }
+
+ private:
+  em::RemoteCommand result_;
+};
+
+// Helper class that builds enterprise_management::SignedData.
+class SignedDataBuilder {
+ public:
+  SignedDataBuilder() = default;
+  SignedDataBuilder(const SignedDataBuilder&) = delete;
+  SignedDataBuilder& operator=(const SignedDataBuilder&) = delete;
+  SignedDataBuilder(SignedDataBuilder&&) = default;
+  SignedDataBuilder& operator=(SignedDataBuilder&&) = default;
+  ~SignedDataBuilder() = default;
+
+  em::SignedData Build() { return BuildSignedData(command_.Build()); }
+
+  SignedDataBuilder& WithCommandId(int id) {
+    command_.WithId(id);
+    return *this;
+  }
+
+  SignedDataBuilder& WithoutCommandId() {
+    command_.WithoutId();
+    return *this;
+  }
+
+  SignedDataBuilder& WithCommandType(em::RemoteCommand::Type type) {
+    command_.WithType(type);
+    return *this;
+  }
+
+  SignedDataBuilder& WithoutCommandType() {
+    command_.WithoutType();
+    return *this;
+  }
+
+  SignedDataBuilder& WithCommandPayload(const std::string& value) {
+    command_.WithPayload(value);
+    return *this;
+  }
+
+  SignedDataBuilder& WithTargetDeviceId(const std::string& value) {
+    command_.WithTargetDeviceId(value);
+    return *this;
+  }
+
+  SignedDataBuilder& WithSignedData(const std::string& value) {
+    signed_data.set_data(value);
+    return *this;
+  }
+
+  SignedDataBuilder& WithSignature(const std::string& value) {
+    signed_data.set_signature(value);
+    return *this;
+  }
+
+  SignedDataBuilder& WithPolicyType(const std::string& value) {
+    policy_data.set_policy_type(value);
+    return *this;
+  }
+
+  SignedDataBuilder& WithPolicyValue(const std::string& value) {
+    policy_data.set_policy_value(value);
+    return *this;
+  }
+
+ private:
+  // The signed data defaults to correctly signing the remote command,
+  // unless it was explicitly overwritten during this test.
+  em::SignedData BuildSignedData(const em::RemoteCommand& command) {
+    if (!policy_data.has_policy_type())
+      policy_data.set_policy_type("google/chromeos/remotecommand");
+
+    if (!policy_data.has_policy_value())
+      command.SerializeToString(policy_data.mutable_policy_value());
+
+    if (!signed_data.has_data())
+      policy_data.SerializeToString(signed_data.mutable_data());
+
+    if (!signed_data.has_signature())
+      signed_data.set_signature(SignDataWithTestKey(signed_data.data()));
+
+    return signed_data;
+  }
+
+  CommandBuilder command_;
+  em::PolicyData policy_data;
+  em::SignedData signed_data;
+};
+
+// Future value that waits for the remote command result that is sent to the
+// server.
+class ServerResponseFuture
+    : public base::test::TestFuture<em::RemoteCommandResult> {
+ public:
+  ServerResponseFuture() = default;
+  ServerResponseFuture(const ServerResponseFuture&) = delete;
+  ServerResponseFuture& operator=(const ServerResponseFuture&) = delete;
+  ~ServerResponseFuture() = default;
+
+  ResultReportedCallback GetCallback() {
+    return base::test::TestFuture<em::RemoteCommandResult>::GetCallback<
+        const em::RemoteCommandResult&>();
+  }
+};
+
+// A fake remote command job. It will not report completion until the test
+// calls any of the Finish*() methods.
+class FakeJob : public RemoteCommandJob {
+ public:
+  explicit FakeJob(enterprise_management::RemoteCommand_Type type)
+      : type_(type) {}
+  FakeJob(const FakeJob&) = delete;
+  FakeJob& operator=(const FakeJob&) = delete;
+  ~FakeJob() override = default;
+
+  // Returns the payload passed to |ParseCommandPayload|.
+  const std::string& GetPayload() const { return payload_; }
+
+  // Finish this job and report success.
+  void FinishWithSuccess(const std::string& payload) {
+    DCHECK(!succeed_callback_.is_null());
+    std::move(succeed_callback_).Run(std::make_unique<StringPayload>(payload));
+  }
+  // Finish this job and report an error.
+  void FinishWithFailure(const std::string& payload) {
+    DCHECK(!failed_callback_.is_null());
+    std::move(failed_callback_).Run(std::make_unique<StringPayload>(payload));
+  }
+
+  void Finish() { FinishWithSuccess(""); }
+
+  // RemoteCommandJob implementation:
+  enterprise_management::RemoteCommand_Type GetType() const override {
+    return type_;
+  }
+  bool ParseCommandPayload(const std::string& command_payload) override {
+    payload_ = command_payload;
+    return true;
+  }
+  bool IsExpired(base::TimeTicks now) override { return false; }
+  void RunImpl(CallbackWithResult succeed_callback,
+               CallbackWithResult failed_callback) override {
+    succeed_callback_ = std::move(succeed_callback);
+    failed_callback_ = std::move(failed_callback);
+  }
+
+ private:
+  class StringPayload : public RemoteCommandJob::ResultPayload {
+   public:
+    explicit StringPayload(const std::string& payload) : payload_(payload) {}
+    StringPayload(const StringPayload&) = delete;
+    StringPayload& operator=(const StringPayload&) = delete;
+    ~StringPayload() override = default;
+
+    // RemoteCommandJob::ResultPayload implementation:
+    std::unique_ptr<std::string> Serialize() override {
+      return std::make_unique<std::string>(payload_);
+    }
+
+   private:
+    const std::string payload_;
+  };
+
+  const enterprise_management::RemoteCommand_Type type_;
+
+  // The payload passed to ParseCommandPayload().
+  std::string payload_;
+
+  CallbackWithResult succeed_callback_;
+  CallbackWithResult failed_callback_;
+};
+
+// Fake RemoteCommand factory that creates FakeJob instances.
+// It also provides a WaitForJob() method that will block until a job is
+// created, and return the corresponding fake_job. It is the responsibility of
+// the test to finish the fake_job (by calling any of the Finish*() methods).
+class FakeJobFactory : public RemoteCommandsFactory {
+ public:
+  FakeJobFactory() = default;
+  FakeJobFactory(const FakeJobFactory&) = delete;
+  FakeJobFactory& operator=(const FakeJobFactory&) = delete;
+  ~FakeJobFactory() override { DCHECK(created_jobs_.IsEmpty()); }
+
+  // Wait until a new job is constructed.
+  FakeJob& WaitForJob() {
+    FakeJob* result = created_jobs_.Take();
+    DCHECK_NE(result, nullptr);
+    return *result;
+  }
 
  private:
   // RemoteCommandJobsFactory:
   std::unique_ptr<RemoteCommandJob> BuildJobForType(
       em::RemoteCommand_Type type,
       RemoteCommandsService* service) override {
-    if (type != em::RemoteCommand_Type_COMMAND_ECHO_TEST) {
-      ADD_FAILURE();
-      return nullptr;
-    }
-    return base::WrapUnique<RemoteCommandJob>(BuildTestCommand());
+    auto result = std::make_unique<FakeJob>(type);
+
+    created_jobs_.AddValue(result.get());
+    return result;
   }
 
-  DISALLOW_COPY_AND_ASSIGN(MockTestRemoteCommandFactory);
+  // List of all jobs created in BuildJobForType() and consumed in
+  // WaitForJob().
+  base::test::RepeatingTestFuture<FakeJob*> created_jobs_;
 };
 
-// Expectations for a single FetchRemoteCommands() call.
-struct FetchCallExpectation {
-  FetchCallExpectation() = default;
+// Mocked RemoteCommand factory.
+// This will by default create remote command jobs that finish automatically,
+// but you can overwrite this by adding an EXPECT_CALL to your code:
+// EXPECT_CALL(job_factory, BuildJobForType).WillOnce(Return(<your job>));
+//
+// You can use this instead of |FakeJobFactory| if:
+//     - You need to simulate a failure to create the job (in which case you
+//       can return nullptr like this):
+//         EXPECT_CALL(job_factory, BuildJobForType).WillOnce(Return(nullptr));
+//     - You want the job to auto-finish without having to call one of the
+//       Finish*() methods like you have to do with the |FakeJobFactory|.
+class MockJobFactory : public RemoteCommandsFactory {
+ public:
+  MockJobFactory() {
+    ON_CALL(*this, BuildJobForType(testing::_))
+        .WillByDefault(ReturnNew<EchoRemoteCommandJob>(
+            /*succeed=*/true,
+            /*execution_duration=*/base::Seconds(
+                kTestEchoCommandExecutionTimeInSeconds)));
+  }
+  MockJobFactory(const MockJobFactory&) = delete;
+  MockJobFactory& operator=(const MockJobFactory&) = delete;
 
-  FetchCallExpectation SetCommandResults(size_t n) {
-    expected_command_results = n;
-    return *this;
-  }
-  FetchCallExpectation SetFetchedCommands(size_t n) {
-    expected_fetched_commands = n;
-    return *this;
-  }
-  FetchCallExpectation SetSignedCommands(size_t n) {
-    expected_signed_commands = n;
-    return *this;
-  }
-  FetchCallExpectation SetFetchedCallback(base::RepeatingClosure callback) {
-    commands_fetched_callback = callback;
-    return *this;
-  }
+  MOCK_METHOD(RemoteCommandJob*,
+              BuildJobForType,
+              (em::RemoteCommand::Type type));
 
-  size_t expected_command_results = 0;
-  size_t expected_fetched_commands = 0;
-  size_t expected_signed_commands = 0;
-  base::RepeatingClosure commands_fetched_callback;
+  // ON_CALL(...).WillByDefault() does not support methods that return an
+  // unique_ptr, so we have to mock a version that returns a raw pointer, and
+  // wrap it here.
+  std::unique_ptr<RemoteCommandJob> BuildJobForType(
+      em::RemoteCommand::Type type,
+      RemoteCommandsService* service) override {
+    return base::WrapUnique<RemoteCommandJob>(BuildJobForType(type));
+  }
 };
 
 // A mocked CloudPolicyClient to interact with a TestingRemoteCommandsServer.
@@ -126,95 +351,84 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
         server_(server) {
     dm_token_ = kDMToken;
   }
+  TestingCloudPolicyClientForRemoteCommands(
+      const TestingCloudPolicyClientForRemoteCommands&) = delete;
+  TestingCloudPolicyClientForRemoteCommands& operator=(
+      const TestingCloudPolicyClientForRemoteCommands&) = delete;
 
-  ~TestingCloudPolicyClientForRemoteCommands() override {
-    EXPECT_TRUE(expected_fetch_commands_calls_.empty());
-  }
-
-  // Expect a FetchRemoteCommands() call with |fetch_call_expectation|.
-  void ExpectFetchCommands(FetchCallExpectation fetch_call_expectation) {
-    expected_fetch_commands_calls_.push(fetch_call_expectation);
-  }
+  ~TestingCloudPolicyClientForRemoteCommands() override = default;
 
  private:
   void FetchRemoteCommands(
       std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
       const std::vector<em::RemoteCommandResult>& command_results,
       RemoteCommandCallback callback) override {
-    ASSERT_FALSE(expected_fetch_commands_calls_.empty());
+    std::vector<em::SignedData> commands =
+        server_->FetchCommands(std::move(last_command_id), command_results);
 
-    const FetchCallExpectation fetch_call_expectation =
-        expected_fetch_commands_calls_.front();
-    expected_fetch_commands_calls_.pop();
-
-    // Simulate delay from client to DMServer.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    // Asynchronously send the response from the DMServer back to client.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &TestingCloudPolicyClientForRemoteCommands::DoFetchRemoteCommands,
-            base::Unretained(this), std::move(last_command_id), command_results,
-            std::move(callback), fetch_call_expectation),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
+        base::BindOnce(std::move(callback), DM_STATUS_SUCCESS, commands));
   }
 
-  void DoFetchRemoteCommands(
-      std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
-      const std::vector<em::RemoteCommandResult>& command_results,
-      RemoteCommandCallback callback,
-      const FetchCallExpectation& fetch_call_expectation) {
-    std::vector<em::RemoteCommand> fetched_commands;
-    std::vector<em::SignedData> signed_commands;
-    server_->FetchCommands(std::move(last_command_id), command_results,
-                           &fetched_commands, &signed_commands);
-
-    // The server will send us either old-style unsigned or new signed commands,
-    // never both at the same time.
-    EXPECT_TRUE(fetched_commands.size() == 0 || signed_commands.size() == 0);
-
-    EXPECT_EQ(fetch_call_expectation.expected_command_results,
-              command_results.size());
-    EXPECT_EQ(fetch_call_expectation.expected_fetched_commands,
-              fetched_commands.size());
-    EXPECT_EQ(fetch_call_expectation.expected_signed_commands,
-              signed_commands.size());
-
-    if (!fetch_call_expectation.commands_fetched_callback.is_null())
-      fetch_call_expectation.commands_fetched_callback.Run();
-
-    // Simulate delay from DMServer back to client.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), DM_STATUS_SUCCESS, fetched_commands,
-                       signed_commands),
-        base::TimeDelta::FromSeconds(
-            kTestClientServerCommunicationDelayInSeconds));
-  }
-
-  base::queue<FetchCallExpectation> expected_fetch_commands_calls_;
-  TestingRemoteCommandsServer* server_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingCloudPolicyClientForRemoteCommands);
+  raw_ptr<TestingRemoteCommandsServer> server_;
 };
+
+}  // namespace
 
 // Base class for unit tests regarding remote commands service.
 class RemoteCommandsServiceTest
     : public testing::TestWithParam<PolicyInvalidationScope> {
+ public:
+  RemoteCommandsServiceTest(const RemoteCommandsServiceTest&) = delete;
+  RemoteCommandsServiceTest& operator=(const RemoteCommandsServiceTest&) =
+      delete;
+
  protected:
-  RemoteCommandsServiceTest()
-      : server_(std::make_unique<TestingRemoteCommandsServer>()) {
-    server_->SetClock(mock_task_runner_->GetMockTickClock());
-    cloud_policy_client_ =
-        std::make_unique<TestingCloudPolicyClientForRemoteCommands>(
-            server_.get());
+  void SetUp() override {
+    // Set the public key and the device id.
+    std::vector<uint8_t> public_key = PolicyBuilder::GetPublicTestKey();
+    store_.policy_signature_public_key_.assign(public_key.begin(),
+                                               public_key.end());
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->set_device_id("acme-device");
+    store_.set_policy_data_for_testing(std::move(policy_data));
   }
 
-  void StartService(std::unique_ptr<RemoteCommandsFactory> factory) {
+  RemoteCommandsServiceTest() {
+    server_.SetClock(mock_task_runner_->GetMockTickClock());
+  }
+
+  // Starts the RemoteCommandService using a job factory of the given type.
+  // Returns a reference to the job factory.
+  template <typename FactoryType>
+  FactoryType& StartServiceWith() {
+    auto factory = std::make_unique<FactoryType>();
+    auto* factory_ptr = factory.get();
+
     remote_commands_service_ = std::make_unique<RemoteCommandsService>(
-        std::move(factory), cloud_policy_client_.get(), &store_, GetScope());
+        std::move(factory), &cloud_policy_client_, &store_, GetScope());
     remote_commands_service_->SetClocksForTesting(
         mock_task_runner_->GetMockClock(),
         mock_task_runner_->GetMockTickClock());
+
+    return *factory_ptr;
+  }
+
+  void FetchRemoteCommands() {
+    // A return value of |true| means the fetch command was successfully issued.
+    EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
+  }
+
+  // Return a builder for a signed RemoteCommand, with the important fields set
+  // to valid defaults.
+  SignedDataBuilder Command() {
+    return std::move(
+        SignedDataBuilder{}
+            .WithCommandId(server_.GetNextCommandId())
+            .WithCommandType(em::RemoteCommand_Type_COMMAND_ECHO_TEST)
+            .WithTargetDeviceId(kDeviceId));
   }
 
   void FlushAllTasks() { mock_task_runner_->FastForwardUntilNoTasksRemain(); }
@@ -225,283 +439,269 @@ class RemoteCommandsServiceTest
       base::MakeRefCounted<base::TestMockTimeTaskRunner>(
           base::TestMockTimeTaskRunner::Type::kBoundToThread);
 
-  std::unique_ptr<TestingRemoteCommandsServer> server_;
-  std::unique_ptr<TestingCloudPolicyClientForRemoteCommands>
-      cloud_policy_client_;
+  TestingRemoteCommandsServer server_;
+  TestingCloudPolicyClientForRemoteCommands cloud_policy_client_{&server_};
   MockCloudPolicyStore store_;
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsServiceTest);
 };
 
-// Tests that no command will be fetched if no commands is issued.
-TEST_P(RemoteCommandsServiceTest, NoCommands) {
-  std::unique_ptr<MockTestRemoteCommandFactory> factory(
-      new MockTestRemoteCommandFactory());
-  EXPECT_CALL(*factory, BuildTestCommand()).Times(0);
+TEST_P(RemoteCommandsServiceTest,
+       ShouldCreateNoJobsIfServerHasNoRemoteCommands) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
 
-  StartService(std::move(factory));
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
 
-  // A fetch requst should get nothing from server.
-  cloud_policy_client_->ExpectFetchCommands(FetchCallExpectation());
+  FetchRemoteCommands();
+  FlushAllTasks();
+}
+
+TEST_P(RemoteCommandsServiceTest, ShouldCreateJobWhenRemoteCommandIsFetched) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+
+  server_.IssueCommand(
+      Command()
+          .WithCommandType(em::RemoteCommand_Type_DEVICE_FETCH_STATUS)
+          .WithCommandPayload("the payload")
+          .Build(),
+      {});
+
+  FetchRemoteCommands();
+
+  FakeJob& job = job_factory.WaitForJob();
+  EXPECT_EQ(job.GetType(), em::RemoteCommand_Type_DEVICE_FETCH_STATUS);
+  EXPECT_EQ(job.GetPayload(), "the payload");
+  job.Finish();
+}
+
+TEST_P(RemoteCommandsServiceTest, ShouldSendJobSuccessToRemoteServer) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+  ServerResponseFuture response_future;
+  server_.IssueCommand(Command().Build(), response_future.GetCallback());
+  FetchRemoteCommands();
+
+  job_factory.WaitForJob().FinishWithSuccess("<the-payload>");
+
+  // Now we wait until the result of the job is received by the server.
+  em::RemoteCommandResult result = response_future.Get();
+  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
+  EXPECT_EQ(result.payload(), "<the-payload>");
+}
+
+TEST_P(RemoteCommandsServiceTest, ShouldSendJobFailureToRemoteServer) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+
+  ServerResponseFuture response_future;
+  server_.IssueCommand(Command().Build(), response_future.GetCallback());
+  FetchRemoteCommands();
+
+  job_factory.WaitForJob().FinishWithFailure("<the-failure-payload>");
+
+  // Now we wait until the result of the job is received by the server.
+  em::RemoteCommandResult result = response_future.Get();
+  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_FAILURE);
+  EXPECT_EQ(result.payload(), "<the-failure-payload>");
+}
+
+TEST_P(RemoteCommandsServiceTest, ShouldSendFailureToCreateJobToRemoteServer) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+
+  ServerResponseFuture response_future;
+  server_.IssueCommand(Command().Build(), response_future.GetCallback());
+  FetchRemoteCommands();
+
+  // Fail building of the job
+  EXPECT_CALL(job_factory, BuildJobForType).WillOnce(Return(nullptr));
+
+  // Now we wait until the result of the job is received by the server.
+  em::RemoteCommandResult result = response_future.Get();
+  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_IGNORED);
+  EXPECT_EQ(result.payload(), "");
+}
+
+TEST_P(RemoteCommandsServiceTest,
+       ShouldSupportMultipleRemoteCommandsSentTogether) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+
+  // Send 2 remote commands
+  ServerResponseFuture first_future;
+  server_.IssueCommand(Command().WithCommandPayload("first").Build(),
+                       first_future.GetCallback());
+  ServerResponseFuture second_future;
+  server_.IssueCommand(Command().WithCommandPayload("second").Build(),
+                       second_future.GetCallback());
+  FetchRemoteCommands();
+
+  // Handle both jobs - in order.
+  FakeJob& first_job = job_factory.WaitForJob();
+  EXPECT_EQ(first_job.GetPayload(), "first");
+  first_job.FinishWithSuccess("first-result");
+
+  FakeJob& second_job = job_factory.WaitForJob();
+  EXPECT_EQ(second_job.GetPayload(), "second");
+  second_job.FinishWithSuccess("second-result");
+
+  // Expect results to both remote commands on the server.
+  em::RemoteCommandResult first_result = first_future.Get();
+  EXPECT_EQ(first_result.payload(), "first-result");
+
+  em::RemoteCommandResult second_result = second_future.Get();
+  EXPECT_EQ(second_result.payload(), "second-result");
+}
+
+TEST_P(RemoteCommandsServiceTest,
+       ShouldSupportMultipleRemoteCommandsSentBackToBack) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+
+  // Send the first remote command.
+  ServerResponseFuture first_future;
+  server_.IssueCommand(Command().WithCommandPayload("first").Build(),
+                       first_future.GetCallback());
+
+  FetchRemoteCommands();
+
+  // Send the second remote command after the first one is fetched.
+  ServerResponseFuture second_future;
+  server_.IssueCommand(Command().WithCommandPayload("second").Build(),
+                       second_future.GetCallback());
+
+  // The system should now allow us to handle both jobs
+  // (by automatically fetching new remote commands when a job is finished).
+  FakeJob& first_job = job_factory.WaitForJob();
+  EXPECT_EQ(first_job.GetPayload(), "first");
+  first_job.FinishWithSuccess("first-result");
+
+  FakeJob& second_job = job_factory.WaitForJob();
+  EXPECT_EQ(second_job.GetPayload(), "second");
+  second_job.FinishWithSuccess("second-result");
+
+  // And the result of both jobs should be sent to the server.
+  em::RemoteCommandResult first_result = first_future.Get();
+  EXPECT_EQ(first_result.payload(), "first-result");
+
+  em::RemoteCommandResult second_result = second_future.Get();
+  EXPECT_EQ(second_result.payload(), "second-result");
+}
+
+TEST_P(RemoteCommandsServiceTest, NewCommandFollowingFetch) {
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
+
+  // Don't return anything on the first fetch.
+  server_.OnNextFetchCommandsCallReturnNothing();
+
+  // Add a command which will be issued after the first fetch.
+  server_.IssueCommand(
+      Command().WithCommandPayload("Command sent in the second fetch").Build(),
+      {});
+
+  // Attempt to fetch commands.
   EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
 
-  FlushAllTasks();
+  // The command fetch should be in progress.
+  EXPECT_TRUE(remote_commands_service_->IsCommandFetchInProgressForTesting());
+
+  // And a following up fetch request should be enqueued.
+  // A return value of |false| means exactly that - another fetch request is in
+  // progress, but a follow up request has been enqueued.
+  EXPECT_FALSE(remote_commands_service_->FetchRemoteCommands());
+
+  FakeJob& job = job_factory.WaitForJob();
+  EXPECT_EQ(job.GetPayload(), "Command sent in the second fetch");
+  job.Finish();
 }
 
-// Tests that existing commands issued before service started will be fetched.
-TEST_P(RemoteCommandsServiceTest, ExistingCommand) {
-  std::unique_ptr<MockTestRemoteCommandFactory> factory(
-      new MockTestRemoteCommandFactory());
-  EXPECT_CALL(*factory, BuildTestCommand()).Times(1);
-
-  {
-    base::RunLoop run_loop;
-
-    // Issue a command before service started.
-    server_->IssueCommand(
-        em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-        base::BindOnce(&ExpectSucceededJob, kTestPayload), false);
-
-    // Start the service, run until the command is fetched.
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetFetchedCommands(1).SetFetchedCallback(
-            run_loop.QuitClosure()));
-    StartService(std::move(factory));
-    EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
-
-    run_loop.Run();
-  }
-
-  // And run again so that the result can be reported.
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetCommandResults(1));
-
-  FlushAllTasks();
-
-  EXPECT_EQ(0u, server_->NumberOfCommandsPendingResult());
-}
-
-// Tests that commands issued after service started will be fetched.
-TEST_P(RemoteCommandsServiceTest, NewCommand) {
-  std::unique_ptr<MockTestRemoteCommandFactory> factory(
-      new MockTestRemoteCommandFactory());
-  EXPECT_CALL(*factory, BuildTestCommand()).Times(1);
-
-  StartService(std::move(factory));
-
-  // Set up expectations on fetch commands calls. The first request will fetch
-  // one command, and the second will fetch none but provide result for the
-  // previous command instead.
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(1));
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetCommandResults(1));
-
-  // Issue a command and manually start a command fetch.
-  server_->IssueCommand(em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-                        base::BindOnce(&ExpectSucceededJob, kTestPayload),
-                        false);
-  EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
-
-  FlushAllTasks();
-
-  EXPECT_EQ(0u, server_->NumberOfCommandsPendingResult());
-}
-
-// Tests that commands issued after service started will be fetched, even if
-// the command is issued when a fetch request is ongoing.
-TEST_P(RemoteCommandsServiceTest, NewCommandFollwingFetch) {
-  std::unique_ptr<MockTestRemoteCommandFactory> factory(
-      new MockTestRemoteCommandFactory());
-  EXPECT_CALL(*factory, BuildTestCommand()).Times(1);
-
-  StartService(std::move(factory));
-
-  {
-    base::RunLoop run_loop;
-
-    // Add a command which will be issued after first fetch.
-    server_->IssueCommand(
-        em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-        base::BindOnce(&ExpectSucceededJob, kTestPayload), true);
-
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetFetchedCallback(run_loop.QuitClosure()));
-
-    // Attempts to fetch commands.
-    EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
-
-    // There should be no issued command at this point.
-    EXPECT_EQ(0u, server_->NumberOfCommandsPendingResult());
-
-    // The command fetch should be in progress.
-    EXPECT_TRUE(remote_commands_service_->IsCommandFetchInProgressForTesting());
-
-    // And a following up fetch request should be enqueued.
-    EXPECT_FALSE(remote_commands_service_->FetchRemoteCommands());
-
-    // Run until first fetch request is completed.
-    run_loop.Run();
-  }
-
-  // The command should be issued now. Note that this command was actually
-  // issued before the first fetch request completes in previous run loop.
-  EXPECT_EQ(1u, server_->NumberOfCommandsPendingResult());
-
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(1));
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetCommandResults(1));
-
-  // No further fetch request is made, but the new issued command should be
-  // fetched and executed.
-  FlushAllTasks();
-
-  EXPECT_EQ(0u, server_->NumberOfCommandsPendingResult());
-}
-
-// Tests that on_command_acked_callback_ gets called after the commands get
-// acked/fetched (one function handles both).
+// Tests that the 'acked callback' gets called after the next response from the
+// server.
 TEST_P(RemoteCommandsServiceTest, AckedCallback) {
-  std::unique_ptr<MockTestRemoteCommandFactory> factory(
-      new MockTestRemoteCommandFactory());
-  EXPECT_CALL(*factory, BuildTestCommand()).Times(1);
+  auto& job_factory = StartServiceWith<FakeJobFactory>();
 
-  StartService(std::move(factory));
+  // Fetch the command.
+  ServerResponseFuture response_future;
+  server_.IssueCommand(Command().Build(), response_future.GetCallback());
+  FetchRemoteCommands();
 
-  bool on_command_acked_callback_called = false;
-  remote_commands_service_->SetOnCommandAckedCallback(base::BindOnce(
-      [](bool* on_command_acked_callback_called) {
-        *on_command_acked_callback_called = true;
-      },
-      &on_command_acked_callback_called));
+  // Wait for the job to be created. This means the fetch is completed.
+  FakeJob& job = job_factory.WaitForJob();
 
-  // Set up expectations on fetch commands calls. The first request will fetch
-  // one command, and the second will fetch none but provide result for the
-  // previous command instead.
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(1));
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetCommandResults(1));
+  // Now we install the ack callback, which should be invoked only after the
+  // job finished and its result was uploaded to the server.
+  StrictMock<base::MockOnceCallback<void()>> ack_callback;
+  remote_commands_service_->SetOnCommandAckedCallback(ack_callback.Get());
 
-  // Issue a command and manually start a command fetch.
-  server_->IssueCommand(em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-                        base::BindOnce(&ExpectSucceededJob, kTestPayload),
-                        false);
-  EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
+  job.Finish();
+
+  // Wait for the result to be uploaded to the server.
+  ASSERT_TRUE(response_future.Wait());
+
+  // Only now we should expect the ack callback to be called.
+  EXPECT_CALL(ack_callback, Run());
 
   FlushAllTasks();
-
-  EXPECT_TRUE(on_command_acked_callback_called);
 }
 
-class EnsureCalled {
- public:
-  EnsureCalled() = default;
-  ~EnsureCalled() { CHECK(called_times_ == 1); }
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithInvalidSignature) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  ServerResponseFuture response_future;
 
-  void Bind(ResultReportedCallback callback) {
-    callback_ = std::move(callback);
-  }
+  server_.IssueCommand(Command().WithSignature("random-signature").Build(),
+                       response_future.GetCallback());
+  FetchRemoteCommands();
 
-  void Call(const em::RemoteCommandResult& command_result) {
-    called_times_++;
-    std::move(callback_).Run(command_result);
-  }
-
- private:
-  int called_times_ = 0;
-  ResultReportedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnsureCalled);
-};
-
-class SignedRemoteCommandsServiceTest : public RemoteCommandsServiceTest {
- protected:
-  SignedRemoteCommandsServiceTest() {
-    StartService(std::make_unique<MockTestRemoteCommandFactory>());
-
-    // Set the public key and the device id.
-    std::vector<uint8_t> public_key = PolicyBuilder::GetPublicTestKey();
-    store_.policy_signature_public_key_.assign(public_key.begin(),
-                                               public_key.end());
-    store_.policy_ = std::make_unique<em::PolicyData>();
-    store_.policy_->set_device_id("acme-device");
-
-    // Set up expectations on fetch commands calls. The first request will fetch
-    // one secure command, and the second will fetch none but provide result for
-    // the previous command instead.
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetSignedCommands(1));
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetCommandResults(1));
-  }
-
-  ~SignedRemoteCommandsServiceTest() override {
-    EXPECT_TRUE(remote_commands_service_->FetchRemoteCommands());
-    FlushAllTasks();
-    EXPECT_EQ(0u, server_->NumberOfCommandsPendingResult());
-  }
-
-  EnsureCalled ensure_called_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignedRemoteCommandsServiceTest);
-};
-
-// Tests that signed remote commands work.
-TEST_P(SignedRemoteCommandsServiceTest, Success) {
-  ensure_called_.Bind(base::BindOnce(&ExpectSucceededJob, std::string()));
-  server_->IssueSignedCommand(
-      base::BindOnce(&EnsureCalled::Call, base::Unretained(&ensure_called_)),
-      nullptr, nullptr, nullptr);
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
+  EXPECT_EQ(response_future.Get().result(),
+            em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
-// Tests that we reject signed remote commands with invalid signature.
-TEST_P(SignedRemoteCommandsServiceTest, InvalidSignature) {
-  em::SignedData signed_data;
-  signed_data.set_data("some-random-data");
-  signed_data.set_signature("random-signature");
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithInvalidSignedData) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  ServerResponseFuture response_future;
 
-  ensure_called_.Bind(base::BindOnce(&ExpectIgnoredJob));
-  server_->IssueSignedCommand(
-      base::BindOnce(&EnsureCalled::Call, base::Unretained(&ensure_called_)),
-      nullptr, nullptr, &signed_data);
+  server_.IssueCommand(Command().WithSignedData("random-data").Build(),
+                       response_future.GetCallback());
+  FetchRemoteCommands();
+
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
+  EXPECT_EQ(response_future.Get().result(),
+            em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
-// Tests that we reject signed remote commands with invalid PolicyData type.
-TEST_P(SignedRemoteCommandsServiceTest, InvalidPolicyDataType) {
-  em::PolicyData policy_data;
-  policy_data.set_policy_type("some-random-policy-type");
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithInvalidPolicyType) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  ServerResponseFuture response_future;
 
-  ensure_called_.Bind(base::BindOnce(&ExpectIgnoredJob));
-  server_->IssueSignedCommand(
-      base::BindOnce(&EnsureCalled::Call, base::Unretained(&ensure_called_)),
-      nullptr, &policy_data, nullptr);
+  server_.IssueCommand(Command().WithPolicyType("random-policy-type").Build(),
+                       response_future.GetCallback());
+  FetchRemoteCommands();
+
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
+  EXPECT_EQ(response_future.Get().result(),
+            em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
-// Tests that we reject signed remote commands with invalid RemoteCommand data.
-TEST_P(SignedRemoteCommandsServiceTest, InvalidRemoteCommand) {
-  em::PolicyData policy_data;
-  policy_data.set_policy_type("google/chromeos/remotecommand");
+TEST_P(RemoteCommandsServiceTest, ShouldRejectCommandWithInvalidPolicyValue) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  ServerResponseFuture response_future;
 
-  ensure_called_.Bind(base::BindOnce(&ExpectIgnoredJob));
-  server_->IssueSignedCommand(
-      base::BindOnce(&EnsureCalled::Call, base::Unretained(&ensure_called_)),
-      nullptr, &policy_data, nullptr);
+  server_.IssueCommand(Command().WithPolicyValue("random-policy-value").Build(),
+                       response_future.GetCallback());
+  FetchRemoteCommands();
+
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
+  EXPECT_EQ(response_future.Get().result(),
+            em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
-// Tests that we reject signed remote commands with invalid target device id.
-TEST_P(SignedRemoteCommandsServiceTest, InvalidDeviceId) {
-  em::RemoteCommand remote_command;
-  remote_command.set_target_device_id("roadrunner-device");
+TEST_P(RemoteCommandsServiceTest,
+       ShouldRejectCommandWithInvalidTargetDeviceId) {
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  ServerResponseFuture response_future;
 
-  ensure_called_.Bind(base::BindOnce(&ExpectIgnoredJob));
-  server_->IssueSignedCommand(
-      base::BindOnce(&EnsureCalled::Call, base::Unretained(&ensure_called_)),
-      &remote_command, nullptr, nullptr);
+  server_.IssueCommand(Command().WithTargetDeviceId("wrong-device-id").Build(),
+                       response_future.GetCallback());
+  FetchRemoteCommands();
+
+  EXPECT_NO_CALLS(job_factory, BuildJobForType);
+  EXPECT_EQ(response_future.Get().result(),
+            em::RemoteCommandResult_ResultType_RESULT_IGNORED);
 }
 
 class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
@@ -510,363 +710,150 @@ class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
       RemoteCommandsService::MetricReceivedRemoteCommand;
 
   RemoteCommandsServiceHistogramTest() {
-    auto factory = std::make_unique<MockTestRemoteCommandFactory>();
-    factory_ptr = factory.get();
-    StartService(std::move(factory));
-
-    std::vector<uint8_t> public_key = PolicyBuilder::GetPublicTestKey();
-    store_.policy_signature_public_key_.assign(public_key.begin(),
-                                               public_key.end());
-    store_.policy_ = std::make_unique<em::PolicyData>();
-    store_.policy_->set_device_id("acme-device");
+    StartServiceWith<NiceMock<MockJobFactory>>();
   }
 
-  void ExpectCommand() {
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetFetchedCommands(1));
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetCommandResults(1));
-  }
-
-  void ExpectSignedCommand() {
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetSignedCommands(1));
-    cloud_policy_client_->ExpectFetchCommands(
-        FetchCallExpectation().SetCommandResults(1));
-  }
-
-  std::string GetMetricNameReceived(bool is_command_signed) {
+  std::string GetMetricNameReceived() {
     return RemoteCommandsService::GetMetricNameReceivedRemoteCommand(
-        GetScope(), is_command_signed);
+        GetScope());
   }
 
-  std::string GetMetricNameExecuted(bool is_command_signed) {
+  std::string GetMetricNameExecuted() {
     return RemoteCommandsService::GetMetricNameExecutedRemoteCommand(
-        GetScope(), em::RemoteCommand_Type_COMMAND_ECHO_TEST,
-        is_command_signed);
+        GetScope(), em::RemoteCommand_Type_COMMAND_ECHO_TEST);
   }
 
-  void ExpectReceivedCommands(
-      const std::vector<MetricReceivedRemoteCommand>& metrics,
-      bool is_command_signed) {
+  void ExpectReceivedCommandsMetrics(
+      const std::vector<MetricReceivedRemoteCommand>& metrics) {
     for (const auto& metric : metrics) {
-      histogram_tester_.ExpectBucketCount(
-          GetMetricNameReceived(is_command_signed), metric, 1);
+      histogram_tester_.ExpectBucketCount(GetMetricNameReceived(), metric, 1);
     }
-    histogram_tester_.ExpectTotalCount(GetMetricNameReceived(is_command_signed),
-                                       metrics.size());
+    histogram_tester_.ExpectTotalCount(GetMetricNameReceived(), metrics.size());
   }
 
-  void ExpectExecutedCommands(
-      const std::vector<RemoteCommandJob::Status>& metrics,
-      bool is_command_signed) {
+  void ExpectExecutedCommandsMetrics(
+      const std::vector<RemoteCommandJob::Status>& metrics) {
     for (const auto& metric : metrics) {
-      histogram_tester_.ExpectBucketCount(
-          GetMetricNameExecuted(is_command_signed), metric, 1);
+      histogram_tester_.ExpectBucketCount(GetMetricNameExecuted(), metric, 1);
     }
-    histogram_tester_.ExpectTotalCount(GetMetricNameExecuted(is_command_signed),
-                                       metrics.size());
+    histogram_tester_.ExpectTotalCount(GetMetricNameExecuted(), metrics.size());
   }
 
-  MockTestRemoteCommandFactory* factory_ptr;
+ private:
   base::HistogramTester histogram_tester_;
 };
 
 TEST_P(RemoteCommandsServiceHistogramTest, WhenNoCommandsNothingRecorded) {
-  cloud_policy_client_->ExpectFetchCommands(FetchCallExpectation());
-
-  remote_commands_service_->FetchRemoteCommands();
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  for (const bool is_command_signed : {true, false}) {
-    ExpectReceivedCommands({}, is_command_signed);
-    ExpectExecutedCommands({}, is_command_signed);
-  }
-}
-
-TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenReceivedUnsignedCommandOfUnknownTypeRecordUnknownType) {
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(1));
-  // No result for command without type.
-
-  em::RemoteCommand command;
-  command.set_command_id(123);
-  server_->IssueCommand(command, /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  remote_commands_service_->FetchRemoteCommands();
-  FlushAllTasks();
-
-  constexpr bool is_signed = false;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kUnknownType},
-                         is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedCommandOfUnknownTypeRecordUnknownType) {
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetSignedCommands(1));
-  // No result for command without type.
-
-  em::RemoteCommand command;
-  command.set_target_device_id("acme-device");
-  command.set_command_id(123);
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{}, &command, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithoutCommandType().Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kUnknownType},
-                         is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kUnknownType});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenReceivedUnsignedCommandWithoutIdRecordInvalid) {
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(1));
-  // No result for command without id.
-
-  em::RemoteCommand command;
-  command.set_type(em::RemoteCommand_Type_COMMAND_ECHO_TEST);
-  server_->IssueCommand(command, /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  remote_commands_service_->FetchRemoteCommands();
+       WhenReceivedCommandWithoutIdRecordInvalid) {
+  server_.IssueCommand(Command().WithoutCommandId().Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = false;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalid}, is_signed);
-  ExpectExecutedCommands({}, is_signed);
-}
-
-TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenReceivedCommandWithoutIdRecordInvlaid) {
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetSignedCommands(1));
-  // No result for command without id.
-
-  em::RemoteCommand command;
-  command.set_target_device_id("acme-device");
-  command.set_type(em::RemoteCommand_Type_COMMAND_ECHO_TEST);
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{}, &command, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
-  FlushAllTasks();
-
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalid}, is_signed);
-  ExpectExecutedCommands({}, is_signed);
-}
-
-TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenReceivedExistingUnsignedCommandRecordDuplicated) {
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetFetchedCommands(2));
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetCommandResults(1));
-  // No result for command without id.
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).Times(1);
-
-  server_->IssueCommand(em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-                        /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  em::RemoteCommand command;
-  command.set_type(em::RemoteCommand_Type_COMMAND_ECHO_TEST);
-  command.set_command_id(server_->last_command_id());
-  server_->IssueCommand(command, /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  remote_commands_service_->FetchRemoteCommands();
-  FlushAllTasks();
-
-  constexpr bool is_signed = false;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kCommandEchoTest,
-                          MetricReceivedRemoteCommand::kDuplicated},
-                         is_signed);
-  ExpectExecutedCommands({RemoteCommandJob::SUCCEEDED}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalid});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedExistingCommandRecordDuplicated) {
-  ExpectSignedCommand();
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).Times(1);
-
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithCommandId(222).Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  cloud_policy_client_->ExpectFetchCommands(
-      FetchCallExpectation().SetSignedCommands(1));
-  // No result for command without id.
-  em::RemoteCommand command;
-  command.set_target_device_id("acme-device");
-  command.set_type(em::RemoteCommand_Type_COMMAND_ECHO_TEST);
-  command.set_command_id(server_->last_command_id());
-  server_->IssueSignedCommand(/*reported_callback=*/{}, &command,
-                              /*policy_data_in=*/nullptr,
-                              /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithCommandId(222).Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kCommandEchoTest,
-                          MetricReceivedRemoteCommand::kDuplicated},
-                         is_signed);
-  ExpectExecutedCommands({RemoteCommandJob::SUCCEEDED}, is_signed);
-}
-
-TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenCannotBuildUnsignedJobRecordInvalidScope) {
-  ExpectCommand();
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).WillOnce(Return(nullptr));
-
-  server_->IssueCommand(em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-                        /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  remote_commands_service_->FetchRemoteCommands();
-  FlushAllTasks();
-
-  constexpr bool is_signed = false;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalidScope},
-                         is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kCommandEchoTest,
+                                 MetricReceivedRemoteCommand::kDuplicated});
+  ExpectExecutedCommandsMetrics({RemoteCommandJob::SUCCEEDED});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenCannotBuildJobRecordInvalidScope) {
-  ExpectSignedCommand();
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).WillOnce(Return(nullptr));
+  auto& job_factory = StartServiceWith<MockJobFactory>();
+  EXPECT_CALL(job_factory, BuildJobForType).WillOnce(Return(nullptr));
 
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalidScope},
-                         is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalidScope});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedInvalidSignatureRecordInvalidSignature) {
-  ExpectSignedCommand();
-
-  em::SignedData signed_data;
-  signed_data.set_data("some-random-data");
-  signed_data.set_signature("random-signature");
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, /*policy_data_in=*/nullptr, &signed_data);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithSignature("wrong-signature").Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalidSignature},
-                         is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics(
+      {MetricReceivedRemoteCommand::kInvalidSignature});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedInvalidPolicyDataRecordInvalid) {
-  ExpectSignedCommand();
-
-  em::PolicyData policy_data;
-  policy_data.set_policy_type("some-random-policy-type");
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, &policy_data, /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithPolicyType("random-policy-type").Build(),
+                       {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalid}, is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalid});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedInvalidTargetDeviceRecordInvalid) {
-  ExpectSignedCommand();
-
-  em::RemoteCommand remote_command;
-  remote_command.set_target_device_id("roadrunner-device");
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{}, &remote_command, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(
+      Command().WithTargetDeviceId("invalid-device-id").Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalid}, is_signed);
-  ExpectExecutedCommands({}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalid});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest,
        WhenReceivedInvalidCommandRecordInvalid) {
-  ExpectSignedCommand();
-
-  em::PolicyData policy_data;
-  policy_data.set_policy_type("google/chromeos/remotecommand");
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, &policy_data, /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().WithPolicyValue("wrong-value").Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kInvalid}, is_signed);
-  ExpectExecutedCommands({}, is_signed);
-}
-
-TEST_P(RemoteCommandsServiceHistogramTest,
-       WhenReceivedValidUnsignedCommandRecordType) {
-  ExpectCommand();
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).Times(1);
-
-  server_->IssueCommand(em::RemoteCommand_Type_COMMAND_ECHO_TEST, kTestPayload,
-                        /*reported_callback=*/{},
-                        /*skip_next_fetch=*/false);
-  remote_commands_service_->FetchRemoteCommands();
-  FlushAllTasks();
-
-  constexpr bool is_signed = false;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kCommandEchoTest},
-                         is_signed);
-  ExpectExecutedCommands({RemoteCommandJob::SUCCEEDED}, is_signed);
+  ExpectReceivedCommandsMetrics({MetricReceivedRemoteCommand::kInvalid});
+  ExpectExecutedCommandsMetrics({});
 }
 
 TEST_P(RemoteCommandsServiceHistogramTest, WhenReceivedValidCommandRecordType) {
-  ExpectSignedCommand();
-  EXPECT_CALL(*factory_ptr, BuildTestCommand()).Times(1);
-
-  server_->IssueSignedCommand(
-      /*reported_callback=*/{},
-      /*command_in=*/nullptr, /*policy_data_in=*/nullptr,
-      /*signed_data_in=*/nullptr);
-  remote_commands_service_->FetchRemoteCommands();
+  server_.IssueCommand(Command().Build(), {});
+  FetchRemoteCommands();
   FlushAllTasks();
 
-  constexpr bool is_signed = true;
-  ExpectReceivedCommands({MetricReceivedRemoteCommand::kCommandEchoTest},
-                         is_signed);
-  ExpectExecutedCommands({RemoteCommandJob::SUCCEEDED}, is_signed);
+  ExpectReceivedCommandsMetrics(
+      {MetricReceivedRemoteCommand::kCommandEchoTest});
+  ExpectExecutedCommandsMetrics({RemoteCommandJob::SUCCEEDED});
 }
 
 INSTANTIATE_TEST_SUITE_P(RemoteCommandsServiceTestInstance,
                          RemoteCommandsServiceTest,
-                         testing::Values(PolicyInvalidationScope::kUser,
-                                         PolicyInvalidationScope::kDevice));
-
-INSTANTIATE_TEST_SUITE_P(SignedRemoteCommandsServiceTestInstance,
-                         SignedRemoteCommandsServiceTest,
                          testing::Values(PolicyInvalidationScope::kUser,
                                          PolicyInvalidationScope::kDevice));
 

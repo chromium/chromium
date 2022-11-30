@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 #include "build/build_config.h"
 #include "url/gurl.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 constexpr char kFakeOnlineEulaPath[] = "/intl/en-US/chrome/eula_text.html";
 
@@ -26,7 +25,7 @@ const char* FakeEulaMixin::kFakeOnlineEula = "No obligations at all";
 const char* FakeEulaMixin::kOfflineEULAWarning =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // See IDS_TERMS_HTML for the complete text.
-    "Google Chrome and Chrome OS Additional Terms of Service";
+    "Google Chrome and ChromeOS Additional Terms of Service";
 #else
     // Placeholder text in terms_chromium.html.
     "In official builds this space will show the terms of service.";
@@ -74,4 +73,4 @@ std::unique_ptr<HttpResponse> FakeEulaMixin::HandleRequest(
   return std::move(http_response);
 }
 
-}  // namespace chromeos
+}  // namespace ash

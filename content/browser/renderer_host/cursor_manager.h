@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/cursors/webcursor.h"
 
@@ -21,14 +22,6 @@ class RenderWidgetHostViewBase;
 // update was received for the current view.
 class CONTENT_EXPORT CursorManager {
  public:
-  class TooltipObserver {
-   public:
-    virtual ~TooltipObserver() {}
-
-    virtual void OnSetTooltipTextForView(
-        const RenderWidgetHostViewBase* view,
-        const std::u16string& tooltip_text) = 0;
-  };
 
   CursorManager(RenderWidgetHostViewBase* root);
   ~CursorManager();
@@ -40,22 +33,20 @@ class CONTENT_EXPORT CursorManager {
   // Called when the mouse moves over a different RenderWidgetHostView.
   void UpdateViewUnderCursor(RenderWidgetHostViewBase*);
 
-  // Accepts TooltipText updates from views, but only updates what's displayed
-  // if the requesting view is currently under the mouse cursor.
-  void SetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                             const std::u16string& tooltip_text);
-
   // Notification of a RenderWidgetHostView being destroyed, so that its
   // cursor map entry can be removed if it has one. If it is the current
   // view_under_cursor_, then the root_view_'s cursor will be displayed.
   void ViewBeingDestroyed(RenderWidgetHostViewBase*);
 
+  // Called by any RenderWidgetHostView before updating the tooltip text to
+  // validate that the tooltip text being updated is for the view under the
+  // cursor. This is only used for cursor triggered tooltips.
+  bool IsViewUnderCursor(RenderWidgetHostViewBase*) const;
+
   // Accessor for browser tests, enabling verification of the cursor_map_.
   // Returns false if the provided View is not in the map, and outputs
   // the cursor otherwise.
   bool GetCursorForTesting(RenderWidgetHostViewBase*, WebCursor&);
-
-  void SetTooltipObserverForTesting(TooltipObserver* observer);
 
  private:
   // Stores the last received cursor from each RenderWidgetHostView.
@@ -63,13 +54,11 @@ class CONTENT_EXPORT CursorManager {
 
   // The view currently underneath the cursor, which corresponds to the cursor
   // currently displayed.
-  RenderWidgetHostViewBase* view_under_cursor_;
+  raw_ptr<RenderWidgetHostViewBase> view_under_cursor_;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
-  RenderWidgetHostViewBase* root_view_;
-
-  TooltipObserver* tooltip_observer_for_testing_;
+  raw_ptr<RenderWidgetHostViewBase> root_view_;
 };
 
 }  // namespace content

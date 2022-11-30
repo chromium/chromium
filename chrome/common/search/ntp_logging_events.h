@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,39 +22,26 @@ enum NTPLoggingEventType {
   // Deleted: NTP_EXTERNAL_TILE_FALLBACK = 8,
   // Deleted: NTP_MOUSEOVER = 9
   // Deleted: NTP_TILE_LOADED = 10,
+  // Deleted: NTP_ALL_TILES_LOADED = 11,
   // Deleted: NTP_ALL_TILES_RECEIVED = 12,
+  // Deleted: NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX = 13,
+  // Deleted: NTP_VOICE_ACTION_ACTIVATE_KEYBOARD = 14,
+  // Deleted: NTP_VOICE_ACTION_CLOSE_OVERLAY = 15,
+  // Deleted: NTP_VOICE_ACTION_QUERY_SUBMITTED = 16,
+  // Deleted: NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED = 17,
+  // Deleted: NTP_VOICE_ACTION_TRY_AGAIN_LINK = 18,
+  // Deleted: NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON = 19,
+  // Deleted: NTP_VOICE_ERROR_NO_SPEECH = 20,
+  // Deleted: NTP_VOICE_ERROR_ABORTED = 21,
+  // Deleted: NTP_VOICE_ERROR_AUDIO_CAPTURE = 22,
+  // Deleted: NTP_VOICE_ERROR_NETWORK = 23,
+  // Deleted: NTP_VOICE_ERROR_NOT_ALLOWED = 24,
+  // Deleted: NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED = 25,
+  // Deleted: NTP_VOICE_ERROR_BAD_GRAMMAR = 26,
+  // Deleted: NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 27,
+  // Deleted: NTP_VOICE_ERROR_NO_MATCH = 28,
+  // Deleted: NTP_VOICE_ERROR_OTHER = 29,
   // Deleted: NTP_MODULES_SHOWN = 83,
-
-  // All NTP tiles have finished loading (successfully or failing). Logged only
-  // by the single-iframe version of the NTP.
-  NTP_ALL_TILES_LOADED = 11,
-
-  // Activated by clicking on the fakebox or realbox icon. Logged by Voice
-  // Search.
-  NTP_VOICE_ACTION_ACTIVATE_SEARCH_BOX = 13,
-  // Activated by keyboard shortcut.
-  NTP_VOICE_ACTION_ACTIVATE_KEYBOARD = 14,
-  // Close the voice overlay by a user's explicit action.
-  NTP_VOICE_ACTION_CLOSE_OVERLAY = 15,
-  // Submitted voice query.
-  NTP_VOICE_ACTION_QUERY_SUBMITTED = 16,
-  // Clicked on support link in error message.
-  NTP_VOICE_ACTION_SUPPORT_LINK_CLICKED = 17,
-  // Retried by clicking Try Again link.
-  NTP_VOICE_ACTION_TRY_AGAIN_LINK = 18,
-  // Retried by clicking microphone button.
-  NTP_VOICE_ACTION_TRY_AGAIN_MIC_BUTTON = 19,
-  // Errors received from the Speech Recognition API.
-  NTP_VOICE_ERROR_NO_SPEECH = 20,
-  NTP_VOICE_ERROR_ABORTED = 21,
-  NTP_VOICE_ERROR_AUDIO_CAPTURE = 22,
-  NTP_VOICE_ERROR_NETWORK = 23,
-  NTP_VOICE_ERROR_NOT_ALLOWED = 24,
-  NTP_VOICE_ERROR_SERVICE_NOT_ALLOWED = 25,
-  NTP_VOICE_ERROR_BAD_GRAMMAR = 26,
-  NTP_VOICE_ERROR_LANGUAGE_NOT_SUPPORTED = 27,
-  NTP_VOICE_ERROR_NO_MATCH = 28,
-  NTP_VOICE_ERROR_OTHER = 29,
 
   // A static Doodle was shown, coming from cache.
   NTP_STATIC_LOGO_SHOWN_FROM_CACHE = 30,
@@ -80,20 +67,13 @@ enum NTPLoggingEventType {
   // Shortcuts have been customized on the NTP.
   NTP_SHORTCUT_CUSTOMIZED = 39,
 
-  // The 'Chrome backgrounds' menu item was clicked.
-  NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED = 40,
-  // The 'Upload an image' menu item was clicked.
-  NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED = 41,
-  // The 'Restore default background' menu item was clicked.
-  NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED = 42,
-  // The attribution link on a customized background image was clicked.
-  NTP_CUSTOMIZE_ATTRIBUTION_CLICKED = 43,
-  // The 'Add shortcut' link was clicked.
-  NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED = 44,
-  // The 'Edit shortcut' link was clicked.
-  NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED = 45,
-  // The 'Restore default shortcuts' menu item was clicked.
-  NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED = 46,
+  // Deleted: NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED = 40,
+  // Deleted: NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED = 41,
+  // Deleted: NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED = 42,
+  // Deleted: NTP_CUSTOMIZE_ATTRIBUTION_CLICKED = 43,
+  // Deleted: NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED = 44,
+  // Deleted: NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED = 45,
+  // Deleted: NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED = 46,
 
   // A collection was selected in the 'Chrome backgrounds' dialog.
   NTP_CUSTOMIZE_CHROME_BACKGROUND_SELECT_COLLECTION = 47,
@@ -178,18 +158,6 @@ enum NTPLoggingEventType {
   NTP_APP_RENDERED = 84,
 
   NTP_EVENT_TYPE_LAST = NTP_APP_RENDERED
-};
-
-// The different types of events that are logged for NTP search suggestions,
-// such as number of chips shown and the index of chips that are clicked. This
-// enum is used to transfer information from the NTP javascript to the renderer
-// and is *not* used as a UMA enum histogram's logged value. These events may be
-// logged by javascript served from GWS, see
-// google3/java/com/google/gws/plugins/newtab/suggestions.js.
-enum class NTPSuggestionsLoggingEventType {
-  kShownCount = 0,
-  kIndexClicked = 1,
-  kMaxValue = kIndexClicked,
 };
 
 #endif  // CHROME_COMMON_SEARCH_NTP_LOGGING_EVENTS_H_

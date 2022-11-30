@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 
@@ -19,17 +18,21 @@ class ScopedIPCSupport;
 
 namespace content {
 
-class BrowserProcessSubThread;
+class BrowserProcessIOThread;
 struct StartupDataImpl;
 
 // Encapsulates the basic state necessary to bring up a working Mojo IPC
 // environment in the browser process.
 class CONTENT_EXPORT MojoIpcSupport {
  public:
-  explicit MojoIpcSupport(std::unique_ptr<BrowserProcessSubThread> io_thread);
+  explicit MojoIpcSupport(std::unique_ptr<BrowserProcessIOThread> io_thread);
+
+  MojoIpcSupport(const MojoIpcSupport&) = delete;
+  MojoIpcSupport& operator=(const MojoIpcSupport&) = delete;
+
   ~MojoIpcSupport();
 
-  BrowserProcessSubThread* io_thread() { return io_thread_.get(); }
+  BrowserProcessIOThread* io_thread() { return io_thread_.get(); }
 
   // Returns a new StartupDataImpl which captures and/or reflects the partial
   // state of this object. This must be called and the result passed to
@@ -40,11 +43,9 @@ class CONTENT_EXPORT MojoIpcSupport {
   std::unique_ptr<StartupDataImpl> CreateBrowserStartupData();
 
  private:
-  std::unique_ptr<BrowserProcessSubThread> io_thread_;
+  std::unique_ptr<BrowserProcessIOThread> io_thread_;
   base::Thread mojo_ipc_thread_{"Mojo IPC"};
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoIpcSupport);
 };
 
 }  // namespace content

@@ -3,20 +3,14 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../assert_selection.js"></script>
 <script>
-let supportsEditableMathML =
-    window.internals && internals.runtimeFlags.editingNGEnabled;
-
-if (supportsEditableMathML) {
-    selection_test(
-        '<math id="target">a</math>',
-        selection => {
-            const target = selection.document.getElementById('target');
-            const style = selection.window.getComputedStyle(target);
-            supportsEditableMathML = style.display === 'math';
-        },
-        '<math id="target">a</math>',
-        'Check whether we have MathML or not');
-}
+selection_test(
+    '<math id="target">a</math>',
+    selection => {
+        const target = selection.document.getElementById('target');
+        const style = selection.window.getComputedStyle(target);
+    },
+    '<math id="target">a</math>',
+    'Check whether we have MathML or not');
 
 function hasRedBackground(element) {
   return window.getComputedStyle(element).
@@ -54,9 +48,7 @@ selection_test(
     selection.document.execCommand('paste');
     assert_false(hasRedBackground(document.documentElement));
   },
-  supportsEditableMathML
-    ? '<div contenteditable>teA<math>B<a style="display:block"><title>D<a id="</title><svg><style>*{background:red}</style>"></a></title></a></math>C|st</div>'
-    : '<div contenteditable>teA<math>B<br></math>C|<svg></svg>st</div>',
+  '<div contenteditable>teA<math>B<a style="display:block"><title>D<a id="</title><svg><style>*{background:red}</style>"></a></title></a></math>C|st</div>',
   'Paste blocks SVG style injection');
 
 // crbug.com/1141350
@@ -67,8 +59,6 @@ selection_test(
     selection.document.execCommand('paste');
     assert_equals(selection.document.querySelector('use'), null, 'SVG <use> with data URI should not leak into main document');
   },
-  supportsEditableMathML
-    ? '<div contenteditable><math><xss style="display:block"><xmp>X<a title="</xmp><div style=position:fixed;left:0;top:0;width:100%;height:100%><svg><use href=data:application/xml;base64,PHN2ZyBpZD0neCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPGEgaHJlZj0namF2YXNjcmlwdDphbGVydCgxMjMpJz4KICAgIDxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9J2xpZ2h0Ymx1ZScgLz4KICAgICA8dGV4dCB4PScwJyB5PScwJyBmaWxsPSdibGFjayc+CiAgICAgICA8dHNwYW4geD0nMCcgZHk9JzEuMmVtJz5Pb3BzLCB0aGVyZSdzIHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBwYWdlITwvdHNwYW4+CiAgICAgPHRzcGFuIHg9JzAnIGR5PScxLjJlbSc+UGxlYXNlIGNsaWNrIGhlcmUgdG8gcmVsb2FkLjwvdHNwYW4+Cjwvc3ZnPg==#x>">.<a></a></a></xmp></xss></math>t|abc</div>'
-    : '<div contenteditable>t<xmp>X&lt;a title="</xmp><div style="position: fixed; left: 0px; top: 0px; width: 800px; height: 600px;"><svg></svg></div>|abc</div>',
+  '<div contenteditable><math><xss style="display:block"><xmp>X<a title="</xmp><div style=position:fixed;left:0;top:0;width:100%;height:100%><svg><use href=data:application/xml;base64,PHN2ZyBpZD0neCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz4KPGEgaHJlZj0namF2YXNjcmlwdDphbGVydCgxMjMpJz4KICAgIDxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9J2xpZ2h0Ymx1ZScgLz4KICAgICA8dGV4dCB4PScwJyB5PScwJyBmaWxsPSdibGFjayc+CiAgICAgICA8dHNwYW4geD0nMCcgZHk9JzEuMmVtJz5Pb3BzLCB0aGVyZSdzIHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBwYWdlITwvdHNwYW4+CiAgICAgPHRzcGFuIHg9JzAnIGR5PScxLjJlbSc+UGxlYXNlIGNsaWNrIGhlcmUgdG8gcmVsb2FkLjwvdHNwYW4+Cjwvc3ZnPg==#x>">.<a></a></a></xmp></xss></math>t|abc</div>',
   'Paste blocks data URI in SVG use element injection via <math>');
 </script>

@@ -1,15 +1,17 @@
 <style>
   :host {
     background-color: #fff;
+    font-size: 13px;
     overflow: hidden;
   }
 
   input {
+    background-color: transparent;
     border: 0;
     box-sizing: border-box;
     height: 100%;
     margin:0;
-    padding: 1em 1em 1em .5em;
+    padding: 1em 1em 1em 0;
     width: 100%;
   }
 
@@ -17,11 +19,20 @@
     outline: none;
   }
 
-  #input-row {
+  #inputRow {
     align-items: center;
     box-sizing: border-box;
     display: flex;
     height: 48px;
+    width: 100%;
+  }
+
+  #noResults {
+    border-top: 1px solid var(--google-grey-300);
+    box-sizing: border-box;
+    font-weight: bold;
+    height: 48px;
+    padding: 1em;
     width: 100%;
   }
 
@@ -38,25 +49,60 @@
     white-space: nowrap;
   }
 
+  commander-option:first-child {
+    border-top: 1px solid var(--google-grey-300);
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
 
   iron-icon {
     margin-inline-start: 1em;
-    --iron-icon-fill-color: #999;
+    margin-top: 0.5em;
+    --iron-icon-fill-color: var(--google-grey-600);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      background-color: var(--google-grey-900);
+      color: #fff;
+    }
+
+    .chip {
+      background-color: var(--google-blue-700);
+      color: var(--google-blue-50);
+    }
+
+    input::placeholder {
+      color: var(--google-grey-500);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
   }
 </style>
-<div id="input-row">
-  <iron-icon icon="cr:search"></iron-icon>
+<div id="inputRow" aria-owns="options"
+    aria-expanded="[[computeExpanded_(options_)]]" role="combobox" >
+  <iron-icon icon="commander-icons:chrome"></iron-icon>
   <template is="dom-if" if="[[computeShowChip_(promptText_)]]">
     <div class="chip">[[promptText_]]</div>
   </template>
   <input id="input" type="text" on-input="onInput_"
-      on-keydown="onKeydown_" autofocus></input>
+      on-keydown="onKeydown_" aria-autocomplete="list" aria-controls="options"
+      placeholder="$i18n{placeholder}"></input>
 </div>
-<template id="options" is="dom-repeat" on-dom-change="onDomChange_"
-      items="[[options_]]">
-  <commander-option class$="[[getOptionClass_(index, focusedIndex_)]]"
-        model="[[item]]" on-click="onOptionClick_"></commander-option>
+<div id="options" role="listbox">
+<template is="dom-repeat" on-dom-change="onDomChange_" items="[[options_]]">
+  <commander-option
+      aria-selected="[[computeAriaSelected_(index, focusedIndex_)]]"
+      role="option" id="[[getOptionId_(index)]]"
+      class$="[[getOptionClass_(index, focusedIndex_)]]"
+      model="[[item]]" on-click="onOptionClick_"></commander-option>
 </template>
+<template is="dom-if" if="[[showNoResults_]]"
+    on-dom-change="onDomChange_">
+  <div id="noResults">$i18n{noResults}</div>
+</template>
+</div>

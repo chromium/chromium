@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -53,8 +53,6 @@ target(link_target_type, "child") {
     "runtime_features.h",
     "scoped_child_process_reference.cc",
     "scoped_child_process_reference.h",
-    "webthemeengine_impl_conversions.cc",
-    "webthemeengine_impl_conversions.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -69,21 +67,20 @@ target(link_target_type, "child") {
     "//base",
     "//build/config/compiler:compiler_buildflags",
     "//cc/paint",
+    "//components/autofill/core/common:features",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/power_scheduler",
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",
-    "//content/app/resources",
     "//content/common",
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
-    "//crypto:platform",
+    "//device/base",
     "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
     "//media",
-    "//media/blink",
     "//mojo/core/embedder",
     "//net",
     "//services/device/public/cpp:device_features",
@@ -116,19 +113,6 @@ target(link_target_type, "child") {
     "//v8",
   ]
 
-  if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
-    sources += [
-      "webthemeengine_impl_android.cc",
-      "webthemeengine_impl_android.h",
-    ]
-  } else {
-    sources += [
-      "webthemeengine_impl_default.cc",
-      "webthemeengine_impl_default.h",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_sandbox_support_impl_linux.cc",
@@ -160,12 +144,10 @@ target(link_target_type, "child") {
     sources += [
       "child_process_sandbox_support_impl_mac.cc",
       "child_process_sandbox_support_impl_mac.h",
-      "webthemeengine_impl_mac.cc",
-      "webthemeengine_impl_mac.h",
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi/proxy",
       "//ppapi/shared_impl",
@@ -176,10 +158,7 @@ target(link_target_type, "child") {
     ]
   }
 
-  configs += [
-    "//content:content_implementation",
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
+  configs += [ "//content:content_implementation" ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.

@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var mockTimer;
+import {MockTimer} from './mock_timer.js';
+
+let mockTimer;
 
 /**
  * Counter class for tallying the number if times a calback is triggered.
@@ -28,7 +30,7 @@ ClickCounter.prototype = {
    * @return {!Function}
    */
   createCallback: function() {
-    var self = this;
+    const self = this;
     return function() {
       self.tick();
     };
@@ -40,7 +42,7 @@ ClickCounter.prototype = {
    */
   get value() {
     return this.clickCount_;
-  }
+  },
 };
 
 function setUp() {
@@ -53,7 +55,7 @@ function tearDown() {
 }
 
 function testSetTimeout() {
-  var counter = new ClickCounter();
+  const counter = new ClickCounter();
   window.setTimeout(counter.createCallback(), 100);
   assertEquals(0, counter.value);
   mockTimer.tick(50);
@@ -65,8 +67,8 @@ function testSetTimeout() {
 }
 
 function testClearTimeout() {
-  var counter = new ClickCounter();
-  var t = window.setTimeout(counter.createCallback(), 100);
+  const counter = new ClickCounter();
+  const t = window.setTimeout(counter.createCallback(), 100);
 
   // Verify that clearing a timeout before the elapsed time does not trigger
   // the callback.
@@ -76,8 +78,8 @@ function testClearTimeout() {
 }
 
 function testSetAndClearInterval() {
-  var counter = new ClickCounter();
-  var t = window.setInterval(counter.createCallback(), 100);
+  const counter = new ClickCounter();
+  const t = window.setInterval(counter.createCallback(), 100);
 
   // Verify that callback doesn't fire before elapsed interval.
   assertEquals(0, counter.value);
@@ -99,17 +101,17 @@ function testSetAndClearInterval() {
 }
 
 function testInterleavedTimers() {
-  var results = '';
-  var createCallback = function(response) {
-    var label = response;
+  let results = '';
+  const createCallback = function(response) {
+    const label = response;
     return function() {
       results = results + label;
     };
   };
 
   // Verify callbacks are properly interleaved.
-  var t1 = window.setInterval(createCallback('A'), 7);
-  var t2 = window.setInterval(createCallback('B'), 13);
+  const t1 = window.setInterval(createCallback('A'), 7);
+  const t2 = window.setInterval(createCallback('B'), 13);
   mockTimer.tick(30);
   assertEquals('ABAABA', results);
   mockTimer.tick(30);
@@ -124,3 +126,12 @@ function testInterleavedTimers() {
   mockTimer.tick(30);
   assertEquals('ABAABAABAABABCB', results);
 }
+
+Object.assign(window, {
+  setUp,
+  tearDown,
+  testSetTimeout,
+  testClearTimeout,
+  testSetAndClearInterval,
+  testInterleavedTimers,
+});

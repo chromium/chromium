@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!--
+Check that VideoEncoder can encode in different latency and bitrate modes
+-->
+<html>
+
+<head>
+  <title>Encode test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    async function main(arg) {
+      const width = 640;
+      const height = 480;
+      const frames_in_one_pass = 15;
+
+      let errors = 0;
+      let chunks = [];
+      let decoder_configs = [];
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: arg.acceleration,
+        width: width,
+        height: height,
+        latencyMode: arg.latency_mode,
+        bitrateMode: arg.bitrate_mode,
+        bitrate: 1000000,
+        framerate: 24
+      };
+
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
+
+      const init = {
+        output(chunk, metadata) {
+          if (metadata.decoderConfig)
+            decoder_configs.push(metadata.decoderConfig);
+
+          chunks.push(chunk);
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(init);
+      encoder.configure(encoder_config);
+
+      for (let i = 0; i < frames_in_one_pass; i++) {
+        let frame = await source.getNextFrame();
+        encoder.encode(frame, { keyFrame: false });
+        frame.close();
+        await waitForNextFrame();
+      }
+
+      await encoder.flush();
+      encoder.close();
+      source.close();
+
+      TEST.assert(
+        decoder_configs.length >= 1,
+        'There should be at least 1 configs');
+
+      TEST.assert(
+        chunks.length == frames_in_one_pass,
+        'Output count mismatch: ' + chunks.length);
+
+      TEST.assert(errors == 0, 'Encoding errors occurred during the test');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

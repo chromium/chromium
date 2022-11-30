@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
- -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.weblayer_browsertests_apk">
@@ -27,6 +28,7 @@
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:windowSoftInputMode="adjustPan|stateUnspecified"
+                  android:exported="true"
                   android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -38,7 +40,7 @@
                    android:value="org.chromium.weblayer_browsertests_apk"/>
     </application>
 
-    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+    <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
             android:label="WebLayerBrowserTests"
             android:targetPackage="org.chromium.weblayer_browsertests_apk"/>
 </manifest>

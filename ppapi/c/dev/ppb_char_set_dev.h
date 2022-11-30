@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -82,4 +82,4 @@ struct PPB_CharSet_Dev_0_4 {
 
 typedef struct PPB_CharSet_Dev_0_4 PPB_CharSet_Dev;
 
-#endif  /* PPAPI_C_DEV_PPB_CHAR_SET_DEV_H_ */
+#endif  // PPAPI_C_DEV_PPB_CHAR_SET_DEV_H_

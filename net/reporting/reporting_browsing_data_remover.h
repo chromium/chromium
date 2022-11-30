@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 #define NET_REPORTING_REPORTING_BROWSING_DATA_REMOVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
-#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -22,6 +21,11 @@ class NET_EXPORT ReportingBrowsingDataRemover {
     DATA_TYPE_CLIENTS = 0x2,
   };
 
+  ReportingBrowsingDataRemover() = delete;
+  ReportingBrowsingDataRemover(const ReportingBrowsingDataRemover&) = delete;
+  ReportingBrowsingDataRemover& operator=(const ReportingBrowsingDataRemover&) =
+      delete;
+
   // Removes browsing data from the Reporting system. |data_type_mask| specifies
   // which types of data to remove: reports queued by browser features and/or
   // clients (endpoints configured by origins). |origin_filter| specifies which
@@ -33,16 +37,13 @@ class NET_EXPORT ReportingBrowsingDataRemover {
   static void RemoveBrowsingData(
       ReportingCache* cache,
       uint64_t data_type_mask,
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Like RemoveBrowsingData except removes data for all origins without a
   // filter. Allows slight optimization over passing an always-true filter to
   // RemoveBrowsingData.
   static void RemoveAllBrowsingData(ReportingCache* cache,
                                     uint64_t data_type_mask);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReportingBrowsingDataRemover);
 };
 
 }  // namespace net

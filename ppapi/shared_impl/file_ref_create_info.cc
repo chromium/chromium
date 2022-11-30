@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ std::string GetNameForExternalFilePath(const base::FilePath& in_path) {
   const base::FilePath::StringType& path = in_path.value();
   size_t pos = path.rfind(base::FilePath::kSeparators[0]);
   CHECK(pos != base::FilePath::StringType::npos);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(path.substr(pos + 1));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return path.substr(pos + 1);
 #else
 #error "Unsupported platform."

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,10 @@ namespace autofill {
 // Strings used in more than one place and must be the same everywhere.
 const char kQuebecCode[] = "QC";
 const char kQuebecName[] = "Quebec";
+const char16_t kQuebecName16[] = u"Quebec";
 const char kOntarioCode[] = "ON";
 const char kOntarioName[] = "Ontario";
+const char16_t kOntarioName16[] = u"Ontario";
 
 // Make sure the two regions returned by the source are properly set in the
 // model.
@@ -36,10 +38,10 @@ TEST(RegionComboboxModelTest, QuebecOntarioRegions) {
 
   test_region_data_loader.SendAsynchronousData(regions);
 
-  EXPECT_EQ(3, model.GetItemCount());
+  EXPECT_EQ(3u, model.GetItemCount());
   EXPECT_EQ(u"---", model.GetItemAt(0));
-  EXPECT_EQ(base::ASCIIToUTF16(kQuebecName), model.GetItemAt(1));
-  EXPECT_EQ(base::ASCIIToUTF16(kOntarioName), model.GetItemAt(2));
+  EXPECT_EQ(kQuebecName16, model.GetItemAt(1));
+  EXPECT_EQ(kOntarioName16, model.GetItemAt(2));
   EXPECT_FALSE(model.failed_to_load_data());
 }
 
@@ -52,7 +54,7 @@ TEST(RegionComboboxModelTest, FailingSource) {
       std::vector<std::pair<std::string, std::string>>());
 
   // There's always 1 item, even in failure cases.
-  EXPECT_EQ(1, model.GetItemCount());
+  EXPECT_EQ(1u, model.GetItemCount());
   EXPECT_TRUE(model.failed_to_load_data());
 }
 

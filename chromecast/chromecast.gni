@@ -1,16 +1,35 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//build/config/locales.gni")
-import("//extensions/buildflags/buildflags.gni")
+import("//components/cast_streaming/features.gni")
 import("//media/media_options.gni")
 
-# This args block should contain arguments used within the //chromecast
+# These args blocks should contain arguments used within the //chromecast
 # directory. Arguments which are used in other Chrome components should
 # be instead declared in //build/config/chromecast_build.gni.
 declare_args() {
+  # True if Chromecast build is targeted for linux desktop. This type of build
+  # is useful for testing and development, but currently supports only a subset
+  # of Cast functionality. Though this defaults to true for x86 Linux devices,
+  # this should be overridden manually for an embedded x86 build.
+  is_cast_desktop_build =
+      target_os == "linux" && (target_cpu == "x86" || target_cpu == "x64") &&
+      enable_cast_receiver
+
+  # chromecast_branding is used to include or exclude Google-branded components.
+  # Set it to "public" for a Chromium build.
+  chromecast_branding = "public"
+}
+
+declare_args() {
+  # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
+  # it will evaluate to 0. Overriding this when is_debug=false is useful for
+  # doing engineering builds.
+  cast_is_debug = is_debug
+
   # The incremental build number. The Cast automated builders will set this
   # value to indicate the buildset. Note: The default value should be greater
   # than any value the builder may assign to prevent attempted automatic updates
@@ -45,21 +64,6 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true for builds targeting Android Things.
-  is_android_things = false
-
-  # Set true for builds targeting Android appliances.
-  is_android_appliance = false
-
-  # Set true if the platform works as a single volume device, mapping all
-  # volume streams to a single one.
-  is_single_volume = false
-
-  # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
-  # to run cast receiver app.
-  # TODO(thoren) merge this flag with display_web_contents_in_service
-  enable_cast_fragment = false
-
   if (is_android) {
     # Set to true to get logcat from a remote service
     # If false, will only get the logs of the app.
@@ -86,10 +90,10 @@ declare_args() {
   use_android_user_agent = false
 
   # Contain default command line switches we want to set.
-  # The syntax: "test-flag-one=public,test-flag-two=true,test-flag-three=1,".
-  # This arg can be overridden but not supports += operator.
+  # This will get joined into a comma-separated list that looks like:
+  #   "test-flag-one=public,test-flag-two=true,test-flag-three=1,"
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
-  default_command_line_flags = ""
+  default_command_line_flags = []
 
   # Set to true to disable secure flac/opus support in EME, when using
   # cast CMA media backend and supporting Widevine or Playready.
@@ -105,17 +109,19 @@ declare_args() {
 
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
-  enable_external_mojo_services = is_linux || is_chromeos
+  enable_external_mojo_services = is_linux || is_chromeos || is_android
 
-  # Support Perfetto tracing of processes that depend on entry points in
-  # //chromecast/external_mojo/external_service_support
-  enable_external_mojo_tracing = false
+  # Support using system perfetto tracing
+  enable_perfetto_tracing = false
+
+  # Support using system perfetto tracing
+  enable_perfetto_tracing = false
 
   # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
   audio_input_sample_rate = 16000
 
   # Whether use unix sockets in Cast input/output stream.
-  use_unix_sockets = is_linux || is_chromeos
+  use_unix_sockets = is_linux || is_chromeos || is_android
 
   # Set to true to enable audio capture service for audio input.
   enable_audio_capture_service = false
@@ -132,11 +138,18 @@ declare_args() {
 
   # True to use the Chromium runtime for cast rendering.
   enable_chromium_runtime_cast_renderer = false
-}
 
-declare_args() {
-  is_android_things_non_public =
-      is_android_things && chromecast_branding != "public"
+  # True to use the remoting implementation of cast streaming for the cast web
+  # runtime (as opposed to the mirroring-only implementation).
+  enable_remoting_for_cwr = false
+
+  # device specific string to append to User string.
+  device_user_agent_suffix = ""
+
+  # link vendor-supplied functionality as shared libraries. When true,
+  # cast_shared_library targets are normal shared libraries. When false,
+  # they become source_sets.
+  use_vendor_shlibs = !is_android
 }
 
 declare_args() {
@@ -165,11 +178,14 @@ cast_locales = locales_without_pseudolocales
 # If Cast will also the android files update this and the Cast grd files.
 if (is_android) {
   # Subtract out additional Android locales
-  cast_locales -= android_bundle_only_locales
+  cast_locales -= extended_locales
 }
-
-declare_args() {
-  enable_chromecast_extensions = enable_extensions
+if (!(is_ios || is_chromeos)) {
+  # Subtract out the additional desktop locales
+  cast_locales -= [
+    "af",
+    "ur",
+  ]
 }
 
 # Use Chromecast CDMs for protected content. Some Android platforms use
@@ -181,16 +197,30 @@ declare_args() {
 foreach(target_type,
         [
           "executable",
-          "shared_library",
           "loadable_module",
           "source_set",
         ]) {
   template("cast_${target_type}") {
     target(target_type, target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, [ "testonly" ])
 
       configs += [ "//chromecast:cast_config" ]
     }
+  }
+}
+
+template("cast_shared_library") {
+  if (use_vendor_shlibs) {
+    target_type = "shared_library"
+  } else {
+    target_type = "source_set"
+  }
+  target(target_type, target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, [ "testonly" ])
+
+    configs += [ "//chromecast:cast_config" ]
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
+#include "base/strings/string_piece_forward.h"
 
 namespace feed {
 
@@ -17,6 +18,31 @@ enum class NetworkRequestType : int {
   kListWebFeeds = 3,
   kUnfollowWebFeed = 4,
   kFollowWebFeed = 5,
+  kListRecommendedWebFeeds = 6,
+  kWebFeedListContents = 7,
+  kQueryInteractiveFeed = 8,
+  kQueryBackgroundFeed = 9,
+  kQueryNextPage = 10,
+};
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
+
+// Denotes how the stream content loading is used for.
+enum class LoadType {
+  // Loads the stream model into memory. If successful, this directly forces a
+  // model load in |FeedStream()| before completing the task.
+  kInitialLoad = 0,
+  // Loads additional content from the network when the model is already loaded.
+  kLoadMore = 1,
+  // Refreshes the stored stream data from the network, on the background. This
+  // will fail if the model is already loaded.
+  kBackgroundRefresh = 2,
+  // Refreshes the stored stream data from the network, per the user request.
+  // The stored stream data and the loaded model will not be affected if the
+  // network request fails.
+  kManualRefresh = 3,
+  // Same as kBackgroundRefresh but specifically scheduled based on user
+  // interaction with the feed.
+  kFeedCloseBackgroundRefresh = 4,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
@@ -56,9 +82,20 @@ enum class LoadStreamStatus {
   kNetworkFetchFailed = 18,
   kCannotLoadMoreNoNextPageToken = 19,
   kDataInStoreIsExpired = 22,
-
-  kMaxValue = kDataInStoreIsExpired,
+  kDataInStoreIsForAnotherUser = 23,
+  kAbortWithPendingClearAll = 24,
+  kAlreadyHaveUnreadContent = 25,
+  kNotAWebFeedSubscriber = 26,
+  kAccountTokenFetchFailedWrongAccount = 27,
+  kAccountTokenFetchTimedOut = 28,
+  kNetworkFetchTimedOut = 29,
+  kLoadNotAllowedDisabled = 30,
+  kMaxValue = kLoadNotAllowedDisabled,
 };
+
+// Were we able to load fresh Feed data. This should be 'true' unless some kind
+// of error occurred.
+bool IsLoadingSuccessfulAndFresh(LoadStreamStatus status);
 
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);
 
@@ -72,8 +109,11 @@ enum class UploadActionsStatus {
   kUpdatedConsistencyToken = 4,
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
+  // TODO(b/213622639): This is unused, remove it.
   kAbortUploadBecauseDisabled = 7,
-  kMaxValue = kAbortUploadBecauseDisabled,
+  kAbortUploadForWrongUser = 8,
+  kAbortUploadActionsWithPendingClearAll = 9,
+  kMaxValue = kAbortUploadActionsWithPendingClearAll,
 };
 
 // Keep this in sync with FeedUploadActionsBatchStatus in enums.xml.
@@ -90,6 +130,51 @@ enum class UploadActionsBatchStatus {
 
 std::ostream& operator<<(std::ostream& out, UploadActionsStatus value);
 std::ostream& operator<<(std::ostream& out, UploadActionsBatchStatus value);
+
+// This must be kept in sync with WebFeedRefreshStatus in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Status of updating recommended or subscribed web feeds.
+enum class WebFeedRefreshStatus {
+  kNoStatus = 0,
+  kSuccess = 1,
+  kNetworkFailure = 2,
+  kNetworkRequestThrottled = 3,
+  kAbortFetchWebFeedPendingClearAll = 4,
+  kMaxValue = kAbortFetchWebFeedPendingClearAll,
+};
+std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
+
+// This must be kept in sync with FeedUserSettingsOnStart in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Reports last known state of user settings which affect Feed content.
+// This includes WAA (whether activity is recorded), and DP (whether
+// Discover personalization is enabled).
+enum class UserSettingsOnStart {
+  // The Feed is disabled by enterprise policy.
+  kFeedNotEnabledByPolicy = 0,
+  // The Feed is enabled by enterprise policy, but the user has hidden and
+  // disabled the Feed, so other user settings beyond sign-in status are not
+  // available.
+  kFeedNotVisibleSignedOut = 1,
+  kFeedNotVisibleSignedIn = 2,
+  // The Feed is enabled, the user is not signed in.
+  kSignedOut = 3,
+  // The Feed is enabled, the user is signed in, and setting states are known.
+  kSignedInWaaOnDpOn = 4,
+  kSignedInWaaOnDpOff = 5,
+  kSignedInWaaOffDpOn = 6,
+  kSignedInWaaOffDpOff = 7,
+  // The Feed is enabled, but there is no recent Feed data, so user settings
+  // state is unknown.
+  kSignedInNoRecentData = 8,
+  // The Feed is disabled.
+  kFeedNotEnabled = 9,
+  kMaxValue = kFeedNotEnabled,
+};
+base::StringPiece ToString(UserSettingsOnStart v);
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
 
 }  // namespace feed
 

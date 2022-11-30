@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,19 @@
 
 namespace base {
 
-BigEndianReader::BigEndianReader(const char* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {}
+BigEndianReader BigEndianReader::FromStringPiece(
+    base::StringPiece string_piece) {
+  return BigEndianReader(base::as_bytes(base::make_span(string_piece)));
+}
+
+BigEndianReader::BigEndianReader(const uint8_t* buf, size_t len)
+    : ptr_(buf), end_(ptr_ + len) {
+  // Ensure `len` does not cause `end_` to wrap around.
+  CHECK_GE(end_, ptr_);
+}
+
+BigEndianReader::BigEndianReader(base::span<const uint8_t> buf)
+    : ptr_(buf.data()), end_(buf.data() + buf.size()) {}
 
 bool BigEndianReader::Skip(size_t len) {
   if (len > remaining())
@@ -32,7 +43,15 @@ bool BigEndianReader::ReadBytes(void* out, size_t len) {
 bool BigEndianReader::ReadPiece(base::StringPiece* out, size_t len) {
   if (len > remaining())
     return false;
-  *out = base::StringPiece(ptr_, len);
+  *out = base::StringPiece(reinterpret_cast<const char*>(ptr_), len);
+  ptr_ += len;
+  return true;
+}
+
+bool BigEndianReader::ReadSpan(base::span<const uint8_t>* out, size_t len) {
+  if (len > remaining())
+    return false;
+  *out = base::make_span(ptr_, len);
   ptr_ += len;
   return true;
 }
@@ -68,12 +87,12 @@ bool BigEndianReader::ReadLengthPrefixed(base::StringPiece* out) {
   if (!Read(&t_len))
     return false;
   size_t len = strict_cast<size_t>(t_len);
-  const char* original_ptr = ptr_;
+  const uint8_t* original_ptr = ptr_;
   if (!Skip(len)) {
     ptr_ -= sizeof(T);
     return false;
   }
-  *out = base::StringPiece(original_ptr, len);
+  *out = base::StringPiece(reinterpret_cast<const char*>(original_ptr), len);
   return true;
 }
 
@@ -86,7 +105,10 @@ bool BigEndianReader::ReadU16LengthPrefixed(base::StringPiece* out) {
 }
 
 BigEndianWriter::BigEndianWriter(char* buf, size_t len)
-    : ptr_(buf), end_(ptr_ + len) {}
+    : ptr_(buf), end_(ptr_ + len) {
+  // Ensure `len` does not cause `end_` to wrap around.
+  CHECK_GE(end_, ptr_);
+}
 
 bool BigEndianWriter::Skip(size_t len) {
   if (len > remaining())

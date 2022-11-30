@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // Result<SuccessType, ErrorType> represents the success or failure of an
 // operation, along with either the success value or error details.
@@ -29,7 +30,7 @@
 // Result()
 //   Only present when the success value is default constructible. Default
 //   constructs the success value. This is useful for situations like IPC
-//   deserialization where a default-costructed instance is created and the
+//   deserialization where a default-constructed instance is created and the
 //   actual value is filled in later. In general, prefer using the
 //   Result(kSuccessTag) constructor to be explicit.
 //
@@ -123,22 +124,22 @@
 
 namespace remoting {
 
+// TODO(joedow): Migrate instances of remoting::Result to base::expected.
+
 // SuccessTag and ErrorTag are used for constructing a Result in the success
 // state or error state, respectively.
 class SuccessTag {};
 class ErrorTag {};
-// Monostate can be used for SuccessType or ErrorType to indicate that there is
-// no data for that state. Thus, Result<SomeType, Monostate> is somewhat
-// analogous to base::Optional<SomeType>, and Result<Monostate, Monostate> is
-// effectively a (2-byte) boolean. Result<Monostate, ErrorType> can be useful
-// for cases where an operation can fail, but there is no return value in the
-// success case.
-// TODO(rkjnsn): Replace with std::monostate once C++17 is allowed.
-class Monostate {};
+// absl::monostate can be used for SuccessType or ErrorType to indicate that
+// there is no data for that state. Thus, Result<SomeType, monostate> is
+// somewhat analogous to absl::optional<SomeType>, and Result<monostate,
+// monostate> is effectively a (2-byte) boolean. Result<monostate, ErrorType>
+// can be useful for cases where an operation can fail, but there is no return
+// value in the success case.
 
 constexpr SuccessTag kSuccessTag = SuccessTag();
 constexpr ErrorTag kErrorTag = ErrorTag();
-constexpr Monostate kMonostate = Monostate();
+constexpr absl::monostate kMonostate = absl::monostate();
 
 namespace internal {
 
@@ -456,8 +457,9 @@ class Result : public internal::DefaultConstructible<
   // this Result contains an error, it will be passed through unchanged and the
   // functor will not be called.
   template <typename SuccessFunctor>
-  Result<typename std::result_of<SuccessFunctor && (const SuccessType&)>::type,
-         ErrorType>
+  Result<
+      typename std::invoke_result<SuccessFunctor&&, const SuccessType&>::type,
+      ErrorType>
   Map(SuccessFunctor&& on_success) const& {
     if (storage_.is_success) {
       return {kSuccessTag,
@@ -468,7 +470,7 @@ class Result : public internal::DefaultConstructible<
   }
 
   template <typename SuccessFunctor>
-  Result<typename std::result_of<SuccessFunctor && (SuccessType &&)>::type,
+  Result<typename std::invoke_result<SuccessFunctor&&, SuccessType&&>::type,
          ErrorType>
   Map(SuccessFunctor&& on_success) && {
     if (storage_.is_success) {
@@ -485,7 +487,7 @@ class Result : public internal::DefaultConstructible<
   // the functor will not be called.
   template <typename ErrorFunctor>
   Result<SuccessType,
-         typename std::result_of<ErrorFunctor && (const ErrorType&)>::type>
+         typename std::invoke_result<ErrorFunctor&&, const ErrorType&>::type>
   MapError(ErrorFunctor&& on_error) const& {
     if (storage_.is_success) {
       return {kSuccessTag, storage_.success};
@@ -496,7 +498,7 @@ class Result : public internal::DefaultConstructible<
 
   template <typename ErrorFunctor>
   Result<SuccessType,
-         typename std::result_of<ErrorFunctor && (ErrorType &&)>::type>
+         typename std::invoke_result<ErrorFunctor&&, ErrorType&&>::type>
   MapError(ErrorFunctor&& on_error) && {
     if (storage_.is_success) {
       return {kSuccessTag, std::move(storage_.success)};
@@ -512,8 +514,8 @@ class Result : public internal::DefaultConstructible<
   // unchanged and the functor will not be called.
   template <
       typename SuccessFunctor,
-      typename ReturnType =
-          typename std::result_of<SuccessFunctor && (const SuccessType&)>::type,
+      typename ReturnType = typename std::
+          invoke_result<SuccessFunctor&&, const SuccessType&>::type,
       typename std::enable_if<
           std::is_convertible<typename ReturnType::ErrorType, ErrorType>::value,
           int>::type = 0>
@@ -529,7 +531,7 @@ class Result : public internal::DefaultConstructible<
   template <
       typename SuccessFunctor,
       typename ReturnType =
-          typename std::result_of<SuccessFunctor && (SuccessType &&)>::type,
+          typename std::invoke_result<SuccessFunctor&&, SuccessType&&>::type,
       typename std::enable_if<
           std::is_convertible<typename ReturnType::ErrorType, ErrorType>::value,
           int>::type = 0>
@@ -547,13 +549,14 @@ class Result : public internal::DefaultConstructible<
   // provided Error->Result<Success, NewError> functor with the error value, if
   // present. If this Result contains a success value, it will be passed through
   // unchanged and the functor will not be called.
-  template <typename ErrorFunctor,
-            typename ReturnType = typename std::result_of<
-                ErrorFunctor && (const ErrorType&)>::type,
-            typename std::enable_if<
-                std::is_convertible<typename ReturnType::SuccessType,
-                                    SuccessType>::value,
-                int>::type = 0>
+  template <
+      typename ErrorFunctor,
+      typename ReturnType =
+          typename std::invoke_result<ErrorFunctor&&, const ErrorType&>::type,
+      typename std::enable_if<
+          std::is_convertible<typename ReturnType::SuccessType,
+                              SuccessType>::value,
+          int>::type = 0>
   Result<SuccessType, typename ReturnType::ErrorType> OrElse(
       ErrorFunctor&& on_error) const& {
     if (storage_.is_success) {
@@ -565,7 +568,7 @@ class Result : public internal::DefaultConstructible<
 
   template <typename ErrorFunctor,
             typename ReturnType =
-                typename std::result_of<ErrorFunctor && (ErrorType &&)>::type,
+                typename std::invoke_result<ErrorFunctor&&, ErrorType&&>::type,
             typename std::enable_if<
                 std::is_convertible<typename ReturnType::SuccessType,
                                     SuccessType>::value,

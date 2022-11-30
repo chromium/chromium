@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 // Singleton that owns all SessionServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated SessionService.
-class SessionServiceFactory : public BrowserContextKeyedServiceFactory {
+class SessionServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the session service for |profile|. This may return NULL. If this
   // profile supports a session service (it isn't incognito), and the session

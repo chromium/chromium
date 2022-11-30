@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import logging
@@ -18,21 +18,33 @@ RENDERING_BENCHMARK_UMA = [
     'Compositing.Display.DrawToSwapUs',
     'CompositorLatency.TotalLatency',
     'CompositorLatency.Type',
-    'Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4',
-    'Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4',
+    'EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency',
+    'EventLatency.GestureScrollUpdate.Wheel.TotalLatency',
+    'Graphics.Smoothness.Checkerboarding.AllAnimations',
+    'Graphics.Smoothness.Checkerboarding.AllInteractions',
+    'Graphics.Smoothness.Checkerboarding.AllSequences',
     'Graphics.Smoothness.Checkerboarding.TouchScroll',
     'Graphics.Smoothness.Checkerboarding.WheelScroll',
-    'Graphics.Smoothness.PercentDroppedFrames.AllAnimations',
-    'Graphics.Smoothness.PercentDroppedFrames.AllInteractions',
-    'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
-    'Memory.GPU.PeakMemoryUsage.Scroll',
-    'Memory.GPU.PeakMemoryUsage.PageLoad',
+    'Graphics.Smoothness.Jank.AllAnimations',
+    'Graphics.Smoothness.Jank.AllInteractions',
+    'Graphics.Smoothness.Jank.AllSequences',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
+    'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
+    'Memory.GPU.PeakMemoryUsage2.Scroll',
+    'Memory.GPU.PeakMemoryUsage2.PageLoad',
 ]
 
 
 class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
+  # TODO(crbug/1205829): Capturing video is causing long cycle time and timeout
+  # on some Pixel devices. Disabling this option until the issue can be fixed.
+  #options = {
+  #    'capture_screen_video': True
+  #}
+
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     parser.add_option('--scroll-forever', action='store_true',
@@ -42,10 +54,18 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     parser.add_option('--allow-software-compositing', action='store_true',
                       help='If set, allows the benchmark to run with software '
                            'compositing.')
+    parser.add_option('--extra-uma-metrics',
+                      action='store',
+                      help='Comma separated list of additional UMA metrics to '
+                      'include in result output. Note that histogram buckets '
+                      'in telemetry report may not match buckets from UMA.')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
     cls.allow_software_compositing = args.allow_software_compositing
+    cls.uma_metrics = RENDERING_BENCHMARK_UMA
+    if args.extra_uma_metrics:
+      cls.uma_metrics += args.extra_uma_metrics.split(',')
 
   def CreateStorySet(self, options):
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME)
@@ -53,7 +73,13 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
-    if self.allow_software_compositing:
+    # TODO(jonross): Catapult's record_wpr.py calls SetExtraBrowserOptions
+    # before calling ProcessCommandLineArgs. This will crash attempting to
+    # record new rendering benchmarks. We do not want to support software
+    # compositing for recording, so for now we will just check for the existence
+    # the flag. We will review updating Catapult at a later point.
+    if (hasattr(self, 'allow_software_compositing')
+        and self.allow_software_compositing) or self.NeedsSoftwareCompositing():
       logging.warning('Allowing software compositing. Some of the reported '
                       'metrics will have unreliable values.')
     else:
@@ -64,8 +90,7 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     category_filter.AddDisabledByDefault(
         'disabled-by-default-histogram_samples')
     options = timeline_based_measurement.Options(category_filter)
-    options.config.chrome_trace_config.EnableUMAHistograms(
-        *RENDERING_BENCHMARK_UMA)
+    options.config.chrome_trace_config.EnableUMAHistograms(*self.uma_metrics)
     options.SetTimelineBasedMetrics([
         'renderingMetric',
         'umaMetric',
@@ -76,10 +101,10 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     return options
 
 
-@benchmark.Info(emails=['behdadb@chromium.org', 'jonross@chromium.org',
-                        'sadrul@chromium.org'],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingDesktop(_RenderingBenchmark):
   # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
@@ -104,16 +129,43 @@ class RenderingDesktop(_RenderingBenchmark):
           '--use-gpu-high-thread-priority-for-perf-tests')
 
 
-@benchmark.Info(emails=['behdadb@chromium.org', 'jonross@chromium.org',
-                        'sadrul@chromium.org'],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
+class RenderingDesktopNoTracing(RenderingDesktop):
+  @classmethod
+  def Name(cls):
+    return 'rendering.desktop.notracing'
+
+  def CreateStorySet(self, options):
+    return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
+                                       disable_tracing=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = timeline_based_measurement.Options()
+    options.config.enable_chrome_trace = False
+    options.config.enable_platform_display_trace = False
+    return options
+
+
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingMobile(_RenderingBenchmark):
   # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
   # from expectations.config in SUPPORTED_PLATFORM_TAGS.
-  SUPPORTED_PLATFORMS = [story_module.expectations.ALL_MOBILE]
-  SUPPORTED_PLATFORM_TAGS = [core_platforms.MOBILE]
+  SUPPORTED_PLATFORMS = [
+      story_module.expectations.ALL_MOBILE,
+      story_module.expectations.FUCHSIA_ASTRO,
+      story_module.expectations.FUCHSIA_SHERLOCK
+  ]
+  SUPPORTED_PLATFORM_TAGS = [
+      core_platforms.MOBILE, core_platforms.FUCHSIA_ASTRO,
+      core_platforms.FUCHSIA_SHERLOCK
+  ]
   PLATFORM_NAME = platforms.MOBILE
 
   @classmethod
@@ -135,4 +187,24 @@ class RenderingMobile(_RenderingBenchmark):
     options = super(
         RenderingMobile, self).CreateCoreTimelineBasedMeasurementOptions()
     options.config.enable_platform_display_trace = True
+    return options
+
+
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
+class RenderingMobileNoTracing(RenderingMobile):
+  @classmethod
+  def Name(cls):
+    return 'rendering.mobile.notracing'
+
+  def CreateStorySet(self, options):
+    return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
+                                       disable_tracing=True)
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = timeline_based_measurement.Options()
+    options.config.enable_chrome_trace = False
+    options.config.enable_platform_display_trace = False
     return options

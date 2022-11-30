@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,8 +8,8 @@ from telemetry.page import shared_page_state
 class AndroidScreenRestorationSharedState(shared_page_state.SharedPageState):
   """ Ensures the screen is on before and after each user story is run. """
 
-  def WillRunStory(self, page):
-    super(AndroidScreenRestorationSharedState, self).WillRunStory(page)
+  def WillRunStory(self, story):
+    super(AndroidScreenRestorationSharedState, self).WillRunStory(story)
     self._EnsureScreenOn()
 
   def DidRunStory(self, results):

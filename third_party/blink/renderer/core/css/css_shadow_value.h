@@ -62,4 +62,4 @@ struct DowncastTraits<CSSShadowValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SHADOW_VALUE_H_

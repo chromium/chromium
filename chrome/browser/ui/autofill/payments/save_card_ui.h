@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,18 @@ enum class BubbleType {
   // There is no bubble to show anymore. This also
   // indicates that the icon should not be visible.
   INACTIVE
+};
+
+// The type of experiment running for the save card ui.
+enum SaveCardUiExperiment {
+  // Show the text for default/current image.
+  DEFAULT = 0,
+
+  // Show the text for faster and protected image.
+  FASTER_AND_PROTECTED = 1,
+
+  // Show the text for encrypted and secure image.
+  ENCRYPTED_AND_SECURE = 2
 };
 
 }  // namespace autofill

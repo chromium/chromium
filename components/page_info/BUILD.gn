@@ -4,8 +4,6 @@ if (is_android) {
 
 static_library("page_info") {
   sources = [
-    "features.cc",
-    "features.h",
     "page_info.cc",
     "page_info.h",
     "page_info_delegate.h",
@@ -19,14 +17,20 @@ static_library("page_info") {
     "//build:chromeos_buildflags",
     "//components/browsing_data/content",
     "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
+    "//components/keyed_service/core",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
+    "//components/page_info/core",
     "//components/password_manager/core/browser",
     "//components/permissions",
     "//components/prefs",
+    "//components/privacy_sandbox",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/content/password_protection",
-    "//components/safe_browsing/core:csd_proto",
-    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/content/browser/password_protection",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_state/core",
@@ -49,6 +53,8 @@ static_library("page_info") {
       "//components/password_manager/core/browser:password_manager_java_enums_srcjar",
       "//components/resources:android_resources",
     ]
+  } else {
+    deps += [ "//ui/native_theme" ]
   }
 }
 

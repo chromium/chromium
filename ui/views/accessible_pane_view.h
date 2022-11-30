@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/views/focus/focus_manager.h"
@@ -28,6 +28,10 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   METADATA_HEADER(AccessiblePaneView);
 
   AccessiblePaneView();
+
+  AccessiblePaneView(const AccessiblePaneView&) = delete;
+  AccessiblePaneView& operator=(const AccessiblePaneView&) = delete;
+
   ~AccessiblePaneView() override;
 
   // Set focus to the pane with complete keyboard access.
@@ -106,7 +110,7 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
 
   // Save the focus manager rather than calling GetFocusManager(),
   // so that we can remove focus listeners in the destructor.
-  FocusManager* focus_manager_ = nullptr;
+  raw_ptr<FocusManager> focus_manager_ = nullptr;
 
   // Our custom focus search implementation that traps focus in this
   // pane and traverses all views that are focusable for accessibility,
@@ -126,8 +130,6 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   friend class AccessiblePaneViewFocusSearch;
 
   base::WeakPtrFactory<AccessiblePaneView> method_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessiblePaneView);
 };
 
 }  // namespace views

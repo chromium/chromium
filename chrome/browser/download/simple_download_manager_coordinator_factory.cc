@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,7 @@
 namespace {
 void DownloadUrl(std::unique_ptr<download::DownloadUrlParameters> parameters,
                  Profile* profile) {
-  content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(profile);
+  content::DownloadManager* manager = profile->GetDownloadManager();
   DCHECK(manager);
   manager->DownloadUrl(std::move(parameters));
 }

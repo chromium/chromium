@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,16 @@
 #include <set>
 
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
 #include "content/public/browser/web_contents_observer.h"
-
-#if !defined(OS_ANDROID)
-#include "content/public/browser/devtools_frontend_host.h"
-#endif
-
-namespace base {
-class Value;
-}
 
 namespace content {
 
@@ -62,6 +54,10 @@ class ShellDevToolsBindings : public WebContentsObserver,
       const base::Value arg2 = {},
       const base::Value arg3 = {},
       base::OnceCallback<void(base::Value)> cb = base::NullCallback());
+
+  ShellDevToolsBindings(const ShellDevToolsBindings&) = delete;
+  ShellDevToolsBindings& operator=(const ShellDevToolsBindings&) = delete;
+
   ~ShellDevToolsBindings() override;
 
   WebContents* inspected_contents() { return inspected_contents_; }
@@ -72,7 +68,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
 
-  void HandleMessageFromDevToolsFrontend(const std::string& message);
+  void HandleMessageFromDevToolsFrontend(base::Value::Dict message);
 
   // WebContentsObserver overrides
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
@@ -81,12 +77,12 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void SendMessageAck(int request_id, const base::Value arg);
   void AttachInternal();
 
-  WebContents* inspected_contents_;
-  ShellDevToolsDelegate* delegate_;
+  raw_ptr<WebContents> inspected_contents_;
+  raw_ptr<ShellDevToolsDelegate> delegate_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int inspect_element_at_x_;
   int inspect_element_at_y_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DevToolsFrontendHost> frontend_host_;
 #endif
 
@@ -99,8 +95,6 @@ class ShellDevToolsBindings : public WebContentsObserver,
   using ExtensionsAPIs = std::map<std::string, std::string>;
   ExtensionsAPIs extensions_api_;
   base::WeakPtrFactory<ShellDevToolsBindings> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsBindings);
 };
 
 }  // namespace content

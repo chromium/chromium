@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,36 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "url/gurl.h"
 
+// TODO(https://crbug.com/1227477): move this class to chrome/browser/ui/views.
+
 namespace {
+
+// The OAuth token consumer name.
+const char kOAuthConsumerName[] = "file_system_signin_dialog";
 
 // The OAuth2 configuration of the Box App used for the file system integration
 // uses https://google.com/generate_204 as the redirect URI.
@@ -51,14 +61,18 @@ namespace enterprise_connectors {
 FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
     content::BrowserContext* browser_context,
     const FileSystemSettings& settings,
+    absl::optional<std::string> account_login,
     AuthorizationCompletedCallback callback)
     : settings_(settings),
+      account_login_(std::move(account_login)),
       web_view_(std::make_unique<views::WebView>(browser_context)),
       callback_(std::move(callback)) {
   SetHasWindowSizeControls(true);
-  SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
+  SetTitle(l10n_util::GetStringFUTF16(
+      IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_DIALOG_TITLE, GetProviderName()));
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_custom_frame(false);
+
   SetCancelCallback(
       base::BindOnce(&FileSystemSigninDialogDelegate::OnCancellation,
                      weak_factory_.GetWeakPtr()));
@@ -76,30 +90,20 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
 
   std::string query = base::StringPrintf("client_id=%s&response_type=code",
                                          settings_.client_id.c_str());
-  url::Replacements<char> replacements;
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  std::string extra_params = GetProviderSpecificUrlParameters();
+  if (!extra_params.empty())
+    base::StringAppendF(&query, "&%s", extra_params.c_str());
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query);
   GURL url = settings_.authorization_endpoint.ReplaceComponents(replacements);
   web_view_->LoadInitialURL(url);
 }
 
-FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() = default;
-
-// static
-void FileSystemSigninDialogDelegate::ShowDialog(
-    content::WebContents* web_contents,
-    const FileSystemSettings& settings,
-    AuthorizationCompletedCallback callback) {
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  gfx::NativeView parent = web_contents->GetNativeView();
-
-  FileSystemSigninDialogDelegate* delegate = new FileSystemSigninDialogDelegate(
-      browser_context, settings, std::move(callback));
-  // Object will be deleted internally by widget via DeleteDelegate().
-  // TODO(https://crbug.com/1160012): use std::unique_ptr instead?
-
-  views::DialogDelegate::CreateDialogWidget(delegate, nullptr, parent);
-  delegate->GetWidget()->Show();
-  // This only returns when the dialog is closed.
+FileSystemSigninDialogDelegate::~FileSystemSigninDialogDelegate() {
+  if (callback_) {
+    OnCancellation();
+  }
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -138,18 +142,21 @@ ui::ModalType FileSystemSigninDialogDelegate::GetModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-void FileSystemSigninDialogDelegate::DeleteDelegate() {
-  delete this;
-}
-
 views::View* FileSystemSigninDialogDelegate::GetInitiallyFocusedView() {
   return static_cast<views::View*>(web_view_.get());
 }
 
 void FileSystemSigninDialogDelegate::OnCancellation() {
-  std::move(callback_).Run(
-      GoogleServiceAuthError{GoogleServiceAuthError::State::REQUEST_CANCELED},
-      std::string(), std::string());
+  ReturnCancellation(std::move(callback_));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+FileSystemSigninDialogDelegate::GetURLLoaderFactory() {
+  content::StoragePartition* partition =
+      web_view_->GetBrowserContext()->GetStoragePartition(
+          content::StoragePartitionConfig::CreateDefault(
+              web_view_->GetBrowserContext()));
+  return partition->GetURLLoaderFactoryForBrowserProcess();
 }
 
 void FileSystemSigninDialogDelegate::DidFinishNavigation(
@@ -167,18 +174,16 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
     return;
   }
 
-  content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartitionForUrl(
-          web_view_->GetBrowserContext(), GURL(kFileSystemBoxEndpointApi));
-  auto url_loader = partition->GetURLLoaderFactoryForBrowserProcess();
   auto callback =
       base::BindOnce(&FileSystemSigninDialogDelegate::OnGotOAuthTokens,
                      weak_factory_.GetWeakPtr());
 
   // No refresh_token, so need to get both tokens with authorization code.
   token_fetcher_ = std::make_unique<AccessTokenFetcher>(
-      url_loader, settings_.service_provider, settings_.token_endpoint,
-      std::string(), auth_code, std::move(callback));
+      GetURLLoaderFactory(), settings_.service_provider,
+      settings_.token_endpoint,
+      /*refresh_token=*/std::string(), auth_code, kOAuthConsumerName,
+      std::move(callback));
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,
                         settings_.scopes);
 }
@@ -187,9 +192,108 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
     const GoogleServiceAuthError& status,
     const std::string& access_token,
     const std::string& refresh_token) {
-  token_fetcher_ = nullptr;
-  std::move(callback_).Run(status, access_token, refresh_token);
+  token_fetcher_.reset();
+
+  // If we failed to auth then just notify upstream right here.
+  if (status.state() != GoogleServiceAuthError::NONE) {
+    DLOG(ERROR) << "Failed authentication: " << status.state();
+    OnAuthFlowDone(status);
+    return;
+  }
+
+  access_token_ = access_token;
+  refresh_token_ = refresh_token;
+
+  // Otherwise check enterprise ID.
+  current_api_call_ = std::make_unique<BoxGetCurrentUserApiCallFlow>(
+      base::BindOnce(&FileSystemSigninDialogDelegate::OnGotCurrentUserResponse,
+                     weak_factory_.GetWeakPtr()));
+  current_api_call_->Start(GetURLLoaderFactory(), access_token);
+}
+
+void FileSystemSigninDialogDelegate::OnGotCurrentUserResponse(
+    BoxApiCallResponse response,
+    base::Value user_info) {
+  current_api_call_.reset();
+  auto state = GoogleServiceAuthError::NONE;  // Assume success.
+
+  if (settings_.enterprise_id.empty()) {
+    NOTREACHED() << "enterprise_id is required field in policy but it's empty";
+    state = GoogleServiceAuthError::REQUEST_CANCELED;
+  } else if (!response.success) {
+    // Request for Box user's enterprise_id failed.
+    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
+  } else {
+    DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
+    const std::string* enterprise_id =
+        user_info.FindStringPath(kBoxEnterpriseIdFieldName);
+    if (!settings_.enterprise_id.empty()) {
+      DLOG_IF(ERROR, !enterprise_id)
+          << "Policy enforces account to have enterprise_id = "
+          << settings_.enterprise_id
+          << " but this account to be linked has none: " << user_info;
+    }
+    if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
+      // User is logged in to wrong account which doesn't match enterprise_id.
+      // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+      // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+      state = GoogleServiceAuthError::USER_NOT_SIGNED_UP;
+      DLOG(ERROR) << "Enterprise ID mismatch. Policy: "
+                  << settings_.enterprise_id
+                  << " [vs] Account: " << *enterprise_id;
+    } else {
+      // Enterprise IDs match, save the info to prefs.
+      PrefService* prefs =
+          Profile::FromBrowserContext(web_view_->GetBrowserContext())
+              ->GetPrefs();
+      DCHECK_EQ(settings_.service_provider,
+                kFileSystemServiceProviderPrefNameBox);
+      SetFileSystemAccountInfo(prefs, kFileSystemServiceProviderPrefNameBox,
+                               std::move(user_info));
+    }
+  }
+
+  OnAuthFlowDone(GoogleServiceAuthError(state));
+}
+
+void FileSystemSigninDialogDelegate::OnAuthFlowDone(
+    const GoogleServiceAuthError& status) {
+  if (status.state() == GoogleServiceAuthError::NONE) {
+    DCHECK(!access_token_.empty());
+    DCHECK(!refresh_token_.empty());
+  } else {
+    access_token_ = std::string();
+    refresh_token_ = std::string();
+  }
+  std::move(callback_).Run(status, access_token_, refresh_token_);
   GetWidget()->Close();
+}
+
+std::string FileSystemSigninDialogDelegate::GetProviderSpecificUrlParameters() {
+  // If an email domain is specified, use it as a hint in the box authn URL.
+  // Make sure the domain has an @ prefix.
+  if (settings_.service_provider == kFileSystemServiceProviderPrefNameBox) {
+    if (account_login_ && !account_login_->empty()) {
+      return base::StringPrintf("box_login=%s", account_login_->c_str());
+    } else if (!settings_.email_domain.empty()) {
+      // If the domain does not already start with an @ sign, prepend the
+      // escaped version of it.
+      return base::StringPrintf(
+          "box_login=%s%s", settings_.email_domain[0] == '@' ? "" : "%40",
+          base::EscapeQueryParamValue(settings_.email_domain, true).c_str());
+    }
+  } else {
+    NOTREACHED() << "Unknown service provider: " << settings_.service_provider;
+  }
+
+  return std::string();
+}
+
+std::u16string FileSystemSigninDialogDelegate::GetProviderName() const {
+  DCHECK_EQ(settings_.service_provider, kFileSystemServiceProviderPrefNameBox);
+  return l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
 }
 
 BEGIN_METADATA(FileSystemSigninDialogDelegate, views::DialogDelegateView)

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,38 @@ enum class NotificationInteraction {
   kMaxValue = kDismiss,
 };
 
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContentShown {
+  kContentShown1 = 1,
+  kContentShown2 = 2,
+  kContentShown3 = 3,
+  kContentShown4 = 4,
+  kContentShownGTE5 = 5,
+  kMaxValue = kContentShownGTE5
+};
+
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContentClicked {
+  kContentClicked1 = 11,
+  kContentClicked2 = 21,
+  kContentClicked3 = 31,
+  kContentClicked4 = 41,
+  kContentClickedGTE5 = 51,
+  kMaxValue = kContentClickedGTE5
+};
+
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class CameraRollContextMenuDownload {
+  kDownload1 = 111,
+  kDownload2 = 211,
+  kDownload3 = 311,
+  kDownload4 = 411,
+  kDownloadGTE5 = 511,
+  kMaxValue = kDownloadGTE5
+};
+
+enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
+
 // Logs an |event| occurring for the given |interstitial_screen|.
 void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event);
 
@@ -67,9 +99,6 @@ void LogScreenOnBubbleClose(Screen screen);
 // Logs the |screen| when the settings button is clicked.
 void LogScreenOnSettingsButtonClicked(Screen screen);
 
-// Logs an |event| for the notification opt-in prompt.
-void LogNotificationOptInEvent(InterstitialScreenEvent event);
-
 // Logs the |tab_index| of the tab continuation chip that was clicked.
 void LogTabContinuationChipClicked(int tab_index);
 
@@ -81,6 +110,21 @@ void LogNotificationCount(int count);
 
 // Logs a given |interaction| with a PhoneHub notification.
 void LogNotificationInteraction(NotificationInteraction interaction);
+
+// Logs the message length of a PhoneHub notification.
+void LogNotificationMessageLength(int length);
+
+// Logs the display of a Camera Roll item at |index|.
+void LogCameraRollContentShown(int index, CameraRollMediaType mediaType);
+
+// Logs clicking a Camera Roll item at |index|.
+void LogCameraRollContentClicked(int index, CameraRollMediaType mediaType);
+
+// Logs a download of item at |index| from the Camera Roll context menu.
+void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
+
+// Logs the display of any Camera Roll item. Emits once per opening of bubble.
+void LogCameraRollContentPresent();
 
 }  // namespace phone_hub_metrics
 }  // namespace ash

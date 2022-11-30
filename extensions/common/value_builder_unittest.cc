@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,12 +30,11 @@ TEST(ValueBuilderTest, Basic) {
   base::ListValue* list_value;
   ASSERT_TRUE(settings->GetList("permissions", &list_value));
 
-  ASSERT_EQ(2U, list_value->GetSize());
-  std::string permission;
-  ASSERT_TRUE(list_value->GetString(0, &permission));
-  ASSERT_EQ(permission, "tabs");
-  ASSERT_TRUE(list_value->GetString(1, &permission));
-  ASSERT_EQ(permission, "history");
+  ASSERT_EQ(list_value->GetList().size(), 2u);
+  ASSERT_TRUE(list_value->GetList()[0].is_string());
+  ASSERT_EQ(list_value->GetList()[0].GetString(), "tabs");
+  ASSERT_TRUE(list_value->GetList()[1].is_string());
+  ASSERT_EQ(list_value->GetList()[1].GetString(), "history");
 }
 
 TEST(ValueBuilderTest, AppendList) {

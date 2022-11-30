@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,6 @@ static_library("search_engines") {
     "keyword_table.h",
     "keyword_web_data_service.cc",
     "keyword_web_data_service.h",
-    "omnibox_focus_type.h",
     "search_engines_pref_names.cc",
     "search_engines_pref_names.h",
     "search_engines_switches.cc",
@@ -45,6 +44,8 @@ static_library("search_engines") {
     "template_url_service.h",
     "template_url_service_client.h",
     "template_url_service_observer.h",
+    "template_url_starter_pack_data.cc",
+    "template_url_starter_pack_data.h",
     "util.cc",
     "util.h",
   ]
@@ -66,12 +67,13 @@ static_library("search_engines") {
     "//base:i18n",
     "//components/country_codes",
     "//components/database_utils",
-    "//components/history/core/browser",
     "//components/infobars/core",
     "//components/lens:lens",
+    "//components/omnibox/common",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/search_provider_logos:switches",
     "//components/strings",
     "//components/url_formatter",
     "//components/variations",
@@ -166,10 +168,12 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/country_codes",
     "//components/google/core/common",
+    "//components/omnibox/common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
     "//components/webdata/common",
     "//net:net",
     "//services/network:test_support",

@@ -1,17 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_DATABASE_OWNER_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_DATABASE_OWNER_H_
 
+#include <memory>
+
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
+
+namespace sql {
+
+class Database;
+
+}  // namespace sql
 
 namespace network {
 

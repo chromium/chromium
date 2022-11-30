@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Verify write and read clipboard given 2 platform-neutral raw inputs promise_test: Unhandled rejection with value: object "NotAllowedError: Type application/x-raw-clipboard-test-format-1 not supported on write."
-Harness: the test ran to completion.
-

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "device/udev_linux/udev_loader.h"
 
 class LibUdev0Loader;
@@ -17,6 +16,10 @@ namespace device {
 class Udev0Loader : public UdevLoader {
  public:
   Udev0Loader();
+
+  Udev0Loader(const Udev0Loader&) = delete;
+  Udev0Loader& operator=(const Udev0Loader&) = delete;
+
   ~Udev0Loader() override;
 
  private:
@@ -29,6 +32,8 @@ class Udev0Loader : public UdevLoader {
       udev_device* udev_device,
       const char* subsystem,
       const char* devtype) override;
+  udev_list_entry* udev_device_get_properties_list_entry(
+      struct udev_device* udev_device) override;
   const char* udev_device_get_property_value(udev_device* udev_device,
                                              const char* key) override;
   const char* udev_device_get_subsystem(udev_device* udev_device) override;
@@ -77,8 +82,6 @@ class Udev0Loader : public UdevLoader {
   void udev_unref(udev* udev) override;
 
   std::unique_ptr<LibUdev0Loader> lib_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Udev0Loader);
 };
 
 }  // namespace device

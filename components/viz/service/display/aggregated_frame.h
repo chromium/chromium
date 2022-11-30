@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_AGGREGATED_FRAME_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/latency/latency_info.h"
@@ -27,10 +28,13 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
 
   AggregatedFrame& operator=(AggregatedFrame&& other);
 
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+  std::string ToString() const;
+
   // The visible height of the top-controls. If the value is not set, then the
   // visible height should be the same as in the latest submitted frame with a
   // value set.
-  base::Optional<float> top_controls_visible_height;
+  absl::optional<float> top_controls_visible_height;
 
   // A list of latency info used for this frame.
   std::vector<ui::LatencyInfo> latency_info;
@@ -44,8 +48,10 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // Indicates whether video capture has been enabled for this frame.
   bool video_capture_enabled = false;
 
-  // Indicates whether this frame may contain video.
-  bool may_contain_video = false;
+  // Indicates whether this is a page fullscreen mode without Chrome tabs. When
+  // in the page fullscreen mode, the content surface has the same size as the
+  // root render pass |output_rect| (display size) on the root surface.
+  bool page_fullscreen_mode = false;
 
   // A list of surface damage rects in the current frame, used for overlays.
   SurfaceDamageRectList surface_damage_rect_list_;

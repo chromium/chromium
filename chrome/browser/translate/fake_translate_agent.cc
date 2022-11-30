@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/translate/content/browser/content_translate_driver.h"
@@ -75,11 +75,10 @@ void FakeTranslateAgent::RevertTranslation() {
   called_revert_translation_ = true;
 }
 
-void FakeTranslateAgent::PageTranslated(
-    bool cancelled,
-    const std::string& source_lang,
-    const std::string& target_lang,
-    translate::TranslateErrors::Type error) {
+void FakeTranslateAgent::PageTranslated(bool cancelled,
+                                        const std::string& source_lang,
+                                        const std::string& target_lang,
+                                        translate::TranslateErrors error) {
   std::move(translate_callback_pending_)
       .Run(cancelled, source_lang, target_lang, error);
 }

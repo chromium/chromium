@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
-#include "base/compiler_specific.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/ime/win/tsf_bridge.h"
 #include "ui/base/ime/win/tsf_text_store.h"
@@ -19,6 +19,10 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
  public:
   MockTSFBridge();
+
+  MockTSFBridge(const MockTSFBridge&) = delete;
+  MockTSFBridge& operator=(const MockTSFBridge&) = delete;
+
   ~MockTSFBridge() override;
 
   // TSFBridge:
@@ -28,8 +32,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
   void OnTextLayoutChanged() override;
   void SetFocusedClient(HWND focused_window, TextInputClient* client) override;
   void RemoveFocusedClient(TextInputClient* client) override;
-  void SetInputMethodDelegate(internal::InputMethodDelegate* delegate) override;
-  void RemoveInputMethodDelegate() override;
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
+  void RemoveImeKeyEventDispatcher() override;
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
   bool IsInputLanguageCJK() override;
@@ -95,14 +100,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
   unsigned associate_focus_call_count_ = 0;
   unsigned set_focused_client_call_count_ = 0;
   unsigned remove_focused_client_call_count_ = 0;
-  TextInputClient* text_input_client_ = nullptr;
-  internal::InputMethodDelegate* input_method_delegate_ = nullptr;
+  raw_ptr<TextInputClient> text_input_client_ = nullptr;
+  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_ = nullptr;
   HWND focused_window_ = nullptr;
   TextInputType latest_text_input_type_ = TEXT_INPUT_TYPE_NONE;
   Microsoft::WRL::ComPtr<ITfThreadMgr> thread_manager_;
-  TSFTextStore* tsf_text_store_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTSFBridge);
+  raw_ptr<TSFTextStore> tsf_text_store_ = nullptr;
 };
 
 }  // namespace ui

@@ -67,21 +67,21 @@ PASS new StorageEvent('eventType', { url: undefined }).url is ""
 PASS new StorageEvent('eventType', { url: null }).url is "null"
 PASS new StorageEvent('eventType', { storageArea: localStorage }).storageArea is localStorage
 PASS new StorageEvent('eventType', { storageArea: sessionStorage }).storageArea is sessionStorage
-PASS new StorageEvent('eventType', { storageArea: test_object }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: window }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: document }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
+PASS new StorageEvent('eventType', { storageArea: test_object }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: window }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: document }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
 PASS new StorageEvent('eventType', { storageArea: undefined }).storageArea is null
 PASS new StorageEvent('eventType', { storageArea: null }).storageArea is null
-PASS new StorageEvent('eventType', { storageArea: false }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: true }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: '' }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: 'chocolate' }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: 12345 }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: 18446744073709551615 }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: NaN }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
-PASS new StorageEvent('eventType', { storageArea: {valueOf: function () { return window; } } }).storageArea == window threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
+PASS new StorageEvent('eventType', { storageArea: false }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: true }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: '' }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: 'chocolate' }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: 12345 }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: 18446744073709551615 }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: NaN }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
+PASS new StorageEvent('eventType', { storageArea: {valueOf: function () { return window; } } }).storageArea == window threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
 PASS new StorageEvent('eventType', { get storageArea() { return localStorage; } }).storageArea is localStorage
-PASS new StorageEvent('eventType', { get storageArea() { return 123; } }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': member storageArea is not of type Storage..
+PASS new StorageEvent('eventType', { get storageArea() { return 123; } }).storageArea threw exception TypeError: Failed to construct 'StorageEvent': Failed to read the 'storageArea' property from 'StorageEventInit': Failed to convert value to 'Storage'..
 PASS new StorageEvent('eventType', { get storageArea() { throw 'StorageEvent Error'; } }) threw exception StorageEvent Error.
 PASS new StorageEvent('eventType', { bubbles: true, cancelable: false, key: 'abc', oldValue: 'def', newValue: 'ghi', url: 'jkl', storageArea: localStorage }).bubbles is true
 PASS new StorageEvent('eventType', { bubbles: false, cancelable: true, key: 'abc', oldValue: 'def', newValue: 'ghi', url: 'jkl', storageArea: localStorage }).cancelable is true

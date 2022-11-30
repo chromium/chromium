@@ -26,7 +26,7 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -62,7 +62,7 @@ static void Table(unsigned char* values,
     double v1 = table_values[k];
     double v2 = table_values[std::min((k + 1), (n - 1))];
     double val = 255.0 * (v1 + (c * (n - 1) - k) * (v2 - v1));
-    val = clampTo(val, 0.0, 255.0);
+    val = ClampTo(val, 0.0, 255.0);
     values[i] = static_cast<unsigned char>(val);
   }
 }
@@ -77,7 +77,7 @@ static void Discrete(unsigned char* values,
     unsigned k = static_cast<unsigned>((i * n) / 255.0);
     k = std::min(k, n - 1);
     double val = 255 * table_values[k];
-    val = clampTo(val, 0.0, 255.0);
+    val = ClampTo(val, 0.0, 255.0);
     values[i] = static_cast<unsigned char>(val);
   }
 }
@@ -87,7 +87,7 @@ static void Linear(unsigned char* values,
   for (unsigned i = 0; i < 256; ++i) {
     double val =
         transfer_function.slope * i + 255 * transfer_function.intercept;
-    val = clampTo(val, 0.0, 255.0);
+    val = ClampTo(val, 0.0, 255.0);
     values[i] = static_cast<unsigned char>(val);
   }
 }
@@ -99,7 +99,7 @@ static void Gamma(unsigned char* values,
     double val =
         255.0 * (transfer_function.amplitude * pow((i / 255.0), exponent) +
                  transfer_function.offset);
-    val = clampTo(val, 0.0, 255.0);
+    val = ClampTo(val, 0.0, 255.0);
     values[i] = static_cast<unsigned char>(val);
   }
 }
@@ -132,12 +132,12 @@ sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
   unsigned char r_values[256], g_values[256], b_values[256], a_values[256];
   GetValues(r_values, g_values, b_values, a_values);
 
-  base::Optional<PaintFilter::CropRect> crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   sk_sp<SkColorFilter> color_filter =
       SkTableColorFilter::MakeARGB(a_values, r_values, g_values, b_values);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(input),
-                                            base::OptionalOrNullptr(crop_rect));
+                                            base::OptionalToPtr(crop_rect));
 }
 
 void FEComponentTransfer::GetValues(unsigned char r_values[256],
@@ -154,7 +154,7 @@ void FEComponentTransfer::GetValues(unsigned char r_values[256],
 
   for (unsigned channel = 0; channel < 4; channel++) {
     SECURITY_DCHECK(static_cast<size_t>(transfer_function[channel].type) <
-                    base::size(call_effect));
+                    std::size(call_effect));
     (*call_effect[transfer_function[channel].type])(tables[channel],
                                                     transfer_function[channel]);
   }

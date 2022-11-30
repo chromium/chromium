@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,12 @@ namespace test {
 class TestEventRewriterContinuation : public ui::EventRewriterContinuation {
  public:
   TestEventRewriterContinuation() = default;
-  ~TestEventRewriterContinuation() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriterContinuation);
+  TestEventRewriterContinuation(const TestEventRewriterContinuation&) = delete;
+  TestEventRewriterContinuation& operator=(
+      const TestEventRewriterContinuation&) = delete;
+
+  ~TestEventRewriterContinuation() override = default;
 };
 
 }  // namespace test

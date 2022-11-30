@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -39,8 +39,8 @@ class CONTENT_EXPORT NotificationEventDispatcher {
       BrowserContext* browser_context,
       const std::string& notification_id,
       const GURL& origin,
-      const base::Optional<int>& action_index,
-      const base::Optional<std::u16string>& reply,
+      const absl::optional<int>& action_index,
+      const absl::optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) = 0;
 
   // Dispatches the "notificationclose" event on the Service Worker associated

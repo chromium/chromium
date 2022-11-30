@@ -1,0 +1,11 @@
+{
+  "name": "displayinfo",
+  "manifest_version": 2,
+  "version": "1.0",
+  "description": "Test system.display API",
+  "permissions": ["system.display"],
+  "background": {
+    "scripts": ["test_display_api.js"],
+    "persistent": true
+  }
+}

@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/output_protection_delegate.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "ui/display/display.h"
@@ -24,10 +23,8 @@ display::ContentProtectionManager* manager() {
 
 void MaybeSetCaptureModeWindowProtection(aura::Window* window,
                                          uint32_t protection_mask) {
-  if (features::IsCaptureModeEnabled()) {
-    CaptureModeController::Get()->SetWindowProtectionMask(window,
-                                                          protection_mask);
-  }
+  CaptureModeController::Get()->SetWindowProtectionMask(window,
+                                                        protection_mask);
 }
 
 }  // namespace
@@ -49,14 +46,12 @@ OutputProtectionDelegate::OutputProtectionDelegate(aura::Window* window)
     return;
 
   window_->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 OutputProtectionDelegate::~OutputProtectionDelegate() {
   if (!window_)
     return;
 
-  display::Screen::GetScreen()->RemoveObserver(this);
   window_->RemoveObserver(this);
   MaybeSetCaptureModeWindowProtection(window_,
                                       display::CONTENT_PROTECTION_METHOD_NONE);
@@ -86,7 +81,7 @@ void OutputProtectionDelegate::OnWindowHierarchyChanged(
 
 void OutputProtectionDelegate::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(window, window_);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
   window_->RemoveObserver(this);
   MaybeSetCaptureModeWindowProtection(window_,
                                       display::CONTENT_PROTECTION_METHOD_NONE);
@@ -141,8 +136,7 @@ void OutputProtectionDelegate::OnWindowMayHaveMovedToAnotherDisplay() {
 
     // The window may have moved to a display that is currently being recorded,
     // so we need to refresh Capture Mode's content protection.
-    if (features::IsCaptureModeEnabled())
-      CaptureModeController::Get()->RefreshContentProtection();
+    CaptureModeController::Get()->RefreshContentProtection();
   }
   display_id_ = new_display_id;
 }

@@ -81,7 +81,7 @@ base_refcounted.cpp:30:7: note: [chromium-style] 'PublicRefCountedDtorInImpl' in
 base_refcounted.cpp:59:3: warning: [chromium-style] Classes that are ref-counted should have destructors that are declared protected or private.
   ~UnsafeTypedefChainInImpl() {}
   ^
-base_refcounted.cpp:56:34: note: [chromium-style] 'UnsafeTypedefChainInImpl' inherits from 'Baz::MyLocalTypedef' (aka 'RefCounted<Foo::BarInterface>') here
+base_refcounted.cpp:56:34: note: [chromium-style] 'UnsafeTypedefChainInImpl' inherits from 'Baz::MyLocalTypedef' (aka 'RefCounted<BarInterface>') here
 class UnsafeTypedefChainInImpl : public Baz::MyLocalTypedef {
                                  ^
 13 warnings generated.

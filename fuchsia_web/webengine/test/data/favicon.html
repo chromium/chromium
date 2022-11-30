@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>Favicon</title>
+<link id="favicon" rel='icon' type='image/png' />
+<script>
+  var params = new URLSearchParams(window.location.search);
+  var favicon = document.getElementById('favicon')
+  if (params.has("favicon")) {
+    favicon.href = params.get("favicon");
+  } else {
+    favicon.href = 'favicon.png'
+  }
+</script>
+</head>
+</html>

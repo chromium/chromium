@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ TEST(AutoFetch, MakeClientId) {
 }
 
 TEST(AutoFetch, ExtractMetadataSuccess) {
-  base::Optional<auto_fetch::ClientIdMetadata> metadata =
+  absl::optional<auto_fetch::ClientIdMetadata> metadata =
       auto_fetch::ExtractMetadata(
           auto_fetch::MakeClientId(auto_fetch::ClientIdMetadata(123)));
   ASSERT_TRUE(metadata);

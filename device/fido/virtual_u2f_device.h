@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/fido/virtual_fido_device.h"
 
@@ -26,6 +25,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualU2fDevice
 
   VirtualU2fDevice();
   explicit VirtualU2fDevice(scoped_refptr<State> state);
+
+  VirtualU2fDevice(const VirtualU2fDevice&) = delete;
+  VirtualU2fDevice& operator=(const VirtualU2fDevice&) = delete;
+
   ~VirtualU2fDevice() override;
 
   // FidoDevice:
@@ -35,20 +38,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualU2fDevice
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
  private:
-  base::Optional<std::vector<uint8_t>> DoRegister(
+  absl::optional<std::vector<uint8_t>> DoRegister(
       uint8_t ins,
       uint8_t p1,
       uint8_t p2,
       base::span<const uint8_t> data);
 
-  base::Optional<std::vector<uint8_t>> DoSign(uint8_t ins,
+  absl::optional<std::vector<uint8_t>> DoSign(uint8_t ins,
                                               uint8_t p1,
                                               uint8_t p2,
                                               base::span<const uint8_t> data);
 
   base::WeakPtrFactory<FidoDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualU2fDevice);
 };
 
 }  // namespace device

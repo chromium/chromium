@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,9 +11,10 @@ component("missive") {
 
   deps = [
     "//base",
+    "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage:missive_storage_module",
+    "//components/reporting/util:disconnectable_client",
     "//components/reporting/util:status",
     "//dbus",
   ]
@@ -23,5 +24,22 @@ component("missive") {
     "fake_missive_client.h",
     "missive_client.cc",
     "missive_client.h",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "missive_client_test_observer.cc",
+    "missive_client_test_observer.h",
+  ]
+
+  deps = [
+    ":missive",
+    "//base",
+    "//base/test:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
   ]
 }

@@ -3,4 +3,3 @@ AXWebArea
 ++AXScrollBar AXMinValue=2
 ++AXSlider AXMinValue=3
 ++AXIncrementor AXMinValue=4
-++++AXStaticText

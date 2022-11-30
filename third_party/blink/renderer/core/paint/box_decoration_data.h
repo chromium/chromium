@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_DECORATION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_DECORATION_DATA_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -38,8 +39,8 @@ class BoxDecorationData {
                     const NGPhysicalFragment& fragment)
       : BoxDecorationData(paint_info, fragment, fragment.Style()) {}
 
-  bool IsPaintingScrollingBackground() const {
-    return is_painting_scrolling_background_;
+  bool IsPaintingBackgroundInContentsSpace() const {
+    return paint_info_.IsPaintingBackgroundInContentsSpace();
   }
   bool HasAppearance() const { return has_appearance_; }
   bool ShouldPaintBackground() const { return should_paint_background_; }
@@ -62,16 +63,6 @@ class BoxDecorationData {
     return style_.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   }
 
-  static bool IsPaintingScrollingBackground(const PaintInfo& paint_info,
-                                            const LayoutBox& layout_box) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return paint_info.IsPaintingScrollingBackground();
-    return (paint_info.PaintFlags() & kPaintLayerPaintingOverflowContents) &&
-           !(paint_info.PaintFlags() &
-             kPaintLayerPaintingCompositingBackgroundPhase) &&
-           layout_box == paint_info.PaintContainer();
-  }
-
  private:
   BoxDecorationData(const PaintInfo& paint_info,
                     const LayoutBox& layout_box,
@@ -80,8 +71,6 @@ class BoxDecorationData {
       : paint_info_(paint_info),
         layout_box_(layout_box),
         style_(style),
-        is_painting_scrolling_background_(
-            IsPaintingScrollingBackground(paint_info, layout_box)),
         has_appearance_(style.HasEffectiveAppearance()),
         should_paint_background_(ComputeShouldPaintBackground()),
         should_paint_border_(
@@ -89,25 +78,20 @@ class BoxDecorationData {
         should_paint_shadow_(ComputeShouldPaintShadow()) {}
 
   bool ComputeShouldPaintBackground() const {
-    if (!style_.HasBackground())
-      return false;
-    if (layout_box_.BackgroundTransfersToView())
-      return false;
-    if (paint_info_.SkipRootBackground() &&
-        paint_info_.PaintContainer() == &layout_box_)
-      return false;
-    return true;
+    return style_.HasBackground() && !layout_box_.BackgroundTransfersToView() &&
+           !paint_info_.ShouldSkipBackground();
   }
 
   bool ComputeShouldPaintBorder(
       bool has_non_collapsed_border_decoration) const {
-    if (is_painting_scrolling_background_)
+    if (paint_info_.IsPaintingBackgroundInContentsSpace())
       return false;
     return has_non_collapsed_border_decoration;
   }
 
   bool ComputeShouldPaintShadow() const {
-    return !is_painting_scrolling_background_ && style_.BoxShadow();
+    return !paint_info_.IsPaintingBackgroundInContentsSpace() &&
+           style_.BoxShadow();
   }
 
   bool BorderObscuresBackgroundEdge() const;
@@ -117,16 +101,16 @@ class BoxDecorationData {
   const PaintInfo& paint_info_;
   const LayoutBox& layout_box_;
   const ComputedStyle& style_;
+
   // Outputs that are initialized in the constructor.
-  const bool is_painting_scrolling_background_;
   const bool has_appearance_;
   const bool should_paint_background_;
   const bool should_paint_border_;
   const bool should_paint_shadow_;
   // This is lazily initialized.
-  mutable base::Optional<BackgroundBleedAvoidance> bleed_avoidance_;
+  mutable absl::optional<BackgroundBleedAvoidance> bleed_avoidance_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_DECORATION_DATA_H_

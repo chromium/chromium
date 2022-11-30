@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,10 @@ source_set("web_state_list") {
     "active_web_state_observation_forwarder.mm",
     "all_web_state_observation_forwarder.h",
     "all_web_state_observation_forwarder.mm",
+    "web_state_dependency_installation_observer.h",
+    "web_state_dependency_installation_observer.mm",
+    "web_state_dependency_installer_bridge.h",
+    "web_state_dependency_installer_bridge.mm",
     "web_state_list.h",
     "web_state_list.mm",
     "web_state_list_delegate.h",
@@ -31,6 +35,8 @@ source_set("web_state_list") {
     "web_state_list_observer_bridge.mm",
     "web_state_list_order_controller.h",
     "web_state_list_order_controller.mm",
+    "web_state_list_removing_indexes.h",
+    "web_state_list_removing_indexes.mm",
     "web_state_list_serialization.h",
     "web_state_list_serialization.mm",
     "web_state_opener.h",
@@ -41,11 +47,13 @@ source_set("web_state_list") {
     "//components/favicon/core",
     "//components/favicon/ios",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/sessions:restoration_observer",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/web",
     "//ios/web/public/session",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -54,23 +62,34 @@ source_set("agents") {
   sources = [
     "tab_insertion_browser_agent.h",
     "tab_insertion_browser_agent.mm",
+    "view_source_browser_agent.h",
+    "view_source_browser_agent.mm",
     "web_state_list_metrics_browser_agent.h",
     "web_state_list_metrics_browser_agent.mm",
   ]
   deps = [
     ":session_metrics",
     ":web_state_list",
+    "//base",
     "//components/navigation_metrics",
     "//components/profile_metrics",
-    "//ios/chrome/browser:chrome_url_constants",
+    "//components/url_param_filter/core",
+    "//components/url_param_filter/ios",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:restoration_observer",
+    "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:tab_helper_delegates",
+    "//ios/components/security_interstitials:security_interstitials",
     "//ios/web/public",
+    "//ios/web/public/js_messaging:js_messaging",
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -96,8 +115,11 @@ source_set("unit_tests") {
     "all_web_state_observation_forwarder_unittest.mm",
     "session_metrics_unittest.cc",
     "tab_insertion_browser_agent_unittest.mm",
+    "web_state_dependency_installation_observer_unittest.mm",
+    "web_state_dependency_installer_bridge_unittest.mm",
     "web_state_list_favicon_driver_observer_unittest.mm",
     "web_state_list_order_controller_unittest.mm",
+    "web_state_list_removing_indexes_unittest.mm",
     "web_state_list_serialization_unittest.mm",
     "web_state_list_unittest.mm",
     "web_state_opener_unittest.mm",
@@ -110,10 +132,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/favicon/ios",
+    "//components/url_param_filter/core",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/sessions:features",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/web",
     "//ios/web",

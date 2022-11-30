@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "segmentation_internals"
+  static_files = [ "segmentation_internals.html" ]
+  non_web_component_files = [
+    "segmentation_internals.ts",
+    "segmentation_internals_browser_proxy.ts",
+  ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings_webui_js",
+  ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom-webui.js" ]
+  ts_deps = [ "//ui/webui/resources:library" ]
+}

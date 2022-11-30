@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/nintendo_controller.h"
@@ -45,11 +44,15 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
                                                   mojom::HidManagerClient {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<NintendoDataFetcher,
-                                                GAMEPAD_SOURCE_NINTENDO>;
+                                                GamepadSource::kNintendo>;
   using ControllerMap =
       std::unordered_map<int, std::unique_ptr<NintendoController>>;
 
   NintendoDataFetcher();
+
+  NintendoDataFetcher(const NintendoDataFetcher&) = delete;
+  NintendoDataFetcher& operator=(const NintendoDataFetcher&) = delete;
+
   ~NintendoDataFetcher() override;
 
   // Add the newly-connected HID device described by |device_info|. Returns
@@ -85,6 +88,7 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
   // mojom::HidManagerClient implementation.
   void DeviceAdded(mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(mojom::HidDeviceInfoPtr device_info) override;
 
   // mojom::HidManagerClient::GetDevicesAndSetClient callback.
   void OnGetDevices(std::vector<mojom::HidDeviceInfoPtr> device_infos);
@@ -114,8 +118,6 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
   mojo::Remote<mojom::HidManager> hid_manager_;
   mojo::AssociatedReceiver<mojom::HidManagerClient> receiver_{this};
   base::WeakPtrFactory<NintendoDataFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NintendoDataFetcher);
 };
 
 }  // namespace device

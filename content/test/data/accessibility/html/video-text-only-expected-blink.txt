@@ -1,7 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++video name='Unable to play media.' restriction=disabled
-++++++staticText name=' '
-++++++++inlineTextBox name=' '
-++++++video name='Unable to play media.' restriction=disabled

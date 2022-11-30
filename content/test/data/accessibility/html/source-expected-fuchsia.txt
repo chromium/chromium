@@ -1,0 +1,64 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable
+++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++BUTTON hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++BUTTON focusable label='play' actions='{DEFAULT}'
+++++++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='elapsed time: 0:00'
+++++++++++++++++STATIC_TEXT label='0:00'
+++++++++++++++++++UNKNOWN label='0:00'
+++++++++++++++UNKNOWN label='total time: / 0:00'
+++++++++++++++++STATIC_TEXT label='/ 0:00'
+++++++++++++++++++UNKNOWN label='/ 0:00'
+++++++++++++++SLIDER focusable label='audio time scrubber 0:00 / 0:00' actions='{SET_VALUE}' value='elapsed time: 0:00'
+++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN
+++++++++++++++++SLIDER focusable label='volume' actions='{SET_VALUE}'
+++++++++++++++++BUTTON focusable label='mute' actions='{DEFAULT}'
+++++++++++++++BUTTON hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON focusable label='show more media controls' actions='{DEFAULT}' secondary_label='more options'
+++++++++++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Play'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Fullscreen'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Download'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Mute'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Cast'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Captions'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Playback speed'

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.browserservices.intents;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
@@ -55,6 +56,47 @@ public abstract class BrowserServicesIntentDataProvider {
         int V1_INFOBAR = 0;
         int V2_NOTIFICATION_OR_SNACKBAR = 1;
     }
+
+    @IntDef({ACTIVITY_HEIGHT_DEFAULT, ACTIVITY_HEIGHT_ADJUSTABLE, ACTIVITY_HEIGHT_FIXED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActivityResizeBehavior {}
+
+    /**
+     * Applies the default resize behavior for the Custom Tab Activity when it behaves as a
+     * bottom sheet. Same as {@link #ACTIVITY_HEIGHT_ADJUSTABLE}.
+     */
+    public static final int ACTIVITY_HEIGHT_DEFAULT = 0;
+
+    /**
+     * The Custom Tab Activity, when it behaves as a bottom sheet, can be manually resized by the
+     * user.
+     */
+    public static final int ACTIVITY_HEIGHT_ADJUSTABLE = 1;
+
+    /**
+     * The Custom Tab Activity, when it behaves as a bottom sheet, cannot be manually resized by
+     * the user.
+     */
+    public static final int ACTIVITY_HEIGHT_FIXED = 2;
+
+    @IntDef({CLOSE_BUTTON_POSITION_DEFAULT, CLOSE_BUTTON_POSITION_START, CLOSE_BUTTON_POSITION_END})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CloseButtonPosition {}
+
+    /** Same as {@link #CLOSE_BUTTON_POSITION_START}. */
+    public static final int CLOSE_BUTTON_POSITION_DEFAULT = 0;
+
+    /** Positions the close button at the start of the toolbar. */
+    public static final int CLOSE_BUTTON_POSITION_START = 1;
+
+    /** Positions the close button at the end of the toolbar. */
+    public static final int CLOSE_BUTTON_POSITION_END = 2;
+
+    /**
+     * Maximum value for the CLOSE_BUTTON_POSITION_* configuration options. For validation purposes
+     * only.
+     */
+    public static final int CLOSE_BUTTON_POSITION_MAX = 2;
 
     /**
      * @return The type of the Activity;
@@ -129,8 +171,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The URL that should be used from this intent. If it is a WebLite url, it may be
-     *         overridden if the Data Reduction Proxy is using Lo-Fi previews.
+     * @return The URL that should be used from this intent.
      * Must be called only after native has loaded.
      */
     @Nullable
@@ -145,35 +186,8 @@ public abstract class BrowserServicesIntentDataProvider {
         return true;
     }
 
-    /**
-     * @return The toolbar color.
-     */
-    public int getToolbarColor() {
-        return Color.WHITE;
-    }
-
-    /**
-     * @return Whether the intent specifies a custom toolbar color.
-     */
-    public boolean hasCustomToolbarColor() {
-        return false;
-    }
-
-    /**
-     * @return The navigation bar color specified in the intent, or null if not specified.
-     */
-    @Nullable
-    public Integer getNavigationBarColor() {
-        return null;
-    }
-
-    /**
-     * @return The navigation bar divider color specified in the intent, or null if not specified.
-     */
-    @Nullable
-    public Integer getNavigationBarDividerColor() {
-        return null;
-    }
+    @NonNull
+    public abstract ColorProvider getColorProvider();
 
     /**
      * @return The drawable of the icon of close button shown in the custom tab toolbar.
@@ -209,13 +223,6 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public List<CustomButtonParams> getCustomButtonsOnBottombar() {
         return Collections.emptyList();
-    }
-
-    /**
-     * @return The color of the bottom bar.
-     */
-    public int getBottomBarColor() {
-        return getToolbarColor();
     }
 
     /**
@@ -290,13 +297,6 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return Initial RGB background color.
-     */
-    public int getInitialBackgroundColor() {
-        return Color.TRANSPARENT;
-    }
-
-    /**
      * @return Whether there should be a star button in the menu.
      */
     public boolean shouldShowStarButton() {
@@ -337,15 +337,6 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public final boolean isWebApkActivity() {
         return getActivityType() == ActivityType.WEB_APK;
-    }
-
-    /**
-     * @return Whether the Activity should attempt to load a dynamic module.
-     *
-     * Will return false if native is not initialized.
-     */
-    public boolean isDynamicModuleEnabled() {
-        return false;
     }
 
     /**
@@ -491,44 +482,46 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * Returns true if omnibox should hide cct related visits.
+     * @return Whether the intent is for partial-height custom tabs.
      */
-    public boolean shouldHideOmniboxSuggestionsForCctVisits() {
+    public boolean isPartialHeightCustomTab() {
         return false;
     }
 
     /**
-     * Returns true if visits from cct should be hidden.
+     * @return The value in pixels  of the initial height of the Activity. It will return 0 if there
+     *         is no value set.
      */
-    public boolean shouldHideCctVisits() {
+    public @Px int getInitialActivityHeight() {
+        return 0;
+    }
+
+    /**
+     * Returns the {@link CloseButtonPosition}.
+     */
+    public @CloseButtonPosition int getCloseButtonPosition() {
+        return CLOSE_BUTTON_POSITION_DEFAULT;
+    }
+
+    /**
+     * If {@code true} the App Menu will not be shown. If {@code false} it will be left to the
+     * Activity to decide.
+     */
+    public boolean shouldSuppressAppMenu() {
         return false;
     }
 
     /**
-     * Returns true if new notification requests from cct should be blocked.
+     * Returns the partial custom tab toolbar corner radius.
      */
-    public boolean shouldBlockNewNotificationRequests() {
-        return false;
+    public @Px int getPartialTabToolbarCornerRadius() {
+        return 0;
     }
 
     /**
-     * Returns true if 'open in chrome' should be shown in the tab context menu.
+     * Returns false as by default PCCT is resizable.
      */
-    public boolean shouldShowOpenInChromeMenuItemInContextMenu() {
-        return true;
-    }
-
-    /**
-     * Returns true if 'open in chrome' should be shown in the app menu.
-     */
-    public boolean shouldShowOpenInChromeMenuItem() {
-        return true;
-    }
-
-    /**
-     * @return Whether the incognito icon in the toolbar should be hidden in cct-incognito mode.
-     */
-    public boolean shouldHideIncognitoIconOnToolbarInCct() {
+    public boolean isPartialCustomTabFixedHeight() {
         return false;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace blink {
 
 namespace {
 
-const base::TimeDelta kStatsReportingPeriod = base::TimeDelta::FromMinutes(1);
+const base::TimeDelta kStatsReportingPeriod = base::Minutes(1);
 
 class ThermalUmaListenerTest : public ::testing::Test {
  public:

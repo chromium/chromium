@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,21 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
+#include "base/types/id_type.h"
 #include "base/types/pass_key.h"
-#include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 class ArCoreImpl;
 
-using AnchorId = util::IdTypeU64<class AnchorTag>;
+using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 class ArCoreAnchorManager {
  public:
@@ -28,24 +30,23 @@ class ArCoreAnchorManager {
   ~ArCoreAnchorManager();
 
   // Updates anchor manager state - it should be called in every frame if the
-  // ARCore session supports anchors. Currently, all ARCore sessions support
-  // anchors.
+  // ARCore session has anchors feature enabled.
   void Update(ArFrame* ar_frame);
 
   mojom::XRAnchorsDataPtr GetAnchorsData() const;
 
   bool AnchorExists(AnchorId id) const;
 
-  // Returns base::nullopt if anchor with the given id does not exist.
-  base::Optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
+  // Returns absl::nullopt if anchor with the given id does not exist.
+  absl::optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
 
   // Creates Anchor object given a plane ID.
-  base::Optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
+  absl::optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
                                         const device::mojom::Pose& pose,
                                         PlaneId plane_id);
 
   // Creates free-floating Anchor.
-  base::Optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
+  absl::optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
 
   void DetachAnchor(AnchorId anchor_id);
 
@@ -69,7 +70,7 @@ class ArCoreAnchorManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCoreAnchorManager
   // is also owned by ArCoreImpl.
-  ArSession* arcore_session_;
+  raw_ptr<ArSession> arcore_session_;
 
   // Allows reuse of the pose object; ARCore will populate it with new data on
   // each call to the ARCore SDK.
@@ -86,6 +87,17 @@ class ArCoreAnchorManager {
   // Set containing IDs of anchors updated in the last frame. It should be
   // modified only during calls to |Update()|.
   std::set<AnchorId> updated_anchor_ids_;
+
+#if DCHECK_IS_ON()
+  // True if |GetAnchorsData()| was called after |Update()|. It is used to track
+  // if |Update()| was called twice in a row w/o a call to |GetAnchorsData()| in
+  // between. Initially true since we expect the call to |Update()| to happen
+  // next.
+  // TODO(https://crbug.com/1192844): remove the assumption that the calls to
+  // |Update()| will always be followed by at least one call to
+  // |GetAnchorsData()| before the next call to |Update()| happens.
+  mutable bool was_anchor_data_retrieved_in_current_frame_ = true;
+#endif
 };
 
 }  // namespace device

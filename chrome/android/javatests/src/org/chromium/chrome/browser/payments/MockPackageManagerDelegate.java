@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.PackageManagerDelegate;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
     private final Map<ApplicationInfo, List<String[]>> mResources = new HashMap<>();
 
     private String mInvokedAppPackageName;
+
+    // A map of a package name to its installer's package name.
+    private Map<String, String> mMockInstallerPackageMap = new HashMap<>();
 
     /**
      * Simulates an installed payment app with no supported delegations.
@@ -210,5 +214,23 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
     public void setInvokedAppPackageName(String packageName) {
         assert mPackages.containsKey(packageName);
         mInvokedAppPackageName = packageName;
+    }
+
+    @Override
+    @Nullable
+    public String getInstallerPackage(String packageName) {
+        return mMockInstallerPackageMap.get(packageName);
+    }
+
+    /**
+     * Mock the installer of a specified package.
+     * @param packageName The package name that is intended to mock a installer for, not allowed to
+     *         be null.
+     * @param installerPackageName The package name intended to be set as the installer of the
+     *         specified package.
+     */
+    public void mockInstallerForPackage(String packageName, @Nullable String installerPackageName) {
+        assert packageName != null;
+        mMockInstallerPackageMap.put(packageName, installerPackageName);
     }
 }

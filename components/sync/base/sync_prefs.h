@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,17 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_member.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/protocol/sync.pb.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -39,77 +35,16 @@ class SyncPrefObserver {
   virtual ~SyncPrefObserver();
 };
 
-// Thin wrapper for "bookkeeping" sync preferences, such as the last synced
-// time, whether the last shutdown was clean, etc. Does *NOT* include sync
-// preferences which are directly user-controlled, such as the set of selected
-// types.
-//
-// In order to use this class SyncPrefs::RegisterProfilePrefs() needs to be
-// invoked first.
-// TODO(crbug.com/938894): Move to dedicated file, possibly next to
-// SyncEngineImpl and introduce a separate pref registration function.
-class SyncTransportDataPrefs {
- public:
-  // |pref_service| must not be null and must outlive this object.
-  explicit SyncTransportDataPrefs(PrefService* pref_service);
-  SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;
-  SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
-  ~SyncTransportDataPrefs();
-
-  // Clears all preferences in this class, which excludes the encryption
-  // bootstrap token (non-keystore counterpart).
-  void ClearAllExceptEncryptionBootstrapToken();
-
-  void SetGaiaId(const std::string& gaia_id);
-  std::string GetGaiaId() const;
-  void SetCacheGuid(const std::string& cache_guid);
-  std::string GetCacheGuid() const;
-  void SetBirthday(const std::string& birthday);
-  std::string GetBirthday() const;
-  void SetBagOfChips(const std::string& bag_of_chips);
-  std::string GetBagOfChips() const;
-
-  base::Time GetLastSyncedTime() const;
-  void SetLastSyncedTime(base::Time time);
-
-  base::Time GetLastPollTime() const;
-  void SetLastPollTime(base::Time time);
-
-  base::TimeDelta GetPollInterval() const;
-  void SetPollInterval(base::TimeDelta interval);
-
-  // The encryption bootstrap token is used for explicit passphrase users
-  // (usually custom passphrase) and represents a user-entered passphrase.
-  // Hence, it gets treated as user-controlled similarly to sync datatype
-  // selection settings (i.e. doesn't get cleared in
-  // ClearAllExceptEncryptionBootstrapToken()).
-  std::string GetEncryptionBootstrapToken() const;
-  void SetEncryptionBootstrapToken(const std::string& token);
-  void ClearEncryptionBootstrapToken();
-
-  // Use this keystore bootstrap token if we're not using an explicit
-  // passphrase.
-  std::string GetKeystoreEncryptionBootstrapToken() const;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token);
-
-  // Get/set for the last known sync invalidation versions.
-  std::map<ModelType, int64_t> GetInvalidationVersions() const;
-  void UpdateInvalidationVersions(
-      const std::map<ModelType, int64_t>& invalidation_versions);
-
- private:
-  // Never null.
-  PrefService* const pref_service_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
 // SyncPrefs is a helper class that manages getting, setting, and persisting
 // global sync preferences. It is not thread-safe, and lives on the UI thread.
 class SyncPrefs {
  public:
   // |pref_service| must not be null and must outlive this object.
   explicit SyncPrefs(PrefService* pref_service);
+
+  SyncPrefs(const SyncPrefs&) = delete;
+  SyncPrefs& operator=(const SyncPrefs&) = delete;
+
   ~SyncPrefs();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -155,39 +90,31 @@ class SyncPrefs {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
-  bool IsOsSyncFeatureEnabled() const;
-  void SetOsSyncFeatureEnabled(bool enabled);
 
   // Maps |type| to its corresponding preference name. Returns nullptr if |type|
   // isn't an OS type.
   static const char* GetPrefNameForOsType(UserSelectableOsType type);
 #endif
 
-  // Whether Sync is forced off by enterprise policy. Note that this only covers
-  // one out of two types of policy, "browser" policy. The second kind, "cloud"
-  // policy, is handled directly in ProfileSyncService.
-  bool IsManaged() const;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsAppsSyncEnabledByOs() const;
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled);
+#endif
+
+  // Whether Sync is disabled on the client for all profiles and accounts.
+  bool IsSyncClientDisabledByPolicy() const;
 
   // Maps |type| to its corresponding preference name.
   static const char* GetPrefNameForType(UserSelectableType type);
 
-#if defined(OS_ANDROID)
-  // Sets a boolean pref representing that Sync should no longer respect whether
-  // Android master sync is enabled/disabled. It is set per-device and never
-  // gets cleared.
-  void SetDecoupledFromAndroidMasterSync();
-
-  // Gets the value for the boolean pref representing whether Sync should no
-  // longer respect if Android master sync is enabled/disabled. Returns false
-  // until |SetDecoupledFromAndroidMasterSync()| is called.
-  bool GetDecoupledFromAndroidMasterSync();
-#endif  // defined(OS_ANDROID)
-
-  // For testing.
-  void SetManagedForTest(bool is_managed);
-
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;
+
+  // The encryption bootstrap token is used for explicit passphrase users
+  // (usually custom passphrase) and represents a user-entered passphrase.
+  std::string GetEncryptionBootstrapToken() const;
+  void SetEncryptionBootstrapToken(const std::string& token);
+  void ClearEncryptionBootstrapToken();
 
   // Muting mechanism for passphrase prompts, used on Android.
   int GetPassphrasePromptMutedProductVersion() const;
@@ -203,7 +130,7 @@ class SyncPrefs {
   void OnSyncRequestedPrefChange();
 
   // Never null.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 
@@ -218,12 +145,15 @@ class SyncPrefs {
   bool local_sync_enabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncPrefs);
 };
 
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service);
-void MigrateSyncSuppressedPref(PrefService* pref_service);
+#if BUILDFLAG(IS_ANDROID)
+void ClearObsoleteSyncDecoupledFromAndroidMasterSync(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void MigrateSyncRequestedPrefPostMice(PrefService* pref_service);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace syncer
 

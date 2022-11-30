@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,8 @@ ScrollOffsetAnimationsImpl::~ScrollOffsetAnimationsImpl() {
 
 void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
     ElementId element_id,
-    const gfx::ScrollOffset& target_offset,
-    const gfx::ScrollOffset& current_offset,
+    const gfx::PointF& target_offset,
+    const gfx::PointF& current_offset,
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
@@ -55,8 +55,8 @@ void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
 
 void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
     ElementId element_id,
-    const gfx::ScrollOffset& target_offset,
-    const gfx::ScrollOffset& current_offset,
+    const gfx::PointF& target_offset,
+    const gfx::PointF& current_offset,
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
@@ -92,7 +92,7 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
 
 bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
     base::TimeDelta delayed_by) {
   DCHECK(scroll_offset_animation_);
@@ -117,9 +117,8 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
       ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
           keyframe_model->curve());
 
-  gfx::ScrollOffset new_target =
-      gfx::ScrollOffsetWithDelta(curve->target_value(), scroll_delta);
-  new_target.SetToMax(gfx::ScrollOffset());
+  gfx::PointF new_target = curve->target_value() + scroll_delta;
+  new_target.SetToMax(gfx::PointF());
   new_target.SetToMin(max_scroll_offset);
 
   // TODO(ymalik): KeyframeModel::TrimTimeToCurrentIteration should probably
@@ -196,6 +195,11 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion) {
       TargetProperty::SCROLL_OFFSET, needs_completion);
   TRACE_EVENT_INSTANT1("cc", "ScrollAnimationAbort", TRACE_EVENT_SCOPE_THREAD,
                        "needs_completion", needs_completion);
+}
+
+void ScrollOffsetAnimationsImpl::AnimatingElementRemovedByCommit() {
+  scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET)
+      ->set_affects_pending_elements(false);
 }
 
 void ScrollOffsetAnimationsImpl::NotifyAnimationFinished(

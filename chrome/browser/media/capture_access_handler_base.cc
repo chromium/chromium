@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/extension.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -30,40 +29,40 @@
 
 using content::BrowserThread;
 
-namespace {
-
-// Keep track of the outermost WebContents for a particular tab.
-// Similar semantics as base::WeakPtr<WebContents> as WebContentsObserver
-// will detect when the WebContents no longer exists.
-class WeakPtrToWebContents : private content::WebContentsObserver {
- public:
-  WeakPtrToWebContents() = default;
-  ~WeakPtrToWebContents() override = default;
-
-  void Set(int render_process_id, int render_frame_id) {
-    auto* target_web_contents = content::WebContents::FromRenderFrameHost(
-        content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-    // Use the outermost WebContents in the WebContents tree, if possible.
-    // If we can't find the WebContents, clear the observer.
-    WebContentsObserver::Observe(
-        target_web_contents ? target_web_contents->GetOutermostWebContents()
-                            : nullptr);
-  }
-
-  content::WebContents* get() const {
-    return WebContentsObserver::web_contents();
-  }
-
- private:
-  // WebContentsObserver does not allow copy or assign.
-  DISALLOW_COPY_AND_ASSIGN(WeakPtrToWebContents);
-};
-
-}  // namespace
-
 // Tracks MEDIA_DESKTOP/TAB_VIDEO_CAPTURE sessions. Sessions are removed when
 // MEDIA_REQUEST_STATE_CLOSING is encountered.
 struct CaptureAccessHandlerBase::Session {
+  Session(int request_process_id,
+          int request_frame_id,
+          int page_request_id,
+          bool is_trusted,
+          bool is_capturing_link_secure,
+          content::DesktopMediaID::Type capturing_type,
+          gfx::NativeWindow target_window)
+      : request_process_id(request_process_id),
+        request_frame_id(request_frame_id),
+        page_request_id(page_request_id),
+        is_trusted(is_trusted),
+        is_capturing_link_secure(is_capturing_link_secure),
+        capturing_type(capturing_type),
+        target_window(target_window) {
+    SetWebContents(request_process_id, request_frame_id);
+  }
+
+  void SetWebContents(int render_process_id, int render_frame_id) {
+    auto* web_contents = content::WebContents::FromRenderFrameHost(
+        content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+    // Use the outermost WebContents in the WebContents tree, if possible.
+    // If we can't find the WebContents, clear |target_web_contents|.
+    target_web_contents =
+        web_contents ? web_contents->GetOutermostWebContents()->GetWeakPtr()
+                     : nullptr;
+  }
+
+  content::WebContents* GetWebContents() const {
+    return target_web_contents.get();
+  }
+
   int request_process_id;
   int request_frame_id;
   int page_request_id;
@@ -79,11 +78,28 @@ struct CaptureAccessHandlerBase::Session {
   // then |capturing_type| is TYPE_SCREEN. If a specific window is specified,
   // then |capturing_type| is TYPE_WINDOW and |target_window| is set. If a
   // specific tab is the target, then |capturing_type| is TYPE_WEB_CONTENTS and
-  // |target_weak_web_contents| is set.
+  // |target_web_contents| is set.
   content::DesktopMediaID::Type capturing_type;
   gfx::NativeWindow target_window;
-  std::unique_ptr<WeakPtrToWebContents> target_weak_web_contents;
+  base::WeakPtr<content::WebContents> target_web_contents;
 };
+
+CaptureAccessHandlerBase::PendingAccessRequest::PendingAccessRequest(
+    std::unique_ptr<DesktopMediaPicker> picker,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback,
+    std::u16string application_title,
+    bool should_display_notification,
+    bool is_allowlisted_extension)
+    : picker(std::move(picker)),
+      request(request),
+      callback(std::move(callback)),
+      application_title(std::move(application_title)),
+      should_display_notification(should_display_notification),
+      is_allowlisted_extension(is_allowlisted_extension) {}
+
+CaptureAccessHandlerBase::PendingAccessRequest::~PendingAccessRequest() =
+    default;
 
 CaptureAccessHandlerBase::CaptureAccessHandlerBase() = default;
 
@@ -98,9 +114,7 @@ void CaptureAccessHandlerBase::AddCaptureSession(int render_process_id,
       // Assume that the target is the same tab that is
       // requesting capture, not the display or any particular
       // window. This can be changed by calling UpdateTarget().
-      content::DesktopMediaID::TYPE_WEB_CONTENTS, gfx::kNullNativeWindow,
-      std::make_unique<WeakPtrToWebContents>()};
-  session.target_weak_web_contents->Set(render_process_id, render_frame_id);
+      content::DesktopMediaID::TYPE_WEB_CONTENTS, gfx::kNullNativeWindow};
 
   sessions_.push_back(std::move(session));
 }
@@ -117,14 +131,13 @@ std::list<CaptureAccessHandlerBase::Session>::iterator
 CaptureAccessHandlerBase::FindSession(int render_process_id,
                                       int render_frame_id,
                                       int page_request_id) {
-  return std::find_if(sessions_.begin(), sessions_.end(),
-                      [render_process_id, render_frame_id,
-                       page_request_id](const Session& session) {
-                        return session.request_process_id ==
-                                   render_process_id &&
-                               session.request_frame_id == render_frame_id &&
-                               session.page_request_id == page_request_id;
-                      });
+  return base::ranges::find_if(
+      sessions_, [render_process_id, render_frame_id,
+                  page_request_id](const Session& session) {
+        return session.request_process_id == render_process_id &&
+               session.request_frame_id == render_frame_id &&
+               session.page_request_id == page_request_id;
+      });
 }
 
 void CaptureAccessHandlerBase::UpdateMediaRequestState(
@@ -140,6 +153,7 @@ void CaptureAccessHandlerBase::UpdateMediaRequestState(
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       break;
     default:
       return;
@@ -166,12 +180,9 @@ void CaptureAccessHandlerBase::UpdateMediaRequestState(
 
 void CaptureAccessHandlerBase::UpdateExtensionTrusted(
     const content::MediaStreamRequest& request,
-    const extensions::Extension* extension) {
-  const bool is_trusted = MediaCaptureDevicesDispatcher::IsOriginForCasting(
-                              request.security_origin) ||
-                          IsExtensionAllowedForScreenCapture(extension) ||
-                          IsBuiltInFeedbackUI(request.security_origin);
-  UpdateTrusted(request, is_trusted);
+    bool is_allowlisted_extension) {
+  UpdateTrusted(request, is_allowlisted_extension ||
+                             IsBuiltInFeedbackUI(request.security_origin));
 }
 
 void CaptureAccessHandlerBase::UpdateTrusted(
@@ -222,9 +233,8 @@ void CaptureAccessHandlerBase::UpdateTarget(
 #endif
   } else if (target.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) {
     // Specific tab captured.
-    it->target_weak_web_contents->Set(
-        target.web_contents_id.render_process_id,
-        target.web_contents_id.main_render_frame_id);
+    it->SetWebContents(target.web_contents_id.render_process_id,
+                       target.web_contents_id.main_render_frame_id);
   }
 }
 
@@ -280,7 +290,7 @@ bool CaptureAccessHandlerBase::MatchesSession(const Session& session,
 
     case content::DesktopMediaID::TYPE_WEB_CONTENTS:
       // Check that the target is the frame selected.
-      auto* target_web_contents = session.target_weak_web_contents->get();
+      auto* target_web_contents = session.GetWebContents();
       if (!target_web_contents)
         return false;
       auto* web_contents = content::WebContents::FromRenderFrameHost(
@@ -330,9 +340,5 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
 }
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
-  return
-      // Feedback Extension.
-      origin.spec() == "chrome-extension://gfdkimpbcpahaombhbimeihdjnejgicl/" ||
-      (origin.spec() == chrome::kChromeUIFeedbackURL &&
-       base::FeatureList::IsEnabled(features::kWebUIFeedback));
+  return origin.spec() == chrome::kChromeUIFeedbackURL;
 }

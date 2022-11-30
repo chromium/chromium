@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ const char kModelAbbr[] = "MDL";
 const char kCommandSet[] = "COMMAND SET";
 const char kCommandSetAbbr[] = "CMD";
 
-UsbPrinterId::UsbPrinterId(const std::vector<uint8_t>& device_id_data) {
+UsbPrinterId::UsbPrinterId(base::span<const uint8_t> device_id_data) {
   // Build mapping.
   id_mappings_ = BuildDeviceIdMapping(device_id_data);
 
@@ -52,7 +52,7 @@ UsbPrinterId::UsbPrinterId(const UsbPrinterId& other) = default;
 UsbPrinterId::~UsbPrinterId() = default;
 
 std::map<std::string, std::vector<std::string>> BuildDeviceIdMapping(
-    const std::vector<uint8_t>& data) {
+    base::span<const uint8_t> data) {
   // Must contain at least the length information.
   if (data.size() < 2) {
     return {};

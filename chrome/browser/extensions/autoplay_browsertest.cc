@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,11 +35,11 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowed) {
 // out on Linux.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AutoplayAllowedInIframe DISABLED_AutoplayAllowedInIframe
 #else
 #define MAYBE_AutoplayAllowedInIframe AutoplayAllowedInIframe
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
                        MAYBE_AutoplayAllowedInIframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest,
   content::WindowedNotificationObserver popup_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  browser_action_test_util->Press(0);
+  browser_action_test_util->Press(extension->id());
   popup_observer.Wait();
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

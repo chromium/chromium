@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace internal {
 
 namespace {
 
-bool CanUseBackgroundPriorityForWorkerThreadImpl() {
+bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
   // Commandline flag overrides (e.g. for experiments). Note that it may not be
   // initialized yet, e.g. in cronet.
   if (CommandLine::InitializedForCurrentProcess() &&
@@ -31,25 +31,26 @@ bool CanUseBackgroundPriorityForWorkerThreadImpl() {
   if (!Lock::HandlesMultipleThreadPriorities())
     return false;
 
-#if !defined(OS_ANDROID)
-  // When thread priority can't be increased to NORMAL, run all threads with a
-  // NORMAL priority to avoid priority inversions on shutdown (ThreadPoolImpl
-  // increases BACKGROUND threads priority to NORMAL on shutdown while resolving
-  // remaining shutdown blocking tasks).
+#if !BUILDFLAG(IS_ANDROID)
+  // When thread type can't be increased to kNormal, run all threads with a
+  // kNormal thread type to avoid priority inversions on shutdown
+  // (ThreadPoolImpl increases kBackground threads type to kNormal on shutdown
+  // while resolving remaining shutdown blocking tasks).
   //
   // This is ignored on Android, because it doesn't have a clean shutdown phase.
-  if (!PlatformThread::CanIncreaseThreadPriority(ThreadPriority::NORMAL))
+  if (!PlatformThread::CanChangeThreadType(ThreadType::kBackground,
+                                           ThreadType::kDefault))
     return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
 }
 
 }  // namespace
 
-bool CanUseBackgroundPriorityForWorkerThread() {
+bool CanUseBackgroundThreadTypeForWorkerThread() {
   static const bool can_use_background_priority_for_worker_thread =
-      CanUseBackgroundPriorityForWorkerThreadImpl();
+      CanUseBackgroundThreadTypeForWorkerThreadImpl();
   return can_use_background_priority_for_worker_thread;
 }
 

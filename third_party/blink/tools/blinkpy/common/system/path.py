@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Generic routines to convert platform-specific paths to URIs."""
 
-import urllib
+from six.moves import urllib
 
 
 def abspath_to_uri(platform, path):
@@ -41,7 +41,7 @@ def _escape(path):
     # when converting filenames to files. Instead of using urllib's default
     # rules, we allow a small list of other characters through un-escaped.
     # It's unclear if this is the best possible solution.
-    return urllib.quote(path, safe='/+:')
+    return urllib.parse.quote(path, safe='/+:')
 
 
 def _convert_path(platform, path):

@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -13,12 +14,16 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/fullscreen_notification_blocker.h"
+#include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,6 +37,11 @@ namespace {
 
 const int kToastMarginX = 7;
 
+void ReportPopupAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
+                               smoothness);
+}
+
 }  // namespace
 
 const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
@@ -39,13 +49,16 @@ const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
 
 AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
     : screen_(nullptr), shelf_(shelf), tray_bubble_height_(0) {
-  set_inverse();
+  // The order for notifications will be reversed when
+  // IsNotificationsRefreshEnabled.
+  if (!features::IsNotificationsRefreshEnabled())
+    set_inverse();
   shelf_->AddObserver(this);
+  Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
-  if (screen_)
-    screen_->RemoveObserver(this);
+  Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
     widget->RemoveObserver(this);
@@ -57,7 +70,7 @@ void AshMessagePopupCollection::StartObserving(
     const display::Display& display) {
   screen_ = screen;
   work_area_ = display.work_area();
-  screen->AddObserver(this);
+  display_observer_.emplace(this);
   if (tray_bubble_height_ > 0)
     UpdateWorkArea();
 }
@@ -137,8 +150,9 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
 
   // Make the widget activatable so it can receive focus when cycling through
   // windows (i.e. pressing ctrl + forward/back).
-  init_params->activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
+  init_params->corner_radius = kMessagePopupCornerRadius;
   Shell::Get()->focus_cycler()->AddWidget(widget);
   widget->AddObserver(this);
   tracked_widgets_.insert(widget);
@@ -161,12 +175,59 @@ void AshMessagePopupCollection::NotifyPopupAdded(
   MessagePopupCollection::NotifyPopupAdded(popup);
   popup->message_view()->AddObserver(this);
   metrics_utils::LogPopupShown(popup->message_view()->notification_id());
+  last_pop_up_added_ = popup;
 }
 
 void AshMessagePopupCollection::NotifyPopupClosed(
     message_center::MessagePopupView* popup) {
+  metrics_utils::LogPopupClosed(popup);
   MessagePopupCollection::NotifyPopupClosed(popup);
   popup->message_view()->RemoveObserver(this);
+  if (last_pop_up_added_ == popup)
+    last_pop_up_added_ = nullptr;
+}
+
+void AshMessagePopupCollection::AnimationStarted() {
+  if (popups_animating_ == 0 && last_pop_up_added_) {
+    // Since all the popup widgets use the same compositor, we only need to set
+    // this when the first popup shows in the animation sequence.
+    animation_tracker_.emplace(last_pop_up_added_->GetWidget()
+                                   ->GetCompositor()
+                                   ->RequestNewThroughputTracker());
+    animation_tracker_->Start(metrics_util::ForSmoothness(
+        base::BindRepeating(&ReportPopupAnimationSmoothness)));
+  }
+  ++popups_animating_;
+}
+
+void AshMessagePopupCollection::AnimationFinished() {
+  --popups_animating_;
+  // Stop when all animations are finished.
+  if (animation_tracker_ && popups_animating_ == 0) {
+    animation_tracker_->Stop();
+    animation_tracker_.reset();
+  }
+}
+
+message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
+    const message_center::Notification& notification) {
+  bool a11_feedback_on_init =
+      notification.rich_notification_data()
+          .should_make_spoken_feedback_for_popup_updates;
+  return new message_center::MessagePopupView(
+      MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
+          .release(),
+      this, a11_feedback_on_init);
+}
+
+void AshMessagePopupCollection::OnTabletModeStarted() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
+}
+
+void AshMessagePopupCollection::OnTabletModeEnded() {
+  // Reset bounds so pop-up baseline is updated.
+  ResetBounds();
 }
 
 void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {

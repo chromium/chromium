@@ -1,34 +1,23 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "printing/print_settings.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "printing/units.h"
 
-#if defined(USE_CUPS) && (defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH))
+#if defined(USE_CUPS) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS))
 #include <cups/cups.h>
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
+
 namespace printing {
-
-namespace {
-
-base::LazyInstance<std::string>::Leaky g_user_agent;
-
-}  // namespace
-
-void SetAgent(const std::string& user_agent) {
-  g_user_agent.Get() = user_agent;
-}
-
-const std::string& GetAgent() {
-  return g_user_agent.Get();
-}
 
 mojom::ColorModel ColorModeToColorModel(int color_mode) {
   if (color_mode < static_cast<int>(mojom::ColorModel::kUnknownColorModel) ||
@@ -41,7 +30,7 @@ mojom::ColorModel ColorModeToColorModel(int color_mode) {
 void GetColorModelForModel(mojom::ColorModel color_model,
                            std::string* color_setting_name,
                            std::string* color_value) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr char kCUPSColorMode[] = "ColorMode";
   constexpr char kCUPSColorModel[] = "ColorModel";
   constexpr char kCUPSPrintoutMode[] = "PrintoutMode";
@@ -61,7 +50,7 @@ void GetColorModelForModel(mojom::ColorModel color_model,
   constexpr char kCUPSEpsonInk[] = "cups-Ink";
   constexpr char kCUPSSharpARCMode[] = "cups-ARCMode";
   constexpr char kCUPSXeroxXRXColor[] = "cups-XRXColor";
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   *color_setting_name = kCUPSColorModel;
 
@@ -183,13 +172,13 @@ void GetColorModelForModel(mojom::ColorModel color_model,
   // all ColorModel values are determinantly handled.
 }
 
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
-  // Accept |kUnknownColorModel| for consistency with GetColorModelForModel().
+  // Accept `kUnknownColorModel` for consistency with GetColorModelForModel().
   if (color_model == mojom::ColorModel::kUnknownColorModel)
     return CUPS_PRINT_COLOR_MODE_MONOCHROME;
 
-  base::Optional<bool> is_color = IsColorModelSelected(color_model);
+  absl::optional<bool> is_color = IsColorModelSelected(color_model);
   if (!is_color.has_value()) {
     NOTREACHED();
     return std::string();
@@ -198,10 +187,10 @@ std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
   return is_color.value() ? CUPS_PRINT_COLOR_MODE_COLOR
                           : CUPS_PRINT_COLOR_MODE_MONOCHROME;
 }
-#endif  // defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #endif  // defined(USE_CUPS)
 
-base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
+absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
   switch (color_model) {
     case mojom::ColorModel::kColor:
     case mojom::ColorModel::kCMYK:
@@ -237,7 +226,7 @@ base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
       return false;
     case mojom::ColorModel::kUnknownColorModel:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.
@@ -248,6 +237,51 @@ static base::AtomicSequenceNumber cookie_seq;
 
 PrintSettings::PrintSettings() {
   Clear();
+}
+
+PrintSettings::PrintSettings(const PrintSettings& settings) {
+  *this = settings;
+}
+
+PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
+  if (this == &settings)
+    return *this;
+
+  ranges_ = settings.ranges_;
+  selection_only_ = settings.selection_only_;
+  margin_type_ = settings.margin_type_;
+  title_ = settings.title_;
+  url_ = settings.url_;
+  display_header_footer_ = settings.display_header_footer_;
+  should_print_backgrounds_ = settings.should_print_backgrounds_;
+  collate_ = settings.collate_;
+  color_ = settings.color_;
+  copies_ = settings.copies_;
+  duplex_mode_ = settings.duplex_mode_;
+  device_name_ = settings.device_name_;
+  requested_media_ = settings.requested_media_;
+  page_setup_device_units_ = settings.page_setup_device_units_;
+  dpi_ = settings.dpi_;
+  scale_factor_ = settings.scale_factor_;
+  rasterize_pdf_ = settings.rasterize_pdf_;
+  rasterize_pdf_dpi_ = settings.rasterize_pdf_dpi_;
+  landscape_ = settings.landscape_;
+  supports_alpha_blend_ = settings.supports_alpha_blend_;
+#if BUILDFLAG(IS_WIN)
+  printer_language_type_ = settings.printer_language_type_;
+#endif
+  is_modifiable_ = settings.is_modifiable_;
+  pages_per_sheet_ = settings.pages_per_sheet_;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  for (const auto& item : settings.advanced_settings_)
+    advanced_settings_.emplace(item.first, item.second.Clone());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  send_user_info_ = settings.send_user_info_;
+  username_ = settings.username_;
+  pin_value_ = settings.pin_value_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return *this;
 }
 
 PrintSettings::~PrintSettings() = default;
@@ -270,22 +304,22 @@ void PrintSettings::Clear() {
   dpi_ = gfx::Size();
   scale_factor_ = 1.0f;
   rasterize_pdf_ = false;
+  rasterize_pdf_dpi_ = 0;
   landscape_ = false;
   supports_alpha_blend_ = true;
-#if defined(OS_WIN)
-  print_text_with_gdi_ = false;
-  printer_type_ = PrintSettings::PrinterType::TYPE_NONE;
+#if BUILDFLAG(IS_WIN)
+  printer_language_type_ = mojom::PrinterLanguageType::kNone;
 #endif
   is_modifiable_ = true;
   pages_per_sheet_ = 1;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   advanced_settings_.clear();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   send_user_info_ = false;
   username_.clear();
   pin_value_.clear();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PrintSettings::SetPrinterPrintableArea(
@@ -344,16 +378,14 @@ void PrintSettings::SetPrinterPrintableArea(
     case mojom::MarginType::kCustomMargins: {
       margins.header = 0;
       margins.footer = 0;
-      margins.top = ConvertUnitDouble(requested_custom_margins_in_points_.top,
-                                      kPointsPerInch, units_per_inch);
-      margins.bottom =
-          ConvertUnitDouble(requested_custom_margins_in_points_.bottom,
-                            kPointsPerInch, units_per_inch);
-      margins.left = ConvertUnitDouble(requested_custom_margins_in_points_.left,
-                                       kPointsPerInch, units_per_inch);
-      margins.right =
-          ConvertUnitDouble(requested_custom_margins_in_points_.right,
-                            kPointsPerInch, units_per_inch);
+      margins.top = ConvertUnit(requested_custom_margins_in_points_.top,
+                                kPointsPerInch, units_per_inch);
+      margins.bottom = ConvertUnit(requested_custom_margins_in_points_.bottom,
+                                   kPointsPerInch, units_per_inch);
+      margins.left = ConvertUnit(requested_custom_margins_in_points_.left,
+                                 kPointsPerInch, units_per_inch);
+      margins.right = ConvertUnit(requested_custom_margins_in_points_.right,
+                                  kPointsPerInch, units_per_inch);
       break;
     }
     default: {

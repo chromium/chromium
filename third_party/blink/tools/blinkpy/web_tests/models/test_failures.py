@@ -25,11 +25,13 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+import re
+import six
 from six.moves import cPickle
 
 from blinkpy.web_tests.controllers import repaint_overlay
 from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.models.failure_reason import FailureReason
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.unified_diff import unified_diff
 
@@ -101,6 +103,18 @@ FILENAME_SUFFIX_OVERLAY = "-overlay"
 
 _ext_to_file_type = {'.txt': 'text', '.png': 'image', '.wav': 'audio'}
 
+# Matches new failures in TestHarness.js tests.
+TESTHARNESS_JS_FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
+
+# Matches fatal log lines. In Chrome, these trigger process crash.
+# Such lines typically written as part of a (D)Check failures, but there
+# are other types of FATAL messages too.
+# The first capture group captures the name of the file which generated
+# the fatal message, the second captures the message itself.
+FATAL_MESSAGE_RE = re.compile(
+    r'^.*FATAL.*?([a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+\([0-9]+\))\]? (.*)$',
+    re.MULTILINE)
+
 
 def has_failure_type(failure_type, failure_list):
     return any(isinstance(failure, failure_type) for failure in failure_list)
@@ -123,6 +137,10 @@ class AbstractTestResultType(object):
             self.has_stderr = actual_driver_output.has_stderr()
         if expected_driver_output:
             self.has_stderr |= expected_driver_output.has_stderr()
+
+    def _artifact_is_text(self, path):
+        ext = self.filesystem.splitext(path)[1]
+        return ext != '.png' and ext != '.wav'
 
     def _write_to_artifacts(self, typ_artifacts, artifact_name, path, content,
                             force_overwrite):
@@ -155,12 +173,24 @@ class AbstractTestResultType(object):
             # --iterations=n or --repeat-each=n.
             if (force_overwrite or self.result != ResultType.Pass
                     or not self.filesystem.exists(artifacts_abspath)):
-                self._write_to_artifacts(
-                    typ_artifacts,
-                    'stderr',
-                    artifact_filename,
-                    self.actual_driver_output.error,
-                    force_overwrite=True)
+                self._write_to_artifacts(typ_artifacts,
+                                         'stderr',
+                                         artifact_filename,
+                                         self.actual_driver_output.error,
+                                         force_overwrite=True)
+
+    def _error_text(self):
+        if (self.actual_driver_output
+                and self.actual_driver_output.error is not None):
+            # Even when running under py3, some clients pass a str
+            # to error instead of bytes. We must handle both.
+            if (six.PY3
+                    and not isinstance(self.actual_driver_output.error, str)):
+                return self.actual_driver_output.error.decode(
+                    'utf8', 'replace')
+            else:
+                return self.actual_driver_output.error
+        return ''
 
     @staticmethod
     def loads(s):
@@ -170,6 +200,30 @@ class AbstractTestResultType(object):
     def message(self):
         """Returns a string describing the failure in more detail."""
         raise NotImplementedError
+
+    def failure_reason(self):
+        """Returns a FailureReason object describing why the test failed, if
+        the test failed and suitable reasons are available.
+        The information is used in LUCI result viewing UIs and will be
+        used to cluster similar failures together."""
+
+        error_text = self._error_text()
+        match = FATAL_MESSAGE_RE.search(error_text)
+        if match:
+            # The file name and line number, e.g. "my_file.cc(123)".
+            file_name = match.group(1)
+            # The log message, e.g. "Check failed: task_queue_.IsEmpty()".
+            message = match.group(2)
+
+            # Add the file name (and line number) as context to the log
+            # message, as some messages are not very specific
+            # ("e.g. Check failed: false") and this results in better
+            # clustering. It also helps the developer locate the problematic
+            # line.
+            primary_error = '{}: {}'.format(file_name, message.strip())
+            return FailureReason(primary_error)
+
+        return None
 
     def __eq__(self, other):
         return self.__class__.__name__ == other.__class__.__name__
@@ -217,7 +271,10 @@ class FailureTimeout(AbstractTestResultType):
         self.is_reftest = is_reftest
 
     def message(self):
-        return 'test timed out'
+        if self.is_reftest:
+            return 'test reference timed out'
+        else:
+            return 'test timed out'
 
     def driver_needs_restart(self):
         return True
@@ -245,14 +302,24 @@ class FailureCrash(AbstractTestResultType):
         if self.crash_log:
             artifact_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_CRASH_LOG, '.txt')
-            self._write_to_artifacts(
-                typ_artifacts, 'crash_log', artifact_filename,
-                self.crash_log.encode('utf8', 'replace'), force_overwrite)
+            self._write_to_artifacts(typ_artifacts, 'crash_log',
+                                     artifact_filename, self.crash_log,
+                                     force_overwrite)
 
     def message(self):
         if self.pid:
-            return '%s crashed [pid=%d]' % (self.process_name, self.pid)
-        return self.process_name + ' crashed'
+            return self._pid_message_format() % (self.process_name, self.pid)
+        else:
+            return self._process_message_format() % (self.process_name)
+
+    def _pid_message_format(self):
+        return self._process_message_format() + ' [pid=%d]'
+
+    def _process_message_format(self):
+        if self.is_reftest:
+            return '%s crashed in reference'
+        else:
+            return '%s crashed'
 
     def driver_needs_restart(self):
         return True
@@ -273,7 +340,13 @@ class FailureLeak(TestFailure):
                                  self.log, force_overwrite)
 
     def message(self):
-        return 'leak detected: %s' % (self.log)
+        return self._message_format() % (self.log)
+
+    def _message_format(self):
+        if self.is_reftest:
+            return 'leak detected in reference: %s'
+        else:
+            return 'leak detected: %s'
 
 
 class ActualAndBaselineArtifacts(TestFailure):
@@ -306,18 +379,49 @@ class FailureText(ActualAndBaselineArtifacts):
                                           expected_driver_output)
         self.has_repaint_overlay = (
             repaint_overlay.result_contains_repaint_rects(
-                actual_driver_output.text)
+                self._actual_text())
             or repaint_overlay.result_contains_repaint_rects(
-                expected_driver_output.text))
+                self._expected_text()))
         self.file_ext = '.txt'
+
+    def _actual_text(self):
+        if (self.actual_driver_output
+                and self.actual_driver_output.text is not None):
+            if six.PY3:
+                # TODO(crbug/1197331): We should not decode here looks like.
+                # html_diff expects it to be bytes for comparing to account
+                # various types of encodings.
+                # html_diff.py and unified_diff.py use str types during
+                # diff fixup. Will handle it later.
+                return self.actual_driver_output.text.decode('utf8', 'replace')
+            else:
+                return self.actual_driver_output.text
+        return ''
+
+    def _expected_text(self):
+        if (self.expected_driver_output
+                and self.expected_driver_output.text is not None):
+            if six.PY3:
+                # TODO(crbug/1197331): We should not decode here looks like.
+                # html_diff expects it to be bytes for comparing to account
+                # various types of encodings.
+                # html_diff.py and unified_diff.py use str types during
+                # diff fixup. Will handle it later.
+                return self.expected_driver_output.text.decode(
+                    'utf8', 'replace')
+            else:
+                return self.expected_driver_output.text
+        return ''
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         # TODO (rmhasan): See if you can can only output diff files for
         # non empty text.
         super(FailureText, self).create_artifacts(typ_artifacts,
                                                   force_overwrite)
-        expected_text = self.expected_driver_output.text or ''
-        actual_text = self.actual_driver_output.text or ''
+
+        actual_text = self._actual_text()
+        expected_text = self._expected_text()
+
         artifacts_abs_path = self.filesystem.join(
             self.result_directory, typ_artifacts.ArtifactsSubDirectory())
         diff_content = unified_diff(
@@ -331,6 +435,13 @@ class FailureText(ActualAndBaselineArtifacts):
         html_diff_content = html_diff(expected_text, actual_text)
         html_diff_filename = self.port.output_filename(
             self.test_name, FILENAME_SUFFIX_HTML_DIFF, '.html')
+
+        # TODO(crbug/1197331): Revisit while handling the diff modules.
+        if diff_content and six.PY3:
+            diff_content = diff_content.encode('utf8', 'replace')
+        if html_diff_content and six.PY3:
+            html_diff_content = html_diff_content.encode('utf8', 'replace')
+
         self._write_to_artifacts(typ_artifacts, 'text_diff', diff_filename,
                                  diff_content, force_overwrite)
         self._write_to_artifacts(typ_artifacts, 'pretty_text_diff',
@@ -342,6 +453,72 @@ class FailureText(ActualAndBaselineArtifacts):
 
     def text_mismatch_category(self):
         raise NotImplementedError
+
+    def failure_reason(self):
+        actual_text = self._actual_text()
+        expected_text = self._expected_text()
+        diff_content = unified_diff(expected_text, actual_text, "expected",
+                                    "actual")
+        diff_lines = diff_content.splitlines()
+
+        # Drop the standard diff header with the following lines:
+        # --- expected
+        # +++ actual
+        diff_lines = diff_lines[2:]
+
+        # Find the first block of additions and/or deletions in the diff.
+        # E.g.
+        #  Unchanged line
+        # -Old line 1  <-- Start of block
+        # -Old line 2
+        # +New line 1
+        # +New line 2  <-- End of block
+        #  Unchanged line
+        deleted_lines = []
+        added_lines = []
+        match_state = ''
+        for i, line in enumerate(diff_lines):
+            # A block of diffs starts with removals (-)
+            # and then additions (+). Any variation from this
+            # pattern indicates an end of this block of diffs.
+            if ((line.startswith(' ') and match_state != '')
+                    or (line.startswith('-') and match_state == '+')):
+                # End of block of additions and deletions.
+                break
+            if line.startswith('-'):
+                match_state = '-'
+                deleted_lines.append(line)
+            if line.startswith('+'):
+                match_state = '+'
+                added_lines.append(line)
+
+        primary_error = None
+
+        if 'This is a testharness.js-based test.' in actual_text:
+            # Testharness.js test. Find the first new failure (if any) and
+            # report it as the failure reason.
+            for i, line in enumerate(added_lines):
+                match = TESTHARNESS_JS_FAILURE_RE.match(line)
+                if match:
+                    primary_error = match.group(1)
+                    break
+        else:
+            # Reconstitute the first diff block, but put added lines before
+            # the deleted lines as they are usually more interesting.
+            # (New actual output more interesting than missing expected
+            # output, as it is likely to contain errors.)
+            first_diff_block = '\n'.join(added_lines + deleted_lines)
+
+            if len(first_diff_block) >= 30:
+                # Only use the diff if it is not tiny. If it is only the
+                # addition of an empty line at the end of the file or
+                # similar, it is unlikely to be useful.
+                primary_error = ('Unexpected Diff (+got, -want):\n' +
+                                 first_diff_block)
+
+        if primary_error:
+            return FailureReason(primary_error)
+        return None
 
 
 class FailureMissingResult(FailureText):
@@ -358,14 +535,22 @@ class FailureTextMismatch(FailureText):
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
         super(FailureTextMismatch, self).create_artifacts(
             typ_artifacts, force_overwrite)
-        html = repaint_overlay.generate_repaint_overlay_html(
-            self.test_name, self.actual_driver_output.text,
-            self.expected_driver_output.text)
+        if six.PY2:
+            html = repaint_overlay.generate_repaint_overlay_html(
+                self.test_name, self.actual_driver_output.text,
+                self.expected_driver_output.text)
+        else:
+            html = repaint_overlay.generate_repaint_overlay_html(
+                self.test_name,
+                self.actual_driver_output.text.decode('utf8', 'replace'),
+                self.expected_driver_output.text.decode('utf8', 'replace'))
         if html:
             overlay_filename = self.port.output_filename(
                 self.test_name, FILENAME_SUFFIX_OVERLAY, '.html')
             self._write_to_artifacts(typ_artifacts, 'overlay',
-                                     overlay_filename, html, force_overwrite)
+                                     overlay_filename,
+                                     html.encode('utf8',
+                                                 'replace'), force_overwrite)
 
     def message(self):
         return 'text diff'
@@ -448,7 +633,8 @@ class FailureImageHashMismatch(FailureImage):
                 'prefix': self.port.output_filename(self.test_name, '', '')
             }
             self._write_to_artifacts(typ_artifacts, 'pretty_image_diff',
-                                     diffs_html_filename, diffs_html,
+                                     diffs_html_filename,
+                                     diffs_html.encode('utf8', 'replace'),
                                      force_overwrite)
 
         super(FailureImageHashMismatch, self).create_artifacts(

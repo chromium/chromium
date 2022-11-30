@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module feed.mojom;
+
+import "url/mojom/url.mojom";
+
+struct RssLinks {
+  // URL of the page.
+  url.mojom.Url page_url;
+  // List of RSS URLs within the page's <head>.
+  array<url.mojom.Url> links;
+};
+
+// One instance per main frame on the renderer.
+interface RssLinkReader {
+  // Scans the document for RSS links, and returns them.
+  GetRssLinks() => (RssLinks rss_links);
+};

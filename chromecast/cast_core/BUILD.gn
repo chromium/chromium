@@ -1,0 +1,71 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("cast_core_switches") {
+  sources = [ "cast_core_switches.h" ]
+}
+
+cast_source_set("core_runtime_lib_simple") {
+  data_deps = [ "//chromecast:cast_shell_pak" ]
+
+  deps = [
+    "//chromecast:cast_shell_lib_base",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:prefs_simple",
+    "//chromecast/browser:simple_main_parts",
+    "//chromecast/cast_core/runtime/browser:browser_simple",
+    "//chromecast/cast_core/runtime/renderer:renderer_simple",
+    "//chromecast/utility:simple_client",
+  ]
+}
+
+cast_source_set("cast_runtime_main") {
+  sources = [ "cast_runtime_main.cc" ]
+
+  deps = [
+    "//chromecast/app",
+    "//content/public/app",
+  ]
+}
+
+cast_executable("core_runtime_simple") {
+  deps = [
+    ":cast_runtime_main",
+    ":core_runtime_lib_simple",
+    "//chromecast:chromecast_locales_pak",
+  ]
+}
+
+group("all_unit_tests") {
+  testonly = true
+
+  deps = [
+    "//chromecast/cast_core/grpc:unit_tests",
+    "//chromecast/cast_core/runtime/browser:unit_tests",
+    "//chromecast/cast_core/runtime/browser/url_rewrite:unit_tests",
+  ]
+}
+
+test("cast_cast_core_unittests") {
+  deps = [
+    ":all_unit_tests",
+    ":core_runtime_lib_simple",
+    "//mojo/core/test:run_all_unittests",
+  ]
+}
+
+group("cast_core_integration_test") {
+  testonly = true
+  data = [
+    "//chromecast/cast_core/test/",
+    "//testing/scripts/run_cast_core_tests.py",
+    "//third_party/cast_core/prebuilts/",
+    "//third_party/cast_web_runtime/",
+  ]
+  data_deps = [
+    "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
+  ]
+}

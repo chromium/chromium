@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,12 @@ constexpr hb_feature_t CreateFeature(char c1,
 
 }  // namespace
 
-base::Optional<unsigned> FontFeatures::FindValueForTesting(hb_tag_t tag) const {
+absl::optional<unsigned> FontFeatures::FindValueForTesting(hb_tag_t tag) const {
   for (const hb_feature_t& feature : features_) {
     if (feature.tag == tag)
       return feature.value;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void FontFeatures::Initialize(const FontDescription& description) {

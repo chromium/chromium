@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <ostream>
 
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
 using base::ASCIIToUTF16;
@@ -80,7 +81,7 @@ TEST(UrlUtilTest, AppendOrReplaceQueryParameter) {
           GURL("http://example.com/path?name=old&existing=one&name=old"),
           "name", "new").spec());
 
-  // Preserve the content of the original params regarless of our failure to
+  // Preserve the content of the original params regardless of our failure to
   // interpret them correctly.
   EXPECT_EQ("http://example.com/path?bar&name=new&left=&"
             "=right&=&&name=again",
@@ -88,6 +89,78 @@ TEST(UrlUtilTest, AppendOrReplaceQueryParameter) {
           GURL("http://example.com/path?bar&name=old&left=&"
                 "=right&=&&name=again"),
           "name", "new").spec());
+
+  // ----- Removing the key using nullopt value -----
+
+  // Removes the name-value pair from the URL preserving other query parameters.
+  EXPECT_EQ("http://example.com/path?abc=xyz",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/path?name=value&abc=xyz"), "name",
+                absl::nullopt)
+                .spec());
+
+  // Removes the name-value pair from the URL.
+  EXPECT_EQ("http://example.com/path?",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/path?existing=one"), "existing",
+                absl::nullopt)
+                .spec());
+
+  // Removes the first name-value pair.
+  EXPECT_EQ("http://example.com/path?c=d&e=f",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/path?a=b&c=d&e=f"), "a", absl::nullopt)
+                .spec());
+
+  // Removes a name-value pair in between two query params.
+  EXPECT_EQ(
+      "http://example.com/path?existing=one&hello=world",
+      AppendOrReplaceQueryParameter(
+          GURL("http://example.com/path?existing=one&replace=sure&hello=world"),
+          "replace", absl::nullopt)
+          .spec());
+
+  // Removes the last name-value pair.
+  EXPECT_EQ("http://example.com/path?existing=one",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/path?existing=one&replace=sure"),
+                "replace", absl::nullopt)
+                .spec());
+
+  // Removing a name-value pair with unsafe characters included. The
+  // unsafe characters should be escaped.
+  EXPECT_EQ("http://example.com/path?existing=one&hello=world",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/"
+                     "path?existing=one&na+me=v.alue%3D&hello=world"),
+                "na me", absl::nullopt)
+                .spec());
+
+  // Does nothing if the provided query param key does not exist.
+  EXPECT_EQ("http://example.com/path?existing=one&name=old",
+            AppendOrReplaceQueryParameter(
+                GURL("http://example.com/path?existing=one&name=old"), "old",
+                absl::nullopt)
+                .spec());
+
+  // Remove the value of first parameter with this name only.
+  EXPECT_EQ(
+      "http://example.com/path?existing=one&name=old",
+      AppendOrReplaceQueryParameter(
+          GURL("http://example.com/path?name=something&existing=one&name=old"),
+          "name", absl::nullopt)
+          .spec());
+
+  // Preserve the content of the original params regardless of our failure to
+  // interpret them correctly.
+  EXPECT_EQ(
+      "http://example.com/path?bar&left=&"
+      "=right&=&&name=again",
+      AppendOrReplaceQueryParameter(
+          GURL("http://example.com/path?bar&name=old&left=&"
+               "=right&=&&name=again"),
+          "name", absl::nullopt)
+          .spec());
 }
 
 TEST(UrlUtilTest, GetValueForKeyInQuery) {
@@ -247,16 +320,22 @@ TEST(UrlUtilTest, GetHostAndOptionalPort) {
     GURL url;
     const char* const expected_host_and_port;
   } tests[] = {
-    { GURL("http://www.foo.com/x"), "www.foo.com"},
-    { GURL("http://www.foo.com:21/x"), "www.foo.com:21"},
+      {GURL("http://www.foo.com/x"), "www.foo.com"},
+      {GURL("http://www.foo.com:21/x"), "www.foo.com:21"},
+      {GURL("http://www.foo.com:443/x"), "www.foo.com:443"},
 
-    // For IPv6 literals should always include the brackets.
-    { GURL("http://[1::2]/x"), "[1::2]"},
-    { GURL("http://[::a]:33/x"), "[::a]:33"},
+      {GURL("https://www.foo.com/x"), "www.foo.com"},
+      {GURL("https://www.foo.com:80/x"), "www.foo.com:80"},
+
+      // For IPv6 literals should always include the brackets.
+      {GURL("http://[1::2]/x"), "[1::2]"},
+      {GURL("http://[::a]:33/x"), "[::a]:33"},
   };
   for (const auto& test : tests) {
-    std::string host_and_port = GetHostAndOptionalPort(test.url);
-    EXPECT_EQ(std::string(test.expected_host_and_port), host_and_port);
+    EXPECT_EQ(test.expected_host_and_port, GetHostAndOptionalPort(test.url));
+    // Also test the SchemeHostPort variant.
+    EXPECT_EQ(test.expected_host_and_port,
+              GetHostAndOptionalPort(url::SchemeHostPort(test.url)));
   }
 }
 
@@ -424,7 +503,7 @@ const NonUniqueNameTestData kNonUniqueNameTestData[] = {
 class UrlUtilNonUniqueNameTest
     : public testing::TestWithParam<NonUniqueNameTestData> {
  public:
-  virtual ~UrlUtilNonUniqueNameTest() = default;
+  ~UrlUtilNonUniqueNameTest() override = default;
 
  protected:
   bool IsUnique(const std::string& hostname) {

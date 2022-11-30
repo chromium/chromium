@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_THREAD_STOPPABLE_H_
 #define CRASHPAD_UTIL_THREAD_STOPPABLE_H_
 
-#include "base/macros.h"
 
 namespace crashpad {
 

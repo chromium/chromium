@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
+#include "chromecast/media/audio/cast_audio_manager_helper.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -26,7 +27,7 @@ class WebContents;
 namespace chromecast {
 namespace shell {
 
-class CastSessionIdMap {
+class CastSessionIdMap : public media::CastAudioManagerHelper::Delegate {
  public:
   // Retrieve the map instance. The first time this is called, a task runner can
   // be specified for the instance to run on. Any subsequent calls to this
@@ -35,27 +36,40 @@ class CastSessionIdMap {
   // This must be called for the first time on the browser main thread.
   static CastSessionIdMap* GetInstance(
       base::SequencedTaskRunner* task_runner = nullptr);
+
+  CastSessionIdMap(const CastSessionIdMap&) = delete;
+  CastSessionIdMap& operator=(const CastSessionIdMap&) = delete;
+
   // Map a session id to a particular group id in the provided WebContents.
   // Record whether the session is an audio only session.
   // Can be called on any thread.
-  static void SetAppProperties(std::string session_id,
-                               bool is_audio_app,
-                               content::WebContents* web_contents);
+  void SetAppProperties(std::string session_id,
+                        bool is_audio_app,
+                        content::WebContents* web_contents);
+  // Record whether the session is launched in a group.
+  // Can be called on any thread.
+  void SetGroupInfo(std::string session_id, bool is_group);
+
+  // CastAudioManagerHelper::Delegate implementation:
   // Fetch the session id that is mapped to the provided group_id. Defaults to
   // empty string if the mapping is not found.
   // Must be called on the sequence for |task_runner_|.
-  static std::string GetSessionId(const std::string& group_id);
+  std::string GetSessionId(const std::string& group_id) override;
   // Fetch whether the session is an audio only session based on the provided
   // session id. Defaults to false if the mapping is not found.
   // Must be called on the sequence for |task_runner_|.
-  static bool IsAudioOnlySession(const std::string& session_id);
+  bool IsAudioOnlySession(const std::string& session_id) override;
+  // Fetch whether the session is launched in a group based on the provided
+  // session id. Defaults to false if the mapping is not found.
+  // Must be called on the sequence for |task_runner_|.
+  bool IsGroup(const std::string& session_id) override;
 
  private:
   class GroupObserver;
   friend class base::NoDestructor<CastSessionIdMap>;
 
   explicit CastSessionIdMap(base::SequencedTaskRunner* task_runner);
-  ~CastSessionIdMap();
+  ~CastSessionIdMap() override;
 
   // Callback for the group being destroyed.
   void OnGroupDestroyed(base::UnguessableToken group_id);
@@ -70,13 +84,6 @@ class CastSessionIdMap {
                                 bool is_audio_app,
                                 base::UnguessableToken group_id,
                                 std::unique_ptr<GroupObserver> group_observer);
-  // Retrieves the session id for the provided group id.
-  // This must be called on the |task_runner_|.
-  std::string GetSessionIdInternal(const std::string& group_id);
-  // Retrieves the session is an audio only session based on the provided
-  // session id.
-  // This must be called on the |task_runner_|.
-  bool IsAudioOnlySessionInternal(const std::string& session_id);
 
   base::flat_map<
       std::string,
@@ -85,10 +92,10 @@ class CastSessionIdMap {
 
   base::flat_map<std::string /* session_id */, bool /* is_audio_app */>
       application_capability_mapping_;
+  base::flat_map<std::string /* session_id */, bool /* is_group */>
+      group_info_mapping_;
   base::SequencedTaskRunner* const task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CastSessionIdMap);
 };
 
 }  // namespace shell

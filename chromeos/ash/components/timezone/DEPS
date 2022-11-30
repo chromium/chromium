@@ -1,0 +1,19 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/geolocation",
+  "+components/prefs",
+  "+google_apis",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+net",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+services/network/test",
+    "+testing",
+  ],
+}

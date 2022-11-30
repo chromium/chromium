@@ -1,0 +1,10 @@
+{
+  "description": "Extension for Auto-Update testing",
+  "manifest_version": 2,
+  "name": "Auto-Update Test",
+  "version": "1.0",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "update_url": "$1"
+}

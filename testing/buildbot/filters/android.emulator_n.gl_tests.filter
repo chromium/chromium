@@ -1,0 +1,17 @@
+# https://crbug.com/1342710
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureCubeMap/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureLevel/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/1
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/0
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/1
+
+# https://crbug.com/1342713
+-GLBGRAMipMapTest.GenerateMipmapsSucceeds
+
+# TODO(crbug.com/1368355)
+-Service/GLTextureImageBackingFactoryTest.Basic/AllowPassthrough_BGRA_8888
+-Service/GLTextureImageBackingFactoryTest.Basic/DisallowPassthrough_BGRA_8888
+-GLTextureImageBackingFactoryTest.Basic/BGRA_8888
+-GLTextureImageBackingFactoryWithFormatTest.Basic/BGRA_8888
+-GLTextureImageBackingFactoryWithUploadTest.UploadFromMemory/BGRA_8888

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,20 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "build/build_config.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "url/gurl.h"
 #include "weblayer/browser/browser_process.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
-#include "weblayer/test/stub_autofill_provider.h"
 #include "weblayer/test/test_navigation_observer.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "weblayer/test/stub_autofill_provider.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace weblayer {
 
@@ -90,15 +93,16 @@ const std::u16string& GetTitle(Shell* shell) {
   return tab_impl->web_contents()->GetTitle();
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data) {
   TabImpl* tab_impl = static_cast<TabImpl*>(shell->tab());
-
-  tab_impl->InitializeAutofillForTests(
-      std::make_unique<StubAutofillProvider>(on_received_form_data));
+  new StubAutofillProvider(tab_impl->web_contents(), on_received_form_data);
+  tab_impl->InitializeAutofillForTests();
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ActivateSubresourceFilterInWebContentsForURL(
     content::WebContents* web_contents,
@@ -108,11 +112,9 @@ void ActivateSubresourceFilterInWebContentsForURL(
   database_manager->AddBlocklistedUrl(
       url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
 
-  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(web_contents)
-              ->client());
-  client_impl->set_database_manager_for_testing(std::move(database_manager));
+  subresource_filter::ContentSubresourceFilterWebContentsHelper::
+      FromWebContents(web_contents)
+          ->SetDatabaseManagerForTesting(std::move(database_manager));
 }
 
 OneShotNavigationObserver::OneShotNavigationObserver(Shell* shell)
@@ -126,6 +128,10 @@ OneShotNavigationObserver::~OneShotNavigationObserver() {
 
 void OneShotNavigationObserver::WaitForNavigation() {
   run_loop_.Run();
+}
+
+void OneShotNavigationObserver::NavigationStarted(Navigation* navigation) {
+  is_page_initiated_ = navigation->IsPageInitiated();
 }
 
 void OneShotNavigationObserver::NavigationCompleted(Navigation* navigation) {

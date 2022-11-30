@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 
 namespace ash {
 
@@ -22,9 +21,14 @@ class AssistantNotificationModelObserver;
 // notification state and notifies a pool of observers.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModel {
  public:
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+  using AssistantNotification = assistant::AssistantNotification;
 
   AssistantNotificationModel();
+
+  AssistantNotificationModel(const AssistantNotificationModel&) = delete;
+  AssistantNotificationModel& operator=(const AssistantNotificationModel&) =
+      delete;
+
   ~AssistantNotificationModel();
 
   // Adds/removes the specified notification model |observer|.
@@ -70,8 +74,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModel {
   std::map<std::string, AssistantNotification> notifications_;
 
   mutable base::ObserverList<AssistantNotificationModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantNotificationModel);
 };
 
 }  // namespace ash

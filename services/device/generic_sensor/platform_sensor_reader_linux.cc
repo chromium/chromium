@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"
@@ -26,6 +24,10 @@ class PollingSensorReader : public SensorReader {
  public:
   PollingSensorReader(const SensorInfoLinux& sensor_info,
                       base::WeakPtr<PlatformSensorLinux> sensor);
+
+  PollingSensorReader(const PollingSensorReader&) = delete;
+  PollingSensorReader& operator=(const PollingSensorReader&) = delete;
+
   ~PollingSensorReader() override;
 
   // SensorReader overrides
@@ -42,6 +44,11 @@ class PollingSensorReader : public SensorReader {
     BlockingTaskRunnerHelper(
         base::WeakPtr<PollingSensorReader> polling_sensor_reader,
         const SensorInfoLinux& sensor_info);
+
+    BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+    BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) =
+        delete;
+
     ~BlockingTaskRunnerHelper();
 
     // Starts polling for data at a given |frequency|, and stops if there is an
@@ -72,8 +79,6 @@ class PollingSensorReader : public SensorReader {
     const SensorInfoLinux sensor_info_;
 
     SEQUENCE_CHECKER(sequence_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
   };
 
   // Receives a reading from the platform sensor and forwards it to |sensor_|.
@@ -81,9 +86,6 @@ class PollingSensorReader : public SensorReader {
 
   // Signals that an error occurred while trying to read from a platform sensor.
   void OnReadingError();
-
-  // Initializes a read timer.
-  void InitializeTimer(const PlatformSensorConfiguration& configuration);
 
   // In builds with DCHECK enabled, checks that methods of this class are
   // called on the right thread.
@@ -98,8 +100,6 @@ class PollingSensorReader : public SensorReader {
       blocking_task_helper_;
 
   base::WeakPtrFactory<PollingSensorReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PollingSensorReader);
 };
 
 PollingSensorReader::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper(
@@ -121,11 +121,10 @@ void PollingSensorReader::BlockingTaskRunnerHelper::StartPolling(
     double frequency) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!timer_.IsRunning());
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromMicroseconds(
-                   base::Time::kMicrosecondsPerSecond / frequency),
-               this,
-               &PollingSensorReader::BlockingTaskRunnerHelper::PollForData);
+  timer_.Start(
+      FROM_HERE,
+      base::Microseconds(base::Time::kMicrosecondsPerSecond / frequency), this,
+      &PollingSensorReader::BlockingTaskRunnerHelper::PollForData);
 }
 
 void PollingSensorReader::BlockingTaskRunnerHelper::StopPolling() {
@@ -146,7 +145,7 @@ void PollingSensorReader::BlockingTaskRunnerHelper::PollForData() {
 
   SensorReading readings;
   DCHECK_LE(sensor_info_.device_reading_files.size(),
-            base::size(readings.raw.values));
+            std::size(readings.raw.values));
   int i = 0;
   for (const auto& path : sensor_info_.device_reading_files) {
     std::string new_read_value;

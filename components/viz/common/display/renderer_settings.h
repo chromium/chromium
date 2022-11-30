@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,18 @@ class VIZ_COMMON_EXPORT RendererSettings {
   RendererSettings(const RendererSettings& other);
   ~RendererSettings();
 
+  bool apply_simple_frame_rate_throttling = false;
   bool allow_antialiasing = true;
   bool force_antialiasing = false;
   bool force_blending_with_shaders = false;
   bool partial_swap_enabled = false;
   bool should_clear_root_render_pass = true;
   bool release_overlay_resources_after_gpu_query = false;
-  bool use_skia_renderer = false;
-  bool allow_overlays = true;
   bool dont_round_texture_sizes_for_pixel_tests = false;
   int highp_threshold_min = 0;
   bool auto_resize_output_surface = true;
   bool requires_alpha_channel = false;
+  bool disable_render_pass_bypassing = false;
 
   int slow_down_compositing_scale_factor = 1;
 
@@ -49,7 +49,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
   // split into multiple quads during occlusion culling.
   int minimum_fragments_reduced = 128 * 128;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The screen size at renderer creation time.
   gfx::Size initial_screen_size = gfx::Size(0, 0);
 
@@ -71,6 +71,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
 // HostFrameSinkManager.
 struct VIZ_COMMON_EXPORT DebugRendererSettings {
   bool tint_composited_content = false;
+  bool tint_composited_content_modulate = false;
   bool show_overdraw_feedback = false;
   bool show_dc_layer_debug_borders = false;
   bool show_aggregated_damage = false;

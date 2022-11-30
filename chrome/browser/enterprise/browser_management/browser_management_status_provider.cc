@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,23 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "components/user_manager/user_manager.h"
 #endif
+
+namespace {
+
+bool IsProfileManaged(Profile* profile) {
+  return profile && profile->GetProfilePolicyConnector() &&
+         profile->GetProfilePolicyConnector()->IsManaged();
+}
+
+}  // namespace
 
 BrowserCloudManagementStatusProvider::BrowserCloudManagementStatusProvider() =
     default;
@@ -22,22 +36,19 @@ BrowserCloudManagementStatusProvider::BrowserCloudManagementStatusProvider() =
 BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
-bool BrowserCloudManagementStatusProvider::IsManaged() {
+EnterpriseManagementAuthority
+BrowserCloudManagementStatusProvider::FetchAuthority() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
-#elif !defined(OS_ANDROID)
+  return EnterpriseManagementAuthority::NONE;
+#else
   // A machine level user cloud policy manager is only created if the browser is
   // managed by CBCM.
-  return g_browser_process->browser_policy_connector()
-             ->machine_level_user_cloud_policy_manager() != nullptr;
-#else
-  return false;
-#endif
-}
-
-EnterpriseManagementAuthority
-BrowserCloudManagementStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::CLOUD_DOMAIN;
+  if (g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager() != nullptr) {
+    return EnterpriseManagementAuthority::CLOUD_DOMAIN;
+  }
+  return EnterpriseManagementAuthority::NONE;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 LocalBrowserManagementStatusProvider::LocalBrowserManagementStatusProvider() =
@@ -46,18 +57,45 @@ LocalBrowserManagementStatusProvider::LocalBrowserManagementStatusProvider() =
 LocalBrowserManagementStatusProvider::~LocalBrowserManagementStatusProvider() =
     default;
 
-bool LocalBrowserManagementStatusProvider::IsManaged() {
-  return g_browser_process->browser_policy_connector()
-      ->HasMachineLevelPolicies();
+EnterpriseManagementAuthority
+LocalBrowserManagementStatusProvider::FetchAuthority() {
+// BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
+// OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return EnterpriseManagementAuthority::NONE;
+#else
+  return g_browser_process && g_browser_process->browser_policy_connector() &&
+                 g_browser_process->browser_policy_connector()
+                     ->HasMachineLevelPolicies()
+             ? EnterpriseManagementAuthority::COMPUTER_LOCAL
+             : EnterpriseManagementAuthority::NONE;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+LocalDomainBrowserManagementStatusProvider::
+    LocalDomainBrowserManagementStatusProvider() = default;
+
+LocalDomainBrowserManagementStatusProvider::
+    ~LocalDomainBrowserManagementStatusProvider() = default;
+
 EnterpriseManagementAuthority
-LocalBrowserManagementStatusProvider::GetAuthority() {
-#if defined(OS_WIN)
-  if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain())
-    return EnterpriseManagementAuthority::DOMAIN_LOCAL;
-#endif
-  return EnterpriseManagementAuthority::COMPUTER_LOCAL;
+LocalDomainBrowserManagementStatusProvider::FetchAuthority() {
+  auto result = EnterpriseManagementAuthority::NONE;
+// BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
+// OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return result;
+#else
+  if (g_browser_process->browser_policy_connector()
+          ->HasMachineLevelPolicies()) {
+    result = EnterpriseManagementAuthority::COMPUTER_LOCAL;
+#if BUILDFLAG(IS_WIN)
+    if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain())
+      result = EnterpriseManagementAuthority::DOMAIN_LOCAL;
+#endif  // BUILDFLAG(IS_WIN)
+  }
+  return result;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ProfileCloudManagementStatusProvider::ProfileCloudManagementStatusProvider(
@@ -67,11 +105,36 @@ ProfileCloudManagementStatusProvider::ProfileCloudManagementStatusProvider(
 ProfileCloudManagementStatusProvider::~ProfileCloudManagementStatusProvider() =
     default;
 
-bool ProfileCloudManagementStatusProvider::IsManaged() {
-  return profile_->GetProfilePolicyConnector()->IsManaged();
+EnterpriseManagementAuthority
+ProfileCloudManagementStatusProvider::FetchAuthority() {
+  if (IsProfileManaged(profile_))
+    return EnterpriseManagementAuthority::CLOUD;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This session's primary user may also have policies, and those policies may
+  // not have per-profile support.
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (primary_user &&
+      IsProfileManaged(
+          ash::ProfileHelper::Get()->GetProfileByUser(primary_user))) {
+    return EnterpriseManagementAuthority::CLOUD;
+  }
+#endif
+  return EnterpriseManagementAuthority::NONE;
 }
 
-EnterpriseManagementAuthority
-ProfileCloudManagementStatusProvider::GetAuthority() {
-  return EnterpriseManagementAuthority::CLOUD;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DeviceManagementStatusProvider::DeviceManagementStatusProvider() = default;
+
+DeviceManagementStatusProvider::~DeviceManagementStatusProvider() = default;
+
+EnterpriseManagementAuthority DeviceManagementStatusProvider::FetchAuthority() {
+  return g_browser_process && g_browser_process->platform_part() &&
+                 g_browser_process->platform_part()
+                     ->browser_policy_connector_ash() &&
+                 g_browser_process->platform_part()
+                     ->browser_policy_connector_ash()
+                     ->IsDeviceEnterpriseManaged()
+             ? EnterpriseManagementAuthority::CLOUD_DOMAIN
+             : EnterpriseManagementAuthority::NONE;
 }
+#endif

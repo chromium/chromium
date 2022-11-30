@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
+#include "chromecast/metrics/metrics_recorder.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
@@ -20,7 +22,8 @@ namespace mixer_service {
 namespace {
 
 int GetFrameSize(const OutputStreamParams& params) {
-  return GetSampleSizeBytes(params.sample_format()) * params.num_channels();
+  return audio_service::GetSampleSizeBytes(params.sample_format()) *
+         params.num_channels();
 }
 
 int GetFillSizeFrames(const OutputStreamParams& params) {
@@ -39,6 +42,7 @@ enum MessageTypes : int {
   kStreamVolume,
   kPauseResume,
   kEndOfStream,
+  kTimestampAdjustment,
 };
 
 }  // namespace
@@ -156,8 +160,19 @@ void OutputStreamConnection::Resume() {
   paused_ = false;
   if (socket_) {
     Generic message;
-    message.mutable_set_paused()->set_paused(false);
+    auto* pause_message = message.mutable_set_paused();
+    pause_message->set_paused(false);
     socket_->SendProto(kPauseResume, message);
+  }
+}
+
+void OutputStreamConnection::SendTimestampAdjustment(
+    int64_t timestamp_adjustment) {
+  if (socket_) {
+    Generic message;
+    auto* adjustment_message = message.mutable_timestamp_adjustment();
+    adjustment_message->set_adjustment(timestamp_adjustment);
+    socket_->SendProto(kTimestampAdjustment, message);
   }
 }
 
@@ -187,7 +202,7 @@ void OutputStreamConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   socket_->SendProto(kInitial, message);
   delegate_->FillNextBuffer(
       audio_buffer_->data() + MixerSocket::kAudioMessageHeaderSize,
-      fill_size_frames_, std::numeric_limits<int64_t>::min());
+      fill_size_frames_, std::numeric_limits<int64_t>::min(), 0);
 }
 
 void OutputStreamConnection::OnConnectionError() {
@@ -208,7 +223,8 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   if (message.has_push_result() && !sent_eos_) {
     delegate_->FillNextBuffer(
         audio_buffer_->data() + MixerSocket::kAudioMessageHeaderSize,
-        fill_size_frames_, message.push_result().next_playback_timestamp());
+        fill_size_frames_, message.push_result().delay_timestamp(),
+        message.push_result().delay());
   }
 
   if (message.has_ready_for_playback()) {
@@ -221,6 +237,14 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   }
 
   if (message.has_mixer_underrun()) {
+    std::string metric_name =
+        (message.mixer_underrun().type() == MixerUnderrun::INPUT_UNDERRUN
+             ? "Platform.Audio.Mixer.StreamUnderrun"
+             : "Platform.Audio.Mixer.OutputUnderrun");
+    std::unique_ptr<CastEventBuilder> event = CreateCastEvent(metric_name);
+    delegate_->ProcessCastEvent(event.get());
+    RecordCastEvent(metric_name, std::move(event),
+                    /* verbose_log_level = */ 0);
     delegate_->OnMixerUnderrun(static_cast<Delegate::MixerUnderrunType>(
         message.mixer_underrun().type()));
   }

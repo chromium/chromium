@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/storage/partition_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
@@ -36,18 +35,22 @@ class StorageServiceImpl : public mojom::StorageService {
   // browser.
   StorageServiceImpl(mojo::PendingReceiver<mojom::StorageService> receiver,
                      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
+  StorageServiceImpl(const StorageServiceImpl&) = delete;
+  StorageServiceImpl& operator=(const StorageServiceImpl&) = delete;
+
   ~StorageServiceImpl() override;
 
   const auto& partitions() const { return partitions_; }
 
   // mojom::StorageService implementation:
   void EnableAggressiveDomStorageFlushing() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetDataDirectory(
       const base::FilePath& path,
       mojo::PendingRemote<mojom::Directory> directory) override;
 #endif
-  void BindPartition(const base::Optional<base::FilePath>& path,
+  void BindPartition(const absl::optional<base::FilePath>& path,
                      mojo::PendingReceiver<mojom::Partition> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 
@@ -57,7 +60,7 @@ class StorageServiceImpl : public mojom::StorageService {
   // Removes a partition from the set of tracked partitions.
   void RemovePartition(PartitionImpl* partition);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Binds a Directory receiver to the same remote implementation to which
   // |remote_data_directory_| is bound. It is invalid to call this when
   // |remote_data_directory_| is unbound.
@@ -68,7 +71,7 @@ class StorageServiceImpl : public mojom::StorageService {
   const mojo::Receiver<mojom::StorageService> receiver_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If bound, the service will assume it should not perform certain filesystem
   // operations directly and will instead go through this interface.
   base::FilePath remote_data_directory_path_;
@@ -87,8 +90,6 @@ class StorageServiceImpl : public mojom::StorageService {
   std::map<base::FilePath, PartitionImpl*> persistent_partition_map_;
 
   base::WeakPtrFactory<StorageServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServiceImpl);
 };
 
 }  // namespace storage

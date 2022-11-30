@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 class ToolbarActionsBarBubbleViewsTest;
@@ -62,9 +63,9 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> delegate_;
   bool delegate_notified_of_close_ = false;
   bool observer_notified_of_show_ = false;
-  views::Label* body_text_ = nullptr;
-  views::Label* item_list_ = nullptr;
-  views::ImageButton* learn_more_button_ = nullptr;
+  raw_ptr<views::Label> body_text_ = nullptr;
+  raw_ptr<views::Label> item_list_ = nullptr;
+  raw_ptr<views::ImageButton> learn_more_button_ = nullptr;
   const bool anchored_to_action_;
 };
 

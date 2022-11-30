@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,30 +14,16 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "ui/gfx/switches.h"
-
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"        // nogncheck
-#include "ui/gfx/x/connection.h"       // nogncheck
-#include "ui/gfx/x/screensaver.h"      // nogncheck
-#endif
-
-#if defined(USE_OZONE)
 #include "ui/display/screen.h"
-#endif
+#include "ui/gfx/switches.h"
 
 namespace device {
 
@@ -139,22 +125,6 @@ void GetDbusStringsForApi(DBusAPI api,
   NOTREACHED();
 }
 
-void SetScreenSaverSuspended(bool suspend) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    auto* const screen = display::Screen::GetScreen();
-    // The screen can be nullptr in tests.
-    if (!screen)
-      return;
-    screen->SetScreenSaverSuspended(suspend);
-    return;
-  }
-#endif
-#if defined(USE_X11)
-  ui::SuspendX11ScreenSaver(suspend);
-#endif
-}
-
 }  // namespace
 
 class PowerSaveBlocker::Delegate
@@ -165,6 +135,9 @@ class PowerSaveBlocker::Delegate
            const std::string& description,
            scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
            scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   // Post a task to initialize the delegate on the UI thread, which will itself
   // then post a task to apply the power save block on the blocking task runner.
@@ -202,6 +175,8 @@ class PowerSaveBlocker::Delegate
   // call to Inhibit().
   void Uninhibit(const InhibitCookie& inhibit_cookie);
 
+  void SetScreenSaverSuspended(bool suspend);
+
   const mojom::WakeLockType type_;
   const std::string description_;
 
@@ -212,7 +187,8 @@ class PowerSaveBlocker::Delegate
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
 
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
+  std::unique_ptr<display::Screen::ScreenSaverSuspender>
+      screen_saver_suspender_;
 };
 
 PowerSaveBlocker::Delegate::Delegate(
@@ -234,8 +210,9 @@ void PowerSaveBlocker::Delegate::Init() {
         FROM_HERE, base::BindOnce(&Delegate::ApplyBlock, this));
   }
 
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(SetScreenSaverSuspended, true));
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Delegate::SetScreenSaverSuspended, this, true));
 }
 
 void PowerSaveBlocker::Delegate::CleanUp() {
@@ -244,8 +221,9 @@ void PowerSaveBlocker::Delegate::CleanUp() {
         FROM_HERE, base::BindOnce(&Delegate::RemoveBlock, this));
   }
 
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(SetScreenSaverSuspended, false));
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Delegate::SetScreenSaverSuspended, this, false));
 }
 
 bool PowerSaveBlocker::Delegate::ShouldBlock() const {
@@ -389,6 +367,17 @@ void PowerSaveBlocker::Delegate::Uninhibit(
   // really do anything about it anyway if it fails.
   if (!response)
     LOG(ERROR) << "No response to Uninhibit() request!";
+}
+
+void PowerSaveBlocker::Delegate::SetScreenSaverSuspended(bool suspend) {
+  if (suspend) {
+    DCHECK(!screen_saver_suspender_);
+    // The screen can be nullptr in tests.
+    if (auto* const screen = display::Screen::GetScreen())
+      screen_saver_suspender_ = screen->SuspendScreenSaver();
+  } else {
+    screen_saver_suspender_.reset();
+  }
 }
 
 PowerSaveBlocker::PowerSaveBlocker(

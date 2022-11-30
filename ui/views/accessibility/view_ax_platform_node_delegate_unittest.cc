@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -68,7 +70,7 @@ class TestAXEventObserver : public AXEventObserver {
   }
 
  private:
-  AXAuraObjCache* cache_;
+  raw_ptr<AXAuraObjCache> cache_;
 };
 
 }  // namespace
@@ -77,13 +79,13 @@ class TestTableModel : public ui::TableModel {
  public:
   TestTableModel() = default;
 
+  TestTableModel(const TestTableModel&) = delete;
+  TestTableModel& operator=(const TestTableModel&) = delete;
+
   // ui::TableModel:
-  int RowCount() override { return 10; }
+  size_t RowCount() override { return 10; }
 
-  std::u16string GetText(int row, int column_id) override {
-    if (row == -1)
-      return std::u16string();
-
+  std::u16string GetText(size_t row, int column_id) override {
     const char* const cells[5][4] = {
         {"Orange", "Orange", "South america", "$5"},
         {"Apple", "Green", "Canada", "$3"},
@@ -96,14 +98,11 @@ class TestTableModel : public ui::TableModel {
   }
 
   void SetObserver(ui::TableModelObserver* observer) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTableModel);
 };
 
 class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
  public:
-  ViewAXPlatformNodeDelegateTest() = default;
+  ViewAXPlatformNodeDelegateTest() : ax_mode_setter_(ui::kAXModeComplete) {}
   ViewAXPlatformNodeDelegateTest(const ViewAXPlatformNodeDelegateTest&) =
       delete;
   ViewAXPlatformNodeDelegateTest& operator=(
@@ -112,10 +111,10 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
     widget_ = new Widget;
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     widget_->Init(std::move(params));
 
@@ -125,9 +124,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
 
     label_ = new Label();
     label_->SetID(DEFAULT_VIEW_ID);
-    button_->AddChildView(label_);
+    button_->AddChildView(label_.get());
 
-    widget_->GetContentsView()->AddChildView(button_);
+    widget_->GetRootView()->AddChildView(button_.get());
     widget_->Show();
   }
 
@@ -163,7 +162,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   // child Views.
   View::Views SetUpExtraViews() {
     View* parent_view =
-        widget_->GetContentsView()->AddChildView(std::make_unique<View>());
+        widget_->GetRootView()->AddChildView(std::make_unique<View>());
     View::Views views{parent_view};
     for (int i = 0; i < 4; i++)
       views.push_back(parent_view->AddChildView(std::make_unique<View>()));
@@ -202,9 +201,10 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   const int DEFAULT_VIEW_ID = 0;
   const int NON_DEFAULT_VIEW_ID = 1;
 
-  Widget* widget_ = nullptr;
-  Button* button_ = nullptr;
-  Label* label_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Button> button_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
+  ScopedAXModeSetter ax_mode_setter_;
 };
 
 class ViewAXPlatformNodeDelegateTableTest
@@ -223,7 +223,7 @@ class ViewAXPlatformNodeDelegateTableTest
     auto table =
         std::make_unique<TableView>(model_.get(), columns, TEXT_ONLY, true);
     table_ = table.get();
-    widget_->GetContentsView()->AddChildView(
+    widget_->GetRootView()->AddChildView(
         TableView::CreateScrollViewWithTable(std::move(table)));
   }
 
@@ -241,7 +241,7 @@ class ViewAXPlatformNodeDelegateTableTest
 
  private:
   std::unique_ptr<TestTableModel> model_;
-  TableView* table_ = nullptr;  // Owned by parent.
+  raw_ptr<TableView> table_ = nullptr;  // Owned by parent.
 };
 
 class ViewAXPlatformNodeDelegateMenuTest
@@ -252,7 +252,6 @@ class ViewAXPlatformNodeDelegateMenuTest
 
     owner_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-    params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     owner_->Init(std::move(params));
     owner_->Show();
 
@@ -260,21 +259,21 @@ class ViewAXPlatformNodeDelegateMenuTest
     menu_ = new views::TestMenuItemView(menu_delegate_.get());
     runner_ = std::make_unique<MenuRunner>(menu_, 0);
 
-    menu_->AppendMenuItemImpl(0, u"normal", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(0, u"normal", ui::ImageModel(),
                               MenuItemView::Type::kNormal);
-    menu_->AppendMenuItemImpl(1, u"submenu", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(1, u"submenu", ui::ImageModel(),
                               MenuItemView::Type::kSubMenu);
-    menu_->AppendMenuItemImpl(2, u"actionable", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(2, u"actionable", ui::ImageModel(),
                               MenuItemView::Type::kActionableSubMenu);
-    menu_->AppendMenuItemImpl(3, u"checkbox", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(3, u"checkbox", ui::ImageModel(),
                               MenuItemView::Type::kCheckbox);
-    menu_->AppendMenuItemImpl(4, u"radio", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(4, u"radio", ui::ImageModel(),
                               MenuItemView::Type::kRadio);
-    menu_->AppendMenuItemImpl(5, u"separator", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(5, u"separator", ui::ImageModel(),
                               MenuItemView::Type::kSeparator);
-    menu_->AppendMenuItemImpl(6, u"highlighted", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(6, u"highlighted", ui::ImageModel(),
                               MenuItemView::Type::kHighlighted);
-    menu_->AppendMenuItemImpl(7, u"title", gfx::ImageSkia(),
+    menu_->AppendMenuItemImpl(7, u"title", ui::ImageModel(),
                               MenuItemView::Type::kTitle);
 
     submenu_ = menu_->GetSubmenu();
@@ -299,39 +298,33 @@ class ViewAXPlatformNodeDelegateMenuTest
 
  private:
   // Owned by runner_.
-  views::TestMenuItemView* menu_ = nullptr;
+  raw_ptr<views::TestMenuItemView> menu_ = nullptr;
 
-  SubmenuView* submenu_ = nullptr;
+  raw_ptr<SubmenuView> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
-  std::unique_ptr<Widget> owner_;
+  UniqueWidgetPtr owner_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateTest, FocusBehaviorShouldAffectIgnoredState) {
-  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetRole());
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kIgnored));
 
   // Since the label is a subview of |button_|, and the button is keyboard
   // focusable, the label is assumed to form part of the button and should be
   // ignored.
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
-  EXPECT_TRUE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
+  EXPECT_TRUE(label_accessibility()->HasState(ax::mojom::State::kIgnored));
 
   // This will happen for all potentially keyboard-focusable Views with
   // non-keyboard-focusable children, so if we make the button unfocusable, the
   // label will not be ignored any more.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
 
-  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
-  EXPECT_FALSE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kButton, button_accessibility()->GetRole());
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
+  EXPECT_FALSE(label_accessibility()->HasState(ax::mojom::State::kIgnored));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, BoundsShouldMatch) {
@@ -354,34 +347,28 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   // ignored, i.e. not visible in the accessibility tree that is available to
   // platform APIs.
   EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
-  EXPECT_EQ(0, button_accessibility()->GetChildCount());
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
+  EXPECT_EQ(0u, button_accessibility()->GetChildCount());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
 
   // Modify the focus behavior to make the button unfocusable, and verify that
   // the label is now a child of the button.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  EXPECT_EQ(1, button_accessibility()->GetChildCount());
+  EXPECT_EQ(1u, button_accessibility()->GetChildCount());
   EXPECT_EQ(label_->GetNativeViewAccessible(),
             button_accessibility()->ChildAtIndex(0));
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             label_accessibility()->GetParent());
-  EXPECT_EQ(ax::mojom::Role::kStaticText,
-            label_accessibility()->GetData().role);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
 }
 
 // Verify Views with invisible ancestors have ax::mojom::State::kInvisible.
 TEST_F(ViewAXPlatformNodeDelegateTest, InvisibleViews) {
   EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_FALSE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
-  EXPECT_FALSE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(button_accessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(label_accessibility()->HasState(ax::mojom::State::kInvisible));
   button_->SetVisible(false);
-  EXPECT_TRUE(
-      button_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
-  EXPECT_TRUE(
-      label_accessibility()->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(button_accessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(label_accessibility()->HasState(ax::mojom::State::kInvisible));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
@@ -418,6 +405,109 @@ TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdDefault) {
 
 TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdNonDefault) {
   ASSERT_EQ(u"view_1", button_accessibility()->GetAuthorUniqueId());
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
+  // Initially the button has no name and no description.
+  // TODO(accessibility): If nothing has set the name, should the NameFrom
+  // be kNone or kUninitialized instead of kAttribute?
+  EXPECT_EQ(button_accessibility()->GetName(), "");
+  EXPECT_EQ(button_accessibility()->GetNameFrom(),
+            ax::mojom::NameFrom::kAttribute);
+  EXPECT_EQ(button_accessibility()->GetDescription(), "");
+  EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kNone);
+
+  // Setting the name to the empty string without explicitly setting the
+  // source to reflect that should trigger a DCHECK in OverrideName.
+  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideName(""),
+                           "Check failed: name.empty\\(\\) == name_from == "
+                           "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
+
+  // Setting the name to a non-empty string with a NameFrom of
+  // kAttributeExplicitlyEmpty should trigger a DCHECK in OverrideName.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->OverrideName(
+          "foo", ax::mojom::NameFrom::kAttributeExplicitlyEmpty),
+      "Check failed: name.empty\\(\\) == name_from == "
+      "ax::mojom::NameFrom::kAttributeExplicitlyEmpty");
+
+  button_accessibility()->OverrideName(
+      "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  EXPECT_EQ(button_accessibility()->GetName(), "");
+  EXPECT_EQ(button_accessibility()->GetNameFrom(),
+            ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
+  // Setting the description to the empty string without explicitly setting
+  // the source to reflect that should trigger a DCHECK in OverrideDescription.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->OverrideDescription(""),
+      "Check failed: description.empty\\(\\) == description_from == "
+      "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
+
+  // Setting the description to a non-empty string with a DescriptionFrom of
+  // kAttributeExplicitlyEmpty should trigger a DCHECK in OverrideDescription.
+  EXPECT_DCHECK_DEATH_WITH(
+      button_accessibility()->OverrideDescription(
+          "foo", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty),
+      "Check failed: description.empty\\(\\) == description_from == "
+      "ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty");
+
+  button_accessibility()->OverrideDescription(
+      "", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  EXPECT_EQ(button_accessibility()->GetDescription(), "");
+  EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+
+  // Overriding the name and description without specifying the sources
+  // should set the sources to kAttribute and kAriaDescription respectively.
+  button_accessibility()->OverrideName("Button's Name");
+  EXPECT_EQ(button_accessibility()->GetName(), "Button's Name");
+  EXPECT_EQ(button_accessibility()->GetNameFrom(),
+            ax::mojom::NameFrom::kAttribute);
+
+  button_accessibility()->OverrideDescription("Button's description");
+  EXPECT_EQ(button_accessibility()->GetDescription(), "Button's description");
+  EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kAriaDescription);
+
+  // Initially the label has no name and no description.
+  EXPECT_EQ(label_accessibility()->GetName(), "");
+  EXPECT_EQ(label_accessibility()->GetDescription(), "");
+
+  // Set the name and description of the label using other source types
+  // for greater test coverage (i.e. rather than those types being the
+  // most appropriate choice.)
+  label_accessibility()->OverrideName("Label's Name",
+                                      ax::mojom::NameFrom::kContents);
+  EXPECT_EQ(label_accessibility()->GetName(), "Label's Name");
+  EXPECT_EQ(label_accessibility()->GetNameFrom(),
+            ax::mojom::NameFrom::kContents);
+
+  label_accessibility()->OverrideDescription(
+      "Label's description", ax::mojom::DescriptionFrom::kTitle);
+  EXPECT_EQ(label_accessibility()->GetDescription(), "Label's description");
+  EXPECT_EQ(label_accessibility()->GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kTitle);
+
+  // Set the label's View as the name source of the accessible button.
+  // This should cause the previously-set name to be replaced with the
+  // accessible name of the label.
+  button_accessibility()->OverrideLabelledBy(label_);
+  EXPECT_EQ(button_accessibility()->GetName(), "Label's Name");
+  EXPECT_EQ(button_accessibility()->GetNameFrom(),
+            ax::mojom::NameFrom::kRelatedElement);
+
+  // Set the label's View as the description source of the accessible button.
+  // This should also remove the previously-set description.
+  button_accessibility()->OverrideDescribedBy(label_);
+  EXPECT_EQ(button_accessibility()->GetDescription(), "Label's Name");
+  EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
+            ax::mojom::DescriptionFrom::kRelatedElement);
+
+  // Setting the labelledby View to itself should trigger a DCHECK.
+  EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideLabelledBy(button_),
+                           "Check failed: labelled_by_view != view_");
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, IsOrderedSet) {
@@ -536,12 +626,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
   ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
 
-  EXPECT_EQ(view_accessibility(widget_->GetContentsView())->GetNativeObject(),
+  EXPECT_EQ(view_accessibility(widget_->GetRootView())->GetNativeObject(),
             parent_view->GetParent());
-  EXPECT_EQ(4, parent_view->GetChildCount());
+  EXPECT_EQ(4u, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
   EXPECT_EQ(child_view_2->GetNativeObject(), parent_view->ChildAtIndex(1));
@@ -553,28 +643,28 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
             parent_view->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(0, child_view_1->GetChildCount());
-  EXPECT_EQ(0, child_view_1->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_1->GetChildCount());
+  EXPECT_EQ(0u, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_2->GetNativeObject(), child_view_1->GetNextSibling());
   EXPECT_EQ(nullptr, child_view_1->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(0, child_view_2->GetChildCount());
-  EXPECT_EQ(1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_2->GetChildCount());
+  EXPECT_EQ(1u, child_view_2->GetIndexInParent());
   EXPECT_EQ(child_view_3->GetNativeObject(), child_view_2->GetNextSibling());
   EXPECT_EQ(child_view_1->GetNativeObject(),
             child_view_2->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(0, child_view_3->GetChildCount());
-  EXPECT_EQ(2, child_view_3->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_3->GetChildCount());
+  EXPECT_EQ(2u, child_view_3->GetIndexInParent());
   EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
   EXPECT_EQ(child_view_2->GetNativeObject(),
             child_view_3->GetPreviousSibling());
 
   EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
-  EXPECT_EQ(0, child_view_4->GetChildCount());
-  EXPECT_EQ(3, child_view_4->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_4->GetChildCount());
+  EXPECT_EQ(3u, child_view_4->GetIndexInParent());
   EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
@@ -585,8 +675,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
@@ -596,7 +684,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // 4 = ++++ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* contents_view =
-      view_accessibility(widget_->GetContentsView());
+      view_accessibility(widget_->GetRootView());
   ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
   ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
   ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
@@ -610,12 +698,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   parent_view->OverrideIsLeaf(true);
   child_view_2->OverrideIsLeaf(true);
 
-  EXPECT_EQ(4, contents_view->GetChildCount());
+  EXPECT_EQ(2u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(0, parent_view->GetChildCount());
+  EXPECT_EQ(0u, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -647,12 +735,12 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
   // have no effect.
   parent_view->OverrideIsLeaf(false);
 
-  EXPECT_EQ(4, contents_view->GetChildCount());
+  EXPECT_EQ(2u, contents_view->GetChildCount());
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(4, parent_view->GetChildCount());
+  EXPECT_EQ(4u, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_EQ(1u, parent_view->GetIndexInParent());
 
   EXPECT_FALSE(contents_view->IsIgnored());
   EXPECT_FALSE(parent_view->IsIgnored());
@@ -691,8 +779,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
@@ -702,7 +788,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   // 4 = ++++ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* contents_view =
-      view_accessibility(widget_->GetContentsView());
+      view_accessibility(widget_->GetRootView());
   ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
   ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
   ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
@@ -714,47 +800,47 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   child_view_2->OverrideIsIgnored(true);
 
   EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(3, parent_view->GetChildCount());
+  EXPECT_EQ(3u, parent_view->GetChildCount());
 
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(-1, parent_view->GetIndexInParent());
+  EXPECT_EQ(0u, button_accessibility()->GetIndexInParent());
+  EXPECT_FALSE(parent_view->GetIndexInParent().has_value());
 
   EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
   EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(1));
   EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(2));
 
   EXPECT_EQ(button_accessibility()->GetNativeObject(),
-            contents_view->ChildAtIndex(2));
-  EXPECT_EQ(child_view_1->GetNativeObject(), contents_view->ChildAtIndex(3));
-  EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(4));
-  EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(5));
+            contents_view->ChildAtIndex(0));
+  EXPECT_EQ(child_view_1->GetNativeObject(), contents_view->ChildAtIndex(1));
+  EXPECT_EQ(child_view_3->GetNativeObject(), contents_view->ChildAtIndex(2));
+  EXPECT_EQ(child_view_4->GetNativeObject(), contents_view->ChildAtIndex(3));
 
   EXPECT_EQ(nullptr, parent_view->GetNextSibling());
   EXPECT_EQ(nullptr, parent_view->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(0, child_view_1->GetChildCount());
-  EXPECT_EQ(3, child_view_1->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_1->GetChildCount());
+  EXPECT_EQ(1u, child_view_1->GetIndexInParent());
   EXPECT_EQ(child_view_3->GetNativeObject(), child_view_1->GetNextSibling());
   EXPECT_EQ(button_accessibility()->GetNativeObject(),
             child_view_1->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(0, child_view_2->GetChildCount());
-  EXPECT_EQ(-1, child_view_2->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_2->GetChildCount());
+  EXPECT_FALSE(child_view_2->GetIndexInParent().has_value());
   EXPECT_EQ(nullptr, child_view_2->GetNextSibling());
   EXPECT_EQ(nullptr, child_view_2->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(0, child_view_3->GetChildCount());
-  EXPECT_EQ(4, child_view_3->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_3->GetChildCount());
+  EXPECT_EQ(2u, child_view_3->GetIndexInParent());
   EXPECT_EQ(child_view_4->GetNativeObject(), child_view_3->GetNextSibling());
   EXPECT_EQ(child_view_1->GetNativeObject(),
             child_view_3->GetPreviousSibling());
 
   EXPECT_EQ(contents_view->GetNativeObject(), child_view_4->GetParent());
-  EXPECT_EQ(0, child_view_4->GetChildCount());
-  EXPECT_EQ(5, child_view_4->GetIndexInParent());
+  EXPECT_EQ(0u, child_view_4->GetChildCount());
+  EXPECT_EQ(3u, child_view_4->GetIndexInParent());
   EXPECT_EQ(nullptr, child_view_4->GetNextSibling());
   EXPECT_EQ(child_view_3->GetNativeObject(),
             child_view_4->GetPreviousSibling());
@@ -852,9 +938,9 @@ TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
-  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(0, 0));
-  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(0, 3));
-  EXPECT_NE(base::nullopt, table_accessibility()->GetCellId(9, 3));
+  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 0));
+  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 3));
+  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(9, 3));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(-1, 0));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));
@@ -865,155 +951,151 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   RunMenu();
 
   ViewAXPlatformNodeDelegate* submenu = submenu_accessibility();
-  EXPECT_FALSE(submenu->GetData().HasState(ax::mojom::State::kFocusable));
-  EXPECT_EQ(submenu->GetChildCount(), 8);
-  EXPECT_EQ(submenu->GetData().role, ax::mojom::Role::kMenu);
+  EXPECT_FALSE(submenu->HasState(ax::mojom::State::kFocusable));
+  EXPECT_EQ(submenu->GetChildCount(), 8u);
+  EXPECT_EQ(submenu->GetRole(), ax::mojom::Role::kMenu);
   EXPECT_EQ(submenu->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
 
   auto items = submenu->view()->children();
 
   // MenuItemView::Type::kNormal
   ViewAXPlatformNodeDelegate* normal_item = view_accessibility(items[0]);
-  EXPECT_TRUE(normal_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(normal_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(normal_item->GetData().IsSelectable());
-  EXPECT_FALSE(normal_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      normal_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(normal_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(normal_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(normal_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(normal_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(normal_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(normal_item->GetPosInSet(), 1);
   EXPECT_EQ(normal_item->GetSetSize(), 7);
-  EXPECT_EQ(normal_item->GetChildCount(), 0);
-  EXPECT_EQ(normal_item->GetIndexInParent(), 0);
+  EXPECT_EQ(normal_item->GetChildCount(), 0u);
+  EXPECT_EQ(normal_item->GetIndexInParent(), 0u);
 
   // MenuItemView::Type::kSubMenu
   ViewAXPlatformNodeDelegate* submenu_item = view_accessibility(items[1]);
-  EXPECT_TRUE(submenu_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(submenu_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(submenu_item->GetData().IsSelectable());
-  EXPECT_FALSE(submenu_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      submenu_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(submenu_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(submenu_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(submenu_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(submenu_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(submenu_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(submenu_item->GetPosInSet(), 2);
   EXPECT_EQ(submenu_item->GetSetSize(), 7);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kSubMenu as a submenu rather than an item.
-  EXPECT_EQ(submenu_item->GetChildCount(), 1);
+  EXPECT_EQ(submenu_item->GetChildCount(), 1u);
 #else
-  EXPECT_EQ(submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_APPLE)
-  EXPECT_EQ(submenu_item->GetIndexInParent(), 1);
+  EXPECT_EQ(submenu_item->GetChildCount(), 0u);
+#endif  // BUILDFLAG(IS_MAC)
+  EXPECT_EQ(submenu_item->GetIndexInParent(), 1u);
 
   // MenuItemView::Type::kActionableSubMenu
   ViewAXPlatformNodeDelegate* actionable_submenu_item =
       view_accessibility(items[2]);
-  EXPECT_TRUE(actionable_submenu_item->GetData().HasState(
-      ax::mojom::State::kFocusable));
+  EXPECT_TRUE(actionable_submenu_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(actionable_submenu_item->GetData().IsSelectable());
-  EXPECT_FALSE(actionable_submenu_item->GetData().GetBoolAttribute(
+  EXPECT_FALSE(actionable_submenu_item->GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(actionable_submenu_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(actionable_submenu_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(actionable_submenu_item->GetData().role,
-            ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(actionable_submenu_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(actionable_submenu_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(actionable_submenu_item->GetPosInSet(), 3);
   EXPECT_EQ(actionable_submenu_item->GetSetSize(), 7);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kActionableSubMenu as a submenu rather than an item.
-  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1);
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1u);
 #else
-  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_APPLE)
-  EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2);
+  EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0u);
+#endif  // BUILDFLAG(IS_MAC)
+  EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2u);
 
   // MenuItemView::Type::kCheckbox
   ViewAXPlatformNodeDelegate* checkbox_item = view_accessibility(items[3]);
-  EXPECT_TRUE(checkbox_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(checkbox_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(checkbox_item->GetData().IsSelectable());
-  EXPECT_TRUE(checkbox_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(
+      checkbox_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(checkbox_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(checkbox_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(checkbox_item->GetData().role, ax::mojom::Role::kMenuItemCheckBox);
+  EXPECT_EQ(checkbox_item->GetRole(), ax::mojom::Role::kMenuItemCheckBox);
   EXPECT_EQ(checkbox_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(checkbox_item->GetPosInSet(), 4);
   EXPECT_EQ(checkbox_item->GetSetSize(), 7);
-  EXPECT_EQ(checkbox_item->GetChildCount(), 0);
-  EXPECT_EQ(checkbox_item->GetIndexInParent(), 3);
+  EXPECT_EQ(checkbox_item->GetChildCount(), 0u);
+  EXPECT_EQ(checkbox_item->GetIndexInParent(), 3u);
 
   // MenuItemView::Type::kRadio
   ViewAXPlatformNodeDelegate* radio_item = view_accessibility(items[4]);
-  EXPECT_TRUE(radio_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(radio_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(radio_item->GetData().IsSelectable());
-  EXPECT_FALSE(radio_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      radio_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(radio_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(radio_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(radio_item->GetData().role, ax::mojom::Role::kMenuItemRadio);
+  EXPECT_EQ(radio_item->GetRole(), ax::mojom::Role::kMenuItemRadio);
   EXPECT_EQ(radio_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(radio_item->GetPosInSet(), 5);
   EXPECT_EQ(radio_item->GetSetSize(), 7);
-  EXPECT_EQ(radio_item->GetChildCount(), 0);
-  EXPECT_EQ(radio_item->GetIndexInParent(), 4);
+  EXPECT_EQ(radio_item->GetChildCount(), 0u);
+  EXPECT_EQ(radio_item->GetIndexInParent(), 4u);
 
   // MenuItemView::Type::kSeparator
   ViewAXPlatformNodeDelegate* separator_item = view_accessibility(items[5]);
-  EXPECT_FALSE(
-      separator_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(separator_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_FALSE(separator_item->GetData().IsSelectable());
-  EXPECT_FALSE(separator_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      separator_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(separator_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(separator_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(separator_item->GetData().role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(separator_item->GetRole(), ax::mojom::Role::kSplitter);
   EXPECT_EQ(separator_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
-  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
-      ax::mojom::IntAttribute::kPosInSet));
-  EXPECT_FALSE(separator_item->GetData().HasIntAttribute(
-      ax::mojom::IntAttribute::kSetSize));
-  EXPECT_EQ(separator_item->GetChildCount(), 0);
-  EXPECT_EQ(separator_item->GetIndexInParent(), 5);
+  EXPECT_FALSE(
+      separator_item->HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_FALSE(
+      separator_item->HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  EXPECT_EQ(separator_item->GetChildCount(), 0u);
+  EXPECT_EQ(separator_item->GetIndexInParent(), 5u);
 
   // MenuItemView::Type::kHighlighted
   ViewAXPlatformNodeDelegate* highlighted_item = view_accessibility(items[6]);
-  EXPECT_TRUE(
-      highlighted_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(highlighted_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(highlighted_item->GetData().IsSelectable());
-  EXPECT_FALSE(highlighted_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      highlighted_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(highlighted_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(highlighted_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(highlighted_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(highlighted_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(highlighted_item->GetData().GetHasPopup(),
             ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(highlighted_item->GetPosInSet(), 6);
   EXPECT_EQ(highlighted_item->GetSetSize(), 7);
-  EXPECT_EQ(highlighted_item->GetChildCount(), 0);
-  EXPECT_EQ(highlighted_item->GetIndexInParent(), 6);
+  EXPECT_EQ(highlighted_item->GetChildCount(), 0u);
+  EXPECT_EQ(highlighted_item->GetIndexInParent(), 6u);
 
   // MenuItemView::Type::kTitle
   ViewAXPlatformNodeDelegate* title_item = view_accessibility(items[7]);
-  EXPECT_TRUE(title_item->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(title_item->HasState(ax::mojom::State::kFocusable));
   EXPECT_TRUE(title_item->GetData().IsSelectable());
-  EXPECT_FALSE(title_item->GetData().GetBoolAttribute(
-      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      title_item->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
   EXPECT_FALSE(title_item->IsInvisibleOrIgnored());
   EXPECT_FALSE(title_item->GetData().IsInvisibleOrIgnored());
-  EXPECT_EQ(title_item->GetData().role, ax::mojom::Role::kMenuItem);
+  EXPECT_EQ(title_item->GetRole(), ax::mojom::Role::kMenuItem);
   EXPECT_EQ(title_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kFalse);
   EXPECT_EQ(title_item->GetPosInSet(), 7);
   EXPECT_EQ(title_item->GetSetSize(), 7);
-  EXPECT_EQ(title_item->GetChildCount(), 0);
-  EXPECT_EQ(title_item->GetIndexInParent(), 7);
+  EXPECT_EQ(title_item->GetChildCount(), 0u);
+  EXPECT_EQ(title_item->GetIndexInParent(), 7u);
 }
 
 #if defined(USE_AURA)
@@ -1034,9 +1116,8 @@ TEST_F(AXViewTest, LayoutCalledInvalidateRootView) {
   // this observer to simulate it.
   AXAuraObjCache cache;
   TestAXEventObserver observer(&cache);
-  std::unique_ptr<Widget> widget(new Widget);
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
   widget->Show();
 

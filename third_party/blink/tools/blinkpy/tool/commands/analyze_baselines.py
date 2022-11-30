@@ -26,6 +26,8 @@
 # (INCLUDING NEGLIGENCE OR/ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import logging
 import optparse
 
@@ -56,7 +58,7 @@ class AnalyzeBaselines(AbstractRebaseliningCommand):
         self._tool = None
 
     def _write(self, msg):
-        print msg
+        print(msg)
 
     def _analyze_baseline(self, options, test_name):
         # TODO(robertma): Investigate changing the CLI to take extensions with leading '.'.
@@ -65,7 +67,7 @@ class AnalyzeBaselines(AbstractRebaseliningCommand):
             name = self._port.output_filename(
                 test_name, self._port.BASELINE_SUFFIX, extension)
             results_by_directory = self._baseline_optimizer.read_results_by_directory(
-                name)
+                test_name, name)
             if results_by_directory:
                 self._write('%s:' % name)
                 self._baseline_optimizer.write_by_directory(

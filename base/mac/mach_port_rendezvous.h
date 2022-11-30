@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -85,6 +84,9 @@ class BASE_EXPORT MachPortRendezvousServer {
   // the server is created, which registers an endpoint in the Mach bootstrap
   // namespace.
   static MachPortRendezvousServer* GetInstance();
+
+  MachPortRendezvousServer(const MachPortRendezvousServer&) = delete;
+  MachPortRendezvousServer& operator=(const MachPortRendezvousServer&) = delete;
 
   // Registers a collection of Mach ports |ports| to be acquirable by the
   // process known by |pid|. This cannot be called again for the same |pid|
@@ -153,8 +155,6 @@ class BASE_EXPORT MachPortRendezvousServer {
   Lock lock_;
   // Association of pid-to-ports.
   std::map<pid_t, ClientData> client_data_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(MachPortRendezvousServer);
 };
 
 // Client class for accessing the memory object exposed by the
@@ -167,6 +167,9 @@ class BASE_EXPORT MachPortRendezvousClient {
   // if the server is not available, this returns null. Acquiring zero ports
   // from the exchange is not considered a failure.
   static MachPortRendezvousClient* GetInstance();
+
+  MachPortRendezvousClient(const MachPortRendezvousClient&) = delete;
+  MachPortRendezvousClient& operator=(const MachPortRendezvousClient&) = delete;
 
   // Returns the Mach send right that was registered with |key|. If no such
   // right exists, or it was already taken, returns an invalid right. Safe to
@@ -209,8 +212,6 @@ class BASE_EXPORT MachPortRendezvousClient {
   Lock lock_;
   // The collection of ports that was acquired.
   MachPortsForRendezvous ports_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(MachPortRendezvousClient);
 };
 
 }  // namespace base

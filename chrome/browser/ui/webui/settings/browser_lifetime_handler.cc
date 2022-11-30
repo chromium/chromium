@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,19 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif
 
 namespace settings {
 
@@ -27,8 +33,8 @@ namespace {
 // Triggers a TPM firmware update using the least destructive mode from
 // |available_modes|.
 void TriggerTPMFirmwareUpdate(
-    const std::set<chromeos::tpm_firmware_update::Mode>& available_modes) {
-  using chromeos::tpm_firmware_update::Mode;
+    const std::set<ash::tpm_firmware_update::Mode>& available_modes) {
+  using ::ash::tpm_firmware_update::Mode;
 
   // Decide which update mode to use.
   for (Mode mode :
@@ -73,32 +79,41 @@ void BrowserLifetimeHandler::RegisterMessages() {
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  web_ui()->RegisterMessageCallback(
+      "shouldShowRelaunchConfirmationDialog",
+      base::BindRepeating(
+          &BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getRelaunchConfirmationDialogDescription",
+      base::BindRepeating(&BrowserLifetimeHandler::
+                              HandleGetRelaunchConfirmationDialogDescription,
+                          base::Unretained(this)));
+#endif
 }
 
-void BrowserLifetimeHandler::HandleRestart(
-    const base::ListValue* args) {
+void BrowserLifetimeHandler::HandleRestart(const base::Value::List& args) {
   chrome::AttemptRestart();
 }
 
-void BrowserLifetimeHandler::HandleRelaunch(
-    const base::ListValue* args) {
+void BrowserLifetimeHandler::HandleRelaunch(const base::Value::List& args) {
   chrome::AttemptRelaunch();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserLifetimeHandler::HandleSignOutAndRestart(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   chrome::AttemptUserExit();
 }
 
-void BrowserLifetimeHandler::HandleFactoryReset(
-    const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
-  CHECK_EQ(1U, args_list.size());
-  bool tpm_firmware_update_requested = args_list[0].GetBool();
+void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  bool tpm_firmware_update_requested = args[0].GetBool();
 
   if (tpm_firmware_update_requested) {
-    chromeos::tpm_firmware_update::GetAvailableUpdateModes(
+    ash::tpm_firmware_update::GetAvailableUpdateModes(
         base::BindOnce(&TriggerTPMFirmwareUpdate), base::TimeDelta());
     return;
   }
@@ -121,5 +136,28 @@ void BrowserLifetimeHandler::HandleFactoryReset(
   chrome::AttemptRelaunch();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  size_t incognito_count = BrowserList::GetIncognitoBrowserCount();
+  base::Value description;
+  if (incognito_count > 0) {
+    description = base::Value(l10n_util::GetPluralStringFUTF16(
+        IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY, incognito_count));
+  }
+  ResolveJavascriptCallback(callback_id, description);
+}
+
+void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
+    const base::Value::List& args) {
+  AllowJavascript();
+  const base::Value& callback_id = args[0];
+  base::Value result = base::Value(BrowserList::GetIncognitoBrowserCount() > 0);
+  ResolveJavascriptCallback(callback_id, result);
+}
+#endif
 
 }  // namespace settings

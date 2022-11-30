@@ -1,8 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "base/test/bind.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DevToolsUIBindingsTest : public testing::Test {
@@ -34,10 +40,6 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "?service-backend=ws://localhost:9222/services",
        "devtools://devtools/"
        "?service-backend=ws://localhost:9222/services"},
-      {"devtools://devtools/?dockSide=undocked",
-       "devtools://devtools/?dockSide=undocked"},
-      {"devtools://devtools/?dockSide=dock-to-bottom", "devtools://devtools/"},
-      {"devtools://devtools/?dockSide=bottom", "devtools://devtools/"},
       {"devtools://devtools/?remoteBase="
        "http://example.com:1234/remote-base#hash",
        "devtools://devtools/?remoteBase="
@@ -108,4 +110,61 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
     url = DevToolsUIBindings::SanitizeFrontendURL(url);
     EXPECT_EQ(pair.second, url.spec());
   }
+}
+
+class DevToolsUIBindingsSyncInfoTest : public testing::Test {
+ public:
+  void SetUp() override {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext*) {
+          return static_cast<std::unique_ptr<KeyedService>>(
+              std::make_unique<syncer::TestSyncService>());
+        }));
+    sync_service_ = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(&profile_));
+  }
+
+ protected:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
+
+  TestingProfile profile_;
+  syncer::TestSyncService* sync_service_;
+};
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
+  sync_service_->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN);
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_FALSE(info.FindBoolKey("isSyncActive").value());
+}
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kBookmarks));
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_TRUE(info.FindBoolKey("isSyncActive").value());
+  EXPECT_FALSE(info.FindBoolKey("arePreferencesSynced").value());
+}
+
+TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "sync@devtools.dev", signin::ConsentLevel::kSync);
+  sync_service_->SetAccountInfo(account_info);
+
+  EXPECT_TRUE(account_info.account_image.IsEmpty());
+
+  base::Value info =
+      DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
+
+  EXPECT_EQ(*info.FindStringKey("accountEmail"), "sync@devtools.dev");
+  EXPECT_NE(info.FindStringKey("accountImage"), nullptr);
 }

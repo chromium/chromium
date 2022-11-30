@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,17 @@ import org.junit.runners.model.InitializationError;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.test.util.ChromeRestriction;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,7 +58,14 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getDefaultTestRules() {
-        return addToList(super.getDefaultTestRules(), new Features.InstrumentationProcessor());
+        List<TestRule> rules = super.getDefaultTestRules();
+        Class<?> clazz = getTestClass().getJavaClass();
+        if (!clazz.isAnnotationPresent(Batch.class)
+                || !clazz.getAnnotation(Batch.class).value().equals(Batch.UNIT_TESTS)) {
+            rules = addToList(rules, new Features.InstrumentationProcessor());
+        }
+
+        return addToList(rules, new DisableAnimationsTestRule());
     }
 
     private static class ChromeRestrictionSkipCheck extends RestrictionSkipCheck {
@@ -157,7 +166,7 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
                 return true;
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_OFFICIAL_BUILD)
-                    && (!ChromeVersionInfo.isOfficialBuild())) {
+                    && (!VersionInfo.isOfficialBuild())) {
                 return true;
             }
             if (TextUtils.equals(restriction, ChromeRestriction.RESTRICTION_TYPE_DEVICE_DAYDREAM)

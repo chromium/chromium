@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,11 @@
 
 namespace blink {
 
+void LayoutTableBoxComponent::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBox::Trace(visitor);
+}
+
 void LayoutTableBoxComponent::InvalidateCollapsedBordersOnStyleChange(
     const LayoutObject& table_part,
     LayoutTable& table,
@@ -17,9 +22,7 @@ void LayoutTableBoxComponent::InvalidateCollapsedBordersOnStyleChange(
     const ComputedStyle& old_style) {
   if (!table.ShouldCollapseBorders())
     return;
-  if (!old_style.BorderEquals(table_part.StyleRef()) ||
-      (diff.TextDecorationOrColorChanged() &&
-       table_part.StyleRef().HasBorderColorReferencingCurrentColor()))
+  if (!old_style.BorderEquals(table_part.StyleRef()))
     table.InvalidateCollapsedBorders();
 }
 

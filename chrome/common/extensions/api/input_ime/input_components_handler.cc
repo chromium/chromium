@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -28,99 +29,92 @@ InputComponentInfo::InputComponentInfo() = default;
 InputComponentInfo::InputComponentInfo(const InputComponentInfo& other) =
     default;
 
-InputComponentInfo::~InputComponentInfo() {}
+InputComponentInfo::~InputComponentInfo() = default;
 
-InputComponents::InputComponents() {}
-InputComponents::~InputComponents() {}
+InputComponents::InputComponents() = default;
+InputComponents::~InputComponents() = default;
 
 // static
 const std::vector<InputComponentInfo>* InputComponents::GetInputComponents(
     const Extension* extension) {
   InputComponents* info = static_cast<InputComponents*>(
       extension->GetManifestData(keys::kInputComponents));
-  return info ? &info->input_components : NULL;
+  return info ? &info->input_components : nullptr;
 }
 
-InputComponentsHandler::InputComponentsHandler() {
-}
+InputComponentsHandler::InputComponentsHandler() = default;
 
-InputComponentsHandler::~InputComponentsHandler() {
-}
+InputComponentsHandler::~InputComponentsHandler() = default;
 
 bool InputComponentsHandler::Parse(Extension* extension,
                                    std::u16string* error) {
-  std::unique_ptr<InputComponents> info(new InputComponents);
-  const base::ListValue* list_value = NULL;
+  const base::Value* list_value;
   if (!extension->manifest()->GetList(keys::kInputComponents, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidInputComponents);
+    *error = errors::kInvalidInputComponents16;
     return false;
   }
-  for (size_t i = 0; i < list_value->GetSize(); ++i) {
-    const base::DictionaryValue* module_value = NULL;
-    std::string name_str;
-    std::string id_str;
-    std::set<std::string> languages;
-    std::set<std::string> layouts;
-    GURL input_view_url;
-    GURL options_page_url;
 
-    if (!list_value->GetDictionary(i, &module_value)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidInputComponents);
+  auto info = std::make_unique<InputComponents>();
+  for (size_t i = 0; i < list_value->GetList().size(); ++i) {
+    const base::Value& module_value = list_value->GetList()[i];
+    if (!module_value.is_dict()) {
+      *error = errors::kInvalidInputComponents16;
       return false;
     }
 
     // Get input_components[i].name.
-    if (!module_value->GetString(keys::kName, &name_str)) {
+    const std::string* name_str = module_value.FindStringKey(keys::kName);
+    if (!name_str) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidInputComponentName, base::NumberToString(i));
       return false;
     }
 
     // Get input_components[i].id.
-    if (!module_value->GetString(keys::kId, &id_str)) {
-      id_str = "";
-    }
+    std::string id_str;
+    const std::string* maybe_id_str = module_value.FindStringKey(keys::kId);
+    if (maybe_id_str)
+      id_str = *maybe_id_str;
 
     // Get input_components[i].language.
     // Both string and list of string are allowed to be compatibile with old
     // input_ime manifest specification.
-    const base::Value* language_value = NULL;
-    if (module_value->Get(keys::kLanguage, &language_value)) {
+    std::set<std::string> languages;
+    const base::Value* language_value = module_value.FindKey(keys::kLanguage);
+    if (language_value) {
       if (language_value->is_string()) {
-        std::string language_str;
-        language_value->GetAsString(&language_str);
-        languages.insert(language_str);
+        languages.insert(language_value->GetString());
       } else if (language_value->is_list()) {
-        const base::ListValue* language_list = NULL;
-        language_value->GetAsList(&language_list);
-        for (size_t j = 0; j < language_list->GetSize(); ++j) {
-          std::string language_str;
-          if (language_list->GetString(j, &language_str))
-            languages.insert(language_str);
+        for (const auto& language : language_value->GetList()) {
+          if (language.is_string())
+            languages.insert(language.GetString());
         }
       }
     }
 
     // Get input_components[i].layouts.
-    const base::ListValue* layouts_value = NULL;
-    if (module_value->GetList(keys::kLayouts, &layouts_value)) {
-      for (size_t j = 0; j < layouts_value->GetSize(); ++j) {
-        std::string layout_name_str;
-        if (!layouts_value->GetString(j, &layout_name_str)) {
+    std::set<std::string> layouts;
+    const base::Value* layouts_value = module_value.FindListKey(keys::kLayouts);
+    if (layouts_value) {
+      for (size_t j = 0; j < layouts_value->GetList().size(); ++j) {
+        const auto& layout = layouts_value->GetList()[j];
+        if (!layout.is_string()) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidInputComponentLayoutName, base::NumberToString(i),
               base::NumberToString(j));
           return false;
         }
-        layouts.insert(layout_name_str);
+        layouts.insert(layout.GetString());
       }
     }
 
     // Get input_components[i].input_view_url.
     // Note: 'input_view' is optional in manifest.
-    std::string input_view_str;
-    if (module_value->GetString(keys::kInputView, &input_view_str)) {
-      input_view_url = extension->GetResourceURL(input_view_str);
+    GURL input_view_url;
+    const std::string* input_view_str =
+        module_value.FindStringKey(keys::kInputView);
+    if (input_view_str) {
+      input_view_url = extension->GetResourceURL(*input_view_str);
       if (!input_view_url.is_valid()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidInputView,
                                                      base::NumberToString(i));
@@ -130,9 +124,11 @@ bool InputComponentsHandler::Parse(Extension* extension,
 
     // Get input_components[i].options_page_url.
     // Note: 'options_page' is optional in manifest.
-    std::string options_page_str;
-    if (module_value->GetString(keys::kImeOptionsPage, &options_page_str)) {
-      options_page_url = extension->GetResourceURL(options_page_str);
+    GURL options_page_url;
+    const std::string* options_page_str =
+        module_value.FindStringKey(keys::kImeOptionsPage);
+    if (options_page_str) {
+      options_page_url = extension->GetResourceURL(*options_page_str);
       if (!options_page_url.is_valid()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidOptionsPage, base::NumberToString(i));
@@ -143,14 +139,14 @@ bool InputComponentsHandler::Parse(Extension* extension,
       options_page_url = extensions::OptionsPageInfo::GetOptionsPage(extension);
     }
 
-    info->input_components.push_back(InputComponentInfo());
-    info->input_components.back().name = name_str;
-    info->input_components.back().id = id_str;
-    info->input_components.back().languages = languages;
-    info->input_components.back().layouts.insert(layouts.begin(),
-        layouts.end());
-    info->input_components.back().options_page_url = options_page_url;
-    info->input_components.back().input_view_url = input_view_url;
+    InputComponentInfo component;
+    component.name = *name_str;
+    component.id = std::move(id_str);
+    component.languages = std::move(languages);
+    component.layouts = std::move(layouts);
+    component.options_page_url = std::move(options_page_url);
+    component.input_view_url = std::move(input_view_url);
+    info->input_components.push_back(std::move(component));
   }
   extension->SetManifestData(keys::kInputComponents, std::move(info));
   return true;

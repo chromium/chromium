@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,11 @@ class RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl final
   RegisterSupportHostClientImpl(
       OAuthTokenGetter* token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  RegisterSupportHostClientImpl(const RegisterSupportHostClientImpl&) = delete;
+  RegisterSupportHostClientImpl& operator=(
+      const RegisterSupportHostClientImpl&) = delete;
+
   ~RegisterSupportHostClientImpl() override;
 
   void RegisterSupportHost(
@@ -81,8 +86,6 @@ class RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegisterSupportHostClientImpl);
 };
 
 RemotingRegisterSupportHostRequest::RegisterSupportHostClientImpl::
@@ -196,7 +199,7 @@ void RemotingRegisterSupportHostRequest::OnRegisterHostResult(
   }
   state_ = State::REGISTERED;
   base::TimeDelta lifetime =
-      base::TimeDelta::FromSeconds(response->support_id_lifetime_seconds());
+      base::Seconds(response->support_id_lifetime_seconds());
   RunCallback(response->support_id(), lifetime, protocol::ErrorCode::OK);
 }
 

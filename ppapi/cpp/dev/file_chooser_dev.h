@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,7 @@ class FileChooser_Dev : public Resource {
                   const Var& accept_types);
 
   FileChooser_Dev(const FileChooser_Dev& other);
+  FileChooser_Dev& operator=(const FileChooser_Dev& other);
 
   /// This function displays a previously created file chooser resource as a
   /// dialog box, prompting the user to choose a file or files. This function

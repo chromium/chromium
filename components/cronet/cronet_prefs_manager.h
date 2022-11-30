@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 
@@ -46,6 +45,9 @@ class CronetPrefsManager {
       net::NetLog* net_log,
       net::URLRequestContextBuilder* context_builder);
 
+  CronetPrefsManager(const CronetPrefsManager&) = delete;
+  CronetPrefsManager& operator=(const CronetPrefsManager&) = delete;
+
   virtual ~CronetPrefsManager();
 
   void SetupNqePersistence(net::NetworkQualityEstimator* nqe);
@@ -75,8 +77,6 @@ class CronetPrefsManager {
 
   // Checks that all methods are called on the network thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CronetPrefsManager);
 
 };  // class CronetPrefsManager
 

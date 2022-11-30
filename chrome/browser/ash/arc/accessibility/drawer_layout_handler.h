@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXNodeData;
@@ -24,7 +24,7 @@ class AccessibilityEventData;
 
 class DrawerLayoutHandler : public AXTreeSourceArc::Hook {
  public:
-  static base::Optional<
+  static absl::optional<
       std::pair<int32_t, std::unique_ptr<DrawerLayoutHandler>>>
   CreateIfNecessary(AXTreeSourceArc* tree_source,
                     const mojom::AccessibilityEventData& event_data);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 
 class AccountChooserPrompt;
@@ -23,6 +24,12 @@ class CredentialManagerDialogControllerImpl
  public:
   CredentialManagerDialogControllerImpl(Profile* profile,
                                         PasswordsModelDelegate* delegate);
+
+  CredentialManagerDialogControllerImpl(
+      const CredentialManagerDialogControllerImpl&) = delete;
+  CredentialManagerDialogControllerImpl& operator=(
+      const CredentialManagerDialogControllerImpl&) = delete;
+
   ~CredentialManagerDialogControllerImpl() override;
 
   // Pop up the account chooser dialog.
@@ -50,15 +57,19 @@ class CredentialManagerDialogControllerImpl
  private:
   // Release |current_dialog_| and close the open dialog.
   void ResetDialog();
+  void OnBiometricReauthCompleted(
+      password_manager::PasswordForm password_form,
+      password_manager::CredentialType credential_type,
+      bool result);
 
-  Profile* const profile_;
-  PasswordsModelDelegate* const delegate_;
-  AccountChooserPrompt* account_chooser_dialog_;
-  AutoSigninFirstRunPrompt* autosignin_dialog_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<PasswordsModelDelegate> delegate_;
+  raw_ptr<AccountChooserPrompt> account_chooser_dialog_;
+  raw_ptr<AutoSigninFirstRunPrompt> autosignin_dialog_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerDialogControllerImpl);
+  base::WeakPtrFactory<CredentialManagerDialogControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_IMPL_H_

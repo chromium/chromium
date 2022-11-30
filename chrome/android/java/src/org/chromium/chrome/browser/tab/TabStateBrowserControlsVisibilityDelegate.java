@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,11 +96,17 @@ public class TabStateBrowserControlsVisibilityDelegate
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (!navigation.hasCommitted() || !navigation.isInMainFrame()) return;
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (!navigation.hasCommitted()) return;
                 mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
                 mHandler.sendEmptyMessageDelayed(
                         MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD, getLoadDelayMs());
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override
@@ -155,6 +161,7 @@ public class TabStateBrowserControlsVisibilityDelegate
             }
         });
         onWebContentsUpdated(mTab.getWebContents());
+        updateVisibilityConstraints();
     }
 
     private void onWebContentsUpdated(WebContents contents) {
@@ -174,10 +181,10 @@ public class TabStateBrowserControlsVisibilityDelegate
         WebContents webContents = mTab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
 
-        String url = mTab.getUrlString();
+        GURL url = mTab.getUrl();
         boolean enableHidingBrowserControls = url != null;
-        enableHidingBrowserControls &= !url.startsWith(UrlConstants.CHROME_URL_PREFIX);
-        enableHidingBrowserControls &= !url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
+        enableHidingBrowserControls &= !url.getScheme().equals(UrlConstants.CHROME_SCHEME);
+        enableHidingBrowserControls &= !url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
         enableHidingBrowserControls &=
                 !SecurityStateModel.isContentDangerous(mTab.getWebContents());

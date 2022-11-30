@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
@@ -36,6 +36,8 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MockCloudPolicyClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceManagementService* service);
+  MockCloudPolicyClient(const MockCloudPolicyClient&) = delete;
+  MockCloudPolicyClient& operator=(const MockCloudPolicyClient&) = delete;
   ~MockCloudPolicyClient() override;
 
   MOCK_METHOD3(SetupRegistration,
@@ -100,34 +102,56 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(enterprise_management::ChromeOsUserReportRequest*,
                     StatusCallback&));
 
+  void UploadChromeProfileReport(
+      std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
+          request,
+      StatusCallback callback) override {
+    UploadChromeProfileReportProxy(request.get(), callback);
+  }
+  // Use Proxy function because unique_ptr can't be used in mock function.
+  MOCK_METHOD2(UploadChromeProfileReportProxy,
+               void(enterprise_management::ChromeProfileReportRequest*,
+                    StatusCallback&));
+
+  void UploadEuiccInfo(
+      std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
+      StatusCallback callback) override {
+    UploadEuiccInfoProxy(request.get(), callback);
+  }
+  // Use Proxy function because unique_ptr can't be used in mock function.
+  MOCK_METHOD2(UploadEuiccInfoProxy,
+               void(enterprise_management::UploadEuiccInfoRequest*,
+                    StatusCallback&));
+
   void UploadSecurityEventReport(content::BrowserContext* context,
                                  bool include_device_info,
-                                 base::Value value,
+                                 base::Value::Dict value,
                                  StatusCallback callback) override {
     UploadSecurityEventReport_(context, include_device_info, value, callback);
   }
   MOCK_METHOD4(UploadSecurityEventReport_,
                void(content::BrowserContext* context,
                     bool include_device_info,
-                    base::Value&,
+                    base::Value::Dict&,
                     StatusCallback&));
 
   MOCK_METHOD3(UploadEncryptedReport,
-               void(base::Value,
-                    base::Optional<base::Value>,
+               void(base::Value::Dict,
+                    absl::optional<base::Value::Dict>,
                     ResponseCallback));
 
-  void UploadAppInstallReport(base::Value value,
+  void UploadAppInstallReport(base::Value::Dict value,
                               StatusCallback callback) override {
     UploadAppInstallReport_(value, callback);
   }
-  MOCK_METHOD2(UploadAppInstallReport_, void(base::Value&, StatusCallback&));
-  void UploadExtensionInstallReport(base::Value value,
+  MOCK_METHOD2(UploadAppInstallReport_,
+               void(base::Value::Dict&, StatusCallback&));
+  void UploadExtensionInstallReport(base::Value::Dict value,
                                     StatusCallback callback) override {
     UploadExtensionInstallReport_(value, callback);
   }
   MOCK_METHOD2(UploadExtensionInstallReport_,
-               void(base::Value&, StatusCallback&));
+               void(base::Value::Dict&, StatusCallback&));
 
   MOCK_METHOD5(ClientCertProvisioningStartCsr,
                void(const std::string& cert_scope,
@@ -180,22 +204,19 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   using CloudPolicyClient::public_key_version_;
   using CloudPolicyClient::public_key_version_valid_;
   using CloudPolicyClient::types_to_fetch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyClient);
 };
 
 class MockCloudPolicyClientObserver : public CloudPolicyClient::Observer {
  public:
   MockCloudPolicyClientObserver();
+  MockCloudPolicyClientObserver(const MockCloudPolicyClientObserver&) = delete;
+  MockCloudPolicyClientObserver& operator=(
+      const MockCloudPolicyClientObserver&) = delete;
   ~MockCloudPolicyClientObserver() override;
 
   MOCK_METHOD1(OnPolicyFetched, void(CloudPolicyClient*));
   MOCK_METHOD1(OnRegistrationStateChanged, void(CloudPolicyClient*));
   MOCK_METHOD1(OnClientError, void(CloudPolicyClient*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyClientObserver);
 };
 
 }  // namespace policy

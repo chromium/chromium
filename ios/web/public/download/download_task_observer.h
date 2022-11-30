@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_OBSERVER_H_
 #define IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_OBSERVER_H_
-
-#include "base/macros.h"
 
 namespace web {
 
@@ -28,10 +26,11 @@ class DownloadTaskObserver {
   virtual void OnDownloadDestroyed(DownloadTask* task) {}
 
   DownloadTaskObserver() = default;
-  virtual ~DownloadTaskObserver() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskObserver);
+  DownloadTaskObserver(const DownloadTaskObserver&) = delete;
+  DownloadTaskObserver& operator=(const DownloadTaskObserver&) = delete;
+
+  virtual ~DownloadTaskObserver() = default;
 };
 
 }  // namespace web

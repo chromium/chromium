@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,9 @@ TEST(TestPendingTaskTest, GTestPrettyPrint) {
 
 TEST(TestPendingTaskTest, ShouldRunBefore) {
   base::TestPendingTask task_first;
-  task_first.delay = base::TimeDelta::FromMilliseconds(1);
+  task_first.delay = base::Milliseconds(1);
   base::TestPendingTask task_after;
-  task_after.delay = base::TimeDelta::FromMilliseconds(2);
+  task_after.delay = base::Milliseconds(2);
 
   EXPECT_FALSE(task_after.ShouldRunBefore(task_first))
       << task_after << ".ShouldRunBefore(" << task_first << ")\n";

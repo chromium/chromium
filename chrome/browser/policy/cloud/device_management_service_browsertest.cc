@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,17 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "components/policy/test_support/local_policy_test_server.h"
+#include "components/policy/proto/cloud_policy.pb.h"
+#include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -83,9 +85,9 @@ void OnRequest(network::TestURLLoaderFactory* test_factory,
 }  // namespace
 
 class DeviceManagementServiceIntegrationTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<
-          std::string (DeviceManagementServiceIntegrationTest::*)(void)> {
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<std::string (
+          DeviceManagementServiceIntegrationTest::*)(void)> {
  public:
   MOCK_METHOD4(OnJobDone,
                void(DeviceManagementService::Job*,
@@ -131,7 +133,7 @@ class DeviceManagementServiceIntegrationTest
       DeviceManagementService::JobConfiguration::JobType type,
       bool critical,
       DMAuth auth_data,
-      base::Optional<std::string> oauth_token,
+      absl::optional<std::string> oauth_token,
       const em::DeviceManagementRequest request) {
     std::string payload;
     request.SerializeToString(&payload);
@@ -165,9 +167,9 @@ class DeviceManagementServiceIntegrationTest
 
   void SetUpOnMainThread() override {
     std::string service_url((this->*(GetParam()))());
-    service_.reset(new DeviceManagementService(
+    service_ = std::make_unique<DeviceManagementService>(
         std::unique_ptr<DeviceManagementService::Configuration>(
-            new MockDeviceManagementServiceConfiguration(service_url))));
+            new MockDeviceManagementServiceConfiguration(service_url)));
     service_->ScheduleInitialization(0);
   }
 
@@ -177,9 +179,16 @@ class DeviceManagementServiceIntegrationTest
   }
 
   void StartTestServer() {
-    test_server_.reset(new LocalPolicyTestServer(
-        "chrome/test/data/policy/"
-        "policy_device_management_service_browsertest.json"));
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
+    em::CloudPolicySettings settings;
+    settings.mutable_homepagelocation()->mutable_policy_options()->set_mode(
+        em::PolicyOptions::MANDATORY);
+    settings.mutable_homepagelocation()->set_value("http://www.chromium.org");
+    PolicyStorage* policy_storage = test_server_->policy_storage();
+    policy_storage->SetPolicyPayload(dm_protocol::kChromeUserPolicyType,
+                                     settings.SerializeAsString());
+    policy_storage->add_managed_user("*");
+    policy_storage->set_robot_api_auth_code("fake_auth_code");
     ASSERT_TRUE(test_server_->Start());
   }
 
@@ -195,7 +204,7 @@ class DeviceManagementServiceIntegrationTest
   std::string token_;
   std::string robot_auth_code_;
   std::unique_ptr<DeviceManagementService> service_;
-  std::unique_ptr<LocalPolicyTestServer> test_server_;
+  std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -263,6 +272,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, Unregistration) {
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, AutoEnrollment) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _))
@@ -277,6 +287,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, AutoEnrollment) {
 
   run_loop.Run();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     DeviceManagementServiceIntegrationTestInstance,

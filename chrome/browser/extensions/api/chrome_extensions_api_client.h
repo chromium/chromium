@@ -1,12 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 
@@ -20,14 +18,18 @@ class ClipboardExtensionHelper;
 class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
  public:
   ChromeExtensionsAPIClient();
+
+  ChromeExtensionsAPIClient(const ChromeExtensionsAPIClient&) = delete;
+  ChromeExtensionsAPIClient& operator=(const ChromeExtensionsAPIClient&) =
+      delete;
+
   ~ChromeExtensionsAPIClient() override;
 
   // ExtensionsApiClient implementation.
   void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
-      const scoped_refptr<ValueStoreFactory>& factory,
-      const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
-          observers,
+      const scoped_refptr<value_store::ValueStoreFactory>& factory,
+      SettingsChangedCallback observer,
       std::map<settings_namespace::Namespace, ValueStoreCache*>* caches)
       override;
   void AttachWebContentsHelpers(content::WebContents* web_contents) const
@@ -60,14 +62,18 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
       WebViewGuest* web_view_guest) const override;
   WebViewPermissionHelperDelegate* CreateWebViewPermissionHelperDelegate(
       WebViewPermissionHelper* web_view_permission_helper) const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ConsentProvider> CreateConsentProvider(
+      content::BrowserContext* browser_context) const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<ContentRulesRegistry> CreateContentRulesRegistry(
       content::BrowserContext* browser_context,
       RulesCacheDelegate* cache_delegate) const override;
   std::unique_ptr<DevicePermissionsPrompt> CreateDevicePermissionsPrompt(
       content::WebContents* web_contents) const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAllowDetachingUsb(int vid, int pid) const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<VirtualKeyboardDelegate> CreateVirtualKeyboardDelegate(
       content::BrowserContext* browser_context) const override;
   ManagementAPIDelegate* CreateManagementAPIDelegate() const override;
@@ -77,7 +83,6 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;
   MetricsPrivateDelegate* GetMetricsPrivateDelegate() override;
-  NetworkingCastPrivateDelegate* GetNetworkingCastPrivateDelegate() override;
   FileSystemDelegate* GetFileSystemDelegate() override;
   MessagingDelegate* GetMessagingDelegate() override;
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() override;
@@ -85,22 +90,22 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate() override;
   NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
   void SaveImageDataToClipboard(
-      const std::vector<char>& image_data,
+      std::vector<uint8_t> image_data,
       api::clipboard::ImageType type,
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   AutomationInternalApiDelegate* GetAutomationInternalApiDelegate() override;
   std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies() override;
 
  private:
   std::unique_ptr<ChromeMetricsPrivateDelegate> metrics_private_delegate_;
-  std::unique_ptr<NetworkingCastPrivateDelegate>
-      networking_cast_private_delegate_;
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
   std::unique_ptr<FeedbackPrivateDelegate> feedback_private_delegate_;
@@ -108,12 +113,12 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MediaPerceptionAPIDelegate> media_perception_api_delegate_;
   std::unique_ptr<NonNativeFileSystemDelegate> non_native_file_system_delegate_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ClipboardExtensionHelper> clipboard_extension_helper_;
 #endif
   std::unique_ptr<extensions::ChromeAutomationInternalApiDelegate>
       extensions_automation_api_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClient);
 };
 
 }  // namespace extensions

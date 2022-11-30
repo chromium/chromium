@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_service.h"
 
@@ -24,6 +23,10 @@ class UsbDeviceLinux;
 class UsbServiceLinux final : public UsbService {
  public:
   UsbServiceLinux();
+
+  UsbServiceLinux(const UsbServiceLinux&) = delete;
+  UsbServiceLinux& operator=(const UsbServiceLinux&) = delete;
+
   ~UsbServiceLinux() override;
 
   // device::UsbService implementation
@@ -54,13 +57,10 @@ class UsbServiceLinux final : public UsbService {
   uint32_t first_enumeration_countdown_ = 0;
   std::list<GetDevicesCallback> enumeration_callbacks_;
 
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
   DeviceMap devices_by_path_;
 
   base::WeakPtrFactory<UsbServiceLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceLinux);
 };
 
 }  // namespace device

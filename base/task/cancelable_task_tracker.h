@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 //
 // NOTE:
 //
-// CancelableCallback (base/cancelable_callback.h) and WeakPtr binding are
+// CancelableOnceCallback (base/cancelable_callback.h) and WeakPtr binding are
 // preferred solutions for canceling a task. However, they don't support
 // cancelation from another sequence. This is sometimes a performance critical
 // requirement. E.g. We need to cancel database lookup task on DB thread when
-// user changes inputed text. If it is performance critical to do a best effort
+// user changes inputted text. If it is performance critical to do a best effort
 // cancelation of a task, then CancelableTaskTracker is appropriate, otherwise
 // use one of the other mechanisms.
 //
@@ -46,12 +46,11 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/small_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/post_task_and_reply_with_result_internal.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/post_task_and_reply_with_result_internal.h"
 
 namespace base {
 
@@ -68,6 +67,9 @@ class BASE_EXPORT CancelableTaskTracker {
   using IsCanceledCallback = RepeatingCallback<bool()>;
 
   CancelableTaskTracker();
+
+  CancelableTaskTracker(const CancelableTaskTracker&) = delete;
+  CancelableTaskTracker& operator=(const CancelableTaskTracker&) = delete;
 
   // Cancels all tracked tasks.
   ~CancelableTaskTracker();
@@ -155,13 +157,11 @@ class BASE_EXPORT CancelableTaskTracker {
       task_flags_;
 
   TaskId next_id_ = 1;
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // TODO(https://crbug.com/1009795): Remove once crasher is resolved.
   base::WeakPtr<CancelableTaskTracker> weak_this_;
   base::WeakPtrFactory<CancelableTaskTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CancelableTaskTracker);
 };
 
 }  // namespace base

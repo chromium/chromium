@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -17,12 +18,13 @@
 #include "extensions/browser/extension_icon_image.h"
 #include "ui/views/controls/label.h"
 
+class Browser;
+
 namespace content {
 class WebContents;
 }
 
 namespace views {
-class AXVirtualView;
 class Button;
 class ImageButton;
 }  // namespace views
@@ -32,6 +34,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
                        public ImmersiveModeController::Observer,
                        public extensions::IconImage::Observer {
  public:
+  ZoomBubbleView(const ZoomBubbleView&) = delete;
+  ZoomBubbleView& operator=(const ZoomBubbleView&) = delete;
+
   // Shows the bubble and automatically closes it after a short time period if
   // |reason| is AUTOMATIC.
   static void ShowBubble(content::WebContents* web_contents,
@@ -133,6 +138,9 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Called by ButtonPressed() when |image_button_| is pressed.
   void ImageButtonPressed();
 
+  // Gets the browser for `web_contents()`. May return null.
+  Browser* GetBrowser() const;
+
   ZoomBubbleExtensionInfo extension_info_;
 
   // Singleton instance of the zoom bubble. The zoom bubble can only be shown on
@@ -149,18 +157,15 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Image button in the zoom bubble that will show the |extension_icon_| image
   // if an extension initiated the zoom change, and links to that extension at
   // "chrome://extensions".
-  views::ImageButton* image_button_ = nullptr;
+  raw_ptr<views::ImageButton> image_button_ = nullptr;
 
   // Label displaying the zoom percentage.
-  views::Label* label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
   // Action buttons that can change zoom.
-  views::Button* zoom_out_button_ = nullptr;
-  views::Button* zoom_in_button_ = nullptr;
-  views::Button* reset_button_ = nullptr;
-
-  // Virtual view used to announce zoom level changes.
-  views::AXVirtualView* zoom_level_alert_ = nullptr;
+  raw_ptr<views::Button> zoom_out_button_ = nullptr;
+  raw_ptr<views::Button> zoom_in_button_ = nullptr;
+  raw_ptr<views::Button> reset_button_ = nullptr;
 
   // Whether the currently displayed bubble will automatically close.
   bool auto_close_;
@@ -173,13 +178,11 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // The immersive mode controller for the BrowserView containing
   // |web_contents_|.
   // Not owned.
-  ImmersiveModeController* immersive_mode_controller_;
+  raw_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   // The session of the Browser that triggered the bubble. This allows the zoom
   // icon to be updated even if the WebContents is destroyed.
   const SessionID session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- This test validates that overlap testing for fixed within an iframe with
+     overflow hidden either correctly performs overlap testing with an expanded
+     rect for the fixed content up front (pre-CAP) or invalidates appropriately
+     so that overlap testing is re-run when the scroll offset updates. Note
+     that this runs in an iframe to specifically test the case where there is
+     no paint property scroll node for iframe with overflow: hidden (root will
+     always have scroll translation and scroll node). If the CAP implementation
+     ends up changing to include this type of (uncommon) overlap testing,
+     rebaseline the expected.txt to have the same layer tree structure before
+     and after the scroll update. -->
+<iframe id="iframe" srcdoc="
+  <style>
+    html { overflow: hidden; }
+    .fixed {
+      position: fixed;
+      bottom: 20px;
+      width: 30px;
+      height: 30px;
+      background: blue;
+    }
+    .tall { height: 1000px; }
+    .overlapped {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      background: orange;
+      z-index: 1;
+    }
+  </style>
+  <body>
+    <div class='fixed'></div>
+    <div class='tall'></div>
+    <div class='overlapped'></div>
+"></iframe>
+
+<pre></pre>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script>
+if (window.testRunner && window.internals) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+
+let iframe = document.querySelector('iframe');
+iframe.addEventListener('load', function() {
+  runAfterLayoutAndPaint(function() {
+    if (window.testRunner) {
+      let dumpText = "Before:\n" + internals.layerTreeAsText(document);
+      let iframeHtmlElem = iframe.contentDocument.documentElement;
+      iframeHtmlElem.scrollTop = iframeHtmlElem.offsetHeight;
+      runAfterLayoutAndPaint(function() {
+        dumpText += "\nAfter scroll:\n" + internals.layerTreeAsText(document);
+        document.querySelector('pre').textContent = dumpText;
+      }, true);
+    }
+  });
+});
+</script>
+

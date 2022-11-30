@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 //   3. keyboardWillShow will get called. The keyboard's end frame will go
 //      offscreen if the physical keyboard is presented.
 //   4. Pass that information to the callback and remove the hidden text field.
-//      The view will not flicker as long as we immedately remove the text field
+//      The view will not flicker as long as we immediately remove the text field
 //      in keyboardWillShow.
 //
 // Unfortunately there is no easy way to know immediately when the user connects

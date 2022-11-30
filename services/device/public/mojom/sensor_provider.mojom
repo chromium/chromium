@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module device.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/device/public/mojom/sensor.mojom";
 
 struct SensorInitParams {
@@ -14,7 +15,7 @@ struct SensorInitParams {
   pending_receiver<SensorClient> client_receiver;
 
   // The shared memory handle used to fetch the sensor reading.
-  handle<shared_buffer> memory;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion memory;
 
   // The offset at which shared buffer must be mapped.
   uint64 buffer_offset;

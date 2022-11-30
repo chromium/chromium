@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "components/cronet/native/test/test_util.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -18,12 +17,13 @@ namespace {
 const char* kUserAgent = "EngineTest/1";
 
 class EngineTest : public ::testing::Test {
+ public:
+  EngineTest(const EngineTest&) = delete;
+  EngineTest& operator=(const EngineTest&) = delete;
+
  protected:
   EngineTest() = default;
   ~EngineTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EngineTest);
 };
 
 TEST_F(EngineTest, StartCronetEngine) {

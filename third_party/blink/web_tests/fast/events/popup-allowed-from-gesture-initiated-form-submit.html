@@ -2,15 +2,13 @@
     <script src="../../resources/testdriver.js"></script>
     <script src="../../resources/testdriver-vendor.js"></script>
     <body>
-        <form action="resources/popup-allowed-from-gesture-initiated-form-submit-target.html" method="post" target="_blank">
+        <form action="resources/popup-allowed-from-gesture-initiated-form-submit-target.html" method="post" target="_blank" rel="opener">
             <input id="button" type="submit" value="Click Here" />
         </form>
         <div id="console">FAIL</div>
         <script>
             if (window.testRunner) {
                 testRunner.dumpAsText();
-                testRunner.setCanOpenWindows();
-                testRunner.setPopupBlockingEnabled(true);
                 testRunner.waitUntilDone();
 
                 var button = document.getElementById("button");

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Too Many Web Media Players Intervention Test</title>
+  </head>
+
+  <script language="javascript">
+    let oldVideos = [];
+
+    async function CreateVideo() {
+      let t = document.getElementById('video-template');
+      let c = t.content.cloneNode(true);
+      let v = c.children[0];
+      let d = document.getElementById('video-div');
+      d.innerHTML = '';
+      d.appendChild(c);
+      oldVideos.push(v);
+    }
+  </script>
+
+  <body>
+    <template id="video-template">
+      <video width="320" height="240" controls preload="metadata"
+             poster="blackwhite.png">
+        <source src="bear-320x240.webm" type="video/webm">
+      </video>
+    </template>
+
+    <div id="video-div">
+    </div>
+  </body>
+</html>

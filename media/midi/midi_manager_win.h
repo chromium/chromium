@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/system_monitor.h"
 #include "media/midi/midi_export.h"
@@ -32,6 +31,10 @@ class MidiManagerWin final
   MIDI_EXPORT static void OverflowInstanceIdForTesting();
 
   explicit MidiManagerWin(MidiService* service);
+
+  MidiManagerWin(const MidiManagerWin&) = delete;
+  MidiManagerWin& operator=(const MidiManagerWin&) = delete;
+
   ~MidiManagerWin() override;
 
   // Returns PortManager that implements interfaces to help implementation.
@@ -77,8 +80,8 @@ class MidiManagerWin final
   // Reflect active port list to a device list.
   template <typename T>
   void ReflectActiveDeviceList(MidiManagerWin* manager,
-                               std::vector<T>* known_ports,
-                               std::vector<T>* active_ports);
+                               std::vector<std::unique_ptr<T>>* known_ports,
+                               std::vector<std::unique_ptr<T>>* active_ports);
 
   // Sends MIDI data on TaskRunner.
   void SendOnTaskRunner(MidiManagerClient* client,
@@ -94,8 +97,6 @@ class MidiManagerWin final
   // Manages platform dependent implementation for port managegent. Should be
   // accessed with the task lock.
   std::unique_ptr<PortManager> port_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MidiManagerWin);
 };
 
 }  // namespace midi

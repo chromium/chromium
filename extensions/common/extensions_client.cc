@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace extensions {
 
 namespace {
 
-ExtensionsClient* g_client = NULL;
+ExtensionsClient* g_client = nullptr;
 
 }  // namespace
 
@@ -108,8 +108,8 @@ void ExtensionsClient::AddOriginAccessPermissions(
     bool is_extension_active,
     std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const {}
 
-base::Optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
-  return base::nullopt;
+absl::optional<int> ExtensionsClient::GetExtensionExtendedErrorCode() const {
+  return absl::nullopt;
 }
 
 void ExtensionsClient::DoInitialize() {
@@ -129,8 +129,7 @@ void ExtensionsClient::DoInitialize() {
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Extensions.ChromeExtensionsClientInitTime2", timer.Elapsed(),
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-      50);
+      base::Microseconds(1), base::Seconds(10), 50);
 }
 
 }  // namespace extensions

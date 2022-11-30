@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
@@ -25,7 +23,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/ec_private_key.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -33,6 +30,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gcm {
 
@@ -51,6 +49,10 @@ class GCMDriverBaseTest : public testing::Test {
   enum WaitToFinish { DO_NOT_WAIT, WAIT };
 
   GCMDriverBaseTest();
+
+  GCMDriverBaseTest(const GCMDriverBaseTest&) = delete;
+  GCMDriverBaseTest& operator=(const GCMDriverBaseTest&) = delete;
+
   ~GCMDriverBaseTest() override;
 
   // testing::Test:
@@ -109,8 +111,6 @@ class GCMDriverBaseTest : public testing::Test {
   std::string encrypted_message_;
   GCMDecryptionResult decryption_result_ = GCMDecryptionResult::UNENCRYPTED;
   std::string decrypted_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverBaseTest);
 };
 
 GCMDriverBaseTest::GCMDriverBaseTest() : io_thread_("IOThread") {}
@@ -147,14 +147,12 @@ void GCMDriverBaseTest::PumpIOLoop() {
 }
 
 void GCMDriverBaseTest::CreateDriver() {
-  scoped_refptr<net::URLRequestContextGetter> request_context =
-      new net::TestURLRequestContextGetter(io_thread_.task_runner());
   GCMClient::ChromeBuildInfo chrome_build_info;
   chrome_build_info.product_category_for_subtypes = "com.chrome.macosx";
   driver_ = std::make_unique<GCMDriverDesktop>(
       std::make_unique<FakeGCMClientFactory>(
           base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner()),
-      chrome_build_info, "user-agent-string", &prefs_, temp_dir_.GetPath(),
+      chrome_build_info, &prefs_, temp_dir_.GetPath(),
       /*remove_account_mappings_with_email_key=*/true, base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),

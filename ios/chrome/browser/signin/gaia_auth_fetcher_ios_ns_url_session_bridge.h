@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
 #include <vector>
 
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
@@ -28,6 +29,12 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
   GaiaAuthFetcherIOSNSURLSessionBridge(
       GaiaAuthFetcherIOSBridge::GaiaAuthFetcherIOSBridgeDelegate* delegate,
       web::BrowserState* browser_state);
+
+  GaiaAuthFetcherIOSNSURLSessionBridge(
+      const GaiaAuthFetcherIOSNSURLSessionBridge&) = delete;
+  GaiaAuthFetcherIOSNSURLSessionBridge& operator=(
+      const GaiaAuthFetcherIOSNSURLSessionBridge&) = delete;
+
   ~GaiaAuthFetcherIOSNSURLSessionBridge() override;
 
   // GaiaAuthFetcherIOSBridge:
@@ -38,19 +45,19 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
   void Cancel() override;
 
   // Informs the bridge of the success of the URL fetch.
-  // * |data| is the body of the HTTP response.
-  // * |response_code| is the response code.
+  // * `data` is the body of the HTTP response.
+  // * `response_code` is the response code.
   // URLFetchSuccess and URLFetchFailure are no-op if one of them was already
   // called.
   void OnURLFetchSuccess(const std::string& data, int response_code);
 
   // Informs the bridge of the failure of the URL fetch.
-  // * |is_cancelled| whether the fetch failed because it was cancelled.
+  // * `is_cancelled` whether the fetch failed because it was cancelled.
   // URLFetchSuccess and URLFetchFailure are no-op if one of them was already
   // called.
   void OnURLFetchFailure(int error, int response_code);
 
-  // Set cookies from |response| in SystemCookieStore asynchronously.
+  // Set cookies from `response` in SystemCookieStore asynchronously.
   void SetCanonicalCookiesFromResponse(NSHTTPURLResponse* response);
 
  private:
@@ -78,7 +85,7 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
   friend class GaiaAuthFetcherIOSNSURLSessionBridgeTest;
 
   // Creates a NSURLRequest with the url, the headers and the body received in
-  // the constructor of this instance. The request is a GET if |body| is empty
+  // the constructor of this instance. The request is a GET if `body` is empty
   // and a POST otherwise.
   NSURLRequest* GetNSURLRequest() const;
 
@@ -112,8 +119,6 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
 
   // Task to send the NSURLRequest.
   NSURLSessionDataTask* url_session_data_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaAuthFetcherIOSNSURLSessionBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_GAIA_AUTH_FETCHER_IOS_NS_URL_SESSION_BRIDGE_H_

@@ -34,28 +34,24 @@
 namespace blink {
 
 LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
-    : LayoutSVGShape(node, kSimple), use_path_fallback_(false) {}
+    : LayoutSVGShape(node, kSimple) {}
 
 LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 
 void LayoutSVGEllipse::UpdateShapeFromElement() {
   NOT_DESTROYED();
-  // Before creating a new object we need to clear the cached bounding box
-  // to avoid using garbage.
-  fill_bounding_box_ = FloatRect();
-  stroke_bounding_box_ = FloatRect();
-  center_ = FloatPoint();
-  radii_ = FloatSize();
+
+  stroke_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
   CalculateRadiiAndCenter();
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
 
-  // Spec: "A negative value is an error. A value of zero disables rendering of
-  // the element."
-  if (radii_.Width() < 0 || radii_.Height() < 0)
-    return;
+  fill_bounding_box_.SetRect(center_.x() - radius_x_, center_.y() - radius_y_,
+                             radius_x_ * 2, radius_y_ * 2);
 
-  if (!radii_.IsEmpty()) {
+  if (radius_x_ && radius_y_) {
     // Fall back to LayoutSVGShape and path-based hit detection if the ellipse
     // has a non-scaling or discontinuous stroke.
     // However, only use LayoutSVGShape bounding-box calculations for the
@@ -75,7 +71,6 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ = FloatRect(center_ - radii_, radii_.ScaledBy(2));
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
@@ -84,53 +79,65 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
   DCHECK(GetElement());
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  center_ = length_context.ResolveLengthPair(style.Cx(), style.Cy(), style);
+  center_ = gfx::PointAtOffsetFromOrigin(
+      length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
 
   if (IsA<SVGCircleElement>(*GetElement())) {
-    float radius =
+    radius_x_ = radius_y_ =
         length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
-    radii_ = FloatSize(radius, radius);
   } else {
-    radii_ = ToFloatSize(
-        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
+    gfx::Vector2dF radii =
+        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);
+    radius_x_ = radii.x();
+    radius_y_ = radii.y();
     if (style.Rx().IsAuto())
-      radii_.SetWidth(radii_.Height());
+      radius_x_ = radius_y_;
     else if (style.Ry().IsAuto())
-      radii_.SetHeight(radii_.Width());
+      radius_y_ = radius_x_;
   }
+
+  // Spec: "A negative value is an error. A value of zero disables rendering of
+  // the element."
+  radius_x_ = std::max(radius_x_, 0.f);
+  radius_y_ = std::max(radius_y_, 0.f);
 }
 
 bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
   NOT_DESTROYED();
-  if (radii_.Width() < 0 || radii_.Height() < 0)
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
+  if (!radius_x_ || !radius_y_)
     return false;
 
   // The optimized check below for circles does not support non-circular and
   // the cases that we set use_path_fallback_ in UpdateShapeFromElement().
-  if (use_path_fallback_ || radii_.Width() != radii_.Height())
+  if (use_path_fallback_ || radius_x_ != radius_y_)
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
-  const FloatPoint& point = location.TransformedPoint();
-  const FloatPoint center =
-      FloatPoint(center_.X() - point.X(), center_.Y() - point.Y());
+  const gfx::PointF& point = location.TransformedPoint();
+  const gfx::Vector2dF center_offset = center_ - point;
   const float half_stroke_width = StrokeWidth() / 2;
-  const float r = radii_.Width();
-  return std::abs(center.length() - r) <= half_stroke_width;
+  return std::abs(center_offset.Length() - radius_x_) <= half_stroke_width;
 }
 
 bool LayoutSVGEllipse::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
   NOT_DESTROYED();
-  const FloatPoint& point = location.TransformedPoint();
-  const FloatPoint center =
-      FloatPoint(center_.X() - point.X(), center_.Y() - point.Y());
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
+  if (!radius_x_ || !radius_y_)
+    return false;
+
+  const gfx::PointF& point = location.TransformedPoint();
+  const gfx::PointF center =
+      gfx::PointF(center_.x() - point.x(), center_.y() - point.y());
 
   // This works by checking if the point satisfies the ellipse equation.
   // (x/rX)^2 + (y/rY)^2 <= 1
-  const float xr_x = center.X() / radii_.Width();
-  const float yr_y = center.Y() / radii_.Height();
+  const float xr_x = center.x() / radius_x_;
+  const float yr_y = center.y() / radius_y_;
   return xr_x * xr_x + yr_y * yr_y <= 1.0;
 }
 

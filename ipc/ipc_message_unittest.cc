@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 
 #define IPC_MESSAGE_IMPL
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 #define IPC_MESSAGE_START TestMsgStart
 
@@ -90,8 +91,8 @@ TEST(IPCMessageTest, Value) {
   }
   {
     base::Value list(base::Value::Type::LIST);
-    list.Append(42);
-    list.Append("hello");
+    list.GetList().Append(42);
+    list.GetList().Append("hello");
     expect_value_equals(list);
   }
 
@@ -103,46 +104,24 @@ TEST(IPCMessageTest, Value) {
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
-TEST(IPCMessageTest, ListValue) {
-  base::ListValue input;
-  input.AppendDouble(42.42);
-  input.AppendString("forty");
-  input.Append(std::make_unique<base::Value>());
-
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  IPC::WriteParam(&msg, input);
-
-  base::ListValue output;
-  base::PickleIterator iter(msg);
-  EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
-
-  EXPECT_TRUE(input.Equals(&output));
-
-  // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  bad_msg.WriteInt(99);
-  iter = base::PickleIterator(bad_msg);
-  EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
-}
-
 TEST(IPCMessageTest, DictionaryValue) {
   base::DictionaryValue input;
-  input.Set("null", std::make_unique<base::Value>());
+  input.SetKey("null", base::Value());
   input.SetBoolean("bool", true);
-  input.SetInteger("int", 42);
+  input.GetDict().Set("int", 42);
   input.SetKey("int.with.dot", base::Value(43));
 
-  auto subdict = std::make_unique<base::DictionaryValue>();
-  subdict->SetString("str", "forty two");
-  subdict->SetBoolean("bool", false);
+  base::DictionaryValue subdict;
+  subdict.SetString("str", "forty two");
+  subdict.SetBoolean("bool", false);
 
-  auto sublist = std::make_unique<base::ListValue>();
-  sublist->AppendDouble(42.42);
-  sublist->AppendString("forty");
-  sublist->AppendString("two");
-  subdict->Set("list", std::move(sublist));
+  base::ListValue sublist;
+  sublist.GetList().Append(42.42);
+  sublist.GetList().Append("forty");
+  sublist.GetList().Append("two");
+  subdict.SetKey("list", std::move(sublist));
 
-  input.Set("dict", std::move(subdict));
+  input.SetKey("dict", std::move(subdict));
 
   IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
   IPC::WriteParam(&msg, input);
@@ -151,7 +130,7 @@ TEST(IPCMessageTest, DictionaryValue) {
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 
-  EXPECT_TRUE(input.Equals(&output));
+  EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
   IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
@@ -296,7 +275,7 @@ TEST_F(IPCMessageParameterTest, EmptyDispatcherWithParam) {
   EXPECT_TRUE(called_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_OneIntegerWithParam DISABLED_OneIntegerWithParam
 #else
 #define MAYBE_OneIntegerWithParam OneIntegerWithParam

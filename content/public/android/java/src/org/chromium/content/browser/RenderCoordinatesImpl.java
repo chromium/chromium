@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -12,11 +14,13 @@ import org.chromium.content_public.browser.WebContents;
  * Cached copy of all positions and scales (CSS-to-DIP-to-physical pixels)
  * reported from the renderer.
  * Provides wrappers and a utility class to help with coordinate transforms on the client side.
- * Provides the internally-visible set of update methods (called from GestureListenerManagerImpl).
+ * Provides the internally-visible set of update methods.
  *
  * Unless stated otherwise, all coordinates are in CSS (document) coordinate space.
  */
 public class RenderCoordinatesImpl implements RenderCoordinates {
+    private static RenderCoordinatesImpl sInstanceForTesting;
+
     // Scroll offset from the native in CSS.
     private float mScrollXCss;
     private float mScrollYCss;
@@ -40,7 +44,15 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     private float mTopContentOffsetYPix;
 
     public static RenderCoordinatesImpl fromWebContents(WebContents webContents) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         return ((WebContentsImpl) webContents).getRenderCoordinates();
+    }
+
+    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
+    // available.
+    @VisibleForTesting
+    public static void setInstanceForTesting(RenderCoordinatesImpl instance) {
+        sInstanceForTesting = instance;
     }
 
     // Internally-visible set of update methods (used by WebContentsImpl).
@@ -189,6 +201,7 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     /**
      * @return Minimum page scale factor to be used with the content.
      */
+    @Override
     public float getMinPageScaleFactor() {
         return mMinPageScaleFactor;
     }
@@ -244,5 +257,13 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     // Maximum possible vertical scroll in physical pixels.
     private float getMaxVerticalScrollPix() {
         return getContentHeightPix() - getLastFrameViewportHeightPix();
+    }
+
+    /**
+     * @return whether the first frame info was passed in and cached. Rendered content
+     *     area dimension, page scale factor, etc. is available if true.
+     */
+    public boolean frameInfoUpdatedForTesting() {
+        return mContentWidthCss != 0.f || mContentHeightCss != 0.f;
     }
 }

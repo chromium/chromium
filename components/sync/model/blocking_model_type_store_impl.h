@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,25 @@
 #include <string>
 
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/blocking_model_type_store.h"
 
 namespace syncer {
+
+// TODO(andreaorru): The following functions are public only
+// to support Lacros migration. Make them private again once
+// they are not needed anymore. See crbug.com/1147556 for more
+// context on move migration.
+
+// Formats key prefix for data records of |type|.
+std::string FormatDataPrefix(ModelType type);
+
+// Formats key prefix for metadata records of |type|.
+std::string FormatMetaPrefix(ModelType type);
+
+// Formats key for global metadata record of |type|.
+std::string FormatGlobalMetadataKey(ModelType type);
 
 class ModelTypeStoreBackend;
 
@@ -22,19 +36,24 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
   // |backend| must not be null.
   BlockingModelTypeStoreImpl(ModelType type,
                              scoped_refptr<ModelTypeStoreBackend> backend);
+
+  BlockingModelTypeStoreImpl(const BlockingModelTypeStoreImpl&) = delete;
+  BlockingModelTypeStoreImpl& operator=(const BlockingModelTypeStoreImpl&) =
+      delete;
+
   ~BlockingModelTypeStoreImpl() override;
 
   // BlockingModelTypeStore implementation.
-  base::Optional<ModelError> ReadData(const IdList& id_list,
+  absl::optional<ModelError> ReadData(const IdList& id_list,
                                       RecordList* data_records,
                                       IdList* missing_id_list) override;
-  base::Optional<ModelError> ReadAllData(RecordList* data_records) override;
-  base::Optional<ModelError> ReadAllMetadata(
+  absl::optional<ModelError> ReadAllData(RecordList* data_records) override;
+  absl::optional<ModelError> ReadAllMetadata(
       MetadataBatch* metadata_batch) override;
   std::unique_ptr<WriteBatch> CreateWriteBatch() override;
-  base::Optional<ModelError> CommitWriteBatch(
+  absl::optional<ModelError> CommitWriteBatch(
       std::unique_ptr<WriteBatch> write_batch) override;
-  base::Optional<ModelError> DeleteAllDataAndMetadata() override;
+  absl::optional<ModelError> DeleteAllDataAndMetadata() override;
 
   // For advanced uses that require cross-thread batch posting. Avoid if
   // possible.
@@ -52,8 +71,6 @@ class BlockingModelTypeStoreImpl : public BlockingModelTypeStore {
   const std::string global_metadata_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingModelTypeStoreImpl);
 };
 
 }  // namespace syncer

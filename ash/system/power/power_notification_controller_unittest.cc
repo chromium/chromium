@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,10 @@ namespace {
 class MockMessageCenter : public message_center::FakeMessageCenter {
  public:
   MockMessageCenter() : add_count_(0), remove_count_(0), update_count_(0) {}
+
+  MockMessageCenter(const MockMessageCenter&) = delete;
+  MockMessageCenter& operator=(const MockMessageCenter&) = delete;
+
   ~MockMessageCenter() override = default;
 
   int add_count() const { return add_count_; }
@@ -62,8 +66,6 @@ class MockMessageCenter : public message_center::FakeMessageCenter {
   int remove_count_;
   int update_count_;
   std::map<std::string, std::unique_ptr<Notification>> notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageCenter);
 };
 
 }  // namespace
@@ -73,6 +75,12 @@ namespace ash {
 class PowerNotificationControllerTest : public AshTestBase {
  public:
   PowerNotificationControllerTest() = default;
+
+  PowerNotificationControllerTest(const PowerNotificationControllerTest&) =
+      delete;
+  PowerNotificationControllerTest& operator=(
+      const PowerNotificationControllerTest&) = delete;
+
   ~PowerNotificationControllerTest() override = default;
 
   MockMessageCenter* message_center() { return message_center_.get(); }
@@ -81,8 +89,9 @@ class PowerNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    message_center_.reset(new MockMessageCenter());
-    controller_.reset(new PowerNotificationController(message_center_.get()));
+    message_center_ = std::make_unique<MockMessageCenter>();
+    controller_ =
+        std::make_unique<PowerNotificationController>(message_center_.get());
   }
 
   void TearDown() override {
@@ -143,8 +152,6 @@ class PowerNotificationControllerTest : public AshTestBase {
  private:
   std::unique_ptr<MockMessageCenter> message_center_;
   std::unique_ptr<PowerNotificationController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerNotificationControllerTest);
 };
 
 TEST_F(PowerNotificationControllerTest, MaybeShowUsbChargerNotification) {

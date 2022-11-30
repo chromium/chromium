@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,13 @@
 #define CHROMECAST_MEDIA_SERVICE_CAST_RENDERER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/base/video_resolution_policy.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
@@ -23,6 +22,7 @@
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -40,9 +40,9 @@ class MediaPipelineImpl;
 class VideoGeometrySetterService;
 class VideoModeSwitcher;
 
-class CastRenderer : public ::media::Renderer,
-                     public VideoResolutionPolicy::Observer,
-                     public mojom::VideoGeometryChangeClient {
+class CastRenderer final : public ::media::Renderer,
+                           public VideoResolutionPolicy::Observer,
+                           public mojom::VideoGeometryChangeClient {
  public:
   // |frame_interfaces| provides interfaces tied to RenderFrameHost.
   CastRenderer(CmaBackendFactory* backend_factory,
@@ -50,8 +50,14 @@ class CastRenderer : public ::media::Renderer,
                VideoModeSwitcher* video_mode_switcher,
                VideoResolutionPolicy* video_resolution_policy,
                const base::UnguessableToken& overlay_plane_id,
-               ::media::mojom::FrameInterfaceFactory* frame_interfaces);
-  ~CastRenderer() final;
+               ::media::mojom::FrameInterfaceFactory* frame_interfaces,
+               external_service_support::ExternalConnector* connector,
+               bool is_buffering_enabled);
+
+  CastRenderer(const CastRenderer&) = delete;
+  CastRenderer& operator=(const CastRenderer&) = delete;
+
+  ~CastRenderer() override;
   // For CmaBackend implementation, CastRenderer must be connected to
   // VideoGeometrySetterService.
   void SetVideoGeometrySetterService(
@@ -60,22 +66,22 @@ class CastRenderer : public ::media::Renderer,
   // ::media::Renderer implementation.
   void Initialize(::media::MediaResource* media_resource,
                   ::media::RendererClient* client,
-                  ::media::PipelineStatusCallback init_cb) final;
+                  ::media::PipelineStatusCallback init_cb) override;
   void SetCdm(::media::CdmContext* cdm_context,
-              CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
-  void Flush(base::OnceClosure flush_cb) final;
-  void StartPlayingFrom(base::TimeDelta time) final;
-  void SetPlaybackRate(double playback_rate) final;
-  void SetVolume(float volume) final;
-  base::TimeDelta GetMediaTime() final;
+              CdmAttachedCB cdm_attached_cb) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void Flush(base::OnceClosure flush_cb) override;
+  void StartPlayingFrom(base::TimeDelta time) override;
+  void SetPlaybackRate(double playback_rate) override;
+  void SetVolume(float volume) override;
+  base::TimeDelta GetMediaTime() override;
 
   // VideoResolutionPolicy::Observer implementation.
   void OnVideoResolutionPolicyChanged() override;
 
   // mojom::VideoGeometryChangeClient implementation.
   void OnVideoGeometryChange(const gfx::RectF& rect_f,
-                             gfx::OverlayTransform transform) final;
+                             gfx::OverlayTransform transform) override;
 
   // TODO(guohuideng): For now we use a global callback to gain access to
   // VideoPlaneController so CastRenderer can set the video geometry. We
@@ -117,6 +123,7 @@ class CastRenderer : public ::media::Renderer,
   base::UnguessableToken overlay_plane_id_;
   mojo::Remote<chromecast::mojom::ServiceConnector> service_connector_;
   ::media::mojom::FrameInterfaceFactory* frame_interfaces_;
+  external_service_support::ExternalConnector* const connector_;
 
   ::media::RendererClient* client_;
   CastCdmContext* cast_cdm_context_;
@@ -142,10 +149,11 @@ class CastRenderer : public ::media::Renderer,
     return *g_overlay_composited_callback;
   }
 
-  base::Optional<float> pending_volume_;
+  absl::optional<float> pending_volume_;
+
+  const bool is_buffering_enabled_;
 
   base::WeakPtrFactory<CastRenderer> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(CastRenderer);
 };
 
 }  // namespace media

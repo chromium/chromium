@@ -30,18 +30,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_H_
 
 #include <memory>
-
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -64,24 +66,34 @@ class PLATFORM_EXPORT AudioDestination
   USING_FAST_MALLOC(AudioDestination);
 
  public:
+  // Represents the current state of the underlying |WebAudioDevice| object
+  // (RendererWebAudioDeviceImpl).
+  enum DeviceState {
+    kRunning,
+    kPaused,
+    kStopped,
+  };
+
   AudioDestination(AudioIOCallback&,
                    unsigned number_of_output_channels,
                    const WebAudioLatencyHint&,
-                   base::Optional<float> context_sample_rate,
+                   absl::optional<float> context_sample_rate,
                    unsigned render_quantum_frames);
+  AudioDestination(const AudioDestination&) = delete;
+  AudioDestination& operator=(const AudioDestination&) = delete;
   ~AudioDestination() override;
 
   static scoped_refptr<AudioDestination> Create(
       AudioIOCallback&,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint&,
-      base::Optional<float> context_sample_rate,
+      absl::optional<float> context_sample_rate,
       unsigned render_quantum_frames);
 
   // The actual render function (WebAudioDevice::RenderCallback) isochronously
   // invoked by the media renderer. This is never called after Stop() is called.
   void Render(const WebVector<float*>& destination_data,
-              size_t number_of_frames,
+              uint32_t number_of_frames,
               double delay,
               double delay_timestamp,
               size_t prior_frames_skipped) override;
@@ -115,7 +127,8 @@ class PLATFORM_EXPORT AudioDestination
   // hardware.
   int FramesPerBuffer() const;
 
-  // The information from the actual audio hardware. (via Platform::current)
+  // The information from the actual audio hardware. (via Platform::Current)
+  static size_t HardwareBufferSize();
   static float HardwareSampleRate();
   static uint32_t MaxChannelCount();
 
@@ -126,14 +139,6 @@ class PLATFORM_EXPORT AudioDestination
   unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
-  // Represents the current state of the underlying |WebAudioDevice| object
-  // (RendererWebAudioDeviceImpl).
-  enum DeviceState {
-    kRunning,
-    kPaused,
-    kStopped,
-  };
-
   void SetDeviceState(DeviceState);
 
   // Provide input to the resampler (if used).
@@ -142,7 +147,7 @@ class PLATFORM_EXPORT AudioDestination
   // Check if the buffer size chosen by the WebAudioDevice is too large.
   bool CheckBufferSize(unsigned render_quantum_frames);
 
-  size_t HardwareBufferSize();
+  void SendLogMessage(const String& message);
 
   unsigned render_quantum_frames_;
 
@@ -187,13 +192,14 @@ class PLATFORM_EXPORT AudioDestination
   AudioCallbackMetricReporter metric_reporter_;
 
   // This protects |device_state_| below.
-  mutable Mutex state_change_lock_;
+  mutable base::Lock state_change_lock_;
 
   // Modified only on the main thread, so it can be read without holding a lock
   // there.
   DeviceState device_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(AudioDestination);
+  // Collect the device latency matric only from the initial callback.
+  bool is_latency_metric_collected_ = false;
 };
 
 }  // namespace blink

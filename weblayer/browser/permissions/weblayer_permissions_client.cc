@@ -1,20 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/permissions/weblayer_permissions_client.h"
 
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "weblayer/browser/cookie_settings_factory.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/permission_decision_auto_blocker_factory.h"
-#include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/android/permission_request_utils.h"
 #include "weblayer/browser/android/resource_mapper.h"
 #endif
@@ -54,36 +54,22 @@ WebLayerPermissionsClient::GetPermissionDecisionAutoBlocker(
       browser_context);
 }
 
-permissions::PermissionManager* WebLayerPermissionsClient::GetPermissionManager(
+// PermissionActionsHistory would never be read in WebLayer, so it seems logical
+// not to have the service at all.
+permissions::PermissionActionsHistory*
+WebLayerPermissionsClient::GetPermissionActionsHistory(
     content::BrowserContext* browser_context) {
-  return PermissionManagerFactory::GetForBrowserContext(browser_context);
+  return nullptr;
 }
 
-permissions::ChooserContextBase* WebLayerPermissionsClient::GetChooserContext(
+permissions::ObjectPermissionContextBase*
+WebLayerPermissionsClient::GetChooserContext(
     content::BrowserContext* browser_context,
     ContentSettingsType type) {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
-bool WebLayerPermissionsClient::IsPermissionControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
-  return weblayer::IsPermissionControlledByDse(type, origin);
-}
-
-bool WebLayerPermissionsClient::ResetPermissionIfControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
-  if (IsPermissionControlledByDse(browser_context, type, origin)) {
-    ResetDsePermissions(browser_context);
-    return true;
-  }
-  return false;
-}
-
+#if BUILDFLAG(IS_ANDROID)
 void WebLayerPermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types,

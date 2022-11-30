@@ -9,7 +9,7 @@ Here are some of the key bits:
   types. You can define your own by specializing Converter.
 
 * function\_template.h: Create JavaScript functions that dispatch to any C++
-  function, member function pointer, or base::Callback.
+  function, member function pointer, or base::RepeatingCallback.
 
 * object\_template\_builder.h: A handy utility for creation of v8::ObjectTemplate.
 

@@ -1,13 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -16,7 +13,7 @@
 
 namespace ui {
 
-class WaylandShm;
+class WaylandBufferFactory;
 
 // Encapsulates a Wayland SHM buffer, covering basically 2 use cases:
 // (1) Buffers created and mmap'ed locally to draw skia bitmap(s) into; and
@@ -26,7 +23,11 @@ class WaylandShm;
 // wl_buffer and WritableSharedMemoryMapping (if any) instance.
 class WaylandShmBuffer {
  public:
-  WaylandShmBuffer(WaylandShm* shm, const gfx::Size& size);
+  WaylandShmBuffer(WaylandBufferFactory* buffer_factory, const gfx::Size& size);
+
+  WaylandShmBuffer(const WaylandShmBuffer&) = delete;
+  WaylandShmBuffer& operator=(const WaylandShmBuffer&) = delete;
+
   ~WaylandShmBuffer();
 
   WaylandShmBuffer(WaylandShmBuffer&& buffer);
@@ -49,16 +50,14 @@ class WaylandShmBuffer {
   int stride() const { return stride_; }
 
  private:
-  void Initialize(WaylandShm* shm);
+  void Initialize(WaylandBufferFactory* buffer_factory);
 
   gfx::Size size_;
   int stride_;
   wl::Object<wl_buffer> buffer_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandShmBuffer);
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_SHM_BUFFER_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_

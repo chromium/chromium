@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ const char kPost[] = "POST";
 const char kProtobufContentType[] = "application/x-protobuf";
 const char kQueryParameterAlternateOutputKey[] = "alt";
 const char kQueryParameterAlternateOutputProto[] = "proto";
+const char kPlatformTypeHeaderName[] = "X-Sharing-Platform-Type";
+const char kPlatformTypeHeaderValue[] = "OSType.CHROME_OS";
 
 }  // namespace
 
@@ -97,6 +99,14 @@ GURL NearbyShareApiCallFlowImpl::CreateApiCallUrl() {
   return request_url_;
 }
 
+net::HttpRequestHeaders NearbyShareApiCallFlowImpl::CreateApiCallHeaders() {
+  // Inform the server that Chrome OS is making the request; this helps with
+  // diagnostics.
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kPlatformTypeHeaderName, kPlatformTypeHeaderValue);
+  return headers;
+}
+
 std::string NearbyShareApiCallFlowImpl::CreateApiCallBody() {
   return serialized_request_.value_or(std::string());
 }
@@ -127,7 +137,7 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
     int net_error,
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
-  base::Optional<NearbyShareHttpError> error;
+  absl::optional<NearbyShareHttpError> error;
   std::string error_message;
   if (net_error == net::OK) {
     int response_code = -1;
@@ -138,8 +148,8 @@ void NearbyShareApiCallFlowImpl::ProcessApiCallFailure(
     error = NearbyShareHttpError::kOffline;
   }
 
-  NS_LOG(ERROR) << "API call failed, error code: "
-                << net::ErrorToString(net_error);
+  NS_LOG(ERROR) << "API call failed: "
+                << NearbyShareHttpStatus(net_error, head).ToString();
   if (body)
     NS_LOG(VERBOSE) << "API failure response body: " << *body;
 

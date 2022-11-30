@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,8 @@ const CSS = '#main { color: green !important; }';
 const CSS2 = CSS.replace('green', 'yellow');
 // A file to inject. This also sets the color to `INJECTED_COLOR`.
 const FILE = '/file.css';
+// A second file to inject. This sets the color to `INJECTED_COLOR2`.
+const FILE2 = '/file2.css';
 
 // Aliases for brevity.
 const insertCSS = chrome.scripting.insertCSS;
@@ -52,7 +54,7 @@ async function getFrameIds(tabId) {
 async function getCurrentColor(tabId, frameId) {
   const scriptResults = await chrome.scripting.executeScript({
     target: {tabId, frameIds: [frameId]},
-    function: () => {
+    func: () => {
       const element = document.getElementById('main');
       const style = getComputedStyle(element);
       return style.getPropertyValue('color');
@@ -203,6 +205,39 @@ chrome.test.runTests([
     await removeCSS(
         {target: {tabId, allFrames: true}, files: ['/other.css']});
     await checkColors();
+    chrome.test.succeed();
+  },
+  async function insertAndRemoveCSSWithMultipleFilesShouldSucceed() {
+    // Insert two style sheets. The second should "win", since it's latest
+    // injected.
+    await insertCSS({target: {tabId}, files: [FILE, FILE2]});
+    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    await checkColors();
+
+    // Remove both previously-injected files.
+    await removeCSS({target: {tabId}, files: [FILE, FILE2]});
+    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    await checkColors();
+
+    chrome.test.succeed();
+  },
+  async function insertMultipleFilesAndRemoveOneAtATime() {
+    // Insert two style sheets. The second should "win", since it's latest
+    // injected.
+    await insertCSS({target: {tabId}, files: [FILE, FILE2]});
+    updateExpectedState([INJECTED_COLOR2, , , , , ]);
+    await checkColors();
+
+    // Remove only one of the previously-injected files.
+    await removeCSS({target: {tabId}, files: [FILE2]});
+    updateExpectedState([INJECTED_COLOR, , , , , ]);
+    await checkColors();
+
+    // Now, remove the second.
+    await removeCSS({target: {tabId}, files: [FILE]});
+    updateExpectedState([ORIGINAL_COLOR, , , , , ]);
+    await checkColors();
+
     chrome.test.succeed();
   },
   async function insertCSSWithDuplicateCodeShouldSucceed() {

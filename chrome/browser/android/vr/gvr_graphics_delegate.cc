@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -16,8 +18,11 @@
 #include "chrome/browser/vr/vr_geometry_util.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/vr_gl_util.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
@@ -25,6 +30,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace vr {
@@ -90,14 +96,14 @@ gfx::Transform PerspectiveMatrixFromView(const gvr::Rectf& fov,
 
   // The gfx::Transform default ctor initializes the transform to the identity,
   // so we must zero out a few values along the diagonal here.
-  result.matrix().set(0, 0, X);
-  result.matrix().set(0, 2, A);
-  result.matrix().set(1, 1, Y);
-  result.matrix().set(1, 2, B);
-  result.matrix().set(2, 2, C);
-  result.matrix().set(2, 3, D);
-  result.matrix().set(3, 2, -1);
-  result.matrix().set(3, 3, 0);
+  result.set_rc(0, 0, X);
+  result.set_rc(0, 2, A);
+  result.set_rc(1, 1, Y);
+  result.set_rc(1, 2, B);
+  result.set_rc(2, 2, C);
+  result.set_rc(2, 3, D);
+  result.set_rc(3, 2, -1);
+  result.set_rc(3, 3, 0);
 
   return result;
 }
@@ -165,22 +171,25 @@ void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
   // TODO(crbug.com/1170580): support ANGLE with cardboard?
   gl::init::DisableANGLE();
 
-  if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
-      !gl::init::InitializeGLOneOff()) {
-    LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
-    browser_->ForceExitVr();
-    return;
+  gl::GLDisplay* display = nullptr;
+  if (gl::GetGLImplementation() == gl::kGLImplementationNone) {
+    display = gl::init::InitializeGLOneOff(/*system_device_id=*/0);
+    if (!display) {
+      LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
+      browser_->ForceExitVr();
+      return;
+    }
+  } else {
+    display = gl::GetDefaultDisplayEGL();
   }
-
-  DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
 
   scoped_refptr<gl::GLSurface> surface;
   if (window) {
     DCHECK(!surfaceless_rendering_);
-    surface = gl::init::CreateViewGLSurface(window);
+    surface = gl::init::CreateViewGLSurface(display, window);
   } else {
     DCHECK(surfaceless_rendering_);
-    surface = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface = gl::init::CreateOffscreenGLSurface(display, gfx::Size());
   }
   if (!surface.get()) {
     LOG(ERROR) << "gl::init::CreateOffscreenGLSurface failed";
@@ -345,9 +354,11 @@ void GvrGraphicsDelegate::InitializeRenderer(bool start_in_webxr_mode) {
   float scale = low_density_ ? kLowDpiDefaultRenderTargetSizeScale
                              : kDefaultRenderTargetSizeScale;
 
-  render_size_default_ = {max_size.width * scale, max_size.height * scale};
-  render_size_webvr_ui_ = {max_size.width / kWebVrBrowserUiSizeFactor,
-                           max_size.height / kWebVrBrowserUiSizeFactor};
+  render_size_default_ = {base::ClampRound(max_size.width * scale),
+                          base::ClampRound(max_size.height * scale)};
+  render_size_webvr_ui_ = {
+      base::ClampRound(max_size.width / kWebVrBrowserUiSizeFactor),
+      base::ClampRound(max_size.height / kWebVrBrowserUiSizeFactor)};
 
   specs[kMultiSampleBuffer].SetSamples(2);
   specs[kMultiSampleBuffer].SetDepthStencilFormat(
@@ -451,8 +462,10 @@ void GvrGraphicsDelegate::ResizeForBrowser() {
                              {target_size.width(), target_size.height()});
   }
   size = swap_chain_.GetBufferSize(kNoMultiSampleBuffer);
-  target_size = {content_tex_buffer_size_.width() * kContentVignetteScale,
-                 content_tex_buffer_size_.height() * kContentVignetteScale};
+  target_size = {base::ClampRound(content_tex_buffer_size_.width() *
+                                  kContentVignetteScale),
+                 base::ClampRound(content_tex_buffer_size_.height() *
+                                  kContentVignetteScale)};
   if (size.width != target_size.width() ||
       size.height != target_size.height()) {
     swap_chain_.ResizeBuffer(kNoMultiSampleBuffer,
@@ -654,7 +667,7 @@ void GvrGraphicsDelegate::GetContentQuadDrawParams(Transform* uv_transform,
                                                    float* border_x,
                                                    float* border_y) {
   std::copy(kContentUvTransform,
-            kContentUvTransform + base::size(kContentUvTransform),
+            kContentUvTransform + std::size(kContentUvTransform),
             *uv_transform);
   DCHECK(!content_tex_buffer_size_.IsEmpty());
   *border_x = kContentBorderPixels / content_tex_buffer_size_.width();
@@ -670,14 +683,14 @@ void GvrGraphicsDelegate::GetWebXrDrawParams(int* texture_id,
     *texture_id = buffer->local_texture;
     // Use an identity UV transform, the image is already oriented correctly.
     std::copy(kWebVrIdentityUvTransform,
-              kWebVrIdentityUvTransform + base::size(kWebVrIdentityUvTransform),
+              kWebVrIdentityUvTransform + std::size(kWebVrIdentityUvTransform),
               *uv_transform);
   } else {
     *texture_id = webvr_texture_id_;
     // Apply the UV transform from the SurfaceTexture, that's usually a Y flip.
     std::copy(webvr_surface_texture_uv_transform_,
               webvr_surface_texture_uv_transform_ +
-                  base::size(webvr_surface_texture_uv_transform_),
+                  std::size(webvr_surface_texture_uv_transform_),
               *uv_transform);
   }
 }

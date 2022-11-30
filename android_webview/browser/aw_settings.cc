@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,16 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
+#include "android_webview/browser/aw_contents_origin_matcher.h"
+#include "android_webview/browser/aw_dark_mode.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"
@@ -24,8 +28,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_util.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
@@ -42,8 +49,6 @@ void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->should_clear_document_background = false;
   web_prefs->viewport_meta_enabled = true;
   web_prefs->picture_in_picture_enabled = false;
-  web_prefs->disable_features_depending_on_viz =
-      !::features::IsUsingVizForWebView();
   web_prefs->disable_accelerated_small_canvases = true;
   // WebView has historically not adjusted font scale for text autosizing.
   web_prefs->device_scale_adjustment = 1.0;
@@ -62,11 +67,11 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwSettingsUserData* data = static_cast<AwSettingsUserData*>(
         web_contents->GetUserData(kAwSettingsUserDataKey));
-    return data ? data->settings_ : NULL;
+    return data ? data->settings_.get() : NULL;
   }
 
  private:
-  AwSettings* settings_;
+  raw_ptr<AwSettings> settings_;
 };
 
 AwSettings::AwSettings(JNIEnv* env,
@@ -77,7 +82,10 @@ AwSettings::AwSettings(JNIEnv* env,
       javascript_can_open_windows_automatically_(false),
       allow_third_party_cookies_(false),
       allow_file_access_(false),
-      is_dark_mode_(false),
+      enterprise_authentication_app_link_policy_enabled_(
+          true),  // TODO(b/222053757,ayushsha): Change this policy to be by
+                  // default false from next Android version(Maybe Android U).
+      xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -104,6 +112,10 @@ bool AwSettings::GetAllowThirdPartyCookies() {
   return allow_third_party_cookies_;
 }
 
+AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
+  return mixed_content_mode_;
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -115,6 +127,27 @@ AwSettings* AwSettings::FromWebContents(content::WebContents* web_contents) {
 bool AwSettings::GetAllowSniffingFileUrls() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AwSettings_getAllowSniffingFileUrls(env);
+}
+
+AwSettings::RequestedWithHeaderMode
+AwSettings::GetDefaultRequestedWithHeaderMode() {
+  // If the control feature is not enabled, the default is the old behavior,
+  // which is to send the app package name.
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewXRequestedWithHeaderControl))
+    return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+
+  int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
+  switch (configuredValue) {
+    case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
+      return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
+    case AwSettings::RequestedWithHeaderMode::NO_HEADER:
+      return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+    default:
+      // If the field trial config is broken for some reason, use the
+      // package name.
+      return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+  }
 }
 
 AwRenderViewHostExt* AwSettings::GetAwRenderViewHostExt() {
@@ -156,6 +189,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateWillSuppressErrorStateLocked(env, obj);
   UpdateCookiePolicyLocked(env, obj);
   UpdateAllowFileAccessLocked(env, obj);
+  UpdateMixedContentModeLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -261,7 +295,7 @@ void AwSettings::UpdateRendererPreferencesLocked(
         AwBrowserContext::FromWebContents(web_contents());
     // AndroidWebview does not use per-site storage partitions.
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(aw_browser_context);
+        aw_browser_context->GetDefaultStoragePartition();
     std::string expanded_language_list =
         net::HttpUtil::ExpandLanguageList(prefs->accept_languages);
     storage_partition->GetNetworkContext()->SetAcceptLanguage(
@@ -294,6 +328,16 @@ void AwSettings::UpdateAllowFileAccessLocked(JNIEnv* env,
     return;
 
   allow_file_access_ = Java_AwSettings_getAllowFileAccess(env, obj);
+}
+
+void AwSettings::UpdateMixedContentModeLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents())
+    return;
+
+  mixed_content_mode_ = static_cast<MixedContentMode>(
+      Java_AwSettings_getMixedContentMode(env, obj));
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,
@@ -406,10 +450,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->plugins_enabled = false;
 
-  web_prefs->application_cache_enabled =
-      Java_AwSettings_getAppCacheEnabledLocked(env, obj) &&
-      content::StoragePartition::IsAppCacheEnabled();
-
   web_prefs->local_storage_enabled =
       Java_AwSettings_getDomStorageEnabledLocked(env, obj);
 
@@ -510,63 +550,55 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->allow_mixed_content_upgrades =
       Java_AwSettings_getAllowMixedContentAutoupgradesLocked(env, obj);
 
-  switch (Java_AwSettings_getForceDarkModeLocked(env, obj)) {
-    case ForceDarkMode::FORCE_DARK_OFF:
-      is_dark_mode_ = false;
-      break;
-    case ForceDarkMode::FORCE_DARK_ON:
-      is_dark_mode_ = true;
-      break;
-    case ForceDarkMode::FORCE_DARK_AUTO: {
-      AwContents* contents = AwContents::FromWebContents(web_contents());
-      is_dark_mode_ = contents && contents->GetViewTreeForceDarkState();
-      break;
-    }
+  if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
+    aw_dark_mode->PopulateWebPreferences(
+        web_prefs, Java_AwSettings_getForceDarkModeLocked(env, obj),
+        Java_AwSettings_getForceDarkBehaviorLocked(env, obj),
+        Java_AwSettings_isAlgorithmicDarkeningAllowedLocked(env, obj));
   }
-  web_prefs->preferred_color_scheme =
-      is_dark_mode_ ? blink::mojom::PreferredColorScheme::kDark
-                    : blink::mojom::PreferredColorScheme::kLight;
-  if (is_dark_mode_) {
-    switch (Java_AwSettings_getForceDarkBehaviorLocked(env, obj)) {
-      case ForceDarkBehavior::FORCE_DARK_ONLY: {
-        web_prefs->preferred_color_scheme =
-            blink::mojom::PreferredColorScheme::kLight;
-        web_prefs->force_dark_mode_enabled = true;
-        break;
-      }
-      case ForceDarkBehavior::MEDIA_QUERY_ONLY: {
-        web_prefs->preferred_color_scheme =
-            blink::mojom::PreferredColorScheme::kDark;
-        web_prefs->force_dark_mode_enabled = false;
-        break;
-      }
-      // Blink's behavior is that if the preferred color scheme matches the
-      // supported color scheme, then force dark will be disabled, otherwise
-      // the preferred color scheme will be reset to 'light'. Therefore
-      // when enabling force dark, we also set the preferred color scheme to
-      // dark so that dark themed content will be preferred over force
-      // darkening.
-      case ForceDarkBehavior::PREFER_MEDIA_QUERY_OVER_FORCE_DARK: {
-        web_prefs->preferred_color_scheme =
-            blink::mojom::PreferredColorScheme::kDark;
-        web_prefs->force_dark_mode_enabled = true;
-        break;
-      }
-    }
-  } else {
-    web_prefs->preferred_color_scheme =
-        blink::mojom::PreferredColorScheme::kLight;
-    web_prefs->force_dark_mode_enabled = false;
-  }
+
+  // WebView does not support WebAuthn yet.
+  web_prefs->disable_webauthn = true;
 }
 
-bool AwSettings::IsDarkMode(JNIEnv* env,
-                                 const JavaParamRef<jobject>& obj) {
-  return is_dark_mode_;
+bool AwSettings::IsForceDarkApplied(JNIEnv* env,
+                                    const JavaParamRef<jobject>& obj) {
+  if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
+    return aw_dark_mode->is_force_dark_applied();
+  }
+  return false;
+}
+
+void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jboolean enabled) {
+  enterprise_authentication_app_link_policy_enabled_ = enabled;
+}
+
+bool AwSettings::GetEnterpriseAuthenticationAppLinkPolicyEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return enterprise_authentication_app_link_policy_enabled();
 }
 
 bool AwSettings::GetAllowFileAccess() {
   return allow_file_access_;
+}
+
+base::android::ScopedJavaLocalRef<jobjectArray>
+AwSettings::UpdateXRequestedWithAllowListOriginMatcher(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& jrules) {
+  std::vector<std::string> rules;
+  base::android::AppendJavaStringArrayToStringVector(env, jrules, &rules);
+  std::vector<std::string> bad_rules =
+      xrw_allowlist_matcher_->UpdateRuleList(rules);
+  return base::android::ToJavaArrayOfStrings(env, bad_rules);
+}
+
+scoped_refptr<AwContentsOriginMatcher> AwSettings::xrw_allowlist_matcher() {
+  return xrw_allowlist_matcher_;
 }
 
 static jlong JNI_AwSettings_Init(JNIEnv* env,

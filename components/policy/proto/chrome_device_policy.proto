@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@ option optimize_for = LITE_RUNTIME;
 import "policy_common_definitions.proto";
 
 package enterprise_management;
+
+option go_package="chromium/policy/enterprise_management_proto";
 
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
@@ -111,19 +113,27 @@ message NetworkHostnameProto {
   optional string device_hostname_template = 1;
 }
 
+message HostnameUserConfigurableProto {
+  // Determines if user is allowed to configure the device hostname
+  optional bool device_hostname_user_configurable = 1 [default = false];
+}
+
 // Policies to turn on portions of the device status reports.
 // If changed, the default values have to be updated in
-// chrome/browser/chromeos/policy/status_collector/device_status_collector.cc
+// chrome/browser/ash/policy/status_collector/device_status_collector.cc
 // and
-// chrome/browser/chromeos/policy/status_collector/child_status_collector.cc.
+// chrome/browser/ash/policy/status_collector/child_status_collector.cc.
 message DeviceReportingProto {
   optional bool report_version_info = 1 [default = true];
   optional bool report_activity_times = 2 [default = true];
   optional bool report_boot_mode = 3 [default = true];
   optional bool report_location = 4 [default = false];
-  optional bool report_network_interfaces = 5 [default = true];
+  // TODO(b/243958646): The server side should remove the usage of this field.
+  optional bool report_network_interfaces = 5
+      [default = true, deprecated = true];
   optional bool report_users = 6 [default = true];
-  optional bool report_hardware_status = 7 [default = true];
+  // TODO(b/243960946): The server side should remove the usage of this field.
+  optional bool report_hardware_status = 7 [default = true, deprecated = true];
   optional bool report_session_status = 8 [default = true];
   optional bool report_os_update_status = 10 [default = false];
   optional bool report_running_kiosk_app = 11 [default = false];
@@ -142,11 +152,36 @@ message DeviceReportingProto {
   optional bool report_vpd_info = 24 [default = false];
   optional bool report_system_info = 25 [default = false];
   optional bool report_print_jobs = 26 [default = false];
+  optional bool report_login_logout = 27 [default = false];
+  optional bool report_audio_status = 28 [default = true];
+  optional bool report_network_configuration = 29 [default = true];
+  optional bool report_network_status = 30 [default = true];
+  optional bool report_security_status = 31 [default = false];
+  optional bool report_crd_sessions = 36 [default = false];
+  optional bool report_peripherals = 37 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
-  // chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.cc.
+  // chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.cc.
   optional int64 device_status_frequency = 9 [default = 10800000];
+
+  // Obsolete: This policy is not supported by the client starting with M-106.
+  // This is a internal flag that will be used to control whether enable
+  // granular device reporting is enabled
+  optional bool enable_granular_reporting = 32
+      [default = true, deprecated = true];
+
+  // Network telemetry policies.
+  optional int64 report_network_telemetry_collection_rate_ms = 33
+      [default = 3600000];
+  optional int64 report_network_telemetry_event_checking_rate_ms = 34
+      [default = 600000];
+
+  // Audio telemetry policy
+  optional int64 report_device_audio_status_checking_rate_ms = 35
+      [default = 600000];
+
+  optional StringList report_signal_strength_event_driven_telemetry = 38;
 }
 
 message EphemeralUsersEnabledProto {
@@ -154,6 +189,12 @@ message EphemeralUsersEnabledProto {
   // mode, no cryptohome is created for the user, but a tmpfs mount is used
   // instead such that upon logout all user state is discarded.
   optional bool ephemeral_users_enabled = 1;
+}
+
+message DeviceKeylockerForStorageEncryptionEnabledProto {
+  // Determines whether cryptohome uses Keylocker for storage encryption ciphers
+  // when supported.
+  optional bool enabled = 1;
 }
 
 // Details of an extension to install as part of the AppPack.
@@ -243,10 +284,9 @@ message AutoUpdateSettingsProto {
 
   // Enumerates network connection types.
   enum ConnectionType {
-    reserved 2;
-
     CONNECTION_TYPE_ETHERNET = 0;
     CONNECTION_TYPE_WIFI = 1;
+    CONNECTION_TYPE_WIMAX = 2;
     CONNECTION_TYPE_BLUETOOTH = 3;
     CONNECTION_TYPE_CELLULAR = 4;
   }
@@ -285,17 +325,15 @@ message AutoUpdateSettingsProto {
     // case, the device will still respect |target_version_prefix|, so it will
     // not update Chrome OS.
     ROLLBACK_DISABLED = 1;
-    // If |target_version_prefix| specifies an older version than the currently
-    // installed Chrome OS version, the device should roll back to a Chrome OS
-    // version starting with |target_version_prefix|. The device does a full
-    // powerwash during the rollback, including TPM reset.
+    // Deprecated. This option is not available or supported anymore.
     ROLLBACK_AND_POWERWASH = 2;
     // If |target_version_prefix| specifies an older version than the currently
-    // installed Chrome OS version, the device should roll back to a Chrome OS
+    // installed ChromeOS version, the device should roll back to a ChromeOS
     // version starting with |target_version_prefix|.
-    // If possible, the device tries to carry over device-level configuration
-    // including network credentials during the rollback process.
-    // If that is not possible, rolls back with a full powerwash.
+    // The device is powerwashed but some data is preserved and recovered: OOBE
+    // completion state, stats consent status, and device-wide network
+    // configurations without certificates. When rolling back to M>=106, the
+    // device re-enrolls automatically.
     ROLLBACK_AND_RESTORE_IF_POSSIBLE = 3;
   }
 
@@ -348,6 +386,11 @@ message AutoUpdateSettingsProto {
   // Specifies what should happen if the device channel is downgraded.
   optional ChannelDowngradeBehavior channel_downgrade_behavior = 16
       [default = WAIT_FOR_VERSION_CATCH_UP];
+
+  // |target_version_selector| is forwarded as the "targetversionselector"
+  // attribute to Omaha and is used by it if for minor version pinning. The
+  // field is not and shall not be processed by the client.
+  optional string target_version_selector = 17;
 }
 
 message OBSOLETE_StartUpUrlsProto {
@@ -616,43 +659,30 @@ message AttestationSettingsProto {
 }
 
 message AccessibilitySettingsProto {
-  // Sets the default state of the large cursor accessibility feature on the
-  // login screen. If this policy is set to true, the large cursor will be
-  // enabled when the login screen is shown. If this policy is set to false, the
-  // large cursor will be disabled when the login screen is shown. Users can
-  // temporarily override this setting by enabling or disabling the large
-  // cursor. However, the user's choice is not persistent and the default is
+  // Sets the default state of the following accessibility features on the login
+  // screen:
+  //
+  // 1) Large cursor: login_screen_default_large_cursor_enabled
+  // 2) Spoken feedback: login_screen_default_spoken_feedback_enabled
+  // 3) High contrast: login_screen_default_high_contrast_enabled
+  // 4) Screen magnifier: login_screen_default_screen_magnifier_type
+  // 5) Virtual keyboard: login_screen_default_virtual_keyboard_enabled
+  //
+  // Each acts as follows: If the corresponding policy is set to true, the
+  // associated accessibility feature will be enabled when the login screen is
+  // shown. If this policy is set to false, the accessibility feature will be
+  // disabled when the login screen is shown. Users can temporarily override
+  // this setting by enabling or disabling the corresponding accessibiilty
+  // feature. However, the user's choice is not persistent and the default is
   // restored whenever the login screen is shown anew or the user remains idle
-  // on the login screen for a minute. If this policy is left unset, the large
-  // cursor is disabled when the login screen is first shown. Users can enable
-  // or disable the large cursor anytime and its status on the login screen is
-  // persisted between users.
+  // on the login screen for a minute. If this policy is left unset, the
+  // corresponding accessibiilty feature is disabled when the login screen is
+  // first shown. Users can enable or disable the corresponding accessibiilty
+  // feature anytime and its status on the login screen is persisted between
+  // users.
+
   optional bool login_screen_default_large_cursor_enabled = 1;
-
-  // Sets the default state of the spoken feedback accessibility feature on the
-  // login screen. If this policy is set to true, spoken feedback will be
-  // enabled when the login screen is shown. If this policy is set to false,
-  // spoken feedback will be disabled when the login screen is shown. Users can
-  // temporarily override this setting by enabling or disabling spoken feedback.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, spoken feedback is
-  // disabled when the login screen is first shown. Users can enable or disable
-  // spoken feedback anytime and its status on the login screen is persisted
-  // between users.
   optional bool login_screen_default_spoken_feedback_enabled = 2;
-
-  // Sets the default state of the high contrast mode accessibility feature on
-  // the login screen. If this policy is set to true, high contrast mode will be
-  // enabled when the login screen is shown. If this policy is set to false,
-  // high contrast mode will be disabled when the login screen is shown. Users
-  // can temporarily override this setting by enabling or disabling high
-  // contrast mode. However, the user's choice is not persistent and the default
-  // is restored whenever the login screen is shown anew or the user remains
-  // idle on the login screen for a minute. If this policy is left unset, high
-  // contrast mode is disabled when the login screen is first shown. Users can
-  // enable or disable high contrast mode anytime and its status on the login
-  // screen is persisted between users.
   optional bool login_screen_default_high_contrast_enabled = 3;
 
   // Enumerates the screen magnifier types.
@@ -662,269 +692,106 @@ message AccessibilitySettingsProto {
     // Full-screen magnifier enabled.
     SCREEN_MAGNIFIER_TYPE_FULL = 1;
   }
-
-  // Sets the default type of screen magnifier that is enabled on the login
-  // screen. If this policy is set, it controls the type of screen magnifier
-  // that is enabled when the login screen is shown. Users can temporarily
-  // override this setting by enabling or disabling the screen magnifier.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, the screen
-  // magnifier is disabled when the login screen is first shown. Users can
-  // enable or disable the screen magnifier anytime and its status on the login
-  // screen is persisted between users.
   optional ScreenMagnifierType login_screen_default_screen_magnifier_type = 4;
 
-  // Sets the default state of the on-screen keyboard accessibility feature on
-  // the login screen. If this policy is set to true, the on-screen keyboard
-  // will be enabled when the login screen is shown. If this policy is set to
-  // false, the on-screen keyboard will be disabled when the login screen is
-  // shown. Users can temporarily override this setting by enabling or disabling
-  // the on-screen keyboard. However, the user's choice is not persistent and
-  // the default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the on-screen keyboard is disabled when the login screen is first
-  // shown. Users can enable or disable the on-screen keyboard anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_default_virtual_keyboard_enabled = 5;
 
-  // Sets the state of the large cursor accessibility feature on the login
-  // screen. If this policy is set to true, the large cursor will be enabled
-  // when the login screen is shown. If this policy is set to false, the large
-  // cursor will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // large cursor. However, the user's choice is not persistent and the default
-  // is restored whenever the login screen is shown anew or the user remains
-  // idle on the login screen for a minute. If this policy is left unset, the
-  // large cursor is disabled when the login screen is first shown. Users can
-  // enable or disable the large cursor anytime and its status on the login
-  // screen is persisted between users.
+  // Sets the mandatory or default state, depending on the PolicyOptions, of the
+  // following accessibility features on the login screen:
+  //
+  // 1) Large cursor: login_screen_large_cursor_enabled
+  //    PolicyOptions: login_screen_large_cursor_enabled_options
+  // 2) Spoken feedback: login_screen_spoken_feedback_enabled
+  //    PolicyOptions: login_screen_spoken_feedback_enabled_options
+  // 3) High contrast: login_screen_high_contrast_enabled
+  //    PolicyOptions: login_screen_high_contrast_enabled_options
+  // 4) Virtual keyboard: login_screen_virtual_keyboard_enabled
+  //    PolicyOptions: login_screen_virtual_keyboard_enabled_options
+  // 5) Dictation: login_screen_dictation_enabled
+  //    PolicyOptions: login_screen_dictation_enabled_options
+  // 6) Select to speak: login_screen_select_to_speak_enabled
+  //    PolicyOptions: login_screen_select_to_speak_enabled_options
+  // 7) Cursor highlight: login_screen_cursor_highlight_enabled
+  //    PolicyOptions: login_screen_cursor_highlight_enabled_options
+  // 8) Caret highlight: login_screen_caret_highlight_enabled
+  //    PolicyOptions: login_screen_caret_highlight_enabled_options
+  // 9) Mono audio: login_screen_mono_audio_enabled
+  //    PolicyOptions: login_screen_mono_audio_enabled_options
+  // 10) Autoclick: login_screen_autoclick_enabled
+  //    PolicyOptions: login_screen_autoclick_enabled_options
+  // 11) Sticky keys: login_screen_sticky_keys_enabled
+  //    PolicyOptions: login_screen_sticky_keys_enabled_options
+  // 12) Keyboard focus highlight: login_screen_keyboard_focus_highlight_enabled
+  //    PolicyOptions: login_screen_keyboard_focus_highlight_enabled_options
+  // 13) Screen magnifier: login_screen_screen_magnifier_type
+  //    PolicyOptions: login_screen_screen_magnifier_type_options
+  // 14) Show options in system tray menu:
+  //    login_screen_show_options_in_system_tray_menu_enabled
+  //    PolicyOptions: login_screen_sticky_keys_enabled_options
+  // 15) Accessibility shortcuts: login_screen_shortcuts_enabled
+  //    PolicyOptions: login_screen_shortcuts_enabled_options
+  //
+  // For all the aforementioned accessibility policies:
+  //  - If this policy is set to true, the accessibility feature will be enabled
+  //  when the login screen is shown.
+  //  - If the policy is set to false, the accessibility feature will be
+  //  disabled when the login screen is shown.
+  //  - If the policy is left unset, the accessibility feature is disabled when
+  //  the login screen is first shown.
+  //  - If the PolicyOptions is set to mandatory, the user won't be able
+  //  to change these settings.
+  //  - If the PolicyOptions is set to recommended, the user can temporarily
+  //  override this setting by enabling or disabling the accessibility feature.
+  //  However, the user's choice is not persistent and the default is restored
+  //  whenever the login screen is shown anew or the user remains idle on the
+  //  login screen for a minute. Users can enable or disable the accessibility
+  //  feature anytime and its status on the login screen is persisted between
+  //  users.
+
   optional bool login_screen_large_cursor_enabled = 6;
   optional PolicyOptions login_screen_large_cursor_enabled_options = 7;
 
-  // Sets the state of the spoken feedback accessibility feature on the login
-  // screen. If this policy is set to true, the spoken feedback will be enabled
-  // when the login screen is shown. If this policy is set to false, the spoken
-  // feedback will be disabled when the spoken feedback is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as
-  // recommended users can temporarily override this setting by enabling or
-  // disabling the spoken feedback. However, the user's choice is not persistent
-  // and the default is restored whenever the login screen is shown anew or the
-  // user remains idle on the login screen for a minute. If this policy is left
-  // unset, the spoken feedback is disabled when the login screen is first
-  // shown. Users can enable or disable the spoken feedback anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_spoken_feedback_enabled = 8;
   optional PolicyOptions login_screen_spoken_feedback_enabled_options = 9;
 
-  // Sets the state of the high contrast accessibility feature on the login
-  // screen. If this policy is set to true, the high contrast will be enabled
-  // when the login screen is shown. If this policy is set to false, the high
-  // contrast will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as
-  // recommended users can temporarily override this setting by enabling or
-  // disabling the high contrast. However, the user's choice is not persistent
-  // and the default is restored whenever the login screen is shown anew or the
-  // user remains idle on the login screen for a minute. If this policy is left
-  // unset, the high contrast is disabled when the login screen is first
-  // shown. Users can enable or disable the high contrast anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_high_contrast_enabled = 10;
   optional PolicyOptions login_screen_high_contrast_enabled_options = 11;
 
-  // Sets the state of the virtual keyboard accessibility feature on the login
-  // screen. If this policy is set to true, the virtual keyboard will be enabled
-  // when the login screen is shown. If this policy is set to false, the virtual
-  // keyboard will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as
-  // recommended users can temporarily override this setting by enabling or
-  // disabling the virtual keyboard. However, the user's choice is not
-  // persistent and the default is restored whenever the login screen is shown
-  // anew or the user remains idle on the login screen for a minute. If this
-  // policy is left unset, the virtual keyboard is disabled when the login
-  // screen is first shown. Users can enable or disable the virtual keyboard
-  // anytime and its status on the login screen is persisted between users.
   optional bool login_screen_virtual_keyboard_enabled = 12;
   optional PolicyOptions login_screen_virtual_keyboard_enabled_options = 13;
 
-  // Sets the state of the dictation accessibility feature on the login screen.
-  // If this policy is set to true, the dictation will be enabled when the login
-  // screen is shown. If this policy is set to false, the dictation will
-  // be disabled when the login screen is shown. If the PolicyOptions mode was
-  // being mandatory then the user won't be able to change these settings. Only
-  // if PolicyOptions was being set as recommended users can temporarily
-  // override this setting by enabling or disabling the dictation. However, the
-  // user's choice is not persistent and the default is restored whenever the
-  // login screen is shown anew or the user remains idle on the login screen for
-  // a minute. If this policy is left unset, the dictation is disabled when the
-  // login screen is first shown. Users can enable or disable the dictation
-  // anytime and its status on the login screen is persisted between users.
   optional bool login_screen_dictation_enabled = 14;
   optional PolicyOptions login_screen_dictation_enabled_options = 15;
 
-  // Sets the state of the select to speak accessibility feature on the login
-  // screen. If this policy is set to true, the select to speak will be enabled
-  // when the login screen is shown. If this policy is set to false, the select
-  // to speak will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // select to speak. However, the user's choice is not persistent and the
-  // default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the select to speak is disabled when the login screen is first
-  // shown. Users can enable or disable the select to speak anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_select_to_speak_enabled = 16;
   optional PolicyOptions login_screen_select_to_speak_enabled_options = 17;
 
-  // Sets the state of the cursor highlight accessibility feature on the login
-  // screen. If this policy is set to true, the cursor highlight will be enabled
-  // when the login screen is shown. If this policy is set to false, the cursor
-  // highlight will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // cursor highlight. However, the user's choice is not persistent and the
-  // default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the cursor highlight is disabled when the login screen is first
-  // shown. Users can enable or disable the cursor highlight anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_cursor_highlight_enabled = 18;
   optional PolicyOptions login_screen_cursor_highlight_enabled_options = 19;
 
-  // Sets the state of the caret highlight accessibility feature on the login
-  // screen. If this policy is set to true, the caret highlight will be enabled
-  // when the login screen is shown. If this policy is set to false, the spoken
-  // feedback will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // caret highlight. However, the user's choice is not persistent and the
-  // default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the caret highlight is disabled when the login screen is first
-  // shown. Users can enable or disable the caret highlight anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_caret_highlight_enabled = 20;
   optional PolicyOptions login_screen_caret_highlight_enabled_options = 21;
 
-  // Sets the state of the mono audio accessibility feature on the login
-  // screen. If this policy is set to true, the mono audio will be enabled
-  // when the login screen is shown. If this policy is set to false, the mono
-  // audio will be disabled when the login screen is shown. If the PolicyOptions
-  // mode was being mandatory then the user won't be able to change these
-  // settings. Only if PolicyOptions was being set as recommended users can
-  // temporarily override this setting by enabling or disabling the mono audio.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, the mono audio is
-  // disabled when the login screen is first shown. Users can enable or disable
-  // the mono audio anytime and its status on the login screen is persisted
-  // between users.
   optional bool login_screen_mono_audio_enabled = 22;
   optional PolicyOptions login_screen_mono_audio_enabled_options = 23;
 
-  // Sets the state of the autoclick accessibility feature on the login
-  // screen. If this policy is set to true, the autoclick will be enabled
-  // when the login screen is shown. If this policy is set to false, the
-  // autoclick will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // autoclick. However, the user's choice is not persistent and the
-  // default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the autoclick is disabled when the login screen is first
-  // shown. Users can enable or disable the autoclick anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_autoclick_enabled = 24;
   optional PolicyOptions login_screen_autoclick_enabled_options = 25;
 
-  // Sets the state of the sticky keys accessibility feature on the login
-  // screen. If this policy is set to true, the sticky keys will be enabled
-  // when the login screen is shown. If this policy is set to false, the
-  // sticky keys will be disabled when the login screen is shown. If the
-  // PolicyOptions mode was being mandatory then the user won't be able to
-  // change these settings. Only if PolicyOptions was being set as recommended
-  // users can temporarily override this setting by enabling or disabling the
-  // sticky keys. However, the user's choice is not persistent and the
-  // default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the sticky keys is disabled when the login screen is first
-  // shown. Users can enable or disable the sticky keys anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_sticky_keys_enabled = 26;
   optional PolicyOptions login_screen_sticky_keys_enabled_options = 27;
 
-  // Sets the state of the keyboard focus highlight accessibility feature on the
-  // login screen. If this policy is set to true, the keyboard focus highlight
-  // will be enabled when the login screen is shown. If this policy is set to
-  // false, the keyboard focus highlight will be disabled when the login screen
-  // is shown. If the PolicyOptions mode was being mandatory then the user won't
-  // be able to change these settings. Only if PolicyOptions was being set as
-  // recommended users can temporarily override this setting by enabling or
-  // disabling the keyboard focus highlight. However, the user's choice is not
-  // persistent and the default is restored whenever the login screen is shown
-  // anew or the user remains idle on the login screen for a minute. If this
-  // policy is left unset, the keyboard focus highlight is disabled when the
-  // login screen is first shown. Users can enable or disable the keyboard focus
-  // highlight anytime and its status on the login screen is persisted between
-  // users.
   optional bool login_screen_keyboard_focus_highlight_enabled = 28;
   optional PolicyOptions login_screen_keyboard_focus_highlight_enabled_options =
       29;
 
-  // Sets the state of the screen magnifier accessibility feature on the login
-  // screen. If this policy is set to 1, the screen magnifier will be enabled
-  // in full-screen magnifier mode, when the login screen is shown. If this
-  // policy is set to 2, the screen magnifier will be enabled in docked
-  // magnifier mode, when the login screen is shown. If this policy is set
-  // to 0, the screen magnifier will be disabled, when the login screen is
-  // shown. If the PolicyOptions mode was being mandatory then the user won't be
-  // able to change these settings. Only if PolicyOptions was being set as
-  // recommended users can temporarily override this setting by changing the
-  // screen magnifier state the. However, the user's choice is not persistent
-  // and the default is restored whenever the login screen is shown anew or the
-  // user remains idle on the login screen for a minute. If this policy is left
-  // unset, the screen magnifier is disabled when the login screen is first
-  // shown. Users can enable or disable the screen magnifier anytime and its
-  // status on the login screen is persisted between users.
   optional int64 login_screen_screen_magnifier_type = 30;
   optional PolicyOptions login_screen_screen_magnifier_type_options = 31;
 
-  // Sets the state of the visibility of the accessibility options on quick
-  // settings accessibility feature on the login screen. If this policy is set
-  // to true, the accessibility options on quick settings will always be shown
-  // when the login screen is shown. If this policy is set to false, the
-  // accessibility options will never appear on system tray menu when the login
-  // screen is shown. If the PolicyOptions mode was being mandatory then the
-  // user won't be able to change these settings. Only if PolicyOptions was
-  // being set as recommended users can temporarily override this setting by
-  // enabling or disabling the accessibility options on system tray menu.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, accessibility
-  // options will not appear in the system tray menu, but the user can cause the
-  // accessibility options to appear via the Settings page.
-  // When accessiblity features are enabled by other means (e.g by a key
-  // combination), Accessibility options will always appear in system tray menu.
   optional bool login_screen_show_options_in_system_tray_menu_enabled = 32;
   optional PolicyOptions
       login_screen_show_options_in_system_tray_menu_enabled_options = 33;
 
-  // Sets whether all the accessibility features shortcuts are being enabled or
-  // not on the login screen. If this policy is set to true, the accessibility
-  // shortcuts are going to be enabled when the login screen is shown. If this
-  // policy is set to false, the accessibility shortcuts are going to be
-  // disabled when the login screen is shown. If this policy is left unset, the
-  // accessibility shortcuts are going to be enabled on the login screen.
   optional bool login_screen_shortcuts_enabled = 34;
   optional PolicyOptions login_screen_shortcuts_enabled_options = 35;
 }
@@ -1048,6 +915,20 @@ message SAMLSettingsProto {
   // every time a user authenticates via SAML during login. If false, cookies
   // are transferred during each user's first login only.
   optional bool transfer_saml_cookies = 1;
+
+  // Deprecated. This field has been moved to SAMLUsernameProto.
+  optional string OBSOLETE_url_parameter_to_autofill_saml_username = 2
+      [deprecated = true];
+}
+
+message SAMLUsernameProto {
+  // If this policy is not configured or set to a blank string, users will have
+  // to manually enter their username on SAML IdP page during online
+  // authentication on the sign-in screen and the lock screen.
+  // Otherwise, this string is expected to contain a url parameter name which
+  // should be used on IdP's login page with user's email as a value to autofill
+  // the username.
+  optional string url_parameter_to_autofill_saml_username = 1;
 }
 
 message RebootOnShutdownProto {
@@ -1540,18 +1421,6 @@ message DeviceAuthDataCacheLifetimeProto {
   optional int32 lifetime_hours = 1;
 }
 
-// Setting to control the authentication type for newly added users which log in
-// via SAML.
-message SamlLoginAuthenticationTypeProto {
-  enum Type {
-    TYPE_DEFAULT = 0;             // Implementation-defined default config.
-    TYPE_CLIENT_CERTIFICATE = 1;  // Client certificate authentication.
-    // Next ID to use: 2
-  }
-
-  optional Type saml_login_authentication_type = 1 [default = TYPE_DEFAULT];
-}
-
 // Setting that controls whether unaffiliated users are allowed to run Crostini
 // (true by default)
 message DeviceUnaffiliatedCrostiniAllowedProto {
@@ -1754,13 +1623,21 @@ message DeviceArcDataSnapshotHoursProto {
 // Setting that controls whether system-wide trace collection using the Perfetto
 // system tracing service is allowed.
 message DeviceSystemWideTracingEnabledProto {
-  optional bool enabled = 1 [default = true];
+  optional bool enabled = 1 [default = false];
 }
 
 // Setting that controls whether data access is enabled for Thunderbolt/USB4
-// peripherals.
+// peripherals. This proto is no longer being used, please use
+// DevicePciPeripheralDataAccessEnabledProtoV2.
 message DevicePciPeripheralDataAccessEnabledProto {
   optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether data access is enabled for Thunderbolt/USB4
+// peripherals. This replaces DevicePciPeripheralDataAccessEnabledProto. Used
+// only for the associated CrosSetting.
+message DevicePciPeripheralDataAccessEnabledProtoV2 {
+  optional bool enabled = 1;
 }
 
 // Setting that controls whether Borealis will be allowed on the device.
@@ -1768,8 +1645,67 @@ message DeviceBorealisAllowedProto {
   optional bool allowed = 1 [default = true];
 }
 
+message DeviceAllowedBluetoothServicesProto {
+  // Policy which controls which service UUID is available.
+  repeated string allowlist = 1;
+}
+
+// Policy that controls whether packet captures will be allowed on the device.
+message DeviceDebugPacketCaptureAllowedProto {
+  optional bool allowed = 1;
+}
+
+// Settings that control when a device will reboot. The reboots are
+// recurring. In order to disable scheduled reboots the policy must be
+// removed.
+message DeviceScheduledRebootProto {
+  // This is a JSON string, for details see "DeviceScheduledReboot" in
+  // policy_templates.json.
+  optional string device_scheduled_reboot_settings = 1;
+}
+
+// Setting that controls whether restricted managed guest session is enabled on
+// the device.
+message DeviceRestrictedManagedGuestSessionEnabledProto {
+  // If this policy is set to true, it will forcefully override certain
+  // policies. If it's set to false or not set, then no policies will be
+  // overridden.
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls whether keyboard shortcuts mapping are consistent
+// across all international keyboard layouts.
+message DeviceI18nShortcutsEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
+// reven board collects hardware data of the device to provide relevant updates.
+// Setting that controls whether device hardware data can be also used for other
+// purposes.
+message RevenDeviceHWDataUsageEnabledProto {
+  optional bool hardware_data_usage_enabled = 1 [default = false];
+}
+
+// Controls whether Login WebUI will be explicitly loaded on start.
+// Overrides EnableLazyLoginWebUILoading feature.
+message DeviceLoginScreenWebUILazyLoadingProto {
+  optional bool enabled = 1 [default = false];
+}
+
+// Setting that controls different configurations for the Encrypted Reporting
+// Pipeline.
+message EncryptedReportingPipelineConfigurationProto {
+  // Controls overall functioning of Encrypted Reporting Pipeline: setting it to
+  // false would disable the pipeline on a device
+  optional bool enabled = 1 [default = true];
+}
+
+message DeviceReportXDREventsProto {
+  optional bool enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
-  reserved 61, 90;
+  reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -1858,7 +1794,6 @@ message ChromeDeviceSettingsProto {
   optional VirtualMachinesAllowedProto virtual_machines_allowed = 69;
   optional DeviceMachinePasswordChangeRateProto
       device_machine_password_change_rate = 70;
-  optional SamlLoginAuthenticationTypeProto saml_login_authentication_type = 71;
   optional DeviceUnaffiliatedCrostiniAllowedProto
       device_unaffiliated_crostini_allowed = 72;
   optional DeviceWiFiFastTransitionEnabledProto
@@ -1921,4 +1856,32 @@ message ChromeDeviceSettingsProto {
   optional DevicePciPeripheralDataAccessEnabledProto
       device_pci_peripheral_data_access_enabled = 118;
   optional DeviceBorealisAllowedProto device_borealis_allowed = 119;
+  optional DeviceAllowedBluetoothServicesProto
+      device_allowed_bluetooth_services = 120;
+  optional DeviceDebugPacketCaptureAllowedProto
+      device_debug_packet_capture_allowed = 121;
+  optional DeviceScheduledRebootProto device_scheduled_reboot = 122;
+  optional DevicePciPeripheralDataAccessEnabledProtoV2
+      device_pci_peripheral_data_access_enabled_v2 = 123;
+  optional DeviceRestrictedManagedGuestSessionEnabledProto
+      device_restricted_managed_guest_session_enabled = 124;
+  optional HostnameUserConfigurableProto hostname_user_configurable = 125;
+  optional BooleanPolicyProto
+      login_screen_prompt_on_multiple_matching_certificates = 126;
+  optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
+  optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
+  optional BooleanPolicyProto chromad_to_cloud_migration_enabled = 129;
+  optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
+  optional DeviceLoginScreenWebUILazyLoadingProto login_web_ui_lazy_loading =
+      131;
+  optional DeviceKeylockerForStorageEncryptionEnabledProto
+      keylocker_for_storage_encryption_enabled = 132;
+  optional BooleanPolicyProto device_run_automatic_cleanup_on_login = 133;
+  optional EncryptedReportingPipelineConfigurationProto
+      device_encrypted_reporting_pipeline_enabled = 134;
+  optional SAMLUsernameProto saml_username = 135;
+  optional StringListPolicyProto
+      device_login_screen_context_aware_access_signals_allowlist = 136;
+  optional StringPolicyProto device_printing_client_name_template = 137;
+  optional DeviceReportXDREventsProto device_report_xdr_events = 138;
 }

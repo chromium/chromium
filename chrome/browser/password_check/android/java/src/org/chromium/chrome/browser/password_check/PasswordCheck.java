@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_check;
 
 import android.app.Activity;
 import android.content.Context;
+
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 
 /**
  * This component allows to check for compromised passwords. It provides a settings page which shows
@@ -32,12 +34,6 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
          * @param status A {@link PasswordCheckUIStatus} enum value.
          */
         void onPasswordCheckStatusChanged(@PasswordCheckUIStatus int status);
-
-        /**
-         * Invoked whenever a running check finds another leaked credential.
-         * @param leakedCredential The newly found leaked credential.
-         */
-        void onCompromisedCredentialFound(CompromisedCredential leakedCredential);
 
         /**
          * Called during a check when a credential has finished being processed.
@@ -131,4 +127,9 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
      * Checks if scripts refreshment is finished.
      */
     boolean areScriptsRefreshed();
+
+    /**
+     *  Fetches scripts for automated passwords changes.
+     */
+    void fetchScripts();
 }

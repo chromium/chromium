@@ -1,30 +1,36 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 
 namespace {
 
+using ::network::mojom::WebClientHintsType;
+
 void LogCriticalCHStatus(CriticalCHRestart status) {
-  UMA_HISTOGRAM_ENUMERATION("ClientHints.CriticalCHRestart", status);
+  base::UmaHistogramEnumeration("ClientHints.CriticalCHRestart", status);
 }
 
 }  // namespace
@@ -41,26 +47,66 @@ CriticalClientHintsThrottle::CriticalClientHintsThrottle(
   LogCriticalCHStatus(CriticalCHRestart::kNavigationStarted);
 }
 
-void CriticalClientHintsThrottle::WillProcessResponse(
-    const GURL& response_url,
-    network::mojom::URLResponseHead* response_head,
+CriticalClientHintsThrottle::~CriticalClientHintsThrottle() = default;
+
+void CriticalClientHintsThrottle::WillStartRequest(
+    network::ResourceRequest* request,
     bool* defer) {
-  if (redirected_)
+  response_url_ = request->url;
+  initial_request_headers_ = request->headers;
+}
+
+void CriticalClientHintsThrottle::BeforeWillProcessResponse(
+    const GURL& response_url,
+    const network::mojom::URLResponseHead& response_head,
+    bool* defer) {
+  DCHECK_EQ(response_url, response_url_);
+  MaybeRestartWithHints(response_head);
+}
+
+void CriticalClientHintsThrottle::BeforeWillRedirectRequest(
+    net::RedirectInfo* redirect_info,
+    const network::mojom::URLResponseHead& response_head,
+    bool* defer,
+    std::vector<std::string>* to_be_removed_request_headers,
+    net::HttpRequestHeaders* modified_request_headers,
+    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+  MaybeRestartWithHints(response_head);
+  response_url_ = redirect_info->new_url;
+}
+
+void CriticalClientHintsThrottle::MaybeRestartWithHints(
+    const network::mojom::URLResponseHead& response_head) {
+  if (!base::FeatureList::IsEnabled(features::kCriticalClientHint))
     return;
 
-  if (!response_head->parsed_headers ||
-      !response_head->parsed_headers->accept_ch ||
-      !response_head->parsed_headers->critical_ch)
+  if (!response_head.parsed_headers ||
+      !response_head.parsed_headers->accept_ch ||
+      !response_head.parsed_headers->critical_ch)
     return;
+
+  url::Origin response_origin = url::Origin::Create(response_url_);
+
+  // Only restart once per-Origin (per navigation)
+  if (restarted_origins_.contains(response_origin))
+    return;
+
+  if (!ShouldAddClientHints(
+          response_origin, FrameTreeNode::GloballyFindByID(frame_tree_node_id_),
+          client_hint_delegate_)) {
+    return;
+  }
 
   // Ensure that only hints in the accept-ch header are examined
-  blink::WebEnabledClientHints hints;
+  blink::EnabledClientHints hints;
+  for (const WebClientHintsType hint :
+       response_head.parsed_headers->accept_ch.value())
+    hints.SetIsEnabled(response_url_, /*third_party_url=*/absl::nullopt,
+                       response_head.headers.get(), hint, true);
 
-  for (const auto& hint : response_head->parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(hint, true);
-
-  std::vector<network::mojom::WebClientHintsType> critical_hints;
-  for (const auto& hint : response_head->parsed_headers->critical_ch.value())
+  std::vector<WebClientHintsType> critical_hints;
+  for (const WebClientHintsType hint :
+       response_head.parsed_headers->critical_ch.value())
     if (hints.IsEnabled(hint))
       critical_hints.push_back(hint);
 
@@ -72,22 +118,43 @@ void CriticalClientHintsThrottle::WillProcessResponse(
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
-  if (AreCriticalHintsMissing(response_url, frame_tree_node,
-                              client_hint_delegate_, critical_hints)) {
-    redirected_ = true;
-    auto parsed = ParseAndPersistAcceptCHForNagivation(
-        response_url, response_head->parsed_headers, context_,
-        client_hint_delegate_, frame_tree_node);
+  if (!AreCriticalHintsMissing(response_origin, frame_tree_node,
+                               client_hint_delegate_, critical_hints)) {
+    return;
+  }
 
-    net::HttpRequestHeaders modified_headers;
+  ParseAndPersistAcceptCHForNavigation(response_origin,
+                                       response_head.parsed_headers,
+                                       response_head.headers.get(), context_,
+                                       client_hint_delegate_, frame_tree_node);
+  restarted_origins_.insert(response_origin);
+
+  net::HttpRequestHeaders modified_headers;
+  // TODO(crbug.com/1195034): If the frame tree node doesn't have an associated
+  // navigation_request (e.g. a service worker request) it might not override
+  // the user agent correctly.
+  if (frame_tree_node) {
     AddNavigationRequestClientHintsHeaders(
-        response_url, &modified_headers, context_, client_hint_delegate_,
-        frame_tree_node->navigation_request()->GetIsOverridingUserAgent(),
-        frame_tree_node);
+        response_origin, &modified_headers, context_, client_hint_delegate_,
+        frame_tree_node->navigation_request()->is_overriding_user_agent(),
+        frame_tree_node,
+        frame_tree_node->navigation_request()
+            ->commit_params()
+            .frame_policy.container_policy);
+  } else {
+    AddPrefetchNavigationRequestClientHintsHeaders(
+        response_origin, &modified_headers, context_, client_hint_delegate_,
+        /*is_ua_override_on=*/false, /*is_javascript_enabled=*/true);
+  }
 
-    LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
-
-    delegate_->RestartWithModifiedHeadersNow(modified_headers);
+  // If a client hint header is not in the original request,
+  // restart the request.
+  for (auto modified_header : modified_headers.GetHeaderVector()) {
+    if (!initial_request_headers_.HasHeader(modified_header.key)) {
+      LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
+      delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
+      return;
+    }
   }
 }
 }  // namespace content

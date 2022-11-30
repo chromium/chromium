@@ -26,8 +26,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
+<<<<<<< HEAD
 #include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+||||||| 80c960997e61f
+#include "third_party/blink/renderer/platform/heap/handle.h"
+=======
+#include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -41,7 +50,8 @@ namespace blink {
 class Resource;
 
 class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
-  USING_PRE_FINALIZER(ResourceClient, ClearResource);
+  USING_PRE_FINALIZER(ResourceClient, Prefinalize);
+
  public:
   ResourceClient() {
     // Pointer registration is needed by ResourceClientWalker.
@@ -91,8 +101,12 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   // additional clients.
   friend class CSSFontFaceSrcValue;
 
+  FRIEND_TEST_ALL_PREFIXES(ResourceTest, GarbageCollection);
+
   void SetResource(Resource* new_resource,
                    base::SingleThreadTaskRunner* task_runner);
+
+  void Prefinalize();
 
   Member<Resource> resource_;
 
@@ -103,4 +117,4 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_

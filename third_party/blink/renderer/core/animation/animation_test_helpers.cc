@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -25,6 +26,9 @@ void SetV8ObjectPropertyAsString(v8::Isolate* isolate,
                                  v8::Local<v8::Object> object,
                                  const StringView& name,
                                  const StringView& value) {
+  v8::MicrotasksScope microtasks_scope(
+      isolate, isolate->GetCurrentContext()->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   object
       ->Set(isolate->GetCurrentContext(), V8String(isolate, name),
             V8String(isolate, value))
@@ -35,6 +39,9 @@ void SetV8ObjectPropertyAsNumber(v8::Isolate* isolate,
                                  v8::Local<v8::Object> object,
                                  const StringView& name,
                                  double value) {
+  v8::MicrotasksScope microtasks_scope(
+      isolate, isolate->GetCurrentContext()->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   object
       ->Set(isolate->GetCurrentContext(), V8String(isolate, name),
             v8::Number::New(isolate, value))
@@ -46,8 +53,17 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element* target,
                                                   String value_start,
                                                   String value_end) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1000);
 
+  auto* model =
+      CreateSimpleKeyframeEffectModelForTest(property, value_start, value_end);
+  return MakeGarbageCollected<KeyframeEffect>(target, model, timing);
+}
+
+KeyframeEffectModelBase* CreateSimpleKeyframeEffectModelForTest(
+    CSSPropertyID property,
+    String value_start,
+    String value_end) {
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetOffset(0.0);
   start_keyframe->SetCSSPropertyValue(
@@ -62,8 +78,7 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element* target,
   keyframes.push_back(start_keyframe);
   keyframes.push_back(end_keyframe);
 
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  return MakeGarbageCollected<KeyframeEffect>(target, model, timing);
+  return MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 }
 
 void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
@@ -74,7 +89,8 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   // require our callers to properly register every animation they pass in
   // here, which the current tests do not do.
   auto style = document.GetStyleResolver().CreateComputedStyle();
-  StyleResolverState state(document, *element, StyleRequest(style.get()));
+  StyleResolverState state(document, *element, nullptr /* StyleRecalcContext */,
+                           StyleRequest(style.get()));
   state.SetStyle(style);
 
   ActiveInterpolationsMap map;
@@ -83,23 +99,6 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   StyleCascade cascade(state);
   cascade.AddInterpolations(&map, CascadeOrigin::kAnimation);
   cascade.Apply();
-}
-
-ScrollTimelineOffsetValue OffsetFromString(Document& document,
-                                           const String& string) {
-  ScrollTimelineOffsetValue result;
-
-  const CSSValue* value = css_test_helpers::ParseValue(
-      document, "<length-percentage> | auto", string);
-
-  if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(value))
-    result.SetCSSNumericValue(CSSNumericValue::FromCSSValue(*primitive));
-  else if (DynamicTo<CSSIdentifierValue>(value))
-    result.SetCSSKeywordValue(CSSKeywordValue::Create("auto"));
-  else
-    result.SetString(string);
-
-  return result;
 }
 
 }  // namespace animation_test_helpers

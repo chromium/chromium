@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_TEST_HELPER_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 
 class TestingProfile;
 
@@ -23,20 +24,24 @@ class ScopedUserManager;
 namespace plugin_vm {
 
 void SetupConciergeForSuccessfulDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_);
+    ash::FakeConciergeClient* fake_concierge_client_);
 
 void SetupConciergeForFailedDiskImageImport(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     vm_tools::concierge::DiskImageStatus status);
 
 void SetupConciergeForCancelDiskImageOperation(
-    chromeos::FakeConciergeClient* fake_concierge_client_,
+    ash::FakeConciergeClient* fake_concierge_client_,
     bool success);
 
 // A helper class for enabling Plugin VM in unit tests.
 class PluginVmTestHelper {
  public:
   explicit PluginVmTestHelper(TestingProfile* testing_profile);
+
+  PluginVmTestHelper(const PluginVmTestHelper&) = delete;
+  PluginVmTestHelper& operator=(const PluginVmTestHelper&) = delete;
+
   ~PluginVmTestHelper();
 
   void SetPolicyRequirementsToAllowPluginVm();
@@ -53,13 +58,21 @@ class PluginVmTestHelper {
   void OpenShelfItem();
   void CloseShelfItem();
 
+  // Adds an app in the default container. Replaces an existing app with the
+  // same app name if one exists.
+  void AddApp(const vm_tools::apps::App& app);
+
+  // Returns the app id that the registry would use for the given app name.
+  static std::string GenerateAppId(const std::string& app_name);
+
  private:
+  void UpdateRegistry();
+
   TestingProfile* testing_profile_;
+  vm_tools::apps::ApplicationList current_apps_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::test::ScopedRunningOnChromeOS> running_on_chromeos_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmTestHelper);
 };
 
 }  // namespace plugin_vm

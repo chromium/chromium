@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,24 +11,34 @@ that controls what branches the definition is actually executed for. If
 the `settings` struct in '//project.star', then the resource is not defined. The
 `branch_selector` argument can be one of the following constants referring to
 the category of the branch:
-* MAIN - The resource is defined only for main/master/trunk
+* MAIN - The resource is defined only for main/trunk
     [`settings.is_main`]
 * STANDARD_BRANCHES - The resource is defined only for the beta and stable
     branches.
-    [`not settings.is_main and not settings.is_lts_branch`]
-* LTS_BRANCHES - The resource is defined only for the long-term support branches
+    [`branch_type.STANDARD in settings.branch_types`]
+* DESKTOP_EXTENDED_STABLE_BRANCHES - The resource is defined only for the
+    desktop extended stable branch.
+    [`branch_type.DESKTOP_EXTENDED_STABLE in settings.branch_types`]
+* CROS_LTS_BRANCHES - The resource is defined only for the long-term support branches
     (LTC and LTR).
-    [`not settings.is_main and settings.is_lts_branch`]
+    [`branch_type.CROS_LTS in settings.branch_types`]
+* FUCHSIA_LTS_BRANCHES - The resource is defined only for the fuchsia support
+    branches.
+    [`branch_type.FUCHSIA_LTS in settings.branch_types`]
 
 The `branch_selector` argument can also be one of the following constants
 composing multiple categories:
-* STANDARD_MILESTONES - The resource is defined for a branch as it moves through
-    the standad release channels: trunk -> beta -> stable.
-* LTS_MILESTONES - The resource is defined for a branch as it move through the
+* STANDARD_MILESTONE - The resource is defined for a branch as it moves through
+    the standard release channels: trunk -> beta -> stable.
+* DESKTOP_EXTENDED_STABLE_MILESTONE - The resource is defined for a branch as it
+    moves through the desktop extended stable release channels:
+    trunk -> beta -> stable -> desktop extended stable
+* CROS_LTS_MILESTONE - The resource is defined for a branch as it move through the
     long-term suport release channels: trunk -> beta -> stable -> LTC -> LTR.
-* ALL_BRANCHES - The resource is defined for all branches and main/master/trunk.
-* NOT_MAIN - The resource is defined for all branches, but not for
-    main/master/trunk.
+* FUCHSIA_LTS_MILESTONE - The resource is define only for a branch as it moves
+    through the fuchsia support channels: trunk -> beta -> stable -> Fuchsia LTS.
+* ALL_BRANCHES - The resource is defined for all branches and main/trunk.
+* NOT_MAIN - The resource is defined for all branches, but not for main/trunk.
 
 The `branch_selector` constants are also accessible via the `branches` struct.
 
@@ -36,51 +46,101 @@ For other uses cases where execution needs to vary by branch, the following are
 also accessible via the `branches` struct:
 * matches - Allows library code to be written that takes branch-specific
     behavior.
-* value - Allows for providing different values between main/master/trunk and
-    branches.
+* value - Allows for providing different values between main/trunk and branches.
 * exec - Allows for conditionally executing starlark modules.
 """
 
-load("//project.star", "settings")
+load("//project.star", "branch_type", "settings")
 
 def _branch_selector(tag):
     return struct(__branch_selector__ = tag)
 
 MAIN = _branch_selector("MAIN")
 STANDARD_BRANCHES = _branch_selector("STANDARD_BRANCHES")
-LTS_BRANCHES = _branch_selector("LTS_BRANCHES")
+DESKTOP_EXTENDED_STABLE_BRANCHES = _branch_selector("DESKTOP_EXTENDED_STABLE_BRANCHES")
+CROS_LTS_BRANCHES = _branch_selector("CROS_LTS_BRANCHES")
+FUCHSIA_LTS_BRANCHES = _branch_selector("FUCHSIA_LTS_BRANCHES")
 
-_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, LTS_BRANCHES)
+_BRANCH_SELECTORS = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES, CROS_LTS_BRANCHES, FUCHSIA_LTS_BRANCHES)
 
-def _matches(branch_selector):
-    """Returns whether `branch_selector` matches the project settings."""
+def _normalize_branch_selector(branch_selector):
+    """Convert provided branch selector to a set of basic selectors.
+    """
+
+    # A single basic selector was provided, return a set containing just it
     if type(branch_selector) == type(struct()):
-        branch_selectors = [branch_selector]
-    else:
-        branch_selectors = branch_selector
+        return set([branch_selector])
+
+    # The provided selector is either:
+    # * a compound selector, which are tuples of basic selectors
+    # * an iterable of arbitrary selectors
+    # Iterate over the selector, extracting the basic selectors from each
+    branch_selectors = set()
+    for s in branch_selector:
+        if type(s) == type(struct()):
+            s = [s]
+        branch_selectors = branch_selectors.union(s)
+    return branch_selectors
+
+def _matches(branch_selector, *, target = None):
+    """Returns whether `branch_selector` matches the project settings.
+
+    Args:
+      branch_selector: A single branch selector value or a list of branch
+        selector values.
+      target: A single branch selector value or a list of branch selector values
+        to match branch_selector against. The return value will indicate whether
+        there is an intersection between branch_selector and target instead of
+        matching against the project settings.
+
+    Returns:
+      True if any of the specified branch selectors matches, False otherwise.
+    """
+    branch_selectors = _normalize_branch_selector(branch_selector)
+
+    if target != None:
+        targets = _normalize_branch_selector(target)
+        for b in branch_selectors:
+            if b in targets:
+                return True
+        return False
+
     for b in branch_selectors:
         if b == MAIN:
             if settings.is_main:
                 return True
         elif b == STANDARD_BRANCHES:
-            if not settings.is_main and not settings.is_lts_branch:
+            if branch_type.STANDARD in settings.branch_types:
                 return True
-        elif b == LTS_BRANCHES:
-            if settings.is_lts_branch:
+        elif b == DESKTOP_EXTENDED_STABLE_BRANCHES:
+            if branch_type.DESKTOP_EXTENDED_STABLE in settings.branch_types:
+                return True
+        elif b == CROS_LTS_BRANCHES:
+            if branch_type.CROS_LTS in settings.branch_types:
+                return True
+        elif b == FUCHSIA_LTS_BRANCHES:
+            if branch_type.FUCHSIA_LTS in settings.branch_types:
                 return True
         else:
             fail("elements of branch_selectors must be one of {}, got {!r}"
                 .format(_BRANCH_SELECTORS, b))
     return False
 
-def _value(*, for_main = None, for_branches = None):
-    """Provide a value that varies between main/master/trunk and branches.
+def _value(values, *, default = None):
+    """Provide a value that varies depending on the project settings.
 
-    If the current project settings indicate that this is main/master/trunk,
-    then `for_main` will be returned. Otherwise, `for_branches` will be
-    returned.
+    Args:
+      values - A mapping from branch selectors to the value to be used for the
+        matching branches. The keys can be either a single selector or a tuple
+        of selectors. The selectors will be matched in the order declared in the
+        mapping.
+      default - The value to be returned if the project settings don't match any
+        of the branch selectors in the keys of `values`.
     """
-    return for_main if settings.is_main else for_branches
+    for selector, value in values.items():
+        if _matches(selector):
+            return value
+    return default
 
 def _exec(module, *, branch_selector = MAIN):
     """Execute `module` if `branch_selector` matches the project settings."""
@@ -91,8 +151,8 @@ def _exec(module, *, branch_selector = MAIN):
 def _make_branch_conditional(fn):
     def conditional_fn(*args, branch_selector = MAIN, **kwargs):
         if not _matches(branch_selector):
-            return
-        fn(*args, **kwargs)
+            return None
+        return fn(*args, **kwargs)
 
     return conditional_fn
 
@@ -100,15 +160,19 @@ branches = struct(
     # Basic branch selectors
     MAIN = MAIN,
     STANDARD_BRANCHES = STANDARD_BRANCHES,
-    LTS_BRANCHES = LTS_BRANCHES,
+    DESKTOP_EXTENDED_STABLE_BRANCHES = DESKTOP_EXTENDED_STABLE_BRANCHES,
+    CROS_LTS_BRANCHES = CROS_LTS_BRANCHES,
+    FUCHSIA_LTS_BRANCHES = FUCHSIA_LTS_BRANCHES,
 
     # Branch selectors for tracking milestones through release channels
-    STANDARD_MILESTONE = [MAIN, STANDARD_BRANCHES],
-    LTS_MILESTONE = [MAIN, STANDARD_BRANCHES, LTS_BRANCHES],
+    STANDARD_MILESTONE = (MAIN, STANDARD_BRANCHES),
+    DESKTOP_EXTENDED_STABLE_MILESTONE = (MAIN, STANDARD_BRANCHES, DESKTOP_EXTENDED_STABLE_BRANCHES),
+    CROS_LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, CROS_LTS_BRANCHES),
+    FUCHSIA_LTS_MILESTONE = (MAIN, STANDARD_BRANCHES, FUCHSIA_LTS_BRANCHES),
 
     # Branch selectors to apply widely to branches
     ALL_BRANCHES = _BRANCH_SELECTORS,
-    NOT_MAIN = [b for b in _BRANCH_SELECTORS if b != MAIN],
+    NOT_MAIN = tuple([b for b in _BRANCH_SELECTORS if b != MAIN]),
 
     # Branch functions
     matches = _matches,

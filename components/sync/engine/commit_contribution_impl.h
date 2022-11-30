@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,18 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+
+namespace sync_pb {
+class ClientToServerMessage;
+class SyncEntity;
+class ClientToServerResponse;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -28,7 +32,9 @@ class ModelTypeWorker;
 // closely with the ModelTypeWorker.
 class CommitContributionImpl : public CommitContribution {
  public:
-  // Note: only one of |on_commit_response_callback| and
+  // If a non-null |cryptographer| is passed, it must outlive this object and
+  // will be used to encrypt the constructed commit. Otherwise, the commit won't
+  // be encrypted. Only one of |on_commit_response_callback| and
   // |on_full_commit_failure_callback| will be called.
   // TODO(rushans): there is still possible rare case when both of these
   // callbacks are never called, i.e. if get updates from the server fails.
@@ -43,6 +49,10 @@ class CommitContributionImpl : public CommitContribution {
       Cryptographer* cryptographer,
       PassphraseType passphrase_type,
       bool only_commit_specifics);
+
+  CommitContributionImpl(const CommitContributionImpl&) = delete;
+  CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
+
   ~CommitContributionImpl() override;
 
   // Implementation of CommitContribution
@@ -79,7 +89,7 @@ class CommitContributionImpl : public CommitContribution {
 
   // Null if |type_| is not encrypted. Otherwise this is used to encrypt the
   // committed entities.
-  Cryptographer* const cryptographer_;
+  const raw_ptr<Cryptographer> cryptographer_;
 
   const PassphraseType passphrase_type_;
 
@@ -96,8 +106,6 @@ class CommitContributionImpl : public CommitContribution {
   // Don't send any metadata to server, only specifics. This is needed for
   // commit only types to save bandwidth.
   bool only_commit_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitContributionImpl);
 };
 
 }  // namespace syncer

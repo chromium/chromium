@@ -1,6 +1,5 @@
 include_rules = [
   "+apps",
-  "+ash/components/audio",
   "+chromeos",
   "+components/keep_alive_registry",
   "+components/keyed_service",
@@ -11,6 +10,7 @@ include_rules = [
   "+components/sessions",
   "+components/update_client",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/web_modal",
   "+content/public/browser",
 
@@ -46,6 +46,7 @@ include_rules = [
   "+ui/wm",
 
   "+third_party/cros_system_api",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
 
   "-webkit",
 ]

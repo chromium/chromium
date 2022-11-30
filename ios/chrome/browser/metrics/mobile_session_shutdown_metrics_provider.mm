@@ -1,30 +1,29 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/version.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
+#import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "base/task/thread_pool.h"
+#import "base/version.h"
+#import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#import "components/breadcrumbs/core/features.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/features.h"
-#include "ios/chrome/browser/crash_report/crash_helper.h"
-#include "ios/chrome/browser/crash_report/features.h"
-#include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
-#include "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
+#import "ios/chrome/browser/crash_report/features.h"
+#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#import "ios/chrome/browser/crash_report/synthetic_crash_report_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -192,41 +191,40 @@ void LogStabilityIOSExperimentalCounts(
       return;
   };
 
-  UMA_STABILITY_HISTOGRAM_ENUMERATION(
-      "Stability.iOS.Experimental.Counts", type,
-      IOSStabilityUserVisibleCrashType::kMaxValue);
+  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.Experimental.Counts2",
+                                      type);
 }
 
-// Logs |type| in the shutdown type histogram.
+// Logs `type` in the shutdown type histogram.
 void LogShutdownType(MobileSessionShutdownType type) {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.MobileSessionShutdownType",
                                       type, MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
 }
 
 // Logs the time which the application was in the background between
-// |session_end_time| and now.
+// `session_end_time` and now.
 void LogApplicationBackgroundedTime(NSDate* session_end_time) {
   NSTimeInterval background_time =
       [[NSDate date] timeIntervalSinceDate:session_end_time];
   UMA_STABILITY_HISTOGRAM_LONG_TIMES(
       "Stability.iOS.UTE.TimeBetweenUTEAndNextLaunch",
-      base::TimeDelta::FromSeconds(background_time));
+      base::Seconds(background_time));
 }
 
-// Logs the device |battery_level| as a UTE stability metric.
+// Logs the device `battery_level` as a UTE stability metric.
 void LogBatteryCharge(float battery_level) {
   int battery_charge = static_cast<int>(battery_level * 100);
   UMA_STABILITY_HISTOGRAM_PERCENTAGE("Stability.iOS.UTE.BatteryCharge",
                                      battery_charge);
 }
 
-// Logs the device's |available_storage| as a UTE stability metric.
+// Logs the device's `available_storage` as a UTE stability metric.
 void LogAvailableStorage(NSInteger available_storage) {
   UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS("Stability.iOS.UTE.AvailableStorage",
                                         available_storage, 1, 200000, 100);
 }
 
-// Logs the OS version change between |os_version| and the current os version.
+// Logs the OS version change between `os_version` and the current os version.
 // Records whether the version is the same, if a minor version change occurred,
 // or if a major version change occurred.
 void LogOSVersionChange(std::string os_version) {
@@ -251,12 +249,6 @@ void LogOSVersionChange(std::string os_version) {
 
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.OSVersion", difference,
                                       VersionComparison::kMaxValue);
-}
-
-// Logs wether or not low power mode is enabled.
-void LogLowPowerMode(bool low_power_mode_enabled) {
-  UMA_STABILITY_HISTOGRAM_BOOLEAN("Stability.iOS.UTE.LowPowerModeEnabled",
-                                  low_power_mode_enabled);
 }
 
 // Logs the thermal state of the device.
@@ -356,7 +348,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
     if (session_info.OSVersion) {
       LogOSVersionChange(base::SysNSStringToUTF8(session_info.OSVersion));
     }
-    LogLowPowerMode(session_info.deviceWasInLowPowerMode);
     LogDeviceThermalState(session_info.deviceThermalState);
 
     UMA_STABILITY_HISTOGRAM_BOOLEAN(

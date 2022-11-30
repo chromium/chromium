@@ -1,0 +1,4 @@
+diff --git a/tensorflow/lite/ios/BUILD.apple b/tensorflow/lite/ios/BUILD
+similarity index 100%
+rename from tensorflow/lite/ios/BUILD.apple
+rename to tensorflow/lite/ios/BUILD

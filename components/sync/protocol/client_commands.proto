@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -23,7 +23,7 @@ message CustomNudgeDelay {
 
 message ClientCommand {
   // Time to wait before sending any requests to the server.
-  optional int32 set_sync_poll_interval = 1;       // in seconds
+  optional int32 set_sync_poll_interval = 1;  // in seconds
   // This has been deprecated since M75.
   optional int32 set_sync_long_poll_interval = 2 [deprecated = true];
 
@@ -47,4 +47,13 @@ message ClientCommand {
   // |sessions_commit_delay_seconds|
   // New in M39.
   repeated CustomNudgeDelay custom_nudge_delays = 8;
+
+  // Configuration for commit quota of extension-related data types.
+  // The maximum count of tokens (=initial at browser startup) and the
+  // interval for refilling one more token if not at maximum.
+  optional int32 extension_types_max_tokens = 9;
+  optional int32 extension_types_refill_interval_seconds = 10;
+
+  // Extended nudge delay for data types with depleted quota.
+  optional int32 extension_types_depleted_quota_nudge_delay_seconds = 11;
 }

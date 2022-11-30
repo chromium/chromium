@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
@@ -39,6 +38,9 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   // management differ from how typical infobars work.
   static GlobalConfirmInfoBar* Show(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
+  GlobalConfirmInfoBar(const GlobalConfirmInfoBar&) = delete;
+  GlobalConfirmInfoBar& operator=(const GlobalConfirmInfoBar&) = delete;
 
   // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* info_bar, bool animate) override;
@@ -75,8 +77,6 @@ class GlobalConfirmInfoBar : public TabStripModelObserver,
   bool is_closing_ = false;
 
   base::WeakPtrFactory<GlobalConfirmInfoBar> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBar);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_GLOBAL_CONFIRM_INFO_BAR_H_

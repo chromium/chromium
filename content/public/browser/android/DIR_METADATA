@@ -1,3 +1,5 @@
 monorail {
-  component: "Content>Core"
+  component: "Internals>Core"
 }
+
+os: ANDROID

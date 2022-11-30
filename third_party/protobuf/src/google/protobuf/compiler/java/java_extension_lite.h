@@ -49,15 +49,15 @@ class ImmutableExtensionLiteGenerator : public ExtensionGenerator {
  public:
   explicit ImmutableExtensionLiteGenerator(const FieldDescriptor* descriptor,
                                            Context* context);
-  virtual ~ImmutableExtensionLiteGenerator();
+  ~ImmutableExtensionLiteGenerator() override;
 
-  virtual void Generate(io::Printer* printer);
-
-  // Returns an estimate of the number of bytes the printed code will compile to
-  virtual int GenerateNonNestedInitializationCode(io::Printer* printer);
+  void Generate(io::Printer* printer) override;
 
   // Returns an estimate of the number of bytes the printed code will compile to
-  virtual int GenerateRegistrationCode(io::Printer* printer);
+  int GenerateNonNestedInitializationCode(io::Printer* printer) override;
+
+  // Returns an estimate of the number of bytes the printed code will compile to
+  int GenerateRegistrationCode(io::Printer* printer) override;
 
  private:
   const FieldDescriptor* descriptor_;

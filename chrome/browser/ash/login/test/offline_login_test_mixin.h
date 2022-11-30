@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 class NetworkStateTestHelper;
 
@@ -20,10 +20,13 @@ class NetworkStateTestHelper;
 class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
  public:
   explicit OfflineLoginTestMixin(InProcessBrowserTestMixinHost* host);
+
+  OfflineLoginTestMixin(const OfflineLoginTestMixin&) = delete;
+  OfflineLoginTestMixin& operator=(const OfflineLoginTestMixin&) = delete;
+
   ~OfflineLoginTestMixin() override;
 
   // InProcessBrowserTestMixin:
-  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Initializes DeviceSettingsProvider to start with OfflineLogin on the next
@@ -49,15 +52,22 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
                                   const std::string& password,
                                   bool wait_for_signin);
 
+  void SubmitEmailAndBlockOfflineFlow(const std::string& user_email);
+
  private:
   // Triggers Offline Login screen.
   void StartLoginAuthOffline();
 
   // This is ised to disable networking.
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineLoginTestMixin);
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OfflineLoginTestMixin;
+}
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_

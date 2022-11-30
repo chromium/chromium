@@ -1,0 +1,69 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+common_cppflags = -O2 -ggdb -Wall -Werror
+imgui_path = ./imgui
+imgui_cppflags = -DImDrawIdx='unsigned int' -I $imgui_path
+implot_path = ./implot
+
+# simple single-file c++ tools
+rule simple_cpp_build
+  deps = gcc
+  depfile = $out.d
+  command = c++ -o $out -MMD -MF $out.d $in $common_cppflags
+build binary_to_compressed_c: simple_cpp_build $imgui_path/misc/fonts/binary_to_compressed_c.cpp
+
+# imgui codegen
+rule gen_font_file
+  command = ./binary_to_compressed_c $in $fontname > $out
+build ProggyTiny.ttf.h: gen_font_file $imgui_path/misc/fonts/ProggyTiny.ttf | ./binary_to_compressed_c
+  fontname = ProggyTiny
+
+# imgui
+rule imgui_base_compile
+  deps = gcc
+  depfile = $out.d
+  command = c++ -c -o $out -MMD -MF $out.d $in $common_cppflags $imgui_cppflags
+build imgui.o: imgui_base_compile $imgui_path/imgui.cpp
+build imgui_demo.o: imgui_base_compile $imgui_path/imgui_demo.cpp
+build imgui_draw.o: imgui_base_compile $imgui_path/imgui_draw.cpp
+build imgui_tables.o: imgui_base_compile $imgui_path/imgui_tables.cpp
+build imgui_widgets.o: imgui_base_compile $imgui_path/imgui_widgets.cpp
+build imgui_impl_opengl2.o: imgui_base_compile $imgui_path/backends/imgui_impl_opengl2.cpp
+
+# imgui SDL backend
+rule imgui_sdl_compile
+  deps = gcc
+  depfile = $out.d
+  command = c++ -c -o $out -MMD -MF $out.d $in $common_cppflags $imgui_cppflags -I $imgui_path/backends $$(sdl2-config --cflags)
+#build imgui_impl_opengl2.o: imgui_sdl_compile $imgui_path/backends/imgui_impl_opengl2.cpp
+build imgui_impl_sdl.o: imgui_sdl_compile $imgui_path/backends/imgui_impl_sdl.cpp
+
+# implot
+rule implot_compile
+  deps = gcc
+  depfile = $out.d
+  command = c++ -c -o $out -MMD -MF $out.d $in $common_cppflags $imgui_cppflags -I $implot_path
+build implot.o: implot_compile $implot_path/implot.cpp
+build implot_demo.o: implot_compile $implot_path/implot_demo.cpp
+build implot_items.o: implot_compile $implot_path/implot_items.cpp
+
+# main GUI
+rule main_build
+  deps = gcc
+  depfile = $out.d
+  command = c++ -c -o $out -MMD -MF $out.d $in $common_cppflags -std=gnu++20 $imgui_cppflags -I $imgui_path/backends -I $implot_path $$(sdl2-config --cflags)
+build palloc-viewer-gui.o: main_build palloc-viewer-gui.cc | ProggyTiny.ttf.h
+
+# non-imgui code
+rule simple_compile
+  deps = gcc
+  depfile = $out.d
+  command = c++ -c -o $out -MMD -MF $out.d $in $common_cppflags -std=gnu++20
+build addrlookup.o: simple_compile addrlookup.cpp
+
+rule link
+  command = c++ $in -o $out $$(sdl2-config --libs) -lGL -ldw -pthread
+build palloc-viewer-gui: link palloc-viewer-gui.o imgui.o imgui_demo.o imgui_draw.o imgui_tables.o imgui_widgets.o imgui_impl_opengl2.o imgui_impl_sdl.o implot.o implot_demo.o implot_items.o addrlookup.o
+

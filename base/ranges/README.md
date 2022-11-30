@@ -3,7 +3,7 @@
 This directory aims to implement a C++14 version of the new `std::ranges`
 algorithms that were introduced in C++20. These implementations are added to the
 `::base::ranges` namespace, and callers can access them by including
-[`base/ranges/algorithm.h`](https://source.chromium.org/chromium/chromium/src/+/master:base/ranges/algorithm.h).
+[`base/ranges/algorithm.h`](https://source.chromium.org/chromium/chromium/src/+/main:base/ranges/algorithm.h).
 
 ## Similarities with C++20:
 

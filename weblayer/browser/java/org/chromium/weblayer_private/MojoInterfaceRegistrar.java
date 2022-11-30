@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.blink.mojom.Authenticator;
+import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -37,6 +39,7 @@ class MojoInterfaceRegistrar {
         @Override
         public void registerInterfaces(
                 InterfaceRegistry registry, final RenderFrameHost renderFrameHost) {
+            registry.addInterface(Authenticator.MANAGER, new AuthenticatorFactory(renderFrameHost));
             registry.addInterface(
                     InstalledAppProvider.MANAGER, new InstalledAppProviderFactory(renderFrameHost));
             registry.addInterface(

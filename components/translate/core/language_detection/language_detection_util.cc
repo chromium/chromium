@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
+<<<<<<< HEAD
 #include "base/record_replay.h"
 #include "base/stl_util.h"
+||||||| 80c960997e61f
+#include "base/stl_util.h"
+=======
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +45,7 @@ const SimilarLanguageCode kSimilarLanguageCodes[] = {
 
 // Checks |kSimilarLanguageCodes| and returns group code.
 int GetSimilarLanguageGroupCode(const std::string& language) {
-  for (size_t i = 0; i < base::size(kSimilarLanguageCodes); ++i) {
+  for (size_t i = 0; i < std::size(kSimilarLanguageCodes); ++i) {
     if (language.find(kSimilarLanguageCodes[i].code) != 0)
       continue;
     return kSimilarLanguageCodes[i].group;
@@ -342,7 +347,7 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
 }
 
 bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
-  for (size_t i = 0; i < base::size(kWellKnownCodesOnWrongConfiguration); ++i) {
+  for (size_t i = 0; i < std::size(kWellKnownCodesOnWrongConfiguration); ++i) {
     if (language_code == kWellKnownCodesOnWrongConfiguration[i])
       return true;
   }

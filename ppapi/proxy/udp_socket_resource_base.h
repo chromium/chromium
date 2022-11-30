@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/ppb_udp_socket.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -29,6 +28,10 @@ class PPAPI_PROXY_EXPORT UDPSocketResourceBase : public PluginResource {
   UDPSocketResourceBase(Connection connection,
                         PP_Instance instance,
                         bool private_api);
+
+  UDPSocketResourceBase(const UDPSocketResourceBase&) = delete;
+  UDPSocketResourceBase& operator=(const UDPSocketResourceBase&) = delete;
+
   virtual ~UDPSocketResourceBase();
 
   int32_t SetOptionImpl(PP_UDPSocket_Option name,
@@ -81,8 +84,6 @@ class PPAPI_PROXY_EXPORT UDPSocketResourceBase : public PluginResource {
   PP_NetAddress_Private bound_addr_;
 
   base::queue<scoped_refptr<TrackedCallback>> sendto_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResourceBase);
 };
 
 }  // namespace proxy

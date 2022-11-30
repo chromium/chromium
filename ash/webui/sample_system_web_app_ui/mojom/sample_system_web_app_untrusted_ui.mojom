@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.sample_swa;
+
+import "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_shared_ui.mojom";
+
+// Factory interface to create a PageHandler (communicates directly with the
+// browser), and creating the parent/child communication interfaces.
+interface UntrustedPageInterfacesFactory {
+  // Passes the chrome-untrusted:// page's remote and receiver to the embedding
+  // chrome:// parent frame to establish the communication.
+  CreateParentPage(
+    pending_remote<ChildUntrustedPage> child_page,
+    pending_receiver<ParentTrustedPage> parent_page
+  );
+
+  // If the chrome-untrusted:// page needs to communicate directly with the
+  // browser, add CreatePageHandler() here. See https://crrev.com/c/3135193
+  // and https://crrev.com/c/3138688 for example.
+};

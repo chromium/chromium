@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,8 @@ enum class TpmChallengeKeyResultCode {
   kMarkCorporateKeyFailedError = 19,
   kAttestationServiceInternalError = 20,
   kUploadCertificateFailedError = 21,
-  kMaxValue = kUploadCertificateFailedError,
+  kDeviceTrustURLConflictError = 22,
+  kMaxValue = kDeviceTrustURLConflictError,
 };
 
 // If |IsSuccess| returns false, |result_code| contains error code and
@@ -68,6 +69,7 @@ struct TpmChallengeKeyResult {
   static const char kMarkCorporateKeyFailedErrorMsg[];
   static const char kAttestationServiceInternalErrorMsg[];
   static const char kUploadCertificateFailedErrorMsg[];
+  static const char kDeviceTrustURLConflictError[];
 
   static TpmChallengeKeyResult MakeChallengeResponse(
       const std::string& challenge_response);

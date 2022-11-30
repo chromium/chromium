@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
 #define COMPONENTS_SERVICES_QUARANTINE_TEST_SUPPORT_H_
-
-#include <string>
 
 class GURL;
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,7 +27,7 @@
 namespace cups_proxy {
 namespace {
 
-using ValueType = ipp_parser::mojom::ValueType;
+using ValueType = ipp_parser::mojom::IppAttributeValue::Tag;
 
 // Initial version only supports english lcoales.
 // TODO(crbug.com/945409): Extending to supporting arbitrary locales.
@@ -70,31 +71,23 @@ std::array<std::vector<int>, 2> ConvertResolutions(
 // Depending on |type|, returns the number of values associated with |attr|.
 size_t GetAttributeValuesSize(const ipp_parser::mojom::IppAttributePtr& attr) {
   const auto& attr_value = attr->value;
-  switch (attr->type) {
-    case ValueType::DATE:
+  switch (attr->value->which()) {
+    case ValueType::kDate:
       return 1;
 
-    case ValueType::BOOLEAN:
-      DCHECK(attr_value->is_bools());
+    case ValueType::kBools:
       return attr_value->get_bools().size();
-    case ValueType::INTEGER:
-      DCHECK(attr_value->is_ints());
+    case ValueType::kInts:
       return attr_value->get_ints().size();
-    case ValueType::STRING:
-      DCHECK(attr_value->is_strings());
+    case ValueType::kStrings:
       return attr_value->get_strings().size();
-    case ValueType::OCTET:
-      DCHECK(attr_value->is_octets());
+    case ValueType::kOctets:
       return attr_value->get_octets().size();
-    case ValueType::RESOLUTION:
-      DCHECK(attr_value->is_resolutions());
+    case ValueType::kResolutions:
       return attr_value->get_resolutions().size();
-
-    default:
-      break;
   }
 
-  DVLOG(1) << "Unknown CupsIppParser ValueType " << attr->type;
+  NOTREACHED();
   return 0;
 }
 
@@ -111,39 +104,39 @@ bool StartsWith(base::span<uint8_t const> data,
 // Verifies that |method|, |endpoint|, and |http_version| form a valid HTTP
 // request-line. On success, returns a wrapper obj containing the verified
 // request-line.
-base::Optional<HttpRequestLine> IppValidator::ValidateHttpRequestLine(
+absl::optional<HttpRequestLine> IppValidator::ValidateHttpRequestLine(
     base::StringPiece method,
     base::StringPiece endpoint,
     base::StringPiece http_version) {
   if (method != "POST") {
-    return base::nullopt;
+    return absl::nullopt;
   }
   if (http_version != "HTTP/1.1") {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Empty endpoint is allowed.
   if (endpoint == "/") {
-    return HttpRequestLine{method.as_string(), endpoint.as_string(),
-                           http_version.as_string()};
+    return HttpRequestLine{std::string(method), std::string(endpoint),
+                           std::string(http_version)};
   }
 
   // Ensure endpoint is a known printer.
-  auto printer_id = ParseEndpointForPrinterId(endpoint.as_string());
+  auto printer_id = ParseEndpointForPrinterId(std::string(endpoint));
   if (!printer_id.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto printer = delegate_->GetPrinter(*printer_id);
   if (!printer.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return HttpRequestLine{method.as_string(), endpoint.as_string(),
-                         http_version.as_string()};
+  return HttpRequestLine{std::string(method), std::string(endpoint),
+                         std::string(http_version)};
 }
 
-base::Optional<std::vector<ipp_converter::HttpHeader>>
+absl::optional<std::vector<ipp_converter::HttpHeader>>
 IppValidator::ValidateHttpHeaders(
     const size_t http_content_length,
     const base::flat_map<std::string, std::string>& headers) {
@@ -151,7 +144,7 @@ IppValidator::ValidateHttpHeaders(
   for (const auto& header : headers) {
     if (!net::HttpUtil::IsValidHeaderName(header.first) ||
         !net::HttpUtil::IsValidHeaderValue(header.second)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
@@ -197,8 +190,8 @@ ipp_t* IppValidator::ValidateIppMessage(
       return nullptr;
     }
 
-    auto ret = ValidateAttribute(ipp_oper_id, attribute->name, attribute->type,
-                                 num_values);
+    auto ret = ValidateAttribute(ipp_oper_id, attribute->name,
+                                 attribute->value->which(), num_values);
     if (ret == ValidateAttributeResult::kFatalError) {
       return nullptr;
     }
@@ -209,9 +202,8 @@ ipp_t* IppValidator::ValidateIppMessage(
       continue;
     }
 
-    switch (attribute->type) {
-      case ValueType::BOOLEAN: {
-        DCHECK(attribute->value->is_bools());
+    switch (attribute->value->which()) {
+      case ValueType::kBools: {
         std::vector<char> values =
             ConvertBooleans(attribute->value->get_bools());
 
@@ -223,8 +215,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::DATE: {
-        DCHECK(attribute->value->is_date());
+      case ValueType::kDate: {
         std::vector<uint8_t> date = attribute->value->get_date();
 
         // Per RFC2910, ipp_uchar_t is defined as an OCTET, so below
@@ -238,8 +229,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::INTEGER: {
-        DCHECK(attribute->value->is_ints());
+      case ValueType::kInts: {
         std::vector<int> values = attribute->value->get_ints();
 
         auto* attr = ippAddIntegers(
@@ -251,9 +241,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::STRING: {
-        DCHECK(attribute->value->is_strings());
-
+      case ValueType::kStrings: {
         // Note: cstrings_values references attribute->value's strings, i.e.
         // attribute->value MUST outlive cstrings_values.
         std::vector<const char*> cstrings_values =
@@ -269,8 +257,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::OCTET: {
-        DCHECK(attribute->value->is_octets());
+      case ValueType::kOctets: {
         size_t num = attribute->value->get_octets().size();
         if (num != 1) {
           LOG(ERROR) << "CUPS API only supports adding a single octet string "
@@ -292,8 +279,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         }
         break;
       }
-      case ValueType::RESOLUTION: {
-        DCHECK(attribute->value->is_resolutions());
+      case ValueType::kResolutions: {
         std::array<std::vector<int>, 2> res =
             ConvertResolutions(attribute->value->get_resolutions());
         auto* attr = ippAddResolutions(
@@ -336,7 +322,7 @@ IppValidator::IppValidator(CupsProxyServiceDelegate* const delegate)
 
 IppValidator::~IppValidator() = default;
 
-base::Optional<IppRequest> IppValidator::ValidateIppRequest(
+absl::optional<IppRequest> IppValidator::ValidateIppRequest(
     ipp_parser::mojom::IppRequestPtr to_validate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Build ipp message.
@@ -344,20 +330,20 @@ base::Optional<IppRequest> IppValidator::ValidateIppRequest(
   printing::ScopedIppPtr ipp =
       printing::WrapIpp(ValidateIppMessage(std::move(to_validate->ipp)));
   if (ipp == nullptr) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Validate ipp data.
   // TODO(crbug/894607): Validate ippData (pdf).
   if (!ValidateIppData(to_validate->data)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Build request line.
   auto request_line = ValidateHttpRequestLine(
       to_validate->method, to_validate->endpoint, to_validate->http_version);
   if (!request_line.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Build headers; must happen after ipp message/data since it requires the
@@ -366,7 +352,7 @@ base::Optional<IppRequest> IppValidator::ValidateIppRequest(
       ippLength(ipp.get()) + to_validate->data.size();
   auto headers = ValidateHttpHeaders(http_content_length, to_validate->headers);
   if (!headers.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Marshall request
@@ -381,7 +367,7 @@ base::Optional<IppRequest> IppValidator::ValidateIppRequest(
       ret.request_line.method, ret.request_line.endpoint,
       ret.request_line.http_version, ret.headers, ret.ipp.get(), ret.ipp_data);
   if (!request_buffer.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret.buffer = std::move(*request_buffer);

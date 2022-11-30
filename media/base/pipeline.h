@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
@@ -22,6 +21,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -38,6 +38,11 @@ class MEDIA_EXPORT Pipeline {
     // and |suspend_cb| respectively.
     // NOTE: The client is responsible for calling Pipeline::Stop().
     virtual void OnError(PipelineStatus status) = 0;
+
+    // Executed whenever some fallback-enabled portion of the pipeline (Just
+    // Decoders and Renderers for now) fails in such a way that a fallback
+    // is still possible without a fatal pipeline error.
+    virtual void OnFallback(PipelineStatus status) = 0;
 
     // Executed whenever the media reaches the end.
     virtual void OnEnded() = 0;
@@ -79,13 +84,13 @@ class MEDIA_EXPORT Pipeline {
 
     // Executed whenever the underlying AudioDecoder or VideoDecoder changes
     // during playback.
-    virtual void OnAudioDecoderChange(const AudioDecoderInfo& info) = 0;
-    virtual void OnVideoDecoderChange(const VideoDecoderInfo& info) = 0;
+    virtual void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) = 0;
+    virtual void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) = 0;
 
     // Executed whenever the video frame rate changes.  |fps| will be unset if
     // the frame rate is unstable.  The duration used for the frame rate is
     // based on wall clock time, not media time.
-    virtual void OnVideoFrameRateChange(base::Optional<int> fps) = 0;
+    virtual void OnVideoFrameRateChange(absl::optional<int> fps) = 0;
   };
 
   virtual ~Pipeline() {}
@@ -148,8 +153,12 @@ class MEDIA_EXPORT Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   virtual void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) = 0;
+
+  // Signal to the pipeline that there has been a client request to access
+  // video frame data.
+  virtual void OnExternalVideoFrameRequest() = 0;
 
   // Stops the pipeline. This is a blocking function.
   // If the pipeline is started, it must be stopped before destroying it.
@@ -223,14 +232,16 @@ class MEDIA_EXPORT Pipeline {
   // post-decode buffering required to start playback or resume from
   // seek/underflow. A null option indicates the hint is unset and the pipeline
   // can choose its own default.
-  virtual void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
 
   // Sets whether pitch adjustment should be applied when the playback rate is
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch) = 0;
 
-  // Sets a flag indicating whether the audio stream was initiated by autoplay.
-  virtual void SetAutoplayInitiated(bool autoplay_initiated) = 0;
+  // Sets a flag indicating whether the audio stream was played with user
+  // activation.
+  virtual void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) = 0;
 
   // Returns the current media playback time, which progresses from 0 until
   // GetMediaDuration().

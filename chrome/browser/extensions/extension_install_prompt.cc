@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -40,6 +41,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using extensions::Extension;
 using extensions::Manifest;
@@ -265,6 +267,7 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
     case REMOTE_INSTALL_PROMPT:
     case REPAIR_PROMPT:
     case DELEGATED_PERMISSIONS_PROMPT:
+    case EXTENSION_REQUEST_PROMPT:
       id = IDS_CANCEL;
       break;
     case PERMISSIONS_PROMPT:
@@ -274,7 +277,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
       id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ABORT_BUTTON;
       break;
     case POST_INSTALL_PERMISSIONS_PROMPT:
-    case EXTENSION_REQUEST_PROMPT:
     case EXTENSION_PENDING_REQUEST_PROMPT:
       id = IDS_CLOSE;
       break;
@@ -449,6 +451,14 @@ bool ExtensionInstallPrompt::Prompt::ShouldDisplayWithholdingUI() const {
          is_requesting_host_permissions_ && type_ == INSTALL_PROMPT;
 }
 
+ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(Result result)
+    : DoneCallbackPayload(result, std::string()) {}
+
+ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(
+    Result result,
+    std::string justification)
+    : result(result), justification(std::move(justification)) {}
+
 // static
 ExtensionInstallPrompt::PromptType
 ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
@@ -473,14 +483,15 @@ scoped_refptr<Extension>
     std::string* error) {
   std::unique_ptr<base::DictionaryValue> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
-    localized_manifest.reset(manifest->DeepCopy());
+    localized_manifest = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(manifest->Clone()));
     if (!localized_name.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kName,
-                                    localized_name);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kName,
+                                       localized_name);
     }
     if (!localized_description.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kDescription,
-                                    localized_description);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kDescription,
+                                       localized_description);
     }
   }
 
@@ -553,7 +564,7 @@ void ExtensionInstallPrompt::ShowDialog(
   if (extension->is_theme() && extension->from_webstore() &&
       prompt_->type() != EXTENSION_REQUEST_PROMPT &&
       prompt_->type() != EXTENSION_PENDING_REQUEST_PROMPT) {
-    std::move(done_callback_).Run(Result::ACCEPTED);
+    std::move(done_callback_).Run(DoneCallbackPayload(Result::ACCEPTED));
     return;
   }
 
@@ -615,10 +626,8 @@ void ExtensionInstallPrompt::LoadImageIfNeeded() {
 
   std::vector<extensions::ImageLoader::ImageRepresentation> images_list;
   images_list.push_back(extensions::ImageLoader::ImageRepresentation(
-      image,
-      extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
-      gfx::Size(),
-      ui::SCALE_FACTOR_100P));
+      image, extensions::ImageLoader::ImageRepresentation::NEVER_RESIZE,
+      gfx::Size(), ui::k100Percent));
   loader->LoadImagesAsync(extension_.get(), images_list,
                           base::BindOnce(&ExtensionInstallPrompt::OnImageLoaded,
                                          weak_factory_.GetWeakPtr()));
@@ -647,7 +656,7 @@ void ExtensionInstallPrompt::ShowConfirmation() {
   prompt_->set_icon(gfx::Image::CreateFrom1xBitmap(icon_));
 
   if (show_params_->WasParentDestroyed()) {
-    std::move(done_callback_).Run(Result::ABORTED);
+    std::move(done_callback_).Run(DoneCallbackPayload(Result::ABORTED));
     return;
   }
 
@@ -667,7 +676,7 @@ void ExtensionInstallPrompt::ShowConfirmation() {
   // a callback on the stack.
   auto cb = std::move(done_callback_);
   std::move(show_dialog_callback_)
-      .Run(show_params_.get(), std::move(cb), std::move(prompt_));
+      .Run(std::move(show_params_), std::move(cb), std::move(prompt_));
 }
 
 bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
@@ -679,21 +688,30 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
     // pumping a few times before the user clicks accept or cancel.
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(done_callback_),
-                                    ExtensionInstallPrompt::Result::ACCEPTED));
+          FROM_HERE,
+          base::BindOnce(
+              std::move(done_callback_),
+              DoneCallbackPayload(ExtensionInstallPrompt::Result::ACCEPTED,
+                                  extensions::ScopedTestDialogAutoConfirm::
+                                      GetJustification())));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(
               std::move(done_callback_),
-              ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED));
+              DoneCallbackPayload(
+                  ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED,
+                  extensions::ScopedTestDialogAutoConfirm::
+                      GetJustification())));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::CANCEL:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback_),
-                         ExtensionInstallPrompt::Result::USER_CANCELED));
+                         DoneCallbackPayload(
+                             ExtensionInstallPrompt::Result::USER_CANCELED)));
       return true;
   }
 

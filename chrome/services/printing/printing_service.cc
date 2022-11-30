@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@
 #include "chrome/services/printing/pdf_to_pwg_raster_converter.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/printing/pdf_flattener.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/services/printing/pdf_thumbnailer.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/services/printing/pdf_to_emf_converter.h"
 #include "chrome/services/printing/pdf_to_emf_converter_factory.h"
 #endif
@@ -41,13 +44,15 @@ void PrintingService::BindPdfToPwgRasterConverter(
       std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintingService::BindPdfFlattener(
     mojo::PendingReceiver<mojom::PdfFlattener> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfFlattener>(),
                               std::move(receiver));
 }
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintingService::BindPdfThumbnailer(
     mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<printing::PdfThumbnailer>(),
@@ -55,7 +60,7 @@ void PrintingService::BindPdfThumbnailer(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintingService::BindPdfToEmfConverterFactory(
     mojo::PendingReceiver<mojom::PdfToEmfConverterFactory> receiver) {
   mojo::MakeSelfOwnedReceiver(

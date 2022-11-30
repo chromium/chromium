@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_MISC_SCOPED_FORBID_RETURN_H_
 #define CRASHPAD_UTIL_MISC_SCOPED_FORBID_RETURN_H_
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -31,6 +30,10 @@ namespace crashpad {
 class ScopedForbidReturn {
  public:
   ScopedForbidReturn() : armed_(true) {}
+
+  ScopedForbidReturn(const ScopedForbidReturn&) = delete;
+  ScopedForbidReturn& operator=(const ScopedForbidReturn&) = delete;
+
   ~ScopedForbidReturn();
 
   //! \brief Arms the object so that it will abort execution when destroyed.
@@ -45,8 +48,6 @@ class ScopedForbidReturn {
 
  private:
   bool armed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedForbidReturn);
 };
 
 }  // namespace crashpad

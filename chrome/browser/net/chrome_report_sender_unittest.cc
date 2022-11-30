@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,8 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
     head->headers =
         net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n\n");
     head->mime_type = "text/html";
-    client_remote->OnReceiveResponse(std::move(head));
+    client_remote->OnReceiveResponse(
+        std::move(head), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
     client_remote->OnComplete(network::URLLoaderCompletionStatus());
   }
 

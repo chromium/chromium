@@ -1,0 +1,33 @@
+{
+  children: [
+    {
+      name: "test_ui_stack",
+      url: "fuchsia-pkg://fuchsia.com/flatland-scene-manager-test-ui-stack#meta/test-ui-stack.cm",
+    },
+  ],
+  offer: [
+    {
+      protocol: [
+        "fuchsia.logger.LogSink",
+        "fuchsia.scheduler.ProfileProvider",
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.tracing.provider.Registry",
+        "fuchsia.vulkan.loader.Loader",
+      ],
+      from: "parent",
+      to: "#test_ui_stack",
+    },
+  ],
+  use: [
+    {
+      protocol: [
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.input3.Keyboard",
+        "fuchsia.ui.scenic.Scenic",
+      ],
+      from: "#test_ui_stack",
+    },
+  ],
+}

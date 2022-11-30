@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -25,17 +26,17 @@ class BlobBytesProviderTest : public testing::Test {
     Platform::SetMainThreadTaskRunnerForTesting();
 
     test_bytes1_.resize(128);
-    for (size_t i = 0; i < test_bytes1_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes1_.size(); ++i)
       test_bytes1_[i] = i % 191;
     test_data1_ = RawData::Create();
     test_data1_->MutableData()->AppendVector(test_bytes1_);
     test_bytes2_.resize(64);
-    for (size_t i = 0; i < test_bytes2_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes2_.size(); ++i)
       test_bytes2_[i] = i;
     test_data2_ = RawData::Create();
     test_data2_->MutableData()->AppendVector(test_bytes2_);
     test_bytes3_.resize(32);
-    for (size_t i = 0; i < test_bytes3_.size(); ++i)
+    for (wtf_size_t i = 0; i < test_bytes3_.size(); ++i)
       test_bytes3_[i] = (i + 10) % 137;
     test_data3_ = RawData::Create();
     test_data3_->MutableData()->AppendVector(test_bytes3_);
@@ -52,8 +53,7 @@ class BlobBytesProviderTest : public testing::Test {
 
   std::unique_ptr<BlobBytesProvider> CreateProvider(
       scoped_refptr<RawData> data = nullptr) {
-    auto result = BlobBytesProvider::CreateForTesting(
-        blink::scheduler::GetSequencedTaskRunnerForTesting());
+    auto result = std::make_unique<BlobBytesProvider>();
     if (data)
       result->AppendData(std::move(data));
     return result;
@@ -73,6 +73,8 @@ class BlobBytesProviderTest : public testing::Test {
 
 TEST_F(BlobBytesProviderTest, Consolidation) {
   auto data = CreateProvider();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(data->sequence_checker_);
+
   data->AppendData(base::make_span("abc", 3));
   data->AppendData(base::make_span("def", 3));
   data->AppendData(base::make_span("ps1", 3));
@@ -145,14 +147,14 @@ class RequestAsFile : public BlobBytesProviderTest,
                              uint64_t file_offset) {
     base::FilePath path;
     base::CreateTemporaryFile(&path);
-    base::Optional<base::Time> received_modified;
+    absl::optional<base::Time> received_modified;
     test_provider_->RequestAsFile(
         source_offset, source_length,
         base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE),
         file_offset,
         base::BindOnce(
-            [](base::Optional<base::Time>* received_modified,
-               base::Optional<base::Time> modified) {
+            [](absl::optional<base::Time>* received_modified,
+               absl::optional<base::Time> modified) {
               *received_modified = modified;
             },
             &received_modified));
@@ -227,7 +229,7 @@ TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
   test_provider_->RequestAsFile(
       test.offset, test.size,
       base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE),
-      file_offset, base::BindOnce([](base::Optional<base::Time> last_modified) {
+      file_offset, base::BindOnce([](absl::optional<base::Time> last_modified) {
         EXPECT_TRUE(last_modified);
       }));
 
@@ -274,7 +276,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
     provider->RequestAsFile(
         i, 16, base::File(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE),
         combined_bytes_.size() - i - 16,
-        base::BindOnce([](base::Optional<base::Time> last_modified) {
+        base::BindOnce([](absl::optional<base::Time> last_modified) {
           EXPECT_TRUE(last_modified);
         }));
     expected_data.insert(0, combined_bytes_.data() + i, 16);
@@ -298,7 +300,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_InvaldFile) {
 
   provider->RequestAsFile(
       0, 16, base::File(), 0,
-      base::BindOnce([](base::Optional<base::Time> last_modified) {
+      base::BindOnce([](absl::optional<base::Time> last_modified) {
         EXPECT_FALSE(last_modified);
       }));
 }
@@ -310,7 +312,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_UnwritableFile) {
   base::CreateTemporaryFile(&path);
   provider->RequestAsFile(
       0, 16, base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ), 0,
-      base::BindOnce([](base::Optional<base::Time> last_modified) {
+      base::BindOnce([](absl::optional<base::Time> last_modified) {
         EXPECT_FALSE(last_modified);
       }));
 

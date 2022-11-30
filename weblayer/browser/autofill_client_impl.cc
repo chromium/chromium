@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/autofill_client_impl.h"
 
-#include "base/stl_util.h"
+#include <utility>
+
+#include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +31,7 @@ AutofillClientImpl::GetAutocompleteHistoryManager() {
 }
 
 PrefService* AutofillClientImpl::GetPrefs() {
-  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
 }
 
 const PrefService* AutofillClientImpl::GetPrefs() const {
@@ -77,9 +79,14 @@ autofill::AddressNormalizer* AutofillClientImpl::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AutofillClientImpl::GetLastCommittedURL() const {
+const GURL& AutofillClientImpl::GetLastCommittedPrimaryMainFrameURL() const {
   NOTREACHED();
   return GURL::EmptyGURL();
+}
+
+url::Origin AutofillClientImpl::GetLastCommittedPrimaryMainFrameOrigin() const {
+  NOTREACHED();
+  return url::Origin();
 }
 
 security_state::SecurityLevel
@@ -93,7 +100,7 @@ const translate::LanguageState* AutofillClientImpl::GetLanguageState() {
 }
 
 translate::TranslateDriver* AutofillClientImpl::GetTranslateDriver() {
-  // The TranslateDriver is used by AutofillHandler to observe the page language
+  // The TranslateDriver is used by AutofillManager to observe the page language
   // and run the type-prediction heuristics with language-dependent regexps.
   auto* translate_client = TranslateClientImpl::FromWebContents(web_contents());
   if (translate_client)
@@ -116,7 +123,7 @@ void AutofillClientImpl::OnUnmaskVerificationResult(PaymentsRpcResult result) {
   NOTREACHED();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<std::string>
 AutofillClientImpl::GetAllowedMerchantsForVirtualCards() {
   NOTREACHED();
@@ -181,7 +188,7 @@ void AutofillClientImpl::OfferVirtualCardOptions(
   NOTREACHED();
 }
 
-#else  // defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
 void AutofillClientImpl::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   NOTREACHED();
@@ -222,6 +229,8 @@ void AutofillClientImpl::ConfirmCreditCardFillAssist(
 
 void AutofillClientImpl::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
+    const autofill::AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   NOTREACHED();
 }
@@ -232,6 +241,49 @@ bool AutofillClientImpl::HasCreditCardScanFeature() {
 }
 
 void AutofillClientImpl::ScanCreditCard(CreditCardScanCallback callback) {
+  NOTREACHED();
+}
+
+bool AutofillClientImpl::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool AutofillClientImpl::IsFastCheckoutTriggerForm(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field) {
+  return false;
+}
+
+bool AutofillClientImpl::FastCheckoutScriptSupportsConsentlessExecution(
+    const url::Origin& origin) {
+  return false;
+}
+
+bool AutofillClientImpl::FastCheckoutClientSupportsConsentlessExecution() {
+  return false;
+}
+
+bool AutofillClientImpl::ShowFastCheckout(
+    base::WeakPtr<autofill::FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AutofillClientImpl::HideFastCheckout() {
+  NOTREACHED();
+}
+
+bool AutofillClientImpl::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool AutofillClientImpl::ShowTouchToFillCreditCard(
+    base::WeakPtr<autofill::TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void AutofillClientImpl::HideTouchToFillCreditCard() {
   NOTREACHED();
 }
 
@@ -281,8 +333,15 @@ bool AutofillClientImpl::IsAutocompleteEnabled() {
   return false;
 }
 
+bool AutofillClientImpl::IsPasswordManagerEnabled() {
+  // This function is currently only used by the BrowserAutofillManager,
+  // but not by the AndroidAutofillManager. See crbug.com/1293341 for context.
+  NOTREACHED();
+  return false;
+}
+
 void AutofillClientImpl::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    autofill::AutofillDriver* driver,
     const std::vector<autofill::FormStructure*>& forms) {
   NOTREACHED();
 }
@@ -312,14 +371,19 @@ void AutofillClientImpl::ExecuteCommand(int id) {
   NOTREACHED();
 }
 
+void AutofillClientImpl::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+  NOTREACHED();
+}
+
 void AutofillClientImpl::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   NOTREACHED();
 }
 
 AutofillClientImpl::AutofillClientImpl(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<AutofillClientImpl>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillClientImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillClientImpl);
 
 }  // namespace weblayer

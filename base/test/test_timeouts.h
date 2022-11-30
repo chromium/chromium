@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,16 @@
 #define BASE_TEST_TEST_TIMEOUTS_H_
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 // Returns common timeouts to use in tests. Makes it possible to adjust
 // the timeouts for different environments (like TSan).
 class TestTimeouts {
  public:
+  TestTimeouts() = delete;
+  TestTimeouts(const TestTimeouts&) = delete;
+  TestTimeouts& operator=(const TestTimeouts&) = delete;
+
   // Initializes the timeouts. Non thread-safe. Should be called exactly once
   // by the test suite.
   static void Initialize();
@@ -56,8 +59,6 @@ class TestTimeouts {
   static base::TimeDelta action_timeout_;
   static base::TimeDelta action_max_timeout_;
   static base::TimeDelta test_launcher_timeout_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TestTimeouts);
 };
 
 #endif  // BASE_TEST_TEST_TIMEOUTS_H_

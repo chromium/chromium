@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -27,7 +29,7 @@
 
 namespace {
 
-base::Optional<media_router::MediaRouter*> media_router_for_test_;
+absl::optional<media_router::MediaRouter*> media_router_for_test_;
 
 Profile* GetProfile() {
   if (!user_manager::UserManager::IsInitialized())
@@ -37,7 +39,7 @@ Profile* GetProfile() {
   if (!user)
     return nullptr;
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
 // Returns the MediaRouter instance for the current primary profile, if there is
@@ -74,6 +76,10 @@ class CastDeviceCache : public media_router::MediaRoutesObserver,
 
   explicit CastDeviceCache(
       const base::RepeatingClosure& update_devices_callback);
+
+  CastDeviceCache(const CastDeviceCache&) = delete;
+  CastDeviceCache& operator=(const CastDeviceCache&) = delete;
+
   ~CastDeviceCache() override;
 
   // This may run |update_devices_callback_| before returning.
@@ -87,15 +93,12 @@ class CastDeviceCache : public media_router::MediaRoutesObserver,
   void OnSinksReceived(const MediaSinks& sinks) override;
 
   // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(const MediaRoutes& routes,
-                       const MediaRouteIds& unused_joinable_route_ids) override;
+  void OnRoutesUpdated(const MediaRoutes& routes) override;
 
   MediaSinks sinks_;
   MediaRoutes routes_;
 
   base::RepeatingClosure update_devices_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDeviceCache);
 };
 
 CastDeviceCache::CastDeviceCache(
@@ -135,9 +138,7 @@ void CastDeviceCache::OnSinksReceived(const MediaSinks& sinks) {
   update_devices_callback_.Run();
 }
 
-void CastDeviceCache::OnRoutesUpdated(
-    const MediaRoutes& routes,
-    const MediaRouteIds& unused_joinable_route_ids) {
+void CastDeviceCache::OnRoutesUpdated(const MediaRoutes& routes) {
   routes_ = routes;
   update_devices_callback_.Run();
 }
@@ -193,6 +194,12 @@ bool CastConfigControllerMediaRouter::HasActiveRoute() const {
   return false;
 }
 
+bool CastConfigControllerMediaRouter::AccessCodeCastingEnabled() const {
+  Profile* profile = GetProfile();
+  return base::FeatureList::IsEnabled(::features::kAccessCodeCastUI) &&
+         profile && media_router::GetAccessCodeCastEnabledPref(profile);
+}
+
 void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   // The media router component isn't ready yet.
   if (!device_cache())
@@ -204,13 +211,6 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   devices_.clear();
 
   for (const media_router::MediaSink& sink : device_cache()->sinks()) {
-    // TODO(crbug.com/1154342): Remove this if-statement once the toolbar's Cast
-    // dialog no longer needs Meet sinks and they are disabled in the backend.
-    if (sink.IsMaybeCloudSink() &&
-        !base::FeatureList::IsEnabled(
-            media_router::kCastToMeetingFromCastDialog)) {
-      continue;
-    }
     ash::SinkAndRoute device;
     device.sink.id = sink.id();
     device.sink.name = sink.name();
@@ -221,9 +221,6 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   }
 
   for (const media_router::MediaRoute& route : device_cache()->routes()) {
-    if (!route.for_display())
-      continue;
-
     for (ash::SinkAndRoute& device : devices_) {
       if (device.sink.id == route.media_sink_id()) {
         device.route.id = route.media_route_id();

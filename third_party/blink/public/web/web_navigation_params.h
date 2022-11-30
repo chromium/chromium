@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,28 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/link_header.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/public/platform/web_fenced_frame_reporting.h"
 #include "third_party/blink/public/platform/web_http_body.h"
-#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -42,7 +44,6 @@
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/public/web/web_origin_policy.h"
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
@@ -56,6 +57,7 @@ namespace blink {
 
 class KURL;
 class WebDocumentLoader;
+class WebServiceWorkerNetworkProvider;
 
 // This structure holds all information collected by Blink when
 // navigation is being initiated.
@@ -105,8 +107,12 @@ struct BLINK_EXPORT WebNavigationInfo {
   // by the window.open'd frame.
   bool is_opener_navigation = false;
 
-  // Whether the runtime feature |BlockingDownloadsInSandbox| is enabled.
-  bool blocking_downloads_in_sandbox_enabled = false;
+  // Whether this is a navigation to _unfencedTop, i.e. to the top-level frame
+  // from a renderer process that does not get a handle to the frame.
+  // The browser should ignore the specified target frame and pick (and
+  // validate) the top-level frame instead.
+  // TODO(crbug.com/1315802): Refactor _unfencedTop handling.
+  bool is_unfenced_top_navigation = false;
 
   // Event information. See TriggeringEventInfo.
   blink::mojom::TriggeringEventInfo triggering_event_info =
@@ -150,11 +156,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Optional impression associated with this navigation. This is attached when
   // a navigation results from a click on an anchor tag that has conversion
   // measurement attributes.
-  base::Optional<WebImpression> impression;
-
-  // The navigation initiator's address space.
-  network::mojom::IPAddressSpace initiator_address_space =
-      network::mojom::IPAddressSpace::kUnknown;
+  absl::optional<Impression> impression;
 
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
@@ -163,7 +165,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
-  base::Optional<LocalFrameToken> initiator_frame_token;
+  absl::optional<LocalFrameToken> initiator_frame_token;
 
   // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
   // alive until we create the NavigationRequest.
@@ -179,9 +181,11 @@ struct BLINK_EXPORT WebNavigationParams {
   WebNavigationParams();
   ~WebNavigationParams();
 
-  // Allows to specify |devtools_navigation_token|, instead of creating
-  // a new one.
-  explicit WebNavigationParams(const base::UnguessableToken&);
+  // Construct with a specific `document_token` and `devtools_navigation_token`,
+  // rather than randomly creating new ones.
+  explicit WebNavigationParams(
+      const blink::DocumentToken& document_token,
+      const base::UnguessableToken& devtools_navigation_token);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
   //
@@ -235,7 +239,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // The http status code of the request used to load the main resource, if any.
   int http_status_code = 0;
   // The origin of the request used to load the main resource, specified at
-  // https://fetch.spec.whatwg.org/#concept-request-origin. Can be null.
+  // https://fetch.spec.whatwg.org/#concept-request-origin. This is never null
+  // for renderer-initiated navigations, but can be null for 1)
+  // browser-initiated navigations and 2) loading of initial empty documents.
   // TODO(dgozman,nasko): we shouldn't need both this and |origin_to_commit|.
   WebSecurityOrigin requestor_origin;
   // If non-null, used as a URL which we weren't able to load. For example,
@@ -245,6 +251,15 @@ struct BLINK_EXPORT WebNavigationParams {
   // If non-null, this gives the pre-redirect URL in case that we're committing
   // a failed navigation.
   WebURL pre_redirect_url_for_failed_navigations;
+
+  // If `url` is about:srcdoc, this is the default base URL to use for the new
+  // document. It corresponds to the parent's base URL snapshotted when the
+  // navigation started.
+  // Note: this value is only used when the IsolateSandboxedIframes feature is
+  // enabled in the embedder.
+  // TODO(wjmaclean): Revisit the naming here when we expand to sending base
+  // URLs for about:blank.
+  WebURL fallback_srcdoc_base_url;
 
   // The net error code for failed navigation. Must be non-zero when
   // |unreachable_url| is non-null.
@@ -301,25 +316,26 @@ struct BLINK_EXPORT WebNavigationParams {
   bool is_client_redirect = false;
   // Cache mode to be used for subresources, instead of the one determined
   // by |frame_load_type|.
-  base::Optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
+  absl::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
 
   // Miscellaneous parameters.
 
   // The origin in which a navigation should commit. When provided, Blink
   // should use this origin directly and not compute locally the new document
   // origin.
-  // TODO(arthursonzogni): Always provide origin_to_commit.
+  //
+  // TODO(https://crbug.com/888079): Always provide origin_to_commit.
   WebSecurityOrigin origin_to_commit;
 
-  // The sandbox flags to apply to the new document. This is the union of:
-  // - the frame's current sandbox attribute, taken when the navigation started.
-  // - the navigation response's CSP sandbox flags.
-  // - the result of CSP embedded enforcement required CSP sandbox flags.
-  // - Various edge cases: MHTML document, error pages, ...
-  // See content/browser/renderer_host/sandbox_flags.md
-  network::mojom::WebSandboxFlags sandbox_flags =
-      network::mojom::WebSandboxFlags::kAll;
+  // The storage key of the document that will be created by the navigation.
+  // This is compatible with the `origin_to_commit`. Until the browser will be
+  // able to compute the `origin_to_commit` in all cases
+  // (https://crbug.com/888079), this is actually just a provisional
+  // `storage_key`. The final storage key is computed by the document loader
+  // taking into account the origin computed by the renderer.
+  StorageKey storage_key;
 
+  blink::DocumentToken document_token;
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;
@@ -341,20 +357,17 @@ struct BLINK_EXPORT WebNavigationParams {
   bool has_text_fragment_token = false;
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
-  // Whether this navigation was for prerendering.
-  bool is_prerendering = false;
   // Whether the document should be able to access local file:// resources.
   bool grant_load_local_resources = false;
-  // The previews state which should be used for this navigation.
-  PreviewsState previews_state = PreviewsTypes::kPreviewsUnspecified;
   // The service worker network provider to be used in the new
   // document.
   std::unique_ptr<blink::WebServiceWorkerNetworkProvider>
       service_worker_network_provider;
-  // The AppCache host id for this navigation.
-  base::UnguessableToken appcache_host_id;
 
-  // Used for SignedExchangeSubresourcePrefetch.
+  // This is `true` only for commit requests coming from
+  // `RenderFrameImpl::SynchronouslyConmmitAboutBlankForBug778318`.
+  bool is_synchronous_commit_for_bug_778318 = false;
+
   // This struct keeps the information about a prefetched signed exchange.
   struct BLINK_EXPORT PrefetchedSignedExchange {
     PrefetchedSignedExchange();
@@ -383,8 +396,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;
 
-  base::Optional<WebOriginPolicy> origin_policy;
-
   // The physical URL of Web Bundle from which the document is loaded.
   // Used as an additional identifier for MemoryCache.
   WebURL web_bundle_physical_url;
@@ -399,8 +410,8 @@ struct BLINK_EXPORT WebNavigationParams {
   ukm::SourceId document_ukm_source_id = ukm::kInvalidSourceId;
 
   // The frame policy specified by the frame owner element.
-  // Should be base::nullopt for top level navigations
-  base::Optional<FramePolicy> frame_policy;
+  // Should be absl::nullopt for top level navigations
+  absl::optional<FramePolicy> frame_policy;
 
   // A list of origin trial names to enable for the document being loaded.
   WebVector<WebString> force_enabled_origin_trials;
@@ -409,18 +420,75 @@ struct BLINK_EXPORT WebNavigationParams {
   // https://html.spec.whatwg.org/C/#is-origin-keyed
   bool origin_agent_cluster = false;
 
+  // Whether the decision to use origin-keyed or site-keyed agent clustering
+  // (which itself is recorded in origin_agent_cluster, above) has been
+  // made based on absent Origin-Agent-Cluster http header.
+  bool origin_agent_cluster_left_as_default = true;
+
   // List of client hints enabled for top-level frame. These still need to be
   // checked against permissions policy before use.
   WebVector<network::mojom::WebClientHintsType> enabled_client_hints;
 
-  // Whether the navigation is cross browsing context group (browsing instance).
-  bool is_cross_browsing_context_group_navigation = false;
+  // Whether the navigation is cross-site and swaps BrowsingContextGroups
+  // (BrowsingInstances).
+  bool is_cross_site_cross_browsing_context_group = false;
 
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;
+
+  // Blink's copy of a permissions policy constructed in the browser that should
+  // take precedence over any permissions policy constructed in blink. This is
+  // useful for isolated applications, which use a different base permissions
+  // policy than blink, which uses a fully permissive policy as its base.
+  absl::optional<blink::ParsedPermissionsPolicy> permissions_policy_override;
+
+  // These are used to construct a subset of the back/forward list for the
+  // window.navigation API. They only have the attributes that are needed for
+  // that API.
+  WebVector<WebHistoryItem> navigation_api_back_entries;
+  WebVector<WebHistoryItem> navigation_api_forward_entries;
+
+  // List of URLs which are preloaded by HTTP Early Hints.
+  // TODO(https://crbug.com/1317936): Pass information more than URL such as
+  // request destination so that ResourceFetcher can provide more useful
+  // console messages when Early Hints preloaded resources are not used.
+  WebVector<WebURL> early_hints_preloaded_resources;
+
+  // If this is a navigation to fenced frame from an interest group auction,
+  // contains URNs mapped to the ad components returned by the winning bid.
+  // Null, otherwise.
+  absl::optional<WebVector<WebURL>> ad_auction_components;
+
+  // If this is a navigation to a "opaque-ads" mode fenced frame, there might
+  // be associated reporting metadata. This is a map from destination type to
+  // reporting metadata which in turn is a map from the event type to the
+  // reporting url. Null, otherwise.
+  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
+  absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
+
+  // Whether the current context would be allowed to create an opaque-ads
+  //  frame (based on the browser-side calculations). See
+  // HTMLFencedFrameElement::canLoadOpaqueURL for usage and
+  // ::blink::mojom::CommitNavigationParams::ancestor_or_self_has_cspee for
+  // where the value is coming from.
+  bool ancestor_or_self_has_cspee = false;
+
+  // Reduced Accept-Language negotiates the language when navigating to a new
+  // document in the main frame, and the browser supplies the same negotiated
+  // language to the main frame and all its subframes when committing a
+  // navigation. This value will be used as the Accept-Language for subresource
+  // requests made by the document committed by this navigation. For example,
+  // when navigating to a URL with embedded image subresource request, the
+  // language negotiation only happens in top-level document. It will store the
+  // top-level document's negotiated language as `reduced_accept_language` here.
+  // Whenever fetching image subresources, the HTTP Accept-Language header will
+  // be set as the reduced accept language which was stored here. As we only do
+  // language negotiation on the top-level document, all subresource requests
+  // will inherit the Accept-Language header value of the top-level document.
+  WebString reduced_accept_language;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NAVIGATION_PARAMS_H_

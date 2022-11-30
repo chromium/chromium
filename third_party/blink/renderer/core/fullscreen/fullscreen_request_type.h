@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FULLSCREEN_FULLSCREEN_REQUEST_TYPE_H_
 
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 #include <string>
@@ -36,6 +37,10 @@ enum class FullscreenRequestType {
   // For WebXR DOM Overlay, in this mode the element and parent iframes use a
   // transparent background.
   kForXrOverlay = 4,
+
+  // For WebXR Immersive AR sessions with access to the camera, in this mode,
+  // the status bar should stay visible.
+  kForXrArWithCamera = 8,
 
   // Explicit name for "no options" for backwards compatibility and convenience
   kUnprefixed = kNull,

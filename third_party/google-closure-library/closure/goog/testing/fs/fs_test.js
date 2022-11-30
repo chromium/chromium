@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.fsTest');
 goog.setTestOnly();
@@ -37,12 +29,7 @@ testSuite({
         fs.getBlob('foo', new FsBlob('bar'), 'baz').toString());
   },
 
-  testBlobToString() {
-    return fs.blobToString(new FsBlob('foobarbaz')).then((result) => {
-      assertEquals('foobarbaz', result);
-    });
-  },
-
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testGetBlobWithProperties() {
     assertEquals(
         'data:spam/eggs;base64,Zm9vYmFy',
@@ -52,11 +39,13 @@ testSuite({
 
   testSliceBlob() {
     let myBlob = new FsBlob('0123456789');
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let actual = new fs.sliceBlob(myBlob, 1, 3);
     let expected = new FsBlob('12');
     assertEquals(expected.toString(), actual.toString());
 
     myBlob = new FsBlob('0123456789');
+    /** @suppress {checkTypes} suppression added to enable type checking */
     actual = new fs.sliceBlob(myBlob, 0, -1);
     expected = new FsBlob('012345678');
     assertEquals(expected.toString(), actual.toString());

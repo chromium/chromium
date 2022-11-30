@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace blink {
 
@@ -27,7 +31,6 @@ class ImageDecodeResult;
 class ImageTrackList;
 class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
-class SegmentReader;
 
 class MODULES_EXPORT ImageDecoderExternal final
     : public ScriptWrappable,
@@ -48,11 +51,11 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // image_decoder.idl implementation.
   ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
-  ScriptPromise decodeMetadata();
   void reset(DOMException* exception = nullptr);
   void close();
   String type() const;
   bool complete() const;
+  ScriptPromise completed(ScriptState* script_state);
   ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.
@@ -72,74 +75,99 @@ class MODULES_EXPORT ImageDecoderExternal final
   void UpdateSelectedTrack();
 
  private:
-  void CreateImageDecoder();
-
   void MaybeSatisfyPendingDecodes();
-  void MaybeSatisfyPendingMetadataDecodes();
-  void MaybeUpdateMetadata();
 
-  // Returns false if the decoder was constructed with an ArrayBuffer or
-  // ArrayBufferView that has since been neutered.
-  bool HasValidEncodedData() const;
+  void OnDecodeReady(
+      std::unique_ptr<ImageDecoderCore::ImageDecodeResult> result);
 
-  void AbortPendingDecodes(DOMException* exception);
+  void DecodeMetadata();
+  void OnMetadata(ImageDecoderCore::ImageMetadata metadata);
 
-  scoped_refptr<media::VideoFrame> MaybeDecodeToYuv();
+  void SetFailed();
+  void CloseInternal(DOMException*);
 
   Member<ScriptState> script_state_;
 
   // Used when a ReadableStream is provided.
   Member<ReadableStreamBytesConsumer> consumer_;
-  scoped_refptr<SharedBuffer> stream_buffer_;
+  size_t bytes_read_ = 0u;
 
-  // Used when all data is provided at construction time.
-  scoped_refptr<SegmentReader> segment_reader_;
-
-  // Construction parameters.
-  Member<const ImageDecoderInit> init_data_;
-  ImageDecoder::AlphaOption alpha_option_ = ImageDecoder::kAlphaPremultiplied;
-  ColorBehavior color_behavior_ = ColorBehavior::Tag();
-  SkISize desired_size_;
+  // Mime type provided at construction time. Cleared upon close().
+  String mime_type_;
 
   // Copy of |preferAnimation| from |init_data_|.
-  base::Optional<bool> prefer_animation_;
+  absl::optional<bool> prefer_animation_;
 
   // Currently configured AnimationOption for |decoder_|.
   ImageDecoder::AnimationOption animation_option_ =
       ImageDecoder::AnimationOption::kUnspecified;
 
+  // Set to true upon ImageDecodeCore::Decode() or
+  // ImageDecoderCore::DecodeMetadata() failure. Once true, never cleared.
+  bool failed_ = false;
+
+  // Set to true either during construction or upon
+  // ImageDecoderCore::DecodeMetadata() indicating it has received all data.
+  // Once true, never cleared.
   bool data_complete_ = false;
 
+  // Internal value used by OnStateChange() to ensure we don't Append() after
+  // the ReadableStream becomes complete.
+  bool internal_data_complete_ = false;
+
+  // Set to true when close() has been called. Once set, never cleared.
   bool closed_ = false;
 
-  std::unique_ptr<ImageDecoder> decoder_;
-  String mime_type_;
+  // Number of ImageDecoderCore::Decode() calls in flight. Decremented during
+  // OnDecodeReady() or zeroed out by reset() or close().
+  size_t num_submitted_decodes_ = 0u;
+
+  // Number of outstanding calls to DecodeMetadata(). Required to ensure the
+  // class isn't destructed while we have outstanding WeakPtrs.
+  int pending_metadata_requests_ = 0;
+
+  // The workhorse which actually does the decoding. Bound to another sequence.
+  scoped_refptr<base::SequencedTaskRunner> decode_task_runner_;
+  std::unique_ptr<WTF::SequenceBound<ImageDecoderCore>> decoder_;
+
+  // List of tracks in this image. Filled in during OnMetadata().
   Member<ImageTrackList> tracks_;
 
+  // Set to true if we make it out of the constructor without an exception.
+  bool construction_succeeded_ = false;
+
   // Pending decode() requests.
-  struct DecodeRequest : public GarbageCollected<DecodeRequest> {
+  struct DecodeRequest final : public GarbageCollected<DecodeRequest> {
     DecodeRequest(ScriptPromiseResolver* resolver,
                   uint32_t frame_index,
                   bool complete_frames_only);
+    ~DecodeRequest();
     void Trace(Visitor*) const;
+    bool IsFinal() const;
 
     Member<ScriptPromiseResolver> resolver;
     uint32_t frame_index;
     bool complete_frames_only;
+    bool pending = false;
+    absl::optional<size_t> bytes_read_index;
     Member<ImageDecodeResult> result;
+    std::unique_ptr<base::AtomicFlag> abort_flag;
+
+    absl::optional<String> range_error_message;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
-  HeapVector<Member<ScriptPromiseResolver>> pending_metadata_decodes_;
 
-  // When decode() of incomplete frames has been requested, we need to track the
-  // generation id for each SkBitmap that we've handed out. So that we can defer
-  // resolution of promises until a new bitmap is generated.
-  HashMap<uint32_t,
-          uint32_t,
-          DefaultHash<uint32_t>::Hash,
-          WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
-      incomplete_frames_;
+  using CompletedProperty =
+      ScriptPromiseProperty<ToV8UndefinedGenerator, Member<DOMException>>;
+  Member<CompletedProperty> completed_property_;
+
+  // WeakPtrFactory used only for decode() requests. Invalidated upon decoding
+  // errors or a call to reset().
+  base::WeakPtrFactory<ImageDecoderExternal> decode_weak_factory_{this};
+
+  // WeakPtrFactory for all other cancelable tasks.
+  base::WeakPtrFactory<ImageDecoderExternal> weak_factory_{this};
 };
 
 }  // namespace blink

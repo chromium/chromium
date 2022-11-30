@@ -1,15 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 #include <stddef.h>
+
 #include <utility>
 
-#include "apps/ui/views/app_window_frame_view.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -24,9 +23,11 @@
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "extensions/browser/app_window/app_delegate.h"
+#include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
@@ -73,17 +74,17 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
   if (!chrome::IsRunningInForcedAppMode()) {
     static base::NoDestructor<std::map<ui::Accelerator, int>> accelerators(
         AcceleratorsFromMapping(kAppWindowAcceleratorMap,
-                                base::size(kAppWindowAcceleratorMap)));
+                                std::size(kAppWindowAcceleratorMap)));
     return *accelerators;
   }
 
   static base::NoDestructor<std::map<ui::Accelerator, int>>
       app_mode_accelerators([]() {
         std::map<ui::Accelerator, int> mapping = AcceleratorsFromMapping(
-            kAppWindowAcceleratorMap, base::size(kAppWindowAcceleratorMap));
+            kAppWindowAcceleratorMap, std::size(kAppWindowAcceleratorMap));
         std::map<ui::Accelerator, int> kiosk_mapping = AcceleratorsFromMapping(
             kAppWindowKioskAppModeAcceleratorMap,
-            base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowKioskAppModeAcceleratorMap));
         mapping.insert(std::begin(kiosk_mapping), std::end(kiosk_mapping));
         return mapping;
       }());
@@ -92,13 +93,9 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
 
 }  // namespace
 
-ChromeNativeAppWindowViews::ChromeNativeAppWindowViews()
-    : has_frame_color_(false),
-      active_frame_color_(SK_ColorBLACK),
-      inactive_frame_color_(SK_ColorBLACK) {
-}
+ChromeNativeAppWindowViews::ChromeNativeAppWindowViews() = default;
 
-ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() {}
+ChromeNativeAppWindowViews::~ChromeNativeAppWindowViews() = default;
 
 void ChromeNativeAppWindowViews::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
@@ -129,12 +126,16 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
       create_params.visible_on_all_workspaces;
 
   OnBeforeWidgetInit(create_params, &init_params, widget());
+  gfx::Rect init_param_bounds = init_params.bounds;
   widget()->Init(std::move(init_params));
 
   // The frame insets are required to resolve the bounds specifications
   // correctly. So we set the window bounds and constraints now.
   gfx::Insets frame_insets = GetFrameInsets();
-  gfx::Rect window_bounds = create_params.GetInitialWindowBounds(frame_insets);
+  gfx::Rect window_bounds =
+      init_param_bounds.IsEmpty()
+          ? create_params.GetInitialWindowBounds(frame_insets)
+          : init_param_bounds;
   SetContentSizeConstraints(create_params.GetContentMinimumSize(frame_insets),
                             create_params.GetContentMaximumSize(frame_insets));
   if (!window_bounds.IsEmpty()) {
@@ -142,10 +143,21 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     bool position_specified =
         window_bounds.x() != BoundsSpecification::kUnspecifiedPosition &&
         window_bounds.y() != BoundsSpecification::kUnspecifiedPosition;
-    if (!position_specified)
+    if (!position_specified) {
+#if BUILDFLAG(IS_MAC)
+      // On Mac, this will call NativeWidgetMac's CenterWindow() which relies
+      // on the size being its content size instead of window size. That
+      // API only causes a problem when we use system title bar in an old
+      // platform app.
+      gfx::Rect content_bounds = window_bounds;
+      content_bounds.Inset(frame_insets);
+      widget()->CenterWindow(content_bounds.size());
+#else
       widget()->CenterWindow(window_bounds.size());
-    else
+#endif
+    } else {
       widget()->SetBounds(window_bounds);
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -166,8 +178,8 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   // registered. This CHECK catches the case.
   CHECK(!is_kiosk_app_mode ||
         accelerator_table.size() ==
-            base::size(kAppWindowAcceleratorMap) +
-                base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowAcceleratorMap) +
+                std::size(kAppWindowKioskAppModeAcceleratorMap));
 
   // Ensure there is a ZoomController in kiosk mode, otherwise the processing
   // of the accelerators will cause a crash. Note CHECK here because DCHECK
@@ -216,7 +228,7 @@ ui::ZOrderLevel ChromeNativeAppWindowViews::GetZOrderLevel() const {
 
 // views::WidgetDelegate implementation.
 
-gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowAppIcon() {
+ui::ImageModel ChromeNativeAppWindowViews::GetWindowAppIcon() {
   // Resulting icon is cached in aura::client::kAppIconKey window property.
   const gfx::Image& custom_image = GetCustomImage();
   if (app_window()->app_icon_url().is_valid() &&
@@ -234,30 +246,30 @@ gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowAppIcon() {
           gfx::ImageSkiaOperations::CreateResizedImage(
               base_image.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
               gfx::Size(large_icon_size, large_icon_size));
-      return gfx::ImageSkiaOperations::CreateIconWithBadge(
-          resized_image, GetAppIconImage().AsImageSkia());
+      return ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateIconWithBadge(
+              resized_image, GetAppIconImage().AsImageSkia()));
     }
-    return gfx::ImageSkiaOperations::CreateIconWithBadge(
-        base_image.AsImageSkia(), GetAppIconImage().AsImageSkia());
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateIconWithBadge(
+            base_image.AsImageSkia(), GetAppIconImage().AsImageSkia()));
   }
 
   if (!custom_image.IsEmpty())
-    return *custom_image.ToImageSkia();
+    return ui::ImageModel::FromImage(custom_image);
   EnsureAppIconCreated();
-  return GetAppIconImage().AsImageSkia();
+  return ui::ImageModel::FromImage(GetAppIconImage());
 }
 
-gfx::ImageSkia ChromeNativeAppWindowViews::GetWindowIcon() {
+ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
   // Resulting icon is cached in aura::client::kWindowIconKey window property.
   content::WebContents* web_contents = app_window()->web_contents();
   if (web_contents) {
     favicon::FaviconDriver* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents);
-    gfx::Image app_icon = favicon_driver->GetFavicon();
-    if (!app_icon.IsEmpty())
-      return *app_icon.ToImageSkia();
+    return ui::ImageModel::FromImage(favicon_driver->GetFavicon());
   }
-  return gfx::ImageSkia();
+  return ui::ImageModel();
 }
 
 std::unique_ptr<views::NonClientFrameView>
@@ -267,7 +279,7 @@ ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
-  return shape_ != NULL;
+  return shape_ != nullptr;
 }
 
 void ChromeNativeAppWindowViews::GetWidgetHitTestMask(SkPath* mask) const {
@@ -322,7 +334,7 @@ void ChromeNativeAppWindowViews::UpdateShape(
   std::unique_ptr<SkRegion> region;
   if (shape_rects_) {
     region = std::make_unique<SkRegion>();
-    for (const gfx::Rect& input_rect : *shape_rects_.get())
+    for (const gfx::Rect& input_rect : *shape_rects_)
       region->op(gfx::RectToSkIRect(input_rect), SkRegion::kUnion_Op);
   }
   shape_ = std::move(region);

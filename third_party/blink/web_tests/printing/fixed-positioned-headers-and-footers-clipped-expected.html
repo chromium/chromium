@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+  if (window.internals)
+    internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<div style="position:absolute; top:0; left:0; clip:rect(0, 100px, 100px, 0px);">
+  <div style="position:absolute; width:300px; height:200px; background:hotpink;"></div>
+</div>
+<p style="margin-top:120px;">
+  There should be a hotpink square on the first page, but not on subsequent
+  pages.
+</p>
+<p style="break-before:page;">Second page</p>
+<p style="break-before:page;">Third page</p>

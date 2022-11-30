@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,7 +17,7 @@ namespace {
 
 using PassphraseErrorItemTest = PlatformTest;
 
-// Tests that the text label is set properly after a call to |configureCell:|.
+// Tests that the text label is set properly after a call to `configureCell:`.
 TEST_F(PassphraseErrorItemTest, ConfigureCell) {
   PassphraseErrorItem* item = [[PassphraseErrorItem alloc] initWithType:0];
   PassphraseErrorCell* cell = [[[item cellClass] alloc] init];

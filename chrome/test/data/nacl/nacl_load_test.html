@@ -1,6 +1,6 @@
 <html>
 <!--
-Copyright (c) 2012 The Chromium Authors. All rights reserved.
+Copyright 2012 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -16,6 +16,11 @@ found in the LICENSE file.
 <script>
 
 function create(manifest_url) {
+  // Make sure NaCl mimetypes are being returned.
+  if (navigator.mimeTypes['application/x-nacl'] === undefined ||
+    navigator.mimeTypes['application/x-pnacl'] === undefined) {
+    return;
+  }
   var embed = document.createElement("embed");
   embed.src = manifest_url;
   embed.type = "application/x-nacl";

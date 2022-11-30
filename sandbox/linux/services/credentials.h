@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 #include "build/build_config.h"
 // Link errors are tedious to track, raise a compile-time error instead.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Android is not supported."
-#endif  // defined(OS_ANDROID).
+#endif  // BUILDFLAG(IS_ANDROID).
 
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "sandbox/linux/system_headers/capability.h"
 #include "sandbox/sandbox_export.h"
 
@@ -33,6 +31,10 @@ class SANDBOX_EXPORT Credentials {
     SYS_ADMIN,
   };
 
+  Credentials() = delete;
+  Credentials(const Credentials&) = delete;
+  Credentials& operator=(const Credentials&) = delete;
+
   // Checks that the set of RES-uids and the set of RES-gids have
   // one element each and returns that element in |resuid| and |resgid|
   // respectively. It's OK to pass NULL as one or both of the ids.
@@ -47,21 +49,22 @@ class SANDBOX_EXPORT Credentials {
   // when calling this API.
   // |proc_fd| must be a file descriptor to /proc/ and remains owned by
   // the caller.
-  static bool DropAllCapabilities(int proc_fd) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool DropAllCapabilities(int proc_fd);
   // A similar API which assumes that it can open /proc/self/ by itself.
-  static bool DropAllCapabilities() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool DropAllCapabilities();
   // Sets the effective and permitted capability sets for the current thread to
   // the list of capabiltiies in |caps|. All other capability flags are cleared.
-  static bool SetCapabilities(int proc_fd, const std::vector<Capability>& caps)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool SetCapabilities(
+      int proc_fd,
+      const std::vector<Capability>& caps);
 
   // Versions of the above functions which do not check that the process is
   // single-threaded. After calling these functions, capabilities of other
   // threads will not be changed. This is dangerous, do not use unless you know
   // what you are doing.
-  static bool DropAllCapabilitiesOnCurrentThread() WARN_UNUSED_RESULT;
-  static bool SetCapabilitiesOnCurrentThread(
-      const std::vector<Capability>& caps) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool DropAllCapabilitiesOnCurrentThread();
+  [[nodiscard]] static bool SetCapabilitiesOnCurrentThread(
+      const std::vector<Capability>& caps);
 
   // Returns true if the current thread has either the effective, permitted, or
   // inheritable flag set for the given capability.
@@ -85,7 +88,7 @@ class SANDBOX_EXPORT Credentials {
   // If this call succeeds, the current process will be granted a full set of
   // capabilities in the new namespace.
   // This will fail if the process is not mono-threaded.
-  static bool MoveToNewUserNS() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool MoveToNewUserNS();
 
   // Removes the ability of the process to access the file system. File
   // descriptors which are already open prior to calling this API remain
@@ -99,16 +102,13 @@ class SANDBOX_EXPORT Credentials {
   //   - the caller must close |proc_fd| eventually or access to the file
   // system can be recovered.
   //   - DropAllCapabilities() must be called to prevent escapes.
-  static bool DropFileSystemAccess(int proc_fd) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool DropFileSystemAccess(int proc_fd);
 
   // This function returns true if the process can still access the filesystem.
   static bool HasFileSystemAccess();
 
   // Forks and drops capabilities in the child.
   static pid_t ForkAndDropCapabilitiesInChild();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Credentials);
 };
 
 }  // namespace sandbox.

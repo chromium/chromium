@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -26,12 +27,12 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/test/ash_pixel_diff_test_helper.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/utility/screenshot_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/work_area_insets.h"
@@ -52,10 +53,12 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/init/input_method_initializer.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
@@ -70,26 +73,37 @@ using session_manager::SessionState;
 namespace ash {
 namespace {
 
+// AshEventGeneratorDelegate ---------------------------------------------------
+
 class AshEventGeneratorDelegate
     : public aura::test::EventGeneratorDelegateAura {
  public:
   AshEventGeneratorDelegate() = default;
+
+  AshEventGeneratorDelegate(const AshEventGeneratorDelegate&) = delete;
+  AshEventGeneratorDelegate& operator=(const AshEventGeneratorDelegate&) =
+      delete;
+
   ~AshEventGeneratorDelegate() override = default;
 
   // aura::test::EventGeneratorDelegateAura overrides:
   ui::EventTarget* GetTargetAt(const gfx::Point& point_in_screen) override {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
+    if (current_display_id_ != display.id()) {
+      Shell::Get()->cursor_manager()->SetDisplay(display);
+      current_display_id_ = display.id();
+    }
     return Shell::GetRootWindowForDisplayId(display.id())->GetHost()->window();
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AshEventGeneratorDelegate);
+  int64_t current_display_id_ = display::kInvalidDisplayId;
 };
 
 }  // namespace
 
-/////////////////////////////////////////////////////////////////////////////
+// AshTestBase -----------------------------------------------------------------
 
 AshTestBase::AshTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
@@ -120,6 +134,8 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.start_session = start_session_;
   params.delegate = std::move(delegate);
   params.local_state = local_state();
+  params.pixel_test_init_params =
+      (pixel_diff_init_params_ ? &*pixel_diff_init_params_ : nullptr);
   ash_test_helper_ = std::make_unique<AshTestHelper>();
   ash_test_helper_->SetUp(std::move(params));
 }
@@ -138,7 +154,7 @@ void AshTestBase::TearDown() {
   event_generator_.reset();
   // Some tests set an internal display id,
   // reset it here, so other tests will continue in a clean environment.
-  display::Display::SetInternalDisplayId(display::kInvalidDisplayId);
+  display::SetInternalDisplayIds({display::kInvalidDisplayId});
 
   // Tests can add devices, so reset the lists for future tests.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
@@ -206,18 +222,33 @@ std::unique_ptr<views::Widget> AshTestBase::CreateTestWidget(
       .BuildOwnsNativeWidget();
 }
 
+// static
+std::unique_ptr<views::Widget> AshTestBase::CreateFramelessTestWidget() {
+  return TestWidgetBuilder()
+      .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+      .BuildOwnsNativeWidget();
+}
+
 std::unique_ptr<aura::Window> AshTestBase::CreateAppWindow(
     const gfx::Rect& bounds_in_screen,
     AppType app_type,
-    int shell_window_id) {
+    int shell_window_id,
+    views::WidgetDelegate* delegate) {
   TestWidgetBuilder builder;
   if (app_type != AppType::NON_APP) {
     builder.SetWindowProperty(aura::client::kAppType,
                               static_cast<int>(app_type));
   }
+
+  if (delegate) {
+    builder.SetDelegate(delegate);
+  } else {
+    builder.SetTestWidgetDelegate();
+  }
+
   // |widget| is configured to be owned by the underlying window.
   views::Widget* widget =
-      builder.SetTestWidgetDelegate()
+      builder
           .SetBounds(bounds_in_screen.IsEmpty() ? gfx::Rect(0, 0, 300, 300)
                                                 : bounds_in_screen)
           .SetContext(Shell::GetPrimaryRootWindow())
@@ -286,6 +317,44 @@ void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
                                         gfx::Rect());
 }
 
+void AshTestBase::PrepareForPixelDiffTest(
+    const std::string& screenshot_prefix,
+    const pixel_test::InitParams& init_params,
+    const std::string& corpus) {
+  // Expect this function to be called before setup. Because the code that
+  // stabilizes the system UI for pixel tests should be executed during setup.
+  CHECK(!setup_called_);
+
+  CHECK(!pixel_diff_init_params_);
+  pixel_diff_init_params_ = init_params;
+
+  // In pixel tests, we want to take screenshots then compare them with the
+  // benchmark images. Therefore, enable pixel output in tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kEnablePixelOutputInTests);
+
+  // Enable the switch so that the time dependent views (such as the time view)
+  // are stable.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kStabilizeTimeDependentViewForTests);
+
+  DCHECK(!pixel_test_helper_);
+  pixel_test_helper_ =
+      std::make_unique<AshPixelDiffTestHelper>(screenshot_prefix, corpus);
+}
+
+AshPixelDiffTestHelper* AshTestBase::GetPixelDiffer() {
+  DCHECK(pixel_test_helper_);
+  return pixel_test_helper_.get();
+}
+
+void AshTestBase::StabilizeUIForPixelTest() {
+  // This function should only be used in a pixel test.
+  CHECK(pixel_diff_init_params_);
+
+  ash_test_helper_->StabilizeUIForPixelTest();
+}
+
 void AshTestBase::SetUserPref(const std::string& user_email,
                               const std::string& path,
                               const base::Value& value) {
@@ -293,11 +362,6 @@ void AshTestBase::SetUserPref(const std::string& user_email,
   PrefService* prefs =
       GetSessionControllerClient()->GetUserPrefService(accountId);
   prefs->Set(path, value);
-}
-
-TestScreenshotDelegate* AshTestBase::GetScreenshotDelegate() {
-  return static_cast<TestScreenshotDelegate*>(
-      Shell::Get()->screenshot_controller()->screenshot_delegate_.get());
 }
 
 TestSessionControllerClient* AshTestBase::GetSessionControllerClient() {
@@ -310,6 +374,10 @@ TestSystemTrayClient* AshTestBase::GetSystemTrayClient() {
 
 AppListTestHelper* AshTestBase::GetAppListTestHelper() {
   return ash_test_helper_->app_list_test_helper();
+}
+
+TestAppListClient* AshTestBase::GetTestAppListClient() {
+  return GetAppListTestHelper()->app_list_client();
 }
 
 AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
@@ -326,6 +394,11 @@ void AshTestBase::SimulateUserLogin(const std::string& user_email,
   session->AddUserSession(user_email, user_type);
   session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
   session->SetSessionState(SessionState::ACTIVE);
+}
+
+void AshTestBase::SimulateUserLogin(const AccountId& account_id,
+                                    user_manager::UserType user_type) {
+  ash_test_helper_->SimulateUserLogin(account_id, user_type);
 }
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
@@ -458,12 +531,38 @@ bool AshTestBase::TestIfMouseWarpsAt(ui::test::EventGenerator* event_generator,
              .id();
 }
 
-void AshTestBase::SimulateMouseClickAt(
-    ui::test::EventGenerator* event_generator,
-    const views::View* target_view) {
-  DCHECK(target_view);
-  event_generator->MoveMouseTo(target_view->GetBoundsInScreen().CenterPoint());
+void AshTestBase::PressAndReleaseKey(ui::KeyboardCode key_code, int flags) {
+  GetEventGenerator()->PressAndReleaseKey(key_code, flags);
+}
+
+void AshTestBase::LeftClickOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
+}
+
+void AshTestBase::RightClickOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickRightButton();
+}
+
+void AshTestBase::GestureTapOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(view->GetBoundsInScreen().CenterPoint());
+}
+
+bool AshTestBase::EnterOverview(OverviewEnterExitType type) {
+  return Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests, type);
+}
+
+bool AshTestBase::ExitOverview(OverviewEnterExitType type) {
+  return Shell::Get()->overview_controller()->EndOverview(
+      OverviewEndAction::kTests, type);
 }
 
 void AshTestBase::SwapPrimaryDisplay() {

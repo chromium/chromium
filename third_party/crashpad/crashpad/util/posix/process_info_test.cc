@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 #include "util/misc/implicit_cast.h"
 #include "util/string/split_string.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "util/linux/direct_ptrace_connection.h"
 #include "test/linux/fake_ptrace_connection.h"
 #endif
@@ -98,7 +98,7 @@ void TestProcessSelfOrClone(const ProcessInfo& process_info) {
 
   const std::vector<std::string>& expect_argv = GetMainArguments();
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Prior to Linux 4.2, the kernel only allowed reading a single page from
   // /proc/<pid>/cmdline, causing any further arguments to be truncated. Disable
   // testing arguments in this case.
@@ -124,7 +124,8 @@ void TestProcessSelfOrClone(const ProcessInfo& process_info) {
       argv_size > static_cast<size_t>(getpagesize())) {
     return;
   }
-#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   std::vector<std::string> argv;
   ASSERT_TRUE(process_info.Arguments(&argv));
@@ -161,18 +162,19 @@ void TestSelfProcess(const ProcessInfo& process_info) {
 
 TEST(ProcessInfo, Self) {
   ProcessInfo process_info;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
   ASSERT_TRUE(process_info.InitializeWithPtrace(&connection));
 #else
   ASSERT_TRUE(process_info.InitializeWithPid(getpid()));
-#endif  // OS_LINUX || OS_ANDROID || OS_CHROMEOS
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   TestSelfProcess(process_info);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 TEST(ProcessInfo, SelfTask) {
   ProcessInfo process_info;
   ASSERT_TRUE(process_info.InitializeWithTask(mach_task_self()));
@@ -184,7 +186,7 @@ TEST(ProcessInfo, Pid1) {
   // PID 1 is expected to be init or the system’s equivalent. This tests reading
   // information about another process.
   ProcessInfo process_info;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(1));
   ASSERT_TRUE(process_info.InitializeWithPtrace(&connection));
@@ -206,13 +208,17 @@ TEST(ProcessInfo, Pid1) {
 class ProcessInfoForkedTest : public Multiprocess {
  public:
   ProcessInfoForkedTest() : Multiprocess() {}
+
+  ProcessInfoForkedTest(const ProcessInfoForkedTest&) = delete;
+  ProcessInfoForkedTest& operator=(const ProcessInfoForkedTest&) = delete;
+
   ~ProcessInfoForkedTest() {}
 
   // Multiprocess:
   void MultiprocessParent() override {
     const pid_t pid = ChildPID();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     DirectPtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(pid));
 
@@ -221,7 +227,8 @@ class ProcessInfoForkedTest : public Multiprocess {
 #else
     ProcessInfo process_info;
     ASSERT_TRUE(process_info.InitializeWithPid(pid));
-#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
     EXPECT_EQ(process_info.ProcessID(), pid);
     EXPECT_EQ(process_info.ParentProcessID(), getpid());
@@ -233,9 +240,6 @@ class ProcessInfoForkedTest : public Multiprocess {
     // Hang around until the parent is done.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessInfoForkedTest);
 };
 
 TEST(ProcessInfo, Forked) {

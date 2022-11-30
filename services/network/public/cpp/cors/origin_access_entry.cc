@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,24 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
+
+bool IsPublicSuffixSubdomainOfHost(const std::string& subdomain,
+                                   const std::string& host) {
+  size_t public_suffix_length =
+      net::registry_controlled_domains::PermissiveGetHostRegistryLength(
+          subdomain,
+          net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return public_suffix_length != std::string::npos &&
+         public_suffix_length != 0 &&
+         IsSubdomainOfHost(
+             subdomain.substr(subdomain.length() - public_suffix_length), host);
+}
+
+}  // namespace
 
 bool IsSubdomainOfHost(const std::string& subdomain, const std::string& host) {
   if (subdomain.length() <= host.length())
@@ -28,8 +41,6 @@ bool IsSubdomainOfHost(const std::string& subdomain, const std::string& host) {
 
   return true;
 }
-
-}  // namespace
 
 OriginAccessEntry::OriginAccessEntry(
     const std::string& protocol,
@@ -56,14 +67,14 @@ OriginAccessEntry::OriginAccessEntry(
       net::registry_controlled_domains::PermissiveGetHostRegistryLength(
           host_, net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  if (public_suffix_length == 0)
+  if (public_suffix_length == 0 || public_suffix_length == std::string::npos)
     public_suffix_length = host_.length();
 
   if (host_.length() <= public_suffix_length + 1) {
     host_is_public_suffix_ = true;
   } else if (domain_match_mode_ ==
-                 mojom::CorsDomainMatchMode::kAllowRegistrableDomains &&
-             public_suffix_length) {
+             mojom::CorsDomainMatchMode::kAllowRegistrableDomains) {
+    DCHECK(public_suffix_length);
     // The "2" in the next line is 1 for the '.', plus a 1-char minimum label
     // length.
     const size_t dot =
@@ -133,6 +144,10 @@ OriginAccessEntry::MatchResult OriginAccessEntry::MatchesDomain(
   if (host_is_public_suffix_)
     return kMatchesOriginButIsPublicSuffix;
 
+  // Determine whether host_ matches domain's public suffix.
+  if (IsPublicSuffixSubdomainOfHost(domain, host_))
+    return kMatchesOriginButIsPublicSuffix;
+
   return kMatchesOrigin;
 }
 
@@ -142,6 +157,4 @@ OriginAccessEntry::CreateCorsOriginPattern() const {
       protocol_, host_, port_, domain_match_mode_, port_match_mode_, priority_);
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

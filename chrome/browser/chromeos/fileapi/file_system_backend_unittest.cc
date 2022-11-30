@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend_delegate.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -28,7 +30,8 @@ FileSystemURL CreateFileSystemURL(const std::string& extension,
                                   const char* path,
                                   ExternalMountPoints* mount_points) {
   return mount_points->CreateCrackedFileSystemURL(
-      url::Origin::Create(GURL("chrome-extension://" + extension + "/")),
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://" +
+                                                    extension + "/"),
       storage::kFileSystemTypeExternal, base::FilePath::FromUTF8Unsafe(path));
 }
 
@@ -55,10 +58,10 @@ TEST(ChromeOSFileSystemBackendTest, DefaultMountPoints) {
   // By default there should be 3 mount points (in system mount points):
   EXPECT_EQ(3u, root_dirs.size());
 
-  EXPECT_TRUE(root_dirs_set.count(
-      chromeos::CrosDisksClient::GetRemovableDiskMountPoint()));
-  EXPECT_TRUE(root_dirs_set.count(
-      chromeos::CrosDisksClient::GetArchiveMountPoint()));
+  EXPECT_TRUE(
+      root_dirs_set.count(ash::CrosDisksClient::GetRemovableDiskMountPoint()));
+  EXPECT_TRUE(
+      root_dirs_set.count(ash::CrosDisksClient::GetArchiveMountPoint()));
   EXPECT_TRUE(root_dirs_set.count(base::FilePath(FPL("/usr/share/oem"))));
 }
 
@@ -122,6 +125,8 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       mount_points.get(), system_mount_points.get());
 
   std::string extension("ddammdhioacbehjngdmkjcjbnfginlla");
+  url::Origin origin = url::Origin::Create(
+      extensions::Extension::GetBaseURLFromExtensionId(extension));
 
   // Initialize mount points.
   ASSERT_TRUE(system_mount_points->RegisterFileSystem(
@@ -139,8 +144,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
 
-  backend.GrantFileAccessToExtension(extension,
-                                      base::FilePath(FPL("removable/foo")));
+  backend.GrantFileAccessToOrigin(origin, base::FilePath(FPL("removable/foo")));
   EXPECT_TRUE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
   EXPECT_FALSE(backend.IsAccessAllowed(
@@ -150,8 +154,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "system/foo", system_mount_points.get())));
 
-  backend.GrantFileAccessToExtension(extension,
-                                      base::FilePath(FPL("system/foo")));
+  backend.GrantFileAccessToOrigin(origin, base::FilePath(FPL("system/foo")));
   EXPECT_TRUE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "system/foo", system_mount_points.get())));
   EXPECT_FALSE(backend.IsAccessAllowed(
@@ -166,7 +169,7 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "test_/foo", mount_points.get())));
 
-  backend.RevokeAccessForExtension(extension);
+  backend.RevokeAccessForOrigin(origin);
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
 }
@@ -226,7 +229,7 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
     { FPL("/foo/xxx"), false, FPL("") },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     // Initialize virtual path with a value.
     base::FilePath virtual_path(FPL("/mount"));
     base::FilePath local_path(kTestCases[i].local_path);

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,6 +31,7 @@ cc_component("base") {
     "list_container_helper.h",
     "math_util.cc",
     "math_util.h",
+    "protected_sequence_synchronizer.h",
     "region.cc",
     "region.h",
     "reverse_spiral_iterator.cc",
@@ -55,9 +56,10 @@ cc_component("base") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//skia",
-    "//ui/gfx:geometry_skia",
+    "//ui/base:features",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   defines = [ "CC_BASE_IMPLEMENTATION=1" ]
@@ -71,9 +73,19 @@ if (is_android) {
     template = "android/java/src/org/chromium/cc/base/CcSwitches.java.tmpl"
   }
 
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":cc_base_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "features.cc" ]
+    template = "android/java/src/org/chromium/cc/base/CcFeatures.java.tmpl"
+  }
+
   android_library("cc_base_java") {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
-    srcjar_deps = [ ":java_switches_srcjar" ]
+    srcjar_deps = [
+      ":java_features_srcjar",
+      ":java_switches_srcjar",
+    ]
   }
 }

@@ -1,21 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class LockScreenBaseTest : public LoginManagerTest {
@@ -29,7 +33,7 @@ class LockScreenBaseTest : public LoginManagerTest {
 
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &user_input_methods_);
   }
 
@@ -41,10 +45,23 @@ class LockScreenBaseTest : public LoginManagerTest {
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
   LockScreenInputsTest() {
+    // The test is flaky when the darklight mode is enabled.
+    // https://crbug.com/1334877
+    //
+    // TODO(b/241259026): This test currently relies on StubAuthenticator,
+    // which doesn't work well with UseAuthFactors. We should instead use
+    // FakeUserDataAuth, which is a mock at a lower level.
+    scoped_feature_list_.InitWithFeatures(
+        {} /*enabled_features*/,
+        {chromeos::features::kDarkLightMode, features::kUseAuthFactors});
+
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");
     user_input_methods_.push_back("xkb:de::ger");
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
@@ -74,12 +91,12 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
   // IME state should be lock screen specific.
   EXPECT_NE(ime_states[0], input_manager->GetActiveIMEState());
   EXPECT_NE(ime_states[1], input_manager->GetActiveIMEState());
 
-  EXPECT_EQ(users[0].account_id, ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(users[0].account_id, LoginScreenTestApi::GetFocusedUser());
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
   locker_tester.UnlockWithPassword(users[0].account_id, "password");
@@ -91,15 +108,15 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
             user_input_methods_[0]);
 
   locker_tester.Lock();
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
   // IME state should be lock screen specific.
   EXPECT_NE(ime_states[0], input_manager->GetActiveIMEState());
   EXPECT_NE(ime_states[1], input_manager->GetActiveIMEState());
 
-  EXPECT_EQ(users[0].account_id, ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(users[0].account_id, LoginScreenTestApi::GetFocusedUser());
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[0]);
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(users[1].account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(users[1].account_id));
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetCurrentInputMethod().id(),
             user_input_methods_[1]);
   locker_tester.UnlockWithPassword(users[1].account_id, "password");
@@ -146,18 +163,18 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   // lock_screen_utils::SetUserInputMethod
   user_ime_state->ChangeInputMethod(valid_lock_screen_method_, false);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
 
   ScreenLockerTester locker_tester;
   locker_tester.Lock();
   auto lock_screen_ime_state = input_manager->GetActiveIMEState();
   EXPECT_NE(user_ime_state, lock_screen_ime_state);
   // Not valid method should be filtered out.
-  EXPECT_EQ(lock_screen_ime_state->GetNumActiveInputMethods(), 2u);
+  EXPECT_EQ(lock_screen_ime_state->GetNumEnabledInputMethods(), 2u);
 
-  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetActiveInputMethodIds(),
+  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
                               not_valid_lock_screen_method_));
 
   // Check that input methods are restored in the session.
@@ -165,10 +182,10 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   locker_tester.WaitForUnlock();
   EXPECT_EQ(input_manager->GetActiveIMEState(), user_ime_state);
 
-  EXPECT_EQ(user_ime_state->GetNumActiveInputMethods(), 3u);
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              valid_lock_screen_method_));
-  EXPECT_TRUE(base::Contains(user_ime_state->GetActiveInputMethodIds(),
+  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
                              not_valid_lock_screen_method_));
 }
 
@@ -192,9 +209,9 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     proto.mutable_login_screen_input_methods()->add_login_screen_input_methods(
         allowed_input_method.front());
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDeviceLoginScreenInputMethods});
+        {kDeviceLoginScreenInputMethods});
 
-    chromeos::input_method::InputMethodManager::Get()->MigrateInputMethods(
+    input_method::InputMethodManager::Get()->MigrateInputMethods(
         &allowed_input_method);
   }
 
@@ -210,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   input_method::InputMethodManager* input_manager =
       input_method::InputMethodManager::Get();
   // Check that policy applies on the login screen.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
             allowed_input_method);
 
   LoginUser(test_account_id);
@@ -225,12 +242,13 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   locker_tester.Lock();
 
   // Inputs should stay the same as inside the session.
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetActiveInputMethodIds(),
-            user_ime_state->GetActiveInputMethodIds());
+  EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
+            user_ime_state->GetEnabledInputMethodIds());
 
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetAllowedInputMethods().size(),
-            0u);
+  EXPECT_EQ(
+      input_manager->GetActiveIMEState()->GetAllowedInputMethodIds().size(),
+      0u);
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

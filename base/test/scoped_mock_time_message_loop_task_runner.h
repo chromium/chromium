@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TEST_SCOPED_MOCK_TIME_MESSAGE_LOOP_TASK_RUNNER_H_
 #define BASE_TEST_SCOPED_MOCK_TIME_MESSAGE_LOOP_TASK_RUNNER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_mock_time_task_runner.h"
 
@@ -28,6 +27,12 @@ class SingleThreadTaskRunner;
 class ScopedMockTimeMessageLoopTaskRunner {
  public:
   ScopedMockTimeMessageLoopTaskRunner();
+
+  ScopedMockTimeMessageLoopTaskRunner(
+      const ScopedMockTimeMessageLoopTaskRunner&) = delete;
+  ScopedMockTimeMessageLoopTaskRunner& operator=(
+      const ScopedMockTimeMessageLoopTaskRunner&) = delete;
+
   ~ScopedMockTimeMessageLoopTaskRunner();
 
   TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
@@ -36,8 +41,6 @@ class ScopedMockTimeMessageLoopTaskRunner {
  private:
   const scoped_refptr<TestMockTimeTaskRunner> task_runner_;
   scoped_refptr<SingleThreadTaskRunner> previous_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockTimeMessageLoopTaskRunner);
 };
 
 }  // namespace base

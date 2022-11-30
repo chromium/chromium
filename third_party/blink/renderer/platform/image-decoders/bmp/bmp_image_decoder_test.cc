@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,8 @@ TEST(BMPImageDecoderTest, isSizeAvailable) {
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
   decoder->SetData(data.get(), true);
   EXPECT_TRUE(decoder->IsSizeAvailable());
-  EXPECT_EQ(256, decoder->Size().Width());
-  EXPECT_EQ(256, decoder->Size().Height());
+  EXPECT_EQ(256, decoder->Size().width());
+  EXPECT_EQ(256, decoder->Size().height());
 }
 
 TEST(BMPImageDecoderTest, parseAndDecode) {

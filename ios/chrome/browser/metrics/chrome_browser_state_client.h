@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_METRICS_CHROME_BROWSER_STATE_CLIENT_H_
 #define IOS_CHROME_BROWSER_METRICS_CHROME_BROWSER_STATE_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 
 namespace metrics {
@@ -14,6 +13,9 @@ namespace metrics {
 class ChromeBrowserStateClient
     : public metrics::DemographicMetricsProvider::ProfileClient {
  public:
+  ChromeBrowserStateClient(const ChromeBrowserStateClient&) = delete;
+  ChromeBrowserStateClient& operator=(const ChromeBrowserStateClient&) = delete;
+
   ~ChromeBrowserStateClient() override;
   ChromeBrowserStateClient() = default;
 
@@ -22,8 +24,6 @@ class ChromeBrowserStateClient
   syncer::SyncService* GetSyncService() override;
   PrefService* GetPrefService() override;
   base::Time GetNetworkTime() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateClient);
 };
 
 }  //    namespace metrics

@@ -1,11 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/linux/x11_keyboard_impl.h"
 
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "remoting/host/linux/unicode_to_keysym.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xkb.h"
@@ -93,8 +91,10 @@ void X11KeyboardImpl::PressKey(uint32_t keycode, uint32_t modifiers) {
        static_cast<x11::ModMask>(modifiers),
        static_cast<x11::ModMask>(modifiers)});
 
-  connection_->xtest().FakeInput({x11::KeyEvent::Press, keycode});
-  connection_->xtest().FakeInput({x11::KeyEvent::Release, keycode});
+  connection_->xtest().FakeInput(
+      {x11::KeyEvent::Press, static_cast<uint8_t>(keycode)});
+  connection_->xtest().FakeInput(
+      {x11::KeyEvent::Release, static_cast<uint8_t>(keycode)});
 
   connection_->xkb().LatchLockState(
       {static_cast<x11::Xkb::DeviceSpec>(x11::Xkb::Id::UseCoreKbd),

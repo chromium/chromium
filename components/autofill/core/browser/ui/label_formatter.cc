@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/address_contact_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/address_email_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/address_form_label_formatter.h"
@@ -40,7 +40,7 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
       app_locale_(app_locale),
       focused_field_type_(focused_field_type),
       groups_(groups) {
-  const FieldTypeGroup focused_group = GetFocusedNonBillingGroup();
+  const FieldTypeGroup focused_group = AutofillType(focused_field_type).group();
   DenseSet<FieldTypeGroup> groups_for_labels{
       FieldTypeGroup::kName, FieldTypeGroup::kAddressHome,
       FieldTypeGroup::kEmail, FieldTypeGroup::kPhoneHome};
@@ -60,7 +60,7 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
     return groups_for_labels.find(
                AutofillType(AutofillType(type).GetStorableType()).group()) !=
                groups_for_labels.end() &&
-           type != ADDRESS_HOME_COUNTRY && type != ADDRESS_BILLING_COUNTRY;
+           type != ADDRESS_HOME_COUNTRY;
   };
 
   std::copy_if(field_types.begin(), field_types.end(),
@@ -73,14 +73,10 @@ LabelFormatter::~LabelFormatter() = default;
 std::vector<std::u16string> LabelFormatter::GetLabels() const {
   std::vector<std::u16string> labels;
   for (const AutofillProfile* profile : profiles_) {
-    labels.push_back(GetLabelForProfile(*profile, GetFocusedNonBillingGroup()));
+    labels.push_back(GetLabelForProfile(
+        *profile, AutofillType(focused_field_type_).group()));
   }
   return labels;
-}
-
-FieldTypeGroup LabelFormatter::GetFocusedNonBillingGroup() const {
-  return AutofillType(AutofillType(focused_field_type_).GetStorableType())
-      .group();
 }
 
 // static
@@ -94,7 +90,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     return nullptr;
   }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return std::make_unique<MobileLabelFormatter>(
       profiles, app_locale, focused_field_type, groups, field_types);
 #else
@@ -124,7 +120,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     default:
       return nullptr;
   }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 }  // namespace autofill

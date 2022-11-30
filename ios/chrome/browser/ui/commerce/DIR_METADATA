@@ -1,4 +1,3 @@
 monorail {
   component: "UI>Browser>Shopping"
 }
-os: IOS

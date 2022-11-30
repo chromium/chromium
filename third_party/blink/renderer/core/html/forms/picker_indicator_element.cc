@@ -51,13 +51,6 @@ PickerIndicatorElement::PickerIndicatorElement(
       picker_indicator_owner_(&picker_indicator_owner) {
   SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
-  if (!features::IsFormControlsRefreshEnabled()) {
-    setAttribute(html_names::kStyleAttr,
-                 "display:list-item; list-style:disclosure-open inside; "
-                 "block-size:1em;");
-    // Do not expose list-item role.
-    setAttribute(html_names::kAriaHiddenAttr, "true");
-  }
 }
 
 PickerIndicatorElement::~PickerIndicatorElement() {
@@ -109,8 +102,7 @@ void PickerIndicatorElement::DidChooseValue(double value) {
 void PickerIndicatorElement::DidEndChooser() {
   chooser_.Clear();
   picker_indicator_owner_->DidEndChooser();
-  if (::features::IsFormControlsRefreshEnabled() &&
-      OwnerElement().GetLayoutObject()) {
+  if (OwnerElement().GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is shown.
     OwnerElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   }
@@ -128,8 +120,7 @@ void PickerIndicatorElement::OpenPopup() {
     return;
   chooser_ = GetDocument().GetPage()->GetChromeClient().OpenDateTimeChooser(
       GetDocument().GetFrame(), this, parameters);
-  if (::features::IsFormControlsRefreshEnabled() &&
-      OwnerElement().GetLayoutObject()) {
+  if (OwnerElement().GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is removed.
     OwnerElement().GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   }
@@ -184,7 +175,7 @@ void PickerIndicatorElement::DidNotifySubtreeInsertionsToDocument() {
   setAttribute(
       html_names::kAriaLabelAttr,
       AtomicString(
-          this->picker_indicator_owner_->AriaRoleForPickerIndicator()));
+          this->picker_indicator_owner_->AriaLabelForPickerIndicator()));
 }
 
 void PickerIndicatorElement::Trace(Visitor* visitor) const {

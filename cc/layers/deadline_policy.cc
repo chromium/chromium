@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,28 @@
 
 #include <limits>
 
+#include "base/notreached.h"
+#include "base/strings/stringprintf.h"
+
 namespace cc {
+namespace {
+
+const char* PolicyToString(DeadlinePolicy::Type type) {
+  switch (type) {
+    case DeadlinePolicy::Type::kUseExistingDeadline:
+      return "UseExistingDeadline";
+    case DeadlinePolicy::Type::kUseDefaultDeadline:
+      return "UseDefaultDeadline";
+    case DeadlinePolicy::Type::kUseSpecifiedDeadline:
+      return "UseSpecifiedDeadline";
+    case DeadlinePolicy::Type::kUseInfiniteDeadline:
+      return "UseInfiniteDeadline";
+  }
+  NOTREACHED();
+  return "";
+}
+
+}  // namespace
 
 // static
 DeadlinePolicy DeadlinePolicy::UseExistingDeadline() {
@@ -31,9 +52,15 @@ DeadlinePolicy DeadlinePolicy::UseInfiniteDeadline() {
 }
 
 DeadlinePolicy::DeadlinePolicy(Type policy_type,
-                               base::Optional<uint32_t> deadline_in_frames)
+                               absl::optional<uint32_t> deadline_in_frames)
     : policy_type_(policy_type), deadline_in_frames_(deadline_in_frames) {}
 
 DeadlinePolicy::DeadlinePolicy(const DeadlinePolicy& other) = default;
+
+std::string DeadlinePolicy::ToString() const {
+  return base::StringPrintf("DeadlinePolicy(%s, %d)",
+                            PolicyToString(policy_type_),
+                            deadline_in_frames_.value_or(-1));
+}
 
 }  // namespace cc

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/files/file_path.h"
-#include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_data_results.h"
@@ -53,6 +49,9 @@ class TokenWebData : public WebDataServiceBase {
   TokenWebData(scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
                scoped_refptr<base::SingleThreadTaskRunner> db_task_runner);
 
+  TokenWebData(const TokenWebData&) = delete;
+  TokenWebData& operator=(const TokenWebData&) = delete;
+
   // Set a token to use for a specified service.
   void SetTokenForService(const std::string& service, const std::string& token);
 
@@ -73,8 +72,6 @@ class TokenWebData : public WebDataServiceBase {
 
  private:
   scoped_refptr<TokenWebDataBackend> token_backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenWebData);
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_WEBDATA_TOKEN_WEB_DATA_H_

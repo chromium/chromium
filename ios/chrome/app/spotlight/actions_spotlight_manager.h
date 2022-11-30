@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ extern const char kSpotlightActionVoiceSearch[];
 extern const char kSpotlightActionQRScanner[];
 
 // Sets the correct properties for startup parameters according to the action
-// specified by the |query|. Returns YES if the properties were successfully
-// set. The query must represent an action and |startupParams| must not be nil.
+// specified by the `query`. Returns YES if the properties were successfully
+// set. The query must represent an action and `startupParams` must not be nil.
 BOOL SetStartupParametersForSpotlightAction(
     NSString* query,
     AppStartupParameters* startupParams);

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "noEmitOnError": true,
+
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "pretty": true,
+    "removeComments": true,
+    "listEmittedFiles": true,
+    "typeRoots": [
+      "../../third_party/node/node_modules/@types"
+    ],
+    "types": [
+      "trusted-types"
+    ]
+  }
+}

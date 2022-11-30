@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ class MojoWatcher final : public ScriptWrappable,
   static void OnHandleReady(const MojoTrapEvent*);
   void RunReadyCallback(MojoResult);
 
-  SelfKeepAlive<MojoWatcher> keep_alive_{PERSISTENT_FROM_HERE};
+  SelfKeepAlive<MojoWatcher> keep_alive_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<V8MojoWatchCallback> callback_;
   mojo::ScopedTrapHandle trap_handle_;

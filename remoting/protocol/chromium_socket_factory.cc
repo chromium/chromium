@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -32,8 +31,7 @@
 #include "third_party/webrtc/rtc_base/net_helpers.h"
 #include "third_party/webrtc/rtc_base/socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -63,6 +61,10 @@ std::unique_ptr<net::UDPServerSocket> CreateUdpSocketAndListen(
 class UdpPacketSocket : public rtc::AsyncPacketSocket {
  public:
   UdpPacketSocket();
+
+  UdpPacketSocket(const UdpPacketSocket&) = delete;
+  UdpPacketSocket& operator=(const UdpPacketSocket&) = delete;
+
   ~UdpPacketSocket() override;
 
   bool Init(const rtc::SocketAddress& local_address,
@@ -122,8 +124,6 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
   bool send_pending_;
   std::list<PendingPacket> send_queue_;
   int send_queue_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(UdpPacketSocket);
 };
 
 UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,
@@ -153,8 +153,7 @@ bool UdpPacketSocket::Init(const rtc::SocketAddress& local_address,
                            uint16_t max_port) {
   DCHECK_LE(min_port, max_port);
   net::IPEndPoint local_endpoint;
-  if (!jingle_glue::SocketAddressToIPEndPoint(
-          local_address, &local_endpoint)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
     return false;
   }
 
@@ -185,8 +184,7 @@ bool UdpPacketSocket::Init(const rtc::SocketAddress& local_address,
   }
 
   if (socket_->GetLocalAddress(&local_endpoint) != net::OK ||
-      !jingle_glue::IPEndPointToSocketAddress(local_endpoint,
-                                              &local_address_)) {
+      !webrtc::IPEndPointToSocketAddress(local_endpoint, &local_address_)) {
     return false;
   }
 
@@ -227,7 +225,7 @@ int UdpPacketSocket::SendTo(const void* data, size_t data_size,
   }
 
   net::IPEndPoint endpoint;
-  if (!jingle_glue::SocketAddressToIPEndPoint(address, &endpoint)) {
+  if (!webrtc::SocketAddressToIPEndPoint(address, &endpoint)) {
     return EINVAL;
   }
 
@@ -390,7 +388,7 @@ void UdpPacketSocket::HandleReadResult(int result) {
 
   if (result > 0) {
     rtc::SocketAddress address;
-    if (!jingle_glue::IPEndPointToSocketAddress(receive_address_, &address)) {
+    if (!webrtc::IPEndPointToSocketAddress(receive_address_, &address)) {
       NOTREACHED();
       LOG(ERROR) << "Failed to convert address received from RecvFrom().";
       return;
@@ -427,7 +425,7 @@ rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
   return result.release();
 }
 
-rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* ChromiumPacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -464,5 +462,4 @@ ChromiumPacketSocketFactory::CreateAsyncResolver() {
   return new rtc::AsyncResolver();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,70 +1,39 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin.services;
 
-import android.accounts.Account;
-import android.os.Handler;
-
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Util methods for signin metrics logging.
  */
 public class SigninMetricsUtils {
-    /**
-     * Scheduler class to poll native side every 15 seconds for 8 times to log web signin event.
-     * Holds a single instance of the class that is reset between logWebSignin() calls if
-     * a Scheduler object is already running.
-     */
-    private static class Scheduler {
-        private static final int MAX_COUNT = 8;
-        private static final int DELAY = 15 * 1000; // 15 seconds
-
-        private static Scheduler sInstance;
-
-        private int mCounter;
-        private String[] mGaiaIds;
-        private final Handler mHandler = new Handler();
-        private final Runnable mPeriodicPoll = new Runnable() {
-            @Override
-            public void run() {
-                if (mCounter < MAX_COUNT && !SigninMetricsUtilsJni.get().logWebSignin(mGaiaIds)) {
-                    mCounter++;
-                    postTask();
-                }
-            }
-        };
-
-        private void postTask() {
-            mHandler.postDelayed(mPeriodicPoll, DELAY);
-        }
-
-        private static void logWebSignin(String[] gaiaIds) {
-            if (sInstance == null) {
-                sInstance = new Scheduler();
-            }
-            sInstance.mHandler.removeCallbacks(sInstance.mPeriodicPoll);
-            sInstance.mCounter = 0;
-            sInstance.mGaiaIds = gaiaIds;
-            sInstance.postTask();
-        }
+    /** Used to record Signin.AddAccountState histogram. Do not change existing values. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({State.REQUESTED, State.STARTED, State.SUCCEEDED, State.FAILED, State.CANCELLED,
+            State.NULL_ACCOUNT_NAME, State.NUM_STATES})
+    public @interface State {
+        int REQUESTED = 0;
+        int STARTED = 1;
+        int SUCCEEDED = 2;
+        int FAILED = 3;
+        int CANCELLED = 4;
+        int NULL_ACCOUNT_NAME = 5;
+        int NUM_STATES = 6;
     }
-
     /**
      * Logs a {@link ProfileAccountManagementMetrics} for a given {@link GAIAServiceType}.
      */
@@ -79,16 +48,7 @@ public class SigninMetricsUtils {
     public static void logAccountConsistencyPromoAction(
             @AccountConsistencyPromoAction int promoAction) {
         RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
-                promoAction, AccountConsistencyPromoAction.MAX);
-    }
-
-    /**
-     * Logs AccountPickerBottomSheet shown count histograms.
-     */
-    public static void logAccountConsistencyPromoShownCount(String histogram) {
-        RecordHistogram.recordExactLinearHistogram(histogram,
-                SigninPreferencesManager.getInstance().getAccountPickerBottomSheetShownCount(),
-                100);
+                promoAction, AccountConsistencyPromoAction.MAX_VALUE + 1);
     }
 
     /**
@@ -106,35 +66,17 @@ public class SigninMetricsUtils {
      * Logs signin user action for a given {@link SigninAccessPoint}.
      */
     public static void logSigninUserActionForAccessPoint(@SigninAccessPoint int accessPoint) {
-        SigninMetricsUtilsJni.get().logSigninUserActionForAccessPoint(accessPoint);
+        // TODO(https://crbug.com/1349700): Remove this check when user action checks are removed
+        // from native code.
+        if (accessPoint != SigninAccessPoint.SETTINGS_SYNC_OFF_ROW) {
+            SigninMetricsUtilsJni.get().logSigninUserActionForAccessPoint(accessPoint);
+        }
     }
 
-    /**
-     * Logs metrics when the user signs in within 2 minutes after dismissing the bottom sheet.
-     * Polls the native side every 15 seconds for web signin events for 2 minutes.
-     */
-    public static void logWebSignin() {
-        new AsyncTask<List<String>>() {
-            @Override
-            protected List<String> doInBackground() {
-                AccountManagerFacade accountManagerFacade =
-                        AccountManagerFacadeProvider.getInstance();
-                List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
-                List<String> gaiaIds = new ArrayList<>();
-                for (Account account : accounts) {
-                    String gaiaId = accountManagerFacade.getAccountGaiaId(account.name);
-                    if (gaiaId != null) {
-                        gaiaIds.add(gaiaId);
-                    }
-                }
-                return gaiaIds;
-            }
-
-            @Override
-            protected void onPostExecute(List<String> gaiaIds) {
-                Scheduler.logWebSignin(gaiaIds.toArray(new String[0]));
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    /** Logs Signin.AddAccountState histogram. */
+    public static void logAddAccountStateHistogram(@State int state) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.AddAccountState", state, State.NUM_STATES);
     }
 
     @VisibleForTesting
@@ -142,8 +84,6 @@ public class SigninMetricsUtils {
     public interface Natives {
         void logProfileAccountManagementMenu(int metric, int gaiaServiceType);
         void logSigninUserActionForAccessPoint(int accessPoint);
-        // Returns whether metrics were recorded on the native side.
-        boolean logWebSignin(String[] gaiaIds);
     }
 
     private SigninMetricsUtils() {}

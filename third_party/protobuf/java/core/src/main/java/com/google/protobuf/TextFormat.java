@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 /**
  * Provide text parsing and formatting support for proto2 instances. The implementation largely
- * follows google/protobuf/text_format.cc.
+ * follows text_format.cc.
  *
  * @author wenboz@google.com Wenbo Zhu
  * @author kenton@google.com Kenton Varda
@@ -59,6 +59,9 @@ public final class TextFormat {
 
   private static final Logger logger = Logger.getLogger(TextFormat.class.getName());
 
+  private static final String DEBUG_STRING_SILENT_MARKER = "\t ";
+
+
   /**
    * Outputs a textual representation of the Protocol Message supplied into the parameter output.
    * (This representation is the new version of the classic "ProtocolPrinter" output from the
@@ -67,6 +70,9 @@ public final class TextFormat {
    * @deprecated Use {@code printer().print(MessageOrBuilder, Appendable)}
    */
   @Deprecated
+  @InlineMe(
+      replacement = "TextFormat.printer().print(message, output)",
+      imports = "com.google.protobuf.TextFormat")
   public static void print(final MessageOrBuilder message, final Appendable output)
       throws IOException {
     printer().print(message, output);
@@ -89,6 +95,9 @@ public final class TextFormat {
    * @deprecated Use {@code printer().escapingNonAscii(false).print(MessageOrBuilder, Appendable)}
    */
   @Deprecated
+  @InlineMe(
+      replacement = "TextFormat.printer().escapingNonAscii(false).print(message, output)",
+      imports = "com.google.protobuf.TextFormat")
   public static void printUnicode(final MessageOrBuilder message, final Appendable output)
       throws IOException {
     printer().escapingNonAscii(false).print(message, output);
@@ -142,6 +151,9 @@ public final class TextFormat {
    * @deprecated Use {@code message.toString()}
    */
   @Deprecated
+  @InlineMe(
+      replacement = "TextFormat.printer().printToString(message)",
+      imports = "com.google.protobuf.TextFormat")
   public static String printToString(final MessageOrBuilder message) {
     return printer().printToString(message);
   }
@@ -163,6 +175,9 @@ public final class TextFormat {
    * @deprecated Use {@code printer().escapingNonAscii(false).printToString(MessageOrBuilder)}
    */
   @Deprecated
+  @InlineMe(
+      replacement = "TextFormat.printer().escapingNonAscii(false).printToString(message)",
+      imports = "com.google.protobuf.TextFormat")
   public static String printToUnicodeString(final MessageOrBuilder message) {
     return printer().escapingNonAscii(false).printToString(message);
   }
@@ -224,6 +239,9 @@ public final class TextFormat {
    * @throws IOException if there is an exception writing to the output
    */
   @Deprecated
+  @InlineMe(
+      replacement = "TextFormat.printer().printFieldValue(field, value, output)",
+      imports = "com.google.protobuf.TextFormat")
   public static void printFieldValue(
       final FieldDescriptor field, final Object value, final Appendable output) throws IOException {
     printer().printFieldValue(field, value, output);
@@ -442,9 +460,7 @@ public final class TextFormat {
     }
 
     /**
-     * An adapter class that can take a MapEntry or a MutableMapEntry and returns its key and entry.
-     * This class is created solely for the purpose of sorting map entries by its key and prevent
-     * duplicated logic by having a separate comparator for MapEntry and MutableMapEntry.
+     * An adapter class that can take a {@link MapEntry} and returns its key and entry.
      */
     private static class MapEntryAdapter implements Comparable<MapEntryAdapter> {
       private Object entry;
@@ -490,11 +506,11 @@ public final class TextFormat {
         }
         switch (fieldType) {
           case BOOLEAN:
-            return Boolean.compare((boolean) getKey(), (boolean) b.getKey());
+            return Boolean.valueOf((boolean) getKey()).compareTo((boolean) b.getKey());
           case LONG:
-            return Long.compare((long) getKey(), (long) b.getKey());
+            return Long.valueOf((long) getKey()).compareTo((long) b.getKey());
           case INT:
-            return Integer.compare((int) getKey(), (int) b.getKey());
+            return Integer.valueOf((int) getKey()).compareTo((int) b.getKey());
           case STRING:
             String aString = (String) getKey();
             String bString = (String) b.getKey();
@@ -725,9 +741,9 @@ public final class TextFormat {
           // Groups must be serialized with their original capitalization.
           generator.print(field.getMessageType().getName());
         } else {
-          generator.print(field.getName());
+            generator.print(field.getName());
+          }
         }
-      }
 
       if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE) {
         generator.print(" {");
@@ -931,6 +947,14 @@ public final class TextFormat {
         Pattern.compile("-?inf(inity)?f?", Pattern.CASE_INSENSITIVE);
     private static final Pattern FLOAT_NAN = Pattern.compile("nanf?", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * {@link containsSilentMarkerAfterCurrentToken} indicates if there is a silent marker after the
+     * current token. This value is moved to {@link containsSilentMarkerAfterPrevToken} every time
+     * the next token is parsed.
+     */
+    private boolean containsSilentMarkerAfterCurrentToken = false;
+    private boolean containsSilentMarkerAfterPrevToken = false;
+
     /** Construct a tokenizer that parses tokens from the given text. */
     private Tokenizer(final CharSequence text) {
       this.text = text;
@@ -953,6 +977,14 @@ public final class TextFormat {
 
     int getColumn() {
       return column;
+    }
+
+    boolean getContainsSilentMarkerAfterCurrentToken() {
+      return containsSilentMarkerAfterCurrentToken;
+    }
+
+    boolean getContainsSilentMarkerAfterPrevToken() {
+      return containsSilentMarkerAfterPrevToken;
     }
 
     /** Are we at the end of the input? */
@@ -1520,6 +1552,19 @@ public final class TextFormat {
    * control the parser behavior.
    */
   public static class Parser {
+    private int debugStringSilentMarker;
+
+    /**
+     * A valid silent marker appears between a field name and its value. If there is a ":" in
+     * between, the silent marker will only appear after the colon. This is called after a field
+     * name is parsed, and before the ":" if it exists. If the current token is ":", then
+     * containsSilentMarkerAfterCurrentToken indicates if there is a valid silent marker. Otherwise,
+     * the current token is part of the field value, so the silent marker is indicated by
+     * containsSilentMarkerAfterPrevToken.
+     */
+    private void detectSilentMarker(Tokenizer tokenizer) {
+    }
+
     /**
      * Determines if repeated values for non-repeated fields and oneofs are permitted. For example,
      * given required/optional field "foo" and a oneof containing "baz" and "qux":
@@ -1809,16 +1854,16 @@ public final class TextFormat {
         extension = target.findExtensionByName(extensionRegistry, name.toString());
 
         if (extension == null) {
-          String message =
-              (tokenizer.getPreviousLine() + 1)
-                  + ":"
-                  + (tokenizer.getPreviousColumn() + 1)
-                  + ":\t"
-                  + type.getFullName()
-                  + ".["
-                  + name
-                  + "]";
-          unknownFields.add(new UnknownField(message, UnknownField.Type.EXTENSION));
+            String message =
+                (tokenizer.getPreviousLine() + 1)
+                    + ":"
+                    + (tokenizer.getPreviousColumn() + 1)
+                    + ":\t"
+                    + type.getFullName()
+                    + ".["
+                    + name
+                    + "]";
+            unknownFields.add(new UnknownField(message, UnknownField.Type.EXTENSION));
         } else {
           if (extension.descriptor.getContainingType() != type) {
             throw tokenizer.parseExceptionPreviousToken(
@@ -1876,6 +1921,7 @@ public final class TextFormat {
         // start with "{" or "<" which indicates the beginning of a message body.
         // If there is no ":" or there is a "{" or "<" after ":", this field has
         // to be a message or the input is ill-formed.
+        detectSilentMarker(tokenizer);
         if (tokenizer.tryConsume(":") && !tokenizer.lookingAt("{") && !tokenizer.lookingAt("<")) {
           skipFieldValue(tokenizer);
         } else {
@@ -1886,6 +1932,7 @@ public final class TextFormat {
 
       // Handle potential ':'.
       if (field.getJavaType() == FieldDescriptor.JavaType.MESSAGE) {
+        detectSilentMarker(tokenizer);
         tokenizer.tryConsume(":"); // optional
         if (parseTreeBuilder != null) {
           TextFormatParseInfoTree.Builder childParseTreeBuilder =
@@ -1909,6 +1956,7 @@ public final class TextFormat {
               unknownFields);
         }
       } else {
+        detectSilentMarker(tokenizer);
         tokenizer.consume(":"); // required
         consumeFieldValues(
             tokenizer,
@@ -2170,6 +2218,7 @@ public final class TextFormat {
           throw tokenizer.parseExceptionPreviousToken("Expected a valid type URL.");
         }
       }
+      detectSilentMarker(tokenizer);
       tokenizer.tryConsume(":");
       final String anyEndToken;
       if (tokenizer.tryConsume("<")) {
@@ -2206,7 +2255,7 @@ public final class TextFormat {
     }
 
     /** Skips the next field including the field's name and value. */
-    private static void skipField(Tokenizer tokenizer) throws ParseException {
+    private void skipField(Tokenizer tokenizer) throws ParseException {
       if (tokenizer.tryConsume("[")) {
         // Extension name.
         do {
@@ -2223,6 +2272,7 @@ public final class TextFormat {
       // start with "{" or "<" which indicates the beginning of a message body.
       // If there is no ":" or there is a "{" or "<" after ":", this field has
       // to be a message or the input is ill-formed.
+      detectSilentMarker(tokenizer);
       if (tokenizer.tryConsume(":") && !tokenizer.lookingAt("<") && !tokenizer.lookingAt("{")) {
         skipFieldValue(tokenizer);
       } else {
@@ -2238,7 +2288,7 @@ public final class TextFormat {
     /**
      * Skips the whole body of a message including the beginning delimiter and the ending delimiter.
      */
-    private static void skipFieldMessage(Tokenizer tokenizer) throws ParseException {
+    private void skipFieldMessage(Tokenizer tokenizer) throws ParseException {
       final String delimiter;
       if (tokenizer.tryConsume("<")) {
         delimiter = ">";
@@ -2253,7 +2303,7 @@ public final class TextFormat {
     }
 
     /** Skips a field value. */
-    private static void skipFieldValue(Tokenizer tokenizer) throws ParseException {
+    private void skipFieldValue(Tokenizer tokenizer) throws ParseException {
       if (tokenizer.tryConsumeString()) {
         while (tokenizer.tryConsumeString()) {}
         return;
@@ -2293,7 +2343,7 @@ public final class TextFormat {
    * Un-escape a byte sequence as escaped using {@link #escapeBytes(ByteString)}. Two-digit hex
    * escapes (starting with "\x") are also recognized.
    */
-  public static ByteString unescapeBytes(final CharSequence charString)
+  public static ByteString unescapeBytes(CharSequence charString)
       throws InvalidEscapeSequenceException {
     // First convert the Java character sequence to UTF-8 bytes.
     ByteString input = ByteString.copyFromUtf8(charString.toString());
@@ -2357,6 +2407,9 @@ public final class TextFormat {
               case '"':
                 result[pos++] = '\"';
                 break;
+              case '?':
+                result[pos++] = '?';
+                break;
 
               case 'x':
                 // hex escape
@@ -2373,6 +2426,75 @@ public final class TextFormat {
                   code = code * 16 + digitValue(input.byteAt(i));
                 }
                 result[pos++] = (byte) code;
+                break;
+
+              case 'u':
+                // Unicode escape
+                ++i;
+                if (i + 3 < input.size()
+                    && isHex(input.byteAt(i))
+                    && isHex(input.byteAt(i + 1))
+                    && isHex(input.byteAt(i + 2))
+                    && isHex(input.byteAt(i + 3))) {
+                  char ch =
+                      (char)
+                          (digitValue(input.byteAt(i)) << 12
+                              | digitValue(input.byteAt(i + 1)) << 8
+                              | digitValue(input.byteAt(i + 2)) << 4
+                              | digitValue(input.byteAt(i + 3)));
+
+                  if (ch >= Character.MIN_SURROGATE && ch <= Character.MAX_SURROGATE) {
+                    throw new InvalidEscapeSequenceException(
+                        "Invalid escape sequence: '\\u' refers to a surrogate");
+                  }
+                  byte[] chUtf8 = Character.toString(ch).getBytes(Internal.UTF_8);
+                  System.arraycopy(chUtf8, 0, result, pos, chUtf8.length);
+                  pos += chUtf8.length;
+                  i += 3;
+                } else {
+                  throw new InvalidEscapeSequenceException(
+                      "Invalid escape sequence: '\\u' with too few hex chars");
+                }
+                break;
+
+              case 'U':
+                // Unicode escape
+                ++i;
+                if (i + 7 >= input.size()) {
+                  throw new InvalidEscapeSequenceException(
+                      "Invalid escape sequence: '\\U' with too few hex chars");
+                }
+                int codepoint = 0;
+                for (int offset = i; offset < i + 8; offset++) {
+                  byte b = input.byteAt(offset);
+                  if (!isHex(b)) {
+                    throw new InvalidEscapeSequenceException(
+                        "Invalid escape sequence: '\\U' with too few hex chars");
+                  }
+                  codepoint = (codepoint << 4) | digitValue(b);
+                }
+                if (!Character.isValidCodePoint(codepoint)) {
+                  throw new InvalidEscapeSequenceException(
+                      "Invalid escape sequence: '\\U"
+                          + input.substring(i, i + 8).toStringUtf8()
+                          + "' is not a valid code point value");
+                }
+                Character.UnicodeBlock unicodeBlock = Character.UnicodeBlock.of(codepoint);
+                if (unicodeBlock != null
+                        && (unicodeBlock.equals(Character.UnicodeBlock.LOW_SURROGATES)
+                    || unicodeBlock.equals(Character.UnicodeBlock.HIGH_SURROGATES)
+                    || unicodeBlock.equals(Character.UnicodeBlock.HIGH_PRIVATE_USE_SURROGATES))) {
+                  throw new InvalidEscapeSequenceException(
+                      "Invalid escape sequence: '\\U"
+                          + input.substring(i, i + 8).toStringUtf8()
+                          + "' refers to a surrogate code unit");
+                }
+                int[] codepoints = new int[1];
+                codepoints[0] = codepoint;
+                byte[] chUtf8 = new String(codepoints, 0, 1).getBytes(Internal.UTF_8);
+                System.arraycopy(chUtf8, 0, result, pos, chUtf8.length);
+                pos += chUtf8.length;
+                i += 7;
                 break;
 
               default:

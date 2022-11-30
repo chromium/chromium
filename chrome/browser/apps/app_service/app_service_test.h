@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,15 @@
 #include <string>
 #include <vector>
 
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
 
 namespace apps {
-
-class AppServiceProxy;
 
 // Helper class to initialize AppService in unit tests.
 class AppServiceTest {
@@ -34,22 +35,14 @@ class AppServiceTest {
 
   // Synchronously fetches the icon for |app_id| of type |app_type| for the
   // specified |size_hint_in_dp|, and blocks until the fetching is completed.
-  gfx::ImageSkia LoadAppIconBlocking(apps::mojom::AppType app_type,
+  gfx::ImageSkia LoadAppIconBlocking(AppType app_type,
                                      const std::string& app_id,
                                      int32_t size_hint_in_dip);
 
   bool AreIconImageEqual(const gfx::ImageSkia& src, const gfx::ImageSkia& dst);
 
-  // Allow AppService async callbacks to run.
-  void WaitForAppService();
-
-  // Flush mojo calls to allow AppService async callbacks to run.
-  void FlushMojoCalls();
-
  private:
-  AppServiceProxy* app_service_proxy_ = nullptr;
-
-  Profile* profile_ = nullptr;
+  raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
 };
 
 }  // namespace apps

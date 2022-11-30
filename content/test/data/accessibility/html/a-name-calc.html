@@ -2,6 +2,7 @@
 @WIN-ALLOW:description*
 @WIN-ALLOW:explicit-name*
 @UIA-WIN-ALLOW:FullDescription*
+@UIA-WIN-ALLOW:ClassName*
 @MAC-ALLOW:AXDescription
 @MAC-ALLOW:AXHelp
 @MAC-DENY:AXValue
@@ -20,7 +21,7 @@
   <a href="#" aria-label="Label5"></a>
   <a href="#" aria-labelledby="label6"></a>
 
-  <p aria-label="@NO_DUMP">
+  <p class="@NO_DUMP">
     <span id="label3">LabelledBy3</span>
     <span id="label6">LabelledBy6</span>
   </p>

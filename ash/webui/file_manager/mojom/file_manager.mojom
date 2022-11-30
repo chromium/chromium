@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.file_manager.mojom;
+
+// Lives in the browser process. A renderer uses this to link itself with
+// a page handler.
+interface PageHandlerFactory {
+  // Create a page handler for the file manager and link it to the UI.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer uses this to control/query the
+// backend of the app.
+interface PageHandler {
+};
+
+// Lives in the renderer process. The browser uses this to send status
+// updates to the web page in the renderer and in rare cases to fetch
+// some info from there.
+interface Page {
+};

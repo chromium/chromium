@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/media_buildflags.h"
 #include "third_party/libyuv/include/libyuv.h"

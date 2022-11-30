@@ -1,16 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LOAD_TRACKER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_LOAD_TRACKER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/sequence_checker.h"
@@ -53,6 +50,9 @@ class TabLoadTracker {
   class Observer;
 
   using LoadingState = ::mojom::LifecycleUnitLoadingState;
+
+  TabLoadTracker(const TabLoadTracker&) = delete;
+  TabLoadTracker& operator=(const TabLoadTracker&) = delete;
 
   // A brief note around loading states specifically as they are defined in the
   // context of a WebContents:
@@ -144,9 +144,9 @@ class TabLoadTracker {
   // actually an observer, but the relevant events are forwarded to it from the
   // TabManager.
   //
-  // In all cases, a call to DidReceiveResponse() is expected to be followed by
+  // In all cases, a call to PrimaryPageChanged() is expected to be followed by
   // a call to StopTracking(), RenderProcessGone() or OnPageStoppedLoading().
-  void DidReceiveResponse(content::WebContents* web_contents);
+  void PrimaryPageChanged(content::WebContents* web_contents);
   void DidStopLoading(content::WebContents* web_contents);
   void RenderProcessGone(content::WebContents* web_contents,
                          base::TerminationStatus status);
@@ -198,8 +198,6 @@ class TabLoadTracker {
   base::ObserverList<Observer>::Unchecked observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoadTracker);
 };
 
 // A class for observing loading state changes of WebContents under observation
@@ -210,6 +208,10 @@ class TabLoadTracker::Observer {
   using LoadingState = TabLoadTracker::LoadingState;
 
   Observer();
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   virtual ~Observer();
 
   // Called when a |web_contents| is starting to be tracked.
@@ -224,9 +226,6 @@ class TabLoadTracker::Observer {
   // Called when a |web_contents| is no longer being tracked.
   virtual void OnStopTracking(content::WebContents* web_contents,
                               LoadingState loading_state) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 }  // namespace resource_coordinator

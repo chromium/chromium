@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,9 @@ namespace base {
 class UnguessableToken;
 }
 
-namespace url {
-class Origin;
-}
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 
@@ -54,10 +54,10 @@ class CONTENT_EXPORT SharedWorkerService {
     // notifications.
     virtual void OnClientAdded(
         const blink::SharedWorkerToken& token,
-        content::GlobalFrameRoutingId render_frame_host_id) = 0;
+        content::GlobalRenderFrameHostId render_frame_host_id) = 0;
     virtual void OnClientRemoved(
         const blink::SharedWorkerToken& token,
-        content::GlobalFrameRoutingId render_frame_host_id) = 0;
+        content::GlobalRenderFrameHostId render_frame_host_id) = 0;
   };
 
   // Adds/removes an observer.
@@ -76,12 +76,11 @@ class CONTENT_EXPORT SharedWorkerService {
   //       OnClientAdded() for each worker's clients.
   virtual void EnumerateSharedWorkers(Observer* observer) = 0;
 
-  // Terminates the given shared worker identified by its name, the URL of
-  // its main script resource, and the constructor origin. Returns true on
-  // success.
+  // Terminates the given shared worker identified by its name, the URL of its
+  // main script resource, and the storage key.  Returns true on success.
   virtual bool TerminateWorker(const GURL& url,
                                const std::string& name,
-                               const url::Origin& constructor_origin) = 0;
+                               const blink::StorageKey& storage_key) = 0;
 
   // Drops all shared workers and references to processes for shared workers
   // synchronously.

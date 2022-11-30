@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,8 +78,7 @@ void ExtensionSyncEventObserver::OnSyncStateUpdated(
   sync_file_system::ServiceInfo service_info;
   service_info.state = SyncServiceStateToExtensionEnum(state);
   service_info.description = description;
-  std::unique_ptr<base::ListValue> params(
-      sync_file_system::OnServiceStatusChanged::Create(service_info));
+  auto params(sync_file_system::OnServiceStatusChanged::Create(service_info));
 
   BroadcastOrDispatchEvent(
       app_origin,
@@ -93,13 +92,13 @@ void ExtensionSyncEventObserver::OnFileSynced(
     ::sync_file_system::SyncFileStatus status,
     ::sync_file_system::SyncAction action,
     ::sync_file_system::SyncDirection direction) {
-  std::unique_ptr<base::ListValue> params(new base::ListValue());
+  base::Value::List params;
 
-  std::unique_ptr<base::DictionaryValue> entry =
+  absl::optional<base::Value::Dict> entry =
       CreateDictionaryValueForFileSystemEntry(url, file_type);
   if (!entry)
     return;
-  params->Append(std::move(entry));
+  params.Append(std::move(*entry));
 
   // Status, SyncAction and any optional notes to go here.
   sync_file_system::FileStatus status_enum =
@@ -107,9 +106,9 @@ void ExtensionSyncEventObserver::OnFileSynced(
   sync_file_system::SyncAction action_enum = SyncActionToExtensionEnum(action);
   sync_file_system::SyncDirection direction_enum =
       SyncDirectionToExtensionEnum(direction);
-  params->AppendString(sync_file_system::ToString(status_enum));
-  params->AppendString(sync_file_system::ToString(action_enum));
-  params->AppendString(sync_file_system::ToString(direction_enum));
+  params.Append(sync_file_system::ToString(status_enum));
+  params.Append(sync_file_system::ToString(action_enum));
+  params.Append(sync_file_system::ToString(direction_enum));
 
   BroadcastOrDispatchEvent(
       url.origin().GetURL(),
@@ -121,7 +120,7 @@ void ExtensionSyncEventObserver::BroadcastOrDispatchEvent(
     const GURL& app_origin,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> values) {
+    base::Value::List values) {
   // Check to see whether the event should be broadcasted to all listening
   // extensions or sent to a specific extension ID.
   bool broadcast_mode = app_origin.is_empty();

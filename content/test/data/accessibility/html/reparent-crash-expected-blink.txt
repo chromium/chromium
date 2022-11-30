@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++listItem name='@NO_CHILDREN_DUMP'
+++++++listItem description='@NO_CHILDREN_DUMP' descriptionFrom=ariaDescription
 ++++++genericContainer
 ++++++++staticText name='Done'
 ++++++++++inlineTextBox name='Done'

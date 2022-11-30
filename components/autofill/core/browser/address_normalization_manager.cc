@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -33,6 +33,9 @@ class AddressNormalizationManager::NormalizerDelegate {
                      AddressNormalizer* address_normalizer,
                      AutofillProfile* profile);
 
+  NormalizerDelegate(const NormalizerDelegate&) = delete;
+  NormalizerDelegate& operator=(const NormalizerDelegate&) = delete;
+
   // Returns whether this delegate has completed or not.
   bool has_completed() const { return has_completed_; }
 
@@ -44,10 +47,8 @@ class AddressNormalizationManager::NormalizerDelegate {
   void OnCompletion(const AutofillProfile& profile);
 
   bool has_completed_ = false;
-  AddressNormalizationManager* owner_ = nullptr;
-  AutofillProfile* profile_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizerDelegate);
+  raw_ptr<AddressNormalizationManager> owner_ = nullptr;
+  raw_ptr<AutofillProfile> profile_ = nullptr;
 };
 
 AddressNormalizationManager::AddressNormalizationManager(

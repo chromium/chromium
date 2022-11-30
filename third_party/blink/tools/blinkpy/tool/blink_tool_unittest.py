@@ -1,13 +1,19 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import unittest
+from unittest.mock import patch
 
+from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.tool.blink_tool import BlinkTool
 
 
+# Avoid creating a real `Git` object, since it runs a command in its
+# constructor.
+@patch('blinkpy.tool.blink_tool.BlinkTool.git',
+       lambda self, path=None: MockGit(path))
 class BlinkToolTest(unittest.TestCase):
     def test_split_args_basic(self):
         self.assertEqual(

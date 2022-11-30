@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -30,6 +30,10 @@ class MEDIA_EXPORT BitReaderCore {
 
   // Lifetime of |byte_stream_provider| must be longer than BitReaderCore.
   explicit BitReaderCore(ByteStreamProvider* byte_stream_provider);
+
+  BitReaderCore(const BitReaderCore&) = delete;
+  BitReaderCore& operator=(const BitReaderCore&) = delete;
+
   ~BitReaderCore();
 
   // Read one bit from the stream and return it as a boolean in |*out|.
@@ -103,7 +107,7 @@ class MEDIA_EXPORT BitReaderCore {
   // Refill the current bit register from the next bit register.
   void RefillCurrentRegister();
 
-  ByteStreamProvider* const byte_stream_provider_;
+  const raw_ptr<ByteStreamProvider> byte_stream_provider_;
 
   // Number of bits read so far.
   int bits_read_;
@@ -117,8 +121,6 @@ class MEDIA_EXPORT BitReaderCore {
   // Note: bits are consumed from MSB to LSB.
   int nbits_next_;
   uint64_t reg_next_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitReaderCore);
 };
 
 }  // namespace media

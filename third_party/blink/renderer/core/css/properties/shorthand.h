@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_SHORTHAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_SHORTHAND_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -25,7 +26,7 @@ class Shorthand : public CSSProperty {
       CSSParserTokenRange&,
       const CSSParserContext&,
       const CSSParserLocalContext&,
-      HeapVector<CSSPropertyValue, 256>& properties) const {
+      HeapVector<CSSPropertyValue, 64>& properties) const {
     NOTREACHED();
     return false;
   }

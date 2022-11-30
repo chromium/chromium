@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 // So that mojo is defined.
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
-// #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-// #import 'chrome://nearby/shared/nearby_preview.m.js';
-// #import {assertEquals} from '../../chai_assert.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
+
+import {NearbyPreviewElement} from 'chrome://nearby/shared/nearby_preview.js';
+
+import {assertEquals} from '../../chai_assert.js';
 
 suite('PreviewTest', function() {
   /** @type {!NearbyPreviewElement} */
@@ -36,10 +37,11 @@ suite('PreviewTest', function() {
     previewElement.payloadPreview = {
       description: title,
       fileCount: 1,
-      shareType: /** @type {nearbyShare.mojom.ShareType} */ (0)
+      shareType: /** @type {nearbyShare.mojom.ShareType} */ (0),
     };
 
-    const renderedTitle = previewElement.$$('#title').textContent;
+    const renderedTitle =
+        previewElement.shadowRoot.querySelector('#title').textContent;
     assertEquals(title, renderedTitle);
   });
 });

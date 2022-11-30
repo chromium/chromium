@@ -1,30 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator.h"
 
-#include "base/bind.h"
-#include "base/feature_list.h"
-#include "base/guid.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-#include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
+#import "base/bind.h"
+#import "base/feature_list.h"
+#import "base/guid.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_client.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
-#include "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
+#import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -74,12 +74,10 @@ using save_card_infobar_overlays::SaveCardMainAction;
 class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   SaveCardInfobarModalOverlayMediatorTest()
-      : prefs_(autofill::test::PrefServiceForTesting()),
-        callback_installer_(&callback_receiver_,
+      : callback_installer_(&callback_receiver_,
                             {SaveCardMainAction::ResponseSupport()}),
         mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-
     autofill::LegalMessageLines legal_message_lines =
         autofill::LegalMessageLines(
             {autofill::TestLegalMessageLine("Test message")});
@@ -96,7 +94,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
                       user_provided_card_details){
                 }),
             autofill::AutofillClient::LocalSaveCardPromptCallback(),
-            prefs_.get());
+            AccountInfo());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));
@@ -116,7 +114,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  std::unique_ptr<PrefService> prefs_;
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;

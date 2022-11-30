@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 
 #include <string>
 
+#include "base/run_loop.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
-#include "services/network/public/mojom/url_request.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
 
@@ -31,17 +34,19 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
+      const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr client_security_state) override;
 
   void OnRawResponse(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-      const base::Optional<std::string>& raw_response_headers,
-      network::mojom::IPAddressSpace resource_address_space) override;
+      const absl::optional<std::string>& raw_response_headers,
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code) override;
 
   void OnPrivateNetworkRequest(
-      const base::Optional<std::string>& devtools_request_id,
+      const absl::optional<std::string>& devtools_request_id,
       const GURL& url,
       bool is_warning,
       network::mojom::IPAddressSpace resource_address_space,
@@ -49,14 +54,15 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   void OnCorsPreflightRequest(
       const base::UnguessableToken& devtool_request_id,
-      const network::ResourceRequest& request,
+      const net::HttpRequestHeaders& request_headers,
+      network::mojom::URLRequestDevToolsInfoPtr request_info,
       const GURL& initiator_url,
       const std::string& initiator_devtool_request_id) override;
 
   void OnCorsPreflightResponse(
       const base::UnguessableToken& devtool_request_id,
       const GURL& url,
-      network::mojom::URLResponseHeadPtr head) override;
+      network::mojom::URLResponseHeadDevToolsInfoPtr head) override;
 
   void OnCorsPreflightRequestCompleted(
       const base::UnguessableToken& devtool_request_id,
@@ -66,10 +72,39 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const std::string& devtool_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;
 
-  void OnCorsError(const base::Optional<std::string>& devtool_request_id,
-                   const base::Optional<::url::Origin>& initiator_origin,
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleMetadata,
+              (const std::string& devtools_request_id,
+               const std::vector<GURL>& urls),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleMetadataError,
+              (const std::string& devtools_request_id,
+               const std::string& error_message),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleInnerResponse,
+              (const std::string& inner_request_devtools_id,
+               const GURL& url,
+               const absl::optional<std::string>& bundle_request_devtools_id),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSubresourceWebBundleInnerResponseError,
+              (const std::string& inner_request_devtools_id,
+               const GURL& url,
+               const std::string& error_message,
+               const absl::optional<std::string>& bundle_request_devtools_id),
+              (override));
+
+  void OnCorsError(const absl::optional<std::string>& devtool_request_id,
+                   const absl::optional<::url::Origin>& initiator_origin,
+                   mojom::ClientSecurityStatePtr client_security_state,
                    const GURL& url,
-                   const network::CorsErrorStatus& status) override;
+                   const network::CorsErrorStatus& status,
+                   bool is_warning) override;
 
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override;
 
@@ -88,8 +123,17 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   const std::string devtools_request_id() { return devtools_request_id_; }
 
-  const base::Optional<std::string> raw_response_headers() {
+  const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers()
+      const {
+    return response_headers_;
+  }
+
+  const absl::optional<std::string> raw_response_headers() const {
     return raw_response_headers_;
+  }
+
+  int32_t raw_response_http_status_code() const {
+    return raw_response_http_status_code_;
   }
 
   const network::mojom::ClientSecurityStatePtr& client_security_state() const {
@@ -102,39 +146,40 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   struct OnPrivateNetworkRequestParams {
     OnPrivateNetworkRequestParams(
-        const base::Optional<std::string>& devtools_request_id,
+        const absl::optional<std::string>& devtools_request_id,
         const GURL& url,
         bool is_warning,
         network::mojom::IPAddressSpace resource_address_space,
         network::mojom::ClientSecurityStatePtr client_security_state);
     OnPrivateNetworkRequestParams(OnPrivateNetworkRequestParams&&);
     ~OnPrivateNetworkRequestParams();
-    base::Optional<std::string> devtools_request_id;
+    absl::optional<std::string> devtools_request_id;
     GURL url;
     bool is_warning;
     network::mojom::IPAddressSpace resource_address_space;
     network::mojom::ClientSecurityStatePtr client_security_state;
   };
 
-  const base::Optional<OnPrivateNetworkRequestParams>&
+  const absl::optional<OnPrivateNetworkRequestParams>&
   private_network_request_params() const {
     return params_of_private_network_request_;
   }
 
   struct OnCorsErrorParams {
-    OnCorsErrorParams(const base::Optional<std::string>& devtools_request_id,
-                      const base::Optional<::url::Origin>& initiator_origin,
-                      const GURL& url,
-                      const network::CorsErrorStatus& status);
+    OnCorsErrorParams();
     OnCorsErrorParams(OnCorsErrorParams&&);
+    OnCorsErrorParams& operator=(OnCorsErrorParams&&);
     ~OnCorsErrorParams();
-    base::Optional<std::string> devtools_request_id;
-    base::Optional<::url::Origin> initiator_origin;
+
+    absl::optional<std::string> devtools_request_id;
+    absl::optional<::url::Origin> initiator_origin;
+    mojom::ClientSecurityStatePtr client_security_state;
     GURL url;
     network::CorsErrorStatus status;
+    bool is_warning = false;
   };
 
-  const base::Optional<OnCorsErrorParams>& cors_error_params() const {
+  const absl::optional<OnCorsErrorParams>& cors_error_params() const {
     return params_of_cors_error_;
   }
 
@@ -145,7 +190,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   bool got_raw_response_ = false;
   network::mojom::IPAddressSpace resource_address_space_;
   std::string devtools_request_id_;
-  base::Optional<std::string> raw_response_headers_;
+  absl::optional<std::string> raw_response_headers_;
+  std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers_;
+  int32_t raw_response_http_status_code_ = -1;
 
   bool got_raw_request_ = false;
   net::CookieAccessResultList raw_request_cookies_;
@@ -154,11 +201,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
   base::RunLoop wait_for_private_network_request_;
-  base::Optional<OnPrivateNetworkRequestParams>
+  absl::optional<OnPrivateNetworkRequestParams>
       params_of_private_network_request_;
 
   base::RunLoop wait_for_cors_error_;
-  base::Optional<OnCorsErrorParams> params_of_cors_error_;
+  absl::optional<OnCorsErrorParams> params_of_cors_error_;
 
   mojo::ReceiverSet<mojom::DevToolsObserver> receivers_;
 };

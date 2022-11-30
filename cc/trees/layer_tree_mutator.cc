@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/trees/layer_tree_mutator.h"
 
-#include <algorithm>
+#include <utility>
+
+#include "base/ranges/algorithm.h"
 
 namespace cc {
 
@@ -25,18 +27,19 @@ AnimationWorkletInput::AddAndUpdateState::~AddAndUpdateState() = default;
 
 #if DCHECK_IS_ON()
 bool AnimationWorkletInput::ValidateId(int worklet_id) const {
-  return std::all_of(added_and_updated_animations.cbegin(),
-                     added_and_updated_animations.cend(),
-                     [worklet_id](auto& it) {
-                       return it.worklet_animation_id.worklet_id == worklet_id;
-                     }) &&
-         std::all_of(updated_animations.cbegin(), updated_animations.cend(),
-                     [worklet_id](auto& it) {
-                       return it.worklet_animation_id.worklet_id == worklet_id;
-                     }) &&
-         std::all_of(
-             removed_animations.cbegin(), removed_animations.cend(),
-             [worklet_id](auto& it) { return it.worklet_id == worklet_id; });
+  return base::ranges::all_of(added_and_updated_animations,
+                              [worklet_id](auto& it) {
+                                return it.worklet_animation_id.worklet_id ==
+                                       worklet_id;
+                              }) &&
+         base::ranges::all_of(updated_animations,
+                              [worklet_id](auto& it) {
+                                return it.worklet_animation_id.worklet_id ==
+                                       worklet_id;
+                              }) &&
+         base::ranges::all_of(removed_animations, [worklet_id](auto& it) {
+           return it.worklet_id == worklet_id;
+         });
 }
 #endif
 

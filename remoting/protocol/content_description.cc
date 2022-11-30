@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/content_description.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -18,8 +19,7 @@
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 const char ContentDescription::kChromotingContentName[] = "chromoting";
 
@@ -40,20 +40,21 @@ const char kVersionAttr[] = "version";
 const char kCodecAttr[] = "codec";
 
 const NameMapElement<ChannelConfig::TransportType> kTransports[] = {
-  { ChannelConfig::TRANSPORT_STREAM, "stream" },
-  { ChannelConfig::TRANSPORT_MUX_STREAM, "mux-stream" },
-  { ChannelConfig::TRANSPORT_DATAGRAM, "datagram" },
-  { ChannelConfig::TRANSPORT_NONE, "none" },
+    {ChannelConfig::TRANSPORT_STREAM, "stream"},
+    {ChannelConfig::TRANSPORT_MUX_STREAM, "mux-stream"},
+    {ChannelConfig::TRANSPORT_DATAGRAM, "datagram"},
+    {ChannelConfig::TRANSPORT_NONE, "none"},
 };
 
 const NameMapElement<ChannelConfig::Codec> kCodecs[] = {
-  { ChannelConfig::CODEC_VERBATIM, "verbatim" },
-  { ChannelConfig::CODEC_VP8, "vp8" },
-  { ChannelConfig::CODEC_VP9, "vp9" },
-  { ChannelConfig::CODEC_H264, "h264" },
-  { ChannelConfig::CODEC_ZIP, "zip" },
-  { ChannelConfig::CODEC_OPUS, "opus" },
-  { ChannelConfig::CODEC_SPEEX, "speex" },
+    {ChannelConfig::CODEC_VERBATIM, "verbatim"},
+    {ChannelConfig::CODEC_VP8, "vp8"},
+    {ChannelConfig::CODEC_VP9, "vp9"},
+    {ChannelConfig::CODEC_H264, "h264"},
+    {ChannelConfig::CODEC_ZIP, "zip"},
+    {ChannelConfig::CODEC_OPUS, "opus"},
+    {ChannelConfig::CODEC_SPEEX, "speex"},
+    {ChannelConfig::CODEC_AV1, "av1"},
 };
 
 // Format a channel configuration tag for chromotocol session description,
@@ -170,8 +171,8 @@ XmlElement* ContentDescription::ToXml() const {
 }
 
 // static
-// Adds the channel configs corresponding to |tag_name|,
-// found in |element|, to |configs|.
+// Adds the channel configs corresponding to |tag_name|, found in |element|, to
+// |configs|.
 bool ContentDescription::ParseChannelConfigs(
     const XmlElement* const element,
     const char tag_name[],
@@ -225,11 +226,10 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
   std::unique_ptr<XmlElement> authenticator_message;
   const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
   if (child)
-    authenticator_message.reset(new XmlElement(*child));
+    authenticator_message = std::make_unique<XmlElement>(*child);
 
   return base::WrapUnique(new ContentDescription(
       std::move(config), std::move(authenticator_message)));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

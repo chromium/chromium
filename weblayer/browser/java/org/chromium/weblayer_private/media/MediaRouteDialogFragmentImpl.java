@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ public class MediaRouteDialogFragmentImpl extends FragmentHostingRemoteFragmentI
             // TODO(estade): this is necessary because MediaRouter dialogs crash if the theme has an
             // action bar. It's unclear why this is necessary when it's not in Chrome, and why
             // ContextThemeWrapper doesn't work.
-            getTheme().applyStyle(R.style.Theme_BrowserUI, true);
+            getTheme().applyStyle(R.style.Theme_BrowserUI_DayNight, /*force=*/true);
+            getTheme().applyStyle(R.style.ColorOverlay_WebLayer, /*force=*/true);
         }
     }
 

@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
+#include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -58,7 +61,7 @@ std::string GetLogTitle(const std::string& label, const TestParams& params) {
 }
 
 base::TimeDelta GetFrameTime(size_t frames_per_second) {
-  return base::TimeDelta::FromSecondsD(1.0 / frames_per_second);
+  return base::Seconds(1.0 / frames_per_second);
 }
 
 class PerfCpuLogger {
@@ -66,8 +69,16 @@ class PerfCpuLogger {
   explicit PerfCpuLogger(base::StringPiece test_name)
       : test_name_(test_name),
         process_metrics_(base::ProcessMetrics::CreateCurrentProcessMetrics()) {
-    process_metrics_->GetPlatformIndependentCPUUsage();
+    // Query the CPU usage once to start the recording interval.
+    const double inital_cpu_usage =
+        process_metrics_->GetPlatformIndependentCPUUsage();
+    // This should have been the first call so the reported cpu usage should be
+    // exactly zero.
+    DCHECK_EQ(inital_cpu_usage, 0.0);
   }
+
+  PerfCpuLogger(const PerfCpuLogger&) = delete;
+  PerfCpuLogger& operator=(const PerfCpuLogger&) = delete;
 
   ~PerfCpuLogger() {
     double result = process_metrics_->GetPlatformIndependentCPUUsage();
@@ -77,8 +88,6 @@ class PerfCpuLogger {
  private:
   std::string test_name_;
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCpuLogger);
 };
 
 MULTIPROCESS_TEST_MAIN(MojoPerfTestClientTestChildMain) {
@@ -192,7 +201,7 @@ class ChannelSteadyPingPongListener : public Listener {
   void SendPong() { sender_->Send(new TestMsg_Ping(payload_)); }
 
  private:
-  Sender* sender_ = nullptr;
+  raw_ptr<Sender> sender_ = nullptr;
   TestParams params_;
   std::string payload_;
   std::string label_;
@@ -270,6 +279,9 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
  public:
   MojoSteadyPingPongTest() = default;
 
+  MojoSteadyPingPongTest(const MojoSteadyPingPongTest&) = delete;
+  MojoSteadyPingPongTest& operator=(const MojoSteadyPingPongTest&) = delete;
+
  protected:
   void RunPingPongServer(MojoHandle mp, const std::string& label, bool sync) {
     label_ = label;
@@ -296,7 +308,7 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
 
     ping_receiver_->Quit();
 
-    ignore_result(ping_receiver_.Unbind().PassPipe().release());
+    std::ignore = ping_receiver_.Unbind().PassPipe().release();
   }
 
   void OnHello(const std::string& value) {
@@ -393,8 +405,6 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
   std::unique_ptr<PerfCpuLogger> cpu_logger_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSteadyPingPongTest);
 };
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoSteadyPingPongTest, h) {

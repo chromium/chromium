@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,9 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/sample_metadata.h"
@@ -17,7 +20,6 @@
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
 #include "base/ranges/algorithm.h"
-#include "build/build_config.h"
 
 // IMPORTANT NOTE: Some functions within this implementation are invoked while
 // the target thread is suspended so it must not do any allocation from the
@@ -58,9 +60,9 @@ class StackCopierDelegate : public StackCopier::Delegate {
   }
 
  private:
-  const base::circular_deque<std::unique_ptr<Unwinder>>* unwinders_;
-  ProfileBuilder* const profile_builder_;
-  const MetadataRecorder::MetadataProvider* const metadata_provider_;
+  raw_ptr<const base::circular_deque<std::unique_ptr<Unwinder>>> unwinders_;
+  const raw_ptr<ProfileBuilder> profile_builder_;
+  const raw_ptr<const MetadataRecorder::MetadataProvider> metadata_provider_;
 };
 
 }  // namespace
@@ -107,7 +109,8 @@ void StackSamplerImpl::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
 }
 
 void StackSamplerImpl::RecordStackFrames(StackBuffer* stack_buffer,
-                                         ProfileBuilder* profile_builder) {
+                                         ProfileBuilder* profile_builder,
+                                         PlatformThreadId thread_id) {
   DCHECK(stack_buffer);
 
   if (record_sample_callback_)
@@ -122,7 +125,7 @@ void StackSamplerImpl::RecordStackFrames(StackBuffer* stack_buffer,
     // Make this scope as small as possible because |metadata_provider| is
     // holding a lock.
     MetadataRecorder::MetadataProvider metadata_provider(
-        GetSampleMetadataRecorder());
+        GetSampleMetadataRecorder(), thread_id);
     StackCopierDelegate delegate(&unwinders_, profile_builder,
                                  &metadata_provider);
     copy_stack_succeeded = stack_copier_->CopyStack(
@@ -143,6 +146,32 @@ void StackSamplerImpl::RecordStackFrames(StackBuffer* stack_buffer,
   profile_builder->OnSampleCompleted(
       WalkStack(module_cache_, &thread_context, stack_top, unwinders_),
       timestamp);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ptrdiff_t stack_size = reinterpret_cast<uint8_t*>(stack_top) -
+                         reinterpret_cast<uint8_t*>(stack_buffer->buffer());
+  constexpr int kBytesPerKilobyte = 1024;
+
+  if ((++stack_size_histogram_sampling_counter_ %
+       kUMAHistogramDownsampleAmount) == 0) {
+    // Record the size of the stack to tune kLargeStackSize.
+    UmaHistogramMemoryKB("Memory.StackSamplingProfiler.StackSampleSize",
+                         saturated_cast<int>(stack_size / kBytesPerKilobyte));
+  }
+
+  // We expect to very rarely see stacks larger than kLargeStackSize. If we see
+  // a stack larger than kLargeStackSize, we tell the kernel to discard the
+  // contents of the buffer (using madvise(MADV_DONTNEED)) after the first
+  // kLargeStackSize bytes to avoid permanently allocating memory that we won't
+  // use again. We don't want kLargeStackSize to be too small, however; for if
+  // we are constantly calling madvise(MADV_DONTNEED) and then writing to the
+  // same parts of the buffer, we're not saving memory and we'll cause extra
+  // page faults.
+  constexpr ptrdiff_t kLargeStackSize = 512 * kBytesPerKilobyte;
+  if (stack_size > kLargeStackSize) {
+    stack_buffer->MarkUpperBufferContentsAsUnneeded(kLargeStackSize);
+  }
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -188,10 +217,10 @@ std::vector<Frame> StackSamplerImpl::WalkStack(
 
     // The unwinder with the lowest priority should be the only one that returns
     // COMPLETED since the stack starts in native code.
-    DCHECK(result != UnwindResult::COMPLETED ||
+    DCHECK(result != UnwindResult::kCompleted ||
            unwinder->get() == unwinders.back().get());
-  } while (result != UnwindResult::ABORTED &&
-           result != UnwindResult::COMPLETED &&
+  } while (result != UnwindResult::kAborted &&
+           result != UnwindResult::kCompleted &&
            // Give up if the authoritative unwinder for the module was unable to
            // unwind.
            stack.size() > prior_stack_size);

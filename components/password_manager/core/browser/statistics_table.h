@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -40,6 +40,10 @@ bool operator==(const InteractionsStats& lhs, const InteractionsStats& rhs);
 class StatisticsTable {
  public:
   StatisticsTable();
+
+  StatisticsTable(const StatisticsTable&) = delete;
+  StatisticsTable& operator=(const StatisticsTable&) = delete;
+
   ~StatisticsTable();
 
   // Initializes |db_|.
@@ -61,9 +65,6 @@ class StatisticsTable {
   // successfully.
   bool RemoveRow(const GURL& domain);
 
-  // Returns all statistics from the database.
-  std::vector<InteractionsStats> GetAllRows();
-
   // Returns the statistics for |domain| if it exists.
   std::vector<InteractionsStats> GetRows(const GURL& domain);
 
@@ -78,10 +79,11 @@ class StatisticsTable {
   // Returns the number of rows (origin/username pairs) in the table.
   int GetNumAccounts();
 
- private:
-  sql::Database* db_ = nullptr;
+  // Returns all statistics from the database.
+  std::vector<InteractionsStats> GetAllRowsForTest();
 
-  DISALLOW_COPY_AND_ASSIGN(StatisticsTable);
+ private:
+  raw_ptr<sql::Database> db_ = nullptr;
 };
 
 }  // namespace password_manager

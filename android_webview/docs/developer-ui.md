@@ -95,7 +95,7 @@ tool.
 
 ![WebView flag UI](images/webview_flag_ui.png)
 
-Tap the "Flags" option in the bottom navgation bar. You can scroll through the
+Tap the "Flags" option in the bottom navigation bar. You can scroll through the
 list to find your desired feature/flag (ex. "highlight-all-webviews"), tap the
 dropdown (look for "Default"), and tap "Enabled" in the dialog popup. You can
 enable (or disable) as many flags as you need.
@@ -152,30 +152,48 @@ running with the latest WebView variations seed.
 ### Adding your flags and features to the UI
 
 If you're intending to launch a feature in WebView or start a field trial (AKA
-Finch experiment), we **highly encourage** you to [add to the
-list](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java)
-(ex. [CL](https://crrev.com/c/2008007), [CL](https://crrev.com/c/2066144)).
-After that, update `enums.xml` by running
-`android_webview/tools/generate_flag_labels.py` (see [this
-doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more context).
+Finch experiment), we **highly encourage** you to [add to
+ProductionSupportedFlagList](/android_webview/java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java):
+
+1. You can list the feature flag name directly. This will be autochecked when
+   sending a Finch change to ensure it's not misspelt.
+2. See
+   [this doc](/tools/metrics/histograms/README.md#Flag-Histograms) for more info
+   about flag labels if you want histogram data about usage.
 
 Exposing your feature this way has several benefits:
 
 - This improves the manual test process. Testers can enable your feature with a
   button click instead of an adb command.
-- Typo-free: someone could mistype a flag or feature name in the commandline,
-  but this UI ensures flag names are always spelled correctly.
 - Because this works on production Android devices, test team can validate your
   feature on devices from other OEMs.
 - You (and teammates) can dogfood your feature.
 - If users or third-party app developers report bugs, this UI is the only way
   they can toggle your feature to help root-cause the regression.
-- You can see metrics for your feature's adoption with the
-  "Launch.FlagsAtStartup" histogram.
 
 ### See also
 
 - [Design doc](http://go/webview-dev-ui-flags-design) (Google-only)
+
+## Components UI
+
+Components UI shows all the registered components and their respective installed
+versions, similar to `chrome://components`. Components are config files downloaded
+via chrome's [component updater](https://chromium.googlesource.com/chromium/src/+/lkgr/components/component_updater/README.md). This can be accessed by opening the 3-dotted
+menu and tapping the "Components" option.
+
+Tapping the "Update" button located in the options menu will download new versions
+of the components if any are available.
+
+*** note
+**Note:** Updating components via the UI runs in "on-demand" or "user-visible"
+mode by default which may have [different behavior](https://crbug.com/1250837)
+from automated updates. To simulate the behaviour of the automated update
+service, on-demand updates can be turned off using the toggle provided
+below the Components Summary.
+***
+
+![WebView components UI](images/webview_components_ui.png)
 
 ## More cool stuff
 

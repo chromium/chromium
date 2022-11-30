@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,5 +45,11 @@ void CombiningUploadList::ClearUploadList(const base::Time& begin,
                                           const base::Time& end) {
   for (const scoped_refptr<UploadList>& sublist : sublists_) {
     sublist->ClearUploadList(begin, end);
+  }
+}
+
+void CombiningUploadList::RequestSingleUpload(const std::string& local_id) {
+  for (const scoped_refptr<UploadList>& sublist : sublists_) {
+    sublist->RequestSingleUpload(local_id);
   }
 }

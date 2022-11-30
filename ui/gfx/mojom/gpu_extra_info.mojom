@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,6 @@ struct GpuExtraInfo {
   // List of features queried from ANGLE
   array<ANGLEFeature> angle_features;
 
-  [EnableIf=enable_x11_params]
-  uint64 system_visual;
-  [EnableIf=enable_x11_params]
-  uint64 rgba_visual;
   [EnableIf=enable_x11_params]
   array<gfx.mojom.BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 };

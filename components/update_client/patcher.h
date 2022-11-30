@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define COMPONENTS_UPDATE_CLIENT_PATCHER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
 class FilePath;
+class File;
 }  // namespace base
 
 namespace update_client {
@@ -18,6 +18,9 @@ namespace update_client {
 class Patcher : public base::RefCountedThreadSafe<Patcher> {
  public:
   using PatchCompleteCallback = base::OnceCallback<void(int result)>;
+
+  Patcher(const Patcher&) = delete;
+  Patcher& operator=(const Patcher&) = delete;
 
   virtual void PatchBsdiff(const base::FilePath& input_file,
                            const base::FilePath& patch_file,
@@ -29,26 +32,28 @@ class Patcher : public base::RefCountedThreadSafe<Patcher> {
                               const base::FilePath& destination,
                               PatchCompleteCallback callback) const = 0;
 
+  virtual void PatchPuffPatch(base::File input_file_path,
+                              base::File patch_file_path,
+                              base::File output_file_path,
+                              PatchCompleteCallback callback) const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<Patcher>;
   Patcher() = default;
   virtual ~Patcher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Patcher);
 };
 
 class PatcherFactory : public base::RefCountedThreadSafe<PatcherFactory> {
  public:
+  PatcherFactory(const PatcherFactory&) = delete;
+  PatcherFactory& operator=(const PatcherFactory&) = delete;
+
   virtual scoped_refptr<Patcher> Create() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<PatcherFactory>;
   PatcherFactory() = default;
   virtual ~PatcherFactory() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PatcherFactory);
 };
 
 }  // namespace update_client

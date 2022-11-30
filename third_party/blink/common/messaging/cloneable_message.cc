@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,6 +67,7 @@ CloneableMessage CloneableMessage::ShallowClone() const {
     clone.file_system_access_tokens.push_back(std::move(cloned_token));
     token = source_token.Unbind();
   }
+  clone.sender_agent_cluster_id = sender_agent_cluster_id;
   return clone;
 }
 

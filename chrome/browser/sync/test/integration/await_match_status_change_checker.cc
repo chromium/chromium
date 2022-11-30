@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@ AwaitMatchStatusChangeChecker::AwaitMatchStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
       condition_(condition) {}
 
-AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() {
-}
+AwaitMatchStatusChangeChecker::~AwaitMatchStatusChangeChecker() = default;
 
 bool AwaitMatchStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
   return condition_.Run(os);

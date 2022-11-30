@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 
@@ -27,7 +26,10 @@ enum class AssistantQueryType {
 // Base class for an Assistant query.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
  public:
-  using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
+  using AssistantQuerySource = assistant::AssistantQuerySource;
+
+  AssistantQuery(const AssistantQuery&) = delete;
+  AssistantQuery& operator=(const AssistantQuery&) = delete;
 
   virtual ~AssistantQuery() = default;
 
@@ -47,8 +49,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
  private:
   const AssistantQueryType type_;
   const AssistantQuerySource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantQuery);
 };
 
 // AssistantNullQuery ----------------------------------------------------------
@@ -61,13 +61,13 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNullQuery
       : AssistantQuery(AssistantQueryType::kNull,
                        AssistantQuerySource::kUnspecified) {}
 
+  AssistantNullQuery(const AssistantNullQuery&) = delete;
+  AssistantNullQuery& operator=(const AssistantNullQuery&) = delete;
+
   ~AssistantNullQuery() override = default;
 
   // AssistantQuery:
   bool Empty() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantNullQuery);
 };
 
 // AssistantTextQuery ----------------------------------------------------------
@@ -79,6 +79,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextQuery
   AssistantTextQuery(const std::string& text, AssistantQuerySource source)
       : AssistantQuery(AssistantQueryType::kText, source), text_(text) {}
 
+  AssistantTextQuery(const AssistantTextQuery&) = delete;
+  AssistantTextQuery& operator=(const AssistantTextQuery&) = delete;
+
   ~AssistantTextQuery() override = default;
 
   // AssistantQuery:
@@ -89,8 +92,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantTextQuery
 
  private:
   const std::string text_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantTextQuery);
 };
 
 // AssistantVoiceQuery ---------------------------------------------------------
@@ -113,6 +114,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantVoiceQuery
         high_confidence_speech_(high_confidence_speech),
         low_confidence_speech_(low_confidence_speech) {}
 
+  AssistantVoiceQuery(const AssistantVoiceQuery&) = delete;
+  AssistantVoiceQuery& operator=(const AssistantVoiceQuery&) = delete;
+
   ~AssistantVoiceQuery() override = default;
 
   // AssistantQuery:
@@ -131,8 +135,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantVoiceQuery
  private:
   const std::string high_confidence_speech_;
   const std::string low_confidence_speech_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantVoiceQuery);
 };
 
 }  // namespace ash

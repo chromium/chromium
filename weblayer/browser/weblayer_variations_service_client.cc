@@ -1,34 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/weblayer_variations_service_client.h"
 
-#include "base/bind.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/system_network_context_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/version_info/android/channel_getter.h"
 #endif
 
 using version_info::Channel;
 
 namespace weblayer {
-namespace {
-
-// Gets the version number to use for variations seed simulation. Must be called
-// on a thread where IO is allowed.
-base::Version GetVersionForSimulation() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  return version_info::GetVersion();
-}
-
-}  // namespace
 
 WebLayerVariationsServiceClient::WebLayerVariationsServiceClient(
     SystemNetworkContextManager* network_context_manager)
@@ -38,9 +27,8 @@ WebLayerVariationsServiceClient::WebLayerVariationsServiceClient(
 
 WebLayerVariationsServiceClient::~WebLayerVariationsServiceClient() = default;
 
-base::OnceCallback<base::Version()>
-WebLayerVariationsServiceClient::GetVersionForSimulationCallback() {
-  return base::BindOnce(&GetVersionForSimulation);
+base::Version WebLayerVariationsServiceClient::GetVersionForSimulation() {
+  return version_info::GetVersion();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -54,7 +42,7 @@ WebLayerVariationsServiceClient::GetNetworkTimeTracker() {
 }
 
 Channel WebLayerVariationsServiceClient::GetChannel() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return version_info::android::GetChannel();
 #else
   return version_info::Channel::UNKNOWN;

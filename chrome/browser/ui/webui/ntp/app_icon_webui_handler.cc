@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,13 @@
 
 namespace {
 
-std::unique_ptr<base::Value> GetDominantColorCssString(
+base::Value GetDominantColorCssString(
     scoped_refptr<base::RefCountedMemory> png) {
   color_utils::GridSampler sampler;
   SkColor color = color_utils::CalculateKMeanColorOfPNG(png);
-  return std::make_unique<base::Value>(
-      base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
-                         SkColorGetG(color), SkColorGetB(color)));
+  return base::Value(base::StringPrintf("rgb(%d, %d, %d)", SkColorGetR(color),
+                                        SkColorGetG(color),
+                                        SkColorGetB(color)));
 }
 
 }  // namespace
@@ -44,9 +44,8 @@ void AppIconWebUIHandler::RegisterMessages() {
 }
 
 void AppIconWebUIHandler::HandleGetAppIconDominantColor(
-    const base::ListValue* args) {
-  std::string extension_id;
-  CHECK(args->GetString(0, &extension_id));
+    const base::Value::List& args) {
+  const std::string& extension_id = args[0].GetString();
 
   Profile* profile = Profile::FromWebUI(web_ui());
   extensions::ExtensionRegistry* extension_registry =
@@ -66,9 +65,8 @@ void AppIconWebUIHandler::OnImageLoaded(const std::string& extension_id) {
     return;
   scoped_refptr<base::RefCountedStaticMemory> bits_mem(
       new base::RefCountedStaticMemory(&bits.front(), bits.size()));
-  std::unique_ptr<base::Value> color_value =
-      GetDominantColorCssString(bits_mem);
+  base::Value color_value = GetDominantColorCssString(bits_mem);
   base::Value id(extension_id);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.setFaviconDominantColor", id,
-                                         *color_value);
+                                         color_value);
 }

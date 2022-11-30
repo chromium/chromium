@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -70,42 +71,33 @@ class BadgeView : public ::views::ImageView {
     ::views::ImageView::OnThemeChanged();
     switch (badge_type_) {
       case BadgedProfilePhoto::BADGE_TYPE_SUPERVISOR:
-        SetImage(gfx::CreateVectorIcon(
-            kSupervisorAccountCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor)));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSupervisorAccountCircleIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_CHILD:
-        SetImage(gfx::CreateVectorIcon(
-            kAccountChildCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor)));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kAccountChildCircleIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_COMPLETE:
-        SetImage(gfx::CreateVectorIcon(
-            kSyncCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_AlertSeverityLow)));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSyncCircleIcon, ui::kColorAlertLowSeverity, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_ERROR:
-        SetImage(gfx::CreateVectorIcon(
-            kSyncErrorCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_AlertSeverityHigh)));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSyncErrorCircleIcon, ui::kColorAlertHighSeverity, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_PAUSED:
-        SetImage(gfx::CreateVectorIcon(
-            kSyncPausedCircleIcon, kBadgeIconSize,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor)));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSyncPausedCircleIcon,
+            ui::kColorButtonBackgroundProminent, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_DISABLED:
-        SetImage(gfx::CreateVectorIcon(kSyncCircleIcon, kBadgeIconSize,
-                                       gfx::kGoogleGrey400));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSyncCircleIcon, ui::kColorIconDisabled, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF:
-        SetImage(gfx::CreateVectorIcon(kSyncPausedCircleIcon, kBadgeIconSize,
-                                       gfx::kGoogleGrey600));
+        SetImage(ui::ImageModel::FromVectorIcon(
+            kSyncPausedCircleIcon, ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BADGE_TYPE_NONE:
         NOTREACHED();
@@ -128,7 +120,7 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
 
   // Create and add image view for profile icon.
   gfx::Image profile_photo_circular = profiles::GetSizedAvatarIcon(
-      profile_photo, true, kImageSize, kImageSize, profiles::SHAPE_CIRCLE);
+      profile_photo, kImageSize, kImageSize, profiles::SHAPE_CIRCLE);
   views::ImageView* profile_photo_view = badge_type == BADGE_TYPE_NONE
                                              ? new views::ImageView()
                                              : new CustomImageView();

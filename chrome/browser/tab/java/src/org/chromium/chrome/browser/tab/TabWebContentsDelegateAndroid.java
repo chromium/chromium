@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,13 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      *         the preferred color scheme to the renderer.
      */
     protected boolean isNightModeEnabled() {
+        return false;
+    }
+
+    /**
+     * @return True if auto-darkening may be applied to web contents per Chrome browser settings.
+     */
+    protected boolean isForceDarkWebContentEnabled() {
         return false;
     }
 

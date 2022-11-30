@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedHelpAppForTest::ScopedHelpAppForTest() {
-  auto reset = GetScopedSigninScreenPolicyProviderDisablerForTesting();
+  auto reset =
+      chromeos::GetScopedSigninScreenPolicyProviderDisablerForTesting();
 
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
@@ -39,4 +40,4 @@ ScopedHelpAppForTest::~ScopedHelpAppForTest() {
   HelpAppLauncher::SetExtensionIdForTest(nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,8 @@ DesktopProfileSessionDurationsService::DesktopProfileSessionDurationsService(
           std::make_unique<
               password_manager::PasswordSessionDurationsMetricsRecorder>(
               pref_service,
-              sync_service)),
-      session_duration_observer_(this) {
-  session_duration_observer_.Add(tracker);
+              sync_service)) {
+  session_duration_observation_.Observe(tracker);
   if (tracker->in_session()) {
     // The session was started before this service was created. Let's start
     // tracking now.
@@ -48,6 +47,14 @@ void DesktopProfileSessionDurationsService::Shutdown() {
 
   password_metrics_recorder_.reset();
   sync_metrics_recorder_.reset();
+}
+
+bool DesktopProfileSessionDurationsService::IsSignedIn() const {
+  return sync_metrics_recorder_->IsSignedIn();
+}
+
+bool DesktopProfileSessionDurationsService::IsSyncing() const {
+  return sync_metrics_recorder_->IsSyncing();
 }
 
 void DesktopProfileSessionDurationsService::OnSessionStarted(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pepper_permission_util.h"
@@ -25,8 +25,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
-#include "ppapi/host/ppapi_host.h"
-#include "ppapi/shared_impl/ppapi_switches.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
@@ -36,6 +34,17 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/socket_permission.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
+#include "ppapi/host/ppapi_host.h"
+#include "ppapi/shared_impl/ppapi_switches.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #endif
 
 namespace plugins {
@@ -125,7 +134,7 @@ void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
-  associated_registry->AddInterface(
+  associated_registry->AddInterface<chrome::mojom::PluginInfoHost>(
       base::BindRepeating(&BindPluginInfoHost, host->GetID()));
 }
 
@@ -141,8 +150,8 @@ bool ChromeContentBrowserClientPluginsPart::
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  return IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                              GetAllowedFileHandleOrigins()) ||
+  return IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                          GetAllowedFileHandleOrigins()) ||
          IsHostAllowedByCommandLine(url, extension_set,
                                     ::switches::kAllowNaClFileHandleAPI);
 #else
@@ -164,11 +173,20 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
   }
 
   if (private_api) {
-    // Access to private socket APIs is controlled by the whitelist.
-    if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                             GetAllowedSocketOrigins())) {
+    // Access to private socket APIs is controlled by the allowlist.
+    if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                         GetAllowedSocketOrigins())) {
       return true;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Terminal SWA is not an extension, but runs SSH NaCL with sockets.
+    if (url == chrome::kChromeUIUntrustedTerminalURL) {
+      return profile->GetPrefs()
+          ->FindPreference(crostini::prefs::kTerminalSshAllowedByPolicy)
+          ->GetValue()
+          ->GetBool();
+    }
+#endif
   } else {
     // Access to public socket APIs is controlled by extension permissions.
     if (url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&
@@ -186,7 +204,7 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
             return true;
           }
         } else if (permissions_data->HasAPIPermission(
-                       extensions::APIPermission::kSocket)) {
+                       extensions::mojom::APIPermissionID::kSocket)) {
           return true;
         }
       }
@@ -219,7 +237,7 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
     const extensions::Extension* extension = extension_set->GetByID(url.host());
     if (extension) {
       if (extension->permissions_data()->HasAPIPermission(
-              extensions::APIPermission::kVpnProvider)) {
+              extensions::mojom::APIPermissionID::kVpnProvider)) {
         return true;
       }
     }
@@ -232,11 +250,13 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
 bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
     content::BrowserContext* browser_context,
     const GURL& url) {
+#if BUILDFLAG(ENABLE_PPAPI)
   // Allow access for tests.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePepperTesting)) {
     return true;
   }
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -246,9 +266,9 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  // Allow access for whitelisted applications.
-  if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                           GetAllowedDevChannelOrigins())) {
+  // Allow access for allowlisted applications.
+  if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                       GetAllowedDevChannelOrigins())) {
     return true;
   }
 #endif
@@ -261,9 +281,13 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
 
 void ChromeContentBrowserClientPluginsPart::DidCreatePpapiPlugin(
     content::BrowserPpapiHost* browser_host) {
+#if BUILDFLAG(ENABLE_PPAPI)
   browser_host->GetPpapiHost()->AddHostFactoryFilter(
       std::unique_ptr<ppapi::host::HostFactory>(
           new ChromeBrowserPepperHostFactory(browser_host)));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 }  // namespace plugins

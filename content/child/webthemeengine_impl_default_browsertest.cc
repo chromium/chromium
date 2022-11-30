@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#endif  // defined (OS_WIN)
+#endif
 
 namespace content {
 
@@ -18,7 +18,7 @@ class WebThemeEngineImplDefaultBrowserTest : public ContentBrowserTest {
   WebThemeEngineImplDefaultBrowserTest() {}
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
   // The test non-deterministically fails on Windows-2008ServerR2 builders due
   // to a difference in the default theme. As a result, only run the test on
@@ -115,32 +115,32 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
   std::vector<std::string> expected_colors;
   if (base::win::GetVersion() <= base::win::Version::WIN8_1) {
     expected_colors = {
-        "rgb(255, 255, 255)", "rgb(204, 204, 204)", "rgb(0, 102, 204)",
-        "rgb(255, 255, 255)", "rgb(99, 99, 206)",   "rgb(240, 240, 240)",
-        "rgb(221, 221, 221)", "rgb(136, 136, 136)", "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
+        "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+        "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
         "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
         "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
-        "rgb(51, 153, 255)",  "rgb(255, 255, 255)", "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)", "rgb(127, 127, 127)", "rgb(251, 252, 197)",
-        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(247, 247, 247)",
-        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(102, 102, 102)",
-        "rgb(192, 192, 192)", "rgb(221, 221, 221)", "rgb(192, 192, 192)",
-        "rgb(136, 136, 136)", "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-        "rgb(204, 204, 204)", "rgb(0, 0, 0)"};
+        "rgb(51, 153, 255)",  "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
   } else {
     expected_colors = {
-        "rgb(255, 255, 255)", "rgb(204, 204, 204)", "rgb(0, 102, 204)",
-        "rgb(255, 255, 255)", "rgb(99, 99, 206)",   "rgb(240, 240, 240)",
-        "rgb(221, 221, 221)", "rgb(136, 136, 136)", "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
+        "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+        "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
         "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
         "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
-        "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(255, 255, 255)",
-        "rgb(255, 255, 255)", "rgb(127, 127, 127)", "rgb(251, 252, 197)",
-        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(247, 247, 247)",
-        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(102, 102, 102)",
-        "rgb(192, 192, 192)", "rgb(221, 221, 221)", "rgb(192, 192, 192)",
-        "rgb(136, 136, 136)", "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-        "rgb(204, 204, 204)", "rgb(0, 0, 0)"};
+        "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
   }
 
   ASSERT_EQ(ids.size(), expected_colors.size());
@@ -152,6 +152,6 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                          ids[i] + "')).getPropertyValue('color').toString()"));
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

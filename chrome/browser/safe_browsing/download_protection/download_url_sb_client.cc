@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_item_utils.h"
 
@@ -33,12 +33,11 @@ DownloadUrlSBClient::DownloadUrlSBClient(
       callback_(std::move(callback)),
       ui_manager_(ui_manager),
       start_time_(base::TimeTicks::Now()),
-      database_manager_(database_manager),
-      download_item_observer_(this) {
+      database_manager_(database_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(item_);
   DCHECK(service_);
-  download_item_observer_.Add(item_);
+  download_item_observation_.Observe(item_.get());
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item_));
   extended_reporting_level_ =
@@ -51,7 +50,8 @@ DownloadUrlSBClient::DownloadUrlSBClient(
 // Implements DownloadItem::Observer.
 void DownloadUrlSBClient::OnDownloadDestroyed(
     download::DownloadItem* download) {
-  download_item_observer_.Remove(item_);
+  DCHECK(download_item_observation_.IsObservingSource(item_.get()));
+  download_item_observation_.Reset();
   item_ = nullptr;
 }
 

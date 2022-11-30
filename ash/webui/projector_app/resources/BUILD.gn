@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Projector is ChromeOS only")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    "//ash/webui/projector_app/resources/annotator/trusted:trusted_annotator_library",
+    "//ash/webui/projector_app/resources/annotator/untrusted:untrusted_annotator_library",
+    "//ash/webui/projector_app/resources/app/trusted:trusted_app",
+    "//ash/webui/projector_app/resources/app/untrusted:untrusted_app",
+    "//ash/webui/projector_app/resources/common:message_types",
+    "//ash/webui/projector_app/resources/mock:mock_app",
+  ]
+
+  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/common/=" + rebase_path(
+                                               "//ash/webui/projector_app/resources/common/",
+                                               root_build_dir) + "\"" ]
+}

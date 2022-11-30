@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/pe_image.h"
@@ -120,6 +119,10 @@ bool GetTestModules(std::vector<TestModule>* test_modules,
 //------------------------------------------------------------------------------
 
 class ThirdPartyFileTest : public testing::Test {
+ public:
+  ThirdPartyFileTest(const ThirdPartyFileTest&) = delete;
+  ThirdPartyFileTest& operator=(const ThirdPartyFileTest&) = delete;
+
  protected:
   ThirdPartyFileTest() = default;
 
@@ -143,7 +146,7 @@ class ThirdPartyFileTest : public testing::Test {
   void CreateTestFile() {
     base::File file(base::FilePath(bl_test_file_path_),
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                        base::File::FLAG_SHARE_DELETE |
+                        base::File::FLAG_WIN_SHARE_DELETE |
                         base::File::FLAG_DELETE_ON_CLOSE);
     ASSERT_TRUE(file.IsValid());
 
@@ -176,8 +179,6 @@ class ThirdPartyFileTest : public testing::Test {
   std::wstring bl_test_file_path_;
   std::vector<TestModule> test_array_;
   std::vector<PackedListModule> test_packed_array_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyFileTest);
 };
 
 //------------------------------------------------------------------------------

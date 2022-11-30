@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +22,7 @@ TEST(MediaSinksObserverTest, OriginMatching) {
   url::Origin origin = url::Origin::Create(GURL("https://origin.com"));
   std::vector<url::Origin> origin_list({origin});
   std::vector<MediaSink> sink_list;
-  sink_list.push_back(MediaSink("sinkId", "Sink", SinkIconType::CAST));
+  sink_list.push_back(CreateCastSink("sinkId", "Sink"));
   MockMediaSinksObserver observer(&router, source, origin);
 
   EXPECT_CALL(observer, OnSinksReceived(sink_list));

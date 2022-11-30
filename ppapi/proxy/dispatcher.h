@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ipc/message_filter.h"
 #include "ppapi/c/pp_instance.h"
@@ -48,6 +46,9 @@ class VarSerializationRules;
 //                                      |
 class PPAPI_PROXY_EXPORT Dispatcher : public ProxyChannel {
  public:
+  Dispatcher(const Dispatcher&) = delete;
+  Dispatcher& operator=(const Dispatcher&) = delete;
+
   ~Dispatcher() override;
 
   // Returns true if the dispatcher is on the plugin side, or false if it's the
@@ -98,8 +99,6 @@ class PPAPI_PROXY_EXPORT Dispatcher : public ProxyChannel {
   scoped_refptr<VarSerializationRules> serialization_rules_;
 
   PpapiPermissions permissions_;
-
-  DISALLOW_COPY_AND_ASSIGN(Dispatcher);
 };
 
 }  // namespace proxy

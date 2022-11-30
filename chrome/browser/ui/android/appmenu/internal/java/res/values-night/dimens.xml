@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+
+  <!-- Menu action bar bg elevation -->
+  <dimen name="menu_action_bar_bg_elev">@dimen/default_elevation_6</dimen>
+</resources>

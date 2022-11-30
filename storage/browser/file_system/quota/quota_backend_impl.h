@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/files/file_error_or.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/quota/quota_reservation_manager.h"
@@ -32,10 +33,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
  public:
   using ReserveQuotaCallback = QuotaReservationManager::ReserveQuotaCallback;
 
-  QuotaBackendImpl(base::SequencedTaskRunner* file_task_runner,
+  QuotaBackendImpl(scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                    ObfuscatedFileUtil* obfuscated_file_util,
                    FileSystemUsageCache* file_system_usage_cache,
-                   QuotaManagerProxy* quota_manager_proxy);
+                   scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
+
+  QuotaBackendImpl(const QuotaBackendImpl&) = delete;
+  QuotaBackendImpl& operator=(const QuotaBackendImpl&) = delete;
+
   ~QuotaBackendImpl() override;
 
   // QuotaReservationManager::QuotaBackend overrides.
@@ -75,21 +80,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                                           int64_t quota);
 
   void ReserveQuotaInternal(const QuotaReservationInfo& info);
-  base::File::Error GetUsageCachePath(const url::Origin& origin,
-                                      FileSystemType type,
-                                      base::FilePath* usage_file_path);
+  base::FileErrorOr<base::FilePath> GetUsageCachePath(const url::Origin& origin,
+                                                      FileSystemType type);
 
-  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
   // Owned by SandboxFileSystemBackendDelegate.
-  ObfuscatedFileUtil* obfuscated_file_util_;
-  FileSystemUsageCache* file_system_usage_cache_;
+  const raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
+  const raw_ptr<FileSystemUsageCache> file_system_usage_cache_;
 
-  scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
 
   base::WeakPtrFactory<QuotaBackendImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaBackendImpl);
 };
 
 }  // namespace storage

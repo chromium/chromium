@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
@@ -18,6 +17,12 @@
 class MockPasswordAccessoryController : public PasswordAccessoryController {
  public:
   MockPasswordAccessoryController();
+
+  MockPasswordAccessoryController(const MockPasswordAccessoryController&) =
+      delete;
+  MockPasswordAccessoryController& operator=(
+      const MockPasswordAccessoryController&) = delete;
+
   ~MockPasswordAccessoryController() override;
 
   MOCK_METHOD(
@@ -38,13 +43,13 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               RegisterFillingSourceObserver,
               (FillingSourceObserver),
               (override));
-  MOCK_METHOD(base::Optional<autofill::AccessorySheetData>,
+  MOCK_METHOD(absl::optional<autofill::AccessorySheetData>,
               GetSheetData,
               (),
               (const, override));
   MOCK_METHOD(void,
               OnFillingTriggered,
-              (autofill::FieldGlobalId, const autofill::UserInfo::Field&),
+              (autofill::FieldGlobalId, const autofill::AccessorySheetField&),
               (override));
   MOCK_METHOD(void,
               OnOptionSelected,
@@ -54,9 +59,6 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               OnToggleChanged,
               (autofill::AccessoryAction toggled_action, bool enabled),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordAccessoryController);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_PASSWORD_ACCESSORY_CONTROLLER_H_

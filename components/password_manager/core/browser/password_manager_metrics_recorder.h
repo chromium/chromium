@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -79,25 +78,17 @@ class PasswordManagerMetricsRecorder {
     kObsoleteShowAllPasswordsWhileNoneAreSuggested = 2,
   };
 
-  // This purpose of this interface is to allow browser to record metrics
-  // about the current navigation.
-  class NavigationMetricRecorderDelegate {
-   public:
-    virtual ~NavigationMetricRecorderDelegate() = default;
-    // Called the first time the user focuses on a password field.
-    virtual void OnUserFocusedPasswordFieldFirstTime() = 0;
-    // Called the first time the user types into a password field.
-    virtual void OnUserModifiedPasswordFieldFirstTime() = 0;
-  };
-
   // Records UKM metrics and reports them on destruction.
-  PasswordManagerMetricsRecorder(
-      ukm::SourceId source_id,
-      std::unique_ptr<NavigationMetricRecorderDelegate>
-          navigation_metric_recorder);
+  explicit PasswordManagerMetricsRecorder(ukm::SourceId source_id);
 
   PasswordManagerMetricsRecorder(
       PasswordManagerMetricsRecorder&& that) noexcept;
+
+  PasswordManagerMetricsRecorder(const PasswordManagerMetricsRecorder&) =
+      delete;
+  PasswordManagerMetricsRecorder& operator=(
+      const PasswordManagerMetricsRecorder&) = delete;
+
   ~PasswordManagerMetricsRecorder();
 
   PasswordManagerMetricsRecorder& operator=(
@@ -106,9 +97,6 @@ class PasswordManagerMetricsRecorder {
   // Records that the user has modified a password field on a page. This may be
   // called multiple times but a single metric will be reported.
   void RecordUserModifiedPasswordField();
-  // Records that the user has focused a password field on a page. This may be
-  // called multiple times but a single metric will be reported.
-  void RecordUserFocusedPasswordField();
 
   // Log failure to provisionally save a password to in the PasswordManager to
   // UMA and the |logger|.
@@ -128,15 +116,10 @@ class PasswordManagerMetricsRecorder {
   std::unique_ptr<ukm::builders::PageWithPassword> ukm_entry_builder_;
 
   bool user_modified_password_field_ = false;
-  bool user_focused_password_field_ = false;
 
   // Stores the value most recently reported via RecordFormManagerAvailable.
   FormManagerAvailable form_manager_availability_ =
       FormManagerAvailable::kNotSet;
-
-  std::unique_ptr<NavigationMetricRecorderDelegate> navigation_metric_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerMetricsRecorder);
 };
 
 }  // namespace password_manager

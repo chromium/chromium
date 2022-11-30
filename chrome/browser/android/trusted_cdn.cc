@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/tab/jni_headers/TrustedCdn_jni.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -41,23 +41,16 @@ void TrustedCdn::OnDestroyed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
 
-void TrustedCdn::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Skip subframe, same-document, or non-committed navigations (downloads or
-  // 204/205 responses).
-  if (!navigation_handle->IsInMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
+// TrustedCdn should only track primary pages and should skip subframe,
+// same-document, or non-committed navigations (downloads or 204/205 responses).
+void TrustedCdn::PrimaryPageChanged(content::Page& page) {
   GURL publisher_url;
 
   // Offline pages don't have headers when they are loaded.
   // TODO(bauerb): Consider storing the publisher URL on the offline page item.
   if (!offline_pages::OfflinePageUtils::GetOfflinePageFromWebContents(
-          navigation_handle->GetWebContents())) {
-    publisher_url = embedder_support::GetPublisherURL(navigation_handle);
+          WebContents::FromRenderFrameHost(&page.GetMainDocument()))) {
+    publisher_url = embedder_support::GetPublisherURL(page);
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();

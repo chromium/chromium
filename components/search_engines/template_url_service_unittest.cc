@@ -1,12 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "components/search_engines/template_url_service.h"
 
 #include <stddef.h>
 
 #include <memory>
 
-#include "components/search_engines/template_url_service.h"
+#include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TemplateURLServiceUnitTest : public testing::Test {
@@ -33,7 +35,7 @@ TEST_F(TemplateURLServiceUnitTest, SessionToken) {
 
   // ... unless the token has expired.
   template_url_service().current_token_.clear();
-  const base::TimeDelta kSmallDelta = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta kSmallDelta = base::Milliseconds(1);
   template_url_service().token_expiration_time_ =
       base::TimeTicks::Now() - kSmallDelta;
   token = template_url_service().GetSessionToken();
@@ -57,4 +59,20 @@ TEST_F(TemplateURLServiceUnitTest, SessionToken) {
       template_url_service().token_expiration_time_;
   EXPECT_GT(expiration_time_2, expiration_time_1);
   EXPECT_GE(expiration_time_2, expiration_time_1 + kSmallDelta);
+}
+
+TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
+  // Set the default search provider to a custom one.
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  EXPECT_EQ(
+      "https://www.example.com/?q=foo",
+      template_url_service().GenerateSearchURLForDefaultSearchProvider(u"foo"));
+  EXPECT_EQ(
+      "https://www.example.com/?q=",
+      template_url_service().GenerateSearchURLForDefaultSearchProvider(u""));
 }

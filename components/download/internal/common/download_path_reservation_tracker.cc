@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -32,7 +31,7 @@
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
 #endif
 
@@ -49,11 +48,11 @@ typedef std::map<ReservationKey, base::FilePath> ReservationMap;
 // possible filename.
 const size_t kIntermediateNameSuffixLength = sizeof(".crdownload") - 1;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On windows, zone identifier is appended to the downloaded file name during
 // annotation. That increases the length of the final target path.
 const size_t kZoneIdentifierLength = sizeof(":Zone.Identifier") - 1;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Map of download path reservations. Each reserved path is associated with a
 // ReservationKey=DownloadItem*. This object is destroyed in |Revoke()| when
@@ -71,6 +70,10 @@ class DownloadItemObserver : public DownloadItem::Observer,
                              public base::SupportsUserData::Data {
  public:
   explicit DownloadItemObserver(DownloadItem* download_item);
+
+  DownloadItemObserver(const DownloadItemObserver&) = delete;
+  DownloadItemObserver& operator=(const DownloadItemObserver&) = delete;
+
   ~DownloadItemObserver() override;
 
  private:
@@ -78,62 +81,49 @@ class DownloadItemObserver : public DownloadItem::Observer,
   void OnDownloadUpdated(DownloadItem* download) override;
   void OnDownloadDestroyed(DownloadItem* download) override;
 
-  DownloadItem* download_item_;
+  raw_ptr<DownloadItem> download_item_;
 
   // Last known target path for the download.
   base::FilePath last_target_path_;
 
   static const int kUserDataKey;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadItemObserver);
 };
 
-// Returns true if the given path is in use by a path reservation.
-bool IsPathReserved(const base::FilePath& path) {
+// Returns true if the given path is in use by a path reservation,
+// and has a different key than |item| if it is not null. Called on the task
+// runner returned by DownloadPathReservationTracker::GetTaskRunner().
+bool IsPathReservedInternal(const base::FilePath& path, DownloadItem* item) {
   // No reservation map => no reservations.
-  if (g_reservation_map == NULL)
+  if (!g_reservation_map)
     return false;
 
-  // We only expect a small number of concurrent downloads at any given time, so
-  // going through all of them shouldn't be too slow.
   for (ReservationMap::const_iterator iter = g_reservation_map->begin();
        iter != g_reservation_map->end(); ++iter) {
-    if (base::FilePath::CompareEqualIgnoreCase(iter->second.value(),
+    if ((!item || iter->first != item) &&
+        base::FilePath::CompareEqualIgnoreCase(iter->second.value(),
                                                path.value()))
       return true;
   }
   return false;
 }
 
-// Returns true if the given file name is in use by any path reservation or the
-// file system. Called on the task runner returned by
-// DownloadPathReservationTracker::GetTaskRunner().
-bool IsFileNameInUse(const base::FilePath& path) {
-#if defined(OS_ANDROID)
-  // If there is a reservation, then the path is in use.
-  if (IsPathReserved(path.BaseName()))
-    return true;
-
-  if (DownloadCollectionBridge::FileNameExists(path.BaseName()))
-    return true;
-#endif
-  return false;
+// Returns true if the given path is in use by a path reservation,
+// and has a different key than |item|. Called on the task
+// runner returned by DownloadPathReservationTracker::GetTaskRunner().
+bool IsAdditionalPathReserved(const base::FilePath& path, DownloadItem* item) {
+#if BUILDFLAG(IS_ANDROID)
+  // If download collection is used, only file name needs to be
+  // unique.
+  if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
+    return IsPathReservedInternal(path.BaseName(), item);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)  // No reservation map => no reservations.
+  return IsPathReservedInternal(path, item);
 }
 
-// Returns true if the given path is in use by a path reservation,
-// and has a different key then the item arg. Called on the task runner returned
-// by DownloadPathReservationTracker::GetTaskRunner().
-bool IsAdditionalPathReserved(const base::FilePath& path, DownloadItem* item) {
-  if (!g_reservation_map)
-    return false;
-
-  for (ReservationMap::const_iterator iter = g_reservation_map->begin();
-       iter != g_reservation_map->end(); ++iter) {
-    if (iter->first != item && base::FilePath::CompareEqualIgnoreCase(
-                                   iter->second.value(), path.value()))
-      return true;
-  }
-  return false;
+// Returns true if the given path is in use by a path reservation.
+bool IsPathReserved(const base::FilePath& path) {
+  return IsAdditionalPathReserved(path, nullptr);
 }
 
 // Returns true if the given path is in use by any path reservation or the
@@ -148,17 +138,21 @@ bool IsPathInUse(const base::FilePath& path) {
   if (base::PathExists(path))
     return true;
 
+#if BUILDFLAG(IS_ANDROID)
+  // If download collection is used, only file name needs to be
+  // unique.
+  if (DownloadCollectionBridge::ShouldPublishDownload(path))
+    return DownloadCollectionBridge::FileNameExists(path.BaseName());
+#endif
   return false;
 }
 
 // Create a unique filename by appending a uniquifier. Modifies |path| in place
 // if successful and returns true. Otherwise |path| is left unmodified and
-// returns false. If |check_file_name_only| is true, this method will only check
-// the name of the file to guarantee that it is unique.
+// returns false.
 bool CreateUniqueFilename(int max_path_component_length,
                           const base::Time& download_start_time,
-                          base::FilePath* path,
-                          bool check_file_name_only) {
+                          base::FilePath* path) {
   // Try every numeric uniquifier. Then make one attempt with the timestamp.
   for (int uniquifier = 1;
        uniquifier <= DownloadPathReservationTracker::kMaxUniqueFiles + 1;
@@ -183,7 +177,7 @@ bool CreateUniqueFilename(int max_path_component_length,
     // If the name length limit is available (max_length != -1), and the
     // the current name exceeds the limit, truncate.
     if (max_path_component_length != -1) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       int limit =
           max_path_component_length -
           std::max(kIntermediateNameSuffixLength, kZoneIdentifierLength) -
@@ -191,7 +185,7 @@ bool CreateUniqueFilename(int max_path_component_length,
 #else
       int limit = max_path_component_length - kIntermediateNameSuffixLength -
                   suffix.size();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       // If truncation failed, give up uniquification.
       if (limit <= 0 ||
           !filename_generation::TruncateFilename(&path_to_check, limit))
@@ -199,8 +193,7 @@ bool CreateUniqueFilename(int max_path_component_length,
     }
     path_to_check = path_to_check.InsertBeforeExtensionASCII(suffix);
 
-    if ((check_file_name_only && !IsFileNameInUse(path_to_check)) ||
-        (!check_file_name_only && !IsPathInUse(path_to_check))) {
+    if (!IsPathInUse(path_to_check)) {
       *path = path_to_check;
       return true;
     }
@@ -235,18 +228,15 @@ bool IsPathWritable(const CreateReservationInfo& info,
 }
 
 // Called when reservation conflicts happen. Returns the result on whether the
-// conflict can be resolved, and uniquifying the file name if necessary. If
-// |check_file_name_only| is true, this method will only check the name of the
-// file to guarantee that it is unique.
+// conflict can be resolved, and uniquifying the file name if necessary.
 PathValidationResult ResolveReservationConflicts(
     const CreateReservationInfo& info,
     int max_path_component_length,
-    base::FilePath* target_path,
-    bool check_file_name_only) {
+    base::FilePath* target_path) {
   switch (info.conflict_action) {
     case DownloadPathReservationTracker::UNIQUIFY:
       return CreateUniqueFilename(max_path_component_length, info.start_time,
-                                  target_path, check_file_name_only)
+                                  target_path)
                  ? PathValidationResult::SUCCESS
                  : PathValidationResult::CONFLICT;
 
@@ -287,12 +277,12 @@ PathValidationResult ValidatePathAndResolveConflicts(
   // Check the limit of file name length if it could be obtained. When the
   // suggested name exceeds the limit, truncate or prompt the user.
   if (max_path_component_length != -1) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     int limit = max_path_component_length -
                 std::max(kIntermediateNameSuffixLength, kZoneIdentifierLength);
 #else
     int limit = max_path_component_length - kIntermediateNameSuffixLength;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     if (limit <= 0 ||
         !filename_generation::TruncateFilename(target_path, limit))
       return PathValidationResult::NAME_TOO_LONG;
@@ -309,7 +299,7 @@ PathValidationResult ValidatePathAndResolveConflicts(
     return PathValidationResult::SUCCESS;
 
   return ResolveReservationConflicts(info, max_path_component_length,
-                                     target_path, false);
+                                     target_path);
 }
 
 // Called on the task runner returned by
@@ -342,16 +332,19 @@ PathValidationResult CreateReservation(const CreateReservationInfo& info,
   base::FilePath target_dir = target_path.DirName();
   base::FilePath filename = target_path.BaseName();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(target_path)) {
-    // If the download is written to a content URI, put file name in the
-    // reservation map as content URIs will always be different.
     PathValidationResult result = PathValidationResult::SUCCESS;
-    if (IsFileNameInUse(filename)) {
+    // Disallow downloading a file onto itself. Assume that downloading a file
+    if (target_path == info.source_path) {
+      result = PathValidationResult::SAME_AS_SOURCE;
+    } else if (IsPathInUse(target_path)) {
+      // If the download is written to a content URI, put file name in the
+      // reservation map as content URIs will always be different.
       int max_path_component_length =
           base::GetMaximumPathComponentLength(target_path.DirName());
       result = ResolveReservationConflicts(info, max_path_component_length,
-                                           &target_path, true);
+                                           &target_path);
     }
     (*g_reservation_map)[info.key] = target_path.BaseName();
     *reserved_path = target_path;
@@ -383,7 +376,16 @@ void UpdateReservation(ReservationKey key, const base::FilePath& new_path) {
   DCHECK(g_reservation_map != NULL);
   auto iter = g_reservation_map->find(key);
   if (iter != g_reservation_map->end()) {
-    iter->second = new_path;
+    bool use_download_collection = false;
+#if BUILDFLAG(IS_ANDROID)
+    if (DownloadCollectionBridge::ShouldPublishDownload(new_path)) {
+      use_download_collection = true;
+      iter->second = new_path.BaseName();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+    if (!use_download_collection) {
+      iter->second = new_path;
+    }
   } else {
     // This would happen if an UpdateReservation() notification was scheduled on
     // the SequencedTaskRunner before ReserveInternal(), or after a Revoke()
@@ -415,7 +417,7 @@ void RunGetReservedPathCallback(
 // Gets the path reserved in the global |g_reservation_map|. For content Uri,
 // file name instead of file path is used.
 base::FilePath GetReservationPath(DownloadItem* download_item) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (download_item->GetTargetFilePath().IsContentUri())
     return download_item->GetFileNameToReportUser();
 #endif
@@ -425,16 +427,16 @@ base::FilePath GetReservationPath(DownloadItem* download_item) {
 DownloadItemObserver::DownloadItemObserver(DownloadItem* download_item)
     : download_item_(download_item),
       last_target_path_(GetReservationPath(download_item)) {
+  // Deregister the old observer from |download_item_| if there is one.
+  DownloadItemObserver* observer = static_cast<DownloadItemObserver*>(
+      download_item_->GetUserData(&kUserDataKey));
+  if (observer)
+    download_item_->RemoveObserver(observer);
   download_item_->AddObserver(this);
   download_item_->SetUserData(&kUserDataKey, base::WrapUnique(this));
 }
 
-DownloadItemObserver::~DownloadItemObserver() {
-  download_item_->RemoveObserver(this);
-  // DownloadItemObserver is owned by DownloadItem. It should only be getting
-  // destroyed because it's being removed from the UserData pool. No need to
-  // call DownloadItem::RemoveUserData().
-}
+DownloadItemObserver::~DownloadItemObserver() = default;
 
 void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
   switch (download->GetState()) {
@@ -463,7 +465,9 @@ void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
       // restarted. Holding on to the reservation now would prevent the name
       // from being used for a subsequent retry attempt.
       DownloadPathReservationTracker::GetTaskRunner()->PostTask(
-          FROM_HERE, base::BindOnce(&RevokeReservation, download));
+          FROM_HERE, base::BindOnce(&RevokeReservation,
+                                    base::UnsafeDanglingUntriaged(download)));
+      download->RemoveObserver(this);
       download->RemoveUserData(&kUserDataKey);
       break;
 
@@ -477,7 +481,8 @@ void DownloadItemObserver::OnDownloadDestroyed(DownloadItem* download) {
   // Items should be COMPLETE/INTERRUPTED/CANCELLED before being destroyed.
   NOTREACHED();
   DownloadPathReservationTracker::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RevokeReservation, download));
+      FROM_HERE, base::BindOnce(&RevokeReservation,
+                                base::UnsafeDanglingUntriaged(download)));
 }
 
 // static

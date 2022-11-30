@@ -7,14 +7,9 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow HTML",
       "bounds": [800, 5016],
       "transform": 1
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [800, 0],
-      "bounds": [0, 600]
     }
   ],
   "transforms": [

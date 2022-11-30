@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -79,5 +79,4 @@ def PrecompileTemplates(generator_modules, output_dir):
         output_dir, "%s.zip" % generator.GetTemplatePrefix()),
                                 extensions=["tmpl"],
                                 zip="stored",
-                                py_compile=sys.version_info.major < 3,
                                 ignore_errors=False)

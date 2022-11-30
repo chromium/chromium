@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_utils.h"
 
@@ -29,6 +30,11 @@ struct FindResults {
 class FindTestWebContentsDelegate : public WebContentsDelegate {
  public:
   FindTestWebContentsDelegate();
+
+  FindTestWebContentsDelegate(const FindTestWebContentsDelegate&) = delete;
+  FindTestWebContentsDelegate& operator=(const FindTestWebContentsDelegate&) =
+      delete;
+
   ~FindTestWebContentsDelegate() override;
 
   // Returns the current find results.
@@ -60,7 +66,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   // replies.
   const std::vector<FindResults>& GetReplyRecord();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Waits for all of the find match rects to be received.
   void WaitForMatchRects();
 
@@ -78,7 +84,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
     NOTHING,
     FINAL_REPLY,
     NEXT_REPLY,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     MATCH_RECTS
 #endif
   };
@@ -90,6 +96,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
+  bool IsBackForwardCacheSupported() override;
 
   // Uses |message_loop_runner_| to wait for various things.
   void WaitFor(WaitingFor wait_for);
@@ -97,7 +104,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   // Stop waiting for |waiting_for_|.
   void StopWaiting();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // WebContentsDelegate override.
   void FindMatchRectsReply(WebContents* web_contents,
                            int version,
@@ -133,8 +140,6 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
   WaitingFor waiting_for_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindTestWebContentsDelegate);
 };
 
 // Finds the set of all RenderFrameHosts that the FindRequestManager associated
@@ -147,4 +152,4 @@ std::unordered_set<RenderFrameHost*> GetRenderFrameHostsWithPendingFindResults(
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_a
+#endif  // CONTENT_PUBLIC_TEST_FIND_TEST_UTILS_H_

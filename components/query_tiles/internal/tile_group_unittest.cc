@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,10 @@ namespace query_tiles {
 namespace {
 
 TEST(TileGroupTest, CompareOperators) {
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
   TileGroup lhs, rhs;
-  test::ResetTestGroup(&lhs);
-  test::ResetTestGroup(&rhs);
+  test::ResetTestGroup(&lhs, last_updated_ts);
+  test::ResetTestGroup(&rhs, last_updated_ts);
   EXPECT_EQ(lhs, rhs);
 
   rhs.id = "changed";
@@ -29,7 +30,7 @@ TEST(TileGroupTest, CompareOperators) {
   EXPECT_NE(lhs, rhs);
   test::ResetTestGroup(&rhs);
 
-  rhs.last_updated_ts += base::TimeDelta::FromDays(1);
+  rhs.last_updated_ts += base::Days(1);
   EXPECT_NE(lhs, rhs);
   test::ResetTestGroup(&rhs);
 
@@ -38,9 +39,10 @@ TEST(TileGroupTest, CompareOperators) {
 }
 
 TEST(TileGroupTest, DeepCompareOperators) {
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
   TileGroup lhs, rhs;
-  test::ResetTestGroup(&lhs);
-  test::ResetTestGroup(&rhs);
+  test::ResetTestGroup(&lhs, last_updated_ts);
+  test::ResetTestGroup(&rhs, last_updated_ts);
   EXPECT_TRUE(test::AreTileGroupsIdentical(lhs, rhs));
 
   // Verify the order of tiles does not matter.
@@ -62,10 +64,11 @@ TEST(TileGroupTest, CopyOperator) {
 
 TEST(TileGroupTest, MoveOperator) {
   TileGroup lhs;
-  test::ResetTestGroup(&lhs);
+  base::Time last_updated_ts = base::Time::Now() - base::Days(7);
+  test::ResetTestGroup(&lhs, last_updated_ts);
   TileGroup rhs = std::move(lhs);
   TileGroup expected;
-  test::ResetTestGroup(&expected);
+  test::ResetTestGroup(&expected, last_updated_ts);
   EXPECT_TRUE(test::AreTileGroupsIdentical(expected, rhs));
 }
 
@@ -73,8 +76,7 @@ TEST(TileGroupTest, OnTileClicked) {
   base::Time now_time = base::Time::Now();
   TileGroup group;
   group.tile_stats["guid-1-1"] = TileStats(now_time, 0);
-  group.tile_stats["guid-1-2"] =
-      TileStats(now_time + base::TimeDelta::FromHours(1), 0.5);
+  group.tile_stats["guid-1-2"] = TileStats(now_time + base::Hours(1), 0.5);
   group.OnTileClicked("guid-1-1");
   EXPECT_EQ(group.tile_stats["guid-1-1"].score, 1);
   group.OnTileClicked("guid-1-2");

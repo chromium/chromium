@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,8 @@ class MockAudioDecoder : public MediaPipelineBackend::AudioDecoder {
   MOCK_METHOD1(SetVolume, bool(float));
   MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
   MOCK_METHOD1(GetStatistics, void(Statistics*));
+  MOCK_METHOD0(GetAudioTrackTimestamp, AudioTrackTimestamp());
+  MOCK_METHOD0(GetStartThresholdInFrames, int());
 };
 
 }  // namespace

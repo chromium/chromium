@@ -18,12 +18,6 @@
 /* Whether struct sockaddr::__ss_family exists */
 #undef HAVE_BROKEN_SS_FAMILY
 
-/* Define to 1 if you have the <ctype.h> header file. */
-#undef HAVE_CTYPE_H
-
-/* Define to 1 if you have the <dirent.h> header file. */
-#undef HAVE_DIRENT_H
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -33,17 +27,8 @@
 /* Define to 1 if you have the <dl.h> header file. */
 #undef HAVE_DL_H
 
-/* Define to 1 if you have the <errno.h> header file. */
-#undef HAVE_ERRNO_H
-
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
-
-/* Define to 1 if you have the <float.h> header file. */
-#undef HAVE_FLOAT_H
-
-/* Define to 1 if you have the `fprintf' function. */
-#undef HAVE_FPRINTF
 
 /* Define to 1 if you have the `ftime' function. */
 #undef HAVE_FTIME
@@ -60,38 +45,14 @@
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
-/* Define if isinf is there */
-#undef HAVE_ISINF
-
-/* Define if isnan is there */
-#undef HAVE_ISNAN
-
 /* Define if history library is there (-lhistory) */
 #undef HAVE_LIBHISTORY
-
-/* Define if pthread library is there (-lpthread) */
-#undef HAVE_LIBPTHREAD
 
 /* Define if readline library is there (-lreadline) */
 #undef HAVE_LIBREADLINE
 
-/* Define to 1 if you have the <limits.h> header file. */
-#undef HAVE_LIMITS_H
-
-/* Define to 1 if you have the `localtime' function. */
-#undef HAVE_LOCALTIME
-
 /* Define to 1 if you have the <lzma.h> header file. */
 #undef HAVE_LZMA_H
-
-/* Define to 1 if you have the <malloc.h> header file. */
-#undef HAVE_MALLOC_H
-
-/* Define to 1 if you have the <math.h> header file. */
-#undef HAVE_MATH_H
-
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the `mmap' function. */
 #undef HAVE_MMAP
@@ -104,9 +65,6 @@
 #  undef /**/ HAVE_MMAP
 #endif
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
-#undef HAVE_NDIR_H
-
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
 
@@ -116,17 +74,11 @@
 /* Define to 1 if you have the <poll.h> header file. */
 #undef HAVE_POLL_H
 
-/* Define to 1 if you have the `printf' function. */
-#undef HAVE_PRINTF
-
 /* Define if <pthread.h> is there */
 #undef HAVE_PTHREAD_H
 
 /* Define to 1 if you have the `putenv' function. */
 #undef HAVE_PUTENV
-
-/* Define to 1 if you have the `rand' function. */
-#undef HAVE_RAND
 
 /* Define to 1 if you have the `rand_r' function. */
 #undef HAVE_RAND_R
@@ -137,38 +89,20 @@
 /* Have shl_load based dso */
 #undef HAVE_SHLLOAD
 
-/* Define to 1 if you have the `signal' function. */
-#undef HAVE_SIGNAL
-
-/* Define to 1 if you have the <signal.h> header file. */
-#undef HAVE_SIGNAL_H
-
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
-
-/* Define to 1 if you have the `sprintf' function. */
-#undef HAVE_SPRINTF
-
-/* Define to 1 if you have the `srand' function. */
-#undef HAVE_SRAND
-
-/* Define to 1 if you have the `sscanf' function. */
-#undef HAVE_SSCANF
 
 /* Define to 1 if you have the `stat' function. */
 #undef HAVE_STAT
 
-/* Define to 1 if you have the <stdarg.h> header file. */
-#undef HAVE_STDARG_H
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
-
-/* Define to 1 if you have the `strftime' function. */
-#undef HAVE_STRFTIME
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -176,16 +110,8 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
-   */
-#undef HAVE_SYS_DIR_H
-
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
-
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
-   */
-#undef HAVE_SYS_NDIR_H
 
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
@@ -205,35 +131,20 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
-/* Define to 1 if you have the `time' function. */
-#undef HAVE_TIME
-
-/* Define to 1 if you have the <time.h> header file. */
-#undef HAVE_TIME_H
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
 /* Whether va_copy() is available */
 #undef HAVE_VA_COPY
 
-/* Define to 1 if you have the `vfprintf' function. */
-#undef HAVE_VFPRINTF
-
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
-
-/* Define to 1 if you have the `vsprintf' function. */
-#undef HAVE_VSPRINTF
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
 
 /* Whether __va_copy() is available */
 #undef HAVE___VA_COPY
-
-/* Define as const if the declaration of iconv() needs const. */
-#undef ICONV_CONST
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
@@ -262,7 +173,9 @@
 /* Type cast for the send() function 2nd arg */
 #undef SEND_ARG2_CAST
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Support for IPv6 */

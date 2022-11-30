@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Test using large start offset.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+
+<style>
+.grid {
+  display: inline-grid;
+  grid-template-rows: minmax(min-content, 0.256424fr) minmax(28px, 86fr);
+}
+
+.firstRowFirstColumn {
+  grid-row: 1/2;
+  margin-top: 6e8px
+}
+</style>
+<div class=grid id=tCF30><div class=grid id=tCF30>
+  <ancestor id=tCF158></ancestor>
+  <ancestor id=tCF159></ancestor>
+  <ancestor id=tCF160 style="stroke: rgb(126, 6, 200); border-collapse: initial; place-content: baseline safe; border-image-slice: 4% 4% 14% 78% fill; flex-flow: wrap row-reverse; "></ancestor>
+  <div data-offset-x=0 class=firstRowFirstColumn id=tCF161>1[]w`COzG*?+, 2ZI</div>
+
+<script>
+  test(function () {
+    testGridPositionDefinitionsValues(document.getElementById("tCF30"), "auto", "auto", "auto", "auto");
+  }, "Test that setting and getting grid-column|row-start|end|gap|min-width to huge values is properly clamped and does not make the renderer crash.");
+</script>

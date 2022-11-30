@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/locale_update_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -27,6 +26,10 @@ class LocaleModel {
   };
 
   LocaleModel();
+
+  LocaleModel(const LocaleModel&) = delete;
+  LocaleModel& operator=(const LocaleModel&) = delete;
+
   ~LocaleModel();
 
   void AddObserver(Observer* observer);
@@ -50,8 +53,6 @@ class LocaleModel {
   std::string current_locale_iso_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleModel);
 };
 
 }  // namespace ash

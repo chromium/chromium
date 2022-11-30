@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that RawSourceCode listeners count won't grow on each script pause. Bug 70996\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -50,10 +50,10 @@
   function liveLocationsCount() {
     var count = 0;
     var infos = Object.values(TestRunner.debuggerModel.scripts)
-                    .map(script => script[Bindings.DebuggerWorkspaceBinding._ScriptInfoSymbol])
+                    .map(script => script[Bindings.DebuggerWorkspaceBinding.ScriptInfoSymbol])
                     .filter(info => !!info);
     infos.forEach(function(info) {
-      count += info._locations ? info._locations.size : 0;
+      count += info.locations ? info._locations.size : 0;
     });
     return count;
   }

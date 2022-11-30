@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -23,18 +22,20 @@ class ProfileSigninConfirmationHelperBrowserTest : public InProcessBrowserTest {
  public:
   ProfileSigninConfirmationHelperBrowserTest() {}
 
+  ProfileSigninConfirmationHelperBrowserTest(
+      const ProfileSigninConfirmationHelperBrowserTest&) = delete;
+  ProfileSigninConfirmationHelperBrowserTest& operator=(
+      const ProfileSigninConfirmationHelperBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Force the first-run flow to trigger autoimport.
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationHelperBrowserTest);
 };
 
 // http://crbug.com/321302
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_HasNotBeenShutdown DISABLED_HasNotBeenShutdown
 #else
 #define MAYBE_HasNotBeenShutdown HasNotBeenShutdown
@@ -49,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(ProfileSigninConfirmationHelperBrowserTest,
 
 // http://crbug.com/321302
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
-    (defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_HasNoSyncedExtensions DISABLED_HasNoSyncedExtensions
 #else
 #define MAYBE_HasNoSyncedExtensions HasNoSyncedExtensions

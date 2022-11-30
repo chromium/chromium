@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,15 +137,15 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   ComputedStyle& style = *state.Style();
   float zoom = EffectiveZoom(style);
-  CSSToLengthConversionData conversion_data = state.CssToLengthConversionData();
-  conversion_data.SetZoom(zoom);
+  CSSToLengthConversionData conversion_data =
+      state.CssToLengthConversionData().CopyWithAdjustedZoom(zoom);
   Length length = To<InterpolableLength>(interpolable_value)
                       .CreateLength(conversion_data, value_range_);
   if (LengthPropertyFunctions::SetLength(CssProperty(), style, length)) {
 #if DCHECK_IS_ON()
     // Assert that setting the length on ComputedStyle directly is identical to
     // the StyleBuilder code path. This check is useful for catching differences
-    // in clamping behaviour.
+    // in clamping behavior.
     Length before;
     Length after;
     DCHECK(LengthPropertyFunctions::GetLength(CssProperty(), style, before));
@@ -155,10 +155,18 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     DCHECK(LengthPropertyFunctions::GetLength(CssProperty(), style, after));
     DCHECK(before.IsSpecified());
     DCHECK(after.IsSpecified());
-    const float kSlack = 1e-6;
+    // A relative error of 1/100th of a percent is likely not noticeable.
+    // This check can be triggered with a tight tolerance such as 1e-6 for
+    // suitably ill-conditioned animations (crbug.com/1204099).
+    const float kSlack = 0.0001;
     const float before_length = FloatValueForLength(before, 100);
     const float after_length = FloatValueForLength(after, 100);
-    if (std::isfinite(before_length) && std::isfinite(after_length)) {
+    // Length values may be constructed from integers, floating point values, or
+    // layout units (64ths of a pixel).  If converted from a layout unit, any
+    /// value greater than max_int64 / 64 cannot be precisely expressed
+    // (crbug.com/1349686).
+    if (std::isfinite(before_length) && std::isfinite(after_length) &&
+        std::abs(before_length) < kIntMaxForLayoutUnit) {
       // Test relative difference for large values to avoid floating point
       // inaccuracies tripping the check.
       const float delta = std::abs(before_length) < kSlack

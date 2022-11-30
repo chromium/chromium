@@ -1,13 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_LOG_SOURCE_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_LOG_SOURCE_H_
 
-#include <string>
-
-#include "base/observer_list.h"
 #include "components/query_tiles/internal/log_sink.h"
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/internal/tile_types.h"

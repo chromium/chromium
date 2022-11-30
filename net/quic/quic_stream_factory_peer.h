@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
+#include "url/scheme_host_port.h"
 
 namespace quic {
 class QuicAlarmFactory;
@@ -36,16 +36,20 @@ namespace test {
 
 class QuicStreamFactoryPeer {
  public:
+  QuicStreamFactoryPeer(const QuicStreamFactoryPeer&) = delete;
+  QuicStreamFactoryPeer& operator=(const QuicStreamFactoryPeer&) = delete;
+
   static const quic::QuicConfig* GetConfig(QuicStreamFactory* factory);
 
   static std::unique_ptr<QuicCryptoClientConfigHandle> GetCryptoConfig(
       QuicStreamFactory* factory,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   static bool HasActiveSession(
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key = NetworkIsolationKey());
+      const NetworkAnonymizationKey& network_anonymization_key =
+          NetworkAnonymizationKey());
 
   static bool HasActiveJob(QuicStreamFactory* factory,
                            const quic::QuicServerId& server_id);
@@ -53,15 +57,16 @@ class QuicStreamFactoryPeer {
   static QuicChromiumClientSession* GetPendingSession(
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
-      const HostPortPair& destination);
+      url::SchemeHostPort destination);
 
   static QuicChromiumClientSession* GetActiveSession(
       QuicStreamFactory* factory,
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key = NetworkIsolationKey());
+      const NetworkAnonymizationKey& network_anonymization_key =
+          NetworkAnonymizationKey());
 
   static bool HasLiveSession(QuicStreamFactory* factory,
-                             const HostPortPair& destination,
+                             url::SchemeHostPort destination,
                              const quic::QuicServerId& server_id);
 
   static bool IsLiveSession(QuicStreamFactory* factory,
@@ -87,15 +92,15 @@ class QuicStreamFactoryPeer {
   static bool CryptoConfigCacheIsEmpty(
       QuicStreamFactory* factory,
       const quic::QuicServerId& quic_server_id,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Creates a dummy QUIC server config and caches it. Caller must be holding
   // onto a QuicCryptoClientConfigHandle for the corresponding
-  // |network_isolation_key|.
+  // |network_anonymization_key|.
   static void CacheDummyServerConfig(
       QuicStreamFactory* factory,
       const quic::QuicServerId& quic_server_id,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   static int GetNumPushStreamsCreated(QuicStreamFactory* factory);
 
@@ -104,9 +109,6 @@ class QuicStreamFactoryPeer {
   static void SetAlarmFactory(
       QuicStreamFactory* factory,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicStreamFactoryPeer);
 };
 
 }  // namespace test

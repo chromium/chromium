@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,11 @@ import android.view.View;
 
 import com.google.common.collect.ImmutableMap;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -28,28 +29,30 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
+@DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
+@EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
     private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -74,6 +77,9 @@ public class HomeButtonCoordinatorTest {
         }
     }
 
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
     @Mock
     private Context mContext;
     @Mock
@@ -82,8 +88,6 @@ public class HomeButtonCoordinatorTest {
     private android.content.res.Resources mResources;
     @Mock
     private UserEducationHelper mUserEducationHelper;
-    @Mock
-    private Tracker mTracker;
 
     @Captor
     private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
@@ -109,21 +113,13 @@ public class HomeButtonCoordinatorTest {
         mIsFeedEnabled = true;
         mIsHomepageNonNtp = false;
         mIsIncognito = false;
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE, true));
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestFeatures(null);
     }
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
         // clang-format off
         return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
                 mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>(),
-                mTracker);
+                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>());
         // clang-format on
     }
 

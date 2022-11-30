@@ -5,113 +5,54 @@
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../../../resources/blink-coordinates-util.js"></script>
 <script src="../../../resources/scrollbar-util.js"></script>
+<script src="resources/mouse-scrolling-on-div-scrollbar.js"></script>
 <style>
-.appearance {
-  width: 100px;
-  height: 100px;
-  overflow: scroll;
-  border: 1px solid black;
-}
-.standardLocation {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-}
-.space {
-  height: 200px;
-  width: 200px;
-}
+  .appearance {
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    border: 1px solid black;
+  }
+
+  .standardLocation {
+    position: absolute;
+    top: 100px;
+    left: 100px;
+  }
+
+  .space {
+    height: 200px;
+    width: 200px;
+  }
 </style>
 
 <!-- Composited non-custom scroller -->
-<div id="standard" class="appearance standardLocation">
+<div id="standard" class="appearance standardLocation" style="direction: ltr;">
   <div class="space"></div>
 </div>
 
 <script>
-if (window.internals)
+  if (window.internals)
     internals.settings.setScrollAnimatorEnabled(false);
 
-window.onload = () => {
-  const standardDivFast = document.getElementById("standard");
-  const standardRectFast = standardDivFast.getBoundingClientRect();
-
+  const scroller = document.getElementById("standard");
   const TRACK_WIDTH = calculateScrollbarThickness();
-  const BUTTON_WIDTH = TRACK_WIDTH;
-  const SCROLL_CORNER = TRACK_WIDTH;
-  assert_equals(standardDivFast.clientHeight, standardDivFast.clientWidth,
-      "This test assumes that the height and width of 'standardDivFast' are equivalent. If this changes please update SCROLL_AMOUNT to be X/Y specific");
-  const SCROLL_AMOUNT = getScrollbarButtonScrollDelta(standardDivFast).y;
 
-  promise_test (async () => {
-    // Scrollbars on Mac don't have arrows. This test is irrelevant.
-    if(navigator.userAgent.includes("Mac OS X"))
-      return;
+  assert_equals(scroller.clientHeight, scroller.clientWidth,
+    "This test assumes that the height and width of the scroller are equivalent. If this changes please update SCROLL_AMOUNT to be X/Y specific");
 
-    await waitForCompositorCommit();
-    resetScrollOffset(standardDivFast);
+  const params = {
+    scroller: scroller,
+    TRACK_WIDTH: TRACK_WIDTH,
+    BUTTON_WIDTH: TRACK_WIDTH,
+    SCROLL_CORNER: TRACK_WIDTH,
+    SCROLL_AMOUNT: getScrollbarButtonScrollDelta(scroller).y
+  }
 
-    // Click on the Down arrow for standardRectFast.
-    let x = standardRectFast.right - BUTTON_WIDTH / 2;
-    let y = standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_equals(standardDivFast.scrollTop, SCROLL_AMOUNT, "Pressing the down arrow didn't scroll.");
-
-    // Click on the Up arrow for standardRectFast.
-    x = standardRectFast.right - BUTTON_WIDTH / 2;
-    y = standardRectFast.top + BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_equals(standardDivFast.scrollTop, 0, "Pressing the up arrow didn't scroll.");
-
-    // Click on the Right arrow for standardRectFast.
-    x = standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH / 2;
-    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-    assert_equals(standardDivFast.scrollLeft, SCROLL_AMOUNT, "Pressing the right arrow didn't scroll.");
-
-    // Click on the Left arrow for standardRectFast.
-    x = standardRectFast.left + BUTTON_WIDTH / 2;
-    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-    assert_equals(standardDivFast.scrollLeft, 0, "Pressing the left arrow didn't scroll.");
+  promise_test(async () => {
+    await testArrows(params);
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
-
-  promise_test (async () => {
-    await waitForCompositorCommit();
-    resetScrollOffset(standardDivFast);
-
-    // Click on the track part just above the down arrow.
-    assert_equals(standardDivFast.scrollTop, 0, "Div is not at 0 offset.");
-    let x = standardRectFast.right - BUTTON_WIDTH / 2;
-    let y = standardRectFast.bottom - SCROLL_CORNER - BUTTON_WIDTH - 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_approx_equals(standardDivFast.scrollTop, 74, 1, "Pressing the down trackpart didn't scroll.");
-
-    // Click on the track part just below the up arrow.
-    x = standardRectFast.right - BUTTON_WIDTH / 2;
-    y = standardRectFast.top + BUTTON_WIDTH + 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
-    assert_equals(standardDivFast.scrollTop, 0, "Pressing the up trackpart didn't scroll.");
-
-    // Click on the track part just to the left of the right arrow.
-    x = standardRectFast.right - SCROLL_CORNER - BUTTON_WIDTH - 2;
-    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-    assert_approx_equals(standardDivFast.scrollLeft, 74, 1, "Pressing the right trackpart didn't scroll.");
-
-    // Click on the track part just to the right of the left arrow.
-    x = standardRectFast.left + BUTTON_WIDTH + 2;
-    y = standardRectFast.bottom - BUTTON_WIDTH / 2;
-    await mouseClickOn(x, y);
-    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollLeft;});
-    assert_equals(standardDivFast.scrollLeft, 0, "Pressing the left trackpart didn't scroll.");
+  promise_test(async () => {
+    await testTrackparts(params);
   }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
-}
 </script>

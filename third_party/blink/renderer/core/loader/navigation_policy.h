@@ -45,6 +45,7 @@ enum NavigationPolicy {
   kNavigationPolicyNewForegroundTab,
   kNavigationPolicyNewWindow,
   kNavigationPolicyNewPopup,
+  kNavigationPolicyPictureInPicture,
 };
 
 // Returns a NavigationPolicy to use for starting a navigation
@@ -61,4 +62,4 @@ NavigationPolicyForCreateWindow(const WebWindowFeatures&);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NAVIGATION_POLICY_H_

@@ -1,15 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_BASE_AUTO_THREAD_TASK_RUNNER_H_
 #define REMOTING_BASE_AUTO_THREAD_TASK_RUNNER_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace remoting {
 
@@ -23,6 +20,9 @@ class AutoThreadTaskRunner : public base::SingleThreadTaskRunner {
   // the AutoThreadTaskRunner is dropped.
   AutoThreadTaskRunner(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                        base::OnceClosure stop_task);
+
+  AutoThreadTaskRunner(const AutoThreadTaskRunner&) = delete;
+  AutoThreadTaskRunner& operator=(const AutoThreadTaskRunner&) = delete;
 
   // SingleThreadTaskRunner implementation
   bool PostDelayedTask(const base::Location& from_here,
@@ -45,8 +45,6 @@ class AutoThreadTaskRunner : public base::SingleThreadTaskRunner {
 
   // The wrapped task runner.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoThreadTaskRunner);
 };
 
 }  // namespace remoting

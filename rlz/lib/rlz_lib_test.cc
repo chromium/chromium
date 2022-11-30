@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -35,7 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Windows.h>
 #include "rlz/win/lib/machine_deal.h"
 #endif
@@ -50,21 +50,22 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/cxx17_backports.h"
 #include "base/files/important_file_writer.h"
-#include "base/stl_util.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
 
 class MachineDealCodeHelper
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     : public rlz_lib::MachineDealCode
 #endif
-    {
+{
  public:
   static bool Clear() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return rlz_lib::MachineDealCode::Clear();
 #else
     return true;
@@ -335,7 +336,7 @@ TEST_F(RlzLibTest, GetPingParams) {
                                      cgi, 2048));
   EXPECT_STREQ("rep=2&rlz=T4:TbRlzValue", cgi);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #define DCC_PARAM "&dcc=dcc_value"
 #else
@@ -455,7 +456,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
     "dcc: dcc_value\r\n"
     "crc32: F9070F81";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value2"));
 #endif
 
@@ -465,7 +466,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
   EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
       rlz_lib::IE_HOME_PAGE, rlz_lib::INSTALL));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #endif
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
@@ -574,7 +575,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
     return;
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
@@ -585,7 +586,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
 #endif
 
   MachineDealCodeHelper::Clear();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #endif
 
@@ -625,15 +626,13 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
-  base::Thread::Options options;
-  options.message_pump_type = base::MessagePumpType::IO;
-
   base::Thread io_thread("rlz_unittest_io_thread");
-  ASSERT_TRUE(io_thread.StartWithOptions(options));
+  ASSERT_TRUE(io_thread.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
 
   network::TestURLLoaderFactory test_url_loader_factory;
   URLLoaderFactoryRAII set_factory(
@@ -705,7 +704,7 @@ TEST_F(RlzLibTest, ClearProductState) {
   EXPECT_STREQ("", cgi);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template<class T>
 class typed_buffer_ptr {
   std::unique_ptr<char[]> buffer_;
@@ -972,7 +971,7 @@ TEST_F(RlzLibTest, BrandingWithStatefulEvents) {
   EXPECT_STREQ("events=I7S", value);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class ReadonlyRlzDirectoryTest : public RlzLibTestNoMachineState {
  protected:
   void SetUp() override;
@@ -1080,10 +1079,19 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class ScopedTestDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
-  TestDebugDaemonClient() = default;
-  ~TestDebugDaemonClient() override = default;
+  ScopedTestDebugDaemonClient() {
+    ash::DebugDaemonClient::SetInstanceForTest(this);
+  }
+
+  ScopedTestDebugDaemonClient(const ScopedTestDebugDaemonClient&) = delete;
+  ScopedTestDebugDaemonClient& operator=(const ScopedTestDebugDaemonClient&) =
+      delete;
+
+  ~ScopedTestDebugDaemonClient() override {
+    ash::DebugDaemonClient::SetInstanceForTest(nullptr);
+  }
 
   int num_set_rlz_ping_sent() const { return num_set_rlz_ping_sent_; }
 
@@ -1100,14 +1108,12 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
  private:
   int num_set_rlz_ping_sent_ = 0;
-  bool default_result_;
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
+  bool default_result_ = false;
 };
 
 TEST_F(RlzLibTest, SetRlzPingSent) {
-  TestDebugDaemonClient* debug_daemon_client = new TestDebugDaemonClient;
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-      std::unique_ptr<chromeos::DebugDaemonClient>(debug_daemon_client));
+  ash::DBusThreadManager::Initialize();
+  auto debug_daemon_client = std::make_unique<ScopedTestDebugDaemonClient>();
   const char* kPingResponse =
       "stateful-events: CAF\r\n"
       "crc32: 3BB2FEAE\r\n";
@@ -1126,6 +1132,8 @@ TEST_F(RlzLibTest, SetRlzPingSent) {
       rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER, kPingResponse));
   EXPECT_EQ(debug_daemon_client->num_set_rlz_ping_sent(),
             1 + rlz_lib::RlzValueStoreChromeOS::kMaxRetryCount);
+  debug_daemon_client.reset();
+  ash::DBusThreadManager::Shutdown();
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent) {
@@ -1139,7 +1147,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
                               rlz_lib::FIRST_SEARCH);
   char cgi[256];
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAF"));
 
   // Simulate another user on the machine sending the RLZ ping, so "should send
@@ -1151,7 +1159,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
   // The first search event should no longer appear, so there are no events
   // to report.
   EXPECT_FALSE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
 
   // The event should be permanently deleted, so setting the flag back to
   // true should still not return the event.
@@ -1159,7 +1167,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueTrue);
   EXPECT_FALSE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent2) {
@@ -1175,7 +1183,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
                               rlz_lib::FIRST_SEARCH);
   char cgi[256];
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAF"));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 
@@ -1187,7 +1195,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
 
   // Only the "CAI" event should appear.
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 
   // The event should be permanently deleted, so setting the flag back to
@@ -1196,7 +1204,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueTrue);
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 }
 #endif

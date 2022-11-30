@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1412802024419177173">မော်ဒင် ( <ph name="ADDRESS" /> )</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />၊ မောက်စ်</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />၊ ကီးဘုတ်နှင့် မောက်စ်ပေါင်းစည်းမှု</translation>
 <translation id="2616803374438260326">ကီးဘုတ် / မောက်စ် ( <ph name="ADDRESS" /> )</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />၊ ချိတ်ဆက်ပစ္စည်း</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />၊ တက်ဘလက်</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />၊ ဖုန်း</translation>
 <translation id="3273951168350045122">ကီးဘိတ် ( <ph name="ADDRESS" /> )</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />၊ ကွန်ပျူတာ</translation>
 <translation id="4287283380557401002">ကား အသံ ( <ph name="ADDRESS" /> )</translation>
 <translation id="430326050669417502">ပဲ့ထိန်း ( <ph name="ADDRESS" /> )</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />၊ အသံစက်ပစ္စည်း</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />၊ ဗီဒီယိုစက်ပစ္စည်း</translation>
 <translation id="5271696982761495740">တက်ဘလက် ( <ph name="ADDRESS" /> )</translation>
 <translation id="5376363957846771741">အမည်မသိရ သို့မဟုတ် ပံ့ပိုးမပေးသည့် ကိရိယာ ( <ph name="ADDRESS" /> )</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />၊ မိုဒမ်</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />၊ ကား အသံစက်ပစ္စည်း</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />၊ ကီးဘုတ်</translation>
 <translation id="654594702871184195">အသံ ( <ph name="ADDRESS" /> )</translation>
 <translation id="6744468237221042970">ကွန်ပျူတာ ( <ph name="ADDRESS" /> )</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />၊ ဂိမ်းခလုတ်</translation>
 <translation id="7501330106833014351">ဂိမ်းပက်ဒ် ( <ph name="ADDRESS" /> )</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />၊ ဂိမ်းခလုတ်</translation>
 <translation id="8866374292072238753">ဗီဒီယို ( <ph name="ADDRESS" /> )</translation>
 <translation id="8952558712545617651">မောက်စ် ( <ph name="ADDRESS" /> )</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />၊ အမျိုးအမည်မသိ စက်အမျိုးအစား</translation>
 <translation id="907431882454731668">ချိတ်ဆက်ပစ္စည်း (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">ဖုန်း ( <ph name="ADDRESS" /> )</translation>
 </translationbundle>

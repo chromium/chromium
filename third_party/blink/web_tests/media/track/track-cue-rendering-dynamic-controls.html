@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<style>
+::cue { font-size: 24px; }
+</style>
+<video src="../content/test.ogv" width="640"></video>
+<script>
+
+function animationFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}
+
+promise_test(async () => {
+  let v = document.querySelector('video');
+  let track = v.addTextTrack('subtitles', 'label', 'en');
+  track.mode = 'showing';
+  track.addCue(new VTTCue(1, 60, 'First subtitle'));
+  let cue1 = new VTTCue(1, 60, 'Second substitle');
+  cue1.line = 9;
+  track.addCue(cue1);
+  v.currentTime = 3;
+  await new Promise(resolve => { v.addEventListener('seeked', resolve, {once:true}); });
+  await animationFrame();
+  await animationFrame();
+  // Now cues are shown.
+  let top0 = textTrackCueElementByIndex(v, 0).offsetTop;
+  let top1 = textTrackCueElementByIndex(v, 1).offsetTop;
+
+  v.controls = true;
+  await animationFrame();
+  await animationFrame();
+  let top0c = textTrackCueElementByIndex(v, 0).offsetTop;
+  let top1c = textTrackCueElementByIndex(v, 1).offsetTop;
+  assert_not_equals(top0, top0c, '[after showing controls, 0]');
+  assert_equals(top1, top1c, '[after showing controls, 1]');
+
+  v.controls = false;
+  await animationFrame();
+  await animationFrame();
+  assert_equals(top0c, textTrackCueElementByIndex(v, 0).offsetTop, '[after hiding controls, 0]');
+  assert_equals(top1c, textTrackCueElementByIndex(v, 1).offsetTop, '[after hiding controls, 1]');
+
+  v.controls = true;
+  v.controls = false;
+  await animationFrame();
+  await animationFrame();
+  // Ideally the following assert should be |assert_equals| because the first
+  // cue and the controls are not overlapped. But it seems togging controls
+  // move the cue to the initial position.
+  assert_not_equals(top0c, textTrackCueElementByIndex(v, 0).offsetTop, '[after toggling controls, 0]');
+  assert_equals(top1c, textTrackCueElementByIndex(v, 1).offsetTop, '[after toggling controls, 1]');
+}, 'Showing media controls should do block position adjustment again');
+</script>

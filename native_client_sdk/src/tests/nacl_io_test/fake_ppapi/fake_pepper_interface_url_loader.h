@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_URL_LOADER_H_
-#define TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_URL_LOADER_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_URL_LOADER_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_URL_LOADER_H_
 
 #include <map>
 #include <string>
@@ -90,6 +90,9 @@ class FakeURLLoaderInterface : public nacl_io::URLLoaderInterface {
  public:
   explicit FakeURLLoaderInterface(FakeCoreInterface* core_interface);
 
+  FakeURLLoaderInterface(const FakeURLLoaderInterface&) = delete;
+  FakeURLLoaderInterface& operator=(const FakeURLLoaderInterface&) = delete;
+
   virtual PP_Resource Create(PP_Instance instance);
   virtual int32_t Open(PP_Resource loader,
                        PP_Resource request_info,
@@ -106,15 +109,16 @@ class FakeURLLoaderInterface : public nacl_io::URLLoaderInterface {
 
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLLoaderInterface);
 };
 
 class FakeURLRequestInfoInterface : public nacl_io::URLRequestInfoInterface {
  public:
   FakeURLRequestInfoInterface(FakeCoreInterface* core_interface,
                               FakeVarInterface* var_interface);
+
+  FakeURLRequestInfoInterface(const FakeURLRequestInfoInterface&) = delete;
+  FakeURLRequestInfoInterface& operator=(const FakeURLRequestInfoInterface&) =
+      delete;
 
   virtual PP_Resource Create(PP_Instance instance);
   virtual PP_Bool SetProperty(PP_Resource request,
@@ -127,15 +131,16 @@ class FakeURLRequestInfoInterface : public nacl_io::URLRequestInfoInterface {
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
   FakeVarInterface* var_interface_;    // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLRequestInfoInterface);
 };
 
 class FakeURLResponseInfoInterface : public nacl_io::URLResponseInfoInterface {
  public:
   FakeURLResponseInfoInterface(FakeCoreInterface* core_interface,
                                FakeVarInterface* var_interface);
+
+  FakeURLResponseInfoInterface(const FakeURLResponseInfoInterface&) = delete;
+  FakeURLResponseInfoInterface& operator=(const FakeURLResponseInfoInterface&) =
+      delete;
 
   virtual PP_Var GetProperty(PP_Resource response,
                              PP_URLResponseProperty property);
@@ -144,15 +149,17 @@ class FakeURLResponseInfoInterface : public nacl_io::URLResponseInfoInterface {
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
   FakeVarInterface* var_interface_;    // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLResponseInfoInterface);
 };
 
 class FakePepperInterfaceURLLoader : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterfaceURLLoader();
   FakePepperInterfaceURLLoader(const FakeURLLoaderServer& server);
+
+  FakePepperInterfaceURLLoader(const FakePepperInterfaceURLLoader&) = delete;
+  FakePepperInterfaceURLLoader& operator=(const FakePepperInterfaceURLLoader&) =
+      delete;
+
   ~FakePepperInterfaceURLLoader();
 
   virtual PP_Instance GetInstance() { return instance_; }
@@ -176,8 +183,6 @@ class FakePepperInterfaceURLLoader : public nacl_io::PepperInterfaceDummy {
   FakeURLRequestInfoInterface url_request_info_interface_;
   FakeURLResponseInfoInterface url_response_info_interface_;
   PP_Instance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterfaceURLLoader);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_URL_LOADER_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_URL_LOADER_H_

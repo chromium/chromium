@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace extensions {
 class ChromeExtensionsClientTest : public testing::Test {
  public:
   void SetUp() override {
-    extensions_client_.reset(new ChromeExtensionsClient());
+    extensions_client_ = std::make_unique<ChromeExtensionsClient>();
     ExtensionsClient::Set(extensions_client_.get());
   }
 

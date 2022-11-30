@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/public/cpp/gamepad.h"
@@ -29,9 +28,14 @@ class GamepadDeviceMac;
 class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<GamepadPlatformDataFetcherMac,
-                                                GAMEPAD_SOURCE_MAC_HID>;
+                                                GamepadSource::kMacHid>;
 
   GamepadPlatformDataFetcherMac();
+
+  GamepadPlatformDataFetcherMac(const GamepadPlatformDataFetcherMac&) = delete;
+  GamepadPlatformDataFetcherMac& operator=(
+      const GamepadPlatformDataFetcherMac&) = delete;
+
   ~GamepadPlatformDataFetcherMac() override;
 
   // GamepadDataFetcher public implementation.
@@ -95,8 +99,6 @@ class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
 
   // A map of all devices using this data fetcher with the source_id as the key.
   std::unordered_map<int, std::unique_ptr<GamepadDeviceMac>> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadPlatformDataFetcherMac);
 };
 
 }  // namespace device

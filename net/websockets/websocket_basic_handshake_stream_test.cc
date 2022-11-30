@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_basic_handshake_stream.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,8 @@ namespace {
 TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org",
-      url::Origin::Create(GURL("http://origin.example.org")), "", "");
+      url::Origin::Create(GURL("http://origin.example.org")),
+      /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
   std::string response =
       "HTTP/1.1 404 Not Found\r\n"
       "Content-Length: 0\r\n"
@@ -66,9 +68,10 @@ TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
   NetLogWithSource net_log;
+  basic_handshake_stream.RegisterRequest(&request_info);
   const int result1 =
       callback1.GetResult(basic_handshake_stream.InitializeStream(
-          &request_info, true, LOWEST, net_log, callback1.callback()));
+          true, LOWEST, net_log, callback1.callback()));
   EXPECT_EQ(result1, OK);
 
   auto request_headers = WebSocketCommonTestHeaders();
@@ -89,7 +92,8 @@ TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
 TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org",
-      url::Origin::Create(GURL("http://origin.example.org")), "", "");
+      url::Origin::Create(GURL("http://origin.example.org")),
+      /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
   std::string response = WebSocketStandardResponse("");
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
   MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response.c_str()),
@@ -103,16 +107,18 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
   const int connect_result = socket->Connect(CompletionOnceCallback());
   EXPECT_EQ(connect_result, OK);
 
-  std::vector<std::string> aliases({"alias1", "alias2", "www.example.org"});
+  std::set<std::string> aliases({"alias1", "alias2", "www.example.org"});
   socket->SetDnsAliases(aliases);
-  EXPECT_THAT(socket->GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "www.example.org"));
+  EXPECT_THAT(
+      socket->GetDnsAliases(),
+      testing::UnorderedElementsAre("alias1", "alias2", "www.example.org"));
 
   const MockTCPClientSocket* const socket_ptr = socket.get();
   auto handle = std::make_unique<ClientSocketHandle>();
   handle->SetSocket(std::move(socket));
-  EXPECT_THAT(handle->socket()->GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "www.example.org"));
+  EXPECT_THAT(
+      handle->socket()->GetDnsAliases(),
+      testing::UnorderedElementsAre("alias1", "alias2", "www.example.org"));
 
   DummyConnectDelegate delegate;
   WebSocketEndpointLockManager endpoint_lock_manager;
@@ -130,9 +136,10 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   TestCompletionCallback callback1;
   NetLogWithSource net_log;
+  basic_handshake_stream.RegisterRequest(&request_info);
   const int result1 =
       callback1.GetResult(basic_handshake_stream.InitializeStream(
-          &request_info, true, LOWEST, net_log, callback1.callback()));
+          true, LOWEST, net_log, callback1.callback()));
   EXPECT_EQ(result1, OK);
 
   auto request_headers = WebSocketCommonTestHeaders();

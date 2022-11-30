@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_OPTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_MENU_LIST_OPTION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
@@ -37,13 +36,21 @@ class AXObjectCacheImpl;
 class AXMenuListOption final : public AXNodeObject {
  public:
   AXMenuListOption(HTMLOptionElement*, AXObjectCacheImpl&);
+
+  AXMenuListOption(const AXMenuListOption&) = delete;
+  AXMenuListOption& operator=(const AXMenuListOption&) = delete;
+
   ~AXMenuListOption() override = default;
+
+  // For an <option>/<optgroup>, return an AXObject* for its popup, if any,
+  // otherwise return null.
+  static AXObject* ComputeParentAXMenuPopupFor(AXObjectCacheImpl& cache,
+                                               HTMLOptionElement* option);
 
  private:
   bool IsMenuListOption() const override { return true; }
 
   bool CanHaveChildren() const override { return false; }
-  AXObject* ComputeParentImpl() const override;
 
   Element* ActionElement() const override;
   bool IsVisible() const override;
@@ -53,19 +60,16 @@ class AXMenuListOption final : public AXNodeObject {
   bool OnNativeSetSelectedAction(bool) override;
 
   void GetRelativeBounds(AXObject** out_container,
-                         FloatRect& out_bounds_in_container,
-                         SkMatrix44& out_container_transform,
+                         gfx::RectF& out_bounds_in_container,
+                         gfx::Transform& out_container_transform,
                          bool* clips_children = nullptr) const override;
   String TextAlternative(bool recursive,
-                         bool in_aria_labelled_by_traversal,
+                         const AXObject* aria_label_or_description_root,
                          AXObjectSet& visited,
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-  HTMLSelectElement* ParentSelectNode() const;
-
-  DISALLOW_COPY_AND_ASSIGN(AXMenuListOption);
 };
 
 template <>

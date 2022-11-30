@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/font_render_params.h"
 
@@ -41,6 +42,9 @@ class GFX_EXPORT GlobalFontConfig {
     DCHECK_EQ(result, FcTrue);
   }
 
+  GlobalFontConfig(const GlobalFontConfig&) = delete;
+  GlobalFontConfig& operator=(const GlobalFontConfig&) = delete;
+
   ~GlobalFontConfig() { FcConfigDestroy(fc_config_); }
 
   // Retrieve the native font-config FcConfig pointer.
@@ -62,9 +66,7 @@ class GFX_EXPORT GlobalFontConfig {
   }
 
  private:
-  FcConfig* fc_config_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalFontConfig);
+  raw_ptr<FcConfig> fc_config_ = nullptr;
 };
 
 // Converts Fontconfig FC_HINT_STYLE to FontRenderParams::Hinting.

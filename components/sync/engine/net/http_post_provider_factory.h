@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/sync/engine/net/network_time_update_callback.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;
@@ -18,7 +17,7 @@ class PendingSharedURLLoaderFactory;
 
 namespace syncer {
 
-class HttpPostProviderInterface;
+class HttpPostProvider;
 
 // A factory to create HttpPostProviders to hide details about the
 // implementations and dependencies.
@@ -28,16 +27,15 @@ class HttpPostProviderFactory {
  public:
   virtual ~HttpPostProviderFactory() = default;
 
-  // Obtain a new HttpPostProviderInterface instance, owned by caller.
-  virtual scoped_refptr<HttpPostProviderInterface> Create() = 0;
+  // Obtain a new HttpPostProvider instance, owned by caller.
+  virtual scoped_refptr<HttpPostProvider> Create() = 0;
 };
 
 using CreateHttpPostProviderFactory =
     base::RepeatingCallback<std::unique_ptr<HttpPostProviderFactory>(
         const std::string& user_agent,
         std::unique_ptr<network::PendingSharedURLLoaderFactory>
-            pending_url_loader_factory,
-        const NetworkTimeUpdateCallback& network_time_update_callback)>;
+            pending_url_loader_factory)>;
 
 }  // namespace syncer
 

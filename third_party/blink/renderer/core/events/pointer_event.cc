@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -91,10 +92,9 @@ PointerEvent::PointerEvent(const AtomicString& type,
 }
 
 bool PointerEvent::IsMouseEvent() const {
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      (type() == event_type_names::kClick ||
-       type() == event_type_names::kAuxclick ||
-       type() == event_type_names::kContextmenu)) {
+  if (type() == event_type_names::kClick ||
+      type() == event_type_names::kAuxclick ||
+      type() == event_type_names::kContextmenu) {
     return true;
   }
 
@@ -102,9 +102,9 @@ bool PointerEvent::IsMouseEvent() const {
 }
 
 bool PointerEvent::ShouldHaveIntegerCoordinates() const {
-  if (RuntimeEnabledFeatures::ClickPointerEventIntegerCoordinatesEnabled() &&
-      (type() == event_type_names::kClick ||
-       type() == event_type_names::kContextmenu)) {
+  if (type() == event_type_names::kClick ||
+      type() == event_type_names::kContextmenu ||
+      type() == event_type_names::kAuxclick) {
     return true;
   }
   return false;
@@ -121,7 +121,7 @@ double PointerEvent::offsetX() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<PointerEvent*>(this)->ComputeRelativePosition();
-  return offset_location_.X();
+  return offset_x_;
 }
 
 double PointerEvent::offsetY() const {
@@ -131,7 +131,7 @@ double PointerEvent::offsetY() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<PointerEvent*>(this)->ComputeRelativePosition();
-  return offset_location_.Y();
+  return offset_y_;
 }
 
 void PointerEvent::ReceivedTarget() {
@@ -171,7 +171,7 @@ base::TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
     // Assume that time stamps of coalesced events are in ascending order.
     return coalesced_events_[0]->PlatformTimeStamp();
   }
-  return this->PlatformTimeStamp();
+  return PlatformTimeStamp();
 }
 
 void PointerEvent::Trace(Visitor* visitor) const {
@@ -181,13 +181,10 @@ void PointerEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  if (type().IsEmpty())
+  if (type().empty())
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
-  if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
-      type() == event_type_names::kClick) {
-    // The MouseEvent::DispatchEvent will take care of sending dblclick event if
-    // needed.
+  if (type() == event_type_names::kClick) {
     return MouseEvent::DispatchEvent(dispatcher);
   }
 

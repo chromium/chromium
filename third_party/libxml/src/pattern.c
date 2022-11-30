@@ -516,9 +516,6 @@ restart:
 		    goto rollback;
 		node = node->parent;
 		if ((node->type == XML_DOCUMENT_NODE) ||
-#ifdef LIBXML_DOCB_ENABLED
-		    (node->type == XML_DOCB_DOCUMENT_NODE) ||
-#endif
 		    (node->type == XML_HTML_DOCUMENT_NODE))
 		    continue;
 		goto rollback;
@@ -548,9 +545,6 @@ restart:
 
 		if ((node->type != XML_ELEMENT_NODE) &&
 		    (node->type != XML_DOCUMENT_NODE) &&
-#ifdef LIBXML_DOCB_ENABLED
-		    (node->type != XML_DOCB_DOCUMENT_NODE) &&
-#endif
 		    (node->type != XML_HTML_DOCUMENT_NODE))
 		    goto rollback;
 
@@ -590,9 +584,6 @@ restart:
             case XML_OP_PARENT:
 		if ((node->type == XML_DOCUMENT_NODE) ||
 		    (node->type == XML_HTML_DOCUMENT_NODE) ||
-#ifdef LIBXML_DOCB_ENABLED
-		    (node->type == XML_DOCB_DOCUMENT_NODE) ||
-#endif
 		    (node->type == XML_NAMESPACE_DECL))
 		    goto rollback;
 		node = node->parent;
@@ -631,9 +622,6 @@ restart:
 		    goto rollback;
 		if ((node->type == XML_DOCUMENT_NODE) ||
 		    (node->type == XML_HTML_DOCUMENT_NODE) ||
-#ifdef LIBXML_DOCB_ENABLED
-		    (node->type == XML_DOCB_DOCUMENT_NODE) ||
-#endif
 		    (node->type == XML_NAMESPACE_DECL))
 		    goto rollback;
 		node = node->parent;
@@ -2219,7 +2207,7 @@ stream_next:
 int
 xmlStreamPush(xmlStreamCtxtPtr stream,
               const xmlChar *name, const xmlChar *ns) {
-    return (xmlStreamPushInternal(stream, name, ns, (int) XML_ELEMENT_NODE));
+    return (xmlStreamPushInternal(stream, name, ns, XML_ELEMENT_NODE));
 }
 
 /**
@@ -2269,7 +2257,7 @@ xmlStreamPushNode(xmlStreamCtxtPtr stream,
 int
 xmlStreamPushAttr(xmlStreamCtxtPtr stream,
 		  const xmlChar *name, const xmlChar *ns) {
-    return (xmlStreamPushInternal(stream, name, ns, (int) XML_ATTRIBUTE_NODE));
+    return (xmlStreamPushInternal(stream, name, ns, XML_ATTRIBUTE_NODE));
 }
 
 /**
@@ -2616,6 +2604,4 @@ xmlPatternFromRoot(xmlPatternPtr comp) {
 
 }
 
-#define bottom_pattern
-#include "elfgcchack.h"
 #endif /* LIBXML_PATTERN_ENABLED */

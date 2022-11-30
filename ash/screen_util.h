@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,13 @@ ASH_EXPORT gfx::Rect GetDisplayBoundsWithShelf(aura::Window* window);
 // |bounds| should be in screen space.
 ASH_EXPORT gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,
                                              const aura::Window* window);
+
+// Returns the ideal bounds for the maximized/fullscreen/pinned state,
+// takig the shelf behavior into account. The maximized window state should
+// not be affected by the shelf bhavior change by fullscreen, but should
+// use the fullscreen bounds if the shelf is set to auto hide mode by a user.
+ASH_EXPORT gfx::Rect GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
+    aura::Window* window);
 
 }  // namespace screen_util
 

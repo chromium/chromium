@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/variations/service/variations_service_client.h"
 
@@ -22,21 +22,24 @@ class WebLayerVariationsServiceClient
  public:
   explicit WebLayerVariationsServiceClient(
       SystemNetworkContextManager* network_context_manager);
+
+  WebLayerVariationsServiceClient(const WebLayerVariationsServiceClient&) =
+      delete;
+  WebLayerVariationsServiceClient& operator=(
+      const WebLayerVariationsServiceClient&) = delete;
+
   ~WebLayerVariationsServiceClient() override;
 
  private:
   // variations::VariationsServiceClient:
-  base::OnceCallback<base::Version(void)> GetVersionForSimulationCallback()
-      override;
+  base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
 
-  SystemNetworkContextManager* network_context_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerVariationsServiceClient);
+  raw_ptr<SystemNetworkContextManager> network_context_manager_;
 };
 
 }  // namespace weblayer

@@ -1,6 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "services/audio/public/cpp/sounds/sounds_manager.h"
 
 #include <memory>
 #include <utility>
@@ -9,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,7 +18,6 @@
 #include "media/audio/test_audio_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/audio/public/cpp/sounds/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,7 +56,7 @@ TEST_F(SoundsManagerTest, Play) {
 
   ASSERT_TRUE(SoundsManager::Get()->Initialize(
       kTestAudioKey,
-      base::StringPiece(kTestAudioData, base::size(kTestAudioData))));
+      base::StringPiece(kTestAudioData, std::size(kTestAudioData))));
   ASSERT_EQ(20,
             SoundsManager::Get()->GetDuration(kTestAudioKey).InMicroseconds());
   ASSERT_TRUE(SoundsManager::Get()->Play(kTestAudioKey));
@@ -79,7 +79,7 @@ TEST_F(SoundsManagerTest, Stop) {
 
   ASSERT_TRUE(SoundsManager::Get()->Initialize(
       kTestAudioKey,
-      base::StringPiece(kTestAudioData, base::size(kTestAudioData))));
+      base::StringPiece(kTestAudioData, std::size(kTestAudioData))));
 
   ASSERT_EQ(0, observer.num_play_requests());
   ASSERT_EQ(0, observer.num_stop_requests());

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   std::unique_ptr<OSExchangeDataProvider> Clone() const override;
   void MarkOriginatedFromRenderer() override;
   bool DidOriginateFromRenderer() const override;
+  void MarkAsFromPrivileged() override;
+  bool IsFromPrivileged() const override;
   void SetString(const std::u16string& data) override;
   void SetURL(const GURL& url, const std::u16string& title) override;
   void SetFilename(const base::FilePath& path) override;
@@ -61,10 +63,11 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-#endif
+  bool GetFileContents(base::FilePath* filename,
+                       std::string* file_contents) const override;
+  bool HasFileContents() const override;
 
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
   bool GetHtml(std::u16string* html, GURL* base_url) const override;
@@ -76,6 +79,14 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
 
   void SetSource(std::unique_ptr<DataTransferEndpoint> data_source) override;
   DataTransferEndpoint* GetSource() const override;
+
+ protected:
+  // Copy internal data into |provider| object.
+  void CopyData(OSExchangeDataProviderNonBacked* provider) const;
+
+  const std::map<ClipboardFormatType, base::Pickle>& pickle_data() const {
+    return pickle_data_;
+  }
 
  private:
   // Returns true if |formats_| contains a file format and the file name can be
@@ -107,6 +118,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   gfx::ImageSkia drag_image_;
   gfx::Vector2d drag_image_offset_;
 
+  // For file contents.
+  base::FilePath file_contents_filename_;
+  std::string file_contents_;
+
   // For HTML format
   std::u16string html_;
   GURL base_url_;
@@ -115,6 +130,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   // For marking data originating from the renderer.
   bool originated_from_renderer_ = false;
 #endif
+
+  // For marking data originating by privileged WebContents.
+  bool is_from_privileged_ = false;
 
   // Data source.
   std::unique_ptr<DataTransferEndpoint> source_;

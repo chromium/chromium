@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,32 +8,39 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
-#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace app_list {
-
+struct FileSuggestData;
+enum class FileSuggestionType;
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
-                               public drive::DriveIntegrationServiceObserver {
+                               public drive::DriveIntegrationServiceObserver,
+                               public session_manager::SessionManagerObserver,
+                               public chromeos::PowerManagerClient::Observer,
+                               public FileSuggestKeyedService::Observer {
  public:
-  ZeroStateDriveProvider(
-      Profile* profile,
-      SearchController* search_controller,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ZeroStateDriveProvider(Profile* profile,
+                         SearchController* search_controller,
+                         drive::DriveIntegrationService* drive_service,
+                         session_manager::SessionManager* session_manager);
   ~ZeroStateDriveProvider() override;
 
   ZeroStateDriveProvider(const ZeroStateDriveProvider&) = delete;
@@ -42,46 +49,71 @@ class ZeroStateDriveProvider : public SearchProvider,
   // drive::DriveIntegrationServiceObserver:
   void OnFileSystemMounted() override;
 
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void ScreenIdleStateChanged(
+      const power_manager::ScreenIdleState& proto) override;
+
   // SearchProvider:
-  void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
   void Start(const std::u16string& query) override;
+  void StartZeroState() override;
+  void ViewClosing() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
  private:
-  void OnFilePathsLocated(
-      base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
+  // Called when file suggestion data are fetched from the service.
+  void OnSuggestFileDataFetched(
+      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
 
-  std::unique_ptr<FileResult> MakeListResult(const base::FilePath& filepath,
-                                             const float relevance);
-  std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
-                                             const float relevance);
+  // Builds the search results from file suggestions then publishes the results.
+  void SetSearchResults(const std::vector<FileSuggestData>& suggest_results);
+
+  std::unique_ptr<FileResult> MakeListResult(
+      const std::string& result_id,
+      const base::FilePath& filepath,
+      const absl::optional<std::u16string>& prediction_reason,
+      const float relevance);
+
+  // Requests an update from the ItemSuggestCache, but only if the call is long
+  // enough after the provider was constructed. This helps ease resource
+  // contention at login, and prevents the call from failing because Google auth
+  // tokens haven't been set up yet. If the productivity launcher is disabled,
+  // this does nothing.
+  void MaybeUpdateCache();
+
+  // FileSuggestKeyedService::Observer:
+  void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
+  session_manager::SessionManager* const session_manager_;
 
-  ItemSuggestCache item_suggest_cache_;
+  const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
 
-  // The most recent results retrieved from |item_suggested_cache_|. This is
-  // updated on a call to Start and is used only to store the results until
-  // OnFilePathsLocated has finished.
-  base::Optional<ItemSuggestCache::Results> cache_results_;
-
+  const base::Time construction_time_;
   base::TimeTicks query_start_time_;
 
-  // Whether suggested files feature is enabled. True if both the experiment is
-  // enabled, and the suggested content toggle is enabled.
-  const bool suggested_files_enabled_;
+  // Whether or not the screen is off due to idling.
+  bool screen_off_ = true;
 
-  // The normalizer normalizes the relevance scores of Results
-  base::Optional<ScoreNormalizer> normalizer_;
-
-  // Whether we have sent at least one request to ItemSuggest to warm up the
-  // results cache.
-  bool have_warmed_up_cache_ = false;
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationServiceObserver>
+      drive_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_observation_{this};
+  base::ScopedObservation<FileSuggestKeyedService,
+                          FileSuggestKeyedService::Observer>
+      file_suggest_service_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateDriveProvider> weak_factory_{this};
 };
 

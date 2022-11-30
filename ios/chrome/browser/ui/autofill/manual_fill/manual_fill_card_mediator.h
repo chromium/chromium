@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,18 +39,17 @@ extern NSString* const kAddCreditCardsAccessibilityIdentifier;
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
 
-// The designated initializer. |cards| must not be nil.
+// The designated initializer. `cards` must not be nil.
 - (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards
-                      handler:(id<BrowserCoordinatorCommands>)handler
     NS_DESIGNATED_INITIALIZER;
 
-// Unavailable. Use |initWithCards:|.
+// Unavailable. Use `initWithCards:`.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Finds the original autofill::CreditCard from given |GUID|.
+// Finds the original autofill::CreditCard from given `GUID`.
 - (const autofill::CreditCard*)findCreditCardfromGUID:(NSString*)GUID;
 
-// Updates the |cards| being presented.
+// Updates the `cards` being presented.
 - (void)reloadWithCards:(std::vector<autofill::CreditCard*>)cards;
 
 @end

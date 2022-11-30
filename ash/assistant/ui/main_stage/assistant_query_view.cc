@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,17 @@
 #include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_id.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace ash {
@@ -28,14 +34,12 @@ constexpr int kHeightDip = 32;
 
 // Helpers ---------------------------------------------------------------------
 
-std::unique_ptr<views::Label> CreateLabel(SkColor color) {
+std::unique_ptr<views::Label> CreateLabel() {
   auto label = std::make_unique<views::Label>();
   label->SetAutoColorReadabilityEnabled(false);
   label->SetLineHeight(kLineHeightDip);
-  label->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   label->SetFontList(
       assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(2));
-  label->SetEnabledColor(color);
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
   return label;
 }
@@ -64,6 +68,15 @@ int AssistantQueryView::GetHeightForWidth(int width) const {
   return kHeightDip;
 }
 
+void AssistantQueryView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  high_confidence_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(kColorAshAssistantQueryHighConfidenceLabel));
+  low_confidence_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(kColorAshAssistantQueryLowConfidenceLabel));
+}
+
 void AssistantQueryView::InitLayout() {
   views::FlexLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -73,15 +86,16 @@ void AssistantQueryView::InitLayout() {
   layout_manager->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Labels
-  high_confidence_label_ = AddChildView(CreateLabel(kTextColorPrimary));
-
+  high_confidence_label_ = AddChildView(CreateLabel());
+  high_confidence_label_->SetID(AssistantViewID::kHighConfidenceLabel);
   high_confidence_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(2));
 
-  low_confidence_label_ = AddChildView(CreateLabel(kTextColorSecondary));
+  low_confidence_label_ = AddChildView(CreateLabel());
+  low_confidence_label_->SetID(AssistantViewID::kLowConfidenceLabel);
   low_confidence_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -116,12 +130,12 @@ void AssistantQueryView::SetText(const std::string& high_confidence_text,
   // |low_confidence_text| may be HTML escaped, so we need to unescape both
   // before displaying to avoid printing HTML entities to the user.
   const std::u16string& high_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
   high_confidence_label_->SetText(high_confidence_text_16);
 
   const std::u16string& low_confidence_text_16 =
-      net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
+      base::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
   low_confidence_label_->SetText(low_confidence_text_16);
 }

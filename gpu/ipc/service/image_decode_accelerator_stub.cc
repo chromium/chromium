@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,22 +19,22 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
-#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -42,24 +42,22 @@
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
+#include "gpu/ipc/service/shared_image_stub.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #endif
 
 namespace gpu {
@@ -71,22 +69,32 @@ namespace {
 struct CleanUpContext {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
   SharedContextState* shared_context_state = nullptr;
-  scoped_refptr<gl::GLImage> gl_image;
-  GLuint texture = 0;
+  std::unique_ptr<SkiaImageRepresentation> skia_representation;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> skia_scoped_access;
 };
 
 void CleanUpResource(SkImage::ReleaseContext context) {
   auto* clean_up_context = static_cast<CleanUpContext*>(context);
   DCHECK(clean_up_context->main_task_runner->BelongsToCurrentThread());
-  if (clean_up_context->shared_context_state->IsCurrent(
-          nullptr /* surface */)) {
-    DCHECK(!clean_up_context->shared_context_state->context_lost());
-    glDeleteTextures(1u, &clean_up_context->texture);
-  } else {
-    DCHECK(clean_up_context->shared_context_state->context_lost());
-  }
-  // The GLImage is destroyed here (it should be destroyed regardless of whether
-  // the context is lost or current).
+
+  // The context should be current as we set it to be current earlier, and this
+  // call is coming from Skia itself.
+  DCHECK(
+      clean_up_context->shared_context_state->IsCurrent(nullptr /* surface */));
+
+  // Note: While we have to call TakeEndState() here by contract, we can elide
+  // setting the backend texture state of the GrContext to that end state. The
+  // latter usually needs to be called to add a layout transition for the
+  // underlying image (currently relevant only for VkImage), but the underlying
+  // image in this case is going away: this VkImage will be deleted right after
+  // the transition would be complete and the underlying dma-buf is going to be
+  // deleted at the same time (we are dropping our ref to the dma-buf here and
+  // Vulkan will drop the last one with the VkImage deletion). Not performing
+  // the layout transition layout saves some work. It might result in missing
+  // data in the dma-buf as caches won't be flushed, but no one was writing to
+  // that dma-buf and no one is going to use it at this point in any case.
+  std::ignore = clean_up_context->skia_scoped_access->TakeEndState();
+
   delete clean_up_context;
 }
 
@@ -99,7 +107,8 @@ ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
     int32_t route_id)
     : worker_(worker),
       channel_(channel),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow)),
+      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
+                                                     channel->task_runner())),
       sync_point_client_state_(
           channel->sync_point_manager()->CreateSyncPointClientState(
               CommandBufferNamespace::GPU_IO,
@@ -114,24 +123,6 @@ ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
   channel_->scheduler()->DisableSequence(sequence_);
 }
 
-bool ImageDecodeAcceleratorStub::OnMessageReceived(const IPC::Message& msg) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  if (!base::FeatureList::IsEnabled(
-          features::kVaapiJpegImageDecodeAcceleration) &&
-      !base::FeatureList::IsEnabled(
-          features::kVaapiWebPImageDecodeAcceleration)) {
-    return false;
-  }
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ImageDecodeAcceleratorStub, msg)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_ScheduleImageDecode,
-                        OnScheduleImageDecode)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void ImageDecodeAcceleratorStub::Shutdown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
@@ -140,24 +131,29 @@ void ImageDecodeAcceleratorStub::Shutdown() {
   channel_ = nullptr;
 }
 
-void ImageDecodeAcceleratorStub::SetImageFactoryForTesting(
-    ImageFactory* image_factory) {
-  external_image_factory_for_testing_ = image_factory;
-}
-
 ImageDecodeAcceleratorStub::~ImageDecodeAcceleratorStub() {
   DCHECK(!channel_);
 }
 
-void ImageDecodeAcceleratorStub::OnScheduleImageDecode(
-    const GpuChannelMsg_ScheduleImageDecode_Params& decode_params,
+void ImageDecodeAcceleratorStub::ScheduleImageDecode(
+    mojom::ScheduleImageDecodeParamsPtr params,
     uint64_t release_count) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiJpegImageDecodeAcceleration) &&
+      !base::FeatureList::IsEnabled(
+          features::kVaapiWebPImageDecodeAcceleration)) {
+    return;
+  }
+
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
   if (!channel_) {
     // The channel is no longer available, so don't do anything.
     return;
   }
+
+  mojom::ScheduleImageDecodeParams& decode_params = *params;
 
   // Start the actual decode.
   worker_->Decode(
@@ -175,13 +171,13 @@ void ImageDecodeAcceleratorStub::OnScheduleImageDecode(
   channel_->scheduler()->ScheduleTask(Scheduler::Task(
       sequence_,
       base::BindOnce(&ImageDecodeAcceleratorStub::ProcessCompletedDecode,
-                     base::WrapRefCounted(this), std::move(decode_params),
+                     base::WrapRefCounted(this), std::move(params),
                      release_count),
       {discardable_handle_sync_token} /* sync_token_fences */));
 }
 
 void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
-    GpuChannelMsg_ScheduleImageDecode_Params params,
+    mojom::ScheduleImageDecodeParamsPtr params_ptr,
     uint64_t decode_release_count) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
@@ -189,6 +185,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     // The channel is no longer available, so don't do anything.
     return;
   }
+
+  mojom::ScheduleImageDecodeParams& params = *params_ptr;
 
   DCHECK(!pending_completed_decodes_.empty());
   std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> completed_decode =
@@ -229,13 +227,6 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   }
   DCHECK(shared_context_state);
 
-  // TODO(andrescj): in addition to this check, we should not advertise support
-  // for hardware decode acceleration if we're not using GL (until we support
-  // other graphics APIs).
-  if (!shared_context_state->IsGLInitialized()) {
-    DLOG(ERROR) << "GL has not been initialized";
-    return;
-  }
   if (!shared_context_state->gr_context()) {
     DLOG(ERROR) << "Could not get the GrContext";
     return;
@@ -246,7 +237,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   }
 
   std::vector<sk_sp<SkImage>> plane_sk_images;
-  base::Optional<base::ScopedClosureRunner> notify_gl_state_changed;
+  absl::optional<base::ScopedClosureRunner> notify_gl_state_changed;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Right now, we only support YUV 4:2:0 for the output of the decoder (either
   // as YV12 or NV12).
@@ -278,43 +269,25 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   gfx::Size uv_plane_size = gfx::Size(uv_width, uv_height);
 
   // We should notify the SharedContextState that we or Skia may have modified
-  // the driver's GL state. We should also notify Skia that we may have modified
-  // the graphics API state outside of Skia. We put this in a
-  // ScopedClosureRunner so that if we return early, both the SharedContextState
-  // and Skia end up in a consistent state.
+  // the driver's GL state. We put this in a ScopedClosureRunner so that if we
+  // return early, the SharedContextState ends up in a consistent state.
+  // TODO(blundell): Determine whether this is still necessary after the
+  // transition to SharedImage.
   notify_gl_state_changed.emplace(base::BindOnce(
       [](scoped_refptr<SharedContextState> scs) {
         scs->set_need_context_state_reset(true);
-        scs->PessimisticallyResetGrContext();
       },
       shared_context_state));
 
-  // Create a gl::GLImage for each plane and attach it to a texture.
+  // Create an SkImage for each plane.
   const size_t num_planes =
       completed_decode->handle.native_pixmap_handle.planes.size();
   plane_sk_images.resize(num_planes);
   for (size_t plane = 0u; plane < num_planes; plane++) {
-    // |resource_cleaner| will be called to delete textures and GLImages that we
-    // create in this section in case of an early return.
-    CleanUpContext* resource = new CleanUpContext{};
-    resource->main_task_runner = channel_->task_runner();
-    resource->shared_context_state = shared_context_state.get();
-    // The use of base::Unretained() is safe because the |resource| is allocated
-    // using new and is deleted inside CleanUpResource().
-    base::ScopedClosureRunner resource_cleaner(
-        base::BindOnce(&CleanUpResource, base::Unretained(resource)));
-    glGenTextures(1u, &resource->texture);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, resource->texture);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T,
-                    GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     gfx::Size plane_size = plane == 0 ? y_plane_size : uv_plane_size;
 
     // Extract the plane out of |completed_decode->handle| and put it in its own
-    // gfx::GpuMemoryBufferHandle so that we can create a GL image for the
+    // gfx::GpuMemoryBufferHandle so that we can create a SharedImage for the
     // plane.
     gfx::GpuMemoryBufferHandle plane_handle;
     plane_handle.type = completed_decode->handle.type;
@@ -328,52 +301,72 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
                                       plane == 1u;
     const auto plane_format = is_nv12_chroma_plane ? gfx::BufferFormat::RG_88
                                                    : gfx::BufferFormat::R_8;
-    scoped_refptr<gl::GLImage> plane_image;
-    if (external_image_factory_for_testing_) {
-      plane_image =
-          external_image_factory_for_testing_->CreateImageForGpuMemoryBuffer(
-              std::move(plane_handle), plane_size, plane_format,
-              -1 /* client_id */, kNullSurfaceHandle);
-    } else {
-      auto plane_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-          plane_size, plane_format,
-          std::move(plane_handle.native_pixmap_handle));
-      auto plane_image_native_pixmap =
-          base::MakeRefCounted<gl::GLImageNativePixmap>(plane_size,
-                                                        plane_format);
-      if (plane_image_native_pixmap->Initialize(plane_pixmap))
-        plane_image = std::move(plane_image_native_pixmap);
-    }
-    if (!plane_image) {
-      DLOG(ERROR) << "Could not create GL image";
-      return;
-    }
-    resource->gl_image = std::move(plane_image);
-    if (!resource->gl_image->BindTexImage(GL_TEXTURE_EXTERNAL_OES)) {
-      DLOG(ERROR) << "Could not bind GL image to texture";
+
+    // NOTE: The SurfaceHandle would typically be used to know what gpu adapter
+    // the buffer belongs to, but here we already have the buffer handle, so it
+    // should be OK to pass a null SurfaceHandle (it's not clear what
+    // SurfaceHandle was used to create the original buffers).
+    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    if (!channel_->shared_image_stub()->CreateSharedImage(
+            mailbox, channel_->client_id(), std::move(plane_handle),
+            plane_format, gfx::BufferPlane::DEFAULT, kNullSurfaceHandle,
+            plane_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+            kOpaque_SkAlphaType,
+            SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION)) {
+      DLOG(ERROR) << "Could not create SharedImage";
       return;
     }
 
-    // Notify Skia that we have changed the driver's GL state outside of Skia.
-    shared_context_state->PessimisticallyResetGrContext();
+    // Create the SkiaRepresentation::ScopedReadAccess from the SharedImage.
+    // There is a need to be careful here as the SkiaRepresentation can outlive
+    // the channel: the representation is effectively owned by the transfer
+    // cache, which is owned by SharedContextState, which is destroyed by
+    // GpuChannelManager *after* GpuChannelManager destroys the channels. Hence,
+    // we cannot supply the channel's SharedImageStub as a MemoryTracker to
+    // create a SharedImageRepresentationFactory here (the factory creates a
+    // MemoryTypeTracker instance backed by that MemoryTracker that needs to
+    // outlive the representation). Instead, we create the Skia representation
+    // directly using the SharedContextState's MemoryTypeTracker instance.
+    auto skia_representation =
+        channel_->gpu_channel_manager()->shared_image_manager()->ProduceSkia(
+            mailbox, shared_context_state->memory_type_tracker(),
+            shared_context_state);
 
-    // Create a SkImage using the texture.
-    const GrBackendTexture plane_backend_texture(
-        plane_size.width(), plane_size.height(), GrMipMapped::kNo,
-        GrGLTextureInfo{GL_TEXTURE_EXTERNAL_OES, resource->texture,
-                        is_nv12_chroma_plane ? GL_RG8_EXT : GL_R8_EXT});
-    plane_sk_images[plane] = SkImage::MakeFromTexture(
-        shared_context_state->gr_context(), plane_backend_texture,
-        kTopLeft_GrSurfaceOrigin,
-        is_nv12_chroma_plane ? kR8G8_unorm_SkColorType : kAlpha_8_SkColorType,
-        kOpaque_SkAlphaType, nullptr /* colorSpace */, CleanUpResource,
-        resource);
+    // Note that per the above reasoning, we have to make sure that the factory
+    // representation doesn't outlive the channel (since it *was* created via
+    // the channel). We can destroy it now that the skia representation is
+    // alive.
+    channel_->shared_image_stub()->factory()->DestroySharedImage(mailbox);
+
+    std::vector<GrBackendSemaphore> begin_semaphores;
+    std::vector<GrBackendSemaphore> end_semaphores;
+    auto skia_scoped_access = skia_representation->BeginScopedReadAccess(
+        &begin_semaphores, &end_semaphores);
+
+    if (!skia_scoped_access) {
+      DLOG(ERROR) << "Could not get scoped access to SkiaImageRepresentation";
+      return;
+    }
+
+    // As this SharedImage has just been created, there should not be any
+    // semaphores.
+    DCHECK(begin_semaphores.empty());
+    DCHECK(end_semaphores.empty());
+
+    // Create the SkImage, handing over lifetime management of the
+    // skia image representation and scoped access.
+    CleanUpContext* resource = new CleanUpContext{};
+    resource->main_task_runner = channel_->task_runner();
+    resource->shared_context_state = shared_context_state.get();
+    resource->skia_representation = std::move(skia_representation);
+    resource->skia_scoped_access = std::move(skia_scoped_access);
+
+    plane_sk_images[plane] = resource->skia_scoped_access->CreateSkImage(
+        shared_context_state->gr_context(), CleanUpResource, resource);
     if (!plane_sk_images[plane]) {
       DLOG(ERROR) << "Could not create planar SkImage";
       return;
     }
-    // No need for us to call the resource cleaner. Skia should do that.
-    resource_cleaner.Release().Reset();
   }
 
   // Insert the cache entry in the transfer cache. Note that this section
@@ -401,7 +394,7 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
 
   {
     auto* gr_shader_cache = channel_->gpu_channel_manager()->gr_shader_cache();
-    base::Optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+    absl::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (gr_shader_cache)
       cache_use.emplace(gr_shader_cache,
                         base::strict_cast<int32_t>(channel_->client_id()));

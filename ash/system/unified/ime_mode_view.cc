@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,8 +24,8 @@ ImeModeView::ImeModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateLabel();
   SetupLabelForTray(label());
   Update();
-  SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
-                                     kUnifiedTrayTextRightPadding));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kUnifiedTrayTextTopPadding, 0, 0, kUnifiedTrayTextRightPadding)));
 
   Shell::Get()->system_tray_notifier()->AddIMEObserver(this);
   Shell::Get()->system_tray_model()->locale()->AddObserver(this);
@@ -72,6 +72,12 @@ void ImeModeView::HandleLocaleChange() {
   Update();
 }
 
+void ImeModeView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  label()->SetEnabledColor(
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+}
+
 void ImeModeView::Update() {
   // Hide the IME mode icon when the locale is shown, because showing locale and
   // IME together is confusing.
@@ -92,7 +98,12 @@ void ImeModeView::Update() {
 
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
 
-  size_t ime_count = ime_controller->available_imes().size();
+  if (!ime_controller->IsCurrentImeVisible()) {
+    SetVisible(false);
+    return;
+  }
+
+  size_t ime_count = ime_controller->GetVisibleImes().size();
   SetVisible(!ime_menu_on_shelf_activated_ &&
              (ime_count > 1 || ime_controller->managed_by_policy()));
 

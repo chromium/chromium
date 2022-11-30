@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 
 using content::BrowserThread;
 
@@ -36,82 +36,83 @@ const int kDefaultTiltSpeed = 0x14 / 2;
 
 // Reset the address of each device in the VISCA chain (broadcast). This is used
 // when resetting the VISCA network.
-const char kSetAddressCommand[] = {0x88, 0x30, 0x01, 0xFF};
+const uint8_t kSetAddressCommand[] = {0x88, 0x30, 0x01, 0xFF};
 
 // Clear all of the devices, halting any pending commands in the VISCA chain
 // (broadcast). This is used when resetting the VISCA network.
-const char kClearAllCommand[] = {0x88, 0x01, 0x00, 0x01, 0xFF};
+const uint8_t kClearAllCommand[] = {0x88, 0x01, 0x00, 0x01, 0xFF};
 
 // Command: {0x8X, 0x09, 0x06, 0x12, 0xFF}, X = 1 to 7: target device address.
 // Response: {0xY0, 0x50, 0x0p, 0x0q, 0x0r, 0x0s, 0x0t, 0x0u, 0x0v, 0x0w, 0xFF},
 // Y = socket number; pqrs: pan position; tuvw: tilt position.
-const char kGetPanTiltCommand[] = {0x81, 0x09, 0x06, 0x12, 0xFF};
+const uint8_t kGetPanTiltCommand[] = {0x81, 0x09, 0x06, 0x12, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x02, 0x0p, 0x0t, 0x0q, 0x0r, 0x0s, 0x0u, 0x0v,
 // 0x0w, 0x0y, 0x0z, 0xFF}, X = 1 to 7: target device address; p = pan speed;
 // t = tilt speed; qrsu = pan position; vwyz = tilt position.
-const char kSetPanTiltCommand[] = {0x81, 0x01, 0x06, 0x02, 0x00,
-                                   0x00, 0x00, 0x00, 0x00, 0x00,
-                                   0x00, 0x00, 0x00, 0x00, 0xFF};
+const uint8_t kSetPanTiltCommand[] = {0x81, 0x01, 0x06, 0x02, 0x00,
+                                      0x00, 0x00, 0x00, 0x00, 0x00,
+                                      0x00, 0x00, 0x00, 0x00, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x05, 0xFF}, X = 1 to 7: target device address.
-const char kResetPanTiltCommand[] = {0x81, 0x01, 0x06, 0x05, 0xFF};
+const uint8_t kResetPanTiltCommand[] = {0x81, 0x01, 0x06, 0x05, 0xFF};
 
 // Command: {0x8X, 0x09, 0x04, 0x47, 0xFF}, X = 1 to 7: target device address.
 // Response: {0xY0, 0x50, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, Y = socket number;
 // pqrs: zoom position.
-const char kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
+const uint8_t kGetZoomCommand[] = {0x81, 0x09, 0x04, 0x47, 0xFF};
 
 // Command: {0x8X, 0x01, 0x04, 0x47, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, X = 1 to 7:
 // target device address; pqrs: zoom position;
-const char kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x00,
-                                0x00, 0x00, 0x00, 0xFF};
+const uint8_t kSetZoomCommand[] = {0x81, 0x01, 0x04, 0x47, 0x00,
+                                   0x00, 0x00, 0x00, 0xFF};
 
 // Command: {0x8X, 0x01, 0x04, 0x38, 0x02, 0xFF}, X = 1 to 7: target device
 // address.
-const char kSetAutoFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x02, 0xFF};
+const uint8_t kSetAutoFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x02, 0xFF};
 
 // Command: {0x8X, 0x01, 0x04, 0x38, 0x03, 0xFF}, X = 1 to 7: target device
 // address.
-const char kSetManualFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x03, 0xFF};
+const uint8_t kSetManualFocusCommand[] = {0x81, 0x01, 0x04, 0x38, 0x03, 0xFF};
 
 // Command: {0x8X, 0x09, 0x04, 0x48, 0xFF}, X = 1 to 7: target device address.
 // Response: {0xY0, 0x50, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, Y = socket number;
 // pqrs: focus position.
-const char kGetFocusCommand[] = {0x81, 0x09, 0x04, 0x48, 0xFF};
+const uint8_t kGetFocusCommand[] = {0x81, 0x09, 0x04, 0x48, 0xFF};
 
 // Command: {0x8X, 0x01, 0x04, 0x48, 0x0p, 0x0q, 0x0r, 0x0s, 0xFF}, X = 1 to 7:
 // target device address; pqrs: focus position;
-const char kSetFocusCommand[] = {0x81, 0x01, 0x04, 0x48, 0x00,
-                                 0x00, 0x00, 0x00, 0xFF};
+const uint8_t kSetFocusCommand[] = {0x81, 0x01, 0x04, 0x48, 0x00,
+                                    0x00, 0x00, 0x00, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x0p, 0x0t, 0x03, 0x01, 0xFF}, X = 1 to 7:
 // target device address; p: pan speed; t: tilt speed.
-const char kPTUpCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
-                             0x00, 0x03, 0x01, 0xFF};
+const uint8_t kPTUpCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
+                                0x00, 0x03, 0x01, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x0p, 0x0t, 0x03, 0x02, 0xFF}, X = 1 to 7:
 // target device address; p: pan speed; t: tilt speed.
-const char kPTDownCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
-                               0x00, 0x03, 0x02, 0xFF};
+const uint8_t kPTDownCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
+                                  0x00, 0x03, 0x02, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x0p, 0x0t, 0x0, 0x03, 0xFF}, X = 1 to 7:
 // target device address; p: pan speed; t: tilt speed.
-const char kPTLeftCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
-                               0x00, 0x01, 0x03, 0xFF};
+const uint8_t kPTLeftCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
+                                  0x00, 0x01, 0x03, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x0p, 0x0t, 0x02, 0x03, 0xFF}, X = 1 to 7:
 // target device address; p: pan speed; t: tilt speed.
-const char kPTRightCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
-                                0x00, 0x02, 0x03, 0xFF};
+const uint8_t kPTRightCommand[] = {0x81, 0x01, 0x06, 0x01, 0x00,
+                                   0x00, 0x02, 0x03, 0xFF};
 
 // Command: {0x8X, 0x01, 0x06, 0x01, 0x03, 0x03, 0x03, 0x03, 0xFF}, X = 1 to 7:
 // target device address.
-const char kPTStopCommand[] = {0x81, 0x01, 0x06, 0x01, 0x03,
-                               0x03, 0x03, 0x03, 0xFF};
+const uint8_t kPTStopCommand[] = {0x81, 0x01, 0x06, 0x01, 0x03,
+                                  0x03, 0x03, 0x03, 0xFF};
 
-#define CHAR_VECTOR_FROM_ARRAY(array) \
-  std::vector<char>(array, array + base::size(array))
+#define CHAR_VECTOR_FROM_ARRAY(array)                     \
+  std::vector<char>(reinterpret_cast<const char*>(array), \
+                    reinterpret_cast<const char*>(array + std::size(array)))
 
 int ShiftResponseLowerBits(char c, size_t shift) {
   return static_cast<int>(c & 0x0F) << shift;
@@ -164,13 +165,13 @@ void ViscaWebcam::Open(const std::string& extension_id,
   api::serial::ConnectionOptions options;
 
   // Set the receive buffer size to receive the response data 1 by 1.
-  options.buffer_size.reset(new int(1));
-  options.persistent.reset(new bool(false));
-  options.bitrate.reset(new int(9600));
-  options.cts_flow_control.reset(new bool(false));
+  options.buffer_size = 1;
+  options.persistent = false;
+  options.bitrate = 9600;
+  options.cts_flow_control = false;
   // Enable send and receive timeout error.
-  options.receive_timeout.reset(new int(3000));
-  options.send_timeout.reset(new int(3000));
+  options.receive_timeout = 3000;
+  options.send_timeout = 3000;
   options.data_bits = api::serial::DATA_BITS_EIGHT;
   options.parity_bit = api::serial::PARITY_BIT_NO;
   options.stop_bits = api::serial::STOP_BITS_ONE;
@@ -190,8 +191,8 @@ void ViscaWebcam::OnConnected(const OpenCompleteCallback& open_callback,
   }
 
   Send(CHAR_VECTOR_FROM_ARRAY(kSetAddressCommand),
-       base::Bind(&ViscaWebcam::OnAddressSetCompleted, base::Unretained(this),
-                  open_callback));
+       base::BindRepeating(&ViscaWebcam::OnAddressSetCompleted,
+                           base::Unretained(this), open_callback));
 }
 
 void ViscaWebcam::OnAddressSetCompleted(
@@ -205,8 +206,8 @@ void ViscaWebcam::OnAddressSetCompleted(
   }
 
   Send(CHAR_VECTOR_FROM_ARRAY(kClearAllCommand),
-       base::Bind(&ViscaWebcam::OnClearAllCompleted, base::Unretained(this),
-                  open_callback));
+       base::BindRepeating(&ViscaWebcam::OnClearAllCompleted,
+                           base::Unretained(this), open_callback));
 }
 
 void ViscaWebcam::OnClearAllCompleted(const OpenCompleteCallback& open_callback,
@@ -358,26 +359,26 @@ void ViscaWebcam::ProcessNextCommand() {
 
 void ViscaWebcam::GetPan(const GetPTZCompleteCallback& callback) {
   Send(CHAR_VECTOR_FROM_ARRAY(kGetPanTiltCommand),
-       base::Bind(&ViscaWebcam::OnInquiryCompleted, base::Unretained(this),
-                  INQUIRY_PAN, callback));
+       base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
+                           base::Unretained(this), INQUIRY_PAN, callback));
 }
 
 void ViscaWebcam::GetTilt(const GetPTZCompleteCallback& callback) {
   Send(CHAR_VECTOR_FROM_ARRAY(kGetPanTiltCommand),
-       base::Bind(&ViscaWebcam::OnInquiryCompleted, base::Unretained(this),
-                  INQUIRY_TILT, callback));
+       base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
+                           base::Unretained(this), INQUIRY_TILT, callback));
 }
 
 void ViscaWebcam::GetZoom(const GetPTZCompleteCallback& callback) {
   Send(CHAR_VECTOR_FROM_ARRAY(kGetZoomCommand),
-       base::Bind(&ViscaWebcam::OnInquiryCompleted, base::Unretained(this),
-                  INQUIRY_ZOOM, callback));
+       base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
+                           base::Unretained(this), INQUIRY_ZOOM, callback));
 }
 
 void ViscaWebcam::GetFocus(const GetPTZCompleteCallback& callback) {
   Send(CHAR_VECTOR_FROM_ARRAY(kGetFocusCommand),
-       base::Bind(&ViscaWebcam::OnInquiryCompleted, base::Unretained(this),
-                  INQUIRY_FOCUS, callback));
+       base::BindRepeating(&ViscaWebcam::OnInquiryCompleted,
+                           base::Unretained(this), INQUIRY_FOCUS, callback));
 }
 
 void ViscaWebcam::SetPan(int value,
@@ -392,8 +393,8 @@ void ViscaWebcam::SetPan(int value,
   command[5] |= kDefaultTiltSpeed;
   ResponseToCommand(&command, 6, static_cast<uint16_t>(pan_));
   ResponseToCommand(&command, 10, static_cast<uint16_t>(tilt_));
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetTilt(int value,
@@ -408,24 +409,24 @@ void ViscaWebcam::SetTilt(int value,
   command[5] |= actual_tilt_speed;
   ResponseToCommand(&command, 6, static_cast<uint16_t>(pan_));
   ResponseToCommand(&command, 10, static_cast<uint16_t>(tilt_));
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetZoom(int value, const SetPTZCompleteCallback& callback) {
   int actual_value = std::max(value, 0);
   std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetZoomCommand);
   ResponseToCommand(&command, 4, actual_value);
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetFocus(int value, const SetPTZCompleteCallback& callback) {
   int actual_value = std::max(value, 0);
   std::vector<char> command = CHAR_VECTOR_FROM_ARRAY(kSetFocusCommand);
   ResponseToCommand(&command, 4, actual_value);
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetAutofocusState(AutofocusState state,
@@ -436,8 +437,8 @@ void ViscaWebcam::SetAutofocusState(AutofocusState state,
   } else {
     command = CHAR_VECTOR_FROM_ARRAY(kSetManualFocusCommand);
   }
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetPanDirection(PanDirection direction,
@@ -460,8 +461,8 @@ void ViscaWebcam::SetPanDirection(PanDirection direction,
       command[5] |= kDefaultTiltSpeed;
       break;
   }
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::SetTiltDirection(TiltDirection direction,
@@ -484,8 +485,8 @@ void ViscaWebcam::SetTiltDirection(TiltDirection direction,
       command[5] |= actual_tilt_speed;
       break;
   }
-  Send(command, base::Bind(&ViscaWebcam::OnCommandCompleted,
-                           base::Unretained(this), callback));
+  Send(command, base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                                    base::Unretained(this), callback));
 }
 
 void ViscaWebcam::Reset(bool pan,
@@ -495,8 +496,8 @@ void ViscaWebcam::Reset(bool pan,
   // pan and tilt are always reset together in Visca Webcams.
   if (pan || tilt) {
     Send(CHAR_VECTOR_FROM_ARRAY(kResetPanTiltCommand),
-         base::Bind(&ViscaWebcam::OnCommandCompleted, base::Unretained(this),
-                    callback));
+         base::BindRepeating(&ViscaWebcam::OnCommandCompleted,
+                             base::Unretained(this), callback));
   }
   if (zoom) {
     // Set the default zoom value to 100 to be consistent with V4l2 webcam.

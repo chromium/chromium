@@ -1,0 +1,30 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Media App is ash-chrome only")
+
+# Note we compile with reportUnknownTypes while it works, but if dependencies
+# get more complex, we should remove it and only enable in developer builds.
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + [
+                    "jscomp_error=strictCheckTypes",
+                    "jscomp_error=reportUnknownTypes",
+                    "language_in=ECMASCRIPT_2018",
+                  ]
+  deps = [
+    ":app_main",
+    ":mock_module",
+  ]
+}
+
+js_library("app_main") {
+  externs_list =
+      [ "//ash/webui/media_app_ui/resources/js/media_app.externs.js" ]
+}
+
+js_library("mock_module") {
+}

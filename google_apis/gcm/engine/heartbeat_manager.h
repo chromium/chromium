@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/time/time.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
@@ -40,6 +40,10 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner>
           maybe_power_wrapped_io_task_runner);
+
+  HeartbeatManager(const HeartbeatManager&) = delete;
+  HeartbeatManager& operator=(const HeartbeatManager&) = delete;
+
   ~HeartbeatManager() override;
 
   // Start the heartbeat logic.
@@ -137,8 +141,6 @@ class GCM_EXPORT HeartbeatManager : public base::PowerSuspendObserver {
   ReconnectCallback trigger_reconnect_callback_;
 
   base::WeakPtrFactory<HeartbeatManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatManager);
 };
 
 }  // namespace gcm

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 #include <utility>
+
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,10 +31,14 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 namespace service_worker_new_script_loader_unittest {
@@ -102,13 +108,13 @@ class MockNetwork {
     if (response.has_certificate_error) {
       response_head->cert_status = response.cert_status;
     }
+    response_head->parsed_headers = network::mojom::ParsedHeaders::New();
 
     mojo::Remote<network::mojom::URLLoaderClient>& client = params->client;
     if (response_head->headers->response_code() == 307) {
       client->OnReceiveRedirect(net::RedirectInfo(), std::move(response_head));
       return true;
     }
-    client->OnReceiveResponse(std::move(response_head));
 
     uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
@@ -117,7 +123,8 @@ class MockNetwork {
     MojoResult result = producer->WriteData(
         response.body.data(), &bytes_written, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     CHECK_EQ(MOJO_RESULT_OK, result);
-    client->OnStartLoadingResponseBody(std::move(consumer));
+    client->OnReceiveResponse(std::move(response_head), std::move(consumer),
+                              absl::nullopt);
 
     network::URLLoaderCompletionStatus status;
     status.error_code = net::OK;
@@ -127,7 +134,7 @@ class MockNetwork {
 
  private:
   // |mock_server_| is owned by ServiceWorkerNewScriptLoaderTest.
-  MockHTTPServer* const mock_server_;
+  const raw_ptr<MockHTTPServer> mock_server_;
 
   // The most recent request received.
   network::ResourceRequest last_request_;
@@ -171,13 +178,16 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
   void SetUpRegistration(const GURL& script_url) {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = script_url.GetWithoutFilename();
-    SetUpRegistrationWithOptions(script_url, options);
+    SetUpRegistrationWithOptions(
+        script_url, options,
+        blink::StorageKey(url::Origin::Create(options.scope)));
   }
   void SetUpRegistrationWithOptions(
       const GURL& script_url,
-      blink::mojom::ServiceWorkerRegistrationOptions options) {
+      blink::mojom::ServiceWorkerRegistrationOptions options,
+      const blink::StorageKey& key) {
     registration_ =
-        CreateNewServiceWorkerRegistration(context()->registry(), options);
+        CreateNewServiceWorkerRegistration(context()->registry(), options, key);
     SetUpVersion(script_url);
   }
 
@@ -185,8 +195,8 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
   // |version_| to null (as subsequent DoRequest() calls should not attempt to
   // install or update |version_|).
   void ActivateVersion() {
-    version_->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+    version_->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNoHandler);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
     version_ = nullptr;
@@ -221,12 +231,17 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
             ? network::mojom::RequestDestination::kServiceWorker
             : network::mojom::RequestDestination::kScript;
 
+    request.mode = (url == version_->script_url())
+                       ? network::mojom::RequestMode::kSameOrigin
+                       : network::mojom::RequestMode::kNoCors;
+
     *out_client = std::make_unique<network::TestURLLoaderClient>();
     *out_loader = ServiceWorkerNewScriptLoader::CreateAndStart(
         request_id, options, request, (*out_client)->CreateRemote(), version_,
         helper_->url_loader_factory_getter()->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        resource_id);
+        resource_id, /*is_throttle_needed=*/false,
+        /*requesting_frame_id=*/GlobalRenderFrameHostId());
   }
 
   // Returns false if the entry for |url| doesn't exist in the storage.
@@ -447,47 +462,6 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_NoMimeType) {
   histogram_tester.ExpectTotalCount(kHistogramWriteResponseResult, 0);
 }
 
-class ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced
-    : public ServiceWorkerNewScriptLoaderTest {
- public:
-  ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced() {
-    feature_list_.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that service workers fail to load over a connection with legacy TLS.
-TEST_F(ServiceWorkerNewScriptLoaderTestWithLegacyTLSEnforced, Error_LegacyTLS) {
-  base::HistogramTester histogram_tester;
-
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::unique_ptr<ServiceWorkerNewScriptLoader> loader;
-
-  // Serve a response with a certificate error.
-  const GURL kScriptURL("https://example.com/certificate-error.js");
-  MockHTTPServer::Response response(std::string("HTTP/1.1 200 OK\n\n"),
-                                    std::string("body"));
-  response.has_certificate_error = true;
-  response.cert_status = net::CERT_STATUS_LEGACY_TLS;
-  mock_server_.Set(kScriptURL, response);
-  SetUpRegistration(kScriptURL);
-  DoRequest(kScriptURL, &client, &loader);
-  client->RunUntilComplete();
-
-  // The request should be failed because of the response with the legacy TLS
-  // error.
-  EXPECT_EQ(net::ERR_SSL_OBSOLETE_VERSION,
-            client->completion_status().error_code);
-  EXPECT_FALSE(client->has_received_response());
-
-  // The response shouldn't be stored in the storage.
-  EXPECT_FALSE(VerifyStoredResponse(kScriptURL));
-  // No sample should be recorded since a write didn't occur.
-  histogram_tester.ExpectTotalCount(kHistogramWriteResponseResult, 0);
-}
-
 TEST_F(ServiceWorkerNewScriptLoaderTest, Error_BadMimeType) {
   base::HistogramTester histogram_tester;
 
@@ -524,6 +498,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
   // Service-Worker-Allowed header allows it.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   mock_server_.Set(kScriptURL,
                    MockHTTPServer::Response(
                        std::string("HTTP/1.1 200 OK\n"
@@ -532,7 +507,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
                        std::string("٩( ’ω’ )و I'm body!")));
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
-  SetUpRegistrationWithOptions(kScriptURL, options);
+  SetUpRegistrationWithOptions(kScriptURL, options, kKey);
   DoRequest(kScriptURL, &client, &loader);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
@@ -552,6 +527,46 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Success_PathRestriction) {
                                       ServiceWorkerMetrics::WRITE_OK, 2);
 }
 
+TEST_F(ServiceWorkerNewScriptLoaderTest,
+       Fail_ModuleServiceWorker_PathRestriction) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::unique_ptr<ServiceWorkerNewScriptLoader> loader;
+
+  // |kScope| is not under the default scope ("/out-of-scope/"), but the
+  // Service-Worker-Allowed header allows it.
+  const GURL kImportedScriptURL(kNormalImportedScriptURL);
+  const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  mock_server_.Set(
+      kImportedScriptURL,
+      MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"
+                                           "Content-Type: text/javascript\n\n"),
+                               std::string("٩( ’ω’ )و I'm body!")));
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = kScope;
+  options.type = blink::mojom::ScriptType::kModule;
+  SetUpRegistrationWithOptions(kImportedScriptURL, options, kKey);
+  DoRequest(kImportedScriptURL, &client, &loader);
+  client->RunUntilComplete();
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+
+  // The client should have received the response.
+  EXPECT_TRUE(client->has_received_response());
+  EXPECT_TRUE(client->response_body().is_valid());
+  std::string response;
+  EXPECT_TRUE(
+      mojo::BlockingCopyToString(client->response_body_release(), &response));
+  EXPECT_EQ(mock_server_.Get(kImportedScriptURL).body, response);
+
+  // WRITE_OK should be recorded once plus one as we record a single write
+  // success and the end of the body.
+  EXPECT_TRUE(VerifyStoredResponse(kImportedScriptURL));
+  histogram_tester.ExpectUniqueSample(kHistogramWriteResponseResult,
+                                      ServiceWorkerMetrics::WRITE_OK, 2);
+}
+
 TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
   base::HistogramTester histogram_tester;
 
@@ -562,6 +577,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
   // Service-Worker-Allowed header is not specified.
   const GURL kScriptURL("https://example.com/out-of-scope/normal.js");
   const GURL kScope("https://example.com/in-scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
   mock_server_.Set(
       kScriptURL,
       MockHTTPServer::Response(std::string("HTTP/1.1 200 OK\n"
@@ -569,7 +585,7 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_PathRestriction) {
                                std::string()));
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = kScope;
-  SetUpRegistrationWithOptions(kScriptURL, options);
+  SetUpRegistrationWithOptions(kScriptURL, options, kKey);
   DoRequest(kScriptURL, &client, &loader);
   client->RunUntilComplete();
 

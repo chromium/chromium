@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/fake_remote_frame.h"
 
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
 namespace content {
@@ -12,11 +13,9 @@ FakeRemoteFrame::FakeRemoteFrame() = default;
 
 FakeRemoteFrame::~FakeRemoteFrame() = default;
 
-void FakeRemoteFrame::Init(blink::AssociatedInterfaceProvider* provider) {
-  provider->OverrideBinderForTesting(
-      blink::mojom::RemoteFrame::Name_,
-      base::BindRepeating(&FakeRemoteFrame::BindFrameHostReceiver,
-                          base::Unretained(this)));
+void FakeRemoteFrame::Init(
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void FakeRemoteFrame::WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) {}
@@ -34,8 +33,7 @@ void FakeRemoteFrame::SetReplicatedOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {}
 
-void FakeRemoteFrame::SetReplicatedAdFrameType(
-    blink::mojom::AdFrameType ad_frame_type) {}
+void FakeRemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {}
 
 void FakeRemoteFrame::SetReplicatedName(const std::string& name,
                                         const std::string& unique_name) {}
@@ -65,11 +63,15 @@ void FakeRemoteFrame::SetPageFocus(bool is_focused) {}
 
 void FakeRemoteFrame::RenderFallbackContent() {}
 
+void FakeRemoteFrame::RenderFallbackContentWithResourceTiming(
+    blink::mojom::ResourceTimingInfoPtr,
+    const std::string& server_timing_value) {}
+
 void FakeRemoteFrame::AddResourceTimingFromChild(
     blink::mojom::ResourceTimingInfoPtr timing) {}
 
 void FakeRemoteFrame::ScrollRectToVisible(
-    const gfx::Rect& rect,
+    const gfx::RectF& rect,
     blink::mojom::ScrollIntoViewParamsPtr params) {}
 
 void FakeRemoteFrame::DidStartLoading() {}
@@ -80,13 +82,7 @@ void FakeRemoteFrame::IntrinsicSizingInfoOfChildChanged(
     blink::mojom::IntrinsicSizingInfoPtr sizing_info) {}
 
 void FakeRemoteFrame::UpdateOpener(
-    const base::Optional<blink::FrameToken>& opener_frame_token) {}
-
-void FakeRemoteFrame::FakeRemoteFrame::BindFrameHostReceiver(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>(
-      std::move(handle)));
-}
+    const absl::optional<blink::FrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrame::DetachAndDispose() {}
 
@@ -101,4 +97,14 @@ void FakeRemoteFrame::DidUpdateVisualProperties(
 void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
 
 void FakeRemoteFrame::ChildProcessGone() {}
+
+void FakeRemoteFrame::CreateRemoteChild(
+    const blink::RemoteFrameToken& token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
+    blink::mojom::TreeScopeType tree_scope_type,
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
+    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
+}
+
 }  // namespace content

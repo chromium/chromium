@@ -7,7 +7,7 @@ Running: testChangeCharacterData
 Replacing 'Getting involved' with 'Getting not involved'
 
 Wrapper identity: identity
-Event Symbol(CharacterDataModified): #text
+Event CharacterDataModified: #text
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -19,7 +19,7 @@ Event Symbol(CharacterDataModified): #text
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(CharacterDataModified): #text
+Event CharacterDataModified: #text
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -36,9 +36,9 @@ Running: testChangeAttributes
 Replacing '<a href' with '<a foo="bar" href'
 
 Wrapper identity: identity
-Event Symbol(AttrModified): A
-Event Symbol(AttrModified): A
-Event Symbol(AttrRemoved): A
+Event AttrModified: A
+Event AttrModified: A
+Event AttrRemoved: A
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a foo="bar" href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -50,9 +50,9 @@ Event Symbol(AttrRemoved): A
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(AttrModified): A
-Event Symbol(AttrRemoved): A
-Event Symbol(AttrRemoved): A
+Event AttrModified: A
+Event AttrRemoved: A
+Event AttrRemoved: A
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -69,7 +69,7 @@ Running: testRemoveLastChild
 Replacing 'Getting involved' with ''
 
 Wrapper identity: identity
-Event Symbol(NodeRemoved): #text
+Event NodeRemoved: #text
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -81,7 +81,7 @@ Event Symbol(NodeRemoved): #text
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): #text
+Event NodeInserted: #text
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -98,9 +98,9 @@ Running: testSplitNode
 Replacing 'Getting involved' with 'Getting</h2><h2>involved'
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H2
+Event NodeInserted: H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -112,9 +112,9 @@ Event Symbol(NodeRemoved): H2
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H2
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H2
+Event NodeRemoved: H2
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -131,8 +131,8 @@ Running: testChangeNodeName
 Replacing '<h2>Getting involved</h2>' with '<h3>Getting involved</h3>'
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H3
-Event Symbol(NodeRemoved): H2
+Event NodeInserted: H3
+Event NodeRemoved: H2
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>
@@ -144,8 +144,8 @@ Event Symbol(NodeRemoved): H2
 Bringing things back
 
 Wrapper identity: identity
-Event Symbol(NodeInserted): H2
-Event Symbol(NodeRemoved): H3
+Event NodeInserted: H2
+Event NodeRemoved: H3
 ==========8<==========
 <div id="container" style="display:none">
       <p>WebKit is used by <a href="http://www.apple.com/safari/">Safari</a>, Dashboard, etc..</p>

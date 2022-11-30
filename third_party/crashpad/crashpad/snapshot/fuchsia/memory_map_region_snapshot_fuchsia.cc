@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
 
 #include "snapshot/fuchsia/memory_map_region_snapshot_fuchsia.h"
 
+#include <iterator>
+
 #include "base/check_op.h"
-#include "base/stl_util.h"
 
 namespace crashpad {
 namespace internal {
@@ -50,7 +51,7 @@ uint32_t MmuFlagsToProtectFlags(zx_vm_option_t flags) {
 
   const uint32_t index =
       flags & (ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE);
-  DCHECK_LT(index, base::size(mapping));
+  DCHECK_LT(index, std::size(mapping));
 
   const uint32_t protect_flags = mapping[index];
   DCHECK_NE(protect_flags, 0u);

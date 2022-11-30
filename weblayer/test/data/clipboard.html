@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Clipboard API helper page</title>
+    <script>
+      function tryClipboardReadText() {
+        navigator.clipboard.readText()
+          .then(() => document.title = 'success')
+          .catch(() => document.title = 'fail');
+      }
+      function tryClipboardWriteText() {
+        navigator.clipboard.writeText('test')
+          .then(() => document.title = 'success')
+          .catch(() => document.title = 'fail');
+      }
+    </script>
+  </head>
+</html>

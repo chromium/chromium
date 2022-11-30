@@ -1,0 +1,22 @@
+<groups>
+  <group name="Group A">
+  <sender name="Foobar Component">
+    <annotation id="foobar_policy_fetcher"/>
+    <annotation id="foobar_info_fetcher"/>
+  </sender>
+  <sender name="Fizzbuzz Component">
+    <annotation id="fizzbuzz_handle_front_end_messages"/>
+    <annotation id="fizzbuzz_hard_coded_data_source"/>
+    <annotation id="fizzbuzz_http_handler"/>
+  </sender>
+  </group>
+  <group name="Group B">
+  <sender name="Widget Component">
+    <annotation id="widget_grabber"/>
+  </sender>
+  </group>
+  <group name="Unsorted">
+    <sender name="Recently Added">
+    </sender>
+  </group>
+</groups>

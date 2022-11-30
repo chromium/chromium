@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@ ChromeClientConnectionManager::ChromeClientConnectionManager(
 
 bool ChromeClientConnectionManager::AllowedToProfileRenderer(
     content::RenderProcessHost* host) {
-  return Profile::FromBrowserContext(host->GetBrowserContext())
-      ->IsRegularProfile();
+  return !host->GetBrowserContext()->IsOffTheRecord();
 }
 
 }  // namespace heap_profiling

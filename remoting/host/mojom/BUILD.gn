@@ -1,0 +1,186 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "chromoting_host_services.mojom",
+    "desktop_session.mojom",
+    "keyboard_layout.mojom",
+    "remote_security_key.mojom",
+    "remote_support.mojom",
+    "remote_url_opener.mojom",
+    "remoting_host.mojom",
+    "testing.mojom",
+    "webauthn_proxy.mojom",
+    "webrtc_types.mojom",
+    "wrapped_primitives.mojom",
+  ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_ip_address",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "remoting.mojom.AudioPacket"
+          cpp = "::std::unique_ptr<::remoting::AudioPacket>"
+          move_only = true
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.BytesPerSample"
+          cpp = "::remoting::AudioPacket::BytesPerSample"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.Channels"
+          cpp = "::remoting::AudioPacket::Channels"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.Encoding"
+          cpp = "::remoting::AudioPacket::Encoding"
+        },
+        {
+          mojom = "remoting.mojom.AudioPacket.SamplingRate"
+          cpp = "::remoting::AudioPacket::SamplingRate"
+        },
+        {
+          mojom = "remoting.mojom.ClipboardEvent"
+          cpp = "::remoting::protocol::ClipboardEvent"
+        },
+        {
+          mojom = "remoting.mojom.DesktopCaptureOptions"
+          cpp = "::webrtc::DesktopCaptureOptions"
+        },
+        {
+          mojom = "remoting.mojom.DesktopCaptureResult"
+          cpp = "::webrtc::DesktopCapturer::Result"
+        },
+        {
+          mojom = "remoting.mojom.DesktopEnvironmentOptions"
+          cpp = "::remoting::DesktopEnvironmentOptions"
+        },
+        {
+          mojom = "remoting.mojom.DesktopRect"
+          cpp = "::webrtc::DesktopRect"
+        },
+        {
+          mojom = "remoting.mojom.DesktopSize"
+          cpp = "::webrtc::DesktopSize"
+        },
+        {
+          mojom = "remoting.mojom.DesktopVector"
+          cpp = "::webrtc::DesktopVector"
+        },
+        {
+          mojom = "remoting.mojom.FileChooserResult"
+          cpp = "::remoting::Result<base::FilePath, ::remoting::protocol::FileTransfer_Error>"
+        },
+        {
+          mojom = "remoting.mojom.FileTransferError"
+          cpp = "::remoting::protocol::FileTransfer_Error"
+        },
+        {
+          mojom = "remoting.mojom.FileTransferError.Type"
+          cpp = "::remoting::protocol::FileTransfer_Error_Type"
+        },
+        {
+          mojom = "remoting.mojom.KeyboardLayout"
+          cpp = "::remoting::protocol::KeyboardLayout"
+        },
+        {
+          mojom = "remoting.mojom.KeyAction"
+          cpp = "::remoting::protocol::KeyboardLayout::KeyAction"
+        },
+        {
+          mojom = "remoting.mojom.KeyBehavior"
+          cpp = "::remoting::protocol::KeyboardLayout::KeyBehavior"
+        },
+        {
+          mojom = "remoting.mojom.KeyEvent"
+          cpp = "::remoting::protocol::KeyEvent"
+        },
+        {
+          mojom = "remoting.mojom.LayoutKeyFunction"
+          cpp = "::remoting::protocol::LayoutKeyFunction"
+        },
+        {
+          mojom = "remoting.mojom.MouseButton"
+          cpp = "::remoting::protocol::MouseEvent::MouseButton"
+        },
+        {
+          mojom = "remoting.mojom.MouseCursor"
+          cpp = "::webrtc::MouseCursor"
+        },
+        {
+          mojom = "remoting.mojom.MouseEvent"
+          cpp = "::remoting::protocol::MouseEvent"
+        },
+        {
+          mojom = "remoting.mojom.ProtocolErrorCode"
+          cpp = "::remoting::protocol::ErrorCode"
+        },
+        {
+          mojom = "remoting.mojom.ReadChunkResult"
+          cpp = "::remoting::protocol::FileTransferResult<std::vector<uint8_t>>"
+        },
+        {
+          mojom = "remoting.mojom.ScreenResolution"
+          cpp = "::remoting::ScreenResolution"
+        },
+        {
+          mojom = "remoting.mojom.TextEvent"
+          cpp = "::remoting::protocol::TextEvent"
+        },
+        {
+          mojom = "remoting.mojom.TouchEvent"
+          cpp = "::remoting::protocol::TouchEvent"
+        },
+        {
+          mojom = "remoting.mojom.TouchEventPoint"
+          cpp = "::remoting::protocol::TouchEventPoint"
+        },
+        {
+          mojom = "remoting.mojom.TouchEventType"
+          cpp = "::remoting::protocol::TouchEvent::TouchEventType"
+        },
+        {
+          mojom = "remoting.mojom.TransportRoute"
+          cpp = "::remoting::protocol::TransportRoute"
+        },
+        {
+          mojom = "remoting.mojom.TransportRouteType"
+          cpp = "::remoting::protocol::TransportRoute::RouteType"
+        },
+        {
+          mojom = "remoting.mojom.VideoLayout"
+          cpp = "::remoting::protocol::VideoLayout"
+        },
+        {
+          mojom = "remoting.mojom.VideoTrackLayout"
+          cpp = "::remoting::protocol::VideoTrackLayout"
+        },
+      ]
+      traits_headers = [ "remoting_mojom_traits.h" ]
+      traits_sources = [ "remoting_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//mojo/public/cpp/bindings",
+        "//mojo/public/cpp/bindings:protobuf_support",
+        "//remoting/host/base",
+        "//remoting/proto",
+        "//remoting/protocol",
+        "//remoting/protocol:errors",
+        "//remoting/protocol:transport",
+        "//services/network/public/cpp:ip_address_mojom_support",
+        "//third_party/webrtc_overrides:webrtc_component",
+      ]
+    },
+  ]
+}

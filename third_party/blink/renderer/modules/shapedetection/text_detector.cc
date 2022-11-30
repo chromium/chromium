@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -14,7 +16,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -28,24 +30,25 @@ TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
   context->GetBrowserInterfaceBroker().GetInterface(
       text_service_.BindNewPipeAndPassReceiver(task_runner));
 
-  text_service_.set_disconnect_handler(WTF::Bind(
+  text_service_.set_disconnect_handler(WTF::BindOnce(
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-ScriptPromise TextDetector::DoDetect(ScriptPromiseResolver* resolver,
-                                     SkBitmap bitmap) {
-  ScriptPromise promise = resolver->Promise();
+ScriptPromise TextDetector::DoDetect(ScriptState* script_state,
+                                     SkBitmap bitmap,
+                                     ExceptionState& exception_state) {
   if (!text_service_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Text detection service unavailable."));
-    return promise;
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Text detection service unavailable.");
+    return ScriptPromise();
   }
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
   text_service_requests_.insert(resolver);
   text_service_->Detect(
       std::move(bitmap),
-      WTF::Bind(&TextDetector::OnDetectText, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&TextDetector::OnDetectText, WrapPersistent(this),
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -80,9 +83,18 @@ void TextDetector::OnDetectText(
 
 void TextDetector::OnTextServiceConnectionError() {
   for (const auto& request : text_service_requests_) {
-    request->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                           "Text Detection not implemented."));
+    // Check if callback's resolver is still valid.
+    if (!IsInParallelAlgorithmRunnable(request->GetExecutionContext(),
+                                       request->GetScriptState())) {
+      continue;
+    }
+    // Enter into resolver's context to support creating DOMException.
+    ScriptState::Scope script_state_scope(request->GetScriptState());
+
+    request->Reject(V8ThrowDOMException::CreateOrDie(
+        request->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kNotSupportedError,
+        "Text Detection not implemented."));
   }
   text_service_requests_.clear();
   text_service_.reset();

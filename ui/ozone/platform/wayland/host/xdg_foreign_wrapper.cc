@@ -1,28 +1,63 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 
 #include <xdg-foreign-unstable-v1-client-protocol.h>
+#include <xdg-foreign-unstable-v2-client-protocol.h>
 
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
-struct XdgForeignWrapper::ExportedSurface {
-  ExportedSurface(wl_surface* surface, OnHandleExported cb);
-  ExportedSurface(ExportedSurface&& buffer);
-  ExportedSurface& operator=(ExportedSurface&& buffer);
-  ~ExportedSurface();
+// static
+constexpr char XdgForeignWrapper::kInterfaceNameV1[];
+// static
+constexpr char XdgForeignWrapper::kInterfaceNameV2[];
+
+constexpr uint32_t kMinVersion = 1;
+
+using OnHandleExported = XdgForeignWrapper::OnHandleExported;
+
+namespace {
+
+template <typename ExporterType>
+std::unique_ptr<XdgForeignWrapper> CreateWrapper(WaylandConnection* connection,
+                                                 wl_registry* registry,
+                                                 uint32_t name,
+                                                 uint32_t version) {
+  auto zxdg_exporter = wl::Bind<ExporterType>(registry, name, version);
+  if (!zxdg_exporter) {
+    LOG(ERROR) << "Failed to bind zxdg_exporter";
+    return {};
+  }
+  return std::make_unique<XdgForeignWrapper>(connection,
+                                             std::move(zxdg_exporter));
+}
+
+}  // namespace
+
+template <typename ExportedType>
+struct ExportedSurface {
+  ExportedSurface(wl_surface* surface, OnHandleExported cb)
+      : surface_for_export(surface) {
+    callbacks.emplace_back((std::move(cb)));
+  }
+  ExportedSurface(ExportedSurface&& buffer) = default;
+  ExportedSurface& operator=(ExportedSurface&& buffer) = default;
+  ~ExportedSurface() = default;
 
   // Surface that is exported.
-  wl_surface* surface_for_export = nullptr;
+  raw_ptr<wl_surface> surface_for_export = nullptr;
 
   // Exported |surface|.
-  wl::Object<zxdg_exported_v1> exported;
+  wl::Object<ExportedType> exported;
 
   // Handle of the exported |surface|.
   std::string exported_handle;
@@ -31,24 +66,154 @@ struct XdgForeignWrapper::ExportedSurface {
   std::vector<OnHandleExported> callbacks;
 };
 
-XdgForeignWrapper::ExportedSurface::ExportedSurface(wl_surface* surface,
-                                                    OnHandleExported cb)
-    : surface_for_export(surface) {
-  callbacks.emplace_back((std::move(cb)));
+class XdgForeignWrapper::XdgForeignWrapperInternal {
+ public:
+  virtual ~XdgForeignWrapperInternal() = default;
+
+  virtual void ExportSurfaceToForeign(wl_surface* surface,
+                                      OnHandleExported cb) = 0;
+
+  // WaylandWindowObserver:
+  virtual void OnWindowRemoved(WaylandWindow* window) = 0;
+};
+
+template <typename ExporterType, typename ExportedType>
+class XdgForeignWrapperImpl
+    : public XdgForeignWrapper::XdgForeignWrapperInternal {
+ public:
+  XdgForeignWrapperImpl(WaylandConnection* connection,
+                        wl::Object<ExporterType> exporter)
+      : connection_(connection), exporter_(std::move(exporter)) {}
+  XdgForeignWrapperImpl(const XdgForeignWrapperImpl&) = delete;
+  XdgForeignWrapperImpl& operator=(const XdgForeignWrapperImpl&) = delete;
+  ~XdgForeignWrapperImpl() override = default;
+
+  void ExportSurfaceToForeign(wl_surface* surface,
+                              OnHandleExported cb) override {
+    auto* exported_surface = GetExportedSurface(surface);
+    if (!exported_surface) {
+      // The |surface| has never been exported. Export it and return the handle
+      // via the |cb|.
+      ExportSurfaceInternal(surface, std::move(cb));
+    } else if (exported_surface->exported_handle.empty()) {
+      // The |surface| has already been exported, but its handle hasn't been
+      // received yet. Store the |cb| and execute when the handle is obtained.
+      exported_surface->callbacks.emplace_back(std::move(cb));
+    } else {
+      // The |surface| has already been exported and its handle has been
+      // received. Execute the |cb| and send the handle.
+      DCHECK(!exported_surface->exported_handle.empty());
+      std::move(cb).Run(exported_surface->exported_handle);
+    }
+  }
+
+  void ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb);
+
+  void OnWindowRemoved(WaylandWindow* window) override {
+    auto it = base::ranges::find(
+        exported_surfaces_, window->root_surface()->surface(),
+        &ExportedSurface<ExportedType>::surface_for_export);
+    if (it != exported_surfaces_.end())
+      exported_surfaces_.erase(it);
+  }
+
+  ExportedSurface<ExportedType>* GetExportedSurface(wl_surface* surface) {
+    for (auto& item : exported_surfaces_) {
+      if (item.surface_for_export == surface)
+        return &item;
+    }
+    return nullptr;
+  }
+
+ private:
+  // static
+  static void OnExported(void* data,
+                         ExportedType* exported,
+                         const char* handle) {
+    auto* self =
+        static_cast<XdgForeignWrapperImpl<ExporterType, ExportedType>*>(data);
+    DCHECK(self);
+
+    auto exported_surface_it = base::ranges::find(
+        self->exported_surfaces_, exported,
+        [](const auto& item) { return item.exported.get(); });
+    DCHECK(exported_surface_it != self->exported_surfaces_.end());
+    exported_surface_it->exported_handle = handle;
+
+    for (auto& cb : exported_surface_it->callbacks)
+      std::move(cb).Run(exported_surface_it->exported_handle);
+
+    exported_surface_it->callbacks.clear();
+  }
+
+  const raw_ptr<WaylandConnection> connection_;
+  wl::Object<ExporterType> exporter_;
+  std::vector<ExportedSurface<ExportedType>> exported_surfaces_;
+};
+
+template <>
+void XdgForeignWrapperImpl<zxdg_exporter_v1, zxdg_exported_v1>::
+    ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb) {
+  static constexpr zxdg_exported_v1_listener kExportedListener = {&OnExported};
+
+  ExportedSurface<zxdg_exported_v1> exported_surface(surface, std::move(cb));
+  exported_surface.exported.reset(
+      zxdg_exporter_v1_export(exporter_.get(), surface));
+  zxdg_exported_v1_add_listener(exported_surface.exported.get(),
+                                &kExportedListener, this);
+  exported_surfaces_.emplace_back(std::move(exported_surface));
+  connection_->Flush();
 }
 
-XdgForeignWrapper::ExportedSurface::ExportedSurface(ExportedSurface&& buffer) =
-    default;
+template <>
+void XdgForeignWrapperImpl<zxdg_exporter_v2, zxdg_exported_v2>::
+    ExportSurfaceInternal(wl_surface* surface, OnHandleExported cb) {
+  static constexpr zxdg_exported_v2_listener kExportedListener = {&OnExported};
 
-XdgForeignWrapper::ExportedSurface&
-XdgForeignWrapper::ExportedSurface::operator=(ExportedSurface&& buffer) =
-    default;
+  ExportedSurface<zxdg_exported_v2> exported_surface(surface, std::move(cb));
+  exported_surface.exported.reset(
+      zxdg_exporter_v2_export_toplevel(exporter_.get(), surface));
+  zxdg_exported_v2_add_listener(exported_surface.exported.get(),
+                                &kExportedListener, this);
+  exported_surfaces_.emplace_back(std::move(exported_surface));
+  connection_->Flush();
+}
 
-XdgForeignWrapper::ExportedSurface::~ExportedSurface() = default;
+// static
+void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
+                                    wl_registry* registry,
+                                    uint32_t name,
+                                    const std::string& interface,
+                                    uint32_t version) {
+  if (connection->xdg_foreign_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
+    return;
+  }
+
+  if (interface == kInterfaceNameV1) {
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v1>(
+        connection, registry, name, kMinVersion);
+  } else if (interface == kInterfaceNameV2) {
+    connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v2>(
+        connection, registry, name, kMinVersion);
+  } else {
+    NOTREACHED() << " unexpected interface name: " << interface;
+  }
+}
 
 XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection,
-                                     wl::Object<zxdg_exporter_v1> exporter_v1)
-    : connection_(connection), exporter_v1_(std::move(exporter_v1)) {}
+                                     wl::Object<zxdg_exporter_v1> exporter_v1) {
+  impl_ = std::make_unique<
+      XdgForeignWrapperImpl<zxdg_exporter_v1, zxdg_exported_v1>>(
+      connection, std::move(exporter_v1));
+}
+
+XdgForeignWrapper::XdgForeignWrapper(WaylandConnection* connection,
+                                     wl::Object<zxdg_exporter_v2> exporter_v2) {
+  impl_ = std::make_unique<
+      XdgForeignWrapperImpl<zxdg_exporter_v2, zxdg_exported_v2>>(
+      connection, std::move(exporter_v2));
+}
 
 XdgForeignWrapper::~XdgForeignWrapper() = default;
 
@@ -56,73 +221,11 @@ void XdgForeignWrapper::ExportSurfaceToForeign(WaylandWindow* window,
                                                OnHandleExported cb) {
   DCHECK_EQ(window->type(), PlatformWindowType::kWindow);
   auto* surface = window->root_surface()->surface();
-  auto* exported_surface = GetExportedSurface(surface);
-  if (!exported_surface) {
-    // The |surface| has never been exported. Export it and return the handle
-    // via the |cb|.
-    ExportSurfaceInternal(surface, std::move(cb));
-  } else if (exported_surface->exported_handle.empty()) {
-    // The |surface| has already been exported, but its handle hasn't been
-    // received yet. Store the |cb| and execute when the handle is obtained.
-    exported_surface->callbacks.emplace_back(std::move(cb));
-  } else {
-    // The |surface| has already been exported and its handle has been received.
-    // Execute the |cb| and send the handle.
-    DCHECK(!exported_surface->exported_handle.empty());
-    std::move(cb).Run(exported_surface->exported_handle);
-  }
-}
-
-XdgForeignWrapper::ExportedSurface* XdgForeignWrapper::GetExportedSurface(
-    wl_surface* surface) {
-  for (auto& item : exported_surfaces_) {
-    if (item.surface_for_export == surface)
-      return &item;
-  }
-  return nullptr;
-}
-
-void XdgForeignWrapper::ExportSurfaceInternal(wl_surface* surface,
-                                              OnHandleExported cb) {
-  static const struct zxdg_exported_v1_listener kExportedListener = {
-      &XdgForeignWrapper::OnExported};
-
-  ExportedSurface exported_surface(surface, std::move(cb));
-  exported_surface.exported.reset(
-      zxdg_exporter_v1_export(exporter_v1_.get(), surface));
-  zxdg_exported_v1_add_listener(exported_surface.exported.get(),
-                                &kExportedListener, this);
-  exported_surfaces_.emplace_back(std::move(exported_surface));
-  connection_->ScheduleFlush();
+  impl_->ExportSurfaceToForeign(surface, std::move(cb));
 }
 
 void XdgForeignWrapper::OnWindowRemoved(WaylandWindow* window) {
-  auto it = std::find_if(exported_surfaces_.begin(), exported_surfaces_.end(),
-                         [window](const auto& surface) {
-                           return window->root_surface()->surface() ==
-                                  surface.surface_for_export;
-                         });
-  if (it != exported_surfaces_.end())
-    exported_surfaces_.erase(it);
-}
-
-// static
-void XdgForeignWrapper::OnExported(void* data,
-                                   zxdg_exported_v1* exported,
-                                   const char* handle) {
-  auto* self = static_cast<XdgForeignWrapper*>(data);
-  DCHECK(self);
-
-  auto exported_surface_it = std::find_if(
-      self->exported_surfaces_.begin(), self->exported_surfaces_.end(),
-      [exported](const auto& item) { return item.exported.get() == exported; });
-  DCHECK(exported_surface_it != self->exported_surfaces_.end());
-  exported_surface_it->exported_handle = handle;
-
-  for (auto& cb : exported_surface_it->callbacks)
-    std::move(cb).Run(exported_surface_it->exported_handle);
-
-  exported_surface_it->callbacks.clear();
+  impl_->OnWindowRemoved(window);
 }
 
 }  // namespace ui

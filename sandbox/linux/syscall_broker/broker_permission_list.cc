@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 
@@ -35,10 +36,10 @@ bool CheckCallerArgs(const char** file_to_access) {
 
 BrokerPermissionList::BrokerPermissionList(
     int denied_errno,
-    const std::vector<BrokerFilePermission>& permissions)
+    std::vector<BrokerFilePermission> permissions)
     : denied_errno_(denied_errno),
-      permissions_(permissions),
-      num_of_permissions_(permissions.size()) {
+      permissions_(std::move(permissions)),
+      num_of_permissions_(permissions_.size()) {
   // The spec guarantees vectors store their elements contiguously
   // so set up a pointer to array of element so it can be used
   // in async signal safe code instead of vector operations.
@@ -49,7 +50,7 @@ BrokerPermissionList::BrokerPermissionList(
   }
 }
 
-BrokerPermissionList::~BrokerPermissionList() {}
+BrokerPermissionList::~BrokerPermissionList() = default;
 
 // Check if calling access() should be allowed on |requested_filename| with
 // mode |requested_mode|.

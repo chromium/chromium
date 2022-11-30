@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,19 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -55,6 +55,10 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   class Factory {
    public:
     Factory() {}
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     virtual ~Factory() {}
 
     // Ownership is not transferred through this interface as
@@ -66,11 +70,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
         content::BrowserContext* browser_context,
         const GURL& url,
         const content::Referrer& referrer,
-        const base::Optional<url::Origin>& initiator_origin,
+        const absl::optional<url::Origin>& initiator_origin,
         Origin origin) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   class Observer {
@@ -96,6 +97,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     virtual ~Observer() = 0;
   };
 
+  NoStatePrefetchContents(const NoStatePrefetchContents&) = delete;
+  NoStatePrefetchContents& operator=(const NoStatePrefetchContents&) = delete;
+
   ~NoStatePrefetchContents() override;
 
   // All observers of a NoStatePrefetchContents are removed after the
@@ -120,7 +124,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // it if not.
   void DestroyWhenUsingTooManyResources();
 
-  content::RenderFrameHost* GetMainFrame();
+  content::RenderFrameHost* GetPrimaryMainFrame();
 
   NoStatePrefetchManager* no_state_prefetch_manager() {
     return no_state_prefetch_manager_;
@@ -154,7 +158,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // Checks that a URL may be prerendered, for one of the many redirections. If
   // the URL can not be prerendered - for example, it's an ftp URL - |this| will
@@ -169,8 +174,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   content::WebContents* no_state_prefetch_contents() const {
     return no_state_prefetch_contents_.get();
   }
-
-  std::unique_ptr<content::WebContents> ReleaseNoStatePrefetchContents();
 
   // Sets the final status, calls OnDestroy and adds |this| to the
   // NoStatePrefetchManager's pending deletes list.
@@ -203,7 +206,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
       content::BrowserContext* browser_context,
       const GURL& url,
       const content::Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       Origin origin);
 
   // Set the final status for how the NoStatePrefetchContents was used. This
@@ -256,7 +259,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // The prefetch manager owning this object.
-  NoStatePrefetchManager* no_state_prefetch_manager_;
+  raw_ptr<NoStatePrefetchManager> no_state_prefetch_manager_;
 
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;
@@ -269,10 +272,10 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
 
   // The origin of the page requesting the prerender. Empty when the prerender
   // is browser initiated.
-  const base::Optional<url::Origin> initiator_origin_;
+  const absl::optional<url::Origin> initiator_origin_;
 
   // The browser context being used
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // A vector of URLs that this prerendered page matches against.
   // This array can contain more than element as a result of redirects,
@@ -305,8 +308,6 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   int64_t network_bytes_;
 
   base::WeakPtrFactory<NoStatePrefetchContents> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchContents);
 };
 
 }  // namespace prerender

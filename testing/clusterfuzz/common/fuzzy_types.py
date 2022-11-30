@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,8 +19,8 @@ def FuzzyInt(n):
   """Returns an integer derived from the input by one of several mutations."""
   int_sizes = [8, 16, 32, 64, 128]
   mutations = [
-    lambda n: utils.UniformExpoInteger(0, sys.maxint.bit_length() + 1),
-    lambda n: -utils.UniformExpoInteger(0, sys.maxint.bit_length()),
+    lambda n: utils.UniformExpoInteger(0, sys.maxsize.bit_length() + 1),
+    lambda n: -utils.UniformExpoInteger(0, sys.maxsize.bit_length()),
     lambda n: 2 ** random.choice(int_sizes) - 1,
     lambda n: 2 ** random.choice(int_sizes),
     lambda n: 0,
@@ -35,36 +35,33 @@ def FuzzyInt(n):
 def FuzzyString(s):
   """Returns a string derived from the input by one of several mutations."""
   # First try some mutations that try to recognize certain types of strings
-  try:
-    s.decode("utf-8")  # These mutations only make sense for textual data
-  except UnicodeDecodeError:
-    pass
-  else:
-    chained_mutations = [
-      FuzzIntsInString,
-      FuzzBase64InString,
-      FuzzListInString,
-    ]
-    original = s
-    for mutation in chained_mutations:
-      s = mutation(s)
-      # Stop if we've modified the string and our coin comes up heads
-      if s != original and random.getrandbits(1):
-        return s
+  assert isinstance(s, str)
+  chained_mutations = [
+    FuzzIntsInString,
+    FuzzBase64InString,
+    FuzzListInString,
+  ]
+  original = s
+  for mutation in chained_mutations:
+    s = mutation(s)
+    # Stop if we've modified the string and our coin comes up heads
+    if s != original and random.getrandbits(1):
+      return s
 
   # If we're still here, apply a more generic mutation
   mutations = [
-    lambda s: "".join(random.choice(string.printable) for i in
-      xrange(utils.UniformExpoInteger(0, 14))),
-    lambda s: "".join(unichr(random.randint(0, sys.maxunicode)) for i in
-      xrange(utils.UniformExpoInteger(0, 14))).encode("utf-8"),
-    lambda s: os.urandom(utils.UniformExpoInteger(0, 14)),
+    lambda _: "".join(random.choice(string.printable) for _ in
+      range(utils.UniformExpoInteger(0, 14))),
+    # We let through the surrogate. The decode exception is handled at caller.
+    lambda _: "".join(chr(random.randint(0, sys.maxunicode)) for _ in
+      range(utils.UniformExpoInteger(0, 14))).encode('utf-8', 'surrogatepass'),
+    lambda _: os.urandom(utils.UniformExpoInteger(0, 14)),
     lambda s: s * utils.UniformExpoInteger(1, 5),
     lambda s: s + "A" * utils.UniformExpoInteger(0, 14),
     lambda s: "A" * utils.UniformExpoInteger(0, 14) + s,
     lambda s: s[:-random.randint(1, max(1, len(s) - 1))],
     lambda s: textwrap.fill(s, random.randint(1, max(1, len(s) - 1))),
-    lambda s: "",
+    lambda _: "",
   ]
   return random.choice(mutations)(s)
 
@@ -105,8 +102,11 @@ def FuzzListInString(s, separators=r", |,|; |;|\r\n|\s"):
   items.RandomMutation()
   return sep.join(items)
 
-
-class FuzzySequence(object):
+# Pylint doesn't recognize that in this case 'self' is some mutable sequence,
+# so the unsupoorted-assignment-operation and unsupported-delete-operation
+# warnings have been disabled here.
+# pylint: disable=unsupported-assignment-operation,unsupported-delete-operation
+class FuzzySequence(object): #pylint: disable=useless-object-inheritance
   """A helpful mixin for writing fuzzy mutable sequence types.
 
   If a method parameter is left at its default value of None, an appropriate
@@ -124,7 +124,7 @@ class FuzzySequence(object):
     if amount is None:
       amount = utils.RandomLowInteger(min(1, len(self)), len(self) - location)
     if hasattr(value, "__call__"):
-      new_elements = (value() for i in xrange(amount))
+      new_elements = (value() for i in range(amount))
     else:
       new_elements = itertools.repeat(value, amount)
     self[location:location+amount] = new_elements
@@ -140,7 +140,7 @@ class FuzzySequence(object):
     if amount is None:
       amount = utils.UniformExpoInteger(0, max_exponent)
     if hasattr(value, "__call__"):
-      new_elements = (value() for i in xrange(amount))
+      new_elements = (value() for i in range(amount))
     else:
       new_elements = itertools.repeat(value, amount)
     self[location:location] = new_elements
@@ -152,6 +152,7 @@ class FuzzySequence(object):
     if amount is None:
       amount = utils.RandomLowInteger(min(1, len(self)), len(self) - location)
     del self[location:location+amount]
+# pylint: enable=unsupported-assignment-operation,unsupported-delete-operation
 
 
 class FuzzyList(list, FuzzySequence):
@@ -171,7 +172,7 @@ class FuzzyList(list, FuzzySequence):
     ]
     if count is None:
       count = utils.RandomLowInteger(1, 5, beta=3.0)
-    for _ in xrange(count):
+    for _ in range(count):
       random.choice(mutations)()
 
 
@@ -185,7 +186,7 @@ class FuzzyBuffer(bytearray, FuzzySequence):
     """Flip num_bits bits in the buffer at random."""
     if num_bits is None:
       num_bits = utils.RandomLowInteger(min(1, len(self)), len(self) * 8)
-    for bit in random.sample(xrange(len(self) * 8), num_bits):
+    for bit in random.sample(range(len(self) * 8), num_bits):
       self[bit / 8] ^= 1 << (bit % 8)
 
   def RandomMutation(self, count=None):
@@ -203,5 +204,5 @@ class FuzzyBuffer(bytearray, FuzzySequence):
     ]
     if count is None:
       count = utils.RandomLowInteger(1, 5, beta=3.0)
-    for _ in xrange(count):
+    for _ in range(count):
       utils.WeightedChoice(mutations)()

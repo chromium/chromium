@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ TEST_F(VisibilityControllerTest, AnimateTransparencyToZeroAndHideHides) {
   std::unique_ptr<aura::Window> window(aura::test::CreateTestWindowWithDelegate(
       &d, -2, gfx::Rect(0, 0, 50, 50), root_window()));
   ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
-  settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(5));
+  settings.SetTransitionDuration(base::Milliseconds(5));
 
   EXPECT_TRUE(window->layer()->visible());
   EXPECT_TRUE(window->IsVisible());
@@ -70,8 +70,7 @@ TEST_F(VisibilityControllerTest, HideAnimationWindowBoundsTest) {
       &d, -2, expected_bounds, root_window()));
   window->Show();
   SetWindowVisibilityChangesAnimated(window.get());
-  SetWindowVisibilityAnimationDuration(window.get(),
-                                       base::TimeDelta::FromMilliseconds(5));
+  SetWindowVisibilityAnimationDuration(window.get(), base::Milliseconds(5));
   SetWindowVisibilityAnimationType(window.get(),
                                    WINDOW_VISIBILITY_ANIMATION_TYPE_DROP);
   // Check that the bound is correct after the hide animation has finished.
@@ -99,8 +98,7 @@ TEST_F(VisibilityControllerTest, SetWindowVisibilityChagnesAnimated) {
   ASSERT_FALSE(window->IsVisible());
 
   SetWindowVisibilityChangesAnimated(window.get());
-  SetWindowVisibilityAnimationDuration(window.get(),
-                                       base::TimeDelta::FromMilliseconds(5));
+  SetWindowVisibilityAnimationDuration(window.get(), base::Milliseconds(5));
   SetWindowVisibilityAnimationType(window.get(),
                                    WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
   window->Show();

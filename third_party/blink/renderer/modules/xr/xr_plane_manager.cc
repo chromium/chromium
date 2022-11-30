@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_set.h"
@@ -17,14 +18,15 @@ XRPlaneManager::XRPlaneManager(base::PassKey<XRSession> pass_key,
 void XRPlaneManager::ProcessPlaneInformation(
     const device::mojom::blink::XRPlaneDetectionData* detected_planes_data,
     double timestamp) {
-  TRACE_EVENT0("xr", __FUNCTION__);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("xr.debug"), __func__);
 
   if (!detected_planes_data) {
     DVLOG(3) << __func__ << ": detected_planes_data is null";
 
     // We have received a nullopt - plane detection is not supported or
-    // disabled. Mark detected_planes as null & clear stored planes.
-    is_detected_planes_null_ = true;
+    // disabled. Clear stored planes (if any).
+    // The device can send either null or empty data - in both cases, it means
+    // that there are no planes available.
     plane_ids_to_planes_.clear();
     return;
   }
@@ -37,8 +39,6 @@ void XRPlaneManager::ProcessPlaneInformation(
            << detected_planes_data->updated_planes_data.size()
            << ", all planes size="
            << detected_planes_data->all_planes_ids.size();
-
-  is_detected_planes_null_ = false;
 
   HeapHashMap<uint64_t, Member<XRPlane>> updated_planes;
 
@@ -74,8 +74,10 @@ void XRPlaneManager::ProcessPlaneInformation(
 }
 
 XRPlaneSet* XRPlaneManager::GetDetectedPlanes() const {
-  if (is_detected_planes_null_)
-    return nullptr;
+  if (!session_->IsFeatureEnabled(
+          device::mojom::XRSessionFeature::PLANE_DETECTION)) {
+    return MakeGarbageCollected<XRPlaneSet>(HeapHashSet<Member<XRPlane>>{});
+  }
 
   HeapHashSet<Member<XRPlane>> result;
   for (auto& plane_id_and_plane : plane_ids_to_planes_) {

@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 
 namespace web_app {
@@ -19,6 +19,11 @@ class GlassAppWindowFrameViewWin;
 class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
  public:
   ChromeNativeAppWindowViewsWin();
+
+  ChromeNativeAppWindowViewsWin(const ChromeNativeAppWindowViewsWin&) = delete;
+  ChromeNativeAppWindowViewsWin& operator=(
+      const ChromeNativeAppWindowViewsWin&) = delete;
+
   ~ChromeNativeAppWindowViewsWin() override;
 
   GlassAppWindowFrameViewWin* glass_frame_view() {
@@ -49,7 +54,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   // to the native widget implementation. This will be NULL if there is no
   // glass frame. Note, this can change from NULL to non-NULL and back again
   // throughout the life of a window, e.g. if DWM is enabled and disabled.
-  GlassAppWindowFrameViewWin* glass_frame_view_;
+  raw_ptr<GlassAppWindowFrameViewWin> glass_frame_view_;
 
   // The Windows Application User Model ID identifying the app.
   std::wstring app_model_id_;
@@ -58,8 +63,6 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   bool is_translucent_;
 
   base::WeakPtrFactory<ChromeNativeAppWindowViewsWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_CHROME_NATIVE_APP_WINDOW_VIEWS_WIN_H_

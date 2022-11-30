@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,25 @@
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
-#include "base/macros.h"
-
 namespace ash {
 
 class WorkspaceEventHandlerTestHelper {
  public:
   explicit WorkspaceEventHandlerTestHelper(WorkspaceEventHandler* handler);
+
+  WorkspaceEventHandlerTestHelper(const WorkspaceEventHandlerTestHelper&) =
+      delete;
+  WorkspaceEventHandlerTestHelper& operator=(
+      const WorkspaceEventHandlerTestHelper&) = delete;
+
   ~WorkspaceEventHandlerTestHelper();
 
   MultiWindowResizeController* resize_controller() {
-    return &(handler_->multi_window_resize_controller_);
+    return handler_->multi_window_resize_controller_.get();
   }
 
  private:
   WorkspaceEventHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkspaceEventHandlerTestHelper);
 };
 
 }  // namespace ash

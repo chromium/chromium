@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/testing_browser_process.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/path_service.h"
@@ -13,11 +15,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_impl.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_ui_manager.h"
+#include "chrome/browser/notifications/stub_notification_platform_bridge.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -25,10 +26,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
-#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/permissions/permissions_client.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -39,6 +38,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,12 +61,18 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/hid/hid_policy_allowed_devices.h"
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
+#include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
 // static
@@ -94,9 +100,14 @@ void TestingBrowserProcess::DeleteInstance() {
 }
 
 TestingBrowserProcess::TestingBrowserProcess()
-    : notification_service_(content::NotificationService::Create()),
-      app_locale_("en"),
-      platform_part_(new TestingBrowserProcessPlatformPart()) {}
+    : app_locale_("en"),
+      platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()) {
+  // TestingBrowserProcess is used in unit_tests which sets this up through
+  // content::UnitTestTestSuite but also through other test binaries which don't
+  // use that test suite in which case we have to set it up.
+  if (!content::NotificationService::current())
+    notification_service_.reset(content::NotificationService::Create());
+}
 
 TestingBrowserProcess::~TestingBrowserProcess() {
   EXPECT_FALSE(local_state_);
@@ -106,7 +117,8 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   extensions::AppWindowClient::Set(nullptr);
 #endif
 
-  content::SetNetworkConnectionTrackerForTesting(nullptr);
+  if (test_network_connection_tracker_)
+    content::SetNetworkConnectionTrackerForTesting(nullptr);
 
   // Destructors for some objects owned by TestingBrowserProcess will use
   // g_browser_process if it is not null, so it must be null before proceeding.
@@ -114,10 +126,13 @@ TestingBrowserProcess::~TestingBrowserProcess() {
 }
 
 void TestingBrowserProcess::Init() {
-  test_network_connection_tracker_ =
-      network::TestNetworkConnectionTracker::CreateInstance();
-  content::SetNetworkConnectionTrackerForTesting(
-      test_network_connection_tracker_.get());
+  // See comment in constructor.
+  if (!network::TestNetworkConnectionTracker::HasInstance()) {
+    test_network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    content::SetNetworkConnectionTrackerForTesting(
+        test_network_connection_tracker_.get());
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_browser_client_ =
@@ -131,7 +146,7 @@ void TestingBrowserProcess::Init() {
   // Make sure permissions client has been set.
   ChromePermissionsClient::GetInstance();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
 #endif
 }
@@ -174,23 +189,20 @@ TestingBrowserProcess::network_quality_tracker() {
   return test_network_quality_tracker_.get();
 }
 
-WatchDogThread* TestingBrowserProcess::watchdog_thread() {
-  return nullptr;
-}
-
 ProfileManager* TestingBrowserProcess::profile_manager() {
   return profile_manager_.get();
 }
 
-void TestingBrowserProcess::SetProfileManager(ProfileManager* profile_manager) {
+void TestingBrowserProcess::SetProfileManager(
+    std::unique_ptr<ProfileManager> profile_manager) {
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // NotificationUIManager can contain references to elements in the current
-  // ProfileManager (for example, the MessageCenterSettingsController maintains
-  // a pointer to the ProfileInfoCache). So when we change the ProfileManager
-  // (typically during test shutdown) make sure to reset any objects that might
-  // maintain references to it. See SetLocalState() for a description of a
-  // similar situation.
+  // ProfileManager. So when we change the ProfileManager (typically during test
+  // shutdown) make sure to reset any objects that might maintain references to
+  // it. See SetLocalState() for a description of a similar situation.
   notification_ui_manager_.reset();
-  profile_manager_.reset(profile_manager);
+#endif
+  profile_manager_ = std::move(profile_manager);
 }
 
 PrefService* TestingBrowserProcess::local_state() {
@@ -211,7 +223,7 @@ TestingBrowserProcess::browser_policy_connector() {
     EXPECT_FALSE(created_browser_policy_connector_);
     created_browser_policy_connector_ = true;
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     // Make sure that the machine policy directory does not exist so that
     // machine-wide policies do not affect tests.
     // Note that passing false as last argument to OverrideAndCreateIfNeeded
@@ -225,7 +237,7 @@ TestingBrowserProcess::browser_policy_connector() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     browser_policy_connector_ =
-        std::make_unique<policy::BrowserPolicyConnectorChromeOS>();
+        std::make_unique<policy::BrowserPolicyConnectorAsh>();
 #else
     browser_policy_connector_ =
         std::make_unique<policy::ChromeBrowserPolicyConnector>();
@@ -278,11 +290,6 @@ TestingBrowserProcess::subresource_filter_ruleset_service() {
   return subresource_filter_ruleset_service_.get();
 }
 
-federated_learning::FlocSortingLshClustersService*
-TestingBrowserProcess::floc_sorting_lsh_clusters_service() {
-  return floc_sorting_lsh_clusters_service_.get();
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
@@ -293,7 +300,7 @@ TestingBrowserProcess::extension_event_router_forwarder() {
 }
 
 NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   if (!notification_ui_manager_.get())
     notification_ui_manager_ = NotificationUIManager::Create();
   return notification_ui_manager_.get();
@@ -304,10 +311,14 @@ NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
 
 NotificationPlatformBridge*
 TestingBrowserProcess::notification_platform_bridge() {
+  if (!notification_platform_bridge_.get()) {
+    notification_platform_bridge_ =
+        std::make_unique<StubNotificationPlatformBridge>();
+  }
   return notification_platform_bridge_.get();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* TestingBrowserProcess::intranet_redirect_detector() {
   return nullptr;
 }
@@ -325,7 +336,7 @@ bool TestingBrowserProcess::IsShuttingDown() {
 printing::PrintJobManager* TestingBrowserProcess::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
   if (!print_job_manager_.get())
-    print_job_manager_.reset(new printing::PrintJobManager());
+    print_job_manager_ = std::make_unique<printing::PrintJobManager>();
   return print_job_manager_.get();
 #else
   NOTIMPLEMENTED();
@@ -350,8 +361,8 @@ printing::BackgroundPrintingManager*
 TestingBrowserProcess::background_printing_manager() {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (!background_printing_manager_.get()) {
-    background_printing_manager_.reset(
-        new printing::BackgroundPrintingManager());
+    background_printing_manager_ =
+        std::make_unique<printing::BackgroundPrintingManager>();
   }
   return background_printing_manager_.get();
 #else
@@ -385,12 +396,12 @@ TestingBrowserProcess::component_updater() {
 }
 
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return nullptr;
 #else
   if (!media_file_system_registry_)
-    media_file_system_registry_.reset(new MediaFileSystemRegistry());
+    media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
   return media_file_system_registry_.get();
 #endif
 }
@@ -405,15 +416,15 @@ TestingBrowserProcess::network_time_tracker() {
     if (!local_state_)
       return nullptr;
 
-    network_time_tracker_.reset(new network_time::NetworkTimeTracker(
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(new base::DefaultClock()),
         std::unique_ptr<base::TickClock>(new base::DefaultTickClock()),
-        local_state_, nullptr));
+        local_state_, nullptr);
   }
   return network_time_tracker_.get();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 gcm::GCMDriver* TestingBrowserProcess::gcm_driver() {
   return nullptr;
 }
@@ -428,12 +439,35 @@ TestingBrowserProcess::resource_coordinator_parts() {
   return resource_coordinator_parts_.get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+SerialPolicyAllowedPorts* TestingBrowserProcess::serial_policy_allowed_ports() {
+  if (!serial_policy_allowed_ports_) {
+    serial_policy_allowed_ports_ =
+        std::make_unique<SerialPolicyAllowedPorts>(local_state());
+  }
+  return serial_policy_allowed_ports_.get();
+}
+
+HidPolicyAllowedDevices* TestingBrowserProcess::hid_policy_allowed_devices() {
+  if (!hid_policy_allowed_devices_) {
+    hid_policy_allowed_devices_ =
+        std::make_unique<HidPolicyAllowedDevices>(local_state());
+  }
+  return hid_policy_allowed_devices_.get();
+}
+#endif
+
 BuildState* TestingBrowserProcess::GetBuildState() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return &build_state_;
 #else
   return nullptr;
 #endif
+}
+
+breadcrumbs::BreadcrumbPersistentStorageManager*
+TestingBrowserProcess::GetBreadcrumbPersistentStorageManager() {
+  return nullptr;
 }
 
 resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {
@@ -445,15 +479,12 @@ void TestingBrowserProcess::SetSharedURLLoaderFactory(
   shared_url_loader_factory_ = shared_url_loader_factory;
 }
 
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 void TestingBrowserProcess::SetNotificationUIManager(
     std::unique_ptr<NotificationUIManager> notification_ui_manager) {
   notification_ui_manager_.swap(notification_ui_manager);
 }
-
-void TestingBrowserProcess::SetNotificationPlatformBridge(
-    std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge) {
-  notification_platform_bridge_.swap(notification_platform_bridge);
-}
+#endif
 
 void TestingBrowserProcess::SetSystemNotificationHelper(
     std::unique_ptr<SystemNotificationHelper> system_notification_helper) {
@@ -472,7 +503,13 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
     // any components owned by TestingBrowserProcess that depend on local_state
     // are also freed.
     network_time_tracker_.reset();
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
     notification_ui_manager_.reset();
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+    serial_policy_allowed_ports_.reset();
+    hid_policy_allowed_devices_.reset();
+#endif
     ShutdownBrowserPolicyConnector();
     created_browser_policy_connector_ = false;
   }
@@ -498,12 +535,6 @@ void TestingBrowserProcess::SetSafeBrowsingService(
 void TestingBrowserProcess::SetRulesetService(
     std::unique_ptr<subresource_filter::RulesetService> ruleset_service) {
   subresource_filter_ruleset_service_.swap(ruleset_service);
-}
-
-void TestingBrowserProcess::SetFlocSortingLshClustersService(
-    std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-        service) {
-  floc_sorting_lsh_clusters_service_.swap(service);
 }
 
 void TestingBrowserProcess::SetShuttingDown(bool is_shutting_down) {

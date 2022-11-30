@@ -83,7 +83,7 @@ bool InspectorHistory::Perform(Action* action,
 }
 
 void InspectorHistory::AppendPerformedAction(Action* action) {
-  if (!action->MergeId().IsEmpty() && after_last_action_index_ > 0 &&
+  if (!action->MergeId().empty() && after_last_action_index_ > 0 &&
       action->MergeId() == history_[after_last_action_index_ - 1]->MergeId()) {
     history_[after_last_action_index_ - 1]->Merge(action);
     if (history_[after_last_action_index_ - 1]->IsNoop())

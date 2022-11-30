@@ -1,0 +1,50 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("web_ui") {
+  sources = [
+    "safe_browsing_ui.cc",
+    "safe_browsing_ui.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/password_manager/core/browser:hash_password_manager",
+    "//components/resources:components_resources_grit",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser:safe_browsing_service",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser/db:hit_report",
+    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/strings:components_strings_grit",
+    "//components/sync/protocol:protocol",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+
+  public_deps = [ "//components/safe_browsing/core/common/proto:webui_proto" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safe_browsing_ui_unittest.cc" ]
+
+  deps = [
+    ":web_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

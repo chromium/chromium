@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,13 @@ const char kBasicNamedCommand[] = "toggle-feature";
 // Get another command platform, whcih is used for simulating a command has been
 // assigned with a shortcut on another platform.
 std::string GetAnotherCommandPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return extensions::manifest_values::kKeybindingPlatformMac;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return extensions::manifest_values::kKeybindingPlatformChromeOs;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return extensions::manifest_values::kKeybindingPlatformLinux;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return extensions::manifest_values::kKeybindingPlatformWin;
 #else
   return "";
@@ -109,26 +109,26 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  DictionaryPrefUpdate updater(browser()->profile()->GetPrefs(),
+  ScopedDictPrefUpdate updater(browser()->profile()->GetPrefs(),
                                prefs::kExtensionCommands);
-  base::DictionaryValue* bindings = updater.Get();
+  base::Value::Dict& bindings = updater.Get();
 
   // Simulate command |toggle-feature| has been assigned with a shortcut on
   // another platform.
   std::string anotherPlatformKey = GetAnotherCommandPlatform() + ":Alt+G";
   const char kNamedCommandName[] = "toggle-feature";
-  auto keybinding = std::make_unique<base::DictionaryValue>();
-  keybinding->SetString("extension", extension->id());
-  keybinding->SetString("command_name", kNamedCommandName);
-  keybinding->SetBoolean("global", false);
-  bindings->Set(anotherPlatformKey, std::move(keybinding));
+  base::Value keybinding(base::Value::Type::DICTIONARY);
+  keybinding.SetStringKey("extension", extension->id());
+  keybinding.SetStringKey("command_name", kNamedCommandName);
+  keybinding.SetBoolKey("global", false);
+  bindings.Set(anotherPlatformKey, std::move(keybinding));
 
   CommandService* command_service = CommandService::Get(browser()->profile());
   command_service->RemoveKeybindingPrefs(extension->id(), kNamedCommandName);
 
   // Removal of keybinding preference should be platform-specific, so the key on
   // another platform should always remained.
-  EXPECT_TRUE(bindings->HasKey(anotherPlatformKey));
+  EXPECT_TRUE(bindings.Find(anotherPlatformKey));
 }
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,

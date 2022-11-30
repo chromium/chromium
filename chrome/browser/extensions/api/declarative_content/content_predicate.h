@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <string>
-
-#include "base/macros.h"
 
 namespace base {
 class Value;
@@ -30,6 +28,9 @@ class Extension;
 // subclasses.
 class ContentPredicate {
  public:
+  ContentPredicate(const ContentPredicate&) = delete;
+  ContentPredicate& operator=(const ContentPredicate&) = delete;
+
   virtual ~ContentPredicate();
 
   // Returns true if this predicate should be ignored during evaluation. By
@@ -41,9 +42,6 @@ class ContentPredicate {
 
  protected:
   ContentPredicate();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicate);
 };
 
 // Defines the interface for objects that create predicates.
@@ -55,6 +53,9 @@ class ContentPredicate {
 // ["input[type='password']"] JSON entities encoded in |value|.
 class ContentPredicateFactory {
  public:
+  ContentPredicateFactory(const ContentPredicateFactory&) = delete;
+  ContentPredicateFactory& operator=(const ContentPredicateFactory&) = delete;
+
   virtual ~ContentPredicateFactory();
 
   // Creates a new predicate from |value|, as specified in the declarative
@@ -66,9 +67,6 @@ class ContentPredicateFactory {
 
  protected:
   ContentPredicateFactory();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentPredicateFactory);
 };
 
 }  // namespace extensions

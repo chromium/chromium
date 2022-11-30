@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "components/arc/mojom/app.mojom-forward.h"
 
 class Profile;
 class AppListControllerDelegate;
@@ -19,6 +18,10 @@ namespace arc {
 enum class ArcPlayStoreSearchRequestState;
 }  // namespace arc
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace app_list {
 
 class ArcPlayStoreSearchProvider : public SearchProvider {
@@ -26,11 +29,16 @@ class ArcPlayStoreSearchProvider : public SearchProvider {
   ArcPlayStoreSearchProvider(int max_results,
                              Profile* profile,
                              AppListControllerDelegate* list_controller);
+
+  ArcPlayStoreSearchProvider(const ArcPlayStoreSearchProvider&) = delete;
+  ArcPlayStoreSearchProvider& operator=(const ArcPlayStoreSearchProvider&) =
+      delete;
+
   ~ArcPlayStoreSearchProvider() override;
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
 
  private:
   void OnResults(const std::u16string& query,
@@ -43,8 +51,6 @@ class ArcPlayStoreSearchProvider : public SearchProvider {
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
   std::u16string last_query_;  // Most recent query issued.
   base::WeakPtrFactory<ArcPlayStoreSearchProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchProvider);
 };
 
 }  // namespace app_list

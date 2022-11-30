@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
@@ -40,6 +39,10 @@ class ASH_EXPORT UserSwitchAnimator {
   UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
                      const AccountId& new_account_id,
                      base::TimeDelta animation_speed);
+
+  UserSwitchAnimator(const UserSwitchAnimator&) = delete;
+  UserSwitchAnimator& operator=(const UserSwitchAnimator&) = delete;
+
   ~UserSwitchAnimator();
 
   // Check if a window is covering the entire work area of the screen it is on.
@@ -122,8 +125,6 @@ class ASH_EXPORT UserSwitchAnimator {
 
   // For unit tests: Check which wallpaper was set.
   std::string wallpaper_user_id_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSwitchAnimator);
 };
 
 }  // namespace ash

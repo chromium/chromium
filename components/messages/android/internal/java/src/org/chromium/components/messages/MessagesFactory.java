@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,17 +20,19 @@ public class MessagesFactory {
      *         to the MessageContainer. When messages are shown, they will be animated down the
      *         screen, starting at the negative |messageMaxTranslation| y translation to the resting
      *         position in the MessageContainer.
-     * @param autodismissDurationMs The {@link Supplier} providing autodismiss duration for message
-     *         banner.
+     * @param autodismissDurationMs The {@link MessageAutodismissDurationProvider} providing
+     *         autodismiss duration for message banner.
      * @param animatorStartCallback The {@link Callback} that will be used by the message to
      *         delegate starting the animations to the {@link WindowAndroid}.
+     * @param windowAndroid The current window Android.
      * @return The constructed ManagedMessageDispatcher.
      */
     public static ManagedMessageDispatcher createMessageDispatcher(MessageContainer container,
-            Supplier<Integer> messageMaxTranslation, Supplier<Long> autodismissDurationMs,
-            Callback<Animator> animatorStartCallback) {
-        return new MessageDispatcherImpl(
-                container, messageMaxTranslation, autodismissDurationMs, animatorStartCallback);
+            Supplier<Integer> messageMaxTranslation,
+            MessageAutodismissDurationProvider autodismissDurationMs,
+            Callback<Animator> animatorStartCallback, WindowAndroid windowAndroid) {
+        return new MessageDispatcherImpl(container, messageMaxTranslation, autodismissDurationMs,
+                animatorStartCallback, windowAndroid);
     }
 
     /**

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -29,6 +30,12 @@ class PageLoadMetricsObserverContentTestHarness
     : public content::RenderViewHostTestHarness {
  public:
   PageLoadMetricsObserverContentTestHarness();
+
+  PageLoadMetricsObserverContentTestHarness(
+      const PageLoadMetricsObserverContentTestHarness&) = delete;
+  PageLoadMetricsObserverContentTestHarness& operator=(
+      const PageLoadMetricsObserverContentTestHarness&) = delete;
+
   ~PageLoadMetricsObserverContentTestHarness() override;
 
   void SetUp() override;
@@ -42,9 +49,8 @@ class PageLoadMetricsObserverContentTestHarness
  private:
   std::unique_ptr<PageLoadMetricsObserverTester> tester_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverContentTestHarness);
+  raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace page_load_metrics

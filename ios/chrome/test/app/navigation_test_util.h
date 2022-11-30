@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 
 namespace chrome_test_util {
 
-// Loads |url| in the current WebState with transition of type
+// Loads `url` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED.
 void LoadUrl(const GURL& url);
 
-// Loads |url| in the current WebState with transition of type
+// Loads `url` in the current WebState with transition of type
 // ui::PAGE_TRANSITION_TYPED in window given windowNumber.
 void LoadUrlInWindowWithNumber(const GURL& url, int window_number);
 

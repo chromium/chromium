@@ -1,0 +1,3 @@
+Tests that DOM.getFrameOwner works correctly with Fenced Frame target
+frame owner element: FENCEDFRAME
+

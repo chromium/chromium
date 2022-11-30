@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,43 +13,38 @@ preprocess_src_manifest = "preprocessed_src_manifest.json"
 generate_grd("build_grdp") {
   grd_prefix = "webui_css"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess_src" ]
+  public_deps = [ ":preprocess_src" ]
   manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
   resource_path_prefix = "css"
 }
 
 preprocess_if_expr("preprocess_src") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "action_link.css",
-    "apps/common.css",
-    "apps/topbutton_bar.css",
     "butter_bar.css",
     "chrome_shared.css",
-    "dialogs.css",
-    "i18n_process.css",
     "list.css",
+    "menu_button.css",
+    "menu.css",
     "roboto.css",
-    "table.css",
-    "tabs.css",
+    "spinner.css",
     "text_defaults.css",
     "text_defaults_md.css",
     "throbber.css",
-
-    # TODO(dpapad): Include remaining files once thy no longer depend on
-    # flattenhtml=true.
-    #"controlled_indicator.css",
-    #"menu_button.css",
-    #"menu.css",
-    #"overlay.css",
-    #"spinner.css",
-    #"tree.css",
-    #"widgets.css",
+    "widgets.css",
   ]
 
   if (include_polymer) {
     in_files += [ "md_colors.css" ]
+  }
+
+  if (is_chromeos) {
+    in_files += [
+      "os_header.css",
+      "overlay.css",
+    ]
   }
 }

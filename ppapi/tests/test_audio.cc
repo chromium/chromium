@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,7 +163,7 @@ std::string TestAudio::TestCreation() {
               sample_rate == PP_AUDIOSAMPLERATE_44100 ||
               sample_rate == PP_AUDIOSAMPLERATE_48000);
   for (size_t i = 0; i < ARRAYSIZE_UNSAFE(kSampleRates); i++) {
-    PP_AudioSampleRate sample_rate = kSampleRates[i];
+    sample_rate = kSampleRates[i];
 
     for (size_t j = 0; j < ARRAYSIZE_UNSAFE(kRequestFrameCounts); j++) {
       // Make a config, create the audio resource, and release the config.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -41,10 +41,11 @@ const char kBytePayload[] = {0x08, 0x09, 0x06, 0x04, 0x0f};
 const char kBytePayload2[] = {0x0a, 0x0b, 0x0c, 0x0d, 0x0e};
 const int64_t kPayloadId = 689777;
 const int64_t kPayloadId2 = 777689;
+const int64_t kPayloadId3 = 986777;
 const uint64_t kTotalSize = 5201314;
 const uint64_t kBytesTransferred = 721831;
 const uint8_t kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
-const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
+const uint8_t kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
 const char kInvalidBluetoothMacAddress[] = {0x07, 0x07, 0x07};
 
 void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
@@ -125,7 +126,7 @@ class MockPayloadStatusListener
   MOCK_METHOD(void,
               OnStatusUpdate,
               (PayloadTransferUpdatePtr update,
-               base::Optional<Medium> upgraded_medium),
+               absl::optional<Medium> upgraded_medium),
               (override));
 };
 
@@ -135,10 +136,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
 
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
-        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+        .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
                                 NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
-              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+              std::make_unique<ash::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();
 
           EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbyConnections)
@@ -259,7 +260,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     NearbyConnection* nearby_connection;
     nearby_connections_manager_.Connect(
         local_endpoint_info, kRemoteEndpointId,
-        /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+        /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
         base::BindLambdaForTesting([&](NearbyConnection* connection) {
           nearby_connection = connection;
         }));
@@ -354,6 +355,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   }
 
   void SendPayload(
+      int64_t payload_id,
       testing::NiceMock<MockPayloadStatusListener>& payload_listener) {
     const std::vector<uint8_t> expected_payload(std::begin(kPayload),
                                                 std::end(kPayload));
@@ -371,7 +373,8 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
           EXPECT_EQ(kServiceId, service_id);
           EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
           ASSERT_TRUE(payload);
-          ASSERT_EQ(PayloadContent::Tag::FILE, payload->content->which());
+          EXPECT_EQ(payload_id, payload->id);
+          ASSERT_EQ(PayloadContent::Tag::kFile, payload->content->which());
 
           base::ScopedAllowBlockingForTesting allow_blocking;
           base::File file = std::move(payload->content->get_file()->file);
@@ -386,9 +389,9 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
     nearby_connections_manager_.Send(
         kRemoteEndpointId,
-        Payload::New(kPayloadId, PayloadContent::NewFile(
+        Payload::New(payload_id, PayloadContent::NewFile(
                                      FilePayload::New(std::move(file)))),
-        &payload_listener);
+        payload_listener.GetWeakPtr());
     run_loop.Run();
   }
 
@@ -396,16 +399,16 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
+  bool should_use_wifilan_ = false;
   DataUsage default_data_usage_ = DataUsage::kWifiOnly;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
       net::test::MockNetworkChangeNotifier::Create();
   base::ScopedDisallowBlocking disallow_blocking_;
-  testing::NiceMock<chromeos::nearby::MockNearbyConnections>
-      nearby_connections_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
+  testing::NiceMock<ash::nearby::MockNearbyConnections> nearby_connections_;
+  testing::NiceMock<ash::nearby::MockNearbyProcessManager>
       nearby_process_manager_;
   NearbyConnectionsManagerImpl nearby_connections_manager_{
-      &nearby_process_manager_};
+      &nearby_process_manager_, kServiceId};
 };
 
 TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {
@@ -493,8 +496,7 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
 
   EXPECT_CALL(nearby_connections_, StopAllEndpoints).Times(0);
   nearby_connections_manager_.OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
-          kNormal);
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason::kNormal);
 
   // Invoking OnEndpointFound will do nothing.
   EXPECT_CALL(discovery_listener, OnEndpointDiscovered(testing::_, testing::_))
@@ -511,8 +513,8 @@ TEST_F(NearbyConnectionsManagerImplTest, StopDiscoveryBeforeStart) {
 /******************************************************************************/
 // Begin: NearbyConnectionsManagerImplTestConnectionMediums
 /******************************************************************************/
-using ConnectionMediumsTestParam =
-    std::tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType, bool>;
+using ConnectionMediumsTestParam = std::
+    tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType, bool, bool>;
 class NearbyConnectionsManagerImplTestConnectionMediums
     : public NearbyConnectionsManagerImplTest,
       public testing::WithParamInterface<ConnectionMediumsTestParam> {};
@@ -524,25 +526,44 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   net::NetworkChangeNotifier::ConnectionType connection_type =
       std::get<1>(param);
   bool is_webrtc_enabled = std::get<2>(GetParam());
+  bool is_wifilan_enabled = std::get<3>(GetParam());
+
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  if (is_webrtc_enabled) {
+    enabled_features.push_back(features::kNearbySharingWebRtc);
+  } else {
+    disabled_features.push_back(features::kNearbySharingWebRtc);
+  }
+  if (is_wifilan_enabled) {
+    enabled_features.push_back(features::kNearbySharingWifiLan);
+  } else {
+    disabled_features.push_back(features::kNearbySharingWifiLan);
+  }
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatureState(features::kNearbySharingWebRtc,
-                                            is_webrtc_enabled);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   network_notifier_->SetConnectionType(connection_type);
   network_notifier_->SetUseDefaultConnectionCostImplementation(true);
-  should_use_web_rtc_ =
-      is_webrtc_enabled && data_usage != DataUsage::kOffline &&
+  bool should_use_internet =
+      data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
        (net::NetworkChangeNotifier::GetConnectionCost() !=
         net::NetworkChangeNotifier::CONNECTION_COST_METERED));
+  bool is_connection_wifi_or_ethernet =
+      connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI ||
+      connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET;
+  should_use_web_rtc_ = is_webrtc_enabled && should_use_internet;
+  should_use_wifilan_ = is_wifilan_enabled && should_use_internet &&
+                        is_connection_wifi_or_ethernet;
 
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       /*ble=*/false,
       /*web_rtc=*/should_use_web_rtc_,
-      /*wifi_lan=*/false);
+      /*wifi_lan=*/should_use_wifilan_);
 
   // StartDiscovery will succeed.
   mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
@@ -568,7 +589,7 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
           });
 
   nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
-                                      /*bluetooth_mac_address=*/base::nullopt,
+                                      /*bluetooth_mac_address=*/absl::nullopt,
                                       data_usage, base::DoNothing());
 
   run_loop.Run();
@@ -584,6 +605,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
                         net::NetworkChangeNotifier::CONNECTION_WIFI,
                         net::NetworkChangeNotifier::CONNECTION_3G),
+        testing::Bool(),
         testing::Bool()));
 /******************************************************************************/
 // End: NearbyConnectionsManagerImplTestConnectionMediums
@@ -593,18 +615,18 @@ INSTANTIATE_TEST_SUITE_P(
 // Begin: NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
 /******************************************************************************/
 struct ConnectionBluetoothMacAddressTestData {
-  base::Optional<std::vector<uint8_t>> bluetooth_mac_address;
-  base::Optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
+  absl::optional<std::vector<uint8_t>> bluetooth_mac_address;
+  absl::optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
 } kConnectionBluetoothMacAddressTestData[] = {
-    {base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+    {absl::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                               std::end(kBluetoothMacAddress))),
-     base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+     absl::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                               std::end(kBluetoothMacAddress)))},
-    {base::make_optional(
+    {absl::make_optional(
          std::vector<uint8_t>(std::begin(kInvalidBluetoothMacAddress),
                               std::end(kInvalidBluetoothMacAddress))),
-     base::nullopt},
-    {base::nullopt, base::nullopt}};
+     absl::nullopt},
+    {absl::nullopt, absl::nullopt}};
 
 class NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
     : public NearbyConnectionsManagerImplTest,
@@ -727,7 +749,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadBeforeAppend) {
   // Read before message is appended should also succeed.
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload, bytes);
         read_run_loop.Quit();
       }));
@@ -782,7 +804,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadAfterAppend) {
 
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload, bytes);
         read_run_loop.Quit();
       }));
@@ -790,7 +812,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectReadAfterAppend) {
 
   base::RunLoop read_run_loop_2;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_EQ(byte_payload_2, bytes);
         read_run_loop_2.Quit();
       }));
@@ -823,7 +845,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectWrite) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(kRemoteEndpointId, endpoint_ids.front());
         ASSERT_TRUE(payload);
-        ASSERT_EQ(PayloadContent::Tag::BYTES, payload->content->which());
+        ASSERT_EQ(PayloadContent::Tag::kBytes, payload->content->which());
         EXPECT_EQ(byte_payload, payload->content->get_bytes()->bytes);
 
         std::move(callback).Run(Status::kSuccess);
@@ -854,7 +876,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosed) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop_3;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop_3.Quit();
       }));
@@ -898,7 +920,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByRemote) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
@@ -931,7 +953,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectClosedByClient) {
       base::BindLambdaForTesting([&]() { close_run_loop.Quit(); }));
   base::RunLoop read_run_loop;
   nearby_connection->Read(base::BindLambdaForTesting(
-      [&](base::Optional<std::vector<uint8_t>> bytes) {
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
         EXPECT_FALSE(bytes);
         read_run_loop.Quit();
       }));
@@ -968,16 +990,16 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectSendPayload) {
           ConnectionResponse::kAccepted);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  SendPayload(payload_listener);
+  SendPayload(kPayloadId, payload_listener);
 
   auto expected_update = PayloadTransferUpdate::New(
       kPayloadId, PayloadStatus::kInProgress, kTotalSize, kBytesTransferred);
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(expected_update, update);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
@@ -999,7 +1021,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectCancelPayload) {
           ConnectionResponse::kAccepted);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  SendPayload(payload_listener);
+  SendPayload(kPayloadId, payload_listener);
 
   base::RunLoop cancel_run_loop;
   EXPECT_CALL(nearby_connections_, CancelPayload)
@@ -1015,16 +1037,85 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectCancelPayload) {
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(kPayloadId, update->payload_id);
         EXPECT_EQ(PayloadStatus::kCanceled, update->status);
         EXPECT_EQ(0u, update->total_bytes);
         EXPECT_EQ(0u, update->bytes_transferred);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
   nearby_connections_manager_.Cancel(kPayloadId);
+  payload_run_loop.Run();
+  cancel_run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest,
+       ConnectCancelPayload_MultiplePayloads_HandleDestroyedPayloadListener) {
+  // StartDiscovery will succeed.
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  // RequestConnection will succeed.
+  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
+  mojo::Remote<PayloadListener> payload_listener_remote;
+  Connect(connection_listener_remote, payload_listener_remote,
+          ConnectionResponse::kAccepted);
+
+  // Send two payloads with the same listener. We will eventually cancel both
+  // payloads, but we will reset the listener before cancelling the second
+  // payload. This can happen in practice: if the first payload is cancelled or
+  // fails, it makes sense to clean everything up before waiting for the other
+  // payload cancellation/failure signals. We are testing that the connections
+  // manager handles the missing listener gracefully.
+  auto payload_listener =
+      std::make_unique<testing::NiceMock<MockPayloadStatusListener>>();
+  SendPayload(kPayloadId, *payload_listener);
+  SendPayload(kPayloadId2, *payload_listener);
+
+  base::RunLoop cancel_run_loop;
+  EXPECT_CALL(nearby_connections_, CancelPayload)
+      .Times(2)
+      .WillOnce([&](const std::string& service_id, int64_t payload_id,
+                    NearbyConnectionsMojom::CancelPayloadCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        EXPECT_EQ(kPayloadId, payload_id);
+
+        std::move(callback).Run(Status::kSuccess);
+      })
+      .WillOnce([&](const std::string& service_id, int64_t payload_id,
+                    NearbyConnectionsMojom::CancelPayloadCallback callback) {
+        EXPECT_EQ(kServiceId, service_id);
+        EXPECT_EQ(kPayloadId2, payload_id);
+
+        std::move(callback).Run(Status::kSuccess);
+        cancel_run_loop.Quit();
+      });
+
+  // Because the payload listener is reset before the second payload is
+  // cancelled, we can only receive the first status update.
+  base::RunLoop payload_run_loop;
+  EXPECT_CALL(*payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    absl::optional<Medium> upgraded_medium) {
+        EXPECT_EQ(kPayloadId, update->payload_id);
+        EXPECT_EQ(PayloadStatus::kCanceled, update->status);
+        EXPECT_EQ(0u, update->total_bytes);
+        EXPECT_EQ(0u, update->bytes_transferred);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
+
+        // Destroy the PayloadStatusListener after the first payload is
+        // cancelled.
+        payload_listener.reset();
+
+        payload_run_loop.Quit();
+      });
+
+  nearby_connections_manager_.Cancel(kPayloadId);
+  nearby_connections_manager_.Cancel(kPayloadId2);
   payload_run_loop.Run();
   cancel_run_loop.Run();
 }
@@ -1070,7 +1161,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectTimeout) {
   NearbyConnection* nearby_connection = nullptr;
   nearby_connections_manager_.Connect(
       local_endpoint_info, kRemoteEndpointId,
-      /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+      /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
       base::BindLambdaForTesting([&](NearbyConnection* connection) {
         nearby_connection = connection;
         run_loop.Quit();
@@ -1112,17 +1203,17 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
   EXPECT_TRUE(connection);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  nearby_connections_manager_.RegisterPayloadStatusListener(kPayloadId,
-                                                            &payload_listener);
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId, payload_listener.GetWeakPtr());
 
   auto expected_update = PayloadTransferUpdate::New(
       kPayloadId, PayloadStatus::kInProgress, kTotalSize, kBytesTransferred);
   base::RunLoop payload_run_loop;
   EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
       .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    base::Optional<Medium> upgraded_medium) {
+                    absl::optional<Medium> upgraded_medium) {
         EXPECT_EQ(expected_update, update);
-        EXPECT_EQ(base::nullopt, upgraded_medium);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
         payload_run_loop.Quit();
       });
 
@@ -1154,6 +1245,99 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingPayloadStatusListener) {
       kRemoteEndpointId,
       PayloadTransferUpdate::New(kPayloadId, PayloadStatus::kSuccess,
                                  kTotalSize, /*bytes_transferred=*/kTotalSize));
+}
+
+TEST_F(
+    NearbyConnectionsManagerImplTest,
+    IncomingPayloadStatusListener_MultiplePayloads_HandleDestroyedPayloadListener) {
+  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
+  testing::NiceMock<MockIncomingConnectionListener>
+      incoming_connection_listener;
+  StartAdvertising(connection_listener_remote, incoming_connection_listener);
+
+  mojo::Remote<PayloadListener> payload_listener_remote;
+  NearbyConnection* connection = OnIncomingConnection(
+      connection_listener_remote, incoming_connection_listener,
+      payload_listener_remote);
+  EXPECT_TRUE(connection);
+
+  // Register three payloads with the same listener. This happens when multiple
+  // payloads are included in the same transfer. Use both file and byte payloads
+  // to ensure control-frame logic is not invoked for either.
+  auto payload_listener =
+      std::make_unique<testing::NiceMock<MockPayloadStatusListener>>();
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId, payload_listener->GetWeakPtr());
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId2, payload_listener->GetWeakPtr());
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId3, payload_listener->GetWeakPtr());
+  base::File file1, file2;
+  InitializeTemporaryFile(file1);
+  InitializeTemporaryFile(file2);
+  payload_listener_remote->OnPayloadReceived(
+      kRemoteEndpointId,
+      Payload::New(kPayloadId, PayloadContent::NewFile(
+                                   FilePayload::New(std::move(file1)))));
+  payload_listener_remote->OnPayloadReceived(
+      kRemoteEndpointId,
+      Payload::New(kPayloadId2, PayloadContent::NewFile(
+                                    FilePayload::New(std::move(file2)))));
+  const std::vector<uint8_t> byte_payload(std::begin(kBytePayload),
+                                          std::end(kBytePayload));
+  payload_listener_remote->OnPayloadReceived(
+      kRemoteEndpointId,
+      Payload::New(kPayloadId3,
+                   PayloadContent::NewBytes(BytesPayload::New(byte_payload))));
+
+  // Fail the first payload and destroy the payload listener. Then, send updates
+  // that the second and third payloads succeeded; this is unlikely in practice,
+  // but we test to ensure that no control-frame logic is exercised. Expect that
+  // a status update is only sent for the first payload failure because the
+  // listener does not exist afterwards.
+  base::RunLoop payload_run_loop;
+  EXPECT_CALL(*payload_listener, OnStatusUpdate(testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
+                    absl::optional<Medium> upgraded_medium) {
+        EXPECT_EQ(kPayloadId, update->payload_id);
+        EXPECT_EQ(PayloadStatus::kFailure, update->status);
+        EXPECT_EQ(kTotalSize, update->total_bytes);
+        EXPECT_EQ(0u, update->bytes_transferred);
+        EXPECT_EQ(absl::nullopt, upgraded_medium);
+
+        // Destroy the PayloadStatusListener after the first payload fails.
+        payload_listener.reset();
+      });
+  // Ensure that no control-frame logic is run, which can happen when a payload
+  // update is received for an unregistered payload.
+  EXPECT_CALL(nearby_connections_, CancelPayload).Times(0);
+
+  payload_listener_remote->OnPayloadTransferUpdate(
+      kRemoteEndpointId,
+      PayloadTransferUpdate::New(kPayloadId, PayloadStatus::kFailure,
+                                 kTotalSize, /*bytes_transferred=*/0u));
+  payload_listener_remote->OnPayloadTransferUpdate(
+      kRemoteEndpointId,
+      PayloadTransferUpdate::New(kPayloadId2, PayloadStatus::kSuccess,
+                                 kTotalSize, /*bytes_transferred=*/0u));
+  payload_listener_remote->OnPayloadTransferUpdate(
+      kRemoteEndpointId,
+      PayloadTransferUpdate::New(kPayloadId3, PayloadStatus::kSuccess,
+                                 kTotalSize, /*bytes_transferred=*/0u));
+  payload_run_loop.RunUntilIdle();
+
+  // Ensure that no control-frame logic was run, notably that no bytes were
+  // written to the connection. Closing the connection will invoke any
+  // outstanding Read() callback if there are no bytes to read.
+  base::RunLoop read_run_loop;
+  connection->Read(base::BindLambdaForTesting(
+      [&](absl::optional<std::vector<uint8_t>> bytes) {
+        EXPECT_FALSE(bytes);
+        read_run_loop.Quit();
+      }));
+  connection->Close();
+  read_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
@@ -1214,8 +1398,8 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingBytesPayload) {
   EXPECT_TRUE(connection);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  nearby_connections_manager_.RegisterPayloadStatusListener(kPayloadId,
-                                                            &payload_listener);
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId, payload_listener.GetWeakPtr());
 
   const std::vector<uint8_t> expected_payload(std::begin(kPayload),
                                               std::end(kPayload));
@@ -1254,8 +1438,8 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingFilePayload) {
   EXPECT_TRUE(connection);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  nearby_connections_manager_.RegisterPayloadStatusListener(kPayloadId,
-                                                            &payload_listener);
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId, payload_listener.GetWeakPtr());
 
   const std::vector<uint8_t> expected_payload(std::begin(kPayload),
                                               std::end(kPayload));
@@ -1305,8 +1489,8 @@ TEST_F(NearbyConnectionsManagerImplTest, ClearIncomingPayloads) {
   EXPECT_TRUE(connection);
 
   testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  nearby_connections_manager_.RegisterPayloadStatusListener(kPayloadId,
-                                                            &payload_listener);
+  nearby_connections_manager_.RegisterPayloadStatusListener(
+      kPayloadId, payload_listener.GetWeakPtr());
 
   base::File file;
   InitializeTemporaryFile(file);
@@ -1356,7 +1540,6 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   network_notifier_->SetUseDefaultConnectionCostImplementation(true);
   should_use_web_rtc_ =
       is_webrtc_enabled && data_usage != DataUsage::kOffline &&
-      power_level != PowerLevel::kLowPower &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
        (net::NetworkChangeNotifier::GetConnectionCost() !=
@@ -1392,6 +1575,8 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
         EXPECT_EQ(is_high_power, options->auto_upgrade_bandwidth);
         EXPECT_EQ(expected_mediums, options->allowed_mediums);
         EXPECT_EQ(!is_high_power, options->enable_bluetooth_listening);
+        EXPECT_EQ(is_high_power && should_use_web_rtc_,
+                  options->enable_webrtc_listening);
         std::move(callback).Run(Status::kSuccess);
       });
 
@@ -1420,7 +1605,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising_BeforeStart) {
   EXPECT_CALL(nearby_connections_, StopAdvertising).Times(0);
-  nearby_connections_manager_.StopAdvertising();
+  nearby_connections_manager_.StopAdvertising(base::BindOnce(
+      [](Status status) { EXPECT_EQ(status, Status::kSuccess); }));
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising) {
@@ -1437,7 +1623,8 @@ TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising) {
         std::move(callback).Run(Status::kSuccess);
         run_loop.Quit();
       });
-  nearby_connections_manager_.StopAdvertising();
+  nearby_connections_manager_.StopAdvertising(base::BindOnce(
+      [](Status status) { EXPECT_EQ(status, Status::kSuccess); }));
   run_loop.Run();
 }
 
@@ -1485,7 +1672,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ShutdownDiscoveryConnectionFails) {
   NearbyConnection* nearby_connection;
   nearby_connections_manager_.Connect(
       local_endpoint_info, kRemoteEndpointId,
-      /*bluetooth_mac_address=*/base::nullopt, DataUsage::kOffline,
+      /*bluetooth_mac_address=*/absl::nullopt, DataUsage::kOffline,
       base::BindLambdaForTesting([&](NearbyConnection* connection) {
         nearby_connection = connection;
         connect_run_loop.Quit();

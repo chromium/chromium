@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,24 +20,25 @@
     [
       CallWith = ScriptState, RaisesException, HighEntropy, MeasureAs = GetUserMediaPromise
     ] Promise<MediaStream>
-    getUserMedia(optional MediaStreamConstraints constraints = {});
+    getUserMedia(optional UserMediaStreamConstraints constraints = {});
 
     // https://w3c.github.io/mediacapture-screen-share/#dom-mediadevices-getdisplaymedia
     [
       RuntimeEnabled = GetDisplayMedia, CallWith = ScriptState, RaisesException,
       MeasureAs = GetDisplayMedia
     ] Promise<MediaStream>
-    getDisplayMedia(optional MediaStreamConstraints constraints = {});
+    getDisplayMedia(optional DisplayMediaStreamOptions constraints = {});
 
-    // TODO(crbug.com/1136942): Link to the spec after the PR goes through.
-    // Note: The runtime flag GetCurrentBrowsingContextMedia presupposes
-    // the runtime flag GetDisplayMedia.
-    // If (GetCurrentBrowsingContextMedia && !GetDisplayMedia), that's an error,
-    // and permission will be denied.
     [
-      RuntimeEnabled = GetCurrentBrowsingContextMedia, CallWith = ScriptState,
-      RaisesException,
-      MeasureAs = GetCurrentBrowsingContextMedia
-    ] Promise<MediaStream>
-    getCurrentBrowsingContextMedia(optional MediaStreamConstraints constraints = {});
+      RuntimeEnabled = GetDisplayMediaSet, CallWith = ScriptState, RaisesException
+    ] Promise<sequence<MediaStream>>
+    getDisplayMediaSet(optional DisplayMediaStreamOptions constraints = {});
+
+    // https://w3c.github.io/mediacapture-handle/identity/
+    // Allows an application APP to opt-in to exposing certain information to
+    // applications which end up capturing APP.
+    [
+      RuntimeEnabled = CaptureHandle, CallWith = ScriptState, RaisesException
+    ] void
+    setCaptureHandleConfig(optional CaptureHandleConfig config = {});
 };

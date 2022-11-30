@@ -2,8 +2,7 @@ rootWebArea pageLocation=(0, 0)
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer pageLocation=(0, 0)
-++++++++genericContainer ignored
-++++++++++staticText pageLocation=(0, 0) name='Before'
-++++++++++++inlineTextBox pageLocation=(0, 0) name='Before'
+++++++++staticText pageLocation=(0, 0) name='Before'
+++++++++++inlineTextBox pageLocation=(0, 0) name='Before'
 ++++++++staticText pageLocation=(100, 0) name='After'
 ++++++++++inlineTextBox pageLocation=(100, 0) name='After'

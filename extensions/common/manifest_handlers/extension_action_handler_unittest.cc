@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_paths.h"
@@ -22,9 +24,12 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
+namespace keys = manifest_keys;
 
 namespace {
 
@@ -74,6 +79,60 @@ TEST(ExtensionActionHandlerTest, LoadInvisiblePageActionIconUnpacked) {
       error);
 }
 
+// Tests that an action is always validated in manifest V3.
+TEST(ExtensionActionHandlerTest, InvalidActionIcon_ManifestV3) {
+  base::FilePath extension_dir =
+      GetTestDataDir().AppendASCII("action_invalid_icon");
+  std::string error;
+  scoped_refptr<Extension> extension(file_util::LoadExtension(
+      extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
+      &error));
+  EXPECT_FALSE(extension);
+  EXPECT_EQ("Could not load icon 'nonexistent_icon.png' specified in 'action'.",
+            error);
+}
+
+using ExtensionActionHandlerManifestTest = ManifestTest;
+
+TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 2,
+           "version": "0.1"
+         })";
+
+  base::Value manifest_value = base::test::ParseJson(kManifest);
+  ASSERT_TRUE(manifest_value.is_dict());
+  scoped_refptr<const Extension> extension =
+      LoadAndExpectSuccess(ManifestData(std::move(manifest_value), "test"));
+  ASSERT_TRUE(extension);
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*extension, ActionInfo::TYPE_PAGE);
+  ASSERT_TRUE(action_info);
+}
+
+TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV3) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+
+  base::Value manifest_value = base::test::ParseJson(kManifest);
+  ASSERT_TRUE(manifest_value.is_dict());
+  scoped_refptr<const Extension> extension =
+      LoadAndExpectSuccess(ManifestData(std::move(manifest_value), "test"));
+  ASSERT_TRUE(extension);
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*extension, ActionInfo::TYPE_ACTION);
+  ASSERT_TRUE(action_info);
+  EXPECT_EQ(ActionInfo::STATE_DISABLED, action_info->default_state);
+}
+
 // A parameterized test suite to test each different extension action key
 // ("page_action", "browser_action", "action").
 class ExtensionActionManifestTest
@@ -81,6 +140,11 @@ class ExtensionActionManifestTest
       public testing::WithParamInterface<ActionInfo::Type> {
  public:
   ExtensionActionManifestTest() {}
+
+  ExtensionActionManifestTest(const ExtensionActionManifestTest&) = delete;
+  ExtensionActionManifestTest& operator=(const ExtensionActionManifestTest&) =
+      delete;
+
   ~ExtensionActionManifestTest() override {}
 
   // Constructs and returns a ManifestData object with the provided
@@ -103,11 +167,64 @@ class ExtensionActionManifestTest
     return ManifestData(std::move(manifest_value), "test");
   }
 
+  scoped_refptr<Extension> LoadExtensionWithDefaultPopup(
+      const char* popup_file_name,
+      int manifest_version,
+      TestExtensionDir* test_extension_dir) {
+    const char* action_key = GetManifestKeyForActionType(GetParam());
+
+    test_extension_dir->WriteManifest(base::StringPrintf(
+        R"({
+             "name": "Test",
+             "manifest_version": %d,
+             "version": "0.1",
+             "%s": { "default_popup": "%s" }
+           })",
+        manifest_version, action_key, popup_file_name));
+    test_extension_dir->WriteFile(FILE_PATH_LITERAL("popup.html"), "");
+
+    std::string error;
+    scoped_refptr<Extension> extension(file_util::LoadExtension(
+        test_extension_dir->UnpackedPath(), mojom::ManifestLocation::kUnpacked,
+        Extension::NO_FLAGS, &error));
+    EXPECT_EQ(error, "");
+    return extension;
+  }
+
+  // Verifies that a specific warning was set on install. Or if not, that the
+  // expected number of warnings were generated.
+  void VerifyInstallWarnings(scoped_refptr<Extension> extension,
+                             int manifest_version,
+                             const std::string& expected_warning_message) {
+    std::vector<const std::string> install_warning_messages;
+    for (const InstallWarning& warning : extension->install_warnings()) {
+      install_warning_messages.push_back(warning.message);
+    }
+    std::vector<const std::string> expected_warning_messages;
+
+    // The test does not register these features, so this warning is
+    // expected.
+    const char* action_key = GetManifestKeyForActionType(GetParam());
+    expected_warning_messages.push_back(ErrorUtils::FormatErrorMessage(
+        manifest_errors::kUnrecognizedManifestKey, action_key));
+    if (manifest_version == 2) {
+      // Manifest v2 always installs a warning that it is deprecated.
+      expected_warning_messages.push_back(
+          manifest_errors::kManifestV2IsDeprecatedWarning);
+    }
+
+    if (!expected_warning_message.empty()) {
+      expected_warning_messages.push_back(expected_warning_message);
+    }
+    EXPECT_THAT(install_warning_messages,
+                testing::ContainerEq(expected_warning_messages));
+    EXPECT_EQ(expected_warning_messages.size(),
+              extension->install_warnings().size());
+  }
+
  private:
   // The "action" key is restricted to trunk.
   ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionManifestTest);
 };
 
 // Tests that parsing an action succeeds and properly populates the given
@@ -215,6 +332,54 @@ TEST_P(ExtensionActionManifestTest, Invalid) {
                      manifest_errors::kInvalidActionDefaultIcon);
 }
 
+// Tests success when default_popup is valid.
+TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
+  constexpr char valid_popup_file_name[] = "popup.html";
+  TestExtensionDir test_extension_dir = TestExtensionDir();
+  int manifest_version = GetManifestVersionForActionType(GetParam());
+  scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
+      valid_popup_file_name, manifest_version, &test_extension_dir);
+  ASSERT_TRUE(test_extension);
+  VerifyInstallWarnings(test_extension, manifest_version, "");
+}
+
+// Tests success when default_popup is empty.
+TEST_P(ExtensionActionManifestTest, EmptyDefaultPopup) {
+  constexpr char empty_popup_file_name[] = "";
+  TestExtensionDir test_extension_dir = TestExtensionDir();
+  int manifest_version = GetManifestVersionForActionType(GetParam());
+  scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
+      empty_popup_file_name, manifest_version, &test_extension_dir);
+  ASSERT_TRUE(test_extension);
+  VerifyInstallWarnings(test_extension, manifest_version, "");
+}
+
+// Tests warning when the default_popup seems to be for another extension.
+TEST_P(ExtensionActionManifestTest, OtherExtensionSpecifiedDefaultPopup) {
+  constexpr char other_extension_specified_popup_file_name[] =
+      "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/popup.html";
+  TestExtensionDir test_extension_dir = TestExtensionDir();
+  int manifest_version = GetManifestVersionForActionType(GetParam());
+  scoped_refptr<Extension> test_extension =
+      LoadExtensionWithDefaultPopup(other_extension_specified_popup_file_name,
+                                    manifest_version, &test_extension_dir);
+  ASSERT_TRUE(test_extension);
+  VerifyInstallWarnings(test_extension, manifest_version,
+                        manifest_errors::kInvalidExtensionOriginPopup);
+}
+
+// Tests warning when the default_popup doesn't exist on file system.
+TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
+  constexpr char nonexistent_popup_file_name[] = "nonexistent_popup.html";
+  TestExtensionDir test_extension_dir = TestExtensionDir();
+  int manifest_version = GetManifestVersionForActionType(GetParam());
+  scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
+      nonexistent_popup_file_name, manifest_version, &test_extension_dir);
+  ASSERT_TRUE(test_extension);
+  VerifyInstallWarnings(test_extension, manifest_version,
+                        manifest_errors::kNonexistentDefaultPopup);
+}
+
 // Test the handling of the default_state key.
 TEST_P(ExtensionActionManifestTest, DefaultState) {
   constexpr char kDefaultStateDisabled[] = R"({"default_state": "disabled"})";
@@ -223,8 +388,10 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
 
   // default_state is only valid for "action" types.
   const bool default_state_allowed = GetParam() == ActionInfo::TYPE_ACTION;
-  const char* key_disallowed_error =
-      manifest_errors::kDefaultStateShouldNotBeSet;
+  const std::string key_disallowed_error =
+      base::UTF16ToUTF8(manifest_errors::kDefaultStateShouldNotBeSet);
+  const std::string invalid_action_error =
+      base::UTF16ToUTF8(manifest_errors::kInvalidActionDefaultState);
 
   struct {
     // The manifest definition of the action key.
@@ -232,20 +399,20 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
     // The expected error, if parsing was unsuccessful.
     const char* expected_error;
     // The expected state, if parsing was successful.
-    base::Optional<ActionInfo::DefaultState> expected_state;
+    absl::optional<ActionInfo::DefaultState> expected_state;
   } test_cases[] = {
       {kDefaultStateDisabled,
-       default_state_allowed ? nullptr : key_disallowed_error,
-       default_state_allowed ? base::make_optional(ActionInfo::STATE_DISABLED)
-                             : base::nullopt},
+       default_state_allowed ? nullptr : key_disallowed_error.c_str(),
+       default_state_allowed ? absl::make_optional(ActionInfo::STATE_DISABLED)
+                             : absl::nullopt},
       {kDefaultStateEnabled,
-       default_state_allowed ? nullptr : key_disallowed_error,
-       default_state_allowed ? base::make_optional(ActionInfo::STATE_ENABLED)
-                             : base::nullopt},
+       default_state_allowed ? nullptr : key_disallowed_error.c_str(),
+       default_state_allowed ? absl::make_optional(ActionInfo::STATE_ENABLED)
+                             : absl::nullopt},
       {kDefaultStateInvalid,
-       default_state_allowed ? manifest_errors::kInvalidActionDefaultState
-                             : key_disallowed_error,
-       base::nullopt},
+       default_state_allowed ? invalid_action_error.c_str()
+                             : key_disallowed_error.c_str(),
+       absl::nullopt},
   };
 
   for (const auto& test_case : test_cases) {

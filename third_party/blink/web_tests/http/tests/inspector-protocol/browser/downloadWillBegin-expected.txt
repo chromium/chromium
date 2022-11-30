@@ -1,0 +1,382 @@
+Tests we properly emit Browser.downloadWillBegin.
+Running test for Browser target...
+Downloading via a navigation: 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+}
+Downloading via a navigation of subframe: 
+downloadWillBegin from child frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+}
+Downloading by clicking a link: 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.text
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+}
+Downloading by clicking a link in subframe: 
+downloadWillBegin from child frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.text
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+}
+Downloading by clicking a link (no HTTP Content-Disposition header, a[download=""]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : download.zzz
+        url : http://127.0.0.1:8000/devtools/network/resources/download.zzz
+    }
+}
+Downloading by clicking a link (HTTP Content-Disposition header with filename=foo.txt, no a[download]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : foo.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download=foo.txt
+    }
+}
+Downloading by clicking a link (HTTP Content-Disposition header with filename=override.txt, a[download="foo.txt"]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : override.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download=override.txt
+    }
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download
+    }
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download], js): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.js
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download&type=js
+    }
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download], image): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.png
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download&type=image
+    }
+}
+Running test for Frame target...
+Downloading via a navigation: 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+Downloading via a navigation of subframe: 
+downloadWillBegin from child frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link: 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.text
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link in subframe: 
+downloadWillBegin from child frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : hello.text
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : inProgress
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+downloadProgress has expected guid: true
+{
+    method : Browser.downloadProgress
+    params : {
+        guid : <string>
+        receivedBytes : <number>
+        state : completed
+        totalBytes : 11
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (no HTTP Content-Disposition header, a[download=""]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : download.zzz
+        url : http://127.0.0.1:8000/devtools/network/resources/download.zzz
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (HTTP Content-Disposition header with filename=foo.txt, no a[download]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : foo.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download=foo.txt
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (HTTP Content-Disposition header with filename=override.txt, a[download="foo.txt"]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : override.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download=override.txt
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download]): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.txt
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download], js): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.js
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download&type=js
+    }
+    sessionId : <string>
+}
+Downloading by clicking a link (HTTP Content-Disposition header without filename, no a[download], image): 
+downloadWillBegin from top frame: {
+    method : Browser.downloadWillBegin
+    params : {
+        frameId : <string>
+        guid : <string>
+        suggestedFilename : resource.png
+        url : http://127.0.0.1:8000/devtools/network/resources/resource.php?named_download&type=image
+    }
+    sessionId : <string>
+}
+

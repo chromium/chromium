@@ -1,9 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
 import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
@@ -13,6 +13,7 @@ import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
+import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 
 const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
@@ -121,6 +122,7 @@ function initialize() {
   addWebUIListener('add-standard-stats', addStandardStats);
   addWebUIListener('add-legacy-stats', addLegacyStats);
   addWebUIListener('add-get-user-media', addGetUserMedia);
+  addWebUIListener('update-get-user-media', updateGetUserMedia);
   addWebUIListener(
       'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
   addWebUIListener(
@@ -142,18 +144,31 @@ function initialize() {
         params.eventLogRecordingsToggleable);
   });
 
-  // Requests stats from all peer connections every second.
-  window.setInterval(requestStats, 1000);
+  // Requests stats from all peer connections every second unless specified via
+  // ?statsInterval=(milliseconds >= 100ms)
+  const searchParameters = new URLSearchParams(window.location.search);
+  let statsInterval = 1000;
+  if (searchParameters.has('statsInterval')) {
+    statsInterval = Math.max(
+        parseInt(searchParameters.get('statsInterval'), 10),
+        100);
+    if (!isFinite(statsInterval)) {
+      statsInterval = 1000;
+    }
+  }
+  window.setInterval(requestStats, statsInterval);
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
 function createStatsSelectionOptionElements() {
-  const p = document.createElement('p');
-
-  const selectElement = document.createElement('select');
-  selectElement.setAttribute('id', 'statsSelectElement');
+  const statsElement = $('stats-template').content.cloneNode(true);
+  const selectElement = statsElement.getElementById('statsSelectElement');
+  const legacyStatsElement = statsElement.getElementById(
+      'legacy-stats-warning');
   selectElement.onchange = () => {
     currentGetStatsMethod = selectElement.value;
+    legacyStatsElement.style.display =
+        currentGetStatsMethod === OPTION_GETSTATS_LEGACY ? 'block' : 'none';
     Object.keys(peerConnectionDataStore).forEach(id => {
       const peerConnectionElement = $(id);
       statsTable.clearStatsLists(peerConnectionElement);
@@ -170,17 +185,7 @@ function createStatsSelectionOptionElements() {
   });
 
   selectElement.value = currentGetStatsMethod;
-
-  p.appendChild(document.createTextNode('Read Stats From: '));
-  p.appendChild(selectElement);
-
-  const statsDocumentation = document.createElement('p');
-  statsDocumentation.appendChild(
-    document.createTextNode('Note: computed stats are in []. ' +
-      'Experimental stats are marked with an * at the end.'));
-  p.appendChild(statsDocumentation);
-
-  return p;
+  return statsElement;
 }
 
 function requestStats() {
@@ -222,6 +227,7 @@ function changeToLegacyGetStats() {
   selectElement.value = currentGetStatsMethod;
   requestStats();
 }
+window.changeToLegacyGetStats = changeToLegacyGetStats;
 
 /**
  * A helper function for getting a peer connection element id.
@@ -294,7 +300,6 @@ function removePeerConnection(data) {
   }
 }
 
-
 /**
  * Adds a peer connection.
  *
@@ -326,6 +331,54 @@ function addPeerConnection(data) {
   }
   peerConnectionElement.appendChild(p);
 
+  // Show deprecation notices as a list.
+  // Note: data.rtcConfiguration is not in JSON format and may
+  // not be defined in tests.
+  const deprecationNotices = document.createElement('ul');
+  if (data.rtcConfiguration) {
+    deprecationNotices.className = 'peerconnection-deprecations';
+  }
+  if (data.constraints) {
+    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
+      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "false" value for this constraint, which is ' +
+          'interpreted as an attempt to use the deprecated "SDES" key ' +
+          'negotiation method. This functionality will be removed; use a ' +
+          'service that supports DTLS key negotiation instead.');
+      } else {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "true" value for this constraint, which has no ' +
+          'effect, but you can remove this constraint for tidiness.');
+      }
+    }
+  }
+  peerConnectionElement.appendChild(deprecationNotices);
+
+  const iceConnectionStates = document.createElement('div');
+  iceConnectionStates.textContent = 'ICE connection state: new';
+  iceConnectionStates.className = 'iceconnectionstate';
+  peerConnectionElement.appendChild(iceConnectionStates);
+
+  const connectionStates = document.createElement('div');
+  connectionStates.textContent = 'Connection state: new';
+  connectionStates.className = 'connectionstate';
+  peerConnectionElement.appendChild(connectionStates);
+
+  const signalingStates = document.createElement('div');
+  signalingStates.textContent = 'Signaling state: new';
+  signalingStates.className = 'signalingstate';
+  peerConnectionElement.appendChild(signalingStates);
+
+  const candidatePair = document.createElement('div');
+  candidatePair.textContent = 'ICE Candidate pair: ';
+  candidatePair.className = 'candidatepair';
+  candidatePair.appendChild(document.createElement('span'));
+  peerConnectionElement.appendChild(candidatePair);
+
+  createIceCandidateGrid(peerConnectionElement);
   return peerConnectionElement;
 }
 
@@ -394,6 +447,83 @@ function addStandardStats(data) {
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, false);
   }
+  // Determine currently connected candidate pair.
+  const stats = r.statsById;
+
+  let activeCandidatePair = null;
+  let remoteCandidate = null;
+  let localCandidate = null;
+
+  // Get the first active candidate pair. This ignores the rare case of
+  // non-bundled connections.
+  stats.forEach(report => {
+    if (report.type === 'transport' && !activeCandidatePair) {
+      activeCandidatePair = stats.get(report.selectedCandidatePairId);
+    }
+  });
+
+  const candidateElement = peerConnectionElement
+    .getElementsByClassName('candidatepair')[0].firstElementChild;
+  if (activeCandidatePair) {
+    if (activeCandidatePair.remoteCandidateId) {
+      remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
+    }
+    if (activeCandidatePair.localCandidateId) {
+      localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    }
+    if (localCandidate && localCandidate.address &&
+        localCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText =
+          '[' + localCandidate.address + ']:' + localCandidate.port
+          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
+    } else {
+      candidateElement.innerText =
+          localCandidate.address + ':' + localCandidate.port
+          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
+    }
+
+    // Mark active local-candidate, remote candidate and candidate pair
+    // bold in the table.
+    const statsContainer =
+        document.getElementById(peerConnectionElement.id + '-table-container');
+    const activeConnectionClass = 'stats-table-active-connection';
+    statsContainer.childNodes.forEach(node => {
+      if (node.nodeName !== 'DETAILS') {
+        return;
+      }
+      const innerText = node.firstElementChild.innerText;
+      if (innerText.startsWith(activeCandidatePair.id)
+          || innerText.startsWith(localCandidate.id)
+          || innerText.startsWith(remoteCandidate.id)) {
+        node.firstElementChild.classList.add(activeConnectionClass);
+      } else {
+        node.firstElementChild.classList.remove(activeConnectionClass);
+      }
+    });
+    // Mark active candidate-pair graph bold.
+    const statsGraphContainers = peerConnectionElement
+      .getElementsByClassName('stats-graph-container');
+    for (let i = 0; i < statsGraphContainers.length; i++) {
+      const node = statsGraphContainers[i];
+      if (node.nodeName !== 'DETAILS') {
+        continue;
+      }
+      if (!node.id.startsWith(pcId + '-candidate-pair')) {
+        continue;
+      }
+      if (node.id === pcId + '-candidate-pair-' + activeCandidatePair.id
+          + '-graph-container') {
+        node.firstElementChild.classList.add(activeConnectionClass);
+      } else {
+        node.firstElementChild.classList.remove(activeConnectionClass);
+      }
+    }
+  } else {
+    candidateElement.innerText = '(not connected)';
+  }
+
+  updateIceCandidateGrid(peerConnectionElement, r.statsById);
 }
 
 /**
@@ -421,12 +551,11 @@ function addLegacyStats(data) {
   }
 }
 
-
 /**
  * Adds a getUserMedia request.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, audio {string}, video {string}.
+ *     origin {string}, request_id {number}, audio {string}, video {string}.
  */
 function addGetUserMedia(data) {
   userMediaRequests.push(data);
@@ -437,21 +566,81 @@ function addGetUserMedia(data) {
 
   const requestDiv = document.createElement('div');
   requestDiv.className = 'user-media-request-div-class';
+  requestDiv.id = ['gum', data.rid, data.pid, data.request_id].join('-');
   requestDiv.rid = data.rid;
   $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
 
   appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
   appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-  appendChildWithText(requestDiv, 'div', 'Time: ' + (new Date(data.timestamp)));
-  appendChildWithText(requestDiv, 'span', 'Audio Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.audio);
-
-  appendChildWithText(requestDiv, 'span', 'Video Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.video);
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia call');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  if (data.audio !== undefined) {
+    appendChildWithText(el, 'div', 'Audio constraints: ' +
+      (data.audio || 'true'))
+      .style.fontWeight = 'normal';
+  }
+  if (data.video !== undefined) {
+    appendChildWithText(el, 'div', 'Video constraints: ' +
+      (data.video || 'true'))
+      .style.fontWeight = 'normal';
+  }
 }
 
+/**
+ * Update a getUserMedia request with a result or error.
+ *
+ * @param {!Object} data The object containing rid {number}, pid {number},
+ *     request_id {number}. For getUserMedia results there is also the
+ *     stream_id {string}, audio_track_info {string} and
+ *     video_track_info {string}. For errors the error {string} and
+ *     error_message {string} fields are set.
+ */
+function updateGetUserMedia(data) {
+  userMediaRequests.push(data);
+
+  if (!$(USER_MEDIA_TAB_ID)) {
+    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
+  }
+
+  const requestDiv = document.getElementById(
+    ['gum', data.rid, data.pid, data.request_id].join('-'));
+  if (!requestDiv) {
+    console.error('Could not update getUserMedia request', data);
+    return;
+  }
+
+  if (data.error) {
+    const el = appendChildWithText(requestDiv, 'span', 'Error');
+    el.style.fontWeight = 'bold';
+    appendChildWithText(el, 'div', 'Time: ' +
+      (new Date(data.timestamp).toTimeString()))
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error: ' + data.error)
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error message: ' + data.error_message)
+      .style.fontWeight = 'normal';
+    return;
+  }
+
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia result');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  appendChildWithText(el, 'div', 'Stream id: ' + data.stream_id)
+    .style.fontWeight = 'normal';
+  if (data.audio_track_info) {
+    appendChildWithText(el, 'div', 'Audio track: ' + data.audio_track_info)
+        .style.fontWeight = 'normal';
+  }
+  if (data.video_track_info) {
+    appendChildWithText(el, 'div', 'Video track: ' + data.video_track_info)
+        .style.fontWeight = 'normal';
+  }
+}
 
 /**
  * Removes the getUserMedia requests from the specified |rid|.

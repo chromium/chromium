@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define CHROME_COMMON_EXTENSIONS_PERMISSIONS_CHROME_PERMISSION_MESSAGE_PROVIDER_H_
 
 #include <set>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_rules.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 
@@ -24,6 +22,12 @@ namespace extensions {
 class ChromePermissionMessageProvider : public PermissionMessageProvider {
  public:
   ChromePermissionMessageProvider();
+
+  ChromePermissionMessageProvider(const ChromePermissionMessageProvider&) =
+      delete;
+  ChromePermissionMessageProvider& operator=(
+      const ChromePermissionMessageProvider&) = delete;
+
   ~ChromePermissionMessageProvider() override;
 
   // PermissionMessageProvider implementation.
@@ -83,8 +87,6 @@ class ChromePermissionMessageProvider : public PermissionMessageProvider {
   PermissionMessages GetPermissionMessagesHelper(
       const PermissionIDSet& permissions,
       const std::vector<ChromePermissionMessageRule>& rules) const;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageProvider);
 };
 
 }  // namespace extensions

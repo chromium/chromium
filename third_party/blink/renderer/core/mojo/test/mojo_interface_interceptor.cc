@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -29,18 +30,26 @@ namespace blink {
 MojoInterfaceInterceptor* MojoInterfaceInterceptor::Create(
     ExecutionContext* context,
     const String& interface_name,
-    const String& scope,
+    const Scope& scope,
     ExceptionState& exception_state) {
-  bool process_scope = scope == "process";
-  if (process_scope && !context->IsWindow()) {
+  if (scope == Scope::Enum::kProcess && !context->IsWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "\"process\" scope interception is unavailable outside a Document.");
     return nullptr;
   }
 
+  if (scope == Scope::Enum::kContextJs &&
+      !context->use_mojo_js_interface_broker()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "\"context_js\" scope interception is unavailable unless MojoJS "
+        "interface broker is used.");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<MojoInterfaceInterceptor>(context, interface_name,
-                                                        process_scope);
+                                                        scope.AsEnum());
 }
 
 MojoInterfaceInterceptor::~MojoInterfaceInterceptor() = default;
@@ -49,10 +58,9 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
   if (started_)
     return;
 
-
   std::string interface_name = interface_name_.Utf8();
 
-  if (process_scope_) {
+  if (scope_ == Scope::Enum::kProcess) {
     started_ = true;
     if (!Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             interface_name,
@@ -73,6 +81,20 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
     return;
 
   started_ = true;
+  if (scope_ == Scope::Enum::kContextJs) {
+    DCHECK(context->use_mojo_js_interface_broker());
+    if (!context->GetMojoJSInterfaceBroker().SetBinderForTesting(
+            interface_name,
+            WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
+                               WrapWeakPersistent(this)))) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidModificationError,
+          "Interface " + interface_name_ +
+              " is already intercepted by another MojoInterfaceInterceptor.");
+    }
+    return;
+  }
+
   if (!context->GetBrowserInterfaceBroker().SetBinderForTesting(
           interface_name,
           WTF::BindRepeating(&MojoInterfaceInterceptor::OnInterfaceRequest,
@@ -91,7 +113,7 @@ void MojoInterfaceInterceptor::stop() {
   started_ = false;
   std::string interface_name = interface_name_.Utf8();
 
-  if (process_scope_) {
+  if (scope_ == Scope::Enum::kProcess) {
     Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
         interface_name, {});
     return;
@@ -99,6 +121,13 @@ void MojoInterfaceInterceptor::stop() {
 
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
+
+  if (scope_ == Scope::Enum::kContextJs) {
+    DCHECK(context->use_mojo_js_interface_broker());
+    context->GetMojoJSInterfaceBroker().SetBinderForTesting(interface_name, {});
+    return;
+  }
+
   context->GetBrowserInterfaceBroker().SetBinderForTesting(interface_name, {});
 }
 
@@ -125,10 +154,10 @@ void MojoInterfaceInterceptor::ContextDestroyed() {
 
 MojoInterfaceInterceptor::MojoInterfaceInterceptor(ExecutionContext* context,
                                                    const String& interface_name,
-                                                   bool process_scope)
+                                                   Scope::Enum scope)
     : ExecutionContextLifecycleObserver(context),
       interface_name_(interface_name),
-      process_scope_(process_scope) {}
+      scope_(scope) {}
 
 void MojoInterfaceInterceptor::OnInterfaceRequest(
     mojo::ScopedMessagePipeHandle handle) {
@@ -139,10 +168,10 @@ void MojoInterfaceInterceptor::OnInterfaceRequest(
   // request is being satisfied by another process.
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMicrotask)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
-                    WrapPersistent(this), std::move(handle)));
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(
+                     &MojoInterfaceInterceptor::DispatchInterfaceRequestEvent,
+                     WrapPersistent(this), std::move(handle)));
 }
 
 void MojoInterfaceInterceptor::DispatchInterfaceRequestEvent(

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/spellcheck/browser/spellcheck_dictionary.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_data.h"
@@ -46,6 +46,10 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   class Change {
    public:
     Change();
+
+    Change(const Change&) = delete;
+    Change& operator=(const Change&) = delete;
+
     ~Change();
 
     // Adds |word| in this change.
@@ -91,8 +95,6 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
     // Whether to clear everything before adding words.
     bool clear_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Change);
   };
 
   // Interface to implement for dictionary load and change observers.
@@ -107,6 +109,10 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   struct LoadFileResult {
     LoadFileResult();
+
+    LoadFileResult(const LoadFileResult&) = delete;
+    LoadFileResult& operator=(const LoadFileResult&) = delete;
+
     ~LoadFileResult();
 
     // The contents of the custom dictionary file or its backup. Does not
@@ -116,14 +122,16 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
     // True when the custom dictionary file on disk has a valid checksum and
     // contains only valid words.
     bool is_valid_file;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LoadFileResult);
   };
 
   // The dictionary will be saved in |dictionary_directory_name|.
   explicit SpellcheckCustomDictionary(
       const base::FilePath& dictionary_directory_name);
+
+  SpellcheckCustomDictionary(const SpellcheckCustomDictionary&) = delete;
+  SpellcheckCustomDictionary& operator=(const SpellcheckCustomDictionary&) =
+      delete;
+
   ~SpellcheckCustomDictionary() override;
 
   // Returns the in-memory cache of words in the custom dictionary.
@@ -162,14 +170,14 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   // Overridden from syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -210,7 +218,7 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
   // Notifies the sync service of the |dictionary_change|. Syncs up to the
   // maximum syncable words on the server. Disables syncing of this dictionary
   // if the server contains the maximum number of syncable words.
-  base::Optional<syncer::ModelError> Sync(const Change& dictionary_change);
+  absl::optional<syncer::ModelError> Sync(const Change& dictionary_change);
 
   // Notifies observers of the dictionary change if the dictionary has been
   // changed.
@@ -244,8 +252,6 @@ class SpellcheckCustomDictionary : public SpellcheckDictionary,
 
   // Used to create weak pointers for an instance of this class.
   base::WeakPtrFactory<SpellcheckCustomDictionary> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckCustomDictionary);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_CUSTOM_DICTIONARY_H_

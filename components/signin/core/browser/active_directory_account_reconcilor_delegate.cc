@@ -1,17 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/signin/core/browser/active_directory_account_reconcilor_delegate.h"
 
-#include "chromeos/tpm/install_attributes.h"
+#include "base/containers/contains.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace signin {
 
 ActiveDirectoryAccountReconcilorDelegate::
     ActiveDirectoryAccountReconcilorDelegate() {
-  DCHECK(chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged());
+  DCHECK(ash::InstallAttributes::Get()->IsActiveDirectoryManaged());
 }
 
 ActiveDirectoryAccountReconcilorDelegate::
@@ -24,16 +25,6 @@ gaia::GaiaSource ActiveDirectoryAccountReconcilorDelegate::GetGaiaApiSource()
 
 bool ActiveDirectoryAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
-}
-
-CoreAccountId
-ActiveDirectoryAccountReconcilorDelegate::GetFirstGaiaAccountForReconcile(
-    const std::vector<CoreAccountId>& chrome_accounts,
-    const std::vector<gaia::ListedAccount>& gaia_accounts,
-    const CoreAccountId& primary_account,
-    bool first_execution,
-    bool will_logout) const {
-  return GetFirstAccount(chrome_accounts, gaia_accounts);
 }
 
 std::vector<CoreAccountId>

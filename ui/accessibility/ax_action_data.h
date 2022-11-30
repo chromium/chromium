@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ struct AX_BASE_EXPORT AXActionData {
   // The target rect for the action.
   gfx::Rect target_rect;
 
-  // The target point for the action.
+  // The target point for the action in screen coordinates.
   gfx::Point target_point;
 
   // The new value for a node, for the SET_VALUE action. UTF-8 encoded.

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -78,22 +79,21 @@ std::string HttpAuthHandlerDigest::FixedNonceGenerator::GenerateNonce() const {
 }
 
 HttpAuthHandlerDigest::Factory::Factory()
-    : nonce_generator_(new DynamicNonceGenerator()) {
-}
+    : nonce_generator_(std::make_unique<DynamicNonceGenerator>()) {}
 
 HttpAuthHandlerDigest::Factory::~Factory() = default;
 
 void HttpAuthHandlerDigest::Factory::set_nonce_generator(
-    const NonceGenerator* nonce_generator) {
-  nonce_generator_.reset(nonce_generator);
+    std::unique_ptr<const NonceGenerator> nonce_generator) {
+  nonce_generator_ = std::move(nonce_generator);
 }
 
 int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -101,20 +101,21 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
     std::unique_ptr<HttpAuthHandler>* handler) {
   // TODO(cbentzel): Move towards model of parsing in the factory
   //                 method and only constructing when valid.
-  std::unique_ptr<HttpAuthHandler> tmp_handler(
+  auto tmp_handler = base::WrapUnique(
       new HttpAuthHandlerDigest(digest_nonce_count, nonce_generator_.get()));
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, origin, net_log)) {
+                                      network_anonymization_key,
+                                      scheme_host_port, net_log)) {
     return ERR_INVALID_RESPONSE;
   }
-  handler->swap(tmp_handler);
+  *handler = std::move(tmp_handler);
   return OK;
 }
 
 bool HttpAuthHandlerDigest::Init(
     HttpAuthChallengeTokenizer* challenge,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return ParseChallenge(challenge);
 }
 
@@ -152,10 +153,11 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   // for the new challenge.
   std::string original_realm;
   while (parameters.GetNext()) {
-    if (base::LowerCaseEqualsASCII(parameters.name_piece(), "stale")) {
-      if (base::LowerCaseEqualsASCII(parameters.value_piece(), "true"))
+    if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "stale")) {
+      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true"))
         return HttpAuth::AUTHORIZATION_RESULT_STALE;
-    } else if (base::LowerCaseEqualsASCII(parameters.name_piece(), "realm")) {
+    } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
+                                                "realm")) {
       original_realm = parameters.value();
     }
   }
@@ -165,12 +167,9 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
 }
 
 HttpAuthHandlerDigest::HttpAuthHandlerDigest(
-    int nonce_count, const NonceGenerator* nonce_generator)
-    : stale_(false),
-      algorithm_(ALGORITHM_UNSPECIFIED),
-      qop_(QOP_UNSPECIFIED),
-      nonce_count_(nonce_count),
-      nonce_generator_(nonce_generator) {
+    int nonce_count,
+    const NonceGenerator* nonce_generator)
+    : nonce_count_(nonce_count), nonce_generator_(nonce_generator) {
   DCHECK(nonce_generator_);
 }
 
@@ -233,32 +232,32 @@ bool HttpAuthHandlerDigest::ParseChallenge(
 
 bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
                                                    base::StringPiece value) {
-  if (base::LowerCaseEqualsASCII(name, "realm")) {
+  if (base::EqualsCaseInsensitiveASCII(name, "realm")) {
     std::string realm;
     if (!ConvertToUtf8AndNormalize(value, kCharsetLatin1, &realm))
       return false;
     realm_ = realm;
     original_realm_ = std::string(value);
-  } else if (base::LowerCaseEqualsASCII(name, "nonce")) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "nonce")) {
     nonce_ = std::string(value);
-  } else if (base::LowerCaseEqualsASCII(name, "domain")) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "domain")) {
     domain_ = std::string(value);
-  } else if (base::LowerCaseEqualsASCII(name, "opaque")) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "opaque")) {
     opaque_ = std::string(value);
-  } else if (base::LowerCaseEqualsASCII(name, "stale")) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "stale")) {
     // Parse the stale boolean.
-    stale_ = base::LowerCaseEqualsASCII(value, "true");
-  } else if (base::LowerCaseEqualsASCII(name, "algorithm")) {
+    stale_ = base::EqualsCaseInsensitiveASCII(value, "true");
+  } else if (base::EqualsCaseInsensitiveASCII(name, "algorithm")) {
     // Parse the algorithm.
-    if (base::LowerCaseEqualsASCII(value, "md5")) {
+    if (base::EqualsCaseInsensitiveASCII(value, "md5")) {
       algorithm_ = ALGORITHM_MD5;
-    } else if (base::LowerCaseEqualsASCII(value, "md5-sess")) {
+    } else if (base::EqualsCaseInsensitiveASCII(value, "md5-sess")) {
       algorithm_ = ALGORITHM_MD5_SESS;
     } else {
       DVLOG(1) << "Unknown value of algorithm";
       return false;  // FAIL -- unsupported value of algorithm.
     }
-  } else if (base::LowerCaseEqualsASCII(name, "qop")) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
     //
@@ -269,7 +268,7 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
                                         ',');
     qop_ = QOP_UNSPECIFIED;
     while (qop_values.GetNext()) {
-      if (base::LowerCaseEqualsASCII(qop_values.value_piece(), "auth")) {
+      if (base::EqualsCaseInsensitiveASCII(qop_values.value_piece(), "auth")) {
         qop_ = QOP_AUTH;
         break;
       }

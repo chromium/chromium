@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "base/scoped_observation.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -32,7 +31,7 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 
 // Handles removal of pre-installed demo mode resources.
 // Observes system state to detect when pre-installed demo mode resources are
@@ -46,7 +45,7 @@ namespace chromeos {
 //   * device is enrolled in a non-demo-mode domain
 //   * enough user activity has been detected on the device
 class DemoModeResourcesRemover
-    : public CryptohomeClient::Observer,
+    : public UserDataAuthClient::Observer,
       public user_manager::UserManager::UserSessionStateObserver,
       public ui::UserActivityObserver {
  public:
@@ -133,10 +132,13 @@ class DemoModeResourcesRemover
   // disabled.
   static bool IsLegacyDemoRetailModeDomain(const std::string& domain);
 
+  DemoModeResourcesRemover(const DemoModeResourcesRemover&) = delete;
+  DemoModeResourcesRemover& operator=(const DemoModeResourcesRemover&) = delete;
+
   ~DemoModeResourcesRemover() override;
 
-  // CryptohomeClient::Observer:
-  void LowDiskSpace(uint64_t free_disk_space) override;
+  // UserDataAuthClient::Observer:
+  void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* user) override;
@@ -186,19 +188,17 @@ class DemoModeResourcesRemover
   const base::TickClock* tick_clock_;
 
   // Used to track the duration of last unrecorded interval of user activity.
-  base::Optional<base::TimeTicks> usage_start_;
-  base::Optional<base::TimeTicks> usage_end_;
+  absl::optional<base::TimeTicks> usage_start_;
+  absl::optional<base::TimeTicks> usage_end_;
 
-  ScopedObserver<CryptohomeClient, CryptohomeClient::Observer>
-      cryptohome_observer_{this};
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
-      user_activity_observer_{this};
+  base::ScopedObservation<UserDataAuthClient, UserDataAuthClient::Observer>
+      userdataauth_observation_{this};
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
+      user_activity_observation_{this};
 
   base::WeakPtrFactory<DemoModeResourcesRemover> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoModeResourcesRemover);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_RESOURCES_REMOVER_H_

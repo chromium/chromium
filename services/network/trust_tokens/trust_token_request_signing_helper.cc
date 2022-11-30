@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -27,8 +28,10 @@
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
+#include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 namespace network {
@@ -50,25 +53,25 @@ namespace internal {
 
 // Parse the Signed-Headers input header as a Structured Headers Draft 15 list
 // of "tokens" (unquoted strings with a constrained alphabet).
-base::Optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
+absl::optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
     base::StringPiece header) {
-  base::Optional<net::structured_headers::List> maybe_list =
+  absl::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(header);
   if (!maybe_list)
-    return base::nullopt;
+    return absl::nullopt;
   std::vector<std::string> ret;
   for (const net::structured_headers::ParameterizedMember&
            parameterized_member : *maybe_list) {
     if (!parameterized_member.params.empty() ||
         parameterized_member.member.size() != 1) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     const net::structured_headers::ParameterizedItem& parameterized_item =
         parameterized_member.member.front();
     if (!parameterized_item.params.empty())
-      return base::nullopt;
+      return absl::nullopt;
     if (!parameterized_item.item.is_token())
-      return base::nullopt;
+      return absl::nullopt;
     ret.push_back(parameterized_item.item.GetString());
   }
   return ret;
@@ -136,20 +139,20 @@ const base::flat_set<std::string>& LowercaseSignableHeaders() {
 // lower-cased members of |additional_headers| and the lower-cased elements of
 // |request|'s previous header value; and
 // - returns the list of these header names.
-base::Optional<std::vector<std::string>>
+absl::optional<std::vector<std::string>>
 GetHeadersToSignAndUpdateSignedHeadersHeader(
     net::URLRequest* request,
     const std::vector<std::string>& additional_headers) {
   std::string signed_headers_header;
-  ignore_result(request->extra_request_headers().GetHeader(
-      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header));
+  std::ignore = request->extra_request_headers().GetHeader(
+      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header);
 
   // Because of the characteristics of the protocol, there are expected to be
   // roughly 2-5 total headers to sign.
   base::flat_set<std::string> deduped_lowercase_headers_to_sign(
       Lowercase(additional_headers));
 
-  base::Optional<std::vector<std::string>> maybe_parsed_header_names =
+  absl::optional<std::vector<std::string>> maybe_parsed_header_names =
       internal::ParseTrustTokenSignedHeadersHeader(signed_headers_header);
 
   // Remove the Signed-Headers header:
@@ -160,7 +163,7 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
 
   // Fail if the request's Signed-Headers header existed but failed to parse.
   if (!maybe_parsed_header_names)
-    return base::nullopt;
+    return absl::nullopt;
 
   for (const std::string& header_name : Lowercase(*maybe_parsed_header_names))
     deduped_lowercase_headers_to_sign.insert(header_name);
@@ -172,7 +175,7 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
 
   if (!base::ranges::includes(LowercaseSignableHeaders(),
                               deduped_lowercase_headers_to_sign)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> out(
@@ -195,7 +198,7 @@ void AttachRedemptionRecordHeader(net::URLRequest* request, std::string value) {
 // issuer-to-RR map but implemented as a Structured Headers Draft 15
 // parameterized list (essentially a list where each member has an associated
 // dictionary).
-base::Optional<std::string> ConstructRedemptionRecordHeader(
+absl::optional<std::string> ConstructRedemptionRecordHeader(
     const base::flat_map<SuitableTrustTokenOrigin, TrustTokenRedemptionRecord>&
         records_per_issuer) {
   net::structured_headers::List header_items;
@@ -237,7 +240,7 @@ Params::Params(
     std::vector<std::string> additional_headers_to_sign,
     bool should_add_timestamp,
     mojom::TrustTokenSignRequestData sign_request_data,
-    base::Optional<std::string> possibly_unsafe_additional_signing_data)
+    absl::optional<std::string> possibly_unsafe_additional_signing_data)
     : issuers(std::move(issuers)),
       toplevel(std::move(toplevel)),
       additional_headers_to_sign(std::move(additional_headers_to_sign)),
@@ -308,7 +311,7 @@ void TrustTokenRequestSigningHelper::Begin(
   // 1. For each issuer specified, search storage for a non-expired RR
   // corresponding to that issuer and the request’s initiating top-level origin.
   for (const SuitableTrustTokenOrigin& issuer : params_.issuers) {
-    base::Optional<TrustTokenRedemptionRecord> maybe_redemption_record =
+    absl::optional<TrustTokenRedemptionRecord> maybe_redemption_record =
         token_store_->RetrieveNonstaleRedemptionRecord(issuer,
                                                        params_.toplevel);
     if (!maybe_redemption_record)
@@ -378,7 +381,7 @@ void TrustTokenRequestSigningHelper::Begin(
   // If the request has a Sec-Trust-Tokens-Additional-Signing-Data header,
   // append “Sec-Trust-Tokens-Additional-Signing-Data” to the request’s
   // Signed-Headers header.
-  base::Optional<std::vector<std::string>> maybe_headers_to_sign =
+  absl::optional<std::vector<std::string>> maybe_headers_to_sign =
       GetHeadersToSignAndUpdateSignedHeadersHeader(
           request, params_.additional_headers_to_sign);
 
@@ -393,7 +396,7 @@ void TrustTokenRequestSigningHelper::Begin(
   }
 
   // 2.c. Attach the RRs in a Sec-Redemption-Record header.
-  if (base::Optional<std::string> maybe_redemption_record_header =
+  if (absl::optional<std::string> maybe_redemption_record_header =
           ConstructRedemptionRecordHeader(records_per_issuer)) {
     AttachRedemptionRecordHeader(request,
                                  std::move(*maybe_redemption_record_header));
@@ -430,7 +433,7 @@ void TrustTokenRequestSigningHelper::Begin(
       signatures_per_issuer;
 
   for (const auto& issuer_and_record : records_per_issuer) {
-    if (base::Optional<std::vector<uint8_t>> maybe_signature = GetSignature(
+    if (absl::optional<std::vector<uint8_t>> maybe_signature = GetSignature(
             request, issuer_and_record.second, *maybe_headers_to_sign)) {
       signatures_per_issuer[issuer_and_record.first] =
           std::move(*maybe_signature);
@@ -455,7 +458,7 @@ void TrustTokenRequestSigningHelper::Begin(
     }
   }
 
-  if (base::Optional<std::string> maybe_signature_header =
+  if (absl::optional<std::string> maybe_signature_header =
           BuildSignatureHeaderIfAtLeastOneSignatureIsPresent(
               records_per_issuer, signatures_per_issuer)) {
     request->SetExtraRequestHeaderByName(kTrustTokensRequestHeaderSecSignature,
@@ -473,6 +476,10 @@ void TrustTokenRequestSigningHelper::Begin(
     return;
   }
 
+  request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenVersionHeader,
+                                       kTrustTokensMajorVersion,
+                                       /*overwrite=*/true);
+
   LogOutcome(net_log_, "Success");
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }
@@ -486,6 +493,7 @@ void TrustTokenRequestSigningHelper::Finalize(
 namespace {
 
 // Given a redemption record and a signature bytestring, returns a {
+//   "alg": <signing alg>,
 //   "public-key": <public key>,
 //   "sig": <signature>
 // }
@@ -493,7 +501,8 @@ namespace {
 // top-level list.
 net::structured_headers::Parameters ConstructKeyAndSignaturePair(
     const TrustTokenRedemptionRecord& redemption_record,
-    base::span<const uint8_t> signature_bytes) {
+    base::span<const uint8_t> signature_bytes,
+    const TrustTokenRequestSigningHelper::Signer& signer) {
   net::structured_headers::Item public_key(
       redemption_record.public_key(),
       net::structured_headers::Item::ItemType::kByteSequenceType);
@@ -503,42 +512,36 @@ net::structured_headers::Parameters ConstructKeyAndSignaturePair(
       net::structured_headers::Item::ItemType::kByteSequenceType));
 
   return {{kSignatureHeaderPublicKeyKey, std::move(public_key)},
-          {kSignatureHeaderSignatureKey, std::move(signature)}};
+          {kSignatureHeaderSignatureKey, std::move(signature)},
+          {kSignatureHeaderAlgorithmKey, signer.GetAlgorithmIdentifier()}};
 }
 
 }  // namespace
 
-base::Optional<std::string> TrustTokenRequestSigningHelper::
+absl::optional<std::string> TrustTokenRequestSigningHelper::
     BuildSignatureHeaderIfAtLeastOneSignatureIsPresent(
         const base::flat_map<SuitableTrustTokenOrigin,
                              TrustTokenRedemptionRecord>& records_per_issuer,
         const base::flat_map<SuitableTrustTokenOrigin, std::vector<uint8_t>>&
             signatures_per_issuer) {
   if (signatures_per_issuer.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   net::structured_headers::Dictionary header_items;
-
-  header_items[kSignatureHeaderAlgorithmKey] =
-      net::structured_headers::ParameterizedMember(
-          net::structured_headers::Item(
-              signer_->GetAlgorithmIdentifier(),
-              net::structured_headers::Item::ItemType::kStringType),
-              {});
 
   std::vector<net::structured_headers::ParameterizedItem> keys_and_signatures;
   for (const auto& kv : signatures_per_issuer) {
     const SuitableTrustTokenOrigin& issuer = kv.first;
     const std::vector<uint8_t>& signature = kv.second;
 
-    keys_and_signatures.emplace_back(net::structured_headers::ParameterizedItem(
+    keys_and_signatures.emplace_back(
         net::structured_headers::Item(
             issuer.Serialize(),
             net::structured_headers::Item::ItemType::kStringType),
         // records_per_issuer is guaranteed to have all of the keys that
         // signatures_per_issuer does, so using |at| is safe:
-        ConstructKeyAndSignaturePair(records_per_issuer.at(issuer),
-                                     signature)));
+        ConstructKeyAndSignaturePair(records_per_issuer.at(issuer), signature,
+                                     *signer_));
   }
 
   header_items[kSignatureHeaderSignaturesKey] =
@@ -573,7 +576,7 @@ base::Optional<std::string> TrustTokenRequestSigningHelper::
   return net::structured_headers::SerializeDictionary(header_items);
 }
 
-base::Optional<std::vector<uint8_t>>
+absl::optional<std::vector<uint8_t>>
 TrustTokenRequestSigningHelper::GetSignature(
     net::URLRequest* request,
     const TrustTokenRedemptionRecord& redemption_record,
@@ -587,13 +590,13 @@ TrustTokenRequestSigningHelper::GetSignature(
   // otherwise-forward-compatible protocol structures, which is useful in case
   // the semantics change across versions.)
 
-  base::Optional<std::vector<uint8_t>> maybe_request_in_cbor =
+  absl::optional<std::vector<uint8_t>> maybe_request_in_cbor =
       canonicalizer_->Canonicalize(
           request->url(), request->extra_request_headers(),
           redemption_record.public_key(), params_.sign_request_data);
 
   if (!maybe_request_in_cbor)
-    return base::nullopt;
+    return absl::nullopt;
 
   // kRequestSigningDomainSeparator is an explicitly-specified char array, not
   // a string literal, so this will, as intended, not include a null terminator.

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 #include <tuple>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -47,7 +47,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   SCOPED_TRACE(static_cast<int>(algo));
   SCOPED_TRACE(mock_enabled);
 
-  base::Optional<crypto::ScopedMockUnexportableKeyProvider> mock;
+  absl::optional<crypto::ScopedMockUnexportableKeyProvider> mock;
   if (mock_enabled) {
     mock.emplace();
   }
@@ -78,7 +78,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const uint8_t msg[] = {1, 2, 3, 4};
 
   const base::TimeTicks sign_start = base::TimeTicks::Now();
-  const base::Optional<std::vector<uint8_t>> sig = key->SignSlowly(msg);
+  const absl::optional<std::vector<uint8_t>> sig = key->SignSlowly(msg);
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign_start);
   ASSERT_TRUE(sig);
 
@@ -94,7 +94,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   LOG(INFO) << "Import took " << (base::TimeTicks::Now() - import2_start);
 
   const base::TimeTicks sign2_start = base::TimeTicks::Now();
-  const base::Optional<std::vector<uint8_t>> sig2 = key->SignSlowly(msg);
+  const absl::optional<std::vector<uint8_t>> sig2 = key->SignSlowly(msg);
   LOG(INFO) << "Signing took " << (base::TimeTicks::Now() - sign2_start);
   ASSERT_TRUE(sig2);
 

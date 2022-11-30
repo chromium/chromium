@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/base/base_export.h"
 
 namespace cc {
@@ -33,7 +35,8 @@ CC_BASE_EXPORT extern const char kFrameId[];
 CC_BASE_EXPORT extern const char kLayerId[];
 CC_BASE_EXPORT extern const char kLayerTreeId[];
 CC_BASE_EXPORT extern const char kPixelRefId[];
-CC_BASE_EXPORT extern const char kPresentationTimestamp[];
+CC_BASE_EXPORT extern const char kFrameSequenceNumber[];
+CC_BASE_EXPORT extern const char kHasPartialUpdate[];
 
 CC_BASE_EXPORT extern const char kImageDecodeTask[];
 CC_BASE_EXPORT extern const char kBeginFrame[];
@@ -69,7 +72,7 @@ class CC_BASE_EXPORT ScopedLayerTask {
 
 class CC_BASE_EXPORT ScopedImageTask {
  public:
-  enum ImageType { kAvif, kBmp, kGif, kIco, kJpeg, kPng, kWebP, kOther };
+  enum ImageType { kJxl, kAvif, kBmp, kGif, kIco, kJpeg, kPng, kWebP, kOther };
 
   explicit ScopedImageTask(ImageType image_type)
       : image_type_(image_type), start_time_(base::TimeTicks::Now()) {}
@@ -88,8 +91,8 @@ class CC_BASE_EXPORT ScopedImageTask {
 
   // UMA histogram parameters
   const uint32_t bucket_count_ = 50;
-  base::TimeDelta hist_min_ = base::TimeDelta::FromMicroseconds(1);
-  base::TimeDelta hist_max_ = base::TimeDelta::FromMilliseconds(1000);
+  base::TimeDelta hist_min_ = base::Microseconds(1);
+  base::TimeDelta hist_max_ = base::Milliseconds(1000);
 };
 
 class CC_BASE_EXPORT ScopedImageUploadTask : public ScopedImageTask {
@@ -143,10 +146,11 @@ class CC_BASE_EXPORT ScopedLayerTreeTask {
 
 struct CC_BASE_EXPORT ScopedCommitTrace {
  public:
-  explicit ScopedCommitTrace(int layer_tree_host_id) {
-    TRACE_EVENT_BEGIN1(internal::CategoryName::kTimeline,
+  explicit ScopedCommitTrace(int layer_tree_host_id, uint64_t sequence_number) {
+    TRACE_EVENT_BEGIN2(internal::CategoryName::kTimeline,
                        internal::kCompositeLayers, internal::kLayerTreeId,
-                       layer_tree_host_id);
+                       layer_tree_host_id, internal::kFrameSequenceNumber,
+                       sequence_number);
   }
   ScopedCommitTrace(const ScopedCommitTrace&) = delete;
   ~ScopedCommitTrace() {
@@ -177,37 +181,22 @@ inline void CC_BASE_EXPORT DidActivateLayerTree(int layer_tree_host_id,
                        internal::kFrameId, frame_id);
 }
 
-inline void CC_BASE_EXPORT DidBeginFrame(int layer_tree_host_id) {
-  TRACE_EVENT_INSTANT1(internal::CategoryName::kTimelineFrame,
-                       internal::kBeginFrame, TRACE_EVENT_SCOPE_THREAD,
-                       internal::kLayerTreeId, layer_tree_host_id);
-}
-
-constexpr uint64_t GetUniqueIDFromLayerTreeHostIdAndFrameToken(
-    int layer_tree_host_id,
-    uint32_t frame_token) {
-  return static_cast<uint64_t>(layer_tree_host_id) << 32 |
-         static_cast<uint64_t>(frame_token);
+inline void CC_BASE_EXPORT DidBeginFrame(int layer_tree_host_id,
+                                         base::TimeTicks begin_frame_timestamp,
+                                         uint64_t sequence_number) {
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kBeginFrame),
+                      begin_frame_timestamp, internal::kLayerTreeId,
+                      layer_tree_host_id, internal::kFrameSequenceNumber,
+                      sequence_number);
 }
 
 inline void CC_BASE_EXPORT DidDrawFrame(int layer_tree_host_id,
-                                        uint32_t frame_token) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(internal::CategoryName::kTimelineFrame,
-                                    internal::kDrawFrame,
-                                    GetUniqueIDFromLayerTreeHostIdAndFrameToken(
-                                        layer_tree_host_id, frame_token),
-                                    internal::kLayerTreeId, layer_tree_host_id);
-}
-
-inline void CC_BASE_EXPORT
-DidPresentFrame(int layer_tree_host_id,
-                uint32_t frame_token,
-                base::TimeTicks presentation_timestamp) {
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      internal::CategoryName::kTimelineFrame, internal::kDrawFrame,
-      GetUniqueIDFromLayerTreeHostIdAndFrameToken(layer_tree_host_id,
-                                                  frame_token),
-      internal::kPresentationTimestamp, presentation_timestamp);
+                                        uint64_t sequence_number) {
+  TRACE_EVENT_INSTANT2(internal::CategoryName::kTimelineFrame,
+                       internal::kDrawFrame, TRACE_EVENT_SCOPE_THREAD,
+                       internal::kLayerTreeId, layer_tree_host_id,
+                       internal::kFrameSequenceNumber, sequence_number);
 }
 
 inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {
@@ -218,11 +207,15 @@ inline void CC_BASE_EXPORT DidRequestMainThreadFrame(int layer_tree_host_id) {
 
 inline void CC_BASE_EXPORT
 DidDropSmoothnessFrame(int layer_tree_host_id,
-                       base::TimeTicks dropped_frame_timestamp) {
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
-      internal::CategoryName::kTimelineFrame, internal::kDroppedFrame,
-      TRACE_EVENT_SCOPE_THREAD, dropped_frame_timestamp, internal::kLayerTreeId,
-      layer_tree_host_id);
+                       base::TimeTicks dropped_frame_timestamp,
+                       uint64_t sequence_number,
+                       bool has_partial_update) {
+  TRACE_EVENT_INSTANT(internal::CategoryName::kTimelineFrame,
+                      perfetto::StaticString(internal::kDroppedFrame),
+                      dropped_frame_timestamp, internal::kLayerTreeId,
+                      layer_tree_host_id, internal::kFrameSequenceNumber,
+                      sequence_number, internal::kHasPartialUpdate,
+                      has_partial_update);
 }
 
 inline std::unique_ptr<base::trace_event::ConvertableToTraceFormat>

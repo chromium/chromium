@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -15,10 +17,10 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
@@ -49,6 +51,12 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
       std::string additional_extensions = std::string())
       : extension_string_(
             BuildExtensionString(std::move(additional_extensions))) {}
+
+  TestGLES2InterfaceForContextProvider(
+      const TestGLES2InterfaceForContextProvider&) = delete;
+  TestGLES2InterfaceForContextProvider& operator=(
+      const TestGLES2InterfaceForContextProvider&) = delete;
+
   ~TestGLES2InterfaceForContextProvider() override = default;
 
   // TestGLES2Interface:
@@ -68,7 +76,7 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
     return nullptr;
   }
   const GrGLubyte* GetStringi(GrGLenum name, GrGLuint i) override {
-    if (name == GL_EXTENSIONS && i < base::size(kExtensions))
+    if (name == GL_EXTENSIONS && i < std::size(kExtensions))
       return reinterpret_cast<const GLubyte*>(kExtensions[i]);
     return nullptr;
   }
@@ -101,7 +109,7 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
  private:
   static std::string BuildExtensionString(std::string additional_extensions) {
     std::string extension_string = kExtensions[0];
-    for (size_t i = 1; i < base::size(kExtensions); ++i) {
+    for (size_t i = 1; i < std::size(kExtensions); ++i) {
       extension_string += " ";
       extension_string += kExtensions[i];
     }
@@ -113,8 +121,6 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
   }
 
   const std::string extension_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGLES2InterfaceForContextProvider);
 };
 
 }  // namespace
@@ -154,6 +160,7 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::BufferPlane plane,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
@@ -163,16 +170,6 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
   shared_images_.insert(mailbox);
   most_recent_size_ = gpu_memory_buffer->GetSize();
   return mailbox;
-}
-
-gpu::Mailbox TestSharedImageInterface::CreateSharedImageWithAHB(
-    const gpu::Mailbox& mailbox,
-    uint32_t usage,
-    const gpu::SyncToken& sync_token) {
-  base::AutoLock locked(lock_);
-  auto out_mailbox = gpu::Mailbox::GenerateForSharedImage();
-  shared_images_.insert(out_mailbox);
-  return out_mailbox;
 }
 
 void TestSharedImageInterface::UpdateSharedImage(
@@ -216,7 +213,7 @@ void TestSharedImageInterface::PresentSwapChain(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& mailbox) {}
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void TestSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -230,7 +227,7 @@ void TestSharedImageInterface::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   NOTREACHED();
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 gpu::SyncToken TestSharedImageInterface::GenVerifiedSyncToken() {
   base::AutoLock locked(lock_);
@@ -276,16 +273,24 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
       std::make_unique<TestContextSupport>(),
       std::make_unique<TestGLES2InterfaceForContextProvider>(
           std::move(additional_extensions)),
+      /*raster=*/nullptr,
       /*sii=*/nullptr, support_locking);
 }
 
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker() {
-  constexpr bool support_locking = true;
+  return CreateWorker(std::make_unique<TestContextSupport>());
+}
+
+// static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
+    std::unique_ptr<TestContextSupport> support) {
+  DCHECK(support);
+
   auto worker_context_provider = base::MakeRefCounted<TestContextProvider>(
-      std::make_unique<TestContextSupport>(),
-      std::make_unique<TestGLES2InterfaceForContextProvider>(), /*sii=*/nullptr,
-      support_locking);
+      std::move(support), std::make_unique<TestRasterInterface>(),
+      /*support_locking=*/true);
+
   // Worker contexts are bound to the thread they are created on.
   auto result = worker_context_provider->BindToCurrentThread();
   if (result != gpu::ContextResult::kSuccess)
@@ -299,8 +304,8 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
   DCHECK(gl);
   constexpr bool support_locking = false;
   return new TestContextProvider(std::make_unique<TestContextSupport>(),
-                                 std::move(gl), /*sii=*/nullptr,
-                                 support_locking);
+                                 std::move(gl), /*raster=*/nullptr,
+                                 /*sii=*/nullptr, support_locking);
 }
 
 // static
@@ -308,9 +313,10 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
     std::unique_ptr<TestSharedImageInterface> sii) {
   DCHECK(sii);
   constexpr bool support_locking = false;
-  return new TestContextProvider(std::make_unique<TestContextSupport>(),
-                                 /*gl=*/nullptr, std::move(sii),
-                                 support_locking);
+  return new TestContextProvider(
+      std::make_unique<TestContextSupport>(),
+      std::make_unique<TestGLES2InterfaceForContextProvider>(),
+      /*raster=*/nullptr, std::move(sii), support_locking);
 }
 
 // static
@@ -321,35 +327,29 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
   return new TestContextProvider(
       std::move(support),
       std::make_unique<TestGLES2InterfaceForContextProvider>(),
-      /*sii=*/nullptr, support_locking);
-}
-
-// static
-scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
-    std::unique_ptr<TestContextSupport> support) {
-  DCHECK(support);
-  constexpr bool support_locking = true;
-  auto worker_context_provider = base::MakeRefCounted<TestContextProvider>(
-      std::move(support),
-      std::make_unique<TestGLES2InterfaceForContextProvider>(),
-      /*sii=*/nullptr, support_locking);
-  // Worker contexts are bound to the thread they are created on.
-  auto result = worker_context_provider->BindToCurrentThread();
-  if (result != gpu::ContextResult::kSuccess)
-    return nullptr;
-  return worker_context_provider;
+      /*raster=*/nullptr, /*sii=*/nullptr, support_locking);
 }
 
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
-    std::unique_ptr<TestGLES2Interface> gl,
-    std::unique_ptr<TestSharedImageInterface> sii,
+    std::unique_ptr<TestRasterInterface> raster,
     bool support_locking)
-    : TestContextProvider(std::move(support),
-                          std::move(gl),
-                          /*raster=*/nullptr,
-                          std::move(sii),
-                          support_locking) {}
+    : support_(std::move(support)),
+      raster_context_(std::move(raster)),
+      shared_image_interface_(std::make_unique<TestSharedImageInterface>()),
+      support_locking_(support_locking) {
+  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK(raster_context_);
+
+  context_thread_checker_.DetachFromThread();
+  raster_context_->set_test_support(support_.get());
+
+  // Just pass nullptr to the ContextCacheController for its task runner.
+  // Idle handling is tested directly in ContextCacheController's
+  // unittests, and isn't needed here.
+  cache_controller_ =
+      std::make_unique<ContextCacheController>(support_.get(), nullptr);
+}
 
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
@@ -358,10 +358,8 @@ TestContextProvider::TestContextProvider(
     std::unique_ptr<TestSharedImageInterface> sii,
     bool support_locking)
     : support_(std::move(support)),
-      context_gl_(
-          gl ? std::move(gl)
-             : std::make_unique<TestGLES2InterfaceForContextProvider>()),
-      raster_context_(std::move(raster)),
+      context_gl_(std::move(gl)),
+      raster_interface_gles_(std::move(raster)),
       shared_image_interface_(
           sii ? std::move(sii) : std::make_unique<TestSharedImageInterface>()),
       support_locking_(support_locking) {
@@ -369,14 +367,16 @@ TestContextProvider::TestContextProvider(
   DCHECK(context_gl_);
   context_thread_checker_.DetachFromThread();
   context_gl_->set_test_support(support_.get());
-  if (!raster_context_) {
-    raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-        context_gl_.get(), support_.get());
+  if (!raster_interface_gles_) {
+    raster_interface_gles_ =
+        std::make_unique<gpu::raster::RasterImplementationGLES>(
+            context_gl_.get(), support_.get());
   }
   // Just pass nullptr to the ContextCacheController for its task runner.
   // Idle handling is tested directly in ContextCacheController's
   // unittests, and isn't needed here.
-  cache_controller_.reset(new ContextCacheController(support_.get(), nullptr));
+  cache_controller_ =
+      std::make_unique<ContextCacheController>(support_.get(), nullptr);
 }
 
 TestContextProvider::~TestContextProvider() {
@@ -397,11 +397,19 @@ gpu::ContextResult TestContextProvider::BindToCurrentThread() {
   DCHECK(context_thread_checker_.CalledOnValidThread());
 
   if (!bound_) {
-    if (context_gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
-      return gpu::ContextResult::kTransientFailure;
+    if (context_gl_) {
+      if (context_gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
+        return gpu::ContextResult::kTransientFailure;
 
-    context_gl_->set_context_lost_callback(base::BindOnce(
-        &TestContextProvider::OnLostContext, base::Unretained(this)));
+      context_gl_->set_context_lost_callback(base::BindOnce(
+          &TestContextProvider::OnLostContext, base::Unretained(this)));
+    } else {
+      if (raster_context_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
+        return gpu::ContextResult::kTransientFailure;
+
+      raster_context_->set_context_lost_callback(base::BindOnce(
+          &TestContextProvider::OnLostContext, base::Unretained(this)));
+    }
   }
   bound_ = true;
   return gpu::ContextResult::kSuccess;
@@ -410,7 +418,10 @@ gpu::ContextResult TestContextProvider::BindToCurrentThread() {
 const gpu::Capabilities& TestContextProvider::ContextCapabilities() const {
   DCHECK(bound_);
   CheckValidThreadOrLockAcquired();
-  return context_gl_->test_capabilities();
+  if (context_gl_)
+    return context_gl_->test_capabilities();
+
+  return raster_context_->capabilities();
 }
 
 const gpu::GpuFeatureInfo& TestContextProvider::GetGpuFeatureInfo() const {
@@ -427,7 +438,7 @@ gpu::gles2::GLES2Interface* TestContextProvider::ContextGL() {
 }
 
 gpu::raster::RasterInterface* TestContextProvider::RasterInterface() {
-  return raster_context_.get();
+  return raster_context_ ? raster_context_.get() : raster_interface_gles_.get();
 }
 
 gpu::ContextSupport* TestContextProvider::ContextSupport() {
@@ -438,6 +449,9 @@ class GrDirectContext* TestContextProvider::GrContext() {
   DCHECK(bound_);
   CheckValidThreadOrLockAcquired();
 
+  if (!context_gl_)
+    return nullptr;
+
   if (gr_context_)
     return gr_context_->get();
 
@@ -447,7 +461,7 @@ class GrDirectContext* TestContextProvider::GrContext() {
                                     &max_glyph_cache_texture_bytes);
   gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       context_gl_.get(), support_.get(), context_gl_->test_capabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
+      max_resource_cache_bytes, max_glyph_cache_texture_bytes, true);
   cache_controller_->SetGrContext(gr_context_->get());
 
   // If GlContext is already lost, also abandon the new GrContext.
@@ -486,58 +500,22 @@ TestGLES2Interface* TestContextProvider::TestContextGL() {
   return context_gl_.get();
 }
 
+TestRasterInterface* TestContextProvider::GetTestRasterInterface() {
+  DCHECK(bound_);
+  CheckValidThreadOrLockAcquired();
+  return raster_context_.get();
+}
+
+TestRasterInterface* TestContextProvider::UnboundTestRasterInterface() {
+  return raster_context_.get();
+}
+
 void TestContextProvider::AddObserver(ContextLostObserver* obs) {
   observers_.AddObserver(obs);
 }
 
 void TestContextProvider::RemoveObserver(ContextLostObserver* obs) {
   observers_.RemoveObserver(obs);
-}
-
-TestVizProcessContextProvider::TestVizProcessContextProvider(
-    std::unique_ptr<TestContextSupport> support,
-    std::unique_ptr<TestGLES2Interface> gl)
-    : support_(std::move(support)), context_gl_(std::move(gl)) {}
-
-TestVizProcessContextProvider::~TestVizProcessContextProvider() = default;
-
-gpu::gles2::GLES2Interface* TestVizProcessContextProvider::ContextGL() {
-  return context_gl_.get();
-}
-
-gpu::ContextSupport* TestVizProcessContextProvider::ContextSupport() {
-  return support_.get();
-}
-
-const gpu::Capabilities& TestVizProcessContextProvider::ContextCapabilities()
-    const {
-  return gpu_capabilities_;
-}
-
-const gpu::GpuFeatureInfo& TestVizProcessContextProvider::GetGpuFeatureInfo()
-    const {
-  return gpu_feature_info_;
-}
-
-void TestVizProcessContextProvider::SetUpdateVSyncParametersCallback(
-    UpdateVSyncParametersCallback callback) {}
-
-void TestVizProcessContextProvider::SetGpuVSyncCallback(
-    GpuVSyncCallback callback) {}
-
-void TestVizProcessContextProvider::SetGpuVSyncEnabled(bool enabled) {}
-
-bool TestVizProcessContextProvider::UseRGB565PixelFormat() const {
-  return false;
-}
-
-uint32_t TestVizProcessContextProvider::GetCopyTextureInternalFormat() {
-  return 0u;
-}
-
-base::ScopedClosureRunner
-TestVizProcessContextProvider::GetCacheBackBufferCb() {
-  return base::ScopedClosureRunner(base::DoNothing());
 }
 
 }  // namespace viz

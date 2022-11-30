@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/web_feed_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <!-- ScrollView can only have one child. Thus an additional layout to wrap everything is
+         needed. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- We need a start margin here because the illustration is not symmetrical and should be
+             offset from the center. -->
+        <ImageView
+            android:id="@+id/web_feed_dialog_illustration"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/web_feed_dialog_illustration_height"
+            android:layout_marginTop="@dimen/web_feed_dialog_illustration_margin_top"
+            android:layout_marginStart="@dimen/web_feed_dialog_illustration_margin_start"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/web_feed_dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/web_feed_dialog_title_padding_top"
+            android:paddingStart="@dimen/web_feed_dialog_text_horizontal_padding"
+            android:paddingEnd="@dimen/web_feed_dialog_text_horizontal_padding"
+            app:leading="@dimen/headline_size_leading"
+            android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/web_feed_dialog_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/web_feed_dialog_details_padding_top"
+            android:paddingBottom="@dimen/web_feed_dialog_details_padding_bottom"
+            android:paddingStart="@dimen/web_feed_dialog_text_horizontal_padding"
+            android:paddingEnd="@dimen/web_feed_dialog_text_horizontal_padding"
+            app:leading="@dimen/text_size_medium_leading"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,30 +17,23 @@
 
 namespace embedder_support {
 
-const uint8_t kTestPublicKey[] = {
+const blink::OriginTrialPublicKey kTestPublicKey1 = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
 };
 
-// Base64 encoding of the above sample public key
+const blink::OriginTrialPublicKey kTestPublicKey2 = {
+    0x50, 0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c,
+    0x47, 0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51,
+    0x3e, 0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca,
+};
+
+// Base64 encoding of the `kTestPublicKey1`.
 const char kTestPublicKeyString[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
-const uint8_t kTwoTestPublicKeys[][32] = {
-    {
-        0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
-        0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
-        0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
-    },
-    {
-        0x50, 0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c,
-        0x47, 0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51,
-        0x3e, 0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca,
-    }};
-const int kTwoTestPublicKeysSize = 2;
-
-// Comma-separated Base64 encodings of the above sample public keys.
+// Comma-separated Base64 encodings of `{kTestPublicKey1, kTestPublicKey2}`.
 const char kTwoTestPublicKeysString[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=,"
     "UAdNdlVWQhctipxHliXacKq5/VNdUT4Wq7SG6vM1xso=";
@@ -109,13 +101,13 @@ class OriginTrialPolicyImplTest : public testing::Test {
   OriginTrialPolicyImplTest()
       : token1_signature_(
             std::string(reinterpret_cast<const char*>(kToken1Signature),
-                        base::size(kToken1Signature))),
+                        std::size(kToken1Signature))),
         token2_signature_(
             std::string(reinterpret_cast<const char*>(kToken2Signature),
-                        base::size(kToken2Signature))),
+                        std::size(kToken2Signature))),
         token3_signature_(
             std::string(reinterpret_cast<const char*>(kToken3Signature),
-                        base::size(kToken3Signature))),
+                        std::size(kToken3Signature))),
         two_disabled_tokens_(
             base::JoinString({kToken1SignatureEncoded, kToken2SignatureEncoded},
                              kTokenSeparator)),
@@ -124,21 +116,18 @@ class OriginTrialPolicyImplTest : public testing::Test {
                               kToken3SignatureEncoded},
                              kTokenSeparator)),
         manager_(base::WrapUnique(new OriginTrialPolicyImpl())),
-        default_keys_(manager_->GetPublicKeys()) {
-    test_keys_.push_back(
-        base::StringPiece(reinterpret_cast<const char*>(kTestPublicKey),
-                          base::size(kTestPublicKey)));
-    for (int n = 0; n < kTwoTestPublicKeysSize; n++) {
-      test_keys2_.push_back(base::StringPiece(
-          reinterpret_cast<const char*>(kTwoTestPublicKeys[n]),
-          base::size(kTwoTestPublicKeys[n])));
-    }
-  }
+        default_keys_(manager_->GetPublicKeys()) {}
 
   OriginTrialPolicyImpl* manager() { return manager_.get(); }
-  std::vector<base::StringPiece> default_keys() { return default_keys_; }
-  std::vector<base::StringPiece> test_keys() { return test_keys_; }
-  std::vector<base::StringPiece> test_keys2() { return test_keys2_; }
+  const std::vector<blink::OriginTrialPublicKey>& default_keys() {
+    return default_keys_;
+  }
+  std::vector<blink::OriginTrialPublicKey> test_keys() {
+    return {kTestPublicKey1};
+  }
+  std::vector<blink::OriginTrialPublicKey> test_keys2() {
+    return {kTestPublicKey1, kTestPublicKey2};
+  }
   std::string token1_signature_;
   std::string token2_signature_;
   std::string token3_signature_;
@@ -147,15 +136,13 @@ class OriginTrialPolicyImplTest : public testing::Test {
 
  private:
   std::unique_ptr<OriginTrialPolicyImpl> manager_;
-  std::vector<base::StringPiece> default_keys_;
-  std::vector<base::StringPiece> test_keys_;
-  std::vector<base::StringPiece> test_keys2_;
+  std::vector<blink::OriginTrialPublicKey> default_keys_;
 };
 
 TEST_F(OriginTrialPolicyImplTest, DefaultConstructor) {
   // We don't specify here what the keys should be, but make sure those are
   // returned, valid and consistent.
-  for (base::StringPiece key : manager()->GetPublicKeys()) {
+  for (const blink::OriginTrialPublicKey& key : manager()->GetPublicKeys()) {
     EXPECT_EQ(32UL, key.size());
   }
   EXPECT_EQ(default_keys(), manager()->GetPublicKeys());
@@ -276,6 +263,19 @@ TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUser) {
   feature_list.InitAndDisableFeature(
       kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
   EXPECT_TRUE(manager()->IsFeatureDisabledForUser("FrobulateThirdParty"));
+}
+
+TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUserAfterCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kOriginTrialsSampleAPIThirdPartyAlternativeUsage);
+  // Regression test for https://crbug.com/1244566: This assert is called for
+  // its side effect of registering the address of the base::Feature used here.
+  // If IsFeatureDisabledForUser erroneously makes a copy of the feature, then
+  // that will trigger a DCHECK failure in CheckFeatureIdentity.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      kOriginTrialsSampleAPIThirdPartyAlternativeUsage));
+  EXPECT_FALSE(manager()->IsFeatureDisabledForUser("FrobulateThirdParty"));
 }
 
 // Tests for initialization from command line

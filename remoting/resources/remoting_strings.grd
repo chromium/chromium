@@ -7,17 +7,23 @@
       <emit emit_type="prepend"/>
     </output>
 
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/af.pak" lang="af" type="data_package"/>
+    </if>
     <output filename="remoting/resources/am.pak" lang="am" type="data_package"/>
     <output filename="remoting/resources/ar.pak" lang="ar" type="data_package"/>
     <output filename="remoting/resources/bg.pak" lang="bg" type="data_package"/>
     <output filename="remoting/resources/bn.pak" lang="bn" type="data_package"/>
     <output filename="remoting/resources/ca.pak" lang="ca" type="data_package"/>
     <output filename="remoting/resources/cs.pak" lang="cs" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/cy.pak" lang="cy" type="data_package"/>
+    </if>
     <output filename="remoting/resources/da.pak" lang="da" type="data_package"/>
     <output filename="remoting/resources/de.pak" lang="de" type="data_package"/>
     <output filename="remoting/resources/el.pak" lang="el" type="data_package"/>
     <output filename="remoting/resources/en-GB.pak" lang="en-GB" type="data_package"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/en-US.pak" lang="en" type="data_package"/>
     </if>
     <output filename="remoting/resources/en.pak" lang="en" type="data_package"/>
@@ -30,17 +36,23 @@
     </if>
     <output filename="remoting/resources/es.pak" lang="es" type="data_package"/>
     <output filename="remoting/resources/et.pak" lang="et" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/eu.pak" lang="eu" type="data_package"/>
+    </if>
     <output filename="remoting/resources/fa.pak" lang="fa" type="data_package"/>
     <output filename="remoting/resources/fi.pak" lang="fi" type="data_package"/>
     <output filename="remoting/resources/fil.pak" lang="fil" type="data_package"/>
     <output filename="remoting/resources/fr.pak" lang="fr" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/gl.pak" lang="gl" type="data_package"/>
+    </if>
     <output filename="remoting/resources/gu.pak" lang="gu" type="data_package"/>
     <output filename="remoting/resources/he.pak" lang="he" type="data_package"/>
     <output filename="remoting/resources/hi.pak" lang="hi" type="data_package"/>
     <output filename="remoting/resources/hr.pak" lang="hr" type="data_package"/>
     <output filename="remoting/resources/hu.pak" lang="hu" type="data_package"/>
     <output filename="remoting/resources/id.pak" lang="id" type="data_package"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/is.pak" lang="is" type="data_package"/>
     </if>
     <output filename="remoting/resources/it.pak" lang="it" type="data_package"/>
@@ -79,23 +91,32 @@
     <output filename="remoting/resources/vi.pak" lang="vi" type="data_package"/>
     <output filename="remoting/resources/zh-CN.pak" lang="zh-CN" type="data_package"/>
     <output filename="remoting/resources/zh-TW.pak" lang="zh-TW" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/zu.pak" lang="zu" type="data_package"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/ar-XB.pak" lang="ar-XB" type="data_package"/>
     <output filename="remoting/resources/en-XA.pak" lang="en-XA" type="data_package"/>
 
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/af/messages.json" lang="af" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/am/messages.json" lang="am" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ar/messages.json" lang="ar" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bg/messages.json" lang="bg" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/bn/messages.json" lang="bn" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ca/messages.json" lang="ca" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/cs/messages.json" lang="cs" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/cy/messages.json" lang="cy" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/da/messages.json" lang="da" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/de/messages.json" lang="de" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fa/messages.json" lang="fa" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/el/messages.json" lang="el" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/en/messages.json" lang="en" type="chrome_messages_json"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <!-- lang="en-US" will create an empty json file. -->
       <output filename="remoting/resources/_locales/en_US/messages.json" lang="en" type="chrome_messages_json"/>
     </if>
@@ -109,16 +130,22 @@
       <output filename="remoting/resources/_locales/es_419/messages.json" lang="es-419" type="chrome_messages_json"/>
     </if>
     <output filename="remoting/resources/_locales/et/messages.json" lang="et" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/eu/messages.json" lang="eu" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/fi/messages.json" lang="fi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fil/messages.json" lang="fil" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/fr/messages.json" lang="fr" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/gl/messages.json" lang="gl" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/gu/messages.json" lang="gu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/he/messages.json" lang="he" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hi/messages.json" lang="hi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hr/messages.json" lang="hr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/hu/messages.json" lang="hu" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/id/messages.json" lang="id" type="chrome_messages_json"/>
-    <if expr="chromeos or lacros">
+    <if expr="is_chromeos">
       <output filename="remoting/resources/_locales/is/messages.json" lang="is" type="chrome_messages_json"/>
     </if>
     <output filename="remoting/resources/_locales/it/messages.json" lang="it" type="chrome_messages_json"/>
@@ -157,6 +184,9 @@
     <output filename="remoting/resources/_locales/vi/messages.json" lang="vi" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_CN/messages.json" lang="zh-CN" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/zh_TW/messages.json" lang="zh-TW" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/zu/messages.json" lang="zu" type="chrome_messages_json"/>
+    </if>
 
     <!-- Pseudolocales -->
     <output filename="remoting/resources/_locales/ar_XB/messages.json" lang="ar-XB" type="chrome_messages_json"/>
@@ -211,87 +241,88 @@
     </if>
   </outputs>
   <translations>
-    <file lang="af" path="remoting_strings_af.xtb"/>
-    <file lang="am" path="remoting_strings_am.xtb"/>
-    <file lang="ar" path="remoting_strings_ar.xtb"/>
-    <file lang="as" path="remoting_strings_as.xtb"/>
-    <file lang="az" path="remoting_strings_az.xtb"/>
-    <file lang="be" path="remoting_strings_be.xtb"/>
-    <file lang="bg" path="remoting_strings_bg.xtb"/>
-    <file lang="bn" path="remoting_strings_bn.xtb"/>
-    <file lang="bs" path="remoting_strings_bs.xtb"/>
-    <file lang="ca" path="remoting_strings_ca.xtb"/>
-    <file lang="cs" path="remoting_strings_cs.xtb"/>
-    <file lang="da" path="remoting_strings_da.xtb"/>
-    <file lang="de" path="remoting_strings_de.xtb"/>
-    <file lang="el" path="remoting_strings_el.xtb"/>
-    <file lang="en-GB" path="remoting_strings_en-GB.xtb"/>
-    <file lang="es" path="remoting_strings_es.xtb"/>
-    <file lang="es-419" path="remoting_strings_es-419.xtb"/>
-    <file lang="et" path="remoting_strings_et.xtb"/>
-    <file lang="eu" path="remoting_strings_eu.xtb"/>
-    <file lang="fa" path="remoting_strings_fa.xtb"/>
-    <file lang="fi" path="remoting_strings_fi.xtb"/>
-    <file lang="fil" path="remoting_strings_fil.xtb"/>
-    <file lang="fr" path="remoting_strings_fr.xtb"/>
-    <file lang="fr-CA" path="remoting_strings_fr-CA.xtb"/>
-    <file lang="gl" path="remoting_strings_gl.xtb"/>
-    <file lang="gu" path="remoting_strings_gu.xtb"/>
+    <file path="remoting_strings_af.xtb" lang="af"/>
+    <file path="remoting_strings_am.xtb" lang="am"/>
+    <file path="remoting_strings_ar.xtb" lang="ar"/>
+    <file path="remoting_strings_as.xtb" lang="as"/>
+    <file path="remoting_strings_az.xtb" lang="az"/>
+    <file path="remoting_strings_be.xtb" lang="be"/>
+    <file path="remoting_strings_bg.xtb" lang="bg"/>
+    <file path="remoting_strings_bn.xtb" lang="bn"/>
+    <file path="remoting_strings_bs.xtb" lang="bs"/>
+    <file path="remoting_strings_ca.xtb" lang="ca"/>
+    <file path="remoting_strings_cs.xtb" lang="cs"/>
+    <file path="remoting_strings_cy.xtb" lang="cy"/>
+    <file path="remoting_strings_da.xtb" lang="da"/>
+    <file path="remoting_strings_de.xtb" lang="de"/>
+    <file path="remoting_strings_el.xtb" lang="el"/>
+    <file path="remoting_strings_en-GB.xtb" lang="en-GB"/>
+    <file path="remoting_strings_es.xtb" lang="es"/>
+    <file path="remoting_strings_es-419.xtb" lang="es-419"/>
+    <file path="remoting_strings_et.xtb" lang="et"/>
+    <file path="remoting_strings_eu.xtb" lang="eu"/>
+    <file path="remoting_strings_fa.xtb" lang="fa"/>
+    <file path="remoting_strings_fi.xtb" lang="fi"/>
+    <file path="remoting_strings_fil.xtb" lang="fil"/>
+    <file path="remoting_strings_fr.xtb" lang="fr"/>
+    <file path="remoting_strings_fr-CA.xtb" lang="fr-CA"/>
+    <file path="remoting_strings_gl.xtb" lang="gl"/>
+    <file path="remoting_strings_gu.xtb" lang="gu"/>
     <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
-    <file lang="he" path="remoting_strings_iw.xtb"/>
-    <file lang="hi" path="remoting_strings_hi.xtb"/>
-    <file lang="hr" path="remoting_strings_hr.xtb"/>
-    <file lang="hu" path="remoting_strings_hu.xtb"/>
-    <file lang="hy" path="remoting_strings_hy.xtb"/>
-    <file lang="id" path="remoting_strings_id.xtb"/>
-    <file lang="is" path="remoting_strings_is.xtb"/>
-    <file lang="it" path="remoting_strings_it.xtb"/>
-    <file lang="ja" path="remoting_strings_ja.xtb"/>
-    <file lang="ka" path="remoting_strings_ka.xtb"/>
-    <file lang="kk" path="remoting_strings_kk.xtb"/>
-    <file lang="km" path="remoting_strings_km.xtb"/>
-    <file lang="kn" path="remoting_strings_kn.xtb"/>
-    <file lang="ko" path="remoting_strings_ko.xtb"/>
-    <file lang="ky" path="remoting_strings_ky.xtb"/>
-    <file lang="lo" path="remoting_strings_lo.xtb"/>
-    <file lang="lt" path="remoting_strings_lt.xtb"/>
-    <file lang="lv" path="remoting_strings_lv.xtb"/>
-    <file lang="mk" path="remoting_strings_mk.xtb"/>
-    <file lang="ml" path="remoting_strings_ml.xtb"/>
-    <file lang="mn" path="remoting_strings_mn.xtb"/>
-    <file lang="mr" path="remoting_strings_mr.xtb"/>
-    <file lang="ms" path="remoting_strings_ms.xtb"/>
-    <file lang="my" path="remoting_strings_my.xtb"/>
-    <file lang="ne" path="remoting_strings_ne.xtb"/>
-    <file lang="nl" path="remoting_strings_nl.xtb"/>
-    <file lang="no" path="remoting_strings_no.xtb"/>
-    <file lang="or" path="remoting_strings_or.xtb"/>
-    <file lang="pa" path="remoting_strings_pa.xtb"/>
-    <file lang="pl" path="remoting_strings_pl.xtb"/>
-    <file lang="pt-BR" path="remoting_strings_pt-BR.xtb"/>
-    <file lang="pt-PT" path="remoting_strings_pt-PT.xtb"/>
-    <file lang="ro" path="remoting_strings_ro.xtb"/>
-    <file lang="ru" path="remoting_strings_ru.xtb"/>
-    <file lang="si" path="remoting_strings_si.xtb"/>
-    <file lang="sk" path="remoting_strings_sk.xtb"/>
-    <file lang="sl" path="remoting_strings_sl.xtb"/>
-    <file lang="sq" path="remoting_strings_sq.xtb"/>
-    <file lang="sr" path="remoting_strings_sr.xtb"/>
-    <file lang="sr-Latn" path="remoting_strings_sr-Latn.xtb"/>
-    <file lang="sv" path="remoting_strings_sv.xtb"/>
-    <file lang="sw" path="remoting_strings_sw.xtb"/>
-    <file lang="ta" path="remoting_strings_ta.xtb"/>
-    <file lang="te" path="remoting_strings_te.xtb"/>
-    <file lang="th" path="remoting_strings_th.xtb"/>
-    <file lang="tr" path="remoting_strings_tr.xtb"/>
-    <file lang="uk" path="remoting_strings_uk.xtb"/>
-    <file lang="ur" path="remoting_strings_ur.xtb"/>
-    <file lang="uz" path="remoting_strings_uz.xtb"/>
-    <file lang="vi" path="remoting_strings_vi.xtb"/>
-    <file lang="zh-CN" path="remoting_strings_zh-CN.xtb"/>
-    <file lang="zh-HK" path="remoting_strings_zh-HK.xtb"/>
-    <file lang="zh-TW" path="remoting_strings_zh-TW.xtb"/>
-    <file lang="zu" path="remoting_strings_zu.xtb"/>
+    <file path="remoting_strings_iw.xtb" lang="he"/>
+    <file path="remoting_strings_hi.xtb" lang="hi"/>
+    <file path="remoting_strings_hr.xtb" lang="hr"/>
+    <file path="remoting_strings_hu.xtb" lang="hu"/>
+    <file path="remoting_strings_hy.xtb" lang="hy"/>
+    <file path="remoting_strings_id.xtb" lang="id"/>
+    <file path="remoting_strings_is.xtb" lang="is"/>
+    <file path="remoting_strings_it.xtb" lang="it"/>
+    <file path="remoting_strings_ja.xtb" lang="ja"/>
+    <file path="remoting_strings_ka.xtb" lang="ka"/>
+    <file path="remoting_strings_kk.xtb" lang="kk"/>
+    <file path="remoting_strings_km.xtb" lang="km"/>
+    <file path="remoting_strings_kn.xtb" lang="kn"/>
+    <file path="remoting_strings_ko.xtb" lang="ko"/>
+    <file path="remoting_strings_ky.xtb" lang="ky"/>
+    <file path="remoting_strings_lo.xtb" lang="lo"/>
+    <file path="remoting_strings_lt.xtb" lang="lt"/>
+    <file path="remoting_strings_lv.xtb" lang="lv"/>
+    <file path="remoting_strings_mk.xtb" lang="mk"/>
+    <file path="remoting_strings_ml.xtb" lang="ml"/>
+    <file path="remoting_strings_mn.xtb" lang="mn"/>
+    <file path="remoting_strings_mr.xtb" lang="mr"/>
+    <file path="remoting_strings_ms.xtb" lang="ms"/>
+    <file path="remoting_strings_my.xtb" lang="my"/>
+    <file path="remoting_strings_ne.xtb" lang="ne"/>
+    <file path="remoting_strings_nl.xtb" lang="nl"/>
+    <file path="remoting_strings_no.xtb" lang="no"/>
+    <file path="remoting_strings_or.xtb" lang="or"/>
+    <file path="remoting_strings_pa.xtb" lang="pa"/>
+    <file path="remoting_strings_pl.xtb" lang="pl"/>
+    <file path="remoting_strings_pt-BR.xtb" lang="pt-BR"/>
+    <file path="remoting_strings_pt-PT.xtb" lang="pt-PT"/>
+    <file path="remoting_strings_ro.xtb" lang="ro"/>
+    <file path="remoting_strings_ru.xtb" lang="ru"/>
+    <file path="remoting_strings_si.xtb" lang="si"/>
+    <file path="remoting_strings_sk.xtb" lang="sk"/>
+    <file path="remoting_strings_sl.xtb" lang="sl"/>
+    <file path="remoting_strings_sq.xtb" lang="sq"/>
+    <file path="remoting_strings_sr.xtb" lang="sr"/>
+    <file path="remoting_strings_sr-Latn.xtb" lang="sr-Latn"/>
+    <file path="remoting_strings_sv.xtb" lang="sv"/>
+    <file path="remoting_strings_sw.xtb" lang="sw"/>
+    <file path="remoting_strings_ta.xtb" lang="ta"/>
+    <file path="remoting_strings_te.xtb" lang="te"/>
+    <file path="remoting_strings_th.xtb" lang="th"/>
+    <file path="remoting_strings_tr.xtb" lang="tr"/>
+    <file path="remoting_strings_uk.xtb" lang="uk"/>
+    <file path="remoting_strings_ur.xtb" lang="ur"/>
+    <file path="remoting_strings_uz.xtb" lang="uz"/>
+    <file path="remoting_strings_vi.xtb" lang="vi"/>
+    <file path="remoting_strings_zh-CN.xtb" lang="zh-CN"/>
+    <file path="remoting_strings_zh-HK.xtb" lang="zh-HK"/>
+    <file path="remoting_strings_zh-TW.xtb" lang="zh-TW"/>
+    <file path="remoting_strings_zu.xtb" lang="zu"/>
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
@@ -322,7 +353,7 @@
           Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2021 Google LLC. All Rights Reserved.
+          Copyright 2022 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
@@ -364,7 +395,7 @@
           The Chromium Authors
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chromoting Host executable. It should be updated every year.">
-          Copyright 2021 The Chromium Authors. All Rights Reserved.
+          Copyright 2022 The Chromium Authors. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chromoting.">
           Chromoting Service
@@ -794,6 +825,9 @@
       <message name="IDS_REMOTING_START_HOST_DESCRIPTION" desc="The file description specified in the version information of remoting_start_host.exe.">
         Host Provisioning Utility
       </message>
+      <message name="IDS_REMOTING_REMOTE_WEBAUTHN_DESCRIPTION" desc="The file description specified in the version information of remote_webauthn.exe.">
+        Web Authentication Remoting Process
+      </message>
       <message name="IDS_HOST_CATEGORY" desc="Name of the message category assigned to all messages written to the EventLog by Chromoting Host.">
         Host
       </message>
@@ -836,6 +870,9 @@
       <message desc="Message displayed before sharing computer in 'It2Me' mode when the email of the remote user attempting to connect is known." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_WITH_USERNAME" >
         Would you like to allow <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> to see and control your computer?
       </message>
+      <message desc="Message displayed before sharing computer when admin initiated the connection remotely" name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED">
+        <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Press ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE">{1}<ex>cancel</ex></ph>'' if you are not expecting this request. Otherwise select ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM">{2}<ex>share</ex></ph>'' to allow the connection when ready.
+      </message>
       <message desc="Label for the button to accept sharing the computer in 'It2Me' mode." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" >
         Share
       </message>
@@ -844,6 +881,18 @@
       </message>
       <message name="IDS_DOWNLOAD_FILE_DIALOG_TITLE" desc="Window title for file chooser to select file to download to the client">
         Download File
+      </message>
+      <message name="IDS_URL_FORWARDER_NAME" desc="Name of an application that is used by Chrome Remote Desktop to forward URLs from the remote device to the client device.">
+        <ph name="PRODUCT_NAME">%s<ex>Chrome Remote Desktop</ex></ph> URL Forwarder
+      </message>
+      <message name="IDS_URL_FORWARDER_DESCRIPTION" desc="Description of an application that is used by Chrome Remote Desktop to forward URLs from the remote device to the client device.">
+        Helper application to open a URL on the <ph name="PRODUCT_NAME">%s<ex>Chrome Remote Desktop</ex></ph> client
+      </message>
+      <message name="IDS_SET_UP_URL_FORWARDER_PROMPT" desc="Prompt to be displayed to inform the user how they can set up the Chrome Remote Desktop URL forwarder.">
+        To allow links clicked on the remote device to be opened on the client browser, you need to change the system's web browser to "<ph name="URL_FORWARDER_NAME">%s<ex>Chrome Remote Desktop URL Forwarder</ex></ph>".
+      </message>
+      <message name="IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON" desc="Label for the button to open the default apps settings page, which allows the user to change the system's default application that is associated with a specific file type or URL scheme.">
+        Open Default Apps Settings
       </message>
       <if expr="is_macosx">
         <message name="IDS_HOST_AUTHENTICATION_PROMPT" desc="The prompt to be displayed in the authentication dialog when making changes to the system.  The system will add a sentence asking for an administrator's name and password.  Mac-only.">
@@ -894,11 +943,23 @@ If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></
           Open Screen Recording Preferences
         </message>
       </if>
+      <message name="IDS_REMOTE_OPEN_URL_FAILED" desc="Message shown when Chrome Remote Desktop fails to open a URL from the host device on the client device.">
+        Failed to open <ph name="URL">$1<ex>http://google.com</ex></ph> on the client.
+      </message>
+      <message name="IDS_CHOOSE_FALLBACK_BROWSER" desc="Message shown on a browser chooser dialog when the Chrome Remote Desktop URL forwarder cannot determine the browser for opening a URL locally (when the URL cannot be remotely opened by the client).">
+        Chrome Remote Desktop cannot determine the browser to open URLs locally. Please choose it from the list below.
+      </message>
+      <message name="IDS_BROWSER_IS_INVALID" desc="Message shown when the user has chosen an invalid app as the browser to open URLs locally.">
+        The chosen browser cannot be used to open URLs on the local machine.
+      </message>
+      <message name="IDS_URL_FORWARDER_INCORRECTLY_CONFIGURED" desc="Message shown when the Chrome Remote Desktop URL forwarder is incorrectly configured.">
+        <ph name="URL_FORWARDER_NAME">%s<ex>Chrome Remote Desktop URL Forwarder</ex></ph> is not configured correctly. Please choose a different default web browser and then enable URL forwarding again.
+      </message>
       <if expr="is_linux">
         <message name="IDS_SESSION_DIALOG_MESSAGE" desc="The message to show at the top of the session-selection dialog.">
           Select a session to launch within your Chrome Remote Desktop environment. (Note that some session types may not support running within Chrome Remote Desktop and on the local console simultaneously.)
         </message>
-        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions.">
+        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions." meaning="Name of an inanimate object">
           Name
         </message>
         <message name="IDS_SESSION_DIALOG_COMMENT_COLUMN" desc="The title of the column containing the comment/description of potential sessions.">

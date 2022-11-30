@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import os
 import tempfile
 
 from blinkpy.common.exit_codes import SYS_DEPS_EXIT_STATUS
@@ -46,7 +47,7 @@ class LinuxPort(base.Port):
     FALLBACK_PATHS['trusty'] = (
         ['linux'] + win.WinPort.latest_platform_fallback_path())
 
-    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md'
+    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
 
     XVFB_START_STOP_TIMEOUT = 5.0  # Wait up to 5 seconds for Xvfb to start or stop.
 
@@ -72,6 +73,15 @@ class LinuxPort(base.Port):
         self._xvfb_stdout = None
         self._xvfb_stderr = None
 
+        # See //testing/xvfb.py for an explanation of parsing -help output.
+        try:
+            output = self.host.executive.run_command(['Xvfb', '-help'],
+                                                     debug_logging=False)
+            self._xvfb_supports_maxclients = (type(output) is str
+                                              and '-maxclients' in output)
+        except Exception:
+            self._xvfb_supports_maxclients = False
+
     def additional_driver_flags(self):
         flags = super(LinuxPort, self).additional_driver_flags()
         if not self.get_option('disable_breakpad'):
@@ -89,7 +99,7 @@ class LinuxPort(base.Port):
             _log.error('For complete Linux build requirements, please see:')
             _log.error('')
             _log.error(
-                '    https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md'
+                '    https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
             )
         return result
 
@@ -106,7 +116,17 @@ class LinuxPort(base.Port):
     def operating_system(self):
         return 'linux'
 
+    def use_system_httpd(self):
+        if (self.host.platform.is_linux() and
+                self.host.platform.get_machine() == 'x86_64'):
+            return False
+        # use the system httpd on linux-arm64 and freebsd
+        return True
+
     def path_to_apache(self):
+        if not self.use_system_httpd():
+            return self._path_from_chromium_base(
+                'third_party', 'apache-linux', 'bin', 'httpd')
         # The Apache binary path can vary depending on OS and distribution
         # See http://wiki.apache.org/httpd/DistrosDefaultLayout
         for path in ['/usr/sbin/httpd', '/usr/sbin/apache2']:
@@ -140,8 +160,13 @@ class LinuxPort(base.Port):
         unnecessary.
         """
         self._original_home = self.host.environ.get('HOME')
+        self._original_cipd_cache_dir = self.host.environ.get('CIPD_CACHE_DIR')
         dummy_home = str(self._filesystem.mkdtemp())
         self.host.environ['HOME'] = dummy_home
+        # When using a dummy home directory, CIPD cache directory needs to be
+        # specified explicitly to make vpython work.
+        self.host.environ['CIPD_CACHE_DIR'] = os.path.join(
+            dummy_home, '.vpython_cipd_cache')
         self._setup_files_in_dummy_home_dir(dummy_home)
 
     def _setup_files_in_dummy_home_dir(self, dummy_home):
@@ -167,6 +192,10 @@ class LinuxPort(base.Port):
         assert dummy_home != self._original_home
         self._filesystem.rmtree(dummy_home)
         self.host.environ['HOME'] = self._original_home
+        if self._original_cipd_cache_dir:
+            self.host.environ['CIPD_CACHE_DIR'] = self._original_cipd_cache_dir
+        else:
+            del self.host.environ['CIPD_CACHE_DIR']
 
     def _start_xvfb(self):
         display = self._find_display()
@@ -231,9 +260,7 @@ class LinuxPort(base.Port):
         flags = ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96']
         # Raise the Xvfb connection limit if the default limit (256 connections)
         # is in danger of being exceeded by 4 connections per test.
-        # This is conditional since the linux-trusty-rel build bot uses a very
-        # old version of Xvfb which does not recognise the flag.
-        if self.default_child_processes() > 60:
+        if self._xvfb_supports_maxclients:
             flags += ['-maxclients', '512']
         return flags
 

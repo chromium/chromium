@@ -1,9 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -65,6 +68,10 @@ bool IsWindowTransientChildOf(aura::Window* maybe_transient,
 class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
  public:
   explicit BubbleObserver(ImmersiveFullscreenController* controller);
+
+  BubbleObserver(const BubbleObserver&) = delete;
+  BubbleObserver& operator=(const BubbleObserver&) = delete;
+
   ~BubbleObserver() override;
 
   // Start / stop observing changes to |bubble|'s visibility.
@@ -79,15 +86,13 @@ class ImmersiveFocusWatcher::BubbleObserver : public aura::WindowObserver {
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  ImmersiveFullscreenController* controller_;
+  raw_ptr<ImmersiveFullscreenController> controller_;
 
   std::set<aura::Window*> bubbles_;
 
   // Lock which keeps the top-of-window views revealed based on whether any of
   // |bubbles_| is visible.
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleObserver);
 };
 
 ImmersiveFocusWatcher::BubbleObserver::BubbleObserver(
@@ -239,7 +244,8 @@ aura::Window* ImmersiveFocusWatcher::GetWidgetWindow() {
 }
 
 void ImmersiveFocusWatcher::RecreateBubbleObserver() {
-  bubble_observer_.reset(new BubbleObserver(immersive_fullscreen_controller_));
+  bubble_observer_ =
+      std::make_unique<BubbleObserver>(immersive_fullscreen_controller_);
   const std::vector<aura::Window*> transient_children =
       aura::client::GetTransientWindowClient()->GetTransientChildren(
           GetWidgetWindow());

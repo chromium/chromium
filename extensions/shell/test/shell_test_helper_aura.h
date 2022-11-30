@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_SHELL_BROWSER_TEST_SHELL_TEST_HELPER_AURA_H_
-#define EXTENSIONS_SHELL_BROWSER_TEST_SHELL_TEST_HELPER_AURA_H_
+#ifndef EXTENSIONS_SHELL_TEST_SHELL_TEST_HELPER_AURA_H_
+#define EXTENSIONS_SHELL_TEST_SHELL_TEST_HELPER_AURA_H_
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -24,6 +23,10 @@ class AppWindow;
 class ShellTestHelperAura {
  public:
   ShellTestHelperAura();
+
+  ShellTestHelperAura(const ShellTestHelperAura&) = delete;
+  ShellTestHelperAura& operator=(const ShellTestHelperAura&) = delete;
+
   ~ShellTestHelperAura();
 
   // Initializes common test dependencies.
@@ -37,10 +40,8 @@ class ShellTestHelperAura {
 
  private:
   std::unique_ptr<aura::test::AuraTestHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestHelperAura);
 };
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_SHELL_BROWSER_TEST_SHELL_TEST_HELPER_AURA_H_
+#endif  // EXTENSIONS_SHELL_TEST_SHELL_TEST_HELPER_AURA_H_

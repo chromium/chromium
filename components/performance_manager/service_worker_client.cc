@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/service_worker_client.h"
 
 ServiceWorkerClient::ServiceWorkerClient(
-    content::GlobalFrameRoutingId render_frame_host_id)
+    content::GlobalRenderFrameHostId render_frame_host_id)
     : type_(blink::mojom::ServiceWorkerClientType::kWindow),
       render_frame_host_id_(render_frame_host_id) {}
 ServiceWorkerClient::ServiceWorkerClient(
@@ -24,7 +24,7 @@ ServiceWorkerClient& ServiceWorkerClient::operator=(
 
 ServiceWorkerClient::~ServiceWorkerClient() = default;
 
-content::GlobalFrameRoutingId ServiceWorkerClient::GetRenderFrameHostId()
+content::GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId()
     const {
   DCHECK_EQ(type_, blink::mojom::ServiceWorkerClientType::kWindow);
   return render_frame_host_id_;

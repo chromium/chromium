@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_RENDERER_RESOURCE_COORDINATOR_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "components/performance_manager/public/mojom/v8_contexts.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -62,8 +62,9 @@ class CONTROLLER_EXPORT RendererResourceCoordinatorImpl final
 
   mojo::Remote<performance_manager::mojom::blink::ProcessCoordinationUnit>
       service_;
+  scoped_refptr<base::SequencedTaskRunner> service_task_runner_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_RESOURCE_COORDINATOR_RENDERER_RESOURCE_COORDINATOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CONTROLLER_PERFORMANCE_MANAGER_RENDERER_RESOURCE_COORDINATOR_IMPL_H_

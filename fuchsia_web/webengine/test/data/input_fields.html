@@ -1,0 +1,23 @@
+<html>
+
+<body>
+  <input id="input-text" />
+  <input id="input-mode-tel" inputmode="tel" />
+  <input id="input-mode-numeric" inputmode="numeric" />
+  <input id="input-mode-url" inputmode="url" />
+  <input id="input-mode-email" inputmode="email" />
+  <input id="input-mode-decimal" inputmode="decimal" />
+  <input id="input-mode-search" inputmode="search" />
+  <input id="input-type-tel" type="tel" />
+  <input id="input-type-number" type="number" />
+  <input id="input-type-password" type="password" />
+
+  <script>
+    function getPointInsideText(id) {
+      var rect = document.getElementById(id).getBoundingClientRect();
+      return { 'x': rect.left + 8, 'y': rect.top + 8 };
+    }
+  </script>
+</body>
+
+</html>

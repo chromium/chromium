@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager_export.h"
@@ -32,6 +31,11 @@ class DISPLAY_MANAGER_EXPORT QueryContentProtectionTask
                              NativeDisplayDelegate* native_display_delegate,
                              int64_t display_id,
                              ResponseCallback callback);
+
+  QueryContentProtectionTask(const QueryContentProtectionTask&) = delete;
+  QueryContentProtectionTask& operator=(const QueryContentProtectionTask&) =
+      delete;
+
   ~QueryContentProtectionTask() override;
 
   void Run() override;
@@ -56,8 +60,6 @@ class DISPLAY_MANAGER_EXPORT QueryContentProtectionTask
   size_t pending_requests_ = 0;
 
   base::WeakPtrFactory<QueryContentProtectionTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QueryContentProtectionTask);
 };
 
 }  // namespace display

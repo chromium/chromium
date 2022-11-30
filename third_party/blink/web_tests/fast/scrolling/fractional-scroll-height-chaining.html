@@ -2,6 +2,7 @@
 <script src="../../resources/gesture-util.js"></script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 
 #scroller {
@@ -21,12 +22,17 @@
 
 <script>
 promise_test(async () => {
+    await waitForCompositorCommit();
     var scroller_element = document.getElementById("scroller");
     var scroller_center = pointInElement(scroller_element, 50, 50);
+    await mouseClickOn(50, 50);
     await wheelTick(0, 1, scroller_center);
-    await waitFor( () => {
-        return scrollY == pixelsPerTick();
-});
+    await waitForAnimationEndTimeBased(() => { return window.scrollY });
 
+    const pixelsToScrollY = pixelsPerTick();
+    const { y: expectedScrollY } = calculateExpectedScroll(
+      document.scrollingElement, 0, pixelsToScrollY
+    );
+    assert_approx_equals(window.scrollY, expectedScrollY, 0.001);
 }, "Verify that wheel scrolls chain correctly from a fractional-height scroller to its parent.");
 </script>

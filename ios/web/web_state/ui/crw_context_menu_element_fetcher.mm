@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/web_state/ui/crw_context_menu_element_fetcher.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/unguessable_token.h"
-#include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/unguessable_token.h"
+#import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
@@ -79,11 +79,12 @@
           self.webState->GetBrowserState());
   context_menu_feature->GetElementAtPoint(
       self.webState, requestID, point, self.webView.scrollView.contentSize,
-      base::BindOnce(^(const std::string& requestID,
+      base::BindOnce(^(const std::string& innerRequestID,
                        const web::ContextMenuParams& params) {
         web::ContextMenuParams context_menu_params(params);
-        [weakSelf elementDetailsReceived:context_menu_params
-                            forRequestID:base::SysUTF8ToNSString(requestID)];
+        [weakSelf
+            elementDetailsReceived:context_menu_params
+                      forRequestID:base::SysUTF8ToNSString(innerRequestID)];
       }));
 }
 
@@ -101,7 +102,7 @@
   CRWHTMLElementFetchRequest* fetchRequest =
       _pendingElementFetchRequests[requestID];
   if (!fetchRequest) {
-    // Do not process the message if a fetch request with a matching |requestID|
+    // Do not process the message if a fetch request with a matching `requestID`
     // was not found. This ensures that the response matches a request made by
     // this instance.
     return;

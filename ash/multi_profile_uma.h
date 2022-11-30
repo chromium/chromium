@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_MULTI_PROFILE_UMA_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -22,11 +21,12 @@ class ASH_EXPORT MultiProfileUMA {
     NUM_SWITCH_ACTIVE_USER_ACTIONS
   };
 
+  MultiProfileUMA() = delete;
+  MultiProfileUMA(const MultiProfileUMA&) = delete;
+  MultiProfileUMA& operator=(const MultiProfileUMA&) = delete;
+
   // Record switching the active user and what UI path was taken.
   static void RecordSwitchActiveUser(SwitchActiveUserAction action);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MultiProfileUMA);
 };
 
 }  // namespace ash

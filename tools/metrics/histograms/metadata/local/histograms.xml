@@ -1,0 +1,307 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Local histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="IndexId">
+  <variant name="CrosSettings." summary="Cros Settings"/>
+  <variant name="HelpApp." summary="Help App"/>
+  <variant name="HelpAppLauncher." summary="Help App Launcher"/>
+  <variant name="Personalization." summary="Personalization App"/>
+</variants>
+
+<variants name="LocalStorageSizes">
+  <variant name="" summary=""/>
+  <variant name="1MBTo5MB" summary="DB size between 1MB and 5MB."/>
+  <variant name="100KBTo1MB" summary="DB size between 100KB and 1MB."/>
+  <variant name="Under100KB" summary="DB size under 100KB."/>
+</variants>
+
+<histogram base="true" name="LocalNetworkRequests.PrivatePage" units="requests"
+    expires_after="2020-07-06">
+  <owner>uthakore@chromium.org</owner>
+  <owner>invernizzi@chromium.org</owner>
+  <summary>
+    Number of requests made by a private page to resources besides itself.
+  </summary>
+</histogram>
+
+<histogram base="true" name="LocalNetworkRequests.PublicPage" units="requests"
+    expires_after="M81">
+  <owner>uthakore@chromium.org</owner>
+  <owner>invernizzi@chromium.org</owner>
+  <summary>
+    Number of requests made by a public page to resources with reserved IP
+    addresses.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Whether or not BindIndex calls to LocalSearchService have errors. It is
+    reported once for every BindIndex call. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.MetricsDailyEventInterval"
+    enum="DailyEventIntervalType" expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Reasons why local search daily metrics were reported. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}AddOrUpdateLatency" units="ms"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to add/update content to the index. It is reported once for every
+    AddOrUpdate call. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}Backend"
+    enum="LocalSearchServiceBackend" expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Type of backend requested from the Local Search Service. It is reported once
+    at the initialization of an Index. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}ClearIndexLatency" units="ms"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to clear all content from the index. It is reported once for
+    every ClearIndex call. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}DailySearch" units="count"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Number of times the local search service has been requested to perform a
+    search on a device. Reported daily. The count is accumulated through the
+    day, spanning reboots, and sent once the system clock indicates that a full
+    day or more has passed since the last report. If the system is suspended or
+    off for more than a day, the current count will be reported the next time
+    the system boots, but the skipped days will not be reported. Chrome OS only.
+    {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}DeleteLatency" units="ms"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to delete content from the index. It is reported once for every
+    Delete call. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}NumberDocuments" units="count"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Number of documents in the corpus. Recorded each time the index is updated
+    (documents added, updated or removed) and if the index is not empty. Chrome
+    OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}NumberResults" units="count"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Number of results for each successful search. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}NumberSearchPerformedDone"
+    enum="Boolean" expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    This is recorded each time a search is successfully performed using
+    LocalSearchService. Always records true. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}ResponseStatus"
+    enum="LocalSearchServiceResponseStatus" expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Search request response status for Cros Settings. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}SearchLatency" units="ms"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to find search results. Only recorded if search response status
+    is success, i.e. neither index nor query is empty. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalSearchService.{IndexId}UpdateDocumentsLatency" units="ms"
+    expires_after="2022-11-30">
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Time taken to update contents from the index. It is reported once for every
+    UpdateDocuments call. Chrome OS only. {IndexId}
+  </summary>
+  <token key="IndexId" variants="IndexId">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LocalStorage.BrowserLocalStorageCachePurgedInKB" units="KB"
+    expires_after="M77">
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Total size of the HTML5 LocalStorage browser-side cache purged in KB when
+    memory pressure signal was triggered or cache size hit the limits.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.BrowserLocalStorageCacheSizeInKB" units="KB"
+    expires_after="M77">
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Total size of the HTML5 LocalStorage databases in KB in the browser-side
+    cache recorded each time a new database is opened in memory.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.MojoSizeInKB" units="KB" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Size of the HTML5 LocalStorage DB in KB in the renderer-side cache using
+    Mojo implementation.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.MojoTimeToPrime" units="ms" expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Time (in ms) to load HTML5 LocalStorage into the renderer-side cache using
+    Mojo implementation.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Time (in ms) to load HTML5 LocalStorage into the renderer-side cache using
+    Mojo implementation, split by size. {LocalStorageSizes}
+  </summary>
+  <token key="LocalStorageSizes" variants="LocalStorageSizes"/>
+</histogram>
+
+<histogram name="LocalStorage.RendererAreaCacheHit"
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2023-05-01">
+  <owner>mek@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The renderer side cache hit rate metrics for new HTML5 LocalStorage DB
+    opened.
+
+    Warning: this histogram was expired from M78 to M92; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.RendererLocalStorageSizeInKB" units="KB"
+    expires_after="M95">
+  <owner>mek@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Size of the HTML5 LocalStorage DB in KB in the renderer-side cache.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

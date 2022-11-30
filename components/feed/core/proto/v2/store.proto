@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@ syntax = "proto3";
 package feedstore;
 
 import "components/feed/core/proto/v2/wire/content_id.proto";
-import "components/feed/core/proto/v2/wire/stream_structure.proto";
 import "components/feed/core/proto/v2/wire/feed_action.proto";
+import "components/feed/core/proto/v2/wire/stream_structure.proto";
+import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
+import "components/feed/core/proto/v2/wire/web_feeds.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -27,6 +29,7 @@ option optimize_for = LITE_RUNTIME;
 // subs                             -> subscribed_web_feeds
 // recommendedIndex                 -> recommended_web_feed_index
 // R/<web_feed_id>                  -> recommended_web_feed
+// W/<operation-id>                 -> pending_web_feed_operation
 message Record {
   oneof data {
     StreamData stream_data = 1;
@@ -38,6 +41,7 @@ message Record {
     SubscribedWebFeeds subscribed_web_feeds = 7;
     WebFeedInfo recommended_web_feed = 8;
     RecommendedWebFeedIndex recommended_web_feed_index = 9;
+    PendingWebFeedOperation pending_web_feed_operation = 10;
   }
 }
 
@@ -49,18 +53,26 @@ message StreamData {
   bytes next_page_token = 2;
   // The unix timestamp in milliseconds that the most recent content was added.
   int64 last_added_time_millis = 4;
-  // The content ID of the shared state for this stream.
-  feedwire.ContentId shared_state_id = 6;
+  // The content IDs of the shared state for this stream.
+  repeated feedwire.ContentId shared_state_ids = 6;
   // Was this feed signed in.
   bool signed_in = 7;
+  // If signed_in, this is the account gaia tied to this stream data.
+  string gaia = 13;
+  // If signed_in, this is the account email tied to this stream data.
+  string email = 14;
   // Is activity logging enabled?
   bool logging_enabled = 8;
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled = 9;
   // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 10;
+  // List of IDs representing content contained in the stream.
+  repeated uint32 content_hashes = 11;
+  // Root EventID provided by the server.
+  bytes root_event_id = 12;
 
-  reserved 3, 5;
+  reserved 3, 5, 15;
 }
 
 // Data that doesn't belong to a stream.
@@ -73,11 +85,29 @@ message Metadata {
 
   // Metadata about a specific stream.
   message StreamMetadata {
-    string stream_id = 1;
-    // If this stream has been viewed before, this timestamp matches the
-    // 'StreamData.last_added_time_millis' value of that stream. This is used to
-    // determine whether the user has already seen a stored stream's data.
-    int64 view_time_millis = 2;
+    string stream_key = 1;
+    // Whether the stream data is known to be stale. This can happen in the
+    // WebFeed stream if the subscription list changes.
+    bool is_known_stale = 3;
+    // If this stream has been viewed before, this is the list of content in the
+    // stream
+    // (`StreamData.content_hashes`). This is used to determine whether the user
+    // has already seen a stored stream's data.
+    repeated uint32 view_content_hashes = 4;
+
+    message ContentLifetime {
+      int64 stale_age_ms = 1;
+      int64 invalid_age_ms = 2;
+    }
+    ContentLifetime content_lifetime = 5;
+    // The unix timestamp in milliseconds that the stream was fetched last time.
+    int64 last_fetch_time_millis = 6;
+
+    // The unix timestamp in milliseconds that the feed response is produced on
+    // the server. This is returned from the server and based on server clock.
+    int64 last_server_response_time_millis = 7;
+
+    reserved 2;
   }
 
   // Token used to read or write to the same storage.
@@ -93,6 +123,17 @@ message Metadata {
   //    records.
   int32 stream_schema_version = 4;
   repeated StreamMetadata stream_metadata = 5;
+  // The GAIA ID associated with the store.
+  string gaia = 6;
+  // Whether WAA is enabled for this user, as reported by the last FeedQuery
+  // response.
+  bool web_and_app_activity_enabled = 7;
+  // Whether personalization is enabled for Discover, as reported by the last
+  // FeedQuery response.
+  bool discover_personalization_enabled = 8;
+  // Count of how many times the user has followed from the main menu, so we
+  // can show appropriate user education help for the following feed.
+  int32 followed_from_web_page_menu_count = 9;
 }
 
 // A set of StreamStructures that should be applied to a stream.
@@ -201,21 +242,12 @@ message SubscribedWebFeeds {
 message RecommendedWebFeedIndex {
   message Entry {
     string web_feed_id = 1;
-    repeated UriMatcher matchers = 2;
+    repeated feedwire.webfeed.WebFeedMatcher matchers = 2;
   }
   repeated Entry entries = 1;
   // The unix timestamp in milliseconds that this data was updated from the
   // server.
   int64 update_time_millis = 2;
-}
-
-// Data to allow matching URI.
-message UriMatcher {
-  // Simple String comparing, will use to match against the domain part of the
-  // hostname string and ignore the subdomains. For example: "foo.com" should
-  // match "https://www.foo.com/..." and "https://foo.com/..." but should not
-  // match "https://foo.com.br/...".
-  string domain_match = 1;
 }
 
 // Reference to an image.
@@ -229,6 +261,7 @@ message WebFeedInfo {
     STATE_UNSPECIFIED = 0;
     INACTIVE = 1;
     ACTIVE = 2;
+    WAITING_FOR_CONTENT = 4;
   }
   string web_feed_id = 1;
   string title = 2;
@@ -239,5 +272,23 @@ message WebFeedInfo {
   Image favicon = 7;
   int64 follower_count = 8;
   State state = 9;
-  repeated UriMatcher uri_matchers = 10;
+  repeated feedwire.webfeed.WebFeedMatcher matchers = 10;
+}
+
+message PendingWebFeedOperation {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    SUBSCRIBE = 1;
+    UNSUBSCRIBE = 2;
+  }
+  // Unique ID, for sorting operations.
+  int64 id = 1;
+  // The operation kind.
+  Kind kind = 2;
+  // The web feed ID to either subscribe or unsubscribe.
+  string web_feed_id = 3;
+  // Number of times the operation has been attempted.
+  int32 attempts = 4;
+  // Reason for this change.
+  feedwire.webfeed.WebFeedChangeReason change_reason = 5;
 }

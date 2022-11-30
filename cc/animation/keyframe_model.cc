@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -20,6 +19,16 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 
 namespace cc {
+
+namespace {
+#if DCHECK_IS_ON()
+int GetNextDebugId() {
+  static int g_nextDebugId = 0;
+  g_nextDebugId++;
+  return g_nextDebugId;
+}
+#endif
+}  // namespace
 
 // static
 const KeyframeModel* KeyframeModel::ToCcKeyframeModel(
@@ -55,7 +64,13 @@ KeyframeModel::TargetPropertyId::TargetPropertyId(
 KeyframeModel::TargetPropertyId::TargetPropertyId(
     const TargetPropertyId& other) = default;
 
+KeyframeModel::TargetPropertyId::TargetPropertyId(TargetPropertyId&& other) =
+    default;
+
 KeyframeModel::TargetPropertyId::~TargetPropertyId() = default;
+
+KeyframeModel::TargetPropertyId& KeyframeModel::TargetPropertyId::operator=(
+    TargetPropertyId&& other) = default;
 
 std::unique_ptr<KeyframeModel> KeyframeModel::Create(
     std::unique_ptr<gfx::AnimationCurve> curve,
@@ -63,7 +78,8 @@ std::unique_ptr<KeyframeModel> KeyframeModel::Create(
     int group_id,
     TargetPropertyId target_property_id) {
   return base::WrapUnique(new KeyframeModel(std::move(curve), keyframe_model_id,
-                                            group_id, target_property_id));
+                                            group_id,
+                                            std::move(target_property_id)));
 }
 
 std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
@@ -86,6 +102,9 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   to_return->set_fill_mode(fill_mode());
   DCHECK(!to_return->is_controlling_instance_);
   to_return->is_controlling_instance_ = true;
+#if DCHECK_IS_ON()
+  to_return->debug_id_ = debug_id_;
+#endif
   return to_return;
 }
 
@@ -97,13 +116,17 @@ KeyframeModel::KeyframeModel(std::unique_ptr<gfx::AnimationCurve> curve,
                          keyframe_model_id,
                          target_property_id.target_property_type()),
       group_(group_id),
-      target_property_id_(target_property_id),
+      target_property_id_(std::move(target_property_id)),
+#if DCHECK_IS_ON()
+      debug_id_(GetNextDebugId()),
+#endif
       needs_synchronized_start_time_(false),
       received_finished_event_(false),
       is_controlling_instance_(false),
       is_impl_only_(false),
       affects_active_elements_(true),
-      affects_pending_elements_(true) {}
+      affects_pending_elements_(true) {
+}
 
 KeyframeModel::~KeyframeModel() = default;
 
@@ -152,6 +175,12 @@ bool KeyframeModel::InEffect(base::TimeTicks monotonic_time) const {
 }
 
 void KeyframeModel::PushPropertiesTo(KeyframeModel* other) const {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(debug_id_, other->debug_id_)
+      << "Attempted to push properties to a model with a mismatched debug id "
+         "(i.e., different keyframe models). This can happen when keyframe "
+         "model ids are reused.";
+#endif
   other->element_id_ = element_id_;
   if (run_state() == KeyframeModel::PAUSED ||
       other->run_state() == KeyframeModel::PAUSED) {

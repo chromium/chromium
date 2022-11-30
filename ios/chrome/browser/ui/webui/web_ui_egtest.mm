@@ -1,75 +1,35 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/field_trial.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/field_trial.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/ui/webui/web_ui_test_utils.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using base::TrimPositions;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
-using chrome_test_util::OmniboxText;
-using chrome_test_util::OmniboxContainingText;
-
-namespace {
-
-// Returns the url to the web ui page |host|. |url::SchemeHostPort| can not be
-// used when this test is run using EarlGrey2 because the chrome scheme is not
-// registered in the test process and |url::SchemeHostPort| will not build an
-// invalid URL.
-GURL WebUIPageUrlWithHost(const std::string& host) {
-  return GURL(base::StringPrintf("%s://%s", kChromeUIScheme, host.c_str()));
-}
-
-// Waits for omnibox text to equal (if |exact_match|) or contain (else) |URL|
-// and returns true if it was found or false on timeout. Strips trailing URL
-// slash if present as the omnibox does not display them.
-bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {
-  const std::string trimmed_URL =
-      base::TrimString(URL, "/", TrimPositions::TRIM_TRAILING).as_string();
-
-  // TODO(crbug.com/642207): Unify with the omniboxText matcher or move to the
-  // same location with the omniboxText matcher.
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^{
-        NSError* error = nil;
-        if (exact_match) {
-          [[EarlGrey selectElementWithMatcher:OmniboxText(trimmed_URL)]
-              assertWithMatcher:grey_notNil()
-                          error:&error];
-        } else {
-          [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-              assertWithMatcher:OmniboxContainingText(trimmed_URL)
-                          error:&error];
-        }
-        return error == nil;
-      });
-}
-
-}  // namespace
 
 // Test case for chrome://* WebUI pages.
 @interface WebUITestCase : ChromeTestCase
@@ -83,8 +43,9 @@ bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {
 
   NSString* userAgent = [ChromeEarlGrey mobileUserAgentString];
   // Verify that JavaScript navigator.userAgent returns the mobile User Agent.
-  id result = [ChromeEarlGrey executeJavaScript:@"navigator.userAgent"];
-  NSString* navigatorUserAgent = base::mac::ObjCCast<NSString>(result);
+  auto result = [ChromeEarlGrey evaluateJavaScript:@"navigator.userAgent"];
+  GREYAssertTrue(result.is_string(), @"Result is not a string.");
+  NSString* navigatorUserAgent = base::SysUTF8ToNSString(result.GetString());
   GREYAssertEqualObjects(userAgent, navigatorUserAgent,
                          @"User-Agent strings did not match");
 }

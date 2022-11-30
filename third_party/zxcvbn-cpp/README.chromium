@@ -45,6 +45,8 @@ Applied the following patches:
 - Removed Python sources, unneeded config files, JavaScript bindings, C wrapper
   and incomplete C++ entrypoints from native-src, since they are unused / not
   necessary for Chromium, includes applying patches/no-c-api.diff.
+- patches/reduce_memory_usage.diff: Reduce browser memory usage by ~2.0 MiB on
+  64bit, ~0.65 MiB on 32bit (https://crrev.com/c/2842124).
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp

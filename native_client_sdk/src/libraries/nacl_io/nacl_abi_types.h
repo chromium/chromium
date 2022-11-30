@@ -1,4 +1,4 @@
-/* Copyright 2015 The Chromium Authors. All rights reserved.
+/* Copyright 2015 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -129,4 +129,4 @@ struct nacl_abi_dirent {
   char           nacl_abi_d_name[MAXNAMLEN + 1];
 };
 
-#endif  /* LIBRARIES_NACL_IO_NACL_ABI_TYPES_H_ */
+#endif  // LIBRARIES_NACL_IO_NACL_ABI_TYPES_H_

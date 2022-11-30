@@ -1,0 +1,128 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of invalidation
+(cf. components/invalidation/) histograms along with a detailed description for
+each one.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
+    enum="NetErrorCodes" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>Net error codes for failed subscription requests.</summary>
+</histogram>
+
+<histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
+    enum="FCMInvalidationMessageStatus" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Status of the message from the FCM channel. Recorded upon receiving response
+    from the FCM channel. {FCMInvalidationSenders}
+  </summary>
+  <token key="FCMInvalidationSenders">
+    <variant name=""/>
+    <variant name=".Drive"
+        summary="The message was sent with the Drive sender ID"/>
+    <variant name=".Policy"
+        summary="The message was sent with the Policy sender ID"/>
+    <variant name=".Sync"
+        summary="The message was sent with the Sync sender ID"/>
+  </token>
+</histogram>
+
+<histogram name="FCMInvalidations.InitialTokenRetrievalStatus"
+    enum="InstanceIDResult" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Status of the initial attempt to retrieve the instance id token.
+  </summary>
+</histogram>
+
+<histogram name="FCMInvalidations.SubscriptionRequestStatus"
+    enum="FCMInvalidationSubscriptionStatus" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Status of subscription request to the Per User Topic server. Recorded upon
+    receiving response from server.
+  </summary>
+</histogram>
+
+<histogram name="FCMInvalidations.SubscriptionResponseCode"
+    enum="HttpResponseCode" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    For each subcription request to the FCM Per-User-Topic server, log the
+    response received from the server.
+  </summary>
+</histogram>
+
+<histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
+    enum="TokenStateOnRegistrationRequest" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the outcome of instance ID token requests (i.e. whether the token
+    changed). Such requests are made when invalidations are first enabled (e.g.
+    on sign-in), and then periodically every 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="FCMInvalidations.UnsubscriptionRequestStatus"
+    enum="FCMInvalidationSubscriptionStatus" expires_after="never">
+<!-- expires-never: For monitoring FCM based invalidations. -->
+
+  <owner>melandory@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Status of unsubscription request to the Per User Topic server. Recorded upon
+    receiving response from server.
+  </summary>
+</histogram>
+
+<histogram name="Invalidations.GCMUpstreamRequest"
+    enum="GCMUpstreamMessageStatus" expires_after="M76">
+  <owner>nyquist@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>melandory@chromium.org</owner>
+  <summary>
+    Status of sending outgoing invalidation message through GCM upsteam.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

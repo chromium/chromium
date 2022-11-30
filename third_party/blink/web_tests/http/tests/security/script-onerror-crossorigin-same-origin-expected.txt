@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 1: Uncaught SomeError
+CONSOLE ERROR: Uncaught SomeError
 The test passes if 'window.onerror' is invoked with unsanitized information on a script loaded with a 'crossorigin' attribute, but loads from same-origin and without valid CORS headers.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

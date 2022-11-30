@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
+#include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -21,7 +23,7 @@
 namespace android_webview {
 
 namespace {
-enum WebViewDrawAndSubmissionType {
+enum WebViewDrawAndSubmissionType : uint8_t {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   kNoInvalidateNoSubmissionSameParams = 0,
@@ -171,18 +173,20 @@ void HardwareRenderer::ReturnChildFrame(
 
   // The child frame's frame_sink_id is not necessarily same as
   // |child_frame_sink_id_|.
-  ReturnResourcesToCompositor(resources_to_return, child_frame->frame_sink_id,
+  ReturnResourcesToCompositor(std::move(resources_to_return),
+                              child_frame->frame_sink_id,
                               child_frame->layer_tree_frame_sink_id);
 }
 
 void HardwareRenderer::ReturnResourcesToCompositor(
-    const std::vector<viz::ReturnedResource>& resources,
+    std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
-  if (layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_)
+  if (!base::FeatureList::IsEnabled(features::kWebViewCheckReturnResources) &&
+      layer_tree_frame_sink_id != last_committed_layer_tree_frame_sink_id_)
     return;
-  render_thread_manager_->InsertReturnedResourcesOnRT(resources, frame_sink_id,
-                                                      layer_tree_frame_sink_id);
+  render_thread_manager_->InsertReturnedResourcesOnRT(
+      std::move(resources), frame_sink_id, layer_tree_frame_sink_id);
 }
 
 namespace {
@@ -191,6 +195,11 @@ void MoveCopyRequests(CopyOutputRequestQueue* from,
                       CopyOutputRequestQueue* to) {
   std::move(from->begin(), from->end(), std::back_inserter(*to));
   from->clear();
+}
+
+viz::BeginFrameArgs NewerBeginFrameArgs(const viz::BeginFrameArgs& args1,
+                                        const viz::BeginFrameArgs& args2) {
+  return args1.frame_id.IsNextInSequenceTo(args2.frame_id) ? args1 : args2;
 }
 
 }  // namespace
@@ -221,6 +230,11 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     child_frames.pop_back();
     MoveCopyRequests(&frame->copy_requests,
                      &child_frames[remaining_frame_index]->copy_requests);
+
+    // If we're dropping frames at the end, we need update begin frame args.
+    child_frames[remaining_frame_index]->begin_frame_args = NewerBeginFrameArgs(
+        child_frames[remaining_frame_index]->begin_frame_args,
+        frame->begin_frame_args);
     DCHECK(!frame->frame);
   }
   DCHECK_EQ(static_cast<size_t>(remaining_frame_index),
@@ -232,10 +246,18 @@ ChildFrameQueue HardwareRenderer::WaitAndPruneFrameQueue(
     child_frames.pop_front();
     MoveCopyRequests(&frame->copy_requests,
                      &child_frames.back()->copy_requests);
+    // We shouldn't drop newer frames.
+    DCHECK(!frame->begin_frame_args.frame_id.IsNextInSequenceTo(
+        child_frames.back()->begin_frame_args.frame_id));
     if (frame->frame)
       pruned_frames.emplace_back(std::move(frame));
   }
   return pruned_frames;
+}
+
+void HardwareRenderer::SetChildFrameForTesting(
+    std::unique_ptr<ChildFrame> child_frame) {
+  child_frame_ = std::move(child_frame);
 }
 
 }  // namespace android_webview

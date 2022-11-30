@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/daily_event.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -21,6 +21,9 @@ class TestDailyObserver : public DailyEvent::Observer {
  public:
   TestDailyObserver() = default;
 
+  TestDailyObserver(const TestDailyObserver&) = delete;
+  TestDailyObserver& operator=(const TestDailyObserver&) = delete;
+
   bool fired() const { return type_.has_value(); }
   DailyEvent::IntervalType type() const { return type_.value(); }
 
@@ -30,9 +33,7 @@ class TestDailyObserver : public DailyEvent::Observer {
 
  private:
   // Last-received type, or unset if OnDailyEvent() hasn't been called.
-  base::Optional<DailyEvent::IntervalType> type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDailyObserver);
+  absl::optional<DailyEvent::IntervalType> type_;
 };
 
 class DailyEventTest : public testing::Test {
@@ -40,16 +41,16 @@ class DailyEventTest : public testing::Test {
   DailyEventTest() : event_(&prefs_, kTestPrefName, kTestMetricName) {
     DailyEvent::RegisterPref(prefs_.registry(), kTestPrefName);
     observer_ = new TestDailyObserver();
-    event_.AddObserver(base::WrapUnique(observer_));
+    event_.AddObserver(base::WrapUnique(observer_.get()));
   }
+
+  DailyEventTest(const DailyEventTest&) = delete;
+  DailyEventTest& operator=(const DailyEventTest&) = delete;
 
  protected:
   TestingPrefServiceSimple prefs_;
-  TestDailyObserver* observer_;
+  raw_ptr<TestDailyObserver> observer_;
   DailyEvent event_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DailyEventTest);
 };
 
 }  // namespace
@@ -63,7 +64,7 @@ TEST_F(DailyEventTest, TestNewFires) {
 
 // The event should fire if the preference is more than a day old.
 TEST_F(DailyEventTest, TestOldFires) {
-  base::Time last_time = base::Time::Now() - base::TimeDelta::FromHours(25);
+  base::Time last_time = base::Time::Now() - base::Hours(25);
   prefs_.SetInt64(kTestPrefName, last_time.since_origin().InMicroseconds());
   event_.CheckInterval();
   ASSERT_TRUE(observer_->fired());
@@ -72,7 +73,7 @@ TEST_F(DailyEventTest, TestOldFires) {
 
 // The event should fire if the preference is more than a day in the future.
 TEST_F(DailyEventTest, TestFutureFires) {
-  base::Time last_time = base::Time::Now() + base::TimeDelta::FromHours(25);
+  base::Time last_time = base::Time::Now() + base::Hours(25);
   prefs_.SetInt64(kTestPrefName, last_time.since_origin().InMicroseconds());
   event_.CheckInterval();
   ASSERT_TRUE(observer_->fired());
@@ -81,7 +82,7 @@ TEST_F(DailyEventTest, TestFutureFires) {
 
 // The event should not fire if the preference is more recent than a day.
 TEST_F(DailyEventTest, TestRecentNotFired) {
-  base::Time last_time = base::Time::Now() - base::TimeDelta::FromMinutes(2);
+  base::Time last_time = base::Time::Now() - base::Minutes(2);
   prefs_.SetInt64(kTestPrefName, last_time.since_origin().InMicroseconds());
   event_.CheckInterval();
   EXPECT_FALSE(observer_->fired());
@@ -89,7 +90,7 @@ TEST_F(DailyEventTest, TestRecentNotFired) {
 
 // The event should not fire if the preference is less than a day in the future.
 TEST_F(DailyEventTest, TestSoonNotFired) {
-  base::Time last_time = base::Time::Now() + base::TimeDelta::FromMinutes(2);
+  base::Time last_time = base::Time::Now() + base::Minutes(2);
   prefs_.SetInt64(kTestPrefName, last_time.since_origin().InMicroseconds());
   event_.CheckInterval();
   EXPECT_FALSE(observer_->fired());

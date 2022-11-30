@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/url_matcher.h"
 #include "net/base/hash_value.h"
@@ -33,10 +33,14 @@ namespace certificate_transparency {
 // To support Enterprise configuration, additional requirements or exceptions
 // can be provided via |UpdateCTPolicies()|, which uses the configuration
 // syntax documented in pref_names.h for each of the options.
-class ChromeRequireCTDelegate
+class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
     : public net::TransportSecurityState::RequireCTDelegate {
  public:
   explicit ChromeRequireCTDelegate();
+
+  ChromeRequireCTDelegate(const ChromeRequireCTDelegate&) = delete;
+  ChromeRequireCTDelegate& operator=(const ChromeRequireCTDelegate&) = delete;
+
   ~ChromeRequireCTDelegate() override;
 
   // RequireCTDelegate implementation
@@ -92,14 +96,12 @@ class ChromeRequireCTDelegate
   bool FilterTakesPrecedence(const Filter& lhs, const Filter& rhs) const;
 
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
-  url_matcher::URLMatcherConditionSet::ID next_id_;
-  std::map<url_matcher::URLMatcherConditionSet::ID, Filter> filters_;
+  base::MatcherStringPattern::ID next_id_;
+  std::map<base::MatcherStringPattern::ID, Filter> filters_;
 
   // Both SPKI lists are sorted.
   net::HashValueVector spkis_;
   net::HashValueVector legacy_spkis_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRequireCTDelegate);
 };
 
 }  // namespace certificate_transparency

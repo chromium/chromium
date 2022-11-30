@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -77,7 +76,7 @@ void SetSwitchesFromCommandLine(const base::CommandLine& command_line,
   // Go through the argv, skipping the exec path. Stop if there are too many
   // switches to hold in crash keys.
   for (size_t i = 1; i < argv.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::string switch_str = base::WideToUTF8(argv[i]);
 #else
     std::string switch_str = argv[i];
@@ -119,7 +118,7 @@ static PrinterInfoKey printer_info_keys[] = {
 ScopedPrinterInfo::ScopedPrinterInfo(base::StringPiece data) {
   std::vector<base::StringPiece> info = base::SplitStringPiece(
       data, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (size_t i = 0; i < base::size(printer_info_keys); ++i) {
+  for (size_t i = 0; i < std::size(printer_info_keys); ++i) {
     if (i < info.size())
       printer_info_keys[i].Set(info[i]);
     else

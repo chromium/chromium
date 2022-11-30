@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 #include "components/upload_list/upload_list.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webrtc_event_logging {
 
@@ -33,6 +34,11 @@ class WebRtcRemoteEventLogManager final
   WebRtcRemoteEventLogManager(
       WebRtcRemoteEventLogsObserver* observer,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  WebRtcRemoteEventLogManager(const WebRtcRemoteEventLogManager&) = delete;
+  WebRtcRemoteEventLogManager& operator=(const WebRtcRemoteEventLogManager&) =
+      delete;
+
   ~WebRtcRemoteEventLogManager() override;
 
   // Sets a network::NetworkConnectionTracker which will be used to track
@@ -279,7 +285,7 @@ class WebRtcRemoteEventLogManager final
   // this check is not too expensive.
   // If a |browser_context_id| is provided, logs are only pruned for it.
   void PrunePendingLogs(
-      base::Optional<BrowserContextId> browser_context_id = base::nullopt);
+      absl::optional<BrowserContextId> browser_context_id = absl::nullopt);
 
   // PrunePendingLogs() and schedule the next proactive pending logs prune.
   void RecurringlyPrunePendingLogs();
@@ -308,7 +314,7 @@ class WebRtcRemoteEventLogManager final
   void MaybeRemovePendingLogs(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      base::Optional<BrowserContextId> browser_context_id,
+      absl::optional<BrowserContextId> browser_context_id,
       bool is_cache_clear);
 
   // Remove all history files associated with |browser_context_id| which were
@@ -342,7 +348,7 @@ class WebRtcRemoteEventLogManager final
   //   can match the filter.
   bool MatchesFilter(BrowserContextId log_browser_context_id,
                      const base::Time& log_last_modification,
-                     base::Optional<BrowserContextId> filter_browser_context_id,
+                     absl::optional<BrowserContextId> filter_browser_context_id,
                      const base::Time& filter_range_begin,
                      const base::Time& filter_range_end) const;
 
@@ -416,7 +422,7 @@ class WebRtcRemoteEventLogManager final
   // This is used to inform WebRtcEventLogManager when remote-bound logging
   // of a peer connection starts/stops, which allows WebRtcEventLogManager to
   // decide when to ask WebRTC to start/stop sending event logs.
-  WebRtcRemoteEventLogsObserver* const observer_;
+  const raw_ptr<WebRtcRemoteEventLogsObserver> observer_;
 
   // The IDs of the BrowserContexts for which logging is enabled, mapped to
   // the directory where each BrowserContext's remote-bound logs are stored.
@@ -450,7 +456,7 @@ class WebRtcRemoteEventLogManager final
   base::FilePath currently_uploaded_file_;
 
   // Provides notifications of network changes.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Whether the network we are currently connected to, if any, is one over
   // which we may upload.
@@ -484,8 +490,6 @@ class WebRtcRemoteEventLogManager final
   // here. In reality, this is never auto-destroyed; see destructor for details.
   std::unique_ptr<base::WeakPtrFactory<WebRtcRemoteEventLogManager>>
       weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcRemoteEventLogManager);
 };
 
 }  // namespace webrtc_event_logging

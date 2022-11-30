@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -23,6 +25,7 @@ class PageLoader;
 FORWARD_DECLARE_TEST(BackgroundTabLoadingBrowserTest,
                      RestoredTabsAreLoadedGradually);
 class BackgroundTabLoadingBrowserTest;
+class SiteDataReader;
 
 namespace policies {
 
@@ -45,11 +48,28 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
-  // Schedules the PageNodes in |page_nodes| to be loaded when appropriate.
-  void ScheduleLoadForRestoredTabs(std::vector<PageNode*> page_nodes);
+  // Holds information about a PageNode to load by this policy.
+  struct PageNodeAndNotificationPermission {
+    PageNodeAndNotificationPermission(base::WeakPtr<PageNode> page_node,
+                                      bool has_notification_permission);
+    PageNodeAndNotificationPermission(
+        const PageNodeAndNotificationPermission&
+            page_node_and_notification_permission);
+    ~PageNodeAndNotificationPermission();
+
+    base::WeakPtr<PageNode> page_node;
+    bool has_notification_permission;
+  };
+
+  // Schedules the PageNodes in |page_node_and_permission_vector| to be loaded
+  // when appropriate.
+  void ScheduleLoadForRestoredTabs(
+      std::vector<PageNodeAndNotificationPermission>
+          page_node_and_permission_vector);
 
   void SetMockLoaderForTesting(std::unique_ptr<mechanism::PageLoader> loader);
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);
@@ -65,21 +85,25 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // Holds a handful of data about a tab which is used to prioritize it during
   // session restore.
   struct PageNodeToLoadData {
-    explicit PageNodeToLoadData(PageNode* page_node);
+    explicit PageNodeToLoadData(PageNode* page_node,
+                                bool has_notification_permission);
     PageNodeToLoadData(const PageNodeToLoadData&) = delete;
     ~PageNodeToLoadData();
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
 
     // Keeps a pointer to the corresponding PageNode.
-    const PageNode* page_node;
+    raw_ptr<const PageNode> page_node;
 
     // A higher value here means the tab has higher priority for restoring.
-    float score = 0.0f;
+    absl::optional<float> score;
 
-    // Indicates whether or not the tab communicates with the user even when it
-    // is in the background (tab title changes, favicons, etc).
-    // It is initialized to nullopt and set asynchronously to the proper value.
-    base::Optional<bool> used_in_bg;
+    // Whether the tab has the notification permission.
+    const bool has_notification_permission;
+
+    // Whether the tab updates its title or favicon when backgrounded.
+    // Initialized to nullopt and set asynchronously with the proper value from
+    // the sites database.
+    absl::optional<bool> updates_title_or_favicon_in_bg;
   };
 
   // Comparator used to sort PageNodeToLoadData.
@@ -92,6 +116,10 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // SystemNodeObserver:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override;
+
+  // Returns the SiteDataReader instance for |page_node|, if any. Virtual for
+  // testing.
+  virtual SiteDataReader* GetSiteDataReader(const PageNode* page_node) const;
 
   // Determines whether or not the given PageNode should be loaded. If this
   // returns false, then the policy no longer attempts to load |page_node| and
@@ -188,8 +216,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   static constexpr uint32_t kDesiredAmountOfFreeMemoryMb = 150;
 
   // The maximum time since last use of a tab in order for it to be loaded.
-  static constexpr base::TimeDelta kMaxTimeSinceLastUseToLoad =
-      base::TimeDelta::FromDays(30);
+  static constexpr base::TimeDelta kMaxTimeSinceLastUseToLoad = base::Days(30);
 
   // Lower bound for the maximum number of tabs to load simultaneously.
   static constexpr uint32_t kMinSimultaneousTabLoads = 1;

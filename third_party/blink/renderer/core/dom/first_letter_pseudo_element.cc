@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
@@ -90,10 +91,19 @@ unsigned FirstLetterPseudoElement::FirstLetterLength(const String& text) {
   return length;
 }
 
+void FirstLetterPseudoElement::Trace(Visitor* visitor) const {
+  visitor->Trace(remaining_text_layout_object_);
+  PseudoElement::Trace(visitor);
+}
+
 // Once we see any of these layoutObjects we can stop looking for first-letter
 // as they signal the end of the first line of text.
 static bool IsInvalidFirstLetterLayoutObject(const LayoutObject* obj) {
   return (obj->IsBR() || (obj->IsText() && To<LayoutText>(obj)->IsWordBreak()));
+}
+
+static bool IsParentInlineLayoutObject(const LayoutObject* obj) {
+  return (obj && obj->Parent() && obj->Parent()->IsLayoutInline());
 }
 
 LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
@@ -129,17 +139,30 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
             kPseudoIdFirstLetter) {
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
-    } else if (first_letter_text_layout_object->IsText()) {
+    } else if (auto* layout_text =
+                   DynamicTo<LayoutText>(first_letter_text_layout_object)) {
+      // Don't apply first letter styling to passwords and other elements
+      // obfuscated by -webkit-text-security. Also, see
+      // ShouldUpdateLayoutByReattaching() in text.cc.
+      if (layout_text->IsSecure())
+        return nullptr;
       // FIXME: If there is leading punctuation in a different LayoutText than
       // the first letter, we'll not apply the correct style to it.
       scoped_refptr<StringImpl> str =
-          To<LayoutText>(first_letter_text_layout_object)->IsTextFragment()
+          layout_text->IsTextFragment()
               ? To<LayoutTextFragment>(first_letter_text_layout_object)
                     ->CompleteText()
-              : To<LayoutText>(first_letter_text_layout_object)->OriginalText();
+              : layout_text->OriginalText();
       if (FirstLetterLength(str.get()) ||
           IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
         break;
+
+      // In case of inline level content made of punctuation and there is no
+      // sibling, we'll apply style to it.
+      if (IsParentInlineLayoutObject(first_letter_text_layout_object) &&
+          str->length() && !first_letter_text_layout_object->NextSibling())
+        break;
+
       first_letter_text_layout_object =
           first_letter_text_layout_object->NextSibling();
     } else if (first_letter_text_layout_object->IsListMarkerIncludingAll()) {
@@ -341,6 +364,13 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* fi
   // FIXME: This would already have been calculated in firstLetterLayoutObject.
   // Can we pass the length through?
   unsigned length = FirstLetterPseudoElement::FirstLetterLength(old_text);
+
+  // In case of inline level content made of punctuation, we use
+  // first_letter_text length instead of FirstLetterLength.
+  if (IsParentInlineLayoutObject(first_letter_text) && length == 0 &&
+      first_letter_text->TextLength())
+    length = first_letter_text->TextLength();
+
   unsigned remaining_length = old_text.length() - length;
 
   // Construct a text fragment for the text after the first letter.

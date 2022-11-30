@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ const char* EmptyPredictor::GetName() const {
 }
 
 void EmptyPredictor::Reset() {
-  last_input_ = base::nullopt;
+  last_input_ = absl::nullopt;
 }
 
 void EmptyPredictor::Update(const InputData& cur_input) {

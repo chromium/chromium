@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,10 @@ base::OneShotTimer& TabLoaderTester::force_load_timer() {
 
 const TabLoader::TabVector& TabLoaderTester::tabs_to_load() const {
   return tab_loader_->tabs_to_load_;
+}
+
+const TabLoader::TabSet& TabLoaderTester::tabs_load_initiated() const {
+  return tab_loader_->tabs_load_initiated_;
 }
 
 size_t TabLoaderTester::scheduled_to_load_count() const {

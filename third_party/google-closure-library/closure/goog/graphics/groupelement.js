@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -21,6 +13,7 @@
 goog.provide('goog.graphics.GroupElement');
 
 goog.require('goog.graphics.Element');
+goog.requireType('goog.graphics.AbstractGraphics');
 
 
 
@@ -38,6 +31,7 @@ goog.require('goog.graphics.Element');
  *     http://en.wikipedia.org/wiki/Canvas_element for details.
  */
 goog.graphics.GroupElement = function(element, graphics) {
+  'use strict';
   goog.graphics.Element.call(this, element, graphics);
 };
 goog.inherits(goog.graphics.GroupElement, goog.graphics.Element);

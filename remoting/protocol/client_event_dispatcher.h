@@ -1,23 +1,25 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_
 #define REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // ClientEventDispatcher manages the event channel on the client
 // side. It implements InputStub for outgoing input messages.
 class ClientEventDispatcher : public ChannelDispatcherBase, public InputStub {
  public:
   ClientEventDispatcher();
+
+  ClientEventDispatcher(const ClientEventDispatcher&) = delete;
+  ClientEventDispatcher& operator=(const ClientEventDispatcher&) = delete;
+
   ~ClientEventDispatcher() override;
 
   // InputStub implementation.
@@ -28,11 +30,8 @@ class ClientEventDispatcher : public ChannelDispatcherBase, public InputStub {
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientEventDispatcher);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_

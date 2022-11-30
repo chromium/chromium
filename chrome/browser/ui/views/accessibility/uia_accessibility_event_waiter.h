@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -58,7 +59,7 @@ class UiaAccessibilityEventWaiter {
     UiaAccessibilityWaiterInfo info_;
 
    private:
-    UiaAccessibilityEventWaiter* owner_ = nullptr;
+    raw_ptr<UiaAccessibilityEventWaiter> owner_ = nullptr;
 
     Microsoft::WRL::ComPtr<IUIAutomation> uia_;
     Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
@@ -78,6 +79,10 @@ class UiaAccessibilityEventWaiter {
                          public IUIAutomationEventHandler {
      public:
       EventHandler();
+
+      EventHandler(const EventHandler&) = delete;
+      EventHandler& operator=(const EventHandler&) = delete;
+
       virtual ~EventHandler();
 
       void Init(UiaAccessibilityEventWaiter::Thread* owner,
@@ -111,14 +116,12 @@ class UiaAccessibilityEventWaiter {
                                            EVENTID event_id) override;
 
       // Points to the waiter to receive notifications.
-      UiaAccessibilityEventWaiter::Thread* owner_ = nullptr;
+      raw_ptr<UiaAccessibilityEventWaiter::Thread> owner_ = nullptr;
 
      private:
       bool MatchesNameRole(IUIAutomationElement* sender);
 
       Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
-
-      DISALLOW_COPY_AND_ASSIGN(EventHandler);
     };
     Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
   };

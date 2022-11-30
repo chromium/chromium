@@ -1,18 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
-  '../chromevox/testing/snippets.js'
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
+  '../chromevox/testing/snippets.js',
 ]);
 
 /**
  * Test fixture for tree_walker.js.
  */
 AccessibilityExtensionAutomationTreeWalkerTest =
-    class extends ChromeVoxNextE2ETest {
+    class extends SelectToSpeakE2ETest {
   /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes.call();
@@ -53,6 +53,13 @@ AccessibilityExtensionAutomationTreeWalkerTest =
 
   isDescendant(descendant, node) {
     return this.isAncestor(node, descendant);
+  }
+
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        ['AutomationTreeWalker', 'AutomationTreeWalkerPhase'],
+        '/common/tree_walker.js');
   }
 };
 
@@ -119,11 +126,10 @@ TEST_F(
       }.bind(this)));
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'RootLeafRestriction',
-    function() {
-      this.runWithLoadedTree(
-          `
+    async function() {
+      const r = await this.runWithLoadedTree(`
       <div role="group" aria-label="1">
         <div role="group" aria-label="2">
           <div role="group" aria-label="3">
@@ -133,121 +139,116 @@ TEST_F(
         </div>
         <div role="group" aria-label="6"></div>
       </div>
-    `,
-          function(r) {
-            const node2 = r.firstChild.firstChild;
-            assertEquals('2', node2.name);
+    `);
+      const node2 = r.firstChild.firstChild;
+      assertEquals('2', node2.name);
 
-            // Restrict to 2's subtree and consider 3 and 5 leaves.
-            const leafP = function(n) {
-              return n.name === '3' || n.name === '5';
-            };
-            const rootP = function(n) {
-              return n.name === '2';
-            };
+      // Restrict to 2's subtree and consider 3 and 5 leaves.
+      const leafP = function(n) {
+        return n.name === '3' || n.name === '5';
+      };
+      const rootP = function(n) {
+        return n.name === '2';
+      };
 
-            // Track the nodes we've visited.
-            let visited = '';
-            const visit = function(n) {
-              visited += n.name;
-            };
-            const restrictions = {leaf: leafP, root: rootP, visit};
-            let walker =
-                new AutomationTreeWalker(node2, 'forward', restrictions);
-            while (walker.next().node) {
-            }
-            assertEquals('35', visited);
-            assertEquals(AutomationTreeWalkerPhase.OTHER, walker.phase);
+      // Track the nodes we've visited.
+      let visited = '';
+      const visit = function(n) {
+        visited += n.name;
+      };
+      const restrictions = {leaf: leafP, root: rootP, visit};
+      let walker = new AutomationTreeWalker(node2, 'forward', restrictions);
+      while (walker.next().node) {
+      }
+      assertEquals('35', visited);
+      assertEquals(AutomationTreeWalkerPhase.OTHER, walker.phase);
 
-            // And the reverse.
-            // Note that walking into a root is allowed.
-            visited = '';
-            const node6 = r.lastChild.lastChild;
-            assertEquals('6', node6.name);
-            walker = new AutomationTreeWalker(node6, 'backward', restrictions);
-            while (walker.next().node) {
-            }
-            assertEquals('532', visited);
+      // And the reverse.
+      // Note that walking into a root is allowed.
+      visited = '';
+      const node6 = r.lastChild.lastChild;
+      assertEquals('6', node6.name);
+      walker = new AutomationTreeWalker(node6, 'backward', restrictions);
+      while (walker.next().node) {
+      }
+      assertEquals('532', visited);
 
-            // Test not visiting ancestors of initial node.
-            const node5 = r.firstChild.firstChild.lastChild;
-            assertEquals('5', node5.name);
-            restrictions.root = function(n) {
-              return n.name === '1';
-            };
-            restrictions.leaf = function(n) {
-              return !n.firstChild;
-            };
+      // Test not visiting ancestors of initial node.
+      const node5 = r.firstChild.firstChild.lastChild;
+      assertEquals('5', node5.name);
+      restrictions.root = function(n) {
+        return n.name === '1';
+      };
+      restrictions.leaf = function(n) {
+        return !n.firstChild;
+      };
 
-            visited = '';
-            restrictions.skipInitialAncestry = false;
-            walker = new AutomationTreeWalker(node5, 'backward', restrictions);
-            while (walker.next().node) {
-            }
-            assertEquals('4321', visited);
+      visited = '';
+      restrictions.skipInitialAncestry = false;
+      walker = new AutomationTreeWalker(node5, 'backward', restrictions);
+      while (walker.next().node) {
+      }
+      assertEquals('4321', visited);
 
-            // 2 and 1 are ancestors; check they get skipped.
-            visited = '';
-            restrictions.skipInitialAncestry = true;
-            walker = new AutomationTreeWalker(node5, 'backward', restrictions);
-            while (walker.next().node) {
-            }
-            assertEquals('43', visited);
+      // 2 and 1 are ancestors; check they get skipped.
+      visited = '';
+      restrictions.skipInitialAncestry = true;
+      walker = new AutomationTreeWalker(node5, 'backward', restrictions);
+      while (walker.next().node) {
+      }
+      assertEquals('43', visited);
 
-            // We should skip node 2's subtree.
-            walker = new AutomationTreeWalker(
-                node2, 'forward', {skipInitialSubtree: true});
-            assertEquals(node6, walker.next().node);
-          });
+      // We should skip node 2's subtree.
+      walker = new AutomationTreeWalker(
+          node2, 'forward', {skipInitialSubtree: true});
+      assertEquals(node6, walker.next().node);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'LeafPredicateSymmetry',
-    function() {
-      this.runWithLoadedTree(toolbarDoc, function(r) {
-        const d = r.root.parent.root;
-        const forwardWalker = new AutomationTreeWalker(d, 'forward');
-        const forwardNodes = [];
+    async function() {
+      const r = await this.runWithLoadedTree(toolbarDoc);
+      const d = r.root.parent.root;
+      const forwardWalker = new AutomationTreeWalker(d, 'forward');
+      const forwardNodes = [];
 
-        // Get all nodes according to the walker in the forward direction.
-        do {
-          forwardNodes.push(forwardWalker.node);
-        } while (forwardWalker.next().node);
+      // Get all nodes according to the walker in the forward direction.
+      do {
+        forwardNodes.push(forwardWalker.node);
+      } while (forwardWalker.next().node);
 
-        // Now, verify the walker moving backwards matches the forwards list.
-        const backwardWalker = new AutomationTreeWalker(
-            forwardNodes[forwardNodes.length - 1], 'backward');
+      // Now, verify the walker moving backwards matches the forwards list.
+      const backwardWalker = new AutomationTreeWalker(
+          forwardNodes[forwardNodes.length - 1], 'backward');
 
-        do {
-          const next = forwardNodes.pop();
-          assertEquals(next, backwardWalker.node);
-        } while (backwardWalker.next().node);
-      });
+      do {
+        const next = forwardNodes.pop();
+        assertEquals(next, backwardWalker.node);
+      } while (backwardWalker.next().node);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'RootPredicateEnding',
-    function() {
-      this.runWithLoadedTree(toolbarDoc(), function(r) {
-        const backwardWalker =
-            new AutomationTreeWalker(r.firstChild, 'backward', {
-              root(node) {
-                return node === r;
-              }
-            });
-        assertEquals(r, backwardWalker.next().node);
-        assertEquals(null, backwardWalker.next().node);
+    async function() {
+      const r = await this.runWithLoadedTree(toolbarDoc());
+      const backwardWalker =
+          new AutomationTreeWalker(r.firstChild, 'backward', {
+            root(node) {
+              return node === r;
+            },
+          });
+      assertEquals(r, backwardWalker.next().node);
+      assertEquals(null, backwardWalker.next().node);
 
-        const forwardWalker =
-            new AutomationTreeWalker(r.firstChild.lastChild, 'forward', {
-              root(node) {
-                return node === r;
-              }
-            });
-        // Advance to the static text box of button contains text "Forward".
-        assertEquals('Forward', forwardWalker.next().node.name);
-        // Advance to the inline text box of button contains text "Forward".
-        assertEquals('Forward', forwardWalker.next().node.name);
-        assertEquals(null, forwardWalker.next().node);
-      });
+      const forwardWalker =
+          new AutomationTreeWalker(r.firstChild.lastChild, 'forward', {
+            root(node) {
+              return node === r;
+            },
+          });
+      // Advance to the static text box of button contains text "Forward".
+      assertEquals('Forward', forwardWalker.next().node.name);
+      // Advance to the inline text box of button contains text "Forward".
+      assertEquals('Forward', forwardWalker.next().node.name);
+      assertEquals(null, forwardWalker.next().node);
     });

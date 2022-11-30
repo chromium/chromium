@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_TOKEN_FETCHER_IMPL_H_
 
 #include <memory>
+#include <set>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetch_tracker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
@@ -39,6 +39,7 @@ class SafeBrowsingTokenFetcherImpl
 
   // SafeBrowsingTokenFetcher:
   void Start(Callback callback) override;
+  void OnInvalidAccessToken(const std::string& invalid_access_token) override;
 
  private:
   void OnTokenFetched(int request_id, const std::string& access_token);

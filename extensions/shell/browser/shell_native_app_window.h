@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NATIVE_APP_WINDOW_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 
@@ -16,6 +16,10 @@ class ShellNativeAppWindow : public NativeAppWindow {
  public:
   ShellNativeAppWindow(AppWindow* app_window,
                        const AppWindow::CreateParams& params);
+
+  ShellNativeAppWindow(const ShellNativeAppWindow&) = delete;
+  ShellNativeAppWindow& operator=(const ShellNativeAppWindow&) = delete;
+
   ~ShellNativeAppWindow() override;
 
   AppWindow* app_window() const { return app_window_; }
@@ -67,9 +71,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
  private:
-  AppWindow* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellNativeAppWindow);
+  raw_ptr<AppWindow> app_window_;
 };
 
 }  // namespace extensions

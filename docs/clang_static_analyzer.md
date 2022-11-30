@@ -31,6 +31,17 @@ As of this writing, the checker suites we support are
 [cplusplus](https://clang-analyzer.llvm.org/available_checks.html#cplusplus_checkers), and
 [deadcode](https://clang-analyzer.llvm.org/available_checks.html#deadcode_checkers).
 
+To easily run these checks against Chromium code via clang-tidy, follow
+[these](clang_tidy.md#evaluating_running-clang_tidy-across-chromium)
+instructions to pull down `tricium_clang_tidy.py` and then pass the following
+argument when invoking the script (`-*` disables all checks and then the
+remaining check name globs enable each category of checks):
+```
+--tidy_checks="-*,clang-analyzer-core*,clang-analyzer-cplusplus*,clang-analyzer-unix*,clang-analyzer-deadcode*"
+```
+A full list of Clang analyzer checks can be found in the
+[Clang-Tidy Checks List](https://clang.llvm.org/extra/clang-tidy/checks/list.html).
+
 ## Addressing false positives
 
 Some of the errors you encounter will be false positives, which occurs when the
@@ -53,9 +64,8 @@ DCHECK recklessly just to quiet down the analyzer. :)
 Other types of false positives and their suppressions:
 * Unreachable code paths. To suppress, add the `ANALYZER_SKIP_THIS_PATH();`
   directive to the relevant code block.
-* Dead stores. To suppress, use the macro
-  `ANALYZER_ALLOW_UNUSED(my_var)`. This also suppresses dead store warnings
-  on conventional builds without static analysis enabled!
+* Dead stores. To suppress, use `[[maybe_unused]]`. This also suppresses dead
+  store warnings on conventional builds without static analysis enabled!
 
 See the definitions of the `ANALYZER_*` macros in base/logging.h for more
 detailed information about how the annotations are implemented.

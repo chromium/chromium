@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,8 +17,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -48,7 +48,7 @@ class TestLocalCardMigrationBubbleControllerImpl
       : LocalCardMigrationBubbleControllerImpl(web_contents) {}
 
   void SimulateNavigation() {
-    content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
     content::MockNavigationHandle navigation_handle(GURL(), rfh);
     navigation_handle.set_has_committed(true);
     DidFinishNavigation(&navigation_handle);
@@ -60,7 +60,11 @@ class TestLocalCardMigrationBubbleControllerImpl
 class LocalCardMigrationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
-  LocalCardMigrationBubbleControllerImplTest() {}
+  LocalCardMigrationBubbleControllerImplTest() = default;
+  LocalCardMigrationBubbleControllerImplTest(
+      const LocalCardMigrationBubbleControllerImplTest&) = delete;
+  LocalCardMigrationBubbleControllerImplTest& operator=(
+      const LocalCardMigrationBubbleControllerImplTest&) = delete;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -95,8 +99,6 @@ class LocalCardMigrationBubbleControllerImplTest
 
  private:
   static void LocalCardMigrationCallback() {}
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleControllerImplTest);
 };
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
@@ -108,8 +110,8 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       histogram_tester.GetAllSamples(
           "Autofill.LocalCardMigrationBubbleOffer.FirstShow"),
       ElementsAre(
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, Metrics_Reshows_ShowBubble) {
@@ -121,8 +123,8 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Metrics_Reshows_ShowBubble) {
       histogram_tester.GetAllSamples(
           "Autofill.LocalCardMigrationBubbleOffer.Reshows"),
       ElementsAre(
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
@@ -135,8 +137,8 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
       histogram_tester.GetAllSamples(
           "Autofill.LocalCardMigrationBubbleOffer.FirstShow"),
       ElementsAre(
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
-          Bucket(AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_REQUESTED, 1),
+          Bucket(autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_SHOWN, 1)));
 }
 
 // Ensures the bubble should still stick around even if the time since bubble
@@ -146,7 +148,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
        StickyBubble_ShouldNotDismissUponNavigation) {
   ShowBubble();
   base::HistogramTester histogram_tester;
-  test_clock_.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock_.Advance(base::Seconds(10));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(
@@ -163,7 +165,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleAccepted) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleClosed) {
@@ -173,7 +175,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleClosed) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
@@ -184,7 +186,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleLostFocus) {
@@ -194,7 +196,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_BubbleLostFocus) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_Unknown) {
@@ -204,7 +206,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, FirstShow_Unknown) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleAccepted) {
@@ -215,10 +217,10 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleAccepted) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_ACCEPTED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleClosed) {
@@ -229,10 +231,10 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleClosed) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_CLOSED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
@@ -244,10 +246,10 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleLostFocus) {
@@ -258,10 +260,10 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_BubbleLostFocus) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_LOST_FOCUS, 1);
 }
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_Unknown) {
@@ -272,10 +274,10 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest, Reshows_Unknown) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.FirstShow",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_NOT_INTERACTED, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.LocalCardMigrationBubbleResult.Reshows",
-      AutofillMetrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
+      autofill_metrics::LOCAL_CARD_MIGRATION_BUBBLE_RESULT_UNKNOWN, 1);
 }
 
 }  // namespace autofill

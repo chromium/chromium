@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,8 @@ int CalculateVariance(const std::vector<int>& values) {
 
 AudioDelayStatsReporter::AudioDelayStatsReporter(int variance_window_size)
     : variance_window_size_(variance_window_size),
-      delay_histogram_min_(base::TimeDelta::FromMilliseconds(1)),
-      delay_histogram_max_(base::TimeDelta::FromMilliseconds(500)) {
+      delay_histogram_min_(base::Milliseconds(1)),
+      delay_histogram_max_(base::Milliseconds(500)) {
   DCHECK_GT(variance_window_size_, 1);
   capture_delays_ms_.reserve(variance_window_size_);
   render_delays_ms_.reserve(variance_window_size_);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -172,7 +171,7 @@ PolicySource PolicyProviderTestHarness::policy_source() const {
 }
 
 void PolicyProviderTestHarness::Install3rdPartyPolicy(
-    const base::DictionaryValue* policies) {
+    const base::Value::Dict& policies) {
   FAIL();
 }
 
@@ -238,8 +237,6 @@ void ConfigurationPolicyProviderTest::CheckValue(
            test_harness_->policy_scope(), test_harness_->policy_source(),
            expected_value.Clone(), nullptr);
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
-  // TODO(joaodasilva): set the policy in the POLICY_DOMAIN_EXTENSIONS too,
-  // and extend the |expected_bundle|, once all providers are ready.
 }
 
 TEST_P(ConfigurationPolicyProviderTest, Empty) {
@@ -276,8 +273,8 @@ TEST_P(ConfigurationPolicyProviderTest, IntegerValue) {
 
 TEST_P(ConfigurationPolicyProviderTest, StringListValue) {
   base::ListValue expected_value;
-  expected_value.AppendString("first");
-  expected_value.AppendString("second");
+  expected_value.Append("first");
+  expected_value.Append("second");
   CheckValue(test_keys::kKeyStringList, expected_value,
              base::BindOnce(&PolicyProviderTestHarness::InstallStringListPolicy,
                             base::Unretained(test_harness_.get()),
@@ -285,35 +282,43 @@ TEST_P(ConfigurationPolicyProviderTest, StringListValue) {
 }
 
 TEST_P(ConfigurationPolicyProviderTest, DictionaryValue) {
-  base::DictionaryValue expected_value;
-  expected_value.SetBoolean("bool", true);
-  expected_value.SetDouble("double", 123.456);
-  expected_value.SetInteger("int", 123);
-  expected_value.SetString("string", "omg");
+  base::Value::Dict expected_value;
+  expected_value.Set("bool", true);
+  expected_value.Set("double", 123.456);
+  expected_value.Set("int", 123);
+  expected_value.Set("string", "omg");
 
-  auto list = std::make_unique<base::ListValue>();
-  list->AppendString("first");
-  list->AppendString("second");
-  expected_value.Set("array", std::move(list));
+  {
+    base::Value::List list;
+    list.Append("first");
+    list.Append("second");
+    expected_value.Set("array", std::move(list));
+  }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("sub", "value");
-  list = std::make_unique<base::ListValue>();
-  auto sub = std::make_unique<base::DictionaryValue>();
-  sub->SetInteger("aaa", 111);
-  sub->SetInteger("bbb", 222);
-  list->Append(std::move(sub));
-  sub = std::make_unique<base::DictionaryValue>();
-  sub->SetString("ccc", "333");
-  sub->SetString("ddd", "444");
-  list->Append(std::move(sub));
-  dict->Set("sublist", std::move(list));
+  base::Value::List sublist;
+  {
+    base::Value::Dict sub;
+    sub.Set("aaa", 111);
+    sub.Set("bbb", 222);
+    sublist.Append(std::move(sub));
+  }
+
+  {
+    base::Value::Dict sub;
+    sub.Set("ccc", "333");
+    sub.Set("ddd", "444");
+    sublist.Append(std::move(sub));
+  }
+
+  base::Value::Dict dict;
+  dict.Set("sub", "value");
+  dict.Set("sublist", std::move(sublist));
   expected_value.Set("dictionary", std::move(dict));
 
-  CheckValue(test_keys::kKeyDictionary, expected_value,
+  CheckValue(test_keys::kKeyDictionary, base::Value(expected_value.Clone()),
              base::BindOnce(&PolicyProviderTestHarness::InstallDictionaryPolicy,
                             base::Unretained(test_harness_.get()),
-                            test_keys::kKeyDictionary, &expected_value));
+                            test_keys::kKeyDictionary, expected_value.Clone()));
 }
 
 TEST_P(ConfigurationPolicyProviderTest, RefreshPolicies) {
@@ -352,37 +357,38 @@ Configuration3rdPartyPolicyProviderTest::
     ~Configuration3rdPartyPolicyProviderTest() {}
 
 TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
-  base::DictionaryValue policy_dict;
-  policy_dict.SetBoolean("bool", true);
-  policy_dict.SetDouble("double", 123.456);
-  policy_dict.SetInteger("int", 789);
-  policy_dict.SetString("string", "string value");
+  base::Value::Dict policy_dict;
+  policy_dict.Set("bool", true);
+  policy_dict.Set("double", 123.456);
+  policy_dict.Set("int", 789);
+  policy_dict.Set("string", "string value");
 
-  auto list = std::make_unique<base::ListValue>();
+  base::Value::List list;
   for (int i = 0; i < 2; ++i) {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetInteger("subdictindex", i);
-    dict->SetKey("subdict", policy_dict.Clone());
-    list->Append(std::move(dict));
+    base::Value::Dict dict;
+    dict.Set("subdictindex", i);
+    dict.Set("subdict", policy_dict.Clone());
+    list.Append(std::move(dict));
   }
   policy_dict.Set("list", std::move(list));
-  policy_dict.SetKey("dict", policy_dict.Clone());
+  policy_dict.Set("dict", policy_dict.Clone());
 
   // Install these policies as a Chrome policy.
   test_harness_->InstallDictionaryPolicy(test_keys::kKeyDictionary,
-                                         &policy_dict);
+                                         policy_dict.Clone());
   // Install them as 3rd party policies too.
   base::DictionaryValue policy_3rdparty;
   policy_3rdparty.SetPath({"extensions", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
-                          policy_dict.Clone());
+                          base::Value(policy_dict.Clone()));
   policy_3rdparty.SetPath({"extensions", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
-                          policy_dict.Clone());
+                          base::Value(policy_dict.Clone()));
   // Install invalid 3rd party policies that shouldn't be loaded. These also
   // help detecting memory leaks in the code paths that detect invalid input.
-  policy_3rdparty.SetPath({"invalid-domain", "component"}, policy_dict.Clone());
-  policy_3rdparty.SetString("extensions.cccccccccccccccccccccccccccccccc",
-                            "invalid-value");
-  test_harness_->Install3rdPartyPolicy(&policy_3rdparty);
+  policy_3rdparty.SetPath({"invalid-domain", "component"},
+                          base::Value(policy_dict.Clone()));
+  policy_3rdparty.SetStringPath("extensions.cccccccccccccccccccccccccccccccc",
+                                "invalid-value");
+  test_harness_->Install3rdPartyPolicy(policy_3rdparty.GetDict());
 
   provider_->RefreshPolicies();
   task_environment_.RunUntilIdle();
@@ -390,22 +396,21 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   PolicyMap expected_policy;
   expected_policy.Set(test_keys::kKeyDictionary, test_harness_->policy_level(),
                       test_harness_->policy_scope(),
-                      test_harness_->policy_source(), policy_dict.Clone(),
-                      nullptr);
+                      test_harness_->policy_source(),
+                      base::Value(policy_dict.Clone()), nullptr);
   PolicyBundle expected_bundle;
-  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(expected_policy);
+  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      expected_policy.Clone();
   expected_policy.Clear();
-  expected_policy.LoadFrom(&policy_dict,
-                           test_harness_->policy_level(),
+  expected_policy.LoadFrom(policy_dict, test_harness_->policy_level(),
                            test_harness_->policy_scope(),
                            test_harness_->policy_source());
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
-                                      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
-      .CopyFrom(expected_policy);
+                                      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")) =
+      expected_policy.Clone();
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
-                                      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"))
-      .CopyFrom(expected_policy);
+                                      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")) =
+      expected_policy.Clone();
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
 }
 

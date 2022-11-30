@@ -131,7 +131,7 @@ has_single_bit(T x) noexcept {
 // fractional part discarded.
 template <class T>
 ABSL_INTERNAL_CONSTEXPR_CLZ inline
-    typename std::enable_if<std::is_unsigned<T>::value, T>::type
+    typename std::enable_if<std::is_unsigned<T>::value, int>::type
     bit_width(T x) noexcept {
   return std::numeric_limits<T>::digits - countl_zero(x);
 }

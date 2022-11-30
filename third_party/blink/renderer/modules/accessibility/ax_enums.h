@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_ENUMS_H_
-
-#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 
@@ -57,6 +55,8 @@ enum class AXUIntAttribute {
 };
 
 enum class AXStringAttribute {
+  kAriaBrailleLabel,
+  kAriaBrailleRoleDescription,
   kAriaKeyShortcuts,
   kAriaRoleDescription,
   // TODO(bebeaudr): kAriaVirtualContent is currently a string attribute to
@@ -87,32 +87,31 @@ enum AccessibilityOptionalBool {
   kOptionalBoolFalse
 };
 
-// The potential native HTML-based text (name, description or placeholder)
-// sources for an element.  See
-// http://rawgit.com/w3c/aria/master/html-aam/html-aam.html#accessible-name-and-description-calculation
-enum AXTextFromNativeHTML {
-  kAXTextFromNativeHTMLUninitialized = -1,
-  kAXTextFromNativeHTMLFigcaption,
+// The potential native host-language-based text (name, description or
+// placeholder) sources for an element.  See
+// https://w3c.github.io/html-aam/#accessible-name-and-description-computation
+enum AXTextSource {
+  kAXTextFromNativeSourceUninitialized = -1,
   kAXTextFromNativeHTMLLabel,
   kAXTextFromNativeHTMLLabelFor,
   kAXTextFromNativeHTMLLabelWrapped,
   kAXTextFromNativeHTMLLegend,
   kAXTextFromNativeHTMLRubyAnnotation,
   kAXTextFromNativeHTMLTableCaption,
-  kAXTextFromNativeHTMLTitleElement,
+  kAXTextFromNativeSVGDescElement,
+  kAXTextFromNativeTitleElement,  // HTML and SVG
 };
 
 enum AXIgnoredReason {
+  kAXActiveFullscreenElement,
   kAXActiveModalDialog,
   kAXAriaModalDialog,
-  kAXAncestorIsLeafNode,
   kAXAriaHiddenElement,
   kAXAriaHiddenSubtree,
   kAXEmptyAlt,
   kAXEmptyText,
   kAXInertElement,
   kAXInertSubtree,
-  kAXInheritsPresentation,
   kAXLabelContainer,
   kAXLabelFor,
   kAXNotRendered,

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/branding_buildflags.h"
@@ -59,6 +57,9 @@ class AllowedMemoryRanges {
     allowed_memory_ranges_.size = 0;
   }
 
+  AllowedMemoryRanges(const AllowedMemoryRanges&) = delete;
+  AllowedMemoryRanges& operator=(const AllowedMemoryRanges&) = delete;
+
   void AddEntry(VMAddress base, VMSize length) {
     SanitizationAllowedMemoryRanges::Range new_entry;
     new_entry.base = base;
@@ -86,8 +87,6 @@ class AllowedMemoryRanges {
   base::Lock lock_;
   SanitizationAllowedMemoryRanges allowed_memory_ranges_;
   std::vector<SanitizationAllowedMemoryRanges::Range> array_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllowedMemoryRanges);
 };
 
 bool SetSanitizationInfo(crash_reporter::CrashReporterClient* client,
@@ -136,6 +135,9 @@ class SandboxedHandler {
     static SandboxedHandler* instance = new SandboxedHandler();
     return instance;
   }
+
+  SandboxedHandler(const SandboxedHandler&) = delete;
+  SandboxedHandler& operator=(const SandboxedHandler&) = delete;
 
   bool Initialize(bool dump_at_crash) {
     request_dump_ = dump_at_crash ? 1 : 0;
@@ -208,7 +210,7 @@ class SandboxedHandler {
     msg.msg_name = nullptr;
     msg.msg_namelen = 0;
     msg.msg_iov = iov;
-    msg.msg_iovlen = base::size(iov);
+    msg.msg_iovlen = std::size(iov);
 
     char cmsg_buf[CMSG_SPACE(sizeof(int))];
     msg.msg_control = cmsg_buf;
@@ -245,8 +247,6 @@ class SandboxedHandler {
   // true if the previously installed signal handler is restored after
   // handling a crash. Otherwise SIG_DFL is restored.
   bool restore_previous_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedHandler);
 };
 
 }  // namespace
@@ -496,6 +496,9 @@ class HandlerStarter {
     return instance;
   }
 
+  HandlerStarter(const HandlerStarter&) = delete;
+  HandlerStarter& operator=(const HandlerStarter&) = delete;
+
   base::FilePath Initialize(bool dump_at_crash) {
     base::FilePath database_path;
     base::FilePath metrics_path;
@@ -625,28 +628,7 @@ class HandlerStarter {
   std::string handler_trampoline_;
   std::string handler_library_;
   bool use_java_handler_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(HandlerStarter);
 };
-
-bool ConnectToHandler(CrashReporterClient* client, base::ScopedFD* connection) {
-  int fds[2];
-  if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) != 0) {
-    PLOG(ERROR) << "socketpair";
-    return false;
-  }
-  base::ScopedFD local_connection(fds[0]);
-  base::ScopedFD handlers_socket(fds[1]);
-
-  if (!HandlerStarter::Get()->StartHandlerForClient(
-          client, handlers_socket.get(),
-          true /* write_minidump_to_database */)) {
-    return false;
-  }
-
-  *connection = std::move(local_connection);
-  return true;
-}
 
 bool g_is_browser = false;
 
@@ -672,35 +654,6 @@ void DumpWithoutCrashing() {
   }
 }
 
-bool DumpWithoutCrashingForClient(CrashReporterClient* client) {
-  base::ScopedFD connection;
-  if (!ConnectToHandler(client, &connection)) {
-    return false;
-  }
-
-  siginfo_t siginfo;
-  siginfo.si_signo = crashpad::Signals::kSimulatedSigno;
-  siginfo.si_errno = 0;
-  siginfo.si_code = 0;
-
-  ucontext_t context;
-  crashpad::CaptureContext(&context);
-
-  crashpad::SanitizationInformation sanitization;
-  crashpad::SetSanitizationInfo(client, &sanitization);
-
-  crashpad::ExceptionInformation exception;
-  crashpad::SetExceptionInformation(&siginfo, &context, &exception);
-
-  crashpad::ExceptionHandlerProtocol::ClientInformation info;
-  crashpad::SetClientInformation(&exception, &sanitization, &info);
-
-  crashpad::ScopedPrSetDumpable set_dumpable(/* may_log= */ false);
-
-  crashpad::ExceptionHandlerClient handler_client(connection.get(), false);
-  return handler_client.RequestCrashDump(info) == 0;
-}
-
 void AllowMemoryRange(void* begin, size_t length) {
   crashpad::AllowedMemoryRanges::Singleton()->AddEntry(
       crashpad::FromPointerCast<crashpad::VMAddress>(begin),
@@ -714,13 +667,14 @@ bool StartHandlerForClient(int fd, bool write_minidump_to_database) {
       GetCrashReporterClient(), fd, write_minidump_to_database);
 }
 
-base::FilePath PlatformCrashpadInitialization(
+bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
     bool embedded_handler,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
+    const std::vector<std::string>& initial_arguments,
+    base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
 
@@ -742,14 +696,16 @@ base::FilePath PlatformCrashpadInitialization(
 
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
-    return starter->Initialize(dump_at_crash);
+    *database_path = starter->Initialize(dump_at_crash);
+    return true;
   }
 
   crashpad::SandboxedHandler* handler = crashpad::SandboxedHandler::Get();
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
 
-  return base::FilePath();
+  *database_path = base::FilePath();
+  return true;
 }
 
 }  // namespace internal

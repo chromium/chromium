@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/cache/image_metadata_store.h"
@@ -44,6 +45,11 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
       std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
           database,
       base::Clock* clock);
+
+  ImageMetadataStoreLevelDB(const ImageMetadataStoreLevelDB&) = delete;
+  ImageMetadataStoreLevelDB& operator=(const ImageMetadataStoreLevelDB&) =
+      delete;
+
   ~ImageMetadataStoreLevelDB() override;
 
   // ImageMetadataStorage:
@@ -103,10 +109,8 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
   std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
       database_;
   // Clock is owned by the service that creates this object.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   base::WeakPtrFactory<ImageMetadataStoreLevelDB> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageMetadataStoreLevelDB);
 };
 
 }  // namespace image_fetcher

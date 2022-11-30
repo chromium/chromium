@@ -34,20 +34,19 @@ post-normalized string offsets using the input offsets_map, which is an output
 from the `normalize_utf8_with_offsets_map` op. offsets_map can be indexed or
 sliced along with the input_offsets.
 
-#### Example usage:
+#### Examples:
 
-
-
-```python
 ```
+>>> # input: <string>[num_strings]
 >>> post_normalized_str, offsets_map = normalize_utf8_with_offsets_map(
-...                                 ["株式会社",
-...                                  "ＫＡＤＯＫＡＷＡ"])
+...     ["株式会社", "ＫＡＤＯＫＡＷＡ"])
+>>> # input: <variant>[num_strings], <int64>[num_strings, num_offsets]
 >>> find_source_offsets(offsets_map, [[0, 1, 2], [0, 1, 2]])
-tf.Tensor([[0, 1, 2], [0, 3, 6]], shape=(2, 3), dtype=int64)
->>> find_source_offsets(offsets_map[1], [[0, 1, 2]])  # indexed offsets_map
-tf.Tensor([[0, 3, 6]], shape=(1, 3), dtype=int64)
-```
+>>> # output: <int64>[num_strings, num_offsets]
+<tf.Tensor: shape=(2, 3), dtype=int64, numpy=array([[0, 1, 2], [0, 3, 6]])>
+>>> # Offsets map can be indexed.
+>>> find_source_offsets(offsets_map[1], [[0, 1, 2]])
+<tf.Tensor: shape=(1, 3), dtype=int64, numpy=array([[0, 3, 6]])>
 ```
 
 <!-- Tabular view -->

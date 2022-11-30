@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ public class LicenseActivity extends Activity {
     private static final String LICENSES_CONTENT_TYPE = "text/html";
 
     @Override
+    @SuppressWarnings("DiscouragedApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String packageName = getPackageName();

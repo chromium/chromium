@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
-#include "net/dns/host_resolver.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 #include "services/proxy_resolver/host_resolver_mojo.h"
@@ -66,15 +66,15 @@ class MojoProxyResolverV8TracingBindings
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<mojom::HostResolverRequestClient> client) override {
     DCHECK(thread_checker_.CalledOnValidThread());
-    client_->ResolveDns(hostname, operation, network_isolation_key,
+    client_->ResolveDns(hostname, operation, network_anonymization_key,
                         std::move(client));
   }
 
   base::ThreadChecker thread_checker_;
-  Client* const client_;
+  const raw_ptr<Client> client_;
   HostResolverMojo host_resolver_;
 };
 

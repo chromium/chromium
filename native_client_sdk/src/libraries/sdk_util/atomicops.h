@@ -1,4 +1,4 @@
-/* Copyright 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -106,4 +106,4 @@ inline Atomic32 AtomicXorFetch(volatile Atomic32* ptr, Atomic32 value) {
 
 #endif  // ifndef WIN32
 
-#endif  /* LIBRARIES_SDK_UTIL_ATOMICOPS_H_ */
+#endif  // LIBRARIES_SDK_UTIL_ATOMICOPS_H_

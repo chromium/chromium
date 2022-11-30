@@ -1,17 +1,6 @@
 include_rules = [
-  "+ash/components/account_manager",
-  "+ash/components/audio",
-  "+components/services/app_service/public",
-  "+device/bluetooth",
+  "+components/browser_ui/share/android",
   "+extensions/strings/grit/extensions_strings.h",
-
-  # Generated files
-  "+js2webui/chrome/test/data",
-
-  # Other libraries.
-  "+third_party/angle",       # For ANGLE version.
-  "+third_party/brotli",      # For compressed resources.
-  "+third_party/zlib/zlib.h", # For compression level constants.
 ]
 
 specific_include_rules = {

@@ -1,21 +1,28 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/browser_accessibility.h"
 
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_position.h"
 
 namespace content {
 
-class BrowserAccessibilityTest : public testing::Test {
+using RetargetEventType = ui::AXTreeManager::RetargetEventType;
+
+class BrowserAccessibilityTest : public ::testing::Test {
  public:
   BrowserAccessibilityTest();
+
+  BrowserAccessibilityTest(const BrowserAccessibilityTest&) = delete;
+  BrowserAccessibilityTest& operator=(const BrowserAccessibilityTest&) = delete;
+
   ~BrowserAccessibilityTest() override;
 
  protected:
@@ -25,16 +32,16 @@ class BrowserAccessibilityTest : public testing::Test {
  private:
   void SetUp() override;
 
-  base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityTest);
+  BrowserTaskEnvironment task_environment_;
+  content::testing::ScopedContentAXModeSetter ax_mode_setter_;
 };
 
-BrowserAccessibilityTest::BrowserAccessibilityTest() = default;
+BrowserAccessibilityTest::BrowserAccessibilityTest()
+    : ax_mode_setter_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityTest::~BrowserAccessibilityTest() = default;
 
 void BrowserAccessibilityTest::SetUp() {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
 }
@@ -57,35 +64,35 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, para1, text1),
+          MakeAXTreeUpdateForTesting(root, para1, text1),
           test_browser_accessibility_delegate_.get()));
 
-  BrowserAccessibility* root_obj = manager->GetRoot();
-  EXPECT_FALSE(root_obj->PlatformIsLeaf());
+  BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  EXPECT_FALSE(root_obj->IsLeaf());
   EXPECT_TRUE(root_obj->CanFireEvents());
 
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
   EXPECT_TRUE(para_obj->CanFireEvents());
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(para_obj->PlatformIsLeaf());
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(para_obj->IsLeaf());
 #else
-  EXPECT_FALSE(para_obj->PlatformIsLeaf());
+  EXPECT_FALSE(para_obj->IsLeaf());
 #endif
 
   BrowserAccessibility* text_obj = manager->GetFromID(111);
-  EXPECT_TRUE(text_obj->PlatformIsLeaf());
-#if !defined(OS_ANDROID)
+  EXPECT_TRUE(text_obj->IsLeaf());
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(text_obj->CanFireEvents());
 #endif
-  BrowserAccessibility* retarget = manager->RetargetForEvents(
-      text_obj, BrowserAccessibilityManager::RetargetEventType::
-                    RetargetEventTypeBlinkHover);
+  BrowserAccessibility* retarget =
+      manager->RetargetBrowserAccessibilityForEvents(
+          text_obj, RetargetEventType::RetargetEventTypeBlinkHover);
   EXPECT_TRUE(retarget->CanFireEvents());
 
   manager.reset();
 }
 
-#if defined(OS_WIN) || BUILDFLAG(USE_ATK)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   // (i) => node is ignored
   // Parent Tree
@@ -176,14 +183,13 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   child_tree_update.nodes[4].id = 5;
 
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      BrowserAccessibilityManager::Create(
-          parent_tree_update, test_browser_accessibility_delegate_.get()));
+      BrowserAccessibilityManager::Create(parent_tree_update, nullptr));
 
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(
-          child_tree_update, test_browser_accessibility_delegate_.get()));
+      BrowserAccessibilityManager::Create(child_tree_update, nullptr));
 
-  BrowserAccessibility* root_obj = parent_manager->GetRoot();
+  BrowserAccessibility* root_obj =
+      parent_manager->GetBrowserAccessibilityRoot();
   // Test traversal
   // PlatformChildren(root_obj) = {5, 6, 13, 15, 11, 3, 4}
   BrowserAccessibility::PlatformChildIterator platform_iterator =
@@ -269,7 +275,7 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   }
   ASSERT_EQ(platform_iterator, platform_iterator2);
 }
-#endif  // defined(OS_WIN) || BUILDFLAG(USE_ATK)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 
 TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
   ui::AXNodeData root;
@@ -321,17 +327,18 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, static_text, inline_text1, inline_text2),
+          MakeAXTreeUpdateForTesting(root, static_text, inline_text1,
+                                     inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
   ASSERT_NE(nullptr, static_text_accessible);
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from root accessibility nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
@@ -373,7 +380,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
                     ui::AXClippingBehavior::kUnclipped)
                 .ToString());
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from root accessibility nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
@@ -437,12 +444,12 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectPlainTextField) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, textarea, container, static_text,
-                           inline_text1),
+          MakeAXTreeUpdateForTesting(root, textarea, container, static_text,
+                                     inline_text1),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* textarea_accessible =
       root_accessible->PlatformGetChild(0);
@@ -498,12 +505,12 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, static_text, inline_text1, static_text2,
-                           inline_text2),
+          MakeAXTreeUpdateForTesting(root, static_text, inline_text1,
+                                     static_text2, inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -544,7 +551,7 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectMultiElement) {
                     ui::AXClippingBehavior::kUnclipped)
                 .ToString());
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Android disallows getting inner text from accessibility root nodes.
   EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(),
             root_accessible
@@ -625,11 +632,12 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectBiDi) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, static_text, inline_text1, inline_text2),
+          MakeAXTreeUpdateForTesting(root, static_text, inline_text1,
+                                     inline_text2),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -711,14 +719,14 @@ TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRectScrolledWindow) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, static_text, inline_text),
+          MakeAXTreeUpdateForTesting(root, static_text, inline_text),
           test_browser_accessibility_delegate_.get()));
 
   browser_accessibility_manager
       ->SetUseRootScrollOffsetsWhenComputingBoundsForTesting(true);
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   BrowserAccessibility* static_text_accessible =
       root_accessible->PlatformGetChild(0);
@@ -750,11 +758,12 @@ TEST_F(BrowserAccessibilityTest, GetAuthorUniqueId) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(root),
+          test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
 
   ASSERT_EQ(u"my_html_id", root_accessible->GetAuthorUniqueId());
@@ -764,23 +773,30 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
   // Build a tree simulating an INPUT control with placeholder text.
   ui::AXNodeData root;
   root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids = {2};
-
   ui::AXNodeData input;
   input.id = 2;
-  input.role = ax::mojom::Role::kTextField;
-  input.SetName("Search the web");
-  input.child_ids = {3};
-
+  ui::AXNodeData text_container;
+  text_container.id = 3;
   ui::AXNodeData static_text;
-  static_text.id = 3;
+  static_text.id = 4;
+  ui::AXNodeData inline_text;
+  inline_text.id = 5;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {input.id};
+
+  input.role = ax::mojom::Role::kTextField;
+  input.AddState(ax::mojom::State::kEditable);
+  input.SetName("Search the web");
+  input.child_ids = {text_container.id};
+
+  text_container.role = ax::mojom::Role::kGenericContainer;
+  text_container.child_ids = {static_text.id};
+
   static_text.role = ax::mojom::Role::kStaticText;
   static_text.SetName("Search the web");
-  static_text.child_ids = {4};
+  static_text.child_ids = {inline_text.id};
 
-  ui::AXNodeData inline_text;
-  inline_text.id = 4;
   inline_text.role = ax::mojom::Role::kInlineTextBox;
   inline_text.SetName("Search the web");
   inline_text.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
@@ -790,12 +806,13 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, input, static_text, inline_text),
+          MakeAXTreeUpdateForTesting(root, input, text_container, static_text,
+                                     inline_text),
           test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
   ASSERT_NE(0u, root_accessible->InternalChildCount());
   BrowserAccessibility* input_accessible = root_accessible->InternalGetChild(0);
@@ -803,8 +820,7 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   // Create a text position at offset 0 in the input control
   BrowserAccessibility::AXPosition position =
-      input_accessible->CreatePositionAt(0,
-                                         ax::mojom::TextAffinity::kDownstream);
+      input_accessible->CreateTextPositionAt(0);
 
   // On platforms that expose IA2 or ATK hypertext, moving by word should work
   // the same as if the value of the text field is equal to the placeholder
@@ -818,7 +834,8 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_start =
       position->CreateNextWordStartPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_start->IsNullPosition());
   } else {
@@ -830,7 +847,8 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
 
   BrowserAccessibility::AXPosition next_word_end =
       position->CreateNextWordEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          {ui::AXBoundaryBehavior::kCrossBoundary,
+           ui::AXBoundaryDetection::kDontCheckInitialPosition});
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_end->IsNullPosition());
   } else {
@@ -870,16 +888,14 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
       ax::mojom::StringAttribute::kName, "name");
 
   std::unique_ptr<BrowserAccessibilityManager> parent_manager(
-      BrowserAccessibilityManager::Create(
-          parent_tree_update, test_browser_accessibility_delegate_.get()));
+      BrowserAccessibilityManager::Create(parent_tree_update, nullptr));
 
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(
-          child_tree_update, test_browser_accessibility_delegate_.get()));
+      BrowserAccessibilityManager::Create(child_tree_update, nullptr));
 
   // Portal node should use name from root of child tree.
-  EXPECT_EQ("name", child_manager->GetRoot()->GetName());
-  EXPECT_EQ("name", parent_manager->GetRoot()->GetName());
+  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
+  EXPECT_EQ("name", parent_manager->GetBrowserAccessibilityRoot()->GetName());
 
   // Explicitly add name to portal node.
   parent_tree_update.nodes[0].AddStringAttribute(
@@ -888,8 +904,8 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
   parent_manager->Initialize(parent_tree_update);
 
   // Portal node should now use name from attribute.
-  EXPECT_EQ("name", child_manager->GetRoot()->GetName());
-  EXPECT_EQ("name2", parent_manager->GetRoot()->GetName());
+  EXPECT_EQ("name", child_manager->GetBrowserAccessibilityRoot()->GetName());
+  EXPECT_EQ("name2", parent_manager->GetBrowserAccessibilityRoot()->GetName());
 }
 
 TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
@@ -905,19 +921,64 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, static_text),
+          MakeAXTreeUpdateForTesting(root, static_text),
           test_browser_accessibility_delegate_.get()));
   ASSERT_NE(nullptr, browser_accessibility_manager.get());
 
   BrowserAccessibility* root_accessible =
-      browser_accessibility_manager->GetRoot();
+      browser_accessibility_manager->GetBrowserAccessibilityRoot();
   ASSERT_NE(nullptr, root_accessible);
-  // Should be -1 for kRootWebArea since it doesn't have a calculated index.
-  EXPECT_EQ(-1, root_accessible->GetIndexInParent());
+  // Should be nullopt for kRootWebArea since it doesn't have a calculated
+  // index.
+  EXPECT_FALSE(root_accessible->GetIndexInParent().has_value());
   BrowserAccessibility* child_accessible = root_accessible->InternalGetChild(0);
   ASSERT_NE(nullptr, child_accessible);
   // Returns the index calculated in AXNode.
-  EXPECT_EQ(0, child_accessible->GetIndexInParent());
+  EXPECT_EQ(0u, child_accessible->GetIndexInParent());
+}
+
+TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
+  ui::AXNodeData root_1;
+  root_1.id = 1;
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {2};
+
+  ui::AXNodeData gc_2;
+  gc_2.id = 2;
+  gc_2.role = ax::mojom::Role::kGenericContainer;
+  gc_2.child_ids = {3};
+
+  ui::AXNodeData text_3;
+  text_3.id = 3;
+  text_3.role = ax::mojom::Role::kStaticText;
+  text_3.SetName("text");
+
+  std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root_1, gc_2, text_3),
+          test_browser_accessibility_delegate_.get()));
+  ASSERT_NE(nullptr, browser_accessibility_manager.get());
+
+  BrowserAccessibility* gc_accessible =
+      browser_accessibility_manager->GetBrowserAccessibilityRoot()
+          ->PlatformGetChild(0);
+  ASSERT_NE(nullptr, gc_accessible);
+
+  BrowserAccessibility::AXPosition pos = gc_accessible->CreatePositionAt(0);
+  EXPECT_TRUE(pos->IsTreePosition());
+
+  ASSERT_EQ(1U, gc_accessible->InternalChildCount());
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, nodes with only static text can drop their children.
+  ASSERT_EQ(0U, gc_accessible->PlatformChildCount());
+#else
+  ASSERT_EQ(1U, gc_accessible->PlatformChildCount());
+  BrowserAccessibility* text_accessible = gc_accessible->PlatformGetChild(0);
+  ASSERT_NE(nullptr, text_accessible);
+
+  pos = text_accessible->CreatePositionAt(0);
+  EXPECT_TRUE(pos->IsTextPosition());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace content

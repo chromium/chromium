@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   NSImage* appIcon = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
   [appIcon drawInRect:[self bounds]
              fromRect:NSZeroRect
-            operation:NSCompositeSourceOver
+            operation:NSCompositingOperationSourceOver
              fraction:1.0];
 
   if (_downloads == 0)
@@ -129,8 +129,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
   // Download count
   base::scoped_nsobject<NSNumberFormatter> formatter(
       [[NSNumberFormatter alloc] init]);
-  NSString* countString =
-      [formatter stringFromNumber:[NSNumber numberWithInt:_downloads]];
+  NSString* countString = [formatter stringFromNumber:@(_downloads)];
 
   CGFloat countFontSize = 24;
   NSSize countSize = NSZeroSize;
@@ -192,7 +191,7 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 - (void)updateIcon {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static base::TimeDelta updateFrequency =
-      base::TimeDelta::FromMilliseconds(kUpdateFrequencyMs);
+      base::Milliseconds(kUpdateFrequencyMs);
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta timeSinceLastUpdate = now - _lastUpdate;

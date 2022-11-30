@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -69,5 +69,38 @@ class TranslateTest(unittest.TestCase):
     # pylint: disable=W0212
     self.assertEquals(
         translate._MapKind("asso<SomeInterface>?"), "?asso:x:SomeInterface")
-    self.assertEquals(
-        translate._MapKind("asso<SomeInterface&>?"), "?asso:r:x:SomeInterface")
+    self.assertEquals(translate._MapKind("rca<SomeInterface>?"),
+                      "?rca:x:SomeInterface")
+
+  def testSelfRecursiveUnions(self):
+    """Verifies _UnionField() raises when a union is self-recursive."""
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union("SomeUnion", None,
+                  ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion")]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])
+
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union(
+            "SomeUnion", None,
+            ast.UnionBody([ast.UnionField("a", None, None, "SomeUnion?")]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])
+
+  def testDuplicateAttributesException(self):
+    tree = ast.Mojom(None, ast.ImportList(), [
+        ast.Union(
+            "FakeUnion",
+            ast.AttributeList([
+                ast.Attribute("key1", "value"),
+                ast.Attribute("key1", "value")
+            ]),
+            ast.UnionBody([
+                ast.UnionField("a", None, None, "int32"),
+                ast.UnionField("b", None, None, "string")
+            ]))
+    ])
+    with self.assertRaises(Exception):
+      translate.OrderedModule(tree, "mojom_tree", [])

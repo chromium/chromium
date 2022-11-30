@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -42,6 +43,9 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
+  MediaPowerDelegate(const MediaPowerDelegate&) = delete;
+  MediaPowerDelegate& operator=(const MediaPowerDelegate&) = delete;
+
   ~MediaPowerDelegate() override {
     base::PowerMonitor::RemovePowerSuspendObserver(this);
   }
@@ -54,8 +58,6 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
 
  private:
   const base::WeakPtr<AudioFocusManager> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPowerDelegate);
 };
 
 class AudioFocusManager::SourceObserverHolder {
@@ -69,6 +71,9 @@ class AudioFocusManager::SourceObserverHolder {
     observer_.set_disconnect_handler(base::BindOnce(
         &AudioFocusManager::CleanupSourceObservers, base::Unretained(owner)));
   }
+
+  SourceObserverHolder(const SourceObserverHolder&) = delete;
+  SourceObserverHolder& operator=(const SourceObserverHolder&) = delete;
 
   ~SourceObserverHolder() = default;
 
@@ -84,11 +89,13 @@ class AudioFocusManager::SourceObserverHolder {
     observer_->OnFocusLost(std::move(session));
   }
 
+  void OnRequestIdReleased(const base::UnguessableToken& request_id) {
+    observer_->OnRequestIdReleased(request_id);
+  }
+
  private:
   const base::UnguessableToken identity_;
   mojo::Remote<mojom::AudioFocusObserver> observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceObserverHolder);
 };
 
 void AudioFocusManager::RequestAudioFocus(
@@ -262,6 +269,18 @@ void AudioFocusManager::GetSourceFocusRequests(
   }
 
   std::move(callback).Run(std::move(requests));
+}
+
+void AudioFocusManager::RequestIdReleased(
+    const base::UnguessableToken& request_id) {
+  for (const auto& observer : observers_)
+    observer->OnRequestIdReleased(request_id);
+
+  const base::UnguessableToken& source_id = GetBindingIdentity();
+  for (auto& holder : source_observers_) {
+    if (holder->identity() == source_id)
+      holder->OnRequestIdReleased(request_id);
+  }
 }
 
 void AudioFocusManager::CreateActiveMediaController(

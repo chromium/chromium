@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -17,18 +17,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Enum actions for the IOS.DefaultBrowserFullscreenPromo UMA metric.
-enum IOSDefaultBrowserFullscreenPromoAction {
-  ACTION_BUTTON = 0,
-  CANCEL = 1,
-  REMIND_ME_LATER = 2,
-  kMaxValue = REMIND_ME_LATER,
-};
-
-}  // namespace
 
 @interface DefaultBrowserPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -87,22 +75,18 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 #pragma mark - ConfirmationAlertActionHandler
 
-- (void)confirmationAlertDismissAction {
-  // There should be no cancel toolbar button for this UI.
-  NOTREACHED();
-}
-
 - (void)confirmationAlertPrimaryAction {
   if (IsInRemindMeLaterGroup()) {
-    if (self.defaultBrowerPromoViewController.tertiaryActionAvailable) {
+    if (self.defaultBrowerPromoViewController.tertiaryActionString) {
       [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-                ACTION_BUTTON];
+                IOSDefaultBrowserFullscreenPromoAction::kActionButton];
     } else {
       [self logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
-                ACTION_BUTTON];
+                IOSDefaultBrowserFullscreenPromoAction::kActionButton];
     }
   } else {
-    [self logDefaultBrowserFullscreenPromoHistogramForAction:ACTION_BUTTON];
+    [self logDefaultBrowserFullscreenPromoHistogramForAction:
+              IOSDefaultBrowserFullscreenPromoAction::kActionButton];
   }
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
@@ -116,34 +100,35 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 }
 
 - (void)confirmationAlertSecondaryAction {
+  LogUserInteractionWithFullscreenPromo();
   if (IsInRemindMeLaterGroup()) {
-    if (self.defaultBrowerPromoViewController.tertiaryActionAvailable) {
+    if (self.defaultBrowerPromoViewController.tertiaryActionString) {
       // When the "Remind Me Later" button is visible, it is the secondary
       // button, while the "No Thanks" button is the tertiary button.
       [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
-                REMIND_ME_LATER];
+                IOSDefaultBrowserFullscreenPromoAction::kRemindMeLater];
       base::RecordAction(base::UserMetricsAction(
           "IOS.DefaultBrowserFullscreenPromo.RemindMeTapped"));
       LogRemindMeLaterPromoActionInteraction();
     } else {
       [self logDefaultBrowserFullscreenRemindMeSecondPromoHistogramForAction:
-                CANCEL];
+                IOSDefaultBrowserFullscreenPromoAction::kCancel];
       base::RecordAction(base::UserMetricsAction(
           "IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-      LogUserInteractionWithFullscreenPromo();
     }
   } else {
-    [self logDefaultBrowserFullscreenPromoHistogramForAction:CANCEL];
+    [self logDefaultBrowserFullscreenPromoHistogramForAction:
+              IOSDefaultBrowserFullscreenPromoAction::kCancel];
     base::RecordAction(
         base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
-    LogUserInteractionWithFullscreenPromo();
   }
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertTertiaryAction {
   DCHECK(IsInRemindMeLaterGroup());
-  [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:CANCEL];
+  [self logDefaultBrowserFullscreenPromoRemindMeHistogramForAction:
+            IOSDefaultBrowserFullscreenPromoAction::kCancel];
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
   LogUserInteractionWithFullscreenPromo();

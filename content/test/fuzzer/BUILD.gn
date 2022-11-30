@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,17 +32,18 @@ source_set("fuzzer_support") {
   testonly = true
 }
 
+fuzzer_test("color_parser_fuzzer") {
+  sources = [ "color_parser_fuzzer.cc" ]
+  deps = [ ":fuzzer_support" ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/color_parser_data/"
+}
+
 fuzzer_test("origin_trial_token_fuzzer") {
   sources = [ "origin_trial_token_fuzzer.cc" ]
   deps = [ "//content/test:test_support" ]
   dict =
       "//content/test/data/fuzzer_dictionaries/origin_trial_token_fuzzer.dict"
   seed_corpus = "//content/test/data/fuzzer_corpus/origin_trial_token_data/"
-}
-
-fuzzer_test("renderer_fuzzer") {
-  sources = [ "renderer_fuzzer.cc" ]
-  deps = [ ":fuzzer_support" ]
 }
 
 fuzzer_test("renderer_tree_fuzzer") {
@@ -108,16 +109,6 @@ fuzzer_test("signed_exchange_certificate_chain_fuzzer") {
   seed_corpus = "//content/test/data/fuzzer_corpus/signed_exchange_certificate_chain_data/"
 }
 
-fuzzer_test("appcache_manifest_parser_fuzzer") {
-  sources = [ "appcache_manifest_parser_fuzzer.cc" ]
-  deps = [
-    "//base:i18n",
-    "//content/test:test_support",
-  ]
-  dict = "//content/test/data/fuzzer_dictionaries/appcache_manifest_parser_fuzzer.dict"
-  seed_corpus = "//third_party/blink/web_tests/http/tests/appcache/resources/"
-}
-
 fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   sources = [ "merkle_integrity_source_stream_fuzzer.cc" ]
 
@@ -138,30 +129,26 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
 }
 
-proto_library("appcache_fuzzer_proto") {
-  sources = [ "../../browser/appcache/appcache_fuzzer.proto" ]
-  testonly = true
-}
+if (enable_mojom_fuzzer) {
+  source_set("mojolpm_fuzzer_support") {
+    testonly = true
 
-fuzzer_test("appcache_fuzzer") {
-  sources = [
-    "../../browser/appcache/appcache_fuzzer.cc",
-    "../../browser/appcache/mock_appcache_storage.cc",
-    "../../browser/appcache/mock_appcache_storage.h",
-  ]
+    sources = [
+      "mojolpm_fuzzer_support.cc",
+      "mojolpm_fuzzer_support.h",
+    ]
 
-  deps = [
-    ":appcache_fuzzer_proto",
-    "//base/test:test_support",
-    "//content/app:for_content_tests",
-    "//content/browser:browser",
-    "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//mojo/core/embedder",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
-    "//third_party/libprotobuf-mutator",
-  ]
+    deps = [ "//mojo/core/embedder:embedder" ]
+
+    public_deps = [
+      "//base/test:test_support",
+      "//content/browser:for_content_tests",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//storage/browser:test_support",
+      "//third_party/icu:icudata",
+    ]
+  }
 }
 
 mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
@@ -171,13 +158,9 @@ mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
   testcase_proto_kind = "content.fuzzing.code_cache_host.proto.Testcase"
 
   deps = [
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
-    "//third_party/icu:icudata",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -194,13 +177,26 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   proto_source = "file_system_manager_mojolpm_fuzzer.proto"
 
   deps = [
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
+    "//testing/libfuzzer/proto:url_proto_converter",
+    "//third_party/blink/public/common:storage_key_proto_converter",
+  ]
+
+  proto_deps = [
+    "//third_party/blink/public/common:storage_key_proto",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+  ]
+}
+
+mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
+  sources = [ "audio_context_manager_mojolpm_fuzzer.cc" ]
+
+  proto_source = "audio_context_manager_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
     "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
-    "//third_party/icu:icudata",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
@@ -220,6 +216,31 @@ fuzzer_test("speech_audio_encoder_fuzzer") {
     "//base",
     "//third_party/flac",
   ]
+}
+
+fuzzer_test("attribution_simulator_fuzzer") {
+  sources = [ "attribution_simulator_fuzzer.cc" ]
+  deps = [
+    "//content/test:test_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/attribution_simulator/"
+}
+
+fuzzer_test("attribution_source_fuzzer") {
+  sources = [ "attribution_source_fuzzer.cc" ]
+  deps = [
+    "//content/browser",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus =
+      "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus/"
 }
 
 fuzzer_test("browser_accessibility_fuzzer") {
@@ -275,6 +296,56 @@ fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
       "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
 }
 
+if (use_fuzzing_engine) {
+  source_set("first_party_set_parser_fuzzer_support") {
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//content/browser",
+      "//content/public/browser:browser_sources",
+      "//net:net",
+      "//net:net_fuzzer_test_support",
+    ]
+    testonly = true
+  }
+}
+
+fuzzer_test("first_party_set_parser_fuzzer") {
+  sources =
+      [ "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.cc" ]
+  deps = [ ":first_party_set_parser_fuzzer_support" ]
+  dict =
+      "../../browser/first_party_sets/test/first_party_set_parser_fuzzer.dict"
+  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+}
+
+fuzzer_test("first_party_set_parser_json_fuzzer") {
+  sources = [
+    "../../browser/first_party_sets/test/first_party_set_parser_json_fuzzer.cc",
+  ]
+  deps = [
+    ":first_party_set_parser_fuzzer_support",
+    "//testing/libfuzzer/proto:json_proto",
+    "//testing/libfuzzer/proto:json_proto_converter",
+    "//third_party/libprotobuf-mutator",
+  ]
+}
+
+mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
+  sources = [ "media_stream_dispatcher_host_mojolpm_fuzzer.cc" ]
+
+  proto_source = "media_stream_dispatcher_host_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+}
+
 # Fuzzer only supports linux. As we use a `V4L2CaptureDevice`, which is only
 # usable on linux through `VideoCaptureDeviceFactoryLinux`.
 if (is_linux || is_chromeos_lacros) {
@@ -284,22 +355,33 @@ if (is_linux || is_chromeos_lacros) {
     proto_source = "video_capture_host_mojolpm_fuzzer.proto"
 
     deps = [
-      "//base/test:test_support",
+      ":mojolpm_fuzzer_support",
       "//content/browser:for_content_tests",
-      "//content/public/browser:browser",
+      "//content/public/browser:browser_sources",
       "//content/test:content_unittests",
-      "//content/test:test_support",
       "//media:test_support",
       "//media/capture:capture_lib",
       "//media/capture:test_support",
-      "//services/network:test_support",
-      "//storage/browser:test_support",
       "//third_party/blink/public/common:common",
-      "//third_party/icu:icudata",
     ]
 
     proto_deps = [ "//media/capture/mojom:video_capture_mojolpm" ]
   }
+}
+
+mojolpm_fuzzer_test("image_capture_mojolpm_fuzzer") {
+  sources = [ "image_capture_mojolpm_fuzzer.cc" ]
+
+  proto_source = "image_capture_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//media/capture:capture_lib",
+  ]
+
+  proto_deps = [ "//media/capture/mojom:image_capture_mojolpm" ]
 }
 
 mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
@@ -309,13 +391,8 @@ mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
 
   deps = [
     ":controller_presentation_service_delegate_for_fuzzing",
-    "//base/test:test_support",
+    ":mojolpm_fuzzer_support",
     "//content/browser:for_content_tests",
-    "//content/public/browser:browser",
-    "//content/test:content_unittests",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
     "//ui/events/devices:devices",
   ]
 
@@ -323,6 +400,21 @@ mojolpm_fuzzer_test("presentation_service_mojolpm_fuzzer") {
     ":controller_presentation_service_delegate_for_fuzzing_proto",
     "//third_party/blink/public/mojom:mojom_platform_mojolpm",
   ]
+}
+
+mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
+  sources = [ "clipboard_host_mojolpm_fuzzer.cc" ]
+
+  proto_source = "clipboard_host_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 }
 
 if (enable_mojom_fuzzer) {

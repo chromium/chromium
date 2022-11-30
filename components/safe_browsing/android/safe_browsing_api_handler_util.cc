@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "components/safe_browsing/core/db/metadata.pb.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/metadata.pb.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 namespace safe_browsing {
 namespace {
@@ -43,108 +43,33 @@ enum UmaThreatSubType {
   UMA_THREAT_SUB_TYPE_MAX_VALUE
 };
 
-void ReportUmaThreatSubType(SBThreatType threat_type,
-                            UmaThreatSubType sub_type) {
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SB2.RemoteCall.ThreatSubType.PotentiallyHarmfulApp", sub_type,
-        UMA_THREAT_SUB_TYPE_MAX_VALUE);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("SB2.RemoteCall.ThreatSubType.SocialEngineering",
-                              sub_type, UMA_THREAT_SUB_TYPE_MAX_VALUE);
-  }
-}
-
-// Parse the appropriate "*_pattern_type" key from the metadata.
-// Returns NONE if no pattern type was found.
-ThreatPatternType ParseThreatSubType(const base::DictionaryValue* match,
-                                     SBThreatType threat_type) {
-  if (threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-      threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER ||
-      threat_type == SB_THREAT_TYPE_BILLING) {
-    return ThreatPatternType::NONE;
-  }
-
-  std::string pattern_key;
-  switch (threat_type) {
-    case SB_THREAT_TYPE_URL_MALWARE:
-      pattern_key = "pha_pattern_type";
-      break;
-    case SB_THREAT_TYPE_URL_PHISHING:
-      pattern_key = "se_pattern_type";
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  std::string pattern_type;
-  if (!match->GetString(pattern_key, &pattern_type)) {
-    ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_NOT_SET);
-    return ThreatPatternType::NONE;
-  }
-
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
-    if (pattern_type == "LANDING") {
-      ReportUmaThreatSubType(
-          threat_type, UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_LANDING);
-      return ThreatPatternType::MALWARE_LANDING;
-    } else if (pattern_type == "DISTRIBUTION") {
-      ReportUmaThreatSubType(
-          threat_type,
-          UMA_THREAT_SUB_TYPE_POTENTIALLY_HALMFUL_APP_DISTRIBUTION);
-      return ThreatPatternType::MALWARE_DISTRIBUTION;
-    } else {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_UNKNOWN);
-      return ThreatPatternType::NONE;
-    }
-  } else {
-    DCHECK(threat_type == SB_THREAT_TYPE_URL_PHISHING);
-    if (pattern_type == "SOCIAL_ENGINEERING_ADS") {
-      ReportUmaThreatSubType(threat_type,
-                             UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_ADS);
-      return ThreatPatternType::SOCIAL_ENGINEERING_ADS;
-    } else if (pattern_type == "SOCIAL_ENGINEERING_LANDING") {
-      ReportUmaThreatSubType(threat_type,
-                             UMA_THREAT_SUB_TYPE_SOCIAL_ENGINEERING_LANDING);
-      return ThreatPatternType::SOCIAL_ENGINEERING_LANDING;
-    } else if (pattern_type == "PHISHING") {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_PHISHING);
-      return ThreatPatternType::PHISHING;
-    } else {
-      ReportUmaThreatSubType(threat_type, UMA_THREAT_SUB_TYPE_UNKNOWN);
-      return ThreatPatternType::NONE;
-    }
-  }
-}
-
 // Parse the optional "UserPopulation" key from the metadata.
 // Returns empty string if none was found.
-std::string ParseUserPopulation(const base::DictionaryValue* match) {
-  std::string population_id;
-  if (!match->GetString("UserPopulation", &population_id))
+std::string ParseUserPopulation(const base::Value::Dict& match) {
+  const std::string* population_id = match.FindString("UserPopulation");
+  if (!population_id)
     return std::string();
   else
-    return population_id;
+    return *population_id;
 }
 
 SubresourceFilterMatch ParseSubresourceFilterMatch(
-    const base::DictionaryValue* match) {
+    const base::Value::Dict& match) {
   SubresourceFilterMatch subresource_filter_match;
 
   auto get_enforcement = [](const std::string& value) {
     return value == "warn" ? SubresourceFilterLevel::WARN
                            : SubresourceFilterLevel::ENFORCE;
   };
-  std::string absv_value;
-  if (match->GetString("sf_absv", &absv_value)) {
+  const std::string* absv_value = match.FindString("sf_absv");
+  if (absv_value) {
     subresource_filter_match[SubresourceFilterType::ABUSIVE] =
-        get_enforcement(absv_value);
+        get_enforcement(*absv_value);
   }
-  std::string bas_value;
-  if (match->GetString("sf_bas", &bas_value)) {
+  const std::string* bas_value = match.FindString("sf_bas");
+  if (bas_value) {
     subresource_filter_match[SubresourceFilterType::BETTER_ADS] =
-        get_enforcement(bas_value);
+        get_enforcement(*bas_value);
   }
   return subresource_filter_match;
 }
@@ -197,7 +122,7 @@ SBThreatType JavaToSBThreatType(int java_threat_num) {
 // Valid examples:
 // {"matches":[{"threat_type":"5"}]}
 //   or
-// {"matches":[{"threat_type":"4", "pha_pattern_type":"LANDING"},
+// {"matches":[{"threat_type":"4"},
 //             {"threat_type":"5"}]}
 //   or
 // {"matches":[{"threat_type":"4", "UserPopulation":"YXNvZWZpbmFqO..."}]
@@ -211,29 +136,36 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     return UMA_STATUS_JSON_EMPTY;
 
   // Pick out the "matches" list.
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(metadata_str);
-  const base::ListValue* matches = nullptr;
-  if (!value.get() || !value->is_dict() ||
-      !(static_cast<base::DictionaryValue*>(value.get()))
-           ->GetList(kJsonKeyMatches, &matches) ||
-      !matches) {
-    return UMA_STATUS_JSON_FAILED_TO_PARSE;
+  absl::optional<base::Value> value = base::JSONReader::Read(metadata_str);
+  const base::Value::List* matches = nullptr;
+  {
+    if (!value.has_value())
+      return UMA_STATUS_JSON_FAILED_TO_PARSE;
+
+    base::Value::Dict* dict = value->GetIfDict();
+    if (!dict)
+      return UMA_STATUS_JSON_FAILED_TO_PARSE;
+
+    matches = dict->FindList(kJsonKeyMatches);
+    if (!matches)
+      return UMA_STATUS_JSON_FAILED_TO_PARSE;
   }
 
   // Go through each matched threat type and pick the most severe.
   JavaThreatTypes worst_threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
-  const base::DictionaryValue* worst_match = nullptr;
-  for (size_t i = 0; i < matches->GetSize(); i++) {
-    // Get the threat number
-    const base::DictionaryValue* match;
-    std::string threat_num_str;
+  const base::Value::Dict* worst_match = nullptr;
+  for (const base::Value& match_value : *matches) {
+    const base::Value::Dict* match = match_value.GetIfDict();
+    if (!match) {
+      continue;  // Skip malformed list entries.
+    }
 
+    // Get the threat number
+    const std::string* threat_num_str = match->FindString(kJsonKeyThreatType);
     int threat_type_num;
-    if (!matches->GetDictionary(i, &match) ||
-        !match->GetString(kJsonKeyThreatType, &threat_num_str) ||
-        !base::StringToInt(threat_num_str, &threat_type_num)) {
-      continue;  // Skip malformed list entries
+    if (!threat_num_str ||
+        !base::StringToInt(*threat_num_str, &threat_type_num)) {
+      continue;  // Skip malformed list entries.
     }
 
     JavaThreatTypes threat_type = static_cast<JavaThreatTypes>(threat_type_num);
@@ -251,12 +183,10 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
     return UMA_STATUS_JSON_UNKNOWN_THREAT;
 
   // Fill in the metadata
-  metadata->threat_pattern_type =
-      ParseThreatSubType(worst_match, *worst_sb_threat_type);
-  metadata->population_id = ParseUserPopulation(worst_match);
+  metadata->population_id = ParseUserPopulation(*worst_match);
   if (*worst_sb_threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
     metadata->subresource_filter_match =
-        ParseSubresourceFilterMatch(worst_match);
+        ParseSubresourceFilterMatch(*worst_match);
   }
 
   return UMA_STATUS_MATCH;  // success

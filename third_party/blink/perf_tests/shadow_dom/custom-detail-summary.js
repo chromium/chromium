@@ -27,11 +27,11 @@ customElements.define("my-detail", class extends HTMLElement {
         //Get the first <my-summary> element from <my-detail>'s direct children
         const my_summary = target.querySelector(':scope > my-summary');
         if (my_summary) {
-          slot1.assign([my_summary]);
+          slot1.assign(my_summary);
         } else {
-          slot1.assign([]);
+          slot1.assign();
         }
-        slot2.assign(target.childNodes);
+        slot2.assign(...target.childNodes);
       });
     observer.observe(this, {childList: true});
     }

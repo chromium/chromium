@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -211,7 +211,7 @@ void V8UnitTest::SetUp() {
           .ToLocalChecked(),
       send_function);
 
-  context_.Reset(isolate, v8::Context::New(isolate, NULL, global));
+  context_.Reset(isolate, v8::Context::New(isolate, nullptr, global));
 
   // Set up console object for console.log(), etc.
   v8::Local<v8::ObjectTemplate> console = v8::ObjectTemplate::New(isolate);
@@ -238,6 +238,8 @@ void V8UnitTest::SetUp() {
   {
     v8::Local<v8::Context> context = context_.Get(isolate);
     v8::Context::Scope context_scope(context);
+    v8::MicrotasksScope microtasks(isolate,
+                                   v8::MicrotasksScope::kDoNotRunMicrotasks);
     context->Global()
         ->Set(context,
               v8::String::NewFromUtf8(isolate, "console",
@@ -254,6 +256,8 @@ void V8UnitTest::SetGlobalStringVar(const std::string& var_name,
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate, context_);
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks(isolate,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   context->Global()
       ->Set(context,
             v8::String::NewFromUtf8(isolate, var_name.c_str(),
@@ -285,7 +289,7 @@ void V8UnitTest::ExecuteScriptInContext(const base::StringPiece& script_source,
           .ToLocalChecked();
 
   v8::TryCatch try_catch(isolate);
-  v8::ScriptOrigin origin(name);
+  v8::ScriptOrigin origin(isolate, name);
   v8::Local<v8::Script> script;
   // Ensure the script compiled without errors.
   if (!v8::Script::Compile(context, source, &origin).ToLocal(&script))
@@ -342,7 +346,7 @@ void V8UnitTest::TestFunction(const std::string& function_name) {
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> result =
-      function->Call(context, context->Global(), 0, NULL)
+      function->Call(context, context->Global(), 0, nullptr)
           .FromMaybe(v8::Local<v8::Value>());
   // The test fails if an exception was thrown.
   if (result.IsEmpty())
@@ -383,8 +387,8 @@ void V8UnitTest::ChromeSend(const v8::FunctionCallbackInfo<v8::Value>& args) {
   g_test_result_ok =
       test_result->Get(context, 0).ToLocalChecked()->BooleanValue(isolate);
   if (!g_test_result_ok) {
-    v8::String::Utf8Value message(
+    v8::String::Utf8Value error_message(
         isolate, test_result->Get(context, 1).ToLocalChecked());
-    LOG(ERROR) << *message;
+    LOG(ERROR) << *error_message;
   }
 }

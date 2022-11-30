@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -31,6 +30,10 @@ class LoopbackHandler {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   LoopbackHandler(scoped_refptr<base::SequencedTaskRunner> io_task_runner,
                   bool use_external_audio_pipeline);
+
+  LoopbackHandler(const LoopbackHandler&) = delete;
+  LoopbackHandler& operator=(const LoopbackHandler&) = delete;
+
   ~LoopbackHandler();
 
   // Adds a new loopback connection.
@@ -75,8 +78,6 @@ class LoopbackHandler {
 
   base::SequenceBound<LoopbackIO> io_;
   std::unique_ptr<ExternalLoopbackHandler, ExternalDeleter> external_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackHandler);
 };
 
 }  // namespace media

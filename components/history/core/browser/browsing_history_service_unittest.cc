@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,27 @@
 
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/sync/driver/fake_sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/test/fake_sync_service.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace history {
 
@@ -42,6 +41,9 @@ const char kUrl4[] = "http://www.four.com";
 const char kUrl5[] = "http://www.five.com";
 const char kUrl6[] = "http://www.six.com";
 const char kUrl7[] = "http://www.seven.com";
+const char kUrl8[] = "http://eight.com";
+const char kUrl9[] = "http://nine.com/eight.com";
+const char kUrl10[] = "http://ten.com/eight";
 const char kIconUrl1[] = "http://www.one.com/favicon.ico";
 
 const HistoryEntry::EntryType kLocal = HistoryEntry::LOCAL_ENTRY;
@@ -117,7 +119,7 @@ class TestBrowsingHistoryDriver : public BrowsingHistoryDriver {
   int history_deleted_count_ = 0;
   std::vector<QueryResult> query_results_;
   base::OnceClosure continuation_closure_;
-  WebHistoryService* web_history_;
+  raw_ptr<WebHistoryService> web_history_;
 };
 
 class TestWebHistoryService : public FakeWebHistoryService {
@@ -191,8 +193,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   // before Time::UnixEpoch() that cannot be represented. By adding 1 day we
   // ensure all test data is after Time::UnixEpoch().
   BrowsingHistoryServiceTest()
-      : baseline_time_(Time::UnixEpoch().LocalMidnight() +
-                       TimeDelta::FromDays(1)),
+      : baseline_time_(Time::UnixEpoch().LocalMidnight() + base::Days(1)),
         driver_(&web_history_) {
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     local_history_ = CreateHistoryService(history_dir_.GetPath(), true);
@@ -214,7 +215,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   }
 
   Time OffsetToTime(int64_t hour_offset) {
-    return baseline_time_ + TimeDelta::FromHours(hour_offset);
+    return baseline_time_ + base::Hours(hour_offset);
   }
 
   void AddHistory(const std::vector<TestResult>& data,
@@ -254,8 +255,14 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
 
   TestBrowsingHistoryDriver::QueryResult QueryHistory(
       const QueryOptions& options) {
+    return QueryHistory(std::u16string(), options);
+  }
+
+  TestBrowsingHistoryDriver::QueryResult QueryHistory(
+      const std::u16string& query_text,
+      const QueryOptions& options) {
     size_t previous_results_count = driver()->GetQueryResults().size();
-    service()->QueryHistory(std::u16string(), options);
+    service()->QueryHistory(query_text, options);
     BlockUntilHistoryProcessesPendingRequests();
     const std::vector<TestBrowsingHistoryDriver::QueryResult> all_results =
         driver()->GetQueryResults();
@@ -307,7 +314,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   TestWebHistoryService web_history_;
   TestSyncService sync_service_;
   TestBrowsingHistoryDriver driver_;
-  base::MockOneShotTimer* timer_;
+  raw_ptr<base::MockOneShotTimer> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 
@@ -382,9 +389,9 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalTimeRanges) {
   QueryOptions options;
   options.begin_time = OffsetToTime(2);
   options.end_time = OffsetToTime(4);
-  // Having a |reached_beginning| value of false here seems
-  // counterintuitive. Seems to be for paging by |begin_time| instead of
-  // |count|. If the local history implementation changes, feel free to update
+  // Having a `reached_beginning` value of false here seems
+  // counterintuitive. Seems to be for paging by `begin_time` instead of
+  // `count`. If the local history implementation changes, feel free to update
   // this value, all this test cares about is that BrowsingHistoryService passes
   // the values through correctly.
   VerifyQueryResult(/*reached_beginning*/ false,
@@ -404,6 +411,23 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
   VerifyQueryResult(
       /*reached_beginning*/ true, /*has_synced_results*/ true,
       {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}}, QueryHistory(options));
+}
+
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
+  AddHistory({{kUrl8, 1, kRemote}, {kUrl9, 2, kRemote}, {kUrl10, 3, kRemote}});
+
+  QueryOptions options;
+  options.max_count = 0;
+  options.host_only = false;
+  VerifyQueryResult(
+      /*reached_beginning*/ true,
+      /*has_synced_results*/ true,
+      {{kUrl10, 3, kRemote}, {kUrl9, 2, kRemote}, {kUrl8, 1, kRemote}},
+      QueryHistory(u"eight.com", options));
+  options.host_only = true;
+  VerifyQueryResult(/*reached_beginning*/ true,
+                    /*has_synced_results*/ true, {{kUrl8, 1, kRemote}},
+                    QueryHistory(u"eight.com", options));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {
@@ -655,7 +679,7 @@ TEST_F(BrowsingHistoryServiceTest, WebHistoryTimeout) {
 
   // WebHistoryService will DCHECK if we destroy it before the observer in
   // BrowsingHistoryService is removed, so reset our first
-  // BrowsingHistoryService before |timeout| goes out of scope.
+  // BrowsingHistoryService before `timeout` goes out of scope.
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
 }
@@ -717,7 +741,7 @@ TEST_F(BrowsingHistoryServiceTest, IncorrectlyOrderedRemoteResults) {
 
   // WebHistoryService will DCHECK if we destroy it before the observer in
   // BrowsingHistoryService is removed, so reset our first
-  // BrowsingHistoryService before |reversed| goes out of scope.
+  // BrowsingHistoryService before `reversed` goes out of scope.
   driver()->SetWebHistory(nullptr);
   ResetService(driver(), nullptr, nullptr);
 }

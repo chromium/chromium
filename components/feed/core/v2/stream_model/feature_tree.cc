@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,9 @@ std::string ToAsciiForTesting(const std::string& s) {
 }
 }  // namespace
 
-ContentMap::ContentMap() = default;
+ContentMap::ContentMap(ContentRevision::Generator* revision_generator)
+    : revision_generator_(revision_generator) {}
+
 ContentMap::~ContentMap() = default;
 
 ContentTag ContentMap::GetContentTag(const feedwire::ContentId& id) {
@@ -57,7 +59,7 @@ ContentRevision ContentMap::AddContent(feedstore::Content content) {
     return result.first->second;
 
   // Newly inserted.
-  const ContentRevision new_revision = revision_generator_.GenerateNextId();
+  const ContentRevision new_revision = revision_generator_->GenerateNextId();
   result.first->second = new_revision;
   if (revision_to_content_.size() <= new_revision.GetUnsafeValue()) {
     revision_to_content_.resize(new_revision.GetUnsafeValue() + 1);

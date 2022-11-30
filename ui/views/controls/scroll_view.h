@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,24 @@
 #define UI_VIEWS_CONTROLS_SCROLL_VIEW_H_
 
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "ui/native_theme/native_theme.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/separator.h"
 
+namespace cc {
+struct ElementId;
+}
+
 namespace gfx {
-class ScrollOffset;
+class PointF;
 }
 
 namespace views {
@@ -63,11 +67,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
     kEnabled
   };
 
-  class Observer {
-   public:
-    // Called when |contents_| scrolled.
-    virtual void OnContentsScrolled() {}
-  };
+  using ScrollViewCallbackList = base::RepeatingClosureList;
+  using ScrollViewCallback = ScrollViewCallbackList::CallbackType;
 
   ScrollView();
 
@@ -75,6 +76,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // |kUiCompositorScrollWithLayers|. See crbug.com/873923 for more details on
   // enabling by default this for all platforms.
   explicit ScrollView(ScrollWithLayers scroll_with_layers);
+
+  ScrollView(const ScrollView&) = delete;
+  ScrollView& operator=(const ScrollView&) = delete;
 
   ~ScrollView() override;
 
@@ -97,6 +101,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   const View* contents() const { return contents_; }
   View* contents() { return contents_; }
 
+  // `layer_type` specifies the kind of layer used if scroll with layers is
+  // enabled. This function should be called before SetContents().
+  void SetContentsLayerType(ui::LayerType layer_type);
+
   // Sets the header, deleting the previous header.
   template <typename T>
   T* SetHeader(std::unique_ptr<T> a_header) {
@@ -110,19 +118,22 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   int GetMinHeight() const { return min_height_; }
 
+  // Sets the preferred margins within the scroll viewport - when scrolling
+  // rects to visible, these margins will be added to the visible rect.
+  void SetPreferredViewportMargins(const gfx::Insets& margins);
+
   // The background color can be configured in two distinct ways:
   // . By way of SetBackgroundThemeColorId(). This is the default and when
   //   called the background color comes from the theme (and changes if the
   //   theme changes).
   // . By way of setting an explicit color, i.e. SetBackgroundColor(). Use
-  //   base::nullopt if you don't want any color, but be warned this
+  //   absl::nullopt if you don't want any color, but be warned this
   //   produces awful results when layers are used with subpixel rendering.
-  base::Optional<SkColor> GetBackgroundColor() const;
-  void SetBackgroundColor(const base::Optional<SkColor>& color);
+  absl::optional<SkColor> GetBackgroundColor() const;
+  void SetBackgroundColor(const absl::optional<SkColor>& color);
 
-  base::Optional<ui::NativeTheme::ColorId> GetBackgroundThemeColorId() const;
-  void SetBackgroundThemeColorId(
-      const base::Optional<ui::NativeTheme::ColorId>& color_id);
+  absl::optional<ui::ColorId> GetBackgroundThemeColorId() const;
+  void SetBackgroundThemeColorId(const absl::optional<ui::ColorId>& color_id);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
@@ -142,6 +153,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void SetVerticalScrollBarMode(ScrollBarMode vertical_scroll_bar_mode);
   void SetTreatAllScrollEventsAsHorizontal(
       bool treat_all_scroll_events_as_horizontal);
+
+  // Gets/Sets whether the keyboard arrow keys attempt to scroll the view.
+  bool GetAllowKeyboardScrolling() const { return allow_keyboard_scrolling_; }
+  void SetAllowKeyboardScrolling(bool allow_keyboard_scrolling);
 
   bool GetDrawOverflowIndicator() const { return draw_overflow_indicator_; }
   void SetDrawOverflowIndicator(bool draw_overflow_indicator);
@@ -163,11 +178,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetScrollBarLayoutWidth() const;
   int GetScrollBarLayoutHeight() const;
 
-  // Returns the horizontal/vertical scrollbar. This may return null.
-  ScrollBar* horizontal_scroll_bar() { return horiz_sb_.get(); }
-  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_.get(); }
-  ScrollBar* vertical_scroll_bar() { return vert_sb_.get(); }
-  const ScrollBar* vertical_scroll_bar() const { return vert_sb_.get(); }
+  // Returns the horizontal/vertical scrollbar.
+  ScrollBar* horizontal_scroll_bar() { return horiz_sb_; }
+  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_; }
+  ScrollBar* vertical_scroll_bar() { return vert_sb_; }
+  const ScrollBar* vertical_scroll_bar() const { return vert_sb_; }
 
   // Customize the scrollbar design. |horiz_sb| and |vert_sb| cannot be null.
   ScrollBar* SetHorizontalScrollBar(std::unique_ptr<ScrollBar> horiz_sb);
@@ -177,8 +192,27 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool GetHasFocusIndicator() const { return draw_focus_indicator_; }
   void SetHasFocusIndicator(bool has_focus_indicator);
 
-  void AddScrollViewObserver(Observer* observer);
-  void RemoveScrollViewObserver(Observer* observer);
+  // Called when |contents_| scrolled. This can be triggered by each single
+  // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
+  // ui::VKEY_RIGHT, or only ui::ET_MOUSEWHEEL will only trigger this function
+  // but not OnContentsScrollEnded below, since they do not belong to any
+  // events sequence. This function will also be triggered by each
+  // ui::ET_GESTURE_SCROLL_UPDATE event in the gesture scroll sequence or
+  // each ui::ET_MOUSEWHEEL event that associated with the ScrollEvent in the
+  // scroll events sequence while the OnContentsScrollEnded below will only be
+  // triggered once at the end of the events sequence.
+  base::CallbackListSubscription AddContentsScrolledCallback(
+      ScrollViewCallback callback);
+
+  // Called at the end of a sequence of events that are generated to scroll
+  // the contents. The gesture scroll sequence {ui::ET_GESTURE_SCROLL_BEGIN,
+  // ui::ET_GESTURE_SCROLL_UPDATE, ..., ui::ET_GESTURE_SCROLL_UPDATE,
+  // ui::ET_GESTURE_SCROLL_END or ui::ET_SCROLL_FLING_START} or the scroll
+  // events sequence {ui::ET_SCROLL_FLING_CANCEL, ui::ET_SCROLL, ...,
+  // ui::ET_SCROLL, ui::ET_SCROLL_FLING_START} both will trigger this function
+  // on the events sequence end.
+  base::CallbackListSubscription AddContentsScrollEndedCallback(
+      ScrollViewCallback callback);
 
   // View overrides:
   gfx::Size CalculatePreferredSize() const override;
@@ -197,6 +231,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetScrollIncrement(ScrollBar* source,
                          bool is_page,
                          bool is_positive) override;
+  void OnScrollEnded() override;
+
+  bool is_scrolling() const {
+    return horiz_sb_->is_scrolling() || vert_sb_->is_scrolling();
+  }
 
  private:
   friend class test::ScrollViewTestApi;
@@ -249,17 +288,17 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Helpers to get and set the current scroll offset (either from the ui::Layer
   // or from the |contents_| origin offset).
-  gfx::ScrollOffset CurrentOffset() const;
-  void ScrollToOffset(const gfx::ScrollOffset& offset);
+  gfx::PointF CurrentOffset() const;
+  void ScrollToOffset(const gfx::PointF& offset);
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;
 
   // Callback entrypoint when hosted Layers are scrolled by the Compositor.
-  void OnLayerScrolled(const gfx::ScrollOffset&, const cc::ElementId&);
+  void OnLayerScrolled(const gfx::PointF&, const cc::ElementId&);
 
   // Updates accessory elements when |contents_| is scrolled.
-  void OnScrolled(const gfx::ScrollOffset& offset);
+  void OnScrolled(const gfx::PointF& offset);
 
   // Horizontally scrolls the header (if any) to match the contents.
   void ScrollHeader();
@@ -274,23 +313,25 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Shows/hides the overflow indicators depending on the position of the
   // scrolling content within the viewport.
-  void UpdateOverflowIndicatorVisibility(const gfx::ScrollOffset& offset);
+  void UpdateOverflowIndicatorVisibility(const gfx::PointF& offset);
+
+  View* GetContentsViewportForTest() const;
 
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
   View* contents_ = nullptr;
-  View* contents_viewport_ = nullptr;
+  raw_ptr<Viewport> contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
   View* header_ = nullptr;
-  View* header_viewport_ = nullptr;
+  raw_ptr<Viewport> header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  std::unique_ptr<ScrollBar> horiz_sb_;
+  raw_ptr<ScrollBar> horiz_sb_;
 
   // Vertical scrollbar.
-  std::unique_ptr<ScrollBar> vert_sb_;
+  raw_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
   std::unique_ptr<View> corner_view_;
@@ -313,9 +354,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int max_height_ = -1;
 
   // See description of SetBackgroundColor() for details.
-  base::Optional<SkColor> background_color_;
-  base::Optional<ui::NativeTheme::ColorId> background_color_id_ =
-      ui::NativeTheme::kColorId_DialogBackground;
+  absl::optional<SkColor> background_color_;
+  absl::optional<ui::ColorId> background_color_id_ = ui::kColorDialogBackground;
 
   // How to handle the case when the contents overflow the viewport.
   ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
@@ -340,24 +380,35 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Set to true if the scroll with layers feature is enabled.
   const bool scroll_with_layers_enabled_;
 
-  // The focus ring for this ScrollView.
-  FocusRing* focus_ring_ = nullptr;
+  // Whether the left/right/up/down arrow keys attempt to scroll the view.
+  bool allow_keyboard_scrolling_ = true;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  // The layer type used for content view when scroll by layers is enabled.
+  ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
 
-  DISALLOW_COPY_AND_ASSIGN(ScrollView);
+  gfx::Insets preferred_viewport_margins_;
+
+  // Scrolling callbacks.
+  ScrollViewCallbackList on_contents_scrolled_;
+  ScrollViewCallbackList on_contents_scroll_ended_;
 };
+
+// When building with GCC this ensures that an instantiation of the
+// ScrollView::SetContents<View> template is available with which to link.
+template View* ScrollView::SetContents<View>(std::unique_ptr<View> a_view);
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
+VIEW_BUILDER_PROPERTY(ui::LayerType, ContentsLayerType)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
-VIEW_BUILDER_PROPERTY(base::Optional<ui::NativeTheme::ColorId>,
-                      BackgroundThemeColorId)
+VIEW_BUILDER_PROPERTY(bool, AllowKeyboardScrolling)
+VIEW_BUILDER_PROPERTY(absl::optional<ui::ColorId>, BackgroundThemeColorId)
+VIEW_BUILDER_METHOD(ClipHeightTo, int, int)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
 VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)
 VIEW_BUILDER_PROPERTY(bool, DrawOverflowIndicator)
-VIEW_BUILDER_PROPERTY(base::Optional<SkColor>, BackgroundColor)
+VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BackgroundColor)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, HorizontalScrollBar)
 VIEW_BUILDER_VIEW_PROPERTY(ScrollBar, VerticalScrollBar)
 VIEW_BUILDER_PROPERTY(bool, HasFocusIndicator)
@@ -391,6 +442,11 @@ class VariableRowHeightScrollHelper {
   // Creates a new VariableRowHeightScrollHelper. Controller is
   // NOT deleted by this VariableRowHeightScrollHelper.
   explicit VariableRowHeightScrollHelper(Controller* controller);
+
+  VariableRowHeightScrollHelper(const VariableRowHeightScrollHelper&) = delete;
+  VariableRowHeightScrollHelper& operator=(
+      const VariableRowHeightScrollHelper&) = delete;
+
   virtual ~VariableRowHeightScrollHelper();
 
   // Delegate the View methods of the same name to these. The scroll amount is
@@ -409,9 +465,7 @@ class VariableRowHeightScrollHelper {
   virtual RowInfo GetRowInfo(int y);
 
  private:
-  Controller* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariableRowHeightScrollHelper);
+  raw_ptr<Controller> controller_;
 };
 
 // FixedRowHeightScrollHelper is intended for views that contain fixed height
@@ -424,6 +478,10 @@ class FixedRowHeightScrollHelper : public VariableRowHeightScrollHelper {
   // height of each row.
   FixedRowHeightScrollHelper(int top_margin, int row_height);
 
+  FixedRowHeightScrollHelper(const FixedRowHeightScrollHelper&) = delete;
+  FixedRowHeightScrollHelper& operator=(const FixedRowHeightScrollHelper&) =
+      delete;
+
  protected:
   // Calculates the bounds of the row from the top margin and row height.
   RowInfo GetRowInfo(int y) override;
@@ -431,8 +489,6 @@ class FixedRowHeightScrollHelper : public VariableRowHeightScrollHelper {
  private:
   int top_margin_;
   int row_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(FixedRowHeightScrollHelper);
 };
 
 }  // namespace views

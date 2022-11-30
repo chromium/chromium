@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ ui::TouchEvent TouchWithTapParams(ui::EventType type,
 }
 
 base::TimeTicks MsToTicks(int ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(ms);
+  return base::TimeTicks() + base::Milliseconds(ms);
 }
 
 ui::TouchEvent TouchWithTime(ui::EventType type, int id, int ms) {

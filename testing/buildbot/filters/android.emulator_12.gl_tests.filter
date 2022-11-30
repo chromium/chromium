@@ -1,0 +1,12 @@
+# https://crbug.com/1189284
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureCubeMap/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.CopyTextureLevel/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/0
+-CopyType/GLCopyTextureCHROMIUMES3Test.FormatCombinations/1
+-CopyType/GLCopyTextureCHROMIUMTest.CopyTextureLevel/1
+-CopyType/GLCopyTextureCHROMIUMTest.ImmutableTexture/1
+-GLBGRAMipMapTest.GenerateMipmapsSucceeds
+-RasterInProcessCommandBufferTest.AllowedBetweenBeginEndRasterCHROMIUM
+
+# crbug.com/1271745
+-ES3MapBufferRangeTest.CopyBufferSubData

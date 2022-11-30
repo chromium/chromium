@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -29,14 +28,23 @@ class InstanceIDAndroid : public InstanceID {
   class ScopedBlockOnAsyncTasksForTesting {
    public:
     ScopedBlockOnAsyncTasksForTesting();
+
+    ScopedBlockOnAsyncTasksForTesting(
+        const ScopedBlockOnAsyncTasksForTesting&) = delete;
+    ScopedBlockOnAsyncTasksForTesting& operator=(
+        const ScopedBlockOnAsyncTasksForTesting&) = delete;
+
     ~ScopedBlockOnAsyncTasksForTesting();
 
    private:
     bool previous_value_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedBlockOnAsyncTasksForTesting);
   };
 
   InstanceIDAndroid(const std::string& app_id, gcm::GCMDriver* gcm_driver);
+
+  InstanceIDAndroid(const InstanceIDAndroid&) = delete;
+  InstanceIDAndroid& operator=(const InstanceIDAndroid&) = delete;
+
   ~InstanceIDAndroid() override;
 
   // InstanceID implementation:
@@ -89,8 +97,6 @@ class InstanceIDAndroid : public InstanceID {
   base::IDMap<std::unique_ptr<DeleteIDCallback>> delete_id_callbacks_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDAndroid);
 };
 
 }  // namespace instance_id

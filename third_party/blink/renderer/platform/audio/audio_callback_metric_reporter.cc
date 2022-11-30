@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
 namespace blink {
@@ -33,7 +34,7 @@ void AudioCallbackMetricReporter::BeginTrace() {
   if (metric_.number_of_callbacks == 0) {
     previous_callback_start_time_ =
         callback_start_time_ -
-        base::TimeDelta::FromSecondsD(metric_.expected_callback_interval);
+        base::Seconds(metric_.expected_callback_interval);
 
     // Let's assume that the previous render duration is zero.
     previous_render_end_time_ = previous_callback_start_time_;

@@ -5,8 +5,7 @@ AXSelection from AX text position in "StaticText": "Some text.", 0 to AX object 
 ++<GenericContainer>
 ++++<GenericContainer>
 ++++++<Main>
-++++++++<Presentational>
-^++++++++++<StaticText: ^Some text.>
+^++++++++<StaticText: ^Some text.>
 ++++++++<GenericContainer>
 |++++++++<Paragraph>
 ++++++++<Paragraph>

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A delegate class that returns the Profile information necessary for
 // browser-independent Nearby Share components, such as the local-device-data
@@ -17,13 +17,13 @@ class NearbyShareProfileInfoProvider {
   NearbyShareProfileInfoProvider() = default;
   virtual ~NearbyShareProfileInfoProvider() = default;
 
-  // Proxy for User::GetGivenName(). Returns base::nullopt if a valid given name
+  // Proxy for User::GetGivenName(). Returns absl::nullopt if a valid given name
   // cannot be returned.
-  virtual base::Optional<std::u16string> GetGivenName() const = 0;
+  virtual absl::optional<std::u16string> GetGivenName() const = 0;
 
-  // Proxy for Profile::GetProfileUserName(). Returns base::nullopt if a valid
+  // Proxy for Profile::GetProfileUserName(). Returns absl::nullopt if a valid
   // user name cannot be returned.
-  virtual base::Optional<std::string> GetProfileUserName() const = 0;
+  virtual absl::optional<std::string> GetProfileUserName() const = 0;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_COMMON_NEARBY_SHARE_PROFILE_INFO_PROVIDER_H_

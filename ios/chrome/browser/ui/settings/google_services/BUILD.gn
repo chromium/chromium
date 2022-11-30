@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,6 @@ source_set("google_services") {
     "google_services_settings_coordinator.mm",
     "google_services_settings_mediator.h",
     "google_services_settings_mediator.mm",
-    "google_services_settings_mode.h",
     "google_services_settings_service_delegate.h",
     "google_services_settings_view_controller.h",
     "google_services_settings_view_controller.mm",
@@ -29,7 +28,6 @@ source_set("google_services") {
     "manage_sync_settings_table_view_controller.mm",
     "manage_sync_settings_view_controller_model_delegate.h",
     "sync_error_settings_command_handler.h",
-    "sync_settings_view_state.h",
   ]
   deps = [
     ":constants",
@@ -41,30 +39,35 @@ source_set("google_services") {
     "//components/google/core/common",
     "//components/metrics",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/signin/ios/browser",
-    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/commerce:commerce",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/icons:item_icons",
+    "//ios/chrome/browser/ui/icons:settings_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
@@ -75,12 +78,14 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
-    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/url_loading",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ios/web/common:features",
     "//ui/base",
   ]
@@ -100,7 +105,6 @@ source_set("constants") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -119,17 +123,19 @@ source_set("eg_app_support+eg2") {
   ]
 }
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "google_services_settings_app_interface.h" ]
+  sources = [
+    "google_services_settings_app_interface.h",
+    "google_services_settings_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -137,27 +143,36 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "accounts_table_egtest.mm",
-    "accounts_table_mice_egtest.mm",
     "google_services_settings_egtest.mm",
+    "manage_sync_settings_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/common",
-    "//components/safe_browsing/core:features",
+    "//components/policy:generated",
+    "//components/policy/core/common:common_constants",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/signin/ios/browser:features",
     "//components/signin/public/base",
+    "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/elements:constants",
+    "//ios/chrome/browser/ui/elements:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -166,25 +181,39 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "manage_sync_settings_mediator_unittest.mm" ]
+  sources = [
+    "accounts_table_view_controller_unittest.mm",
+    "manage_sync_settings_mediator_unittest.mm",
+  ]
   deps = [
     ":google_services",
     "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/sync:test_support",
     "//components/sync/driver",
-    "//components/sync/driver:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock:ocmock",
+    "//ui/base",
   ]
 }

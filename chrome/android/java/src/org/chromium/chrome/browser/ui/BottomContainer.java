@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
+import androidx.annotation.CallSuper;
+
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 /**
@@ -20,34 +23,35 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 public class BottomContainer
         extends FrameLayout implements Destroyable, BrowserControlsStateProvider.Observer {
     /** An observer of the viewport insets to change this container's position. */
-    private final Callback<Integer> mViewportInsetObserver;
+    private final Callback<Integer> mInsetObserver;
 
     /** The {@link BrowserControlsStateProvider} to listen for controls offset changes. */
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    /** A {@link ApplicationViewportInsetSupplier} to listen for viewport-shrinking features. */
+    /** {@link ApplicationViewportInsetSupplier} to listen for viewport-shrinking features. */
     private ApplicationViewportInsetSupplier mViewportInsetSupplier;
+    /** {@link ObservableSupplier} to listen for page-shrinking features. */
+    private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
 
     /** The desired Y offset if unaffected by other UI. */
     private float mBaseYOffset;
 
-    /**
-     * Constructor for XML inflation.
-     */
+    /** Constructor for XML inflation. */
     public BottomContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mViewportInsetObserver = (inset) -> setTranslationY(mBaseYOffset);
+        mInsetObserver = (inset) -> setTranslationY(mBaseYOffset);
     }
 
-    /**
-     * Initializes this container.
-     */
+    /** Initializes this container. */
     public void initialize(BrowserControlsStateProvider browserControlsStateProvider,
-            ApplicationViewportInsetSupplier viewportInsetSupplier) {
+            ApplicationViewportInsetSupplier viewportInsetSupplier,
+            ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
         mViewportInsetSupplier = viewportInsetSupplier;
-        mViewportInsetSupplier.addObserver(mViewportInsetObserver);
+        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
+        mViewportInsetSupplier.addObserver(mInsetObserver);
+        mAutofillUiBottomInsetSupplier.addObserver(mInsetObserver);
         setTranslationY(mBaseYOffset);
     }
 
@@ -65,6 +69,7 @@ public class BottomContainer
         float offsetFromControls = mBrowserControlsStateProvider.getBottomControlOffset()
                 - mBrowserControlsStateProvider.getBottomControlsHeight();
         offsetFromControls -= mViewportInsetSupplier.get();
+        offsetFromControls -= mAutofillUiBottomInsetSupplier.get();
 
         // Sit on top of either the bottom sheet or the bottom toolbar depending on which is larger
         // (offsets are negative).
@@ -77,9 +82,11 @@ public class BottomContainer
         setTranslationY(mBaseYOffset);
     }
 
+    @CallSuper
     @Override
     public void destroy() {
         mBrowserControlsStateProvider.removeObserver(this);
-        mViewportInsetSupplier.removeObserver(mViewportInsetObserver);
+        mViewportInsetSupplier.removeObserver(mInsetObserver);
+        mAutofillUiBottomInsetSupplier.removeObserver(mInsetObserver);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace sessions {
 class SessionCommand;
@@ -20,6 +20,12 @@ class CommandStorageManagerTestHelper {
  public:
   explicit CommandStorageManagerTestHelper(
       CommandStorageManager* command_storage_manager);
+
+  CommandStorageManagerTestHelper(const CommandStorageManagerTestHelper&) =
+      delete;
+  CommandStorageManagerTestHelper& operator=(
+      const CommandStorageManagerTestHelper&) = delete;
+
   ~CommandStorageManagerTestHelper() = default;
 
   // This posts the task to the SequencedWorkerPool, or run immediately
@@ -41,9 +47,7 @@ class CommandStorageManagerTestHelper {
   void ForceAppendCommandsToFailForTesting();
 
  private:
-  CommandStorageManager* command_storage_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommandStorageManagerTestHelper);
+  raw_ptr<CommandStorageManager> command_storage_manager_;
 };
 
 }  // namespace sessions

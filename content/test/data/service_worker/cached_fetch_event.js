@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,6 @@ self.addEventListener('install', evt => {
 self.addEventListener('fetch', evt => {
   evt.respondWith(async function() {
     const c = await caches.open(name);
-    return c.match(resource);
+    return c.match(new Request(resource, { headers: evt.request.headers }));
   }());
 });

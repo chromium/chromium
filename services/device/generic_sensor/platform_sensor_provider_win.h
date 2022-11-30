@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ class PlatformSensorReaderWinBase;
 class PlatformSensorProviderWin final : public PlatformSensorProvider {
  public:
   PlatformSensorProviderWin();
+
+  PlatformSensorProviderWin(const PlatformSensorProviderWin&) = delete;
+  PlatformSensorProviderWin& operator=(const PlatformSensorProviderWin&) =
+      delete;
+
   ~PlatformSensorProviderWin() override;
 
   // Overrides ISensorManager COM interface provided by the system, used
@@ -52,8 +57,6 @@ class PlatformSensorProviderWin final : public PlatformSensorProvider {
 
   scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
   Microsoft::WRL::ComPtr<ISensorManager> sensor_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderWin);
 };
 
 }  // namespace device

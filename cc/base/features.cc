@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -17,61 +18,74 @@ namespace features {
 //   This means it might only decode one frame, resuming where it left off.
 //   However, if the animation updates faster than the display's refresh rate,
 //   it is possible to decode more than a single frame.
-const base::Feature kAnimatedImageResume = {"AnimatedImageResume",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAnimatedImageResume,
+             "AnimatedImageResume",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables impulse-style scroll animations in place of the default ones.
-const base::Feature kImpulseScrollAnimations = {
-    "ImpulseScrollAnimations",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+bool IsImpulseScrollAnimationEnabled() {
+  return base::FeatureList::IsEnabled(features::kWindowsScrollingPersonality);
+}
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
-const base::Feature kSynchronizedScrolling = {
-    "SynchronizedScrolling",
-#if defined(OS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSynchronizedScrolling,
+             "SynchronizedScrolling",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-    base::FEATURE_ENABLED_BY_DEFAULT};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-bool IsImplLatencyRecoveryEnabled() {
-  // TODO(crbug.com/1142598): Latency recovery has been disabled by default
-  // since M87. For now, only the flag is removed. If all goes well, remove the
-  // code supporting latency recovery.
-  return false;
-}
+BASE_FEATURE(kAvoidRasterDuringElasticOverscroll,
+             "AvoidRasterDuringElasticOverscroll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsMainLatencyRecoveryEnabled() {
-  // TODO(crbug.com/1142598): Latency recovery has been disabled by default
-  // since M87. For now, only the flag is removed. If all goes well, remove the
-  // code supporting latency recovery.
-  return false;
-}
+BASE_FEATURE(kRemoveMobileViewportDoubleTap,
+             "RemoveMobileViewportDoubleTap",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kRemoveMobileViewportDoubleTap{
-    "RemoveMobileViewportDoubleTap", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kScrollUnification,
+             "ScrollUnification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kScrollUnification{"ScrollUnification",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls,
+             "SmoothnessModeForAnimatedScrolls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kSchedulerSmoothnessForAnimatedScrolls{
-    "SmoothnessModeForAnimatedScrolls", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kHudDisplayForPerformanceMetrics,
+             "HudDisplayForPerformanceMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kWheelEventRegions{"WheelEventRegions",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kJankInjectionAblationFeature,
+             "JankInjectionAblation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kHudDisplayForPerformanceMetrics{
-    "HudDisplayForPerformanceMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPreferNewContentForCheckerboardedScrolls,
+             "PreferNewContentForCheckerboardedScrolls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kJankInjectionAblationFeature{
-    "JankInjectionAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDurationEstimatesInCompositorTimingHistory,
+             "DurationEstimatesInCompositorTimingHistory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDocumentTransition{"DocumentTransition",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNonBlockingCommit,
+             "NonBlockingCommit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsDocumentTransitionEnabled() {
-  return base::FeatureList::IsEnabled(kDocumentTransition);
-}
+BASE_FEATURE(kSlidingWindowForDroppedFrameCounter,
+             "SlidingWindowForDroppedFrameCounter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNormalPriorityImageDecoding,
+             "NormalPriorityImageDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipCommitsIfNotSynchronizingCompositorState,
+             "SkipCommitsIfNotSynchronizingCompositorState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseDMSAAForTiles,
+             "UseDMSAAForTiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

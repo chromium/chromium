@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_DELEGATED_INK_POINT_H_
 #define UI_GFX_DELEGATED_INK_POINT_H_
 
+#include <limits>
 #include <string>
 
 #include "base/time/time.h"
@@ -14,6 +15,7 @@
 
 namespace gfx {
 
+class DelegatedInkMetadata;
 namespace mojom {
 class DelegatedInkPointDataView;
 }  // namespace mojom
@@ -27,19 +29,27 @@ class DelegatedInkPointDataView;
 // the screen, connected to the end of the already rendered ink stroke.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
   DelegatedInkPoint(const PointF& pt,
                     base::TimeTicks timestamp,
-                    int32_t pointer_id)
+                    int32_t pointer_id = std::numeric_limits<int32_t>::min())
       : point_(pt), timestamp_(timestamp), pointer_id_(pointer_id) {}
 
   const PointF& point() const { return point_; }
   base::TimeTicks timestamp() const { return timestamp_; }
   int32_t pointer_id() const { return pointer_id_; }
   std::string ToString() const;
+
+  bool MatchesDelegatedInkMetadata(const DelegatedInkMetadata* metadata) const;
+  uint64_t trace_id() const {
+    // Use mask to distinguish from DelegatedInkMetadata::trace_id().
+    // Using microseconds provides uniqueness of trace_id per
+    // DelegatedInkPoint.
+    return timestamp_.since_origin().InMicroseconds() & 0x7fffffffffffffff;
+  }
 
  private:
   friend struct mojo::StructTraits<mojom::DelegatedInkPointDataView,

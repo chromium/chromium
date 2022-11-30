@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  if (is_component_build) {
+    check_includes = false
+  }
+  sources = [
+    "internal_authenticator_impl.cc",
+    "internal_authenticator_impl.h",
+  ]
+  deps = [
+    "//components/webauthn/core/browser",
+    "//content/public/browser",
+  ]
+}

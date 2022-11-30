@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,19 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 
 namespace google_apis {
 class AboutResource;
 class FileList;
 class FileResource;
-}
+}  // namespace google_apis
 
 namespace leveldb {
 class Env;
@@ -66,6 +66,10 @@ class SyncEngineInitializer : public SyncTask {
   SyncEngineInitializer(SyncEngineContext* sync_context,
                         const base::FilePath& database_path,
                         leveldb::Env* env_override);
+
+  SyncEngineInitializer(const SyncEngineInitializer&) = delete;
+  SyncEngineInitializer& operator=(const SyncEngineInitializer&) = delete;
+
   ~SyncEngineInitializer() override;
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
 
@@ -75,27 +79,27 @@ class SyncEngineInitializer : public SyncTask {
   void GetAboutResource(std::unique_ptr<SyncTaskToken> token);
   void DidGetAboutResource(
       std::unique_ptr<SyncTaskToken> token,
-      google_apis::DriveApiErrorCode error,
+      google_apis::ApiErrorCode error,
       std::unique_ptr<google_apis::AboutResource> about_resource);
   void FindSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidFindSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                       google_apis::DriveApiErrorCode error,
+                       google_apis::ApiErrorCode error,
                        std::unique_ptr<google_apis::FileList> file_list);
   void CreateSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidCreateSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                         google_apis::DriveApiErrorCode error,
+                         google_apis::ApiErrorCode error,
                          std::unique_ptr<google_apis::FileResource> entry);
   void DetachSyncRoot(std::unique_ptr<SyncTaskToken> token);
   void DidDetachSyncRoot(std::unique_ptr<SyncTaskToken> token,
-                         google_apis::DriveApiErrorCode error);
+                         google_apis::ApiErrorCode error);
   void ListAppRootFolders(std::unique_ptr<SyncTaskToken> token);
   void DidListAppRootFolders(std::unique_ptr<SyncTaskToken> token,
-                             google_apis::DriveApiErrorCode error,
+                             google_apis::ApiErrorCode error,
                              std::unique_ptr<google_apis::FileList> file_list);
   void PopulateDatabase(std::unique_ptr<SyncTaskToken> token);
 
-  SyncEngineContext* sync_context_;  // Not owned.
-  leveldb::Env* env_override_;
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
+  raw_ptr<leveldb::Env> env_override_;
 
   google_apis::CancelCallbackOnce cancel_callback_;
   base::FilePath database_path_;
@@ -111,8 +115,6 @@ class SyncEngineInitializer : public SyncTask {
   std::unique_ptr<google_apis::FileResource> sync_root_folder_;
 
   base::WeakPtrFactory<SyncEngineInitializer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineInitializer);
 };
 
 }  // namespace drive_backend

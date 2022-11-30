@@ -1,9 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Config.h"
 #include "RecordInfo.h"
+
+#include <string>
+
+#include "Config.h"
 #include "clang/Sema/Sema.h"
 
 using namespace clang;
@@ -13,21 +16,7 @@ RecordInfo::RecordInfo(CXXRecordDecl* record, RecordCache* cache)
     : cache_(cache),
       record_(record),
       name_(record->getName()),
-      fields_need_tracing_(TracingStatus::Unknown()),
-      bases_(0),
-      fields_(0),
-      is_stack_allocated_(kNotComputed),
-      is_non_newable_(kNotComputed),
-      is_only_placement_newable_(kNotComputed),
-      does_need_finalization_(kNotComputed),
-      has_gc_mixin_methods_(kNotComputed),
-      is_declaring_local_trace_(kNotComputed),
-      determined_trace_methods_(false),
-      trace_method_(0),
-      trace_dispatch_method_(0),
-      finalize_dispatch_method_(0),
-      is_gc_derived_(false),
-      directly_derived_gc_base_(nullptr) {}
+      fields_need_tracing_(TracingStatus::Unknown()) {}
 
 RecordInfo::~RecordInfo() {
   delete fields_;
@@ -81,7 +70,7 @@ bool RecordInfo::HasOptionalFinalizer() {
     return false;
   // Heap collections may have a finalizer but it is optional (i.e. may be
   // delayed until FinalizeGarbageCollectedObject() gets called), unless there
-  // is an inline buffer. Vector, Deque, and ListHashSet can have an inline
+  // is an inline buffer. Vector and Deque can have an inline
   // buffer.
   if (name_ != "Vector" && name_ != "Deque" && name_ != "HeapVector" &&
       name_ != "HeapDeque")
@@ -241,76 +230,60 @@ RecordInfo* RecordCache::Lookup(CXXRecordDecl* record) {
               .first->second;
 }
 
+bool RecordInfo::HasTypeAlias(std::string marker_name) const {
+  for (Decl* decl : record_->decls()) {
+    TypeAliasDecl* alias = dyn_cast<TypeAliasDecl>(decl);
+    if (!alias)
+      continue;
+    if (alias->getName() == marker_name)
+      return true;
+  }
+  return false;
+}
+
 bool RecordInfo::IsStackAllocated() {
   if (is_stack_allocated_ == kNotComputed) {
     is_stack_allocated_ = kFalse;
-    for (Bases::iterator it = GetBases().begin();
-         it != GetBases().end();
-         ++it) {
-      if (it->second.info()->IsStackAllocated()) {
-        is_stack_allocated_ = kTrue;
-        return is_stack_allocated_;
-      }
-    }
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName &&
-          it->isDeleted() &&
-          Config::IsStackAnnotated(*it)) {
-        is_stack_allocated_ = kTrue;
-        return is_stack_allocated_;
+    if (HasTypeAlias("IsStackAllocatedTypeMarker")) {
+      is_stack_allocated_ = kTrue;
+    } else {
+      for (Bases::iterator it = GetBases().begin(); it != GetBases().end();
+           ++it) {
+        if (it->second.info()->IsStackAllocated()) {
+          is_stack_allocated_ = kTrue;
+          break;
+        }
       }
     }
   }
   return is_stack_allocated_;
 }
 
-bool RecordInfo::IsNonNewable() {
-  if (is_non_newable_ == kNotComputed) {
-    bool deleted = false;
-    bool all_deleted = true;
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName) {
-        deleted = it->isDeleted();
-        all_deleted = all_deleted && deleted;
-      }
-    }
-    is_non_newable_ = (deleted && all_deleted) ? kTrue : kFalse;
-  }
-  return is_non_newable_;
-}
-
-bool RecordInfo::IsOnlyPlacementNewable() {
-  if (is_only_placement_newable_ == kNotComputed) {
-    bool placement = false;
-    bool new_deleted = false;
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName) {
-        if (it->getNumParams() == 1) {
-          new_deleted = it->isDeleted();
-        } else if (it->getNumParams() == 2) {
-          placement = !it->isDeleted();
-        }
-      }
-    }
-    is_only_placement_newable_ = (placement && new_deleted) ? kTrue : kFalse;
-  }
-  return is_only_placement_newable_;
+bool RecordInfo::IsNewDisallowed() {
+  if (auto* new_operator = DeclaresNewOperator())
+    return new_operator->isDeleted();
+  return false;
 }
 
 CXXMethodDecl* RecordInfo::DeclaresNewOperator() {
-  for (CXXRecordDecl::method_iterator it = record_->method_begin();
-       it != record_->method_end();
-       ++it) {
-    if (it->getNameAsString() == kNewOperatorName && it->getNumParams() == 1)
-      return *it;
+  if (!determined_new_operator_) {
+    determined_new_operator_ = true;
+    for (auto* method : record_->methods()) {
+      if (method->getNameAsString() == kNewOperatorName &&
+          method->getNumParams() == 1) {
+        new_operator_ = method;
+        break;
+      }
+    }
+    if (!new_operator_) {
+      for (auto& base : GetBases()) {
+        new_operator_ = base.second.info()->DeclaresNewOperator();
+        if (new_operator_)
+          break;
+      }
+    }
   }
-  return 0;
+  return new_operator_;
 }
 
 // An object requires a tracing method if it has any fields that need tracing
@@ -318,11 +291,17 @@ CXXMethodDecl* RecordInfo::DeclaresNewOperator() {
 bool RecordInfo::RequiresTraceMethod() {
   if (IsStackAllocated())
     return false;
+  if (GetTraceMethod())
+    return true;
   unsigned bases_with_trace = 0;
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.NeedsTracing().IsNeeded())
       ++bases_with_trace;
   }
+  // If a single base has a Trace method, this type can inherit the Trace
+  // method from that base. If more than a single base has a Trace method,
+  // this type needs it's own Trace method which will delegate to each of
+  // the bases' Trace methods.
   if (bases_with_trace > 1)
     return true;
   GetFields();
@@ -401,9 +380,11 @@ bool RecordInfo::DeclaresLocalTraceMethod() {
   return is_declaring_local_trace_;
 }
 
-// A (non-virtual) class is considered abstract in Blink if it has
-// no public constructors and no create methods.
+// A (non-virtual) class is considered abstract in Blink if it has no implicit
+// default constructor, no public constructors and no public create methods.
 bool RecordInfo::IsConsideredAbstract() {
+  if (record()->needsImplicitDefaultConstructor())
+    return false;
   for (CXXRecordDecl::ctor_iterator it = record_->ctor_begin();
        it != record_->ctor_end();
        ++it) {
@@ -413,7 +394,7 @@ bool RecordInfo::IsConsideredAbstract() {
   for (CXXRecordDecl::method_iterator it = record_->method_begin();
        it != record_->method_end();
        ++it) {
-    if (it->getNameAsString() == kCreateName)
+    if (it->getNameAsString() == kCreateName && it->getAccess() == AS_public)
       return false;
   }
   return true;
@@ -586,6 +567,8 @@ bool RecordInfo::NeedsFinalization() {
 
 // A class needs tracing if:
 // - it is allocated on the managed heap,
+// - it has a Trace method (i.e. the plugin assumes such a method was added for
+//                          a reason).
 // - it is derived from a class that needs tracing, or
 // - it contains fields that need tracing.
 //
@@ -595,6 +578,9 @@ TracingStatus RecordInfo::NeedsTracing(Edge::NeedsTracingOption option) {
 
   if (IsStackAllocated())
     return TracingStatus::Unneeded();
+
+  if (GetTraceMethod())
+    return TracingStatus::Needed();
 
   for (Bases::iterator it = GetBases().begin(); it != GetBases().end(); ++it) {
     if (it->second.info()->NeedsTracing(option).IsNeeded())
@@ -636,15 +622,12 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
       cache_->Lookup(elaboratedType->getQualifier()->getAsType());
 
   bool on_heap = false;
-  bool is_unsafe = false;
   // Silently handle unknown types; the on-heap collection types will
   // have to be in scope for the declaration to compile, though.
   if (info) {
-    is_unsafe = Config::IsGCCollectionWithUnsafeIterator(info->name());
-    // Don't mark iterator as being on the heap if it is not supported.
-    on_heap = !is_unsafe && Config::IsGCCollection(info->name());
+    on_heap = Config::IsGCCollection(info->name());
   }
-  return new Iterator(info, on_heap, is_unsafe);
+  return new Iterator(info, on_heap);
 }
 
 Edge* RecordInfo::CreateEdge(const Type* type) {
@@ -686,33 +669,32 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return 0;
   }
 
-  if (Config::IsMember(info->name()) && info->GetTemplateArgs(1, &args)) {
-    if (Edge* ptr = CreateEdge(args[0]))
+  // Find top-level namespace.
+  NamespaceDecl* ns = dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
+  if (ns) {
+    while (NamespaceDecl* outer_ns =
+               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
+      ns = outer_ns;
+    }
+  }
+  auto ns_name = ns ? ns->getName() : "";
+
+  if (Config::IsMember(info->name(), ns_name, info, &args)) {
+    if (Edge* ptr = CreateEdge(args[0])) {
       return new Member(ptr);
+    }
     return 0;
   }
 
-  if (Config::IsWeakMember(info->name()) && info->GetTemplateArgs(1, &args)) {
+  if (Config::IsWeakMember(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new WeakMember(ptr);
     return 0;
   }
 
-  bool is_persistent = Config::IsPersistent(info->name());
-  if (is_persistent || Config::IsCrossThreadPersistent(info->name())) {
-    // Persistent might refer to v8::Persistent, so check the name space.
-    // TODO: Consider using a more canonical identification than names.
-    NamespaceDecl* ns =
-        dyn_cast<NamespaceDecl>(info->record()->getDeclContext());
-    // Find outer-most namespace.
-    while (NamespaceDecl* outer_ns =
-               dyn_cast<NamespaceDecl>(ns->getDeclContext())) {
-      ns = outer_ns;
-    }
-    if (!ns || (ns->getName() != "blink") && (ns->getName() != "cppgc"))
-      return 0;
-    if (!info->GetTemplateArgs(1, &args))
-      return 0;
+  bool is_persistent = Config::IsPersistent(info->name(), ns_name, info, &args);
+  if (is_persistent ||
+      Config::IsCrossThreadPersistent(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0])) {
       if (is_persistent)
         return new Persistent(ptr);
@@ -739,8 +721,7 @@ Edge* RecordInfo::CreateEdge(const Type* type) {
     return edge;
   }
 
-  if (Config::IsTraceWrapperV8Reference(info->name()) &&
-      info->GetTemplateArgs(1, &args)) {
+  if (Config::IsTraceWrapperV8Reference(info->name(), ns_name, info, &args)) {
     if (Edge* ptr = CreateEdge(args[0]))
       return new TraceWrapperV8Reference(ptr);
     return 0;

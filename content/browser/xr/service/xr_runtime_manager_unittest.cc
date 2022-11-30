@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/service/xr_runtime_manager_impl.h"
@@ -25,6 +25,10 @@
 namespace content {
 
 class XRRuntimeManagerTest : public testing::Test {
+ public:
+  XRRuntimeManagerTest(const XRRuntimeManagerTest&) = delete;
+  XRRuntimeManagerTest& operator=(const XRRuntimeManagerTest&) = delete;
+
  protected:
   XRRuntimeManagerTest() = default;
   ~XRRuntimeManagerTest() override = default;
@@ -32,7 +36,7 @@ class XRRuntimeManagerTest : public testing::Test {
   void SetUp() override {
     std::vector<std::unique_ptr<device::VRDeviceProvider>> providers;
     provider_ = new device::FakeVRDeviceProvider();
-    providers.emplace_back(base::WrapUnique(provider_));
+    providers.emplace_back(base::WrapUnique(provider_.get()));
     xr_runtime_manager_ =
         XRRuntimeManagerImpl::CreateInstance(std::move(providers));
   }
@@ -80,10 +84,8 @@ class XRRuntimeManagerTest : public testing::Test {
   void DropRuntimeManagerRef() { xr_runtime_manager_ = nullptr; }
 
  private:
-  device::FakeVRDeviceProvider* provider_ = nullptr;
+  raw_ptr<device::FakeVRDeviceProvider> provider_ = nullptr;
   scoped_refptr<XRRuntimeManagerImpl> xr_runtime_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRRuntimeManagerTest);
 };
 
 TEST_F(XRRuntimeManagerTest, InitializationTest) {

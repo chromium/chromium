@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,18 @@
 #import <MaterialComponents/MaterialCollections.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/material_components/app_bar_view_controller_presenting.h"
 
 @class CollectionViewItem;
 
 typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
   // A simple collection view controller.
   CollectionViewControllerStyleDefault,
-  // A collection view controller with an app bar.
-  CollectionViewControllerStyleAppBar,
 };
 
 // Chrome-specific Material Design collection view controller. With
 // CollectionViewControllerStyleAppBar, it features an app bar in the card
 // style.
-@interface CollectionViewController
-    : MDCCollectionViewController<AppBarViewControllerPresenting>
+@interface CollectionViewController : MDCCollectionViewController
 
 // The model of this controller.
 @property(strong, nonatomic, readonly)
@@ -44,12 +40,12 @@ typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
 // override this method in order to get a clean collectionViewModel.
 - (void)loadModel NS_REQUIRES_SUPER;
 
-// Reconfigures the cells corresponding to the given |items| by calling
-// |configureCell:| on each cell.
+// Reconfigures the cells corresponding to the given `items` by calling
+// `configureCell:` on each cell.
 - (void)reconfigureCellsForItems:(NSArray*)items;
 
-// Reconfigures the cells corresponding to the given |indexPaths| by calling
-// |configureCell:| on each cell.
+// Reconfigures the cells corresponding to the given `indexPaths` by calling
+// `configureCell:` on each cell.
 - (void)reconfigureCellsAtIndexPaths:(NSArray*)indexPaths;
 
 #pragma mark MDCCollectionViewEditingDelegate
@@ -66,33 +62,6 @@ typedef NS_ENUM(NSInteger, CollectionViewControllerStyle) {
 - (void)collectionView:(UICollectionView*)collectionView
     willMoveItemAtIndexPath:(NSIndexPath*)indexPath
                 toIndexPath:(NSIndexPath*)newIndexPath NS_REQUIRES_SUPER;
-
-#pragma mark UIScrollViewDelegate
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
-                  willDecelerate:(BOOL)decelerate NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView
-    NS_REQUIRES_SUPER;
-
-// Updates the MDCFlexibleHeader with changes to the collection view scroll
-// state. Must be called by subclasses if they override this method in order to
-// maintain this functionality.
-- (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
-                     withVelocity:(CGPoint)velocity
-              targetContentOffset:(inout CGPoint*)targetContentOffset
-    NS_REQUIRES_SUPER;
 
 @end
 

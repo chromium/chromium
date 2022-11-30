@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,20 @@
  * @fileoverview This file should contain utility functions used only by the
  * files app. Other shared utility functions can be found in base/*_util.js,
  * which allows finer-grained control over introducing dependencies.
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
-// clang-format off
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {EntryList} from './files_app_entry_types.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {promisify} from './api.js';
+import {EntryList} from './files_app_entry_types.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Namespace for utility functions.
@@ -114,94 +113,6 @@ util.htmlEscape = str => {
         return '&amp;';
     }
   });
-};
-
-/**
- * @param {string} str String to unescape.
- * @return {string} Unescaped string.
- */
-util.htmlUnescape = str => {
-  return str.replace(/&(lt|gt|amp);/g, entity => {
-    switch (entity) {
-      case '&lt;':
-        return '<';
-      case '&gt;':
-        return '>';
-      case '&amp;':
-        return '&';
-    }
-  });
-};
-
-/**
- * Renames the entry to newName.
- * @param {Entry} entry The entry to be renamed.
- * @param {string} newName The new name.
- * @param {function(Entry)} successCallback Callback invoked when the rename
- *     is successfully done.
- * @param {function(DOMError)} errorCallback Callback invoked when an error
- *     is found.
- */
-util.rename = (entry, newName, successCallback, errorCallback) => {
-  entry.getParent(parentEntry => {
-    const parent = /** @type {!DirectoryEntry} */ (parentEntry);
-
-    // Before moving, we need to check if there is an existing entry at
-    // parent/newName, since moveTo will overwrite it.
-    // Note that this way has some timing issue. After existing check,
-    // a new entry may be create on background. However, there is no way not to
-    // overwrite the existing file, unfortunately. The risk should be low,
-    // assuming the unsafe period is very short.
-    (entry.isFile ? parent.getFile : parent.getDirectory)
-        .call(
-            parent, newName, {create: false},
-            entry => {
-              // The entry with the name already exists.
-              errorCallback(
-                  util.createDOMError(util.FileError.PATH_EXISTS_ERR));
-            },
-            error => {
-              if (error.name != util.FileError.NOT_FOUND_ERR) {
-                // Unexpected error is found.
-                errorCallback(error);
-                return;
-              }
-
-              // No existing entry is found.
-              entry.moveTo(parent, newName, successCallback, errorCallback);
-            });
-  }, errorCallback);
-};
-
-/**
- * Converts DOMError of util.rename to error message.
- * @param {DOMError} error
- * @param {!Entry} entry
- * @param {string} newName
- * @return {string}
- */
-util.getRenameErrorMessage = (error, entry, newName) => {
-  if (error &&
-      (error.name == util.FileError.PATH_EXISTS_ERR ||
-       error.name == util.FileError.TYPE_MISMATCH_ERR)) {
-    // Check the existing entry is file or not.
-    // 1) If the entry is a file:
-    //   a) If we get PATH_EXISTS_ERR, a file exists.
-    //   b) If we get TYPE_MISMATCH_ERR, a directory exists.
-    // 2) If the entry is a directory:
-    //   a) If we get PATH_EXISTS_ERR, a directory exists.
-    //   b) If we get TYPE_MISMATCH_ERR, a file exists.
-    return strf(
-        (entry.isFile && error.name == util.FileError.PATH_EXISTS_ERR) ||
-                (!entry.isFile &&
-                 error.name == util.FileError.TYPE_MISMATCH_ERR) ?
-            'FILE_ALREADY_EXISTS' :
-            'DIRECTORY_ALREADY_EXISTS',
-        newName);
-  }
-
-  return strf(
-      'ERROR_RENAMING', entry.name, util.getFileErrorString(error.name));
 };
 
 /**
@@ -301,36 +212,13 @@ util.getKeyModifiers = event => {
 };
 
 /**
- * @typedef {?{
- *   scaleX: number,
- *   scaleY: number,
- *   rotate90: number
- * }}
- */
-util.Transform;
-
-/**
- * @param {Element} element Element to transform.
- * @param {util.Transform} transform Transform object,
- *                           contains scaleX, scaleY and rotate90 properties.
- */
-util.applyTransform = (element, transform) => {
-  // The order of rotate and scale matters.
-  element.style.transform = transform ?
-      'rotate(' + transform.rotate90 * 90 + 'deg)' +
-          'scaleX(' + transform.scaleX + ') ' +
-          'scaleY(' + transform.scaleY + ') ' :
-      '';
-};
-
-/**
  * Extracts path from filesystem: URL.
- * @param {string} url Filesystem URL.
- * @return {?string} The path.
+ * @param {?string=} url Filesystem URL.
+ * @return {?string} The path if it can be parsed, null if it cannot.
  */
 util.extractFilePath = url => {
   const match =
-      /^filesystem:[\w-]*:\/\/[\w]*\/(external|persistent|temporary)(\/.*)$/
+      /^filesystem:[\w-]*:\/\/[\w-]*\/(external|persistent|temporary)(\/.*)$/
           .exec(url);
   const path = match && match[2];
   if (!path) {
@@ -357,6 +245,21 @@ util.createChild = (parent, opt_className, opt_tag) => {
 };
 
 /**
+ * Query an element that's known to exist by a selector. We use this instead of
+ * just calling querySelector and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} selectors CSS selectors to query the element.
+ * @param {(!Document|!DocumentFragment|!Element)=} context An optional
+ *     context object for querySelector.
+ * @return {!HTMLElement} the Element.
+ */
+util.queryRequiredElement = (selectors, context) => {
+  const element = (context || document).querySelector(selectors);
+  return assertInstanceof(
+      element, HTMLElement, 'Missing required element: ' + selectors);
+};
+
+/**
  * Obtains the element that should exist, decorates it with given type, and
  * returns it.
  * @param {string} query Query for the element.
@@ -365,8 +268,8 @@ util.createChild = (parent, opt_className, opt_tag) => {
  * @return {!T} Decorated element.
  */
 util.queryDecoratedElement = (query, type) => {
-  const element = queryRequiredElement(query);
-  cr.ui.decorate(element, type);
+  const element = util.queryRequiredElement(query);
+  decorate(element, type);
   return element;
 };
 
@@ -379,8 +282,13 @@ util.queryDecoratedElement = (query, type) => {
  * @param {string} id The id of the string to return.
  * @return {string} The translated string.
  */
-/* #export */ function str(id) {
-  return loadTimeData.getString(id);
+export function str(id) {
+  try {
+    return loadTimeData.getString(id);
+  } catch (e) {
+    console.warn('Failed to get string for', id);
+    return id;
+  }
 }
 
 /**
@@ -393,7 +301,7 @@ util.queryDecoratedElement = (query, type) => {
  * @param {...*} var_args The values to replace into the string.
  * @return {string} The translated string with replaced values.
  */
-/* #export */ function strf(id, var_args) {
+export function strf(id, var_args) {
   return loadTimeData.getStringF.apply(loadTimeData, arguments);
 }
 
@@ -430,42 +338,6 @@ util.addIsFocusedMethod = () => {
   };
 };
 
-/**
- * Checks, if the Files app's window is in a full screen mode.
- *
- * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
- * @return {boolean} True if the full screen mode is enabled.
- */
-util.isFullScreen = appWindow => {
-  if (appWindow) {
-    return appWindow.isFullscreen();
-  } else {
-    console.error(
-        'App window not passed. Unable to check status of the full screen ' +
-        'mode.');
-    return false;
-  }
-};
-
-/**
- * Toggles the full screen mode.
- *
- * @param {chrome.app.window.AppWindow} appWindow App window to be maximized.
- * @param {boolean} enabled True for enabling, false for disabling.
- */
-util.toggleFullScreen = (appWindow, enabled) => {
-  if (appWindow) {
-    if (enabled) {
-      appWindow.fullscreen();
-    } else {
-      appWindow.restore();
-    }
-    return;
-  }
-
-  console.error(
-      'App window not passed. Unable to toggle the full screen mode.');
-};
 
 /**
  * The type of a file operation.
@@ -477,6 +349,7 @@ util.FileOperationType = {
   DELETE: 'DELETE',
   MOVE: 'MOVE',
   RESTORE: 'RESTORE',
+  RESTORE_TO_DESTINATION: 'RESTORE_TO_DESTINATION',
   ZIP: 'ZIP',
 };
 Object.freeze(util.FileOperationType);
@@ -586,10 +459,7 @@ util.getTeamDriveName = entry => {
  * @return {boolean}
  */
 util.isRecentRootType = rootType => {
-  return rootType == VolumeManagerCommon.RootType.RECENT ||
-      rootType == VolumeManagerCommon.RootType.RECENT_AUDIO ||
-      rootType == VolumeManagerCommon.RootType.RECENT_IMAGES ||
-      rootType == VolumeManagerCommon.RootType.RECENT_VIDEOS;
+  return rootType == VolumeManagerCommon.RootType.RECENT;
 };
 
 /**
@@ -957,14 +827,16 @@ util.lastVisitedURL;
 /**
  * Visit the URL.
  *
- * If the browser is opening, the url is opened in a new tag, otherwise the url
+ * If the browser is opening, the url is opened in a new tab, otherwise the url
  * is opened in a new window.
  *
  * @param {!string} url URL to visit.
  */
 util.visitURL = url => {
   util.lastVisitedURL = url;
-  window.open(url);
+  // openURL opens URLs in the primary browser (ash vs lacros) as opposed to
+  // window.open which always opens URLs in ash-chrome.
+  chrome.fileManagerPrivate.openURL(url);
 };
 
 /**
@@ -976,15 +848,13 @@ util.getLastVisitedURL = () => {
   return util.lastVisitedURL;
 };
 
-
 /**
  * Returns normalized current locale, or default locale - 'en'.
  * @return {string} Current locale
  */
 util.getCurrentLocaleOrDefault = () => {
-  // chrome.i18n.getMessage('@@ui_locale') can't be used in packed app.
-  // Instead, we pass it from C++-side with strings.
-  return str('UI_LOCALE') || 'en';
+  const locale = str('UI_LOCALE') || 'en';
+  return locale.replace(/_/g, '-');
 };
 
 /**
@@ -994,8 +864,8 @@ util.getCurrentLocaleOrDefault = () => {
  */
 util.entriesToURLs = entries => {
   return entries.map(entry => {
-    // When building background.js, cachedUrl is not refered other than here.
-    // Thus closure compiler raises an error if we refer the property like
+    // When building file_manager_base.js, cachedUrl is not referred other than
+    // here. Thus closure compiler raises an error if we refer the property like
     // entry.cachedUrl.
     return entry['cachedUrl'] || entry.toURL();
   });
@@ -1048,7 +918,7 @@ util.URLsToEntries = (urls, opt_callback) => {
           opt_callback(result.entries, result.failureUrls);
         })
         .catch(error => {
-          console.error(
+          console.warn(
               'util.URLsToEntries is failed.',
               error.stack ? error.stack : error);
         });
@@ -1133,11 +1003,11 @@ util.getRootTypeLabel = locationInfo => {
       return str('DRIVE_MY_DRIVE_LABEL');
     case VolumeManagerCommon.RootType.SHARED_DRIVE:
     // |locationInfo| points to either the root directory of an individual Team
-    // Drive or subdirectory under it, but not the Shared Drives grand
-    // directory. Every Shared Drive and its subdirectories always have
+    // Drive or sub-directory under it, but not the Shared Drives grand
+    // directory. Every Shared Drive and its sub-directories always have
     // individual names (locationInfo.hasFixedLabel is false). So
-    // getRootTypeLabel() is only used by LocationLine.show() to display the
-    // ancestor name in the location line like this:
+    // getRootTypeLabel() is used by PathComponent.computeComponentsFromEntry()
+    // to display the ancestor name in the breadcrumb like this:
     //   Shared Drives > ABC Shared Drive > Folder1
     //   ^^^^^^^^^^^
     // By this reason, we return the label of the Shared Drives grand root here.
@@ -1156,12 +1026,6 @@ util.getRootTypeLabel = locationInfo => {
       return str('DRIVE_DIRECTORY_LABEL');
     case VolumeManagerCommon.RootType.RECENT:
       return str('RECENT_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.RECENT_AUDIO:
-      return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.RECENT_IMAGES:
-      return str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
-    case VolumeManagerCommon.RootType.RECENT_VIDEOS:
-      return str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
     case VolumeManagerCommon.RootType.CROSTINI:
       return str('LINUX_FILES_ROOT_LABEL');
     case VolumeManagerCommon.RootType.MY_FILES:
@@ -1179,10 +1043,11 @@ util.getRootTypeLabel = locationInfo => {
           return str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
         case VolumeManagerCommon.MediaViewRootType.AUDIO:
           return str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
+        case VolumeManagerCommon.MediaViewRootType.DOCUMENTS:
+          return str('MEDIA_VIEW_DOCUMENTS_ROOT_LABEL');
       }
       console.error('Unsupported media view root type: ' + mediaViewRootType);
       return locationInfo.volumeInfo.label;
-    case VolumeManagerCommon.RootType.DRIVE_OTHER:
     case VolumeManagerCommon.RootType.ARCHIVE:
     case VolumeManagerCommon.RootType.REMOVABLE:
     case VolumeManagerCommon.RootType.MTP:
@@ -1190,6 +1055,7 @@ util.getRootTypeLabel = locationInfo => {
     case VolumeManagerCommon.RootType.ANDROID_FILES:
     case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
     case VolumeManagerCommon.RootType.SMB:
+    case VolumeManagerCommon.RootType.GUEST_OS:
       return locationInfo.volumeInfo.label;
     default:
       console.error('Unsupported root type: ' + locationInfo.rootType);
@@ -1238,6 +1104,7 @@ util.getEntryLabel = (locationInfo, entry) => {
  *  - "My Files"/{Downloads,PvmDefault,Camera} directories, or
  *  - "Play Files"/{<any-directory>,DCIM/Camera} directories, or
  *  - "Linux Files" root "/" directory
+ *  - "Guest OS" root "/" directory
  *
  * which cannot be modified such as deleted/cut or renamed.
  *
@@ -1314,6 +1181,10 @@ util.isNonModifiable = (volumeManager, entry) => {
     return entry.fullPath === '/';
   }
 
+  if (volumeType === VolumeManagerCommon.RootType.GUEST_OS) {
+    return entry.fullPath === '/';
+  }
+
   return false;
 };
 
@@ -1328,90 +1199,6 @@ util.isNonModifiable = (volumeManager, entry) => {
 util.isDropEffectAllowed = (effectAllowed, dropEffect) => {
   return effectAllowed === 'all' ||
       effectAllowed.toLowerCase().indexOf(dropEffect) !== -1;
-};
-
-/**
- * Verifies the user entered name for file or folder to be created or
- * renamed to. Name restrictions must correspond to File API restrictions
- * (see DOMFilePath::isValidPath). Curernt WebKit implementation is
- * out of date (spec is
- * http://dev.w3.org/2009/dap/file-system/file-dir-sys.html, 8.3) and going to
- * be fixed. Shows message box if the name is invalid.
- *
- * It also verifies if the name length is in the limit of the filesystem.
- *
- * @param {!DirectoryEntry} parentEntry The entry of the parent directory.
- * @param {string} name New file or folder name.
- * @param {boolean} filterHiddenOn Whether to report the hidden file name error
- *     or not.
- * @return {Promise} Promise fulfilled on success, or rejected with the error
- *     message.
- */
-util.validateFileName = (parentEntry, name, filterHiddenOn) => {
-  const testResult = /[\/\\\<\>\:\?\*\"\|]/.exec(name);
-  let msg;
-  if (testResult) {
-    return Promise.reject(strf('ERROR_INVALID_CHARACTER', testResult[0]));
-  } else if (/^\s*$/i.test(name)) {
-    return Promise.reject(str('ERROR_WHITESPACE_NAME'));
-  } else if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(name)) {
-    return Promise.reject(str('ERROR_RESERVED_NAME'));
-  } else if (filterHiddenOn && /\.crdownload$/i.test(name)) {
-    return Promise.reject(str('ERROR_RESERVED_NAME'));
-  } else if (filterHiddenOn && name[0] == '.') {
-    return Promise.reject(str('ERROR_HIDDEN_NAME'));
-  }
-
-  return new Promise((fulfill, reject) => {
-    chrome.fileManagerPrivate.validatePathNameLength(
-        parentEntry, name, valid => {
-          if (valid) {
-            fulfill(null);
-          } else {
-            reject(str('ERROR_LONG_NAME'));
-          }
-        });
-  });
-};
-
-/**
- * Verifies the user entered name for external drive to be
- * renamed to. Name restrictions must correspond to the target filesystem
- * restrictions.
- *
- * It also verifies that name length is in the limits of the filesystem.
- *
- * @param {string} name New external drive name.
- * @param {!VolumeManagerCommon.FileSystemType} fileSystem
- * @return {Promise} Promise fulfilled on success, or rejected with the error
- *     message.
- */
-util.validateExternalDriveName = (name, fileSystem) => {
-  // Verify if entered name for external drive respects restrictions provided by
-  // the target filesystem
-
-  const nameLength = name.length;
-  const lengthLimit = VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit;
-
-  // Verify length for the target file system type
-  if (lengthLimit.hasOwnProperty(fileSystem) &&
-      nameLength > lengthLimit[fileSystem]) {
-    return Promise.reject(
-        strf('ERROR_EXTERNAL_DRIVE_LONG_NAME', lengthLimit[fileSystem]));
-  }
-
-  // Checks if the name contains only alphanumeric characters or allowed special
-  // characters. This needs to stay in sync with cros-disks/filesystem_label.cc
-  // on the ChromeOS side.
-  const validCharRegex = /[a-zA-Z0-9 \!\#\$\%\&\(\)\-\@\^\_\`\{\}\~]/;
-  for (let i = 0; i < nameLength; i++) {
-    if (!validCharRegex.test(name[i])) {
-      return Promise.reject(
-          strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', name[i]));
-    }
-  }
-
-  return Promise.resolve();
 };
 
 /**
@@ -1433,7 +1220,7 @@ util.addEventListenerToBackgroundComponent = (target, type, handler) => {
  */
 util.checkAPIError = () => {
   if (chrome.runtime.lastError) {
-    console.error(chrome.runtime.lastError.message);
+    console.warn(chrome.runtime.lastError.message);
   }
 };
 
@@ -1458,18 +1245,11 @@ util.delay = ms => {
  */
 util.timeoutPromise = (promise, ms, opt_message) => {
   return Promise.race([
-    promise, util.delay(ms).then(() => {
+    promise,
+    util.delay(ms).then(() => {
       throw new Error(opt_message || 'Operation timed out.');
-    })
+    }),
   ]);
-};
-
-/**
- * Returns true when FilesNG is enabled.
- * @return {boolean}
- */
-util.isFilesNg = () => {
-  return true;
 };
 
 /**
@@ -1481,46 +1261,82 @@ util.isCopyImageEnabled = () => {
 };
 
 /**
- * Returns true if the unified media view is enabled.
- * @return {boolean}
+ * Whether the Files app integration with DLP (Data Loss Prevention) is enabled.
+ * @returns {boolean}
  */
-util.isUnifiedMediaViewEnabled = () => {
-  return loadTimeData.getBoolean('UNIFIED_MEDIA_VIEW_ENABLED');
+util.isDlpEnabled = () => {
+  return loadTimeData.valueExists('DLP_ENABLED') &&
+      loadTimeData.getBoolean('DLP_ENABLED');
 };
 
 /**
- * Returns true if filters in Recents view is enabled.
+ * Returns true if FilesExtractArchive flag is enabled.
  * @return {boolean}
  */
-util.isRecentsFilterEnabled = () => {
-  return loadTimeData.getBoolean('FILTERS_IN_RECENTS_ENABLED');
+util.isExtractArchiveEnabled = () => {
+  return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
 };
 
 /**
- * Returns true when FilesZipMount feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
- * @return {boolean}
+ * Whether the Files app Experimental flag is enabled.
+ * @returns {boolean}
  */
-util.isZipMountEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_MOUNT');
+util.isFilesAppExperimental = () => {
+  return loadTimeData.valueExists('FILES_APP_EXPERIMENTAL') &&
+      loadTimeData.getBoolean('FILES_APP_EXPERIMENTAL');
 };
 
 /**
- * Returns true when FilesZipPack feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
+ * Returns true if FuseBoxDebug flag is enabled.
  * @return {boolean}
  */
-util.isZipPackEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_PACK');
+util.isFuseBoxDebugEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('FUSEBOX_DEBUG') &&
+      loadTimeData.getBoolean('FUSEBOX_DEBUG');
 };
 
 /**
- * Returns true when FilesZipUnpack feature is enabled.
- * TODO(crbug.com/912236) Remove once transition to new ZIP system is finished.
+ * Returns true if FuseBox flag is enabled.
  * @return {boolean}
  */
-util.isZipUnpackEnabled = () => {
-  return loadTimeData.getBoolean('ZIP_UNPACK');
+util.isFuseBoxEnabled = () => {
+  return loadTimeData.getBoolean('FUSEBOX');
+};
+
+/**
+ * Returns true if GuestOsFiles flag is enabled.
+ * @return {boolean}
+ */
+util.isGuestOsEnabled = () => {
+  return loadTimeData.getBoolean('GUEST_OS');
+};
+
+/**
+ * Returns true if DriveFsMirroring flag is enabled.
+ * @return {boolean}
+ */
+util.isMirrorSyncEnabled = () => {
+  return loadTimeData.isInitialized() &&
+      loadTimeData.valueExists('DRIVEFS_MIRRORING') &&
+      loadTimeData.getBoolean('DRIVEFS_MIRRORING');
+};
+
+/**
+ * Returns true if filters in Recents view V2 is enabled.
+ * @return {boolean}
+ */
+util.isRecentsFilterV2Enabled = () => {
+  return loadTimeData.valueExists('FILTERS_IN_RECENTS_V2_ENABLED') &&
+      loadTimeData.getBoolean('FILTERS_IN_RECENTS_V2_ENABLED');
+};
+
+/**
+ * Returns true if search v2 feature flag is enabled.
+ * @return {boolean}
+ */
+util.isSearchV2Enabled = () => {
+  return loadTimeData.getBoolean('FILES_SEARCH_V2');
 };
 
 /**
@@ -1532,27 +1348,21 @@ util.isSinglePartitionFormatEnabled = () => {
 };
 
 /**
- * Returns true if  flag is enabled.
- * @return {boolean}
+ * Returns true if FilesTrash feature flag is enabled.
+ * @returns {boolean}
  */
-util.isFilesJsModulesEnabled = () => {
-  return loadTimeData.getBoolean('FILES_JS_MODULES_ENABLED');
+util.isTrashEnabled = () => {
+  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
+      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
 };
 
 /**
- * Returns true if  flag is enabled.
- * @return {boolean}
+ * Returns true if InlineSyncStatus feature flag is enabled.
+ * @returns {boolean}
  */
-util.isAudioPlayerJsModulesEnabled = () => {
-  return loadTimeData.getBoolean('AUDIO_PLAYER_JS_MODULES_ENABLED');
-};
-
-/**
- * Returns true if  flag is enabled.
- * @return {boolean}
- */
-util.isVideoPlayerJsModulesEnabled = () => {
-  return loadTimeData.getBoolean('VIDEO_PLAYER_JS_MODULES_ENABLED');
+util.isInlineSyncStatusEnabled = () => {
+  return loadTimeData.valueExists('INLINE_SYNC_STATUS') &&
+      loadTimeData.getBoolean('INLINE_SYNC_STATUS');
 };
 
 /**
@@ -1647,16 +1457,18 @@ util.getEntries = volumeInfo => {
 
 /**
  * Executes a functions only when the context is not the incognito one in a
- * regular session.
- * @param {function()} callback
+ * regular session. Returns a promise that when fulfilled informs us whether or
+ * not the callback was invoked.
+ * @param {function():void} callback
+ * @return {!Promise<boolean>}
  */
-util.doIfPrimaryContext = callback => {
-  chrome.fileManagerPrivate.getProfiles((profiles) => {
-    if ((profiles[0] && profiles[0].profileId == '$guest') ||
-        !chrome.extension.inIncognitoContext) {
-      callback();
-    }
-  });
+util.doIfPrimaryContext = async (callback) => {
+  const guestMode = await util.isInGuestMode();
+  if (guestMode) {
+    callback();
+    return true;
+  }
+  return false;
 };
 
 /**
@@ -1718,6 +1530,12 @@ util.unwrapEntry = entry => {
 util.isArcUsbStorageUIEnabled = () => {
   return loadTimeData.valueExists('ARC_USB_STORAGE_UI_ENABLED') &&
       loadTimeData.getBoolean('ARC_USB_STORAGE_UI_ENABLED');
+};
+
+/** @return {boolean} */
+util.isArcVirtioBlkForDataEnabled = () => {
+  return loadTimeData.valueExists('ARC_ENABLE_VIRTIO_BLK_FOR_DATA') &&
+      loadTimeData.getBoolean('ARC_ENABLE_VIRTIO_BLK_FOR_DATA');
 };
 
 /** @return {boolean} */
@@ -1836,16 +1654,81 @@ util.getFilesAppModalDialogInstance = () => {
   return /** @type {!HTMLDialogElement} */ (dialogElement);
 };
 
-/** @return {boolean} */
-util.isSharesheetEnabled = () => {
-  return loadTimeData.valueExists('SHARESHEET_ENABLED') &&
-      loadTimeData.getBoolean('SHARESHEET_ENABLED');
-};
-
 util.isDriveDssPinEnabled = () => {
   return loadTimeData.valueExists('DRIVE_DSS_PIN_ENABLED') &&
       loadTimeData.getBoolean('DRIVE_DSS_PIN_ENABLED');
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {util};
+/**
+ *
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} left
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} right
+ * @returns {boolean}
+ */
+util.descriptorEqual = function(left, right) {
+  return left.appId === right.appId && left.taskType === right.taskType &&
+      left.actionId === right.actionId;
+};
+
+/**
+ * Create a taskID which is a string unique-ID for a task. This is temporary
+ * and will be removed once we use task.descriptor everywhere instead.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
+ * @returns {string}
+ */
+util.makeTaskID = function({appId, taskType, actionId}) {
+  return `${appId}|${taskType}|${actionId}`;
+};
+
+/**
+ * Returns a new promise which, when fulfilled carries a boolean indicating
+ * whether the app is in the guest mode. Typical use:
+ *
+ * util.isInGuestMode().then(
+ *     (guest) => { if (guest) { ... in guest mode } }
+ * );
+ * @return {Promise<boolean>}
+ */
+util.isInGuestMode = async () => {
+  const profiles = await promisify(chrome.fileManagerPrivate.getProfiles);
+  return profiles.length > 0 && profiles[0].profileId === '$guest';
+};
+
+/**
+ * Get the locale based week start from the load time data.
+ * @returns {number}
+ */
+util.getLocaleBasedWeekStart = () => {
+  return loadTimeData.valueExists('WEEK_START_FROM') ?
+      loadTimeData.getInteger('WEEK_START_FROM') :
+      0;
+};
+
+/**
+ * Returns a boolean indicating whether the volume is a GuestOs volume. And
+ * ANDROID_FILES type volume can also be a GuestOs volume if we are using
+ * virtio-blk.
+ * @param {VolumeManagerCommon.VolumeType} type
+ * @return {boolean}
+ */
+util.isGuestOs = type => {
+  return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
+      (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
+       util.isArcVirtioBlkForDataEnabled());
+};
+
+/**
+ * A kind of error that represents user electing to cancel an operation. We use
+ * this specialization to differentiate between system errors and errors
+ * generated through legitimate user actions.
+ */
+class UserCanceledError extends Error {}
+
+/**
+ * Returns whether the given value is null or undefined.
+ * @param {*} value
+ * @returns {boolean}
+ */
+util.isNullOrUndefined = (value) => value === null || value === undefined;
+
+export {util, UserCanceledError};

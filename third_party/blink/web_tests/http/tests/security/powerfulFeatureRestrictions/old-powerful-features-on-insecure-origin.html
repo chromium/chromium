@@ -46,8 +46,8 @@ if (window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN) {
     }, 'requestMediaKeySystemAccess');
 
     test(function() {
-      assert_false('applicationCache' in window);
-    }, 'applicationCache');
+      assert_false('getBattery' in navigator);
+    }, 'Battery Status API');
 }
 </script>
 </body>

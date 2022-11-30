@@ -1,18 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://github.com/WICG/web-codecs
 
+// NOTE: Keep this structure in sync with CopyConfig() defined in
+// audio_encoder.cc.
 dictionary AudioEncoderConfig {
-  // TODO(chcunningham): reference spec registry.
   required DOMString codec;
 
   // Rate of samples per second. 44100, 48000, etc.
-  required unsigned long sampleRate;
+  required [EnforceRange] unsigned long sampleRate;
 
   // 1, 2, etc.
-  required unsigned short numberOfChannels;
+  required [EnforceRange] unsigned short numberOfChannels;
 
-  required unsigned long long bitrate;
+  [EnforceRange] unsigned long long bitrate;
 };

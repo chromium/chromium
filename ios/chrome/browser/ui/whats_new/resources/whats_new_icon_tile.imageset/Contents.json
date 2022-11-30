@@ -1,0 +1,14 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "whats_new_icon_tile@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "whats_new_icon_tile@3x.png"
+        }
+    ]
+}

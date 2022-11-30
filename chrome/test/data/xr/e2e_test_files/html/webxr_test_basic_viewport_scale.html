@@ -12,8 +12,6 @@ Tests for WebXR dynamic viewport scaling.
     <script>var shouldAutoCreateNonImmersiveSession = false;</script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       // Tests that requesting a viewport scale takes effect immediately if done
       // before calling getViewport.
       function stepRequestViewportScaleSameFrame() {
@@ -39,6 +37,11 @@ Tests for WebXR dynamic viewport scaling.
             gl.clearColor(0.0, 0.0, 1.0, 0.5);
             gl.clear(gl.COLOR_BUFFER_BIT);
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' viewportPixels=' + viewportPixels +
+              ' framebufferPixels=' + framebufferPixels);
           assert_greater_than(viewportPixels, 0);
           assert_less_than_equal(viewportPixels, framebufferPixels);
           if (frameCount == 0) {
@@ -89,6 +92,11 @@ Tests for WebXR dynamic viewport scaling.
             gl.clearColor(0.0, 0.0, 1.0, 0.5);
             gl.clear(gl.COLOR_BUFFER_BIT);
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' viewportPixels=' + viewportPixels +
+              ' framebufferPixels=' + framebufferPixels);
           assert_greater_than(viewportPixels, 0);
           assert_less_than_equal(viewportPixels, framebufferPixels);
           if (frameCount == 1) {
@@ -111,8 +119,11 @@ Tests for WebXR dynamic viewport scaling.
         let gotAnyRecommendedViewportScale = false;
         let gotReducedRecommendedViewportScale = false;
         let gotIncreasedRecommendedViewportScale = false;
-        let clearRectangleCount = 1;
+        let clearRectangleCount = 32;
         let minViewportScale = 99999;
+        let maxViewportScale = 0;
+        let maxRectangles = 0;
+        let frameCount = 0;
 
         onARFrameCallback = (session, frame) => {
           const pose = frame.getViewerPose(referenceSpace);
@@ -122,20 +133,23 @@ Tests for WebXR dynamic viewport scaling.
             if (recScale) {
               if (recScale > 0) {
                 gotAnyRecommendedViewportScale = true;
+                maxViewportScale = Math.max(maxViewportScale, recScale);
               }
               if (gotReducedRecommendedViewportScale) {
                 if (recScale > minViewportScale) {
                   if (!gotIncreasedRecommendedViewportScale) {
                     // Only log the increase once - the session may not terminate immediately after calling done().
-                    console.log("got recommendedViewportScale increase from " + minViewportScale + " to " + recScale);
+                    console.log("got recommendedViewportScale increase from " + minViewportScale + " to " + recScale +
+                                ", frameCount=" + frameCount);
                   }
                   gotIncreasedRecommendedViewportScale = true;
                 }
               } else {
-                if (recScale < 1.0) {
+                if (recScale < maxViewportScale) {
                   gotReducedRecommendedViewportScale = true;
                   minViewportScale=Math.min(minViewportScale, recScale);
-                  console.log("got recommendedViewportScale=" + recScale + " at clearRectangleCount=" + clearRectangleCount);
+                  console.log("got recommendedViewportScale=" + recScale + " at clearRectangleCount=" + clearRectangleCount +
+                              ", frameCount=" + frameCount);
                 }
               }
             }
@@ -151,6 +165,7 @@ Tests for WebXR dynamic viewport scaling.
             // again.
             gl.bindFramebuffer(gl.FRAMEBUFFER, baseLayer.framebuffer);
             gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+            maxRectangles = Math.max(maxRectangles, clearRectangleCount);
             for (let i = 0; i < clearRectangleCount; ++i) {
               const xOffset = viewport.width * Math.random() / 2;
               const yOffset = viewport.height * Math.random() / 2;
@@ -162,17 +177,40 @@ Tests for WebXR dynamic viewport scaling.
               // Done with the load test, wait for size to increase again.
               clearRectangleCount = 1;
             } else {
-              // Add more load.
-              clearRectangleCount *= 2;
+              // Add more load every 4th frame. The GPU load feedback is delayed, and we don't want the
+              // exponential growth to overload the system excessively since that could cause test timeouts.
+              if (frameCount % 4 == 0) {
+                clearRectangleCount *= 2;
+              }
             }
           }
+          updateSingleTestProgressMessage(
+            'state:' +
+              ' frameCount=' + frameCount +
+              ' clearRectangleCount=' + clearRectangleCount +
+              ' (max=' + maxRectangles + ')' +
+              ' gotAnyRecommendedViewportScale=' + gotAnyRecommendedViewportScale +
+              ' gotReducedRecommendedViewportScale=' + gotReducedRecommendedViewportScale +
+              ' gotIncreasedRecommendedViewportScale=' + gotIncreasedRecommendedViewportScale);
           gl.disable(gl.SCISSOR_TEST);
 
           if (gotAnyRecommendedViewportScale &&
               gotReducedRecommendedViewportScale &&
               gotIncreasedRecommendedViewportScale) {
             done();
+          } else {
+            // Check that the test finishes within a reasonable number of frames.
+            // This helps ensure that malfunctioning viewport scaling shows up
+            // as a test failure and not just a generic timeout. It's in the "else"
+            // branch here to avoid emitting errors for animation frames that are
+            // still arriving after the test ended.
+            //
+            // Since the rectangle count is doubled each frame in the load-increasing
+            // test phase, this potentially allows drawing up to 2^30 (~1 billion)
+            // rectangles followed by 20 frames of recovery which should be plenty.
+            assert_less_than(frameCount, 50, "Viewport scale didn't update within the expected number of frames.")
           }
+          ++frameCount;
         };
       }
     </script>

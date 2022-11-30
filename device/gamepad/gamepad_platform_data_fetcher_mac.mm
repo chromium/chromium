@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "device/gamepad/gamepad_blocklist.h"
 #include "device/gamepad/gamepad_device_mac.h"
@@ -32,14 +32,10 @@ const uint16_t kGameUsageNumber = 0x05;
 const uint16_t kMultiAxisUsageNumber = 0x08;
 
 NSDictionary* DeviceMatching(uint32_t usage_page, uint32_t usage) {
-  return [NSDictionary
-      dictionaryWithObjectsAndKeys:[NSNumber numberWithUnsignedInt:usage_page],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsagePageKey)),
-                                   [NSNumber numberWithUnsignedInt:usage],
-                                   base::mac::CFToNSCast(
-                                       CFSTR(kIOHIDDeviceUsageKey)),
-                                   nil];
+  return @{
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsagePageKey)) : @(usage_page),
+    base::mac::CFToNSCast(CFSTR(kIOHIDDeviceUsageKey)) : @(usage)
+  };
 }
 
 }  // namespace
@@ -86,8 +82,8 @@ void GamepadPlatformDataFetcherMac::RegisterForNotifications() {
   IOHIDManagerScheduleWithRunLoop(hid_manager_ref_, CFRunLoopGetCurrent(),
                                   kCFRunLoopDefaultMode);
 
-  enabled_ = IOHIDManagerOpen(hid_manager_ref_, kIOHIDOptionsTypeNone) ==
-             kIOReturnSuccess;
+  const auto result = IOHIDManagerOpen(hid_manager_ref_, kIOHIDOptionsTypeNone);
+  enabled_ = (result == kIOReturnSuccess || result == kIOReturnExclusiveAccess);
 }
 
 void GamepadPlatformDataFetcherMac::UnregisterFromNotifications() {

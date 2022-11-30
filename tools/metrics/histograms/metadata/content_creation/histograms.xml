@@ -1,0 +1,821 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of content creation
+histograms along with a detailed description for each histogram. It includes
+histograms for the following features:
+  - Shared Highlighting
+  - Note Creation
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="TextFragmentSource">
+<!-- Should be synced with TextFragmentLinkOpenSource in enums.xml. -->
+
+  <variant name=".SearchEngine" summary="the default search engine."/>
+  <variant name=".Unknown" summary="unknown but not the default search engine"/>
+</variants>
+
+<histogram name="LightweightReactions.AssetsFetchDuration.{Outcome}" units="ms"
+    expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to download all assets during dialog
+    initialization, for the case where {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="Failure" summary="the download failed."/>
+    <variant name="Success" summary="the download succeeded."/>
+  </token>
+</histogram>
+
+<histogram name="LightweightReactions.AssetsFetchSuccess" enum="BooleanSuccess"
+    expires_after="2023-02-12">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the Lightweight Reactions assets were successfully
+    downloaded.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.Editing.Tapped{Button}.NumberOf{Action}"
+    units="times" expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the total number of times (across all reactions) the user performed
+    editing action {Action} during GIF editing, for cases where the user ended
+    up tapping the {Button} button.
+  </summary>
+  <token key="Action">
+    <variant name="Delete"
+        summary="Number of times the user deleted a reaction from the scene."/>
+    <variant name="Duplicate"
+        summary="Number of times the user duplicated a reaction."/>
+    <variant name="Move"
+        summary="Number of times the user moved a reaction by dragging it
+                 around the scene."/>
+    <variant name="ReactionsAdded"
+        summary="Number of times the user added a new reaction to the scene
+                 from the Toolbar."/>
+    <variant name="RotateScale"
+        summary="Number of times the user rotated or scaled a reaction."/>
+    <variant name="TypeChanges"
+        summary="Number of times the user changed an existing reaction's
+                 type."/>
+  </token>
+  <token key="Button">
+    <variant name="Cancel" summary="Cancel"/>
+    <variant name="Done" summary="Done"/>
+  </token>
+</histogram>
+
+<histogram name="LightweightReactions.EditingDone" enum="BooleanContinueChoice"
+    expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the user completed their GIF editing by tapping the Done
+    button. Enum value &quot;CONTINUE&quot; means the user tapped Done;
+    &quot;CANCEL&quot; means the user tapped Cancel.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.Funnel" enum="LightweightReactionsFunnel"
+    expires_after="2023-02-12">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the step of the Lightweight Reaction usage funnel that the user
+    reaches. Recorded each time the user progresses to a new step in the funnel,
+    meaning records in later steps are also included in all previous steps.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled" enum="Boolean"
+    expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the GIF generation operation was cancelled. Recorded as True
+    when the GIF generation is cancelled by the user, or as False when the
+    generation completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled.Duration"
+    units="ms" expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the duration between the start of GIF generation and the moment the
+    user cancelled the generation. Recorded when the user taps Cancel during GIF
+    generation.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled.Progress"
+    units="%" expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the GIF generation progress % at the time the generation was
+    cancelled by the user. Recorded when the user taps Cancel during GIF
+    generation.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationDuration" units="ms"
+    expires_after="2023-02-26">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to generate and encode the user's GIF.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationSuccess"
+    enum="BooleanSuccess" expires_after="2023-02-26">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the GIF was successfully generated and encoded.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifShared" enum="BooleanShared"
+    expires_after="2023-02-26">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>Records whether the GIF was shared in the Share Sheet.</summary>
+</histogram>
+
+<histogram name="LightweightReactions.OrientationChange"
+    enum="DeviceOrientation" expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records that there was an orientation change during Lightweight Reactions
+    scene editing.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.ReactionsUsed" enum="ReactionType"
+    expires_after="2023-02-26">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records which reactions have been used in a generated GIF. This is recorded
+    each time the user taps the Done button in the Lightweight Reactions dialog.
+    Each reaction is recorded as a separate sample in this histogram (e.g. if a
+    user generates a GIF with 5 reactions, 5 reaction types will be recorded in
+    this histogram).
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.ShareDestination"
+    enum="NoteShareDestination" expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the destination type (first or third party) for the shared GIF.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.TimeTo{Action}" units="ms"
+    expires_after="2022-12-04">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to accomplish {Action} from the time the
+    Lightweight Reactions dialog was shown.
+  </summary>
+  <token key="Action">
+    <variant name=".DismissDialog"
+        summary="The user tapped the Cancel button during GIF editing."/>
+    <variant name=".DismissShare"
+        summary="The user dismissed the Share Sheet before sharing their GIF."/>
+    <variant name=".FinishEditing"
+        summary="The user tapped the Done button after editing their GIF."/>
+    <variant name=".GenerateGif" summary="The GIF was generated."/>
+    <variant name=".ShareGif"
+        summary="The user shared their GIF in the Share Sheet."/>
+  </token>
+</histogram>
+
+<histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
+    expires_after="2022-12-04">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether user created a note when they were in the creation flow of
+    the feature.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.Funnel" enum="NoteCreationFunnel"
+    expires_after="2023-02-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the different states of the funnel that a user goes through in the
+    note creation feature.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.NoteShared" enum="BooleanShared"
+    expires_after="2022-12-04">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>Records whether the created note was shared or not.</summary>
+</histogram>
+
+<histogram name="NoteCreation.NumberOfTemplateChanges"
+    units="Number of changes" expires_after="2022-12-04">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the number of times the user changed templates when creating a note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.SelectedDynamicTemplateID" units="count"
+    expires_after="2022-12-04">
+  <owner>graysonlafleur@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the ID of the template selected. Recorded only for dynamic templates
+    while NoteCreation.SelectedTemplate records selected template based on an
+    enum of hardcoded template IDs. This will replace
+    NoteCreation.SelectedTemplate.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.SelectedDynamicTemplateIndex" units="count"
+    expires_after="2022-12-04">
+  <owner>graysonlafleur@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the index of the template selected. Recorded only for dynamic
+    templates. Since we will no longer use an enum of template IDs, we will also
+    record the index of the template the user selects so that we can detect
+    where exactly the template was in the carousel.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
+    expires_after="2023-02-19">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records which template the user selected when creating their note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
+    expires_after="2022-12-04">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the destination type (first or third party) for the shared note.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.TemplateFetchSuccess" enum="BooleanSuccess"
+    expires_after="2022-12-04">
+  <owner>graysonlafleur@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the Webnote Stylize template data was successfully fetched
+    from gStatic.
+  </summary>
+</histogram>
+
+<histogram name="NoteCreation.TimeTo{action}" units="ms"
+    expires_after="2022-12-04">
+  <owner>sebsg@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the amount of time taken to accomplish {action} from the time the
+    creation flow was started.
+  </summary>
+  <token key="action">
+    <variant name=".DismissCreationDialog"
+        summary="The user dismissed the creation dialog."/>
+    <variant name=".DismissShare"
+        summary="The user dismissed the sharing dialog for their newly
+                 created note."/>
+    <variant name=".SelectTemplate"
+        summary="The user selected a template for their note, completing the
+                 creation flow."/>
+    <variant name=".ShareCreation"
+        summary="The user shared their newly created note."/>
+  </token>
+</histogram>
+
+<histogram name="SharedHighlights.AndroidShareSheet.SharedState"
+    enum="LinkGenerationSharedStatus" expires_after="2023-02-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of the link generation when a user shares content using
+    the feature on Android.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
+    expires_after="2023-01-01">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for AsyncFindBuffer to finish the
+    search. AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
+    expires_after="2023-01-22">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in milliseconds for AsyncFindBuffer to finish the search.
+    AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.Desktop.CopiedLinkType"
+    enum="LinkGenerationCopiedLinkType" expires_after="2023-02-12">
+  <owner>sebsg@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the type of shared highlighting link the user copied on desktop.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error"
+    enum="LinkGenerationError" expires_after="2023-02-12">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded for all the failed link generation runs. This histogram is a
+    superset of |SharedHighlights.LinkGenerated.Error.Requested|.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
+    units="iterations" expires_after="2023-01-15">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took for the unsuccessful text fragment
+    selector generation run.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Requested"
+    enum="LinkGenerationError" expires_after="2023-02-19">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded only for failure cases that were requested by users.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
+    units="ms" expires_after="2023-02-19">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in millisecons for a failed text fragment selector generation
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
+    expires_after="2022-12-25">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates number of iterations it took to successfully generate text
+    fragment selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
+    expires_after="2022-12-18">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of charaters in successfully generated text fragment selector. For
+    example, for #:=:text=sample%20text, it would be the
+    len(&quot;sample%20text&quot;) which is 13. Recorded only when selector
+    generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectionLength"
+    units="characters" expires_after="2022-08-24">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Number of characters in the user selected text, that text fragment selector
+    is generated for. Recorded regardless of generation success.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
+    enum="TextFragmentAnchorParameters" expires_after="2022-06-19">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates which parameters were specified in a text fragment selector.
+    Recorded only when selector generation was successful.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
+    enum="LinkGenerationState" expires_after="2023-02-19">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the state of the link generation when link to text request is
+    received from the browser process.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
+    expires_after="2023-02-12">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    How long it took in milliseconds to successfully generate text fragment
+    selector.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated{Requested}"
+    enum="BooleanSuccess" expires_after="2023-01-27">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates whether text fragment selector generation was successful for
+    {Requested}.
+  </summary>
+  <token key="Requested">
+    <variant name="" summary="all generation cases"/>
+    <variant name=".Requested"
+        summary="all cases when generated selector is requested."/>
+    <variant name=".RequestedAfterReady"
+        summary="cases when selector is requested after its ready."/>
+    <variant name=".RequestedBeforeReady"
+        summary="cases when selector is requested before its ready."/>
+  </token>
+</histogram>
+
+<histogram name="SharedHighlights.LinkToTextDiagnoseStatus"
+    enum="LinkToTextDiagnoseStatus" expires_after="2023-02-26">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records the status of link to text flow on Android for diagnostic purposes.
+    Intended to be temporary for debug purposes.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.ObtainReshareLink.Status"
+    enum="LinkToTextReshareStatus" expires_after="2022-10-09">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records if obtaining reshare link was successful. Otherwise, it records the
+    failure reason.
+  </summary>
+</histogram>
+
+<histogram name="TextFragmentAnchor.ElementIdFragmentFound" enum="Boolean"
+    expires_after="2022-09-11">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether an element-id based fragment was found in the document. Counted only
+    when a fragment was specified and it wasn't parsed into a |targetText| style
+    anchor.
+  </summary>
+</histogram>
+
+<histogram name="TextFragmentAnchor.LinkOpenSource"
+    enum="TextFragmentLinkOpenSource" expires_after="2023-06-30">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Recorded for every navigation to a link with a valid text fragment selector
+    (e.g. #:=:text=SELECTOR). Indicates source type that navigation originated
+    from. It only know about search engines that come from the pre-populated
+    list installed with Chrome. If the user uses a search engine not on the
+    list, it will be recorded as Unknown. This is even true if the user have a
+    custom search engine. These custom search engines can be created by hand or
+    auto-generated. In either case, it's not going to count as a search engine.
+    Also, it only checks to see if the *referrer* is from a domain associated
+    with search engine. If someone posts a link somewhere on a web site that
+    happens to have a search engine known to Google and that links includes the
+    fragment tokens, then if a user clicks that link, it'll look like it came
+    from a search engine even thought they did not.
+  </summary>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.AmbiguousMatch"
+    enum="Boolean" expires_after="2023-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether we found multiple matches for a selector. Recorded when
+    TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.DidScrollIntoView"
+    enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether the page did a non-zero scroll in order to scroll the match into
+    view. Only recorded if we found a match and scrolled it into view. Recorded
+    when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.DirectiveLength"
+    units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The raw length of the directive in the URL (e.g. spaces count as the three
+    characters '%20'), regardless of how many text= terms there are. Recorded if
+    there was a text directive, regardless of whether a match was found.
+    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.EndTextLength"
+    units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The length of the end parameter, in the case of a range match. Only recorded
+    if a match was found. Recorded when TextFragmentAnchor finishes searching
+    once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.ExactTextLength"
+    units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The length of the matched text, in the case of an exact match. Only recorded
+    if a match was found. Recorded when TextFragmentAnchor finishes searching
+    once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.ListItemMatch"
+    enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether the match was within a list item. Only recorded for exact text
+    fragments and only if a match was found. Recorded when TextFragmentAnchor
+    finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
+    expires_after="2023-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The percentage of selectors for which a match was found in the document.
+    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.Parameters"
+    enum="TextFragmentAnchorParameters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    An enum indicating which parameters were specified in the text fragment
+    anchor. Only recorded if a match was found. Recorded when TextFragmentAnchor
+    finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.RangeMatchLength"
+    units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The length of the matched text, in the case of a range match. Only recorded
+    if a match was found. Recorded when TextFragmentAnchor finishes searching
+    once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.ScrollCancelled"
+    enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether the scroll into view was cancelled by a user gesture or programmatic
+    scroll. Recorded when TextFragmentAnchor finishes searching once the page is
+    loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.SelectorCount"
+    units="selectors" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The number of selectors in the text fragment anchor if it is present.
+    Recorded when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
+    enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether or not a range-based text fragment match crosses any block
+    boundaries. That is, the start and end of the range are in different blocks
+    or in the same block but contain an intervening block. Only recorded for
+    range-based (start,end) text fragments. Only recorded on successful match.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.StartTextLength"
+    units="characters" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The length of the start parameter, in the case of a range match. Only
+    recorded if a match was found. Recorded when TextFragmentAnchor finishes
+    searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.TableCellMatch"
+    enum="Boolean" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Whether the match was within a table cell. Only recorded for exact text
+    fragments and only if a match was found. Recorded when TextFragmentAnchor
+    finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollIntoView"
+    units="ms" expires_after="2023-06-30">
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The time between creating the TextFragmentAnchor (i.e. when it is parsed)
+    and scrolling the target into view. Only recorded if there is a match and we
+    tried to scroll it into view (it may already have been in view). Recorded
+    when TextFragmentAnchor finishes searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+<histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollToTop"
+    units="ms" expires_after="2022-06-30">
+  <obsolete>
+    Removed 2022-05.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    The time between scrolling a match into view and the user scrolling back to
+    the top of the page. Used as a signal for whether a match was useful. Only
+    recorded if a match is scrolled into view and the user subsequently scrolled
+    back to the top of the page. Recorded when TextFragmentAnchor finishes
+    searching once the page is loaded.
+
+    Recorded from text fragment links followed from {TextFragmentSource}.
+  </summary>
+  <token key="TextFragmentSource" variants="TextFragmentSource"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

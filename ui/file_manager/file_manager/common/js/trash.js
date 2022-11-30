@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,34 +19,40 @@
  * TrashEntry combines both files for display.
  */
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {util} from './util.m.js';
-// #import {FakeEntryImpl, CombinedReaders} from './files_app_entry_types.m.js';
-// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
-// clang-format on
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {parseTrashInfoFiles, startIOTask} from './api.js';
+import {FakeEntryImpl} from './files_app_entry_types.js';
+import {metrics} from './metrics.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
  * Configuration for where Trash is stored in a volume.
  */
-/* #export */ class TrashConfig {
+export class TrashConfig {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType
    * @param {string} topDir Top directory of volume. Must end with a slash to
    *     make comparisons simpler.
    * @param {string} trashDir Trash directory. Must end with a slash to make
    *     comparisons simpler.
+   * @param {string} rootLabel Root label for items in trash.
+   * @param {Object<string>=} pathMap map of substitutions for first path
+   *     segment.  Used by Drive to map 'root' => 'My Drive', etc.
    * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
    *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
    *     this is the user's homedir (/home/<username>).
    */
-  constructor(volumeType, topDir, trashDir, prefixPathWithRemoteMount = false) {
+  constructor(
+      volumeType, topDir, trashDir, rootLabel, pathMap = {},
+      prefixPathWithRemoteMount = false) {
     this.id = `${volumeType}-${topDir}`;
     this.volumeType = volumeType;
     this.topDir = topDir;
     this.trashDir = trashDir;
+    this.rootLabel = rootLabel;
+    this.pathMap = pathMap;
     this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
     this.pathPrefix = '';
   }
@@ -64,17 +70,72 @@ TrashConfig.CONFIG = [
   // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
   new TrashConfig(
       VolumeManagerCommon.VolumeType.DOWNLOADS, '/Downloads/',
-      '/Downloads/.Trash/'),
-  new TrashConfig(VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/'),
+      '/Downloads/.Trash/', 'MY_FILES_ROOT_LABEL'),
   new TrashConfig(
-      VolumeManagerCommon.VolumeType.CROSTINI, '/', '/.local/share/Trash/',
-      /*prefixPathWithRemoteMount=*/ true),
+      VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/',
+      'MY_FILES_ROOT_LABEL'),
 ];
+
+/**
+ * Interval (ms) until items in trash are permanently deleted. 30 days.
+ */
+export const AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * Returns a list of strings that represent volumes that are enabled for Trash.
+ * Used to validate drag drop data without resolving the URLs to Entry's.
+ * @param {!VolumeManager} volumeManager
+ * @param {boolean} includeTrashPath True if URLs should have the .Trash folder
+ *     suffix.
+ * @returns {!Array<!string>}
+ */
+export function getEnabledTrashVolumeURLs(
+    volumeManager, includeTrashPath = false) {
+  const urls = [];
+  for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
+    const volumeInfo = volumeManager.volumeInfoList.item(i);
+    for (const config of TrashConfig.CONFIG) {
+      if (volumeInfo.volumeType === config.volumeType) {
+        if (!includeTrashPath) {
+          urls.push(volumeInfo.fileSystem.root.toURL());
+          continue;
+        }
+        let fileSystemRootURL = volumeInfo.fileSystem.root.toURL();
+        if (fileSystemRootURL.endsWith('/')) {
+          fileSystemRootURL =
+              fileSystemRootURL.substring(0, fileSystemRootURL.length - 1);
+        }
+        urls.push(fileSystemRootURL + config.trashDir);
+      }
+    }
+  }
+  return urls;
+}
+
+/**
+ * Returns true if all supplied entries reside at a known trash location.
+ * @param {!Array<!Entry>} entries List of entries to verify.
+ * @param {!VolumeManager} volumeManager Volume manager used to get trash
+ *     location URLs.
+ * @returns {boolean} True if all entries are trash
+ */
+export function isAllTrashEntries(entries, volumeManager) {
+  const enabledTrashVolumeURLs =
+      getEnabledTrashVolumeURLs(volumeManager, /*includeTrashPath=*/ true);
+  return entries.every(e => {
+    for (const volumeURL of enabledTrashVolumeURLs) {
+      if (e.toURL().startsWith(volumeURL)) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
 
 /**
  * Wrapper for /.Trash/files and /.Trash/info directories.
  */
-/* #export */ class TrashDirs {
+export class TrashDirs {
   /**
    * @param {!DirectoryEntry} files /.Trash/files directory entry.
    * @param {!DirectoryEntry} info /.Trash/info directory entry.
@@ -131,17 +192,19 @@ TrashConfig.CONFIG = [
  *
  * @implements {FilesAppEntry}
  */
-/* #export */ class TrashEntry {
+export class TrashEntry {
   /**
    * @param {string} name Name of the file deleted.
    * @param {!Date} deletionDate DeletionDate of deleted file from infoEntry.
    * @param {!Entry} filesEntry trash files entry.
    * @param {!FileEntry} infoEntry trash info entry.
+   * @param {!Entry} restoreEntry The entry to restore the item.
    */
-  constructor(name, deletionDate, filesEntry, infoEntry) {
+  constructor(name, deletionDate, filesEntry, infoEntry, restoreEntry) {
     this.name = name;
     this.filesEntry = filesEntry;
     this.infoEntry = infoEntry;
+    this.restoreEntry = restoreEntry;
 
     /** @private */
     this.deletionDate_ = deletionDate;
@@ -306,12 +369,10 @@ class TrashDirectoryReader {
   /**
    * @param {!FileSystem} fileSystem trash file system.
    * @param {!TrashConfig} config trash config.
-   * @param {string} rootLabel Label of trash root to prefix entries with.
    */
-  constructor(fileSystem, config, rootLabel) {
+  constructor(fileSystem, config) {
     this.fileSystem_ = fileSystem;
     this.config_ = config;
-    this.rootLabel_ = rootLabel;
 
     /** @private {!Object<!Entry>} all entries in .Trash/files keyed by name. */
     this.filesEntries_ = {};
@@ -329,57 +390,36 @@ class TrashDirectoryReader {
    * Create a trash entry if infoEntry and matching files entry are valid, else
    * return null.
    *
+   * @param {!chrome.fileManagerPrivate.ParsedTrashInfoFile} parsedEntry
    * @param {!FileEntry} infoEntry trash info entry.
-   * @return {!Promise<TrashEntry?>}
+   * @return {?TrashEntry}
    */
-  async createTrashEntry_(infoEntry) {
-    const error = (msg, text = '') => {
-      console.warn(`${msg}: ${infoEntry.toURL()}: ${text}`);
-      return null;
-    };
-
-    // Ignore any directories.
-    if (!infoEntry.isFile) {
-      return error('Ignoring unexpected trash info directory');
-    }
-
-    // Ignore any files not *.trashinfo.
-    if (!infoEntry.name.endsWith('.trashinfo')) {
-      return error('Ignoring unexpected trash info file');
-    }
-
-    const fileName = infoEntry.name.substring(0, infoEntry.name.length - 10);
-    const filesEntry = this.filesEntries_[fileName];
-    delete this.filesEntries_[fileName];
+  createTrashEntry_(parsedEntry, infoEntry) {
+    const filesEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
 
     // Ignore any .trashinfo file with no matching file entry.
     if (!filesEntry) {
-      return error('Ignoring trash info file with no matching files entry');
+      console.warn('Ignoring trash info file with no matching files entry');
+      return null;
     }
 
-    let text;
-    try {
-      const file = await new Promise(
-          (resolve, reject) => infoEntry.file(resolve, reject));
-      text = await file.text();
-    } catch (e) {
-      return error('Ignoring removed file');
-    }
-    const path = TrashEntry.parsePath(text);
-    if (!path) {
-      return error('Ignoring trash info file with no Path', text);
-    }
+    const deletionDate = /** @type {!Date} */ (parsedEntry.deletionDate);
 
-    const deletionDate = TrashEntry.parseDeletionDate(text);
-    if (!deletionDate) {
-      return error('Ignoring trash info file with invalid DeletionDate', text);
-    }
+    return new TrashEntry(
+        parsedEntry.restoreEntry.name, deletionDate, filesEntry, infoEntry,
+        parsedEntry.restoreEntry);
+  }
 
-    // Show the root label and the whole Path=<path> from infoEntry as the name.
-    // This allows users to differentiate deleted files such as /a/hello.txt and
-    // /b/hello.txt.
-    const trashName = this.rootLabel_ + path.replace(/\//g, ' › ');
-    return new TrashEntry(trashName, deletionDate, filesEntry, infoEntry);
+  /**
+   * Returns the Entry from the cached files entries.
+   * @param {string} trashInfoFileName The .trashinfo filename that keys the
+   *     files entry.
+   * @returns {?Entry} The files entry if one exists, null otherwise.
+   */
+  getFilesEntry(trashInfoFileName) {
+    const filesEntry = this.filesEntries_[trashInfoFileName];
+    delete this.filesEntries_[trashInfoFileName];
+    return filesEntry;
   }
 
   /**
@@ -417,7 +457,8 @@ class TrashDirectoryReader {
           if (!entries.length) {
             break;
           }
-          entries.forEach(entry => this.filesEntries_[entry.name] = entry);
+          entries.forEach(
+              entry => this.filesEntries_[entry.name + '.trashinfo'] = entry);
         }
       } catch (e) {
         console.warn('Error reading trash files entries', e);
@@ -431,6 +472,8 @@ class TrashDirectoryReader {
     // Consume infoReader which is initialized in the first call. Read from
     // .Trash/info until we have at least 1 result, or end of stream.
     const result = [];
+    const entriesToDelete = [];
+    const dateNow = Date.now();
     while (true) {
       let entries = [];
       try {
@@ -440,17 +483,53 @@ class TrashDirectoryReader {
         error(e);
         return;
       }
+      if (!entries.length) {
+        break;
+      }
+      const infoEntryMap = {};
       for (const e of entries) {
-        const trashEntry = await this.createTrashEntry_(e);
+        if (!e.isFile || !e.name.endsWith('.trashinfo')) {
+          continue;
+        }
+        infoEntryMap[e.name] = e;
+      }
+      let parsedEntries = [];
+      try {
+        parsedEntries = await parseTrashInfoFiles(entries);
+      } catch (e) {
+        console.warn('Error parsing trash info entries', e);
+        error(e);
+        return;
+      }
+      for (const parsedEntry of parsedEntries) {
+        // In the event the parsed entry was deleted more than 30 days ago,
+        // schedule them for deletion and don't render them in the view.
+        if (parsedEntry.deletionDate < (dateNow - AUTO_DELETE_INTERVAL_MS)) {
+          entriesToDelete.push(infoEntryMap[parsedEntry.trashInfoFileName]);
+          const trashEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
+          if (trashEntry) {
+            entriesToDelete.push(trashEntry);
+          }
+          continue;
+        }
+        const trashEntry = this.createTrashEntry_(
+            parsedEntry, infoEntryMap[parsedEntry.trashInfoFileName]);
         if (trashEntry) {
           result.push(trashEntry);
         }
       }
-      if (!entries.length || result.length) {
-        break;
-      }
     }
     success(result);
+
+    if (entriesToDelete.length > 0) {
+      startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.DELETE, entriesToDelete,
+          {showNotification: false});
+    }
+
+    // Record the amount of files seen for this particularly directory reader.
+    metrics.recordMediumCount(
+        /*name=*/ `TrashFiles.${this.config_.volumeType}`, result.length);
   }
 
   /** @override */
@@ -463,7 +542,7 @@ class TrashDirectoryReader {
  * Root Trash entry sits inside "My files". It shows the combined entries of
  * trashes defined in TrashConfig.
  */
-/* #export */ class TrashRootEntry extends FakeEntryImpl {
+export class TrashRootEntry extends FakeEntryImpl {
   /**
    * @param {!VolumeManager} volumeManager
    */
@@ -471,20 +550,51 @@ class TrashDirectoryReader {
     super('Trash', VolumeManagerCommon.RootType.TRASH);
     this.volumeManager_ = volumeManager;
   }
-
-  /** @override */
-  createReader() {
-    const readers = [];
-    TrashConfig.CONFIG.forEach(c => {
-      const info =
-          this.volumeManager_.getCurrentProfileVolumeInfo(c.volumeType);
-      if (info && info.fileSystem) {
-        const locationInfo =
-            this.volumeManager_.getLocationInfo(info.fileSystem.root);
-        const rootLabel = util.getRootTypeLabel(assert(locationInfo));
-        readers.push(new TrashDirectoryReader(info.fileSystem, c, rootLabel));
-      }
-    });
-    return new CombinedReaders(readers);
-  }
 }
+
+/**
+ * Returns all the Trash directory readers.
+ * @param {!VolumeManager} volumeManager
+ * @returns {!Array<DirectoryReader>} Trash directory readers combined.
+ */
+export function createTrashReaders(volumeManager) {
+  const readers = [];
+  TrashConfig.CONFIG.forEach(c => {
+    const info = volumeManager.getCurrentProfileVolumeInfo(c.volumeType);
+    if (info && info.fileSystem) {
+      readers.push(new TrashDirectoryReader(info.fileSystem, c));
+    }
+  });
+  return readers;
+}
+
+// The UMA to track the enum that is reported below.
+export const RestoreFailedUMA = 'Trash.RestoreFailedNoParent';
+
+export const RestoreFailedType = {
+  // A single item has attempted to be restored but the parent has been removed.
+  SINGLE_ITEM: 'single-item',
+
+  // Multiple items have attempted to be restored where they all shared the same
+  // parent folder, but it has been removed.
+  MULTIPLE_ITEMS_SAME_PARENTS: 'multiple-items-same-parents',
+
+  // Multiple items have attempted to be restored and they all have different
+  // parent folders but all the parent folders have been removed.
+  MULTIPLE_ITEMS_DIFFERENT_PARENTS: 'multiple-items-different-parents',
+
+  // Multiple items have attempted to be restored from different parents with
+  // some parent folders still existing and some have been removed.
+  MULTIPLE_ITEMS_MIXED: 'multiple-items-mixed',
+};
+
+/**
+ * Keep the order of this in sync with RestoreFailedNoParentType in
+ * tools/metrics/histograms/enums.xml.
+ */
+export const RestoreFailedTypesUMA = [
+  RestoreFailedType.SINGLE_ITEM,                       // 0
+  RestoreFailedType.MULTIPLE_ITEMS_SAME_PARENTS,       // 1
+  RestoreFailedType.MULTIPLE_ITEMS_DIFFERENT_PARENTS,  // 2
+  RestoreFailedType.MULTIPLE_ITEMS_MIXED,              // 3
+];

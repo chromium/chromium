@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
-#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #import "ios/chrome/browser/overlays/public/common/placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -37,8 +37,8 @@ void PlaceholderRequestCancelHandler::TranslationHasFinished() {
 PlaceholderRequestCancelHandler::TranslationFinishedObserver::
     TranslationFinishedObserver(TranslateOverlayTabHelper* tab_helper,
                                 PlaceholderRequestCancelHandler* cancel_handler)
-    : cancel_handler_(cancel_handler), scoped_observer_(this) {
-  scoped_observer_.Add(tab_helper);
+    : cancel_handler_(cancel_handler) {
+  scoped_observation_.Observe(tab_helper);
 }
 
 PlaceholderRequestCancelHandler::TranslationFinishedObserver::
@@ -51,7 +51,8 @@ void PlaceholderRequestCancelHandler::TranslationFinishedObserver::
 
 void PlaceholderRequestCancelHandler::TranslationFinishedObserver::
     TranslateOverlayTabHelperDestroyed(TranslateOverlayTabHelper* tab_helper) {
-  scoped_observer_.Remove(tab_helper);
+  DCHECK(scoped_observation_.IsObservingSource(tab_helper));
+  scoped_observation_.Reset();
 }
 
 }  // namespace translate_infobar_overlays

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,16 +25,18 @@ struct InputDeviceSettingsEvdev {
   bool tap_dragging_enabled = false;
   bool natural_scroll_enabled = false;
   bool tap_to_click_paused = false;
-  bool touch_event_logging_enabled = true;
+  bool touch_event_logging_enabled = false;
   bool mouse_reverse_scroll_enabled = false;
   bool mouse_acceleration_enabled = true;
   bool mouse_scroll_acceleration_enabled = true;
   bool pointing_stick_acceleration_enabled = true;
   bool touchpad_acceleration_enabled = true;
   bool touchpad_scroll_acceleration_enabled = true;
+  bool touchpad_haptic_feedback_enabled = true;
 
   int touchpad_sensitivity = kDefaultSensitivity;
   int touchpad_scroll_sensitivity = kDefaultSensitivity;
+  int touchpad_haptic_click_sensitivity = kDefaultSensitivity;
   int mouse_sensitivity = kDefaultSensitivity;
   int mouse_scroll_sensitivity = kDefaultSensitivity;
   int pointing_stick_sensitivity = kDefaultSensitivity;

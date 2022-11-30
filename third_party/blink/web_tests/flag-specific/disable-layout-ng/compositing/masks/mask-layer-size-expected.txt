@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,12 +9,15 @@
     {
       "name": "LayoutBlockFlow DIV id='masked'",
       "bounds": [400, 200],
+      "contentsOpaque": true,
       "backgroundColor": "#000000",
       "transform": 1
     },
     {
-      "name": "Mask Layer",
-      "bounds": [400, 200],
+      "name": "LayoutBlockFlow DIV id='masked'",
+      "position": [-2, -2],
+      "bounds": [404, 204],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/media/router/discovery/discovery_network_info.h"
 #include "net/base/ip_address.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -55,6 +53,9 @@ class DiscoveryNetworkMonitor
   static std::unique_ptr<DiscoveryNetworkMonitor> CreateInstanceForTest(
       NetworkInfoFunction strategy);
 
+  DiscoveryNetworkMonitor(const DiscoveryNetworkMonitor&) = delete;
+  DiscoveryNetworkMonitor& operator=(const DiscoveryNetworkMonitor&) = delete;
+
   void AddObserver(Observer* const observer);
   void RemoveObserver(Observer* const observer);
 
@@ -71,6 +72,7 @@ class DiscoveryNetworkMonitor
  private:
   friend class CastMediaSinkServiceImplTest;
   friend class DiscoveryNetworkMonitorTest;
+  friend class AccessCodeCastSinkServiceTest;
   friend struct std::default_delete<DiscoveryNetworkMonitor>;
   friend struct base::LazyInstanceTraitsBase<DiscoveryNetworkMonitor>;
 
@@ -106,8 +108,6 @@ class DiscoveryNetworkMonitor
 
   // SequenceChecker for |task_runner_|.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DiscoveryNetworkMonitor);
 };
 
 }  // namespace media_router

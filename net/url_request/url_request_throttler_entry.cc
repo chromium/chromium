@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,21 +54,19 @@ const int URLRequestThrottlerEntry::kDefaultEntryLifetimeMs = 2 * 60 * 1000;
 base::Value NetLogRejectedRequestParams(const std::string* url_id,
                                         int num_failures,
                                         const base::TimeDelta& release_after) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", *url_id);
-  dict.SetIntKey("num_failures", num_failures);
-  dict.SetIntKey("release_after_ms",
-                 static_cast<int>(release_after.InMilliseconds()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("url", *url_id);
+  dict.Set("num_failures", num_failures);
+  dict.Set("release_after_ms",
+           static_cast<int>(release_after.InMilliseconds()));
+  return base::Value(std::move(dict));
 }
 
 URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     URLRequestThrottlerManager* manager,
     const std::string& url_id)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(kDefaultSlidingWindowPeriodMs)),
+    : sliding_window_period_(base::Milliseconds(kDefaultSlidingWindowPeriodMs)),
       max_send_threshold_(kDefaultMaxSendThreshold),
-      is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
       manager_(manager),
       url_id_(url_id),
@@ -88,10 +86,8 @@ URLRequestThrottlerEntry::URLRequestThrottlerEntry(
     double multiply_factor,
     double jitter_factor,
     int maximum_backoff_ms)
-    : sliding_window_period_(
-          base::TimeDelta::FromMilliseconds(sliding_window_period_ms)),
+    : sliding_window_period_(base::Milliseconds(sliding_window_period_ms)),
       max_send_threshold_(max_send_threshold),
-      is_backoff_disabled_(false),
       backoff_entry_(&backoff_policy_),
       manager_(manager),
       url_id_(url_id) {

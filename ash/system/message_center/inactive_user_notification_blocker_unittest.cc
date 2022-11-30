@@ -1,16 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -25,13 +26,24 @@ const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
 
 class InactiveUserNotificationBlockerTest
     : public NoSessionAshTestBase,
-      public message_center::NotificationBlocker::Observer {
+      public message_center::NotificationBlocker::Observer,
+      public testing::WithParamInterface<bool> {
  public:
   InactiveUserNotificationBlockerTest() = default;
+
+  InactiveUserNotificationBlockerTest(
+      const InactiveUserNotificationBlockerTest&) = delete;
+  InactiveUserNotificationBlockerTest& operator=(
+      const InactiveUserNotificationBlockerTest&) = delete;
+
   ~InactiveUserNotificationBlockerTest() override = default;
 
   // AshTestBase overrides:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     AshTestBase::SetUp();
 
     blocker_ = ShellTestApi()
@@ -39,6 +51,8 @@ class InactiveUserNotificationBlockerTest
                    ->inactive_user_notification_blocker_for_testing();
     blocker_->AddObserver(this);
   }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);
@@ -76,7 +90,7 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id", u"popup-title",
-        u"popup-message", gfx::Image(), u"popup-source", GURL(),
+        u"popup-message", ui::ImageModel(), u"popup-source", GURL(),
         id_with_profile, message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
@@ -92,7 +106,7 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "notification-id",
-        u"notification-title", u"notification-message", gfx::Image(),
+        u"notification-title", u"notification-message", ui::ImageModel(),
         u"notification-source", GURL(), id_with_profile,
         message_center::RichNotificationData(), nullptr);
 
@@ -105,21 +119,25 @@ class InactiveUserNotificationBlockerTest
  private:
   int state_changed_count_ = 0;
   InactiveUserNotificationBlocker* blocker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InactiveUserNotificationBlockerTest);
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(InactiveUserNotificationBlockerTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         InactiveUserNotificationBlockerTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(InactiveUserNotificationBlockerTest, Basic) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, "test-app");
   // System priority notifiers should always show regardless of fullscreen
   // or lock state.
   message_center::NotifierId ash_system_notifier(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority);
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+      NotificationCatalogName::kTestCatalogName);
   // Other system notifiers should be treated as same as a normal notifier.
   message_center::NotifierId random_system_notifier(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      "ash.some-other-component");
+      "ash.some-other-component", NotificationCatalogName::kTestCatalogName);
 
   // Notifications are not blocked before login.
   const std::string kEmptyUserId;

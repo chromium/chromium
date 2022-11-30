@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.payments;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,27 +12,22 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -40,16 +36,9 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        // For all the tests in this file, we expect abort exception when there is no supported
-        // payment apps instead of showing payment request UI.
-        "enable-features=" + PaymentFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT,
         // Prevent crawling the web for real payment apps.
         "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS})
 public class PaymentRequestServiceWorkerPaymentAppTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");
@@ -71,7 +60,7 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
             @Override
             public void create(PaymentAppFactoryDelegate delegate) {
                 WebContents webContents = delegate.getParams().getWebContents();
-                ChromeActivity activity = ChromeActivity.fromWebContents(webContents);
+                Activity activity = ActivityUtils.getActivityFromWebContents(webContents);
                 BitmapDrawable icon = withIcon
                         ? new BitmapDrawable(activity.getResources(),
                                 Bitmap.createBitmap(new int[] {Color.RED}, 1 /* width */,
@@ -120,25 +109,12 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 new SupportedDelegations(shippingAddress, payerName, payerPhone, payerEmail));
     }
 
-    /**
-     * Adds a credit cart to ensure that autofill app is available.
-     */
-    public void addCreditCard() throws TimeoutException {
-        AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
-                        "John Smith", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "310-310-6000", "john.smith@gmail.com", "en-US"));
-        helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                billingAddressId, "" /* serverId */));
-    }
-
     @Test
     @MediumTest
     @Feature({"Payments"})
     public void testNoSupportedPaymentMethods() throws TimeoutException {
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(mPaymentRequestTestRule.getShowFailed());
+        mPaymentRequestTestRule.openPageAndClickNodeAndWait(
+                "buy_with_bobpay", mPaymentRequestTestRule.getShowFailed());
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"show() rejected", "The payment method", "not supported"});
     }
@@ -159,10 +135,12 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @MediumTest
     @Feature({"Payments"})
     public void testDoNotCallCanMakePayment() throws TimeoutException {
-        // Add a credit card to force showing payment sheet UI.
-        addCreditCard();
-        String[] supportedMethodNames = {"basic-card"};
-        installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames, true, true);
+        String[] supportedMethodNames1 = {"https://bobpay.com"};
+        installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames1, true, true);
+
+        String[] supportedMethodNames2 = {"https://kylepay.com/webpay"};
+        installMockServiceWorkerPaymentApp(
+                "https://kylepay.com/webpay", supportedMethodNames2, true, true);
 
         // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
         // no real sw payment app, so if CanMakePayment is called then no payment apps will be

@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 19: WebSocket connection to 'ws://127.0.0.1:8880/long-invalid-header' failed: Error during WebSocket handshake: 'Upgrade' header is missing
 Make sure WebSocket gives errors on long invalid upgrade header.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

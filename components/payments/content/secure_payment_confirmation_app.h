@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,14 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
 
 class SkBitmap;
 
-namespace autofill {
+namespace webauthn {
 class InternalAuthenticator;
-}  // namespace autofill
+}  // namespace webauthn
 
 namespace content {
 class RenderFrameHost;
@@ -58,7 +58,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
       mojom::SecurePaymentConfirmationRequestPtr request,
-      std::unique_ptr<autofill::InternalAuthenticator> authenticator);
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
   ~SecurePaymentConfirmationApp() override;
 
   SecurePaymentConfirmationApp(const SecurePaymentConfirmationApp& other) =
@@ -69,7 +69,6 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   // PaymentApp implementation.
   void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   bool IsCompleteForPayment() const override;
-  uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
   std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
@@ -79,10 +78,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   std::u16string GetLabel() const override;
   std::u16string GetSublabel() const override;
   const SkBitmap* icon_bitmap() const override;
-  bool IsValidForModifier(
-      const std::string& method,
-      bool supported_networks_specified,
-      const std::set<std::string>& supported_networks) const override;
+  bool IsValidForModifier(const std::string& method) const override;
   base::WeakPtr<PaymentApp> AsWeakPtr() override;
   bool HandlesShippingAddress() const override;
   bool HandlesPayerName() const override;
@@ -93,6 +89,8 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       mojom::PaymentRequestDetailsUpdatePtr details_update) override;
   void OnPaymentDetailsNotUpdated() override;
   void AbortPaymentApp(base::OnceCallback<void(bool)> abort_callback) override;
+  mojom::PaymentResponsePtr SetAppSpecificResponseFields(
+      mojom::PaymentResponsePtr response) const override;
 
   // WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -101,22 +99,23 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   void OnGetAssertion(
       base::WeakPtr<Delegate> delegate,
       blink::mojom::AuthenticatorStatus status,
-      blink::mojom::GetAssertionAuthenticatorResponsePtr response);
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // Used only for comparison with the RenderFrameHost pointer in
   // RenderFrameDeleted() method.
-  content::GlobalFrameRoutingId authenticator_frame_routing_id_;
+  content::GlobalRenderFrameHostId authenticator_frame_routing_id_;
 
   const std::string effective_relying_party_identity_;
   const std::unique_ptr<SkBitmap> icon_;
   const std::u16string label_;
   const std::vector<uint8_t> credential_id_;
-  const std::string encoded_credential_id_;
   const url::Origin merchant_origin_;
   const base::WeakPtr<PaymentRequestSpec> spec_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;
-  std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
+  std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
   std::string challenge_;
+  blink::mojom::GetAssertionAuthenticatorResponsePtr response_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };

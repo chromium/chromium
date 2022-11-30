@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 
 namespace views {
@@ -23,6 +23,12 @@ class AppWindowDesktopWindowTreeHostWin
   AppWindowDesktopWindowTreeHostWin(
       ChromeNativeAppWindowViewsWin* app_window,
       views::DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  AppWindowDesktopWindowTreeHostWin(const AppWindowDesktopWindowTreeHostWin&) =
+      delete;
+  AppWindowDesktopWindowTreeHostWin& operator=(
+      const AppWindowDesktopWindowTreeHostWin&) = delete;
+
   ~AppWindowDesktopWindowTreeHostWin() override;
 
  private:
@@ -32,9 +38,7 @@ class AppWindowDesktopWindowTreeHostWin
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void HandleFrameChanged() override;
 
-  ChromeNativeAppWindowViewsWin* app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowDesktopWindowTreeHostWin);
+  raw_ptr<ChromeNativeAppWindowViewsWin> app_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_WINDOW_TREE_HOST_WIN_H_

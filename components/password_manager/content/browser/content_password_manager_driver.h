@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -19,6 +19,8 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -28,7 +30,6 @@ class RenderFrameHost;
 }
 
 namespace password_manager {
-enum class BadMessageReason;
 
 // There is one ContentPasswordManagerDriver per RenderFrameHost.
 // The lifetime is managed by the ContentPasswordManagerDriverFactory.
@@ -39,6 +40,11 @@ class ContentPasswordManagerDriver
   ContentPasswordManagerDriver(content::RenderFrameHost* render_frame_host,
                                PasswordManagerClient* client,
                                autofill::AutofillClient* autofill_client);
+
+  ContentPasswordManagerDriver(const ContentPasswordManagerDriver&) = delete;
+  ContentPasswordManagerDriver& operator=(const ContentPasswordManagerDriver&) =
+      delete;
+
   ~ContentPasswordManagerDriver() override;
 
   // Gets the driver for |render_frame_host|.
@@ -48,10 +54,11 @@ class ContentPasswordManagerDriver
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
           pending_receiver);
+  void UnbindReceiver();
 
   // PasswordManagerDriver implementation.
   int GetId() const override;
-  void FillPasswordForm(
+  void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;
@@ -62,11 +69,14 @@ class ContentPasswordManagerDriver
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) override;
-  void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password) override;
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
+#if BUILDFLAG(IS_ANDROID)
+  void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) override;
+  void TriggerFormSubmission() override;
+#endif
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
   void ClearPreviewedForm() override;
@@ -74,9 +84,9 @@ class ContentPasswordManagerDriver
   PasswordManager* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
-  autofill::AutofillDriver* GetAutofillDriver() override;
-  bool IsMainFrame() const override;
+  bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
+  ::ui::AXTreeID GetAxTreeId() const override;
   const GURL& GetLastCommittedURL() const override;
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override;
@@ -89,16 +99,32 @@ class ContentPasswordManagerDriver
     return render_frame_host_;
   }
 
+  // Key-press handlers capture the user input into fields while an Autofill
+  // popup is shown. Through these key presses, the user may select suggestions
+  // from the Autofill popup, for example.
+  void SetKeyPressHandler(
+      const content::RenderWidgetHost::KeyPressEventCallback& handler);
+  void UnsetKeyPressHandler();
+
+#if defined(UNIT_TEST)
+  // Exposed to allow browser tests to hook the driver.
+  mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>&
+  ReceiverForTesting() {
+    return password_manager_receiver_;
+  }
+#endif
+
  protected:
   // autofill::mojom::PasswordManagerDriver:
   // Note that these messages received from a potentially compromised renderer.
   // For that reason, any access to form data should be validated via
-  // bad_message::CheckChildProcessSecurityPolicy.
+  // bad_message::CheckChildProcessSecurityPolicy. Further, messages should not
+  // be sent from a prerendered page, so we will similarly validate calls to
+  // ensure that this is not the case.
   void PasswordFormsParsed(
       const std::vector<autofill::FormData>& forms_data) override;
   void PasswordFormsRendered(
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) override;
+      const std::vector<autofill::FormData>& visible_forms_data) override;
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
   void InformAboutUserInput(const autofill::FormData& form_data) override;
   void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
@@ -107,12 +133,16 @@ class ContentPasswordManagerDriver
   void RecordSavePasswordProgress(const std::string& log) override;
   void UserModifiedPasswordField() override;
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
+                                    const std::u16string& field_name,
                                     const std::u16string& value) override;
   void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
                                const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override;
-  void ShowTouchToFill() override;
+#if BUILDFLAG(IS_ANDROID)
+  void ShowTouchToFill(
+      autofill::mojom::SubmissionReadinessState submission_readiness) override;
+#endif
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(
@@ -131,15 +161,10 @@ class ContentPasswordManagerDriver
   const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
   GetPasswordGenerationAgent();
 
-  content::RenderFrameHost* render_frame_host_;
-  PasswordManagerClient* client_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  raw_ptr<PasswordManagerClient> client_;
   PasswordGenerationFrameHelper password_generation_helper_;
   PasswordAutofillManager password_autofill_manager_;
-
-  // It should be filled in the constructor, since later the frame might be
-  // detached and it would be impossible to check whether the frame is a main
-  // frame.
-  const bool is_main_frame_;
 
   int id_;
 
@@ -152,9 +177,9 @@ class ContentPasswordManagerDriver
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_;
 
-  base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
+  content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentPasswordManagerDriver);
+  base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
 };
 
 }  // namespace password_manager

@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
 namespace resource_coordinator {
@@ -23,6 +23,10 @@ class TestLifecycleUnit : public LifecycleUnitBase {
                     bool can_discard = true);
   TestLifecycleUnit(content::Visibility visibility, UsageClock* usage_clock);
   explicit TestLifecycleUnit(LifecycleUnitSourceBase* source);
+
+  TestLifecycleUnit(const TestLifecycleUnit&) = delete;
+  TestLifecycleUnit& operator=(const TestLifecycleUnit&) = delete;
+
   ~TestLifecycleUnit() override;
 
   void SetLastFocusedTime(base::TimeTicks last_focused_time) {
@@ -45,7 +49,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   int GetEstimatedMemoryFreedOnDiscardKB() const override;
   bool CanDiscard(LifecycleUnitDiscardReason reason,
                   DecisionDetails* decision_details) const override;
-  bool Discard(LifecycleUnitDiscardReason discard_reason) override;
+  bool Discard(LifecycleUnitDiscardReason discard_reason,
+               uint64_t resident_set_size_estimate) override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
 
  private:
@@ -54,8 +59,6 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::ProcessHandle process_handle_;
   LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLifecycleUnit);
 };
 
 // Helper funtions for testing CanDiscard policy.

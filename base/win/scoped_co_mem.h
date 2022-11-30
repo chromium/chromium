@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <objbase.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace base {
 namespace win {
@@ -23,6 +22,10 @@ template <typename T>
 class ScopedCoMem {
  public:
   ScopedCoMem() : mem_ptr_(nullptr) {}
+
+  ScopedCoMem(const ScopedCoMem&) = delete;
+  ScopedCoMem& operator=(const ScopedCoMem&) = delete;
+
   ~ScopedCoMem() { Reset(nullptr); }
 
   T** operator&() {               // NOLINT
@@ -52,8 +55,6 @@ class ScopedCoMem {
 
  private:
   T* mem_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCoMem);
 };
 
 }  // namespace win

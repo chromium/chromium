@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -25,7 +25,7 @@
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -37,10 +37,12 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/sync_data.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/test/model/fake_sync_change_processor.h"
-#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/protocol/app_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -119,13 +121,16 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
                 expected_type == syncer::ModelType::APPS);
   }
 
+  StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
+  StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
+
   ~StatefulChangeProcessor() override {}
 
   // We let our parent class, FakeSyncChangeProcessor, handle saving the
   // changes for us, but in addition we "apply" these changes by treating
   // the FakeSyncChangeProcessor's SyncDataList as a map keyed by extension
   // id.
-  base::Optional<syncer::ModelError> ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override {
     syncer::FakeSyncChangeProcessor::ProcessSyncChanges(from_here, change_list);
@@ -137,12 +142,11 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
           ExtensionSyncData::CreateFromSyncData(sync_data);
 
       // Start by removing any existing entry for this extension id.
-      syncer::SyncDataList& data_list = data();
-      for (auto iter = data_list.begin(); iter != data_list.end(); ++iter) {
+      for (auto iter = data_.begin(); iter != data_.end(); ++iter) {
         std::unique_ptr<ExtensionSyncData> existing =
             ExtensionSyncData::CreateFromSyncData(*iter);
         if (existing->id() == modified->id()) {
-          data_list.erase(iter);
+          data_.erase(iter);
           break;
         }
       }
@@ -150,20 +154,12 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
       // Now add in the new data for this id, if appropriate.
       if (change.change_type() == SyncChange::ACTION_ADD ||
           change.change_type() == SyncChange::ACTION_UPDATE) {
-        data_list.push_back(sync_data);
+        data_.push_back(sync_data);
       } else if (change.change_type() != SyncChange::ACTION_DELETE) {
         ADD_FAILURE() << "Unexpected change type " << change.change_type();
       }
     }
-    return base::nullopt;
-  }
-
-  // We override this to help catch the error of trying to use a single
-  // StatefulChangeProcessor to process changes for both extensions and apps
-  // sync data.
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override {
-    EXPECT_EQ(expected_type_, type);
-    return FakeSyncChangeProcessor::GetAllSyncData(type);
+    return absl::nullopt;
   }
 
   // This is a helper to vend a wrapped version of this object suitable for
@@ -175,11 +171,12 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
     return std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(this);
   }
 
- protected:
-  // The expected ModelType of changes that this processor will see.
-  syncer::ModelType expected_type_;
+  const syncer::SyncDataList& data() const { return data_; }
 
-  DISALLOW_COPY_AND_ASSIGN(StatefulChangeProcessor);
+ private:
+  // The expected ModelType of changes that this processor will see.
+  const syncer::ModelType expected_type_;
+  syncer::SyncDataList data_;
 };
 
 }  // namespace
@@ -277,7 +274,7 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledNormal) {
 
   ASSERT_FALSE(extension_system()->is_ready());
   service()->Init();
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
   ASSERT_TRUE(extension_system()->is_ready());
 
   // Extensions added before service is_ready() don't trigger sync startup.
@@ -330,13 +327,13 @@ TEST_F(ExtensionServiceSyncTest, DisableExtensionFromSync) {
 
   // The user has enabled sync.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile());
+      SyncServiceFactory::GetForProfile(profile());
   sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
 
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
 
   // We start enabled.
   const Extension* extension = registry()->enabled_extensions().GetByID(good0);
@@ -366,7 +363,7 @@ TEST_F(ExtensionServiceSyncTest, ReenableDisabledExtensionFromSync) {
 
   // Enable sync.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile());
+      SyncServiceFactory::GetForProfile(profile());
   sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
 
   service()->Init();
@@ -448,7 +445,7 @@ TEST_F(ExtensionServiceSyncTest,
 
   // Enable sync.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile());
+      SyncServiceFactory::GetForProfile(profile());
   sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
 
   service()->Init();
@@ -514,14 +511,14 @@ TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
 
   // The user has enabled sync.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile());
+      SyncServiceFactory::GetForProfile(profile());
   sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
 
   ASSERT_TRUE(service()->IsExtensionEnabled(good0));
   ASSERT_TRUE(service()->IsExtensionEnabled(good2));
@@ -575,7 +572,7 @@ TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
   InitializeInstalledExtensionService(pref_path, source_install_dir);
 
   // The user has enabled sync.
-  ProfileSyncServiceFactory::GetForProfile(profile())
+  SyncServiceFactory::GetForProfile(profile())
       ->GetUserSettings()
       ->SetFirstSetupComplete(kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
@@ -583,7 +580,7 @@ TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
-  ASSERT_EQ(3u, loaded_.size());
+  ASSERT_EQ(3u, loaded_extensions().size());
   ASSERT_TRUE(service()->IsExtensionEnabled(good0));
 
   syncer::FakeSyncChangeProcessor* processor =
@@ -691,7 +688,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncData) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataDisableReasons) {
@@ -798,7 +794,6 @@ TEST_F(ExtensionServiceSyncTest, GetSyncDataTerminated) {
   EXPECT_EQ(data->version(), extension->version());
   EXPECT_EQ(extensions::ManifestURL::GetUpdateURL(extension),
             data->update_url());
-  EXPECT_EQ(extension->name(), data->name());
 }
 
 TEST_F(ExtensionServiceSyncTest, GetSyncDataFilter) {
@@ -1578,9 +1573,8 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest, ProcessSyncDataDeferredEnable) {
   PackCRXAndUpdateExtension(id, path, pem_path, ENABLED);
 }
 
-// Flaky on a few platforms.
 TEST_F(ExtensionServiceSyncCustomGalleryTest,
-       DISABLED_ProcessSyncDataPermissionApproval) {
+       ProcessSyncDataPermissionApproval) {
   InitializeEmptyExtensionService();
   extension_sync_service()->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
@@ -1689,7 +1683,7 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest,
         prefs->GetGrantedPermissions(id);
     if (test_case.expect_permissions_granted) {
       std::unique_ptr<const PermissionSet> active_permissions =
-          prefs->GetActivePermissions(id);
+          prefs->GetDesiredActivePermissions(id);
       EXPECT_EQ(*granted_permissions, *active_permissions);
     } else {
       EXPECT_EQ(*granted_permissions, *granted_permissions_v1);
@@ -1705,7 +1699,7 @@ TEST_F(ExtensionServiceSyncTest, DontSyncThemes) {
   InitializeEmptyExtensionService();
 
   // The user has enabled sync.
-  ProfileSyncServiceFactory::GetForProfile(profile())
+  SyncServiceFactory::GetForProfile(profile())
       ->GetUserSettings()
       ->SetFirstSetupComplete(kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
@@ -1797,9 +1791,8 @@ TEST_F(ExtensionServiceSyncTest, AppToExtension) {
   // Get the current data from the change processors to use as the input to
   // the following call to MergeDataAndStartSyncing. This simulates what should
   // happen with sync.
-  syncer::SyncDataList extensions_data =
-      extensions_processor.GetAllSyncData(syncer::EXTENSIONS);
-  syncer::SyncDataList apps_data = apps_processor.GetAllSyncData(syncer::APPS);
+  syncer::SyncDataList extensions_data = extensions_processor.data();
+  syncer::SyncDataList apps_data = apps_processor.data();
 
   // Stop syncing, then start again.
   extension_sync_service()->StopSyncing(syncer::EXTENSIONS);
@@ -1834,6 +1827,11 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
  public:
   BlocklistedExtensionSyncServiceTest() {}
 
+  BlocklistedExtensionSyncServiceTest(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+  BlocklistedExtensionSyncServiceTest& operator=(
+      const BlocklistedExtensionSyncServiceTest&) = delete;
+
   void SetUp() override {
     ExtensionServiceSyncTest::SetUp();
 
@@ -1841,7 +1839,7 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
 
     // Enable sync.
     syncer::SyncService* sync_service =
-        ProfileSyncServiceFactory::GetForProfile(profile());
+        SyncServiceFactory::GetForProfile(profile());
     sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
 
     test_blocklist_.Attach(service()->blocklist_);
@@ -1880,12 +1878,10 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
-  syncer::FakeSyncChangeProcessor* processor_raw_;
+  raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_;
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistedExtensionSyncServiceTest);
 };
 
 // Test that sync cannot enable blocklisted extensions.

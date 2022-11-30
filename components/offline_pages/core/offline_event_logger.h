@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace offline_pages {
 
@@ -67,7 +67,7 @@ class OfflineEventLogger {
   bool is_logging_;
 
   // Not owned.
-  Client* client_;
+  raw_ptr<Client> client_;
 };
 }  // namespace offline_pages
 

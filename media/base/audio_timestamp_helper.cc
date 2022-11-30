@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/audio_timestamp_helper.h"
+
+#include <cmath>
 
 #include "base/check_op.h"
 #include "media/base/timestamp_constants.h"
@@ -12,9 +14,9 @@ namespace media {
 // static
 base::TimeDelta AudioTimestampHelper::FramesToTime(int64_t frames,
                                                    int samples_per_second) {
-  DCHECK_GE(samples_per_second, 0);
-  return base::TimeDelta::FromMicroseconds(
-      frames * base::Time::kMicrosecondsPerSecond / samples_per_second);
+  DCHECK_GT(samples_per_second, 0);
+  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                            samples_per_second);
 }
 
 // static
@@ -51,8 +53,15 @@ base::TimeDelta AudioTimestampHelper::GetTimestamp() const {
 
 base::TimeDelta AudioTimestampHelper::GetFrameDuration(int frame_count) const {
   DCHECK_GE(frame_count, 0);
+  base::TimeDelta current_timestamp = GetTimestamp();
   base::TimeDelta end_timestamp = ComputeTimestamp(frame_count_ + frame_count);
-  return end_timestamp - GetTimestamp();
+
+  if ((current_timestamp.is_min() && end_timestamp.is_min()) ||
+      (current_timestamp.is_max() && end_timestamp.is_max())) {
+    return base::TimeDelta();
+  }
+
+  return end_timestamp - current_timestamp;
 }
 
 int64_t AudioTimestampHelper::GetFramesToTarget(base::TimeDelta target) const {
@@ -82,7 +91,7 @@ base::TimeDelta AudioTimestampHelper::ComputeTimestamp(
   DCHECK_GE(frame_count, 0);
   DCHECK(base_timestamp_ != kNoTimestamp);
   double frames_us = microseconds_per_frame_ * frame_count;
-  return base_timestamp_ + base::TimeDelta::FromMicroseconds(frames_us);
+  return base_timestamp_ + base::Microseconds(frames_us);
 }
 
 }  // namespace media

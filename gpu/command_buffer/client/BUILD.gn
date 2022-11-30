@@ -1,10 +1,11 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/nacl/toolchain.gni")
 import("//ui/gl/features.gni")
 
-if (!is_nacl) {
+if (!is_nacl && !is_minimal_toolchain) {
   import("//skia/features.gni")
 }
 
@@ -95,7 +96,7 @@ source_set("client_sources") {
   ]
 
   # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     sources += [
       "shared_image_interface.cc",
       "shared_image_interface.h",
@@ -115,10 +116,7 @@ source_set("gles2_cmd_helper_sources") {
     "gles2_cmd_helper_autogen.h",
   ]
 
-  configs += [
-    "//build/config/compiler:no_shorten_64_warnings",
-    "//gpu:gpu_gles2_implementation",
-  ]
+  configs += [ "//gpu:gpu_gles2_implementation" ]
 
   deps = [
     ":client",
@@ -204,6 +202,7 @@ source_set("raster_interface") {
     "//base",
     "//components/viz/common:resource_format",
     "//gpu/command_buffer/common",
+    "//gpu/command_buffer/common:raster",
     "//skia:skia",
     "//ui/gfx:buffer_types",
   ]
@@ -219,6 +218,7 @@ source_set("webgpu_interface") {
     ":interface_base",
     "//base",
     "//gpu/command_buffer/common:webgpu",
+    "//third_party/blink/public/common/tokens:tokens_headers",
   ]
 }
 
@@ -237,13 +237,14 @@ component("gles2_implementation") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
+    "//components/nacl/common:buildflags",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//ui/gfx/geometry",
   ]
 
-  if (!is_nacl) {
+  if (!is_nacl && !is_minimal_toolchain) {
     deps += [
       "//components/viz/common:resource_format",
       "//ui/gfx:color_space",
@@ -271,6 +272,7 @@ source_set("raster_sources") {
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/common:raster",
+    "//ui/base:features",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/color",
@@ -299,9 +301,9 @@ source_set("webgpu_sources") {
     ":gles2_implementation",
     ":webgpu_interface",
     "//gpu/command_buffer/common:webgpu",
-    "//third_party/dawn/src/dawn:dawn_proc",
+    "//third_party/dawn/src/dawn:proc",
   ]
-  public_deps = [ "//third_party/dawn/src/dawn:dawn_headers" ]
+  public_deps = [ "//third_party/dawn/include/dawn:headers" ]
   sources = [
     "webgpu_cmd_helper.cc",
     "webgpu_cmd_helper.h",
@@ -339,6 +341,7 @@ component("gles2_implementation_no_check") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
+    "//components/nacl/common:buildflags",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",

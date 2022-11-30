@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,9 @@ class SSLErrorControllerClient
       std::unique_ptr<security_interstitials::SettingsPageHelper>
           settings_page_helper);
 
+  SSLErrorControllerClient(const SSLErrorControllerClient&) = delete;
+  SSLErrorControllerClient& operator=(const SSLErrorControllerClient&) = delete;
+
   ~SSLErrorControllerClient() override = default;
 
   // security_interstitials::SecurityInterstitialControllerClient:
@@ -48,8 +51,6 @@ class SSLErrorControllerClient
   const int cert_error_;
   const net::SSLInfo ssl_info_;
   const GURL request_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorControllerClient);
 };
 
 }  // namespace weblayer

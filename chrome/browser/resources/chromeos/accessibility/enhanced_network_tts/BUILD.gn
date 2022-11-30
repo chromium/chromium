@@ -1,0 +1,88 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
+import("//chrome/common/features.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash)
+
+enhanced_network_tts_dir =
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts"
+
+group("build") {
+  deps = [ ":enhanced_network_tts_copied_files" ]
+}
+
+# Instead of setting up one copy target for each subdirectory, use a script
+# to copy all files.
+run_jsbundler("enhanced_network_tts_copied_files") {
+  mode = "copy"
+  dest_dir = enhanced_network_tts_dir
+  sources = [
+    "background.html",
+    "background.js",
+    "enhanced_network_tts.js",
+  ]
+  rewrite_rules = [
+    rebase_path(".", root_build_dir) + ":",
+    rebase_path(closure_library_dir, root_build_dir) + ":closure",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  assert(enable_extensions)
+
+  deps = [ ":enhanced_network_tts_extjs_tests" ]
+
+  data = [
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/",
+    "//chrome/browser/resources/chromeos/accessibility/common/",
+    "//chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/",
+  ]
+  data += js2gtest_js_libraries
+}
+
+js2gtest("enhanced_network_tts_extjs_tests") {
+  test_type = "extension"
+  sources = [
+    "enhanced_network_tts_unittest.js",
+    "error_handling_unittest.js",
+  ]
+  gen_include_files = [
+    "../common/testing/accessibility_test_base.js",
+    "../common/testing/e2e_test_base.js",
+    "enhanced_network_tts_e2e_test_base.js",
+    "mock_mojo_private.js",
+  ]
+
+  # The test base classes generate C++ code with these deps.
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/common",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":enhanced_network_tts" ]
+}
+
+js_library("enhanced_network_tts") {
+  deps = [ "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js_library_for_compile" ]
+  externs_list = [
+    "mojo_bindings_externs.js",
+    "$externs_path/tts.js",
+    "$externs_path/ttsEngine.js",
+    "$externs_path/mojo_private.js",
+  ]
+}

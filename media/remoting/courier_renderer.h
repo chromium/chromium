@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,23 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
 #include "media/remoting/metrics.h"
-#include "media/remoting/rpc_broker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+#include "third_party/openscreen/src/util/weak_ptr.h"
 
 namespace media {
 
@@ -47,6 +50,10 @@ class CourierRenderer final : public Renderer {
   CourierRenderer(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                   const base::WeakPtr<RendererController>& controller,
                   VideoRendererSink* video_renderer_sink);
+
+  CourierRenderer(const CourierRenderer&) = delete;
+  CourierRenderer& operator=(const CourierRenderer&) = delete;
+
   ~CourierRenderer() final;
 
  private:
@@ -56,7 +63,7 @@ class CourierRenderer final : public Renderer {
   static void OnDataPipeCreatedOnMainThread(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
-      base::WeakPtr<RpcBroker> rpc_broker,
+      openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
       mojo::ScopedDataPipeProducerHandle audio_handle,
@@ -68,14 +75,14 @@ class CourierRenderer final : public Renderer {
   static void OnMessageReceivedOnMainThread(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
-      std::unique_ptr<pb::RpcMessage> message);
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
 
  public:
   // media::Renderer implementation.
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
@@ -105,22 +112,30 @@ class CourierRenderer final : public Renderer {
       int video_rpc_handle);
 
   // Callback function when RPC message is received. Runs on media thread only.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Function to post task to main thread in order to send RPC message.
-  void SendRpcToRemote(std::unique_ptr<pb::RpcMessage> message);
+  void SendRpcToRemote(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Functions when RPC message is received.
-  void AcquireRendererDone(std::unique_ptr<pb::RpcMessage> message);
-  void InitializeCallback(std::unique_ptr<pb::RpcMessage> message);
+  void AcquireRendererDone(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void InitializeCallback(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
   void FlushUntilCallback();
-  void OnTimeUpdate(std::unique_ptr<pb::RpcMessage> message);
-  void OnBufferingStateChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnAudioConfigChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoConfigChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoNaturalSizeChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnVideoOpacityChange(std::unique_ptr<pb::RpcMessage> message);
-  void OnStatisticsUpdate(std::unique_ptr<pb::RpcMessage> message);
+  void OnTimeUpdate(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnBufferingStateChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAudioConfigChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoConfigChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoNaturalSizeChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnVideoOpacityChange(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnStatisticsUpdate(
+      std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Called when |current_media_time_| is updated.
   void OnMediaTimeUpdated();
@@ -146,6 +161,13 @@ class CourierRenderer final : public Renderer {
   // though the playback might be delayed or paused.
   bool IsWaitingForDataFromDemuxers() const;
 
+  // Helpers to register/deregister the renderer with the RPC messenger. These
+  // must be called on the media thread to dereference the weak pointer to
+  // this, which if contains a valid RPC messenger pointer will result in a
+  // jump to the main thread.
+  void RegisterForRpcMessaging();
+  void DeregisterFromRpcMessaging();
+
   State state_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
@@ -157,15 +179,20 @@ class CourierRenderer final : public Renderer {
   // lock because it can be accessed from both media and render main thread.
   base::Lock time_lock_;
 
-  MediaResource* media_resource_;
-  RendererClient* client_;
+  raw_ptr<MediaResource> media_resource_;
+  raw_ptr<RendererClient> client_;
   std::unique_ptr<DemuxerStreamAdapter> audio_demuxer_stream_adapter_;
   std::unique_ptr<DemuxerStreamAdapter> video_demuxer_stream_adapter_;
 
   // Component to establish mojo remoting service on browser process.
   const base::WeakPtr<RendererController> controller_;
-  // Broker class to process incoming and outgoing RPC message.
-  const base::WeakPtr<RpcBroker> rpc_broker_;
+
+  // Broker class to process incoming and outgoing RPC messages.
+  // Only accessed on |main_task_runner_|. NOTE: the messenger is wrapped
+  // in an |openscreen::WeakPtr| instead of |base|'s implementation due to
+  // it being defined in the third_party/openscreen repository.
+  const openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger_;
+
   // RPC handle value for CourierRenderer component.
   const int rpc_handle_;
 
@@ -176,7 +203,8 @@ class CourierRenderer final : public Renderer {
   PipelineStatusCallback init_workflow_done_callback_;
   base::OnceClosure flush_cb_;
 
-  VideoRendererSink* const video_renderer_sink_;  // Outlives this class.
+  const raw_ptr<VideoRendererSink>
+      video_renderer_sink_;  // Outlives this class.
 
   // Current playback rate.
   double playback_rate_ = 0;
@@ -212,7 +240,7 @@ class CourierRenderer final : public Renderer {
   // Records events and measurements of interest.
   RendererMetricsRecorder metrics_recorder_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // A timer that polls the DemuxerStreamAdapters periodically to measure
   // the data flow rates for metrics.
@@ -223,8 +251,6 @@ class CourierRenderer final : public Renderer {
   bool receiver_is_blocked_on_local_demuxers_ = true;
 
   base::WeakPtrFactory<CourierRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CourierRenderer);
 };
 
 }  // namespace remoting

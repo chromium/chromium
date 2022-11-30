@@ -1,0 +1,26 @@
+caption: Force logout the user when their account becomes unauthenticated
+desc: |-
+  Force logout the user when their primary account's authentication token becomes invalid.
+          This policy can protect the user from access to restricted content on Google web properties.
+          If this policy is set to True, the user will be logged out as soon as their authentication token becomes invalid and attempts to restore this token fail.
+          If this policy is set to False or unset, the user can continue working in an unauthenticated state.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Log the user out as soon as their account becomes unauthenticated
+  value: true
+- caption: Allow the user to remain logged in after their account becomes unauthenticated
+  value: false
+owners:
+- solovey@google.com
+- sinhak@chromium.org
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+supported_on:
+- chrome_os:81-
+tags: []
+type: main

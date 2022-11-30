@@ -1,0 +1,14 @@
+Name: Kotlin Stdlib Jdk7
+Short Name: kotlin-stdlib-jdk7
+URL: https://kotlinlang.org/
+Version: 1.6.20
+License: Apache Version 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+
+Description:
+Kotlin Standard Library JDK 7 extension
+
+Local Modifications:
+No modifications.

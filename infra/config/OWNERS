@@ -1,0 +1,11 @@
+# iOS owners for changing Xcode constants only.
+per-file lib/builders.star=file://infra/config/groups/ios/OWNERS
+
+# iOS owners for iOS builder configs.
+per-file subprojects/chromium/ci/chromium.fyi.star=file://infra/config/groups/ios/OWNERS
+per-file subprojects/chromium/ci/chromium.mac.star=file://infra/config/groups/ios/OWNERS
+per-file subprojects/chromium/try/tryserver.chromium.mac.star=file://infra/config/groups/ios/OWNERS
+
+# For weetbix configs.
+per-file *-weetbix-*=meiring@google.com
+per-file *-weetbix-*=mwarton@google.com

@@ -27,17 +27,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -73,7 +75,7 @@ class CORE_EXPORT SVGImage final : public Image {
   static bool IsInSVGImage(const Node*);
 
   bool IsSVGImage() const override { return true; }
-  IntSize Size() const override;
+  gfx::Size SizeWithConfig(SizeConfig) const override;
 
   void CheckLoaded() const;
   bool CurrentFrameHasSingleSecurityOrigin() const override;
@@ -90,8 +92,8 @@ class CORE_EXPORT SVGImage final : public Image {
   void AdvanceAnimationForTesting() override;
   SVGImageChromeClient& ChromeClientForTesting();
 
-  static FloatPoint OffsetForCurrentFrame(const FloatRect& dst_rect,
-                                          const FloatRect& src_rect);
+  static gfx::PointF OffsetForCurrentFrame(const gfx::RectF& dst_rect,
+                                           const gfx::RectF& src_rect);
 
   // Service CSS and SMIL animations.
   void ServiceAnimations(base::TimeTicks monotonic_animation_start_time);
@@ -101,7 +103,7 @@ class CORE_EXPORT SVGImage final : public Image {
   // The defaultObjectSize is assumed to be unzoomed, i.e. it should
   // not have the effective zoom level applied. The returned size is
   // thus also independent of current zoom level.
-  FloatSize ConcreteObjectSize(const FloatSize& default_object_size) const;
+  gfx::SizeF ConcreteObjectSize(const gfx::SizeF& default_object_size) const;
 
   // Get the intrinsic dimensions (width, height and aspect ratio) from this
   // SVGImage. Returns true if successful.
@@ -112,6 +114,9 @@ class CORE_EXPORT SVGImage final : public Image {
   bool HasIntrinsicSizingInfo() const;
 
   PaintImage PaintImageForCurrentFrame() override;
+
+  void SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme preferred_color_scheme);
 
  protected:
   // Whether or not size is available yet.
@@ -142,44 +147,43 @@ class CORE_EXPORT SVGImage final : public Image {
     STACK_ALLOCATED();
 
    public:
-    DrawInfo(const FloatSize& container_size, float zoom, const KURL& url);
+    DrawInfo(const gfx::SizeF& container_size,
+             float zoom,
+             const KURL& url,
+             bool is_dark_mode_enabled);
 
-    FloatSize CalculateResidualScale() const;
+    gfx::SizeF CalculateResidualScale() const;
     float Zoom() const { return zoom_; }
-    const FloatSize& ContainerSize() const { return container_size_; }
-    const LayoutSize& RoundedContainerSize() const {
+    const gfx::SizeF& ContainerSize() const { return container_size_; }
+    const gfx::Size& RoundedContainerSize() const {
       return rounded_container_size_;
     }
     const KURL& Url() const { return url_; }
+    bool IsDarkModeEnabled() const { return is_dark_mode_enabled_; }
 
    private:
-    const FloatSize container_size_;
-    const LayoutSize rounded_container_size_;
+    const gfx::SizeF container_size_;
+    const gfx::Size rounded_container_size_;
     const float zoom_;
     const KURL& url_;
+    const bool is_dark_mode_enabled_;
   };
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dst_rect,
-            const FloatRect& src_rect,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const gfx::RectF& dst_rect,
+            const gfx::RectF& src_rect,
+            const ImageDrawOptions&) override;
   void DrawForContainer(const DrawInfo&,
                         cc::PaintCanvas*,
                         const cc::PaintFlags&,
-                        const FloatRect& dst_rect,
-                        const FloatRect& src_rect);
+                        const gfx::RectF& dst_rect,
+                        const gfx::RectF& src_rect);
   void DrawPatternForContainer(const DrawInfo&,
                                GraphicsContext&,
-                               const FloatRect& src_rect,
-                               const FloatSize& tile_scale,
-                               const FloatPoint& phase,
-                               SkBlendMode composite_op,
-                               const FloatRect& dst_rect,
-                               const FloatSize& repeat_spacing);
+                               const cc::PaintFlags&,
+                               const gfx::RectF& dst_rect,
+                               const ImageTilingInfo&);
   void PopulatePaintRecordForCurrentFrameForContainer(const DrawInfo&,
                                                       PaintImageBuilder&);
 
@@ -189,9 +193,12 @@ class CORE_EXPORT SVGImage final : public Image {
   void DrawInternal(const DrawInfo&,
                     cc::PaintCanvas*,
                     const cc::PaintFlags&,
-                    const FloatRect& dst_rect,
-                    const FloatRect& unzoomed_src_rect);
-  bool ApplyShader(cc::PaintFlags&, const SkMatrix& local_matrix) override;
+                    const gfx::RectF& dst_rect,
+                    const gfx::RectF& unzoomed_src_rect);
+  bool ApplyShader(cc::PaintFlags&,
+                   const SkMatrix& local_matrix,
+                   const gfx::RectF& src_rect,
+                   const ImageDrawOptions&) override;
   bool ApplyShaderForContainer(const DrawInfo&,
                                cc::PaintFlags&,
                                const SkMatrix& local_matrix);
@@ -258,11 +265,13 @@ class ImageObserverDisabler {
     image_->SetImageObserverDisabled(true);
   }
 
+  ImageObserverDisabler(const ImageObserverDisabler&) = delete;
+  ImageObserverDisabler& operator=(const ImageObserverDisabler&) = delete;
+
   ~ImageObserverDisabler() { image_->SetImageObserverDisabled(false); }
 
  private:
   Image* image_;
-  DISALLOW_COPY_AND_ASSIGN(ImageObserverDisabler);
 };
 
 }  // namespace blink

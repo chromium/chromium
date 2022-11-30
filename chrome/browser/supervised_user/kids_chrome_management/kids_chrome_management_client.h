@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -48,6 +48,10 @@ class KidsChromeManagementClient : public KeyedService {
 
   explicit KidsChromeManagementClient(Profile* profile);
 
+  KidsChromeManagementClient(const KidsChromeManagementClient&) = delete;
+  KidsChromeManagementClient& operator=(const KidsChromeManagementClient&) =
+      delete;
+
   ~KidsChromeManagementClient() override;
 
   // Each of the next three methods is the interface to an RPC client.
@@ -60,10 +64,6 @@ class KidsChromeManagementClient : public KeyedService {
   virtual void ClassifyURL(
       std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
       KidsChromeManagementCallback callback);
-
-  // TODO(crbug.com/979618): implement ListFamilyMembers method.
-
-  // TODO(crbug.com/979619): implement RequestRestrictedURLAccess method.
 
  private:
   // Every request must be represented by an instance of this struct. It will be
@@ -103,12 +103,10 @@ class KidsChromeManagementClient : public KeyedService {
       ErrorCode error);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // List of requests in execution.
   KidsChromeRequestList requests_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClient);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_CHROME_MANAGEMENT_KIDS_CHROME_MANAGEMENT_CLIENT_H_

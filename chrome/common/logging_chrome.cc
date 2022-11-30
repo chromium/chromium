@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 // logger in this file.  (We implement about:ipc on Mac but implement
 // the loggers here anyway).  We need to do this real early to be sure
 // IPC_MESSAGE_MACROS_LOG_ENABLED doesn't get undefined.
-#if defined(OS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if BUILDFLAG(IS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
@@ -22,7 +22,7 @@
 #include "chrome/common/all_messages.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -48,6 +48,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -59,7 +60,7 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <initguid.h>
 #include "base/logging_win.h"
 #include "base/syslog_logging.h"
@@ -85,7 +86,14 @@ bool chrome_logging_failed_ = false;
 // InitChromeLogging() and the beginning of CleanupChromeLogging().
 bool chrome_logging_redirected_ = false;
 
-#if defined(OS_WIN)
+// The directory on which we do rotation of log files instead of switching
+// with symlink. Because this directory doesn't support symlinks and the logic
+// doesn't work correctly.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kChronosHomeDir[] = "/home/chronos/user/";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
 const GUID kChromeTraceProviderName = {
     0x7fe69228, 0x633e, 0x4f06,
@@ -111,11 +119,9 @@ void SuppressDialogs() {
   assert_handler_ = new ScopedLogAssertHandler(
       base::BindRepeating(SilentRuntimeAssertHandler));
 
-#if defined(OS_WIN)
-  UINT new_flags = SEM_FAILCRITICALERRORS |
-                   SEM_NOGPFAULTERRORBOX |
-                   SEM_NOOPENFILEERRORBOX;
-
+#if BUILDFLAG(IS_WIN)
+  UINT new_flags =
+      SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX;
   // Preserve existing error mode, as discussed at http://t/dmea
   UINT existing_flags = SetErrorMode(new_flags);
   SetErrorMode(existing_flags | new_flags);
@@ -128,15 +134,26 @@ void SuppressDialogs() {
 
 LoggingDestination DetermineLoggingDestination(
     const base::CommandLine& command_line) {
-// only use OutputDebugString in debug mode
-#ifdef NDEBUG
-  bool enable_logging = false;
-  const char *kInvertLoggingSwitch = switches::kEnableLogging;
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia provides a system log that can be filtered for logs from specific
+  // components (e.g. Chrome), and which is easier to access than logs in a
+  // file in the component's namespace would be, so always use the system log
+  // by default.
+  const LoggingDestination kDefaultLoggingMode = LOG_TO_SYSTEM_DEBUG_LOG;
+#elif defined(NDEBUG)
+  // In Release builds, log only to the log file.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_FILE;
 #else
-  bool enable_logging = true;
-  const char *kInvertLoggingSwitch = switches::kDisableLogging;
+  // In Debug builds log to all destinations, for ease of discovery.
   const LoggingDestination kDefaultLoggingMode = LOG_TO_ALL;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(CHROME_ENABLE_LOGGING_BY_DEFAULT)
+  bool enable_logging = true;
+  const char* const kInvertLoggingSwitch = switches::kDisableLogging;
+#else
+  bool enable_logging = false;
+  const char* const kInvertLoggingSwitch = switches::kEnableLogging;
 #endif
 
   if (command_line.HasSwitch(kInvertLoggingSwitch))
@@ -159,6 +176,51 @@ LoggingDestination DetermineLoggingDestination(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+bool RotateLogFile(const base::FilePath& target_path) {
+  DCHECK(!target_path.empty());
+  // If the old log file doesn't exist, do nothing.
+  if (!base::PathExists(target_path)) {
+    return true;
+  }
+
+  // Retrieve the creation time of the old log file.
+  base::File::Info info;
+  {
+    // Opens a file, only if it exists.
+    base::File fp(target_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!fp.GetInfo(&info)) {
+      // On failure, keep using the same file.
+      return false;
+    }
+  }
+
+  // Generate the rotated log path name from the creation time.
+  // (eg. "/home/chrome/user/log/chrome_220102-030405")
+  base::Time timestamp = info.creation_time;
+  base::FilePath rotated_path = GenerateTimestampedName(target_path, timestamp);
+
+  // Rare case: if the target path already exists, generate the alternative by
+  // incrementing the timestamp. This may happen when the Chrome restarts
+  // multiple times in a second.
+  while (base::PathExists(rotated_path)) {
+    timestamp += base::Seconds(1);
+    rotated_path = GenerateTimestampedName(target_path, timestamp);
+  }
+
+  // Rename the old log file: |target_path| => |rotated_path|.
+  // We don't use |base::Move|, since we don't consider the inter-filesystem
+  // move in this logic. The current logic depends on the fact that the ctime
+  // won't be changed after rotation, but ctime may be changed on
+  // inter-filesystem move.
+  if (!base::ReplaceFile(target_path, rotated_path, nullptr)) {
+    PLOG(ERROR) << "Failed to rotate the log files: " << target_path << " => "
+                << rotated_path;
+    return false;
+  }
+
+  return true;
+}
+
 base::FilePath SetUpSymlinkIfNeeded(const base::FilePath& symlink_path,
                                     bool new_log) {
   DCHECK(!symlink_path.empty());
@@ -227,39 +289,56 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
                          const base::FilePath& target_path) {
   if (::unlink(link_path.value().c_str()) == -1)
     DPLOG(WARNING) << "Unable to unlink symlink " << link_path.value();
-  if (::unlink(target_path.value().c_str()) == -1)
+  if (target_path != link_path && ::unlink(target_path.value().c_str()) == -1)
     DPLOG(WARNING) << "Unable to unlink log file " << target_path.value();
 }
 
 base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
-  base::FilePath log_dir;
-  std::string log_dir_str;
+  std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->GetVar(env_vars::kSessionLogDir, &log_dir_str) &&
-      !log_dir_str.empty()) {
-    log_dir = base::FilePath(log_dir_str);
-  } else if (command_line.HasSwitch(chromeos::switches::kLoginProfile)) {
-    base::PathService::Get(chrome::DIR_USER_DATA, &log_dir);
-    base::FilePath profile_dir;
-    std::string login_profile_value =
-        command_line.GetSwitchValueASCII(chromeos::switches::kLoginProfile);
-    if (login_profile_value == chrome::kLegacyProfileDir ||
-        login_profile_value == chrome::kTestUserProfileDir) {
-      profile_dir = base::FilePath(login_profile_value);
-    } else {
-      // We could not use g_browser_process > profile_helper() here.
-      std::string profile_dir_str = chrome::kProfileDirPrefix;
-      profile_dir_str.append(login_profile_value);
-      profile_dir = base::FilePath(profile_dir_str);
-    }
-    log_dir = log_dir.Append(profile_dir);
-  }
-  return log_dir;
+  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir))
+    NOTREACHED();
+  return base::FilePath(log_dir);
 }
 
 base::FilePath GetSessionLogFile(const base::CommandLine& command_line) {
   return GetSessionLogDir(command_line)
       .Append(GetLogFileName(command_line).BaseName());
+}
+
+base::FilePath SetUpLogFile(const base::FilePath& target_path, bool new_log) {
+  const bool supports_symlinks =
+      !(target_path.IsAbsolute() &&
+        base::StartsWith(target_path.value(), kChronosHomeDir));
+
+  // TODO(crbug.com/1326369): Remove the old symlink logic.
+  if (supports_symlinks) {
+    // As for now, we keep the original log rotation logic on the file system
+    // which supports symlinks.
+    return SetUpSymlinkIfNeeded(target_path, new_log);
+  }
+
+  // Chrome OS doesn't support symlinks on this file system, so that it uses
+  // the rotation logic which doesn't use symlinks.
+  if (!new_log) {
+    // Keep using the same log file without doing anything.
+    return target_path;
+  }
+
+  // For backward compatibility, ignore a ".LATEST" extension the way
+  // |SetUpSymlinkIfNeeded()| does.
+  base::FilePath bare_path = target_path;
+  if (target_path.Extension() == ".LATEST") {
+    bare_path = target_path.ReplaceExtension("");
+  }
+
+  // Try to rotate the log.
+  if (!RotateLogFile(bare_path)) {
+    DPLOG(ERROR) << "Failed to rotate the log file: " << bare_path.value()
+                 << ". Keeping using the same log file without rotating.";
+  }
+
+  return bare_path;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -284,14 +363,14 @@ void InitChromeLogging(const base::CommandLine& command_line,
     // For BWSI (Incognito) logins, we want to put the logs in the user
     // profile directory that is created for the temporary session instead
     // of in the system log directory, for privacy reasons.
-    if (command_line.HasSwitch(chromeos::switches::kGuestSession))
+    if (command_line.HasSwitch(ash::switches::kGuestSession))
       log_path = GetSessionLogFile(command_line);
 
-    // On ChromeOS we log to the symlink.  We force creation of a new
-    // symlink if we've been asked to delete the old log, since that
+    // Prepares a log file.  We rotate the previous log file and prepare a new
+    // log file if we've been asked to delete the old log, since that
     // indicates the start of a new session.
-    target_path = SetUpSymlinkIfNeeded(
-        log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
+    target_path =
+        SetUpLogFile(log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
 
     // Because ChromeOS manages the move to a new session by redirecting
     // the link, it shouldn't remove the old file in the logging code,
@@ -365,7 +444,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Enable trace control and transport through event tracing for Windows.
   LogEventProvider::Initialize(kChromeTraceProviderName);
 
@@ -386,8 +465,10 @@ void CleanupChromeLogging() {
   if (chrome_logging_failed_)
     return;  // We failed to initiailize logging, no cleanup.
 
-  DCHECK(chrome_logging_initialized_) <<
-    "Attempted to clean up logging when it wasn't initialized.";
+  // Logging was not initialized, no cleanup required. This is happening with
+  // the Chrome early exit error paths (i.e Process Singleton).
+  if (!chrome_logging_initialized_)
+    return;
 
   CloseLogFile();
 
@@ -396,11 +477,14 @@ void CleanupChromeLogging() {
 }
 
 base::FilePath GetLogFileName(const base::CommandLine& command_line) {
-  std::string filename = command_line.GetSwitchValueASCII(switches::kLogFile);
-  if (filename.empty())
-    base::Environment::Create()->GetVar(env_vars::kLogFileName, &filename);
+  auto filename = command_line.GetSwitchValueNative(switches::kLogFile);
   if (!filename.empty())
-    return base::FilePath::FromUTF8Unsafe(filename);
+    return base::FilePath(filename);
+
+  std::string env_filename;
+  base::Environment::Create()->GetVar(env_vars::kLogFileName, &env_filename);
+  if (!env_filename.empty())
+    return base::FilePath::FromUTF8Unsafe(env_filename);
 
   const base::FilePath log_filename(FILE_PATH_LITERAL("chrome_debug.log"));
   base::FilePath log_path;
@@ -422,7 +506,7 @@ bool DialogsAreSuppressed() {
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
   base::Time::Exploded time_deets;
-  timestamp.LocalExplode(&time_deets);
+  timestamp.UTCExplode(&time_deets);
   std::string suffix = base::StringPrintf("_%02d%02d%02d-%02d%02d%02d",
                                           time_deets.year,
                                           time_deets.month,

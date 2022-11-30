@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/color_chooser_ui_controller.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -52,7 +53,11 @@ void ColorChooserUIController::Trace(Visitor* visitor) const {
 }
 
 void ColorChooserUIController::OpenUI() {
+#if BUILDFLAG(IS_ANDROID)
   OpenColorChooser();
+#else
+  NOTREACHED() << "ColorChooserUIController should only be used on Android";
+#endif
 }
 
 void ColorChooserUIController::SetSelectedColor(const Color& color) {
@@ -71,9 +76,10 @@ AXObject* ColorChooserUIController::RootAXObject() {
 }
 
 void ColorChooserUIController::DidChooseColor(uint32_t color) {
-  client_->DidChooseColor(color);
+  client_->DidChooseColor(Color::FromRGBA32(color));
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 void ColorChooserUIController::OpenColorChooser() {
   DCHECK(!chooser_);
   frame_->GetBrowserInterfaceBroker().GetInterface(
@@ -84,8 +90,9 @@ void ColorChooserUIController::OpenColorChooser() {
           frame_->DomWindow()->GetExecutionContext()->GetTaskRunner(
               TaskType::kUserInteraction)),
       client_->CurrentColor().Rgb(), client_->Suggestions());
-  receiver_.set_disconnect_handler(WTF::Bind(
+  receiver_.set_disconnect_handler(WTF::BindOnce(
       &ColorChooserUIController::EndChooser, WrapWeakPersistent(this)));
 }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 
 }  // namespace blink

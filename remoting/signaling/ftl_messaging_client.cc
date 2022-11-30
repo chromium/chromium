@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,7 @@ namespace remoting {
 
 namespace {
 
-constexpr char kAckMessagesPath[] = "/v1/message:ack";
-constexpr char kPullMessagesPath[] = "/v1/message:pull";
+constexpr char kBatchAckMessagesPath[] = "/v1/message:batchAckMessages";
 constexpr char kReceiveMessagesPath[] = "/v1/messages:receive";
 constexpr char kSendMessagePath[] = "/v1/message:send";
 
@@ -107,15 +106,7 @@ constexpr net::NetworkTrafficAnnotationTag kSendMessageTrafficAnnotation =
         "Not implemented."
     })");
 
-void AddMessageToAckRequest(const ftl::InboxMessage& message,
-                            ftl::AckMessagesRequest* request) {
-  ftl::ReceiverMessage* receiver_message = request->add_messages();
-  receiver_message->set_message_id(message.message_id());
-  receiver_message->set_allocated_receiver_id(
-      new ftl::Id(message.receiver_id()));
-}
-
-constexpr base::TimeDelta kInboxMessageTtl = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kInboxMessageTtl = base::Minutes(1);
 
 }  // namespace
 
@@ -154,17 +145,6 @@ FtlMessagingClient::~FtlMessagingClient() = default;
 base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
     const MessageCallback& callback) {
   return callback_list_.Add(callback);
-}
-
-void FtlMessagingClient::PullMessages(DoneCallback on_done) {
-  auto request = std::make_unique<ftl::PullMessagesRequest>();
-  *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
-      registration_manager_->GetFtlAuthToken());
-  // We use the same annotation, as PullMessages is just the non-streaming
-  // version of ReceiveMessages.
-  ExecuteRequest(
-      kReceiveMessagesTrafficAnnotation, kPullMessagesPath, std::move(request),
-      &FtlMessagingClient::OnPullMessagesResponse, std::move(on_done));
 }
 
 void FtlMessagingClient::SendMessage(
@@ -228,37 +208,6 @@ void FtlMessagingClient::ExecuteRequest(
   client_->ExecuteRequest(std::move(http_request));
 }
 
-void FtlMessagingClient::OnPullMessagesResponse(
-    DoneCallback on_done,
-    const ProtobufHttpStatus& status,
-    std::unique_ptr<ftl::PullMessagesResponse> response) {
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to pull messages. "
-               << "Error code: " << static_cast<int>(status.error_code())
-               << ", message: " << status.error_message();
-    std::move(on_done).Run(status);
-    return;
-  }
-
-  ftl::AckMessagesRequest ack_request;
-  *ack_request.mutable_header() = FtlServicesContext::CreateRequestHeader(
-      registration_manager_->GetFtlAuthToken());
-  for (const auto& message : response->messages()) {
-    RunMessageCallbacks(message);
-    AddMessageToAckRequest(message, &ack_request);
-  }
-
-  if (ack_request.messages_size() == 0) {
-    LOG(WARNING) << "No new message is received.";
-    std::move(on_done).Run(status);
-    return;
-  }
-
-  VLOG(1) << "Acking " << ack_request.messages_size() << " messages";
-
-  AckMessages(ack_request, std::move(on_done));
-}
-
 void FtlMessagingClient::OnSendMessageResponse(
     DoneCallback on_done,
     const ProtobufHttpStatus& status,
@@ -266,18 +215,24 @@ void FtlMessagingClient::OnSendMessageResponse(
   std::move(on_done).Run(status);
 }
 
-void FtlMessagingClient::AckMessages(const ftl::AckMessagesRequest& request,
-                                     DoneCallback on_done) {
-  ExecuteRequest(kAckMessagesTrafficAnnotation, kAckMessagesPath,
-                 std::make_unique<ftl::AckMessagesRequest>(request),
-                 &FtlMessagingClient::OnAckMessagesResponse,
+void FtlMessagingClient::BatchAckMessages(
+    const ftl::BatchAckMessagesRequest& request,
+    DoneCallback on_done) {
+  // BatchAckMessages has a limit of 10 acks per call. Currently we ack one
+  // message at a time, but check here to be safe.
+  DCHECK_LE(request.message_ids_size(), 10);
+  VLOG(1) << "Acking " << request.message_ids_size() << " messages";
+
+  ExecuteRequest(kAckMessagesTrafficAnnotation, kBatchAckMessagesPath,
+                 std::make_unique<ftl::BatchAckMessagesRequest>(request),
+                 &FtlMessagingClient::OnBatchAckMessagesResponse,
                  std::move(on_done));
 }
 
-void FtlMessagingClient::OnAckMessagesResponse(
+void FtlMessagingClient::OnBatchAckMessagesResponse(
     DoneCallback on_done,
     const ProtobufHttpStatus& status,
-    std::unique_ptr<ftl::AckMessagesResponse> response) {
+    std::unique_ptr<ftl::BatchAckMessagesResponse> response) {
   // TODO(yuweih): Handle failure.
   std::move(on_done).Run(status);
 }
@@ -337,11 +292,11 @@ void FtlMessagingClient::RunMessageCallbacks(const ftl::InboxMessage& message) {
 
 void FtlMessagingClient::OnMessageReceived(const ftl::InboxMessage& message) {
   RunMessageCallbacks(message);
-  ftl::AckMessagesRequest ack_request;
-  *ack_request.mutable_header() = FtlServicesContext::CreateRequestHeader(
+  ftl::BatchAckMessagesRequest request;
+  *request.mutable_header() = FtlServicesContext::CreateRequestHeader(
       registration_manager_->GetFtlAuthToken());
-  AddMessageToAckRequest(message, &ack_request);
-  AckMessages(ack_request, base::DoNothing());
+  request.add_message_ids(message.message_id());
+  BatchAckMessages(request, base::DoNothing());
 }
 
 }  // namespace remoting

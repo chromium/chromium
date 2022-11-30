@@ -1,0 +1,37 @@
+diff -rup gnutls28-3.6.13/lib/mbuffers.c gnutls28-3.6.13.new/lib/mbuffers.c
+--- gnutls28-3.6.13/lib/mbuffers.c	2020-01-01 20:11:40.000000000 +0000
++++ gnutls28-3.6.13.new/lib/mbuffers.c	2021-11-08 23:30:49.519648440 +0000
+@@ -284,7 +284,7 @@ mbuffer_st *_mbuffer_alloc(size_t maximu
+ 	}
+ 
+ 	/* set the structure to zero */
+-	memset(st, 0, sizeof(*st));
++	memset(st, 0, maximum_size + sizeof(mbuffer_st));
+ 
+ 	/* payload points after the mbuffer_st structure */
+ 	st->msg.data = (uint8_t *) st + sizeof(mbuffer_st);
+Only in gnutls28-3.6.13.new/lib: mbuffers.c~
+diff -rup gnutls28-3.6.13/lib/nettle/cipher.c gnutls28-3.6.13.new/lib/nettle/cipher.c
+--- gnutls28-3.6.13/lib/nettle/cipher.c	2020-03-24 08:26:29.000000000 +0000
++++ gnutls28-3.6.13.new/lib/nettle/cipher.c	2021-11-08 23:24:35.104648910 +0000
+@@ -1020,6 +1020,7 @@ wrap_nettle_cipher_aead_decrypt(void *_c
+ 	if (ctx->cipher->aead_decrypt == NULL) {
+ 		/* proper AEAD cipher */
+ 		uint8_t tag[MAX_HASH_SIZE];
++		memset(tag, 0, MAX_HASH_SIZE);
+ 
+ 		ctx->cipher->set_iv(ctx->ctx_ptr, nonce_size, nonce);
+ 		ctx->cipher->auth(ctx->ctx_ptr, auth_size, auth);
+Only in gnutls28-3.6.13.new/lib/nettle: cipher.c~
+diff -rup gnutls28-3.6.13/lib/nettle/pk.c gnutls28-3.6.13.new/lib/nettle/pk.c
+--- gnutls28-3.6.13/lib/nettle/pk.c	2020-03-13 20:17:54.000000000 +0000
++++ gnutls28-3.6.13.new/lib/nettle/pk.c	2021-11-08 23:24:58.344835111 +0000
+@@ -369,6 +369,7 @@ dh_cleanup:
+ 	case GNUTLS_PK_EC:
+ 		{
+ 			struct ecc_scalar ecc_priv;
++			memset(&ecc_priv, 0, sizeof(ecc_priv));
+ 			struct ecc_point ecc_pub;
+ 			const struct ecc_curve *curve;
+ 
+Only in gnutls28-3.6.13.new/lib/nettle: pk.c~

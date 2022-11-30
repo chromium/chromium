@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ constexpr int kBubbleTotalWidthDp = 192;
 }  // namespace
 
 class LoginBaseBubbleViewTest : public LoginTestBase {
+ public:
+  LoginBaseBubbleViewTest(const LoginBaseBubbleViewTest&) = delete;
+  LoginBaseBubbleViewTest& operator=(const LoginBaseBubbleViewTest&) = delete;
+
  protected:
   LoginBaseBubbleViewTest() = default;
   ~LoginBaseBubbleViewTest() override = default;
@@ -49,9 +53,6 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
   LoginBaseBubbleView* bubble_;
   views::View* container_;
   views::View* anchor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginBaseBubbleViewTest);
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {

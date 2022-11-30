@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo
+ck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?block<ed="
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo\rck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?block<ed="
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo	ck<ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?block<ed="
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck
+ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck\red' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
+FAIL fenced frame opaque URN => https: URL with dangling markup 'blo<ck	ed' assert_equals: expected "NOT LOADED" but got "https://web-platform.test:8444/wpt_internal/fenced_frame/resources/report-url.html?blo<cked="
+Harness: the test ran to completion.
+

@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/web-animations/#the-animationtimeline-interface
+// https://w3.org/TR/web-animations-1/#the-animationtimeline-interface
 
 enum TimelinePhase { "inactive", "before", "active", "after" };
 [
@@ -11,5 +11,4 @@ enum TimelinePhase { "inactive", "before", "active", "after" };
 ] interface AnimationTimeline {
     readonly attribute CSSNumberish? currentTime;
     [RuntimeEnabled=ScrollTimeline] readonly attribute CSSNumberish? duration;
-    [RuntimeEnabled=ScrollTimeline] readonly attribute TimelinePhase phase;
 };

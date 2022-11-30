@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/model/model_error.h"
@@ -32,7 +32,7 @@ class SyncSessionsClient;
 // This is achieved by implementing the interface ModelTypeSyncBridge, which
 // ClientTagBasedModelTypeProcessor will use to interact, ultimately, with the
 // sync server. See
-// https://chromium.googlesource.com/chromium/src/+/lkcr/docs/sync/model_api.md#Implementing-ModelTypeSyncBridge
+// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
 // for details.
 class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
                           public LocalSessionEventHandlerImpl::Delegate {
@@ -42,6 +42,10 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
       const base::RepeatingClosure& notify_foreign_session_updated_cb,
       SyncSessionsClient* sessions_client,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  SessionSyncBridge(const SessionSyncBridge&) = delete;
+  SessionSyncBridge& operator=(const SessionSyncBridge&) = delete;
+
   ~SessionSyncBridge() override;
 
   SessionsGlobalIdMapper* GetGlobalIdMapper();
@@ -52,10 +56,10 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -73,7 +77,7 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
 
  private:
   void OnStoreInitialized(
-      const base::Optional<syncer::ModelError>& error,
+      const absl::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void StartLocalSessionEventHandler();
@@ -86,8 +90,8 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   void ReportError(const syncer::ModelError& error);
 
   const base::RepeatingClosure notify_foreign_session_updated_cb_;
-  SyncSessionsClient* const sessions_client_;
-  LocalSessionEventRouter* const local_session_event_router_;
+  const raw_ptr<SyncSessionsClient> sessions_client_;
+  const raw_ptr<LocalSessionEventRouter> local_session_event_router_;
 
   SessionsGlobalIdMapper global_id_mapper_;
   std::unique_ptr<SessionStore> store_;
@@ -111,11 +115,9 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   };
 
   // TODO(mastiz): We should rather rename this to |syncing_state_|.
-  base::Optional<SyncingState> syncing_;
+  absl::optional<SyncingState> syncing_;
 
   base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionSyncBridge);
 };
 
 }  // namespace sync_sessions

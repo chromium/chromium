@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -51,8 +50,13 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
   ForeignSessionHandler();
+
+  ForeignSessionHandler(const ForeignSessionHandler&) = delete;
+  ForeignSessionHandler& operator=(const ForeignSessionHandler&) = delete;
+
   ~ForeignSessionHandler() override;
 
   void InitializeForeignSessions();
@@ -73,10 +77,12 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
       content::WebUI* web_ui);
 
+  void SetWebUIForTesting(content::WebUI* web_ui) { set_web_ui(web_ui); }
+
  private:
   void OnForeignSessionUpdated();
 
-  base::Value GetForeignSessions();
+  base::Value::List GetForeignSessions();
 
   // Returns a string used to show the user when a session was last modified.
   std::u16string FormatSessionTime(const base::Time& time);
@@ -84,26 +90,24 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // Determines which session is to be opened, and then calls
   // OpenForeignSession, to begin the process of opening a new browser window.
   // This is a javascript callback handler.
-  void HandleOpenForeignSession(const base::ListValue* args);
+  void HandleOpenForeignSession(const base::Value::List& args);
 
   // Determines whether foreign sessions should be obtained from the sync model.
   // This is a javascript callback handler, and it is also called when the sync
   // model has changed and the new tab page needs to reflect the changes.
-  void HandleGetForeignSessions(const base::ListValue* args);
+  void HandleGetForeignSessions(const base::Value::List& args);
 
   // Delete a foreign session. This will remove it from the list of foreign
   // sessions on all devices. It will reappear if the session is re-activated
   // on the original device.
   // This is a javascript callback handler.
-  void HandleDeleteForeignSession(const base::ListValue* args);
+  void HandleDeleteForeignSession(const base::Value::List& args);
 
-  void HandleSetForeignSessionCollapsed(const base::ListValue* args);
+  void HandleSetForeignSessionCollapsed(const base::Value::List& args);
 
-  base::Value initial_session_list_;
+  absl::optional<base::Value::List> initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForeignSessionHandler);
 };
 
 }  // namespace browser_sync

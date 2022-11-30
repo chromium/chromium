@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace storage_monitor {
 
@@ -40,6 +38,10 @@ class MtabWatcherLinux {
   // Caller is responsible for bouncing to the correct sequence.
   MtabWatcherLinux(const base::FilePath& mtab_path,
                    const UpdateMtabCallback& callback);
+
+  MtabWatcherLinux(const MtabWatcherLinux&) = delete;
+  MtabWatcherLinux& operator=(const MtabWatcherLinux&) = delete;
+
   ~MtabWatcherLinux();
 
  private:
@@ -60,8 +62,6 @@ class MtabWatcherLinux {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MtabWatcherLinux> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MtabWatcherLinux);
 };
 
 }  // namespace storage_monitor

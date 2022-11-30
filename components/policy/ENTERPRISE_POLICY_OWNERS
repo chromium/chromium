@@ -1,0 +1,15 @@
+# Prefer enterprise-policy-review@ to individual owners. Sending code
+# reviews to the alias allows the owners to distribute code review loads.
+enterprise-policy-review@google.com
+
+# When making changes, also update EnterprisePolicyOwners in the GwsQ config:
+# http://google3/chrome/enterprise/gwsq/enterprise-policy-review.gwsq
+anqing@chromium.org
+emaxx@chromium.org
+hendrich@chromium.org
+igorcov@chromium.org
+pastarmovj@chromium.org
+pmarko@chromium.org
+poromov@chromium.org
+rsorokin@google.com
+zmin@chromium.org

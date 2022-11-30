@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,16 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
+
+import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,16 +29,18 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ViewUtils;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Tests {@link OptionalNewTabButtonController} on tablet. Phone functionality is tested by {@link
- * OptionalNewTabButtonControllerTest}.
+ * OptionalNewTabButtonControllerPhoneTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -54,18 +61,44 @@ public class OptionalNewTabButtonControllerTabletTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, /*clearAllTabState=*/false);
 
     private String mTestPageUrl;
-    private String mButtonDescription;
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(
+                AdaptiveToolbarButtonVariant.NEW_TAB);
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(null);
+    }
 
     @Before
     public void setUp() {
         mTestPageUrl = sActivityTestRule.getTestServer().getURL(TEST_PAGE);
-        mButtonDescription =
-                sActivityTestRule.getActivity().getResources().getString(R.string.button_new_tab);
+    }
+
+    @After
+    public void tearDown() {
+        ActivityTestUtils.clearActivityOrientation(sActivityTestRule.getActivity());
     }
 
     @Test
     @MediumTest
-    public void testButton_hiddenOnTablet() {
+    public void testButton_hiddenOnTablet_landscape() {
+        ActivityTestUtils.rotateActivityToOrientation(
+                sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
+
+        onView(isRoot()).check(waitForView(
+                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL));
+    }
+
+    @Test
+    @MediumTest
+    public void testButton_hiddenOnTablet_portrait() {
+        ActivityTestUtils.rotateActivityToOrientation(
+                sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
         sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
 
         onView(isRoot()).check(waitForView(

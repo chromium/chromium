@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,8 @@ component("fido") {
   sources = [
     "attested_credential_data.cc",
     "attested_credential_data.h",
+    "authenticator_data.cc",
+    "authenticator_data.h",
     "authenticator_selection_criteria.cc",
     "authenticator_selection_criteria.h",
     "cable/cable_discovery_data.cc",
@@ -22,6 +24,8 @@ component("fido") {
     "cable/websocket_adapter.cc",
     "cable/websocket_adapter.h",
     "cbor_extract.cc",
+    "discoverable_credential_metadata.cc",
+    "discoverable_credential_metadata.h",
     "ed25519_public_key.cc",
     "ed25519_public_key.h",
     "features.cc",
@@ -77,6 +81,8 @@ component("fido") {
       "aoa/android_accessory_device.h",
       "aoa/android_accessory_discovery.cc",
       "aoa/android_accessory_discovery.h",
+      "appid_exclude_probe_task.cc",
+      "appid_exclude_probe_task.h",
       "attestation_object.cc",
       "attestation_object.h",
       "attestation_statement.cc",
@@ -85,8 +91,6 @@ component("fido") {
       "attestation_statement_formats.h",
       "auth_token_requester.cc",
       "auth_token_requester.h",
-      "authenticator_data.cc",
-      "authenticator_data.h",
       "authenticator_get_assertion_response.cc",
       "authenticator_get_assertion_response.h",
       "authenticator_get_info_response.cc",
@@ -133,6 +137,8 @@ component("fido") {
       "ctap_make_credential_request.cc",
       "ctap_make_credential_request.h",
       "device_operation.h",
+      "device_public_key_extension.cc",
+      "device_public_key_extension.h",
       "device_response_converter.cc",
       "device_response_converter.h",
       "fido_authenticator.cc",
@@ -193,6 +199,8 @@ component("fido") {
       "virtual_ctap2_device.h",
       "virtual_fido_device.cc",
       "virtual_fido_device.h",
+      "virtual_fido_device_authenticator.cc",
+      "virtual_fido_device_authenticator.h",
       "virtual_u2f_device.cc",
       "virtual_u2f_device.h",
     ]
@@ -254,15 +262,19 @@ component("fido") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
+      "cros/credential_store.cc",
+      "cros/credential_store.h",
       "cros/discovery.cc",
       "cros/discovery.h",
     ]
 
     deps += [
+      "//chromeos/dbus/tpm_manager",
+      "//chromeos/dbus/tpm_manager:tpm_manager_proto",
       "//chromeos/dbus/u2f",
       "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",
@@ -282,6 +294,7 @@ static_library("cablev2_registration") {
     "//components/device_event_log",
     "//components/gcm_driver",
     "//components/gcm_driver/instance_id",
+    "//third_party/boringssl",
   ]
 }
 
@@ -294,6 +307,7 @@ static_library("cablev2_authenticator") {
     ":fido",
     "//components/cbor",
     "//components/device_event_log",
+    "//content/public/common",  # for authenticator.mojom
     "//services/network/public/mojom",
   ]
 }
@@ -308,7 +322,9 @@ static_library("cablev2_test_util") {
     ":cablev2_authenticator",
     ":fido",
     "//components/cbor",
+    "//content/public/common",  # for authenticator.mojom
     "//crypto",
+    "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/mojom",
   ]

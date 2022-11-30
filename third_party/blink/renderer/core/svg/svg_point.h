@@ -32,8 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POINT_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -44,18 +44,18 @@ class SVGPoint final : public SVGListablePropertyBase {
   typedef SVGPointTearOff TearOffType;
 
   SVGPoint();
-  explicit SVGPoint(const FloatPoint&);
+  explicit SVGPoint(const gfx::PointF&);
 
   SVGPoint* Clone() const;
   SVGPropertyBase* CloneForAnimation(const String&) const override;
 
-  const FloatPoint& Value() const { return value_; }
-  void SetValue(const FloatPoint& value) { value_ = value; }
+  const gfx::PointF& Value() const { return value_; }
+  void SetValue(const gfx::PointF& value) { value_ = value; }
 
-  float X() const { return value_.X(); }
-  float Y() const { return value_.Y(); }
-  void SetX(float f) { value_.SetX(f); }
-  void SetY(float f) { value_.SetY(f); }
+  float X() const { return value_.x(); }
+  float Y() const { return value_.y(); }
+  void SetX(float f) { value_.set_x(f); }
+  void SetY(float f) { value_.set_y(f); }
 
   String ValueAsString() const override;
 
@@ -75,7 +75,7 @@ class SVGPoint final : public SVGListablePropertyBase {
   AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
-  FloatPoint value_;
+  gfx::PointF value_;
 };
 
 template <>

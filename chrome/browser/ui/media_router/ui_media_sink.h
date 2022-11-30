@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -33,7 +34,7 @@ enum class UIMediaSinkState {
 
 struct UIMediaSink {
  public:
-  UIMediaSink();
+  explicit UIMediaSink(mojom::MediaRouteProviderId provider);
   UIMediaSink(const UIMediaSink& other);
   ~UIMediaSink();
 
@@ -54,20 +55,20 @@ struct UIMediaSink {
   GURL presentation_url;
 
   // Active route associated with the sink.
-  base::Optional<MediaRoute> route;
+  absl::optional<MediaRoute> route;
 
   // The icon to use for the sink.
   SinkIconType icon_type = SinkIconType::GENERIC;
 
   // The provider of the sink.
-  MediaRouteProviderId provider = MediaRouteProviderId::UNKNOWN;
+  mojom::MediaRouteProviderId provider;
 
   // The current state of the media sink.
   UIMediaSinkState state = UIMediaSinkState::AVAILABLE;
 
   // An issue the sink is having. This is a nullopt when there are no issues
   // with the sink.
-  base::Optional<Issue> issue;
+  absl::optional<Issue> issue;
 
   // Set of Cast Modes (e.g. presentation, desktop mirroring) supported by the
   // sink.

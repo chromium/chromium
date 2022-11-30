@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
-class LocationBarView;
 class TemplateURLService;
 
 namespace gfx {
@@ -37,7 +36,7 @@ class SelectedKeywordView : public IconLabelBubbleView {
   static KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
                                                 TemplateURLService* service);
 
-  SelectedKeywordView(LocationBarView* location_bar,
+  SelectedKeywordView(IconLabelBubbleView::Delegate* delegate,
                       TemplateURLService* template_url_service,
                       const gfx::FontList& font_list);
   SelectedKeywordView(const SelectedKeywordView&) = delete;
@@ -67,8 +66,7 @@ class SelectedKeywordView : public IconLabelBubbleView {
 
   void SetLabelForCurrentWidth();
 
-  LocationBarView* location_bar_;
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   // The keyword we're showing. If empty, no keyword is selected.
   // NOTE: we don't cache the TemplateURL as it is possible for it to get

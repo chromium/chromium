@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 #include <string.h>
 
 #include <utility>
-#include "build/chromeos_buildflags.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/codec/png_codec.h"
 #endif
 
@@ -66,15 +67,17 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
                                    int64_t max_size_in_bytes,
                                    const gfx::Size& desired_image_frame_size,
                                    DecodeImageCallback callback) {
+  base::ElapsedTimer timer;
+
   if (encoded_data.size() == 0) {
-    std::move(callback).Run(SkBitmap());
+    std::move(callback).Run(timer.Elapsed(), SkBitmap());
     return;
   }
 
   SkBitmap decoded_image;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (codec == mojom::ImageCodec::ROBUST_PNG) {
-    // Our robust PNG decoding is using libpng.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (codec == mojom::ImageCodec::kPng) {
+    // Our PNG decoding is using libpng.
     if (encoded_data.size()) {
       SkBitmap decoded_png;
       if (gfx::PNGCodec::Decode(encoded_data.data(), encoded_data.size(),
@@ -83,8 +86,8 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  if (codec == mojom::ImageCodec::DEFAULT) {
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (codec == mojom::ImageCodec::kDefault) {
     decoded_image = blink::WebImage::FromData(
         blink::WebData(reinterpret_cast<const char*>(encoded_data.data()),
                        encoded_data.size()),
@@ -94,7 +97,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   if (!decoded_image.isNull())
     ResizeImage(&decoded_image, shrink_to_fit, max_size_in_bytes);
 
-  std::move(callback).Run(decoded_image);
+  std::move(callback).Run(timer.Elapsed(), decoded_image);
 }
 
 void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
@@ -108,6 +111,10 @@ void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,
 
   auto frames = blink::WebImage::AnimationFromData(blink::WebData(
       reinterpret_cast<const char*>(encoded_data.data()), encoded_data.size()));
+  if (frames.size() == 0) {
+    std::move(callback).Run({});
+    return;
+  }
 
   int64_t max_frame_size_in_bytes = max_size_in_bytes / frames.size();
   std::vector<mojom::AnimationFramePtr> decoded_images;

@@ -105,4 +105,4 @@ class InstanceCounters {
 
 }  // namespace blink
 
-#endif  // !defined(InstanceCounters_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_INSTANCE_COUNTERS_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -221,10 +221,11 @@ CSSValue* ConsumeCounterStyleAdditiveSymbols(CSSParserTokenRange& range,
 
 CSSValue* ConsumeCounterStyleSpeakAs(CSSParserTokenRange& range,
                                      const CSSParserContext& context) {
-  // Syntax: auto | bullets | numbers | words | spell-out | <counter-style-name>
+  // Syntax: auto | bullets | numbers | words | <counter-style-name>
+  // We don't support spell-out now.
   if (CSSValue* ident = css_parsing_utils::ConsumeIdent<
           CSSValueID::kAuto, CSSValueID::kBullets, CSSValueID::kNumbers,
-          CSSValueID::kWords, CSSValueID::kSpellOut>(range))
+          CSSValueID::kWords>(range))
     return ident;
   if (CSSValue* name =
           css_parsing_utils::ConsumeCounterStyleName(range, context))
@@ -238,8 +239,6 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
     AtRuleDescriptorID id,
     CSSParserTokenRange& range,
     const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
-
   CSSValue* parsed_value = nullptr;
   switch (id) {
     case AtRuleDescriptorID::System:

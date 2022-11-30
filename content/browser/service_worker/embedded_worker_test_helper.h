@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,16 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
@@ -36,7 +38,6 @@ class FakeServiceWorker;
 class MockRenderProcessHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerContextWrapper;
-class TestBrowserContext;
 
 // In-Process EmbeddedWorker test helper.
 //
@@ -83,9 +84,19 @@ class EmbeddedWorkerTestHelper {
   // If |user_data_directory| is empty, the context makes storage stuff in
   // memory.
   explicit EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory);
+  EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory,
+                           std::unique_ptr<BrowserContext> browser_context);
   EmbeddedWorkerTestHelper(
       const base::FilePath& user_data_directory,
-      storage::SpecialStoragePolicy* special_storage_policy);
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+  EmbeddedWorkerTestHelper(
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      std::unique_ptr<BrowserContext> browser_context);
+
+  EmbeddedWorkerTestHelper(const EmbeddedWorkerTestHelper&) = delete;
+  EmbeddedWorkerTestHelper& operator=(const EmbeddedWorkerTestHelper&) = delete;
+
   virtual ~EmbeddedWorkerTestHelper();
 
   ServiceWorkerContextCore* context();
@@ -104,7 +115,13 @@ class EmbeddedWorkerTestHelper {
   // Only used for tests that force creating a new render process.
   int new_render_process_id() const { return new_mock_render_process_id_; }
 
-  TestBrowserContext* browser_context() { return browser_context_.get(); }
+  storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
+
+  storage::MockQuotaManagerProxy* quota_manager_proxy() {
+    return quota_manager_proxy_.get();
+  }
+
+  BrowserContext* browser_context() { return browser_context_.get(); }
 
   static std::unique_ptr<ServiceWorkerVersion::MainScriptResponse>
   CreateMainScriptResponse();
@@ -167,6 +184,42 @@ class EmbeddedWorkerTestHelper {
                                       base::OnceClosure callback);
   /////////////////////////////////////////////////////////////////////////////
 
+  using RegistrationAndVersionPair =
+      std::pair<scoped_refptr<ServiceWorkerRegistration>,
+                scoped_refptr<ServiceWorkerVersion>>;
+
+  RegistrationAndVersionPair PrepareRegistrationAndVersion(
+      const GURL& scope,
+      const GURL& script_url);
+
+  // Calls worker->Start() and runs until the start IPC is sent.
+  //
+  // Expects success. For failure cases, call Start() manually.
+  void StartWorkerUntilStartSent(
+      EmbeddedWorkerInstance* worker,
+      blink::mojom::EmbeddedWorkerStartParamsPtr params);
+
+  // Calls worker->Start() and runs until startup finishes.
+  //
+  // Expects success. For failure cases, call Start() manually.
+  void StartWorker(EmbeddedWorkerInstance* worker,
+                   blink::mojom::EmbeddedWorkerStartParamsPtr params);
+
+  blink::mojom::EmbeddedWorkerStartParamsPtr CreateStartParams(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr CreateProviderInfo(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  mojo::PendingReceiver<blink::mojom::ServiceWorker> CreateServiceWorker(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
+  CreateController();
+
+  blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
+  GetInstalledScriptsInfoPtr();
+
  protected:
   // Subclasses can override these to change the default fakes. This saves tests
   // from calling AddPending*() for each start worker attempt.
@@ -179,9 +232,11 @@ class EmbeddedWorkerTestHelper {
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
           receiver);
 
-  std::unique_ptr<TestBrowserContext> browser_context_;
+  std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   std::unique_ptr<MockRenderProcessHost> new_render_process_host_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
 
@@ -209,7 +264,13 @@ class EmbeddedWorkerTestHelper {
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
 
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerTestHelper);
+  // Mojo endpoints.
+  std::vector<mojo::Remote<blink::mojom::ControllerServiceWorker>> controllers_;
+  std::vector<mojo::Remote<blink::mojom::ServiceWorkerInstalledScriptsManager>>
+      installed_scripts_managers_;
+  std::vector<mojo::PendingReceiver<
+      blink::mojom::ServiceWorkerInstalledScriptsManagerHost>>
+      installed_scripts_manager_host_receivers_;
 };
 
 template <typename MockType, typename... Args>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace errors {
 const char kAnotherUiShowing[] = "Another PaymentRequest UI is already showing in a different tab or window.";
 const char kAppStoreMethodOnlySupportedInTwa[] = "Payment method https://play.google.com/billing is only supported in Trusted Web Activity.";
 const char kAttemptedInitializationTwice[] = "Attempted initialization twice.";
-const char kCannotShowInBackgroundTab[] = "Cannot show PaymentRequest UI in a background tab.";
+const char kCannotShowInBackgroundTab[] = "Cannot show PaymentRequest UI in a preview page or a background tab.";
 const char kCannotShowTwice[] = "Attempted show twice.";
 const char kCannotShowWithoutInit[] = "Attempted show without initialization.";
 const char kCannotUpdateWithoutInit[] = "Attempted updateWith without initialization.";
@@ -37,6 +37,8 @@ const char kSkipAppForPartialDelegation[] = "Skipping $ for not providing all of
 const char kStrictBasicCardShowReject[] = "User does not have valid information on file.";
 const char kTotalRequired[] = "Total required.";
 const char kUserCancelled[] = "User closed the Payment Request UI.";
+const char kWebAuthnOperationTimedOutOrNotAllowed[] = "The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
+const char kSpcUserOptedOut[] = "User opted out of the process.";
 const char kInvalidPaymentDetails[] = "Invalid payment details.";
 const char kInvalidPaymentOptions[] = "Invalid payment options.";
 // clang-format on

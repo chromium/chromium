@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@ namespace app_list {
 
 CrOSActionRecorderTabTracker::CrOSActionRecorderTabTracker(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<CrOSActionRecorderTabTracker>(
+          *web_contents) {}
 
 // A tab should be skipped if it is empty, blank or default page.
 bool CrOSActionRecorderTabTracker::ShouldSkip() {
@@ -27,13 +29,13 @@ bool CrOSActionRecorderTabTracker::ShouldSkip() {
 void CrOSActionRecorderTabTracker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInMainFrame() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument() || ShouldSkip()) {
     return;
   }
 
   const std::string& previous_url =
-      navigation_handle->GetPreviousMainFrameURL().spec();
+      navigation_handle->GetPreviousPrimaryMainFrameURL().spec();
   const std::string& url = web_contents()->GetURL().spec();
 
   // Only record when navigates to a new url.
@@ -77,6 +79,6 @@ void CrOSActionRecorderTabTracker::DidOpenRequestedURL(
        {url.spec(), -2}});
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CrOSActionRecorderTabTracker)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CrOSActionRecorderTabTracker);
 
 }  // namespace app_list

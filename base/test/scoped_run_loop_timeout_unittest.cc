@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ TEST(ScopedRunLoopTimeoutTest, TimesOut) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
 
   // Since the delayed task will be posted only after the message pump starts
@@ -47,7 +47,7 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeout) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(FROM_HERE, kArbitraryTimeout);
 
   // Posting a task with the same delay as our timeout, immediately before
@@ -65,19 +65,28 @@ TEST(ScopedRunLoopTimeoutTest, OnTimeoutLog) {
   TaskEnvironment task_environment;
   RunLoop run_loop;
 
-  static constexpr auto kArbitraryTimeout = TimeDelta::FromMilliseconds(10);
+  static constexpr auto kArbitraryTimeout = Milliseconds(10);
   ScopedRunLoopTimeout run_timeout(
       FROM_HERE, kArbitraryTimeout,
       BindRepeating([]() -> std::string { return "I like kittens!"; }));
 
   // EXPECT_FATAL_FAILURE() can only reference globals and statics.
   static RunLoop& static_loop = run_loop;
+#if defined(__clang__) && defined(_MSC_VER)
   EXPECT_FATAL_FAILURE(
       static_loop.Run(),
       "Run() timed out. Timeout set at "
-      "TestBody@../../base/test/scoped_run_loop_timeout_unittest.cc:70.\n"
+      "TestBody@base\\test\\scoped_run_loop_timeout_unittest.cc:70.\n"
       "I like kittens!");
 }
+#else
+  EXPECT_FATAL_FAILURE(
+      static_loop.Run(),
+      "Run() timed out. Timeout set at "
+      "TestBody@base/test/scoped_run_loop_timeout_unittest.cc:70.\n"
+      "I like kittens!");
+}
+#endif
 
 }  // namespace test
 }  // namespace base

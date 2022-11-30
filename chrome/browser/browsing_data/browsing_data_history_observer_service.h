@@ -1,14 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_
 
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -29,13 +30,19 @@ class BrowsingDataHistoryObserverService
       public history::HistoryServiceObserver {
  public:
   explicit BrowsingDataHistoryObserverService(Profile* profile);
+
+  BrowsingDataHistoryObserverService(
+      const BrowsingDataHistoryObserverService&) = delete;
+  BrowsingDataHistoryObserverService& operator=(
+      const BrowsingDataHistoryObserverService&) = delete;
+
   ~BrowsingDataHistoryObserverService() override;
 
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static Factory* GetInstance();
 
@@ -54,14 +61,13 @@ class BrowsingDataHistoryObserverService
   void OverrideStoragePartitionForTesting(content::StoragePartition* partition);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  content::StoragePartition* storage_partition_for_testing_ = nullptr;
+  raw_ptr<content::StoragePartition> storage_partition_for_testing_ = nullptr;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataHistoryObserverService);
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_HISTORY_OBSERVER_SERVICE_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
-// Temporarily used by both Ozone and non-Ozone/X11. Once Ozone becomes default
-// on Linux, this class will be used purely by Ozone.
 class ChromeBrowserMainExtraPartsOzone : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsOzone();
@@ -18,10 +16,10 @@ class ChromeBrowserMainExtraPartsOzone : public ChromeBrowserMainExtraParts {
       const ChromeBrowserMainExtraPartsOzone&) = delete;
   ~ChromeBrowserMainExtraPartsOzone() override;
 
- private:
+ protected:
   // ChromeBrowserMainExtraParts overrides.
   void PreEarlyInitialization() override;
-  void PostMainMessageLoopStart() override;
+  void PostCreateMainMessageLoop() override;
   void PostMainMessageLoopRun() override;
 };
 

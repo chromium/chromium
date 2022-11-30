@@ -1,0 +1,73 @@
+<style include="firmware-fonts firmware-shared">
+  :host {
+    --cr-dialog-width: 416px;
+  }
+
+  [slot='button-container'] {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  [slot='footer'] {
+    border: none;
+  }
+
+  #progress {
+    display: inline-block;
+    margin: 8px 0;
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--cros-slider-color-active);
+    --paper-progress-container-color: var(--cros-slider-track-color-active);
+    --paper-progress-height: 4px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 8px;
+    width: 95%;
+  }
+</style>
+<template is="dom-if"
+    if="[[shouldShowUpdateDialog_(installationProgress.*,
+        isInitiallyInflight_)]]" restamp>
+  <cr-dialog id="updateDialog" show-on-attach
+      on-close="closeDialog_">
+    <div slot="title" id="updateDialogTitle" class="firmware-dialog-title-font"
+        tabindex="0" aria-labelledby="updateDialogTitle">
+      [[dialogContent.title]]
+    </div>
+    <div slot="body" class="firmware-dialog-body-font">
+      <div id="updateDialogBody" aria-hidden="true" tabindex="0">
+        [[dialogContent.body]]
+      </div>
+    </div>
+    <div slot="footer"
+        hidden$="[[!shouldShowProgressBar_(installationProgress.*,
+                   isInitiallyInflight_)]]">
+      <label id="progress" class="firmware-dialog-installing-font"
+          aria-live="polite" tabindex="0">
+        [[dialogContent.footer]]
+      </label>
+      <template is="dom-if"
+          if="[[!isInIndeterminateState_(installationProgress.*)]]" restamp>
+        <paper-progress id="updateProgressBar"
+            value="[[computePercentageValue_(installationProgress.percentage)]]"
+            max="100">
+        </paper-progress>
+      </template>
+      <template is="dom-if"
+          if="[[isInIndeterminateState_(installationProgress.*)]]" restamp>
+        <paper-progress id="indeterminateProgressBar" indeterminate>
+        </paper-progress>
+      </template>
+    </div>
+    <div slot="button-container"
+        hidden$="[[!isUpdateDone_(installationProgress.state)]]">
+      <cr-button class="action-button"
+          on-click="closeDialog_"
+          id="updateDoneButton">
+        [[computeButtonText_(installationProgress.state)]]
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/audio/audio_manager_base.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -22,6 +22,10 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
  public:
   AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
                   AudioLogFactory* audio_log_factory);
+
+  AudioManagerWin(const AudioManagerWin&) = delete;
+  AudioManagerWin& operator=(const AudioManagerWin&) = delete;
+
   ~AudioManagerWin() override;
 
   // Implementation of AudioManager.
@@ -51,10 +55,19 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
+  AudioOutputStream* MakeBitstreamOutputStream(
+      const AudioParameters& params,
+      const std::string& device_id,
+      const LogCallback& log_callback) override;
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
   std::string GetCommunicationsInputDeviceID() override;
   std::string GetCommunicationsOutputDeviceID() override;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  // Bitmask indicating which audio codecs are playable using passthrough.
+  static void SetBitstreamPassthroughBitmask(uint32_t bitmask);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
  protected:
   void ShutdownOnAudioThread() override;
@@ -72,10 +85,12 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
 
   void GetAudioDeviceNamesImpl(bool input, AudioDeviceNames* device_names);
 
+  AudioOutputStream* MakeOutputStream(const AudioParameters& params,
+                                      const std::string& device_id,
+                                      const LogCallback& log_callback);
+
   // Listen for output device changes.
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerWin);
 };
 
 }  // namespace media

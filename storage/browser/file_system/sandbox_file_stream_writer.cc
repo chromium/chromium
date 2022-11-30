@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,19 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_observers.h"
-#include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_util.h"
+#include "storage/browser/file_system/memory_file_stream_writer.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
-#include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -145,18 +146,9 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
   DCHECK(!file_writer_.get());
 
   if (file_system_context_->is_incognito()) {
-    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate;
-    if (url_.type() == kFileSystemTypePluginPrivate) {
-      auto* backend = static_cast<PluginPrivateFileSystemBackend*>(
-          file_system_context_->GetFileSystemBackend(
-              kFileSystemTypePluginPrivate));
-      memory_file_util_delegate =
-          backend->obfuscated_file_util_memory_delegate()->GetWeakPtr();
-    } else {
-      memory_file_util_delegate =
-          file_system_context_->sandbox_delegate()->memory_file_util_delegate();
-    }
-    file_writer_ = FileStreamWriter::CreateForMemoryFile(
+    base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate =
+        file_system_context_->sandbox_delegate()->memory_file_util_delegate();
+    file_writer_ = std::make_unique<MemoryFileStreamWriter>(
         file_system_context_->default_file_task_runner(),
         memory_file_util_delegate, platform_path, initial_offset_);
 
@@ -165,7 +157,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
         file_system_context_->default_file_task_runner(), platform_path,
         initial_offset_, FileStreamWriter::OPEN_EXISTING_FILE);
   }
-  QuotaManagerProxy* quota_manager_proxy =
+  const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
       file_system_context_->quota_manager_proxy();
   if (!quota_manager_proxy) {
     // If we don't have the quota manager or the requested filesystem type
@@ -177,7 +169,7 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      url_.origin(), FileSystemTypeToQuotaStorageType(url_.type()),
+      url_.storage_key(), FileSystemTypeToQuotaStorageType(url_.type()),
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -225,10 +217,10 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
   if (write_response <= 0) {
     // TODO(crbug.com/1091792): Consider listening explicitly for out
     // of space errors instead of surfacing all write errors to quota.
-    QuotaManagerProxy* quota_manager_proxy =
+    const scoped_refptr<QuotaManagerProxy>& quota_manager_proxy =
         file_system_context_->quota_manager_proxy();
     if (quota_manager_proxy) {
-      quota_manager_proxy->NotifyWriteFailed(url_.origin());
+      quota_manager_proxy->NotifyWriteFailed(url_.storage_key());
     }
     if (CancelIfRequested())
       return;

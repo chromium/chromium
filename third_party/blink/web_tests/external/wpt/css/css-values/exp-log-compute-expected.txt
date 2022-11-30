@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+FAIL log(1) should be used-value-equivalent to 0 assert_not_equals: log(1) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL log(10, 10) should be used-value-equivalent to 1 assert_not_equals: log(10, 10) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL exp(0) should be used-value-equivalent to 1 assert_not_equals: exp(0) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log(e) ) should be used-value-equivalent to 1 assert_not_equals: calc(log(e) ) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(e - exp(1)) should be used-value-equivalent to 0 assert_not_equals: calc(e - exp(1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log( 1 + 1 + 2 /2 - 2) ) should be used-value-equivalent to 0 assert_not_equals: calc(log( 1 + 1 + 2 /2 - 2) ) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log(1) + exp(0)) should be used-value-equivalent to 1 assert_not_equals: calc(log(1) + exp(0)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(exp(log(1) + exp(0)*2)) should be used-value-equivalent to 7.4 assert_not_equals: calc(exp(log(1) + exp(0)*2)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(log(log(1) + exp(0)*10)) should be used-value-equivalent to 2.3 assert_not_equals: calc(log(log(1) + exp(0)*10)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(log(log(1) + exp(0)*20, 10)) should be used-value-equivalent to 1.3 assert_not_equals: calc(log(log(1) + exp(0)*20, 10)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+FAIL calc(log(e)  / log(e) + exp(0)*2 * log(e)) should be used-value-equivalent to 3 assert_not_equals: calc(log(e)  / log(e) + exp(0)*2 * log(e)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log((1 + 1) /2)  / log(e) + exp(0*1)*2 * log(e)) should be used-value-equivalent to 2 assert_not_equals: calc(log((1 + 1) /2)  / log(e) + exp(0*1)*2 * log(e)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log((3 + 1) /2, 2)  / log(e) + exp(0*1)*2 * log(e)) should be used-value-equivalent to 3 assert_not_equals: calc(log((3 + 1) /2, 2)  / log(e) + exp(0*1)*2 * log(e)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log((3 + 1) /2, 2)  / log(e, e) + exp(0*1)*2 * log(e, e)) should be used-value-equivalent to 3 assert_not_equals: calc(log((3 + 1) /2, 2)  / log(e, e) + exp(0*1)*2 * log(e, e)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(exp(0) + 1) should be used-value-equivalent to 2 assert_not_equals: calc(exp(0) + 1) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log(exp(1))) should be used-value-equivalent to 1 assert_not_equals: calc(log(exp(1))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+FAIL calc(log(exp(log(e)))) should be used-value-equivalent to 1 assert_not_equals: calc(log(exp(log(e)))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+Harness: the test ran to completion.
+

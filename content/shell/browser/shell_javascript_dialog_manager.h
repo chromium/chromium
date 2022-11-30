@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
@@ -20,6 +18,11 @@ class ShellJavaScriptDialog;
 class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
  public:
   ShellJavaScriptDialogManager();
+
+  ShellJavaScriptDialogManager(const ShellJavaScriptDialogManager&) = delete;
+  ShellJavaScriptDialogManager& operator=(const ShellJavaScriptDialogManager&) =
+      delete;
+
   ~ShellJavaScriptDialogManager() override;
 
   // JavaScriptDialogManager:
@@ -52,7 +55,7 @@ class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
   }
 
  private:
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // The dialog being shown. No queueing.
   std::unique_ptr<ShellJavaScriptDialog> dialog_;
 #else
@@ -67,8 +70,6 @@ class ShellJavaScriptDialogManager : public JavaScriptDialogManager {
   bool beforeunload_success_;
 
   DialogClosedCallback before_unload_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellJavaScriptDialogManager);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -20,7 +20,7 @@ class USBInTransferResult final : public ScriptWrappable {
 
  public:
   static USBInTransferResult* Create(const String& status,
-                                     const Vector<uint8_t>& data) {
+                                     base::span<const uint8_t> data) {
     DOMDataView* data_view = DOMDataView::Create(
         DOMArrayBuffer::Create(data.data(), data.size()), 0, data.size());
     return MakeGarbageCollected<USBInTransferResult>(status, data_view);

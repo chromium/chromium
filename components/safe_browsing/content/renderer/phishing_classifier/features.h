@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -29,8 +29,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
-
 namespace safe_browsing {
 
 // Container for a map of features to values, which enforces behavior
@@ -38,6 +36,10 @@ namespace safe_browsing {
 class FeatureMap {
  public:
   FeatureMap();
+
+  FeatureMap(const FeatureMap&) = delete;
+  FeatureMap& operator=(const FeatureMap&) = delete;
+
   ~FeatureMap();
 
   // Adds a boolean feature to a FeatureMap with a value of 1.0.
@@ -66,8 +68,6 @@ class FeatureMap {
 
  private:
   std::unordered_map<std::string, double> features_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureMap);
 };
 
 namespace features {

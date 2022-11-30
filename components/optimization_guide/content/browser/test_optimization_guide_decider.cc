@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,6 @@ namespace optimization_guide {
 TestOptimizationGuideDecider::TestOptimizationGuideDecider() = default;
 TestOptimizationGuideDecider::~TestOptimizationGuideDecider() = default;
 
-void TestOptimizationGuideDecider::RegisterOptimizationTargets(
-    const std::vector<proto::OptimizationTarget>& optimization_targets) {}
-
-void TestOptimizationGuideDecider::ShouldTargetNavigationAsync(
-    content::NavigationHandle* navigation_handle,
-    proto::OptimizationTarget optimization_target,
-    const base::flat_map<proto::ClientModelFeature, float>&
-        client_model_feature_values,
-    OptimizationGuideTargetDecisionCallback callback) {
-  std::move(callback).Run(OptimizationGuideDecision::kFalse);
-}
-
 void TestOptimizationGuideDecider::RegisterOptimizationTypes(
     const std::vector<proto::OptimizationType>& optimization_types) {}
 
@@ -34,20 +22,28 @@ void TestOptimizationGuideDecider::CanApplyOptimizationAsync(
                           /*optimization_metadata=*/{});
 }
 
-void TestOptimizationGuideDecider::AddObserverForOptimizationTargetModel(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    const base::Optional<proto::Any>& model_metadata,
-    optimization_guide::OptimizationTargetModelObserver* observer) {}
-
-void TestOptimizationGuideDecider::RemoveObserverForOptimizationTargetModel(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationTargetModelObserver* observer) {}
-
 OptimizationGuideDecision TestOptimizationGuideDecider::CanApplyOptimization(
     const GURL& url,
     proto::OptimizationType optimization_type,
     OptimizationMetadata* optimization_metadata) {
   return OptimizationGuideDecision::kFalse;
+}
+
+void TestOptimizationGuideDecider::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    proto::RequestContext request_context,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  for (const auto& url : urls) {
+    base::flat_map<proto::OptimizationType,
+                   OptimizationGuideDecisionWithMetadata>
+        decisions;
+    for (const auto optimization_type : optimization_types) {
+      decisions[optimization_type] = {OptimizationGuideDecision::kFalse,
+                                      /*optimization_metadata=*/{}};
+    }
+    callback.Run(url, decisions);
+  }
 }
 
 }  // namespace optimization_guide

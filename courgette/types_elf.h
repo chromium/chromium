@@ -1,9 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COURGETTE_ELF_TYPES_H_
-#define COURGETTE_ELF_TYPES_H_
+#ifndef COURGETTE_TYPES_ELF_H_
+#define COURGETTE_TYPES_ELF_H_
 
 #include <stdint.h>
 
@@ -173,4 +173,4 @@ enum elf32_rel_386_type_values {
   R_386_TLS_TPOFF = 14,
 };
 
-#endif  // COURGETTE_ELF_TYPES_H_
+#endif  // COURGETTE_TYPES_ELF_H_

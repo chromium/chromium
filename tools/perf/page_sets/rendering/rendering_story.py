@@ -1,6 +1,8 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import six
 
 from page_sets.rendering import story_tags
 from page_sets.system_health import platforms
@@ -22,9 +24,8 @@ class _MetaRenderingStory(type):
     return cls.__dict__.get('ABSTRACT_STORY', False)
 
 
-class RenderingStory(page.Page):
+class RenderingStory(six.with_metaclass(_MetaRenderingStory, page.Page)):
   """Abstract base class for Rendering user stories."""
-  __metaclass__ = _MetaRenderingStory
 
   BASE_NAME = NotImplemented
   URL = NotImplemented
@@ -33,6 +34,7 @@ class RenderingStory(page.Page):
   TAGS =[]
   PLATFORM_SPECIFIC = False
   YEAR = None
+  DISABLE_TRACING = False
 
   def __init__(self,
                page_set,
@@ -60,3 +62,7 @@ class RenderingStory(page.Page):
         make_javascript_deterministic=make_javascript_deterministic,
         base_dir=base_dir,
         perform_final_navigation=perform_final_navigation)
+
+  def WillStartTracing(self, chrome_trace_config):
+    chrome_trace_config.category_filter.AddIncludedCategory('benchmark')
+    chrome_trace_config.category_filter.AddIncludedCategory('v8')

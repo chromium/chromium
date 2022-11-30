@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+@property --num {
+  syntax:  "<integer>";
+  initial-value:  0;
+  inherits:  false;
+}
+</style>
+<body>
+<script src="resources/interpolation-test.js"></script>
+<script>
+// Regression test for crbug.com/1217506
+assertInterpolation({
+  property: '--num',
+  from: '0',
+  to: '1000000000',
+}, [
+  {at: 0.123456789,  is: '123456789'},
+]);
+</script>
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -122,10 +121,10 @@ void NetworkingPrivateServiceClient::RemoveServiceCallbacks(
 void NetworkingPrivateServiceClient::GetProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetProperties,
@@ -139,10 +138,10 @@ void NetworkingPrivateServiceClient::GetProperties(
 void NetworkingPrivateServiceClient::GetManagedProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetManagedProperties,
@@ -161,10 +160,10 @@ void NetworkingPrivateServiceClient::GetState(
   service_callbacks->failure_callback = std::move(failure_callback);
   service_callbacks->get_properties_callback = std::move(success_callback);
 
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetState,
@@ -177,7 +176,7 @@ void NetworkingPrivateServiceClient::GetState(
 
 void NetworkingPrivateServiceClient::SetProperties(
     const std::string& guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    base::Value properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -193,7 +192,7 @@ void NetworkingPrivateServiceClient::SetProperties(
       FROM_HERE,
       base::BindOnce(&WiFiService::SetProperties,
                      base::Unretained(wifi_service_.get()), guid,
-                     std::move(properties), error),
+                     std::move(properties).TakeDict(), error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterSetProperties,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(error)));
@@ -201,7 +200,7 @@ void NetworkingPrivateServiceClient::SetProperties(
 
 void NetworkingPrivateServiceClient::CreateNetwork(
     bool shared,
-    std::unique_ptr<base::DictionaryValue> properties,
+    base::Value properties,
     StringCallback success_callback,
     FailureCallback failure_callback) {
   ServiceCallbacks* service_callbacks = AddServiceCallbacks();
@@ -215,7 +214,7 @@ void NetworkingPrivateServiceClient::CreateNetwork(
       FROM_HERE,
       base::BindOnce(&WiFiService::CreateNetwork,
                      base::Unretained(wifi_service_.get()), shared,
-                     std::move(properties), network_guid, error),
+                     std::move(properties).TakeDict(), network_guid, error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterCreateNetwork,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(network_guid), base::Owned(error)));
@@ -242,16 +241,16 @@ void NetworkingPrivateServiceClient::GetNetworks(
   service_callbacks->get_visible_networks_callback =
       std::move(success_callback);
 
-  std::unique_ptr<base::ListValue> networks(new base::ListValue);
+  auto networks = std::make_unique<base::Value::List>();
 
   // TODO(stevenjb/mef): Apply filters (configured, visible, limit).
 
-  base::ListValue* networks_ptr = networks.get();
+  base::Value::List* networks_ptr = networks.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetVisibleNetworks,
                      base::Unretained(wifi_service_.get()), network_type,
-                     networks_ptr, false),
+                     /*include_details=*/false, networks_ptr),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterGetVisibleNetworks,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      std::move(networks)));
@@ -329,50 +328,53 @@ void NetworkingPrivateServiceClient::SelectCellularMobileNetwork(
   std::move(failure_callback).Run(networking_private::kErrorNotSupported);
 }
 
-std::unique_ptr<base::ListValue>
-NetworkingPrivateServiceClient::GetEnabledNetworkTypes() {
-  auto network_list = std::make_unique<base::ListValue>();
-  network_list->AppendString(::onc::network_type::kWiFi);
-  return network_list;
+void NetworkingPrivateServiceClient::GetEnabledNetworkTypes(
+    EnabledNetworkTypesCallback callback) {
+  base::Value network_list(base::Value::Type::LIST);
+  network_list.Append(::onc::network_type::kWiFi);
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(std::move(network_list)));
 }
 
-std::unique_ptr<NetworkingPrivateDelegate::DeviceStateList>
-NetworkingPrivateServiceClient::GetDeviceStateList() {
+void NetworkingPrivateServiceClient::GetDeviceStateList(
+    DeviceStateListCallback callback) {
   std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
   std::unique_ptr<api::networking_private::DeviceStateProperties> properties(
       new api::networking_private::DeviceStateProperties);
   properties->type = api::networking_private::NETWORK_TYPE_WIFI;
   properties->state = api::networking_private::DEVICE_STATE_TYPE_ENABLED;
   device_state_list->push_back(std::move(properties));
-  return device_state_list;
+  std::move(callback).Run(std::move(device_state_list));
 }
 
-std::unique_ptr<base::DictionaryValue>
-NetworkingPrivateServiceClient::GetGlobalPolicy() {
-  return std::make_unique<base::DictionaryValue>();
+void NetworkingPrivateServiceClient::GetGlobalPolicy(
+    GetGlobalPolicyCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue(
+      base::Value(base::Value::Type::DICTIONARY)));
 }
 
-std::unique_ptr<base::DictionaryValue>
-NetworkingPrivateServiceClient::GetCertificateLists() {
-  return std::make_unique<base::DictionaryValue>();
+void NetworkingPrivateServiceClient::GetCertificateLists(
+    GetCertificateListsCallback callback) {
+  std::move(callback).Run(base::Value::ToUniquePtrValue(
+      base::Value(base::Value::Type::DICTIONARY)));
 }
 
-bool NetworkingPrivateServiceClient::EnableNetworkType(
-    const std::string& type) {
-  return false;
+void NetworkingPrivateServiceClient::EnableNetworkType(const std::string& type,
+                                                       BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateServiceClient::DisableNetworkType(
-    const std::string& type) {
-  return false;
+void NetworkingPrivateServiceClient::DisableNetworkType(const std::string& type,
+                                                        BoolCallback callback) {
+  std::move(callback).Run(false);
 }
 
-bool NetworkingPrivateServiceClient::RequestScan(
-    const std::string& /* type */) {
+void NetworkingPrivateServiceClient::RequestScan(const std::string& /* type */,
+                                                 BoolCallback callback) {
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&WiFiService::RequestNetworkScan,
                                         base::Unretained(wifi_service_.get())));
-  return true;
+  std::move(callback).Run(true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -380,19 +382,19 @@ bool NetworkingPrivateServiceClient::RequestScan(
 void NetworkingPrivateServiceClient::AfterGetProperties(
     PropertiesCallback callback,
     const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    std::unique_ptr<base::Value::Dict> properties,
     const std::string* error) {
   if (!error->empty()) {
-    std::move(callback).Run(base::nullopt, *error);
+    std::move(callback).Run(absl::nullopt, *error);
     return;
   }
-  std::move(callback).Run(std::move(*properties), base::nullopt);
+  std::move(callback).Run(base::Value(std::move(*properties)), absl::nullopt);
 }
 
 void NetworkingPrivateServiceClient::AfterGetState(
     ServiceCallbacksID callback_id,
     const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    std::unique_ptr<base::Value::Dict> properties,
     const std::string* error) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
@@ -402,19 +404,21 @@ void NetworkingPrivateServiceClient::AfterGetState(
   } else {
     DCHECK(!service_callbacks->get_properties_callback.is_null());
     std::move(service_callbacks->get_properties_callback)
-        .Run(std::move(properties));
+        .Run(base::Value(std::move(*properties)));
   }
   RemoveServiceCallbacks(callback_id);
 }
 
 void NetworkingPrivateServiceClient::AfterGetVisibleNetworks(
     ServiceCallbacksID callback_id,
-    std::unique_ptr<base::ListValue> networks) {
+    std::unique_ptr<base::Value::List> networks) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
   DCHECK(!service_callbacks->get_visible_networks_callback.is_null());
+  // TODO(https://crbug.com/1187001): Make callbacks take base::Value::List.
   std::move(service_callbacks->get_visible_networks_callback)
-      .Run(std::move(networks));
+      .Run(base::ListValue::From(
+          std::make_unique<base::Value>(std::move(*networks))));
   RemoveServiceCallbacks(callback_id);
 }
 

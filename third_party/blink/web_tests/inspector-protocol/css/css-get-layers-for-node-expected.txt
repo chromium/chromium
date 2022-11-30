@@ -1,0 +1,51 @@
+Verify that layers are reported properly.
+Layers for document scope: 
+{
+    name : implicit outer layer
+    order : 5
+    subLayers : [
+        [0] : {
+            name : base
+            order : 1
+            subLayers : [
+                [0] : {
+                    name : nested
+                    order : 0
+                }
+            ]
+        }
+        [1] : {
+            name : ext
+            order : 2
+        }
+        [2] : {
+            name : empty
+            order : 3
+        }
+        [3] : {
+            name : stylesheet
+            order : 4
+        }
+    ]
+}
+Layers for shadow root scope: 
+{
+    name : implicit outer layer
+    order : 2
+    subLayers : [
+        [0] : {
+            name : shadow1
+            order : 0
+        }
+        [1] : {
+            name : shadow2
+            order : 1
+        }
+    ]
+}
+Layers for empty shadow root scope: 
+{
+    name : implicit outer layer
+    order : 0
+}
+

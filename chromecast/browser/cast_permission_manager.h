@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,14 @@
 #define CHROMECAST_BROWSER_CAST_PERMISSION_MANAGER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "content/public/browser/permission_result.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 namespace chromecast {
 namespace shell {
@@ -15,44 +21,61 @@ namespace shell {
 class CastPermissionManager : public content::PermissionControllerDelegate {
  public:
   CastPermissionManager();
+
+  CastPermissionManager(const CastPermissionManager&) = delete;
+  CastPermissionManager& operator=(const CastPermissionManager&) = delete;
+
   ~CastPermissionManager() override;
 
   // content::PermissionControllerDelegate implementation:
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
-      const std::vector<content::PermissionType>& permission,
+  void RequestPermission(
+      blink::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
+      const std::vector<blink::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
-  void ResetPermission(content::PermissionType permission,
+  void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<blink::PermissionType>& permissions,
+      content::RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<
+          void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
+      override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      content::PermissionType permission,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
-  blink::mojom::PermissionStatus GetPermissionStatusForFrame(
-      content::PermissionType permission,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin) override;
-  int SubscribePermissionStatusChange(
-      content::PermissionType permission,
+  content::PermissionResult GetPermissionResultForOriginWithoutContext(
+      blink::PermissionType permission,
+      const url::Origin& origin) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
+      blink::PermissionType permission,
+      content::RenderFrameHost* render_frame_host) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+      blink::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
+      const GURL& worker_origin) override;
+  SubscriptionId SubscribePermissionStatusChange(
+      blink::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastPermissionManager);
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 };
 
 }  // namespace shell

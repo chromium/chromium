@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,46 +7,45 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "content/browser/permissions/permission_controller_impl.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace content {
 
-GeolocationServiceImplContext::GeolocationServiceImplContext(
-    PermissionControllerImpl* permission_controller)
-    : permission_controller_(permission_controller),
-      request_id_(PermissionController::kNoPendingOperation) {}
+GeolocationServiceImplContext::GeolocationServiceImplContext() = default;
 
-GeolocationServiceImplContext::~GeolocationServiceImplContext() {
-}
+GeolocationServiceImplContext::~GeolocationServiceImplContext() = default;
 
 void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
     PermissionCallback callback) {
-  if (request_id_ != PermissionController::kNoPendingOperation) {
+  if (has_pending_permission_request_) {
     mojo::ReportBadMessage(
         "GeolocationService client may only create one Geolocation at a "
         "time.");
     return;
   }
 
-  request_id_ = permission_controller_->RequestPermission(
-      PermissionType::GEOLOCATION, render_frame_host,
-      render_frame_host->GetLastCommittedOrigin().GetURL(), user_gesture,
-      base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  has_pending_permission_request_ = true;
+
+  render_frame_host->GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          blink::PermissionType::GEOLOCATION, render_frame_host, user_gesture,
+          base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void GeolocationServiceImplContext::HandlePermissionStatus(
     PermissionCallback callback,
     blink::mojom::PermissionStatus permission_status) {
-  request_id_ = PermissionController::kNoPendingOperation;
+  has_pending_permission_request_ = false;
   std::move(callback).Run(permission_status);
 }
 
@@ -57,18 +56,14 @@ GeolocationServiceImpl::GeolocationServiceImpl(
       render_frame_host_(render_frame_host) {
   DCHECK(geolocation_context);
   DCHECK(render_frame_host);
-
-  permission_controller_ = PermissionControllerImpl::FromBrowserContext(
-      render_frame_host_->GetProcess()->GetBrowserContext());
 }
 
 GeolocationServiceImpl::~GeolocationServiceImpl() {}
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
-  receiver_set_.Add(
-      this, std::move(receiver),
-      std::make_unique<GeolocationServiceImplContext>(permission_controller_));
+  receiver_set_.Add(this, std::move(receiver),
+                    std::make_unique<GeolocationServiceImplContext>());
 }
 
 void GeolocationServiceImpl::CreateGeolocation(
@@ -104,11 +99,9 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host_);
-
-  geolocation_context_->BindGeolocation(
-      std::move(receiver), web_contents->GetLastCommittedURL().GetOrigin());
+  const auto& requesting_url =
+      render_frame_host_->GetMainFrame()->GetLastCommittedURL();
+  geolocation_context_->BindGeolocation(std::move(receiver), requesting_url);
 }
 
 }  // namespace content

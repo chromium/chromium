@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,7 +40,6 @@ source_set("flatbuffers") {
 source_set("compiler_files") {
   include_dirs = [ "src/grpc" ]
   sources = [
-    "src/grpc/src/compiler/config.h",
     "src/grpc/src/compiler/cpp_generator.cc",
     "src/grpc/src/compiler/cpp_generator.h",
     "src/grpc/src/compiler/go_generator.cc",
@@ -48,13 +47,15 @@ source_set("compiler_files") {
     "src/grpc/src/compiler/java_generator.cc",
     "src/grpc/src/compiler/java_generator.h",
     "src/grpc/src/compiler/python_generator.cc",
+    "src/grpc/src/compiler/python_generator.h",
     "src/grpc/src/compiler/schema_interface.h",
     "src/grpc/src/compiler/swift_generator.cc",
     "src/grpc/src/compiler/swift_generator.h",
+    "src/grpc/src/compiler/ts_generator.cc",
+    "src/grpc/src/compiler/ts_generator.h",
+    "src/include/flatbuffers/bfbs_generator.h",
     "src/include/flatbuffers/code_generators.h",
-    "src/include/flatbuffers/flatbuffers.h",
     "src/include/flatbuffers/flatc.h",
-    "src/include/flatbuffers/flexbuffers.h",
     "src/include/flatbuffers/grpc.h",
     "src/include/flatbuffers/hash.h",
     "src/include/flatbuffers/idl.h",
@@ -62,7 +63,13 @@ source_set("compiler_files") {
     "src/include/flatbuffers/reflection.h",
     "src/include/flatbuffers/reflection_generated.h",
     "src/include/flatbuffers/registry.h",
-    "src/include/flatbuffers/util.h",
+    "src/src/annotated_binary_text_gen.cpp",
+    "src/src/annotated_binary_text_gen.h",
+    "src/src/bfbs_gen.h",
+    "src/src/bfbs_gen_lua.cpp",
+    "src/src/bfbs_gen_lua.h",
+    "src/src/binary_annotator.cpp",
+    "src/src/binary_annotator.h",
     "src/src/code_generators.cpp",
     "src/src/flatc.cpp",
     "src/src/idl_gen_cpp.cpp",
@@ -72,7 +79,6 @@ source_set("compiler_files") {
     "src/src/idl_gen_go.cpp",
     "src/src/idl_gen_grpc.cpp",
     "src/src/idl_gen_java.cpp",
-    "src/src/idl_gen_js_ts.cpp",
     "src/src/idl_gen_json_schema.cpp",
     "src/src/idl_gen_kotlin.cpp",
     "src/src/idl_gen_lobster.cpp",
@@ -82,6 +88,7 @@ source_set("compiler_files") {
     "src/src/idl_gen_rust.cpp",
     "src/src/idl_gen_swift.cpp",
     "src/src/idl_gen_text.cpp",
+    "src/src/idl_gen_ts.cpp",
     "src/src/idl_parser.cpp",
     "src/src/reflection.cpp",
     "src/src/util.cpp",
@@ -105,11 +112,15 @@ executable("flatc") {
 flatbuffer("flatbuffers_samplebuffer") {
   testonly = true
   sources = [
+    "src/tests/arrays_test.fbs",
     "src/tests/include_test/include_test1.fbs",
     "src/tests/include_test/sub/include_test2.fbs",
+    "src/tests/monster_extra.fbs",
     "src/tests/monster_test.fbs",
     "src/tests/namespace_test/namespace_test1.fbs",
     "src/tests/namespace_test/namespace_test2.fbs",
+    "src/tests/native_type_test.fbs",
+    "src/tests/optional_scalars.fbs",
   ]
   flatc_include_dirs = [ "src/tests/include_test" ]
 }
@@ -161,10 +172,10 @@ test("flatbuffers_unittests") {
   data = [
     "src/tests/",
 
-    "//testing/scripts/common.py",
     "//testing/scripts/run_flatbuffers_unittests.py",
-    "//testing/xvfb.py",
   ]
+
+  data_deps = [ "//testing:test_scripts_shared" ]
 
   defines = [
     "FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE",

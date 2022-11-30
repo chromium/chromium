@@ -1,0 +1,26 @@
+caption: Require that the name of the local user and the remote access host owner
+  match
+desc: |-
+  Setting the policy to Enabled has the remote access host compare the name of the local user the host is associated with and the name of the Google Account registered as the host owner ("johndoe," if the host is owned by "johndoe@example.com"). This host won't start if the host owner's name differs from the name of the local user that the host is associated with. To enforce that the owner's Google Account is associated with a specific domain, use the policy with <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME">RemoteAccessHostDomain</ph>.
+
+        Setting the policy to Disabled or leaving it unset means the remote access host can be associated with any local user.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+items:
+- caption: Require matching local user and remote access host owner
+  value: true
+- caption: Do not require matching local user and remote access host owner
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.linux:25-
+- chrome.mac:25-
+tags: []
+type: main

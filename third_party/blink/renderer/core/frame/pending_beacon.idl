@@ -1,0 +1,51 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/unload-beacon/blob/main/README.md
+
+[RuntimeEnabled = PendingBeaconAPI] enum BeaconMethod { "POST", "GET" };
+
+[RuntimeEnabled = PendingBeaconAPI] dictionary PendingBeaconOptions {
+  long backgroundTimeout = -1;
+  long timeout = -1;
+};
+
+// Interface for the PendingBeacon API.
+[
+  RuntimeEnabled = PendingBeaconAPI,
+  Exposed = Window,
+  ImmutablePrototype
+] interface PendingBeacon {
+  [Measure] readonly attribute USVString url;
+  [Measure] readonly attribute BeaconMethod method;
+  [Measure] attribute long backgroundTimeout;
+  [Measure] attribute long timeout;
+  [Measure] readonly attribute boolean pending;
+
+  [Measure] void deactivate();
+  [Measure] void sendNow();
+};
+
+// Interface for the PendingGetBeacon API.
+[
+  RuntimeEnabled = PendingBeaconAPI,
+  Exposed = Window
+] interface PendingGetBeacon : PendingBeacon {
+  [Measure, CallWith = ExecutionContext] constructor(
+      USVString url, optional PendingBeaconOptions options);
+
+  [Measure] void setURL(USVString url);
+};
+
+// Interface for the PendingPostBeacon API.
+[
+  RuntimeEnabled = PendingBeaconAPI,
+  Exposed = Window
+] interface PendingPostBeacon : PendingBeacon {
+  [Measure, CallWith = ExecutionContext] constructor(
+      USVString url, optional PendingBeaconOptions options);
+
+  [Measure, RaisesException] void setData(
+      (ReadableStream or XMLHttpRequestBodyInit) data);
+};

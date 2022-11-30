@@ -7,7 +7,7 @@ function runTest()
 {
     description("Tests that calling window.open on the contentWindow of a detached frame does not crash or open a new window. You may need to disable popup blocking for this test case.");
     if (window.testRunner)
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
     var ifr = document.createElement("iframe");
     ifr.onload = function ()
     {

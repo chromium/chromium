@@ -1,0 +1,3 @@
+[document web] tag:#document
+++[section] tag:div
+++++[push button] name='Test' tag:button

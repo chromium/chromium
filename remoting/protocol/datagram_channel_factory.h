@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PDatagramSocket;
 
@@ -21,7 +19,10 @@ class DatagramChannelFactory {
   typedef base::OnceCallback<void(std::unique_ptr<P2PDatagramSocket>)>
       ChannelCreatedCallback;
 
-  DatagramChannelFactory() {}
+  DatagramChannelFactory() = default;
+
+  DatagramChannelFactory(const DatagramChannelFactory&) = delete;
+  DatagramChannelFactory& operator=(const DatagramChannelFactory&) = delete;
 
   // Creates new channels and calls the |callback| when then new channel is
   // created and connected. The |callback| is called with nullptr if channel
@@ -38,13 +39,9 @@ class DatagramChannelFactory {
   virtual void CancelChannelCreation(const std::string& name) = 0;
 
  protected:
-  virtual ~DatagramChannelFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DatagramChannelFactory);
+  virtual ~DatagramChannelFactory() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_DATAGRAM_CHANNEL_FACTORY_H_

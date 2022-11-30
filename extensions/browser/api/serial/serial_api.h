@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ class SerialGetDevicesFunction : public ExtensionFunction {
 
   SerialGetDevicesFunction();
 
+  SerialGetDevicesFunction(const SerialGetDevicesFunction&) = delete;
+  SerialGetDevicesFunction& operator=(const SerialGetDevicesFunction&) = delete;
+
  protected:
   ~SerialGetDevicesFunction() override;
 
@@ -44,8 +47,6 @@ class SerialGetDevicesFunction : public ExtensionFunction {
 
  private:
   void OnGotDevices(std::vector<device::mojom::SerialPortInfoPtr> devices);
-
-  DISALLOW_COPY_AND_ASSIGN(SerialGetDevicesFunction);
 };
 
 class SerialConnectFunction : public SerialExtensionFunction {

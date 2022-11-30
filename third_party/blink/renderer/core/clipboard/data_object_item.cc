@@ -31,14 +31,17 @@
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -93,8 +96,9 @@ DataObjectItem* DataObjectItem::CreateFromHTML(const String& html,
 }
 
 // static
-DataObjectItem* DataObjectItem::CreateFromSharedBuffer(
+DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
     scoped_refptr<SharedBuffer> buffer,
+    bool is_image_accessible,
     const KURL& source_url,
     const String& filename_extension,
     const AtomicString& content_disposition) {
@@ -102,6 +106,7 @@ DataObjectItem* DataObjectItem::CreateFromSharedBuffer(
       kFileKind,
       MIMETypeRegistry::GetWellKnownMIMETypeForExtension(filename_extension));
   item->shared_buffer_ = std::move(buffer);
+  item->is_image_accessible_ = is_image_accessible;
   item->filename_extension_ = filename_extension;
   // TODO(dcheng): Rename these fields to be more generically named.
   item->title_ = content_disposition;
@@ -113,7 +118,7 @@ DataObjectItem* DataObjectItem::CreateFromSharedBuffer(
 DataObjectItem* DataObjectItem::CreateFromClipboard(
     SystemClipboard* system_clipboard,
     const String& type,
-    uint64_t sequence_number) {
+    const ClipboardSequenceNumberToken& sequence_number) {
   if (type == kMimeTypeImagePng) {
     return MakeGarbageCollected<DataObjectItem>(
         kFileKind, type, sequence_number, system_clipboard);
@@ -126,13 +131,14 @@ DataObjectItem::DataObjectItem(ItemKind kind, const String& type)
     : source_(DataSource::kInternalSource),
       kind_(kind),
       type_(type),
-      sequence_number_(0),
+      sequence_number_(base::UnguessableToken::Create()),
       system_clipboard_(nullptr) {}
 
-DataObjectItem::DataObjectItem(ItemKind kind,
-                               const String& type,
-                               uint64_t sequence_number,
-                               SystemClipboard* system_clipboard)
+DataObjectItem::DataObjectItem(
+    ItemKind kind,
+    const String& type,
+    const ClipboardSequenceNumberToken& sequence_number,
+    SystemClipboard* system_clipboard)
     : source_(DataSource::kClipboardSource),
       kind_(kind),
       type_(type),
@@ -148,33 +154,33 @@ File* DataObjectItem::GetAsFile() const {
   if (source_ == DataSource::kInternalSource) {
     if (file_)
       return file_.Get();
+
+    // If this file is not backed by |file_| then it must be a |shared_buffer_|.
     DCHECK(shared_buffer_);
-    // TODO: This code is currently impossible--we never populate
-    // |shared_buffer_| when dragging in. At some point though, we may need to
-    // support correctly converting a shared buffer into a file.
-    return nullptr;
+    // If dragged image is cross-origin, do not allow access to it.
+    if (!is_image_accessible_)
+      return nullptr;
+    auto data = std::make_unique<BlobData>();
+    data->SetContentType(type_);
+    for (const auto& span : *shared_buffer_)
+      data->AppendBytes(span.data(), span.size());
+    const uint64_t length = data->length();
+    auto blob = BlobDataHandle::Create(std::move(data), length);
+    return MakeGarbageCollected<File>(
+        DecodeURLEscapeSequences(base_url_.LastPathComponent(),
+                                 DecodeURLMode::kUTF8OrIsomorphic),
+        base::Time::Now(), std::move(blob));
   }
 
   DCHECK_EQ(source_, DataSource::kClipboardSource);
   if (GetType() == kMimeTypeImagePng) {
-    SkBitmap bitmap =
-        system_clipboard_->ReadImage(mojom::ClipboardBuffer::kStandard);
-
-    SkPixmap pixmap;
-    bitmap.peekPixels(&pixmap);
-
-    // Set encoding options to favor speed over size.
-    SkPngEncoder::Options options;
-    options.fZLibLevel = 1;
-    options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
-    Vector<uint8_t> png_data;
-    if (!ImageEncoder::Encode(&png_data, pixmap, options))
-      return nullptr;
+    mojo_base::BigBuffer png_data =
+        system_clipboard_->ReadPng(mojom::blink::ClipboardBuffer::kStandard);
 
     auto data = std::make_unique<BlobData>();
     data->SetContentType(kMimeTypeImagePng);
     data->AppendBytes(png_data.data(), png_data.size());
+
     const uint64_t length = data->length();
     auto blob = BlobDataHandle::Create(std::move(data), length);
     return MakeGarbageCollected<File>("image.png", base::Time::Now(),
@@ -218,7 +224,7 @@ bool DataObjectItem::IsFilename() const {
 }
 
 bool DataObjectItem::HasFileSystemId() const {
-  return kind_ == kFileKind && !file_system_id_.IsEmpty();
+  return kind_ == kFileKind && !file_system_id_.empty();
 }
 
 String DataObjectItem::FileSystemId() const {

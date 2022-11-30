@@ -3,7 +3,7 @@
 #
 # Each non-whitespace / non-comment line specified a
 # fully-namespace-qualified field that should not be rewritten
-# to use CheckedPtr<T>.
+# to use raw_ptr<T>.
 
 # Next line is non-empty, but contains only whitespace.
             

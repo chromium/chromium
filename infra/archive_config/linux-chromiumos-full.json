@@ -1,0 +1,40 @@
+{
+    "archive_datas": [
+        {
+            "files": [
+                "chrome",
+                "chrome-wrapper",
+                "chrome_100_percent.pak",
+                "chrome_200_percent.pak",
+                "chrome_crashpad_handler",
+                "icudtl.dat",
+                "keyboard_resources.pak",
+                "libminigbm.so",
+                "MEIPreload/manifest.json",
+                "MEIPreload/preloaded_data.pb",
+                "nacl_helper",
+                "nacl_helper_bootstrap",
+                "nacl_irt_x86_64.nexe",
+                "product_logo_48.png",
+                "resources.pak",
+                "snapshot_blob.bin",
+                "xdg-mime",
+                "xdg-settings"
+            ],
+            "dirs": ["ClearKeyCdm", "locales", "resources"],
+            "rename_dirs": [
+                {"from_dir": ".", "to_dir": "chrome-chromeos"}
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Linux_ChromiumOS_Full/{%position%}/chrome-chromeos.zip",
+            "archive_type": "ARCHIVE_TYPE_ZIP",
+            "latest_upload": {
+                "gcs_path": "Linux_ChromiumOS_Full/LAST_CHANGE",
+                "gcs_file_content": "{%position%}"
+            },
+            "revisions_file": {
+                "gcs_path": "Linux_ChromiumOS_Full/{%position%}/REVISIONS"
+            }
+        }
+    ]
+}

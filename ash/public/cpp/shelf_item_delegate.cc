@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 
-#include "base/bind.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -35,22 +34,9 @@ void ShelfItemDelegate::GetContextMenu(int64_t display_id,
   std::move(callback).Run(nullptr);
 }
 
-AppWindowLauncherItemController*
-ShelfItemDelegate::AsAppWindowLauncherItemController() {
+AppWindowShelfItemController*
+ShelfItemDelegate::AsAppWindowShelfItemController() {
   return nullptr;
-}
-
-bool ShelfItemDelegate::ExecuteContextMenuCommand(int64_t command_id,
-                                                  int32_t event_flags) {
-  DCHECK(context_menu_);
-  // Help subclasses execute context menu items, which may be on a sub-menu.
-  ui::MenuModel* model = context_menu_.get();
-  int index = -1;
-  if (!ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model, &index))
-    return false;
-
-  model->ActivatedAt(index, event_flags);
-  return true;
 }
 
 }  // namespace ash

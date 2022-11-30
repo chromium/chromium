@@ -1,10 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<dom-module id="cr-toggle">
-  <template>
     <style>
       :host {
         --cr-toggle-checked-bar-color: var(--google-blue-600);
@@ -24,28 +17,40 @@
         width: 34px;
       }
 
+      @media (forced-colors: active) {
+        :host {
+          /* TODO(crbug.com/1176612): cr-toggle heavily relies on
+             background-color to convey various states (on/off,
+             enabled/disabled). Until proper specs for HCM exist, turn off
+             forced-colors automatic adjustments so that the cr-toggle is at
+             least visible. Replace with a HCM compliant implementation once
+             specs exist.*/
+          forced-color-adjust: none;
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
         :host {
-          --cr-toggle-checked-bar-color: var(--google-blue-refresh-300);
-          --cr-toggle-checked-button-color: var(--google-blue-refresh-300);
+          --cr-toggle-checked-bar-color: var(--google-blue-300);
+          --cr-toggle-checked-button-color: var(--google-blue-300);
           --cr-toggle-checked-ripple-color:
-              rgba(var(--google-blue-refresh-300-rgb), .4);
-          --cr-toggle-unchecked-bar-color: var(--google-grey-refresh-500);
-          --cr-toggle-unchecked-button-color: var(--google-grey-refresh-300);
+              rgba(var(--google-blue-300-rgb), .4);
+          --cr-toggle-unchecked-bar-color: var(--google-grey-500);
+          --cr-toggle-unchecked-button-color: var(--google-grey-300);
           --cr-toggle-unchecked-ripple-color:
-              rgba(var(--google-grey-refresh-300-rgb), .4);
+              rgba(var(--google-grey-300-rgb), .4);
         }
       }
       /* Keep the prefers-color-scheme and [dark] rules the same. */
       :host([dark]) {
-        --cr-toggle-checked-bar-color: var(--google-blue-refresh-300);
-        --cr-toggle-checked-button-color: var(--google-blue-refresh-300);
+        --cr-toggle-checked-bar-color: var(--google-blue-300);
+        --cr-toggle-checked-button-color: var(--google-blue-300);
         --cr-toggle-checked-ripple-color:
-            rgba(var(--google-blue-refresh-300-rgb), .4);
-        --cr-toggle-unchecked-bar-color: var(--google-grey-refresh-500);
-        --cr-toggle-unchecked-button-color: var(--google-grey-refresh-300);
+            rgba(var(--google-blue-300-rgb), .4);
+        --cr-toggle-unchecked-bar-color: var(--google-grey-500);
+        --cr-toggle-unchecked-button-color: var(--google-grey-300);
         --cr-toggle-unchecked-ripple-color:
-            rgba(var(--google-grey-refresh-300-rgb), .4);
+            rgba(var(--google-grey-300-rgb), .4);
       }
 
       :host([disabled]) {
@@ -68,13 +73,13 @@
 
       :host([checked]) #bar {
         background-color: var(--cr-toggle-checked-bar-color);
-        opacity: 0.5;
+        opacity: var(--cr-toggle-checked-bar-opacity, 0.5);
       }
 
       #knob {
         background-color: var(--cr-toggle-unchecked-button-color);
         border-radius: 50%;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
+        box-shadow: var(--cr-toggle-box-shadow, 0 1px 3px 0 rgba(0, 0, 0, .4));
         display: block;
         height: 16px;
         position: relative;
@@ -95,12 +100,15 @@
       paper-ripple {
         --paper-ripple-opacity: 1;
         color: var(--cr-toggle-unchecked-ripple-color);
-        height: 40px;
-        left: -12px;
+        height: var(--cr-toggle-ripple-diameter, 40px);
+        left: 50%;
+        outline: var(--cr-toggle-ripple-ring, none);
         pointer-events: none;
-        top: -12px;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
         transition: color linear 80ms;
-        width: 40px;
+        width: var(--cr-toggle-ripple-diameter, 40px);
       }
 
       :host([checked]) paper-ripple {
@@ -109,11 +117,9 @@
 
       :host-context([dir=rtl]) paper-ripple {
         left: auto;
-        right: -12px;
+        right: 50%;
+        transform: translate(50%, -50%);
       }
     </style>
     <span id="bar"></span>
     <span id="knob"></span>
-  </template>
-  <script src="cr_toggle.js"></script>
-</dom-module>

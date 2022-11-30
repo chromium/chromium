@@ -1,0 +1,10 @@
+include_rules = [
+  "+ui/base/owned_window_anchor.h",
+  "+ui/base/ui_base_types.h"
+]
+specific_include_rules = {
+  "ozone_integration_tests_main\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+mojo/core/embedder/configuration.h",
+  ],
+}

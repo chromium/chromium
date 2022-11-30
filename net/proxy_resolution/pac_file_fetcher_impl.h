@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -50,6 +49,9 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   static std::unique_ptr<PacFileFetcherImpl> Create(
       URLRequestContext* url_request_context);
 
+  PacFileFetcherImpl(const PacFileFetcherImpl&) = delete;
+  PacFileFetcherImpl& operator=(const PacFileFetcherImpl&) = delete;
+
   ~PacFileFetcherImpl() override;
 
   // Used by unit-tests to modify the default limits.
@@ -80,8 +82,6 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   void OnResponseStarted(URLRequest* request, int net_error) override;
   void OnReadCompleted(URLRequest* request, int num_bytes) override;
 
-  const IsolationInfo& isolation_info_for_testing() { return isolation_info_; }
-
  private:
   enum { kBufSize = 4096 };
 
@@ -110,16 +110,13 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // The context used for making network requests.  Set to nullptr by
   // OnShutdown.
-  URLRequestContext* url_request_context_;
-
-  // Transient IsolationInfo used to fetch PAC scripts.
-  const IsolationInfo isolation_info_;
+  raw_ptr<URLRequestContext> url_request_context_;
 
   // Buffer that URLRequest writes into.
   scoped_refptr<IOBuffer> buf_;
 
   // The next ID to use for |cur_request_| (monotonically increasing).
-  int next_id_;
+  int next_id_ = 0;
 
   // The current (in progress) request, or NULL.
   std::unique_ptr<URLRequest> cur_request_;
@@ -127,20 +124,20 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   // State for current request (only valid when |cur_request_| is not NULL):
 
   // Unique ID for the current request.
-  int cur_request_id_;
+  int cur_request_id_ = 0;
 
   // Callback to invoke on completion of the fetch.
   CompletionOnceCallback callback_;
 
   // Holds the error condition that was hit on the current request, or OK.
-  int result_code_;
+  int result_code_ = OK;
 
   // Holds the bytes read so far. Will not exceed |max_response_bytes|.
   std::string bytes_read_so_far_;
 
   // This buffer is owned by the owner of |callback|, and will be filled with
   // UTF16 response on completion.
-  std::u16string* result_text_;
+  raw_ptr<std::u16string> result_text_ = nullptr;
 
   // The maximum number of bytes to allow in responses.
   size_t max_response_bytes_;
@@ -157,8 +154,6 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
   // Factory for creating the time-out task. This takes care of revoking
   // outstanding tasks when |this| is deleted.
   base::WeakPtrFactory<PacFileFetcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileFetcherImpl);
 };
 
 }  // namespace net

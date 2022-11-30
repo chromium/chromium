@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
@@ -25,7 +23,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -34,6 +31,19 @@ using remote_cocoa::mojom::AlertDisposition;
 
 ////////////////////////////////////////////////////////////////////////////////
 // JavaScriptAppModalDialogCocoa:
+
+// static
+javascript_dialogs::AppModalDialogView*
+JavaScriptAppModalDialogCocoa::CreateNativeJavaScriptDialog(
+    javascript_dialogs::AppModalDialogController* controller) {
+  javascript_dialogs::AppModalDialogView* view =
+      new JavaScriptAppModalDialogCocoa(controller);
+  // Match Views by activating the tab during creation (rather than
+  // when showing).
+  controller->web_contents()->GetDelegate()->ActivateContents(
+      controller->web_contents());
+  return view;
+}
 
 JavaScriptAppModalDialogCocoa::JavaScriptAppModalDialogCocoa(
     javascript_dialogs::AppModalDialogController* controller)
@@ -109,8 +119,6 @@ void JavaScriptAppModalDialogCocoa::OnAlertFinished(
       controller_->OnClose();
       break;
   }
-  if (Browser* browser = BrowserList::GetInstance()->GetLastActive())
-    browser->window()->Show();
   delete this;
 }
 
@@ -125,22 +133,31 @@ void JavaScriptAppModalDialogCocoa::OnMojoDisconnect() {
 void JavaScriptAppModalDialogCocoa::ShowAppModalDialog() {
   is_showing_ = true;
 
-  mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge> bridge_receiver =
-      alert_bridge_.BindNewPipeAndPassReceiver();
-  alert_bridge_.set_disconnect_handler(
-      base::BindOnce(&JavaScriptAppModalDialogCocoa::OnMojoDisconnect,
-                     weak_factory_.GetWeakPtr()));
-  // If the alert is from a window that is out of process then use the
-  // remote_cocoa::ApplicationHost for that window to create the alert.
-  // Otherwise create an AlertBridge in-process (but still communicate with it
-  // over mojo).
-  auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
-      controller_->web_contents()->GetNativeView());
-  if (application_host)
+  // Set `alert_bridge` to point to the in-process or out-of-process interface
+  // on which we will call Show. We need different paths (mojo for remote and
+  // raw pointers for in-process) to have consistent ordering with other
+  // remote_cocoa interfaces.
+  // https://crbug.com/1236369
+  remote_cocoa::mojom::AlertBridge* alert_bridge = nullptr;
+  if (auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
+          controller_->web_contents()->GetNativeView())) {
+    // If the alert is from a window that is out of process then use the
+    // remote_cocoa::ApplicationHost for that window to create the alert.
+    mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge> bridge_receiver =
+        alert_bridge_remote_.BindNewPipeAndPassReceiver();
+    alert_bridge_remote_.set_disconnect_handler(
+        base::BindOnce(&JavaScriptAppModalDialogCocoa::OnMojoDisconnect,
+                       weak_factory_.GetWeakPtr()));
     application_host->GetApplication()->CreateAlert(std::move(bridge_receiver));
-  else
-    ignore_result(new remote_cocoa::AlertBridge(std::move(bridge_receiver)));
-  alert_bridge_->Show(
+    alert_bridge = alert_bridge_remote_.get();
+  } else {
+    // Otherwise create an remote_cocoa::AlertBridge directly in-process. Note
+    // that `alert_bridge` will delete itself.
+    alert_bridge = new remote_cocoa::AlertBridge(
+        mojo::PendingReceiver<remote_cocoa::mojom::AlertBridge>());
+  }
+
+  alert_bridge->Show(
       GetAlertParams(),
       base::BindOnce(&JavaScriptAppModalDialogCocoa::OnAlertFinished,
                      weak_factory_.GetWeakPtr()));
@@ -175,16 +192,8 @@ bool JavaScriptAppModalDialogCocoa::IsShowing() const {
   return is_showing_;
 }
 
-void InstallChromeJavaScriptAppModalDialogViewFactory() {
+void InstallChromeJavaScriptAppModalDialogViewCocoaFactory() {
   javascript_dialogs::AppModalDialogManager::GetInstance()
       ->SetNativeDialogFactory(base::BindRepeating(
-          [](javascript_dialogs::AppModalDialogController* controller) {
-            javascript_dialogs::AppModalDialogView* view =
-                new JavaScriptAppModalDialogCocoa(controller);
-            // Match Views by activating the tab during creation (rather than
-            // when showing).
-            controller->web_contents()->GetDelegate()->ActivateContents(
-                controller->web_contents());
-            return view;
-          }));
+          &JavaScriptAppModalDialogCocoa::CreateNativeJavaScriptDialog));
 }

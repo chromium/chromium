@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 namespace nacl {
 
 PnaclCacheInfo::PnaclCacheInfo()
-    : abi_version(0), opt_level(0), has_no_store_header(0), use_subzero(false) {
-}
+    : abi_version(0),
+      opt_level(0),
+      has_no_store_header(false),
+      use_subzero(false) {}
 PnaclCacheInfo::PnaclCacheInfo(const PnaclCacheInfo& other) = default;
 PnaclCacheInfo::~PnaclCacheInfo() {}
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "media/base/media_log.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -81,6 +80,10 @@ MATCHER_P(MatchesPropertyAnyValue, message, "") {
 class MockMediaLog : public MediaLog {
  public:
   MockMediaLog();
+
+  MockMediaLog(const MockMediaLog&) = delete;
+  MockMediaLog& operator=(const MockMediaLog&) = delete;
+
   ~MockMediaLog() override;
 
   MOCK_METHOD1(DoAddLogRecordLogString, void(const std::string& event));
@@ -105,8 +108,6 @@ class MockMediaLog : public MediaLog {
 
  private:
   std::unique_ptr<MediaLogRecord> most_recent_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaLog);
 };
 
 }  // namespace media

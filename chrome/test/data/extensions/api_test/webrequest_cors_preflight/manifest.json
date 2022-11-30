@@ -1,0 +1,11 @@
+{
+  "name": "CORS preflight WebRequest",
+  "description": "Test extension for webRequest api in extraHeaders mode for CORS preflight request",
+  "manifest_version": 2,
+  "permissions": [ "webRequest", "http://127.0.0.1/*", "http://cors.test/*" ],
+  "version": "0.1",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}

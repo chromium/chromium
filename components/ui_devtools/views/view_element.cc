@@ -1,38 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/ui_devtools/views/view_element.h"
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
+#include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
-#include "ui/events/event_utils.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/views/metadata/metadata_types.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ui_devtools {
 
 namespace {
-
-// Remove any custom editor "prefixes" from the property name. The prefixes must
-// not be valid identifier characters.
-void StripPrefix(std::string& property_name) {
-  auto cur = property_name.cbegin();
-  for (; cur < property_name.cend(); ++cur) {
-    if ((*cur >= 'A' && *cur <= 'Z') || (*cur >= 'a' && *cur <= 'z') ||
-        *cur == '_') {
-      break;
-    }
-  }
-  property_name.erase(property_name.cbegin(), cur);
-}
 
 ui::EventType GetMouseEventType(const std::string& type) {
   if (type == protocol::DOM::MouseEvent::TypeEnum::MousePressed)
@@ -91,22 +82,22 @@ int GetMouseWheelYOffset(const std::string& mouse_wheel_direction) {
 ViewElement::ViewElement(views::View* view,
                          UIElementDelegate* ui_element_delegate,
                          UIElement* parent)
-    : UIElement(UIElementType::VIEW, ui_element_delegate, parent), view_(view) {
-  view_->AddObserver(this);
+    : UIElementWithMetaData(UIElementType::VIEW, ui_element_delegate, parent),
+      view_(view) {
+  observer_.Observe(view_);
 }
 
-ViewElement::~ViewElement() {
-  view_->RemoveObserver(this);
-}
+ViewElement::~ViewElement() = default;
 
 void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = std::find_if(
-      children().begin(), children().end(), [view](UIElement* child) {
-        return view ==
-               UIElement::GetBackingElement<views::View, ViewElement>(child);
-      });
-  DCHECK(iter != children().end());
+  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+    return UIElement::GetBackingElement<views::View, ViewElement>(child);
+  });
+  if (iter == children().end()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
   RemoveChild(child_element);
   delete child_element;
@@ -114,54 +105,32 @@ void ViewElement::OnChildViewRemoved(views::View* parent, views::View* view) {
 
 void ViewElement::OnChildViewAdded(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
+  if (base::Contains(children(), view, [](UIElement* child) {
+        return UIElement::GetBackingElement<views::View, ViewElement>(child);
+      })) {
+    RebuildTree();
+    return;
+  }
   AddChild(new ViewElement(view, delegate(), this));
 }
 
 void ViewElement::OnChildViewReordered(views::View* parent, views::View* view) {
   DCHECK_EQ(parent, view_);
-  auto iter = std::find_if(
-      children().begin(), children().end(), [view](UIElement* child) {
-        return view ==
-               UIElement::GetBackingElement<views::View, ViewElement>(child);
-      });
-  DCHECK(iter != children().end());
+  auto iter = base::ranges::find(children(), view, [](UIElement* child) {
+    return UIElement::GetBackingElement<views::View, ViewElement>(child);
+  });
+  if (iter == children().end() ||
+      children().size() != view_->children().size()) {
+    RebuildTree();
+    return;
+  }
   UIElement* child_element = *iter;
-  ReorderChild(child_element, parent->GetIndexOf(view));
+  ReorderChild(child_element, parent->GetIndexOf(view).value());
 }
 
 void ViewElement::OnViewBoundsChanged(views::View* view) {
   DCHECK_EQ(view_, view);
   delegate()->OnUIElementBoundsChanged(this);
-}
-
-std::vector<UIElement::ClassProperties>
-ViewElement::GetCustomPropertiesForMatchedStyle() const {
-  std::vector<UIElement::ClassProperties> ret;
-
-  ui::Layer* layer = view_->layer();
-  if (layer) {
-    std::vector<UIElement::UIProperty> layer_properties;
-    AppendLayerPropertiesMatchedStyle(layer, &layer_properties);
-    ret.emplace_back("Layer", layer_properties);
-  }
-
-  std::vector<UIElement::UIProperty> class_properties;
-  views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
-  for (auto member = metadata->begin(); member != metadata->end(); member++) {
-    auto flags = (*member)->GetPropertyFlags();
-    if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
-        !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
-      class_properties.emplace_back(
-          (*member)->GetMemberNamePrefix() + (*member)->member_name(),
-          base::UTF16ToUTF8((*member)->GetValueAsString(view_)));
-    }
-
-    if (member.IsLastMember()) {
-      ret.emplace_back(member.GetCurrentCollectionName(), class_properties);
-      class_properties.clear();
-    }
-  }
-  return ret;
 }
 
 void ViewElement::GetBounds(gfx::Rect* bounds) const {
@@ -170,61 +139,6 @@ void ViewElement::GetBounds(gfx::Rect* bounds) const {
 
 void ViewElement::SetBounds(const gfx::Rect& bounds) {
   view_->SetBoundsRect(bounds);
-}
-
-void ViewElement::GetVisible(bool* visible) const {
-  // Visibility information should be directly retrieved from View's metadata,
-  // no need for this function any more.
-  NOTREACHED();
-}
-
-void ViewElement::SetVisible(bool visible) {
-  // Intentional No-op.
-}
-
-bool ViewElement::SetPropertiesFromString(const std::string& text) {
-  bool property_set = false;
-  std::vector<std::string> tokens = base::SplitString(
-      text, ":;", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  if (tokens.size() == 0UL)
-    return false;
-
-  for (size_t i = 0; i < tokens.size() - 1; i += 2) {
-    std::string property_name = tokens.at(i);
-    std::string property_value = base::ToLowerASCII(tokens.at(i + 1));
-
-    // Remove any type editor "prefixes" from the property name.
-    StripPrefix(property_name);
-
-    views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
-    views::metadata::MemberMetaDataBase* member =
-        metadata->FindMemberData(property_name);
-    if (!member) {
-      DLOG(ERROR) << "UI DevTools: Can not find property " << property_name
-                  << " in MetaData.";
-      continue;
-    }
-
-    // Since DevTools frontend doesn't check the value, we do a sanity check
-    // based on the allowed values specified in the metadata.
-    auto valid_values = member->GetValidValues();
-    if (!valid_values.empty() &&
-        std::find(valid_values.begin(), valid_values.end(),
-                  base::UTF8ToUTF16(property_value)) == valid_values.end()) {
-      // Ignore the value.
-      continue;
-    }
-
-    auto property_flags = member->GetPropertyFlags();
-    if (!!(property_flags & views::metadata::PropertyFlags::kReadOnly))
-      continue;
-    DCHECK(!!(property_flags & views::metadata::PropertyFlags::kSerializable));
-    member->SetValueAsString(view_, base::UTF8ToUTF16(property_value));
-    property_set = true;
-  }
-
-  return property_set;
 }
 
 std::vector<std::string> ViewElement::GetAttributes() const {
@@ -263,18 +177,11 @@ void ViewElement::PaintRect() const {
   view()->SchedulePaint();
 }
 
-void ViewElement::InitSources() {
-  if (view_->layer()) {
-    AddSource("ui/compositor/layer.h", 0);
-  }
-
-  for (views::metadata::ClassMetaData* metadata = view_->GetClassMetaData();
-       metadata != nullptr; metadata = metadata->parent_class_meta_data()) {
-    // If class has Metadata properties, add their sources.
-    if (!metadata->members().empty()) {
-      AddSource(metadata->file(), metadata->line());
-    }
-  }
+bool ViewElement::FindMatchByElementID(
+    const ui::ElementIdentifier& identifier) {
+  return base::Contains(views::ElementTrackerViews::GetInstance()
+                            ->GetAllMatchingViewsInAnyContext(identifier),
+                        view_);
 }
 
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
@@ -297,6 +204,44 @@ bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
     view_->OnMouseEvent(&mouse_event);
   }
   return true;
+}
+
+bool ViewElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
+  ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
+  // Key events are processed differently based on classes. Character events are
+  // routed to the text input client while key stroke events are propragated
+  // through the normal event flow. The IME flow is bypassed.
+  if (key_event.is_char()) {
+    // Since the IME flow is bypassed, we need to manually add ui components
+    // we want to receive character events here.
+    if (views::IsViewClass<views::Textfield>(view_)) {
+      static_cast<views::Textfield*>(view_)->InsertChar(key_event);
+    } else {
+      return false;
+    }
+  } else {
+    view_->OnKeyEvent(&key_event);
+  }
+  return true;
+}
+
+ui::metadata::ClassMetaData* ViewElement::GetClassMetaData() const {
+  return view_->GetClassMetaData();
+}
+
+void* ViewElement::GetClassInstance() const {
+  return view_;
+}
+
+ui::Layer* ViewElement::GetLayer() const {
+  return view_->layer();
+}
+
+void ViewElement::RebuildTree() {
+  ClearChildren();
+  for (auto* child : view_->children()) {
+    AddChild(new ViewElement(child, delegate(), this));
+  }
 }
 
 }  // namespace ui_devtools

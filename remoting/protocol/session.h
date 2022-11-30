@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionPlugin;
 class Transport;
@@ -52,8 +50,8 @@ class Session {
 
   class EventHandler {
    public:
-    EventHandler() {}
-    virtual ~EventHandler() {}
+    EventHandler() = default;
+    virtual ~EventHandler() = default;
 
     // Called after session state has changed. It is safe to destroy
     // the session from within the handler if |state| is AUTHENTICATING
@@ -61,8 +59,12 @@ class Session {
     virtual void OnSessionStateChange(State state) = 0;
   };
 
-  Session() {}
-  virtual ~Session() {}
+  Session() = default;
+
+  Session(const Session&) = delete;
+  Session& operator=(const Session&) = delete;
+
+  virtual ~Session() = default;
 
   // Set event handler for this session. |event_handler| must outlive
   // this object.
@@ -92,12 +94,8 @@ class Session {
   // called immediately after SessionManager::Connect() for outgoing connections
   // or in the IncomingSessionCallback handler for incoming connections.
   virtual void AddPlugin(SessionPlugin* plugin) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Session);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_SESSION_H_

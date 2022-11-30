@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -30,6 +29,12 @@ class ASH_EXPORT TestLockScreenActionBackgroundController
     : public LockScreenActionBackgroundController {
  public:
   TestLockScreenActionBackgroundController();
+
+  TestLockScreenActionBackgroundController(
+      const TestLockScreenActionBackgroundController&) = delete;
+  TestLockScreenActionBackgroundController& operator=(
+      const TestLockScreenActionBackgroundController&) = delete;
+
   ~TestLockScreenActionBackgroundController() override;
 
   // LockScreenBackgroundController:
@@ -53,8 +58,6 @@ class ASH_EXPORT TestLockScreenActionBackgroundController
  private:
   // Testing widget created when the background is shown.
   std::unique_ptr<views::Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockScreenActionBackgroundController);
 };
 
 }  // namespace ash

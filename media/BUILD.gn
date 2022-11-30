@@ -1,36 +1,43 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
-import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
+
+if (enable_library_cdms) {
+  import("//media/cdm/library_cdm/cdm_paths.gni")
+}
 
 buildflag_header("media_buildflags") {
   header = "media_buildflags.h"
 
   flags = [
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
-    "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
+    "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
-    "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",
-    "ENABLE_CDM_STORAGE_ID=$enable_cdm_storage_id",
+    "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
     "ENABLE_AV1_DECODER=$enable_av1_decoder",
     "ENABLE_PLATFORM_DOLBY_VISION=$enable_platform_dolby_vision",
+    "ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION=$enable_platform_encrypted_dolby_vision",
     "ENABLE_FFMPEG=$media_use_ffmpeg",
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
     "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",
+    "ENABLE_HEVC_PARSER_AND_HW_DECODER=$enable_hevc_parser_and_hw_decoder",
     "ENABLE_HLS_SAMPLE_AES=$enable_hls_sample_aes",
+    "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
     "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",
+    "ENABLE_LIBAOM=$enable_libaom",
     "ENABLE_LIBRARY_CDMS=$enable_library_cdms",
     "ENABLE_LIBVPX=$media_use_libvpx",
     "ENABLE_LOGGING_OVERRIDE=$enable_logging_override",
@@ -40,10 +47,21 @@ buildflag_header("media_buildflags") {
     "ENABLE_OPENH264=$media_use_openh264",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
+    "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
+    "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
+    "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
   ]
+
+  if (enable_library_cdms) {
+    flags += [
+      "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
+      "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",
+      "ENABLE_CDM_STORAGE_ID=$enable_cdm_storage_id",
+    ]
+  }
 }
 
 if (proprietary_codecs && media_use_ffmpeg) {
@@ -100,7 +118,6 @@ component("media") {
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
     "//cc/paint",
-    "//crypto:platform",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
     "//third_party/libyuv",
@@ -124,9 +141,6 @@ component("media") {
     public_deps += [ "//media/base/mac" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
-  }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -179,6 +193,10 @@ test("media_unittests") {
 
   data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:media_unittests_filters" ]
+  }
+
   if (media_use_ffmpeg) {
     deps += [ "//media/ffmpeg:unit_tests" ]
   }
@@ -197,10 +215,24 @@ test("media_unittests") {
 
   if (is_fuchsia) {
     deps += [
-      "//media/fuchsia/audio:unittests",
       "//media/fuchsia/cdm/service:unittests",
+      "//media/fuchsia/video:unittests",
     ]
-    manifest = "//media/fuchsia/media_unittests.test-cmx"
+
+    # PaintCanvasVideoRendererWithGLTest.* uses SwiftShader, which generates
+    # machine code.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/audio_output.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
+
+    if (enable_library_cdms) {
+      excluded_files = [ "lib.unstripped/libclearkeycdm.so" ]
+    }
   }
 
   if (enable_media_remoting) {
@@ -258,6 +290,11 @@ test("audio_unittests") {
       "//ui/android:ui_java",
     ]
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/audio_output.shard.test-cml" ]
+  }
 }
 
 # Note: Most external components should just depend on //media unless they
@@ -267,6 +304,7 @@ component("shared_memory_support") {
   sources = [
     "base/audio_bus.cc",
     "base/audio_bus.h",
+    "base/audio_codecs.h",
     "base/audio_latency.cc",
     "base/audio_latency.h",
     "base/audio_parameters.cc",
@@ -277,6 +315,7 @@ component("shared_memory_support") {
     "base/channel_layout.cc",
     "base/channel_layout.h",
     "base/limits.h",
+    "base/media_export.h",
     "base/media_shmem_export.h",
     "base/sample_format.cc",
     "base/sample_format.h",

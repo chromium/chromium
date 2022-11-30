@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 namespace content {
 
 TapSuppressionController::Config::Config()
-    : enabled(false),
-      max_cancel_to_down_time(base::TimeDelta::FromMilliseconds(180)) {
-}
+    : enabled(false), max_cancel_to_down_time(base::Milliseconds(180)) {}
 
 TapSuppressionController::TapSuppressionController(const Config& config)
     : state_(config.enabled ? NOTHING : DISABLED),

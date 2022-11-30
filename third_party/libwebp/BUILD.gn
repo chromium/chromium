@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,17 +7,19 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 config("libwebp_config") {
-  include_dirs = [ "./src" ]
+  include_dirs = [ "./src/src" ]
   defines = [ "WEBP_EXTERN=extern" ]
 }
 
 config("libwebp_config_internal") {
-  include_dirs = [ "." ]
+  include_dirs = [ "./src" ]
   defines = [
     "WEBP_NEAR_LOSSLESS=0",
     "WEBP_DISABLE_STATS",
-    "WEBP_REDUCE_SIZE",
   ]
+  if (!is_chromeos) {
+    defines += [ "WEBP_REDUCE_SIZE" ]
+  }
   if (!is_ios) {
     defines += [ "WEBP_REDUCE_CSP" ]
   }
@@ -34,34 +36,34 @@ use_dsp_neon =
 
 source_set("libwebp_webp") {
   sources = [
-    "src/webp/decode.h",
-    "src/webp/demux.h",
-    "src/webp/encode.h",
-    "src/webp/format_constants.h",
-    "src/webp/mux.h",
-    "src/webp/mux_types.h",
-    "src/webp/types.h",
+    "src/src/webp/decode.h",
+    "src/src/webp/demux.h",
+    "src/src/webp/encode.h",
+    "src/src/webp/format_constants.h",
+    "src/src/webp/mux.h",
+    "src/src/webp/mux_types.h",
+    "src/src/webp/types.h",
   ]
 }
 
 static_library("libwebp_dec") {
   sources = [
-    "src/dec/alpha_dec.c",
-    "src/dec/alphai_dec.h",
-    "src/dec/buffer_dec.c",
-    "src/dec/common_dec.h",
-    "src/dec/frame_dec.c",
-    "src/dec/idec_dec.c",
-    "src/dec/io_dec.c",
-    "src/dec/quant_dec.c",
-    "src/dec/tree_dec.c",
-    "src/dec/vp8_dec.c",
-    "src/dec/vp8_dec.h",
-    "src/dec/vp8i_dec.h",
-    "src/dec/vp8l_dec.c",
-    "src/dec/vp8li_dec.h",
-    "src/dec/webp_dec.c",
-    "src/dec/webpi_dec.h",
+    "src/src/dec/alpha_dec.c",
+    "src/src/dec/alphai_dec.h",
+    "src/src/dec/buffer_dec.c",
+    "src/src/dec/common_dec.h",
+    "src/src/dec/frame_dec.c",
+    "src/src/dec/idec_dec.c",
+    "src/src/dec/io_dec.c",
+    "src/src/dec/quant_dec.c",
+    "src/src/dec/tree_dec.c",
+    "src/src/dec/vp8_dec.c",
+    "src/src/dec/vp8_dec.h",
+    "src/src/dec/vp8i_dec.h",
+    "src/src/dec/vp8l_dec.c",
+    "src/src/dec/vp8li_dec.h",
+    "src/src/dec/webp_dec.c",
+    "src/src/dec/webpi_dec.h",
   ]
 
   configs += [ ":libwebp_config_internal" ]
@@ -73,18 +75,16 @@ static_library("libwebp_dec") {
   }
 
   deps = [
-    ":libwebp_dsp",
+    ":libwebp_dsp_headers",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
   all_dependent_configs = [ ":libwebp_config" ]
-  if (use_dsp_neon) {
-    deps += [ ":libwebp_dsp_neon" ]
-  }
+  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 static_library("libwebp_demux") {
-  sources = [ "src/demux/demux.c" ]
+  sources = [ "src/src/demux/demux.c" ]
   all_dependent_configs = [ ":libwebp_config" ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -97,12 +97,12 @@ static_library("libwebp_demux") {
 
 static_library("libwebp_mux") {
   sources = [
-    "src/mux/anim_encode.c",
-    "src/mux/animi.h",
-    "src/mux/muxedit.c",
-    "src/mux/muxi.h",
-    "src/mux/muxinternal.c",
-    "src/mux/muxread.c",
+    "src/src/mux/anim_encode.c",
+    "src/src/mux/animi.h",
+    "src/src/mux/muxedit.c",
+    "src/src/mux/muxi.h",
+    "src/src/mux/muxinternal.c",
+    "src/src/mux/muxread.c",
   ]
   all_dependent_configs = [ ":libwebp_config" ]
   configs += [ ":libwebp_config_internal" ]
@@ -115,52 +115,58 @@ static_library("libwebp_mux") {
   ]
 }
 
+source_set("libwebp_dsp_headers") {
+  public = [
+    "src/src/dsp/cpu.h",
+    "src/src/dsp/dsp.h",
+    "src/src/dsp/lossless.h",
+    "src/src/dsp/lossless_common.h",
+    "src/src/dsp/mips_macro.h",
+    "src/src/dsp/msa_macro.h",
+    "src/src/dsp/neon.h",
+    "src/src/dsp/quant.h",
+    "src/src/dsp/yuv.h",
+  ]
+}
+
 static_library("libwebp_dsp") {
   sources = [
-    "src/dsp/alpha_processing.c",
-    "src/dsp/alpha_processing_mips_dsp_r2.c",
-    "src/dsp/cost.c",
-    "src/dsp/cost_mips32.c",
-    "src/dsp/cost_mips_dsp_r2.c",
-    "src/dsp/cpu.c",
-    "src/dsp/dec.c",
-    "src/dsp/dec_clip_tables.c",
-    "src/dsp/dec_mips32.c",
-    "src/dsp/dec_mips_dsp_r2.c",
-    "src/dsp/dec_msa.c",
-    "src/dsp/dsp.h",
-    "src/dsp/enc.c",
-    "src/dsp/enc_mips32.c",
-    "src/dsp/enc_mips_dsp_r2.c",
-    "src/dsp/enc_msa.c",
-    "src/dsp/filters.c",
-    "src/dsp/filters_mips_dsp_r2.c",
-    "src/dsp/filters_msa.c",
-    "src/dsp/lossless.c",
-    "src/dsp/lossless.h",
-    "src/dsp/lossless_common.h",
-    "src/dsp/lossless_enc.c",
-    "src/dsp/lossless_enc_mips32.c",
-    "src/dsp/lossless_enc_mips_dsp_r2.c",
-    "src/dsp/lossless_enc_msa.c",
-    "src/dsp/lossless_mips_dsp_r2.c",
-    "src/dsp/lossless_msa.c",
-    "src/dsp/mips_macro.h",
-    "src/dsp/msa_macro.h",
-    "src/dsp/neon.h",
-    "src/dsp/quant.h",
-    "src/dsp/rescaler.c",
-    "src/dsp/rescaler_mips32.c",
-    "src/dsp/rescaler_mips_dsp_r2.c",
-    "src/dsp/rescaler_msa.c",
-    "src/dsp/ssim.c",
-    "src/dsp/upsampling.c",
-    "src/dsp/upsampling_mips_dsp_r2.c",
-    "src/dsp/upsampling_msa.c",
-    "src/dsp/yuv.c",
-    "src/dsp/yuv.h",
-    "src/dsp/yuv_mips32.c",
-    "src/dsp/yuv_mips_dsp_r2.c",
+    "src/src/dsp/alpha_processing.c",
+    "src/src/dsp/alpha_processing_mips_dsp_r2.c",
+    "src/src/dsp/cost.c",
+    "src/src/dsp/cost_mips32.c",
+    "src/src/dsp/cost_mips_dsp_r2.c",
+    "src/src/dsp/cpu.c",
+    "src/src/dsp/dec.c",
+    "src/src/dsp/dec_clip_tables.c",
+    "src/src/dsp/dec_mips32.c",
+    "src/src/dsp/dec_mips_dsp_r2.c",
+    "src/src/dsp/dec_msa.c",
+    "src/src/dsp/enc.c",
+    "src/src/dsp/enc_mips32.c",
+    "src/src/dsp/enc_mips_dsp_r2.c",
+    "src/src/dsp/enc_msa.c",
+    "src/src/dsp/filters.c",
+    "src/src/dsp/filters_mips_dsp_r2.c",
+    "src/src/dsp/filters_msa.c",
+    "src/src/dsp/lossless.c",
+    "src/src/dsp/lossless_enc.c",
+    "src/src/dsp/lossless_enc_mips32.c",
+    "src/src/dsp/lossless_enc_mips_dsp_r2.c",
+    "src/src/dsp/lossless_enc_msa.c",
+    "src/src/dsp/lossless_mips_dsp_r2.c",
+    "src/src/dsp/lossless_msa.c",
+    "src/src/dsp/rescaler.c",
+    "src/src/dsp/rescaler_mips32.c",
+    "src/src/dsp/rescaler_mips_dsp_r2.c",
+    "src/src/dsp/rescaler_msa.c",
+    "src/src/dsp/ssim.c",
+    "src/src/dsp/upsampling.c",
+    "src/src/dsp/upsampling_mips_dsp_r2.c",
+    "src/src/dsp/upsampling_msa.c",
+    "src/src/dsp/yuv.c",
+    "src/src/dsp/yuv_mips32.c",
+    "src/src/dsp/yuv_mips_dsp_r2.c",
   ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -172,11 +178,14 @@ static_library("libwebp_dsp") {
 
   all_dependent_configs = [ ":libwebp_config" ]
   deps = [
+    ":libwebp_dec",
     ":libwebp_dsp_sse2",
     ":libwebp_dsp_sse41",
+    ":libwebp_enc",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
+  public_deps = [ ":libwebp_dsp_headers" ]
   if (is_android) {
     deps += [ "//third_party/android_ndk:cpu_features" ]
   }
@@ -186,17 +195,23 @@ static_library("libwebp_dsp") {
       "WEBP_HAVE_SSE41",
     ]
   }
+  allow_circular_includes_from = [
+    ":libwebp_dsp_sse2",
+    ":libwebp_dsp_sse41",
+    ":libwebp_utils",
+  ]
 }
 
 static_library("libwebp_dsp_sse41") {
   sources = [
-    "src/dsp/alpha_processing_sse41.c",
-    "src/dsp/common_sse41.h",
-    "src/dsp/dec_sse41.c",
-    "src/dsp/enc_sse41.c",
-    "src/dsp/lossless_enc_sse41.c",
-    "src/dsp/upsampling_sse41.c",
-    "src/dsp/yuv_sse41.c",
+    "src/src/dsp/alpha_processing_sse41.c",
+    "src/src/dsp/common_sse41.h",
+    "src/src/dsp/dec_sse41.c",
+    "src/src/dsp/enc_sse41.c",
+    "src/src/dsp/lossless_enc_sse41.c",
+    "src/src/dsp/lossless_sse41.c",
+    "src/src/dsp/upsampling_sse41.c",
+    "src/src/dsp/yuv_sse41.c",
   ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -213,22 +228,23 @@ static_library("libwebp_dsp_sse41") {
       cflags = [ "-msse4.1" ]
     }
   }
+  deps = [ ":libwebp_dsp_sse2" ]
 }
 
 static_library("libwebp_dsp_sse2") {
   sources = [
-    "src/dsp/alpha_processing_sse2.c",
-    "src/dsp/common_sse2.h",
-    "src/dsp/cost_sse2.c",
-    "src/dsp/dec_sse2.c",
-    "src/dsp/enc_sse2.c",
-    "src/dsp/filters_sse2.c",
-    "src/dsp/lossless_enc_sse2.c",
-    "src/dsp/lossless_sse2.c",
-    "src/dsp/rescaler_sse2.c",
-    "src/dsp/ssim_sse2.c",
-    "src/dsp/upsampling_sse2.c",
-    "src/dsp/yuv_sse2.c",
+    "src/src/dsp/alpha_processing_sse2.c",
+    "src/src/dsp/common_sse2.h",
+    "src/src/dsp/cost_sse2.c",
+    "src/src/dsp/dec_sse2.c",
+    "src/src/dsp/enc_sse2.c",
+    "src/src/dsp/filters_sse2.c",
+    "src/src/dsp/lossless_enc_sse2.c",
+    "src/src/dsp/lossless_sse2.c",
+    "src/src/dsp/rescaler_sse2.c",
+    "src/src/dsp/ssim_sse2.c",
+    "src/src/dsp/upsampling_sse2.c",
+    "src/src/dsp/yuv_sse2.c",
   ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -245,21 +261,34 @@ static_library("libwebp_dsp_sse2") {
       cflags = [ "-msse2" ]
     }
   }
+  public_deps = [
+    ":libwebp_dec",
+    ":libwebp_dsp_headers",
+    ":libwebp_enc",
+    ":libwebp_utils",
+  ]
 }
 
 if (use_dsp_neon) {
   static_library("libwebp_dsp_neon") {
     sources = [
-      "src/dsp/alpha_processing_neon.c",
-      "src/dsp/cost_neon.c",
-      "src/dsp/dec_neon.c",
-      "src/dsp/enc_neon.c",
-      "src/dsp/filters_neon.c",
-      "src/dsp/lossless_enc_neon.c",
-      "src/dsp/lossless_neon.c",
-      "src/dsp/rescaler_neon.c",
-      "src/dsp/upsampling_neon.c",
-      "src/dsp/yuv_neon.c",
+      "src/src/dsp/alpha_processing_neon.c",
+      "src/src/dsp/cost_neon.c",
+      "src/src/dsp/dec_neon.c",
+      "src/src/dsp/enc_neon.c",
+      "src/src/dsp/filters_neon.c",
+      "src/src/dsp/lossless_enc_neon.c",
+      "src/src/dsp/lossless_neon.c",
+      "src/src/dsp/rescaler_neon.c",
+      "src/src/dsp/upsampling_neon.c",
+      "src/src/dsp/yuv_neon.c",
+    ]
+
+    deps = [
+      ":libwebp_dec",
+      ":libwebp_dsp",
+      ":libwebp_enc",
+      ":libwebp_utils",
     ]
 
     configs += [ ":libwebp_config_internal" ]
@@ -282,34 +311,34 @@ if (use_dsp_neon) {
 
 static_library("libwebp_enc") {
   sources = [
-    "src/enc/alpha_enc.c",
-    "src/enc/analysis_enc.c",
-    "src/enc/backward_references_cost_enc.c",
-    "src/enc/backward_references_enc.c",
-    "src/enc/backward_references_enc.h",
-    "src/enc/config_enc.c",
-    "src/enc/cost_enc.c",
-    "src/enc/cost_enc.h",
-    "src/enc/filter_enc.c",
-    "src/enc/frame_enc.c",
-    "src/enc/histogram_enc.c",
-    "src/enc/histogram_enc.h",
-    "src/enc/iterator_enc.c",
-    "src/enc/near_lossless_enc.c",
-    "src/enc/picture_csp_enc.c",
-    "src/enc/picture_enc.c",
-    "src/enc/picture_psnr_enc.c",
-    "src/enc/picture_rescale_enc.c",
-    "src/enc/picture_tools_enc.c",
-    "src/enc/predictor_enc.c",
-    "src/enc/quant_enc.c",
-    "src/enc/syntax_enc.c",
-    "src/enc/token_enc.c",
-    "src/enc/tree_enc.c",
-    "src/enc/vp8i_enc.h",
-    "src/enc/vp8l_enc.c",
-    "src/enc/vp8li_enc.h",
-    "src/enc/webp_enc.c",
+    "src/src/enc/alpha_enc.c",
+    "src/src/enc/analysis_enc.c",
+    "src/src/enc/backward_references_cost_enc.c",
+    "src/src/enc/backward_references_enc.c",
+    "src/src/enc/backward_references_enc.h",
+    "src/src/enc/config_enc.c",
+    "src/src/enc/cost_enc.c",
+    "src/src/enc/cost_enc.h",
+    "src/src/enc/filter_enc.c",
+    "src/src/enc/frame_enc.c",
+    "src/src/enc/histogram_enc.c",
+    "src/src/enc/histogram_enc.h",
+    "src/src/enc/iterator_enc.c",
+    "src/src/enc/near_lossless_enc.c",
+    "src/src/enc/picture_csp_enc.c",
+    "src/src/enc/picture_enc.c",
+    "src/src/enc/picture_psnr_enc.c",
+    "src/src/enc/picture_rescale_enc.c",
+    "src/src/enc/picture_tools_enc.c",
+    "src/src/enc/predictor_enc.c",
+    "src/src/enc/quant_enc.c",
+    "src/src/enc/syntax_enc.c",
+    "src/src/enc/token_enc.c",
+    "src/src/enc/tree_enc.c",
+    "src/src/enc/vp8i_enc.h",
+    "src/src/enc/vp8l_enc.c",
+    "src/src/enc/vp8li_enc.h",
+    "src/src/enc/webp_enc.c",
   ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -322,46 +351,28 @@ static_library("libwebp_enc") {
   all_dependent_configs = [ ":libwebp_config" ]
 
   deps = [
+    ":libwebp_dec",
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
+
+  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
-config("libwebp_utils_warnings") {
-  if (is_clang) {
-    # See https://code.google.com/p/webp/issues/detail?id=253.
-    cflags = [ "-Wno-incompatible-pointer-types" ]
-  }
+source_set("libwebp_sharpyuv_dsp_headers") {
+  public = [ "src/sharpyuv/sharpyuv_dsp.h" ]
 }
 
-static_library("libwebp_utils") {
+static_library("libwebp_sharpyuv") {
   sources = [
-    "src/utils/bit_reader_inl_utils.h",
-    "src/utils/bit_reader_utils.c",
-    "src/utils/bit_reader_utils.h",
-    "src/utils/bit_writer_utils.c",
-    "src/utils/bit_writer_utils.h",
-    "src/utils/color_cache_utils.c",
-    "src/utils/color_cache_utils.h",
-    "src/utils/endian_inl_utils.h",
-    "src/utils/filters_utils.c",
-    "src/utils/filters_utils.h",
-    "src/utils/huffman_encode_utils.c",
-    "src/utils/huffman_encode_utils.h",
-    "src/utils/huffman_utils.c",
-    "src/utils/huffman_utils.h",
-    "src/utils/quant_levels_dec_utils.c",
-    "src/utils/quant_levels_dec_utils.h",
-    "src/utils/quant_levels_utils.c",
-    "src/utils/quant_levels_utils.h",
-    "src/utils/random_utils.c",
-    "src/utils/random_utils.h",
-    "src/utils/rescaler_utils.c",
-    "src/utils/rescaler_utils.h",
-    "src/utils/thread_utils.c",
-    "src/utils/thread_utils.h",
-    "src/utils/utils.c",
-    "src/utils/utils.h",
+    "src/sharpyuv/sharpyuv.c",
+    "src/sharpyuv/sharpyuv.h",
+    "src/sharpyuv/sharpyuv_csp.c",
+    "src/sharpyuv/sharpyuv_csp.h",
+    "src/sharpyuv/sharpyuv_gamma.c",
+    "src/sharpyuv/sharpyuv_gamma.h",
   ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -373,9 +384,131 @@ static_library("libwebp_utils") {
 
   all_dependent_configs = [ ":libwebp_config" ]
 
-  public_configs = [ ":libwebp_utils_warnings" ]
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_dsp",
+    ":libwebp_webp",
+  ]
+}
 
-  deps = [ ":libwebp_webp" ]
+static_library("libwebp_sharpyuv_dsp") {
+  sources = [
+    "src/sharpyuv/sharpyuv_dsp.c",
+    "src/sharpyuv/sharpyuv_dsp.h",
+  ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_sse2",
+    ":libwebp_webp",
+  ]
+  if (use_dsp_neon) {
+    deps += [ ":libwebp_sharpyuv_neon" ]
+  }
+}
+
+if (use_dsp_neon) {
+  static_library("libwebp_sharpyuv_neon") {
+    sources = [ "src/sharpyuv/sharpyuv_neon.c" ]
+
+    deps = [
+      ":libwebp_dsp_headers",
+      ":libwebp_sharpyuv_dsp_headers",
+    ]
+
+    configs += [ ":libwebp_config_internal" ]
+
+    if (set_opt_level) {
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+    }
+
+    if (current_cpu == "arm") {
+      # behavior similar to *.c.neon in an Android.mk
+      configs -= [ "//build/config/compiler:compiler_arm_fpu" ]
+      cflags = [ "-mfpu=neon" ]
+    } else if (current_cpu == "arm64" && !is_clang) {
+      # avoid an ICE with gcc-4.9: b/15574841
+      cflags = [ "-frename-registers" ]
+    }
+  }
+}  # use_dsp_neon
+
+static_library("libwebp_sharpyuv_sse2") {
+  sources = [ "src/sharpyuv/sharpyuv_sse2.c" ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+  if (!is_msan) {
+    if ((current_cpu == "x86" || current_cpu == "x64") &&
+        (!is_win || is_clang)) {
+      cflags = [ "-msse2" ]
+    }
+  }
+  public_deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_sharpyuv_dsp_headers",
+  ]
+}
+
+static_library("libwebp_utils") {
+  sources = [
+    "src/src/utils/bit_reader_inl_utils.h",
+    "src/src/utils/bit_reader_utils.c",
+    "src/src/utils/bit_reader_utils.h",
+    "src/src/utils/bit_writer_utils.c",
+    "src/src/utils/bit_writer_utils.h",
+    "src/src/utils/color_cache_utils.c",
+    "src/src/utils/color_cache_utils.h",
+    "src/src/utils/endian_inl_utils.h",
+    "src/src/utils/filters_utils.c",
+    "src/src/utils/filters_utils.h",
+    "src/src/utils/huffman_encode_utils.c",
+    "src/src/utils/huffman_encode_utils.h",
+    "src/src/utils/huffman_utils.c",
+    "src/src/utils/huffman_utils.h",
+    "src/src/utils/quant_levels_dec_utils.c",
+    "src/src/utils/quant_levels_dec_utils.h",
+    "src/src/utils/quant_levels_utils.c",
+    "src/src/utils/quant_levels_utils.h",
+    "src/src/utils/random_utils.c",
+    "src/src/utils/random_utils.h",
+    "src/src/utils/rescaler_utils.c",
+    "src/src/utils/rescaler_utils.h",
+    "src/src/utils/thread_utils.c",
+    "src/src/utils/thread_utils.h",
+    "src/src/utils/utils.c",
+    "src/src/utils/utils.h",
+  ]
+  configs += [ ":libwebp_config_internal" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  if (set_opt_level) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  all_dependent_configs = [ ":libwebp_config" ]
+
+  deps = [
+    ":libwebp_dsp_headers",
+    ":libwebp_webp",
+  ]
 }
 
 group("libwebp") {
@@ -400,8 +533,8 @@ group("libwebp") {
 if (current_toolchain == host_toolchain) {
   source_set("example_util") {
     sources = [
-      "examples/example_util.c",
-      "examples/example_util.h",
+      "src/examples/example_util.c",
+      "src/examples/example_util.h",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -421,9 +554,9 @@ if (current_toolchain == host_toolchain) {
 
   source_set("imageio_util") {
     sources = [
-      "examples/unicode.h",
-      "imageio/imageio_util.c",
-      "imageio/imageio_util.h",
+      "src/examples/unicode.h",
+      "src/imageio/imageio_util.c",
+      "src/imageio/imageio_util.h",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -440,23 +573,23 @@ if (current_toolchain == host_toolchain) {
 
   source_set("imagedec") {
     sources = [
-      "examples/unicode.h",
-      "imageio/image_dec.c",
-      "imageio/image_dec.h",
-      "imageio/jpegdec.c",
-      "imageio/jpegdec.h",
-      "imageio/metadata.c",
-      "imageio/metadata.h",
-      "imageio/pngdec.c",
-      "imageio/pngdec.h",
-      "imageio/pnmdec.c",
-      "imageio/pnmdec.h",
-      "imageio/tiffdec.c",
-      "imageio/tiffdec.h",
-      "imageio/webpdec.c",
-      "imageio/webpdec.h",
-      "imageio/wicdec.c",
-      "imageio/wicdec.h",
+      "src/examples/unicode.h",
+      "src/imageio/image_dec.c",
+      "src/imageio/image_dec.h",
+      "src/imageio/jpegdec.c",
+      "src/imageio/jpegdec.h",
+      "src/imageio/metadata.c",
+      "src/imageio/metadata.h",
+      "src/imageio/pngdec.c",
+      "src/imageio/pngdec.h",
+      "src/imageio/pnmdec.c",
+      "src/imageio/pnmdec.h",
+      "src/imageio/tiffdec.c",
+      "src/imageio/tiffdec.h",
+      "src/imageio/webpdec.c",
+      "src/imageio/webpdec.h",
+      "src/imageio/wicdec.c",
+      "src/imageio/wicdec.h",
     ]
     defines = [ "WEBP_HAVE_PNG" ]
     configs += [ ":libwebp_config_internal" ]
@@ -479,9 +612,9 @@ if (current_toolchain == host_toolchain) {
 
   source_set("imageenc") {
     sources = [
-      "examples/unicode.h",
-      "imageio/image_enc.c",
-      "imageio/image_enc.h",
+      "src/examples/unicode.h",
+      "src/imageio/image_enc.c",
+      "src/imageio/image_enc.h",
     ]
     configs += [ ":libwebp_config_internal" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -501,9 +634,9 @@ if (current_toolchain == host_toolchain) {
 
   executable("cwebp") {
     sources = [
-      "examples/cwebp.c",
-      "examples/stopwatch.h",
-      "examples/unicode.h",
+      "src/examples/cwebp.c",
+      "src/examples/stopwatch.h",
+      "src/examples/unicode.h",
     ]
 
     deps = [
@@ -526,9 +659,9 @@ if (current_toolchain == host_toolchain) {
 
   executable("dwebp") {
     sources = [
-      "examples/dwebp.c",
-      "examples/stopwatch.h",
-      "examples/unicode.h",
+      "src/examples/dwebp.c",
+      "src/examples/stopwatch.h",
+      "src/examples/unicode.h",
     ]
 
     deps = [
@@ -555,8 +688,8 @@ if (current_toolchain == host_toolchain) {
 # Fuzzers
 
 fuzzer_test("libwebp_simple_api_fuzzer") {
-  sources = [ "tests/fuzzer/simple_api_fuzzer.c" ]
-  dict = "tests/fuzzer/fuzz.dict"
+  sources = [ "src/tests/fuzzer/simple_api_fuzzer.c" ]
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
@@ -567,8 +700,8 @@ fuzzer_test("libwebp_simple_api_fuzzer") {
 }
 
 fuzzer_test("libwebp_advanced_api_fuzzer") {
-  sources = [ "tests/fuzzer/advanced_api_fuzzer.c" ]
-  dict = "tests/fuzzer/fuzz.dict"
+  sources = [ "src/tests/fuzzer/advanced_api_fuzzer.c" ]
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
@@ -580,13 +713,14 @@ fuzzer_test("libwebp_advanced_api_fuzzer") {
 
 fuzzer_test("libwebp_animation_api_fuzzer") {
   sources = [
-    "src/demux/anim_decode.c",
-    "tests/fuzzer/animation_api_fuzzer.c",
+    "src/src/demux/anim_decode.c",
+    "src/tests/fuzzer/animation_api_fuzzer.c",
   ]
-  dict = "tests/fuzzer/fuzz.dict"
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
+    ":libwebp_utils",
     ":libwebp_webp",
   ]
   defines = [ "WEBP_MAX_IMAGE_SIZE=838860800" ]
@@ -594,8 +728,8 @@ fuzzer_test("libwebp_animation_api_fuzzer") {
 }
 
 fuzzer_test("libwebp_mux_demux_api_fuzzer") {
-  sources = [ "tests/fuzzer/mux_demux_api_fuzzer.c" ]
-  dict = "tests/fuzzer/fuzz.dict"
+  sources = [ "src/tests/fuzzer/mux_demux_api_fuzzer.c" ]
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
@@ -606,8 +740,8 @@ fuzzer_test("libwebp_mux_demux_api_fuzzer") {
 }
 
 fuzzer_test("libwebp_animencoder_fuzzer") {
-  sources = [ "tests/fuzzer/animencoder_fuzzer.cc" ]
-  dict = "tests/fuzzer/fuzz.dict"
+  sources = [ "src/tests/fuzzer/animencoder_fuzzer.cc" ]
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",
@@ -618,8 +752,8 @@ fuzzer_test("libwebp_animencoder_fuzzer") {
 }
 
 fuzzer_test("libwebp_enc_dec_api_fuzzer") {
-  sources = [ "tests/fuzzer/enc_dec_fuzzer.cc" ]
-  dict = "tests/fuzzer/fuzz.dict"
+  sources = [ "src/tests/fuzzer/enc_dec_fuzzer.cc" ]
+  dict = "src/tests/fuzzer/fuzz.dict"
   seed_corpus = "fuzzing/fuzz_seed_corpus"
   deps = [
     ":libwebp",

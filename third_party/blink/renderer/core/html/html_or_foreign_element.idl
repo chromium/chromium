@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,11 @@ interface mixin HTMLOrForeignElement {
   [CEReactions] attribute DOMString nonce;
 
   [CEReactions, Reflect] attribute boolean autofocus;
-  [Affects=Nothing, CEReactions] attribute long tabIndex;
-  void focus(optional FocusOptions options = {});
+  [CEReactions] attribute long tabIndex;
+
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
+  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, Measure] attribute DOMString focusgroup;
+
+  [ImplementedAs=focusForBindings] void focus(optional FocusOptions options = {});
   void blur();
 };
-

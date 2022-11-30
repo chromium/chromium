@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/record_replay.h"
 #include "mojo/core/watch.h"
@@ -247,6 +246,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
     if (last_watch_to_block_arming_) {
       // Find the next watch to notify in simple round-robin order on the
       // |ready_watches_| map, wrapping around to the beginning if necessary.
+<<<<<<< HEAD
       if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
         // When recording/replaying the ready_watches_ set is sorted by pointer ID,
         // and since last_watch_to_block_arming_ may be an invalid pointer we can't
@@ -265,6 +265,12 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
       } else {
         next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
       }
+||||||| 80c960997e61f
+      next_ready_iter = ready_watches_.find(last_watch_to_block_arming_);
+=======
+      next_ready_iter = ready_watches_.find(
+          reinterpret_cast<const Watch*>(last_watch_to_block_arming_));
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
       if (next_ready_iter != ready_watches_.end())
         ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())
@@ -281,7 +287,7 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
       blocking_events[i].signals_state = watch->last_known_signals_state();
 
       // Iterate and wrap around.
-      last_watch_to_block_arming_ = watch;
+      last_watch_to_block_arming_ = reinterpret_cast<uintptr_t>(watch);
       ++next_ready_iter;
       if (next_ready_iter == ready_watches_.end())
         next_ready_iter = ready_watches_.begin();

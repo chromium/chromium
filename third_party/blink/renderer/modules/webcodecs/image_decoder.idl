@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 [
     Exposed=(Window,DedicatedWorker),
     RuntimeEnabled=WebCodecs,
+    SecureContext,
     ImplementedAs=ImageDecoderExternal,
     ActiveScriptWrappable
 ] interface ImageDecoder {
@@ -22,12 +23,6 @@
   // resolved or rejected until the given |options.frameIndex| is available,
   // all data is received, or a decoding error occurs.
   Promise<ImageDecodeResult> decode(optional ImageDecodeOptions options);
-
-  // Decodes only the metadata for an image; resolves the promise when metadata
-  // can be decoded. Normally this is done automatically at construction time.
-  // However when using a ReadableStream, there may not be enough data to decode
-  // metadata at the time of construction.
-  Promise<void> decodeMetadata();
 
   // Aborts all pending metadata and decode promises.
   void reset();
@@ -46,6 +41,9 @@
   // when an ArrayBuffer is provided at construction. False for ReadableStream
   // usage
   readonly attribute boolean complete;
+
+  // Property-based promise for signaling that all data has been received.
+  [CallWith=ScriptState] readonly attribute Promise<void> completed;
 
   // List of tracks available in this image.
   //

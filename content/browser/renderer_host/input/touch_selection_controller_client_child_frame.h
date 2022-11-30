@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/selection.h"
-#include "content/common/content_export.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
@@ -24,13 +23,19 @@ class TouchSelectionControllerClientManager;
 // TouchSelectionControllerClient is intended to bind these views to the
 // TouchSelectionController, we need a different implementation for
 // cross-process subframes.
-class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
+class TouchSelectionControllerClientChildFrame
     : public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient {
  public:
   TouchSelectionControllerClientChildFrame(
       RenderWidgetHostViewChildFrame* rwhv,
       TouchSelectionControllerClientManager* manager);
+
+  TouchSelectionControllerClientChildFrame(
+      const TouchSelectionControllerClientChildFrame&) = delete;
+  TouchSelectionControllerClientChildFrame& operator=(
+      const TouchSelectionControllerClientChildFrame&) = delete;
+
   ~TouchSelectionControllerClientChildFrame() override;
 
   void DidStopFlinging();
@@ -65,14 +70,12 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   gfx::Point ConvertFromRoot(const gfx::PointF& point) const;
 
   // Not owned, non-null for the lifetime of this object.
-  RenderWidgetHostViewChildFrame* rwhv_;
-  TouchSelectionControllerClientManager* manager_;
+  raw_ptr<RenderWidgetHostViewChildFrame> rwhv_;
+  raw_ptr<TouchSelectionControllerClientManager> manager_;
 
   // The last selection bounds reported by the view, in view coordinates.
   gfx::SelectionBound selection_start_;
   gfx::SelectionBound selection_end_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerClientChildFrame);
 };
 
 }  // namespace content

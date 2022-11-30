@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -19,8 +18,8 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -31,6 +30,11 @@ namespace {
 class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
  public:
   GcmInternalsUIMessageHandler();
+
+  GcmInternalsUIMessageHandler(const GcmInternalsUIMessageHandler&) = delete;
+  GcmInternalsUIMessageHandler& operator=(const GcmInternalsUIMessageHandler&) =
+      delete;
+
   ~GcmInternalsUIMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -38,16 +42,16 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
 
  private:
   // Return all of the GCM related infos to the gcm-internals page by calling
-  // Javascript callback function |gcm-internals.returnInfo()|.
+  // Javascript callback function `gcm-internals.returnInfo()`.
   void ReturnResults(PrefService* prefs,
                      gcm::GCMProfileService* profile_service,
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::ListValue* args);
+  void RequestAllInfo(const base::Value::List& args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::ListValue* args);
+  void SetRecording(const base::Value::List& args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(
@@ -55,8 +59,6 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GcmInternalsUIMessageHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(GcmInternalsUIMessageHandler);
 };
 
 GcmInternalsUIMessageHandler::GcmInternalsUIMessageHandler()
@@ -68,23 +70,21 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     PrefService* prefs,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) const {
-  base::DictionaryValue results;
-  gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs, &results);
+  base::Value::Dict results =
+      gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
 
-  std::vector<const base::Value*> args{&results};
-  web_ui()->CallJavascriptFunction(gcm_driver::kSetGcmInternalsInfo, args);
+  base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
+  base::ValueView args[] = {event_name, results};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
-void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+void GcmInternalsUIMessageHandler::RequestAllInfo(
+    const base::Value::List& args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = false;
-  if (!args->GetBoolean(0, &clear_logs)) {
-    NOTREACHED();
-    return;
-  }
+  bool clear_logs = args[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -105,16 +105,12 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue* args) {
   }
 }
 
-void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  if (args->GetSize() != 1) {
+void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
+  if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
   }
-  bool recording = false;
-  if (!args->GetBoolean(0, &recording)) {
-    NOTREACHED();
-    return;
-  }
+  bool recording = args[0].GetBool();
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());

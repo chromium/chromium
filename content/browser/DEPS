@@ -10,12 +10,14 @@ include_rules = [
   "+components/discardable_memory/service",
   "+components/download/database",
   "+components/download/public/common",
+  "+components/file_access",
   "+components/filename_generation",
+  "+components/permissions/features.h",
   "+components/services/font",
   "+components/services/filesystem",
-  "+components/services/font/ppapi_fontconfig_matching.h",
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",
+  "+components/services/screen_ai/buildflags",
   "+components/services/storage",
   "+components/services/storage/public",
   "+components/session_manager/core",
@@ -26,7 +28,8 @@ include_rules = [
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
-  "+components/payments",
+  "+components/payments/content/icon",
+  "+components/payments/mojom",
   "+components/services/heap_profiling/public",
   "+components/services/quarantine/public/mojom/quarantine.mojom.h",
   "+components/system_media_controls",
@@ -58,6 +61,8 @@ include_rules = [
   "+sql",
   "+ui/aura_extra",
   "+components/vector_icons",
+  "+ui/linux",
+  "+ui/strings/grit/ax_strings.h",
   "+ui/webui",
 
   # TODO(crbug.com/1079201): Consider removing "+serivces". Each service should
@@ -102,21 +107,17 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+third_party/blink/public/platform/resource_request_blocked_reason.h",
-  "+third_party/blink/public/platform/web_client_hints_type.h",
   "+third_party/blink/public/platform/web_content_security_policy.h",
-  "+third_party/blink/public/common/page/drag_operation.h",
   "+third_party/blink/public/platform/web_fullscreen_video_status.h",
-  "+third_party/blink/public/common/widget/screen_info.h",
   "+third_party/blink/public/platform/web_text_input_type.h",
   "+third_party/blink/public/platform/mac/web_scrollbar_theme.h",
   "+third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h",
   "+third_party/blink/public/platform/modules/sms/webotp_service.mojom.h",
   "+third_party/blink/public/public_buildflags.h",
+  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",
-  "+third_party/blink/public/common/context_menu_data/context_menu_data.h",
-  "+third_party/blink/public/common/widget/device_emulation_params.h",
   "+third_party/blink/public/web/web_drag_status.h",
   "+third_party/blink/public/web/web_serialized_script_value_version.h",
   "+third_party/blink/public/mojom/frame/tree_scope_type.mojom.h",
@@ -128,6 +129,9 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\.cc": [
+    "+services/network/test",
+  ],
+  ".*test_utils\.(h|cc)": [
     "+services/network/test",
   ],
   "browser_main_loop\.cc": [
@@ -167,11 +171,17 @@ specific_include_rules = {
     "+content/browser/renderer_host/render_process_host_impl.h",
     "+content/browser/renderer_host/agent_scheduling_group_host.h",
   ],
+  "stable_video_decoder_factory\.cc" : [
+    "+ui/ozone/public/ozone_switches.h",
+  ],
   "storage_partition_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
     "+third_party/leveldatabase",
   ],
   "launch_as_mojo_client_browsertest.cc": [
     "+ui/ozone/public/ozone_switches.h",
+  ],
+  "site_per_process_mac_browsertest\.mm": [
+    "+content/app_shim_remote_cocoa",
   ],
 }

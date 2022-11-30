@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,6 @@ TestThemeProvider::~TestThemeProvider() = default;
 
 gfx::ImageSkia* TestThemeProvider::GetImageSkiaNamed(int id) const {
   return nullptr;
-}
-
-SkColor TestThemeProvider::GetColor(int id) const {
-  auto it = colors_.find(id);
-  return it != colors_.end() ? it->second : gfx::kPlaceholderColor;
 }
 
 color_utils::HSL TestThemeProvider::GetTint(int id) const {
@@ -36,13 +31,9 @@ bool TestThemeProvider::HasCustomImage(int id) const {
   return false;
 }
 
-bool TestThemeProvider::HasCustomColor(int id) const {
-  return colors_.find(id) != colors_.end();
-}
-
 base::RefCountedMemory* TestThemeProvider::GetRawData(
     int id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return nullptr;
 }
 

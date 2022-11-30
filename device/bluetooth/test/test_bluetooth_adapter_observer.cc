@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -43,7 +44,7 @@ void TestBluetoothAdapterObserver::Reset() {
   last_rssi_ = 128;
   last_tx_power_ = 128;
   last_appearance_ = 128;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   device_paired_changed_count_ = 0;
   device_new_paired_status_ = false;
   device_mtu_changed_count_ = 0;
@@ -164,11 +165,11 @@ void TestBluetoothAdapterObserver::DeviceAddressChanged(
 
 void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
     const std::string& device_address,
-    const base::Optional<std::string>& device_name,
-    const base::Optional<std::string>& advertisement_name,
-    base::Optional<int8_t> rssi,
-    base::Optional<int8_t> tx_power,
-    base::Optional<uint16_t> appearance,
+    const absl::optional<std::string>& device_name,
+    const absl::optional<std::string>& advertisement_name,
+    absl::optional<int8_t> rssi,
+    absl::optional<int8_t> tx_power,
+    absl::optional<uint16_t> appearance,
     const device::BluetoothDevice::UUIDList& advertised_uuids,
     const device::BluetoothDevice::ServiceDataMap& service_data_map,
     const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {
@@ -186,7 +187,7 @@ void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
   QuitMessageLoop();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void TestBluetoothAdapterObserver::DevicePairedChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
@@ -416,6 +417,15 @@ void TestBluetoothAdapterObserver::GattDescriptorValueChanged(
 
   QuitMessageLoop();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void TestBluetoothAdapterObserver::
+    LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus status) {
+  last_low_energy_scan_session_hardware_offloading_status_ = status;
+  QuitMessageLoop();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void TestBluetoothAdapterObserver::QuitMessageLoop() {
   if (base::RunLoop::IsRunningOnCurrentThread())

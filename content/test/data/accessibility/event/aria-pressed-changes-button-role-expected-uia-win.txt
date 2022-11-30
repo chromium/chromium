@@ -1,0 +1,7 @@
+StructureChanged/ChildAdded on role=button
+StructureChanged/ChildRemoved on role=document
+StructureChanged/ChildrenReordered on role=document
+=== Start Continuation ===
+StructureChanged/ChildAdded on role=button
+StructureChanged/ChildRemoved on role=document
+StructureChanged/ChildrenReordered on role=document

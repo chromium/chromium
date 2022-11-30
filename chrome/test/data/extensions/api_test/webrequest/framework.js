@@ -1,6 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+if ('ServiceWorkerGlobalScope' in self) {
+  self.selfFrameId = -1;
+} else {
+  self.selfDocumentId = 1;
+  self.selfFrameId = 0;
+}
 
 var getURL = chrome.extension.getURL;
 var deepEq = chrome.test.checkDeepEq;
@@ -8,10 +15,13 @@ var expectedEventData;
 var capturedEventData;
 var capturedUnexpectedData;
 var expectedEventOrder;
+var mparchEnabled;
 var tabId;
 var tabIdMap;
+var documentIdMap;
 var frameIdMap;
 var testWebSocketPort;
+var testWebTransportPort;
 var testServerPort;
 var testServer = "www.a.com";
 var defaultScheme = "http";
@@ -53,6 +63,7 @@ function runTestsForTab(tests, tab) {
   chrome.test.getConfig(function(config) {
     testServerPort = config.testServer.port;
     testWebSocketPort = config.testWebSocketPort;
+    testWebTransportPort = config.testWebTransportPort;
     chrome.test.runTests(tests);
   });
 }
@@ -60,8 +71,15 @@ function runTestsForTab(tests, tab) {
 // Creates an "about:blank" tab and runs |tests| with this tab as default.
 function runTests(tests) {
   chrome.test.getConfig(function(config) {
-    if (config.customArg == 'debug')
-      debug = true;
+    if (config.customArg) {
+      let args = JSON.parse(config.customArg);
+      debug = args.debug;
+      mparchEnabled = args.mparch;
+      // Because the extension runs in split mode, only the incognito context
+      // should run the tests.
+      if (args.runInIncognito && !chrome.extension.inIncognitoContext)
+        return;
+    }
 
     var waitForAboutBlank = function(_, info, tab) {
       if (debug) {
@@ -186,6 +204,7 @@ function expect(data, order, filter, extraInfoSpec) {
   }
   tabAndFrameUrls = {};  // Maps "{tabId}-{frameId}" to the URL of the frame.
   frameIdMap = {"-1": -1, "0": 0};
+  documentIdMap = [];
   removeListeners();
   resetDeclarativeRules();
   initListeners(filter || {urls: ["<all_urls>"]}, extraInfoSpec || []);
@@ -209,6 +228,18 @@ function expect(data, order, filter, extraInfoSpec) {
     if ('initiator' in expectedEventData[i].details &&
         expectedEventData[i].details.initiator == undefined) {
       delete expectedEventData[i].details.initiator;
+    }
+    if (expectedEventData[i].details.frameId >= 0) {
+      if (!('documentLifecycle' in expectedEventData[i].details)) {
+        expectedEventData[i].details.documentLifecycle = "active";
+      }
+      if (!('frameType' in expectedEventData[i].details)) {
+        expectedEventData[i].details.frameType = "outermost_frame";
+      }
+    }
+    if ('documentId' in expectedEventData[i].details &&
+        expectedEventData[i].details.documentId == undefined) {
+      delete expectedEventData[i].details.documentId;
     }
   }
 }
@@ -313,7 +344,8 @@ function captureEvent(name, details, callback) {
     chrome.test.assertTrue('tabId' in details &&
                             typeof details.tabId === 'number');
     var key = details.tabId + "-" + details.frameId;
-    if (details.type == "main_frame" || details.type == "sub_frame") {
+    if (details.type == 'main_frame' || details.type == 'sub_frame' ||
+        details.type == 'webtransport') {
       tabAndFrameUrls[key] = details.url;
     }
     details.frameUrl = tabAndFrameUrls[key] || "unknown frame URL";
@@ -329,6 +361,23 @@ function captureEvent(name, details, callback) {
   }
   details.frameId = frameIdMap[details.frameId];
   details.parentFrameId = frameIdMap[details.parentFrameId];
+
+  // Since the parentDocumentId & documentId is a unique random identifier it
+  // is not useful to tests. Normalize it so that test cases can assert
+  // against a fixed number.
+  if ('parentDocumentId' in details) {
+    if (documentIdMap[details.parentDocumentId] === undefined) {
+      documentIdMap[details.parentDocumentId] =
+          Object.keys(documentIdMap).length + 1;
+    }
+    details.parentDocumentId = documentIdMap[details.parentDocumentId];
+  }
+  if ('documentId' in details) {
+    if (documentIdMap[details.documentId] === undefined) {
+      documentIdMap[details.documentId] = Object.keys(documentIdMap).length + 1;
+    }
+    details.documentId = documentIdMap[details.documentId];
+  }
 
   // This assigns unique IDs to newly opened tabs. However, the new IDs are only
   // deterministic, if the order in which the tabs are opened is deterministic.

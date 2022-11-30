@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
-#include "ui/ozone/platform/wayland/host/wayland_shm.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
@@ -37,7 +37,6 @@ void WaylandCursor::OnBufferRelease(void* data, wl_buffer* buffer) {
 void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
                                  const gfx::Point& hotspot_in_dips,
                                  int buffer_scale) {
-  DCHECK(connection_->shm());
   if (!pointer_)
     return;
 
@@ -49,7 +48,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
     return HideCursor();
 
   gfx::Size image_size = gfx::SkISizeToSize(image.dimensions());
-  WaylandShmBuffer buffer(connection_->shm(), image_size);
+  WaylandShmBuffer buffer(connection_->wayland_buffer_factory(), image_size);
 
   if (!buffer.IsValid()) {
     LOG(ERROR) << "Failed to create SHM buffer for Cursor Bitmap.";
@@ -57,11 +56,11 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
   }
 
   buffer_scale_ = buffer_scale;
-  wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
+  if (!connection_->surface_submission_in_pixel_coordinates())
+    wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
 
-  static const struct wl_buffer_listener wl_buffer_listener {
-    &WaylandCursor::OnBufferRelease
-  };
+  static constexpr wl_buffer_listener wl_buffer_listener{
+      &WaylandCursor::OnBufferRelease};
   wl_buffer_add_listener(buffer.get(), &wl_buffer_listener, this);
 
   wl::DrawBitmap(image, &buffer);
@@ -76,8 +75,7 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
     listener_->OnCursorBufferAttached(nullptr);
 }
 
-void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
-                                     int buffer_scale) {
+void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data, int buffer_scale) {
   if (!pointer_)
     return;
 
@@ -87,7 +85,8 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
   buffer_scale_ = buffer_scale;
   current_image_index_ = 0;
 
-  wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
+  if (!connection_->surface_submission_in_pixel_coordinates())
+    wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
 
   SetPlatformShapeInternal();
 
@@ -96,14 +95,21 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data,
 }
 
 void WaylandCursor::HideCursor() {
+  auto pointer_enter_serial =
+      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
+  if (!pointer_enter_serial) {
+    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+    return;
+  }
+
   DCHECK(pointer_);
-  wl_pointer_set_cursor(pointer_->wl_object(), connection_->serial(), nullptr,
-                        0, 0);
+  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
+                        nullptr, 0, 0);
 
   wl_surface_attach(pointer_surface_.get(), nullptr, 0, 0);
   wl_surface_commit(pointer_surface_.get());
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   if (listener_)
     listener_->OnCursorBufferAttached(nullptr);
@@ -128,9 +134,8 @@ void WaylandCursor::SetPlatformShapeInternal() {
   if (cursor_data_->image_count > 1 && cursor_image->delay > 0) {
     // If we have multiple frames, then we have animated cursor.  Schedule
     // sending the next frame.  See also the comment above.
-    animation_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(cursor_image->delay), this,
-        &WaylandCursor::SetPlatformShapeInternal);
+    animation_timer_.Start(FROM_HERE, base::Milliseconds(cursor_image->delay),
+                           this, &WaylandCursor::SetPlatformShapeInternal);
     ++current_image_index_;
   }
 }
@@ -140,16 +145,22 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
                                     uint32_t buffer_height,
                                     uint32_t hotspot_x_dip,
                                     uint32_t hotspot_y_dip) {
-  DCHECK(pointer_);
+  auto pointer_enter_serial =
+      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
+  if (!pointer_enter_serial) {
+    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+    return;
+  }
 
-  wl_pointer_set_cursor(pointer_->wl_object(), connection_->serial(),
+  DCHECK(pointer_);
+  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
                         pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
   wl_surface_attach(pointer_surface_.get(), buffer, 0, 0);
   wl_surface_commit(pointer_surface_.get());
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 }  // namespace ui

@@ -1,11 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_SETS_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_SETS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/sandbox_export.h"
 
@@ -18,6 +17,10 @@ namespace sandbox {
 
 class SANDBOX_EXPORT SyscallSets {
  public:
+  SyscallSets() = delete;
+  SyscallSets(const SyscallSets&) = delete;
+  SyscallSets& operator=(const SyscallSets&) = delete;
+
   static bool IsKill(int sysno);
   static bool IsAllowedGettime(int sysno);
   static bool IsCurrentDirectory(int sysno);
@@ -62,12 +65,16 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsKernelModule(int sysno);
   static bool IsGlobalFSViewChange(int sysno);
   static bool IsFsControl(int sysno);
+  static bool IsSendfile(int sysno);
   static bool IsNuma(int sysno);
   static bool IsMessageQueue(int sysno);
   static bool IsGlobalProcessEnvironment(int sysno);
   static bool IsDebug(int sysno);
   static bool IsGlobalSystemStatus(int sysno);
   static bool IsEventFd(int sysno);
+  // System calls used for dlopen(), which loads shared libraries. May overlap
+  // with other syscall sets.
+  static bool IsDlopen(int sysno);
   // Asynchronous I/O API.
   static bool IsAsyncIo(int sysno);
   static bool IsKeyManagement(int sysno);
@@ -110,8 +117,7 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsMipsPrivate(int sysno);
   static bool IsMipsMisc(int sysno);
 #endif  // defined(__mips__)
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SyscallSets);
+  static bool IsGoogle3Threading(int sysno);
 };
 
 }  // namespace sandbox.

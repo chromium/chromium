@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,27 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/clang_profiling_buildflags.h"
-#include "base/files/scoped_file.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
-#include "ipc/ipc_channel_proxy.h"
+#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+// TODO(crbug.com/1328879): Remove this when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+#include <string>
+
 #include "mojo/public/cpp/system/message_pipe.h"
+#endif
 
 namespace base {
+class File;
 class FilePath;
-}
+}  // namespace base
 
 namespace IPC {
 class MessageFilter;
@@ -41,7 +47,7 @@ class ChildProcessHostDelegate;
 // processes that run independent of the browser process.
 class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
  public:
-  ~ChildProcessHost() override {}
+  ~ChildProcessHost() override;
 
   // This is a value never returned as the unique id of any child processes of
   // any kind, including the values returned by RenderProcessHost::GetID().
@@ -81,7 +87,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // No special behavior requested.
     CHILD_NORMAL = 0,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Indicates that the child execed after forking may be execced from
     // /proc/self/exe rather than using the "real" app path. This prevents
     // autoupdate from confusing us if it changes the file out from under us.
@@ -90,7 +96,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // gdb). In this case, you'd use GetChildPath to get the real executable
     // file name, and then prepend the GDB command to the command line.
     CHILD_ALLOW_SELF = 1 << 0,
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Note, on macOS these are not bitwise flags and each value is mutually
     // exclusive with the others. Each one of these options should correspond
     // to a value in //content/public/app/mac_helpers.gni.
@@ -146,13 +152,16 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //
   // Always valid immediately after ChildProcessHost construction, but may be
   // null if someone else has taken ownership.
-  virtual base::Optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
+  virtual absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() = 0;
 
-  // Creates the IPC channel over a Mojo message pipe. The pipe connection is
-  // brokered through the Service Manager like any other service connection.
+  // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
+  // legacy IPC will be used to communicate with the child process, but
+  // otherwise should not be called.
   virtual void CreateChannelMojo() = 0;
 
-  // Returns true iff the IPC channel is currently being opened;
+  // Returns true iff the IPC channel is currently being opened; this means
+  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // been invoked.
   virtual bool IsChannelOpening() = 0;
 
   // Adds an IPC message filter.  A reference will be kept to the filter.
@@ -170,16 +179,31 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Reinitializes the child process's logging with the given settings. This
+  // is needed on Chrome OS, which switches to a log file in the user's home
+  // directory once they log in.
+  virtual void ReinitializeLogging(uint32_t logging_dest,
+                                   base::ScopedFD log_file_descriptor) = 0;
+#endif
+
+// TODO(crbug.com/1328879): Remove this method when fixing the bug.
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   // Instructs the child process to run an instance of the named service. This
   // is DEPRECATED and should never be used.
   virtual void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) = 0;
+#endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Write out the accumulated code profiling profile to the configured file.
   // The callback is invoked once the profile has been flushed to disk.
   virtual void DumpProfilingData(base::OnceClosure callback) = 0;
+
+  // Sets the profiling file for the child process.
+  // Used for the coverage builds.
+  virtual void SetProfilingFile(base::File file) = 0;
 #endif
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/bit_cast.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "net/filter/brotli_source_stream.h"
@@ -28,8 +27,13 @@ const int kBufferSize = 4096;
 }  // namespace
 
 class ContentDecoderToolTest : public PlatformTest {
+ public:
+  ContentDecoderToolTest(const ContentDecoderToolTest&) = delete;
+  ContentDecoderToolTest& operator=(const ContentDecoderToolTest&) = delete;
+
  protected:
   ContentDecoderToolTest() : gzip_encoded_len_(kBufferSize) {}
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -69,8 +73,6 @@ class ContentDecoderToolTest : public PlatformTest {
   // Original source encoded with gzip.
   char gzip_encoded_[kBufferSize];
   size_t gzip_encoded_len_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentDecoderToolTest);
 };
 
 TEST_F(ContentDecoderToolTest, TestGzip) {
@@ -86,7 +88,7 @@ TEST_F(ContentDecoderToolTest, TestGzip) {
 TEST_F(ContentDecoderToolTest, TestBrotli) {
   // In Cronet build, brotli sources are excluded due to binary size concern.
   // In such cases, skip the test.
-  std::unique_ptr<MockSourceStream> mock_source_stream(new MockSourceStream());
+  auto mock_source_stream = std::make_unique<MockSourceStream>();
   bool brotli_disabled =
       CreateBrotliSourceStream(std::move(mock_source_stream)) == nullptr;
   if (brotli_disabled)

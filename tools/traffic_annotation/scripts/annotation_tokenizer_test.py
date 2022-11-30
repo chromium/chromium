@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,7 @@ Unit tests for annotation_tokenizer.py.
 
 import unittest
 
-from annotation_tokenizer import Tokenizer, CppParsingError
+from annotation_tokenizer import Tokenizer, SourceCodeParsingError
 
 
 class AnnotationTokenizerTest(unittest.TestCase):
@@ -54,6 +54,14 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual(')', tokenizer.advance('right_paren'))
     self.assertEqual(')', tokenizer.advance('right_paren'))
 
+  def testConcatenatedStrings(self):
+    tokenizer = Tokenizer('"hello " + "world" + "!"', 'foo.java', 22)
+    self.assertEqual('hello ', tokenizer.advance('string_literal'))
+    self.assertEqual('+', tokenizer.advance('plus'))
+    self.assertEqual('world', tokenizer.advance('string_literal'))
+    self.assertEqual('+', tokenizer.advance('plus'))
+    self.assertEqual('!', tokenizer.advance('string_literal'))
+
   def testAdvanceMultiline(self):
     tokenizer = Tokenizer('\n\tR"(the quick\nbrown\nfox)"', 'foo.txt', 33)
     self.assertEqual(
@@ -62,20 +70,20 @@ class AnnotationTokenizerTest(unittest.TestCase):
   def testAdvanceErrorPaths(self):
     tokenizer = Tokenizer('  hello , ', 'foo.txt', 33)
     tokenizer.advance('symbol')
-    with self.assertRaisesRegexp(CppParsingError,
-                                 'Expected symbol.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected symbol.+at foo.txt:33'):
       # There are no more tokens.
       tokenizer.advance('symbol')
 
     tokenizer = Tokenizer('"hello"', 'foo.txt', 33)
-    with self.assertRaisesRegexp(CppParsingError,
-                                 'Expected comma.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected comma.+at foo.txt:33'):
       # The type doesn't match.
       tokenizer.advance('comma')
 
     tokenizer = Tokenizer('{', 'foo.txt', 33)
-    with self.assertRaisesRegexp(CppParsingError,
-                                 'Expected string_literal.+at foo.txt:33'):
+    with self.assertRaisesRegex(SourceCodeParsingError,
+                                'Expected string_literal.+at foo.txt:33'):
       # Not a valid token at all.
       tokenizer.advance('string_literal')
 
@@ -87,6 +95,15 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual(None, tokenizer.maybe_advance('left_paren'))
     self.assertEqual('world', tokenizer.maybe_advance('symbol'))
     self.assertEqual(None, tokenizer.maybe_advance('right_paren'))
+
+  def testEscaping(self):
+    tokenizer = Tokenizer(
+        '''
+      "\\"abc \\\\\\" def \\\\\\""
+      "string ends here:\\\\" this is not part of the string"
+    ''', 'foo.txt', 33)
+    self.assertEqual('"abc \\" def \\"', tokenizer.advance('string_literal'))
+    self.assertEqual('string ends here:\\', tokenizer.advance('string_literal'))
 
 
 if __name__ == '__main__':

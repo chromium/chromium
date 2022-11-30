@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,22 +16,21 @@
 
 #include <windows.h>
 
+#include <iterator>
+
 #include "base/logging.h"
-#include "base/stl_util.h"
 
 namespace crashpad {
 
 // static
 bool Paths::Executable(base::FilePath* path) {
   wchar_t executable_path[_MAX_PATH];
-  unsigned int len =
-      GetModuleFileName(nullptr,
-                        executable_path,
-                        static_cast<DWORD>(base::size(executable_path)));
+  unsigned int len = GetModuleFileName(
+      nullptr, executable_path, static_cast<DWORD>(std::size(executable_path)));
   if (len == 0) {
     PLOG(ERROR) << "GetModuleFileName";
     return false;
-  } else if (len >= base::size(executable_path)) {
+  } else if (len >= std::size(executable_path)) {
     LOG(ERROR) << "GetModuleFileName";
     return false;
   }

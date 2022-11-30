@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -125,6 +125,9 @@ class SelfOwnedReceiver {
 // Any incoming method calls or disconnection notifications will be scheduled
 // to run on |task_runner|. If |task_runner| is null, this defaults to the
 // current SequencedTaskRunner.
+//
+// Note: self-owned receivers are unsafe to use when the interface
+// implementation has lifetime dependencies outside of its control.
 template <typename Interface, typename Impl>
 SelfOwnedReceiverRef<Interface> MakeSelfOwnedReceiver(
     std::unique_ptr<Impl> impl,

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,10 @@ bool CloseKeyboardIfActive() {
   }
 
   // Close the Android VK if it is visible by sending a back event.
-  if (Shell::Get()->system_tray_model()->virtual_keyboard()->visible()) {
+  if (Shell::Get()
+          ->system_tray_model()
+          ->virtual_keyboard()
+          ->arc_keyboard_visible()) {
     window_util::SendBackKeyEvent(Shell::GetPrimaryRootWindow());
     return true;
   }

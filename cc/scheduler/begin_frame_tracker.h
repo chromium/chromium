@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
-#include "base/trace_event/trace_event.h"
-#include "base/trace_event/traced_value.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace perfetto {
+class EventContext;
 namespace protos {
 namespace pbzero {
 class BeginImplFrameArgs;
@@ -73,6 +73,7 @@ class CC_EXPORT BeginFrameTracker {
   base::TimeDelta Interval() const;
 
   void AsProtozeroInto(
+      perfetto::EventContext& ctx,
       base::TimeTicks now,
       perfetto::protos::pbzero::BeginImplFrameArgs* dict) const;
 

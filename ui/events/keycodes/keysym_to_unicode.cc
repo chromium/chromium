@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace ui {
@@ -811,12 +812,15 @@ const struct {
 class KeySymToUnicode {
  public:
   KeySymToUnicode()
-      : keysym_to_unicode_map_(base::size(g_keysym_to_unicode_table)) {
-    for (size_t i = 0; i < base::size(g_keysym_to_unicode_table); ++i) {
+      : keysym_to_unicode_map_(std::size(g_keysym_to_unicode_table)) {
+    for (size_t i = 0; i < std::size(g_keysym_to_unicode_table); ++i) {
       keysym_to_unicode_map_[g_keysym_to_unicode_table[i].keysym] =
           g_keysym_to_unicode_table[i].unicode;
     }
   }
+
+  KeySymToUnicode(const KeySymToUnicode&) = delete;
+  KeySymToUnicode& operator=(const KeySymToUnicode&) = delete;
 
   uint16_t UnicodeFromKeySym(uint32_t keysym) const {
     // Latin-1 characters have the same representation.
@@ -840,8 +844,6 @@ class KeySymToUnicode {
  private:
   typedef std::unordered_map<uint32_t, uint16_t> KeySymToUnicodeMap;
   KeySymToUnicodeMap keysym_to_unicode_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeySymToUnicode);
 };
 
 static base::LazyInstance<KeySymToUnicode>::Leaky g_keysym_to_unicode =

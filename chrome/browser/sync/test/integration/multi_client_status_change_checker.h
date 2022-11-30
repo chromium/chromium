@@ -1,27 +1,31 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_MULTI_CLIENT_STATUS_CHANGE_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_MULTI_CLIENT_STATUS_CHANGE_CHECKER_H_
 
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 // This class provides some common functionality for StatusChangeCheckers that
-// observe many ProfileSyncServices.  This class is abstract.  Its descendants
+// observe many SyncServiceImpls.  This class is abstract.  Its descendants
 // are expected to provide additional functionality.
 class MultiClientStatusChangeChecker : public StatusChangeChecker,
                                        public syncer::SyncServiceObserver {
  public:
   explicit MultiClientStatusChangeChecker(
-      std::vector<syncer::ProfileSyncService*> services);
+      std::vector<syncer::SyncServiceImpl*> services);
+
+  MultiClientStatusChangeChecker(const MultiClientStatusChangeChecker&) =
+      delete;
+  MultiClientStatusChangeChecker& operator=(
+      const MultiClientStatusChangeChecker&) = delete;
+
   ~MultiClientStatusChangeChecker() override;
 
  protected:
@@ -32,16 +36,13 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
   // StatusChangeChecker implementations and stubs.
   bool IsExitConditionSatisfied(std::ostream* os) override = 0;
 
-  const std::vector<syncer::ProfileSyncService*>& services() {
-    return services_;
-  }
+  const std::vector<syncer::SyncServiceImpl*>& services() { return services_; }
 
  private:
-  std::vector<syncer::ProfileSyncService*> services_;
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultiClientStatusChangeChecker);
+  std::vector<syncer::SyncServiceImpl*> services_;
+  base::ScopedMultiSourceObservation<syncer::SyncService,
+                                     syncer::SyncServiceObserver>
+      scoped_observations_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MULTI_CLIENT_STATUS_CHANGE_CHECKER_H_

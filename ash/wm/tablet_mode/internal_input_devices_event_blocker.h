@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_WM_TABLET_MODE_INTERNAL_INPUT_DEVICES_EVENT_BLOCKER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
@@ -16,6 +15,12 @@ class ASH_EXPORT InternalInputDevicesEventBlocker
     : public ui::InputDeviceEventObserver {
  public:
   InternalInputDevicesEventBlocker();
+
+  InternalInputDevicesEventBlocker(const InternalInputDevicesEventBlocker&) =
+      delete;
+  InternalInputDevicesEventBlocker& operator=(
+      const InternalInputDevicesEventBlocker&) = delete;
+
   ~InternalInputDevicesEventBlocker() override;
 
   // ui::InputDeviceEventObserver:
@@ -43,8 +48,6 @@ class ASH_EXPORT InternalInputDevicesEventBlocker
 
   bool is_touchpad_blocked_ = false;
   bool is_keyboard_blocked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalInputDevicesEventBlocker);
 };
 
 }  // namespace ash

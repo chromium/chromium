@@ -23,32 +23,39 @@
 
 <edu-coexistence-template>
   <span slot="main">
-     <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame"
-        allowscaling></webview>
-     <div class ="spinner-container" hidden$="[[!loading_]]">
-        <paper-spinner-lite class="spinner" active="[[loading_]]">
-        </paper-spinner-lite>
-        <div id="comment" aria-live="polite"
-          aria-label$="$i18n{loadingMessage}">
+    <div class="new-oobe-layout-back-button" hidden$="[[!showGaiaButtons_]]">
+      <edu-coexistence-button hidden$="[[!newOobeLayoutEnabled_]]"
+                              button-type="back"
+         id="gaia-back-button"
+         on-go-back="handleGaiaLoginGoBack_">
+      </edu-coexistence-button>
+    </div>
+
+    <webview id="signinFrame" hidden$="[[loading_]]" class="signin-frame"
+             allowscaling></webview>
+    <div class ="spinner-container" hidden$="[[!loading_]]">
+      <paper-spinner-lite class="spinner" active="[[loading_]]">
+      </paper-spinner-lite>
+      <div id="comment" aria-live="polite"
+           aria-label$="$i18n{loadingMessage}">
           $i18n{loadingMessage}
-       </div>
-     </div>
-  </span>
-  <span slot="buttons">
-    <div class="buttons-layout" hidden$="[[!showGaiaButtons_]]">
-        <span>
-          <edu-coexistence-button button-type="back"
-            id="gaia-back-button"
-            on-go-back="handleGaiaLoginGoBack_">
-          </edu-coexistence-button>
-        </span>
-        <span>
-          <gaia-action-buttons id = "gaiaNextButton"
-            authenticator="[[controller_.authExtHost_]]"
-            hidden$="[[!showGaiaNextButton_]]">
-          </gaia-action-buttons>
-        </span>
+      </div>
     </div>
   </span>
-
+  <span slot="buttons" hidden$="[[!showGaiaButtons_]]"
+        class$="[[buttonsLayoutCssClass_]]">
+    <span hidden$="[[newOobeLayoutEnabled_]]">
+      <edu-coexistence-button button-type="back"
+        id="gaia-back-button"
+        on-go-back="handleGaiaLoginGoBack_">
+      </edu-coexistence-button>
+    </span>
+    <span>
+      <gaia-action-buttons id="gaiaNextButton"
+        authenticator="[[controller_.authExtHost_]]"
+        rounded-button="[[newOobeLayoutEnabled_]]"
+        hidden$="[[!showGaiaNextButton_]]">
+      </gaia-action-buttons>
+    </span>
+  </span>
 </edu-coexistence-template>

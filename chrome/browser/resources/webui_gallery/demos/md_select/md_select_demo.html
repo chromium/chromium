@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="../demo.css">
+<style include="md-select">
+</style>
+
+<h1>Select menus</h1>
+<div class="demos">
+  <div class="row center">
+    <label id="label">Select an option</label>
+    <select id="select" class="md-select" value="[[selectedOption_]]"
+        on-change="onSelectValueChanged_"
+        aria-labelledby="label">
+      <option value="one">Option 1</option>
+      <option value="two">Option 2</option>
+      <option value="three">Option 3</option>
+      <option value="four">Option 4</option>
+      <option value="five">Option 5</option>
+    </select>
+  </div>
+
+  <div>Selected value: [[selectedOption_]]</div>
+
+  <div class="row center">
+    <label id="disabled-label">Select an option</label>
+    <select class="md-select" disabled aria-labelledby="disabled-label">
+      <option>Disabled option 1</option>
+      <option>Disabled option 2</option>
+      <option selected>Disabled option 3</option>
+    </select>
+  </div>
+</div>

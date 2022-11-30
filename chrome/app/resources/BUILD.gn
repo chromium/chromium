@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ grit("locale_settings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/locale_settings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "locale_settings_{{source_name_part}}.pak" ])
 }
 
@@ -25,14 +25,14 @@ grit("platform_locale_settings") {
     source = "locale_settings_win.grd"
   } else if (is_mac) {
     source = "locale_settings_mac.grd"
-  } else if (is_chromeos_ash || is_chromeos_lacros) {
+  } else if (is_chromeos) {
     if (is_chrome_branded) {
       source = "locale_settings_google_chromeos.grd"
     } else {
       source = "locale_settings_chromiumos.grd"
     }
   } else if (is_posix || is_fuchsia) {
-    # All other posix systems just use the Linux one.
+    # All other POSIX systems and Fuchsia use the Linux one.
     source = "locale_settings_linux.grd"
   }
 

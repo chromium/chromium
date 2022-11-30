@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -19,6 +19,10 @@ namespace device {
 class FakeSensor : public mojom::Sensor {
  public:
   FakeSensor(mojom::SensorType sensor_type, SensorReadingSharedBuffer* buffer);
+
+  FakeSensor(const FakeSensor&) = delete;
+  FakeSensor& operator=(const FakeSensor&) = delete;
+
   ~FakeSensor() override;
 
   // mojom::Sensor:
@@ -45,23 +49,26 @@ class FakeSensor : public mojom::Sensor {
   void SensorReadingChanged();
 
   mojom::SensorType sensor_type_;
-  SensorReadingSharedBuffer* buffer_;
+  raw_ptr<SensorReadingSharedBuffer> buffer_;
   bool reading_notification_enabled_ = true;
   mojo::Remote<mojom::SensorClient> client_;
   SensorReading reading_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensor);
 };
 
 class FakeSensorProvider : public mojom::SensorProvider {
  public:
   FakeSensorProvider();
+
+  FakeSensorProvider(const FakeSensorProvider&) = delete;
+  FakeSensorProvider& operator=(const FakeSensorProvider&) = delete;
+
   ~FakeSensorProvider() override;
 
   // mojom::sensorProvider:
   void GetSensor(mojom::SensorType type, GetSensorCallback callback) override;
 
   void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
+  bool is_bound() const;
 
   void set_ambient_light_sensor_is_available(
       bool ambient_light_sensor_is_available) {
@@ -127,13 +134,13 @@ class FakeSensorProvider : public mojom::SensorProvider {
 
   // The following sensor pointers are owned by the caller of
   // FakeSensorProvider::GetSensor().
-  FakeSensor* ambient_light_sensor_ = nullptr;
-  FakeSensor* accelerometer_ = nullptr;
-  FakeSensor* linear_acceleration_sensor_ = nullptr;
-  FakeSensor* gravity_sensor_ = nullptr;
-  FakeSensor* gyroscope_ = nullptr;
-  FakeSensor* relative_orientation_sensor_ = nullptr;
-  FakeSensor* absolute_orientation_sensor_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> ambient_light_sensor_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> accelerometer_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> linear_acceleration_sensor_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> gravity_sensor_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> gyroscope_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> relative_orientation_sensor_ = nullptr;
+  raw_ptr<FakeSensor, DanglingUntriaged> absolute_orientation_sensor_ = nullptr;
 
   SensorReading ambient_light_sensor_reading_;
   SensorReading accelerometer_reading_;
@@ -150,10 +157,7 @@ class FakeSensorProvider : public mojom::SensorProvider {
   bool relative_orientation_sensor_is_available_ = true;
   bool absolute_orientation_sensor_is_available_ = true;
   mojo::ReceiverSet<mojom::SensorProvider> receivers_{};
-  mojo::ScopedSharedBufferHandle shared_buffer_handle_;
-  mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSensorProvider);
+  base::MappedReadOnlyRegion mapped_region_;
 };
 
 }  // namespace device

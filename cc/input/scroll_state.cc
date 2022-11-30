@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,11 +24,11 @@ void ScrollState::ConsumeDelta(double x, double y) {
     data_.delta_consumed_for_scroll_sequence = true;
 }
 
-gfx::ScrollOffset ScrollState::DeltaOrHint() const {
+gfx::Vector2dF ScrollState::DeltaOrHint() const {
   if (is_beginning())
-    return gfx::ScrollOffset(delta_x_hint(), delta_y_hint());
+    return gfx::Vector2dF(delta_x_hint(), delta_y_hint());
 
-  return gfx::ScrollOffset(delta_x(), delta_y());
+  return gfx::Vector2dF(delta_x(), delta_y());
 }
 
 }  // namespace cc

@@ -1,0 +1,4 @@
+include_rules = [
+  "+ash/quick_pair",
+  "+ui/message_center"
+]

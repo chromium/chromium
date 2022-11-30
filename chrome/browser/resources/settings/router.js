@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import './i18n_setup.js';
+
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
   /**
    * @typedef {{
@@ -17,8 +19,11 @@ import './i18n_setup.js';
 
   /** Class for navigable routes. */
   export class Route {
-    /** @param {string} path */
-    constructor(path) {
+    /**
+     * @param {string} path
+     * @param {string=} title
+     */
+    constructor(path, title) {
       /** @type {string} */
       this.path = path;
 
@@ -28,9 +33,12 @@ import './i18n_setup.js';
       /** @type {number} */
       this.depth = 0;
 
+      /** @type {string|undefined} */
+      this.title = title;
+
       /**
        * @type {boolean} Whether this route corresponds to a navigable
-       *     dialog. Those routes don't belong to a "section".
+       *     dialog. Those routes must belong to a "section".
        */
       this.isNavigableDialog = false;
 
@@ -45,16 +53,17 @@ import './i18n_setup.js';
      * Returns a new Route instance that's a child of this route.
      * @param {string} path Extends this route's path if it doesn't contain a
      *     leading slash.
+     * @param {string=} title
      * @return {!Route}
      */
-    createChild(path) {
+    createChild(path, title) {
       assert(path);
 
       // |path| extends this route's path if it doesn't have a leading slash.
       // If it does have a leading slash, it's just set as the new route's URL.
       const newUrl = path[0] === '/' ? path : `${this.path}/${path}`;
 
-      const route = new Route(newUrl);
+      const route = new Route(newUrl, title);
       route.parent = this;
       route.section = this.section;
       route.depth = this.depth + 1;
@@ -67,10 +76,11 @@ import './i18n_setup.js';
      * TODO(tommycli): Remove once we've obsoleted the concept of sections.
      * @param {string} path
      * @param {string} section
+     * @param {string=} title
      * @return {!Route}
      */
-    createSection(path, section) {
-      const route = this.createChild(path);
+    createSection(path, section, title) {
+      const route = this.createChild(path, title);
       route.section = section;
       return route;
     }
@@ -103,7 +113,7 @@ import './i18n_setup.js';
      * @return {boolean}
      */
     isSubpage() {
-      return !!this.parent && !!this.section &&
+      return !this.isNavigableDialog && !!this.parent && !!this.section &&
           this.parent.section === this.section;
     }
   }
@@ -208,6 +218,23 @@ import './i18n_setup.js';
       new Set(this.routeObservers_).forEach((observer) => {
         observer.currentRouteChanged(this.currentRoute, oldRoute);
       });
+
+      this.updateTitle_();
+    }
+
+    /**
+     * Updates the page title to reflect the current route.
+     * @private
+     */
+    updateTitle_() {
+      if (this.currentRoute.title) {
+        document.title = loadTimeData.getStringF(
+            'settingsAltPageTitle', this.currentRoute.title);
+      } else if (
+          !this.currentRoute.isSubpage() &&
+          !this.routes_.ABOUT.contains(this.currentRoute)) {
+        document.title = loadTimeData.getString('settings');
+      }
     }
 
     /** @return {!Route} */
@@ -244,22 +271,45 @@ import './i18n_setup.js';
     }
 
     /**
+     * Updates the URL parameters of the current route via exchanging the
+     * window history state. This changes the Settings route path, but doesn't
+     * change the route itself, hence does not push a new route history entry.
+     * Notifies routeChangedObservers.
+     * @param {!URLSearchParams} params
+     */
+    updateRouteParams(params) {
+      let url = this.currentRoute.path;
+      const queryString = params.toString();
+      if (queryString) {
+        url += '?' + queryString;
+      }
+      window.history.replaceState(window.history.state, '', url);
+
+      // We can't call |setCurrentRoute()| for the following, as it would also
+      // update |oldRoute| and |currentRoute|, which should not happen when
+      // only the URL parameters are updated.
+      this.currentQueryParameters_ = params;
+      new Set(this.routeObservers_).forEach((observer) => {
+        observer.currentRouteChanged(this.currentRoute, this.currentRoute);
+      });
+    }
+
+    /**
      * Navigates to a canonical route and pushes a new history entry.
      * @param {!Route} route
-     * @param {URLSearchParams=} opt_dynamicParameters Navigations to the same
+     * @param {URLSearchParams=} dynamicParameters Navigations to the same
      *     URL parameters in a different order will still push to history.
-     * @param {boolean=} opt_removeSearch Whether to strip the 'search' URL
+     * @param {boolean=} removeSearch Whether to strip the 'search' URL
      *     parameter during navigation. Defaults to false.
      */
-    navigateTo(route, opt_dynamicParameters, opt_removeSearch) {
+    navigateTo(route, dynamicParameters, removeSearch = false) {
       // The ADVANCED route only serves as a parent of subpages, and should not
       // be possible to navigate to it directly.
       if (route === this.routes_.ADVANCED) {
         route = this.routes_.BASIC;
       }
 
-      const params = opt_dynamicParameters || new URLSearchParams();
-      const removeSearch = !!opt_removeSearch;
+      const params = dynamicParameters || new URLSearchParams();
 
       const oldSearchParam = this.getQueryParameters().get('search') || '';
       const newSearchParam = params.get('search') || '';
@@ -318,6 +368,8 @@ import './i18n_setup.js';
       } else {
         window.history.replaceState(undefined, '', this.routes_.BASIC.path);
       }
+
+      this.updateTitle_();
     }
 
     /**
@@ -334,7 +386,8 @@ import './i18n_setup.js';
               loadTimeData.getBoolean('isOSSettings') ?
           'ChromeOS.Settings.PathVisited' :
           'WebUI.Settings.PathVisited';
-      chrome.metricsPrivate.recordSparseHashable(metricName, urlPath);
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+          metricName, urlPath);
     }
 
     resetRouteForTesting() {
@@ -345,28 +398,51 @@ import './i18n_setup.js';
     }
   }
 
-  /** @polymerBehavior */
-  export const RouteObserverBehavior = {
-    /** @override */
-    attached() {
-      routerInstance.addObserver(this);
-
-      // Emulating Polymer data bindings, the observer is called when the
-      // element starts observing the route.
-      this.currentRouteChanged(routerInstance.currentRoute, undefined);
-    },
-
-    /** @override */
-    detached() {
-      routerInstance.removeObserver(this);
-    },
-
+  /**
+   * @polymer
+   * @mixinFunction
+   */
+  export const RouteObserverMixin = dedupingMixin(superClass => {
     /**
-     * @param {!Route|undefined} opt_newRoute
-     * @param {!Route|undefined} opt_oldRoute
+     * @polymer
+     * @mixinClass
      */
-    currentRouteChanged(opt_newRoute, opt_oldRoute) {
-      assertNotReached();
-    },
-  };
+    class RouteObserverMixin extends superClass {
+      /** @override */
+      connectedCallback() {
+        super.connectedCallback();
 
+        routerInstance.addObserver(this);
+
+        // Emulating Polymer data bindings, the observer is called when the
+        // element starts observing the route.
+        this.currentRouteChanged(routerInstance.currentRoute, undefined);
+      }
+
+      /** @override */
+      disconnectedCallback() {
+        super.disconnectedCallback();
+
+        routerInstance.removeObserver(this);
+      }
+
+      /**
+       * @param {!Route} newRoute
+       * @param {!Route=} oldRoute
+       */
+      currentRouteChanged(newRoute, oldRoute) {
+        assertNotReached();
+      }
+    }
+
+    return /** @type {?} */ (RouteObserverMixin);
+  });
+
+  /** @interface */
+  export class RouteObserverMixinInterface {
+    /**
+     * @param {!Route} newRoute
+     * @param {!Route=} oldRoute
+     */
+    currentRouteChanged(newRoute, oldRoute) {}
+  }

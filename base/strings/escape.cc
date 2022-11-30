@@ -1,17 +1,149 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/strings/escape.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
 
 namespace base {
 
 namespace {
+
+const char kHexString[] = "0123456789ABCDEF";
+inline char IntToHex(int i) {
+  DCHECK_GE(i, 0) << i << " not a hex value";
+  DCHECK_LE(i, 15) << i << " not a hex value";
+  return kHexString[i];
+}
+
+// A fast bit-vector map for ascii characters.
+//
+// Internally stores 256 bits in an array of 8 ints.
+// Does quick bit-flicking to lookup needed characters.
+struct Charmap {
+  bool Contains(unsigned char c) const {
+    return ((map[c >> 5] & (1 << (c & 31))) != 0);
+  }
+
+  uint32_t map[8];
+};
+
+// Given text to escape and a Charmap defining which values to escape,
+// return an escaped string.  If use_plus is true, spaces are converted
+// to +, otherwise, if spaces are in the charmap, they are converted to
+// %20. And if keep_escaped is true, %XX will be kept as it is, otherwise, if
+// '%' is in the charmap, it is converted to %25.
+std::string Escape(StringPiece text,
+                   const Charmap& charmap,
+                   bool use_plus,
+                   bool keep_escaped = false) {
+  std::string escaped;
+  escaped.reserve(text.length() * 3);
+  for (size_t i = 0; i < text.length(); ++i) {
+    unsigned char c = static_cast<unsigned char>(text[i]);
+    if (use_plus && ' ' == c) {
+      escaped.push_back('+');
+    } else if (keep_escaped && '%' == c && i + 2 < text.length() &&
+               IsHexDigit(text[i + 1]) && IsHexDigit(text[i + 2])) {
+      escaped.push_back('%');
+    } else if (charmap.Contains(c)) {
+      escaped.push_back('%');
+      escaped.push_back(IntToHex(c >> 4));
+      escaped.push_back(IntToHex(c & 0xf));
+    } else {
+      escaped.push_back(static_cast<char>(c));
+    }
+  }
+  return escaped;
+}
+
+// Convert a character |c| to a form that will not be mistaken as HTML.
+template <class str>
+void AppendEscapedCharForHTMLImpl(typename str::value_type c, str* output) {
+  static constexpr struct {
+    char key;
+    StringPiece replacement;
+  } kCharsToEscape[] = {
+      {'<', "&lt;"},   {'>', "&gt;"},   {'&', "&amp;"},
+      {'"', "&quot;"}, {'\'', "&#39;"},
+  };
+  for (const auto& char_to_escape : kCharsToEscape) {
+    if (c == char_to_escape.key) {
+      output->append(std::begin(char_to_escape.replacement),
+                     std::end(char_to_escape.replacement));
+      return;
+    }
+  }
+  output->push_back(c);
+}
+
+// Convert |input| string to a form that will not be interpreted as HTML.
+template <typename T, typename CharT = typename T::value_type>
+std::basic_string<CharT> EscapeForHTMLImpl(T input) {
+  std::basic_string<CharT> result;
+  result.reserve(input.size());  // Optimize for no escaping.
+
+  for (auto c : input) {
+    AppendEscapedCharForHTMLImpl(c, &result);
+  }
+
+  return result;
+}
+
+// Everything except alphanumerics and -._~
+// See RFC 3986 for the list of unreserved characters.
+static const Charmap kUnreservedCharmap = {
+    {0xffffffffL, 0xfc009fffL, 0x78000001L, 0xb8000001L, 0xffffffffL,
+     0xffffffffL, 0xffffffffL, 0xffffffffL}};
+
+// Everything except alphanumerics and !'()*-._~
+// See RFC 2396 for the list of reserved characters.
+static const Charmap kQueryCharmap = {{0xffffffffL, 0xfc00987dL, 0x78000001L,
+                                       0xb8000001L, 0xffffffffL, 0xffffffffL,
+                                       0xffffffffL, 0xffffffffL}};
+
+// non-printable, non-7bit, and (including space)  "#%:<>?[\]^`{|}
+static const Charmap kPathCharmap = {{0xffffffffL, 0xd400002dL, 0x78000000L,
+                                      0xb8000001L, 0xffffffffL, 0xffffffffL,
+                                      0xffffffffL, 0xffffffffL}};
+
+#if BUILDFLAG(IS_APPLE)
+// non-printable, non-7bit, and (including space)  "#%<>[\]^`{|}
+static const Charmap kNSURLCharmap = {{0xffffffffL, 0x5000002dL, 0x78000000L,
+                                       0xb8000001L, 0xffffffffL, 0xffffffffL,
+                                       0xffffffffL, 0xffffffffL}};
+#endif  // BUILDFLAG(IS_APPLE)
+
+// non-printable, non-7bit, and (including space) ?>=<;+'&%$#"![\]^`{|}
+static const Charmap kUrlEscape = {{0xffffffffL, 0xf80008fdL, 0x78000001L,
+                                    0xb8000001L, 0xffffffffL, 0xffffffffL,
+                                    0xffffffffL, 0xffffffffL}};
+
+// non-7bit, as well as %.
+static const Charmap kNonASCIICharmapAndPercent = {
+    {0x00000000L, 0x00000020L, 0x00000000L, 0x00000000L, 0xffffffffL,
+     0xffffffffL, 0xffffffffL, 0xffffffffL}};
+
+// non-7bit
+static const Charmap kNonASCIICharmap = {{0x00000000L, 0x00000000L, 0x00000000L,
+                                          0x00000000L, 0xffffffffL, 0xffffffffL,
+                                          0xffffffffL, 0xffffffffL}};
+
+// Everything except alphanumerics, the reserved characters(;/?:@&=+$,) and
+// !'()*-._~#[]
+static const Charmap kExternalHandlerCharmap = {
+    {0xffffffffL, 0x50000025L, 0x50000000L, 0xb8000001L, 0xffffffffL,
+     0xffffffffL, 0xffffffffL, 0xffffffffL}};
 
 // Contains nonzero when the corresponding character is unescapable for normal
 // URLs. These characters are the ones that may change the parsing of a URL, so
@@ -66,8 +198,8 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
   char most_sig_digit(escaped_text[index + 1]);
   char least_sig_digit(escaped_text[index + 2]);
   if (IsHexDigit(most_sig_digit) && IsHexDigit(least_sig_digit)) {
-    *value =
-        HexDigitToInt(most_sig_digit) * 16 + HexDigitToInt(least_sig_digit);
+    *value = static_cast<unsigned char>(HexDigitToInt(most_sig_digit) * 16 +
+                                        HexDigitToInt(least_sig_digit));
     return true;
   }
   return false;
@@ -80,7 +212,7 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
 // |escaped_text| that corresponds to the unescaped character.
 bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
                                   size_t index,
-                                  uint32_t* code_point_out,
+                                  base_icu::UChar32* code_point_out,
                                   std::string* unescaped_out) {
   DCHECK(unescaped_out->empty());
 
@@ -96,7 +228,7 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
     // reach max character length number of bytes, or hit an unescaped
     // character. No need to check length of escaped_text, as
     // UnescapeUnsignedByteAtIndex checks lengths.
-    while (num_bytes < size(bytes) &&
+    while (num_bytes < std::size(bytes) &&
            UnescapeUnsignedByteAtIndex(escaped_text, index + num_bytes * 3,
                                        &bytes[num_bytes]) &&
            CBU8_IS_TRAIL(bytes[num_bytes])) {
@@ -104,7 +236,7 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
     }
   }
 
-  int32_t char_index = 0;
+  size_t char_index = 0;
   // Check if the unicode "character" that was just unescaped is valid.
   if (!ReadUnicodeCharacter(reinterpret_cast<char*>(bytes), num_bytes,
                             &char_index, code_point_out)) {
@@ -121,10 +253,11 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
 
 // This method takes a Unicode code point and returns true if it should be
 // unescaped, based on |rules|.
-bool ShouldUnescapeCodePoint(UnescapeRule::Type rules, uint32_t code_point) {
+bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
+                             base_icu::UChar32 code_point) {
   // If this is an ASCII character, use the lookup table.
-  if (code_point < 0x80) {
-    return kUrlUnescape[code_point] ||
+  if (code_point >= 0 && code_point < 0x80) {
+    return kUrlUnescape[static_cast<size_t>(code_point)] ||
            // Allow some additional unescaping when flags are set.
            (code_point == ' ' && (rules & UnescapeRule::SPACES)) ||
            // Allow any of the prohibited but non-control characters when doing
@@ -274,7 +407,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
   // Locations of adjusted text.
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     // Try to unescape the character.
-    uint32_t code_point;
+    base_icu::UChar32 code_point;
     std::string unescaped;
     if (!UnescapeUTF8CharacterAtIndex(escaped_text, i, &code_point,
                                       &unescaped)) {
@@ -286,7 +419,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
       // sequences.
       unsigned char non_utf8_byte;
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
-        result.push_back(non_utf8_byte);
+        result.push_back(static_cast<char>(non_utf8_byte));
         if (adjustments)
           adjustments->push_back(OffsetAdjuster::Adjustment(i, 3, 1));
         i += 3;
@@ -331,6 +464,52 @@ std::string UnescapeURLWithAdjustmentsImpl(
 
 }  // namespace
 
+std::string EscapeAllExceptUnreserved(StringPiece text) {
+  return Escape(text, kUnreservedCharmap, false);
+}
+
+std::string EscapeQueryParamValue(StringPiece text, bool use_plus) {
+  return Escape(text, kQueryCharmap, use_plus);
+}
+
+std::string EscapePath(StringPiece path) {
+  return Escape(path, kPathCharmap, false);
+}
+
+#if BUILDFLAG(IS_APPLE)
+std::string EscapeNSURLPrecursor(StringPiece precursor) {
+  return Escape(precursor, kNSURLCharmap, false, true);
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
+std::string EscapeUrlEncodedData(StringPiece path, bool use_plus) {
+  return Escape(path, kUrlEscape, use_plus);
+}
+
+std::string EscapeNonASCIIAndPercent(StringPiece input) {
+  return Escape(input, kNonASCIICharmapAndPercent, false);
+}
+
+std::string EscapeNonASCII(StringPiece input) {
+  return Escape(input, kNonASCIICharmap, false);
+}
+
+std::string EscapeExternalHandlerValue(StringPiece text) {
+  return Escape(text, kExternalHandlerCharmap, false, true);
+}
+
+void AppendEscapedCharForHTML(char c, std::string* output) {
+  AppendEscapedCharForHTMLImpl(c, output);
+}
+
+std::string EscapeForHTML(StringPiece input) {
+  return EscapeForHTMLImpl(input);
+}
+
+std::u16string EscapeForHTML(StringPiece16 input) {
+  return EscapeForHTMLImpl(input);
+}
+
 std::string UnescapeURLComponent(StringPiece escaped_text,
                                  UnescapeRule::Type rules) {
   return UnescapeURLWithAdjustmentsImpl(escaped_text, rules, nullptr);
@@ -364,6 +543,16 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
   DCHECK(!(rules &
            ~(UnescapeRule::NORMAL | UnescapeRule::REPLACE_PLUS_WITH_SPACE)));
 
+  // If there are no '%' characters in the string, there will be nothing to
+  // unescape, so we can take the fast path.
+  if (base::FeatureList::IsEnabled(features::kOptimizeDataUrls) &&
+      escaped_text.find('%') == StringPiece::npos) {
+    std::string unescaped_text(escaped_text);
+    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
+      std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
+    return unescaped_text;
+  }
+
   std::string unescaped_text;
 
   // The output of the unescaping is always smaller than the input, so we can
@@ -381,7 +570,7 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      unescaped_text[output_index++] = byte;
+      unescaped_text[output_index++] = static_cast<char>(byte);
       i += 3;
       continue;
     }
@@ -407,7 +596,7 @@ bool UnescapeBinaryURLComponentSafe(StringPiece escaped_text,
   unescaped_text->clear();
 
   std::set<unsigned char> illegal_encoded_bytes;
-  for (char c = '\x00'; c < '\x20'; ++c) {
+  for (unsigned char c = '\x00'; c < '\x20'; ++c) {
     illegal_encoded_bytes.insert(c);
   }
   if (fail_on_path_separators) {
@@ -439,6 +628,42 @@ bool ContainsEncodedBytes(StringPiece escaped_text,
   }
 
   return false;
+}
+
+std::u16string UnescapeForHTML(StringPiece16 input) {
+  static const struct {
+    const char* ampersand_code;
+    const char16_t replacement;
+  } kEscapeToChars[] = {
+      {"&lt;", '<'},   {"&gt;", '>'},   {"&amp;", '&'},
+      {"&quot;", '"'}, {"&#39;", '\''},
+  };
+  constexpr size_t kEscapeToCharsCount = std::size(kEscapeToChars);
+
+  if (input.find(u"&") == std::string::npos)
+    return std::u16string(input);
+
+  std::u16string ampersand_chars[kEscapeToCharsCount];
+  std::u16string text(input);
+  for (std::u16string::iterator iter = text.begin(); iter != text.end();
+       ++iter) {
+    if (*iter == '&') {
+      // Potential ampersand encode char.
+      size_t index = static_cast<size_t>(iter - text.begin());
+      for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
+        if (ampersand_chars[i].empty()) {
+          ampersand_chars[i] = ASCIIToUTF16(kEscapeToChars[i].ampersand_code);
+        }
+        if (text.find(ampersand_chars[i], index) == index) {
+          text.replace(
+              iter, iter + static_cast<ptrdiff_t>(ampersand_chars[i].length()),
+              1, kEscapeToChars[i].replacement);
+          break;
+        }
+      }
+    }
+  }
+  return text;
 }
 
 }  // namespace base

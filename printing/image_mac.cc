@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 namespace printing {
 
 bool Image::LoadMetafile(const Metafile& metafile) {
-  // Load only the first page of |metafile|, just like Windows.
+  // Load only the first page of `metafile`, just like Windows.
   const unsigned int page_number = 1;
   gfx::Rect rect(metafile.GetPageBounds(page_number));
   if (rect.width() < 1 || rect.height() < 1)

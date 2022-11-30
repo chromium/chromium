@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/gpu/test/video_frame_file_writer.h"
-#include "media/gpu/test/video_player/video_decoder_client.h"
+#include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_test_environment.h"
 
 namespace media {
@@ -34,12 +33,12 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& video_metadata_path,
       ValidatorType validator_type,
       const DecoderImplementation implementation,
+      bool linear_output,
       const base::FilePath& output_folder = base::FilePath(),
-      const FrameOutputConfig& frame_output_config = FrameOutputConfig());
+      const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {});
   ~VideoPlayerTestEnvironment() override;
-
-  // Set up video test environment, called once for entire test run.
-  void SetUp() override;
 
   // Get the video the tests will be ran on.
   const media::test::Video* Video() const;
@@ -49,6 +48,8 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   ValidatorType GetValidatorType() const;
   // Return which implementation is used.
   DecoderImplementation GetDecoderImplementation() const;
+  // Returns whether the final output of the decoder should be linear buffers.
+  bool ShouldOutputLinearBuffers() const;
 
   // Get the frame output mode.
   FrameOutputMode GetFrameOutputMode() const;
@@ -59,33 +60,24 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   // Get the output folder.
   const base::FilePath& OutputFolder() const;
 
-  // Whether import mode is supported, valid after SetUp() has been called.
-  bool ImportSupported() const;
-
-  // Get the GpuMemoryBufferFactory for doing buffer allocations. This needs to
-  // survive as long as the process is alive just like in production which is
-  // why it's in here as there are threads that won't immediately die when an
-  // individual test is completed.
-  gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
-
  private:
-  VideoPlayerTestEnvironment(std::unique_ptr<media::test::Video> video,
-                             ValidatorType validator_type,
-                             const DecoderImplementation implementation,
-                             const base::FilePath& output_folder,
-                             const FrameOutputConfig& frame_output_config);
+  VideoPlayerTestEnvironment(
+      std::unique_ptr<media::test::Video> video,
+      ValidatorType validator_type,
+      const DecoderImplementation implementation,
+      bool linear_output,
+      const base::FilePath& output_folder,
+      const FrameOutputConfig& frame_output_config,
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
 
   const std::unique_ptr<media::test::Video> video_;
   const ValidatorType validator_type_;
   const DecoderImplementation implementation_;
+  const bool linear_output_;
 
   const FrameOutputConfig frame_output_config_;
   const base::FilePath output_folder_;
-
-  // TODO(dstaessens): Remove this once all allocate-only platforms reached EOL.
-  bool import_supported_ = false;
-
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 };
 }  // namespace test
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ RendererTask::RendererTask(const std::u16string& title,
     : RendererTask(title,
                    icon,
                    web_contents,
-                   web_contents->GetMainFrame()->GetProcess()) {}
+                   web_contents->GetPrimaryMainFrame()->GetProcess()) {}
 
 RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
@@ -183,7 +183,7 @@ std::u16string RendererTask::GetTitleFromWebContents(
   DCHECK(web_contents);
   std::u16string title = web_contents->GetTitle();
   if (title.empty()) {
-    GURL url = web_contents->GetURL();
+    GURL url = web_contents->GetLastCommittedURL();
     title = base::UTF8ToUTF16(url.spec());
     // Force URL to be LTR.
     title = base::i18n::GetDisplayStringInLTRDirectionality(title);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,11 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_types.h"
@@ -34,18 +32,22 @@ class SyncMessageFilter;
 class NaClListener : public IPC::Listener {
  public:
   NaClListener();
+
+  NaClListener(const NaClListener&) = delete;
+  NaClListener& operator=(const NaClListener&) = delete;
+
   ~NaClListener() override;
   // Listen for a request to launch a NaCl module.
   void Listen();
 
   bool Send(IPC::Message* msg);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void set_prereserved_sandbox_size(size_t prereserved_sandbox_size) {
     prereserved_sandbox_size_ = prereserved_sandbox_size;
   }
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void set_number_of_cores(int number_of_cores) {
     number_of_cores_ = number_of_cores;
   }
@@ -68,7 +70,7 @@ class NaClListener : public IPC::Listener {
                            base::FilePath file_path);
 
  private:
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static int MakeSharedMemorySegment(size_t length, int executable);
 #endif
 
@@ -91,10 +93,10 @@ class NaClListener : public IPC::Listener {
   base::WaitableEvent shutdown_event_;
   base::Thread io_thread_;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   size_t prereserved_sandbox_size_;
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The outer sandbox on Linux and OSX prevents
   // sysconf(_SC_NPROCESSORS) from working; in Windows, there are no
   // problems with invoking GetSystemInfo.  Therefore, only in
@@ -119,8 +121,6 @@ class NaClListener : public IPC::Listener {
   PrefetchedResourceFilesMap prefetched_resource_files_;
 
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClListener);
 };
 
 #endif  // COMPONENTS_NACL_LOADER_NACL_LISTENER_H_

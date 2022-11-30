@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,16 @@ namespace device {
 class BluetoothAdapterCastTest : public testing::Test {
  public:
   BluetoothAdapterCastTest() = default;
+
+  BluetoothAdapterCastTest(const BluetoothAdapterCastTest&) = delete;
+  BluetoothAdapterCastTest& operator=(const BluetoothAdapterCastTest&) = delete;
+
   ~BluetoothAdapterCastTest() override {
     BluetoothAdapterCast::ResetFactoryForTest();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterCastTest);
 };
 
 TEST_F(BluetoothAdapterCastTest, TestSetFactory) {

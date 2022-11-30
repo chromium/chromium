@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,12 @@
 // [2] https://blogs.msdn.microsoft.com/openspecification/2013/03/26/ntlm-and-
 //         channel-binding-hash-aka-extended-protection-for-authentication/
 
-#ifndef NET_BASE_NTLM_TEST_DATA_H_
-#define NET_BASE_NTLM_TEST_DATA_H_
+#ifndef NET_NTLM_NTLM_TEST_DATA_H_
+#define NET_NTLM_NTLM_TEST_DATA_H_
 
 #include "net/ntlm/ntlm_constants.h"
 
-namespace net {
-namespace ntlm {
-namespace test {
+namespace net::ntlm::test {
 
 // Common input values defined in [MS-NLMP] Section 4.2.1.
 constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '\0'};
@@ -41,7 +39,7 @@ constexpr char kUserAscii[] = "User";
 constexpr char kHostnameAscii[] = "COMPUTER";
 
 // Test data obtained from [2].
-constexpr char kChannelBindings[] = {
+constexpr uint8_t kChannelBindings[] = {
     't',  'l',  's',  '-',  's',  'e',  'r',  'v',  'e',  'r',  '-',
     'e',  'n',  'd',  '-',  'p',  'o',  'i',  'n',  't',  ':',  0xea,
     0x05, 0xfe, 0xfe, 0xcc, 0x6b, 0x0b, 0xd5, 0x71, 0xdb, 0xbc, 0x5b,
@@ -566,8 +564,6 @@ constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
     'P',  0x00, 'U',  0x00, 'T',  0x00, 'E',  0x00, 'R',  0x00,
 };
 
-}  // namespace test
-}  // namespace ntlm
-}  // namespace net
+}  // namespace net::ntlm::test
 
-#endif  // NET_BASE_NTLM_TEST_DATA_H_
+#endif  // NET_NTLM_NTLM_TEST_DATA_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 class Profile;
 
 namespace exo {
+class Surface;
 class WMHelper;
 }
 
@@ -31,10 +31,21 @@ class ArcAppPerformanceTracingSession;
 class ArcAppPerformanceTracingTestHelper {
  public:
   ArcAppPerformanceTracingTestHelper();
+
+  ArcAppPerformanceTracingTestHelper(
+      const ArcAppPerformanceTracingTestHelper&) = delete;
+  ArcAppPerformanceTracingTestHelper& operator=(
+      const ArcAppPerformanceTracingTestHelper&) = delete;
+
   virtual ~ArcAppPerformanceTracingTestHelper();
 
   // Creates app window as ARC++ window.
-  static views::Widget* CreateArcWindow(const std::string& window_app_id);
+  // Caller retains ownership of |shell_root_surface|.
+  // If |shell_root_surface| is not given or is nullptr, one will be created,
+  // which should be cleaned up by the surface tree destruction.
+  static views::Widget* CreateArcWindow(
+      const std::string& window_app_id,
+      exo::Surface* shell_root_surface = nullptr);
 
   void SetUp(Profile* profile);
   void TearDown();
@@ -64,8 +75,6 @@ class ArcAppPerformanceTracingTestHelper {
   Profile* profile_ = nullptr;
 
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingTestHelper);
 };
 
 }  // namespace arc

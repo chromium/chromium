@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -19,6 +18,12 @@ class ASH_EXPORT LockScreenActionBackgroundControllerStub
     : public LockScreenActionBackgroundController {
  public:
   LockScreenActionBackgroundControllerStub();
+
+  LockScreenActionBackgroundControllerStub(
+      const LockScreenActionBackgroundControllerStub&) = delete;
+  LockScreenActionBackgroundControllerStub& operator=(
+      const LockScreenActionBackgroundControllerStub&) = delete;
+
   ~LockScreenActionBackgroundControllerStub() override;
 
   // LockScreenActionBackgroundController:
@@ -26,9 +31,6 @@ class ASH_EXPORT LockScreenActionBackgroundControllerStub
   bool ShowBackground() override;
   bool HideBackgroundImmediately() override;
   bool HideBackground() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerStub);
 };
 
 }  // namespace ash

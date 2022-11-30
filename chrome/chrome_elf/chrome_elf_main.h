@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,10 @@ void SetMetricsClientId(const char* client_id);
 // Returns true if invoked in a Chrome process other than the main browser
 // process. False otherwise.
 bool IsBrowserProcess();
+
+// Returns true if we set the PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY
+// was set
+bool IsExtensionPointDisableSet();
 
 }  // extern "C"
 

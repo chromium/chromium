@@ -33,12 +33,20 @@ def _unichr(codepoint):
 def coerce_to_structurally_valid_utf8(input,
                                       replacement_char=_unichr(65533),
                                       name=None):
-  """Coerce UTF-8 input strings to structurally valid UTF-8.
+  r"""Coerce UTF-8 input strings to structurally valid UTF-8.
 
   Any bytes which cause the input string to be invalid UTF-8 are substituted
   with the provided replacement character codepoint (default 65533). If you plan
   on overriding the default, use a single byte replacement character codepoint
   to preserve alignment to the source input string.
+
+  In this example, the character \xDEB2 is an invalid UTF-8 bit sequence; the
+  call to `coerce_to_structurally_valid_utf8` replaces it with \xef\xbf\xbd,
+  which is the default replacement character encoding.
+  >>> input_data = ["A", b"\xDEB2", "C"]
+  >>> coerce_to_structurally_valid_utf8(input_data)
+  <tf.Tensor: shape=(3,), dtype=string,
+              numpy=array([b'A', b'\xef\xbf\xbdB2', b'C'], dtype=object)>
 
   Args:
     input: UTF-8 string tensor to coerce to valid UTF-8.

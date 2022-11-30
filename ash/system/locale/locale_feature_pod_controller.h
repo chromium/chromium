@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define ASH_SYSTEM_LOCALE_LOCALE_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -18,18 +18,21 @@ class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
  public:
   explicit LocaleFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
+
+  LocaleFeaturePodController(const LocaleFeaturePodController&) = delete;
+  LocaleFeaturePodController& operator=(const LocaleFeaturePodController&) =
+      delete;
+
   ~LocaleFeaturePodController() override;
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
-  SystemTrayItemUmaType GetUmaType() const override;
 
  private:
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleFeaturePodController);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -24,7 +24,7 @@ class ChromePasswordProtectionService;
 // associated service. It returns a separate instance if the profile is in the
 // Incognito mode.
 class ChromePasswordProtectionServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
@@ -32,6 +32,11 @@ class ChromePasswordProtectionServiceFactory
 
   // Get the singleton instance.
   static ChromePasswordProtectionServiceFactory* GetInstance();
+
+  ChromePasswordProtectionServiceFactory(
+      const ChromePasswordProtectionServiceFactory&) = delete;
+  ChromePasswordProtectionServiceFactory& operator=(
+      const ChromePasswordProtectionServiceFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<
@@ -43,10 +48,6 @@ class ChromePasswordProtectionServiceFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePasswordProtectionServiceFactory);
 };
 
 }  // namespace safe_browsing

@@ -1,0 +1,105 @@
+diff --git a/crypto/context.h b/crypto/context.h
+index 9b0384d9fe0cc..294aa427d91a3 100644
+--- a/crypto/context.h
++++ b/crypto/context.h
+@@ -21,6 +21,7 @@
+ #include <memory>
+ #include <string>
+ 
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "third_party/private-join-and-compute/src/chromium_patch.h"
+ #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+ #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+@@ -40,7 +41,7 @@ std::string OpenSSLErrorString();
+ //
+ // This class is not thread-safe, so each thread needs to have a unique Context
+ // initialized.
+-class Context {
++class PRIVATE_COMPUTE_EXPORT Context {
+  public:
+   // Deletes a BN_CTX.
+   class BnCtxDeleter {
+diff --git a/crypto/ec_commutative_cipher.h b/crypto/ec_commutative_cipher.h
+index 11f2b096e9a2f..83b8fcbec25ff 100644
+--- a/crypto/ec_commutative_cipher.h
++++ b/crypto/ec_commutative_cipher.h
+@@ -19,6 +19,7 @@
+ #include <memory>
+ #include <string>
+ 
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+ #include "third_party/private-join-and-compute/src/crypto/context.h"
+ #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+@@ -82,7 +83,7 @@ namespace private_join_and_compute {
+ //    ::private_join_and_compute::StatusOr<std::pair<string, string>> double_encrypted_string =
+ //        cipher->ReEncryptElGamalCiphertext(elgamal_ciphertext);
+ 
+-class ECCommutativeCipher {
++class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
+  public:
+   // The hash function used by the ECCommutativeCipher.
+   enum HashType {
+diff --git a/crypto/ec_group.h b/crypto/ec_group.h
+index a1884fba70f2a..5c2db0505069c 100644
+--- a/crypto/ec_group.h
++++ b/crypto/ec_group.h
+@@ -19,6 +19,7 @@
+ #include <memory>
+ #include <string>
+ 
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+ #include "third_party/private-join-and-compute/src/crypto/context.h"
+ #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+@@ -29,7 +30,7 @@ namespace private_join_and_compute {
+ class ECPoint;
+ 
+ // Wrapper class for openssl EC_GROUP.
+-class ECGroup {
++class PRIVATE_COMPUTE_EXPORT ECGroup {
+  public:
+   // Deletes a EC_GROUP.
+   class ECGroupDeleter {
+diff --git a/crypto/ec_point.h b/crypto/ec_point.h
+index 0fab463ca6342..93a7e229b718f 100644
+--- a/crypto/ec_point.h
++++ b/crypto/ec_point.h
+@@ -19,6 +19,7 @@
+ #include <memory>
+ #include <string>
+ 
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+ #include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+@@ -28,7 +29,7 @@ class BigNum;
+ class ECGroup;
+ 
+ // Wrapper class for openssl EC_POINT.
+-class ECPoint {
++class PRIVATE_COMPUTE_EXPORT ECPoint {
+  public:
+   // Deletes an EC_POINT.
+   class ECPointDeleter {
+diff --git a/util/statusor.h b/util/statusor.h
+index a1666d549b0bf..7951d3d31a3c6 100644
+--- a/util/statusor.h
++++ b/util/statusor.h
+@@ -73,6 +73,7 @@
+ #include <new>
+ #include <utility>
+ 
++#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+ #include "third_party/private-join-and-compute/src/util/status.h"  // IWYU pragma: export  // for Status
+ 
+ namespace private_join_and_compute {
+@@ -151,7 +152,7 @@ namespace private_join_and_compute {
+ 
+ namespace internal {
+ 
+-class StatusOrHelper {
++class PRIVATE_COMPUTE_EXPORT StatusOrHelper {
+  public:
+   // Move type-agnostic error handling to the .cc.
+   static Status HandleInvalidStatusCtorArg();

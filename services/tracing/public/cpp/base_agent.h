@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace tracing {
 
@@ -17,6 +16,9 @@ namespace tracing {
 // categories via Perfetto.
 class COMPONENT_EXPORT(TRACING_CPP) BaseAgent {
  public:
+  BaseAgent(const BaseAgent&) = delete;
+  BaseAgent& operator=(const BaseAgent&) = delete;
+
   virtual ~BaseAgent();
 
   // May be called on any thread.
@@ -24,8 +26,6 @@ class COMPONENT_EXPORT(TRACING_CPP) BaseAgent {
 
  protected:
   BaseAgent();
-
-  DISALLOW_COPY_AND_ASSIGN(BaseAgent);
 };
 
 }  // namespace tracing

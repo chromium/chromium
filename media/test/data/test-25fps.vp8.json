@@ -256,19 +256,5 @@
     "7c998a26a20aaa3e348f9f7c49407317",
     "3f8679de7b0d2d32ec3f5997090e86f5",
     "17e3fb19dd3b57130a73e40dca0b136a"
-  ],
-  "thumbnail_checksums": [
-    "# ARM - Mali",
-    "6012551634f90fb4bd59f871fff904f4",
-    "# ARM - Tegra",
-    "cd355b553ce7660283c52675232e9227",
-    "# ARM - MediaTek",
-    "5acb8209d79c02ed9bc12048e07908e4",
-    "# Intel - VA_FILTER_SCALING_DEFAULT",
-    "66f40a833b8b23dc52bbdfc0ef0e268f",
-    "# Intel - go2001",
-    "f9c98d3808b3ca06d3375d005ab31537",
-    "# Intel - VA decode to NV12, EGLImage CSC",
-    "4fc4e3c4b690c004072b968530058b67"
   ]
 }

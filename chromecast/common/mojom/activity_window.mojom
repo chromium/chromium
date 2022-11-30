@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+// Simplified window interface to allow a web app to show/hide itself.
+//
+// Security: This interface is hosted by the Cast Browser. It is exposed to
+// render processes via Cast App ID allow-list, which limits this API to apps
+// that need the ability to dynamically show/hide themselves. This API does not
+// expose any sensitive functionality.
+interface ActivityWindow {
+  // Make the window visible. Depending on the system state, the window manager
+  // will decide how the activity window is composited on the screen.
+  Show();
+
+  // Hide the window.
+  Hide();
+};

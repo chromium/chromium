@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
+#include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;
 
@@ -25,7 +27,7 @@ class ShareTargetInfo {
   ShareTargetInfo& operator=(ShareTargetInfo&&);
   virtual ~ShareTargetInfo();
 
-  const base::Optional<std::string>& endpoint_id() const {
+  const absl::optional<std::string>& endpoint_id() const {
     return endpoint_id_;
   }
 
@@ -33,7 +35,7 @@ class ShareTargetInfo {
     endpoint_id_ = std::move(endpoint_id);
   }
 
-  const base::Optional<NearbyShareDecryptedPublicCertificate>& certificate()
+  const absl::optional<NearbyShareDecryptedPublicCertificate>& certificate()
       const {
     return certificate_;
   }
@@ -57,7 +59,7 @@ class ShareTargetInfo {
     transfer_update_callback_ = std::move(transfer_update_callback);
   }
 
-  const base::Optional<std::string>& token() const { return token_; }
+  const absl::optional<std::string>& token() const { return token_; }
 
   void set_token(std::string token) { token_ = std::move(token); }
 
@@ -76,18 +78,21 @@ class ShareTargetInfo {
     key_verification_runner_ = std::move(key_verification_runner);
   }
 
-  PayloadTracker* payload_tracker() { return payload_tracker_.get(); }
+  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
+  payload_tracker() {
+    return payload_tracker_->GetWeakPtr();
+  }
 
   void set_payload_tracker(std::unique_ptr<PayloadTracker> payload_tracker) {
     payload_tracker_ = std::move(payload_tracker);
   }
 
  private:
-  base::Optional<std::string> endpoint_id_;
-  base::Optional<NearbyShareDecryptedPublicCertificate> certificate_;
+  absl::optional<std::string> endpoint_id_;
+  absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
   NearbyConnection* connection_ = nullptr;
   std::unique_ptr<TransferUpdateCallback> transfer_update_callback_;
-  base::Optional<std::string> token_;
+  absl::optional<std::string> token_;
   std::unique_ptr<IncomingFramesReader> frames_reader_;
   std::unique_ptr<PairedKeyVerificationRunner> key_verification_runner_;
   std::unique_ptr<PayloadTracker> payload_tracker_;

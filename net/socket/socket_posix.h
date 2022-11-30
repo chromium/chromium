@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
@@ -28,6 +28,10 @@ class NET_EXPORT_PRIVATE SocketPosix
     : public base::MessagePumpForIO::FdWatcher {
  public:
   SocketPosix();
+
+  SocketPosix(const SocketPosix&) = delete;
+  SocketPosix& operator=(const SocketPosix&) = delete;
+
   ~SocketPosix() override;
 
   // Opens a socket and returns net::OK if |address_family| is AF_INET, AF_INET6
@@ -126,14 +130,14 @@ class NET_EXPORT_PRIVATE SocketPosix
   SocketDescriptor socket_fd_;
 
   base::MessagePumpForIO::FdWatchController accept_socket_watcher_;
-  std::unique_ptr<SocketPosix>* accept_socket_;
+  raw_ptr<std::unique_ptr<SocketPosix>> accept_socket_;
   CompletionOnceCallback accept_callback_;
 
   base::MessagePumpForIO::FdWatchController read_socket_watcher_;
 
   // Non-null when a Read() is in progress.
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
   CompletionOnceCallback read_callback_;
 
   // Non-null when a ReadIfReady() is in progress.
@@ -141,19 +145,17 @@ class NET_EXPORT_PRIVATE SocketPosix
 
   base::MessagePumpForIO::FdWatchController write_socket_watcher_;
   scoped_refptr<IOBuffer> write_buf_;
-  int write_buf_len_;
+  int write_buf_len_ = 0;
   // External callback; called when write or connect is complete.
   CompletionOnceCallback write_callback_;
 
   // A connect operation is pending. In this case, |write_callback_| needs to be
   // called when connect is complete.
-  bool waiting_connect_;
+  bool waiting_connect_ = false;
 
   std::unique_ptr<SockaddrStorage> peer_address_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketPosix);
 };
 
 }  // namespace net

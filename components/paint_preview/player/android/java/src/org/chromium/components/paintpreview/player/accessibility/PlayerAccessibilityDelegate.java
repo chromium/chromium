@@ -1,19 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.paintpreview.player.accessibility;
 
 import android.graphics.Rect;
-import android.os.Handler;
 import android.util.Size;
 import android.view.View;
+import android.view.ViewStructure;
 
 import org.chromium.components.paintpreview.player.frame.PlayerFrameCoordinator;
 import org.chromium.components.paintpreview.player.frame.PlayerFrameViewport;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate;
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
-import org.chromium.content_public.browser.AccessibilitySnapshotNode;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -24,12 +22,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     private final long mNativeAxTree;
     private final PlayerAccessibilityCoordinatesImpl mPlayerAccessibilityCoordinates;
 
-    public PlayerAccessibilityDelegate(PlayerFrameCoordinator coordinator, long nativeAxTree) {
+    public PlayerAccessibilityDelegate(
+            PlayerFrameCoordinator coordinator, long nativeAxTree, Size constantOffset) {
         mRootCoordinator = coordinator;
         mNativeAxTree = nativeAxTree;
         mPlayerAccessibilityCoordinates = new PlayerAccessibilityCoordinatesImpl(
                 mRootCoordinator.getViewportForAccessibility(),
-                mRootCoordinator.getContentSizeForAccessibility());
+                mRootCoordinator.getContentSizeForAccessibility(), constantOffset);
     }
 
     @Override
@@ -58,13 +57,10 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback) {
-        new Handler().post(() -> {
-            AccessibilitySnapshotNode rootNode =
-                    PlayerAccessibilitySnapshotHelper.getJavaAccessibilitySnapshotNode(
-                            mNativeAxTree);
-            callback.onAccessibilitySnapshot(rootNode);
-        });
+    public void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback) {
+        // Not implemented. This is used to support Assistant reading the screen,
+        // which isn't important to support during the short window of time when the
+        // Player is active.
     }
 
     @Override
@@ -92,10 +88,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     static class PlayerAccessibilityCoordinatesImpl implements AccessibilityCoordinates {
         private final PlayerFrameViewport mViewport;
         private final Size mContentSize;
+        private final Size mConstantOffset;
 
-        PlayerAccessibilityCoordinatesImpl(PlayerFrameViewport viewport, Size contentSize) {
+        PlayerAccessibilityCoordinatesImpl(
+                PlayerFrameViewport viewport, Size contentSize, Size constantOffset) {
             mViewport = viewport;
             mContentSize = contentSize;
+            mConstantOffset = constantOffset;
         }
 
         @Override
@@ -137,13 +136,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
         @Override
         public float getScrollX() {
             Rect rect = mViewport.asRect();
-            return rect.left;
+            return rect.left + (mConstantOffset == null ? 0 : mConstantOffset.getWidth());
         }
 
         @Override
         public float getScrollY() {
             Rect rect = mViewport.asRect();
-            return rect.top;
+            return rect.top + (mConstantOffset == null ? 0 : mConstantOffset.getHeight());
         }
     }
 }

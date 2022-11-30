@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 
 namespace remoting {
@@ -15,6 +14,10 @@ namespace remoting {
 class ScHandleTraits {
  public:
   typedef SC_HANDLE Handle;
+
+  ScHandleTraits() = delete;
+  ScHandleTraits(const ScHandleTraits&) = delete;
+  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
 
   // Closes the handle.
   static bool CloseHandle(SC_HANDLE handle) {
@@ -30,9 +33,6 @@ class ScHandleTraits {
   static SC_HANDLE NullHandle() {
     return NULL;
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<

@@ -1,128 +1,198 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/os_crypt/os_crypt_mocker.h"
-#include "content/public/test/browser_task_environment.h"
+#include <tuple>
+
+#include "base/barrier_closure.h"
+#include "base/base64.h"
+#include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
+#include "components/device_signals/core/common/signals_constants.h"
+#include "components/prefs/testing_pref_service.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
 using testing::Invoke;
+using testing::NotNull;
+
 namespace {
 
-const base::Value origins[]{base::Value("example1.example.com"),
-                            base::Value("example2.example.com")};
+base::Value::List GetOrigins() {
+  base::Value::List origins;
+  origins.Append("example1.example.com");
+  origins.Append("example2.example.com");
+  return origins;
+}
+
+// A sample VerifiedAccess v2 challenge rerepsented as a JSON string.
+constexpr char kJsonChallenge[] =
+    "{"
+    "\"challenge\": "
+    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
+    "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
+    "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
+    "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
+    "FUA5r3lxdoluxwAUMFqcP4VgnMvKzKTPYbnnB+xj5h5BZqjQToXJYoP4VC3/"
+    "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
+    "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
+    "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
+    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
+    "}";
+
+constexpr char kResultHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Result";
+
+std::string GetSerializedSignedChallenge(const std::string& response) {
+  absl::optional<base::Value> data = base::JSONReader::Read(
+      response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+
+  // If json is malformed or it doesn't include the needed field return
+  // an empty string.
+  if (!data || !data.value().FindPath("challenge"))
+    return std::string();
+
+  std::string serialized_signed_challenge;
+  if (!base::Base64Decode(data.value().FindPath("challenge")->GetString(),
+                          &serialized_signed_challenge)) {
+    return std::string();
+  }
+
+  return serialized_signed_challenge;
+}
 
 }  // namespace
 
 namespace enterprise_connectors {
 
-class DeviceTrustServiceTest : public testing::Test {
- public:
-  DeviceTrustServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+using test::MockAttestationService;
+using test::MockSignalsService;
 
+class DeviceTrustServiceTest
+    : public testing::Test,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
   void SetUp() override {
-    testing::Test::SetUp();
-    OSCryptMocker::SetUp();
+    RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
+
+    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
+                                       is_flag_enabled());
+
+    if (is_policy_enabled()) {
+      EnableServicePolicy();
+    } else {
+      DisableServicePolicy();
+    }
   }
 
-  void TearDown() override {
-    OSCryptMocker::TearDown();
-    testing::Test::TearDown();
+  void EnableServicePolicy() {
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(GetOrigins()));
   }
 
-  void ClearService() {
-    prefs()->RemoveUserPref(
-        enterprise_connectors::kContextAwareAccessSignalsAllowlistPref);
+  void DisableServicePolicy() {
+    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
+                          base::Value(base::Value::List()));
   }
 
-  void EnableService() {
-    prefs()->SetUserPref(
-        enterprise_connectors::kContextAwareAccessSignalsAllowlistPref,
-        std::make_unique<base::ListValue>(origins));
+  std::unique_ptr<DeviceTrustService> CreateService() {
+    connector_ = std::make_unique<DeviceTrustConnectorService>(&prefs_);
+
+    auto mock_attestation_service = std::make_unique<MockAttestationService>();
+    mock_attestation_service_ = mock_attestation_service.get();
+
+    auto mock_signals_service = std::make_unique<MockSignalsService>();
+    mock_signals_service_ = mock_signals_service.get();
+
+    return std::make_unique<DeviceTrustService>(
+        std::move(mock_attestation_service), std::move(mock_signals_service),
+        connector_.get());
   }
 
-  void DisableService() {
-    prefs()->SetUserPref(
-        enterprise_connectors::kContextAwareAccessSignalsAllowlistPref,
-        std::make_unique<base::ListValue>());
+  bool is_attestation_flow_enabled() {
+    return is_flag_enabled() && is_policy_enabled();
   }
 
-  void SetUpReporterForUpdates(DeviceTrustService* dt_service) {
-    using Reporter = enterprise_connectors::MockDeviceTrustSignalReporter;
-    std::unique_ptr<Reporter> reporter = std::make_unique<Reporter>();
-    EXPECT_CALL(*reporter, SendReport(_, _))
-        .WillRepeatedly(Invoke(
-            [this](base::Value value, base::OnceCallback<void(bool)> sent_cb) {
-              signal_posted_ = std::move(value);
-              std::move(sent_cb).Run(true);
-            }));
-    dt_service->SetSignalReporterForTesting(std::move(reporter));
-    dt_service->SetSignalReportCallbackForTesting(base::BindOnce(
-        &DeviceTrustServiceTest::ReportCallback, base::Unretained(this)));
-    run_loop_ = std::make_unique<base::RunLoop>();
-  }
+  bool is_flag_enabled() { return std::get<0>(GetParam()); }
+  bool is_policy_enabled() { return std::get<1>(GetParam()); }
 
-  void WaitForSignalReported() { run_loop_->Run(); }
-
-  void ReportCallback(bool success) { run_loop_->Quit(); }
-
-  sync_preferences::TestingPrefServiceSyncable* prefs() {
-    return profile_->GetTestingPrefService();
-  }
-  TestingProfile* profile() { return profile_.get(); }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  base::Value signal_posted_;
-
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
-  ScopedTestingLocalState local_state_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<DeviceTrustConnectorService> connector_;
+  raw_ptr<MockAttestationService> mock_attestation_service_;
+  raw_ptr<MockSignalsService> mock_signals_service_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+  base::HistogramTester histogram_tester_;
 };
 
-TEST_F(DeviceTrustServiceTest, StartWithEnabledPolicy) {
-  EnableService();
-  DeviceTrustService* device_trust_service =
-      DeviceTrustFactory::GetForProfile(profile());
-  EXPECT_TRUE(device_trust_service->IsEnabled());
+// Tests that IsEnabled returns true only when the feature flag is enabled and
+// the policy has some URLs.
+TEST_P(DeviceTrustServiceTest, IsEnabled) {
+  auto device_trust_service = CreateService();
+  EXPECT_EQ(is_attestation_flow_enabled(), device_trust_service->IsEnabled());
 }
 
-TEST_F(DeviceTrustServiceTest, StartWithDisabledPolicy) {
-  DisableService();
-  DeviceTrustService* device_trust_service =
-      DeviceTrustFactory::GetForProfile(profile());
-  ASSERT_FALSE(device_trust_service->IsEnabled());
+// Tests that the service kicks off the attestation flow properly.
+TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
+  auto device_trust_service = CreateService();
 
-  SetUpReporterForUpdates(device_trust_service);
-  EnableService();
-  WaitForSignalReported();
-  EXPECT_TRUE(device_trust_service->IsEnabled());
+  std::string fake_display_name = "fake_display_name";
+  EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
+      .WillOnce(Invoke(
+          [&fake_display_name](
+              base::OnceCallback<void(base::Value::Dict)> signals_callback) {
+            auto fake_signals = std::make_unique<base::Value::Dict>();
+            fake_signals->Set(device_signals::names::kDisplayName,
+                              fake_display_name);
+            std::move(signals_callback).Run(std::move(*fake_signals));
+          }));
+
+  const DTAttestationResult result_code = DTAttestationResult::kSuccess;
+  EXPECT_CALL(*mock_attestation_service_,
+              BuildChallengeResponseForVAChallenge(
+                  GetSerializedSignedChallenge(kJsonChallenge), _, _))
+      .WillOnce(Invoke([&fake_display_name](
+                           const std::string& challenge,
+                           const base::Value::Dict signals,
+                           AttestationService::AttestationCallback callback) {
+        EXPECT_EQ(
+            signals.FindString(device_signals::names::kDisplayName)->c_str(),
+            fake_display_name);
+        std::move(callback).Run({challenge, result_code});
+      }));
+
+  base::test::TestFuture<const DeviceTrustResponse&> future;
+  device_trust_service->BuildChallengeResponse(
+      kJsonChallenge,
+      /*callback=*/future.GetCallback());
+
+  const DeviceTrustResponse& dt_response = future.Get();
+  EXPECT_FALSE(dt_response.challenge_response.empty());
+  EXPECT_FALSE(dt_response.error);
+  ASSERT_TRUE(dt_response.attestation_result);
+  EXPECT_EQ(dt_response.attestation_result.value(), result_code);
+
+  histogram_tester_.ExpectUniqueSample(kResultHistogramName, result_code, 1);
 }
 
-// According to Chrome policy_templates "do's / don'ts" (go/policies-dos-donts),
-// for a list policy, Chrome should behave the same way under no policy set or
-// empty list.
-TEST_F(DeviceTrustServiceTest, StartWithNoPolicy) {
-  ClearService();
-  DeviceTrustService* device_trust_service =
-      DeviceTrustFactory::GetForProfile(profile());
-  ASSERT_FALSE(device_trust_service->IsEnabled());
-
-  SetUpReporterForUpdates(device_trust_service);
-  EnableService();
-  WaitForSignalReported();
-  EXPECT_TRUE(device_trust_service->IsEnabled());
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeviceTrustServiceTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

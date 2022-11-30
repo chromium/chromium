@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <memory>
 #include "base/android/java_handler_thread.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 
 namespace device {
@@ -24,6 +23,10 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge,
       base::OnceCallback<void()> initialized_callback);
+
+  ArCoreGlThread(const ArCoreGlThread&) = delete;
+  ArCoreGlThread& operator=(const ArCoreGlThread&) = delete;
+
   ~ArCoreGlThread() override;
   ArCoreGl* GetArCoreGl();
 
@@ -38,8 +41,6 @@ class ArCoreGlThread : public base::android::JavaHandlerThread {
 
   // Created on GL thread.
   std::unique_ptr<ArCoreGl> arcore_gl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArCoreGlThread);
 };
 
 }  // namespace device

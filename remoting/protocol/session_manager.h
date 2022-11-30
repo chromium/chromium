@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@
 // specifies configuration supported on the client side. When the host receives
 // session-initiate stanza, the IncomingSessionCallback is called. The
 // configuration sent in the session-intiate staza is available via
-// ChromotocolConnnection::candidate_config(). If an incoming session is
+// ChromotocolConnection::candidate_config(). If an incoming session is
 // being accepted then the IncomingSessionCallback callback function must
 // select session configuration and then set it with Session::set_config().
 
@@ -56,7 +56,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "remoting/protocol/session.h"
 
 namespace remoting {
@@ -97,6 +96,10 @@ class SessionManager {
       IncomingSessionCallback;
 
   SessionManager() {}
+
+  SessionManager(const SessionManager&) = delete;
+  SessionManager& operator=(const SessionManager&) = delete;
+
   virtual ~SessionManager() {}
 
   // Starts accepting incoming connections.
@@ -123,9 +126,6 @@ class SessionManager {
   // factory before all authenticators it created are deleted.
   virtual void set_authenticator_factory(
       std::unique_ptr<AuthenticatorFactory> authenticator_factory) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };
 
 }  // namespace protocol

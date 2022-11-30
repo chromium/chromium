@@ -26,17 +26,20 @@
   // dedicated-worker-string-setTimeout.js, which calls setTimeout("foo()", 0);
   // - and as a side-effect of that, "foo()" is getting parsed as it has to be
   // evaluated.
-  // Whereas parsing the worker script itself would result in a Debugger.scriptParsed
-  // message that reports a result url, parsing this string results in a message
-  // that has the url field set to the empty string.
+  // Whereas parsing the worker script itself would result in a
+  // Debugger.scriptParsed message that reports a result url, parsing this
+  // string results in a message that has the url field set to the empty string.
   // We use this fact below to verify that indeed, we did evaluate setTimeout
   // in the worker.
 
   session.evaluate('worker.postMessage(1)');
   testRunner.log('Did post message to worker');
 
+  // Skip the script event.
+  await childSession.protocol.Debugger.onceScriptParsed();
+
   const sourceUrl =
-        (await childSession.protocol.Debugger.onceScriptParsed()).params.url;
+      (await childSession.protocol.Debugger.onceScriptParsed()).params.url;
   if (sourceUrl === '') {
     testRunner.log('SUCCESS: script created from string parameter of ' +
                    'setTimeout has no url');

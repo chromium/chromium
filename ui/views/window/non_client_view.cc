@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,34 +7,25 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
 #endif
 
 namespace views {
-
-namespace {
-
-// The frame view and the client view are always at these specific indices,
-// because the RootView message dispatch sends messages to items higher in the
-// z-order first and we always want the client view to have first crack at
-// handling mouse messages.
-constexpr int kFrameViewIndex = 0;
-constexpr int kClientViewIndex = 1;
-// The overlay view is always on top (view == children().back()).
-
-}  // namespace
 
 NonClientFrameView::~NonClientFrameView() = default;
 
@@ -43,47 +34,43 @@ bool NonClientFrameView::ShouldPaintAsActive() const {
 }
 
 int NonClientFrameView::GetHTComponentForFrame(const gfx::Point& point,
-                                               int top_resize_border_height,
-                                               int resize_border_thickness,
+                                               const gfx::Insets& resize_border,
                                                int top_resize_corner_height,
                                                int resize_corner_width,
                                                bool can_resize) {
-  // Tricky: In XP, native behavior is to return HTTOPLEFT and HTTOPRIGHT for
-  // a |resize_corner_size|-length strip of both the side and top borders, but
-  // only to return HTBOTTOMLEFT/HTBOTTOMRIGHT along the bottom border + corner
-  // (not the side border).  Vista goes further and doesn't return these on any
-  // of the side borders.  We allow callers to match either behavior.
+  bool point_in_top = point.y() < resize_border.top();
+  bool point_in_bottom = point.y() >= height() - resize_border.bottom();
+  bool point_in_left = point.x() < resize_border.left();
+  bool point_in_right = point.x() >= width() - resize_border.right();
+
+  if (!point_in_left && !point_in_right && !point_in_top && !point_in_bottom)
+    return HTNOWHERE;
+
+  point_in_top |= point.y() < top_resize_corner_height;
+  point_in_left |= point.x() < resize_corner_width;
+  point_in_right |= point.x() >= width() - resize_corner_width;
+
   int component;
-  if (point.x() < resize_border_thickness) {
-    if (point.y() < top_resize_corner_height)
+  if (point_in_top) {
+    if (point_in_left)
       component = HTTOPLEFT;
-    else if (point.y() >= (height() - resize_border_thickness))
-      component = HTBOTTOMLEFT;
-    else
-      component = HTLEFT;
-  } else if (point.x() >= (width() - resize_border_thickness)) {
-    if (point.y() < top_resize_corner_height)
-      component = HTTOPRIGHT;
-    else if (point.y() >= (height() - resize_border_thickness))
-      component = HTBOTTOMRIGHT;
-    else
-      component = HTRIGHT;
-  } else if (point.y() < top_resize_border_height) {
-    if (point.x() < resize_corner_width)
-      component = HTTOPLEFT;
-    else if (point.x() >= (width() - resize_corner_width))
+    else if (point_in_right)
       component = HTTOPRIGHT;
     else
       component = HTTOP;
-  } else if (point.y() >= (height() - resize_border_thickness)) {
-    if (point.x() < resize_corner_width)
+  } else if (point_in_bottom) {
+    if (point_in_left)
       component = HTBOTTOMLEFT;
-    else if (point.x() >= (width() - resize_corner_width))
+    else if (point_in_right)
       component = HTBOTTOMRIGHT;
     else
       component = HTBOTTOM;
+  } else if (point_in_left) {
+    component = HTLEFT;
+  } else if (point_in_right) {
+    component = HTRIGHT;
   } else {
-    return HTNOWHERE;
+    NOTREACHED();
   }
 
   // If the window can't be resized, there are no resize boundaries, just
@@ -105,7 +92,7 @@ bool NonClientFrameView::GetClientMask(const gfx::Size& size,
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
   gfx::Point point(GetMirroredXInView(GetBoundsForClientView().x()),
                    GetSystemMenuY());
@@ -129,21 +116,39 @@ void NonClientFrameView::OnThemeChanged() {
   SchedulePaint();
 }
 
+void NonClientFrameView::Layout() {
+  if (GetLayoutManager())
+    GetLayoutManager()->Layout(this);
+
+  views::ClientView* client_view = GetWidget()->client_view();
+  client_view->SetBoundsRect(GetBoundsForClientView());
+  SkPath client_clip;
+  if (GetClientMask(client_view->size(), &client_clip))
+    client_view->SetClipPath(client_clip);
+}
+
+View::Views NonClientFrameView::GetChildrenInZOrder() {
+  View::Views paint_order = View::GetChildrenInZOrder();
+  views::ClientView* client_view =
+      GetWidget() ? GetWidget()->client_view() : nullptr;
+
+  // Move the client view to the beginning of the Z-order to ensure that the
+  // other children of the frame view draw on top of it.
+  if (client_view && base::Erase(paint_order, client_view))
+    paint_order.insert(paint_order.begin(), client_view);
+
+  return paint_order;
+}
+
+void NonClientFrameView::InsertClientView(ClientView* client_view) {
+  AddChildView(client_view);
+}
+
 NonClientFrameView::NonClientFrameView() {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
-// ViewTargeterDelegate:
-bool NonClientFrameView::DoesIntersectRect(const View* target,
-                                           const gfx::Rect& rect) const {
-  CHECK_EQ(target, this);
-
-  // For the default case, we assume the non-client frame view never overlaps
-  // the client view.
-  return !GetWidget()->client_view()->bounds().Intersects(rect);
-}
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int NonClientFrameView::GetSystemMenuY() const {
   return GetBoundsForClientView().y();
 }
@@ -165,13 +170,18 @@ NonClientView::~NonClientView() {
 
 void NonClientView::SetFrameView(
     std::unique_ptr<NonClientFrameView> frame_view) {
-  // See comment in header about ownership.
-  frame_view->set_owned_by_client();
-  if (frame_view_.get())
-    RemoveChildView(frame_view_.get());
+  // If there is an existing frame view, ensure that the ClientView remains
+  // attached to the Widget by moving the ClientView to the new frame before
+  // removing the old frame from the view hierarchy.
+  std::unique_ptr<NonClientFrameView> old_frame_view = std::move(frame_view_);
   frame_view_ = std::move(frame_view);
-  if (parent())
-    AddChildViewAt(frame_view_.get(), kFrameViewIndex);
+  if (parent()) {
+    AddChildViewAt(frame_view_.get(), 0);
+    frame_view_->InsertClientView(client_view_);
+  }
+
+  if (old_frame_view)
+    RemoveChildView(old_frame_view.get());
 }
 
 void NonClientView::SetOverlayView(View* view) {
@@ -183,7 +193,7 @@ void NonClientView::SetOverlayView(View* view) {
 
   overlay_view_ = view;
   if (parent())
-    AddChildView(overlay_view_);
+    AddChildView(overlay_view_.get());
 }
 
 CloseRequestResult NonClientView::OnWindowCloseRequested() {
@@ -232,10 +242,6 @@ void NonClientView::SizeConstraintsChanged() {
   frame_view_->SizeConstraintsChanged();
 }
 
-void NonClientView::SetAccessibleName(const std::u16string& name) {
-  accessible_name_ = name;
-}
-
 gfx::Size NonClientView::CalculatePreferredSize() const {
   // TODO(pkasting): This should probably be made to look similar to
   // GetMinimumSize() below.  This will require implementing GetPreferredSize()
@@ -262,19 +268,14 @@ void NonClientView::Layout() {
   // into a View hierarchy once" ( http://codereview.chromium.org/27317 ), but
   // where that is still the case it should simply be fixed.
   frame_view_->SetBoundsRect(GetLocalBounds());
-  client_view_->SetBoundsRect(frame_view_->GetBoundsForClientView());
-
-  SkPath client_clip;
-  if (frame_view_->GetClientMask(client_view_->size(), &client_clip))
-    client_view_->SetClipPath(client_clip);
 
   if (overlay_view_)
     overlay_view_->SetBoundsRect(GetLocalBounds());
 }
 
 void NonClientView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // TODO(crbug.com/1366294): Should this be pruned from the accessibility tree?
   node_data->role = ax::mojom::Role::kClient;
-  node_data->SetName(accessible_name_);
 }
 
 View* NonClientView::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -302,10 +303,10 @@ void NonClientView::ViewHierarchyChanged(
   // the various setters, and create and add children directly in the
   // constructor.
   if (details.is_add && GetWidget() && details.child == this) {
-    AddChildViewAt(frame_view_.get(), kFrameViewIndex);
-    AddChildViewAt(client_view_, kClientViewIndex);
+    AddChildViewAt(frame_view_.get(), 0);
+    frame_view_->InsertClientView(client_view_);
     if (overlay_view_)
-      AddChildView(overlay_view_);
+      AddChildView(overlay_view_.get());
   }
 }
 

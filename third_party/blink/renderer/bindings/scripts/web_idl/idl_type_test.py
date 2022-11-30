@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -92,7 +92,7 @@ class IdlTypesTest(unittest.TestCase):
             'ShortOrString',
             factory.union_type([short_type, string_type]).type_name)
         self.assertEqual(
-            'StringOrShort',
+            'ShortOrString',
             factory.union_type([string_type, short_type]).type_name)
         self.assertEqual('ShortPromise',
                          factory.promise_type(short_type).type_name)

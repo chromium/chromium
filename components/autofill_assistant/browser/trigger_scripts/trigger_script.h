@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,9 @@ class TriggerScript {
   bool waiting_for_precondition_no_longer_true() const;
   void waiting_for_precondition_no_longer_true(bool waiting);
 
-  TriggerUIType trigger_ui_type() const { return proto_.trigger_ui_type(); }
+  TriggerScriptProto::TriggerUIType trigger_ui_type() const {
+    return proto_.trigger_ui_type();
+  }
 
  private:
   friend class TriggerScriptTest;

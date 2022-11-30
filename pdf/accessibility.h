@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@ struct AccessibilityPageInfo;
 struct AccessibilityPageObjects;
 struct AccessibilityTextRunInfo;
 
-// Retrieve |page_info|, |text_runs|, |chars|, and |page_objects| from
-// |engine| for the page at 0-indexed |page_index|. Returns true on success with
+// Retrieve `page_info`, `text_runs`, `chars`, and `page_objects` from
+// `engine` for the page at 0-indexed `page_index`. Returns true on success with
 // all out parameters filled, or false on failure with all out parameters
 // untouched.
 bool GetAccessibilityInfo(PDFEngine* engine,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,11 +40,16 @@ scoped_refptr<SimpleFontData> BinaryDataFontFaceSource::CreateFontData(
   return SimpleFontData::Create(
       custom_platform_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
-          font_description.IsSyntheticBold(),
-          font_description.IsSyntheticItalic(),
+          font_description.AdjustedSpecifiedSize(),
+          font_description.IsSyntheticBold() &&
+              font_description.SyntheticBoldAllowed(),
+          font_description.IsSyntheticItalic() &&
+              font_description.SyntheticItalicAllowed(),
           font_description.GetFontSelectionRequest(),
           font_selection_capabilities, font_description.FontOpticalSizing(),
-          font_description.Orientation(), font_description.VariationSettings()),
+          font_description.TextRendering(), font_description.Orientation(),
+          font_description.VariationSettings(),
+          font_description.GetFontPalette()),
       CustomFontData::Create());
 }
 

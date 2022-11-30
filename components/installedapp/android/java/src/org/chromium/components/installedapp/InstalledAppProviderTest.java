@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
@@ -356,7 +356,7 @@ public class InstalledAppProviderTest {
         manifestUrl.url = MANIFEST_URL;
 
         mInstalledAppProvider.filterInstalledApps(manifestRelatedApps, manifestUrl,
-                new InstalledAppProvider.FilterInstalledAppsResponse() {
+                new InstalledAppProvider.FilterInstalledApps_Response() {
                     @Override
                     public void call(RelatedApplication[] installedRelatedApps) {
                         Assert.assertEquals(
@@ -380,9 +380,10 @@ public class InstalledAppProviderTest {
         mTestInstalledAppProviderImplJni = new TestInstalledAppProviderImplJni();
         mocker.mock(InstalledAppProviderImplJni.TEST_HOOKS, mTestInstalledAppProviderImplJni);
 
+        GURL urlOnOrigin = new GURL(URL_ON_ORIGIN);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(urlOnOrigin);
+
         mFakePackageManager = new FakePackageManager();
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(URL_ON_ORIGIN));
         mFakeInstantAppsHandler = new FakeInstantAppsHandler();
         mInstalledAppProvider =
                 new InstalledAppProviderTestImpl(mMockRenderFrameHost, mFakeInstantAppsHandler);
@@ -399,12 +400,12 @@ public class InstalledAppProviderTest {
         setAssetStatement(PACKAGE_NAME_1, NAMESPACE_WEB, RELATION_HANDLE_ALL_URLS, ORIGIN);
         RelatedApplication[] expectedInstalledRelatedApps = new RelatedApplication[] {};
 
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_MISSING_SCHEME));
+        GURL originMissingScheme = new GURL(ORIGIN_MISSING_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originMissingScheme);
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_MISSING_HOST));
+        GURL originMissingHost = new GURL(ORIGIN_MISSING_HOST);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originMissingHost);
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
     }
 
@@ -594,8 +595,8 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
 
         // Simulate a navigation to a different origin.
-        Mockito.when(mMockRenderFrameHost.getLastCommittedURL())
-                .thenReturn(new GURL(ORIGIN_DIFFERENT_SCHEME));
+        GURL originDifferentScheme = new GURL(ORIGIN_DIFFERENT_SCHEME);
+        Mockito.when(mMockRenderFrameHost.getLastCommittedURL()).thenReturn(originDifferentScheme);
 
         // Now the result should include the Android app that relates to the new origin.
         expectedInstalledRelatedApps = manifestRelatedApps;

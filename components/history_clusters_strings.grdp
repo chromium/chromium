@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Strings for the chrome://history/journeys page -->
+
+<grit-part>
+  <message name="IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION" desc="Text used to identify the history clusters drop-down menu for screen readers">
+    Actions
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
+    Remove
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history clusters page">
+    Are you sure you want to delete these pages from your history?
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'."
+    formatter_data="android_java">
+    Turn off Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_ENABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn on the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'."
+    formatter_data="android_java">
+    Turn on Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where Journeys are collected and shown to the user. See glossary entry for meaning of 'Journeys'." formatter_data="android_java">
+    Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user."
+    formatter_data="android_java">
+    List
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS" desc="The header used for Journeys that are anchored by search terms. The header is just the search terms in locale-specific quotation marks.">
+    “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_MULTIPLE_HOSTNAMES" desc="The header used for Journeys that are anchored by multiple host names.">
+    <ph name="HOST_NAME">$1<ex>google.com</ex> and more</ph>
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
+    Load more
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_NO_RESULTS" desc="Text shown when no history cluster entries are found.">
+    No results
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_NO_SEARCH_RESULTS" desc="Text used to denote that there are no search results for a search term in history clusters.">
+    No search results
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_ALL_IN_TABGROUP" desc="Label of the item in drop-down menu that allows the user to open a group of urls in a tab group."
+    formatter_data="android_java">
+    Open all in new tab group
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_INCOGNITO" desc="Label of the item in drop-down menu that allows the user to open a link in an incognito window.">
+    Open Link in Incognito Window
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_TAB" desc="Label of the item in drop-down menu that allows the user to open a link in a new tab.">
+    Open Link in New Tab
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_WINDOW" desc="Label of the item in drop-down menu that allows the user to open a link in a new window.">
+    Open Link in New Window
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_RELATED_SEARCHES_HEADER" desc="Header text shown for the section containing search suggestions related to a group of search and browsing activities.">
+    Related searches
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_ALL_ITEMS" desc="Label of the item in drop-down menu that allows the user to remove a group of history items.">
+    Remove all from history
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_PAGE" desc="Label of the item in drop-down menu that allows the user to remove a history item">
+    Remove from history
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST" desc="Confirmation message shown after user successfully removes one history item from the item's drop-down menu.">
+    Item removed
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history cluster items">
+    Remove selected items
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
+    Saved in tab group
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SEARCH_PROMPT" desc="A placeholder for the search bar in the side panel.">
+    Search Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_COPY_LINK" desc="Label of the item in drop-down menu that allows the user to copy a link.">
+    Copy Link Address
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SHOW_LESS_BUTTON_LABEL" desc="A label for the button that collapses the view showing fewer history items.">
+    Show less
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items." formatter_data="android_java">
+    Show more
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_SEARCH_YOUR_JOURNEYS" desc="A label for the hint text for the search box in Chrome Journeys." formatter_data="android_java">
+    Search your Journeys
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_N_MATCHES" desc="A label for the number of matching clusters for a given label." formatter_data="android_java">
+   {NUM_MATCHES, plural,
+        =1 {# match} other {# matches}}
+  </message>
+</grit-part>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -23,7 +24,7 @@ class ExtensionsInternalsSource : public content::URLDataSource {
 
   // content::URLDataSource:
   std::string GetSource() override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   void StartDataRequest(
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
@@ -34,7 +35,7 @@ class ExtensionsInternalsSource : public content::URLDataSource {
   std::string WriteToString() const;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_INTERNALS_SOURCE_H_

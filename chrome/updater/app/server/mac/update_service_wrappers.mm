@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 
@@ -26,10 +27,20 @@ static NSString* const kCRUUpdateStateErrorCode = @"updateStateErrorCode";
 static NSString* const kCRUUpdateStateExtraCode = @"updateStateExtraCode";
 
 static NSString* const kCRUPriority = @"priority";
+static NSString* const kCRUPolicySameVersionUpdate = @"policySameVersionUpdate";
 static NSString* const kCRUErrorCategory = @"errorCategory";
 
+static NSString* const kCRUAppStateWrappers = @"appStateWrappers";
+static NSString* const kCRUAppStateAppId = @"appStateAppId";
+static NSString* const kCRUAppStateVersion = @"appStateVersion";
+static NSString* const kCRUAppStateAp = @"appStateAp";
+static NSString* const kCRUAppStateBrandCode = @"appStateBrandCode";
+static NSString* const kCRUAppStateBrandPath = @"appStateBrandPath";
+static NSString* const kCRUAppStateExistenceChecker =
+    @"appStateExistenceChecker";
+
 using StateChangeCallback =
-    base::RepeatingCallback<void(updater::UpdateService::UpdateState)>;
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>;
 
 @implementation CRUUpdateStateObserver {
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
@@ -314,7 +325,6 @@ typedef NS_ENUM(NSInteger, CRUUpdatePriorityEnum) {
   DCHECK([coder respondsToSelector:@selector(encodeInt:forKey:)]);
   [coder encodeInt:static_cast<NSInteger>(self.priority) forKey:kCRUPriority];
 }
-
 // Required for unit tests.
 - (BOOL)isEqual:(id)object {
   if (![object isMemberOfClass:[CRUPriorityWrapper class]]) {
@@ -327,6 +337,75 @@ typedef NS_ENUM(NSInteger, CRUUpdatePriorityEnum) {
 // Required because isEqual is overridden.
 - (NSUInteger)hash {
   return static_cast<NSUInteger>(_priority);
+}
+
+@end
+
+@implementation CRUPolicySameVersionUpdateWrapper
+
+@synthesize policySameVersionUpdate = _policySameVersionUpdate;
+
+// Wrapper for updater::UpdateService::PolicySameVersionUpdate.
+typedef NS_ENUM(NSInteger, CRUUpdatePolicySameVersionUpdateEnum) {
+  kCRUPolicySameVersionUpdateNotAllowed = static_cast<NSInteger>(
+      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed),
+  kCRUPolicySameVersionUpdateAllowed = static_cast<NSInteger>(
+      updater::UpdateService::PolicySameVersionUpdate::kAllowed),
+};
+
+// Designated initializer.
+- (instancetype)initWithPolicySameVersionUpdate:
+    (updater::UpdateService::PolicySameVersionUpdate)policySameVersionUpdate {
+  if (self = [super init]) {
+    _policySameVersionUpdate = policySameVersionUpdate;
+  }
+  return self;
+}
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  DCHECK([aDecoder allowsKeyedCoding]);
+  NSInteger enumValue =
+      [aDecoder decodeIntegerForKey:kCRUPolicySameVersionUpdate];
+
+  switch (enumValue) {
+    case kCRUPolicySameVersionUpdateNotAllowed:
+      return [self
+          initWithPolicySameVersionUpdate:
+              updater::UpdateService::PolicySameVersionUpdate::kNotAllowed];
+    case kCRUPolicySameVersionUpdateAllowed:
+      return
+          [self initWithPolicySameVersionUpdate:
+                    updater::UpdateService::PolicySameVersionUpdate::kAllowed];
+    default:
+      DLOG(ERROR)
+          << "Unexpected value for CRUUpdatePolicySameVersionUpdateEnum: "
+          << enumValue;
+      return nil;
+  }
+}
+- (void)encodeWithCoder:(NSCoder*)coder {
+  DCHECK([coder respondsToSelector:@selector(encodeInt:forKey:)]);
+  [coder encodeInt:static_cast<NSInteger>(self.policySameVersionUpdate)
+            forKey:kCRUPolicySameVersionUpdate];
+}
+// Required for unit tests.
+- (BOOL)isEqual:(id)object {
+  if (![object isMemberOfClass:[CRUPolicySameVersionUpdateWrapper class]]) {
+    return NO;
+  }
+  CRUPolicySameVersionUpdateWrapper* otherPolicySameVersionUpdateWrapper =
+      object;
+  return self.policySameVersionUpdate ==
+         otherPolicySameVersionUpdateWrapper.policySameVersionUpdate;
+}
+
+// Required because isEqual is overridden.
+- (NSUInteger)hash {
+  return static_cast<NSUInteger>(_policySameVersionUpdate);
 }
 
 @end
@@ -396,6 +475,135 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
   DCHECK([coder respondsToSelector:@selector(encodeInt:forKey:)]);
   [coder encodeInt:static_cast<NSInteger>(self.errorCategory)
             forKey:kCRUErrorCategory];
+}
+
+@end
+
+@implementation CRUAppStateWrapper
+
+@synthesize state = _state;
+
+- (instancetype)initWithAppState:
+                    (const updater::UpdateService::AppState&)appState
+                  restrictedView:(bool)restrictedView {
+  if (self = [super init]) {
+    _state = appState;
+    if (restrictedView) {
+      _state.ecp = base::FilePath();
+    }
+  }
+  return self;
+}
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  DCHECK([coder respondsToSelector:@selector(encodeObject:forKey:)]);
+
+  [coder encodeObject:base::SysUTF8ToNSString(self.state.app_id)
+               forKey:kCRUAppStateAppId];
+  [coder encodeObject:base::SysUTF8ToNSString(self.state.version.GetString())
+               forKey:kCRUAppStateVersion];
+  [coder encodeObject:base::SysUTF8ToNSString(self.state.ap)
+               forKey:kCRUAppStateAp];
+  [coder encodeObject:base::SysUTF8ToNSString(self.state.brand_code)
+               forKey:kCRUAppStateBrandCode];
+  [coder encodeObject:base::mac::FilePathToNSString(self.state.brand_path)
+               forKey:kCRUAppStateBrandPath];
+  [coder encodeObject:base::mac::FilePathToNSString(self.state.ecp)
+               forKey:kCRUAppStateExistenceChecker];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  DCHECK([aDecoder allowsKeyedCoding]);
+
+  NSString* appId = [aDecoder decodeObjectOfClass:[NSString class]
+                                           forKey:kCRUAppStateAppId];
+  NSString* version = [aDecoder decodeObjectOfClass:[NSString class]
+                                             forKey:kCRUAppStateVersion];
+
+  NSString* ap = [aDecoder decodeObjectOfClass:[NSString class]
+                                        forKey:kCRUAppStateAp];
+  NSString* brandCode = [aDecoder decodeObjectOfClass:[NSString class]
+                                               forKey:kCRUAppStateBrandCode];
+  NSString* brandPath = [aDecoder decodeObjectOfClass:[NSString class]
+                                               forKey:kCRUAppStateBrandPath];
+  NSString* ecp = [aDecoder decodeObjectOfClass:[NSString class]
+                                         forKey:kCRUAppStateExistenceChecker];
+
+  updater::UpdateService::AppState appState;
+  appState.app_id = base::SysNSStringToUTF8(appId);
+  appState.version = base::Version(base::SysNSStringToUTF8(version));
+  appState.ap = base::SysNSStringToUTF8(ap);
+  appState.brand_code = base::SysNSStringToUTF8(brandCode);
+  appState.brand_path = base::mac::NSStringToFilePath(brandPath);
+  appState.ecp = base::mac::NSStringToFilePath(ecp);
+  return [self initWithAppState:appState restrictedView:NO];
+}
+
+@end
+
+@implementation CRUAppStatesWrapper {
+  NSArray<CRUAppStateWrapper*>* _states;
+}
+
+- (instancetype)initWithAppStateWrappers:
+    (NSArray<CRUAppStateWrapper*>*)appStates {
+  if (self = [super init]) {
+    _states = [appStates copy];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [_states release];
+  [super dealloc];
+}
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (instancetype)initWithAppStates:
+                    (const std::vector<updater::UpdateService::AppState>&)
+                        appStates
+                   restrictedView:(bool)restrictedView {
+  NSMutableArray<CRUAppStateWrapper*>* stateWrappers = [NSMutableArray array];
+  for (const auto& state : appStates) {
+    [stateWrappers addObject:[[[CRUAppStateWrapper alloc]
+                                 initWithAppState:state
+                                   restrictedView:restrictedView] autorelease]];
+  }
+
+  return [self initWithAppStateWrappers:stateWrappers];
+}
+
+- (std::vector<updater::UpdateService::AppState>)states {
+  std::vector<updater::UpdateService::AppState> appStates;
+  for (CRUAppStateWrapper* wrapper in _states) {
+    appStates.push_back(wrapper.state);
+  }
+
+  return appStates;
+}
+
+- (void)encodeWithCoder:(NSCoder*)coder {
+  DCHECK([coder respondsToSelector:@selector(encodeObject:forKey:)]);
+
+  [coder encodeObject:_states forKey:kCRUAppStateWrappers];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  DCHECK([aDecoder allowsKeyedCoding]);
+
+  NSSet* objectClasses =
+      [NSSet setWithObjects:[NSArray class], [CRUAppStateWrapper class], nil];
+  NSArray<CRUAppStateWrapper*>* stateWrappers =
+      [aDecoder decodeObjectOfClasses:objectClasses
+                               forKey:kCRUAppStateWrappers];
+  return [self initWithAppStateWrappers:stateWrappers];
 }
 
 @end

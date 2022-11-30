@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_TRANSLATE_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_TRANSLATE_INFOBAR_BANNER_OVERLAY_REQUEST_CONFIG_H_
+
+#include <CoreFoundation/CoreFoundation.h>
+
+#include <string>
 
 #include "components/translate/core/browser/translate_step.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
@@ -23,13 +27,11 @@ class TranslateBannerRequestConfig
   ~TranslateBannerRequestConfig() override;
 
   // The source language name.
-  std::u16string source_language() const { return source_language_; }
+  const std::u16string& source_language() const { return source_language_; }
   // The target language name.
-  std::u16string target_language() const { return target_language_; }
+  const std::u16string& target_language() const { return target_language_; }
   // The current TranslateStep Translate is in.
   translate::TranslateStep translate_step() const { return translate_step_; }
-  // The name of the banner's icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(TranslateBannerRequestConfig);
@@ -39,11 +41,10 @@ class TranslateBannerRequestConfig
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   // The InfoBar causing this banner.
-  infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s translate delegate.
+  infobars::InfoBar* const infobar_;
+  // Configuration data extracted from `infobar_`'s translate delegate.
   std::u16string source_language_;
   std::u16string target_language_;
-  NSString* icon_image_name_ = nil;
   translate::TranslateStep translate_step_;
 };
 

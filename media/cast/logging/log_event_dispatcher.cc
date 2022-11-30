@@ -1,15 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/logging/log_event_dispatcher.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/cast/cast_environment.h"
 
@@ -125,14 +126,12 @@ void LogEventDispatcher::Impl::DispatchBatchOfEvents(
 }
 
 void LogEventDispatcher::Impl::Subscribe(RawEventSubscriber* subscriber) {
-  DCHECK(std::find(subscribers_.begin(), subscribers_.end(), subscriber) ==
-         subscribers_.end());
+  DCHECK(!base::Contains(subscribers_, subscriber));
   subscribers_.push_back(subscriber);
 }
 
 void LogEventDispatcher::Impl::Unsubscribe(RawEventSubscriber* subscriber) {
-  const auto it =
-      std::find(subscribers_.begin(), subscribers_.end(), subscriber);
+  const auto it = base::ranges::find(subscribers_, subscriber);
   DCHECK(it != subscribers_.end());
   subscribers_.erase(it);
 }

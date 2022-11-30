@@ -1,9 +1,13 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_FEEDBACK_SIGNAL_ACCUMULATOR_H_
 #define MEDIA_BASE_FEEDBACK_SIGNAL_ACCUMULATOR_H_
+
+#include <algorithm>
+#include <cmath>
+#include <ostream>
 
 #include "base/time/time.h"
 
@@ -34,7 +38,7 @@ class FeedbackSignalAccumulator {
   // Update(1.0, t=1s) will result in an accumulated average value of 0.5.
   explicit FeedbackSignalAccumulator(base::TimeDelta half_life)
       : half_life_(half_life), average_(NAN) {
-    DCHECK(half_life_ > base::TimeDelta());
+    DCHECK(half_life_.is_positive());
   }
 
   // Erase all memory of historical values, re-starting with the given

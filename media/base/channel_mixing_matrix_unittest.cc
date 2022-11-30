@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/channel_mixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +21,7 @@ TEST(ChannelMixingMatrixTest, ConstructAllPossibleLayouts) {
          output_layout <= CHANNEL_LAYOUT_MAX;
          output_layout = static_cast<ChannelLayout>(output_layout + 1)) {
       // DISCRETE, BITSTREAM can't be tested here based on the current approach.
-      // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is not mixable.
+      // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is deprecated.
       // Stereo down mix should never be the output layout.
       if (input_layout == CHANNEL_LAYOUT_BITSTREAM ||
           input_layout == CHANNEL_LAYOUT_DISCRETE ||
@@ -161,7 +160,7 @@ TEST(ChannelMixingMatrixTest, DiscreteToDiscrete) {
     {2, 2}, {2, 5}, {5, 2},
   };
 
-  for (size_t n = 0; n < base::size(test_case); n++) {
+  for (size_t n = 0; n < std::size(test_case); n++) {
     int input_channels = test_case[n].input_channels;
     int output_channels = test_case[n].output_channels;
     ChannelMixingMatrix matrix_builder(CHANNEL_LAYOUT_DISCRETE,

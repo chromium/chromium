@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,33 +31,35 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for the PhotoPickerDialog class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PhotoPickerDialogTest extends DummyUiActivityTestCase
+public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
         implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
                    DecoderServiceHost.DecoderStatusCallback,
                    PickerVideoPlayer.VideoPlaybackStatusCallback, AnimationListener {
@@ -66,9 +68,13 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     // The timeout (in seconds) to wait for the decoder service to be ready.
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
+    private static final long VIDEO_TIMEOUT_SECONDS = 10L;
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MEDIA_PICKER)
+                    .build();
 
     private WindowAndroid mWindowAndroid;
 
@@ -128,8 +134,11 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() throws Exception {
-        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return new ActivityWindowAndroid(getActivity()); });
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new ActivityWindowAndroid(getActivity(), /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(getActivity()));
+        });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DecoderServiceHost.setIntentSupplier(
                     () -> { return new Intent(getActivity(), TestImageDecoderService.class); });
@@ -268,24 +277,17 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     private PhotoPickerDialog createDialogWithContentResolver(final ContentResolver contentResolver,
             final boolean multiselect, final List<String> mimeTypes) throws Exception {
-        final PhotoPickerDialog dialog =
-                TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
-                    @Override
-                    public PhotoPickerDialog call() {
-                        final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid,
-                                contentResolver, PhotoPickerDialogTest.this, multiselect,
-                                /* animatedThumbnailsSupported = */ true, mimeTypes);
-                        dialog.show();
-                        return dialog;
-                    }
-                });
-
-        mSelectionDelegate = dialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
-        if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
-        mSelectionDelegate.addObserver(this);
-        mDialog = dialog;
-
-        return dialog;
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid, contentResolver,
+                    PhotoPickerDialogTest.this, multiselect, mimeTypes);
+            dialog.show();
+            mSelectionDelegate =
+                    dialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
+            if (!multiselect) mSelectionDelegate.setSingleSelectionMode();
+            mSelectionDelegate.addObserver(this);
+            mDialog = dialog;
+            return dialog;
+        });
     }
 
     private PhotoPickerDialog createDialog(final boolean multiselect, final List<String> mimeTypes)
@@ -348,7 +350,8 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         int callCount = mOnVideoPlayingCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mDialog.getCategoryViewForTesting().startVideoPlaybackAsync(uri); });
-        mOnVideoPlayingCallback.waitForCallback(callCount, 1);
+        mOnVideoPlayingCallback.waitForCallback(
+                callCount, 1, VIDEO_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     private void dismissDialog() {
@@ -425,6 +428,35 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         Assert.assertEquals(1, mLastSelectedPhotos.length);
         Assert.assertEquals(PhotoPickerAction.PHOTOS_SELECTED, mLastActionRecorded);
         Assert.assertEquals(mTestFiles.get(1).getUri().getPath(), mLastSelectedPhotos[0].getPath());
+    }
+
+    @Test
+    @LargeTest
+    public void testBackPressDismiss() throws Throwable {
+        setupTestFiles();
+        createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
+        Assert.assertTrue(mDialog.isShowing());
+        waitForDecoder();
+
+        // Expected selection count is 1 because clicking on a new view unselects other.
+        int expectedSelectionCount = 1;
+
+        // Click the first view.
+        int callCount = mOnAnimatedCallback.getCallCount();
+        clickView(0, expectedSelectionCount);
+        mOnAnimatedCallback.waitForCallback(callCount, 1);
+
+        // Click the second view.
+        callCount = mOnAnimatedCallback.getCallCount();
+        clickView(1, expectedSelectionCount);
+        mOnAnimatedCallback.waitForCallback(callCount, 1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+
+        Assert.assertNull(mLastSelectedPhotos);
+        Assert.assertEquals(PhotoPickerAction.CANCEL, mLastActionRecorded);
+        Assert.assertFalse(mDialog.isShowing());
     }
 
     @Test
@@ -513,6 +545,57 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         }
     }
 
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    public void testVideoPlayerPlayAndBackPress() throws Throwable {
+        // Requesting to play a video is not a case of an accidental disk read on the UI thread.
+        StrictMode.ThreadPolicy oldPolicy = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return StrictMode.allowThreadDiskReads(); });
+
+        try {
+            setupTestFiles();
+            createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
+            Assert.assertTrue(mDialog.isShowing());
+            waitForDecoder();
+
+            PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
+
+            View container = categoryView.findViewById(R.id.playback_container);
+            Assert.assertTrue(container.getVisibility() == View.GONE);
+
+            // This test video takes one second to play.
+            String fileName = "chrome/test/data/android/photo_picker/noogler_1sec.mp4";
+            File file = new File(UrlUtils.getIsolatedTestFilePath(fileName));
+
+            int callCount = mOnVideoEndedCallback.getCallCount();
+
+            playVideo(Uri.fromFile(file));
+            Assert.assertTrue(container.getVisibility() == View.VISIBLE);
+
+            mOnVideoEndedCallback.waitForCallback(callCount, 1);
+
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+
+            // Clicking the play button should restart playback.
+            callCount = mOnVideoEndedCallback.getCallCount();
+
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                View playbutton = categoryView.findViewById(R.id.video_player_play_button);
+                categoryView.getVideoPlayerForTesting().onClick(playbutton);
+            });
+
+            mOnVideoEndedCallback.waitForCallback(callCount, 1);
+
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { mDialog.getOnBackPressedDispatcher().onBackPressed(); });
+            Assert.assertTrue(mDismissed);
+        } finally {
+            TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(oldPolicy); });
+        }
+    }
+
     private void verifyVisible(int viewId, int eventId) {
         Assert.assertEquals("Unexpected view ID for event " + eventId, viewId,
                 (long) mLastViewAnimatingIds.get(eventId));
@@ -532,6 +615,8 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1092104")
+    @DisabledTest(message = "https://crbug.com/1311783")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
 
@@ -624,13 +709,16 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
         Assert.assertTrue(mDialog.isShowing());
 
+        int callCount = mOnDecoderReadyCallback.getCallCount();
+
         // Simulate an early configuration change for the photo grid.
         Configuration configuration = getActivity().getResources().getConfiguration();
         PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { categoryView.onConfigurationChanged(configuration); });
 
-        waitForDecoder();
+        mOnDecoderReadyCallback.waitForCallback(
+                callCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         // Simulate an early configuration change for the video player (before showing).
         TestThreadUtils.runOnUiThreadBlocking(() -> {

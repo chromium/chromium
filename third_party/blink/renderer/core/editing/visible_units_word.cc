@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,11 +47,6 @@ namespace {
 // Helpers used during word movement
 static bool IsLineBreak(UChar ch) {
   return ch == kNewlineCharacter || ch == kCarriageReturnCharacter;
-}
-
-static bool IsWordBreak(UChar ch) {
-  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
-         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
 }
 
 PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
@@ -339,4 +334,8 @@ Position StartOfWordPosition(const Position& position, WordSide side) {
       StartOfWordPosition(ToPositionInFlatTree(position), side));
 }
 
+bool IsWordBreak(UChar ch) {
+  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
+         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
+}
 }  // namespace blink

@@ -47,7 +47,7 @@ class TestServerBase(unittest.TestCase):
 
         host.filesystem.write_text_file(server._pid_file, 'foo')
         server.stop()
-        self.assertIsNone(host.filesystem.files[server._pid_file])
+        self.assertFalse(host.filesystem.exists(server._pid_file))
 
         host.filesystem.write_text_file(server._pid_file, 'foo')
         server.start()
@@ -55,4 +55,4 @@ class TestServerBase(unittest.TestCase):
 
         # Note that the pid file would not be None if _spawn_process()
         # was actually a real implementation.
-        self.assertIsNone(host.filesystem.files[server._pid_file])
+        self.assertFalse(host.filesystem.exists(server._pid_file))

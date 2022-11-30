@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ void ActivityFilteringWebSocketHandshakeThrottle::ThrottleHandshake(
 
   // Pass through allowed URLs, block otherwise.
   if (url_filter_->UrlMatchesWhitelist(gurl)) {
-    std::move(completion_callback).Run(base::nullopt);
+    std::move(completion_callback).Run(absl::nullopt);
     return;
   }
 

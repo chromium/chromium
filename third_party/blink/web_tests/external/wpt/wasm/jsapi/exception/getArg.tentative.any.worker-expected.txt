@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Missing arguments WebAssembly.Tag is not a constructor
+FAIL Invalid exception argument WebAssembly.Tag is not a constructor
+FAIL Index out of bounds WebAssembly.Tag is not a constructor
+FAIL Getting out-of-range argument WebAssembly.Tag is not a constructor
+FAIL getArg WebAssembly.Tag is not a constructor
+Harness: the test ran to completion.
+

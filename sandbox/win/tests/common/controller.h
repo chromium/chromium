@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <windows.h>
 #include <string>
 
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -22,24 +25,45 @@ namespace sandbox {
 // All the possible error codes returned by the child process in
 // the sandbox.
 enum SboxTestResult {
+  // First Result. (0x25B10000 or 632356864)
   SBOX_TEST_FIRST_RESULT = CUSTOMER_CODE | SBOX_TESTS_FACILITY,
+  // Second result. (0x25B10001 or 632356865)
   SBOX_TEST_SUCCEEDED,
+  // Ping OK. (0x25B10002 or 632356866)
   SBOX_TEST_PING_OK,
+  // First info. (0x65B10000 or 1706098688)
   SBOX_TEST_FIRST_INFO = SBOX_TEST_FIRST_RESULT | SEVERITY_INFO_FLAGS,
-  SBOX_TEST_DENIED,     // Access was denied.
-  SBOX_TEST_NOT_FOUND,  // The resource was not found.
+  // Access was denied. (0x65B10001 or 1706098689)
+  SBOX_TEST_DENIED,
+  // The resource was not found. (0x65B10002 or 1706098690)
+  SBOX_TEST_NOT_FOUND,
+  // First error. (0xE5B10000 or -441384960)
   SBOX_TEST_FIRST_ERROR = SBOX_TEST_FIRST_RESULT | SEVERITY_ERROR_FLAGS,
+  // Second error. (0xE5B10001 or -441384959)
   SBOX_TEST_SECOND_ERROR,
+  // Third error. (0xE5B10002 or -441384958)
   SBOX_TEST_THIRD_ERROR,
+  // Fourth error. (0xE5B10003 or -441384957)
   SBOX_TEST_FOURTH_ERROR,
+  // Fifth error. (0xE5B10004 or -441384956)
   SBOX_TEST_FIFTH_ERROR,
+  // Sixth error. (0xE5B10005 or -441384955)
   SBOX_TEST_SIXTH_ERROR,
+  // Seventh error. (0xE5B10006 or -441384954)
   SBOX_TEST_SEVENTH_ERROR,
+  // Invalid Parameter. (0xE5B10007 or -441384953)
   SBOX_TEST_INVALID_PARAMETER,
+  // Failed to run test. (0xE5B10008 or -441384952)
   SBOX_TEST_FAILED_TO_RUN_TEST,
+  // Failed to execute command. (0xE5B10009 or -441384951)
   SBOX_TEST_FAILED_TO_EXECUTE_COMMAND,
+  // Test timed out. (0xE5B1000A or -441384950)
   SBOX_TEST_TIMED_OUT,
+  // Test failed. (0xE5B1000B or -441384949)
   SBOX_TEST_FAILED,
+  // Failed to configure sandbox before test. (0xE5B1000C or -441384948)
+  SBOX_TEST_FAILED_SETUP,
+  // Last Result. (0xE5B1000D or -441384947)
   SBOX_TEST_LAST_RESULT
 };
 
@@ -78,18 +102,18 @@ class TestRunner {
 
   // Adds a rule to the policy. The parameters are the same as the AddRule
   // function in the sandbox.
-  bool AddRule(TargetPolicy::SubSystem subsystem,
-               TargetPolicy::Semantics semantics,
+  bool AddRule(SubSystem subsystem,
+               Semantics semantics,
                const wchar_t* pattern);
 
   // Adds a filesystem rules with the path of a file in system32. The function
   // appends "pattern" to "system32" and then call AddRule. Return true if the
   // function succeeds.
-  bool AddRuleSys32(TargetPolicy::Semantics semantics, const wchar_t* pattern);
+  bool AddRuleSys32(Semantics semantics, const wchar_t* pattern);
 
   // Adds a filesystem rules to the policy. Returns true if the functions
   // succeeds.
-  bool AddFsRule(TargetPolicy::Semantics semantics, const wchar_t* pattern);
+  bool AddFsRule(Semantics semantics, const wchar_t* pattern);
 
   // Starts a child process in the sandbox and ask it to run |command|. Returns
   // a SboxTestResult. By default, the test runs AFTER_REVERT.
@@ -97,6 +121,7 @@ class TestRunner {
 
   // Sets the timeout value for the child to run the command and return.
   void SetTimeout(DWORD timeout_ms);
+  void SetTimeout(base::TimeDelta timeout);
 
   // Sets TestRunner to return without waiting for the process to exit.
   void SetAsynchronous(bool is_async) { is_async_ = is_async; }
@@ -115,10 +140,6 @@ class TestRunner {
   // destroyed.
   void SetKillOnDestruction(bool value) { kill_on_destruction_ = value; }
 
-  // Sets whether the TargetPolicy should be released after the child process
-  // is launched while the test is running.
-  void SetReleasePolicyInRun(bool value) { release_policy_in_run_ = value; }
-
   // Returns the pointers to the policy object. It can be used to modify
   // the policy manually.
   TargetPolicy* GetPolicy();
@@ -135,17 +156,17 @@ class TestRunner {
 
   // The actual runner.
   int InternalRunTest(const wchar_t* command);
+  DWORD timeout_ms();
 
-  BrokerServices* broker_;
-  scoped_refptr<TargetPolicy> policy_;
-  DWORD timeout_;
+  raw_ptr<BrokerServices> broker_;
+  std::unique_ptr<TargetPolicy> policy_;
+  base::TimeDelta timeout_;
   SboxTestsState state_;
   bool is_init_;
   bool is_async_;
   bool no_sandbox_;
   bool disable_csrss_;
   bool kill_on_destruction_;
-  bool release_policy_in_run_ = false;
   base::win::ScopedHandle target_process_;
   DWORD target_process_id_;
 };

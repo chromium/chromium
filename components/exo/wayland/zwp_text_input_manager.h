@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,20 @@ struct WaylandTextInputManager {
   SerialTracker* const serial_tracker;
 };
 
+struct WaylandTextInputExtension {};
+
 void bind_text_input_manager(wl_client* client,
                              void* data,
                              uint32_t version,
                              uint32_t id);
+
+// Binds zcr_text_input_extention interface.
+// Exceptionally, this exists in zwp_text_input_manager, because it is closely
+// related to zwp_text_input_manager in its implementation.
+void bind_text_input_extension(wl_client* client,
+                               void* data,
+                               uint32_t version,
+                               uint32_t id);
 
 }  // namespace wayland
 }  // namespace exo

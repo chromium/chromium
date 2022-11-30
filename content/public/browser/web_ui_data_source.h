@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
 namespace base {
-class DictionaryValue;
 class RefCountedMemory;
 }  // namespace base
 
@@ -38,6 +38,15 @@ class WebUIDataSource {
  public:
   virtual ~WebUIDataSource() {}
 
+  // Calls `Create()` and `Add()` to internalize ownership of the
+  // WebUIDataSource instance. Callers just get a raw pointer, which they don't
+  // own. Prefer `CreateAndAdd` in new code.
+  CONTENT_EXPORT static WebUIDataSource* CreateAndAdd(
+      BrowserContext* browser_context,
+      const std::string& source_name);
+
+  // Creates a WebUIDataSource instance. Caller takes ownership of returned
+  // pointer. Prefer `CreateAndAdd()` when possible.
   CONTENT_EXPORT static WebUIDataSource* Create(const std::string& source_name);
 
   // Adds a WebUI data source to |browser_context|. TODO(dbeam): update this API
@@ -47,10 +56,9 @@ class WebUIDataSource {
   CONTENT_EXPORT static void Add(BrowserContext* browser_context,
                                  WebUIDataSource* source);
 
-  CONTENT_EXPORT static void Update(
-      BrowserContext* browser_context,
-      const std::string& source_name,
-      std::unique_ptr<base::DictionaryValue> update);
+  CONTENT_EXPORT static void Update(BrowserContext* browser_context,
+                                    const std::string& source_name,
+                                    const base::Value::Dict& update);
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(base::StringPiece name,
@@ -68,9 +76,9 @@ class WebUIDataSource {
   virtual void AddLocalizedStrings(
       base::span<const webui::LocalizedString> strings) = 0;
 
-  // Add strings from |localized_strings| to our dictionary.
+  // Add strings from `localized_strings` to our dictionary.
   virtual void AddLocalizedStrings(
-      const base::DictionaryValue& localized_strings) = 0;
+      const base::Value::Dict& localized_strings) = 0;
 
   // Adds a boolean keyed to its name to our dictionary.
   virtual void AddBoolean(base::StringPiece name, bool value) = 0;
@@ -136,6 +144,11 @@ class WebUIDataSource {
   virtual void OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive,
       const std::string& value) = 0;
+
+  // Adds cross origin opener, embedder, and resource policy headers.
+  virtual void OverrideCrossOriginOpenerPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginEmbedderPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginResourcePolicy(const std::string& value) = 0;
 
   // Removes directives related to Trusted Types from the CSP header.
   virtual void DisableTrustedTypesCSP() = 0;

@@ -1,13 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_PLAY_STORE_ENABLED_PREFERENCE_HANDLER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -23,6 +20,12 @@ class ArcPlayStoreEnabledPreferenceHandler {
  public:
   ArcPlayStoreEnabledPreferenceHandler(Profile* profile,
                                        ArcSessionManager* arc_session_manager);
+
+  ArcPlayStoreEnabledPreferenceHandler(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+  ArcPlayStoreEnabledPreferenceHandler& operator=(
+      const ArcPlayStoreEnabledPreferenceHandler&) = delete;
+
   ~ArcPlayStoreEnabledPreferenceHandler();
 
   // Starts observing Google Play Store enabled preference change.
@@ -49,8 +52,6 @@ class ArcPlayStoreEnabledPreferenceHandler {
   // Must be the last member.
   base::WeakPtrFactory<ArcPlayStoreEnabledPreferenceHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreEnabledPreferenceHandler);
 };
 
 }  // namespace arc

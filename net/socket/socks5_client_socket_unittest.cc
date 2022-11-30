@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -46,6 +46,10 @@ namespace {
 class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
  public:
   SOCKS5ClientSocketTest();
+
+  SOCKS5ClientSocketTest(const SOCKS5ClientSocketTest&) = delete;
+  SOCKS5ClientSocketTest& operator=(const SOCKS5ClientSocketTest&) = delete;
+
   // Create a SOCKSClientSocket on top of a MockSocket.
   std::unique_ptr<SOCKS5ClientSocket> BuildMockSocket(
       base::span<const MockRead> reads,
@@ -58,17 +62,14 @@ class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
 
  protected:
   const uint16_t kNwPort;
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   std::unique_ptr<SOCKS5ClientSocket> user_sock_;
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  StreamSocket* tcp_sock_;
+  raw_ptr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<SocketDataProvider> data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SOCKS5ClientSocketTest);
 };
 
 SOCKS5ClientSocketTest::SOCKS5ClientSocketTest()
@@ -90,8 +91,10 @@ std::unique_ptr<SOCKS5ClientSocket> SOCKS5ClientSocketTest::BuildMockSocket(
     int port,
     NetLog* net_log) {
   TestCompletionCallback callback;
-  data_.reset(new StaticSocketDataProvider(reads, writes));
-  tcp_sock_ = new MockTCPClientSocket(address_list_, net_log, data_.get());
+  data_ = std::make_unique<StaticSocketDataProvider>(reads, writes);
+  auto tcp_sock = std::make_unique<MockTCPClientSocket>(address_list_, net_log,
+                                                        data_.get());
+  tcp_sock_ = tcp_sock.get();
 
   int rv = tcp_sock_->Connect(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -101,7 +104,7 @@ std::unique_ptr<SOCKS5ClientSocket> SOCKS5ClientSocketTest::BuildMockSocket(
 
   // The SOCKS5ClientSocket takes ownership of |tcp_sock_|, but keep a
   // non-owning pointer to it.
-  return std::make_unique<SOCKS5ClientSocket>(base::WrapUnique(tcp_sock_),
+  return std::make_unique<SOCKS5ClientSocket>(std::move(tcp_sock),
                                               HostPortPair(hostname, port),
                                               TRAFFIC_ANNOTATION_FOR_TESTS);
 }
@@ -124,7 +127,7 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kOkRequest, base::size(kOkRequest)),
+      MockWrite(ASYNC, kOkRequest, std::size(kOkRequest)),
       MockWrite(ASYNC, payload_write.data(), payload_write.size())};
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
@@ -132,7 +135,7 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
       MockRead(ASYNC, payload_read.data(), payload_read.size()) };
 
   user_sock_ =
-      BuildMockSocket(data_reads, data_writes, "localhost", 80, &net_log_);
+      BuildMockSocket(data_reads, data_writes, "localhost", 80, NetLog::Get());
 
   // At this state the TCP connection is completed but not the SOCKS handshake.
   EXPECT_TRUE(tcp_sock_->IsConnected());
@@ -142,7 +145,7 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(user_sock_->IsConnected());
 
-  auto net_log_entries = net_log_.GetEntries();
+  auto net_log_entries = net_log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsBeginEvent(net_log_entries, 0,
                                     NetLogEventType::SOCKS5_CONNECT));
 
@@ -151,7 +154,7 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(user_sock_->IsConnected());
 
-  net_log_entries = net_log_.GetEntries();
+  net_log_entries = net_log_observer_.GetEntries();
   EXPECT_TRUE(LogContainsEndEvent(net_log_entries, -1,
                                   NetLogEventType::SOCKS5_CONNECT));
 
@@ -187,7 +190,7 @@ TEST_F(SOCKS5ClientSocketTest, ConnectAndDisconnectTwice) {
       0x03,  // ATYPE
   };
 
-  std::string request(kSOCKS5DomainRequest, base::size(kSOCKS5DomainRequest));
+  std::string request(kSOCKS5DomainRequest, std::size(kSOCKS5DomainRequest));
   request.push_back(static_cast<char>(hostname.size()));
   request.append(hostname);
   request.append(reinterpret_cast<const char*>(&kNwPort), sizeof(kNwPort));
@@ -252,18 +255,18 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const char partial1[] = { 0x05, 0x01 };
     const char partial2[] = { 0x00 };
     MockWrite data_writes[] = {
-        MockWrite(ASYNC, partial1, base::size(partial1)),
-        MockWrite(ASYNC, partial2, base::size(partial2)),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, partial1, std::size(partial1)),
+        MockWrite(ASYNC, partial2, std::size(partial2)),
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
     user_sock_ =
-        BuildMockSocket(data_reads, data_writes, hostname, 80, &net_log_);
+        BuildMockSocket(data_reads, data_writes, hostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-    auto net_log_entries = net_log_.GetEntries();
+    auto net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsBeginEvent(net_log_entries, 0,
                                       NetLogEventType::SOCKS5_CONNECT));
 
@@ -271,7 +274,7 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(user_sock_->IsConnected());
 
-    net_log_entries = net_log_.GetEntries();
+    net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsEndEvent(net_log_entries, -1,
                                     NetLogEventType::SOCKS5_CONNECT));
   }
@@ -282,23 +285,23 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const char partial2[] = { 0x00 };
     MockWrite data_writes[] = {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
-        MockRead(ASYNC, partial1, base::size(partial1)),
-        MockRead(ASYNC, partial2, base::size(partial2)),
+        MockRead(ASYNC, partial1, std::size(partial1)),
+        MockRead(ASYNC, partial2, std::size(partial2)),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength)};
     user_sock_ =
-        BuildMockSocket(data_reads, data_writes, hostname, 80, &net_log_);
+        BuildMockSocket(data_reads, data_writes, hostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-    auto net_log_entries = net_log_.GetEntries();
+    auto net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsBeginEvent(net_log_entries, 0,
                                       NetLogEventType::SOCKS5_CONNECT));
     rv = callback_.WaitForResult();
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(user_sock_->IsConnected());
-    net_log_entries = net_log_.GetEntries();
+    net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsEndEvent(net_log_entries, -1,
                                     NetLogEventType::SOCKS5_CONNECT));
   }
@@ -310,21 +313,21 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
         MockWrite(ASYNC, kOkRequest, kSplitPoint),
         MockWrite(ASYNC, kOkRequest + kSplitPoint,
-                  base::size(kOkRequest) - kSplitPoint)};
+                  std::size(kOkRequest) - kSplitPoint)};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
     user_sock_ =
-        BuildMockSocket(data_reads, data_writes, hostname, 80, &net_log_);
+        BuildMockSocket(data_reads, data_writes, hostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-    auto net_log_entries = net_log_.GetEntries();
+    auto net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsBeginEvent(net_log_entries, 0,
                                       NetLogEventType::SOCKS5_CONNECT));
     rv = callback_.WaitForResult();
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(user_sock_->IsConnected());
-    net_log_entries = net_log_.GetEntries();
+    net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsEndEvent(net_log_entries, -1,
                                     NetLogEventType::SOCKS5_CONNECT));
   }
@@ -334,7 +337,7 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const int kSplitPoint = 6;  // Break the handshake read into two parts.
     MockWrite data_writes[] = {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSplitPoint),
@@ -343,16 +346,16 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     };
 
     user_sock_ =
-        BuildMockSocket(data_reads, data_writes, hostname, 80, &net_log_);
+        BuildMockSocket(data_reads, data_writes, hostname, 80, NetLog::Get());
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
-    auto net_log_entries = net_log_.GetEntries();
+    auto net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsBeginEvent(net_log_entries, 0,
                                       NetLogEventType::SOCKS5_CONNECT));
     rv = callback_.WaitForResult();
     EXPECT_THAT(rv, IsOk());
     EXPECT_TRUE(user_sock_->IsConnected());
-    net_log_entries = net_log_.GetEntries();
+    net_log_entries = net_log_observer_.GetEntries();
     EXPECT_TRUE(LogContainsEndEvent(net_log_entries, -1,
                                     NetLogEventType::SOCKS5_CONNECT));
   }
@@ -360,23 +363,23 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
 
 TEST_F(SOCKS5ClientSocketTest, Tag) {
   StaticSocketDataProvider data;
-  RecordingTestNetLog log;
-  MockTaggingStreamSocket* tagging_sock =
-      new MockTaggingStreamSocket(std::unique_ptr<StreamSocket>(
-          new MockTCPClientSocket(address_list_, &log, &data)));
+  auto tagging_sock = std::make_unique<MockTaggingStreamSocket>(
+      std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
+                                            &data));
+  auto* tagging_sock_ptr = tagging_sock.get();
 
   // |socket| takes ownership of |tagging_sock|, but keep a non-owning pointer
   // to it.
-  SOCKS5ClientSocket socket(std::unique_ptr<StreamSocket>(tagging_sock),
+  SOCKS5ClientSocket socket(std::move(tagging_sock),
                             HostPortPair("localhost", 80),
                             TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  EXPECT_EQ(tagging_sock->tag(), SocketTag());
-#if defined(OS_ANDROID)
+  EXPECT_EQ(tagging_sock_ptr->tag(), SocketTag());
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
-  EXPECT_EQ(tagging_sock->tag(), tag);
-#endif  // OS_ANDROID
+  EXPECT_EQ(tagging_sock_ptr->tag(), tag);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

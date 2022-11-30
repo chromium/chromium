@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class Profile;
 
@@ -22,6 +22,9 @@ class MostVisitedSites;
 class MostVisitedSitesBridge {
  public:
   explicit MostVisitedSitesBridge(Profile* profile);
+
+  MostVisitedSitesBridge(const MostVisitedSitesBridge&) = delete;
+  MostVisitedSitesBridge& operator=(const MostVisitedSitesBridge&) = delete;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
@@ -51,7 +54,6 @@ class MostVisitedSitesBridge {
                             jint jicon_type,
                             jint jtitle_source,
                             jint jsource,
-                            jlong jdata_generation_time_ms,
                             const base::android::JavaParamRef<jobject>& jurl);
   void RecordOpenedMostVisitedItem(
       JNIEnv* env,
@@ -59,8 +61,7 @@ class MostVisitedSitesBridge {
       jint index,
       jint tile_type,
       jint title_source,
-      jint source,
-      jlong jdata_generation_time_ms);
+      jint source);
 
  private:
   ~MostVisitedSitesBridge();
@@ -69,9 +70,7 @@ class MostVisitedSitesBridge {
   std::unique_ptr<JavaObserver> java_observer_;
 
   std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_;
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedSitesBridge);
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_MOST_VISITED_SITES_BRIDGE_H_

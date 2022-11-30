@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout used by LongSummaryTextMessagePreference for multiline summary. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/PreferenceLayout">
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@android:id/title"
+      style="@style/PreferenceTitle"
+      android:paddingBottom="@dimen/long_summary_text_message_preference_padding_bottom"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@android:id/summary"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+      app:leading="@dimen/text_size_medium_leading"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+</LinearLayout>

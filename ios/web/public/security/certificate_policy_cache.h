@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "ios/web/public/security/cert_policy.h"
 #include "net/cert/x509_certificate.h"
 
@@ -25,14 +24,17 @@ class CertificatePolicyCache
   // Can be called from any thread:
   CertificatePolicyCache();
 
+  CertificatePolicyCache(const CertificatePolicyCache&) = delete;
+  CertificatePolicyCache& operator=(const CertificatePolicyCache&) = delete;
+
   // Everything from here on can only be called from the IO thread.
 
-  // Records that |cert| is permitted to be used for |host| in the future.
+  // Records that `cert` is permitted to be used for `host` in the future.
   virtual void AllowCertForHost(net::X509Certificate* cert,
                                 const std::string& host,
                                 net::CertStatus error);
 
-  // Queries whether |cert| is allowed or denied for |host|.
+  // Queries whether `cert` is allowed or denied for `host`.
   virtual CertPolicy::Judgment QueryPolicy(net::X509Certificate* cert,
                                            const std::string& host,
                                            net::CertStatus error);
@@ -48,8 +50,6 @@ class CertificatePolicyCache
 
   // Certificate policies for each host.
   std::map<std::string, CertPolicy> cert_policy_for_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertificatePolicyCache);
 };
 
 }  // namespace web

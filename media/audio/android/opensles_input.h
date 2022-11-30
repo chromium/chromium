@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,10 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/audio/android/opensles_util.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -35,10 +36,13 @@ class OpenSLESInputStream : public AudioInputStream {
   OpenSLESInputStream(AudioManagerAndroid* manager,
                       const AudioParameters& params);
 
+  OpenSLESInputStream(const OpenSLESInputStream&) = delete;
+  OpenSLESInputStream& operator=(const OpenSLESInputStream&) = delete;
+
   ~OpenSLESInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -77,9 +81,9 @@ class OpenSLESInputStream : public AudioInputStream {
   // |buffer_size_bytes_| and |simple_buffer_queue_|.
   base::Lock lock_;
 
-  AudioManagerAndroid* audio_manager_;
+  raw_ptr<AudioManagerAndroid> audio_manager_;
 
-  AudioInputCallback* callback_;
+  raw_ptr<AudioInputCallback> callback_;
 
   // Shared engine interfaces for the app.
   media::ScopedSLObjectItf recorder_object_;
@@ -107,8 +111,6 @@ class OpenSLESInputStream : public AudioInputStream {
 
   // Set to true at construction if user wants to disable all audio effects.
   const bool no_effects_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenSLESInputStream);
 };
 
 }  // namespace media

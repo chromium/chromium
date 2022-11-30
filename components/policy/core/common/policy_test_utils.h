@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
+
+#if BUILDFLAG(IS_APPLE)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 namespace policy {
 
@@ -26,6 +29,8 @@ struct PolicyNamespace;
 class PolicyDetailsMap {
  public:
   PolicyDetailsMap();
+  PolicyDetailsMap(const PolicyDetailsMap&) = delete;
+  PolicyDetailsMap& operator=(const PolicyDetailsMap&) = delete;
   ~PolicyDetailsMap();
 
   // The returned callback's lifetime is tied to |this| object.
@@ -40,15 +45,13 @@ class PolicyDetailsMap {
   const PolicyDetails* Lookup(const std::string& policy) const;
 
   PolicyDetailsMapping map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyDetailsMap);
 };
 
 // Returns true if |service| is not serving any policies. Otherwise logs the
 // current policies and returns false.
 bool PolicyServiceIsEmpty(const PolicyService* service);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 // Converts a base::Value to the equivalent CFPropertyListRef.
 // The returned value is owned by the caller.

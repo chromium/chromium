@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,6 +71,10 @@ id<GREYMatcher> SearchIconButton();
 // Navigates to the bookmark manager UI.
 - (void)openBookmarks;
 
+// Navigates to the bookmark manager UI in window with number `windowNumber`.
+// Sets and Leaves the root matcher to the given window.
+- (void)openBookmarksInWindowWithNumber:(int)windowNumber;
+
 // Selects MobileBookmarks to open.
 - (void)openMobileBookmarks;
 
@@ -78,16 +82,16 @@ id<GREYMatcher> SearchIconButton();
 - (void)starCurrentTab;
 
 // Creates a new folder starting from the folder picker.
-// Passing a |name| of 0 length will use the default value.
+// Passing a `name` of 0 length will use the default value.
 - (void)addFolderWithName:(NSString*)name;
 
-// Waits for the disparition of the given |title| in the UI.
+// Waits for the disparition of the given `title` in the UI.
 - (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
 
 // Wait for Undo toast to go away.
 - (void)waitForUndoToastToGoAway;
 
-// Rename folder title to |folderTitle|. Must be in edit folder UI.
+// Rename folder title to `folderTitle`. Must be in edit folder UI.
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle;
 
 // Close edit mode.
@@ -117,6 +121,8 @@ id<GREYMatcher> SearchIconButton();
 - (void)verifyFolderFlowIsClosed;
 
 - (void)verifyEmptyBackgroundAppears;
+
+- (void)verifyEmptyBackgroundIsAbsent;
 
 - (void)verifyEmptyState;
 
@@ -161,7 +167,7 @@ id<GREYMatcher> SearchIconButton();
 - (void)createNewBookmarkFolderWithFolderTitle:(NSString*)folderTitle
                                    pressReturn:(BOOL)pressReturn;
 
-// Bookmarks the current tab using |title| as Bookmark title. Make sure the
+// Bookmarks the current tab using `title` as Bookmark title. Make sure the
 // Bookmark loaded is loaded before by calling [BookmarkEarlGrey
 // waitForBookmarkModelLoaded:YES];
 - (void)bookmarkCurrentTabWithTitle:(NSString*)title;

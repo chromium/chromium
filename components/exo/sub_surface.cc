@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "components/exo/sub_surface_observer.h"
 #include "components/exo/surface.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace exo {
 
@@ -24,6 +26,9 @@ SubSurface::SubSurface(Surface* surface, Surface* parent)
 }
 
 SubSurface::~SubSurface() {
+  for (SubSurfaceObserver& observer : observers_)
+    observer.OnSubSurfaceDestroying(this);
+
   if (surface_) {
     if (parent_)
       parent_->RemoveSubSurface(surface_);
@@ -34,7 +39,7 @@ SubSurface::~SubSurface() {
     parent_->RemoveSurfaceObserver(this);
 }
 
-void SubSurface::SetPosition(const gfx::Point& position) {
+void SubSurface::SetPosition(const gfx::PointF& position) {
   TRACE_EVENT1("exo", "SubSurface::SetPosition", "position",
                position.ToString());
 
@@ -42,6 +47,16 @@ void SubSurface::SetPosition(const gfx::Point& position) {
     return;
 
   parent_->SetSubSurfacePosition(surface_, position);
+}
+
+void SubSurface::SetClipRect(const absl::optional<gfx::RectF>& clip_rect) {
+  TRACE_EVENT1("exo", "SubSurface::SetClipRect", "clip_rect",
+               (clip_rect ? clip_rect->ToString() : "nullopt"));
+
+  if (!parent_ || !surface_)
+    return;
+
+  surface_->SetClipRect(clip_rect);
 }
 
 void SubSurface::PlaceAbove(Surface* reference) {
@@ -119,6 +134,12 @@ void SubSurface::OnSetParent(Surface* parent, const gfx::Point&) {
     surface_->window()->SetProperty(aura::client::kSkipImeProcessing, true);
 }
 
+SecurityDelegate* SubSurface::GetSecurityDelegate() {
+  if (parent_)
+    return parent_->GetSecurityDelegate();
+  return nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceObserver overrides:
 
@@ -132,6 +153,16 @@ void SubSurface::OnSurfaceDestroying(Surface* surface) {
   if (parent_)
     parent_->RemoveSubSurface(surface_);
   surface_ = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SubSurface Observers
+void SubSurface::AddSubSurfaceObserver(SubSurfaceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SubSurface::RemoveSubSurfaceObserver(SubSurfaceObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace exo

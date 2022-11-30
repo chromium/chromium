@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -30,6 +30,10 @@ class GPU_EXPORT BufferBacking {
 class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  public:
   explicit MemoryBufferBacking(uint32_t size);
+
+  MemoryBufferBacking(const MemoryBufferBacking&) = delete;
+  MemoryBufferBacking& operator=(const MemoryBufferBacking&) = delete;
+
   ~MemoryBufferBacking() override;
   void* GetMemory() const override;
   uint32_t GetSize() const override;
@@ -37,7 +41,6 @@ class GPU_EXPORT MemoryBufferBacking : public BufferBacking {
  private:
   std::unique_ptr<char[]> memory_;
   uint32_t size_;
-  DISALLOW_COPY_AND_ASSIGN(MemoryBufferBacking);
 };
 
 
@@ -46,6 +49,11 @@ class GPU_EXPORT SharedMemoryBufferBacking : public BufferBacking {
   SharedMemoryBufferBacking(
       base::UnsafeSharedMemoryRegion shared_memory_region,
       base::WritableSharedMemoryMapping shared_memory_mapping);
+
+  SharedMemoryBufferBacking(const SharedMemoryBufferBacking&) = delete;
+  SharedMemoryBufferBacking& operator=(const SharedMemoryBufferBacking&) =
+      delete;
+
   ~SharedMemoryBufferBacking() override;
   const base::UnsafeSharedMemoryRegion& shared_memory_region() const override;
   base::UnguessableToken GetGUID() const override;
@@ -55,13 +63,15 @@ class GPU_EXPORT SharedMemoryBufferBacking : public BufferBacking {
  private:
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryBufferBacking);
 };
 
 // Buffer owns a piece of shared-memory of a certain size.
 class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
  public:
   explicit Buffer(std::unique_ptr<BufferBacking> backing);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
 
   BufferBacking* backing() const { return backing_.get(); }
   void* memory() const { return memory_; }
@@ -81,10 +91,8 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
   ~Buffer();
 
   std::unique_ptr<BufferBacking> backing_;
-  void* memory_;
+  raw_ptr<void> memory_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(

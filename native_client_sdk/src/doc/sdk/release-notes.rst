@@ -64,7 +64,7 @@ PNaCl
   new targets.
 
 .. _`code generation bug on ARM`: https://code.google.com/p/chromium/issues/detail?id=460432
-.. _`Subzero translator`: https://chromium.googlesource.com/native_client/pnacl-subzero/+/master/README.rst
+.. _`Subzero translator`: https://chromium.googlesource.com/native_client/pnacl-subzero/+/main/README.rst
 .. _`native-client-dev`: https://groups.google.com/forum/#!forum/native-client-dev
 
 Pepper

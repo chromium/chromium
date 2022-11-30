@@ -2,11 +2,17 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 99
+  * Implementation optimizations: [Navigation optimizations and timeOrigin changes](2022_03_lcp_fcp.md)
+* Chrome 98
+  * Metric bug fix: [Text paints are more accurate](2021_11_lcp.md)
+* Chrome 96
+  * Metric bug fix: [Largest Contentful Paint uses the page viewport](2021_09_lcp.md)
 * Chrome 88
   * Metric definition improvement: [Largest Contentful Paint ignores full viewport images](2020_11_lcp.md)
   * Metric definition improvement: [Largest Contentful Paint stops recording after input in an iframe](2020_11_lcp.md)
-  * Metric definition improvement: [Largest Contentful Paint ignores removed content by default](2020_11_lcp.md)
-  * Metric definition improvement: [Largest Contentful Paint bug fix for some images with source chagnes](2020_11_lcp.md)
+  * Metric definition improvement: [Largest Contentful Paint bug fix for some images with source changes](2020_11_lcp.md)
+  * Metric definition improvement: [Largest Contentful Paint ignores removed content by default](2020_11_lcp_2.md)
 * Chrome 86
   * Metric definition improvement: [Largest Contentful Paint ignores paints with opacity 0](2020_08_lcp.md)
 * Chrome 83

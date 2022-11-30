@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 // This file provides helpers for converting WebGPU objects, descriptors,
@@ -19,44 +21,26 @@
 
 namespace blink {
 
-class DoubleSequenceOrGPUColorDict;
 class GPUColorDict;
-class GPUProgrammableStage;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
-class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
-class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
-class V8GPUIndexFormat;
-
-// Convert WebGPU bitfield values to Dawn enums. These have the same value.
-template <typename DawnEnum>
-DawnEnum AsDawnEnum(uint32_t webgpu_enum) {
-  return static_cast<DawnEnum>(webgpu_enum);
-}
-
-// Convert WebGPU string enums to Dawn enums.
-template <typename DawnEnum>
-DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
-WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
+class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
 // individually.
 WGPUColor AsDawnColor(const Vector<double>&);
 WGPUColor AsDawnType(const GPUColorDict*);
-WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict*);
-WGPUExtent3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*,
-    GPUDevice* device);
-WGPUOrigin3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
-WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
-                               GPUDevice* device);
+WGPUColor AsDawnType(const V8GPUColor* webgpu_color);
+WGPUExtent3D AsDawnType(const V8GPUExtent3D* webgpu_extent);
+WGPUOrigin3D AsDawnType(const V8GPUOrigin3D* webgpu_extent);
+WGPUImageCopyTexture AsDawnType(const GPUImageCopyTexture* webgpu_view);
+WGPUTextureFormat AsDawnType(SkColorType color_type);
+WGPUPipelineLayout AsDawnType(
+    V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
+
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
-using OwnedProgrammableStageDescriptor =
-    std::tuple<WGPUProgrammableStageDescriptor, std::unique_ptr<char[]>>;
-OwnedProgrammableStageDescriptor AsDawnType(const GPUProgrammableStage*);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.
@@ -78,9 +62,15 @@ std::unique_ptr<TypeOfDawnType<WebGPUType>[]> AsDawnType(
   wtf_size_t count = webgpu_objects.size();
   // TODO(enga): Pass in temporary memory or an allocator so we don't make a
   // separate memory allocation here.
-  std::unique_ptr<DawnType[]> dawn_objects(new DawnType[count]);
+  std::unique_ptr<DawnType[]> dawn_objects =
+      std::make_unique<DawnType[]>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
-    dawn_objects[i] = AsDawnType(webgpu_objects[i].Get());
+    if (webgpu_objects[i]) {
+      dawn_objects[i] = AsDawnType(webgpu_objects[i].Get());
+    } else {
+      // Construct a default object if it is null
+      dawn_objects[i] = {};
+    }
   }
   return dawn_objects;
 }
@@ -92,7 +82,27 @@ std::unique_ptr<DawnEnum[]> AsDawnEnum(const Vector<WebGPUEnum>& webgpu_enums) {
   // separate memory allocation here.
   std::unique_ptr<DawnEnum[]> dawn_enums(new DawnEnum[count]);
   for (wtf_size_t i = 0; i < count; ++i) {
-    dawn_enums[i] = AsDawnEnum<DawnEnum>(webgpu_enums[i]);
+    dawn_enums[i] = AsDawnEnum(webgpu_enums[i]);
+  }
+  return dawn_enums;
+}
+
+// For sequence of nullable enums, convert null value to undefined
+// dawn_enums should be a pre-allocated array with a size of count
+template <typename DawnEnum, typename WebGPUEnum>
+std::unique_ptr<DawnEnum[]> AsDawnEnum(
+    const Vector<absl::optional<WebGPUEnum>>& webgpu_enums) {
+  wtf_size_t count = webgpu_enums.size();
+  // TODO(enga): Pass in temporary memory or an allocator so we don't make a
+  // separate memory allocation here.
+  std::unique_ptr<DawnEnum[]> dawn_enums = std::make_unique<DawnEnum[]>(count);
+  for (wtf_size_t i = 0; i < count; ++i) {
+    if (webgpu_enums[i].has_value()) {
+      dawn_enums[i] = AsDawnEnum(webgpu_enums[i].value());
+    } else {
+      // Undefined is always 0
+      dawn_enums[i] = static_cast<DawnEnum>(0);
+    }
   }
   return dawn_enums;
 }

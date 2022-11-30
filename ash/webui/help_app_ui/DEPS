@@ -1,0 +1,10 @@
+include_rules = [
+  # Do not add chrome here (use a delegate instead).
+  "+chromeos/grit/chromeos_help_app_bundle_resources.h",
+  "+chromeos/grit/chromeos_help_app_bundle_resources_map.h",
+  "+chromeos/grit/chromeos_help_app_kids_magazine_bundle_resources.h",
+  "+chromeos/grit/chromeos_help_app_kids_magazine_bundle_resources_map.h",
+  "+components/content_settings/core/common",
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+]

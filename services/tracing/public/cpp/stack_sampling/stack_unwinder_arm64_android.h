@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(TRACING_CPP) UnwinderArm64 : public base::Unwinder {
 
   base::UnwindResult TryUnwind(base::RegisterContext* thread_context,
                                uintptr_t stack_top,
-                               std::vector<base::Frame>* stack) const override;
+                               std::vector<base::Frame>* stack) override;
 };
 
 }  // namespace tracing

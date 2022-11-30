@@ -1,0 +1,30 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <style>
+      body {
+        height: 100vh;
+        margin: 0;
+        width: 100vw;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          --md-background-color: rgba(41, 42, 45, 1);
+          background-color: var(--md-background-color);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <intro-app></intro-app>
+    <if expr="enable_dice_support">
+      <script type="module" src="dice_app.js"></script>
+    </if>
+    <if expr="chromeos_lacros">
+      <script type="module" src="lacros_app.js"></script>
+    </if>
+  </body>
+</html>

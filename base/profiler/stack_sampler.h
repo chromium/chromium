@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/threading/platform_thread.h"
 
@@ -31,13 +30,16 @@ class BASE_EXPORT StackSampler {
   using UnwindersFactory =
       OnceCallback<std::vector<std::unique_ptr<Unwinder>>()>;
 
+  StackSampler(const StackSampler&) = delete;
+  StackSampler& operator=(const StackSampler&) = delete;
+
   virtual ~StackSampler();
 
   // Creates a stack sampler that records samples for thread with
   // |thread_token|. Unwinders in |unwinders| must be stored in increasing
   // priority to guide unwind attempts. Only the unwinder with the lowest
-  // priority is allowed to return with UnwindResult::COMPLETED. Returns null if
-  // this platform does not support stack sampling.
+  // priority is allowed to return with UnwindResult::kCompleted. Returns null
+  // if this platform does not support stack sampling.
   static std::unique_ptr<StackSampler> Create(
       SamplingProfilerThreadToken thread_token,
       ModuleCache* module_cache,
@@ -65,19 +67,20 @@ class BASE_EXPORT StackSampler {
 
   // Records a set of frames and returns them.
   virtual void RecordStackFrames(StackBuffer* stackbuffer,
-                                 ProfileBuilder* profile_builder) = 0;
+                                 ProfileBuilder* profile_builder,
+                                 PlatformThreadId thread_id) = 0;
 
  protected:
   StackSampler();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackSampler);
 };
 
 // StackSamplerTestDelegate provides seams for test code to execute during stack
 // collection.
 class BASE_EXPORT StackSamplerTestDelegate {
  public:
+  StackSamplerTestDelegate(const StackSamplerTestDelegate&) = delete;
+  StackSamplerTestDelegate& operator=(const StackSamplerTestDelegate&) = delete;
+
   virtual ~StackSamplerTestDelegate();
 
   // Called after copying the stack and resuming the target thread, but prior to
@@ -86,9 +89,6 @@ class BASE_EXPORT StackSamplerTestDelegate {
 
  protected:
   StackSamplerTestDelegate();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackSamplerTestDelegate);
 };
 
 }  // namespace base

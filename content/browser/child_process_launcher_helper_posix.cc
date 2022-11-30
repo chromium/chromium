@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
       PosixFileDescriptorInfoImpl::Create());
 
 // Mac shared memory doesn't use file descriptors.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   int fd = base::FieldTrialList::GetFieldTrialDescriptor();
   DCHECK_NE(fd, -1);
   files_to_register->Share(kFieldTrialDescriptor, fd);

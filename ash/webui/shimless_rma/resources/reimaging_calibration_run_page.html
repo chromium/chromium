@@ -1,0 +1,17 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[getCalibrationTitleString_(calibrationComplete_)]]</h1>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper" aria-hidden="true">
+      <paper-spinner-lite active hidden$="[[calibrationComplete_]]"
+          class="large-spinner">
+      </paper-spinner-lite>
+      <img class="illustration" src="illustrations/success.svg"
+          hidden$="[[!calibrationComplete_]]" alt="[[i18n('successAltText')]]">
+    </div>
+  </div>
+</base-page>

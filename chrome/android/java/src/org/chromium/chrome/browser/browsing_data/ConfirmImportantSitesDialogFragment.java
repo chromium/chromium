@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,7 +67,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
             mDomains = domains;
             mFaviconURLs = faviconURLs;
             mFaviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
-            mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(getResources());
+            mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(getContext());
         }
 
         @Override
@@ -325,7 +325,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         message.setText(messageResource);
 
         final AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
+                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(titleResource)
                         .setPositiveButton(
                                 R.string.clear_browsing_data_important_dialog_button, listener)

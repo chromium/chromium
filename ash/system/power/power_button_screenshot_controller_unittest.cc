@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/login_status.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_screenshot_controller_test_api.h"
 #include "ash/system/power/power_button_test_base.h"
-#include "ash/test_screenshot_delegate.h"
 #include "ash/wm/lock_state_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -57,6 +55,12 @@ class KeyEventWindowDelegate : public aura::test::TestWindowDelegate {
 class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
  public:
   PowerButtonScreenshotControllerTest() = default;
+
+  PowerButtonScreenshotControllerTest(
+      const PowerButtonScreenshotControllerTest&) = delete;
+  PowerButtonScreenshotControllerTest& operator=(
+      const PowerButtonScreenshotControllerTest&) = delete;
+
   ~PowerButtonScreenshotControllerTest() override = default;
 
   // PowerButtonTestBase:
@@ -65,14 +69,13 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
     InitPowerButtonControllerMembers(
         chromeos::PowerManagerClient::TabletMode::ON);
     InitScreenshotTestApi();
-    screenshot_delegate_ = GetScreenshotDelegate();
     EnableTabletMode(true);
 
     // Advance a duration longer than |kIgnorePowerButtonAfterResumeDelay| to
     // avoid events being ignored.
     tick_clock_.Advance(
         PowerButtonController::kIgnorePowerButtonAfterResumeDelay +
-        base::TimeDelta::FromMilliseconds(2));
+        base::Milliseconds(2));
 
     ResetScreenshotCount();
   }
@@ -97,27 +100,21 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
   }
 
   int GetScreenshotCount() const {
-    if (features::IsCaptureModeEnabled()) {
-      constexpr char kClamshellHistogram[] =
-          "Ash.CaptureModeController.EntryPoint.ClamshellMode";
-      constexpr char kTabletHistogram[] =
-          "Ash.CaptureModeController.EntryPoint.TabletMode";
-      if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-        return histograme_tester_->GetBucketCount(
-            kTabletHistogram, CaptureModeEntryType::kCaptureAllDisplays);
-      }
-
-      return histograme_tester_->GetBucketCount(
-          kClamshellHistogram, CaptureModeEntryType::kCaptureAllDisplays);
+    constexpr char kClamshellHistogram[] =
+        "Ash.CaptureModeController.EntryPoint.ClamshellMode";
+    constexpr char kTabletHistogram[] =
+        "Ash.CaptureModeController.EntryPoint.TabletMode";
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      return histogram_tester_->GetBucketCount(
+          kTabletHistogram, CaptureModeEntryType::kCaptureAllDisplays);
     }
-    return screenshot_delegate_->handle_take_screenshot_count();
+
+    return histogram_tester_->GetBucketCount(
+        kClamshellHistogram, CaptureModeEntryType::kCaptureAllDisplays);
   }
 
   void ResetScreenshotCount() {
-    if (features::IsCaptureModeEnabled())
-      histograme_tester_ = std::make_unique<base::HistogramTester>();
-    else
-      screenshot_delegate_->reset_handle_take_screenshot_count();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   bool LastKeyConsumed() const {
@@ -125,7 +122,6 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
     return last_key_event_->stopped_propagation();
   }
 
-  TestScreenshotDelegate* screenshot_delegate_ = nullptr;  // Not owned.
   std::unique_ptr<PowerButtonScreenshotControllerTestApi> screenshot_test_api_;
 
   // Stores the last key event. Can be NULL if not set through PressKey() or
@@ -133,9 +129,7 @@ class PowerButtonScreenshotControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ui::KeyEvent> last_key_event_;
 
   // Used to test capture mode invocations when the feature is on.
-  std::unique_ptr<base::HistogramTester> histograme_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerTest);
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 class PowerButtonScreenshotControllerWithSystemKeysTest
@@ -169,14 +163,14 @@ TEST_P(PowerButtonScreenshotControllerWithSystemKeysTest,
        PowerButtonPressedFirst_Screenshot) {
   PressPowerButton();
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay -
-                      base::TimeDelta::FromMilliseconds(5));
+                      base::Milliseconds(5));
   PressKey(ui::VKEY_VOLUME_DOWN);
   // Verifies screenshot is taken, volume down is consumed.
   EXPECT_EQ(1, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Presses volume up key under screenshot chord condition will not take
   // screenshot again, volume up is also consumed.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   ResetScreenshotCount();
   PressKey(ui::VKEY_VOLUME_UP);
   EXPECT_EQ(0, GetScreenshotCount());
@@ -184,13 +178,13 @@ TEST_P(PowerButtonScreenshotControllerWithSystemKeysTest,
   // Presses volume down key again under screenshot chord condition will not
   // take screenshot and still consume volume down event.
   ResetScreenshotCount();
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(ui::VKEY_VOLUME_DOWN);
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Keeps pressing volume down key outside of screenshot chord condition will
   // not take screenshot and still consume volume down event.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(ui::VKEY_VOLUME_DOWN);
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
@@ -227,25 +221,25 @@ TEST_F(PowerButtonScreenshotControllerTest, VolumeKeyPressedFirst_Screenshot) {
   // Presses power button under screenshot chord condition, and verifies that
   // screenshot is taken.
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay -
-                      base::TimeDelta::FromMilliseconds(5));
+                      base::Milliseconds(5));
   PressPowerButton();
   EXPECT_EQ(1, GetScreenshotCount());
   // Presses volume down key under screenshot chord condition will not take
   // screenshot, volume down is also consumed.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   ResetScreenshotCount();
   PressKey(ui::VKEY_VOLUME_DOWN);
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Presses volume up key under screenshot chord condition again will not take
   // screenshot and still consume volume up event.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(ui::VKEY_VOLUME_UP);
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Keeps pressing volume up key outside of screenshot chord condition will not
   // take screenshot and still consume volume up event.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(ui::VKEY_VOLUME_UP);
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
@@ -324,14 +318,17 @@ class PowerButtonScreenshotControllerWithKeyCodeTest
  public:
   PowerButtonScreenshotControllerWithKeyCodeTest() : key_code_(GetParam()) {}
 
+  PowerButtonScreenshotControllerWithKeyCodeTest(
+      const PowerButtonScreenshotControllerWithKeyCodeTest&) = delete;
+  PowerButtonScreenshotControllerWithKeyCodeTest& operator=(
+      const PowerButtonScreenshotControllerWithKeyCodeTest&) = delete;
+
   ui::KeyboardCode key_code() const { return key_code_; }
 
  private:
   // Value of the |key_code_| will only be ui::VKEY_VOLUME_DOWN or
   // ui::VKEY_VOLUME_UP.
   ui::KeyboardCode key_code_ = ui::VKEY_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerButtonScreenshotControllerWithKeyCodeTest);
 };
 
 // Tests power button screenshot accelerator works in tablet mode only.
@@ -378,21 +375,21 @@ TEST_P(PowerButtonScreenshotControllerWithKeyCodeTest,
        PowerButtonPressedFirst_ScreenshotChord) {
   PressPowerButton();
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay -
-                      base::TimeDelta::FromMilliseconds(2));
+                      base::Milliseconds(2));
   PressKey(key_code());
   // Verifies screenshot is taken, volume down/up is consumed.
   EXPECT_EQ(1, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Keeps pressing volume down/up key under screenshot chord condition will not
   // take screenshot again, volume down/up is also consumed.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(base::Milliseconds(1));
   ResetScreenshotCount();
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Keeps pressing volume down/up key off screenshot chord condition will not
   // take screenshot and still consume volume down/up event.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
@@ -412,14 +409,14 @@ TEST_P(PowerButtonScreenshotControllerWithKeyCodeTest,
        PowerButtonPressedFirst_NoScreenshotChord) {
   PressPowerButton();
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay +
-                      base::TimeDelta::FromMilliseconds(1));
+                      base::Milliseconds(1));
   PressKey(key_code());
   // Verifies screenshot is not taken, volume down/up is not consumed.
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_FALSE(LastKeyConsumed());
   // Keeps pressing volume down/up key should continue triggerring volume
   // down/up.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_FALSE(LastKeyConsumed());
@@ -471,19 +468,19 @@ TEST_P(PowerButtonScreenshotControllerWithKeyCodeTest,
   // Presses power button under screenshot chord condition, and verifies that
   // screenshot is taken.
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay -
-                      base::TimeDelta::FromMilliseconds(2));
+                      base::Milliseconds(2));
   PressPowerButton();
   EXPECT_EQ(1, GetScreenshotCount());
   // Keeps pressing volume down/up key under screenshot chord condition will not
   // take screenshot again, volume down/up is also consumed.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+  tick_clock_.Advance(base::Milliseconds(1));
   ResetScreenshotCount();
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
   // Keeps pressing volume down/up key off screenshot chord condition will not
   // take screenshot and still consume volume down/up event.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_TRUE(LastKeyConsumed());
@@ -509,7 +506,7 @@ TEST_P(PowerButtonScreenshotControllerWithKeyCodeTest,
   // trigger volume down/up timer timeout, which will perform a volume down/up
   // operation.
   tick_clock_.Advance(PowerButtonScreenshotController::kScreenshotChordDelay +
-                      base::TimeDelta::FromMilliseconds(1));
+                      base::Milliseconds(1));
   if (key_code() == ui::VKEY_VOLUME_DOWN)
     EXPECT_TRUE(screenshot_test_api_->TriggerVolumeDownTimer());
   else
@@ -519,7 +516,7 @@ TEST_P(PowerButtonScreenshotControllerWithKeyCodeTest,
   EXPECT_EQ(0, GetScreenshotCount());
   // Keeps pressing volume down/up key should continue triggerring volume
   // down/up.
-  tick_clock_.Advance(base::TimeDelta::FromMilliseconds(2));
+  tick_clock_.Advance(base::Milliseconds(2));
   PressKey(key_code());
   EXPECT_EQ(0, GetScreenshotCount());
   EXPECT_FALSE(LastKeyConsumed());

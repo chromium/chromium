@@ -1,9 +1,9 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_ENTRY_POINT_H_
-#define REMOTING_HOST_ENTRY_POINT_H_
+#ifndef REMOTING_HOST_HOST_MAIN_H_
+#define REMOTING_HOST_HOST_MAIN_H_
 
 #include "remoting/host/host_export.h"
 
@@ -16,4 +16,4 @@ HOST_EXPORT int HostMain(int argc, char** argv);
 
 } // namespace remoting
 
-#endif  // REMOTING_HOST_ENTRY_POINT_H_
+#endif  // REMOTING_HOST_HOST_MAIN_H_

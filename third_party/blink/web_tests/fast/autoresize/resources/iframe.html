@@ -1,14 +1,12 @@
 <!doctype html>
 <html>
 <body style="background-color:green;">
-This test only works in DumpRenderTree since it relies on setting up autoresize from javascript. It verifies that iframes are sized correctly when the main window is autoresized. On success, you should see a series of PASS messages followed by a DONE.
 <div id='result'>
 </div>
-<script src='autoresize-util.js'></script>
 <script>
 window.onmessage = function (evt)
 {
-    eval(evt.data);
+  window.parent.postMessage(eval(evt.data), "*");
 }
 </script>
 </body>

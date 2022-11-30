@@ -1,6 +1,10 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 component("power_scheduler") {
   sources = [
@@ -14,16 +18,12 @@ component("power_scheduler") {
     "traced_power_mode.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "power_scheduler.cc",
-      "power_scheduler.h",
-    ]
-  }
-
   defines = [ "IS_POWER_SCHEDULER_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
 }
 
 source_set("unit_tests") {

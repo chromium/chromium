@@ -1,0 +1,145 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("repository") {
+  sources = [
+    "fast_pair/device_id_map.cc",
+    "fast_pair/device_id_map.h",
+    "fast_pair/device_image_store.cc",
+    "fast_pair/device_image_store.h",
+    "fast_pair/device_metadata.cc",
+    "fast_pair/device_metadata.h",
+    "fast_pair/device_metadata_fetcher.cc",
+    "fast_pair/device_metadata_fetcher.h",
+    "fast_pair/fast_pair_image_decoder.cc",
+    "fast_pair/fast_pair_image_decoder.h",
+    "fast_pair/fast_pair_image_decoder_impl.cc",
+    "fast_pair/fast_pair_image_decoder_impl.h",
+    "fast_pair/footprints_fetcher.h",
+    "fast_pair/footprints_fetcher_impl.cc",
+    "fast_pair/footprints_fetcher_impl.h",
+    "fast_pair/pairing_metadata.cc",
+    "fast_pair/pairing_metadata.h",
+    "fast_pair/pending_write_store.cc",
+    "fast_pair/pending_write_store.h",
+    "fast_pair/proto_conversions.cc",
+    "fast_pair/proto_conversions.h",
+    "fast_pair/saved_device_registry.cc",
+    "fast_pair/saved_device_registry.h",
+    "fast_pair_repository.cc",
+    "fast_pair_repository.h",
+    "fast_pair_repository_impl.cc",
+    "fast_pair_repository_impl.h",
+    "http_fetcher.cc",
+    "http_fetcher.h",
+    "oauth_http_fetcher.cc",
+    "oauth_http_fetcher.h",
+    "unauthenticated_http_fetcher.cc",
+    "unauthenticated_http_fetcher.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//base",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/services/bluetooth_config/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//crypto",
+    "//device/bluetooth",
+    "//google_apis",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_device_metadata_http_fetcher.cc",
+    "fake_device_metadata_http_fetcher.h",
+    "fake_fast_pair_repository.cc",
+    "fake_fast_pair_repository.h",
+    "fast_pair/fake_footprints_fetcher.cc",
+    "fast_pair/fake_footprints_fetcher.h",
+    "fast_pair/mock_fast_pair_image_decoder.cc",
+    "fast_pair/mock_fast_pair_image_decoder.h",
+    "mock_fast_pair_repository.cc",
+    "mock_fast_pair_repository.h",
+    "mock_http_fetcher.cc",
+    "mock_http_fetcher.h",
+  ]
+
+  deps = [
+    ":repository",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/bluetooth_config/public/cpp",
+    "//device/bluetooth",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_pair/device_id_map_unittest.cc",
+    "fast_pair/device_image_store_unittest.cc",
+    "fast_pair/device_metadata_fetcher_unittest.cc",
+    "fast_pair/pending_write_store_unittest.cc",
+    "fast_pair/saved_device_registry_unittest.cc",
+    "fast_pair_repository_impl_unittest.cc",
+    "fast_pair_repository_unittest.cc",
+    "oauth_http_fetcher_unittest.cc",
+    "unauthenticated_http_fetcher_unittest.cc",
+  ]
+
+  deps = [
+    ":repository",
+    ":test_support",
+    "//ash:test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/bluetooth_config/public/cpp",
+    "//chromeos/ash/services/quick_pair/public/cpp",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//crypto",
+    "//device/bluetooth:mocks",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

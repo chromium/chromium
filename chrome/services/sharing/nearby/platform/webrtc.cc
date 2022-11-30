@@ -1,21 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"
 #include "chrome/services/sharing/webrtc/p2p_port_allocator.h"
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom-shared.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom-shared.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/nearby/src/cpp/platform/public/count_down_latch.h"
-#include "third_party/nearby/src/cpp/platform/public/future.h"
-#include "third_party/nearby/src/cpp/platform/public/logging.h"
+#include "third_party/nearby/src/internal/platform/count_down_latch.h"
+#include "third_party/nearby/src/internal/platform/future.h"
+#include "third_party/nearby/src/internal/platform/logging.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
@@ -26,6 +27,28 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+
+// The following constants are RTCConfiguration defaults designed to help with
+// battery life for persistent connections like Phone Hub. These values were
+// chosen by doing battery drain tests on an Android phone with a persistent
+// Phone Hub connection upgraded to WebRtc. The goal here is prevent chatty
+// KeepAlive pings at the WebRtc layer from waking up the Phone's kernel too
+// frequently and causing battery drain.
+//
+// NOTE: Nearby Connections also has its own KeepAlive interval and timeout that
+// are different from these core WebRtc values. They operate at a different
+// layer and don't directly affect the values chosen for WebRtc. However, both
+// values need to be greater than the defaults for battery saving to happen and
+// the most frequent ping ultimately determines the worst case number of wake
+// ups.
+//
+// See: b/183505430 for more context.
+constexpr base::TimeDelta kIceConnectionReceivingTimeout = base::Minutes(10);
+constexpr base::TimeDelta kIceCheckIntervalStrongConnectivity =
+    base::Seconds(25);
+constexpr base::TimeDelta kStableWritableConnectionPingInterval =
+    base::Seconds(30);
+
 net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("nearby_webrtc_connection", R"(
         semantics {
@@ -269,8 +292,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
 
 WebRtcMedium::WebRtcMedium(
     const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
-    const mojo::SharedRemote<
-        location::nearby::connections::mojom::MdnsResponderFactory>&
+    const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
         mdns_responder_factory,
     const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
         ice_config_fetcher,
@@ -344,9 +366,9 @@ void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
 }
 
 void WebRtcMedium::InitWebRTCThread(rtc::Thread** thread_to_set) {
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
-  *thread_to_set = jingle_glue::JingleThreadWrapper::current();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::current()->set_send_allowed(true);
+  *thread_to_set = webrtc::ThreadWrapper::current();
 }
 
 void WebRtcMedium::InitPeerConnectionFactory() {
@@ -357,8 +379,8 @@ void WebRtcMedium::InitPeerConnectionFactory() {
   DCHECK(!rtc_signaling_thread_);
   DCHECK(!rtc_worker_thread_);
 
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::current()->set_send_allowed(true);
 
   // We need to create three dedicated threads for WebRTC. We post tasks to the
   // threads and to ensure the message loop and jingle wrapper is setup for each
@@ -473,6 +495,8 @@ void WebRtcMedium::OnIceServersFetched(
   }
 
   webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
+  // Use the spec-compliant SDP semantics.
+  rtc_config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
   // Add |ice_servers| into the rtc_config.servers.
   for (const auto& ice_server : ice_servers) {
     webrtc::PeerConnectionInterface::IceServer ice_turn_server;
@@ -483,6 +507,19 @@ void WebRtcMedium::OnIceServersFetched(
     if (ice_server->credential)
       ice_turn_server.password = *ice_server->credential;
     rtc_config.servers.push_back(ice_turn_server);
+  }
+
+  // This prevents WebRTC from being chatty with keep alive messages which was
+  // causing battery drain for Phone Hub's persistent connection.
+  // Ideally these options should be configurable per connection, but right now
+  // we have a single share factory for all peer connections.
+  if (ash::features::IsNearbyKeepAliveFixEnabled()) {
+    rtc_config.ice_connection_receiving_timeout =
+        kIceConnectionReceivingTimeout.InMilliseconds();
+    rtc_config.ice_check_interval_strong_connectivity =
+        kIceCheckIntervalStrongConnectivity.InMilliseconds();
+    rtc_config.stable_writable_connection_ping_interval_ms =
+        kStableWritableConnectionPingInterval.InMilliseconds();
   }
 
   webrtc::PeerConnectionDependencies dependencies(observer);

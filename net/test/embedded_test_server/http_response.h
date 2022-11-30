@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,36 +7,75 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
-// Callback called when the response is done being sent.
-using SendCompleteCallback = base::OnceClosure;
+class HttpResponse;
 
-// Callback called when the response is ready to be sent that takes the
-// |response| that is being sent along with the callback |write_done| that is
-// called when the response has been fully written.
-using SendBytesCallback =
-    base::RepeatingCallback<void(const std::string& response,
-                                 SendCompleteCallback write_done)>;
+// Delegate that actually sends the response bytes. Any response created should
+// be owned by the delegate that passed in via HttpResponse::SendResponse().
+class HttpResponseDelegate {
+ public:
+  HttpResponseDelegate();
+  virtual ~HttpResponseDelegate();
+  HttpResponseDelegate(HttpResponseDelegate&) = delete;
+  HttpResponseDelegate& operator=(const HttpResponseDelegate&) = delete;
 
-// Interface for HTTP response implementations.
-class HttpResponse{
+  // The delegate needs to take ownership of the response to ensure the
+  // response can stay alive until the delegate has finished sending it.
+  virtual void AddResponse(std::unique_ptr<HttpResponse> response) = 0;
+
+  // Builds and sends header block. Should only be called once.
+  virtual void SendResponseHeaders(HttpStatusCode status,
+                                   const std::string& status_reason,
+                                   const base::StringPairs& headers) = 0;
+  // Sends a raw header block, in the form of an HTTP1.1 response header block
+  // (separated by "\r\n". Best effort will be maintained to preserve the raw
+  // headers.
+  virtual void SendRawResponseHeaders(const std::string& headers) = 0;
+
+  // Sends a content block, then calls the closure.
+  virtual void SendContents(const std::string& contents,
+                            base::OnceClosure callback = base::DoNothing()) = 0;
+
+  // Called after the last content block or after the header block. The response
+  // will hang until this is called.
+  virtual void FinishResponse() = 0;
+
+  // The following functions are essentially shorthand for common combinations
+  // of function calls that may have a more efficient layout than just calling
+  // one after the other.
+  virtual void SendContentsAndFinish(const std::string& contents) = 0;
+  virtual void SendHeadersContentAndFinish(HttpStatusCode status,
+                                           const std::string& status_reason,
+                                           const base::StringPairs& headers,
+                                           const std::string& contents) = 0;
+};
+
+// Interface for HTTP response implementations. The response should be owned by
+// the HttpResponseDelegate passed into SendResponse(), and should stay alive
+// until FinishResponse() is called on the delegate (or the owning delegate is
+// destroyed).
+class HttpResponse {
  public:
   virtual ~HttpResponse();
 
-  // |send| will send the specified data to the network socket, and invoke
-  // |write_done| when complete. When the entire response has been sent,
-  // |done| must be called. Invoking |done| will delete the HttpResponse object.
-  virtual void SendResponse(const SendBytesCallback& send,
-                            SendCompleteCallback done) = 0;
+  // Note that this is a WeakPtr. WeakPtrs can not be dereferenced or
+  // invalidated outside of the thread that created them, so any use of the
+  // delegate must either be from the same thread or posted to the original
+  // task runner
+  virtual void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) = 0;
 };
 
 // This class is used to handle basic HTTP responses with commonly used
@@ -44,90 +83,117 @@ class HttpResponse{
 class BasicHttpResponse : public HttpResponse {
  public:
   BasicHttpResponse();
+
+  BasicHttpResponse(const BasicHttpResponse&) = delete;
+  BasicHttpResponse& operator=(const BasicHttpResponse&) = delete;
+
   ~BasicHttpResponse() override;
 
   // The response code.
   HttpStatusCode code() const { return code_; }
   void set_code(HttpStatusCode code) { code_ = code; }
 
+  std::string reason() const {
+    return reason_.value_or(GetHttpReasonPhrase(code_));
+  }
+  void set_reason(absl::optional<std::string> reason) {
+    reason_ = std::move(reason);
+  }
+
   // The content of the response.
   const std::string& content() const { return content_; }
-  void set_content(const std::string& content) { content_ = content; }
+  void set_content(base::StringPiece content) {
+    content_ = std::string{content};
+  }
 
   // The content type.
   const std::string& content_type() const { return content_type_; }
-  void set_content_type(const std::string& content_type) {
-    content_type_ = content_type;
+  void set_content_type(base::StringPiece content_type) {
+    content_type_ = std::string{content_type};
   }
 
   // Adds a custom header.
-  void AddCustomHeader(const std::string& key, const std::string& value) {
-    custom_headers_.push_back(std::make_pair(key, value));
+  void AddCustomHeader(base::StringPiece key, base::StringPiece value) {
+    custom_headers_.emplace_back(key, value);
   }
 
   // Generates and returns a http response string.
   std::string ToResponseString() const;
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override;
+  base::StringPairs BuildHeaders() const;
+
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
  private:
-  HttpStatusCode code_;
+  HttpStatusCode code_ = HTTP_OK;
+  absl::optional<std::string> reason_;
   std::string content_;
   std::string content_type_;
   base::StringPairs custom_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicHttpResponse);
+  base::WeakPtrFactory<BasicHttpResponse> weak_factory_{this};
 };
 
 class DelayedHttpResponse : public BasicHttpResponse {
  public:
-  DelayedHttpResponse(const base::TimeDelta delay);
+  explicit DelayedHttpResponse(const base::TimeDelta delay);
+
+  DelayedHttpResponse(const DelayedHttpResponse&) = delete;
+  DelayedHttpResponse& operator=(const DelayedHttpResponse&) = delete;
+
   ~DelayedHttpResponse() override;
 
   // Issues a delayed send to the to the task runner.
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override;
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
  private:
   // The delay time for the response.
   const base::TimeDelta delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelayedHttpResponse);
 };
 
 class RawHttpResponse : public HttpResponse {
  public:
   RawHttpResponse(const std::string& headers, const std::string& contents);
+
+  RawHttpResponse(const RawHttpResponse&) = delete;
+  RawHttpResponse& operator=(const RawHttpResponse&) = delete;
+
   ~RawHttpResponse() override;
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override;
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 
   void AddHeader(const std::string& key_value_pair);
 
  private:
   std::string headers_;
   const std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawHttpResponse);
 };
 
 // "Response" where the server doesn't actually respond until the server is
 // destroyed.
 class HungResponse : public HttpResponse {
  public:
-  HungResponse() {}
-  ~HungResponse() override {}
+  HungResponse() = default;
 
-  void SendResponse(const SendBytesCallback& send,
-                    SendCompleteCallback done) override;
+  HungResponse(const HungResponse&) = delete;
+  HungResponse& operator=(const HungResponse&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HungResponse);
+  ~HungResponse() override = default;
+
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
 };
 
-}  // namespace test_server
-}  // namespace net
+// Return headers, then hangs.
+class HungAfterHeadersHttpResponse : public HttpResponse {
+ public:
+  explicit HungAfterHeadersHttpResponse(base::StringPairs headers = {});
+  ~HungAfterHeadersHttpResponse() override;
+
+  void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override;
+
+ private:
+  base::StringPairs headers_;
+};
+
+}  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_HTTP_RESPONSE_H_

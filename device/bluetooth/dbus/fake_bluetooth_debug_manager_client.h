@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,21 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDebugManagerClient
 
   // BluetoothDebugManagerClient overrides
   void Init(dbus::Bus* bus, const std::string& bluetooth_service_name) override;
-  void SetLogLevels(const uint8_t dispatcher_level,
-                    const uint8_t newblue_level,
-                    const uint8_t bluez_level,
+  void SetLogLevels(const uint8_t bluez_level,
                     const uint8_t kernel_level,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override;
+
+  void SetDevCoredump(const bool enable,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override {}
+
+  void SetLLPrivacy(const bool enable,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback) override {}
+  void SetBluetoothQualityReport(const bool enable,
+                                 base::OnceClosure callback,
+                                 ErrorCallback error_callback) override {}
 
   // Make the next call to SetLogLevels() to fail only once.
   void MakeNextSetLogLevelsFail();

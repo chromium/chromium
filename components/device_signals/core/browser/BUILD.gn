@@ -1,0 +1,112 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("browser") {
+  public = [
+    "base_signals_collector.h",
+    "file_system_signals_collector.h",
+    "metrics_utils.h",
+    "settings_client.h",
+    "settings_signals_collector.h",
+    "signals_aggregator.h",
+    "signals_aggregator_impl.h",
+    "signals_collector.h",
+    "signals_types.h",
+    "system_signals_service_host.h",
+    "user_context.h",
+    "user_delegate.h",
+    "user_permission_service.h",
+    "user_permission_service_impl.h",
+  ]
+
+  sources = [
+    "base_signals_collector.cc",
+    "file_system_signals_collector.cc",
+    "metrics_utils.cc",
+    "settings_signals_collector.cc",
+    "signals_aggregator_impl.cc",
+    "signals_types.cc",
+    "user_context.cc",
+    "user_permission_service_impl.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/device_signals/core/common/mojom",
+    "//components/keyed_service/core",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//components/device_signals/core/common",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+  ]
+
+  if (is_win) {
+    public_deps += [ "//components/device_signals/core/common/win" ]
+  }
+
+  if (is_win || is_linux || is_mac) {
+    public += [ "pref_names.h" ]
+    sources += [ "pref_names.cc" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_settings_client.cc",
+    "mock_settings_client.h",
+    "mock_signals_aggregator.cc",
+    "mock_signals_aggregator.h",
+    "mock_signals_collector.cc",
+    "mock_signals_collector.h",
+    "mock_system_signals_service_host.cc",
+    "mock_system_signals_service_host.h",
+    "mock_user_delegate.cc",
+    "mock_user_delegate.h",
+    "mock_user_permission_service.cc",
+    "mock_user_permission_service.h",
+  ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//components/device_signals/core/common/mojom",
+    "//components/signin/public/identity_manager",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "file_system_signals_collector_unittest.cc",
+    "settings_signals_collector_unittest.cc",
+    "signals_aggregator_impl_unittest.cc",
+    "user_permission_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/device_signals/core/common",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    deps += [ "//components/device_signals/core/browser/win:unit_tests" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//components/device_signals/core/browser/mac:unit_tests" ]
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,5 +22,12 @@ void OverrideInProcessInstanceForTesting(
 
 }  // namespace network_config
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace network_config {
+using ::chromeos::network_config::BindToInProcessInstance;
+}  // namespace network_config
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_NETWORK_CONFIG_IN_PROCESS_INSTANCE_H_

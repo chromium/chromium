@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -41,7 +40,7 @@ TEST(DialDeviceCountMetricsTest, RecordDeviceCountsIfNeeded) {
       DialDeviceCountMetrics::kHistogramDialKnownDeviceCount, 10, 1);
 
   // Record another count.
-  clock.Advance(base::TimeDelta::FromHours(2));
+  clock.Advance(base::Hours(2));
   metrics.RecordDeviceCountsIfNeeded(7, 10);
   tester.ExpectTotalCount(
       DialDeviceCountMetrics::kHistogramDialAvailableDeviceCount, 2);
@@ -79,7 +78,7 @@ TEST(CastDeviceCountMetricsTest, RecordDeviceCountsIfNeeded) {
       CastDeviceCountMetrics::kHistogramCastKnownDeviceCount, 10, 1);
 
   // Record another count.
-  clock.Advance(base::TimeDelta::FromHours(2));
+  clock.Advance(base::Hours(2));
   metrics.RecordDeviceCountsIfNeeded(7, 10);
   tester.ExpectTotalCount(
       CastDeviceCountMetrics::kHistogramCastConnectedDeviceCount, 2);
@@ -133,7 +132,7 @@ TEST(CastAnalyticsTest, RecordDeviceChannelError) {
 
 TEST(CastAnalyticsTest, RecordDeviceChannelOpenDuration) {
   base::HistogramTester tester;
-  const base::TimeDelta delta = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta delta = base::Milliseconds(10);
 
   tester.ExpectTotalCount(CastAnalytics::kHistogramCastMdnsChannelOpenSuccess,
                           0);

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,9 @@ TextTrackConfig::TextTrackConfig(TextKind kind,
       id_(id) {
 }
 
-TextTrackConfig::TextTrackConfig(const TextTrackConfig& other) = default;
+TextTrackConfig::TextTrackConfig(const TextTrackConfig&) = default;
+
+TextTrackConfig& TextTrackConfig::operator=(const TextTrackConfig&) = default;
 
 bool TextTrackConfig::Matches(const TextTrackConfig& config) const {
   return config.kind() == kind_ &&

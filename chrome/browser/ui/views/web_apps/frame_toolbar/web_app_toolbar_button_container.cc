@@ -1,10 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -15,16 +19,22 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/system_app_accessible_name.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
-#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -56,11 +66,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   views::FlexLayout* const layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetInteriorMargin(gfx::Insets(0, WebAppFrameRightMargin()))
+      .SetInteriorMargin(gfx::Insets::VH(0, WebAppFrameRightMargin()))
       .SetDefault(
           views::kMarginsKey,
-          gfx::Insets(0,
-                      HorizontalPaddingBetweenPageActionsAndAppMenuButtons()))
+          gfx::Insets::VH(
+              0, HorizontalPaddingBetweenPageActionsAndAppMenuButtons()))
       .SetCollapseMargins(true)
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -73,9 +83,30 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   const auto* app_controller = browser_view_->browser()->app_controller();
 
-  if (app_controller->HasTitlebarAppOriginText()) {
+  // App's origin will not be shown in the borderless mode, it will only be
+  // visible in App Settings UI.
+  if (app_controller->HasTitlebarAppOriginText() &&
+      !browser_view_->IsBorderlessModeEnabled()) {
     web_app_origin_text_ = AddChildView(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (app_controller->system_app()) {
+    AddChildView(std::make_unique<SystemAppAccessibleName>(
+        app_controller->GetAppShortName()));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (app_controller->AppUsesWindowControlsOverlay()) {
+    window_controls_overlay_toggle_button_ = AddChildView(
+        std::make_unique<WindowControlsOverlayToggleButton>(browser_view_));
+    views::SetHitTestComponent(window_controls_overlay_toggle_button_,
+                               static_cast<int>(HTCLIENT));
+    ConfigureWebAppToolbarButton(window_controls_overlay_toggle_button_,
+                                 toolbar_button_provider_);
+    window_controls_overlay_toggle_button_->SetVisible(
+        browser_view_->should_show_window_controls_overlay_toggle());
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
@@ -86,7 +117,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   // This is the point where we will be inserting page action icons.
-  page_action_insertion_point_ = int{children().size()};
+  page_action_insertion_point_ = static_cast<int>(children().size());
 
   // Insert the default page action icons.
   PageActionIconParams params;
@@ -100,9 +131,14 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   params.page_action_icon_delegate = this;
   page_action_icon_controller_->Init(params, this);
 
+  bool create_extensions_container = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not create the extensions or browser actions container if it is a
   // System Web App.
-  if (!web_app::IsSystemWebApp(browser_view_->browser())) {
+  create_extensions_container = !ash::IsSystemWebApp(browser_view_->browser());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (create_extensions_container) {
     // Extensions toolbar area with pinned extensions is lower priority than,
     // for example, the menu button or other toolbar buttons, and pinned
     // extensions should hide before other toolbar buttons.
@@ -125,16 +161,18 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
                                static_cast<int>(HTCLIENT));
   }
 
+  if (download::IsDownloadBubbleEnabled(browser_view_->browser()->profile())) {
+    download_button_ = AddChildView(
+        std::make_unique<DownloadToolbarButtonView>(browser_view_));
+    views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
+  }
+
   if (app_controller->HasTitlebarMenuButton()) {
     web_app_menu_button_ =
         AddChildView(std::make_unique<WebAppMenuButton>(browser_view_));
     web_app_menu_button_->SetID(VIEW_ID_APP_MENU);
-    const bool is_browser_focus_mode =
-        browser_view_->browser()->is_focus_mode();
-    SetInsetsForWebAppToolbarButton(web_app_menu_button_,
-                                    is_browser_focus_mode);
-    web_app_menu_button_->SetMinSize(
-        toolbar_button_provider_->GetToolbarButtonSize());
+    ConfigureWebAppToolbarButton(web_app_menu_button_,
+                                 toolbar_button_provider_);
     web_app_menu_button_->SetProperty(views::kFlexBehaviorKey,
                                       views::FlexSpecification());
   }
@@ -157,11 +195,17 @@ void WebAppToolbarButtonContainer::UpdateStatusIconsVisibility() {
 }
 
 void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
-                                             SkColor background_color) {
+                                             SkColor background_color,
+                                             bool color_changed) {
   foreground_color_ = foreground_color;
   background_color_ = background_color;
-  if (web_app_origin_text_)
-    web_app_origin_text_->SetTextColor(foreground_color_);
+  if (web_app_origin_text_) {
+    web_app_origin_text_->SetTextColor(foreground_color_,
+                                       /*show_text=*/color_changed);
+  }
+  if (window_controls_overlay_toggle_button_)
+    window_controls_overlay_toggle_button_->SetColor(foreground_color_);
+
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);
   if (extensions_container_)
@@ -195,9 +239,11 @@ void WebAppToolbarButtonContainer::DisableAnimationForTesting() {
   g_animation_disabled_for_testing = true;
 }
 
-void WebAppToolbarButtonContainer::AddPageActionIcon(views::View* icon) {
-  AddChildViewAt(icon, page_action_insertion_point_++);
-  views::SetHitTestComponent(icon, static_cast<int>(HTCLIENT));
+void WebAppToolbarButtonContainer::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
+  auto* icon_ptr =
+      AddChildViewAt(std::move(icon), page_action_insertion_point_++);
+  views::SetHitTestComponent(icon_ptr, static_cast<int>(HTCLIENT));
 }
 
 int WebAppToolbarButtonContainer::GetPageActionIconSize() const {
@@ -236,6 +282,9 @@ void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
 }
 
 void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
+  if (!GetAnimate())
+    return;
+
   if (content_settings_container_)
     content_settings_container_->FadeIn();
 }
@@ -291,13 +340,7 @@ WebAppToolbarButtonContainer::GetWebContentsForPageActionIconView() {
   return browser_view_->GetActiveWebContents();
 }
 
-// views::WidgetObserver:
-void WebAppToolbarButtonContainer::OnWidgetVisibilityChanged(
-    views::Widget* widget,
-    bool visible) {
-  if (!visible || !pending_widget_visibility_)
-    return;
-  pending_widget_visibility_ = false;
+void WebAppToolbarButtonContainer::AddedToWidget() {
   if (GetAnimate()) {
     if (content_settings_container_)
       content_settings_container_->SetUpForFadeIn();

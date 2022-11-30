@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.quick_start.mojom;
+
+struct GetAssertionResponse {
+  enum GetAssertionStatus {
+    kSuccess = 0,
+    kCtapResponseError = 1,
+    kCborDecoderError = 2,
+    kUnknownError = 3,
+  };
+
+  GetAssertionStatus status;
+
+  uint8 ctap_device_response_code;
+  int64 cbor_decoder_error;
+  string email;
+  string credential_id;
+
+  // The following fields are passed directly to GAIA with
+  // no further processing in Chromium. The raw byte values
+  // will be opaque and will not be parsed within the
+  // browser process.
+  array<uint8> auth_data;
+  array<uint8> signature;
+};

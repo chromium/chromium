@@ -1,20 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/webui/mojo_facade.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_test.h"
-#include "ios/web/test/mojo_test.mojom.h"
-#include "ios/web/web_state/web_state_impl.h"
+#import "ios/web/public/test/web_test.h"
+#import "ios/web/test/fakes/fake_web_frame_impl.h"
+#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,7 +30,7 @@ namespace web {
 
 namespace {
 
-// Serializes the given |object| to JSON string.
+// Serializes the given `object` to JSON string.
 std::string GetJson(id object) {
   NSData* json_as_data =
       [NSJSONSerialization dataWithJSONObject:object options:0 error:nil];
@@ -38,7 +40,7 @@ std::string GetJson(id object) {
   return base::SysNSStringToUTF8(json_as_string);
 }
 
-// Deserializes the given |json| to an object.
+// Deserializes the given `json` to an object.
 id GetObject(const std::string& json) {
   NSData* json_as_data =
       [base::SysUTF8ToNSString(json) dataUsingEncoding:NSUTF8StringEncoding];
@@ -47,14 +49,28 @@ id GetObject(const std::string& json) {
                                            error:nil];
 }
 
-class FakeWebStateWithMojoFacade : public FakeWebState {
+class FakeWebStateWithInterfaceBinder : public FakeWebState {
  public:
+  InterfaceBinder* GetInterfaceBinderForMainFrame() override {
+    return &interface_binder_;
+  }
+
+ private:
+  InterfaceBinder interface_binder_{this};
+};
+
+class FakeWebFrameWithMojoFacade : public FakeWebFrameImpl {
+ public:
+  FakeWebFrameWithMojoFacade()
+      : FakeWebFrameImpl(kMainFakeFrameId, /*is_main_frame=*/true, GURL()) {}
+
   void SetWatchId(int watch_id) { watch_id_ = watch_id; }
 
   void SetFacade(MojoFacade* facade) { facade_ = facade; }
 
-  void ExecuteJavaScript(const std::u16string& javascript) override {
-    FakeWebState::ExecuteJavaScript(javascript);
+  bool ExecuteJavaScript(const std::u16string& javascript) override {
+    bool success = FakeWebFrameImpl::ExecuteJavaScript(javascript);
+
     // Cancel the watch immediately to ensure there are no additional
     // notifications.
     // NOTE: This must be done as a side effect of executing the JavaScript.
@@ -65,16 +81,13 @@ class FakeWebStateWithMojoFacade : public FakeWebState {
       },
     };
     EXPECT_TRUE(facade_->HandleMojoMessage(GetJson(cancel_watch)).empty());
-  }
 
-  InterfaceBinder* GetInterfaceBinderForMainFrame() override {
-    return &interface_binder_;
+    return success;
   }
 
  private:
   int watch_id_;
   MojoFacade* facade_;  // weak
-  InterfaceBinder interface_binder_{this};
 };
 
 }  // namespace
@@ -84,10 +97,18 @@ class MojoFacadeTest : public WebTest {
  protected:
   MojoFacadeTest() {
     facade_ = std::make_unique<MojoFacade>(&web_state_);
-    web_state_.SetFacade(facade_.get());
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    frames_manager_ = web_frames_manager.get();
+    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+
+    auto main_frame = std::make_unique<FakeWebFrameWithMojoFacade>();
+    main_frame->SetFacade(facade_.get());
+    main_frame_ = main_frame.get();
+    frames_manager_->AddWebFrame(std::move(main_frame));
   }
 
-  FakeWebStateWithMojoFacade* web_state() { return &web_state_; }
+  FakeWebFrameWithMojoFacade* main_frame() { return main_frame_; }
   MojoFacade* facade() { return facade_.get(); }
 
   void CreateMessagePipe(uint32_t* handle0, uint32_t* handle1) {
@@ -119,7 +140,9 @@ class MojoFacadeTest : public WebTest {
   }
 
  private:
-  FakeWebStateWithMojoFacade web_state_;
+  FakeWebStateWithInterfaceBinder web_state_;
+  web::FakeWebFramesManager* frames_manager_;
+  FakeWebFrameWithMojoFacade* main_frame_;
   std::unique_ptr<MojoFacade> facade_;
 };
 
@@ -173,13 +196,16 @@ TEST_F(MojoFacadeTest, Watch) {
   int watch_id = 0;
   EXPECT_TRUE(base::StringToInt(watch_id_as_string, &watch_id));
 
-  web_state()->SetWatchId(watch_id);
+  main_frame()->SetWatchId(watch_id);
 
   // Write to the other end of the pipe.
   NSDictionary* write = @{
     @"name" : @"MojoHandle.writeMessage",
-    @"args" :
-        @{@"handle" : @(handle1), @"handles" : @[], @"buffer" : @{@"0" : @0}},
+    @"args" : @{
+      @"handle" : @(handle1),
+      @"handles" : @[],
+      @"buffer" : @"QUJDRA=="  // "ABCD" in base-64
+    },
   };
   std::string result_as_string = facade()->HandleMojoMessage(GetJson(write));
   EXPECT_FALSE(result_as_string.empty());
@@ -189,7 +215,7 @@ TEST_F(MojoFacadeTest, Watch) {
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     base::RunLoop().RunUntilIdle();
-    return !web_state()->GetLastExecutedJavascript().empty();
+    return !main_frame()->GetLastJavaScriptCall().empty();
   }));
 
   NSString* expected_script =
@@ -198,7 +224,7 @@ TEST_F(MojoFacadeTest, Watch) {
                     callback_id, MOJO_RESULT_OK];
 
   EXPECT_EQ(base::SysNSStringToUTF16(expected_script),
-            web_state()->GetLastExecutedJavascript());
+            main_frame()->GetLastJavaScriptCall());
 
   CloseHandle(handle0);
   CloseHandle(handle1);
@@ -215,7 +241,7 @@ TEST_F(MojoFacadeTest, ReadWrite) {
     @"args" : @{
       @"handle" : @(handle1),
       @"handles" : @[],
-      @"buffer" : @{@"0" : @9, @"1" : @2, @"2" : @2008}
+      @"buffer" : @"QUJDRA=="  // "ABCD" in base-64
     },
   };
   std::string result_as_string = facade()->HandleMojoMessage(GetJson(write));
@@ -234,7 +260,7 @@ TEST_F(MojoFacadeTest, ReadWrite) {
   NSDictionary* message = GetObject(facade()->HandleMojoMessage(GetJson(read)));
   EXPECT_TRUE([message isKindOfClass:[NSDictionary class]]);
   EXPECT_TRUE(message);
-  NSArray* expected_message = @[ @9, @2, @216 ];  // 2008 does not fit 8-bit.
+  NSArray* expected_message = @[ @65, @66, @67, @68 ];  // ASCII values for A, B, C, D
   EXPECT_NSEQ(expected_message, message[@"buffer"]);
   EXPECT_FALSE([message[@"handles"] count]);
   EXPECT_EQ(MOJO_RESULT_OK, [message[@"result"] unsignedIntValue]);

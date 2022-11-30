@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <cstring>
 #include <limits>
 #include <utility>
 
@@ -64,8 +63,7 @@ void AudioBus::CheckOverflow(int start_frame, int frames, int total_frames) {
 }
 
 AudioBus::AudioBus(int channels, int frames)
-    : frames_(frames),
-      can_set_channel_data_(false) {
+    : frames_(frames), is_wrapper_(false) {
   ValidateConfig(channels, frames_);
 
   int aligned_frames = 0;
@@ -78,8 +76,7 @@ AudioBus::AudioBus(int channels, int frames)
 }
 
 AudioBus::AudioBus(int channels, int frames, float* data)
-    : frames_(frames),
-      can_set_channel_data_(false) {
+    : frames_(frames), is_wrapper_(false) {
   // Since |data| may have come from an external source, ensure it's valid.
   CHECK(data);
   ValidateConfig(channels, frames_);
@@ -91,9 +88,7 @@ AudioBus::AudioBus(int channels, int frames, float* data)
 }
 
 AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
-    : channel_data_(channel_data),
-      frames_(frames),
-      can_set_channel_data_(false) {
+    : channel_data_(channel_data), frames_(frames), is_wrapper_(false) {
   ValidateConfig(
       base::checked_cast<int>(channel_data_.size()), frames_);
 
@@ -103,15 +98,16 @@ AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
 }
 
 AudioBus::AudioBus(int channels)
-    : channel_data_(channels),
-      frames_(0),
-      can_set_channel_data_(true) {
+    : channel_data_(channels), frames_(0), is_wrapper_(true) {
   CHECK_GT(channels, 0);
   for (size_t i = 0; i < channel_data_.size(); ++i)
     channel_data_[i] = NULL;
 }
 
-AudioBus::~AudioBus() = default;
+AudioBus::~AudioBus() {
+  if (wrapped_data_deleter_cb_)
+    std::move(wrapped_data_deleter_cb_).Run();
+}
 
 std::unique_ptr<AudioBus> AudioBus::Create(int channels, int frames) {
   return base::WrapUnique(new AudioBus(channels, frames));
@@ -171,7 +167,7 @@ std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(
 }
 
 void AudioBus::SetChannelData(int channel, float* data) {
-  CHECK(can_set_channel_data_);
+  CHECK(is_wrapper_);
   CHECK(data);
   CHECK_GE(channel, 0);
   CHECK_LT(static_cast<size_t>(channel), channel_data_.size());
@@ -180,9 +176,15 @@ void AudioBus::SetChannelData(int channel, float* data) {
 }
 
 void AudioBus::set_frames(int frames) {
-  CHECK(can_set_channel_data_);
+  CHECK(is_wrapper_);
   ValidateConfig(static_cast<int>(channel_data_.size()), frames);
   frames_ = frames;
+}
+
+void AudioBus::SetWrappedDataDeleter(base::OnceClosure deleter) {
+  CHECK(is_wrapper_);
+  DCHECK(!wrapped_data_deleter_cb_);
+  wrapped_data_deleter_cb_ = std::move(deleter);
 }
 
 size_t AudioBus::GetBitstreamDataSize() const {

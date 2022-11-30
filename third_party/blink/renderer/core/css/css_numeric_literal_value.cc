@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -24,8 +24,6 @@ void CSSNumericLiteralValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 
 CSSNumericLiteralValue::CSSNumericLiteralValue(double num, UnitType type)
     : CSSPrimitiveValue(kNumericLiteralClass), num_(num) {
-  DCHECK(RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() ||
-         std::isfinite(num));
   DCHECK_NE(UnitType::kUnknown, type);
   numeric_literal_unit_type_ = static_cast<unsigned>(type);
 }
@@ -36,17 +34,11 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
   if (value < 0 || value > CSSValuePool::kMaximumCacheableIntegerValue)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    // Value can be NaN.
-    if (std::isnan(value))
-      return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
-  } else {
-    // TODO(timloh): This looks wrong.
-    if (std::isinf(value))
-      value = 0;
-  }
+  // Value can be NaN.
+  if (std::isnan(value))
+    return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
-  int int_value = clampTo<int>(value);
+  int int_value = ClampTo<int>(value);
   if (value != int_value)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 
@@ -101,11 +93,11 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kDegrees:
       return num_;
     case UnitType::kRadians:
-      return rad2deg(num_);
+      return Rad2deg(num_);
     case UnitType::kGradians:
-      return grad2deg(num_);
+      return Grad2deg(num_);
     case UnitType::kTurns:
-      return turn2deg(num_);
+      return Turn2deg(num_);
     default:
       NOTREACHED();
       return 0;
@@ -118,9 +110,9 @@ double CSSNumericLiteralValue::ComputeDotsPerPixel() const {
 }
 
 double CSSNumericLiteralValue::ComputeLengthPx(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsLength());
-  return conversion_data.ZoomedComputedPixels(num_, GetType());
+  return length_resolver.ZoomedComputedPixels(num_, GetType());
 }
 
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
@@ -128,6 +120,8 @@ bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
   LengthUnitType length_type;
   bool conversion_success = UnitTypeToLengthUnitType(GetType(), length_type);
   DCHECK(conversion_success);
+  if (length_type >= CSSLengthArray::kSize)
+    return false;
   length_array.values[length_type] +=
       num_ * ConversionToCanonicalUnitsScaleFactor(GetType()) * multiplier;
   length_array.type_flags.set(length_type);
@@ -153,11 +147,11 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
 }
 
 static String FormatNumber(double number, const char* suffix) {
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   unsigned oldFormat = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   String result = String::Format("%.6g%s", number, suffix);
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   _set_output_format(oldFormat);
 #endif
   return result;
@@ -197,6 +191,8 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kExs:
     case UnitType::kRems:
     case UnitType::kChs:
+    case UnitType::kIcs:
+    case UnitType::kLhs:
     case UnitType::kPixels:
     case UnitType::kCentimeters:
     case UnitType::kDotsPerPixel:
@@ -219,8 +215,34 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kFraction:
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
+    case UnitType::kViewportInlineSize:
+    case UnitType::kViewportBlockSize:
     case UnitType::kViewportMin:
-    case UnitType::kViewportMax: {
+    case UnitType::kViewportMax:
+    case UnitType::kSmallViewportWidth:
+    case UnitType::kSmallViewportHeight:
+    case UnitType::kSmallViewportInlineSize:
+    case UnitType::kSmallViewportBlockSize:
+    case UnitType::kSmallViewportMin:
+    case UnitType::kSmallViewportMax:
+    case UnitType::kLargeViewportWidth:
+    case UnitType::kLargeViewportHeight:
+    case UnitType::kLargeViewportInlineSize:
+    case UnitType::kLargeViewportBlockSize:
+    case UnitType::kLargeViewportMin:
+    case UnitType::kLargeViewportMax:
+    case UnitType::kDynamicViewportWidth:
+    case UnitType::kDynamicViewportHeight:
+    case UnitType::kDynamicViewportInlineSize:
+    case UnitType::kDynamicViewportBlockSize:
+    case UnitType::kDynamicViewportMin:
+    case UnitType::kDynamicViewportMax:
+    case UnitType::kContainerWidth:
+    case UnitType::kContainerHeight:
+    case UnitType::kContainerInlineSize:
+    case UnitType::kContainerBlockSize:
+    case UnitType::kContainerMin:
+    case UnitType::kContainerMax: {
       // The following integers are minimal and maximum integers which can
       // be represented in non-exponential format with 6 digit precision.
       constexpr int kMinInteger = -999999;
@@ -229,20 +251,18 @@ String CSSNumericLiteralValue::CustomCSSText() const {
       // If the value is small integer, go the fast path.
       if (value < kMinInteger || value > kMaxInteger ||
           std::trunc(value) != value) {
-        if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
-            (std::isinf(value) || std::isnan(value))) {
+        if (std::isinf(value) || std::isnan(value)) {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text = FormatNumber(value, UnitTypeToString(GetType()));
         }
-
       } else {
         StringBuilder builder;
         int int_value = value;
         const char* unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
-        builder.Append(unit_type, strlen(unit_type));
-        text = builder.ToString();
+        builder.Append(unit_type, static_cast<unsigned>(strlen(unit_type)));
+        text = builder.ReleaseString();
       }
     } break;
     default:

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -129,6 +129,12 @@ void ExpectFailedGetCatalogResult(
 class ExploreSitesGetCatalogTaskTest : public TaskTestBase {
  public:
   ExploreSitesGetCatalogTaskTest() = default;
+
+  ExploreSitesGetCatalogTaskTest(const ExploreSitesGetCatalogTaskTest&) =
+      delete;
+  ExploreSitesGetCatalogTaskTest& operator=(
+      const ExploreSitesGetCatalogTaskTest&) = delete;
+
   ~ExploreSitesGetCatalogTaskTest() override = default;
 
   void SetUp() override {
@@ -155,8 +161,6 @@ class ExploreSitesGetCatalogTaskTest : public TaskTestBase {
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesGetCatalogTaskTest);
 };
 
 void ExploreSitesGetCatalogTaskTest::PopulateTestingCatalog() {
@@ -168,38 +172,44 @@ void ExploreSitesGetCatalogTaskTest::PopulateTestingCatalog() {
     ExploreSitesSchema::InitMetaTable(db, &meta_table);
     meta_table.SetValue("current_catalog", "5678");
     meta_table.DeleteKey("downloading_catalog");
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label, ntp_shown_count)
-VALUES
-(1, "1234", 1, "label_1", 5), -- older catalog
-(2, "1234", 2, "label_2", 2), -- older catalog
-(3, "1234", 3, "label_3", 9), -- older catalog
-(4, "5678", 1, "label_1", 4), -- current catalog
-(5, "5678", 2, "label_2", 6), -- current catalog
-(6, "5678", 3, "label_3", 7); -- current catalog)"));
-    if (!insert.Run())
+    static constexpr char kCategoriesSql[] =
+        // clang-format off
+        "INSERT INTO categories"
+            "(category_id, version_token, type, label, ntp_shown_count)"
+            "VALUES"
+                "(1, '1234', 1, 'label_1', 5),"  // older catalog
+                "(2, '1234', 2, 'label_2', 2),"  // older catalog
+                "(3, '1234', 3, 'label_3', 9),"  // older catalog
+                "(4, '5678', 1, 'label_1', 4),"  // current catalog
+                "(5, '5678', 2, 'label_2', 6),"  // current catalog
+                "(6, '5678', 3, 'label_3', 7)";  // current catalog
+    // clang-format on
+    sql::Statement insert_categories(db->GetUniqueStatement(kCategoriesSql));
+    if (!insert_categories.Run())
       return false;
 
-    sql::Statement insert_sites(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title)
-VALUES
-(1, "https://www.example.com/1", 1, "example_old_1"),
-(2, "https://www.example.com/2", 2, "example_old_2"),
-(3, "https://www.example.com/1", 4, "example_1"),
-(4, "https://www.example.com/2", 5, "example_2");
-    )"));
+    static constexpr char kSitesSql[] =
+        // clang-format off
+        "INSERT INTO sites"
+            "(site_id, url, category_id, title)"
+            "VALUES"
+                "(1, 'https://www.example.com/1', 1, 'example_old_1'),"
+                "(2, 'https://www.example.com/2', 2, 'example_old_2'),"
+                "(3, 'https://www.example.com/1', 4, 'example_1'),"
+                "(4, 'https://www.example.com/2', 5, 'example_2')";
+    // clang-format on
+    sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
     if (!insert_sites.Run())
       return false;
 
-    sql::Statement insert_activity(db->GetUniqueStatement(R"(
-INSERT INTO activity
-(time, category_type, url)
-VALUES
-(12345, 1, "https://www.example.com/1"),
-(23456, 1, "https://www.example.com/1");
-    )"));
+    static constexpr char kActivitySql[] =
+        // clang-format off
+        "INSERT INTO activity(time, category_type, url)"
+            "VALUES"
+                "(12345, 1, 'https://www.google.com'),"
+                "(23456, 1, 'https://www.example.com/1')";
+    // clang-format on
+    sql::Statement insert_activity(db->GetUniqueStatement(kActivitySql));
     return insert_activity.Run();
   }));
 }
@@ -354,7 +364,7 @@ TEST_F(ExploreSitesGetCatalogTaskTest,
   SetDownloadingAndCurrentVersion("1234", "");
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count(db->GetUniqueStatement(
-        "DELETE FROM categories where version_token <> \"1234\";"));
+        "DELETE FROM categories where version_token <> '1234'"));
     return cat_count.Run();
   }));
   auto callback = base::BindLambdaForTesting(

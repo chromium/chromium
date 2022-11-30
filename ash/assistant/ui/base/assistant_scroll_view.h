@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -21,16 +21,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
    public:
     // Invoked when the scrollable contents' preferred size has changed.
     virtual void OnContentsPreferredSizeChanged(views::View* content_view) {}
-
-    // Invoked when the specified |scroll_bar| has been updated.
-    virtual void OnScrollBarUpdated(views::ScrollBar* scroll_bar,
-                                    int viewport_size,
-                                    int content_size,
-                                    int content_scroll_offset) {}
-
-    // Invoked when the visibility for the specified |scroll_bar| has changed.
-    virtual void OnScrollBarVisibilityChanged(views::ScrollBar* scroll_bar,
-                                              bool is_visible) {}
 
    protected:
     Observer() = default;
@@ -54,17 +44,12 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
   views::View* content_view() { return content_view_; }
   const views::View* content_view() const { return content_view_; }
 
-  views::ScrollBar* horizontal_scroll_bar() { return horizontal_scroll_bar_; }
-  views::ScrollBar* vertical_scroll_bar() { return vertical_scroll_bar_; }
-
  private:
   void InitLayout();
 
   base::ObserverList<Observer> observers_;
 
   views::View* content_view_;                // Owned by view hierarchy.
-  views::ScrollBar* horizontal_scroll_bar_;  // Owned by view hierarchy.
-  views::ScrollBar* vertical_scroll_bar_;    // Owned by view hierarchy.
 };
 
 }  // namespace ash

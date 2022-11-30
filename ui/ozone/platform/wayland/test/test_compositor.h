@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -17,17 +16,19 @@ class MockSurface;
 // Manage wl_compositor object.
 class TestCompositor : public GlobalObject {
  public:
-  static constexpr uint32_t kVersion = 4;
+  explicit TestCompositor(uint32_t intended_version);
 
-  TestCompositor();
+  TestCompositor(const TestCompositor&) = delete;
+  TestCompositor& operator=(const TestCompositor&) = delete;
+
   ~TestCompositor() override;
 
   void AddSurface(MockSurface* surface);
+  uint32_t GetVersion() { return version_; }
 
  private:
+  uint32_t version_;
   std::vector<MockSurface*> surfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCompositor);
 };
 
 }  // namespace wl

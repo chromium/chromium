@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -28,7 +27,7 @@ const char* const NativeMessageEchoHost::kOrigins[] = {
     "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"};
 
 // static
-const int NativeMessageEchoHost::kOriginCount = base::size(kOrigins);
+const size_t NativeMessageEchoHost::kOriginCount = std::size(kOrigins);
 
 // static
 std::unique_ptr<NativeMessageHost> NativeMessageEchoHost::Create(
@@ -44,7 +43,7 @@ void NativeMessageEchoHost::Start(Client* client) {
 }
 
 void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
-  base::Optional<base::Value> request_value =
+  absl::optional<base::Value> request_value =
       base::JSONReader::Read(request_string);
   if (!request_value.has_value()) {
     client_->CloseChannel(kHostInputOutputError);
@@ -64,9 +63,9 @@ scoped_refptr<base::SingleThreadTaskRunner> NativeMessageEchoHost::task_runner()
 
 void NativeMessageEchoHost::ProcessEcho(const base::DictionaryValue& request) {
   base::DictionaryValue response;
-  response.SetInteger("id", ++message_number_);
-  response.Set("echo", request.CreateDeepCopy());
-  response.SetString("caller_url", kOrigins[0]);
+  response.SetIntKey("id", ++message_number_);
+  response.SetKey("echo", request.Clone());
+  response.SetStringKey("caller_url", kOrigins[0]);
   std::string response_string;
   base::JSONWriter::Write(response, &response_string);
   client_->PostMessageFromNativeHost(response_string);

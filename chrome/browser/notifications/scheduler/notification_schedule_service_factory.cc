@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service_factory.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_impl.h"
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
@@ -20,17 +22,13 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/notifications/scheduler/display_agent_android.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
-#include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_client.h"
-#include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_service_factory.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
-#include "chrome/browser/updates/update_notification_client.h"
-#include "chrome/browser/updates/update_notification_service_factory.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -38,27 +36,7 @@ std::unique_ptr<notifications::NotificationSchedulerClientRegistrar>
 RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
-#if defined(OS_ANDROID)
-  // Register UpdateNotificationClient.
-  auto update_notification_service_getter =
-      base::BindRepeating(&UpdateNotificationServiceFactory::GetForKey, key);
-  auto chrome_update_client =
-      std::make_unique<updates::UpdateNotificationClient>(
-          std::move(update_notification_service_getter));
-  client_registrar->RegisterClient(
-      notifications::SchedulerClientType::kChromeUpdate,
-      std::move(chrome_update_client));
-
-  // Register PrefetchNotificationClient.
-  auto prefetch_notification_service_getter =
-      base::BindRepeating(&PrefetchNotificationServiceFactory::GetForKey, key);
-  auto prefetch_client =
-      std::make_unique<offline_pages::prefetch::PrefetchNotificationClient>(
-          std::move(prefetch_notification_service_getter));
-  client_registrar->RegisterClient(
-      notifications::SchedulerClientType::kPrefetch,
-      std::move(prefetch_client));
-
+#if BUILDFLAG(IS_ANDROID)
   // Register reading list client.
   if (ReadingListNotificationService::IsEnabled()) {
     Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
@@ -72,7 +50,20 @@ RegisterClients(ProfileKey* key) {
         std::move(reading_list_client));
   }
 
-#endif  // defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kFeatureNotificationGuide)) {
+    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
+    auto feature_guide_service_getter = base::BindRepeating(
+        &feature_guide::FeatureNotificationGuideServiceFactory::GetForProfile,
+        profile);
+
+    client_registrar->RegisterClient(
+        notifications::SchedulerClientType::kFeatureGuide,
+        CreateFeatureNotificationGuideNotificationClient(
+            feature_guide_service_getter));
+  }
+
+#endif  // BUILDFLAG(IS_ANDROID)
   return client_registrar;
 }
 
@@ -105,7 +96,7 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
   base::FilePath storage_dir = profile_key->GetPath().Append(
       chrome::kNotificationSchedulerStorageDirname);
   auto client_registrar = RegisterClients(profile_key);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto display_agent = std::make_unique<DisplayAgentAndroid>();
   auto background_task_scheduler =
       std::make_unique<NotificationBackgroundTaskSchedulerAndroid>();
@@ -113,7 +104,7 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
   auto display_agent = notifications::DisplayAgent::Create();
   auto background_task_scheduler =
       std::make_unique<NotificationBackgroundTaskSchedulerImpl>();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   auto* db_provider = profile_key->GetProtoDatabaseProvider();
   return notifications::CreateNotificationScheduleService(
       std::move(client_registrar), std::move(background_task_scheduler),

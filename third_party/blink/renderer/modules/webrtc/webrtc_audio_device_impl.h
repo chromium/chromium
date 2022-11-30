@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_not_impl.h"
@@ -54,11 +54,11 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
       public blink::WebRtcAudioRendererSource,
       public blink::WebRtcPlayoutDataSource {
  public:
-  // The maximum volume value WebRtc uses.
-  static const int kMaxVolumeLevel = 255;
-
   // Instances of this object are created on the main render thread.
   WebRtcAudioDeviceImpl();
+
+  WebRtcAudioDeviceImpl(const WebRtcAudioDeviceImpl&) = delete;
+  WebRtcAudioDeviceImpl& operator=(const WebRtcAudioDeviceImpl&) = delete;
 
  protected:
   // Make destructor protected, we should only be deleted by Release().
@@ -89,14 +89,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   int32_t StopRecording() override;
   bool Recording() const override;
 
-  // Called on the AudioInputDevice worker thread.
-  int32_t SetMicrophoneVolume(uint32_t volume) override;
-
-  // TODO(henrika): sort out calling thread once we start using this API.
-  int32_t MicrophoneVolume(uint32_t* volume) const override;
-
-  int32_t MaxMicrophoneVolume(uint32_t* max_volume) const override;
-  int32_t MinMicrophoneVolume(uint32_t* min_volume) const override;
   int32_t PlayoutDelay(uint16_t* delay_ms) const override;
 
  public:
@@ -127,14 +119,13 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Called on the AudioOutputDevice worker thread.
   void RenderData(media::AudioBus* audio_bus,
                   int sample_rate,
-                  int audio_delay_milliseconds,
+                  base::TimeDelta audio_delay,
                   base::TimeDelta* current_time) override;
 
   // Called on the main render thread.
   void RemoveAudioRenderer(blink::WebRtcAudioRenderer* renderer) override;
   void AudioRendererThreadStopped() override;
   void SetOutputDeviceForAec(const String& output_device_id) override;
-  base::UnguessableToken GetAudioProcessingId() const override;
 
   // blink::WebRtcPlayoutDataSource implementation.
   void AddPlayoutSink(blink::WebRtcPlayoutDataSource::Sink* sink) override;
@@ -152,8 +143,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   THREAD_CHECKER(signaling_thread_checker_);
   THREAD_CHECKER(worker_thread_checker_);
   THREAD_CHECKER(audio_renderer_thread_checker_);
-
-  const base::UnguessableToken audio_processing_id_;
 
   // List of captures which provides access to the native audio input layer
   // in the browser process.  The last capturer in this list is considered the
@@ -175,9 +164,9 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   webrtc::AudioTransport* audio_transport_callback_;
 
   // Cached value of the current audio delay on the output/renderer side.
-  int output_delay_ms_ GUARDED_BY(lock_);
+  base::TimeDelta output_delay_ GUARDED_BY(lock_);
 
-  // Protects |renderer_|, |playout_sinks_|, |output_delay_ms_|, |playing_|,
+  // Protects |renderer_|, |playout_sinks_|, |output_delay_|, |playing_|,
   // and |recording_|.
   mutable base::Lock lock_;
 
@@ -191,8 +180,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
 
   // The output device used for echo cancellation
   String output_device_id_for_aec_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcAudioDeviceImpl);
 };
 
 }  // namespace blink

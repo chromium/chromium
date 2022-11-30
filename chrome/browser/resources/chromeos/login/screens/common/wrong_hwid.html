@@ -1,0 +1,29 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<style include="oobe-dialog-host-styles"></style>
+<oobe-adaptive-dialog role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'wrongHWIDScreenHeader')]]
+  </h1>
+  <p slot="content">
+    <span inner-h-t-m-l="[[i18nAdvancedDynamic(locale, 
+                          'wrongHWIDMessageFirstPart')]]"></span>
+  </p>
+  <p slot="content">
+    [[i18nDynamic(locale, 'wrongHWIDMessageSecondPart')]]
+  </p>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="images/error.svg" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skipButton" inverse
+        text-key="wrongHWIDScreenSkipLink" on-click="onSkip_">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

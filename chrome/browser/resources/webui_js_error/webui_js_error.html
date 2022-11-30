@@ -2,8 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <!-- Title is not localized since this is just a debugging page -->
-    <title>WebUI JS Error Page</title>
+    <title>$i18n{title}</title>
     <style>
       html,
       body {
@@ -16,15 +15,14 @@
       }
     </style>
   </head>
-  <body>
-    <!-- Text not localized since this is just a debugging page -->
-    This page generates a JavaScript error on load. Other types of errors can
-    be generated with the buttons: <div>
+  <body>$i18n{explainerText}<div>
       <!-- Ids are referenced in integration tests, including tast tests -->
-      <button id="error-button" accesskey="l">Log Error</button>
-      <button id="exception-button" accesskey="t">Throw Uncaught Error</button>
+      <button id="error-button" accesskey="l">$i18n{logErrorButton}</button>
+      <button id="exception-button" accesskey="t">
+        $i18n{uncaughtErrorButton}
+      </button>
       <button id="promise-button" accesskey="p">
-        Unhandled Promise Rejection
+        $i18n{promiseRejectButton}
       </button>
     </div>
     <script type="module" src="webui_js_error.js"></script>

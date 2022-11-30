@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"
@@ -75,10 +74,10 @@ std::string GetBrand() {
 }
 
 std::string GetRlzBrand() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  base::Optional<policy::MarketSegment> market_segment;
-  if (connector->IsEnterpriseManaged())
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  absl::optional<policy::MarketSegment> market_segment;
+  if (connector->IsDeviceEnterpriseManaged())
     market_segment = connector->GetEnterpriseMarketSegment();
   // The rlz brand code may change over time (e.g. when device goes from
   // unenrolled to enrolled status in OOBE). Prefer not to save it in pref to

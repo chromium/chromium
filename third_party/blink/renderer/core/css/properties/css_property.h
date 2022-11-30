@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTY_H_
 
 #include <memory>
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -25,17 +25,23 @@ class LayoutObject;
 
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
-  using Flags = uint32_t;
+  using Flags = uint64_t;
 
   static const CSSProperty& Get(CSSPropertyID);
+
+  static bool IsShorthand(const CSSPropertyName&);
+  static bool IsRepeated(const CSSPropertyName&);
 
   // For backwards compatibility when passing around CSSUnresolvedProperty
   // references. In case we need to call a function that hasn't been converted
   // to using property classes yet.
-  CSSPropertyID PropertyID() const { return property_id_; }
+  CSSPropertyID PropertyID() const {
+    return static_cast<CSSPropertyID>(property_id_);
+  }
   virtual CSSPropertyName GetCSSPropertyName() const {
     return CSSPropertyName(PropertyID());
   }
+  virtual bool HasEqualCSSPropertyName(const CSSProperty& other) const;
 
   bool IDEquals(CSSPropertyID id) const { return PropertyID() == id; }
   bool IsResolvedProperty() const override { return true; }
@@ -50,15 +56,30 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsInherited() const { return flags_ & kInherited; }
   bool IsVisited() const { return flags_ & kVisited; }
   bool IsInternal() const { return flags_ & kInternal; }
+  bool IsAnimationProperty() const { return flags_ & kAnimation; }
+  bool SupportsIncrementalStyle() const {
+    return flags_ & kSupportsIncrementalStyle;
+  }
+  bool IsIdempotent() const { return flags_ & kIdempotent; }
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
+  bool IsValidForFormattedText() const {
+    return flags_ & kValidForFormattedText;
+  }
+  bool IsValidForFormattedTextRun() const {
+    return flags_ & kValidForFormattedTextRun;
+  }
+  bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
+  bool IsValidForPositionFallback() const {
+    return flags_ & kValidForPositionFallback;
+  }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
   bool IsBorder() const { return flags_ & kBorder; }
+  bool IsBorderRadius() const { return flags_ & kBorderRadius; }
   bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
   bool IsInLogicalPropertyGroup() const {
     return flags_ & kInLogicalPropertyGroup;
@@ -138,32 +159,65 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // inline-size is a surrogate for either width or height.
     kSurrogate = 1 << 13,
     kAffectsFont = 1 << 14,
-    // If the author specifies any background or border property on an UI
-    // element, the native appearance must be disabled.
+    // If the author specifies any background, border or border-radius property
+    // on an UI element, the native appearance must be disabled.
     kBackground = 1 << 15,
     kBorder = 1 << 16,
+    kBorderRadius = 1 << 17,
     // Set if the property values are tree-scoped references.
-    kTreeScopedValue = 1 << 17,
-    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1 << 18,
+    kTreeScopedValue = 1 << 18,
+    // Similar to the list at
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling, with some
+    // differences for compatibility reasons.
+    kValidForHighlightLegacy = 1 << 19,
     // https://drafts.csswg.org/css-logical/#logical-property-group
-    kInLogicalPropertyGroup = 1 << 19,
+    kInLogicalPropertyGroup = 1 << 20,
     // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-    kValidForFirstLine = 1 << 20,
+    kValidForFirstLine = 1 << 21,
+    // The property participates in paired cascade, such that when encountered
+    // in highlight styles, we make all other highlight color properties default
+    // to initial, rather than the UA default.
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
+    kHighlightColors = 1 << 22,
+    kVisitedHighlightColors = 1 << 23,
+    // See supports_incremental_style in css_properties.json5.
+    kSupportsIncrementalStyle = 1 << 24,
+    // See idempotent in css_properties.json5.
+    kIdempotent = 1 << 25,
+    // Set if the css property can apply to the experiemental canvas
+    // formatted text API to render multiline text in canvas.
+    // https://github.com/WICG/canvas-formatted-text
+    kValidForFormattedText = 1 << 26,
+    kValidForFormattedTextRun = 1 << 27,
+    // See overlapping in css_properties.json5.
+    kOverlapping = 1 << 28,
+    // See legacy_overlapping in css_properties.json5.
+    kLegacyOverlapping = 1 << 29,
+    // See valid_for_keyframes in css_properties.json5
+    kValidForKeyframe = 1 << 30,
+    // See valid_for_position_fallback in css_properties.json5
+    kValidForPositionFallback = 1ull << 31,
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
+    kValidForHighlight = 1ull << 32,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
                         Flags flags,
                         char repetition_separator)
-      : CSSUnresolvedProperty(),
-        property_id_(property_id),
-        flags_(flags),
-        repetition_separator_(repetition_separator) {}
+      : property_id_(static_cast<uint16_t>(property_id)),
+        repetition_separator_(repetition_separator),
+        flags_(flags) {}
 
  private:
-  CSSPropertyID property_id_;
-  Flags flags_;
+  uint16_t property_id_;
   char repetition_separator_;
+  Flags flags_;
+
+  // Make sure we have room for all valid CSSPropertyIDs.
+  // (Using a smaller type here reduces CSSProperty size from 24 to 16
+  // bytes, and we have many of them that are frequently accessed
+  // during style application.)
+  static_assert(sizeof(property_id_) * 8 >= kCSSPropertyIDBitLength);
 };
 
 template <>

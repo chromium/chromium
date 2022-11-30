@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Can set 'accent-color' to CSS-wide keywords
+PASS Can set 'accent-color' to var() references
+PASS Can set 'accent-color' to the 'currentcolor' keyword
+FAIL Can set 'accent-color' to the 'auto' keyword assert_class_string: expected "[object CSSStyleValue]" but got "[object CSSKeywordValue]"
+PASS Setting 'accent-color' to a length throws TypeError
+PASS Setting 'accent-color' to a percent throws TypeError
+PASS Setting 'accent-color' to a time throws TypeError
+PASS Setting 'accent-color' to an angle throws TypeError
+PASS Setting 'accent-color' to a flexible length throws TypeError
+PASS Setting 'accent-color' to a number throws TypeError
+PASS Setting 'accent-color' to a position throws TypeError
+PASS Setting 'accent-color' to a URL throws TypeError
+PASS Setting 'accent-color' to a transform throws TypeError
+PASS 'accent-color' does not supported 'red'
+PASS 'accent-color' does not supported '#bbff00'
+PASS 'accent-color' does not supported 'rgb(255, 255, 128)'
+PASS 'accent-color' does not supported 'hsl(50, 33%, 25%)'
+PASS 'accent-color' does not supported 'transparent'
+Harness: the test ran to completion.
+

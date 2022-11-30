@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -33,13 +33,17 @@ class UpdateClientImpl : public UpdateClient {
                    scoped_refptr<PingManager> ping_manager,
                    UpdateChecker::Factory update_checker_factory);
 
+  UpdateClientImpl(const UpdateClientImpl&) = delete;
+  UpdateClientImpl& operator=(const UpdateClientImpl&) = delete;
+
   // Overrides for UpdateClient.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void Install(const std::string& id,
-               CrxDataCallback crx_data_callback,
-               CrxStateChangeCallback crx_state_change_callback,
-               Callback callback) override;
+  base::RepeatingClosure Install(
+      const std::string& id,
+      CrxDataCallback crx_data_callback,
+      CrxStateChangeCallback crx_state_change_callback,
+      Callback callback) override;
   void Update(const std::vector<std::string>& ids,
               CrxDataCallback crx_data_callback,
               CrxStateChangeCallback crx_state_change_callback,
@@ -49,13 +53,9 @@ class UpdateClientImpl : public UpdateClient {
                          CrxUpdateItem* update_item) const override;
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback callback) override;
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
-                            Callback callback) override;
 
  private:
   ~UpdateClientImpl() override;
@@ -87,8 +87,6 @@ class UpdateClientImpl : public UpdateClient {
   scoped_refptr<PingManager> ping_manager_;
   scoped_refptr<UpdateEngine> update_engine_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientImpl);
 };
 
 }  // namespace update_client

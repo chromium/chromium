@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ WebViewSyncInternalsUI::~WebViewSyncInternalsUI() {}
 
 bool WebViewSyncInternalsUI::OverrideHandleWebUIIOSMessage(
     const GURL& source_url,
-    const std::string& message,
-    const base::ListValue& args) {
+    base::StringPiece message) {
   // ios/web_view only supports sync in transport mode. Explicitly override sync
   // start and stop messages and perform a no op.
   return message == syncer::sync_ui_util::kRequestStart ||

@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
+import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.common
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContextMenuDataMediaType
@@ -57,32 +56,26 @@ enum ContextMenuDataInputFieldType {
   kOther,
 };
 
-// Mojo struct to represent blink::Impression native struct.
-struct Impression {
-  // Intended committed top-level origin of the resulting navigation. Must match
-  // the committed navigation's origin to be a valid impression. Declared by
-  // the impression tag.
-  url.mojom.Origin conversion_destination;
-
-  // Optional origin that will receive all conversion measurement reports
-  // associated with this impression. Declared by the impression tag.
-  url.mojom.Origin? reporting_origin;
-
-  // Data that will be sent in conversion reports to identify this impression.
-  // Declared by the impression tag.
-  uint64 impression_data;
-
-  // Optional expiry specifying the amount of time this impression can convert.
-  // Declared by the impression tag.
-  mojo_base.mojom.TimeDelta? expiry;
-};
-
 enum CustomContextMenuItemType {
   kOption,
   kCheckableOption,
   kGroup,
   kSeparator,
   kSubMenu
+};
+
+// Container for information about the form renderer id from where the context
+// menu was triggered.
+// autofill::FormRendererId
+struct FormRendererId {
+  uint64 id;
+};
+
+// Container for information about the field renderer id where the context menu
+// was triggered.
+// autofill::FieldRendererId
+struct FieldRendererId {
+  uint64 id;
 };
 
 // Container for information about entries in an HTML select popup menu and
@@ -121,7 +114,7 @@ struct UntrustworthyContextMenuParams {
   // Will be empty if |link_url| is empty.
   mojo_base.mojom.String16 link_text;
 
-  // The impression declared by the link. May be base::nullopt even if
+  // The impression declared by the link. May be absl::nullopt even if
   // |link_url| is non-empty.
   Impression? impression;
 
@@ -211,6 +204,14 @@ struct UntrustworthyContextMenuParams {
   // Whether the context contains text highlighted by a text fragment.
   // See TextFragmentAnchor.
   bool opened_from_highlight;
+
+  // The renderer id of the form that contains the input or textarea field.
+  // Not set if the initiating field is not an input or textarea field.
+  FormRendererId? form_renderer_id;
+
+  // The renderer id of the input or textarea field from where the context menu
+  // is opened. Not set if it is not an input or text area field.
+  FieldRendererId? field_renderer_id;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

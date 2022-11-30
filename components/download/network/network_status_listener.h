@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 #define COMPONENTS_DOWNLOAD_NETWORK_NETWORK_STATUS_LISTENER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
 namespace download {
@@ -19,11 +19,25 @@ class NetworkStatusListener {
   // Observer to receive network connection type change notifications.
   class Observer {
    public:
+    // Called after the NetworkStatusListener is initialized and ready to use.
+    virtual void OnNetworkStatusReady(network::mojom::ConnectionType type) = 0;
+
+    // Called when the network type is changed.
     virtual void OnNetworkChanged(network::mojom::ConnectionType type) = 0;
+
+    Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
 
    protected:
     virtual ~Observer() {}
   };
+
+  NetworkStatusListener(const NetworkStatusListener&) = delete;
+  NetworkStatusListener& operator=(const NetworkStatusListener&) = delete;
+
+  virtual ~NetworkStatusListener();
 
   // Starts to listen to network changes.
   virtual void Start(Observer* observer) = 0;
@@ -34,20 +48,16 @@ class NetworkStatusListener {
   // Gets the current connection type.
   virtual network::mojom::ConnectionType GetConnectionType() = 0;
 
-  virtual ~NetworkStatusListener();
-
  protected:
   NetworkStatusListener();
 
-  // The only observer that listens to connection type change.
-  Observer* observer_ = nullptr;
+  // The only observer that listens to connection type change. Must outlive this
+  // class.
+  raw_ptr<Observer> observer_ = nullptr;
 
   // The current network status.
   network::mojom::ConnectionType connection_type_ =
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkStatusListener);
 };
 
 }  // namespace download

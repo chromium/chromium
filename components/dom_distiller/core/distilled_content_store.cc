@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/core/distilled_content_store.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -53,9 +54,9 @@ void InMemoryContentStore::LoadContent(
   }
   std::unique_ptr<DistilledArticleProto> distilled_article;
   if (success) {
-    distilled_article.reset(new DistilledArticleProto(*it->second));
+    distilled_article = std::make_unique<DistilledArticleProto>(*it->second);
   } else {
-    distilled_article.reset(new DistilledArticleProto());
+    distilled_article = std::make_unique<DistilledArticleProto>();
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success,

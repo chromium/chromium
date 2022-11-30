@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
@@ -44,14 +45,14 @@ class MessageBoxViewTest : public ViewsTestBase {
   }
 
   std::unique_ptr<MessageBoxView> message_box_;
-  const LayoutProvider* provider_;
+  raw_ptr<const LayoutProvider> provider_;
 };
 
 TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {
   message_box_->SizeToPreferredSize();
 
-  gfx::Insets box_border =
-      provider_->GetDialogInsetsForContentType(views::TEXT, views::TEXT);
+  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText);
   gfx::Size scroll_size = message_box_->scroll_view_->size();
   scroll_size.Enlarge(0, box_border.top() + box_border.bottom());
   EXPECT_EQ(scroll_size, message_box_->size());
@@ -61,8 +62,8 @@ TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
   message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
-  gfx::Insets box_border =
-      provider_->GetDialogInsetsForContentType(views::TEXT, views::CONTROL);
+  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kControl);
   gfx::Size scroll_size = message_box_->scroll_view_->size();
   gfx::Size prompt_size = message_box_->prompt_field_->size();
   gfx::Size content_size(std::max(scroll_size.width(), prompt_size.width()),
@@ -76,8 +77,8 @@ TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
   message_box_->SetLink(u"Link to display", base::DoNothing());
   message_box_->SizeToPreferredSize();
 
-  box_border =
-      provider_->GetDialogInsetsForContentType(views::TEXT, views::TEXT);
+  box_border = provider_->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText);
   gfx::Size checkbox_size = message_box_->checkbox_->size();
   gfx::Size link_size = message_box_->link_->size();
   content_size =
@@ -106,8 +107,8 @@ TEST_F(MessageBoxViewTest, CheckInterRowHeightChange) {
 
   int scroll_height = message_box_->scroll_view_->height();
   int prompt_height = message_box_->prompt_field_->height();
-  gfx::Insets box_border =
-      provider_->GetDialogInsetsForContentType(views::TEXT, views::CONTROL);
+  gfx::Insets box_border = provider_->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kControl);
   int inter_row_spacing = message_box_->inter_row_vertical_spacing_;
   EXPECT_EQ(
       scroll_height + inter_row_spacing + prompt_height + box_border.height(),

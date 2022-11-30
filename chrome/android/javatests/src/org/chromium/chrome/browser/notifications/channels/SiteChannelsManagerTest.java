@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.notifications.channels;
@@ -10,12 +10,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -57,7 +57,7 @@ import java.util.List;
  * blocked. Thus some of these tests use different channel ids to avoid this problem.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class SiteChannelsManagerTest {
     private SiteChannelsManager mSiteChannelsManager;
     @Rule
@@ -115,7 +115,7 @@ public class SiteChannelsManagerTest {
 
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @SmallTest
     public void testCreateSiteChannel_disabled() {
         mSiteChannelsManager.createSiteChannel("https://example-blocked.org", 0L, false);
@@ -202,7 +202,8 @@ public class SiteChannelsManagerTest {
         PermissionInfo info = new PermissionInfo(
                 ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(),
+            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                                           /*createIfNeeded=*/true),
                     ContentSettingValues.BLOCK);
         });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
@@ -217,7 +218,8 @@ public class SiteChannelsManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
             Profile nonPrimaryOTRProfile =
-                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                            otrProfileID, /*createIfNeeded=*/true);
             assertNotNull(nonPrimaryOTRProfile);
             assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
             info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);

@@ -1,90 +1,29 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/download/browser_download_service.h"
+#import "ios/chrome/browser/download/browser_download_service.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
-#include "ios/chrome/browser/download/download_manager_metric_names.h"
+#import "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#import "ios/chrome/browser/download/download_mimetype_util.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
-#include "ios/chrome/browser/download/usdz_mime_type.h"
+#import "ios/chrome/browser/download/safari_download_tab_helper.h"
+#import "ios/chrome/browser/download/vcard_tab_helper.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Returns DownloadMimeTypeResult for the given MIME type.
-DownloadMimeTypeResult GetUmaResult(const std::string& mime_type) {
-  if (mime_type == kPkPassMimeType)
-    return DownloadMimeTypeResult::PkPass;
-
-  if (mime_type == "application/zip")
-    return DownloadMimeTypeResult::ZipArchive;
-
-  if (mime_type == "application/x-apple-aspen-config")
-    return DownloadMimeTypeResult::iOSMobileConfig;
-
-  if (mime_type == "application/x-msdownload")
-    return DownloadMimeTypeResult::MicrosoftApplication;
-
-  if (mime_type == "application/vnd.android.package-archive")
-    return DownloadMimeTypeResult::AndroidPackageArchive;
-
-  if (mime_type == "text/vcard")
-    return DownloadMimeTypeResult::VirtualContactFile;
-
-  if (mime_type == "text/calendar")
-    return DownloadMimeTypeResult::iCalendar;
-
-  if (mime_type == kLegacyUsdzMimeType)
-    return DownloadMimeTypeResult::LegacyUniversalSceneDescription;
-
-  if (mime_type == "application/x-apple-diskimage")
-    return DownloadMimeTypeResult::AppleDiskImage;
-
-  if (mime_type == "application/vnd.apple.installer+xml")
-    return DownloadMimeTypeResult::AppleInstallerPackage;
-
-  if (mime_type == "application/x-7z-compressed")
-    return DownloadMimeTypeResult::SevenZipArchive;
-
-  if (mime_type == "application/x-rar-compressed")
-    return DownloadMimeTypeResult::RARArchive;
-
-  if (mime_type == "application/x-tar")
-    return DownloadMimeTypeResult::TarArchive;
-
-  if (mime_type == "application/x-shockwave-flash")
-    return DownloadMimeTypeResult::AdobeFlash;
-
-  if (mime_type == "application/vnd.amazon.ebook")
-    return DownloadMimeTypeResult::AmazonKindleBook;
-
-  if (mime_type == "application/octet-stream")
-    return DownloadMimeTypeResult::BinaryData;
-
-  if (mime_type == "application/x-bittorrent")
-    return DownloadMimeTypeResult::BitTorrent;
-
-  if (mime_type == "application/java-archive")
-    return DownloadMimeTypeResult::JavaArchive;
-
-  if (mime_type == kLegacyPixarUsdzMimeType)
-    return DownloadMimeTypeResult::LegacyPixarUniversalSceneDescription;
-
-  if (mime_type == kUsdzMimeType)
-    return DownloadMimeTypeResult::UniversalSceneDescription;
-
-  return DownloadMimeTypeResult::Other;
-}
-}  // namespace
 
 BrowserDownloadService::BrowserDownloadService(
     web::DownloadController* download_controller)
@@ -104,30 +43,59 @@ void BrowserDownloadService::OnDownloadCreated(
     web::DownloadController* download_controller,
     web::WebState* web_state,
     std::unique_ptr<web::DownloadTask> task) {
-  base::UmaHistogramEnumeration("Download.IOSDownloadMimeType",
-                                GetUmaResult(task->GetMimeType()));
+  // When a prerendered page tries to download a file, cancel the download.
+  PrerenderService* prerender_service =
+      PrerenderServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  if (prerender_service &&
+      prerender_service->IsWebStatePrerendered(web_state)) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Download.IOSDownloadMimeType",
+      GetDownloadMimeTypeResultFromMimeType(task->GetMimeType()));
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
                                 DownloadFileUI::DownloadFilePresented,
                                 DownloadFileUI::Count);
 
   if (task->GetMimeType() == kPkPassMimeType) {
     PassKitTabHelper* tab_helper = PassKitTabHelper::FromWebState(web_state);
-    if (tab_helper) {
+    if (tab_helper)
       tab_helper->Download(std::move(task));
-    }
-  } else if (IsUsdzFileFormat(task->GetMimeType(),
-                              task->GetSuggestedFilename())) {
+  } else if (IsUsdzFileFormat(task->GetMimeType(), task->GenerateFileName()) &&
+             !base::FeatureList::IsEnabled(kARKillSwitch)) {
     ARQuickLookTabHelper* tab_helper =
         ARQuickLookTabHelper::FromWebState(web_state);
-    if (tab_helper) {
+    if (tab_helper)
       tab_helper->Download(std::move(task));
-    }
+
+  } else if (task->GetMimeType() == kMobileConfigurationType &&
+             task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
+    // SFSafariViewController can only open http and https URLs.
+    SafariDownloadTabHelper* tab_helper =
+        SafariDownloadTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->DownloadMobileConfig(std::move(task));
+  } else if (task->GetMimeType() == kCalendarMimeType &&
+             !base::FeatureList::IsEnabled(kCalendarKillSwitch) &&
+             task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
+    // SFSafariViewController can only open http and https URLs.
+    SafariDownloadTabHelper* tab_helper =
+        SafariDownloadTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->DownloadCalendar(std::move(task));
+  } else if (task->GetMimeType() == kVcardMimeType &&
+             !base::FeatureList::IsEnabled(kVCardKillSwitch)) {
+    VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
   } else {
     DownloadManagerTabHelper* tab_helper =
         DownloadManagerTabHelper::FromWebState(web_state);
-    if (tab_helper) {
+    // TODO(crbug.com/1300151): Investigate why tab_helper is sometimes nil.
+    if (tab_helper)
       tab_helper->Download(std::move(task));
-    }
   }
 }
 

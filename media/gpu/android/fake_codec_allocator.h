@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +23,10 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
  public:
   explicit FakeCodecAllocator(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  FakeCodecAllocator(const FakeCodecAllocator&) = delete;
+  FakeCodecAllocator& operator=(const FakeCodecAllocator&) = delete;
+
   ~FakeCodecAllocator() override;
 
   // These are called with some parameters of the codec config by our
@@ -49,7 +54,7 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
 
   // Most recent codec that we've created via CreateMockCodec, since we have
   // to assign ownership.  It may be freed already.
-  MockMediaCodecBridge* most_recent_codec = nullptr;
+  raw_ptr<MockMediaCodecBridge> most_recent_codec = nullptr;
 
   // The DestructionObserver for |most_recent_codec|.
   std::unique_ptr<DestructionObserver> most_recent_codec_destruction_observer;
@@ -59,8 +64,6 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
 
  private:
   CodecCreatedCB pending_codec_created_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCodecAllocator);
 };
 
 }  // namespace media

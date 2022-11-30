@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -301,7 +301,7 @@ LayoutUnit InitialColumnHeightFinder::SpaceUsedByStrutsAt(
 void InitialColumnHeightFinder::AddContentRun(
     LayoutUnit end_offset_in_flow_thread) {
   end_offset_in_flow_thread -= SpaceUsedByStrutsAt(end_offset_in_flow_thread);
-  if (!content_runs_.IsEmpty() &&
+  if (!content_runs_.empty() &&
       end_offset_in_flow_thread <= content_runs_.back().BreakOffset())
     return;
   // Append another item as long as we haven't exceeded used column count. What
@@ -322,9 +322,9 @@ unsigned InitialColumnHeightFinder::ContentRunIndexWithTallestColumns() const {
   unsigned index_with_largest_height = 0;
   LayoutUnit largest_height;
   LayoutUnit previous_offset = LogicalTopInFlowThread();
-  size_t run_count = content_runs_.size();
+  wtf_size_t run_count = content_runs_.size();
   DCHECK(run_count);
-  for (size_t i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
+  for (unsigned i = FirstContentRunIndexInLastRow(); i < run_count; i++) {
     const ContentRun& run = content_runs_[i];
     LayoutUnit height = run.ColumnLogicalHeight(previous_offset);
     if (largest_height < height) {

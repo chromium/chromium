@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 namespace blink {
 
 base::FilePath StringToFilePath(const String& str) {
-  if (str.IsEmpty())
+  if (str.empty())
     return base::FilePath();
 
   if (!str.Is8Bit()) {
@@ -21,7 +21,7 @@ base::FilePath StringToFilePath(const String& str) {
         base::StringPiece16(str.Characters16(), str.length()));
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   StringUTF8Adaptor utf8(str);
   return base::FilePath::FromUTF8Unsafe(utf8.AsStringPiece());
 #else
@@ -39,7 +39,7 @@ WebString FilePathToWebString(const base::FilePath& path) {
   if (path.empty())
     return WebString();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return WebString::FromUTF8(path.value());
 #else
   return WebString::FromUTF16(path.AsUTF16Unsafe());

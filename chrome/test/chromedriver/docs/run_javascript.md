@@ -49,13 +49,13 @@ Chrome for a variety of reasons. Examples include:
   Selenium, to find elements on a page,
   to get the text displayed by a DOM element, etc.
 * Call one of the JavaScript function in the
-  [js](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/js/)
+  [js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/js/)
   directory, e.g., to get the location of an element on the page.
 
 ## DevTools JavaScript API
 
 The Chrome DevTools provide [Runtime.evaluate
-command](https://source.chromium.org/chromium/chromium/src/+/master:v8/include/js_protocol.pdl?q=command%5C%20evaluate$)
+command](https://source.chromium.org/chromium/chromium/src/+/main:v8/include/js_protocol.pdl?q=command%5C%20evaluate$)
 for running JavaScript code.
 ChromeDriver uses this command to send all JavaScript code to Chrome.
 
@@ -91,7 +91,7 @@ Like most DevTools commands,
 Runtime.evaluate returns a JSON object to the caller.
 This JSON object always has a property named `result`,
 whose value is another JSON object of
-[type RemoteObject](https://source.chromium.org/chromium/chromium/src/+/master:v8/include/js_protocol.pdl?q=%22type%20RemoteObject%20%22).
+[type RemoteObject](https://source.chromium.org/chromium/chromium/src/+/main:v8/include/js_protocol.pdl?q=%22type%20RemoteObject%20%22).
 
 The type of the result (e.g., string, number, object, etc)
 is given in the `type` property of the RemoteObject.
@@ -191,7 +191,7 @@ The caller also has to figure out how to route the script to the right frame.
 
 ### Use `WebView::EvaluateScript` Method
 
-The [`WebView::EvaluateScript`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::EvaluateScript%5c%28)
+The [`WebView::EvaluateScript`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::EvaluateScript%5c%28)
 method is a thin wrapper around DevTools Runtime.evaluate command.
 The only additional service it provides is routing the script to the
 desired frame. The caller can provide a frame ID,
@@ -203,10 +203,10 @@ parameters supported by DevTools API.
 
 ### Use `WebView::CallFunction` Method
 
-The [`WebView::CallFunction`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallFunction%5c%28) method
-(and its variation [`WebView::CallFunctionWithTimeout`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallFunctionWithTimeout%5c%28) method)
+The [`WebView::CallFunction`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallFunction%5c%28) method
+(and its variation [`WebView::CallFunctionWithTimeout`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallFunctionWithTimeout%5c%28) method)
 wraps the supplied JavaScript code inside
-[callFunction](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/js/call_function.js?q=callFunction).
+[callFunction](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/js/call_function.js?q=callFunction).
 It requires that the supplied JavaScript code must be a function.
 
 This method provides the following functionality:
@@ -220,10 +220,10 @@ This method provides the following functionality:
 
 ### Use `WebView::CallUserSyncScript` Method
 
-The [`WebView::CallUserSyncScript`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallUserSyncScript%5c%28)
+The [`WebView::CallUserSyncScript`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallUserSyncScript%5c%28)
 method is used by the Execute Script command in the WebDriver API.
 It is responsible for wrapping the user-supplied script inside a
-[function](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/js/execute_script.js),
+[function](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/js/execute_script.js),
 before passing it to `WebView::CallFunctionWithTimeout`.
 This is necessary because the WebDriver standard requires that
 the user-supplied script is not a function,
@@ -235,10 +235,10 @@ Wrapping the script in a function has additional benefits:
 
 ### Use `WebView::CallUserAsyncFunction` Method
 
-The [`WebView::CallUserAsyncFunction`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallUserAsyncFunction%5c%28)
+The [`WebView::CallUserAsyncFunction`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/chrome/web_view_impl.cc?q=WebViewImpl::CallUserAsyncFunction%5c%28)
 method is used by the Execute Async Script command in the WebDriver API.
 It wraps the user-supplied script inside
-[`executeAsyncScript`](https://source.chromium.org/chromium/chromium/src/+/master:chrome/test/chromedriver/js/execute_async_script.js) function,
+[`executeAsyncScript`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/chromedriver/js/execute_async_script.js) function,
 before passing it to `WebView::CallFunctionWithTimeout`.
 The [`executeAsyncScript`] function is responsible for waiting for the
 async script to finish, as required by the WebDriver standard.

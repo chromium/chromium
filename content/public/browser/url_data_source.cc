@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
 #include "content/browser/webui/url_data_manager.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/url_data_source_impl.h"
@@ -96,6 +95,7 @@ std::string URLDataSource::GetContentSecurityPolicy(
                                                : std::string();
     case network::mojom::CSPDirectiveName::BlockAllMixedContent:
     case network::mojom::CSPDirectiveName::ConnectSrc:
+    case network::mojom::CSPDirectiveName::FencedFrameSrc:
     case network::mojom::CSPDirectiveName::FrameSrc:
     case network::mojom::CSPDirectiveName::FontSrc:
     case network::mojom::CSPDirectiveName::ImgSrc:
@@ -117,6 +117,18 @@ std::string URLDataSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::Unknown:
       return std::string();
   }
+}
+
+std::string URLDataSource::GetCrossOriginOpenerPolicy() {
+  return std::string();
+}
+
+std::string URLDataSource::GetCrossOriginEmbedderPolicy() {
+  return std::string();
+}
+
+std::string URLDataSource::GetCrossOriginResourcePolicy() {
+  return std::string();
 }
 
 bool URLDataSource::ShouldDenyXFrameOptions() {

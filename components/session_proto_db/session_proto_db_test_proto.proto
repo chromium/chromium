@@ -1,0 +1,18 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package session_proto_db;
+
+// Proto used for testing purposes.
+message SessionProtoDBTestProto {
+  // A field
+  optional string key = 1;
+
+  // Another field
+  optional int32 b = 2;
+}

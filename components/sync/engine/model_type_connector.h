@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,13 +37,13 @@ class ModelTypeConnector {
   // This is the sync thread's chance to clear state associated with the type.
   // It also causes the syncer to stop requesting updates for this type, and to
   // abort any in-progress commit requests.
+  //
+  // No-op if the type is not connected.
   virtual void DisconnectDataType(ModelType type) = 0;
 
-  // Marks a proxy type as connected.
-  virtual void ConnectProxyType(ModelType type) = 0;
-
-  // Marks a proxy type as disconnected.
-  virtual void DisconnectProxyType(ModelType type) = 0;
+  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
+  // the server during commits.
+  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

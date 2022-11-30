@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ void SharedWorkerClient::OnConnected(
 
 void SharedWorkerClient::OnScriptLoadFailed(const String& error_message) {
   worker_->SetIsBeingConnected(false);
-  if (!error_message.IsEmpty()) {
+  if (!error_message.empty()) {
     worker_->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kWorker,

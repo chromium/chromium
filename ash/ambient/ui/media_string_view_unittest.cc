@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace ash {
 
@@ -49,7 +52,7 @@ TEST_F(MediaStringViewTest, ShowMediaTitleAndArtist) {
 
   SimulateMediaMetadataChanged(metadata);
 
-  const std::u16string expected_text = base::UTF8ToUTF16("title \u2022 artist");
+  const std::u16string expected_text = u"title \u2022 artist";
   EXPECT_EQ(GetMediaStringViewTextLabel()->GetText(), expected_text);
 }
 
@@ -105,7 +108,7 @@ TEST_F(MediaStringViewTest, HasNoAnimationWithShortText) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
@@ -130,7 +133,7 @@ TEST_F(MediaStringViewTest, HasAnimationWithLongText) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
@@ -155,7 +158,7 @@ TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
@@ -169,7 +172,7 @@ TEST_F(MediaStringViewTest, ShouldStopAndStartAnimationWhenTextChanges) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
@@ -194,7 +197,7 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
@@ -208,7 +211,7 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
@@ -222,7 +225,7 @@ TEST_F(MediaStringViewTest, ShouldStartAndStopAnimationWhenTextChanges) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 }
@@ -247,7 +250,7 @@ TEST_F(MediaStringViewTest, PauseMediaWillNotStopAnimationWithLongText) {
 
   EXPECT_FALSE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_TRUE(
       GetMediaStringViewTextLabel()->layer()->GetAnimator()->is_animating());
 
@@ -271,11 +274,12 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
@@ -291,11 +295,12 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_FALSE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
@@ -311,11 +316,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 
   // Change to long text.
   metadata.title = u"A super duper long title";
@@ -324,11 +330,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_FALSE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 
   // Change to short text.
   metadata.title = u"title";
@@ -337,11 +344,12 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
   SimulateMediaMetadataChanged(metadata);
   // Force re-layout.
   for (auto* view : GetContainerViews())
-    view->Layout();
+    views::test::RunScheduledLayout(view);
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
+  EXPECT_TRUE(
+      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
 }
 
 TEST_F(MediaStringViewTest, ShowWhenMediaIsPlaying) {

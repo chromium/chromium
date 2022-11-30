@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace blink {
 
 // Defines Mojo StructTraits that convert between the given |MojomDataViewType|
 // and the given |TokenType|. It is assumed that TokenType is an instance of
-// util::TokenType<...> and that MojomDataViewType is a simple mojom struct
+// base::TokenType<...> and that MojomDataViewType is a simple mojom struct
 // containing only a "base.mojom.UnguessableToken value" field.
 template <typename MojomDataViewType, typename TokenType>
 struct TokenMojomTraitsHelper {
@@ -20,6 +20,9 @@ struct TokenMojomTraitsHelper {
     base::UnguessableToken token;
     if (!input.ReadValue(&token))
       return false;
+    // UnguessableToken's StructTraits ensures that `token` will never be
+    // empty.
+    CHECK(!token.is_empty());
     *output = TokenType(token);
     return true;
   }

@@ -1,73 +1,73 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_expand_button.h"
 
 #include "ash/public/cpp/ash_typography.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_provider.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font_list.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
-namespace {
-
-// Sizes are in px.
-constexpr int kDefaultBubbleWidth = 416;
-constexpr int kCaretIconSize = 20;
-constexpr int kHeight = 32;
-constexpr int kLineHeight = 20;
-constexpr int kBetweenChildSpacing = 8;
-constexpr int kMarginSpacing = 24;
-
-constexpr SkColor kLabelColor = gfx::kGoogleBlue600;
-
-}  // namespace
+namespace ash {
+namespace sharesheet {
 
 SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
     : Button(std::move(callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(6, 16, 6, 16),
-      kBetweenChildSpacing, true));
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::VH(kExpandButtonInsideBorderInsetsVertical,
+                      kExpandButtonInsideBorderInsetsHorizontal),
+      kExpandButtonBetweenChildSpacing, true));
+  // Sets all views to be center-aligned along the orientation axis.
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
-  label_ = AddChildView(std::make_unique<views::Label>(
-      std::u16string(), ash::CONTEXT_SHARESHEET_BUBBLE_BODY,
-      ash::STYLE_SHARESHEET));
-  label_->SetLineHeight(kLineHeight);
-  label_->SetEnabledColor(kLabelColor);
-
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  label_ = AddChildView(CreateShareLabel(
+      std::u16string(), CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonLabelColorBlue),
+      gfx::ALIGN_CENTER));
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
   SetToDefaultState();
 }
 
 void SharesheetExpandButton::SetToDefaultState() {
-  icon_->SetImage(
-      gfx::CreateVectorIcon(kCaretDownIcon, kCaretIconSize, kLabelColor));
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kCaretDownIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorProminent),
+      kExpandButtonCaretIconSize));
   auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
   label_->SetText(display_name);
   SetAccessibleName(display_name);
 }
 
 void SharesheetExpandButton::SetToExpandedState() {
-  icon_->SetImage(
-      gfx::CreateVectorIcon(kCaretUpIcon, kCaretIconSize, kLabelColor));
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kCaretUpIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorProminent),
+      kExpandButtonCaretIconSize));
   auto display_name =
       l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL);
   label_->SetText(display_name);
   SetAccessibleName(display_name);
 }
 
-gfx::Size SharesheetExpandButton::CalculatePreferredSize() const {
-  // Width is bubble width - left and right margins
-  return gfx::Size((kDefaultBubbleWidth - 2 * kMarginSpacing), kHeight);
-}
-
 BEGIN_METADATA(SharesheetExpandButton, views::Button)
 END_METADATA
+
+}  // namespace sharesheet
+}  // namespace ash

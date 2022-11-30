@@ -1,108 +1,88 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_H_
 
-#include "base/deferred_sequenced_task_runner.h"
+#include <memory>
+#include <string>
+
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/optional.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
+#include "base/task/deferred_sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
-#define PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL 1
-#endif
-
 namespace content {
 
-// A class that encapsulates building a font enumeration cache once,
-// then serving the cache as a ReadOnlySharedMemoryRegion.
-// Receives requests for accessing this cache from FontAccessManagerImpl
-// after Mojo IPC calls from a renderer process. Per-platform subclasses are
-// expected to be singletons and as such a GetInstance() method is provided as a
-// convenience.
+class FontEnumerationDataSource;
+
+struct CONTENT_EXPORT FontEnumerationData {
+  blink::mojom::FontEnumerationStatus status;
+
+  // Stores a serialized blink::FontEnumerationTable proto.
+  //
+  // Valid iff `status` is kOk.
+  base::ReadOnlySharedMemoryRegion font_data;
+};
+
+// Caches font enumeration data, and serves it as a ReadOnlySharedMemoryRegion.
+//
+// This class is not thread-safe. Each instance must be accessed from a single
+// sequence, which must allow blocking.
 class CONTENT_EXPORT FontEnumerationCache {
  public:
-  FontEnumerationCache();
+  // Factory method for production instances.
+  static base::SequenceBound<FontEnumerationCache> Create();
+
+  // Factory method with dependency injection support for testing.
+  //
+  // `task_runner` must allow blocking.
+  static base::SequenceBound<FontEnumerationCache> CreateForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      std::unique_ptr<FontEnumerationDataSource> data_source,
+      absl::optional<std::string> locale_override);
+
+  // Exposed for base::SequenceBound. Instances must be obtained from one of
+  // the Create*() factory methods.
+  FontEnumerationCache(std::unique_ptr<FontEnumerationDataSource> data_source,
+                       absl::optional<std::string> locale_override,
+                       base::PassKey<FontEnumerationCache>);
+
+  FontEnumerationCache(const FontEnumerationCache&) = delete;
+  FontEnumerationCache& operator=(const FontEnumerationCache&) = delete;
   ~FontEnumerationCache();
 
-  using CacheTaskCallback =
-      base::OnceCallback<void(blink::mojom::FontEnumerationStatus,
-                              base::ReadOnlySharedMemoryRegion)>;
+  FontEnumerationData GetFontEnumerationData();
 
-  static FontEnumerationCache* GetInstance();
-
-  // Enqueue a request to get notified about the availability of the shared
-  // memory region holding the font enumeration cache.
-  void QueueShareMemoryRegionWhenReady(
-      scoped_refptr<base::TaskRunner> task_runner,
-      CacheTaskCallback callback);
-
-  // Returns whether the cache population has completed and the shared memory
-  // region is ready.
-  bool IsFontEnumerationCacheReady();
-
-  // This will set an override for the system locale setting. Unfortunately,
-  // only the Windows platform is supported at this time.
-  void OverrideLocaleForTesting(const std::string& locale) {
-    locale_override_ = locale;
-  }
-  void ResetStateForTesting();
-
- protected:
-  virtual void SchedulePrepareFontEnumerationCache() = 0;
-
-  // Retrieve the prepared memory region if it is available.
-  base::ReadOnlySharedMemoryRegion DuplicateMemoryRegion();
-
-  // Used to bind a CacheTaskCallback to a provided TaskRunner.
-  struct CallbackOnTaskRunner {
-    CallbackOnTaskRunner(scoped_refptr<base::TaskRunner>, CacheTaskCallback);
-    CallbackOnTaskRunner(CallbackOnTaskRunner&&);
-    ~CallbackOnTaskRunner();
-    scoped_refptr<base::TaskRunner> task_runner;
-    CacheTaskCallback callback;
-  };
-
-  // Method to bind to callbacks_task_runner_ for execution when the font cache
-  // build is complete. It will run CacheTaskCallback on its bound
-  // TaskRunner through CallbackOnTaskRunner.
-  void RunPendingCallback(CallbackOnTaskRunner pending_callback);
-  void StartCallbacksTaskQueue();
-
-  bool IsFontEnumerationCacheValid() const;
-
+ private:
   // Build the cache given a properly formed enumeration cache table.
-  void BuildEnumerationCache(
-      std::unique_ptr<blink::FontEnumerationTable> table);
-  void InitializeCacheState();
-
-  base::MappedReadOnlyRegion enumeration_cache_memory_;
-  std::unique_ptr<base::AtomicFlag> enumeration_cache_built_;
-  std::unique_ptr<base::AtomicFlag> enumeration_cache_build_started_;
-
-  // All responses are serialized through this DeferredSequencedTaskRunner. It
-  // is started when the table is ready and guarantees that requests made before
-  // the table was ready are replied to first.
-  scoped_refptr<base::DeferredSequencedTaskRunner> callbacks_task_runner_ =
-      base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
-
-  blink::mojom::FontEnumerationStatus status_ =
-      blink::mojom::FontEnumerationStatus::kOk;
-
-  base::Optional<std::string> locale_override_;
+  void BuildEnumerationCache(blink::FontEnumerationTable& table);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Guaranteed to be non-null.
+  const std::unique_ptr<FontEnumerationDataSource> data_source_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // nullopt in production. Only set in testing.
+  const absl::optional<std::string> locale_override_;
+
+  bool initialized_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Valid only if `initialized_` is true.
+  FontEnumerationData data_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_H
+#endif  // CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_H_

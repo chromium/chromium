@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,10 +14,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappAuthenticator;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.webapps.WebappIntentDataProviderFactory;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebappsUtils;
-import org.chromium.content_public.common.ScreenOrientationConstants;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,42 +37,6 @@ import java.util.Set;
  * or open a web app.
  */
 public class ShortcutHelper {
-    public static final String EXTRA_ICON = "org.chromium.chrome.browser.webapp_icon";
-    public static final String EXTRA_ID = "org.chromium.chrome.browser.webapp_id";
-    public static final String EXTRA_MAC = "org.chromium.chrome.browser.webapp_mac";
-    // EXTRA_TITLE is present for backward compatibility reasons.
-    public static final String EXTRA_TITLE = "org.chromium.chrome.browser.webapp_title";
-    public static final String EXTRA_NAME = "org.chromium.chrome.browser.webapp_name";
-    public static final String EXTRA_SHORT_NAME = "org.chromium.chrome.browser.webapp_short_name";
-    public static final String EXTRA_URL = "org.chromium.chrome.browser.webapp_url";
-    public static final String EXTRA_SCOPE = "org.chromium.chrome.browser.webapp_scope";
-    public static final String EXTRA_DISPLAY_MODE =
-            "org.chromium.chrome.browser.webapp_display_mode";
-    public static final String EXTRA_ORIENTATION = ScreenOrientationConstants.EXTRA_ORIENTATION;
-    public static final String EXTRA_SOURCE = "org.chromium.chrome.browser.webapp_source";
-    public static final String EXTRA_THEME_COLOR = "org.chromium.chrome.browser.theme_color";
-    public static final String EXTRA_BACKGROUND_COLOR =
-            "org.chromium.chrome.browser.background_color";
-    public static final String EXTRA_IS_ICON_GENERATED =
-            "org.chromium.chrome.browser.is_icon_generated";
-    public static final String EXTRA_IS_ICON_ADAPTIVE =
-            "org.chromium.chrome.browser.webapp_icon_adaptive";
-    public static final String EXTRA_VERSION =
-            "org.chromium.chrome.browser.webapp_shortcut_version";
-    public static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
-            "REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB";
-    // Whether the webapp should navigate to the URL in {@link EXTRA_URL} if the webapp is already
-    // open. Applies to webapps and WebAPKs. Value contains "webapk" for backward compatibility.
-    public static final String EXTRA_FORCE_NAVIGATION =
-            "org.chromium.chrome.browser.webapk_force_navigation";
-
-    // When a new field is added to the intent, this version should be incremented so that it will
-    // be correctly populated into the WebappRegistry/WebappDataStorage.
-    public static final int WEBAPP_SHORTCUT_VERSION = 3;
-
-    // This value is equal to kInvalidOrMissingColor in the C++ blink::Manifest struct.
-    public static final long MANIFEST_COLOR_INVALID_OR_MISSING = ((long) Integer.MAX_VALUE) + 1;
-
     private static final String TAG = "ShortcutHelper";
 
     // Holds splash images for web apps that are currently being installed. After installation is
@@ -124,7 +86,7 @@ public class ShortcutHelper {
     @CalledByNative
     private static void addWebapp(final String id, final String url, final String scopeUrl,
             final String userTitle, final String name, final String shortName, final String iconUrl,
-            final Bitmap icon, boolean isIconAdaptive, @WebDisplayMode final int displayMode,
+            final Bitmap icon, boolean isIconAdaptive, @DisplayMode.EnumType final int displayMode,
             final int orientation, final int source, final long themeColor,
             final long backgroundColor) {
         new AsyncTask<Intent>() {
@@ -136,11 +98,12 @@ public class ShortcutHelper {
                 String encodedIcon = BitmapHelper.encodeBitmapAsString(icon);
 
                 // TODO(http://crbug.com/1000046): Use action which does not require mac on O+
-                Intent shortcutIntent = createWebappShortcutIntent(id, url, scopeUrl, name,
-                        shortName, encodedIcon, WEBAPP_SHORTCUT_VERSION, displayMode, orientation,
-                        themeColor, backgroundColor, iconUrl.isEmpty(), isIconAdaptive);
-                shortcutIntent.putExtra(EXTRA_MAC, getEncodedMac(url));
-                shortcutIntent.putExtra(EXTRA_SOURCE, source);
+                Intent shortcutIntent =
+                        createWebappShortcutIntent(id, url, scopeUrl, name, shortName, encodedIcon,
+                                WebappConstants.WEBAPP_SHORTCUT_VERSION, displayMode, orientation,
+                                themeColor, backgroundColor, iconUrl.isEmpty(), isIconAdaptive);
+                shortcutIntent.putExtra(WebappConstants.EXTRA_MAC, getEncodedMac(url));
+                shortcutIntent.putExtra(WebappConstants.EXTRA_SOURCE, source);
                 return shortcutIntent;
             }
             @Override
@@ -177,18 +140,6 @@ public class ShortcutHelper {
             boolean isIconAdaptive, int source, String iconUrl) {
         Intent shortcutIntent = createShortcutIntent(url, id, source);
         sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
-    }
-
-    /**
-     * Shows toast notifying user that a WebAPK install is already in progress when user tries to
-     * queue a new install for the same WebAPK.
-     */
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private static void showWebApkInstallInProgressToast() {
-        Context applicationContext = ContextUtils.getApplicationContext();
-        String toastText = applicationContext.getString(R.string.webapk_install_in_progress);
-        WebappsUtils.showToast(toastText);
     }
 
     /**
@@ -240,25 +191,25 @@ public class ShortcutHelper {
      */
     public static Intent createWebappShortcutIntent(String id, String url, String scope,
             String name, String shortName, String encodedIcon, int version,
-            @WebDisplayMode int displayMode, int orientation, long themeColor, long backgroundColor,
-            boolean isIconGenerated, boolean isIconAdaptive) {
+            @DisplayMode.EnumType int displayMode, int orientation, long themeColor,
+            long backgroundColor, boolean isIconGenerated, boolean isIconAdaptive) {
         // Create an intent as a launcher icon for a full-screen Activity.
         Intent shortcutIntent = new Intent();
         shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName())
                 .setAction(sDelegate.getFullscreenAction())
-                .putExtra(EXTRA_ID, id)
-                .putExtra(EXTRA_URL, url)
-                .putExtra(EXTRA_SCOPE, scope)
-                .putExtra(EXTRA_NAME, name)
-                .putExtra(EXTRA_SHORT_NAME, shortName)
-                .putExtra(EXTRA_ICON, encodedIcon)
-                .putExtra(EXTRA_VERSION, version)
-                .putExtra(EXTRA_DISPLAY_MODE, displayMode)
-                .putExtra(EXTRA_ORIENTATION, orientation)
-                .putExtra(EXTRA_THEME_COLOR, themeColor)
-                .putExtra(EXTRA_BACKGROUND_COLOR, backgroundColor)
-                .putExtra(EXTRA_IS_ICON_GENERATED, isIconGenerated)
-                .putExtra(EXTRA_IS_ICON_ADAPTIVE, isIconAdaptive);
+                .putExtra(WebappConstants.EXTRA_ID, id)
+                .putExtra(WebappConstants.EXTRA_URL, url)
+                .putExtra(WebappConstants.EXTRA_SCOPE, scope)
+                .putExtra(WebappConstants.EXTRA_NAME, name)
+                .putExtra(WebappConstants.EXTRA_SHORT_NAME, shortName)
+                .putExtra(WebappConstants.EXTRA_ICON, encodedIcon)
+                .putExtra(WebappConstants.EXTRA_VERSION, version)
+                .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode)
+                .putExtra(WebappConstants.EXTRA_ORIENTATION, orientation)
+                .putExtra(WebappConstants.EXTRA_THEME_COLOR, themeColor)
+                .putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, backgroundColor)
+                .putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, isIconGenerated)
+                .putExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE, isIconAdaptive);
         return shortcutIntent;
     }
 
@@ -271,7 +222,8 @@ public class ShortcutHelper {
      */
     public static Intent createWebappShortcutIntentForTesting(String id, String url) {
         return createWebappShortcutIntent(id, url, getScopeFromUrl(url), null, null, null,
-                WEBAPP_SHORTCUT_VERSION, WebDisplayMode.STANDALONE, 0, 0, 0, false, false);
+                WebappConstants.WEBAPP_SHORTCUT_VERSION, DisplayMode.STANDALONE, 0, 0, 0, false,
+                false);
     }
 
     /**
@@ -281,9 +233,9 @@ public class ShortcutHelper {
      */
     public static Intent createShortcutIntent(String url, String id, int source) {
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        shortcutIntent.putExtra(REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-        shortcutIntent.putExtra(EXTRA_ID, id);
-        shortcutIntent.putExtra(EXTRA_SOURCE, source);
+        shortcutIntent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+        shortcutIntent.putExtra(WebappConstants.EXTRA_ID, id);
+        shortcutIntent.putExtra(WebappConstants.EXTRA_SOURCE, source);
         shortcutIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         return shortcutIntent;
     }
@@ -305,8 +257,7 @@ public class ShortcutHelper {
     @CalledByNative
     @VisibleForTesting
     public static boolean doesOriginContainAnyInstalledTwa(String origin) {
-        return WebappRegistry.getInstance().getTrustedWebActivityPermissionStore().isTwaInstalled(
-                origin.toLowerCase(Locale.getDefault()));
+        return WebappRegistry.getInstance().isTwaInstalled(origin.toLowerCase(Locale.getDefault()));
     }
 
     @CalledByNative

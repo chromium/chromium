@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -85,6 +84,9 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       NetLogCaptureMode capture_mode,
       std::unique_ptr<base::Value> constants);
 
+  FileNetLogObserver(const FileNetLogObserver&) = delete;
+  FileNetLogObserver& operator=(const FileNetLogObserver&) = delete;
+
   ~FileNetLogObserver() override;
 
   // Attaches this observer to |net_log| and begins observing events.
@@ -126,7 +128,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   static std::unique_ptr<FileNetLogObserver> CreateInternal(
       const base::FilePath& log_path,
       const base::FilePath& inprogress_dir_path,
-      base::Optional<base::File> pre_existing_out_file,
+      absl::optional<base::File> pre_existing_out_file,
       uint64_t max_total_size,
       size_t total_num_event_files,
       NetLogCaptureMode capture_mode,
@@ -157,8 +159,6 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   std::unique_ptr<FileWriter> file_writer_;
 
   const NetLogCaptureMode capture_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileNetLogObserver);
 };
 
 // Serializes |value| to a JSON string used when writing to a file.

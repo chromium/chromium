@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
@@ -24,6 +23,9 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
  public:
   explicit MediaDeviceIDSalt(PrefService* pref_service);
 
+  MediaDeviceIDSalt(const MediaDeviceIDSalt&) = delete;
+  MediaDeviceIDSalt& operator=(const MediaDeviceIDSalt&) = delete;
+
   std::string GetSalt() const;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -34,8 +36,6 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
   ~MediaDeviceIDSalt();
 
   mutable StringPrefMember media_device_id_salt_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaDeviceIDSalt);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_DEVICE_ID_SALT_H_

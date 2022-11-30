@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
@@ -39,6 +37,10 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   typedef int RequestID;
 
   URLDataManagerBackend();
+
+  URLDataManagerBackend(const URLDataManagerBackend&) = delete;
+  URLDataManagerBackend& operator=(const URLDataManagerBackend&) = delete;
+
   ~URLDataManagerBackend() override;
 
   static URLDataManagerBackend* GetForBrowserContext(BrowserContext* context);
@@ -47,7 +49,7 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   void AddDataSource(URLDataSourceImpl* source);
 
   void UpdateWebUIDataSource(const std::string& source_name,
-                             const base::DictionaryValue& update);
+                             const base::Value::Dict& update);
 
   // DataSource invokes this. Sends the data to the URLRequest. |bytes| may be
   // null, which signals an error handling the request.
@@ -60,7 +62,7 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // Creates and sets the response headers for the given request.
   static scoped_refptr<net::HttpResponseHeaders> GetHeaders(
       URLDataSourceImpl* source,
-      const std::string& path,
+      const GURL& url,
       const std::string& origin);
 
   // Returns whether |url| passes some sanity checks and is a valid GURL.
@@ -87,8 +89,6 @@ class URLDataManagerBackend : public base::SupportsUserData::Data {
   // and detached from the backend. This allows outstanding asynchronous queries
   // to be served and routed to the backend to which they were original issued.
   base::WeakPtrFactory<URLDataManagerBackend> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLDataManagerBackend);
 };
 
 }  // namespace content

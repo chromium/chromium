@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,6 +125,30 @@ class MediaPipelineBackend {
       uint64_t decoded_bytes;
     };
 
+    // Android AudioTrack timestamp information.
+    struct AudioTrackTimestamp {
+      AudioTrackTimestamp()
+          : audio_track_frame_position(0),
+            audio_track_frame_position_without_silence(0),
+            audio_track_nano_time(INT64_MIN) {}
+      AudioTrackTimestamp(int64_t audio_track_frame_position_in,
+                          int64_t audio_track_frame_position_without_silence_in,
+                          int64_t audio_track_nano_time_in)
+          : audio_track_frame_position(audio_track_frame_position_in),
+            audio_track_frame_position_without_silence(
+                audio_track_frame_position_without_silence_in),
+            audio_track_nano_time(audio_track_nano_time_in) {}
+      // Position in frames relative to start of an assumed audio stream in the
+      // Android AudioTrack.
+      int64_t audio_track_frame_position;
+      // Position in frames relative to start of an assumed audio stream in the
+      // Android AudioTrack, excluding frames of silence buffers which don't
+      // have timestamps.
+      int64_t audio_track_frame_position_without_silence;
+      // Time associated with the frame in the Android audio pipeline.
+      int64_t audio_track_nano_time;
+    };
+
     // Provides the audio configuration.  Called once before the backend is
     // initialized, and again any time the configuration changes (in any state).
     // Note that SetConfig() may be called before SetDelegate() is called.
@@ -148,6 +172,15 @@ class MediaPipelineBackend {
     // called when playing or paused.
     virtual void GetStatistics(Statistics* statistics) = 0;
 
+    // Returns the Android AudioTrack timestamp information.
+    // Returns a AudioTrackTimestamp.audio_track_nano_time = INT64_MIN if the
+    // timestamp is not available.
+    virtual AudioTrackTimestamp GetAudioTrackTimestamp() = 0;
+
+    // Returns the streaming start threshold of the current audio track.
+    // Returns zero if the start threshold is not available.
+    virtual int GetStartThresholdInFrames() = 0;
+
     // Returns the minimum amount of audio data buffered (in microseconds)
     // necessary to prevent underrun for the given |config|; ie, if the
     // rendering delay falls below this value, then underrun may occur.
@@ -168,7 +201,7 @@ class MediaPipelineBackend {
     // Statistics (computed since last call to backend Start).
     struct Statistics {
       // Counts number of source bytes decoded (not decoder output).
-      uint64_t decoded_bytes;  // Reported as webkitVideoBytesDecoded.
+      uint64_t decoded_bytes;   // Reported as webkitVideoBytesDecoded.
       uint64_t decoded_frames;  // Reported as webkitDecodedFrames.
       uint64_t dropped_frames;  // Reported as webkitDroppedFrames.
     };

@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 #define WEBLAYER_TEST_TEST_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "weblayer/public/navigation_observer.h"
 
@@ -29,6 +29,10 @@ class TestNavigationObserver : public NavigationObserver {
   TestNavigationObserver(const GURL& url,
                          NavigationEvent target_event,
                          Tab* tab);
+
+  TestNavigationObserver(const TestNavigationObserver&) = delete;
+  TestNavigationObserver& operator=(const TestNavigationObserver&) = delete;
+
   ~TestNavigationObserver() override;
 
   // Spins a RunLoop until the requested type of navigation event is observed.
@@ -39,18 +43,16 @@ class TestNavigationObserver : public NavigationObserver {
   void NavigationStarted(Navigation* navigation) override;
   void NavigationCompleted(Navigation* navigation) override;
   void NavigationFailed(Navigation* navigation) override;
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
 
   void CheckNavigationCompleted();
 
   const GURL url_;
-  base::Optional<NavigationEvent> observed_event_;
+  absl::optional<NavigationEvent> observed_event_;
   NavigationEvent target_event_;
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   bool done_loading_ = false;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationObserver);
 };
 
 }  // namespace weblayer

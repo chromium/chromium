@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,8 @@ typedef NS_ENUM(NSInteger, CopiedContentType);
 // ways to launch the app. The second section displays the current copied URL.
 @interface SearchWidgetView : UIView
 
-// Designated initializer, creates the widget view with a |target| for user
-// actions. |compactHeight| indicates the size to use in compact display.
+// Designated initializer, creates the widget view with a `target` for user
+// actions. `compactHeight` indicates the size to use in compact display.
 - (instancetype)initWithActionTarget:(id<SearchWidgetViewActionTarget>)target
                        compactHeight:(CGFloat)compactHeight
     NS_DESIGNATED_INITIALIZER;

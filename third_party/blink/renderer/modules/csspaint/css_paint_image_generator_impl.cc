@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,15 +53,13 @@ void CSSPaintImageGeneratorImpl::NotifyGeneratorReady() {
 
 scoped_refptr<Image> CSSPaintImageGeneratorImpl::Paint(
     const ImageResourceObserver& observer,
-    const FloatSize& container_size,
-    const CSSStyleValueVector* data,
-    float device_scale_factor) {
-  return paint_worklet_->Paint(name_, observer, container_size, data,
-                               device_scale_factor);
+    const gfx::SizeF& container_size,
+    const CSSStyleValueVector* data) {
+  return paint_worklet_->Paint(name_, observer, container_size, data);
 }
 
 bool CSSPaintImageGeneratorImpl::HasDocumentDefinition() const {
-  return paint_worklet_->GetDocumentDefinitionMap().at(name_);
+  return paint_worklet_->GetDocumentDefinitionMap().Contains(name_);
 }
 
 bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ class ConfirmInfobarBannerInteractionHandler
   void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
  private:
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   ConfirmInfoBarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
 };
 

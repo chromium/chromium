@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,77 @@
 #include <algorithm>
 
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/constants/ash_features.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
 
+PagedViewStructure::ScopedSanitizeLock::ScopedSanitizeLock(
+    PagedViewStructure* view_structure)
+    : view_structure_(view_structure) {
+  ++view_structure_->sanitize_locks_;
+}
+
+PagedViewStructure::ScopedSanitizeLock::~ScopedSanitizeLock() {
+  --view_structure_->sanitize_locks_;
+  view_structure_->Sanitize();
+}
+
 PagedViewStructure::PagedViewStructure(AppsGridView* apps_grid_view)
     : apps_grid_view_(apps_grid_view) {}
 
-PagedViewStructure::PagedViewStructure(const PagedViewStructure& other) =
-    default;
+PagedViewStructure::~PagedViewStructure() {
+  DCHECK_EQ(0, sanitize_locks_);
+}
 
-PagedViewStructure::~PagedViewStructure() = default;
+void PagedViewStructure::Init(Mode mode) {
+  mode_ = mode;
+}
+
+std::unique_ptr<PagedViewStructure::ScopedSanitizeLock>
+PagedViewStructure::GetSanitizeLock() {
+  return std::make_unique<ScopedSanitizeLock>(this);
+}
 
 void PagedViewStructure::LoadFromMetadata() {
-  int model_index = 0;
+  const auto* view_model = apps_grid_view_->view_model();
+
   pages_.clear();
   pages_.emplace_back();
 
-  for (size_t i = 0; i < apps_grid_view_->item_list_->item_count(); ++i) {
+  if (mode_ == Mode::kSinglePage) {
+    // Copy the view model to a single page.
+    pages_[0].reserve(view_model->view_size());
+    for (size_t i = 0; i < view_model->view_size(); ++i) {
+      pages_[0].push_back(view_model->view_at(i));
+    }
+    return;
+  }
+
+  if (mode_ == Mode::kFullPages) {
+    // Copy the view model to N full pages.
+    for (size_t i = 0; i < view_model->view_size(); ++i) {
+      if (pages_.back().size() ==
+          static_cast<size_t>(TilesPerPage(pages_.size() - 1))) {
+        pages_.emplace_back();
+      }
+      pages_.back().push_back(view_model->view_at(i));
+    }
+    return;
+  }
+
+  int model_index = 0;
+  const size_t item_count = apps_grid_view_->item_list_
+                                ? apps_grid_view_->item_list_->item_count()
+                                : 0;
+  for (size_t i = 0; i < item_count; ++i) {
     const auto* item = apps_grid_view_->item_list_->item_at(i);
     if (item->is_page_break()) {
       // Create a new page if a "page break" item is detected and current page
@@ -38,8 +88,8 @@ void PagedViewStructure::LoadFromMetadata() {
     }
 
     // Create a new page if the current page is full.
-    const size_t current_page_max_items = apps_grid_view_->TilesPerPage();
-    if (pages_.back().size() == current_page_max_items)
+    const size_t current_page_max_items = TilesPerPage(pages_.size() - 1);
+    if (sanitize_locks_ == 0 && pages_.back().size() == current_page_max_items)
       pages_.emplace_back();
 
     pages_.back().emplace_back(
@@ -47,11 +97,16 @@ void PagedViewStructure::LoadFromMetadata() {
   }
 
   // Remove trailing empty page if exist.
-  if (pages_.back().empty())
+  if (sanitize_locks_ == 0 && pages_.back().empty())
     pages_.pop_back();
 }
 
 void PagedViewStructure::SaveToMetadata() {
+  // When ignoring page breaks we don't need to add or remove page breaks from
+  // the data model.
+  if (mode_ == Mode::kFullPages || mode_ == Mode::kSinglePage)
+    return;
+
   auto* item_list = apps_grid_view_->item_list_;
   size_t item_index = 0;
   AppListModel* model = apps_grid_view_->model_;
@@ -88,7 +143,12 @@ void PagedViewStructure::SaveToMetadata() {
       ++item_index;
     }
 
-    if (item_index < item_list->item_count() &&
+    // When removing launcher spaces is enabled, all launcher pages expect for
+    // the last one should be full (i.e. no empty spaces). Therefore page break
+    // items are useless. It is why we should only create page break items when
+    // the feature flag is disabled.
+    if (!features::IsProductivityLauncherEnabled() &&
+        item_index < item_list->item_count() &&
         !item_list->item_at(item_index)->is_page_break()) {
       // Remove AppListItemListObserver temporarily to avoid |pages_| being
       // reloaded.
@@ -108,35 +168,27 @@ void PagedViewStructure::SaveToMetadata() {
 }
 
 void PagedViewStructure::Move(AppListItemView* view,
-                              const GridIndex& target_index,
-                              bool clear_overflow,
-                              bool clear_empty_pages) {
-  Remove(view, false /* clear_overflow */, false /* clear_empty_pages */);
-  Add(view, target_index, clear_overflow, clear_empty_pages);
+                              const GridIndex& target_index) {
+  // Do not sanitize view structure after Remove() call.
+  std::unique_ptr<ScopedSanitizeLock> sanitize_lock = GetSanitizeLock();
+  Remove(view);
+  Add(view, target_index);
 }
 
-void PagedViewStructure::Remove(AppListItemView* view,
-                                bool clear_overflow,
-                                bool clear_empty_pages) {
+void PagedViewStructure::Remove(AppListItemView* view) {
   for (auto& page : pages_) {
-    auto iter = std::find(page.begin(), page.end(), view);
+    auto iter = base::ranges::find(page, view);
     if (iter != page.end()) {
       page.erase(iter);
       break;
     }
   }
 
-  if (clear_overflow)
-    ClearOverflow();
-
-  if (clear_empty_pages)
-    ClearEmptyPages();
+  Sanitize();
 }
 
 void PagedViewStructure::Add(AppListItemView* view,
-                             const GridIndex& target_index,
-                             bool clear_overflow,
-                             bool clear_empty_pages) {
+                             const GridIndex& target_index) {
   const int view_structure_size = total_pages();
   if (target_index.page < view_structure_size) {
     // Adding to an existing page.
@@ -153,14 +205,22 @@ void PagedViewStructure::Add(AppListItemView* view,
   auto& page = pages_[target_index.page];
   page.insert(page.begin() + target_index.slot, view);
 
-  if (clear_overflow)
-    ClearOverflow();
-
-  if (clear_empty_pages)
-    ClearEmptyPages();
+  Sanitize();
 }
 
 GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
+  if (mode_ == Mode::kSinglePage)
+    return GridIndex(0, model_index);
+
+  if (mode_ == Mode::kFullPages) {
+    int current_page = 0;
+    while (model_index >= TilesPerPage(current_page)) {
+      model_index -= TilesPerPage(current_page);
+      ++current_page;
+    }
+    return GridIndex(current_page, model_index);
+  }
+
   AppListItemView* view = apps_grid_view_->view_model()->view_at(model_index);
   for (size_t i = 0; i < pages_.size(); ++i) {
     auto& page = pages_[i];
@@ -173,21 +233,44 @@ GridIndex PagedViewStructure::GetIndexFromModelIndex(int model_index) const {
 }
 
 int PagedViewStructure::GetModelIndexFromIndex(const GridIndex& index) const {
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(index.page, 0);
+    return index.slot;
+  }
+
+  if (mode_ == Mode::kFullPages) {
+    int model_index = 0;
+    for (int i = 0; i < index.page; i++) {
+      model_index += TilesPerPage(i);
+    }
+    model_index += index.slot;
+    return model_index;
+  }
+
   auto* view_model = apps_grid_view_->view_model();
   if (index.page >= total_pages() || index.slot >= items_on_page(index.page))
     return view_model->view_size();
 
   AppListItemView* view = pages_[index.page][index.slot];
-  return view_model->GetIndexOfView(view);
+  return view_model->GetIndexOfView(view).value();
 }
 
 GridIndex PagedViewStructure::GetLastTargetIndex() const {
   if (apps_grid_view_->view_model()->view_size() == 0)
     return GridIndex(0, 0);
 
+  if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages) {
+    size_t view_index = apps_grid_view_->view_model()->view_size();
+
+    // If a view in the current view model is being dragged, then ignore it.
+    if (apps_grid_view_->drag_view())
+      --view_index;
+    return GetIndexFromModelIndex(view_index);
+  }
+
   int last_page_index = total_pages() - 1;
   int target_slot = CalculateTargetSlot(pages_.back());
-  if (target_slot == apps_grid_view_->TilesPerPage()) {
+  if (target_slot == TilesPerPage(last_page_index)) {
     // The last page is full, so the last target visual index is the first slot
     // in the next new page.
     target_slot = 0;
@@ -197,15 +280,26 @@ GridIndex PagedViewStructure::GetLastTargetIndex() const {
 }
 
 GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(page_index, 0);
+    return GetLastTargetIndex();
+  }
+
+  if (mode_ == Mode::kFullPages) {
+    if (page_index == apps_grid_view_->GetTotalPages() - 1)
+      return GetLastTargetIndex();
+    return GridIndex(page_index, TilesPerPage(page_index) - 1);
+  }
+
   const int page_size = total_pages();
-  DCHECK_LT(0, apps_grid_view_->view_model()->view_size());
+  DCHECK_LT(0u, apps_grid_view_->view_model()->view_size());
   DCHECK_LE(page_index, page_size);
 
   if (page_index == page_size)
     return GridIndex(page_index, 0);
 
   int target_slot = CalculateTargetSlot(pages_[page_index]);
-  if (target_slot == apps_grid_view_->TilesPerPage()) {
+  if (target_slot == TilesPerPage(page_index)) {
     // The specified page is full, so the last target visual index is the last
     // slot in the page_index.
     --target_slot;
@@ -214,8 +308,11 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
 }
 
 int PagedViewStructure::GetTargetModelIndexForMove(
-    AppListItemView* moved_view,
+    AppListItem* moved_item,
     const GridIndex& index) const {
+  if (mode_ == Mode::kSinglePage || mode_ == Mode::kFullPages)
+    return GetModelIndexFromIndex(index);
+
   int target_model_index = 0;
   const int max_page = std::min(index.page, total_pages());
   for (int i = 0; i < max_page; ++i) {
@@ -225,8 +322,7 @@ int PagedViewStructure::GetTargetModelIndexForMove(
     // Skip the item view to be moved in the page if found.
     // Decrement |target_model_index| if |moved_view| is in this page because it
     // is represented by a placeholder.
-    auto iter = std::find(page.begin(), page.end(), moved_view);
-    if (iter != page.end())
+    if (base::Contains(page, moved_item, &AppListItemView::item))
       --target_model_index;
   }
 
@@ -236,9 +332,34 @@ int PagedViewStructure::GetTargetModelIndexForMove(
   return target_model_index;
 }
 
-int PagedViewStructure::GetTargetItemIndexForMove(
-    AppListItemView* moved_view,
+int PagedViewStructure::GetTargetItemListIndexForMove(
+    AppListItem* moved_item,
     const GridIndex& index) const {
+  if (mode_ == Mode::kFullPages)
+    return GetModelIndexFromIndex(index);
+
+  if (mode_ == Mode::kSinglePage) {
+    DCHECK_EQ(index.page, 0);
+    GridIndex current_index(0, 0);
+    size_t current_item_index = 0;
+
+    // Skip the leading "page break" items.
+    const auto* item_list = apps_grid_view_->item_list_;
+    while (current_item_index < item_list->item_count() &&
+           item_list->item_at(current_item_index)->is_page_break()) {
+      ++current_item_index;
+    }
+
+    while (current_item_index < item_list->item_count() &&
+           current_index != index) {
+      if (!item_list->item_at(current_item_index)->is_page_break())
+        ++current_index.slot;
+      ++current_item_index;
+    }
+    DCHECK_EQ(current_index, index);
+    return current_item_index;
+  }
+
   GridIndex current_index(0, 0);
   size_t current_item_index = 0;
   size_t offset = 0;
@@ -254,7 +375,7 @@ int PagedViewStructure::GetTargetItemIndexForMove(
     while (current_item_index < item_list->item_count() &&
            !item_list->item_at(current_item_index)->is_page_break() &&
            current_index != index) {
-      if (moved_view->item() == item_list->item_at(current_item_index) &&
+      if (moved_item && moved_item == item_list->item_at(current_item_index) &&
           current_index.page < index.page) {
         // If the item view is moved to a following page, we need to skip the
         // item view. If the view is moved to the same page, do not skip the
@@ -286,8 +407,10 @@ bool PagedViewStructure::IsValidReorderTargetIndex(
   if (apps_grid_view_->IsValidIndex(index))
     return true;
 
-  // The user can drag an item view to another page's end.
-  if (index.page <= total_pages() &&
+  // The user can drag an item view to another page's end. Also covers the case
+  // where a dragged folder item is being reparented to the last target index of
+  // the root level grid.
+  if (index.page < total_pages() &&
       GetLastTargetIndexOfPage(index.page) == index) {
     return true;
   }
@@ -296,6 +419,7 @@ bool PagedViewStructure::IsValidReorderTargetIndex(
 }
 
 void PagedViewStructure::AppendPage() {
+  DCHECK_NE(mode_, Mode::kSinglePage);
   pages_.emplace_back();
 }
 
@@ -303,7 +427,7 @@ bool PagedViewStructure::IsFullPage(int page_index) const {
   if (page_index >= total_pages())
     return false;
   return static_cast<int>(pages_[page_index].size()) ==
-         apps_grid_view_->TilesPerPage();
+         TilesPerPage(page_index);
 }
 
 int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
@@ -313,9 +437,14 @@ int PagedViewStructure::CalculateTargetSlot(const Page& page) const {
   return static_cast<int>(target_slot);
 }
 
-bool PagedViewStructure::ClearOverflow() {
-  const size_t max_item_views = apps_grid_view_->TilesPerPage();
-  bool changed = false;
+void PagedViewStructure::Sanitize() {
+  if (sanitize_locks_ == 0) {
+    ClearOverflow();
+    ClearEmptyPages();
+  }
+}
+
+void PagedViewStructure::ClearOverflow() {
   std::vector<AppListItemView*> overflow_views;
   auto iter = pages_.begin();
   while (iter != pages_.end() || !overflow_views.empty()) {
@@ -323,16 +452,16 @@ bool PagedViewStructure::ClearOverflow() {
       // Add additional page if overflowing item views remain.
       pages_.emplace_back();
       iter = pages_.end() - 1;
-      changed = true;
     }
 
+    const size_t max_item_views =
+        TilesPerPage(static_cast<int>(iter - pages_.begin()));
     auto& page = *iter;
 
     if (!overflow_views.empty()) {
       // Put overflowing item views in current page.
       page.insert(page.begin(), overflow_views.begin(), overflow_views.end());
       overflow_views.clear();
-      changed = true;
     }
 
     if (page.size() > max_item_views) {
@@ -340,27 +469,26 @@ bool PagedViewStructure::ClearOverflow() {
       overflow_views.insert(overflow_views.begin(),
                             page.begin() + max_item_views, page.end());
       page.erase(page.begin() + max_item_views, page.end());
-      changed = true;
     }
 
     ++iter;
   }
-  return changed;
 }
 
-bool PagedViewStructure::ClearEmptyPages() {
-  bool changed = false;
+void PagedViewStructure::ClearEmptyPages() {
   auto iter = pages_.begin();
   while (iter != pages_.end()) {
     if (iter->empty()) {
       // Remove empty page.
       iter = pages_.erase(iter);
-      changed = true;
     } else {
       ++iter;
     }
   }
-  return changed;
+}
+
+int PagedViewStructure::TilesPerPage(int page) const {
+  return apps_grid_view_->TilesPerPage(page);
 }
 
 }  // namespace ash

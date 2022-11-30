@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -31,6 +31,12 @@ class PermissionRequestCreatorApiary : public PermissionRequestCreator {
   PermissionRequestCreatorApiary(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PermissionRequestCreatorApiary(const PermissionRequestCreatorApiary&) =
+      delete;
+  PermissionRequestCreatorApiary& operator=(
+      const PermissionRequestCreatorApiary&) = delete;
+
   ~PermissionRequestCreatorApiary() override;
 
   static std::unique_ptr<PermissionRequestCreator> CreateWithProfile(
@@ -67,13 +73,11 @@ class PermissionRequestCreatorApiary : public PermissionRequestCreator {
 
   void DispatchResult(RequestList::iterator it, bool success);
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool retry_on_network_change_;
 
   RequestList requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestCreatorApiary);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_PERMISSION_REQUEST_CREATOR_APIARY_H_

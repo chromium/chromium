@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package _IMPORTER_PACKAGE;
+
+import _IMPORTEE_PACKAGE._IMPORTEE_CLASS_NAME;
+
+public class Importer {
+  public Importer() {
+    new _IMPORTEE_CLASS_NAME().foo();
+  }
+}

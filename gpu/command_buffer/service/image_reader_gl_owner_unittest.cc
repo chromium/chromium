@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 
 #include <stdint.h>
@@ -11,9 +12,14 @@
 #include "base/android/android_image_reader_compat.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 #include "gpu/command_buffer/service/mock_abstract_texture.h"
+#include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_preferences.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context_egl.h"
@@ -34,9 +40,14 @@ class ImageReaderGLOwnerTest : public testing::Test {
 
     gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
-    gl::init::InitializeGLOneOffPlatformImplementation(false, false, true);
+    display_ = gl::init::InitializeGLOneOffPlatformImplementation(
+        /*fallback_to_software_gl=*/false,
+        /*disable_gl_drawing=*/false,
+        /*init_extensions=*/true,
+        /*system_device_id=*/0);
 
-    surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));
+    surface_ = new gl::PbufferGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
+                                           gfx::Size(320, 240));
     surface_->Initialize();
 
     share_group_ = new gl::GLShareGroup();
@@ -44,13 +55,26 @@ class ImageReaderGLOwnerTest : public testing::Test {
     context_->Initialize(surface_.get(), gl::GLContextAttribs());
     ASSERT_TRUE(context_->MakeCurrent(surface_.get()));
 
+    GpuDriverBugWorkarounds workarounds;
+    auto context_state = base::MakeRefCounted<SharedContextState>(
+        share_group_, surface_, context_,
+        false /* use_virtualized_gl_contexts */, base::DoNothing());
+    context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    auto feature_info =
+        base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
+    context_state->InitializeGL(GpuPreferences(), std::move(feature_info));
+
     // Create a texture.
     glGenTextures(1, &texture_id_);
 
     std::unique_ptr<MockAbstractTexture> texture =
         std::make_unique<MockAbstractTexture>(texture_id_);
     abstract_texture_ = texture->AsWeakPtr();
-    image_reader_ = TextureOwner::Create(std::move(texture), SecureMode());
+    image_reader_ = TextureOwner::Create(
+        std::move(texture), SecureMode(), std::move(context_state),
+        features::NeedThreadSafeAndroidMedia()
+            ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+            : nullptr);
   }
 
   virtual TextureOwner::Mode SecureMode() {
@@ -64,7 +88,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::init::ShutdownGL(display_, false);
   }
 
   bool IsImageReaderSupported() const {
@@ -80,6 +104,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLSurface> surface_;
   base::test::TaskEnvironment task_environment_;
+  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 TEST_F(ImageReaderGLOwnerTest, ImageReaderObjectCreation) {
@@ -122,8 +147,8 @@ TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
   if (!IsImageReaderSupported())
     return;
 
-  scoped_refptr<gl::GLSurface> new_surface(
-      new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240)));
+  scoped_refptr<gl::GLSurface> new_surface(new gl::PbufferGLSurfaceEGL(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(320, 240)));
   new_surface->Initialize();
 
   scoped_refptr<gl::GLShareGroup> new_share_group(new gl::GLShareGroup());

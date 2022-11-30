@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -32,6 +31,9 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
 
   BrowserPolicyConnectorIOS(
       const policy::HandlerListFactory& handler_list_factory);
+  BrowserPolicyConnectorIOS(const BrowserPolicyConnectorIOS&) = delete;
+  BrowserPolicyConnectorIOS& operator=(const BrowserPolicyConnectorIOS&) =
+      delete;
 
   ~BrowserPolicyConnectorIOS() override;
 
@@ -54,7 +56,7 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
   bool HasMachineLevelPolicies() override;
   void Shutdown() override;
 
@@ -78,8 +80,6 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
       chrome_browser_cloud_management_controller_;
   policy::MachineLevelUserCloudPolicyManager*
       machine_level_user_cloud_policy_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorIOS);
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_BROWSER_POLICY_CONNECTOR_IOS_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 
 namespace blink {
@@ -44,7 +44,8 @@ WebRtcMediaStreamTrackAdapterMap::AdapterRef::~AdapterRef() {
         map_->local_track_adapters_.EraseByPrimary(
             adapter->track()->UniqueId());
       } else {
-        map_->remote_track_adapters_.EraseByPrimary(adapter->webrtc_track());
+        map_->remote_track_adapters_.EraseByPrimary(
+            adapter->webrtc_track().get());
       }
     }
   }
@@ -67,7 +68,7 @@ void WebRtcMediaStreamTrackAdapterMap::AdapterRef::InitializeOnMainThread() {
   if (type_ == WebRtcMediaStreamTrackAdapterMap::AdapterRef::Type::kRemote) {
     base::AutoLock scoped_lock(map_->lock_);
     if (!map_->remote_track_adapters_.FindBySecondary(track()->UniqueId())) {
-      map_->remote_track_adapters_.SetSecondaryKey(webrtc_track(),
+      map_->remote_track_adapters_.SetSecondaryKey(webrtc_track().get(),
                                                    track()->UniqueId());
     }
   }
@@ -129,12 +130,12 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateLocalTrackAdapter(
     // is blocked waiting for |lock_| we end up in a deadlock.
     base::AutoUnlock scoped_unlock(lock_);
     new_adapter = blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-        factory_, main_thread_, component);
+        factory_.Lock(), main_thread_, component);
   }
   DCHECK(new_adapter->is_initialized());
   local_track_adapters_.Insert(component->UniqueId(), new_adapter);
   local_track_adapters_.SetSecondaryKey(component->UniqueId(),
-                                        new_adapter->webrtc_track());
+                                        new_adapter->webrtc_track().get());
   return base::WrapUnique(
       new AdapterRef(this, AdapterRef::Type::kLocal, new_adapter));
 }
@@ -189,7 +190,7 @@ WebRtcMediaStreamTrackAdapterMap::GetOrCreateRemoteTrackAdapter(
     base::AutoUnlock scoped_unlock(lock_);
     new_adapter =
         blink::WebRtcMediaStreamTrackAdapter::CreateRemoteTrackAdapter(
-            factory_, main_thread_, webrtc_track);
+            factory_.Lock(), main_thread_, webrtc_track);
   }
   remote_track_adapters_.Insert(webrtc_track.get(), new_adapter);
   // The new adapter is initialized in a post to the main thread. As soon as it

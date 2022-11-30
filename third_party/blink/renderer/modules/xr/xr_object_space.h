@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_OBJECT_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_OBJECT_SPACE_H_
 
+#include <string>
+
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
-#include "third_party/blink/renderer/modules/xr/xr_native_origin_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
@@ -16,11 +17,13 @@ class XRSession;
 
 // Helper class that returns an XRSpace that tracks the position of object of
 // type T (for example XRPlane, XRAnchor). The type T has to have a
-// MojoFromObject() method, returning a base::Optional<TransformationMatrix>,
-// and IsStationary() method returning true if the object is supposed to be
-// treated as stationary for the purposes of anchor creation.
+// NativeOrigin() method, returning a
+// device::mojom::blink::XRNativeOriginInformationPtr, a MojoFromObject()
+// method, returning a absl::Optional<TransformationMatrix>, and IsStationary()
+// method returning true if the object is supposed to be treated as stationary
+// for the purposes of anchor creation.
 //
-// If the object's MojoFromObject() method returns a base::nullopt, it means
+// If the object's MojoFromObject() method returns a absl::nullopt, it means
 // that the object is not localizable in the current frame (i.e. its pose is
 // unknown) - the `frame.getPose(objectSpace, otherSpace)` will return null.
 // That does not necessarily mean that object tracking is lost - it may be that
@@ -33,13 +36,13 @@ class XRObjectSpace final : public XRSpace {
         object_(object),
         is_stationary_(object->IsStationary()) {}
 
-  base::Optional<TransformationMatrix> MojoFromNative() override {
+  absl::optional<TransformationMatrix> MojoFromNative() const override {
     return object_->MojoFromObject();
   }
 
-  base::Optional<device::mojom::blink::XRNativeOriginInformation> NativeOrigin()
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override {
-    return XRNativeOriginInformation::Create(object_);
+    return object_->NativeOrigin();
   }
 
   bool IsStationary() const override { return is_stationary_; }

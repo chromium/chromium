@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,8 @@ GetCatalogSync(bool update_current, sql::Database* db) {
   if (update_current) {
     DVLOG(1) << "Updating current catalog from " << catalog_version_token;
     sql::Transaction transaction(db);
-    transaction.Begin();
+    if (!transaction.Begin())
+      return std::make_pair(GetCatalogStatus::kFailed, nullptr);
     catalog_version_token =
         UpdateCurrentCatalogIfNewer(&meta_table, catalog_version_token);
     if (catalog_version_token == "")

@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_panel.h"
 
 namespace ash {
@@ -14,6 +13,10 @@ namespace ash {
 class ChromeVoxPanel : public AccessibilityPanel {
  public:
   explicit ChromeVoxPanel(content::BrowserContext* browser_context);
+
+  ChromeVoxPanel(const ChromeVoxPanel&) = delete;
+  ChromeVoxPanel& operator=(const ChromeVoxPanel&) = delete;
+
   ~ChromeVoxPanel() override;
 
   class ChromeVoxPanelWebContentsObserver;
@@ -30,8 +33,6 @@ class ChromeVoxPanel : public AccessibilityPanel {
   std::string GetUrlForContent();
 
   std::unique_ptr<ChromeVoxPanelWebContentsObserver> web_contents_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVoxPanel);
 };
 
 }  // namespace ash

@@ -1,8 +1,8 @@
 Name: UnRAR source for decompressing .RAR and other files.
 Short Name: unrar
 URL: https://github.com/aawc/unrar.git
-Revision: 5bf3568f8865dc4d335def904f80c875dc45c4d1
-Version: 5.7.3
+Revision: d84d61312db5dd83ed1da9fe3e45cb233a56630c
+Version: 6.0.3
 License: Non-standard
 License File: src/license.txt
 Security Critical: yes
@@ -31,6 +31,8 @@ Notable changes from upstream:
   can be extracted inside the sandbox for analysis.
 - Fix a bug with NOVOLUME implementation (https://crbug.com/949787). This
   should be temporary, until the fix can be pulled from upstream.
-- More static initializers removed (see chromium_changes2.patch)
+- More static initializers removed.
+- Changes to support building in -std=c++20 mode.
+- Cherry-picked https://github.com/aawc/unrar/pull/35
 
-All these changes are included in one patch file (chromium_changes.patch)
+All these changes are included in one patch file (chromium_changes.v6.0.3.patch)

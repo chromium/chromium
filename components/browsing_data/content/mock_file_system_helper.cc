@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "components/browsing_data/content/file_system_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,11 +17,10 @@ namespace browsing_data {
 MockFileSystemHelper::MockFileSystemHelper(
     content::BrowserContext* browser_context)
     : FileSystemHelper(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetFileSystemContext(),
+          browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
           {},
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetNativeIOContext()) {}
+          browser_context->GetDefaultStoragePartition()->GetNativeIOContext()) {
+}
 
 MockFileSystemHelper::~MockFileSystemHelper() {}
 

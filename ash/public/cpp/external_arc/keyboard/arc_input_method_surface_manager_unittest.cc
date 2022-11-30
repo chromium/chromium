@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
 namespace ash {
 namespace {
@@ -18,6 +18,12 @@ class TestArcInputMethodSurfaceManagerObserver
     : public ArcInputMethodSurfaceManager::Observer {
  public:
   TestArcInputMethodSurfaceManagerObserver() = default;
+
+  TestArcInputMethodSurfaceManagerObserver(
+      const TestArcInputMethodSurfaceManagerObserver&) = delete;
+  TestArcInputMethodSurfaceManagerObserver& operator=(
+      const TestArcInputMethodSurfaceManagerObserver&) = delete;
+
   ~TestArcInputMethodSurfaceManagerObserver() override = default;
 
   void OnArcInputMethodBoundsChanged(const gfx::Rect& bounds) override {
@@ -27,9 +33,6 @@ class TestArcInputMethodSurfaceManagerObserver
 
   int bounds_changed_calls_ = 0;
   gfx::Rect last_bounds_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestArcInputMethodSurfaceManagerObserver);
 };
 
 }  // namespace
@@ -37,6 +40,12 @@ class TestArcInputMethodSurfaceManagerObserver
 class ArcInputMethodSurfaceManagerTest : public AshTestBase {
  public:
   ArcInputMethodSurfaceManagerTest() = default;
+
+  ArcInputMethodSurfaceManagerTest(const ArcInputMethodSurfaceManagerTest&) =
+      delete;
+  ArcInputMethodSurfaceManagerTest& operator=(
+      const ArcInputMethodSurfaceManagerTest&) = delete;
+
   ~ArcInputMethodSurfaceManagerTest() override = default;
 
   void SetUp() override {
@@ -51,8 +60,6 @@ class ArcInputMethodSurfaceManagerTest : public AshTestBase {
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodSurfaceManagerTest);
 };
 
 TEST_F(ArcInputMethodSurfaceManagerTest, AddRemoveSurface) {
@@ -73,7 +80,14 @@ TEST_F(ArcInputMethodSurfaceManagerTest, Observer) {
   auto surface = std::make_unique<exo::Surface>();
   auto input_method_surface = std::make_unique<exo::InputMethodSurface>(
       &manager, surface.get(), /*default_scale_cancellation=*/false);
-  surface->SetViewport(gfx::Size(500, 500));
+  auto buffer = std::make_unique<exo::Buffer>(
+      aura::Env::GetInstance()
+          ->context_factory()
+          ->GetGpuMemoryBufferManager()
+          ->CreateGpuMemoryBuffer(gfx::Size(500, 500), gfx::BufferFormat::R_8,
+                                  gfx::BufferUsage::GPU_READ,
+                                  gpu::kNullSurfaceHandle, nullptr));
+  surface->Attach(buffer.get());
   surface->Commit();
 
   gfx::Rect test_bounds(10, 10, 100, 100);

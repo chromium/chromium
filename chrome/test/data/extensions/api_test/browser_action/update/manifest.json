@@ -3,7 +3,7 @@
   "version": "1.0",
   "manifest_version": 2,
   "background": {
-    "persistent": false,
+    "persistent": true,
     "scripts": ["background.js"]
   },
   "browser_action": {

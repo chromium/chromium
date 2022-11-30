@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 54 tests; 22 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 22 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -11,17 +11,17 @@ PASS Partial interface HTMLIFrameElement[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
 PASS Document includes DocumentAndElementEventHandlers: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
 FAIL PermissionsPolicy interface: existence and properties of interface object assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
 FAIL PermissionsPolicy interface object length assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
 FAIL PermissionsPolicy interface object name assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
@@ -52,6 +52,7 @@ FAIL PermissionsPolicyViolationReportBody interface: attribute lineNumber assert
 FAIL PermissionsPolicyViolationReportBody interface: attribute columnNumber assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 FAIL PermissionsPolicyViolationReportBody interface: attribute disposition assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
 FAIL HTMLIFrameElement interface: attribute permissionsPolicy assert_true: The prototype object must have a property "permissionsPolicy" expected true got false
+FAIL HTMLIFrameElement interface: document.createElement("iframe") must inherit property "permissionsPolicy" with the proper type assert_inherits: property "permissionsPolicy" not found in prototype chain
 FAIL Document interface: attribute permissionsPolicy assert_true: The prototype object must have a property "permissionsPolicy" expected true got false
 FAIL Document interface: document must inherit property "permissionsPolicy" with the proper type assert_inherits: property "permissionsPolicy" not found in prototype chain
 Harness: the test ran to completion.

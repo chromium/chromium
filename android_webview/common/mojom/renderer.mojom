@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,4 @@ interface Renderer {
 
   // Adjusts the javascript 'online' property value.
   SetJsOnlineProperty(bool network_up);
-
-  // Set renderer process CPU affinity to little cores. Temporarily added for an
-  // experiment; to be deleted after its conclusion (https://crbug.com/1111789).
-  SetCpuAffinityToLittleCores();
 };

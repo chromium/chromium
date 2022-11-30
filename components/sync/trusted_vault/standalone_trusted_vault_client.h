@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
@@ -60,23 +60,28 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void StoreKeys(const std::string& gaia_id,
                  const std::vector<std::vector<uint8_t>>& keys,
                  int last_key_version) override;
-  void RemoveAllStoredKeys() override;
-  void MarkKeysAsStale(const CoreAccountInfo& account_info,
-                       base::OnceCallback<void(bool)> cb) override;
+  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                            base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
                                    base::OnceCallback<void(bool)> cb) override;
   void AddTrustedRecoveryMethod(const std::string& gaia_id,
                                 const std::vector<uint8_t>& public_key,
+                                int method_type_hint,
                                 base::OnceClosure cb) override;
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Runs |cb| when all requests have completed.
   void WaitForFlushForTesting(base::OnceClosure cb) const;
   void FetchBackendPrimaryAccountForTesting(
-      base::OnceCallback<void(const base::Optional<CoreAccountInfo>&)> callback)
+      base::OnceCallback<void(const absl::optional<CoreAccountInfo>&)> callback)
       const;
-  void SetRecoverabilityDegradedForTesting();
+  // TODO(crbug.com/1201659): This this API and rely exclusively on
+  // FakeSecurityDomainsServer.
+  void GetLastAddedRecoveryMethodPublicKeyForTesting(
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
 
  private:
+  void NotifyTrustedVaultKeysChanged();
   void NotifyRecoverabilityDegradedChanged();
 
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -93,9 +98,9 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // |backend_task_runner_|.
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 
-  // Observes changes of primary account and populates them into |backend_|.
+  // Observes changes of accounts state and populates them into |backend_|.
   // Holds references to |backend_| and |backend_task_runner_|.
-  std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
+  std::unique_ptr<signin::IdentityManager::Observer> identity_manager_observer_;
 
   base::WeakPtrFactory<StandaloneTrustedVaultClient> weak_ptr_factory_{this};
 };

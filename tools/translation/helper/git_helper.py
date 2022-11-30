@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,8 @@ def list_grds_in_repository(repo_path):
   #               translate.py.
   output = subprocess.check_output([GIT, 'ls-files', '--', '*.grd'],
                                    cwd=repo_path)
-  return output.strip().splitlines()
+  # Need to decode because Python3 returns subprocess output as bytes.
+  return output.decode('utf8').strip().splitlines()
 
 
 def git_add(files, repo_root):

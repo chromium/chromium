@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ namespace ash {
 class StackingControllerTest : public AshTestBase {
  public:
   StackingControllerTest() = default;
+
+  StackingControllerTest(const StackingControllerTest&) = delete;
+  StackingControllerTest& operator=(const StackingControllerTest&) = delete;
+
   ~StackingControllerTest() override = default;
 
   aura::Window* CreateTestWindow() {
@@ -28,9 +32,6 @@ class StackingControllerTest : public AshTestBase {
     window->Init(ui::LAYER_TEXTURED);
     return window;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackingControllerTest);
 };
 
 // Verifies a window with a transient parent is in the same container as its

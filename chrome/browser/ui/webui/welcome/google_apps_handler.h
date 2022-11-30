@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/welcome/bookmark_item.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -28,19 +27,21 @@ enum class GoogleAppsInteraction {
 class GoogleAppsHandler : public content::WebUIMessageHandler {
  public:
   GoogleAppsHandler();
+
+  GoogleAppsHandler(const GoogleAppsHandler&) = delete;
+  GoogleAppsHandler& operator=(const GoogleAppsHandler&) = delete;
+
   ~GoogleAppsHandler() override;
 
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
   // Callbacks for JS APIs.
-  void HandleCacheGoogleAppIcon(const base::ListValue* args);
-  void HandleGetGoogleAppsList(const base::ListValue* args);
+  void HandleCacheGoogleAppIcon(const base::Value::List& args);
+  void HandleGetGoogleAppsList(const base::Value::List& args);
 
  private:
   std::vector<BookmarkItem> google_apps_;
-
-  DISALLOW_COPY_AND_ASSIGN(GoogleAppsHandler);
 };
 
 }  // namespace welcome

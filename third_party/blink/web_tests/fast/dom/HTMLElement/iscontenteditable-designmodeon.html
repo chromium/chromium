@@ -21,12 +21,12 @@ evalAndLog('document.designMode = "on"');
 
 shouldBe('document.getElementById("div").getAttribute("contentEditable")','"false"');
 shouldBe('document.getElementById("div").contentEditable', '"false"');
-shouldBe('document.getElementById("div").isContentEditable', 'false');
+shouldBe('document.getElementById("div").isContentEditable', 'true');
 shouldBe('window.getComputedStyle(div, "").getPropertyValue("-webkit-user-modify")', '"read-only"');
 
 shouldBe('document.getElementById("div2").getAttribute("contentEditable")','"false"');
 shouldBe('document.getElementById("div2").contentEditable', '"false"');
-shouldBe('document.getElementById("div2").isContentEditable', 'false');
+shouldBe('document.getElementById("div2").isContentEditable', 'true');
 shouldBe('window.getComputedStyle(div2, "").getPropertyValue("-webkit-user-modify")', '"read-only"');
 
 shouldBe('document.getElementById("p").getAttribute("contentEditable")','"true"');

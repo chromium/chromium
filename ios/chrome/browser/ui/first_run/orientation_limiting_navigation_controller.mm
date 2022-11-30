@@ -1,10 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -13,17 +13,21 @@
 @implementation OrientationLimitingNavigationController
 
 - (NSUInteger)supportedInterfaceOrientations {
-  return IsIPadIdiom() ? [super supportedInterfaceOrientations]
-                       : UIInterfaceOrientationMaskPortrait;
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+             ? [super supportedInterfaceOrientations]
+             : UIInterfaceOrientationMaskPortrait;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-  return IsIPadIdiom() ? [super preferredInterfaceOrientationForPresentation]
-                       : UIInterfaceOrientationPortrait;
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+             ? [super preferredInterfaceOrientationForPresentation]
+             : UIInterfaceOrientationPortrait;
 }
 
 - (BOOL)shouldAutorotate {
-  return IsIPadIdiom() ? [super shouldAutorotate] : NO;
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+             ? [super shouldAutorotate]
+             : NO;
 }
 
 @end

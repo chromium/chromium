@@ -1,19 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_TRACKER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_TRACKER_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
@@ -56,7 +54,11 @@ class ScriptTracker : public ScriptExecutor::Listener {
   // |delegate| and |listener| should outlive this object and should not be
   // nullptr.
   ScriptTracker(ScriptExecutorDelegate* delegate,
+                ScriptExecutorUiDelegate* ui_delegate,
                 ScriptTracker::Listener* listener);
+
+  ScriptTracker(const ScriptTracker&) = delete;
+  ScriptTracker& operator=(const ScriptTracker&) = delete;
 
   ~ScriptTracker() override;
 
@@ -129,8 +131,9 @@ class ScriptTracker : public ScriptExecutor::Listener {
   void OnScriptListChanged(
       std::vector<std::unique_ptr<Script>> scripts) override;
 
-  ScriptExecutorDelegate* const delegate_;
-  ScriptTracker::Listener* const listener_;
+  const raw_ptr<ScriptExecutorDelegate> delegate_;
+  const raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  const raw_ptr<ScriptTracker::Listener> listener_;
 
   // If true, a set of script has already been reported to
   // Listener::OnRunnableScriptsChanged.
@@ -154,14 +157,11 @@ class ScriptTracker : public ScriptExecutor::Listener {
   // SetScripts() reset this.
   std::vector<std::unique_ptr<Script>> interrupts_;
 
-  // List of scripts that have been executed and their corresponding statuses.
-  std::map<std::string, ScriptStatusProto> scripts_state_;
-
   std::unique_ptr<BatchElementChecker> batch_element_checker_;
 
   // Path of the scripts found to be runnable so far, in the current check,
   // represented by |batch_element_checker_|.
-  std::set<std::string> pending_runnable_scripts_;
+  base::flat_set<std::string> pending_runnable_scripts_;
 
   // If a script is currently running, this is the script's executor. Otherwise,
   // this is nullptr.
@@ -171,8 +171,6 @@ class ScriptTracker : public ScriptExecutor::Listener {
   std::string last_script_payload_;
 
   base::WeakPtrFactory<ScriptTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptTracker);
 };
 
 }  // namespace autofill_assistant

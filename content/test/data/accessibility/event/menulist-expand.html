@@ -1,19 +1,13 @@
+<!--
+@DEFAULT-ACTION-ON:Fruit
+-->
 <!DOCTYPE html>
 <html>
 <body>
-<select>
+<select aria-label="Fruit">
   <option>Apple</option>
   <option>Orange</option>
   <option>Banana</option>
 </select>
-<script>
-  document.querySelector('select').focus();
-  function go() {
-    var comboBox = document.querySelector('select');
-    var clickEvent = document.createEvent('MouseEvents');
-    clickEvent.initMouseEvent('mousedown', true, true, window);
-    comboBox.dispatchEvent(clickEvent);
-  }
-</script>
 </body>
 </html>

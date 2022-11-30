@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,6 @@ option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "CommonTypesProto";
 
 package optimization_guide.proto;
-
-// Loading milestones that Perfect Heuristics experiments can use as delays.
-enum PerfectHeuristicsDelayType {
-  DELAY_TYPE_UNKNOWN = 0;
-  DELAY_TYPE_FINISHED_PARSING = 1;
-  DELAY_TYPE_FIRST_PAINT_OR_FINISHED_PARSING = 2;
-  DELAY_TYPE_FIRST_PAINT = 3;
-  DELAY_TYPE_FIRST_CONTENTFUL_PAINT = 4;
-}
 
 // The possible effective connection type values.
 //
@@ -50,13 +41,20 @@ enum EffectiveConnectionType {
 
 // Context in which the items are requested.
 enum RequestContext {
-  reserved 1;
+  reserved 1, 3;
   // Context not specified.
   CONTEXT_UNSPECIFIED = 0;
   // Requesting items on page navigation.
   CONTEXT_PAGE_NAVIGATION = 2;
-  // Requesting items as part of a batch update.
-  CONTEXT_BATCH_UPDATE = 3;
+  // Requesting as part of a SRP fetch.
+  CONTEXT_BATCH_UPDATE_GOOGLE_SRP = 4;
+  // Requesting as part of a regularly scheduled fetch for active tabs.
+  CONTEXT_BATCH_UPDATE_ACTIVE_TABS = 5;
+  // Requesting a batch of models to update.
+  CONTEXT_BATCH_UPDATE_MODELS = 6;
+  // Requesting page load metadata for a user's bookmarks when visiting the
+  // bookmarks surface.
+  CONTEXT_BOOKMARKS = 7;
 }
 
 message FieldTrial {
@@ -87,10 +85,55 @@ message Duration {
   optional int32 nanos = 2;
 }
 
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  optional int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  optional int32 nanos = 2;
+}
+
 message Any {
   // A URL/resource name that uniquely identifies the type of the serialized
   // protocol buffer message.
   optional string type_url = 1;
   // Must be a valid serialized protocol buffer of the above specified type.
   optional bytes value = 2;
+}
+
+// Wrapper message for `string`.
+//
+// The JSON representation for `StringValue` is JSON string.
+message StringValue {
+  // The string value.
+  optional string value = 1;
+}
+
+// Information about the request origin, common to all Cacao requests.
+message OriginInfo {
+  // The platform for the user's Chrome.
+  optional Platform platform = 1;
+}
+
+// The platform for the user's Chrome on which the request was made.
+enum Platform {
+  // Unknown is used when the user's platform cannot be resolved.
+  PLATFORM_UNKNOWN = 0;
+  // Android based platforms.
+  PLATFORM_ANDROID = 1;
+  // ChromeOS platforms including all architectures.
+  PLATFORM_CHROMEOS = 2;
+  // IOS based platforms.
+  PLATFORM_IOS = 3;
+  // Linux platforms including all architectures.
+  PLATFORM_LINUX = 4;
+  // Mac based platforms.
+  PLATFORM_MAC = 5;
+  // Windows based platforms.
+  PLATFORM_WINDOWS = 6;
 }

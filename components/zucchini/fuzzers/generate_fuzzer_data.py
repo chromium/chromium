@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -61,9 +61,7 @@ def gen(old_file, new_file, patch_file, output_file, is_raw, is_win):
   ret = subprocess.call([sys.executable,
                          os.path.join(ABS_PATH, 'create_seed_file_pair.py'),
                          os.path.abspath(protoc), old_file, patch_file,
-                         output_file],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+                         output_file])
   os.remove(patch_file)
   return ret
 

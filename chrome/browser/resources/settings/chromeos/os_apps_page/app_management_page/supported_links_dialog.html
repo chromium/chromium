@@ -1,0 +1,26 @@
+<style include="app-management-cros-shared-css settings-shared">
+  #dialog-body {
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    overflow-y: auto;
+  }
+
+  .list-item {
+    border-bottom: var(--cr-separator-line);
+    min-height: 36px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach show-close-button>
+  <div slot="title">$i18n{appManagementIntentSettingsDialogTitle}</div>
+  <div id="dialog-body" slot="body" scrollable>
+    <iron-list id="list" scroll-target="dialog-body"
+        items="[[app.supportedLinks]]">
+      <template>
+        <div class="list-item">
+          [[item]]
+        </div>
+      </template>
+    </iron-list>
+  </div>
+</cr-dialog>

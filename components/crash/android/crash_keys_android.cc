@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/stl_util.h"
 #include "components/crash/android/jni_headers/CrashKeys_jni.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -24,9 +23,10 @@ JavaCrashKey& GetCrashKey(int index) {
       {"emulated_modules", JavaCrashKey::Tag::kArray},
       {"dynamic_module_dex_name", JavaCrashKey::Tag::kArray},
       {"partner_customization_config", JavaCrashKey::Tag::kArray},
+      {"first_run", JavaCrashKey::Tag::kArray},
   };
   static_assert(
-      base::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),
+      std::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),
       "crash_keys out of sync with index enum");
 
   return crash_keys[index];

@@ -1,0 +1,390 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cy">
+<translation id="1006017844123154345">Agor ar-lein</translation>
+<translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
+<translation id="1124090076051167250">Bydd hyn yn clirio <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
+<translation id="1178581264944972037">Seibio</translation>
+<translation id="1181037720776840403">Dileu</translation>
+<translation id="1201402288615127009">Nesaf</translation>
+<translation id="1242008676835033345">Plannwyd ar <ph name="WEBSITE_URL" /></translation>
+<translation id="1272079795634619415">Stopio</translation>
+<translation id="1289742167380433257">Er mwyn cadw eich data, mae lluniau'r dudalen hon wedi'u hoptimeiddio gan Google.</translation>
+<translation id="129382876167171263">Mae ffeiliau a gedwir gan wefannau yn ymddangos yma</translation>
+<translation id="1317194122196776028">Anghofio'r wefan hon</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676">Mae'r wefan <ph name="SITE_NAME" /> wedi'i hychwanegu</translation>
+<translation id="1383876407941801731">Chwilio</translation>
+<translation id="1384959399684842514">Wedi seibio lawrlwytho</translation>
+<translation id="1409426117486808224">Gwedd symlach ar gyfer tabiau sydd ar agor</translation>
+<translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
+<translation id="1426410128494586442">Iawn</translation>
+<translation id="1446450296470737166">Caniatáu rheolaeth lawn dros ddyfeisiau MIDI</translation>
+<translation id="1620510694547887537">Camera</translation>
+<translation id="1633720957382884102">Gwefannau Cysylltiedig</translation>
+<translation id="1644574205037202324">Hanes</translation>
+<translation id="1647582022260550163">Ydych chi'n siŵr eich bod am ailosod caniatadau, a chlirio cwcis a data gwefan?</translation>
+<translation id="1660204651932907780">Caniatáu i wefannau chwarae sain (argymhellir)</translation>
+<translation id="1677097821151855053">Defnyddir cwcis a data gwefan eraill i'ch cofio, er enghraifft i'ch mewngofnodi neu i bersonoleiddio hysbysebion. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
+<translation id="1688867105868176567">Clirio data'r wefan?</translation>
+<translation id="169515064810179024">Rhwystro gwefannau rhag cael mynediad at synwyryddion symudiad</translation>
+<translation id="1717218214683051432">Synwyryddion symudiad</translation>
+<translation id="1743802530341753419">Gofyn cyn caniatáu i wefannau gysylltu â dyfais (argymhellir)</translation>
+<translation id="1779089405699405702">Datgodiwr lluniau</translation>
+<translation id="1785415724048343560">Argymhellir ar gyfer y profiad gorau</translation>
+<translation id="1818308510395330587">I ganiatáu i <ph name="APP_NAME" /> ddefnyddio AR, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="1864927262126810325">O <ph name="SOURCE_NAME" /></translation>
+<translation id="1887786770086287077">Mae mynediad lleoliad wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="1915307458270490472">Dod â'r sgwrs i ben</translation>
+<translation id="1919345977826869612">Hysbysebion</translation>
+<translation id="1919950603503897840">Dewis cysylltiadau</translation>
+<translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">Wedi'i ganiatáu, ac eithrio trydydd parti</translation>
+<translation id="1989112275319619282">Pori</translation>
+<translation id="1994173015038366702">URL gwefan</translation>
+<translation id="2004697686368036666">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio</translation>
+<translation id="2025115093177348061">Realiti estynedig</translation>
+<translation id="2030769033451695672">Tapiwch i ddychwelyd i <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
+<translation id="2079545284768500474">Dadwneud</translation>
+<translation id="2091887806945687916">Sain</translation>
+<translation id="2107397443965016585">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
+<translation id="2146738493024040262">Agor Ap Sydyn</translation>
+<translation id="2148716181193084225">Heddiw</translation>
+<translation id="2182457891543959921">Gofyn cyn caniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain safle eich camera (argymhellir)</translation>
+<translation id="2212565012507486665">Caniatáu cwcis</translation>
+<translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
+<translation id="2241634353105152135">Unwaith yn unig</translation>
+<translation id="2253414712144136228">Tynnu <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="2289270750774289114">Gofyn pan fydd gwefan eisiau darganfod dyfeisiau Bluetooth gerllaw (argymhellir)</translation>
+<translation id="2315043854645842844">Nid yw'r system weithredu yn cefnogi dewis tystysgrif ochr y cleient.</translation>
+<translation id="2321958826496381788">Llusgwch y llithrydd nes eich bod yn gallu darllen hwn yn gyffyrddus. Dylai'r testun fod o leiaf y maint hwn ar ôl tapio dwywaith ar baragraff.</translation>
+<translation id="2329473609445770916">Mae'r wefan hon yn diffinio diddordebau y gall gwefannau eraill eu defnyddio i ddangos hysbysebion i chi</translation>
+<translation id="2359808026110333948">Parhau</translation>
+<translation id="2379925928934107488">Os yw'n bosib, defnyddio'r thema dywyll ar wefannau pan fydd Chrome yn defnyddio'r thema dywyll</translation>
+<translation id="2387895666653383613">Newid maint testun yn gymesur</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall}zero{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}two{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}few{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}many{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}other{Caniateir <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}}</translation>
+<translation id="2434158240863470628">Mae'r lawrlwythiad wedi'i gwblhau <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
+<translation id="2482878487686419369">Hysbysiadau</translation>
+<translation id="2485422356828889247">Dadosod</translation>
+<translation id="2490684707762498678">Rheolir gan <ph name="APP_NAME" /></translation>
+<translation id="2498359688066513246">Help ac adborth</translation>
+<translation id="2501278716633472235">Mynd yn ôl</translation>
+<translation id="2546283357679194313">Cwcis a data gwefan</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Mae 1 cwci wedi'i rwystro}zero{Mae # cwci wedi'u rhwystro}two{Mae # gwci wedi'u rhwystro}few{Mae # chwci wedi'u rhwystro}many{Mae # chwci wedi'u rhwystro}other{Mae # cwci wedi'u rhwystro}}</translation>
+<translation id="2570922361219980984">Mae mynediad lleoliad hefyd wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="257931822824936280">Wedi'i ehangu - cliciwch i grebachu.</translation>
+<translation id="2586657967955657006">Clipfwrdd</translation>
+<translation id="2597457036804169544">Peidio â defnyddio'r thema dywyll ar gyfer gwefannau</translation>
+<translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
+<translation id="2653659639078652383">Danfon</translation>
+<translation id="2677748264148917807">Gadael</translation>
+<translation id="2687403674020088961">Rhwystro pob cwci (ni argymhellir)</translation>
+<translation id="2704606927547763573">Copïwyd</translation>
+<translation id="2713106313042589954">Diffodd y camera</translation>
+<translation id="2717722538473713889">Cyfeiriadau e-bost</translation>
+<translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
+<translation id="2785051990912111074">Bydd y dewis hwn yn clirio cwcis ar gyfer <ph name="WEBSITE" /></translation>
+<translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2870560284913253234">Gwefan</translation>
+<translation id="2874939134665556319">Trac blaenorol</translation>
+<translation id="2903493209154104877">Cyfeiriadau</translation>
+<translation id="2910701580606108292">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
+<translation id="2913331724188855103">Caniatáu i wefannau gadw a darllen data cwcis (argymhellir)</translation>
+<translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
+<translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
+<translation id="300526633675317032">Bydd hyn yn clirio'r holl <ph name="SIZE_IN_KB" /> o le storio gwefan.</translation>
+<translation id="3008272652534848354">Ailosod caniatadau</translation>
+<translation id="301521992641321250">Rhwystrwyd yn awtomatig</translation>
+<translation id="3069226013421428034">Caniatáu mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
+<translation id="3109724472072898302">Wedi'i grebachu</translation>
+<translation id="3114012059975132928">Chwaraewr fideo</translation>
+<translation id="3115898365077584848">Dangos Gwybodaeth</translation>
+<translation id="3123473560110926937">Wedi'u rhwystro ar rai gwefannau</translation>
+<translation id="3143754809889689516">Chwarae o'r dechrau</translation>
+<translation id="3162899666601560689">Gall gwefannau ddefnyddio cwcis i wella'ch profiad pori, er enghraifft, i'ch cadw bod wedi'ch mewngofnodi neu i gofio eitemau yn eich basged siopa</translation>
+<translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data a storiwyd</translation>
+<translation id="3203366800380907218">O'r we</translation>
+<translation id="321187648315454507">I ganiatáu i <ph name="APP_NAME" /> anfon hysbysiadau atoch, trowch hysbysiadau ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="3227137524299004712">Meicroffon</translation>
+<translation id="3248611290851046188">Mae'r wefan hon yn diffinio diddordebau y gall gwefannau eraill eu defnyddio i ddangos hysbysebion i chi. Mae'r wefan hon hefyd yn cael eich diddordebau o Chrome i ddangos hysbysebion mwy defnyddiol i chi.</translation>
+<translation id="3277252321222022663">Caniatáu i wefannau gael mynediad at synwyryddion (argymhellir)</translation>
+<translation id="3295602654194328831">Cuddio Gwybodaeth</translation>
+<translation id="3328801116991980348">Gwybodaeth am y wefan</translation>
+<translation id="3333961966071413176">Pob cyswllt</translation>
+<translation id="3362437373201486687">Wrthi'n sganio am ddyfeisiau Bluetooth</translation>
+<translation id="3386292677130313581">Gofyn cyn caniatáu i wefannau wybod eich lleoliad (argymhellir)</translation>
+<translation id="3521663503435878242">Gwefannau o dan <ph name="DOMAIN" /></translation>
+<translation id="3538390592868664640">Rhwystro gwefannau rhag creu map 3D o'ch amgylchoedd neu olrhain safle'r camera</translation>
+<translation id="3551268116566418498">Gadael y modd Anhysbys?</translation>
+<translation id="3586500876634962664">Defnyddio camera a meicroffon</translation>
+<translation id="358794129225322306">Caniatáu i wefan lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
+<translation id="3594780231884063836">Mudo'r fideo</translation>
+<translation id="3596414637720633074">Rhwystro cwcis gan drydydd parti yn y Modd Anhysbys</translation>
+<translation id="3600792891314830896">Distewi gwefannau sy'n chwarae sain</translation>
+<translation id="3628308229821498208">Chwiliadau a awgrymir</translation>
+<translation id="3744111561329211289">Cysoni yn y cefndir</translation>
+<translation id="3763247130972274048">Tapiwch ddwywaith ar ochr chwith neu dde'r i neidio 10 eiliad</translation>
+<translation id="3797520601150691162">Peidio â defnyddio'r thema dywyll ar gyfer gwefan benodol</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
+<translation id="381841723434055211">Rhifau ffôn</translation>
+<translation id="3826050100957962900">Mewngofnodi trydydd parti</translation>
+<translation id="3835233591525155343">Eich defnydd dyfais</translation>
+<translation id="385051799172605136">Nôl</translation>
+<translation id="3859306556332390985">Chwilio ymlaen</translation>
+<translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
+<translation id="3955193568934677022">Caniatáu i wefannau chwarae cynnwys gwarchodedig (argymhellir)</translation>
+<translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
+<translation id="3987993985790029246">Copïo'r ddolen</translation>
+<translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
+<translation id="3992684624889376114">Ynghylch y dudalen hon</translation>
+<translation id="4002066346123236978">Teitl</translation>
+<translation id="4008040567710660924">Caniatáu cwcis ar gyfer gwefan benodol.</translation>
+<translation id="4046123991198612571">Trac nesaf</translation>
+<translation id="4149994727733219643">Gwedd syml ar gyfer tudalennau gwe</translation>
+<translation id="4165986682804962316">Gosodiadau gwefan</translation>
+<translation id="4169549551965910670">Wedi'i gysylltu â dyfais USB</translation>
+<translation id="4194328954146351878">Gofyn cyn caniatáu i wefannau weld a newid gwybodaeth ar ddyfeisiau NFC (argymhellir)</translation>
+<translation id="4200726100658658164">Agor Gosodiadau Lleoliad</translation>
+<translation id="4226663524361240545">Mae'n bosib y bydd hysbysiadau ddirgrynu’r ddyfais</translation>
+<translation id="4259722352634471385">Llywio wedi'i rwystro: <ph name="URL" /></translation>
+<translation id="4278390842282768270">Caniateir</translation>
+<translation id="429312253194641664">Mae gwefan yn chwarae cyfryngau</translation>
+<translation id="42981349822642051">Ehangu</translation>
+<translation id="4336434711095810371">Clirio'r holl ddata</translation>
+<translation id="4338831206024587507">Pob gwefan o dan <ph name="DOMAIN" /></translation>
+<translation id="4402755511846832236">Rhwystro gwefannau rhag gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
+<translation id="4428065317363009941">Personoleiddio hysbysebion</translation>
+<translation id="4434045419905280838">Ffenestri naid ac ailgyfeiriadau</translation>
+<translation id="445467742685312942">Caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
+<translation id="4468959413250150279">Distewi sain ar gyfer gwefan benodol.</translation>
+<translation id="4479647676395637221">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch camera (argymhellir)</translation>
+<translation id="4505788138578415521">URL wedi'i ehangu</translation>
+<translation id="4534723447064627427">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich meicroffon, trowch y meicroffon ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="4566417217121906555">Distewi'r meicroffon</translation>
+<translation id="4570913071927164677">Manylion</translation>
+<translation id="4645575059429386691">Rheolir gan dy riant</translation>
+<translation id="4670064810192446073">Realiti rhithwir</translation>
+<translation id="4751476147751820511">Synwyryddion ystumiau/goleuadau</translation>
+<translation id="4811450222531576619">Dysgu am ei ffynhonnell a'i bwnc</translation>
+<translation id="4836046166855586901">Gofyn pan fydd gwefan eisiau gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
+<translation id="483914009762354899">Cynnwys pob gwefan o dan y parth hwn</translation>
+<translation id="4883854917563148705">Methu ag ailosod gosodiadau a reolir</translation>
+<translation id="4887024562049524730">Gofyn cyn caniatáu i wefannau ddefnyddio'ch dyfais rhithwirionedd a'ch data (argymhellir)</translation>
+<translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
+<translation id="497421865427891073">Mynd ymlaen</translation>
+<translation id="4976702386844183910">Ymwelwyd ddiwethaf <ph name="DATE" /></translation>
+<translation id="4994033804516042629">Ni chanfuwyd unrhyw gysylltiadau</translation>
+<translation id="4996978546172906250">Rhannu drwy</translation>
+<translation id="5014906230196386306">Clirio cwcis?</translation>
+<translation id="5039804452771397117">Caniatáu</translation>
+<translation id="5048398596102334565">Caniatáu i wefannau gael mynediad at synwyryddion symudiad (argymhellir)</translation>
+<translation id="5050380848339752099">Mae'r wefan hon ar fin rhannu gwybodaeth ag ap y tu allan i'r modd Anhysbys.</translation>
+<translation id="5063480226653192405">Defnydd</translation>
+<translation id="5091013926750941408">Gwefan symudol</translation>
+<translation id="509133520954049755">Gofyn am wedd bwrdd gwaith</translation>
+<translation id="5100237604440890931">Wedi'i grebachu - cliciwch i'w ehangu.</translation>
+<translation id="5123685120097942451">Tab anhysbys</translation>
+<translation id="5134599672855298214">Gofyn am wedd symudol (argymhellir)</translation>
+<translation id="5186036860380548585">Mae'r opsiwn ar gael yn agos at frig y sgrîn</translation>
+<translation id="5197729504361054390">Bydd y cysylltiadau rydych yn eu dewis yn cael eu rhannu gyda <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
+<translation id="5225463052809312700">Troi'r camera ymlaen</translation>
+<translation id="5264323282659631142">Tynnu '<ph name="CHIP_LABEL" />'</translation>
+<translation id="528192093759286357">Llusgwch o'r brig a chyffyrddwch â'r botwm nôl i adael y sgrîn lawn.</translation>
+<translation id="5300589172476337783">Arddangos</translation>
+<translation id="5301954838959518834">Iawn</translation>
+<translation id="5313967007315987356">Ychwanegu gwefan</translation>
+<translation id="5317780077021120954">Cadw</translation>
+<translation id="5335288049665977812">Caniatáu i wefannau redeg JavaScript (argymhellir)</translation>
+<translation id="534295439873310000">Dyfeisiau NFC</translation>
+<translation id="5354152178998424783">Bydd hyn yn clirio <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau.</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 arall)}zero{(+ # arall)}two{(+ # arall)}few{(+ # arall)}many{(+ # arall)}other{(+ # arall)}}</translation>
+<translation id="5403592356182871684">Enwau</translation>
+<translation id="5412236728747081950">Mae'r wefan hon yn cael eich diddordebau o Chrome i ddangos rhagor o hysbysebion defnyddiol i chi</translation>
+<translation id="5438097262470833822">Bydd y dewis hwn yn ailosod caniatadau ar gyfer <ph name="WEBSITE" /></translation>
+<translation id="5489227211564503167">Mae <ph name="ELAPSED_TIME" /> o <ph name="TOTAL_TIME" /> wedi mynd heibio.</translation>
+<translation id="5494752089476963479">Rhwystro hysbysebion ar wefannau sy'n dangos hysbysebion ymwthiol neu gamarweiniol</translation>
+<translation id="5502860503640766021">Caniateir <ph name="PERMISSION_1" />, Rhwystrir <ph name="PERMISSION_2" /></translation>
+<translation id="5505264765875738116">Ni all gwefannau ofyn am anfon hysbysiadau</translation>
+<translation id="5516455585884385570">Agor y gosodiadau hysbysu</translation>
+<translation id="5527111080432883924">Gofyn cyn caniatáu i wefannau ddarllen testun a lluniau o'r clipfwrdd (argymhellir)</translation>
+<translation id="5553374991681107062">Diweddaraf</translation>
+<translation id="5556459405103347317">Ail-lwytho</translation>
+<translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
+<translation id="5649053991847567735">Lawrlwythiadau awtomatig</translation>
+<translation id="5668404140385795438">Diystyru cais gwefan i atal chwyddo</translation>
+<translation id="5677928146339483299">Rhwystrwyd</translation>
+<translation id="5689516760719285838">Lleoliad</translation>
+<translation id="5690795753582697420">Mae'r camera wedi'i ddiffodd yn Gosodiadau Android</translation>
+<translation id="5719847187258001597">Bydd hyn yn clirio'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" /> neu gan ei ap ar eich sgrîn Hafan.</translation>
+<translation id="5771720122942595109">Rhwystrwyd <ph name="PERMISSION_1" /></translation>
+<translation id="5804241973901381774">Caniatadau</translation>
+<translation id="5860033963881614850">Diffodd</translation>
+<translation id="5876056640971328065">Seibio'r fideo</translation>
+<translation id="5887687176710214216">Ymwelwyd ddiwethaf ddoe</translation>
+<translation id="5916664084637901428">Ymlaen</translation>
+<translation id="5922853908706496913">Wrthi'n rhannu eich sgrîn</translation>
+<translation id="5922967540311291836">Rhwystro cwcis trydydd parti:</translation>
+<translation id="5939518447894949180">Ailosod</translation>
+<translation id="5975083100439434680">Pellhau</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">Rheoli mynediad y wefan hon at eich dyfais</translation>
+<translation id="6040143037577758943">Cau</translation>
+<translation id="6042308850641462728">Mwy</translation>
+<translation id="6064125863973209585">Lawrlwythiadau a gwblhawyd</translation>
+<translation id="6165508094623778733">Dysgu rhagor</translation>
+<translation id="6177111841848151710">Wedi'i rwystro ar gyfer y peiriant chwilio presennol</translation>
+<translation id="6177128806592000436">Nid yw eich cysylltiad â'r wefan hon yn ddiogel</translation>
+<translation id="6181444274883918285">Ychwanegu eithriad gwefan</translation>
+<translation id="6192792657125177640">Eithriadau</translation>
+<translation id="6196640612572343990">Rhwystro cwcis trydydd parti</translation>
+<translation id="6216432067784365534">Dewisiadau <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="6231752747840485235">Dadosod '<ph name="APP_NAME" />'?</translation>
+<translation id="6262191102408817757">Yn seiliedig ar eich tab olaf</translation>
+<translation id="6262279340360821358">Mae <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> wedi'u rhwystro</translation>
+<translation id="6270391203985052864">Gall gwefannau ofyn am anfon hysbysiadau</translation>
+<translation id="6295158916970320988">Pob gwefan</translation>
+<translation id="6320088164292336938">Dirgrynu</translation>
+<translation id="6367753977865761591">Rhwystro mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
+<translation id="6388207532828177975">Clirio ac ailosod</translation>
+<translation id="6398765197997659313">Gadael y sgrîn lawn</translation>
+<translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
+<translation id="6439114592976064011">Rhwystro gwefannau rhag defnyddio eich dyfais rhithwrionedd a'i data</translation>
+<translation id="6447842834002726250">Cwcis</translation>
+<translation id="6467852467360539617">Clirio data ac ailosod caniatadau</translation>
+<translation id="6527303717912515753">Rhannu</translation>
+<translation id="6545864417968258051">Sganio Bluetooth</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall wedi'u rhwystro}zero{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}two{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}few{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}many{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}other{Mae <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall wedi'u rhwystro}}</translation>
+<translation id="6554732001434021288">Ymwelwyd ddiwethaf <ph name="NUM_DAYS" /> o ddiwrnodau yn ôl</translation>
+<translation id="6561560012278703671">Defnyddiwch negeseuon tawelach (mae'n rhwystro anogwyr hysbysiadau rhag torri ar eich traws)</translation>
+<translation id="6593061639179217415">Gwefan bwrdd gwaith</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
+<translation id="6612358246767739896">Cynnwys gwarchodedig</translation>
+<translation id="662080504995468778">Aros</translation>
+<translation id="6643016212128521049">Clirio</translation>
+<translation id="6689172468748959065">Lluniau proffil</translation>
+<translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
+<translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
+<translation id="6746124502594467657">Symud i lawr</translation>
+<translation id="6749077623962119521">Ailosod caniatadau?</translation>
+<translation id="6766622839693428701">Sweipiwch i lawr i gau.</translation>
+<translation id="6790428901817661496">Chwarae</translation>
+<translation id="6818926723028410516">Dewis eitemau</translation>
+<translation id="6864395892908308021">Ni all y ddyfais hon ddarllen NFC</translation>
+<translation id="6912998170423641340">Rhwystro gwefannau rhag darllen testun a lluniau o'r clipfwrdd</translation>
+<translation id="6945221475159498467">Dewis</translation>
+<translation id="6965382102122355670">Iawn</translation>
+<translation id="6981982820502123353">Hygyrchedd</translation>
+<translation id="6992289844737586249">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch meicroffon (argymhellir)</translation>
+<translation id="7000754031042624318">Wedi'i ddiffodd yn Gosodiadau Android</translation>
+<translation id="7016516562562142042">Wedi'i ganiatáu ar gyfer y peiriant chwilio presennol</translation>
+<translation id="702463548815491781">Argymhellir pan fydd TalkBack neu Newid Mynediad ymlaen</translation>
+<translation id="7053983685419859001">Rhwystro</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
+<translation id="7087918508125750058">Dewiswyd <ph name="ITEM_COUNT" />.  Mae dewisiadau ar gael yn agos at waelod y sgrîn</translation>
+<translation id="7141896414559753902">Rhwystro gwefannau rhag dangos ffenestri naid ac ailgyfeiriadau (argymhellir)</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="7180611975245234373">Ail-lwytho</translation>
+<translation id="7203150201908454328">Wedi'i ehangu</translation>
+<translation id="723171743924126238">Dewis lluniau</translation>
+<translation id="7243308994586599757">Mae opsiynau ar gael yn agos at waelod y sgrîn</translation>
+<translation id="7250468141469952378">Mae <ph name="ITEM_COUNT" /> wedi'u dewis</translation>
+<translation id="7260727271532453612">Caniateir <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
+<translation id="7302486331832100261">Rydych fel arfer yn rhwystro hysbysiadau. I'w caniatáu, tapiwch Manylion.</translation>
+<translation id="7383715096023715447">Gosodiadau ar gyfer <ph name="DOMAIN" /></translation>
+<translation id="7423098979219808738">Gofyn yn gyntaf</translation>
+<translation id="7423538860840206698">Wedi'i rwystro rhag darllen y clipfwrdd</translation>
+<translation id="7425915948813553151">Thema dywyll ar gyfer gwefannau</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">Mae gwefan yn defnyddio'ch meicroffon</translation>
+<translation id="7561196759112975576">Bob tro</translation>
+<translation id="757524316907819857">Rhwystro gwefannau rhag chwarae cynnwys gwarchodedig</translation>
+<translation id="7577900504646297215">Rheoli diddordebau</translation>
+<translation id="7594634374516752650">Wedi cysylltu â dyfais Bluetooth</translation>
+<translation id="7641339528570811325">Clirio data pori…</translation>
+<translation id="7649070708921625228">Cymorth</translation>
+<translation id="7658239707568436148">Canslo</translation>
+<translation id="7781829728241885113">Ddoe</translation>
+<translation id="7791543448312431591">Ychwanegu</translation>
+<translation id="780301667611848630">Dim diolch</translation>
+<translation id="7804248752222191302">Mae gwefan yn defnyddio'ch camera</translation>
+<translation id="7817023149356982970">Byddwch yn cael eich allgofnodi o'r wefan hon.</translation>
+<translation id="7835852323729233924">Chwarae cyfryngau</translation>
+<translation id="783819812427904514">Dad-ddistewi'r fideo</translation>
+<translation id="7846076177841592234">Canslo dewis</translation>
+<translation id="7846621471902887024">Byddwch wedi'ch allgofnodi o bob gwefan.</translation>
+<translation id="7882806643839505685">Caniatáu sain ar gyfer gwefan benodol.</translation>
+<translation id="789180354981963912">Rhwystro cwcis trydydd parti yn y Modd Anhysbys:</translation>
+<translation id="7940722705963108451">Atgoffwch fi</translation>
+<translation id="7986741934819883144">Dewis cyswllt</translation>
+<translation id="7999064672810608036">Ydych chi'n siŵr eich bod chi am glirio'r holl ddata lleol, gan gynnwys cwcis, ac ailosod yr holl ganiatadau ar gyfer y wefan hon?</translation>
+<translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
+<translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
+<translation id="8042586301629853791">Trefnu yn ôl:</translation>
+<translation id="8067883171444229417">Chwarae'r fideo</translation>
+<translation id="8068648041423924542">Methu â dewis tystysgrif.</translation>
+<translation id="8087000398470557479">Mae'r cynnwys hwn yn dod o <ph name="DOMAIN_NAME" />, sy'n cael ei ddarparu gan Google.</translation>
+<translation id="8116925261070264013">Wedi'i ddistewi</translation>
+<translation id="813082847718468539">Gweld gwybodaeth am y wefan</translation>
+<translation id="8131740175452115882">Cadarnhau</translation>
+<translation id="8154912474061769055">Mae'n bosib na fydd nodweddion ar lawer o wefannau yn gweithio</translation>
+<translation id="8197286292360124385">Caniateir <ph name="PERMISSION_1" /></translation>
+<translation id="8200772114523450471">Parhau</translation>
+<translation id="8206354486702514201">Mae eich gweinyddwr wedi gorfodi'r gosodiad hwn.</translation>
+<translation id="8211406090763984747">Mae'r cysylltiad yn ddiogel</translation>
+<translation id="8249310407154411074">Symud i'r brig</translation>
+<translation id="8261506727792406068">Dileu</translation>
+<translation id="8284326494547611709">Capsiynau</translation>
+<translation id="8300705686683892304">Wedi'u rheoli gan ap</translation>
+<translation id="8324158725704657629">Peidio â gofyn eto</translation>
+<translation id="834785183489258869">Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
+<translation id="8372893542064058268">Caniatáu Cysoni yn y Cefndir ar gyfer wefan benodol.</translation>
+<translation id="8376384591331888629">Gan gynnwys cwcis trydydd parti ar y wefan hon</translation>
+<translation id="83792324527827022">Mae gwefan yn defnyddio'ch camera a'ch meicroffon</translation>
+<translation id="8380167699614421159">Mae'r wefan hon yn dangos hysbysebion ymwthiol neu gamarweiniol</translation>
+<translation id="8394832520002899662">Tapiwch i ddychwelyd i'r wefan</translation>
+<translation id="8409345997656833551">Cael hysbysiadau pan fydd erthygl yn gallu cael ei dangos yn y wedd syml</translation>
+<translation id="8428213095426709021">Gosodiadau</translation>
+<translation id="8441146129660941386">Mynd yn ôl</translation>
+<translation id="8444433999583714703">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich lleoliad, trowch leoliad ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
+<translation id="8447861592752582886">Dirymu caniatâd dyfais</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Mae 1 cwci yn cael ei ddefnyddio}zero{Mae # cwci yn cael eu defnyddio}two{Mae # gwci yn cael eu defnyddio}few{Mae # chwci yn cael eu defnyddio}many{Mae # chwci yn cael eu defnyddio}other{Mae # cwci yn cael eu defnyddio}}</translation>
+<translation id="8487700953926739672">Ar gael all-lein</translation>
+<translation id="848952951823693243">Gofyn am wefan symudol bob amser</translation>
+<translation id="8499083585497694743">Dad-ddistewi'r meicroffon</translation>
+<translation id="851751545965956758">Rhwystro gwefannau rhag cysylltu â dyfeisiau</translation>
+<translation id="8525306231823319788">Sgrîn lawn</translation>
+<translation id="857943718398505171">Caniateir (argymhellir)</translation>
+<translation id="8609465669617005112">Symud i fyny</translation>
+<translation id="8676374126336081632">Clirio mewnbwn</translation>
+<translation id="868929229000858085">Chwilio eich cysylltiadau</translation>
+<translation id="8702612070107455751">Bydd unrhyw ddata all-lein yn cael eu clirio.</translation>
+<translation id="8712637175834984815">Iawn</translation>
+<translation id="8719283222052720129">Gallwch droi ganiatâd ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
+<translation id="8730621377337864115">Wedi gorffen</translation>
+<translation id="8737217482364735741">Bydd hyn yn clirio'r holl ddata a chwcis sy'n cael eu storio gan <ph name="ORIGIN" />.</translation>
+<translation id="8751914237388039244">Dewiswch lun</translation>
+<translation id="8801436777607969138">Rhwystro JavaScript ar gyfer gwefan benodol.</translation>
+<translation id="8816026460808729765">Rhwystro gwefannau rhag cael mynediad at synwyryddion</translation>
+<translation id="8823559166155093873">Rhwystro cwcis</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">Chwyddo</translation>
+<translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
+<translation id="8926666909099850184">Mae NFC wedi'i ddiffodd ar gyfer y ddyfais hon. Trowch ef ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Rhwystro gwefannau rhag gweld a newid gwybodaeth ar ddyfeisiau NFC</translation>
+<translation id="8941729603749328384">www.enghraifft.com</translation>
+<translation id="8958424370300090006">Rhwystro cwcis ar gyfer gwefan benodol.</translation>
+<translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Anghofio</translation>
+<translation id="9019902583201351841">Rheolir gan eich rhieni</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}two{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}}</translation>
+<translation id="913657688200966289">Trowch ganiatadau ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
+<translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
+<translation id="930525582205581608">Anghofio'r wefan hon?</translation>
+<translation id="967624055006145463">Data a storiwyd</translation>
+</translationbundle>

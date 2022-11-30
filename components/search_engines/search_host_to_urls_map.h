@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/search_engines/template_url.h"
 
@@ -22,6 +21,10 @@ class SearchHostToURLsMap {
   using TemplateURLSet = base::flat_set<TemplateURL*>;
 
   SearchHostToURLsMap();
+
+  SearchHostToURLsMap(const SearchHostToURLsMap&) = delete;
+  SearchHostToURLsMap& operator=(const SearchHostToURLsMap&) = delete;
+
   ~SearchHostToURLsMap();
 
   // Initializes the map.
@@ -36,8 +39,8 @@ class SearchHostToURLsMap {
   // Removes the TemplateURL from the lookup.
   void Remove(const TemplateURL* template_url);
 
-  // Returns the first TemplateURL found with a URL using the specified |host|,
-  // or NULL if there are no such TemplateURLs
+  // Returns the best TemplateURL found with a URL using the specified |host|,
+  // or nullptr if there are no such TemplateURLs
   TemplateURL* GetTemplateURLForHost(base::StringPiece host);
 
   // Return the TemplateURLSet for the given the |host| or NULL if there are
@@ -61,8 +64,6 @@ class SearchHostToURLsMap {
 
   // Has Init been called?
   bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchHostToURLsMap);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_HOST_TO_URLS_MAP_H_

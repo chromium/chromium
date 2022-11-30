@@ -30,14 +30,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_CONVOLVER_H_
 
 #include <memory>
-
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/reverb_accumulation_buffer.h"
 #include "third_party/blink/renderer/platform/audio/reverb_convolver_stage.h"
 #include "third_party/blink/renderer/platform/audio/reverb_input_buffer.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -55,11 +55,13 @@ class PLATFORM_EXPORT ReverbConvolver {
   // FFT sizes and single-precision floats.  In these cases 2048 is a good
   // size.  If not doing multi-threaded convolution, then should not go > 8192.
   ReverbConvolver(AudioChannel* impulse_response,
-                  size_t render_slice_size,
-                  size_t max_fft_size,
+                  unsigned render_slice_size,
+                  unsigned max_fft_size,
                   size_t convolver_render_phase,
                   bool use_background_threads,
                   float scale);
+  ReverbConvolver(const ReverbConvolver&) = delete;
+  ReverbConvolver& operator=(const ReverbConvolver&) = delete;
   ~ReverbConvolver();
 
   void Process(const AudioChannel* source_channel,
@@ -86,17 +88,15 @@ class PLATFORM_EXPORT ReverbConvolver {
 
   // First stage will be of size m_minFFTSize.  Each next stage will be twice as
   // big until we hit m_maxFFTSize.
-  size_t min_fft_size_;
-  size_t max_fft_size_;
+  unsigned min_fft_size_;
+  unsigned max_fft_size_;
 
   // But don't exceed this size in the real-time thread (if we're doing
   // background processing).
-  size_t max_realtime_fft_size_;
+  unsigned max_realtime_fft_size_;
 
   // Background thread and synchronization
-  std::unique_ptr<Thread> background_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReverbConvolver);
+  std::unique_ptr<NonMainThread> background_thread_;
 };
 
 }  // namespace blink

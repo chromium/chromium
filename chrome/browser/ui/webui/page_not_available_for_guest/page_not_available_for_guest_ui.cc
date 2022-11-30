@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@ content::WebUIDataSource* CreateHTMLSource(Profile* profile,
     page_title = l10n_util::GetStringUTF16(IDS_HISTORY_TITLE);
   else if (host_name == chrome::kChromeUIExtensionsHost)
     page_title = l10n_util::GetStringUTF16(IDS_EXTENSIONS_TOOLBAR_TITLE);
+  else if (host_name == chrome::kChromeUIPasswordManagerHost)
+    page_title = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_TITLE);
   else
     page_title = base::UTF8ToUTF16(host_name);
 

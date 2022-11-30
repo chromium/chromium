@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -30,27 +29,30 @@ class AddressComboboxModel : public ui::ComboboxModel {
   AddressComboboxModel(const PersonalDataManager& personal_data_manager,
                        const std::string& app_locale,
                        const std::string& default_selected_guid);
+
+  AddressComboboxModel(const AddressComboboxModel&) = delete;
+  AddressComboboxModel& operator=(const AddressComboboxModel&) = delete;
+
   ~AddressComboboxModel() override;
 
   // ui::ComboboxModel implementation:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  bool IsItemSeparatorAt(int index) const override;
-  int GetDefaultIndex() const override;
-  void AddObserver(ui::ComboboxModelObserver* observer) override;
-  void RemoveObserver(ui::ComboboxModelObserver* observer) override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  bool IsItemSeparatorAt(size_t index) const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
   // Adds |profile| to model and return its combobox index. The lifespan of
   // |profile| beyond this call is undefined so a copy must be made.
-  int AddNewProfile(const AutofillProfile& profile);
+  size_t AddNewProfile(const AutofillProfile& profile);
 
   // Returns the unique identifier of the profile at |index|, unless |index|
   // refers to a special entry, in which case an empty string is returned.
-  std::string GetItemIdentifierAt(int index);
+  std::string GetItemIdentifierAt(size_t index);
 
-  // Returns the combobox index of the item with the given id or -1 if it's not
-  // found.
-  int GetIndexOfIdentifier(const std::string& identifier) const;
+  // Returns the combobox index of the item with the given id or nullopt if it's
+  // not found.
+  absl::optional<size_t> GetIndexOfIdentifier(
+      const std::string& identifier) const;
 
  private:
   // Update |addresses_| based on |profiles_cache_| and notify observers.
@@ -69,11 +71,6 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // If non empty, the guid of the address that should be selected by default.
   std::string default_selected_guid_;
-
-  // To be called when the data for the given country code was loaded.
-  base::ObserverList<ui::ComboboxModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressComboboxModel);
 };
 
 }  // namespace autofill

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
-#include "chrome/browser/ui/color/omnibox_color_mixers.h"
 #include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -29,13 +28,12 @@ const char* enum_names[] = {
 };
 // clang-format on
 
+// Note that this second include is not redundant. The second inclusion of the
+// .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_macros.inc"
 
-#if defined(OS_MAC)
-#include "ui/color/color_mixers.h"
-#endif
-
-constexpr size_t kColorColumnWidth = 19 + 1;  // '#xxxxxxxx '/'#xxxxxxxx\n'
+// Longest color name, plus a space.  Currently, "SK_ColorTRANSPARENT ".
+constexpr size_t kColorColumnWidth = 19 + 1;
 
 std::string SkColorToString(SkColor color) {
   std::string color_string = ui::SkColorName(color);
@@ -48,23 +46,26 @@ std::string SkColorToString(SkColor color) {
 }
 
 int main(int argc, const char* argv[]) {
-  const auto add_mixers = [](ui::ColorProvider* provider, bool dark_window,
-                             bool high_contrast) {
-    // TODO(pkasting): Use standard provider setup functions once those exist.
-    ui::AddCoreDefaultColorMixer(provider, dark_window, high_contrast);
-    ui::AddNativeCoreColorMixer(provider, dark_window, high_contrast);
-    ui::AddUiColorMixer(provider, dark_window, high_contrast);
-    ui::AddNativeUiColorMixer(provider, dark_window, high_contrast);
-    ui::AddNativePostprocessingMixer(provider);
-    AddChromeColorMixers(provider);
-    AddOmniboxColorMixers(provider, false);
+  const auto add_mixers = [](ui::ColorProvider* provider, auto color_mode,
+                             auto contrast_mode) {
+    const ui::ColorProviderManager::Key key = {
+        color_mode, contrast_mode, ui::SystemTheme::kDefault,
+        ui::ColorProviderManager::FrameType::kChromium};
+    ui::AddColorMixers(provider, key);
+    AddChromeColorMixers(provider, key);
   };
   ui::ColorProvider light_provider, dark_provider, light_high_contrast_provider,
       dark_high_contrast_provider;
-  add_mixers(&light_provider, false, false);
-  add_mixers(&dark_provider, true, false);
-  add_mixers(&light_high_contrast_provider, false, true);
-  add_mixers(&dark_high_contrast_provider, true, true);
+  add_mixers(&light_provider, ui::ColorProviderManager::ColorMode::kLight,
+             ui::ColorProviderManager::ContrastMode::kNormal);
+  add_mixers(&dark_provider, ui::ColorProviderManager::ColorMode::kDark,
+             ui::ColorProviderManager::ContrastMode::kNormal);
+  add_mixers(&light_high_contrast_provider,
+             ui::ColorProviderManager::ColorMode::kLight,
+             ui::ColorProviderManager::ContrastMode::kHigh);
+  add_mixers(&dark_high_contrast_provider,
+             ui::ColorProviderManager::ColorMode::kDark,
+             ui::ColorProviderManager::ContrastMode::kHigh);
 
   size_t longest_name = 0;
   for (const char* name : enum_names)

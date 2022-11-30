@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,11 +29,6 @@ ChildAccountInfoFetcherAndroid::Create(AccountFetcherService* service,
   // constructor is private.
   return base::WrapUnique(
       new ChildAccountInfoFetcherAndroid(service, account_info));
-}
-
-void ChildAccountInfoFetcherAndroid::InitializeForTests() {
-  signin::Java_ChildAccountInfoFetcher_initializeForTests(
-      base::android::AttachCurrentThread());
 }
 
 ChildAccountInfoFetcherAndroid::ChildAccountInfoFetcherAndroid(

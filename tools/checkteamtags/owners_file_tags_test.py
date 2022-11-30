@@ -1,16 +1,15 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from collections import OrderedDict
 from contextlib import contextmanager
 import os
-import sys
 import unittest
+import unittest.mock as mock
 
 import owners_file_tags
 
-import mock
 
 @contextmanager
 def mock_file_tree(tree):
@@ -28,7 +27,7 @@ def mock_file_tree(tree):
       ret_val = mock.MagicMock()
       if path in files_data and mode == 'r':
 
-        class mock_opened_file(object):
+        class mock_opened_file:
           def __enter__(self, *args, **kwargs):
             return self
 
@@ -58,7 +57,7 @@ class OwnersFileTagsTest(unittest.TestCase):
 
   """os tag breaking dupe >>"""
   def setUp(self):
-    super(OwnersFileTagsTest, self).setUp()
+    super().setUp()
     self.maxDiff = None
 
   def testScrapeOwners(self):

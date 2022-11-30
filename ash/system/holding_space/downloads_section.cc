@@ -1,26 +1,35 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/holding_space/downloads_section.h"
 
+#include "ash/bubble/bubble_utils.h"
+#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
+#include "ash/public/cpp/holding_space/holding_space_section.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
-#include "ash/system/holding_space/holding_space_item_chips_container.h"
+#include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -28,26 +37,6 @@
 namespace ash {
 
 namespace {
-
-// CallbackPathGenerator -------------------------------------------------------
-
-class CallbackPathGenerator : public views::HighlightPathGenerator {
- public:
-  using Callback = base::RepeatingCallback<gfx::RRectF()>;
-
-  explicit CallbackPathGenerator(Callback callback) : callback_(callback) {}
-  CallbackPathGenerator(const CallbackPathGenerator&) = delete;
-  CallbackPathGenerator& operator=(const CallbackPathGenerator&) = delete;
-  ~CallbackPathGenerator() override = default;
-
- private:
-  // views::HighlightPathGenerator:
-  base::Optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    return callback_.Run();
-  }
-
-  Callback callback_;
-};
 
 // Header ----------------------------------------------------------------------
 
@@ -62,32 +51,25 @@ class Header : public views::Button {
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        kHoldingSpaceDownloadsHeaderSpacing));
+        kHoldingSpaceSectionHeaderSpacing));
 
     // Label.
-    auto* label = AddChildView(holding_space_util::CreateLabel(
-        holding_space_util::LabelStyle::kHeader,
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    auto* label = AddChildView(
+        holding_space_ui::CreateSectionHeaderLabel(
+            IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .Build());
     layout->SetFlexForView(label, 1);
 
     // Chevron.
-    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
-    auto* chevron = AddChildView(std::make_unique<views::ImageView>());
-    chevron->SetFlipCanvasOnPaintForRTLUI(true);
-    chevron->SetImage(gfx::CreateVectorIcon(
-        kChevronRightIcon, kHoldingSpaceDownloadsChevronIconSize,
-        ash_color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    chevron_ = AddChildView(std::make_unique<views::ImageView>());
+    chevron_->SetFlipCanvasOnPaintForRTLUI(true);
 
     // Focus ring.
-    focus_ring()->SetColor(ash_color_provider->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kFocusRingColor));
-
     // Though the entirety of the header is focusable and behaves as a single
-    // button, the focus ring is drawn as a circle around just the `chevron`.
-    focus_ring()->SetPathGenerator(
-        std::make_unique<CallbackPathGenerator>(base::BindRepeating(
+    // button, the focus ring is drawn as a circle around just the `chevron_`.
+    views::FocusRing::Get(this)->SetPathGenerator(
+        holding_space_util::CreateHighlightPathGenerator(base::BindRepeating(
             [](const views::View* chevron) {
               const float radius = chevron->width() / 2.f;
               gfx::RRectF path(gfx::RectF(chevron->bounds()), radius);
@@ -98,28 +80,41 @@ class Header : public views::Button {
               }
               return path;
             },
-            base::Unretained(chevron))));
+            base::Unretained(chevron_))));
+    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   }
 
  private:
+  // views::Button:
+  void OnThemeChanged() override {
+    views::Button::OnThemeChanged();
+    AshColorProvider* const ash_color_provider = AshColorProvider::Get();
+
+    // Chevron.
+    chevron_->SetImage(gfx::CreateVectorIcon(
+        kChevronRightSmallIcon, kHoldingSpaceSectionChevronIconSize,
+        ash_color_provider->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  }
+
   void OnPressed() {
     holding_space_metrics::RecordDownloadsAction(
         holding_space_metrics::DownloadsAction::kClick);
 
     HoldingSpaceController::Get()->client()->OpenDownloads(base::DoNothing());
   }
+
+  // Owned by view hierarchy.
+  views::ImageView* chevron_ = nullptr;
 };
 
 }  // namespace
 
 // DownloadsSection ------------------------------------------------------------
 
-DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
+DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
-                                   /*supported_types=*/
-                                   {HoldingSpaceItem::Type::kDownload,
-                                    HoldingSpaceItem::Type::kNearbyShare},
-                                   /*max_count=*/kMaxDownloads) {}
+                                   HoldingSpaceSectionId::kDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
 
@@ -135,7 +130,12 @@ std::unique_ptr<views::View> DownloadsSection::CreateHeader() {
 }
 
 std::unique_ptr<views::View> DownloadsSection::CreateContainer() {
-  return std::make_unique<HoldingSpaceItemChipsContainer>();
+  auto container = std::make_unique<views::View>();
+  container->SetLayoutManager(std::make_unique<SimpleGridLayout>(
+      kHoldingSpaceChipCountPerRow,
+      /*column_spacing=*/kHoldingSpaceSectionContainerChildSpacing,
+      /*row_spacing=*/kHoldingSpaceSectionContainerChildSpacing));
+  return container;
 }
 
 std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(

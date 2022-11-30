@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module printing.mojom;
 
 // Print job color mode values.
+[Stable, Extensible]
 enum ColorModel {
-  kUnknownColorModel,
+  [Default] kUnknownColorModel,
   kGray,
   kColor,
   kCMYK,
@@ -41,8 +42,9 @@ enum ColorModel {
 };
 
 // Print job duplex mode values.
+[Stable, Extensible]
 enum DuplexMode {
-  kUnknownDuplexMode = -1,
+  [Default] kUnknownDuplexMode = -1,
   kSimplex,
   kLongEdge,
   kShortEdge,
@@ -87,6 +89,13 @@ enum SkiaDocumentType {
   kMSKP,
 };
 
+// Metafile data type encapsulated by a player.
+enum MetafileDataType {
+  kPDF,
+  [EnableIf=is_win]
+  kEMF,
+};
+
 // What kind of margins to use.
 enum MarginType {
   // Default varies depending on headers being enabled or not
@@ -94,4 +103,70 @@ enum MarginType {
   kNoMargins,
   kPrintableAreaMargins,
   kCustomMargins,
+};
+
+// Allowed printing modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum ColorModeRestriction {
+  [Default] kUnset = 0x0,
+  kMonochrome = 0x1,
+  kColor = 0x2,
+};
+
+// Allowed duplex modes as a bitmask.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum DuplexModeRestriction {
+  [Default] kUnset = 0x0,
+  kSimplex = 0x1,
+  kLongEdge = 0x2,
+  kShortEdge = 0x4,
+  kDuplex = 0x6,
+};
+
+// Allowed PIN printing modes.
+// This is used in pref file and should never change.
+[Stable, Extensible, EnableIf=is_chromeos]
+enum PinModeRestriction {
+  [Default] kUnset = 0,
+  kPin = 1,
+  kNoPin = 2,
+};
+
+// Result codes distilled from system error codes.
+enum ResultCode {
+  kSuccess,
+  // Generic code for uncategorized errors.
+  kFailed,
+  // Insufficient permissions to perform the operation.
+  kAccessDenied,
+  // Operation was canceled.
+  kCanceled,
+};
+
+// Matches print_preview.PrinterType in
+// chrome/browser/resources/print_preview/data/destination_match.ts
+[Stable, Extensible]
+enum PrinterType {
+  kPrivetDeprecated,
+  kExtension,
+  kPdf,
+  kLocal,
+  kCloudDeprecated
+};
+
+[EnableIf=is_win]
+enum PrinterLanguageType {
+  kNone = 0,
+  kTextOnly,
+  kXps,
+  kPostscriptLevel2,
+  kPostscriptLevel3,
+};
+
+// Corresponds to `printing::PageRange` in printing/page_range.h.
+struct PageRange {
+  uint32 from;
+  uint32 to;
 };

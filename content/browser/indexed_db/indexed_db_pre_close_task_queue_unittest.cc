@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ using PreCloseTask = IndexedDBPreCloseTaskQueue::PreCloseTask;
 using StopReason = IndexedDBPreCloseTaskQueue::StopReason;
 
 namespace {
-constexpr base::TimeDelta kTestMaxRunTime = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kTestMaxRunTime = base::Seconds(30);
 const std::u16string kDBName = u"TestDBName";
 constexpr int64_t kDBId = 1;
 constexpr int64_t kDBVersion = 2;

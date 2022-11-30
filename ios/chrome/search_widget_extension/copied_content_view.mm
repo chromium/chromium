@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import <NotificationCenter/NotificationCenter.h>
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/search_widget_extension/search_widget_constants.h"
 
@@ -36,7 +36,7 @@ const CGFloat kURLButtonMargin = 10;
 @property(nonatomic, strong) UIVisualEffectView* primaryEffectView;
 @property(nonatomic, strong) UIVisualEffectView* secondaryEffectView;
 
-// Updates the view to show the currently set |type|.
+// Updates the view to show the currently set `type`.
 - (void)updateUI;
 
 @end
@@ -58,24 +58,15 @@ const CGFloat kURLButtonMargin = 10;
     UIVibrancyEffect* secondaryEffect = nil;
     UIVibrancyEffect* backgroundEffect = nil;
     UIVibrancyEffect* hairlineEffect = nil;
-    if (@available(iOS 13, *)) {
-      primaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
-      secondaryEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-      backgroundEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
-      hairlineEffect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSeparator];
-    }
-#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
-    else {
-      primaryEffect = [UIVibrancyEffect widgetPrimaryVibrancyEffect];
-      secondaryEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-      backgroundEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-      hairlineEffect = [UIVibrancyEffect widgetSecondaryVibrancyEffect];
-    }
-#endif
+    primaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+    secondaryEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    backgroundEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
+    hairlineEffect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSeparator];
+
     DCHECK(primaryEffect);
     DCHECK(secondaryEffect);
     DCHECK(backgroundEffect);
@@ -101,21 +92,13 @@ const CGFloat kURLButtonMargin = 10;
 
     _hairlineView = [[UIView alloc] initWithFrame:CGRectZero];
     // The new widget vibrancy style API requires new colors for the views.
-    if (@available(iOS 13, *)) {
-      _hairlineView.backgroundColor = UIColor.separatorColor;
-    } else {
-      _hairlineView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
-    }
+    _hairlineView.backgroundColor = UIColor.separatorColor;
     _hairlineView.translatesAutoresizingMaskIntoConstraints = NO;
     [hairlineEffectView.contentView addSubview:_hairlineView];
 
     _copiedButtonView = [[UIView alloc] init];
     // The new widget vibrancy style API requires new colors for the views.
-    if (@available(iOS 13, *)) {
-      _copiedButtonView.backgroundColor = UIColor.whiteColor;
-    } else {
-      _copiedButtonView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
-    }
+    _copiedButtonView.backgroundColor = UIColor.whiteColor;
     _copiedButtonView.layer.cornerRadius = 5;
     _copiedButtonView.translatesAutoresizingMaskIntoConstraints = NO;
     [backgroundEffectView.contentView addSubview:_copiedButtonView];
@@ -192,21 +175,16 @@ const CGFloat kURLButtonMargin = 10;
   self.hairlineView.hidden = hasContent;
   self.accessibilityTraits =
       (hasContent) ? UIAccessibilityTraitLink : UIAccessibilityTraitNone;
-  if (@available(iOS 13, *)) {
-    if (hasContent) {
-      self.primaryEffectView.effect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
-      self.secondaryEffectView.effect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-    } else {
-      self.primaryEffectView.effect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
-      self.secondaryEffectView.effect = [UIVibrancyEffect
-          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryLabel];
-    }
+  if (hasContent) {
+    self.primaryEffectView.effect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+    self.secondaryEffectView.effect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
   } else {
-    self.copiedContentLabel.alpha = (hasContent) ? 1 : 0.5;
-    self.openCopiedContentTitleLabel.alpha = (hasContent) ? 1 : 0.5;
+    self.primaryEffectView.effect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    self.secondaryEffectView.effect = [UIVibrancyEffect
+        widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryLabel];
   }
 
   NSString* titleText;

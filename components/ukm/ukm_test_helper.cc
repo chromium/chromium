@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ bool UkmTestHelper::IsRecordingEnabled() const {
 
 bool UkmTestHelper::IsReportUserNoisedUserBirthYearAndGenderEnabled() {
   return base::FeatureList::IsEnabled(
-      ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+      ukm::kReportUserNoisedUserBirthYearAndGender);
 }
 
 uint64_t UkmTestHelper::GetClientId() {

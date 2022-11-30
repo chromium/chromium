@@ -27,11 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_
 
 #include <cstddef>
+#include <cstdint>
 
-#include "base/macros.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -94,11 +94,13 @@ class StaticSingleton final {
     LEAK_SANITIZER_IGNORE_OBJECT(instance_.Get());
   }
 
-  Type& Get(bool allow_cross_thread_use) {
+  StaticSingleton(const StaticSingleton&) = delete;
+  StaticSingleton& operator=(const StaticSingleton&) = delete;
+
+  Type& Get([[maybe_unused]] bool allow_cross_thread_use) {
 #if DCHECK_IS_ON()
     DCHECK(IsNotRacy(allow_cross_thread_use));
 #endif
-    ALLOW_UNUSED_LOCAL(allow_cross_thread_use);
     return Wrapper<Type>::Unwrap(instance_.Get());
   }
 
@@ -145,8 +147,6 @@ class StaticSingleton final {
   bool safely_initialized_;
   base::PlatformThreadId thread_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(StaticSingleton);
 };
 
 }  // namespace WTF
@@ -218,11 +218,6 @@ TypePtr unsafe_reinterpret_cast_ptr(const void* ptr) {
 
 namespace WTF {
 
-template <typename To, typename From>
-inline To SafeCast(From value) {
-  return base::checked_cast<To>(value);
-}
-
 // Use the following macros to prevent errors caused by accidental
 // implicit casting of function arguments.  For example, this can
 // be used to prevent overflows from non-promoting conversions.
@@ -261,7 +256,5 @@ inline To SafeCast(From value) {
                 "identical size (could overflow).");
 
 }  // namespace WTF
-
-using WTF::SafeCast;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_

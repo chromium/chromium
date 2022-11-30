@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -51,7 +52,8 @@ namespace sandbox {
 
 namespace {
 
-// This also tests that read(), write() and fstat() are allowed.
+// This also tests that read(), write(), fstat(), and fstatat(.., "", ..,
+// AT_EMPTY_PATH) are allowed.
 void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   BPF_ASSERT_LE(0, read_end.get());
   BPF_ASSERT_LE(0, write_end.get());
@@ -59,6 +61,20 @@ void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   int sys_ret = fstat(read_end.get(), &stat_buf);
   BPF_ASSERT_EQ(0, sys_ret);
   BPF_ASSERT(S_ISFIFO(stat_buf.st_mode) || S_ISSOCK(stat_buf.st_mode));
+
+  sys_ret = fstatat(read_end.get(), "", &stat_buf, AT_EMPTY_PATH);
+  BPF_ASSERT_EQ(0, sys_ret);
+  BPF_ASSERT(S_ISFIFO(stat_buf.st_mode) || S_ISSOCK(stat_buf.st_mode));
+
+  // Make sure fstatat with anything other than an empty string is denied.
+  sys_ret = fstatat(read_end.get(), "/", &stat_buf, AT_EMPTY_PATH);
+  BPF_ASSERT_EQ(sys_ret, -1);
+  BPF_ASSERT_EQ(EPERM, errno);
+
+  // Make sure fstatat without AT_EMPTY_PATH is denied.
+  sys_ret = fstatat(read_end.get(), "", &stat_buf, 0);
+  BPF_ASSERT_EQ(sys_ret, -1);
+  BPF_ASSERT_EQ(EPERM, errno);
 
   const ssize_t kTestTransferSize = 4;
   static const char kTestString[kTestTransferSize] = {'T', 'E', 'S', 'T'};
@@ -138,7 +154,9 @@ BPF_TEST_C(BaselinePolicy, ForkArmEperm, BaselinePolicy) {
 BPF_TEST_C(BaselinePolicy, SystemEperm, BaselinePolicy) {
   errno = 0;
   int ret_val = system("echo SHOULD NEVER RUN");
-  BPF_ASSERT_EQ(-1, ret_val);
+  // glibc >= 2.33 changed the ret code: 127 is now expected on bits 15-8
+  // previously it was simply -1, so check for not zero
+  BPF_ASSERT_NE(0, ret_val);
   BPF_ASSERT_EQ(EPERM, errno);
 }
 
@@ -168,7 +186,7 @@ BPF_TEST_C(BaselinePolicy, CreateThread, BaselinePolicy) {
 }
 
 // Rseq should be enabled if it exists (i.e. shouldn't receive EPERM).
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 BPF_TEST_C(BaselinePolicy, RseqEnabled, BaselinePolicy) {
   errno = 0;
   int res = syscall(__NR_rseq, 0, 0, 0, 0);
@@ -178,7 +196,7 @@ BPF_TEST_C(BaselinePolicy, RseqEnabled, BaselinePolicy) {
   // EINVAL, or ENOSYS if the kernel is too old to recognize the system call.
   BPF_ASSERT(EINVAL == errno || ENOSYS == errno);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 BPF_DEATH_TEST_C(BaselinePolicy,
                  DisallowedCloneFlagCrashes,
@@ -235,7 +253,7 @@ BPF_DEATH_TEST_C(BaselinePolicy,
                  DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
                  BaselinePolicy) {
   int sv[2];
-  ignore_result(socketpair(AF_INET, SOCK_STREAM, 0, sv));
+  std::ignore = socketpair(AF_INET, SOCK_STREAM, 0, sv);
   _exit(1);
 }
 #endif  // defined(__x86_64__) || defined(__arm__) || defined(__aarch64__)

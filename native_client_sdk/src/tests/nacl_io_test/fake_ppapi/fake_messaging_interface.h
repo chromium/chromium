@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_MESSAGING_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_MESSAGING_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_MESSAGING_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_MESSAGING_INTERFACE_H_
 
 #include <string>
 #include <vector>
@@ -20,6 +20,10 @@ class FakeMessagingInterface : public nacl_io::MessagingInterface {
  public:
   FakeMessagingInterface(FakeVarManager* manager,
                          nacl_io::VarInterface* var_interface);
+
+  FakeMessagingInterface(const FakeMessagingInterface&) = delete;
+  FakeMessagingInterface& operator=(const FakeMessagingInterface&) = delete;
+
   ~FakeMessagingInterface();
 
   virtual void PostMessage(PP_Instance instance, PP_Var message);
@@ -28,7 +32,6 @@ class FakeMessagingInterface : public nacl_io::MessagingInterface {
  private:
   FakeVarManager* manager_;
   nacl_io::VarInterface* var_interface_;
-  DISALLOW_COPY_AND_ASSIGN(FakeMessagingInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_MESSAGING_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_MESSAGING_INTERFACE_H_

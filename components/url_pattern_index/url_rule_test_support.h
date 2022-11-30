@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,11 +55,18 @@ constexpr proto::SourceType kFirstParty = proto::SOURCE_TYPE_FIRST_PARTY;
 // initialized to defaults.
 proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern = UrlPattern());
 
-// Parses |domains| and adds them to the domain list of the |rule|.
+// Parses `initiator_domains` and adds them to the initiator domain list of the
+// `rule`.
 //
-// The |domains| vector should contain non-empty strings. If a string starts
-// with '~' then the following part of the string is an exception domain.
-void AddDomains(const std::vector<std::string>& domains, proto::UrlRule* rule);
+// The `initiator_domains` vector should contain non-empty strings. If a string
+// starts with '~' then the following part of the string is an exception domain.
+void AddInitiatorDomains(const std::vector<std::string>& initiator_domains,
+                         proto::UrlRule* rule);
+
+// Parses `request_domains` and adds them to the request domain list of the
+// `rule`. See `AddInitiatorDomains`.
+void AddRequestDomains(const std::vector<std::string>& request_domains,
+                       proto::UrlRule* rule);
 
 // Returns the url::Origin parsed from |origin_string|, or the unique origin if
 // the string is empty.

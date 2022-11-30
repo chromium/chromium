@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -240,33 +245,6 @@ TEST_F(ConcurrentMarkingTest, SwapLinkedHashSet) {
   SwapCollections<HeapLinkedHashSet<Member<IntegerObject>>>();
 }
 
-// HeapListHashSet
-
-template <typename T>
-struct MethodAdapter<HeapListHashSet<T>>
-    : public MethodAdapterBase<HeapListHashSet<T>> {
-  static void Swap(HeapListHashSet<T>& a, HeapListHashSet<T>& b) { a.Swap(b); }
-};
-
-TEST_F(ConcurrentMarkingTest, AddToListHashSet) {
-  AddToCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfListHashSet) {
-  RemoveFromBeginningOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfListHashSet) {
-  RemoveFromMiddleOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, RemoveFromEndOfListHashSet) {
-  RemoveFromEndOfCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, ClearListHashSet) {
-  ClearCollection<HeapListHashSet<Member<IntegerObject>>>();
-}
-TEST_F(ConcurrentMarkingTest, SwapListHashSet) {
-  SwapCollections<HeapListHashSet<Member<IntegerObject>>>();
-}
-
 // HeapHashCountedSet
 
 TEST_F(ConcurrentMarkingTest, AddToHashCountedSet) {
@@ -310,21 +288,6 @@ void PopFromCollection() {
   }
   driver.FinishGC();
 }
-
-#define TEST_VECTOR_COLLECTION(name, type)                                \
-  TEST_F(ConcurrentMarkingTest, AddTo##name) { AddToCollection<type>(); } \
-  TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOf##name) {            \
-    RemoveFromBeginningOfCollection<type>();                              \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOf##name) {               \
-    RemoveFromMiddleOfCollection<type>();                                 \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, RemoveFromEndOf##name) {                  \
-    RemoveFromEndOfCollection<type>();                                    \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, Clear##name) { ClearCollection<type>(); } \
-  TEST_F(ConcurrentMarkingTest, Swap##name) { SwapCollections<type>(); }  \
-  TEST_F(ConcurrentMarkingTest, PopFrom##name) { PopFromCollection<type>(); }
 
 template <typename T, wtf_size_t inlineCapacity>
 struct MethodAdapter<HeapVector<T, inlineCapacity>>

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "chrome/common/extensions/api/mdns.h"
@@ -34,6 +34,10 @@ class MDnsAPI : public BrowserContextKeyedAPI,
                 public media_router::DnsSdRegistry::DnsSdObserver {
  public:
   explicit MDnsAPI(content::BrowserContext* context);
+
+  MDnsAPI(const MDnsAPI&) = delete;
+  MDnsAPI& operator=(const MDnsAPI&) = delete;
+
   ~MDnsAPI() override;
 
   static MDnsAPI* Get(content::BrowserContext* context);
@@ -107,20 +111,21 @@ class MDnsAPI : public BrowserContextKeyedAPI,
 
   // Ensure methods are only called on UI thread.
   base::ThreadChecker thread_checker_;
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   // Raw pointer to a leaky singleton. Lazily created on first access. Must
   // outlive this object.
-  media_router::DnsSdRegistry* dns_sd_registry_;
+  raw_ptr<media_router::DnsSdRegistry> dns_sd_registry_;
   // Count of active listeners per service type, saved from the previous
   // invocation of UpdateMDnsListeners().
   ServiceTypeCounts prev_service_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsAPI);
 };
 
 class MdnsForceDiscoveryFunction : public ExtensionFunction {
  public:
   MdnsForceDiscoveryFunction();
+  MdnsForceDiscoveryFunction(const MdnsForceDiscoveryFunction&) = delete;
+  MdnsForceDiscoveryFunction& operator=(const MdnsForceDiscoveryFunction&) =
+      delete;
 
  protected:
   ~MdnsForceDiscoveryFunction() override;
@@ -130,7 +135,6 @@ class MdnsForceDiscoveryFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   DECLARE_EXTENSION_FUNCTION("mdns.forceDiscovery", MDNS_FORCEDISCOVERY)
-  DISALLOW_COPY_AND_ASSIGN(MdnsForceDiscoveryFunction);
 };
 
 }  // namespace extensions

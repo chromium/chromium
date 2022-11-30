@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_CONTENT_MANAGER_H_
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -17,15 +15,46 @@ class MockDlpContentManager : public DlpContentManager {
   MockDlpContentManager();
   ~MockDlpContentManager() override;
 
-  MOCK_METHOD2(OnConfidentialityChanged,
-               void(content::WebContents*, const DlpContentRestrictionSet&));
-  MOCK_METHOD1(OnWebContentsDestroyed, void(content::WebContents*));
-  MOCK_CONST_METHOD1(GetRestrictionSetForURL,
-                     DlpContentRestrictionSet(const GURL&));
-  MOCK_METHOD1(OnVisibilityChanged, void(content::WebContents*));
-  MOCK_CONST_METHOD1(IsScreenshotRestricted, bool(const ScreenshotArea& area));
-  MOCK_CONST_METHOD1(IsScreenCaptureRestricted,
-                     bool(const content::DesktopMediaID& media_id));
+  MOCK_METHOD(void,
+              OnConfidentialityChanged,
+              (content::WebContents*, const DlpContentRestrictionSet&),
+              (override));
+  MOCK_METHOD(void,
+              OnWebContentsDestroyed,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void, OnVisibilityChanged, (content::WebContents*), (override));
+  MOCK_METHOD(bool,
+              IsScreenshotApiRestricted,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(void,
+              CheckScreenShareRestriction,
+              (const content::DesktopMediaID&,
+               const std::u16string&,
+               OnDlpRestrictionCheckedCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnScreenShareStarted,
+              (const std::string&,
+               std::vector<content::DesktopMediaID>,
+               const std::u16string&,
+               base::RepeatingClosure,
+               content::MediaStreamUI::StateChangeCallback,
+               content::MediaStreamUI::SourceCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnScreenShareStopped,
+              (const std::string&, const content::DesktopMediaID&),
+              (override));
+  MOCK_METHOD(ConfidentialContentsInfo,
+              GetScreenShareConfidentialContentsInfo,
+              (const content::DesktopMediaID&, content::WebContents*),
+              (const override));
+  MOCK_METHOD(void,
+              TabLocationMaybeChanged,
+              (content::WebContents * web_contents),
+              (override));
 };
 
 }  // namespace policy

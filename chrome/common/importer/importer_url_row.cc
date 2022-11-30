@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,5 +17,6 @@ ImporterURLRow::ImporterURLRow(const GURL& url)
       hidden(false) {
 }
 
-ImporterURLRow::ImporterURLRow(const ImporterURLRow& other) = default;
+ImporterURLRow::ImporterURLRow(const ImporterURLRow&) = default;
 
+ImporterURLRow& ImporterURLRow::operator=(const ImporterURLRow&) = default;

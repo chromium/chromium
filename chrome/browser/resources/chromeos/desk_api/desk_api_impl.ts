@@ -1,0 +1,53 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview The implementation of Desk API
+ */
+
+import {DeskApi, LaunchOptions, RemoveDeskOptions, WindowProperties} from './types';
+
+
+/**
+ * Provides the implementation for Desk API.
+ */
+export class DeskApiImpl implements DeskApi {
+  launchDesk(
+      options: LaunchOptions, callback: chrome.wmDesksPrivate.DeskIdCallback) {
+    if (typeof chrome.wmDesksPrivate.launchDesk !== 'function') {
+      throw new Error('launchDesk is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.launchDesk(options, callback);
+  }
+  removeDesk(
+      deskUuid: string, options: RemoveDeskOptions,
+      callback: chrome.wmDesksPrivate.VoidCallback) {
+    if (typeof chrome.wmDesksPrivate.removeDesk !== 'function') {
+      throw new Error('removeDesk is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.removeDesk(deskUuid, options, callback);
+  }
+  setWindowProperties(
+      windowId: number, windowProperties: WindowProperties,
+      callback: chrome.wmDesksPrivate.VoidCallback) {
+    if (typeof chrome.wmDesksPrivate.setWindowProperties !== 'function') {
+      throw new Error('setWindowProperties is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.setWindowProperties(
+        windowId, windowProperties, callback);
+  }
+  getActiveDesk(callback: chrome.wmDesksPrivate.DeskIdCallback) {
+    if (typeof chrome.wmDesksPrivate.getActiveDesk !== 'function') {
+      throw new Error('getActiveDesk is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.getActiveDesk(callback);
+  }
+
+  switchDesk(deskId: string, callback: chrome.wmDesksPrivate.VoidCallback) {
+    if (typeof chrome.wmDesksPrivate.switchDesk !== 'function') {
+      throw new Error('switchDesk is not supported in this version.');
+    }
+    chrome.wmDesksPrivate.switchDesk(deskId, callback);
+  }
+}

@@ -1,5 +1,0 @@
-include_rules = [
-  "+chromeos/services/cros_healthd/public/mojom",
-  "+chromeos/services/network_health/public/mojom",
-  "+mojo/public",
-]

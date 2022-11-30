@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <queue>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 
 // The gpu_timing classes handles the abstraction of GL GPU Timing extensions
@@ -60,6 +60,9 @@ class GPUTiming {
     kTimerTypeDisjoint  // EXT_disjoint_timer_query
   };
 
+  GPUTiming(const GPUTiming&) = delete;
+  GPUTiming& operator=(const GPUTiming&) = delete;
+
  protected:
   friend std::default_delete<GPUTiming>;
   friend class GLContextReal;
@@ -70,8 +73,6 @@ class GPUTiming {
   virtual ~GPUTiming();
 
   virtual scoped_refptr<GPUTimingClient> CreateGPUTimingClient() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTiming);
 };
 
 // Class to compute the amount of time it takes to fully
@@ -79,6 +80,9 @@ class GPUTiming {
 class GL_EXPORT GPUTimer {
  public:
   static void DisableTimestampQueries();
+
+  GPUTimer(const GPUTimer&) = delete;
+  GPUTimer& operator=(const GPUTimer&) = delete;
 
   ~GPUTimer();
 
@@ -117,8 +121,6 @@ class GL_EXPORT GPUTimer {
   scoped_refptr<GPUTimingClient> gpu_timing_client_;
   scoped_refptr<QueryResult> time_stamp_result_;
   scoped_refptr<QueryResult> elapsed_timer_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimer);
 };
 
 // GPUTimingClient contains all the gl timing logic that is not specific
@@ -127,6 +129,9 @@ class GL_EXPORT GPUTimingClient
     : public base::RefCounted<GPUTimingClient> {
  public:
   explicit GPUTimingClient(GPUTimingImpl* gpu_timing = nullptr);
+
+  GPUTimingClient(const GPUTimingClient&) = delete;
+  GPUTimingClient& operator=(const GPUTimingClient&) = delete;
 
   std::unique_ptr<GPUTimer> CreateGPUTimer(bool prefer_elapsed_time);
   bool IsAvailable();
@@ -152,11 +157,9 @@ class GL_EXPORT GPUTimingClient
 
   virtual ~GPUTimingClient();
 
-  GPUTimingImpl* gpu_timing_;
+  raw_ptr<GPUTimingImpl> gpu_timing_;
   GPUTiming::TimerType timer_type_ = GPUTiming::kTimerTypeInvalid;
   uint32_t disjoint_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTimingClient);
 };
 
 }  // namespace gl

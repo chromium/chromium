@@ -1,0 +1,25 @@
+caption: Restrict the UDP port range used by the remote access host
+desc: |-
+  Setting the policy restricts the UDP port range used by the remote access host in this machine.
+
+        Leaving the policy unset or set to an empty string means the remote access host can use any available port.
+
+        Note: If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is Disabled, the remote access host will use UDP ports in the 12400-12409 range.
+example_value: 12400-12409
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- yuweih@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome.*:36-
+- chrome_os:41-
+tags: []
+type: string

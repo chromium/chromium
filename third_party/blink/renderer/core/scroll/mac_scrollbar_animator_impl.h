@@ -1,134 +1,97 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_
 
-#include <memory>
-
-#include "base/mac/scoped_nsobject.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
-
-@class BlinkScrollbarPainterControllerDelegate;
-@class BlinkScrollbarPainterDelegate;
-
-typedef id ScrollbarPainterController;
-typedef id ScrollbarPainter;
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/native_theme/scrollbar_animator_mac.h"
 
 namespace blink {
-// This class handles scrollbar opacity animations by delegating to native
-// Cocoa APIs (.mm).
-// It was created with the goal of solving (crbug.com/682209), but we still
-// need to replace the Cocoa APIs calls by platform-agnostic code.
-//
-// The animations handled are:
-// - knob alpha : thumb transparency animation
-// - track alpha : track transparency animation
-// - ui state transition
-// - expansion transition
-// (these are enumerated by |FeatureToAnimate|)
-//
-// All these animation are theme-related, it means that they're specific to
-// the ScrollbarThemeMac theme, and use the Cocoa private APIs to drive that
-// animation.
-//
-// The objective-c classes defined on the .mm file are used to glue our blink
-// code with the Cocoa APIs for animation.
-//
-// - |BlinkScrollbarPartAnimation|: animates the properties of a
-// |ScrollbarPainter| (|NSScrollerImp|) object based on a |FeatureToAnimate|.
-// - |BlinkScrollbarPartAnimationTimer|: Implements the curve that maps the time
-// elapsed in the animation to the animation progress.
-// - |BlinkScrollbarPainterControllerDelegate|: Delegates tasks from a
-// |ScrollbarPainterController| (|NSScrollerImpPair|) to the |ScrollableArea|
-// where the ScrollbarPainter is painting
-// - |BlinkScrollbarPainterDelegate|: Delegates the creation and running of all
-// 4 |BlinkScrollbarPartAnimation| on a |ScrollbarPainter|.
-//
-//
-// The usage of these classes follow:
-//
-// The "scrollbar painter controller" calls back into Blink via
-// BlinkScrollbarPainterControllerDelegate.
-//
-// The "scrollbar painter" calls back into Blink via
-// BlinkScrollbarPainterDelegate.  The scrollbar painter is registered
-// with ScrollbarThemeMac, so that the ScrollbarTheme painting APIs can call
-// into it.
-//
-// The scrollbar painter initiates an overlay scrollbar fade-out animation by
-// calling animateKnobAlphaTo on the delegate.  This starts a timer inside the
-// BlinkScrollbarPartAnimationTimer.  Each tick evaluates a cubic bezier
-// function to obtain the current opacity, which is stored in the scrollbar
-// painter with setKnobAlpha.
-//
-// If the scroller is composited, the opacity value stored on the scrollbar
-// painter is subsequently read out through ScrollbarThemeMac::ThumbOpacity and
-// plumbed into PaintedScrollbarLayerImpl::thumb_opacity_.
-class PLATFORM_EXPORT MacScrollbarAnimatorImpl : public MacScrollbarAnimator {
+
+// Implementation of the ui::OverlayScrollbarAnimatorMac::Client interface to
+// talk to a Scrollbar instance.
+class CORE_EXPORT MacScrollbarImplV2
+    : public ui::OverlayScrollbarAnimatorMac::Client,
+      public MacScrollbar {
  public:
-  MacScrollbarAnimatorImpl(ScrollableArea*);
-  virtual ~MacScrollbarAnimatorImpl() = default;
+  MacScrollbarImplV2(Scrollbar& scrollbar,
+                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ~MacScrollbarImplV2() override;
 
-  bool needs_scroller_style_update_ = false;
-  ScrollOffset content_area_scrolled_timer_scroll_delta_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  TaskHandle initial_scrollbar_paint_task_handle_;
-  TaskHandle send_content_area_scrolled_task_handle_;
+  // Return true if `this` is the animator for `scrollbar`.
+  bool IsAnimatorFor(Scrollbar& scrollbar) const;
 
-  // MacScrollbarAnimator overrides
-  void ContentAreaWillPaint() const override;
-  void MouseEnteredContentArea() const override;
-  void MouseExitedContentArea() const override;
-  void MouseMovedInContentArea() const override;
-  void MouseEnteredScrollbar(Scrollbar&) const override;
-  void MouseExitedScrollbar(Scrollbar&) const override;
-  void ContentsResized() const override;
-  void DidAddVerticalScrollbar(Scrollbar&) override;
-  void WillRemoveVerticalScrollbar(Scrollbar&) override;
-  void DidAddHorizontalScrollbar(Scrollbar&) override;
-  void WillRemoveHorizontalScrollbar(Scrollbar&) override;
-  bool SetScrollbarsVisibleForTesting(bool) override;
-  void DidChangeUserVisibleScrollOffset(
-      const ScrollOffset& offset_delta) override;
+  // Function to call upon interaction with this scrollbar.
+  void MouseDidEnter();
+  void MouseDidExit();
+  void DidScroll();
 
-  void UpdateScrollerStyle() override;
+  // MacScrollbar:
+  void SetEnabled(bool) final {}
+  void SetOverlayColorTheme(ScrollbarOverlayColorTheme) final {}
+  float GetKnobAlpha() final;
+  float GetTrackAlpha() final;
+  int GetTrackBoxWidth() final;
 
-  void InitialScrollbarPaintTask();
-  void SendContentAreaScrolledTask();
+  // ui::OverlayScrollbarAnimatorMac::Client:
+  bool IsMouseInScrollbarFrameRect() const override;
+  void SetHidden(bool hidden) override;
+  void SetThumbNeedsDisplay() override;
+  void SetTrackNeedsDisplay() override;
 
-  bool ScrollbarPaintTimerIsActive() const override;
-  void StartScrollbarPaintTimer() override;
-  void StopScrollbarPaintTimer() override;
+ private:
+  std::unique_ptr<ui::OverlayScrollbarAnimatorMac> overlay_animator_;
+  Persistent<Scrollbar> scrollbar_;
+};
 
-  void Dispose() override;
+// A non-Cocoa-based implementation of the MacScrollbarAnimator interface.
+class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
+ public:
+  MacScrollbarAnimatorV2(ScrollableArea*);
+  virtual ~MacScrollbarAnimatorV2();
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(scrollable_area_);
+  // MacScrollbarAnimator:
+  void Trace(Visitor* visitor) const final {
     MacScrollbarAnimator::Trace(visitor);
   }
+  void ContentAreaWillPaint() const final {}
+  void MouseEnteredContentArea() const final {}
+  void MouseExitedContentArea() const final {}
+  void MouseMovedInContentArea() const final {}
+  void MouseEnteredScrollbar(Scrollbar&) const final;
+  void MouseExitedScrollbar(Scrollbar&) const final;
+  void ContentsResized() const final {}
+  void DidAddVerticalScrollbar(Scrollbar&) final;
+  void WillRemoveVerticalScrollbar(Scrollbar&) final;
+  void DidAddHorizontalScrollbar(Scrollbar&) final;
+  void WillRemoveHorizontalScrollbar(Scrollbar&) final;
+  bool SetScrollbarsVisibleForTesting(bool) final { return true; }
+  void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
+  void UpdateScrollerStyle() final { NOTREACHED(); }
+  bool ScrollbarPaintTimerIsActive() const final {
+    NOTREACHED();
+    return false;
+  }
+  void StartScrollbarPaintTimer() final { NOTREACHED(); }
+  void StopScrollbarPaintTimer() final { NOTREACHED(); }
+  void Dispose() final;
 
- protected:
-  base::scoped_nsobject<ScrollbarPainterController>
-      scrollbar_painter_controller_;
-  base::scoped_nsobject<BlinkScrollbarPainterControllerDelegate>
-      scrollbar_painter_controller_delegate_;
-  base::scoped_nsobject<BlinkScrollbarPainterDelegate>
-      horizontal_scrollbar_painter_delegate_;
-  base::scoped_nsobject<BlinkScrollbarPainterDelegate>
-      vertical_scrollbar_painter_delegate_;
-
-  Member<ScrollableArea> scrollable_area_;
+ private:
+  std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;
+  std::unique_ptr<MacScrollbarImplV2> vertical_scrollbar_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_

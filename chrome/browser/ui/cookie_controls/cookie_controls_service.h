@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -36,6 +37,9 @@ class CookieControlsService : public KeyedService,
     virtual void OnThirdPartyCookieBlockingPolicyChanged() {}
   };
 
+  CookieControlsService(const CookieControlsService&) = delete;
+  CookieControlsService& operator=(const CookieControlsService&) = delete;
+
   ~CookieControlsService() override;
 
   void Init();
@@ -62,17 +66,15 @@ class CookieControlsService : public KeyedService,
   void OnThirdPartyCookieBlockingPolicyChanged(const base::Value* previous,
                                                const base::Value* current);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_registrar_;
-  scoped_refptr<content_settings::CookieSettings> incongito_cookie_settings_;
+  scoped_refptr<content_settings::CookieSettings> incognito_cookie_settings_;
   scoped_refptr<content_settings::CookieSettings> regular_cookie_settings_;
-  ScopedObserver<content_settings::CookieSettings,
-                 content_settings::CookieSettings::Observer>
-      cookie_observer_{this};
+  base::ScopedMultiSourceObservation<content_settings::CookieSettings,
+                                     content_settings::CookieSettings::Observer>
+      cookie_observations_{this};
 
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsService);
 };
 
 #endif  // CHROME_BROWSER_UI_COOKIE_CONTROLS_COOKIE_CONTROLS_SERVICE_H_

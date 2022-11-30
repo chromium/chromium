@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,8 @@ import("//build/config/android/rules.gni")
 source_set("android") {
   sources = [
     "content_capture_features_android.cc",
-    "content_capture_receiver_manager_android.cc",
-    "content_capture_receiver_manager_android.h",
+    "onscreen_content_provider_android.cc",
+    "onscreen_content_provider_android.h",
   ]
   deps = [
     ":jni_headers",
@@ -20,26 +20,29 @@ source_set("android") {
 android_library("java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/content_capture/ContentCaptureConsumer.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureConsumerImpl.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureDataBase.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
     "java/src/org/chromium/components/content_capture/ContentCapturedTask.java",
     "java/src/org/chromium/components/content_capture/ContentRemovedTask.java",
     "java/src/org/chromium/components/content_capture/ContentUpdateTask.java",
     "java/src/org/chromium/components/content_capture/ExperimentContentCaptureConsumer.java",
+    "java/src/org/chromium/components/content_capture/FaviconUpdateTask.java",
     "java/src/org/chromium/components/content_capture/FrameSession.java",
     "java/src/org/chromium/components/content_capture/NotificationTask.java",
+    "java/src/org/chromium/components/content_capture/OnscreenContentProvider.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapper.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapperImpl.java",
+    "java/src/org/chromium/components/content_capture/PlatformContentCaptureConsumer.java",
     "java/src/org/chromium/components/content_capture/PlatformContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/PlatformSession.java",
     "java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java",
@@ -54,6 +57,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
+    "java/src/org/chromium/components/content_capture/OnscreenContentProvider.java",
   ]
 }

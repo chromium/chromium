@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // A simulated modal dialog. Taking focus seems important to repro the crash,
@@ -28,7 +28,9 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
     DCHECK(owned_by_widget());
     SetModalType(ui::MODAL_TYPE_CHILD);
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    // Dialogs that take focus must have a name to pass accessibility checks.
+    // Dialogs that take focus must have a name and role to pass accessibility
+    // checks.
+    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
     GetViewAccessibility().OverrideName("Test dialog");
   }
   ChildModalDialogDelegate(const ChildModalDialogDelegate&) = delete;
@@ -55,7 +57,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalDialogDelegateTest,
   // Show the captive portal dialog.
   LoginDisplayHostMojo* login_display_host =
       static_cast<LoginDisplayHostMojo*>(LoginDisplayHost::default_host());
-  OobeUIDialogDelegate* oobe_ui_dialog = login_display_host->dialog_for_test();
+  OobeUIDialogDelegate* oobe_ui_dialog =
+      login_display_host->EnsureDialogForTest();
   CaptivePortalDialogDelegate* portal_dialog =
       oobe_ui_dialog->captive_portal_delegate_for_test();
   views::test::WidgetVisibleWaiter show_waiter(
@@ -79,4 +82,4 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalDialogDelegateTest,
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

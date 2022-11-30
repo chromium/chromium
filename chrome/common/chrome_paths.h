@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/widevine/cdm/buildflags.h"
 
 namespace base {
 class FilePath;
@@ -21,11 +22,10 @@ namespace chrome {
 enum {
   PATH_START = 1000,
 
-  DIR_APP = PATH_START,  // Directory where dlls and data reside.
-  DIR_LOGS,              // Directory where logs should be written.
-  DIR_USER_DATA,         // Directory where user data can be written.
-  DIR_CRASH_DUMPS,       // Directory where crash dumps are written.
-#if defined(OS_WIN)
+  DIR_LOGS = PATH_START,  // Directory where logs should be written.
+  DIR_USER_DATA,          // Directory where user data can be written.
+  DIR_CRASH_DUMPS,        // Directory where crash dumps are written.
+#if BUILDFLAG(IS_WIN)
   DIR_WATCHER_DATA,       // Directory where the Chrome watcher stores
                           // data.
   DIR_ROAMING_USER_DATA,  // Directory where user data is stored that
@@ -45,7 +45,7 @@ enum {
   DIR_INTERNAL_PLUGINS,        // Directory where internal plugins reside.
   DIR_COMPONENTS,              // Directory where built-in implementations of
                                // component-updated libraries or data reside.
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   DIR_POLICY_FILES,  // Directory for system-wide read-only
                      // policy files that allow sys-admins
                      // to set policies for chrome. This directory
@@ -53,10 +53,10 @@ enum {
 #endif
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) ||                            \
-    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     BUILDFLAG(CHROMIUM_BRANDING)) ||                        \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) ||                              \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+     BUILDFLAG(CHROMIUM_BRANDING)) ||                          \
+    BUILDFLAG(IS_MAC)
   DIR_USER_EXTERNAL_EXTENSIONS,  // Directory for per-user external extensions
                                  // on Chrome Mac and Chromium Linux.
                                  // On Chrome OS, this path is used for OEM
@@ -64,7 +64,7 @@ enum {
                                  // create it.
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   DIR_STANDALONE_EXTERNAL_EXTENSIONS,  // Directory for 'per-extension'
                                        // definition manifest files that
                                        // describe extensions which are to be
@@ -72,34 +72,40 @@ enum {
 #endif
   DIR_EXTERNAL_EXTENSIONS,  // Directory where installer places .crx files.
 
-  DIR_DEFAULT_APPS,         // Directory where installer places .crx files
-                            // to be installed when chrome is first run.
-  FILE_RESOURCE_MODULE,      // Full path and filename of the module that
-                             // contains embedded resources (version,
-                             // strings, images, etc.).
-  FILE_LOCAL_STATE,          // Path and filename to the file in which
-                             // machine/installation-specific state is saved.
-  FILE_RECORDED_SCRIPT,      // Full path to the script.log file that
-                             // contains recorded browser events for
-                             // playback.
-  DIR_PNACL_BASE,            // Full path to the base dir for PNaCl.
-  DIR_PNACL_COMPONENT,       // Full path to the latest PNaCl version
-                             // (subdir of DIR_PNACL_BASE).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  DIR_DEFAULT_APPS,      // Directory where installer places .crx files
+                         // to be installed when chrome is first run.
+  FILE_LOCAL_STATE,      // Path and filename to the file in which
+                         // machine/installation-specific state is saved.
+  FILE_RECORDED_SCRIPT,  // Full path to the script.log file that
+                         // contains recorded browser events for
+                         // playback.
+  DIR_PNACL_BASE,        // Full path to the base dir for PNaCl.
+  DIR_PNACL_COMPONENT,   // Full path to the latest PNaCl version
+                         // (subdir of DIR_PNACL_BASE).
+#if BUILDFLAG(ENABLE_WIDEVINE)
   DIR_BUNDLED_WIDEVINE_CDM,  // Full path to the directory containing the
                              // bundled Widevine CDM.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DIR_COMPONENT_UPDATED_WIDEVINE_CDM,  // Base directory of the Widevine CDM
-                                       // downloaded by the component
-                                       // updater.
+                                       // downloaded by the component updater.
   FILE_COMPONENT_WIDEVINE_CDM_HINT,    // A file in a known location that points
                                        // to the component updated Widevine CDM.
-#endif                                 // !BUILDFLAG(IS_CHROMEOS_ASH)
-#endif                  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif
   FILE_RESOURCES_PACK,  // Full path to the .pak file containing binary data.
                         // This includes data for internal pages (e.g., html
                         // files and images), unless these resources are
                         // purposefully split into a separate file.
+#if BUILDFLAG(IS_CHROMEOS)
+  FILE_RESOURCES_FOR_SHARING_PACK,  // Full path to the shared_resources.pak
+                                    // tile containing binary data. This
+                                    // includes mapping table from lacros
+                                    // resource id to ash resource id, and
+                                    // fallback resources info consists of
+                                    // resources not included in
+                                    // ASH_RESOURCES_PACK.
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FILE_ASH_RESOURCES_PACK,  // Full path to ash resources.pak file.
+#endif
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing
                                // binary data for internal pages (e.g., html
                                // files and images).
@@ -111,13 +117,13 @@ enum {
   DIR_CHROMEOS_CUSTOM_WALLPAPERS,     // Directory where custom wallpapers
                                       // reside.
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   DIR_NATIVE_MESSAGING,       // System directory where native messaging host
                               // manifest files are stored.
   DIR_USER_NATIVE_MESSAGING,  // Directory with Native Messaging Hosts
                               // installed per-user.
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DIR_GLOBAL_GCM_STORE,  // Directory where the global GCM instance
                          // stores its data.
 #endif

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/task/post_task.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -17,13 +15,18 @@
 class IOSChromeURLRequestContextFactory {
  public:
   IOSChromeURLRequestContextFactory() {}
+
+  IOSChromeURLRequestContextFactory(const IOSChromeURLRequestContextFactory&) =
+      delete;
+  IOSChromeURLRequestContextFactory& operator=(
+      const IOSChromeURLRequestContextFactory&) = delete;
+
   virtual ~IOSChromeURLRequestContextFactory() {}
 
   // Called to create a new instance (will only be called once).
   virtual net::URLRequestContext* Create() = 0;
 
  protected:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeURLRequestContextFactory);
 };
 
 namespace {
@@ -93,7 +96,7 @@ void IOSChromeURLRequestContextGetter::NotifyContextShuttingDown() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 IOSChromeURLRequestContextGetter::GetNetworkTaskRunner() const {
-  return base::CreateSingleThreadTaskRunner({web::WebThread::IO});
+  return web::GetIOThreadTaskRunner({});
 }
 
 // static

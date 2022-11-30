@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,17 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
+using blink::PermissionType;
 using blink::mojom::PermissionStatus;
-using content::PermissionType;
 
 using RequestPermissionsCallback =
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>;
@@ -42,6 +44,9 @@ void PermissionRequestResponseCallbackWrapper(
 class LastRequestResultCache {
  public:
   LastRequestResultCache() = default;
+
+  LastRequestResultCache(const LastRequestResultCache&) = delete;
+  LastRequestResultCache& operator=(const LastRequestResultCache&) = delete;
 
   void SetResult(PermissionType permission,
                  const GURL& requesting_origin,
@@ -146,8 +151,6 @@ class LastRequestResultCache {
 
   using StatusMap = std::unordered_map<std::string, PermissionStatus>;
   StatusMap pmi_result_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(LastRequestResultCache);
 };
 
 class AwPermissionManager::PendingRequest {
@@ -234,20 +237,19 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-int AwPermissionManager::RequestPermission(
+void AwPermissionManager::RequestPermission(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(PermissionStatus)> callback) {
-  return RequestPermissions(
-      std::vector<PermissionType>(1, permission), render_frame_host,
-      requesting_origin, user_gesture,
-      base::BindOnce(&PermissionRequestResponseCallbackWrapper,
-                     std::move(callback)));
+  RequestPermissions(std::vector<PermissionType>(1, permission),
+                     render_frame_host, requesting_origin, user_gesture,
+                     base::BindOnce(&PermissionRequestResponseCallbackWrapper,
+                                    std::move(callback)));
 }
 
-int AwPermissionManager::RequestPermissions(
+void AwPermissionManager::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -255,7 +257,7 @@ int AwPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
-    return content::PermissionController::kNoPendingOperation;
+    return;
   }
 
   const GURL& embedding_origin = LastCommittedOrigin(render_frame_host);
@@ -340,7 +342,7 @@ int AwPermissionManager::RequestPermissions(
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_PLACEMENT:
-      case PermissionType::FONT_ACCESS:
+      case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
@@ -372,7 +374,7 @@ int AwPermissionManager::RequestPermissions(
   // If delegate resolve the permission synchronously, all requests could be
   // already resolved here.
   if (!pending_requests_.Lookup(request_id))
-    return content::PermissionController::kNoPendingOperation;
+    return;
 
   // If requests are resolved without calling delegate functions, e.g.
   // PermissionType::MIDI is permitted within the previous for-loop, all
@@ -384,10 +386,7 @@ int AwPermissionManager::RequestPermissions(
         std::move(pending_request_raw->callback);
     pending_requests_.Remove(request_id);
     std::move(completed_callback).Run(results);
-    return content::PermissionController::kNoPendingOperation;
   }
-
-  return request_id;
 }
 
 // static
@@ -443,6 +442,17 @@ void AwPermissionManager::ResetPermission(PermissionType permission,
   result_cache_->ClearResult(permission, requesting_origin, embedding_origin);
 }
 
+void AwPermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<PermissionType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
+  RequestPermissions(permissions, render_frame_host,
+                     LastCommittedOrigin(render_frame_host), user_gesture,
+                     std::move(callback));
+}
+
 PermissionStatus AwPermissionManager::GetPermissionStatus(
     PermissionType permission,
     const GURL& requesting_origin,
@@ -459,27 +469,47 @@ PermissionStatus AwPermissionManager::GetPermissionStatus(
   return PermissionStatus::DENIED;
 }
 
-PermissionStatus AwPermissionManager::GetPermissionStatusForFrame(
-    PermissionType permission,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin) {
-  return GetPermissionStatus(
-      permission, requesting_origin,
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetLastCommittedURL()
-          .GetOrigin());
+content::PermissionResult
+AwPermissionManager::GetPermissionResultForOriginWithoutContext(
+    blink::PermissionType permission,
+    const url::Origin& origin) {
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission, origin.GetURL(), origin.GetURL());
+
+  return content::PermissionResult(
+      status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
-int AwPermissionManager::SubscribePermissionStatusChange(
+PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
     PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  return GetPermissionStatus(
+      permission,
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host),
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          render_frame_host->GetMainFrame()));
+}
+
+PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
+    PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
+}
+
+AwPermissionManager::SubscriptionId
+AwPermissionManager::SubscribePermissionStatusChange(
+    PermissionType permission,
+    content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(PermissionStatus)> callback) {
-  return content::PermissionController::kNoPendingOperation;
+  return SubscriptionId();
 }
 
 void AwPermissionManager::UnsubscribePermissionStatusChange(
-    int subscription_id) {}
+    SubscriptionId subscription_id) {}
 
 void AwPermissionManager::CancelPermissionRequest(int request_id) {
   PendingRequest* pending_request = pending_requests_.Lookup(request_id);
@@ -548,7 +578,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::STORAGE_ACCESS_GRANT:
       case PermissionType::CAMERA_PAN_TILT_ZOOM:
       case PermissionType::WINDOW_PLACEMENT:
-      case PermissionType::FONT_ACCESS:
+      case PermissionType::LOCAL_FONTS:
       case PermissionType::DISPLAY_CAPTURE:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
@@ -596,12 +626,13 @@ int AwPermissionManager::GetRenderFrameID(
 
 GURL AwPermissionManager::LastCommittedOrigin(
     content::RenderFrameHost* render_frame_host) {
-  return content::WebContents::FromRenderFrameHost(render_frame_host)
-      ->GetLastCommittedURL().GetOrigin();
+  return permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+      render_frame_host);
 }
 
 AwBrowserPermissionRequestDelegate* AwPermissionManager::GetDelegate(
-    int render_process_id, int render_frame_id) {
+    int render_process_id,
+    int render_frame_id) {
   return AwBrowserPermissionRequestDelegate::FromID(render_process_id,
                                                     render_frame_id);
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,17 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
-namespace chromeos {
-namespace assistant {
-enum class AssistantEntryPoint;
-enum class AssistantQuerySource;
-}  // namespace assistant
-}  // namespace chromeos
-
 namespace ash {
 namespace assistant {
+
+enum class AssistantEntryPoint;
+enum class AssistantQuerySource;
+
 namespace util {
 
 // Enumeration of deep link types.
@@ -34,13 +31,11 @@ enum class DeepLinkType {
   kLists,
   kNotes,
   kOnboarding,
-  kProactiveSuggestions,
   kQuery,
   kReminders,
   kScreenshot,
   kSettings,
   kTaskManager,
-  kWhatsOnMyScreen,
 };
 
 // Enumeration of deep link parameters.
@@ -72,14 +67,6 @@ enum class AlarmTimerAction {
   kResumeTimer,
 };
 
-// Enumeration of proactive suggestions deep link actions.
-enum class ProactiveSuggestionsAction {
-  kCardClick,
-  kEntryPointClick,
-  kEntryPointClose,
-  kViewImpression,
-};
-
 // Enumeration of reminder deep link actions.
 enum class ReminderAction {
   kCreate,
@@ -89,23 +76,21 @@ enum class ReminderAction {
 // Returns a new deep link, having appended or replaced the entry point param
 // from the original |deep_link| with |entry_point|.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-GURL AppendOrReplaceEntryPointParam(
-    const GURL& deep_link,
-    chromeos::assistant::AssistantEntryPoint entry_point);
+GURL AppendOrReplaceEntryPointParam(const GURL& deep_link,
+                                    AssistantEntryPoint entry_point);
 
 // Returns a new deep link, having appended or replaced the query source param
 // from the original |deep_link| with |query_source|.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-GURL AppendOrReplaceQuerySourceParam(
-    const GURL& deep_link,
-    chromeos::assistant::AssistantQuerySource query_source);
+GURL AppendOrReplaceQuerySourceParam(const GURL& deep_link,
+                                     AssistantQuerySource query_source);
 
 // Returns a deep link to perform an alarm/timer action.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<GURL> CreateAlarmTimerDeepLink(
+absl::optional<GURL> CreateAlarmTimerDeepLink(
     AlarmTimerAction action,
-    base::Optional<std::string> alarm_timer_id,
-    base::Optional<base::TimeDelta> duration = base::nullopt);
+    absl::optional<std::string> alarm_timer_id,
+    absl::optional<base::TimeDelta> duration = absl::nullopt);
 
 // Returns a deep link to send an Assistant query.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
@@ -113,9 +98,6 @@ GURL CreateAssistantQueryDeepLink(const std::string& query);
 
 // Returns a deep link to top level Assistant Settings.
 COMPONENT_EXPORT(ASSISTANT_UTIL) GURL CreateAssistantSettingsDeepLink();
-
-// Returns a deep link to initiate a screen context interaction.
-COMPONENT_EXPORT(ASSISTANT_UTIL) GURL CreateWhatsOnMyScreenDeepLink();
 
 // Returns the parsed parameters for the specified |deep_link|. If the supplied
 // argument is not a supported deep link or if no parameters are found, an empty
@@ -126,7 +108,7 @@ std::map<std::string, std::string> GetDeepLinkParams(const GURL& deep_link);
 // Returns a specific string |param| from the given parameters. If the desired
 // parameter is not found, and empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<std::string> GetDeepLinkParam(
+absl::optional<std::string> GetDeepLinkParam(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -134,13 +116,13 @@ base::Optional<std::string> GetDeepLinkParam(
 // parameter is not found or is not an AlarmTimerAction, an empty value is
 // returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<AlarmTimerAction> GetDeepLinkParamAsAlarmTimerAction(
+absl::optional<AlarmTimerAction> GetDeepLinkParamAsAlarmTimerAction(
     const std::map<std::string, std::string>& params);
 
 // Returns a specific bool |param| from the given parameters. If the desired
 // parameter is not found or is not a bool, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<bool> GetDeepLinkParamAsBool(
+absl::optional<bool> GetDeepLinkParamAsBool(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -148,37 +130,28 @@ base::Optional<bool> GetDeepLinkParamAsBool(
 // desired parameter is not found or is not mappable to an Assistant entry
 // point, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<chromeos::assistant::AssistantEntryPoint>
-GetDeepLinkParamAsEntryPoint(const std::map<std::string, std::string>& params,
-                             DeepLinkParam param);
+absl::optional<AssistantEntryPoint> GetDeepLinkParamAsEntryPoint(
+    const std::map<std::string, std::string>& params,
+    DeepLinkParam param);
 
 // Returns a specific GURL |param| from the given parameters. If the desired
 // parameter is not found, an absent value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<GURL> GetDeepLinkParamAsGURL(
+absl::optional<GURL> GetDeepLinkParamAsGURL(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific int |param| from the given parameters. If the desired
 // parameter is not found or is not an int, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<int32_t> GetDeepLinkParamAsInt(
+absl::optional<int32_t> GetDeepLinkParamAsInt(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific int64 |param| from the given parameters. If the desired
 // parameter is not found or is not an int64, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<int64_t> GetDeepLinkParamAsInt64(
-    const std::map<std::string, std::string>& params,
-    DeepLinkParam param);
-
-// Returns a specific ProactiveSuggestionsAction |param| from the given
-// parameters. If the desired parameter is not found, an empty value is
-// returned.
-COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<ProactiveSuggestionsAction>
-GetDeepLinkParamAsProactiveSuggestionsAction(
+absl::optional<int64_t> GetDeepLinkParamAsInt64(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -186,14 +159,14 @@ GetDeepLinkParamAsProactiveSuggestionsAction(
 // desired parameter is not found or is not mappable to an Assistant query
 // source, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<chromeos::assistant::AssistantQuerySource>
-GetDeepLinkParamAsQuerySource(const std::map<std::string, std::string>& params,
-                              DeepLinkParam param);
+absl::optional<AssistantQuerySource> GetDeepLinkParamAsQuerySource(
+    const std::map<std::string, std::string>& params,
+    DeepLinkParam param);
 
 // Returns a specific ReminderAction |param| from the given parameters. If the
 // desired parameter is not found, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
+absl::optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
     const std::map<std::string, std::string> params,
     DeepLinkParam param);
 
@@ -201,7 +174,7 @@ base::Optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
 // found, can't convert to TimeDelta or not a time type parameter, an empty
 // value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<base::TimeDelta> GetDeepLinkParamAsTimeDelta(
+absl::optional<base::TimeDelta> GetDeepLinkParamAsTimeDelta(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -222,26 +195,26 @@ COMPONENT_EXPORT(ASSISTANT_UTIL) bool IsDeepLinkUrl(const GURL& url);
 // be for the top-level Assistant URL. Otherwise, the URL will correspond to
 // the resource identified by |id|.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<GURL> GetAssistantUrl(
+absl::optional<GURL> GetAssistantUrl(
     DeepLinkType type,
     const std::map<std::string, std::string>& params);
 
 // Returns the URL for the specified Chrome Settings |page|. If page is absent
 // or not allowed, the URL will be for top-level Chrome Settings.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-GURL GetChromeSettingsUrl(const base::Optional<std::string>& page);
+GURL GetChromeSettingsUrl(const absl::optional<std::string>& page);
 
 // Returns the web URL for the specified |deep_link|. A return value will only
 // be present if |deep_link| is a web deep link as identified by the
 // IsWebDeepLink(GURL) API.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<GURL> GetWebUrl(const GURL& deep_link);
+absl::optional<GURL> GetWebUrl(const GURL& deep_link);
 
 // Returns the web URL for a deep link of the specified |type| with the given
 // |params|. A return value will only be present if the deep link type is a web
 // deep link type as identified by the IsWebDeepLinkType(DeepLinkType) API.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-base::Optional<GURL> GetWebUrl(
+absl::optional<GURL> GetWebUrl(
     DeepLinkType type,
     const std::map<std::string, std::string>& params);
 

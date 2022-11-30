@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/main/browser_list_observer.h"
 
 class Browser;
@@ -16,6 +15,10 @@ class BrowserList;
 class TestBrowserListObserver : public BrowserListObserver {
  public:
   TestBrowserListObserver();
+
+  TestBrowserListObserver(const TestBrowserListObserver&) = delete;
+  TestBrowserListObserver& operator=(const TestBrowserListObserver&) = delete;
+
   ~TestBrowserListObserver() override;
 
   // A weak pointer to the last Browser that was observed being added to the
@@ -54,13 +57,11 @@ class TestBrowserListObserver : public BrowserListObserver {
                                  Browser* browser) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserListObserver);
-
   // Backing vars for the corresponding getter methods.
-  Browser* last_added_browser_;
-  Browser* last_removed_browser_;
-  Browser* last_added_incognito_browser_;
-  Browser* last_removed_incognito_browser_;
+  Browser* last_added_browser_ = nullptr;
+  Browser* last_removed_browser_ = nullptr;
+  Browser* last_added_incognito_browser_ = nullptr;
+  Browser* last_removed_incognito_browser_ = nullptr;
   std::set<Browser*> last_browsers_;
   std::set<Browser*> last_incognito_browsers_;
 };

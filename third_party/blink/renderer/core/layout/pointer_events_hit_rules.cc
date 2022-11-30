@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -42,7 +41,7 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
   if (request.SvgClipContent())
     pointer_events = EPointerEvents::kFill;
 
-  if (hit_testing == SVG_GEOMETRY_HITTESTING) {
+  if (hit_testing == kSvgGeometryHitTesting) {
     switch (pointer_events) {
       case EPointerEvents::kBoundingBox:
         can_hit_bounding_box = true;
@@ -52,7 +51,7 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
                                    // SVG content
         require_fill = true;
         require_stroke = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case EPointerEvents::kVisible:
         require_visible = true;
         can_hit_fill = true;
@@ -69,7 +68,7 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
       case EPointerEvents::kPainted:
         require_fill = true;
         require_stroke = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case EPointerEvents::kAll:
         can_hit_fill = true;
         can_hit_stroke = true;

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_tts_platform.h"
 
+#include "base/callback.h"
 #include "content/public/browser/tts_controller.h"
 
 // static
@@ -31,7 +32,7 @@ void WebTestTtsPlatform::Speak(
     base::OnceCallback<void(bool)> on_speak_finished) {
   std::move(on_speak_finished).Run(true);
   content::TtsController* controller = content::TtsController::GetInstance();
-  int len = int{utterance.size()};
+  int len = static_cast<int>(utterance.size());
   controller->OnTtsEvent(utterance_id, content::TTS_EVENT_START, 0, len,
                          std::string());
   controller->OnTtsEvent(utterance_id, content::TTS_EVENT_END, len, 0,
@@ -67,6 +68,16 @@ void WebTestTtsPlatform::SetError(const std::string& error) {}
 
 void WebTestTtsPlatform::Shutdown() {}
 
-WebTestTtsPlatform::WebTestTtsPlatform() {}
+void WebTestTtsPlatform::FinalizeVoiceOrdering(
+    std::vector<content::VoiceData>& voices) {}
 
-WebTestTtsPlatform::~WebTestTtsPlatform() {}
+void WebTestTtsPlatform::RefreshVoices() {}
+
+content::ExternalPlatformDelegate*
+WebTestTtsPlatform::GetExternalPlatformDelegate() {
+  return nullptr;
+}
+
+WebTestTtsPlatform::WebTestTtsPlatform() = default;
+
+WebTestTtsPlatform::~WebTestTtsPlatform() = default;

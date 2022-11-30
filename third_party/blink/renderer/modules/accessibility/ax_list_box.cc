@@ -43,11 +43,8 @@ AXListBox::AXListBox(LayoutObject* layout_object,
 
 AXListBox::~AXListBox() = default;
 
-ax::mojom::Role AXListBox::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  return ax::mojom::Role::kListBox;
+ax::mojom::blink::Role AXListBox::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kListBox;
 }
 
 AXObject* AXListBox::ActiveDescendant() {
@@ -55,13 +52,11 @@ AXObject* AXListBox::ActiveDescendant() {
   if (!select)
     return nullptr;
 
-  int active_index = select->ActiveSelectionEndListIndex();
-  if (active_index >= 0 && active_index < static_cast<int>(select->length())) {
-    HTMLOptionElement* option = select->item(active_index_);
-    return AXObjectCache().Get(option);
-  }
-
-  return nullptr;
+  // This is more direct than getting the item via select->item(active_index_).
+  // It's also more accurate, because active_index includes optgroup lines,
+  // whereas select->item() assumes an index that does not include them.
+  HTMLOptionElement* option = select->ActiveSelectionEnd();
+  return AXObjectCache().GetOrCreate(option);
 }
 
 void AXListBox::ActiveIndexChanged() {

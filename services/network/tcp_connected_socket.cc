@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,23 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/tls_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
 int ClampTCPBufferSize(int requested_buffer_size) {
-  return base::ClampToRange(requested_buffer_size, 0,
-                            TCPConnectedSocket::kMaxBufferSize);
+  return base::clamp(requested_buffer_size, 0,
+                     TCPConnectedSocket::kMaxBufferSize);
 }
 
 // Sets the initial options on a fresh socket. Assumes |socket| is currently
@@ -31,9 +32,9 @@ int ClampTCPBufferSize(int requested_buffer_size) {
 // (TCPSocket::SetDefaultOptionsForClient()).
 int ConfigureSocket(
     net::TransportClientSocket* socket,
-    const mojom::TCPConnectedSocketOptions& tcp_connected_socket_options) {
+    const mojom::TCPConnectedSocketOptions* tcp_connected_socket_options) {
   int send_buffer_size =
-      ClampTCPBufferSize(tcp_connected_socket_options.send_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options->send_buffer_size);
   if (send_buffer_size > 0) {
     int result = socket->SetSendBufferSize(send_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -42,7 +43,7 @@ int ConfigureSocket(
   }
 
   int receive_buffer_size =
-      ClampTCPBufferSize(tcp_connected_socket_options.receive_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options->receive_buffer_size);
   if (receive_buffer_size > 0) {
     int result = socket->SetReceiveBufferSize(receive_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -51,11 +52,22 @@ int ConfigureSocket(
   }
 
   // No delay is set by default, so only update the setting if it's false.
-  if (!tcp_connected_socket_options.no_delay) {
+  if (!tcp_connected_socket_options->no_delay) {
     // Unlike the above calls, TcpSocket::SetNoDelay() returns a bool rather
     // than a network error code.
     if (!socket->SetNoDelay(false))
       return net::ERR_FAILED;
+  }
+
+  const mojom::TCPKeepAliveOptionsPtr& keep_alive_options =
+      tcp_connected_socket_options->keep_alive_options;
+  if (keep_alive_options) {
+    // TcpSocket::SetKeepAlive(...) returns a bool rather than a network error
+    // code.
+    if (!socket->SetKeepAlive(/*enable=*/keep_alive_options->enable,
+                              /*delay_secs=*/keep_alive_options->delay)) {
+      return net::ERR_FAILED;
+    }
   }
 
   return net::OK;
@@ -99,14 +111,14 @@ TCPConnectedSocket::~TCPConnectedSocket() {
     // If |this| is destroyed when connect hasn't completed, tell the consumer
     // that request has been aborted.
     std::move(connect_callback_)
-        .Run(net::ERR_ABORTED, base::nullopt, base::nullopt,
+        .Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }
 }
 
 void TCPConnectedSocket::Connect(
-    const base::Optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
     mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
@@ -142,8 +154,9 @@ void TCPConnectedSocket::ConnectWithSocket(
   connect_callback_ = std::move(callback);
 
   if (tcp_connected_socket_options) {
+    socket_options_ = std::move(tcp_connected_socket_options);
     socket_->SetBeforeConnectCallback(base::BindRepeating(
-        &ConfigureSocket, socket_.get(), *tcp_connected_socket_options));
+        &ConfigureSocket, socket_.get(), socket_options_.get()));
   }
   int result = socket_->Connect(base::BindOnce(
       &TCPConnectedSocket::OnConnectCompleted, base::Unretained(this)));
@@ -164,7 +177,7 @@ void TCPConnectedSocket::UpgradeToTLS(
   if (!tls_socket_factory_) {
     std::move(callback).Run(
         net::ERR_NOT_IMPLEMENTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), base::nullopt /* ssl_info*/);
+        mojo::ScopedDataPipeProducerHandle(), absl::nullopt /* ssl_info*/);
     return;
   }
   // Wait for data pipes to be closed by the client before doing the upgrade.
@@ -255,7 +268,7 @@ void TCPConnectedSocket::OnConnectCompleted(int result) {
 
   if (result != net::OK) {
     std::move(connect_callback_)
-        .Run(result, base::nullopt, base::nullopt,
+        .Run(result, absl::nullopt, absl::nullopt,
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
     return;

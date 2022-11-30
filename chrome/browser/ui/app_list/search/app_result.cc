@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ AppResult::AppResult(Profile* profile,
   SetResultType(ash::AppListSearchResultType::kInstalledApp);
   SetMetricsType(ash::SEARCH_RESULT_TYPE_BOUNDARY);
   SetIsRecommendation(is_recommendation);
+  SetCategory(Category::kApps);
 }
 
 AppResult::~AppResult() {
@@ -35,7 +36,7 @@ void AppResult::UpdateFromLastLaunchedOrInstalledTime(
     return;
   }
 
-  const double weeks = (current_time - old_time) / base::TimeDelta::FromDays(7);
+  const double weeks = (current_time - old_time) / base::Days(7);
 
   // Set the relevance to a value between 0 and 1. This function decays as the
   // time delta increases and reaches a value of 0.5 at 1 week.

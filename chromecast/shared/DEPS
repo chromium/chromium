@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromecast/bindings/shared",
+  "+chromecast/public/media",
+  "+third_party/cast_core/public/src/proto/bindings",
+]

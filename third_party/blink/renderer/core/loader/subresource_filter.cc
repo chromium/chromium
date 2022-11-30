@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -47,7 +47,7 @@ SubresourceFilter::SubresourceFilter(
   // associated with an ad subframe.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
     auto* frame = window->GetFrame();
-    if (frame->IsAdSubframe()) {
+    if (frame->IsAdFrame()) {
       ReportAdRequestId(
           frame->Loader().GetDocumentLoader()->GetResponse().RequestId());
     }
@@ -74,10 +74,9 @@ bool SubresourceFilter::AllowLoad(
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
 
-bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
-  WebDocumentSubresourceFilter::LoadPolicy load_policy =
-      subresource_filter_->GetLoadPolicyForWebSocketConnect(url);
-
+void SubresourceFilter::ReportLoadAsync(
+    const KURL& resource_url,
+    WebDocumentSubresourceFilter::LoadPolicy load_policy) {
   // Post a task to notify this load to avoid unduly blocking the worker
   // thread. Note that this unconditionally calls reportLoad unlike allowLoad,
   // because there aren't developer-invisible connections (like speculative
@@ -85,9 +84,24 @@ bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       execution_context_->GetTaskRunner(TaskType::kNetworking);
   DCHECK(task_runner->RunsTasksInCurrentSequence());
-  task_runner->PostTask(
-      FROM_HERE, WTF::Bind(&SubresourceFilter::ReportLoad, WrapPersistent(this),
-                           url, load_policy));
+  task_runner->PostTask(FROM_HERE, WTF::BindOnce(&SubresourceFilter::ReportLoad,
+                                                 WrapPersistent(this),
+                                                 resource_url, load_policy));
+}
+
+bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
+  WebDocumentSubresourceFilter::LoadPolicy load_policy =
+      subresource_filter_->GetLoadPolicyForWebSocketConnect(url);
+
+  ReportLoadAsync(url, load_policy);
+  return load_policy != WebDocumentSubresourceFilter::kDisallow;
+}
+
+bool SubresourceFilter::AllowWebTransportConnection(const KURL& url) {
+  WebDocumentSubresourceFilter::LoadPolicy load_policy =
+      subresource_filter_->GetLoadPolicyForWebTransportConnect(url);
+
+  ReportLoadAsync(url, load_policy);
   return load_policy != WebDocumentSubresourceFilter::kDisallow;
 }
 
@@ -131,7 +145,7 @@ void SubresourceFilter::ReportLoad(
                 mojom::ConsoleMessageLevel::kError,
                 GetErrorStringForDisallowedLoad(resource_url)));
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebDocumentSubresourceFilter::kWouldDisallow:
       // TODO(csharrison): Consider posting a task to the main thread from
       // worker thread, or adding support for DidObserveLoadingBehavior to

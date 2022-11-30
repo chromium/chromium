@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -83,14 +84,14 @@ class BrowserNavigationObserverImpl : public BrowserRestoreObserver,
   void OnRestoreCompleted() override {
     browser_->RemoveBrowserRestoreObserver(this);
     ASSERT_LT(tab_to_wait_for_, browser_->GetTabs().size());
-    ASSERT_EQ(nullptr, tab_);
+    ASSERT_EQ(nullptr, tab_.get());
     tab_ = browser_->GetTabs()[tab_to_wait_for_];
     tab_->GetNavigationController()->AddObserver(this);
   }
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   const GURL& url_;
-  Tab* tab_ = nullptr;
+  raw_ptr<Tab> tab_ = nullptr;
   const size_t tab_to_wait_for_;
   std::unique_ptr<TestNavigationObserver> navigation_observer_;
   base::RunLoop run_loop_;
@@ -416,6 +417,37 @@ IN_PROC_BROWSER_TEST_F(BrowserPersisterTestWithTwoPersistedIds,
     EXPECT_FALSE(base::PathExists(file_path1));
     EXPECT_FALSE(base::PathExists(file_path2));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserPersisterTest, OnErrorWritingSessionCommands) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::unique_ptr<BrowserImpl> browser = CreateBrowser(GetProfile(), "x");
+  Tab* tab = browser->CreateTab();
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
+  const GURL url = embedded_test_server()->GetURL("/simple_page.html");
+  NavigateAndWaitForCompletion(url, tab);
+  static_cast<sessions::CommandStorageManagerDelegate*>(
+      browser->browser_persister())
+      ->OnErrorWritingSessionCommands();
+  ShutdownBrowserPersisterAndWait(browser.get());
+  tab = nullptr;
+  browser.reset();
+
+  browser = CreateBrowser(GetProfile(), "x");
+  // Should be no tabs while waiting for restore.
+  EXPECT_TRUE(browser->GetTabs().empty());
+  EXPECT_TRUE(browser->IsRestoringPreviousState());
+  // Wait for the restore and navigation to complete.
+  BrowserNavigationObserverImpl::WaitForNewTabToCompleteNavigation(
+      browser.get(), url);
+
+  ASSERT_EQ(1u, browser->GetTabs().size());
+  EXPECT_EQ(browser->GetTabs()[0], browser->GetActiveTab());
+  EXPECT_EQ(1, browser->GetTabs()[0]
+                   ->GetNavigationController()
+                   ->GetNavigationListSize());
+  EXPECT_FALSE(browser->IsRestoringPreviousState());
 }
 
 }  // namespace weblayer

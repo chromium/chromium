@@ -1,18 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://crostini-upgrader/app.js';
 
 import {BrowserProxy} from 'chrome://crostini-upgrader/browser_proxy.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class FakePageHandler extends TestBrowserProxy {
   constructor() {
     super([
-      'backup', 'startPrechecks', 'upgrade', 'restore', 'cancel',
-      'cancelBeforeStart', 'onPageClosed', 'launch'
+      'backup',
+      'startPrechecks',
+      'upgrade',
+      'restore',
+      'cancel',
+      'cancelBeforeStart',
+      'onPageClosed',
+      'launch',
     ]);
   }
 
@@ -60,8 +66,7 @@ class FakePageHandler extends TestBrowserProxy {
 class FakeBrowserProxy {
   constructor() {
     this.handler = new FakePageHandler();
-    this.callbackRouter =
-        new chromeos.crostiniUpgrader.mojom.PageCallbackRouter();
+    this.callbackRouter = new ash.crostiniUpgrader.mojom.PageCallbackRouter();
     /** @type {appManagement.mojom.PageRemote} */
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }
@@ -98,7 +103,7 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   const getCancelButton = () => {
-    return app.$$('.cancel-button');
+    return app.$$('#cancel-button');
   };
 
   const clickAction = async () => {
@@ -134,95 +139,140 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   test('upgradeFlow', async () => {
-    expectFalse(app.$$('#prompt-message').hidden);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
+    assertFalse(getProgressMessage().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
 
     // The page will not register that backup has started until the first
     // progress message.
     await clickAction();
     fakeBrowserProxy.page.onBackupProgress(0);
     await flushTasks();
-    expectFalse(getProgressMessage().hidden);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 1);
-    expectTrue(getActionButton().hidden);
-    expectTrue(getCancelButton().hidden);
+    assertFalse(getProgressMessage().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('backup'), 1);
+    assertTrue(getActionButton().hidden);
+    assertTrue(getCancelButton().hidden);
 
     fakeBrowserProxy.page.onBackupProgress(50);
     await flushTasks();
-    expectTrue(
+    assertTrue(
         !!getProgressMessage().textContent, 'progress message should be set');
-    expectFalse(getBackupProgressBar().hidden);
-    expectEquals(app.$$('#backup-progress-bar > paper-progress').value, 50);
+    assertFalse(getBackupProgressBar().hidden);
+    assertEquals(app.$$('#backup-progress-bar > paper-progress').value, 50);
 
     fakeBrowserProxy.page.onBackupSucceeded();
     await flushTasks();
-    expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 0);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 0);
     // The UI pauses for 2000 ms before continuing.
     await waitMillis(2010).then(flushTasks());
     fakeBrowserProxy.page.precheckStatus(
-        chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
     await flushTasks();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
-    expectFalse(getUpgradeProgressBar().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
+    assertFalse(getUpgradeProgressBar().hidden);
     fakeBrowserProxy.page.onUpgradeProgress(['foo', 'bar']);
     fakeBrowserProxy.page.onUpgradeSucceeded();
     await flushTasks();
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
-    expectTrue(getRestoreProgressBar().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
+    assertTrue(getRestoreProgressBar().hidden);
 
     await clickAction();
-    expectEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+  });
+
+  test('upgradeFlowFailureShowsLogs', async () => {
+    // Uncheck backup box
+    app.$$('#backup-checkbox > cr-checkbox').click();
+    await clickAction();
+
+    const kMaxUpgradeAttempts = 3;
+    for (let i = 0; i < kMaxUpgradeAttempts; i++) {
+      fakeBrowserProxy.page.precheckStatus(
+          ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+      await flushTasks();
+      assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
+      fakeBrowserProxy.page.onUpgradeProgress(['foo', 'bar']);
+      fakeBrowserProxy.page.onUpgradeFailed();
+      await flushTasks();
+    }
+
+    const single = 'foo\nbar';
+    assertFalse(app.$$('#upgrade-error-message').hidden);
+    assertEquals(
+        app.$$('#error-log').innerHTML, single + '\n' + single + '\n' + single);
+  });
+
+  test('upgradeFlowPrecheckRetry', async () => {
+    // Uncheck backup box
+    app.$$('#backup-checkbox > cr-checkbox').click();
+    await clickAction();
+
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 1);
+    fakeBrowserProxy.page.precheckStatus(
+        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE);
+    await clickAction();
+
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 2);
+    fakeBrowserProxy.page.precheckStatus(
+        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER);
+    await clickAction();
+
+    assertEquals(fakeBrowserProxy.handler.getCallCount('startPrechecks'), 3);
+    fakeBrowserProxy.page.precheckStatus(
+        ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+    await clickAction();
+
+    assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 1);
   });
 
   test('upgradeFlowFailureOffersRestore', async () => {
-    expectFalse(app.$$('#prompt-message').hidden);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
+    assertFalse(getProgressMessage().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('backup'), 0);
 
     // The page will not register that backup has started until the first
     // progress message.
     await clickAction();
     fakeBrowserProxy.page.onBackupProgress(0);
     await flushTasks();
-    expectFalse(getProgressMessage().hidden);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('backup'), 1);
-    expectTrue(getActionButton().hidden);
-    expectTrue(getCancelButton().hidden);
+    assertFalse(getProgressMessage().hidden);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('backup'), 1);
+    assertTrue(getActionButton().hidden);
+    assertTrue(getCancelButton().hidden);
 
     fakeBrowserProxy.page.onBackupSucceeded();
     await flushTasks();
-    expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 0);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), 0);
     // The UI pauses for 2000 ms before continuing.
     await waitMillis(2010).then(flushTasks());
 
     const kMaxUpgradeAttempts = 3;
     for (let i = 0; i < kMaxUpgradeAttempts; i++) {
       fakeBrowserProxy.page.precheckStatus(
-          chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
+          ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK);
       await flushTasks();
-      expectEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
-      expectFalse(getUpgradeProgressBar().hidden);
+      assertEquals(fakeBrowserProxy.handler.getCallCount('upgrade'), i + 1);
+      assertFalse(getUpgradeProgressBar().hidden);
       fakeBrowserProxy.page.onUpgradeProgress(['foo', 'bar']);
       fakeBrowserProxy.page.onUpgradeFailed();
       await flushTasks();
     }
 
-    expectEquals(fakeBrowserProxy.handler.getCallCount('restore'), 0);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('restore'), 0);
     await clickAction();
-    expectEquals(fakeBrowserProxy.handler.getCallCount('restore'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('restore'), 1);
     fakeBrowserProxy.page.onRestoreProgress(50);
     await flushTasks();
-    expectTrue(
+    assertTrue(
         !!getProgressMessage().textContent, 'progress message should be set');
-    expectFalse(getRestoreProgressBar().hidden);
-    expectEquals(app.$$('#restore-progress-bar > paper-progress').value, 50);
+    assertFalse(getRestoreProgressBar().hidden);
+    assertEquals(app.$$('#restore-progress-bar > paper-progress').value, 50);
     fakeBrowserProxy.page.onRestoreSucceeded();
     await flushTasks();
 
-    await clickAction();
-    expectEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
-    expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    await clickCancel();
+    assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });
 });

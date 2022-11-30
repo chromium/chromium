@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_session {
 namespace test {
@@ -42,8 +43,8 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  base::Optional<ImageTypePair> expected_;
-  base::Optional<ImageTypePair> current_;
+  absl::optional<ImageTypePair> expected_;
+  absl::optional<ImageTypePair> current_;
 
   mojo::Receiver<mojom::MediaControllerImageObserver> receiver_{this};
 };
@@ -60,13 +61,13 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   // mojom::MediaControllerObserver overrides.
   void MediaSessionInfoChanged(mojom::MediaSessionInfoPtr session) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<MediaMetadata>& metadata) override;
+      const absl::optional<MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<mojom::MediaSessionAction>& actions) override;
   void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override;
+      const absl::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   void WaitForState(mojom::MediaSessionInfo::SessionState wanted_state);
   void WaitForPlaybackState(mojom::MediaPlaybackState wanted_state);
@@ -82,13 +83,13 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   void WaitForEmptyPosition();
   void WaitForNonEmptyPosition();
 
-  void WaitForSession(const base::Optional<base::UnguessableToken>& request_id);
+  void WaitForSession(const absl::optional<base::UnguessableToken>& request_id);
 
   const mojom::MediaSessionInfoPtr& session_info() const {
     return *session_info_;
   }
 
-  const base::Optional<base::Optional<MediaMetadata>>& session_metadata()
+  const absl::optional<absl::optional<MediaMetadata>>& session_metadata()
       const {
     return session_metadata_;
   }
@@ -97,30 +98,30 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
     return *session_actions_;
   }
 
-  const base::Optional<base::Optional<MediaPosition>>& session_position() {
+  const absl::optional<absl::optional<MediaPosition>>& session_position() {
     return session_position_;
   }
 
  private:
   void StartWaiting();
 
-  base::Optional<mojom::MediaSessionInfoPtr> session_info_;
-  base::Optional<base::Optional<MediaMetadata>> session_metadata_;
-  base::Optional<std::set<mojom::MediaSessionAction>> session_actions_;
-  base::Optional<base::Optional<base::UnguessableToken>> session_request_id_;
-  base::Optional<base::Optional<MediaPosition>> session_position_;
+  absl::optional<mojom::MediaSessionInfoPtr> session_info_;
+  absl::optional<absl::optional<MediaMetadata>> session_metadata_;
+  absl::optional<std::set<mojom::MediaSessionAction>> session_actions_;
+  absl::optional<absl::optional<base::UnguessableToken>> session_request_id_;
+  absl::optional<absl::optional<MediaPosition>> session_position_;
   bool waiting_for_empty_position_ = false;
   bool waiting_for_non_empty_position_ = false;
 
-  base::Optional<MediaMetadata> expected_metadata_;
-  base::Optional<std::set<mojom::MediaSessionAction>> expected_actions_;
+  absl::optional<MediaMetadata> expected_metadata_;
+  absl::optional<std::set<mojom::MediaSessionAction>> expected_actions_;
   bool waiting_for_empty_metadata_ = false;
 
   bool waiting_for_empty_info_ = false;
-  base::Optional<mojom::MediaSessionInfo::SessionState> wanted_state_;
-  base::Optional<mojom::MediaPlaybackState> wanted_playback_state_;
+  absl::optional<mojom::MediaSessionInfo::SessionState> wanted_state_;
+  absl::optional<mojom::MediaPlaybackState> wanted_playback_state_;
 
-  base::Optional<base::Optional<base::UnguessableToken>> expected_request_id_;
+  absl::optional<absl::optional<base::UnguessableToken>> expected_request_id_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -132,6 +133,10 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
     : public mojom::MediaController {
  public:
   TestMediaController();
+
+  TestMediaController(const TestMediaController&) = delete;
+  TestMediaController& operator=(const TestMediaController&) = delete;
+
   ~TestMediaController() override;
 
   mojo::Remote<mojom::MediaController> CreateMediaControllerRemote();
@@ -155,10 +160,12 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void ScrubTo(base::TimeDelta seek_time) override {}
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
-  void SetAudioSinkId(const base::Optional<std::string>& id) override {}
+  void SetAudioSinkId(const absl::optional<std::string>& id) override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  void Raise() override {}
+  void SetMute(bool mute) override {}
 
   int toggle_suspend_resume_count() const {
     return toggle_suspend_resume_count_;
@@ -174,7 +181,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_forward_count() const { return seek_forward_count_; }
   int seek_to_count() const { return seek_to_count_; }
 
-  base::Optional<base::TimeDelta> seek_to_time() { return seek_to_time_; }
+  absl::optional<base::TimeDelta> seek_to_time() { return seek_to_time_; }
 
   void SimulateMediaSessionInfoChanged(mojom::MediaSessionInfoPtr session_info);
   void SimulateMediaSessionActionsChanged(
@@ -193,13 +200,11 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   int seek_forward_count_ = 0;
   int seek_to_count_ = 0;
 
-  base::Optional<base::TimeDelta> seek_to_time_;
+  absl::optional<base::TimeDelta> seek_to_time_;
 
   mojo::RemoteSet<mojom::MediaControllerObserver> observers_;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaController);
 };
 
 }  // namespace test

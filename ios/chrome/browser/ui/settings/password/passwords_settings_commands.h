@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 // Commands relative to the passwords in the Settings.
 @protocol PasswordsSettingsCommands <NSObject>
 
@@ -14,7 +18,14 @@
 - (void)showCompromisedPasswords;
 
 // Shows passwords details.
-- (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form;
+- (void)showDetailedViewForCredential:
+    (const password_manager::CredentialUIEntry&)credential;
+
+// Shows form to manually enter new password credentials.
+- (void)showAddPasswordSheet;
+
+// Shows promotional view for Passwords In Other Apps.
+- (void)showPasswordsInOtherAppsPromo;
 
 @end
 

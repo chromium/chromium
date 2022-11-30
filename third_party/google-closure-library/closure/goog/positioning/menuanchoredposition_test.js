@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.positioning.MenuAnchoredPositionTest');
 goog.setTestOnly();
@@ -45,6 +37,10 @@ testSuite({
     menu.innerHTML = savedMenuHtml;
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testRepositionWithAdjustAndOnscreenAnchor() {
     // Add so many children that it can't possibly fit onscreen.
     for (let i = 0; i < 200; i++) {
@@ -59,6 +55,10 @@ testSuite({
     assertEquals(5, menu.offsetLeft);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testRepositionWithAdjustAndOffscreenAnchor() {
     // This does not get adjusted because it's too far offscreen.
     const pos =
@@ -69,6 +69,10 @@ testSuite({
     assertEquals(-1000, menu.offsetLeft);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testRespositionFailoverEvenWhenResizeHeightIsOn() {
     const pos =
         new MenuAnchoredPosition(onscreenAnchor, Corner.TOP_LEFT, true, true);
@@ -79,6 +83,10 @@ testSuite({
     assertEquals(5, menu.offsetLeft);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testRepositionToBottomLeftWhenBottomFailsAndRightFailsAndResizeOn() {
     const pageSize = dom.getViewportSize();
     customAnchor.style.left = (pageSize.width - 10) + 'px';

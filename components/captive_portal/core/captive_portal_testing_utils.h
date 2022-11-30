@@ -1,13 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_TESTING_UTILS_H_
 
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -20,6 +18,11 @@ namespace captive_portal {
 class CaptivePortalDetectorTestBase {
  public:
   CaptivePortalDetectorTestBase();
+
+  CaptivePortalDetectorTestBase(const CaptivePortalDetectorTestBase&) = delete;
+  CaptivePortalDetectorTestBase& operator=(
+      const CaptivePortalDetectorTestBase&) = delete;
+
   virtual ~CaptivePortalDetectorTestBase();
 
   // Sets test time for captive portal detector.
@@ -46,10 +49,8 @@ class CaptivePortalDetectorTestBase {
   const GURL& get_probe_url() { return detector_->probe_url_; }
 
  protected:
-  CaptivePortalDetector* detector_;
+  raw_ptr<CaptivePortalDetector> detector_;
   network::TestURLLoaderFactory test_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetectorTestBase);
 };
 
 }  // namespace captive_portal

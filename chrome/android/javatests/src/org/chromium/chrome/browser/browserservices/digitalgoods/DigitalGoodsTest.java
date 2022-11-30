@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.COMMAND_SET_RESPONSE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_BUNDLE;
 import static org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService.SET_RESPONSE_NAME;
-import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
 
 import android.net.Uri;
 import android.os.Build;
@@ -35,7 +34,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule;
@@ -43,7 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
+import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
 import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
@@ -74,7 +73,7 @@ public class DigitalGoodsTest {
         LibraryLoader.getInstance().ensureInitialized();
 
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        component.resolveTwaPermissionManager().addDelegateApp(
+        component.resolvePermissionManager().addDelegateApp(
                 Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
         mClient = component.resolveTrustedWebActivityClient();
 
@@ -85,7 +84,7 @@ public class DigitalGoodsTest {
         mTestPage = mTestServer.getURL(TEST_PAGE);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
     }
 
@@ -125,7 +124,7 @@ public class DigitalGoodsTest {
                                 "id1", "Item 1", "Desc 1", "GBP", "10")));
 
         CallbackHelper helper = new CallbackHelper();
-        impl.getDetails(new String[] { "id1" }, new GetDetailsResponse() {
+        impl.getDetails(new String[] {"id1"}, new GetDetails_Response() {
             @Override
             public void call(Integer responseCode, ItemDetails[] details) {
                 assertEquals(0, responseCode.intValue());
@@ -165,38 +164,6 @@ public class DigitalGoodsTest {
         waitForNonNull("itemDetails");
 
         assertEquals("\"Item 1\"", exec("itemDetails[0].title"));
-    }
-
-    /**
-     * Tests that acknowledge works correctly.
-     */
-    @Test
-    @MediumTest
-    public void acknowledge() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(0));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callAcknowledge('sku', 'onetime')");
-        waitForNonNull("acknowledgeFlag");
-    }
-
-    /**
-     * Tests that acknowledge throws when given a non-zero response code.
-     */
-    @Test
-    @MediumTest
-    public void acknowledge_failsOnNonZeroResponse() throws TimeoutException {
-        DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(createFixedDigitalGoods());
-
-        setTwaServiceResponse(RESPONSE_ACKNOWLEDGE, AcknowledgeConverter.createResponseBundle(1));
-
-        exec("populateDigitalGoodsService()");
-        waitForNonNull("digitalGoodsService");
-        exec("callAcknowledge('sku', 'onetime')");
-        waitForNonNull("acknowledgeError");
     }
 
     private DigitalGoodsImpl createFixedDigitalGoods() {

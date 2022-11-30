@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Defines a template for Swift source files. The default module_name
+# of the target is the entire target label (without the leading //)
+# with all "/" and ":" replaced with "_".
+template("swift_source_set") {
+  _target_name = target_name
+  source_set(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (!defined(module_name)) {
+      _target_label = get_label_info(":$_target_name", "label_no_toolchain")
+
+      # Strip the // from the beginning of the label.
+      _target_label = string_replace(_target_label, "//", "", 1)
+      module_name =
+          string_replace(string_replace(_target_label, "/", "_"), ":", "_")
+    }
+  }
+}
+set_defaults("swift_source_set") {
+  configs = default_compiler_configs
+}

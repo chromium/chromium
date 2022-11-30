@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,6 +32,10 @@ namespace viz {
 class Gpu::GpuPtrIO {
  public:
   GpuPtrIO() { DETACH_FROM_THREAD(thread_checker_); }
+
+  GpuPtrIO(const GpuPtrIO&) = delete;
+  GpuPtrIO& operator=(const GpuPtrIO&) = delete;
+
   ~GpuPtrIO() { DCHECK_CALLED_ON_VALID_THREAD(thread_checker_); }
 
   void Initialize(mojo::PendingRemote<mojom::Gpu> gpu_remote,
@@ -87,8 +93,6 @@ class Gpu::GpuPtrIO {
   // callback fires or if an interface connection error occurs.
   scoped_refptr<EstablishRequest> establish_request_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuPtrIO);
 };
 
 // Encapsulates a single request to establish a GPU channel.
@@ -99,6 +103,9 @@ class Gpu::EstablishRequest
                    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
       : parent_(parent), main_task_runner_(main_task_runner),
         lock_("Gpu::EstablishRequest.lock_") {}
+
+  EstablishRequest(const EstablishRequest&) = delete;
+  EstablishRequest& operator=(const EstablishRequest&) = delete;
 
   const scoped_refptr<gpu::GpuChannelHost>& gpu_channel() {
     return gpu_channel_;
@@ -194,17 +201,15 @@ class Gpu::EstablishRequest
 
   virtual ~EstablishRequest() = default;
 
-  Gpu* const parent_;
+  const raw_ptr<Gpu> parent_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  base::WaitableEvent* establish_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> establish_event_ = nullptr;
 
   base::Lock lock_;
   bool received_ = false;
   bool finished_ = false;
 
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(EstablishRequest);
 };
 
 void Gpu::GpuPtrIO::ConnectionError() {
@@ -330,6 +335,7 @@ scoped_refptr<gpu::GpuChannelHost> Gpu::EstablishGpuChannelSync() {
   if (channel)
     return channel;
 
+  SCOPED_UMA_HISTOGRAM_TIMER("GPU.EstablishGpuChannelSyncTime");
   SendEstablishGpuChannelRequest();
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::SIGNALED);

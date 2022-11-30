@@ -1,16 +1,15 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/net/system_network_context_manager.h"  // nogncheck
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,6 +24,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The maximum number of retries allowed for GET requests.
 constexpr int kMaxRetries = 2;
@@ -102,23 +102,23 @@ const network::mojom::URLResponseHead* DialURLFetcher::GetResponseHead() const {
 
 void DialURLFetcher::Get(const GURL& url, bool set_origin_header) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Start(url, "GET", base::nullopt, kMaxRetries, set_origin_header);
+  Start(url, "GET", absl::nullopt, kMaxRetries, set_origin_header);
 }
 
 void DialURLFetcher::Delete(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Start(url, "DELETE", base::nullopt, 0, true);
+  Start(url, "DELETE", absl::nullopt, 0, true);
 }
 
 void DialURLFetcher::Post(const GURL& url,
-                          const base::Optional<std::string>& post_data) {
+                          const absl::optional<std::string>& post_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Start(url, "POST", post_data, 0, true);
 }
 
 void DialURLFetcher::Start(const GURL& url,
                            const std::string& method,
-                           const base::Optional<std::string>& post_data,
+                           const absl::optional<std::string>& post_data,
                            int max_retries,
                            bool set_origin_header) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -177,12 +177,12 @@ void DialURLFetcher::ReportError(const std::string& message) {
   std::move(error_cb_).Run(message, GetHttpResponseCode());
 }
 
-base::Optional<int> DialURLFetcher::GetHttpResponseCode() const {
+absl::optional<int> DialURLFetcher::GetHttpResponseCode() const {
   if (GetResponseHead() && GetResponseHead()->headers) {
     int code = GetResponseHead()->headers->response_code();
-    return code == -1 ? base::nullopt : base::Optional<int>(code);
+    return code == -1 ? absl::nullopt : absl::optional<int>(code);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DialURLFetcher::ReportRedirectError(

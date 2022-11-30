@@ -20,6 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_NAVIGATOR_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_NAVIGATOR_BASE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/navigator_concurrent_hardware.h"
 #include "third_party/blink/renderer/core/frame/navigator_device_memory.h"
@@ -28,7 +29,7 @@
 #include "third_party/blink/renderer/core/frame/navigator_on_line.h"
 #include "third_party/blink/renderer/core/frame/navigator_ua.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -36,41 +37,28 @@ namespace blink {
 // NavigatorBase is a helper for shared logic between Navigator and
 // WorkerNavigator. It is also a Supplementable, and can therefore be used for
 // classes that need to Supplement both Navigator and WorkerNavigator.
-class NavigatorBase : public ScriptWrappable,
-                      public NavigatorConcurrentHardware,
-                      public NavigatorDeviceMemory,
-                      public NavigatorID,
-                      public NavigatorLanguage,
-                      public NavigatorOnLine,
-                      public NavigatorUA,
-                      public ExecutionContextClient,
-                      public Supplementable<NavigatorBase> {
+class CORE_EXPORT NavigatorBase : public ScriptWrappable,
+                                  public NavigatorConcurrentHardware,
+                                  public NavigatorDeviceMemory,
+                                  public NavigatorID,
+                                  public NavigatorLanguage,
+                                  public NavigatorOnLine,
+                                  public NavigatorUA,
+                                  public ExecutionContextClient,
+                                  public Supplementable<NavigatorBase> {
  public:
-  explicit NavigatorBase(ExecutionContext* context)
-      : NavigatorLanguage(context), ExecutionContextClient(context) {}
+  explicit NavigatorBase(ExecutionContext* context);
 
   // NavigatorID override
-  String userAgent() const override {
-    return GetExecutionContext() ? GetExecutionContext()->UserAgent()
-                                 : String();
-  }
+  String userAgent() const override;
+  String platform() const override;
+  void Trace(Visitor* visitor) const override;
 
-  void Trace(Visitor* visitor) const override {
-    ScriptWrappable::Trace(visitor);
-    NavigatorLanguage::Trace(visitor);
-    ExecutionContextClient::Trace(visitor);
-    Supplementable<NavigatorBase>::Trace(visitor);
-  }
+  unsigned int hardwareConcurrency() const override;
 
  protected:
-  ExecutionContext* GetUAExecutionContext() const override {
-    return GetExecutionContext();
-  }
-
-  UserAgentMetadata GetUserAgentMetadata() const override {
-    return GetExecutionContext() ? GetExecutionContext()->GetUserAgentMetadata()
-                                 : blink::UserAgentMetadata();
-  }
+  ExecutionContext* GetUAExecutionContext() const override;
+  UserAgentMetadata GetUserAgentMetadata() const override;
 };
 
 }  // namespace blink

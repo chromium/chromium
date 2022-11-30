@@ -9,6 +9,8 @@ include_rules = [
     "+third_party/blink/renderer/modules/p2p",
     "+third_party/blink/renderer/modules/webrtc",
 
+    # TODO(crbug.com/1266408): Temporarily added to enable splitting UMA stats based on tier.
+    "+base/cpu.h",
     "+base/hash/md5.h",
     "+base/lazy_instance.h",
     "+base/power_monitor/power_observer.h",
@@ -16,17 +18,20 @@ include_rules = [
     "+base/sequence_checker.h",
     # TODO(crbug.com/787254): Replace StringPrintf uses here.
     "+base/strings/stringprintf.h",
+    # TODO(crbug.com/1266408): Temporarily added to enable splitting UMA stats based on tier.
+    "+base/system/sys_info.h",
     # TODO(crbug.com/787254): Remove the use of base::CurrentThread.
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
     "+base/values.h",
     "+crypto/openssl_util.h",
-    "+jingle/glue/thread_wrapper.h",
+    "+components/webrtc/thread_wrapper.h",
     "+media/base",
     "+media/media_buildflags.h",
+    "+media/mojo/mojom/webrtc_video_perf.mojom-blink.h",
     "+media/video/gpu_video_accelerator_factories.h",
-    "+net/third_party/quiche/src/quic",
-    "+net/third_party/quiche/src/common",
+    "+net/third_party/quiche/src/quiche/quic",
+    "+net/third_party/quiche/src/quiche/common",
     "+net/net_buildflags.h",
     "+net/quic/chromium",
     "+net/quic",
@@ -36,6 +41,8 @@ include_rules = [
 
 specific_include_rules = {
     ".*test.*": [
+        # TODO(crbug.com/1294176): Remove when no longer needed.
+        "+base/cfi_buildflags.h",
         "+base/run_loop.h",
         "+base/test/scoped_run_loop_timeout.h",
         "+base/test/test_timeouts.h",

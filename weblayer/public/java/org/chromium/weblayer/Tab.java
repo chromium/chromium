@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,12 @@ import android.webkit.ValueCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
+import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
 import org.chromium.weblayer_private.interfaces.IFullscreenCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountsCallbackClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
@@ -40,10 +39,7 @@ import java.util.Set;
  * Represents a single tab in a browser. More specifically, owns a NavigationController, and allows
  * configuring state of the tab, such as delegates and callbacks.
  */
-public class Tab {
-    /** The top level key of the JSON object returned by executeScript(). */
-    public static final String SCRIPT_RESULT_KEY = "result";
-
+class Tab {
     // Maps from id (as returned from ITab.getId()) to Tab.
     private static final Map<Integer, Tab> sTabMap = new HashMap<Integer, Tab>();
 
@@ -59,8 +55,14 @@ public class Tab {
     private NewTabCallback mNewTabCallback;
     private final ObserverList<ScrollOffsetCallback> mScrollOffsetCallbacks;
     private @Nullable ActionModeCallback mActionModeCallback;
+
+    private TabProxy mTabProxy;
+    private TabNavigationControllerProxy mTabNavigationControllerProxy;
+
     // Id from the remote side.
     private final int mId;
+    // Guid from the remote side.
+    private final String mGuid;
 
     // Constructor for test mocking.
     protected Tab() {
@@ -71,6 +73,9 @@ public class Tab {
         mCallbacks = null;
         mScrollOffsetCallbacks = null;
         mId = 0;
+        mGuid = "";
+        mTabProxy = null;
+        mTabNavigationControllerProxy = null;
     }
 
     Tab(ITab impl, Browser browser) {
@@ -78,6 +83,7 @@ public class Tab {
         mBrowser = browser;
         try {
             mId = impl.getId();
+            mGuid = impl.getGuid();
             mImpl.setClient(new TabClientImpl());
         } catch (RemoteException e) {
             throw new APICallException(e);
@@ -88,6 +94,10 @@ public class Tab {
         mNavigationController = NavigationController.create(mImpl);
         mFindInPageController = new FindInPageController(mImpl);
         mMediaCaptureController = new MediaCaptureController(mImpl);
+
+        mTabProxy = new TabProxy(this);
+        mTabNavigationControllerProxy = new TabNavigationControllerProxy(mNavigationController);
+
         registerTab(this);
     }
 
@@ -213,8 +223,13 @@ public class Tab {
      * Tab, the target language will be |targetLanguage|. Notes:
      * - |targetLanguage| should be specified as the language code (e.g., "de" for German).
      * - Passing an empty string causes behavior to revert to default.
-     * - Even with the target language specified, the translate UI will not trigger for pages in the
-     *   user's locale.
+     * - Specifying a non-empty target language will also result in the following behaviors (all of
+     *   which are intentional as part of the semantics of having a target language):
+     *   - Translation is initiated automatically (note that the infobar UI is present)
+     *   - Translation occurs even for languages/sites that the user has blocklisted
+     *   - Translation occurs even for pages in the user's default locale
+     *   - Translation does *not* occur nor is the infobar UI shown for pages in the specified
+     *     target language
      */
     public void setTranslateTargetLanguage(@NonNull String targetLanguage) {
         ThreadCheck.ensureOnUiThread();
@@ -227,9 +242,7 @@ public class Tab {
     }
 
     /**
-     * Executes the script, and returns the result as a JSON object to the callback if provided. The
-     * object passed to the callback will have a single key SCRIPT_RESULT_KEY which will hold the
-     * result of running the script.
+     * Executes the script, and returns the result to the callback if provided.
      * @param useSeparateIsolate If true, runs the script in a separate v8 Isolate. This uses more
      * memory, but separates the injected scrips from scripts in the page. This prevents any
      * potentially malicious interaction between first-party scripts in the page, and injected
@@ -237,24 +250,11 @@ public class Tab {
      * or you need to interact with first-party scripts.
      */
     public void executeScript(@NonNull String script, boolean useSeparateIsolate,
-            @Nullable ValueCallback<JSONObject> callback) {
+            @Nullable ValueCallback<String> callback) {
         ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
         try {
-            ValueCallback<String> stringCallback = (String result) -> {
-                if (callback == null) {
-                    return;
-                }
-
-                try {
-                    callback.onReceiveValue(
-                            new JSONObject("{\"" + SCRIPT_RESULT_KEY + "\":" + result + "}"));
-                } catch (JSONException e) {
-                    // This should never happen since the result should be well formed.
-                    throw new RuntimeException(e);
-                }
-            };
-            mImpl.executeScript(script, useSeparateIsolate, ObjectWrapper.wrap(stringCallback));
+            mImpl.executeScript(script, useSeparateIsolate, ObjectWrapper.wrap(callback));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -322,7 +322,6 @@ public class Tab {
 
     @NonNull
     public NavigationController getNavigationController() {
-        ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
         return mNavigationController;
     }
@@ -428,13 +427,17 @@ public class Tab {
      */
     @NonNull
     public String getGuid() {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            return mImpl.getGuid();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return mGuid;
+    }
+
+    @NonNull
+    TabNavigationControllerProxy getTabNavigationControllerProxy() {
+        return mTabNavigationControllerProxy;
+    }
+
+    @NonNull
+    TabProxy getTabProxy() {
+        return mTabProxy;
     }
 
     /**
@@ -485,6 +488,28 @@ public class Tab {
         try {
             mImpl.setGoogleAccountsCallbackClient(
                     callback == null ? null : new GoogleAccountsCallbackClientImpl(callback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Sets a callback to present warning dialogs gating external intent launches in incognito mode.
+     * If this callback is set, any such pending intent launch will trigger a call to {@link
+     * ExternalIntentInIncognitoCallback#onExternalIntentInIncognito}.
+     * @since 93
+     */
+    public void setExternalIntentInIncognitoCallback(
+            @Nullable ExternalIntentInIncognitoCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
+        if (WebLayer.getSupportedMajorVersionInternal() < 93) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setExternalIntentInIncognitoCallbackClient(callback == null
+                            ? null
+                            : new ExternalIntentInIncognitoCallbackClientImpl(callback));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -829,6 +854,13 @@ public class Tab {
             assert proxy != null;
             mCallback.onWebMessageReplyProxyActiveStateChanged(proxy);
         }
+
+        @Override
+        public void onSetPage(int proxyId, IClientPage clientPage) {
+            StrictModeWorkaround.apply();
+            assert mProxyIdToProxy.get(proxyId) != null;
+            mProxyIdToProxy.get(proxyId).setPage((Page) clientPage);
+        }
     }
 
     private final class TabClientImpl extends ITabClient.Stub {
@@ -957,6 +989,14 @@ public class Tab {
                 mActionModeCallback.onActionItemClicked(actionModeItemType, selectedString);
             }
         }
+
+        @Override
+        public void onVerticalOverscroll(float accumulatedOverscrollY) {
+            StrictModeWorkaround.apply();
+            for (TabCallback callback : mCallbacks) {
+                callback.onVerticalOverscroll(accumulatedOverscrollY);
+            }
+        }
     }
 
     private static final class ErrorPageCallbackClientImpl extends IErrorPageCallbackClient.Stub {
@@ -1029,6 +1069,25 @@ public class Tab {
         public String getGaiaId() {
             StrictModeWorkaround.apply();
             return mCallback.getGaiaId();
+        }
+    }
+
+    private static final class ExternalIntentInIncognitoCallbackClientImpl
+            extends IExternalIntentInIncognitoCallbackClient.Stub {
+        private ExternalIntentInIncognitoCallback mCallback;
+
+        ExternalIntentInIncognitoCallbackClientImpl(ExternalIntentInIncognitoCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public void onExternalIntentInIncognito(IObjectWrapper onUserDecisionWrapper) {
+            StrictModeWorkaround.apply();
+            ValueCallback<Integer> valueCallback =
+                    ObjectWrapper.unwrap(onUserDecisionWrapper, ValueCallback.class);
+
+            mCallback.onExternalIntentInIncognito(
+                    (userDecision) -> valueCallback.onReceiveValue(userDecision));
         }
     }
 }

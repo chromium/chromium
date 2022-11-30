@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,11 @@ class RelaunchNotificationControllerPlatformImpl
  public:
   RelaunchNotificationControllerPlatformImpl();
 
+  RelaunchNotificationControllerPlatformImpl(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+  RelaunchNotificationControllerPlatformImpl& operator=(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+
   ~RelaunchNotificationControllerPlatformImpl() override;
 
   // Shows the relaunch recommended notification if it is not already open.
@@ -29,6 +34,7 @@ class RelaunchNotificationControllerPlatformImpl
 
   // Shows the relaunch required notification if it is not already open.
   void NotifyRelaunchRequired(base::Time deadline,
+                              bool is_notification_type_overriden,
                               base::OnceCallback<base::Time()> on_visible);
 
   // Sets the notification title to the default one on Chrome OS.
@@ -54,7 +60,7 @@ class RelaunchNotificationControllerPlatformImpl
 
   // Callback triggered whenever the required notification's title has to
   // refresh.
-  void RefreshRelaunchRequiredTitle();
+  void RefreshRelaunchRequiredTitle(bool is_notification_type_overriden);
 
   // Returns true if the display is on && the session is active
   bool CanScheduleReboot();
@@ -77,8 +83,6 @@ class RelaunchNotificationControllerPlatformImpl
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationControllerPlatformImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_PLATFORM_IMPL_CHROMEOS_H_

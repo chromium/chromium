@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/ptr_util.h"
-#include "ios/web/common/features.h"
+#import "base/memory/ptr_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#include "net/http/http_response_headers.h"
+#import "net/http/http_response_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -131,6 +131,14 @@ void NavigationContextImpl::SetResponseHeaders(
   response_headers_ = response_headers;
 }
 
+HttpsUpgradeType NavigationContextImpl::GetFailedHttpsUpgradeType() const {
+  return failed_https_upgrade_type_;
+}
+
+void NavigationContextImpl::SetFailedHttpsUpgradeType(HttpsUpgradeType type) {
+  failed_https_upgrade_type_ = type;
+}
+
 int NavigationContextImpl::GetNavigationItemUniqueID() const {
   return navigation_item_unique_id_;
 }
@@ -164,16 +172,6 @@ void NavigationContextImpl::SetLoadingHtmlString(bool is_loading_html_string) {
   is_loading_html_string_ = is_loading_html_string;
 }
 
-bool NavigationContextImpl::IsPlaceholderNavigation() const {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  return is_placeholder_navigation_;
-}
-
-void NavigationContextImpl::SetPlaceholderNavigation(bool flag) {
-  DCHECK(!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage));
-  is_placeholder_navigation_ = flag;
-}
-
 void NavigationContextImpl::SetMimeType(NSString* mime_type) {
   mime_type_ = mime_type;
 }
@@ -193,7 +191,7 @@ std::unique_ptr<NavigationItemImpl> NavigationContextImpl::ReleaseItem() {
 void NavigationContextImpl::SetItem(std::unique_ptr<NavigationItemImpl> item) {
   DCHECK(!item_);
   if (item) {
-    // |item| can be null for same-docuemnt navigations and reloads, where
+    // `item` can be null for same-docuemnt navigations and reloads, where
     // navigation item is committed and should not be stored in
     // NavigationContext.
     DCHECK_EQ(GetNavigationItemUniqueID(), item->GetUniqueID());

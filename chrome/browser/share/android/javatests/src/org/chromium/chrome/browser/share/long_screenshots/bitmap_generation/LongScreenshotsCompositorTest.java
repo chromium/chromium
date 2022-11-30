@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -23,9 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
@@ -36,7 +32,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
+@SuppressWarnings("DoNotMock") // Mocks GURL.
 public class LongScreenshotsCompositorTest {
     private TestPlayerCompositorDelegate mCompositorDelegate;
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
@@ -63,9 +59,9 @@ public class LongScreenshotsCompositorTest {
         }
 
         @Override
-        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode,
+        public PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr, GURL url,
+                String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return mCompositorDelegate;
@@ -73,14 +69,18 @@ public class LongScreenshotsCompositorTest {
     }
 
     /**
-     * Implementation of {@link PlayerCompositorDelegate} for tests. TODO(tgupta): Consider moving
-     * this into its own class when it starts to get used more.
+     * Implementation of {@link PlayerCompositorDelegate} for tests.
      */
     class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
         private boolean mRequestBitmapError;
+        private boolean mWasDestroyed;
 
         public void setRequestBitmapError() {
             mRequestBitmapError = true;
+        }
+
+        public boolean wasDestroyed() {
+            return mWasDestroyed;
         }
 
         @Override
@@ -119,6 +119,11 @@ public class LongScreenshotsCompositorTest {
         public GURL onClick(UnguessableToken frameGuid, int x, int y) {
             return null;
         }
+
+        @Override
+        public void destroy() {
+            mWasDestroyed = true;
+        }
     }
 
     @Before
@@ -136,7 +141,7 @@ public class LongScreenshotsCompositorTest {
     }
 
     @Test
-    public void testSuccessfullCompositing() {
+    public void testSuccessfulCompositing() {
         Callback<Bitmap> onBitmapResult = new Callback<Bitmap>() {
             @Override
             public void onResult(Bitmap result) {
@@ -159,14 +164,19 @@ public class LongScreenshotsCompositorTest {
         };
 
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
-                mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), compositorCallback);
+                mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        compositor.onCompositorReady(
+                null, null, new int[] {1, 2}, new int[] {3, 4}, null, null, null, 0f, 0);
+        Assert.assertEquals(1, compositor.getContentSize().getWidth());
+        Assert.assertEquals(2, compositor.getContentSize().getHeight());
+        Assert.assertEquals(3, compositor.getScrollOffset().x);
+        Assert.assertEquals(4, compositor.getScrollOffset().y);
 
         // RequestBitmap in mCompositorDelegate should match
-        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+        compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);
+        compositor.destroy();
     }
 
     @Test
@@ -194,14 +204,33 @@ public class LongScreenshotsCompositorTest {
         };
 
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
-                mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), compositorCallback);
+                mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        compositor.onCompositorReady(null, null, null, null, null, null, null, 0f, 0);
+        Assert.assertEquals(0, compositor.getContentSize().getWidth());
 
         // RequestBitmap in mCompositorDelegate should match
-        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+        compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);
         Assert.assertTrue(mErrorThrown);
+        compositor.destroy();
+        Assert.assertTrue(mCompositorDelegate.wasDestroyed());
+    }
+
+    @Test
+    public void testCompositorError() {
+        Callback<Integer> compositorCallback = new Callback<Integer>() {
+            @Override
+            public void onResult(Integer result) {
+                Assert.assertEquals((Integer) CompositorStatus.INVALID_REQUEST, result);
+            }
+        };
+
+        LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
+                mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
+
+        compositor.onCompositorError(CompositorStatus.INVALID_REQUEST);
+        compositor.destroy();
+        Assert.assertTrue(mCompositorDelegate.wasDestroyed());
     }
 }

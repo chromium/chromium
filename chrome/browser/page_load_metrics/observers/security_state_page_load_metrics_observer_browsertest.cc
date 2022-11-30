@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,15 +15,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
-#include "components/security_state/core/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -41,6 +42,11 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
  public:
   explicit SecurityStyleTestObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
+
+  SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
+  SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
+      delete;
+
   ~SecurityStyleTestObserver() override {}
 
   void DidChangeVisibleSecurityState() override { run_loop_.Quit(); }
@@ -49,12 +55,17 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(SecurityStyleTestObserver);
 };
 
 class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
  public:
   SecurityStatePageLoadMetricsBrowserTest() {}
+
+  SecurityStatePageLoadMetricsBrowserTest(
+      const SecurityStatePageLoadMetricsBrowserTest&) = delete;
+  SecurityStatePageLoadMetricsBrowserTest& operator=(
+      const SecurityStatePageLoadMetricsBrowserTest&) = delete;
+
   ~SecurityStatePageLoadMetricsBrowserTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -130,14 +141,12 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_test_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityStatePageLoadMetricsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   // Site Engagement metrics.
@@ -174,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Http) {
   StartHttpServer();
   GURL url = http_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -203,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Http) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, ReloadPage) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -271,11 +280,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
     // The UKM isn't recorded until the page is destroyed.
     ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-        1, TabStripModel::CLOSE_NONE));
+        1, TabCloseTypes::CLOSE_NONE));
 
     histogram_tester.ExpectTotalCount(
         kSiteEngagementHistogramPrefix +
@@ -321,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
 
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -337,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, OtherScheme) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
   CloseAllTabs();
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
@@ -382,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(
     MixedContent) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -428,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   // Make HTTPS server cause an interstitial.
   StartHttpsServer(net::EmbeddedTestServer::CERT_EXPIRED);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -453,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        HostDoesNotExist) {
   GURL url("http://nonexistent.test/page.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
@@ -501,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
 
     histogram_tester()->ExpectTotalCount(
@@ -519,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 
   GURL http_url = http_test_server()->GetURL("/circle.svg");
   GURL https_url = https_test_server()->GetURL("/circle.svg");
-  ui_test_utils::NavigateToURL(browser(), http_url);
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -556,10 +566,9 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
 
   GURL https_url = https_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
-  const base::TimeDelta kMinForegroundTime =
-      base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kMinForegroundTime = base::Milliseconds(10);
 
   // Ensure that the tab is open for more than 0 ms, even in the face of bots
   // with bad clocks.
@@ -579,4 +588,98 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   EXPECT_EQ(1u, safety_tip_samples.size());
   EXPECT_LE(kMinForegroundTime.InMilliseconds(),
             safety_tip_samples.front().min);
+}
+
+class SecurityStatePageLoadMetricsMPArchBrowserTest
+    : public SecurityStatePageLoadMetricsBrowserTest {
+ public:
+  SecurityStatePageLoadMetricsMPArchBrowserTest() = default;
+  ~SecurityStatePageLoadMetricsMPArchBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
+class SecurityStatePageLoadMetricsPrerenderBrowserTest
+    : public SecurityStatePageLoadMetricsMPArchBrowserTest {
+ public:
+  SecurityStatePageLoadMetricsPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SecurityStatePageLoadMetricsPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~SecurityStatePageLoadMetricsPrerenderBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    SecurityStatePageLoadMetricsBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SecurityStatePageLoadMetricsPrerenderBrowserTest,
+    EnsurePrerenderingDoesNotRecordOnCommitSecurityLevelHistogram) {
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+
+  GURL https_url = https_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
+
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
+
+  // Loads a page in the prerender.
+  GURL prerender_url = https_test_server()->GetURL("/title2.html");
+  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
+
+  // Activate the page from the prerendering.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // Prerendering records it on DidActivatePrerenderedPage.
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 2);
+}
+
+class SecurityStatePageLoadMetricsFencedFrameBrowserTest
+    : public SecurityStatePageLoadMetricsMPArchBrowserTest {
+ public:
+  SecurityStatePageLoadMetricsFencedFrameBrowserTest() = default;
+  ~SecurityStatePageLoadMetricsFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsFencedFrameBrowserTest,
+                       DoNotRecordOnCommitSecurityLevelHistogram) {
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+
+  GURL https_url = https_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
+
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url(
+      https_test_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+
+  histogram_tester()->ExpectTotalCount("Security.SecurityLevel.OnCommit", 1);
 }

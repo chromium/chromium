@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,17 @@
 
 #include "ash/assistant/ui/logo_view/shape/shape.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "chromeos/assistant/internal/logo_view/logo_model/dot.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -109,8 +111,8 @@ void LogoViewImpl::DrawDots(gfx::Canvas* canvas) {
   // TODO: The Green Mic parts seems overlapped on the Red Mic part. Draw dots
   // in reverse order so that the Red Mic part is on top of Green Mic parts. But
   // we need to find out why the Mic parts are overlapping in the first place.
-  for (auto iter = logo_.dots().rbegin(); iter != logo_.dots().rend(); ++iter)
-    DrawDot(canvas, (*iter).get());
+  for (const auto& dot : base::Reversed(logo_.dots()))
+    DrawDot(canvas, dot.get());
 }
 
 void LogoViewImpl::DrawDot(gfx::Canvas* canvas, Dot* dot) {

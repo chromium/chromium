@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace content {
@@ -23,7 +22,7 @@ void EncodeVarInt(int64_t from, std::string* into);
 // Decodes a varint from the given string piece into the given int64_t. Returns
 // if the  string had a valid varint (where a byte was found with it's top bit
 // set). This function does NOT check to see if move than 64 bits were read.
-WARN_UNUSED_RESULT bool DecodeVarInt(base::StringPiece* from, int64_t* into);
+[[nodiscard]] bool DecodeVarInt(base::StringPiece* from, int64_t* into);
 
 }  // namespace content
 

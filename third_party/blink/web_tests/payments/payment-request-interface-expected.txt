@@ -1,0 +1,154 @@
+CONSOLE WARNING: PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE WARNING: PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) SecurityError: Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort
+CONSOLE ERROR: Uncaught (in promise) SecurityError: Failed to execute 'show' on 'PaymentRequest': PaymentRequest.show() requires either transient user activation or delegated payment request capability
+CONSOLE ERROR: Uncaught (in promise) InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort
+This is a testharness.js-based test.
+PASS Creating a PaymentRequest with empty parameters should not throw or crash.
+PASS Creating a PaymentRequest with extra parameters should not throw or crash.
+PASS Creating a PaymentRequest with omitted optional parameters should not throw or crash.
+PASS Creating a PaymentRequest with undefined optional parameters should not throw or crash.
+PASS Creating a PaymentRequest with null optional parameters should not throw or crash.
+PASS PaymentRequest should have readonly shippingAddress and shippingOption properties.
+PASS PaymentRequest should have onShippingAddressChange and onShippingOptionChange events.
+PASS PaymentRequest should have methods abort() and show().
+PASS PaymentRequest.abort() and PaymentRequest.show() should take no parameters.
+PASS Valid data causes no errors.
+PASS Shipping option identifier should be null if shipping request is omitted.
+PASS Shipping option identifier should be null if shipping is explicitly not requested.
+PASS Shipping option identifier should be null if no shipping options are provided.
+PASS Shipping option identifier should be null if the single provided option is not selected.
+PASS Shipping option identifier should default to the single provided option if it is selected.
+PASS Shipping option identifier should be null if multiple unselected shipping options are provided.
+PASS Shipping option identifier should default to the selected shipping option.
+PASS Shipping option identifier should default to the last selected shipping option, if multiple are selected.
+PASS A TypeError should be thrown for duplicate shipping option identifiers.
+PASS Shipping type should be null if shipping is explicitly not requested.
+PASS Shipping type should be 'shipping' by default if shipping type isn't specified.
+PASS Shipping type should be null if shipping type is specified but requestShipping is false.
+PASS Shipping type should be 'shipping' if shipping type is specified as 'shipping'.
+PASS Shipping type should be 'delivery' if shipping type is specified as 'delivery'.
+PASS Shipping type should be 'pickup' if shipping type is specified as 'pickup'.
+PASS Shipping type should be 'shipping' if shipping type is specified as undefined.
+PASS Undefined display items should not throw.
+PASS Empty display items should not throw.
+PASS Non-negative total value should not throw.
+PASS Negative line item value should not throw.
+PASS Undefined modifiers should not throw.
+PASS Non-negative total value in PaymentDetailsModifier should not throw.
+PASS Duplicate supported payment method identifiers in separate methoData objects of modifiers should not throw.
+PASS Android Pay parameters for test environment with gateway token should not throw.
+PASS Android Pay parameters for produciton environment with network token should not throw.
+PASS Basic card parameters should not throw.
+PASS Empty basic card parameters should not throw.
+PASS Invalid basic card parameters should not throw when method name is not "basic-card".
+PASS Android Pay parameters for network token without environment key should not throw.
+PASS Invalid Android Pay parameters should not throw when method name is not "https://android.com/pay".
+PASS Invalid Android Pay parameters should not throw even when method name is "https://android.com/pay".
+PASS Array value for payment method specific data parameter should not throw
+PASS abort() without show() should reject with error
+PASS PaymentRequest constructor should throw for incorrect parameter types.
+PASS PaymentRequest constructor should throw for undefined required parameters.
+PASS PaymentRequest constructor should throw for null required parameter.
+PASS Empty list of supported payment method identifiers should throw TypeError.
+PASS Empty supported payment method identifier should throw RangeError.
+PASS Absence of total should throw TypeError.
+PASS Negative total value should throw a TypeError.
+PASS Negative total value in PaymentDetailsModifier should throw a TypeError.
+PASS Undefined supportedMethods in modifiers should throw TypeError.
+PASS Empty supportedMethods in modifiers should throw RangeError.
+PASS Absence of supportedMethods in modifiers should throw TypeError.
+PASS Empty details should throw
+PASS Null items should throw
+PASS Null shipping options should throw
+PASS Undefined PaymentShippingType value for shppingType should throw a TypeError
+PASS Null for shppingType should throw a TypeError
+PASS Array value for shppingType should throw a TypeError
+PASS Object value for shppingType should throw a TypeError
+PASS Numeric value for shppingType should throw a TypeError
+PASS String value for payment method specific data parameter should throw
+PASS Numeric value for payment method specific data parameter should throw
+PASS Infinite JSON value for one of the payment method specific data pieces should throw
+PASS Null for payment method specific data parameter should throw
+PASS Empty string for payment method specific data parameter should throw
+FAIL PaymentRequest constructor should throw for invalid "basic-card" parameters. assert_throws_js: function "function() {
+        new PaymentRequest([{'supportedMethods': 'basic-card', 'data': {'supportedTypes': 0, 'supportedNetworks': 'foo'}}], buildDetails())
+    }" did not throw
+PASS Undefined currency code in total should throw
+PASS Invalid amount "-" in total should throw
+PASS Invalid amount "notdigits" in total should throw
+PASS Invalid amount "ALSONOTDIGITS" in total should throw
+PASS Invalid amount "10." in total should throw
+PASS Invalid amount ".99" in total should throw
+PASS Invalid amount "-10." in total should throw
+PASS Invalid amount "-.99" in total should throw
+PASS Invalid amount "10-" in total should throw
+PASS Invalid amount "1-0" in total should throw
+PASS Invalid amount "1.0.0" in total should throw
+PASS Invalid amount "1/3" in total should throw
+PASS Empty amount in total should throw
+PASS Null amount in total should throw
+PASS Undefined amount in total should throw
+PASS Undefined currency code in displayItems.0 should throw
+PASS Invalid amount "-" in displayItems.0 should throw
+PASS Invalid amount "notdigits" in displayItems.0 should throw
+PASS Invalid amount "ALSONOTDIGITS" in displayItems.0 should throw
+PASS Invalid amount "10." in displayItems.0 should throw
+PASS Invalid amount ".99" in displayItems.0 should throw
+PASS Invalid amount "-10." in displayItems.0 should throw
+PASS Invalid amount "-.99" in displayItems.0 should throw
+PASS Invalid amount "10-" in displayItems.0 should throw
+PASS Invalid amount "1-0" in displayItems.0 should throw
+PASS Invalid amount "1.0.0" in displayItems.0 should throw
+PASS Invalid amount "1/3" in displayItems.0 should throw
+PASS Empty amount in displayItems.0 should throw
+PASS Null amount in displayItems.0 should throw
+PASS Undefined amount in displayItems.0 should throw
+PASS Undefined currency code in shippingOptions.0 should throw
+PASS Invalid amount "-" in shippingOptions.0 should throw
+PASS Invalid amount "notdigits" in shippingOptions.0 should throw
+PASS Invalid amount "ALSONOTDIGITS" in shippingOptions.0 should throw
+PASS Invalid amount "10." in shippingOptions.0 should throw
+PASS Invalid amount ".99" in shippingOptions.0 should throw
+PASS Invalid amount "-10." in shippingOptions.0 should throw
+PASS Invalid amount "-.99" in shippingOptions.0 should throw
+PASS Invalid amount "10-" in shippingOptions.0 should throw
+PASS Invalid amount "1-0" in shippingOptions.0 should throw
+PASS Invalid amount "1.0.0" in shippingOptions.0 should throw
+PASS Invalid amount "1/3" in shippingOptions.0 should throw
+PASS Empty amount in shippingOptions.0 should throw
+PASS Null amount in shippingOptions.0 should throw
+PASS Undefined amount in shippingOptions.0 should throw
+PASS Undefined currency code in modifiers.0.total should throw
+PASS Invalid amount "-" in modifiers.0.total should throw
+PASS Invalid amount "notdigits" in modifiers.0.total should throw
+PASS Invalid amount "ALSONOTDIGITS" in modifiers.0.total should throw
+PASS Invalid amount "10." in modifiers.0.total should throw
+PASS Invalid amount ".99" in modifiers.0.total should throw
+PASS Invalid amount "-10." in modifiers.0.total should throw
+PASS Invalid amount "-.99" in modifiers.0.total should throw
+PASS Invalid amount "10-" in modifiers.0.total should throw
+PASS Invalid amount "1-0" in modifiers.0.total should throw
+PASS Invalid amount "1.0.0" in modifiers.0.total should throw
+PASS Invalid amount "1/3" in modifiers.0.total should throw
+PASS Empty amount in modifiers.0.total should throw
+PASS Null amount in modifiers.0.total should throw
+PASS Undefined amount in modifiers.0.total should throw
+PASS Undefined currency code in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "-" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "notdigits" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "ALSONOTDIGITS" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "10." in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount ".99" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "-10." in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "-.99" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "10-" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "1-0" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "1.0.0" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Invalid amount "1/3" in modifiers.0.additionalDisplayItems.0 should throw
+PASS Empty amount in modifiers.0.additionalDisplayItems.0 should throw
+PASS Null amount in modifiers.0.additionalDisplayItems.0 should throw
+PASS Undefined amount in modifiers.0.additionalDisplayItems.0 should throw
+Harness: the test ran to completion.
+

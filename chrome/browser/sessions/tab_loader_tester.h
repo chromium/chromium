@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_
 #define CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/sessions/tab_loader.h"
@@ -14,9 +15,14 @@
 class TabLoaderTester {
  public:
   using TabVector = TabLoader::TabVector;
+  using TabSet = TabLoader::TabSet;
 
   TabLoaderTester();
   explicit TabLoaderTester(TabLoader* tab_loader);
+
+  TabLoaderTester(const TabLoaderTester&) = delete;
+  TabLoaderTester& operator=(const TabLoaderTester&) = delete;
+
   ~TabLoaderTester();
 
   void SetTabLoader(TabLoader*);
@@ -42,6 +48,7 @@ class TabLoaderTester {
   base::TimeTicks force_load_time() const;
   base::OneShotTimer& force_load_timer();
   const TabVector& tabs_to_load() const;
+  const TabSet& tabs_load_initiated() const;
   size_t scheduled_to_load_count() const;
   static TabLoader* shared_tab_loader();
 
@@ -54,9 +61,7 @@ class TabLoaderTester {
   void WaitForTabLoadingEnabled();
 
  private:
-  TabLoader* tab_loader_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TabLoaderTester);
+  raw_ptr<TabLoader> tab_loader_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_

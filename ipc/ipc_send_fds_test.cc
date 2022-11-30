@@ -1,15 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
 extern "C" {
 #include <sandbox.h>
 }
 #endif
+
 #include <fcntl.h>
 #include <stddef.h>
 #include <sys/socket.h>
@@ -19,26 +19,23 @@ extern "C" {
 #include <memory>
 #include <queue>
 
-#include "base/callback.h"
 #include "base/file_descriptor_posix.h"
-#include "base/location.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_test_base.h"
 
-#if defined(OS_POSIX)
-#include "base/macros.h"
-#endif
-
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt.h"
+#elif BUILDFLAG(IS_FUCHSIA)
+#include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_dev_zero_fuchsia.h"
 #endif
 
 namespace {
@@ -47,11 +44,9 @@ const unsigned kNumFDsToSend = 7;  // per message
 const unsigned kNumMessages = 20;
 const char* kDevZeroPath = "/dev/zero";
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 static_assert(kNumFDsToSend ==
                   IPC::MessageAttachmentSet::kMaxDescriptorsPerMessage,
               "The number of FDs to send must be kMaxDescriptorsPerMessage.");
-#endif
 
 class MyChannelDescriptorListenerBase : public IPC::Listener {
  public:
@@ -115,6 +110,12 @@ class MyChannelDescriptorListener : public MyChannelDescriptorListenerBase {
 
 class IPCSendFdsTest : public IPCChannelMojoTestBase {
  protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_FUCHSIA)
+    ASSERT_TRUE(dev_zero_);
+#endif
+  }
+
   void RunServer() {
     // Set up IPC channel and start client.
     MyChannelDescriptorListener listener(-1);
@@ -142,9 +143,20 @@ class IPCSendFdsTest : public IPCChannelMojoTestBase {
     EXPECT_TRUE(WaitForClientShutdown());
     DestroyChannel();
   }
+
+ private:
+#if BUILDFLAG(IS_FUCHSIA)
+  scoped_refptr<base::ScopedDevZero> dev_zero_ = base::ScopedDevZero::Get();
+#endif
 };
 
-TEST_F(IPCSendFdsTest, DescriptorTest) {
+// Disabled on Fuchsia due to failures; see https://crbug.com/1272424.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DescriptorTest DISABLED_DescriptorTest
+#else
+#define MAYBE_DescriptorTest DescriptorTest
+#endif
+TEST_F(IPCSendFdsTest, MAYBE_DescriptorTest) {
   Init("SendFdsClient");
   RunServer();
 }
@@ -179,7 +191,7 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
   SendFdsClientCommon("SendFdsClient", st.st_ino);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
 // Test that FDs are correctly sent to a sandboxed process.
 // TODO(port): Make this test cross-platform.
 TEST_F(IPCSendFdsTest, DescriptorTestSandboxed) {
@@ -211,8 +223,6 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
   // See if we can receive a file descriptor.
   SendFdsClientCommon("SendFdsSandboxedClient", st.st_ino);
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
-
-#endif  // defined(OS_POSIX)

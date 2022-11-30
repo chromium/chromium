@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.android.webview.chromium;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -56,6 +55,7 @@ import android.webkit.WebViewRenderProcessClient;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -67,10 +67,10 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.components.autofill.AutofillProvider;
-import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SmartClipProvider;
 import org.chromium.url.GURL;
@@ -240,7 +240,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     private static void recordWebViewApiCall(@ApiCall int sample) {
-        RecordHistogram.recordEnumeratedHistogram("WebView.ApiCall", sample, ApiCall.COUNT);
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ApiCall", sample, ApiCall.COUNT);
     }
 
     // This does not touch any global / non-threadsafe state, but note that
@@ -256,7 +256,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mFactory = factory;
             mShouldDisableThreadChecking = shouldDisableThreadChecking;
-            factory.getWebViewDelegate().addWebViewAssetPath(mWebView.getContext());
+            factory.addWebViewAssetPath(mWebView.getContext());
             mSharedWebViewChromium =
                     new SharedWebViewChromium(mFactory.getRunQueue(), mFactory.getAwInit());
         }
@@ -277,7 +277,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     // so is ignored. TODO: remove it from WebViewProvider.
     public void init(final Map<String, Object> javaScriptInterfaces,
             final boolean privateBrowsing) {
-        long startTime = SystemClock.elapsedRealtime();
+        long startTime = SystemClock.uptimeMillis();
         boolean isFirstWebViewInit = !mFactory.hasStarted();
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
@@ -381,11 +381,11 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             if (isFirstWebViewInit) {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                        SystemClock.elapsedRealtime() - startTime);
+                        SystemClock.uptimeMillis() - startTime);
             } else {
                 RecordHistogram.recordTimesHistogram(
                         "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                        SystemClock.elapsedRealtime() - startTime);
+                        SystemClock.uptimeMillis() - startTime);
             }
         }
     }
@@ -393,6 +393,8 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     // This is a workaround for https://crbug.com/622151.
     // In HTC's email app, InputConnection.setComposingText() will call WebView.evaluateJavaScript,
     // and thread assertion will occur. We turn off WebView thread assertion for this app.
+    // SuppressLint rationale: https://crrev.com/c/3439168/comments/d612ae09_b7bfca2b
+    @SuppressLint("SoonBlockedPrivateApi")
     private void disableThreadChecking() {
         try {
             Class<?> webViewClass = Class.forName("android.webkit.WebView");
@@ -414,13 +416,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             mAwContents = new AwContents(mFactory.getBrowserContextOnUiThread(), mWebView, mContext,
                     new InternalAccessAdapter(), new WebViewNativeDrawFunctorFactory(),
                     mContentsClientAdapter, mWebSettings.getAwSettings(),
-                    new AwContents.DependencyFactory() {
-                        @Override
-                        public AutofillProvider createAutofillProvider(
-                                Context context, ViewGroup containerView) {
-                            return mFactory.createAutofillProvider(context, mWebView);
-                        }
-                    });
+                    new AwContents.DependencyFactory());
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
                 // On KK and above, favicons are automatically downloaded as the method
                 // old apps use to enable that behavior is deprecated.
@@ -973,7 +969,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
     public void insertVisualStateCallback(
             final long requestId, final VisualStateCallback callback) {
         recordWebViewApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
@@ -1486,11 +1481,13 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         return mSharedWebViewChromium.getWebViewClient();
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcess getWebViewRenderProcess() {
         return GlueApiHelperForQ.getWebViewRenderProcess(mSharedWebViewChromium.getRenderProcess());
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public void setWebViewRenderProcessClient(
             Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
@@ -1505,6 +1502,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
         SharedWebViewRendererClientAdapter adapter =
@@ -1629,11 +1627,12 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
     public void postMessageToMainFrame(final WebMessage message, final Uri targetOrigin) {
         recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
-        mSharedWebViewChromium.postMessageToMainFrame(message.getData(), targetOrigin.toString(),
-                WebMessagePortAdapter.toMessagePorts(message.getPorts()));
+        // Create MessagePayload from AOSP WebMessage, MessagePayload is not directly supported by
+        // AOSP.
+        mSharedWebViewChromium.postMessageToMainFrame(new MessagePayload(message.getData()),
+                targetOrigin.toString(), WebMessagePortAdapter.toMessagePorts(message.getPorts()));
     }
 
     @Override
@@ -1832,7 +1831,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i("ContentCapture", "onProvideContentCaptureStructure");
         }
-        mAwContents.setContentCaptureConsumer(ContentCaptureConsumerImpl.create(
+        mAwContents.setOnscreenContentProvider(new OnscreenContentProvider(
                 ClassLoaderContextWrapperFactory.get(mWebView.getContext()), mWebView, structure,
                 mAwContents.getWebContents()));
     }
@@ -1886,7 +1885,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         return mAwContents.getAccessibilityNodeProvider();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onProvideVirtualStructure(final ViewStructure structure) {
         mFactory.startYourEngines(false);
@@ -2547,7 +2545,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         @Override
         public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return mFactory.getWebViewDelegate();
+                return mFactory.getWebViewDelegate()::drawWebViewFunctor;
             }
             return null;
         }

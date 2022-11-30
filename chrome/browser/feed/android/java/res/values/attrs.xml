@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <declare-styleable name="SectionHeaderView">
+       <attr name="animatePaddingWhenDisabled" format="boolean"/>
+       <!-- This is used by the BadgeDrawable used by this view, declared here
+       because its attr definition is not part of the official Material
+       library release yet (1.4.0). This will be unread in public Chromium, but
+       public Chromium should not be triggering the code that makes this
+       necessary. -->
+       <attr name="badgeRadius" format="dimension"/>
+    </declare-styleable>
+</resources>

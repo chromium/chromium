@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "net/base/net_errors.h"
 #include "net/socket/ssl_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 const char kClientAuthSslExporterLabel[] =
     "EXPORTER-remoting-channel-auth-client";
@@ -65,5 +64,4 @@ std::string GetAuthBytes(net::SSLSocket* socket,
   return std::string(out_bytes, out_bytes + kAuthDigestLength);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

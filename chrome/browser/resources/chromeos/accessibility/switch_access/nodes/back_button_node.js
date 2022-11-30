@@ -1,7 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventHandler} from '../../common/event_handler.js';
+import {RepeatedEventHandler} from '../../common/repeated_event_handler.js';
 import {ActionManager} from '../action_manager.js';
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {MenuManager} from '../menu_manager.js';
@@ -155,7 +157,7 @@ export class BackButtonNode extends SAChildNode {
     SwitchAccess.findNodeMatching(
         {
           role: chrome.automation.RoleType.BUTTON,
-          attributes: {className: 'SwitchAccessBackButtonView'}
+          attributes: {className: 'SwitchAccessBackButtonView'},
         },
         BackButtonNode.saveAutomationNode_);
   }

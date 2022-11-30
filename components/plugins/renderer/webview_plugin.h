@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
-#include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -31,6 +31,7 @@ namespace blink {
 namespace web_pref {
 struct WebPreferences;
 }  // namespace web_pref
+struct RendererPreferences;
 class WebLocalFrame;
 class WebMouseEvent;
 }
@@ -160,17 +161,17 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
                         public blink::WebLocalFrameClient,
                         public blink::mojom::WidgetHost {
    public:
-    WebViewHelper(WebViewPlugin* plugin,
-                  const blink::web_pref::WebPreferences& preferences);
+    WebViewHelper(
+        WebViewPlugin* plugin,
+        const blink::web_pref::WebPreferences& parent_web_preferences,
+        const blink::RendererPreferences& parent_renderer_preferences);
     ~WebViewHelper() override;
 
     blink::WebView* web_view() { return web_view_; }
     blink::WebNavigationControl* main_frame() { return frame_; }
 
     // WebViewClient methods:
-    bool AcceptsLoadDrops() override;
-    bool CanUpdateLayout() override;
-    void DidInvalidateRect(const gfx::Rect&) override;
+    void InvalidateContainer() override;
 
     // WebNonCompositedWidgetClient overrides.
     void ScheduleNonCompositedAnimation() override;
@@ -184,13 +185,18 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
 
     // blink::mojom::WidgetHost implementation.
     void SetCursor(const ui::Cursor& cursor) override;
-    void SetToolTipText(const std::u16string& tooltip_text,
-                        base::i18n::TextDirection hint) override;
+    void UpdateTooltipUnderCursor(const std::u16string& tooltip_text,
+                                  base::i18n::TextDirection hint) override;
+    void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
+                                   base::i18n::TextDirection hint,
+                                   const gfx::Rect& bounds) override;
+    void ClearKeyboardTriggeredTooltip() override;
     void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override {}
     void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                                 base::i18n::TextDirection anchor_dir,
                                 const gfx::Rect& focus_rect,
                                 base::i18n::TextDirection focus_dir,
+                                const gfx::Rect& bounding_box,
                                 bool is_anchor_first) override {}
     void CreateFrameSink(
         mojo::PendingReceiver<viz::mojom::CompositorFrameSink>
@@ -201,6 +207,10 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
             render_frame_metadata_observer_client_receiver,
         mojo::PendingRemote<cc::mojom::RenderFrameMetadataObserver>
             render_frame_metadata_observer) override {}
+
+    // This function sets the "title" attribute to the text value passed by
+    // parameter on the container's element, if possible.
+    void UpdateTooltip(const std::u16string& tooltip_text);
 
    private:
     WebViewPlugin* plugin_;

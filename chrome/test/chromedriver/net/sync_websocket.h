@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_CHROMEDRIVER_NET_SYNC_WEBSOCKET_H_
 #define CHROME_TEST_CHROMEDRIVER_NET_SYNC_WEBSOCKET_H_
 
+#include <base/callback.h>
 #include <string>
 
 class GURL;
@@ -13,11 +14,7 @@ class Timeout;
 // Proxy for using a WebSocket running on a background thread synchronously.
 class SyncWebSocket {
  public:
-  enum StatusCode {
-    kOk = 0,
-    kTimeout,
-    kDisconnected
-  };
+  enum class StatusCode { kOk = 0, kTimeout, kDisconnected };
 
   virtual ~SyncWebSocket() {}
 
@@ -42,6 +39,11 @@ class SyncWebSocket {
   // Returns whether there are any messages that have been received and not yet
   // handled by ReceiveNextMessage.
   virtual bool HasNextMessage() = 0;
+
+  // Set the callback to be executed if there any messages available.
+  // The callback is called in the thread where the socket was created.
+  // Sporadic calls of the callback are permitted.
+  virtual void SetNotificationCallback(base::RepeatingClosure callback) {}
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_SYNC_WEBSOCKET_H_

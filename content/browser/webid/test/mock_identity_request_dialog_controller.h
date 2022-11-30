@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,21 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD3(ShowInitialPermissionDialog,
-               void(WebContents*, const GURL&, InitialApprovalCallback));
-  MOCK_METHOD4(ShowIdProviderWindow,
+  MOCK_METHOD7(ShowAccountsDialog,
                void(WebContents*,
-                    WebContents*,
-                    const GURL&,
-                    IdProviderWindowClosedCallback));
-  MOCK_METHOD0(CloseIdProviderWindow, void());
-  MOCK_METHOD3(ShowTokenExchangePermissionDialog,
-               void(content::WebContents*,
-                    const GURL&,
-                    TokenExchangeApprovalCallback));
+                    const std::string&,
+                    const absl::optional<std::string>&,
+                    const std::vector<content::IdentityProviderData>&,
+                    IdentityRequestAccount::SignInMode,
+                    AccountSelectionCallback,
+                    DismissCallback));
+  MOCK_METHOD0(DestructorCalled, void());
+  MOCK_METHOD5(ShowFailureDialog,
+               void(WebContents*,
+                    const std::string&,
+                    const std::string&,
+                    const absl::optional<std::string>&,
+                    DismissCallback));
 };
 
 }  // namespace content

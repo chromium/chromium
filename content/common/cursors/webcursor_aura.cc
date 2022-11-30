@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/check_op.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/cursor_util.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/wm/core/cursor_util.h"
 
 namespace content {
 
@@ -22,12 +22,10 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
       CreateScaledBitmapAndHotspotFromCustomData(&bitmap, &hotspot, &scale);
       custom_cursor_->set_custom_bitmap(bitmap);
       custom_cursor_->set_custom_hotspot(hotspot);
-      custom_cursor_->set_image_scale_factor(scale);
-
-      DCHECK(!platform_cursor_);
-      platform_cursor_ = ui::CursorFactory::GetInstance()->CreateImageCursor(
-          ui::mojom::CursorType::kCustom, bitmap, hotspot);
-      custom_cursor_->SetPlatformCursor(platform_cursor_);
+      custom_cursor_->set_image_scale_factor(device_scale_factor_);
+      custom_cursor_->SetPlatformCursor(
+          ui::CursorFactory::GetInstance()->CreateImageCursor(
+              ui::mojom::CursorType::kCustom, bitmap, hotspot));
     }
     return *custom_cursor_;
   }
@@ -41,7 +39,7 @@ void WebCursor::CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
   *bitmap = cursor_.custom_bitmap();
   *hotspot = cursor_.custom_hotspot();
   *scale = GetCursorScaleFactor(bitmap);
-  ui::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
+  wm::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
 }
 
 #if !defined(USE_OZONE)
@@ -62,25 +60,7 @@ float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
 }
 #endif
 
-void WebCursor::CopyPlatformData(const WebCursor& other) {
-  custom_cursor_ = other.custom_cursor_;
-  if (platform_cursor_)
-    ui::CursorFactory::GetInstance()->UnrefImageCursor(platform_cursor_);
-  platform_cursor_ = other.platform_cursor_;
-  if (platform_cursor_)
-    ui::CursorFactory::GetInstance()->RefImageCursor(platform_cursor_);
-
-  device_scale_factor_ = other.device_scale_factor_;
-#if defined(USE_OZONE)
-  maximum_cursor_size_ = other.maximum_cursor_size_;
-#endif
-}
-
 void WebCursor::CleanupPlatformData() {
-  if (platform_cursor_) {
-    ui::CursorFactory::GetInstance()->UnrefImageCursor(platform_cursor_);
-    platform_cursor_ = nullptr;
-  }
   custom_cursor_.reset();
 }
 

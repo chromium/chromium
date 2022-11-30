@@ -1,0 +1,18 @@
+{
+  "images" : [
+    {
+      "filename" : "chromium_non_default_promo@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "chromium_non_default_promo@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class Profile;
@@ -76,12 +76,12 @@ class AppInfoFooterPanel
                               const extensions::Extension* app);
 
   // UI elements on the dialog. Elements are null if they are not displayed.
-  views::View* create_shortcuts_button_ = nullptr;
+  raw_ptr<views::View> create_shortcuts_button_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::View* pin_to_shelf_button_ = nullptr;
   views::View* unpin_from_shelf_button_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View* remove_button_ = nullptr;
+  raw_ptr<views::View> remove_button_ = nullptr;
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;

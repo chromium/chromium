@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 class Printer;
@@ -40,18 +39,18 @@ constexpr std::array<uint8_t, 4> ps_magic_bytes = {0x25, 0x21, 0x50,
 // Expects |request| to be an IPP_OP_GET_PRINTERS IPP request. This function
 // creates an appropriate IPP response referencing |printers|.
 // TODO(crbug.com/945409): Expand testing suite.
-base::Optional<IppResponse> BuildGetDestsResponse(
+absl::optional<IppResponse> BuildGetDestsResponse(
     const IppRequest& request,
     const std::vector<chromeos::Printer>& printers);
 
 // If |ipp| refers to a printer, we return the associated printer_id.
 // Note: Expects the printer id to be embedded in the resource field of the
 // 'printer-uri' IPP attribute.
-base::Optional<std::string> GetPrinterId(ipp_t* ipp);
+absl::optional<std::string> GetPrinterId(ipp_t* ipp);
 
 // Expects |endpoint| to be of the form '/printers/{printer_id}'.
 // Returns an empty Optional if parsing fails or yields an empty printer_id.
-base::Optional<std::string> ParseEndpointForPrinterId(
+absl::optional<std::string> ParseEndpointForPrinterId(
     base::StringPiece endpoint);
 
 // Return list of printers containing first recently used printers,

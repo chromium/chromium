@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 // __STDC_FORMAT_MACROS is defined in order for //base/format_macros.h to
 // function correctly. See comment and #error message in //base/format_macros.h
 // for details.
-#if defined(OS_POSIX) && !defined(__STDC_FORMAT_MACROS)
+#if BUILDFLAG(IS_POSIX) && !defined(__STDC_FORMAT_MACROS)
 #define __STDC_FORMAT_MACROS
 #endif
 
@@ -32,9 +32,9 @@
 #include "ui/gl/gl_export.h"
 
 // The standard OpenGL native extension headers are also included.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <GL/wglext.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <OpenGL/OpenGL.h>
 #elif defined(USE_GLX)
 using Display = struct _XDisplay;
@@ -142,6 +142,9 @@ struct XVisualInfo;
 // GL_ANGLE_memory_size
 #define GL_MEMORY_SIZE_ANGLE 0x93AD
 
+// GL_ANGLE_rgbx_internal_format
+#define GL_RGBX8_ANGLE 0x96BA
+
 // GL_EXT_occlusion_query_boolean
 #define GL_ANY_SAMPLES_PASSED_EXT                        0x8C2F
 #define GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT           0x8D6A
@@ -183,23 +186,12 @@ struct XVisualInfo;
 // GL_CHROMIUM_ycbcr_p010_image
 #define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
 
-// GL_CHROMIUM_schedule_overlay_plane
-#define GL_OVERLAY_TRANSFORM_NONE_CHROMIUM               0x9245
-#define GL_OVERLAY_TRANSFORM_FLIP_HORIZONTAL_CHROMIUM    0x9246
-#define GL_OVERLAY_TRANSFORM_FLIP_VERTICAL_CHROMIUM      0x9247
-#define GL_OVERLAY_TRANSFORM_ROTATE_90_CHROMIUM          0x9248
-#define GL_OVERLAY_TRANSFORM_ROTATE_180_CHROMIUM         0x9249
-#define GL_OVERLAY_TRANSFORM_ROTATE_270_CHROMIUM         0x924A
-
 // GL_CHROMIUM_subscribe_uniforms
 #define GL_SUBSCRIBED_VALUES_BUFFER_CHROMIUM             0x924B
 #define GL_MOUSE_POSITION_CHROMIUM                       0x924C
 
 // GL_CHROMIUM_texture_filtering_hint
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM               0x8AF0
-
-// GL_CHROMIUM_texture_storage_image
-#define GL_SCANOUT_CHROMIUM 0x6000
 
 // GL_OES_texure_3D
 #define GL_SAMPLER_3D_OES                                0x8B5F
@@ -221,6 +213,9 @@ struct XVisualInfo;
 
 // GL_OES_compressed_ETC1_RGB8_texture
 #define GL_ETC1_RGB8_OES                                 0x8D64
+
+// GL_OES_compressed_ETC2_RGB8_texture
+#define GL_COMPRESSED_RGB8_ETC2 0x9274
 
 // GL_AMD_compressed_ATC_texture
 #define GL_ATC_RGB_AMD                                   0x8C92
@@ -480,7 +475,7 @@ struct XVisualInfo;
 
 #define GL_GLEXT_PROTOTYPES 1
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define GL_BINDING_CALL WINAPI
 #else
 #define GL_BINDING_CALL
@@ -543,16 +538,10 @@ struct GL_EXPORT CurrentGL {
 #if defined(USE_EGL)
 struct GL_EXPORT DriverEGL {
   void InitializeStaticBindings();
-  void InitializeClientExtensionBindings();
-  void InitializeExtensionBindings();
   void ClearBindings();
-  void UpdateConditionalExtensionBindings();
 
   ProcsEGL fn;
-  ExtensionsEGL ext;
-
-  static std::string GetPlatformExtensions();
-  static std::string GetClientExtensions();
+  ClientExtensionsEGL client_ext;
 };
 #endif
 

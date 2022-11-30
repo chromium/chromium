@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_surface.h"
 
 namespace gpu {
 class SharedImageFactory;
@@ -30,40 +32,52 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
  public:
   class Image {
    public:
-    Image();
+    Image(gpu::SharedImageFactory* factory,
+          gpu::SharedImageRepresentationFactory* representation_factory,
+          SkiaOutputSurfaceDependency* deps);
     virtual ~Image();
 
     Image(const Image&) = delete;
     Image& operator=(const Image&) = delete;
 
-    bool Initialize(
-        gpu::SharedImageFactory* factory,
-        gpu::SharedImageRepresentationFactory* representation_factory,
-        const gpu::Mailbox& mailbox,
-        SkiaOutputSurfaceDependency* deps);
+    virtual bool Initialize(const gfx::Size& size,
+                            const gfx::ColorSpace& color_space,
+                            SharedImageFormat format,
+                            uint32_t shared_image_usage);
 
-    gpu::SharedImageRepresentationSkia* skia_representation() {
+    gpu::SkiaImageRepresentation* skia_representation() {
       return skia_representation_.get();
     }
 
-    void BeginWriteSkia();
+    void BeginWriteSkia(int sample_count);
     SkSurface* sk_surface();
     std::vector<GrBackendSemaphore> TakeEndWriteSkiaSemaphores();
-    void EndWriteSkia();
+    void EndWriteSkia(bool force_flush = false);
     void PreGrContextSubmit();
 
     virtual void BeginPresent() = 0;
-    virtual void EndPresent() = 0;
+    virtual void EndPresent(gfx::GpuFenceHandle release_fence) = 0;
     virtual int GetPresentCount() const = 0;
     virtual void OnContextLost() = 0;
 
     base::WeakPtr<Image> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
-   private:
-    base::ScopedClosureRunner shared_image_deleter_;
-    std::unique_ptr<gpu::SharedImageRepresentationSkia> skia_representation_;
-    std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>
+   protected:
+    const raw_ptr<gpu::SharedImageFactory> factory_;
+    const raw_ptr<gpu::SharedImageRepresentationFactory>
+        representation_factory_;
+    const raw_ptr<SkiaOutputSurfaceDependency> deps_;
+    gpu::Mailbox mailbox_;
+
+    std::unique_ptr<gpu::SkiaImageRepresentation> skia_representation_;
+    std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_skia_write_access_;
+
+    std::unique_ptr<gpu::OverlayImageRepresentation> overlay_representation_;
+    std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
+        scoped_overlay_read_access_;
+
+    int present_count_ = 0;
 
     std::vector<GrBackendSemaphore> end_semaphores_;
     base::WeakPtrFactory<Image> weak_ptr_factory_{this};
@@ -79,35 +93,52 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
 
   virtual void InitializeCapabilities(
       OutputSurface::Capabilities* capabilities) = 0;
-  virtual bool Reshape(const gfx::Size& size,
-                       float device_scale_factor,
+  virtual bool Reshape(const SkSurfaceCharacterization& characterization,
                        const gfx::ColorSpace& color_space,
-                       gfx::BufferFormat format,
+                       float device_scale_factor,
                        gfx::OverlayTransform transform) = 0;
   virtual std::vector<std::unique_ptr<Image>> AllocateImages(
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) = 0;
-  virtual std::unique_ptr<Image> AllocateBackgroundImage(
+  // This function exists because the Fuchsia call to 'AllocateImages' does not
+  // support single image allocation.
+  virtual std::unique_ptr<Image> AllocateSingleImage(
       gfx::ColorSpace color_space,
       gfx::Size image_size);
   virtual void SwapBuffers(SwapCompletionCallback completion_callback,
-                           BufferPresentedCallback presentation_callback) = 0;
+                           BufferPresentedCallback presentation_callback,
+                           gl::FrameData data) = 0;
   virtual void PostSubBuffer(const gfx::Rect& rect,
                              SwapCompletionCallback completion_callback,
-                             BufferPresentedCallback presentation_callback) = 0;
+                             BufferPresentedCallback presentation_callback,
+                             gl::FrameData data) = 0;
   virtual void CommitOverlayPlanes(
       SwapCompletionCallback completion_callback,
-      BufferPresentedCallback presentation_callback) = 0;
+      BufferPresentedCallback presentation_callback,
+      gl::FrameData data) = 0;
   virtual void SchedulePrimaryPlane(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) = 0;
-  using ScopedOverlayAccess =
-      gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
-  virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
-                                std::vector<ScopedOverlayAccess*> accesses) = 0;
-  virtual void ScheduleBackground(Image* image);
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  using OverlayPlaneCandidate = OverlayCandidate;
+#elif BUILDFLAG(IS_APPLE)
+  using OverlayPlaneCandidate = CALayerOverlay;
+#elif BUILDFLAG(IS_WIN)
+  using OverlayPlaneCandidate = DCLayerOverlay;
+#else
+  // Default.
+  using OverlayPlaneCandidate = OverlayCandidate;
+#endif
+  using ScopedOverlayAccess = gpu::OverlayImageRepresentation::ScopedReadAccess;
+  virtual void ScheduleOverlayPlane(
+      const OverlayPlaneCandidate& overlay_plane_candidate,
+      ScopedOverlayAccess* access,
+      std::unique_ptr<gfx::GpuFence> acquire_fence) = 0;
+#if BUILDFLAG(IS_MAC)
+  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
+#endif
 };
 
 }  // namespace viz

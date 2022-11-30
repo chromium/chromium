@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,15 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -24,28 +27,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-// Controls whether to use the WebRtcVideoFrameAdapter or the
-// LegacyWebRtcVideoFrameAdapter as the adapter of media::VideoFrames.
-PLATFORM_EXPORT extern const base::Feature kWebRtcUseModernFrameAdapter;
-
-// TODO(https://crbug.com/1191986): When kWebRtcUseModernFrameAdapter is shipped
-// to 100%, delete the legacy adapter and this interface.
-class PLATFORM_EXPORT WebRtcVideoFrameAdapterInterface
-    : public webrtc::VideoFrameBuffer {
- public:
-  WebRtcVideoFrameAdapterInterface() = default;
-  ~WebRtcVideoFrameAdapterInterface() override = default;
-
-  virtual scoped_refptr<media::VideoFrame> getMediaVideoFrame() const = 0;
-};
-
-// Constructs a WebRtcVideoFrameAdapter or LegacyWebRtcVideoFrameAdapter with
-// null passed in as the shared resources. In order to pass in the type-specific
-// shared resources you need to manually check if kWebRtcUseModernFrameAdapter
-// is enabled and invoke the type-specific constructor.
-PLATFORM_EXPORT rtc::scoped_refptr<WebRtcVideoFrameAdapterInterface>
-CreateWebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
 
 // The WebRtcVideoFrameAdapter implements webrtc::VideoFrameBuffer and is backed
 // by one or more media::VideoFrames.
@@ -67,8 +48,27 @@ CreateWebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
 // or to the frame feeddback so that we may optionally use this information to
 // optimize future captured frames for these sizes.
 class PLATFORM_EXPORT WebRtcVideoFrameAdapter
-    : public WebRtcVideoFrameAdapterInterface {
+    : public webrtc::VideoFrameBuffer {
  public:
+  class VectorBufferPool {
+   public:
+    VectorBufferPool();
+    ~VectorBufferPool() = default;
+    // Allocate will return any available buffer and the vector buffer size
+    // needs to be resized manually by the user.
+    std::unique_ptr<std::vector<uint8_t>> Allocate();
+    void Return(std::unique_ptr<std::vector<uint8_t>> buffer);
+
+   private:
+    struct BufferEntry {
+      base::TimeTicks last_use_time;
+      std::unique_ptr<std::vector<uint8_t>> buffer;
+    };
+    base::Lock buffer_lock_;
+    std::vector<BufferEntry> free_buffers_ GUARDED_BY(buffer_lock_);
+    const base::TickClock* tick_clock_;
+  };
+
   class PLATFORM_EXPORT SharedResources
       : public base::RefCountedThreadSafe<SharedResources> {
    public:
@@ -83,16 +83,12 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         const gfx::Size& natural_size,
         base::TimeDelta timestamp);
 
-    // Temporary frames may have a different format or size than scaled frames.
-    // However, VideoFramePool doesn't work nicely if the requested frame size
-    // or format changes on the fly. Therefore a separate pool is used for
-    // temporary frames.
-    virtual scoped_refptr<media::VideoFrame> CreateTemporaryFrame(
-        media::VideoPixelFormat format,
-        const gfx::Size& coded_size,
-        const gfx::Rect& visible_rect,
-        const gfx::Size& natural_size,
-        base::TimeDelta timestamp);
+    // Temporary vector buffers used in the video pre-processing for the input
+    // frame before encoding, e.g. scaling the input frame to natural size for
+    // encoding. Buffer needs manually release after using.
+    virtual std::unique_ptr<std::vector<uint8_t>> CreateTemporaryVectorBuffer();
+    virtual void ReleaseTemporaryVectorBuffer(
+        std::unique_ptr<std::vector<uint8_t>> buffer);
 
     virtual scoped_refptr<viz::RasterContextProvider>
     GetRasterContextProvider();
@@ -112,10 +108,10 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         scoped_refptr<media::VideoFrame> source_frame);
 
     // Used to report feedback from an adapter upon destruction.
-    void SetFeedback(const media::VideoFrameFeedback& feedback);
+    void SetFeedback(const media::VideoCaptureFeedback& feedback);
 
     // Returns the most recently stored feedback.
-    media::VideoFrameFeedback GetFeedback();
+    media::VideoCaptureFeedback GetFeedback();
 
    protected:
     friend class base::RefCountedThreadSafe<SharedResources>;
@@ -124,7 +120,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
    private:
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
-    media::VideoFramePool pool_for_tmp_frames_;
+    VectorBufferPool pool_for_tmp_vectors_;
+
+    std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
+        accelerated_frame_pool_;
+    bool disable_gmb_frames_ = false;
 
     base::Lock context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_
@@ -135,7 +135,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     base::Lock feedback_lock_;
 
     // Contains feedback from the most recently destroyed Adapter.
-    media::VideoFrameFeedback last_feedback_ GUARDED_BY(feedback_lock_);
+    media::VideoCaptureFeedback last_feedback_ GUARDED_BY(feedback_lock_);
   };
 
   struct PLATFORM_EXPORT ScaledBufferSize {
@@ -206,9 +206,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       scoped_refptr<SharedResources> shared_resources);
 
-  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
-    return frame_;
-  }
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
 
   // Regardless of the pixel format used internally, kNative is returned
   // indicating that GetMappedFrameBuffer() or ToI420() is required to obtain
@@ -232,8 +230,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       int scaled_width,
       int scaled_height) override;
 
-  // If this exact size has been hard-applied, gets the frame associated with
-  // that adaptation, otherwise null.
+  // If this exact size has been hard-applied by wrapping or using a pre-scaled
+  // media::VideoFrame, the associated media::VideoFrame is returned (the
+  // wrapping or original). If this size has not been hard-applied, or it was
+  // hard-applied by scaling a previously adapted webrtc::VideoFrameBuffer, then
+  // null is returned.
   scoped_refptr<media::VideoFrame> GetAdaptedVideoBufferForTesting(
       const ScaledBufferSize& size);
 
@@ -250,14 +251,15 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
           frame_buffer(std::move(frame_buffer)) {}
 
     ScaledBufferSize size;
+    // If |frame_buffer| was produced without a media::VideoFrame this is null.
     scoped_refptr<media::VideoFrame> video_frame;
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer;
   };
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetOrCreateFrameBufferForSize(
       const ScaledBufferSize& size);
-  scoped_refptr<media::VideoFrame> GetOrWrapFrameForSize(
-      const ScaledBufferSize& size) const;
+  AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size) const
+      EXCLUSIVE_LOCKS_REQUIRED(adapted_frames_lock_);
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;

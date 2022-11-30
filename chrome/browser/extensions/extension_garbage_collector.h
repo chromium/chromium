@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/install_observer.h"
@@ -31,6 +31,11 @@ class ExtensionGarbageCollector : public KeyedService,
                                   public InstallGate {
  public:
   explicit ExtensionGarbageCollector(content::BrowserContext* context);
+
+  ExtensionGarbageCollector(const ExtensionGarbageCollector&) = delete;
+  ExtensionGarbageCollector& operator=(const ExtensionGarbageCollector&) =
+      delete;
+
   ~ExtensionGarbageCollector() override;
 
   static ExtensionGarbageCollector* Get(content::BrowserContext* context);
@@ -74,7 +79,7 @@ class ExtensionGarbageCollector : public KeyedService,
       const std::multimap<std::string, base::FilePath>& extension_paths);
 
   // The BrowserContext associated with the GarbageCollector.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   // The number of currently ongoing CRX installations. This is used to prevent
   // garbage collection from running while a CRX is being installed.
@@ -89,8 +94,6 @@ class ExtensionGarbageCollector : public KeyedService,
   // Generate weak pointers for safely posting to the file thread for garbage
   // collection.
   base::WeakPtrFactory<ExtensionGarbageCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGarbageCollector);
 };
 
 }  // namespace extensions

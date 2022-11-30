@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -149,8 +149,7 @@ LoadingStatsCollector::LoadingStatsCollector(
     ResourcePrefetchPredictor* predictor,
     const LoadingPredictorConfig& config)
     : predictor_(predictor),
-      max_stats_age_(base::TimeDelta::FromSeconds(
-          config.max_navigation_lifetime_seconds)) {}
+      max_stats_age_(base::Seconds(config.max_navigation_lifetime_seconds)) {}
 
 LoadingStatsCollector::~LoadingStatsCollector() = default;
 
@@ -168,7 +167,7 @@ void LoadingStatsCollector::RecordPreconnectStats(
 
 void LoadingStatsCollector::RecordPageRequestSummary(
     const PageRequestSummary& summary,
-    const base::Optional<OptimizationGuidePrediction>&
+    const absl::optional<OptimizationGuidePrediction>&
         optimization_guide_prediction) {
   const GURL& initial_url = summary.initial_url;
 

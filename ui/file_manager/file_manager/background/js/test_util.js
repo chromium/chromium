@@ -1,30 +1,26 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {background} from './background.m.js';
-// #import {test} from './test_util_base.m.js';
-// #import {launcher} from './launcher.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
-// clang-format on
+import {FilesAppState} from '../../common/js/files_app_state.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {util} from '../../common/js/util.js';
+
+import {background} from './file_manager_base.js';
+import {launcher} from './launcher.js';
+import {test} from './test_util_base.js';
+
+export {test};
 
 /**
  * Opens the main Files app's window and waits until it is ready.
  *
- * @param {Object} appState App state.
+ * @param {!FilesAppState} appState App state.
  * @param {function(string)} callback Completion callback with the new window's
  *     App ID.
  */
 test.util.async.openMainWindow = (appState, callback) => {
-  launcher
-      .launchFileManager(
-          appState,
-          undefined,  // opt_type
-          undefined,  // opt_id
-          )
-      .then(callback);
+  launcher.launchFileManager(appState).then(callback);
 };
 
 /**
@@ -68,7 +64,7 @@ test.util.sync.getFileList = contentWindow => {
       row.querySelector('.filename-label').textContent,
       row.querySelector('.size').textContent,
       row.querySelector('.type').textContent,
-      row.querySelector('.date').textContent
+      row.querySelector('.date').textContent,
     ]);
   }
   return fileList;
@@ -113,7 +109,7 @@ test.util.sync.selectFile = (contentWindow, filename) => {
     test.util.sync.fakeKeyDown(
         contentWindow, '#file-list', 'ArrowDown', false, false, false);
   }
-  console.error('Failed to select file "' + filename + '"');
+  console.warn('Failed to select file "' + filename + '"');
   return false;
 };
 
@@ -189,7 +185,7 @@ test.util.async.selectInDirectoryTree =
           callback(
               test.util.sync.fakeMouseDown(contentWindow, query) &&
               test.util.sync.fakeMouseClick(contentWindow, query));
-        }
+        },
       };
       steps.checkQuery();
     };
@@ -293,6 +289,15 @@ test.util.sync.getLastVisitedURL = contentWindow => {
 };
 
 /**
+ * Returns a string translation from its translation ID.
+ * @param {string} id The id of the translated string.
+ * @return {string}
+ */
+test.util.sync.getTranslatedString = (contentWindow, id) => {
+  return contentWindow.fileManager.getTranslatedString(id);
+};
+
+/**
  * Executes Javascript code on a webview and returns the result.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -353,43 +358,16 @@ test.util.sync.deleteFile = (contentWindow, filename) => {
  * @return {boolean} True if the command is executed successfully.
  */
 test.util.sync.execCommand = (contentWindow, command) => {
-  return contentWindow.document.execCommand(command);
+  const ret = contentWindow.document.execCommand(command);
+  if (!ret) {
+    // TODO(b/191831968): Fix execCommand for SWA.
+    console.warn(
+        `execCommand(${command}) returned false for SWA, forcing ` +
+        `return value to true. b/191831968`);
+    return true;
+  }
+  return ret;
 };
-
-/**
- * Override the installWebstoreItem method in private api for test.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {string} expectedItemId Item ID to be called this method with.
- * @param {?string} intendedError Error message to be returned when the item id
- *     matches. 'null' represents no error.
- * @return {boolean} Always return true.
- */
-test.util.sync.overrideInstallWebstoreItemApi =
-    (contentWindow, expectedItemId, intendedError) => {
-      const setLastError = message => {
-        contentWindow.chrome.runtime.lastError =
-            message ? {message: message} : undefined;
-      };
-
-      const installWebstoreItem = (itemId, silentInstallation, callback) => {
-        setTimeout(() => {
-          if (itemId !== expectedItemId) {
-            setLastError('Invalid Chrome Web Store item ID');
-            callback();
-            return;
-          }
-
-          setLastError(intendedError);
-          callback();
-        }, 0);
-      };
-
-      test.util.executedTasks_ = [];
-      contentWindow.chrome.webstoreWidgetPrivate.installWebstoreItem =
-          installWebstoreItem;
-      return true;
-    };
 
 /**
  * Override the task-related methods in private api for test.
@@ -403,17 +381,18 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
   const getFileTasks = (entries, onTasks) => {
     // Call onTask asynchronously (same with original getFileTasks).
     setTimeout(() => {
-      onTasks(taskList);
+      onTasks({tasks: taskList});
     }, 0);
   };
 
-  const executeTask = (taskId, entries, callback) => {
-    test.util.executedTasks_.push({taskId, entries, callback});
+  const executeTask = (descriptor, entries, callback) => {
+    test.util.executedTasks_.push({descriptor, entries, callback});
   };
 
-  const setDefaultTask = taskId => {
+  const setDefaultTask = descriptor => {
     for (let i = 0; i < taskList.length; i++) {
-      taskList[i].isDefault = taskList[i].taskId === taskId;
+      taskList[i].isDefault =
+          util.descriptorEqual(taskList[i].descriptor, descriptor);
     }
   };
 
@@ -427,34 +406,56 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
 /**
  * Obtains the list of executed tasks.
  * @param {Window} contentWindow Window to be tested.
- * @return {Array<string>} List of executed task ID.
+ * @return {Array<!chrome.fileManagerPrivate.FileTaskDescriptor>} List of
+ *     executed tasks.
  */
 test.util.sync.getExecutedTasks = contentWindow => {
   if (!test.util.executedTasks_) {
     console.error('Please call overrideTasks() first.');
     return null;
   }
-  return test.util.executedTasks_.map(task => task.taskId);
+  return test.util.executedTasks_.map(task => task.descriptor);
+};
+
+/**
+ * Obtains the list of executed tasks.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     check.
+ * @return {boolean} True if the task was executed.
+ */
+test.util.sync.taskWasExecuted = (contentWindow, descriptor) => {
+  if (!test.util.executedTasks_) {
+    console.error('Please call overrideTasks() first.');
+    return null;
+  }
+  return !!test.util.executedTasks_.find(
+      task => util.descriptorEqual(task.descriptor, descriptor));
 };
 
 /**
  * Invokes an executed task with |responseArgs|.
  * @param {Window} contentWindow Window to be tested.
- * @param {string} taskId the task to be replied to.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     be replied to.
  * @param {Array<Object>} responseArgs the arguments to inoke the callback with.
  */
-test.util.sync.replyExecutedTask = (contentWindow, taskId, responseArgs) => {
-  if (!test.util.executedTasks_) {
-    console.error('Please call overrideTasks() first.');
-    return null;
-  }
-  const found = test.util.executedTasks_.find(task => task.taskId === taskId);
-  if (!found) {
-    console.error(`No task with id ${taskId}`);
-    return null;
-  }
-  found.callback(...responseArgs);
-};
+test.util.sync.replyExecutedTask =
+    (contentWindow, descriptor, responseArgs) => {
+      if (!test.util.executedTasks_) {
+        console.error('Please call overrideTasks() first.');
+        return false;
+      }
+      const found = test.util.executedTasks_.find(
+          task => util.descriptorEqual(task.descriptor, descriptor));
+      if (!found) {
+        const {appId, taskType, actionId} = descriptor;
+        console.error(`No task with id ${appId}|${taskType}|${actionId}`);
+        return false;
+      }
+      found.callback(...responseArgs);
+      return true;
+    };
 
 /**
  * Calls the unload handler for the window.
@@ -465,32 +466,20 @@ test.util.sync.unload = contentWindow => {
 };
 
 /**
- * Returns the path shown in the location line breadcrumb.
+ * Returns the path shown in the breadcrumb.
  *
  * @param {Window} contentWindow Window to be tested.
  * @return {string} The breadcrumb path.
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
-  const breadcrumb =
-      contentWindow.document.querySelector('#location-breadcrumbs');
+  const doc = contentWindow.document;
+  const breadcrumb = doc.querySelector('#location-breadcrumbs xf-breadcrumb');
+
   if (!breadcrumb) {
     return '';
   }
 
-  let path = '';
-
-  if (util.isFilesNg()) {
-    const crumbs = breadcrumb.querySelector('bread-crumb');
-    if (crumbs) {
-      path = '/' + crumbs.path;
-    }
-  } else {
-    const paths = breadcrumb.querySelectorAll('.breadcrumb-path');
-    for (let i = 0; i < paths.length; i++) {
-      path += '/' + paths[i].textContent;
-    }
-  }
-  return path;
+  return '/' + breadcrumb.path;
 };
 
 /**
@@ -510,6 +499,7 @@ test.util.async.getPreferences = callback => {
 test.util.sync.overrideFormat = contentWindow => {
   contentWindow.chrome.fileManagerPrivate.formatVolume =
       (volumeId, filesystem, volumeLabel) => {};
+  return true;
 };
 
 /**
@@ -668,6 +658,12 @@ test.util.PrepareFake = class {
      * @private {number}
      */
     this.callCounter_ = 0;
+
+    /**
+     * List to record the arguments provided to the static fake calls.
+     * @private {!Array}
+     */
+    this.calledArgs_ = [];
   }
 
   /**
@@ -705,6 +701,7 @@ test.util.PrepareFake = class {
     this.parentObject_[this.leafAttrName_] = (...args) => {
       this.fake_(...args);
       this.callCounter_++;
+      this.calledArgs_.push([...args]);
     };
   }
 
@@ -846,7 +843,8 @@ test.util.sync.removeAllBackgroundFakes = () => {
  *  value'].
  */
 test.util.sync.foregroundFake = (contentWindow, fakeData) => {
-  for (const [path, mockValue] of Object.entries(fakeData)) {
+  const entries = Object.entries(fakeData);
+  for (const [path, mockValue] of entries) {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
     const fake =
@@ -854,6 +852,7 @@ test.util.sync.foregroundFake = (contentWindow, fakeData) => {
     fake.prepare();
     fake.replace(test.util.FakeType.FOREGROUND_FAKE, contentWindow);
   }
+  return entries.length;
 };
 
 /**
@@ -885,6 +884,19 @@ test.util.sync.staticFakeCounter = (contentWindow, fakedApi) => {
 };
 
 /**
+ * Obtains the list of arguments with which the static fake api was called.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fakedApi Path of the method that is faked.
+ * @param {!Array<!Array<*>>} An array with all calls to this fake, each item is
+ *     an array with all args passed in when the fake was called.
+ */
+test.util.sync.staticFakeCalledArgs = (contentWindow, fakedApi) => {
+  const fake =
+      test.util.foregroundReplacedObjects_[contentWindow.appID][fakedApi];
+  return fake.calledArgs_;
+};
+
+/**
  * Send progress item to Foreground page to display.
  * @param {string} id Progress item id.
  * @param {ProgressItemType} type Type of progress item.
@@ -909,7 +921,5 @@ test.util.sync.sendProgressItem =
       item.itemCount = count;
 
       background.progressCenter.updateItem(item);
+      return true;
     };
-
-// Register the test utils.
-test.util.registerRemoteTestUtils();

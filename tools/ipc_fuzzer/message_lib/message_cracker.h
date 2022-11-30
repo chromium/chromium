@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 
 // Means for updating protected message fields.
 class MessageCracker : public IPC::Message {
  public:
+  MessageCracker(const MessageCracker&) = delete;
+  MessageCracker& operator=(const MessageCracker&) = delete;
+
   static void CopyMessageID(IPC::Message* dst, IPC::Message* src) {
     memcpy(ToCracker(dst)->mutable_payload(),
            ToCracker(src)->payload(),
@@ -27,8 +29,6 @@ class MessageCracker : public IPC::Message {
   static MessageCracker* ToCracker(IPC::Message* message) {
     return reinterpret_cast<MessageCracker*>(message);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCracker);
 };
 
 #endif  // TOOLS_IPC_FUZZER_MESSAGE_LIB_MESSAGE_CRACKER_H_

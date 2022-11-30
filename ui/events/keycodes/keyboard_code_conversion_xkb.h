@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 // These functions are used by X11 targets and by Ozone/XKBcommon targets.
 
-#include <string>
 
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/xkb_keysym.h"

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ std::string DumpFrameHeaderIfNeeded(WebLocalFrame* frame) {
 
 std::string DumpFrameScrollPosition(WebLocalFrame* frame) {
   std::string result;
-  gfx::ScrollOffset offset = frame->GetScrollOffset();
+  gfx::PointF offset = frame->GetScrollOffset();
   if (offset.x() > 0 || offset.y() > 0) {
     if (frame->Parent()) {
       auto* frame_proxy = static_cast<WebFrameTestProxy*>(frame->Client());

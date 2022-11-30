@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -21,6 +20,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase {
  public:
   WidgetExample();
+
+  WidgetExample(const WidgetExample&) = delete;
+  WidgetExample& operator=(const WidgetExample&) = delete;
+
   ~WidgetExample() override;
 
   // ExampleBase:
@@ -34,8 +37,6 @@ class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase {
 
   // Construct a Widget for |sender|, initialize with |type|, and call Show().
   void ShowWidget(View* sender, Widget::InitParams::Type type);
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetExample);
 };
 
 }  // namespace examples

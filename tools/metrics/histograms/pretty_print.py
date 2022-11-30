@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2013 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -179,7 +179,7 @@ def main():
     --diff: (Optional) Prints diff to stdout rather than modifying the file.
 
   Example usage:
-    pretty_print.py histograms_xml/Fingerprint/histograms.xml
+    pretty_print.py metadata/Fingerprint/histograms.xml
     pretty_print.py enums.xml
   """
   parser = argparse.ArgumentParser()

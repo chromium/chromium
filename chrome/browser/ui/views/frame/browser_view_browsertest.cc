@@ -1,23 +1,19 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/caption_controller.h"
-#include "chrome/browser/accessibility/caption_controller_factory.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -28,6 +24,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -46,12 +43,10 @@
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
-  BrowserViewTest() : devtools_(nullptr) {
-    // TODO(crbug.com/1182859): Update this test to enable the
-    // kUseSodaForLiveCaption feature.
-    scoped_feature_list_.InitWithFeatures({media::kLiveCaption},
-                                          {media::kUseSodaForLiveCaption});
-  }
+  BrowserViewTest() : devtools_(nullptr) {}
+
+  BrowserViewTest(const BrowserViewTest&) = delete;
+  BrowserViewTest& operator=(const BrowserViewTest&) = delete;
 
  protected:
   BrowserView* browser_view() {
@@ -79,12 +74,10 @@ class BrowserViewTest : public InProcessBrowserTest {
     DevToolsWindowTesting::Get(devtools_)->SetInspectedPageBounds(bounds);
   }
 
-  DevToolsWindow* devtools_;
+  raw_ptr<DevToolsWindow> devtools_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewTest);
 };
 
 namespace {
@@ -97,6 +90,10 @@ class TestWebContentsObserver : public content::WebContentsObserver {
                           content::WebContents* other)
       : content::WebContentsObserver(source),
         other_(other) {}
+
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
   ~TestWebContentsObserver() override {}
 
   void WebContentsDestroyed() override {
@@ -105,19 +102,21 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::WebContents* other_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
+  raw_ptr<content::WebContents> other_;
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
+
+  TestTabModalConfirmDialogDelegate(const TestTabModalConfirmDialogDelegate&) =
+      delete;
+  TestTabModalConfirmDialogDelegate& operator=(
+      const TestTabModalConfirmDialogDelegate&) = delete;
+
   std::u16string GetTitle() override { return std::u16string(u"Dialog Title"); }
   std::u16string GetDialogMessage() override { return std::u16string(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
 }  // namespace
 
@@ -143,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   chrome::AddTabAt(browser2, GURL(), -1, true);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   TestWebContentsObserver observer(
       browser2->tab_strip_model()->GetWebContentsAt(0),
       browser2->tab_strip_model()->GetWebContentsAt(1));
@@ -152,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
 
 // Verifies that page and devtools WebViews are being correctly layed out
 // when DevTools is opened/closed/updated/undocked.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsUpdatesBrowserWindow) {
+// TODO(crbug.com/1316663): Re-enable; currently failing on multiple platforms.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
   gfx::Rect full_bounds =
       browser_view()->GetContentsContainerForTest()->GetLocalBounds();
   gfx::Rect small_bounds(10, 20, 30, 40);
@@ -218,6 +219,10 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
   BookmarkBarViewObserverImpl() : change_count_(0) {
   }
 
+  BookmarkBarViewObserverImpl(const BookmarkBarViewObserverImpl&) = delete;
+  BookmarkBarViewObserverImpl& operator=(const BookmarkBarViewObserverImpl&) =
+      delete;
+
   int change_count() const { return change_count_; }
   void clear_change_count() { change_count_ = 0; }
 
@@ -226,8 +231,6 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
 
  private:
   int change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewObserverImpl);
 };
 
 // Verifies we don't unnecessarily change the visibility of the BookmarkBarView.
@@ -238,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
       bookmarks::prefs::kShowBookmarkBar, false);
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   chrome::AddTabAt(browser(), GURL(), -1, true);
-  ui_test_utils::NavigateToURL(browser(), new_tab_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url));
 
   ASSERT_TRUE(browser_view()->bookmark_bar());
   BookmarkBarViewObserverImpl observer;
@@ -248,14 +251,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
 
   // Go to empty tab. Bookmark bar should hide.
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
 
   // Go to ntp tab. Bookmark bar should not show.
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_FALSE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
@@ -264,13 +269,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
   browser()->profile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, true);
   browser()->tab_strip_model()->ActivateTabAt(
-      0, {TabStripModel::GestureType::kOther});
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(bookmark_bar->GetVisible());
   EXPECT_EQ(1, observer.change_count());
   observer.clear_change_count();
 
   browser()->tab_strip_model()->ActivateTabAt(
-      1, {TabStripModel::GestureType::kOther});
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
   EXPECT_TRUE(bookmark_bar->GetVisible());
   EXPECT_EQ(0, observer.change_count());
   observer.clear_change_count();
@@ -313,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
   // Opens "chrome://version/" page, which uses default favicon.
   GURL version_url(chrome::kChromeUIVersionURL);
-  ui_test_utils::NavigateToURL(browser(), version_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), version_url));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* helper = TabUIHelper::FromWebContents(contents);
   ASSERT_TRUE(helper);
@@ -324,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an
 // accessible title for tab-modal dialogs is not necessary.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Open a tab-modal dialog and check that the accessible window title is the
 // title of the dialog.
@@ -350,12 +357,13 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
 // Open a tab-modal dialog and check that the accessibility tree only contains
 // the dialog.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
-  ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::kAXModeComplete);
   ui::AXPlatformNode* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(
       browser_view()->GetWidget()->GetRootView()->GetNativeViewAccessible());
 // We expect this conversion to be safe on Windows, but can't guarantee that it
 // is safe on other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(ax_node);
 #else
   if (!ax_node)
@@ -381,63 +389,4 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
             nullptr);
 }
 
-#endif  // !defined(OS_MAC)
-
-// Mac processes different accelerators and also focuses differently.
-// TODO(crbug.com/1055150): Implement RotatePaneFocus for Mac and add a similar
-// test using command+option+down/up arrows.
-#if !defined(OS_MAC)
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
-  captions::CaptionController* caption_controller =
-      captions::CaptionControllerFactory::GetForProfileIfExists(
-          browser()->profile());
-  caption_controller->Init();
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                               true);
-  // No bubble is shown until a transcription happens.
-  captions::CaptionBubbleControllerViews* bubble_controller =
-      static_cast<captions::CaptionBubbleControllerViews*>(
-          caption_controller->GetCaptionBubbleControllerForBrowser(browser()));
-  EXPECT_FALSE(bubble_controller->GetFocusableCaptionBubble());
-
-  auto caption_host_impl = std::make_unique<captions::CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-  caption_controller->DispatchTranscription(
-      caption_host_impl.get(),
-      chrome::mojom::TranscriptionResult::New("Hello, world", false));
-  // Now the caption bubble exists but is not focused.
-  views::View* bubble = bubble_controller->GetFocusableCaptionBubble();
-  EXPECT_TRUE(bubble);
-  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
-  EXPECT_FALSE(bubble->HasFocus());
-  EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
-
-  // Press F6 until we enter the bubble.
-  while (!bubble->HasFocus()) {
-    EXPECT_TRUE(
-        browser_view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_F6, 0)));
-  }
-
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Check the native widget has focus.
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(bubble->GetWidget()->GetNativeView());
-  EXPECT_TRUE(bubble->GetWidget()->GetNativeView() ==
-              focus_client->GetFocusedWindow());
-#endif
-
-  // F6 again exits the bubble. Because the bubble is focused, it gets the
-  // accelerator event.
-  EXPECT_TRUE(bubble->AcceleratorPressed(ui::Accelerator(ui::VKEY_F6, 0)));
-
-  // Now something else within the browser_view's focus manager is focused.
-  EXPECT_FALSE(bubble->HasFocus());
-  EXPECT_FALSE(bubble->GetFocusManager()->GetFocusedView());
-  EXPECT_TRUE(browser_view()->GetWidget()->GetFocusManager()->GetFocusedView());
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // The bubble's native widget should no longer have focus.
-  EXPECT_FALSE(bubble->GetWidget()->GetNativeView() ==
-               focus_client->GetFocusedWindow());
-#endif
-}
-#endif
+#endif  // !BUILDFLAG(IS_MAC)

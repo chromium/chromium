@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 
@@ -18,11 +18,13 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
  public:
-
   SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id)
       : listener_(listener), session_id_(session_id) {
     DCHECK(listener_);
   }
+
+  SpeechRecognizer(const SpeechRecognizer&) = delete;
+  SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;
 
   virtual void StartRecognition(const std::string& device_id) = 0;
   virtual void AbortRecognition() = 0;
@@ -38,10 +40,8 @@ class CONTENT_EXPORT SpeechRecognizer
   int session_id() const { return session_id_; }
 
  private:
-  SpeechRecognitionEventListener* listener_;
+  raw_ptr<SpeechRecognitionEventListener> listener_;
   int session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizer);
 };
 
 }  // namespace content

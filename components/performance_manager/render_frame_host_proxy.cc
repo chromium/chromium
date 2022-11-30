@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ content::RenderFrameHost* RenderFrameHostProxy::Get() const {
 }
 
 RenderFrameHostProxy::RenderFrameHostProxy(
-    const content::GlobalFrameRoutingId& global_frame_routing_id)
+    const content::GlobalRenderFrameHostId& global_frame_routing_id)
     : global_frame_routing_id_(global_frame_routing_id) {}
 
 }  // namespace performance_manager

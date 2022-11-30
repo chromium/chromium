@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,11 @@ class TestAutofillDownloadManager : public AutofillDownloadManager {
  public:
   TestAutofillDownloadManager(AutofillDriver* driver,
                               AutofillDownloadManager::Observer* observer);
+
+  TestAutofillDownloadManager(const TestAutofillDownloadManager&) = delete;
+  TestAutofillDownloadManager& operator=(const TestAutofillDownloadManager&) =
+      delete;
+
   ~TestAutofillDownloadManager() override;
 
   // AutofillDownloadManager overrides.
@@ -30,8 +35,6 @@ class TestAutofillDownloadManager : public AutofillDownloadManager {
 
  private:
   std::vector<FormStructure*> last_queried_forms_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillDownloadManager);
 };
 
 }  // namespace autofill

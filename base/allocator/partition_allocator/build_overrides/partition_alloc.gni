@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+
+# This is the default build configuration when building PartitionAlloc
+# as a standalone library.
+# If embedders want to use PartitionAlloc, they need to create their own
+# //build_overrides/partition_alloc.gni and define their own PartitionAlloc
+# configuration.
+
+use_partition_alloc_as_malloc_default = false
+use_allocator_shim_default = false
+enable_backup_ref_ptr_support_default = false
+enable_mte_checked_ptr_support_default = false
+put_ref_count_in_previous_slot_default = false
+enable_backup_ref_ptr_slow_checks_default = false
+enable_dangling_raw_ptr_checks_default = false

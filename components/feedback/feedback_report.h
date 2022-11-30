@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace feedback {
@@ -42,6 +41,9 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  bool has_email);
 
+  FeedbackReport(const FeedbackReport&) = delete;
+  FeedbackReport& operator=(const FeedbackReport&) = delete;
+
   // The ID of the product specific data for the crash report IDs as stored by
   // the feedback server.
   static const char kCrashReportIdsKey[];
@@ -53,6 +55,11 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   // The ID of the product specific data for the system logs entry containing
   // mem_usage entries with tab names.
   static const char kMemUsageWithTabTitlesKey[];
+
+  // The ID of the product specific data indicating whether the users want to be
+  // contacted back with any additional questions or updates about the issue
+  // they are reporting.
+  static const char kFeedbackUserCtlConsentKey[];
 
   // Loads the reports still on disk and queues then using the given callback.
   // This call blocks on the file reads.
@@ -86,8 +93,6 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   std::unique_ptr<std::string> data_;
 
   scoped_refptr<base::SequencedTaskRunner> reports_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackReport);
 };
 
 }  // namespace feedback

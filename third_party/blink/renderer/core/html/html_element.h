@@ -23,10 +23,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ELEMENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -40,13 +43,19 @@ class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
 class KeyboardEvent;
-class StringOrTrustedScript;
-class StringTreatNullAsEmptyStringOrTrustedScript;
+class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
 enum TranslateAttributeMode {
   kTranslateAttributeYes,
   kTranslateAttributeNo,
   kTranslateAttributeInherit
+};
+
+enum class ContentEditableType {
+  kInherit,
+  kContentEditable,
+  kNotContentEditable,
+  kPlaintextOnly,
 };
 
 class CORE_EXPORT HTMLElement : public Element {
@@ -62,17 +71,18 @@ class CORE_EXPORT HTMLElement : public Element {
 
   String title() const final;
 
-  void setInnerText(const String&, ExceptionState&);
-  virtual void setInnerText(const StringOrTrustedScript&, ExceptionState&);
-  virtual void setInnerText(const StringTreatNullAsEmptyStringOrTrustedScript&,
-                            ExceptionState&);
   String innerText();
-  void innerText(StringOrTrustedScript& result);
-  void innerText(StringTreatNullAsEmptyStringOrTrustedScript& result);
+  void setInnerText(const String&);
+  V8UnionStringTreatNullAsEmptyStringOrTrustedScript* innerTextForBinding();
+  virtual void setInnerTextForBinding(
+      const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+          string_or_trusted_script,
+      ExceptionState& exception_state);
   void setOuterText(const String&, ExceptionState&);
 
   virtual bool HasCustomFocusLogic() const;
 
+  ContentEditableType contentEditableNormalized() const;
   String contentEditable() const;
   void setContentEditable(const String&, ExceptionState&);
   // For HTMLElement.prototype.isContentEditable. This matches to neither
@@ -108,6 +118,9 @@ class CORE_EXPORT HTMLElement : public Element {
   bool HasDirectionAuto() const;
 
   virtual bool IsHTMLBodyElement() const { return false; }
+  // TODO(crbug.com/1123606): Remove this virtual method once the fenced frame
+  // origin trial is over.
+  virtual bool IsHTMLFencedFrameElement() const { return false; }
   virtual bool IsHTMLFrameSetElement() const { return false; }
   virtual bool IsHTMLPortalElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
@@ -161,6 +174,12 @@ class CORE_EXPORT HTMLElement : public Element {
   void AdjustDirectionalityIfNeededAfterShadowRootChanged();
   void BeginParsingChildren() override;
 
+  V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
+  void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
+
+  // https://html.spec.whatwg.org/C/#potentially-render-blocking
+  virtual bool IsPotentiallyRenderBlocking() const { return false; }
+
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   enum AllowZero { kDontAllowZeroValues, kAllowZeroValues };
@@ -173,9 +192,20 @@ class CORE_EXPORT HTMLElement : public Element {
                            CSSPropertyID,
                            const String& color);
 
+  // This corresponds to:
+  //  'map to the aspect-ratio property (using dimension rules)'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property-(using-dimension-rules)
   void ApplyAspectRatioToStyle(const AtomicString& width,
                                const AtomicString& height,
                                MutableCSSPropertyValueSet*);
+  // This corresponds to:
+  //  'map to the aspect-ratio property'
+  // described by:
+  // https://html.spec.whatwg.org/multipage/rendering.html#map-to-the-aspect-ratio-property
+  void ApplyIntegerAspectRatioToStyle(const AtomicString& width,
+                                      const AtomicString& height,
+                                      MutableCSSPropertyValueSet*);
   void ApplyAlignmentAttributeToStyle(const AtomicString&,
                                       MutableCSSPropertyValueSet*);
   void ApplyBorderAttributeToStyle(const AtomicString&,
@@ -209,16 +239,20 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  void MapLanguageAttributeToLocale(const AtomicString&,
-                                    MutableCSSPropertyValueSet*);
+  void ApplyAspectRatioToStyle(double width,
+                               double height,
+                               MutableCSSPropertyValueSet* style);
 
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
   void AdjustDirectionalityIfNeededAfterChildrenChanged(
       const ChildrenChange& change);
-  TextDirection ResolveAutoDirectionality(bool& is_deferred,
-                                          Node* stay_within) const;
+
+  template <typename Traversal>
+  absl::optional<TextDirection> ResolveAutoDirectionality(
+      bool& is_deferred,
+      Node* stay_within) const;
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
@@ -229,11 +263,10 @@ class CORE_EXPORT HTMLElement : public Element {
 
   void OnDirAttrChanged(const AttributeModificationParams&);
   void OnFormAttrChanged(const AttributeModificationParams&);
-  void OnInertAttrChanged(const AttributeModificationParams&);
   void OnLangAttrChanged(const AttributeModificationParams&);
   void OnNonceAttrChanged(const AttributeModificationParams&);
-  void OnTabIndexAttrChanged(const AttributeModificationParams&);
-  void OnXMLLangAttrChanged(const AttributeModificationParams&);
+
+  void ReparseAttribute(const AttributeModificationParams&);
 };
 
 template <typename T>

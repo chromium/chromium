@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <aaudio/AAudio.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -15,6 +16,7 @@
 
 namespace media {
 
+class AAudioDestructionHelper;
 class AudioManagerAndroid;
 
 class AAudioOutputStream : public MuteableAudioOutputStream {
@@ -22,6 +24,10 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
                      aaudio_usage_t usage);
+
+  AAudioOutputStream(const AAudioOutputStream&) = delete;
+  AAudioOutputStream& operator=(const AAudioOutputStream&) = delete;
+
   ~AAudioOutputStream() override;
 
   // Implementation of MuteableAudioOutputStream.
@@ -47,7 +53,7 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
 
   THREAD_CHECKER(thread_checker_);
 
-  AudioManagerAndroid* const audio_manager_;
+  const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
 
   aaudio_usage_t usage_;
@@ -60,16 +66,18 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
 
   AAudioStream* aaudio_stream_ = nullptr;
 
+  // Bound to the audio data callback. Outlives |this| in case the callbacks
+  // continue after |this| is destroyed. See crbug.com/1183255.
+  std::unique_ptr<AAudioDestructionHelper> destruction_helper_;
+
   // Lock protects all members below which may be read concurrently from the
   // audio manager thread and the OS provided audio thread.
   base::Lock lock_;
 
-  AudioSourceCallback* callback_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<AudioSourceCallback> callback_ GUARDED_BY(lock_) = nullptr;
   bool muted_ GUARDED_BY(lock_) = false;
   double volume_ GUARDED_BY(lock_) = 1.0;
   bool device_changed_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AAudioOutputStream);
 };
 
 }  // namespace media

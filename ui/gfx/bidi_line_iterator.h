@@ -1,17 +1,18 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GFX_BIDI_LINE_ITERATOR_H_
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
+#include <memory>
 #include <string>
 
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/ubidi_deleter.h"
 
 namespace ui {
 namespace gfx {
@@ -22,6 +23,10 @@ namespace gfx {
 class GFX_EXPORT BiDiLineIterator {
  public:
   BiDiLineIterator();
+
+  BiDiLineIterator(const BiDiLineIterator&) = delete;
+  BiDiLineIterator& operator=(const BiDiLineIterator&) = delete;
+
   ~BiDiLineIterator();
 
   // Initializes the bidirectional iterator with the specified text.  Returns
@@ -38,9 +43,7 @@ class GFX_EXPORT BiDiLineIterator {
   void GetLogicalRun(int start, int* end, UBiDiLevel* level) const;
 
  private:
-  UBiDi* bidi_;
-
-  DISALLOW_COPY_AND_ASSIGN(BiDiLineIterator);
+  std::unique_ptr<UBiDi, UBiDiDeleter> bidi_;
 };
 
 }  // namespace gfx

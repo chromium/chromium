@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// You can print out the json data source file paths
+
+{%- for path in source_json_files %}
+//   {{ path }}
+{%- endfor %}
+
+// You can print out the header guard for C++ header files
+
+{%- set header_guard = "%s_" | format(out_file_path | to_header_guard ) %}
+#ifndef {{ header_guard }}
+#define {{ header_guard }}
+#endif // {{ header_guard }}
+
+// Access the data
+{{ model.test_data1.name }}
+{{ model.test_data2[0].name }}
+{{ model.test_data2[1].age }}
+{{ model.test_data2[0].habits | join(',') }}
+
+// Custom globals/filters
+{{ name_with_title }}
+{{ model.test_data2[0].name | custom_upper }}

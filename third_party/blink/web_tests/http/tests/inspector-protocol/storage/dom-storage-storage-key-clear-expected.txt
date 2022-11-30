@@ -1,0 +1,9 @@
+Tests that clearing data works for DOMStorage with storageKey
+
+Set item: testItem
+storageId.storageKey: string
+not empty
+
+Clear data
+Get item: null
+

@@ -27,7 +27,7 @@ test(function() {
         for (var i = 0; i < 5; ++i) {
             var extents = element.getExtentOfChar(i);
             for (var attr of ['x', 'y', 'width', 'height'])
-                assert_equals(extents[attr], reference[i][attr], 'same extents as reference (' + attr + ')');
+                assert_approx_equals(extents[attr], reference[i][attr], 0.02, 'same extents as reference (' + attr + ')');
         }
 
         var queryPoint = element.ownerSVGElement.createSVGPoint();

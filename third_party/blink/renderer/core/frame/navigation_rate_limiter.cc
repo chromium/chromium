@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/frame/navigation_rate_limiter.h"
@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -31,7 +31,7 @@ bool NavigationRateLimiter::CanProceed() {
   // can increase this threshold somewhat.
   static constexpr int kStateUpdateLimit = 200;
   static constexpr base::TimeDelta kStateUpdateLimitResetInterval =
-      base::TimeDelta::FromSeconds(10);
+      base::Seconds(10);
 
   if (++count_ <= kStateUpdateLimit)
     return true;
@@ -53,7 +53,7 @@ bool NavigationRateLimiter::CanProceed() {
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
           "Throttling navigation to prevent the browser from hanging. See "
-          "https://crbug.com/882238. Command line switch "
+          "https://crbug.com/1038223. Command line switch "
           "--disable-ipc-flooding-protection can be used to bypass the "
           "protection"));
     }

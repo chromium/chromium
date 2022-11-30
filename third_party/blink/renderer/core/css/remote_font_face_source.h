@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_REMOTE_FONT_FACE_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_REMOTE_FONT_FACE_SOURCE_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/css_font_face_source.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
@@ -19,20 +20,26 @@ class FontCustomPlatformData;
 
 class RemoteFontFaceSource final : public CSSFontFaceSource,
                                    public FontResourceClient {
-  USING_PRE_FINALIZER(RemoteFontFaceSource, Dispose);
-
  public:
-  enum Phase { kNoLimitExceeded, kShortLimitExceeded, kLongLimitExceeded };
+  enum Phase : uint8_t {
+    kNoLimitExceeded,
+    kShortLimitExceeded,
+    kLongLimitExceeded
+  };
 
-  RemoteFontFaceSource(CSSFontFace*, FontSelector*, FontDisplay);
+  RemoteFontFaceSource(CSSFontFace*,
+                       FontSelector*,
+                       FontDisplay,
+                       scoped_refptr<base::SingleThreadTaskRunner>);
   ~RemoteFontFaceSource() override;
-  void Dispose();
 
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool IsValid() const override;
 
   String GetURL() const override { return url_; }
+
+  bool IsPendingDataUrl() const override;
 
   const FontCustomPlatformData* GetCustomPlaftormData() const override {
     return custom_font_data_.get();
@@ -49,9 +56,11 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   bool IsInBlockPeriod() const override { return period_ == kBlockPeriod; }
   bool IsInFailurePeriod() const override { return period_ == kFailurePeriod; }
 
+  // For UMA reporting and 'font-display: optional' period control.
+  void PaintRequested() override;
+
   // For UMA reporting
   bool HadBlankText() override { return histograms_.HadBlankText(); }
-  void PaintRequested() override { histograms_.FallbackFontPainted(period_); }
 
   void Trace(Visitor*) const override;
 
@@ -69,7 +78,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   // the font is loaded from memory cache synchronously, and hence, made
   // immediately available. As we never need to use a fallback for it, using
   // other DisplayPeriod values seem artificial. So we use a special value.
-  enum DisplayPeriod {
+  enum DisplayPeriod : uint8_t {
     kBlockPeriod,
     kSwapPeriod,
     kFailurePeriod,
@@ -146,28 +155,34 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   Member<CSSFontFace> face_;
   Member<FontSelector> font_selector_;
 
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  // Post `BeginLoadIfNeeded()` unless context thread.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+#endif
+
   // |nullptr| if font is not loaded or failed to decode.
   scoped_refptr<FontCustomPlatformData> custom_font_data_;
   // |nullptr| if font is not loaded or failed to decode.
   String url_;
 
+  FontLoadHistograms histograms_;
+
   FontDisplay display_;
   Phase phase_;
   DisplayPeriod period_;
-  FontLoadHistograms histograms_;
   bool is_intervention_triggered_;
   bool finished_before_document_rendering_begin_;
 
-  // Indicates whether FontData has been requested while the font is still being
-  // loaded, in which case a fallback FontData is returned and used. If true, we
-  // will render contents with fallback font, and later if we would switch to
-  // the web font after it loads, there will be a layout shifting. Therefore, we
-  // don't need to worry about layout shifting when it's false.
-  bool has_been_requested_while_pending_;
+  // Indicates whether FontData has been requested for painting while the font
+  // is still being loaded, in which case we will paint with a fallback font. If
+  // true, and later if we would switch to the web font after it loads, there
+  // will be a layout shifting. Therefore, we don't need to worry about layout
+  // shifting when it's false.
+  bool paint_requested_while_pending_;
 
   bool finished_before_lcp_limit_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_REMOTE_FONT_FACE_SOURCE_H_

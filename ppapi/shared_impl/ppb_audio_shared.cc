@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/shared_impl/ppb_audio_shared.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -101,7 +102,8 @@ void PPB_Audio_Shared::SetStreamInfo(
     base::SyncSocket::ScopedHandle socket_handle,
     PP_AudioSampleRate sample_rate,
     int sample_frame_count) {
-  socket_.reset(new base::CancelableSyncSocket(std::move(socket_handle)));
+  socket_ =
+      std::make_unique<base::CancelableSyncSocket>(std::move(socket_handle));
   shared_memory_size_ = media::ComputeAudioOutputBufferSize(
       kAudioOutputChannels, sample_frame_count);
   DCHECK_GE(shared_memory_region.GetSize(), shared_memory_size_);
@@ -155,8 +157,8 @@ void PPB_Audio_Shared::StartThread() {
     nacl_thread_active_ = true;
   } else {
     DCHECK(!audio_thread_.get());
-    audio_thread_.reset(
-        new base::DelegateSimpleThread(this, "plugin_audio_thread"));
+    audio_thread_ = std::make_unique<base::DelegateSimpleThread>(
+        this, "plugin_audio_thread");
     audio_thread_->Start();
   }
 }
@@ -229,8 +231,7 @@ void PPB_Audio_Shared::Run() {
       TRACE_EVENT0("audio", "PPB_Audio_Shared::FireRenderCallback");
       media::AudioOutputBuffer* buffer =
           reinterpret_cast<media::AudioOutputBuffer*>(shared_memory_.memory());
-      base::TimeDelta delay =
-          base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+      base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
       callback_.Run(client_buffer_.get(), client_buffer_size_bytes_,
                     delay.InSecondsF(), user_data_);

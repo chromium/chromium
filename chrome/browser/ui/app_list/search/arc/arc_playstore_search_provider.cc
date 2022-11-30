@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_playstore_search_request_state.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,10 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
-#include "chrome/common/chrome_features.h"
-#include "components/arc/app/arc_playstore_search_request_state.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
 
 namespace {
 constexpr int kHistogramBuckets = 13;
@@ -61,26 +60,9 @@ bool IsInvalidResult(const arc::mojom::AppDiscoveryResult& result) {
   if (!result.label || result.label->empty())
     return true;
 
-  // The result doesn't have a valid formatted price.
-  if (!result.formatted_price || result.formatted_price->empty())
-    return true;
-
-  // The result doesn't have a valid review score.
-  if (result.review_score < 0)
-    return true;
-
   // The result doesn't have a valid launcher icon.
-  //
-  // TODO(crbug.com/1083331): Remove the checking result.icon_png_data.empty(),
-  // when the ARC change is rolled in Chrome OS.
-  if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    if (!result.icon)
-      return true;
-  } else if ((!result.icon || !result.icon->icon_png_data ||
-              result.icon->icon_png_data->empty()) &&
-             result.icon_png_data.empty()) {
+  if (!result.icon)
     return true;
-  }
 
   // The result doesn't have a valid package name.
   if (!result.package_name || result.package_name->empty())
@@ -88,6 +70,7 @@ bool IsInvalidResult(const arc::mojom::AppDiscoveryResult& result) {
 
   return false;
 }
+
 }  // namespace
 
 namespace app_list {
@@ -104,7 +87,7 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
 
 ArcPlayStoreSearchProvider::~ArcPlayStoreSearchProvider() = default;
 
-ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() {
+ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kPlayStoreApp;
 }
 
@@ -120,9 +103,9 @@ void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
                 GetRecentAndSuggestedAppsFromPlayStore)
           : nullptr;
 
-  if (app_instance == nullptr || query.empty()) {
+  DCHECK(!query.empty());
+  if (app_instance == nullptr)
     return;
-  }
 
   app_instance->GetRecentAndSuggestedAppsFromPlayStore(
       base::UTF16ToUTF8(query), max_results_,
@@ -137,10 +120,22 @@ void ArcPlayStoreSearchProvider::OnResults(
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {
   if (state != arc::ArcPlayStoreSearchRequestState::SUCCESS) {
-    DCHECK(results.empty());
+    ClearResults();
+    DCHECK(
+        state ==
+            arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA ||
+        results.empty());
     UMA_HISTOGRAM_ENUMERATION(kAppListPlayStoreQueryStateHistogram, state,
                               arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
-    return;
+
+    // PHONESKY_RESULT_INVALID_DATA indicates that at least one of the apps
+    // returned from playstore was invalid. The returned data may still contain
+    // valid results - display them in the UI if that's the case.
+    if (state !=
+            arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA ||
+        results.empty()) {
+      return;
+    }
   }
 
   // Play store could have a long latency that when the results come back,
@@ -156,13 +151,11 @@ void ArcPlayStoreSearchProvider::OnResults(
 
   SearchProvider::Results new_results;
   size_t instant_app_count = 0;
+  bool has_invalid_result = false;
   for (auto& result : results) {
     if (IsInvalidResult(*result)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kAppListPlayStoreQueryStateHistogram,
-          arc::ArcPlayStoreSearchRequestState::CHROME_GOT_INVALID_RESULT,
-          arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
-      return;
+      has_invalid_result = true;
+      continue;
     }
 
     if (result->is_instant_app)
@@ -172,14 +165,25 @@ void ArcPlayStoreSearchProvider::OnResults(
       continue;
 
     new_results.emplace_back(std::make_unique<ArcPlayStoreSearchResult>(
-        std::move(result), profile_, list_controller_));
+        std::move(result), profile_, list_controller_, last_query_));
   }
   SwapResults(&new_results);
 
   // Record user metrics.
-  UMA_HISTOGRAM_ENUMERATION(kAppListPlayStoreQueryStateHistogram,
-                            arc::ArcPlayStoreSearchRequestState::SUCCESS,
-                            arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
+  if (state == arc::ArcPlayStoreSearchRequestState::SUCCESS) {
+    if (has_invalid_result) {
+      UMA_HISTOGRAM_ENUMERATION(
+          kAppListPlayStoreQueryStateHistogram,
+          arc::ArcPlayStoreSearchRequestState::CHROME_GOT_INVALID_RESULT,
+          arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(
+          kAppListPlayStoreQueryStateHistogram,
+          arc::ArcPlayStoreSearchRequestState::SUCCESS,
+          arc::ArcPlayStoreSearchRequestState::STATE_COUNT);
+    }
+  }
+
   UMA_HISTOGRAM_TIMES("Arc.PlayStoreSearch.QueryTime",
                       base::TimeTicks::Now() - query_start_time);
   if (results.size() > 0) {

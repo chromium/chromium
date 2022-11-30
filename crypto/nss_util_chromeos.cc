@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,16 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/debug/stack_trace.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_checker.h"
@@ -52,9 +53,9 @@ class ChromeOSUserData {
 
   ~ChromeOSUserData() {
     if (public_slot_) {
-      SECStatus status = SECMOD_CloseUserDB(public_slot_.get());
+      SECStatus status = CloseSoftwareNSSDB(public_slot_.get());
       if (status != SECSuccess)
-        PLOG(ERROR) << "SECMOD_CloseUserDB failed: " << PORT_GetError();
+        PLOG(ERROR) << "CloseSoftwareNSSDB failed: " << PORT_GetError();
     }
   }
 
@@ -106,14 +107,48 @@ class ChromeOSUserData {
   SlotReadyCallbackList tpm_ready_callback_list_;
 };
 
+// Contains state used for the ChromeOSTokenManager. Unlike the
+// ChromeOSTokenManager, which is thread-checked, this object may live
+// and be accessed on multiple threads. While this is normally dangerous,
+// this is done to support callers initializing early in process startup,
+// where the threads using the objects may not be created yet, and the
+// thread startup may depend on these objects.
+// Put differently: They may be written to from any thread, if, and only
+// if, the thread they will be read from has not yet been created;
+// otherwise, this should be treated as thread-affine/thread-hostile.
+struct ChromeOSTokenManagerDataForTesting {
+  static ChromeOSTokenManagerDataForTesting& GetInstance() {
+    static base::NoDestructor<ChromeOSTokenManagerDataForTesting> instance;
+    return *instance;
+  }
+
+  // System slot that will be used for the system slot initialization.
+  ScopedPK11Slot test_system_slot;
+};
+
 class ChromeOSTokenManager {
  public:
+  enum class State {
+    // Initial state.
+    kInitializationNotStarted,
+    // Initialization of the TPM token was started.
+    kInitializationStarted,
+    // TPM token was successfully initialized, but not available to the class'
+    // users yet.
+    kTpmTokenInitialized,
+    // TPM token was successfully enabled. It is a final state.
+    kTpmTokenEnabled,
+    // TPM token will never be enabled. It is a final state.
+    kTpmTokenDisabled,
+  };
+
   // Used with PostTaskAndReply to pass handles to worker thread and back.
   struct TPMModuleAndSlot {
     explicit TPMModuleAndSlot(SECMODModule* init_chaps_module)
         : chaps_module(init_chaps_module) {}
+
     SECMODModule* chaps_module;
-    crypto::ScopedPK11Slot tpm_slot;
+    ScopedPK11Slot tpm_slot;
   };
 
   ScopedPK11Slot OpenPersistentNSSDBForPath(const std::string& db_name,
@@ -132,42 +167,12 @@ class ChromeOSTokenManager {
     return OpenSoftwareNSSDB(nssdb_path, db_name);
   }
 
-  void EnableTPMTokenForNSS() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    // If this gets set, then we'll use the TPM for certs with
-    // private keys, otherwise we'll fall back to the software
-    // implementation.
-    tpm_token_enabled_for_nss_ = true;
-  }
-
-  bool IsTPMTokenEnabledForNSS() {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    return tpm_token_enabled_for_nss_;
-  }
-
   void InitializeTPMTokenAndSystemSlot(
       int system_slot_id,
       base::OnceCallback<void(bool)> callback) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    // Should not be called while there is already an initialization in
-    // progress.
-    DCHECK(!initializing_tpm_token_);
-    // If EnableTPMTokenForNSS hasn't been called, return false.
-    if (!tpm_token_enabled_for_nss_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), false));
-      return;
-    }
-
-    // If everything is already initialized, then return true.
-    // Note that only |tpm_slot_| is checked, since |chaps_module_| could be
-    // nullptr in tests while |tpm_slot_| has been set to the test DB.
-    if (tpm_slot_) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), true));
-      return;
-    }
+    DCHECK_EQ(state_, State::kInitializationNotStarted);
+    state_ = State::kInitializationStarted;
 
     // Note that a reference is not taken to chaps_module_. This is safe since
     // ChromeOSTokenManager is Leaky, so the reference it holds is never
@@ -184,7 +189,26 @@ class ChromeOSTokenManager {
             &ChromeOSTokenManager::OnInitializedTPMTokenAndSystemSlot,
             base::Unretained(this),  // ChromeOSTokenManager is leaky
             std::move(callback), std::move(tpm_args)));
-    initializing_tpm_token_ = true;
+  }
+
+  void FinishInitializingTPMTokenAndSystemSlot() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(!IsInitializationFinished());
+
+    // If `OnInitializedTPMTokenAndSystemSlot` was not called, but a test system
+    // slot is prepared, start using it now. Can happen in tests that don't fake
+    // enable TPM.
+    if (!system_slot_ &&
+        ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot) {
+      system_slot_ = ScopedPK11Slot(
+          PK11_ReferenceSlot(ChromeOSTokenManagerDataForTesting::GetInstance()
+                                 .test_system_slot.get()));
+    }
+
+    state_ = (state_ == State::kTpmTokenInitialized) ? State::kTpmTokenEnabled
+                                                     : State::kTpmTokenDisabled;
+
+    tpm_ready_callback_list_->Notify();
   }
 
   static void InitializeTPMTokenInThreadPool(CK_SLOT_ID token_slot_id,
@@ -202,8 +226,7 @@ class ChromeOSTokenManager {
       tpm_args->chaps_module = LoadChaps();
     }
     if (tpm_args->chaps_module) {
-      tpm_args->tpm_slot =
-          GetTPMSlotForIdInThreadPool(tpm_args->chaps_module, token_slot_id);
+      tpm_args->tpm_slot = GetChapsSlot(tpm_args->chaps_module, token_slot_id);
     }
   }
 
@@ -215,50 +238,42 @@ class ChromeOSTokenManager {
              << ", got tpm slot: " << !!tpm_args->tpm_slot;
 
     chaps_module_ = tpm_args->chaps_module;
-    tpm_slot_ = std::move(tpm_args->tpm_slot);
-    if (!chaps_module_ && test_system_slot_) {
+
+    if (ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot) {
       // chromeos_unittests try to test the TPM initialization process. If we
-      // have a test DB open, pretend that it is the TPM slot.
-      tpm_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
+      // have a test DB open, pretend that it is the system slot.
+      system_slot_ = ScopedPK11Slot(
+          PK11_ReferenceSlot(ChromeOSTokenManagerDataForTesting::GetInstance()
+                                 .test_system_slot.get()));
+    } else {
+      system_slot_ = std::move(tpm_args->tpm_slot);
     }
-    initializing_tpm_token_ = false;
 
-    if (tpm_slot_)
-      RunAndClearTPMReadyCallbackList();
+    if (system_slot_) {
+      state_ = State::kTpmTokenInitialized;
+    }
 
-    std::move(callback).Run(!!tpm_slot_);
+    std::move(callback).Run(!!system_slot_);
   }
 
-  void RunAndClearTPMReadyCallbackList() { tpm_ready_callback_list_.Notify(); }
-
-  bool IsTPMTokenReady(base::OnceClosure callback) {
+  void IsTPMTokenEnabled(base::OnceCallback<void(bool)> callback) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    if (tpm_slot_)
-      return true;
+    DCHECK(!callback.is_null());
 
-    if (!callback.is_null())
-      tpm_ready_callback_list_.AddUnsafe(std::move(callback));
+    if (!IsInitializationFinished()) {
+      // Call back to this method when initialization is finished.
+      tpm_ready_callback_list_->AddUnsafe(
+          base::BindOnce(&ChromeOSTokenManager::IsTPMTokenEnabled,
+                         base::Unretained(this) /* singleton is leaky */,
+                         std::move(callback)));
+      return;
+    }
 
-    return false;
-  }
-
-  // Note that CK_SLOT_ID is an unsigned long, but cryptohome gives us the slot
-  // id as an int. This should be safe since this is only used with chaps, which
-  // we also control.
-  static crypto::ScopedPK11Slot GetTPMSlotForIdInThreadPool(
-      SECMODModule* chaps_module,
-      CK_SLOT_ID slot_id) {
-    DCHECK(chaps_module);
-
-    DVLOG(3) << "Poking chaps module.";
-    SECStatus rv = SECMOD_UpdateSlotList(chaps_module);
-    if (rv != SECSuccess)
-      PLOG(ERROR) << "SECMOD_UpdateSlotList failed: " << PORT_GetError();
-
-    PK11SlotInfo* slot = SECMOD_LookupSlot(chaps_module->moduleID, slot_id);
-    if (!slot)
-      LOG(ERROR) << "TPM slot " << slot_id << " not found.";
-    return crypto::ScopedPK11Slot(slot);
+    DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       /*is_tpm_enabled=*/(state_ == State::kTpmTokenEnabled)));
   }
 
   bool InitializeNSSForChromeOSUser(const std::string& username_hash,
@@ -392,32 +407,44 @@ class ChromeOSTokenManager {
     chromeos_user_map_.erase(i);
   }
 
-  void SetSystemKeySlotForTesting(ScopedPK11Slot slot) {
+  void GetSystemNSSKeySlot(base::OnceCallback<void(ScopedPK11Slot)> callback) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-    // Ensure that a previous value of test_system_slot_ is not overwritten.
-    // Unsetting, i.e. setting a nullptr, however is allowed.
-    DCHECK(!slot || !test_system_slot_);
-    test_system_slot_ = std::move(slot);
-    if (test_system_slot_) {
-      tpm_slot_.reset(PK11_ReferenceSlot(test_system_slot_.get()));
-      RunAndClearTPMReadyCallbackList();
-    } else {
-      tpm_slot_.reset();
+    if (!IsInitializationFinished()) {
+      // Call back to this method when initialization is finished.
+      tpm_ready_callback_list_->AddUnsafe(
+          base::BindOnce(&ChromeOSTokenManager::GetSystemNSSKeySlot,
+                         base::Unretained(this) /* singleton is leaky */,
+                         std::move(callback)));
+      return;
     }
+
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       /*system_slot=*/ScopedPK11Slot(
+                           system_slot_ ? PK11_ReferenceSlot(system_slot_.get())
+                                        : nullptr)));
   }
 
-  void SetSystemKeySlotWithoutInitializingTPMForTesting(ScopedPK11Slot slot) {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  void ResetSystemSlotForTesting() { system_slot_.reset(); }
 
-    // Ensure that a previous value of test_system_slot_ is not overwritten.
-    // Unsetting, i.e. setting a nullptr, however is allowed.
-    DCHECK(!slot || !test_system_slot_);
-    if (tpm_slot_ && tpm_slot_ == test_system_slot_) {
-      // Unset |tpm_slot_| if it was initialized from |test_system_slot_|.
-      tpm_slot_.reset();
-    }
-    test_system_slot_ = std::move(slot);
+  void ResetTokenManagerForTesting() {
+    // Prevent test failures when two tests in the same process use the same
+    // ChromeOSTokenManager from different threads.
+    DETACH_FROM_THREAD(thread_checker_);
+    state_ = State::kInitializationNotStarted;
+
+    // Configuring chaps_module_ here is not supported yet.
+    CHECK(!chaps_module_);
+
+    // Make sure there are no outstanding callbacks between tests.
+    // OnceClosureList doesn't provide a way to clear the callback list.
+    tpm_ready_callback_list_ = std::make_unique<base::OnceClosureList>();
+
+    chromeos_user_map_.clear();
+    ResetSystemSlotForTesting();  // IN-TEST
+    prepared_test_private_slot_.reset();
   }
 
   void SetPrivateSoftwareSlotForChromeOSUserForTesting(ScopedPK11Slot slot) {
@@ -429,29 +456,8 @@ class ChromeOSTokenManager {
     prepared_test_private_slot_ = std::move(slot);
   }
 
-  void GetSystemNSSKeySlotCallback(
-      base::OnceCallback<void(ScopedPK11Slot)> callback) {
-    std::move(callback).Run(
-        ScopedPK11Slot(PK11_ReferenceSlot(tpm_slot_.get())));
-  }
-
-  ScopedPK11Slot GetSystemNSSKeySlot(
-      base::OnceCallback<void(ScopedPK11Slot)> callback) {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    // TODO(mattm): chromeos::TPMTokenloader always calls
-    // InitializeTPMTokenAndSystemSlot with slot 0.  If the system slot is
-    // disabled, tpm_slot_ will be the first user's slot instead. Can that be
-    // detected and return nullptr instead?
-
-    base::OnceClosure wrapped_callback;
-    if (!callback.is_null()) {
-      wrapped_callback = base::BindOnce(
-          &ChromeOSTokenManager::GetSystemNSSKeySlotCallback,
-          base::Unretained(this) /* singleton is leaky */, std::move(callback));
-    }
-    if (IsTPMTokenReady(std::move(wrapped_callback)))
-      return ScopedPK11Slot(PK11_ReferenceSlot(tpm_slot_.get()));
-    return ScopedPK11Slot();
+  bool IsInitializationStarted() {
+    return (state_ != State::kInitializationNotStarted);
   }
 
  private:
@@ -464,14 +470,25 @@ class ChromeOSTokenManager {
   // shut down.
   ~ChromeOSTokenManager() = delete;
 
-  bool tpm_token_enabled_for_nss_ = false;
-  bool initializing_tpm_token_ = false;
-  using TPMReadyCallbackList = base::OnceClosureList;
-  TPMReadyCallbackList tpm_ready_callback_list_;
+  bool IsInitializationFinished() {
+    switch (state_) {
+      case State::kTpmTokenEnabled:
+      case State::kTpmTokenDisabled:
+        return true;
+      case State::kInitializationNotStarted:
+      case State::kInitializationStarted:
+      case State::kTpmTokenInitialized:
+        return false;
+    }
+  }
+
+  State state_ = State::kInitializationNotStarted;
+  std::unique_ptr<base::OnceClosureList> tpm_ready_callback_list_ =
+      std::make_unique<base::OnceClosureList>();
+
   SECMODModule* chaps_module_ = nullptr;
-  crypto::ScopedPK11Slot tpm_slot_;
+  ScopedPK11Slot system_slot_;
   std::map<std::string, std::unique_ptr<ChromeOSUserData>> chromeos_user_map_;
-  ScopedPK11Slot test_system_slot_;
   ScopedPK11Slot prepared_test_private_slot_;
 
   THREAD_CHECKER(thread_checker_);
@@ -486,36 +503,46 @@ base::FilePath GetSoftwareNSSDBPath(
   return profile_directory_path.AppendASCII(".pki").AppendASCII("nssdb");
 }
 
-ScopedPK11Slot GetSystemNSSKeySlot(
-    base::OnceCallback<void(ScopedPK11Slot)> callback) {
-  return g_token_manager.Get().GetSystemNSSKeySlot(std::move(callback));
+void GetSystemNSSKeySlot(base::OnceCallback<void(ScopedPK11Slot)> callback) {
+  g_token_manager.Get().GetSystemNSSKeySlot(std::move(callback));
 }
 
-void SetSystemKeySlotForTesting(ScopedPK11Slot slot) {
-  g_token_manager.Get().SetSystemKeySlotForTesting(std::move(slot));
+void PrepareSystemSlotForTesting(ScopedPK11Slot slot) {
+  DCHECK(!ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot);
+  DCHECK(!g_token_manager.IsCreated() ||
+         !g_token_manager.Get().IsInitializationStarted())
+      << "PrepareSystemSlotForTesting is called after initialization started";
+
+  ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot =
+      std::move(slot);
 }
 
-void SetSystemKeySlotWithoutInitializingTPMForTesting(ScopedPK11Slot slot) {
-  g_token_manager.Get().SetSystemKeySlotWithoutInitializingTPMForTesting(
-      std::move(slot));
+void ResetSystemSlotForTesting() {
+  if (g_token_manager.IsCreated()) {
+    g_token_manager.Get().ResetSystemSlotForTesting();  // IN-TEST
+  }
+  ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot.reset();
 }
 
-void EnableTPMTokenForNSS() {
-  g_token_manager.Get().EnableTPMTokenForNSS();
+void ResetTokenManagerForTesting() {
+  if (g_token_manager.IsCreated()) {
+    g_token_manager.Get().ResetTokenManagerForTesting();  // IN-TEST
+  }
+  ResetSystemSlotForTesting();  // IN-TEST
 }
 
-bool IsTPMTokenEnabledForNSS() {
-  return g_token_manager.Get().IsTPMTokenEnabledForNSS();
-}
-
-bool IsTPMTokenReady(base::OnceClosure callback) {
-  return g_token_manager.Get().IsTPMTokenReady(std::move(callback));
+void IsTPMTokenEnabled(base::OnceCallback<void(bool)> callback) {
+  g_token_manager.Get().IsTPMTokenEnabled(std::move(callback));
 }
 
 void InitializeTPMTokenAndSystemSlot(int token_slot_id,
                                      base::OnceCallback<void(bool)> callback) {
   g_token_manager.Get().InitializeTPMTokenAndSystemSlot(token_slot_id,
                                                         std::move(callback));
+}
+
+void FinishInitializingTPMTokenAndSystemSlot() {
+  g_token_manager.Get().FinishInitializingTPMTokenAndSystemSlot();
 }
 
 bool InitializeNSSForChromeOSUser(const std::string& username_hash,
@@ -562,6 +589,87 @@ void CloseChromeOSUserForTesting(const std::string& username_hash) {
 void SetPrivateSoftwareSlotForChromeOSUserForTesting(ScopedPK11Slot slot) {
   g_token_manager.Get().SetPrivateSoftwareSlotForChromeOSUserForTesting(
       std::move(slot));
+}
+
+namespace {
+void PrintDirectoryInfo(const base::FilePath& path) {
+  base::stat_wrapper_t file_stat;
+
+  if (base::File::Stat(path.value().c_str(), &file_stat) == -1) {
+    base::File::Error error_code = base::File::OSErrorToFileError(errno);
+    LOG(ERROR) << "Failed to collect directory info, error: " << error_code;
+  }
+
+  LOG(ERROR) << path << ", " << std::oct << file_stat.st_mode << std::dec
+             << ", "
+             << "uid " << file_stat.st_uid << ", "
+             << "gid " << file_stat.st_gid << std::endl;
+}
+}  // namespace
+
+// TODO(crbug.com/1163303): Remove when the bug is fixed.
+void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path) {
+  LOG(ERROR) << "Public slot is invalid. Start collecting stats.";
+  // Should be something like /home/chronos/u-<hash>/.pki/nssdb .
+  LOG(ERROR) << "NSS path: " << nss_path;
+
+  {
+    // NSS files like pkcs11.txt, cert9.db, key4.db .
+    base::FileEnumerator files(
+        nss_path, /*recursive=*/false,
+        /*file_type=*/base::FileEnumerator::FILES,
+        /*pattern=*/base::FilePath::StringType(),
+        base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+        base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
+    LOG(ERROR) << "Public slot database files:";
+    for (base::FilePath path = files.Next(); !path.empty();
+         path = files.Next()) {
+      base::FileEnumerator::FileInfo file_info = files.GetInfo();
+
+      char buf[16];
+      int read_result = base::ReadFile(path, buf, sizeof(buf) - 1);
+
+      LOG(ERROR) << file_info.GetName() << ", " << std::oct
+                 << file_info.stat().st_mode << std::dec << ", "
+                 << "uid " << file_info.stat().st_uid << ", "
+                 << "gid " << file_info.stat().st_gid << ", "
+                 << file_info.stat().st_size << " bytes, "
+                 << ((read_result > 0) ? "readable" : "not readable");
+    }
+    LOG(ERROR) << "Enumerate error code: " << files.GetError();
+  }
+
+  // NSS directory might not be created yet, also check parent directories.
+  // Use u-hash directory as a comparison point for user and group ids and
+  // access permissions.
+
+  base::FilePath nssdb_path = nss_path.Append(base::FilePath::kParentDirectory);
+  PrintDirectoryInfo(nssdb_path);
+
+  base::FilePath pki_path = nssdb_path.Append(base::FilePath::kParentDirectory);
+  PrintDirectoryInfo(pki_path);
+
+  base::FilePath u_hash_path =
+      pki_path.Append(base::FilePath::kParentDirectory);
+  PrintDirectoryInfo(u_hash_path);
+
+  {
+    // Check whether the NSS path exists, and if not, check whether it's
+    // possible to create it.
+    if (base::DirectoryExists(nss_path)) {
+      LOG(ERROR) << "NSS path exists (as expected).";
+    } else {
+      base::File::Error error = base::File::Error::FILE_OK;
+      if (base::CreateDirectoryAndGetError(nss_path, &error)) {
+        LOG(ERROR) << "NSS path didn't exist. Created successfully.";
+      } else {
+        LOG(ERROR) << "NSS path didn't exist. Failed to create, error: "
+                   << error;
+      }
+    }
+  }
+
+  CHECK(false) << "Public slot is invalid.";
 }
 
 }  // namespace crypto

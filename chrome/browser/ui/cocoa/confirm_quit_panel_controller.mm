@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 
 @implementation ConfirmQuitFrameView
 
-- (id)initWithFrame:(NSRect)frameRect {
+- (instancetype)initWithFrame:(NSRect)frameRect {
   if ((self = [super initWithFrame:frameRect])) {
     base::scoped_nsobject<NSTextField> message(
         // The frame will be fixed up when |-setMessageText:| is called.
@@ -112,15 +112,15 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
  @private
   NSApplication* _application;
 }
-- (id)initWithApplication:(NSApplication*)app
-        animationDuration:(NSTimeInterval)duration;
+- (instancetype)initWithApplication:(NSApplication*)app
+                  animationDuration:(NSTimeInterval)duration;
 @end
 
 
 @implementation FadeAllWindowsAnimation
 
-- (id)initWithApplication:(NSApplication*)app
-        animationDuration:(NSTimeInterval)duration {
+- (instancetype)initWithApplication:(NSApplication*)app
+                  animationDuration:(NSTimeInterval)duration {
   if ((self = [super initWithDuration:duration
                        animationCurve:NSAnimationLinear])) {
     _application = app;
@@ -170,13 +170,13 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   return [[g_confirmQuitPanelController retain] autorelease];
 }
 
-- (id)init {
+- (instancetype)init {
   const NSRect kWindowFrame = NSMakeRect(0, 0, 350, 70);
-  base::scoped_nsobject<NSWindow> window(
-      [[NSWindow alloc] initWithContentRect:kWindowFrame
-                                  styleMask:NSBorderlessWindowMask
-                                    backing:NSBackingStoreBuffered
-                                      defer:NO]);
+  base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
+      initWithContentRect:kWindowFrame
+                styleMask:NSWindowStyleMaskBorderless
+                  backing:NSBackingStoreBuffered
+                    defer:NO]);
   if ((self = [super initWithWindow:window])) {
     [window setDelegate:self];
     [window setBackgroundColor:[NSColor clearColor]];
@@ -219,7 +219,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
     [self hideAllWindowsForApplication:app withDuration:0];
     NSEvent* nextEvent = [self pumpEventQueueForKeyUp:app
                                             untilDate:[NSDate distantFuture]];
-    [app discardEventsMatchingMask:NSAnyEventMask beforeEvent:nextEvent];
+    [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
     // Based on how long the user held the keys, record the metric.
     if ([[NSDate date] timeIntervalSinceDate:timeNow] <
@@ -238,7 +238,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   // Explicitly announce the hold-to-quit message. For an ordinary modal dialog
   // VoiceOver would announce it and read its message, but VoiceOver does not do
-  // this for windows whose styleMask is NSBorderlessWindowMask, so do it
+  // this for windows whose styleMask is NSWindowStyleMaskBorderless, so do it
   // manually here. Without this screenreader users have no way to know why
   // their quit hotkey seems not to work.
   [self sendAccessibilityAnnouncement];
@@ -278,7 +278,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
   // The user has released the key combo. Discard any events (i.e. the
   // repeated KeyDown Cmd+Q).
-  [app discardEventsMatchingMask:NSAnyEventMask beforeEvent:nextEvent];
+  [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
   if (willQuit) {
     // The user held down the combination long enough that quitting should
@@ -299,7 +299,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 - (void)windowWillClose:(NSNotification*)notif {
   // Release all animations because CAAnimation retains its delegate (self),
   // which will cause a retain cycle. Break it!
-  [[self window] setAnimations:[NSDictionary dictionary]];
+  [[self window] setAnimations:@{}];
   g_confirmQuitPanelController = nil;
   [self autorelease];
 }
@@ -308,7 +308,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   // If a panel that is fading out is going to be reused here, make sure it
   // does not get released when the animation finishes.
   base::scoped_nsobject<ConfirmQuitPanelController> keepAlive([self retain]);
-  [[self window] setAnimations:[NSDictionary dictionary]];
+  [[self window] setAnimations:@{}];
   [[self window] center];
   [[self window] setAlphaValue:1.0];
   [super showWindow:sender];
@@ -328,7 +328,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   [animation setDuration:0.2];
   NSMutableDictionary* dictionary =
       [NSMutableDictionary dictionaryWithDictionary:[window animations]];
-  [dictionary setObject:animation forKey:@"alphaValue"];
+  dictionary[@"alphaValue"] = animation;
   [window setAnimations:dictionary];
   [[window animator] setAlphaValue:0.0];
 }
@@ -350,7 +350,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 
 // Runs a nested loop that pumps the event queue until the next KeyUp event.
 - (NSEvent*)pumpEventQueueForKeyUp:(NSApplication*)app untilDate:(NSDate*)date {
-  return [app nextEventMatchingMask:NSKeyUpMask
+  return [app nextEventMatchingMask:NSEventMaskKeyUp
                           untilDate:date
                              inMode:NSEventTrackingRunLoopMode
                             dequeue:YES];
@@ -382,7 +382,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
                                                  action:@selector(terminate:)
                                           keyEquivalent:@"q"] autorelease];
-  item.keyEquivalentModifierMask = NSCommandKeyMask;
+  item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
   return item;
 }
 
@@ -390,13 +390,13 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   NSMutableString* string = [NSMutableString string];
   NSUInteger modifiers = item.keyEquivalentModifierMask;
 
-  if (modifiers & NSCommandKeyMask)
+  if (modifiers & NSEventModifierFlagCommand)
     [string appendString:@"\u2318"];
-  if (modifiers & NSControlKeyMask)
+  if (modifiers & NSEventModifierFlagControl)
     [string appendString:@"\u2303"];
-  if (modifiers & NSAlternateKeyMask)
+  if (modifiers & NSEventModifierFlagOption)
     [string appendString:@"\u2325"];
-  if (modifiers & NSShiftKeyMask)
+  if (modifiers & NSEventModifierFlagShift)
     [string appendString:@"\u21E7"];
 
   [string appendString:[item.keyEquivalent uppercaseString]];

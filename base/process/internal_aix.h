@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 
@@ -78,7 +80,7 @@ int64_t ReadProcStatsAndGetFieldAsInt64(pid_t pid, ProcStatsFields field_num);
 // Same as ReadProcStatsAndGetFieldAsInt64() but for size_t values.
 size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num);
 
-}  // namespace internal
+}  // namespace internalAIX
 }  // namespace base
 
 #endif  // BASE_PROCESS_INTERNAL_AIX_H_

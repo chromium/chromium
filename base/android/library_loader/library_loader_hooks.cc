@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,16 +28,10 @@ namespace android {
 namespace {
 
 base::AtExitManager* g_at_exit_manager = nullptr;
-const char* g_library_version_number = "";
 LibraryLoadedHook* g_registration_callback = nullptr;
 NativeInitializationHook* g_native_initialization_hook = nullptr;
 NonMainDexJniRegistrationHook* g_jni_registration_hook = nullptr;
 LibraryProcessType g_library_process_type = PROCESS_UNINITIALIZED;
-
-// The amount of time, in milliseconds, that it took to load the shared
-// libraries in the renderer. Set in
-// JNI_LibraryLoader_RecordRendererLibraryLoadTime().
-long g_renderer_library_load_time_ms = 0;
 
 }  // namespace
 
@@ -53,12 +47,6 @@ bool IsUsingOrderfileOptimization() {
 #endif
 }
 
-static void JNI_LibraryLoader_RecordRendererLibraryLoadTime(
-    JNIEnv* env,
-    jlong library_load_time_ms) {
-  g_renderer_library_load_time_ms = library_load_time_ms;
-}
-
 void SetNativeInitializationHook(
     NativeInitializationHook native_initialization_hook) {
   g_native_initialization_hook = native_initialization_hook;
@@ -68,13 +56,6 @@ void SetNonMainDexJniRegistrationHook(
     NonMainDexJniRegistrationHook jni_registration_hook) {
   DCHECK(!g_jni_registration_hook);
   g_jni_registration_hook = jni_registration_hook;
-}
-
-void RecordLibraryLoaderRendererHistograms() {
-  // Record how long it took to load the shared libraries.
-  UMA_HISTOGRAM_TIMES(
-      "ChromiumAndroidLinker.RendererLoadTime",
-      base::TimeDelta::FromMilliseconds(g_renderer_library_load_time_ms));
 }
 
 void SetLibraryLoadedHook(LibraryLoadedHook* func) {
@@ -125,14 +106,6 @@ void LibraryLoaderExitHook() {
     delete g_at_exit_manager;
     g_at_exit_manager = nullptr;
   }
-}
-
-void SetVersionNumber(const char* version_number) {
-  g_library_version_number = strdup(version_number);
-}
-
-ScopedJavaLocalRef<jstring> JNI_LibraryLoader_GetVersionNumber(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, g_library_version_number);
 }
 
 void InitAtExitManager() {

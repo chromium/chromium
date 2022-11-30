@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const base::FilePath extension_path(
       test_data_dir_.AppendASCII("browsertest")
                     .AppendASCII("chrome_theme_url"));
-  ExtensionTestMessageListener listener(false);
+  ExtensionTestMessageListener listener;
 
   // First try loading the extension as a non-component extension.  The
   // chrome://theme/ image referenced in the extension should fail to load.

@@ -1,6 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {constants} from '../common/constants.js';
 
 import {ParagraphUtils} from './paragraph_utils.js';
 
@@ -10,8 +12,6 @@ const RoleType = chrome.automation.RoleType;
  * Utilities for processing sentences within strings and node groups.
  */
 export class SentenceUtils {
-  constructor() {}
-
   /**
    * Gets the sentence start from the current position. When |direction| is set
    * to forward, this function will incrementally go over each nodeGroupItem in

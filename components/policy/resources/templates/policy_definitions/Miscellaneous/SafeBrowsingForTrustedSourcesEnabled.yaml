@@ -1,0 +1,31 @@
+caption: Enable Safe Browsing for trusted sources
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset means downloaded files are sent to be analyzed by Safe Browsing, even when it's from a trusted source.
+
+        Setting the policy to Disabled means downloaded files won't be sent to be analyzed by Safe Browsing when it's from a trusted source.
+
+        These restrictions apply to downloads triggered from webpage content, as well as the Download link menu option. These restrictions don't apply to the save or download of the currently displayed page or to saving as PDF from the printing options.
+
+        On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this functionality is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, running on Windows 10 Pro, or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. On <ph name="MAC_OS_NAME">macOS</ph>, this functionality is only available on instances that are managed via MDM, or joined to a domain via MCX.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Perform Safe Browsing checks on all downloaded files
+  value: true
+- caption: Skip Safe Browsing checks for files download from trusted sources
+  value: false
+label: Safe Browsing enable state for trusted sources
+owners:
+- mad@chromium.org
+- zmin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:61-
+tags:
+- local-data-access
+type: main

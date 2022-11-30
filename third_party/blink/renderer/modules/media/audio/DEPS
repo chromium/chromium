@@ -4,6 +4,7 @@ include_rules = [
     "+media/audio",
     "+media/base",
     "+media/mojo",
+    "+media/webrtc",
 
     # TODO(https://crbug.com/787252): Replace this use by a Blink singleton
     # construction.
@@ -21,10 +22,5 @@ specific_include_rules = {
         "+base/test/gtest_util.h",
         "+base/test/test_mock_time_task_runner.h",
         "+base/threading/thread.h",
-    ],
-    "fuchsia_audio_device_factory\.cc" : [
-        "+media/fuchsia/audio/fuchsia_audio_capturer_source.h",
-        "+media/fuchsia/audio/fuchsia_audio_output_device.h",
-        "+media/fuchsia/mojom",
     ],
 }

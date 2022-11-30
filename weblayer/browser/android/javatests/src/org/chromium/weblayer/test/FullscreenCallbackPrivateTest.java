@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.FullscreenCallback;
 import org.chromium.weblayer.TestWebLayer;
@@ -65,6 +66,7 @@ public class FullscreenCallbackPrivateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1293419")
     public void testToastShown() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTab().setFullscreenCallback(new FullscreenCallback() {

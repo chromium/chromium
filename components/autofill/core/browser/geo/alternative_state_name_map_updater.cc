@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -93,8 +92,8 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
 
   CountryToStateNamesListMapping country_to_state_names_map;
   for (AutofillProfile* profile : profiles) {
-    const AutofillType country_code_type(HTML_TYPE_COUNTRY_CODE,
-                                         HTML_MODE_NONE);
+    const AutofillType country_code_type(HtmlFieldType::kCountryCode,
+                                         HtmlFieldMode::kNone);
     const AlternativeStateNameMap::CountryCode country(
         base::UTF16ToUTF8(profile->GetInfo(
             country_code_type, personal_data_manager_->app_locale())));
@@ -126,7 +125,11 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
     PrefService* pref_service,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pref_service);
+
+  // Would be null in the case of tests.
+  if (!pref_service) {
+    return;
+  }
 
   // Get the states data installation path from |pref_service| which is set by
   // the component updater once it downloads the states data and should be safe
@@ -156,13 +159,7 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
 
   // The |country_to_state_names_map| maps country_code names to a vector of
   // state names that are associated with this corresponding country.
-  for (const auto& entry : country_to_state_names_map) {
-    // country_code is used as the filename.
-    // Example -> File "DE" contains the geographical states data of Germany.
-    const AlternativeStateNameMap::CountryCode& country_code = entry.first;
-    const std::vector<AlternativeStateNameMap::StateName>& states =
-        entry.second;
-
+  for (const auto& [country_code, states] : country_to_state_names_map) {
     // This is a security check to ensure that we only attempt to read files
     // that match to known countries.
     if (!base::Contains(country_codes, country_code.value()))
@@ -170,6 +167,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
 
     ++number_pending_init_tasks_;
 
+    // |country_code| is used as the filename.
+    // Example -> File "DE" contains the geographical states data of Germany.
     base::PostTaskAndReplyWithResult(
         GetTaskRunner().get(), FROM_HERE,
         base::BindOnce(&LoadDataFromFile,

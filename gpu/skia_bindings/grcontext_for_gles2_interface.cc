@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -27,17 +26,18 @@ GrContextForGLES2Interface::GrContextForGLES2Interface(
     gpu::ContextSupport* context_support,
     const gpu::Capabilities& capabilities,
     size_t max_resource_cache_bytes,
-    size_t max_glyph_cache_texture_bytes)
+    size_t max_glyph_cache_texture_bytes,
+    bool support_bilerp_from_flyph_atlas)
     : context_support_(context_support) {
   GrContextOptions options;
   options.fGlyphCacheTextureMaximumBytes = max_glyph_cache_texture_bytes;
   options.fAvoidStencilBuffers = capabilities.avoid_stencil_buffers;
   options.fAllowPathMaskCaching = false;
-  options.fSharpenMipmappedTextures = true;
   options.fShaderErrorHandler = this;
   // TODO(csmartdalton): enable internal multisampling after the related Skia
   // rolls are in.
   options.fInternalMultisampleCount = 0;
+  options.fSupportBilerpFromGlyphAtlas = support_bilerp_from_flyph_atlas;
   sk_sp<GrGLInterface> interface(
       skia_bindings::CreateGLES2InterfaceBindings(gl, context_support));
   gr_context_ = GrDirectContext::MakeGL(std::move(interface), options);

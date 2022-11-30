@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
@@ -35,7 +34,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter)
   do {
     // Get the size of the buffer
     size_t len = 0;
-    if (sysctl(mib, base::size(mib), NULL, &len, NULL, 0) < 0) {
+    if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0) {
       DLOG(ERROR) << "failed to get the size needed for the process list";
       kinfo_procs_.resize(0);
       done = true;
@@ -47,7 +46,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter)
       kinfo_procs_.resize(num_of_kinfo_proc);
       len = num_of_kinfo_proc * sizeof(struct kinfo_proc);
       // Load the list of processes
-      if (sysctl(mib, base::size(mib), &kinfo_procs_[0], &len, NULL, 0) < 0) {
+      if (sysctl(mib, std::size(mib), &kinfo_procs_[0], &len, NULL, 0) < 0) {
         // If we get a mem error, it just means we need a bigger buffer, so
         // loop around again.  Anything else is a real error and give up.
         if (errno != ENOMEM) {
@@ -85,13 +84,13 @@ bool ProcessIterator::CheckForNextProcess() {
 
     // Find out what size buffer we need.
     size_t data_len = 0;
-    if (sysctl(mib, base::size(mib), NULL, &data_len, NULL, 0) < 0) {
+    if (sysctl(mib, std::size(mib), NULL, &data_len, NULL, 0) < 0) {
       DVPLOG(1) << "failed to figure out the buffer size for a commandline";
       continue;
     }
 
     data.resize(data_len);
-    if (sysctl(mib, base::size(mib), &data[0], &data_len, NULL, 0) < 0) {
+    if (sysctl(mib, std::size(mib), &data[0], &data_len, NULL, 0) < 0) {
       DVPLOG(1) << "failed to fetch a commandline";
       continue;
     }

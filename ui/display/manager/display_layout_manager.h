@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,7 @@ class DisplayLayoutManager {
       const std::vector<DisplaySnapshot*>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
+      RefreshRateThrottleState new_throttle_state,
       std::vector<DisplayConfigureRequest>* requests) const = 0;
 
   virtual std::vector<DisplaySnapshot*> GetDisplayStates() const = 0;

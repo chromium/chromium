@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {
@@ -26,6 +26,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
  public:
   BluetoothGattConnection(scoped_refptr<device::BluetoothAdapter> adapter,
                           const std::string& device_address);
+
+  BluetoothGattConnection(const BluetoothGattConnection&) = delete;
+  BluetoothGattConnection& operator=(const BluetoothGattConnection&) = delete;
 
   // Destructor automatically closes this GATT connection. If this is the last
   // remaining GATT connection and this results in a call to the OS, that call
@@ -61,12 +64,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
 
   // Bluetooth address of the underlying device.
   std::string device_address_;
-  BluetoothDevice* device_ = nullptr;
+  raw_ptr<BluetoothDevice> device_ = nullptr;
 
  private:
   bool owns_reference_for_connection_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattConnection);
 };
 
 }  // namespace device

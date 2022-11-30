@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 
-#include "base/i18n/rtl.h"
+#import "base/i18n/rtl.h"
 #import "base/logging.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -36,10 +35,10 @@ const CGFloat kAnimationDuration = 0.15;
 
 @interface ToolbarAccessoryPresenter ()
 
-// The |presenting| public property redefined as readwrite.
+// The `presenting` public property redefined as readwrite.
 @property(nonatomic, assign, readwrite, getter=isPresenting) BOOL presenting;
 
-// The view that acts as the background for |presentedView|, redefined as
+// The view that acts as the background for `presentedView`, redefined as
 // readwrite. This is especially important on iPhone, as this view that holds
 // everything around the safe area.
 @property(nonatomic, strong, readwrite) UIView* backgroundView;
@@ -234,7 +233,7 @@ const CGFloat kAnimationDuration = 0.15;
     [self.backgroundView.heightAnchor
         constraintEqualToConstant:kPrimaryToolbarHeight],
   ]];
-  // Layouts |shadow| around |self.backgroundView|.
+  // Layouts `shadow` around `self.backgroundView`.
   AddSameConstraintsToSidesWithInsets(
       shadow, self.backgroundView,
       LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
@@ -270,23 +269,17 @@ const CGFloat kAnimationDuration = 0.15;
       .active = YES;
 }
 
-// Creates the background view and adds |self.presentedViewController.view| to
+// Creates the background view and adds `self.presentedViewController.view` to
 // it
 - (UIView*)createBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.accessibilityIdentifier = kToolbarAccessoryContainerViewID;
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |incognitoStyle| can be removed, as well as
-    // the incognito specific assets.
-    backgroundView.overrideUserInterfaceStyle =
-        self.isIncognito ? UIUserInterfaceStyleDark
-                         : UIUserInterfaceStyleUnspecified;
-  }
-  backgroundView.backgroundColor = color::DarkModeDynamicColor(
-      [UIColor colorNamed:kBackgroundColor], self.isIncognito,
-      [UIColor colorNamed:kBackgroundDarkColor]);
+
+  backgroundView.overrideUserInterfaceStyle =
+      self.isIncognito ? UIUserInterfaceStyleDark
+                       : UIUserInterfaceStyleUnspecified;
+  backgroundView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
   [backgroundView addSubview:self.presentedViewController.view];
 

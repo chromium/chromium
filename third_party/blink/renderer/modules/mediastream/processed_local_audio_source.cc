@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,33 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_source_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/media_switches.h"
 #include "media/base/sample_rates.h"
-#include "media/webrtc/audio_processor_controls.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/media_buildflags.h"
+#include "media/webrtc/webrtc_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/audio_service_audio_processor_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/media/base/media_channel.h"
 
@@ -78,46 +84,98 @@ std::string GetAudioProcesingPropertiesLogString(
       "goog_audio_mirroring: %s, "
       "goog_auto_gain_control: %s, "
       "goog_experimental_echo_cancellation: %s, "
-      "goog_typing_noise_detection: %s, "
       "goog_noise_suppression: %s, "
       "goog_experimental_noise_suppression: %s, "
       "goog_highpass_filter: %s, "
       "goog_experimental_agc: %s, "
-      "hybrid_agc: %s",
+      "hybrid_agc: %s"
+      "analog_agc_clipping_control: %s",
       aec_to_string(properties.echo_cancellation_type),
       bool_to_string(properties.disable_hw_noise_suppression),
       bool_to_string(properties.goog_audio_mirroring),
       bool_to_string(properties.goog_auto_gain_control),
       bool_to_string(properties.goog_experimental_echo_cancellation),
-      bool_to_string(properties.goog_typing_noise_detection),
       bool_to_string(properties.goog_noise_suppression),
       bool_to_string(properties.goog_experimental_noise_suppression),
       bool_to_string(properties.goog_highpass_filter),
       bool_to_string(properties.goog_experimental_auto_gain_control),
-      bool_to_string(base::FeatureList::IsEnabled(features::kWebRtcHybridAgc)));
+      bool_to_string(
+          base::FeatureList::IsEnabled(::features::kWebRtcHybridAgc)),
+      bool_to_string(base::FeatureList::IsEnabled(
+          ::features::kWebRtcAnalogAgcClippingControl)));
   return str;
 }
+
+// Returns whether system noise suppression is allowed to be used regardless of
+// whether the noise suppression constraint is set, or whether a browser-based
+// AEC is active. This is currently the default on at least MacOS but is not
+// allowed for ChromeOS setups.
+constexpr bool IsIndependentSystemNsAllowed() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
+void LogInputDeviceParametersToUma(
+    const media::AudioParameters& input_device_params) {
+  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout",
+                            input_device_params.channel_layout(),
+                            media::CHANNEL_LAYOUT_MAX + 1);
+  media::AudioSampleRate asr;
+  if (media::ToAudioSampleRate(input_device_params.sample_rate(), &asr)) {
+    UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputSampleRate", asr,
+                              media::kAudioSampleRateMax + 1);
+  } else {
+    UMA_HISTOGRAM_COUNTS_1M("WebRTC.AudioInputSampleRateUnexpected",
+                            input_device_params.sample_rate());
+  }
+}
+
 }  // namespace
 
+// static
+bool ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate() {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (!media::IsChromeWideEchoCancellationEnabled())
+    return true;
+  return media::kChromeWideEchoCancellationMinimizeResampling.Get();
+#else
+  return true;
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+}
+
 ProcessedLocalAudioSource::ProcessedLocalAudioSource(
-    LocalFrame* frame,
+    LocalFrame& frame,
     const blink::MediaStreamDevice& device,
     bool disable_local_echo,
     const blink::AudioProcessingProperties& audio_processing_properties,
-    ConstraintsOnceCallback started_callback,
+    int num_requested_channels,
+    ConstraintsRepeatingCallback started_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : blink::MediaStreamAudioSource(std::move(task_runner),
                                     true /* is_local_source */,
                                     disable_local_echo),
-      consumer_frame_(frame),
+      // Remote APM is only enabled for mic input, other input sources have
+      // conflicting requirements on echo cancellation:
+      // https://crbug.com/1328012
+      use_remote_apm_(media::IsChromeWideEchoCancellationEnabled() &&
+                      device.type ==
+                          mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE),
+      consumer_frame_(&frame),
+      dependency_factory_(
+          PeerConnectionDependencyFactory::From(*frame.DomWindow())),
       audio_processing_properties_(audio_processing_properties),
+      num_requested_channels_(num_requested_channels),
       started_callback_(std::move(started_callback)),
-      volume_(0),
       allow_invalid_render_frame_id_for_testing_(false) {
+  DCHECK(frame.DomWindow());
   SetDevice(device);
   SendLogMessage(
-      base::StringPrintf("ProcessedLocalAudioSource({session_id=%s})",
-                         device.session_id().ToString().c_str()));
+      base::StringPrintf("ProcessedLocalAudioSource({session_id=%s}, {APM:%s})",
+                         device.session_id().ToString().c_str(),
+                         use_remote_apm_ ? "remote" : "local"));
 }
 
 ProcessedLocalAudioSource::~ProcessedLocalAudioSource() {
@@ -140,7 +198,7 @@ void ProcessedLocalAudioSource::SendLogMessageWithSessionId(
                  "]");
 }
 
-base::Optional<blink::AudioProcessingProperties>
+absl::optional<blink::AudioProcessingProperties>
 ProcessedLocalAudioSource::GetAudioProcessingProperties() const {
   return audio_processing_properties_;
 }
@@ -174,12 +232,22 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   bool device_is_modified = false;
 
   // Disable system echo cancellation if specified by
-  // |audio_processing_properties_|.
+  // |audio_processing_properties_|. Also disable any system noise suppression
+  // and automatic gain control to avoid those causing issues for the echo
+  // cancellation.
   if (audio_processing_properties_.echo_cancellation_type !=
           EchoCancellationType::kEchoCancellationSystem &&
       device().input.effects() & media::AudioParameters::ECHO_CANCELLER) {
     modified_device.input.set_effects(modified_device.input.effects() &
                                       ~media::AudioParameters::ECHO_CANCELLER);
+    if (!IsIndependentSystemNsAllowed()) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::NOISE_SUPPRESSION);
+    }
+    modified_device.input.set_effects(
+        modified_device.input.effects() &
+        ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
     device_is_modified = true;
   } else if (audio_processing_properties_.echo_cancellation_type ==
                  EchoCancellationType::kEchoCancellationSystem &&
@@ -194,104 +262,178 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     device_is_modified = true;
   }
 
-  // Disable noise suppression on the device if the properties explicitly
-  // specify to do so.
-  if (audio_processing_properties_.disable_hw_noise_suppression &&
-      (device().input.effects() & media::AudioParameters::NOISE_SUPPRESSION)) {
-    modified_device.input.set_effects(
-        modified_device.input.effects() &
-        ~media::AudioParameters::NOISE_SUPPRESSION);
-    device_is_modified = true;
+  // Optionally disable system noise suppression.
+  if (device().input.effects() & media::AudioParameters::NOISE_SUPPRESSION) {
+    // Disable noise suppression on the device if the properties explicitly
+    // specify to do so.
+    bool disable_system_noise_suppression =
+        audio_processing_properties_.disable_hw_noise_suppression;
+
+    if (!IsIndependentSystemNsAllowed()) {
+      // Disable noise suppression on the device if browser-based echo
+      // cancellation is active, since that otherwise breaks the AEC.
+      const bool browser_based_aec_active =
+          audio_processing_properties_.echo_cancellation_type ==
+          AudioProcessingProperties::EchoCancellationType::
+              kEchoCancellationAec3;
+      disable_system_noise_suppression =
+          disable_system_noise_suppression || browser_based_aec_active;
+
+      // Disable noise suppression on the device if the constraints
+      // dictate that.
+      disable_system_noise_suppression =
+          disable_system_noise_suppression ||
+          !audio_processing_properties_.goog_noise_suppression;
+    }
+
+    if (disable_system_noise_suppression) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::NOISE_SUPPRESSION);
+      device_is_modified = true;
+    }
+  }
+
+  // Optionally disable system automatic gain control.
+  if (device().input.effects() &
+      media::AudioParameters::AUTOMATIC_GAIN_CONTROL) {
+    // Disable automatic gain control on the device if browser-based echo
+    // cancellation is, since that otherwise breaks the AEC.
+    const bool browser_based_aec_active =
+        audio_processing_properties_.echo_cancellation_type ==
+        AudioProcessingProperties::EchoCancellationType::kEchoCancellationAec3;
+    bool disable_system_automatic_gain_control = browser_based_aec_active;
+
+    // Disable automatic gain control on the device if the constraints dictates
+    // that.
+    disable_system_automatic_gain_control =
+        disable_system_automatic_gain_control ||
+        !audio_processing_properties_.goog_auto_gain_control;
+
+    if (disable_system_automatic_gain_control) {
+      modified_device.input.set_effects(
+          modified_device.input.effects() &
+          ~media::AudioParameters::AUTOMATIC_GAIN_CONTROL);
+      device_is_modified = true;
+    }
   }
 
   if (device_is_modified)
     SetDevice(modified_device);
 
-  // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
-  // module.
+  // Create the audio processor.
+
+  DCHECK(dependency_factory_);
   WebRtcAudioDeviceImpl* const rtc_audio_device =
-      PeerConnectionDependencyFactory::GetInstance()->GetWebRtcAudioDevice();
+      dependency_factory_->GetWebRtcAudioDevice();
   if (!rtc_audio_device) {
     SendLogMessageWithSessionId(
         "EnsureSourceIsStarted() => (ERROR: no WebRTC ADM instance)");
     return false;
   }
 
-  // If KEYBOARD_MIC effect is set, change the layout to the corresponding
-  // layout that includes the keyboard mic.
-  media::ChannelLayout channel_layout = device().input.channel_layout();
-  if ((device().input.effects() & media::AudioParameters::KEYBOARD_MIC) &&
-      audio_processing_properties_.goog_experimental_noise_suppression) {
-    if (channel_layout == media::CHANNEL_LAYOUT_STEREO) {
-      channel_layout = media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
-      DVLOG(1) << "Changed stereo layout to stereo + keyboard mic layout due "
-               << "to KEYBOARD_MIC effect.";
-    } else {
-      DVLOG(1) << "KEYBOARD_MIC effect ignored, not compatible with layout "
-               << channel_layout;
+  // If system level echo cancellation is active, flag any other active system
+  // level effects to the audio processor.
+  if (audio_processing_properties_.echo_cancellation_type ==
+      AudioProcessingProperties::EchoCancellationType::
+          kEchoCancellationSystem) {
+    if (!IsIndependentSystemNsAllowed()) {
+      if (audio_processing_properties_.goog_noise_suppression) {
+        audio_processing_properties_.system_noise_suppression_activated =
+            device().input.effects() &
+            media::AudioParameters::NOISE_SUPPRESSION;
+      }
+    }
+
+    if (audio_processing_properties_.goog_auto_gain_control) {
+      audio_processing_properties_.system_gain_control_activated =
+          device().input.effects() &
+          media::AudioParameters::AUTOMATIC_GAIN_CONTROL;
     }
   }
 
-  DVLOG(1) << "Audio input hardware channel layout: " << channel_layout;
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputChannelLayout", channel_layout,
-                            media::CHANNEL_LAYOUT_MAX + 1);
+  // No more modifications of |audio_processing_properties_| after this line.
+  media::AudioProcessingSettings audio_processing_settings(
+      audio_processing_properties_.ToAudioProcessingSettings(
+          num_requested_channels_ > 1));
 
-  // Verify that the reported input channel configuration is supported.
-  if (channel_layout != media::CHANNEL_LAYOUT_MONO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO &&
-      channel_layout != media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC &&
-      channel_layout != media::CHANNEL_LAYOUT_DISCRETE) {
-    SendLogMessage(
-        base::StringPrintf("EnsureSourceIsStarted() => (ERROR: "
-                           "input channel layout (%d) is not supported.",
-                           static_cast<int>(channel_layout)));
+  // Determine the audio format required of the AudioCapturerSource.
+  const media::AudioParameters input_device_params = device().input;
+  LogInputDeviceParametersToUma(input_device_params);
+  auto maybe_audio_capture_params = media::AudioProcessor::ComputeInputFormat(
+      input_device_params, audio_processing_settings);
+
+  if (!maybe_audio_capture_params) {
+    SendLogMessage(base::StringPrintf(
+        "EnsureSourceIsStarted() => (ERROR: "
+        "input device format (%s) is not supported.",
+        input_device_params.AsHumanReadableString().c_str()));
     return false;
   }
+  media::AudioParameters audio_capture_params = *maybe_audio_capture_params;
 
-  DVLOG(1) << "Audio input hardware sample rate: "
-           << device().input.sample_rate();
-  media::AudioSampleRate asr;
-  if (media::ToAudioSampleRate(device().input.sample_rate(), &asr)) {
-    UMA_HISTOGRAM_ENUMERATION("WebRTC.AudioInputSampleRate", asr,
-                              media::kAudioSampleRateMax + 1);
+  media::AudioSourceParameters source_config(device().session_id());
+
+  if (use_remote_apm_) {
+    if (OutputAudioAtProcessingSampleRate()) {
+      // Since audio processing will be applied in the audio service, we request
+      // audio here in the audio processing output format to avoid forced
+      // resampling.
+      audio_capture_params = media::AudioProcessor::GetDefaultOutputFormat(
+          audio_capture_params, audio_processing_settings);
+    }
+
+    // Create a proxy to the audio processor in the audio service.
+    audio_processor_proxy_ =
+        new rtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+
+    // The output format of this ProcessedLocalAudioSource is the audio capture
+    // format.
+    SetFormat(audio_capture_params);
+
+    // Add processing to the AudioCapturerSource configuration.
+    source_config.processing = audio_processing_settings;
+
   } else {
-    UMA_HISTOGRAM_COUNTS_1M("WebRTC.AudioInputSampleRateUnexpected",
-                            device().input.sample_rate());
+    DCHECK(OutputAudioAtProcessingSampleRate());
+    // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device
+    // module.
+
+    // This callback has to be valid until MediaStreamAudioProcessor is stopped,
+    // which happens in EnsureSourceIsStopped().
+    MediaStreamAudioProcessor::DeliverProcessedAudioCallback
+        processing_callback =
+            ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &ProcessedLocalAudioSource::DeliverProcessedAudio,
+                CrossThreadUnretained(this)));
+
+    media_stream_audio_processor_ =
+        new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+            std::move(processing_callback), audio_processing_settings,
+            audio_capture_params, rtc_audio_device);
+
+    // The output format of this ProcessedLocalAudioSource is the audio
+    // processor's output format.
+    SetFormat(media_stream_audio_processor_->output_format());
   }
 
-  // Determine the audio format required of the AudioCapturerSource. Then,
-  // pass that to the |audio_processor_| and set the output format of this
-  // ProcessedLocalAudioSource to the processor's output format.
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                channel_layout, device().input.sample_rate(),
-                                device().input.sample_rate() / 100);
-  params.set_effects(device().input.effects());
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    DCHECK_LE(device().input.channels(), 2);
-    params.set_channels_for_discrete(device().input.channels());
-  }
-  DVLOG(1) << params.AsHumanReadableString();
-  DCHECK(params.IsValid());
-
-  media::AudioSourceParameters source_params(device().session_id());
-  blink::WebRtcLogMessage("Using APM in renderer process.");
-  audio_processor_ = new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-      audio_processing_properties_, rtc_audio_device);
-  params.set_frames_per_buffer(GetBufferSize(device().input.sample_rate()));
-  audio_processor_->OnCaptureFormatChanged(params);
-  SetFormat(audio_processor_->OutputFormat());
+  SendLogMessageWithSessionId(
+      base::StringPrintf("EnsureSourceIsStarted() => (using APM in %s process: "
+                         "settings=[%s])",
+                         audio_processor_proxy_ ? "audio" : "renderer",
+                         audio_processing_settings.ToString().c_str()));
 
   // Start the source.
   SendLogMessageWithSessionId(base::StringPrintf(
       "EnsureSourceIsStarted() => (WebRTC audio source starts: "
       "input_parameters=[%s], output_parameters=[%s])",
-      params.AsHumanReadableString().c_str(),
+      audio_capture_params.AsHumanReadableString().c_str(),
       GetAudioParameters().AsHumanReadableString().c_str()));
   auto* web_frame =
       static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(consumer_frame_));
   scoped_refptr<media::AudioCapturerSource> new_source =
-      Platform::Current()->NewAudioCapturerSource(web_frame, source_params);
-  new_source->Initialize(params, this);
+      Platform::Current()->NewAudioCapturerSource(web_frame, source_config);
+  new_source->Initialize(audio_capture_params, this);
   // We need to set the AGC control before starting the stream.
   new_source->SetAutomaticGainControl(true);
   source_ = std::move(new_source);
@@ -311,75 +453,90 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
 
   scoped_refptr<media::AudioCapturerSource> source_to_stop(std::move(source_));
 
-  if (WebRtcAudioDeviceImpl* rtc_audio_device =
-          PeerConnectionDependencyFactory::GetInstance()
-              ->GetWebRtcAudioDevice()) {
-    rtc_audio_device->RemoveAudioCapturer(this);
+  if (dependency_factory_) {
+    dependency_factory_->GetWebRtcAudioDevice()->RemoveAudioCapturer(this);
   }
 
   source_to_stop->Stop();
 
-  // Stop the audio processor to avoid feeding render data into the processor.
-  if (audio_processor_)
-    audio_processor_->Stop();
+  if (media_stream_audio_processor_) {
+    // Stop the audio processor to avoid feeding render data into the processor.
+    media_stream_audio_processor_->Stop();
+  } else {
+    // Stop the proxy, to detach from the processor controls.
+    DCHECK(audio_processor_proxy_);
+    audio_processor_proxy_->Stop();
+  }
 
   DVLOG(1) << "Stopped WebRTC audio pipeline for consumption.";
 }
 
 scoped_refptr<webrtc::AudioProcessorInterface>
 ProcessedLocalAudioSource::GetAudioProcessor() const {
-  DCHECK(audio_processor_);
+  if (audio_processor_proxy_) {
+    return static_cast<scoped_refptr<webrtc::AudioProcessorInterface>>(
+        audio_processor_proxy_);
+  }
+  DCHECK(media_stream_audio_processor_);
+  if (!media_stream_audio_processor_->has_webrtc_audio_processing())
+    return nullptr;
   return static_cast<scoped_refptr<webrtc::AudioProcessorInterface>>(
-      audio_processor_);
+      media_stream_audio_processor_);
 }
 
-bool ProcessedLocalAudioSource::HasAudioProcessing() const {
-  return audio_processor_ && audio_processor_->has_audio_processing();
-}
-
-void ProcessedLocalAudioSource::SetVolume(int volume) {
+void ProcessedLocalAudioSource::SetVolume(double volume) {
   DVLOG(1) << "ProcessedLocalAudioSource::SetVolume()";
-  DCHECK_LE(volume, MaxVolume());
-  const double normalized_volume = static_cast<double>(volume) / MaxVolume();
+  DCHECK_LE(volume, 1.0);
   if (source_)
-    source_->SetVolume(normalized_volume);
-}
-
-int ProcessedLocalAudioSource::Volume() const {
-  // Note: Using NoBarrier_Load() because the timing of visibility of the
-  // updated volume information on other threads can be relaxed.
-  return base::subtle::NoBarrier_Load(&volume_);
-}
-
-int ProcessedLocalAudioSource::MaxVolume() const {
-  return WebRtcAudioDeviceImpl::kMaxVolumeLevel;
+    source_->SetVolume(volume);
 }
 
 void ProcessedLocalAudioSource::OnCaptureStarted() {
   SendLogMessageWithSessionId(base::StringPrintf("OnCaptureStarted()"));
-  std::move(started_callback_)
-      .Run(this, blink::mojom::MediaStreamRequestResult::OK, "");
+  started_callback_.Run(this, mojom::blink::MediaStreamRequestResult::OK, "");
 }
 
 void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
                                         base::TimeTicks audio_capture_time,
                                         double volume,
                                         bool key_pressed) {
-  if (audio_processor_) {
-    // The data must be processed here.
-    CaptureUsingProcessor(audio_bus, audio_capture_time, volume, key_pressed);
-  } else {
-    // The audio is already processed in the audio service, just send it
-    // along.
-    level_calculator_.Calculate(*audio_bus, false);
-    DeliverDataToTracks(*audio_bus, audio_capture_time);
+  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
+               audio_capture_time);
+  // Maximum number of channels used by the sinks.
+  int num_preferred_channels = NumPreferredChannels();
+  if (media_stream_audio_processor_) {
+    // Figure out if the pre-processed data has any energy or not. This
+    // information will be passed to the level calculator to force it to report
+    // energy in case the post-processed data is zeroed by the audio processing.
+    force_report_nonzero_energy_ = !audio_bus->AreFramesZero();
+
+    // Push the data to the processor for processing.
+    // Passing audio to the audio processor is sufficient, the processor will
+    // return it to DeliverProcessedAudio() via the registered callback.
+    media_stream_audio_processor_->ProcessCapturedAudio(
+        *audio_bus, audio_capture_time, num_preferred_channels, volume,
+        key_pressed);
+    return;
   }
+
+  DCHECK(audio_processor_proxy_);
+  audio_processor_proxy_->MaybeUpdateNumPreferredCaptureChannels(
+      num_preferred_channels);
+
+  // The audio is already processed in the audio service, just send it
+  // along.
+  force_report_nonzero_energy_ = false;
+  DeliverProcessedAudio(*audio_bus, audio_capture_time,
+                        /*new_volume=*/absl::nullopt);
 }
 
-void ProcessedLocalAudioSource::OnCaptureError(const std::string& message) {
+void ProcessedLocalAudioSource::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   SendLogMessageWithSessionId(
-      base::StringPrintf("OnCaptureError({message=%s})", message.c_str()));
-  StopSourceOnError(message);
+      base::StringPrintf("OnCaptureError({code=%d, message=%s})",
+                         static_cast<int>(code), message.c_str()));
+  StopSourceOnError(code, message);
 }
 
 void ProcessedLocalAudioSource::OnCaptureMuted(bool is_muted) {
@@ -392,6 +549,19 @@ void ProcessedLocalAudioSource::OnCaptureProcessorCreated(
     media::AudioProcessorControls* controls) {
   SendLogMessageWithSessionId(
       base::StringPrintf("OnCaptureProcessorCreated()"));
+  DCHECK_NE(!!media_stream_audio_processor_, !!audio_processor_proxy_);
+  if (audio_processor_proxy_)
+    audio_processor_proxy_->SetControls(controls);
+}
+
+void ProcessedLocalAudioSource::ChangeSourceImpl(
+    const MediaStreamDevice& new_device) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  WebRtcLogMessage("ProcessedLocalAudioSource::ChangeSourceImpl(new_device = " +
+                   new_device.id + ")");
+  EnsureSourceIsStopped();
+  SetDevice(new_device);
+  EnsureSourceIsStarted();
 }
 
 void ProcessedLocalAudioSource::SetOutputDeviceForAec(
@@ -402,108 +572,21 @@ void ProcessedLocalAudioSource::SetOutputDeviceForAec(
     source_->SetOutputDeviceForAec(output_device_id);
 }
 
-void ProcessedLocalAudioSource::CaptureUsingProcessor(
-    const media::AudioBus* audio_bus,
+void ProcessedLocalAudioSource::DeliverProcessedAudio(
+    const media::AudioBus& processed_audio,
     base::TimeTicks audio_capture_time,
-    double volume,
-    bool key_pressed) {
-#if defined(OS_WIN) || defined(OS_MAC)
-  DCHECK_LE(volume, 1.0);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_OPENBSD)
-  // We have a special situation on Linux where the microphone volume can be
-  // "higher than maximum". The input volume slider in the sound preference
-  // allows the user to set a scaling that is higher than 100%. It means that
-  // even if the reported maximum levels is N, the actual microphone level can
-  // go up to 1.5x*N and that corresponds to a normalized |volume| of 1.5x.
-  DCHECK_LE(volume, 1.6);
-#endif
+    absl::optional<double> new_volume) {
+  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::DeliverProcessedAudio",
+               "capture-time", audio_capture_time);
+  level_calculator_.Calculate(processed_audio, force_report_nonzero_energy_);
+  DeliverDataToTracks(processed_audio, audio_capture_time);
 
-  TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
-               audio_capture_time);
-
-  // Map internal volume range of [0.0, 1.0] into [0, 255] used by AGC.
-  // The volume can be higher than 255 on Linux, and it will be cropped to
-  // 255 since AGC does not allow values out of range.
-  int current_volume = static_cast<int>((volume * MaxVolume()) + 0.5);
-  // Note: Using NoBarrier_Store() because the timing of visibility of the
-  // updated volume information on other threads can be relaxed.
-  base::subtle::NoBarrier_Store(&volume_, current_volume);
-  current_volume = std::min(current_volume, MaxVolume());
-
-  // Sanity-check the input audio format in debug builds.  Then, notify the
-  // tracks if the format has changed.
-  //
-  // Locking is not needed here to read the audio input/output parameters
-  // because the audio processor format changes only occur while audio capture
-  // is stopped.
-  DCHECK(audio_processor_->InputFormat().IsValid());
-  DCHECK_EQ(audio_bus->channels(), audio_processor_->InputFormat().channels());
-  DCHECK_EQ(audio_bus->frames(),
-            audio_processor_->InputFormat().frames_per_buffer());
-
-  // Figure out if the pre-processed data has any energy or not. This
-  // information will be passed to the level calculator to force it to report
-  // energy in case the post-processed data is zeroed by the audio processing.
-  const bool force_report_nonzero_energy = !audio_bus->AreFramesZero();
-
-  // Push the data to the processor for processing.
-  audio_processor_->PushCaptureData(
-      *audio_bus, base::TimeTicks::Now() - audio_capture_time);
-
-  // Process and consume the data in the processor until there is not enough
-  // data in the processor.
-  media::AudioBus* processed_data = nullptr;
-  base::TimeDelta processed_data_audio_delay;
-  int new_volume = 0;
-
-  // Maximum number of channels used by the sinks.
-  const int num_preferred_channels = NumPreferredChannels();
-
-  while (audio_processor_->ProcessAndConsumeData(
-      current_volume, num_preferred_channels, key_pressed, &processed_data,
-      &processed_data_audio_delay, &new_volume)) {
-    DCHECK(processed_data);
-
-    level_calculator_.Calculate(*processed_data, force_report_nonzero_energy);
-
-    DeliverDataToTracks(*processed_data, audio_capture_time);
-
-    if (new_volume) {
-      PostCrossThreadTask(
-          *GetTaskRunner(), FROM_HERE,
-          CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
-                              weak_factory_.GetWeakPtr(), new_volume));
-      // Update the |current_volume| to avoid passing the old volume to AGC.
-      current_volume = new_volume;
-    }
+  if (new_volume) {
+    PostCrossThreadTask(
+        *GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
+                            weak_factory_.GetWeakPtr(), *new_volume));
   }
-}
-
-int ProcessedLocalAudioSource::GetBufferSize(int sample_rate) const {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-#if defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
-  // TODO(henrika): Re-evaluate whether to use same logic as other platforms.
-  // https://crbug.com/638081
-  return (2 * sample_rate / 100);
-#else
-  // If audio processing is turned on, require 10ms buffers.
-  if (audio_processor_->has_audio_processing())
-    return (sample_rate / 100);
-
-  // If audio processing is off and the native hardware buffer size was
-  // provided, use it. It can be harmful, in terms of CPU/power consumption,
-  // to use smaller buffer sizes than the native size
-  // (https://crbug.com/362261).
-  if (int hardware_buffer_size = device().input.frames_per_buffer())
-    return hardware_buffer_size;
-
-  // If the buffer size is missing from the MediaStreamDevice, provide 10ms as
-  // a fall-back.
-  //
-  // TODO(miu): Identify where/why the buffer size might be missing, fix the
-  // code, and then require it here. https://crbug.com/638081
-  return (sample_rate / 100);
-#endif
 }
 
 }  // namespace blink

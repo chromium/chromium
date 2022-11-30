@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 
 #include "cc/layers/layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -20,6 +20,21 @@ String PointerAsString(const void* ptr) {
   WTF::TextStream ts;
   ts << ptr;
   return ts.Release();
+}
+
+double RoundCloseToZero(double number) {
+  return std::abs(number) < 1e-7 ? 0 : number;
+}
+
+std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
+  auto array = std::make_unique<JSONArray>();
+  for (int c = 0; c < 4; c++) {
+    auto col = std::make_unique<JSONArray>();
+    for (int r = 0; r < 4; r++)
+      col->PushDouble(RoundCloseToZero(t.rc(r, c)));
+    array->PushArray(std::move(col));
+  }
+  return array;
 }
 
 }  // namespace
@@ -34,32 +49,38 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
     json->SetInteger("ccLayerId", layer.id());
   }
 
-  json->SetString("name", String(layer.DebugName().c_str()));
+  String debug_name(layer.DebugName());
+  json->SetString("name", debug_name);
 
   if (layer.offset_to_transform_parent() != gfx::Vector2dF()) {
-    json->SetArray(
-        "position",
-        PointAsJSONArray(FloatPoint(layer.offset_to_transform_parent())));
+    json->SetArray("position",
+                   VectorAsJSONArray(layer.offset_to_transform_parent()));
   }
 
   // This is testing against gfx::Size(), *not* whether the size is empty.
   if (layer.bounds() != gfx::Size())
-    json->SetArray("bounds", SizeAsJSONArray(IntSize(layer.bounds())));
+    json->SetArray("bounds", SizeAsJSONArray(layer.bounds()));
 
   if (layer.contents_opaque())
     json->SetBoolean("contentsOpaque", true);
   else if (layer.contents_opaque_for_text())
     json->SetBoolean("contentsOpaqueForText", true);
 
-  if (!layer.DrawsContent())
+  if (!layer.draws_content())
     json->SetBoolean("drawsContent", false);
 
   if (layer.should_check_backface_visibility())
     json->SetString("backfaceVisibility", "hidden");
 
-  if (Color(layer.background_color()).Alpha()) {
+  if (Color::FromSkColor4f(layer.background_color()).Alpha() &&
+      ((flags & kLayerTreeIncludesDebugInfo) ||
+       // Omit backgroundColor for these layers because it's not interesting
+       // and we want to avoid platform differences and changes with CLs
+       // affecting backgroundColor in web tests that dump layer trees.
+       (debug_name != "Caret" && !debug_name.Contains("Scroll corner of")))) {
     json->SetString("backgroundColor",
-                    Color(layer.background_color()).NameForLayoutTreeAsText());
+                    Color::FromSkColor4f(layer.background_color())
+                        .NameForLayoutTreeAsText());
   }
 
   if (flags &
@@ -108,8 +129,9 @@ int LayersAsJSON::AddTransformJSON(
   }
 
   if (!transform.IsIdentityOr2DTranslation() &&
-      !transform.Matrix().IsIdentityOrTranslation())
-    transform_json->SetArray("origin", PointAsJSONArray(transform.Origin()));
+      !transform.Matrix().IsIdentityOrTranslation()) {
+    transform_json->SetArray("origin", Point3AsJSONArray(transform.Origin()));
+  }
 
   if (!transform.FlattensInheritedTransform())
     transform_json->SetBoolean("flattenInheritedTransform", false);
@@ -132,11 +154,14 @@ int LayersAsJSON::AddTransformJSON(
 void LayersAsJSON::AddLayer(const cc::Layer& layer,
                             const TransformPaintPropertyNode& transform,
                             const LayerAsJSONClient* json_client) {
-  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.DrawsContent() &&
-      (layer.DebugName() == "LayoutView #document" ||
-       layer.DebugName() == "Inner Viewport Scroll Layer" ||
-       layer.DebugName() == "Scrolling Contents Layer"))
-    return;
+  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content()) {
+    std::string debug_name = layer.DebugName();
+    if (debug_name == "LayoutNGView #document" ||
+        debug_name == "LayoutView #document" ||
+        debug_name == "Inner Viewport Scroll Layer" ||
+        debug_name == "Scrolling Contents Layer")
+      return;
+  }
 
   auto layer_json = CCLayerAsJSON(layer, flags_);
   if (json_client) {

@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_mediator.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/sparse_histogram.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/metrics/metrics_log.h"
-#include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/common/translate_constants.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/sparse_histogram.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/metrics/metrics_log.h"
+#import "components/translate/core/browser/translate_step.h"
+#import "components/translate/core/common/translate_constants.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/translate/translate_constants.h"
 #import "ios/chrome/browser/translate/translate_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -66,9 +66,14 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   self.newSourceLanguageIndex = kInvalidLanguageIndex;
   self.newTargetLanguageIndex = kInvalidLanguageIndex;
 
-  BOOL currentStepBeforeTranslate =
+  // The Translate button should be enabled whenever the page is untranslated,
+  // which may be before any translation has been triggered or after an error
+  // caused translation to fail.
+  BOOL currentStepUntranslated =
       self.config->current_step() ==
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE;
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE ||
+      self.config->current_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR;
 
   [self.consumer
       setupModalViewControllerWithPrefs:
@@ -79,8 +84,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                                          base::SysUTF16ToNSString(
                                              self.config
                                                  ->target_language_name())
-                             translateButtonEnabled:
-                                 currentStepBeforeTranslate]];
+                             translateButtonEnabled:currentStepUntranslated]];
 }
 
 - (void)setSourceLanguageSelectionConsumer:
@@ -109,7 +113,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 #pragma mark - InfobarTranslateModalDelegate
 
-- (void)showOriginalLanguage {
+- (void)showSourceLanguage {
   [self recordInfobarEvent:translate::InfobarEvent::INFOBAR_REVERT];
   [self dispatchResponse:
             OverlayResponse::CreateWithInfo<
@@ -222,7 +226,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectSourceLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -247,7 +251,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (void)didSelectTargetLanguageIndex:(int)languageIndex
                             withName:(NSString*)languageName {
-  // Sanity check that |languageIndex| matches the languageName selected.
+  // Sanity check that `languageIndex` matches the languageName selected.
   DCHECK([languageName
       isEqualToString:base::SysUTF16ToNSString(
                           self.config->language_names().at(languageIndex))]);
@@ -274,10 +278,10 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 
 - (NSArray<TableViewTextItem*>*)loadTranslateLanguageItemsForSelectingLanguage:
     (BOOL)sourceLanguage {
-  // In the instance that the user has already selected a different original
+  // In the instance that the user has already selected a different source
   // language, then we should be using that language as the one to potentially
   // check or not show.
-  std::u16string originalLanguageName =
+  std::u16string sourceLanguageName =
       self.newSourceLanguageIndex != kInvalidLanguageIndex
           ? self.config->language_names().at(self.newSourceLanguageIndex)
           : self.config->source_language_name();
@@ -296,7 +300,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     item.text =
         base::SysUTF16ToNSString(self.config->language_names().at((int)i));
 
-    if (self.config->language_names().at((int)i) == originalLanguageName) {
+    if (self.config->language_names().at((int)i) == sourceLanguageName) {
       if (!sourceLanguage) {
         // Disable for source language if selecting the target
         // language to prevent same language translation. Need to add item,
@@ -316,7 +320,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     }
 
     if ((sourceLanguage &&
-         originalLanguageName == self.config->language_names().at((int)i)) ||
+         sourceLanguageName == self.config->language_names().at((int)i)) ||
         (!sourceLanguage &&
          targetLanguageName == self.config->language_names().at((int)i))) {
       item.checked = YES;
@@ -327,11 +331,11 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   return items;
 }
 
-// Records a histogram for |event|.
+// Records a histogram for `event`.
 - (void)recordInfobarEvent:(translate::InfobarEvent)event {
   UMA_HISTOGRAM_ENUMERATION(kEventHistogram, event);
 }
-// Records a histogram of |histogram| for |langCode|. This is used to log the
+// Records a histogram of `histogram` for `langCode`. This is used to log the
 // language distribution of certain Translate events.
 - (void)recordLanguageDataHistogram:(const std::string&)histogramName
                        languageCode:(const std::string&)langCode {
@@ -355,15 +359,19 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 }
 
 // Returns a dictionary of prefs to send to the modalConsumer depending on
-// |sourceLanguage|, |targetLanguage|, |translateButtonEnabled|, and
-// |self.currentStep|.
+// `sourceLanguage`, `targetLanguage`, `translateButtonEnabled`, and
+// `self.currentStep`.
 - (NSDictionary*)createPrefDictionaryForSourceLanguage:(NSString*)sourceLanguage
                                         targetLanguage:(NSString*)targetLanguage
                                 translateButtonEnabled:
                                     (BOOL)translateButtonEnabled {
-  BOOL currentStepBeforeTranslate =
+  // Modal state following a translate error should be the same as on an
+  // untranslated page.
+  BOOL currentStepUntranslated =
       self.config->current_step() ==
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE;
+          translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE ||
+      self.config->current_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR;
   BOOL currentStepAfterTranslate =
       self.config->current_step() ==
       translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE;
@@ -379,8 +387,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     kEnableAndDisplayShowOriginalButtonPrefKey : @(currentStepAfterTranslate),
     kShouldAlwaysTranslatePrefKey :
         @(self.config->is_always_translate_enabled()),
-    kDisplayNeverTranslateLanguagePrefKey : @(currentStepBeforeTranslate),
-    kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepBeforeTranslate),
+    kDisplayNeverTranslateLanguagePrefKey : @(currentStepUntranslated),
+    kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepUntranslated),
     kIsTranslatableLanguagePrefKey : @(self.config->is_translatable_language()),
     kIsSiteOnNeverPromptListPrefKey :
         @(self.config->is_site_on_never_prompt_list()),

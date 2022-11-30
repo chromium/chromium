@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
@@ -61,6 +61,10 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
       DialMediaSinkServiceImpl* media_sink_service,
       const std::string& hash_token,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  DialMediaRouteProvider(const DialMediaRouteProvider&) = delete;
+  DialMediaRouteProvider& operator=(const DialMediaRouteProvider&) = delete;
+
   ~DialMediaRouteProvider() override;
 
   // mojom::MediaRouteProvider:
@@ -68,25 +72,17 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                    const std::string& sink_id,
                    const std::string& presentation_id,
                    const url::Origin& origin,
-                   int32_t tab_id,
+                   int32_t frame_tree_node_id,
                    base::TimeDelta timeout,
                    bool incognito,
                    CreateRouteCallback callback) override;
   void JoinRoute(const std::string& media_source,
                  const std::string& presentation_id,
                  const url::Origin& origin,
-                 int32_t tab_id,
+                 int32_t frame_tree_node_id,
                  base::TimeDelta timeout,
                  bool incognito,
                  JoinRouteCallback callback) override;
-  void ConnectRouteByRouteId(const std::string& media_source,
-                             const std::string& route_id,
-                             const std::string& presentation_id,
-                             const url::Origin& origin,
-                             int32_t tab_id,
-                             base::TimeDelta timeout,
-                             bool incognito,
-                             ConnectRouteByRouteIdCallback callback) override;
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override;
   void SendRouteMessage(const std::string& media_route_id,
@@ -95,8 +91,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                               const std::vector<uint8_t>& data) override;
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
-  void StartObservingMediaRoutes(const std::string& media_source) override;
-  void StopObservingMediaRoutes(const std::string& media_source) override;
+  void StartObservingMediaRoutes() override;
   void StartListeningForRouteMessages(const std::string& route_id) override;
   void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
@@ -124,13 +119,15 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
   struct MediaSinkQuery {
     MediaSinkQuery();
+
+    MediaSinkQuery(const MediaSinkQuery&) = delete;
+    MediaSinkQuery& operator=(const MediaSinkQuery&) = delete;
+
     ~MediaSinkQuery();
 
     // Set of registered media sources for current sink query.
     base::flat_set<MediaSource> media_sources;
     base::CallbackListSubscription subscription;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaSinkQuery);
   };
 
   // MediaSinkServiceBase::Observer:
@@ -170,11 +167,10 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
                         TerminateRouteCallback callback);
   void HandleStopAppResult(const MediaRoute::Id& route_id,
                            TerminateRouteCallback callback,
-                           const base::Optional<std::string>& message,
-                           RouteRequestResult::ResultCode result_code);
+                           const absl::optional<std::string>& message,
+                           mojom::RouteRequestResultCode result_code);
   void NotifyAllOnRoutesUpdated();
-  void NotifyOnRoutesUpdated(const MediaSource::Id& source_id,
-                             const std::vector<MediaRoute>& routes);
+  void NotifyOnRoutesUpdated(const std::vector<MediaRoute>& routes);
 
   // Returns a list of valid origins for |app_name|. Returns an empty list if
   // all origins are valid.
@@ -187,7 +183,7 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
   mojo::Remote<mojom::MediaRouter> media_router_;
 
   // Non-owned pointer to the DialMediaSinkServiceImpl instance.
-  DialMediaSinkServiceImpl* const media_sink_service_;
+  const raw_ptr<DialMediaSinkServiceImpl> media_sink_service_;
 
   // Map of media sink queries, keyed by app name.
   base::flat_map<std::string, std::unique_ptr<MediaSinkQuery>>
@@ -210,7 +206,6 @@ class DialMediaRouteProvider : public mojom::MediaRouteProvider,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DialMediaRouteProvider> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DialMediaRouteProvider);
 };
 
 }  // namespace media_router

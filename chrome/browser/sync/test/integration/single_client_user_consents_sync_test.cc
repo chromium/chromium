@@ -1,24 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
-using consent_auditor::ConsentStatus;
-using consent_auditor::Feature;
 using fake_server::FakeServer;
 using sync_pb::SyncEntity;
 using sync_pb::UserConsentSpecifics;
@@ -34,7 +31,7 @@ CoreAccountId GetAccountId() {
 class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   UserConsentEqualityChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       FakeServer* fake_server,
       std::vector<UserConsentSpecifics> expected_specifics)
       : SingleClientStatusChangeChecker(service), fake_server_(fake_server) {
@@ -43,6 +40,10 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
           specifics.consent_case(), specifics));
     }
   }
+
+  UserConsentEqualityChecker(const UserConsentEqualityChecker&) = delete;
+  UserConsentEqualityChecker& operator=(const UserConsentEqualityChecker&) =
+      delete;
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting server side USER_CONSENTS to match expected.";
@@ -75,13 +76,11 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  FakeServer* fake_server_;
+  raw_ptr<FakeServer> fake_server_;
   // TODO(markusheintz): User a string with the serialized proto instead of an
   // int. The requires creating better expectations with a proper creation
   // time.
   std::multimap<int64_t, UserConsentSpecifics> expected_specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserConsentEqualityChecker);
 };
 
 class SingleClientUserConsentsSyncTest : public SyncTest {

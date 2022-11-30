@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,12 +46,15 @@ import java.util.concurrent.Callable;
  * {@code
  *
  * @RunWith(BaseJUnit4ClassRunner.class)
- * public class MyTest extends DummyUiActivityTestCase {
+ * public class MyTest extends BlankUiTestActivityTestCase {
  *     @Rule
  *     public RenderTestRule mRenderTestRule = new RenderTestRule.Builder()
  *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with
  *             // the shorthand RenderTestRule.Builder.withPublicCorpus().
  *             .setCorpus(RenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
+ *             // Required. If adding a test for the first time for a component, add the string
+ *             // value to the Component @StringDef and @interface.
+ *             .setBugComponent(RenderTestRule.Component.BLINK_FORMS_COLOR)
  *             // Optional, only necessary once a CL lands that should invalidate previous golden
  *             // images, e.g. a UI rework.
  *             .setRevision(2)
@@ -101,6 +104,7 @@ public class RenderTestRule extends TestWatcher {
     private int mSkiaGoldRevision;
     private String mSkiaGoldRevisionDescription;
     private boolean mFailOnUnsupportedConfigs;
+    private String mBugComponent;
 
     @StringDef({Corpus.ANDROID_RENDER_TESTS_PUBLIC, Corpus.ANDROID_RENDER_TESTS_INTERNAL,
             Corpus.ANDROID_VR_RENDER_TESTS})
@@ -114,21 +118,86 @@ public class RenderTestRule extends TestWatcher {
         String ANDROID_VR_RENDER_TESTS = "android-vr-render-tests";
     }
 
+    @StringDef({Component.BLINK_CONTACTS, Component.BLINK_FORMS_COLOR, Component.BLINK_PAYMENTS,
+            Component.FREEZE_DRIED_TABS, Component.PRIVACY, Component.PRIVACY_INCOGNITO,
+            Component.SERVICES_SIGN_IN, Component.SERVICES_SYNC, Component.UI_BROWSER_AUTOFILL,
+            Component.UI_BROWSER_BOOKMARKS, Component.UI_BROWSER_BUBBLES_PAGE_INFO,
+            Component.UI_BROWSER_CONTENT_SUGGESTIONS, Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
+            Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY, Component.UI_BROWSER_FIRST_RUN,
+            Component.UI_BROWSER_INCOGNITO, Component.UI_BROWSER_INFOBARS,
+            Component.UI_BROWSER_MEDIA_PICKER, Component.UI_BROWSER_MOBILE,
+            Component.UI_BROWSER_MOBILE_APP_MENU, Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
+            Component.UI_BROWSER_MOBILE_CUSTOM_TABS, Component.UI_BROWSER_MOBILE_MESSAGES,
+            Component.UI_BROWSER_MOBILE_RECENT_TABS, Component.UI_BROWSER_MOBILE_SETTINGS,
+            Component.UI_BROWSER_MOBILE_START, Component.UI_BROWSER_MOBILE_TAB_GROUPS,
+            Component.UI_BROWSER_MOBILE_TAB_SWITCHER, Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID,
+            Component.UI_BROWSER_NEW_TAB_PAGE, Component.UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES,
+            Component.UI_BROWSER_OMNIBOX, Component.UI_BROWSER_SEARCH_VOICE,
+            Component.UI_BROWSER_SHARING, Component.UI_BROWSER_SHOPPING,
+            Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
+            Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
+            Component.UI_BROWSER_WEB_APP_INSTALLS, Component.UI_SETTINGS_PRIVACY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Component {
+        String BLINK_CONTACTS = "Blink>Contacts";
+        String BLINK_FORMS_COLOR = "Blink>Forms>Color";
+        String BLINK_PAYMENTS = "Blink>Payments";
+        String FREEZE_DRIED_TABS = "Internals>FreezeDriedTabs";
+        String PRIVACY = "Privacy";
+        String PRIVACY_INCOGNITO = "Privacy>Incognito";
+        String SERVICES_SIGN_IN = "Services>SignIn";
+        String SERVICES_SYNC = "Services>Sync";
+        String UI_BROWSER_AUTOFILL = "UI>Browser>Autofill";
+        String UI_BROWSER_BOOKMARKS = "UI>Browser>Bookmarks";
+        String UI_BROWSER_BUBBLES_PAGE_INFO = "UI>Browser>Bubbles>PageInfo";
+        String UI_BROWSER_CONTENT_SUGGESTIONS = "UI>Browser>ContentSuggestions";
+        String UI_BROWSER_CONTENT_SUGGESTIONS_FEED = "UI>Browser>ContentSuggestions>Feed";
+        String UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY = "UI>Browser>ContentSuggestions>History";
+        String UI_BROWSER_FIRST_RUN = "UI>Browser>FirstRun";
+        String UI_BROWSER_INCOGNITO = "UI>Browser>Incognito";
+        String UI_BROWSER_INFOBARS = "UI>Browser>Infobars";
+        String UI_BROWSER_MEDIA_PICKER = "UI>Browser>MediaPicker";
+        String UI_BROWSER_MOBILE = "UI>Browser>Mobile";
+        String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
+        String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
+        String UI_BROWSER_MOBILE_CUSTOM_TABS = "UI>Browser>Mobile>CustomTabs";
+        String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
+        String UI_BROWSER_MOBILE_RECENT_TABS = "UI>Browser>Mobile>RecentTabs";
+        String UI_BROWSER_MOBILE_SETTINGS = "UI>Browser>Mobile>Settings";
+        String UI_BROWSER_MOBILE_START = "UI>Browser>Mobile>Start";
+        String UI_BROWSER_MOBILE_TAB_GROUPS = "UI>Browser>Mobile>TabGroups";
+        String UI_BROWSER_MOBILE_TAB_SWITCHER = "UI>Browser>Mobile>TabSwitcher";
+        String UI_BROWSER_MOBILE_TAB_SWITCHER_GRID = "UI>Browser>Mobile>TabSwitcher>Grid";
+        String UI_BROWSER_NEW_TAB_PAGE = "UI>Browser>NewTabPage";
+        String UI_BROWSER_NEW_TAB_PAGE_EXPLORE_SITES = "UI>Browser>NewTabPage>ExploreSites";
+        String UI_BROWSER_OMNIBOX = "UI>Browser>Omnibox";
+        String UI_BROWSER_SEARCH_VOICE = "UI>Browser>Search>Voice";
+        String UI_BROWSER_SHARING = "UI>Browser>Sharing";
+        String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
+        String UI_BROWSER_SHOPPING_MERCHANT_TRUST = "UI>Browser>Shopping>MerchantTrust";
+        String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
+        String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
+        String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
+        String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";
+    }
+
     // Skia Gold-specific constructor used by the builder.
     // Note that each corpus/description combination results in some additional initialization
     // on the host (~250 ms), so consider whether adding unique descriptions is necessary before
     // adding them to a bunch of test classes.
     protected RenderTestRule(int revision, @Corpus String corpus, String description,
-            boolean failOnUnsupportedConfigs) {
+            boolean failOnUnsupportedConfigs, @Component String component) {
         assert revision >= 0;
         // Don't have a default corpus so that users explicitly specify whether
         // they want their test results to be public or not.
         assert corpus != null;
+        assert component != null;
 
         mSkiaGoldCorpus = corpus;
         mSkiaGoldRevisionDescription = description;
         mSkiaGoldRevision = revision;
         mFailOnUnsupportedConfigs = failOnUnsupportedConfigs;
+        mBugComponent = component;
 
         // The output folder can be overridden with the --render-test-output-dir command.
         mOutputFolder = CommandLine.getInstance().getSwitchValue("render-test-output-dir");
@@ -196,18 +265,25 @@ public class RenderTestRule extends TestWatcher {
 
         saveBitmap(testBitmap, createOutputPath(SKIA_GOLD_FOLDER_RELATIVE, imageName));
         JSONObject goldKeys = new JSONObject();
+        JSONObject optionalKeys = new JSONObject();
         try {
             goldKeys.put("source_type", mSkiaGoldCorpus);
             goldKeys.put("model", Build.MODEL);
             goldKeys.put("sdk_version", String.valueOf(Build.VERSION.SDK_INT));
             if (!TextUtils.isEmpty(mSkiaGoldRevisionDescription)) {
-                goldKeys.put("revision_description", mSkiaGoldRevisionDescription);
+                optionalKeys.put("revision_description", mSkiaGoldRevisionDescription);
             }
-            goldKeys.put("fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            optionalKeys.put(
+                    "fail_on_unsupported_configs", String.valueOf(mFailOnUnsupportedConfigs));
+            optionalKeys.put("bug_component", mBugComponent);
             // This key will be deleted by the test runner before uploading to Gold. It is used to
             // differentiate results from different tests if the test runner has batched multiple
             // tests together in a single run.
             goldKeys.put("full_test_name", mFullTestName);
+            // This key will be deleted by the test runner and its contents passed into Gold as
+            // optional key/value pairs. These are purely informational as opposed to indicating
+            // something that might have an effect on test output such as device model.
+            goldKeys.put("optional_keys", optionalKeys);
         } catch (JSONException e) {
             Assert.fail("Failed to create Skia Gold JSON keys: " + e.toString());
         }
@@ -234,6 +310,8 @@ public class RenderTestRule extends TestWatcher {
                 ((AnimatedVectorDrawableCompat) drawable).stop();
             }
         }
+        // Scrollbars fade slowly, making tests flaky due to differences in rendered images.
+        view.setVerticalScrollBarEnabled(false);
     }
 
     /**
@@ -337,6 +415,7 @@ public class RenderTestRule extends TestWatcher {
         protected @Corpus String mCorpus;
         protected String mDescription;
         protected boolean mFailOnUnsupportedConfigs;
+        protected @Component String mBugComponent;
 
         /**
          * Sets the revision that will be appended to the test name reported to Gold. This should
@@ -375,6 +454,14 @@ public class RenderTestRule extends TestWatcher {
             return self();
         }
 
+        /**
+         * Sets the bug component that will be shown alongside the image in the Gold web UI.
+         */
+        public B setBugComponent(@Component String component) {
+            mBugComponent = component;
+            return self();
+        }
+
         protected B self() {
             return (B) this;
         }
@@ -388,7 +475,8 @@ public class RenderTestRule extends TestWatcher {
     public static class Builder extends BaseBuilder<Builder> {
         @Override
         public RenderTestRule build() {
-            return new RenderTestRule(mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs);
+            return new RenderTestRule(
+                    mRevision, mCorpus, mDescription, mFailOnUnsupportedConfigs, mBugComponent);
         }
 
         /**

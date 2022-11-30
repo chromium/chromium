@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -268,7 +267,7 @@ TEST_F(RTLTest, WrapPathWithLTRFormatting) {
 
   for (auto*& i : cases) {
     FilePath path;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::wstring win_path(i);
     std::replace(win_path.begin(), win_path.end(), '/', '\\');
     path = FilePath(win_path);
@@ -526,10 +525,10 @@ TEST_F(RTLTest, SanitizeUserSuppliedString) {
   for (auto& i : cases) {
     // On Windows for an LTR locale, no changes to the string are made.
     std::u16string prefix, suffix = u"";
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     prefix = u"\x200e\x202b";
     suffix = u"\x202c\x200e";
-#endif  // !OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
     std::u16string unsanitized_text = WideToUTF16(i.unformatted_text);
     std::u16string sanitized_text =
         prefix + WideToUTF16(i.formatted_text) + suffix;
@@ -543,13 +542,18 @@ class SetICULocaleTest : public PlatformTest {};
 TEST_F(SetICULocaleTest, OverlongLocaleId) {
   test::ScopedRestoreICUDefaultLocale restore_locale;
   std::string id("fr-ca-x-foo");
-  while (id.length() < 152)
+  std::string lid("fr_CA@x=foo");
+  while (id.length() < 152) {
     id.append("-x-foo");
+    lid.append("-x-foo");
+  }
   SetICUDefaultLocale(id);
   EXPECT_STRNE("en_US", icu::Locale::getDefault().getName());
   id.append("zzz");
+  lid.append("zzz");
   SetICUDefaultLocale(id);
-  EXPECT_STREQ("en_US", icu::Locale::getDefault().getName());
+  // ICU-21639 fix the long locale issue now.
+  EXPECT_STREQ(lid.c_str(), icu::Locale::getDefault().getName());
 }
 
 }  // namespace i18n

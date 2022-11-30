@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,7 @@ extern const char kGoogleUpdatePolicyType[];
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.
-std::string GetRegisterBrowserRequestData(const std::string& machine_name,
-                                          const std::string& os_platform,
-                                          const std::string& os_version);
+std::string GetRegisterBrowserRequestData();
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a PolicyFetchRequest, to fetch policies for the given type.
@@ -41,6 +39,10 @@ std::string GetPolicyValidationReportRequestData(
 // returns the DM token. Returns empty string if parsing failed or the response
 // is unexpected.
 std::string ParseDeviceRegistrationResponse(const std::string& response_data);
+
+// Determines whether the DMToken is expected to be deleted based on the
+// DMServer response contents.
+bool ShouldDeleteDmToken(const std::string& response_data);
 
 // Parses and validates the DeviceManagementResponse for a policy fetch request,
 // and returns valid policies in the DMPolicyMap. All validation issues will be

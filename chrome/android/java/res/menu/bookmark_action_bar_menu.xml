@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
@@ -13,20 +15,20 @@
             android:title="@string/bookmark_action_bar_edit_folder"
             android:visible="false"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_tint_list" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/search_menu_id"
             android:icon="@drawable/ic_search"
             android:title="@string/search"
             android:visible="false"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_tint_list" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/close_menu_id"
             android:icon="@drawable/btn_close"
             android:title="@string/bookmark_action_bar_close"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_tint_list" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
     </group>
     <group
         android:id="@+id/selection_mode_menu_group"
@@ -36,19 +38,19 @@
             android:icon="@drawable/bookmark_edit_active"
             android:title="@null"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_inverse" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_move_menu_id"
             android:icon="@drawable/bookmark_move_active"
             android:title="@null"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_inverse" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_mode_delete_menu_id"
             android:icon="@drawable/ic_delete_white_24dp"
             android:title="@null"
             app:showAsAction="ifRoom"
-            app:iconTint="@color/default_icon_color_inverse" />
+            app:iconTint="@color/default_icon_color_secondary_tint_list" />
         <item
             android:id="@+id/selection_open_in_new_tab_id"
             android:title="@string/contextmenu_open_in_new_tab"

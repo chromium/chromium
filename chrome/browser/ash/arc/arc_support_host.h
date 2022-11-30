@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -62,7 +62,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // A struct to represent the error to display on the screen.
   struct ErrorInfo {
     explicit ErrorInfo(Error error);
-    ErrorInfo(Error error, const base::Optional<int>& arg);
+    ErrorInfo(Error error, const absl::optional<int>& arg);
     ErrorInfo(const ErrorInfo&);
     ErrorInfo& operator=(const ErrorInfo&);
 
@@ -76,7 +76,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // For SIGN_IN_UNKNOWN_ERROR the arg should be specific provisioning result
     // code. For SIGN_IN_CLOUD_PROVISION_FLOW_* errors the arg should be error
     // code received from ARC.
-    base::Optional<int> arg;
+    absl::optional<int> arg;
   };
 
   // Delegate to handle authentication related events. Currently used for Active
@@ -133,6 +133,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // Called when send feedback button on error page is clicked.
     virtual void OnSendFeedbackClicked() = 0;
 
+    // Called when network tests link on error page is clicked.
+    virtual void OnRunNetworkTestsClicked() = 0;
+
    protected:
     virtual ~ErrorDelegate() = default;
   };
@@ -141,11 +144,22 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
       base::RepeatingCallback<void(Profile* profile)>;
 
   explicit ArcSupportHost(Profile* profile);
+
+  ArcSupportHost(const ArcSupportHost&) = delete;
+  ArcSupportHost& operator=(const ArcSupportHost&) = delete;
+
   ~ArcSupportHost() override;
 
   void SetAuthDelegate(AuthDelegate* delegate);
   void SetTermsOfServiceDelegate(TermsOfServiceDelegate* delegate);
   void SetErrorDelegate(ErrorDelegate* delegate);
+
+  // Returns the should_show_run_network_tests_ field.
+  bool GetShouldShowRunNetworkTests();
+
+  // Returns the outermost native view. This will be used as the parent for
+  // dialog boxes.
+  gfx::NativeWindow GetNativeWindow() const;
 
   bool HasAuthDelegate() const { return auth_delegate_ != nullptr; }
 
@@ -181,14 +195,16 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
                                const std::string& device_management_url_prefix);
 
   // Requests to show the error page
-  void ShowError(ErrorInfo error_info, bool should_show_send_feedback);
+  void ShowError(ErrorInfo error_info,
+                 bool should_show_send_feedback,
+                 bool should_show_run_network_tests);
 
   void SetMetricsPreferenceCheckbox(bool is_enabled, bool is_managed);
   void SetBackupAndRestorePreferenceCheckbox(bool is_enabled, bool is_managed);
   void SetLocationServicesPreferenceCheckbox(bool is_enabled, bool is_managed);
 
   // arc::ArcSupportMessageHost::Observer override:
-  void OnMessage(const base::DictionaryValue& message) override;
+  void OnMessage(const base::Value::Dict& message) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -247,14 +263,17 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // The instance is created and managed by Chrome.
   arc::ArcSupportMessageHost* message_host_ = nullptr;
 
+  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+
   // The lifetime of the message_host_ is out of control from ARC.
   // Fields below are UI parameter cache in case the value is set before
   // connection to the ARC support Chrome app is established.
   UIPage ui_page_ = UIPage::NO_PAGE;
 
   // These have valid values iff ui_page_ == ERROR.
-  base::Optional<ErrorInfo> error_info_;
+  absl::optional<ErrorInfo> error_info_;
   bool should_show_send_feedback_;
+  bool should_show_run_network_tests_;
 
   bool is_arc_managed_ = false;
 
@@ -267,8 +286,6 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   // Prefix of the device management (DM) server URL used to detect whether the
   // SAML flow finished. The DM server is the SAML service provider.
   std::string active_directory_auth_device_management_url_prefix_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportHost);
 };
 
 #endif  // CHROME_BROWSER_ASH_ARC_ARC_SUPPORT_HOST_H_

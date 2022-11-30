@@ -1,79 +1,317 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
-namespace {
+namespace internal {
 
-// The purpose of this observer is to estimate how many prerendering pages will
-// use certain features. The plan for prerendering is to delay loading of
-// cross-origin iframes, so we want to ignore feature uses inside cross-origin
-// iframes.  To do this, just check if the |url| is cross-origin to
-// |first_party_url|. This may not be an accurate count if a third-party
-// subframe embeds a first-party subframe, or if there is a way for a frame to
-// access cross-origin storage, but it's probably not significant.
-//
-// This check is somewhat heavy so it should be done after cheaper early
-// returns.
-bool IsFirstParty(const GURL& url, const GURL& first_party_url) {
-  return url::IsSameOriginWith(url, first_party_url);
+const char kHistogramPrerenderNavigationToActivation[] =
+    "PageLoad.Clients.Prerender.NavigationToActivation";
+const char kHistogramPrerenderActivationToFirstPaint[] =
+    "PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstPaint";
+const char kHistogramPrerenderActivationToFirstContentfulPaint[] =
+    "PageLoad.Clients.Prerender.PaintTiming.ActivationToFirstContentfulPaint";
+const char kHistogramPrerenderActivationToLargestContentfulPaint2[] =
+    "PageLoad.Clients.Prerender.PaintTiming."
+    "ActivationToLargestContentfulPaint2";
+const char kHistogramPrerenderFirstInputDelay4[] =
+    "PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4";
+const char kHistogramPrerenderCumulativeShiftScore[] =
+    "PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore";
+const char kHistogramPrerenderCumulativeShiftScoreMainFrame[] =
+    "PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore."
+    "MainFrame";
+const char
+    kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
+        [] = "PageLoad.Clients.Prerender.LayoutInstability."
+             "MaxCumulativeShiftScore.SessionWindow."
+             "Gap1000ms.Max5000ms2";
+
+// Responsiveness metrics.
+const char
+    kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration
+        [] = "PageLoad.InteractiveTiming."
+             "AverageUserInteractionLatencyOverBudget."
+             "MaxEventDuration.Prerender";
+const char kHistogramPrerenderNumInteractions[] =
+    "PageLoad.InteractiveTiming.NumInteractions.Prerender";
+const char
+    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[] =
+        "PageLoad.InteractiveTiming.UserInteractionLatency."
+        "HighPercentile2.MaxEventDuration.Prerender";
+const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
+    "Prerender";
+
+}  // namespace internal
+
+PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
+PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::OnStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url,
+    bool started_in_foreground) {
+  return STOP_OBSERVING;
 }
 
-}  // namespace
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // are not supported. So, this class doesn't need forwarding.
+  DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // are not supported.
+  DCHECK(navigation_handle->GetNavigatingFrameType() !=
+         content::FrameType::kFencedFrameRoot);
+  return CONTINUE_OBSERVING;
+}
+
+void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  // Copy the trigger type and histogram suffix for an embedder. These data will
+  // be lost after NavigationRequest is destroyed.
+  DCHECK(!trigger_type_.has_value());
+  trigger_type_ = navigation_handle->GetPrerenderTriggerType();
+  embedder_histogram_suffix_ =
+      navigation_handle->GetPrerenderEmbedderHistogramSuffix();
+
+  // |navigation_handle| here is for the activation navigation, while
+  // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
+  // navigation.
+  base::TimeDelta navigation_to_activation =
+      navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderNavigationToActivation),
+      navigation_to_activation, base::Milliseconds(10), base::Minutes(10), 100);
+
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetWasPrerendered(true)
+      .SetTiming_NavigationToActivation(
+          navigation_to_activation.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_paint, GetDelegate())) {
+    return;
+  }
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderActivationToFirstPaint),
+      timing.paint_timing->first_paint.value() -
+          timing.activation_start.value(),
+      base::Milliseconds(10), base::Minutes(10), 100);
+}
 
 void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  did_fcp_ = true;
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+    return;
+  }
+  base::TimeDelta activation_to_fcp =
+      timing.paint_timing->first_contentful_paint.value() -
+      timing.activation_start.value();
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(
+          internal::kHistogramPrerenderActivationToFirstContentfulPaint),
+      activation_to_fcp, base::Milliseconds(10), base::Minutes(10), 100);
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetTiming_ActivationToFirstContentfulPaint(
+          activation_to_fcp.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
 }
 
-void PrerenderPageLoadMetricsObserver::OnStorageAccessed(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool blocked_by_policy,
-    page_load_metrics::StorageType access_type) {
-  // TODO(falken): Account for `blocked_by_policy`?
+void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (!WasActivatedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
+    return;
+  }
 
-  switch (access_type) {
-    case page_load_metrics::StorageType::kLocalStorage:
-      if (did_local_storage_)
-        return;
-      if (!IsFirstParty(url, first_party_url))
-        return;
+  base::TimeDelta first_input_delay =
+      timing.interactive_timing->first_input_delay.value();
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderFirstInputDelay4),
+      first_input_delay, base::Milliseconds(1), base::Seconds(60), 50);
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetInteractiveTiming_FirstInputDelay4(first_input_delay.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
+}
 
-      did_local_storage_ = true;
-      RecordFeatureUse(
-          did_fcp_ ? blink::mojom::WebFeature::kLocalStorageFirstUsedAfterFcp
-                   : blink::mojom::WebFeature::kLocalStorageFirstUsedBeforeFcp);
-      break;
-    case page_load_metrics::StorageType::kSessionStorage:
-      if (did_session_storage_)
-        return;
-      if (!IsFirstParty(url, first_party_url))
-        return;
+void PrerenderPageLoadMetricsObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordSessionEndHistograms(timing);
+}
 
-      did_session_storage_ = true;
-      RecordFeatureUse(
-          did_fcp_
-              ? blink::mojom::WebFeature::kSessionStorageFirstUsedAfterFcp
-              : blink::mojom::WebFeature::kSessionStorageFirstUsedBeforeFcp);
-      break;
-    case page_load_metrics::StorageType::kFileSystem:
-    case page_load_metrics::StorageType::kIndexedDb:
-    case page_load_metrics::StorageType::kCacheStorage:
-      return;
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordSessionEndHistograms(timing);
+  return STOP_OBSERVING;
+}
+
+void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
+    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
+  if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
+      !main_frame_timing.activation_start) {
+    // Even if the page was activated, activation_start may not yet been
+    // notified by the renderer. Ignore such page loads.
+    return;
+  }
+
+  // Records Largest Contentful Paint (LCP) to UMA and UKM.
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasActivatedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    base::TimeDelta activation_to_lcp =
+        largest_contentful_paint.Time().value() -
+        main_frame_timing.activation_start.value();
+    base::UmaHistogramCustomTimes(
+        AppendSuffix(
+            internal::kHistogramPrerenderActivationToLargestContentfulPaint2),
+        activation_to_lcp, base::Milliseconds(10), base::Minutes(10), 100);
+    ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+        .SetTiming_ActivationToLargestContentfulPaint(
+            activation_to_lcp.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  // Record metrics only when a prerendered page is successfully activated.
+  // TODO(crbug.com/1364013): add tests to make sure that CLS and INP metrics
+  // are not recorded when prerendering is canceled.
+  if (GetDelegate().GetPrerenderingState() ==
+      page_load_metrics::PrerenderingState::kActivated) {
+    RecordLayoutShiftScoreMetrics(main_frame_timing);
+    RecordNormalizedResponsivenessMetrics();
   }
 }
 
-void PrerenderPageLoadMetricsObserver::RecordFeatureUse(
-    blink::mojom::WebFeature feature) {
-  page_load_metrics::mojom::PageLoadFeatures page_load_features;
-  page_load_features.features.push_back(feature);
+void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
+    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
+  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  DCHECK(main_frame_timing.activation_start);
 
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-      GetDelegate().GetWebContents()->GetMainFrame(), page_load_features);
+  base::UmaHistogramCounts100(
+      AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScore),
+      page_load_metrics::LayoutShiftUmaValue(
+          GetDelegate().GetPageRenderData().layout_shift_score));
+  base::UmaHistogramCounts100(
+      AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScoreMainFrame),
+      page_load_metrics::LayoutShiftUmaValue(
+          GetDelegate().GetMainFrameRenderData().layout_shift_score));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (normalized_cls_data.data_tainted)
+    return;
+
+  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+      AppendSuffix(
+          internal::
+              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
+      normalized_cls_data);
+  const float max_cls =
+      normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+          page_load_metrics::LayoutShiftUkmValue(max_cls))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
+  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  const page_load_metrics::NormalizedInteractionLatencies& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+
+  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
+      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+          normalized_responsiveness_metrics.num_user_interactions,
+          max_event_durations.worst_ten_latencies);
+
+  UmaHistogramCustomTimes(
+      internal::kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration,
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
+      high_percentile2_max_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCounts1000(
+      internal::kHistogramPrerenderNumInteractions,
+      normalized_responsiveness_metrics.num_user_interactions);
+
+  ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
+      max_event_durations.worst_latency.InMilliseconds());
+  builder
+      .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+
+  builder
+      .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+          high_percentile2_max_event_duration.InMilliseconds());
+  builder.SetInteractiveTiming_NumInteractions(
+      ukm::GetExponentialBucketMinForCounts1000(
+          normalized_responsiveness_metrics.num_user_interactions));
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
+    const std::string& histogram_name) const {
+  DCHECK(trigger_type_.has_value());
+  switch (trigger_type_.value()) {
+    case content::PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_histogram_suffix_.empty());
+      return histogram_name + ".SpeculationRule";
+    case content::PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_histogram_suffix_.empty());
+      return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
+  }
+  NOTREACHED();
 }

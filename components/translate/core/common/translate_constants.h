@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,8 @@ enum class InfobarEvent {
   INFOBAR_SNACKBAR_CANCEL_AUTO_ALWAYS = 23,
   INFOBAR_SNACKBAR_CANCEL_AUTO_NEVER = 24,
   INFOBAR_HISTOGRAM_BOUNDARY = 25,
+  INFOBAR_NEVER_TRANSLATE_UNDO = 25,
+  INFOBAR_NEVER_TRANSLATE_SITE_UNDO = 25,
   kMaxValue = INFOBAR_HISTOGRAM_BOUNDARY,
 };
 

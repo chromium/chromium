@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,9 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // Attempts to resize the canvas to match the viewport size. After
   // resizing, the compositor must call GetSurface() to get the next
   // surface - this invalidates any previous surface from GetSurface().
-  virtual void ResizeCanvas(const gfx::Size& viewport_size) = 0;
+  // |viewport_size| is the size of viewport in pixels that is the multiple
+  // of a size in screen dips * |scale|.
+  virtual void ResizeCanvas(const gfx::Size& viewport_size, float scale) = 0;
 
   // Present the current surface. After presenting, the compositor must
   // call GetSurface() to get the next surface - this invalidates any
@@ -59,6 +61,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // OnSwapBuffers and run the callback that is passed in an OnSwapBuffers
   // call once the swap is completed.
   virtual bool SupportsAsyncBufferSwap() const;
+
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
 
   // Corresponds to SoftwareOutputDevice::SwapBuffersCallback.
   using SwapBuffersCallback = base::OnceCallback<void(const gfx::Size&)>;

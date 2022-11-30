@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,12 @@
 namespace blink {
 
 WebAudioMediaStreamSource::WebAudioMediaStreamSource(
-    MediaStreamSource* media_stream_source,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : MediaStreamAudioSource(std::move(task_runner), false /* is_remote */),
       is_registered_consumer_(false),
       fifo_(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebAudioMediaStreamSource::DeliverRebufferedAudio,
-          WTF::CrossThreadUnretained(this)))),
-      media_stream_source_(media_stream_source) {
+          WTF::CrossThreadUnretained(this)))) {
   DVLOG(1) << "WebAudioMediaStreamSource::WebAudioMediaStreamSource()";
 }
 
@@ -29,7 +27,7 @@ WebAudioMediaStreamSource::~WebAudioMediaStreamSource() {
   EnsureSourceIsStopped();
 }
 
-void WebAudioMediaStreamSource::SetFormat(size_t number_of_channels,
+void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
                                           float sample_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   VLOG(1) << "WebAudio media stream source changed format to: channels="
@@ -44,15 +42,10 @@ void WebAudioMediaStreamSource::SetFormat(size_t number_of_channels,
   // Set the format used by this WebAudioMediaStreamSource. We are using 10ms
   // data as a buffer size since that is the native buffer size of WebRtc packet
   // running on.
-  //
-  // TODO(miu): Re-evaluate whether this is needed. For now (this refactoring),
-  // I did not want to change behavior. https://crbug.com/577874
   fifo_.Reset(sample_rate / 100);
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                channel_layout, sample_rate,
-                                fifo_.frames_per_buffer());
-  // Take care of the discrete channel layout case.
-  params.set_channels_for_discrete(number_of_channels);
+                                {channel_layout, number_of_channels},
+                                sample_rate, fifo_.frames_per_buffer());
   MediaStreamAudioSource::SetFormat(params);
 
   if (!wrapper_bus_ || wrapper_bus_->channels() != params.channels())
@@ -66,7 +59,7 @@ bool WebAudioMediaStreamSource::EnsureSourceIsStarted() {
   if (!media_stream_source_ || !media_stream_source_->RequiresAudioConsumer())
     return false;
   VLOG(1) << "Starting WebAudio media stream source.";
-  media_stream_source_->AddAudioConsumer(this);
+  media_stream_source_->SetAudioConsumer(this);
   is_registered_consumer_ = true;
   return true;
 }
@@ -77,7 +70,7 @@ void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
     return;
   is_registered_consumer_ = false;
   DCHECK(media_stream_source_);
-  media_stream_source_->RemoveAudioConsumer(this);
+  media_stream_source_->RemoveAudioConsumer();
   media_stream_source_ = nullptr;
   VLOG(1) << "Stopped WebAudio media stream source. Final audio parameters={"
           << GetAudioParameters().AsHumanReadableString() << "}.";
@@ -85,20 +78,20 @@ void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
 
 void WebAudioMediaStreamSource::ConsumeAudio(
     const Vector<const float*>& audio_data,
-    size_t number_of_frames) {
+    int number_of_frames) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamSource::ConsumeAudio", "frames",
                number_of_frames);
 
-  // TODO(miu): Plumbing is needed to determine the actual capture timestamp
-  // of the audio, instead of just snapshotting base::TimeTicks::Now(), for
-  // proper audio/video sync.  https://crbug.com/335335
+  //  TODO(https://crbug.com/1302080): this should use the actual audio
+  // playout stamp instead of Now().
   current_reference_time_ = base::TimeTicks::Now();
-
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    wrapper_bus_->SetChannelData(i, const_cast<float*>(audio_data[i]));
+  for (wtf_size_t i = 0; i < audio_data.size(); ++i) {
+    wrapper_bus_->SetChannelData(static_cast<int>(i),
+                                 const_cast<float*>(audio_data[i]));
+  }
 
   // The following will result in zero, one, or multiple synchronous calls to
   // DeliverRebufferedAudio().
@@ -113,7 +106,7 @@ void WebAudioMediaStreamSource::DeliverRebufferedAudio(
                audio_bus.frames());
   const base::TimeTicks reference_time =
       current_reference_time_ +
-      base::TimeDelta::FromMicroseconds(
+      base::Microseconds(
           frame_delay * base::Time::kMicrosecondsPerSecond /
           MediaStreamAudioSource::GetAudioParameters().sample_rate());
   MediaStreamAudioSource::DeliverDataToTracks(audio_bus, reference_time);

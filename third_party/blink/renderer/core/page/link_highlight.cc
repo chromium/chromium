@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_id_provider.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/link_highlight_impl.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 
 namespace blink {
 
@@ -33,8 +34,9 @@ void LinkHighlight::RemoveHighlight() {
   if (!impl_)
     return;
 
-  if (timeline_)
-    timeline_->AnimationDestroyed(*impl_);
+  if (timeline_ && impl_->GetCompositorAnimation())
+    timeline_->DetachAnimation(impl_->GetCompositorAnimation()->CcAnimation());
+
   impl_.reset();
 }
 
@@ -63,8 +65,8 @@ void LinkHighlight::SetTapHighlight(Node* node) {
     return;
 
   impl_ = std::make_unique<LinkHighlightImpl>(node);
-  if (timeline_)
-    timeline_->AnimationAttached(*impl_);
+  if (timeline_ && impl_->GetCompositorAnimation())
+    timeline_->AttachAnimation(impl_->GetCompositorAnimation()->CcAnimation());
 }
 
 LocalFrame* LinkHighlight::MainFrame() const {
@@ -73,9 +75,9 @@ LocalFrame* LinkHighlight::MainFrame() const {
              : nullptr;
 }
 
-void LinkHighlight::StartHighlightAnimationIfNeeded() {
+void LinkHighlight::UpdateOpacityAndRequestAnimation() {
   if (impl_)
-    impl_->StartHighlightAnimationIfNeeded();
+    impl_->UpdateOpacityAndRequestAnimation();
 
   if (auto* local_frame = MainFrame())
     GetPage().GetChromeClient().ScheduleAnimation(local_frame->View());
@@ -85,22 +87,22 @@ void LinkHighlight::AnimationHostInitialized(
     cc::AnimationHost& animation_host) {
   animation_host_ = &animation_host;
   if (Platform::Current()->IsThreadedAnimationEnabled()) {
-    timeline_ = std::make_unique<CompositorAnimationTimeline>();
-    animation_host_->AddAnimationTimeline(timeline_->GetAnimationTimeline());
+    timeline_ = cc::AnimationTimeline::Create(
+        cc::AnimationIdProvider::NextTimelineId());
+    animation_host_->AddAnimationTimeline(timeline_.get());
   }
 }
 
 void LinkHighlight::WillCloseAnimationHost() {
   RemoveHighlight();
   if (timeline_) {
-    animation_host_->RemoveAnimationTimeline(timeline_->GetAnimationTimeline());
+    animation_host_->RemoveAnimationTimeline(timeline_.get());
     timeline_.reset();
   }
   animation_host_ = nullptr;
 }
 
-bool LinkHighlight::NeedsHighlightEffectInternal(
-    const LayoutObject& object) const {
+bool LinkHighlight::IsHighlightingInternal(const LayoutObject& object) const {
   DCHECK(impl_);
   return &object == impl_->GetLayoutObject();
 }
@@ -118,6 +120,12 @@ void LinkHighlight::UpdateAfterPrePaint() {
 void LinkHighlight::Paint(GraphicsContext& context) const {
   if (impl_)
     impl_->Paint(context);
+}
+
+void LinkHighlight::UpdateAfterPaint(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  if (impl_)
+    impl_->UpdateAfterPaint(paint_artifact_compositor);
 }
 
 }  // namespace blink

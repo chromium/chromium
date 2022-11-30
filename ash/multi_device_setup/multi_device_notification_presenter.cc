@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -19,7 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
@@ -28,6 +29,8 @@
 namespace ash {
 
 namespace {
+
+bool g_disable_notifications_for_test_ = false;
 
 const char kNotifierMultiDevice[] = "ash.multi_device_setup";
 
@@ -151,6 +154,13 @@ void MultiDeviceNotificationPresenter::OnBecameEligibleForWifiSync() {
                                 NotificationType::kWifiSyncAnnouncement);
 }
 
+// static
+std::unique_ptr<base::AutoReset<bool>>
+MultiDeviceNotificationPresenter::DisableNotificationsForTesting() {
+  return std::make_unique<base::AutoReset<bool>>(
+      &g_disable_notifications_for_test_, true);
+}
+
 void MultiDeviceNotificationPresenter::RemoveMultiDeviceSetupNotification() {
   notification_status_ = Status::kNoNotificationVisible;
   message_center_->RemoveNotification(kSetupNotificationId,
@@ -188,8 +198,8 @@ void MultiDeviceNotificationPresenter::OnNotificationRemoved(
 
 void MultiDeviceNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (notification_id == kWifiSyncNotificationId) {
     message_center_->RemoveNotification(kWifiSyncNotificationId,
                                         /* by_user */ false);
@@ -199,8 +209,8 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
         case 0:  // "Turn on" button
           PA_LOG(INFO) << "Enabling Wi-Fi Sync.";
           multidevice_setup_remote_->SetFeatureEnabledState(
-              chromeos::multidevice_setup::mojom::Feature::kWifiSync,
-              /*enabled=*/true, /*auth_token=*/base::nullopt,
+              multidevice_setup::mojom::Feature::kWifiSync,
+              /*enabled=*/true, /*auth_token=*/absl::nullopt,
               /*callback=*/base::DoNothing());
           break;
         case 1:  // "Cancel" button
@@ -234,7 +244,7 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
     case Status::kExistingUserHostSwitchedNotificationVisible:
       // Clicks on the 'host switched' and 'Chromebook added' notifications have
       // the same effect, i.e. opening the Settings subpage.
-      FALLTHROUGH;
+      [[fallthrough]];
     case Status::kExistingUserNewChromebookNotificationVisible:
       Shell::Get()
           ->system_tray_model()
@@ -297,6 +307,9 @@ void MultiDeviceNotificationPresenter::ShowNotification(
     const std::u16string& title,
     const std::u16string& message,
     message_center::RichNotificationData optional_fields) {
+  if (g_disable_notifications_for_test_)
+    return;
+
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
@@ -304,7 +317,7 @@ void MultiDeviceNotificationPresenter::ShowNotification(
           GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierMultiDevice),
+              kNotifierMultiDevice, NotificationCatalogName::kMultiDevice),
           optional_fields, nullptr /* delegate */,
           kNotificationMultiDeviceSetupIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);

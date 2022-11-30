@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,22 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "content/browser/renderer_host/page_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame_messages.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
-#include "content/public/browser/android/app_web_message_port.h"
+#include "base/android/scoped_java_ref.h"
+#include "content/browser/android/app_web_message_port.h"
+#include "content/browser/android/message_payload.h"
 #endif
 
 using blink::MessagePortChannel;
@@ -28,10 +30,10 @@ namespace content {
 namespace {
 
 void PostMessageToFrameInternal(
-    WebContents* web_contents,
+    Page& page,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
-    const std::u16string& data,
+    const blink::WebMessagePayload& data,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -41,18 +43,20 @@ void PostMessageToFrameInternal(
   for (auto& port : ports)
     channels.emplace_back(MessagePortChannel(std::move(port)));
 
-  blink::TransferableMessage message;
-  message.owned_encoded_message = blink::EncodeStringMessage(data);
-  message.encoded_message = message.owned_encoded_message;
+  blink::TransferableMessage message = blink::EncodeWebMessagePayload(data);
   message.ports = std::move(channels);
+  // As the message is posted from the embedder and not from another renderer,
+  // set the agent cluster ID to the embedder's.
+  message.sender_agent_cluster_id =
+      blink::WebMessagePort::GetEmbedderAgentClusterID();
 
   RenderFrameHostImpl* rfh =
-      static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame());
-  rfh->PostMessageEvent(base::nullopt, source_origin, target_origin,
+      static_cast<RenderFrameHostImpl*>(&page.GetMainDocument());
+  rfh->PostMessageEvent(absl::nullopt, source_origin, target_origin,
                         std::move(message));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::u16string ToString16(JNIEnv* env,
                           const base::android::JavaParamRef<jstring>& s) {
   if (s.is_null())
@@ -65,35 +69,38 @@ std::u16string ToString16(JNIEnv* env,
 
 // static
 void MessagePortProvider::PostMessageToFrame(
-    WebContents* web_contents,
+    Page& page,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
-    const std::u16string& data) {
-  PostMessageToFrameInternal(web_contents, source_origin, target_origin, data,
+    const blink::WebMessagePayload& data) {
+  PostMessageToFrameInternal(page, source_origin, target_origin, data,
                              std::vector<blink::MessagePortDescriptor>());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MessagePortProvider::PostMessageToFrame(
-    WebContents* web_contents,
+    Page& page,
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& source_origin,
     const base::android::JavaParamRef<jstring>& target_origin,
-    const base::android::JavaParamRef<jstring>& data,
+    const base::android::JavaParamRef<jobject>& payload,
     const base::android::JavaParamRef<jobjectArray>& ports) {
-  PostMessageToFrameInternal(web_contents, ToString16(env, source_origin),
-                             ToString16(env, target_origin),
-                             ToString16(env, data),
-                             AppWebMessagePort::UnwrapJavaArray(env, ports));
+  PostMessageToFrameInternal(
+      page, ToString16(env, source_origin), ToString16(env, target_origin),
+      android::ConvertToWebMessagePayloadFromJava(
+          base::android::ScopedJavaLocalRef<jobject>(payload)),
+      android::AppWebMessagePort::Release(env, ports));
 }
 #endif
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) ||           \
+    BUILDFLAG(ENABLE_CAST_RECEIVER) && \
+        (BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID))
 // static
 void MessagePortProvider::PostMessageToFrame(
-    WebContents* web_contents,
+    Page& page,
     const std::u16string& source_origin,
-    const base::Optional<std::u16string>& target_origin,
+    const absl::optional<std::u16string>& target_origin,
     const std::u16string& data,
     std::vector<blink::WebMessagePort> ports) {
   // Extract the underlying descriptors.
@@ -101,7 +108,7 @@ void MessagePortProvider::PostMessageToFrame(
   descriptors.reserve(ports.size());
   for (size_t i = 0; i < ports.size(); ++i)
     descriptors.push_back(ports[i].PassPort());
-  PostMessageToFrameInternal(web_contents, source_origin,
+  PostMessageToFrameInternal(page, source_origin,
                              target_origin.value_or(base::EmptyString16()),
                              data, std::move(descriptors));
 }

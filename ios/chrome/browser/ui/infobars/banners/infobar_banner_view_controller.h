@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_container.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_interaction_delegate.h"
 
 @protocol InfobarBannerDelegate;
@@ -17,13 +16,11 @@
 // ViewController that manages an InfobarBanner. It consists of a leading icon,
 // a title and optional subtitle, and a trailing button.
 @interface InfobarBannerViewController
-    : UIViewController <InfobarBannerConsumer,
-                        InfobarBannerInteractable,
-                        InfobarBannerContained>
+    : UIViewController <InfobarBannerConsumer, InfobarBannerInteractable>
 
-// Designated Initializer. |delegate| handles InfobarBannerVC actions.
-// |presentsModal| should be YES if the banner is able to present an
-// InfobarModal. |infobarType| is used to know which Coordinator presented this
+// Designated Initializer. `delegate` handles InfobarBannerVC actions.
+// `presentsModal` should be YES if the banner is able to present an
+// InfobarModal. `infobarType` is used to know which Coordinator presented this
 // VC.
 - (instancetype)initWithDelegate:(id<InfobarBannerDelegate>)delegate
                    presentsModal:(BOOL)presentsModal

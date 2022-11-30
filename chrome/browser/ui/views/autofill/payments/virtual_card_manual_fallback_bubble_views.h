@@ -1,0 +1,83 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
+
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace views {
+class MdTextButton;
+}
+
+namespace autofill {
+
+// This class implements the desktop bubble that displays the information of the
+// virtual card that was sent to Chrome from Payments.
+class VirtualCardManualFallbackBubbleViews
+    : public AutofillBubbleBase,
+      public LocationBarBubbleDelegateView {
+ public:
+  // The bubble will be anchored to the |anchor_view|.
+  VirtualCardManualFallbackBubbleViews(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      VirtualCardManualFallbackBubbleController* controller);
+  ~VirtualCardManualFallbackBubbleViews() override;
+  VirtualCardManualFallbackBubbleViews(
+      const VirtualCardManualFallbackBubbleViews&) = delete;
+  VirtualCardManualFallbackBubbleViews& operator=(
+      const VirtualCardManualFallbackBubbleViews&) = delete;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(
+      VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
+      TooltipAndAccessibleName);
+
+  // AutofillBubbleBase:
+  void Hide() override;
+
+  // LocationBarBubbleDelegateView:
+  void Init() override;
+  ui::ImageModel GetWindowIcon() override;
+  std::u16string GetWindowTitle() const override;
+  void WindowClosing() override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // Creates a button for the |field|. If the button is pressed, the text of it
+  // will be copied to the clipboard.
+  std::unique_ptr<views::MdTextButton> CreateRowItemButtonForField(
+      VirtualCardManualFallbackBubbleField field);
+
+  // Invoked when a button with card information is clicked.
+  void OnFieldClicked(VirtualCardManualFallbackBubbleField field);
+
+  // Update the tooltips and the accessible names of the buttons.
+  void UpdateButtonTooltipsAndAccessibleNames();
+
+  // Handles user click on learn more link.
+  void LearnMoreLinkClicked();
+
+  raw_ptr<VirtualCardManualFallbackBubbleController> controller_;
+
+  // The map keeping the references to each button with card information text in
+  // the bubble.
+  std::map<VirtualCardManualFallbackBubbleField, views::MdTextButton*>
+      fields_to_buttons_map_;
+
+  base::WeakPtrFactory<VirtualCardManualFallbackBubbleViews> weak_ptr_factory_{
+      this};
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_

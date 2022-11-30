@@ -1,0 +1,53 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  .cr-padded-text {
+    flex: 1;
+  }
+
+  .list-frame {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #outer {
+    max-height: 250px;
+  }
+</style>
+<div class="cr-row first">
+  <div class="cr-padded-text">$i18n{tabDiscardingExceptionsHeader}</div>
+  <cr-button id="addButton" on-click="onAddClick_">$i18n{add}</cr-button>
+</div>
+<div id="noSitesAdded" class="list-frame" hidden$="[[hasSites_(siteList_.*)]]">
+  <div class="list-item secondary">$i18n{noSitesAdded}</div>
+</div>
+<div id="outer" class="layout vertical list-frame">
+  <div id="container" class="scroll-container" scrollable>
+    <iron-list id="list" items="[[siteList_]]" scroll-target="container"
+        preserve-focus risk-selection class="cr-separators">
+      <template>
+        <tab-discard-exception-entry site="[[item]]" first$="[[!index]]"
+            tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
+            last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
+            focus-row-index="[[index]]" on-menu-click="onMenuClick_">
+        </tab-discard-exception-entry>
+      </template>
+    </iron-list>
+  </div>
+</div>
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="edit" class="dropdown-item" role="menuitem"
+          on-click="onEditClick_">
+        $i18n{edit}
+      </button>
+      <button id="delete" class="dropdown-item" role="menuitem"
+          on-click="onDeleteClick_">
+        $i18n{siteSettingsActionReset}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+<template is="dom-if" if="[[showDialog_]]" restamp>
+  <tab-discard-exception-dialog rule="[[selectedRule_]]"
+      on-close="onDialogClose_" on-submit="onDialogSubmit_">
+  </tab-discard-exception-dialog>
+</template>

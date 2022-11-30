@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/invalidation/impl/invalidation_switches.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace invalidation {
@@ -17,31 +18,23 @@ const int kDefaultInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;
 
 }  // namespace
 
-// This feature affects only Android.
-const base::Feature kFCMInvalidationsStartOnceActiveAccountAvailable = {
-    "FCMInvalidationsStartOnceActiveAccountAvailable",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kFCMInvalidationsForSyncDontCheckVersion = {
-    "FCMInvalidationsForSyncDontCheckVersion",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kSyncInstanceIDTokenTTL {
-  "SyncInstanceIDTokenTTL",
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_IOS)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kSyncInstanceIDTokenTTL,
+             "SyncInstanceIDTokenTTL",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 const base::FeatureParam<int> kSyncInstanceIDTokenTTLSeconds{
     &kSyncInstanceIDTokenTTL, "time_to_live_seconds",
     kDefaultInstanceIDTokenTTLSeconds};
 
-const base::Feature kPolicyInstanceIDTokenTTL{
-    "PolicyInstanceIDTokenTTL", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kPolicyInstanceIDTokenTTL,
+             "PolicyInstanceIDTokenTTL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kPolicyInstanceIDTokenTTLSeconds{
     &kPolicyInstanceIDTokenTTL, "time_to_live_seconds",

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/6040">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+
+<div id=untilfound hidden=until-found>
+  hello world
+</div>
+
+<script>
+async_test(t => {
+  assert_equals(getComputedStyle(untilfound).contentVisibility, 'hidden',
+    `hidden=until-found elements should be hidden.`);
+  assert_equals(window.pageYOffset, 0,
+    `page should be scrolled to the top at the start of the test.`);
+
+  testRunner.findString('hello world', ['Async']);
+
+  untilfound.addEventListener('beforematch', t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      requestAnimationFrame(t.step_func_done(() => {
+        assert_not_equals(window.pageYOffset, 0,
+          `find-in-page should scroll to the active match.`);
+        assert_false(untilfound.hasAttribute('hidden'),
+          `hidden=until-found should be removed after a matching find-in-page.`);
+      }));
+    }));
+  }));
+}, `Verifies that find-in-page reveals hidden=until-found elements when the target text is inside of them.`);
+</script>

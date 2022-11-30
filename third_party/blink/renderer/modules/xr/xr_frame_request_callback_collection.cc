@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -22,15 +23,15 @@ XRFrameRequestCallbackCollection::RegisterCallback(
     V8XRFrameRequestCallback* callback) {
   CallbackId id = ++next_callback_id_;
   auto add_result_frame_request = callback_frame_requests_.Set(id, callback);
-  auto add_result_async_task =
-      callback_async_tasks_.Set(id, std::make_unique<probe::AsyncTaskId>());
+  auto add_result_async_task = callback_async_tasks_.Set(
+      id, std::make_unique<probe::AsyncTaskContext>());
   DCHECK_EQ(add_result_frame_request.is_new_entry,
             add_result_async_task.is_new_entry);
   pending_callbacks_.push_back(id);
 
-  probe::AsyncTaskScheduledBreakable(
-      context_, "XRRequestFrame",
-      add_result_async_task.stored_value->value.get());
+  add_result_async_task.stored_value->value->Schedule(context_,
+                                                      "XRRequestFrame");
+  probe::BreakableLocation(context_, "XRRequestFrame");
   return id;
 }
 
@@ -56,8 +57,8 @@ void XRFrameRequestCallbackCollection::ExecuteCallbacks(XRSession* session,
   // of ids for iteration purposes.  current_callback_ids is the set of ids for
   // callbacks we will call, and is kept in sync with current_callbacks_ but
   // safe to iterate over.
-  DCHECK(current_callback_frame_requests_.IsEmpty());
-  DCHECK(current_callback_async_tasks_.IsEmpty());
+  DCHECK(current_callback_frame_requests_.empty());
+  DCHECK(current_callback_async_tasks_.empty());
   current_callback_frame_requests_.swap(callback_frame_requests_);
   current_callback_async_tasks_.swap(callback_async_tasks_);
 

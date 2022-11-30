@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -49,15 +48,20 @@ class QuotaService {
   class TimedLimit;
 
   QuotaService();
+
+  QuotaService(const QuotaService&) = delete;
+  QuotaService& operator=(const QuotaService&) = delete;
+
   virtual ~QuotaService();
 
   // Decide whether the invocation of |function| with argument |args| by the
   // extension specified by |extension_id| results in a quota limit violation.
   // Returns an error message representing the failure if quota was exceeded,
   // or empty-string if the request is fine and can proceed.
+  // |args| must be a list.
   std::string Assess(const std::string& extension_id,
                      ExtensionFunction* function,
-                     const base::ListValue* args,
+                     const base::Value::List& args,
                      const base::TimeTicks& event_time);
 
   // An active ScopedDisablePurgeForTesting prevents QuotaService's constructor
@@ -65,10 +69,12 @@ class QuotaService {
   class ScopedDisablePurgeForTesting {
    public:
     ScopedDisablePurgeForTesting();
-    ~ScopedDisablePurgeForTesting();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedDisablePurgeForTesting);
+    ScopedDisablePurgeForTesting(const ScopedDisablePurgeForTesting&) = delete;
+    ScopedDisablePurgeForTesting& operator=(
+        const ScopedDisablePurgeForTesting&) = delete;
+
+    ~ScopedDisablePurgeForTesting();
   };
 
  private:
@@ -90,8 +96,6 @@ class QuotaService {
   std::map<ExtensionId, FunctionHeuristicsMap> function_heuristics_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaService);
 };
 
 // A QuotaLimitHeuristic is two things: 1, A heuristic to map extension
@@ -121,6 +125,10 @@ class QuotaLimitHeuristic {
   class Bucket {
    public:
     Bucket() : num_tokens_(0) {}
+
+    Bucket(const Bucket&) = delete;
+    Bucket& operator=(const Bucket&) = delete;
+
     // Removes a token from this bucket, and returns true if the bucket had
     // any tokens in the first place.
     bool DeductToken() { return num_tokens_-- > 0; }
@@ -140,7 +148,6 @@ class QuotaLimitHeuristic {
    private:
     base::TimeTicks expiration_;
     int64_t num_tokens_;
-    DISALLOW_COPY_AND_ASSIGN(Bucket);
   };
   using BucketList = std::list<Bucket*>;
 
@@ -155,7 +162,8 @@ class QuotaLimitHeuristic {
     // occurs while parsing |args|, the function aborts - buckets may be non-
     // empty). The expectation is that invalid args and associated errors are
     // handled by the ExtensionFunction itself so we don't concern ourselves.
-    virtual void GetBucketsForArgs(const base::ListValue* args,
+    // |args| must be a list.
+    virtual void GetBucketsForArgs(const base::Value::List& args,
                                    BucketList* buckets) = 0;
   };
 
@@ -164,25 +172,33 @@ class QuotaLimitHeuristic {
   class SingletonBucketMapper : public BucketMapper {
    public:
     SingletonBucketMapper() {}
-    ~SingletonBucketMapper() override {}
-    void GetBucketsForArgs(const base::ListValue* args,
+
+    SingletonBucketMapper(const SingletonBucketMapper&) = delete;
+    SingletonBucketMapper& operator=(const SingletonBucketMapper&) = delete;
+
+    ~SingletonBucketMapper() override = default;
+    void GetBucketsForArgs(const base::Value::List& args,
                            BucketList* buckets) override;
 
    private:
     Bucket bucket_;
-    DISALLOW_COPY_AND_ASSIGN(SingletonBucketMapper);
   };
 
   QuotaLimitHeuristic(const Config& config,
                       std::unique_ptr<BucketMapper> map,
                       const std::string& name);
+
+  QuotaLimitHeuristic(const QuotaLimitHeuristic&) = delete;
+  QuotaLimitHeuristic& operator=(const QuotaLimitHeuristic&) = delete;
+
   virtual ~QuotaLimitHeuristic();
 
   // Determines if sufficient quota exists (according to the Apply
   // implementation of a derived class) to perform an operation with |args|,
   // based on the history of similar operations with similar arguments (which
   // is retrieved using the BucketMapper).
-  bool ApplyToArgs(const base::ListValue* args,
+  // |args| must be a list.
+  bool ApplyToArgs(const base::Value::List& args,
                    const base::TimeTicks& event_time);
 
   // Returns an error formatted according to this heuristic.
@@ -205,8 +221,6 @@ class QuotaLimitHeuristic {
 
   // The name of the heuristic for formatting error messages.
   std::string name_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaLimitHeuristic);
 };
 
 // A simple per-item heuristic to limit the number of events that can occur in

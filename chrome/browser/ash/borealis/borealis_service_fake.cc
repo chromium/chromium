@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ BorealisServiceFake* BorealisServiceFake::UseFakeForTesting(
           })));
 }
 
+BorealisServiceFake::BorealisServiceFake() = default;
 BorealisServiceFake::~BorealisServiceFake() = default;
 
 BorealisAppLauncher& BorealisServiceFake::AppLauncher() {
@@ -37,6 +38,11 @@ BorealisContextManager& BorealisServiceFake::ContextManager() {
   return *context_manager_;
 }
 
+BorealisDiskManagerDispatcher& BorealisServiceFake::DiskManagerDispatcher() {
+  CHECK(borealis_disk_manager_dispatcher_);
+  return *borealis_disk_manager_dispatcher_;
+}
+
 BorealisFeatures& BorealisServiceFake::Features() {
   CHECK(features_);
   return *features_;
@@ -45,6 +51,11 @@ BorealisFeatures& BorealisServiceFake::Features() {
 BorealisInstaller& BorealisServiceFake::Installer() {
   CHECK(installer_);
   return *installer_;
+}
+
+BorealisLaunchOptions& BorealisServiceFake::LaunchOptions() {
+  CHECK(launch_options_);
+  return *launch_options_;
 }
 
 BorealisShutdownMonitor& BorealisServiceFake::ShutdownMonitor() {
@@ -70,6 +81,11 @@ void BorealisServiceFake::SetAppUninstallerForTesting(
 void BorealisServiceFake::SetContextManagerForTesting(
     BorealisContextManager* context_manager) {
   context_manager_ = context_manager;
+}
+
+void BorealisServiceFake::SetDiskManagerDispatcherForTesting(
+    BorealisDiskManagerDispatcher* borealis_disk_manager_dispatcher) {
+  borealis_disk_manager_dispatcher_ = borealis_disk_manager_dispatcher;
 }
 
 void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {

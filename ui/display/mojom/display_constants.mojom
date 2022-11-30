@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,5 +42,7 @@ enum PanelOrientation {
 enum PrivacyScreenState {
   DISABLED = 0,
   ENABLED = 1,
-  NOT_SUPPORTED = 2
+  DISABLED_LOCKED = 2,
+  ENABLED_LOCKED = 3,
+  NOT_SUPPORTED = 4
 };

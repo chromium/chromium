@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-   Copyright 2013 The Chromium Authors. All rights reserved.
+   Copyright 2020 The Chromium Authors
 
    Use of this source code is governed by a BSD-style license that can be
    found in the LICENSE file.
@@ -9,175 +9,74 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="8dp"
-    android:orientation="vertical"
-    android:background="@color/sheet_bg_color">
+    android:layout_height="wrap_content"
+    android:background="@drawable/sheet_background"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/page_info_row_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="12dp"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides"
-        android:paddingStart="@dimen/page_info_popup_padding_sides" >
-
-        <view class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
-            android:id="@+id/page_info_url"
-            android:layout_width="match_parent"
+        android:showDividers="middle"
+        android:divider="?android:listDivider"
+        android:dividerPadding="2dp" >
+        <org.chromium.components.page_info.PageInfoRowView
+            android:id="@+id/page_info_connection_row"
+            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:lineSpacingExtra="6dp"
-            android:paddingTop="16dp"
-            android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-
-        <TextView
-            android:id="@+id/page_info_connection_summary"
-            android:layout_width="match_parent"
+            android:layout_width="match_parent"/>
+        <org.chromium.components.page_info.PageInfoRowView
+            android:id="@+id/page_info_permissions_row"
+            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_connection_message"
-            android:layout_width="match_parent"
+            android:layout_width="match_parent"/>
+        <org.chromium.components.page_info.PageInfoRowView
+            android:id="@+id/page_info_cookies_row"
+            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="8dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_performance_summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:text="@string/page_info_fast_site_summary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_performance_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:paddingTop="8dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:text="@string/page_info_fast_site_message"
-            android:visibility="gone" />
-
-        <View
-            android:id="@+id/page_info_preview_separator"
-            android:layout_marginTop="16dp"
-            style="@style/HorizontalDivider"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_preview_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="14dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:text="@string/page_info_preview_message"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_preview_load_original"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="12dp"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/page_info_lite_mode_https_image_compression_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="12dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:text="@string/page_info_lite_mode_https_image_compression"
-            android:visibility="gone" />
+            android:layout_width="match_parent"/>
     </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/page_info_forget_site_button"
+        android:text="@string/page_info_history_forget"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingHorizontal="@dimen/page_info_popup_button_padding_sides"
+        android:layout_gravity="end"
+        style="@style/TextButton"/>
+
+    <TextView
+        android:id="@+id/page_info_lite_mode_https_image_compression_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/page_info_popup_padding_vertical"
+        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
+        android:text="@string/page_info_lite_mode_https_image_compression"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_info_instant_app_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginEnd="@dimen/page_info_popup_padding_sides"
-        android:layout_marginStart="@dimen/page_info_popup_padding_sides"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="4dp"
-        android:paddingEnd="@dimen/page_info_popup_button_padding_sides"
-        android:paddingStart="@dimen/page_info_popup_button_padding_sides"
+        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingHorizontal="@dimen/page_info_popup_button_padding_sides"
         android:text="@string/page_info_instant_app_button"
         app:buttonColor="@color/app_banner_install_button_bg"
         style="@style/FilledButton" />
-
-    <View
-        android:id="@+id/page_info_cookie_controls_separator"
-        android:layout_marginTop="16dp"
-        style="@style/HorizontalDivider"/>
-
-    <org.chromium.components.page_info.CookieControlsView
-        android:id="@+id/page_info_cookie_controls_view"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="16dp"
-        android:paddingStart="@dimen/page_info_popup_padding_sides"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides"/>
-
-    <View
-        android:id="@+id/page_info_permissions_separator"
-        android:layout_marginTop="16dp"
-        style="@style/HorizontalDivider" />
-
-    <TextView
-        android:id="@+id/page_info_permissions_list_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingStart="@dimen/page_info_popup_padding_sides"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:text="@string/page_info_permissions_title"/>
-
-    <LinearLayout
-        android:id="@+id/page_info_permissions_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/page_info_popup_padding_sides"
-        android:paddingEnd="@dimen/page_info_popup_padding_sides" >
-    </LinearLayout>
-
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/page_info_site_settings_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="@dimen/page_info_popup_padding_sides"
-        android:layout_marginStart="@dimen/page_info_popup_padding_sides"
-        android:layout_marginTop="2dp"
-        android:paddingEnd="@dimen/page_info_popup_button_padding_sides"
-        android:paddingStart="@dimen/page_info_popup_button_padding_sides"
-        android:text="@string/page_info_site_settings_button"
-        style="@style/TextButton" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/page_info_open_online_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginEnd="@dimen/page_info_popup_padding_sides"
-        android:layout_marginStart="@dimen/page_info_popup_padding_sides"
-        android:layout_marginTop="2dp"
-        android:paddingEnd="@dimen/page_info_popup_button_padding_sides"
-        android:paddingStart="@dimen/page_info_popup_button_padding_sides"
+        android:layout_marginHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingHorizontal="@dimen/page_info_popup_button_padding_sides"
         android:text="@string/page_info_open_online_button"
         style="@style/TextButton" />
 </LinearLayout>

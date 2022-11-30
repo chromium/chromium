@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 14: WebSocket connection to 'ws://127.0.0.1:8880/handshake-fail-by-just-close' failed: Connection closed before receiving a handshake response
 Test if WebSocket fires error and close event when handshake is not received at all.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

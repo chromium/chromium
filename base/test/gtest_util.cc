@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,9 @@ namespace base {
 TestIdentifier::TestIdentifier() = default;
 
 TestIdentifier::TestIdentifier(const TestIdentifier& other) = default;
+
+TestIdentifier& TestIdentifier::operator=(const TestIdentifier& other) =
+    default;
 
 std::string FormatFullTestName(const std::string& test_case_name,
                                const std::string& test_name) {
@@ -53,18 +56,18 @@ std::vector<TestIdentifier> GetCompiledInTests() {
 bool WriteCompiledInTestsToFile(const FilePath& path) {
   std::vector<TestIdentifier> tests(GetCompiledInTests());
 
-  ListValue root;
-  for (const auto& i : tests) {
-    std::unique_ptr<DictionaryValue> test_info(new DictionaryValue);
-    test_info->SetStringKey("test_case_name", i.test_case_name);
-    test_info->SetStringKey("test_name", i.test_name);
-    test_info->SetStringKey("file", i.file);
-    test_info->SetIntKey("line", i.line);
-    root.Append(std::move(test_info));
+  Value::List storage;
+  for (const TestIdentifier& i : tests) {
+    Value::Dict test_info;
+    test_info.Set("test_case_name", i.test_case_name);
+    test_info.Set("test_name", i.test_name);
+    test_info.Set("file", i.file);
+    test_info.Set("line", i.line);
+    storage.Append(std::move(test_info));
   }
 
   JSONFileValueSerializer serializer(path);
-  return serializer.Serialize(root);
+  return serializer.Serialize(storage);
 }
 
 bool ReadTestNamesFromFile(const FilePath& path,
@@ -72,35 +75,41 @@ bool ReadTestNamesFromFile(const FilePath& path,
   JSONFileValueDeserializer deserializer(path);
   int error_code = 0;
   std::string error_message;
-  std::unique_ptr<base::Value> value =
+  std::unique_ptr<Value> value =
       deserializer.Deserialize(&error_code, &error_message);
   if (!value.get())
     return false;
 
-  base::ListValue* tests = nullptr;
-  if (!value->GetAsList(&tests))
+  if (!value->is_list())
     return false;
 
-  std::vector<base::TestIdentifier> result;
-  for (const auto& i : *tests) {
-    const base::DictionaryValue* test = nullptr;
-    if (!i.GetAsDictionary(&test))
+  std::vector<TestIdentifier> result;
+  for (const Value& item : value->GetList()) {
+    if (!item.is_dict())
+      return false;
+
+    const Value::Dict& dict = item.GetDict();
+    const std::string* test_case_name = dict.FindString("test_case_name");
+    if (!test_case_name || !IsStringASCII(*test_case_name))
+      return false;
+
+    const std::string* test_name = dict.FindString("test_name");
+    if (!test_name || !IsStringASCII(*test_name))
+      return false;
+
+    const std::string* file = dict.FindString("file");
+    if (!file || !IsStringASCII(*file))
+      return false;
+
+    absl::optional<int> line = dict.FindInt("line");
+    if (!line.has_value())
       return false;
 
     TestIdentifier test_data;
-
-    if (!test->GetStringASCII("test_case_name", &test_data.test_case_name))
-      return false;
-
-    if (!test->GetStringASCII("test_name", &test_data.test_name))
-      return false;
-
-    if (!test->GetStringASCII("file", &test_data.file))
-      return false;
-
-    if (!test->GetInteger("line", &test_data.line))
-      return false;
-
+    test_data.test_case_name = *test_case_name;
+    test_data.test_name = *test_name;
+    test_data.file = *file;
+    test_data.line = *line;
     result.push_back(test_data);
   }
 

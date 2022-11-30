@@ -1,0 +1,19 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=2 number_of_columns=2
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++COLUMN_HEADER label='Browser' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Browser'
+++++++++++++++++UNKNOWN label='Browser'
+++++++++++++COLUMN_HEADER label='Rendering Engine' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Rendering Engine'
+++++++++++++++++UNKNOWN label='Rendering Engine'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='Chrome' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Chrome'
+++++++++++++++++UNKNOWN label='Chrome'
+++++++++++++CELL label='Blink' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Blink'
+++++++++++++++++UNKNOWN label='Blink'

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,6 +37,9 @@ if (is_win) {
       "//base",
       "//build:branding_buildflags",
       "//build/win:default_exe_manifest",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:rotate_util",
       "//chrome/chrome_elf:constants",
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
@@ -46,6 +49,7 @@ if (is_win) {
       "//components/crash/core/app:run_as_crashpad_handler",
       "//content/public/common:static_switches",
       "//rlz:rlz_lib_no_network",
+      "//url",
     ]
 
     libs = [ "netapi32.lib" ]
@@ -118,6 +122,13 @@ if (is_win) {
       "//third_party/crashpad/crashpad/util",
       "//ui/base:fullscreen_win",
     ]
+
+    if (is_chrome_branded) {
+      sources += [
+        "channel_override_work_item.cc",
+        "channel_override_work_item.h",
+      ]
+    }
   }
 
   process_version_rc_template("setup_exe_version") {
@@ -140,6 +151,7 @@ if (is_win) {
       "setup_singleton_unittest.cc",
       "setup_util_unittest.cc",
       "setup_util_unittest.h",
+      "taskbar_util_unittest.cc",
       "update_active_setup_version_work_item_unittest.cc",
       "user_experiment_unittest.cc",
       "user_hive_visitor_unittest.cc",
@@ -171,5 +183,9 @@ if (is_win) {
     ]
 
     libs = [ "netapi32.lib" ]
+
+    if (is_chrome_branded) {
+      sources += [ "channel_override_work_item_unittest.cc" ]
+    }
   }
 }

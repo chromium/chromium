@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
  <merge
@@ -16,7 +17,7 @@
         android:scaleType="center"
         android:background="@drawable/list_item_icon_modern_bg"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_inverse"
+        app:tint="@macro/default_icon_color_inverse"
         app:layout_gravity="center"
         tools:ignore="ContentDescription" />
 

@@ -1,12 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_factory.h"
 
 namespace media {
@@ -19,6 +19,10 @@ class MojoDecoderFactory final : public DecoderFactory {
  public:
   explicit MojoDecoderFactory(
       media::mojom::InterfaceFactory* interface_factory);
+
+  MojoDecoderFactory(const MojoDecoderFactory&) = delete;
+  MojoDecoderFactory& operator=(const MojoDecoderFactory&) = delete;
+
   ~MojoDecoderFactory() final;
 
   void CreateAudioDecoders(
@@ -37,9 +41,7 @@ class MojoDecoderFactory final : public DecoderFactory {
       std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) final;
 
  private:
-  media::mojom::InterfaceFactory* interface_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDecoderFactory);
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_;
 };
 
 }  // namespace media

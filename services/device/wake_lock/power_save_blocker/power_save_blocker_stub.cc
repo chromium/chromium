@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace device {
@@ -14,11 +13,12 @@ class PowerSaveBlocker::Delegate
  public:
   Delegate() {}
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
  private:
   friend class base::RefCountedThreadSafe<Delegate>;
   virtual ~Delegate() {}
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::PowerSaveBlocker(

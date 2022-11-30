@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,34 +10,12 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
+
 namespace action_delegate_util {
-namespace {
-
-template <typename R>
-void RetainElementAndExecuteGetCallback(
-    std::unique_ptr<ElementFinder::Result> element,
-    base::OnceCallback<void(const ClientStatus&, const R&)> callback,
-    const ClientStatus& status,
-    const R& result) {
-  DCHECK(element != nullptr);
-  std::move(callback).Run(status, result);
-}
-
-}  // namespace
-
-using ElementActionCallback =
-    base::OnceCallback<void(const ElementFinder::Result&,
-                            base::OnceCallback<void(const ClientStatus&)>)>;
-
-using ElementActionVector = std::vector<ElementActionCallback>;
-
-template <typename R>
-using ElementActionGetCallback = base::OnceCallback<void(
-    const ElementFinder::Result&,
-    base::OnceCallback<void(const ClientStatus&, const R&)>)>;
 
 // Finds the element given by the selector. If the resolution fails, it
 // immediately executes the |done| callback. If the resolution succeeds, it
@@ -45,45 +23,8 @@ using ElementActionGetCallback = base::OnceCallback<void(
 // arguments, while retaining the element.
 void FindElementAndPerform(const ActionDelegate* delegate,
                            const Selector& selector,
-                           ElementActionCallback perform,
+                           element_action_util::ElementActionCallback perform,
                            base::OnceCallback<void(const ClientStatus&)> done);
-
-// Take ownership of the |element| and execute the |perform| callback with the
-// element and the |done| callback as arguments, while retaining the element.
-// If the initial status is not ok, execute the |done| callback immediately.
-void TakeElementAndPerform(ElementActionCallback perform,
-                           base::OnceCallback<void(const ClientStatus&)> done,
-                           const ClientStatus& element_status,
-                           std::unique_ptr<ElementFinder::Result> element);
-
-// Take ownership of the |element| and execute the |perform| callback with the
-// element and the |done| callback as arguments, while retaining the element.
-// If the initial status is not ok, execute the |done| callback with the default
-// value immediately.
-template <typename R>
-void TakeElementAndGetProperty(
-    ElementActionGetCallback<R> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const R&)> done,
-    const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!element_status.ok()) {
-    VLOG(1) << __func__ << " Failed to find element.";
-    std::move(done).Run(element_status, R());
-    return;
-  }
-
-  const ElementFinder::Result* element_result_ptr = element_result.get();
-  std::move(perform_and_get)
-      .Run(*element_result_ptr,
-           base::BindOnce(&RetainElementAndExecuteGetCallback<R>,
-                          std::move(element_result), std::move(done)));
-}
-
-// Run all |perform_actions| sequentially. Breaks the execution on any error
-// and executes the |done| callback with the final status.
-void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
-                const ElementFinder::Result& element,
-                base::OnceCallback<void(const ClientStatus&)> done);
 
 // Resolve the |text_value| and run the |perform| callback. Run the |done|
 // callback with an error status if the |text_value| could not be resolved.
@@ -92,64 +33,56 @@ void PerformWithTextValue(
     const ActionDelegate* delegate,
     const TextValue& text_value,
     base::OnceCallback<void(const std::string&,
-                            const ElementFinder::Result&,
+                            const ElementFinderResult&,
                             base::OnceCallback<void(const ClientStatus&)>)>
         perform,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
+    base::OnceCallback<void(const ClientStatus&)> done);
+
+// Resolve the |client_id| and run the |perform| callback. Run the |done|
+// callback with an error status if the |client_id| could not be resolved.
+// Run the |done| callback with the result status of |perform| otherwise.
+void PerformWithElementValue(
+    const ActionDelegate* delegate,
+    const ClientIdProto& client_id,
+    base::OnceCallback<void(const ElementFinderResult&,
+                            const ElementFinderResult&,
+                            base::OnceCallback<void(const ClientStatus&)>)>
+        perform,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done);
 
 // Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
 // not add it. For |REPORT_STEP_RESULT| it adds the step ignoring a potential
 // failure. For |REQUIRE_STEP_SUCCESS| it binds the step as is.
 void AddOptionalStep(OptionalStep optional_step,
-                     ElementActionCallback step,
-                     ElementActionVector* actions);
+                     element_action_util::ElementActionCallback step,
+                     element_action_util::ElementActionVector* actions);
 
 // Adds a step to the |actions| and ignores its timing results.
 void AddStepIgnoreTiming(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> step,
-    ElementActionVector* actions);
+    element_action_util::ElementActionVector* actions);
 
-void ClickOrTapElement(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       ClickType click_type,
-                       OptionalStep on_top,
-                       base::OnceCallback<void(const ClientStatus&)> callback);
+// Adds a step to the |actions| that does not have a callback.
+void AddStepWithoutCallback(
+    base::OnceCallback<void(const ElementFinderResult&)> step,
+    element_action_util::ElementActionVector* actions);
+
 void PerformClickOrTapElement(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     ClickType click_type,
-    OptionalStep on_top,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
-void SendKeyboardInput(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       const std::vector<UChar32> codepoints,
-                       int delay_in_millis,
-                       bool use_focus,
-                       base::OnceCallback<void(const ClientStatus&)> callback);
-void PerformSendKeyboardInput(
-    const ActionDelegate* delegate,
-    const std::vector<UChar32> codepoints,
-    int delay_in_millis,
-    bool use_focus,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback);
-
-void SetFieldValue(const ActionDelegate* delegate,
-                   const Selector& selector,
-                   const std::string& value,
-                   KeyboardValueFillStrategy fill_strategy,
-                   int key_press_delay_in_millisecond,
-                   base::OnceCallback<void(const ClientStatus&)> callback);
 void PerformSetFieldValue(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 }  // namespace action_delegate_util

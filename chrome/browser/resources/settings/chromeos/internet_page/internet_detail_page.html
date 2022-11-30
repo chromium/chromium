@@ -1,450 +1,474 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="internet-shared settings-shared iron-flex">
+  :host {
+    padding-bottom: 40px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_apnlist.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_choose_mobile.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_config_toggle.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_ip_config.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_nameservers.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_property_list_mojo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_siminfo.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../../controls/controlled_button.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../people_page/sync_browser_proxy.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_people_page/os_sync_browser_proxy.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="internet_page_browser_proxy.html">
-<link rel="import" href="internet_shared_css.html">
-<link rel="import" href="network_proxy_section.html">
-<link rel="import" href="tether_connection_dialog.html">
+  iron-icon {
+    margin-inline-end: 10px;
+  }
 
-<dom-module id="settings-internet-detail-page">
-  <template>
-    <style include="internet-shared settings-shared iron-flex">
-      :host {
-        padding-bottom: 40px;
-      }
+  cr-policy-indicator {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
 
-      iron-icon {
-        margin-inline-end: 10px;
-      }
+  cr-policy-network-indicator-mojo {
+    margin: 0 var(--settings-controlled-by-spacing);
+  }
 
-      cr-policy-indicator {
-        margin-inline-start: var(--settings-controlled-by-spacing);
-      }
+  #networkState[connected] {
+    color: var(--cros-text-color-positive);
+  }
 
-      cr-policy-network-indicator-mojo {
-        margin: 0 var(--settings-controlled-by-spacing);
-      }
+  #networkState[warning] {
+    color: var(--cros-text-color-warning);
+  }
 
-      #networkState[connected] {
-        color: var(--google-green-500);
-      }
+  #networkState[error] {
+    color: var(--cros-text-color-alert);
+  }
 
-      #networkState[error] {
-        color: var(--google-red-500);
-      }
+  #preferNetworkToggleContainer:hover {
+    background-color: var(--cr-hover-background-color);
+  }
 
-      paper-spinner-lite {
-        height: var(--cr-icon-size);
-        width: var(--cr-icon-size);
-      }
+  #preferNetworkToggleContainer:active {
+    background-color: var(--cr-active-background-color);
+  }
 
-      .warning {
-          color: var(--cr-secondary-text-color);
-          margin-inline-start: var(--settings-controlled-by-spacing);
-      }
+  paper-spinner-lite {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
 
-      #mac-address-container {
-        border-top: none;
-      }
-    </style>
-    <!-- Title section: Icon + name + connection state. -->
-    <div id="titleDiv" class="settings-box first">
-      <div class="start layout horizontal center">
-        <network-icon
-            show-technology-badge="[[showTechnologyBadge_]]"
-            network-state="[[getNetworkState_(managedProperties_)]]">
-        </network-icon>
-        <div id="networkState" class="title settings-box-text"
-            connected$="[[isConnectedState_(managedProperties_)]]"
-            error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
-          [[getStateText_(managedProperties_, propertiesReceived_,
-              outOfRange_, deviceState_)]]
-        </div>
-        <template is="dom-if"
-            if="[[isPolicySource(managedProperties_.source))]]">
-          <cr-policy-indicator
-              indicator-type="[[getIndicatorTypeForSource(
-                  managedProperties_.source)]]">
-          </cr-policy-indicator>
-        </template>
-      </div>
-      <cr-button id="forgetButton" on-click="onForgetTap_"
-          hidden$="[[!showForget_(managedProperties_)]]"
-          disabled="[[disableForget_(managedProperties_,
-              prefs.vpn_config_allowed, disabled)]]">
-        $i18n{networkButtonForget}
-      </cr-button>
-      <cr-button id="viewAccountButton"
-          on-click="onViewAccountTap_"
-          hidden$="[[!showViewAccount_(managedProperties_)]]"
-          disabled="[[disabled]]">
-        $i18n{networkButtonViewAccount}
-      </cr-button>
-      <cr-button id="activateButton"
-          on-click="onActivateTap_"
-          hidden$="[[!showActivate_(managedProperties_)]]"
-          disabled="[[disabled]]">
-        $i18n{networkButtonActivate}
-      </cr-button>
-      <cr-button id="configureButton" on-click="onConfigureTap_"
-          hidden$="[[!showConfigure_(managedProperties_, globalPolicy,
-              managedNetworkAvailable)]]"
-          disabled="[[disableConfigure_(managedProperties_,
-              prefs.vpn_config_allowed, disabled)]]"
-          deep-link-focus-id$="[[Setting.kConfigureEthernet]]">
-        $i18n{networkButtonConfigure}
-      </cr-button>
-      <!-- Use policy properties from vpn_config_allowed to indicate when that
-           pref disables buttons in this row. -->
-      <controlled-button id="connectDisconnect" class="action-button"
-          on-click="onConnectDisconnectTap_"
-          hidden$="[[shouldConnectDisconnectButtonBeHidden_(managedProperties_,
-              globalPolicy,managedNetworkAvailable, deviceState_)]]"
-          disabled="[[shouldConnectDisconnectButtonBeDisabled_(
-              managedProperties_, defaultNetwork,propertiesReceived_,
-              outOfRange_, globalPolicy, managedNetworkAvailable, deviceState_,
-              disabled)]]"
-          label="[[getConnectDisconnectButtonLabel_(managedProperties_,
-              globalPolicy,managedNetworkAvailable, deviceState_)]]"
-          pref="[[getFakeVpnConfigPrefForEnforcement_(managedProperties_,
-              prefs.vpn_config_allowed)]]"
-          deep-link-focus-id$="[[Setting.kDisconnectWifiNetwork]]
-              [[Setting.kDisconnectCellularNetwork]]
-              [[Setting.kDisconnectTetherNetwork]]">
-      </controlled-button>
+  .warning {
+    color: var(--cr-secondary-text-color);
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
+
+  .signin-button {
+    margin-inline-end: 8px;
+    padding: 8px 16px 8px 8px;
+  }
+
+  .signin-icon {
+    background-color: var(--text-color);
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
+
+  #mac-address-container {
+    border-top: none;
+  }
+</style>
+<!-- Title section: Icon + name + connection state. -->
+<div id="titleDiv" class="settings-box first">
+  <div class="start layout horizontal center">
+    <network-icon
+        show-technology-badge="[[showTechnologyBadge_]]"
+        network-state="[[getNetworkState_(managedProperties_)]]">
+    </network-icon>
+    <div id="networkState" class="title settings-box-text"
+        connected$="[[showConnectedState_(managedProperties_)]]"
+        warning$="[[showRestrictedConnectivity_(managedProperties_)]]"
+        error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
+      [[getStateText_(managedProperties_, propertiesReceived_,
+          outOfRange_, deviceState_)]]
     </div>
-
-
-
-    <!-- Start of NOTICES section. -->
-    <!-- If row ordering changes, messagesDividerClass_() must be updated. -->
-    <template is="dom-if" if="[[isBlockedByPolicy_(managedProperties_,
-                                globalPolicy, managedNetworkAvailable)]]">
-      <!-- Disabled by policy -->
-      <div class="settings-box continuation">
-        <iron-icon class="policy" icon="cr20:domain"></iron-icon>
-        <div class="settings-box-text">$i18n{networkConnectNotAllowed}</div>
-      </div>
-    </template>
-
-    <template is="dom-if" if="[[isSecondaryUser_]]">
-      <!-- Non primary users. -->
-      <div class$="settings-box single-column
-                  [[messagesDividerClass_('secondary', managedProperties_,
-                      globalPolicy, managedNetworkAvailable,
-                      isSecondaryUser_, isWifiSyncEnabled_)]]">
-        <div class="layout horizontal center">
-          <iron-icon class="policy" icon="cr:group"></iron-icon>
-          <div class="settings-box-text">
-            [[i18n('networkPrimaryUserControlled', primaryUserEmail_)]]
-          </div>
-        </div>
-      </div>
-    </template>
-
-
     <template is="dom-if"
-        if="[[showShared_(managedProperties_, globalPolicy,
+        if="[[isPolicySource(managedProperties_.source))]]">
+      <cr-policy-indicator
+          indicator-type="[[getIndicatorTypeForSource(
+              managedProperties_.source)]]">
+      </cr-policy-indicator>
+    </template>
+  </div>
+  <template is="dom-if" if="[[isCaptivePortalUI2022Enabled_]]">
+    <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+      hidden$="[[!showSignin_(managedProperties_)]]"
+      disabled="[[disableSignin_(managedProperties_, disabled_)]]">
+      <div class="signin-icon cr-icon icon-external"></div>
+      $i18n{networkButtonSignin}
+    </cr-button>
+  </template>
+  <cr-button id="forgetButton" on-click="onForgetTap_"
+      hidden$="[[!showForget_(managedProperties_)]]"
+      disabled="[[disableForget_(managedProperties_,
+          prefs.vpn_config_allowed, disabled_)]]">
+    $i18n{networkButtonForget}
+  </cr-button>
+  <cr-button id="viewAccountButton"
+      on-click="onViewAccountTap_"
+      hidden$="[[!showViewAccount_(managedProperties_)]]"
+      disabled="[[disabled_]]">
+    $i18n{networkButtonViewAccount}
+  </cr-button>
+  <cr-button id="activateButton"
+      on-click="onActivateTap_"
+      hidden$="[[!showActivate_(managedProperties_)]]"
+      disabled="[[disabled_]]">
+    $i18n{networkButtonActivate}
+  </cr-button>
+  <cr-button id="configureButton" on-click="onConfigureTap_"
+      hidden$="[[!showConfigure_(managedProperties_, globalPolicy,
+          managedNetworkAvailable)]]"
+      disabled="[[disableConfigure_(managedProperties_,
+          prefs.vpn_config_allowed, disabled_)]]"
+      deep-link-focus-id$="[[Setting.kConfigureEthernet]]">
+    $i18n{networkButtonConfigure}
+  </cr-button>
+  <!-- Use policy properties from vpn_config_allowed to indicate when that
+      pref disables buttons in this row. -->
+  <controlled-button id="connectDisconnect" class="action-button"
+      on-click="onConnectDisconnectTap_"
+      hidden$="[[shouldConnectDisconnectButtonBeHidden_(
+          managedProperties_, globalPolicy, managedNetworkAvailable,
+          deviceState_)]]"
+      disabled="[[shouldConnectDisconnectButtonBeDisabled_(
+          managedProperties_, defaultNetwork, propertiesReceived_,
+          outOfRange_, globalPolicy, managedNetworkAvailable,
+          deviceState_, disabled_)]]"
+      label="[[getConnectDisconnectButtonLabel_(managedProperties_,
+          globalPolicy,managedNetworkAvailable, deviceState_)]]"
+      pref="[[getFakeVpnConfigPrefForEnforcement_(managedProperties_,
+          prefs.vpn_config_allowed)]]"
+      deep-link-focus-id$="[[Setting.kDisconnectWifiNetwork]]
+          [[Setting.kDisconnectCellularNetwork]]
+          [[Setting.kDisconnectTetherNetwork]]">
+  </controlled-button>
+</div>
+
+
+<!-- Start of NOTICES section. -->
+<!-- If row ordering changes, messagesDividerClass_() must be updated. -->
+<template is="dom-if" if="[[isBlockedByPolicy_(managedProperties_,
+                            globalPolicy, managedNetworkAvailable)]]">
+  <!-- Disabled by policy -->
+  <div class="settings-box continuation">
+    <iron-icon class="policy" icon="cr20:domain"></iron-icon>
+    <div class="settings-box-text">$i18n{networkConnectNotAllowed}</div>
+  </div>
+</template>
+
+<template is="dom-if" if="[[isSecondaryUser_]]">
+  <!-- Non primary users. -->
+  <div class$="settings-box single-column
+              [[messagesDividerClass_('secondary', managedProperties_,
+                  globalPolicy, managedNetworkAvailable,
+                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+    <div class="layout horizontal center">
+      <iron-icon class="policy" icon="cr:group"></iron-icon>
+      <div class="settings-box-text">
+        [[i18n('networkPrimaryUserControlled', primaryUserEmail_)]]
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<template is="dom-if"
+    if="[[showShared_(managedProperties_, globalPolicy,
+        managedNetworkAvailable)]]">
+  <!-- Shared network. -->
+  <div class$="settings-box settings-box-text
+              [[messagesDividerClass_('shared', managedProperties_,
+                  globalPolicy, managedNetworkAvailable,
+                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+      [[sharedString_(managedProperties_)]]
+  </div>
+</template>
+<template is="dom-if"
+    if="[[showSynced_(managedProperties_, globalPolicy,
+        managedNetworkAvailable, isWifiSyncEnabled_)]]">
+  <!-- Synced network. -->
+  <div class$="settings-box settings-box-text
+              [[messagesDividerClass_('synced', managedProperties_,
+                  globalPolicy, managedNetworkAvailable,
+                  isSecondaryUser_, isWifiSyncEnabled_)]]">
+      <localized-link
+          localized-string="[[syncedString_(managedProperties_)]]">
+      </localized-link>
+  </div>
+</template>
+<!-- End of NOTICES section -->
+
+<template is="dom-if" if="[[!isSecondaryUser_]]">
+  <template is="dom-if" if="[[showConfigurableSections_]]"  restamp>
+    <!-- Prefer this network. -->
+    <template is="dom-if"
+        if="[[showPreferNetwork_(managedProperties_, globalPolicy,
             managedNetworkAvailable)]]">
-      <!-- Shared network. -->
-      <div class$="settings-box settings-box-text
-                  [[messagesDividerClass_('shared', managedProperties_,
-                      globalPolicy, managedNetworkAvailable,
-                      isSecondaryUser_, isWifiSyncEnabled_)]]">
-          [[sharedString_(managedProperties_)]]
+      <div id="preferNetworkToggleContainer" class="settings-box"
+          on-click="onPreferNetworkRowClicked_"
+          actionable$="[[!isNetworkPolicyEnforced(
+              managedProperties_.priority)]]">
+        <div id="preferNetworkToggleLabel" class="start settings-box-text">
+          $i18n{networkPrefer}
+        </div>
+        <cr-policy-network-indicator-mojo
+            property="[[managedProperties_.priority]]">
+        </cr-policy-network-indicator-mojo>
+        <cr-toggle id="preferNetworkToggle" checked="{{preferNetwork_}}"
+            disabled="[[shouldPreferNetworkToggleBeDisabled_(
+                managedProperties_.priority, disabled_)]]"
+            aria-labelledby="preferNetworkToggleLabel"
+            deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]">
+        </cr-toggle>
       </div>
     </template>
-
+    <!-- Hidden. -->
     <template is="dom-if"
-        if="[[showSynced_(managedProperties_, globalPolicy,
-            managedNetworkAvailable, isWifiSyncEnabled_)]]">
-      <!-- Synced network. -->
-      <div class$="settings-box settings-box-text
-                   [[messagesDividerClass_('synced', managedProperties_,
-                      globalPolicy, managedNetworkAvailable,
-                      isSecondaryUser_, isWifiSyncEnabled_)]]">
-          <settings-localized-link
-            localized-string="[[syncedString_(managedProperties_)]]">
-          </settings-localized-link>
-      </div>
+        if="[[showHiddenNetwork_(managedProperties_, globalPolicy,
+            managedNetworkAvailable)]]">
+      <settings-toggle-button id="hiddenToggle" class="hr"
+          pref="{{hiddenPref_}}"
+          label="$i18n{networkHidden}"
+          sub-label="$i18n{networkHiddenSublabel}"
+          sub-label-icon="cr20:warning"
+          learn-more-url="$i18n{wifiHiddenNetworkLearnMoreUrl}"
+          deep-link-focus-id$="[[Setting.kWifiHidden]]">
+      </settings-toggle-button>
     </template>
-    <!-- End of NOTICES section -->
-
-    <template is="dom-if" if="[[!isSecondaryUser_]]">
-      <!-- Prefer this network. -->
+    <!-- Autoconnect. -->
+    <template is="dom-if"
+        if="[[showAutoConnect_(managedProperties_, globalPolicy,
+            managedNetworkAvailable)]]">
+      <settings-toggle-button id="autoConnectToggle" class="hr"
+          pref="{{autoConnectPref_}}"
+          label="[[getAutoConnectToggleLabel_(managedProperties_)]]"
+          deep-link-focus-id$="[[Setting.kWifiAutoConnectToNetwork]]
+              [[Setting.kCellularAutoConnectToNetwork]]"
+          disabled="[[disabled_]]">
+      </settings-toggle-button>
+      <!-- Hidden Network Warning -->
       <template is="dom-if"
-          if="[[showPreferNetwork_(managedProperties_, globalPolicy,
-              managedNetworkAvailable)]]">
-        <div class="settings-box"  on-click="onPreferNetworkRowClicked_"
-            actionable$="[[!isNetworkPolicyEnforced(
-                managedProperties_.priority)]]">
-          <div id="preferNetworkToggleLabel" class="start settings-box-text">
-            $i18n{networkPrefer}
-          </div>
-          <cr-policy-network-indicator-mojo
-              property="[[managedProperties_.priority]]">
-          </cr-policy-network-indicator-mojo>
-          <cr-toggle id="preferNetworkToggle" checked="{{preferNetwork_}}"
-              disabled="[[shouldPreferNetworkToggleBeDisabled_(
-                  managedProperties_.priority, disabled)]]"
-              aria-labelledby="preferNetworkToggleLabel"
-              deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]">
-          </cr-toggle>
-        </div>
-      </template>
-      <!-- Autoconnect. -->
-      <template is="dom-if"
-          if="[[showAutoConnect_(managedProperties_, globalPolicy,
-              managedNetworkAvailable)]]">
-        <settings-toggle-button id="autoConnectToggle" class="hr"
-            pref="{{autoConnectPref_}}"
-            label="[[getAutoConnectToggleLabel_(managedProperties_)]]"
-            deep-link-focus-id$="[[Setting.kWifiAutoConnectToNetwork]]
-                [[Setting.kCellularAutoConnectToNetwork]]"
-            disabled="[[disabled]]">
-        </settings-toggle-button>
-        <!-- Hidden Network Warning -->
-        <template is="dom-if"
-            if="[[showHiddenNetworkWarning_(autoConnectPref_.*,
-                managedProperties_)]]"
-            restamp>
-          <div class="warning">
-            <iron-icon icon="cr:warning"></iron-icon>
-            [[i18n('hiddenNetworkWarning')]]
-          </div>
-        </template>
-      </template>
-      <!-- Always-on VPN. -->
-      <template is="dom-if"
-          if="[[showAlwaysOnVpn_(managedProperties_)]]">
-        <settings-toggle-button id="alwaysOnVpnToggle" class="hr"
-            pref="{{alwaysOnVpn_}}"
-            label="$i18n{networkAlwaysOnVpn}"
-            disabled="[[disabled]]">
-        </settings-toggle-button>
-      </template>
-      <!-- Data roaming (Cellular only). -->
-      <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-        <settings-toggle-button id="allowDataRoaming" class="hr"
-            pref="{{prefs.cros.signed.data_roaming_enabled}}"
-            label="$i18n{networkAllowDataRoaming}"
-            sub-label="[[getRoamingDetails_(managedProperties_)]]"
-            deep-link-focus-id$="[[Setting.kCellularRoaming]]"
-            disabled="[[disabled]]">
-        </settings-toggle-button>
-      </template>
-      <!-- SIM Info (Cellular only). -->
-      <!-- TODO(crbug/1093185): Remove when updatedCellularActivationUi
-           flag launches -->
-      <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
+          if="[[showHiddenNetworkWarning_(autoConnectPref_.*,
+              managedProperties_)]]"
           restamp>
-        <div class="settings-box single-column stretch">
-          <network-siminfo id="cellularSimInfo"
-              network-state="[[getNetworkState_(managedProperties_)]]"
-              device-state="[[deviceState_]]"
-              disabled="[[disabled]]">
-          </network-siminfo>
+        <div class="warning">
+          <iron-icon icon="cr:warning"></iron-icon>
+          [[i18n('hiddenNetworkWarning')]]
         </div>
-      </template>
-      <!-- IP Address. -->
-      <div class="settings-box two-line single-column stretch settings-box-text"
-        hidden$="[[!showIpAddress_(ipAddress_, managedProperties_)]]">
-        <div>$i18n{networkIPAddress}</div>
-        <div class="secondary">[[ipAddress_]]</div>
-      </div>
-      <!-- Properties to always show if present. -->
-      <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
-        <div class="settings-box single-column stretch">
-          <network-property-list-mojo id="infoFields"
-              fields="[[getInfoFields_(managedProperties_)]]"
-              edit-field-types="[[getInfoEditFieldTypes_(managedProperties_)]]"
-              property-dict="[[managedProperties_]]"
-              on-property-change="onNetworkPropertyChange_"
-              disabled="[[disabled]]">
-          </network-property-list-mojo>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
-                                 propertiesReceived_, showMeteredToggle_)]]">
-        <!-- Advanced toggle. -->
-        <cr-expand-button
-            aria-label="$i18n{networkSectionAdvancedA11yLabel}"
-            class="settings-box"
-            expanded="{{advancedExpanded_}}">
-          $i18n{networkSectionAdvanced}
-        </cr-expand-button>
-
-        <!-- Advanced section -->
-        <iron-collapse opened="[[advancedExpanded_]]">
-          <div class="settings-box single-column stretch indented first">
-             <!-- SIM Info (Cellular only). -->
-            <template is="dom-if"
-                if="[[showCellularSimUpdatedUi_(managedProperties_)]]" restamp>
-              <div class="single-column stretch">
-                <network-siminfo id="cellularSimInfoAdvanced"
-                    network-state="[[getNetworkState_(managedProperties_)]]"
-                    device-state="[[deviceState_]]"
-                    disabled="[[disabled]]">
-                </network-siminfo>
-              </div>
-            </template>
-            <!-- Metered (WiFi and Cellular only). -->
-            <template is="dom-if"
-                if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">
-              <network-config-toggle id="meteredToggle" policy-on-left
-                  property="[[managedProperties_.metered]]"
-                  label="$i18n{networkMetered}"
-                  sub-label="$i18n{networkMeteredDesc}"
-                  checked="{{meteredOverride_}}"
-                  on-checked-changed="meteredChanged_"
-                  deep-link-focus-id$="[[Setting.kWifiMetered]]
-                      [[Setting.kCellularMetered]]"
-                  disabled="[[disabled]]">
-              </network-config-toggle>
-            </template>
-            <!-- Advanced properties -->
-            <template is="dom-if"
-                if="[[hasAdvancedFields_(managedProperties_)]]">
-              <network-property-list-mojo id="advancedFields"
-                  fields="[[getAdvancedFields_(managedProperties_)]]"
-                  property-dict="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-property-list-mojo>
-            </template>
-            <!-- Device properties -->
-            <template is="dom-if" if="[[hasDeviceFields_(managedProperties_)]]">
-              <network-property-list-mojo id="deviceFields"
-                  fields="[[getDeviceFields_(managedProperties_)]]"
-                  property-dict="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-property-list-mojo>
-            </template>
-          </div>
-        </iron-collapse>
-      </template>
-
-      <template is="dom-if" if="[[hasNetworkSection_(managedProperties_,
-          globalPolicy, managedNetworkAvailable)]]">
-        <!-- Network toggle -->
-        <cr-expand-button
-            aria-label="$i18n{networkSectionNetworkExpandA11yLabel}"
-            class="settings-box"
-            expanded="{{networkExpanded_}}">
-          <div class="settings-row">
-            <div class="start">
-              $i18n{networkSectionNetwork}
-            </div>
-            <template is="dom-if"
-                if="[[showScanningSpinner_(managedProperties_, deviceState_)]]">
-              <paper-spinner-lite active></paper-spinner-lite>
-            </template>
-          </div>
-        </cr-expand-button>
-
-        <iron-collapse opened="[[networkExpanded_]]">
-          <div class="settings-box single-column stretch indented first">
-            <!-- Choose Mobile Network (Cellular only). -->
-            <template is="dom-if"
-                if="[[showCellularChooseNetwork_(managedProperties_)]]">
-              <network-choose-mobile device-state="[[deviceState_]]"
-                  managed-properties="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-choose-mobile>
-            </template>
-
-            <!-- APN -->
-            <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-              <network-apnlist on-apn-change="onApnChange_"
-                  managed-properties="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-apnlist>
-            </template>
-
-            <!-- IP Config, Nameservers -->
-            <template is="dom-if"
-                if="[[isRememberedOrConnected_(managedProperties_)]]">
-              <network-ip-config on-ip-change="onIPConfigChange_"
-                  managed-properties="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-ip-config>
-              <network-nameservers on-nameservers-change="onIPConfigChange_"
-                  managed-properties="[[managedProperties_]]"
-                  disabled="[[disabled]]">
-              </network-nameservers>
-            </template>
-          </div>
-
-          <!-- MAC Address. -->
-          <div class="settings-box two-line single-column stretch indented"
-              id="mac-address-container"
-              hidden$="[[!deviceState_.macAddress]]">
-            <div>$i18n{OncMacAddress}</div>
-            <div class="secondary">[[deviceState_.macAddress]]</div>
-          </div>
-        </iron-collapse>
-      </template>
-
-      <template is="dom-if" if="[[hasProxySection_(managedProperties_,
-          globalPolicy, managedNetworkAvailable)]]">
-        <!-- Proxy toggle -->
-        <cr-expand-button
-            aria-label="$i18n{networkSectionProxyExpandA11yLabel}"
-            class="settings-box"
-            expanded="{{proxyExpanded_}}">
-          $i18n{networkSectionProxy}
-        </cr-expand-button>
-
-        <iron-collapse opened="[[proxyExpanded_]]">
-          <network-proxy-section prefs="{{prefs}}"
-              on-proxy-change="onProxyChange_"
-              managed-properties="[[managedProperties_]]"
-              disabled="[[disabled]]">
-          </network-proxy-section>
-        </iron-collapse>
       </template>
     </template>
-
-    <template is="dom-if" if="[[isTether_(managedProperties_)]]" restamp>
-      <tether-connection-dialog id="tetherDialog"
-          managed-properties="[[managedProperties_]]"
-          on-tether-connect="onTetherConnect_"
-          out-of-range="[[outOfRange_]]">
-      </tether-connection-dialog>
+    <!-- Always-on VPN. -->
+    <template is="dom-if"
+        if="[[showAlwaysOnVpn_(managedProperties_)]]">
+      <settings-toggle-button id="alwaysOnVpnToggle" class="hr"
+          pref="{{alwaysOnVpn_}}"
+          label="$i18n{networkAlwaysOnVpn}"
+          disabled="[[disabled_]]">
+      </settings-toggle-button>
+    </template>
+    <!-- Data roaming (Cellular only). -->
+    <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+      <cellular-roaming-toggle-button
+        disabled="[[disabled_]]"
+        managed-properties="[[managedProperties_]]"
+        prefs="{{prefs}}">
+      </cellular-roaming-toggle-button>
+    </template>
+    <!-- Public Key (WireGuard VPN only). -->
+    <template is="dom-if" if="[[isWireGuard_(managedProperties_)]]">
+      <div id="wgPublicKeyField"
+          class="settings-box two-line single-column stretch settings-box-text">
+        <div aria-hidden="true" id="wgPublicKeyLabel">
+          $i18n{OncVPN-WireGuard-PublicKey}
+        </div>
+        <div class="secondary" aria-labelledby="wgPublicKeyLabel">
+          [[managedProperties_.typeProperties.vpn.wireguard.publicKey.activeValue]]
+        </div>
+      </div>
+    </template>
+    <!-- IP Address. -->
+    <div
+      class="settings-box two-line single-column stretch settings-box-text"
+      hidden$="[[!showIpAddress_(ipAddress_, managedProperties_)]]">
+      <div>$i18n{networkIPAddress}</div>
+      <div class="secondary">[[ipAddress_]]</div>
+    </div>
+    <!-- Properties to always show if present. -->
+    <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
+      <div class="settings-box single-column stretch">
+        <network-property-list-mojo id="infoFields"
+            fields="[[getInfoFields_(managedProperties_)]]"
+            edit-field-types="[[getInfoEditFieldTypes_(
+              managedProperties_)]]"
+            property-dict="[[managedProperties_]]"
+            on-property-change="onNetworkPropertyChange_"
+            disabled="[[disabled_]]">
+        </network-property-list-mojo>
+      </div>
     </template>
   </template>
-  <script src="internet_detail_page.js"></script>
-</dom-module>
+  <template is="dom-if" if="[[hasAdvancedSection_(managedProperties_,
+                              propertiesReceived_, showMeteredToggle_,
+                              deviceState_)]]">
+    <!-- Advanced toggle. -->
+    <cr-expand-button
+        aria-label="$i18n{networkSectionAdvancedA11yLabel}"
+        class="settings-box"
+        expanded="{{advancedExpanded_}}">
+      $i18n{networkSectionAdvanced}
+    </cr-expand-button>
+
+    <!-- Advanced section -->
+    <iron-collapse opened="[[advancedExpanded_]]">
+      <div class="settings-box single-column stretch indented first">
+          <!-- SIM Info (Cellular only). -->
+        <template is="dom-if"
+            if="[[showCellularSimUpdatedUi_(managedProperties_)]]" restamp>
+          <div class="single-column stretch">
+            <network-siminfo id="cellularSimInfoAdvanced"
+                network-state="[[getNetworkState_(managedProperties_)]]"
+                device-state="[[deviceState_]]"
+                global-policy="[[globalPolicy]]"
+                disabled="[[disabled_]]">
+            </network-siminfo>
+          </div>
+        </template>
+        <!-- Metered (WiFi and Cellular only). -->
+        <template is="dom-if"
+            if="[[showMetered_(managedProperties_, showMeteredToggle_)]]">
+          <network-config-toggle id="meteredToggle" policy-on-left
+              property="[[managedProperties_.metered]]"
+              label="$i18n{networkMetered}"
+              sub-label="$i18n{networkMeteredDesc}"
+              checked="{{meteredOverride_}}"
+              on-checked-changed="meteredChanged_"
+              deep-link-focus-id$="[[Setting.kWifiMetered]]
+                  [[Setting.kCellularMetered]]"
+              disabled="[[disabled_]]">
+          </network-config-toggle>
+        </template>
+        <!-- Advanced properties -->
+        <template is="dom-if"
+            if="[[hasAdvancedFields_(managedProperties_)]]">
+          <network-property-list-mojo id="advancedFields"
+              fields="[[getAdvancedFields_(managedProperties_)]]"
+              property-dict="[[managedProperties_]]"
+              disabled="[[disabled_]]">
+          </network-property-list-mojo>
+        </template>
+        <!-- Device properties -->
+        <template is="dom-if"
+            if="[[hasDeviceFields_(managedProperties_, deviceState_)]]">
+          <network-property-list-mojo id="deviceFields"
+              fields="[[getDeviceFields_(managedProperties_,
+                  deviceState_)]]"
+              property-dict="[[managedProperties_]]"
+              disabled="[[disabled_]]">
+          </network-property-list-mojo>
+        </template>
+      </div>
+    </iron-collapse>
+  </template>
+
+  <template is="dom-if" if="[[showDataUsage_(managedProperties_)]]">
+    <!-- Data usage toggle. -->
+    <cr-expand-button
+        aria-label="$i18n{TrafficCountersDataUsageLabel}"
+        class="settings-box"
+        expanded="{{dataUsageExpanded_}}">
+      $i18n{TrafficCountersDataUsageLabel}
+    </cr-expand-button>
+
+    <!-- Data usage section -->
+    <iron-collapse opened="[[dataUsageExpanded_]]">
+      <settings-traffic-counters id="settingsTrafficCounters"
+          guid="[[guid]]">
+      </settings-traffic-counters>
+    </iron-collapse>
+  </template>
+
+  <template is="dom-if" if="[[showConfigurableSections_]]"  restamp>
+    <template is="dom-if" if="[[hasNetworkSection_(managedProperties_,
+        globalPolicy, managedNetworkAvailable)]]">
+      <!-- Network toggle -->
+      <cr-expand-button
+          id="configurableSections"
+          aria-label="$i18n{networkSectionNetworkExpandA11yLabel}"
+          class="settings-box"
+          expanded="{{networkExpanded_}}">
+        <div class="settings-row">
+          <div class="start">
+            $i18n{networkSectionNetwork}
+          </div>
+          <template is="dom-if" if="[[showScanningSpinner_(
+              managedProperties_, deviceState_)]]">
+            <paper-spinner-lite active
+                title="$i18n{mobileNetworkScanningLabel}">
+            </paper-spinner-lite>
+          </template>
+        </div>
+      </cr-expand-button>
+
+      <iron-collapse opened="[[networkExpanded_]]">
+        <div class="settings-box single-column stretch indented first">
+          <!-- Choose Mobile Network (Cellular only). -->
+          <template is="dom-if"
+              if="[[showCellularChooseNetwork_(managedProperties_)]]">
+            <network-choose-mobile device-state="[[deviceState_]]"
+                managed-properties="[[managedProperties_]]"
+                disabled="[[disabled_]]">
+            </network-choose-mobile>
+          </template>
+
+          <!-- APN -->
+          <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+            <network-apnlist on-apn-change="onApnChange_"
+                managed-properties="[[managedProperties_]]"
+                disabled="[[disabled_]]">
+            </network-apnlist>
+          </template>
+
+          <!-- IP Config, Nameservers -->
+          <template is="dom-if"
+              if="[[isRememberedOrConnected_(managedProperties_)]]">
+            <network-ip-config on-ip-change="onIPConfigChange_"
+                managed-properties="[[managedProperties_]]"
+                disabled="[[disabled_]]">
+            </network-ip-config>
+            <network-nameservers on-nameservers-change="onIPConfigChange_"
+                managed-properties="[[managedProperties_]]"
+                disabled="[[disabled_]]">
+            </network-nameservers>
+          </template>
+        </div>
+
+        <!-- MAC Address. -->
+        <div class="settings-box two-line single-column stretch indented"
+            id="mac-address-container"
+            hidden$="[[!shouldShowMacAddress_(deviceState_)]]">
+          <div>$i18n{OncMacAddress}</div>
+          <div class="secondary">[[getMacAddress_(deviceState_)]]</div>
+        </div>
+      </iron-collapse>
+    </template>
+
+    <template is="dom-if" if="[[hasProxySection_(managedProperties_,
+        globalPolicy, managedNetworkAvailable)]]">
+      <!-- Proxy toggle -->
+      <cr-expand-button
+          aria-label="$i18n{networkSectionProxyExpandA11yLabel}"
+          class="settings-box"
+          expanded="{{proxyExpanded_}}">
+        $i18n{networkSectionProxy}
+      </cr-expand-button>
+
+      <iron-collapse opened="[[proxyExpanded_]]">
+        <network-proxy-section prefs="{{prefs}}"
+            on-proxy-change="onProxyChange_"
+            managed-properties="[[managedProperties_]]"
+            disabled="[[disabled_]]">
+        </network-proxy-section>
+      </iron-collapse>
+    </template>
+  </template>
+</template>
+<template is="dom-if" if="[[isTether_(managedProperties_)]]" restamp>
+  <tether-connection-dialog id="tetherDialog"
+      managed-properties="[[managedProperties_]]"
+      on-tether-connect="onTetherConnect_"
+      out-of-range="[[outOfRange_]]">
+  </tether-connection-dialog>
+</template>

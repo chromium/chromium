@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 
 #include <ctype.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <unistd.h>
+
 #include <utility>
 
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {
@@ -17,7 +20,7 @@ namespace {
 
 bool ReadFileContents(int fd, base::span<char> contents) {
   lseek(fd, 0, SEEK_SET);
-  int res = read(fd, contents.data(), contents.size() - 1);
+  ssize_t res = read(fd, contents.data(), contents.size() - 1);
   if (res <= 0)
     return false;
   contents.data()[res] = '\0';
@@ -94,7 +97,7 @@ bool MemoryUsageMonitorPosix::CalculateProcessMemoryFootprint(
 }
 
 void MemoryUsageMonitorPosix::GetProcessMemoryUsage(MemoryUsage& usage) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ResetFileDescriptors();
 #endif
   if (!statm_fd_.is_valid() || !status_fd_.is_valid())
@@ -110,7 +113,7 @@ void MemoryUsageMonitorPosix::GetProcessMemoryUsage(MemoryUsage& usage) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MemoryUsageMonitorPosix::ResetFileDescriptors() {
   if (file_descriptors_reset_)
     return;
@@ -134,7 +137,7 @@ void MemoryUsageMonitorPosix::SetProcFiles(base::File statm_file,
   status_fd_.reset(status_file.TakePlatformFile());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 void MemoryUsageMonitorPosix::Bind(
     mojo::PendingReceiver<mojom::blink::MemoryUsageMonitorLinux> receiver) {

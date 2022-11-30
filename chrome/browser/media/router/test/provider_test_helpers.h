@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
@@ -25,7 +25,6 @@
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +39,6 @@ class MockDialMediaSinkService : public DialMediaSinkService {
 
   MOCK_METHOD1(Start, void(const OnSinksDiscoveredCallback&));
   MOCK_METHOD0(OnUserGesture, void());
-  MOCK_METHOD1(BindLogger, void(mojo::PendingRemote<mojom::Logger>));
 };
 
 class MockCastMediaSinkService : public CastMediaSinkService {
@@ -51,7 +49,6 @@ class MockCastMediaSinkService : public CastMediaSinkService {
   MOCK_METHOD2(Start,
                void(const OnSinksDiscoveredCallback&, MediaSinkServiceBase*));
   MOCK_METHOD0(OnUserGesture, void());
-  MOCK_METHOD1(BindLogger, void(LoggerImpl*));
   MOCK_METHOD0(StartMdnsDiscovery, void());
 };
 
@@ -66,7 +63,6 @@ class MockCastAppDiscoveryService : public CastAppDiscoveryService {
   scoped_refptr<base::SequencedTaskRunner> task_runner() override;
   MOCK_METHOD1(DoStartObservingMediaSinks, void(const CastMediaSource&));
   MOCK_METHOD0(Refresh, void());
-  MOCK_METHOD1(BindLogger, void(mojo::PendingRemote<mojom::Logger>));
 
   SinkQueryCallbackList& callbacks() { return callbacks_; }
 
@@ -99,24 +95,28 @@ class TestDialURLFetcher : public DialURLFetcher {
   ~TestDialURLFetcher() override;
   void Start(const GURL& url,
              const std::string& method,
-             const base::Optional<std::string>& post_data,
+             const absl::optional<std::string>& post_data,
              int max_retries,
              bool set_origin_header) override;
   MOCK_METHOD4(DoStart,
                void(const GURL&,
                     const std::string&,
-                    const base::Optional<std::string>&,
+                    const absl::optional<std::string>&,
                     int));
   void StartDownload() override;
 
  private:
-  network::TestURLLoaderFactory* const factory_;
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
 };
 
 class TestDialActivityManager : public DialActivityManager {
  public:
   TestDialActivityManager(DialAppDiscoveryService* app_discovery_service,
                           network::TestURLLoaderFactory* factory);
+
+  TestDialActivityManager(const TestDialActivityManager&) = delete;
+  TestDialActivityManager& operator=(const TestDialActivityManager&) = delete;
+
   ~TestDialActivityManager() override;
 
   std::unique_ptr<DialURLFetcher> CreateFetcher(
@@ -125,18 +125,16 @@ class TestDialActivityManager : public DialActivityManager {
 
   void SetExpectedRequest(const GURL& url,
                           const std::string& method,
-                          const base::Optional<std::string>& post_data);
+                          const absl::optional<std::string>& post_data);
 
   MOCK_METHOD0(OnFetcherCreated, void());
 
  private:
-  network::TestURLLoaderFactory* const factory_;
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
 
   GURL expected_url_;
   std::string expected_method_;
-  base::Optional<std::string> expected_post_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDialActivityManager);
+  absl::optional<std::string> expected_post_data_;
 };
 
 // Helper function to create an IP endpoint object.

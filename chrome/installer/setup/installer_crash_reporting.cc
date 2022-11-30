@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,8 @@ void ConfigureCrashReporting(const InstallerState& installer_state) {
       new InstallerCrashReporterClient(!installer_state.system_install());
   ANNOTATE_LEAKING_OBJECT_PTR(crash_client);
   crash_reporter::SetCrashReporterClient(crash_client);
+
+  crash_reporter::InitializeCrashKeys();
 
   if (installer_state.system_install()) {
     base::FilePath temp_dir;

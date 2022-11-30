@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,32 @@
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_mouse_enter_exit_handler.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
-#include "components/omnibox/browser/omnibox_popup_model.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -31,8 +39,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/style/typography.h"
 
@@ -66,12 +72,12 @@ class OmniboxRowView::HeaderView : public views::View {
     views::InstallCircleHighlightPathGenerator(header_toggle_button_);
     header_toggle_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-    header_toggle_button_focus_ring_ =
-        views::FocusRing::Install(header_toggle_button_);
-    header_toggle_button_focus_ring_->SetHasFocusPredicate([&](View* view) {
-      return view->GetVisible() &&
-             row_view_->popup_model_->selection() == GetHeaderSelection();
-    });
+    views::FocusRing::Install(header_toggle_button_);
+    views::FocusRing::Get(header_toggle_button_)
+        ->SetHasFocusPredicate([&](View* view) {
+          return view->GetVisible() &&
+                 row_view_->model_->GetPopupSelection() == GetHeaderSelection();
+        });
 
     if (row_view_->pref_service_) {
       pref_change_registrar_.Init(row_view_->pref_service_);
@@ -82,7 +88,8 @@ class OmniboxRowView::HeaderView : public views::View {
     }
   }
 
-  void SetHeader(int suggestion_group_id, const std::u16string& header_text) {
+  void SetHeader(omnibox::GroupId suggestion_group_id,
+                 const std::u16string& header_text) {
     suggestion_group_id_ = suggestion_group_id;
     header_text_ = header_text;
 
@@ -93,7 +100,7 @@ class OmniboxRowView::HeaderView : public views::View {
 
     if (row_view_->pref_service_) {
       suggestion_group_hidden_ =
-          row_view_->popup_model_->result().IsSuggestionGroupIdHidden(
+          row_view_->model_->result().IsSuggestionGroupHidden(
               row_view_->pref_service_, suggestion_group_id_);
 
       header_toggle_button_->SetToggled(suggestion_group_hidden_);
@@ -114,15 +121,15 @@ class OmniboxRowView::HeaderView : public views::View {
                                 assumed_match_cell_icon_width) /
                                    2;
 
-    return gfx::Insets(vertical, left_inset, vertical,
-                       OmniboxMatchCellView::kMarginRight);
+    return gfx::Insets::TLBR(vertical, left_inset, vertical,
+                             OmniboxMatchCellView::kMarginRight);
   }
   bool OnMousePressed(const ui::MouseEvent& event) override {
     // Needed to receive the OnMouseReleased event.
     return true;
   }
   void OnMouseReleased(const ui::MouseEvent& event) override {
-    row_view_->popup_model_->TriggerSelectionAction(GetHeaderSelection());
+    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
   }
   void OnMouseEntered(const ui::MouseEvent& event) override { UpdateUI(); }
   void OnMouseExited(const ui::MouseEvent& event) override { UpdateUI(); }
@@ -146,19 +153,24 @@ class OmniboxRowView::HeaderView : public views::View {
   // Updates the UI state for the new hover or selection state.
   void UpdateUI() {
     OmniboxPartState part_state = OmniboxPartState::NORMAL;
-    if (row_view_->popup_model_->selection() == GetHeaderSelection()) {
+    if (row_view_->model_->GetPopupSelection() == GetHeaderSelection()) {
       part_state = OmniboxPartState::SELECTED;
     } else if (IsMouseHovered()) {
       part_state = OmniboxPartState::HOVERED;
     }
 
-    SkColor text_color = GetOmniboxColor(
-        GetThemeProvider(), OmniboxPart::RESULTS_TEXT_DIMMED, part_state);
+    const auto* const color_provider = GetColorProvider();
+    const SkColor text_color =
+        color_provider->GetColor((part_state == OmniboxPartState::SELECTED)
+                                     ? kColorOmniboxResultsTextDimmedSelected
+                                     : kColorOmniboxResultsTextDimmed);
     header_label_->SetEnabledColor(text_color);
 
-    SkColor icon_color = GetOmniboxColor(GetThemeProvider(),
-                                         OmniboxPart::RESULTS_ICON, part_state);
-    header_toggle_button_->SetInkDropBaseColor(icon_color);
+    const SkColor icon_color =
+        color_provider->GetColor((part_state == OmniboxPartState::SELECTED)
+                                     ? kColorOmniboxResultsIconSelected
+                                     : kColorOmniboxResultsIcon);
+    views::InkDrop::Get(header_toggle_button_)->SetBaseColor(icon_color);
 
     int dip_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     const gfx::ImageSkia arrow_down =
@@ -177,14 +189,14 @@ class OmniboxRowView::HeaderView : public views::View {
 
     // The "toggled" button state corresponds with the group being hidden.
     // The button's action is therefore to Show the group, when clicked.
-    header_toggle_button_->SetToggledImage(views::Button::STATE_NORMAL,
-                                           &arrow_down);
+    header_toggle_button_->SetToggledImageModel(
+        views::Button::STATE_NORMAL, ui::ImageModel::FromImageSkia(arrow_down));
     header_toggle_button_->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON));
     header_toggle_button_->SetToggledAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON, header_text_));
 
-    header_toggle_button_focus_ring_->SchedulePaint();
+    views::FocusRing::Get(header_toggle_button_)->SchedulePaint();
 
     // It's a little hokey that we're stealing the logic for the background
     // color from OmniboxResultView. If we start doing this is more than just
@@ -196,51 +208,45 @@ class OmniboxRowView::HeaderView : public views::View {
 
  private:
   void HeaderToggleButtonPressed() {
-    row_view_->popup_model_->TriggerSelectionAction(GetHeaderSelection());
+    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
     // The PrefChangeRegistrar will update the actual button toggle state.
   }
 
   // Updates the hide button's toggle state.
   void OnPrefChanged() {
     DCHECK(row_view_->pref_service_);
-    bool was_hidden = suggestion_group_hidden_;
-    suggestion_group_hidden_ =
-        row_view_->popup_model_->result().IsSuggestionGroupIdHidden(
-            row_view_->pref_service_, suggestion_group_id_);
+    suggestion_group_hidden_ = !suggestion_group_hidden_;
 
-    if (was_hidden != suggestion_group_hidden_) {
-      NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 
-      // Because this view doesn't have true focus (it stays on the textfield),
-      // we also need to manually announce state changes.
-      GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
-          suggestion_group_hidden_ ? IDS_ACC_HEADER_SECTION_HIDDEN
-                                   : IDS_ACC_HEADER_SECTION_SHOWN,
-          header_text_));
-    }
+    // Because this view doesn't have true focus (it stays on the textfield),
+    // we also need to manually announce state changes.
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        suggestion_group_hidden_ ? IDS_ACC_HEADER_SECTION_HIDDEN
+                                 : IDS_ACC_HEADER_SECTION_SHOWN,
+        header_text_));
 
     header_toggle_button_->SetToggled(suggestion_group_hidden_);
   }
 
-  // Convenience method to get the OmniboxPopupModel::Selection for this view.
-  OmniboxPopupModel::Selection GetHeaderSelection() const {
-    return OmniboxPopupModel::Selection(
-        row_view_->line_, OmniboxPopupModel::FOCUSED_BUTTON_HEADER);
+  // Convenience method to get the OmniboxPopupSelection for this view.
+  OmniboxPopupSelection GetHeaderSelection() const {
+    return OmniboxPopupSelection(row_view_->line_,
+                                 OmniboxPopupSelection::FOCUSED_BUTTON_HEADER);
   }
 
   // Non-owning pointer our parent row view. We access a lot of private members
   // of our outer class. This lets us save quite a bit of state duplication.
-  OmniboxRowView* const row_view_;
+  const raw_ptr<OmniboxRowView> row_view_;
 
   // The Label containing the header text. This is never nullptr.
-  views::Label* header_label_;
+  raw_ptr<views::Label> header_label_;
 
   // The button used to toggle hiding suggestions with this header.
-  views::ToggleImageButton* header_toggle_button_;
-  views::FocusRing* header_toggle_button_focus_ring_ = nullptr;
+  raw_ptr<views::ToggleImageButton> header_toggle_button_;
 
   // The group ID associated with this header.
-  int suggestion_group_id_ = 0;
+  omnibox::GroupId suggestion_group_id_ = omnibox::GROUP_INVALID;
 
   // The unmodified header text for this header.
   std::u16string header_text_;
@@ -257,67 +263,65 @@ class OmniboxRowView::HeaderView : public views::View {
   OmniboxMouseEnterExitHandler mouse_enter_exit_handler_;
 };
 
-DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
-                       {OmniboxPopupModel::FOCUSED_BUTTON_HEADER,
+DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_HEADER,
                         u"FOCUSED_BUTTON_HEADER"},
-                       {OmniboxPopupModel::NORMAL, u"NORMAL"},
-                       {OmniboxPopupModel::KEYWORD_MODE, u"KEYWORD_MODE"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH,
+                       {OmniboxPopupSelection::NORMAL, u"NORMAL"},
+                       {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH,
                         u"FOCUSED_BUTTON_TAB_SWITCH"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_PEDAL,
-                        u"FOCUSED_BUTTON_PEDAL"},
-                       {OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION,
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+                        u"FOCUSED_BUTTON_ACTION"},
+                       {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,
                         u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
 
 template <>
-struct views::metadata::TypeConverter<OmniboxPopupModel::Selection>
-    : public views::metadata::BaseTypeConverter<true> {
+struct ui::metadata::TypeConverter<OmniboxPopupSelection>
+    : public ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
-      views::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
-  static base::Optional<OmniboxPopupModel::Selection> FromString(
+      ui::metadata::ArgType<OmniboxPopupSelection> source_value);
+  static absl::optional<OmniboxPopupSelection> FromString(
       const std::u16string& source_value);
-  static views::metadata::ValidStrings GetValidStrings() { return {}; }
+  static ui::metadata::ValidStrings GetValidStrings() { return {}; }
 };
 
 // static
-std::u16string
-views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
-    views::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
+std::u16string ui::metadata::TypeConverter<OmniboxPopupSelection>::ToString(
+    ui::metadata::ArgType<OmniboxPopupSelection> source_value) {
   return u"{" + base::NumberToString16(source_value.line) + u"," +
-         TypeConverter<OmniboxPopupModel::LineState>::ToString(
+         TypeConverter<OmniboxPopupSelection::LineState>::ToString(
              source_value.state) +
          u"}";
 }
 
 // static
-base::Optional<OmniboxPopupModel::Selection>
-views::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
-    const std::u16string& source_value) {
+absl::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
+    OmniboxPopupSelection>::FromString(const std::u16string& source_value) {
   const auto values = base::SplitString(
       source_value, u"{,}", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (values.size() != 2)
-    return base::nullopt;
+    return absl::nullopt;
   // TODO(pkasting): This should be size_t, but for some reason that won't link
   // on Mac.
-  const base::Optional<uint32_t> line =
+  const absl::optional<uint32_t> line =
       TypeConverter<uint32_t>::FromString(values[0]);
-  const base::Optional<OmniboxPopupModel::LineState> state =
-      TypeConverter<OmniboxPopupModel::LineState>::FromString(values[1]);
+  const absl::optional<OmniboxPopupSelection::LineState> state =
+      TypeConverter<OmniboxPopupSelection::LineState>::FromString(values[1]);
   return (line.has_value() && state.has_value())
-             ? base::make_optional<OmniboxPopupModel::Selection>(line.value(),
-                                                                 state.value())
-             : base::nullopt;
+             ? absl::make_optional<OmniboxPopupSelection>(line.value(),
+                                                          state.value())
+             : absl::nullopt;
 }
 
 BEGIN_METADATA(OmniboxRowView, HeaderView, views::View)
-ADD_READONLY_PROPERTY_METADATA(OmniboxPopupModel::Selection, HeaderSelection)
+ADD_READONLY_PROPERTY_METADATA(OmniboxPopupSelection, HeaderSelection)
 END_METADATA
 
 OmniboxRowView::OmniboxRowView(size_t line,
-                               OmniboxPopupModel* popup_model,
+                               OmniboxEditModel* model,
                                std::unique_ptr<OmniboxResultView> result_view,
                                PrefService* pref_service)
-    : line_(line), popup_model_(popup_model), pref_service_(pref_service) {
+    : line_(line), model_(model), pref_service_(pref_service) {
   DCHECK(result_view);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -326,7 +330,7 @@ OmniboxRowView::OmniboxRowView(size_t line,
   result_view_ = AddChildView(std::move(result_view));
 }
 
-void OmniboxRowView::ShowHeader(int suggestion_group_id,
+void OmniboxRowView::ShowHeader(omnibox::GroupId suggestion_group_id,
                                 const std::u16string& header_text) {
   // Create the header (at index 0) if it doesn't exist.
   if (header_view_ == nullptr)
@@ -348,9 +352,9 @@ void OmniboxRowView::OnSelectionStateChanged() {
 }
 
 views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
-  DCHECK(popup_model_->selection().IsButtonFocused());
-  if (popup_model_->selected_line_state() ==
-      OmniboxPopupModel::FOCUSED_BUTTON_HEADER) {
+  DCHECK(model_->GetPopupSelection().IsButtonFocused());
+  if (model_->GetPopupSelection().state ==
+      OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     return header_view_->header_toggle_button();
   }
 
@@ -361,7 +365,7 @@ gfx::Insets OmniboxRowView::GetInsets() const {
   // A visible header means this is the start of a new section. Give the section
   // that just ended an extra 4dp of padding. https://crbug.com/1076646
   if (line_ != 0 && header_view_ && header_view_->GetVisible())
-    return gfx::Insets(4, 0, 0, 0);
+    return gfx::Insets::TLBR(4, 0, 0, 0);
 
   return gfx::Insets();
 }

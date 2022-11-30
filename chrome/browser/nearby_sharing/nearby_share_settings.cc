@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -23,6 +25,11 @@ NearbyShareSettings::NearbyShareSettings(
       base::BindRepeating(&NearbyShareSettings::OnEnabledPrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      base::BindRepeating(
+          &NearbyShareSettings::OnFastInitiationNotificationStatePrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kNearbySharingBackgroundVisibilityName,
       base::BindRepeating(&NearbyShareSettings::OnVisibilityPrefChanged,
                           base::Unretained(this)));
@@ -34,6 +41,11 @@ NearbyShareSettings::NearbyShareSettings(
       prefs::kNearbySharingAllowedContactsPrefName,
       base::BindRepeating(&NearbyShareSettings::OnAllowedContactsPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNearbySharingOnboardingCompletePrefName,
+      base::BindRepeating(
+          &NearbyShareSettings::OnIsOnboardingCompletePrefChanged,
+          base::Unretained(this)));
 
   local_device_data_manager_->AddObserver(this);
 
@@ -49,6 +61,25 @@ NearbyShareSettings::~NearbyShareSettings() {
 
 bool NearbyShareSettings::GetEnabled() const {
   return pref_service_->GetBoolean(prefs::kNearbySharingEnabledPrefName);
+}
+
+FastInitiationNotificationState
+NearbyShareSettings::GetFastInitiationNotificationState() const {
+  return static_cast<FastInitiationNotificationState>(pref_service_->GetInteger(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName));
+}
+
+void NearbyShareSettings::SetIsFastInitiationHardwareSupported(
+    bool is_supported) {
+  // If new value is same as old value don't notify observers.
+  if (is_fast_initiation_hardware_supported_ == is_supported) {
+    return;
+  }
+
+  is_fast_initiation_hardware_supported_ = is_supported;
+  for (auto& remote : observers_set_) {
+    remote->OnIsFastInitiationHardwareSupportedChanged(is_supported);
+  }
 }
 
 std::string NearbyShareSettings::GetDeviceName() const {
@@ -67,13 +98,10 @@ Visibility NearbyShareSettings::GetVisibility() const {
 
 const std::vector<std::string> NearbyShareSettings::GetAllowedContacts() const {
   std::vector<std::string> allowed_contacts;
-  const base::ListValue* list =
+  const base::Value::List& list =
       pref_service_->GetList(prefs::kNearbySharingAllowedContactsPrefName);
-  if (list) {
-    base::Value::ConstListView view = list->GetList();
-    for (const auto& value : view) {
-      allowed_contacts.push_back(value.GetString());
-    }
+  for (const auto& value : list) {
+    allowed_contacts.push_back(value.GetString());
   }
   return allowed_contacts;
 }
@@ -98,25 +126,41 @@ void NearbyShareSettings::GetEnabled(base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetEnabled());
 }
 
-void NearbyShareSettings::SetEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
-  if (enabled) {
-    // We rely on the the UI to enforce that if the feature was enabled for the
-    // first time, that onboarding was run.
-    pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
-                              true);
+void NearbyShareSettings::GetFastInitiationNotificationState(
+    base::OnceCallback<void(FastInitiationNotificationState)> callback) {
+  std::move(callback).Run(GetFastInitiationNotificationState());
+}
 
-    if (GetVisibility() == Visibility::kUnknown) {
-      NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
-                       "visibility to kNoOne.";
-      SetVisibility(Visibility::kNoOne);
-    }
+void NearbyShareSettings::GetIsFastInitiationHardwareSupported(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(is_fast_initiation_hardware_supported_);
+}
+
+void NearbyShareSettings::SetEnabled(bool enabled) {
+  DCHECK(!enabled || IsOnboardingComplete());
+  pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
+  if (enabled && GetVisibility() == Visibility::kUnknown) {
+    NS_LOG(ERROR) << "Nearby Share enabled with visibility unset. Setting "
+                     "visibility to kNoOne.";
+    SetVisibility(Visibility::kNoOne);
   }
+}
+
+void NearbyShareSettings::SetFastInitiationNotificationState(
+    FastInitiationNotificationState state) {
+  pref_service_->SetInteger(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      static_cast<int>(state));
 }
 
 void NearbyShareSettings::IsOnboardingComplete(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(IsOnboardingComplete());
+}
+
+void NearbyShareSettings::SetIsOnboardingComplete(bool completed) {
+  pref_service_->SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                            completed);
 }
 
 void NearbyShareSettings::GetDeviceName(
@@ -171,7 +215,7 @@ void NearbyShareSettings::SetAllowedContacts(
     const std::vector<std::string>& allowed_contacts) {
   base::ListValue list;
   for (const auto& id : allowed_contacts) {
-    list.AppendString(id);
+    list.Append(id);
   }
   pref_service_->Set(prefs::kNearbySharingAllowedContactsPrefName, list);
 }
@@ -183,7 +227,7 @@ void NearbyShareSettings::Bind(
 
 void NearbyShareSettings::OnLocalDeviceDataChanged(bool did_device_name_change,
                                                    bool did_full_name_change,
-                                                   bool did_icon_url_change) {
+                                                   bool did_icon_change) {
   if (!did_device_name_change)
     return;
 
@@ -197,6 +241,15 @@ void NearbyShareSettings::OnEnabledPrefChanged() {
   bool enabled = GetEnabled();
   for (auto& remote : observers_set_) {
     remote->OnEnabledChanged(enabled);
+  }
+
+  ProcessFastInitiationNotificationParentPrefChanged(enabled);
+}
+
+void NearbyShareSettings::OnFastInitiationNotificationStatePrefChanged() {
+  FastInitiationNotificationState state = GetFastInitiationNotificationState();
+  for (auto& remote : observers_set_) {
+    remote->OnFastInitiationNotificationStateChanged(state);
   }
 }
 
@@ -219,4 +272,30 @@ void NearbyShareSettings::OnAllowedContactsPrefChanged() {
   for (auto& remote : observers_set_) {
     remote->OnAllowedContactsChanged(visible_contacts);
   }
+}
+
+void NearbyShareSettings::OnIsOnboardingCompletePrefChanged() {
+  bool is_complete = IsOnboardingComplete();
+  for (auto& remote : observers_set_) {
+    remote->OnIsOnboardingCompleteChanged(is_complete);
+  }
+}
+
+void NearbyShareSettings::ProcessFastInitiationNotificationParentPrefChanged(
+    bool enabled) {
+  // If onboarding is not yet complete the Nearby feature should not be able to
+  // affect the enabled state.
+  if (!IsOnboardingComplete()) {
+    return;
+  }
+
+  // If the user explicitly disabled notifications, toggling the Nearby Share
+  // feature does not re-enable the notification sub-feature.
+  if (GetFastInitiationNotificationState() ==
+      FastInitiationNotificationState::kDisabledByUser) {
+    return;
+  }
+  SetFastInitiationNotificationState(
+      enabled ? FastInitiationNotificationState::kEnabled
+              : FastInitiationNotificationState::kDisabledByFeature);
 }

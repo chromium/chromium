@@ -30,9 +30,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 
+#include <limits>
+#include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -73,27 +83,69 @@ class CORE_EXPORT SelectorChecker {
     kQueryingRules,
   };
 
-  struct Init {
+  explicit inline SelectorChecker(const Mode& mode)
+      : element_style_(nullptr),
+        scrollbar_(nullptr),
+        part_names_(nullptr),
+        pseudo_argument_(g_null_atom),
+        scrollbar_part_(kNoPart),
+        mode_(mode),
+        is_ua_rule_(false) {}
+  inline SelectorChecker(ComputedStyle* element_style,
+                         PartNames* part_names,
+                         const StyleRequest& style_request,
+                         const Mode& mode,
+                         const bool& is_ua_rule)
+      : element_style_(element_style),
+        scrollbar_(style_request.scrollbar),
+        part_names_(part_names),
+        pseudo_argument_(style_request.pseudo_argument),
+        scrollbar_part_(style_request.scrollbar_part),
+        mode_(mode),
+        is_ua_rule_(is_ua_rule) {}
+
+  SelectorChecker(const SelectorChecker&) = delete;
+  SelectorChecker& operator=(const SelectorChecker&) = delete;
+
+  struct StyleScopeActivation {
+    DISALLOW_NEW();
+
+   public:
+    void Trace(blink::Visitor*) const;
+
+    // The root is the element when the activation happened. In other words,
+    // the element that matched <scope-start>.
+    //
+    // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
+    Member<Element> root;
+    // The distance to the root, in terms of number of inclusive ancestors
+    // between some subject element and the root.
+    unsigned proximity = 0;
+    // True if some subject element matches <scope-end>.
+    //
+    // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
+    bool limit = false;
+  };
+
+  // Stores the current @scope activations for a given subject element.
+  //
+  // See documentation near EnsureActivations for more information.
+  //
+  // TODO(crbug.com/1280240): Provide a parent frame in the future.
+  class StyleScopeFrame {
     STACK_ALLOCATED();
 
    public:
-    Mode mode = kResolvingStyle;
-    bool is_ua_rule = false;
-    ComputedStyle* element_style = nullptr;
-    CustomScrollbar* scrollbar = nullptr;
-    ScrollbarPart scrollbar_part = kNoPart;
-    PartNames* part_names = nullptr;
-  };
+    using Activations = HeapVector<StyleScopeActivation>;
 
-  explicit SelectorChecker(const Init& init)
-      : element_style_(init.element_style),
-        scrollbar_(init.scrollbar),
-        part_names_(init.part_names),
-        scrollbar_part_(init.scrollbar_part),
-        mode_(init.mode),
-        is_ua_rule_(init.is_ua_rule) {}
-  SelectorChecker(const SelectorChecker&) = delete;
-  SelectorChecker& operator=(const SelectorChecker&) = delete;
+    explicit StyleScopeFrame(Element& element) : element_(element) {}
+
+   private:
+    friend class SelectorChecker;
+
+    Element& element_;
+    HeapHashMap<Member<const StyleScope>, Member<const Activations>> data_;
+  };
 
   // Wraps the current element and a CSSSelector and stores some other state of
   // the selector matching process.
@@ -104,19 +156,34 @@ class CORE_EXPORT SelectorChecker {
     // Initial selector constructor
     explicit SelectorCheckingContext(Element* element) : element(element) {}
 
+    // Group fields by type to avoid perf test regression.
+    // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
+
+    // Used to match the :scope pseudo-class.
+    const ContainerNode* scope = nullptr;
+    // If `style_scope` is specified, that is used to match the :scope
+    // pseudo-class instead (and `scope` is ignored).
+    const StyleScope* style_scope = nullptr;
+    // StyleScopeFrame is required if style_scope is non-nullptr.
+    StyleScopeFrame* style_scope_frame = nullptr;
+
     Element* element = nullptr;
     Element* previous_element = nullptr;
-    const ContainerNode* scope = nullptr;
+    Element* vtt_originating_element = nullptr;
+    ContainerNode* relative_anchor_element = nullptr;
+
     PseudoId pseudo_id = kPseudoIdNone;
+
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
     bool has_scrollbar_pseudo = false;
     bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
-    Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
+    bool pseudo_has_in_rightmost_compound = true;
+    bool is_inside_has_pseudo_class = false;
   };
 
   struct MatchResult {
@@ -124,6 +191,59 @@ class CORE_EXPORT SelectorChecker {
 
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
+
+    // Comes from an AtomicString, but not stored as one to avoid
+    // the cost of checking the refcount on cleaning up from every
+    // Match() call. Owned by the CSS selector it came from.
+    StringImpl* custom_highlight_name{nullptr};
+
+    // From the :has() argument selector checking, we need to get the element
+    // that matches the leftmost compound selector to mark all possible :has()
+    // anchor elements (the relative anchor element of the :has() argument).
+    //
+    // <main id=main>
+    //   <div id=d1>
+    //     <div id=d2 class="a">
+    //       <div id=d3 class="a">
+    //         <div id=d4>
+    //           <div id=d5 class="b">
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+    // <script>
+    //  main.querySelectorAll('div:has(.a .b)'); // Should return #d1, #d2
+    // </script>
+    //
+    // In case of the above example, the selector 'div:has(.a .b)' is checked
+    // on the descendants of '#main' element in this order:
+    // - 'div#d1', 'div#d2', 'div#d3', 'div#d4', 'div#d5'
+    // When checking the selector on 'div#d1', we can get all possible :has()
+    // anchor element while checking the :has() argument selector ('.a .b')
+    // on the descendants of 'div#d1'.
+    // Among the descendants of 'div#d1', 'div#d5' matches the argument selector
+    // '.a .b'. More precisely, the 'div#d5' matches the argument selector
+    // ':-internal-relative-anchor .a .b' only when the ':-internal-relative-
+    // anchor' matches any ancestors of the element matches the leftmost
+    // compound of the argument selector ('.a').
+    // So, in case of checking the 'div:has(.a .b)' on 'div#d1', 'div#d1' and
+    // 'div#d2' can be a :has() argument anchor element because 'div#d3' and
+    // 'div#d4' are the element that matches the leftmost compound '.a' of the
+    // :has() argument '.a .b'.
+    // To avoid repetitive argument checking, the :has() anchor elements are
+    // stored in the CheckPseudoHasResultCache. To cache the anchor elements
+    // correctly, MatchResult returns the elements that match the leftmost
+    // compound of the :has() argument selector.
+    //
+    // This field is only for checking :has() pseudo class. To avoid the
+    // MatchResult instance allocation overhead on checking the other selectors,
+    // MatchResult has a pointer field to hold the reference of the vector
+    // instance instead of having the vector instance field.
+    HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
+        nullptr};
+    unsigned proximity{std::numeric_limits<unsigned>::max()};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -136,6 +256,7 @@ class CORE_EXPORT SelectorChecker {
   static bool MatchesFocusPseudoClass(const Element&);
   static bool MatchesFocusVisiblePseudoClass(const Element&);
   static bool MatchesSpatialNavigationInterestPseudoClass(const Element&);
+  static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
 
  private:
   // Does the work of checking whether the simple selector and element pointed
@@ -183,11 +304,33 @@ class CORE_EXPORT SelectorChecker {
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoScope(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
+
+  // The *activations* for a given StyleScope/element, is a list of active
+  // scopes found in the ancestor chain, their roots (Element*), and the
+  // proximities to those roots.
+  //
+  // The idea is that, if we're matching a selector ':scope' within some
+  // StyleScope, we look up the activations for that StyleScope, and
+  // and check if the current element (`SelectorCheckingContext.element`)
+  // matches any of the activation roots.
+  using Activations = StyleScopeFrame::Activations;
+
+  const Activations& EnsureActivations(const SelectorCheckingContext&,
+                                       const StyleScope&) const;
+  const Activations* CalculateActivations(
+      Element&,
+      const StyleScope&,
+      const Activations& outer_activations) const;
+  bool CheckInStyleScope(const SelectorCheckingContext&, MatchResult&) const;
+  bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
 
   ComputedStyle* element_style_;
   CustomScrollbar* scrollbar_;
   PartNames* part_names_;
+  const String pseudo_argument_;
   ScrollbarPart scrollbar_part_;
   Mode mode_;
   bool is_ua_rule_;
@@ -198,4 +341,9 @@ class CORE_EXPORT SelectorChecker {
 
 }  // namespace blink
 
-#endif
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::SelectorChecker::StyleScopeActivation)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::SelectorChecker::StyleScopeFrame)
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_

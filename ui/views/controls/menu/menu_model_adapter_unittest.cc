@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_model_delegate.h"
@@ -27,7 +27,10 @@ constexpr int kActionableSubmenuIdBase = 300;
 class MenuModelBase : public ui::MenuModel {
  public:
   explicit MenuModelBase(int command_id_base)
-      : command_id_base_(command_id_base), last_activation_(-1) {}
+      : command_id_base_(command_id_base) {}
+
+  MenuModelBase(const MenuModelBase&) = delete;
+  MenuModelBase& operator=(const MenuModelBase&) = delete;
 
   ~MenuModelBase() override = default;
 
@@ -35,62 +38,70 @@ class MenuModelBase : public ui::MenuModel {
 
   bool HasIcons() const override { return false; }
 
-  int GetItemCount() const override { return static_cast<int>(items_.size()); }
+  size_t GetItemCount() const override { return items_.size(); }
 
-  ItemType GetTypeAt(int index) const override { return items_[index].type; }
+  ItemType GetTypeAt(size_t index) const override { return items_[index].type; }
 
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override {
     return ui::NORMAL_SEPARATOR;
   }
 
-  int GetCommandIdAt(int index) const override {
-    return index + command_id_base_;
+  int GetCommandIdAt(size_t index) const override {
+    return static_cast<int>(index) + command_id_base_;
   }
 
-  std::u16string GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(size_t index) const override {
     return items_[index].label;
   }
 
-  bool IsItemDynamicAt(int index) const override { return false; }
+  bool IsItemDynamicAt(size_t index) const override { return false; }
 
-  const gfx::FontList* GetLabelFontListAt(int index) const override {
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
     return nullptr;
   }
 
-  bool GetAcceleratorAt(int index,
+  bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override {
     return false;
   }
 
-  bool IsItemCheckedAt(int index) const override { return false; }
+  bool IsItemCheckedAt(size_t index) const override { return false; }
 
-  int GetGroupIdAt(int index) const override { return 0; }
+  int GetGroupIdAt(size_t index) const override { return 0; }
 
-  ui::ImageModel GetIconAt(int index) const override {
+  ui::ImageModel GetIconAt(size_t index) const override {
     return ui::ImageModel();
   }
 
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override {
     return nullptr;
   }
 
-  bool IsEnabledAt(int index) const override { return items_[index].enabled; }
+  bool IsEnabledAt(size_t index) const override {
+    return items_[index].enabled;
+  }
 
-  bool IsVisibleAt(int index) const override { return items_[index].visible; }
+  bool IsVisibleAt(size_t index) const override {
+    return items_[index].visible;
+  }
 
-  bool IsAlertedAt(int index) const override { return items_[index].alerted; }
+  bool IsAlertedAt(size_t index) const override {
+    return items_[index].alerted;
+  }
 
-  bool IsNewFeatureAt(int index) const override {
+  bool IsNewFeatureAt(size_t index) const override {
     return items_[index].new_feature;
   }
 
-  MenuModel* GetSubmenuModelAt(int index) const override {
+  MenuModel* GetSubmenuModelAt(size_t index) const override {
     return items_[index].submenu;
   }
 
-  void ActivatedAt(int index) override { set_last_activation(index); }
+  void ActivatedAt(size_t index) override { set_last_activation(index); }
 
-  void ActivatedAt(int index, int event_flags) override { ActivatedAt(index); }
+  void ActivatedAt(size_t index, int event_flags) override {
+    ActivatedAt(index);
+  }
 
   void MenuWillShow() override {}
 
@@ -120,7 +131,7 @@ class MenuModelBase : public ui::MenuModel {
 
     ItemType type;
     std::u16string label;
-    ui::MenuModel* submenu;
+    raw_ptr<ui::MenuModel> submenu;
     bool enabled;
     bool visible;
     bool alerted = false;
@@ -130,8 +141,8 @@ class MenuModelBase : public ui::MenuModel {
   const Item& GetItemDefinition(size_t index) { return items_[index]; }
 
   // Access index argument to ActivatedAt().
-  int last_activation() const { return last_activation_; }
-  void set_last_activation(int last_activation) {
+  absl::optional<size_t> last_activation() const { return last_activation_; }
+  void set_last_activation(absl::optional<size_t> last_activation) {
     last_activation_ = last_activation;
   }
 
@@ -140,9 +151,7 @@ class MenuModelBase : public ui::MenuModel {
 
  private:
   int command_id_base_;
-  int last_activation_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuModelBase);
+  absl::optional<size_t> last_activation_;
 };
 
 class SubmenuModel : public MenuModelBase {
@@ -153,10 +162,10 @@ class SubmenuModel : public MenuModelBase {
     items_[1].alerted = true;
   }
 
-  ~SubmenuModel() override = default;
+  SubmenuModel(const SubmenuModel&) = delete;
+  SubmenuModel& operator=(const SubmenuModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubmenuModel);
+  ~SubmenuModel() override = default;
 };
 
 class ActionableSubmenuModel : public MenuModelBase {
@@ -166,10 +175,11 @@ class ActionableSubmenuModel : public MenuModelBase {
     items_.emplace_back(TYPE_COMMAND, "actionable submenu item 1", nullptr);
     items_[1].new_feature = true;
   }
-  ~ActionableSubmenuModel() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActionableSubmenuModel);
+  ActionableSubmenuModel(const ActionableSubmenuModel&) = delete;
+  ActionableSubmenuModel& operator=(const ActionableSubmenuModel&) = delete;
+
+  ~ActionableSubmenuModel() override = default;
 };
 
 class RootModel : public MenuModelBase {
@@ -187,13 +197,14 @@ class RootModel : public MenuModelBase {
                         actionable_submenu_model_.get());
   }
 
+  RootModel(const RootModel&) = delete;
+  RootModel& operator=(const RootModel&) = delete;
+
   ~RootModel() override = default;
 
  private:
   std::unique_ptr<MenuModel> submenu_model_;
   std::unique_ptr<MenuModel> actionable_submenu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootModel);
 };
 
 void CheckSubmenu(const RootModel& model,
@@ -201,7 +212,7 @@ void CheckSubmenu(const RootModel& model,
                   views::MenuModelAdapter* delegate,
                   int submenu_id,
                   size_t expected_children,
-                  int submenu_model_index,
+                  size_t submenu_model_index,
                   int id) {
   views::MenuItemView* submenu = menu->GetMenuItemByID(submenu_id);
   views::SubmenuView* subitem_container = submenu->GetSubmenu();
@@ -219,7 +230,7 @@ void CheckSubmenu(const RootModel& model,
       continue;
     }
     // Check placement.
-    EXPECT_EQ(i, size_t{submenu->GetSubmenu()->GetIndexOf(item)});
+    EXPECT_EQ(i, submenu->GetSubmenu()->GetIndexOf(item));
 
     // Check type.
     switch (model_item.type) {
@@ -264,8 +275,8 @@ void CheckSubmenu(const RootModel& model,
 
     // Check activation.
     static_cast<views::MenuDelegate*>(delegate)->ExecuteCommand(id);
-    EXPECT_EQ(i, size_t{submodel->last_activation()});
-    submodel->set_last_activation(-1);
+    EXPECT_EQ(i, submodel->last_activation());
+    submodel->set_last_activation(absl::nullopt);
   }
 }
 
@@ -303,7 +314,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     }
 
     // Check placement.
-    EXPECT_EQ(i, size_t{menu->GetSubmenu()->GetIndexOf(item)});
+    EXPECT_EQ(i, menu->GetSubmenu()->GetIndexOf(item));
 
     // Check type.
     switch (model_item.type) {
@@ -348,8 +359,8 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
 
     // Check activation.
     static_cast<views::MenuDelegate*>(&delegate)->ExecuteCommand(id);
-    EXPECT_EQ(i, size_t{model.last_activation()});
-    model.set_last_activation(-1);
+    EXPECT_EQ(i, model.last_activation());
+    model.set_last_activation(absl::nullopt);
   }
 
   // Check the submenu.

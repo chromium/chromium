@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -119,8 +120,8 @@ bool PendingAnimations::Update(
   for (auto& animation : animations)
     animation->PostCommit();
 
-  DCHECK(pending_.IsEmpty());
-  DCHECK(start_on_compositor || deferred.IsEmpty());
+  DCHECK(pending_.empty());
+  DCHECK(start_on_compositor || deferred.empty());
   for (auto& animation : deferred)
     animation->SetCompositorPending();
   DCHECK_EQ(pending_.size(), deferred.size());
@@ -128,7 +129,7 @@ bool PendingAnimations::Update(
   if (started_synchronized_on_compositor)
     return true;
 
-  if (waiting_for_compositor_animation_start_.IsEmpty())
+  if (waiting_for_compositor_animation_start_.empty())
     return false;
 
   // Check if we're still waiting for any compositor animations to start.
@@ -169,7 +170,7 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
           animation->timeline()->CurrentTime().value_or(AnimationTimeDelta()));
     } else {
       animation->NotifyReady(
-          AnimationTimeDelta::FromSecondsD(monotonic_animation_start_time) -
+          ANIMATION_TIME_DELTA_FROM_SECONDS(monotonic_animation_start_time) -
           animation->timeline()->ZeroTime());
     }
   }
@@ -187,7 +188,7 @@ int PendingAnimations::NextCompositorGroup() {
 }
 
 void PendingAnimations::FlushWaitingNonCompositedAnimations() {
-  if (waiting_for_compositor_animation_start_.IsEmpty())
+  if (waiting_for_compositor_animation_start_.empty())
     return;
 
   // Start any main thread animations that were scheduled to wait on

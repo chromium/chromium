@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_database_service.h"
 
@@ -112,48 +112,85 @@ PaymentManifestWebDataService::GetPaymentMethodManifestImpl(
 }
 
 WebDataServiceBase::Handle
-PaymentManifestWebDataService::AddSecurePaymentConfirmationInstrument(
-    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+PaymentManifestWebDataService::AddSecurePaymentConfirmationCredential(
+    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     WebDataServiceConsumer* consumer) {
-  DCHECK(instrument);
+  DCHECK(credential);
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&PaymentManifestWebDataService::
-                         AddSecurePaymentConfirmationInstrumentImpl,
-                     this, std::move(instrument)),
+                         AddSecurePaymentConfirmationCredentialImpl,
+                     this, std::move(credential)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::AddSecurePaymentConfirmationInstrumentImpl(
-    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+PaymentManifestWebDataService::AddSecurePaymentConfirmationCredentialImpl(
+    std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
       BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
-                       ->AddSecurePaymentConfirmationInstrument(*instrument));
+                       ->AddSecurePaymentConfirmationCredential(*credential));
 }
 
 WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetSecurePaymentConfirmationInstruments(
+PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentials(
     std::vector<std::vector<uint8_t>> credential_ids,
+    const std::string& relying_party_id,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&PaymentManifestWebDataService::
-                         GetSecurePaymentConfirmationInstrumentsImpl,
-                     this, std::move(credential_ids)),
+                         GetSecurePaymentConfirmationCredentialsImpl,
+                     this, std::move(credential_ids),
+                     std::move(relying_party_id)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetSecurePaymentConfirmationInstrumentsImpl(
+PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
     std::vector<std::vector<uint8_t>> credential_ids,
+    const std::string& relying_party_id,
     WebDatabase* db) {
   return std::make_unique<WDResult<
-      std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>>>(
+      std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>>(
       SECURE_PAYMENT_CONFIRMATION,
       PaymentMethodManifestTable::FromWebDatabase(db)
-          ->GetSecurePaymentConfirmationInstruments(std::move(credential_ids)));
+          ->GetSecurePaymentConfirmationCredentials(
+              std::move(credential_ids), std::move(relying_party_id)));
+}
+
+void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(
+    base::Time begin,
+    base::Time end,
+    base::OnceClosure callback) {
+  WebDataServiceBase::Handle handle = wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::
+                         ClearSecurePaymentConfirmationCredentialsImpl,
+                     this, begin, end),
+      this);
+  clearing_credentials_requests_[handle] = std::move(callback);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentialsImpl(
+    base::Time begin,
+    base::Time end,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+                       ->ClearSecurePaymentConfirmationCredentials(begin, end));
+}
+
+void PaymentManifestWebDataService::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle h,
+    std::unique_ptr<WDTypedResult> result) {
+  if (clearing_credentials_requests_.find(h) ==
+      clearing_credentials_requests_.end())
+    return;
+
+  std::move(clearing_credentials_requests_[h]).Run();
 }
 
 void PaymentManifestWebDataService::RemoveExpiredData(WebDatabase* db) {

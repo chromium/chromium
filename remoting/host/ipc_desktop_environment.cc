@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,21 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel_handle.h"
-#include "ipc/ipc_sender.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
-#include "remoting/host/chromoting_messages.h"
+#include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/desktop_session_proxy.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/screen_controls.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
@@ -34,6 +35,7 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
     const DesktopEnvironmentOptions& options)
     : desktop_session_proxy_(
@@ -41,6 +43,7 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
                                                     caller_task_runner,
                                                     io_task_runner,
                                                     client_session_control,
+                                                    client_session_events,
                                                     desktop_session_connector,
                                                     options)) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
@@ -64,6 +67,11 @@ std::unique_ptr<ScreenControls> IpcDesktopEnvironment::CreateScreenControls() {
   return desktop_session_proxy_->CreateScreenControls();
 }
 
+DesktopDisplayInfoMonitor* IpcDesktopEnvironment::GetDisplayInfoMonitor() {
+  // Not used in the Network process.
+  return nullptr;
+}
+
 std::unique_ptr<webrtc::MouseCursorMonitor>
 IpcDesktopEnvironment::CreateMouseCursorMonitor() {
   return desktop_session_proxy_->CreateMouseCursorMonitor();
@@ -76,13 +84,17 @@ IpcDesktopEnvironment::CreateKeyboardLayoutMonitor(
       std::move(callback));
 }
 
-std::unique_ptr<webrtc::DesktopCapturer>
-IpcDesktopEnvironment::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer() {
   return desktop_session_proxy_->CreateVideoCapturer();
 }
 
 std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
   return desktop_session_proxy_->CreateFileOperations();
+}
+
+std::unique_ptr<UrlForwarderConfigurator>
+IpcDesktopEnvironment::CreateUrlForwarderConfigurator() {
+  return desktop_session_proxy_->CreateUrlForwarderConfigurator();
 }
 
 std::string IpcDesktopEnvironment::GetCapabilities() const {
@@ -97,32 +109,33 @@ uint32_t IpcDesktopEnvironment::GetDesktopSessionId() const {
   return desktop_session_proxy_->desktop_session_id();
 }
 
-std::unique_ptr<DesktopAndCursorConditionalComposer>
-IpcDesktopEnvironment::CreateComposingVideoCapturer() {
-  // Cursor compositing is done by the desktop process if necessary.
-  return nullptr;
+std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
+IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
+  return desktop_session_proxy_->CreateRemoteWebAuthnStateChangeNotifier();
 }
 
 IpcDesktopEnvironmentFactory::IpcDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    IPC::Sender* daemon_channel)
+    mojo::AssociatedRemote<mojom::DesktopSessionManager> remote)
     : audio_task_runner_(audio_task_runner),
       caller_task_runner_(caller_task_runner),
       io_task_runner_(io_task_runner),
-      daemon_channel_(daemon_channel) {}
+      desktop_session_manager_(std::move(remote)) {}
 
 IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() = default;
 
 std::unique_ptr<DesktopEnvironment> IpcDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   return std::make_unique<IpcDesktopEnvironment>(
       audio_task_runner_, caller_task_runner_, io_task_runner_,
-      client_session_control, connector_factory_.GetWeakPtr(), options);
+      client_session_control, client_session_events,
+      connector_factory_.GetWeakPtr(), options);
 }
 
 bool IpcDesktopEnvironmentFactory::SupportsAudioCapture() const {
@@ -144,8 +157,8 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
 
   VLOG(1) << "Network: registered desktop environment " << id;
 
-  daemon_channel_->Send(new ChromotingNetworkHostMsg_ConnectTerminal(
-      id, resolution, virtual_terminal));
+  desktop_session_manager_->CreateDesktopSession(id, resolution,
+                                                 virtual_terminal);
 }
 
 void IpcDesktopEnvironmentFactory::DisconnectTerminal(
@@ -163,7 +176,7 @@ void IpcDesktopEnvironmentFactory::DisconnectTerminal(
     active_connections_.erase(i);
 
     VLOG(1) << "Network: unregistered desktop environment " << id;
-    daemon_channel_->Send(new ChromotingNetworkHostMsg_DisconnectTerminal(id));
+    desktop_session_manager_->CloseDesktopSession(id);
   }
 }
 
@@ -179,30 +192,41 @@ void IpcDesktopEnvironmentFactory::SetScreenResolution(
   }
 
   if (i != active_connections_.end()) {
-    daemon_channel_->Send(new ChromotingNetworkDaemonMsg_SetScreenResolution(
-        i->first, resolution));
+    desktop_session_manager_->SetScreenResolution(i->first, resolution);
   }
+}
+
+bool IpcDesktopEnvironmentFactory::BindConnectionEventsReceiver(
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  if (desktop_session_connection_events_.is_bound()) {
+    return false;
+  }
+
+  mojo::PendingAssociatedReceiver<mojom::DesktopSessionConnectionEvents>
+      pending_receiver(std::move(handle));
+  desktop_session_connection_events_.Bind(std::move(pending_receiver));
+
+  return true;
 }
 
 void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     int terminal_id,
     int session_id,
-    const IPC::ChannelHandle& desktop_pipe) {
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached,
-            base::Unretained(this), terminal_id, session_id, desktop_pipe));
+            base::Unretained(this), terminal_id, session_id,
+            std::move(desktop_pipe)));
     return;
   }
 
   auto i = active_connections_.find(terminal_id);
   if (i != active_connections_.end()) {
     i->second->DetachFromDesktop();
-    i->second->AttachToDesktop(desktop_pipe, session_id);
-  } else {
-    mojo::ScopedMessagePipeHandle closer(desktop_pipe.mojo_handle);
+    i->second->AttachToDesktop(std::move(desktop_pipe), session_id);
   }
 }
 

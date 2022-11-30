@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
 
 class PrefService;
@@ -28,6 +27,11 @@ class TestRequestAllowedNotifier : public ResourceRequestAllowedNotifier {
   TestRequestAllowedNotifier(
       PrefService* local_state,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  TestRequestAllowedNotifier(const TestRequestAllowedNotifier&) = delete;
+  TestRequestAllowedNotifier& operator=(const TestRequestAllowedNotifier&) =
+      delete;
+
   ~TestRequestAllowedNotifier() override;
 
   // A version of |Init()| that accepts a custom EulaAcceptedNotifier.
@@ -50,8 +54,6 @@ class TestRequestAllowedNotifier : public ResourceRequestAllowedNotifier {
   std::unique_ptr<EulaAcceptedNotifier> test_eula_notifier_;
   bool override_requests_allowed_;
   bool requests_allowed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRequestAllowedNotifier);
 };
 
 }  // namespace web_resource

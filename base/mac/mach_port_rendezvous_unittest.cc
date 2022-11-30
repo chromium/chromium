@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace base {
@@ -149,6 +151,18 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
 
   EXPECT_EQ(42, exit_code);
 
+  // There is no way to synchronize the test code with the asynchronous
+  // delivery of the dispatch process-exit notification. Loop for a short
+  // while for it to be delivered.
+  auto start = TimeTicks::Now();
+  do {
+    if (client_data().size() == 0)
+      break;
+    // Sleep is fine because dispatch will process the notification on one of
+    // its workers.
+    PlatformThread::Sleep(Milliseconds(10));
+  } while ((TimeTicks::Now() - start) < TestTimeouts::action_timeout());
+
   EXPECT_EQ(0u, client_data().size());
 }
 
@@ -174,7 +188,7 @@ TEST_F(MachPortRendezvousServerTest, DestroyRight) {
       // insert_right MAKE_SEND_ONCE.
   };
 
-  for (size_t i = 0; i < base::size(kCases); ++i) {
+  for (size_t i = 0; i < std::size(kCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("case %zu", i).c_str());
     const auto& test = kCases[i];
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,16 +13,15 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const int kChannelIdUnknown = -1;
@@ -32,6 +31,10 @@ class PendingPacket {
  public:
   PendingPacket(std::unique_ptr<MultiplexPacket> packet)
       : packet(std::move(packet)) {}
+
+  PendingPacket(const PendingPacket&) = delete;
+  PendingPacket& operator=(const PendingPacket&) = delete;
+
   ~PendingPacket() = default;
 
   bool is_empty() { return pos >= packet->data().size(); }
@@ -46,8 +49,6 @@ class PendingPacket {
  private:
   std::unique_ptr<MultiplexPacket> packet;
   size_t pos = 0U;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingPacket);
 };
 
 }  // namespace
@@ -65,6 +66,10 @@ class ChannelMultiplexer::MuxChannel {
  public:
   MuxChannel(ChannelMultiplexer* multiplexer, const std::string& name,
              int send_id);
+
+  MuxChannel(const MuxChannel&) = delete;
+  MuxChannel& operator=(const MuxChannel&) = delete;
+
   ~MuxChannel();
 
   const std::string& name() { return name_; }
@@ -84,20 +89,22 @@ class ChannelMultiplexer::MuxChannel {
   int DoRead(const scoped_refptr<net::IOBuffer>& buffer, int buffer_len);
 
  private:
-  ChannelMultiplexer* multiplexer_;
+  raw_ptr<ChannelMultiplexer> multiplexer_;
   std::string name_;
   int send_id_;
   bool id_sent_;
   int receive_id_;
-  MuxSocket* socket_;
+  raw_ptr<MuxSocket> socket_;
   std::list<std::unique_ptr<PendingPacket>> pending_packets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MuxChannel);
 };
 
 class ChannelMultiplexer::MuxSocket : public P2PStreamSocket {
  public:
   MuxSocket(MuxChannel* channel);
+
+  MuxSocket(const MuxSocket&) = delete;
+  MuxSocket& operator=(const MuxSocket&) = delete;
+
   ~MuxSocket() override;
 
   void OnWriteComplete();
@@ -115,7 +122,7 @@ class ChannelMultiplexer::MuxSocket : public P2PStreamSocket {
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
  private:
-  MuxChannel* channel_;
+  raw_ptr<MuxChannel> channel_;
 
   int base_channel_error_ = net::OK;
 
@@ -130,8 +137,6 @@ class ChannelMultiplexer::MuxSocket : public P2PStreamSocket {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MuxSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MuxSocket);
 };
 
 ChannelMultiplexer::MuxChannel::MuxChannel(ChannelMultiplexer* multiplexer,
@@ -467,5 +472,4 @@ void ChannelMultiplexer::DoWrite(
                 traffic_annotation);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,10 @@ enum class AutofillAssistantState {
 
   // Autofill assistant is keeping track of script availability.
   //
-  // In this mode, no UI is shown and scripts are not autostarted. User
-  // actions might be available.
+  // UI will only be shown if the previous state was RUNNING and if the script
+  // finished with tell + stop.
+  //
+  // In this mode, scripts are not autostarted. User actions might be available.
   //
   // Note that it is possible to go from TRACKING to STARTING to trigger
   // whatever autostartable scripts is defined for a page.
@@ -65,14 +67,6 @@ enum class AutofillAssistantState {
   // Next states: RUNNING, TRACKING, STOPPED
   PROMPT,
 
-  // Autofill assistant is waiting for the user to make the first choice.
-  //
-  // When autostartable scripts are expected, this is only triggered as a
-  // fallback if there are non-autostartable scripts to choose from instead.
-  //
-  // Next states: RUNNING, STOPPED
-  AUTOSTART_FALLBACK_PROMPT,
-
   // Autofill assistant is expecting a modal dialog, such as the one asking for
   // CVC.
   //
@@ -87,7 +81,7 @@ enum class AutofillAssistantState {
   // In that scenario, the status message at the time of transition to STOPPED
   // is supposed to contain the final message.
   //
-  // Next states: TRACKING, RUNNING
+  // Next states: TRACKING
   STOPPED,
 
   // Autofill assistant is waiting for the user to browse the website until one
@@ -129,9 +123,6 @@ inline std::ostream& operator<<(std::ostream& out,
       break;
     case AutofillAssistantState::PROMPT:
       out << "PROMPT";
-      break;
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-      out << "AUTOSTART_FALLBACK_PROMPT";
       break;
     case AutofillAssistantState::MODAL_DIALOG:
       out << "MODAL_DIALOG";

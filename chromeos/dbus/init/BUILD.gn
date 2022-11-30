@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("init") {
+  output_name = "chromeos_dbus_init"
+  defines = [ "IS_CHROMEOS_DBUS_INIT_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/constants",
+    "//dbus",
+  ]
+  sources = [
+    "dbus_thread_manager_base.cc",
+    "dbus_thread_manager_base.h",
+    "initialize_dbus_client.h",
+  ]
+}

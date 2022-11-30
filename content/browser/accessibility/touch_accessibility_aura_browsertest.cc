@@ -1,8 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -30,6 +31,10 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
  public:
   TouchAccessibilityBrowserTest() {}
 
+  TouchAccessibilityBrowserTest(const TouchAccessibilityBrowserTest&) = delete;
+  TouchAccessibilityBrowserTest& operator=(
+      const TouchAccessibilityBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -42,7 +47,9 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    waiter.WaitForNotification();
+    // TODO(https://crbug.com/1332468): Investigate why this does not return
+    // true.
+    ASSERT_TRUE(waiter.WaitForNotification());
   }
 
   void SendTouchExplorationEvent(int x, int y) {
@@ -54,10 +61,8 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
     std::unique_ptr<ui::Event> mouse_move_event(
         new ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
                            ui::EventTimeForNow(), flags, 0));
-    ignore_result(sink->OnEventFromSource(mouse_move_event.get()));
+    std::ignore = sink->OnEventFromSource(mouse_move_event.get());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TouchAccessibilityBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
@@ -108,13 +113,13 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
       // Tolerate additional events, keep looping until we get the expected one.
       std::string cell_text;
       do {
-        waiter.WaitForNotification();
+        ASSERT_TRUE(waiter.WaitForNotification());
         int target_id = waiter.event_target_id();
         BrowserAccessibility* hit = manager->GetFromID(target_id);
         BrowserAccessibility* child = hit->PlatformGetChild(0);
         ASSERT_NE(nullptr, child);
-        cell_text = child->GetData().GetStringAttribute(
-            ax::mojom::StringAttribute::kName);
+        cell_text =
+            child->GetStringAttribute(ax::mojom::StringAttribute::kName);
         VLOG(1) << "Got hover event in cell with text: " << cell_text;
       } while (cell_text != expected_cell_text);
     }
@@ -131,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
 
   // Get the BrowserAccessibilityManager for the first child frame.
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
   BrowserAccessibilityManager* child_manager =
@@ -144,12 +149,11 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
-  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetData().role);
-  std::string text =
-      hit->GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
+  std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);
 }
 
@@ -163,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
 
   // Get the BrowserAccessibilityManager for the first child frame.
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
+      shell()->web_contents()->GetPrimaryMainFrame());
   RenderFrameHostImpl* child_frame =
       main_frame->frame_tree_node()->child_at(0)->current_frame_host();
   BrowserAccessibilityManager* child_manager =
@@ -182,12 +186,11 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
   int target_id = waiter.event_target_id();
   BrowserAccessibility* hit = child_manager->GetFromID(target_id);
-  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetData().role);
-  std::string text =
-      hit->GetData().GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(ax::mojom::Role::kButton, hit->GetRole());
+  std::string text = hit->GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ("Ordinary Button", text);
 }
 

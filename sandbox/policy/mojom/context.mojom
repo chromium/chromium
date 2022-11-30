@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sandbox.mojom;
+
+// Context is complementary to Sandbox. This is an ordered list of
+// contexts to which an interface is allowed to be vended by other
+// mojo interfaces. Restricted interfaces are annotated with the RequireContext
+// attribute. Vending methods are annotated with the AllowedContext attribute.
+// If an interface is marked with RequireContext it can only be vended by
+// methods with a corresponding AllowedContext of the same type value or lower.
+// Do not mark this enum as Extensible or Stable.
+enum Context {
+  // This should always be the first value. It corresponds only to the browser
+  // process in Chromium and should not be assigned to other utilities, even
+  // if they are unsandboxed.
+  kBrowser,
+  // Utilities that are allowed to receive privileged interfaces. Note that
+  // this may not correspond to a sandbox level - sometimes it is possible to
+  // tightly sandbox an otherwise privileged utility.
+  kPrivilegedUtility,
+  // This should always be the last value. Renderers and most services (however
+  // they are sandboxed) will fall into this category.
+  kLowest,
+};

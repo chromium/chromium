@@ -1,0 +1,162 @@
+Tests DOM.getTopLayerElements command.
+Nodes:
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : ::backdrop
+            nodeId : <number>
+            nodeName : ::backdrop
+            nodeType : 1
+            nodeValue : 
+            pseudoType : backdrop
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : id
+                [1] : dialog1
+                [2] : open
+                [3] : 
+            ]
+            backendNodeId : <number>
+            childNodeCount : 1
+            localName : dialog
+            nodeId : <number>
+            nodeName : DIALOG
+            nodeType : 1
+            nodeValue : 
+            pseudoElements : [
+                [0] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    localName : ::backdrop
+                    nodeId : <number>
+                    nodeName : ::backdrop
+                    nodeType : 1
+                    nodeValue : 
+                    pseudoType : backdrop
+                }
+            ]
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : ::backdrop
+            nodeId : <number>
+            nodeName : ::backdrop
+            nodeType : 1
+            nodeValue : 
+            pseudoType : backdrop
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : id
+                [1] : dialog2
+                [2] : open
+                [3] : 
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : dialog
+            nodeId : <number>
+            nodeName : DIALOG
+            nodeType : 1
+            nodeValue : 
+            pseudoElements : [
+                [0] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    localName : ::backdrop
+                    nodeId : <number>
+                    nodeName : ::backdrop
+                    nodeType : 1
+                    nodeValue : 
+                    pseudoType : backdrop
+                }
+            ]
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : ::backdrop
+            nodeId : <number>
+            nodeName : ::backdrop
+            nodeType : 1
+            nodeValue : 
+            pseudoType : backdrop
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        node : {
+            attributes : [
+                [0] : id
+                [1] : iframeDialog
+                [2] : open
+                [3] : 
+            ]
+            backendNodeId : <number>
+            childNodeCount : 0
+            localName : dialog
+            nodeId : <number>
+            nodeName : DIALOG
+            nodeType : 1
+            nodeValue : 
+            pseudoElements : [
+                [0] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    localName : ::backdrop
+                    nodeId : <number>
+                    nodeName : ::backdrop
+                    nodeType : 1
+                    nodeValue : 
+                    pseudoType : backdrop
+                }
+            ]
+        }
+    }
+    sessionId : <string>
+}
+

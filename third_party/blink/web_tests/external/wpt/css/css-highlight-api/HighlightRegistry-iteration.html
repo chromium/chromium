@@ -5,15 +5,18 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   'use strict';
-  let customHighlight1 = new Highlight("example1");
-  let customHighlight2 = new Highlight("example2");
-
-  let iterationInitializationCollection = ["CSS.highlights[Symbol.iterator]()", "CSS.highlights.values()", "CSS.highlights.keys()"];
+  let customHighlight1 = new Highlight();
+  let customHighlight2 = new Highlight();
+  let highlightName1 = "example1";
+  let highlightName2 = "example2";
 
   function getIterator(iterationInitialization){
     var iterator;
     if(iterationInitialization === "CSS.highlights[Symbol.iterator]()"){
       iterator = CSS.highlights[Symbol.iterator]();
+    }
+    else if(iterationInitialization === "CSS.highlights.entries()"){
+      iterator = CSS.highlights.entries();
     }
     else if(iterationInitialization === "CSS.highlights.values()"){
       iterator = CSS.highlights.values();
@@ -24,8 +27,86 @@
     return iterator;
   }
 
-  // Test .values, .keys, [Symbol.iterator]
 
+  // Test .keys()
+
+  let iterationInitialization = "CSS.highlights.keys()";
+  test(() => {
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlight names to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlight names to iterate.');
+  }, 'HighlightRegistry can be iterated when it\'s empty initializing the iterator with ' + iterationInitialization);
+
+  test(() => {
+    CSS.highlights.set(highlightName1, customHighlight1);
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight name');
+    assert_equals(element.value, highlightName1, '.next() returns an element with .value corresponding to the first highlight name added to the HighlightRegistry');
+    element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlight names to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlight names to iterate.');
+  }, 'HighlightRegistry can be iterated over all of its highlight names after adding one of them initializing the iterator with ' + iterationInitialization);
+
+  test(() => {
+    CSS.highlights.set(highlightName2, customHighlight2);
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
+    assert_equals(element.value, highlightName1, '.next() returns an element with .value corresponding to the first highlight name added to the HighlightRegistry');
+    element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
+    assert_equals(element.value, highlightName2, '.next() returns an element with .value corresponding to the second highlight name added to the HighlightRegistry');
+    element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlight names to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlight names to iterate.');
+  }, 'HighlightRegistry can be iterated over all of its highlight names after adding two of them initializing the iterator with ' + iterationInitialization);
+
+  CSS.highlights.clear();
+
+
+  // Test .values()
+
+  iterationInitialization = "CSS.highlights.values()";
+  test(() => {
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
+  }, 'HighlightRegistry can be iterated when it\'s empty initializing the iterator with ' + iterationInitialization);
+
+  test(() => {
+    CSS.highlights.set(highlightName1, customHighlight1);
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
+    assert_equals(element.value, customHighlight1, '.next() returns an element with .value corresponding to the first Highlight added to the HighlightRegistry');
+    element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
+  }, 'HighlightRegistry can be iterated over all of its Highlights after adding one of them initializing the iterator with ' + iterationInitialization);
+
+  test(() => {
+    CSS.highlights.set(highlightName2, customHighlight2);
+    let iterator = getIterator(iterationInitialization);
+    let element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
+    assert_equals(element.value, customHighlight1, '.next() returns an element with .value corresponding to the first Highlight added to the HighlightRegistry');
+    element = iterator.next();
+    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
+    assert_equals(element.value, customHighlight2, '.next() returns an element with .value corresponding to the second Highlight added to the HighlightRegistry');
+    element = iterator.next();
+    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
+    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
+  }, 'HighlightRegistry can be iterated over all of its Highlights after adding two of them initializing the iterator with ' + iterationInitialization);
+
+  CSS.highlights.clear();
+
+
+  // Test [Symbol.iterator]() and .entries()
+
+  let iterationInitializationCollection = ["CSS.highlights[Symbol.iterator]()", "CSS.highlights.entries()"];
   for(let iterationInitialization of iterationInitializationCollection){
     test(() => {
       let iterator = getIterator(iterationInitialization);
@@ -35,25 +116,28 @@
     }, 'HighlightRegistry can be iterated when it\'s empty initializing the iterator with ' + iterationInitialization);
 
     test(() => {
-      CSS.highlights.add(customHighlight1);
+      CSS.highlights.set(highlightName1, customHighlight1);
       let iterator = getIterator(iterationInitialization);
       let element = iterator.next();
       assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-      assert_equals(element.value, customHighlight1, '.next() returns an element with .value corresponding to the first Highlight added to the HighlightRegistry');
+      assert_equals(element.value[0], highlightName1, '.next() returns an element with .value[0] corresponding to the first Highlight name added to the HighlightRegistry');
+      assert_equals(element.value[1], customHighlight1, '.next() returns an element with .value[1] corresponding to the first Highlight added to the HighlightRegistry');
       element = iterator.next();
       assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
       assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
     }, 'HighlightRegistry can be iterated over all of its Highlights after adding one of them initializing the iterator with ' + iterationInitialization);
 
     test(() => {
-      CSS.highlights.add(customHighlight2);
+      CSS.highlights.set(highlightName2, customHighlight2);
       let iterator = getIterator(iterationInitialization);
       let element = iterator.next();
       assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-      assert_equals(element.value, customHighlight1, '.next() returns an element with .value corresponding to the first Highlight added to the HighlightRegistry');
+      assert_equals(element.value[0], highlightName1, '.next() returns an element with .value[0] corresponding to the first Highlight name added to the HighlightRegistry');
+      assert_equals(element.value[1], customHighlight1, '.next() returns an element with .value[1] corresponding to the first Highlight added to the HighlightRegistry');
       element = iterator.next();
       assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-      assert_equals(element.value, customHighlight2, '.next() returns an element with .value corresponding to the second Highlight added to the HighlightRegistry');
+      assert_equals(element.value[0], highlightName2, '.next() returns an element with .value[0] corresponding to the second Highlight name added to the HighlightRegistry');
+      assert_equals(element.value[1], customHighlight2, '.next() returns an element with .value[1] corresponding to the second Highlight added to the HighlightRegistry');
       element = iterator.next();
       assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
       assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
@@ -62,44 +146,6 @@
     CSS.highlights.clear();
   }
 
-  // Test .entries
-
-  test(() => {
-    let iterator = CSS.highlights.entries();
-    let element = iterator.next();
-    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
-    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
-  }, 'HighlightRegistry can be iterated when it\'s empty initializing the iterator with .entries().');
-
-  test(() => {
-    CSS.highlights.add(customHighlight1);
-    let iterator = CSS.highlights.entries();
-    let element = iterator.next();
-    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-    assert_equals(element.value[0], customHighlight1, '.next() returns an element with .value[0] corresponding to the first Highlight added to the HighlightRegistry');
-    assert_equals(element.value[1], customHighlight1, '.next() returns an element with .value[1] corresponding to the first Highlight added to the HighlightRegistry');
-    element = iterator.next();
-    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
-    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
-  }, 'HighlightRegistry can be iterated over all of its Highlights after adding one of them initializing the iterator with .entries().');
-
-  test(() => {
-    CSS.highlights.add(customHighlight2);
-    let iterator = CSS.highlights.entries();
-    let element = iterator.next();
-    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-    assert_equals(element.value[0], customHighlight1, '.next() returns an element with .value[0] corresponding to the first Highlight added to the HighlightRegistry');
-    assert_equals(element.value[1], customHighlight1, '.next() returns an element with .value[1] corresponding to the first Highlight added to the HighlightRegistry');
-    element = iterator.next();
-    assert_false(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===false when the iteration didn\'t go past the last highlight');
-    assert_equals(element.value[0], customHighlight2, '.next() returns an element with .value[0] corresponding to the second Highlight added to the HighlightRegistry');
-    assert_equals(element.value[1], customHighlight2, '.next() returns an element with .value[1] corresponding to the second Highlight added to the HighlightRegistry');
-    element = iterator.next();
-    assert_true(element.done, 'HighlightRegistry is iterable and .next() returns an element with .done===true when there are no more highlights to iterate');
-    assert_equals(element.value, undefined, 'HighlightRegistry is iterable and .next() returns an element with .value undefined when there are no more highlights to iterate.');
-  }, 'HighlightRegistry can be iterated over all of its Highlights after adding two of them initializing the iterator with .entries().');
-
-  CSS.highlights.clear();
 
   // Test .forEach
 
@@ -123,7 +169,7 @@
   }, 'HighlightRegistry can be iterated through when it\'s empty using forEach.');
 
   test(() => {
-    CSS.highlights.add(customHighlight1);
+    CSS.highlights.set(highlightName1, customHighlight1);
     expectedResult.push(customHighlight1);
     let actualResult = [];
     CSS.highlights.forEach((highlight) => {actualResult.push(highlight);});
@@ -131,11 +177,10 @@
   }, 'HighlightRegistry can be iterated through when it has one Highlight using forEach.');
 
   test(() => {
-    CSS.highlights.add(customHighlight2);
+    CSS.highlights.set(highlightName2, customHighlight2);
     expectedResult.push(customHighlight2);
     let actualResult = [];
     CSS.highlights.forEach((highlight) => {actualResult.push(highlight);});
     assert_true(compareArrays(actualResult, expectedResult), 'The highlights seen match the highlights added');
   }, 'HighlightRegistry can be iterated through when it has two Highlights using forEach.');
-
 </script>

@@ -1,27 +1,30 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_THREAD_WEB_THREAD_H_
 #define IOS_WEB_PUBLIC_THREAD_WEB_THREAD_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 class Location;
 }
 
 namespace web {
+
+// TODO(crbug.com/1026641): Include web_task_traits.h directly when the
+// migration to Get(UI|IO)ThreadTaskrunner() is complete and the cyclic
+// dependency of web_task_traits.h on WebThread::ID is broken.
+class WebTaskTraits;
 
 class WebThreadDelegate;
 
@@ -31,33 +34,45 @@ class WebThreadDelegate;
   (DCHECK(::web::WebThread::CurrentlyOn(thread_identifier)) \
    << ::web::WebThread::GetDCheckCurrentlyOnErrorMessage(thread_identifier))
 
+// The main entry point to post tasks to the UI thread. Tasks posted with the
+// same `traits` will run in posting order (i.e. according to the
+// SequencedTaskRunner contract). Tasks posted with different `traits` can be
+// re-ordered. You may keep a reference to this task runner, it's always
+// thread-safe to post to it though it may start returning false at some point
+// during shutdown when it definitely is no longer accepting tasks.
+//
+// In unit tests, there must be a WebTaskEnvironment in scope for this API to be
+// available.
+//
+// TODO(crbug.com/1026641): Make default traits |{}| the default param when it's
+// possible to include web_task_traits.h in this file (see note above on the
+// WebTaskTraits fwd-decl).
+scoped_refptr<base::SingleThreadTaskRunner> GetUIThreadTaskRunner(
+    const WebTaskTraits& traits);
+
+// The WebThread::IO counterpart to GetUIThreadTaskRunner().
+scoped_refptr<base::SingleThreadTaskRunner> GetIOThreadTaskRunner(
+    const WebTaskTraits& traits);
+
 ///////////////////////////////////////////////////////////////////////////////
 // WebThread
 //
-// Utility functions for threads that are known by name. For example, there is
-// one IO thread for the entire process, and various pieces of code find it
-// useful to retrieve a pointer to the IO thread's message loop.
-//
-// See web_task_traits.h for posting Tasks to a WebThread.
-//
-// This class automatically handles the lifetime of different threads. You
-// should never need to cache pointers to MessageLoops, since they're not thread
-// safe.
+// Utility functions for threads that are known by name.
 class WebThread {
  public:
   // An enumeration of the well-known threads.
-  // NOTE: threads must be listed in the order of their life-time, with each
-  // thread outliving every other thread below it.
   enum ID {
-    // The main thread in the browser.
+    // The main thread in the browser. It stops running tasks during shutdown
+    // and is never joined.
     UI,
 
-    // This is the thread that processes non-blocking IO, i.e. IPC and network.
-    // Blocking IO should happen in ThreadPool.
+    // This is the thread that processes non-blocking I/O, i.e. IPC and network.
+    // Blocking I/O should happen in base::ThreadPool. It is joined on shutdown
+    // (and thus any task posted to it may block shutdown).
     IO,
 
     // NOTE: do not add new threads here. Instead you should just use
-    // base::Create*TaskRunner to run tasks on the ThreadPool.
+    // base::ThreadPool::Create*TaskRunner to run tasks on the base::ThreadPool.
 
     // This identifier does not represent a thread.  Instead it counts the
     // number of well-known threads.  Insert new well-known threads before this
@@ -65,14 +80,15 @@ class WebThread {
     ID_COUNT
   };
 
-  // NOTE: Task posting APIs have moved to post_task.h. See web_task_traits.h.
+  WebThread(const WebThread&) = delete;
+  WebThread& operator=(const WebThread&) = delete;
 
   // Delete/ReleaseSoon() helpers allow future deletion of an owned object on
   // its associated thread. If you already have a task runner bound to a
   // WebThread you should use its SequencedTaskRunner::DeleteSoon() member
-  // method. If you don't, the helpers below avoid having to do
-  // base::CreateSingleThreadTaskRunner({WebThread::ID})->DeleteSoon(...) which
-  // is equivalent.
+  // method.
+  // TODO(crbug.com/1026641): Get rid of the last few callers to these in favor
+  // of an explicit call to web::GetUIThreadTaskRunner({})->DeleteSoon(...).
 
   template <class T>
   static bool DeleteSoon(ID identifier,
@@ -83,15 +99,15 @@ class WebThread {
 
   // Callable on any thread.  Returns whether the given well-known thread is
   // initialized.
-  static bool IsThreadInitialized(ID identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsThreadInitialized(ID identifier);
 
   // Callable on any thread.  Returns whether execution is currently on the
   // given thread.  To DCHECK this, use the DCHECK_CURRENTLY_ON() macro above.
-  static bool CurrentlyOn(ID identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool CurrentlyOn(ID identifier);
 
   // If the current message loop is one of the known threads, returns true and
   // sets identifier to its ID.
-  static bool GetCurrentThreadIdentifier(ID* identifier) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool GetCurrentThreadIdentifier(ID* identifier);
 
   // Sets the delegate for WebThread::IO.
   //
@@ -160,8 +176,7 @@ class WebThread {
   static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForThread(
       ID identifier);
 
-  WebThread() {}
-  DISALLOW_COPY_AND_ASSIGN(WebThread);
+  WebThread() = default;
 };
 
 }  // namespace web

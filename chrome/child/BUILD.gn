@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,7 +14,6 @@ static_library("child") {
 
   if (is_win) {
     sources += [
-      "delay_load_failure_hook.cc",
       "v8_crashpad_support_win.cc",
       "v8_crashpad_support_win.h",
     ]

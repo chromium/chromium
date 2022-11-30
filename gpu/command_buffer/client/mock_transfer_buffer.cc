@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,7 +146,7 @@ uint32_t MockTransferBuffer::MaxTransferBufferSize() {
 }
 
 unsigned int MockTransferBuffer::RoundToAlignment(unsigned int size) {
-  return base::bits::Align(size, alignment_);
+  return base::bits::AlignUp(size, alignment_);
 }
 
 bool MockTransferBuffer::InSync() {

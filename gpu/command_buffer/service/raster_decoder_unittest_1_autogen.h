@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,24 +11,6 @@
 // It is included by raster_cmd_decoder_unittest_1.cc
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_1_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_1_AUTOGEN_H_
-
-TEST_P(RasterDecoderTest1, FinishValidArgs) {
-  EXPECT_CALL(*gl_, Finish());
-  SpecializedSetup<cmds::Finish, 0>(true);
-  cmds::Finish cmd;
-  cmd.Init();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
-TEST_P(RasterDecoderTest1, FlushValidArgs) {
-  EXPECT_CALL(*gl_, Flush());
-  SpecializedSetup<cmds::Flush, 0>(true);
-  cmds::Flush cmd;
-  cmd.Init();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
 
 TEST_P(RasterDecoderTest1, GetErrorValidArgs) {
   EXPECT_CALL(*gl_, GetError());

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,9 +74,11 @@ bool MinidumpWriter::DoWork() {
 
   // Run the dumpstate callback.
   DCHECK(dump_state_cb_);
+  std::string dumpstate_path;
   if (std::move(dump_state_cb_).Run(minidump_path_.value()) < 0) {
     LOG(ERROR) << "DumpState callback failed.";
-    return false;
+  } else {
+    dumpstate_path = minidump_path_.value() + kDumpStateSuffix;
   }
 
   // Add attachments to dumpinfo and copy the temporary attachments to the dump
@@ -103,9 +105,8 @@ bool MinidumpWriter::DoWork() {
   }
 
   // Add this entry to the lockfile.
-  const DumpInfo info(minidump_path_.value(),
-                      minidump_path_.value() + kDumpStateSuffix,
-                      base::Time::Now(), params_, attachment_files.get());
+  const DumpInfo info(minidump_path_.value(), dumpstate_path, base::Time::Now(),
+                      params_, attachment_files.get());
   if (!AddEntryToLockFile(info)) {
     LOG(ERROR) << "lockfile logging failed";
     return false;

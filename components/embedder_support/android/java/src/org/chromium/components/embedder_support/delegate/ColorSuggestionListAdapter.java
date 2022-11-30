@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,7 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
     private Context mContext;
     private ColorSuggestion[] mSuggestions;
     private OnColorSuggestionClickListener mListener;
+    private int mSelectedColor;
 
     /**
      * The callback used to indicate the user has clicked on a suggestion.
@@ -50,6 +51,14 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
      */
     public void setOnColorSuggestionClickListener(OnColorSuggestionClickListener listener) {
         mListener = listener;
+    }
+
+    /**
+     * Sets the currently selected color so the corresponding list item can be labeled.
+     * @param selectedColor The newly selected color.
+     */
+    public void setSelectedColor(int selectedColor) {
+        mSelectedColor = selectedColor;
     }
 
     /**
@@ -84,6 +93,7 @@ public class ColorSuggestionListAdapter extends BaseAdapter implements View.OnCl
                 super.onInitializeAccessibilityNodeInfo(host, info);
                 info.setCollectionItemInfo(
                         AccessibilityNodeInfo.CollectionItemInfo.obtain(index, 1, 1, 1, false));
+                info.setSelected(suggestion.mColor == mSelectedColor);
             }
         });
     }

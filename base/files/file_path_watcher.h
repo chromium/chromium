@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,15 @@
 #include <utility>
 
 #include "base/base_export.h"
-#include "base/callback.h"
-#include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
+
+class FilePath;
 
 // This class lets you register interest in changes on a FilePath.
 // The callback will get called whenever the file or directory referenced by the
@@ -45,11 +46,11 @@ class BASE_EXPORT FilePathWatcher {
     // within the directory are watched.
     kRecursive,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Indicates that the watcher should watch the given path only (neither
     // ancestors nor descendants). The watch fails if the path does not exist.
     kTrivial,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   };
 
   // Callback type for Watch(). |path| points to the file that was updated,
@@ -69,9 +70,9 @@ class BASE_EXPORT FilePathWatcher {
     virtual ~PlatformDelegate();
 
     // Start watching for the given |path| and notify |delegate| about changes.
-    virtual bool Watch(const FilePath& path,
-                       Type type,
-                       const Callback& callback) WARN_UNUSED_RESULT = 0;
+    [[nodiscard]] virtual bool Watch(const FilePath& path,
+                                     Type type,
+                                     const Callback& callback) = 0;
 
     // Stop watching. This is called from FilePathWatcher's dtor in order to
     // allow to shut down properly while the object is still alive.
@@ -110,10 +111,10 @@ class BASE_EXPORT FilePathWatcher {
   // Returns true if the platform and OS version support recursive watches.
   static bool RecursiveWatchAvailable();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Whether there are outstanding inotify watches.
   static bool HasWatchesForTest();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // Starts watching |path| (and its descendants if |type| is kRecursive) for
   // changes. |callback| will be run on the caller's sequence to report such
@@ -128,7 +129,7 @@ class BASE_EXPORT FilePathWatcher {
  private:
   std::unique_ptr<PlatformDelegate> impl_;
 
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -148,9 +147,9 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
     size_t dump_pos = 0;
 
     // Verifies the first line.
-    EXPECT_EQ(memcmp(&dump[0], kFirstLine, base::size(kFirstLine) - 1), 0);
+    EXPECT_EQ(memcmp(&dump[0], kFirstLine, std::size(kFirstLine) - 1), 0);
 
-    dump_pos += base::size(kFirstLine) - 1;
+    dump_pos += std::size(kFirstLine) - 1;
     EXPECT_GT(dump.size(), dump_pos);
 
     // Skips the file header.
@@ -159,7 +158,7 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
 
     // Reads each packet dump.
     while (dump_pos < dump.size()) {
-      size_t packet_dump_length = 0;
+      uint16_t packet_dump_length = 0;
       if (!VerifyPacketDump(&dump[dump_pos],
                             dump.size() - dump_pos,
                             &packet_dump_length)) {
@@ -181,12 +180,11 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
   // the packet dump.
   bool VerifyPacketDump(const uint8_t* dump,
                         size_t dump_length,
-                        size_t* packet_dump_length) {
+                        uint16_t* packet_dump_length) {
     static const size_t kDumpHeaderLength = 8;
 
     size_t dump_pos = 0;
-    base::ReadBigEndian(reinterpret_cast<const char*>(dump + dump_pos),
-                        reinterpret_cast<uint16_t*>(packet_dump_length));
+    base::ReadBigEndian(dump + dump_pos, packet_dump_length);
     if (*packet_dump_length < kDumpHeaderLength + kMinimumRtpHeaderLength)
       return false;
 
@@ -194,8 +192,7 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
     dump_pos += sizeof(uint16_t);
 
     uint16_t rtp_packet_length = 0;
-    base::ReadBigEndian(reinterpret_cast<const char*>(dump + dump_pos),
-                        &rtp_packet_length);
+    base::ReadBigEndian(dump + dump_pos, &rtp_packet_length);
     if (rtp_packet_length < kMinimumRtpHeaderLength)
       return false;
 
@@ -220,9 +217,8 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
       return false;
 
     uint16_t extension_count = 0;
-    base::ReadBigEndian(
-        reinterpret_cast<const char*>(header + header_length_without_extn + 2),
-        &extension_count);
+    base::ReadBigEndian(header + header_length_without_extn + 2,
+                        &extension_count);
 
     if (length < (extension_count + 1) * 4 + header_length_without_extn)
       return false;
@@ -284,7 +280,7 @@ TEST_F(WebRtcRtpDumpWriterTest, WriteAndFlushSmallSizeDump) {
 }
 
 // Flaky test disabled on Windows (https://crbug.com/1044271).
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_WriteOverMaxLimit DISABLED_WriteOverMaxLimit
 #else
 #define MAYBE_WriteOverMaxLimit WriteOverMaxLimit

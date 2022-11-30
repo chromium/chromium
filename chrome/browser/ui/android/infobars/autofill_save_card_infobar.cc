@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,13 @@
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardInfoBar_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -24,22 +25,17 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
-    base::Optional<AccountInfo> account_info) {
-  return std::make_unique<AutofillSaveCardInfoBar>(std::move(delegate),
-                                                   account_info);
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
+  return std::make_unique<AutofillSaveCardInfoBar>(std::move(delegate));
 }
 
 }  // namespace autofill
 
 AutofillSaveCardInfoBar::AutofillSaveCardInfoBar(
-    std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate,
-    base::Optional<AccountInfo> account_info)
-    : ChromeConfirmInfoBar(std::move(delegate)) {
-  account_info_ = account_info;
-}
+    std::unique_ptr<autofill::AutofillSaveCardInfoBarDelegateMobile> delegate)
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
-AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() {}
+AutofillSaveCardInfoBar::~AutofillSaveCardInfoBar() = default;
 
 void AutofillSaveCardInfoBar::OnLegalMessageLinkClicked(JNIEnv* env,
                                                         jobject obj,
@@ -68,9 +64,16 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(
           base::android::ConvertUTF16ToJavaString(
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_CANCEL)),
           delegate->IsGooglePayBrandingEnabled(),
-          account_info_.has_value()
-              ? ConvertToJavaAccountInfo(env, account_info_.value())
-              : nullptr);
+          delegate->displayed_target_account_email().empty()
+              ? nullptr
+              : base::android::ConvertUTF16ToJavaString(
+                    env, delegate->displayed_target_account_email()),
+          delegate->displayed_target_account_avatar().IsEmpty()
+              ? nullptr
+              : gfx::ConvertToJavaBitmap(
+                    *delegate->displayed_target_account_avatar()
+                         .AsImageSkia()
+                         .bitmap()));
 
   Java_AutofillSaveCardInfoBar_setDescriptionText(
       env, java_delegate,

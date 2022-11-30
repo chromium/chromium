@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,8 @@ class LayerAnimatorTestController {
       LayerAnimationElement::AnimatableProperty property);
 
   // Starts threaded animations that are waiting for an effective start time.
-  void StartThreadedAnimationsIfNeeded();
+  void StartThreadedAnimationsIfNeeded(
+      base::TimeTicks started_time = base::TimeTicks::Now());
 
   // Progresses all running animations by the given |duration|.
   void Step(const base::TimeDelta& duration);

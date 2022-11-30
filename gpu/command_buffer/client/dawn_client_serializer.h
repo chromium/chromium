@@ -1,19 +1,19 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_SERIALIZER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_DAWN_CLIENT_SERIALIZER_H_
 
-#include <dawn_wire/WireClient.h>
+#include <dawn/wire/WireClient.h>
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
 namespace gpu {
 
-struct SharedMemoryLimits;
 class TransferBuffer;
 
 namespace webgpu {
@@ -22,25 +22,17 @@ class DawnClientMemoryTransferService;
 class WebGPUCmdHelper;
 class WebGPUImplementation;
 
-class DawnClientSerializer final : public dawn_wire::CommandSerializer {
+class DawnClientSerializer : public dawn::wire::CommandSerializer {
  public:
-  static std::unique_ptr<DawnClientSerializer> Create(
-      WebGPUImplementation* client,
-      WebGPUCmdHelper* helper,
-      DawnClientMemoryTransferService* memory_transfer_service,
-      const SharedMemoryLimits& limits);
-
   DawnClientSerializer(WebGPUImplementation* client,
                        WebGPUCmdHelper* helper,
                        DawnClientMemoryTransferService* memory_transfer_service,
-                       std::unique_ptr<TransferBuffer> transfer_buffer,
-                       uint32_t buffer_initial_size);
+                       std::unique_ptr<TransferBuffer> transfer_buffer);
   ~DawnClientSerializer() override;
 
-  // dawn_wire::CommandSerializer implementation
+  // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
-  bool Flush() final;
 
   // Signal that it's important that the previously encoded commands are
   // flushed. Calling |AwaitingFlush| will return whether or not a flush still
@@ -55,10 +47,17 @@ class DawnClientSerializer final : public dawn_wire::CommandSerializer {
   // |GetCmdSpace| will do nothing.
   void Disconnect();
 
+  // Marks the commands' place in the GPU command buffer without flushing for
+  // GPU execution.
+  void Commit();
+
  private:
-  WebGPUImplementation* client_;
-  WebGPUCmdHelper* helper_;
-  DawnClientMemoryTransferService* memory_transfer_service_;
+  // dawn::wire::CommandSerializer implementation
+  bool Flush() final;
+
+  raw_ptr<WebGPUImplementation> client_;
+  raw_ptr<WebGPUCmdHelper> helper_;
+  raw_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
   uint32_t put_offset_ = 0;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   uint32_t buffer_initial_size_;

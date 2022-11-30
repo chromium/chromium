@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,9 +93,9 @@ TEST_F(TabCountMetricsTest, HistogramNames) {
   // Testing with hard-coded strings to check that the concatenated names
   // produced by HistogramName() are indeed what we expect. If the bucket ranges
   // change, these strings will need to as well.
-  const std::string kTestMetricNameBucket1("TestMetric.ByLiveTabCount.1Tab");
+  const std::string kTestMetricNameBucket1("TestMetric.ByLiveTabCount2.1Tab");
   const std::string kTestMetricNameBucket3(
-      "TestMetric.ByLiveTabCount.3To4Tabs");
+      "TestMetric.ByLiveTabCount2.3To4Tabs");
   EXPECT_EQ(kTestMetricNameBucket1,
             HistogramName(kTestMetricPrefix, /* live_tabs_only = */ true, 1));
   EXPECT_EQ(kTestMetricNameBucket3,

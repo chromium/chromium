@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/debug/activity_tracker.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/record_replay.h"
 #include "base/synchronization/condition_variable.h"
@@ -19,6 +19,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
 // A WaitableEvent on POSIX is implemented as a wait-list. Currently we don't
@@ -160,7 +161,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
 
  private:
   bool fired_;
-  WaitableEvent* signaling_event_;  // The WaitableEvent which woke us
+  raw_ptr<WaitableEvent> signaling_event_;  // The WaitableEvent which woke us
   base::Lock lock_;
   base::ConditionVariable cv_;
 };
@@ -188,8 +189,8 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider it blocked for scheduling purposes. Ignore this for non-blocking
   // WaitableEvents.
-  Optional<debug::ScopedEventWaitActivity> event_activity;
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<debug::ScopedEventWaitActivity> event_activity;
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_) {
     event_activity.emplace(this);
@@ -226,8 +227,20 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   const TimeTicks end_time =
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
+<<<<<<< HEAD
 
   for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
+||||||| 80c960997e61f
+  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
+       remaining = end_time.is_max()
+                       ? TimeDelta::Max()
+                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
+=======
+  for (TimeDelta remaining = wait_delta; remaining.is_positive() && !sw.fired();
+       remaining = end_time.is_max()
+                       ? TimeDelta::Max()
+                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
     if (end_time.is_max())
       sw.cv()->Wait();
     else

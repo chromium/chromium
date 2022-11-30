@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
@@ -20,7 +19,8 @@
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -67,6 +67,10 @@ class MODULES_EXPORT PaymentRequest final
                  mojo::PendingRemote<payments::mojom::blink::PaymentRequest>
                      mock_payment_provider,
                  ExceptionState&);
+
+  PaymentRequest(const PaymentRequest&) = delete;
+  PaymentRequest& operator=(const PaymentRequest&) = delete;
+
   ~PaymentRequest() override;
 
   ScriptPromise show(ScriptState*, ExceptionState&);
@@ -143,6 +147,11 @@ class MODULES_EXPORT PaymentRequest final
   void OnHasEnrolledInstrument(
       payments::mojom::blink::HasEnrolledInstrumentQueryResult) override;
   void WarnNoFavicon() override;
+  void AllowConnectToSource(
+      const KURL& url,
+      const KURL& url_before_redirects,
+      bool did_follow_redirect,
+      AllowConnectToSourceCallback response_callback) override;
 
   void OnCompleteTimeout(TimerBase*);
   void OnUpdatePaymentDetailsTimeout(TimerBase*);
@@ -187,8 +196,6 @@ class MODULES_EXPORT PaymentRequest final
   HeapTaskRunnerTimer<PaymentRequest> update_payment_details_timer_;
   bool is_waiting_for_show_promise_to_resolve_;
   bool ignore_total_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequest);
 };
 
 }  // namespace blink

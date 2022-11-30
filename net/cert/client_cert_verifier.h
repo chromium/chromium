@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 
@@ -20,16 +19,16 @@ class NET_EXPORT ClientCertVerifier {
  public:
   class Request {
    public:
-    Request() {}
+    Request() = default;
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
 
     // Destruction of the Request cancels it.
-    virtual ~Request() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Request);
+    virtual ~Request() = default;
   };
 
-  virtual ~ClientCertVerifier() {}
+  virtual ~ClientCertVerifier() = default;
 
   // Verifies the given certificate as a client certificate.
   // Returns OK if successful or an error code upon failure.

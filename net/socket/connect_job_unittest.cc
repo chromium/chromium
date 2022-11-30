@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
@@ -44,8 +43,7 @@ class TestConnectJob : public ConnectJob {
                    nullptr /* net_log */,
                    NetLogSourceType::TRANSPORT_CONNECT_JOB,
                    NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
-        job_type_(job_type),
-        last_seen_priority_(DEFAULT_PRIORITY) {
+        job_type_(job_type) {
     switch (job_type_) {
       case JobType::kSyncSuccess:
         socket_data_provider_.set_connect_data(MockConnect(SYNCHRONOUS, OK));
@@ -60,6 +58,9 @@ class TestConnectJob : public ConnectJob {
     }
   }
 
+  TestConnectJob(const TestConnectJob&) = delete;
+  TestConnectJob& operator=(const TestConnectJob&) = delete;
+
   // From ConnectJob:
   LoadState GetLoadState() const override { return LOAD_STATE_IDLE; }
   bool HasEstablishedConnection() const override { return false; }
@@ -67,9 +68,9 @@ class TestConnectJob : public ConnectJob {
     return ResolveErrorInfo(net::OK);
   }
   int ConnectInternal() override {
-    SetSocket(std::unique_ptr<StreamSocket>(new MockTCPClientSocket(
-                  AddressList(), net_log().net_log(), &socket_data_provider_)),
-              base::nullopt /* dns_aliases */);
+    SetSocket(std::make_unique<MockTCPClientSocket>(
+                  AddressList(), net_log().net_log(), &socket_data_provider_),
+              absl::nullopt /* dns_aliases */);
     return socket()->Connect(base::BindOnce(
         &TestConnectJob::NotifyDelegateOfCompletion, base::Unretained(this)));
   }
@@ -85,9 +86,7 @@ class TestConnectJob : public ConnectJob {
  protected:
   const JobType job_type_;
   StaticSocketDataProvider socket_data_provider_;
-  RequestPriority last_seen_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJob);
+  RequestPriority last_seen_priority_ = DEFAULT_PRIORITY;
 };
 
 class ConnectJobTest : public testing::Test {
@@ -107,13 +106,13 @@ class ConnectJobTest : public testing::Test {
             nullptr /* ssl_client_context */,
             nullptr /* socket_performance_watcher_factory */,
             nullptr /* network_quality_estimator */,
-            &net_log_,
+            NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
   ~ConnectJobTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  RecordingTestNetLog net_log_;
+  RecordingNetLogObserver net_log_observer_;
   const CommonConnectJobParams common_connect_job_params_;
   TestConnectJobDelegate delegate_;
 };
@@ -122,16 +121,15 @@ class ConnectJobTest : public testing::Test {
 // completion.
 TEST_F(ConnectJobTest, NoTimeoutOnSyncCompletion) {
   TestConnectJob job(TestConnectJob::JobType::kSyncSuccess,
-                     base::TimeDelta::FromMicroseconds(1),
-                     &common_connect_job_params_, &delegate_);
+                     base::Microseconds(1), &common_connect_job_params_,
+                     &delegate_);
   EXPECT_THAT(job.Connect(), test::IsOk());
 }
 
 // Even though a timeout is specified, it doesn't time out on an asynchronous
 // completion.
 TEST_F(ConnectJobTest, NoTimeoutOnAsyncCompletion) {
-  TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess,
-                     base::TimeDelta::FromMinutes(1),
+  TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess, base::Minutes(1),
                      &common_connect_job_params_, &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsOk());
@@ -150,8 +148,8 @@ TEST_F(ConnectJobTest, NoTimeoutWithNoTimeDelta) {
 // subclasses during the SetPriorityInternal call.
 TEST_F(ConnectJobTest, SetPriority) {
   TestConnectJob job(TestConnectJob::JobType::kAsyncSuccess,
-                     base::TimeDelta::FromMicroseconds(1),
-                     &common_connect_job_params_, &delegate_);
+                     base::Microseconds(1), &common_connect_job_params_,
+                     &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
 
   job.ChangePriority(HIGHEST);
@@ -166,7 +164,7 @@ TEST_F(ConnectJobTest, SetPriority) {
 }
 
 TEST_F(ConnectJobTest, TimedOut) {
-  const base::TimeDelta kTimeout = base::TimeDelta::FromHours(1);
+  const base::TimeDelta kTimeout = base::Hours(1);
 
   std::unique_ptr<TestConnectJob> job =
       std::make_unique<TestConnectJob>(TestConnectJob::JobType::kHung, kTimeout,
@@ -174,19 +172,18 @@ TEST_F(ConnectJobTest, TimedOut) {
   ASSERT_THAT(job->Connect(), test::IsError(ERR_IO_PENDING));
 
   // Nothing should happen before the specified time.
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
   // At which point the job should time out.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsError(ERR_TIMED_OUT));
 
   // Have to delete the job for it to log the end event.
   job.reset();
 
-  auto entries = net_log_.GetEntries();
+  auto entries = net_log_observer_.GetEntries();
 
   EXPECT_EQ(6u, entries.size());
   EXPECT_TRUE(LogContainsBeginEvent(entries, 0, NetLogEventType::CONNECT_JOB));
@@ -204,26 +201,24 @@ TEST_F(ConnectJobTest, TimedOut) {
 }
 
 TEST_F(ConnectJobTest, TimedOutWithRestartedTimer) {
-  const base::TimeDelta kTimeout = base::TimeDelta::FromHours(1);
+  const base::TimeDelta kTimeout = base::Hours(1);
 
   TestConnectJob job(TestConnectJob::JobType::kHung, kTimeout,
                      &common_connect_job_params_, &delegate_);
   ASSERT_THAT(job.Connect(), test::IsError(ERR_IO_PENDING));
 
   // Nothing should happen before the specified time.
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
   // Make sure restarting the timer is respected.
   job.ResetTimer(kTimeout);
-  task_environment_.FastForwardBy(kTimeout -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kTimeout - base::Milliseconds(1));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate_.has_result());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(delegate_.WaitForResult(), test::IsError(ERR_TIMED_OUT));
 }
 

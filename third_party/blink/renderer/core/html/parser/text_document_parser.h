@@ -43,4 +43,4 @@ class TextDocumentParser final : public HTMLDocumentParser {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_TEXT_DOCUMENT_PARSER_H_

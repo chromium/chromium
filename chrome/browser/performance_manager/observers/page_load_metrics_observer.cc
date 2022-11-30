@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -23,7 +23,7 @@
 #include "extensions/browser/process_manager.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #else
 #include "chrome/browser/devtools/devtools_window.h"
@@ -55,38 +55,6 @@ enum class NavigationType {
   kSubFrameSameDocument = 3,
   kNoCommit = 4,
   kCount,
-};
-
-// This enum matches "StabilityPageLoadType" in enums.xml. The ordering
-// of values must match the ordering of values in the NavigationType enum.
-enum class LoadType {
-  kVisibleTabBase = 0,
-  kVisibleTabMainFrameDifferentDocument = 0,
-  kVisibleTabSubFrameDifferentDocument = 1,
-  kVisibleTabMainFrameSameDocument = 2,
-  kVisibleTabSubFrameSameDocument = 3,
-  kVisibleTabNoCommit = 4,
-
-  kHiddenTabBase = 5,
-  kHiddenTabMainFrameDifferentDocument = 5,
-  kHiddenTabSubFrameDifferentDocument = 6,
-  kHiddenTabMainFrameSameDocument = 7,
-  kHiddenTabSubFrameSameDocument = 8,
-  kHiddenTabNoCommit = 9,
-
-  kPrerenderBase = 10,
-  kPrerenderMainFrameDifferentDocument = 10,
-  kPrerenderSubFrameDifferentDocument = 11,
-  kPrerenderMainFrameSameDocument = 12,
-  kPrerenderSubFrameSameDocument = 13,
-  kPrerenderNoCommit = 14,
-
-  kExtension = 15,
-  kDevTools = 16,
-
-  kUnknown = 17,
-
-  kMaxValue = kUnknown,
 };
 
 // Bucketize |load_count| using an exponential function to minimize bits of data
@@ -145,7 +113,9 @@ class PageLoadMetricsWebContentsObserver
 
 PageLoadMetricsWebContentsObserver::PageLoadMetricsWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageLoadMetricsWebContentsObserver>(
+          *web_contents) {
   visible_loads_.fill(0);
   hidden_loads_.fill(0);
 }
@@ -176,7 +146,7 @@ WebContentsType PageLoadMetricsWebContentsObserver::GetWebContentsType() {
 }
 
 bool PageLoadMetricsWebContentsObserver::IsTab() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return !!TabAndroid::FromWebContents(web_contents());
 #else
   return !!chrome::FindBrowserWithWebContents(web_contents());
@@ -198,11 +168,11 @@ bool PageLoadMetricsWebContentsObserver::IsPrerender() const {
           web_contents()->GetBrowserContext());
   if (!no_state_prefetch_manager)
     return false;
-  return no_state_prefetch_manager->IsWebContentsPrerendering(web_contents());
+  return no_state_prefetch_manager->IsWebContentsPrefetching(web_contents());
 }
 
 bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return DevToolsWindow::IsDevToolsWindow(web_contents());
@@ -301,12 +271,15 @@ void PageLoadMetricsWebContentsObserver::DidStopLoading() {
 
 void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  // We don't record metrics for prerendering pages.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->GetRenderFrameHost()->IsActive()) {
     return;
+  }
 
   DCHECK(is_loading_);
 
-  if (navigation_handle->IsInMainFrame() &&
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     RecordUKM();
     ukm_source_id_ = ukm::ConvertToSourceId(
@@ -315,12 +288,12 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
 
   NavigationType navigation_type;
   if (navigation_handle->IsSameDocument()) {
-    if (navigation_handle->IsInMainFrame())
+    if (navigation_handle->IsInPrimaryMainFrame())
       navigation_type = NavigationType::kMainFrameSameDocument;
     else
       navigation_type = NavigationType::kSubFrameSameDocument;
   } else {
-    if (navigation_handle->IsInMainFrame())
+    if (navigation_handle->IsInPrimaryMainFrame())
       navigation_type = NavigationType::kMainFrameDifferentDocument;
     else
       navigation_type = NavigationType::kSubFrameDifferentDocument;
@@ -333,7 +306,7 @@ void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     navigation_type_ = navigation_type;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageLoadMetricsWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PageLoadMetricsWebContentsObserver);
 
 }  // namespace
 

@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that console copies tree outline messages properly.\n`);
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -18,7 +18,7 @@
 
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);
   var consoleView = Console.ConsoleView.instance();
-  var viewport = consoleView._viewport;
+  var viewport = consoleView.viewport;
 
   TestRunner.runTestSuite([async function testSelectAll(next) {
     viewport.forceScrollItemToBeFirst(0);
@@ -32,7 +32,7 @@
     // Try to select all messages.
     document.execCommand('selectAll');
 
-    var text = viewport._selectedText();
+    var text = viewport.selectedText();
     TestRunner.addResult('Selected text: ' + text);
     next();
   }]);

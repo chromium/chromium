@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,7 +106,7 @@ void V8HTMLConstructor::HtmlConstructor(
   // 7. If Type(prototype) is not Object, then: ...
   if (!prototype->IsObject()) {
     if (V8PerContextData* per_context_data = V8PerContextData::From(
-            new_target.As<v8::Object>()->CreationContext())) {
+            new_target.As<v8::Object>()->GetCreationContextChecked())) {
       prototype = per_context_data->PrototypeForType(&wrapper_type_info);
     } else {
       V8ThrowException::ThrowError(isolate, "The context has been destroyed");
@@ -116,7 +116,7 @@ void V8HTMLConstructor::HtmlConstructor(
 
   // 8. If definition's construction stack is empty...
   Element* element;
-  if (definition->GetConstructionStack().IsEmpty()) {
+  if (definition->GetConstructionStack().empty()) {
     // This is an element being created with 'new' from script
     element = definition->CreateElementForConstructor(*window->document());
   } else {
@@ -140,8 +140,21 @@ void V8HTMLConstructor::HtmlConstructor(
   V8SetReturnValue(info, wrapper);
 
   // 11. Perform element.[[SetPrototypeOf]](prototype). Rethrow any exceptions.
-  // Note: I don't think this prototype set *can* throw exceptions.
-  wrapper->SetPrototype(script_state->GetContext(), prototype.As<v8::Object>())
-      .ToChecked();
+  // Note that SetPrototype doesn't actually return the exceptions, it just
+  // returns false or Nothing on exception. See crbug.com/1197894 for an
+  // example.
+  v8::Maybe<bool> maybe_result = wrapper->SetPrototype(
+      script_state->GetContext(), prototype.As<v8::Object>());
+  bool success;
+  if (!maybe_result.To(&success)) {
+    // Exception has already been thrown in this case.
+    return;
+  }
+  if (!success) {
+    // Likely, Reflect.preventExtensions() has been called on the element.
+    exception_state.ThrowTypeError(
+        "Unable to call SetPrototype on this element");
+    return;
+  }
 }
 }  // namespace blink

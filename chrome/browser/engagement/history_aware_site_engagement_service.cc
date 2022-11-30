@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ void HistoryAwareSiteEngagementService::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   std::multiset<GURL> origins;
   for (const history::URLRow& row : deletion_info.deleted_rows())
-    origins.insert(row.url().GetOrigin());
+    origins.insert(row.url().DeprecatedGetOriginAsURL());
 
   UpdateEngagementScores(origins, deletion_info.is_from_expiration(),
                          deletion_info.deleted_urls_origin_map());
@@ -48,7 +48,7 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
   // time" is 4 weeks ago. Set the last updated date to 4 weeks ago for origins
   // where we can't find a valid last visit date.
   base::Time now = clock().Now();
-  base::Time four_weeks_ago = now - base::TimeDelta::FromDays(28);
+  base::Time four_weeks_ago = now - base::Days(28);
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
@@ -72,7 +72,7 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
     // Remove origins that have no urls left.
     if (remaining == 0) {
       settings_map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
+          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
       continue;
     }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,18 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;
 
 namespace policy {
+class ActiveDirectoryJoinDelegate;
 struct EnrollmentConfig;
+enum class LicenseType;
 class EnrollmentStatus;
 }  // namespace policy
 
-namespace chromeos {
-
-class ActiveDirectoryJoinDelegate;
+namespace ash {
 
 // This class is capable to enroll the device into enterprise domain, using
 // either a profile containing authentication data or OAuth token.
@@ -31,9 +29,6 @@ class ActiveDirectoryJoinDelegate;
 // that are not longer needed.
 class EnterpriseEnrollmentHelper {
  public:
-  using EnrollmentCallback =
-      policy::DeviceCloudPolicyInitializer::EnrollmentCallback;
-
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
   enum OtherError {
@@ -66,23 +61,24 @@ class EnterpriseEnrollmentHelper {
     // Called when device attribute upload finishes. `success` indicates
     // whether it is successful or not.
     virtual void OnDeviceAttributeUploadCompleted(bool success) = 0;
-
-    // Called when steps required to fully restore enrollment steps after
-    // version rollback are completed.
-    virtual void OnRestoreAfterRollbackCompleted() = 0;
   };
 
   // Factory method. Caller takes ownership of the returned object.
   static std::unique_ptr<EnterpriseEnrollmentHelper> Create(
       EnrollmentStatusConsumer* status_consumer,
-      ActiveDirectoryJoinDelegate* ad_join_delegate,
+      policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
       const policy::EnrollmentConfig& enrollment_config,
-      const std::string& enrolling_user_domain);
+      const std::string& enrolling_user_domain,
+      policy::LicenseType license_type);
 
   // Sets up a mock object that would be returned by next Create call.
   // This call passes ownership of `mock`.
   static void SetEnrollmentHelperMock(
       std::unique_ptr<EnterpriseEnrollmentHelper> mock);
+
+  EnterpriseEnrollmentHelper(const EnterpriseEnrollmentHelper&) = delete;
+  EnterpriseEnrollmentHelper& operator=(const EnterpriseEnrollmentHelper&) =
+      delete;
 
   virtual ~EnterpriseEnrollmentHelper();
 
@@ -99,28 +95,10 @@ class EnterpriseEnrollmentHelper {
   // only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingToken(const std::string& token) = 0;
 
-  // Starts enterprise enrollment using enrollment `token` for authentication.
-  // This flow is used in OOBE configuration flow.
-  // EnrollUsingWorkflowToken can be called only once during this object's
-  // lifetime, and only if none of the EnrollUsing* was called before.
-  virtual void EnrollUsingEnrollmentToken(const std::string& token) = 0;
-
   // Starts enterprise enrollment using PCA attestation.
   // EnrollUsingAttestation can be called only once during the object's
   // lifetime, and only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingAttestation() = 0;
-
-  // Starts enterprise enrollment for offline demo-mode.
-  // EnrollForOfflineDemo is used offline, no network connections. Thus it goes
-  // into enrollment without authentication -- and applies policies which are
-  // stored locally.
-  virtual void EnrollForOfflineDemo() = 0;
-
-  // When chrome version is rolled back on the device via policy, the enrollment
-  // information is persisted (install attributes, DM token), but some steps
-  // should still be taken (e.g. create robot accounts on the device) as the
-  // stateful partition is reset.
-  virtual void RestoreAfterRollback() = 0;
 
   // Starts device attribute update process. First tries to get
   // permission to update device attributes for current user
@@ -146,9 +124,10 @@ class EnterpriseEnrollmentHelper {
   EnterpriseEnrollmentHelper();
 
   // This method is called once from Create method.
-  virtual void Setup(ActiveDirectoryJoinDelegate* ad_join_delegate,
+  virtual void Setup(policy::ActiveDirectoryJoinDelegate* ad_join_delegate,
                      const policy::EnrollmentConfig& enrollment_config,
-                     const std::string& enrolling_user_domain) = 0;
+                     const std::string& enrolling_user_domain,
+                     policy::LicenseType license_type) = 0;
 
   // This method is used in Create method. `status_consumer` must outlive
   // `this`.
@@ -161,10 +140,14 @@ class EnterpriseEnrollmentHelper {
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
   static EnterpriseEnrollmentHelper* mock_enrollment_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EnterpriseEnrollmentHelper;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_H_

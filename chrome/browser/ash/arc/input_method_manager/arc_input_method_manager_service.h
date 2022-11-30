@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,18 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_state.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine.h"
-#include "components/arc/mojom/input_method_manager.mojom-forward.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "ui/base/ime/chromeos/ime_bridge_observer.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_bridge_observer.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace content {
 class BrowserContext;
@@ -35,13 +34,22 @@ class ArcBridgeService;
 class ArcInputMethodManagerService
     : public KeyedService,
       public ArcInputMethodManagerBridge::Delegate,
-      public chromeos::input_method::InputMethodManager::ImeMenuObserver,
-      public chromeos::input_method::InputMethodManager::Observer,
+      public ash::input_method::InputMethodManager::ImeMenuObserver,
+      public ash::input_method::InputMethodManager::Observer,
       public ui::IMEBridgeObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAndroidVirtualKeyboardVisibilityChanged(bool visible) = 0;
+  };
+
+  // The delegate class to access to the global window tree state.
+  // This class separates ash dependency from ArcInputMethodManagerService.
+  class WindowDelegate {
+   public:
+    virtual ~WindowDelegate() = default;
+    virtual aura::Window* GetFocusedWindow() const = 0;
+    virtual aura::Window* GetActiveWindow() const = 0;
   };
 
   // Returns the instance for the given BrowserContext, or nullptr if the
@@ -57,10 +65,16 @@ class ArcInputMethodManagerService
 
   ArcInputMethodManagerService(content::BrowserContext* context,
                                ArcBridgeService* bridge_service);
+
+  ArcInputMethodManagerService(const ArcInputMethodManagerService&) = delete;
+  ArcInputMethodManagerService& operator=(const ArcInputMethodManagerService&) =
+      delete;
+
   ~ArcInputMethodManagerService() override;
 
   void SetInputMethodManagerBridgeForTesting(
       std::unique_ptr<ArcInputMethodManagerBridge> test_bridge);
+  void SetWindowDelegateForTesting(std::unique_ptr<WindowDelegate> delegate);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -74,21 +88,20 @@ class ArcInputMethodManagerService
   void OnImeInfoChanged(std::vector<mojom::ImeInfoPtr> ime_info_array) override;
   void OnConnectionClosed() override;
 
-  // chromeos::input_method::InputMethodManager::ImeMenuObserver overrides:
+  // ash::input_method::InputMethodManager::ImeMenuObserver overrides:
   void ImeMenuListChanged() override;
   void ImeMenuActivationChanged(bool is_active) override {}
   void ImeMenuItemsChanged(
       const std::string& engine_id,
-      const std::vector<chromeos::input_method::InputMethodManager::MenuItem>&
-          items) override {}
+      const std::vector<ash::input_method::InputMethodManager::MenuItem>& items)
+      override {}
 
-  // chromeos::input_method::InputMethodManager::Observer overrides:
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+  // ash::input_method::InputMethodManager::Observer overrides:
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
 
   // ui::IMEBridgeObserver overrides:
-  void OnRequestSwitchEngine() override {}
   void OnInputContextHandlerChanged() override;
 
   // Called when a11y keyboard option changed and disables ARC IME while a11y
@@ -107,8 +120,11 @@ class ArcInputMethodManagerService
   class TabletModeObserver;
 
   void EnableIme(const std::string& ime_id, bool enable);
-  void SwitchImeTo(const std::string& ime_id);
-  chromeos::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
+  // Notify ARC's IMM of the enabled input methods in Chrome.
+  void SyncEnabledImesInArc();
+  // Notify ARC's IMM of the current active input method in Chrome.
+  void SyncCurrentImeInArc();
+  ash::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfo* info);
   void Focus(int input_context_id);
   void Blur();
@@ -133,7 +149,7 @@ class ArcInputMethodManagerService
   Profile* const profile_;
 
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
-  std::set<std::string> active_arc_ime_ids_;
+  std::set<std::string> enabled_arc_ime_ids_;
   std::unique_ptr<ArcInputMethodState::Delegate> arc_ime_state_delegate_;
   ArcInputMethodState arc_ime_state_;
   InputMethodPrefs prefs_;
@@ -146,10 +162,10 @@ class ArcInputMethodManagerService
   // from/to ARC IMEs in the container. The below two variables are for the
   // proxy IME.
   const std::string proxy_ime_extension_id_;
-  std::unique_ptr<chromeos::InputMethodEngine> proxy_ime_engine_;
+  std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
-  // The currently active input method, observed for
-  // OnShowVirtualKeyboardIfEnabled.
+  // The current (active) input method, observed for
+  // OnVirtualKeyboardVisibilityChangedIfEnabled.
   ui::InputMethod* input_method_ = nullptr;
   bool is_arc_ime_active_ = false;
 
@@ -163,9 +179,9 @@ class ArcInputMethodManagerService
 
   base::CallbackListSubscription accessibility_status_subscription_;
 
-  base::ObserverList<Observer> observers_;
+  std::unique_ptr<WindowDelegate> window_delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(ArcInputMethodManagerService);
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace arc

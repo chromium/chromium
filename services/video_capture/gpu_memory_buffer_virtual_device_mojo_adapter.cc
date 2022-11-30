@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "media/base/bind_to_current_loop.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
 
 namespace video_capture {
 
@@ -42,21 +41,38 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::OnNewGpuMemoryBufferHandle(
   if (!video_frame_handler_.is_bound())
     return;
   media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::New();
-  buffer_handle->set_gpu_memory_buffer_handle(std::move(gmb_handle));
+      media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+          std::move(gmb_handle));
   video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
+}
+
+void GpuMemoryBufferVirtualDeviceMojoAdapter::OnFrameAccessHandlerReady(
+    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+        pending_frame_access_handler) {
+  DCHECK(!frame_access_handler_remote_);
+  frame_access_handler_remote_ =
+      base::MakeRefCounted<VideoFrameAccessHandlerRemote>(
+          mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>(
+              std::move(pending_frame_access_handler)));
 }
 
 void GpuMemoryBufferVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
     int32_t buffer_id,
-    mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission,
     media::mojom::VideoFrameInfoPtr frame_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!video_frame_handler_.is_bound())
+  DCHECK(frame_access_handler_remote_);
+  if (!video_frame_handler_.is_bound()) {
+    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id);
     return;
+  }
+  if (!video_frame_handler_has_forwarder_) {
+    VideoFrameAccessHandlerForwarder::
+        CreateForwarderAndSendVideoFrameAccessHandlerReady(
+            video_frame_handler_, frame_access_handler_remote_);
+    video_frame_handler_has_forwarder_ = true;
+  }
   video_frame_handler_->OnFrameReadyInBuffer(
       mojom::ReadyFrameInBuffer::New(buffer_id, 0 /* frame_feedback_id */,
-                                     std::move(access_permission),
                                      std::move(frame_info)),
       {});
 }
@@ -83,8 +99,8 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::Start(
   // Notify receiver of known buffer handles */
   for (auto& entry : known_buffer_handles_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_gpu_memory_buffer_handle(entry.second.Clone());
+        media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            entry.second.Clone());
     video_frame_handler_->OnNewBuffer(entry.first, std::move(buffer_handle));
   }
 }
@@ -115,7 +131,11 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::TakePhoto(
 }
 
 void GpuMemoryBufferVirtualDeviceMojoAdapter::ProcessFeedback(
-    const media::VideoFrameFeedback& feedback) {
+    const media::VideoCaptureFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void GpuMemoryBufferVirtualDeviceMojoAdapter::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -130,6 +150,7 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::Stop() {
     video_frame_handler_->OnBufferRetired(entry.first);
   video_frame_handler_->OnStopped();
   video_frame_handler_.reset();
+  video_frame_handler_has_forwarder_ = false;
 }
 
 void GpuMemoryBufferVirtualDeviceMojoAdapter::

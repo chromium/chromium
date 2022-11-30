@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace views {
 class Widget;
@@ -24,6 +23,10 @@ class ASH_EXPORT FocusCycler {
   enum Direction { FORWARD, BACKWARD };
 
   FocusCycler();
+
+  FocusCycler(const FocusCycler&) = delete;
+  FocusCycler& operator=(const FocusCycler&) = delete;
+
   ~FocusCycler();
 
   // Returns the widget the FocusCycler is attempting to activate or NULL if
@@ -53,8 +56,6 @@ class ASH_EXPORT FocusCycler {
 
   // See description above getter.
   views::Widget* widget_activating_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusCycler);
 };
 
 }  // namespace ash

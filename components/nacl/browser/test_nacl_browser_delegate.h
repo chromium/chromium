@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_NACL_BROWSER_TEST_NACL_BROWSER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 
 // This is a base test implementation of NaClBrowserDelegate which
@@ -21,9 +20,13 @@
 class TestNaClBrowserDelegate : public NaClBrowserDelegate {
  public:
   TestNaClBrowserDelegate();
+
+  TestNaClBrowserDelegate(const TestNaClBrowserDelegate&) = delete;
+  TestNaClBrowserDelegate& operator=(const TestNaClBrowserDelegate&) = delete;
+
   ~TestNaClBrowserDelegate() override;
   void ShowMissingArchInfobar(int render_process_id,
-                              int render_view_id) override;
+                              int render_frame_id) override;
   bool DialogsAreSuppressed() override;
   bool GetCacheDirectory(base::FilePath* cache_dir) override;
   bool GetPluginDirectory(base::FilePath* plugin_dir) override;
@@ -36,11 +39,6 @@ class TestNaClBrowserDelegate : public NaClBrowserDelegate {
       const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
-  bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                           const GURL& manifest_url) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNaClBrowserDelegate);
 };
 
 #endif  // COMPONENTS_NACL_BROWSER_TEST_NACL_BROWSER_DELEGATE_H_

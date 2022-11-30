@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,36 +8,45 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 
-namespace chromeos {
-
-class ErrorScreensHistogramHelper;
+namespace ash {
 
 // Handles the control flow after OOBE auto-update completes to wait for the
 // enterprise auto-enrollment check that happens as part of OOBE. This includes
 // keeping track of current auto-enrollment state and displaying and updating
 // the error screen upon failures. Similar to a screen controller, but it
 // doesn't actually drive a dedicated screen.
-class AutoEnrollmentCheckScreen
-    : public AutoEnrollmentCheckScreenView::Delegate,
-      public BaseScreen,
-      public NetworkPortalDetector::Observer {
+class AutoEnrollmentCheckScreen : public BaseScreen,
+                                  public NetworkStateHandlerObserver {
  public:
+  enum class Result {
+    NEXT,
+    NOT_APPLICABLE,
+  };
   using TView = AutoEnrollmentCheckScreenView;
 
-  AutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
-                            ErrorScreen* error_screen,
-                            const base::RepeatingClosure& exit_callback);
+  AutoEnrollmentCheckScreen(
+      base::WeakPtr<AutoEnrollmentCheckScreenView> view,
+      ErrorScreen* error_screen,
+      const base::RepeatingCallback<void(Result result)>& exit_callback);
+
+  AutoEnrollmentCheckScreen(const AutoEnrollmentCheckScreen&) = delete;
+  AutoEnrollmentCheckScreen& operator=(const AutoEnrollmentCheckScreen&) =
+      delete;
+
   ~AutoEnrollmentCheckScreen() override;
+
+  static std::string GetResultString(Result result);
 
   // Clears the cached state causing the forced enrollment check to be retried.
   void ClearState();
@@ -47,39 +56,39 @@ class AutoEnrollmentCheckScreen
     auto_enrollment_controller_ = auto_enrollment_controller;
   }
 
-  void set_exit_callback_for_testing(const base::RepeatingClosure& callback) {
+  void set_exit_callback_for_testing(
+      const base::RepeatingCallback<void(Result result)>& callback) {
     exit_callback_ = callback;
   }
 
-  // AutoEnrollmentCheckScreenView::Delegate implementation:
-  void OnViewDestroyed(AutoEnrollmentCheckScreenView* view) override;
-
-  // NetworkPortalDetector::Observer implementation:
-  void OnPortalDetectionCompleted(
-      const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalStatus status) override;
+  // NetworkStateHandlerObserver
+  void PortalStateChanged(
+      const NetworkState* default_network,
+      const NetworkState::PortalState portal_state) override;
+  void OnShuttingDown() override;
 
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
+  bool MaybeSkip(WizardContext& context) override;
 
   // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
   // `this` has been destroyed (by wrapping it with a callback bound to a weak
   // ptr).
-  void RunExitCallback() { exit_callback_.Run(); }
+  void RunExitCallback(Result result) { exit_callback_.Run(result); }
 
  private:
   // Handles update notifications regarding the auto-enrollment check.
   void OnAutoEnrollmentCheckProgressed(policy::AutoEnrollmentState state);
 
   // Handles a state update, updating the UI and saving the state.
-  void UpdateState();
+  void UpdateState(NetworkState::PortalState new_captive_portal_state);
 
-  // Configures the UI to reflect `new_captive_portal_status`. Returns true if
-  // and only if a UI change has been made.
-  bool UpdateCaptivePortalStatus(
-      NetworkPortalDetector::CaptivePortalStatus new_captive_portal_status);
+  // Configures the UI to reflect the updated captive portal state.
+  // Returns true if a UI change has been made.
+  bool UpdateCaptivePortalState(
+      NetworkState::PortalState new_captive_portal_state);
 
   // Configures the UI to reflect `new_auto_enrollment_state`. Returns true if
   // and only if a UI change has been made.
@@ -110,25 +119,31 @@ class AutoEnrollmentCheckScreen
   // necessary".
   bool ShouldBlockOnServerError() const;
 
-  AutoEnrollmentCheckScreenView* view_;
+  base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
   ErrorScreen* error_screen_;
-  base::RepeatingClosure exit_callback_;
-  AutoEnrollmentController* auto_enrollment_controller_;
+  base::RepeatingCallback<void(Result result)> exit_callback_;
+  base::raw_ptr<AutoEnrollmentController> auto_enrollment_controller_ = nullptr;
 
   base::CallbackListSubscription auto_enrollment_progress_subscription_;
 
-  NetworkPortalDetector::CaptivePortalStatus captive_portal_status_;
-  policy::AutoEnrollmentState auto_enrollment_state_;
+  NetworkState::PortalState captive_portal_state_ =
+      NetworkState::PortalState::kUnknown;
+  policy::AutoEnrollmentState auto_enrollment_state_ =
+      policy::AUTO_ENROLLMENT_STATE_IDLE;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   base::CallbackListSubscription connect_request_subscription_;
 
   base::WeakPtrFactory<AutoEnrollmentCheckScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentCheckScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::AutoEnrollmentCheckScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_AUTO_ENROLLMENT_CHECK_SCREEN_H_

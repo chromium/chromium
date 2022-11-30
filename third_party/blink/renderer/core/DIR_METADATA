@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink"
-}
 
 team_email: "blink-dev@chromium.org"

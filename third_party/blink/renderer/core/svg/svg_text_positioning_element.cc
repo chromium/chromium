@@ -20,13 +20,14 @@
 
 #include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
 
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -90,6 +91,8 @@ void SVGTextPositioningElement::SvgAttributeChanged(
             LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {
       if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
         text_layout_object->SetNeedsPositioningValuesUpdate();
+      else
+        To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsPositioningValuesUpdate();
     }
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;

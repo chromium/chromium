@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <body />
+
+  <script>
+    const audio = document.createElement('audio');
+    audio.src = '../bear-320x240-audio-only.webm';
+
+    const video = document.createElement('video');
+
+    async function start() {
+      const canvas = document.createElement('canvas');
+      canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+      video.srcObject = canvas.captureStream();
+      video.muted = true;
+
+      await audio.play();
+      await video.play();
+      await video.requestPictureInPicture();
+      return true;
+    }
+
+    function setMediaSessionPlayActionHandler() {
+      navigator.mediaSession.setActionHandler("play", _ => {
+        audio.play();
+        video.play();
+      });
+    }
+
+    function setMediaSessionPauseActionHandler() {
+      navigator.mediaSession.setActionHandler("pause", _ => {
+        audio.pause();
+        video.pause();
+      });
+    }
+
+    function addPlayEventListener() {
+      video.addEventListener('play', _ => {
+        document.title = 'play';
+      }, { once: true });
+    }
+
+    function addPauseEventListener() {
+      video.addEventListener('pause', _ => {
+        document.title = 'pause';
+      }, { once: true });
+    }
+
+  </script>
+</html>

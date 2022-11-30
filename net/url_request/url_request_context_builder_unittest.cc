@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/mock_network_change_notifier.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_resolver.h"
@@ -19,6 +20,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
@@ -28,15 +30,21 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/extras/sqlite/sqlite_persistent_reporting_and_nel_store.h"
 #include "net/reporting/reporting_context.h"
@@ -55,16 +63,17 @@ class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
       : return_code_(return_code), supported_scheme_(supported_scheme) {}
   ~MockHttpAuthHandlerFactory() override = default;
 
-  int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
-                        HttpAuth::Target target,
-                        const SSLInfo& ssl_info,
-                        const NetworkIsolationKey& network_isolation_key,
-                        const GURL& origin,
-                        CreateReason reason,
-                        int nonce_count,
-                        const NetLogWithSource& net_log,
-                        HostResolver* host_resolver,
-                        std::unique_ptr<HttpAuthHandler>* handler) override {
+  int CreateAuthHandler(
+      HttpAuthChallengeTokenizer* challenge,
+      HttpAuth::Target target,
+      const SSLInfo& ssl_info,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
+      CreateReason reason,
+      int nonce_count,
+      const NetLogWithSource& net_log,
+      HostResolver* host_resolver,
+      std::unique_ptr<HttpAuthHandler>* handler) override {
     handler->reset();
 
     return challenge->auth_scheme() == supported_scheme_
@@ -83,10 +92,11 @@ class URLRequestContextBuilderTest : public PlatformTest,
   URLRequestContextBuilderTest() {
     test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("net/data/url_request_unittest")));
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     builder_.set_proxy_config_service(std::make_unique<ProxyConfigServiceFixed>(
         ProxyConfigWithAnnotation::CreateDirect()));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
   }
 
   std::unique_ptr<HostResolver> host_resolver_ =
@@ -126,21 +136,21 @@ TEST_F(URLRequestContextBuilderTest, UserAgent) {
 }
 
 TEST_F(URLRequestContextBuilderTest, DefaultHttpAuthHandlerFactory) {
-  GURL gurl("www.google.com");
+  url::SchemeHostPort scheme_host_port(GURL("https://www.google.com"));
   std::unique_ptr<HttpAuthHandler> handler;
   std::unique_ptr<URLRequestContext> context(builder_.Build());
   SSLInfo null_ssl_info;
 
   // Verify that the default basic handler is present
-  EXPECT_EQ(
-      OK,
-      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-          "basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(OK,
+            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+                "basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resolver_.get(), &handler));
 }
 
 TEST_F(URLRequestContextBuilderTest, CustomHttpAuthHandlerFactory) {
-  GURL gurl("www.google.com");
+  url::SchemeHostPort scheme_host_port(GURL("https://www.google.com"));
   const int kBasicReturnCode = OK;
   std::unique_ptr<HttpAuthHandler> handler;
   builder_.SetHttpAuthHandlerFactory(
@@ -152,22 +162,22 @@ TEST_F(URLRequestContextBuilderTest, CustomHttpAuthHandlerFactory) {
   EXPECT_EQ(kBasicReturnCode,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
                 "ExtraScheme", HttpAuth::AUTH_SERVER, null_ssl_info,
-                NetworkIsolationKey(), gurl, NetLogWithSource(),
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
                 host_resolver_.get(), &handler));
 
   // Verify that the default basic handler isn't present
-  EXPECT_EQ(
-      ERR_UNSUPPORTED_AUTH_SCHEME,
-      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-          "basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
+            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+                "basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resolver_.get(), &handler));
 
   // Verify that a handler isn't returned for a bogus scheme.
-  EXPECT_EQ(
-      ERR_UNSUPPORTED_AUTH_SCHEME,
-      context->http_auth_handler_factory()->CreateAuthHandlerFromString(
-          "Bogus", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          gurl, NetLogWithSource(), host_resolver_.get(), &handler));
+  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
+            context->http_auth_handler_factory()->CreateAuthHandlerFromString(
+                "Bogus", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resolver_.get(), &handler));
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -206,8 +216,9 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
   // Queue a pending upload.
   GURL url("https://www.foo.test");
   context->reporting_service()->GetContextForTesting()->uploader()->StartUpload(
-      url::Origin::Create(url), url, NetworkIsolationKey(), "report body", 0,
-      base::DoNothing());
+      url::Origin::Create(url), url, IsolationInfo::CreateTransient(),
+      "report body", 0,
+      /*eligible_for_credentials=*/false, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1, context->reporting_service()
                    ->GetContextForTesting()
@@ -225,23 +236,21 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   auto mock_host_resolver = std::make_unique<MockHostResolver>();
   mock_host_resolver->rules()->AddRule("example.com", "1.2.3.4");
   mock_host_resolver->set_ondemand_mode(true);
-
+  auto state = mock_host_resolver->state();
+  builder_.set_host_resolver(std::move(mock_host_resolver));
   std::unique_ptr<URLRequestContext> context(builder_.Build());
-  context->set_host_resolver(mock_host_resolver.get());
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       context->host_resolver()->CreateRequest(
-          HostPortPair("example.com", 1234), NetworkIsolationKey(),
-          NetLogWithSource(), base::nullopt);
+          HostPortPair("example.com", 1234), NetworkAnonymizationKey(),
+          NetLogWithSource(), absl::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
-  ASSERT_TRUE(mock_host_resolver->has_pending_requests());
+  ASSERT_TRUE(state->has_pending_requests());
 
   context.reset();
-  mock_host_resolver->ResolveAllPending();
 
-  EXPECT_FALSE(mock_host_resolver->has_pending_requests());
-  EXPECT_TRUE(mock_host_resolver->rules_map().empty());
+  EXPECT_FALSE(state->has_pending_requests());
 
   // Request should never complete.
   base::RunLoop().RunUntilIdle();
@@ -270,6 +279,83 @@ TEST_F(URLRequestContextBuilderTest, CustomHostResolver) {
   std::unique_ptr<URLRequestContext> context = builder_.Build();
 
   EXPECT_EQ(context.get(), context->host_resolver()->GetContextForTesting());
+}
+
+TEST_F(URLRequestContextBuilderTest, BindToNetworkFinalConfiguration) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "BindToNetwork is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // check that all the pieces are in place and configured correctly.
+  constexpr handles::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  builder_.BindToNetwork(network);
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+
+  EXPECT_EQ(context->bound_network(), network);
+  EXPECT_EQ(context->host_resolver()->GetTargetNetworkForTesting(), network);
+  EXPECT_EQ(context->host_resolver()
+                ->GetManagerForTesting()
+                ->target_network_for_testing(),
+            network);
+  ASSERT_TRUE(context->GetNetworkSessionContext());
+  // A special factory that bind sockets to `network` is needed. We don't need
+  // to check exactly for that, the fact that we are not using the default one
+  // should be good enough.
+  EXPECT_NE(context->GetNetworkSessionContext()->client_socket_factory,
+            ClientSocketFactory::GetDefaultFactory());
+
+  const auto* quic_params = context->quic_context()->params();
+  EXPECT_FALSE(quic_params->close_sessions_on_ip_change);
+  EXPECT_FALSE(quic_params->goaway_sessions_on_ip_change);
+  EXPECT_FALSE(quic_params->migrate_sessions_on_network_change_v2);
+
+  const auto* network_session_params = context->GetNetworkSessionParams();
+  EXPECT_TRUE(network_session_params->ignore_ip_address_changes);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "BindToNetwork is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+TEST_F(URLRequestContextBuilderTest, BindToNetworkCustomManagerOptions) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    GTEST_SKIP()
+        << "BindToNetwork is supported starting from Android Marshmallow";
+  }
+
+  // The actual network handle doesn't really matter, this test just wants to
+  // check that all the pieces are in place and configured correctly.
+  constexpr handles::NetworkHandle network = 2;
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<test::ScopedMockNetworkChangeNotifier>();
+  test::MockNetworkChangeNotifier* mock_ncn =
+      scoped_mock_network_change_notifier->mock_network_change_notifier();
+  mock_ncn->ForceNetworkHandlesSupported();
+
+  // Set non-default value for check_ipv6_on_wifi and check that this is what
+  // HostResolverManager receives.
+  HostResolver::ManagerOptions options;
+  options.check_ipv6_on_wifi = !options.check_ipv6_on_wifi;
+  builder_.BindToNetwork(network, options);
+  std::unique_ptr<URLRequestContext> context = builder_.Build();
+  EXPECT_EQ(context->host_resolver()
+                ->GetManagerForTesting()
+                ->check_ipv6_on_wifi_for_testing(),
+            options.check_ipv6_on_wifi);
+#else   // !BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "BindToNetwork is supported only on Android";
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

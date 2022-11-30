@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/public/js_communication/web_message.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/common/content_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "weblayer/public/js_communication/web_message.h"
@@ -65,7 +67,7 @@ class WebMessageHostImpl : public WebMessageHost {
       // First time called, send a message to the page.
       std::unique_ptr<WebMessage> m2 = std::make_unique<WebMessage>();
       m2->message = u"from c++";
-      proxy_->PostMessage(std::move(m2));
+      proxy_->PostWebMessage(std::move(m2));
     } else {
       // On subsequent calls quit.
       quit_closure_.Run();
@@ -83,13 +85,13 @@ class WebMessageHostImpl : public WebMessageHost {
   int call_count_ = 0;
   int back_forward_cache_state_changed_call_count_ = 0;
   base::RepeatingClosure quit_closure_;
-  WebMessageReplyProxy* proxy_;
+  raw_ptr<WebMessageReplyProxy> proxy_;
   std::vector<std::u16string> messages_;
   bool expected_back_forward_value_ = false;
   std::unique_ptr<base::RunLoop> state_changed_run_loop_;
 };
 
-// WebMessageHostFactory implementation that creates WebMessageHostImp.
+// WebMessageHostFactory implementation that creates WebMessageHostImpl.
 class WebMessageHostFactoryImpl : public WebMessageHostFactory {
  public:
   explicit WebMessageHostFactoryImpl(base::RepeatingClosure quit_closure)
@@ -132,6 +134,32 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
   ASSERT_EQ(2u, current_connection->messages().size());
   EXPECT_EQ(u"from page", current_connection->messages()[0]);
   EXPECT_EQ(u"bouncing from c++", current_connection->messages()[1]);
+  // WebLayer's Page has no functions, verify it can be requested.
+  current_connection->proxy()->GetPage();
+}
+
+// Ensures that a listener removed from a post message works.
+IN_PROC_BROWSER_TEST_F(WebMessageTest, RemoveFromReceive) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  base::RunLoop run_loop;
+  shell()->tab()->AddWebMessageHostFactory(
+      std::make_unique<WebMessageHostFactoryImpl>(run_loop.QuitClosure()), u"x",
+      {"*"});
+
+  // web_message_test.html posts a message immediately.
+  shell()->tab()->GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("/web_message_test2.html"));
+  run_loop.Run();
+
+  // There should be two messages. The one from the page, and the ack triggered
+  // when WebMessageHostImpl calls PostMessage().
+  ASSERT_TRUE(current_connection);
+  ASSERT_EQ(2u, current_connection->messages().size());
+  EXPECT_EQ(u"from page", current_connection->messages()[0]);
+  EXPECT_EQ(u"bouncing from c++", current_connection->messages()[1]);
+  // WebLayer's Page has no functions, verify it can be requested.
+  current_connection->proxy()->GetPage();
 }
 
 class WebMessageTestWithBfCache : public WebLayerBrowserTest {
@@ -177,6 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
   ASSERT_TRUE(web_message_host);
   EXPECT_FALSE(web_message_host->proxy()->IsInBackForwardCache());
   EXPECT_EQ(0, web_message_host->back_forward_cache_state_changed_call_count());
+  Page* original_page = &(web_message_host->proxy()->GetPage());
 
   // Navigate to a new host. The old page should go into the cache.
   OneShotNavigationObserver observer1(shell());
@@ -194,5 +223,7 @@ IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
   observer2.WaitForNavigation();
   web_message_host->WaitForBackForwardStateToBe(false);
   EXPECT_EQ(2, web_message_host->back_forward_cache_state_changed_call_count());
+  EXPECT_EQ(original_page, &(web_message_host->proxy()->GetPage()));
 }
+
 }  // namespace weblayer

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,17 @@ namespace sequence_manager {
 namespace internal {
 
 WorkDeduplicator::WorkDeduplicator(
+<<<<<<< HEAD
     scoped_refptr<AssociatedThreadId> associated_thread)
     : state_ordered_lock_id_(recordreplay::CreateOrderedLock("WorkDeduplicator.state_"))
     , associated_thread_(std::move(associated_thread)) {}
+||||||| 80c960997e61f
+    scoped_refptr<AssociatedThreadId> associated_thread)
+    : associated_thread_(std::move(associated_thread)) {}
+=======
+    scoped_refptr<const AssociatedThreadId> associated_thread)
+    : associated_thread_(std::move(associated_thread)) {}
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 
 WorkDeduplicator::~WorkDeduplicator() = default;
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,12 +97,12 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_sysinfo:
     case __NR_times:
     case __NR_uname:
+      // getcpu() is allowed on ARM chips because it is used in
+      // //third_party/cpuinfo/ on those chips.
+#if defined(__arm__) || defined(__aarch64__)
+    case __NR_getcpu:
+#endif
       return Allow();
-    case __NR_sched_getaffinity:
-    case __NR_sched_getparam:
-    case __NR_sched_getscheduler:
-    case __NR_sched_setscheduler:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
       // See crbug.com/662450 and setrlimit comment above.
       return RestrictPrlimit(GetPolicyPid());

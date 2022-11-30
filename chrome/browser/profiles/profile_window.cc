@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,17 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
@@ -45,7 +47,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/escape.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
@@ -55,7 +56,7 @@
 #include "extensions/browser/extension_system.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -66,6 +67,10 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/profile_picker.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profiles_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using base::UserMetricsAction;
 using content::BrowserThread;
@@ -80,18 +85,14 @@ void UnblockExtensions(Profile* profile) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Called in profiles::LoadProfileAsync once profile is loaded. It runs
-// |callback| if it isn't null.
-void ProfileLoadedCallback(ProfileManager::CreateCallback callback,
-                           Profile* profile,
-                           Profile::CreateStatus status) {
+// Helper function to run a callback on a profile once it's initialized.
+void ProfileLoadedCallback(base::OnceCallback<void(Profile*)> callback,
+                           Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
+  if (!profile)
     return;
-
-  if (!callback.is_null())
-    callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
+  if (callback)
+    std::move(callback).Run(profile);
 }
 
 }  // namespace
@@ -116,6 +117,8 @@ void FindOrCreateNewWindowForProfile(
     chrome::startup::IsFirstRun is_first_run,
     bool always_create) {
   DCHECK(profile);
+  TRACE_EVENT1("browser", "FindOrCreateNewWindowForProfile", "profile_path",
+               profile->GetPath());
 
   if (!always_create) {
     Browser* browser = chrome::FindTabbedBrowser(profile, false);
@@ -134,39 +137,45 @@ void FindOrCreateNewWindowForProfile(
                                 /*launch_mode_recorder=*/nullptr);
 }
 
-void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
+void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
-                                 Profile* profile,
-                                 Profile::CreateStatus status) {
+                                 Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (status != Profile::CREATE_STATUS_INITIALIZED)
-    return;
-
-  chrome::startup::IsProcessStartup is_process_startup =
-      chrome::startup::IS_NOT_PROCESS_STARTUP;
-  chrome::startup::IsFirstRun is_first_run = chrome::startup::IS_NOT_FIRST_RUN;
+  TRACE_EVENT1("browser", "OpenBrowserWindowForProfile", "profile_path",
+               profile->GetPath().AsUTF8Unsafe());
+  chrome::startup::IsProcessStartup process_startup =
+      chrome::startup::IsProcessStartup::kNo;
+  chrome::startup::IsFirstRun is_first_run = chrome::startup::IsFirstRun::kNo;
 
   // If this is a brand new profile, then start a first run window.
   if (is_new_profile) {
-    is_process_startup = chrome::startup::IS_PROCESS_STARTUP;
-    is_first_run = chrome::startup::IS_FIRST_RUN;
+    process_startup = chrome::startup::IsProcessStartup::kYes;
+    is_first_run = chrome::startup::IsFirstRun::kYes;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
+  if (!profile->IsGuestSession()) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile->GetPath());
     if (entry && entry->IsSigninRequired()) {
-      ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileLocked));
       return;
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!AreSecondaryProfilesAllowed() && !profile->IsMainProfile()) {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (unblock_extensions)
@@ -182,8 +191,8 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
     Browser* browser = chrome::FindTabbedBrowser(profile, false);
     if (browser) {
       browser->window()->Activate();
-      if (!callback.is_null())
-        callback.Run(profile, Profile::CREATE_STATUS_INITIALIZED);
+      if (callback)
+        std::move(callback).Run(profile);
       return;
     }
   }
@@ -195,48 +204,48 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
   // up calling LaunchBrowser and opens a new window. If for whatever reason
   // that fails, either something has crashed, or the observer will be cleaned
   // up when a different browser for this profile is opened.
-  if (!callback.is_null())
-    new BrowserAddedForProfileObserver(profile, callback);
+  if (callback) {
+    new BrowserAddedForProfileObserver(
+        profile, base::BindOnce(std::move(callback), profile));
+  }
 
   // We already dealt with the case when |always_create| was false and a browser
   // existed, which means that here a browser definitely needs to be created.
   // Passing true for |always_create| means we won't duplicate the code that
   // tries to find a browser.
-  profiles::FindOrCreateNewWindowForProfile(profile, is_process_startup,
+  profiles::FindOrCreateNewWindowForProfile(profile, process_startup,
                                             is_first_run, true);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 void LoadProfileAsync(const base::FilePath& path,
-                      ProfileManager::CreateCallback callback) {
+                      base::OnceCallback<void(Profile*)> callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
-      path, base::BindRepeating(&ProfileLoadedCallback, callback),
-      std::u16string(), std::string());
+      path, base::BindOnce(&ProfileLoadedCallback, std::move(callback)));
 }
 
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
-                     ProfileManager::CreateCallback callback) {
+                     base::OnceCallback<void(Profile*)> callback) {
+  base::OnceCallback<void(Profile*)> open_browser_callback =
+      base::BindOnce(&profiles::OpenBrowserWindowForProfile,
+                     std::move(callback), always_create,
+                     /*is_new_profile=*/false,
+                     /*unblock_extensions=*/false);
   g_browser_process->profile_manager()->CreateProfileAsync(
       path,
-      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
-                          always_create, false, false),
-      std::u16string(), std::string());
+      base::BindOnce(&ProfileLoadedCallback, std::move(open_browser_callback)));
 }
 
-void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      ProfileManager::GetGuestProfilePath(),
-      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
-                          false, false, false),
-      std::u16string(), std::string());
+void SwitchToGuestProfile(base::OnceCallback<void(Profile*)> callback) {
+  SwitchToProfile(ProfileManager::GetGuestProfilePath(),
+                  /*always_create=*/false, std::move(callback));
 }
 #endif
 
 bool HasProfileSwitchTargets(Profile* profile) {
-  size_t min_profiles =
-      (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) ? 1 : 2;
+  size_t min_profiles = profile->IsGuestSession() ? 1 : 2;
   size_t number_of_profiles =
       g_browser_process->profile_manager()->GetNumberOfProfiles();
   return number_of_profiles >= min_profiles;
@@ -249,34 +258,11 @@ void CloseProfileWindows(Profile* profile) {
                                            BrowserList::CloseCallback(), false);
 }
 
-void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
-                                        Profile* profile,
-                                        BubbleViewMode* bubble_view_mode) {
-  switch (mode) {
-    case BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN:
-      *bubble_view_mode = BUBBLE_VIEW_MODE_GAIA_SIGNIN;
-      return;
-    case BrowserWindow::AVATAR_BUBBLE_MODE_ADD_ACCOUNT:
-      *bubble_view_mode = BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT;
-      return;
-    case BrowserWindow::AVATAR_BUBBLE_MODE_REAUTH:
-      *bubble_view_mode = BUBBLE_VIEW_MODE_GAIA_REAUTH;
-      return;
-    case BrowserWindow::AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN:
-      *bubble_view_mode = BUBBLE_VIEW_MODE_PROFILE_CHOOSER;
-      return;
-    case BrowserWindow::AVATAR_BUBBLE_MODE_DEFAULT:
-      *bubble_view_mode = profile->IsIncognitoProfile()
-                              ? profiles::BUBBLE_VIEW_MODE_INCOGNITO
-                              : profiles::BUBBLE_VIEW_MODE_PROFILE_CHOOSER;
-  }
-}
-
 BrowserAddedForProfileObserver::BrowserAddedForProfileObserver(
     Profile* profile,
-    ProfileManager::CreateCallback callback)
-    : profile_(profile), callback_(callback) {
-  DCHECK(!callback_.is_null());
+    base::OnceClosure callback)
+    : profile_(profile), callback_(std::move(callback)) {
+  DCHECK(callback_);
   BrowserList::AddObserver(this);
 }
 
@@ -288,9 +274,8 @@ void BrowserAddedForProfileObserver::OnBrowserAdded(Browser* browser) {
     // By the time the browser is added a tab (or multiple) are about to be
     // added. Post the callback to the message loop so it gets executed after
     // the tabs are created.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback_, profile_,
-                                  Profile::CREATE_STATUS_INITIALIZED));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(callback_));
     base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
   }
 }

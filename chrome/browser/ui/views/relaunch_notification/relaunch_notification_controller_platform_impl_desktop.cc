@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,9 @@ namespace {
 // Returns the last active tabbed browser.
 Browser* FindLastActiveTabbedBrowser() {
   BrowserList* browser_list = BrowserList::GetInstance();
-  const auto end = browser_list->end_last_active();
-  for (auto scan = browser_list->begin_last_active(); scan != end; ++scan) {
+  const auto end = browser_list->end_browsers_ordered_by_activation();
+  for (auto scan = browser_list->begin_browsers_ordered_by_activation();
+       scan != end; ++scan) {
     if ((*scan)->is_type_normal())
       return *scan;
   }
@@ -112,13 +113,6 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
     const {
   return widget_ != nullptr;
-}
-
-void RelaunchNotificationControllerPlatformImpl::OnWidgetClosing(
-    views::Widget* widget) {
-  DCHECK_EQ(widget, widget_);
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
 }
 
 void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(

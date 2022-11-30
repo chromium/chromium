@@ -117,7 +117,7 @@ remote_math->Add(2, 2, base::BindOnce(...));
 
 Used when the receiver/callee creates the endpoints. One endpoint is retained
 for itself to receive IPCs, and the other endpoint is returned as an unbound
-`mojo::PendingRemote<T>` for the sender/callee to bind to a `mojo::Remote<T>`.
+`mojo::PendingRemote<T>` for the sender/caller to bind to a `mojo::Remote<T>`.
 
 ```c++
 class MathImpl : public math::mojom::MathImpl {
@@ -164,6 +164,6 @@ mojo::Receiver<math::mojom::MathImpl> receiver = ...;
 mojo::PendingReceiver<math::mojom::MathImpl> pending_receiver = receiver.Unbind();
 ```
 
-[mojo-idl]: https://chromium.googlesource.com/chromium/src/+/master/mojo/public/tools/bindings/README.md
+[mojo-idl]: https://chromium.googlesource.com/chromium/src/+/main/mojo/public/tools/bindings/README.md
 [gn-template]: https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/mojom.gni
 [message-pipe]: https://cs.chromium.org/chromium/src/mojo/public/cpp/system/message_pipe.h

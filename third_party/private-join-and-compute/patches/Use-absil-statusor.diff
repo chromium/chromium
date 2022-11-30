@@ -1,0 +1,555 @@
+diff --git a/README.chromium b/README.chromium
+index 896b752c6b663..42e79ae3542f6 100644
+--- a/README.chromium
++++ b/README.chromium
+@@ -17,3 +17,4 @@ files.diff - the files deleted from the original library.
+ dependencies.diff - removes all the dependencies on Abseil and other libraries replacing them with Chrome's analogues.
+ compilation.diff - fixes compilation/static analyzers in Chrome.
+ fix_nulls.diff - makes the presubmit happy by replacing NULL with nullptr.
++Use-absil-statusor.diff - removes existing status/statusor library's version, and uses absl::status and absl::statusor as source of truth.
+diff --git a/src/BUILD.gn b/src/BUILD.gn
+index d39f1d1a7a7f1..2f12f7a4c78c3 100644
+--- a/src/BUILD.gn
++++ b/src/BUILD.gn
+@@ -42,17 +42,16 @@ component("ec_commutative_cipher") {
+     "crypto/openssl.inc",
+     "util/canonical_errors.cc",
+     "util/canonical_errors.h",
+-    "util/status.cc",
+     "util/status.h",
+     "util/status.inc",
+     "util/status_macros.h",
+-    "util/statusor.cc",
+     "util/statusor.h",
+   ]
+   deps = [
+     "//base",
+     "//third_party/boringssl",
+   ]
++  public_deps = [ "//third_party/abseil-cpp:absl" ]
+ 
+   configs += [
+     "//build/config/compiler:no_chromium_code",
+diff --git a/src/crypto/ec_commutative_cipher.cc b/src/crypto/ec_commutative_cipher.cc
+index 0075ae01170a3..8b1cbe7d1b139 100644
+--- a/src/crypto/ec_commutative_cipher.cc
++++ b/src/crypto/ec_commutative_cipher.cc
+@@ -77,8 +77,7 @@ StatusOr<std::string> ECCommutativeCipher::Encrypt(
+   if (!status_or_point.ok()) {
+     return status_or_point.status();
+   }
+-  ASSIGN_OR_RETURN(ECPoint encrypted_point,
+-                   Encrypt(status_or_point.ValueOrDie()));
++  ASSIGN_OR_RETURN(ECPoint encrypted_point, Encrypt(status_or_point.value()));
+   return encrypted_point.ToBytesCompressed();
+ }
+ 
+diff --git a/src/crypto/ec_group.cc b/src/crypto/ec_group.cc
+index c4a4770b309fc..2ad8e6bb63095 100644
+--- a/src/crypto/ec_group.cc
++++ b/src/crypto/ec_group.cc
+@@ -141,7 +141,7 @@ Status ECGroup::CheckPrivateKey(const BigNum& priv_key) const {
+     return InvalidArgumentError(
+         "The given key is out of bounds, needs to be in [1, order) instead.");
+   }
+-  return OkStatus();
++  return absl::OkStatus();
+ }
+ 
+ StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveInternal(
+diff --git a/src/util/status.cc b/src/util/status.cc
+deleted file mode 100644
+index 263d5afe46ac9..0000000000000
+--- a/src/util/status.cc
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/*
+- * Copyright 2019 Google Inc.
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *     https://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-#include "third_party/private-join-and-compute/src/util/status.h"
+-
+-#include <sstream>
+-#include <utility>
+-
+-namespace private_join_and_compute {
+-
+-Status::Status() : code_(private_join_and_compute::StatusCode::kOk), message_("") {}
+-
+-Status::Status(private_join_and_compute::StatusCode error, std::string error_message)
+-    : code_(error), message_(std::move(error_message)) {
+-  if (code_ == private_join_and_compute::StatusCode::kOk) {
+-    message_.clear();
+-  }
+-}
+-
+-Status::Status(const Status& other)
+-    : code_(other.code_), message_(other.message_) {}
+-
+-Status& Status::operator=(const Status& other) {
+-  code_ = other.code_;
+-  message_ = other.message_;
+-  return *this;
+-}
+-
+-std::string Status::ToString() const {
+-  if (code_ == private_join_and_compute::StatusCode::kOk) {
+-    return "OK";
+-  }
+-  std::ostringstream stringStream;
+-  stringStream << code_ << ": " << message_;
+-  return stringStream.str();
+-}
+-
+-Status Annotate(const Status& s, const std::string& msg) {
+-  if (s.ok() || msg.empty()) return s;
+-
+-  std::string new_msg;
+-
+-  if (s.message().empty()) {
+-    new_msg = msg;
+-  } else {
+-    new_msg = s.message() + "; " + msg;
+-  }
+-  return Status(s.code(), new_msg);
+-}
+-
+-extern std::ostream& operator<<(std::ostream& os, const Status& other) {
+-  os << other.ToString();
+-  return os;
+-}
+-
+-}  // namespace private_join_and_compute
+diff --git a/src/util/status.h b/src/util/status.h
+index 944af0bcdb272..983ac3b28ce71 100644
+--- a/src/util/status.h
++++ b/src/util/status.h
+@@ -18,84 +18,11 @@
+ 
+ #include <string>
+ 
+-namespace private_join_and_compute {
+-enum StatusCode {
+-  kOk = 0,
+-  kCancelled = 1,
+-  kUnknown = 2,
+-  kInvalidArgument = 3,
+-  kDeadlineExceeded = 4,
+-  kNotFound = 5,
+-  kAlreadyExists = 6,
+-  kPermissionDenied = 7,
+-  kResourceExhausted = 8,
+-  kFailedPrecondition = 9,
+-  kAborted = 10,
+-  kOutOfRange = 11,
+-  kUnimplemented = 12,
+-  kInternal = 13,
+-  kUnavailable = 14,
+-  kDataLoss = 15,
+-  kUnauthenticated = 16,
+-  kDoNotUseReservedForFutureExpansionUseDefaultInSwitchInstead_ = 20
+-};
+-
+-// A Status is a combination of an error code and a string message (for non-OK
+-// error codes).
+-class Status {
+- public:
+-  // Creates an OK status
+-  Status();
+-
+-  // Make a Status from the specified error and message.
+-  Status(private_join_and_compute::StatusCode error, std::string error_message);
+-
+-  Status(const Status& other);
+-  Status& operator=(const Status& other);
+-
+-  // Some pre-defined Status objects
+-  static Status OK() {
+-    return Status();
+-  }
+-  static Status UNKNOWN() {
+-    return Status(private_join_and_compute::StatusCode::kUnknown, "");
+-  }
+-
+-  // Accessors
+-  bool ok() const { return code_ == private_join_and_compute::StatusCode::kOk; }
+-  int error_code() const { return code_; }
+-  private_join_and_compute::StatusCode code() const { return code_; }
+-  const std::string& message() const { return message_; }
+-
+-  bool operator==(const Status& x) const;
+-  bool operator!=(const Status& x) const;
+-
+-  // NoOp
+-  void IgnoreError() const {}
++#include "third_party/abseil-cpp/absl/status/status.h"
+ 
+-  std::string ToString() const;
+-
+- private:
+-  private_join_and_compute::StatusCode code_;
+-  std::string message_;
+-};
+-
+-inline bool Status::operator==(const Status& other) const {
+-  return (this->code_ == other.code_) && (this->message_ == other.message_);
+-}
+-
+-inline bool Status::operator!=(const Status& other) const {
+-  return !(*this == other);
+-}
+-
+-// Returns a Status that is identical to 's' except that the error_message()
+-// has been augmented by adding 'msg' to the end of the original error
+-// message.
+-Status Annotate(const Status& s, const std::string& msg);
+-
+-extern std::ostream& operator<<(std::ostream& os, const Status& other);
+-
+-inline Status OkStatus() { return Status(); }
++namespace private_join_and_compute {
++using Status = absl::Status;
++using StatusCode = absl::StatusCode;
+ 
+ }  // namespace private_join_and_compute
+ 
+diff --git a/src/util/status_macros.h b/src/util/status_macros.h
+index 7c0f1628aa2bb..33063549552e4 100644
+--- a/src/util/status_macros.h
++++ b/src/util/status_macros.h
+@@ -32,10 +32,10 @@
+ // Internal helper.
+ #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
+   auto statusor = (rexpr);                                            \
+-  if (UNLIKELY(!statusor.ok())) {                           \
++  if (UNLIKELY(!statusor.ok())) {                                     \
+     return std::move(statusor).status();                              \
+   }                                                                   \
+-  lhs = std::move(statusor).ValueOrDie()
++  lhs = std::move(statusor).value()
+ 
+ // Internal helper for concatenating macro values.
+ #define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+diff --git a/src/util/statusor.cc b/src/util/statusor.cc
+deleted file mode 100644
+index 08eb1f04d6470..0000000000000
+--- a/src/util/statusor.cc
++++ /dev/null
+@@ -1,49 +0,0 @@
+-/*
+- * Copyright 2019 Google Inc.
+- * Licensed under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License.
+- * You may obtain a copy of the License at
+- *
+- *     https://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS,
+- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- * See the License for the specific language governing permissions and
+- * limitations under the License.
+- */
+-
+-#include "third_party/private-join-and-compute/src/util/statusor.h"
+-
+-#include "third_party/private-join-and-compute/src/chromium_patch.h"
+-#include "third_party/private-join-and-compute/src/util/status.h"
+-
+-namespace private_join_and_compute {
+-namespace internal {
+-
+-static const char* kInvalidStatusCtorArgMessage =
+-    "Status::OK is not a valid constructor argument to StatusOr<T>";
+-static const char* kNullObjectCtorArgMessage =
+-    "nullptr is not a valid constructor argument to StatusOr<T*>";
+-
+-Status StatusOrHelper::HandleInvalidStatusCtorArg() {
+-  LOG(DFATAL) << kInvalidStatusCtorArgMessage;
+-  // In optimized builds, we will fall back to private_join_and_compute::StatusCode::kInternal.
+-  return Status(::private_join_and_compute::StatusCode::kInternal,
+-                kInvalidStatusCtorArgMessage);
+-}
+-
+-Status StatusOrHelper::HandleNullObjectCtorArg() {
+-  LOG(DFATAL) << kNullObjectCtorArgMessage;
+-  // In optimized builds, we will fall back to
+-  // ::private_join_and_compute::StatusCode::kInternal.
+-  return Status(::private_join_and_compute::StatusCode::kInternal, kNullObjectCtorArgMessage);
+-}
+-
+-void StatusOrHelper::Crash(const Status& status) {
+-  LOG(FATAL) << "Attempting to fetch value instead of handling error "
+-             << status;
+-}
+-
+-}  // namespace internal
+-}  // namespace private_join_and_compute
+diff --git a/src/util/statusor.h b/src/util/statusor.h
+index 7951d3d31a3c6..6f351f60cb3f9 100644
+--- a/src/util/statusor.h
++++ b/src/util/statusor.h
+@@ -13,250 +13,15 @@
+  * limitations under the License.
+  */
+ 
+-// StatusOr<T> is the union (w/o using Union) of a Status object and a T object.
+-// StatusOr models the concept of an object that is either a usable value, or an
+-// error Status explaining why such a value is not present. To this end,
+-// StatusOr<T> does not allow its Status value to be Status::OK. Furthermore,
+-// the value of a StatusOr<T*> must not be null. This is enforced by a debug
+-// check in most cases, but even when it is not, clients must not set the value
+-// to null.
+-//
+-// The primary use-case for StatusOr<T> is as the return value of a function
+-// which may fail.
+-//
+-// Example client usage for a StatusOr<T>, where T is not a pointer:
+-//
+-//  StatusOr<float> result = DoBigCalculationThatCouldFail();
+-//  if (result.ok()) {
+-//    float answer = result.ValueOrDie();
+-//    printf("Big calculation yielded: %f", answer);
+-//  } else {
+-//    LOG(ERROR) << result.status();
+-//  }
+-//
+-// Example client usage for a StatusOr<T*>:
+-//
+-//  StatusOr<Foo*> result = FooFactory::MakeNewFoo(arg);
+-//  if (result.ok()) {
+-//    std::unique_ptr<Foo> foo(result.ValueOrDie());
+-//    foo->DoSomethingCool();
+-//  } else {
+-//    LOG(ERROR) << result.status();
+-//  }
+-//
+-// Example client usage for a StatusOr<std::unique_ptr<T>>:
+-//
+-//  StatusOr<std::unique_ptr<Foo>> result = FooFactory::MakeNewFoo(arg);
+-//  if (result.ok()) {
+-//    std::unique_ptr<Foo> foo = std::move(result.ValueOrDie());
+-//    foo->DoSomethingCool();
+-//  } else {
+-//    LOG(ERROR) << result.status();
+-//  }
+-//
+-// Example factory implementation returning StatusOr<T*>:
+-//
+-//  StatusOr<Foo*> FooFactory::MakeNewFoo(int arg) {
+-//    if (arg <= 0) {
+-//      return Status(::private_join_and_compute::StatusCode::kInvalidArgument,
+-//                            "Arg must be positive");
+-//    } else {
+-//      return new Foo(arg);
+-//    }
+-//  }
+-//
+-
+ #ifndef UTIL_STATUSOR_H_
+ #define UTIL_STATUSOR_H_
+ 
+-#include <memory>
+-#include <new>
+-#include <utility>
+-
+-#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+-#include "third_party/private-join-and-compute/src/util/status.h"  // IWYU pragma: export  // for Status
++#include "third_party/abseil-cpp/absl/status/statusor.h"
+ 
+ namespace private_join_and_compute {
+ 
+-  template <typename T>
+-  class StatusOr {
+- public:
+-  // Construct a new StatusOr with Status::UNKNOWN status
+-  StatusOr();
+-
+-  // Construct a new StatusOr with the given non-ok status. After calling
+-  // this constructor, calls to ValueOrDie() will CHECK-fail.
+-  //
+-  // NOTE: Not explicit - we want to use StatusOr<T> as a return
+-  // value, so it is convenient and sensible to be able to do 'return
+-  // Status()' when the return type is StatusOr<T>.
+-  //
+-  // REQUIRES: status != Status::OK. This requirement is DCHECKed.
+-  // In optimized builds, passing Status::OK here will have the effect
+-  // of passing PosixErrorSpace::EINVAL as a fallback.
+-  StatusOr(const Status& status);  // NOLINT - no explicit
+-
+-  // Construct a new StatusOr with the given value. If T is a plain pointer,
+-  // value must not be nullptr. After calling this constructor, calls to
+-  // ValueOrDie() will succeed, and calls to status() will return OK.
+-  //
+-  // NOTE: Not explicit - we want to use StatusOr<T> as a return type
+-  // so it is convenient and sensible to be able to do 'return T()'
+-  // when the return type is StatusOr<T>.
+-  //
+-  // REQUIRES: if T is a plain pointer, value != nullptr. This requirement is
+-  // DCHECKed. In optimized builds, passing a nullptr pointer here will have
+-  // the effect of passing ::private_join_and_compute::StatusCode::kInternal as a fallback.
+-  StatusOr(const T& value);  // NOLINT - no explicit
+-
+-  // Copy constructor.
+-  StatusOr(const StatusOr& other);
+-
+-  // Assignment operator.
+-  StatusOr& operator=(const StatusOr& other);
+-
+-  // Move constructor and move-assignment operator.
+-  StatusOr(StatusOr&& other) = default;
+-  StatusOr& operator=(StatusOr&& other) = default;
+-
+-  // Rvalue-reference overloads of the other constructors and assignment
+-  // operators, to support move-only types and avoid unnecessary copying.
+-  StatusOr(T&& value);  // NOLINT - no explicit
+-
+-  // Returns a reference to our status. If this contains a T, then
+-  // returns Status::OK.
+-  const Status& status() const;
+-
+-  // Returns this->status().ok()
+-  bool ok() const;
+-
+-  // Returns a reference to our current value, or CHECK-fails if !this->ok().
+-  const T& ValueOrDie() const&;
+-  T& ValueOrDie() &;
+-  const T&& ValueOrDie() const&&;
+-  T&& ValueOrDie() &&;
+-
+-  // Ignores any errors. This method does nothing except potentially suppress
+-  // complaints from any tools that are checking that errors are not dropped on
+-  // the floor.
+-  void IgnoreError() const {}
+-
+- private:
+-  // absl::variant<Status, T> variant_;
+-  Status status_;
+-  std::unique_ptr<T> value_;
+-};
+-
+-////////////////////////////////////////////////////////////////////////////////
+-// Implementation details for StatusOr<T>
+-
+-namespace internal {
+-
+-class PRIVATE_COMPUTE_EXPORT StatusOrHelper {
+- public:
+-  // Move type-agnostic error handling to the .cc.
+-  static Status HandleInvalidStatusCtorArg();
+-  static Status HandleNullObjectCtorArg();
+-  static void Crash(const Status& status);
+-
+-  // Customized behavior for StatusOr<T> vs. StatusOr<T*>
+-  template <typename T>
+-  struct Specialize;
+-};
+-
+-template <typename T>
+-struct StatusOrHelper::Specialize {
+-  // For non-pointer T, a reference can never be nullptr.
+-  static inline bool IsValueNull(const T& t) { return false; }
+-};
+-
+-template <typename T>
+-struct StatusOrHelper::Specialize<T*> {
+-  static inline bool IsValueNull(const T* t) { return t == nullptr; }
+-};
+-
+-}  // namespace internal
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr() : status_(Status::UNKNOWN()), value_(nullptr) {}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const Status& status)
+-    : status_(status), value_(nullptr) {
+-  if (status.ok()) {
+-    status_ = internal::StatusOrHelper::HandleInvalidStatusCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const T& value)
+-    : status_(Status::OK()), value_(new T(value)) {
+-  if (internal::StatusOrHelper::Specialize<T>::IsValueNull(*value_)) {
+-    status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(const StatusOr& other)
+-    : status_(other.status_), value_(new T(*other.value_)) {}
+-
+-template <typename T>
+-inline StatusOr<T>& StatusOr<T>::operator=(const StatusOr<T>& other) {
+-  status_ = other.status_;
+-  value_.reset(new T(*other.value_));
+-  return *this;
+-}
+-
+-
+-template <typename T>
+-inline StatusOr<T>::StatusOr(T&& value)
+-    : status_(Status::OK()), value_(new T(std::forward<T>(value))) {
+-  if (internal::StatusOrHelper::Specialize<T>::IsValueNull(*value_)) {
+-    status_ = internal::StatusOrHelper::HandleNullObjectCtorArg();
+-  }
+-}
+-
+-template <typename T>
+-inline const Status& StatusOr<T>::status() const {
+-  return status_;
+-}
+-
+-template <typename T>
+-inline bool StatusOr<T>::ok() const {
+-  return status_.ok();
+-}
+-
+-template <typename T>
+-inline const T& StatusOr<T>::ValueOrDie() const& {
+-  if (value_ == nullptr) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return *value_;
+-}
+-
+-template <typename T>
+-inline T& StatusOr<T>::ValueOrDie() & {
+-  if (value_ == nullptr) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return *value_;
+-}
+-
+-template <typename T>
+-inline const T&& StatusOr<T>::ValueOrDie() const&& {
+-  if (value_ == nullptr) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(*value_);
+-}
+-
+ template <typename T>
+-inline T&& StatusOr<T>::ValueOrDie() && {
+-  if (value_ == nullptr) {
+-    internal::StatusOrHelper::Crash(status());
+-  }
+-  return std::move(*value_);
+-}
++using StatusOr = absl::StatusOr<T>;
+ 
+ }  // namespace private_join_and_compute
+ 

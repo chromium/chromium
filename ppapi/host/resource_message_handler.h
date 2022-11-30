@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_HOST_RESOURCE_MESSAGE_HANDLER_H_
 #define PPAPI_HOST_RESOURCE_MESSAGE_HANDLER_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/host/ppapi_host_export.h"
 
@@ -25,6 +24,10 @@ struct ReplyMessageContext;
 class PPAPI_HOST_EXPORT ResourceMessageHandler {
  public:
   ResourceMessageHandler();
+
+  ResourceMessageHandler(const ResourceMessageHandler&) = delete;
+  ResourceMessageHandler& operator=(const ResourceMessageHandler&) = delete;
+
   virtual ~ResourceMessageHandler();
 
   // Called when this handler should handle a particular message. This should
@@ -63,9 +66,6 @@ class PPAPI_HOST_EXPORT ResourceMessageHandler {
   // The default implementation just returns PP_ERROR_NOTSUPPORTED.
   virtual int32_t OnResourceMessageReceived(const IPC::Message& msg,
                                             HostMessageContext* context);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceMessageHandler);
 };
 
 }  // namespace host

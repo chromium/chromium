@@ -1,19 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_TAB_HELPER_H_
 #define CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_TAB_HELPER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/oom_intervention/near_oom_monitor.h"
+#include "chrome/browser/android/oom_intervention/near_oom_reduction_message_delegate.h"
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/oom_intervention/oom_intervention.mojom.h"
 
 namespace content {
@@ -57,12 +57,13 @@ class OomInterventionTabHelper
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
-  void RenderProcessGone(base::TerminationStatus status) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // CrashDumpManager::Observer:
   void OnCrashDumpProcessed(
@@ -89,13 +90,12 @@ class OomInterventionTabHelper
   void ResetInterfaces();
 
   bool navigation_started_ = false;
-  bool load_finished_ = false;
-  base::Optional<base::TimeTicks> near_oom_detected_time_;
+  absl::optional<base::TimeTicks> near_oom_detected_time_;
   base::CallbackListSubscription subscription_;
   base::OneShotTimer renderer_detection_timer_;
 
   // Not owned. This will be nullptr in incognito mode.
-  OomInterventionDecider* decider_;
+  raw_ptr<OomInterventionDecider> decider_;
 
   mojo::Remote<blink::mojom::OomIntervention> intervention_;
 
@@ -123,9 +123,12 @@ class OomInterventionTabHelper
   base::TimeTicks last_navigation_timestamp_;
   base::TimeTicks start_monitor_timestamp_;
 
-  ScopedObserver<crash_reporter::CrashMetricsReporter,
-                 crash_reporter::CrashMetricsReporter::Observer>
-      scoped_observer_;
+  base::ScopedObservation<crash_reporter::CrashMetricsReporter,
+                          crash_reporter::CrashMetricsReporter::Observer>
+      scoped_observation_{this};
+
+  oom_intervention::NearOomReductionMessageDelegate
+      near_oom_reduction_message_delegate_;
 
   base::WeakPtrFactory<OomInterventionTabHelper> weak_ptr_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

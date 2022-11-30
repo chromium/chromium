@@ -1,0 +1,74 @@
+<html>
+<script src="notification_test_utils.js"></script>
+<script>
+
+function getNotificationPermission() {
+  return Notification.permission;
+}
+
+async function getServiceWorkerNotificationPermission() {
+  return sendMessage('getServiceWorkerNotificationPermission');
+}
+
+async function queryNotificationPermission() {
+  let result = await navigator.permissions.query({name: 'notifications'});
+  return result.state;
+}
+
+async function queryServiceWorkerNotificationPermission() {
+  return sendMessage('queryServiceWorkerNotificationPermission');
+}
+
+async function getPushPermission() {
+  let sw = await getServiceWorkerRegistration();
+  return sw.pushManager.permissionState({userVisibleOnly:true});
+}
+
+async function getServiceWorkerPushPermission() {
+  return sendMessage('getServiceWorkerPushPermission');
+}
+
+async function requestNotificationPermission() {
+  return Notification.requestPermission();
+}
+
+async function requestPushPermission() {
+  let sw = await getServiceWorkerRegistration();
+  let dummy_application_server_key = new Array(65);
+  dummy_application_server_key[0] = 0x04;
+  let options = {
+    userVisibleOnly: true,
+    applicationServerKey: 
+      new TextEncoder().encode(
+        String.fromCharCode(...dummy_application_server_key)),
+  };
+
+  return sw.pushManager.subscribe(options);
+}
+
+// Sends a message to the service worker and returns a promise that resolves
+// to the worker's response.
+async function sendMessage(message) {
+  let sw = await getServiceWorkerRegistration();
+  sw.active.postMessage(message);
+  // Resolves to <result> after receiving response of '<message>:<result>'.
+  return new Promise(resolve => {
+    messagePort.addEventListener('message', event => {
+      if (event.data.startsWith(message + ':')) {
+        resolve(event.data.substr(message.length + 1));
+      }
+    });
+  });
+}
+
+function getServiceWorkerRegistration() {
+  return GetActivatedServiceWorker(
+      'notification_permission_checker_worker.js',
+      location.pathname);
+}
+</script>
+
+<body>
+This page tests notification permissions in service workers.
+</body>
+</html>

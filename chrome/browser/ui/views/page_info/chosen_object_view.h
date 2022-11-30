@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,18 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/page_info/page_info_ui.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
-class ImageView;
-}  // namespace views
+}
 
 class ChosenObjectViewObserver;
+class PageInfoRowView;
 
 // A ChosenObjectView is a row in the Page Info bubble that shows an individual
 // object (e.g. a Bluetooth device, a USB device) that the current site has
@@ -31,8 +33,9 @@ class ChosenObjectView : public views::View {
   ~ChosenObjectView() override;
 
   void AddObserver(ChosenObjectViewObserver* observer);
+  void ResetPermission();
 
-  // views:View:
+  // views::View:
   void OnThemeChanged() override;
 
  private:
@@ -40,8 +43,8 @@ class ChosenObjectView : public views::View {
 
   void ExecuteDeleteCommand();
 
-  views::ImageView* icon_;             // Owned by the views hierarchy.
-  views::ImageButton* delete_button_;  // Owned by the views hierarchy.
+  raw_ptr<views::ImageButton> delete_button_ = nullptr;
+  raw_ptr<PageInfoRowView> row_view_ = nullptr;
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;

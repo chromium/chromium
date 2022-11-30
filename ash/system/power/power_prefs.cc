@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,16 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/human_presence/human_presence_metrics.h"
+#include "ash/system/human_presence/lock_on_leave_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
+#include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
@@ -31,6 +35,8 @@ using PeakShiftDayConfig =
 
 using AdvancedBatteryChargeModeDayConfig =
     power_manager::PowerManagementPolicy::AdvancedBatteryChargeModeDayConfig;
+
+namespace qd_metrics = ash::quick_dim_metrics;
 
 chromeos::PowerPolicyController::Action GetPowerPolicyAction(
     const PrefService* prefs,
@@ -77,6 +83,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPowerAcScreenLockDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
+  registry->RegisterBooleanPref(
+      prefs::kPowerAdaptiveChargingEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kPowerAdaptiveChargingNudgeShown, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenBrightnessPercent,
                                 -1);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenDimDelayMs, 300000);
@@ -104,11 +116,32 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kPowerSmartDimEnabled, true);
   registry->RegisterBooleanPref(prefs::kPowerAlsLoggingEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPowerQuickDimEnabled, false);
 
   registry->RegisterBooleanPref(prefs::kAllowScreenLock, true);
   registry->RegisterBooleanPref(
       prefs::kEnableAutoScreenLock, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
+double GetAdaptiveChargingMinProbability() {
+  // An AdaptiveCharging decision is considered to be reliable if the inference
+  // score is higher than this number.
+  constexpr double kDefaultAdaptiveChargingMinProbability = 0.2;
+
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      ash::features::kAdaptiveCharging, "adaptive_charging_min_probability",
+      kDefaultAdaptiveChargingMinProbability);
+}
+
+int GetAdaptiveChargingHoldPercent() {
+  // The AdaptiveCharging will delay the charging when the battery level is at
+  // or higher than this number until AdaptiveCharging is over.
+  constexpr int kDefaultAdaptiveChargingHoldPercent = 80;
+
+  return base::GetFieldTrialParamByFeatureAsInt(
+      ash::features::kAdaptiveCharging, "adaptive_charging_hold_percent",
+      kDefaultAdaptiveChargingHoldPercent);
 }
 
 }  // namespace
@@ -122,6 +155,10 @@ PowerPrefs::PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
   DCHECK(power_manager_client);
   DCHECK(power_policy_controller_);
   DCHECK(tick_clock_);
+
+  // Only construct lock_on_leave_controller_ if quick dim is enabled.
+  if (features::IsQuickDimEnabled())
+    lock_on_leave_controller_ = std::make_unique<LockOnLeaveController>();
 
   power_manager_client_observation_.Observe(power_manager_client);
   Shell::Get()->session_controller()->AddObserver(this);
@@ -212,6 +249,22 @@ void PowerPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   ObservePrefs(prefs);
 }
 
+void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
+  PrefService* prefs = GetPrefService();
+  if (!prefs)
+    return;
+
+  bool new_quick_dim_pref_enabled =
+      prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
+  if (quick_dim_pref_enabled_ != new_quick_dim_pref_enabled) {
+    quick_dim_pref_enabled_ = new_quick_dim_pref_enabled;
+    base::UmaHistogramBoolean(qd_metrics::kEnabledHistogramName,
+                              quick_dim_pref_enabled_);
+  }
+
+  UpdatePowerPolicyFromPrefs();
+}
+
 void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   PrefService* prefs = GetPrefService();
   if (!prefs || !local_state_)
@@ -285,6 +338,25 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
         prefs->GetDouble(prefs::kPowerUserActivityScreenDimDelayFactor);
   }
 
+  // Only set power_manager and lock-on-leave if quick dim is enabled.
+  if (lock_on_leave_controller_) {
+    if (prefs->GetBoolean(prefs::kPowerQuickDimEnabled)) {
+      values.battery_quick_dim_delay_ms =
+          hps::GetQuickDimDelay().InMilliseconds();
+      values.ac_quick_dim_delay_ms = hps::GetQuickDimDelay().InMilliseconds();
+
+      values.battery_quick_lock_delay_ms =
+          hps::GetQuickLockDelay().InMilliseconds();
+      values.ac_quick_lock_delay_ms = hps::GetQuickLockDelay().InMilliseconds();
+
+      values.send_feedback_if_undimmed = hps::GetQuickDimFeedbackEnabled();
+
+      lock_on_leave_controller_->EnableLockOnLeave();
+    } else {
+      lock_on_leave_controller_->DisableLockOnLeave();
+    }
+  }
+
   values.wait_for_initial_user_activity =
       prefs->GetBoolean(prefs::kPowerWaitForInitialUserActivity);
   values.force_nonzero_brightness_for_user_activity =
@@ -297,11 +369,10 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       local_state_->IsManagedPreference(
           prefs::kPowerPeakShiftBatteryThreshold) &&
       local_state_->IsManagedPreference(prefs::kPowerPeakShiftDayConfig)) {
-    const base::DictionaryValue* configs_value =
-        local_state_->GetDictionary(prefs::kPowerPeakShiftDayConfig);
-    DCHECK(configs_value);
+    const base::Value::Dict& configs_value =
+        local_state_->GetDict(prefs::kPowerPeakShiftDayConfig);
     std::vector<PeakShiftDayConfig> configs;
-    if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(*configs_value,
+    if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(configs_value,
                                                                 &configs)) {
       values.peak_shift_enabled = true;
       values.peak_shift_battery_threshold =
@@ -309,7 +380,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       values.peak_shift_day_configs = std::move(configs);
     } else {
       LOG(WARNING) << "Invalid Peak Shift day configs format: "
-                   << *configs_value;
+                   << configs_value;
     }
   }
 
@@ -318,18 +389,17 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
           prefs::kAdvancedBatteryChargeModeEnabled) &&
       local_state_->IsManagedPreference(
           prefs::kAdvancedBatteryChargeModeDayConfig)) {
-    const base::DictionaryValue* configs_value =
-        local_state_->GetDictionary(prefs::kAdvancedBatteryChargeModeDayConfig);
-    DCHECK(configs_value);
+    const base::Value::Dict& configs_value =
+        local_state_->GetDict(prefs::kAdvancedBatteryChargeModeDayConfig);
     std::vector<AdvancedBatteryChargeModeDayConfig> configs;
     if (chromeos::PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-            *configs_value, &configs)) {
+            configs_value, &configs)) {
       values.advanced_battery_charge_mode_enabled = true;
       values.advanced_battery_charge_mode_day_configs = std::move(configs);
     } else {
       LOG(WARNING)
           << "Invalid Advanced Battery Charge Mode day configs format: "
-          << *configs_value;
+          << configs_value;
     }
   }
 
@@ -361,13 +431,27 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
         local_state_->GetBoolean(prefs::kUsbPowerShareEnabled);
   }
 
+  if (features::IsAdaptiveChargingEnabled()) {
+    values.adaptive_charging_enabled =
+        prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled);
+    if (values.adaptive_charging_enabled) {
+      values.adaptive_charging_min_probability =
+          GetAdaptiveChargingMinProbability();
+      values.adaptive_charging_hold_percent = GetAdaptiveChargingHoldPercent();
+    }
+  }
+
   power_policy_controller_->ApplyPrefs(values);
 }
 
 void PowerPrefs::ObservePrefs(PrefService* prefs) {
+  // Store initial state of the quick dim preference to detect whether it has
+  // been manually flipped.
+  quick_dim_pref_enabled_ = prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
+
   // Observe pref updates from policy.
   base::RepeatingClosure update_callback(base::BindRepeating(
-      &PowerPrefs::UpdatePowerPolicyFromPrefs, base::Unretained(this)));
+      &PowerPrefs::UpdatePowerPolicyFromPrefsChange, base::Unretained(this)));
 
   profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_registrar_->Init(prefs);
@@ -412,6 +496,9 @@ void PowerPrefs::ObservePrefs(PrefService* prefs) {
   profile_registrar_->Add(prefs::kPowerFastSuspendWhenBacklightsForcedOff,
                           update_callback);
   profile_registrar_->Add(prefs::kPowerAlsLoggingEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerQuickDimEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerAdaptiveChargingEnabled,
+                          update_callback);
 
   UpdatePowerPolicyFromPrefs();
 }

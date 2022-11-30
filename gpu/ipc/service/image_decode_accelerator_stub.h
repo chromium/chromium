@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,13 +25,8 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace IPC {
-class Message;
-}  // namespace IPC
-
 namespace gpu {
 class GpuChannel;
-class ImageFactory;
 class SyncPointClientState;
 
 // Processes incoming image decode requests from renderers: it schedules the
@@ -58,27 +53,26 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
                              GpuChannel* channel,
                              int32_t route_id);
 
-  // Processes a message from the renderer. Should be called on the IO thread.
-  bool OnMessageReceived(const IPC::Message& msg);
+  ImageDecodeAcceleratorStub(const ImageDecodeAcceleratorStub&) = delete;
+  ImageDecodeAcceleratorStub& operator=(const ImageDecodeAcceleratorStub&) =
+      delete;
+
+  // Processes a decode request. Must be called on the IO thread.
+  void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
+                           uint64_t release_count);
 
   // Called on the main thread to indicate that |channel_| should no longer be
   // used.
   void Shutdown();
 
-  void SetImageFactoryForTesting(ImageFactory* image_factory);
-
  private:
   friend class base::RefCountedThreadSafe<ImageDecodeAcceleratorStub>;
   ~ImageDecodeAcceleratorStub();
 
-  void OnScheduleImageDecode(
-      const GpuChannelMsg_ScheduleImageDecode_Params& params,
-      uint64_t release_count);
-
   // Creates the service-side cache entry for a completed decode and releases
   // the decode sync token. If the decode was unsuccessful, no cache entry is
   // created but the decode sync token is still released.
-  void ProcessCompletedDecode(GpuChannelMsg_ScheduleImageDecode_Params params,
+  void ProcessCompletedDecode(mojom::ScheduleImageDecodeParamsPtr params_ptr,
                               uint64_t decode_release_count);
 
   // Releases the decode sync token corresponding to |decode_release_count| and
@@ -93,22 +87,18 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
       std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> result);
 
   // The object to which the actual decoding can be delegated.
-  ImageDecodeAcceleratorWorker* worker_ = nullptr;
+  raw_ptr<ImageDecodeAcceleratorWorker> worker_ = nullptr;
 
   base::Lock lock_;
-  GpuChannel* channel_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<GpuChannel> channel_ GUARDED_BY(lock_) = nullptr;
   SequenceId sequence_ GUARDED_BY(lock_);
   scoped_refptr<SyncPointClientState> sync_point_client_state_
       GUARDED_BY(lock_);
   base::queue<std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult>>
       pending_completed_decodes_ GUARDED_BY(lock_);
 
-  ImageFactory* external_image_factory_for_testing_ = nullptr;
-
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDecodeAcceleratorStub);
 };
 
 }  // namespace gpu

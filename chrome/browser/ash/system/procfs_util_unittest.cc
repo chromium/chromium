@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ class ProcfsUtilTest : public testing::Test {
     slash_proc_ = temp_dir_.GetPath().Append("proc");
     CHECK(base::CreateDirectory(slash_proc_));
   }
+
+  ProcfsUtilTest(const ProcfsUtilTest&) = delete;
+  ProcfsUtilTest& operator=(const ProcfsUtilTest&) = delete;
+
   ~ProcfsUtilTest() override = default;
 
   // Write |contents| to file |file_name| under /proc.
@@ -44,8 +48,6 @@ class ProcfsUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcfsUtilTest);
 };
 
 TEST_F(ProcfsUtilTest, GetSingleProcStatSuccess) {
@@ -82,21 +84,6 @@ TEST_F(ProcfsUtilTest, GetCpuTimeJiffiesSuccess) {
       107994940 + 2443611 + 104428507 + 5684138545 + 584527 + 0 + 738084 + 0;
   WriteContentsToFile(contents, "stat");
   EXPECT_EQ(expected, GetCpuTimeJiffies(slash_proc_.Append("stat")).value());
-}
-
-TEST_F(ProcfsUtilTest, GetUsedMemTotalSuccess) {
-  std::string contents =
-      "MemTotal:       65946588 kB\n"
-      "MemFree:         9385800 kB\n"
-      "MemAvailable:   44230668 kB\n"
-      "Buffers:         4646292 kB\n"
-      "Cached:         27859260 kB\n"
-      "SwapCached:          780 kB\n"
-      "Active:         40069592 kB\n"
-      "Inactive:       11098284 kB\n";
-  int64_t expected = 65946588 - 9385800;
-  WriteContentsToFile(contents, "meminfo");
-  EXPECT_EQ(expected, GetUsedMemTotalKB(slash_proc_.Append("meminfo")).value());
 }
 
 }  // namespace system

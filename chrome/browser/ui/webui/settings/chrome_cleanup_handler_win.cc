@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,38 +37,37 @@ namespace settings {
 
 namespace {
 
-// Returns a ListValue containing a copy of the file paths stored in |files|.
-std::unique_ptr<base::ListValue> GetFilesAsListStorage(
-    const std::set<base::FilePath>& files) {
-  auto value = std::make_unique<base::ListValue>();
+// Returns a base::Value::List containing a copy of the file paths stored in
+// |files|.
+base::Value::List GetFilesAsListStorage(const std::set<base::FilePath>& files) {
+  base::Value::List value;
   for (const base::FilePath& path : files) {
-    auto item = std::make_unique<base::DictionaryValue>();
-    item->SetString("dirname",
-                    path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
-    item->SetString("basename", path.BaseName().AsUTF8Unsafe());
-    value->Append(std::move(item));
+    base::Value::Dict item;
+    item.Set("dirname", path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
+    item.Set("basename", path.BaseName().AsUTF8Unsafe());
+    value.Append(std::move(item));
   }
   return value;
 }
 
-// Returns a ListValue containing a copy of the strings stored in |string_set|.
-std::unique_ptr<base::ListValue> GetStringSetAsListStorage(
+// Returns a base::Value::List containing a copy of the strings stored in
+// |string_set|.
+base::Value::List GetStringSetAsListStorage(
     const std::set<std::wstring>& string_set) {
-  auto value = std::make_unique<base::ListValue>();
+  base::Value::List value;
   for (const std::wstring& string : string_set)
-    value->AppendString(base::AsString16(string));
+    value.Append(base::AsString16(string));
 
   return value;
 }
 
-base::DictionaryValue GetScannerResultsAsDictionary(
+base::Value::Dict GetScannerResultsAsDictionary(
     const safe_browsing::ChromeCleanerScannerResults& scanner_results,
     Profile* profile) {
-  base::DictionaryValue value;
-  value.SetList("files",
-                GetFilesAsListStorage(scanner_results.files_to_delete()));
-  value.SetList("registryKeys",
-                GetStringSetAsListStorage(scanner_results.registry_keys()));
+  base::Value::Dict value;
+  value.Set("files", GetFilesAsListStorage(scanner_results.files_to_delete()));
+  value.Set("registryKeys",
+            GetStringSetAsListStorage(scanner_results.registry_keys()));
   return value;
 }
 
@@ -190,10 +189,9 @@ void ChromeCleanupHandler::OnRebootRequired() {
 }
 
 void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
-    const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+    const base::Value::List& args) {
+  DCHECK_EQ(0U, args.size());
 
-  UMA_HISTOGRAM_BOOLEAN("SoftwareReporter.CleanupCard", true);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_Shown"));
   AllowJavascript();
@@ -202,10 +200,11 @@ void ChromeCleanupHandler::HandleRegisterChromeCleanerObserver(
                     base::Value(controller_->IsAllowedByPolicy()));
 }
 
-void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+void ChromeCleanupHandler::HandleStartScanning(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args[0].is_bool())
+    allow_logs_upload = args[0].GetBool();
 
   // If this operation is not allowed the UI should be disabled.
   CHECK(controller_->IsAllowedByPolicy());
@@ -219,8 +218,9 @@ void ChromeCleanupHandler::HandleStartScanning(const base::ListValue* args) {
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartScanning"));
 }
 
-void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+void ChromeCleanupHandler::HandleRestartComputer(
+    const base::Value::List& args) {
+  DCHECK_EQ(0U, args.size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_RestartComputer"));
@@ -228,16 +228,15 @@ void ChromeCleanupHandler::HandleRestartComputer(const base::ListValue* args) {
   controller_->Reboot();
 }
 
-void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+void ChromeCleanupHandler::HandleStartCleanup(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   bool allow_logs_upload = false;
-  args->GetBoolean(0, &allow_logs_upload);
+  if (args[0].is_bool())
+    allow_logs_upload = args[0].GetBool();
 
   // The state is propagated to all open tabs and should be consistent.
   DCHECK_EQ(controller_->logs_enabled(profile_), allow_logs_upload);
 
-  safe_browsing::RecordCleanupStartedHistogram(
-      safe_browsing::CLEANUP_STARTED_FROM_PROMPT_IN_SETTINGS);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartCleanup"));
 
@@ -249,10 +248,11 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
 }
 
 void ChromeCleanupHandler::HandleNotifyShowDetails(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
   bool details_section_visible = false;
-  args->GetBoolean(0, &details_section_visible);
+  if (args[0].is_bool())
+    details_section_visible = args[0].GetBool();
 
   if (details_section_visible) {
     base::RecordAction(
@@ -264,36 +264,35 @@ void ChromeCleanupHandler::HandleNotifyShowDetails(
 }
 
 void ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked(
-    const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetSize());
+    const base::Value::List& args) {
+  CHECK_EQ(0U, args.size());
 
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_LearnMore"));
 }
 
 void ChromeCleanupHandler::HandleGetMoreItemsPluralString(
-    const base::ListValue* args) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const base::Value::List& args) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GetPluralString(IDS_SETTINGS_RESET_CLEANUP_DETAILS_MORE, args);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void ChromeCleanupHandler::HandleGetItemsToRemovePluralString(
-    const base::ListValue* args) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const base::Value::List& args) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GetPluralString(IDS_SETTINGS_RESET_CLEANUP_DETAILS_ITEMS_TO_BE_REMOVED, args);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void ChromeCleanupHandler::GetPluralString(int id,
-                                           const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+                                           const base::Value::List& args) {
+  const auto& list = args;
+  CHECK_EQ(2U, list.size());
 
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  std::string callback_id = list[0].GetString();
 
-  int num_items = 0;
-  args->GetInteger(1, &num_items);
+  int num_items = list[1].GetIfInt().value_or(0);
 
   const std::u16string plural_string =
       num_items > 0 ? l10n_util::GetPluralStringFUTF16(id, num_items)

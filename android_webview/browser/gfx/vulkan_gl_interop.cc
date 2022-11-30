@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
@@ -23,7 +25,6 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context_egl.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -53,14 +54,20 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
  public:
   GLNonOwnedCompatibilityContext()
       : gl::GLContextEGL(nullptr),
-        surface_(
-            base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(gfx::Size(1, 1))) {
+        surface_(base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+            gl::GLSurfaceEGL::GetGLDisplayEGL(),
+            gfx::Size(1, 1))) {
     gl::GLContextAttribs attribs;
     Initialize(surface_.get(), attribs);
 
     DCHECK(!g_gl_context);
     g_gl_context = this;
   }
+
+  GLNonOwnedCompatibilityContext(const GLNonOwnedCompatibilityContext&) =
+      delete;
+  GLNonOwnedCompatibilityContext& operator=(
+      const GLNonOwnedCompatibilityContext&) = delete;
 
   bool MakeCurrentImpl(gl::GLSurface* surface) override {
     // A GLNonOwnedCompatibilityContext may have set the GetRealCurrent()
@@ -95,8 +102,6 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
   }
 
   scoped_refptr<gl::GLSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLNonOwnedCompatibilityContext);
 };
 
 VulkanGLInterop::InFlightInteropDraw::InFlightInteropDraw(
@@ -188,8 +193,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   }
 
   // If prev buffer is wrong size, just re-allocate.
-  if (pending_draw && pending_draw->ahb_image->GetSize() !=
-                          gfx::Size(params.width, params.height)) {
+  if (pending_draw &&
+      pending_draw->image_size != gfx::Size(params.width, params.height)) {
     pending_draw.reset();
   }
 
@@ -214,24 +219,22 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
       LOG(ERROR) << "Failed to allocate AHardwareBuffer for WebView rendering.";
       return;
     }
-    auto scoped_buffer =
+    pending_draw->scoped_buffer =
         base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+    pending_draw->image_size = gfx::Size(params.width, params.height);
 
-    pending_draw->ahb_image = base::MakeRefCounted<gl::GLImageAHardwareBuffer>(
-        gfx::Size(params.width, params.height));
-    if (!pending_draw->ahb_image->Initialize(scoped_buffer.get(),
-                                             false /* preserved */)) {
-      LOG(ERROR) << "Failed to initialize GLImage for AHardwareBuffer.";
+    // Create an EGLImage for the buffer.
+    pending_draw->egl_image = gpu::CreateEGLImageFromAHardwareBuffer(
+        pending_draw->scoped_buffer.get());
+    if (!pending_draw->egl_image.is_valid()) {
+      LOG(ERROR) << "Failed to initialize EGLImage for AHardwareBuffer";
       return;
     }
 
     glGenTextures(1, static_cast<GLuint*>(&pending_draw->texture_id));
     GLenum target = GL_TEXTURE_2D;
     glBindTexture(target, pending_draw->texture_id);
-    if (!pending_draw->ahb_image->BindTexImage(target)) {
-      LOG(ERROR) << "Failed to bind GLImage for AHardwareBuffer.";
-      return;
-    }
+    glEGLImageTargetTexture2DOES(target, pending_draw->egl_image.get());
     glBindTexture(target, 0);
     glGenFramebuffersEXT(1, &pending_draw->framebuffer_id);
     glBindFramebufferEXT(GL_FRAMEBUFFER, pending_draw->framebuffer_id);
@@ -291,13 +294,14 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   // Create a VkImage and import AHB.
   if (!pending_draw->vulkan_image) {
     auto handle = base::android::ScopedHardwareBufferHandle::Create(
-        pending_draw->ahb_image->GetAHardwareBuffer()->buffer());
+        pending_draw->scoped_buffer.get());
     gfx::GpuMemoryBufferHandle gmb_handle(std::move(handle));
     auto* device_queue = vulkan_context_provider_->GetDeviceQueue();
     auto vulkan_image = gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
         device_queue, std::move(gmb_handle),
         gfx::Size(params.width, params.height), VK_FORMAT_R8G8B8A8_UNORM,
-        0 /* usage */);
+        /*usage=*/0, /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+        /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
     if (!vulkan_image) {
       LOG(ERROR) << "Could not create VkImage from AHB.";
       return;

@@ -1,11 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_WATCHER_MANAGER_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_WATCHER_MANAGER_H_
-
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
@@ -30,7 +28,9 @@ class WatcherManager {
   using NotificationCallback =
       base::RepeatingCallback<void(ChangeType change_type)>;
 
-  virtual ~WatcherManager() {}
+  WatcherManager(const WatcherManager&) = delete;
+  WatcherManager& operator=(const WatcherManager&) = delete;
+  virtual ~WatcherManager() = default;
 
   // Adds an entry watcher. If the |recursive| mode is not supported then
   // FILE_ERROR_INVALID_OPERATION must be returned as an error. If the |url| is
@@ -52,6 +52,9 @@ class WatcherManager {
   virtual void RemoveWatcher(const FileSystemURL& url,
                              bool recursive,
                              StatusCallback callback) = 0;
+
+ protected:
+  WatcherManager() = default;
 };
 
 }  // namespace storage

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_package/web_bundle_handle.h"
 
+#include "base/memory/ptr_util.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
 #include "content/browser/web_package/web_bundle_interceptor_for_file.h"
 #include "content/browser/web_package/web_bundle_interceptor_for_history_navigation_from_file_or_from_trustable_file.h"

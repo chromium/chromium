@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,9 @@ BASE_EXPORT void RecordLibraryLoaderRendererHistograms();
 // libraries are loaded. The hook function should register the JNI bindings
 // required to start the application. It should return true for success and
 // false for failure.
-// Note: this can't use base::Callback because there is no way of initializing
-// the default callback without using static objects, which we forbid.
+// Note: this can't use base::{Once, Repeating}Callback because there is no
+// way of initializing the default callback without using static objects, which
+// we forbid.
 typedef bool LibraryLoadedHook(JNIEnv* env,
                                jclass clazz,
                                LibraryProcessType library_process_type);
@@ -76,12 +77,6 @@ typedef bool LibraryLoadedHook(JNIEnv* env,
 // should register the JNI bindings required to start the application.
 
 BASE_EXPORT void SetLibraryLoadedHook(LibraryLoadedHook* func);
-
-// Pass the version name to the loader. This used to check that the library
-// version matches the version expected by Java before completing JNI
-// registration.
-// Note: argument must remain valid at least until library loading is complete.
-BASE_EXPORT void SetVersionNumber(const char* version_number);
 
 // Call on exit to delete the AtExitManager which OnLibraryLoadedOnUIThread
 // created.

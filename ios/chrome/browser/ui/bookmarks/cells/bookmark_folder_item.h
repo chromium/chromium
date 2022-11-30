@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, TableViewBookmarkFolderAccessoryType) {
 // single bookmark folder.
 @interface BookmarkFolderItem : TableViewItem
 
-// The Item's designated initializer. If |style| is
+// The Item's designated initializer. If `style` is
 // BookmarkFolderStyle then all other property values will be
 // ignored.
 - (instancetype)initWithType:(NSInteger)type
@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, TableViewBookmarkFolderAccessoryType) {
 
 // The leading constraint used to set the cell's leading indentation. The
 // default indentationLevel property doesn't affect any custom Cell subviews,
-// changing |indentationConstraint| constant property will.
+// changing `indentationConstraint` constant property will.
 @property(nonatomic, strong, readonly)
     NSLayoutConstraint* indentationConstraint;
 // The folder image displayed by this cell.

@@ -1,29 +1,29 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
 
-#include <map>
-#include <memory>
-#include <string>
+#import <map>
+#import <memory>
+#import <string>
 
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
-#include "ios/net/url_test_util.h"
+#import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/http_server/data_response_provider.h"
+#import "ios/web/public/test/http_server/data_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "net/http/http_response_headers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/http/http_response_headers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -159,68 +159,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests clicking a link with target="_blank" and "event.stopPropagation()"
-// opens a new tab.
-- (void)testBrowsingStopPropagation {
-  // Create map of canned responses and set up the test HTML server.
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://stopPropagation");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
-  // This is a page with a link to |kDestination|.
-  responses[URL] = base::StringPrintf(
-      "<a id='link' href='%s' target='_blank' "
-      "onclick='event.stopPropagation()'>link</a>",
-      destinationURL.spec().c_str());
-  // This is the destination page; it just contains some text.
-  responses[destinationURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
-
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-  [ChromeEarlGrey waitForMainTabCount:2];
-
-  // Verify the new tab was opened with the expected URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests clicking a relative link with target="_blank" and
-// "event.stopPropagation()" opens a new tab.
-- (void)testBrowsingStopPropagationRelativePath {
-  // Create map of canned responses and set up the test HTML server.
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://stopPropRel");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://stopPropRel/#test");
-  // This is page with a relative link to "#test".
-  responses[URL] =
-      "<a id='link' href='#test' target='_blank' "
-      "onclick='event.stopPropagation()'>link</a>";
-  // This is the page that should be showing at the end of the test.
-  responses[destinationURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
-
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-
-  [ChromeEarlGrey waitForMainTabCount:2];
-
-  // Verify the new tab was opened with the expected URL.
-  const std::string omniboxText =
-      net::GetContentAndFragmentForUrl(destinationURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(omniboxText)]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Tests that clicking a link with URL changed by onclick uses the href of the
 // anchor tag instead of the one specified in JavaScript. Also verifies a new
 // tab is opened by target '_blank'.
@@ -262,7 +200,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests tapping a link that navigates to a page that immediately navigates
 // again via document.location.href.
-- (void)testBrowsingWindowDataLinkScriptRedirect {
+// TODO(crbug.com/1352105): Flaky on iPhone.
+- (void)DISABLED_testBrowsingWindowDataLinkScriptRedirect {
   // Create map of canned responses and set up the test HTML server.
   std::map<GURL, std::string> responses;
   const GURL URL =
@@ -394,8 +333,15 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
                                  targetURL.spec().c_str()];
 
   [ChromeEarlGreyUI focusOmniboxAndType:script];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-      performAction:grey_tap()];
+
+  if (@available(iOS 16, *)) {
+    // TODO(crbug.com/1331347): Move this logic into EG.
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [[[app keyboards] buttons][@"go"] tap];
+  } else {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
+        performAction:grey_tap()];
+  }
 
   [ChromeEarlGrey waitForPageToFinishLoading];
 

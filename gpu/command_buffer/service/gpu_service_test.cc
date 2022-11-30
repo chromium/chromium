@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/gpu_service_test.h"
+
+#include <memory>
 
 #include "gpu/command_buffer/service/test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +29,8 @@ void GpuServiceTest::SetUpWithGLVersion(const char* gl_version,
   testing::Test::SetUp();
 
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-  gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-  gl_.reset(new ::testing::StrictMock<::gl::MockGLInterface>());
+  display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+  gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
   ::gl::MockGLInterface::SetGLInterface(gl_.get());
 
   context_ = new gl::GLContextStub;
@@ -49,7 +51,7 @@ void GpuServiceTest::TearDown() {
   surface_ = nullptr;
   ::gl::MockGLInterface::SetGLInterface(nullptr);
   gl_.reset();
-  gl::init::ShutdownGL(false);
+  gl::GLSurfaceTestSupport::ShutdownGL(display_);
   ran_teardown_ = true;
 
   testing::Test::TearDown();

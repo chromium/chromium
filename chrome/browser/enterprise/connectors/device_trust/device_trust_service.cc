@@ -1,106 +1,144 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "base/base64.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
 
-DeviceTrustService::DeviceTrustService() = default;
+namespace {
 
-DeviceTrustService::DeviceTrustService(Profile* profile)
-    : prefs_(profile->GetPrefs()),
-      first_report_sent_(false),
-      signal_report_callback_(
-          base::BindOnce(&DeviceTrustService::OnSignalReported,
-                         base::Unretained(this))) {
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  key_pair_ = std::make_unique<DeviceTrustKeyPair>();
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+// Runs the `callback` to return the `result` from the data decoder
+// service after it is validated and decoded.
+void OnJsonParsed(DeviceTrustService::ParseJsonChallengeCallback callback,
+                  data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
 
-  pref_observer_.Init(prefs_);
-  pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
-                     base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
-                                         base::Unretained(this)));
-  // Using Unretained is ok here because pref_observer_ is owned by this class,
-  // and we Remove() this path from pref_observer_ in Shutdown().
-  reporter_ =
-      std::make_unique<enterprise_connectors::DeviceTrustSignalReporter>();
+  // Check if json is malformed or it doesn't include the needed field.
+  const std::string* challenge = result->FindStringPath("challenge");
+  if (!challenge) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::string serialized_signed_challenge;
+  if (!base::Base64Decode(*challenge, &serialized_signed_challenge)) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  std::move(callback).Run(serialized_signed_challenge);
+  return;
 }
+
+DeviceTrustResponse CreateFailedResponse(DeviceTrustError error) {
+  DeviceTrustResponse response;
+  response.error = error;
+  return response;
+}
+
+}  // namespace
+
+using CollectSignalsCallback = SignalsService::CollectSignalsCallback;
+
+DeviceTrustService::DeviceTrustService(
+    std::unique_ptr<AttestationService> attestation_service,
+    std::unique_ptr<SignalsService> signals_service,
+    DeviceTrustConnectorService* connector)
+    : attestation_service_(std::move(attestation_service)),
+      signals_service_(std::move(signals_service)),
+      connector_(connector) {
+  DCHECK(attestation_service_);
+  DCHECK(signals_service_);
+  DCHECK(connector_);
+}
+
+DeviceTrustService::DeviceTrustService() = default;
 
 DeviceTrustService::~DeviceTrustService() = default;
 
-void DeviceTrustService::Shutdown() {
-  pref_observer_.Remove(kContextAwareAccessSignalsAllowlistPref);
-}
-
 bool DeviceTrustService::IsEnabled() const {
-  return (prefs_->HasPrefPath(kContextAwareAccessSignalsAllowlistPref) &&
-          !prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)->empty());
+  return connector_ && connector_->IsConnectorEnabled();
 }
 
-void DeviceTrustService::OnPolicyUpdated() {
-  if (!reporter_) {
+void DeviceTrustService::BuildChallengeResponse(
+    const std::string& serialized_challenge,
+    DeviceTrustCallback callback) {
+  ParseJsonChallenge(
+      serialized_challenge,
+      base::BindOnce(&DeviceTrustService::OnChallengeParsed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool DeviceTrustService::Watches(const GURL& url) const {
+  return connector_ && connector_->Watches(url);
+}
+
+void DeviceTrustService::ParseJsonChallenge(
+    const std::string& serialized_challenge,
+    ParseJsonChallengeCallback callback) {
+  data_decoder_.ParseJson(serialized_challenge,
+                          base::BindOnce(&OnJsonParsed, std::move(callback)));
+}
+
+void DeviceTrustService::OnChallengeParsed(DeviceTrustCallback callback,
+                                           const std::string& challenge) {
+  if (challenge.empty()) {
+    // Failed to parse the challenge, fail early.
+    std::move(callback).Run(
+        CreateFailedResponse(DeviceTrustError::kFailedToParseChallenge));
     return;
   }
 
-  if (!first_report_sent_ &&
-      IsEnabled()) {  // Policy enabled for the first time.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-    key_pair_->Init();
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-    reporter_->Init(
-        base::BindRepeating(
-            [](DeviceTrustService* self) { return self->IsEnabled(); },
-            base::Unretained(this)),
-        // Unretained is ok here since owned by this class, and this callback is
-        // only used in reporter_.SendReport().
-        base::BindOnce(&DeviceTrustService::OnReporterInitialized,
-                       weak_factory_.GetWeakPtr()));
+  GetSignals(base::BindOnce(&DeviceTrustService::OnSignalsCollected,
+                            weak_factory_.GetWeakPtr(), challenge,
+                            std::move(callback)));
+}
+
+void DeviceTrustService::GetSignals(CollectSignalsCallback callback) {
+  return signals_service_->CollectSignals(std::move(callback));
+}
+
+void DeviceTrustService::OnSignalsCollected(const std::string& challenge,
+                                            DeviceTrustCallback callback,
+                                            base::Value::Dict signals) {
+  LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      challenge, std::move(signals),
+      base::BindOnce(&DeviceTrustService::OnAttestationResponseReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DeviceTrustService::OnAttestationResponseReceived(
+    DeviceTrustCallback callback,
+    const AttestationResponse& attestation_response) {
+  LogAttestationResult(attestation_response.result_code);
+
+  DeviceTrustResponse dt_response{};
+  dt_response.challenge_response = attestation_response.challenge_response;
+  dt_response.attestation_result = attestation_response.result_code;
+
+  if (attestation_response.result_code != DTAttestationResult::kSuccess) {
+    dt_response.error = DeviceTrustError::kFailedToCreateResponse;
   }
-}
 
-void DeviceTrustService::OnReporterInitialized(bool success) {
-  if (!success) {
-    // Initialization failed, so reset reporter_ to prevent retrying Init().
-    reporter_.reset();
-    return;
-  }
-
-  base::Value val(base::Value::Type::DICTIONARY);
-
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  val.SetStringKey("machine_attestion_key", key_pair_->ExportPEMPublicKey());
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-
-  reporter_->SendReport(std::move(val), std::move(signal_report_callback_));
-}
-
-void DeviceTrustService::OnSignalReported(bool success) {
-  if (!success) {
-    LOG(ERROR) << "Failed to send device trust signal report.";
-    // TODO(https://crbug.com/1186413) Handle failure cases.
-  } else {
-    first_report_sent_ = true;
-  }
-}
-
-void DeviceTrustService::SetSignalReporterForTesting(
-    std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter>
-        reporter) {
-  reporter_ = std::move(reporter);
-}
-
-void DeviceTrustService::SetSignalReportCallbackForTesting(
-    base::OnceCallback<void(bool)> cb) {
-  signal_report_callback_ = std::move(cb);
+  std::move(callback).Run(dt_response);
 }
 
 }  // namespace enterprise_connectors

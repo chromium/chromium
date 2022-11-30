@@ -1,6 +1,16 @@
 include_rules = [
+  # TODO(https://crbug.com/1164001): extensions/ will be eventually split
+  # between Ash-only code that will be moved to chrome/browser/ash/extensions
+  # and generic code that will be used by both Ash and Lacros and remain here.
+  # The latter won't be able to depend on the directories below. Remove them
+  # once that is done.
+  "+ash",
+  "+chrome/browser/ash",
+
   # TODO(tfarina): Get rid of this dependency. crbug.com/125846.
   # DO NOT ADD ANY MORE ITEMS TO THE LIST BELOW!
   "!chrome/browser/ui/views/select_file_dialog_extension.h",
   # DO NOT ADD ANY MORE ITEMS TO THE ABOVE LIST!
+
+  "+third_party/ced",
 ]

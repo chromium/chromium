@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,6 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
-
-namespace base {
-class File;
-}  // namespace base
 
 namespace extensions {
 namespace image_writer {
@@ -35,8 +31,10 @@ class TarExtractor : public SingleFileTarReader::Delegate {
   void ExtractImpl();
   void ExtractChunk();
 
-  // SingleFileTarReader:
-  int ReadTarFile(char* data, int size, std::string* error_id) override;
+  // SingleFileTarReader::Delegate:
+  SingleFileTarReader::Result ReadTarFile(char* data,
+                                          uint32_t* size,
+                                          std::string* error_id) override;
   bool WriteContents(const char* data,
                      int size,
                      std::string* error_id) override;

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -79,7 +79,7 @@ if (use_fuzzing_engine) {
 # {micro,mini}dump_stackwalk and minidump_dump are tool-type executables
 # that do not build on Windows.
 if (!is_win) {
-  if (current_toolchain == host_toolchain) {
+  if (current_toolchain == host_toolchain || target_os == "mac") {
     # Contains the code shared by both {micro,mini}dump_stackwalk.
     static_library("stackwalk_common") {
       sources = [
@@ -237,6 +237,8 @@ if (!is_win) {
 
     executable("minidump_dump") {
       sources = [
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
         "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/processor/basic_code_module.h",
         "breakpad/src/processor/basic_code_modules.cc",
@@ -277,7 +279,7 @@ if (!is_win) {
 # Mac --------------------------------------------------------------------------
 
 if (is_mac) {
-  if (current_toolchain == host_toolchain) {
+  if (current_toolchain == host_toolchain || target_os != "ios") {
     source_set("common") {
       sources = [
         "breakpad/src/common/dwarf/bytereader.cc",
@@ -334,15 +336,6 @@ if (is_mac) {
       configs += [ ":internal_config" ]
 
       frameworks = [ "Foundation.framework" ]
-
-      if (!is_debug) {
-        # dump_syms crashes when built at -O1, -O2, and -O3.  It does
-        # not crash at -Os.  To play it safe, dump_syms is always built
-        # at -O0 until this can be sorted out.
-        # https://crbug.com/google-breakpad/329
-        configs -= [ "//build/config/compiler:default_optimization" ]
-        cflags = [ "-O0" ]
-      }
 
       deps = [ ":common" ]
     }
@@ -496,6 +489,8 @@ if (is_linux || is_chromeos || is_android) {
         "breakpad/src/common/linux/symbol_collector_client.h",
         "breakpad/src/common/linux/symbol_upload.cc",
         "breakpad/src/common/linux/symbol_upload.h",
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
         "breakpad/src/common/scoped_ptr.h",
         "breakpad/src/tools/linux/symupload/sym_upload.cc",
       ]
@@ -613,6 +608,9 @@ if (is_linux || is_chromeos || is_android) {
       "breakpad/src/client/linux/minidump_writer/linux_ptrace_dumper.h",
       "breakpad/src/client/linux/minidump_writer/minidump_writer.cc",
       "breakpad/src/client/linux/minidump_writer/minidump_writer.h",
+      "breakpad/src/client/linux/minidump_writer/pe_file.cc",
+      "breakpad/src/client/linux/minidump_writer/pe_file.h",
+      "breakpad/src/client/linux/minidump_writer/pe_structs.h",
       "breakpad/src/client/linux/minidump_writer/proc_cpuinfo_reader.h",
       "breakpad/src/client/minidump_file_writer-inl.h",
       "breakpad/src/client/minidump_file_writer.cc",
@@ -735,10 +733,7 @@ if (is_linux || is_chromeos || is_android) {
       "//testing/gtest:gtest_main",
     ]
 
-    data_deps = [
-      ":linux_dumper_unittest_helper",
-      "//testing/buildbot/filters:breakpad_unittests_filters",
-    ]
+    data_deps = [ ":linux_dumper_unittest_helper" ]
 
     include_dirs = [
       "linux",  # Use our copy of breakpad_googletest_includes.h
@@ -811,7 +806,11 @@ if (is_linux || is_chromeos || is_android) {
   }
 
   executable("core-2-minidump") {
-    sources = [ "breakpad/src/tools/linux/core2md/core2md.cc" ]
+    sources = [
+      "breakpad/src/common/path_helper.cc",
+      "breakpad/src/common/path_helper.h",
+      "breakpad/src/tools/linux/core2md/core2md.cc",
+    ]
 
     deps = [ ":client" ]
 
@@ -847,7 +846,6 @@ if (is_win) {
         "$visual_studio_path/DIA SDK/include",
         "breakpad/src",
       ]
-
       sources = [
         "breakpad/src/common/windows/dia_util.cc",
         "breakpad/src/common/windows/dia_util.h",
@@ -867,6 +865,8 @@ if (is_win) {
         "breakpad/src/common/windows/pe_util.h",
         "breakpad/src/common/windows/string_utils-inl.h",
         "breakpad/src/common/windows/string_utils.cc",
+        "breakpad/src/common/windows/sym_upload_v2_protocol.cc",
+        "breakpad/src/common/windows/sym_upload_v2_protocol.h",
         "breakpad/src/common/windows/symbol_collector_client.cc",
         "breakpad/src/common/windows/symbol_collector_client.h",
       ]

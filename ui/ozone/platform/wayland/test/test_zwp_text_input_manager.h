@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <text-input-unstable-v1-server-protocol.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
 namespace wl {
@@ -21,6 +21,11 @@ class MockZwpTextInput;
 class TestZwpTextInputManagerV1 : public GlobalObject {
  public:
   TestZwpTextInputManagerV1();
+
+  TestZwpTextInputManagerV1(const TestZwpTextInputManagerV1&) = delete;
+  TestZwpTextInputManagerV1& operator=(const TestZwpTextInputManagerV1&) =
+      delete;
+
   ~TestZwpTextInputManagerV1() override;
 
   void set_text_input(MockZwpTextInput* text_input) {
@@ -29,9 +34,7 @@ class TestZwpTextInputManagerV1 : public GlobalObject {
   MockZwpTextInput* text_input() const { return text_input_; }
 
  private:
-  MockZwpTextInput* text_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestZwpTextInputManagerV1);
+  raw_ptr<MockZwpTextInput> text_input_ = nullptr;
 };
 
 }  // namespace wl

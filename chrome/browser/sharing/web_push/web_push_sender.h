@@ -1,12 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
 #define CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -25,6 +23,10 @@ class WebPushSender {
  public:
   explicit WebPushSender(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  WebPushSender(const WebPushSender&) = delete;
+  WebPushSender& operator=(const WebPushSender&) = delete;
+
   virtual ~WebPushSender();
 
   // Sends a WebPushMessage via FCM Web Push. Authenticates with FCM server
@@ -34,7 +36,7 @@ class WebPushSender {
   // |vapid_key|: Private key to sign VAPID header.
   // |message|: WebPushMessage to be sent.
   // |callback|: To be invoked with message_id if asynchronous operation
-  // succeeded, or base::nullopt if operation failed.
+  // succeeded, or absl::nullopt if operation failed.
   virtual void SendMessage(const std::string& fcm_token,
                            crypto::ECPrivateKey* vapid_key,
                            WebPushMessage message,
@@ -48,8 +50,6 @@ class WebPushSender {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<WebPushSender> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebPushSender);
 };
 
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_WEB_PUSH_SENDER_H_

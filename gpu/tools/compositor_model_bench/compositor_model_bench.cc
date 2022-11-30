@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,8 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "gpu/tools/compositor_model_bench/render_model_utils.h"
@@ -36,6 +36,7 @@
 #include "gpu/tools/compositor_model_bench/render_tree.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/event.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -163,8 +164,8 @@ class Simulator {
         .parent = connection_->default_root(),
         .x = 1,
         .y = 1,
-        .width = window_width_,
-        .height = window_height_,
+        .width = static_cast<uint16_t>(window_width_),
+        .height = static_cast<uint16_t>(window_height_),
         .background_pixel = black_pixel,
         .border_pixel = black_pixel,
         .event_mask = x11::EventMask::Exposure | x11::EventMask::KeyPress |
@@ -186,7 +187,7 @@ class Simulator {
 
   // Initialize the OpenGL context.
   bool InitGLContext() {
-    if (!gl::init::InitializeGLOneOff()) {
+    if (!gl::init::InitializeGLOneOff(/*system_device_id=*/0)) {
       LOG(FATAL) << "gl::init::InitializeGLOneOff failed";
       return false;
     }

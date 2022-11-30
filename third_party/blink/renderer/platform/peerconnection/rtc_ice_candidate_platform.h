@@ -31,8 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_ICE_CANDIDATE_PLATFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_ICE_CANDIDATE_PLATFORM_H_
 
-#include "base/optional.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -46,31 +46,33 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
   // considered as having no value.
   RTCIceCandidatePlatform(String candidate,
                           String sdp_mid,
-                          base::Optional<uint16_t> sdp_m_line_index);
+                          absl::optional<uint16_t> sdp_m_line_index);
 
   // Creates a new RTCIceCandidatePlatform using |candidate|, |sdp_mid|,
   // |sdp_m_line_index|, and |username_fragment|.
   RTCIceCandidatePlatform(String candidate,
                           String sdp_mid,
-                          base::Optional<uint16_t> sdp_m_line_index,
+                          absl::optional<uint16_t> sdp_m_line_index,
                           String username_fragment);
+  RTCIceCandidatePlatform(const RTCIceCandidatePlatform&) = delete;
+  RTCIceCandidatePlatform& operator=(const RTCIceCandidatePlatform&) = delete;
   ~RTCIceCandidatePlatform() = default;
 
   const String& Candidate() const { return candidate_; }
   const String& SdpMid() const { return sdp_mid_; }
-  const base::Optional<uint16_t>& SdpMLineIndex() const {
+  const absl::optional<uint16_t>& SdpMLineIndex() const {
     return sdp_m_line_index_;
   }
   const String& Foundation() const { return foundation_; }
   const String& Component() const { return component_; }
-  const base::Optional<uint32_t>& Priority() const { return priority_; }
+  const absl::optional<uint32_t>& Priority() const { return priority_; }
   const String& Address() const { return address_; }
   const String Protocol() const { return protocol_; }
-  const base::Optional<uint16_t>& Port() const { return port_; }
+  const absl::optional<uint16_t>& Port() const { return port_; }
   const String& Type() const { return type_; }
-  const base::Optional<String>& TcpType() const { return tcp_type_; }
+  const absl::optional<String>& TcpType() const { return tcp_type_; }
   const String& RelatedAddress() const { return related_address_; }
-  const base::Optional<uint16_t>& RelatedPort() const { return related_port_; }
+  const absl::optional<uint16_t>& RelatedPort() const { return related_port_; }
   const String& UsernameFragment() const { return username_fragment_; }
 
   void Trace(Visitor*) const {}
@@ -80,20 +82,18 @@ class PLATFORM_EXPORT RTCIceCandidatePlatform final
 
   String candidate_;
   String sdp_mid_;
-  base::Optional<uint16_t> sdp_m_line_index_;
+  absl::optional<uint16_t> sdp_m_line_index_;
   String foundation_;
   String component_;
-  base::Optional<uint32_t> priority_;
+  absl::optional<uint32_t> priority_;
   String address_;
   String protocol_;
-  base::Optional<uint16_t> port_;
+  absl::optional<uint16_t> port_;
   String type_;
-  base::Optional<String> tcp_type_;
+  absl::optional<String> tcp_type_;
   String related_address_;
-  base::Optional<uint16_t> related_port_;
+  absl::optional<uint16_t> related_port_;
   String username_fragment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RTCIceCandidatePlatform);
 };
 
 }  // namespace blink

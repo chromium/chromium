@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_VIEWS_IDENTITY_VIEW_H_
 
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 
 // View with the avatar on the leading side, a title and a subtitle. Only the
 // title is required. The title contains the user name if it exists, or the
@@ -20,9 +22,9 @@
 // +--------------------------------+
 @interface IdentityView : UIView
 
-// Minimum vertical margin above and below the avatar image and title/subtitle.
-// The default value is 12.
-@property(nonatomic) CGFloat minimumVerticalMargin;
+// Style for the identity view (modify the avatar size, font sizes and some
+// margins).
+@property(nonatomic, assign) IdentityViewStyle style;
 
 // Initialises IdentityView.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
@@ -35,8 +37,11 @@
 // image.
 - (void)setAvatar:(UIImage*)avatar;
 
-// Sets the title and subtitle. |subtitle| can be nil.
+// Sets the title and subtitle. `subtitle` can be nil.
 - (void)setTitle:(NSString*)title subtitle:(NSString*)subtitle;
+
+// Sets the color of the title.
+- (void)setTitleColor:(UIColor*)color;
 
 @end
 

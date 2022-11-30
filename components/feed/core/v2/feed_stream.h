@@ -1,45 +1,51 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 #define COMPONENTS_FEED_CORE_V2_FEED_STREAM_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/notice_card_tracker.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
-#include "components/feed/core/v2/stream/upload_criteria.h"
+#include "components/feed/core/v2/stream/info_card_tracker.h"
+#include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/v2/user_actions_collector.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
-#include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 #include "components/feed/core/v2/wire_response_translator.h"
-#include "components/offline_pages/core/prefetch/suggestions_provider.h"
+#include "components/feed/core/v2/xsurface_datastore.h"
 #include "components/offline_pages/task/task_queue.h"
+#include "components/prefs/pref_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-
-namespace offline_pages {
-class OfflinePageModel;
-class PrefetchService;
-}  // namespace offline_pages
 
 namespace feed {
 namespace feed_stream {
@@ -50,7 +56,6 @@ class FeedStore;
 class WebFeedSubscriptionCoordinator;
 class ImageFetcher;
 class MetricsReporter;
-class OfflinePageSpy;
 class RefreshTaskScheduler;
 class PersistentKeyValueStoreImpl;
 class StreamModel;
@@ -60,9 +65,10 @@ class SurfaceUpdater;
 // needed by other classes within the Feed component.
 class FeedStream : public FeedApi,
                    public offline_pages::TaskQueue::Delegate,
+                   public MetricsReporter::Delegate,
                    public StreamModel::StoreObserver {
  public:
-  class Delegate {
+  class Delegate : public WebFeedSubscriptionCoordinator::Delegate {
    public:
     virtual ~Delegate() = default;
     // Returns true if Chrome's EULA has been accepted.
@@ -71,10 +77,14 @@ class FeedStream : public FeedApi,
     virtual bool IsOffline() = 0;
     virtual DisplayMetrics GetDisplayMetrics() = 0;
     virtual std::string GetLanguageTag() = 0;
+    virtual bool IsAutoplayEnabled() = 0;
+    virtual TabGroupEnabledState GetTabGroupEnabledState() = 0;
     virtual void ClearAll() = 0;
-    virtual bool IsSignedIn() = 0;
+    virtual AccountInfo GetAccountInfo() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
@@ -85,8 +95,6 @@ class FeedStream : public FeedApi,
              ImageFetcher* image_fetcher,
              FeedStore* feed_store,
              PersistentKeyValueStoreImpl* persistent_key_value_store,
-             offline_pages::PrefetchService* prefetch_service,
-             offline_pages::OfflinePageModel* offline_page_model,
              const ChromeInfo& chrome_info);
   ~FeedStream() override;
 
@@ -96,24 +104,27 @@ class FeedStream : public FeedApi,
   // FeedApi.
 
   WebFeedSubscriptionCoordinator& subscriptions() override;
-  bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
   void DetachSurface(FeedStreamSurface*) override;
+  void UpdateUserProfileOnLinkClick(
+      const GURL& url,
+      const std::vector<int64_t>& entity_mids) override;
   void AddUnreadContentObserver(const StreamType& stream_type,
                                 UnreadContentObserver* observer) override;
   void RemoveUnreadContentObserver(const StreamType& stream_type,
                                    UnreadContentObserver* observer) override;
   bool IsArticlesListVisible() override;
-  std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override;
   ImageFetchId FetchImage(
       const GURL& url,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
-  PersistentKeyValueStoreImpl* GetPersistentKeyValueStore() override;
+  PersistentKeyValueStoreImpl& GetPersistentKeyValueStore() override;
   void LoadMore(const FeedStreamSurface& surface,
                 base::OnceCallback<void(bool)> callback) override;
+  void ManualRefresh(const StreamType& stream_type,
+                     base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
       const StreamType& stream_type,
       std::vector<feedstore::DataOperation> operations) override;
@@ -127,10 +138,15 @@ class FeedStream : public FeedApi,
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
-  void ProcessThereAndBackAgain(base::StringPiece data) override;
-  void ProcessViewAction(base::StringPiece data) override;
+  void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const LoggingParameters& logging_parameters) override;
+  void ProcessViewAction(base::StringPiece data,
+                         const LoggingParameters& logging_parameters) override;
+  bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
+  void InvalidateContentCacheFor(StreamKind stream_kind) override;
   DebugStreamData GetDebugStreamData() override;
-  void ForceRefreshForDebugging() override;
+  void ForceRefreshForDebugging(const StreamType& stream_type) override;
   std::string DumpStateForDebugging() override;
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override;
@@ -138,21 +154,43 @@ class FeedStream : public FeedApi,
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override;
-  void ReportFeedViewed(SurfaceId surface_id) override;
+  void ReportFeedViewed(const StreamType& stream_type,
+                        SurfaceId surface_id) override;
   void ReportPageLoaded() override;
-  void ReportOpenAction(const StreamType& stream_type,
-                        const std::string& slice_id) override;
+  void ReportOpenAction(const GURL& url,
+                        const StreamType& stream_type,
+                        const std::string& slice_id,
+                        OpenActionType action_type) override;
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
-  void ReportOpenInNewTabAction(const StreamType& stream_type,
-                                const std::string& slice_id) override;
   void ReportStreamScrolled(const StreamType& stream_type,
                             int distance_dp) override;
   void ReportStreamScrollStart() override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+                                      int info_card_type) override;
+  void ReportInfoCardViewed(const StreamType& stream_type,
+                            int info_card_type,
+                            int minimum_view_interval_seconds) override;
+  void ReportInfoCardClicked(const StreamType& stream_type,
+                             int info_card_type) override;
+  void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                         int info_card_type) override;
+  void ResetInfoCardStates(const StreamType& stream_type,
+                           int info_card_type) override;
+  base::Time GetLastFetchTime(const StreamType& stream_type) override;
+  void SetContentOrder(const StreamType& stream_type,
+                       ContentOrder content_order) override;
+  ContentOrder GetContentOrder(const StreamType& stream_type) const override;
+  ContentOrder GetContentOrderFromPrefs(const StreamType& stream_type) override;
+  void IncrementFollowedFromWebPageMenuCount() override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
+
+  // MetricsReporter::Delegate.
+  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
 
   // StreamModel::StoreObserver.
   void OnStoreChange(StreamModel::StoreUpdate update) override;
@@ -184,29 +222,30 @@ class FeedStream : public FeedApi,
   // called with |true| if the consistency token was written to the store.
   void UploadAction(
       feedwire::FeedAction action,
+      const LoggingParameters& logging_parameters,
       bool upload_now,
       base::OnceCallback<void(UploadActionsTask::Result)> callback);
 
-  FeedNetwork* GetNetwork() { return feed_network_; }
-  FeedStore* GetStore() { return store_; }
-  RequestThrottler* GetRequestThrottler() { return &request_throttler_; }
-  const feedstore::Metadata& GetMetadata() const { return metadata_; }
+  FeedNetwork& GetNetwork() { return *feed_network_; }
+  FeedStore& GetStore() { return *store_; }
+  RequestThrottler& GetRequestThrottler() { return request_throttler_; }
+  const feedstore::Metadata& GetMetadata() const;
   void SetMetadata(feedstore::Metadata metadata);
-  bool SetMetadata(base::Optional<feedstore::Metadata> metadata);
+  bool SetMetadata(absl::optional<feedstore::Metadata> metadata);
+  void SetStreamStale(const StreamType& stream_type, bool is_stale);
 
   MetricsReporter& GetMetricsReporter() const { return *metrics_reporter_; }
 
   void PrefetchImage(const GURL& url);
 
-  // Returns the time of the last content fetch.
-  base::Time GetLastFetchTime();
-
-  bool IsSignedIn() const { return delegate_->IsSignedIn(); }
+  bool IsSignedIn() const { return !delegate_->GetAccountInfo().IsEmpty(); }
+  AccountInfo GetAccountInfo() const { return delegate_->GetAccountInfo(); }
 
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
-  LoadStreamStatus ShouldAttemptLoad(const StreamType& stream_type,
-                                     bool model_loading = false);
+  LaunchResult ShouldAttemptLoad(const StreamType& stream_type,
+                                 LoadType load_type,
+                                 bool model_loading = false);
 
   // Whether the last scheduled refresh was missed.
   bool MissedLastRefresh(const StreamType& stream_type);
@@ -216,9 +255,9 @@ class FeedStream : public FeedApi,
   // Otherwise returns the reason. If |consume_quota| is false, no quota is
   // consumed. This can be used to predict the likely result on a subsequent
   // call.
-  LoadStreamStatus ShouldMakeFeedQueryRequest(const StreamType& stream_type,
-                                              bool is_load_more = false,
-                                              bool consume_quota = true);
+  LaunchResult ShouldMakeFeedQueryRequest(const StreamType& stream_type,
+                                          LoadType load_type,
+                                          bool consume_quota = true);
 
   // Returns true if a FeedQuery request made right now should be made without
   // user credentials.
@@ -232,8 +271,10 @@ class FeedStream : public FeedApi,
   void UnloadModels();
 
   // Triggers a stream load. The load will be aborted if |ShouldAttemptLoad()|
-  // is not true.
-  void TriggerStreamLoad(const StreamType& stream_type);
+  // is not true. Returns CARDS_UNSPECIFIED if loading is to proceed, or another
+  // DiscoverLaunchResult if loading will not be attempted.
+  feedwire::DiscoverLaunchResult TriggerStreamLoad(
+      const StreamType& stream_type);
 
   // Only to be called by ClearAllTask. This clears other stream data stored in
   // memory.
@@ -242,19 +283,36 @@ class FeedStream : public FeedApi,
   // Returns the model if it is loaded, or null otherwise.
   StreamModel* GetModel(const StreamType& stream_type);
 
+  // Gets request metadata assuming the account is signed-in. This is useful for
+  // uploading actions where stream type is not known, but sign-in status is
+  // required.
+  RequestMetadata GetSignedInRequestMetadata() const;
+
+  // Gets request metadata, looking up if session ID or client instance ID
+  // should be used based on the login state of Chrome and the model for the
+  // appropriate Stream.
   RequestMetadata GetRequestMetadata(const StreamType& stream_type,
                                      bool is_for_next_page) const;
+
+  bool HasUnreadContent(const StreamType& stream_type);
 
   bool IsOffline() const { return delegate_->IsOffline(); }
 
   offline_pages::TaskQueue& GetTaskQueue() { return task_queue_; }
 
-  const WireResponseTranslator* GetWireResponseTranslator() const {
-    return wire_response_translator_;
+  const WireResponseTranslator& GetWireResponseTranslator() const {
+    return *wire_response_translator_;
+  }
+
+  LaunchReliabilityLogger& GetLaunchReliabilityLogger(
+      const StreamType& stream_type);
+
+  XsurfaceDatastoreSlice& GetGlobalXsurfaceDatastore() {
+    return global_datastore_slice_;
   }
 
   // Testing functionality.
-  offline_pages::TaskQueue* GetTaskQueueForTesting();
+  offline_pages::TaskQueue& GetTaskQueueForTesting();
   // Loads |model|. Should be used for testing in place of typical model
   // loading from network or storage.
   void LoadModelForTesting(const StreamType& stream_type,
@@ -265,18 +323,25 @@ class FeedStream : public FeedApi,
   }
   void SetIdleCallbackForTesting(base::RepeatingClosure idle_callback);
 
-  bool CanUploadActions() const;
+  bool ClearAllInProgress() const { return clear_all_in_progress_; }
+
+  bool IsEnabledAndVisible();
+
+  PrefService* profile_prefs() const { return profile_prefs_; }
 
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  bool GetStreamPresentForTest(StreamType stream_type) {
+    return FindStream(stream_type) != nullptr;
+  }
+
  private:
-  class OfflineSuggestionsProvider;
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
   struct Stream {
-    Stream();
+    explicit Stream(const StreamType& stream_type);
     ~Stream();
     Stream(const Stream&) = delete;
     Stream& operator=(const Stream&) = delete;
@@ -284,17 +349,17 @@ class FeedStream : public FeedApi,
     // Whether the model is being loaded. Used to prevent multiple simultaneous
     // attempts to load the model.
     bool model_loading_in_progress = false;
+    StreamSurfaceSet surfaces;
     std::unique_ptr<SurfaceUpdater> surface_updater;
     // The stream model. Null if not yet loaded.
     // Internally, this should only be changed by |LoadModel()| and
     // |UnloadModel()|.
     std::unique_ptr<StreamModel> model;
     int unload_on_detach_sequence_number = 0;
-    // When new content was last added to this stream. Populated when we attempt
-    // to load the model or background refresh.
-    base::Time last_updated_time;
+    ContentHashSet content_ids;
     std::vector<UnreadContentNotifier> unread_content_notifiers;
     std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
+    std::vector<base::OnceCallback<void(bool)>> refresh_complete_callbacks;
     bool is_activity_logging_enabled = false;
   };
 
@@ -305,57 +370,63 @@ class FeedStream : public FeedApi,
 
   void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
 
-  // Re-evaluate whether or not activity logging should currently be enabled.
-  void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
-
-  void GetPrefetchSuggestions(
-      base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>
-          suggestions_callback);
-
   // A single function task to delete stored feed data and force a refresh.
   // To only be called from within a |Task|.
-  void ForceRefreshForDebuggingTask();
+  void ForceRefreshForDebuggingTask(const StreamType& stream_type);
+  void ForceRefreshTask(const StreamType& stream_type);
 
   void ScheduleModelUnloadIfNoSurfacesAttached(const StreamType& stream_type);
   void AddUnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type,
                                               int sequence_number);
   void UnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type);
 
-  void InitialStreamLoadComplete(LoadStreamTask::Result result);
+  void StreamLoadComplete(LoadStreamTask::Result result);
   void LoadMoreComplete(LoadMoreTask::Result result);
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
-  void MaybeReportNewSuggestionsAvailable(const LoadStreamTask::Result& result);
-  void MaybeReportNewSuggestionsAvailable(const LoadMoreTask::Result& result);
-
   void ClearAll();
 
   bool IsFeedEnabledByEnterprisePolicy();
+  bool IsFeedEnabled();
 
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
 
-  bool CanLogViews() const;
-
   void MaybeNotifyHasUnreadContent(const StreamType& stream_type);
+  void EnabledPreferencesChanged();
 
   Stream& GetStream(const StreamType& type);
   Stream* FindStream(const StreamType& type);
   const Stream* FindStream(const StreamType& type) const;
   void UpdateExperiments(Experiments experiments);
 
+  RequestMetadata GetCommonRequestMetadata(bool signed_in_request,
+                                           bool allow_expired_session_id) const;
+
+  // Schedule a feed-close refresh when the user has taken some kind of action
+  // on the feed.
+  void ScheduleFeedCloseRefreshOnInteraction(const StreamType& type);
+  // Schedule a feed-close refresh when the user has viewed content for the
+  // first time.
+  void ScheduleFeedCloseRefreshOnFirstView(const StreamType& type);
+  // Internal method for scheduling the feed-close refresh.
+  void ScheduleFeedCloseRefresh(const StreamType& type);
+
   // Unowned.
 
-  offline_pages::PrefetchService* prefetch_service_;
-  RefreshTaskScheduler* refresh_task_scheduler_;
-  MetricsReporter* metrics_reporter_;
-  Delegate* delegate_;
-  PrefService* profile_prefs_;  // May be null.
-  FeedNetwork* feed_network_;
-  ImageFetcher* image_fetcher_;
-  FeedStore* store_;
-  PersistentKeyValueStoreImpl* persistent_key_value_store_;
-  const WireResponseTranslator* wire_response_translator_;
+  raw_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<PrefService> profile_prefs_;  // May be null.
+  raw_ptr<FeedNetwork> feed_network_;
+  raw_ptr<ImageFetcher> image_fetcher_;
+  raw_ptr<FeedStore> store_;
+  raw_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
+  raw_ptr<const WireResponseTranslator> wire_response_translator_;
+
+  StreamModel::Context stream_model_context_;
+  // For Xsurface datastore data which applies to all `StreamType`s.
+  XsurfaceDatastoreSlice global_datastore_slice_;
 
   ChromeInfo chrome_info_;
 
@@ -363,8 +434,6 @@ class FeedStream : public FeedApi,
 
   std::map<StreamType, Stream> streams_;
 
-  std::unique_ptr<OfflineSuggestionsProvider> offline_suggestions_provider_;
-  std::unique_ptr<OfflinePageSpy> offline_page_spy_;
   std::unique_ptr<WebFeedSubscriptionCoordinator>
       web_feed_subscription_coordinator_;
 
@@ -372,8 +441,13 @@ class FeedStream : public FeedApi,
   RequestThrottler request_throttler_;
   base::TimeTicks signed_out_for_you_refreshes_until_;
 
+  BooleanPrefMember has_stored_data_;
+  BooleanPrefMember snippets_enabled_by_policy_;
+  BooleanPrefMember articles_list_visible_;
+
   // State loaded at startup:
   feedstore::Metadata metadata_;
+  bool metadata_populated_ = false;
 
   base::ObserverList<UnreadContentObserver> unread_content_observers_;
 
@@ -384,8 +458,16 @@ class FeedStream : public FeedApi,
   // internals page for debugging purpose.
   feedui::StreamUpdate forced_stream_update_for_debugging_;
 
-  feed_stream::UploadCriteria upload_criteria_;
-  NoticeCardTracker notice_card_tracker_;
+  PrivacyNoticeCardTracker privacy_notice_card_tracker_;
+
+  InfoCardTracker info_card_tracker_;
+
+  bool clear_all_in_progress_ = false;
+
+  std::vector<GURL> recent_feed_navigations_;
+  UserActionsCollector user_actions_collector_;
+
+  base::TimeTicks last_refresh_scheduled_on_interaction_time_{};
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};
 };

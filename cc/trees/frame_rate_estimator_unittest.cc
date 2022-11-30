@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/trees/frame_rate_estimator.h"
 
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,6 +69,25 @@ TEST_F(FrameRateEstimatorTest, InputPriorityMode) {
   task_runner_->RunUntilIdle();
   EXPECT_NE(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
+}
+
+TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
+  estimator_->SetFrameEstimationEnabled(true);
+  // Recorded rAF intervals at 30 fps.
+  const base::TimeDelta kIntervals[] = {
+      base::Microseconds(33425), base::Microseconds(33298),
+      base::Microseconds(33396), base::Microseconds(33339),
+      base::Microseconds(33431), base::Microseconds(33320),
+      base::Microseconds(33364), base::Microseconds(33360)};
+  const base::TimeDelta kIntervalForHalfFps =
+      viz::BeginFrameArgs::DefaultInterval() * 2;
+  base::TimeTicks time;
+  for (size_t i = 0; i <= std::size(kIntervals); ++i) {
+    estimator_->WillDraw(time);
+    EXPECT_EQ(kIntervalForHalfFps, estimator_->GetPreferredInterval());
+    if (i < std::size(kIntervals))
+      time += kIntervals[i];
+  }
 }
 }  // namespace
 }  // namespace cc

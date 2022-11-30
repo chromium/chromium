@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,13 +49,6 @@ struct CONTENT_EXPORT Referrer {
 
   static net::ReferrerPolicy ReferrerPolicyForUrlRequest(
       network::mojom::ReferrerPolicy referrer_policy);
-
-  // Configures retaining the pre-M80 default referrer
-  // policy of no-referrer-when-downgrade.
-  // TODO(crbug.com/1016541): After M82, remove when the corresponding
-  // enterprise policy has been deleted.
-  static void SetForceLegacyDefaultReferrerPolicy(bool force);
-  static bool ShouldForceLegacyDefaultReferrerPolicy();
 
   // Validates |policy| to make sure it represents one of the valid
   // net::mojom::ReferrerPolicy enum values and returns it.  The relatively safe

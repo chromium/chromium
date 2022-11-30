@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ enum class ErrorStorageType {
   kStorageGetAllMatchedEntriesBackendClosed = 23,
   kStorageHandleNull = 24,
   kWriteSideDataDidWriteMetadataWrongBytes = 25,
-  kMaxValue = kWriteSideDataDidWriteMetadataWrongBytes,
+  kDefaultBucketError = 26,
+  kMaxValue = kDefaultBucketError,
 };
 
 blink::mojom::CacheStorageError MakeErrorStorage(ErrorStorageType type);

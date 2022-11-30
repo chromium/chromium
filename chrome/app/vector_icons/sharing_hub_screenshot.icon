@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 18,
+
+// Create four rounded border elements: we start with
+// a large rounded rectangle filling the canvas,
+// hollow it out, and then divide into four sections.
+ROUND_RECT, 2, 2, 15, 15, 2,
+CLOSE,
+NEW_PATH,
+PATH_MODE_CLEAR,
+ROUND_RECT, 3, 3, 13, 13, 1.72f,
+CLOSE,
+NEW_PATH,
+PATH_MODE_CLEAR,
+ROUND_RECT, 7.4f, 0, 3.2f, 18, 0,
+ROUND_RECT, 0, 7.4f, 18, 3.2f, 0,
+CLOSE,
+
+// Draw the bottom-right cross.
+NEW_PATH,
+STROKE, 1,
+MOVE_TO, 16.5, 12,
+R_V_LINE_TO, 7,
+MOVE_TO, 12, 16.5,
+R_H_LINE_TO, 7,
+CLOSE

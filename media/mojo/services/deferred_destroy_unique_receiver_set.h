@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bind_to_current_loop.h"
@@ -71,8 +70,13 @@ class DeferredDestroyUniqueReceiverSet {
 
   DeferredDestroyUniqueReceiverSet() {}
 
-  void AddReceiver(std::unique_ptr<DeferredDestroy<Interface>> impl,
-                   mojo::PendingReceiver<Interface> receiver) {
+  DeferredDestroyUniqueReceiverSet(const DeferredDestroyUniqueReceiverSet&) =
+      delete;
+  DeferredDestroyUniqueReceiverSet& operator=(
+      const DeferredDestroyUniqueReceiverSet&) = delete;
+
+  void Add(std::unique_ptr<DeferredDestroy<Interface>> impl,
+           mojo::PendingReceiver<Interface> receiver) {
     // Wrap the pointer into a unique_ptr with a deleter.
     Deleter deleter(base::BindRepeating(
         &DeferredDestroyUniqueReceiverSet::OnReceiverRemoved,
@@ -130,8 +134,6 @@ class DeferredDestroyUniqueReceiverSet {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DeferredDestroyUniqueReceiverSet> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredDestroyUniqueReceiverSet);
 };
 
 }  // namespace media

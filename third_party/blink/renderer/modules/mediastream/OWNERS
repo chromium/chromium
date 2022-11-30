@@ -1,5 +1,10 @@
+eladalon@chromium.org
 guidou@chromium.org
 hbos@chromium.org
 tommi@chromium.org
+toprice@chromium.org
 
-per-file media_stream_audio_processor*=olka@chromium.org
+per-file *audio*=olka@chromium.org
+per-file low_latency_video*=kron@chromium.org
+per-file webmediaplayer_ms*=kron@chromium.org
+per-file video_renderer_algorithm*=kron@chromium.org

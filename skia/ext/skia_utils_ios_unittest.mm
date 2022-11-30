@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,6 +141,14 @@ TEST_F(SkiaUtilsIosTest, ImageDataToSkBitmaps) {
 TEST_F(SkiaUtilsIosTest, ImageTooLarge) {
   std::vector<SkBitmap> bitmaps(skia::ImageDataToSkBitmapsWithMaxSize(
       StringToNSData(kIcoEncodedData), 20));
+  EXPECT_EQ(1UL, bitmaps.size());
+  EXPECT_EQ(16, bitmaps[0].width());
+  EXPECT_EQ(16, bitmaps[0].height());
+}
+
+TEST_F(SkiaUtilsIosTest, ImageSizeOnTheEdge) {
+  std::vector<SkBitmap> bitmaps(skia::ImageDataToSkBitmapsWithMaxSize(
+      StringToNSData(kIcoEncodedData), 16));
   EXPECT_EQ(1UL, bitmaps.size());
   EXPECT_EQ(16, bitmaps[0].width());
   EXPECT_EQ(16, bitmaps[0].height());

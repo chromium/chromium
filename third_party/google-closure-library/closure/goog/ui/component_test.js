@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.ComponentTest');
 goog.setTestOnly();
@@ -22,6 +14,7 @@ const NodeType = goog.require('goog.dom.NodeType');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
 const TagName = goog.require('goog.dom.TagName');
 const dom = goog.require('goog.dom');
+const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let component;
@@ -40,6 +33,7 @@ testSuite({
     propertyReplacer.reset();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testConstructor() {
     assertTrue(
         'Instance must be non-null and have the expected class',
@@ -49,6 +43,7 @@ testSuite({
         component.dom_ instanceof DomHelper);
 
     const fakeDom = {};
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const otherComponent = new Component(fakeDom);
     assertEquals(
         'DOM helper must refer to expected object', fakeDom,
@@ -57,6 +52,7 @@ testSuite({
     otherComponent.dispose();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetId() {
     assertNull('Component ID should be initialized to null', component.id_);
     const id = component.getId();
@@ -302,18 +298,21 @@ testSuite({
   },
 
   testDecorate_AllowDetached_NotInDocument() {
-    Component.ALLOW_DETACHED_DECORATION = true;
+    /** Computed properties to avoid compiler checks of the define value. */
+    Component['ALLOW_DETACHED_DECORATION'] = true;
     const element = dom.createElement(TagName.DIV);
     component.decorate(element);
     assertFalse(
         'Component should not call enterDocument when decorated ' +
             'with an element that is not in the document.',
         component.isInDocument());
-    Component.ALLOW_DETACHED_DECORATION = false;
+    /** Computed properties to avoid compiler checks of the define value. */
+    Component['ALLOW_DETACHED_DECORATION'] = false;
   },
 
   testDecorate_AllowDetached_InDocument() {
-    Component.ALLOW_DETACHED_DECORATION = true;
+    /** Computed properties to avoid compiler checks of the define value. */
+    Component['ALLOW_DETACHED_DECORATION'] = true;
     const element = dom.createElement(TagName.DIV);
     sandbox.appendChild(element);
     component.decorate(element);
@@ -321,7 +320,8 @@ testSuite({
         'Component should call enterDocument when decorated ' +
             'with an element that is in the document.',
         component.isInDocument());
-    Component.ALLOW_DETACHED_DECORATION = false;
+    /** Computed properties to avoid compiler checks of the define value. */
+    Component['ALLOW_DETACHED_DECORATION'] = false;
   },
 
   testCannotDecorate() {
@@ -351,6 +351,7 @@ testSuite({
         component.wasDecorated());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDecorateInternal() {
     assertNull('Element must be null by default', component.getElement());
     const element = dom.createElement(TagName.DIV);
@@ -540,6 +541,7 @@ testSuite({
   testGetElementByFragment() {
     component.render(sandbox);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const element = component.dom_.createDom(
         TagName.DIV, {id: component.makeId('foo')}, 'Hello');
     sandbox.appendChild(element);
@@ -800,6 +802,7 @@ testSuite({
         'Parent must no longer contain this child', component.getChild('a'));
   },
 
+  /** @suppress {missingProperties} suppression added to enable type checking */
   testMovingChildrenUsingAddChildAt() {
     component.render(sandbox);
 
@@ -843,6 +846,24 @@ testSuite({
     assertEquals('adcb', component.getChildIds().join(''));
     assertEquals(a, component.getChildAt(0));
     assertEquals(a.getElement(), component.getElement().childNodes[0]);
+
+    // Move child d to the bottom, and check that DOM nodes are in correct
+    // order. Sanity-check that a re-render occurs.
+    const removeChild = recordFunction(Element.prototype.removeChild);
+    propertyReplacer.replace(Element.prototype, 'removeChild', removeChild);
+    component.addChildAt(d, 3);
+    assertEquals('acbd', component.getChildIds().join(''));
+    assertEquals(d, component.getChildAt(3));
+    assertEquals(d.getElement(), component.getElement().childNodes[3]);
+    assertEquals(1, removeChild.getCallCount());
+
+    // Move child d again to the bottom, and check a re-render does not occur
+    removeChild.reset();
+    component.addChildAt(d, 3);
+    assertEquals('acbd', component.getChildIds().join(''));
+    assertEquals(d, component.getChildAt(3));
+    assertEquals(d.getElement(), component.getElement().childNodes[3]);
+    assertEquals(0, removeChild.getCallCount());
   },
 
   testAddChildAfterDomCreatedDoesNotEnterDocument() {

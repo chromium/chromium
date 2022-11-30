@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/remote_objects/remote_objects.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -57,7 +57,7 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   void BindRemoteObjectReceiver(
       int32_t object_id,
       mojo::PendingReceiver<mojom::blink::RemoteObject>);
-  void ReleaseObject(int32_t object_id);
+  void ReleaseObject(int32_t object_id, RemoteObject* remote_object);
   RemoteObject* GetRemoteObject(v8::Isolate* isolate, int32_t object_id);
 
  private:

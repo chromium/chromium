@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,10 +12,18 @@ source_set("credential_provider") {
     "archivable_credential.mm",
     "archivable_credential_store.h",
     "archivable_credential_store.mm",
+    "archivable_credential_util.h",
+    "archivable_credential_util.mm",
     "as_password_credential_identity+credential.h",
     "as_password_credential_identity+credential.mm",
     "constants.h",
     "constants.mm",
+    "memory_credential_store.h",
+    "memory_credential_store.mm",
+    "multi_store_credential_store.h",
+    "multi_store_credential_store.mm",
+    "user_defaults_credential_store.h",
+    "user_defaults_credential_store.mm",
   ]
   deps = [
     ":ui",
@@ -45,6 +53,9 @@ source_set("unit_tests") {
     "archivable_credential_store_unittest.mm",
     "archivable_credential_unittest.mm",
     "as_password_credential_identity+credential_unittests.mm",
+    "memory_credential_store_unittests.mm",
+    "multi_store_credential_store_unittests.mm",
+    "user_defaults_credential_store_unittests.mm",
   ]
   deps = [
     ":credential_provider",

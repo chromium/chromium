@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/navigation/navigation_manager_util.h"
+#import "ios/web/navigation/navigation_manager_util.h"
 
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
@@ -22,11 +22,6 @@ NavigationItemImpl* GetItemWithUniqueID(
     return context->GetItem();
 
   int unique_id = context->GetNavigationItemUniqueID();
-  NavigationItemImpl* transient_item =
-      navigation_manager->GetTransientItemImpl();
-  if (transient_item && transient_item->GetUniqueID() == unique_id)
-    return transient_item;
-
   NavigationItemImpl* pending_item =
       navigation_manager->GetPendingItemInCurrentOrRestoredSession();
   if (pending_item && pending_item->GetUniqueID() == unique_id)

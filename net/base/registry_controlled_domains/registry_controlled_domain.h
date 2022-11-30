@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,9 +117,9 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -129,8 +129,7 @@ class Origin;
 
 struct DomainRule;
 
-namespace net {
-namespace registry_controlled_domains {
+namespace net::registry_controlled_domains {
 
 // This enum is a required parameter to all public methods declared for this
 // service. The Public Suffix List (http://publicsuffix.org/) this service
@@ -208,7 +207,7 @@ NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
                                  PrivateRegistryFilter filter);
 // Note: this returns false if |origin2| is not set.
 NET_EXPORT bool SameDomainOrHost(const url::Origin& origin1,
-                                 const base::Optional<url::Origin>& origin2,
+                                 const absl::optional<url::Origin>& origin2,
                                  PrivateRegistryFilter filter);
 NET_EXPORT bool SameDomainOrHost(const GURL& gurl,
                                  const url::Origin& origin,
@@ -296,14 +295,14 @@ PermissiveGetHostRegistryLength(base::StringPiece16 host,
 
 typedef const struct DomainRule* (*FindDomainPtr)(const char *, unsigned int);
 
-// Used for unit tests. Use default domains.
-NET_EXPORT_PRIVATE void SetFindDomainGraph();
+// Used for unit tests. Uses default domains.
+NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
 
 // Used for unit tests, so that a frozen list of domains is used.
-NET_EXPORT_PRIVATE void SetFindDomainGraph(const unsigned char* domains,
-                                           size_t length);
+NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
+    const unsigned char* domains,
+    size_t length);
 
-}  // namespace registry_controlled_domains
-}  // namespace net
+}  // namespace net::registry_controlled_domains
 
 #endif  // NET_BASE_REGISTRY_CONTROLLED_DOMAINS_REGISTRY_CONTROLLED_DOMAIN_H_

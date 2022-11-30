@@ -11,12 +11,18 @@ locale.  The strings in this file are specific to iOS.
     <output filename="grit/ios_chromium_strings.h" type="rc_header">
       <emit emit_type="prepend"></emit>
     </output>
+    <output filename="ios_chromium_strings_af.pak" type="data_package" lang="af" />
     <output filename="ios_chromium_strings_am.pak" type="data_package" lang="am" />
     <output filename="ios_chromium_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ios_chromium_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ios_chromium_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ios_chromium_strings_be.pak" type="data_package" lang="be" />
     <output filename="ios_chromium_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="ios_chromium_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ios_chromium_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="ios_chromium_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ios_chromium_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ios_chromium_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="ios_chromium_strings_da.pak" type="data_package" lang="da" />
     <output filename="ios_chromium_strings_de.pak" type="data_package" lang="de" />
     <output filename="ios_chromium_strings_el.pak" type="data_package" lang="el" />
@@ -25,36 +31,55 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_chromium_strings_es.pak" type="data_package" lang="es" />
     <output filename="ios_chromium_strings_es-MX.pak" type="data_package" lang="es-419" />
     <output filename="ios_chromium_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ios_chromium_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="ios_chromium_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="ios_chromium_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ios_chromium_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ios_chromium_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="ios_chromium_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ios_chromium_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="ios_chromium_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="ios_chromium_strings_he.pak" type="data_package" lang="he" />
     <output filename="ios_chromium_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="ios_chromium_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="ios_chromium_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ios_chromium_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="ios_chromium_strings_id.pak" type="data_package" lang="id" />
+    <output filename="ios_chromium_strings_is.pak" type="data_package" lang="is" />
     <output filename="ios_chromium_strings_it.pak" type="data_package" lang="it" />
     <output filename="ios_chromium_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ios_chromium_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ios_chromium_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ios_chromium_strings_km.pak" type="data_package" lang="km" />
     <output filename="ios_chromium_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="ios_chromium_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ios_chromium_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ios_chromium_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="ios_chromium_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="ios_chromium_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ios_chromium_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="ios_chromium_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ios_chromium_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="ios_chromium_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="ios_chromium_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ios_chromium_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ios_chromium_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="ios_chromium_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="ios_chromium_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ios_chromium_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="ios_chromium_strings_pl.pak" type="data_package" lang="pl" />
     <output filename="ios_chromium_strings_pt.pak" type="data_package" lang="pt-BR" />
     <output filename="ios_chromium_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ios_chromium_strings_or.pak" type="data_package" lang="or" />
     <output filename="ios_chromium_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="ios_chromium_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ios_chromium_strings_si.pak" type="data_package" lang="si" />
     <output filename="ios_chromium_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="ios_chromium_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ios_chromium_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ios_chromium_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="ios_chromium_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="ios_chromium_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="ios_chromium_strings_sw.pak" type="data_package" lang="sw" />
@@ -63,10 +88,13 @@ locale.  The strings in this file are specific to iOS.
     <output filename="ios_chromium_strings_th.pak" type="data_package" lang="th" />
     <output filename="ios_chromium_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="ios_chromium_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ios_chromium_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ios_chromium_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="ios_chromium_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ios_chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ios_chromium_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="ios_chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-
+    <output filename="ios_chromium_strings_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
     <output filename="ios_chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="ios_chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
@@ -83,6 +111,7 @@ locale.  The strings in this file are specific to iOS.
     <file path="resources/ios_chromium_strings_bs.xtb" lang="bs" />
     <file path="resources/ios_chromium_strings_ca.xtb" lang="ca" />
     <file path="resources/ios_chromium_strings_cs.xtb" lang="cs" />
+    <file path="resources/ios_chromium_strings_cy.xtb" lang="cy" />
     <file path="resources/ios_chromium_strings_da.xtb" lang="da" />
     <file path="resources/ios_chromium_strings_de.xtb" lang="de" />
     <file path="resources/ios_chromium_strings_el.xtb" lang="el" />
@@ -165,9 +194,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
         Copyright <ph name="YEAR">$1</ph> The Chromium Authors. All rights reserved.
       </message>
-      <message name="IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_TITLE" desc="Title of the screen where users select an account to use. [Length: 20em] [iOS only]">
-        Sign in to Chromium
-      </message>
       <message name="IDS_IOS_AUTOFILL_DESCRIBE_LOCAL_COPY" desc="Text label that describes a Wallet credit card which has been copied to the local Chromium instance. Title case. [Length: 20em] [iOS only]">
         Copied to Chromium
       </message>
@@ -178,17 +204,20 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_VOICE_OVER" desc="Text to be read by VoiceOver when the Bottom Toolbar Tip is presented to the user, explaining that the bottom toolbar can be used to reach some controls. Read by Text-to-Speech. [iOS only]">
         Chromium tip. Some buttons are now at the bottom of your screen, like Back, Forward, and Search.
       </message>
+      <message name="IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SIGN_OUT_EVERY_WEBSITE" desc="Footer message in the settings to clear browsing data that allows user to sign out of Chrome to sign out their Google account from all websites. [iOS only]">
+        To sign out of your Google Account on all websites, <ph name="BEGIN_LINK">BEGIN_LINK</ph>sign out of Chromium<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_DESCRIPTION" desc="Description of the dialog informing the user that their Chromium browsing history was deleted, but other forms of history can still be found on Google My Activity.">
         The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history like searches and activity from other Google services at history.google.com.
       </message>
       <message name="IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE" desc="Title of a dialog that informs the user that the deletion of Chromium's browsing data has been completed.">
         Cleared Chromium data
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE" desc="Title of the default browser promotion modal. [iOS only]">
-        Make Chromium Your Default
+      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL" desc="Dialog label to invite the user to sign-in on the web. [iOS only]">
+        Sign in to this site and Chromium.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_OPEN_LINKS" desc="Title of the default browser promotion modal. [iOS only]">
-        Use Chromium to Open Links
+      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
+        Sign In to Chromium
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
         Switch to Chromium
@@ -208,17 +237,106 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         You can now use Chromium any time you tap on links in messages, documents, and other apps.
       </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP_SUBTITLE" desc="The subtitle explaining what the choosen mode (here desktop, the other possible state is mobile) will do in the browser">
+        This means Chromium will request the desktop site every time.
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE" desc="The subtitle explaining what the choosen mode (here mobile, the other possible state is desktop) will do in the browser">
+        This means Chromium will request the mobile site every time.
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE" desc="Title for the non-modal default browser promotion banner">
+        Set Chromium as Default?
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_DESCRIPTION" desc="Description for the non-modal default browser promotion banner">
+        Open Chromium anytime you tap on links in other apps
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Chromium version of the description for the 'All your tabs' default browser promotion modal. [iOS only]">
+        Set Chromium as default to sync your tabs, passwords, and payment info on all your devices
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_TITLE" desc="Chromium version of the title for the 'Stay safe' default browser promotion modal. [iOS only]">
+        Stay Safe With Chromium
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_STAY_SAFE_DESCRIPTION" desc="Chromium version of the description for the 'Stay safe' default browser promotion modal. [iOS only]">
+        Use Chromium as your default browser to stay protected from dangerous sites &amp; keep your passwords safe
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_DESCRIPTION" desc="Chromium version of the description for the 'Built for iOS' default browser promotion modal. [iOS only]">
+        Use Chromium by default to open links, search from widgets, and autofill passwords in other apps
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chromium?
       </message>
-     <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
+      <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
         When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.
       </message>
-      <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your account.
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Force Sign In) [iOS only]">
+          Your organization requires you to sign in to use Chromium.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE" desc="Text to inform the user about the forced sign-in policy with a Learn More link that redirects to a page that gives more details. (Force Sign In) [iOS only]">
+        Your organization requires you to sign in to use Chromium. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE" desc="The signout dialog title when forced sign-in is enabled. (Force Sign In) [iOS only]">
+        Sign out of Chromium?
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chromium uses Face ID to ensure authorized access to your passwords.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility [iOS only]">
+        You can now use Chromium anytime you tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP" desc="Text of the row indicating the third step of setting the default browser [iOS only]">
+        Select <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Chromium<ph name="END_BOLD">END_BOLD</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE" desc="Title of the screen suggesting to the user to use Chrome by default [iOS only]">
+        Use Chromium by Default
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_LAUNCH_SCREEN_ENTERPRISE" desc="The text of the launch screen presented to the user on First Run when the browser is managed [iOS only]">
+        Your organization is setting up Chromium...
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
+        To get the most out of Chromium, sign in to Chromium with your Google Account.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT" desc="Subtitle of the screen suggesting to the user to sign in. [iOS only]">
+          Sign in to get the most out of Chromium.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED" desc="Subtitle of the screen suggesting to the user to sign in when their Sign In is managed by their administrator.">
+          Sign in to Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED" desc="Subtitle of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
+        Your organization requires you to sign in to use Chromium.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED" desc="In Title Case: Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy. [iOS only]">
+        Sign In to Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_TITLE" desc="Title of the screen suggesting to the user to sign in. [iOS only]">
+        Make Chromium Your Own
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX" desc="Checkbox to accept the metrics reporting consent. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
+        Help Improve Chromium's Features and Performance
+        </message>
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_EXPLANATION" desc="Text to explain how the user can help to improve Chrome by accepting the metrics reporting consent. Bullet points lines should start with 2 spaces, followed by • and with a space right after. Related to IDS_IOS_FIRST_RUN_UMA_DIALOG_CHECKBOX and IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE. [iOS only]">
+        When on:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Help make Chromium better for people who use it the way you do.<ph name="END_INDENT">END_INDENT</ph>
+
+Things to consider:
+<ph name="BEGIN_INDENT">BEGIN_INDENT</ph>  • Info is sent to Google about your Chromium usage, but it isn't tied to you.
+
+  • If Chromium crashes, details about the crash may include some personal info.
+
+  • If you turn on sync, metrics may also include info about URLs you visit.<ph name="END_INDENT">END_INDENT</ph>
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="In Title Case: Title of the dialog where users can change their Chrome metrics sharing settings, like usage data. The title communicates that allowing Chrome to see this data can improve Chrome; this happens because we can better invent/improve features based on usage. This appears when they open the Chrome app for the first time on their phone. [iOS only]">
+        Make Chromium Better
+        </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT" desc="The label next to the metrics reporting consent checkbox of the welcome screen presented to the user on First Run [iOS only]">
+        Help improve Chromium by sending usage statistics and crash reports to Google
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_ENTERPRISE" desc="The title of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
+        Get More Done with Chromium
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE" desc="The subtitle of the welcome screen presented to the user on First Run [iOS only]">
+        Get more done with a simple, secure, and faster-than-ever Chromium.
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE_ENTERPRISE" desc="The subtitle of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
+        Chromium is simple, secure and faster-than-ever
       </message>
       <message name="IDS_IOS_FIRSTRUN_AGREE_TO_TERMS" desc="Label containing a link to the Terms of Service, displayed in the first run flow. [Length: 117em] [iOS only]">
         By using Chromium, you agree to the <ph name="BEGIN_LINK_TOS">BEGIN_LINK_TOS</ph>Terms of Service<ph name="END_LINK_TOS">END_LINK_TOS</ph>.
@@ -229,20 +347,20 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_FIRSTRUN_WELCOME_TO_CHROME" desc="Title on the Welcome to Chromium screen presented to the user on First Run. [iOS only]">
         Welcome to Chromium
       </message>
+      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING" desc="The text is displayed in a footer on the very first screen of Chrome. Make sure 'usage' and 'crash' are translated consistently with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). The ‘Manage’ link opens a dialog to change the corresponding setting. [iOS only]">
+        To help improve the app, Chromium sends usage and crash data to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Manage<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
         Help Improve Chromium's Features and Performance
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_CHROME_DATA" desc="Turns off and on all the sync data (like bookmarks, history and others). [iOS only]">
         Sync Your Chromium Data
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to enable the setting to protect incognito tabs with biometric auth. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_SYSTEM_DIALOG_REASON" desc="Text for system biometric authentication dialog to explain why authentication is required when the user attempts to enable the setting to protect Incognito tabs with biometric auth. [iOS only]">
        Let Chromium lock your Incognito tabs.
       </message>
-      <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
+      <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito Tabs When You Close Chromium
-      </message>
-      <message name="IDS_IOS_LOCATION_MODAL_DESCRIPTION" desc="The description of the location permissions modal [Length: unlimited] [iOS only].">
-          If you allow Chromium to know your location, Chromium sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
           Chromium shares your location with sites you allow.
@@ -262,23 +380,17 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_TITLE_UNITY" desc="Title of the dialog shown when signing out of a managed account.[Length: 50em] [iOS only].">
         Clear your Chromium data from this device?
       </message>
-      <message name="IDS_IOS_MANAGED_SIGNIN_SUBTITLE" desc="The subtitle of the Sign in to a managed account dialog. [300em]">
+      <message name="IDS_IOS_MANAGED_SIGNIN_SUBTITLE" desc="The subtitle of the Sign in to a managed account dialog. If the User Policy feature is enabled, the IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE subtitle will be used instead of this one. [300em]">
         You are signing in with an account managed by <ph name="DOMAIN">$1<ex>doe.com</ex></ph> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.
       </message>
       <message name="IDS_IOS_MANAGED_SWITCH_SUBTITLE" desc="The subtitle of the Switch from a managed account dialog. [300em]">
         You are switching sync accounts from <ph name="USER_EMAIL1">$1<ex>john@doe.com</ex></ph> to <ph name="USER_EMAIL2">$2<ex>johndoe@gmail.com</ex></ph>. Your existing Chromium data is managed by <ph name="DOMAIN">$3<ex>doe.com</ex></ph>. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1">$1<ex>john@doe.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_MOVE_TO_DOCK_TIP" desc="Text displayed on the New Tab Page for the move Chromium to the dock promo. [iOS only]">
-        Tip: <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Move Chromium to your dock<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
+      <message name="IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE" desc="The subtitle of the Sync with a managed account dialog when User Policy is enabled (alternative to IDS_IOS_MANAGED_SIGNIN_SUBTITLE). [300em][iOS only]">
+        Your organization <ph name="DOMAIN">$1<ex>doe.com</ex></ph> will have access to your Chromium data, bookmarks, history, passwords and other settings you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organization. Your organization can also set user policies specific to that account that can change the behavior of Chromium.
       </message>
-      <message name="IDS_IOS_OPEN_TABS_NO_SESSION_INSTRUCTIONS" desc="Information about sync displayed when the user has signed in on mobile but not on desktop">
-        Access the tabs you have open on your computer, right here. Just open Chromium on your computer, go to the menu, and select “Sign in to Chromium…”
-      </message>
-      <message name="IDS_IOS_OPEN_TABS_SYNC_IS_OFF_MOBILE" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.]">
-        Tabs that you've opened in Chromium on your other devices will appear here.
-      </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN" desc="The title of the Import Data settings screen when signing in. [30em]">
-        Sign in to Chromium
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
+        <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph> was using Chromium and left bookmarks, passwords, and other settings on this device.
       </message>
       <message name="IDS_IOS_PAGE_INFO_CHROME_PAGE_LABEL" desc="Label to display at the top of the site information screen when the page you are on is a Chromium page.">
         Chromium Page
@@ -301,6 +413,15 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_REMOVE_ACCOUNT_CONFIRMATION_MESSAGE" desc="Dialog message to emphasize the effects of removing an account.">
         This account and any unsaved data will be removed from Chromium.
       </message>
+      <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
+        Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing standard protection mode.">
+        Checks URLs with a list of unsafe sites stored in Chromium. If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing.
+      </message>
+      <message name="IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_SUMMARY" desc="Summary for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
+        Chromium periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.
+      </message>
       <message name="IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND" desc="The message indicating a 3rd party tweak has been found that is known to crash Chromium.  After the ':', we will list the names of the libraries. [Length: 140em]">
         Some add-ons cause Chromium to crash. Please uninstall:
       </message>
@@ -312,6 +433,9 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_MESSAGE_GO_TO_SETTINGS" desc="Body of the alert shown when the user tries to save an image but we lack permission to add photos. This body tells the user he'll be redirected to the Settings app. [Length: 100em] [iOS only].">
         To save images, tap on Settings to let Chromium add to your photos
+      </message>
+      <message name="IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING" desc="Helper text above the save credentials modal's primary action button. [Length: unlimited] [iOS only]">
+        Passwords are saved to Password Manager on this device only.
       </message>
       <message name="IDS_IOS_SCANNER_CAMERA_IN_USE_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR or credit card scanner but the camera is in use by another application. [Length: 140em] [iOS only]">
         Chromium can't use your camera because it's in use by another application
@@ -331,6 +455,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR or credit card scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Chromium can't use your camera in Split View mode
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPad [iPadOS only]">
+        You can use the passwords you saved to Password Manager in other apps on your iPad.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
+        You can use the passwords you saved to Password Manager in other apps on your iPhone.
+      </message>
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name.">
         Chromium
       </message>
@@ -342,6 +472,9 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a gmail account and sync is turned on [iOS only].">
         Choose whether to clear your Chromium data from this device or keep it
+      </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNCING_ACCOUNT" desc="Title of sign-out button, warning the user they’ll have access to less features once signed out. [iOS only].">
+        Some Chromium features won’t be available anymore.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
         Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chromium data will be cleared from this device
@@ -357,6 +490,18 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chromium just got better! A new version is available.
+      </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE" desc="The subtitle of the User Policy notification dialog. [iOS only] [300em]">
+        You are signed in and syncing your data with an account managed by <ph name="DOMAIN">$1<ex>doe.com</ex></ph> where its administrator can now set user policies specific to that account that can change the behavior of Chromimum.
+      </message>
+      <message name="IDS_IOS_USER_POLICY_NOTIFICATION_TITLE" desc="The title of the User Policy notification dialog. [iOS only] [300em]">
+        Chromium now supports user policies for your managed account
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        Select Chromium
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4" desc="Text of the row indicating the fourth step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        4. Select Chromium
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER" desc="Informational header at the top of the safety check page">
         Chromium can help keep you safe from data breaches, unsafe websites and more.
@@ -397,6 +542,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT" desc="This text is shown when sign-in is disabled by policy and the user taps on the info pop-over of the 'Sign in to Chromium' button in the settings. [iOS only]">
         Your organization requires you to stay signed out of Chromium.
       </message>
+      <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
+            You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chromium can't check your passwords
       </message>
@@ -420,6 +568,30 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
         Your password was exposed in a data breach. Chromium recommends changing the password now.
+      </message>
+      <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
+        Your password was exposed in a data breach. Password Manager recommends changing it now.
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
+        Shows prompts to sign in to Chromium.
+      </message>
+      <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT" desc="Feature title in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
+        Allow Chromium Sign-in
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER" desc="Disclaimer telling users what will happen to their passwords">
+        Your password will be saved in your Account (<ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>).
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
+        Your password will be saved to Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP" desc="The text of the tip explaining to the user they can tap on Autofill password suggestions">
+        Use the password you saved in Chromium to sign in faster
+      </message>
+      <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER" desc="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions." meaning="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions.">
+        Chromium tip. Sign in faster by selecting your saved password at the top of the keyboard.
+      </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user that the Overflow Menu has new items">
+        Get to know the new Chromium menu
       </message>
     </messages>
   </release>

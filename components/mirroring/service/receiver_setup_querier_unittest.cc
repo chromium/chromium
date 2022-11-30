@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
@@ -27,6 +27,10 @@ class ReceiverSetupQuerierTest : public ::testing::Test {
  public:
   ReceiverSetupQuerierTest()
       : receiver_address_(media::cast::test::GetFreeLocalPort().address()) {}
+
+  ReceiverSetupQuerierTest(const ReceiverSetupQuerierTest&) = delete;
+  ReceiverSetupQuerierTest& operator=(const ReceiverSetupQuerierTest&) = delete;
+
   ~ReceiverSetupQuerierTest() override = default;
 
  protected:
@@ -55,10 +59,8 @@ class ReceiverSetupQuerierTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   const net::IPAddress receiver_address_;
-  network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
+  raw_ptr<network::TestURLLoaderFactory> url_loader_factory_ = nullptr;
   std::unique_ptr<ReceiverSetupQuerier> setup_querier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverSetupQuerierTest);
 };
 
 TEST_F(ReceiverSetupQuerierTest, ValidSetupInfo) {

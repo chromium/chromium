@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,37 +28,40 @@ const char kEnableVp9ConfigPath[] = "enable_vp9";
 const char kEnableH264ConfigPath[] = "enable_h264";
 const char kFrameRecorderBufferKbConfigPath[] = "frame-recorder-buffer-kb";
 
-std::unique_ptr<base::DictionaryValue> HostConfigFromJson(
-    const std::string& json) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value || !value->is_dict()) {
-    LOG(WARNING) << "Failed to parse host config from JSON";
-    return nullptr;
+absl::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value.has_value()) {
+    DLOG(ERROR) << "Failed to parse host config from JSON";
+    return absl::nullopt;
   }
 
-  return base::WrapUnique(static_cast<base::DictionaryValue*>(value.release()));
+  if (!value->is_dict()) {
+    DLOG(ERROR) << "Parsed host config returned was not a dictionary";
+    return absl::nullopt;
+  }
+
+  return std::move(value->GetDict());
 }
 
-std::string HostConfigToJson(const base::DictionaryValue& host_config) {
+std::string HostConfigToJson(const base::Value::Dict& host_config) {
   std::string data;
   base::JSONWriter::Write(host_config, &data);
   return data;
 }
 
-std::unique_ptr<base::DictionaryValue> HostConfigFromJsonFile(
+absl::optional<base::Value::Dict> HostConfigFromJsonFile(
     const base::FilePath& config_file) {
-  // TODO(sergeyu): Implement better error handling here.
   std::string serialized;
   if (!base::ReadFileToString(config_file, &serialized)) {
-    LOG(WARNING) << "Failed to read " << config_file.value();
-    return nullptr;
+    DLOG(ERROR) << "Failed to read " << config_file.value();
+    return absl::nullopt;
   }
 
   return HostConfigFromJson(serialized);
 }
 
-bool HostConfigToJsonFile(const base::DictionaryValue& host_config,
+bool HostConfigToJsonFile(const base::Value::Dict& host_config,
                           const base::FilePath& config_file) {
   std::string serialized = HostConfigToJson(host_config);
   return base::ImportantFileWriter::WriteFileAtomically(config_file,

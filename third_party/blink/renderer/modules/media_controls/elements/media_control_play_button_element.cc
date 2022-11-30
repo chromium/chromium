@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_play_button_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -73,7 +74,11 @@ void MediaControlPlayButtonElement::DefaultEventHandler(Event& event) {
 
     MediaElement().TogglePlayState();
     UpdateDisplayType();
-    event.SetDefaultHandled();
+
+    // Don't set default handled in the overflow menu since it also needs to
+    // handle the click.
+    if (!IsOverflowElement())
+      event.SetDefaultHandled();
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,8 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return chromecast::media::mojom::AudioCodec::kCodecAC3;
       case (chromecast::media::AudioCodec::kCodecDTS):
         return chromecast::media::mojom::AudioCodec::kCodecDTS;
+      case (chromecast::media::AudioCodec::kCodecDTSXP2):
+        return chromecast::media::mojom::AudioCodec::kCodecDTSXP2;
       case (chromecast::media::AudioCodec::kCodecFLAC):
         return chromecast::media::mojom::AudioCodec::kCodecFLAC;
       case (chromecast::media::AudioCodec::kCodecMpegHAudio):
@@ -77,6 +79,9 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecDTS):
         *output = chromecast::media::AudioCodec::kCodecDTS;
+        return true;
+      case (chromecast::media::mojom::AudioCodec::kCodecDTSXP2):
+        *output = chromecast::media::AudioCodec::kCodecDTSXP2;
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecFLAC):
         *output = chromecast::media::AudioCodec::kCodecFLAC;
@@ -154,6 +159,8 @@ struct mojo::EnumTraits<chromecast::media::mojom::SampleFormat,
         return chromecast::media::mojom::SampleFormat::kSampleFormatS32;
       case (chromecast::media::SampleFormat::kSampleFormatF32):
         return chromecast::media::mojom::SampleFormat::kSampleFormatF32;
+      case (chromecast::media::SampleFormat::kSampleFormatPlanarU8):
+        return chromecast::media::mojom::SampleFormat::kSampleFormatPlanarU8;
       case (chromecast::media::SampleFormat::kSampleFormatPlanarS16):
         return chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS16;
       case (chromecast::media::SampleFormat::kSampleFormatPlanarF32):
@@ -184,6 +191,9 @@ struct mojo::EnumTraits<chromecast::media::mojom::SampleFormat,
         return true;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatF32):
         *output = chromecast::media::SampleFormat::kSampleFormatF32;
+        return true;
+      case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarU8):
+        *output = chromecast::media::SampleFormat::kSampleFormatPlanarU8;
         return true;
       case (chromecast::media::mojom::SampleFormat::kSampleFormatPlanarS16):
         *output = chromecast::media::SampleFormat::kSampleFormatPlanarS16;

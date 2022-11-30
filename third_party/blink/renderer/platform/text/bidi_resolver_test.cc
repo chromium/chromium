@@ -32,11 +32,12 @@
 
 #include <fstream>
 
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/bidi_test_harness.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -109,7 +110,7 @@ TEST(BidiResolver, ParagraphDirectionSurrogates) {
       // Test broken surrogate: trail appearing before
       // lead. (U+10858 units reversed)
       {{0xDC58, 0xD802}, 2, TextDirection::kLtr, false}};
-  for (size_t i = 0; i < base::size(kTestData); ++i)
+  for (size_t i = 0; i < std::size(kTestData); ++i)
     TestDirectionality(kTestData[i]);
 }
 
@@ -174,7 +175,7 @@ void BidiTestRunner::RunTest(const std::basic_string<UChar>& input,
                              bidi_test::ParagraphDirection paragraph_direction,
                              const std::string& line,
                              size_t line_number) {
-  if (!skipped_code_points_.IsEmpty()) {
+  if (!skipped_code_points_.empty()) {
     for (size_t i = 0; i < input.size(); i++) {
       if (skipped_code_points_.Contains(input[i])) {
         tests_skipped_++;

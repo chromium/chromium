@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
@@ -40,8 +41,8 @@ class TrustedVaultAccessTokenFetcherFrontend
 
   // Asynchronously fetches an access token for |account_id|. If |account_id|
   // doesn't represent current primary account, |callback| is called immediately
-  // with base::nullopt. If primary account changes before access token fetched,
-  // |callback| is called with base::nullopt.
+  // with absl::nullopt. If primary account changes before access token fetched,
+  // |callback| is called with absl::nullopt.
   void FetchAccessToken(const CoreAccountId& account_id,
                         TrustedVaultAccessTokenFetcher::TokenCallback callback);
 
@@ -59,16 +60,16 @@ class TrustedVaultAccessTokenFetcherFrontend
   void StartAccessTokenFetch();
 
   // Handles access token fetch completion. Runs |pending_requests_| with
-  // |access_token_info| on success and with base::nullopt otherwise.
+  // |access_token_info| on success and with absl::nullopt otherwise.
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 
   // Helper method to run and clear |pending_requests_|.
   void FulfillPendingRequests(
-      base::Optional<signin::AccessTokenInfo> access_token_info);
+      absl::optional<signin::AccessTokenInfo> access_token_info);
 
   // Never null.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Pending request for an access token. Non-null iff there is a request
   // ongoing.

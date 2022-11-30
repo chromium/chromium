@@ -1,11 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -18,30 +19,33 @@ const SelectFileDialogExtension::RoutingID kDefaultRoutingID =
 }  // namespace
 
 // Must be a class so it can be a friend of SelectFileDialogExtension.
-class SelectFileDialogExtensionTest : public testing::Test {
+class SelectFileDialogExtensionTest : public ::testing::Test {
  public:
-  SelectFileDialogExtensionTest() {}
-  ~SelectFileDialogExtensionTest() override {}
+  SelectFileDialogExtensionTest() = default;
+  SelectFileDialogExtensionTest(const SelectFileDialogExtensionTest&) = delete;
+  SelectFileDialogExtensionTest& operator=(
+      const SelectFileDialogExtensionTest&) = delete;
 
   static SelectFileDialogExtension* CreateDialog(
       ui::SelectFileDialog::Listener* listener) {
-    SelectFileDialogExtension* dialog = new SelectFileDialogExtension(listener,
-                                                                      NULL);
+    SelectFileDialogExtension* dialog =
+        new SelectFileDialogExtension(listener, nullptr);
     // Simulate the dialog opening.
     EXPECT_FALSE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     dialog->AddPending(kDefaultRoutingID);
     EXPECT_TRUE(SelectFileDialogExtension::PendingExists(kDefaultRoutingID));
     return dialog;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialogExtensionTest);
 };
 
 // Test listener for a SelectFileDialog.
 class TestListener : public ui::SelectFileDialog::Listener {
  public:
   TestListener() : selected_(false), file_index_(-1) {}
+
+  TestListener(const TestListener&) = delete;
+  TestListener& operator=(const TestListener&) = delete;
+
   ~TestListener() override {}
 
   bool selected() const { return selected_; }
@@ -58,8 +62,6 @@ class TestListener : public ui::SelectFileDialog::Listener {
  private:
   bool selected_;
   int file_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListener);
 };
 
 // Client of a SelectFileDialog that deletes itself whenever the dialog
@@ -90,7 +92,7 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
 
 TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   const int kFileIndex = 5;
-  std::unique_ptr<TestListener> listener(new TestListener);
+  auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate selecting a file.
@@ -98,19 +100,19 @@ TEST_F(SelectFileDialogExtensionTest, FileSelected) {
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, info,
                                             kFileIndex);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(NULL);
+  dialog->OnSystemDialogWillClose();
   EXPECT_TRUE(listener->selected());
   EXPECT_EQ(kFileIndex, listener->file_index());
 }
 
 TEST_F(SelectFileDialogExtensionTest, FileSelectionCanceled) {
-  std::unique_ptr<TestListener> listener(new TestListener);
+  auto listener = std::make_unique<TestListener>();
   scoped_refptr<SelectFileDialogExtension> dialog =
       CreateDialog(listener.get());
   // Simulate cancelling the dialog.
   SelectFileDialogExtension::OnFileSelectionCanceled(kDefaultRoutingID);
   // Simulate closing the dialog so the listener gets invoked.
-  dialog->ExtensionDialogClosing(NULL);
+  dialog->OnSystemDialogWillClose();
   EXPECT_FALSE(listener->selected());
   EXPECT_EQ(-1, listener->file_index());
 }
@@ -122,5 +124,5 @@ TEST_F(SelectFileDialogExtensionTest, SelfDeleting) {
   ui::SelectedFileInfo file_info;
   SelectFileDialogExtension::OnFileSelected(kDefaultRoutingID, file_info, 0);
   // Simulate closing the dialog so the listener gets invoked.
-  client->dialog()->ExtensionDialogClosing(NULL);
+  client->dialog()->OnSystemDialogWillClose();
 }

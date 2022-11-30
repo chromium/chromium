@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
 
 #import <CoreGraphics/CoreGraphics.h>
-#include <algorithm>
+#import <algorithm>
 
-#include "base/check_op.h"
-#include "base/numerics/ranges.h"
+#import "base/check_op.h"
+#import "base/cxx17_backports.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -59,6 +60,7 @@
 // constrainst for the guides have been applied.
 
 namespace {
+
 // Height and width of the slider.
 const CGFloat kSliderHeight = 40.0;
 const CGFloat kSliderWidth = 78.0;
@@ -104,22 +106,42 @@ const CGFloat kBackgroundAlpha = 0.3;
 // Color for the regular tab count label and icons.
 const CGFloat kSelectedColor = 0x3C4043;
 
-// Returns the point that's at the center of |rect|.
+// The size of the symbol image.
+const CGFloat kSymbolTabGridPageControlPointSize = 24.;
+
+// Returns the point that's at the center of `rect`.
 CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
-// Convenience method that composes an asset name and returns the correct image
-// (in template rendering mode) based on the segment name (one of "regular",
-// "incognito, "remote") and whether the selected state image is needed or not.
-UIImage* ImageForSegment(NSString* segment, BOOL selected) {
-  NSString* asset =
-      [NSString stringWithFormat:@"page_control_%@_tabs%@", segment,
-                                 selected ? @"_selected" : @""];
-  return [[UIImage imageNamed:asset]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+// Image names for the different icon state.
+NSString* kImagePageControlRegularSelected =
+    @"page_control_regular_tabs_selected";
+NSString* kImagePageControlRegularNotSelected = @"page_control_regular_tabs";
+NSString* kImagePageControlIncognitoSelected =
+    @"page_control_incognito_tabs_selected";
+NSString* kImagePageControlIncognitoNotSelected =
+    @"page_control_incognito_tabs";
+NSString* kImagePageControlRemoteSelected =
+    @"page_control_remote_tabs_selected";
+NSString* kImagePageControlRemoteNotSelected = @"page_control_remote_tabs";
+
+// Returns an UIImageView for the given imgageName.
+UIImageView* ImageViewForImageNamed(NSString* imageName) {
+  return [[UIImageView alloc]
+      initWithImage:
+          [[UIImage imageNamed:imageName]
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
 }
+
+// Returns an UIImageView for the given symbolName.
+UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
+  return [[UIImageView alloc]
+      initWithImage:CustomSymbolTemplateWithPointSize(
+                        symbolName, kSymbolTabGridPageControlPointSize)];
 }
+
+}  // namespace
 
 // View class used for the background of this control; it draws the grey
 // rectangles with clear separators.
@@ -139,17 +161,17 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @property(nonatomic, weak) UILayoutGuide* remoteGuide;
 // The view for the slider.
 @property(nonatomic, weak) UIView* sliderView;
-// The view for the selected images and labels (a subview of |sliderView).
+// The view for the selected images and labels (a subview of `sliderView).
 @property(nonatomic, weak) UIView* selectedImageView;
 // The labels for the incognito and regular sections, in regular and selected
 // variants.
-@property(nonatomic, weak) UIView* incognitoIcon;
+@property(nonatomic, weak) UIView* incognitoNotSelectedIcon;
 @property(nonatomic, weak) UIView* incognitoSelectedIcon;
-@property(nonatomic, weak) UIView* regularIcon;
+@property(nonatomic, weak) UIView* regularNotSelectedIcon;
 @property(nonatomic, weak) UIView* regularSelectedIcon;
 @property(nonatomic, weak) UILabel* regularLabel;
 @property(nonatomic, weak) UILabel* regularSelectedLabel;
-@property(nonatomic, weak) UIView* remoteIcon;
+@property(nonatomic, weak) UIView* remoteNotSelectedIcon;
 @property(nonatomic, weak) UIView* remoteSelectedIcon;
 
 // Standard pointer interactions provided UIKit require views on which to attach
@@ -161,12 +183,12 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @property(nonatomic, weak) UIView* regularHoverView;
 @property(nonatomic, weak) UIView* remoteHoverView;
 
-// The center point for the slider corresponding to a |sliderPosition| of 0.
+// The center point for the slider corresponding to a `sliderPosition` of 0.
 @property(nonatomic) CGFloat sliderOrigin;
 // The (signed) x-coordinate distance the slider moves over. The slider's
-// position is set by adding a fraction of this distance to |sliderOrigin|, so
-// that when |sliderRange| is negative (in RTL layout), the slider will move in
-// the negative-x direction from |sliderOrigin|, and otherwise it will move in
+// position is set by adding a fraction of this distance to `sliderOrigin`, so
+// that when `sliderRange` is negative (in RTL layout), the slider will move in
+// the negative-x direction from `sliderOrigin`, and otherwise it will move in
 // the positive-x direction.
 @property(nonatomic) CGFloat sliderRange;
 // State properties to track the point and position (in the 0.0-1.0 range) of
@@ -174,6 +196,9 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 @property(nonatomic) CGPoint dragStart;
 @property(nonatomic) CGFloat dragStartPosition;
 @property(nonatomic) BOOL draggingSlider;
+// Gesture recognizer used to handle taps. Owned by `self` as a UIView, so this
+// property is just a weak pointer to refer to it in some touch logic.
+@property(nonatomic, weak) UIGestureRecognizer* tapRecognizer;
 @end
 
 @implementation TabGridPageControl
@@ -230,8 +255,8 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 }
 
 - (void)setSliderPosition:(CGFloat)sliderPosition {
-  // Clamp |selectionOffset| to (0.0 - 1.0).
-  sliderPosition = base::ClampToRange<CGFloat>(sliderPosition, 0.0, 1.0);
+  // Clamp `selectionOffset` to (0.0 - 1.0).
+  sliderPosition = base::clamp<CGFloat>(sliderPosition, 0.0, 1.0);
   CGPoint center = self.sliderView.center;
   center.x = self.sliderOrigin + self.sliderRange * sliderPosition;
   self.sliderView.center = center;
@@ -241,7 +266,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
                                               toView:self.sliderView];
   _sliderPosition = sliderPosition;
 
-  // |_selectedPage| should be kept in sync with the slider position.
+  // `_selectedPage` should be kept in sync with the slider position.
   TabGridPage previousSelectedPage = _selectedPage;
   if (sliderPosition < 0.25)
     _selectedPage = TabGridPageIncognitoTabs;
@@ -348,8 +373,13 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   DCHECK(!self.multipleTouchEnabled);
   DCHECK_EQ(1U, touches.count);
   self.draggingSlider = NO;
-  [self setSelectedPage:self.selectedPage animated:YES];
-  [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  // The tap recognizer will cancel the touches it recognizes as the last step
+  // of handling the gesture, so in that case, control events have already been
+  // sent and don't need to be sent again here.
+  if (self.tapRecognizer.state != UIGestureRecognizerStateEnded) {
+    [self setSelectedPage:self.selectedPage animated:YES];
+    [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  }
 }
 
 #pragma mark - UIView
@@ -373,28 +403,27 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 
   // Position the section images, labels and hover views, which depend on the
   // layout guides.
-  self.incognitoIcon.center = [self centerOfSegment:TabGridPageIncognitoTabs];
+  self.incognitoNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageIncognitoTabs];
   self.incognitoSelectedIcon.center =
       [self centerOfSegment:TabGridPageIncognitoTabs];
 
-  self.regularIcon.center = [self centerOfSegment:TabGridPageRegularTabs];
+  self.regularNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageRegularTabs];
   self.regularSelectedIcon.center =
       [self centerOfSegment:TabGridPageRegularTabs];
   self.regularLabel.center = [self centerOfSegment:TabGridPageRegularTabs];
   self.regularSelectedLabel.center =
       [self centerOfSegment:TabGridPageRegularTabs];
 
-  self.remoteIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
+  self.remoteNotSelectedIcon.center =
+      [self centerOfSegment:TabGridPageRemoteTabs];
   self.remoteSelectedIcon.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
-  if (@available(iOS 13.4, *)) {
-      self.incognitoHoverView.center =
-          [self centerOfSegment:TabGridPageIncognitoTabs];
-      self.regularHoverView.center =
-          [self centerOfSegment:TabGridPageRegularTabs];
-      self.remoteHoverView.center =
-          [self centerOfSegment:TabGridPageRemoteTabs];
-  }
+  self.incognitoHoverView.center =
+      [self centerOfSegment:TabGridPageIncognitoTabs];
+  self.regularHoverView.center = [self centerOfSegment:TabGridPageRegularTabs];
+  self.remoteHoverView.center = [self centerOfSegment:TabGridPageRemoteTabs];
 
   // Determine the slider origin and range; this is based on the layout guides
   // and can't be computed until they are determined.
@@ -452,6 +481,60 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 }
 
 #pragma mark - Private
+
+// Configures and Adds icon to the tab grid page control for the given tab.
+- (void)addTabsIcon:(TabGridPage)tab {
+  UIImageView* iconSelected;
+  UIImageView* iconNotSelected;
+  switch (tab) {
+    case TabGridPageRegularTabs: {
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kSquareNumberSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kSquareNumberSymbol);
+      } else {
+        iconSelected = ImageViewForImageNamed(kImagePageControlRegularSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlRegularNotSelected);
+      }
+      self.regularSelectedIcon = iconSelected;
+      self.regularNotSelectedIcon = iconNotSelected;
+      break;
+    }
+    case TabGridPageIncognitoTabs: {
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kIncognitoSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kIncognitoSymbol);
+      } else {
+        iconSelected =
+            ImageViewForImageNamed(kImagePageControlIncognitoSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlIncognitoNotSelected);
+      }
+      self.incognitoSelectedIcon = iconSelected;
+      self.incognitoNotSelectedIcon = iconNotSelected;
+      break;
+    }
+    case TabGridPageRemoteTabs: {
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kRecentTabsSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kRecentTabsSymbol);
+      } else {
+        iconSelected = ImageViewForImageNamed(kImagePageControlRemoteSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlRemoteNotSelected);
+      }
+      self.remoteSelectedIcon = iconSelected;
+      self.remoteNotSelectedIcon = iconNotSelected;
+      break;
+    }
+  }
+
+  iconNotSelected.tintColor = UIColorFromRGB(kSliderColor);
+  iconSelected.tintColor = UIColorFromRGB(kSelectedColor);
+
+  [self insertSubview:iconNotSelected belowSubview:self.sliderView];
+  [self.selectedImageView addSubview:iconSelected];
+}
 
 // Sets up all of the subviews for this control, as well as the layout guides
 // used to position the section content.
@@ -517,17 +600,10 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   [self.sliderView addSubview:selectedImageView];
   self.selectedImageView = selectedImageView;
 
-  // Icons and labels for the regular tabs.
-  UIImageView* regularIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"regular", NO)];
-  regularIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:regularIcon belowSubview:self.sliderView];
-  self.regularIcon = regularIcon;
-  UIImageView* regularSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"regular", YES)];
-  regularSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:regularSelectedIcon];
-  self.regularSelectedIcon = regularSelectedIcon;
+  [self addTabsIcon:TabGridPageRegularTabs];
+  [self addTabsIcon:TabGridPageIncognitoTabs];
+  [self addTabsIcon:TabGridPageRemoteTabs];
+
   UILabel* regularLabel = [self labelSelected:NO];
   [self insertSubview:regularLabel belowSubview:self.sliderView];
   self.regularLabel = regularLabel;
@@ -535,51 +611,25 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   [self.selectedImageView addSubview:regularSelectedLabel];
   self.regularSelectedLabel = regularSelectedLabel;
 
-  // Icons for the incognito tabs section.
-  UIImageView* incognitoIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"incognito", NO)];
-  incognitoIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:incognitoIcon belowSubview:self.sliderView];
-  self.incognitoIcon = incognitoIcon;
-  UIImageView* incognitoSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"incognito", YES)];
-  incognitoSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:incognitoSelectedIcon];
-  self.incognitoSelectedIcon = incognitoSelectedIcon;
+  CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
+  UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
+  [self insertSubview:incognitoHoverView belowSubview:self.sliderView];
+  [self insertSubview:regularHoverView belowSubview:self.sliderView];
+  [self insertSubview:remoteHoverView belowSubview:self.sliderView];
+  self.incognitoHoverView = incognitoHoverView;
+  self.regularHoverView = regularHoverView;
+  self.remoteHoverView = remoteHoverView;
 
-  // Icons for the remote tabs section.
-  UIImageView* remoteIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"remote", NO)];
-  remoteIcon.tintColor = UIColorFromRGB(kSliderColor);
-  [self insertSubview:remoteIcon belowSubview:self.sliderView];
-  self.remoteIcon = remoteIcon;
-  UIImageView* remoteSelectedIcon =
-      [[UIImageView alloc] initWithImage:ImageForSegment(@"remote", YES)];
-  remoteSelectedIcon.tintColor = UIColorFromRGB(kSelectedColor);
-  [self.selectedImageView addSubview:remoteSelectedIcon];
-  self.remoteSelectedIcon = remoteSelectedIcon;
-
-  if (@available(iOS 13.4, *)) {
-      CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kOverallHeight);
-      UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
-      [self insertSubview:incognitoHoverView belowSubview:self.sliderView];
-      [self insertSubview:regularHoverView belowSubview:self.sliderView];
-      [self insertSubview:remoteHoverView belowSubview:self.sliderView];
-      self.incognitoHoverView = incognitoHoverView;
-      self.regularHoverView = regularHoverView;
-      self.remoteHoverView = remoteHoverView;
-
-      [self.incognitoHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.regularHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.remoteHoverView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-      [self.sliderView
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  }
+  [self.incognitoHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.regularHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.remoteHoverView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
+  [self.sliderView
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   // Update the label text, in case these properties have been set before the
   // views were set up.
@@ -597,6 +647,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
                                               action:@selector(handleTap:)];
   tapRecognizer.delegate = self;
   [self addGestureRecognizer:tapRecognizer];
+  self.tapRecognizer = tapRecognizer;
 }
 
 // Creates a label for use in this control.
@@ -625,7 +676,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   } else if (CGRectContainsPoint(self.remoteGuide.layoutFrame, point)) {
     page = TabGridPageRemoteTabs;
   } else {
-    // bug: taps in the left- or rightmost |kSliderOverhang| points of the
+    // bug: taps in the left- or rightmost `kSliderOverhang` points of the
     // control will fall through to this case.
     // TODO(crbug.com/804500): Fix this.
     page = TabGridPageRegularTabs;
@@ -636,7 +687,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   }
 }
 
-// Returns the point at the center of |segment|.
+// Returns the point at the center of `segment`.
 - (CGPoint)centerOfSegment:(TabGridPage)segment {
   switch (segment) {
     case TabGridPageIncognitoTabs:

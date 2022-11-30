@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/win/conflicts/installed_applications.h"
@@ -92,6 +92,12 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
       scoped_refptr<ModuleListFilter> module_list_filter,
       const InstalledApplications& installed_applications,
       bool module_analysis_disabled);
+
+  IncompatibleApplicationsUpdater(const IncompatibleApplicationsUpdater&) =
+      delete;
+  IncompatibleApplicationsUpdater& operator=(
+      const IncompatibleApplicationsUpdater&) = delete;
+
   ~IncompatibleApplicationsUpdater() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
@@ -125,7 +131,7 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   void DisableModuleAnalysis();
 
  private:
-  ModuleDatabaseEventSource* const module_database_event_source_;
+  const raw_ptr<ModuleDatabaseEventSource> module_database_event_source_;
 
   const CertificateInfo& exe_certificate_info_;
   scoped_refptr<ModuleListFilter> module_list_filter_;
@@ -146,8 +152,6 @@ class IncompatibleApplicationsUpdater : public ModuleDatabaseObserver {
   bool module_analysis_disabled_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsUpdater);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_INCOMPATIBLE_APPLICATIONS_UPDATER_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/transport_security_state.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,14 +32,16 @@ class HSTSStateManager {
   HSTSStateManager(net::TransportSecurityState* state,
                    bool is_hsts,
                    std::string host);
+
+  HSTSStateManager(const HSTSStateManager&) = delete;
+  HSTSStateManager& operator=(const HSTSStateManager&) = delete;
+
   ~HSTSStateManager();
 
  private:
-  net::TransportSecurityState* state_;
+  raw_ptr<net::TransportSecurityState> state_;
   const bool is_hsts_;
   const std::string host_;
-
-  DISALLOW_COPY_AND_ASSIGN(HSTSStateManager);
 };
 
 HSTSStateManager::HSTSStateManager(net::TransportSecurityState* state,
@@ -60,24 +65,24 @@ HSTSStateManager::~HSTSStateManager() {
 class HSTSQueryTest : public testing::Test {
  public:
   HSTSQueryTest()
-      : request_context_(new net::TestURLRequestContextGetter(
-            base::ThreadTaskRunnerHandle::Get())),
+      : request_context_(net::CreateTestURLRequestContextBuilder()->Build()),
         network_context_(std::make_unique<network::NetworkContext>(
             nullptr,
             network_context_remote_.BindNewPipeAndPassReceiver(),
-            request_context_->GetURLRequestContext(),
+            request_context_.get(),
             /*cors_exempt_header_list=*/std::vector<std::string>())) {}
+
+  HSTSQueryTest(const HSTSQueryTest&) = delete;
+  HSTSQueryTest& operator=(const HSTSQueryTest&) = delete;
 
   network::NetworkContext* network_context() { return network_context_.get(); }
 
  private:
   // Used by request_context_.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_;
+  std::unique_ptr<net::URLRequestContext> request_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<network::NetworkContext> network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(HSTSQueryTest);
 };
 
 TEST_F(HSTSQueryTest, TestPostHSTSQueryForHostAndRequestContext) {

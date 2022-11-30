@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 struct arch_seccomp_data;
@@ -23,6 +22,10 @@ namespace bpf_dsl {
 // deserves a new name.
 class SANDBOX_EXPORT Verifier {
  public:
+  Verifier() = delete;
+  Verifier(const Verifier&) = delete;
+  Verifier& operator=(const Verifier&) = delete;
+
   // Evaluate a given BPF program for a particular set of system call
   // parameters. If evaluation failed for any reason, "err" will be set to
   // a non-NULL error string. Otherwise, the BPF program's result will be
@@ -34,9 +37,6 @@ class SANDBOX_EXPORT Verifier {
   static uint32_t EvaluateBPF(const std::vector<struct sock_filter>& program,
                               const struct arch_seccomp_data& data,
                               const char** err);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Verifier);
 };
 
 }  // namespace bpf_dsl

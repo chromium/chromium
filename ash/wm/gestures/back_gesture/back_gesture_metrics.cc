@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/gestures/back_gesture/back_gesture_metrics.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/app_types.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -36,8 +36,8 @@ BackGestureStartScenarioType GetStartScenarioType(
                : BackGestureStartScenarioType::kNonSnappedWindow;
   }
 
-  const auto* left_window = split_view_controller->left_window();
-  const auto* right_window = split_view_controller->right_window();
+  const auto* left_window = split_view_controller->primary_window();
+  const auto* right_window = split_view_controller->secondary_window();
   const bool is_primary = IsCurrentScreenOrientationPrimary();
   const auto* physical_left_or_top_window =
       is_primary ? left_window : right_window;

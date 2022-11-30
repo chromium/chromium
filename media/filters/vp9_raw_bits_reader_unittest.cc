@@ -1,8 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
+
+#include <tuple>
 
 #include "media/filters/vp9_raw_bits_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +30,7 @@ TEST(Vp9RawBitsReaderTest, ReadBool) {
   EXPECT_TRUE(reader.IsValid());
 
   // The return value is undefined.
-  ignore_result(reader.ReadBool());
+  std::ignore = reader.ReadBool();
   EXPECT_FALSE(reader.IsValid());
   EXPECT_EQ(1u, reader.GetBytesRead());
 }
@@ -44,7 +46,7 @@ TEST(Vp9RawBitsReader, ReadLiteral) {
   EXPECT_TRUE(reader.IsValid());
 
   // The return value is undefined.
-  ignore_result(reader.ReadLiteral(8));
+  std::ignore = reader.ReadLiteral(8);
   EXPECT_FALSE(reader.IsValid());
   EXPECT_EQ(3u, reader.GetBytesRead());
 }
@@ -60,7 +62,7 @@ TEST(Vp9RawBitsReader, ReadSignedLiteral) {
   EXPECT_TRUE(reader.IsValid());
 
   // The return value is undefined.
-  ignore_result(reader.ReadSignedLiteral(7));
+  std::ignore = reader.ReadSignedLiteral(7);
   EXPECT_FALSE(reader.IsValid());
   EXPECT_EQ(3u, reader.GetBytesRead());
 }

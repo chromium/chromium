@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.Assert;
 
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.base.ContextUtils;
 
@@ -44,8 +45,11 @@ public class ServiceConnectionHelper implements AutoCloseable {
             public void onServiceDisconnected(ComponentName name) {}
         };
 
-        Assert.assertTrue("Failed to bind to service",
-                ContextUtils.getApplicationContext().bindService(intent, mConnection, flags));
+        boolean success = ServiceHelper.bindService(
+                ContextUtils.getApplicationContext(), intent, mConnection, flags);
+        Assert.assertTrue("Failed to bind to service with " + intent + ". "
+                        + "Did you expose it in android_webview/test/shell/AndroidManifest.xml?",
+                success);
     }
 
     /**

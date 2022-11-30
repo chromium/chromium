@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -91,6 +90,10 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
                 scoped_refptr<base::SequencedTaskRunner> runner =
                     base::SequencedTaskRunnerHandle::Get(),
                 const char* handler_tag = nullptr);
+
+  SimpleWatcher(const SimpleWatcher&) = delete;
+  SimpleWatcher& operator=(const SimpleWatcher&) = delete;
+
   ~SimpleWatcher();
 
   // Indicates if the SimpleWatcher is currently watching a handle.
@@ -229,8 +232,6 @@ class MOJO_CPP_SYSTEM_EXPORT SimpleWatcher {
   const char* handler_tag_ = nullptr;
 
   base::WeakPtrFactory<SimpleWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleWatcher);
 };
 
 }  // namespace mojo

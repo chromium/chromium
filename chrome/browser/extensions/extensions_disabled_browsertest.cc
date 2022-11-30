@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include "base/command_line.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
@@ -22,6 +22,11 @@ constexpr char kSimpleWithKeyExtensionId[] = "iegclhlplifhodhkoafiokenjoapiobj";
 class ExtensionsDisabledBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionsDisabledBrowserTest() = default;
+
+  ExtensionsDisabledBrowserTest(const ExtensionsDisabledBrowserTest&) = delete;
+  ExtensionsDisabledBrowserTest& operator=(
+      const ExtensionsDisabledBrowserTest&) = delete;
+
   ~ExtensionsDisabledBrowserTest() override = default;
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // A little tricky: we disable extensions (via the commandline) on the
@@ -34,9 +39,6 @@ class ExtensionsDisabledBrowserTest : public ExtensionBrowserTest {
       command_line->AppendSwitch(::switches::kDisableExtensions);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsDisabledBrowserTest);
 };
 
 // Tests installing a number of extensions, and then restarting Chrome with the

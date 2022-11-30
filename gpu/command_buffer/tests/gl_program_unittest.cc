@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,7 +158,7 @@ TEST_F(GLProgramTest, ShaderLengthSpecified) {
   EXPECT_EQ(GL_FALSE, compile_state);
 
   // Compiling program cutting off invalid parts should succeed.
-  const GLint lengths[] = { valid_shader_str.length() };
+  const GLint lengths[] = {static_cast<GLint>(valid_shader_str.length())};
   glShaderSource(vs, 1, invalid_shader_strings, lengths);
   glCompileShader(vs);
   glGetShaderiv(vs, GL_COMPILE_STATUS, &compile_state);

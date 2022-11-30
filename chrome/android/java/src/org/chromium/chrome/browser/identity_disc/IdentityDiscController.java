@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -25,12 +25,13 @@ import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -109,17 +110,13 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 -> {
                     recordIdentityDiscUsed();
                     SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                    settingsLauncher.launchSettingsActivity(mContext,
-                            ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                                    ? MainSettings.class
-                                    : SyncAndServicesSettings.class);
+                    settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
                 },
                 R.string.accessibility_toolbar_btn_identity_disc, /*supportsTinting=*/false,
                 new IPHCommandBuilder(mContext.getResources(),
                         FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
                         R.string.iph_identity_disc_accessibility_text),
-                /*isEnabled=*/true);
+                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 
     /**
@@ -156,8 +153,14 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         return mButtonData;
     }
 
-    public ButtonData getForStartSurface(@StartSurfaceState int overviewModeState) {
-        if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
+    public ButtonData getForStartSurface(
+            @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
+        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)) {
+            if (layoutType != LayoutType.START_SURFACE) {
+                mButtonData.setCanShow(false);
+                return mButtonData;
+            }
+        } else if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
             mButtonData.setCanShow(false);
             return mButtonData;
         }
@@ -188,8 +191,9 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private static ButtonSpec buttonSpecWithDrawable(ButtonSpec buttonSpec, Drawable drawable) {
         if (buttonSpec.getDrawable() == drawable) return buttonSpec;
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                buttonSpec.getContentDescriptionResId(), buttonSpec.getSupportsTinting(),
-                buttonSpec.getIPHCommandBuilder());
+                /*onLongClickListener=*/null, buttonSpec.getContentDescriptionResId(),
+                buttonSpec.getSupportsTinting(), buttonSpec.getIPHCommandBuilder(),
+                AdaptiveToolbarButtonVariant.UNKNOWN, buttonSpec.getActionChipLabelResId());
     }
 
     /**
@@ -322,13 +326,9 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      * @return account info for the current profile. Returns null for OTR profile.
      */
     private CoreAccountInfo getSignedInAccountInfo() {
-        @ConsentLevel
-        int consentLevel =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                ? ConsentLevel.SIGNIN
-                : ConsentLevel.SYNC;
-        return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo(consentLevel)
-                                        : null;
+        return mIdentityManager != null
+                ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)
+                : null;
     }
 
     /**

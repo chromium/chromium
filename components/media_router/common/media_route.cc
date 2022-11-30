@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,17 @@ std::string MediaRoute::GetPresentationIdFromMediaRouteId(
 }
 
 // static
+std::string MediaRoute::GetSinkIdFromMediaRouteId(
+    const MediaRoute::Id route_id) {
+  if (!IsValidMediaRouteId(route_id)) {
+    return "";
+  }
+  auto begin = route_id.find("/");
+  auto end = route_id.find("/", begin + 1);
+  return route_id.substr(begin + 1, (end - begin - 1));
+}
+
+// static
 std::string MediaRoute::GetMediaSourceIdFromMediaRouteId(
     const MediaRoute::Id route_id) {
   if (!IsValidMediaRouteId(route_id)) {
@@ -63,18 +74,17 @@ MediaRoute::MediaRoute(const MediaRoute::Id& media_route_id,
                        const MediaSource& media_source,
                        const MediaSink::Id& media_sink_id,
                        const std::string& description,
-                       bool is_local,
-                       bool for_display)
+                       bool is_local)
     : media_route_id_(media_route_id),
       media_source_(media_source),
       media_sink_id_(media_sink_id),
       description_(description),
-      is_local_(is_local),
-      for_display_(for_display) {}
+      is_local_(is_local) {}
 
 MediaRoute::MediaRoute(const MediaRoute& other) = default;
 
-MediaRoute::MediaRoute() {}
+MediaRoute::MediaRoute() : media_source_("") {}
+
 MediaRoute::~MediaRoute() = default;
 
 bool MediaRoute::operator==(const MediaRoute& other) const {
@@ -85,9 +95,9 @@ bool MediaRoute::operator==(const MediaRoute& other) const {
          media_sink_name_ == other.media_sink_name_ &&
          description_ == other.description_ && is_local_ == other.is_local_ &&
          controller_type_ == other.controller_type_ &&
-         for_display_ == other.for_display_ &&
          is_off_the_record_ == other.is_off_the_record_ &&
-         is_local_presentation_ == other.is_local_presentation_;
+         is_local_presentation_ == other.is_local_presentation_ &&
+         is_connecting_ == other.is_connecting_;
 }
 
 std::ostream& operator<<(std::ostream& stream, const MediaRoute& route) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -59,16 +59,12 @@ bool IsExcludedHeaderForServiceWorkerFetchEvent(const String& header_name) {
     return true;
   }
 
-  if (Platform::Current()->IsExcludedHeaderForServiceWorkerFetchEvent(
-          header_name)) {
-    return true;
-  }
-
   return false;
 }
 
-void SignalError(
-    Persistent<DataPipeBytesConsumer::CompletionNotifier> notifier) {
+void SignalError(Persistent<DataPipeBytesConsumer::CompletionNotifier> notifier,
+                 uint32_t reason,
+                 const std::string& description) {
   notifier->SignalError(BytesConsumer::Error());
 }
 
@@ -149,12 +145,12 @@ FetchRequestData* FetchRequestData::Create(
       auto body_remote = std::make_unique<
           mojo::Remote<network::mojom::blink::ChunkedDataPipeGetter>>(
           fetch_api_request->body.TakeStreamBody());
-      body_remote->set_disconnect_handler(
-          WTF::Bind(SignalError, WrapPersistent(completion_notifier)));
+      body_remote->set_disconnect_with_reason_handler(
+          WTF::BindOnce(SignalError, WrapPersistent(completion_notifier)));
       auto* body_remote_raw = body_remote.get();
       (*body_remote_raw)
-          ->GetSize(WTF::Bind(SignalSize, std::move(body_remote),
-                              WrapPersistent(completion_notifier)));
+          ->GetSize(WTF::BindOnce(SignalSize, std::move(body_remote),
+                                  WrapPersistent(completion_notifier)));
       (*body_remote_raw)->StartReading(std::move(writable));
     } else {
       request->SetBuffer(BodyStreamBuffer::Create(
@@ -169,6 +165,10 @@ FetchRequestData* FetchRequestData::Create(
   // we deprecate SetContext.
 
   request->SetDestination(fetch_api_request->destination);
+  if (fetch_api_request->request_initiator)
+    request->SetOrigin(fetch_api_request->request_initiator);
+  request->SetNavigationRedirectChain(
+      fetch_api_request->navigation_redirect_chain);
   request->SetReferrerString(AtomicString(Referrer::NoReferrer()));
   if (fetch_api_request->referrer) {
     if (!fetch_api_request->referrer->url.IsEmpty()) {
@@ -178,6 +178,7 @@ FetchRequestData* FetchRequestData::Create(
     request->SetReferrerPolicy(fetch_api_request->referrer->policy);
   }
   request->SetMode(fetch_api_request->mode);
+  request->SetTargetAddressSpace(fetch_api_request->target_address_space);
   request->SetCredentials(fetch_api_request->credentials_mode);
   request->SetCacheMode(fetch_api_request->cache_mode);
   request->SetRedirect(fetch_api_request->redirect_mode);
@@ -189,6 +190,18 @@ FetchRequestData* FetchRequestData::Create(
       fetch_api_request->priority));
   if (fetch_api_request->fetch_window_id)
     request->SetWindowId(fetch_api_request->fetch_window_id.value());
+
+  if (fetch_api_request->trust_token_params) {
+    if (script_state) {
+      // script state might be null for some tests
+      DCHECK(RuntimeEnabledFeatures::TrustTokensEnabled(
+          ExecutionContext::From(script_state)));
+    }
+    absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
+        std::move(*(fetch_api_request->trust_token_params->Clone().get()));
+    request->SetTrustTokenParams(trust_token_params);
+  }
+
   return request;
 }
 
@@ -198,24 +211,25 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->method_ = method_;
   request->header_list_ = header_list_->Clone();
   request->origin_ = origin_;
+  request->navigation_redirect_chain_ = navigation_redirect_chain_;
   request->isolated_world_origin_ = isolated_world_origin_;
   request->destination_ = destination_;
   request->referrer_string_ = referrer_string_;
   request->referrer_policy_ = referrer_policy_;
   request->mode_ = mode_;
+  request->target_address_space_ = target_address_space_;
   request->credentials_ = credentials_;
   request->cache_mode_ = cache_mode_;
   request->redirect_ = redirect_;
   request->mime_type_ = mime_type_;
   request->integrity_ = integrity_;
   request->priority_ = priority_;
-  request->importance_ = importance_;
+  request->fetch_priority_hint_ = fetch_priority_hint_;
+  request->original_destination_ = original_destination_;
   request->keepalive_ = keepalive_;
   request->is_history_navigation_ = is_history_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;
-  request->allow_http1_for_streaming_upload_ =
-      allow_http1_for_streaming_upload_;
   return request;
 }
 
@@ -256,18 +270,7 @@ FetchRequestData* FetchRequestData::Pass(ScriptState* script_state) {
 FetchRequestData::~FetchRequestData() {}
 
 FetchRequestData::FetchRequestData(ExecutionContext* execution_context)
-    : method_(http_names::kGET),
-      header_list_(MakeGarbageCollected<FetchHeaderList>()),
-      destination_(network::mojom::RequestDestination::kEmpty),
-      referrer_string_(Referrer::ClientReferrerString()),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-      mode_(network::mojom::RequestMode::kNoCors),
-      credentials_(network::mojom::CredentialsMode::kOmit),
-      cache_mode_(mojom::FetchCacheMode::kDefault),
-      redirect_(network::mojom::RedirectMode::kFollow),
-      importance_(mojom::FetchImportanceMode::kImportanceAuto),
-      priority_(ResourceLoadPriority::kUnresolved),
-      keepalive_(false),
+    : referrer_string_(Referrer::ClientReferrerString()),
       url_loader_factory_(execution_context),
       execution_context_(execution_context) {}
 

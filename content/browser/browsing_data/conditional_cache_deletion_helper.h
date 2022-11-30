@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/sequenced_task_runner_helpers.h"
-#include "content/common/content_export.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -22,12 +22,17 @@ class Entry;
 namespace content {
 
 // Helper to remove http/code cache data from a StoragePartition.
-class CONTENT_EXPORT ConditionalCacheDeletionHelper {
+class ConditionalCacheDeletionHelper {
  public:
   // Creates a helper to delete |cache| entries that match the |condition|.
   ConditionalCacheDeletionHelper(
       disk_cache::Backend* cache,
       base::RepeatingCallback<bool(const disk_cache::Entry*)> condition);
+
+  ConditionalCacheDeletionHelper(const ConditionalCacheDeletionHelper&) =
+      delete;
+  ConditionalCacheDeletionHelper& operator=(
+      const ConditionalCacheDeletionHelper&) = delete;
 
   // A convenience method to create a condition matching cache entries whose
   // last modified time is between |begin_time| (inclusively), |end_time|
@@ -57,7 +62,7 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
 
   void IterateOverEntries(disk_cache::EntryResult result);
 
-  disk_cache::Backend* cache_;
+  raw_ptr<disk_cache::Backend> cache_;
   const base::RepeatingCallback<bool(const disk_cache::Entry*)> condition_;
 
   net::CompletionOnceCallback completion_callback_;
@@ -65,9 +70,7 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
-  disk_cache::Entry* previous_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
+  raw_ptr<disk_cache::Entry> previous_entry_;
 };
 
 }  // namespace content

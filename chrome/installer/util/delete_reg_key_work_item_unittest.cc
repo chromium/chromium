@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/registry_test_data.h"
 #include "chrome/installer/util/work_item.h"
@@ -38,7 +37,7 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
       std::wstring(test_data_.base_path() + L"\\NoKeyHere"),
       std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")};
   RegKey key;
-  for (size_t i = 0; i < base::size(key_paths); ++i) {
+  for (size_t i = 0; i < std::size(key_paths); ++i) {
     const std::wstring& key_path = key_paths[i];
     std::unique_ptr<DeleteRegKeyWorkItem> item(
         WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,

@@ -31,6 +31,7 @@ import logging
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net import web
+from blinkpy.common.net.bb_agent import BBAgent
 from blinkpy.common.net.results_fetcher import TestResultsFetcher
 from blinkpy.common.system.system_host import SystemHost
 from blinkpy.web_tests.builder_list import BuilderList
@@ -46,16 +47,15 @@ class Host(SystemHost):
 
         self._git = None
 
-        # Everything below this line is WebKit-specific and belongs on a higher-level object.
-        self.results_fetcher = TestResultsFetcher()
-
         # FIXME: Unfortunately Port objects are currently the central-dispatch objects of the NRWT world.
         # In order to instantiate a port correctly, we have to pass it at least an executive, user, git, and filesystem
         # so for now we just pass along the whole Host object.
         # FIXME: PortFactory doesn't belong on this Host object if Port is going to have a Host (circular dependency).
         self.port_factory = PortFactory(self)
 
+        self.bb_agent = BBAgent(self)
         self.builders = BuilderList.load_default_builder_list(self.filesystem)
+        self.results_fetcher = TestResultsFetcher.from_host(self)
 
     def git(self, path=None):
         if path:

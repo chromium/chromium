@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,23 +10,31 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 #include "chrome/browser/metrics/perf/perf_output.h"
 #include "chrome/browser/metrics/perf/random_selector.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/re2/src/re2/stringpiece.h"
+
+namespace ash {
+class DebugDaemonClientProvider;
+}
 
 namespace base {
 class SequencedTaskRunner;
 }
 
-namespace chromeos {
-class DebugDaemonClientProvider;
-}  // namespace chromeos
-
 namespace metrics {
 
 struct CPUIdentity;
 class WindowedIncognitoObserver;
+
+BASE_DECLARE_FEATURE(kCWPCollectionOnHostAndGuest);
+
+BASE_DECLARE_FEATURE(kCWPCollectsETM);
 
 // Enables collection of perf events profile data. perf aka "perf events" is a
 // performance profiling infrastructure built into the linux kernel. For more
@@ -35,6 +43,9 @@ class PerfCollector : public internal::MetricCollector {
  public:
   PerfCollector();
 
+  PerfCollector(const PerfCollector&) = delete;
+  PerfCollector& operator=(const PerfCollector&) = delete;
+
   // MetricCollector:
   ~PerfCollector() override;
   const char* ToolName() const override;
@@ -42,8 +53,8 @@ class PerfCollector : public internal::MetricCollector {
  protected:
   // For testing to mock PerfOutputCall.
   virtual std::unique_ptr<PerfOutputCall> CreatePerfOutputCall(
-      base::TimeDelta duration,
-      const std::vector<std::string>& perf_args,
+      const std::vector<std::string>& quipper_args,
+      bool disable_cpu_idle,
       PerfOutputCall::DoneCallback callback);
 
   void OnPerfOutputComplete(
@@ -72,6 +83,9 @@ class PerfCollector : public internal::MetricCollector {
 
   const RandomSelector& command_selector() const { return command_selector_; }
 
+  // Collects both Ash and Lacros Chrome process and thread types.
+  static void CollectProcessTypes(SampledProfile* sampled_profile);
+
   // Executes asynchronously on another thread pool. When it finishes, posts a
   // task on the given task_runner.
   static void ParseCPUFrequencies(
@@ -94,6 +108,22 @@ class PerfCollector : public internal::MetricCollector {
     kAllZeroCPUFrequencies,
     // Magic constant used by the histogram macros.
     kMaxValue = kAllZeroCPUFrequencies,
+  };
+
+  // Extracts the |lacros_channel| and |lacros_version| from |lacros_path|.
+  static bool LacrosChannelAndVersion(
+      re2::StringPiece lacros_path,
+      metrics::SystemProfileProto_Channel& lacros_channel,
+      std::string& lacros_version);
+
+  // Enumeration of various locations gotten from parsing a Lacros binary path.
+  // This is used to monitor any change to the Lacros path.
+  enum class ParseLacrosPath {
+    kRootfs,
+    kStateful,
+    kUnrecognized,
+    // Magic constant used by the histogram macros.
+    kMaxValue = kUnrecognized,
   };
 
   // Annotations on the collected sampled_profile, including adding process
@@ -120,6 +150,15 @@ class PerfCollector : public internal::MetricCollector {
   SampledProfile::TriggerEvent current_trigger_ =
       SampledProfile::UNKNOWN_TRIGGER_EVENT;
 
+  // Enumeration representing event types that need additional treatment
+  // during or after the collection.
+  enum class EventType {
+    kOther,
+    kCycles,
+    kETM,
+  };
+  static EventType CommandEventType(const std::vector<std::string>& args);
+
  private:
   // Change the values in |collection_params_| and the commands in
   // |command_selector| for any keys that are present in |params|.
@@ -130,7 +169,7 @@ class PerfCollector : public internal::MetricCollector {
   RandomSelector command_selector_;
 
   // |debugd_client_provider_| hosts the private DBus connection to debugd.
-  std::unique_ptr<chromeos::DebugDaemonClientProvider> debugd_client_provider_;
+  std::unique_ptr<ash::DebugDaemonClientProvider> debugd_client_provider_;
 
   // An active call to perf/quipper, if set.
   std::unique_ptr<PerfOutputCall> perf_output_call_;
@@ -140,8 +179,6 @@ class PerfCollector : public internal::MetricCollector {
   std::vector<uint32_t> max_frequencies_mhz_;
 
   base::WeakPtrFactory<PerfCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollector);
 };
 
 // Exposed for unit testing.
@@ -149,8 +186,9 @@ namespace internal {
 
 // Return the default set of perf commands and their odds of selection given
 // the identity of the CPU in |cpuid|.
-std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
-    const CPUIdentity& cpuid);
+std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpuModel(
+    const CPUIdentity& cpuid,
+    const std::string& model);
 
 // For the "PerfCommand::"-prefixed keys in |params|, return the cpu specifier
 // that is the narrowest match for the CPU identified by |cpuid|.

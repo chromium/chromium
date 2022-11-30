@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Abrir o app Arquivos</translation>
 <translation id="1122869341872663659">Exibindo <ph name="N" /> resultados da pesquisa para <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">Arrastar o link até a barra de endereço da guia</translation>
-<translation id="1204450209689312104">Abrir uma nova janela no modo de navegação anônima</translation>
 <translation id="1251638888133819822">Ativar ou desativar a lupa de tela cheia</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Ir para o fim da linha</translation>
 <translation id="1499072997694708844">Fechar janelas abertas ou interromper carregamento da página atual</translation>
 <translation id="1510238584712386396">Iniciador</translation>
+<translation id="1516966594427080024">Abrir uma nova janela no modo de navegação anônima</translation>
 <translation id="152892567002884378">Aumentar volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e depois <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Ir para o espaço de trabalho 1 a 8</translation>
 <translation id="1652741121070700329">Mover para o início da palavra anterior</translation>
 <translation id="1679841710523778799">Aumentar o brilho</translation>
 <translation id="168356808214100546">Pressione <ph name="ALT" /> e mantenha a tecla pressionada, toque em <ph name="TAB" /> até chegar à janela que você quer abrir e depois solte.</translation>
@@ -44,7 +45,7 @@
 <translation id="2424073332829844142">Ativar e desativar a tecla Caps Lock</translation>
 <translation id="2441202986792279177">Alternar rapidamente entre janelas</translation>
 <translation id="2454251766545114447">Diminuir zoom da tela</translation>
-<translation id="2478303094958140141">Ativar ou desativar o ChromeVox (feedback falado)</translation>
+<translation id="2478303094958140141">Ativar ou desativar o ChromeVox (resposta falada)</translation>
 <translation id="2480851840841871861">Abrir o Google Assistente</translation>
 <translation id="2488661730534396940">Ativar o espaço de trabalho à esquerda</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Rolar a página da Web para baixo</translation>
 <translation id="2530896289327917474">Ativar ou desativar Caret Browsing</translation>
 <translation id="2574014812750545982">Redefinir nível de zoom na página</translation>
-<translation id="2596078834055697711">Fazer captura de tela da janela</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e depois <ph name="TAB" /> ou <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Atualizar a página atual</translation>
 <translation id="2764005613199379871">Colocar o foco na barra de endereço de pesquisa</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3084301071537457911">Destacar o próximo item na estante</translation>
 <translation id="309173601632226815">Destacar o botão de tela de início na estante</translation>
-<translation id="3105917916468784889">Faça uma captura de tela</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Foco na barra de endereço</translation>
 <translation id="3256109297135787951">Remover o destaque de um item na estante</translation>
 <translation id="3288816184963444640">Fechar a janela atual</translation>
+<translation id="3322797428033495633">Focar na janela picture-in-picture</translation>
+<translation id="3350805006883559974">Criar ponto flutuante da janela ativa na parte superior</translation>
 <translation id="3407560819924487926">Abrir o gerenciador de tarefas</translation>
+<translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3422679037938588196">Ir para a correspondência anterior da sua pesquisa</translation>
 <translation id="353037708190149633">Salvar todas as páginas abertas na janela atual nos favoritos em uma nova pasta</translation>
 <translation id="355103131818127604">Abrir o link em uma nova guia no plano de fundo</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">vírgula</translation>
 <translation id="3976863468609830880">Clicar no último ícone da estante</translation>
 <translation id="3994783594793697310">Redefinir nível de zoom da tela</translation>
+<translation id="4026837045671473537">Ativar o modo de inversão de cores</translation>
 <translation id="4026843240379844265">Mover janela ativa entre telas</translation>
 <translation id="4035482366624727273">Selecionar tudo na página</translation>
 <translation id="4060703249685950734">Reabrir a última guia ou janela que você fechou</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">Ver assistente de atalhos do teclado</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ou <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Abrir a área de status, onde a imagem da sua conta aparece</translation>
-<translation id="4642092649622328492">Fazer uma captura de tela parcial</translation>
 <translation id="4698850295812410683">Mostrar ferramentas da stylus</translation>
 <translation id="4801989101741319327">Mover para o fim da próxima palavra</translation>
 <translation id="4866066940972151697">Ativar o espaço de trabalho à direita</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Selecionar o texto até o início da linha</translation>
 <translation id="5316716239522500219">Espelhar monitores</translation>
 <translation id="539072479502328326">Ativar ou desativar a lupa em área fixa</translation>
+<translation id="5466615362193675484">Alterne o menu para o modo de bloqueio de redimensionamento</translation>
 <translation id="5541719484267030947">Ao arrastar a guia, pressione <ph name="ESC" /></translation>
 <translation id="5554139136362089836">Pesquisar na página atual</translation>
 <translation id="5563050856984839829">Pressione <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e clique em um link</translation>
 <translation id="561814908794220892">Abrir a página da Web em uma nova guia</translation>
 <translation id="5620219513321115856">Mover a janela ativa para o espaço de trabalho à direita</translation>
+<translation id="5699366815052349604">Atribuir a janela ativa a todos os espaços de trabalho</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ou <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Abrir o link na guia</translation>
 <translation id="5757474750054631686">Escurecer teclado (apenas para teclados retroiluminados)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Girar janela</translation>
 <translation id="5926306472221400972">Fazer uma captura de tela cheia</translation>
 <translation id="6022924867608035986">Limpar texto da caixa de pesquisa</translation>
-<translation id="6045998054441862242">Ativar o modo de alto contraste</translation>
 <translation id="6052614013050385269">Clicar com o botão direito do mouse em um link</translation>
 <translation id="6129953537138746214">Espaço</translation>
 <translation id="6143669479988153888">Aumentar zoom na página</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
 <translation id="6321940490215594447">Abrir Histórico</translation>
 <translation id="6340769215862220182">Aumentar zoom da tela</translation>
+<translation id="634687982629734605">Alternar foco entre: a área de status (onde a imagem da sua conta é exibida), o acesso rápido, a barra de endereço, a barra de favoritos (se estiver visível), a página da Web que está aberta e a barra de downloads (se estiver visível). Se uma caixa de diálogo focalizável for exibida, mova o foco para ela.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Selecionar o texto até o fim da linha</translation>
 <translation id="6425378783626925378">Clicar nos ícones de 1 a 8 na estante</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">Voltar a guia para a posição original</translation>
 <translation id="6474744297082284761">Diminuir zoom (quando encaixado na base OU se a lupa de tela cheia estiver ativada)</translation>
 <translation id="649811797655257835">Selecione o arquivo e pressione <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Abrir ou fechar o widget do Google Agenda.</translation>
 <translation id="6551886416582667425">Fazer uma captura/gravação de tela parcial</translation>
 <translation id="6556040137485212400">Abrir a janela que ficou sem ser usada há mais tempo</translation>
 <translation id="666343722268997814">Abrir menu de clique com o botão direito para o item destacado</translation>
@@ -187,10 +192,9 @@
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> e depois <ph name="SPACE" /> ou <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Abrir um arquivo no navegador</translation>
 <translation id="7952165122793773711">Ir para as guias 1 a 8</translation>
-<translation id="8026334261755873520">Limpar dados de navegação</translation>
+<translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8130528849632411619">Ir para o início do documento</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> ou <ph name="E" /></translation>
-<translation id="8232835244134740473">Alternar foco entre: a área de status (onde a imagem da sua conta é exibida), o acesso rápido, a barra de endereço, a barra de favoritos (se estiver visível), a página da Web que está aberta e a barra de downloads (se estiver visível).</translation>
 <translation id="8234414138295101081">Girar a tela em 90 graus</translation>
 <translation id="8241665785394195545">colchete direito</translation>
 <translation id="8264941229485248811">Mostrar ou ocultar o inspetor de Ferramentas para Desenvolvedores</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Arrastar o link até uma área em branco na barra de guias</translation>
 <translation id="8389638407792712197">Abrir nova janela</translation>
 <translation id="8429696719963529183">Usar teclas F (F1 a F12)</translation>
-<translation id="8537650670971624753">Sair do modo de pesquisa</translation>
 <translation id="85690795166292698">Abrir o link em uma nova guia</translation>
 <translation id="8609384513243082612">Abrir nova guia</translation>
 <translation id="8644639153978066712">Exibir arquivos ocultos no app Arquivos</translation>
 <translation id="8717459106217102612">Selecionar palavra ou letra anterior</translation>
 <translation id="8727232706774971183">Ver suas notificações</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
 <translation id="8881584919399569791">Mover a janela ativa para o espaço de trabalho à esquerda</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8924883688469390268">Alternar para o usuário anterior</translation>
+<translation id="8941626538514548667">Focar em conteúdo da Web no navegador</translation>
 <translation id="8977648847395357314">Selecionar o conteúdo na barra de endereço</translation>
 <translation id="8982190978301344584">Mostrar o menu exibindo uma lista de IMEs (editores de método de entrada, na sigla em inglês) disponíveis</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 a 8</translation>

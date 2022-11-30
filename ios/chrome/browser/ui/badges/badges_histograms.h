@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,18 @@ extern const char kInfobarOverflowMenuTappedHistogram[];
 
 // Values for the Mobile.Messages.OverflowRow.Tapped histogram. Entries should
 // not be renumbered and numeric values should never be reused.
+// Please also update MobileMessagesInfobarType enum in
+// tools/metrics/histograms/enums.xml
 enum class MobileMessagesInfobarType {
   Confirm = 0,
   SavePassword = 1,
   UpdatePassword = 2,
   SaveCard = 3,
   Translate = 4,
+  Permissions = 5,
+  AutofillSaveAddressProfile = 6,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = Translate,
+  kMaxValue = AutofillSaveAddressProfile,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGES_HISTOGRAMS_H_

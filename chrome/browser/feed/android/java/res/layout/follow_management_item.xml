@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--  TODO(petewil): Redo as a follow management list item -->
+<org.chromium.chrome.browser.feed.followmanagement.FollowManagementItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/follow_management_favicon"
+        android:layout_width="@dimen/web_feed_management_icon_size"
+        android:layout_height="@dimen/web_feed_management_icon_size"
+        android:layout_margin="@dimen/follow_margin"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/star_gray"
+        android:scaleType="center"
+        tools:ignore="ContentDescription" />
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/follow_item_margin"
+        android:layout_weight="1" >
+
+        <TextView
+            android:id="@+id/follow_management_item_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/follow_management_item_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_below="@id/follow_management_item_text" />
+
+        <TextView
+            android:id="@+id/follow_management_item_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextSmall.Disabled"
+            android:layout_marginBottom="2dp"
+            android:layout_below="@id/follow_management_item_url" />
+
+    </RelativeLayout>
+
+    <CheckBox
+        android:id="@+id/follow_management_subscribed_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="9dp" />
+
+</org.chromium.chrome.browser.feed.followmanagement.FollowManagementItemView>

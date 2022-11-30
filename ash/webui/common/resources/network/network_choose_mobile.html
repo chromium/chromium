@@ -1,0 +1,31 @@
+<style include="cr-shared-style network-shared md-select iron-flex">
+  /* Leave some space between button and select. */
+  select {
+    margin-inline-start: 8px;
+  }
+</style>
+<div class="property-box first two-line">
+  <div class="flex layout vertical">
+    <div>[[i18n('networkChooseMobile')]]</div>
+    <div class="cr-secondary-text">
+      [[getSecondaryText_(managedProperties, deviceState)]]
+    </div>
+  </div>
+  <cr-button on-click="onScanTap_"
+      disabled="[[!getEnableScanButton_(managedProperties,
+          deviceState, disabled)]]">
+    [[i18n('networkCellularScan')]]
+  </cr-button>
+  <select class="md-select" on-change="onChange_"
+      value="[[selectedMobileNetworkId_]]"
+      disabled="[[!getEnableSelectNetwork_(managedProperties,
+          deviceState, disabled)]]"
+      aria-label="[[i18n('networkChooseMobile')]]">
+    <template is="dom-repeat" items="[[mobileNetworkList_]]">
+      <option value="[[item.networkId]]"
+          disabled="[[getMobileNetworkIsDisabled_(item)]]">
+        [[getName_(item)]]
+      </option>
+    </template>
+  </select>
+</div>

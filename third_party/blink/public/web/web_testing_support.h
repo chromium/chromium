@@ -64,4 +64,4 @@ class WebTestingSupport {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_TESTING_SUPPORT_H_

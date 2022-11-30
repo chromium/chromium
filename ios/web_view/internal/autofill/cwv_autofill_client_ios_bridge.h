@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -21,6 +20,10 @@ class AutofillProfile;
 class CreditCard;
 class FormStructure;
 }  // namespace autofill
+
+namespace web {
+class WebFrame;
+}  // namespace web
 
 // WebView extension of AutofillClientIOSBridge.
 @protocol CWVAutofillClientIOSBridge<AutofillClientIOSBridge>
@@ -34,20 +37,6 @@ class FormStructure;
                        saveCreditCardOptions
                             callback:(autofill::AutofillClient::
                                           UploadSaveCardPromptCallback)callback;
-
-// Bridge For AutofillClient's method |ConfirmAccountNameFixFlow|.
-- (void)
-    confirmCreditCardAccountName:(const std::u16string&)name
-                        callback:
-                            (base::OnceCallback<void(const std::u16string&)>)
-                                callback;
-
-// Bridge For AutofillClient's method |ConfirmExpirationDateFixFlow|.
-- (void)confirmCreditCardExpirationWithCard:(const autofill::CreditCard&)card
-                                   callback:
-                                       (base::OnceCallback<void(
-                                            const std::u16string&,
-                                            const std::u16string&)>)callback;
 
 // Bridge for AutofillClient's method |CreditCardUploadCompleted|.
 - (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;
@@ -67,7 +56,15 @@ showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
 
 // Bridge for AutofillClient's method |PropagateAutofillPredictions|.
 - (void)propagateAutofillPredictionsForForms:
-    (const std::vector<autofill::FormStructure*>&)forms;
+            (const std::vector<autofill::FormStructure*>&)forms
+                                     inFrame:(web::WebFrame*)frame;
+
+// Bridge for AutofillClient's method |ConfirmSaveAddressProfile|.
+- (void)
+    confirmSaveAddressProfile:(const autofill::AutofillProfile&)profile
+              originalProfile:(const autofill::AutofillProfile*)originalProfile
+                     callback:(autofill::AutofillClient ::
+                                   AddressProfileSavePromptCallback)callback;
 
 @end
 

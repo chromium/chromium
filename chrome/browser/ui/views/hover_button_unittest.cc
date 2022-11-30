@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -17,6 +16,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_utils.h"
@@ -49,6 +49,9 @@ class HoverButtonTest : public ChromeViewsTestBase {
  public:
   HoverButtonTest() {}
 
+  HoverButtonTest(const HoverButtonTest&) = delete;
+  HoverButtonTest& operator=(const HoverButtonTest&) = delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
@@ -74,7 +77,6 @@ class HoverButtonTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  DISALLOW_COPY_AND_ASSIGN(HoverButtonTest);
 };
 
 // Double check the length of the strings used for testing are either over or
@@ -98,7 +100,7 @@ TEST_F(HoverButtonTest, ValidateTestData) {
 
 // Tests whether the HoverButton has the correct tooltip and accessible name.
 TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
-  for (size_t i = 0; i < base::size(kTitleSubtitlePairs); ++i) {
+  for (size_t i = 0; i < std::size(kTitleSubtitlePairs); ++i) {
     TitleSubtitlePair pair = kTitleSubtitlePairs[i];
     SCOPED_TRACE(testing::Message() << "Index: " << i << ", expected_tooltip="
                                     << (pair.tooltip ? "true" : "false"));
@@ -159,8 +161,22 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
   widget()->Close();
 }
 
+// Test that changing the text style updates the return value of
+// views::View::GetHeightForWidth().
+TEST_F(HoverButtonTest, ChangingTextStyleResizesButton) {
+  auto button = std::make_unique<HoverButton>(
+      views::Button::PressedCallback(), CreateIcon(), u"Title", u"Subtitle");
+  button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
+                               views::style::STYLE_SECONDARY);
+  int height1 = button->GetHeightForWidth(100);
+  button->SetSubtitleTextStyle(views::style::CONTEXT_DIALOG_TITLE,
+                               views::style::STYLE_SECONDARY);
+  int height2 = button->GetHeightForWidth(100);
+  EXPECT_NE(height1, height2);
+}
+
 // No touch on desktop Mac.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Tests that tapping hover button does not crash if the tap handler removes the
 // button from views hierarchy.
@@ -184,6 +200,6 @@ TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
   widget()->Close();
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 }  // namespace

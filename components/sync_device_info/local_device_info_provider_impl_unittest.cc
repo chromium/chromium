@@ -1,12 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/version_info/version_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +23,7 @@ const char kLocalDeviceGuid[] = "foo";
 const char kLocalDeviceClientName[] = "bar";
 const char kLocalDeviceManufacturerName[] = "manufacturer";
 const char kLocalDeviceModelName[] = "model";
+const char kLocalFullHardwareClass[] = "test_full_hardware_class";
 
 const char kSharingVapidFCMRegistrationToken[] = "test_vapid_fcm_token";
 const char kSharingVapidP256dh[] = "test_vapid_p256_dh";
@@ -30,44 +35,44 @@ const sync_pb::SharingSpecificFields::EnabledFeatures
     kSharingEnabledFeatures[] = {
         sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2};
 
-using testing::_;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
-using testing::ReturnRef;
 
 class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
  public:
   MockDeviceInfoSyncClient() = default;
-  ~MockDeviceInfoSyncClient() = default;
+
+  MockDeviceInfoSyncClient(const MockDeviceInfoSyncClient&) = delete;
+  MockDeviceInfoSyncClient& operator=(const MockDeviceInfoSyncClient&) = delete;
+
+  ~MockDeviceInfoSyncClient() override = default;
 
   MOCK_METHOD(std::string, GetSigninScopedDeviceId, (), (const override));
   MOCK_METHOD(bool, GetSendTabToSelfReceivingEnabled, (), (const override));
-  MOCK_METHOD(base::Optional<DeviceInfo::SharingInfo>,
+  MOCK_METHOD(absl::optional<DeviceInfo::SharingInfo>,
               GetLocalSharingInfo,
               (),
               (const override));
-  MOCK_METHOD(base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo>,
+  MOCK_METHOD(absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo>,
               GetPhoneAsASecurityKeyInfo,
               (),
               (const override));
-  MOCK_METHOD(base::Optional<std::string>,
+  MOCK_METHOD(absl::optional<std::string>,
               GetFCMRegistrationToken,
               (),
               (const override));
-  MOCK_METHOD(base::Optional<ModelTypeSet>,
+  MOCK_METHOD(absl::optional<ModelTypeSet>,
               GetInterestedDataTypes,
               (),
               (const override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceInfoSyncClient);
+  MOCK_METHOD(bool, IsUmaEnabledOnCrOSDevice, (), (const override));
 };
 
 class LocalDeviceInfoProviderImplTest : public testing::Test {
  public:
-  LocalDeviceInfoProviderImplTest() {}
-  ~LocalDeviceInfoProviderImplTest() override {}
+  LocalDeviceInfoProviderImplTest() = default;
+  ~LocalDeviceInfoProviderImplTest() override = default;
 
   void SetUp() override {
     provider_ = std::make_unique<LocalDeviceInfoProviderImpl>(
@@ -84,6 +89,7 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   void InitializeProvider(const std::string& guid) {
     provider_->Initialize(guid, kLocalDeviceClientName,
                           kLocalDeviceManufacturerName, kLocalDeviceModelName,
+                          kLocalFullHardwareClass,
                           /*device_info_restored_from_store=*/nullptr);
   }
 
@@ -101,6 +107,43 @@ class LocalDeviceInfoProviderImplTest : public testing::Test {
   std::unique_ptr<LocalDeviceInfoProviderImpl> provider_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(LocalDeviceInfoProviderImplTest, UmaToggleFullHardwareClass) {
+  InitializeProvider(kLocalDeviceGuid);
+
+  // Tests that |full_hardware_class| maintains correct values on toggling UMA
+  // from ON -> OFF, OFF -> ON
+  ON_CALL(device_info_sync_client_, IsUmaEnabledOnCrOSDevice)
+      .WillByDefault(Return(true));
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->full_hardware_class(),
+            kLocalFullHardwareClass);
+
+  ON_CALL(device_info_sync_client_, IsUmaEnabledOnCrOSDevice)
+      .WillByDefault(Return(false));
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->full_hardware_class(), "");
+
+  ON_CALL(device_info_sync_client_, IsUmaEnabledOnCrOSDevice)
+      .WillByDefault(Return(true));
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()->full_hardware_class(),
+            kLocalFullHardwareClass);
+}
+#else   // NOT BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(LocalDeviceInfoProviderImplTest,
+       UmaEnabledNonChromeOSHardwareClassEmpty) {
+  // Tests that the |full_hardware_class| doesn't get updated when on
+  // non-chromeos device. IsUmaEnabledOnCrOSDevice() returns false on non-cros.
+  ON_CALL(device_info_sync_client_, IsUmaEnabledOnCrOSDevice)
+      .WillByDefault(Return(false));
+
+  InitializeProvider(kLocalDeviceGuid);
+
+  const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
+
+  // |kLocalFullHardwareClass| is reset after retrieving |local_device_info|
+  EXPECT_EQ(local_device_info->full_hardware_class(), "");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
   ASSERT_EQ(nullptr, provider_->GetLocalDeviceInfo());
 
@@ -108,6 +151,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, GetLocalDeviceInfo) {
 
   const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
   ASSERT_NE(nullptr, local_device_info);
+  EXPECT_EQ("", local_device_info->full_hardware_class());
   EXPECT_EQ(std::string(kLocalDeviceGuid), local_device_info->guid());
   EXPECT_EQ(kLocalDeviceClientName, local_device_info->client_name());
   EXPECT_EQ(kLocalDeviceManufacturerName,
@@ -153,7 +197,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SendTabToSelfReceivingEnabled) {
 
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
-      .WillByDefault(Return(base::nullopt));
+      .WillByDefault(Return(absl::nullopt));
 
   InitializeProvider();
 
@@ -162,8 +206,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
 
   std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features(
       std::begin(kSharingEnabledFeatures), std::end(kSharingEnabledFeatures));
-  base::Optional<DeviceInfo::SharingInfo> sharing_info =
-      base::make_optional<DeviceInfo::SharingInfo>(
+  absl::optional<DeviceInfo::SharingInfo> sharing_info =
+      absl::make_optional<DeviceInfo::SharingInfo>(
           DeviceInfo::SharingTargetInfo{kSharingVapidFCMRegistrationToken,
                                         kSharingVapidP256dh,
                                         kSharingVapidAuthSecret},
@@ -175,7 +219,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
       .WillByDefault(Return(sharing_info));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  const base::Optional<DeviceInfo::SharingInfo>& local_sharing_info =
+  const absl::optional<DeviceInfo::SharingInfo>& local_sharing_info =
       provider_->GetLocalDeviceInfo()->sharing_info();
   ASSERT_TRUE(local_sharing_info);
   EXPECT_EQ(kSharingVapidFCMRegistrationToken,
@@ -226,35 +270,38 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       SamplePhoneAsASecurityKeyInfo();
   auto device_info_restored_from_store = std::make_unique<DeviceInfo>(
       kLocalDeviceGuid, "name", "chrome_version", "user_agent",
-      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, "device_id", "manufacturer",
-      "model", base::Time(), base::TimeDelta::FromDays(1),
+      sync_pb::SyncEnums_DeviceType_TYPE_LINUX, DeviceInfo::OsType::kLinux,
+      DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
+      "full_hardware_class", base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/true,
-      /*sharing_info=*/base::nullopt, paask_info, kFCMRegistrationToken,
+      /*sharing_info=*/absl::nullopt, paask_info, kFCMRegistrationToken,
       kInterestedDataTypes);
 
-  // |kFCMRegistrationToken|, |kInterestedDataTypes|, and |paask_info| should be
-  // taken from |device_info_restored_from_store| when
-  // |device_info_sync_client_| returns nullopt.
+  // |kFCMRegistrationToken|, |kInterestedDataTypes|,
+  // and |paask_info| should be taken from |device_info_restored_from_store|
+  // when |device_info_sync_client_| returns nullopt.
   provider_->Initialize(kLocalDeviceGuid, kLocalDeviceClientName,
                         kLocalDeviceManufacturerName, kLocalDeviceModelName,
+                        kLocalFullHardwareClass,
                         std::move(device_info_restored_from_store));
 
   EXPECT_CALL(device_info_sync_client_, GetFCMRegistrationToken())
-      .WillOnce(Return(base::nullopt));
+      .WillOnce(Return(absl::nullopt));
   EXPECT_CALL(device_info_sync_client_, GetInterestedDataTypes())
-      .WillOnce(Return(base::nullopt));
+      .WillOnce(Return(absl::nullopt));
   EXPECT_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
-      .WillOnce(Return(base::nullopt));
+      .WillOnce(Return(absl::nullopt));
 
   const DeviceInfo* local_device_info = provider_->GetLocalDeviceInfo();
   EXPECT_EQ(local_device_info->interested_data_types(), kInterestedDataTypes);
   EXPECT_EQ(local_device_info->fcm_registration_token(), kFCMRegistrationToken);
-  EXPECT_EQ(local_device_info->paask_info(), paask_info);
+  EXPECT_TRUE(
+      local_device_info->paask_info()->NonRotatingFieldsEqual(paask_info));
 }
 
 TEST_F(LocalDeviceInfoProviderImplTest, PhoneAsASecurityKeyInfo) {
   ON_CALL(device_info_sync_client_, GetPhoneAsASecurityKeyInfo())
-      .WillByDefault(Return(base::nullopt));
+      .WillByDefault(Return(absl::nullopt));
 
   InitializeProvider();
 
@@ -267,7 +314,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, PhoneAsASecurityKeyInfo) {
       .WillByDefault(Return(paask_info));
 
   ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
-  const base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo>& result_paask_info =
+  const absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo>& result_paask_info =
       provider_->GetLocalDeviceInfo()->paask_info();
   ASSERT_TRUE(result_paask_info);
   EXPECT_EQ(paask_info.tunnel_server_domain,

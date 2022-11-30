@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/transform.mojom-shared.h"
-#include "ui/gfx/transform.h"
 
 namespace mojo {
 
 template <>
+<<<<<<< HEAD
 struct ArrayTraits<SkMatrix44> {
   using Element = float;
 
@@ -36,9 +37,31 @@ struct ArrayTraits<SkMatrix44> {
 };
 
 template <>
+||||||| 80c960997e61f
+struct ArrayTraits<SkMatrix44> {
+  using Element = float;
+
+  static bool IsNull(const SkMatrix44& input) { return input.isIdentity(); }
+
+  static size_t GetSize(const SkMatrix44& input) { return 16; }
+
+  static float GetAt(const SkMatrix44& input, size_t index) {
+    return input.getFloat(static_cast<int>(index % 4),
+                          static_cast<int>(index / 4));
+  }
+};
+
+template <>
+=======
+>>>>>>> 27d3765d341b09369006d030f83f582a29eb57ae
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static const SkMatrix44& matrix(const gfx::Transform& transform) {
-    return transform.matrix();
+  static absl::optional<std::array<float, 16>> matrix(
+      const gfx::Transform& transform) {
+    if (transform.IsIdentity())
+      return absl::nullopt;
+    std::array<float, 16> matrix;
+    transform.GetColMajorF(matrix.data());
+    return matrix;
   }
 
   static bool Read(gfx::mojom::TransformDataView data, gfx::Transform* out) {
@@ -48,7 +71,7 @@ struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
       out->MakeIdentity();
       return true;
     }
-    out->matrix().setColMajorf(matrix.data());
+    *out = gfx::Transform::ColMajorF(matrix.data());
     return true;
   }
 };

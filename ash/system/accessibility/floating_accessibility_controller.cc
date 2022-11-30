@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -17,15 +18,16 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/border.h"
 
 namespace ash {
 
 namespace {
 
 constexpr int kFloatingMenuHeight = 64;
-constexpr base::TimeDelta kAnimationDuration =
-    base::TimeDelta::FromMilliseconds(150);
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
 }  // namespace
 
@@ -53,7 +55,7 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   DCHECK(!bubble_view_);
 
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = this;
+  init_params.delegate = GetWeakPtr();
   // Our view uses SettingsBubbleContainer since it is activatable and is
   // included in the collision detection logic.
   init_params.parent_window = Shell::GetContainer(
@@ -64,25 +66,27 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   // the detailed view is drawn at kCollisionWindowWorkAreaInsetsDp above the
   // bubble menu when the position is at the bottom of the screen. The space
   // between the bubbles belongs to the detailed view bubble's shadow.
-  init_params.insets = gfx::Insets(0, kCollisionWindowWorkAreaInsetsDp,
-                                   kCollisionWindowWorkAreaInsetsDp,
-                                   kCollisionWindowWorkAreaInsetsDp);
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
-  init_params.has_shadow = false;
+  init_params.insets = gfx::Insets::TLBR(0, kCollisionWindowWorkAreaInsetsDp,
+                                         kCollisionWindowWorkAreaInsetsDp,
+                                         kCollisionWindowWorkAreaInsetsDp);
   init_params.max_height = kFloatingMenuHeight;
   init_params.translucent = true;
   init_params.close_on_deactivate = false;
   bubble_view_ = new FloatingAccessibilityBubbleView(init_params);
 
   menu_view_ = new FloatingAccessibilityView(this);
-  menu_view_->SetBorder(
-      views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
+  menu_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
   bubble_view_->AddChildView(menu_view_);
   bubble_view_->SetFocusBehavior(
       ActionableView::FocusBehavior::ACCESSIBLE_ONLY);
 
-  menu_view_->SetPaintToLayer();
-  menu_view_->layer()->SetFillsBoundsOpaquely(false);
+  // In dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    menu_view_->SetPaintToLayer();
+    menu_view_->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_view_->SetCanActivate(true);
@@ -122,9 +126,9 @@ void FloatingAccessibilityController::SetMenuPosition(
           new_bounds);
   // Un-inset the bounds to get the widget's bounds, which includes the drop
   // shadow.
-  resting_bounds.Inset(-kCollisionWindowWorkAreaInsetsDp, 0,
-                       -kCollisionWindowWorkAreaInsetsDp,
-                       -kCollisionWindowWorkAreaInsetsDp);
+  resting_bounds.Inset(gfx::Insets::TLBR(0, -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp,
+                                         -kCollisionWindowWorkAreaInsetsDp));
 
   if (bubble_widget_->GetWindowBoundsInScreen() == resting_bounds)
     return;
@@ -153,9 +157,9 @@ void FloatingAccessibilityController::OnDetailedMenuEnabled(bool enabled) {
     detailed_menu_controller_ =
         std::make_unique<FloatingAccessibilityDetailedController>(this);
     gfx::Rect anchor_rect = bubble_view_->GetBoundsInScreen();
-    anchor_rect.Inset(-kCollisionWindowWorkAreaInsetsDp, 0,
-                      -kCollisionWindowWorkAreaInsetsDp,
-                      -kCollisionWindowWorkAreaInsetsDp);
+    anchor_rect.Inset(gfx::Insets::TLBR(0, -kCollisionWindowWorkAreaInsetsDp,
+                                        -kCollisionWindowWorkAreaInsetsDp,
+                                        -kCollisionWindowWorkAreaInsetsDp));
     detailed_menu_controller_->Show(
         anchor_rect, GetAnchorAlignmentForFloatingMenuPosition(position_));
     menu_view_->SetDetailedViewShown(true);

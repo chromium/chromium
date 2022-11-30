@@ -1,9 +1,10 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <algorithm>
+#include <utility>
 
 #include "cc/paint/render_surface_filters.h"
 
@@ -14,7 +15,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -206,8 +207,8 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
             std::move(image_filter));
         break;
       case FilterOperation::COLOR_MATRIX:
-        image_filter =
-            CreateMatrixImageFilter(op.matrix(), std::move(image_filter));
+        image_filter = CreateMatrixImageFilter(op.matrix().data(),
+                                               std::move(image_filter));
         break;
       case FilterOperation::ZOOM: {
         // The center point, always the midpoint of the unclipped rectangle.
@@ -262,7 +263,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         sk_sp<SkColorFilter> cf;
         bool has_input = false;
         if (op.image_filter()->type() == PaintFilter::Type::kColorFilter &&
-            !op.image_filter()->crop_rect()) {
+            !op.image_filter()->GetCropRect()) {
           auto* color_paint_filter =
               static_cast<ColorFilterPaintFilter*>(op.image_filter().get());
           cf = color_paint_filter->color_filter();
@@ -292,6 +293,12 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         } else {
           image_filter = std::move(alpha_filter);
         }
+        break;
+      }
+      case FilterOperation::STRETCH: {
+        image_filter = sk_make_sp<StretchPaintFilter>(
+            op.amount(), op.outer_threshold(), size.width(), size.height(),
+            std::move(image_filter));
         break;
       }
     }

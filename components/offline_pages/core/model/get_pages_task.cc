@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_store_utils.h"
@@ -33,13 +34,13 @@ using ReadResult = GetPagesTask::ReadResult;
   "file_path,title,original_url,request_origin,digest,"   \
   "snippet,attribution"
 
-ClientId OfflinePageClientId(const sql::Statement& statement) {
+ClientId OfflinePageClientId(sql::Statement& statement) {
   return ClientId(statement.ColumnString(7), statement.ColumnString(8));
 }
 
 // Create an offline page item from a SQL result.
 // Expects the order of columns as defined by OFFLINE_PAGE_PROJECTION macro.
-OfflinePageItem MakeOfflinePageItem(const sql::Statement& statement) {
+OfflinePageItem MakeOfflinePageItem(sql::Statement& statement) {
   OfflinePageItem item;
   item.offline_id = statement.ColumnInt64(0);
   item.creation_time = store_utils::FromDatabaseTime(statement.ColumnInt64(1));

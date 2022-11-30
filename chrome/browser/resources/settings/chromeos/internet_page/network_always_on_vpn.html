@@ -1,0 +1,63 @@
+<style include="settings-shared network-shared md-select">
+  #lockdown {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+<!-- Always-on VPN enable/disable toggle -->
+<div class="property-box">
+  <div class="start text-area" aria-hidden="true">
+    <div class="label" id="alwaysOnVpnEnableLabel">
+      $i18n{networkAlwaysOnVpnEnableLabel}
+    </div>
+    <div class="secondary" id="alwaysOnVpnEnableSublabel">
+      $i18n{networkAlwaysOnVpnEnableSublabel}
+    </div>
+  </div>
+  <cr-toggle id="alwaysOnVpnEnableToggle"
+      disabled="[[shouldDisableAlwaysOnVpn_(networks)]]"
+      checked="[[computeAlwaysOnVpnEnabled_(mode, networks)]]"
+      on-change="onAlwaysOnEnableChanged_"
+      aria-labelledby="alwaysOnVpnEnableLabel"
+      aria-describedby="alwaysOnVpnEnableSublabel">
+  </cr-toggle>
+</div>
+<!-- Always-on VPN options -->
+<template is="dom-if" if="[[shouldShowAlwaysOnVpnOptions_(
+        mode, networks)]]">
+  <!-- Service selector -->
+  <div class="property-box indented two-line">
+    <div class="start text-area" aria-hidden="true">
+      <div class="label" id="alwaysOnVpnServiceLabel">
+        $i18n{networkAlwaysOnVpnService}
+      </div>
+    </div>
+    <select id="alwaysOnVpnServiceSelect"
+        class="md-select"
+        on-change="onAlwaysOnVpnServiceChanged_"
+        aria-labelledby="alwaysOnVpnServiceLabel">
+      <template is="dom-repeat" items="[[getAlwaysOnVpnListOptions_(
+                service, networks)]]">
+        <option value="[[item.value]]" selected="[[item.selected]]">
+          [[item.name]]
+        </option>
+      </template>
+    </select>
+  </div>
+  <!-- Lockdown toggle -->
+  <div id="lockdown" class="property-box indented two-line">
+    <div class="start text-area" aria-hidden="true">
+      <div class="label" id="alwaysOnVpnLockdownLabel">
+        $i18n{networkAlwaysOnVpnLockdownLabel}
+      </div>
+      <div class="secondary" id="alwaysOnVpnLockdownSublabel">
+        $i18n{networkAlwaysOnVpnLockdownSublabel}
+      </div>
+    </div>
+    <cr-toggle id="alwaysOnVpnLockdownToggle"
+        checked="[[computeAlwaysOnVpnLockdown_(mode)]]"
+        on-change="onAlwaysOnVpnLockdownChanged_"
+        aria-labelledby="alwaysOnVpnLockdownLabel"
+        aria-describedby="alwaysOnVpnLockdownSublabel">
+    </cr-toggle>
+  </div>
+</template>

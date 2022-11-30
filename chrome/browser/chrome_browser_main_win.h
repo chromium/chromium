@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include <memory>
 
 #include "chrome/browser/chrome_browser_main.h"
-
-class ModuleWatcher;
+#include "chrome/common/conflicts/module_watcher_win.h"
 
 namespace base {
 class CommandLine;
@@ -24,7 +23,7 @@ int DoUninstallTasks(bool chrome_still_running);
 
 class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsWin(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsWin(bool is_integration_test,
                             StartupData* startup_data);
   ChromeBrowserMainPartsWin(const ChromeBrowserMainPartsWin&) = delete;
   ChromeBrowserMainPartsWin& operator=(const ChromeBrowserMainPartsWin&) =
@@ -33,13 +32,13 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
 
   // BrowserParts overrides.
   void ToolkitInitialized() override;
-  void PreMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
   int PreCreateThreads() override;
   void PostMainMessageLoopRun() override;
 
   // ChromeBrowserMainParts overrides.
   void ShowMissingLocaleMessageBox() override;
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostBrowserStart() override;
 
   // Prepares the localized strings that are going to be displayed to
@@ -77,6 +76,9 @@ class ChromeBrowserMainPartsWin : public ChromeBrowserMainParts {
       const base::CommandLine& command_line);
 
  private:
+  void OnModuleEvent(const ModuleWatcher::ModuleEvent& event);
+  void SetupModuleDatabase(std::unique_ptr<ModuleWatcher>* module_watcher);
+
   // Watches module load events and forwards them to the ModuleDatabase.
   std::unique_ptr<ModuleWatcher> module_watcher_;
 };

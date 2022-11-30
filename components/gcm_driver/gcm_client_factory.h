@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace gcm {
 
 class GCMClient;
@@ -16,14 +14,15 @@ class GCMClient;
 class GCMClientFactory {
  public:
   GCMClientFactory();
+
+  GCMClientFactory(const GCMClientFactory&) = delete;
+  GCMClientFactory& operator=(const GCMClientFactory&) = delete;
+
   virtual ~GCMClientFactory();
 
   // Creates a new instance of GCMClient. The testing code could override this
   // to provide a mocked instance.
   virtual std::unique_ptr<GCMClient> BuildInstance();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMClientFactory);
 };
 
 }  // namespace gcm

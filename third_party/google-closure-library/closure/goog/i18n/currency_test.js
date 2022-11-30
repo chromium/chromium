@@ -1,23 +1,15 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.i18n.currencyTest');
 goog.setTestOnly();
 
-const RawCurrencyInfo = goog.require('goog.i18n.currency.CurrencyInfo');
 const NumberFormat = goog.require('goog.i18n.NumberFormat');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const RawCurrencyInfo = goog.require('goog.i18n.currency.CurrencyInfo');
 const currency = goog.require('goog.i18n.currency');
 const googObject = goog.require('goog.object');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -29,9 +21,8 @@ const stubs = new PropertyReplacer();
 testSuite({
   setUp() {
     stubs.replace(
-        goog.i18n.currency, 'CurrencyInfo',
-        goog.object.clone(goog.i18n.currency.CurrencyInfo));
-    CurrencyInfo = goog.i18n.currency.CurrencyInfo;
+        currency, 'CurrencyInfo', googObject.clone(currency.CurrencyInfo));
+    CurrencyInfo = currency.CurrencyInfo;
   },
 
   tearDown() {
@@ -81,6 +72,27 @@ testSuite({
     assertEquals('\'CHF\'#,##0.00', currency.getLocalCurrencyPattern('CHF'));
     assertEquals('\'CHF\'#,##0.00', currency.getPortableCurrencyPattern('CHF'));
     assertEquals('\'CHF\'#,##0.00', currency.getGlobalCurrencyPattern('CHF'));
+
+    assertEquals('\'$\'#,##0.00', currency.getLocalCurrencyPattern('TWD'));
+    assertEquals('\'NT$\'#,##0.00', currency.getPortableCurrencyPattern('TWD'));
+    assertEquals('TWD \'$\'#,##0.00', currency.getGlobalCurrencyPattern('TWD'));
+  },
+
+  testCurrencyFormatTWD() {
+    let formatter;
+    let str;
+
+    formatter = new NumberFormat(currency.getLocalCurrencyPattern('TWD'));
+    str = formatter.format(123456.7899);
+    assertEquals('$123,456.79', str);
+
+    formatter = new NumberFormat(currency.getPortableCurrencyPattern('TWD'));
+    str = formatter.format(123456.7899);
+    assertEquals('NT$123,456.79', str);
+
+    formatter = new NumberFormat(currency.getGlobalCurrencyPattern('TWD'));
+    str = formatter.format(123456.7899);
+    assertEquals('TWD $123,456.79', str);
   },
 
   testCurrencyFormatCHF() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,6 @@ enum WellKnownDirectory {
 dictionary FilePickerOptions {
   sequence<FilePickerAcceptType> types;
   boolean excludeAcceptAllOption = false;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] USVString id;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] (WellKnownDirectory or FileSystemHandle)? startIn;
+  DOMString id;
+  (WellKnownDirectory or FileSystemHandle) startIn;
 };

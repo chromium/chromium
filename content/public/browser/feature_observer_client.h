@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ class CONTENT_EXPORT FeatureObserverClient {
   // used by a frame switches between zero to non-zero. There is no guarantee
   // that the frame identified by |render_process_id| and |render_frame_id|
   // still exists when this is called.
-  virtual void OnStartUsing(GlobalFrameRoutingId id,
+  virtual void OnStartUsing(GlobalRenderFrameHostId id,
                             blink::mojom::ObservedFeatureType feature_type) = 0;
-  virtual void OnStopUsing(GlobalFrameRoutingId id,
+  virtual void OnStopUsing(GlobalRenderFrameHostId id,
                            blink::mojom::ObservedFeatureType feature_type) = 0;
 };
 

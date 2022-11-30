@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,16 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
-
-namespace tray {
 
 IMEDetailedView::IMEDetailedView(DetailedViewDelegate* delegate,
                                  ImeControllerImpl* ime_controller)
@@ -81,7 +80,5 @@ void IMEDetailedView::ShowSettings() {
 
 BEGIN_METADATA(IMEDetailedView, ImeListView)
 END_METADATA
-
-}  // namespace tray
 
 }  // namespace ash

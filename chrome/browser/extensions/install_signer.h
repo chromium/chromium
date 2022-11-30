@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {
@@ -71,6 +71,10 @@ class InstallSigner {
   InstallSigner(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const ExtensionIdSet& ids);
+
+  InstallSigner(const InstallSigner&) = delete;
+  InstallSigner& operator=(const InstallSigner&) = delete;
+
   ~InstallSigner();
 
   // Returns a set of ids that are forced to be considered not from webstore,
@@ -119,8 +123,6 @@ class InstallSigner {
 
   // The time the request to the server was started.
   base::Time request_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallSigner);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -43,16 +41,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
   // Request a fresh video frame from the capturer.
   virtual void RequestRefreshFrame() = 0;
 
-  // The following are for hardware video encoding.
-
+  // The VEA is necessary for hardware encoding.
   virtual void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) = 0;
 
-  // TODO(crbug.com/1015472): Remove this interface. Instead, create the shared
-  // memory in external video encoder through mojo::ScopedSharedBufferHandle.
-  virtual void CreateVideoEncodeMemory(
-      size_t size,
-      media::cast::ReceiveVideoEncodeMemoryCallback callback) = 0;
 };
 
 // Receives video frames and submits the data to media::cast::VideoSender. It
@@ -67,6 +59,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
  public:
   VideoRtpStream(std::unique_ptr<media::cast::VideoSender> video_sender,
                  base::WeakPtr<RtpStreamClient> client);
+
+  VideoRtpStream(const VideoRtpStream&) = delete;
+  VideoRtpStream& operator=(const VideoRtpStream&) = delete;
+
   ~VideoRtpStream();
 
   // Called by VideoCaptureClient when a video frame is received.
@@ -74,6 +70,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   void InsertVideoFrame(scoped_refptr<media::VideoFrame> video_frame);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
 
  private:
   void OnRefreshTimerFired();
@@ -85,14 +82,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   // to a consecutive maximum.
   base::RepeatingTimer refresh_timer_;
 
-  // Counter for the number of consecutive "refresh frames" requested.
-  int consecutive_refresh_count_;
-
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
   bool expecting_a_refresh_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRtpStream);
 };
 
 // Receives audio data and submits the data to media::cast::AudioSender.
@@ -101,19 +93,26 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
  public:
   AudioRtpStream(std::unique_ptr<media::cast::AudioSender> audio_sender,
                  base::WeakPtr<RtpStreamClient> client);
+
+  AudioRtpStream(const AudioRtpStream&) = delete;
+  AudioRtpStream& operator=(const AudioRtpStream&) = delete;
+
   ~AudioRtpStream();
 
   // Called by AudioCaptureClient when new audio data is available.
   void InsertAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                   const base::TimeTicks& estimated_capture_time);
+                   base::TimeTicks estimated_capture_time);
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+  base::TimeDelta GetTargetPlayoutDelay() const;
+
+  // Get the real time encoder bitrate usage. Note that not all encoders support
+  // changing the bitrate in realtime.
+  int GetEncoderBitrate() const;
 
  private:
   const std::unique_ptr<media::cast::AudioSender> audio_sender_;
   const base::WeakPtr<RtpStreamClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRtpStream);
 };
 
 }  // namespace mirroring

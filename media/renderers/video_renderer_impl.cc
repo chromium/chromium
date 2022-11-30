@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/renderers/video_renderer_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -14,8 +15,8 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
@@ -41,7 +42,7 @@ constexpr int kAbsoluteMaxFrames = 24;
 
 bool ShouldUseLowDelayMode(DemuxerStream* stream) {
   return base::FeatureList::IsEnabled(kLowDelayVideoRenderingOnLiveStream) &&
-         stream->liveness() == DemuxerStream::LIVENESS_LIVE;
+         stream->liveness() == StreamLiveness::kLive;
 }
 
 }  // namespace
@@ -52,13 +53,15 @@ VideoRendererImpl::VideoRendererImpl(
     const CreateVideoDecodersCB& create_video_decoders_cb,
     bool drop_frames,
     MediaLog* media_log,
-    std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool)
+    std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool,
+    MediaPlayerLoggingID media_player_id)
     : task_runner_(media_task_runner),
       sink_(sink),
       sink_started_(false),
       client_(nullptr),
       gpu_memory_buffer_pool_(std::move(gmb_pool)),
       media_log_(media_log),
+      player_id_(media_player_id),
       low_delay_(false),
       received_end_of_stream_(false),
       rendered_end_of_stream_(false),
@@ -161,7 +164,8 @@ void VideoRendererImpl::Initialize(
     const TimeSource::WallClockTimeCB& wall_clock_time_cb,
     PipelineStatusCallback init_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT_ASYNC_BEGIN0("media", "VideoRendererImpl::Initialize", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "VideoRendererImpl::Initialize",
+                                    TRACE_ID_LOCAL(this));
 
   base::AutoLock auto_lock(lock_);
   DCHECK(stream);
@@ -174,11 +178,13 @@ void VideoRendererImpl::Initialize(
 
   demuxer_stream_ = stream;
 
-  video_decoder_stream_.reset(new VideoDecoderStream(
+  video_decoder_stream_ = std::make_unique<VideoDecoderStream>(
       std::make_unique<VideoDecoderStream::StreamTraits>(media_log_),
-      task_runner_, create_video_decoders_cb_, media_log_));
+      task_runner_, create_video_decoders_cb_, media_log_);
   video_decoder_stream_->set_config_change_observer(base::BindRepeating(
       &VideoRendererImpl::OnConfigChange, weak_factory_.GetWeakPtr()));
+  video_decoder_stream_->set_fallback_observer(base::BindRepeating(
+      &VideoRendererImpl::OnFallback, weak_factory_.GetWeakPtr()));
   if (gpu_memory_buffer_pool_) {
     video_decoder_stream_->SetPrepareCB(base::BindRepeating(
         &GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
@@ -187,7 +193,6 @@ void VideoRendererImpl::Initialize(
   }
 
   low_delay_ = ShouldUseLowDelayMode(demuxer_stream_);
-  UMA_HISTOGRAM_BOOLEAN("Media.VideoRenderer.LowDelay", low_delay_);
   if (low_delay_) {
     MEDIA_LOG(DEBUG, media_log_) << "Video rendering in low delay mode.";
 
@@ -222,8 +227,7 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
     RenderingMode rendering_mode) {
-  TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id",
-                     media_log_->id());
+  TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id", player_id_);
   base::AutoLock auto_lock(lock_);
   DCHECK_EQ(state_, kPlaying);
   last_render_time_ = tick_clock_->NowTicks();
@@ -303,7 +307,8 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
   // frames yet.
   state_ = kFlushed;
 
-  algorithm_.reset(new VideoRendererAlgorithm(wall_clock_time_cb_, media_log_));
+  algorithm_ =
+      std::make_unique<VideoRendererAlgorithm>(wall_clock_time_cb_, media_log_);
   if (!drop_frames_)
     algorithm_->disable_frame_dropping();
 
@@ -312,14 +317,16 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
 
 void VideoRendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_ASYNC_END1("media", "VideoRendererImpl::Initialize", this,
-                         "status", PipelineStatusToString(status));
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "VideoRendererImpl::Initialize",
+                                  TRACE_ID_LOCAL(this), "status",
+                                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void VideoRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_ASYNC_END0("media", "VideoRendererImpl::Flush", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "VideoRendererImpl::Flush",
+                                  TRACE_ID_LOCAL(this));
   std::move(flush_cb_).Run();
 }
 
@@ -378,6 +385,11 @@ void VideoRendererImpl::OnConfigChange(const VideoDecoderConfig& config) {
     current_decoder_config_ = config;
     client_->OnVideoConfigChange(config);
   }
+}
+
+void VideoRendererImpl::OnFallback(PipelineStatus status) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  client_->OnFallback(std::move(status).AddHere());
 }
 
 void VideoRendererImpl::SetTickClockForTesting(
@@ -464,7 +476,7 @@ void VideoRendererImpl::OnTimeStopped() {
 }
 
 void VideoRendererImpl::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   base::AutoLock auto_lock(lock_);
 
   latency_hint_ = latency_hint;
@@ -560,20 +572,26 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Can happen when demuxers are preparing for a new Seek().
   switch (result.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       break;
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // TODO(liberato): This used to check specifically for the value
       // DEMUXER_READ_ABORTED, which was more specific than |kAborted|.
       // However, since it's a dcheck, this seems okay.
       return;
     default:
-      DCHECK(result.has_error());
       // Anything other than `kOk` or `kAborted` is treated as an error.
+      DCHECK(result.has_error());
+
+      PipelineStatus::Codes code =
+          result.code() == DecoderStatus::Codes::kDisconnected
+              ? PIPELINE_ERROR_DISCONNECTED
+              : PIPELINE_ERROR_DECODE;
+      PipelineStatus status = {code, std::move(result).error()};
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&VideoRendererImpl::OnPlaybackError,
-                         weak_factory_.GetWeakPtr(), PIPELINE_ERROR_DECODE));
+                         weak_factory_.GetWeakPtr(), std::move(status)));
       return;
   }
 
@@ -652,8 +670,7 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Update average frame duration.
   base::TimeDelta frame_duration = algorithm_->average_frame_duration();
-  if (frame_duration != kNoTimestamp &&
-      frame_duration != base::TimeDelta::FromSeconds(0)) {
+  if (frame_duration != kNoTimestamp && frame_duration != base::Seconds(0)) {
     fps_estimator_.AddSample(frame_duration);
   } else {
     fps_estimator_.Reset();
@@ -809,7 +826,7 @@ void VideoRendererImpl::UpdateStats_Locked(bool force_update) {
   if (stats_.video_frames_dropped) {
     TRACE_EVENT_INSTANT2("media", "VideoFramesDropped",
                          TRACE_EVENT_SCOPE_THREAD, "count",
-                         stats_.video_frames_dropped, "id", media_log_->id());
+                         stats_.video_frames_dropped, "id", player_id_);
   }
 
   const size_t memory_usage = algorithm_->GetMemoryUsage();
@@ -827,7 +844,7 @@ void VideoRendererImpl::ReportFrameRateIfNeeded_Locked() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   lock_.AssertAcquired();
 
-  base::Optional<int> current_fps = fps_estimator_.ComputeFPS();
+  absl::optional<int> current_fps = fps_estimator_.ComputeFPS();
   if (last_reported_fps_ && current_fps &&
       *last_reported_fps_ == *current_fps) {
     // Reported an FPS before, and it hasn't changed.

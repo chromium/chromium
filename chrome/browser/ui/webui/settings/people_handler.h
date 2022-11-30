@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -53,6 +53,10 @@ class PeopleHandler : public SettingsPageUIHandler,
   static const char kPassphraseFailedPageStatus[];
 
   explicit PeopleHandler(Profile* profile);
+
+  PeopleHandler(const PeopleHandler&) = delete;
+  PeopleHandler& operator=(const PeopleHandler&) = delete;
+
   ~PeopleHandler() override;
 
  protected:
@@ -94,7 +98,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, EnterWrongExistingPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, CannotCreateBlankPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
-                           CannotCreatePassphraseIfEncryptEverythingDisallowed);
+                           CannotCreatePassphraseIfCustomPassphraseDisallowed);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            CannotOverwritePassphraseWithNewOne);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
@@ -116,6 +120,11 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerGuestModeTest, GetStoredAccountsList);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, TurnOffSync);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, GetStoredAccountsList);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, Signout);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSecondaryProfile, SignoutWhenSyncing);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerMainProfile, GetStoredAccountsList);
+  FRIEND_TEST_ALL_PREFIXES(PeopleHandlerSecondaryProfile,
+                           GetStoredAccountsList);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -132,14 +141,14 @@ class PeopleHandler : public SettingsPageUIHandler,
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
   // syncer::SyncServiceObserver implementation.
-  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnStateChanged(syncer::SyncService* sync_service) override;
 
   // content::WebContentsObserver implementation
   void BeforeUnloadDialogCancelled() override;
 
   // Returns a newly created dictionary with a number of properties that
   // correspond to the status of sync.
-  std::unique_ptr<base::DictionaryValue> GetSyncStatusDictionary() const;
+  base::Value::Dict GetSyncStatusDictionary() const;
 
   // Helper routine that gets the SyncService associated with the parent
   // profile.
@@ -149,25 +158,30 @@ class PeopleHandler : public SettingsPageUIHandler,
   LoginUIService* GetLoginUIService() const;
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(const base::ListValue* args);
-  void OnDidClosePage(const base::ListValue* args);
-  void HandleSetDatatypes(const base::ListValue* args);
-  void HandleSetEncryptionPassphrase(const base::ListValue* args);
-  void HandleSetDecryptionPassphrase(const base::ListValue* args);
-  void HandleShowSyncSetupUI(const base::ListValue* args);
-  void HandleSyncPrefsDispatch(const base::ListValue* args);
+  void HandleGetProfileInfo(const base::Value::List& args);
+  void OnDidClosePage(const base::Value::List& args);
+  void HandleSetDatatypes(const base::Value::List& args);
+  void HandleSetEncryptionPassphrase(const base::Value::List& args);
+  void HandleSetDecryptionPassphrase(const base::Value::List& args);
+  void HandleShowSyncSetupUI(const base::Value::List& args);
+  void HandleSyncPrefsDispatch(const base::Value::List& args);
+  void HandleTrustedVaultBannerStateDispatch(const base::Value::List& args);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleAttemptUserExit(const base::ListValue* args);
-  void HandleTurnOnSync(const base::ListValue* args);
-  void HandleTurnOffSync(const base::ListValue* args);
+  void HandleAttemptUserExit(const base::Value::List& args);
+  void HandleTurnOnSync(const base::Value::List& args);
+  void HandleTurnOffSync(const base::Value::List& args);
+#else
+  void HandleStartSignin(const base::Value::List& args);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleStartSignin(const base::ListValue* args);
-  void HandleSignout(const base::ListValue* args);
-  void HandlePauseSync(const base::ListValue* args);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void HandleSignout(const base::Value::List& args);
 #endif
-  void HandleStartKeyRetrieval(const base::ListValue* args);
-  void HandleGetSyncStatus(const base::ListValue* args);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void HandlePauseSync(const base::Value::List& args);
+#endif
+  void HandleStartKeyRetrieval(const base::Value::List& args);
+  void HandleGetSyncStatus(const base::Value::List& args);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Displays the GAIA login form.
@@ -179,12 +193,14 @@ class PeopleHandler : public SettingsPageUIHandler,
       signin_metrics::AccessPoint access_point);
 #endif
 
-  void HandleGetStoredAccounts(const base::ListValue* args);
-  void HandleStartSyncingWithEmail(const base::ListValue* args);
-  base::Value GetStoredAccountsList();
+  void HandleGetStoredAccounts(const base::Value::List& args);
+  void HandleStartSyncingWithEmail(const base::Value::List& args);
+  base::Value::List GetStoredAccountsList();
 
   // Pushes the updated sync prefs to JavaScript.
   void PushSyncPrefs();
+
+  void PushTrustedVaultBannerState();
 
   // Sends the current sync status to the JavaScript WebUI code.
   void UpdateSyncStatus();
@@ -208,7 +224,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void InitializeSyncBlocker();
 
   // Weak pointer.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
@@ -233,8 +249,6 @@ class PeopleHandler : public SettingsPageUIHandler,
       sync_service_observation_{this};
 
   base::WeakPtrFactory<PeopleHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PeopleHandler);
 };
 
 }  // namespace settings

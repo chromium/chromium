@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mocks.cc",
+    "mocks.h",
+  ]
+  deps = [
+    "//base",
+    "//components/content_creation/notes/core/server",
+    "//components/content_creation/notes/core/templates",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

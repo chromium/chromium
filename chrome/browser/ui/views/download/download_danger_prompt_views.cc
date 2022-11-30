@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_stats.h"
@@ -10,13 +12,13 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,11 +26,11 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -63,8 +65,8 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   std::u16string GetMessageBody() const;
   void RunDone(Action action);
 
-  download::DownloadItem* download_;
-  Profile* profile_;
+  raw_ptr<download::DownloadItem> download_;
+  raw_ptr<Profile> profile_;
   // If show_context_ is true, this is a download confirmation dialog by
   // download API, otherwise it is download recovery dialog from a regular
   // download.
@@ -108,7 +110,7 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   download_->AddObserver(this);
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   SetUseDefaultFillLayout(true);
 
   auto message_body_label = std::make_unique<views::Label>(GetMessageBody());
@@ -119,9 +121,6 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
   AddChildView(std::move(message_body_label));
 
   RecordOpenedDangerousConfirmDialog(download_->GetDangerType());
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::DOWNLOAD_DANGER_PROMPT);
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {
@@ -159,6 +158,7 @@ std::u16string DownloadDangerPromptViews::GetWindowTitle() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return l10n_util::GetStringUTF16(IDS_KEEP_DANGEROUS_DOWNLOAD_TITLE);
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
@@ -192,6 +192,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       }
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:  // Fall through
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST: {
         return l10n_util::GetStringFUTF16(
             IDS_PROMPT_MALICIOUS_DOWNLOAD_CONTENT,
@@ -244,6 +245,7 @@ std::u16string DownloadDangerPromptViews::GetMessageBody() const {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT: {
         return l10n_util::GetStringUTF16(
             IDS_PROMPT_CONFIRM_KEEP_MALICIOUS_DOWNLOAD_BODY);
@@ -271,11 +273,11 @@ void DownloadDangerPromptViews::RunDone(Action action) {
       if (!download_->GetURL().is_empty() &&
           !content::DownloadItemUtils::GetBrowserContext(download_)
                ->IsOffTheRecord()) {
-        ClientSafeBrowsingReportRequest::ReportType report_type
-            = show_context_ ?
-                ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API :
-                ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
-        SendSafeBrowsingDownloadReport(report_type, accept, *download_);
+        ClientSafeBrowsingReportRequest::ReportType report_type =
+            show_context_
+                ? ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API
+                : ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY;
+        SendSafeBrowsingDownloadReport(report_type, accept, download_);
       }
     }
     download_->RemoveObserver(this);

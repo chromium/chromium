@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,7 +22,6 @@ STABLE_TEST_SUITES = [
     'android_webview_unittests',
     'base_unittests',
     'blink_unittests',
-    'breakpad_unittests',
     'cc_unittests',
     'components_unittests',
     'content_browsertests',
@@ -48,7 +47,6 @@ STABLE_TEST_SUITES = [
 # Tests fail in component=shared_library build, which is required for ASan.
 # http://crbug.com/344868
 ASAN_EXCLUDED_TEST_SUITES = [
-    'breakpad_unittests',
     'sandbox_linux_unittests',
 
     # The internal ASAN recipe cannot run step "unit_tests_apk", this is the

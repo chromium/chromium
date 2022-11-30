@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/loader/navigation_url_loader_factory.h"
 
 namespace content {
@@ -20,6 +19,12 @@ namespace content {
 class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
  public:
   TestNavigationURLLoaderFactory();
+
+  TestNavigationURLLoaderFactory(const TestNavigationURLLoaderFactory&) =
+      delete;
+  TestNavigationURLLoaderFactory& operator=(
+      const TestNavigationURLLoaderFactory&) = delete;
+
   ~TestNavigationURLLoaderFactory() override;
 
   // TestNavigationURLLoaderFactory implementation.
@@ -30,9 +35,6 @@ class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
       ServiceWorkerMainResourceHandle* service_worker_handle,
       NavigationURLLoaderDelegate* delegate,
       NavigationURLLoader::LoaderType loader_type) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderFactory);
 };
 
 }  // namespace content

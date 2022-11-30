@@ -1,0 +1,19 @@
+include_rules = [
+  "+components/cast",
+  "+content/public/test",
+  "+fuchsia_web/cast_streaming",
+
+  # TODO(crbug.com/852834): Remove this dependency when
+  # kAudioCapturerWithEchoCancellation is removed.
+  "+media/base/media_switches.h",
+
+  "+net",
+]
+
+specific_include_rules = {
+  ".*_browsertest\.cc": [
+    # WebEngine test helpers.
+    "+fuchsia_web/webengine/test/frame_for_test.h",
+    "+fuchsia_web/webengine/test/web_engine_browser_test.h",
+  ],
+}

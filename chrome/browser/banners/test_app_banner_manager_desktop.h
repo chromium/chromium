@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
@@ -21,6 +20,11 @@ namespace webapps {
 class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
  public:
   explicit TestAppBannerManagerDesktop(content::WebContents* web_contents);
+
+  TestAppBannerManagerDesktop(const TestAppBannerManagerDesktop&) = delete;
+  TestAppBannerManagerDesktop& operator=(const TestAppBannerManagerDesktop&) =
+      delete;
+
   ~TestAppBannerManagerDesktop() override;
 
   // Ensure this test class will be instantiated in place of
@@ -34,7 +38,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   // Blocks until the existing installability check has been cleared.
   void WaitForInstallableCheckTearDown();
 
-  // Returns whether the installable check passed.
+  // Returns whether both the installable and promotable check passed.
   bool WaitForInstallableCheck();
 
   // Configures a callback to be invoked when the app banner flow finishes.
@@ -50,6 +54,8 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnDidGetManifest(const InstallableData& result) override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
+  void PerformServiceWorkerCheck() override;
+  void OnDidPerformWorkerCheck(const InstallableData& result) override;
   void ResetCurrentPageData() override;
 
   // AppBannerManagerDesktop:
@@ -60,22 +66,24 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   // AppBannerManager:
   void OnInstall(blink::mojom::DisplayMode display) override;
   void DidFinishCreatingWebApp(const web_app::AppId& app_id,
-                               web_app::InstallResultCode code) override;
+                               webapps::InstallResultCode code) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void UpdateState(AppBannerManager::State state) override;
 
  private:
   void SetInstallable(bool installable);
+  void SetPromotable(bool promotable);
   void OnFinished();
 
-  base::Optional<bool> installable_;
+  absl::optional<bool> installable_;
+  bool waiting_for_worker_;
+  bool promotable_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
+  base::OnceClosure promotable_quit_closure_;
   base::OnceClosure on_done_;
   base::OnceClosure on_install_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppBannerManagerDesktop);
 };
 
 }  // namespace webapps

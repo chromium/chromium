@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -34,7 +35,7 @@ struct MyOverlapped {
   base::MessagePumpForIO::IOContext context_;
   scoped_refptr<disk_cache::File> file_;
   scoped_refptr<CompletionHandler> completion_handler_;
-  disk_cache::FileIOCallback* callback_;
+  raw_ptr<disk_cache::FileIOCallback> callback_;
 };
 
 static_assert(offsetof(MyOverlapped, context_) == 0,
@@ -47,6 +48,9 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
   CompletionHandler() : base::MessagePumpForIO::IOHandler(FROM_HERE) {}
   static CompletionHandler* Get();
 
+  CompletionHandler(const CompletionHandler&) = delete;
+  CompletionHandler& operator=(const CompletionHandler&) = delete;
+
  private:
   friend class base::RefCounted<CompletionHandler>;
   ~CompletionHandler() override {}
@@ -55,13 +59,12 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
   void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
                      DWORD actual_bytes,
                      DWORD error) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionHandler);
 };
 
 class CompletionHandlerHolder {
  public:
-  CompletionHandlerHolder() { completion_handler_ = new CompletionHandler; }
+  CompletionHandlerHolder()
+      : completion_handler_(base::MakeRefCounted<CompletionHandler>()) {}
 
   CompletionHandler* completion_handler() { return completion_handler_.get(); }
 
@@ -91,8 +94,10 @@ void CompletionHandler::OnIOCompleted(
     NOTREACHED();
   }
 
+  // `callback_` may self delete while in `OnFileIOComplete`.
   if (data->callback_)
-    data->callback_->OnFileIOComplete(static_cast<int>(actual_bytes));
+    data->callback_.ExtractAsDangling()->OnFileIOComplete(
+        static_cast<int>(actual_bytes));
 
   delete data;
 }
@@ -213,8 +218,7 @@ bool File::Write(const void* buffer, size_t buffer_len, size_t offset,
   return AsyncWrite(buffer, buffer_len, offset, callback, completed);
 }
 
-File::~File() {
-}
+File::~File() = default;
 
 base::PlatformFile File::platform_file() const {
   DCHECK(init_);
@@ -280,7 +284,7 @@ size_t File::GetLength() {
 // Static.
 void File::WaitForPendingIOForTesting(int* num_pending_io) {
   // Spin on the burn-down count until the file IO completes.
-  constexpr base::TimeDelta kMillisecond = base::TimeDelta::FromMilliseconds(1);
+  constexpr base::TimeDelta kMillisecond = base::Milliseconds(1);
   for (; *num_pending_io; base::PlatformThread::Sleep(kMillisecond)) {
     // This waits for callbacks running on worker threads.
     base::ThreadPoolInstance::Get()->FlushForTesting();  // IN-TEST

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -61,7 +61,9 @@ sk_sp<cc::PaintShader> CreateGradientShader(const gfx::Point& start_point,
                                             const gfx::Point& end_point,
                                             SkColor start_color,
                                             SkColor end_color) {
-  SkColor grad_colors[2] = {start_color, end_color};
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  SkColor4f grad_colors[2] = {SkColor4f::FromColor(start_color),
+                              SkColor4f::FromColor(end_color)};
   SkPoint grad_points[2] = {gfx::PointToSkPoint(start_point),
                             gfx::PointToSkPoint(end_point)};
 

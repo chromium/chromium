@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace android_webview {
 
@@ -42,10 +40,19 @@ class ScopedAppGLStateRestore {
   static ScopedAppGLStateRestore* Current();
 
   ScopedAppGLStateRestore(CallMode mode, bool save_restore);
+
+  ScopedAppGLStateRestore(const ScopedAppGLStateRestore&) = delete;
+  ScopedAppGLStateRestore& operator=(const ScopedAppGLStateRestore&) = delete;
+
   ~ScopedAppGLStateRestore();
 
   StencilState stencil_state() const;
   int framebuffer_binding_ext() const;
+
+  // Android HWUI has a bug that asks functor to draw into a 8-bit mask for
+  // functionality that is not related to and not needed by webview.
+  // Skip this draw which is doing extra unnecessary work.
+  bool skip_draw() const;
 
   class Impl {
    public:
@@ -54,16 +61,16 @@ class ScopedAppGLStateRestore {
 
     const StencilState& stencil_state() const { return stencil_state_; }
     int framebuffer_binding_ext() const { return framebuffer_binding_ext_; }
+    bool skip_draw() const { return skip_draw_; }
 
    protected:
     StencilState stencil_state_{};
     int framebuffer_binding_ext_ = 0;
+    bool skip_draw_ = false;
   };
 
  private:
   std::unique_ptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAppGLStateRestore);
 };
 
 }  // namespace android_webview

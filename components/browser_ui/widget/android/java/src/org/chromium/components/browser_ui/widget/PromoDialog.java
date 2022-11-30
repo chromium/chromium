@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
-
-import org.chromium.base.ApiCompatibilityUtils;
 
 /**
  * Generic builder for promo dialogs.
@@ -92,8 +90,8 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
         super(activity, R.style.PromoDialog);
 
         mScrimView = new FrameLayout(activity);
-        mScrimView.setBackgroundColor(ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.modal_dialog_scrim_color));
+        mScrimView.setBackgroundColor(
+                activity.getResources().getColor(R.color.modal_dialog_scrim_color));
         LayoutInflater.from(activity).inflate(R.layout.promo_dialog_layout, mScrimView, true);
 
         mDialogLayout = (PromoDialogLayout) mScrimView.findViewById(R.id.promo_dialog_layout);
@@ -104,8 +102,7 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
      */
     protected void forceOpaqueBackground() {
         LayerDrawable background = new LayerDrawable(new Drawable[] {new ColorDrawable(Color.WHITE),
-                new ColorDrawable(ApiCompatibilityUtils.getColor(
-                        getContext().getResources(), R.color.modal_dialog_scrim_color))});
+                new ColorDrawable(getContext().getColor(R.color.modal_dialog_scrim_color))});
         mScrimView.setBackground(background);
     }
 

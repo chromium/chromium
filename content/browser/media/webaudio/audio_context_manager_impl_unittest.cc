@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/test_renderer_host.h"
@@ -24,8 +25,8 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
     clock_.SetNowTicks(base::TimeTicks::Now());
 
     mojo::Remote<blink::mojom::AudioContextManager> service_remote;
-    audio_context_manager_ = new AudioContextManagerImpl(
-        main_rfh(), service_remote.BindNewPipeAndPassReceiver());
+    audio_context_manager_ = &AudioContextManagerImpl::CreateForTesting(
+        *main_rfh(), service_remote.BindNewPipeAndPassReceiver());
     audio_context_manager_->set_clock_for_testing(&clock_);
   }
 
@@ -40,7 +41,7 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock& clock() { return clock_; }
 
  private:
-  AudioContextManagerImpl* audio_context_manager_ = nullptr;
+  raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };
@@ -48,17 +49,17 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
 TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
   // Entry for 42 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(42));
+  clock().Advance(base::Milliseconds(42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 4242 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(4242));
+  clock().Advance(base::Milliseconds(4242));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 9999 milliseconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromMilliseconds(9999));
+  clock().Advance(base::Milliseconds(9999));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);
@@ -74,22 +75,22 @@ TEST_F(AudioContextManagerImplTest, TimeBelow10SecondsIsRaw) {
 TEST_F(AudioContextManagerImplTest, TimeGreater10SecondsIsRoundedDown) {
   // Entry for 42 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSeconds(42));
+  clock().Advance(base::Seconds(42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 42.42 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(42.42));
+  clock().Advance(base::Seconds(42.42));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 10.01 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(10.01));
+  clock().Advance(base::Seconds(10.01));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   // Entry for 10.99 seconds.
   audio_context_manager()->AudioContextAudiblePlaybackStarted(0);
-  clock().Advance(base::TimeDelta::FromSecondsD(10.99));
+  clock().Advance(base::Seconds(10.99));
   audio_context_manager()->AudioContextAudiblePlaybackStopped(0);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(UkmEntry::kEntryName);

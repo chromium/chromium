@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
@@ -16,7 +18,6 @@
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace invalidation {
 
@@ -77,8 +78,7 @@ class FCMInvalidationListener
       SubscriptionChannelState state) override;
 
   virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(const base::DictionaryValue&)>&
-          callback) const;
+      const base::RepeatingCallback<void(base::Value::Dict)>& callback) const;
 
   void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
@@ -123,11 +123,11 @@ class FCMInvalidationListener
   void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
 
   // Generate a Dictionary with all the debugging information.
-  base::DictionaryValue CollectDebugData() const;
+  base::Value::Dict CollectDebugData() const;
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   UnackedInvalidationsMap unacked_invalidations_map_;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // The set of topics for which we want to receive invalidations. We'll pass
   // these to |per_user_topic_subscription_manager_| for (un)subscription.

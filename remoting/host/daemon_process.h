@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,18 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
-#include "ipc/ipc_channel.h"
-#include "ipc/ipc_channel_handle.h"
+#include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/config_watcher.h"
-#include "remoting/host/current_process_stats_agent.h"
 #include "remoting/host/host_status_monitor.h"
+#include "remoting/host/host_status_observer.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
-#include "remoting/protocol/process_stats_stub.h"
-
-struct SerializedTransportRoute;
 
 namespace base {
 class Location;
@@ -35,18 +34,20 @@ namespace remoting {
 class AutoThreadTaskRunner;
 class DesktopSession;
 class HostEventLogger;
-class ProcessStatsSender;
 class ScreenResolution;
 
 // This class implements core of the daemon process. It manages the networking
 // process running at lower privileges and maintains the list of desktop
 // sessions.
-class DaemonProcess
-    : public ConfigWatcher::Delegate,
-      public WorkerProcessIpcDelegate,
-      public protocol::ProcessStatsStub {
+class DaemonProcess : public ConfigWatcher::Delegate,
+                      public WorkerProcessIpcDelegate,
+                      public HostStatusObserver,
+                      public mojom::DesktopSessionManager {
  public:
   typedef std::list<DesktopSession*> DesktopSessionList;
+
+  DaemonProcess(const DaemonProcess&) = delete;
+  DaemonProcess& operator=(const DaemonProcess&) = delete;
 
   ~DaemonProcess() override;
 
@@ -67,13 +68,19 @@ class DaemonProcess
 
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnPermanentError(int exit_code) override;
   void OnWorkerProcessStopped() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // Sends an IPC message to the network process. The message will be dropped
-  // unless the network process is connected over the IPC channel.
-  virtual void SendToNetwork(IPC::Message* message) = 0;
+  // mojom::DesktopSessionManager implementation.
+  void CreateDesktopSession(int terminal_id,
+                            const ScreenResolution& resolution,
+                            bool virtual_terminal) override;
+  void CloseDesktopSession(int terminal_id) override;
+  void SetScreenResolution(int terminal_id,
+                           const ScreenResolution& resolution) override;
 
   // Called when a desktop integration process attaches to |terminal_id|.
   // |session_id| is the id of the desktop session being attached.
@@ -82,27 +89,15 @@ class DaemonProcess
   virtual bool OnDesktopSessionAgentAttached(
       int terminal_id,
       int session_id,
-      const IPC::ChannelHandle& desktop_pipe) = 0;
+      mojo::ScopedMessagePipeHandle desktop_pipe) = 0;
 
-  // Closes the desktop session identified by |terminal_id|.
-  void CloseDesktopSession(int terminal_id);
+  // Requests the network process to crash.
+  void CrashNetworkProcess(const base::Location& location);
 
  protected:
   DaemonProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                 scoped_refptr<AutoThreadTaskRunner> io_task_runner,
                 base::OnceClosure stopped_callback);
-
-  // Creates a desktop session and assigns a unique ID to it.
-  void CreateDesktopSession(int terminal_id,
-                            const ScreenResolution& resolution,
-                            bool virtual_terminal);
-
-  // Changes the screen resolution of the desktop session identified by
-  // |terminal_id|.
-  void SetScreenResolution(int terminal_id, const ScreenResolution& resolution);
-
-  // Requests the network process to crash.
-  void CrashNetworkProcess(const base::Location& location);
 
   // Reads the host configuration and launches the network process.
   void Initialize();
@@ -114,17 +109,16 @@ class DaemonProcess
   // less or equal to the highest ID we have seen so far.
   bool WasTerminalIdAllocated(int terminal_id);
 
-  // Handlers for the host status notifications received from the network
-  // process.
-  void OnAccessDenied(const std::string& jid);
-  void OnClientAuthenticated(const std::string& jid);
-  void OnClientConnected(const std::string& jid);
-  void OnClientDisconnected(const std::string& jid);
-  void OnClientRouteChange(const std::string& jid,
+  // HostStatusObserver overrides.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientAuthenticated(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
+  void OnClientRouteChange(const std::string& signaling_id,
                            const std::string& channel_name,
-                           const SerializedTransportRoute& route);
-  void OnHostStarted(const std::string& xmpp_login);
-  void OnHostShutdown();
+                           const protocol::TransportRoute& route) override;
+  void OnHostStarted(const std::string& owner_email) override;
+  void OnHostShutdown() override;
 
   // Creates a platform-specific desktop session and assigns a unique ID to it.
   // An implementation should validate |params| as they are received via IPC.
@@ -138,6 +132,16 @@ class DaemonProcess
 
   // Launches the network process and establishes an IPC channel with it.
   virtual void LaunchNetworkProcess() = 0;
+
+  // Sends |serialized_config| to the network process. The config includes
+  // details such as the host owner email and robot account refresh token which
+  // are required to start the host and get online.
+  virtual void SendHostConfigToNetworkProcess(
+      const std::string& serialized_config) = 0;
+
+  // Notifies the network process that the daemon has disconnected the desktop
+  // session from the associated desktop environment.
+  virtual void SendTerminalDisconnected(int terminal_id) = 0;
 
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;
@@ -156,17 +160,6 @@ class DaemonProcess
  private:
   // Deletes all desktop sessions.
   void DeleteAllDesktopSessions();
-
-  // Starts to report process statistic data to network process. If |interval|
-  // is less then or equal to 0, a default non-zero value will be used.
-  void StartProcessStatsReport(base::TimeDelta interval);
-
-  // Stops sending process statistic data to network process.
-  void StopProcessStatsReport();
-
-  // ProcessStatsStub implementation.
-  void OnProcessStats(
-      const protocol::AggregatedProcessResourceUsage& usage) override;
 
   // Gets the location of the config file.
   base::FilePath GetConfigPath();
@@ -194,23 +187,12 @@ class DaemonProcess
   // Writes host status updates to the system event log.
   std::unique_ptr<HostEventLogger> host_event_logger_;
 
+  mojo::AssociatedReceiver<mojom::DesktopSessionManager>
+      desktop_session_manager_{this};
+  mojo::AssociatedReceiver<mojom::HostStatusObserver> host_status_observer_{
+      this};
+
   scoped_refptr<HostStatusMonitor> status_monitor_;
-
-  // Reports process statistic data to network process.
-  std::unique_ptr<ProcessStatsSender> stats_sender_;
-
-  // The number of StartProcessStatsReport requests received.
-  // Daemon and Network processes manages multiple desktop sessions. Some of
-  // them may request for process statistic reports. So the resource usage of
-  // daemon process and network process will be merged to each desktop session.
-  //
-  // As long as at least process statistic reports is enabled for one desktop
-  // session, daemon process should continually send the reports.
-  int process_stats_request_count_ = 0;
-
-  CurrentProcessStatsAgent current_process_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonProcess);
 };
 
 }  // namespace remoting

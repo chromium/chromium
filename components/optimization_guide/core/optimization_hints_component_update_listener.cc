@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
+#include "base/observer_list.h"
 
 namespace optimization_guide {
 
@@ -61,7 +63,7 @@ void OptimizationHintsComponentUpdateListener::MaybeUpdateHintsComponent(
 }
 
 void OptimizationHintsComponentUpdateListener::ResetStateForTesting() {
-  hints_component_info_ = base::nullopt;
+  hints_component_info_ = absl::nullopt;
 }
 
 }  // namespace optimization_guide

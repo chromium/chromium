@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
 #include "device/bluetooth/jni_headers/ChromeBluetoothDevice_jni.h"
@@ -18,20 +16,6 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
-namespace {
-void RecordConnectionSuccessResult(int32_t status) {
-  base::UmaHistogramSparse("Bluetooth.Android.GATTConnection.Success.Result",
-                           status);
-}
-void RecordConnectionFailureResult(int32_t status) {
-  base::UmaHistogramSparse("Bluetooth.Android.GATTConnection.Failure.Result",
-                           status);
-}
-void RecordConnectionTerminatedResult(int32_t status) {
-  base::UmaHistogramSparse(
-      "Bluetooth.Android.GATTConnection.Disconnected.Result", status);
-}
-}  // namespace
 
 std::unique_ptr<BluetoothDeviceAndroid> BluetoothDeviceAndroid::Create(
     BluetoothAdapterAndroid* adapter,
@@ -100,11 +84,11 @@ uint16_t BluetoothDeviceAndroid::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceAndroid::GetName() const {
+absl::optional<std::string> BluetoothDeviceAndroid::GetName() const {
   auto name =
       Java_ChromeBluetoothDevice_getName(AttachCurrentThread(), j_device_);
   if (name.is_null())
-    return base::nullopt;
+    return absl::nullopt;
   return ConvertJavaStringToUTF8(name);
 }
 
@@ -159,8 +143,7 @@ void BluetoothDeviceAndroid::SetConnectionLatency(
 }
 
 void BluetoothDeviceAndroid::Connect(PairingDelegate* pairing_delegate,
-                                     base::OnceClosure callback,
-                                     ConnectErrorCallback error_callback) {
+                                     ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -216,18 +199,15 @@ void BluetoothDeviceAndroid::OnConnectionStateChange(
     bool connected) {
   gatt_connected_ = connected;
   if (gatt_connected_) {
-    RecordConnectionSuccessResult(status);
-    DidConnectGatt();
-  } else if (!create_gatt_connection_error_callbacks_.empty()) {
+    DidConnectGatt(/*error_code=*/absl::nullopt);
+  } else if (!create_gatt_connection_callbacks_.empty()) {
     // We assume that if there are any pending connection callbacks there
     // was a failed connection attempt.
-    RecordConnectionFailureResult(status);
     // TODO(ortuno): Return an error code based on |status|
     // http://crbug.com/578191
-    DidFailToConnectGatt(ERROR_FAILED);
+    DidConnectGatt(ERROR_FAILED);
   } else {
     // Otherwise an existing connection was terminated.
-    RecordConnectionTerminatedResult(status);
     gatt_services_.clear();
     device_uuids_.ClearServiceUUIDs();
     SetGattServicesDiscoveryComplete(false);
@@ -270,7 +250,7 @@ BluetoothDeviceAndroid::BluetoothDeviceAndroid(BluetoothAdapterAndroid* adapter)
     : BluetoothDevice(adapter) {}
 
 void BluetoothDeviceAndroid::CreateGattConnectionImpl(
-    base::Optional<device::BluetoothUUID> service_uuid) {
+    absl::optional<device::BluetoothUUID> service_uuid) {
   Java_ChromeBluetoothDevice_createGattConnectionImpl(AttachCurrentThread(),
                                                       j_device_);
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@ MathMLUnderOverElement::MathMLUnderOverElement(const QualifiedName& tagName,
                                                Document& document)
     : MathMLScriptsElement(tagName, document) {}
 
-base::Optional<bool> MathMLUnderOverElement::Accent() const {
+absl::optional<bool> MathMLUnderOverElement::Accent() const {
   return BooleanAttribute(mathml_names::kAccentAttr);
 }
 
-base::Optional<bool> MathMLUnderOverElement::AccentUnder() const {
+absl::optional<bool> MathMLUnderOverElement::AccentUnder() const {
   return BooleanAttribute(mathml_names::kAccentunderAttr);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -21,6 +20,10 @@ namespace audio {
 class FakeSystemInfo : public mojom::SystemInfo {
  public:
   FakeSystemInfo();
+
+  FakeSystemInfo(const FakeSystemInfo&) = delete;
+  FakeSystemInfo& operator=(const FakeSystemInfo&) = delete;
+
   ~FakeSystemInfo() override;
 
   static void OverrideGlobalBinderForAudioService(
@@ -51,7 +54,6 @@ class FakeSystemInfo : public mojom::SystemInfo {
   void Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver);
 
   mojo::ReceiverSet<mojom::SystemInfo> receivers_;
-  DISALLOW_COPY_AND_ASSIGN(FakeSystemInfo);
 };
 
 }  // namespace audio

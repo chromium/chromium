@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,7 +142,7 @@ float RemapLatitude(float t) {
 Background::Background() {
   SetTransitionedProperties(
       {NORMAL_COLOR_FACTOR, INCOGNITO_COLOR_FACTOR, FULLSCREEN_COLOR_FACTOR});
-  SetTransitionDuration(base::TimeDelta::FromMilliseconds(2500));
+  SetTransitionDuration(base::Milliseconds(2500));
 }
 
 Background::~Background() = default;

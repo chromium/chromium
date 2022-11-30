@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #if defined(USE_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/native_widget_aura.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
@@ -21,7 +21,7 @@ NativeWidget* CreatePlatformNativeWidgetImpl(
     Widget* widget,
     uint32_t type,
     bool* destroyed) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   return new TestPlatformNativeWidget<NativeWidgetMac>(
       widget, type == kStubCapture, destroyed);
 #else

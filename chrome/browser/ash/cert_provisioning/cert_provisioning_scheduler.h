@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,21 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_platform_keys_helpers.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-// TODO(https://crbug.com/1164001): forward declare NetworkStateHandler
-// after //chromeos/network is moved to ash.
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -44,6 +44,10 @@ using CertProfileSet = base::flat_set<CertProfile, CertProfileComparator>;
 // Holds information about a worker which failed that is still useful (e.g. for
 // UI) after the worker has been destroyed.
 struct FailedWorkerInfo {
+  FailedWorkerInfo();
+  ~FailedWorkerInfo();
+  FailedWorkerInfo(const FailedWorkerInfo&);
+  FailedWorkerInfo& operator=(const FailedWorkerInfo&);
   // The state the worker had prior to switching to the failed state
   // (CertProvisioningWorkerState::kFailed).
   CertProvisioningWorkerState state_before_failure =
@@ -55,18 +59,8 @@ struct FailedWorkerInfo {
   // The time the worker was last updated, i.e. when it transferred to the
   // failed state.
   base::Time last_update_time;
-};
-
-// An observer that gets notified about state changes of the
-// CertProvisioningScheduler.
-class CertProvisioningSchedulerObserver : public base::CheckedObserver {
- public:
-  // Called when the "visible state" of the observerd CertProvisioningScheduler
-  // has changed, i.e. when:
-  // (*) the list of active workers changed,
-  // (*) the list of recently failed workers changed,
-  // (*) the state of a worker changed.
-  virtual void OnVisibleStateChanged() = 0;
+  // Holds a message describing the reason for the failure.
+  std::string failure_message;
 };
 
 // Interface for the scheduler for client certificate provisioning using device
@@ -76,9 +70,10 @@ class CertProvisioningScheduler {
   virtual ~CertProvisioningScheduler() = default;
 
   // Intended to be called when a user presses a button in certificate manager
-  // UI. Retries provisioning of a specific certificate.
-  virtual void UpdateOneCert(const CertProfileId& cert_profile_id) = 0;
-  virtual void UpdateAllCerts() = 0;
+  // UI. Retries the process of provisioning a specific certificate.
+  // Returns "false" if `cert_profile_id` is not found and "true" otherwise.
+  virtual bool UpdateOneWorker(const CertProfileId& cert_profile_id) = 0;
+  virtual void UpdateAllWorkers() = 0;
 
   // Returns all certificate provisioning workers that are currently active.
   virtual const WorkerMap& GetWorkers() const = 0;
@@ -88,11 +83,14 @@ class CertProvisioningScheduler {
   virtual const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const = 0;
 
-  // Adds |observer| which will observer this CertProvisioningScheduler.
-  virtual void AddObserver(CertProvisioningSchedulerObserver* observer) = 0;
-
-  // Removes a previously added |observer|.
-  virtual void RemoveObserver(CertProvisioningSchedulerObserver* observer) = 0;
+  // Saves the |callback| to call it when the "visible state" of the scheduler
+  // changes, i.e.
+  // (*) the list of active workers changes,
+  // (*) the list of recently failed workers changes,
+  // (*) the state of a worker changes.
+  // (As long as the returned subscription is alive.)
+  virtual base::CallbackListSubscription AddObserver(
+      base::RepeatingClosure callback) = 0;
 };
 
 // This class is a part of certificate provisioning feature. It tracks updates
@@ -129,13 +127,13 @@ class CertProvisioningSchedulerImpl
       const CertProvisioningSchedulerImpl&) = delete;
 
   // CertProvisioningScheduler:
-  void UpdateOneCert(const CertProfileId& cert_profile_id) override;
-  void UpdateAllCerts() override;
+  bool UpdateOneWorker(const CertProfileId& cert_profile_id) override;
+  void UpdateAllWorkers() override;
   const WorkerMap& GetWorkers() const override;
   const base::flat_map<CertProfileId, FailedWorkerInfo>&
   GetFailedCertProfileIds() const override;
-  void AddObserver(CertProvisioningSchedulerObserver* observer) override;
-  void RemoveObserver(CertProvisioningSchedulerObserver* observer) override;
+  base::CallbackListSubscription AddObserver(
+      base::RepeatingClosure callback) override;
 
   // Invoked when the CertProvisioningWorker corresponding to |profile| reached
   // its final state.
@@ -150,29 +148,29 @@ class CertProvisioningSchedulerImpl
  private:
   void ScheduleInitialUpdate();
   void ScheduleDailyUpdate();
-  // Posts delayed task to call UpdateOneCertImpl.
+  // Posts delayed task to call UpdateOneWorkerImpl.
   void ScheduleRetry(const CertProfileId& profile_id);
   void ScheduleRenewal(const CertProfileId& profile_id, base::TimeDelta delay);
 
   void InitialUpdateCerts();
   void DeleteCertsWithoutPolicy();
-  void OnDeleteCertsWithoutPolicyDone(platform_keys::Status status);
+  void OnDeleteCertsWithoutPolicyDone(chromeos::platform_keys::Status status);
   void CancelWorkersWithoutPolicy(const std::vector<CertProfile>& profiles);
   void CleanVaKeysIfIdle();
   void OnCleanVaKeysIfIdleDone(bool delete_result);
   void RegisterForPrefsChanges();
 
   void InitiateRenewal(const CertProfileId& cert_profile_id);
-  void UpdateOneCertImpl(const CertProfileId& cert_profile_id);
-  void UpdateCertList(std::vector<CertProfile> profiles);
-  void UpdateCertListWithExistingCerts(
+  void UpdateOneWorkerImpl(const CertProfileId& cert_profile_id);
+  void UpdateWorkerList(std::vector<CertProfile> profiles);
+  void UpdateWorkerListWithExistingCerts(
       std::vector<CertProfile> profiles,
       base::flat_map<CertProfileId, scoped_refptr<net::X509Certificate>>
           existing_certs_with_ids,
-      platform_keys::Status status);
+      chromeos::platform_keys::Status status);
 
   void OnPrefsChange();
-  void DailyUpdateCerts();
+  void DailyUpdateWorkers();
   void DeserializeWorkers();
 
   // Creates a new worker for |profile| if there is no at the moment.
@@ -180,7 +178,7 @@ class CertProvisioningSchedulerImpl
   // Continues an existing worker if it is in a waiting state.
   void ProcessProfile(const CertProfile& profile);
 
-  base::Optional<CertProfile> GetOneCertProfile(
+  absl::optional<CertProfile> GetOneCertProfile(
       const CertProfileId& cert_profile_id);
   std::vector<CertProfile> GetCertProfiles();
 
@@ -208,6 +206,10 @@ class CertProvisioningSchedulerImpl
   // PlatformKeysServiceObserver
   void OnPlatformKeysServiceShutDown() override;
 
+  // Called by |hold_back_updates_timer_| when the notifications should be sent
+  // again. Notifies observers if there were any events during the hold back
+  // period.
+  void OnHoldBackUpdatesTimerExpired();
   // Notifies each observer from |observers_| that the state has changed.
   void NotifyObserversVisibleStateChanged();
 
@@ -221,6 +223,9 @@ class CertProvisioningSchedulerImpl
   // |platform_keys_service_| can be nullptr if it has been shut down.
   platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
+
   PrefChangeRegistrar pref_change_registrar_;
   WorkerMap workers_;
   // Contains cert profile ids that will be renewed before next daily update.
@@ -228,8 +233,8 @@ class CertProvisioningSchedulerImpl
   // the renewal starts for a profile id, it is removed from the set.
   base::flat_set<CertProfileId> scheduled_renewals_;
   // Collection of cert profile ids that failed recently. They will not be
-  // retried until next |DailyUpdateCerts|. FailedWorkerInfo contains some extra
-  // information about the failure. Profiles that failed with
+  // retried until next |DailyUpdateWorkers|. FailedWorkerInfo contains some
+  // extra information about the failure. Profiles that failed with
   // kInconsistentDataError will not be stored into this collection.
   base::flat_map<CertProfileId, FailedWorkerInfo> failed_cert_profiles_;
   // Equals true if the last attempt to update certificates failed because there
@@ -245,14 +250,21 @@ class CertProvisioningSchedulerImpl
   std::unique_ptr<CertProvisioningInvalidatorFactory> invalidator_factory_;
 
   // Observers that are observing this CertProvisioningSchedulerImpl.
-  base::ObserverList<CertProvisioningSchedulerObserver> observers_;
+  base::RepeatingClosureList observers_;
   // True when a task for notifying observers about a state change has been
   // scheduled but not executed yet.
   bool notify_observers_pending_ = false;
+  // When this timer is running, notifications should not be sent until it
+  // fires. Used to prevent spamming the observers if many events happen in
+  // rapid succession.
+  base::OneShotTimer hold_back_updates_timer_;
+  // When this is true, an update should be sent to the UI when
+  // |hold_back_updates_timer_| fires.
+  bool update_after_hold_back_ = false;
 
-  ScopedObserver<platform_keys::PlatformKeysService,
-                 platform_keys::PlatformKeysServiceObserver>
-      scoped_platform_keys_service_observer_{this};
+  base::ScopedObservation<platform_keys::PlatformKeysService,
+                          platform_keys::PlatformKeysServiceObserver>
+      scoped_platform_keys_service_observation_{this};
 
   base::WeakPtrFactory<CertProvisioningSchedulerImpl> weak_factory_{this};
 };

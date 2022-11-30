@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,13 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -31,6 +33,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -100,12 +103,14 @@ int PrivacyInfoView::GetHeightForWidth(int width) const {
 void PrivacyInfoView::OnPaintBackground(gfx::Canvas* canvas) {
   if (selected_action_ == Action::kCloseButton) {
     const AppListColorProvider* color_provider = AppListColorProvider::Get();
-    const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
+    const SkColor bg_color =
+        color_provider->GetSearchBoxBackgroundColor(GetWidget());
+    const views::Widget* app_list_widget = GetWidget();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(SkColorSetA(
-        color_provider->GetRippleAttributesBaseColor(bg_color),
-        color_provider->GetRippleAttributesHighlightOpacity(bg_color) * 255));
+        color_provider->GetInkDropBaseColor(app_list_widget, bg_color),
+        color_provider->GetInkDropOpacity(app_list_widget, bg_color) * 255));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(close_button_->bounds().CenterPoint(),
                        close_button_->width() / 2, flags);
@@ -205,6 +210,14 @@ views::View* PrivacyInfoView::GetSelectedView() {
   }
 }
 
+void PrivacyInfoView::OnThemeChanged() {
+  SearchResultBaseView::OnThemeChanged();
+  views::StyledLabel::RangeStyleInfo style;
+  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor(
+      kDeprecatedSearchBoxTextDefaultColor, GetWidget());
+  text_view_->AddStyleRange(gfx::Range(0, text_offset_), style);
+}
+
 void PrivacyInfoView::OnButtonPressed() {
   CloseButtonPressed();
 }
@@ -212,16 +225,16 @@ void PrivacyInfoView::OnButtonPressed() {
 void PrivacyInfoView::InitLayout() {
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kVerticalPaddingDip, kLeftPaddingDip, kVerticalPaddingDip,
-                  kRightPaddingDip),
+      gfx::Insets::TLBR(kVerticalPaddingDip, kLeftPaddingDip,
+                        kVerticalPaddingDip, kRightPaddingDip),
       kCellSpacingDip));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/1,
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::EMPHASIS_MEDIUM),
-      gfx::Insets(kRowMarginDip, kRowMarginDip), gfx::kGoogleGrey300));
+          views::Emphasis::kMedium),
+      gfx::Insets::VH(kRowMarginDip, kRowMarginDip), gfx::kGoogleGrey300));
 
   // Info icon.
   InitInfoIcon();
@@ -246,9 +259,8 @@ void PrivacyInfoView::InitInfoIcon() {
 
 void PrivacyInfoView::InitText() {
   const std::u16string link = l10n_util::GetStringUTF16(link_string_id_);
-  size_t offset;
   const std::u16string text =
-      l10n_util::GetStringFUTF16(info_string_id_, link, &offset);
+      l10n_util::GetStringFUTF16(info_string_id_, link, &text_offset_);
   text_view_ = AddChildView(std::make_unique<PrivacyTextView>(this));
   text_view_->SetText(text);
   text_view_->SetAutoColorReadabilityEnabled(false);
@@ -256,16 +268,10 @@ void PrivacyInfoView::InitText() {
   // Make the whole text view behave as a link for accessibility.
   text_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kLink);
 
-  views::StyledLabel::RangeStyleInfo style;
-  style.override_color = AppListColorProvider::Get()->GetSearchBoxTextColor(
-      kDeprecatedSearchBoxTextDefaultColor);
-  text_view_->AddStyleRange(gfx::Range(0, offset), style);
-
   // Create a custom view for the link portion of the text. This allows an
   // underline font style to be applied when the link is focused. This is done
   // manually because default focus handling remains on the search box.
   views::StyledLabel::RangeStyleInfo link_style;
-  link_style.disable_line_wrapping = true;
   auto custom_view = std::make_unique<views::Link>(link);
   custom_view->SetCallback(base::BindRepeating(&PrivacyInfoView::LinkClicked,
                                                base::Unretained(this)));
@@ -273,17 +279,18 @@ void PrivacyInfoView::InitText() {
   link_style.custom_view = custom_view.get();
   link_view_ = custom_view.get();
   text_view_->AddCustomView(std::move(custom_view));
-  text_view_->AddStyleRange(gfx::Range(offset, offset + link.length()),
-                            link_style);
+  text_view_->AddStyleRange(
+      gfx::Range(text_offset_, text_offset_ + link.length()), link_style);
 }
 
 void PrivacyInfoView::InitCloseButton() {
   auto close_button = std::make_unique<views::ImageButton>();
   close_button->SetCallback(base::BindRepeating(
       &PrivacyInfoView::OnButtonPressed, base::Unretained(this)));
-  close_button->SetImage(views::ImageButton::STATE_NORMAL,
-                         gfx::CreateVectorIcon(views::kCloseIcon, kIconSizeDip,
-                                               gfx::kGoogleGrey700));
+  close_button->SetImageModel(
+      views::ImageButton::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(views::kCloseIcon, gfx::kGoogleGrey700,
+                                     kIconSizeDip));
   close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   std::u16string close_button_label(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
@@ -292,18 +299,20 @@ void PrivacyInfoView::InitCloseButton() {
   close_button->SetFocusBehavior(FocusBehavior::ALWAYS);
   constexpr int kImageButtonSizeDip = 40;
   constexpr int kIconMarginDip = (kImageButtonSizeDip - kIconSizeDip) / 2;
-  close_button->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kIconMarginDip)));
+  close_button->SetBorder(views::CreateEmptyBorder(kIconMarginDip));
   close_button->SizeToPreferredSize();
 
   // Ink ripple.
-  close_button->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
+  views::InkDrop::Get(close_button.get())
+      ->SetMode(views::InkDropHost::InkDropMode::ON);
   constexpr SkColor kInkDropBaseColor = gfx::kGoogleGrey900;
   constexpr float kInkDropVisibleOpacity = 0.06f;
   constexpr float kInkDropHighlightOpacity = 0.08f;
-  close_button->SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
-  close_button->SetInkDropHighlightOpacity(kInkDropHighlightOpacity);
-  close_button->SetInkDropBaseColor(kInkDropBaseColor);
+  views::InkDrop::Get(close_button.get())
+      ->SetVisibleOpacity(kInkDropVisibleOpacity);
+  views::InkDrop::Get(close_button.get())
+      ->SetHighlightOpacity(kInkDropHighlightOpacity);
+  views::InkDrop::Get(close_button.get())->SetBaseColor(kInkDropBaseColor);
   close_button->SetHasInkDropActionOnClick(true);
   views::InstallCircleHighlightPathGenerator(close_button.get());
   close_button_ = AddChildView(std::move(close_button));

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
  * @fileoverview Multi-tap gesture detector for web UI OOBE.
  */
 
+// #import {assert} from 'chrome://resources/js/assert.js';
+
 /** Multi-tap gesture detector. */
-class MultiTapDetector {
+/* #export */ class MultiTapDetector {
   /**
-   * @param {!Element} element UI element to attach the multi-tap detector to.
+   * @param {?HTMLElement} element UI element to attach the multi-tap detector to.
    * @param {number} tapsCount Number of taps in multi-tap gesture to detect.
    * @param {!function()} callback Callback to be called when multi-tap gesture
    *     is detected.
@@ -25,10 +27,25 @@ class MultiTapDetector {
     /** @private {?Date} */
     this.lastTapTime_ = null;
 
+    /**
+     * Time in between taps used to recognize multi-tap gesture.
+     * @const {number}
+     */
+    this.inBetweenTapsTimeMs_ = 400;
+
     this.callback_ = callback;
     this.tapsCount_ = tapsCount;
 
     element.addEventListener('click', this.onTap_.bind(this));
+  }
+
+  /**
+   * TODO(crbug.com/1319450) - Use a proper static variable
+   * Sets a fake time to be used during testing.
+   * @param {Date} fakeTime
+   */
+  static setFakeTimeForTests(fakeTime) {
+    MultiTapDetector.FAKE_TIME_FOR_TESTS = fakeTime;
   }
 
   /**
@@ -47,10 +64,9 @@ class MultiTapDetector {
    * @private
    */
   onTap_() {
-    let timestamp = this.getCurrentTime_();
+    const timestamp = this.getCurrentTime_();
     if (!this.lastTapTime_ ||
-        timestamp - this.lastTapTime_ <
-            MultiTapDetector.IN_BETWEEN_TAPS_TIME_MS) {
+        timestamp - this.lastTapTime_ < this.inBetweenTapsTimeMs_) {
       this.tapsSeen_++;
       if (this.tapsSeen_ >= this.tapsCount_) {
         this.tapsSeen_ = 0;
@@ -62,16 +78,3 @@ class MultiTapDetector {
     this.lastTapTime_ = timestamp;
   }
 }
-
-/**
- * Time in between taps used to recognize multi-tap gesture.
- * @const {number}
- */
-MultiTapDetector.IN_BETWEEN_TAPS_TIME_MS = 400;
-
-/**
- * Fake time used for testing. If set it will be used instead of the current
- * time.
- * @const {?Date}
- */
-MultiTapDetector.FAKE_TIME_FOR_TESTS = null;

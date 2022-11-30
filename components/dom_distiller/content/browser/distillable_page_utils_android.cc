@@ -1,10 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/dom_distiller/content/browser/android/jni_headers/DistillablePageUtils_jni.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
@@ -24,6 +24,11 @@ class JniDistillabilityObserverWrapper
     : public DistillabilityObserver,
       public content::WebContentsUserData<JniDistillabilityObserverWrapper> {
  public:
+  JniDistillabilityObserverWrapper(const JniDistillabilityObserverWrapper&) =
+      delete;
+  JniDistillabilityObserverWrapper& operator=(
+      const JniDistillabilityObserverWrapper&) = delete;
+
   void SetCallback(JNIEnv* env, const JavaParamRef<jobject>& callback) {
     callback_ = ScopedJavaGlobalRef<jobject>(env, callback);
   }
@@ -35,13 +40,13 @@ class JniDistillabilityObserverWrapper
   }
 
  private:
-  explicit JniDistillabilityObserverWrapper(content::WebContents* contents) {}
+  explicit JniDistillabilityObserverWrapper(content::WebContents* contents)
+      : content::WebContentsUserData<JniDistillabilityObserverWrapper>(
+            *contents) {}
   friend class content::WebContentsUserData<JniDistillabilityObserverWrapper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   ScopedJavaGlobalRef<jobject> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(JniDistillabilityObserverWrapper);
 };
 
 }  // namespace
@@ -65,7 +70,7 @@ static void JNI_DistillablePageUtils_SetDelegate(
   AddObserver(web_contents, observer);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper);
 
 }  // namespace android
 }  // namespace dom_distiller

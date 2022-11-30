@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <map>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -39,7 +40,7 @@ struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 template <>
 struct less<::printing::AdvancedCapability> {
   bool operator()(const ::printing::AdvancedCapability& lhs,
@@ -49,7 +50,7 @@ struct less<::printing::AdvancedCapability> {
     return lhs.display_name < rhs.display_name;
   }
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace std
 
@@ -115,7 +116,7 @@ bool StructTraits<printing::mojom::PaperDataView,
          data.ReadVendorId(&out->vendor_id) && data.ReadSizeUm(&out->size_um);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 printing::mojom::AdvancedCapabilityType
 EnumTraits<printing::mojom::AdvancedCapabilityType,
@@ -177,7 +178,26 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
          data.ReadDefaultValue(&out->default_value) &&
          data.ReadValues(&out->values);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+// static
+bool StructTraits<printing::mojom::PageOutputQualityAttributeDataView,
+                  printing::PageOutputQualityAttribute>::
+    Read(printing::mojom::PageOutputQualityAttributeDataView data,
+         printing::PageOutputQualityAttribute* out) {
+  return data.ReadDisplayName(&out->display_name) && data.ReadName(&out->name);
+}
+
+// static
+bool StructTraits<printing::mojom::PageOutputQualityDataView,
+                  printing::PageOutputQuality>::
+    Read(printing::mojom::PageOutputQualityDataView data,
+         printing::PageOutputQuality* out) {
+  return data.ReadQualities(&out->qualities) &&
+         data.ReadDefaultQuality(&out->default_quality);
+}
+#endif
 
 // static
 bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
@@ -201,11 +221,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   out->pin_supported = data.pin_supported();
   if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities))
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Extra validity checks.
 
@@ -215,23 +235,10 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  // There should be at least one item in `papers`.
-  if (out->papers.empty()) {
-    DLOG(ERROR) << "The available papers must not be empty.";
-    return false;
-  }
-
-  // There should not be duplicates in any of the arrays.
+  // There should not be duplicates in certain arrays.
   DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
   if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {
     DLOG(ERROR) << "Duplicate duplex_modes detected.";
-    return false;
-  }
-
-  DuplicateChecker<printing::PrinterSemanticCapsAndDefaults::Paper>
-      papers_dup_checker;
-  if (papers_dup_checker.HasDuplicates(out->papers)) {
-    DLOG(ERROR) << "Duplicate papers detected.";
     return false;
   }
 
@@ -242,13 +249,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  DuplicateChecker<gfx::Size> dpis_dup_checker;
-  if (dpis_dup_checker.HasDuplicates(out->dpis)) {
-    DLOG(ERROR) << "Duplicate dpis detected.";
-    return false;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DuplicateChecker<printing::AdvancedCapability>
       advanced_capabilities_dup_checker;
   if (advanced_capabilities_dup_checker.HasDuplicates(
@@ -256,8 +257,38 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+  if (!data.ReadPageOutputQuality(&out->page_output_quality)) {
+    return false;
+  }
+  DuplicateChecker<printing::PageOutputQualityAttribute>
+      page_output_quality_dup_checker;
+  if (out->page_output_quality) {
+    printing::PageOutputQualityAttributes qualities =
+        out->page_output_quality->qualities;
+    absl::optional<std::string> default_quality =
+        out->page_output_quality->default_quality;
+
+    // If non-null `default_quality`, there should be a matching element in
+    // `qualities` array.
+    if (default_quality) {
+      if (!base::Contains(qualities, *default_quality,
+                          &printing::PageOutputQualityAttribute::name)) {
+        DLOG(ERROR) << "Non-null default quality, but page output qualities "
+                       "does not contain default quality";
+        return false;
+      }
+    }
+
+    // There should be no duplicates in `qualities` array.
+    if (page_output_quality_dup_checker.HasDuplicates(qualities)) {
+      DLOG(ERROR) << "Duplicate page output qualities detected.";
+      return false;
+    }
+  }
+#endif
   return true;
 }
 

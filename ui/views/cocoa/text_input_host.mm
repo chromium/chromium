@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -314,7 +314,6 @@ bool TextInputHost::HasCompositionText(bool* out_has_composition_text) {
     return true;
   *out_has_composition_text = text_input_client_->HasCompositionText();
   return true;
-  return true;
 }
 
 bool TextInputHost::GetCompositionTextRange(gfx::Range* out_composition_range) {
@@ -380,7 +379,7 @@ void TextInputHost::GetSelectionText(GetSelectionTextCallback callback) {
 
 void TextInputHost::HasCompositionText(HasCompositionTextCallback callback) {
   bool has_composition_text = false;
-  IsRTL(&has_composition_text);
+  HasCompositionText(&has_composition_text);
   std::move(callback).Run(has_composition_text);
 }
 

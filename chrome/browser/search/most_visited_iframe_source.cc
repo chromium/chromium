@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,16 @@
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/local_ntp_resources.h"
+#include "chrome/grit/new_tab_page_instant_resources.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_generated_resources.h"
 #include "url/gurl.h"
 
 namespace {
 
 // Multi-iframe version, used by third party remote NTPs.
-const char kAssertJsPath[] = "/assert.js";
 const char kTitleHTMLPath[] = "/title.html";
 const char kTitleCSSPath[] = "/title.css";
 const char kTitleJSPath[] = "/title.js";
@@ -44,21 +42,21 @@ void MostVisitedIframeSource::StartDataRequest(
   const std::string path(url.path());
 
   if (path == kTitleHTMLPath) {
-    SendResource(IDR_MOST_VISITED_TITLE_HTML, std::move(callback));
+    SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML,
+                 std::move(callback));
   } else if (path == kTitleCSSPath) {
-    SendResource(IDR_MOST_VISITED_TITLE_CSS, std::move(callback));
+    SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_CSS,
+                 std::move(callback));
   } else if (path == kTitleJSPath) {
-    SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS, wc_getter, std::move(callback));
-  } else if (path == kAssertJsPath) {
-    SendResource(IDR_WEBUI_JS_ASSERT_JS, std::move(callback));
+    SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS, wc_getter,
+                     std::move(callback));
   } else {
     std::move(callback).Run(nullptr);
   }
 }
 
-std::string MostVisitedIframeSource::GetMimeType(
-    const std::string& path_and_query) {
-  std::string path(GURL("chrome-search://host/" + path_and_query).path());
+std::string MostVisitedIframeSource::GetMimeType(const GURL& url) {
+  base::StringPiece path = url.path_piece();
   if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII))
     return "application/javascript";
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII))
@@ -66,6 +64,10 @@ std::string MostVisitedIframeSource::GetMimeType(
   if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII))
     return "text/html";
   return std::string();
+}
+
+bool MostVisitedIframeSource::ShouldServeMimeTypeAsContentTypeHeader() {
+  return true;
 }
 
 bool MostVisitedIframeSource::AllowCaching() {
@@ -88,7 +90,7 @@ bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {
 
 bool MostVisitedIframeSource::ServesPath(const std::string& path) const {
   return path == kTitleHTMLPath || path == kTitleCSSPath ||
-         path == kTitleJSPath || path == kAssertJsPath;
+         path == kTitleJSPath;
 }
 
 void MostVisitedIframeSource::SendResource(
@@ -128,7 +130,7 @@ bool MostVisitedIframeSource::GetOrigin(
   if (!entry)
     return false;
 
-  *origin = entry->GetURL().GetOrigin().spec();
+  *origin = entry->GetURL().DeprecatedGetOriginAsURL().spec();
   // Origin should not include a trailing slash. That is part of the path.
   base::TrimString(*origin, "/", origin);
   return true;

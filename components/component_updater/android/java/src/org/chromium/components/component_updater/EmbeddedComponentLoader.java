@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@ import android.os.ResultReceiver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +31,14 @@ import java.util.Set;
  */
 public class EmbeddedComponentLoader implements ServiceConnection {
     private static final String TAG = "EmbedComponentLoader";
+
+    /**
+     * WebView's ComponentsProviderService name that implements IComponentsProviderService.aidl
+     * interface. Use this String in an intent to connect to the service to avoid dependency on the
+     * service class itself.
+     */
+    public static final String AW_COMPONENTS_PROVIDER_SERVICE =
+            "org.chromium.android_webview.services.ComponentsProviderService";
 
     private static final String KEY_RESULT = "RESULT";
 
@@ -71,13 +81,15 @@ public class EmbeddedComponentLoader implements ServiceConnection {
             }
 
             if (resultCode != 0) {
-                mComponent.componentLoadFailed();
+                mComponent.componentLoadFailed(
+                        ComponentLoadResult.COMPONENTS_PROVIDER_SERVICE_ERROR);
                 return;
             }
             Map<String, ParcelFileDescriptor> resultMap =
                     (Map<String, ParcelFileDescriptor>) resultData.getSerializable(KEY_RESULT);
             if (resultMap == null) {
-                mComponent.componentLoadFailed();
+                mComponent.componentLoadFailed(
+                        ComponentLoadResult.COMPONENTS_PROVIDER_SERVICE_ERROR);
                 return;
             }
             mComponent.componentLoaded(resultMap);
@@ -90,28 +102,29 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        ThreadUtils.assertOnUiThread();
-
-        try {
-            IComponentsProviderService providerService =
-                    IComponentsProviderService.Stub.asInterface(service);
-            for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                String componentId = receiver.getComponentLoaderPolicy().getComponentId();
-                providerService.getFilesForComponent(componentId, receiver);
-            }
-        } catch (RemoteException e) {
-            Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
-            if (!mComponentsResultReceivers.isEmpty()) {
-                // Clearing up receivers here to avoid unbinding multiple times in the future.
-                // This means if some receivers get their result after this step, their results
-                // will be ignored.
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            try {
+                IComponentsProviderService providerService =
+                        IComponentsProviderService.Stub.asInterface(service);
                 for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                    receiver.getComponentLoaderPolicy().componentLoadFailed();
+                    String componentId = receiver.getComponentLoaderPolicy().getComponentId();
+                    providerService.getFilesForComponent(componentId, receiver);
                 }
-                mComponentsResultReceivers.clear();
-                ContextUtils.getApplicationContext().unbindService(this);
+            } catch (RemoteException e) {
+                Log.d(TAG, "Remote Exception calling ComponentProviderService", e);
+                if (!mComponentsResultReceivers.isEmpty()) {
+                    // Clearing up receivers here to avoid unbinding multiple times in the future.
+                    // This means if some receivers get their result after this step, their results
+                    // will be ignored.
+                    for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
+                        receiver.getComponentLoaderPolicy().componentLoadFailed(
+                                ComponentLoadResult.REMOTE_EXCEPTION);
+                    }
+                    mComponentsResultReceivers.clear();
+                    ContextUtils.getApplicationContext().unbindService(this);
+                }
             }
-        }
+        });
     }
 
     @Override
@@ -135,7 +148,8 @@ public class EmbeddedComponentLoader implements ServiceConnection {
         if (!appContext.bindService(intent, this, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "Could not bind to " + intent);
             for (ComponentResultReceiver receiver : mComponentsResultReceivers) {
-                receiver.getComponentLoaderPolicy().componentLoadFailed();
+                receiver.getComponentLoaderPolicy().componentLoadFailed(
+                        ComponentLoadResult.FAILED_TO_CONNECT_TO_COMPONENTS_PROVIDER_SERVICE);
             }
             mComponentsResultReceivers.clear();
         }

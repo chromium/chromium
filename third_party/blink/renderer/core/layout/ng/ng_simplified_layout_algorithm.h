@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SIMPLIFIED_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_SIMPLIFIED_LAYOUT_ALGORITHM_H_
 
+#include "base/notreached.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -14,7 +16,7 @@ namespace blink {
 
 class NGBlockBreakToken;
 struct NGLink;
-class NGPhysicalContainerFragment;
+class NGPhysicalFragment;
 
 // The "simplified" layout algorithm will run in the following circumstances:
 //  - An OOF-positioned descendant of this node (this node is its containing
@@ -40,20 +42,33 @@ class CORE_EXPORT NGSimplifiedLayoutAlgorithm
                                NGBlockBreakToken> {
  public:
   NGSimplifiedLayoutAlgorithm(const NGLayoutAlgorithmParams&,
-                              const NGLayoutResult&);
+                              const NGLayoutResult&,
+                              bool keep_old_size = false);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override {
+  // Perform a simple copy of all children of the old fragment.
+  void CloneOldChildren();
+
+  void AppendNewChildFragment(const NGPhysicalFragment&, LogicalOffset);
+
+  // Just create a new layout result based on the current builder state. To be
+  // used after CloneOldChildren() / AppendNewChildFragment().
+  const NGLayoutResult* CreateResultAfterManualChildLayout();
+
+  // Attempt to perform simplified layout on all children and return a new
+  // result. If nullptr is returned, it means that simplified layout isn't
+  // possible.
+  const NGLayoutResult* Layout() override;
+
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     NOTREACHED();
     return MinMaxSizesResult();
   }
 
-  NOINLINE scoped_refptr<const NGLayoutResult> LayoutWithItemsBuilder();
+  NOINLINE const NGLayoutResult* LayoutWithItemsBuilder();
 
  private:
   void AddChildFragment(const NGLink& old_fragment,
-                        const NGPhysicalContainerFragment& new_fragment,
+                        const NGPhysicalFragment& new_fragment,
                         const NGMarginStrut* margin_strut = nullptr,
                         bool is_self_collapsing = false);
 

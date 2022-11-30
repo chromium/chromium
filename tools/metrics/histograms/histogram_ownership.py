@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -62,8 +62,8 @@ def main():
     argv[1]: Optional argument that is the relative path to a specific
         histograms.xml.
 
-  Example usage to print owners of histograms_xml/Accessibility/histograms.xml:
-    python histogram_ownership.py histograms_xml/Accessibility/histograms.xml
+  Example usage to print owners of metadata/Accessibility/histograms.xml:
+    python histogram_ownership.py metadata/Accessibility/histograms.xml
 
   Example usage to print owners of all histograms:
     python histogram_ownership.py

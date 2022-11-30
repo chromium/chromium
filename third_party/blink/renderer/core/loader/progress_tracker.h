@@ -26,12 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -58,6 +56,8 @@ class CORE_EXPORT ProgressTracker final
     : public GarbageCollected<ProgressTracker> {
  public:
   explicit ProgressTracker(LocalFrame*);
+  ProgressTracker(const ProgressTracker&) = delete;
+  ProgressTracker& operator=(const ProgressTracker&) = delete;
   ~ProgressTracker();
   void Trace(Visitor*) const;
   void Dispose();
@@ -99,10 +99,8 @@ class CORE_EXPORT ProgressTracker final
   int64_t estimated_bytes_for_pending_requests_ = 0;
 
   HashMap<uint64_t, ProgressItem> progress_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressTracker);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_

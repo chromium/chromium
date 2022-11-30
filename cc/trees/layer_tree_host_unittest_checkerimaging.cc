@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,36 +15,16 @@
 
 namespace cc {
 namespace {
-const char kRenderingEvent[] = "Compositor.Rendering";
-const char kCheckerboardImagesMetric[] = "CheckerboardedImagesCount";
 
 class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
  public:
-  LayerTreeHostCheckerImagingTest() : url_(GURL("https://example.com")),
-                                      ukm_source_id_(123) {}
+  LayerTreeHostCheckerImagingTest()
+      : url_(GURL("https://example.com")),
+        ukm_source_id_(ukm::AssignNewSourceId()) {}
 
   void BeginTest() override {
     layer_tree_host()->SetSourceURL(ukm_source_id_, url_);
     PostSetNeedsCommitToMainThread();
-  }
-
-  void VerifyUkmAndEndTest(LayerTreeHostImpl* impl) {
-    auto* recorder = static_cast<ukm::TestUkmRecorder*>(
-        impl->ukm_manager()->recorder_for_testing());
-    // Tie the source id to the URL. In production, this is already done in
-    // Document, and the source id is passed down to cc.
-    recorder->UpdateSourceURL(ukm_source_id_, url_);
-
-    // Change the source to ensure any accumulated metrics are flushed.
-    impl->ukm_manager()->SetSourceId(200);
-    recorder->UpdateSourceURL(200, GURL("chrome://test2"));
-
-    const auto& entries = recorder->GetEntriesByName(kRenderingEvent);
-    ASSERT_EQ(1u, entries.size());
-    auto* entry = entries[0];
-    recorder->ExpectEntrySourceHasUrl(entry, url_);
-    recorder->ExpectEntryMetric(entry, kCheckerboardImagesMetric, 1);
-    EndTest();
   }
 
   void InitializeSettings(LayerTreeSettings* settings) override {
@@ -152,7 +132,7 @@ class LayerTreeHostCheckerImagingTestMergeWithMainFrame
         expected_update_rect.Union(gfx::Rect(600, 0, 50, 500));
         EXPECT_EQ(sync_layer_impl->update_rect(), expected_update_rect);
 
-        VerifyUkmAndEndTest(host_impl);
+        EndTest();
       } break;
       default:
         NOTREACHED();
@@ -217,7 +197,7 @@ class LayerTreeHostCheckerImagingTestImplSideTree
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
     num_of_activations_++;
     if (num_of_activations_ == 2) {
-      VerifyUkmAndEndTest(host_impl);
+      EndTest();
     }
   }
 

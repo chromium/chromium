@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -24,13 +25,21 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 
 namespace {
 
-void ClearAllButFrameAncestors(
-    std::vector<network::mojom::ContentSecurityPolicyPtr>& csp) {
+void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
+  response_head->headers->RemoveHeader("Content-Security-Policy");
+  response_head->headers->RemoveHeader("Content-Security-Policy-Report-Only");
+
+  if (!response_head->parsed_headers)
+    return;
+
+  std::vector<network::mojom::ContentSecurityPolicyPtr>& csp =
+      response_head->parsed_headers->content_security_policy;
   std::vector<network::mojom::ContentSecurityPolicyPtr> cleared;
 
   for (auto& policy : csp) {
@@ -52,6 +61,14 @@ void ClearAllButFrameAncestors(
     if (raw_frame_ancestors == policy->raw_directives.end()) {
       DCHECK(false);
     } else {
+      cleared_policy->header->header_value =
+          "frame-ancestors " + raw_frame_ancestors->second;
+      response_head->headers->AddHeader(
+          cleared_policy->header->type ==
+                  network::mojom::ContentSecurityPolicyType::kEnforce
+              ? "Content-Security-Policy"
+              : "Content-Security-Policy-Report-Only",
+          cleared_policy->header->header_value);
       cleared_policy
           ->raw_directives[network::mojom::CSPDirectiveName::FrameAncestors] =
           std::move(raw_frame_ancestors->second);
@@ -102,35 +119,32 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   // Ignore CSP served on a PDF response. https://crbug.com/271452
   if (extension_id == extension_misc::kPdfExtensionId &&
       response_head->headers) {
-    response_head->headers->RemoveHeader("Content-Security-Policy");
-
-    if (response_head->parsed_headers) {
-      // We still want to honor the frame-ancestors directive in the
-      // AncestorThrottle.
-      ClearAllButFrameAncestors(
-          response_head->parsed_headers->content_security_policy);
-    }
+    // We still want to honor the frame-ancestors directive in the
+    // AncestorThrottle.
+    ClearAllButFrameAncestors(response_head);
   }
 
   MimeTypesHandler::ReportUsedHandler(extension_id);
 
-  std::string view_id = base::GenerateGUID();
-  // The string passed down to the original client with the response body.
-  std::string payload = view_id;
+  // TODO(mcnee): Could this id just be an int instead? This is only used
+  // internally.
+  const std::string stream_id = base::GenerateGUID();
 
   mojo::PendingRemote<network::mojom::URLLoader> dummy_new_loader;
-  ignore_result(dummy_new_loader.InitWithNewPipeAndPassReceiver());
+  std::ignore = dummy_new_loader.InitWithNewPipeAndPassReceiver();
   mojo::Remote<network::mojom::URLLoaderClient> new_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver =
       new_client.BindNewPipeAndPassReceiver();
 
   uint32_t data_pipe_size = 64U;
+  // The string passed down to the original client with the response body.
+  std::string payload;
   // Provide the MimeHandlerView code a chance to override the payload. This is
   // the case where the resource is handled by frame-based MimeHandlerView.
   *defer = extensions::MimeHandlerViewAttachHelper::
       OverrideBodyForInterceptedResponse(
-          frame_tree_node_id_, response_url, response_head->mime_type, view_id,
-          &payload, &data_pipe_size,
+          frame_tree_node_id_, response_url, response_head->mime_type,
+          stream_id, &payload, &data_pipe_size,
           base::BindOnce(
               &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
               weak_factory_.GetWeakPtr()));
@@ -146,8 +160,6 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
            producer_handle->WriteData(payload.c_str(), &len,
                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
 
-  new_client->OnStartLoadingResponseBody(std::move(consumer_handle));
-
   network::URLLoaderCompletionStatus status(net::OK);
   status.decoded_body_length = len;
   new_client->OnComplete(status);
@@ -156,7 +168,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   mojo::PendingReceiver<network::mojom::URLLoaderClient> original_client;
   delegate_->InterceptResponse(std::move(dummy_new_loader),
                                std::move(new_client_receiver), &original_loader,
-                               &original_client);
+                               &original_client, &consumer_handle);
 
   // Make a deep copy of URLResponseHead before passing it cross-thread.
   auto deep_copied_response = response_head->Clone();
@@ -174,6 +186,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->url_loader_client = std::move(original_client);
   transferrable_loader->head = std::move(deep_copied_response);
   transferrable_loader->head->intercepted_by_plugin = true;
+  transferrable_loader->body = std::move(consumer_handle);
 
   bool embedded =
       request_destination_ != network::mojom::RequestDestination::kDocument;
@@ -181,8 +194,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       FROM_HERE,
       base::BindOnce(
           &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
-          extension_id, view_id, embedded, frame_tree_node_id_,
-          -1 /* render_process_id */, -1 /* render_frame_id */,
+          extension_id, stream_id, embedded, frame_tree_node_id_,
           std::move(transferrable_loader), response_url));
 }
 

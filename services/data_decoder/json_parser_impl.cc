@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,15 @@ JsonParserImpl::JsonParserImpl() = default;
 
 JsonParserImpl::~JsonParserImpl() = default;
 
-void JsonParserImpl::Parse(const std::string& json, ParseCallback callback) {
-  base::JSONReader::ValueWithError ret =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  if (ret.value) {
-    std::move(callback).Run(std::move(ret.value), base::nullopt);
+void JsonParserImpl::Parse(const std::string& json,
+                           uint32_t options,
+                           ParseCallback callback) {
+  auto ret = base::JSONReader::ReadAndReturnValueWithError(json, options);
+  if (ret.has_value()) {
+    std::move(callback).Run(std::move(*ret), absl::nullopt);
   } else {
-    std::move(callback).Run(base::nullopt,
-                            base::make_optional(std::move(ret.error_message)));
+    std::move(callback).Run(
+        absl::nullopt, absl::make_optional(std::move(ret.error().message)));
   }
 }
 

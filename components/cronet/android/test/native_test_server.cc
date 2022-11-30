@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/test/test_support_android.h"
 #include "components/cronet/android/cronet_tests_jni_headers/NativeTestServer_jni.h"
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

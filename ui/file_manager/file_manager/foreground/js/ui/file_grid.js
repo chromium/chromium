@@ -1,29 +1,34 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {A11yAnnounce} from './a11y_announce.m.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
-// #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {FileTapHandler} from './file_tap_handler.m.js';
-// #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-// #import {DragSelector} from './drag_selector.m.js';
-// #import {FileType} from '../../../common/js/file_type.m.js';
-// #import {importer} from '../../../common/js/importer_common.m.js';
-// #import {filelist} from './file_table_list.m.js';
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-// #import {util, str} from '../../../common/js/util.m.js';
-// #import {isRTL} from 'chrome://resources/js/util.m.js';
-// #import {AsyncUtil} from '../../../common/js/async_util.m.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {Grid, GridSelectionController} from 'chrome://resources/js/cr/ui/grid.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {isRTL} from 'chrome://resources/js/util.js';
+
+import {AsyncUtil} from '../../../common/js/async_util.js';
+import {FileType} from '../../../common/js/file_type.js';
+import {util} from '../../../common/js/util.js';
+import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
+import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupValue} from '../file_list_model.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import {MetadataModel} from '../metadata/metadata_model.js';
+
+import {A11yAnnounce} from './a11y_announce.js';
+import {DragSelector} from './drag_selector.js';
+import {filelist} from './file_table_list.js';
+import {FileTapHandler} from './file_tap_handler.js';
+import {Grid, GridSelectionController} from './grid.js';
+import {List} from './list.js';
+import {ListItem} from './list_item.js';
+import {ListSelectionModel} from './list_selection_model.js';
+
+
+// Align with CSS .grid-title.group-by-modificationTime.
+const MODIFICATION_TIME_GROUP_HEADING_HEIGHT = 57;
+// Align with CSS .grid-title.group-by-isDirectory.
+const DIRECTORY_GROUP_HEADING_HEIGHT = 40;
 
 /**
  * FileGrid constructor.
@@ -31,7 +36,7 @@
  * Represents grid for the Grid View in the File Manager.
  */
 
-/* #export */ class FileGrid extends cr.ui.Grid {
+export class FileGrid extends Grid {
   constructor() {
     super();
 
@@ -48,29 +53,16 @@
     this.endIndex_ = 0;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.beforeFiller_ = null;
 
     /**
-     * Inherited from cr.ui.Grid <- cr.ui.List
+     * Inherited from Grid <- List
      * @private {?Element}
      * */
     this.afterFiller_ = null;
-
-    /**
-     * Reflects the visibility of import status in the UI.  Assumption: import
-     * status is only enabled in import-eligible locations.  See
-     * ImportController#onDirectoryChanged.  For this reason, the code in this
-     * class checks if import status is visible, and if so, assumes that all the
-     * files are in an import-eligible location.
-     * TODO(kenobi): Clean this up once import status is queryable from
-     * metadata.
-     *
-     * @private {boolean}
-     */
-    this.importStatusVisible_ = true;
 
     /** @private {?MetadataModel} */
     this.metadataModel_ = null;
@@ -80,9 +72,6 @@
 
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
-
-    /** @private {?importerHistoryInterfaces.HistoryLoader} */
-    this.historyLoader_ = null;
 
     /** @private {?AsyncUtil.RateLimiter} */
     this.relayoutRateLimiter_ = null;
@@ -101,10 +90,10 @@
 
   get dataModel() {
     if (!this.dataModelDescriptor_) {
-      // We get the property descriptor for dataModel from cr.ui.List, because
-      // cr.ui.Grid doesn't have its own descriptor.
+      // We get the property descriptor for dataModel from List, because
+      // Grid doesn't have its own descriptor.
       this.dataModelDescriptor_ =
-          Object.getOwnPropertyDescriptor(cr.ui.List.prototype, 'dataModel');
+          Object.getOwnPropertyDescriptor(List.prototype, 'dataModel');
     }
     return this.dataModelDescriptor_.get.call(this);
   }
@@ -114,11 +103,13 @@
     // listener for the current data model.
     if (this.dataModel) {
       this.dataModel.removeEventListener('splice', this.onSplice_.bind(this));
+      this.dataModel.removeEventListener('sorted', this.onSorted_.bind(this));
     }
     this.dataModelDescriptor_.set.call(this, model);
     if (this.dataModel) {
       this.dataModel.addEventListener('splice', this.onSplice_.bind(this));
       this.classList.toggle('image-dominant', this.dataModel.isImageDominant());
+      this.dataModel.addEventListener('sorted', this.onSorted_.bind(this));
     }
   }
 
@@ -127,12 +118,11 @@
    * @param {!Element} element The grid to decorate.
    * @param {!MetadataModel} metadataModel File system metadata.
    * @param {!VolumeManager} volumeManager Volume manager instance.
-   * @param {!importerHistoryInterfaces.HistoryLoader} historyLoader
    * @param {!A11yAnnounce} a11y
    */
-  static decorate(element, metadataModel, volumeManager, historyLoader, a11y) {
-    if (cr.ui.Grid.decorate) {
-      cr.ui.Grid.decorate(element);
+  static decorate(element, metadataModel, volumeManager, a11y) {
+    if (Grid.decorate) {
+      Grid.decorate(element);
     }
     const self = /** @type {!FileGrid} */ (element);
     self.__proto__ = FileGrid.prototype;
@@ -140,7 +130,6 @@
     self.setAttribute('aria-describedby', 'more-actions-info');
     self.metadataModel_ = metadataModel;
     self.volumeManager_ = volumeManager;
-    self.historyLoader_ = historyLoader;
     self.a11y = a11y;
 
     // Force the list's ending spacer to be tall enough to allow overscroll.
@@ -152,7 +141,6 @@
     self.listThumbnailLoader_ = null;
     self.beginIndex_ = 0;
     self.endIndex_ = 0;
-    self.importStatusVisible_ = true;
     self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
 
     self.itemConstructor = function(entry) {
@@ -264,70 +252,13 @@
    * @override
    */
   mergeItems(beginIndex, endIndex) {
-    cr.ui.List.prototype.mergeItems.call(this, beginIndex, endIndex);
-
-    const afterFiller = this.afterFiller_;
-    const columns = this.columns;
-    let previousTitle = '';
-
-    for (let item = this.beforeFiller_.nextSibling; item !== afterFiller;) {
-      const next = item.nextSibling;
-      if (isSpacer(item)) {
-        // Spacer found on a place it mustn't be.
-        this.removeChild(item);
-        item = next;
-        continue;
-      }
-      const index = item.listIndex;
-      const nextIndex = index + 1;
-
-      const entry = this.dataModel.item(index);
-      if (entry && util.isFilesNg()) {
-        if (entry.isDirectory && previousTitle !== 'dir') {
-          // For first Directory we add a title div before the element.
-          const title = document.createElement('div');
-          title.innerText = str('GRID_VIEW_FOLDERS_TITLE');
-          title.classList.add('grid-title', 'folders');
-          this.insertBefore(title, item);
-          previousTitle = 'dir';
-        } else if (!entry.isDirectory && previousTitle !== 'file') {
-          // For first File we add a title div before the element.
-          const title = document.createElement('div');
-          title.innerText = str('GRID_VIEW_FILES_TITLE');
-          title.classList.add('grid-title', 'files');
-          this.insertBefore(title, item);
-          previousTitle = 'file';
-        }
-      }
-
-      // Invisible pinned item could be outside of the
-      // [beginIndex, endIndex). Ignore it.
-      if (index >= beginIndex && nextIndex < endIndex &&
-          (nextIndex < this.dataModel.getFolderCount() ?
-               nextIndex % columns === 0 :
-               (nextIndex - this.dataModel.getFolderCount()) % columns === 0)) {
-        const isFolderSpacer = nextIndex === this.dataModel.getFolderCount();
-        if (isSpacer(next)) {
-          // Leave the spacer on its place.
-          next.classList.toggle('folder-spacer', isFolderSpacer);
-          item = next.nextSibling;
-        } else {
-          // Insert spacer.
-          const spacer = this.ownerDocument.createElement('div');
-          spacer.className = 'spacer';
-          spacer.classList.toggle('folder-spacer', isFolderSpacer);
-          this.insertBefore(spacer, next);
-          item = next;
-        }
-      } else {
-        item = next;
-      }
-    }
-
-    function isSpacer(child) {
-      return child.classList.contains('spacer') &&
-          child !== afterFiller;  // Must not be removed.
-    }
+    List.prototype.mergeItems.call(this, beginIndex, endIndex);
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot =
+        fileListModel ? fileListModel.getGroupBySnapshot() : [];
+    const startIndexToGroupLabel = new Map(groupBySnapshot.map(group => {
+      return [group.startIndex, group];
+    }));
 
     // Make sure that grid item's selected attribute is updated just after the
     // mergeItems operation is done. This prevents shadow of selected grid items
@@ -340,6 +271,16 @@
       const isSelected = this.selectionModel.getIndexSelected(i);
       if (item.selected !== isSelected) {
         item.selected = isSelected;
+      }
+      // Check if index i is the start of a new group.
+      if (startIndexToGroupLabel.has(i)) {
+        // For first item in each group, we add a title div before the element.
+        const title = document.createElement('div');
+        title.setAttribute('role', 'heading');
+        title.innerText = startIndexToGroupLabel.get(i).label;
+        title.classList.add(
+            'grid-title', `group-by-${fileListModel.groupByField}`);
+        this.insertBefore(title, item);
       }
     }
 
@@ -355,28 +296,58 @@
    * @override
    */
   getItemTop(index) {
-    if (index < this.dataModel.getFolderCount()) {
-      return Math.floor(index / this.columns) * this.getFolderItemHeight_();
-    }
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
-    const folderRows = this.getFolderRowCount();
-    const indexInFiles = index - this.dataModel.getFolderCount();
-    return folderRows * this.getFolderItemHeight_() +
-        (folderRows > 0 ? this.getSeparatorHeight_() : 0) +
-        Math.floor(indexInFiles / this.columns) * this.getFileItemHeight_();
+    let top = 0;
+    let totalItemCount = 0;
+    for (const group of groupBySnapshot) {
+      if (index <= group.endIndex) {
+        // The index falls into the current group. Calculates how many rows
+        // we have in the current group up until this index.
+        const indexInCurGroup = index - totalItemCount;
+        const rowsInCurGroup = Math.floor(indexInCurGroup / this.columns);
+        top += (rowsInCurGroup > 0 ? this.getGroupHeadingHeight_() : 0) +
+            rowsInCurGroup * this.getGroupItemHeight_(group.group);
+        break;
+      } else {
+        // The index is not in the current group. Add all row heights in this
+        // group to the final result.
+        const groupItemCount = group.endIndex - group.startIndex + 1;
+        const groupRowCount = Math.ceil(groupItemCount / this.columns);
+        top += this.getGroupHeadingHeight_() +
+            groupRowCount * this.getGroupItemHeight_(group.group);
+        totalItemCount += groupItemCount;
+      }
+    }
+    return top;
   }
 
   /**
    * @override
    */
   getItemRow(index) {
-    if (index < this.dataModel.getFolderCount()) {
-      return Math.floor(index / this.columns);
-    }
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
-    const folderRows = this.getFolderRowCount();
-    const indexInFiles = index - this.dataModel.getFolderCount();
-    return folderRows + Math.floor(indexInFiles / this.columns);
+    let rows = 0;
+    let totalItemCount = 0;
+    for (const group of groupBySnapshot) {
+      if (index <= group.endIndex) {
+        // The index falls into the current group. Calculates how many rows
+        // we have in the current group up until this index.
+        const indexInCurGroup = index - totalItemCount;
+        rows += Math.floor(indexInCurGroup / this.columns);
+        break;
+      } else {
+        // The index is not in the current group. Add all rows in this
+        // group to the final result.
+        const groupItemCount = group.endIndex - group.startIndex + 1;
+        rows += Math.ceil(groupItemCount / this.columns);
+        totalItemCount += groupItemCount;
+      }
+    }
+    return rows;
   }
 
   /**
@@ -384,12 +355,21 @@
    * @param {number} index The item index.
    */
   getItemColumn(index) {
-    if (index < this.dataModel.getFolderCount()) {
-      return index % this.columns;
-    }
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
-    const indexInFiles = index - this.dataModel.getFolderCount();
-    return indexInFiles % this.columns;
+    let totalItemCount = 0;
+    for (const group of groupBySnapshot) {
+      if (index <= group.endIndex) {
+        // The index falls into the current group. Calculates the column index
+        // with the remaining index in this group.
+        const indexInCurGroup = index - totalItemCount;
+        return indexInCurGroup % this.columns;
+      }
+      const groupItemCount = group.endIndex - group.startIndex + 1;
+      totalItemCount += groupItemCount;
+    }
+    return 0;
   }
 
   /**
@@ -402,27 +382,53 @@
     if (row < 0 || column < 0 || column >= this.columns) {
       return -1;
     }
-    const folderCount = this.dataModel.getFolderCount();
-    const folderRows = this.getFolderRowCount();
-    let index;
-    if (row < folderRows) {
-      index = row * this.columns + column;
-      return index < folderCount ? index : -1;
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+
+    let curRow = 0;
+    let index = 0;
+    for (const group of groupBySnapshot) {
+      const groupItemCount = group.endIndex - group.startIndex + 1;
+      const groupRowCount = Math.ceil(groupItemCount / this.columns);
+      if (row < curRow + groupRowCount) {
+        // The row falls into the current group. Calculate the index based on
+        // the column value and return.
+        const isLastRowInGroup = row === curRow + groupRowCount - 1;
+        const itemCountInLastRow =
+            groupItemCount - (groupRowCount - 1) * this.columns;
+        if (isLastRowInGroup && column >= itemCountInLastRow) {
+          // column is larger than the item count in this row, return -1.
+          // This happens when we try to find the index for the above/below
+          // items. For example:
+          // --------------------------------------
+          // item 0 item 1 item 2
+          // item 3 (end of group)
+          // item 4 item 5 (end of group)
+          // --------------------------------------
+          // * To find above index for item 5, we pass (row - 1, col), col is
+          //   not existed in the above row.
+          // * To find the below index for item 2, we pass (row + 1, col), col
+          //   is not existed in the below row.
+          return -1;
+        }
+        return index + (row - curRow) * this.columns + column;
+      }
+      curRow += groupRowCount;
+      index = group.endIndex + 1;
     }
-    index = folderCount + (row - folderRows) * this.columns + column;
-    return index < this.dataModel.length ? index : -1;
+    // `row` index is larger than the last row, return -1.
+    return -1;
   }
 
   /**
    * @override
    */
   getFirstItemInRow(row) {
-    const folderRows = this.getFolderRowCount();
-    if (row < folderRows) {
-      return row * this.columns;
+    if (row < 0) {
+      return 0;
     }
-
-    return this.dataModel.getFolderCount() + (row - folderRows) * this.columns;
+    const index = this.getItemIndex(row, 0);
+    return index === -1 ? this.dataModel.length : index;
   }
 
   /**
@@ -434,9 +440,7 @@
       return;
     }
 
-    const itemHeight = index < this.dataModel.getFolderCount() ?
-        this.getFolderItemHeight_() :
-        this.getFileItemHeight_();
+    const itemHeight = this.getItemHeightByIndex_(index);
     const scrollTop = this.scrollTop;
     const top = this.getItemTop(index);
     const clientHeight = this.clientHeight;
@@ -476,15 +480,21 @@
    * @override
    */
   getItemsInViewPort(scrollTop, clientHeight) {
-    const beginRow = this.getRowForListOffset_(scrollTop);
-    const endRow = this.getRowForListOffset_(scrollTop + clientHeight - 1) + 1;
-    const beginIndex = this.getFirstItemInRow(beginRow);
+    // Render 1 more row above to make the scrolling more smooth.
+    const beginRow = this.getRowForListOffset_(scrollTop) - 1;
+    // Render 1 more rows below, +2 here because "endIndex" is the first item
+    // of the row, in order to render the whole +1 row, we need to make sure
+    // the "endIndex" is the first item of +2 row.
+    const endRow = this.getRowForListOffset_(scrollTop + clientHeight - 1) + 2;
+    const beginIndex = Math.max(0, this.getFirstItemInRow(beginRow));
     const endIndex =
         Math.min(this.getFirstItemInRow(endRow), this.dataModel.length);
     const result = {
-      first: beginIndex,
-      length: endIndex - beginIndex,
-      last: endIndex - 1
+      // beginIndex + 1 here because "first" will be -1 when it's being
+      // consumed in redraw() method in the parent class.
+      first: beginIndex + 1,
+      length: endIndex - beginIndex - 1,
+      last: endIndex - 1,
     };
     return result;
   }
@@ -493,35 +503,36 @@
    * @override
    */
   getAfterFillerHeight(lastIndex) {
-    const folderRows = this.getFolderRowCount();
-    const fileRows = this.getFileRowCount();
-    const row = this.getItemRow(lastIndex - 1);
-    if (row < folderRows) {
-      let fillerHeight = (folderRows - 1 - row) * this.getFolderItemHeight_() +
-          fileRows * this.getFileItemHeight_();
-      if (fileRows > 0) {
-        fillerHeight += this.getSeparatorHeight_();
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    // Excluding the current index, because [firstIndex, lastIndex) is used
+    // in mergeItems().
+    const index = lastIndex - 1;
+
+    let afterFillerHeight = 0;
+    let totalItemCount = 0;
+    let shouldAdd = false;
+    // Find the group of "index" and accumulate the height after that group.
+    for (const group of groupBySnapshot) {
+      const groupItemCount = group.endIndex - group.startIndex + 1;
+      const groupRowCount = Math.ceil(groupItemCount / this.columns);
+      if (shouldAdd) {
+        afterFillerHeight += this.getGroupHeadingHeight_() +
+            groupRowCount * this.getGroupItemHeight_(group.group);
+      } else if (index <= group.endIndex) {
+        // index falls into the current group. Starting from this group we need
+        // to add all remaining group heights into the final result.
+        const indexInCurGroup = Math.max(0, index - totalItemCount);
+        // For current group, we need to add the row heights starting from the
+        // row which current index locates.
+        afterFillerHeight +=
+            (groupRowCount - Math.floor(indexInCurGroup / this.columns)) *
+            this.getGroupItemHeight_(group.group);
+        shouldAdd = true;
       }
-      return fillerHeight;
+      totalItemCount += groupItemCount;
     }
-    const rowInFiles = row - folderRows;
-    return (fileRows - 1 - rowInFiles) * this.getFileItemHeight_();
-  }
-
-  /**
-   * Returns the number of rows in folders section.
-   * @return {number}
-   */
-  getFolderRowCount() {
-    return Math.ceil(this.dataModel.getFolderCount() / this.columns);
-  }
-
-  /**
-   * Returns the number of rows in files section.
-   * @return {number}
-   */
-  getFileRowCount() {
-    return Math.ceil(this.dataModel.getFileCount() / this.columns);
+    return afterFillerHeight;
   }
 
   /**
@@ -529,7 +540,9 @@
    * @return {number} The height of folder items.
    */
   getFolderItemHeight_() {
-    return 44;  // TODO(fukino): Read from DOM and cache it.
+    // Align with CSS value for .thumbnail-item.directory: height + margin +
+    // border.
+    return 40 + this.getItemMarginTop_() + 2;
   }
 
   /**
@@ -537,7 +550,67 @@
    * @return {number} The height of file items.
    */
   getFileItemHeight_() {
-    return 184;  // TODO(fukino): Read from DOM and cache it.
+    // Align with CSS value for .thumbnail-item: height + margin + border.
+    return 160 + this.getItemMarginTop_() + 2;
+  }
+
+  /**
+   * Returns the height of group heading.
+   * @return {number}
+   * @private
+   */
+  getGroupHeadingHeight_() {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    switch (fileListModel.groupByField) {
+      case GROUP_BY_FIELD_DIRECTORY:
+        return DIRECTORY_GROUP_HEADING_HEIGHT;
+      case GROUP_BY_FIELD_MODIFICATION_TIME:
+        return MODIFICATION_TIME_GROUP_HEADING_HEIGHT;
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * Returns the height of the item in the group based on the group value.
+   * @param {GroupValue|undefined} groupValue
+   * @return {number}
+   * @private
+   */
+  getGroupItemHeight_(groupValue) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    switch (fileListModel.groupByField) {
+      case GROUP_BY_FIELD_DIRECTORY:
+        return groupValue === true ? this.getFolderItemHeight_() :
+                                     this.getFileItemHeight_();
+      case GROUP_BY_FIELD_MODIFICATION_TIME:
+        return this.getFileItemHeight_();
+      default:
+        return this.getFileItemHeight_();
+    }
+  }
+
+  /**
+   * Returns the height of the item specified by the index.
+   * @param {number} index
+   * @return {number}
+   * @private
+   */
+  getItemHeightByIndex_(index) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    if (fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      return this.getFileItemHeight_();
+    }
+
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
+    for (const group of groupBySnapshot) {
+      if (index <= group.endIndex) {
+        // The index falls into the current group, return group item height
+        // by its group value.
+        return this.getGroupItemHeight_(group.group);
+      }
+    }
+    return this.getFileItemHeight_();
   }
 
   /**
@@ -545,7 +618,8 @@
    * @return {number}
    */
   getItemWidth_() {
-    return 184;  // TODO(fukino): Read from DOM and cache it.
+    // Align with CSS value for .thumbnail-item: width + margin + border.
+    return 180 + this.getItemMarginLeft_() + 2;
   }
 
   /**
@@ -553,7 +627,8 @@
    * @return {number};
    */
   getItemMarginTop_() {
-    return 4;  // TODO(fukino): Read from DOM and cache it.
+    // Align with CSS value for .thumbnail-item: margin-top.
+    return 16;
   }
 
   /**
@@ -561,15 +636,8 @@
    * @return {number}
    */
   getItemMarginLeft_() {
-    return 4;  // TODO(fukino): Read from DOM and cache it.
-  }
-
-  /**
-   * Returns the height of the separator which separates folders and files.
-   * @return {number} The height of the separator.
-   */
-  getSeparatorHeight_() {
-    return 5;  // TODO(fukino): Read from DOM and cache it.
+    // Align with CSS value for .thumbnail-item: margin-inline-start.
+    return 16;
   }
 
   /**
@@ -580,16 +648,34 @@
    */
   getRowForListOffset_(offset) {
     const innerOffset = Math.max(0, offset - this.paddingTop_);
-    const folderRows = this.getFolderRowCount();
-    if (innerOffset < folderRows * this.getFolderItemHeight_()) {
-      return Math.floor(innerOffset / this.getFolderItemHeight_());
-    }
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
-    let offsetInFiles = innerOffset - folderRows * this.getFolderItemHeight_();
-    if (folderRows > 0) {
-      offsetInFiles = Math.max(0, offsetInFiles - this.getSeparatorHeight_());
+    // Loop through all the groups, calculate the accumulated height for all
+    // items (item height + group heading height), until the total height
+    // reaches "offset", then we know how many items can be included in this
+    // offset.
+    let currentHeight = 0;
+    let curRow = 0;
+    for (const group of groupBySnapshot) {
+      const groupItemCount = group.endIndex - group.startIndex + 1;
+      const groupRowCount = Math.ceil(groupItemCount / this.columns);
+      const groupHeight = this.getGroupHeadingHeight_() +
+          groupRowCount * this.getGroupItemHeight_(group.group);
+
+      if (currentHeight + groupHeight > innerOffset) {
+        // Current offset falls into the current group. Calculates how many
+        // rows in the offset within the group.
+        const offsetInCurGroup = Math.max(
+            0, innerOffset - currentHeight - this.getGroupHeadingHeight_());
+        return curRow +
+            Math.floor(
+                offsetInCurGroup / this.getGroupItemHeight_(group.group));
+      }
+      currentHeight += groupHeight;
+      curRow += groupRowCount;
     }
-    return folderRows + Math.floor(offsetInFiles / this.getFileItemHeight_());
+    return this.getItemRow(fileListModel.length - 1);
   }
 
   /**
@@ -597,6 +683,16 @@
    */
   createSelectionController(sm) {
     return new FileGridSelectionController(assert(sm), this);
+  }
+
+  updateGroupHeading_() {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    if (fileListModel &&
+        fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      // TODO(crbug.com/1353650): find a way to update heading instead of
+      // redraw.
+      this.redraw();
+    }
   }
 
   /**
@@ -618,7 +714,9 @@
 
       this.decorateThumbnailBox_(assert(listItem), entry);
       this.updateSharedStatus_(assert(listItem), entry);
+      this.updateInlineSyncStatus_(assert(listItem), entry);
     }
+    this.updateGroupHeading_();
   }
 
   /**
@@ -637,12 +735,12 @@
     this.columns = 0;
     this.redraw();
     this.endBatchUpdates();
-    cr.dispatchSimpleEvent(this, 'relayout');
+    dispatchSimpleEvent(this, 'relayout');
   }
 
   /**
    * Decorates thumbnail.
-   * @param {cr.ui.ListItem} li List item.
+   * @param {ListItem} li List item.
    * @param {!Entry} entry Entry to render a thumbnail for.
    * @private
    */
@@ -656,34 +754,18 @@
     frame.className = 'thumbnail-frame';
     li.appendChild(frame);
 
+    if (util.isInlineSyncStatusEnabled()) {
+      const syncStatus = li.ownerDocument.createElement('div');
+      syncStatus.className = 'sync-status';
+      frame.appendChild(syncStatus);
+    }
+
     const box = li.ownerDocument.createElement('div');
     box.classList.add('img-container', 'no-thumbnail');
     frame.appendChild(box);
     if (entry) {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
-
-    if (!util.isFilesNg()) {
-      const shield = li.ownerDocument.createElement('div');
-      shield.className = 'shield';
-      frame.appendChild(shield);
-    }
-
-    const isDirectory = entry && entry.isDirectory;
-    if (!isDirectory) {
-      if (!util.isFilesNg()) {
-        const activeCheckmark = li.ownerDocument.createElement('div');
-        activeCheckmark.className = 'checkmark active';
-        frame.appendChild(activeCheckmark);
-        const inactiveCheckmark = li.ownerDocument.createElement('div');
-        inactiveCheckmark.className = 'checkmark inactive';
-        frame.appendChild(inactiveCheckmark);
-      }
-    }
-
-    const badge = li.ownerDocument.createElement('div');
-    badge.className = 'badge';
-    frame.appendChild(badge);
 
     const bottom = li.ownerDocument.createElement('div');
     bottom.className = 'thumbnail-bottom';
@@ -695,11 +777,9 @@
         li.ownerDocument, entry, locationInfo, mimeType);
 
     // For FilesNg we add the checkmark in the same location.
-    if (isDirectory || util.isFilesNg()) {
-      const checkmark = li.ownerDocument.createElement('div');
-      checkmark.className = 'detail-checkmark';
-      detailIcon.appendChild(checkmark);
-    }
+    const checkmark = li.ownerDocument.createElement('div');
+    checkmark.className = 'detail-checkmark';
+    detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
     bottom.appendChild(
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
@@ -707,6 +787,7 @@
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
 
     this.updateSharedStatus_(li, entry);
+    this.updateInlineSyncStatus_(li, entry);
   }
 
   /**
@@ -720,11 +801,6 @@
   decorateThumbnailBox_(li, entry) {
     const box =
         assertInstanceof(li.querySelector('.img-container'), HTMLDivElement);
-    if (this.importStatusVisible_ && importer.isEligibleType(entry)) {
-      this.historyLoader_.getHistory().then(FileGrid.applyHistoryBadges_.bind(
-          null,
-          /** @type {!FileEntry} */ (entry), box));
-    }
 
     if (entry.isDirectory) {
       this.setGenericThumbnail_(box, entry);
@@ -747,12 +823,6 @@
     } else {
       this.setGenericThumbnail_(box, entry, mimeType);
       li.classList.toggle('thumbnail-loaded', false);
-    }
-
-    if (!util.isFilesNg()) {
-      li.classList.toggle(
-          'can-hide-filename',
-          FileType.isImage(entry, mimeType) || FileType.isRaw(entry, mimeType));
     }
   }
 
@@ -780,11 +850,22 @@
   }
 
   /**
-   * Sets the visibility of the cloud import status column.
-   * @param {boolean} visible
+   * Update sync status icon for file or directory entry.
+   * @param {!HTMLLIElement} li The grid item.
+   * @param {!Entry} entry File entry for the grid item.
+   * @private
    */
-  setImportStatusVisible(visible) {
-    this.importStatusVisible_ = visible;
+  updateInlineSyncStatus_(li, entry) {
+    if (!util.isInlineSyncStatusEnabled()) {
+      return;
+    }
+    const frame = li.querySelector('.thumbnail-frame');
+    const syncStatus =
+        this.metadataModel_.getCache([entry], ['syncStatus'])[0].syncStatus;
+    if (frame && syncStatus) {
+      frame.setAttribute('data-sync-status', syncStatus);
+      // TODO(msalomao): set sync status aria-label.
+    }
   }
 
   /**
@@ -802,6 +883,21 @@
       return;
     }
     this.classList.toggle('image-dominant', this.dataModel.isImageDominant());
+  }
+
+  /**
+   * @private
+   */
+  onSorted_() {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const hasGroupHeadingAfterSort = fileListModel.shouldShowGroupHeading();
+    // Sort doesn't trigger redraw sometimes, e.g. if we sort by Name for now,
+    // then we sort by time, if the list order doesn't change, no permuted event
+    // is triggered, thus no redraw is triggered. In this scenario, we need to
+    // manually trigger a redraw to remove/add the group heading.
+    if (hasGroupHeadingAfterSort !== fileListModel.hasGroupHeadingBeforeSort) {
+      this.redraw();
+    }
   }
 
   /**
@@ -863,52 +959,12 @@
     if (entry.isDirectory) {
       box.setAttribute('generic-thumbnail', 'folder');
     } else {
-      if (!util.isFilesNg()) {
-        const mediaType = FileType.getMediaType(entry);
-        box.setAttribute('generic-thumbnail', mediaType);
-      } else {
-        box.classList.toggle('no-thumbnail', true);
-        const locationInfo = this.volumeManager_.getLocationInfo(entry);
-        const icon =
-            FileType.getIcon(entry, opt_mimeType, locationInfo.rootType);
-        box.setAttribute('generic-thumbnail', icon);
-      }
+      box.classList.toggle('no-thumbnail', true);
+      const locationInfo = this.volumeManager_.getLocationInfo(entry);
+      const rootType = locationInfo && locationInfo.rootType || undefined;
+      const icon = FileType.getIcon(entry, opt_mimeType, rootType);
+      box.setAttribute('generic-thumbnail', icon);
     }
-  }
-
-  /**
-   * Applies cloud import history badges as appropriate for the Entry.
-   *
-   * @param {!FileEntry} entry
-   * @param {Element} box Box to decorate.
-   * @param {!importerHistoryInterfaces.ImportHistory} history
-   *
-   * @private
-   */
-  static applyHistoryBadges_(entry, box, history) {
-    history.wasImported(entry, importer.Destination.GOOGLE_DRIVE)
-        .then(imported => {
-          if (imported) {
-            // TODO(smckay): update badges when history changes
-            // "box" is currently the sibling of the elemement
-            // we want to style. So rather than employing
-            // a possibly-fragile sibling selector we just
-            // plop the imported class on the parent of both.
-            box.parentElement.classList.add('imported');
-          } else {
-            history.wasCopied(entry, importer.Destination.GOOGLE_DRIVE)
-                .then(copied => {
-                  if (copied) {
-                    // TODO(smckay): update badges when history changes
-                    // "box" is currently the sibling of the elemement
-                    // we want to style. So rather than employing
-                    // a possibly-fragile sibling selector we just
-                    // plop the imported class on the parent of both.
-                    box.parentElement.classList.add('copied');
-                  }
-                });
-          }
-        });
   }
 
   /**
@@ -939,47 +995,64 @@
   /**
    * Returns the index of row corresponding to the given y position.
    *
-   * If the reverse is false, this returns index of the first row in which
+   * If `isStart` is true, this returns index of the first row in which
    * bottom of grid items is greater than or equal to y. Otherwise, this returns
    * index of the last row in which top of grid items is less than or equal to
    * y.
    * @param {number} y
-   * @param {boolean} reverse
+   * @param {boolean} isStart
    * @return {number}
    * @private
    */
-  getHitRowIndex_(y, reverse) {
-    const folderRows = this.getFolderRowCount();
-    const folderHeight = this.getFolderItemHeight_();
-    const fileHeight = this.getFileItemHeight_();
+  getHitRowIndex_(y, isStart) {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    const groupBySnapshot = fileListModel.getGroupBySnapshot();
 
-    if (y < folderHeight * folderRows) {
-      const shift = reverse ? -this.getItemMarginTop_() : 0;
-      return Math.floor((y + shift) / folderHeight);
+    let currentHeight = 0;
+    let curRow = 0;
+    const shift = isStart ? 0 : -this.getItemMarginTop_();
+    const yAfterShift = y + shift;
+    for (const group of groupBySnapshot) {
+      const groupItemCount = group.endIndex - group.startIndex + 1;
+      const groupRowCount = Math.ceil(groupItemCount / this.columns);
+      const groupHeight = this.getGroupHeadingHeight_() +
+          groupRowCount * this.getGroupItemHeight_(group.group);
+      if (yAfterShift < currentHeight + groupHeight) {
+        // The y falls into the current group.
+        const yInCurGroup =
+            yAfterShift - currentHeight - this.getGroupHeadingHeight_();
+        if (yInCurGroup < 0) {
+          // The remaining y in this group can't cover the current group
+          // heading height.
+          return isStart ? curRow : curRow - 1;
+        }
+        return Math.min(
+            curRow + groupRowCount - 1,
+            curRow +
+                Math.floor(
+                    yInCurGroup / this.getGroupItemHeight_(group.group)));
+      }
+      currentHeight += groupHeight;
+      curRow += groupRowCount;
     }
-    let yInFiles = y - folderHeight * folderRows;
-    if (folderRows > 0) {
-      yInFiles = Math.max(0, yInFiles - this.getSeparatorHeight_());
-    }
-    const shift = reverse ? -this.getItemMarginTop_() : 0;
-    return folderRows + Math.floor((yInFiles + shift) / fileHeight);
+    return curRow;
   }
 
   /**
    * Returns the index of column corresponding to the given x position.
    *
-   * If the reverse is false, this returns index of the first column in which
+   * If `isStart` is true, this returns index of the first column in which
    * left of grid items is greater than or equal to x. Otherwise, this returns
    * index of the last column in which right of grid items is less than or equal
    * to x.
    * @param {number} x
-   * @param {boolean} reverse
+   * @param {boolean} isStart
    * @return {number}
    * @private
    */
-  getHitColumnIndex_(x, reverse) {
+  getHitColumnIndex_(x, isStart) {
     const itemWidth = this.getItemWidth_();
-    const shift = reverse ? -this.getItemMarginLeft_() : 0;
+    const shift = isStart ? 0 : -this.getItemMarginLeft_();
     return Math.floor((x + shift) / itemWidth);
   }
 
@@ -1003,10 +1076,10 @@
     const top = Math.max(0, y - this.paddingTop_);
     const bottom = top + (opt_height ? opt_height - 1 : 0);
 
-    const firstRow = this.getHitRowIndex_(top, false);
-    const lastRow = this.getHitRowIndex_(bottom, true);
-    const firstColumn = this.getHitColumnIndex_(startX, false);
-    const lastColumn = this.getHitColumnIndex_(endX, true);
+    const firstRow = this.getHitRowIndex_(top, /* isStart= */ true);
+    const lastRow = this.getHitRowIndex_(bottom, /* isStart= */ false);
+    const firstColumn = this.getHitColumnIndex_(startX, /* isStart= */ true);
+    const lastColumn = this.getHitColumnIndex_(endX, /* isStart= */ false);
 
     for (let row = firstRow; row <= lastRow; row++) {
       for (let col = firstColumn; col <= lastColumn; col++) {
@@ -1026,7 +1099,7 @@
  */
 FileGrid.GridSize = 180;  // px
 
-FileGrid.Item = class extends cr.ui.ListItem {
+FileGrid.Item = class extends ListItem {
   constructor() {
     super();
     throw new Error('Use FileGrid.Item.decorate');
@@ -1040,7 +1113,7 @@ FileGrid.Item = class extends cr.ui.ListItem {
   }
 
   set label(newLabel) {
-    // no-op setter. cr.ui.List calls this setter but Files app doesn't need it.
+    // no-op setter. List calls this setter but Files app doesn't need it.
   }
 
   /**
@@ -1062,12 +1135,11 @@ FileGrid.Item = class extends cr.ui.ListItem {
 /**
  * Selection controller for the file grid.
  */
-/* #export */ class FileGridSelectionController extends
-    cr.ui.GridSelectionController {
+export class FileGridSelectionController extends GridSelectionController {
   /**
-   * @param {!cr.ui.ListSelectionModel} selectionModel The selection model to
+   * @param {!ListSelectionModel} selectionModel The selection model to
    *     interact with.
-   * @param {!cr.ui.Grid} grid The grid to interact with.
+   * @param {!Grid} grid The grid to interact with.
    */
   constructor(selectionModel, grid) {
     super(selectionModel, grid);
@@ -1116,9 +1188,24 @@ FileGrid.Item = class extends cr.ui.ListItem {
     const col = grid.getItemColumn(index);
     const nextIndex = grid.getItemIndex(row + 1, col);
     if (nextIndex === -1) {
-      return row + 1 < grid.getFolderRowCount() ?
-          grid.dataModel.getFolderCount() - 1 :
-          grid.dataModel.length - 1;
+      // The row (index `row + 1`) doesn't exist or doesn't have the enough
+      // columns to get the column (index `col`), and `row + 1` must be the
+      // last row of the group. We just need to return the last index of that
+      // group.
+      const fileListModel = /** @type {FileListModel} */ (grid.dataModel);
+      const groupBySnapshot = fileListModel.getGroupBySnapshot();
+      let curRow = 0;
+      for (const group of groupBySnapshot) {
+        const groupItemCount = group.endIndex - group.startIndex + 1;
+        const groupRowCount = Math.ceil(groupItemCount / grid.columns);
+        if (row + 1 < curRow + groupRowCount) {
+          // The row falls into the current group. Return the last index in the
+          // current group.
+          return group.endIndex;
+        }
+        curRow += groupRowCount;
+      }
+      return grid.dataModel.length - 1;
     }
     return nextIndex;
   }
@@ -1134,15 +1221,16 @@ FileGrid.Item = class extends cr.ui.ListItem {
 
     const grid = /** @type {!FileGrid} */ (this.grid_);
     const row = grid.getItemRow(index);
+    // First row, no items above, just return the first index.
     if (row - 1 < 0) {
       return 0;
     }
     const col = grid.getItemColumn(index);
     const nextIndex = grid.getItemIndex(row - 1, col);
     if (nextIndex === -1) {
-      return row - 1 < grid.getFolderRowCount() ?
-          grid.dataModel.getFolderCount() - 1 :
-          grid.dataModel.length - 1;
+      // The row (index `row - 1`) doesn't have the enough columns to get the
+      // column (index `col`), we need to find the last index on "row - 1".
+      return grid.getFirstItemInRow(row) - 1;
     }
     return nextIndex;
   }

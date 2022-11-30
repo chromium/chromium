@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,64 @@ namespace cocoa {
 
 namespace {
 bool g_is_input_source_command_qwerty = false;
+bool g_is_input_source_dvorak_right_or_left = false;
+bool g_is_input_source_command_hebrew = false;
 }  // namespace
 
 void SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty) {
   g_is_input_source_command_qwerty = is_command_qwerty;
 }
 
+void SetIsInputSourceDvorakRightOrLeftForTesting(bool is_dvorak_right_or_left) {
+  g_is_input_source_dvorak_right_or_left = is_dvorak_right_or_left;
+}
+
+void SetIsInputSourceCommandHebrewForTesting(bool is_command_hebrew) {
+  g_is_input_source_command_hebrew = is_command_hebrew;
+}
+
 bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
          [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
+}
+
+bool IsKeyboardLayoutDvorakRightOrLeft(NSString* layout_id) {
+  return [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Right"] ||
+         [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Left"];
+}
+
+bool IsKeyboardLayoutCommandHebrew(NSString* layout_id) {
+  // com.apple.keylayout.Hebrew, com.apple.keylayout.Hebrew-PC,
+  // com.apple.keylayout.Hebrew-QWERTY.
+  return [layout_id hasPrefix:@"com.apple.keylayout.Hebrew"];
+}
+
+NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
+  NSUInteger eventModifierMask =
+      NSEventModifierFlagCommand | NSEventModifierFlagControl |
+      NSEventModifierFlagOption | NSEventModifierFlagShift;
+
+  // If `event` isn't a function key press or it's not a character key press
+  // (e.g. it's a flags change), we can simply return the mask.
+  if (([event modifierFlags] & NSEventModifierFlagFunction) == 0 ||
+      [event type] != NSEventTypeKeyDown)
+    return eventModifierMask;
+
+  NSString* eventString = [event charactersIgnoringModifiers];
+  if ([eventString length] == 0)
+    return eventModifierMask;
+
+  // "Up arrow", home, and other "function" key events include
+  // NSEventModifierFlagFunction in their flags even though the user isn't
+  // holding down the keyboard's function / world key. Add
+  // NSEventModifierFlagFunction to the returned modifier mask only if the
+  // event isn't for a function key.
+  unichar firstCharacter = [eventString characterAtIndex:0];
+  if (firstCharacter < NSUpArrowFunctionKey ||
+      firstCharacter > NSModeSwitchFunctionKey)
+    eventModifierMask |= NSEventModifierFlagFunction;
+
+  return eventModifierMask;
 }
 
 }  // namespace cocoa
@@ -58,6 +107,10 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
       inputSource.get(), kTISPropertyInputSourceID);
   ui::cocoa::g_is_input_source_command_qwerty =
       ui::cocoa::IsKeyboardLayoutCommandQwerty(layoutId);
+  ui::cocoa::g_is_input_source_dvorak_right_or_left =
+      ui::cocoa::IsKeyboardLayoutDvorakRightOrLeft(layoutId);
+  ui::cocoa::g_is_input_source_command_hebrew =
+      ui::cocoa::IsKeyboardLayoutCommandHebrew(layoutId);
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -68,11 +121,11 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 
 @implementation NSMenuItem (ChromeAdditions)
 
-- (BOOL)cr_firesForKeyEvent:(NSEvent*)event {
+- (BOOL)cr_firesForKeyEquivalentEvent:(NSEvent*)event {
   if (![self isEnabled])
     return NO;
 
-  DCHECK([event type] == NSKeyDown);
+  DCHECK([event type] == NSEventTypeKeyDown);
   // In System Preferences->Keyboard->Keyboard Shortcuts, it is possible to add
   // arbitrary keyboard shortcuts to applications. It is not documented how this
   // works in detail, but |NSMenuItem| has a method |userKeyEquivalent| that
@@ -87,22 +140,39 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // for printable characters (but not for stuff like arrow keys etc).
   NSString* eventString = [event charactersIgnoringModifiers];
   NSUInteger eventModifiers =
-      [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+      [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 
   // cmd-opt-a gives some weird char as characters and "a" as
   // charactersWithoutModifiers with an US layout, but an "a" as characters and
   // a weird char as "charactersWithoutModifiers" with a cyrillic layout. Oh,
   // Cocoa! Instead of getting the current layout from Text Input Services,
   // and then requesting the kTISPropertyUnicodeKeyLayoutData and looking in
-  // there, let's try a pragmatic hack.
-  if ([eventString length] == 0 ||
-      ([eventString characterAtIndex:0] > 0x7f &&
-       [[event characters] length] > 0 &&
-       [[event characters] characterAtIndex:0] <= 0x7f)) {
-    eventString = [event characters];
+  // there, let's go with a pragmatic hack.
+  bool useEventCharacters = [eventString length] == 0;
+  NSString* eventCharacters = [event characters];
+  if ([eventString length] > 0 && [eventCharacters length] > 0) {
+    if ([eventString characterAtIndex:0] > 0x7f &&
+        [eventCharacters characterAtIndex:0] <= 0x7f) {
+      useEventCharacters = true;
+    } else if (ui::cocoa::g_is_input_source_command_hebrew &&
+               [eventString isEqualToString:@"/"] &&
+               [eventCharacters isEqualToString:@"q"]) {
+      // Our pragmatic hack works very well except for the "q" key in Hebrew
+      // layouts. In this case, the first char of eventString ("/") is
+      // not < 0x7f, so the hack doesn't choose eventCharacters (which is
+      // "q"). This causes Cmd-q to not take the normal processing path which
+      // includes a warning to hold "Cmd q" to quit (if that option is set).
+      // Instead, the Cmd-q likely travels to the renderer and upon its return
+      // triggers -[NSApplication terminate:], the selector associated with
+      // Chrome -> Quit. We handle this special case here.
+      useEventCharacters = true;
+    }
+  }
+  if (useEventCharacters) {
+    eventString = eventCharacters;
 
     // Process the shift if necessary.
-    if (eventModifiers & NSShiftKeyMask)
+    if (eventModifiers & NSEventModifierFlagShift)
       eventString = [eventString uppercaseString];
   }
 
@@ -111,7 +181,8 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 
   // Turns out esc never fires unless cmd or ctrl is down.
   if ([event keyCode] == kVK_Escape &&
-      (eventModifiers & (NSControlKeyMask | NSCommandKeyMask)) == 0)
+      (eventModifiers &
+       (NSEventModifierFlagControl | NSEventModifierFlagCommand)) == 0)
     return NO;
 
   // From the |NSMenuItem setKeyEquivalent:| documentation:
@@ -127,7 +198,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [NSString stringWithCharacters:&chr length:1];
 
     // Make sure "shift" is not removed from modifiers below.
-    eventModifiers |= NSFunctionKeyMask;
+    eventModifiers |= NSEventModifierFlagFunction;
   }
   if ([[self keyEquivalent] characterAtIndex:0] == NSDeleteCharacter &&
       [eventString characterAtIndex:0] == NSDeleteFunctionKey) {
@@ -135,11 +206,11 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [NSString stringWithCharacters:&chr length:1];
 
     // Make sure "shift" is not removed from modifiers below.
-    eventModifiers |= NSFunctionKeyMask;
+    eventModifiers |= NSEventModifierFlagFunction;
   }
 
   // We intentionally leak this object.
-  static __attribute__((unused)) KeyboardInputSourceListener* listener =
+  [[maybe_unused]] static KeyboardInputSourceListener* listener =
       [[KeyboardInputSourceListener alloc] init];
 
   // We typically want to compare [NSMenuItem keyEquivalent] against [NSEvent
@@ -156,12 +227,14 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
     eventString = [NSString stringWithFormat:@"%C", shifted_character];
   }
 
-  // On all keyboards, treat cmd + <number key> as the equivalent numerical key.
-  // This is technically incorrect, since the actual character produced may not
-  // be a number key, but this causes Chrome to match platform behavior. For
-  // example, on the Czech keyboard, we want to interpret cmd + '+' as cmd +
-  // '1', even though the '1' character normally requires cmd + shift + '+'.
-  if (eventModifiers == NSCommandKeyMask) {
+  // On all keyboards except Dvorak-Right/Left, treat cmd + <number key> as the
+  // equivalent numerical key. This is technically incorrect, since the actual
+  // character produced may not be a number key, but this causes Chrome to match
+  // platform behavior. For example, on the Czech keyboard, we want to interpret
+  // cmd + '+' as cmd + '1', even though the '1' character normally requires
+  // cmd + shift + '+'.
+  if (!ui::cocoa::g_is_input_source_dvorak_right_or_left &&
+      eventModifiers == NSEventModifierFlagCommand) {
     ui::KeyboardCode windows_keycode =
         ui::KeyboardCodeFromKeyCode(event.keyCode);
     if (windows_keycode >= ui::VKEY_0 && windows_keycode <= ui::VKEY_9) {
@@ -174,21 +247,21 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // "Horizontal Tab". We still use "Horizontal Tab" in the main menu to match
   // the behavior of Safari and Terminal. Thus, we need to explicitly check for
   // this case.
-  if ((eventModifiers & NSShiftKeyMask) &&
+  if ((eventModifiers & NSEventModifierFlagShift) &&
       [eventString isEqualToString:@"\x19"]) {
     eventString = @"\x9";
   } else {
     // Clear shift key for printable characters, excluding tab.
-    if ((eventModifiers & (NSNumericPadKeyMask | NSFunctionKeyMask)) == 0 &&
+    if ((eventModifiers &
+         (NSEventModifierFlagNumericPad | NSEventModifierFlagFunction)) == 0 &&
         [[self keyEquivalent] characterAtIndex:0] != '\r' &&
         [[self keyEquivalent] characterAtIndex:0] != '\x9') {
-      eventModifiers &= ~NSShiftKeyMask;
+      eventModifiers &= ~NSEventModifierFlagShift;
     }
   }
 
   // Clear all non-interesting modifiers
-  eventModifiers &=
-      NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask;
+  eventModifiers &= ui::cocoa::ModifierMaskForKeyEvent(event);
 
   return [eventString isEqualToString:[self keyEquivalent]] &&
          eventModifiers == [self keyEquivalentModifierMask];

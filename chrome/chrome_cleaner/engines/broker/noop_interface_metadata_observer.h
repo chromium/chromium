@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/chrome_cleaner/engines/broker/interface_metadata_observer.h"
 
 namespace chrome_cleaner {
@@ -16,6 +15,11 @@ namespace chrome_cleaner {
 class NoOpInterfaceMetadataObserver : public InterfaceMetadataObserver {
  public:
   NoOpInterfaceMetadataObserver();
+
+  NoOpInterfaceMetadataObserver(const NoOpInterfaceMetadataObserver&) = delete;
+  NoOpInterfaceMetadataObserver& operator=(
+      const NoOpInterfaceMetadataObserver&) = delete;
+
   ~NoOpInterfaceMetadataObserver() override;
 
   // InterfaceMetadataObserver
@@ -23,8 +27,6 @@ class NoOpInterfaceMetadataObserver : public InterfaceMetadataObserver {
   void ObserveCall(const LogInformation& log_information,
                    const std::map<std::string, std::string>& params) override;
   void ObserveCall(const LogInformation& log_information) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NoOpInterfaceMetadataObserver);
 };
 
 }  // namespace chrome_cleaner

@@ -1,17 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 #define COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
 #endif
 
@@ -28,6 +27,10 @@ class SpellCheckerSessionBridge;
 class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
  public:
   SpellCheckHostImpl();
+
+  SpellCheckHostImpl(const SpellCheckHostImpl&) = delete;
+  SpellCheckHostImpl& operator=(const SpellCheckHostImpl&) = delete;
+
   ~SpellCheckHostImpl() override;
 
  protected:
@@ -51,24 +54,22 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) &&
         // !BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // spellcheck::mojom::SpellCheckHost:
   void DisconnectSessionBridge() override;
 #endif
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android-specific object used to query the Android spellchecker.
   SpellCheckerSessionBridge session_bridge_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckHostImpl);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_BROWSER_SPELL_CHECK_HOST_IMPL_H_

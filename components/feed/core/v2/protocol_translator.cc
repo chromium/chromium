@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/packing.pb.h"
 #include "components/feed/core/proto/v2/wire/chrome_feed_response_metadata.pb.h"
@@ -22,6 +21,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -59,12 +59,20 @@ feedstore::StreamStructure::Type TranslateNodeType(
   }
 }
 
-base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
-  return base::TimeDelta::FromSeconds(v.seconds()) +
-         base::TimeDelta::FromNanoseconds(v.nanos());
+feedstore::Metadata::StreamMetadata::ContentLifetime TranslateContentLifetime(
+    feedwire::ContentLifetime content_lifetime) {
+  feedstore::Metadata::StreamMetadata::ContentLifetime store_lifetime;
+  store_lifetime.set_stale_age_ms(content_lifetime.stale_age_ms());
+  store_lifetime.set_invalid_age_ms(content_lifetime.invalid_age_ms());
+
+  return store_lifetime;
 }
 
-base::Optional<RequestSchedule> TranslateRequestSchedule(
+base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
+  return base::Seconds(v.seconds()) + base::Nanoseconds(v.nanos());
+}
+
+absl::optional<RequestSchedule> TranslateRequestSchedule(
     base::Time now,
     const feedwire::RequestSchedule& v) {
   RequestSchedule schedule;
@@ -80,14 +88,14 @@ base::Optional<RequestSchedule> TranslateRequestSchedule(
 
 // Fields that should be present at most once in the response.
 struct ConvertedGlobalData {
-  base::Optional<RequestSchedule> request_schedule;
+  absl::optional<RequestSchedule> request_schedule;
 };
 
 struct ConvertedDataOperation {
   feedstore::StreamStructure stream_structure;
-  base::Optional<feedstore::Content> content;
-  base::Optional<feedstore::StreamSharedState> shared_state;
-  base::Optional<std::string> next_page_token;
+  absl::optional<feedstore::Content> content;
+  absl::optional<feedstore::StreamSharedState> shared_state;
+  absl::optional<std::string> next_page_token;
 };
 
 bool TranslateFeature(feedwire::Feature* feature,
@@ -118,11 +126,11 @@ bool TranslateFeature(feedwire::Feature* feature,
   return true;
 }
 
-base::Optional<feedstore::StreamSharedState> TranslateSharedState(
+absl::optional<feedstore::StreamSharedState> TranslateSharedState(
     feedwire::ContentId content_id,
     feedwire::RenderData& wire_shared_state) {
   if (wire_shared_state.render_data_type() != feedwire::RenderData::XSURFACE) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   feedstore::StreamSharedState shared_state;
@@ -178,7 +186,7 @@ bool TranslatePayload(base::Time now,
   return true;
 }
 
-base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
+absl::optional<ConvertedDataOperation> TranslateDataOperationInternal(
     base::Time now,
     feedwire::DataOperation operation,
     ConvertedGlobalData* global_data) {
@@ -194,18 +202,18 @@ base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UPDATE_OR_APPEND:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return base::nullopt;
+        return absl::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
 
       if (!TranslatePayload(now, std::move(operation), global_data, result))
-        return base::nullopt;
+        return absl::nullopt;
       break;
 
     case feedstore::StreamStructure::REMOVE:
       if (!operation.has_metadata() || !operation.metadata().has_content_id())
-        return base::nullopt;
+        return absl::nullopt;
 
       result.stream_structure.set_allocated_content_id(
           operation.mutable_metadata()->release_content_id());
@@ -213,7 +221,7 @@ base::Optional<ConvertedDataOperation> TranslateDataOperationInternal(
 
     case feedstore::StreamStructure::UNKNOWN:  // Fall through
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   return result;
@@ -234,7 +242,7 @@ RefreshResponseData::RefreshResponseData(RefreshResponseData&&) = default;
 RefreshResponseData& RefreshResponseData::operator=(RefreshResponseData&&) =
     default;
 
-base::Optional<feedstore::DataOperation> TranslateDataOperation(
+absl::optional<feedstore::DataOperation> TranslateDataOperation(
     base::Time now,
     feedwire::DataOperation wire_operation) {
   feedstore::DataOperation store_operation;
@@ -242,15 +250,15 @@ base::Optional<feedstore::DataOperation> TranslateDataOperation(
   // actions embedded in the server protobuf. Some data in data operations
   // aren't supported by this function, which is why we're passing in
   // global_data=nullptr.
-  base::Optional<ConvertedDataOperation> converted =
+  absl::optional<ConvertedDataOperation> converted =
       TranslateDataOperationInternal(now, std::move(wire_operation), nullptr);
   if (!converted)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We only support translating StreamSharedStates when they will be attached
   // to StreamModelUpdateRequests.
   if (converted->shared_state)
-    return base::nullopt;
+    return absl::nullopt;
 
   *store_operation.mutable_structure() = std::move(converted->stream_structure);
   if (converted->content)
@@ -262,7 +270,7 @@ base::Optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time) {
   if (response.response_version() != feedwire::Response::FEED_RESPONSE)
     return {};
@@ -276,7 +284,7 @@ RefreshResponseData TranslateWireResponse(
     if (!wire_data_operation.has_operation())
       continue;
 
-    base::Optional<ConvertedDataOperation> operation =
+    absl::optional<ConvertedDataOperation> operation =
         TranslateDataOperationInternal(
             current_time, std::move(wire_data_operation), &global_data);
     if (!operation)
@@ -297,52 +305,88 @@ RefreshResponseData TranslateWireResponse(
   }
 
   if (!result->shared_states.empty()) {
-    if (result->shared_states.size() > 1) {
-      DLOG(ERROR)
-          << "Receieved more than one shared state. Only the first is used.";
+    for (const auto& shared_state : result->shared_states) {
+      *result->stream_data.add_shared_state_ids() = shared_state.content_id();
     }
-    *result->stream_data.mutable_shared_state_id() =
-        result->shared_states.front().content_id();
   }
   feedstore::SetLastAddedTime(current_time, result->stream_data);
 
-  const auto& response_metadata =
-      feed_response->feed_response_metadata().chrome_feed_response_metadata();
-  result->stream_data.set_signed_in(was_signed_in_request);
-  result->stream_data.set_logging_enabled(response_metadata.logging_enabled());
-  result->stream_data.set_privacy_notice_fulfilled(
-      response_metadata.privacy_notice_fulfilled());
+  const auto& response_metadata = feed_response->feed_response_metadata();
 
-  base::Optional<std::string> session_id = base::nullopt;
-  if (was_signed_in_request) {
+  absl::optional<feedstore::Metadata::StreamMetadata::ContentLifetime>
+      content_lifetime;
+  if (response_metadata.has_content_lifetime()) {
+    content_lifetime =
+        TranslateContentLifetime(response_metadata.content_lifetime());
+  }
+
+  const auto& chrome_response_metadata =
+      response_metadata.chrome_feed_response_metadata();
+  // Note that we're storing the raw proto bytes for the root event ID because
+  // we want to retain any unknown fields. This value is ignored in next-page
+  // responses. Because time_usec is a required field, we can only serialize
+  // this message if it is set.
+  if (response_metadata.event_id().has_time_usec()) {
+    result->stream_data.set_root_event_id(
+        response_metadata.event_id().SerializeAsString());
+  }
+  result->stream_data.set_signed_in(!account_info.IsEmpty());
+  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_email(account_info.email);
+  result->stream_data.set_logging_enabled(
+      chrome_response_metadata.logging_enabled());
+  result->stream_data.set_privacy_notice_fulfilled(
+      chrome_response_metadata.privacy_notice_fulfilled());
+
+  for (const feedstore::Content& content : result->content) {
+    for (auto& metadata : content.prefetch_metadata()) {
+      result->stream_data.add_content_hashes(
+          feedstore::ContentHashFromPrefetchMetadata(metadata));
+    }
+  }
+
+  absl::optional<std::string> session_id = absl::nullopt;
+  if (!account_info.IsEmpty()) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
-  } else if (response_metadata.has_session_id()) {
+  } else if (chrome_response_metadata.has_session_id()) {
     // Signed-out requests can set a new session token; otherwise, we leave
-    // the default base::nullopt value to keep whatever token is already in
+    // the default absl::nullopt value to keep whatever token is already in
     // play.
-    session_id = response_metadata.session_id();
+    session_id = chrome_response_metadata.session_id();
   }
 
-  base::Optional<Experiments> experiments = base::nullopt;
-  if (response_metadata.experiments_size() > 0) {
+  absl::optional<Experiments> experiments = absl::nullopt;
+  if (chrome_response_metadata.experiments_size() > 0) {
     Experiments e;
-    for (feedwire::Experiment exp : response_metadata.experiments()) {
+    for (feedwire::Experiment exp : chrome_response_metadata.experiments()) {
       e[exp.trial_name()] = exp.group_name();
     }
     experiments = std::move(e);
   }
 
-  MetricsReporter::ActivityLoggingEnabled(response_metadata.logging_enabled());
+  MetricsReporter::ActivityLoggingEnabled(
+      chrome_response_metadata.logging_enabled());
   MetricsReporter::NoticeCardFulfilledObsolete(
-      response_metadata.privacy_notice_fulfilled());
+      chrome_response_metadata.privacy_notice_fulfilled());
 
   RefreshResponseData response_data;
   response_data.model_update_request = std::move(result);
   response_data.request_schedule = std::move(global_data.request_schedule);
+  response_data.content_lifetime = std::move(content_lifetime);
   response_data.session_id = std::move(session_id);
   response_data.experiments = std::move(experiments);
+  response_data.server_request_received_timestamp =
+      feedstore::FromTimestampMicros(
+          feed_response->feed_response_metadata().event_id().time_usec());
+  response_data.server_response_sent_timestamp = feedstore::FromTimestampMillis(
+      feed_response->feed_response_metadata().response_time_ms());
+  response_data.last_fetch_timestamp = current_time;
+  response_data.web_and_app_activity_enabled =
+      chrome_response_metadata.web_and_app_activity_enabled();
+  response_data.discover_personalization_enabled =
+      chrome_response_metadata.discover_personalization_enabled();
 
   return response_data;
 }
@@ -352,7 +396,7 @@ std::vector<feedstore::DataOperation> TranslateDismissData(
     feedpacking::DismissData data) {
   std::vector<feedstore::DataOperation> result;
   for (auto& operation : data.data_operations()) {
-    base::Optional<feedstore::DataOperation> translated_operation =
+    absl::optional<feedstore::DataOperation> translated_operation =
         TranslateDataOperation(current_time, operation);
     if (translated_operation) {
       result.push_back(std::move(translated_operation.value()));

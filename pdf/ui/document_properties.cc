@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/document_metadata.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -53,11 +53,15 @@ std::u16string FormatLengthInMillimeters(int length_points) {
 
 // Returns the localized string for the orientation.
 std::u16string GetOrientation(const gfx::Size& size) {
-  // TODO(crbug.com/1184345): Add a string for square sizes such that they are
-  // not displayed as "portrait".
-  return l10n_util::GetStringUTF16(
-      size.height() >= size.width() ? IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT
-                                    : IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE);
+  int message_id;
+  if (size.height() > size.width())
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT;
+  else if (size.height() < size.width())
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE;
+  else
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_SQUARE;
+
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 bool ShowInches() {
@@ -71,7 +75,7 @@ bool ShowInches() {
 
 }  // namespace
 
-std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points) {
+std::u16string FormatPageSize(const absl::optional<gfx::Size>& size_points) {
   if (!size_points.has_value())
     return l10n_util::GetStringUTF16(IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE);
 

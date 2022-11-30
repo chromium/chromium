@@ -1,0 +1,19 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("7zS2_source") {
+  sources = [
+    "Precomp.h",
+    "SfxSetup.c",
+  ]
+  defines = [
+    "_LZMA_PROB32",
+    "_WIN32",
+  ]
+  include_dirs = [
+    ".",
+    "../..",
+  ]
+  public_deps = [ "//third_party/lzma_sdk:lzma_sdk" ]
+}

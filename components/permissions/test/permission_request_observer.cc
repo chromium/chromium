@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,17 @@ void PermissionRequestObserver::Wait() {
   loop_.Run();
 }
 
-void PermissionRequestObserver::OnBubbleAdded() {
+void PermissionRequestObserver::OnPromptAdded() {
   request_shown_ = true;
   loop_.Quit();
+}
+
+void PermissionRequestObserver::OnRequestsFinalized() {
+  loop_.Quit();
+}
+
+void PermissionRequestObserver::OnPermissionRequestManagerDestructed() {
+  observation_.Reset();
 }
 
 }  // namespace permissions

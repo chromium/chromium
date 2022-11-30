@@ -40,7 +40,8 @@ class ExceptionState;
 class NumberInputType final : public TextFieldInputType {
  public:
   explicit NumberInputType(HTMLInputElement& element)
-      : TextFieldInputType(element) {}
+      : TextFieldInputType(Type::kNumber, element) {}
+  bool TypeMismatchFor(const String&) const;
 
  private:
   void CountUsage() override;
@@ -56,11 +57,9 @@ class NumberInputType final : public TextFieldInputType {
   void SetValueAsDecimal(const Decimal&,
                          TextFieldEventBehavior,
                          ExceptionState&) const override;
-  bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
   bool SizeShouldIncludeDecoration(int default_size,
                                    int& preferred_size) const override;
-  bool IsSteppable() const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
@@ -80,6 +79,13 @@ class NumberInputType final : public TextFieldInputType {
   void MinOrMaxAttributeChanged() override;
   void StepAttributeChanged() override;
   bool SupportsSelectionAPI() const override;
+};
+
+template <>
+struct DowncastTraits<NumberInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsNumberInputType();
+  }
 };
 
 }  // namespace blink

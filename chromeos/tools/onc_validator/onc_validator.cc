@@ -1,8 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <cstdio>
 #include <iostream>
 #include <utility>
@@ -12,10 +13,9 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_validator.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_validator.h"
 
 // TODO Check why this file do not fail on default trybots
 // http://crbug.com/543919
@@ -63,13 +63,13 @@ void PrintHelp() {
           "  onc_validator [OPTION]... [TYPE] onc_file\n"
           "\n"
           "Valid TYPEs are:\n");
-  for (size_t i = 0; i < base::size(kTypes); ++i)
+  for (size_t i = 0; i < std::size(kTypes); ++i)
     fprintf(stderr, "  %s\n", kTypes[i]);
 
   fprintf(stderr,
           "\n"
           "Valid OPTIONs are:\n");
-  for (size_t i = 0; i < base::size(kSwitches); ++i)
+  for (size_t i = 0; i < std::size(kSwitches); ++i)
     fprintf(stderr, "  --%s\n", kSwitches[i]);
 
   fprintf(stderr,

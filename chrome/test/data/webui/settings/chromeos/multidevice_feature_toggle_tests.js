@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, PhoneHubFeatureAccessStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {MultiDeviceFeature, MultiDeviceFeatureState, PhoneHubNotificationAccessStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 /**
  * @fileoverview
@@ -21,7 +18,7 @@ suite('Multidevice', () => {
   let featureToggle = null;
   /** @type {?CrToggleElement} */
   let crToggle = null;
-  /** @type {!settings.MultiDeviceFeature} */
+  /** @type {!MultiDeviceFeature} */
   let featureToTest;
   /** @type {string} */
   let pageContentDataKey;
@@ -30,41 +27,54 @@ suite('Multidevice', () => {
    * Sets the state of the feature shown in the toggle. Note that in order to
    * trigger featureToggle's bindings to update, we set its pageContentData to a
    * new object as the actual UI does.
-   * @param {?settings.MultiDeviceFeatureState} newFeatureState
+   * @param {?MultiDeviceFeatureState} newFeatureState
    */
   function setFeatureState(newFeatureState) {
     featureToggle.pageContentData = Object.assign(
         {}, featureToggle.pageContentData,
         {[pageContentDataKey]: newFeatureState});
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
-   * @param {!settings.PhoneHubNotificationAccessStatus} accessStatus
+   * @param {!PhoneHubFeatureAccessStatus} accessStatus
    */
   function setNotificationAccessStatus(accessStatus) {
     featureToggle.pageContentData = Object.assign(
         {}, featureToggle.pageContentData,
         {notificationAccessStatus: accessStatus});
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
    * Sets the state of the feature suite. Note that in order to trigger
    * featureToggle's bindings to update, we set its pageContentData to a new
    * object as the actual UI does.
-   * @param {?settings.MultiDeviceFeatureState} newSuiteState. New value for
+   * @param {?MultiDeviceFeatureState} newSuiteState. New value for
    * featureToggle.pageContentData.betterTogetherState.
    */
   function setSuiteState(newSuiteState) {
     featureToggle.pageContentData = Object.assign(
         {}, featureToggle.pageContentData,
         {betterTogetherState: newSuiteState});
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
-   * @param {!settings.MultiDeviceFeature} feature
+   * Sets the state of the top-level Phone Hub feature. Note that in order to
+   * trigger featureToggle's bindings to update, we set its pageContentData to a
+   * new object as the actual UI does.
+   * @param {?MultiDeviceFeatureState} newPhoneHubState. New value for
+   * featureToggle.pageContentData.phoneHubState.
+   */
+  function setPhoneHubState(newPhoneHubState) {
+    featureToggle.pageContentData = Object.assign(
+        {}, featureToggle.pageContentData, {phoneHubState: newPhoneHubState});
+    flush();
+  }
+
+  /**
+   * @param {!MultiDeviceFeature} feature
    * @param {string} key
    */
   function init(feature, key) {
@@ -80,17 +90,16 @@ suite('Multidevice', () => {
     // feature or the cr-toggle property/attribute. DISABLED_BY_USER refers to
     // the former so it unchecks but does not functionally disable the toggle.
     featureToggle.pageContentData = {
-      betterTogetherState: settings.MultiDeviceFeatureState.ENABLED_BY_USER,
-      [pageContentDataKey]: settings.MultiDeviceFeatureState.DISABLED_BY_USER,
+      betterTogetherState: MultiDeviceFeatureState.ENABLED_BY_USER,
+      [pageContentDataKey]: MultiDeviceFeatureState.DISABLED_BY_USER,
     };
     document.body.appendChild(featureToggle);
-    Polymer.dom.flush();
+    flush();
 
     crToggle = featureToggle.$.toggle;
 
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
-    assertFalse(crToggle.disabled);
   }
 
   setup(() => {
@@ -98,96 +107,126 @@ suite('Multidevice', () => {
   });
 
   test('checked property can be set by feature state', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
-    setFeatureState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
 
-    setFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.DISABLED_BY_USER);
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
   });
 
   test('disabled property can be set by feature state', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
-    setFeatureState(settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
+    setFeatureState(MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
     assertTrue(crToggle.disabled);
 
-    setFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.DISABLED_BY_USER);
     assertFalse(crToggle.disabled);
   });
 
   test('disabled and checked properties update simultaneously', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
-    setFeatureState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
     assertFalse(crToggle.disabled);
 
-    setFeatureState(settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
+    setFeatureState(MultiDeviceFeatureState.PROHIBITED_BY_POLICY);
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
     assertTrue(crToggle.disabled);
 
-    setFeatureState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.DISABLED_BY_USER);
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
     assertFalse(crToggle.disabled);
   });
 
   test('disabled property can be set by suite pref', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
-    setSuiteState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
-    Polymer.dom.flush();
+    setSuiteState(MultiDeviceFeatureState.DISABLED_BY_USER);
+    flush();
     assertTrue(crToggle.disabled);
 
-    setSuiteState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
-    Polymer.dom.flush();
+    setSuiteState(MultiDeviceFeatureState.ENABLED_BY_USER);
+    flush();
     assertFalse(crToggle.disabled);
   });
 
   test('checked property is unaffected by suite pref', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
-    setFeatureState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
     assertFalse(crToggle.disabled);
 
-    setSuiteState(settings.MultiDeviceFeatureState.DISABLED_BY_USER);
-    Polymer.dom.flush();
+    setSuiteState(MultiDeviceFeatureState.DISABLED_BY_USER);
+    flush();
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
     assertTrue(crToggle.disabled);
   });
 
   test('clicking toggle does not change checked property', () => {
-    init(settings.MultiDeviceFeature.MESSAGES, 'messagesState');
+    init(MultiDeviceFeature.MESSAGES, 'messagesState');
 
     const preClickCrToggleChecked = crToggle.checked;
     crToggle.click();
-    Polymer.dom.flush();
+    flush();
     assertEquals(crToggle.checked, preClickCrToggleChecked);
   });
 
   test('notification access is prohibited', () => {
     init(
-        settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+        MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
         'phoneHubNotificationsState');
 
-    setFeatureState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+    setPhoneHubState(MultiDeviceFeatureState.ENABLED_BY_USER);
+
+    setFeatureState(MultiDeviceFeatureState.ENABLED_BY_USER);
     assertTrue(featureToggle.checked_);
     assertTrue(crToggle.checked);
     assertFalse(crToggle.disabled);
 
-    setNotificationAccessStatus(
-        settings.PhoneHubNotificationAccessStatus.PROHIBITED);
+    setNotificationAccessStatus(PhoneHubFeatureAccessStatus.PROHIBITED);
     assertFalse(featureToggle.checked_);
     assertFalse(crToggle.checked);
     assertTrue(crToggle.disabled);
   });
+
+  test(
+      'Phone Hub notifications toggle unclickable if Phone Hub disabled',
+      () => {
+        init(
+            MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
+            'phoneHubNotificationsState');
+
+        setPhoneHubState(MultiDeviceFeatureState.ENABLED_BY_USER);
+        setNotificationAccessStatus(PhoneHubFeatureAccessStatus.ACCESS_GRANTED);
+        assertFalse(crToggle.disabled);
+
+        setPhoneHubState(MultiDeviceFeatureState.DISABLED_BY_USER);
+        assertTrue(crToggle.disabled);
+      });
+
+  test(
+      'Phone Hub task-continuation toggle unclickable if Phone Hub disabled',
+      () => {
+        init(
+            MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
+            'phoneHubTaskContinuationState');
+
+        setPhoneHubState(MultiDeviceFeatureState.ENABLED_BY_USER);
+        assertFalse(crToggle.disabled);
+
+        setPhoneHubState(MultiDeviceFeatureState.DISABLED_BY_USER);
+        assertTrue(crToggle.disabled);
+      });
 });

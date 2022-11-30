@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <iterator>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 
 namespace base {
 
@@ -29,6 +31,28 @@ struct ModuleAddressCompare {
 };
 
 }  // namespace
+
+std::string TransformModuleIDToBreakpadFormat(StringPiece module_id) {
+  std::string mangled_id(module_id);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Linux ELF module IDs are 160bit integers, which we need to mangle
+  // down to 128bit integers to match the id that Breakpad outputs.
+  // Example on version '66.0.3359.170' x64:
+  //   Build-ID: "7f0715c2 86f8 b16c 10e4ad349cda3b9b 56c7a773
+  //   Debug-ID  "C215077F F886 6CB1 10E4AD349CDA3B9B 0"
+
+  if (mangled_id.size() < 32) {
+    mangled_id.resize(32, '0');
+  }
+
+  mangled_id = base::StrCat({mangled_id.substr(6, 2), mangled_id.substr(4, 2),
+                             mangled_id.substr(2, 2), mangled_id.substr(0, 2),
+                             mangled_id.substr(10, 2), mangled_id.substr(8, 2),
+                             mangled_id.substr(14, 2), mangled_id.substr(12, 2),
+                             mangled_id.substr(16, 16), "0"});
+#endif
+  return mangled_id;
+}
 
 ModuleCache::ModuleCache() = default;
 

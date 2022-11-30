@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+
+namespace session_manager {
+enum class SessionState;
+}  // namespace session_manager
+
+namespace views {
+class Separator;
+}  // namespace views
 
 namespace ash {
 
@@ -34,6 +41,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
@@ -62,9 +70,29 @@ class QuietModeView : public TrayItemView {
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // views::TrayItemView:
   const char* GetClassName() const override;
+};
+
+// Separator view in UnifiedSystemTray button.
+class SeparatorTrayItemView : public TrayItemView {
+ public:
+  explicit SeparatorTrayItemView(Shelf* shelf);
+  ~SeparatorTrayItemView() override;
+  SeparatorTrayItemView(const SeparatorTrayItemView&) = delete;
+  SeparatorTrayItemView& operator=(const SeparatorTrayItemView&) = delete;
+
+  // TrayItemView:
+  void HandleLocaleChange() override;
+  const char* GetClassName() const override;
+
+  // Update the color of separator depending on the given state.
+  void UpdateColor(session_manager::SessionState state);
+
+ private:
+  views::Separator* separator_ = nullptr;
 };
 
 }  // namespace ash

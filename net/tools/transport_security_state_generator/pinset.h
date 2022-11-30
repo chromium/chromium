@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 // A Pinset represents the data a website would send in a HPKP header. A pinset
 // is given a name so that multiple entries in the preload list can reference
@@ -20,6 +16,10 @@ namespace transport_security_state {
 class Pinset {
  public:
   Pinset(std::string name, std::string report_uri);
+
+  Pinset(const Pinset&) = delete;
+  Pinset& operator=(const Pinset&) = delete;
+
   ~Pinset();
 
   const std::string& name() const { return name_; }
@@ -47,12 +47,8 @@ class Pinset {
   // These vectors contain names rather than actual hashes.
   std::vector<std::string> static_spki_hashes_;
   std::vector<std::string> bad_static_spki_hashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(Pinset);
 };
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_PINSET_H_

@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_CHANNEL_H_
 #define HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_CHANNEL_H_
 
-#include <string>
-
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "headless/public/headless_export.h"
 
 namespace headless {

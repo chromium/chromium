@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,51 @@
 
 #include <memory>
 
+#include "ash/wm/window_state.h"
+#include "base/base64.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/borealis/testing/apps.h"
+#include "chrome/browser/ash/borealis/testing/widgets.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/views/widget/widget.h"
 
 using ::testing::_;
 
 namespace borealis {
 namespace {
 
-class BorealisWindowManagerTest : public testing::Test {
+class BorealisWindowManagerTest : public ChromeAshTestBase {
  protected:
   Profile* profile() { return &profile_; }
 
+  void SetUp() override { ChromeAshTestBase::SetUp(); }
+
+  void TearDown() override { ChromeAshTestBase::TearDown(); }
+
+  std::unique_ptr<views::Widget> SetupMinimizeTest(
+      std::string active_window_id) {
+    // Windows should only ever be minimised when an active borealis window is
+    // fullscreen.
+    std::unique_ptr<views::Widget> active_widget =
+        CreateFakeWidget(active_window_id, true);
+    aura::Window* window = active_widget->GetNativeWindow();
+    EXPECT_TRUE(ash::WindowState::Get(window)->IsFullscreen());
+    return active_widget;
+  }
+
+  std::string GetBorealisClientId() {
+    return std::string(kBorealisWindowPrefix) + kBorealisClientSuffix;
+  }
+
  private:
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 
@@ -41,6 +65,22 @@ TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnId) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.foobarbaz");
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
+}
+
+TEST_F(BorealisWindowManagerTest, BorealisWindowHasCorrectId) {
+  BorealisWindowManager window_manager(profile());
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.xprop.456789");
+  CreateFakeApp(profile(), "some_app", "steam://rungameid/456789");
+  EXPECT_EQ(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
+}
+
+TEST_F(BorealisWindowManagerTest, MismatchedWindowHasDifferentId) {
+  BorealisWindowManager window_manager(profile());
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.xprop.2468");
+  CreateFakeApp(profile(), "some_app", "steam://rungameid/456789");
+  EXPECT_NE(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
 }
 
 TEST_F(BorealisWindowManagerTest, IdDetectionDoesNotImplyTracking) {
@@ -127,12 +167,12 @@ TEST_F(BorealisWindowManagerTest, LifetimeObserverTracksWindows) {
 
   // But deleting them all does finish the app.
   EXPECT_CALL(observer, OnWindowFinished(_, _));
-  EXPECT_CALL(observer, OnAppFinished(_));
+  EXPECT_CALL(observer, OnAppFinished(_, _));
   second_foo.reset();
 
   // And deleting all the windows finishes the session.
   EXPECT_CALL(observer, OnWindowFinished(_, _));
-  EXPECT_CALL(observer, OnAppFinished(_));
+  EXPECT_CALL(observer, OnAppFinished(_, _));
   EXPECT_CALL(observer, OnSessionFinished());
   only_bar.reset();
 
@@ -167,7 +207,7 @@ TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
   vm_tools::apps::ApplicationList list;
   list.set_vm_name("vm");
   list.set_container_name("container");
-  list.set_vm_type(vm_tools::apps::ApplicationList_VmType_BOREALIS);
+  list.set_vm_type(vm_tools::apps::BOREALIS);
   vm_tools::apps::App* app = list.add_apps();
   app->set_desktop_file_id("foo.desktop");
   app->mutable_name()->add_values()->set_value("foo");
@@ -183,6 +223,59 @@ TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
       MakeAndTrackWindow("org.chromium.borealis.wmclass.foo", &window_manager);
 
   window_manager.RemoveObserver(&observer);
+}
+
+TEST_F(BorealisWindowManagerTest, DontMinimizeWhenWindowIsntBorealisClient) {
+  std::unique_ptr<views::Widget> active_widget =
+      SetupMinimizeTest((std::string(kBorealisWindowPrefix) + "foo.bar"));
+
+  std::string new_window_id = std::string(kBorealisWindowPrefix) + "foo.bar";
+
+  EXPECT_FALSE(
+      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
+}
+
+TEST_F(BorealisWindowManagerTest, DontMinimizeWhenActiveWindowIsNotBorealis) {
+  std::unique_ptr<views::Widget> active_widget =
+      SetupMinimizeTest("not.borealis.foo.bar");
+
+  std::string new_window_id = GetBorealisClientId();
+
+  EXPECT_FALSE(
+      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
+}
+
+TEST_F(BorealisWindowManagerTest, DontMinimizeWhenActiveWindowIsNotFullscreen) {
+  std::unique_ptr<views::Widget> active_widget =
+      SetupMinimizeTest(std::string(kBorealisWindowPrefix) + "foo.bar2");
+  active_widget->SetFullscreen(false);
+
+  std::string new_window_id = GetBorealisClientId();
+
+  EXPECT_FALSE(
+      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
+}
+
+TEST_F(BorealisWindowManagerTest,
+       DontMinimizeWhenActiveWindowIsBorealisClient) {
+  std::unique_ptr<views::Widget> active_widget =
+      SetupMinimizeTest(kFullscreenClientShellId);
+
+  std::string new_window_id = GetBorealisClientId();
+
+  EXPECT_FALSE(
+      BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
+}
+
+TEST_F(
+    BorealisWindowManagerTest,
+    MinimizeWhenActiveBorealisWindowIsFullscreenAndNewWindowIsBorealisClient) {
+  std::unique_ptr<views::Widget> active_widget =
+      SetupMinimizeTest(std::string(kBorealisWindowPrefix) + "foo.bar");
+
+  std::string new_window_id = GetBorealisClientId();
+
+  EXPECT_TRUE(BorealisWindowManager::ShouldNewWindowBeMinimized(new_window_id));
 }
 
 }  // namespace

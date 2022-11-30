@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/printing/printing_service.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
@@ -22,10 +22,10 @@ const mojo::Remote<printing::mojom::PrintingService>& GetPrintingService() {
     // Ensure that if the interface is ever disconnected (e.g. the service
     // process crashes) or goes idle for a short period of time -- meaning there
     // are no in-flight messages and no other interfaces bound through this
-    // one -- then we will reset |remote|, causing the service process to be
+    // one -- then we will reset `remote`, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
-    remote->reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote->reset_on_idle_timeout(base::Seconds(5));
   }
 
   return *remote;

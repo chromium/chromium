@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- Search resumption module dimens -->
+    <dimen name="search_resumption_module_header_padding_top" tools:ignore="UnusedResources">14dp</dimen>
+    <dimen name="search_resumption_module_header_padding_start" tools:ignore="UnusedResources">8dp</dimen>
+    <dimen name="search_resumption_module_suggestion_padding_start" tools:ignore="UnusedResources">22dp</dimen>
+    <dimen name="search_resumption_module_suggestion_margin_bottom" tools:ignore="UnusedResources">2dp</dimen>
+    <dimen name="search_resumption_module_margin_top" tools:ignore="UnusedResources">-11dp</dimen>
+    <dimen name="search_resumption_module_margin_bottom" tools:ignore="UnusedResources">30dp</dimen>
+    <dimen name="search_resumption_module_rounded_corner_radius_small" tools:ignore="UnusedResources">2dp</dimen>
+    <dimen name="search_resumption_module_rounded_corner_radius_big" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="search_resumption_module_option_button_height" tools:ignore="UnusedResources">20dp</dimen>
+</resources>

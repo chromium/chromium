@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,9 +112,7 @@ TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyCheckerPattern) {
           ->CreateBuffer();
   EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
   // Verify the result has the same number of checker tiles.
-  int num_tiles_across_x;
-  int num_tiles_across_y;
-  std::tie(num_tiles_across_x, num_tiles_across_y) =
+  auto [num_tiles_across_x, num_tiles_across_y] =
       GetCheckerPatternNumTilesAccross(
           CreateArgbBufferFromYuvsIOSurface(
               CVPixelBufferGetIOSurface(destination)),
@@ -155,9 +153,7 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyCheckerPattern) {
           ->CreateBuffer();
   EXPECT_TRUE(transferer.TransferImage(source->pixel_buffer, destination));
   // Verify the result has the same number of checker tiles.
-  int num_tiles_across_x;
-  int num_tiles_across_y;
-  std::tie(num_tiles_across_x, num_tiles_across_y) =
+  auto [num_tiles_across_x, num_tiles_across_y] =
       GetCheckerPatternNumTilesAccross(
           CreateArgbBufferFromYuvsIOSurface(
               CVPixelBufferGetIOSurface(destination)),
@@ -225,9 +221,7 @@ class PixelBufferTransfererParameterizedTest
 // YUVS -> X -> Y -> YUVS
 TEST_P(PixelBufferTransfererParameterizedTest,
        CanConvertFromXToYAndVerifyColor) {
-  OSType pixel_format_from;
-  OSType pixel_format_to;
-  std::tie(pixel_format_from, pixel_format_to) = GetParam();
+  auto [pixel_format_from, pixel_format_to] = GetParam();
   LOG(INFO) << "Running Test: " << MacFourCCToString(pixel_format_from)
             << " -> " << MacFourCCToString(pixel_format_to);
 

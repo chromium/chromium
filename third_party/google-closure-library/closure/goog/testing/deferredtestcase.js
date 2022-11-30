@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Defines DeferredTestCase class. By calling waitForDeferred(),
@@ -76,6 +68,7 @@ goog.require('goog.testing.TestCase');
  *    supports async testing using promises.
  */
 goog.testing.DeferredTestCase = function(opt_name) {
+  'use strict';
   goog.testing.AsyncTestCase.call(this, opt_name);
 };
 goog.inherits(goog.testing.DeferredTestCase, goog.testing.AsyncTestCase);
@@ -88,6 +81,7 @@ goog.inherits(goog.testing.DeferredTestCase, goog.testing.AsyncTestCase);
  * @return {!goog.testing.DeferredTestCase} The created DeferredTestCase.
  */
 goog.testing.DeferredTestCase.createAndInstall = function(opt_name) {
+  'use strict';
   var deferredTestCase = new goog.testing.DeferredTestCase(opt_name);
   goog.testing.TestCase.initializeTestRunner(deferredTestCase);
   return deferredTestCase;
@@ -101,6 +95,7 @@ goog.testing.DeferredTestCase.createAndInstall = function(opt_name) {
  * @throws Always throws a ControlBreakingException.
  */
 goog.testing.DeferredTestCase.prototype.onError = function(err) {
+  'use strict';
   this.doAsyncError(err);
 };
 
@@ -110,6 +105,7 @@ goog.testing.DeferredTestCase.prototype.onError = function(err) {
  * @protected
  */
 goog.testing.DeferredTestCase.prototype.onSuccess = function() {
+  'use strict';
   this.continueTesting();
 };
 
@@ -123,6 +119,7 @@ goog.testing.DeferredTestCase.prototype.onSuccess = function() {
  * @see goog.testing.AsyncTestCase#waitForAsync
  */
 goog.testing.DeferredTestCase.prototype.addWaitForAsync = function(msg, d) {
+  'use strict';
   d.addCallback(goog.bind(this.waitForAsync, this, msg));
 };
 
@@ -135,6 +132,7 @@ goog.testing.DeferredTestCase.prototype.addWaitForAsync = function(msg, d) {
  * @param {goog.async.Deferred=} opt_b The deferred object to wait for.
  */
 goog.testing.DeferredTestCase.prototype.waitForDeferred = function(a, opt_b) {
+  'use strict';
   var waitMsg;
   var deferred;
   switch (arguments.length) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,9 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
       StreamCreatedCallback stream_created_callback,
       base::OnceClosure deleter_callback);
 
+  MojoAudioInputStream(const MojoAudioInputStream&) = delete;
+  MojoAudioInputStream& operator=(const MojoAudioInputStream&) = delete;
+
   ~MojoAudioInputStream() override;
 
   void SetOutputDeviceForAec(const std::string& raw_output_device_id);
@@ -59,7 +62,6 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
       base::ReadOnlySharedMemoryRegion shared_memory_region,
       std::unique_ptr<base::CancelableSyncSocket> foreign_socket,
       bool initially_muted) override;
-  void OnMuted(int stream_id, bool is_muted) override;
   void OnStreamError(int stream_id) override;
 
   // Closes connection to client and notifies owner.
@@ -73,8 +75,6 @@ class MEDIA_MOJO_EXPORT MojoAudioInputStream
   mojo::Remote<mojom::AudioInputStreamClient> client_;
   std::unique_ptr<AudioInputDelegate> delegate_;
   base::WeakPtrFactory<MojoAudioInputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioInputStream);
 };
 
 }  // namespace media

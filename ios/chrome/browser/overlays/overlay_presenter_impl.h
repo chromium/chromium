@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/public/overlay_dismissal_callback.h"
@@ -40,7 +42,7 @@ class OverlayPresenterImpl : public BrowserObserver,
    public:
     ~Container() override;
 
-    // Returns the OverlayPresenterImpl for |modality|.
+    // Returns the OverlayPresenterImpl for `modality`.
     OverlayPresenterImpl* PresenterForModality(OverlayModality modality);
 
    private:
@@ -69,10 +71,10 @@ class OverlayPresenterImpl : public BrowserObserver,
   void SetActiveWebState(web::WebState* web_state,
                          ActiveWebStateChangeReason reason);
 
-  // Fetches the request queue for |web_state|, creating it if necessary.
+  // Fetches the request queue for `web_state`, creating it if necessary.
   OverlayRequestQueueImpl* GetQueueForWebState(web::WebState* web_state) const;
 
-  // Returns the front request for |web_state|'s request queue.
+  // Returns the front request for `web_state`'s request queue.
   OverlayRequest* GetFrontRequestForWebState(web::WebState* web_state) const;
 
   // Returns the request queue for the active WebState.
@@ -83,36 +85,36 @@ class OverlayPresenterImpl : public BrowserObserver,
 
   // Triggers the presentation of the overlay UI for the active request.  Does
   // nothing if there is no active request or if there is no UI delegate.  Must
-  // only be called when |presenting_| is false.
+  // only be called when `presenting_` is false.
   void PresentOverlayForActiveRequest();
 
-  // Notifies this object that the UI for |request| has finished being
-  // presented in |presentation_context|.  This function is called when the
+  // Notifies this object that the UI for `request` has finished being
+  // presented in `presentation_context`.  This function is called when the
   // OverlayPresentationCallback provided to the presentation context is
   // executed.
   void OverlayWasPresented(OverlayPresentationContext* presentation_context,
                            OverlayRequest* request);
 
-  // Notifies this object that the UI for |request| has finished being dismissed
-  // in |presentation_context| in for |reason|.  |queue| is |request|'s queue.
+  // Notifies this object that the UI for `request` has finished being dismissed
+  // in `presentation_context` in for `reason`.  `queue` is `request`'s queue.
   // This function is called when the OverlayDismissalCallback provided to
-  // |presentation_context| is executed.
+  // `presentation_context` is executed.
   void OverlayWasDismissed(OverlayPresentationContext* presentation_context,
                            OverlayRequest* request,
                            base::WeakPtr<OverlayRequestQueueImpl> queue,
                            OverlayDismissalReason reason);
 
-  // Used as a completion callback for |request|.  Cleans up state associated
-  // with |request|.
+  // Used as a completion callback for `request`.  Cleans up state associated
+  // with `request`.
   void OverlayWasCompleted(OverlayRequest* request, OverlayResponse* response);
 
-  // Cancels all overlays for |request|.
+  // Cancels all overlays for `request`.
   void CancelOverlayUIForRequest(OverlayRequest* request);
 
   // Cancels all overlays for the Browser.
   void CancelAllOverlayUI();
 
-  // Sets up and tears down observation and delegation for |web_state|'s request
+  // Sets up and tears down observation and delegation for `web_state`'s request
   // queue when it is added or removed from the Browser.
   void WebStateAddedToBrowser(web::WebState* web_state);
   void WebStateRemovedFromBrowser(web::WebState* web_state);
@@ -140,6 +142,8 @@ class OverlayPresenterImpl : public BrowserObserver,
       override;
   void OverlayPresentationContextDidChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context) override;
+  void OverlayPresentationContextDidEnableUI(
+      OverlayPresentationContext* presentation_context) override;
   void OverlayPresentationContextDidMoveToWindow(
       OverlayPresentationContext* presentation_context,
       UIWindow* window) override;
@@ -166,22 +170,22 @@ class OverlayPresenterImpl : public BrowserObserver,
   // true from the beginning of the presentation until the end of the
   // dismissal.
   bool presenting_ = false;
-  // Whether |detached_presenting_request_queue_| has replaced this
+  // Whether `detached_presenting_request_queue_` has replaced this
   // presenter as its delegate. This property will help manage a situation where
   // the WebState replaces another presenter with this presenter while an
   // overlay request is still presenting, requiring this presenter to cleanup
   // references to the request before the request is dismissed.
   bool detached_queue_replaced_delegate_ = false;
-  // The OverlayRequestQueue owning |presented_request_| has recently been
+  // The OverlayRequestQueue owning `presented_request_` has recently been
   // detached.
   OverlayRequestQueueImpl* detached_presenting_request_queue_ = nullptr;
   // The request whose overlay UI is currently being presented.  The value is
-  // set when |presenting_| is set to true, and is reset to nullptr when
-  // |presenting_| is reset to false.  May be different from GetActiveRequest()
+  // set when `presenting_` is set to true, and is reset to nullptr when
+  // `presenting_` is reset to false.  May be different from GetActiveRequest()
   // if the front request of the active WebState's request queue is updated
   // while overlay UI is be presented.
   OverlayRequest* presented_request_ = nullptr;
-  // Whether the WebState that owns |presented_request_| is being detached.
+  // Whether the WebState that owns `presented_request_` is being detached.
   bool detaching_presenting_web_state_ = false;
   // Used to extend the lifetime of an OverlayRequest after being removed from
   // a queue until the completion of its dismissal flow.
@@ -197,7 +201,11 @@ class OverlayPresenterImpl : public BrowserObserver,
   base::ObserverList<OverlayPresenterObserver,
                      /* check_empty= */ true>
       observers_;
-  base::WeakPtrFactory<OverlayPresenterImpl> weak_factory_;
+  // Scoped observation.
+  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::WeakPtrFactory<OverlayPresenterImpl> weak_factory_{this};
+  // Add new members before weak_factory_.
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_OVERLAY_PRESENTER_IMPL_H_

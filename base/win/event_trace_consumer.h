@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,7 +14,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace base {
@@ -38,6 +37,9 @@ class EtwTraceConsumerBase {
  public:
   // Constructs a closed consumer.
   EtwTraceConsumerBase() = default;
+
+  EtwTraceConsumerBase(const EtwTraceConsumerBase&) = delete;
+  EtwTraceConsumerBase& operator=(const EtwTraceConsumerBase&) = delete;
 
   ~EtwTraceConsumerBase() { Close(); }
 
@@ -80,8 +82,6 @@ class EtwTraceConsumerBase {
   static ULONG WINAPI ProcessBufferCallback(PEVENT_TRACE_LOGFILE buffer) {
     return ImplClass::ProcessBuffer(buffer);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceConsumerBase);
 };
 
 template <class ImplClass>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,10 @@ struct EVENTS_DEVICES_EXPORT InputDevice {
 
   // If the device is enabled, and whether events should be dispatched to UI.
   bool enabled = true;
+
+  // If the device is suspected to be identifying as another device type
+  // (Currently only applies to Mice pretending to be keyboards).
+  bool suspected_imposter = false;
 
   // The path to the input device in the sysfs filesystem.
   base::FilePath sys_path;

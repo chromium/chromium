@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,36 @@
 
 namespace ash {
 enum class AppListLaunchedFrom;
+enum class AppListOrderUpdateEvent;
+enum class AppListSortOrder;
+
+// UMA histograms that record the actions that clear the pref sort order.
+ASH_PUBLIC_EXPORT extern const char kClamshellPrefOrderClearActionHistogram[];
+ASH_PUBLIC_EXPORT extern const char kTabletPrefOrderClearActionHistogram[];
+
+// UMA histograms that record app list pref sort order when a session starts.
+// Exposed in this header because they are needed in tests.
+ASH_PUBLIC_EXPORT extern const char
+    kClamshellAppListSortOrderOnSessionStartHistogram[];
+ASH_PUBLIC_EXPORT extern const char
+    kTabletAppListSortOrderOnSessionStartHistogram[];
+
+// The UMA histogram that records the time duration between the app list sort
+// education nudge show and the first sort usage.
+ASH_PUBLIC_EXPORT extern const char kAppListSortDiscoveryDurationAfterNudge[];
+
+// Similar to `kAppListSortDiscoveryDurationAfterNudge`. The only difference is
+// that the metric data is separated by the tablet mode state under which the
+// reorder education nudge shows.
+ASH_PUBLIC_EXPORT extern const char
+    kAppListSortDiscoveryDurationAfterNudgeClamshell[];
+ASH_PUBLIC_EXPORT extern const char
+    kAppListSortDiscoveryDurationAfterNudgeTablet[];
+
+// The UMA histogram that records the time duration between the earliest user
+// session activation with the app list sort enabled and the first sort usage.
+ASH_PUBLIC_EXPORT extern const char
+    kAppListSortDiscoveryDurationAfterActivation[];
 
 // The type of the ChromeSearchResult. This is used for logging so do not
 // change the order of this enum. If you add to this enum update
@@ -92,20 +122,36 @@ enum SearchResultType {
   REMOTE_APP,
   // A Borealis App Result.
   BOREALIS_APP,
-  // A Help App (aka Explore) Result.
-  HELP_APP,
+  // A Help App (aka Explore) Result. For default or help results. There are
+  // different search result types for Updates and Discover.
+  HELP_APP_DEFAULT,
   // A result from omnibox for query suggestion.
   OMNIBOX_SEARCH_SUGGEST_ENTITY,
   // A result from omnibox for suggested navigation.
   OMNIBOX_NAVSUGGEST,
-  // An answer rich entity result from omnibox.
-  OMNIBOX_RICH_ENTITY_ANSWER,
-  // A rich entity result from omnibox with image icon.
-  OMNIBOX_RICH_ENTITY_IMAGE_ENTITY,
+  // An answer result from Omnibox.
+  OMNIBOX_ANSWER,
+  // A calculator result from Omnibox.
+  OMNIBOX_CALCULATOR,
   // A local file search result.
   FILE_SEARCH,
   // A Drive file search result.
   DRIVE_SEARCH,
+  // A Help App result about the "What's new" (Updates) page.
+  HELP_APP_UPDATES,
+  // A Help App result about the "Discover" page.
+  HELP_APP_DISCOVER,
+  // A keyboard shortcut result from the Keyboard Shortcut provider.
+  KEYBOARD_SHORTCUT,
+  // A keyboard shortcut result from the Keyboard Shortcut provider.
+  OPEN_TAB,
+  // Null result type that indicates that user did not interact with any results
+  // in some metrics.
+  NO_RESULT,
+  // A game search result.
+  GAME_SEARCH,
+  // A search result for OS personalization options.
+  PERSONALIZATION,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
@@ -128,6 +174,17 @@ ASH_PUBLIC_EXPORT void RecordLauncherClickedSearchQueryLength(int query_length);
 ASH_PUBLIC_EXPORT void RecordSuccessfulAppLaunchUsingSearch(
     AppListLaunchedFrom launched_from,
     int query_length);
+
+ASH_PUBLIC_EXPORT void ReportPrefOrderClearAction(
+    AppListOrderUpdateEvent action,
+    bool in_tablet);
+
+ASH_PUBLIC_EXPORT void RecordFirstSearchResult(SearchResultType type,
+                                               bool in_tablet);
+
+ASH_PUBLIC_EXPORT void ReportPrefSortOrderOnSessionStart(
+    ash::AppListSortOrder permanent_order,
+    bool in_tablet);
 
 }  // namespace ash
 

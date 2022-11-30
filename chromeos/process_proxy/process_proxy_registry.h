@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromeos/process_proxy/process_proxy.h"
 
@@ -44,6 +43,9 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
 
   static ProcessProxyRegistry* Get();
 
+  ProcessProxyRegistry(const ProcessProxyRegistry&) = delete;
+  ProcessProxyRegistry& operator=(const ProcessProxyRegistry&) = delete;
+
   // Converts the id returned by OpenProcess() to the system pid.
   static int ConvertToSystemPID(const std::string& id);
 
@@ -52,14 +54,16 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
   // Starts new ProcessProxy (which starts new process).
-  // Returns true if the process is created sucessfully, false otherwise.
+  // Returns true if the process is created successfully, false otherwise.
   // The unique process id is passed back via |id|.
   bool OpenProcess(const base::CommandLine& cmdline,
                    const std::string& user_id_hash,
                    const OutputCallback& callback,
                    std::string* id);
   // Sends data to the process identified by |id|.
-  bool SendInput(const std::string& id, const std::string& data);
+  void SendInput(const std::string& id,
+                 const std::string& data,
+                 base::OnceCallback<void(bool)> callback);
   // Stops the process identified by |id|.
   bool CloseProcess(const std::string& id);
   // Reports terminal resize to process proxy.
@@ -93,8 +97,6 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
   std::unique_ptr<base::Thread> watcher_thread_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessProxyRegistry);
 };
 
 }  // namespace chromeos

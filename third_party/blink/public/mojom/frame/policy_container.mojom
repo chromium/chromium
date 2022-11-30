@@ -1,17 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
 import "services/network/public/mojom/content_security_policy.mojom";
+import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 
+// This are the document policies contained within PolicyContainer. These are
+// owned by the browser, and remain constant for the lifetime of the document
+// except for referrer_policy and content_security_policies which might be
+// updated through meta tags (see PolicyContainerHost).
 struct PolicyContainerPolicies {
-  network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
-  network.mojom.IPAddressSpace ip_address_space = network.mojom.IPAddressSpace.kUnknown;
+  network.mojom.CrossOriginEmbedderPolicyValue cross_origin_embedder_policy =
+    network.mojom.CrossOriginEmbedderPolicyValue.kNone;
+  network.mojom.ReferrerPolicy referrer_policy =
+    network.mojom.ReferrerPolicy.kDefault;
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
+  bool is_anonymous = false;
+  network.mojom.WebSandboxFlags sandbox_flags =
+    network.mojom.WebSandboxFlags.kNone;
+  // This is necessary for service worker restored from database to perform
+  // Private Network Access checks.
+  network.mojom.IPAddressSpace ip_address_space =
+      network.mojom.IPAddressSpace.kUnknown;
+  bool can_navigate_top_without_user_gesture = true;
 };
 
 // This interface is implemented in the browser process. It defines methods to

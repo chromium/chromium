@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
-#define UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
+#ifndef UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_
+#define UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_
 
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
@@ -22,6 +22,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
  public:
   explicit CALayerTreeCoordinator(bool allow_remote_layers,
                                   bool allow_av_sample_buffer_display_layer);
+
+  CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
+  CALayerTreeCoordinator& operator=(const CALayerTreeCoordinator&) = delete;
+
   ~CALayerTreeCoordinator();
 
   // Set the composited frame's size.
@@ -60,10 +64,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   // Frame that is currently being displayed on the screen.
   std::unique_ptr<CARendererLayerTree> current_ca_renderer_layer_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(CALayerTreeCoordinator);
 };
 
 }  // namespace ui
 
-#endif  // UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_HOST_H_
+#endif  // UI_ACCELERATED_WIDGET_MAC_CA_LAYER_TREE_COORDINATOR_H_

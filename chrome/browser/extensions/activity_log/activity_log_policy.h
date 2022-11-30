@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_database.h"
@@ -70,6 +70,9 @@ class ActivityLogPolicy {
   // cleaner to pass thread_id as a param of ReadData directly.
   explicit ActivityLogPolicy(Profile* profile);
 
+  ActivityLogPolicy(const ActivityLogPolicy&) = delete;
+  ActivityLogPolicy& operator=(const ActivityLogPolicy&) = delete;
+
   // Instead of a public destructor, ActivityLogPolicy objects have a Close()
   // method which will cause the object to be deleted (but may do so on another
   // thread or in a deferred fashion).
@@ -89,13 +92,17 @@ class ActivityLogPolicy {
   // these methods more convenient from within a policy, but they are public.
   class Util {
    public:
+    Util() = delete;
+    Util(const Util&) = delete;
+    Util& operator=(const Util&) = delete;
+
     // A collection of API calls, used to specify allowlists for argument
     // filtering.
     typedef std::set<std::pair<Action::ActionType, std::string> > ApiSet;
 
     // Serialize a Value as a JSON string.  Returns an empty string if value is
     // null.
-    static std::string Serialize(const base::Value* value);
+    static std::string Serialize(absl::optional<base::ValueView> value);
 
     // Removes potentially privacy-sensitive data that should not be logged.
     // This should generally be called on an Action before logging, unless
@@ -120,9 +127,6 @@ class ActivityLogPolicy {
                                           int days_ago,
                                           int64_t* early_bound,
                                           int64_t* late_bound);
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(Util);
   };
 
  protected:
@@ -139,9 +143,7 @@ class ActivityLogPolicy {
   // Support for a mock clock for testing purposes.  This is used by ReadData
   // to determine the date for "today" when when interpreting date ranges to
   // fetch.  This has no effect on batching of writes to the database.
-  base::Clock* testing_clock_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityLogPolicy);
+  raw_ptr<base::Clock> testing_clock_ = nullptr;
 };
 
 // A subclass of ActivityLogPolicy which is designed for policies that use
@@ -221,7 +223,7 @@ class ActivityLogDatabasePolicy : public ActivityLogPolicy,
  private:
   // See the comments for the ActivityDatabase class for a discussion of how
   // database cleanup runs.
-  ActivityDatabase* db_;
+  raw_ptr<ActivityDatabase> db_;
   base::FilePath database_path_;
 };
 

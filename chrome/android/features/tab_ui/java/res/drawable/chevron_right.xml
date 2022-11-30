@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+android:width="24dp"
+android:height="24dp"
+android:viewportWidth="24"
+android:viewportHeight="24"
+android:tint="@macro/default_icon_color">
+<path
+    android:fillColor="@android:color/white"
+    android:pathData="M7.59,18.59L9,20l8,-8 -8,-8 -1.41,1.41L14.17,12"/>
+</vector>

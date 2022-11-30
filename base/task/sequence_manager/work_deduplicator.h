@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ class BASE_EXPORT WorkDeduplicator {
   // Creates an unbound WorkDeduplicator. BindToCurrentThread must be called
   // before work can be scheduled.
   explicit WorkDeduplicator(
-      scoped_refptr<AssociatedThreadId> associated_thread);
+      scoped_refptr<const AssociatedThreadId> associated_thread);
 
   ~WorkDeduplicator();
 
@@ -136,7 +136,7 @@ class BASE_EXPORT WorkDeduplicator {
   std::atomic<int> state_{State::kUnbound};
   int state_ordered_lock_id_ = 0;
 
-  scoped_refptr<AssociatedThreadId> associated_thread_;
+  const scoped_refptr<const AssociatedThreadId> associated_thread_;
 };
 
 }  // namespace internal

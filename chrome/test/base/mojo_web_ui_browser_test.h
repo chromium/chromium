@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
 
-#include <string>
-
 #include "chrome/test/base/web_ui_browser_test.h"
-#include "chrome/test/data/webui/web_ui_test.mojom.h"
 
 // The runner of Mojo WebUI javascript based tests. The main difference between
 // this and WebUIBrowserTest is that tests subclassing from this class use a
@@ -19,7 +16,6 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   ~MojoWebUIBrowserTest() override;
 
   void set_use_mojo_modules() { use_mojo_modules_ = true; }
-  void set_use_mojo_lite_bindings() { use_mojo_lite_bindings_ = true; }
 
   // WebUIBrowserTest:
   void BrowsePreload(const GURL& browse_to) override;
@@ -31,7 +27,6 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   std::unique_ptr<WebUITestContentBrowserClient> test_content_browser_client_;
 
   bool use_mojo_modules_ = false;
-  bool use_mojo_lite_bindings_ = false;
 };
 
 #endif  // CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_

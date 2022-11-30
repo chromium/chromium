@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,61 +146,61 @@ INSTANTIATE_TEST_SUITE_P(WindowProperties,
 
 TEST_P(BindingSecurityCounterTest, CrossOriginWindow) {
   LoadWindowAndAccessProperty(OriginDisposition::CrossOrigin, GetParam());
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
 TEST_P(BindingSecurityCounterTest, SameOriginWindow) {
   LoadWindowAndAccessProperty(OriginDisposition::SameOrigin, GetParam());
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
 TEST_P(BindingSecurityCounterTest, SameOriginDomainWindow) {
   LoadWindowAndAccessProperty(OriginDisposition::SameOriginDomain, GetParam());
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
 TEST_P(BindingSecurityCounterTest, CrossOriginFrame) {
   LoadFrameAndAccessProperty(OriginDisposition::CrossOrigin, GetParam());
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
 TEST_P(BindingSecurityCounterTest, SameOriginFrame) {
   LoadFrameAndAccessProperty(OriginDisposition::SameOrigin, GetParam());
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 
 TEST_P(BindingSecurityCounterTest, SameOriginDomainFrame) {
   LoadFrameAndAccessProperty(OriginDisposition::SameOriginDomain, GetParam());
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccess));
-  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_FALSE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kCrossOriginPropertyAccessFromOpener));
-  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().HasRecordedMeasurement(
+  EXPECT_TRUE(GetDocument().Loader()->GetUseCounter().IsCounted(
       WebFeature::kDocumentDomainEnabledCrossOriginAccess));
 }
 

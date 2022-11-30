@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -58,29 +58,32 @@ AppListControllerDelegate::~AppListControllerDelegate() {}
 
 void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                                   const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK_NE(proxy->AppRegistryCache().GetAppType(app_id),
-            apps::mojom::AppType::kUnknown);
+  auto app_type = apps::AppServiceProxyFactory::GetForProfile(profile)
+                      ->AppRegistryCache()
+                      .GetAppType(app_id);
+  DCHECK_NE(app_type, apps::AppType::kUnknown);
 
-  web_app::AppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile)->registrar();
-  if (registrar.IsInstalled(app_id)) {
-    chrome::ShowAppManagementPage(
-        profile, app_id,
-        AppManagementEntryPoint::kAppListContextMenuAppInfoWebApp);
+  if (app_type == apps::AppType::kWeb ||
+      app_type == apps::AppType::kSystemWeb) {
+    chrome::ShowAppManagementPage(profile, app_id,
+                                  ash::settings::AppManagementEntryPoint::
+                                      kAppListContextMenuAppInfoWebApp);
   } else {
-    chrome::ShowAppManagementPage(
-        profile, app_id,
-        AppManagementEntryPoint::kAppListContextMenuAppInfoChromeApp);
+    chrome::ShowAppManagementPage(profile, GetEscapedAppId(app_id, app_type),
+                                  ash::settings::AppManagementEntryPoint::
+                                      kAppListContextMenuAppInfoChromeApp);
   }
 }
 
 void AppListControllerDelegate::UninstallApp(Profile* profile,
                                              const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->Uninstall(app_id, GetAppListWindow());
+  if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
+        app_id, apps::UninstallSource::kAppList, GetAppListWindow());
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
+        app_id, apps::mojom::UninstallSource::kAppList, GetAppListWindow());
+  }
 }
 
 void AppListControllerDelegate::ShowOptionsPage(Profile* profile,

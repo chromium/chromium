@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class GURL;
 // Detail text for content view. Rendered below text.
 @property(nonatomic, copy) NSString* detailText;
 // Text for the time stamp. Rendered aligned to trailing edge at same level as
-// |text|.
+// `text`.
 @property(nonatomic, copy) NSString* timeText;
 // URL of the associated history entry.
 @property(nonatomic, assign) GURL URL;

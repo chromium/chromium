@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,29 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
 namespace {
 
 // Appearance.
-constexpr float kInkDropHighlightOpacity = 0.08f;
+constexpr int kFocusRingStrokeWidth = 2;
 constexpr int kInkDropInset = 2;
 
 }  // namespace
@@ -40,24 +48,21 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
                                              base::Unretained(this))),
       listener_(listener),
       id_(button_id) {
-  constexpr SkColor kInkDropBaseColor = SK_ColorBLACK;
-  constexpr float kInkDropVisibleOpacity = 0.06f;
-
-  // Avoid drawing default focus rings since Assistant buttons use
-  // a custom highlight on focus.
+  // Avoid drawing default focus ring and draw customized focus instead.
   SetInstallFocusRingOnFocus(false);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+
+  // Inkdrop only on click.
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  SetHasInkDropActionOnClick(true);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/false);
+  views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
 
   // Image.
   SetFlipCanvasOnPaintForRTLUI(false);
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-
-  // Ink drop.
-  SetInkDropMode(InkDropMode::ON);
-  SetHasInkDropActionOnClick(true);
-  SetInkDropBaseColor(kInkDropBaseColor);
-  SetInkDropVisibleOpacity(kInkDropVisibleOpacity);
-  views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
 }
 
 AssistantButton::~AssistantButton() = default;
@@ -81,42 +86,91 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
         l10n_util::GetStringUTF16(params.tooltip_id.value()));
   }
 
-  button->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(icon, params.icon_size_in_dip, params.icon_color));
   button->SetPreferredSize(gfx::Size(params.size_in_dip, params.size_in_dip));
+
+  gfx::IconDescription icon_description(icon, params.icon_size_in_dip,
+                                        gfx::kPlaceholderColor);
+
+  if (params.icon_color_type.has_value()) {
+    // If we have an `icon_color_type`, that color needs to be resolved in
+    // OnThemeChanged(). Since we can't do anything else now, just set the data
+    // and return the button.
+    button->icon_color_type_ = params.icon_color_type.value();
+    // We cannot copy IconDescription as copy assignment operator of
+    // IconDescription is deleted since it has a non-static reference member,
+    // icon.
+    button->icon_description_.emplace(icon_description);
+    return button;
+  }
+
+  // `icon_color` does not change so we can set the color and icon for the
+  // button now.
+  icon_description.color = params.icon_color;
+
+  button->SetImage(views::Button::STATE_NORMAL,
+                   gfx::CreateVectorIcon(icon_description));
   return button;
+}
+
+void AssistantButton::OnBlur() {
+  views::ImageButton::OnBlur();
+  SchedulePaint();
 }
 
 void AssistantButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Note that the current assumption is that button bounds are square.
   DCHECK_EQ(width(), height());
-  SetFocusPainter(views::Painter::CreateSolidRoundRectPainter(
-      SkColorSetA(GetInkDropBaseColor(), 0xff * kInkDropHighlightOpacity),
-      width() / 2 - kInkDropInset, gfx::Insets(kInkDropInset)));
 }
 
-std::unique_ptr<views::InkDrop> AssistantButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      std::make_unique<views::InkDropImpl>(this, size());
-  ink_drop->SetAutoHighlightMode(
-      views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE);
-  return ink_drop;
+void AssistantButton::OnFocus() {
+  views::ImageButton::OnFocus();
+  SchedulePaint();
 }
 
-std::unique_ptr<views::InkDropHighlight>
-AssistantButton::CreateInkDropHighlight() const {
-  auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(size()), GetInkDropBaseColor());
-  highlight->set_visible_opacity(kInkDropHighlightOpacity);
-  return highlight;
+void AssistantButton::OnPaintBackground(gfx::Canvas* canvas) {
+  // Hide focus ring when keyboard traversal is not enabled.
+  // This is specifically applicable to tablet mode when
+  // keyboard traversal may be off.
+  const bool hide_focus_ring_when_not_keyboard_traversal =
+      !AssistantUiController::Get()->GetModel()->keyboard_traversal_mode();
+  const bool should_show_focus_ring =
+      HasFocus() && !hide_focus_ring_when_not_keyboard_traversal;
+
+  if (should_show_focus_ring) {
+    cc::PaintFlags circle_flags;
+    circle_flags.setAntiAlias(true);
+    circle_flags.setColor(
+        GetColorProvider()->GetColor(cros_tokens::kFocusRingColor));
+    circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    circle_flags.setStrokeWidth(kFocusRingStrokeWidth);
+    canvas->DrawCircle(GetLocalBounds().CenterPoint(),
+                       width() / 2 - kFocusRingStrokeWidth, circle_flags);
+  }
 }
 
-std::unique_ptr<views::InkDropRipple> AssistantButton::CreateInkDropRipple()
-    const {
-  return std::make_unique<views::FloodFillInkDropRipple>(
-      size(), gfx::Insets(kInkDropInset), GetInkDropCenterBasedOnLastEvent(),
-      GetInkDropBaseColor(), GetInkDropVisibleOpacity());
+void AssistantButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  // Updates inkdrop color and opacity.
+  const bool is_enabled = features::IsProductivityLauncherEnabled();
+  const bool base_color =
+      is_enabled ? GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor)
+                 : SK_ColorBLACK;
+  const float opacity = is_enabled ? StyleUtil::GetInkDropOpacity()
+                                   : StyleUtil::kDarkInkDropOpacity;
+
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColor(base_color);
+  ink_drop->SetVisibleOpacity(opacity);
+
+  if (!icon_color_type_.has_value() || !icon_description_.has_value())
+    return;
+
+  // This might be the first time the image is rendered since `icon_color_type_`
+  // may not resolvable until now.
+  icon_description_->color = GetColorProvider()->GetColor(*icon_color_type_);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(icon_description_.value()));
 }
 
 void AssistantButton::OnButtonPressed() {

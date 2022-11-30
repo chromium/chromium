@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "base/task/thread_pool.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
 
 #include "base/callback.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/driver/sync_service.h"
@@ -42,7 +43,7 @@ bool IsDesktop(sync_pb::SyncEnums::DeviceType type) {
 
 bool IsStale(const syncer::DeviceInfo& device) {
   if (base::FeatureList::IsEnabled(kSharingMatchPulseInterval)) {
-    base::TimeDelta pulse_delta = base::TimeDelta::FromHours(
+    base::TimeDelta pulse_delta = base::Hours(
         IsDesktop(device.device_type()) ? kSharingPulseDeltaDesktopHours.Get()
                                         : kSharingPulseDeltaAndroidHours.Get());
     base::Time min_updated_time =
@@ -51,8 +52,7 @@ bool IsStale(const syncer::DeviceInfo& device) {
   }
 
   const base::Time min_updated_time =
-      base::Time::Now() -
-      base::TimeDelta::FromHours(kSharingDeviceExpirationHours.Get());
+      base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
 }
 }  // namespace

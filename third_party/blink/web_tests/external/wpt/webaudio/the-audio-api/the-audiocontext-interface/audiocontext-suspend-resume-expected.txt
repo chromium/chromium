@@ -16,13 +16,13 @@ PASS > [test-resume] Test resume() for offline context
 PASS   p2 = offlineContext.resume() did not throw an exception.
 PASS   p2 instanceof Promise is true.
 PASS   After resume, offlineContext.state is equal to suspended.
-PASS   p2 rejected correctly with InvalidStateError: cannot resume an offline context that has not started.
+PASS   p2 rejected correctly with InvalidStateError: Failed to execute 'resume' on 'OfflineAudioContext': cannot resume an offline context that has not started.
 PASS < [test-resume] All assertions passed. (total 4 assertions)
 PASS > [test-after-close] Test state after context closed
 PASS   p3 = offlineContext.startRendering() did not throw an exception.
 PASS   After close, offlineContext.state is equal to closed.
 PASS   offlineContext.suspend() rejected correctly with TypeError: Failed to execute 'suspend' on 'OfflineAudioContext': 1 argument required, but only 0 present..
-PASS   offlineContext.resume() rejected correctly with InvalidStateError: cannot resume an offline context that has not started.
+PASS   offlineContext.resume() rejected correctly with InvalidStateError: Failed to execute 'resume' on 'OfflineAudioContext': cannot resume an offline context that has not started.
 PASS < [test-after-close] All assertions passed. (total 4 assertions)
 PASS > [resume-running-context] Test resuming a running context
 PASS   Create online context did not throw an exception.

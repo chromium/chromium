@@ -1,4 +1,4 @@
-// Copyright 2016 The Crashpad Authors. All rights reserved.
+// Copyright 2016 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,12 @@
 
 #include <inttypes.h>
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "util/file/file_io.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "util/ios/ios_intermediate_dump_format.h"
+#endif
 
 namespace crashpad {
 
@@ -30,6 +34,10 @@ namespace crashpad {
 //! Chromium's base, they allow integration with its metrics system.
 class Metrics {
  public:
+  Metrics() = delete;
+  Metrics(const Metrics&) = delete;
+  Metrics& operator=(const Metrics&) = delete;
+
   //! \brief Values for CrashReportPending().
   //!
   //! \note These are used as metrics enumeration values, so new values should
@@ -54,6 +62,12 @@ class Metrics {
 
   //! \brief Reports on a crash upload attempt, and if it succeeded.
   static void CrashUploadAttempted(bool successful);
+
+#if BUILDFLAG(IS_APPLE) || DOXYGEN
+  //! \brief Records error codes from
+  //!     `+[NSURLConnection sendSynchronousRequest:returningResponse:error:]`.
+  static void CrashUploadErrorCode(int error_code);
+#endif
 
   //! \brief Values for CrashUploadSkipped().
   //!
@@ -80,6 +94,10 @@ class Metrics {
     //! \brief There was an error between accessing the report from the database
     //!     and uploading it to the crash server.
     kPrepareForUploadFailed = 5,
+
+    //! \brief The upload of the crash failed during communication with the
+    //!     server, but the upload can be retried later.
+    kUploadFailedButCanRetry = 6,
 
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
@@ -195,8 +213,15 @@ class Metrics {
   //! This is currently only reported on Windows.
   static void HandlerCrashed(uint32_t exception_code);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Metrics);
+#if BUILDFLAG(IS_IOS) || DOXYGEN
+  //! \brief Records a missing key from an intermediate dump.
+  static void MissingIntermediateDumpKey(
+      const internal::IntermediateDumpKey& key);
+
+  //! \brief Records a key with an invalid key size from an intermediate dump.
+  static void InvalidIntermediateDumpKeySize(
+      const internal::IntermediateDumpKey& key);
+#endif
 };
 
 }  // namespace crashpad

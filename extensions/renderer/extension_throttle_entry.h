@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 
@@ -62,6 +61,9 @@ class ExtensionThrottleEntry {
   // It is only used by unit tests.
   ExtensionThrottleEntry(const std::string& url_id,
                          const net::BackoffEntry::Policy* backoff_policy);
+
+  ExtensionThrottleEntry(const ExtensionThrottleEntry&) = delete;
+  ExtensionThrottleEntry& operator=(const ExtensionThrottleEntry&) = delete;
 
   virtual ~ExtensionThrottleEntry();
 
@@ -154,8 +156,6 @@ class ExtensionThrottleEntry {
 
   // Canonicalized URL string that this entry is for; used for logging only.
   const std::string url_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionThrottleEntry);
 };
 
 }  // namespace extensions

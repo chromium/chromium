@@ -1,0 +1,5 @@
+The embedder_support component is for small shims and minimal glue layer on top
+of the Content API that do not clearly justify a component of their own. Before
+adding additional features to this component, consider whether the feature
+justifies a new component instead (e.g. more than 5 files would be a good
+indicator that a new component could be used instead)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 namespace syncer {
-enum class KeyRetrievalTriggerForUMA;
+enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
 
 // Protocol used to display sync-related UI.
@@ -23,11 +23,19 @@ enum class KeyRetrievalTriggerForUMA;
 // Presents the Google services settings.
 - (void)showGoogleServicesSettings;
 
+// Presents the Account settings.
+- (void)showAccountSettings;
+
 // Presents the Trusted Vault reauthentication dialog.
-// |retrievalTrigger| UI elements where the trusted vault reauth has been
-// triggered.
-- (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
-    (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger;
+// `trigger` UI elements where the trusted vault reauth has been triggered.
+- (void)showTrustedVaultReauthForFetchKeysWithTrigger:
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
+
+// Presents the Trusted Vault degraded recoverability dialog (to enroll
+// additional recovery factors).
+// `trigger` UI elements where the trusted vault reauth has been triggered.
+- (void)showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+    (syncer::TrustedVaultUserActionTriggerForUMA)trigger;
 
 @end
 

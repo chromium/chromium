@@ -1,0 +1,32 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("kerberos") {
+  defines = [ "IS_KERBEROS_IMPL" ]
+
+  deps = [
+    ":kerberos_proto",
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_kerberos_client.cc",
+    "fake_kerberos_client.h",
+    "kerberos_client.cc",
+    "kerberos_client.h",
+  ]
+}
+
+proto_library("kerberos_proto") {
+  sources =
+      [ "//third_party/cros_system_api/dbus/kerberos/kerberos_service.proto" ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/kerberos"
+}

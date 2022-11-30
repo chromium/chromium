@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_incident.h"
 
@@ -28,6 +27,9 @@ class MacSignatureEvaluator {
   // string, which describes the identity of the signer.
   MacSignatureEvaluator(const base::FilePath& signed_object_path,
                         const std::string& requirement);
+
+  MacSignatureEvaluator(const MacSignatureEvaluator&) = delete;
+  MacSignatureEvaluator& operator=(const MacSignatureEvaluator&) = delete;
 
   ~MacSignatureEvaluator();
 
@@ -62,8 +64,6 @@ class MacSignatureEvaluator {
 
   // The requirement object constructed from the requirement string.
   base::ScopedCFTypeRef<SecRequirementRef> requirement_;
-
-  DISALLOW_COPY_AND_ASSIGN(MacSignatureEvaluator);
 };
 
 }  // namespace safe_browsing

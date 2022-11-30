@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +21,7 @@
 #include "services/service_manager/service_manager.h"
 #include "services/service_manager/tests/service_manager/test_manifests.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 namespace {
@@ -34,6 +35,10 @@ class TestListener : public mojom::ServiceManagerListener {
   explicit TestListener(
       mojo::PendingReceiver<mojom::ServiceManagerListener> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestListener(const TestListener&) = delete;
+  TestListener& operator=(const TestListener&) = delete;
+
   ~TestListener() override = default;
 
   void WaitForInit() { wait_for_init_loop_.Run(); }
@@ -68,17 +73,19 @@ class TestListener : public mojom::ServiceManagerListener {
   mojo::Receiver<mojom::ServiceManagerListener> receiver_;
   base::RunLoop wait_for_init_loop_;
 
-  base::Optional<base::RunLoop> wait_for_start_loop_;
-  Identity* wait_for_start_identity_ = nullptr;
-  uint32_t* wait_for_start_pid_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestListener);
+  absl::optional<base::RunLoop> wait_for_start_loop_;
+  raw_ptr<Identity> wait_for_start_identity_ = nullptr;
+  raw_ptr<uint32_t> wait_for_start_pid_ = nullptr;
 };
 
 class TestTargetService : public Service {
  public:
   explicit TestTargetService(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestTargetService(const TestTargetService&) = delete;
+  TestTargetService& operator=(const TestTargetService&) = delete;
+
   ~TestTargetService() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
@@ -98,8 +105,6 @@ class TestTargetService : public Service {
 
   ServiceReceiver receiver_;
   base::RunLoop wait_for_disconnect_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTargetService);
 };
 
 class ServiceManagerListenerTest : public testing::Test, public Service {
@@ -107,6 +112,11 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
   ServiceManagerListenerTest()
       : service_manager_(GetTestManifests(),
                          ServiceManager::ServiceExecutablePolicy::kSupported) {}
+
+  ServiceManagerListenerTest(const ServiceManagerListenerTest&) = delete;
+  ServiceManagerListenerTest& operator=(const ServiceManagerListenerTest&) =
+      delete;
+
   ~ServiceManagerListenerTest() override = default;
 
   Connector* connector() { return service_receiver_.GetConnector(); }
@@ -149,8 +159,6 @@ class ServiceManagerListenerTest : public testing::Test, public Service {
   ServiceManager service_manager_;
   ServiceReceiver service_receiver_{this};
   std::unique_ptr<TestListener> listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerListenerTest);
 };
 
 TEST_F(ServiceManagerListenerTest, InstancesHaveUniqueIdentity) {

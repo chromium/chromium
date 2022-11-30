@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,25 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
+#include "media/base/video_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 using media::VideoFrame;
 using media::VideoPixelFormat;
@@ -45,6 +52,8 @@ void VideoCaptureOverlay::SetImageAndBounds(const SkBitmap& image,
   image_ = image;
   bounds_ = bounds;
 
+  image_.setImmutable();
+
   // Reset the cached sprite since the source image has been changed.
   sprite_ = nullptr;
 
@@ -52,7 +61,7 @@ void VideoCaptureOverlay::SetImageAndBounds(const SkBitmap& image,
   if (!new_rect.IsEmpty() || !old_rect.IsEmpty()) {
     frame_source_->InvalidateRect(old_rect);
     frame_source_->InvalidateRect(new_rect);
-    frame_source_->RequestRefreshFrame();
+    frame_source_->RefreshNow();
   }
 }
 
@@ -64,7 +73,7 @@ void VideoCaptureOverlay::SetBounds(const gfx::RectF& bounds) {
     if (!new_rect.IsEmpty() || !old_rect.IsEmpty()) {
       frame_source_->InvalidateRect(old_rect);
       frame_source_->InvalidateRect(new_rect);
-      frame_source_->RequestRefreshFrame();
+      frame_source_->RefreshNow();
     }
   }
 }
@@ -98,90 +107,182 @@ gfx::Rect ToAbsoluteBoundsForI420(const gfx::RectF& relative,
                    std::max(0, snapped_bottom - snapped_top));
 }
 
-// Shrinks the given |rect| by the minimum amount necessary to align its corners
-// to even-numbered coordinates. |rect| is assumed to have non-negative values
-// for its coordinates.
-gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect) {
-  DCHECK(gfx::Rect(0, 0, media::limits::kMaxDimension,
-                   media::limits::kMaxDimension)
-             .Contains(rect));
-  const int left = rect.x() + (rect.x() % 2);
-  const int top = rect.y() + (rect.y() % 2);
-  const int right = rect.right() - (rect.right() % 2);
-  const int bottom = rect.bottom() - (rect.bottom() % 2);
-  return gfx::Rect(left, top, std::max(0, right - left),
-                   std::max(0, bottom - top));
+// Uses the mapping of a region R that exists in coordinate system A
+// as |from_region| and in coordinate system B as |to_region|. The |source|
+// rectangle is in coordinate system A and mapped to coordinate system B
+// in three steps:
+//   1. translate to remove the origin of the old coordinate space.
+//   2. scale values to the new space.
+//   3. translate to add the origin of the new coordinate space.
+gfx::Rect Transform(const gfx::Rect& source,
+                    const gfx::Rect& from_region,
+                    const gfx::Rect& to_region) {
+  // Transforming from or to a zero space is undefined behavior.
+  if (from_region.IsEmpty() || to_region.IsEmpty())
+    return {};
+
+  const gfx::Vector2dF scale{static_cast<float>(to_region.width()) /
+                                 static_cast<float>(from_region.width()),
+                             static_cast<float>(to_region.height()) /
+                                 static_cast<float>(from_region.height())};
+
+  const gfx::Rect old_translated =
+      gfx::Rect(source.x() - from_region.x(), source.y() - from_region.y(),
+                source.width(), source.height());
+  const gfx::Rect scaled =
+      gfx::ScaleToEnclosingRect(old_translated, scale.x(), scale.y());
+  const gfx::Rect new_translated =
+      gfx::Rect(scaled.x() + to_region.x(), scaled.y() + to_region.y(),
+                scaled.width(), scaled.height());
+
+  return media::MinimallyShrinkRectForI420(new_translated);
 }
 
 }  // namespace
 
-VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
-    const gfx::Rect& region_in_frame,
-    const VideoPixelFormat frame_format) {
+std::string VideoCaptureOverlay::CapturedFrameProperties::ToString() const {
+  return base::StringPrintf(
+      "%s from %s into %s, format %s", sub_region.ToString().c_str(),
+      compositor_region.ToString().c_str(), content_region.ToString().c_str(),
+      media::VideoPixelFormatToString(format).c_str());
+}
+
+std::string VideoCaptureOverlay::BlendInformation::ToString() const {
+  return base::StringPrintf(
+      "src_rect=%s, src_rect_in_content=%s, dst_rect_in_content=%s",
+      source_region.ToString().c_str(), source_region_scaled.ToString().c_str(),
+      destination_region_content.ToString().c_str());
+}
+
+absl::optional<VideoCaptureOverlay::BlendInformation>
+VideoCaptureOverlay::CalculateBlendInformation(
+    const CapturedFrameProperties& properties) const {
+  // The sub region should always be a subset of the frame region.
+  DCHECK(properties.compositor_region.Contains(properties.sub_region));
+
   // If there's no image set yet, punt.
-  if (image_.drawsNothing()) {
-    return VideoCaptureOverlay::OnceRenderer();
+  if (image_.drawsNothing() || bounds_.IsEmpty()) {
+    return absl::nullopt;
   }
 
-  // Determine the bounds of the sprite to be blitted onto the video frame. The
+  // Determine the bounds of the sprite to be blended onto the video frame. The
   // calculations here align to the 2x2 pixel-quads, since dealing with
   // fractions or partial I420 chroma plane alpha-blending would greatly
   // complexify the blitting algorithm later on. This introduces a little
   // inaccuracy in the size and position of the overlay in the final result, but
   // should be an acceptable trade-off for all use cases.
-  const gfx::Rect bounds_in_frame =
-      ToAbsoluteBoundsForI420(bounds_, region_in_frame);
+  //
+  // Rescale the relative bounds (scoped between [0, 1]) to absolute bounds
+  // based on the entire region of the frame sink being captured. This allows
+  // for calculations such as mouse cursor position (which is retrieved in
+  // relationship to the entire tab or window) to be scaled properly.
+  const gfx::Rect bounds_in_compositor_space =
+      ToAbsoluteBoundsForI420(bounds_, properties.compositor_region);
+
+  // If the sprite that we want to render does not fall within the subregion
+  // that we are capturing, punt.
+  if (!bounds_in_compositor_space.Intersects(properties.sub_region)) {
+    return absl::nullopt;
+  }
+
+  // The bounds are currently in the coordinate space of the captured compositor
+  // frame, however blending may be done in the coordinate space of the
+  // outputted video frame and must be scaled and translated.
+  const gfx::Rect bounds_in_content_space =
+      Transform(bounds_in_compositor_space, properties.sub_region,
+                properties.content_region);
+
   // If the sprite's size will be unreasonably large, punt.
-  if (bounds_in_frame.width() > media::limits::kMaxDimension ||
-      bounds_in_frame.height() > media::limits::kMaxDimension) {
-    return VideoCaptureOverlay::OnceRenderer();
+  if (bounds_in_content_space.width() > media::limits::kMaxDimension ||
+      bounds_in_content_space.height() > media::limits::kMaxDimension) {
+    return absl::nullopt;
   }
 
-  // Compute the blit rect: the region of the frame to be modified by future
-  // Sprite::Blit() calls. First, |region_in_frame| must be shrunk to have
-  // even-valued coordinates to ensure the final blit rect is I420-friendly.
-  // Then, the shrunk |region_in_frame| is used to clip |bounds_in_frame|.
-  gfx::Rect blit_rect = MinimallyShrinkRectForI420(region_in_frame);
-  blit_rect.Intersect(bounds_in_frame);
-  // If the two rects didn't intersect at all (i.e., everything has been
-  // clipped), punt.
+  // Now let's see where the scaled sprite will be placed in the video frame.
+  // By intersecting, we will check if the entire sprite fits in the frame,
+  // and if not, we will calculate which part of the sprite will be blended.
+  // |blit_rect| is the region of the video frame that we will write into.
+  const gfx::Rect blit_rect =
+      gfx::IntersectRects(bounds_in_content_space, properties.content_region);
+
+  // If the scaled sprite's size is empty, punt.
   if (blit_rect.IsEmpty()) {
-    return VideoCaptureOverlay::OnceRenderer();
+    return absl::nullopt;
   }
 
-  // If the cached sprite does not match the computed scaled size and/or pixel
-  // format, create a new instance for this (and future) renderers.
-  if (!sprite_ || sprite_->size() != bounds_in_frame.size() ||
-      sprite_->format() != frame_format) {
-    sprite_ = base::MakeRefCounted<Sprite>(image_, bounds_in_frame.size(),
-                                           frame_format);
+  // Compute the left-most and top-most pixel to source from the transformed
+  // image. This is usually (0,0) unless only part of the sprite is being
+  // blended (i.e., cropped at the edge(s) of the video frame):
+  const gfx::Rect source_region_scaled =
+      gfx::Rect(blit_rect.origin() - bounds_in_content_space.OffsetFromOrigin(),
+                blit_rect.size());
+
+  // Scaling is determined by the ratio of the |image_| size to
+  // |bounds_in_content_space| size - we know the size of the scaled region, so
+  // use the ratio to compute the unscaled region:
+  float scale_x = static_cast<float>(image_.dimensions().width()) /
+                  bounds_in_content_space.width();
+  float scale_y = static_cast<float>(image_.dimensions().height()) /
+                  bounds_in_content_space.height();
+  const gfx::Rect source_region =
+      gfx::ScaleToEnclosingRect(source_region_scaled, scale_x, scale_y);
+
+  // If the unscaled source region is empty, punt.
+  if (source_region.IsEmpty()) {
+    return absl::nullopt;
   }
 
-  return base::BindOnce(&Sprite::Blit, sprite_, bounds_in_frame.origin(),
-                        blit_rect);
+  return BlendInformation{source_region, source_region_scaled,
+                          bounds_in_content_space};
+}
+
+VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
+    const CapturedFrameProperties& properties) {
+  absl::optional<VideoCaptureOverlay::BlendInformation> blend_information =
+      CalculateBlendInformation(properties);
+  if (!blend_information) {
+    return {};
+  }
+
+  // Sprite cares about scaled source region, as it will blend from a
+  // transformed image:
+  gfx::Rect src_rect = blend_information->source_region_scaled;
+  // Sprite cares about content's destination region, as it will blend into the
+  // video frame:
+  gfx::Rect dst_rect = blend_information->destination_region_content;
+
+  // If the cached sprite does not match the computed scaled size and/or
+  // pixel format, create a new instance for this (and future) renderers.
+  if (!sprite_ || sprite_->size() != dst_rect.size() ||
+      sprite_->format() != properties.format) {
+    sprite_ = base::MakeRefCounted<Sprite>(image_, dst_rect.size(),
+                                           properties.format);
+  }
+
+  dst_rect.Intersect(properties.content_region);
+  if (dst_rect.IsEmpty())
+    return {};
+
+  return base::BindOnce(&Sprite::Blend, sprite_, src_rect, dst_rect);
 }
 
 // static
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeCombinedRenderer(
     const std::vector<VideoCaptureOverlay*>& overlays,
-    const gfx::Rect& region_in_frame,
-    const VideoPixelFormat frame_format) {
-  if (overlays.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+    const CapturedFrameProperties& properties) {
+  if (overlays.empty())
+    return {};
 
   std::vector<OnceRenderer> renderers;
   for (VideoCaptureOverlay* overlay : overlays) {
-    renderers.emplace_back(
-        overlay->MakeRenderer(region_in_frame, frame_format));
+    renderers.emplace_back(overlay->MakeRenderer(properties));
     if (renderers.back().is_null()) {
       renderers.pop_back();
     }
   }
 
-  if (renderers.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  if (renderers.empty())
+    return {};
 
   return base::BindOnce(
       [](std::vector<OnceRenderer> renderers, VideoFrame* frame) {
@@ -200,7 +301,7 @@ gfx::Rect VideoCaptureOverlay::ComputeSourceMutationRect() const {
     result.Intersect(gfx::Rect(source_size));
     return result;
   }
-  return gfx::Rect();
+  return {};
 }
 
 VideoCaptureOverlay::Sprite::Sprite(const SkBitmap& image,
@@ -249,28 +350,32 @@ uint32_t ToClamped255(float value) {
 
 }  // namespace
 
-void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
-                                       const gfx::Rect& blit_rect,
-                                       VideoFrame* frame) {
+void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
+                                        const gfx::Rect& dst_rect,
+                                        VideoFrame* frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame);
+  DCHECK(frame->visible_rect().Contains(dst_rect))
+      << "frame->visible_rect()=" << frame->visible_rect().ToString()
+      << ", dst_rect=" << dst_rect.ToString();
+  DCHECK(gfx::Rect(size_).Contains(src_rect))
+      << "size_=" << size_.ToString() << ", src_rect=" << src_rect.ToString();
+
   DCHECK_EQ(format_, frame->format());
-  DCHECK(frame->visible_rect().Contains(blit_rect));
+  DCHECK(!dst_rect.IsEmpty())
+      << ": frame->visible_rect()=" << frame->visible_rect().ToString()
+      << ", dst_rect=" << dst_rect.ToString();
   DCHECK(frame->ColorSpace().IsValid());
 
-  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::Blit", "x",
-               position.x(), "y", position.y());
+  TRACE_EVENT2("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
+               dst_rect.x(), "y", dst_rect.y());
 
   if (!transformed_image_ || color_space_ != frame->ColorSpace()) {
     color_space_ = frame->ColorSpace();
     TransformImage();
   }
 
-  // Compute the left-most and top-most pixel to source from the transformed
-  // image. This is usually (0,0) unless only part of the sprite is being
-  // blitted (i.e., cropped at the edge(s) of the video frame).
-  gfx::Point src_origin = blit_rect.origin() - position.OffsetFromOrigin();
-  DCHECK(gfx::Rect(size_).Contains(gfx::Rect(src_origin, blit_rect.size())));
+  gfx::Point src_origin = src_rect.origin();
 
   // Blit the sprite (src) onto the video frame (dest). One of two algorithms is
   // used, depending on the video frame's format, as the blending calculations
@@ -281,10 +386,10 @@ void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
       // coordinates.
       DCHECK_EQ(src_origin.x() % 2, 0);
       DCHECK_EQ(src_origin.y() % 2, 0);
-      DCHECK_EQ(blit_rect.x() % 2, 0);
-      DCHECK_EQ(blit_rect.y() % 2, 0);
-      DCHECK_EQ(blit_rect.width() % 2, 0);
-      DCHECK_EQ(blit_rect.height() % 2, 0);
+      DCHECK_EQ(dst_rect.x() % 2, 0);
+      DCHECK_EQ(dst_rect.y() % 2, 0);
+      DCHECK_EQ(dst_rect.width() % 2, 0);
+      DCHECK_EQ(dst_rect.height() % 2, 0);
 
       // Helper function to execute a "SrcOver" blit from |src| to |dst|, and
       // store the results back in |dst|.
@@ -311,10 +416,10 @@ void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame's Y plane that will be SrcOver'ed.
       int dst_stride = frame->stride(VideoFrame::kYPlane);
-      uint8_t* dst =
-          PositionPointerInPlane(frame->visible_data(VideoFrame::kYPlane),
-                                 dst_stride, blit_rect.origin());
-      BlitOntoPlane(blit_rect.size(), src_stride, src, under_weight, dst_stride,
+      uint8_t* dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kYPlane), dst_stride,
+          dst_rect.origin());
+      BlitOntoPlane(dst_rect.size(), src_stride, src, under_weight, dst_stride,
                     dst);
 
       // Blit the U and V planes similarly to the Y plane, but reduce all
@@ -326,17 +431,19 @@ void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
       const int num_chroma_pixels = size_.GetArea() / 4;
       src = under_weight + num_chroma_pixels;
       dst_stride = frame->stride(VideoFrame::kUPlane);
-      const gfx::Rect chroma_blit_rect(blit_rect.x() / 2, blit_rect.y() / 2,
-                                       blit_rect.width() / 2,
-                                       blit_rect.height() / 2);
-      dst = PositionPointerInPlane(frame->visible_data(VideoFrame::kUPlane),
-                                   dst_stride, chroma_blit_rect.origin());
+      const gfx::Rect chroma_blit_rect(dst_rect.x() / 2, dst_rect.y() / 2,
+                                       dst_rect.width() / 2,
+                                       dst_rect.height() / 2);
+      dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kUPlane), dst_stride,
+          chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
       src += num_chroma_pixels;
       dst_stride = frame->stride(VideoFrame::kVPlane);
-      dst = PositionPointerInPlane(frame->visible_data(VideoFrame::kVPlane),
-                                   dst_stride, chroma_blit_rect.origin());
+      dst = PositionPointerInPlane(
+          frame->GetWritableVisibleData(VideoFrame::kVPlane), dst_stride,
+          chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
 
@@ -354,9 +461,9 @@ void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
       // frame that will be SrcOver'ed.
       const int dst_stride = frame->stride(VideoFrame::kARGBPlane);
       DCHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
-      uint8_t* dst =
-          PositionPointerARGB(frame->visible_data(VideoFrame::kARGBPlane),
-                              dst_stride, blit_rect.origin());
+      uint8_t* dst = PositionPointerARGB(
+          frame->GetWritableVisibleData(VideoFrame::kARGBPlane), dst_stride,
+          dst_rect.origin());
       DCHECK_EQ((dst - frame->visible_data(VideoFrame::kARGBPlane)) %
                     sizeof(uint32_t),
                 0u);
@@ -365,10 +472,10 @@ void VideoCaptureOverlay::Sprite::Blit(const gfx::Point& position,
       // frame, and store the result back in the video frame. Note that the
       // video frame format does NOT have color values pre-multiplied by the
       // alpha.
-      for (int row = 0; row < blit_rect.height();
+      for (int row = 0; row < dst_rect.height();
            ++row, src += src_stride, dst += dst_stride) {
         uint32_t* dst_pixel = reinterpret_cast<uint32_t*>(dst);
-        for (int col = 0; col < blit_rect.width(); ++col) {
+        for (int col = 0; col < dst_rect.width(); ++col) {
           const int src_idx = 4 * col;
           const float src_alpha = src[src_idx];
           const float dst_weight =
@@ -465,9 +572,8 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
   }
   if (image_color_space != color_space_) {
-    const auto color_transform = gfx::ColorTransform::NewColorTransform(
-        image_color_space, color_space_,
-        gfx::ColorTransform::Intent::INTENT_ABSOLUTE);
+    const auto color_transform =
+        gfx::ColorTransform::NewColorTransform(image_color_space, color_space_);
     color_transform->Transform(colors.get(), num_pixels);
   }
 

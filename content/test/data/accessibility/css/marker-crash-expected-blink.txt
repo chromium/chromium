@@ -3,7 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++group
 ++++++++listMarker name='%E2%80%A2 '
-++++++++listItem
-++++++++++genericContainer
-++++++++++genericContainer ignored
+++++++++++staticText ignored name='%E2%80%A2 '
 ++++++genericContainer ignored
+++++++++genericContainer ignored

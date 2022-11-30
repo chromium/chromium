@@ -72,27 +72,27 @@
 
 我
 #zh-CN:
-"Noto Sans CJK JP Regular" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-HK:
-"Noto Sans CJK JP Regular" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-Hans:
-"Noto Sans CJK JP Regular" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #zh-Hant:
-"Noto Sans CJK JP Regular" : 1
+"Noto Sans CJK JP" : 1
 
 我
 #ja:
-"Noto Sans CJK JP Regular" : 1
+"Noto Sans CJK JP" : 1
 
 ᄀᄁ
 #ko:
-"Noto Sans CJK JP Regular" : 2
+"Noto Sans CJK JP" : 2
 
 בג
 #he:

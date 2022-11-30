@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_PCIE_PERIPHERAL_PCIE_PERIPHERAL_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 
 class PrefRegistrySimple;
 
@@ -23,7 +23,7 @@ namespace ash {
 // that their peripherals may not be working due to data access protection
 // enabled in OS Settings.
 class ASH_EXPORT PciePeripheralNotificationController
-    : public PciePeripheralManager::Observer {
+    : public PeripheralNotificationManager::Observer {
  public:
   explicit PciePeripheralNotificationController(
       message_center::MessageCenter* message_center);
@@ -35,14 +35,15 @@ class ASH_EXPORT PciePeripheralNotificationController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Call when PciePeripheralManager is initialized so that this class can start
-  // observering requests for notifications.
-  void OnPciePeripheralManagerInitialized();
+  // Call when PeripheralNotificationManager is initialized so that this
+  // class can start observering requests for notifications.
+  void OnPeripheralNotificationManagerInitialized();
 
   // chromeos::PciePeripheral::Observer
   void OnLimitedPerformancePeripheralReceived() override;
   void OnGuestModeNotificationReceived(bool is_thunderbolt_only) override;
   void OnPeripheralBlockedReceived() override;
+  void OnBillboardDeviceConnected() override;
 
   // Call to show a notification to indicate that the recently plugged in
   // Thunderbolt/USB4 peripheral performance is limited.
@@ -55,6 +56,17 @@ class ASH_EXPORT PciePeripheralNotificationController
   // Call to show a notification to indicate to the user that their
   // Thunderbolt/USB4 peripheral is not allowed due to security reasons.
   void NotifyPeripheralBlockedNotification();
+
+  // Call to show a notification that a billboard device that was connected
+  // is not supported by the board.
+  void NotifyBillboardDevice();
+
+  // Stubs from usb peripheral notification controller
+  void OnInvalidDpCableWarning() override {}
+  void OnInvalidUSB4ValidTBTCableWarning() override {}
+  void OnInvalidUSB4CableWarning() override {}
+  void OnInvalidTBTCableWarning() override {}
+  void OnSpeedLimitingCableWarning() override {}
 
  private:
   friend class PciePeripheralNotificationControllerTest;

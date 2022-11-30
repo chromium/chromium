@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -23,6 +23,8 @@ constexpr struct KnownLoadingMode {
     {"default", mojom::LoadingMode::kDefault},
     {"uncredentialed-prefetch", mojom::LoadingMode::kUncredentialedPrefetch},
     {"uncredentialed-prerender", mojom::LoadingMode::kUncredentialedPrerender},
+    {"credentialed-prerender", mojom::LoadingMode::kCredentialedPrerender},
+    {"fenced-frame", mojom::LoadingMode::kFencedFrame},
 };
 
 }  // namespace

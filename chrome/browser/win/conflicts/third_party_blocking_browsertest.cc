@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -37,6 +36,10 @@ class ThirdPartyRegistryKeyObserver {
       : registry_key_(HKEY_CURRENT_USER,
                       GetRegistryKeyPath().c_str(),
                       KEY_CREATE_SUB_KEY | KEY_READ | KEY_NOTIFY) {}
+
+  ThirdPartyRegistryKeyObserver(const ThirdPartyRegistryKeyObserver&) = delete;
+  ThirdPartyRegistryKeyObserver& operator=(
+      const ThirdPartyRegistryKeyObserver&) = delete;
 
   bool StartWatching() {
     return registry_key_.StartWatching(base::BindOnce(
@@ -75,8 +78,6 @@ class ThirdPartyRegistryKeyObserver {
   bool path_written_ = false;
 
   base::OnceClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyRegistryKeyObserver);
 };
 
 // Creates an empty serialized ModuleList proto in the module list component
@@ -103,15 +104,19 @@ void CreateModuleList(base::FilePath* module_list_path) {
 }
 
 class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
+ public:
+  ThirdPartyBlockingBrowserTest(const ThirdPartyBlockingBrowserTest&) = delete;
+  ThirdPartyBlockingBrowserTest& operator=(
+      const ThirdPartyBlockingBrowserTest&) = delete;
+
  protected:
   ThirdPartyBlockingBrowserTest() = default;
   ~ThirdPartyBlockingBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kThirdPartyModulesBlocking,
-                                           quarantine::kOutOfProcessQuarantine},
-                                          {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kThirdPartyModulesBlocking);
 
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     ASSERT_NO_FATAL_FAILURE(
@@ -142,8 +147,6 @@ class ThirdPartyBlockingBrowserTest : public InProcessBrowserTest {
 
   // Temp directory where the third-party module is located.
   base::ScopedTempDir scoped_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyBlockingBrowserTest);
 };
 
 }  // namespace
@@ -172,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyBlockingBrowserTest,
         ModuleDatabase* module_database = ModuleDatabase::GetInstance();
 
         // Speed up the test.
-        module_database->IncreaseInspectionPriority();
+        module_database->ForceStartInspection();
 
         base::FilePath module_list_path;
         ASSERT_NO_FATAL_FAILURE(CreateModuleList(&module_list_path));

@@ -21,12 +21,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FILTER_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -38,25 +37,27 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
  public:
   enum UnitScaling { kUserSpace, kBoundingBox };
 
-  Filter(float scale);
-  Filter(const FloatRect& reference_box,
-         const FloatRect& filter_region,
+  explicit Filter(float scale);
+  Filter(const gfx::RectF& reference_box,
+         const gfx::RectF& filter_region,
          float scale,
          UnitScaling);
+  Filter(const Filter&) = delete;
+  Filter& operator=(const Filter&) = delete;
 
   void Trace(Visitor*) const;
 
   float Scale() const { return scale_; }
-  FloatRect MapLocalRectToAbsoluteRect(const FloatRect&) const;
-  FloatRect MapAbsoluteRectToLocalRect(const FloatRect&) const;
+  gfx::RectF MapLocalRectToAbsoluteRect(const gfx::RectF&) const;
+  gfx::RectF MapAbsoluteRectToLocalRect(const gfx::RectF&) const;
 
   float ApplyHorizontalScale(float value) const;
   float ApplyVerticalScale(float value) const;
 
-  FloatPoint3D Resolve3dPoint(const FloatPoint3D&) const;
+  gfx::Point3F Resolve3dPoint(gfx::Point3F) const;
 
-  const FloatRect& FilterRegion() const { return filter_region_; }
-  const FloatRect& ReferenceBox() const { return reference_box_; }
+  const gfx::RectF& FilterRegion() const { return filter_region_; }
+  const gfx::RectF& ReferenceBox() const { return reference_box_; }
 
   void SetLastEffect(FilterEffect*);
   FilterEffect* LastEffect() const { return last_effect_.Get(); }
@@ -64,15 +65,13 @@ class PLATFORM_EXPORT Filter final : public GarbageCollected<Filter> {
   SourceGraphic* GetSourceGraphic() const { return source_graphic_.Get(); }
 
  private:
-  FloatRect reference_box_;
-  FloatRect filter_region_;
+  gfx::RectF reference_box_;
+  gfx::RectF filter_region_;
   float scale_;
   UnitScaling unit_scaling_;
 
   Member<SourceGraphic> source_graphic_;
   Member<FilterEffect> last_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(Filter);
 };
 
 }  // namespace blink

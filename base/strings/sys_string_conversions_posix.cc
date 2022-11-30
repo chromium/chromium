@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ std::wstring SysUTF8ToWide(StringPiece utf8) {
   return out;
 }
 
-#if defined(SYSTEM_NATIVE_UTF8) || defined(OS_ANDROID)
+#if defined(SYSTEM_NATIVE_UTF8) || BUILDFLAG(IS_ANDROID)
 // TODO(port): Consider reverting the OS_ANDROID when we have wcrtomb()
 // support and a better understanding of what calls these routines.
 
@@ -116,7 +116,7 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
       case 0:
         // We hit an embedded null byte, keep going.
         i += 1;
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         i += res;
         ++num_out_chars;
@@ -154,6 +154,6 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
   return out;
 }
 
-#endif  // defined(SYSTEM_NATIVE_UTF8) || defined(OS_ANDROID)
+#endif  // defined(SYSTEM_NATIVE_UTF8) || BUILDFLAG(IS_ANDROID)
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,9 @@
 namespace ui {
 
 TEST(AcceleratorStructTraitsTest, SerializeAndDeserialize1) {
-  Accelerator accelerator(
-      KeyboardCode::VKEY_TAB, EF_NUM_LOCK_ON,
-      ui::Accelerator::KeyState::RELEASED,
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1));
+  Accelerator accelerator(KeyboardCode::VKEY_TAB, EF_NUM_LOCK_ON,
+                          ui::Accelerator::KeyState::RELEASED,
+                          base::TimeTicks() + base::Milliseconds(1));
   Accelerator deserialized;
   ASSERT_TRUE(mojom::Accelerator::Deserialize(
       mojom::Accelerator::Serialize(&accelerator), &deserialized));

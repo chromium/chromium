@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 
-#include "base/macros.h"
+#include <string>
+
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -76,20 +77,25 @@ enum class OpenInMimeType {
 class OpenInTabHelper : public web::WebStateObserver,
                         public web::WebStateUserData<OpenInTabHelper> {
  public:
+  OpenInTabHelper(const OpenInTabHelper&) = delete;
+  OpenInTabHelper& operator=(const OpenInTabHelper&) = delete;
+
   ~OpenInTabHelper() override;
 
-  // Creates OpenInTabHelper and attaches to |web_state|. |web_state| must not
-  // be null.
-  static void CreateForWebState(web::WebState* web_state);
-
-  // Sets the OpenInTabHelper delegate. |delegate| will be in charge of enabling
-  // the openIn view. |delegate| is not retained by TabHelper.
+  // Sets the OpenInTabHelper delegate. `delegate` will be in charge of enabling
+  // the openIn view. `delegate` is not retained by TabHelper.
   void SetDelegate(id<OpenInTabHelperDelegate> delegate);
+
+  // Returns true if the displayed content should be downloaded.
+  static bool ShouldDownload(web::WebState* web_state);
+
+  // Returns the suggested file name of the displayed content.
+  std::u16string GetFileNameSuggestion();
 
  private:
   friend class web::WebStateUserData<OpenInTabHelper>;
 
-  OpenInTabHelper(web::WebState* web_state);
+  explicit OpenInTabHelper(web::WebState* web_state);
 
   // Handles exportable files and shows open in button if content mime type is
   // PDF.
@@ -119,8 +125,6 @@ class OpenInTabHelper : public web::WebStateObserver,
   __weak id<OpenInTabHelperDelegate> delegate_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(OpenInTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_

@@ -1,15 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/zipfile_installer.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -17,6 +18,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -34,7 +37,7 @@ constexpr const base::FilePath::CharType* kAllowedThemeFiletypes[] = {
     FILE_PATH_LITERAL(".json"), FILE_PATH_LITERAL(".png"),
     FILE_PATH_LITERAL(".webp")};
 
-base::Optional<base::FilePath> PrepareAndGetUnzipDir(
+absl::optional<base::FilePath> PrepareAndGetUnzipDir(
     const base::FilePath& zip_file) {
   base::FilePath dir_temp;
   base::PathService::Get(base::DIR_TEMP, &dir_temp);
@@ -44,15 +47,15 @@ base::Optional<base::FilePath> PrepareAndGetUnzipDir(
 
   base::FilePath unzip_dir;
   if (!base::CreateTemporaryDirInDir(dir_temp, dir_name, &unzip_dir))
-    return base::Optional<base::FilePath>();
+    return absl::optional<base::FilePath>();
 
   return unzip_dir;
 }
 
-base::Optional<std::string> ReadFileContent(const base::FilePath& path) {
+absl::optional<std::string> ReadFileContent(const base::FilePath& path) {
   std::string content;
   return base::ReadFileToString(path, &content) ? content
-                                                : base::Optional<std::string>();
+                                                : absl::optional<std::string>();
 }
 
 }  // namespace
@@ -104,7 +107,7 @@ ZipFileInstaller::ZipFileInstaller(
 
 ZipFileInstaller::~ZipFileInstaller() = default;
 
-void ZipFileInstaller::Unzip(base::Optional<base::FilePath> unzip_dir) {
+void ZipFileInstaller::Unzip(absl::optional<base::FilePath> unzip_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!unzip_dir) {
@@ -133,28 +136,49 @@ void ZipFileInstaller::ManifestUnzipped(const base::FilePath& unzip_dir,
 
 void ZipFileInstaller::ManifestRead(
     const base::FilePath& unzip_dir,
-    base::Optional<std::string> manifest_content) {
+    absl::optional<std::string> manifest_content) {
   if (!manifest_content) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *manifest_content,
-      base::BindOnce(&ZipFileInstaller::ManifestParsed, this, unzip_dir));
+  // Create a DataDecoder to specify custom parse options to the JSON
+  // parser. The ownership of the |data_decoder| and |json_parser|
+  // transfer to the response callback and are deleted after it runs.
+  auto data_decoder = std::make_unique<data_decoder::DataDecoder>();
+  mojo::Remote<data_decoder::mojom::JsonParser> json_parser;
+  data_decoder->GetService()->BindJsonParser(
+      json_parser.BindNewPipeAndPassReceiver());
+  json_parser.set_disconnect_handler(
+      base::BindOnce(&ZipFileInstaller::ManifestParsed, this, unzip_dir,
+                     absl::nullopt, "Data Decoder terminated unexpectedly"));
+  auto* json_parser_ptr = json_parser.get();
+  json_parser_ptr->Parse(
+      *manifest_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+      base::BindOnce(
+          [](std::unique_ptr<data_decoder::DataDecoder>,
+             mojo::Remote<data_decoder::mojom::JsonParser>,
+             scoped_refptr<ZipFileInstaller> installer,
+             const base::FilePath& unzip_dir, absl::optional<base::Value> value,
+             const absl::optional<std::string>& error) {
+            installer->ManifestParsed(unzip_dir, std::move(value), error);
+          },
+          std::move(data_decoder), std::move(json_parser),
+          base::WrapRefCounted(this), unzip_dir));
 }
 
 void ZipFileInstaller::ManifestParsed(
     const base::FilePath& unzip_dir,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+    absl::optional<base::Value> result,
+    const absl::optional<std::string>& error) {
+  if (!result) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
   }
 
   std::unique_ptr<base::DictionaryValue> manifest_dictionary =
       base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(*result.value)));
+          base::Value::ToUniquePtrValue(std::move(*result)));
   if (!manifest_dictionary) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;

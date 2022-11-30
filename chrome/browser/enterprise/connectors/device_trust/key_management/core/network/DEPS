@@ -1,0 +1,5 @@
+include_rules = [
+  # Allow the use of winhttp::NetworkFetcher for sending pubkey to DM server.
+  "+components/winhttp",
+]
+

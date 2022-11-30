@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,11 @@ const char kGoogleUrl[] = "https://www.google.com";
 class ExploreSitesBlockSiteTest : public TaskTestBase {
  public:
   ExploreSitesBlockSiteTest() = default;
+
+  ExploreSitesBlockSiteTest(const ExploreSitesBlockSiteTest&) = delete;
+  ExploreSitesBlockSiteTest& operator=(const ExploreSitesBlockSiteTest&) =
+      delete;
+
   ~ExploreSitesBlockSiteTest() override = default;
 
   void SetUp() override {
@@ -59,19 +64,18 @@ class ExploreSitesBlockSiteTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesBlockSiteTest);
 };
 
 void ExploreSitesBlockSiteTest::PopulateActivity() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert_activity(db->GetUniqueStatement(R"(
-INSERT INTO activity
-(time, category_type, url)
-VALUES
-(12345, 1, "https://www.google.com"),
-(23456, 1, "https://www.example.com/1");
-    )"));
+    static constexpr char kActivitySql[] =
+        // clang-format off
+        "INSERT INTO activity(time, category_type, url)"
+            "VALUES"
+                "(12345, 1, 'https://www.google.com'),"
+                "(23456, 1, 'https://www.example.com/1')";
+    // clang-format on
+    sql::Statement insert_activity(db->GetUniqueStatement(kActivitySql));
     return insert_activity.Run();
   }));
 }

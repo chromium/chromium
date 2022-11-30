@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
@@ -12,10 +13,10 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
@@ -33,15 +34,17 @@ views::Widget* FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
     content::FileSystemAccessPermissionContext::HandleType handle_type,
     base::OnceCallback<void(SensitiveDirectoryResult)> callback,
     content::WebContents* web_contents) {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents);
   auto delegate =
       base::WrapUnique(new FileSystemAccessRestrictedDirectoryDialogView(
-          origin, path, handle_type, std::move(callback)));
+          browser, origin, path, handle_type, std::move(callback)));
   return constrained_window::ShowWebModalDialogViews(delegate.release(),
                                                      web_contents);
 }
 
 FileSystemAccessRestrictedDirectoryDialogView::
     FileSystemAccessRestrictedDirectoryDialogView(
+        Browser* browser,
         const url::Origin& origin,
         const base::FilePath& path,
         content::FileSystemAccessPermissionContext::HandleType handle_type,
@@ -67,7 +70,7 @@ FileSystemAccessRestrictedDirectoryDialogView::
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
@@ -75,10 +78,12 @@ FileSystemAccessRestrictedDirectoryDialogView::
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   AddChildView(file_system_access_ui_helper::CreateOriginLabel(
+      browser,
       handle_type_ == HandleType::kDirectory
           ? IDS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_TEXT
           : IDS_FILE_SYSTEM_ACCESS_RESTRICTED_FILE_TEXT,
-      origin, views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
+      origin, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      /*show_emphasis=*/true));
 }
 
 BEGIN_METADATA(FileSystemAccessRestrictedDirectoryDialogView,
@@ -89,8 +94,8 @@ void ShowFileSystemAccessRestrictedDirectoryDialog(
     const url::Origin& origin,
     const base::FilePath& path,
     content::FileSystemAccessPermissionContext::HandleType handle_type,
-    base::OnceCallback<void(
-        content::FileSystemAccessPermissionContext::SensitiveDirectoryResult)>
+    base::OnceCallback<
+        void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
     content::WebContents* web_contents) {
   FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/login/auth/user_context.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -37,15 +37,18 @@ class EnterpriseUserSessionMetricsTest : public testing::Test {
         install_attributes_(std::make_unique<ScopedStubInstallAttributes>(
             StubInstallAttributes::CreateCloudManaged("test-domain",
                                                       "FAKE_DEVICE_ID"))) {}
+
+  EnterpriseUserSessionMetricsTest(const EnterpriseUserSessionMetricsTest&) =
+      delete;
+  EnterpriseUserSessionMetricsTest& operator=(
+      const EnterpriseUserSessionMetricsTest&) = delete;
+
   ~EnterpriseUserSessionMetricsTest() override = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<ScopedStubInstallAttributes> install_attributes_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseUserSessionMetricsTest);
 };
 
 // Tests recording a sign-in event with a sign-in event type.
@@ -132,8 +135,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-        base::TimeDelta::FromMinutes(25));
+        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT, base::Minutes(25));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Time is rounded down to the nearest 10.
@@ -150,8 +152,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     // Test with a regular user session.
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_REGULAR,
-        base::TimeDelta::FromMinutes(149));
+        user_manager::UserType::USER_TYPE_REGULAR, base::Minutes(149));
     enterprise_user_session_metrics::RecordStoredSessionLength();
     histogram_tester.ExpectUniqueSample(
         "Enterprise.RegularUserSession.SessionLength", 140, 1);
@@ -165,14 +166,13 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_REGULAR,
-        base::TimeDelta::FromDays(10));
+        user_manager::UserType::USER_TYPE_REGULAR, base::Days(10));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Reported length is capped at 24 hours.
     histogram_tester.ExpectUniqueSample(
         "Enterprise.RegularUserSession.SessionLength",
-        base::TimeDelta::FromHours(24).InMinutes(), 1);
+        base::Hours(24).InMinutes(), 1);
 
     // No other session length metrics are recorded.
     histogram_tester.ExpectTotalCount("Enterprise.PublicSession.SessionLength",
@@ -202,7 +202,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
         user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-        base::TimeDelta::FromSeconds(25 * 60 + 59));
+        base::Seconds(25 * 60 + 59));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Time is rounded down to the nearest 10 minutes.
@@ -217,18 +217,17 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
-        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT,
-        base::TimeDelta::FromDays(10));
+        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT, base::Days(10));
     enterprise_user_session_metrics::RecordStoredSessionLength();
 
     // Reported length is capped at 24 hours.
     histogram_tester.ExpectUniqueSample(
-        "Enterprise.PublicSession.SessionLength",
-        base::TimeDelta::FromHours(24).InMinutes(), 1);
+        "Enterprise.PublicSession.SessionLength", base::Hours(24).InMinutes(),
+        1);
 
     // Demo session length is capped at 2 hours because demo sessions are short.
-    histogram_tester.ExpectUniqueSample(
-        "DemoMode.SessionLength", base::TimeDelta::FromHours(2).InMinutes(), 1);
+    histogram_tester.ExpectUniqueSample("DemoMode.SessionLength",
+                                        base::Hours(2).InMinutes(), 1);
   }
   {
     SCOPED_TRACE("");
@@ -244,4 +243,4 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

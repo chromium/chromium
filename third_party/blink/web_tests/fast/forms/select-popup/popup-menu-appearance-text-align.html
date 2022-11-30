@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<style>
+  select {
+    width: 100px;
+    font-size: 20px;
+    display:block;
+  }
+</style>
+
+<!-- text-align CSS should work inside <select> -->
+<select>
+  <option style="text-align:right;" selected>right</option>
+  <option >auto</option>
+  <option style="text-align:left">left</option>
+  <option style="text-align:center">center</option>
+</select>
+<select>
+  <option style="text-align:right;">right</option>
+  <option selected>auto</option>
+  <option style="text-align:left">left</option>
+  <option style="text-align:center">center</option>
+</select>
+<select style="text-align:right">
+  <option style="text-align:right;">right</option>
+  <option selected>auto rtl</option>
+  <option style="text-align:left">left</option>
+  <option style="text-align:center">center</option>
+</select>
+<select>
+  <option style="text-align:right;">right</option>
+  <option >auto</option>
+  <option style="text-align:left" selected>left</option>
+  <option style="text-align:center">center</option>
+</select>
+<select>
+  <option style="text-align:right;">right</option>
+  <option >auto</option>
+  <option style="text-align:left" >left</option>
+  <option style="text-align:center" selected>center</option>
+</select>
+
+<select id="menu" style="width: 200px; ">
+  <option style="text-align:right;" >right</option>
+  <option >auto</option>
+  <option style="text-align:left">left</option>
+  <option style="text-align:center">center</option>
+</select>
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('#menu'));
+</script>

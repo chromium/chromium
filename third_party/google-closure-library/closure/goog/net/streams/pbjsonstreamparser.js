@@ -1,16 +1,8 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A stream parser of StreamBody message in Protobuf-JSON format.
@@ -34,10 +26,10 @@
 
 goog.module('goog.net.streams.PbJsonStreamParser');
 
-var JsonStreamParser = goog.require('goog.net.streams.JsonStreamParser');
-var StreamParser = goog.require('goog.net.streams.StreamParser');
-var asserts = goog.require('goog.asserts');
-var utils = goog.require('goog.net.streams.utils');
+const JsonStreamParser = goog.require('goog.net.streams.JsonStreamParser');
+const StreamParser = goog.require('goog.net.streams.StreamParser');
+const asserts = goog.require('goog.asserts');
+const utils = goog.require('goog.net.streams.utils');
 
 
 /**
@@ -48,7 +40,7 @@ var utils = goog.require('goog.net.streams.utils');
  * @implements {StreamParser}
  * @final
  */
-var PbJsonStreamParser = function() {
+const PbJsonStreamParser = function() {
   /**
    * Protobuf raw bytes stream parser
    * @private {?JsonStreamParser}
@@ -91,7 +83,7 @@ var PbJsonStreamParser = function() {
  * The parser state.
  * @enum {number}
  */
-var State = {
+const State = {
   INIT: 0,           // expecting the beginning "["
   ARRAY_OPEN: 1,     // expecting the message array or the msg-status separator
   MESSAGES: 2,       // expecting the message array
@@ -113,15 +105,22 @@ PbJsonStreamParser.prototype.getErrorMessage = function() {
   return this.errorMessage_;
 };
 
+/**
+ * @override
+ * @return {boolean}
+ */
+PbJsonStreamParser.prototype.acceptsBinaryInput = function() {
+  return false;
+};
 
 /** @override */
 PbJsonStreamParser.prototype.parse = function(input) {
   asserts.assertString(input);
 
-  var parser = this;
-  var pos = 0;
+  const parser = this;
+  let pos = 0;
   while (pos < input.length) {
-    if (!readMore()) {
+    if ((parser.state_ !== State.MESSAGES) && !readMore()) {
       return null;
     }
 
@@ -158,7 +157,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
         break;
       }
       case State.MESSAGES: {
-        var messages = parser.jsonStreamParser_.parse(input.substring(pos));
+        const messages = parser.jsonStreamParser_.parse(input.substring(pos));
         addResultMessages(messages);
 
         if (!parser.jsonStreamParser_.done()) {
@@ -166,7 +165,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
           pos = input.length;  // end the loop
         } else {
           parser.state_ = State.MESSAGES_DONE;
-          var extra = parser.jsonStreamParser_.getExtraInput();
+          const extra = parser.jsonStreamParser_.getExtraInput();
           parser.streamPos_ += input.length - pos - extra.length;
           input = extra;
           pos = 0;
@@ -189,7 +188,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
         break;
       }
       case State.STATUS: {
-        var status = parser.jsonStreamParser_.parse(input.substring(pos));
+        const status = parser.jsonStreamParser_.parse(input.substring(pos));
         addResultStatus(status);
 
         if (!parser.jsonStreamParser_.done()) {
@@ -197,7 +196,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
           pos = input.length;  // end the loop
         } else {
           parser.state_ = State.ARRAY_END;
-          var extra = parser.jsonStreamParser_.getExtraInput();
+          const extra = parser.jsonStreamParser_.getExtraInput();
           parser.streamPos_ += input.length - pos - extra.length;
           input = extra;
           pos = 0;
@@ -212,7 +211,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
   }
 
   if (parser.result_.length > 0) {
-    var results = parser.result_;
+    const results = parser.result_;
     parser.result_ = [];
     return results;
   }
@@ -255,8 +254,8 @@ PbJsonStreamParser.prototype.parse = function(input) {
   /** @param {?Array<string>} messages Parsed messages */
   function addResultMessages(messages) {
     if (messages) {
-      for (var i = 0; i < messages.length; i++) {
-        var tagged = {};
+      for (let i = 0; i < messages.length; i++) {
+        const tagged = {};
         tagged[1] = messages[i];
         parser.result_.push(tagged);
       }
@@ -271,7 +270,7 @@ PbJsonStreamParser.prototype.parse = function(input) {
       }
       parser.statusParsed_ = true;
 
-      var tagged = {};
+      const tagged = {};
       tagged[2] = status[0];
       parser.result_.push(tagged);
     }

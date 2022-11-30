@@ -1,11 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BASE_CAST_RESOURCE_H_
 #define CHROMECAST_BASE_CAST_RESOURCE_H_
-
-#include "base/macros.h"
 
 namespace chromecast {
 
@@ -69,6 +67,9 @@ class CastResource {
     virtual ~Client() {}
   };
 
+  CastResource(const CastResource&) = delete;
+  CastResource& operator=(const CastResource&) = delete;
+
   // Sets the Client for the CastResource to respond to when it is done with
   // Acquire/ReleaseResource.
   void SetCastResourceClient(Client* client);
@@ -95,10 +96,8 @@ class CastResource {
 
  private:
   Client* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastResource);
 };
 
 }  // namespace chromecast
 
-#endif
+#endif  // CHROMECAST_BASE_CAST_RESOURCE_H_

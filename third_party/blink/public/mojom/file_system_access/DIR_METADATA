@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>Storage>FileSystem"
-}
+mixins: "//content/browser/file_system_access/COMMON_METADATA"
 
-team_email: "storage-dev@chromium.org"

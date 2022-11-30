@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,30 @@
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
 // clients (Chromium, other downstream repos) later.
-// Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
-
+// Versions list:
+// Version 0: Initial
+// Version 1: Include HypothesisPart Info in Final result.
+// Version 2: Include enable formatting in request config.
+// Version 3: Include recognition mode in request config.
 module chromeos.machine_learning.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBool {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
+[Stable, Extensible]
+enum SodaRecognitionMode {
+  [Default] kCaption,
+  kIme,
+};
 
 // The configuration used to load Soda recognizer.
 [Stable]
@@ -31,6 +49,11 @@ struct SodaConfig {
   string library_dlc_path;
   // Path to already-installed SODA language pack to use.
   string language_dlc_path;
+  // Whether to enable automated punctuation. Defaults to true as this
+  // is the default in the underlying protocol buffer.
+  [MinVersion=2] OptionalBool enable_formatting = kTrue;
+  // Which mode to execute in: IME or CAPTION. Default CAPTION.
+  [MinVersion=3] SodaRecognitionMode recognition_mode = kCaption;
 };
 
 // From the endpointer, What kind of endpointer event to record.
@@ -107,15 +130,34 @@ enum EndpointReason {
   ENDPOINT_END_OF_AUDIO,
 };
 
+
+// Detail about a part of a hypothesis in a result. Only makes sense
+// in context of an array of them for a hypothesis.
+[Stable]
+struct HypothesisPartInResult {
+  // Typically 1 item for a a word/piece of text. If formatting is
+  // enabled, the raw text is the second item.
+  array<string> text;
+
+  // Offset from the beginning of this part of the hypothesis from
+  // audio_start_time in TimingInfo.
+  mojo_base.mojom.TimeDelta alignment;
+};
+
 [Stable]
 struct FinalResult {
   // Sorted in decreasing order of probability.
   array<string> final_hypotheses;
   EndpointReason endpoint_reason;
   TimingInfo? timing_event;
+
+  // If populated, this array contains the hypothesis parts for the
+  // first final hypothesis in the array of final_hypotheses.
+  [MinVersion=1] array<HypothesisPartInResult>? hypothesis_part;
 };
 
-// Frequent event from recognizer, almost from every frame. Gives an indication of speechiness and audio level.
+// Frequent event from recognizer, almost from every frame. Gives an indication
+// of speechiness and audio level.
 [Stable]
 struct AudioLevelEvent {
   // RMS audio level, from PowerEvaluator . Score is [0, 1)
@@ -140,7 +182,7 @@ union SpeechRecognizerEvent {
 // Next ordinal: 3
 [Stable]
 interface SodaClient {
-  // After SODA successfully starts / stops, in case the client
+  // After SODA successfully starts / warms up / stops, in case the client
   // cares:
   OnStart@0();
   OnStop@1();

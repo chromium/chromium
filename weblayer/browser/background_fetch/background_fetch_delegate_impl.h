@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@ class BrowserContext;
 
 namespace weblayer {
 
-// Implementation of BackgroundFetchDelegate using the DownloadService.
+// Implementation of BackgroundFetchDelegate using the
+// BackgroundDownloadService.
 class BackgroundFetchDelegateImpl
     : public background_fetch::BackgroundFetchDelegateBase,
       public KeyedService {
@@ -38,15 +39,12 @@ class BackgroundFetchDelegateImpl
   // BackgroundFetchDelegate:
   void MarkJobComplete(const std::string& job_id) override;
   void UpdateUI(const std::string& job_id,
-                const base::Optional<std::string>& title,
-                const base::Optional<SkBitmap>& icon) override;
+                const absl::optional<std::string>& title,
+                const absl::optional<SkBitmap>& icon) override;
 
  protected:
   // BackgroundFetchDelegateBase:
-  void GetPermissionForOriginWithoutWebContents(
-      const url::Origin& origin,
-      GetPermissionForOriginCallback callback) override;
-  download::DownloadService* GetDownloadService() override;
+  download::BackgroundDownloadService* GetDownloadService() override;
   void OnJobDetailsCreated(const std::string& job_id) override;
   void DoShowUi(const std::string& job_id) override;
   void DoUpdateUi(const std::string& job_id) override;

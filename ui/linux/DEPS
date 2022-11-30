@@ -1,0 +1,18 @@
+include_rules = [
+  "+printing",
+  "+third_party/skia",
+  "+ui/base",
+  "+ui/base/cursor",
+  "+ui/base/ime",
+  "+ui/gfx",
+  "+ui/native_theme",
+  "+ui/shell_dialogs",
+]
+
+specific_include_rules = {
+  "linux_ui_factory.cc": [
+    "+ui/color",
+    "+ui/gtk",
+    "+ui/qt",
+  ],
+}

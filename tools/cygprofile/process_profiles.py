@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,13 +25,12 @@ def _Median(items):
     return None
   sorted_items = sorted(items)
   if len(sorted_items) & 1:
-    return sorted_items[len(sorted_items)/2]
-  else:
-    return (sorted_items[len(sorted_items)/2 - 1] +
-            sorted_items[len(sorted_items)/2]) / 2
+    return sorted_items[len(sorted_items) // 2]
+  return (sorted_items[len(sorted_items) // 2 - 1] +
+          sorted_items[len(sorted_items) // 2]) // 2
 
 
-class SymbolOffsetProcessor(object):
+class SymbolOffsetProcessor:
   """Utility for processing symbols in binaries.
 
   This class is used to translate between general offsets into a binary and the
@@ -204,7 +203,7 @@ class SymbolOffsetProcessor(object):
     """
     our_symbol_names = set(s.name for s in self.SymbolInfos())
     matched_names = our_symbol_names.intersection(set(symbol_names))
-    return [self.NameToSymbolMap()[n] for n in matched_names]
+    return sorted([self.NameToSymbolMap()[n] for n in matched_names])
 
   def TranslateAnnotatedSymbolOffsets(self, annotated_offsets):
     """Merges offsets across run groups and translates to symbol offsets.
@@ -237,7 +236,7 @@ class SymbolOffsetProcessor(object):
     dump_offset_to_symbol_info = self.GetDumpOffsetToSymbolInfo()
     for i in items:
       dump_offset = get(i)
-      idx = dump_offset / 2
+      idx = dump_offset // 2
       assert dump_offset >= 0 and idx < len(dump_offset_to_symbol_info), (
           'Dump offset out of binary range')
       symbol_info = dump_offset_to_symbol_info[idx]
@@ -275,7 +274,7 @@ class SymbolOffsetProcessor(object):
         if sym.size != 0 or sym.offset == start_of_text:
           continue
         self._whitelist.add(sym.name)
-        idx = (sym.offset - start_of_text)/ 2
+        idx = (sym.offset - start_of_text) // 2
         assert self._offset_to_symbol_info[idx] == sym, (
             'Unexpected unset offset')
         idx += 1
@@ -297,7 +296,7 @@ class SymbolOffsetProcessor(object):
       assert len(start_syms) == 1, 'Can\'t find unique start of text symbol'
       start_of_text = start_syms[0].offset
       max_offset = max(s.offset + s.size for s in self.SymbolInfos())
-      text_length_halfwords = (max_offset - start_of_text) / 2
+      text_length_halfwords = (max_offset - start_of_text) // 2
       self._offset_to_symbol_info = [None] * text_length_halfwords
       for sym in self.SymbolInfos():
         offset = sym.offset - start_of_text
@@ -306,7 +305,7 @@ class SymbolOffsetProcessor(object):
         # The low bit of offset may be set to indicate a thumb instruction. The
         # actual offset is still halfword aligned and so the low bit may be
         # safely ignored in the division by two below.
-        for i in range(offset / 2, (offset + sym.size) / 2):
+        for i in range(offset // 2, (offset + sym.size) // 2):
           assert i < text_length_halfwords
           other_symbol = self._offset_to_symbol_info[i]
           # There may be overlapping symbols, for example fancy
@@ -316,7 +315,7 @@ class SymbolOffsetProcessor(object):
             self._offset_to_symbol_info[i] = sym
 
         if sym.name != symbol_extractor.START_OF_TEXT_SYMBOL and sym.size == 0:
-          idx = offset / 2
+          idx = offset // 2
           assert (self._offset_to_symbol_info[idx] is None or
                   self._offset_to_symbol_info[idx].size == 0), (
               'Unexpected symbols overlapping')
@@ -324,7 +323,7 @@ class SymbolOffsetProcessor(object):
     return self._offset_to_symbol_info
 
 
-class ProfileManager(object):
+class ProfileManager:
   """Manipulates sets of profiles.
 
   A "profile set" refers to a set of data from an instrumented version of chrome
@@ -363,7 +362,8 @@ class ProfileManager(object):
     time. This files can be grouped into run sets that are within 30 seconds of
     each other. Each run set is then grouped into phases as before.
   """
-  class AnnotatedOffset(object):
+
+  class AnnotatedOffset:
     """Describes an offset with how it appeared in a profile set.
 
     Each offset is annotated with the phase and process that it appeared in, and
@@ -390,10 +390,10 @@ class ProfileManager(object):
       return self._count.get((phase, process), 0)
 
     def Processes(self):
-      return set(k[1] for k in self._count.iterkeys())
+      return set(key[1] for key in self._count)
 
     def Phases(self):
-      return set(k[0] for k in self._count.iterkeys())
+      return set(key[0] for key in self._count)
 
     def Offset(self):
       return self._offset
@@ -401,7 +401,7 @@ class ProfileManager(object):
     def SetOffset(self, o):
       self._offset = o
 
-  class _RunGroup(object):
+  class _RunGroup:
     RUN_GROUP_THRESHOLD_NS = 30e9
 
     def __init__(self):
@@ -478,12 +478,12 @@ class ProfileManager(object):
     return offsets_by_process
 
   def _SanityCheckAllCallsCapturedByTheInstrumentation(self, process_info):
-    total_calls_count = long(process_info['total_calls_count'])
+    total_calls_count = int(process_info['total_calls_count'])
     call_graph = process_info['call_graph']
     count = 0
     for el in call_graph:
       for bucket in el['caller_and_count']:
-        count += long(bucket['count'])
+        count += int(bucket['count'])
 
     # This is a sanity check to ensure the number of race-related
     # inconsistencies is small.
@@ -580,8 +580,8 @@ class ProfileManager(object):
     assert self._run_groups
     if len(self._run_groups) < 5:
       return  # Small runs have too much variance for testing.
-    sizes = map(lambda g: len(g.Filenames()), self._run_groups)
-    avg_size = sum(sizes) / len(self._run_groups)
+    sizes = list(map(lambda g: len(g.Filenames()), self._run_groups))
+    avg_size = sum(sizes) // len(self._run_groups)
     num_outliers = len([s for s in sizes
                         if s > 1.5 * avg_size or s < 0.75 * avg_size])
     expected_outliers = 0.1 * len(self._run_groups)
@@ -638,7 +638,6 @@ def main():
   logging.info('Merging dumps')
   dump_files = args.dumps.split(',')
   profile_manager = ProfileManager(dump_files)
-  profile_manager.SortByTimestamp()
   dumps = profile_manager.GetMergedOffsets()
 
   instrumented_native_lib = os.path.join(args.instrumented_build_dir,
@@ -648,9 +647,9 @@ def main():
 
   instrumented_processor = SymbolOffsetProcessor(instrumented_native_lib)
 
-  reached_offsets = instrumented_processor.GetReachedOffsetsFromDumps(dumps)
+  reached_offsets = instrumented_processor.GetReachedOffsetsFromDump(dumps)
   if args.offsets_output:
-    with file(args.offsets_output, 'w') as f:
+    with open(args.offsets_output, 'w') as f:
       f.write('\n'.join(map(str, reached_offsets)))
   logging.info('Reached Offsets = %d', len(reached_offsets))
 

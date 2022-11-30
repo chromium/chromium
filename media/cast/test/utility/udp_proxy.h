@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include <random>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "net/base/ip_endpoint.h"
 
@@ -46,7 +46,7 @@ class PacketPipe {
   std::unique_ptr<PacketPipe> pipe_;
   // Allows injection of fake task runner for testing.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 // Implements a Interrupted Poisson Process for packet delivery.
@@ -61,6 +61,11 @@ class InterruptedPoissonProcess {
                             double coef_burstiness,
                             double coef_variance,
                             uint32_t rand_seed);
+
+  InterruptedPoissonProcess(const InterruptedPoissonProcess&) = delete;
+  InterruptedPoissonProcess& operator=(const InterruptedPoissonProcess&) =
+      delete;
+
   ~InterruptedPoissonProcess();
 
   std::unique_ptr<PacketPipe> NewBuffer(size_t size);
@@ -83,7 +88,7 @@ class InterruptedPoissonProcess {
   void SendPacket();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   const std::vector<double> average_rates_;
   const double coef_burstiness_;
   const double coef_variance_;
@@ -101,8 +106,6 @@ class InterruptedPoissonProcess {
   std::mt19937 mt_rand_;
 
   base::WeakPtrFactory<InterruptedPoissonProcess> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterruptedPoissonProcess);
 };
 
 // A UDPProxy will set up a UDP socket and bind to |local_port|.

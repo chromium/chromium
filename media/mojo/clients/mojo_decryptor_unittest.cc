@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
 #include "media/base/decryptor.h"
@@ -17,7 +16,6 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/mojo/clients/mojo_decryptor.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,15 +35,19 @@ namespace media {
 class MojoDecryptorTest : public ::testing::Test {
  public:
   MojoDecryptorTest() = default;
+
+  MojoDecryptorTest(const MojoDecryptorTest&) = delete;
+  MojoDecryptorTest& operator=(const MojoDecryptorTest&) = delete;
+
   ~MojoDecryptorTest() override = default;
 
   void SetWriterCapacity(uint32_t capacity) { writer_capacity_ = capacity; }
 
   void Initialize() {
-    decryptor_.reset(new StrictMock<MockDecryptor>());
+    decryptor_ = std::make_unique<StrictMock<MockDecryptor>>();
 
-    mojo_decryptor_service_.reset(
-        new MojoDecryptorService(decryptor_.get(), nullptr));
+    mojo_decryptor_service_ =
+        std::make_unique<MojoDecryptorService>(decryptor_.get(), nullptr);
 
     receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
         mojo_decryptor_service_.get());
@@ -69,17 +71,22 @@ class MojoDecryptorTest : public ::testing::Test {
 
   void ReturnSharedBufferVideoFrame(scoped_refptr<DecoderBuffer> encrypted,
                                     Decryptor::VideoDecodeCB video_decode_cb) {
-    // We don't care about the encrypted data, just create a simple VideoFrame.
-    scoped_refptr<VideoFrame> frame(
-        MojoSharedBufferVideoFrame::CreateDefaultForTesting(
-            PIXEL_FORMAT_I420, gfx::Size(100, 100),
-            base::TimeDelta::FromSeconds(100)));
+    // We don't care about the encrypted data, just create a simple SHMEM
+    // VideoFrame.
+    auto region = base::ReadOnlySharedMemoryRegion::Create(15000);
+    CHECK(region.IsValid());
+    uint8_t* data = const_cast<uint8_t*>(region.mapping.GetMemoryAs<uint8_t>());
+    scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
+        PIXEL_FORMAT_I420, gfx::Size(100, 100), gfx::Rect(100, 100),
+        gfx::Size(100, 100), 100, 50, 50, data, data + 100 * 100,
+        data + (100 * 100 * 5 / 4), base::Seconds(100));
+    auto read_only_mapping = region.region.Map();
+    CHECK(read_only_mapping.IsValid());
+    frame->BackWithOwnedSharedMemory(std::move(region.region),
+                                     std::move(read_only_mapping));
     frame->AddDestructionObserver(base::BindOnce(
         &MojoDecryptorTest::OnFrameDestroyed, base::Unretained(this)));
 
-    // Currently freeing buffers only works for MojoSharedMemory, so make
-    // sure |frame| is of that type.
-    EXPECT_EQ(VideoFrame::STORAGE_MOJO_SHARED_BUFFER, frame->storage_type());
     std::move(video_decode_cb).Run(Decryptor::kSuccess, std::move(frame));
   }
 
@@ -87,7 +94,7 @@ class MojoDecryptorTest : public ::testing::Test {
                          Decryptor::AudioDecodeCB audio_decode_cb) {
     const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_4_0;
     const int kSampleRate = 48000;
-    const base::TimeDelta start_time = base::TimeDelta::FromSecondsD(1000.0);
+    const base::TimeDelta start_time = base::Seconds(1000.0);
     auto audio_buffer = MakeAudioBuffer<float>(
         kSampleFormatPlanarF32, kChannelLayout,
         ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,
@@ -126,9 +133,6 @@ class MojoDecryptorTest : public ::testing::Test {
 
   // The actual Decryptor object used by |mojo_decryptor_service_|.
   std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoDecryptorTest);
 };
 
 // DecryptAndDecodeAudio() and ResetDecoder(kAudio) immediately.

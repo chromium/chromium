@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 
 namespace media {
@@ -21,10 +21,10 @@ CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
       VideoCaptureDeviceFactoryChromeOS::GetBufferManager();
   if (!buf_manager) {
     LOG(ERROR) << "GpuMemoryBufferManager not set";
-    return std::unique_ptr<gfx::GpuMemoryBuffer>();
+    return nullptr;
   }
   return buf_manager->CreateGpuMemoryBuffer(size, format, usage,
-                                            gpu::kNullSurfaceHandle);
+                                            gpu::kNullSurfaceHandle, nullptr);
 }
 
 // There's no good way to resolve the HAL pixel format to the platform-specific

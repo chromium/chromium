@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/values_equivalent.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,12 +25,7 @@ MATCHER_P3(PrefValueMatches, prefs, pref_name, value, "") {
   if (!pref)
     return false;
 
-  const base::Value* actual_value = pref->GetValue();
-  if (!actual_value)
-    return value == NULL;
-  if (!value)
-    return actual_value == NULL;
-  return value->Equals(actual_value);
+  return base::ValuesEquivalent(value, pref->GetValue());
 }
 
 // A mock for testing preference notifications and easy setup of expectations.
@@ -45,7 +42,7 @@ class MockPrefChangeCallback {
               const base::Value* value);
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 #endif  // COMPONENTS_PREFS_MOCK_PREF_CHANGE_CALLBACK_H_

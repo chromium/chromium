@@ -2,7 +2,7 @@
 ++[section]
 ++++[label] label-for
 ++++++[static] name='Default: '
-++++++[entry] name='Default:' selectable-text labelled-by
+++++++[entry] name='Default:' selectable-text labelled-by text-input-type:text
 ++++[label] label-for
 ++++++[static] name='Button: '
 ++++++[push button] name='Button:' labelled-by

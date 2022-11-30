@@ -29,10 +29,14 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/parser/arena.h"
 
 namespace blink {
 
 class CSSParserSelector;
+
+// See css_selector_parser.h.
+using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // This class represents a CSS selector, i.e. a pattern of one or more
 // simple selectors. https://www.w3.org/TR/css3-selectors/
@@ -61,88 +65,85 @@ class CSSParserSelector;
 // Use CSSSelector::TagHistory() and CSSSelector::IsLastInTagHistory()
 // to traverse through each sequence of simple selectors,
 // from .c3 to #ident; from span to .c2; from div to .c1
+//
+// StyleRule stores its selectors in an identical memory layout,
+// but not as part of a CSSSelectorList (see its class comments).
+// It reuses many of the exposed static member functions from CSSSelectorList
+// to provide a subset of its API.
 class CORE_EXPORT CSSSelectorList {
   USING_FAST_MALLOC(CSSSelectorList);
 
  public:
-  CSSSelectorList() : selector_array_(nullptr) {}
+  CSSSelectorList() = default;
 
-  CSSSelectorList(CSSSelectorList&& o) : selector_array_(o.selector_array_) {
-    o.selector_array_ = nullptr;
-  }
+  CSSSelectorList(CSSSelectorList&& o)
+      : selector_array_(std::move(o.selector_array_)) {}
 
   CSSSelectorList& operator=(CSSSelectorList&& o) {
     DCHECK(this != &o);
-    DeleteSelectorsIfNeeded();
-    selector_array_ = o.selector_array_;
-    o.selector_array_ = nullptr;
+    selector_array_ = std::move(o.selector_array_);
     return *this;
   }
 
-  ~CSSSelectorList() { DeleteSelectorsIfNeeded(); }
+  ~CSSSelectorList() = default;
 
+  // Finds out how many elements one would need to allocate for
+  // AdoptSelectorVector(), ie., storing the selector tree as a flattened list.
+  // The returned count is in CSSSelector elements, not bytes.
+  static size_t FlattenedSize(const CSSSelectorVector& selector_vector);
   static CSSSelectorList AdoptSelectorVector(
-      Vector<std::unique_ptr<CSSParserSelector>>& selector_vector);
+      CSSSelectorVector& selector_vector);
+  static void AdoptSelectorVector(CSSSelectorVector& selector_vector,
+                                  CSSSelector* selector_array,
+                                  size_t flattened_size);
+
   CSSSelectorList Copy() const;
 
   bool IsValid() const { return !!selector_array_; }
-  const CSSSelector* First() const { return selector_array_; }
-  const CSSSelector* FirstForCSSOM() const;
+  const CSSSelector* First() const { return selector_array_.get(); }
   static const CSSSelector* Next(const CSSSelector&);
-  static const CSSSelector* NextInFullList(const CSSSelector&);
 
   // The CSS selector represents a single sequence of simple selectors.
-  bool HasOneSelector() const {
-    return selector_array_ && !Next(*selector_array_);
-  }
+  bool HasOneSelector() const { return selector_array_ && !Next(*First()); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
+    DCHECK(selector_array_);
     return selector_array_[index];
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
-    return static_cast<wtf_size_t>(&selector - selector_array_);
+    DCHECK(First());
+    return static_cast<wtf_size_t>(&selector - First());
   }
 
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
     const CSSSelector& current = SelectorAt(index);
-    const CSSSelector* next = this->Next(current);
+    const CSSSelector* next = Next(current);
     if (!next)
       return kNotFound;
     return SelectorIndex(*next);
   }
 
-  String SelectorsText() const;
+  String SelectorsText() const { return SelectorsText(First()); }
+  static String SelectorsText(const CSSSelector* first);
 
   // Selector lists don't know their length, computing it is O(n) and should be
   // avoided when possible. Instead iterate from first() and using next().
   unsigned ComputeLength() const;
 
- private:
-  void DeleteSelectorsIfNeeded() {
-    if (selector_array_)
-      DeleteSelectors();
-  }
-  void DeleteSelectors();
+  // Return the specificity of the selector with the highest specificity.
+  unsigned MaximumSpecificity() const;
 
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;
 
+ private:
   // End of a multipart selector is indicated by is_last_in_tag_history_ bit in
   // the last item. End of the array is indicated by is_last_in_selector_list_
   // bit in the last item.
-  CSSSelector* selector_array_;
+  std::unique_ptr<CSSSelector[]> selector_array_;
 };
 
 inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {
-  // Skip subparts of compound selectors.
-  const CSSSelector* last = &current;
-  while (!last->IsLastInTagHistory())
-    last++;
-  return last->IsLastInOriginalList() ? nullptr : last + 1;
-}
-
-inline const CSSSelector* CSSSelectorList::NextInFullList(
-    const CSSSelector& current) {
   // Skip subparts of compound selectors.
   const CSSSelector* last = &current;
   while (!last->IsLastInTagHistory())

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ namespace gpu {
 class CommandBufferDirectLocked : public CommandBufferDirect {
  public:
   CommandBufferDirectLocked() = default;
+
+  CommandBufferDirectLocked(const CommandBufferDirectLocked&) = delete;
+  CommandBufferDirectLocked& operator=(const CommandBufferDirectLocked&) =
+      delete;
+
   ~CommandBufferDirectLocked() override = default;
 
   // Overridden from CommandBufferDirect
@@ -51,7 +56,6 @@ class CommandBufferDirectLocked : public CommandBufferDirect {
   int client_put_offset_ = 0;
   int service_put_offset_ = 0;
   int flush_count_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(CommandBufferDirectLocked);
 };
 
 }  // namespace gpu

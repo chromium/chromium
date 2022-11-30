@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/filters/vp9_bool_decoder.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/base/bit_reader.h"
 
 namespace media {
@@ -49,7 +49,7 @@ bool Vp9BoolDecoder::Initialize(const uint8_t* data, size_t size) {
     return false;
   }
 
-  reader_.reset(new BitReader(data, size));
+  reader_ = std::make_unique<BitReader>(data, size);
   valid_ = true;
 
   bool_value_ = 0;
@@ -112,7 +112,7 @@ bool Vp9BoolDecoder::ReadBool(int prob) {
 
   // Need to fill |count| bits next time in order to make |bool_range_| >=
   // 128.
-  DCHECK_LT(bool_range_, base::size(kCountToShiftTo128));
+  DCHECK_LT(bool_range_, std::size(kCountToShiftTo128));
   DCHECK_GT(bool_range_, 0u);
   int count = kCountToShiftTo128[bool_range_];
   bool_range_ <<= count;

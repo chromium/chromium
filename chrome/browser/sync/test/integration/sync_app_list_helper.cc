@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,9 @@ SyncAppListHelper* SyncAppListHelper::GetInstance() {
   return instance;
 }
 
-SyncAppListHelper::SyncAppListHelper()
-    : test_(nullptr), setup_completed_(false) {}
+SyncAppListHelper::SyncAppListHelper() = default;
 
-SyncAppListHelper::~SyncAppListHelper() {}
+SyncAppListHelper::~SyncAppListHelper() = default;
 
 void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   if (setup_completed_) {
@@ -39,7 +38,7 @@ void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
     return;
   }
   test_ = test;
-  for (auto* profile : test_->GetAllProfiles()) {
+  for (Profile* profile : test_->GetAllProfiles()) {
     extensions::ExtensionSystem::Get(profile)->InitForRegularProfile(
         true /* extensions_enabled */);
     if (test_->UseVerifier() && profile == test_->verifier()) {
@@ -84,8 +83,9 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 
     ChromeAppListItem* item2 =
         service2->GetModelUpdater()->ItemAtForTest(index2);
-    if (item1->CompareForTest(item2))
+    if (item1->CompareForTest(item2)) {
       continue;
+    }
 
     LOG(ERROR) << "Item(" << i << ") in profile1: " << item1->ToDebugString()
                << " != "
@@ -96,15 +96,16 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 }
 
 bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
-  const auto& profiles = test_->GetAllProfiles();
-  for (auto* profile : profiles) {
+  const std::vector<Profile*>& profiles = test_->GetAllProfiles();
+  for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !AppListMatch(profiles.front(), profile)) {
       DVLOG(1) << "Profile1: "
                << AppListSyncableServiceFactory::GetForProfile(profile);
       PrintAppList(profile);
-      DVLOG(1) << "Profile2: " <<
-          AppListSyncableServiceFactory::GetForProfile(profiles.front());
+      DVLOG(1) << "Profile2: "
+               << AppListSyncableServiceFactory::GetForProfile(
+                      profiles.front());
       PrintAppList(profiles.front());
       return false;
     }
@@ -122,7 +123,7 @@ void SyncAppListHelper::MoveAppToFolder(Profile* profile,
                                         const std::string& folder_id) {
   AppListSyncableService* service =
       AppListSyncableServiceFactory::GetForProfile(profile);
-  service->GetModelUpdater()->MoveItemToFolder(id, folder_id);
+  service->GetModelUpdater()->SetItemFolderId(id, folder_id);
 }
 
 void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
@@ -136,7 +137,7 @@ void SyncAppListHelper::MoveAppFromFolder(Profile* profile,
     LOG(ERROR) << "Folder not found: " << folder_id;
     return;
   }
-  service->GetModelUpdater()->MoveItemToFolder(id, "");
+  service->GetModelUpdater()->SetItemFolderId(id, "");
 }
 
 void SyncAppListHelper::PrintAppList(Profile* profile) {
@@ -146,20 +147,23 @@ void SyncAppListHelper::PrintAppList(Profile* profile) {
   std::map<const std::string, std::vector<ChromeAppListItem*>> children;
   for (size_t i = 0; i < service->GetModelUpdater()->ItemCount(); ++i) {
     ChromeAppListItem* item = service->GetModelUpdater()->ItemAtForTest(i);
-    if (!item->folder_id().empty())
+    if (!item->folder_id().empty()) {
       children[item->folder_id()].push_back(item);
+    }
   }
   for (size_t i = 0; i < service->GetModelUpdater()->ItemCount(); ++i) {
     ChromeAppListItem* item = service->GetModelUpdater()->ItemAtForTest(i);
     // Skip if it's not a top level item.
-    if (!item->folder_id().empty())
+    if (!item->folder_id().empty()) {
       continue;
+    }
     std::string label = base::StringPrintf("Item(%d): ", static_cast<int>(i));
     PrintItem(profile, item, label);
     // Print children if it has any.
     if (children.count(item->id())) {
       DCHECK(item->is_folder());
-      auto& child_items = children[item->folder_id()];
+      std::vector<ChromeAppListItem*>& child_items =
+          children[item->folder_id()];
       for (size_t j = 0; j < child_items.size(); ++j) {
         ChromeAppListItem* child_item = child_items[j];
         std::string child_label =

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,25 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/geometry/rect.h"
+#endif
 
 namespace printing {
 
 namespace {
 
 constexpr size_t kTestLength = 8;
+
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr gfx::Size kIsoA4Microns(210000, 297000);
 constexpr gfx::Size kNaLetterMicrons(216000, 279000);
+#endif
 
 std::string Simplify(const std::string& title) {
   return base::UTF16ToUTF8(
@@ -56,6 +65,7 @@ TEST(PrintingUtilsTest, FormatDocumentTitleWithOwner) {
   EXPECT_EQ("ab...j: ", Format("abcdefghij", "0123456789"));
 }
 
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrintingUtilsTest, GetDefaultPaperSizeFromLocaleMicrons) {
   // Valid locales
   EXPECT_EQ(kNaLetterMicrons, GetDefaultPaperSizeFromLocaleMicrons("en-US"));
@@ -98,19 +108,49 @@ TEST(PrintingUtilsTest, SizesEqualWithinEpsilon) {
   EXPECT_TRUE(
       SizesEqualWithinEpsilon(kIsoA4Microns, gfx::Size(210500, 296500), 500));
 }
+#endif  // defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST(PrintingUtilsTest, ParsePaper) {
-  PrinterSemanticCapsAndDefaults::Paper paper_mm =
-      ParsePaper("iso_a4_210x297mm");
-  EXPECT_EQ(gfx::Size(210000, 297000), paper_mm.size_um);
-  EXPECT_EQ("iso_a4_210x297mm", paper_mm.vendor_id);
-  EXPECT_EQ("iso a4", paper_mm.display_name);
+#if BUILDFLAG(IS_WIN)
+TEST(PrintingUtilsTest, GetCenteredPageContentRect) {
+  gfx::Rect page_content;
 
-  PrinterSemanticCapsAndDefaults::Paper paper_in =
-      ParsePaper("na_letter_8.5x11in");
-  EXPECT_EQ(gfx::Size(215900, 279400), paper_in.size_um);
-  EXPECT_EQ("na_letter_8.5x11in", paper_in.vendor_id);
-  EXPECT_EQ("na letter", paper_in.display_name);
+  // No centering.
+  gfx::Size page_size = gfx::Size(1200, 1200);
+  gfx::Rect page_content_rect = gfx::Rect(0, 0, 400, 1100);
+  page_content = GetCenteredPageContentRect(gfx::Size(1000, 1000), page_size,
+                                            page_content_rect);
+  EXPECT_EQ(0, page_content.x());
+  EXPECT_EQ(0, page_content.y());
+  EXPECT_EQ(400, page_content.width());
+  EXPECT_EQ(1100, page_content.height());
+
+  // X centered.
+  page_size = gfx::Size(500, 1200);
+  page_content = GetCenteredPageContentRect(gfx::Size(1000, 1000), page_size,
+                                            page_content_rect);
+  EXPECT_EQ(250, page_content.x());
+  EXPECT_EQ(0, page_content.y());
+  EXPECT_EQ(400, page_content.width());
+  EXPECT_EQ(1100, page_content.height());
+
+  // Y centered.
+  page_size = gfx::Size(1200, 500);
+  page_content = GetCenteredPageContentRect(gfx::Size(1000, 1000), page_size,
+                                            page_content_rect);
+  EXPECT_EQ(0, page_content.x());
+  EXPECT_EQ(250, page_content.y());
+  EXPECT_EQ(400, page_content.width());
+  EXPECT_EQ(1100, page_content.height());
+
+  // Both X and Y centered.
+  page_size = gfx::Size(500, 500),
+  page_content = GetCenteredPageContentRect(gfx::Size(1000, 1000), page_size,
+                                            page_content_rect);
+  EXPECT_EQ(250, page_content.x());
+  EXPECT_EQ(250, page_content.y());
+  EXPECT_EQ(400, page_content.width());
+  EXPECT_EQ(1100, page_content.height());
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

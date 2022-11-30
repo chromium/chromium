@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
@@ -22,8 +23,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/webrtc/api/ice_transport_factory.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
@@ -40,14 +40,14 @@ namespace {
 const char* kIceRoleControllingStr = "controlling";
 const char* kIceRoleControlledStr = "controlled";
 
-base::Optional<cricket::Candidate> ConvertToCricketIceCandidate(
+absl::optional<cricket::Candidate> ConvertToCricketIceCandidate(
     const RTCIceCandidate& candidate) {
   webrtc::JsepIceCandidate jsep_candidate("", 0);
   webrtc::SdpParseError error;
   if (!webrtc::SdpDeserializeCandidate(candidate.candidate().Utf8(),
                                        &jsep_candidate, &error)) {
     LOG(WARNING) << "Failed to deserialize candidate: " << error.description;
-    return base::nullopt;
+    return absl::nullopt;
   }
   return jsep_candidate.candidate();
 }
@@ -86,10 +86,10 @@ RTCIceTransport* RTCIceTransport::Create(
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
       context->GetTaskRunner(TaskType::kNetworking);
 
-  PeerConnectionDependencyFactory::GetInstance()->EnsureInitialized();
+  PeerConnectionDependencyFactory::From(*context).EnsureInitialized();
   scoped_refptr<base::SingleThreadTaskRunner> host_thread =
-      PeerConnectionDependencyFactory::GetInstance()
-          ->GetWebRtcNetworkTaskRunner();
+      PeerConnectionDependencyFactory::From(*context)
+          .GetWebRtcNetworkTaskRunner();
   return MakeGarbageCollected<RTCIceTransport>(
       context, std::move(proxy_thread), std::move(host_thread),
       std::make_unique<DtlsIceTransportAdapterCrossThreadFactory>(
@@ -225,10 +225,13 @@ static webrtc::PeerConnectionInterface::IceServer ConvertIceServer(
   // Prefer standardized 'urls' field over deprecated 'url' field.
   Vector<String> url_strings;
   if (ice_server->hasUrls()) {
-    if (ice_server->urls().IsString()) {
-      url_strings.push_back(ice_server->urls().GetAsString());
-    } else if (ice_server->urls().IsStringSequence()) {
-      url_strings = ice_server->urls().GetAsStringSequence();
+    switch (ice_server->urls()->GetContentType()) {
+      case V8UnionStringOrStringSequence::ContentType::kString:
+        url_strings.push_back(ice_server->urls()->GetAsString());
+        break;
+      case V8UnionStringOrStringSequence::ContentType::kStringSequence:
+        url_strings = ice_server->urls()->GetAsStringSequence();
+        break;
     }
   } else if (ice_server->hasUrl()) {
     url_strings.push_back(ice_server->url());
@@ -290,12 +293,10 @@ void RTCIceTransport::gather(RTCIceGatherOptions* options,
   }
   cricket::ServerAddresses stun_servers;
   std::vector<cricket::RelayServerConfig> turn_servers;
-  webrtc::RTCErrorType error_type = webrtc::ParseIceServers(
+  webrtc::RTCError error = webrtc::ParseIceServersOrError(
       ice_servers.ReleaseVector(), &stun_servers, &turn_servers);
-  if (error_type != webrtc::RTCErrorType::NONE) {
-    ThrowExceptionFromRTCError(
-        webrtc::RTCError(error_type, "Invalid ICE server URL(s)."),
-        exception_state);
+  if (!error.ok()) {
+    ThrowExceptionFromRTCError(error, exception_state);
     return;
   }
   gathering_state_ = cricket::kIceGatheringGathering;
@@ -386,7 +387,7 @@ void RTCIceTransport::addRemoteCandidate(RTCIceCandidate* remote_candidate,
   if (RaiseExceptionIfClosed(exception_state)) {
     return;
   }
-  base::Optional<cricket::Candidate> converted_remote_candidate =
+  absl::optional<cricket::Candidate> converted_remote_candidate =
       ConvertToCricketIceCandidate(*remote_candidate);
   if (!converted_remote_candidate) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,

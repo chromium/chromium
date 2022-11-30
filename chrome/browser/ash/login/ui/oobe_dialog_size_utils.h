@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
-
-// Enum that specifies how inner padding of OOBE dialog should be calculated.
-enum class OobeDialogPaddingMode {
-  // Oobe dialog is displayed full screen, padding will be calculated
-  // via css depending on media size.
-  PADDING_AUTO,
-  // Oobe dialog have enough free space around and should use wide padding.
-  PADDING_WIDE,
-  // Oobe dialog is positioned in limited space and should use narrow padding.
-  PADDING_NARROW
-};
+namespace ash {
 
 // Exposed for testing.
 extern const gfx::Size kMaxDialogSize;
@@ -40,7 +29,7 @@ gfx::Size CalculateOobeDialogSize(const gfx::Size& host_size,
 
 // Calculated the size of OOBE dialog for primary display by passing primary
 // display screen size and shelf height to `CalculateOobeDialogSize`.
-gfx::Size CalculateOobeDialogSizeForPrimrayDisplay();
+gfx::Size CalculateOobeDialogSizeForPrimaryDisplay();
 
 // Position OOBE dialog according to specs inside `host_bounds` excluding shelf.
 // `host_bounds` is in coordinates of oobe dialog widget. `result` is
@@ -48,10 +37,19 @@ gfx::Size CalculateOobeDialogSizeForPrimrayDisplay();
 void CalculateOobeDialogBounds(const gfx::Rect& host_bounds,
                                int shelf_height,
                                bool is_horizontal,
-                               bool is_new_oobe_layout_enabled,
-                               gfx::Rect* result,
-                               OobeDialogPaddingMode* result_padding);
+                               gfx::Rect* result);
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::CalculateOobeDialogSize;
+using ::ash::CalculateOobeDialogSizeForPrimaryDisplay;
+using ::ash::kMaxLandscapeDialogSize;
+using ::ash::kMaxPortraitDialogSize;
+using ::ash::kMinLandscapeDialogSize;
+using ::ash::kMinPortraitDialogSize;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_DIALOG_SIZE_UTILS_H_

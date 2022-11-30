@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 
 namespace blink {
 
+class WebSecurityOrigin;
 class WebURL;
-struct WebURLError;
 struct WebNavigationInfo;
 struct WebNavigationParams;
 
@@ -43,8 +43,9 @@ class WebNavigationControl : public WebLocalFrame {
       std::unique_ptr<WebNavigationParams> navigation_params,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
 
-  // Commits a same-document navigation in the frame. For history navigations, a
-  // valid WebHistoryItem should be provided. Returns CommitResult::Ok if the
+  // Commits a same-document navigation in the frame. For history navigations,
+  // a valid WebHistoryItem should be provided. |initiator_origin| is null
+  // for browser-initiated navigations. Returns CommitResult::Ok if the
   // navigation has actually committed.
   virtual mojom::CommitResult CommitSameDocumentNavigation(
       const WebURL&,
@@ -52,30 +53,14 @@ class WebNavigationControl : public WebLocalFrame {
       const WebHistoryItem&,
       bool is_client_redirect,
       bool has_transient_user_activation,
-      std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) = 0;
+      const WebSecurityOrigin& initiator_origin,
+      bool is_browser_initiated) = 0;
 
-  // Loads a JavaScript URL in the frame.
-  // TODO(dgozman): this may replace the document, so perhaps we should
-  // return something meaningful?
-  virtual void LoadJavaScriptURL(const WebURL&) = 0;
-
-  enum FallbackContentResult {
-    // An error page should be shown instead of fallback.
-    NoFallbackContent,
-    // Something else committed, no fallback content or error page needed.
-    NoLoadInProgress,
-    // Fallback content rendered, no error page needed.
-    FallbackRendered
-  };
-  // On load failure, attempts to make frame's parent render fallback content.
-  virtual FallbackContentResult MaybeRenderFallbackContent(
-      const WebURLError&) const = 0;
-
-  // Override the normal rules for whether a load has successfully committed
-  // in this frame. Used to propagate state when this frame has navigated
-  // cross process.
-  virtual void SetCommittedFirstRealLoad() = 0;
-  virtual bool HasCommittedFirstRealLoad() = 0;
+  // Override the normal rules that determine whether the frame is on the
+  // initial empty document or not. Used to propagate state when this frame has
+  // navigated cross process.
+  virtual void SetIsNotOnInitialEmptyDocument() = 0;
+  virtual bool IsOnInitialEmptyDocument() = 0;
 
   // Marks the frame as loading, before WebLocalFrameClient issues a navigation
   // request through the browser process on behalf of the frame.

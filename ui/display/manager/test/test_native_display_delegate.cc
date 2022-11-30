@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,32 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_observer.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace display {
 namespace test {
+
+std::string GetModesetFlag(uint32_t flag) {
+  std::string flags_str;
+  if (flag & kTestModeset)
+    flags_str = base::StrCat({flags_str, kTestModesetStr, ", "});
+  if (flag & kCommitModeset)
+    flags_str = base::StrCat({flags_str, kCommitModesetStr, ", "});
+  if (flag & kSeamlessModeset)
+    flags_str = base::StrCat({flags_str, kSeamlessModesetStr, ", "});
+
+  // Remove trailing comma and space.
+  if (!flags_str.empty())
+    flags_str.resize(flags_str.size() - 2);
+  return flags_str;
+}
 
 TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
     : max_configurable_pixels_(0),
@@ -62,20 +79,66 @@ bool TestNativeDisplayDelegate::Configure(
 
   if (max_configurable_pixels_ == 0)
     return true;
-
-  if (!display_config_params.mode.has_value())
+  else if (max_configurable_pixels_ < 0)
     return false;
 
-  return display_config_params.mode.value()->size().GetArea() <=
-         max_configurable_pixels_;
+  if (display_config_params.mode.has_value()) {
+    return display_config_params.mode.value()->size().GetArea() <=
+           max_configurable_pixels_;
+  }
+
+  return true;
+}
+
+bool TestNativeDisplayDelegate::IsConfigurationWithinSystemBandwidth(
+    const std::vector<display::DisplayConfigurationParams>& config_requests) {
+  if (system_bandwidth_limit_ == 0)
+    return true;
+
+  // We need a copy of the current state to account for current configuration.
+  // But we can't overwrite it yet because we may fail to configure
+  base::flat_map<int64_t, int> requested_ids_with_bandwidth =
+      display_id_to_used_system_bw_;
+  for (const DisplayConfigurationParams& config : config_requests) {
+    requested_ids_with_bandwidth[config.id] =
+        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+  }
+
+  int requested_bandwidth = 0;
+  for (const auto& it : requested_ids_with_bandwidth) {
+    requested_bandwidth += it.second;
+  }
+
+  return requested_bandwidth <= system_bandwidth_limit_;
+}
+
+void TestNativeDisplayDelegate::SaveCurrentConfigSystemBandwidth(
+    const std::vector<display::DisplayConfigurationParams>& config_requests) {
+  // On a successful configuration, we update the current state to reflect the
+  // current system usage.
+  for (const DisplayConfigurationParams& config : config_requests) {
+    display_id_to_used_system_bw_[config.id] =
+        config.mode.has_value() ? config.mode.value()->size().GetArea() : 0;
+  }
 }
 
 void TestNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
-    ConfigureCallback callback) {
+    ConfigureCallback callback,
+    uint32_t modeset_flag) {
+  log_->AppendAction(GetModesetFlag(modeset_flag));
   bool config_success = true;
   for (const auto& config : config_requests)
     config_success &= Configure(config);
+
+  config_success &= IsConfigurationWithinSystemBandwidth(config_requests);
+
+  if (config_success)
+    SaveCurrentConfigSystemBandwidth(config_requests);
+
+  std::string config_outcome = "outcome: ";
+  config_outcome += config_success ? "success" : "failure";
+  log_->AppendAction(config_outcome);
 
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -161,9 +224,12 @@ bool TestNativeDisplayDelegate::SetGammaCorrection(
   return true;
 }
 
-void TestNativeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
-                                                 bool enabled) {
+void TestNativeDisplayDelegate::SetPrivacyScreen(
+    int64_t display_id,
+    bool enabled,
+    SetPrivacyScreenCallback callback) {
   log_->AppendAction(SetPrivacyScreenAction(display_id, enabled));
+  std::move(callback).Run(true);
 }
 
 void TestNativeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {

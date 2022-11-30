@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_engagement_metrics_service.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace plugin_vm {
 
@@ -27,9 +27,7 @@ PluginVmEngagementMetricsService::Factory::GetInstance() {
 }
 
 PluginVmEngagementMetricsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "PluginVmEngagementMetricsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PluginVmEngagementMetricsService") {}
 
 PluginVmEngagementMetricsService::Factory::~Factory() = default;
 

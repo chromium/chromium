@@ -6,9 +6,12 @@
 <translation id="1717486229951421299">La lista de credenciales que se debe tocar para completar está abierta a media altura.</translation>
 <translation id="207576718733492531">La lista de credenciales que se debe tocar para completar está cerrada.</translation>
 <translation id="2610239185026711824">Sugerir contraseña</translation>
+<translation id="2652129567809778422">Seleccionar contraseña</translation>
 <translation id="2803478378562657435">Se muestran las contraseñas guardadas y las opciones de contraseña</translation>
 <translation id="2903493209154104877">Direcciones</translation>
 <translation id="3399357656427473483">Lista de credenciales que se debe tocar para completar.</translation>
+<translation id="3688051737190211318">Si confías en <ph name="ORIGIN" />, puedes usar una contraseña guardada para acceder.</translation>
+<translation id="4631649115723685955">Devolución de dinero vinculada</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4694050069269396220">Si confías en <ph name="ORIGIN" />, puedes usar una contraseña guardada para otro sitio.</translation>
 <translation id="5016175294846053194">Las sugerencias de Autocompletar están disponibles arriba del teclado</translation>
@@ -24,4 +27,5 @@
 <translation id="8037472847879765671">Muestra formas de pago</translation>
 <translation id="8507520749471379845">Contraseñas disponibles</translation>
 <translation id="8705308553596171387">Sin contraseña</translation>
+<translation id="8849262850971482943">Usa tu tarjeta virtual para mejorar la seguridad</translation>
 </translationbundle>

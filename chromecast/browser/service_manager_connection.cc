@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
 #include "base/thread_annotations.h"
@@ -54,6 +53,9 @@ class ServiceManagerConnection::IOThreadContext
     io_thread_checker_.DetachFromThread();
   }
 
+  IOThreadContext(const IOThreadContext&) = delete;
+  IOThreadContext& operator=(const IOThreadContext&) = delete;
+
   // Safe to call from any thread.
   void Start() {
     DCHECK(!started_);
@@ -84,6 +86,9 @@ class ServiceManagerConnection::IOThreadContext
       base::CurrentThread::Get()->AddDestructionObserver(this);
     }
 
+    MessageLoopObserver(const MessageLoopObserver&) = delete;
+    MessageLoopObserver& operator=(const MessageLoopObserver&) = delete;
+
     ~MessageLoopObserver() override {
       base::CurrentThread::Get()->RemoveDestructionObserver(this);
     }
@@ -109,8 +114,6 @@ class ServiceManagerConnection::IOThreadContext
 
     bool is_active_ = true;
     base::WeakPtr<IOThreadContext> context_;
-
-    DISALLOW_COPY_AND_ASSIGN(MessageLoopObserver);
   };
 
   ~IOThreadContext() override {}
@@ -175,8 +178,6 @@ class ServiceManagerConnection::IOThreadContext
   MessageLoopObserver* message_loop_observer_ = nullptr;
 
   base::WeakPtrFactory<IOThreadContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOThreadContext);
 };
 
 // static

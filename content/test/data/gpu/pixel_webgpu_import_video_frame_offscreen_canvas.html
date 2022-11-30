@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU importExternalTexture videoFrame test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript" src="webcodecs/webcodecs_common.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      let cnv = document.getElementById('placeholder');
+      let offscreen = cnv.transferControlToOffscreen();
+      let ctx = offscreen.getContext('2d');
+      const gpuCanvas = document.getElementById('canvas_webgpu');
+      const [gpuDevice, gpuContext] = await webGpuUtils.init(gpuCanvas);
+
+      if (!gpuDevice || !gpuContext) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const urlSearchParams = new URLSearchParams(window.location.search);
+
+      let source = await createFrameSource(urlSearchParams.get("sourceType"), cnv.width, cnv.height);
+      if (!source) {
+        console.error("Cannot get valid video frame - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      let frame = await source.getNextFrame();
+      ctx.drawImage(frame, 0, 0, cnv.width, cnv.height);
+
+      const renderCallback = function() {
+        webGpuUtils.importExternalTextureTest(gpuDevice, gpuContext, frame);
+        frame.close();
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="placeholder" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_webgpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

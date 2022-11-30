@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ namespace {
 class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
  public:
   SimpleDataPipeGetter(const String& str) : str_(str) {}
+  SimpleDataPipeGetter(const SimpleDataPipeGetter&) = delete;
+  SimpleDataPipeGetter& operator=(const SimpleDataPipeGetter&) = delete;
   ~SimpleDataPipeGetter() override = default;
 
   // network::mojom::DataPipeGetter implementation:
@@ -33,8 +35,6 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
 
  private:
   String str_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDataPipeGetter);
 };
 
 }  // namespace
@@ -89,7 +89,7 @@ void FakeBlob::ReadSideData(ReadSideDataCallback callback) {
 }
 
 void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback callback) {
-  std::move(callback).Run(body_.length(), base::nullopt);
+  std::move(callback).Run(body_.length(), absl::nullopt);
 }
 
 void FakeBlob::GetInternalUUID(GetInternalUUIDCallback callback) {

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 #define COMPONENTS_SYNC_MODEL_SYNCABLE_SERVICE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -27,6 +26,10 @@ class SyncErrorFactory;
 class SyncableService : public base::SupportsWeakPtr<SyncableService> {
  public:
   SyncableService() = default;
+
+  SyncableService(const SyncableService&) = delete;
+  SyncableService& operator=(const SyncableService&) = delete;
+
   virtual ~SyncableService() = default;
 
   // A StartSyncFlare is useful when your SyncableService has a need for sync
@@ -54,9 +57,9 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   // two. After this, the SyncableService's local data should match the server
   // data, and the service should be ready to receive and process any further
   // SyncChange's as they occur.
-  // Returns: base::nullopt if no error was encountered while merging the two
-  //          models, otherwise a base::Optional filled with such error.
-  virtual base::Optional<syncer::ModelError> MergeDataAndStartSyncing(
+  // Returns: absl::nullopt if no error was encountered while merging the two
+  //          models, otherwise a absl::optional filled with such error.
+  virtual absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       ModelType type,
       const SyncDataList& initial_sync_data,
       std::unique_ptr<SyncChangeProcessor> sync_processor,
@@ -67,14 +70,11 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
 
   // SyncChangeProcessor interface.
   // Process a list of new SyncChanges and update the local data as necessary.
-  // Returns: base::nullopt if no error was encountered, otherwise a
-  //          base::Optional filled with such error.
-  virtual base::Optional<ModelError> ProcessSyncChanges(
+  // Returns: absl::nullopt if no error was encountered, otherwise a
+  //          absl::optional filled with such error.
+  virtual absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncableService);
 };
 
 }  // namespace syncer

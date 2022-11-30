@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,13 +38,13 @@ class MockChrome : public StubChrome {
 typedef Status (*Command)(Session* session,
                           WebView* web_view,
                           const std::string& element_id,
-                          const base::DictionaryValue& params,
+                          const base::Value::Dict& params,
                           std::unique_ptr<base::Value>* value);
 
 Status CallElementCommand(Command command,
                           StubWebView* web_view,
                           const std::string& element_id,
-                          const base::DictionaryValue& params = {},
+                          const base::Value::Dict& params = {},
                           std::unique_ptr<base::Value>* value = nullptr) {
   MockChrome* chrome = new MockChrome();
   Session session("id", std::unique_ptr<Chrome>(chrome));
@@ -65,7 +65,7 @@ class MockResponseWebView : public StubWebView {
 
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     if (function ==
         webdriver::atoms::asString(webdriver::atoms::GET_LOCATION)) {
@@ -89,7 +89,7 @@ class MockResponseWebView : public StubWebView {
 
 TEST(ElementCommandsTest, ExecuteGetElementRect_SizeError) {
   MockResponseWebView webview = MockResponseWebView();
-  base::DictionaryValue params;
+  base::Value::Dict params;
   std::unique_ptr<base::Value> result_value;
   Status status = CallElementCommand(ExecuteGetElementRect, &webview,
                                      "3247f4d1-ce70-49e9-9a99-bdc7591e032f",

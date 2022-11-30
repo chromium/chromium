@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/buildflags.h"
@@ -50,29 +50,14 @@ void MojoDecoderFactory::CreateVideoDecoders(
     std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) {
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 
-#if defined(OS_WIN)
-  // If the D3D11VideoDecoder is enabled, then push a kAlternate decoder ahead
-  // of the default one.
-  if (base::FeatureList::IsEnabled(media::kD3D11VideoDecoder)) {
-    mojo::PendingRemote<mojom::VideoDecoder> d3d11_video_decoder_remote;
-    interface_factory_->CreateVideoDecoder(
-        d3d11_video_decoder_remote.InitWithNewPipeAndPassReceiver());
-
-    video_decoders->push_back(std::make_unique<MojoVideoDecoder>(
-        task_runner, gpu_factories, media_log,
-        std::move(d3d11_video_decoder_remote),
-        VideoDecoderImplementation::kAlternate, request_overlay_info_cb,
-        target_color_space));
-  }
-#endif  // defined(OS_WIN)
   mojo::PendingRemote<mojom::VideoDecoder> video_decoder_remote;
   interface_factory_->CreateVideoDecoder(
-      video_decoder_remote.InitWithNewPipeAndPassReceiver());
+      video_decoder_remote.InitWithNewPipeAndPassReceiver(),
+      /*dst_video_decoder=*/{});
 
   video_decoders->push_back(std::make_unique<MojoVideoDecoder>(
       task_runner, gpu_factories, media_log, std::move(video_decoder_remote),
-      VideoDecoderImplementation::kDefault, std::move(request_overlay_info_cb),
-      target_color_space));
+      std::move(request_overlay_info_cb), target_color_space));
 
 #endif
 }

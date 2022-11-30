@@ -1,0 +1,28 @@
+<style include="cr-shared-style diagnostics-shared">
+  #banner {
+    align-items: center;
+    background-color: var(--cros-highlight-color);
+    display: flex;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    width: 100vw;
+    z-index: 1;
+  }
+
+  #bannerIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    fill: var(--cros-color-prominent);
+    padding-inline-end: 16px;
+    padding-inline-start: 40px;
+  }
+
+  .elevation-2 {
+    box-shadow: var(--diagnostics-box-shadow-elevation-2);
+  }
+</style>
+<div id="banner" hidden$="[[!bannerMessage]]" class$="[[scrollingClass_]]">
+  <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
+  <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
+</div>

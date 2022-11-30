@@ -1,9 +1,10 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gl/buildflags.h"
 
 #if BUILDFLAG(USE_DAWN)
@@ -20,11 +21,15 @@ WebGPUDecoder* WebGPUDecoder::Create(
     SharedImageManager* shared_image_manager,
     MemoryTracker* memory_tracker,
     gles2::Outputter* outputter,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    scoped_refptr<SharedContextState> shared_context_state,
+    const DawnCacheOptions& dawn_cache_options,
+    IsolationKeyProvider* isolation_key_provider) {
 #if BUILDFLAG(USE_DAWN)
-  return CreateWebGPUDecoderImpl(client, command_buffer_service,
-                                 shared_image_manager, memory_tracker,
-                                 outputter, gpu_preferences);
+  return CreateWebGPUDecoderImpl(
+      client, command_buffer_service, shared_image_manager, memory_tracker,
+      outputter, gpu_preferences, std::move(shared_context_state),
+      dawn_cache_options, isolation_key_provider);
 #else
   NOTREACHED();
   return nullptr;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 namespace ui {
@@ -21,11 +20,13 @@ namespace ui {
 
 extern const char kEnrollmentStepSignin[];
 extern const char kEnrollmentStepWorking[];
+extern const char kEnrollmentStepTPMChecking[];
 extern const char kEnrollmentStepLicenses[];
 extern const char kEnrollmentStepDeviceAttributes[];
 extern const char kEnrollmentStepSuccess[];
 extern const char kEnrollmentStepADJoin[];
 extern const char kEnrollmentStepError[];
+extern const char kEnrollmentStepKioskEnrollment[];
 extern const char kEnrollmentStepDeviceAttributesError[];
 extern const char kEnrollmentStepADJoinError[];
 
@@ -50,6 +51,10 @@ extern const char kLocation[];
 class EnrollmentUIMixin : public InProcessBrowserTestMixin {
  public:
   explicit EnrollmentUIMixin(InProcessBrowserTestMixinHost* host);
+
+  EnrollmentUIMixin(const EnrollmentUIMixin&) = delete;
+  EnrollmentUIMixin& operator=(const EnrollmentUIMixin&) = delete;
+
   ~EnrollmentUIMixin() override;
 
   // Waits until specific enrollment step is displayed.
@@ -58,6 +63,7 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 
   void ExpectErrorMessage(int error_message_id, bool can_retry);
   void RetryAfterError();
+  void CancelAfterError();
 
   // Fills out the UI with device attribute information and submits it.
   void SubmitDeviceAttributes(const std::string& asset_id,
@@ -66,6 +72,8 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   void LeaveDeviceAttributeErrorScreen();
 
   void LeaveSuccessScreen();
+
+  void ConfirmKioskEnrollment();
 
   // Selects enrollment license.
   void SelectEnrollmentLicense(const std::string& license_type);
@@ -80,14 +88,31 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
   EnrollmentScreen::Result WaitForScreenExit();
 
  private:
-  base::Optional<EnrollmentScreen::Result> screen_result_;
-  base::Optional<base::RunLoop> screen_exit_waiter_;
+  absl::optional<EnrollmentScreen::Result> screen_result_;
+  absl::optional<base::RunLoop> screen_exit_waiter_;
 
   void HandleScreenExit(EnrollmentScreen::Result result);
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentUIMixin);
 };
 
+}  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::EnrollmentUIMixin;
+namespace ui {
+using ::ash::test::ui::kEnrollmentStepADJoin;
+using ::ash::test::ui::kEnrollmentStepDeviceAttributes;
+using ::ash::test::ui::kEnrollmentStepError;
+using ::ash::test::ui::kEnrollmentStepSignin;
+using ::ash::test::ui::kEnrollmentStepSuccess;
+}  // namespace ui
+namespace values {
+using ::ash::test::values::kAssetId;
+using ::ash::test::values::kLocation;
+}  // namespace values
 }  // namespace test
 }  // namespace chromeos
 

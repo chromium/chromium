@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -166,6 +165,12 @@ class MockPeerConnectionDependencyFactory
     : public blink::PeerConnectionDependencyFactory {
  public:
   MockPeerConnectionDependencyFactory();
+
+  MockPeerConnectionDependencyFactory(
+      const MockPeerConnectionDependencyFactory&) = delete;
+  MockPeerConnectionDependencyFactory& operator=(
+      const MockPeerConnectionDependencyFactory&) = delete;
+
   ~MockPeerConnectionDependencyFactory() override;
 
   scoped_refptr<webrtc::PeerConnectionInterface> CreatePeerConnection(
@@ -184,6 +189,8 @@ class MockPeerConnectionDependencyFactory
                                                     int sdp_mline_index,
                                                     const String& sdp) override;
 
+  scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcNetworkTaskRunner()
+      override;
   scoped_refptr<base::SingleThreadTaskRunner> GetWebRtcSignalingTaskRunner()
       override;
 
@@ -194,10 +201,8 @@ class MockPeerConnectionDependencyFactory
 
  private:
   // TODO(crbug.com/787254): Replace with the appropriate Blink class.
-  base::Thread signaling_thread_;
+  base::Thread thread_;
   bool fail_to_create_session_description_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPeerConnectionDependencyFactory);
 };
 
 }  // namespace blink

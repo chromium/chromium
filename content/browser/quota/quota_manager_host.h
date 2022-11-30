@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
 #define CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/quota/quota_change_dispatcher.h"
@@ -13,18 +14,18 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
 
-namespace storage {
-class QuotaManager;
+namespace blink {
+class StorageKey;
 }
 
-namespace url {
-class Origin;
+namespace storage {
+class QuotaManager;
 }
 
 namespace content {
 class QuotaPermissionContext;
 
-// Implements the Quota (Storage) API for a single origin.
+// Implements the Quota (Storage) API for a single StorageKey.
 //
 // QuotaContext indirectly owns all QuotaManagerHost instances associated with a
 // StoragePartition. A new instance is created for every incoming mojo
@@ -37,12 +38,12 @@ class QuotaPermissionContext;
 // is likely to change when QuotaManager moves to the Storage Service.
 class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
  public:
-  // The owner must guarantee that |quota_manager| and |permission_context|
+  // The owner must guarantee that `quota_manager` and `permission_context`
   // outlive this instance.
   QuotaManagerHost(
       int process_id,
       int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       storage::QuotaManager* quota_manager,
       QuotaPermissionContext* permission_context,
       scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher);
@@ -99,19 +100,19 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
   // MSG_ROUTING_NONE if this host is connected to a worker.
   const int render_frame_id_;
 
-  // The origin of the frame or worker connected to this host.
-  const url::Origin origin_;
+  // The storage key of the frame or worker connected to this host.
+  const blink::StorageKey storage_key_;
 
   // Raw pointer use is safe because the QuotaContext that indirectly owns this
   // QuotaManagerHost owner holds a reference to the QuotaManager. Therefore
   // the QuotaManager is guaranteed to outlive this QuotaManagerHost.
-  storage::QuotaManager* const quota_manager_;
+  const raw_ptr<storage::QuotaManager> quota_manager_;
 
   // Raw pointer use is safe because the QuotaContext that indirectly owns this
   // QuotaManagerHost owner holds a reference to the QuotaPermissionContext.
   // Therefore the QuotaPermissionContext is guaranteed to outlive this
   // QuotaManagerHost.
-  QuotaPermissionContext* const permission_context_;
+  const raw_ptr<QuotaPermissionContext> permission_context_;
 
   scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,15 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -25,6 +26,20 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
   using TransitionDirectiveCompleteCallback =
       base::OnceCallback<void(uint32_t)>;
+
+  struct RenderPassDrawData {
+    RenderPassDrawData();
+    RenderPassDrawData(const CompositorRenderPass& render_pass, float opacity);
+
+    // This represents the size of the copied texture.
+    gfx::Size size;
+    // This is a transform that takes `rect` into a root render pass space. Note
+    // that this makes this result dependent on the structure of the compositor
+    // frame render pass list used to request the copy output.
+    gfx::Transform target_transform;
+    // Opacity accumulated from the original frame.
+    float opacity = 1.f;
+  };
 
   struct OutputCopyResult {
     OutputCopyResult();
@@ -36,19 +51,20 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     // Texture representation.
     gpu::Mailbox mailbox;
     gpu::SyncToken sync_token;
+    gfx::ColorSpace color_space;
 
-    // This represents the region for the pixel output.
-    gfx::Rect rect;
-    // This is a transform that takes `rect` into a root render pass space. Note
-    // that this makes this result dependent on the structure of the compositor
-    // frame render pass list used to request the copy output.
-    gfx::Transform target_transform;
+    // Software bitmap representation.
+    SkBitmap bitmap;
+
+    // This is information needed to draw the texture as if it was a part of the
+    // original frame.
+    RenderPassDrawData draw_data;
 
     // Is this a software or a GPU copy result?
     bool is_software = false;
 
     // Release callback used to return a GPU texture.
-    std::unique_ptr<SingleReleaseCallback> release_callback;
+    ReleaseCallback release_callback;
   };
 
   struct FrameResult {
@@ -59,7 +75,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     FrameResult& operator=(FrameResult&& other);
 
     OutputCopyResult root_result;
-    std::vector<base::Optional<OutputCopyResult>> shared_results;
+    std::vector<absl::optional<OutputCopyResult>> shared_results;
+    base::flat_set<SharedElementResourceId> empty_resource_ids;
   };
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
@@ -75,27 +92,59 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // frame.
   void RequestCopyOfOutput(Surface* surface);
 
-  base::Optional<FrameResult> TakeResult() WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<FrameResult> TakeResult();
 
   // For testing functionality that ensures that we have a valid frame.
-  void CompleteSavedFrameForTesting(
-      base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback);
+  void CompleteSavedFrameForTesting();
+
+  base::flat_set<SharedElementResourceId> GetEmptyResourceIds() const;
 
  private:
   enum class ResultType { kRoot, kShared };
 
+  std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
+      const CompositorRenderPass& render_pass,
+      const CompositorRenderPassList& render_pass_list) const;
+
   void NotifyCopyOfOutputComplete(ResultType type,
                                   size_t shared_index,
-                                  const gfx::Rect& rect,
-                                  const gfx::Transform& target_transform,
+                                  const RenderPassDrawData& info,
                                   std::unique_ptr<CopyOutputResult> result);
 
   size_t ExpectedResultCount() const;
+  void InitFrameResult();
+
+  // Collects metadata to create a copy of the source CompositorFrame for shared
+  // element snapshots.
+  // |render_passes| is the render pass list from the source frame.
+  // |max_id| returns the maximum render pass id in the list above.
+  // |tainted_to_clean_pass_ids| populates the set of render passes which
+  // include shared elements and need clean render passes for snapshots.
+  void PrepareForCopy(
+      const CompositorRenderPassList& render_passes,
+      CompositorRenderPassId& max_id,
+      base::flat_map<CompositorRenderPassId, CompositorRenderPassId>&
+          tainted_to_clean_pass_ids) const;
+
+  // Used to filter render pass draw quads when copying render passes for shared
+  // element snapshots.
+  // |tained_to_clean_pass_ids| is used to replace tainted quads with the
+  // equivalent clean render passes.
+  // |pass_quad| is the quad from the source pass being copied.
+  // |copy_pass| is the new clean pass being created.
+  bool FilterSharedElementAndTaintedQuads(
+      const base::flat_map<CompositorRenderPassId, CompositorRenderPassId>*
+          tainted_to_clean_pass_ids,
+      const DrawQuad& quad,
+      CompositorRenderPass& copy_pass) const;
+
+  // Returns true if |pass_id|'s content is 1:1 with a shared element.
+  bool IsSharedElementRenderPass(CompositorRenderPassId pass_id) const;
 
   CompositorFrameTransitionDirective directive_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
 
-  base::Optional<FrameResult> frame_result_;
+  absl::optional<FrameResult> frame_result_;
 
   // This is the number of copy requests we requested. We decrement this value
   // anytime we get a result back. When it reaches 0, we notify that this frame

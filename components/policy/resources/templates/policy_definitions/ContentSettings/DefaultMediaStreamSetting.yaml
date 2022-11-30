@@ -1,0 +1,31 @@
+caption: Default mediastream setting
+deprecated: true
+desc: |-
+  Allows you to set whether websites are allowed to get access to media capture devices. Access to media capture devices can be allowed by default, or the user can be asked every time a website wants to get access to media capture devices.
+
+            If this policy is left not set, 'PromptOnAccess' will be used and the user will be able to change it.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Do not allow any site to access the camera and microphone
+  name: BlockAccess
+  value: 2
+- caption: Ask every time a site wants to access the camera and/or microphone
+  name: PromptOnAccess
+  value: 3
+owners:
+- engedy@chromium.org
+- file://components/permissions/PERMISSIONS_OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome.*:22-
+- chrome_os:22-
+tags:
+- website-sharing
+type: int-enum

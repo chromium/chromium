@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <unordered_map>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr_exclusion.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -80,11 +81,9 @@ class DependentIterator {
     } while (graph_->edges[current_index_].task != task_);
 
     // Now find the node for the dependent of this edge.
-    auto it = std::find_if(graph_->nodes.begin(), graph_->nodes.end(),
-                           [this](const TaskGraph::Node& node) {
-                             return node.task ==
-                                    graph_->edges[current_index_].dependent;
-                           });
+    auto it = base::ranges::find(graph_->nodes,
+                                 graph_->edges[current_index_].dependent,
+                                 &TaskGraph::Node::task);
     DCHECK(it != graph_->nodes.end());
     current_node_ = &(*it);
 
@@ -94,10 +93,16 @@ class DependentIterator {
   operator bool() const { return current_index_ < graph_->edges.size(); }
 
  private:
-  TaskGraph* graph_;
-  const Task* task_;
+  // `graph_` and `task_` are not a raw_ptr<...> for performance reasons (based
+  // on analysis of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION TaskGraph* graph_;
+  RAW_PTR_EXCLUSION const Task* task_;
+
   size_t current_index_;
-  TaskGraph::Node* current_node_;
+
+  // `current_node_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
+  RAW_PTR_EXCLUSION TaskGraph::Node* current_node_;
 };
 
 }  // namespace
@@ -152,11 +157,8 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
     // Remove any old nodes that are associated with this task. The result is
     // that the old graph is left with all nodes not present in this graph,
     // which we use below to determine what tasks need to be canceled.
-    auto old_it = std::find_if(task_namespace.graph.nodes.begin(),
-                               task_namespace.graph.nodes.end(),
-                               [&node](const TaskGraph::Node& other) {
-                                 return node.task == other.task;
-                               });
+    auto old_it = base::ranges::find(task_namespace.graph.nodes, node.task,
+                                     &TaskGraph::Node::task);
     if (old_it != task_namespace.graph.nodes.end()) {
       std::swap(*old_it, task_namespace.graph.nodes.back());
       // If old task is scheduled to run again and not yet started running,
@@ -176,12 +178,10 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (std::any_of(task_namespace.running_tasks.begin(),
-                    task_namespace.running_tasks.end(),
-                    [&node](const CategorizedTask& task) {
-                      return task.second == node.task;
-                    }))
+    if (base::Contains(task_namespace.running_tasks, node.task,
+                       &CategorizedTask::second)) {
       continue;
+    }
 
     node.task->state().DidSchedule();
     task_namespace.ready_to_run_tasks[node.category].emplace_back(
@@ -208,12 +208,10 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (std::any_of(task_namespace.running_tasks.begin(),
-                    task_namespace.running_tasks.end(),
-                    [&node](const CategorizedTask& task) {
-                      return task.second == node.task;
-                    }))
+    if (base::Contains(task_namespace.running_tasks, node.task,
+                       &CategorizedTask::second)) {
       continue;
+    }
 
     DCHECK(!base::Contains(task_namespace.completed_tasks, node.task));
     node.task->state().DidCancel();
@@ -291,11 +289,8 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
   scoped_refptr<Task> task(std::move(completed_task.task));
 
   // Remove task from |running_tasks|.
-  auto it = std::find_if(task_namespace->running_tasks.begin(),
-                         task_namespace->running_tasks.end(),
-                         [&task](const CategorizedTask& categorized_task) {
-                           return categorized_task.second == task;
-                         });
+  auto it = base::ranges::find(task_namespace->running_tasks, task,
+                               &CategorizedTask::second);
   DCHECK(it != task_namespace->running_tasks.end());
   std::swap(*it, task_namespace->running_tasks.back());
   task_namespace->running_tasks.pop_back();

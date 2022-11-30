@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/testing/earl_grey/coverage_utils.h"
 
-#include "base/clang_profiling_buildflags.h"
+#import "base/clang_profiling_buildflags.h"
 #import "testing/coverage_util_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -12,7 +12,7 @@
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
+#import "base/test/clang_profiling.h"
 extern "C" void __llvm_profile_reset_counters(void);
 #endif
 

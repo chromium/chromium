@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,10 +34,8 @@ component("clipboard_types") {
     sources += [ "clipboard_format_type_win.cc" ]
   }
 
-  if (use_aura) {
-    if ((use_x11 && (is_linux || is_chromeos_lacros)) || !is_win) {
-      sources += [ "clipboard_format_type_aura.cc" ]
-    }
+  if (use_aura && !is_win) {
+    sources += [ "clipboard_format_type_aura.cc" ]
   }
 
   defines = [ "IS_UI_BASE_CLIPBOARD_TYPES_IMPL" ]
@@ -78,6 +76,7 @@ component("clipboard") {
     "clipboard_monitor.h",
     "clipboard_observer.cc",
     "clipboard_observer.h",
+    "clipboard_sequence_number_token.h",
     "custom_data_helper.cc",
     "custom_data_helper.h",
     "scoped_clipboard_writer.cc",
@@ -133,33 +132,16 @@ component("clipboard") {
       sources += [
         "clipboard_data.cc",
         "clipboard_data.h",
+        "clipboard_factory_ozone.cc",
         "clipboard_non_backed.cc",
         "clipboard_non_backed.h",
         "clipboard_ozone.cc",
         "clipboard_ozone.h",
       ]
-      deps += [ "//ui/ozone" ]
-    }
-
-    if (use_x11) {
-      sources += [
-        "clipboard_x11.cc",
-        "clipboard_x11.h",
-      ]
       deps += [
         "//ui/base",
-        "//ui/base/x",
-        "//ui/events/platform",
-        "//ui/events/platform/x11",
-        "//ui/events/x",
-        "//ui/gfx/x",
+        "//ui/ozone",
       ]
-    }
-
-    # TODO(crbug.com/1096425): Cleanup when non-Ozone path gets dropped.
-    if (use_ozone || use_x11) {
-      sources += [ "clipboard_factory_ozone.cc" ]
-      deps += [ "//ui/base" ]
     }
   }
 
@@ -203,6 +185,7 @@ source_set("clipboard_test_support") {
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//ui/base:features",
+    "//ui/gfx",
   ]
 
   if (is_android) {
@@ -230,7 +213,7 @@ source_set("clipboard_test") {
     ]
   }
 
-  if (use_aura && !is_chromeos_lacros && !use_x11 && !is_win) {
+  if (use_aura && !is_chromeos_lacros && !is_linux && !is_win) {
     sources += [
       "clipboard_data_unittest.cc",
       "clipboard_non_backed_unittest.cc",

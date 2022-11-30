@@ -13,14 +13,25 @@
   }
 
   .content {
-    --icon-grid-gap: 25px;
-    --icon-size: 72px;
     padding-inline-start: var(--cr-section-indent-width);
     padding-top: 4px;
   }
 
   #name {
     width: 288px;
+  }
+
+  .grid-container {
+    --icon-grid-gap: 25px;
+    --icon-size: 72px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  cr-customize-themes,
+  cr-profile-avatar-selector {
+    margin-bottom: 10px;
   }
 
   #themeSelector {
@@ -67,14 +78,14 @@
 </div>
 <div class="cr-row manage-profile-section">
   <h1 class="cr-title-text">$i18n{pickThemeColor}</h1>
-  <div class="content">
+  <div class="content grid-container">
     <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
     </cr-customize-themes>
  </div>
 </div>
 <div class="cr-row manage-profile-section">
   <h1 class="cr-title-text">$i18n{pickAvatar}</h1>
-  <div class="content">
+  <div class="content grid-container">
     <cr-profile-avatar-selector
         id="profileAvatarSelector" avatars="[[availableIcons]]"
         selected-avatar="{{profileAvatar_}}" ignore-modified-key-events>

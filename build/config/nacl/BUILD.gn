@@ -17,7 +17,7 @@ config("nacl_defines") {
     defines = [ "__STDC_LIMIT_MACROS=1" ]
   }
 
-  if (current_cpu == "pnacl" && !is_nacl_nonsfi) {
+  if (current_cpu == "pnacl") {
     # TODO: Remove the following definition once NACL_BUILD_ARCH and
     # NACL_BUILD_SUBARCH are defined by the PNaCl toolchain.
     defines += [ "NACL_BUILD_ARCH=pnacl" ]
@@ -43,6 +43,17 @@ config("nacl_warnings") {
   }
 }
 
+config("nacl_static_libstdc++") {
+  # The sysroot of linux x86 bots can have a different version of libstdc++
+  # than the one that is on the bots natively. Linking dynamically against
+  # libstdc++ can then lead to linking against symbols that are not found when
+  # running the executable.
+  # Therefore, link statically instead.
+  if (is_linux && current_cpu == "x86") {
+    ldflags = [ "-static-libstdc++" ]
+  }
+}
+
 # The base target that all targets in the NaCl build should depend on.
 # This allows configs to be modified for everything in the NaCl build, even when
 # the NaCl build is composed into the Chrome build.  (GN has no functionality to
@@ -52,6 +63,7 @@ source_set("nacl_base") {
   public_configs = [
     ":nacl_defines",
     ":nacl_warnings",
+    ":nacl_static_libstdc++",
   ]
   if (current_os == "nacl") {
     public_configs += [ ":nexe_defines" ]
@@ -72,29 +84,6 @@ config("compiler") {
     # on x86-64 to preserve sandbox base address hiding.  Use it
     # everywhere for consistency (and possibly quicker builds).
     cflags += [ "-integrated-as" ]
-  }
-  if (is_nacl_nonsfi) {
-    cflags += [ "--pnacl-allow-translate" ]
-    ldflags += [
-      "--pnacl-allow-translate",
-      "--pnacl-allow-native",
-      "-Wl,--noirt",
-      "-Wt,--noirt",
-      "-Wt,--noirtshim",
-
-      # The clang driver automatically injects -lpthread when using libc++, but
-      # the toolchain doesn't have it yet.  To get around this, use
-      # -nodefaultlibs and make each executable target depend on
-      # "//native_client/src/nonsfi/irt:nacl_sys_private".
-      "-nodefaultlibs",
-    ]
-    libs += [
-      "c++",
-      "m",
-      "c",
-      "pnaclmm",
-    ]
-    include_dirs = [ "//native_client/src/public/linux_syscalls" ]
   }
 
   asmflags = cflags

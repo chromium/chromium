@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -44,6 +44,10 @@ class FakeBatteryStatusManager : public BatteryStatusManager {
   explicit FakeBatteryStatusManager(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : callback_(callback), battery_status_available_(true), started_(false) {}
+
+  FakeBatteryStatusManager(const FakeBatteryStatusManager&) = delete;
+  FakeBatteryStatusManager& operator=(const FakeBatteryStatusManager&) = delete;
+
   ~FakeBatteryStatusManager() override {}
 
   // Methods from BatteryStatusManager.
@@ -77,13 +81,15 @@ class FakeBatteryStatusManager : public BatteryStatusManager {
   bool battery_status_available_;
   bool started_;
   mojom::BatteryStatus status_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryStatusManager);
 };
 
 class BatteryMonitorImplTest : public DeviceServiceTestBase {
  public:
   BatteryMonitorImplTest() = default;
+
+  BatteryMonitorImplTest(const BatteryMonitorImplTest&) = delete;
+  BatteryMonitorImplTest& operator=(const BatteryMonitorImplTest&) = delete;
+
   ~BatteryMonitorImplTest() override = default;
 
  protected:
@@ -114,9 +120,7 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::BatteryMonitor> battery_monitor_;
 
  private:
-  FakeBatteryStatusManager* battery_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMonitorImplTest);
+  raw_ptr<FakeBatteryStatusManager> battery_manager_;
 };
 
 TEST_F(BatteryMonitorImplTest, BatteryManagerDefaultValues) {

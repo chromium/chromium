@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import {getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore} from 'chrome://test/bookmarks/test_store.js';
-import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestStore} from './test_store.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from './test_util.js';
 
 suite('<bookmarks-router>', function() {
   let store;
@@ -86,7 +87,7 @@ suite('URL preload', function() {
    */
   function setupWithUrl(url) {
     document.body.innerHTML = '';
-    Store.instance_ = undefined;
+    Store.setInstance(undefined);
     window.history.replaceState({}, '', url);
 
     chrome.bookmarks.getTree = function(callback) {

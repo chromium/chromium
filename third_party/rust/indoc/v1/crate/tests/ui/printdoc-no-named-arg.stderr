@@ -1,0 +1,7 @@
+error: there is no argument named `named`
+ --> $DIR/printdoc-no-named-arg.rs:4:16
+  |
+4 |     printdoc!("{named}");
+  |                ^^^^^^^
+  |
+  = help: if you intended to capture `named` from the surrounding scope, add `#![feature(format_args_capture)]` to the crate attributes

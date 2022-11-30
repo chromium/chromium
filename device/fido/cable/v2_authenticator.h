@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,12 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace device {
 namespace cablev2 {
@@ -42,10 +43,14 @@ class Platform {
     HANDSHAKE_COMPLETE = 2,
     REQUEST_RECEIVED = 3,
     CTAP_ERROR = 4,
+    FIRST_TRANSACTION_DONE = 5,
   };
 
   enum class Error {
-    // These values must match up with CableAuthenticatorUI.java.
+    // These values must match up with CableAuthenticatorUI.java and zero
+    // is considered to be not an error by the Java code.
+
+    // NONE = 0,
     UNEXPECTED_EOF = 100,
     TUNNEL_SERVER_CONNECT_FAILED = 101,
     HANDSHAKE_FAILED = 102,
@@ -54,50 +59,32 @@ class Platform {
     INVALID_CTAP = 105,
     UNKNOWN_COMMAND = 106,
     INTERNAL_ERROR = 107,
+    SERVER_LINK_WRONG_LENGTH = 108,
+    SERVER_LINK_NOT_ON_CURVE = 109,
+    NO_SCREENLOCK = 110,
+    NO_BLUETOOTH_PERMISSION = 111,
+    QR_URI_ERROR = 112,
+    EOF_WHILE_PROCESSING = 113,
+    AUTHENTICATOR_SELECTION_RECEIVED = 114,
+    DISCOVERABLE_CREDENTIALS_REQUEST = 115,
   };
 
-  using MakeCredentialCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> attestation_obj)>;
+  using MakeCredentialCallback = base::OnceCallback<void(
+      uint32_t status,
+      base::span<const uint8_t> attestation_obj,
+      absl::optional<base::span<const uint8_t>> device_public_key_signature)>;
 
-  struct MakeCredentialParams {
-    MakeCredentialParams();
-    ~MakeCredentialParams();
-    MakeCredentialParams(const MakeCredentialParams&) = delete;
-    MakeCredentialParams& operator=(const MakeCredentialParams&) = delete;
-    MakeCredentialParams(MakeCredentialParams&&) = delete;
+  virtual void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
+      MakeCredentialCallback callback) = 0;
 
-    std::vector<uint8_t> client_data_hash;
-    std::string rp_id;
-    std::vector<uint8_t> user_id;
-    std::vector<int> algorithms;
-    std::vector<std::vector<uint8_t>> excluded_cred_ids;
-    bool resident_key_required = false;
-    MakeCredentialCallback callback;
-  };
+  using GetAssertionCallback = base::OnceCallback<void(
+      uint32_t status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr response)>;
 
-  virtual void MakeCredential(std::unique_ptr<MakeCredentialParams> params) = 0;
-
-  using GetAssertionCallback =
-      base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> cred_id,
-                              base::span<const uint8_t> auth_data,
-                              base::span<const uint8_t> sig)>;
-
-  struct GetAssertionParams {
-    GetAssertionParams();
-    ~GetAssertionParams();
-    GetAssertionParams(const GetAssertionParams&) = delete;
-    GetAssertionParams& operator=(const GetAssertionParams&) = delete;
-    GetAssertionParams(GetAssertionParams&&) = delete;
-
-    std::vector<uint8_t> client_data_hash;
-    std::string rp_id;
-    std::vector<std::vector<uint8_t>> allowed_cred_ids;
-    GetAssertionCallback callback;
-  };
-
-  virtual void GetAssertion(std::unique_ptr<GetAssertionParams> params) = 0;
+  virtual void GetAssertion(
+      blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
+      GetAssertionCallback callback) = 0;
 
   // OnStatus is called when a new informative status is available.
   virtual void OnStatus(Status) = 0;
@@ -105,7 +92,7 @@ class Platform {
   // OnCompleted is called when the transaction has completed. Note that calling
   // this may result in the |Transaction| that owns this |Platform| being
   // deleted.
-  virtual void OnCompleted(base::Optional<Error>) = 0;
+  virtual void OnCompleted(absl::optional<Error>) = 0;
 
   virtual std::unique_ptr<BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) = 0;
@@ -138,8 +125,6 @@ class Transport {
 // A Transaction is a handle to an ongoing caBLEv2 transaction with a peer.
 class Transaction {
  public:
-  using CompleteCallback = base::OnceCallback<void()>;
-
   virtual ~Transaction();
 };
 
@@ -152,6 +137,7 @@ std::unique_ptr<Transaction> TransactWithPlaintextTransport(
 // TransactFromQRCode starts a network-based transaction based on the decoded
 // contents of a QR code.
 std::unique_ptr<Transaction> TransactFromQRCode(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,
@@ -159,18 +145,21 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     // TODO: name this constant.
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    base::Optional<std::vector<uint8_t>> contact_id);
+    absl::optional<std::vector<uint8_t>> contact_id,
+    bool use_new_crypter_construction);
 
 // TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
 std::unique_ptr<Transaction> TransactFromFCM(
+    unsigned protocol_revision,
     std::unique_ptr<Platform> platform,
     network::mojom::NetworkContext* network_context,
     base::span<const uint8_t, kRootSecretSize> root_secret,
     std::array<uint8_t, kRoutingIdSize> routing_id,
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-    base::span<const uint8_t> pairing_id,
-    base::span<const uint8_t, kClientNonceSize> client_nonce);
+    base::span<const uint8_t, kPairingIDSize> pairing_id,
+    base::span<const uint8_t, kClientNonceSize> client_nonce,
+    absl::optional<base::span<const uint8_t>> contact_id);
 
 }  // namespace authenticator
 }  // namespace cablev2

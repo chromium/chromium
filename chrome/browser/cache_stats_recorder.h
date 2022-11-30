@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,10 @@
 class CacheStatsRecorder : public chrome::mojom::CacheStatsRecorder {
  public:
   explicit CacheStatsRecorder(int render_process_id);
+
+  CacheStatsRecorder(const CacheStatsRecorder&) = delete;
+  CacheStatsRecorder& operator=(const CacheStatsRecorder&) = delete;
+
   ~CacheStatsRecorder() override;
 
   static void Create(
@@ -22,8 +26,6 @@ class CacheStatsRecorder : public chrome::mojom::CacheStatsRecorder {
   void RecordCacheStats(uint64_t capacity, uint64_t size) override;
 
   const int render_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStatsRecorder);
 };
 
 #endif  // CHROME_BROWSER_CACHE_STATS_RECORDER_H_

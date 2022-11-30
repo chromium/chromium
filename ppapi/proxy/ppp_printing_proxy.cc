@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool HasPrintingPermission(PP_Instance instance) {
   Dispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
   if (!dispatcher)
@@ -99,7 +99,7 @@ const PPP_Printing_Dev ppp_printing_interface = {
 #else
 // The NaCl plugin doesn't need the host side interface - stub it out.
 static const PPP_Printing_Dev ppp_printing_interface = {};
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 

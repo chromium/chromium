@@ -1,15 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/gles2_conform_support/egl/display.h"
 
-#include "base/stl_util.h"
+#include <memory>
+
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/gles2_conform_support/egl/config.h"
 #include "gpu/gles2_conform_support/egl/context.h"
 #include "gpu/gles2_conform_support/egl/surface.h"
 #include "gpu/gles2_conform_support/egl/thread_state.h"
+#include "ui/gl/gl_display.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gles2_conform_support {
@@ -19,8 +23,7 @@ Display::Display()
     : is_initialized_(false),
       next_create_window_surface_creates_pbuffer_(false),
       window_surface_pbuffer_width_(0),
-      window_surface_pbuffer_height_(0) {
-}
+      window_surface_pbuffer_height_(0) {}
 
 Display::~Display() {
   surfaces_.clear();
@@ -88,7 +91,7 @@ EGLBoolean Display::ChooseConfig(ThreadState* ts,
   if (!configs)
     config_size = 0;
   *num_config = 0;
-  for (size_t i = 0; i < base::size(configs_); ++i) {
+  for (size_t i = 0; i < std::size(configs_); ++i) {
     if (configs_[i]->Matches(attrib_list)) {
       if (*num_config < config_size) {
         configs[*num_config] = configs_[i].get();
@@ -111,21 +114,21 @@ EGLBoolean Display::GetConfigs(ThreadState* ts,
   InitializeConfigsIfNeeded();
   if (!configs)
     config_size = 0;
-  *num_config = base::size(configs_);
+  *num_config = std::size(configs_);
   size_t count =
-      std::min(base::size(configs_), static_cast<size_t>(config_size));
+      std::min(std::size(configs_), static_cast<size_t>(config_size));
   for (size_t i = 0; i < count; ++i)
     configs[i] = configs_[i].get();
   return ts->ReturnSuccess(EGL_TRUE);
 }
 
 bool Display::IsValidNativeWindow(EGLNativeWindowType win) {
-#if defined OS_WIN
+#if BUILDFLAG(IS_WIN)
   return ::IsWindow(win) != FALSE;
 #else
   // TODO(alokp): Validate window handle.
   return true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 EGLBoolean Display::GetConfigAttrib(ThreadState* ts,
@@ -182,7 +185,8 @@ EGLSurface Display::DoCreatePbufferSurface(ThreadState* ts,
                                            EGLint height) {
   lock_.AssertAcquired();
   scoped_refptr<gl::GLSurface> gl_surface;
-  gl_surface = gl::init::CreateOffscreenGLSurface(gfx::Size(width, height));
+  gl_surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size(width, height));
   if (!gl_surface)
     return ts->ReturnError(EGL_BAD_ALLOC, nullptr);
   surfaces_.emplace_back(new Surface(gl_surface.get(), config));
@@ -217,12 +221,12 @@ EGLSurface Display::CreateWindowSurface(ThreadState* ts,
     return result;
   }
   scoped_refptr<gl::GLSurface> gl_surface;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget;
 #else
   gfx::AcceleratedWidget widget = static_cast<gfx::AcceleratedWidget>(win);
 #endif
-  gl_surface = gl::init::CreateViewGLSurface(widget);
+  gl_surface = gl::init::CreateViewGLSurface(gl::GetDefaultDisplay(), widget);
   if (!gl_surface)
     return ts->ReturnError(EGL_BAD_ALLOC, EGL_NO_SURFACE);
   surfaces_.emplace_back(new Surface(gl_surface.get(), config));
@@ -233,7 +237,7 @@ EGLBoolean Display::DestroySurface(ThreadState* ts, EGLSurface sfe) {
   base::AutoLock auto_lock(lock_);
   if (!is_initialized_)
     return ts->ReturnError(EGL_NOT_INITIALIZED, EGL_FALSE);
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), sfe);
+  auto it = base::ranges::find(surfaces_, sfe);
   if (it == surfaces_.end())
     return ts->ReturnError(EGL_BAD_SURFACE, EGL_FALSE);
   surfaces_.erase(it);
@@ -344,7 +348,7 @@ EGLBoolean Display::DestroyContext(ThreadState* ts, EGLContext ctx) {
   base::AutoLock auto_lock(lock_);
   if (!is_initialized_)
     return ts->ReturnError(EGL_NOT_INITIALIZED, EGL_FALSE);
-  auto it = std::find(contexts_.begin(), contexts_.end(), ctx);
+  auto it = base::ranges::find(contexts_, ctx);
   if (it == contexts_.end())
     return ts->ReturnError(EGL_BAD_CONTEXT, EGL_FALSE);
   (*it)->MarkDestroyed();
@@ -364,8 +368,8 @@ void Display::InitializeConfigsIfNeeded() {
     // This way we can record the client intention at context creation time.
     // The GL implementation (gl::GLContext and gl::GLSurface) needs this
     // distinction when creating a context.
-    configs_[0].reset(new Config(EGL_WINDOW_BIT));
-    configs_[1].reset(new Config(EGL_PBUFFER_BIT));
+    configs_[0] = std::make_unique<Config>(EGL_WINDOW_BIT);
+    configs_[1] = std::make_unique<Config>(EGL_PBUFFER_BIT);
   }
 }
 
@@ -380,7 +384,7 @@ const Config* Display::GetConfig(EGLConfig cfg) {
 
 Surface* Display::GetSurface(EGLSurface surface) {
   lock_.AssertAcquired();
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), surface);
+  auto it = base::ranges::find(surfaces_, surface);
   if (it == surfaces_.end())
     return nullptr;
   return it->get();
@@ -388,7 +392,7 @@ Surface* Display::GetSurface(EGLSurface surface) {
 
 Context* Display::GetContext(EGLContext context) {
   lock_.AssertAcquired();
-  auto it = std::find(contexts_.begin(), contexts_.end(), context);
+  auto it = base::ranges::find(contexts_, context);
   if (it == contexts_.end())
     return nullptr;
   return it->get();

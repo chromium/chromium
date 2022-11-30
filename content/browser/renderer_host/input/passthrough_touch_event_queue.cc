@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/input/touch_timeout_handler.h"
@@ -66,9 +67,9 @@ PassthroughTouchEventQueue::PassthroughTouchEventQueue(
       skip_touch_filter_(config.skip_touch_filter),
       events_to_always_forward_(config.events_to_always_forward) {
   if (config.touch_ack_timeout_supported) {
-    timeout_handler_.reset(
-        new TouchTimeoutHandler(this, config.desktop_touch_ack_timeout_delay,
-                                config.mobile_touch_ack_timeout_delay));
+    timeout_handler_ = std::make_unique<TouchTimeoutHandler>(
+        this, config.desktop_touch_ack_timeout_delay,
+        config.mobile_touch_ack_timeout_delay);
   }
 }
 
@@ -281,7 +282,7 @@ void PassthroughTouchEventQueue::SendTouchEventImmediately(
     if (last_sent_touchevent_)
       *last_sent_touchevent_ = touch->event;
     else
-      last_sent_touchevent_.reset(new WebTouchEvent(touch->event));
+      last_sent_touchevent_ = std::make_unique<WebTouchEvent>(touch->event);
   }
 
   if (timeout_handler_)

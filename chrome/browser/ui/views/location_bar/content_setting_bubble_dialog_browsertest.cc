@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,9 @@
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/notification_permission_ui_selector.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/test/browser_test.h"
@@ -40,31 +41,39 @@
 
 namespace {
 
-using QuietUiReason =
-    permissions::NotificationPermissionUiSelector::QuietUiReason;
+using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
 
 // Test implementation of NotificationPermissionUiSelector that always forces
 // the quiet UI to be used for surfacing notification permission requests.
 class TestQuietNotificationPermissionUiSelector
-    : public permissions::NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
   explicit TestQuietNotificationPermissionUiSelector(
       QuietUiReason simulated_reason_for_quiet_ui)
       : simulated_reason_for_quiet_ui_(simulated_reason_for_quiet_ui) {}
+
+  TestQuietNotificationPermissionUiSelector(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+  TestQuietNotificationPermissionUiSelector& operator=(
+      const TestQuietNotificationPermissionUiSelector&) = delete;
+
   ~TestQuietNotificationPermissionUiSelector() override = default;
 
  protected:
-  // permissions::NotificationPermissionUiSelector:
+  // permissions::PermissionUiSelector:
   void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override {
     std::move(callback).Run(
-        Decision(simulated_reason_for_quiet_ui_, base::nullopt));
+        Decision(simulated_reason_for_quiet_ui_, absl::nullopt));
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return request_type == permissions::RequestType::kNotifications;
   }
 
  private:
   QuietUiReason simulated_reason_for_quiet_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestQuietNotificationPermissionUiSelector);
 };
 
 }  // namespace
@@ -74,9 +83,15 @@ using ImageType = ContentSettingImageModel::ImageType;
 class ContentSettingBubbleDialogTest : public DialogBrowserTest {
  public:
   ContentSettingBubbleDialogTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kQuietNotificationPrompts);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQuietNotificationPrompts},
+        {permissions::features::kPermissionQuietChip});
   }
+
+  ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
+      delete;
+  ContentSettingBubbleDialogTest& operator=(
+      const ContentSettingBubbleDialogTest&) = delete;
 
   void ApplyMediastreamSettings(bool mic_accessed, bool camera_accessed);
   void ApplyContentSettingsForType(ContentSettingsType content_type);
@@ -89,10 +104,8 @@ class ContentSettingBubbleDialogTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::Optional<permissions::MockPermissionRequest>
+  absl::optional<permissions::MockPermissionRequest>
       notification_permission_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleDialogTest);
 };
 
 void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
@@ -108,7 +121,10 @@ void ContentSettingBubbleDialogTest::ApplyMediastreamSettings(
           : 0;
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
+          browser()
+              ->tab_strip_model()
+              ->GetActiveWebContents()
+              ->GetPrimaryMainFrame());
   content_settings->OnMediaStreamPermissionSet(
       GURL("https://example.com/"), mic_setting | camera_setting, std::string(),
       std::string(), std::string(), std::string());
@@ -120,7 +136,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       browser()->tab_strip_model()->GetActiveWebContents();
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetMainFrame());
+          web_contents->GetPrimaryMainFrame());
   switch (content_type) {
     case ContentSettingsType::AUTOMATIC_DOWNLOADS: {
       // Automatic downloads are handled by DownloadRequestLimiter.
@@ -134,9 +150,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       break;
     }
     case ContentSettingsType::POPUPS: {
-      ui_test_utils::NavigateToURL(
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
           browser(),
-          embedded_test_server()->GetURL("/popup_blocker/popup-many-10.html"));
+          embedded_test_server()->GetURL("/popup_blocker/popup-many-10.html")));
       EXPECT_TRUE(content::ExecuteScript(web_contents, std::string()));
       auto* helper =
           blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
@@ -146,8 +162,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
       chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
-          ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
-              "mailto", GURL("https://example.com/")));
+          ->set_pending_protocol_handler(
+              custom_handlers::ProtocolHandler::CreateProtocolHandler(
+                  "mailto", GURL("https://example.com/")));
       break;
 
     default:
@@ -164,15 +181,13 @@ void ContentSettingBubbleDialogTest::TriggerQuietNotificationPermissionRequest(
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  permission_request_manager
-      ->set_notification_permission_ui_selector_for_testing(
-          std::make_unique<TestQuietNotificationPermissionUiSelector>(
-              simulated_reason_for_quiet_ui));
+  permission_request_manager->set_permission_ui_selector_for_testing(
+      std::make_unique<TestQuietNotificationPermissionUiSelector>(
+          simulated_reason_for_quiet_ui));
   DCHECK(!notification_permission_request_);
   notification_permission_request_.emplace(
-      "notifications", permissions::RequestType::kNotifications,
-      GURL("https://example.com"));
-  permission_request_manager->AddRequest(web_contents->GetMainFrame(),
+      GURL("https://example.com"), permissions::RequestType::kNotifications);
+  permission_request_manager->AddRequest(web_contents->GetPrimaryMainFrame(),
                                          &*notification_permission_request_);
   base::RunLoop().RunUntilIdle();
 }
@@ -211,7 +226,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     else if (name == "notifications_quiet_abusive_content")
       reason = QuietUiReason::kTriggeredDueToAbusiveContent;
     else if (name == "notifications_quiet_predicted_very_unlikely")
-      reason = QuietUiReason::kPredictedVeryUnlikelyGrant;
+      reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     TriggerQuietNotificationPermissionRequest(reason);
     ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
     return;

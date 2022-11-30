@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,67 @@ TEST_F(SelectionModifierTest, MoveForwardByWordNone) {
   EXPECT_EQ(SelectionInDOMTree(), modifier.Selection().AsSelection());
 }
 
+// http://crbug.com/1300781
+TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "font: 10px/20px Ahem;"
+      "padding: 10px;"
+      "writing-mode: horizontal-tb;"
+      "}"
+      "b { background: orange; }");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DEF</p>de|f</b></div>",
+            MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+}
+
+TEST_F(SelectionModifierTest, MoveByLineBlockInInlineCulled) {
+  // |LayoutNGBlockInInline| prevents the inline box from culling. This test is
+  // exactly the same as |MoveByLineBlockInInline| above.
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
+    return;
+
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "font: 10px/20px Ahem;"
+      "padding: 10px;"
+      "writing-mode: horizontal-tb;"
+      "}");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DEF</p>de|f</b></div>",
+            MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+}
+
 TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
   LoadAhem();
   InsertStyleElement(
@@ -67,6 +128,38 @@ TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
   EXPECT_EQ("<p>abc<br>d<br>|<br>ghi</p>", MoveBackwardByLine(modifier));
   EXPECT_EQ("<p>abc<br>d|<br><br>ghi</p>", MoveBackwardByLine(modifier));
   EXPECT_EQ("<p>ab|c<br>d<br><br>ghi</p>", MoveBackwardByLine(modifier));
+}
+
+TEST_F(SelectionModifierTest, MoveByLineMultiColumnSingleText) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(RuntimeEnabledFeatures::LayoutNGEnabled());
+  LoadAhem();
+  InsertStyleElement(
+      "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>|abc def ghi jkl mno pqr</div>");
+  // This HTML is rendered as:
+  //    abc ghi mno
+  //    def jkl pqr
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc |def ghi jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def |ghi jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi |jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl |mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl mno |pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl mno pqr|</div>", MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc def ghi jkl |mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi |jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc def |ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc |def ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>|abc def ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
 }
 
 TEST_F(SelectionModifierTest, MoveByLineVertical) {
@@ -178,7 +271,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
       }
       modifier.Modify(move, direction, granularity);
       EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
@@ -201,7 +295,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
     }
@@ -218,7 +313,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
       }
       modifier.Modify(move, direction, granularity);
       EXPECT_EQ(Position(node, skip_space ? 2 : 1),
@@ -242,7 +338,8 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
-        EXPECT_EQ(Position(node, 0), modifier.Selection().Base());
+        EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
     }
@@ -260,7 +357,9 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (int i = 0; i <= 3; ++i) {
       SelectionModifier modifier(GetFrame(), makeSelection(Position(a, i)));
       for (Node* node : {a, b, c, d, e, f}) {
-        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
+                                      : Position(node, i),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
       EXPECT_EQ(Position(f, 3), modifier.Selection().Base());
@@ -273,7 +372,9 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     for (int i = 0; i <= 3; ++i) {
       SelectionModifier modifier(GetFrame(), makeSelection(Position(f, i)));
       for (Node* node : {f, e, d, c, b, a}) {
-        EXPECT_EQ(Position(node, i), modifier.Selection().Base());
+        EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
+                                      : Position(node, i),
+                  modifier.Selection().Base());
         modifier.Modify(move, direction, granularity);
       }
       EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
@@ -331,14 +432,39 @@ TEST_F(SelectionModifierTest, PositionDisconnectedInFlatTree2) {
       modifier.Modify(SelectionModifyAlteration::kExtend,
                       SelectionModifyDirection::kForward,
                       TextGranularity::kParagraph);
+      EXPECT_TRUE(extent.IsConnected());
       bool flat_extent_is_connected =
           ToPositionInFlatTree(selection.Extent()).IsConnected();
-      EXPECT_EQ(flat_base_is_connected && flat_extent_is_connected
+      EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
                     ? "<div id=\"host\">x</div>^y|"
                     : "<div id=\"host\">x</div>y",
                 GetSelectionTextFromBody(modifier.Selection().AsSelection()));
     }
   }
+}
+
+// For https://crbug.com/1312704
+TEST_F(SelectionModifierTest, OptgroupAndTable) {
+  InsertStyleElement(
+      "optgroup, table { display: inline-table; }"
+      "table { appearance:button; }");
+  SelectionModifier modifier(
+      GetFrame(), SetSelectionTextToBody(
+                      "<optgroup>^</optgroup>|<table><td></td></table>"));
+  EXPECT_TRUE(modifier.Modify(SelectionModifyAlteration::kExtend,
+                              SelectionModifyDirection::kForward,
+                              TextGranularity::kLine));
+
+  const SelectionInDOMTree& selection = modifier.Selection().AsSelection();
+  EXPECT_EQ(
+      "<optgroup></optgroup><table><tbody><tr><td></td></tr></tbody></table>",
+      GetSelectionTextFromBody(selection));
+
+  Element* optgroup = GetDocument().QuerySelector("optgroup");
+  ShadowRoot* shadow_root = optgroup->GetShadowRoot();
+  Element* label = shadow_root->getElementById("optgroup-label");
+  EXPECT_EQ(Position(label, 0), selection.Base());
+  EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
 }
 
 }  // namespace blink

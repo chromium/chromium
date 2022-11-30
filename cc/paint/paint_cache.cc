@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
@@ -91,15 +90,6 @@ bool ClientPaintCache::PurgeAll() {
 ServicePaintCache::ServicePaintCache() = default;
 ServicePaintCache::~ServicePaintCache() = default;
 
-void ServicePaintCache::PutTextBlob(PaintCacheId id, sk_sp<SkTextBlob> blob) {
-  cached_blobs_.emplace(id, std::move(blob));
-}
-
-sk_sp<SkTextBlob> ServicePaintCache::GetTextBlob(PaintCacheId id) const {
-  auto it = cached_blobs_.find(id);
-  return it == cached_blobs_.end() ? nullptr : it->second;
-}
-
 void ServicePaintCache::PutPath(PaintCacheId id, SkPath path) {
   cached_paths_.emplace(id, std::move(path));
 }
@@ -116,9 +106,6 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
                               size_t n,
                               const volatile PaintCacheId* ids) {
   switch (type) {
-    case PaintCacheDataType::kTextBlob:
-      EraseFromMap(&cached_blobs_, n, ids);
-      return;
     case PaintCacheDataType::kPath:
       EraseFromMap(&cached_paths_, n, ids);
       return;
@@ -128,7 +115,6 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
 }
 
 void ServicePaintCache::PurgeAll() {
-  cached_blobs_.clear();
   cached_paths_.clear();
 }
 

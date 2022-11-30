@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/query_parser/query_parser.h"
+
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/query_parser/query_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace query_parser {
@@ -80,7 +80,7 @@ TEST_F(QueryParserTest, NumWords) {
     { "foo \"bar baz\"  blah", 4 },
   };
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::u16string query_string;
     EXPECT_EQ(
         data[i].expected_word_count,
@@ -116,7 +116,7 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatch) {
     { "\"foo blah\"",  "\"foo blah\"",     true,  1, 9, 0, 0 },
     { "foo blah",      "\"foo bar blah\"", true,  1, 4, 9, 13 },
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     query_parser::QueryNodeVector query_nodes;
     QueryParser::ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
                                  MatchingAlgorithm::DEFAULT, &query_nodes);
@@ -152,7 +152,7 @@ TEST_F(QueryParserTest, ParseQueryWords) {
     { "\"foo bar\"",   "foo", "bar", "",  2 },
     { "\"foo bar\" a", "foo", "bar", "a", 3 },
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::vector<std::u16string> results;
     QueryParser::ParseQueryWords(base::UTF8ToUTF16(data[i].text),
                                  MatchingAlgorithm::DEFAULT, &results);
@@ -162,6 +162,52 @@ TEST_F(QueryParserTest, ParseQueryWords) {
       EXPECT_EQ(data[i].w2, base::UTF16ToUTF8(results[1]));
     if (results.size() == 3)
       EXPECT_EQ(data[i].w3, base::UTF16ToUTF8(results[2]));
+  }
+}
+
+TEST_F(QueryParserTest, ParseQueryNodesAndMatchExact) {
+  struct TestData2 {
+    const std::string query;
+    const std::string find_in_text;
+    const bool matches;
+  } data[] = {
+      // Trivial cases.
+      {"blah", "blah", true},
+      {"blah", "foo", false},
+      {"blah", "blahblah", false},
+      {"blah", "foo blah", true},
+      {"foo blah", "blah", false},
+      {"foo blah", "blahx foobar", false},
+
+      // Verify some prefix-match edge cases.
+      {"foo", "fooey foo", true},
+      {"foo foo", "foo", true},
+
+      // Query contains a term that doesn't have an exact match in the text.
+      {"foo fooey", "fooey", false},
+      {"fooey foo", "fooey", false},
+      {"foo fooey bar", "bar fooey", false},
+
+      // Verify that quotes still work correctly.
+      {"\"foo blah\"", "foo blah", true},
+      {"\"foo blah\"", "foox blahx", false},
+      {"\"foo blah\"", "\"foo blah\"", true},
+      {"foo blah", "\"foo bar blah\"", true},
+  };
+  for (size_t i = 0; i < std::size(data); ++i) {
+    SCOPED_TRACE(::testing::Message()
+                 << " Testing case i=" << i << " query=" << data[i].query
+                 << " find_in_text=" << data[i].find_in_text);
+
+    QueryWordVector find_in_words;
+    QueryParser::ExtractQueryWords(base::UTF8ToUTF16(data[i].find_in_text),
+                                   &find_in_words);
+
+    query_parser::QueryNodeVector query_nodes;
+    QueryParser::ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
+                                 MatchingAlgorithm::DEFAULT, &query_nodes);
+    EXPECT_EQ(data[i].matches, QueryParser::DoesQueryMatch(
+                                   find_in_words, query_nodes, /*exact=*/true));
   }
 }
 

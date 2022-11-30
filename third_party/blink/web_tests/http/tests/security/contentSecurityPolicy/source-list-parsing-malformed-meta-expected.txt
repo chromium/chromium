@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 24: Refused to connect to 'http://127.0.0.1:8000/xmlhttprequest/resources/get.txt' because it violates the following Content Security Policy directive: "connect-src http://localhost:8000".
+CONSOLE ERROR: Refused to connect to 'http://127.0.0.1:8000/xmlhttprequest/resources/get.txt' because it violates the following Content Security Policy directive: "connect-src http://localhost:8000".
 
 Pass
 

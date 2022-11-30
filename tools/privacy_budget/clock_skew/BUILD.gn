@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("clock_skew_tool") {
+  testonly = true
+  sources = [
+    "clock_skew_tool.cc",
+    "clock_skew_tool.h",
+    "clock_skew_tool_main.cc",
+  ]
+  deps = [
+    "//base",
+    "//components/network_time",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//mojo/core/embedder:embedder",
+    "//services/cert_verifier:lib",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}

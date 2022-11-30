@@ -5,9 +5,26 @@
 <title>$i18n{componentsTitle}</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="components.css">
+<if expr="chromeos_lacros or chromeos_ash">
+  <link rel="stylesheet" href="chrome://resources/css/os_header.css">
+</if>
+
 </head>
 <body>
 <div id="body-container" style="visibility:hidden">
+
+  <if expr="chromeos_lacros or chromeos_ash">
+    <div class="os-link-container-container" id="os-link-container">
+      <div class="os-link-container">
+        <span class="os-link-icon"></span>
+        <span aria-hidden="true" id="os-link-desc">$i18n{os-components-text1}</span>
+        <a href="#" id="os-link-href" aria-describedby="os-link-desc">
+          $i18n{os-components-link}
+        </a>
+        <span aria-hidden="true">$i18n{os-components-text2}</span>
+      </div>
+    </div>
+  </if>
 
   <div id="header"><h1>$i18n{componentsTitle}</h1></div>
   <div id="component-placeholder"></div>

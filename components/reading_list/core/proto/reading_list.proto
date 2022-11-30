@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -45,6 +45,7 @@ message ReadingListLocal {
   optional int64 distillation_time_us = 14;
   optional int64 distillation_size = 15;
   optional ReadingListContentSuggestionsExtra content_suggestions_extra = 16;
+  optional int32 estimated_read_time_seconds = 17;
 }
 
 // Additional data used by the ContentSuggestions.

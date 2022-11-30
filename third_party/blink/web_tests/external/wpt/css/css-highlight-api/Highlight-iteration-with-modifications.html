@@ -12,7 +12,7 @@
 
   // Test insertions using .add
   test(() => {
-    let customHighlight = new Highlight("example");
+    let customHighlight = new Highlight();
     let iterator = customHighlight[Symbol.iterator]();
     customHighlight.add(range1);
     let element = iterator.next();
@@ -21,7 +21,7 @@
   }, 'Highlight iteration is not modified when a new range is added after starting the iteration');
 
   test(() => {
-    let customHighlight = new Highlight("example", range1);
+    let customHighlight = new Highlight(range1);
     let iterator = customHighlight[Symbol.iterator]();
     customHighlight.add(range2);
     let element = iterator.next();
@@ -34,7 +34,7 @@
 
   // Test deletions using .delete
   test(() => {
-    let customHighlight = new Highlight("example", range1);
+    let customHighlight = new Highlight(range1);
     let iterator = customHighlight[Symbol.iterator]();
     customHighlight.delete(range1);
     let element = iterator.next();
@@ -46,7 +46,7 @@
   }, 'Highlight iteration is not modified when the range that was pointed to by the iterator was deleted after starting the iteration');
 
   test(() => {
-    let customHighlight = new Highlight("example", range1, range2);
+    let customHighlight = new Highlight(range1, range2);
     let iterator = customHighlight[Symbol.iterator]();
     customHighlight.delete(range2);
     let element = iterator.next();
@@ -61,7 +61,7 @@
   }, 'Highlight iteration is not modified when the range that was immediately after the one pointed to by the iterator was deleted after starting the iteration');
 
   test(() => {
-    let customHighlight = new Highlight("example", range1, range2);
+    let customHighlight = new Highlight(range1, range2);
     let iterator = customHighlight[Symbol.iterator]();
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end when there are still two ranges to visit');
@@ -77,7 +77,7 @@
 
   // Test deletions using .clear
   test(() => {
-    let customHighlight = new Highlight("example", range1);
+    let customHighlight = new Highlight(range1);
     let iterator = customHighlight[Symbol.iterator]();
     customHighlight.clear();
     let element = iterator.next();

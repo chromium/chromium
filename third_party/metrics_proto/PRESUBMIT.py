@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,12 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
+USE_PYTHON3 = True
+
 README = 'README.chromium'
+PRESUBMIT = 'PRESUBMIT.py'
+PRESUBMIT_TEST = 'PRESUBMIT_test.py'
+OWNERS = 'OWNERS'
 
 
 def IsMetricsProtoPath(input_api, path):
@@ -16,15 +21,21 @@ def IsMetricsProtoPath(input_api, path):
 
 
 def IsReadmeFile(input_api, path):
-  return (input_api.basename(path) == README and
+  return (input_api.os_path.basename(path) == README and
+          IsMetricsProtoPath(input_api, path))
+
+
+def IsImportedFile(input_api, path):
+  return (not input_api.os_path.basename(path) in(PRESUBMIT, PRESUBMIT_TEST,
+                                                  OWNERS) and
           IsMetricsProtoPath(input_api, path))
 
 
 def CheckChange(input_api, output_api):
   """Checks that all changes include a README update."""
   paths = [af.AbsoluteLocalPath() for af in input_api.AffectedFiles()]
-  if (any((IsMetricsProtoPath(input_api, p) for p in paths)) and
-      not any((IsReadmeFile(input_api, p) for p in paths))):
+  if (any(IsImportedFile(input_api, p) for p in paths) and not
+      any(IsReadmeFile(input_api, p) for p in paths)):
     return [output_api.PresubmitError(
             'Modifies %s without updating %s. '
             'Changes to these files should originate upstream.' %

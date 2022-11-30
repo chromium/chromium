@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,12 +24,14 @@ class CallbackArgument {
  public:
   explicit CallbackArgument(base::OnceClosure on_delete)
       : on_delete_(std::move(on_delete)) {}
+
+  CallbackArgument(const CallbackArgument&) = delete;
+  CallbackArgument& operator=(const CallbackArgument&) = delete;
+
   ~CallbackArgument() { std::move(on_delete_).Run(); }
 
  private:
   base::OnceClosure on_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackArgument);
 };
 
 }  // namespace
@@ -50,8 +51,8 @@ class DelayedCallbackRunnerTest : public testing::Test {
   DelayedCallbackRunnerTest() {}
 
   void SetUp() override {
-    instance_.reset(new safe_browsing::DelayedCallbackRunner(
-        base::TimeDelta(), base::ThreadTaskRunnerHandle::Get()));
+    instance_ = std::make_unique<safe_browsing::DelayedCallbackRunner>(
+        base::TimeDelta(), base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override { instance_.reset(); }

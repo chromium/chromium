@@ -1,0 +1,56 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.browser_ui.widget.chips;
+
+import android.text.TextUtils;
+
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** View binder to bind a model to a {@link ChipView}. */
+public class ChipViewBinder {
+    public static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
+        if (ChipProperties.CLICK_HANDLER == key) {
+            chip.setOnClickListener((v) -> model.get(ChipProperties.CLICK_HANDLER).onResult(model));
+
+        } else if (ChipProperties.CONTENT_DESCRIPTION == key) {
+            chip.getPrimaryTextView().setContentDescription(
+                    model.get(ChipProperties.CONTENT_DESCRIPTION));
+
+        } else if (ChipProperties.ENABLED == key) {
+            chip.setEnabled(model.get(ChipProperties.ENABLED));
+
+        } else if (ChipProperties.ICON == key) {
+            int iconId = model.get(ChipProperties.ICON);
+            if (iconId != ChipProperties.INVALID_ICON_ID) {
+                boolean isSelected = model.getAllSetProperties().contains(ChipProperties.SELECTED)
+                        && model.get(ChipProperties.SELECTED);
+                chip.setIcon(isSelected ? R.drawable.ic_check_googblue_24dp : iconId, true);
+            } else {
+                chip.setIcon(ChipProperties.INVALID_ICON_ID, false);
+            }
+
+        } else if (ChipProperties.ID == key) {
+            // Intentional noop.
+
+        } else if (ChipProperties.SELECTED == key) {
+            chip.setSelected(model.get(ChipProperties.SELECTED));
+
+        } else if (ChipProperties.TEXT == key) {
+            chip.getPrimaryTextView().setText(model.get(ChipProperties.TEXT));
+
+        } else if (ChipProperties.TEXT_MAX_WIDTH_PX == key) {
+            int widthPx = model.get(ChipProperties.TEXT_MAX_WIDTH_PX);
+            if (widthPx == ChipProperties.SHOW_WHOLE_TEXT) {
+                chip.getPrimaryTextView().setEllipsize(null);
+                chip.getPrimaryTextView().setMaxWidth(Integer.MAX_VALUE);
+            } else {
+                chip.getPrimaryTextView().setEllipsize(TextUtils.TruncateAt.END);
+                chip.getPrimaryTextView().setMaxWidth(widthPx);
+            }
+        }
+    }
+}

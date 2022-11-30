@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,35 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/settings/timezone_settings.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 namespace arc {
 class ArcOptInPreferenceHandler;
 }
 
+namespace ash {
+class ArcTermsOfServiceScreen;
+}
+
 namespace chromeos {
 
-class ArcTermsOfServiceScreen;
 class ArcTermsOfServiceScreenView;
 
 class ArcTermsOfServiceScreenViewObserver {
  public:
+  ArcTermsOfServiceScreenViewObserver(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
+  ArcTermsOfServiceScreenViewObserver& operator=(
+      const ArcTermsOfServiceScreenViewObserver&) = delete;
+
   virtual ~ArcTermsOfServiceScreenViewObserver() = default;
 
   // Called when the user accepts the PlayStore Terms of Service.
@@ -37,14 +47,15 @@ class ArcTermsOfServiceScreenViewObserver {
 
  protected:
   ArcTermsOfServiceScreenViewObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenViewObserver);
 };
 
 class ArcTermsOfServiceScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"arc-tos"};
+
+  ArcTermsOfServiceScreenView(const ArcTermsOfServiceScreenView&) = delete;
+  ArcTermsOfServiceScreenView& operator=(const ArcTermsOfServiceScreenView&) =
+      delete;
 
   virtual ~ArcTermsOfServiceScreenView() = default;
 
@@ -60,13 +71,10 @@ class ArcTermsOfServiceScreenView {
   virtual void Hide() = 0;
 
   // Sets view and screen.
-  virtual void Bind(ArcTermsOfServiceScreen* screen) = 0;
+  virtual void Bind(ash::ArcTermsOfServiceScreen* screen) = 0;
 
  protected:
   ArcTermsOfServiceScreenView() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenView);
 };
 
 // The sole implementation of the ArcTermsOfServiceScreenView, using WebUI.
@@ -76,11 +84,18 @@ class ArcTermsOfServiceScreenHandler
       public arc::ArcOptInPreferenceHandlerObserver,
       public OobeUI::Observer,
       public system::TimezoneSettings::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+      public chromeos::NetworkStateHandlerObserver,
+      public session_manager::SessionManagerObserver {
  public:
   using TView = ArcTermsOfServiceScreenView;
 
-  explicit ArcTermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+  ArcTermsOfServiceScreenHandler();
+
+  ArcTermsOfServiceScreenHandler(const ArcTermsOfServiceScreenHandler&) =
+      delete;
+  ArcTermsOfServiceScreenHandler& operator=(
+      const ArcTermsOfServiceScreenHandler&) = delete;
+
   ~ArcTermsOfServiceScreenHandler() override;
 
   // content::WebUIMessageHandler:
@@ -95,7 +110,7 @@ class ArcTermsOfServiceScreenHandler
   void RemoveObserver(ArcTermsOfServiceScreenViewObserver* observer) override;
   void Show() override;
   void Hide() override;
-  void Bind(ArcTermsOfServiceScreen* screen) override;
+  void Bind(ash::ArcTermsOfServiceScreen* screen) override;
 
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,
@@ -110,7 +125,10 @@ class ArcTermsOfServiceScreenHandler
 
  private:
   // BaseScreenHandler:
-  void Initialize() override;
+  void InitializeDeprecated() override;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Shows default terms of service screen.
   void DoShow();
@@ -124,11 +142,17 @@ class ArcTermsOfServiceScreenHandler
                     bool enable_location_services,
                     bool review_arc_settings,
                     const std::string& tos_content);
-  // Loads Play Store ToS content in case default network exists. If
-  // `ignore_network_state` is set then network state is not checked.
-  void MaybeLoadPlayStoreToS(bool ignore_network_state);
+
+  // Loads Play Store ToS content.
+  // If `is_preload` is set, skip loading if one of the following conditions
+  // applies:
+  //     * A default network does not exist.
+  //     * The device is managed and ARC++ negotiation is not needed.
+  void MaybeLoadPlayStoreToS(bool is_preload);
 
   void StartNetworkAndTimeZoneObserving();
+
+  void StartSessionManagerObserving();
 
   // Handles the recording of consent given or not given after the user chooses
   // to skip or accept.
@@ -156,6 +180,9 @@ class ArcTermsOfServiceScreenHandler
   // Indicates that we already started network and time zone observing.
   bool network_time_zone_observing_ = false;
 
+  // Indicates that we already started observing the session manager.
+  bool session_manager_observing_ = false;
+
   // To filter out duplicate notifications from html.
   bool action_taken_ = false;
 
@@ -169,11 +196,21 @@ class ArcTermsOfServiceScreenHandler
   // To track if a child account is being set up.
   bool is_child_account_;
 
-  std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
+  base::ScopedObservation<chromeos::NetworkStateHandler,
+                          chromeos::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ArcTermsOfServiceScreenHandler);
+  std::unique_ptr<arc::ArcOptInPreferenceHandler> pref_handler_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ArcTermsOfServiceScreenHandler;
+using ::chromeos::ArcTermsOfServiceScreenView;
+using ::chromeos::ArcTermsOfServiceScreenViewObserver;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ARC_TERMS_OF_SERVICE_SCREEN_HANDLER_H_

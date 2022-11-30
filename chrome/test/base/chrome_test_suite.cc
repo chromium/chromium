@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/chrome_test_suite.h"
+
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <stdio.h>
@@ -13,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/browser/browser_process.h"
@@ -38,7 +39,7 @@
 #include "chrome/common/chrome_paths_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
@@ -69,14 +70,16 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
 ChromeTestSuite::~ChromeTestSuite() = default;
 
 void ChromeTestSuite::Initialize() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
   chrome_browser_application_mac::RegisterBrowserCrApp();
 #endif
 
   if (!browser_dir_.empty()) {
     base::PathService::Override(base::DIR_EXE, browser_dir_);
+#if !BUILDFLAG(IS_FUCHSIA)
     base::PathService::Override(base::DIR_MODULE, browser_dir_);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   }
 
   // Disable external libraries load if we are under python process in
@@ -99,7 +102,7 @@ void ChromeTestSuite::Initialize() {
   // DICE feature gets the right test coverage.
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.
   base::FilePath path;
   base::PathService::Get(base::DIR_EXE, &path);
@@ -113,13 +116,22 @@ void ChromeTestSuite::Initialize() {
   // specific path doesn't matter as long as it exists.
   CHECK(scoped_temp_dir_.CreateUniqueTempDir());
   base::FilePath temp_path = scoped_temp_dir_.GetPath();
-  chrome::SetLacrosDefaultPaths(/*documents_dir=*/temp_path,
-                                /*downloads_dir=*/temp_path);
+  chrome::SetLacrosDefaultPaths(
+      /*documents_dir=*/temp_path,
+      /*downloads_dir=*/temp_path,
+      /*drivefs=*/base::FilePath(),
+      /*removable_media_dir=*/base::FilePath(),
+      /*android_files_dir=*/base::FilePath(),
+      /*linux_files_dir=*/base::FilePath(),
+      /*ash_resources_dir=*/base::FilePath(),
+      /*share_cache_dir=*/temp_path,
+      /*preinstalled_web_app_config_dir=*/base::FilePath(),
+      /*preinstalled_web_app_extra_config_dir=*/base::FilePath());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromeTestSuite::Shutdown() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::SetOverrideFrameworkBundle(NULL);
 #endif
 

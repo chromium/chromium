@@ -1,0 +1,166 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    --privacy-guide-animation-duration: 900ms;
+    --privacy-guide-footer-vertical-padding: 16px;
+    --privacy-guide-footer-total-height: calc(var(--cr-button-height) +
+        2 * var(--privacy-guide-footer-vertical-padding));
+  }
+
+  .footer {
+    align-items: center;
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    padding: var(--privacy-guide-footer-vertical-padding) 24px;
+    position: absolute;
+    width: 100%;
+  }
+
+  .managed-fragment {
+    /* Override cr-view-manager's default styling for view. */
+    bottom: initial;
+    grid-column-start: 1;
+    grid-row-start: 1;
+    left: initial;
+    position: unset;
+    right: initial;
+    top: initial;
+  }
+
+  #viewManager {
+    position: relative;
+  }
+
+  #viewManager > :not(.active) {
+    /* Restore cr-view-manager's absolute positioning for non-active elements,
+       so they overlap the active element. */
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  .visibility-hidden {
+    visibility: hidden;
+  }
+
+  #privacyGuideCard {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: column;
+    min-height: 432px;
+    padding-bottom: var(--privacy-guide-footer-total-height);
+    position: relative;
+  }
+
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  #background {
+    animation: fade-in var(--privacy-guide-animation-duration);
+    height: 100px;
+    left: 50%;
+    position: absolute;
+    top: 24px;
+    transform: translateX(-50%);
+    width: 360px;
+  }
+
+  #background picture {
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  #backgroundClouds {
+    transform: translateX(calc(var(--privacy-guide-step) * -10px));
+    transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  :host-context([dir='rtl']) #backgroundClouds {
+    transform: translateX(calc(var(--privacy-guide-step) * 10px));
+  }
+
+  #backgroundHills {
+    transform: translateX(calc(var(--privacy-guide-step) * -5px));
+    transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  :host-context([dir='rtl']) #backgroundHills {
+    transform: translateX(calc(var(--privacy-guide-step) * 5px));
+  }
+</style>
+<div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard"
+    style="--privacy-guide-v2-translate-multiplier: [[translateMultiplier_]]">
+  <div id="background" aria-hidden="true"
+      hidden$="[[!showBackground_(privacyGuideStep_, isPrivacyGuideV2)]]"
+      style="--privacy-guide-step: [[stepIndicatorModel_.active]]">
+    <picture id="backgroundClouds">
+      <source
+          srcset="./images/privacy_guide/clouds_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/clouds_graphic.svg">
+    </picture>
+    <picture id="backgroundHills">
+      <source
+          srcset="./images/privacy_guide/hills_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/hills_graphic.svg">
+    </picture>
+    <picture>
+      <source
+          srcset="./images/privacy_guide/horizon_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/horizon_graphic.svg">
+    </picture>
+  </div>
+  <cr-view-manager id="viewManager">
+    <privacy-guide-welcome-fragment id="[[privacyGuideStepEnum_.WELCOME]]"
+        class="managed-fragment" on-start-button-click="onNextButtonClick_"
+        slot="view">
+    </privacy-guide-welcome-fragment>
+    <privacy-guide-msbb-fragment id="[[privacyGuideStepEnum_.MSBB]]"
+        class="managed-fragment" prefs="{{prefs}}" slot="view">
+    </privacy-guide-msbb-fragment>
+    <privacy-guide-clear-on-exit-fragment
+        id="[[privacyGuideStepEnum_.CLEAR_ON_EXIT]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
+    </privacy-guide-clear-on-exit-fragment>
+    <privacy-guide-history-sync-fragment
+        id="[[privacyGuideStepEnum_.HISTORY_SYNC]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
+    </privacy-guide-history-sync-fragment>
+    <privacy-guide-safe-browsing-fragment
+        id="[[privacyGuideStepEnum_.SAFE_BROWSING]]" class="managed-fragment"
+        prefs="{{prefs}}" slot="view">
+    </privacy-guide-safe-browsing-fragment>
+    <privacy-guide-cookies-fragment id="[[privacyGuideStepEnum_.COOKIES]]"
+        class="managed-fragment" prefs="{{prefs}}" slot="view">
+    </privacy-guide-cookies-fragment>
+    <privacy-guide-completion-fragment
+        id="[[privacyGuideStepEnum_.COMPLETION]]" class="managed-fragment"
+        on-back-button-click="onBackButtonClick_" slot="view">
+    </privacy-guide-completion-fragment>
+  </cr-view-manager>
+  <template is="dom-if" if="[[showAnySettingFragment_(privacyGuideStep_)]]">
+    <div id="settingFooter" class="footer hr">
+      <cr-button id="backButton" role="button" on-click="onBackButtonClick_"
+          class$="[[computeBackButtonClass_(privacyGuideStep_)]]">
+        $i18n{privacyGuideBackButton}
+      </cr-button>
+      <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>
+      <cr-button class="action-button" id="nextButton" role="button"
+          tabindex="0" on-click="onNextButtonClick_">
+        $i18n{privacyGuideNextButton}
+      </cr-button>
+    </div>
+  </template>
+</div>

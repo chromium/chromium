@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,11 @@ class PeerConnectionDependencyFactory;
 // creating, initializing and disposing track adapters independently of media
 // streams. Adapters are accessed via |AdapterRef|s, when all references to an
 // adapter are destroyed it is disposed and removed from the map.
+// Objects of this class must be constructed on the main thread, after which
+// they may be accessed from any thread. The two exceptions to that are
+// `GetOrCreateLocalTrackAdapter()` that must be called from the main thread and
+// `GetOrCreateRemoteTrackAdapter()` which must not be called from the main
+// thread.
 class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
     : public WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapterMap> {
  public:
@@ -39,7 +44,7 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
     bool is_initialized() const { return adapter_->is_initialized(); }
     void InitializeOnMainThread();
     MediaStreamComponent* track() const { return adapter_->track(); }
-    webrtc::MediaStreamTrackInterface* webrtc_track() const {
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track() const {
       return adapter_->webrtc_track();
     }
 
@@ -135,9 +140,10 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapterMap
   // Invoke on the main thread.
   virtual ~WebRtcMediaStreamTrackAdapterMap();
 
-  // Pointer to a |PeerConnectionDependencyFactory| owned by the |RenderThread|.
-  // It's valid for the lifetime of |RenderThread|.
-  blink::PeerConnectionDependencyFactory* const factory_;
+  // The adapter map is indirectly owned by `RTCPeerConnection`, which is
+  // outlived by the `PeerConnectionDependencyFactory`, so `factory_` should
+  // never be null (with the possible exception of the dtor).
+  const CrossThreadWeakPersistent<PeerConnectionDependencyFactory> factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
 
   mutable base::Lock lock_;

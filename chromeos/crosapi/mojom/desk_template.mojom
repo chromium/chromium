@@ -1,0 +1,56 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "ui/base/mojom/ui_base_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+
+// Additional state of the browser in the single Lacros window for saving in the
+// desk template.
+[Stable]
+struct DeskTemplateState {
+  // URLs in the tab strip.
+  array<url.mojom.Url> urls@0;
+
+  // Index of the active tab.
+  uint32 active_index@1;
+
+  [MinVersion=2] string? browser_app_name@2;
+
+  [MinVersion=3] int64 restore_window_id@3;
+};
+
+// Interface for desk template clients.  Implemented by lacros-chrome.
+// Next version: 4
+// Next method id: 3
+[Stable]
+interface DeskTemplateClient {
+  // Creates a browser from the desk template data.
+  [MinVersion=1]
+  CreateBrowserWithRestoredData@1(gfx.mojom.Rect bounds,
+                                  ui.mojom.WindowShowState initial_show_state,
+                                  DeskTemplateState state);
+
+  // Returns state of the tab strip model in the browser window identified by
+  // |window_unique_id|.
+  GetTabStripModelUrls@0(uint32 serial, string window_unique_id) => (
+    uint32 serial, string window_unique_id, DeskTemplateState? state);
+
+  // Gets the image of the favicon associated with `url`. Returns an empty
+  // image if the favicon cannot be found.
+  [MinVersion=3]
+  GetFaviconImage@2(url.mojom.Url url) => (gfx.mojom.ImageSkia? image);
+};
+
+// Interface for desk template. Implemented by ash-chrome.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="7566edd4-358d-44b6-b71c-9eb87c632271"]
+interface DeskTemplate {
+  // Registers the client that lives in lacros-chrome.
+  AddDeskTemplateClient@0(pending_remote<DeskTemplateClient> client);
+};

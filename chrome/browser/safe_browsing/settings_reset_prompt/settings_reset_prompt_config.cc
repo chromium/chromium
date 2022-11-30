@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,9 @@ bool IsPromptEnabled() {
 
 }  // namespace.
 
-const base::Feature kSettingsResetPrompt{kSettingsResetPromptFeatureName,
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSettingsResetPrompt,
+             kSettingsResetPromptFeatureName,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<SettingsResetPromptConfig> SettingsResetPromptConfig::Create() {
@@ -159,8 +160,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_DELAY_BEFORE_PROMPT_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  delay_before_prompt_ =
-      base::TimeDelta::FromSeconds(delay_before_prompt_seconds);
+  delay_before_prompt_ = base::Seconds(delay_before_prompt_seconds);
 
   // Get the prompt_wave feature paramter.
   prompt_wave_ = base::GetFieldTrialParamByFeatureAsInt(kSettingsResetPrompt,
@@ -181,8 +181,7 @@ bool SettingsResetPromptConfig::Init() {
         CONFIG_ERROR_BAD_TIME_BETWEEN_PROMPTS_SECONDS_PARAM, CONFIG_ERROR_MAX);
     return false;
   }
-  time_between_prompts_ =
-      base::TimeDelta::FromSeconds(time_between_prompts_seconds);
+  time_between_prompts_ = base::Seconds(time_between_prompts_seconds);
 
   UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ConfigError", CONFIG_ERROR_OK,
                             CONFIG_ERROR_MAX);
@@ -199,7 +198,7 @@ SettingsResetPromptConfig::ParseDomainHashes(
   std::unique_ptr<base::DictionaryValue> domains_dict =
       base::DictionaryValue::From(
           base::JSONReader::ReadDeprecated(domain_hashes_json));
-  if (!domains_dict || domains_dict->empty())
+  if (!domains_dict || domains_dict->DictEmpty())
     return CONFIG_ERROR_BAD_DOMAIN_HASHES_PARAM;
 
   // The input JSON should be a hash object with hex-encoded 32-byte
@@ -210,9 +209,8 @@ SettingsResetPromptConfig::ParseDomainHashes(
   // Each key in the hash should be a 64-byte long string and each
   // integer ID should fit in an int.
   domain_hashes_.clear();
-  for (base::DictionaryValue::Iterator iter(*domains_dict); !iter.IsAtEnd();
-       iter.Advance()) {
-    const std::string& hash_string = iter.key();
+  for (const auto item : domains_dict->GetDict()) {
+    const std::string& hash_string = item.first;
     if (hash_string.size() != crypto::kSHA256Length * 2)
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
@@ -223,16 +221,17 @@ SettingsResetPromptConfig::ParseDomainHashes(
       return CONFIG_ERROR_BAD_DOMAIN_HASH;
 
     // Convert the ID string to an integer.
-    std::string domain_id_string;
+    const std::string* domain_id_string = item.second.GetIfString();
     int domain_id = -1;
-    if (!iter.value().GetAsString(&domain_id_string) ||
-        !base::StringToInt(domain_id_string, &domain_id) || domain_id < 0) {
+    if (!domain_id_string ||
+        !base::StringToInt(*domain_id_string, &domain_id) || domain_id < 0) {
       return CONFIG_ERROR_BAD_DOMAIN_ID;
     }
 
     if (!domain_hashes_.insert(std::make_pair(std::move(hash), domain_id))
-             .second)
+             .second) {
       return CONFIG_ERROR_DUPLICATE_DOMAIN_HASH;
+    }
   }
 
   return CONFIG_ERROR_OK;

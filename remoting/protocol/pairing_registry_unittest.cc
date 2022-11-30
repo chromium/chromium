@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 #include <stdlib.h>
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,43 +28,41 @@ using remoting::protocol::PairingRegistry;
 class MockPairingRegistryCallbacks {
  public:
   MockPairingRegistryCallbacks() = default;
+
+  MockPairingRegistryCallbacks(const MockPairingRegistryCallbacks&) = delete;
+  MockPairingRegistryCallbacks& operator=(const MockPairingRegistryCallbacks&) =
+      delete;
+
   virtual ~MockPairingRegistryCallbacks() = default;
 
   MOCK_METHOD1(DoneCallback, void(bool));
-  MOCK_METHOD1(GetAllPairingsCallbackPtr, void(base::ListValue*));
+  MOCK_METHOD1(GetAllPairingsCallback, void(base::Value::List));
   MOCK_METHOD1(GetPairingCallback, void(PairingRegistry::Pairing));
-
-  void GetAllPairingsCallback(std::unique_ptr<base::ListValue> pairings) {
-    GetAllPairingsCallbackPtr(pairings.get());
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPairingRegistryCallbacks);
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include
 // any shared secret.
 void VerifyPairing(PairingRegistry::Pairing expected,
-                   const base::DictionaryValue& actual) {
-  std::string value;
-  EXPECT_TRUE(actual.GetString(PairingRegistry::kClientNameKey, &value));
-  EXPECT_EQ(expected.client_name(), value);
-  EXPECT_TRUE(actual.GetString(PairingRegistry::kClientIdKey, &value));
-  EXPECT_EQ(expected.client_id(), value);
+                   const base::Value::Dict& actual) {
+  const std::string* value = actual.FindString(PairingRegistry::kClientNameKey);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(expected.client_name(), *value);
+  value = actual.FindString(PairingRegistry::kClientIdKey);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(expected.client_id(), *value);
 
-  EXPECT_FALSE(actual.HasKey(PairingRegistry::kSharedSecretKey));
+  EXPECT_FALSE(actual.Find(PairingRegistry::kSharedSecretKey));
 }
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PairingRegistryTest : public testing::Test {
  public:
   void SetUp() override { callback_count_ = 0; }
 
-  void set_pairings(std::unique_ptr<base::ListValue> pairings) {
+  void set_pairings(base::Value::List pairings) {
     pairings_ = std::move(pairings);
   }
 
@@ -86,7 +82,7 @@ class PairingRegistryTest : public testing::Test {
   base::RunLoop run_loop_;
 
   int callback_count_;
-  std::unique_ptr<base::ListValue> pairings_;
+  base::Value::List pairings_;
 };
 
 TEST_F(PairingRegistryTest, CreateAndGetPairings) {
@@ -120,17 +116,19 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_1;
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_1));
-  ASSERT_TRUE(pairings_->GetDictionary(1, &actual_pairing_2));
+  ASSERT_EQ(2u, pairings_.size());
+  const base::Value& actual_pairing_1_value = pairings_[0];
+  ASSERT_TRUE(actual_pairing_1_value.is_dict());
+  const base::Value& actual_pairing_2_value = pairings_[1];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::Value::Dict* actual_pairing_1 = &actual_pairing_1_value.GetDict();
+  const base::Value::Dict* actual_pairing_2 = &actual_pairing_2_value.GetDict();
 
   // Ordering is not guaranteed, so swap if necessary.
-  std::string actual_client_id;
-  ASSERT_TRUE(actual_pairing_1->GetString(PairingRegistry::kClientIdKey,
-                                          &actual_client_id));
-  if (actual_client_id != pairing_1.client_id()) {
+  const std::string* actual_client_id =
+      actual_pairing_1->FindString(PairingRegistry::kClientIdKey);
+  ASSERT_TRUE(actual_client_id);
+  if (*actual_client_id != pairing_1.client_id()) {
     std::swap(actual_pairing_1, actual_pairing_2);
   }
 
@@ -153,13 +151,14 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_2));
-  std::string actual_client_id;
-  ASSERT_TRUE(actual_pairing_2->GetString(PairingRegistry::kClientIdKey,
-                                          &actual_client_id));
-  EXPECT_EQ(pairing_2.client_id(), actual_client_id);
+  ASSERT_EQ(1u, pairings_.size());
+  const base::Value& actual_pairing_2_value = pairings_[0];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const std::string* actual_client_id =
+      actual_pairing_2_value.GetDict().FindString(
+          PairingRegistry::kClientIdKey);
+  ASSERT_TRUE(actual_client_id);
+  EXPECT_EQ(pairing_2.client_id(), *actual_client_id);
 }
 
 TEST_F(PairingRegistryTest, ClearAllPairings) {
@@ -175,7 +174,7 @@ TEST_F(PairingRegistryTest, ClearAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  EXPECT_TRUE(pairings_->empty());
+  EXPECT_TRUE(pairings_.empty());
 }
 
 ACTION_P(QuitMessageLoop, callback) {
@@ -187,7 +186,7 @@ MATCHER_P(EqualsClientName, client_name, "") {
 }
 
 MATCHER(NoPairings, "") {
-  return arg->empty();
+  return arg.empty();
 }
 
 TEST_F(PairingRegistryTest, SerializedRequests) {
@@ -205,8 +204,7 @@ TEST_F(PairingRegistryTest, SerializedRequests) {
       .InSequence(s);
   EXPECT_CALL(callbacks, DoneCallback(true))
       .InSequence(s);
-  EXPECT_CALL(callbacks, GetAllPairingsCallbackPtr(NoPairings()))
-      .InSequence(s);
+  EXPECT_CALL(callbacks, GetAllPairingsCallback(NoPairings())).InSequence(s);
   EXPECT_CALL(callbacks, GetPairingCallback(EqualsClientName("client3")))
       .InSequence(s)
       .WillOnce(QuitMessageLoop(run_loop_.QuitClosure()));
@@ -251,5 +249,4 @@ TEST_F(PairingRegistryTest, SerializedRequests) {
   run_loop_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

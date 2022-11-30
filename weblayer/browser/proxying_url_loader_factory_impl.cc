@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,6 @@ void StartCachedLoad(
     const std::string& data) {
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(pending_client));
-  client->OnReceiveResponse(std::move(response_head));
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
@@ -55,7 +54,8 @@ void StartCachedLoad(
     return;
   }
 
-  client->OnStartLoadingResponseBody(std::move(consumer));
+  client->OnReceiveResponse(std::move(response_head), std::move(consumer),
+                            absl::nullopt);
 
   auto write_data = std::make_unique<WriteData>();
   write_data->client = std::move(client);
@@ -234,7 +234,7 @@ void ProxyingURLLoaderFactoryImpl::CreateLoaderAndStart(
           std::make_unique<CachingResponseDelegate>(
               std::move(response_), frame_tree_node_id_,
               navigation_entry_unique_id_),
-          base::nullopt);
+          absl::nullopt);
       stream_loader->Start();
       return;
     }

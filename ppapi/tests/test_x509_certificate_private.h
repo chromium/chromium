@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_
-#define PPAPPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_
+#ifndef PPAPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_
+#define PPAPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_
 
 #include <string>
 
@@ -22,4 +22,4 @@ class TestX509CertificatePrivate : public TestCase {
   std::string TestInvalidCertificate();
 };
 
-#endif  // PPAPPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_
+#endif  // PPAPI_TESTS_TEST_X509_CERTIFICATE_PRIVATE_H_

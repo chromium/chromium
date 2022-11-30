@@ -1,17 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
-template class WorkletThreadHolder<OfflineAudioWorkletThread>;
+namespace {
 
-int OfflineAudioWorkletThread::s_ref_count_ = 0;
+// Use for ref-counting of all OfflineAudioWorkletThread instances in a
+// process. Incremented by the constructor and decremented by destructor.
+int ref_count = 0;
+
+void EnsureSharedBackingThread(const ThreadCreationParams& params) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(ref_count, 1);
+  WorkletThreadHolder<OfflineAudioWorkletThread>::EnsureInstance(params);
+}
+
+}  // namespace
+
+template class WorkletThreadHolder<OfflineAudioWorkletThread>;
 
 OfflineAudioWorkletThread::OfflineAudioWorkletThread(
     WorkerReportingProxy& worker_reporting_proxy)
@@ -24,17 +37,20 @@ OfflineAudioWorkletThread::OfflineAudioWorkletThread(
   ThreadCreationParams params =
       ThreadCreationParams(ThreadType::kOfflineAudioWorkletThread);
 
-  // OfflineAudioWorkletThread always uses a NORMAL priority thread.
-  params.thread_priority = base::ThreadPriority::NORMAL;
+  // OfflineAudioWorkletThread always uses a kNormal type thread.
+  params.base_thread_type = base::ThreadType::kDefault;
 
-  if (++s_ref_count_ == 1)
+  if (++ref_count == 1) {
     EnsureSharedBackingThread(params);
+  }
 }
 
 OfflineAudioWorkletThread::~OfflineAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0)
+  DCHECK_GT(ref_count, 0);
+  if (--ref_count == 0) {
     ClearSharedBackingThread();
+  }
 }
 
 WorkerBackingThread& OfflineAudioWorkletThread::GetWorkerBackingThread() {
@@ -42,15 +58,9 @@ WorkerBackingThread& OfflineAudioWorkletThread::GetWorkerBackingThread() {
       ->GetThread();
 }
 
-void OfflineAudioWorkletThread::EnsureSharedBackingThread(
-    const ThreadCreationParams& params) {
-  DCHECK(IsMainThread());
-  WorkletThreadHolder<OfflineAudioWorkletThread>::EnsureInstance(params);
-}
-
 void OfflineAudioWorkletThread::ClearSharedBackingThread() {
   DCHECK(IsMainThread());
-  CHECK_EQ(s_ref_count_, 0);
+  CHECK_EQ(ref_count, 0);
   WorkletThreadHolder<OfflineAudioWorkletThread>::ClearInstance();
 }
 

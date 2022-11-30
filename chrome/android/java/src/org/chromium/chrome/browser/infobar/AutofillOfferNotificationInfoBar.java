@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,8 +71,9 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
         layout.getMessageLayout().addIconTitle(mHeaderIconDrawableId, mTitleText);
         InfoBarControlLayout control = layout.addControlLayout();
 
-        String offerDetails = getContext().getString(
-                R.string.autofill_offers_reminder_description_text, mCreditCardIdentifierString);
+        String offerDetails =
+                getContext().getString(R.string.autofill_offers_reminder_infobar_description_text,
+                        mCreditCardIdentifierString);
         SpannableStringBuilder text = new SpannableStringBuilder(offerDetails);
         // Highlight the cardIdentifierString as bold.
         int indexForCardIdentifierString = offerDetails.indexOf(mCreditCardIdentifierString);
@@ -84,7 +85,7 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
             String linkText =
                     getContext().getString(R.string.autofill_offers_reminder_deep_link_text);
             NoUnderlineClickableSpan noUnderlineClickableSpan = new NoUnderlineClickableSpan(
-                    getContext().getResources(),
+                    getContext(),
                     (view)
                             -> AutofillOfferNotificationInfoBarJni.get().onOfferDeepLinkClicked(
                                     mNativeAutofillOfferNotificationInfoBar,

@@ -1,23 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <map>
 #import <string>
 
-#include "base/ios/ios_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -25,22 +29,14 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/1015113): The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(RecentTabsAppInterface);
-#pragma clang diagnostic pop
-
-using chrome_test_util::RecentTabsMenuButton;
+using chrome_test_util::RecentTabsDestinationButton;
 
 namespace {
 const char kURLOfTestPage[] = "http://testPage";
@@ -60,7 +56,7 @@ void OpenRecentTabsPanel() {
   }
 
   [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsMenuButton()];
+  [ChromeEarlGreyUI tapToolsMenuButton:RecentTabsDestinationButton()];
 }
 
 // Returns the matcher for the Recent Tabs table.
@@ -89,6 +85,19 @@ GURL TestPageURL() {
 
 @implementation RecentTabsTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testSyncTypesListDisabled)]) {
+    // Configure the policy.
+    config.additional_args.push_back(
+        "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+    config.additional_args.push_back(
+        "<dict><key>SyncTypesListDisabled</key><array><string>tabs</"
+        "string></array></dict>");
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];
@@ -97,6 +106,12 @@ GURL TestPageURL() {
       std::string(kHTMLOfTestPage),
   }});
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
+}
+
+// Tear down called once per test.
+- (void)tearDown {
+  [super tearDown];
+  [PolicyAppInterface clearPolicies];
 }
 
 // Tests that a closed tab appears in the Recent Tabs panel, and that tapping
@@ -178,7 +193,7 @@ GURL TestPageURL() {
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in promo should be visible with an account on the device.
   [SigninEarlGreyUI
@@ -214,7 +229,7 @@ GURL TestPageURL() {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 
   // Add an account.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Tap on "Other Devices", to show the sign-in promo.
@@ -235,14 +250,8 @@ GURL TestPageURL() {
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
   // TODO(crbug.com/1129589): Test disabled on iOS14 iPhones.
-  if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
+  if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
-  }
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
-  }
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
   }
   OpenRecentTabsPanel();
 
@@ -267,14 +276,14 @@ GURL TestPageURL() {
 // Tests that the Recent Tabs can be opened while signed in (prevent regression
 // for https://crbug.com/1056613).
 - (void)testOpenWhileSignedIn {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   OpenRecentTabsPanel();
 }
 
 // Tests that there is a text cell in the Recently Closed section when it's
-// empty (Only with illustrated-empty-states flag enabled).
+// empty.
 - (void)testRecentlyClosedEmptyState {
   OpenRecentTabsPanel();
 
@@ -283,15 +292,11 @@ GURL TestPageURL() {
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
                          IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY),
                      grey_sufficientlyVisible(), nil)];
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [detailTextCell assertWithMatcher:grey_notNil()];
-  } else {
-    [detailTextCell assertWithMatcher:grey_nil()];
-  }
+  [detailTextCell assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the Signin promo is visible in the Other Devices section
-// (and with illustrated-empty-states enabled, there is the illustrated cell)
+// Tests that the Signin promo is visible in the Other Devices section and that
+// the illustrated cell is present.
 - (void)testOtherDevicesDefaultEmptyState {
   OpenRecentTabsPanel();
 
@@ -301,11 +306,7 @@ GURL TestPageURL() {
               grey_accessibilityID(
                   kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)];
-  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
-    [illustratedCell assertWithMatcher:grey_notNil()];
-  } else {
-    [illustratedCell assertWithMatcher:grey_nil()];
-  }
+  [illustratedCell assertWithMatcher:grey_notNil()];
 
   // Scroll to sign-in promo, if applicable
   [[EarlGrey
@@ -320,29 +321,19 @@ GURL TestPageURL() {
 
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testContextMenuCopyLink {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
   GURL testURL = TestPageURL();
   [ChromeEarlGrey
-      verifyCopyLinkActionWithText:[NSString stringWithUTF8String:testURL.spec()
-                                                                      .c_str()]
-                      useNewString:YES];
+      verifyCopyLinkActionWithText:[NSString
+                                       stringWithUTF8String:testURL.spec()
+                                                                .c_str()]];
 }
 
 // Tests the Open in New Tab action on a recent tab's context menu.
 - (void)testContextMenuOpenInNewTab {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
@@ -355,14 +346,10 @@ GURL TestPageURL() {
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
-- (void)testContextMenuOpenInNewWindow {
+// Test is flaky. https://crbug.com/1273942.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
   }
 
   [self loadTestURL];
@@ -383,16 +370,13 @@ GURL TestPageURL() {
 
 // Tests the Share action on a recent tab's context menu.
 - (void)testContextMenuShare {
-  if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Test disabled when Native Context Menus feature flag is off.");
-  }
-
   [self loadTestURL];
   OpenRecentTabsPanel();
   [self longPressTestURLTab];
 
-  [ChromeEarlGrey verifyShareActionWithPageTitle:kTitleOfTestPage];
+  const GURL testPageURL = web::test::HttpServer::MakeUrl(kURLOfTestPage);
+  [ChromeEarlGrey verifyShareActionWithURL:testPageURL
+                                 pageTitle:kTitleOfTestPage];
 }
 
 #pragma mark Helper Methods
@@ -424,6 +408,47 @@ GURL TestPageURL() {
   [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
   // Wait until the recent tabs panel is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section is
+// managed when the SyncDisabled policy is enabled.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Dismiss the popup.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section is
+// managed when the SyncTypesListDisabled tabs item policy is selected.
+- (void)testSyncTypesListDisabled {
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

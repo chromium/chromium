@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "components/permissions/permission_request_manager.h"
@@ -28,8 +30,9 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/display/screen.h"
+#include "ui/display/display.h"
 #include "ui/views/controls/native/native_view_host.h"
 
 namespace {
@@ -112,7 +115,7 @@ cc::BrowserControlsState GetBrowserControlsStateConstraints(
 void SynchronizeVisualProperties(content::WebContents* contents) {
   DCHECK(contents);
 
-  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   if (!main_frame)
     return;
 
@@ -154,6 +157,10 @@ class TopControlsSlideTabObserver
       permission_manager->AddObserver(this);
   }
 
+  TopControlsSlideTabObserver(const TopControlsSlideTabObserver&) = delete;
+  TopControlsSlideTabObserver& operator=(const TopControlsSlideTabObserver&) =
+      delete;
+
   ~TopControlsSlideTabObserver() override {
     auto* permission_manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
@@ -175,7 +182,8 @@ class TopControlsSlideTabObserver
   }
 
   // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // There is no renderer to communicate with, so just ensure top-chrome
     // is shown. Also the render may have crashed before resetting the gesture
     // in progress bit.
@@ -193,15 +201,17 @@ class TopControlsSlideTabObserver
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (navigation_handle->IsInMainFrame() && navigation_handle->HasCommitted())
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        navigation_handle->HasCommitted()) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
+    }
   }
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code) override {
-    if (render_frame_host->IsCurrent() &&
-        (render_frame_host == web_contents()->GetMainFrame())) {
+    if (render_frame_host->IsActive() &&
+        (render_frame_host == web_contents()->GetPrimaryMainFrame())) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }
@@ -219,7 +229,7 @@ class TopControlsSlideTabObserver
   }
 
   // PermissionRequestManager::Observer:
-  void OnBubbleAdded() override {
+  void OnPromptAdded() override {
     UpdateBrowserControlsStateShown(/*animate=*/true);
   }
 
@@ -233,7 +243,7 @@ class TopControlsSlideTabObserver
     owner_->UpdateBrowserControlsStateShown(web_contents(), animate);
   }
 
-  TopControlsSlideControllerChromeOS* const owner_;
+  const raw_ptr<TopControlsSlideControllerChromeOS> owner_;
 
   // Tracks the current shown ratio of this tab as synchronized with its
   // renderer. This is needed because when switching tabs, we must restore the
@@ -263,8 +273,6 @@ class TopControlsSlideTabObserver
   // right before the final layout of the BrowserView.
   // https://crbug.com/885223.
   bool shrink_renderer_size_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TopControlsSlideTabObserver);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -285,7 +293,6 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   observed_omni_box_->AddObserver(this);
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* accessibility_manager = ash::AccessibilityManager::Get();
@@ -297,13 +304,12 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
   }
 #endif
 
-  OnEnabledStateChanged(CanEnable(base::nullopt));
+  OnEnabledStateChanged(CanEnable(absl::nullopt));
 }
 
 TopControlsSlideControllerChromeOS::~TopControlsSlideControllerChromeOS() {
   OnEnabledStateChanged(false);
 
-  display::Screen::GetScreen()->RemoveObserver(this);
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
 
   if (observed_omni_box_)
@@ -373,7 +379,7 @@ void TopControlsSlideControllerChromeOS::SetShownRatio(
     defer_disabling_ = false;
 
     // Don't just set |is_enabled_| to false. Make sure it's a correct value.
-    OnEnabledStateChanged(CanEnable(base::nullopt));
+    OnEnabledStateChanged(CanEnable(absl::nullopt));
   }
 }
 
@@ -401,7 +407,7 @@ void TopControlsSlideControllerChromeOS::SetTopControlsGestureScrollInProgress(
   if (update_state_after_gesture_scrolling_ends_) {
     DCHECK(!is_gesture_scrolling_in_progress_);
     DCHECK(pause_updates_);
-    OnEnabledStateChanged(CanEnable(base::nullopt));
+    OnEnabledStateChanged(CanEnable(absl::nullopt));
     update_state_after_gesture_scrolling_ends_ = false;
     pause_updates_ = false;
   }
@@ -454,7 +460,7 @@ void TopControlsSlideControllerChromeOS::OnDisplayTabletStateChanged(
   switch (state) {
     case display::TabletState::kInTabletMode:
     case display::TabletState::kInClamshellMode:
-      OnEnabledStateChanged(CanEnable(base::nullopt));
+      OnEnabledStateChanged(CanEnable(absl::nullopt));
       return;
     case display::TabletState::kEnteringTabletMode:
     case display::TabletState::kExitingTabletMode:
@@ -578,10 +584,6 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
   if (!web_contents)
     return;
 
-  content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
-  if (!main_frame)
-    return;
-
   // If the omnibox is focused, then the top controls should be constrained to
   // remain fully shown until the omnibox is blurred.
   const cc::BrowserControlsState constraints_state =
@@ -591,12 +593,12 @@ void TopControlsSlideControllerChromeOS::UpdateBrowserControlsStateShown(
 
   const cc::BrowserControlsState current_state =
       cc::BrowserControlsState::kShown;
-  main_frame->UpdateBrowserControlsState(constraints_state, current_state,
-                                         animate);
+  web_contents->UpdateBrowserControlsState(constraints_state, current_state,
+                                           animate);
 }
 
 bool TopControlsSlideControllerChromeOS::CanEnable(
-    base::Optional<bool> fullscreen_state) const {
+    absl::optional<bool> fullscreen_state) const {
   return IsTabletModeEnabled() &&
          !(fullscreen_state.value_or(browser_view_->IsFullscreen()));
 }
@@ -694,7 +696,7 @@ void TopControlsSlideControllerChromeOS::Refresh() {
 
   for (auto* layer : layers) {
     ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
-    settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+    settings.SetTransitionDuration(base::Milliseconds(0));
     settings.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
     layer->SetTransform(trans);

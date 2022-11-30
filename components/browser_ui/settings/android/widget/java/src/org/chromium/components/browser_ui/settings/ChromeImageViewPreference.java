@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -46,7 +47,7 @@ public class ChromeImageViewPreference extends Preference {
     private int mColorRes;
     /** The color resource ID for tinting of the view's background. */
     @ColorRes
-    private int mBackgroundColorRes;
+    private Integer mBackgroundColorRes;
     /** The string resource ID to use for the ImageView widget content description. */
     @StringRes
     private int mContentDescriptionRes;
@@ -72,7 +73,7 @@ public class ChromeImageViewPreference extends Preference {
 
         setWidgetLayoutResource(R.layout.preference_chrome_image_view);
         setSingleLineTitle(false);
-        setImageColor(R.color.default_icon_color);
+        setImageColor(R.color.default_icon_color_tint_list);
     }
 
     /**
@@ -132,7 +133,7 @@ public class ChromeImageViewPreference extends Preference {
      * @param colorRes
      */
     public void setBackgroundColor(@ColorRes int colorRes) {
-        if (mBackgroundColorRes == colorRes) return;
+        if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
     }
@@ -173,7 +174,9 @@ public class ChromeImageViewPreference extends Preference {
     }
 
     private void updateBackground() {
-        if (mView == null) return;
-        mView.setBackgroundColor(mBackgroundColorRes);
+        if (mView == null || mBackgroundColorRes == null) return;
+        mView.setBackgroundColor(
+                AppCompatResources.getColorStateList(getContext(), mBackgroundColorRes)
+                        .getDefaultColor());
     }
 }

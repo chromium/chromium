@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
-import org.chromium.base.annotations.RemovableInRelease;
 
 /**
  * Implementation of BitmapDrawable that allows to tint the color of the drawable for all
@@ -57,6 +56,15 @@ public class TintedDrawable extends BitmapDrawable {
     }
 
     /**
+     * Sets the tint color for the given Drawable for all states.
+     * @param tint The tint.
+     */
+    @Override
+    public void setTint(@ColorInt int tint) {
+        setTint(ColorStateList.valueOf(tint));
+    }
+
+    /**
      * Factory method for creating a {@link TintedDrawable} with a resource id.
      */
     public static TintedDrawable constructTintedDrawable(Context context, int drawableId) {
@@ -91,7 +99,6 @@ public class TintedDrawable extends BitmapDrawable {
      * @return True iff the loaded resource is either a {@link VectorDrawableCompat} or
      * a {@link VectorDrawable}. The latter is only checked for Android L and later.
      */
-    @RemovableInRelease
     private static boolean isVectorDrawable(Context context, @DrawableRes int drawableId) {
         Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
         return drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable;

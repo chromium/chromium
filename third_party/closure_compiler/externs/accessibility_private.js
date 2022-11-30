@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.accessibilityPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: accessibilityPrivate */
+/**
+ * @fileoverview Externs generated from namespace: accessibilityPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.accessibilityPrivate = {};
@@ -32,6 +35,15 @@ chrome.accessibilityPrivate.AlertInfo;
  * }}
  */
 chrome.accessibilityPrivate.ScreenRect;
+
+/**
+ * Point in global screen coordinates.
+ * @typedef {{
+ *   x: number,
+ *   y: number
+ * }}
+ */
+chrome.accessibilityPrivate.ScreenPoint;
 
 /**
  * @enum {string}
@@ -250,7 +262,9 @@ chrome.accessibilityPrivate.AcceleratorAction = {
  * @enum {string}
  */
 chrome.accessibilityPrivate.AccessibilityFeature = {
-  SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
+  ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
+  GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
+  DICTATION_PUMPKIN_PARSING: 'dictationPumpkinParsing',
 };
 
 /**
@@ -266,6 +280,77 @@ chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
   EXIT: 'exit',
   CHANGE_SPEED: 'changeSpeed',
 };
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.SetNativeChromeVoxResponse = {
+  SUCCESS: 'success',
+  TALKBACK_NOT_INSTALLED: 'talkbackNotInstalled',
+  WINDOW_NOT_FOUND: 'windowNotFound',
+  FAILURE: 'failure',
+  NEED_DEPRECATION_CONFIRMATION: 'needDeprecationConfirmation',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.DictationBubbleIconType = {
+  HIDDEN: 'hidden',
+  STANDBY: 'standby',
+  MACRO_SUCCESS: 'macroSuccess',
+  MACRO_FAIL: 'macroFail',
+};
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.DictationBubbleHintType = {
+  TRY_SAYING: 'trySaying',
+  TYPE: 'type',
+  DELETE: 'delete',
+  SELECT_ALL: 'selectAll',
+  UNDO: 'undo',
+  HELP: 'help',
+  UNSELECT: 'unselect',
+  COPY: 'copy',
+};
+
+/**
+ * @typedef {{
+ *   visible: boolean,
+ *   icon: !chrome.accessibilityPrivate.DictationBubbleIconType,
+ *   text: (string|undefined),
+ *   hints: (!Array<!chrome.accessibilityPrivate.DictationBubbleHintType>|undefined)
+ * }}
+ */
+chrome.accessibilityPrivate.DictationBubbleProperties;
+
+/**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.DlcType = {
+  TTS_ES_US: 'ttsEsUs',
+};
+
+/**
+ * @typedef {{
+ *   js_pumpkin_tagger_bin_js: ArrayBuffer,
+ *   tagger_wasm_main_js: ArrayBuffer,
+ *   tagger_wasm_main_wasm: ArrayBuffer,
+ *   en_us_action_config_binarypb: ArrayBuffer,
+ *   en_us_pumpkin_config_binarypb: ArrayBuffer,
+ *   fr_fr_action_config_binarypb: ArrayBuffer,
+ *   fr_fr_pumpkin_config_binarypb: ArrayBuffer,
+ *   it_it_action_config_binarypb: ArrayBuffer,
+ *   it_it_pumpkin_config_binarypb: ArrayBuffer,
+ *   de_de_action_config_binarypb: ArrayBuffer,
+ *   de_de_pumpkin_config_binarypb: ArrayBuffer,
+ *   es_es_action_config_binarypb: ArrayBuffer,
+ *   es_es_pumpkin_config_binarypb: ArrayBuffer
+ * }}
+ */
+chrome.accessibilityPrivate.PumpkinData;
 
 /**
  * Property to indicate whether event source should default to touch.
@@ -288,6 +373,13 @@ chrome.accessibilityPrivate.getDisplayNameForLocale = function(localeCodeToTrans
  *     string.
  */
 chrome.accessibilityPrivate.getBatteryDescription = function(callback) {};
+
+/**
+ * Called to request an install of the Pumpkin semantic parser for Dictation.
+ * @param {function(!chrome.accessibilityPrivate.PumpkinData): void} callback
+ *     Runs when Pumpkin download finishes.
+ */
+chrome.accessibilityPrivate.installPumpkinForDictation = function(callback) {};
 
 /**
  * Enables or disables native accessibility support. Once disabled, it is up to
@@ -361,8 +453,10 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
 /**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
+ * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse): void}
+ *     callback
  */
-chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled) {};
+chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled, callback) {};
 
 /**
  * Sends a fabricated key event.
@@ -413,6 +507,12 @@ chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect)
  *     in the magnified viewport.
  */
 chrome.accessibilityPrivate.moveMagnifierToRect = function(rect) {};
+
+/**
+ * Called by the Accessibility Common extension to center magnifier at |point|.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} point
+ */
+chrome.accessibilityPrivate.magnifierCenterOnPoint = function(point) {};
 
 /**
  * Toggles dictation between active and inactive states.
@@ -466,6 +566,37 @@ chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, is
  *     or cancelled.
  */
 chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, callback) {};
+
+/**
+ * Gets the DOM key string for the given key code, taking into account the
+ * current input method locale, and assuming the key code is for U.S. input. For
+ * example, the key code for '/' would return the string '!' if the current
+ * input method is French.
+ * @param {number} keyCode
+ * @param {function(string): void} callback Called with the resulting Dom key
+ *     string.
+ */
+chrome.accessibilityPrivate.getLocalizedDomKeyStringForKeyCode = function(keyCode, callback) {};
+
+/**
+ * Updates Dictation's bubble UI.
+ * @param {!chrome.accessibilityPrivate.DictationBubbleProperties} properties
+ *     Properties for the updated Dictation bubble UI.
+ */
+chrome.accessibilityPrivate.updateDictationBubble = function(properties) {};
+
+/**
+ * Cancels the current and queued speech from ChromeVox.
+ */
+chrome.accessibilityPrivate.silenceSpokenFeedback = function() {};
+
+/**
+ * Returns the contents of a DLC.
+ * @param {!chrome.accessibilityPrivate.DlcType} dlc The DLC of interest.
+ * @param {function(ArrayBuffer): void} callback A callback that is run when the
+ *     contents are returned.
+ */
+chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.
@@ -555,3 +686,17 @@ chrome.accessibilityPrivate.onMagnifierBoundsChanged;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled;
+
+/**
+ * Fired when ChromeVox should show its tutorial.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onShowChromeVoxTutorial;
+
+/**
+ * Fired when Dictation is activated or deactivated using a keyboard shortcut,
+ * the button in the tray, or after a call from
+ * accessibilityPrivate.toggleDictation
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onToggleDictation;

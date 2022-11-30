@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_BUBBLE_CONTROLLER_H_
 #define ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_SCROLL_BUBBLE_CONTROLLER_H_
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/system/accessibility/autoclick_scroll_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -16,6 +15,12 @@ namespace ash {
 class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
  public:
   AutoclickScrollBubbleController();
+
+  AutoclickScrollBubbleController(const AutoclickScrollBubbleController&) =
+      delete;
+  AutoclickScrollBubbleController& operator=(
+      const AutoclickScrollBubbleController&) = delete;
+
   ~AutoclickScrollBubbleController() override;
 
   void UpdateAnchorRect(gfx::Rect rect, views::BubbleBorder::Arrow alignment);
@@ -55,8 +60,6 @@ class AutoclickScrollBubbleController : public TrayBubbleView::Delegate {
   gfx::Rect menu_bubble_rect_;
   views::BubbleBorder::Arrow menu_bubble_alignment_ =
       views::BubbleBorder::Arrow::TOP_LEFT;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollBubbleController);
 };
 
 }  // namespace ash

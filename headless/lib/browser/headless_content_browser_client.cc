@@ -1,11 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "headless/lib/browser/headless_content_browser_client.h"
 
-#include <memory>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -14,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
@@ -32,87 +34,50 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_manager_delegate.h"
 #include "headless/lib/browser/headless_quota_permission_context.h"
-#include "headless/lib/headless_macros.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/port_util.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
+#include "net/ssl/ssl_private_key.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
 
-#if defined(HEADLESS_USE_BREAKPAD)
-#include "base/debug/leak_annotations.h"
-#include "components/crash/content/browser/crash_handler_host_linux.h"
-#include "components/crash/core/app/breakpad_linux.h"
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/crash/core/app/crash_switches.h"  // nogncheck
+#include "components/crash/core/app/crashpad.h"        // nogncheck
 #include "content/public/common/content_descriptors.h"
-#endif  // defined(HEADLESS_USE_BREAKPAD)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if defined(HEADLESS_USE_POLICY)
+#include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#endif  // defined(HEADLESS_USE_POLICY)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "components/printing/browser/headless/headless_print_manager.h"
+#endif  // defined(ENABLE_PRINTING)
 
 namespace headless {
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace {
-
-#if defined(HEADLESS_USE_BREAKPAD)
-breakpad::CrashHandlerHostLinux* CreateCrashHandlerHost(
-    const std::string& process_type,
-    const HeadlessBrowser::Options& options) {
-  base::FilePath dumps_path = options.crash_dumps_dir;
-  if (dumps_path.empty()) {
-    bool ok = base::PathService::Get(base::DIR_MODULE, &dumps_path);
-    DCHECK(ok);
-  }
-
-  {
-    ANNOTATE_SCOPED_MEMORY_LEAK;
-#if defined(OFFICIAL_BUILD)
-    // Upload crash dumps in official builds, unless we're running in unattended
-    // mode (not to be confused with headless mode in general -- see
-    // chrome/common/env_vars.cc).
-    static const char kHeadless[] = "CHROME_HEADLESS";
-    bool upload = (getenv(kHeadless) == nullptr);
-#else
-    bool upload = false;
-#endif
-    breakpad::CrashHandlerHostLinux* crash_handler =
-        new breakpad::CrashHandlerHostLinux(process_type, dumps_path, upload);
-    crash_handler->StartUploaderThread();
-    return crash_handler;
-  }
-}
 
 int GetCrashSignalFD(const base::CommandLine& command_line,
                      const HeadlessBrowser::Options& options) {
-  if (!breakpad::IsCrashReporterEnabled())
-    return -1;
-
-  std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-
-  if (process_type == ::switches::kRendererProcess) {
-    static breakpad::CrashHandlerHostLinux* crash_handler =
-        CreateCrashHandlerHost(process_type, options);
-    return crash_handler->GetDeathSignalSocket();
-  }
-
-  if (process_type == ::switches::kPpapiPluginProcess) {
-    static breakpad::CrashHandlerHostLinux* crash_handler =
-        CreateCrashHandlerHost(process_type, options);
-    return crash_handler->GetDeathSignalSocket();
-  }
-
-  if (process_type == ::switches::kGpuProcess) {
-    static breakpad::CrashHandlerHostLinux* crash_handler =
-        CreateCrashHandlerHost(process_type, options);
-    return crash_handler->GetDeathSignalSocket();
-  }
-
-  return -1;
+  int fd;
+  pid_t pid;
+  return crash_reporter::GetHandlerSocket(&fd, &pid) ? fd : -1;
 }
-#endif  // defined(HEADLESS_USE_BREAKPAD)
 
 }  // namespace
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Implements a stub BadgeService. This implementation does nothing, but is
 // required because inbound Mojo messages which do not have a registered
@@ -150,9 +115,9 @@ HeadlessContentBrowserClient::~HeadlessContentBrowserClient() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 HeadlessContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    bool /* is_integration_test */) {
   auto browser_main_parts =
-      std::make_unique<HeadlessBrowserMainParts>(parameters, browser_);
+      std::make_unique<HeadlessBrowserMainParts>(browser_);
 
   browser_->set_browser_main_parts(browser_main_parts.get());
 
@@ -177,9 +142,29 @@ void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       &HeadlessContentBrowserClient::BindBadgeService, base::Unretained(this)));
 }
 
-content::DevToolsManagerDelegate*
-HeadlessContentBrowserClient::GetDevToolsManagerDelegate() {
-  return new HeadlessDevToolsManagerDelegate(browser_->GetWeakPtr());
+void HeadlessContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
+#if BUILDFLAG(ENABLE_PRINTING)
+  associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+                 receiver) {
+            HeadlessPrintManager::BindPrintManagerHost(std::move(receiver),
+                                                       render_frame_host);
+          },
+          &render_frame_host));
+#endif
+}
+
+std::unique_ptr<content::DevToolsManagerDelegate>
+HeadlessContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<HeadlessDevToolsManagerDelegate>(
+      browser_->GetWeakPtr());
 }
 
 scoped_refptr<content::QuotaPermissionContext>
@@ -196,18 +181,16 @@ HeadlessContentBrowserClient::GetGeneratedCodeCacheSettings(
   return content::GeneratedCodeCacheSettings(true, 0, context->GetPath());
 }
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void HeadlessContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
     int child_process_id,
     content::PosixFileDescriptorInfo* mappings) {
-#if defined(HEADLESS_USE_BREAKPAD)
   int crash_signal_fd = GetCrashSignalFD(command_line, *browser_->options());
   if (crash_signal_fd >= 0)
     mappings->Share(kCrashDumpSignal, crash_signal_fd);
-#endif  // defined(HEADLESS_USE_BREAKPAD)
 }
-#endif  // defined(OS_POSIX) && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
@@ -223,14 +206,19 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kUserAgent,
         old_command_line.GetSwitchValueNative(switches::kUserAgent));
   }
-#if defined(HEADLESS_USE_BREAKPAD)
-  // This flag tells child processes to also turn on crash reporting.
-  if (breakpad::IsCrashReporterEnabled())
-    command_line->AppendSwitch(::switches::kEnableCrashReporter);
-#endif  // defined(HEADLESS_USE_BREAKPAD)
 
-  if (old_command_line.HasSwitch(switches::kExportTaggedPDF))
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  int fd;
+  pid_t pid;
+  if (crash_reporter::GetHandlerSocket(&fd, &pid)) {
+    command_line->AppendSwitchASCII(
+        crash_reporter::switches::kCrashpadHandlerPid,
+        base::NumberToString(pid));
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  if (old_command_line.HasSwitch(switches::kDisablePDFTagging))
+    command_line->AppendSwitch(switches::kDisablePDFTagging);
 
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
@@ -249,7 +237,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (!languages.empty()) {
         command_line->AppendSwitchASCII(::switches::kLang,
-                                        languages[0].as_string());
+                                        std::string(languages[0]));
       }
     }
 
@@ -260,7 +248,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
         embedder_support::kOriginTrialPublicKey,
     };
     command_line->CopySwitchesFrom(old_command_line, kSwitchNames,
-                                   base::size(kSwitchNames));
+                                   std::size(kSwitchNames));
   }
 
   if (append_command_line_flags_callback_) {
@@ -278,14 +266,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
                                             headless_browser_context_impl,
                                             process_type, child_process_id);
   }
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // Processes may only query perf_event_open with the BPF sandbox disabled.
-  if (old_command_line.HasSwitch(::switches::kEnableThreadInstructionCount) &&
-      old_command_line.HasSwitch(sandbox::policy::switches::kNoSandbox)) {
-    command_line->AppendSwitch(::switches::kEnableThreadInstructionCount);
-  }
-#endif
 }
 
 std::string HeadlessContentBrowserClient::GetApplicationLocale() {
@@ -302,7 +282,7 @@ void HeadlessContentBrowserClient::AllowCertificateError(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    bool is_main_frame_request,
+    bool is_primary_main_frame_request,
     bool strict_enforcement,
     base::OnceCallback<void(content::CertificateRequestResultType)> callback) {
   if (!callback.is_null()) {
@@ -372,6 +352,55 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
   // in the user's regular profile.
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUserDataDir);
+}
+
+device::GeolocationManager*
+HeadlessContentBrowserClient::GetGeolocationManager() {
+#if BUILDFLAG(IS_MAC)
+  return browser_->browser_main_parts()->GetGeolocationManager();
+#else
+  return nullptr;
+#endif
+}
+
+#if defined(HEADLESS_USE_POLICY)
+std::vector<std::unique_ptr<content::NavigationThrottle>>
+HeadlessContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationHandle* handle) {
+  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+
+  // Avoid creating naviagtion throttle if preferences are not available
+  // (happens in tests).
+  if (browser_->GetPrefs()) {
+    throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
+        handle, handle->GetWebContents()->GetBrowserContext()));
+  }
+
+  return throttles;
+}
+#endif  // defined(HEADLESS_USE_POLICY)
+
+void HeadlessContentBrowserClient::OnNetworkServiceCreated(
+    ::network::mojom::NetworkService* network_service) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kExplicitlyAllowedPorts))
+    return;
+
+  std::string comma_separated_ports =
+      command_line->GetSwitchValueASCII(switches::kExplicitlyAllowedPorts);
+  const auto port_list = base::SplitStringPiece(
+      comma_separated_ports, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<uint16_t> explicitly_allowed_ports;
+  for (const auto port_str : port_list) {
+    int port;
+    if (!base::StringToInt(port_str, &port))
+      continue;
+    if (!net::IsPortValid(port))
+      continue;
+    explicitly_allowed_ports.push_back(port);
+  }
+
+  network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
 }
 
 }  // namespace headless

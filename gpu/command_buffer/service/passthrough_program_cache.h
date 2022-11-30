@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_PROGRAM_CACHE_H_
 
 #include <mutex>
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "ui/gl/gl_bindings.h"
@@ -23,6 +22,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
  public:
   PassthroughProgramCache(size_t max_cache_size_bytes,
                           bool disable_gpu_shader_disk_cache);
+
+  PassthroughProgramCache(const PassthroughProgramCache&) = delete;
+  PassthroughProgramCache& operator=(const PassthroughProgramCache&) = delete;
+
   ~PassthroughProgramCache() override;
 
   ProgramLoadResult LoadLinkedProgram(
@@ -64,6 +67,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
    public:
     ProgramCacheValue(Value&& program_blob,
                       PassthroughProgramCache* program_cache);
+
+    ProgramCacheValue(const ProgramCacheValue&) = delete;
+    ProgramCacheValue& operator=(const ProgramCacheValue&) = delete;
+
     ~ProgramCacheValue();
 
     ProgramCacheValue(ProgramCacheValue&& other);
@@ -73,9 +80,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
    private:
     Value program_blob_;
-    PassthroughProgramCache* program_cache_;
 
-    DISALLOW_COPY_AND_ASSIGN(ProgramCacheValue);
+    // TODO(bartekn): Change this into raw_ptr<...>, after investigating an
+    // earlier crash report most likely caused by a use-after-move.
+    PassthroughProgramCache* program_cache_;
   };
 
   void ClearBackend() override;
@@ -86,16 +94,14 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
   friend class ProgramCacheValue;
 
-  typedef base::MRUCache<Key, ProgramCacheValue> ProgramMRUCache;
+  typedef base::LRUCache<Key, ProgramCacheValue> ProgramLRUCache;
 
   const bool disable_gpu_shader_disk_cache_;
   size_t curr_size_bytes_;
-  ProgramMRUCache store_;
+  ProgramLRUCache store_;
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_
-
-  DISALLOW_COPY_AND_ASSIGN(PassthroughProgramCache);
 };
 
 }  // namespace gles2

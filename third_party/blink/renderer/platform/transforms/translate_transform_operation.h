@@ -48,21 +48,17 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return base::AdoptRef(new TranslateTransformOperation(tx, ty, tz, type));
   }
 
-  bool operator==(const TranslateTransformOperation& other) const {
-    return *this == static_cast<const TransformOperation&>(other);
-  }
-
   BoxSizeDependency BoxSizeDependencies() const override {
     return CombineDependencies(
         (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
         (y_.IsPercentOrCalc() ? kDependsHeight : kDependsNone));
   }
 
-  double X(const FloatSize& border_box_size) const {
-    return FloatValueForLength(x_, border_box_size.Width());
+  double X(const gfx::SizeF& border_box_size) const {
+    return FloatValueForLength(x_, border_box_size.width());
   }
-  double Y(const FloatSize& border_box_size) const {
-    return FloatValueForLength(y_, border_box_size.Height());
+  double Y(const gfx::SizeF& border_box_size) const {
+    return FloatValueForLength(y_, border_box_size.height());
   }
 
   const Length& X() const { return x_; }
@@ -70,7 +66,7 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   double Z() const { return z_; }
 
   void Apply(TransformationMatrix& transform,
-             const FloatSize& border_box_size) const override {
+             const gfx::SizeF& border_box_size) const override {
     transform.Translate3d(X(border_box_size), Y(border_box_size), Z());
   }
 
@@ -84,15 +80,14 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   OperationType GetType() const override { return type_; }
   OperationType PrimitiveType() const final { return kTranslate3D; }
 
- private:
-  bool operator==(const TransformOperation& o) const override {
-    if (!IsSameType(o))
-      return false;
+ protected:
+  bool IsEqualAssumingSameType(const TransformOperation& o) const override {
     const TranslateTransformOperation* t =
         static_cast<const TranslateTransformOperation*>(&o);
     return x_ == t->x_ && y_ == t->y_ && z_ == t->z_;
   }
 
+ private:
   scoped_refptr<TransformOperation> Accumulate(
       const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(
@@ -113,6 +108,10 @@ class PLATFORM_EXPORT TranslateTransformOperation final
       : x_(tx), y_(ty), z_(tz), type_(type) {
     DCHECK(IsMatchingOperationType(type));
   }
+
+  void CommonPrimitiveForInterpolation(
+      const TransformOperation* from,
+      TransformOperation::OperationType& common_type) const;
 
   bool HasNonTrivial3DComponent() const override { return z_ != 0.0; }
 

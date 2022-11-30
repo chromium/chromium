@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,11 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGMixin<LayoutBlockFlow>;
+
 // A LayoutObject subclass for outside-positioned list markers in LayoutNG.
 class CORE_EXPORT LayoutNGOutsideListMarker final
     : public LayoutNGBlockFlowMixin<LayoutBlockFlow> {
@@ -20,12 +25,24 @@ class CORE_EXPORT LayoutNGOutsideListMarker final
 
   void WillCollectInlines() override;
 
-  const char* GetName() const override { return "LayoutNGOutsideListMarker"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGOutsideListMarker";
+  }
 
   bool NeedsOccupyWholeLine() const;
 
-  const ListMarker& Marker() const { return list_marker_; }
-  ListMarker& Marker() { return list_marker_; }
+  const ListMarker& Marker() const {
+    NOT_DESTROYED();
+    return list_marker_;
+  }
+  ListMarker& Marker() {
+    NOT_DESTROYED();
+    return list_marker_;
+  }
+
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine engine) const final;
 
  private:
   bool IsOfType(LayoutObjectType) const override;

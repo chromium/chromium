@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<!--Test page for a web site with a manifest whose start_url points to a different page. -->
+<head>
+  <title>Not Start URL</title>
+  <link rel="icon" href="/webapps_integration/standalone/48x48-red.png">
+  <script src="/webapps_integration/test_utils.js"></script>
+  <script>
+    // If a "manifest=/path/to/manifest.json" query argument is provided to
+    // the URL accessing this page, that path is injected as the manifest tag.
+    addManifestLinkTag("../basic.json");
+  </script>
+</head>
+<body onload="startWorker('/webapps_integration/standalone/service_worker.js', { scope: '/webapps_integration/standalone/' })">
+  <h1>Not Start URL</h1>
+</body>
+</html>

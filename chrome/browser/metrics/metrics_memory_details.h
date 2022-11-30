@@ -1,14 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_
 #define CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_
 
-#include <map>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/memory_details.h"
 
@@ -18,6 +15,9 @@
 class MetricsMemoryDetails : public MemoryDetails {
  public:
   explicit MetricsMemoryDetails(base::OnceClosure callback);
+
+  MetricsMemoryDetails(const MetricsMemoryDetails&) = delete;
+  MetricsMemoryDetails& operator=(const MetricsMemoryDetails&) = delete;
 
  protected:
   ~MetricsMemoryDetails() override;
@@ -29,11 +29,9 @@ class MetricsMemoryDetails : public MemoryDetails {
   // Updates the global histograms for tracking memory usage.
   void UpdateHistograms();
 
-  void UpdateSiteIsolationMetrics();
+  void UpdateSiteIsolationMetrics(size_t live_process_count);
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsMemoryDetails);
 };
 
 #endif  // CHROME_BROWSER_METRICS_METRICS_MEMORY_DETAILS_H_

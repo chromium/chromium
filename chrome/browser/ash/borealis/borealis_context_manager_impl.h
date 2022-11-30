@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/infra/transition.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 
 namespace borealis {
 
@@ -22,9 +23,8 @@ class BorealisTask;
 
 // The Borealis Context Manager is a keyed service responsible for managing
 // the Borealis VM startup flow and guaranteeing its state to other processes.
-class BorealisContextManagerImpl
-    : public BorealisContextManager,
-      public chromeos::ConciergeClient::VmObserver {
+class BorealisContextManagerImpl : public BorealisContextManager,
+                                   public ash::ConciergeClient::VmObserver {
  public:
   explicit BorealisContextManagerImpl(Profile* profile);
   BorealisContextManagerImpl(const BorealisContextManagerImpl&) = delete;
@@ -86,7 +86,7 @@ class BorealisContextManagerImpl
   BorealisContextManager::ContextOrFailure GetResult(
       const Startup::Result& completion_result);
 
-  // chromeos::ConciergeClient::VmObserver:
+  // ash::ConciergeClient::VmObserver:
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 
@@ -94,7 +94,7 @@ class BorealisContextManagerImpl
       base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback,
       const std::string& vm_name);
 
-  void ShutDownBorealisIfChromeCrashed();
+  void ShutDownBorealisIfRunning();
 
   Profile* const profile_;
 

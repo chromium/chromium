@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,8 @@ import("//build/config/apple/symbols.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/mac/mac_sdk.gni")
 import("//build/config/sysroot.gni")
+import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 
 # This is included by reference in the //build/config/compiler config that
 # is applied to all targets. It is here to separate out the logic.
@@ -63,18 +65,12 @@ config("runtime_library") {
   common_flags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
-    "-mmacosx-version-min=$mac_deployment_target",
+    "-mmacos-version-min=$mac_deployment_target",
   ]
 
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
-
-  # Prevent Mac OS X AssertMacros.h (included by system header) from defining
-  # macros that collide with common names, like 'check', 'require', and
-  # 'verify'.
-  # http://opensource.apple.com/source/CarbonHeaders/CarbonHeaders-18.1/AssertMacros.h
-  defines = [ "__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0" ]
 }
 
 # On Mac, this is used for everything except static libraries.
@@ -90,6 +86,15 @@ config("mac_dynamic_flags") {
       # Binary.app/Contents/MacOS.
       "-Wl,-rpath,@loader_path/../../..",
     ]
+
+    # Path for loading shared libraries for unbundled binaries for
+    # the host toolchain (see https://crbug.com/1315433). Only used
+    # for when building for iOS.
+    if (target_os == "ios" && current_toolchain == host_toolchain) {
+      ldflags += [ "-Wl,-rpath,@loader_path/" + rebase_path(
+                       get_label_info(":mac_dynamic_flags", "root_out_dir"),
+                       root_build_dir) ]
+    }
   }
 }
 
@@ -117,7 +122,8 @@ config("strip_all") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-if (use_system_xcode && use_goma && target_os == "mac") {
+if (use_system_xcode && (use_goma || use_remoteexec) && target_os == "mac" &&
+    current_toolchain == default_toolchain) {
   action("sdk_inputs") {
     script = "//build/noop.py"
     outputs = [
@@ -128,5 +134,8 @@ if (use_system_xcode && use_goma && target_os == "mac") {
   }
 } else {
   group("sdk_inputs") {
+    if (current_toolchain != default_toolchain) {
+      public_deps = [ ":sdk_inputs($default_toolchain)" ]
+    }
   }
 }

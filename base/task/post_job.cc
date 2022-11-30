@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,29 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 
 namespace base {
+
+namespace {
+
+scoped_refptr<internal::JobTaskSource> CreateJobTaskSource(
+    const Location& from_here,
+    const TaskTraits& traits,
+    RepeatingCallback<void(JobDelegate*)> worker_task,
+    MaxConcurrencyCallback max_concurrency_callback) {
+  DCHECK(ThreadPoolInstance::Get())
+      << "Hint: if this is in a unit test, you're likely merely missing a "
+         "base::test::TaskEnvironment member in your fixture.\n";
+  // ThreadPool is implicitly the destination for PostJob(). Extension traits
+  // cannot be used.
+  DCHECK_EQ(traits.extension_id(),
+            TaskTraitsExtensionStorage::kInvalidExtensionId);
+
+  return base::MakeRefCounted<internal::JobTaskSource>(
+      from_here, traits, std::move(worker_task),
+      std::move(max_concurrency_callback),
+      static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()));
+}
+
+}  // namespace
 
 JobDelegate::JobDelegate(
     internal::JobTaskSource* task_source,
@@ -81,19 +104,35 @@ bool JobHandle::IsActive() const {
 }
 
 void JobHandle::UpdatePriority(TaskPriority new_priority) {
+  if (!internal::PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          task_source_->delegate())) {
+    return;
+  }
   task_source_->delegate()->UpdateJobPriority(task_source_, new_priority);
 }
 
 void JobHandle::NotifyConcurrencyIncrease() {
+  if (!internal::PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          task_source_->delegate())) {
+    return;
+  }
   task_source_->NotifyConcurrencyIncrease();
 }
 
 void JobHandle::Join() {
+  DCHECK(internal::PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+      task_source_->delegate()));
   DCHECK_GE(internal::GetTaskPriorityForCurrentThread(),
             task_source_->priority_racy())
       << "Join may not be called on Job with higher priority than the current "
          "thread.";
   UpdatePriority(internal::GetTaskPriorityForCurrentThread());
+  if (task_source_->GetRemainingConcurrency() != 0) {
+    // Make sure the task source is in the queue if not enough workers are
+    // contributing. This is necessary for CreateJob(...).Join(). This is a
+    // noop if the task source was already in the queue.
+    task_source_->delegate()->EnqueueJobTaskSource(task_source_);
+  }
   bool must_run = task_source_->WillJoin();
   while (must_run)
     must_run = task_source_->RunJoinTask();
@@ -104,6 +143,8 @@ void JobHandle::Join() {
 }
 
 void JobHandle::Cancel() {
+  DCHECK(internal::PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+      task_source_->delegate()));
   task_source_->Cancel();
   bool must_run = task_source_->WillJoin();
   DCHECK(!must_run);
@@ -127,25 +168,25 @@ JobHandle PostJob(const Location& from_here,
                   const TaskTraits& traits,
                   RepeatingCallback<void(JobDelegate*)> worker_task,
                   MaxConcurrencyCallback max_concurrency_callback) {
-  DCHECK(ThreadPoolInstance::Get())
-      << "Ref. Prerequisite section of post_task.h.\n\n"
-         "Hint: if this is in a unit test, you're likely merely missing a "
-         "base::test::TaskEnvironment member in your fixture.\n";
-  // ThreadPool is implicitly the destination for PostJob(). Extension traits
-  // cannot be used.
-  DCHECK_EQ(traits.extension_id(),
-            TaskTraitsExtensionStorage::kInvalidExtensionId);
-
-  auto task_source = base::MakeRefCounted<internal::JobTaskSource>(
-      from_here, traits, std::move(worker_task),
-      std::move(max_concurrency_callback),
-      static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()));
+  auto task_source =
+      CreateJobTaskSource(from_here, traits, std::move(worker_task),
+                          std::move(max_concurrency_callback));
   const bool queued =
       static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get())
           ->EnqueueJobTaskSource(task_source);
   if (queued)
     return internal::JobTaskSource::CreateJobHandle(std::move(task_source));
   return JobHandle();
+}
+
+JobHandle CreateJob(const Location& from_here,
+                    const TaskTraits& traits,
+                    RepeatingCallback<void(JobDelegate*)> worker_task,
+                    MaxConcurrencyCallback max_concurrency_callback) {
+  auto task_source =
+      CreateJobTaskSource(from_here, traits, std::move(worker_task),
+                          std::move(max_concurrency_callback));
+  return internal::JobTaskSource::CreateJobHandle(std::move(task_source));
 }
 
 }  // namespace base

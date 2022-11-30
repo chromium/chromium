@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,8 @@ extern NSString* const kImportDataContinueButtonId;
 // ImportDataTableViewController.
 @protocol ImportDataControllerDelegate
 
-// Indicates that the user chose the clear data policy to be |shouldClearData|
-// when presented with |controller|.
+// Indicates that the user chose the clear data policy to be `shouldClearData`
+// when presented with `controller`.
 - (void)didChooseClearDataPolicy:(ImportDataTableViewController*)controller
                  shouldClearData:(ShouldClearData)shouldClearData;
 
@@ -33,15 +33,13 @@ extern NSString* const kImportDataContinueButtonId;
 // Table View that handles how to import data during account switching.
 @interface ImportDataTableViewController : SettingsRootTableViewController
 
-// |fromEmail| is the email of the previously signed in account.
-// |toIdentity| is the email of the account switched to.
-// |isSignedIn| is whether the user is currently signed in.
+// `fromEmail` is the email of the previously signed in account.
+// `toIdentity` is the email of the account switched to.
 //
-// |fromEmail| and |toEmail| must not be NULL.
+// `fromEmail` and `toEmail` must not be NULL.
 - (instancetype)initWithDelegate:(id<ImportDataControllerDelegate>)delegate
                        fromEmail:(NSString*)fromEmail
-                         toEmail:(NSString*)toEmail
-                      isSignedIn:(BOOL)isSignedIn NS_DESIGNATED_INITIALIZER;
+                         toEmail:(NSString*)toEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

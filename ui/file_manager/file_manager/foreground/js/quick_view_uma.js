@@ -1,21 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {metrics} from '../../common/js/metrics.m.js';
-// #import {DialogType} from './dialog_type.m.js';
-// #import {FileTasks} from './file_tasks.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {DialogType} from '../../common/js/dialog_type.js';
+import {FileType} from '../../common/js/file_type.js';
+import {metrics} from '../../common/js/metrics.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {FileTasks} from './file_tasks.js';
 
 /**
  * UMA exporter for Quick View.
  */
-/* #export */ class QuickViewUma {
+export class QuickViewUma {
   /**
    * @param {!VolumeManager} volumeManager
    * @param {!DialogType} dialogType
@@ -73,15 +73,20 @@
     metrics.recordEnum(
         'QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
 
-    const volumeType = this.volumeManager_.getVolumeInfo(entry).volumeType;
-    if (QuickViewUma.VolumeType.includes(assert(volumeType))) {
-      metrics.recordEnum(
-          'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+    const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
+    const volumeType = volumeInfo && volumeInfo.volumeType;
+    if (volumeType) {
+      if (QuickViewUma.VolumeType.includes(volumeType)) {
+        metrics.recordEnum(
+            'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+      } else {
+        console.warn('Unknown volume type: ' + volumeType);
+      }
     } else {
-      console.error('Unknown volume type: ' + volumeType);
+      console.warn('Missing volume type');
     }
     // Record stats of dialog types. It must be in sync with
-    // FileDialogType enum in tools/metrics/histograms/histogram.xml.
+    // FileDialogType enum in tools/metrics/histograms/enums.xml.
     metrics.recordEnum('QuickView.DialogType', this.dialogType_, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,
@@ -105,7 +110,7 @@ QuickViewUma.WayToOpen = {
 };
 
 /**
- * The order should be consistnet with the definition  in histograms.xml.
+ * The order should be consistent with the definition in histograms.xml.
  *
  * @const {!Array<QuickViewUma.WayToOpen>}
  * @private
@@ -118,7 +123,7 @@ QuickViewUma.WayToOpenValues_ = [
 
 /**
  * Keep the order of this in sync with FileManagerVolumeType in
- * tools/metrics/histograms/histograms.xml.
+ * tools/metrics/histograms/enums.xml.
  *
  * @type {!Array<VolumeManagerCommon.VolumeType>}
  * @const
@@ -135,4 +140,6 @@ QuickViewUma.VolumeType = [
   VolumeManagerCommon.VolumeType.ANDROID_FILES,
   VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
   VolumeManagerCommon.VolumeType.SMB,
+  VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL,
+  VolumeManagerCommon.VolumeType.GUEST_OS,
 ];

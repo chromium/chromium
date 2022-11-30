@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -42,6 +42,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   static scoped_refptr<BluetoothAdapterAndroid> Create(
       const base::android::JavaRef<jobject>&
           bluetooth_adapter_wrapper);  // Java Type: bluetoothAdapterWrapper
+
+  BluetoothAdapterAndroid(const BluetoothAdapterAndroid&) = delete;
+  BluetoothAdapterAndroid& operator=(const BluetoothAdapterAndroid&) = delete;
 
   // BluetoothAdapter:
   void Initialize(base::OnceClosure callback) override;
@@ -136,8 +139,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterAndroid);
 };
 
 }  // namespace device

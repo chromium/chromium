@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
+
+using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
+using chromeos::mojo_service_manager::mojom::ServiceState;
 
 namespace chromeos {
 namespace sensors {
 
 namespace {
 SensorHalDispatcher* g_sensor_hal_dispatcher = nullptr;
+
+constexpr base::TimeDelta kRequestSensorServiceTimeout = base::Seconds(1);
 }
 
 // static
@@ -44,6 +51,13 @@ SensorHalDispatcher* SensorHalDispatcher::GetInstance() {
 void SensorHalDispatcher::RegisterServer(
     mojo::PendingRemote<mojom::SensorHalServer> remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (iio_sensor_available_) {
+    LOG(ERROR)
+        << "SensorHalServer shouldn't be used with Mojo Service Manager: "
+        << mojo_services::kIioSensor << " enabled";
+    return;
+  }
+
   sensor_hal_server_.Bind(std::move(remote));
   sensor_hal_server_.set_disconnect_handler(
       base::BindOnce(&SensorHalDispatcher::OnSensorHalServerDisconnect,
@@ -61,31 +75,144 @@ void SensorHalDispatcher::RegisterClient(
 
   auto client = mojo::Remote<mojom::SensorHalClient>(std::move(remote));
 
-  if (sensor_hal_server_)
+  if (iio_sensor_available_ || sensor_hal_server_)
     EstablishMojoChannel(client);
 
   sensor_hal_clients_.Add(std::move(client));
 }
 
-SensorHalDispatcher::SensorHalDispatcher() {
+SensorHalDispatcher::SensorHalDispatcher() : receiver_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sensor_hal_clients_.set_disconnect_handler(
       base::BindRepeating(&SensorHalDispatcher::OnSensorHalClientDisconnect,
                           base::Unretained(this)));
 }
 
+base::UnguessableToken SensorHalDispatcher::GetTokenForTrustedClient() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto token = base::UnguessableToken::Create();
+  client_token_set_.insert(token);
+  return token;
+}
+
+bool SensorHalDispatcher::AuthenticateClient(
+    const base::UnguessableToken& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return client_token_set_.find(token) != client_token_set_.end();
+}
+
+void SensorHalDispatcher::TryToEstablishMojoChannelByServiceManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(mojo_service_manager::IsServiceManagerBound());
+  DCHECK(!receiver_.is_bound());
+
+  auto* proxy = mojo_service_manager::GetServiceManagerProxy();
+  proxy->AddServiceObserver(receiver_.BindNewPipeAndPassRemote());
+  proxy->Query(mojo_services::kIioSensor,
+               base::BindOnce(&SensorHalDispatcher::QueryCallback,
+                              base::Unretained(this)));
+}
+
+void SensorHalDispatcher::OnServiceEvent(
+    mojo_service_manager::mojom::ServiceEventPtr event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (event->service_name != mojo_services::kIioSensor)
+    return;
+
+  switch (event->type) {
+    case mojo_service_manager::mojom::ServiceEvent::Type::kRegistered:
+      OnIioSensorServiceRegistered();
+      break;
+
+    case mojo_service_manager::mojom::ServiceEvent::Type::kUnRegistered:
+      iio_sensor_available_ = false;
+      break;
+
+    case mojo_service_manager::mojom::ServiceEvent::Type::kDefaultValue:
+      LOG(WARNING) << "Unsupported kDefaultValue";
+      break;
+  }
+}
+
 SensorHalDispatcher::~SensorHalDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void SensorHalDispatcher::QueryCallback(
+    mojo_service_manager::mojom::ErrorOrServiceStatePtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (result->which()) {
+    case ErrorOrServiceState::Tag::kState:
+      switch (result->get_state()->which()) {
+        case ServiceState::Tag::kRegisteredState:
+          // IioSensor service is already registered by iioservice.
+          OnIioSensorServiceRegistered();
+          break;
+
+        case ServiceState::Tag::kUnregisteredState:
+          // IioSensor service hasn't been registered by iioservice, but the
+          // policy file exists. Although we can establish mojo channels as
+          // usual, and let Mojo Service Manager take care of waiting for the
+          // service to be registered, we still wait for iioservice's registry,
+          // to make sure sensor clients' are notified when iioservice is truly
+          // available.
+          //
+          // After we deprecate SensorHalDispatcher, each sensor client can
+          // decide the logic to request IioSensor service itself.
+          iio_sensor_available_ = false;
+          break;
+
+        case ServiceState::Tag::kDefaultType:
+          LOG(ERROR) << "Unsupported ServiceState::Tag::kDefaultType";
+          break;
+      }
+
+      break;
+
+    case ErrorOrServiceState::Tag::kError:
+      LOG(ERROR) << "Error code: " << result->get_error()->code
+                 << ", message: " << result->get_error()->message;
+      break;
+
+    case ErrorOrServiceState::Tag::kDefaultType:
+      LOG(ERROR) << "Unknown type: " << result->get_default_type();
+      break;
+  }
+}
+
+void SensorHalDispatcher::OnIioSensorServiceRegistered() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (iio_sensor_available_)
+    return;
+
+  DCHECK(!sensor_hal_server_);
+  iio_sensor_available_ = true;
+  for (auto& client : sensor_hal_clients_)
+    EstablishMojoChannel(client);
 }
 
 void SensorHalDispatcher::EstablishMojoChannel(
     const mojo::Remote<mojom::SensorHalClient>& client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sensor_hal_server_);
+  DCHECK(iio_sensor_available_ || sensor_hal_server_);
 
   mojo::PendingRemote<mojom::SensorService> service_remote;
-  sensor_hal_server_->CreateChannel(
-      service_remote.InitWithNewPipeAndPassReceiver());
+  if (iio_sensor_available_) {
+    DCHECK(mojo_service_manager::IsServiceManagerBound());
+
+    mojo_service_manager::GetServiceManagerProxy()->Request(
+        mojo_services::kIioSensor, kRequestSensorServiceTimeout,
+        service_remote.InitWithNewPipeAndPassReceiver().PassPipe());
+  } else {
+    sensor_hal_server_->CreateChannel(
+        service_remote.InitWithNewPipeAndPassReceiver());
+  }
   client->SetUpChannel(std::move(service_remote));
 }
 

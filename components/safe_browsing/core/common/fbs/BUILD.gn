@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/flatbuffers/flatbuffer.gni")
+
+flatbuffer("csd") {
+  sources = [ "csd.fbs" ]
+  mutable = true
+}
+
+flatbuffer("client_model") {
+  sources = [ "client_model.fbs" ]
+  public_deps = [ ":csd" ]
+  mutable = true
+}

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,13 +43,14 @@ source_set("service_manager") {
     "//build:chromeos_buildflags",
     "//components/services/filesystem:lib",
     "//components/services/filesystem/public/mojom",
+    "//sandbox/policy",
     "//ui/base",
   ]
 
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
+    "//sandbox/policy/mojom",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
   ]

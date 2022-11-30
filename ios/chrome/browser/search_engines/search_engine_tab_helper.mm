@@ -1,23 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 
-#include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/search_engines/template_url.h"
-#include "components/search_engines/template_url_fetcher.h"
-#include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/search_engines/template_url_fetcher_factory.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/web/public/favicon/favicon_status.h"
+#import "base/bind.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/search_engines/template_url.h"
+#import "components/search_engines/template_url_fetcher.h"
+#import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/search_engines/template_url_fetcher_factory.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,20 +25,13 @@
 
 namespace {
 
-const char kCommandPrefix[] = "searchEngine";
-const char kCommandOpenSearch[] = "searchEngine.openSearch";
-const char kOpenSearchPageUrlKey[] = "pageUrl";
-const char kOpenSearchOsddUrlKey[] = "osddUrl";
-const char kCommandSearchableUrl[] = "searchEngine.searchableUrl";
-const char kSearchableUrlUrlKey[] = "url";
-
-// Returns true if the |item|'s transition type is FORM_SUBMIT.
+// Returns true if the `item`'s transition type is FORM_SUBMIT.
 bool IsFormSubmit(const web::NavigationItem* item) {
   return ui::PageTransitionCoreTypeIs(item->GetTransitionType(),
                                       ui::PAGE_TRANSITION_FORM_SUBMIT);
 }
 
-// Generates a keyword from |item|. This code is based on:
+// Generates a keyword from `item`. This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
 std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
@@ -77,19 +70,15 @@ SearchEngineTabHelper::~SearchEngineTabHelper() {}
 SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
-  subscription_ = web_state->AddScriptCommandCallback(
-      base::BindRepeating(&SearchEngineTabHelper::OnJsMessage,
-                          base::Unretained(this)),
-      kCommandPrefix);
   DCHECK(favicon::WebFaviconDriver::FromWebState(web_state));
-  favicon_driver_observer_.Add(
+  favicon_driver_observation_.Observe(
       favicon::WebFaviconDriver::FromWebState(web_state));
 }
 
 void SearchEngineTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
-  favicon_driver_observer_.RemoveAll();
+  favicon_driver_observation_.Reset();
 }
 
 // When favicon is updated, notify TemplateURLService about the change.
@@ -108,9 +97,9 @@ void SearchEngineTabHelper::OnFaviconUpdated(
     url_service->UpdateProviderFavicons(potential_search_url, icon_url);
 }
 
-// When the page is loaded, checks if |searchable_url_| has a value generated
+// When the page is loaded, checks if `searchable_url_` has a value generated
 // from the <form> submission before the navigation. If true, and the navigation
-// is successful, adds a TemplateURL by |searchable_url_|. |searchable_url_|
+// is successful, adds a TemplateURL by `searchable_url_`. `searchable_url_`
 // will be set to empty in the end.
 void SearchEngineTabHelper::DidFinishNavigation(
     web::WebState* web_state,
@@ -124,33 +113,8 @@ void SearchEngineTabHelper::DidFinishNavigation(
   }
 }
 
-void SearchEngineTabHelper::OnJsMessage(const base::DictionaryValue& message,
-                                        const GURL& page_url,
-                                        bool user_is_interacting,
-                                        web::WebFrame* sender_frame) {
-  const base::Value* cmd = message.FindKey("command");
-  if (!cmd || !cmd->is_string()) {
-    return;
-  }
-  std::string cmd_str = cmd->GetString();
-  if (cmd_str == kCommandOpenSearch) {
-    const base::Value* document_url = message.FindKey(kOpenSearchPageUrlKey);
-    if (!document_url || !document_url->is_string())
-      return;
-    const base::Value* osdd_url = message.FindKey(kOpenSearchOsddUrlKey);
-    if (!osdd_url || !osdd_url->is_string())
-      return;
-    AddTemplateURLByOSDD(GURL(document_url->GetString()),
-                         GURL(osdd_url->GetString()));
-  } else if (cmd_str == kCommandSearchableUrl) {
-    const base::Value* url = message.FindKey(kSearchableUrlUrlKey);
-    if (!url || !url->is_string())
-      return;
-    // Save |url| to |searchable_url_| when generated from <form> submission,
-    // and create the TemplateURL when the submission did lead to a successful
-    // navigation.
-    searchable_url_ = GURL(url->GetString());
-  }
+void SearchEngineTabHelper::SetSearchableUrl(GURL searchable_url) {
+  searchable_url_ = searchable_url;
 }
 
 // Creates a new TemplateURL by OSDD. The TemplateURL will be added to
@@ -163,7 +127,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   // keyword.
 
   // Make sure that the page is the current page and other basic checks.
-  // When |page_url| has file: scheme, this method doesn't work because of
+  // When `page_url` has file: scheme, this method doesn't work because of
   // http://b/issue?id=863583. For that reason, this doesn't check and allow
   // urls referring to osdd urls with same schemes.
   if (!osdd_url.is_valid() || !osdd_url.SchemeIsHTTPOrHTTPS())
@@ -195,19 +159,19 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
     return;
 
   // Download the OpenSearch description document. If this is successful, a
-  // new keyword will be created when done. For |render_frame_id| arg, it's used
+  // new keyword will be created when done. For `render_frame_id` arg, it's used
   // by network::ResourceRequest::render_frame_id, we don't use Blink so leave
   // it to be the default value defined here:
   //   https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
   ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)
-      ->ScheduleDownload(keyword, osdd_url, item->GetFavicon().url,
+      ->ScheduleDownload(keyword, osdd_url, item->GetFaviconStatus().url,
                          url::Origin::Create(web_state_->GetLastCommittedURL()),
                          browser_state->GetURLLoaderFactory(),
                          /* render_frame_id */ MSG_ROUTING_NONE,
                          /* request_id */ 0);
 }
 
-// Creates a TemplateURL by |searchable_url| and adds it to TemplateURLService.
+// Creates a TemplateURL by `searchable_url` and adds it to TemplateURLService.
 // This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
 void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
@@ -259,8 +223,10 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   //   1. Get from FaviconStatus of previous NavigationItem;
   //   2. Create by current NavigationItem's referrer if valid;
   //   3. Create by previous NavigationItem's URL if valid;
-  if (previous_item->GetFavicon().url.is_valid()) {
-    data.favicon_url = previous_item->GetFavicon().url;
+  const web::FaviconStatus& previous_item_favicon_status =
+      previous_item->GetFaviconStatus();
+  if (previous_item_favicon_status.url.is_valid()) {
+    data.favicon_url = previous_item_favicon_status.url;
   } else if (current_item->GetReferrer().url.is_valid()) {
     data.favicon_url =
         TemplateURL::GenerateFaviconURL(current_item->GetReferrer().url);

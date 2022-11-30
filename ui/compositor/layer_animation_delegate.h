@@ -1,17 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_LAYER_ANIMATION_DELEGATE_H_
 #define UI_COMPOSITOR_LAYER_ANIMATION_DELEGATE_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/property_change_reason.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 class Layer;
@@ -45,6 +46,9 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual void SetRoundedCornersFromAnimation(
       const gfx::RoundedCornersF& rounded_corners,
       PropertyChangeReason reason) = 0;
+  virtual void SetGradientMaskFromAnimation(
+      const gfx::LinearGradient& gradient_mask,
+      PropertyChangeReason reason) = 0;
   virtual void ScheduleDrawForAnimation() = 0;
   virtual const gfx::Rect& GetBoundsForAnimation() const = 0;
   virtual gfx::Transform GetTransformForAnimation() const = 0;
@@ -55,14 +59,15 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual SkColor GetColorForAnimation() const = 0;
   virtual gfx::Rect GetClipRectForAnimation() const = 0;
   virtual gfx::RoundedCornersF GetRoundedCornersForAnimation() const = 0;
+  virtual const gfx::LinearGradient& GetGradientMaskForAnimation() const = 0;
   virtual float GetDeviceScaleFactor() const = 0;
   virtual ui::Layer* GetLayer() = 0;
   virtual cc::Layer* GetCcLayer() const = 0;
   virtual LayerAnimatorCollection* GetLayerAnimatorCollection() = 0;
   virtual LayerThreadedAnimationDelegate* GetThreadedAnimationDelegate() = 0;
-  // Returns base::nullopt if the frame number is not available, e.g. when
+  // Returns absl::nullopt if the frame number is not available, e.g. when
   // Layer is not attached to a Compositor. Otherwise, returns the frame number.
-  virtual base::Optional<int> GetFrameNumber() const = 0;
+  virtual absl::optional<int> GetFrameNumber() const = 0;
   virtual float GetRefreshRate() const = 0;
 
  protected:

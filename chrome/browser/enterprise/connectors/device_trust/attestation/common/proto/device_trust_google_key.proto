@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is a subset copy of
+// third_party/cros_system_api/dbus/attestation/google_key.proto
+// third_party/cros_system_api is only for ChromeOS.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_connectors;
+
+// The RSA public key of Google key used by attestation service. Only used
+// internally for attestation service, this message is specialized to contain a
+// RSA key modulus in hex with well known exponent 65537.
+message GoogleRsaPublicKey {
+  optional string modulus_in_hex = 1;
+  // The key id for the servers to look up the keys for decryption.
+  optional bytes key_id = 2;
+}
+
+// A key set used with |DEAULT_ACA| and |DEFAULT_VA|.
+message DefaultGoogleRsaPublicKeySet {
+  optional GoogleRsaPublicKey default_ca_encryption_key = 1;
+  optional GoogleRsaPublicKey default_va_signing_key = 2;
+  optional GoogleRsaPublicKey default_va_encryption_key = 3;
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,25 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "net/base/escape.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace em = enterprise_management;
@@ -126,6 +129,7 @@ const int DeviceManagementService::kArcDisabled;
 const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
+const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
@@ -196,6 +200,15 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
       return "UploadEncryptedReport";
+    case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
+      return "CheckUserAccount";
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+      return "UploadEuiccInfo";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
+      return "BrowserUploadPublicKey";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return "ChromeProfileReport";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";
@@ -204,7 +217,7 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
 JobConfigurationBase::JobConfigurationBase(
     JobType type,
     DMAuth auth_data,
-    base::Optional<std::string> oauth_token,
+    absl::optional<std::string> oauth_token,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),
@@ -212,11 +225,18 @@ JobConfigurationBase::JobConfigurationBase(
       oauth_token_(std::move(oauth_token)) {
   CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
-  if (oauth_token_)
+#if !BUILDFLAG(IS_IOS)
+  if (oauth_token_) {
+    // Put the oauth token in the query parameters for platforms that are not
+    // iOS. On iOS we are trying the oauth token in the request headers
+    // (crbug.com/1312158). We might want to use the iOS approach on all
+    // platforms at some point.
     AddParameter(dm_protocol::kParamOAuthToken, *oauth_token_);
+  }
+#endif
 }
 
-JobConfigurationBase::~JobConfigurationBase() {}
+JobConfigurationBase::~JobConfigurationBase() = default;
 
 JobConfigurationBase::JobType JobConfigurationBase::GetType() {
   return type_;
@@ -298,15 +318,23 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   rr->trusted_params = network::ResourceRequest::TrustedParams();
   rr->trusted_params->disable_secure_dns = true;
 
+#if BUILDFLAG(IS_IOS)
+  // Put the oauth token in the request headers on iOS. We might want
+  // to use this approach on the other platforms at some point. This approach
+  // will be tried first on iOS (crbug.com/1312158). Technically, the
+  // DMServer should already be able to handle the oauth token in the
+  // request headers, but we prefer to try the approach on iOS first to
+  // avoid breaking the other platforms with unexpected issues.
+  if (oauth_token_ && !oauth_token_->empty()) {
+    rr->headers.SetHeader(dm_protocol::kAuthHeader,
+                          base::StrCat({dm_protocol::kOAuthTokenHeaderPrefix,
+                                        " ", *oauth_token_}));
+  }
+#endif
+
   // If auth data is specified, use it to build the request.
   switch (auth_data_.token_type()) {
     case DMAuthTokenType::kNoAuth:
-      break;
-    case DMAuthTokenType::kGaia:
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-              auth_data_.gaia_token());
       break;
     case DMAuthTokenType::kDm:
       rr->headers.SetHeader(dm_protocol::kAuthHeader,
@@ -334,99 +362,169 @@ DeviceManagementService::Job::RetryMethod JobConfigurationBase::ShouldRetry(
   return DeviceManagementService::Job::NO_RETRY;
 }
 
+absl::optional<base::TimeDelta> JobConfigurationBase::GetTimeoutDuration() {
+  return timeout_;
+}
+
 // A device management service job implementation.
-class DeviceManagementService::JobImpl : public Job, public JobControl {
+class DeviceManagementService::JobImpl : public Job {
  public:
-  JobImpl(DeviceManagementService* service,
+  JobImpl(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
           std::unique_ptr<JobConfiguration> config)
-      : service_(service), config_(std::move(config)) {}
-  ~JobImpl() override { service_->RemoveJob(this); }
+      : config_(std::move(config)), task_runner_(task_runner) {}
+  JobImpl(const JobImpl&) = delete;
+  JobImpl& operator=(const JobImpl&) = delete;
+  ~JobImpl() override = default;
+
+  void Start();
+  base::WeakPtr<JobImpl> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
  private:
-  // JobControl interface.
-  JobConfiguration* GetConfiguration() override { return config_.get(); }
-  base::WeakPtr<JobControl> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-  std::unique_ptr<network::SimpleURLLoader> CreateFetcher() override;
+  friend class JobForTesting;
 
-  RetryMethod OnURLLoadComplete(const std::string& response_body,
-                                const std::string& mime_type,
-                                int net_error,
-                                int response_code,
-                                bool was_fetched_via_proxy,
-                                int* retry_delay) override;
-  RetryMethod ShouldRetry(const std::string& mime_type,
+  void CreateUrlLoader();
+
+  // Callback for `SimpleURLLoader`. Extracts data from |response_body| and
+  // |url_loader_| and passes it on to |OnURLLoaderCompleteInternal|.
+  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+
+  // Interprets URL loading data and either schedules a retry or hands the data
+  // off to |HandleResponseData|.
+  RetryMethod OnURLLoaderCompleteInternal(const std::string& response_body,
+                                          const std::string& mime_type,
+                                          int net_error,
+                                          int response_code,
+                                          bool was_fetched_via_proxy,
+                                          bool is_test = false);
+  // Logs failed jobs an jobs that succeeded after retry.
+  // Then hands the response data off to |config_|.
+  RetryMethod HandleResponseData(const std::string& response_body,
+                                 const std::string& mime_type,
+                                 int net_error,
+                                 int response_code,
+                                 bool was_fetched_via_proxy);
+  RetryMethod ShouldRetry(const std::string& response_body,
+                          const std::string& mime_type,
                           int response_code,
                           int net_error,
                           bool was_fetched_via_proxy);
   int GetRetryDelay(RetryMethod method);
 
-  DeviceManagementService* service_;
   std::unique_ptr<JobConfiguration> config_;
   bool bypass_proxy_ = false;
 
   // Number of times that this job has been retried due to connection errors.
   int retries_count_ = 0;
 
-  // Network error code passed of last call to OnURLLoadComplete().
+  // Network error code passed of last call to HandleResponseData().
   int last_error_ = 0;
 
-  base::WeakPtrFactory<JobControl> weak_ptr_factory_{this};
+  int retry_delay_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(JobImpl);
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<JobImpl> weak_ptr_factory_{this};
 };
 
-std::unique_ptr<network::SimpleURLLoader>
-DeviceManagementService::JobImpl::CreateFetcher() {
+void DeviceManagementService::JobImpl::CreateUrlLoader() {
   auto rr = config_->GetResourceRequest(bypass_proxy_, last_error_);
   auto annotation = config_->GetTrafficAnnotationTag();
-  auto fetcher = network::SimpleURLLoader::Create(std::move(rr), annotation);
-  fetcher->AttachStringForUpload(config_->GetPayload(), kPostContentType);
-  fetcher->SetAllowHttpErrorResults(true);
-  return fetcher;
+  url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
+  url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
+  url_loader_->SetAllowHttpErrorResults(true);
+  if (config_->GetTimeoutDuration())
+    url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());
+}
+
+void DeviceManagementService::JobImpl::OnURLLoaderComplete(
+    std::unique_ptr<std::string> response_body) {
+  int response_code = 0;
+  bool was_fetched_via_proxy = false;
+  std::string mime_type;
+  if (url_loader_->ResponseInfo()) {
+    was_fetched_via_proxy =
+        url_loader_->ResponseInfo()->proxy_server.is_valid() &&
+        !url_loader_->ResponseInfo()->proxy_server.is_direct();
+    mime_type = url_loader_->ResponseInfo()->mime_type;
+    if (url_loader_->ResponseInfo()->headers)
+      response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
+
+  std::string response_body_str;
+  if (response_body.get())
+    response_body_str = std::move(*response_body.get());
+
+  OnURLLoaderCompleteInternal(response_body_str, mime_type,
+                              url_loader_->NetError(), response_code,
+                              was_fetched_via_proxy);
 }
 
 DeviceManagementService::Job::RetryMethod
-DeviceManagementService::JobImpl::OnURLLoadComplete(
+DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
     const std::string& response_body,
     const std::string& mime_type,
     int net_error,
     int response_code,
     bool was_fetched_via_proxy,
-    int* retry_delay) {
+    bool is_test) {
   RetryMethod retry_method =
-      ShouldRetry(mime_type, response_code, net_error, was_fetched_via_proxy);
+      ShouldRetry(response_body, mime_type, response_code, net_error,
+                  was_fetched_via_proxy);
 
-  // Ask the config if this is a valid response
-  if (retry_method == RetryMethod::NO_RETRY) {
-    retry_method = config_->ShouldRetry(response_code, response_body);
-  }
-
-  if (retry_method != RetryMethod::NO_RETRY) {
-    config_->OnBeforeRetry(response_code, response_body);
-    *retry_delay = GetRetryDelay(retry_method);
+  if (retry_method == Job::NO_RETRY) {
+    HandleResponseData(response_body, mime_type, net_error, response_code,
+                       was_fetched_via_proxy);
     return retry_method;
   }
 
-  *retry_delay = 0;
+  config_->OnBeforeRetry(response_code, response_body);
+  LOG(WARNING) << "Request of type "
+               << JobConfiguration::GetJobTypeAsString(config_->GetType())
+               << " failed (net_error = " << net_error
+               << ", response_code = " << response_code << "), retrying in "
+               << retry_delay_ << "ms.";
+  if (!is_test) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DeviceManagementService::JobImpl::Start, GetWeakPtr()),
+        base::Milliseconds(GetRetryDelay(retry_method)));
+  }
+  return retry_method;
+}
 
+DeviceManagementService::Job::RetryMethod
+DeviceManagementService::JobImpl::HandleResponseData(
+    const std::string& response_body,
+    const std::string& mime_type,
+    int net_error,
+    int response_code,
+    bool was_fetched_via_proxy) {
   std::string uma_name = config_->GetUmaName();
   if (net_error != net::OK) {
     // Using histogram functions which allows runtime histogram name.
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestFailed);
-    LOG(WARNING) << "Request failed, error: " << net_error << " Type: "
-                 << JobConfiguration::GetJobTypeAsString(config_->GetType());
+    LOG(WARNING) << "Request of type "
+                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                 << " failed (net_error = " << net_error << ").";
     config_->OnURLLoadComplete(this, net_error, response_code, std::string());
     return RetryMethod::NO_RETRY;
   }
 
   if (response_code != kSuccess) {
+    LOG(WARNING) << "Request of type "
+                 << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                 << " failed (response_code = " << response_code << ").";
     base::UmaHistogramEnumeration(uma_name,
                                   DMServerRequestSuccess::kRequestError);
   } else {
     // Success with retries_count_ retries.
+    if (retries_count_) {
+      LOG(WARNING) << "Request of type "
+                   << JobConfiguration::GetJobTypeAsString(config_->GetType())
+                   << " succeeded after " << retries_count_ << " retries.";
+    }
     base::UmaHistogramExactLinear(
         uma_name, retries_count_,
         static_cast<int>(DMServerRequestSuccess::kMaxValue) + 1);
@@ -437,7 +535,8 @@ DeviceManagementService::JobImpl::OnURLLoadComplete(
 }
 
 DeviceManagementService::Job::RetryMethod
-DeviceManagementService::JobImpl::ShouldRetry(const std::string& mime_type,
+DeviceManagementService::JobImpl::ShouldRetry(const std::string& response_body,
+                                              const std::string& mime_type,
                                               int response_code,
                                               int net_error,
                                               bool was_fetched_via_proxy) {
@@ -466,9 +565,9 @@ DeviceManagementService::JobImpl::ShouldRetry(const std::string& mime_type,
     }
   }
 
-  // The request didn't fail, or the limit of retry attempts has been reached;
-  // forward the result to the job owner.
-  return NO_RETRY;
+  // The request didn't fail, or the limit of retry attempts has been reached.
+  // Ask the config if this is a valid response.
+  return config_->ShouldRetry(response_code, response_body);
 }
 
 int DeviceManagementService::JobImpl::GetRetryDelay(RetryMethod method) {
@@ -483,24 +582,72 @@ int DeviceManagementService::JobImpl::GetRetryDelay(RetryMethod method) {
   }
 }
 
-DeviceManagementService::~DeviceManagementService() {
-  // All running jobs should have been cancelled by now.
-  DCHECK(pending_jobs_.empty());
-  DCHECK(queued_jobs_.empty());
+DeviceManagementService::~DeviceManagementService() = default;
+
+DeviceManagementService::JobForTesting::JobForTesting() = default;
+DeviceManagementService::JobForTesting::JobForTesting(JobImpl* job_impl)
+    : job_impl_(job_impl ? job_impl->GetWeakPtr() : base::WeakPtr<JobImpl>{}) {}
+DeviceManagementService::JobForTesting::JobForTesting(const JobForTesting&) =
+    default;
+DeviceManagementService::JobForTesting::JobForTesting(
+    JobForTesting&&) noexcept = default;
+DeviceManagementService::JobForTesting&
+DeviceManagementService::JobForTesting::operator=(const JobForTesting&) =
+    default;
+DeviceManagementService::JobForTesting&
+DeviceManagementService::JobForTesting::operator=(JobForTesting&&) noexcept =
+    default;
+DeviceManagementService::JobForTesting::~JobForTesting() = default;
+
+bool DeviceManagementService::JobForTesting::IsActive() const {
+  return job_impl_.get();
+}
+
+void DeviceManagementService::JobForTesting::Deactivate() {
+  return job_impl_.reset();
+}
+
+DeviceManagementService::JobConfiguration*
+DeviceManagementService::JobForTesting::GetConfigurationForTesting() const {
+  CHECK(IsActive());
+  return job_impl_.get()->config_.get();
+}
+
+DeviceManagementService::Job::RetryMethod
+DeviceManagementService::JobForTesting::SetResponseForTesting(
+    int net_error,
+    int response_code,
+    const std::string& response_body,
+    const std::string& mime_type,
+    bool was_fetched_via_proxy) {
+  CHECK(IsActive());
+  return job_impl_.get()->OnURLLoaderCompleteInternal(
+      response_body, mime_type, net_error, response_code, was_fetched_via_proxy,
+      /*is_test=*/true);
+}
+
+std::pair<std::unique_ptr<DeviceManagementService::Job>,
+          DeviceManagementService::JobForTesting>
+DeviceManagementService::CreateJobForTesting(
+    std::unique_ptr<JobConfiguration> config) {
+  CHECK(config);
+  auto job = std::make_unique<JobImpl>(task_runner_, std::move(config));
+  JobForTesting job_for_testing(job.get());  // IN-TEST
+  return std::make_pair(std::move(job), std::move(job_for_testing));
 }
 
 std::unique_ptr<DeviceManagementService::Job>
 DeviceManagementService::CreateJob(std::unique_ptr<JobConfiguration> config) {
+  CHECK(config);
   std::unique_ptr<JobImpl> job =
-      std::make_unique<JobImpl>(this, std::move(config));
+      std::make_unique<JobImpl>(task_runner_, std::move(config));
   AddJob(job.get());
-  std::unique_ptr<DeviceManagementService::Job> ret(job.release());
-  return ret;
+  return job;
 }
 
 void DeviceManagementService::ScheduleInitialization(
     int64_t delay_milliseconds) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (initialized_)
     return;
@@ -508,11 +655,11 @@ void DeviceManagementService::ScheduleInitialization(
       FROM_HERE,
       base::BindOnce(&DeviceManagementService::Initialize,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(delay_milliseconds));
+      base::Milliseconds(delay_milliseconds));
 }
 
 void DeviceManagementService::Initialize() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_)
     return;
   initialized_ = true;
@@ -521,42 +668,26 @@ void DeviceManagementService::Initialize() {
 }
 
 void DeviceManagementService::Shutdown() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
-  for (auto job(pending_jobs_.begin()); job != pending_jobs_.end(); ++job) {
-    delete job->first;
-    queued_jobs_.push_back(job->second);
-  }
-  pending_jobs_.clear();
 }
 
 DeviceManagementService::DeviceManagementService(
     std::unique_ptr<Configuration> configuration)
     : configuration_(std::move(configuration)),
       initialized_(false),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(configuration_);
 }
 
-void DeviceManagementService::StartJob(JobControl* job) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+void DeviceManagementService::JobImpl::Start() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<network::SimpleURLLoader> fetcher = job->CreateFetcher();
-  fetcher->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      job->GetConfiguration()->GetUrlLoaderFactory().get(),
-      base::BindOnce(&DeviceManagementService::OnURLLoaderComplete,
-                     base::Unretained(this), fetcher.get()));
-
-  pending_jobs_[fetcher.release()] = job;
-}
-
-void DeviceManagementService::StartJobAfterDelay(
-    base::WeakPtr<JobControl> job) {
-  // Check if the job still exists (it is possible that it had been canceled
-  // while we were waiting for the retry).
-  if (job) {
-    StartJob(job.get());
-  }
+  CreateUrlLoader();
+  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      config_->GetUrlLoaderFactory().get(),
+      base::BindOnce(&DeviceManagementService::JobImpl::OnURLLoaderComplete,
+                     GetWeakPtr()));
 }
 
 // static
@@ -565,90 +696,11 @@ void DeviceManagementService::SetRetryDelayForTesting(long retry_delay_ms) {
   g_retry_delay_ms = retry_delay_ms;
 }
 
-void DeviceManagementService::OnURLLoaderComplete(
-    network::SimpleURLLoader* url_loader,
-    std::unique_ptr<std::string> response_body) {
-  int response_code = 0;
-  bool was_fetched_via_proxy = false;
-  std::string mime_type;
-  if (url_loader->ResponseInfo()) {
-    was_fetched_via_proxy =
-        url_loader->ResponseInfo()->proxy_server.is_valid() &&
-        !url_loader->ResponseInfo()->proxy_server.is_direct();
-    mime_type = url_loader->ResponseInfo()->mime_type;
-    if (url_loader->ResponseInfo()->headers)
-      response_code = url_loader->ResponseInfo()->headers->response_code();
-  }
-
-  std::string response_body_str;
-  if (response_body.get())
-    response_body_str = std::move(*response_body.get());
-
-  OnURLLoaderCompleteInternal(url_loader, response_body_str, mime_type,
-                              url_loader->NetError(), response_code,
-                              was_fetched_via_proxy);
-}
-
-void DeviceManagementService::OnURLLoaderCompleteInternal(
-    network::SimpleURLLoader* url_loader,
-    const std::string& response_body,
-    const std::string& mime_type,
-    int net_error,
-    int response_code,
-    bool was_fetched_via_proxy) {
-  auto entry(pending_jobs_.find(url_loader));
-  if (entry == pending_jobs_.end()) {
-    NOTREACHED() << "Callback from foreign URL loader";
-    return;
-  }
-
-  JobControl* job = entry->second;
-  pending_jobs_.erase(entry);
-
-  int delay;
-  Job::RetryMethod retry_method =
-      job->OnURLLoadComplete(response_body, mime_type, net_error, response_code,
-                             was_fetched_via_proxy, &delay);
-  if (retry_method != Job::NO_RETRY) {
-    LOG(WARNING) << "Dmserver request failed, retrying in " << delay / 1000
-                 << "s.";
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DeviceManagementService::StartJobAfterDelay,
-                       weak_ptr_factory_.GetWeakPtr(), job->GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(delay));
-  }
-
-  delete url_loader;
-}
-
-network::SimpleURLLoader*
-DeviceManagementService::GetSimpleURLLoaderForTesting() {
-  DCHECK_EQ(1u, pending_jobs_.size());
-  return const_cast<network::SimpleURLLoader*>(pending_jobs_.begin()->first);
-}
-
-void DeviceManagementService::AddJob(JobControl* job) {
+void DeviceManagementService::AddJob(JobImpl* job) {
   if (initialized_)
-    StartJob(job);
+    job->Start();
   else
-    queued_jobs_.push_back(job);
-}
-
-void DeviceManagementService::RemoveJob(JobControl* job) {
-  for (auto entry(pending_jobs_.begin()); entry != pending_jobs_.end();
-       ++entry) {
-    if (entry->second == job) {
-      delete entry->first;
-      pending_jobs_.erase(entry);
-      return;
-    }
-  }
-
-  const JobQueue::iterator elem =
-      std::find(queued_jobs_.begin(), queued_jobs_.end(), job);
-  if (elem != queued_jobs_.end())
-    queued_jobs_.erase(elem);
+    queued_jobs_.push_back(job->GetWeakPtr());
 }
 
 base::WeakPtr<DeviceManagementService> DeviceManagementService::GetWeakPtr() {
@@ -657,15 +709,12 @@ base::WeakPtr<DeviceManagementService> DeviceManagementService::GetWeakPtr() {
 
 void DeviceManagementService::StartQueuedJobs() {
   DCHECK(initialized_);
-  while (!queued_jobs_.empty()) {
-    StartJob(queued_jobs_.front());
-    queued_jobs_.pop_front();
+  for (auto& job : queued_jobs_) {
+    if (job.get()) {
+      job.get()->Start();
+    }
   }
-}
-
-void DeviceManagementService::RequeueJobForTesting(JobControl* job) {
-  DCHECK(initialized_);
-  queued_jobs_.push_back(job);
+  queued_jobs_.clear();
 }
 
 }  // namespace policy

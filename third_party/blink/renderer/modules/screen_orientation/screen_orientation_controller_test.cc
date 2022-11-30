@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 
 #include <memory>
+#include <tuple>
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,10 +62,10 @@ class MockLockOrientationCallback : public blink::WebLockOrientationCallback {
 class ScreenOrientationControllerTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(GetFrame().DomWindow());
-    ignore_result(screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = screen_orientation.BindNewEndpointAndPassDedicatedReceiver();
     Controller()->SetScreenOrientationAssociatedRemoteForTests(
         std::move(screen_orientation));
   }
@@ -213,10 +214,10 @@ class ScreenInfoWebFrameWidget : public frame_test_helpers::TestWebFrameWidget {
   ~ScreenInfoWebFrameWidget() override = default;
 
   // frame_test_helpers::TestWebFrameWidget overrides.
-  ScreenInfo GetInitialScreenInfo() override { return screen_info_; }
+  display::ScreenInfo GetInitialScreenInfo() override { return screen_info_; }
 
  private:
-  ScreenInfo screen_info_;
+  display::ScreenInfo screen_info_;
 };
 
 TEST_F(ScreenOrientationControllerTest, PageVisibilityCrash) {
@@ -286,7 +287,7 @@ TEST_F(ScreenOrientationControllerTest,
       ScreenOrientation::Create(To<LocalFrame>(grandchild)->DomWindow());
 
   // Update the screen info and ensure it propagated to the grandchild.
-  blink::ScreenInfos screen_infos((blink::ScreenInfo()));
+  display::ScreenInfos screen_infos((display::ScreenInfo()));
   screen_infos.mutable_current().orientation_angle = 90;
   auto* web_frame_widget_base =
       static_cast<WebFrameWidgetImpl*>(frame->GetWidgetForLocalRoot());

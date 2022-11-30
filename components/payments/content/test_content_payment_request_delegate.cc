@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ TestContentPaymentRequestDelegate::TestContentPaymentRequestDelegate(
 
 TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() {}
 
-std::unique_ptr<autofill::InternalAuthenticator>
+std::unique_ptr<webauthn::InternalAuthenticator>
 TestContentPaymentRequestDelegate::CreateInternalAuthenticator() const {
   return nullptr;
 }
@@ -30,7 +30,7 @@ TestContentPaymentRequestDelegate::GetPaymentManifestWebDataService() const {
 
 PaymentRequestDisplayManager*
 TestContentPaymentRequestDelegate::GetDisplayManager() {
-  return nullptr;
+  return &payment_request_display_manager_;
 }
 
 void TestContentPaymentRequestDelegate::ShowDialog(
@@ -70,6 +70,11 @@ PaymentRequestDialog* TestContentPaymentRequestDelegate::GetDialogForTesting() {
   return nullptr;
 }
 
+SecurePaymentConfirmationNoCreds*
+TestContentPaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
+  return nullptr;
+}
+
 autofill::PersonalDataManager*
 TestContentPaymentRequestDelegate::GetPersonalDataManager() {
   return core_delegate_.GetPersonalDataManager();
@@ -86,13 +91,6 @@ bool TestContentPaymentRequestDelegate::IsOffTheRecord() const {
 
 const GURL& TestContentPaymentRequestDelegate::GetLastCommittedURL() const {
   return core_delegate_.GetLastCommittedURL();
-}
-
-void TestContentPaymentRequestDelegate::DoFullCardRequest(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate) {
-  return core_delegate_.DoFullCardRequest(credit_card, result_delegate);
 }
 
 autofill::AddressNormalizer*
@@ -143,9 +141,15 @@ void TestContentPaymentRequestDelegate::CompleteFullCardRequest() {
   core_delegate_.CompleteFullCardRequest();
 }
 
-const PaymentUIObserver*
+const base::WeakPtr<PaymentUIObserver>
 TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;
 }
+
+void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
+    const std::u16string& merchant_name,
+    const std::string& rp_id,
+    base::OnceClosure response_callback,
+    base::OnceClosure opt_out_callback) {}
 
 }  // namespace payments

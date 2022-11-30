@@ -1,8 +1,6 @@
-# Copyright 2017 The Chromium Authors.  All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-import("//build/config/python.gni")
 
 import("//third_party/closure_compiler/closure_args.gni")
 
@@ -55,8 +53,7 @@ polymer_externs = "$externs_path/polymer-1.0.js"
 #   }
 
 template("js_library") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "$script_path/js_library.py"
     forward_variables_from(invoker,
                            [
@@ -124,8 +121,9 @@ template("js_library") {
 #     List of js_library rules to depend on
 #
 #   outputs:
-#     A file to write the compiled .js to.
-#     Only takes in a single file, but must be placed in a list
+#     If chunks is not specified, a file to write the compiled .js to.
+#     If chunks is specified, a directory to write the compiled .js to.
+#     Only takes in a single file or directory, but must be placed in a list.
 #
 #   bootstrap_file:
 #      A .js files to include before all others
@@ -140,6 +138,17 @@ template("js_library") {
 #
 #   externs_list:
 #     A list of .js files to pass to the compiler as externs
+#
+#   chunks:
+#     Unused in chromium/src but used downstream.
+#     A boolean indicating that a chunk should be created for each input file
+#     (or target_name.js), along with a common_chunk.js for shared code.
+#     Requires outputs refer to a directory and chunk_suffix be provided.
+#
+#   chunk_suffix:
+#     Unused in chromium/src but used downstream.
+#     The suffix appended to a source when naming a chunk, since it may not
+#     have the same name as the source. By default, creates target_name_chunk.js.
 #
 # Example:
 #   js_binary("tree") {
@@ -156,13 +165,14 @@ template("js_library") {
 #   }
 
 template("js_binary") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "$script_path/js_binary.py"
     forward_variables_from(invoker,
                            [
                              "bootstrap_file",
                              "checks_only",
+                             "chunks",
+                             "chunk_suffix",
                              "closure_flags",
                              "config_files",
                              "deps",
@@ -180,7 +190,11 @@ template("js_binary") {
     ]
 
     if (!defined(outputs)) {
-      outputs = [ "$target_gen_dir/$target_name.js" ]
+      if (defined(chunks) && chunks) {
+        outputs = [ "$target_gen_dir/" ]
+      } else {
+        outputs = [ "$target_gen_dir/$target_name.js" ]
+      }
     }
     args += [ "--output" ] + rebase_path(outputs, root_build_dir)
 
@@ -208,9 +222,20 @@ template("js_binary") {
       ]
       sources += [ bootstrap_file ]
     }
+
     if (defined(config_files)) {
       args += [ "--config" ] + rebase_path(config_files, root_build_dir)
       sources += config_files
+    }
+
+    if (defined(chunks) && chunks) {
+      args += [ "--chunks" ]
+
+      assert(defined(chunk_suffix), "Need chunk_suffix with chunks")
+      args += [
+        "--chunk_suffix",
+        chunk_suffix,
+      ]
     }
 
     if (defined(checks_only) && checks_only) {

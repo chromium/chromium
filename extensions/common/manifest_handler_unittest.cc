@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -90,7 +90,7 @@ class ManifestHandlerTest : public testing::Test {
     std::vector<std::string> keys_;
     std::vector<const char*> keys_ptrs_;
     std::vector<std::string> prereqs_;
-    ParsingWatcher* watcher_;
+    raw_ptr<ParsingWatcher> watcher_;
 
     base::span<const char* const> Keys() const override { return keys_ptrs_; }
   };

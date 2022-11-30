@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class DocumentModulatorImplTest : public PageTestBase {
 };
 
 void DocumentModulatorImplTest::SetUp() {
-  PageTestBase::SetUp(IntSize(500, 500));
+  PageTestBase::SetUp(gfx::Size(500, 500));
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
   modulator_ = Modulator::From(script_state);
 }

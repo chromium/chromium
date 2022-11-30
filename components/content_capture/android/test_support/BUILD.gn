@@ -1,0 +1,30 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+testonly = true
+
+source_set("test_support") {
+  sources = [ "content_capture_test_support_android.cc" ]
+  deps = [
+    ":jni_headers",
+    "//components/content_capture/browser",
+  ]
+}
+
+android_library("java") {
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//content/public/android:content_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [ "java/src/org/chromium/components/content_capture/ContentCaptureTestSupport.java" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/content_capture/ContentCaptureTestSupport.java" ]
+}

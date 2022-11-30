@@ -5,4 +5,3 @@ def test_websocket_url(new_session, add_browser_capabilities):
         "alwaysMatch": add_browser_capabilities({"webSocketUrl": True})}})
     value = assert_success(response)
     assert value["capabilities"]["webSocketUrl"].startswith("ws://")
-

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,16 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "net/base/escape.h"
 #include "net/http/http_request_headers.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -24,6 +26,7 @@ namespace signin {
 
 const char kChromeConnectedHeader[] = "X-Chrome-Connected";
 const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
+const char kAutoLoginHeader[] = "X-Auto-Login";
 const char kDiceRequestHeader[] = "X-Chrome-ID-Consistency-Request";
 const char kDiceResponseHeader[] = "X-Chrome-ID-Consistency-Response";
 
@@ -31,6 +34,9 @@ ManageAccountsParams::ManageAccountsParams() = default;
 
 ManageAccountsParams::ManageAccountsParams(const ManageAccountsParams&) =
     default;
+
+ManageAccountsParams& ManageAccountsParams::operator=(
+    const ManageAccountsParams&) = default;
 
 // Trivial constructors and destructors.
 DiceResponseParams::DiceResponseParams() {}
@@ -93,8 +99,7 @@ void RequestAdapter::SetExtraHeaderByName(const std::string& name,
                                           const std::string& value) {
   modified_headers_->SetHeader(name, value);
 
-  auto it =
-      std::find(headers_to_remove_->begin(), headers_to_remove_->end(), name);
+  auto it = base::ranges::find(*headers_to_remove_, name);
   if (it != headers_to_remove_->end())
     headers_to_remove_->erase(it);
 }
@@ -147,12 +152,12 @@ SigninHeaderHelper::ParseAccountConsistencyResponseHeader(
       DLOG(WARNING) << "Unexpected Gaia header field '" << field << "'.";
       continue;
     }
-    dictionary.insert(
-        {field.substr(0, delim).as_string(),
-         net::UnescapeURLComponent(
-             field.substr(delim + 1).as_string(),
-             net::UnescapeRule::PATH_SEPARATORS |
-                 net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)});
+    dictionary.insert({std::string(field.substr(0, delim)),
+                       base::UnescapeURLComponent(
+                           field.substr(delim + 1),
+                           base::UnescapeRule::PATH_SEPARATORS |
+                               base::UnescapeRule::
+                                   URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)});
   }
   return dictionary;
 }
@@ -167,7 +172,7 @@ void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
     const std::string& gaia_id,
-    const base::Optional<bool>& is_child_account,
+    Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask,

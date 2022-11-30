@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@
 #include <string.h>
 
 #include <cmath>
+#include <iterator>
 #include <limits>
 
 #include "base/mac/scoped_launch_data.h"
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "util/stdlib/objc.h"
 
@@ -58,7 +58,7 @@ TEST(Launchd, CFPropertyToLaunchData_Integer) {
       @0xfedcba9876543210,
     };
 
-    for (size_t index = 0; index < base::size(integer_nses); ++index) {
+    for (size_t index = 0; index < std::size(integer_nses); ++index) {
       NSNumber* integer_ns = integer_nses[index];
       launch_data.reset(CFPropertyToLaunchData(integer_ns));
       ASSERT_TRUE(launch_data.get());
@@ -78,17 +78,17 @@ TEST(Launchd, CFPropertyToLaunchData_FloatingPoint) {
       @0.0,
       @1.0,
       @-1.0,
-      [NSNumber numberWithFloat:std::numeric_limits<float>::min()],
-      [NSNumber numberWithFloat:std::numeric_limits<float>::max()],
-      [NSNumber numberWithDouble:std::numeric_limits<double>::min()],
-      [NSNumber numberWithDouble:std::numeric_limits<double>::max()],
+      @(std::numeric_limits<float>::min()),
+      @(std::numeric_limits<float>::max()),
+      @(std::numeric_limits<double>::min()),
+      @(std::numeric_limits<double>::max()),
       @3.1415926535897932,
-      [NSNumber numberWithDouble:std::numeric_limits<double>::infinity()],
-      [NSNumber numberWithDouble:std::numeric_limits<double>::quiet_NaN()],
-      [NSNumber numberWithDouble:std::numeric_limits<double>::signaling_NaN()],
+      @(std::numeric_limits<double>::infinity()),
+      @(std::numeric_limits<double>::quiet_NaN()),
+      @(std::numeric_limits<double>::signaling_NaN()),
     };
 
-    for (size_t index = 0; index < base::size(double_nses); ++index) {
+    for (size_t index = 0; index < std::size(double_nses); ++index) {
       NSNumber* double_ns = double_nses[index];
       launch_data.reset(CFPropertyToLaunchData(double_ns));
       ASSERT_TRUE(launch_data.get());
@@ -114,7 +114,7 @@ TEST(Launchd, CFPropertyToLaunchData_Boolean) {
       @YES,
     };
 
-    for (size_t index = 0; index < base::size(bool_nses); ++index) {
+    for (size_t index = 0; index < std::size(bool_nses); ++index) {
       NSNumber* bool_ns = bool_nses[index];
       launch_data.reset(CFPropertyToLaunchData(bool_ns));
       ASSERT_TRUE(launch_data.get());
@@ -138,7 +138,7 @@ TEST(Launchd, CFPropertyToLaunchData_String) {
       @"Üñîçø∂é",
     };
 
-    for (size_t index = 0; index < base::size(string_nses); ++index) {
+    for (size_t index = 0; index < std::size(string_nses); ++index) {
       NSString* string_ns = string_nses[index];
       launch_data.reset(CFPropertyToLaunchData(string_ns));
       ASSERT_TRUE(launch_data.get());

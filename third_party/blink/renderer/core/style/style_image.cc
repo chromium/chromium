@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,29 +10,30 @@
 
 namespace blink {
 
-FloatSize StyleImage::ApplyZoom(const FloatSize& size, float multiplier) const {
+gfx::SizeF StyleImage::ApplyZoom(const gfx::SizeF& size,
+                                 float multiplier) const {
   if (multiplier == 1.0f || !HasIntrinsicSize())
     return size;
 
-  float width = size.Width() * multiplier;
-  float height = size.Height() * multiplier;
+  float width = size.width() * multiplier;
+  float height = size.height() * multiplier;
 
   // Don't let images that have a width/height >= 1 shrink below 1 when zoomed.
-  if (size.Width() > 0)
+  if (size.width() > 0)
     width = std::max(1.0f, width);
 
-  if (size.Height() > 0)
+  if (size.height() > 0)
     height = std::max(1.0f, height);
 
-  return FloatSize(width, height);
+  return gfx::SizeF(width, height);
 }
 
-FloatSize StyleImage::ImageSizeForSVGImage(
+gfx::SizeF StyleImage::ImageSizeForSVGImage(
     SVGImage* svg_image,
     float multiplier,
-    const FloatSize& default_object_size) const {
-  FloatSize unzoomed_default_object_size = default_object_size;
-  unzoomed_default_object_size.Scale(1 / multiplier);
+    const gfx::SizeF& default_object_size) const {
+  gfx::SizeF unzoomed_default_object_size =
+      gfx::ScaleSize(default_object_size, 1 / multiplier);
   return ApplyZoom(svg_image->ConcreteObjectSize(unzoomed_default_object_size),
                    multiplier);
 }

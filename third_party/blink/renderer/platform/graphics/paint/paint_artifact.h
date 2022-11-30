@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_ARTIFACT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_ARTIFACT_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -27,19 +28,13 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   USING_FAST_MALLOC(PaintArtifact);
 
  public:
-  explicit PaintArtifact(
-      wtf_size_t initial_display_item_list_capacity_in_bytes = 0,
-      wtf_size_t initial_paint_chunks_capacity_in_elements = 0)
-      : display_item_list_(initial_display_item_list_capacity_in_bytes) {
-    chunks_.ReserveInitialCapacity(initial_paint_chunks_capacity_in_elements);
-  }
-
+  PaintArtifact() = default;
   PaintArtifact(const PaintArtifact& other) = delete;
   PaintArtifact& operator=(const PaintArtifact& other) = delete;
   PaintArtifact(PaintArtifact&& other) = delete;
   PaintArtifact& operator=(PaintArtifact&& other) = delete;
 
-  bool IsEmpty() const { return chunks_.IsEmpty(); }
+  bool IsEmpty() const { return chunks_.empty(); }
 
   DisplayItemList& GetDisplayItemList() { return display_item_list_; }
   const DisplayItemList& GetDisplayItemList() const {
@@ -62,10 +57,37 @@ class PLATFORM_EXPORT PaintArtifact final : public RefCounted<PaintArtifact> {
   sk_sp<PaintRecord> GetPaintRecord(
       const PropertyTreeState& replay_state) const;
 
+  void RecordDebugInfo(DisplayItemClientId, const String&, DOMNodeId);
+  // Note that ClientDebugName() returns the debug name at the time the client
+  // was last painted, which may be out-of-date for a client whose debug name
+  // has changed, but not in a way that caused it to be repainted.  This can
+  // happen, for example, when the 'id' or 'class' attribute on a DOM element
+  // changes, but the change doesn't cause a style invalidation.
+  String ClientDebugName(DisplayItemClientId) const;
+  DOMNodeId ClientOwnerNodeId(DisplayItemClientId) const;
+  String IdAsString(const DisplayItem::Id& id) const;
+
+  std::unique_ptr<JSONArray> ToJSON() const;
+  void AppendChunksAsJSON(wtf_size_t start_chunk_index,
+                          wtf_size_t end_chunk_index,
+                          JSONArray&,
+                          unsigned flags) const;
+
  private:
+  struct ClientDebugInfo {
+    String name;
+    DOMNodeId owner_node_id;
+    DISALLOW_NEW();
+  };
+
+  using DebugInfo = HashMap<DisplayItemClientId, ClientDebugInfo>;
+
   DisplayItemList display_item_list_;
   Vector<PaintChunk> chunks_;
+  DebugInfo debug_info_;
 };
+
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const PaintArtifact&);
 
 }  // namespace blink
 

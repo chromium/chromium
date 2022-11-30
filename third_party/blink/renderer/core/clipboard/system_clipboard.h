@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -35,15 +35,16 @@ class CORE_EXPORT SystemClipboard final
   SystemClipboard(const SystemClipboard&) = delete;
   SystemClipboard& operator=(const SystemClipboard&) = delete;
 
-  uint64_t SequenceNumber();
+  ClipboardSequenceNumberToken SequenceNumber();
   bool IsSelectionMode() const;
   void SetSelectionMode(bool);
-  bool CanSmartReplace();
-  bool IsHTMLAvailable();
   Vector<String> ReadAvailableTypes();
+  bool IsFormatAvailable(mojom::ClipboardFormat format);
 
   String ReadPlainText();
-  String ReadPlainText(mojom::ClipboardBuffer buffer);
+  String ReadPlainText(mojom::blink::ClipboardBuffer buffer);
+  void ReadPlainText(mojom::blink::ClipboardBuffer buffer,
+                     mojom::blink::ClipboardHost::ReadTextCallback callback);
   void WritePlainText(const String&, SmartReplaceOption = kCannotSmartReplace);
 
   // If no data is read, an empty string will be returned and all out parameters
@@ -53,6 +54,7 @@ class CORE_EXPORT SystemClipboard final
   // no additional context, fragmentStart will be zero and fragmentEnd will be
   // the same as the length of the markup.
   String ReadHTML(KURL&, unsigned& fragment_start, unsigned& fragment_end);
+  void ReadHTML(mojom::blink::ClipboardHost::ReadHtmlCallback callback);
   void WriteHTML(const String& markup,
                  const KURL& document_url,
                  SmartReplaceOption = kCannotSmartReplace);
@@ -62,7 +64,7 @@ class CORE_EXPORT SystemClipboard final
 
   String ReadRTF();
 
-  SkBitmap ReadImage(mojom::ClipboardBuffer);
+  mojo_base::BigBuffer ReadPng(mojom::blink::ClipboardBuffer);
   String ReadImageAsImageMarkup(mojom::blink::ClipboardBuffer);
 
   // Write the image and its associated tag (bookmark/HTML types).
@@ -82,6 +84,17 @@ class CORE_EXPORT SystemClipboard final
 
   void CopyToFindPboard(const String& text);
 
+  void ReadAvailableCustomAndStandardFormats(
+      mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
+          callback);
+  void ReadUnsanitizedCustomFormat(
+      const String& type,
+      mojom::blink::ClipboardHost::ReadUnsanitizedCustomFormatCallback
+          callback);
+
+  void WriteUnsanitizedCustomFormat(const String& type,
+                                    mojo_base::BigBuffer data);
+
   void Trace(Visitor*) const;
 
  private:
@@ -95,7 +108,6 @@ class CORE_EXPORT SystemClipboard final
 
   // Whether the selection buffer is available on the underlying platform.
   bool is_selection_buffer_available_ = false;
-
 };
 
 }  // namespace blink

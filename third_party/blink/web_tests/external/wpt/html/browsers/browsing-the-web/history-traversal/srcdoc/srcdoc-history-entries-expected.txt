@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL srcdoc history entries: the iframe itself navigates assert_equals: srcdoc contents must be restored from history, not from the current value ('srcdoc2') of the content attribute expected "srcdoc1" but got "srcdoc2"
+FAIL srcdoc history entries: the container window navigates assert_equals: srcdoc contents must be restored from history, not from the current value of the (not-existing) content attribute expected (string) "srcdoc1" but got (undefined) undefined
+Harness: the test ran to completion.
+

@@ -1,16 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONTEXT_H_
 #define MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONTEXT_H_
 
-#include "media/gpu/vaapi/test/scoped_va_config.h"
-#include "media/gpu/vaapi/test/vaapi_device.h"
+#include <va/va.h>
+
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace vaapi_test {
+
+class ScopedVAConfig;
+class VaapiDevice;
 
 // Provides a wrapper around a VAContext that properly handles creation and
 // destruction. Decoders should use this to recreate a context when the VAConfig
@@ -44,4 +47,4 @@ class ScopedVAContext {
 }  // namespace vaapi_test
 }  // namespace media
 
-#endif
+#endif  // MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONTEXT_H_

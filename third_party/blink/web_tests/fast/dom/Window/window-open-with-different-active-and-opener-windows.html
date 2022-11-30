@@ -6,7 +6,7 @@
 var jsTestIsAsync = true;
 description('Test that window.open sets the correct opener when the calling context != window');
 if (window.testRunner)
-  testRunner.setCanOpenWindows(true);
+  testRunner.setPopupBlockingEnabled(false);
 function passed() {
   testPassed('passed called on "this" argument of window.open');
   finishJSTest();

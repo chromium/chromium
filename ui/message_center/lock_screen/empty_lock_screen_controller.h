@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,17 @@ namespace message_center {
 class EmptyLockScreenController : public LockScreenController {
  public:
   EmptyLockScreenController() = default;
+
+  EmptyLockScreenController(const EmptyLockScreenController&) = delete;
+  EmptyLockScreenController& operator=(const EmptyLockScreenController&) =
+      delete;
+
   ~EmptyLockScreenController() override = default;
 
   void DismissLockScreenThenExecute(base::OnceClosure pending_callback,
                                     base::OnceClosure cancal_callback,
                                     int message_id) override;
   bool IsScreenLocked() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyLockScreenController);
 };
 
 }  // namespace message_center

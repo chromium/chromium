@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_COMPLEX_TASKS_TASK_TAB_HELPER_H_
 
 #include <map>
+#include <unordered_map>
 
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/sessions/content/navigation_task_id.h"
 #include "content/public/browser/navigation_details.h"
@@ -26,6 +26,9 @@ namespace tasks {
 class TaskTabHelper : public content::WebContentsObserver,
                       public content::WebContentsUserData<TaskTabHelper> {
  public:
+  TaskTabHelper(const TaskTabHelper&) = delete;
+  TaskTabHelper& operator=(const TaskTabHelper&) = delete;
+
   ~TaskTabHelper() override;
 
   // WebContentsObserver
@@ -64,14 +67,12 @@ class TaskTabHelper : public content::WebContentsObserver,
   int64_t GetParentTaskId();
   int64_t GetParentRootTaskId();
 
-  int last_pruned_navigation_entry_index_;
+  int last_pruned_navigation_entry_index_ = -1;
   std::map<int, int> entry_index_to_spoke_count_map_;
   std::unordered_map<int, sessions::NavigationTaskId>
       local_navigation_task_id_map_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TaskTabHelper);
 };
 
 }  // namespace tasks

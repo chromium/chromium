@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
@@ -25,6 +24,10 @@ class VideoRendererSink;
 class TestMojoMediaClient final : public MojoMediaClient {
  public:
   TestMojoMediaClient();
+
+  TestMojoMediaClient(const TestMojoMediaClient&) = delete;
+  TestMojoMediaClient& operator=(const TestMojoMediaClient&) = delete;
+
   ~TestMojoMediaClient() final;
 
   // MojoMediaClient implementation.
@@ -50,8 +53,6 @@ class TestMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<RendererFactory> renderer_factory_;
   std::vector<scoped_refptr<AudioRendererSink>> audio_sinks_;
   std::vector<std::unique_ptr<VideoRendererSink>> video_sinks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMojoMediaClient);
 };
 
 }  // namespace media

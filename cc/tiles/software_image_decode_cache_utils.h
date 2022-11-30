@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/target_color_params.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -51,6 +52,7 @@ class SoftwareImageDecodeCacheUtils {
                                   SkColorType color_type);
 
     CacheKey(const CacheKey& other);
+    CacheKey& operator=(const CacheKey& other);
 
     bool operator==(const CacheKey& other) const {
       // The frame_key always has to be the same. However, after that all
@@ -61,7 +63,7 @@ class SoftwareImageDecodeCacheUtils {
       // (just passed to skia for the filtering to be done at raster time).
       DCHECK(!is_nearest_neighbor_ || type_ != kSubrectAndScale);
       return frame_key_ == other.frame_key_ && type_ == other.type_ &&
-             target_color_space_ == other.target_color_space_ &&
+             target_color_params_ == other.target_color_params_ &&
              (type_ == kOriginal || (src_rect_ == other.src_rect_ &&
                                      target_size_ == other.target_size_));
     }
@@ -72,10 +74,11 @@ class SoftwareImageDecodeCacheUtils {
     PaintImage::Id stable_id() const { return stable_id_; }
     ProcessingType type() const { return type_; }
     bool is_nearest_neighbor() const { return is_nearest_neighbor_; }
+    bool may_be_lcp_candidate() const { return may_be_lcp_candidate_; }
     gfx::Rect src_rect() const { return src_rect_; }
     gfx::Size target_size() const { return target_size_; }
-    const gfx::ColorSpace& target_color_space() const {
-      return target_color_space_;
+    const TargetColorParams& target_color_params() const {
+      return target_color_params_;
     }
 
     size_t get_hash() const { return hash_; }
@@ -97,9 +100,10 @@ class SoftwareImageDecodeCacheUtils {
              PaintImage::Id stable_id,
              ProcessingType type,
              bool is_nearest_neighbor,
+             bool may_be_lcp_candidate,
              const gfx::Rect& src_rect,
              const gfx::Size& size,
-             const gfx::ColorSpace& target_color_space);
+             const TargetColorParams& target_color_params);
 
     PaintImage::FrameKey frame_key_;
     // The stable id is does not factor into the cache key's value for hashing
@@ -108,9 +112,10 @@ class SoftwareImageDecodeCacheUtils {
     PaintImage::Id stable_id_;
     ProcessingType type_;
     bool is_nearest_neighbor_;
+    bool may_be_lcp_candidate_;
     gfx::Rect src_rect_;
     gfx::Size target_size_;
-    gfx::ColorSpace target_color_space_;
+    TargetColorParams target_color_params_;
     size_t hash_;
   };
 

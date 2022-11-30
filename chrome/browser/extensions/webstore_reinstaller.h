@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,8 @@ class WebstoreReinstaller : public WebstoreStandaloneInstaller,
   content::WebContents* GetWebContents() const override;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> CreateInstallPrompt()
       const override;
-  void OnInstallPromptDone(ExtensionInstallPrompt::Result result) override;
+  void OnInstallPromptDone(
+      ExtensionInstallPrompt::DoneCallbackPayload payload) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

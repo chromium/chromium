@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL request() on non-fully-active document must fail promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'then')"
+FAIL query() on a non-fully-active document must fail promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'then')"
+FAIL request()'s fully-active check happens earlier than name validation promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'then')"
+FAIL Reactivated iframe must not reuse the previous LockManager promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'then')"
+PASS Workers owned by an unloaded iframe must release their locks
+Harness: the test ran to completion.
+

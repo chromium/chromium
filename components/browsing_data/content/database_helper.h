@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,9 @@
 
 #include <list>
 #include <set>
-#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/common/database/database_identifier.h"
 #include "url/gurl.h"
@@ -40,6 +37,9 @@ class DatabaseHelper : public base::RefCountedThreadSafe<DatabaseHelper> {
 
   explicit DatabaseHelper(content::BrowserContext* browser_context);
 
+  DatabaseHelper(const DatabaseHelper&) = delete;
+  DatabaseHelper& operator=(const DatabaseHelper&) = delete;
+
   // Starts the fetching process, which will notify its completion via
   // callback.
   // This must be called only in the UI thread.
@@ -55,8 +55,6 @@ class DatabaseHelper : public base::RefCountedThreadSafe<DatabaseHelper> {
 
  private:
   scoped_refptr<storage::DatabaseTracker> tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseHelper);
 };
 
 // This class is a thin wrapper around DatabaseHelper that does not
@@ -65,6 +63,9 @@ class DatabaseHelper : public base::RefCountedThreadSafe<DatabaseHelper> {
 class CannedDatabaseHelper : public DatabaseHelper {
  public:
   explicit CannedDatabaseHelper(content::BrowserContext* browser_context);
+
+  CannedDatabaseHelper(const CannedDatabaseHelper&) = delete;
+  CannedDatabaseHelper& operator=(const CannedDatabaseHelper&) = delete;
 
   // Add a database to the set of canned databases that is returned by this
   // helper.
@@ -90,8 +91,6 @@ class CannedDatabaseHelper : public DatabaseHelper {
   ~CannedDatabaseHelper() override;
 
   std::set<url::Origin> pending_origins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedDatabaseHelper);
 };
 
 }  // namespace browsing_data

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ class MediaToolbarButtonControllerDelegate {
   virtual void Hide() = 0;
   virtual void Enable() = 0;
   virtual void Disable() = 0;
+  virtual void MaybeShowStopCastingPromo() = 0;
 
  protected:
   virtual ~MediaToolbarButtonControllerDelegate();

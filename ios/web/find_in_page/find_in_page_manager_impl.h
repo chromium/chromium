@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #import "ios/web/find_in_page/find_in_page_request.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #include "ios/web/public/web_state_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSString;
 
@@ -32,6 +33,9 @@ class FindInPageManagerImpl : public FindInPageManager,
   explicit FindInPageManagerImpl(web::WebState* web_state);
   ~FindInPageManagerImpl() override;
 
+  // Need to overload FindInPageManager::CreateForWebState() as the default
+  // implementation inherited from WebStateUserData<FindInPageManager> would
+  // create a FindInPageManager which is a pure abstract class.
   static void CreateForWebState(WebState* web_state);
 
   // FindInPageManager overrides
@@ -44,24 +48,24 @@ class FindInPageManagerImpl : public FindInPageManager,
  private:
   friend class web::WebStateUserData<FindInPageManagerImpl>;
 
-  // Executes find logic for |FindInPageSearch| option.
+  // Executes find logic for `FindInPageSearch` option.
   void StartSearch(NSString* query);
-  // Executes find logic for |FindInPageNext| option.
+  // Executes find logic for `FindInPageNext` option.
   void SelectNextMatch();
-  // Executes find logic for |FindInPagePrevious| option.
+  // Executes find logic for `FindInPagePrevious` option.
   void SelectPreviousMatch();
   // Determines whether find is finished. If not, calls pumpSearch to
   // continue. If it is, calls UpdateFrameMatchesCount(). If find returned
   // null, then does nothing more.
   void ProcessFindInPageResult(const std::string& frame_id,
                                const int request_id,
-                               base::Optional<int> result);
-  // Calls delegate DidHighlightMatches() method if |delegate_| is set and
+                               absl::optional<int> result);
+  // Calls delegate DidHighlightMatches() method if `delegate_` is set and
   // starts a FindInPageNext find. Called when the last frame returns results
   // from a Find request.
   void LastFindRequestCompleted();
   // Calls delegate DidSelectMatch() method to pass back index selected if
-  // |delegate_| is set. |result| is a byproduct of using base::BindOnce() to
+  // `delegate_` is set. `result` is a byproduct of using base::BindOnce() to
   // call this method after making a web_frame->CallJavaScriptFunction() call.
   void SelectDidFinish(const base::Value* result);
   // Executes highlightResult() JavaScript function in frame which contains the

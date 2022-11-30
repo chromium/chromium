@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,9 @@ class DevToolsIOContext : public base::SupportsWeakPtr<DevToolsIOContext> {
                                 bool base64_encoded,
                                 int status)>;
 
+    Stream(const Stream&) = delete;
+    Stream& operator=(const Stream&) = delete;
+
     virtual bool SupportsSeek() const;
     virtual void Read(off_t position,
                       size_t max_size,
@@ -51,8 +54,6 @@ class DevToolsIOContext : public base::SupportsWeakPtr<DevToolsIOContext> {
     void Register(DevToolsIOContext* context, const std::string& handle);
     // We generate handle for the caller and return it.
     std::string Register(DevToolsIOContext* context);
-
-    DISALLOW_COPY_AND_ASSIGN(Stream);
   };
 
   DevToolsIOContext();

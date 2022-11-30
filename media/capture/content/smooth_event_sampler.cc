@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ bool SmoothEventSampler::ShouldSample() const {
 
 void SmoothEventSampler::RecordSample() {
   token_bucket_ -= min_capture_period_;
-  if (token_bucket_ < base::TimeDelta())
+  if (token_bucket_.is_negative())
     token_bucket_ = base::TimeDelta();
   TRACE_COUNTER1("gpu.capture", "MirroringTokenBucketUsec",
                  std::max<int64_t>(0, token_bucket_.InMicroseconds()));

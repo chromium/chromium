@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,28 @@ grit("strings") {
   source = "../ui_chromeos_strings.grd"
   outputs =
       [ "grit/ui_chromeos_strings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "ui_chromeos_strings_{{source_name_part}}.pak" ])
+}
+
+if (is_chromeos_ash) {
+  static_library("strings_provider") {
+    sources = [
+      "network_element_localized_strings_provider.cc",
+      "network_element_localized_strings_provider.h",
+    ]
+    deps = [
+      "//ash/constants",
+      "//chromeos/ash/components/network",
+      "//chromeos/login/login_state:login_state",
+      "//chromeos/strings:strings_grit",
+      "//components/login:login",
+      "//components/strings:components_strings",
+      "//content/public/browser:browser",
+      "//ui/base",
+      "//ui/chromeos:chromeos",
+      "//ui/chromeos/strings:strings_grit",
+      "//ui/strings:ui_strings_grit",
+    ]
+  }
 }

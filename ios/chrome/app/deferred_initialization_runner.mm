@@ -1,12 +1,12 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/deferred_initialization_runner.h"
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include "base/check.h"
+#import "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,8 +70,8 @@ NSString* const kPrefObserverInit = @"PrefObserverInit";
   BOOL _isBlockScheduled;
 }
 
-// Schedule the next block to be run after |delay| it will automatically
-// schedule the next block after |delayBetweenBlocks|.
+// Schedule the next block to be run after `delay` it will automatically
+// schedule the next block after `delayBetweenBlocks`.
 - (void)scheduleNextBlockWithDelay:(NSTimeInterval)delay;
 
 // Time interval between two blocks. Default value is 200ms.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,14 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_APPLE)
+struct CGSize;
+#endif
 
 namespace gfx {
 
@@ -30,13 +34,27 @@ class GEOMETRY_EXPORT SizeF {
       : SizeF(static_cast<float>(size.width()),
               static_cast<float>(size.height())) {}
 
+#if BUILDFLAG(IS_APPLE)
+  explicit SizeF(const CGSize&);
+  CGSize ToCGSize() const;
+#endif
+
   constexpr float width() const { return width_; }
   constexpr float height() const { return height_; }
 
   void set_width(float width) { width_ = clamp(width); }
   void set_height(float height) { height_ = clamp(height); }
 
+  void operator+=(const SizeF& size) {
+    SetSize(width_ + size.width_, height_ + size.height_);
+  }
+  void operator-=(const SizeF& size) {
+    SetSize(width_ - size.width_, height_ - size.height_);
+  }
+
   float GetArea() const;
+
+  float AspectRatio() const { return width_ / height_; }
 
   void SetSize(float width, float height) {
     set_width(width);
@@ -48,7 +66,12 @@ class GEOMETRY_EXPORT SizeF {
   void SetToMin(const SizeF& other);
   void SetToMax(const SizeF& other);
 
-  bool IsEmpty() const { return !width() || !height(); }
+  // Expands width/height to the next representable value.
+  void SetToNextWidth() { width_ = next(width_); }
+  void SetToNextHeight() { height_ = next(height_); }
+
+  constexpr bool IsEmpty() const { return !width() || !height(); }
+  constexpr bool IsZero() const { return !width() && !height(); }
 
   void Scale(float scale) {
     Scale(scale, scale);
@@ -58,33 +81,63 @@ class GEOMETRY_EXPORT SizeF {
     SetSize(width() * x_scale, height() * y_scale);
   }
 
+  // Scales the size by the inverse of the given scale (by dividing).
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale); }
+
+  void InvScale(float inv_x_scale, float inv_y_scale) {
+    width_ /= inv_x_scale;
+    height_ /= inv_y_scale;
+  }
+
+  void Transpose() {
+    using std::swap;
+    swap(width_, height_);
+  }
+
   std::string ToString() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, TrivialDimensionTests);
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, ClampsToZero);
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, ConsistentClamping);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, IsEmpty);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, ClampsToZero);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, ConsistentClamping);
 
   static constexpr float kTrivial = 8.f * std::numeric_limits<float>::epsilon();
 
   static constexpr float clamp(float f) { return f > kTrivial ? f : 0.f; }
 
+  static float next(float f) {
+    return std::nextafter(std::max(kTrivial, f),
+                          std::numeric_limits<float>::max());
+  }
+
   float width_;
   float height_;
 };
 
-inline bool operator==(const SizeF& lhs, const SizeF& rhs) {
+constexpr bool operator==(const SizeF& lhs, const SizeF& rhs) {
   return lhs.width() == rhs.width() && lhs.height() == rhs.height();
 }
 
-inline bool operator!=(const SizeF& lhs, const SizeF& rhs) {
+constexpr bool operator!=(const SizeF& lhs, const SizeF& rhs) {
   return !(lhs == rhs);
+}
+
+inline SizeF operator+(const SizeF& lhs, const SizeF& rhs) {
+  return SizeF(lhs.width() + rhs.width(), lhs.height() + rhs.height());
+}
+
+inline SizeF operator-(const SizeF& lhs, const SizeF& rhs) {
+  return SizeF(lhs.width() - rhs.width(), lhs.height() - rhs.height());
 }
 
 GEOMETRY_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
 
 inline SizeF ScaleSize(const SizeF& p, float scale) {
   return ScaleSize(p, scale, scale);
+}
+
+inline SizeF TransposeSize(const SizeF& s) {
+  return SizeF(s.height(), s.width());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
@@ -47,11 +47,16 @@ void RunUntilIdle() {
 class ArcUserSessionServiceTest : public InProcessBrowserTest {
  public:
   ArcUserSessionServiceTest() {
-    // SplitSettingsSync makes an untitled Play Store icon appear in the shelf
-    // due to app pin syncing code. Sync isn't relevant to this test, so skip
-    // pinned app sync. https://crbug.com/1085597
-    SkipPinnedAppsFromSyncForTest();
+    // SyncSettingsCategorization makes an untitled Play Store icon appear in
+    // the shelf due to app pin syncing code. Sync isn't relevant to this test,
+    // so skip pinned app sync. https://crbug.com/1085597
+    ChromeShelfPrefs::SkipPinnedAppsFromSyncForTest();
   }
+
+  ArcUserSessionServiceTest(const ArcUserSessionServiceTest&) = delete;
+  ArcUserSessionServiceTest& operator=(const ArcUserSessionServiceTest&) =
+      delete;
+
   ~ArcUserSessionServiceTest() override = default;
 
   // InProcessBrowserTest:
@@ -81,9 +86,6 @@ class ArcUserSessionServiceTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<FakeIntentHelperInstance> fake_intent_helper_instance_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcUserSessionServiceTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcUserSessionServiceTest,

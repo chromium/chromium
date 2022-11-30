@@ -1,8 +1,8 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -15,10 +15,10 @@ source_set("browser") {
     "autofill_driver_ios_bridge.h",
     "autofill_driver_ios_webframe.h",
     "autofill_driver_ios_webframe.mm",
+    "autofill_java_script_feature.h",
+    "autofill_java_script_feature.mm",
     "autofill_switches.cc",
     "autofill_switches.h",
-    "autofill_util.h",
-    "autofill_util.mm",
     "credit_card_util.h",
     "credit_card_util.mm",
     "form_suggestion.h",
@@ -26,19 +26,22 @@ source_set("browser") {
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
-    "js_autofill_manager.h",
-    "js_autofill_manager.mm",
-    "js_suggestion_manager.h",
-    "js_suggestion_manager.mm",
     "personal_data_manager_observer_bridge.h",
     "personal_data_manager_observer_bridge.mm",
+    "suggestion_controller_java_script_feature.h",
+    "suggestion_controller_java_script_feature.mm",
   ]
 
   deps = [
+    ":autofill_js",
+    ":suggestion_controller_js",
+    ":util",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/prefs:prefs",
     "//components/prefs/ios",
     "//components/ukm/ios:ukm_url_recorder",
@@ -53,7 +56,35 @@ source_set("browser") {
     "//services/network/public/cpp",
     "//ui/accessibility",
     "//ui/gfx/geometry",
+    "//url",
   ]
+}
+
+source_set("util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "autofill_util.h",
+    "autofill_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//url",
+  ]
+}
+
+optimize_js("autofill_js") {
+  primary_script = "resources/autofill_controller.js"
+  sources = [ "resources/autofill_controller.js" ]
+}
+
+optimize_js("suggestion_controller_js") {
+  primary_script = "resources/suggestion_controller.js"
+  sources = [ "resources/suggestion_controller.js" ]
 }
 
 source_set("test_support") {
@@ -64,9 +95,8 @@ source_set("test_support") {
     "credit_card_save_manager_test_observer_bridge.mm",
     "fake_autofill_agent.h",
     "fake_autofill_agent.mm",
-    "fake_js_autofill_manager.h",
-    "fake_js_autofill_manager.mm",
     "ios_test_event_waiter.h",
+    "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]
   deps = [
@@ -89,15 +119,18 @@ source_set("unit_tests") {
   ]
   deps = [
     ":browser",
+    ":util",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//components/leveldb_proto:leveldb_proto",
     "//components/prefs",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",

@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/native_io/native_io_quota_client.h"
 
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -18,42 +18,45 @@ NativeIOQuotaClient::~NativeIOQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NativeIOQuotaClient::GetOriginUsage(const url::Origin& origin,
-                                         blink::mojom::StorageType type,
-                                         GetOriginUsageCallback callback) {
+void NativeIOQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
+                                         GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  manager_->GetOriginUsage(origin, type, std::move(callback));
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by NativeIO.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  manager_->GetStorageKeyUsage(bucket.storage_key, bucket.type,
+                               std::move(callback));
   return;
 }
 
-void NativeIOQuotaClient::GetOriginsForType(
+void NativeIOQuotaClient::GetStorageKeysForType(
     blink::mojom::StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  manager_->GetOriginsForType(type, std::move(callback));
+  manager_->GetStorageKeysForType(type, std::move(callback));
 }
 
-void NativeIOQuotaClient::GetOriginsForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetOriginsForHostCallback callback) {
+void NativeIOQuotaClient::DeleteBucketData(const storage::BucketLocator& bucket,
+                                           DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  manager_->GetOriginsForHost(type, std::move(host), std::move(callback));
-}
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by NativeIO.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
 
-void NativeIOQuotaClient::DeleteOriginData(const url::Origin& origin,
-                                           blink::mojom::StorageType type,
-                                           DeleteOriginDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-
-  manager_->DeleteOriginData(origin, std::move(callback));
+  manager_->DeleteStorageKeyData(bucket.storage_key, std::move(callback));
 }
 
 void NativeIOQuotaClient::PerformStorageCleanup(

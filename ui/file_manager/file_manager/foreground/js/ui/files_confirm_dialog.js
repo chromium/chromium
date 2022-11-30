@@ -1,23 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {util} from '../../../common/js/util.m.js';
-// #import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {util} from '../../../common/js/util.js';
+
+import {ConfirmDialog} from './dialogs.js';
 
 /**
  * Confirm dialog.
  */
-/* #export */ class FilesConfirmDialog extends cr.ui.dialogs.ConfirmDialog {
+export class FilesConfirmDialog extends ConfirmDialog {
   /**
    * @param {!Element} parentElement
    */
   constructor(parentElement) {
     super(parentElement);
 
-    if (util.isFilesNg()) {
-      this.container.classList.add('files-ng');
-    }
+    this.container.classList.add('files-ng');
 
     /**
      * @type {?function()} showModalElement Optional call to show the

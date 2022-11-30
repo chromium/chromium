@@ -1,0 +1,76 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mojo_ipc") {
+  sources = [
+    "ipc_server.h",
+    "mojo_caller_security_checker.cc",
+    "mojo_caller_security_checker.h",
+    "mojo_ipc_server.cc",
+    "mojo_ipc_server.h",
+    "mojo_ipc_util.cc",
+    "mojo_ipc_util.h",
+    "mojo_server_endpoint_connector.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//remoting/host/base",
+  ]
+  if (is_linux) {
+    sources += [
+      "mojo_server_endpoint_connector_linux.cc",
+      "mojo_server_endpoint_connector_linux.h",
+    ]
+  } else if (is_win) {
+    sources += [
+      "mojo_server_endpoint_connector_win.cc",
+      "mojo_server_endpoint_connector_win.h",
+    ]
+    deps += [ "//remoting/host/win:trust_util" ]
+  } else {
+    sources += [ "mojo_server_endpoint_connector_unsupported.cc" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_ipc_server.cc",
+    "fake_ipc_server.h",
+    "mojo_ipc_test_util.cc",
+    "mojo_ipc_test_util.h",
+  ]
+  deps = [
+    ":mojo_ipc",
+    "//base",
+    "//mojo/public/cpp/platform",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+
+  # Disable MojoIpcServerTest on unsupported platforms (i.e. Mac).
+  if (is_linux || is_win) {
+    sources += [ "mojo_ipc_server_unittest.cc" ]
+  }
+  deps = [
+    ":mojo_ipc",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//remoting/host/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

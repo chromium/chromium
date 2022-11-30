@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -22,6 +20,10 @@ class Profile;
 class CoreAppLauncherHandler : public content::WebUIMessageHandler {
  public:
   CoreAppLauncherHandler();
+
+  CoreAppLauncherHandler(const CoreAppLauncherHandler&) = delete;
+  CoreAppLauncherHandler& operator=(const CoreAppLauncherHandler&) = delete;
+
   ~CoreAppLauncherHandler() override;
 
   // Register app launcher preferences.
@@ -31,7 +33,7 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
   // Callback for the "recordAppLaunchByUrl" message. Takes an escaped URL and
   // a launch source(integer), and if the URL represents an app, records the
   // action for UMA.
-  void HandleRecordAppLaunchByUrl(const base::ListValue* args);
+  void HandleRecordAppLaunchByUrl(const base::Value::List& args);
 
   // Records an app launch in the corresponding |bucket| of the app launch
   // histogram if the |escaped_url| corresponds to an installed app.
@@ -41,8 +43,6 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CoreAppLauncherHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NTP_CORE_APP_LAUNCHER_HANDLER_H_

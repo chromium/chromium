@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,11 @@
 #include <memory>
 #include <utility>
 
-#include "gpu/ipc/single_task_sequence.h"
+#include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
 
 namespace gpu {
+class Scheduler;
 class SyncPointManager;
 }
 
@@ -25,8 +27,13 @@ class TaskQueueWebView;
 // TaskQueueWebView.
 class TaskForwardingSequence : public gpu::SingleTaskSequence {
  public:
-  explicit TaskForwardingSequence(TaskQueueWebView* task_queue,
-                                  gpu::SyncPointManager* sync_point_manager);
+  TaskForwardingSequence(TaskQueueWebView* task_queue,
+                         gpu::SyncPointManager* sync_point_manager,
+                         gpu::Scheduler* scheduler);
+
+  TaskForwardingSequence(const TaskForwardingSequence&) = delete;
+  TaskForwardingSequence& operator=(const TaskForwardingSequence&) = delete;
+
   ~TaskForwardingSequence() override;
 
   // SingleTaskSequence implementation.
@@ -56,14 +63,14 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
       std::vector<gpu::SyncToken> sync_token_fences,
       uint32_t order_num,
       gpu::SyncPointManager* sync_point_manager,
+      gpu::Scheduler* scheduler,
       scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data);
 
   // Raw pointer refer to the global instance.
-  TaskQueueWebView* const task_queue_;
-  gpu::SyncPointManager* const sync_point_manager_;
+  const raw_ptr<TaskQueueWebView> task_queue_;
+  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  const raw_ptr<gpu::Scheduler> scheduler_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskForwardingSequence);
 };
 
 }  // namespace android_webview

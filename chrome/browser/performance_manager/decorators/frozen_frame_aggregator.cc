@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,10 @@ class FrozenDataImpl : public FrozenFrameAggregator::Data,
 
   explicit FrozenDataImpl(const PageNodeImpl* page_node) {}
   explicit FrozenDataImpl(const ProcessNodeImpl* process_node) {}
+
+  FrozenDataImpl(const FrozenDataImpl&) = delete;
+  FrozenDataImpl& operator=(const FrozenDataImpl&) = delete;
+
   ~FrozenDataImpl() override = default;
 
   static StorageType* GetInternalStorage(PageNodeImpl* page_node) {
@@ -102,9 +106,6 @@ class FrozenDataImpl : public FrozenFrameAggregator::Data,
 
     return IsFrozen() != was_frozen;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrozenDataImpl);
 };
 
 bool IsFrozen(const FrameNodeImpl* frame_node) {
@@ -188,7 +189,7 @@ void FrozenFrameAggregator::RegisterObservers(Graph* graph) {
   // This observer presumes that it's been added before any nodes exist in the
   // graph.
   // TODO(chrisha): Add graph introspection functions to Graph.
-  DCHECK(GraphImpl::FromGraph(graph)->nodes().empty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);

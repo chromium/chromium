@@ -1,60 +1,37 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_BASE_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_MEDIA_ROUTER_BASE_H_
 
-#include <set>
+#include <memory>
+#include <string>
 #include <unordered_map>
-#include <vector>
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "build/build_config.h"
-#include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/media_router.h"
-#include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/media_route.h"
+#include "content/public/browser/presentation_service_delegate.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
-
-#if !defined(OS_ANDROID)
-#include "components/media_router/common/mojom/media_controller.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#endif  // !defined(OS_ANDROID)
 
 namespace media_router {
 
 class MediaRouterBase : public MediaRouter {
  public:
+  MediaRouterBase(const MediaRouterBase&) = delete;
+  MediaRouterBase(MediaRouterBase&&) = delete;
+  MediaRouterBase& operator=(const MediaRouterBase&) = delete;
+  MediaRouterBase& operator=(MediaRouterBase&&) = delete;
+
   ~MediaRouterBase() override;
 
-  // Must be called before invoking any other method.
-  void Initialize();
-
-  // MediaRouter implementation.
+  // MediaRouter:
   base::CallbackListSubscription AddPresentationConnectionStateChangedCallback(
       const MediaRoute::Id& route_id,
       const content::PresentationConnectionStateChangedCallback& callback)
       override;
-  void OnIncognitoProfileShutdown() override;
-  IssueManager* GetIssueManager() final;
-  std::vector<MediaRoute> GetCurrentRoutes() const override;
-  std::unique_ptr<media::FlingingController> GetFlingingController(
-      const MediaRoute::Id& route_id) override;
-#if !defined(OS_ANDROID)
-  void GetMediaController(
-      const MediaRoute::Id& route_id,
-      mojo::PendingReceiver<mojom::MediaController> controller,
-      mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
-  base::Value GetLogs() const override;
-#endif  // !defined(OS_ANDROID)
-  base::Value GetState() const override;
-  void GetProviderState(
-      MediaRouteProviderId provider_id,
-      mojom::MediaRouteProvider::GetStateCallback callback) const override;
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
@@ -64,12 +41,12 @@ class MediaRouterBase : public MediaRouter {
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, CreatePresentationIds);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterBaseTest, NotifyCallbacks);
   FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
-                           ListenForConnnectionStateChange);
+                           ListenForConnectionStateChange);
   FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest, GetMediaRoutes);
 
   MediaRouterBase();
 
-  // Generates a unique presentation id. Shared between Android and desktop.
+  // Generates a unique presentation ID.
   static std::string CreatePresentationId();
 
   void NotifyPresentationConnectionStateChange(
@@ -79,14 +56,6 @@ class MediaRouterBase : public MediaRouter {
       const MediaRoute::Id& route_id,
       blink::mojom::PresentationConnectionCloseReason reason,
       const std::string& message);
-
-  // Returns true when there is at least one MediaRoute that can be returned by
-  // JoinRoute().
-  bool HasJoinableRoute() const;
-
-  // Returns a pointer to the MediaRoute whose ID is |route_id|, or nullptr
-  // if not found.
-  const MediaRoute* GetRoute(const MediaRoute::Id& route_id) const;
 
   using PresentationConnectionStateChangedCallbacks =
       base::RepeatingCallbackList<void(
@@ -101,22 +70,10 @@ class MediaRouterBase : public MediaRouter {
   friend class MediaRouterBaseTest;
   friend class MediaRouterMojoTest;
 
-  class InternalMediaRoutesObserver;
-
   // Called when a PresentationConnectionStateChangedCallback associated with
   // |route_id| is removed from |presentation_connection_state_callbacks_|.
   void OnPresentationConnectionStateCallbackRemoved(
       const MediaRoute::Id& route_id);
-
-  // KeyedService
-  void Shutdown() override;
-
-  IssueManager issue_manager_;
-
-  std::unique_ptr<InternalMediaRoutesObserver> internal_routes_observer_;
-  bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterBase);
 };
 
 }  // namespace media_router

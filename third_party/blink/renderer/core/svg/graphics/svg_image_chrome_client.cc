@@ -37,8 +37,7 @@
 
 namespace blink {
 
-static constexpr base::TimeDelta kAnimationFrameDelay =
-    base::TimeDelta::FromHz(60);
+static constexpr base::TimeDelta kAnimationFrameDelay = base::Hertz(60);
 
 SVGImageChromeClient::SVGImageChromeClient(SVGImage* image)
     : image_(image),
@@ -60,7 +59,7 @@ void SVGImageChromeClient::ChromeDestroyed() {
   image_ = nullptr;
 }
 
-void SVGImageChromeClient::InvalidateRect(const IntRect&) {
+void SVGImageChromeClient::InvalidateContainer() {
   // If image_->page_ is null, we're being destructed, so don't fire
   // |Changed()| in that case.
   if (image_ && image_->GetImageObserver() && image_->page_)

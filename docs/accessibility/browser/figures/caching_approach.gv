@@ -1,0 +1,51 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="TB";
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+
+	subgraph cluster_cache_tree {
+		label = "Cached accessibility tree";
+		rankdir="TB";
+
+		root_cache [label="Root node"];
+		root_cache -> { button_cache, other_cache } [dir=none];
+		button_cache [label="Button node"];
+		other_cache [label="..."];
+	}
+    }
+
+    subgraph cluster_render {
+        label = "Render Process";
+
+	subgraph cluster_ax_tree {
+		label = "Accessibility tree";
+		rankdir="TB";
+
+		root_node [label="Root"];
+		root_node -> { button_node, other_node } [dir=none];
+		button_node [label="Button"];
+		other_node [label="..."];
+	}
+
+	subgraph cluster_dom_tree {
+		label = "DOM tree";
+		rankdir="TB";
+
+		root_dom_node [label="<body>"];
+		root_dom_node -> { button_dom_node, other_dom_node } [dir=none];
+		root_dom_node -> other_dom_node;
+		button_dom_node [label="<button>"];
+		other_dom_node [label="..."];
+	}
+
+    }
+
+    os [label="Operating System"];
+    os -> root_cache [dir=both];
+    root_cache -> root_node [dir=back, label="Atomic updates"];
+    root_node -> root_dom_node [dir=both];
+}

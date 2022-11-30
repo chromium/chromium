@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS ServiceWorker's getRegistrations() is partitioned
+Harness: the test ran to completion.
+

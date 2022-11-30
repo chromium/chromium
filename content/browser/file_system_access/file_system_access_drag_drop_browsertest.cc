@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -62,7 +63,7 @@ class FileSystemAccessDragDropBrowserTest : public ContentBrowserTest {
   RenderWidgetHostImpl* GetRenderWidgetHostImplForMainFrame() {
     WebContentsImpl* web_contents_impl =
         static_cast<WebContentsImpl*>(shell()->web_contents());
-    return web_contents_impl->GetMainFrame()->GetRenderWidgetHost();
+    return web_contents_impl->GetPrimaryMainFrame()->GetRenderWidgetHost();
   }
 
  protected:
@@ -135,13 +136,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropFile) {
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
-                                          /*key_modifiers=*/0);
+                                          /*key_modifiers=*/0,
+                                          base::DoNothing());
 
   // Expect the promise to resolve with `test_contents`.
   EXPECT_EQ(test_contents, EvalJs(shell(), "p"));
@@ -220,13 +222,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropDirectory) {
   render_widget_host_impl->DragTargetDragEnter(
       drop_data, client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDragOver(
       client_point, screen_point,
       blink::DragOperationsMask::kDragOperationEvery,
-      /*key_modifiers=*/0);
+      /*key_modifiers=*/0, base::DoNothing());
   render_widget_host_impl->DragTargetDrop(drop_data, client_point, screen_point,
-                                          /*key_modifiers=*/0);
+                                          /*key_modifiers=*/0,
+                                          base::DoNothing());
 
   // Wait promise to resolve and expect the directory to have child with name
   // matching the base name of `file_inside_dir`.

@@ -1,0 +1,12 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Mirror of net::ConnectionEndpointMetadata.
+struct ConnectionEndpointMetadata {
+  array<string> supported_protocol_alpns;
+  array<uint8> ech_config_list;
+  string target_name;
+};

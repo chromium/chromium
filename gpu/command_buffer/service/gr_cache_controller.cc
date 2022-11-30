@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,17 @@
 #include <chrono>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
 namespace raster {
+
+GrCacheController::GrCacheController(SharedContextState* context_state)
+    : context_state_(context_state),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 GrCacheController::GrCacheController(
     SharedContextState* context_state,
@@ -45,9 +50,8 @@ void GrCacheController::ScheduleGrContextCleanup() {
   purge_gr_cache_cb_.Reset(base::BindOnce(&GrCacheController::PurgeGrCache,
                                           base::Unretained(this),
                                           current_idle_id_));
-  task_runner_->PostDelayedTask(
-      FROM_HERE, purge_gr_cache_cb_.callback(),
-      base::TimeDelta::FromSeconds(kIdleCleanupDelaySeconds));
+  task_runner_->PostDelayedTask(FROM_HERE, purge_gr_cache_cb_.callback(),
+                                base::Seconds(kIdleCleanupDelaySeconds));
 }
 
 void GrCacheController::PurgeGrCache(uint64_t idle_id) {

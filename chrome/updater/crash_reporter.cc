@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/crash_reporter.h"
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
@@ -12,48 +13,59 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 
+namespace updater {
 namespace {
 
-// True if the current process is connected to a crash handler process.
-bool g_is_connected_to_crash_handler = false;
-
-crashpad::CrashpadClient* GetCrashpadClient() {
-  static auto* crashpad_client = new crashpad::CrashpadClient();
-  return crashpad_client;
+crashpad::CrashpadClient& GetCrashpadClient() {
+  static base::NoDestructor<crashpad::CrashpadClient> crashpad_client;
+  return *crashpad_client;
 }
 
-void RemoveSwitchIfExisting(const char* switch_to_remove,
-                            std::vector<base::CommandLine::StringType>* argv) {
-  const std::string pattern = base::StrCat({"--", switch_to_remove});
-  auto matches_switch =
-      [&pattern](const base::CommandLine::StringType& argument) -> bool {
-#if defined(OS_WIN)
-    return base::StartsWith(argument, base::UTF8ToWide(pattern),
-                            base::CompareCase::SENSITIVE);
+// Returns the command line arguments to start the crash handler process with.
+std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(kCrashHandlerSwitch);
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
+  if (updater_scope == UpdaterScope::kSystem) {
+    command_line.AppendSwitch(kSystemSwitch);
+  }
+
+  // The first element in the command line arguments is the program name,
+  // which must be skipped.
+#if BUILDFLAG(IS_WIN)
+  std::vector<std::string> args;
+  base::ranges::transform(
+      ++command_line.argv().begin(), command_line.argv().end(),
+      std::back_inserter(args),
+      [](const auto& arg) { return base::WideToUTF8(arg); });
+
+  return args;
 #else
-    return base::StartsWith(argument, pattern, base::CompareCase::SENSITIVE);
-#endif  // OS_WIN
-  };
-  base::EraseIf(*argv, matches_switch);
+  return {++command_line.argv().begin(), command_line.argv().end()};
+#endif
 }
 
 }  // namespace
 
-namespace updater {
-
-void StartCrashReporter(const std::string& version) {
+void StartCrashReporter(UpdaterScope updater_scope,
+                        const std::string& version) {
   static bool started = false;
   DCHECK(!started);
   started = true;
@@ -61,55 +73,54 @@ void StartCrashReporter(const std::string& version) {
   base::FilePath handler_path;
   base::PathService::Get(base::FILE_EXE, &handler_path);
 
-  base::Optional<base::FilePath> database_path = GetVersionedDirectory();
+  const absl::optional<base::FilePath> database_path =
+      GetVersionedDataDirectory(updater_scope);
   if (!database_path) {
-    LOG(DFATAL) << "Failed to get the database path.";
+    LOG(ERROR) << "Failed to get the database path.";
     return;
   }
 
-  std::map<std::string, std::string> annotations;  // Crash keys.
+  std::map<std::string, std::string> annotations;
   annotations["ver"] = version;
-  annotations["prod"] = PRODUCT_FULLNAME_STRING;
+  annotations["prod"] = CRASH_PRODUCT_NAME;
 
-  std::vector<std::string> arguments;
-  arguments.push_back(base::StrCat({"--", kCrashHandlerSwitch}));
-
-  // TODO(crbug.com/1163583): use the production front end instead of staging.
-  crashpad::CrashpadClient* client = GetCrashpadClient();
-  if (!client->StartHandler(handler_path, *database_path,
-                            /*metrics_dir=*/base::FilePath(),
-                            CRASH_STAGING_UPLOAD_URL, annotations, arguments,
-                            /*restartable=*/true,
-                            /*asynchronous_start=*/false)) {
-    LOG(DFATAL) << "Failed to start handler.";
+  crashpad::CrashpadClient& client = GetCrashpadClient();
+  if (!client.StartHandler(handler_path, *database_path,
+                           /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL,
+                           annotations, MakeCrashHandlerArgs(updater_scope),
+                           /*restartable=*/true,
+                           /*asynchronous_start=*/false)) {
+    VLOG(1) << "Failed to start handler.";
     return;
   }
 
-  g_is_connected_to_crash_handler = true;
   VLOG(1) << "Crash handler launched and ready.";
 }
 
 int CrashReporterMain() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line->HasSwitch(kCrashHandlerSwitch));
+  base::CommandLine command_line = *base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line.HasSwitch(kCrashHandlerSwitch));
 
   // Disable rate-limiting until this is fixed:
   //   https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-  command_line->AppendSwitch(kNoRateLimitSwitch);
-
-  std::vector<base::CommandLine::StringType> argv = command_line->argv();
+  command_line.AppendSwitch(kNoRateLimitSwitch);
 
   // Because of https://bugs.chromium.org/p/crashpad/issues/detail?id=82,
   // Crashpad fails on the presence of flags it doesn't handle.
-  RemoveSwitchIfExisting(kCrashHandlerSwitch, &argv);
+  command_line.RemoveSwitch(kCrashHandlerSwitch);
+  command_line.RemoveSwitch(kSystemSwitch);
+  command_line.RemoveSwitch(kEnableLoggingSwitch);
+  command_line.RemoveSwitch(kLoggingModuleSwitch);
+
+  const std::vector<base::CommandLine::StringType> argv = command_line.argv();
 
   // |storage| must be declared before |argv_as_utf8|, to ensure it outlives
   // |argv_as_utf8|, which will hold pointers into |storage|.
   std::vector<std::string> storage;
-  std::unique_ptr<char*[]> argv_as_utf8(new char*[argv.size() + 1]);
+  auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     storage.push_back(base::WideToUTF8(argv[i]));
 #else
     storage.push_back(argv[i]);
@@ -121,27 +132,5 @@ int CrashReporterMain() {
   return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
                                /*user_stream_sources=*/nullptr);
 }
-
-#if defined(OS_WIN)
-
-std::wstring GetCrashReporterIPCPipeName() {
-  return g_is_connected_to_crash_handler
-             ? GetCrashpadClient()->GetHandlerIPCPipe()
-             : std::wstring();
-}
-
-void UseCrashReporter(const std::wstring& ipc_pipe_name) {
-  DCHECK(!ipc_pipe_name.empty());
-  crashpad::CrashpadClient* crashpad_client = GetCrashpadClient();
-  if (!crashpad_client->SetHandlerIPCPipe(ipc_pipe_name)) {
-    LOG(DFATAL) << "Failed to set handler IPC pipe name: " << ipc_pipe_name;
-    return;
-  }
-
-  g_is_connected_to_crash_handler = true;
-  VLOG(1) << "Crash handler is ready.";
-}
-
-#endif  // OS_WIN
 
 }  // namespace updater

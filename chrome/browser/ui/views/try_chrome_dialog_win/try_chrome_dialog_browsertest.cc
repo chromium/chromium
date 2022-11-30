@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ using ::testing::Range;
 // enable it for those platforms at the moment. I hope one day our test harness
 // will be improved to support this so we can get coverage on other platforms.
 // See http://crbug.com/45115 for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/try_chrome_dialog_win/try_chrome_dialog.h"
 
 #include "ui/aura/window.h"
@@ -80,6 +80,11 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTest, ToastCrasher) {}
 // functionality.
 class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
  public:
+  TryChromeDialogBrowserTestBase(const TryChromeDialogBrowserTestBase&) =
+      delete;
+  TryChromeDialogBrowserTestBase& operator=(
+      const TryChromeDialogBrowserTestBase&) = delete;
+
   // Breaks ShowDialogSync() out of its modal run loop.
   void QuitModalLoop() {
     if (quit_closure_)
@@ -109,6 +114,7 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
   // content:BrowserTestBase:
   void SetUpOnMainThread() override {
     dialog_ = base::WrapUnique(new TryChromeDialog(group_, &delegate_));
+    dialog_->BypassTaskbarIconSearchForTesting();
   }
   void TearDownInProcessBrowserTestFixture() override { dialog_.reset(); }
 
@@ -157,8 +163,6 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
   ::testing::NiceMock<MockDelegate> delegate_;
   std::unique_ptr<TryChromeDialog> dialog_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialogBrowserTestBase);
 };
 
 // Showing the dialog then closing it via WM_CLOSE should not launch the
@@ -234,6 +238,10 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTestBase, EarlyEndSession) {
 
   // The dialog is still open, so the result remains in its initial state.
   EXPECT_THAT(result(), Eq(TryChromeDialog::NOT_NOW));
+
+  // Spin the message loop, to allow Chrome to handle the WM_ENDSESSION
+  // gracefully.
+  RunUntilQuit();
 }
 
 // Showing the dialog then receiving a rendezvous should suppress the initial
@@ -287,6 +295,10 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTestBase, EarlyRendezvous) {
 class TryChromeDialogTest
     : public SupportsTestDialog<TryChromeDialogBrowserTestBase>,
       public ::testing::WithParamInterface<int> {
+ public:
+  TryChromeDialogTest(const TryChromeDialogTest&) = delete;
+  TryChromeDialogTest& operator=(const TryChromeDialogTest&) = delete;
+
  protected:
   TryChromeDialogTest()
       : SupportsTestDialog<TryChromeDialogBrowserTestBase>(GetParam()) {}
@@ -297,9 +309,6 @@ class TryChromeDialogTest
     // This class tests a non-dialog widget with the following name.
     return "TryChromeDialog";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_P(TryChromeDialogTest, InvokeUi_default) {
@@ -313,4 +322,4 @@ INSTANTIATE_TEST_SUITE_P(
         0,
         static_cast<int>(installer::ExperimentMetrics::kHoldbackGroup)));
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 @interface CRUUpdateServiceInternalProxyImpl
     : NSObject <CRUUpdateServicingInternal>
 
-- (instancetype)initPrivileged;
+- (instancetype)initWithScope:(updater::UpdaterScope)scope;
 
 @end
 
@@ -27,18 +27,22 @@
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
 }
 
-- (instancetype)init {
-  return [self initWithConnectionOptions:0];
+- (instancetype)initWithScope:(updater::UpdaterScope)scope {
+  switch (scope) {
+    case updater::UpdaterScope::kUser:
+      return [self initWithConnectionOptions:0 withScope:scope];
+    case updater::UpdaterScope::kSystem:
+      return [self initWithConnectionOptions:NSXPCConnectionPrivileged
+                                   withScope:scope];
+  }
+  return nil;
 }
 
-- (instancetype)initPrivileged {
-  return [self initWithConnectionOptions:NSXPCConnectionPrivileged];
-}
-
-- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options {
+- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options
+                                withScope:(updater::UpdaterScope)scope {
   if ((self = [super init])) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:updater::GetUpdateServiceInternalMachName()
+        initWithMachServiceName:updater::GetUpdateServiceInternalMachName(scope)
                                     .get()
                         options:options]);
 
@@ -90,25 +94,24 @@
 
 namespace updater {
 
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
+}
+
 UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
     : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] initPrivileged]);
-      break;
-    case UpdaterScope::kUser:
-      client_.reset([[CRUUpdateServiceInternalProxyImpl alloc] init]);
-      break;
-  }
+  client_.reset(
+      [[CRUUpdateServiceInternalProxyImpl alloc] initWithScope:scope]);
 }
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(block_callback)));
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
 
   [client_ performTasksWithReply:reply];
@@ -117,11 +120,11 @@ void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
 
   __block base::OnceClosure block_callback = std::move(callback);
   auto reply = ^() {
-    callback_runner_->PostTask(FROM_HERE,
-                               base::BindOnce(std::move(block_callback)));
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
   };
 
   [client_ performInitializeUpdateServiceWithReply:reply];

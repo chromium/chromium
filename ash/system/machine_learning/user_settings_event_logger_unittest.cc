@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -47,8 +48,7 @@ NetworkStatePropertiesPtr CreateWifiNetwork(int signal_strength,
   wifi->signal_strength = signal_strength;
   wifi->security = security_type;
   network->type = NetworkType::kWiFi;
-  network->type_state = NetworkTypeStateProperties::New();
-  network->type_state->set_wifi(std::move(wifi));
+  network->type_state = NetworkTypeStateProperties::NewWifi(std::move(wifi));
 
   return network;
 }
@@ -59,8 +59,8 @@ NetworkStatePropertiesPtr CreateCellularNetwork(int signal_strength) {
   CellularStatePropertiesPtr cellular = CellularStateProperties::New();
   cellular->signal_strength = signal_strength;
   network->type = NetworkType::kCellular;
-  network->type_state = NetworkTypeStateProperties::New();
-  network->type_state->set_cellular(std::move(cellular));
+  network->type_state =
+      NetworkTypeStateProperties::NewCellular(std::move(cellular));
 
   return network;
 }
@@ -112,7 +112,7 @@ class UserSettingsEventLoggerTest : public AshTestBase {
 
  protected:
   void FastForwardBySeconds(const int seconds) {
-    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(seconds));
+    task_environment()->FastForwardBy(base::Seconds(seconds));
   }
 
   std::vector<const ukm::mojom::UkmEntry*> GetUkmEntries() {
@@ -211,21 +211,6 @@ TEST_F(UserSettingsEventLoggerTest, TestLogCellularEvent) {
   TestUkmRecorder::ExpectEntryMetric(entry, "SignalStrength", 25);
   // After the first cellular event, |UsedCellularInSession| should now be true.
   TestUkmRecorder::ExpectEntryMetric(entry, "UsedCellularInSession", true);
-}
-
-TEST_F(UserSettingsEventLoggerTest, TestLogBluetoothEvent) {
-  // Log an event with a null bluetooth address.
-  logger_->LogBluetoothUkmEvent(BluetoothAddress());
-
-  const auto& entries = GetUkmEntries();
-  ASSERT_EQ(1ul, entries.size());
-
-  const auto* entry = entries[0];
-  TestUkmRecorder::ExpectEntryMetric(entry, "SettingId",
-                                     UserSettingsEvent::Event::BLUETOOTH);
-  TestUkmRecorder::ExpectEntryMetric(entry, "SettingType",
-                                     UserSettingsEvent::Event::QUICK_SETTINGS);
-  // |is_paired_bluetooth_device| is tested manually.
 }
 
 TEST_F(UserSettingsEventLoggerTest, TestLogNightLightEvent) {

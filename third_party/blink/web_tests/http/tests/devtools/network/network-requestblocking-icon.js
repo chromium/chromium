@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
   dumpIconResult();
 
   TestRunner.addResult('Loading Network Module');
-  await self.runtime.loadModulePromise('network');
+  await TestRunner.loadLegacyModule('network');
   TestRunner.addResult('Network Module Loaded');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(false);
@@ -32,7 +32,7 @@
   TestRunner.completeTest();
 
   function dumpIconResult() {
-    var hasIcon = !!UI.inspectorView._tabbedPane._tabsElement.getElementsByClassName('smallicon-warning').length;
+    var hasIcon = !!UI.inspectorView.tabbedPane.tabsElement.getElementsByClassName('smallicon-warning').length;
     TestRunner.addResult('Is blocking: ' + SDK.multitargetNetworkManager.isBlocking());
     TestRunner.addResult(hasIcon ? 'Has Icon' : 'Does Not Have Icon');
     TestRunner.addResult('');

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 
@@ -18,9 +17,8 @@ class RenderFrameHost;
 class WebContents;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 class TestConditionWaiter;
 
 using UIPath = std::initializer_list<base::StringPiece>;
@@ -42,9 +40,9 @@ class JSChecker {
   void ExecuteAsync(const std::string& expression);
 
   // Evaluates `expression` and returns its result.
-  WARN_UNUSED_RESULT bool GetBool(const std::string& expression);
-  WARN_UNUSED_RESULT int GetInt(const std::string& expression);
-  WARN_UNUSED_RESULT std::string GetString(const std::string& expression);
+  [[nodiscard]] bool GetBool(const std::string& expression);
+  [[nodiscard]] int GetInt(const std::string& expression);
+  [[nodiscard]] std::string GetString(const std::string& expression);
 
   // Checks truthfulness of the given `expression`.
   void ExpectTrue(const std::string& expression);
@@ -60,13 +58,13 @@ class JSChecker {
 
   // Evaluates value of element with `element_id`'s `attribute` and
   // returns its result.
-  WARN_UNUSED_RESULT bool GetAttributeBool(
+  [[nodiscard]] bool GetAttributeBool(
       const std::string& attribute,
       std::initializer_list<base::StringPiece> element_id);
-  WARN_UNUSED_RESULT int GetAttributeInt(
+  [[nodiscard]] int GetAttributeInt(
       const std::string& attribute,
       std::initializer_list<base::StringPiece> element_id);
-  WARN_UNUSED_RESULT std::string GetAttributeString(
+  [[nodiscard]] std::string GetAttributeString(
       const std::string& attribute,
       std::initializer_list<base::StringPiece> element_id);
 
@@ -91,50 +89,51 @@ class JSChecker {
                          bool result);
 
   void ExpectFocused(std::initializer_list<base::StringPiece> element_id);
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateFocusWaiter(
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateFocusWaiter(
       const std::initializer_list<base::StringPiece>& path);
 
   // Checks test waiter that would await until `js_condition` evaluates
   // to true.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateWaiter(
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateWaiter(
       const std::string& js_condition);
 
   // Checks test waiter that would await until `js_condition` evaluates
   // to true.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter>
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter>
   CreateWaiterWithDescription(const std::string& js_condition,
                               const std::string& description);
 
   // Waiter that waits until the given attribute is (not) present.
   // WARNING! This does not cover the case where ATTRIBUTE=false.
   // Should only be used for boolean attributes.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter>
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter>
   CreateAttributePresenceWaiter(
       const std::string& attribute,
       bool presence,
       std::initializer_list<base::StringPiece> element_ids);
 
   // Waiter that waits until specified element is (not) hidden.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter>
-  CreateVisibilityWaiter(bool visibility,
-                         std::initializer_list<base::StringPiece> element_ids);
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter>
-  CreateVisibilityWaiter(bool visibility, const std::string& element);
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateVisibilityWaiter(
+      bool visibility,
+      std::initializer_list<base::StringPiece> element_ids);
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateVisibilityWaiter(
+      bool visibility,
+      const std::string& element);
 
   // Waiter that waits until specified element is (not) displayed with non-zero
   // size.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateDisplayedWaiter(
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateDisplayedWaiter(
       bool displayed,
       std::initializer_list<base::StringPiece> element_ids);
 
   // Waiter that waits until an element is enabled or disabled.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateEnabledWaiter(
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateEnabledWaiter(
       bool enabled,
       std::initializer_list<base::StringPiece> element_ids);
 
   // Waiter that waits until the specified element's class list contains, or
   // doesn't contain the specified class.
-  WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateHasClassWaiter(
+  [[nodiscard]] std::unique_ptr<TestConditionWaiter> CreateHasClassWaiter(
       bool has_class,
       const std::string& css_class,
       std::initializer_list<base::StringPiece> element_ids);
@@ -197,6 +196,10 @@ class JSChecker {
   void ExpectElementValue(const std::string& value,
                           std::initializer_list<base::StringPiece> element_ids);
 
+  // Expects that the indicated modal dialog is open or closed.
+  void ExpectDialogOpen(std::initializer_list<base::StringPiece> element_ids);
+  void ExpectDialogClosed(std::initializer_list<base::StringPiece> element_ids);
+
   // Fires a native 'click' event on the indicated UI element. Prefer using
   // native 'click' event as it works on both polymer and native UI elements.
   void ClickOnPath(std::initializer_list<base::StringPiece> element_ids);
@@ -206,6 +209,7 @@ class JSChecker {
   // backwards compatibility with some OOBE UI elements that only listen to
   // tap events.
   void TapOnPath(std::initializer_list<base::StringPiece> element_ids);
+  void TapOnPathAsync(std::initializer_list<base::StringPiece> element_ids);
   void TapOn(const std::string& element_id);
 
   // Clicks on the indicated UI element that should be a link.
@@ -225,9 +229,13 @@ class JSChecker {
       const std::string& value,
       std::initializer_list<base::StringPiece> element_ids);
 
+  bool IsVisible(std::initializer_list<base::StringPiece> element_ids);
+
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
+
+  content::WebContents* web_contents() { return web_contents_; }
 
  private:
   void GetBoolImpl(const std::string& expression, bool* result);
@@ -258,19 +266,16 @@ std::string GetAttributeExpression(
     const std::string& attribute,
     std::initializer_list<base::StringPiece> element_ids);
 
-// Creates a waiter that allows to wait until screen with `oobe_screen_id` is
-// shown in webui.
-WARN_UNUSED_RESULT std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
-    const std::string& oobe_screen_id);
-
-}  // namespace test
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace test {
-using ::chromeos::test::CreateOobeScreenWaiter;
 }  // namespace test
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos::test {
+using ::ash::test::ExecuteOobeJS;
+using ::ash::test::GetOobeElementPath;
+using ::ash::test::OobeJS;
+using ::ash::test::UIPath;
+}  // namespace chromeos::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_JS_CHECKER_H_

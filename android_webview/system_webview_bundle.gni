@@ -1,9 +1,10 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
+import("//components/crash/android/silent_java_assert_reporting.gni")
 import("//weblayer/variables.gni")
 
 template("system_webview_bundle") {
@@ -11,7 +12,7 @@ template("system_webview_bundle") {
   _base_target_gen_dir =
       get_label_info(invoker.base_module_target, "target_gen_dir")
   _base_module_build_config =
-      "$_base_target_gen_dir/${_base_target_name}.build_config"
+      "$_base_target_gen_dir/${_base_target_name}.build_config.json"
   _rebased_base_module_build_config =
       rebase_path(_base_module_build_config, root_build_dir)
   _base_module_version_code =
@@ -57,7 +58,7 @@ template("system_webview_bundle") {
       if (defined(invoker.weblayer_deps)) {
         deps += invoker.weblayer_deps
       }
-      aapt_locale_allowlist = locales
+      aapt_locale_allowlist = platform_pak_locales
       proguard_enabled = !is_java_debug
       package_name = "weblayer"
       package_id = 126
@@ -66,6 +67,10 @@ template("system_webview_bundle") {
       version_code = _base_module_version_code
       manifest_package =
           "@FileArg($_rebased_base_module_build_config:deps_info:package_name)"
+
+      if (enable_silent_java_assert_reporting) {
+        custom_assertion_handler = crash_reporting_assertion_handler
+      }
     }
   }
 
@@ -77,7 +82,7 @@ template("system_webview_bundle") {
     if (webview_includes_weblayer && weblayer_in_split) {
       extra_modules = [ _weblayer_module_desc ]
     }
-    system_image_locale_allowlist = locales
+    system_image_locale_allowlist = platform_pak_locales
     is_multi_abi =
         android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                      invoker.include_64_bit_webview) &&
@@ -87,6 +92,13 @@ template("system_webview_bundle") {
     if (!defined(proguard_android_sdk_dep)) {
       proguard_android_sdk_dep = webview_framework_dep
     }
+
+    if (enable_silent_java_assert_reporting) {
+      custom_assertion_handler = crash_reporting_assertion_handler
+    }
+
+    # For this to be respected, it must also be set on the base module target.
+    strip_unused_resources = is_official_build
 
     forward_variables_from(invoker, "*")
   }

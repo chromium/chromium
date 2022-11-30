@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_REQUEST_QUEUE_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_REQUEST_QUEUE_H_
 
-#include "base/macros.h"
+#include <memory>
+
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 
@@ -17,9 +18,12 @@ class WebState;
 // A queue of OverlayRequests for a specific WebState.
 class OverlayRequestQueue {
  public:
+  OverlayRequestQueue(const OverlayRequestQueue&) = delete;
+  OverlayRequestQueue& operator=(const OverlayRequestQueue&) = delete;
+
   virtual ~OverlayRequestQueue() = default;
 
-  // Returns the request queue for |web_state| at |modality|.
+  // Returns the request queue for `web_state` at `modality`.
   static OverlayRequestQueue* FromWebState(web::WebState* web_state,
                                            OverlayModality modality);
 
@@ -31,22 +35,22 @@ class OverlayRequestQueue {
   // queue is updated.
   virtual OverlayRequest* front_request() const = 0;
 
-  // Returns the OverlayRequest at |index|.  |index| must be less than the
+  // Returns the OverlayRequest at `index`.  `index` must be less than the
   // queue's size.  Also supports array-style accessors.
   virtual OverlayRequest* GetRequest(size_t index) const = 0;
   OverlayRequest* operator[](size_t index) { return GetRequest(index); }
 
-  // Adds |request| to be displayed alongside the content area of queue's
-  // corresponding WebState.  |cancel_handler| may be used to cancel the
-  // request.  If |cancel_handler| is not provided, the request will be
+  // Adds `request` to be displayed alongside the content area of queue's
+  // corresponding WebState.  `cancel_handler` may be used to cancel the
+  // request.  If `cancel_handler` is not provided, the request will be
   // cancelled by default for committed, document-changing navigations.
   virtual void AddRequest(std::unique_ptr<OverlayRequest> request,
                           std::unique_ptr<OverlayRequestCancelHandler>
                               cancel_handler = nullptr) = 0;
 
-  // Inserts |request| into the queue at |index|.  |index| must be less than or
-  // equal to the queue's size.  |cancel_handler| may be used to cancel the
-  // request.  If |cancel_handler| is not provided, the request will be
+  // Inserts `request` into the queue at `index`.  `index` must be less than or
+  // equal to the queue's size.  `cancel_handler` may be used to cancel the
+  // request.  If `cancel_handler` is not provided, the request will be
   // cancelled by default for committed, document-changing navigations.
   // Inserting at index 0 will dismiss the currently visible overlay UI if it is
   // presented for that request.
@@ -63,9 +67,8 @@ class OverlayRequestQueue {
 
  private:
   friend class OverlayRequestCancelHandler;
-  DISALLOW_COPY_AND_ASSIGN(OverlayRequestQueue);
 
-  // Called by cancellation handlers to cancel |request|.
+  // Called by cancellation handlers to cancel `request`.
   virtual void CancelRequest(OverlayRequest* request) = 0;
 };
 

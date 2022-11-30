@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -24,42 +25,38 @@ const float kCutoffRatio = 0.005f;
 const float kDiscountFactor = 0.75f;
 
 // Gets the sum of the counter for all languages in the histogram.
-int GetCountersSum(const base::DictionaryValue& dict) {
+int GetCountersSum(const base::Value::Dict& dict) {
   int sum = 0;
-  int counter_value = 0;
-  for (base::DictionaryValue::Iterator itr(dict); !itr.IsAtEnd();
-       itr.Advance()) {
-    if (itr.value().GetAsInteger(&counter_value))
-      sum += counter_value;
+  for (const auto itr : dict) {
+    if (itr.second.is_int())
+      sum += itr.second.GetInt();
   }
   return sum;
 }
 
 // Removes languages with small counter values and discount remaining counters.
-void DiscountAndCleanCounters(base::DictionaryValue* dict) {
+void DiscountAndCleanCounters(base::Value::Dict& dict) {
   std::set<std::string> remove_keys;
 
-  int counter_value = 0;
-  for (base::DictionaryValue::Iterator itr(*dict); !itr.IsAtEnd();
-       itr.Advance()) {
+  for (const auto itr : dict) {
     // Remove languages with invalid or small values.
-    if (!itr.value().GetAsInteger(&counter_value) ||
-        counter_value < (kCutoffRatio * kMaxCountersSum)) {
-      remove_keys.insert(itr.key());
+    if (!itr.second.is_int() ||
+        itr.second.GetInt() < (kCutoffRatio * kMaxCountersSum)) {
+      remove_keys.insert(itr.first);
       continue;
     }
 
     // Discount the value.
-    dict->SetInteger(itr.key(), counter_value * kDiscountFactor);
+    dict.Set(itr.first, int(itr.second.GetInt() * kDiscountFactor));
   }
 
   for (const std::string& lang_to_remove : remove_keys)
-    dict->Remove(lang_to_remove, nullptr);
+    dict.Remove(lang_to_remove);
 }
 
 // Transforms the counters from prefs into a list of LanguageInfo structs.
 std::vector<UrlLanguageHistogram::LanguageInfo> GetAllLanguages(
-    const base::DictionaryValue& dict) {
+    const base::Value::Dict& dict) {
   int counters_sum = GetCountersSum(dict);
 
   // If the sample is not large enough yet, pretend there are no top languages.
@@ -67,13 +64,11 @@ std::vector<UrlLanguageHistogram::LanguageInfo> GetAllLanguages(
     return std::vector<UrlLanguageHistogram::LanguageInfo>();
 
   std::vector<UrlLanguageHistogram::LanguageInfo> top_languages;
-  int counter_value = 0;
-  for (base::DictionaryValue::Iterator itr(dict); !itr.IsAtEnd();
-       itr.Advance()) {
-    if (!itr.value().GetAsInteger(&counter_value))
+  for (const auto itr : dict) {
+    if (!itr.second.is_int())
       continue;
     top_languages.emplace_back(
-        itr.key(), static_cast<float>(counter_value) / counters_sum);
+        itr.first, static_cast<float>(itr.second.GetInt()) / counters_sum);
   }
   return top_languages;
 }
@@ -87,14 +82,14 @@ UrlLanguageHistogram::~UrlLanguageHistogram() = default;
 
 // static
 void UrlLanguageHistogram::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kUrlLanguageHistogramCounters);
+  registry->RegisterDictionaryPref(kUrlLanguageHistogramCounters,
+                                   PrefRegistry::LOSSY_PREF);
 }
 
 std::vector<UrlLanguageHistogram::LanguageInfo>
 UrlLanguageHistogram::GetTopLanguages() const {
   std::vector<UrlLanguageHistogram::LanguageInfo> top_languages =
-      GetAllLanguages(
-          *pref_service_->GetDictionary(kUrlLanguageHistogramCounters));
+      GetAllLanguages(pref_service_->GetDict(kUrlLanguageHistogramCounters));
 
   std::sort(top_languages.begin(), top_languages.end(),
             [](UrlLanguageHistogram::LanguageInfo a,
@@ -107,29 +102,27 @@ UrlLanguageHistogram::GetTopLanguages() const {
 
 float UrlLanguageHistogram::GetLanguageFrequency(
     const std::string& language_code) const {
-  const base::DictionaryValue* dict =
-      pref_service_->GetDictionary(kUrlLanguageHistogramCounters);
-  int counters_sum = GetCountersSum(*dict);
+  const base::Value::Dict& dict =
+      pref_service_->GetDict(kUrlLanguageHistogramCounters);
+  int counters_sum = GetCountersSum(dict);
   // If the sample is not large enough yet, pretend there are no top languages.
   if (counters_sum < kMinCountersSum)
     return 0;
 
-  int counter_value = 0;
   // If the key |language_code| does not exist, |counter_value| stays 0.
-  dict->GetInteger(language_code, &counter_value);
+  int counter_value = dict.FindInt(language_code).value_or(0);
 
   return static_cast<float>(counter_value) / counters_sum;
 }
 
 void UrlLanguageHistogram::OnPageVisited(const std::string& language_code) {
-  DictionaryPrefUpdate update(pref_service_, kUrlLanguageHistogramCounters);
-  base::DictionaryValue* dict = update.Get();
-  int counter_value = 0;
+  ScopedDictPrefUpdate update(pref_service_, kUrlLanguageHistogramCounters);
+  base::Value::Dict& dict = update.Get();
   // If the key |language_code| does not exist, |counter_value| stays 0.
-  dict->GetInteger(language_code, &counter_value);
-  dict->SetInteger(language_code, counter_value + 1);
+  int counter_value = dict.FindInt(language_code).value_or(0);
+  dict.Set(language_code, counter_value + 1);
 
-  if (GetCountersSum(*dict) > kMaxCountersSum)
+  if (GetCountersSum(dict) > kMaxCountersSum)
     DiscountAndCleanCounters(dict);
 }
 

@@ -64,4 +64,4 @@ class CORE_EXPORT ExternalDateTimeChooser final : public DateTimeChooser {
   Member<DateTimeChooserClient> client_;
 };
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_EXTERNAL_DATE_TIME_CHOOSER_H_

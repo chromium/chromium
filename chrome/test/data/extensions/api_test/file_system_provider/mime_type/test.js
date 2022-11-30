@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,11 +67,18 @@ function runTests() {
               chrome.test.assertTrue(!!externalEntry);
               chrome.fileManagerPrivate.getFileTasks(
                   [externalEntry],
-                  chrome.test.callbackPass(function(tasks) {
+                  chrome.test.callbackPass(function(resultingTasks) {
+                    const tasks = resultingTasks.tasks;
                     chrome.test.assertEq(1, tasks.length);
                     chrome.test.assertEq(
-                        'pkplfbidichfdicaijlchgnapepdginl|app|magic_handler',
-                        tasks[0].taskId);
+                        'pkplfbidichfdicaijlchgnapepdginl',
+                        tasks[0].descriptor.appId);
+                    chrome.test.assertEq(
+                        'app',
+                        tasks[0].descriptor.taskType);
+                    chrome.test.assertEq(
+                        'magic_handler',
+                        tasks[0].descriptor.actionId);
                   }));
             }).catch(chrome.test.fail);
           }), function(error) {
@@ -91,12 +98,18 @@ function runTests() {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
                       [externalEntry],
-                      chrome.test.callbackPass(function(tasks) {
+                      chrome.test.callbackPass(function(resultingTasks) {
+                        const tasks = resultingTasks.tasks;
                         chrome.test.assertEq(1, tasks.length);
                         chrome.test.assertEq(
-                            'pkplfbidichfdicaijlchgnapepdginl|app|' +
-                                'magic_handler',
-                            tasks[0].taskId);
+                            'pkplfbidichfdicaijlchgnapepdginl',
+                            tasks[0].descriptor.appId);
+                        chrome.test.assertEq(
+                            'app',
+                            tasks[0].descriptor.taskType);
+                        chrome.test.assertEq(
+                            'magic_handler',
+                            tasks[0].descriptor.actionId);
                         var onLaunched = chrome.test.callbackPass(
                             function(event) {
                               chrome.test.assertTrue(!!event);
@@ -113,7 +126,7 @@ function runTests() {
                             });
                         chrome.app.runtime.onLaunched.addListener(onLaunched);
                         chrome.fileManagerPrivate.executeTask(
-                            tasks[0].taskId,
+                          tasks[0].descriptor,
                             [externalEntry],
                             chrome.test.callbackPass(function() {}));
                       }));
@@ -135,7 +148,8 @@ function runTests() {
                   chrome.test.assertTrue(!!externalEntry);
                   chrome.fileManagerPrivate.getFileTasks(
                       [externalEntry],
-                      chrome.test.callbackPass(function(tasks) {
+                      chrome.test.callbackPass(function(resultingTasks) {
+                        const tasks = resultingTasks.tasks;
                         chrome.test.assertEq(0, tasks.length);
                       }));
                 })).catch(chrome.test.fail);

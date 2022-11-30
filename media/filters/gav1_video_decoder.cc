@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,8 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   // VideoFramePool creates frames with a fixed alignment of
   // VideoFrame::kFrameAddressAlignment. If libgav1 requests a larger
   // alignment, it cannot be supported.
-  CHECK_LE(stride_alignment, VideoFrame::kFrameAddressAlignment);
+  CHECK_LE(static_cast<size_t>(stride_alignment),
+           VideoFrame::kFrameAddressAlignment);
 
   const VideoPixelFormat format =
       Libgav1ImageFormatToVideoPixelFormat(image_format, bitdepth);
@@ -147,7 +148,7 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   // proper, indicated by Y. VideoFramePool aligns the first byte of the
   // buffer, indicated by X. To make sure the byte indicated by Y is also
   // aligned, we need to pad left_border to be a multiple of stride_alignment.
-  left_border = base::bits::Align(left_border, stride_alignment);
+  left_border = base::bits::AlignUp(left_border, stride_alignment);
   gfx::Size coded_size(left_border + width + right_border,
                        top_border + height + bottom_border);
   gfx::Rect visible_rect(left_border, top_border, width, height);
@@ -161,7 +162,7 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
   for (int i = 0; i < 3; i++) {
     // frame_buffer->plane[i] points to the first byte of the frame proper,
     // not the first byte of the buffer.
-    frame_buffer->plane[i] = video_frame->visible_data(i);
+    frame_buffer->plane[i] = video_frame->GetWritableVisibleData(i);
     frame_buffer->stride[i] = video_frame->stride(i);
   }
   if (image_format == libgav1::kImageFormatMonochrome400) {
@@ -174,11 +175,11 @@ libgav1::StatusCode GetFrameBufferImpl(void* callback_private_data,
       // and V samples in video_frame to the blank value.
       if (bitdepth == 8) {
         constexpr uint8_t kBlankUV = 256 / 2;
-        memset(video_frame->visible_data(i), kBlankUV, size_needed);
+        memset(video_frame->GetWritableVisibleData(i), kBlankUV, size_needed);
       } else {
         const uint16_t kBlankUV = (1 << bitdepth) / 2;
         uint16_t* data =
-            reinterpret_cast<uint16_t*>(video_frame->visible_data(i));
+            reinterpret_cast<uint16_t*>(video_frame->GetWritableVisibleData(i));
         std::fill(data, data + size_needed / 2, kBlankUV);
       }
     }
@@ -208,8 +209,7 @@ scoped_refptr<VideoFrame> FormatVideoFrame(
     const VideoColorSpace& container_color_space) {
   scoped_refptr<VideoFrame> frame =
       static_cast<VideoFrame*>(buffer.buffer_private_data);
-  frame->set_timestamp(
-      base::TimeDelta::FromMicroseconds(buffer.user_private_data));
+  frame->set_timestamp(base::Microseconds(buffer.user_private_data));
 
   // AV1 color space defines match ISO 23001-8:2016 via ISO/IEC 23091-4/ITU-T
   // H.273. https://aomediacodec.github.io/av1-spec/#color-config-semantics
@@ -269,8 +269,9 @@ void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
-  if (config.is_encrypted() || config.codec() != kCodecAV1) {
-    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+  if (config.is_encrypted() || config.codec() != VideoCodec::kAV1) {
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -296,15 +297,15 @@ void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (status != kLibgav1StatusOk) {
     MEDIA_LOG(ERROR, media_log_) << "libgav1::Decoder::Init() failed, "
                                  << "status=" << status;
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
 
   output_cb_ = output_cb;
   state_ = DecoderState::kDecoding;
   color_space_ = config.color_space_info();
-  pixel_aspect_ratio_ = config.GetPixelAspectRatio();
-  std::move(bound_init_cb).Run(OkStatus());
+  aspect_ratio_ = config.aspect_ratio();
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void Gav1VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -321,18 +322,18 @@ void Gav1VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                  : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!DecodeBuffer(std::move(buffer))) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // VideoDecoderShim expects |decode_cb| call after |output_cb_|.
-  std::move(bound_decode_cb).Run(DecodeStatus::OK);
+  std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 bool Gav1VideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
@@ -421,10 +422,6 @@ void Gav1VideoDecoder::Reset(base::OnceClosure reset_cb) {
   }
 }
 
-bool Gav1VideoDecoder::IsOptimizedForRTC() const {
-  return true;
-}
-
 void Gav1VideoDecoder::Detach() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bind_callbacks_);
@@ -442,9 +439,9 @@ scoped_refptr<VideoFrame> Gav1VideoDecoder::CreateVideoFrame(
   //   The buffer for the new frame will be zero initialized.  Reused frames
   //   will not be zero initialized.
   // The zero initialization is necessary for FFmpeg but not for libgav1.
-  return frame_pool_.CreateFrame(
-      format, coded_size, visible_rect,
-      GetNaturalSize(visible_rect, pixel_aspect_ratio_), kNoTimestamp);
+  return frame_pool_.CreateFrame(format, coded_size, visible_rect,
+                                 aspect_ratio_.GetNaturalSize(visible_rect),
+                                 kNoTimestamp);
 }
 
 void Gav1VideoDecoder::CloseDecoder() {

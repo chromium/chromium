@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,8 @@ PlatformChannelServerEndpoint NamedPlatformChannel::CreateServerEndpoint(
 
 // static
 PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
-    const ServerName& server_name) {
-  std::wstring pipe_name = GetPipeNameFromServerName(server_name);
+    const Options& options) {
+  std::wstring pipe_name = GetPipeNameFromServerName(options.server_name);
 
   // Note: This may block.
   if (!::WaitNamedPipeW(pipe_name.c_str(), NMPWAIT_USE_DEFAULT_WAIT))

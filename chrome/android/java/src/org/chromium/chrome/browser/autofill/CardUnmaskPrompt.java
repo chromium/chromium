@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -24,27 +25,23 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * A prompt that bugs users to enter their CVC when unmasking a Wallet instrument (credit card).
@@ -67,15 +64,14 @@ public class CardUnmaskPrompt
     private final View mExpirationContainer;
     private final TextView mNewCardLink;
     private final TextView mErrorMessage;
-    private final CheckBox mStoreLocallyCheckbox;
     private final CheckBox mUseScreenlockCheckbox;
-    private final ImageView mStoreLocallyTooltipIcon;
-    private PopupWindow mStoreLocallyTooltipPopup;
     private final ViewGroup mControlsContainer;
     private final View mVerificationOverlay;
     private final ProgressBar mVerificationProgressBar;
     private final TextView mVerificationView;
     private final long mSuccessMessageDurationMilliseconds;
+    private final int mGooglePayDrawableId;
+    private final boolean mIsCardLocal;
 
     private int mThisYear;
     private int mThisMonth;
@@ -107,11 +103,9 @@ public class CardUnmaskPrompt
          * @param cvc The value the user entered (a CVC), or an empty string if the user canceled.
          * @param month The value the user selected for expiration month, if any.
          * @param year The value the user selected for expiration month, if any.
-         * @param shouldStoreLocally The state of the "Save locally?" checkbox at the time.
          * @param enableFidoAuth The value the user selected for the use lockscreen checkbox.
          */
-        void onUserInput(String cvc, String month, String year, boolean shouldStoreLocally,
-                boolean enableFidoAuth);
+        void onUserInput(String cvc, String month, String year, boolean enableFidoAuth);
 
         /**
          * Called when the "New card?" link has been clicked.
@@ -156,6 +150,8 @@ public class CardUnmaskPrompt
             boolean defaultToStoringLocally, boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked, long successMessageDurationMilliseconds) {
         mDelegate = delegate;
+        mGooglePayDrawableId = googlePayDrawableId;
+        mIsCardLocal = isCardLocal;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
@@ -172,16 +168,12 @@ public class CardUnmaskPrompt
         mNewCardLink = (TextView) v.findViewById(R.id.new_card_link);
         mNewCardLink.setOnClickListener(this);
         mErrorMessage = (TextView) v.findViewById(R.id.error_message);
-        mStoreLocallyCheckbox = (CheckBox) v.findViewById(R.id.store_locally_checkbox);
         mUseScreenlockCheckbox = (CheckBox) v.findViewById(R.id.use_screenlock_checkbox);
         mUseScreenlockCheckbox.setChecked(defaultUseScreenlockChecked);
         if (!shouldOfferWebauthn) {
             mUseScreenlockCheckbox.setVisibility(View.GONE);
             mUseScreenlockCheckbox.setChecked(false);
         }
-        mStoreLocallyTooltipIcon = (ImageView) v.findViewById(R.id.store_locally_tooltip_icon);
-        mStoreLocallyTooltipIcon.setOnClickListener(this);
-        v.findViewById(R.id.store_locally_container).setVisibility(View.GONE);
         mControlsContainer = (ViewGroup) v.findViewById(R.id.controls_container);
         mVerificationOverlay = v.findViewById(R.id.verification_overlay);
         mVerificationProgressBar = (ProgressBar) v.findViewById(R.id.verification_progress_bar);
@@ -191,25 +183,11 @@ public class CardUnmaskPrompt
 
         Resources resources = context.getResources();
         String modalDialogTitle = null;
-        if (isGooglePayLogoEnabled() && !isCardLocal) {
-            Drawable mInlineTitleIcon = resources.getDrawable(googlePayDrawableId);
-            // The first character will be replaced by the logo, and the consecutive spaces after
-            // are used as padding.
-            SpannableString titleWithLogo = new SpannableString("   " + title);
-            // How much the original logo should scale up in size to match height of text.
-            float scaleFactor = mTitleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
-            mInlineTitleIcon.setBounds(
-                    /* left */ 0, /* top */ 0,
-                    /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
-                    /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
-            titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
-                    /* start */ 0,
-                    /* end */ 1,
-                    /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-            mTitleView.setText(titleWithLogo, BufferType.SPANNABLE);
-        } else {
+        if (isCardLocal) {
             mTitleView.setVisibility(View.GONE);
             modalDialogTitle = title;
+        } else {
+            updateTitleForCustomView(title, context);
         }
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -280,13 +258,16 @@ public class CardUnmaskPrompt
     }
 
     /**
-     * Show the dialog. If activity is null this method will not do anything.
+     * Show the dialog.
+     *
+     * @param activity The current activity, used for context. When null, the method does nothing.
+     * @param modalDialogManager Used to display modal dialogs. When null, the method does nothing.
      */
-    public void show(ChromeActivity activity) {
-        if (activity == null) return;
+    public void show(@Nullable Activity activity, @Nullable ModalDialogManager modalDialogManager) {
+        if (activity == null || modalDialogManager == null) return;
 
         mContext = activity;
-        mModalDialogManager = activity.getModalDialogManager();
+        mModalDialogManager = modalDialogManager;
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
 
@@ -300,13 +281,36 @@ public class CardUnmaskPrompt
     }
 
     public void update(String title, String instructions, boolean shouldRequestExpirationDate) {
-        mDialogModel.set(ModalDialogProperties.TITLE, title);
+        if (mIsCardLocal) {
+            mDialogModel.set(ModalDialogProperties.TITLE, title);
+        } else {
+            updateTitleForCustomView(title, mContext);
+            mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mMainView);
+        }
         mInstructions.setText(instructions);
         mShouldRequestExpirationDate = shouldRequestExpirationDate;
         if (mShouldRequestExpirationDate && (mThisYear == -1 || mThisMonth == -1)) {
             new CalendarTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         showExpirationDateInputsInputs();
+    }
+
+    private void updateTitleForCustomView(String title, Context context) {
+        Drawable mInlineTitleIcon = context.getDrawable(mGooglePayDrawableId);
+        // The first character will be replaced by the logo, and the consecutive spaces after
+        // are used as padding.
+        SpannableString titleWithLogo = new SpannableString("   " + title);
+        // How much the original logo should scale up in size to match height of text.
+        float scaleFactor = mTitleView.getTextSize() / mInlineTitleIcon.getIntrinsicHeight();
+        mInlineTitleIcon.setBounds(
+                /* left */ 0, /* top */ 0,
+                /* right */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicWidth()),
+                /* bottom */ (int) (scaleFactor * mInlineTitleIcon.getIntrinsicHeight()));
+        titleWithLogo.setSpan(new ImageSpan(mInlineTitleIcon, ImageSpan.ALIGN_CENTER),
+                /* start */ 0,
+                /* end */ 1,
+                /* flags */ Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mTitleView.setText(titleWithLogo, BufferType.SPANNABLE);
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {
@@ -385,12 +389,8 @@ public class CardUnmaskPrompt
 
     @Override
     public void onClick(View v) {
-        if (v == mStoreLocallyTooltipIcon) {
-            onTooltipIconClicked();
-        } else {
-            assert v == mNewCardLink;
-            onNewCardLinkClicked();
-        }
+        assert v == mNewCardLink;
+        onNewCardLinkClicked();
     }
 
     private void showExpirationDateInputsInputs() {
@@ -402,38 +402,6 @@ public class CardUnmaskPrompt
         mCardUnmaskInput.setEms(3);
         mMonthInput.addTextChangedListener(this);
         mYearInput.addTextChangedListener(this);
-    }
-
-    private void onTooltipIconClicked() {
-        // Don't show the popup if there's already one showing (or one has been dismissed
-        // recently). This prevents a tap on the (?) from hiding and then immediately re-showing
-        // the popup.
-        if (mStoreLocallyTooltipPopup != null) return;
-
-        mStoreLocallyTooltipPopup = new PopupWindow(mContext);
-        Runnable dismissAction = () -> {
-            mStoreLocallyTooltipPopup = null;
-        };
-        boolean isLeftToRight = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
-                == ViewCompat.LAYOUT_DIRECTION_LTR;
-        AutofillUiUtils.showTooltip(mContext, mStoreLocallyTooltipPopup,
-                R.string.autofill_card_unmask_prompt_storage_tooltip,
-                new AutofillUiUtils.OffsetProvider() {
-                    @Override
-                    public int getXOffset(TextView textView) {
-                        int xOffset =
-                                mStoreLocallyTooltipIcon.getLeft() - textView.getMeasuredWidth();
-                        return Math.max(0, xOffset);
-                    }
-
-                    @Override
-                    public int getYOffset(TextView textView) {
-                        return 0;
-                    }
-                },
-                // If the layout is right to left then anchor on the edit text field else anchor on
-                // the tooltip icon, which would be on the left.
-                isLeftToRight ? mStoreLocallyCheckbox : mStoreLocallyTooltipIcon, dismissAction);
     }
 
     private void onNewCardLinkClicked() {
@@ -532,11 +500,6 @@ public class CardUnmaskPrompt
         return mDelegate.checkUserInputValidity(mCardUnmaskInput.getText().toString());
     }
 
-    private boolean isGooglePayLogoEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_DOWNSTREAM_CVC_PROMPT_USE_GOOGLE_LOGO);
-    }
-
     /**
      * Sets the enabled state of the main contents, and hides or shows the verification overlay.
      * @param enabled True if the inputs should be useable, false if the verification overlay
@@ -546,7 +509,6 @@ public class CardUnmaskPrompt
         mCardUnmaskInput.setEnabled(enabled);
         mMonthInput.setEnabled(enabled);
         mYearInput.setEnabled(enabled);
-        mStoreLocallyCheckbox.setEnabled(enabled);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, !enabled);
     }
 
@@ -597,7 +559,6 @@ public class CardUnmaskPrompt
             mDelegate.onUserInput(mCardUnmaskInput.getText().toString(),
                     mMonthInput.getText().toString(),
                     Integer.toString(AutofillUiUtils.getFourDigitYear(mYearInput)),
-                    mStoreLocallyCheckbox != null && mStoreLocallyCheckbox.isChecked(),
                     mUseScreenlockCheckbox.isChecked());
         } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);

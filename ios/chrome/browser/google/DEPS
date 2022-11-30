@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^google_logo_service.mm": [
+    "+ios/chrome/browser/ui/util/ui_util.h",
+  ],
+}
+

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script type="module">
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
+// Used to notify an iframe to activate of activation ready.
+const readyChannel = new PrerenderChannel('ready-channel', uid);
+
+// Used to notify the main test page of the test result.
+const resultChannel = new PrerenderChannel('result-channel', uid);
+
+// URL to be prerendered.
+const prerenderingUrl = new URL(document.URL);
+prerenderingUrl.searchParams.set('mode', 'prerendering');
+
+try {
+  // The `mode` param indicates the purpose of the loaded frame.
+  switch (params.get('mode')) {
+    // The main frame to trigger prerendering.
+    case 'triggering': {
+      assert_false(document.prerendering);
+
+      // Create an iframe to activate a prerendered page instead of the main
+      // frame.
+      const iframeUrl = new URL(document.URL);
+      iframeUrl.searchParams.set('mode', 'activating-from-iframe');
+      // Wait for the iframe to be loaded. This prevents readyChannel messages
+      // from being sent before the receiver side is ready.
+      await createFrame(iframeUrl);
+      startPrerendering(prerenderingUrl.toString());
+      break;
+    }
+
+    // The iframe to initiate navigation on the main frame to activate the
+    // prerendered page.
+    case 'activating-from-iframe': {
+      assert_false(document.prerendering);
+
+      // Wait for activation ready.
+      const gotMessage = await new Promise(r => readyChannel.onmessage = r);
+      assert_equals(gotMessage.data, 'activation ready');
+      resultChannel.postMessage('attempting prerender activation');
+
+      // Initiate navigation on the main frame. This will attempt to prerender
+      // a page from the iframe, but fail because the initiator of the
+      // navigation will not match. The url will be loaded from scratch,
+      // without prerendering.
+      window.parent.location = prerenderingUrl.toString();
+
+      // Close this iframe. This shouldn't cancel activation attempt.
+      window.close();
+      break;
+    }
+
+    // The main frame of the page being prerendered.
+    case 'prerendering': {
+      if (document.prerendering) {
+        // Inform the activator iframe that this page is ready for activation.
+        readyChannel.postMessage('activation ready');
+
+        // Waiting for a confirmation of prerendering activation, which will
+        // not come.
+        await new Promise(r => document.onprerenderingchange = r);
+      } else {
+        // This block is executed when the page is loaded from scratch after
+        // a failed prerender activation.
+        // Inform the main test page that activation failed, but page was
+        // loaded from scratch.
+        resultChannel.postMessage('loaded from scratch');
+      }
+      break;
+    }
+  }
+} catch (e) {
+  resultChannel.postMessage(e.toString());
+} finally {
+  readyChannel.close();
+  resultChannel.close();
+}
+
+</script>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const kV8HTMLScriptElement_Supports_Method = 4011; // From web_feature.mojom
+
+  assert_equals(typeof HTMLScriptElement.supports, 'function');
+  assert_false(
+      internals.isUseCounted(document, kV8HTMLScriptElement_Supports_Method));
+  assert_true(HTMLScriptElement.supports('classic'));
+  assert_true(
+      internals.isUseCounted(document, kV8HTMLScriptElement_Supports_Method));
+});
+</script>

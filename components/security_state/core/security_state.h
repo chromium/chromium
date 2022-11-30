@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
-#include "components/security_state/core/insecure_input_event_data.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/sct_status_flags.h"
@@ -206,9 +204,8 @@ struct VisibleSecurityState {
   // state perspective (for example, if a different warning is being shown for
   // them).
   bool should_treat_displayed_mixed_forms_as_secure;
-  // Contains information about input events that may impact the security
-  // level of the page.
-  InsecureInputEventData insecure_input_events;
+  // True if the page was the result of an HTTPS-Only Mode upgrade.
+  bool is_https_only_mode_upgraded;
 };
 
 // These security levels describe the treatment given to pages that
@@ -250,10 +247,6 @@ std::string GetSafetyTipHistogramName(const std::string& prefix,
                                       SafetyTipStatus safety_tip_status);
 
 bool IsSHA1InChain(const VisibleSecurityState& visible_security_state);
-
-// Returns true if Safety Tip UI should be shown because a relevant field trial
-// is enabled.
-bool IsSafetyTipUIFeatureEnabled();
 
 }  // namespace security_state
 

@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+
+    <script>
+      // Adds an <iframe> child to `doc` with the given `src` attribute.
+      // Waits when the child has loaded, then returns the child.
+      function addChildFrame(doc, src) {
+        return new Promise(resolve => {
+          const child = doc.createElement("iframe");
+          child.src = src;
+          child.addEventListener("load", () => resolve(child));
+          doc.body.appendChild(child);
+        });
+      }
+
+      // Opens a new window to `src`, waits for it to load, then returns it.
+      function openWindow(src) {
+        return new Promise(resolve => {
+          openee = window.open(src);
+          openee.addEventListener("load", () => resolve(openee));
+        });
+      }
+
+      // Runs a test:
+      //
+      // - Embeds a new `about:blank` iframe
+      // - Opens a new window to a document in the `public` address space
+      // - Has the new window navigate the child iframe to `url`, then do
+      //   something specified by `initiatorBehavior` immediately after
+      //
+      // `initiatorBehavior` can be:
+      //
+      // - "close": the new window closes itself
+      // - "navigate": the new window navigates itself to a new document
+      // - anything else: the new window does nothing
+      //
+      function runTest({ url, initiatorBehavior }) {
+        return new Promise(async (resolve) => {
+          window.mainChild = await addChildFrame(document, "about:blank");
+          window.mainChild.addEventListener("load", () => resolve(true));
+
+          // Navigate `mainChild` from a new window in the `public` address
+          // space, then wait until `mainChild` has finished loading.
+
+          openee = await openWindow(
+              "/private_network_access/navigate-opener-child.html");
+
+          openee.postMessage({ url, initiatorBehavior }, "*");
+        });
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

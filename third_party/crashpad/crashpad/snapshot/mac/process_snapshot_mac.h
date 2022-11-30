@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "client/crashpad_info.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/exception_snapshot.h"
@@ -50,6 +49,10 @@ namespace crashpad {
 class ProcessSnapshotMac final : public ProcessSnapshot {
  public:
   ProcessSnapshotMac();
+
+  ProcessSnapshotMac(const ProcessSnapshotMac&) = delete;
+  ProcessSnapshotMac& operator=(const ProcessSnapshotMac&) = delete;
+
   ~ProcessSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -150,8 +153,6 @@ class ProcessSnapshotMac final : public ProcessSnapshot {
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSnapshotMac);
 };
 
 }  // namespace crashpad

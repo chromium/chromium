@@ -11,15 +11,31 @@
     height: 22px;
   }
 
+  .icon-background {
+    align-items: center;
+    background-color: var(--color-new-tab-page-module-scroll-button);
+    border-radius: 50%;
+    display: flex;
+    height: 18px;
+    justify-content: center;
+    margin-inline-end: 8px;
+    width: 18px;
+  }
+
+  .module-icon {
+    height: 10px;
+    width: 10px;
+  }
+
   #title {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 15px;
   }
 
   #chip {
-    background-color: var(--ntp-chip-background-color);
+    background-color: var(--color-new-tab-page-chip-background);
     border-radius: 4px;
-    color: var(--ntp-chip-text-color);
+    color: var(--color-new-tab-page-chip-foreground);
     font-size: 10px;
     height: 12px;
     margin-inline-start: 10px;
@@ -44,14 +60,30 @@
     margin-inline-end: -10px;
   }
 
+  :host([modules-redesigned-enabled_]) #menuButton {
+    background-color: var(--color-new-tab-page-module-scroll-button);
+    height: 18px;
+    margin: 0;
+    width: 18px;
+  }
+
+  :host([modules-redesigned-enabled_]) #menuButton:hover {
+    background-color: var(--color-new-tab-page-module-scroll-button-hover);
+  }
+
   #description {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     font-size: 12px;
     height: 12px;
     margin-top: 3px;
   }
 </style>
 <div id="titleContainer">
+  <template is="dom-if" if="[[iconSrc]]">
+    <div class="icon-background">
+      <img class="module-icon" src="[[iconSrc]]"></img>
+    </div>
+  </template>
   <span id="title"><slot></slot></span>
   <template is="dom-if" if="[[chipText]]">
     <div id="chip">[[chipText]]</div>
@@ -62,9 +94,11 @@
         on-click="onInfoButtonClick_">
     </cr-icon-button>
   </template>
-  <cr-icon-button id="menuButton" title="$i18n{moreActions}"
-      class="icon-more-vert" on-click="onMenuButtonClick_">
-  </cr-icon-button>
+  <template is="dom-if" if="[[!hideMenuButton]]" restamp>
+    <cr-icon-button id="menuButton" title="$i18n{moreActions}"
+        class="icon-more-vert" on-click="onMenuButtonClick_">
+    </cr-icon-button>
+  </template>
 </div>
 <template is="dom-if" if="[[descriptionText]]">
   <span id="description">[[descriptionText]]</span>
@@ -84,4 +118,10 @@
       on-click="onCustomizeButtonClick_">
     $i18n{modulesCustomizeButtonText}
   </button>
+  <template is="dom-if" if="[[showInfoButtonDropdown]]">
+    <button id="infoButton" class="dropdown-item"
+        on-click="onInfoButtonClick_">
+      $i18n{moduleInfoButtonTitle}
+    </button>
+  </template>
 </cr-action-menu>

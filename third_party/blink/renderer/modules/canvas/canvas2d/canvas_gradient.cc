@@ -32,20 +32,22 @@
 
 namespace blink {
 
-CanvasGradient::CanvasGradient(const FloatPoint& p0, const FloatPoint& p1)
+CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
     : gradient_(
           Gradient::CreateLinear(p0,
                                  p1,
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  identifiability_study_helper_.MaybeUpdateBuilder(
-      CanvasOps::kCreateLinearGradient, p0.X(), p0.Y(), p1.X(), p1.Y());
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
+  }
 }
 
-CanvasGradient::CanvasGradient(const FloatPoint& p0,
+CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                float r0,
-                               const FloatPoint& p1,
+                               const gfx::PointF& p1,
                                float r1)
     : gradient_(
           Gradient::CreateRadial(p0,
@@ -56,13 +58,16 @@ CanvasGradient::CanvasGradient(const FloatPoint& p0,
                                  kSpreadMethodPad,
                                  Gradient::ColorInterpolation::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  identifiability_study_helper_.MaybeUpdateBuilder(
-      CanvasOps::kCreateRadialGradient, p0.X(), p0.Y(), r0, p1.X(), p1.Y(), r1);
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(
+        CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
+        r1);
+  }
 }
 
 // CanvasRenderingContext2D.createConicGradient only takes one angle argument
 // it makes sense to make that rotation here and always make the angles 0 -> 2pi
-CanvasGradient::CanvasGradient(float startAngle, const FloatPoint& center)
+CanvasGradient::CanvasGradient(float startAngle, const gfx::PointF& center)
     : gradient_(
           Gradient::CreateConic(center,
                                 startAngle,
@@ -83,21 +88,32 @@ void CanvasGradient::addColorStop(double value,
     return;
   }
 
-  Color color = 0;
+  Color color = Color::kTransparent;
   if (!ParseColorOrCurrentColor(color, color_string, nullptr /*canvas*/)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The value provided ('" + color_string +
                                           "') could not be parsed as a color.");
     return;
   }
-  identifiability_study_helper_.MaybeUpdateBuilder(CanvasOps::kAddColorStop,
-                                                   value, color.Rgb());
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) {
+    identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddColorStop, value,
+                                                color.Rgb());
+  }
 
   gradient_->AddColorStop(value, color);
 }
 
 IdentifiableToken CanvasGradient::GetIdentifiableToken() const {
   return identifiability_study_helper_.GetToken();
+}
+
+void CanvasGradient::SetExecutionContext(ExecutionContext* context) {
+  identifiability_study_helper_.SetExecutionContext(context);
+}
+
+void CanvasGradient::Trace(Visitor* visitor) const {
+  visitor->Trace(identifiability_study_helper_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

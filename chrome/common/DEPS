@@ -4,17 +4,18 @@ include_rules = [
   "+chrome/install_static",
   "+chrome/services/file_util/public",
   "+chromeos/crosapi",
+  "+chromeos/lacros/lacros_paths.h",
   "+components/autofill/content/common",
   "+components/autofill/core/common",
   "+components/bookmarks/common",
-  "+components/cast_certificate",
   "+components/cdm/common",
   "+components/cloud_devices/common",
   "+components/content_settings/core/common",
   "+components/crash/core/app",
+  "+components/history_clusters",
+  "+components/optimization_guide/optimization_guide_internals/webui",
   "+components/crash/core/common",
   "+components/crx_file",
-  "+components/data_reduction_proxy/core/common",
   "+components/dom_distiller/core",
   "+components/embedder_support/android/common",
   "+components/embedder_support/origin_trials",
@@ -22,6 +23,7 @@ include_rules = [
   "+components/flags_ui/flags_ui_switches.h",
   "+components/gcm_driver",
   "+components/google/core/common",
+  "+components/live_caption/pref_names.h",
   "+components/metrics/client_info.h",
   "+components/metrics/metadata_recorder.h",
   "+components/metrics/metrics_pref_names.h",
@@ -34,12 +36,13 @@ include_rules = [
   "+components/nux",
   "+components/offline_pages/buildflags",
   "+components/password_manager/core/common",
+  "+components/pdf/common",
   "+components/policy/core/common",
   "+components/prefs",
   "+components/printing/common",
   "+components/safe_browsing/buildflags.h",
-  "+components/safe_browsing/core/proto/csd.pb.h",
-  "+components/safe_browsing/core/web_ui/constants.h",
+  "+components/safe_browsing/core/common/web_ui_constants.h",
+  "+components/safe_browsing/core/common/proto/csd.pb.h",
   "+components/services/app_service/public/cpp/share_target.h",
   "+components/strings/grit/components_strings.h",
   "+components/translate/core/common",
@@ -70,7 +73,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "logging_chrome.cc": [
+  "logging_chrome\.cc": [
     "+ash/constants/ash_switches.h",
-  ]
+  ],
+  "pdf_util_unittest\.cc": [
+    "+pdf/content_restriction.h",
+  ],
 }

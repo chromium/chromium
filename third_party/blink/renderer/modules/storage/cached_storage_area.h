@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,20 +14,21 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/storage/storage_area_map.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class LocalDOMWindow;
+
 // An in-process implementation of LocalStorage using a LevelDB Mojo service.
-// Maintains a complete cache of the origin's Map of key/value pairs for fast
-// access. The cache is primed on first access and changes are written to the
-// backend through the level db interface pointer. Mutations originating in
-// other processes are applied to the cache via mojom::LevelDBObserver
+// Maintains a complete cache of the BlinkStorageKey's Map of key/value pairs
+// for fast access. The cache is primed on first access and changes are written
+// to the backend through the level db interface pointer. Mutations originating
+// in other processes are applied to the cache via mojom::LevelDBObserver
 // callbacks.
 // There is one CachedStorageArea for potentially many LocalStorageArea
 // objects.
@@ -53,6 +54,7 @@ class MODULES_EXPORT CachedStorageArea
     virtual blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
         const char* name,
         WebScopedVirtualTimePauser::VirtualTaskDuration duration) = 0;
+    virtual LocalDOMWindow* GetDOMWindow() = 0;
   };
 
   enum class AreaType {
@@ -60,10 +62,16 @@ class MODULES_EXPORT CachedStorageArea
     kLocalStorage,
   };
 
-  CachedStorageArea(AreaType type,
-                    scoped_refptr<const SecurityOrigin> origin,
-                    scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
-                    StorageNamespace* storage_namespace);
+  CachedStorageArea(
+      AreaType type,
+      const BlinkStorageKey& storage_key,
+      LocalDOMWindow* local_dom_window,
+      StorageNamespace* storage_namespace,
+      bool is_session_storage_for_prerendering,
+      mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
+
+  CachedStorageArea(const CachedStorageArea&) = delete;
+  CachedStorageArea& operator=(const CachedStorageArea&) = delete;
 
   // These correspond to blink::Storage.
   unsigned GetLength();
@@ -97,6 +105,12 @@ class MODULES_EXPORT CachedStorageArea
   void ResetConnection(
       mojo::PendingRemote<mojom::blink::StorageArea> new_area = {});
 
+  bool is_session_storage_for_prerendering() const {
+    return is_session_storage_for_prerendering_;
+  }
+
+  void EvictCachedData();
+
   void SetRemoteAreaForTesting(
       mojo::PendingRemote<mojom::blink::StorageArea> area) {
     remote_area_.Bind(std::move(area));
@@ -120,18 +134,21 @@ class MODULES_EXPORT CachedStorageArea
     String old_value;
   };
 
+  LocalDOMWindow* GetBestCurrentDOMWindow();
+
   void BindStorageArea(
-      mojo::PendingRemote<mojom::blink::StorageArea> new_area = {});
+      mojo::PendingRemote<mojom::blink::StorageArea> new_area = {},
+      LocalDOMWindow* local_dom_window = nullptr);
 
   // mojom::blink::StorageAreaObserver:
   void KeyChanged(const Vector<uint8_t>& key,
                   const Vector<uint8_t>& new_value,
-                  const base::Optional<Vector<uint8_t>>& old_value,
+                  const absl::optional<Vector<uint8_t>>& old_value,
                   const String& source) override;
   void KeyChangeFailed(const Vector<uint8_t>& key,
                        const String& source) override;
   void KeyDeleted(const Vector<uint8_t>& key,
-                  const base::Optional<Vector<uint8_t>>& old_value,
+                  const absl::optional<Vector<uint8_t>>& old_value,
                   const String& source) override;
   void AllDeleted(bool was_nonempty, const String& source) override;
   void ShouldSendOldValueOnMutations(bool value) override;
@@ -175,9 +192,14 @@ class MODULES_EXPORT CachedStorageArea
                                              FormatOption format_option);
 
   const AreaType type_;
-  const scoped_refptr<const SecurityOrigin> origin_;
+  const BlinkStorageKey storage_key_;
   const WeakPersistent<StorageNamespace> storage_namespace_;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // Session storage state for prerendering is initialized by cloning the
+  // primary session storage state. It is used locally by the prerendering
+  // context, and does not get propagated back to the primary state (i.e., via
+  // remote_area_). For more details:
+  // https://docs.google.com/document/d/1I5Hr8I20-C1GBr4tAXdm0U8a1RDUKHt4n7WcH4fxiSE/edit?usp=sharing
+  const bool is_session_storage_for_prerendering_;
 
   std::unique_ptr<StorageAreaMap> map_;
 
@@ -217,8 +239,6 @@ class MODULES_EXPORT CachedStorageArea
   mojo::Receiver<mojom::blink::StorageAreaObserver> receiver_{this};
 
   Persistent<HeapHashMap<WeakMember<Source>, String>> areas_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedStorageArea);
 };
 
 }  // namespace blink

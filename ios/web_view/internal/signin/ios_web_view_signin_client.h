@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/signin/ios/browser/wait_for_network_callback_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -21,6 +20,9 @@ class IOSWebViewSigninClient : public SigninClient {
  public:
   IOSWebViewSigninClient(PrefService* pref_service,
                          ios_web_view::WebViewBrowserState* browser_state);
+
+  IOSWebViewSigninClient(const IOSWebViewSigninClient&) = delete;
+  IOSWebViewSigninClient& operator=(const IOSWebViewSigninClient&) = delete;
 
   ~IOSWebViewSigninClient() override;
 
@@ -53,8 +55,6 @@ class IOSWebViewSigninClient : public SigninClient {
   PrefService* pref_service_;
   // The browser_state_ associated with this service.
   ios_web_view::WebViewBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSWebViewSigninClient);
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_SIGNIN_IOS_WEB_VIEW_SIGNIN_CLIENT_H_

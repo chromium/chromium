@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sharing/sharing_message_sender.h"
 
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
@@ -43,13 +42,12 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
       SharingPayloadCaseToMessageType(message.payload_case());
   SharingDevicePlatform receiver_device_platform = GetDevicePlatform(device);
 
-  auto inserted = base::InsertOrAssign(
-      message_metadata_, message_guid,
-      SentMessageMetadata(std::move(callback), base::TimeTicks::Now(),
-                          message_type, receiver_device_platform, trace_id,
-                          SharingChannelType::kUnknown,
-                          device.pulse_interval()));
-  DCHECK(inserted.second);
+  auto [it, inserted] = message_metadata_.insert_or_assign(
+      message_guid, SentMessageMetadata(
+                        std::move(callback), base::TimeTicks::Now(),
+                        message_type, receiver_device_platform, trace_id,
+                        SharingChannelType::kUnknown, device.pulse_interval()));
+  DCHECK(inserted);
 
   auto delegate_iter = send_delegates_.find(delegate_type);
   if (delegate_iter == send_delegates_.end()) {
@@ -100,7 +98,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
 
 void SharingMessageSender::OnMessageSent(const std::string& message_guid,
                                          SharingSendMessageResult result,
-                                         base::Optional<std::string> message_id,
+                                         absl::optional<std::string> message_id,
                                          SharingChannelType channel_type) {
   auto metadata_iter = message_metadata_.find(message_guid);
   DCHECK(metadata_iter != message_metadata_.end());

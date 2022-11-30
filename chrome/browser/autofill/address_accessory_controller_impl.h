@@ -1,14 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_IMPL_H_
 
-#include <vector>
-
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -19,7 +16,6 @@
 class ManualFillingController;
 
 namespace autofill {
-class AutofillProfile;
 class PersonalDataManager;
 
 // Use either AddressAccessoryController::GetOrCreate or
@@ -31,13 +27,18 @@ class AddressAccessoryControllerImpl
       public PersonalDataManagerObserver,
       public content::WebContentsUserData<AddressAccessoryControllerImpl> {
  public:
+  AddressAccessoryControllerImpl(const AddressAccessoryControllerImpl&) =
+      delete;
+  AddressAccessoryControllerImpl& operator=(
+      const AddressAccessoryControllerImpl&) = delete;
+
   ~AddressAccessoryControllerImpl() override;
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  base::Optional<AccessorySheetData> GetSheetData() const override;
+  absl::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
-                          const UserInfo::Field& selection) override;
+                          const AccessorySheetField& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 
@@ -60,8 +61,6 @@ class AddressAccessoryControllerImpl
   // Required for construction via |CreateForWebContents|:
   explicit AddressAccessoryControllerImpl(content::WebContents* contents);
 
-  std::vector<AutofillProfile*> GetProfiles();
-
   // Constructor that allows to inject a mock filling controller.
   AddressAccessoryControllerImpl(
       content::WebContents* web_contents,
@@ -71,18 +70,16 @@ class AddressAccessoryControllerImpl
   // |web_contents_|. The lazy initialization allows injecting mocks for tests.
   base::WeakPtr<ManualFillingController> GetManualFillingController();
 
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_;
+  // The observer to notify if available suggestions change.
+  FillingSourceObserver source_observer_;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The data manager used to retrieve the profiles.
-  PersonalDataManager* personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AddressAccessoryControllerImpl);
 };
 
 }  // namespace autofill

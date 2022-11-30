@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,19 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/image_burner_client.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
+#include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
 namespace image_writer {
 
-using chromeos::disks::DiskMountManager;
-using chromeos::ImageBurnerClient;
+using ::ash::ImageBurnerClient;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 
 namespace {
@@ -31,9 +30,7 @@ void ClearImageBurner() {
     return;
   }
 
-  chromeos::DBusThreadManager::Get()->
-      GetImageBurnerClient()->
-      ResetEventHandlers();
+  ImageBurnerClient::Get()->ResetEventHandlers();
 }
 
 }  // namespace
@@ -65,19 +62,19 @@ void Operation::UnmountVolumes(base::OnceClosure continuation) {
 }
 
 void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
-                                       chromeos::MountError error_code) {
+                                       ash::MountError error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (error_code != chromeos::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     LOG(ERROR) << "Volume unmounting failed with error code " << error_code;
     PostTask(
         base::BindOnce(&Operation::Error, this, error::kUnmountVolumesError));
     return;
   }
 
-  const DiskMountManager::DiskMap& disks =
+  const DiskMountManager::Disks& disks =
       DiskMountManager::GetInstance()->disks();
-  DiskMountManager::DiskMap::const_iterator iter =
+  DiskMountManager::Disks::const_iterator iter =
       disks.find(device_path_.value());
 
   if (iter == disks.end()) {
@@ -87,7 +84,7 @@ void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
     return;
   }
 
-  StartWriteOnUIThread(iter->second->file_path(), std::move(continuation));
+  StartWriteOnUIThread(iter->get()->file_path(), std::move(continuation));
 }
 
 void Operation::StartWriteOnUIThread(const std::string& target_path,
@@ -95,20 +92,10 @@ void Operation::StartWriteOnUIThread(const std::string& target_path,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/373575
-  ImageBurnerClient* burner =
-      chromeos::DBusThreadManager::Get()->GetImageBurnerClient();
+  ImageBurnerClient* burner = ImageBurnerClient::Get();
 
-  // AdaptCallbackForRepeating() is safe for OnBurnFinished, because Chrome OS
-  // supports only one operation at a time and handlers are reset on every new
-  // operation and at the end of the current one.
-  // TODO(crbug.com/730593): AdaptCallbackForRepeating() is being deprecated.
-  // Adapting approach similar to ImageWriterUtilityClient (binding
-  // RepeatingCallback here, calling |continuation| only once inside it) might
-  // resolve this issue. Alternatively ImageBurnerClient API might be changed
-  // to receive OnceCallback (depending on the solution for crbug.com/373575).
   burner->SetEventHandlers(
-      base::AdaptCallbackForRepeating(base::BindOnce(
-          &Operation::OnBurnFinished, this, std::move(continuation))),
+      base::BindOnce(&Operation::OnBurnFinished, this, std::move(continuation)),
       base::BindRepeating(&Operation::OnBurnProgress, this));
 
   burner->BurnImage(image_path_.value(), target_path,

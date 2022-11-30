@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
+#include "components/user_manager/user_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -32,6 +33,12 @@ bool UserChooserDetailedViewController::IsUserChooserEnabled() {
   SessionControllerImpl* session = Shell::Get()->session_controller();
   if (session->IsUserSessionBlocked())
     return false;
+
+  // Only allow for regular user session.
+  if (session->GetPrimaryUserSession()->user_info.type !=
+      user_manager::USER_TYPE_REGULAR) {
+    return false;
+  }
 
   return true;
 }

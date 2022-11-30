@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ColorPanelBridge
   mojom::ColorPanelHost* host() { return host_.get(); }
 
   // mojom::ColorPanel.
-  void Show(uint32_t initial_color) override;
-  void SetSelectedColor(uint32_t color) override;
+  void Show(uint32_t initial_color, ShowCallback callback) override;
+  void SetSelectedColor(uint32_t color,
+                        SetSelectedColorCallback callback) override;
 
  private:
   mojo::Remote<mojom::ColorPanelHost> host_;

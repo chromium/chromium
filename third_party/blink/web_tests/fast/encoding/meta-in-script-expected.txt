@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 4: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
 PASS: windows-1255
 
 

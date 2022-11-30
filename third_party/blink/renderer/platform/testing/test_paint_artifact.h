@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -73,7 +73,8 @@ class TestPaintArtifact {
       const EffectPaintPropertyNodeOrAlias& effect) {
     return Properties(PropertyTreeStateOrAlias(transform, clip, effect));
   }
-  TestPaintArtifact& Properties(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Properties(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Properties(properties.GetPropertyTreeState());
   }
 
@@ -86,39 +87,44 @@ class TestPaintArtifact {
   TestPaintArtifact& Chunk(const PropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
-  TestPaintArtifact& Chunk(const RefCountedPropertyTreeState& properties) {
+  TestPaintArtifact& Chunk(
+      const RefCountedPropertyTreeStateOrAlias& properties) {
     return Chunk().Properties(properties);
   }
 
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
-  TestPaintArtifact& RectDrawing(const IntRect& bounds, Color color);
+  TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
-                                  const IntPoint& offset);
+                                  const gfx::Point& offset);
 
   // Add display item with the specified client in the chunk.
   TestPaintArtifact& RectDrawing(DisplayItemClient&,
-                                 const IntRect& bounds,
+                                 const gfx::Rect& bounds,
                                  Color color);
   TestPaintArtifact& ScrollHitTest(
       DisplayItemClient&,
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
   // display items. Bounds() sets both bounds and drawable_bounds, while
   // DrawableBounds() sets drawable_bounds only.
-  TestPaintArtifact& Bounds(const IntRect&);
-  TestPaintArtifact& DrawableBounds(const IntRect&);
+  TestPaintArtifact& Bounds(const gfx::Rect&);
+  TestPaintArtifact& DrawableBounds(const gfx::Rect&);
 
   TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
-  TestPaintArtifact& KnownToBeOpaque();
+  TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
+  TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
+  TestPaintArtifact& HasText();
+  TestPaintArtifact& EffectivelyInvisible();
   TestPaintArtifact& Uncacheable();
+  TestPaintArtifact& IsMovedFromCachedSubsequence();
 
   // Build the paint artifact. After that, if this object has automatically
   // created any display item client, the caller must retain this object when
@@ -133,7 +139,7 @@ class TestPaintArtifact {
  private:
   void DidAddDisplayItem();
 
-  Vector<std::unique_ptr<FakeDisplayItemClient>> clients_;
+  HeapVector<Member<FakeDisplayItemClient>> clients_;
   scoped_refptr<PaintArtifact> paint_artifact_ =
       base::MakeRefCounted<PaintArtifact>();
 };

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
@@ -24,6 +23,11 @@ struct AccessibilityFocusRingInfo;
 class ASH_PUBLIC_EXPORT AccessibilityFocusRingController {
  public:
   static AccessibilityFocusRingController* Get();
+
+  AccessibilityFocusRingController(const AccessibilityFocusRingController&) =
+      delete;
+  AccessibilityFocusRingController& operator=(
+      const AccessibilityFocusRingController&) = delete;
 
   // Sets the focus ring with the given ID to the specifications of focus_ring.
   virtual void SetFocusRing(
@@ -49,9 +53,6 @@ class ASH_PUBLIC_EXPORT AccessibilityFocusRingController {
  protected:
   AccessibilityFocusRingController();
   virtual ~AccessibilityFocusRingController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingController);
 };
 
 }  // namespace ash

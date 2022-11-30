@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -28,6 +27,9 @@ class AudioPipeReaderTest : public testing::Test,
   AudioPipeReaderTest()
     : stop_at_position_(-1) {
   }
+
+  AudioPipeReaderTest(const AudioPipeReaderTest&) = delete;
+  AudioPipeReaderTest& operator=(const AudioPipeReaderTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
@@ -86,8 +88,6 @@ class AudioPipeReaderTest : public testing::Test,
 
   std::string read_data_;
   int stop_at_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipeReaderTest);
 };
 
 // Verify that the reader can detect when the pipe is created and destroyed.
@@ -105,7 +105,7 @@ TEST_F(AudioPipeReaderTest, CreateAndDestroyPipe) {
 
 // Verifies that the reader reads at the right speed.
 TEST_F(AudioPipeReaderTest, Pacing) {
-  int test_data_size = AudioPipeReader::kSamplingRate *
+  int test_data_size = int{AudioPipeReader::kSamplingRate} *
                        AudioPipeReader::kChannels *
                        AudioPipeReader::kBytesPerSample / 2;
   std::string test_data(test_data_size, '\0');
@@ -117,7 +117,7 @@ TEST_F(AudioPipeReaderTest, Pacing) {
   base::TimeDelta time_passed = base::TimeTicks::Now() - start_time;
 
   EXPECT_EQ(test_data, read_data_);
-  EXPECT_GE(time_passed, base::TimeDelta::FromMilliseconds(500));
+  EXPECT_GE(time_passed, base::Milliseconds(500));
 }
 
 }  // namespace remoting

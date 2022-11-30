@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@ import android.app.Activity;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -46,7 +44,8 @@ public class IncognitoNewTabPage
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getInstance().show(mActivity,
                 mActivity.getString(R.string.help_context_incognito_learn_more),
-                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), null);
+                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                null);
     }
 
     /**
@@ -58,8 +57,7 @@ public class IncognitoNewTabPage
 
         mActivity = activity;
 
-        mIncognitoNTPBackgroundColor = ApiCompatibilityUtils.getColor(
-                host.getContext().getResources(), R.color.ntp_bg_incognito);
+        mIncognitoNTPBackgroundColor = host.getContext().getColor(R.color.ntp_bg_incognito);
 
         mIncognitoNewTabPageManager = new IncognitoNewTabPageManager() {
             @Override
@@ -79,8 +77,6 @@ public class IncognitoNewTabPage
             public void initCookieControlsManager() {
                 mCookieControlsManager = new IncognitoCookieControlsManager();
                 mCookieControlsManager.initialize();
-                mIncognitoNewTabPageView.setIncognitoCookieControlsCardVisibility(
-                        mCookieControlsManager.shouldShowCookieControlsCard());
                 mCookieControlsObserver = new IncognitoCookieControlsManager.Observer() {
                     @Override
                     public void onUpdate(
@@ -116,16 +112,12 @@ public class IncognitoNewTabPage
             }
         };
 
-        mTitle = host.getContext().getResources().getString(R.string.button_new_tab);
+        mTitle = host.getContext().getResources().getString(R.string.new_incognito_tab_title);
 
         LayoutInflater inflater = LayoutInflater.from(host.getContext());
         mIncognitoNewTabPageView =
                 (IncognitoNewTabPageView) inflater.inflate(R.layout.new_tab_page_incognito, null);
         mIncognitoNewTabPageView.initialize(mIncognitoNewTabPageManager);
-
-        TextView newTabIncognitoHeader =
-                mIncognitoNewTabPageView.findViewById(R.id.new_tab_incognito_title);
-        newTabIncognitoHeader.setText(R.string.new_tab_otr_title);
 
         // Work around https://crbug.com/943873 and https://crbug.com/963385 where default focus
         // highlight shows up after toggling dark mode.

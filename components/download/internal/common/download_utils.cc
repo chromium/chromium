@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,10 +30,10 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace download {
 
@@ -54,7 +54,10 @@ const int kDefaultDownloadExpiredTimeInDays = 90;
 // Default time for an overwritten download to be removed from the history.
 const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 
-#if defined(OS_ANDROID)
+// Default buffer size in bytes to write to the download file.
+const int kDefaultDownloadFileBufferSize = 524288;
+
+#if BUILDFLAG(IS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
 const int kDefaultMaxFileNameLengthOnAndroid = 127;
 
@@ -73,13 +76,97 @@ DownloadItem::DownloadRenameResult RenameDownloadedFileForContentUri(
              ? DownloadItem::DownloadRenameResult::SUCCESS
              : DownloadItem::DownloadRenameResult::FAILURE_NAME_INVALID;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void AppendExtraHeaders(net::HttpRequestHeaders* headers,
                         DownloadUrlParameters* params) {
+  // Some headers like "Range" or "If-Ranage", etc are managed by download
+  // system, which might be ignored when adding to the actual request.
+  // TODO(xingliu): Print out the conflict headers here.
   for (const auto& header : params->request_headers())
     headers->SetHeaderIfMissing(header.first, header.second);
 }
+
+// Return whether the download is explicitly to fetch part of the file.
+bool IsArbitraryRangeRequest(DownloadSaveInfo* save_info) {
+  if (!base::FeatureList::IsEnabled(features::kDownloadRange))
+    return false;
+  return save_info && save_info->IsArbitraryRangeRequest();
+}
+
+bool IsArbitraryRangeRequest(DownloadUrlParameters* parameters) {
+  DCHECK(parameters);
+  if (!base::FeatureList::IsEnabled(features::kDownloadRange))
+    return false;
+  auto offsets = parameters->range_request_offset();
+  return offsets.first != kInvalidRange || offsets.second != kInvalidRange;
+}
+
+void AppendRangeHeader(net::HttpRequestHeaders* headers,
+                       DownloadUrlParameters* params) {
+  std::string range_header =
+      base::StringPrintf("bytes=%" PRId64 "-", params->offset());
+
+  if (IsArbitraryRangeRequest(params)) {
+    DCHECK(!params->use_if_range());
+    auto range_offsets = params->range_request_offset();
+    std::string range_from, range_to;
+    DCHECK_GE(params->offset(), 0);
+    if (range_offsets.first != kInvalidRange) {
+      // Have a starting byte in the range request.
+      range_from = base::NumberToString(range_offsets.first + params->offset());
+      range_to = range_offsets.second != kInvalidRange
+                     ? base::NumberToString(range_offsets.second)
+                     : "";
+    } else {
+      // Have no starting byte, trying to fetch the last x bytes.
+      DCHECK_NE(range_offsets.second, kInvalidRange);
+      DCHECK_GE(range_offsets.second, params->offset())
+          << "All the bytes have been fetched.";
+      range_to = base::NumberToString(range_offsets.second - params->offset());
+    }
+    range_header = "bytes=" + range_from + "-" + range_to;
+  }
+
+  headers->SetHeader(net::HttpRequestHeaders::kRange, range_header);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+struct CreateIntermediateUriResult {
+ public:
+  CreateIntermediateUriResult(const base::FilePath& content_uri,
+                              const base::FilePath& file_name)
+      : content_uri(content_uri), file_name(file_name) {}
+
+  base::FilePath content_uri;
+  base::FilePath file_name;
+};
+
+CreateIntermediateUriResult CreateIntermediateUri(
+    const GURL& original_url,
+    const GURL& referrer_url,
+    const base::FilePath& current_path,
+    const base::FilePath& suggested_name,
+    const std::string& mime_type) {
+  base::FilePath content_path =
+      current_path.IsContentUri() && base::ContentUriExists(current_path)
+          ? current_path
+          : DownloadCollectionBridge::CreateIntermediateUriForPublish(
+                original_url, referrer_url, suggested_name, mime_type);
+  base::FilePath file_name;
+  if (!content_path.empty()) {
+    file_name = DownloadCollectionBridge::GetDisplayName(content_path);
+  }
+  if (file_name.empty())
+    file_name = suggested_name;
+  return CreateIntermediateUriResult(content_path, file_name);
+}
+
+void OnInterMediateUriCreated(LocalPathCallback callback,
+                              const CreateIntermediateUriResult& result) {
+  std::move(callback).Run(result.content_uri, result.file_name);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -179,8 +266,28 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
       result = DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED;
   }
 
+  // Handle normal errors which are not related to range requests.
   if (result != DOWNLOAD_INTERRUPT_REASON_NONE && !fetch_error_body)
     return result;
+
+  int64_t first_byte = -1;
+  int64_t last_byte = -1;
+  int64_t length = -1;
+
+  // Explicitly range request.
+  if (IsArbitraryRangeRequest(save_info)) {
+    // Only 206 response is allowed.
+    if (http_headers.response_code() != net::HTTP_PARTIAL_CONTENT) {
+      return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
+    }
+
+    // Must has valid range response header.
+    if (!http_headers.GetContentRangeFor206(&first_byte, &last_byte, &length)) {
+      return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
+    }
+
+    return DOWNLOAD_INTERRUPT_REASON_NONE;
+  }
 
   // The caller is expecting a partial response.
   if (save_info && save_info->offset > 0) {
@@ -196,9 +303,6 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
       return DOWNLOAD_INTERRUPT_REASON_NONE;
     }
 
-    int64_t first_byte = -1;
-    int64_t last_byte = -1;
-    int64_t length = -1;
     if (!http_headers.GetContentRangeFor206(&first_byte, &last_byte, &length))
       return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
     DCHECK_GE(first_byte, 0);
@@ -212,6 +316,7 @@ DownloadInterruptReason HandleSuccessfulServerResponse(
     return DOWNLOAD_INTERRUPT_REASON_NONE;
   }
 
+  // For non range request.
   if (http_headers.response_code() == net::HTTP_PARTIAL_CONTENT)
     return DOWNLOAD_INTERRUPT_REASON_SERVER_BAD_CONTENT;
 
@@ -269,6 +374,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   request->url = params->url();
   request->request_initiator = params->initiator();
   request->trusted_params = network::ResourceRequest::TrustedParams();
+  request->has_user_gesture = params->has_user_gesture();
 
   if (params->isolation_info().has_value()) {
     request->trusted_params->isolation_info = params->isolation_info().value();
@@ -280,16 +386,19 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     // cross-site URL has been visited before.
     url::Origin origin = url::Origin::Create(params->url());
     request->trusted_params->isolation_info = net::IsolationInfo::Create(
-        net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-        net::SiteForCookies::FromOrigin(origin));
+        params->update_first_party_url_on_redirect()
+            ? net::IsolationInfo::RequestType::kMainFrame
+            : net::IsolationInfo::RequestType::kOther,
+        origin, origin, net::SiteForCookies::FromOrigin(origin));
     request->site_for_cookies = net::SiteForCookies::FromUrl(params->url());
   }
 
   request->do_not_prompt_for_login = params->do_not_prompt_for_login();
   request->referrer = params->referrer();
   request->referrer_policy = params->referrer_policy();
-  request->is_main_frame = true;
-  request->update_first_party_url_on_redirect = true;
+  request->is_outermost_main_frame = true;
+  request->update_first_party_url_on_redirect =
+      params->update_first_party_url_on_redirect();
 
   // Downloads should be treated as navigations from Fetch spec perspective.
   // See also:
@@ -346,7 +455,8 @@ int GetLoadFlags(DownloadUrlParameters* params, bool has_upload_data) {
 std::unique_ptr<net::HttpRequestHeaders> GetAdditionalRequestHeaders(
     DownloadUrlParameters* params) {
   auto headers = std::make_unique<net::HttpRequestHeaders>();
-  if (params->offset() == 0) {
+
+  if (params->offset() == 0 && !IsArbitraryRangeRequest(params)) {
     AppendExtraHeaders(headers.get(), params);
     return headers;
   }
@@ -357,20 +467,19 @@ std::unique_ptr<net::HttpRequestHeaders> GetAdditionalRequestHeaders(
   // Strong validator(i.e. etag or last modified) is required in range requests
   // for download resumption and parallel download, unless
   // |kAllowDownloadResumptionWithoutStrongValidators| is enabled.
+  // For arbitrary range request, always allow to send range headers.
   bool allow_resumption =
       has_etag || has_last_modified ||
       base::FeatureList::IsEnabled(
           features::kAllowDownloadResumptionWithoutStrongValidators);
-  if (!allow_resumption) {
+  if (!allow_resumption && !IsArbitraryRangeRequest(params)) {
     DVLOG(1) << "Creating partial request without strong validators.";
     AppendExtraHeaders(headers.get(), params);
     return headers;
   }
 
   // Add "Range" header.
-  std::string range_header =
-      base::StringPrintf("bytes=%" PRId64 "-", params->offset());
-  headers->SetHeader(net::HttpRequestHeaders::kRange, range_header);
+  AppendRangeHeader(headers.get(), params);
 
   // Add "If-Range" headers.
   if (params->use_if_range()) {
@@ -412,7 +521,8 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   InProgressInfo in_progress_info;
   in_progress_info.url_chain = item.GetUrlChain();
   in_progress_info.referrer_url = item.GetReferrerUrl();
-  in_progress_info.site_url = item.GetSiteUrl();
+  in_progress_info.serialized_embedder_download_data =
+      item.GetSerializedEmbedderDownloadData();
   in_progress_info.tab_url = item.GetTabUrl();
   in_progress_info.tab_referrer_url = item.GetTabReferrerUrl();
   in_progress_info.fetch_error_body = item.fetch_error_body();
@@ -424,6 +534,7 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.total_bytes = item.GetTotalBytes();
   in_progress_info.current_path = item.GetFullPath();
   in_progress_info.target_path = item.GetTargetFilePath();
+  in_progress_info.reroute_info = item.GetRerouteInfo();
   in_progress_info.received_bytes = item.GetReceivedBytes();
   in_progress_info.start_time = item.GetStartTime();
   in_progress_info.end_time = item.GetEndTime();
@@ -437,7 +548,10 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.metered = item.AllowMetered();
   in_progress_info.bytes_wasted = item.GetBytesWasted();
   in_progress_info.auto_resume_count = item.GetAutoResumeCount();
-  in_progress_info.download_schedule = item.GetDownloadSchedule();
+  in_progress_info.credentials_mode = item.GetCredentialsMode();
+  auto range_request_offset = item.GetRangeRequestOffset();
+  in_progress_info.range_request_from = range_request_offset.first;
+  in_progress_info.range_request_to = range_request_offset.second;
 
   download_info.in_progress_info = in_progress_info;
 
@@ -448,13 +562,13 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
 }
 
 std::unique_ptr<DownloadEntry> CreateDownloadEntryFromDownloadDBEntry(
-    base::Optional<DownloadDBEntry> entry) {
+    absl::optional<DownloadDBEntry> entry) {
   if (!entry || !entry->download_info)
     return nullptr;
 
-  base::Optional<InProgressInfo> in_progress_info =
+  absl::optional<InProgressInfo> in_progress_info =
       entry->download_info->in_progress_info;
-  base::Optional<UkmInfo> ukm_info = entry->download_info->ukm_info;
+  absl::optional<UkmInfo> ukm_info = entry->download_info->ukm_info;
   if (!ukm_info || !in_progress_info)
     return nullptr;
 
@@ -483,7 +597,7 @@ ResumeMode GetDownloadResumeMode(const GURL& url,
 
   switch (reason) {
     case DOWNLOAD_INTERRUPT_REASON_NETWORK_TIMEOUT:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // If resume mode is USER_CONTINUE, android can still resume
       // the download automatically if we didn't reach the auto resumption
       // limit and the interruption was due to network related reasons.
@@ -573,7 +687,7 @@ bool IsDownloadDone(const GURL& url,
     case DownloadItem::IN_PROGRESS:
       return false;
     case DownloadItem::COMPLETE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case DownloadItem::CANCELLED:
       return true;
     case DownloadItem::INTERRUPTED:
@@ -587,7 +701,7 @@ bool IsDownloadDone(const GURL& url,
 
 bool DeleteDownloadedFile(const base::FilePath& path) {
   DCHECK(GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
     base::DeleteContentUri(path);
     return true;
@@ -602,10 +716,10 @@ bool DeleteDownloadedFile(const base::FilePath& path) {
 DownloadItem::DownloadRenameResult RenameDownloadedFile(
     const base::FilePath& from_path,
     const base::FilePath& display_name) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (from_path.IsContentUri())
     return RenameDownloadedFileForContentUri(from_path, display_name);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   auto to_path = base::FilePath(from_path.DirName()).Append(display_name);
   if (!base::PathExists(from_path) ||
       !base::DirectoryExists(from_path.DirName()))
@@ -644,7 +758,7 @@ base::TimeDelta GetExpiredDownloadDeleteTime() {
   int expired_days = base::GetFieldTrialParamByFeatureAsInt(
       features::kDeleteExpiredDownloads, kExpiredDownloadDeleteTimeFinchKey,
       kDefaultDownloadExpiredTimeInDays);
-  return base::TimeDelta::FromDays(expired_days);
+  return base::Days(expired_days);
 }
 
 base::TimeDelta GetOverwrittenDownloadDeleteTime() {
@@ -652,7 +766,37 @@ base::TimeDelta GetOverwrittenDownloadDeleteTime() {
       features::kDeleteOverwrittenDownloads,
       kOverwrittenDownloadDeleteTimeFinchKey,
       kDefaultOverwrittenDownloadExpiredTimeInDays);
-  return base::TimeDelta::FromDays(expired_days);
+  return base::Days(expired_days);
+}
+
+int GetDownloadFileBufferSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kAllowFileBufferSizeControl, kDownloadFileBufferSizeFinchKey,
+      kDefaultDownloadFileBufferSize);
+}
+
+void DetermineLocalPath(DownloadItem* download,
+                        const base::FilePath& virtual_path,
+                        LocalPathCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  if ((!download->IsTransient() &&
+       DownloadCollectionBridge::ShouldPublishDownload(virtual_path)) ||
+      virtual_path.IsContentUri()) {
+    GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&CreateIntermediateUri,
+                       // Safe because we control download file lifetime.
+                       download->GetOriginalUrl(), download->GetReferrerUrl(),
+                       virtual_path,
+                       virtual_path.IsContentUri()
+                           ? download->GetFileNameToReportUser()
+                           : virtual_path.BaseName(),
+                       download->GetMimeType()),
+        base::BindOnce(&OnInterMediateUriCreated, std::move(callback)));
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(virtual_path, base::FilePath());
 }
 
 }  // namespace download

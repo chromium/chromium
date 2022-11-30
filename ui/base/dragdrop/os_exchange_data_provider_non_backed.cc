@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -27,23 +29,7 @@ OSExchangeDataProviderNonBacked::~OSExchangeDataProviderNonBacked() = default;
 std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
     const {
   auto clone = std::make_unique<OSExchangeDataProviderNonBacked>();
-
-  clone->formats_ = formats_;
-  clone->string_ = string_;
-  clone->url_ = url_;
-  clone->title_ = title_;
-  clone->filenames_ = filenames_;
-  clone->pickle_data_ = pickle_data_;
-  // We skip copying the drag images.
-  clone->html_ = html_;
-  clone->base_url_ = base_url_;
-  clone->source_ =
-      source_ ? std::make_unique<ui::DataTransferEndpoint>(*source_.get())
-              : nullptr;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  clone->originated_from_renderer_ = originated_from_renderer_;
-#endif
-
+  CopyData(clone.get());
   return clone;
 }
 
@@ -61,6 +47,14 @@ bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
 #else
   return originated_from_renderer_;
 #endif
+}
+
+void OSExchangeDataProviderNonBacked::MarkAsFromPrivileged() {
+  is_from_privileged_ = true;
+}
+
+bool OSExchangeDataProviderNonBacked::IsFromPrivileged() const {
+  return is_from_privileged_;
 }
 
 void OSExchangeDataProviderNonBacked::SetString(const std::u16string& data) {
@@ -100,14 +94,14 @@ void OSExchangeDataProviderNonBacked::SetPickledData(
 }
 
 bool OSExchangeDataProviderNonBacked::GetString(std::u16string* data) const {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (HasFile()) {
     // Various Linux file managers both pass a list of file:// URIs and set the
     // string representation to the URI. We explicitly don't want to return use
     // this representation.
     return false;
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if ((formats_ & OSExchangeData::STRING) == 0)
     return false;
@@ -184,13 +178,27 @@ bool OSExchangeDataProviderNonBacked::HasCustomFormat(
   return base::Contains(pickle_data_, format);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void OSExchangeDataProviderNonBacked::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
-  NOTIMPLEMENTED();
+  file_contents_filename_ = filename;
+  file_contents_ = file_contents;
 }
-#endif
+
+bool OSExchangeDataProviderNonBacked::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  if (file_contents_filename_.empty()) {
+    return false;
+  }
+  *filename = file_contents_filename_;
+  *file_contents = file_contents_;
+  return true;
+}
+
+bool OSExchangeDataProviderNonBacked::HasFileContents() const {
+  return !file_contents_filename_.empty();
+}
 
 void OSExchangeDataProviderNonBacked::SetHtml(const std::u16string& html,
                                               const GURL& base_url) {
@@ -261,6 +269,28 @@ void OSExchangeDataProviderNonBacked::SetSource(
 
 DataTransferEndpoint* OSExchangeDataProviderNonBacked::GetSource() const {
   return source_.get();
+}
+
+void OSExchangeDataProviderNonBacked::CopyData(
+    OSExchangeDataProviderNonBacked* provider) const {
+  DCHECK(provider);
+  provider->formats_ = formats_;
+  provider->string_ = string_;
+  provider->url_ = url_;
+  provider->title_ = title_;
+  provider->filenames_ = filenames_;
+  provider->pickle_data_ = pickle_data_;
+  provider->file_contents_filename_ = file_contents_filename_;
+  provider->file_contents_ = file_contents_;
+  provider->html_ = html_;
+  provider->base_url_ = base_url_;
+  provider->source_ =
+      source_ ? std::make_unique<DataTransferEndpoint>(*source_.get())
+              : nullptr;
+  provider->is_from_privileged_ = is_from_privileged_;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  provider->originated_from_renderer_ = originated_from_renderer_;
+#endif
 }
 
 }  // namespace ui

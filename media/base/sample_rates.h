@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ enum AudioSampleRate {
   k384000Hz = 12,
   k768000Hz = 13,
   // Must always equal the largest value ever reported:
-  kAudioSampleRateMax = k384000Hz,
+  kAudioSampleRateMax = k768000Hz,
 };
 
 // Helper method to convert integral values to their respective enum values,

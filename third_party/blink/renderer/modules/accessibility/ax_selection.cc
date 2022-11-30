@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -158,13 +158,13 @@ AXSelection AXSelection::FromCurrentSelection(
   const bool is_backward = (text_control.selectionDirection() == "backward");
   const auto ax_base = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
-      (is_backward ? int{text_control.selectionEnd()}
-                   : int{text_control.selectionStart()}),
+      static_cast<int>(is_backward ? text_control.selectionEnd()
+                                   : text_control.selectionStart()),
       base_affinity);
   const auto ax_extent = AXPosition::CreatePositionInTextObject(
       *ax_text_control,
-      (is_backward ? int{text_control.selectionStart()}
-                   : int{text_control.selectionEnd()}),
+      static_cast<int>(is_backward ? text_control.selectionStart()
+                                   : text_control.selectionEnd()),
       extent_affinity);
 
   if (!ax_base.IsValid() || !ax_extent.IsValid())
@@ -264,18 +264,18 @@ bool AXSelection::IsValid() const {
   // boundaries, replaced elements, CSS user-select, etc.
   //
 
-  if (base_.IsTextPosition() && base_.ContainerObject()->IsNativeTextField() &&
+  if (base_.IsTextPosition() && base_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         extent_.IsTextPosition() &&
-        extent_.ContainerObject()->IsNativeTextField())) {
+        extent_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
   if (extent_.IsTextPosition() &&
-      extent_.ContainerObject()->IsNativeTextField() &&
+      extent_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         base_.IsTextPosition() &&
-        base_.ContainerObject()->IsNativeTextField())) {
+        base_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
@@ -353,12 +353,12 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     return false;
   }
 
-  base::Optional<AXSelection::TextControlSelection> text_control_selection =
+  absl::optional<AXSelection::TextControlSelection> text_control_selection =
       AsTextControlSelection();
   if (text_control_selection.has_value()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
     TextControlElement& text_control = ToTextControl(
-        *base_.ContainerObject()->GetNativeTextControlAncestor()->GetNode());
+        *base_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());
     if (!text_control.SetSelectionRange(text_control_selection->start,
                                         text_control_selection->end,
                                         text_control_selection->direction)) {
@@ -368,7 +368,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     // TextControl::SetSelectionRange deliberately does not set focus. But if
     // we're updating the selection, the text control should be focused.
     ScheduleSelectEvent(text_control);
-    text_control.focus();
+    text_control.Focus();
     return true;
   }
 
@@ -427,7 +427,7 @@ String AXSelection::ToString() const {
   return "AXSelection from " + Base().ToString() + " to " + Extent().ToString();
 }
 
-base::Optional<AXSelection::TextControlSelection>
+absl::optional<AXSelection::TextControlSelection>
 AXSelection::AsTextControlSelection() const {
   if (!IsValid() || !base_.IsTextPosition() || !extent_.IsTextPosition() ||
       base_.ContainerObject() != extent_.ContainerObject()) {
@@ -435,7 +435,7 @@ AXSelection::AsTextControlSelection() const {
   }
 
   const AXObject* text_control =
-      base_.ContainerObject()->GetNativeTextControlAncestor();
+      base_.ContainerObject()->GetAtomicTextFieldAncestor();
   if (!text_control)
     return {};
 

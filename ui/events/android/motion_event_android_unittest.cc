@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ constexpr float float_error = 0.0001f;
 TEST(MotionEventAndroidTest, Constructor) {
   constexpr int kEventTimeMS = 5;
   base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kEventTimeMS);
+      base::TimeTicks() + base::Milliseconds(kEventTimeMS);
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 
@@ -129,7 +129,7 @@ TEST(MotionEventAndroidTest, Clone) {
 TEST(MotionEventAndroidTest, Cancel) {
   constexpr const int kEventTimeMS = 5;
   base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(kEventTimeMS);
+      base::TimeTicks() + base::Milliseconds(kEventTimeMS);
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 

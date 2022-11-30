@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/test/mock_keyboard_driver_win.h"
 #endif
 
@@ -83,6 +82,10 @@ class MockKeyboard {
   };
 
   MockKeyboard();
+
+  MockKeyboard(const MockKeyboard&) = delete;
+  MockKeyboard& operator=(const MockKeyboard&) = delete;
+
   ~MockKeyboard();
 
   // Retrieves Unicode characters composed from the the specified keyboard
@@ -96,13 +99,11 @@ class MockKeyboard {
                     std::u16string* output);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Layout keyboard_layout_ = LAYOUT_NULL;
   Modifiers keyboard_modifiers_ = INVALID;
   MockKeyboardDriverWin driver_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MockKeyboard);
 };
 
 }  // namespace content

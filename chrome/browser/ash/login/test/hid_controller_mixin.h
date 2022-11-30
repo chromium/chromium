@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_HID_CONTROLLER_MIXIN_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -20,7 +18,7 @@ namespace device {
 class FakeInputServiceLinux;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // This test mixin allows to control presence of Human Input Devices during
@@ -33,6 +31,10 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
   static const char kTouchscreenId[];
 
   explicit HIDControllerMixin(InProcessBrowserTestMixinHost* host);
+
+  HIDControllerMixin(const HIDControllerMixin&) = delete;
+  HIDControllerMixin& operator=(const HIDControllerMixin&) = delete;
+
   ~HIDControllerMixin() override;
 
   void AddMouse(device::mojom::InputDeviceType type);
@@ -57,11 +59,17 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<device::FakeInputServiceLinux> fake_input_service_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   base::WeakPtrFactory<HIDControllerMixin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HIDControllerMixin);
 };
 
 }  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::HIDControllerMixin;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_HID_CONTROLLER_MIXIN_H_

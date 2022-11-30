@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ResizeObserver loop limit exceeded
+PASS Same-origin fenced frame loads when feature policies are unset
+PASS Cross-origin fenced frame loads when feature policies are unset
+Harness: the test ran to completion.
+

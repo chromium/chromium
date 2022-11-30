@@ -1,13 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 
+#include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -22,25 +25,36 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
  public:
   // What is the directive?
   // - Save means that the currently submitted frame will be used in the future
-  //   as the source frame of the animation.
-  // - Animate means that this frame should be used as a (new) destination frame
-  //   of the animation, using the previously saved frame as the source.
-  enum class Type { kSave, kAnimate };
+  //   as the source frame of the animation. The animation could be driven by
+  //   the renderer or Viz process. This directive must be followed by the
+  //   Animate or AnimateRenderer directive.
+  //
+  // - AnimateRenderer means that content in the current and subsequent frames
+  //   will use cached resources from the frame with the Save directive.
+  //   Ownership of the cached resources is passed to the renderer process. This
+  //   directive must be followed by Release to delete the cached resources.
+  //
+  // - Release means that cached textures in the Viz process can be deleted.
+  //   This is used in the mode where the renderer is driving this animation.
+  enum class Type { kSave, kAnimateRenderer, kRelease };
 
-  // The type of an effect that should be used in the animation.
-  enum class Effect {
-    kNone,
-    kCoverDown,
-    kCoverLeft,
-    kCoverRight,
-    kCoverUp,
-    kExplode,
-    kFade,
-    kImplode,
-    kRevealDown,
-    kRevealLeft,
-    kRevealRight,
-    kRevealUp
+  struct VIZ_COMMON_EXPORT SharedElement {
+    SharedElement();
+    ~SharedElement();
+
+    SharedElement(const SharedElement&);
+    SharedElement& operator=(const SharedElement&);
+
+    SharedElement(SharedElement&&);
+    SharedElement& operator=(SharedElement&&);
+
+    // The render pass corresponding to a DOM element. The id is scoped to the
+    // same frame that the directive corresponds to.
+    CompositorRenderPassId render_pass_id;
+
+    // An identifier to tag the cached texture for this shared element in the
+    // Viz process.
+    SharedElementResourceId shared_element_resource_id;
   };
 
   CompositorFrameTransitionDirective();
@@ -51,8 +65,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
-      Effect effect = Effect::kNone,
-      std::vector<CompositorRenderPassId> shared_render_pass_ids = {});
+      std::vector<SharedElement> shared_elements = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
   ~CompositorFrameTransitionDirective();
@@ -68,12 +81,9 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The type of this directive.
   Type type() const { return type_; }
 
-  // The effect for the transition.
-  Effect effect() const { return effect_; }
-
-  // Shared element render passes.
-  const std::vector<CompositorRenderPassId> shared_render_pass_ids() const {
-    return shared_render_pass_ids_;
+  // Shared elements.
+  const std::vector<SharedElement>& shared_elements() const {
+    return shared_elements_;
   }
 
  private:
@@ -81,9 +91,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   Type type_ = Type::kSave;
 
-  Effect effect_ = Effect::kNone;
-
-  std::vector<CompositorRenderPassId> shared_render_pass_ids_;
+  std::vector<SharedElement> shared_elements_;
 };
 
 }  // namespace viz

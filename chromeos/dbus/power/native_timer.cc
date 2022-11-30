@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,10 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/rand_util.h"
-#include "base/task_runner_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -36,8 +34,16 @@ const PowerManagerClient::TimerId kErrorId = -2;
 
 }  // namespace
 
+bool NativeTimer::simulate_timer_creation_failure_for_testing_ = false;
+
 NativeTimer::NativeTimer(const std::string& tag)
     : timer_id_(kNotCreatedId), tag_(tag) {
+  // Simulate timer creation failure for testing.
+  if (simulate_timer_creation_failure_for_testing_) {
+    timer_id_ = kErrorId;
+    return;
+  }
+
   // Create a socket pair, one end will be sent to the power daemon the other
   // socket will be used to listen for the timer firing.
   base::ScopedFD powerd_fd;
@@ -76,14 +82,17 @@ struct NativeTimer::StartTimerParams {
       : absolute_expiration_time(absolute_expiration_time),
         timer_expiration_callback(std::move(timer_expiration_callback)),
         result_callback(std::move(result_callback)) {}
+
+  StartTimerParams(const StartTimerParams&) = delete;
+  StartTimerParams& operator=(const StartTimerParams&) = delete;
+
   StartTimerParams(StartTimerParams&&) = default;
+
   ~StartTimerParams() = default;
 
   base::TimeTicks absolute_expiration_time;
   base::OnceClosure timer_expiration_callback;
   OnStartNativeTimerCallback result_callback;
-
-  DISALLOW_COPY_AND_ASSIGN(StartTimerParams);
 };
 
 void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
@@ -124,9 +133,13 @@ void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
                      std::move(result_callback)));
 }
 
+void NativeTimer::SimulateTimerCreationFailureForTesting() {
+  simulate_timer_creation_failure_for_testing_ = true;
+}
+
 void NativeTimer::OnCreateTimer(
     base::ScopedFD expiration_fd,
-    base::Optional<std::vector<int32_t>> timer_ids) {
+    absl::optional<std::vector<int32_t>> timer_ids) {
   DCHECK(expiration_fd.is_valid());
   if (!timer_ids.has_value()) {
     LOG(ERROR) << "No timers returned";

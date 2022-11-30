@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 434 tests; 398 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 434 tests; 400 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS ChildDocument.execCommand(bold, false, bold) with a[b]c: calling execCommand
 PASS ChildDocument.execCommand(bold, false, bold) with a[b]c: checking event on focused document
 PASS ChildDocument.execCommand(bold, false, bold) with a[b]c: checking event on executed document
@@ -66,8 +66,8 @@ PASS ChildDocument.execCommand(forwarddelete, false, null) with a[b]c: checking 
 PASS ChildDocument.execCommand(forwarddelete, false, null) with a[b]c: checking result content in focused document
 PASS ChildDocument.execCommand(forwarddelete, false, null) with a[b]c: checking result content in executed document
 PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: calling execCommand
-PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: checking event on focused document
-FAIL ChildDocument.execCommand(selectall, false, null) with a[b]c: checking event on executed document assert_equals: "selectionchange" event should be fired expected true but got false
+PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: checking unexpected synchronous event
+PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: checking event on executed document
 PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: checking result content in focused document
 PASS ChildDocument.execCommand(selectall, false, null) with a[b]c: checking result content in executed document
 PASS ChildDocument.execCommand(undo, false, null) with a[b]c: calling execCommand
@@ -283,8 +283,8 @@ PASS ParentDocument.execCommand(forwarddelete, false, null) with a[b]c: checking
 PASS ParentDocument.execCommand(forwarddelete, false, null) with a[b]c: checking result content in focused document
 PASS ParentDocument.execCommand(forwarddelete, false, null) with a[b]c: checking result content in executed document
 PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: calling execCommand
-PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: checking event on focused document
-FAIL ParentDocument.execCommand(selectall, false, null) with a[b]c: checking event on executed document assert_equals: "selectionchange" event should be fired expected true but got false
+PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: checking unexpected synchronous event
+PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: checking event on executed document
 PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: checking result content in focused document
 PASS ParentDocument.execCommand(selectall, false, null) with a[b]c: checking result content in executed document
 FAIL ParentDocument.execCommand(undo, false, null) with a[b]c: calling execCommand assert_equals: execCommand should return false expected false but got true

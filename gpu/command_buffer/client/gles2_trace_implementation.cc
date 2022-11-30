@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ void GLES2TraceImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
 }
 void GLES2TraceImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   gl_->WaitSyncTokenCHROMIUM(sync_token);
+}
+void GLES2TraceImplementation::ShallowFlushCHROMIUM() {
+  gl_->ShallowFlushCHROMIUM();
 }
 
 // Include the auto-generated part of this file. We split this because it means

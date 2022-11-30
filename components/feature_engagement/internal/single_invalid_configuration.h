@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,8 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 
@@ -22,6 +18,11 @@ namespace feature_engagement {
 class SingleInvalidConfiguration : public Configuration {
  public:
   SingleInvalidConfiguration();
+
+  SingleInvalidConfiguration(const SingleInvalidConfiguration&) = delete;
+  SingleInvalidConfiguration& operator=(const SingleInvalidConfiguration&) =
+      delete;
+
   ~SingleInvalidConfiguration() override;
 
   // Configuration implementation.
@@ -38,8 +39,6 @@ class SingleInvalidConfiguration : public Configuration {
 
   // An empty map.
   ConfigMap configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleInvalidConfiguration);
 };
 
 }  // namespace feature_engagement

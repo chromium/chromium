@@ -1,16 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.test.util;
 
+import android.app.Activity;
 import android.text.TextUtils;
 
 import org.junit.Assert;
 import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
 import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
 
@@ -34,18 +41,30 @@ import java.util.Set;
 /**
  * Provides annotations related to command-line flag handling.
  *
- * Uses of these annotations on a derived class will take precedence over uses on its base classes,
- * so a derived class can add a command-line flag that a base class has removed (or vice versa).
- * Similarly, uses of these annotations on a test method will take precedence over uses on the
- * containing class.
+ * <p>This can be used in either an on-device instrumentation test or a junit (robolectric) test
+ * running on the host. To use in an instrumentation test, just {@code RunWith} {@link
+ * BaseJUnit4ClassRunner} (or a runner which extends that class). To use from a robolectric test,
+ * add the following test rule to your class:
+ *
+ * <pre>
+ * &#64Rule
+ * TestRule mRule = CommandLineFlags.getTestRule();
+ * </pre>
+ *
+ * <p>Then you can annotate the test class, test methods, or test rules with {@code
+ * CommandLineFlags.Add} or {@code CommandLineFlags.Remove}. Uses of these annotations on a derived
+ * class will take precedence over uses on its base classes, so a derived class can add a
+ * command-line flag that a base class has removed (or vice versa). Similarly, uses of these
+ * annotations on a test method will take precedence over uses on the containing class.
+ *
  * <p>
  * These annonations may also be used on Junit4 Rule classes and on their base classes. Note,
  * however that the annotation processor only looks at the declared type of the Rule, not its actual
  * type, so in, for example:
  *
  * <pre>
- *     &#64Rule
- *     TestRule mRule = new ChromeActivityTestRule();
+ * &#64Rule
+ * TestRule mRule = new ChromeActivityTestRule();
  * </pre>
  *
  * will only look for CommandLineFlags annotations on TestRule, not for CommandLineFlags annotations
@@ -59,6 +78,7 @@ import java.util.Set;
  * Note that this class should never be instantiated.
  */
 public final class CommandLineFlags {
+    private static final String TAG = "CommandLineFlags";
     private static final String DISABLE_FEATURES = "disable-features";
     private static final String ENABLE_FEATURES = "enable-features";
 
@@ -103,7 +123,7 @@ public final class CommandLineFlags {
      * and {@link CommandLineFlags.Remove} to the {@link org.chromium.base.CommandLine}. Note that
      * trying to remove a flag set externally, i.e. by the command-line flags file, will not work.
      */
-    private static void setUpClass(Class<?> clazz) {
+    public static void setUpClass(Class<?> clazz) {
         // The command line may already have been initialized by Application-level init. We need to
         // re-initialize it with test flags.
         if (!sInitializedForTest) {
@@ -119,13 +139,22 @@ public final class CommandLineFlags {
         applyFlags(flags, null, sClassFlagsToRemove, sClassFlagsToAdd);
     }
 
-    private static void tearDownClass() {
+    public static void tearDownClass() {
+        if (ApplicationStatus.isInitialized()) {
+            for (Activity a : ApplicationStatus.getRunningActivities()) {
+                if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
+                    Log.w(TAG,
+                            "Activity " + a + ", is still starting up while the Command Line flags "
+                                    + "are being reset. This is a known source of flakiness.");
+                }
+            }
+        }
         restoreFlags(sClassFlagsToRemove, sClassFlagsToAdd);
         sClassFlagsToRemove = null;
         sClassFlagsToAdd = null;
     }
 
-    private static void setUpMethod(Method method) {
+    public static void setUpMethod(Method method) {
         Set<String> flagsToAdd = new HashSet<>();
         Set<String> flagsToRemove = new HashSet<>();
         updateFlagsForMethod(method, flagsToAdd, flagsToRemove);
@@ -134,18 +163,18 @@ public final class CommandLineFlags {
         applyFlags(flagsToAdd, flagsToRemove, sMethodFlagsToRemove, sMethodFlagsToAdd);
     }
 
-    private static void tearDownMethod() {
+    public static void tearDownMethod() {
         restoreFlags(sMethodFlagsToRemove, sMethodFlagsToAdd);
         sMethodFlagsToRemove = null;
         sMethodFlagsToAdd = null;
     }
 
     private static void restoreFlags(Set<String> flagsToRemove, Map<String, String> flagsToAdd) {
-        for (String flag : flagsToRemove) {
-            CommandLine.getInstance().removeSwitch(flag);
-        }
         for (Entry<String, String> flag : flagsToAdd.entrySet()) {
             CommandLine.getInstance().appendSwitchWithValue(flag.getKey(), flag.getValue());
+        }
+        for (String flag : flagsToRemove) {
+            CommandLine.getInstance().removeSwitch(flag);
         }
     }
 
@@ -247,6 +276,31 @@ public final class CommandLineFlags {
 
     private CommandLineFlags() {
         throw new AssertionError("CommandLineFlags is a non-instantiable class");
+    }
+
+    private static class CommandLineFlagsTestRule implements TestRule {
+        @Override
+        public Statement apply(final Statement base, Description description) {
+            return new Statement() {
+                @Override
+                public void evaluate() throws Throwable {
+                    try {
+                        Class clazz = description.getTestClass();
+                        CommandLineFlags.setUpClass(clazz);
+                        CommandLineFlags.setUpMethod(clazz.getMethod(description.getMethodName()));
+
+                        base.evaluate();
+                    } finally {
+                        CommandLineFlags.tearDownMethod();
+                        CommandLineFlags.tearDownClass();
+                    }
+                }
+            };
+        }
+    }
+
+    public static TestRule getTestRule() {
+        return new CommandLineFlagsTestRule();
     }
 
     public static TestHook getPreTestHook() {

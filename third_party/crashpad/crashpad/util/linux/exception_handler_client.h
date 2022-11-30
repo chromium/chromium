@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "util/linux/exception_handler_protocol.h"
 
 namespace crashpad {
@@ -32,6 +31,9 @@ class ExceptionHandlerClient {
   //! \param[in] multiple_clients `true` if this socket may be used by multiple
   //!     clients.
   ExceptionHandlerClient(int sock, bool multiple_clients);
+
+  ExceptionHandlerClient(const ExceptionHandlerClient&) = delete;
+  ExceptionHandlerClient& operator=(const ExceptionHandlerClient&) = delete;
 
   ~ExceptionHandlerClient();
 
@@ -78,8 +80,6 @@ class ExceptionHandlerClient {
   pid_t ptracer_;
   bool can_set_ptracer_;
   bool multiple_clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerClient);
 };
 
 }  // namespace crashpad

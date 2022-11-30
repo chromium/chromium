@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 ScopedUserPolicyUpdate::ScopedUserPolicyUpdate(
     policy::UserPolicyBuilder* policy_builder,
@@ -26,4 +26,4 @@ ScopedDevicePolicyUpdate::~ScopedDevicePolicyUpdate() {
   std::move(callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

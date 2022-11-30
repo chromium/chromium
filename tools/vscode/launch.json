@@ -1,0 +1,94 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Chrome Debug",
+      "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
+      "request": "launch",
+      "targetArchitecture": "x64",
+      "program": "${workspaceFolder}/out/Debug/chrome",
+      "args": [], // Optional command line args
+      "preLaunchTask": "8-build_chrome_debug",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/out/Debug/",
+      "environment": [],
+      "externalConsole": true,
+      "setupCommands": [
+        {
+          "description": "Enable pretty printing for gdb",
+          "text": "-enable-pretty-printing"
+        },
+        {
+          "description": "Load Chromium gdb configuration",
+          "text": "-interpreter-exec console \"source -v ${workspaceFolder}/tools/gdb/gdbinit\""
+        },
+        {
+          "description": "Load Blink gdb configuration",
+          "text": "-interpreter-exec console \"python import sys; sys.path.insert(0, '${workspaceFolder}/third_party/blink/tools/gdb'); import blink\""
+        }
+      ]
+    },
+    {
+      "name": "Chrome Release",
+      "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
+      "request": "launch",
+      "targetArchitecture": "x64",
+      "program": "${workspaceFolder}/out/Release/chrome",
+      "args": [], // Optional command line args
+      "preLaunchTask": "9-build_chrome_release",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/out/Release/",
+      "environment": [],
+      "externalConsole": true
+    },
+    {
+      "name": "Custom Test Debug",
+      "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
+      "request": "launch",
+      "targetArchitecture": "x64",
+      "program": "${workspaceFolder}/out/Debug/unit_tests",
+      "args": [
+        "--gtest_filter=*",
+        "--single-process-tests",
+        "--ui-test-action-max-timeout=1000000",
+        "--test-launcher-timeout=1000000"
+      ],
+      "preLaunchTask": "10-build_test_debug",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/out/Debug/",
+      "environment": [],
+      "externalConsole": true
+    },
+    {
+      "name": "Attach Debug",
+      "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
+      "request": "launch",
+      "targetArchitecture": "x64",
+      "program": "${workspaceFolder}/out/Debug/chrome",
+      "args": [
+        "--remote-debugging-port=2224"
+      ],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/out/Debug/",
+      "environment": [],
+      "externalConsole": false
+    },
+    {
+      // Must be running before launching: out/Debug/bin/chrome_public_apk gdb --ide
+      "name": "Attach Android",
+      "type": "cppdbg", // "cppdbg" for GDB/LLDB, "cppvsdbg" for Windows Visual Studio debugger
+      "request": "launch",
+      "targetArchitecture": "arm",
+      "program": "/tmp/adb-gdb-support-${env:USER}/app_process",
+      "miDebuggerPath": "/tmp/adb-gdb-support-${env:USER}/gdb",
+      "miDebuggerServerAddress": "ignored",
+      "cwd": "${workspaceFolder}",
+      "customLaunchSetupCommands": [
+        {
+          "text": "-interpreter-exec console \"source -v /tmp/adb-gdb-support-${env:USER}/gdbinit\""
+        }
+      ],
+      "launchCompleteCommand": "None",
+    }
+  ]
+}

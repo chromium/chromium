@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,8 @@ namespace {
 
 bool IsValidMimeType(const std::string& type_string) {
   std::string top_level_type;
-  std::string subtype;
   if (!net::ParseMimeTypeWithoutParameter(type_string, &top_level_type,
-                                          &subtype)) {
+                                          /*subtype=*/nullptr)) {
     return false;
   }
 
@@ -29,24 +28,30 @@ bool IsValidMimeType(const std::string& type_string) {
 }
 
 // Parses `rel` attribute and returns its parsed representation. Returns
-// base::nullopt when the value isn't pre-defined.
-base::Optional<mojom::LinkRelAttribute> ParseRelAttribute(
-    const base::Optional<std::string>& attr) {
+// absl::nullopt when the value isn't pre-defined.
+absl::optional<mojom::LinkRelAttribute> ParseRelAttribute(
+    const absl::optional<std::string>& attr) {
   if (!attr.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
+  if (value == "dns-prefetch")
+    return mojom::LinkRelAttribute::kDnsPrefetch;
+  if (value == "preconnect")
+    return mojom::LinkRelAttribute::kPreconnect;
   if (value == "preload")
     return mojom::LinkRelAttribute::kPreload;
-  return base::nullopt;
+  else if (value == "modulepreload")
+    return mojom::LinkRelAttribute::kModulePreload;
+  return absl::nullopt;
 }
 
 // Parses `as` attribute and returns its parsed representation. Returns
-// base::nullopt when the value isn't pre-defined.
-base::Optional<mojom::LinkAsAttribute> ParseAsAttribute(
-    const base::Optional<std::string>& attr) {
+// absl::nullopt when the value isn't pre-defined.
+absl::optional<mojom::LinkAsAttribute> ParseAsAttribute(
+    const absl::optional<std::string>& attr) {
   if (!attr.has_value())
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string value = base::ToLowerASCII(attr.value());
   if (value == "font")
@@ -55,15 +60,16 @@ base::Optional<mojom::LinkAsAttribute> ParseAsAttribute(
     return mojom::LinkAsAttribute::kImage;
   else if (value == "script")
     return mojom::LinkAsAttribute::kScript;
-  else if (value == "stylesheet")
+  // TODO(crbug.com/671310): Disallow "stylesheet", it was allowed accidentally.
+  else if (value == "style" || value == "stylesheet")
     return mojom::LinkAsAttribute::kStyleSheet;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Parses `crossorigin` attribute and returns its parsed representation. Returns
-// base::nullopt when the value isn't pre-defined.
-base::Optional<mojom::CrossOriginAttribute> ParseCrossOriginAttribute(
-    const base::Optional<std::string>& attr) {
+// absl::nullopt when the value isn't pre-defined.
+absl::optional<mojom::CrossOriginAttribute> ParseCrossOriginAttribute(
+    const absl::optional<std::string>& attr) {
   if (!attr.has_value())
     return mojom::CrossOriginAttribute::kAnonymous;
 
@@ -72,14 +78,14 @@ base::Optional<mojom::CrossOriginAttribute> ParseCrossOriginAttribute(
     return mojom::CrossOriginAttribute::kAnonymous;
   else if (value == "use-credentials")
     return mojom::CrossOriginAttribute::kUseCredentials;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Parses attributes of a Link header and populates parsed representations of
 // attributes. Returns true only when all attributes and their values are
 // pre-definied.
 bool ParseAttributes(
-    const std::unordered_map<std::string, base::Optional<std::string>>& attrs,
+    const std::unordered_map<std::string, absl::optional<std::string>>& attrs,
     mojom::LinkHeaderPtr& parsed) {
   bool is_rel_set = false;
 
@@ -90,7 +96,7 @@ bool ParseAttributes(
       // Ignore if `rel` is already set.
       if (is_rel_set)
         continue;
-      base::Optional<mojom::LinkRelAttribute> rel =
+      absl::optional<mojom::LinkRelAttribute> rel =
           ParseRelAttribute(attr.second);
       if (!rel.has_value())
         return false;
@@ -101,7 +107,7 @@ bool ParseAttributes(
       // is a reasonable behavior.
       if (parsed->as != mojom::LinkAsAttribute::kUnspecified)
         continue;
-      base::Optional<mojom::LinkAsAttribute> as = ParseAsAttribute(attr.second);
+      absl::optional<mojom::LinkAsAttribute> as = ParseAsAttribute(attr.second);
       if (!as.has_value())
         return false;
       parsed->as = as.value();
@@ -110,7 +116,7 @@ bool ParseAttributes(
       // is a reasonable behavior.
       if (parsed->cross_origin != mojom::CrossOriginAttribute::kUnspecified)
         continue;
-      base::Optional<mojom::CrossOriginAttribute> cross_origin =
+      absl::optional<mojom::CrossOriginAttribute> cross_origin =
           ParseCrossOriginAttribute(attr.second);
       if (!cross_origin.has_value())
         return false;
@@ -143,7 +149,7 @@ std::vector<mojom::LinkHeaderPtr> ParseLinkHeaders(
   headers.GetNormalizedHeader("link", &link_header);
   for (const auto& pair : link_header_util::SplitLinkHeader(link_header)) {
     std::string url;
-    std::unordered_map<std::string, base::Optional<std::string>> attrs;
+    std::unordered_map<std::string, absl::optional<std::string>> attrs;
     if (!link_header_util::ParseLinkHeaderValue(pair.first, pair.second, &url,
                                                 &attrs)) {
       continue;

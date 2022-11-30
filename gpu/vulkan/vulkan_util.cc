@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,50 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"  // nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
+#define GL_NONE 0x00
+#define GL_LAYOUT_GENERAL_EXT 0x958D
+#define GL_LAYOUT_COLOR_ATTACHMENT_EXT 0x958E
+#define GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT 0x958F
+#define GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT 0x9590
+#define GL_LAYOUT_SHADER_READ_ONLY_EXT 0x9591
+#define GL_LAYOUT_TRANSFER_SRC_EXT 0x9592
+#define GL_LAYOUT_TRANSFER_DST_EXT 0x9593
+#define GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT 0x9530
+#define GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT 0x9531
 
 namespace gpu {
+
 namespace {
-uint64_t g_submit_count = 0u;
-uint64_t g_import_semaphore_into_gl_count = 0u;
+
+#if BUILDFLAG(IS_ANDROID)
+int GetEMUIVersion() {
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  base::StringPiece manufacturer(build_info->manufacturer());
+
+  // TODO(crbug.com/1096222): check Honor devices as well.
+  if (manufacturer != "HUAWEI")
+    return -1;
+
+  // Huawei puts EMUI version in the build version incremental.
+  // Example: 11.0.0.130C00
+  int version = 0;
+  if (sscanf(build_info->version_incremental(), "%d.", &version) != 1)
+    return -1;
+
+  return version;
+}
+#endif
 }
 
 bool SubmitSignalVkSemaphores(VkQueue vk_queue,
@@ -68,15 +103,6 @@ bool SubmitWaitVkSemaphore(VkQueue vk_queue,
 VkSemaphore CreateExternalVkSemaphore(
     VkDevice vk_device,
     VkExternalSemaphoreHandleTypeFlags handle_types) {
-  base::ScopedClosureRunner uma_runner(base::BindOnce(
-      [](base::Time time) {
-        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-            "GPU.Vulkan.CreateExternalVkSemaphore", base::Time::Now() - time,
-            base::TimeDelta::FromMicroseconds(1),
-            base::TimeDelta::FromMicroseconds(200), 50);
-      },
-      base::Time::Now()));
-
   VkExportSemaphoreCreateInfo export_info = {
       .sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO,
       .handleTypes = handle_types,
@@ -105,14 +131,6 @@ std::string VkVersionToString(uint32_t version) {
                             VK_VERSION_PATCH(version));
 }
 
-VkResult QueueSubmitHook(VkQueue queue,
-                         uint32_t submitCount,
-                         const VkSubmitInfo* pSubmits,
-                         VkFence fence) {
-  g_submit_count++;
-  return vkQueueSubmit(queue, submitCount, pSubmits, fence);
-}
-
 VkResult CreateGraphicsPipelinesHook(
     VkDevice device,
     VkPipelineCache pipelineCache,
@@ -124,28 +142,31 @@ VkResult CreateGraphicsPipelinesHook(
       [](base::Time time) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             "GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines",
-            base::Time::Now() - time, base::TimeDelta::FromMicroseconds(100),
-            base::TimeDelta::FromMicroseconds(50000), 50);
+            base::Time::Now() - time, base::Microseconds(100),
+            base::Microseconds(50000), 50);
       },
       base::Time::Now()));
   return vkCreateGraphicsPipelines(device, pipelineCache, createInfoCount,
                                    pCreateInfos, pAllocator, pPipelines);
 }
 
-void RecordImportingVKSemaphoreIntoGL() {
-  g_import_semaphore_into_gl_count++;
+VkResult VulkanQueueSubmitHook(VkQueue queue,
+                               uint32_t submitCount,
+                               const VkSubmitInfo* pSubmits,
+                               VkFence fence) {
+  TRACE_EVENT0("gpu", "VulkanQueueSubmitHook");
+  return vkQueueSubmit(queue, submitCount, pSubmits, fence);
 }
 
-void ReportUMAPerSwapBuffers() {
-  static uint64_t last_submit_count = 0u;
-  static uint64_t last_semaphore_count = 0u;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("GPU.Vulkan.QueueSubmitPerSwapBuffers",
-                              g_submit_count - last_submit_count, 1, 50, 50);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "GPU.Vulkan.ImportSemaphoreGLPerSwapBuffers",
-      g_import_semaphore_into_gl_count - last_semaphore_count, 1, 50, 50);
-  last_submit_count = g_submit_count;
-  last_semaphore_count = g_import_semaphore_into_gl_count;
+VkResult VulkanQueueWaitIdleHook(VkQueue queue) {
+  TRACE_EVENT0("gpu", "VulkanQueueWaitIdleHook");
+  return vkQueueWaitIdle(queue);
+}
+
+VkResult VulkanQueuePresentKHRHook(VkQueue queue,
+                                   const VkPresentInfoKHR* pPresentInfo) {
+  TRACE_EVENT0("gpu", "VulkanQueuePresentKHRHook");
+  return vkQueuePresentKHR(queue, pPresentInfo);
 }
 
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
@@ -153,29 +174,38 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
                               std::string enable_by_device_name) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
-#if !defined(OS_ANDROID)
-#if defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_win32";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_win32";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   constexpr char kMemoryObjectExtension[] = "GL_ANGLE_memory_object_fuchsia";
   constexpr char kSemaphoreExtension[] = "GL_ANGLE_semaphore_fuchsia";
 #else
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
-  // If both Vulkan and GL are using native GPU (non swiftshader), check
-  // necessary extensions for GL and Vulkan interop.
-  const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
-  if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
-      !gfx::HasExtension(extensions, kSemaphoreExtension)) {
-    DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
-                << " is not supported.";
-    return false;
+  // If Chrome and ANGLE share the same VkQueue, they can share vulkan
+  // resource without those extensions. 
+  if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+    // If both Vulkan and GL are using native GPU (non swiftshader), check
+    // necessary extensions for GL and Vulkan interop.
+    const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
+    if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
+        !gfx::HasExtension(extensions, kSemaphoreExtension)) {
+        DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
+                    << " is not supported.";
+        return false;
+    }
   }
-#endif  // !defined(OS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) && !defined(OZONE_PLATFORM_IS_X11)
+  // Vulkan is only supported with X11 on Linux for now.
+  return false;
+#else
+  return true;
+#endif
+#else   // BUILDFLAG(IS_ANDROID)
   if (vulkan_info.physical_devices.empty())
     return false;
 
@@ -189,10 +219,13 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   }
 
   if (device_info.properties.vendorID == kVendorARM) {
-    // https://crbug.com/1096222: Display problem with Huawei and Honor devices
-    // with Mali GPU. The Mali driver version is < 19.0.0.
-    if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0))
+    int emui_version = GetEMUIVersion();
+    // TODO(crbug.com/1096222) Display problem with Huawei EMUI < 11 and Honor
+    // devices with Mali GPU. The Mali driver version is < 19.0.0.
+    if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0) &&
+        emui_version < 11) {
       return false;
+    }
 
     // Remove "Mali-" prefix.
     base::StringPiece device_name(device_info.properties.deviceName);
@@ -217,6 +250,9 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
 
   // https:://crbug.com/1165783: Performance is not yet as good as GL.
   if (device_info.properties.vendorID == kVendorQualcomm) {
+    if (device_info.properties.deviceName ==
+        base::StringPiece("Adreno (TM) 630"))
+      return true;
     return false;
   }
 
@@ -224,9 +260,66 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   // Imagination GPUs.
   if (device_info.properties.vendorID == kVendorImagination)
     return false;
-#endif  // defined(OS_ANDROID)
 
   return true;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout) {
+  switch (layout) {
+    case GL_NONE:
+      return VK_IMAGE_LAYOUT_UNDEFINED;
+    case GL_LAYOUT_GENERAL_EXT:
+      return VK_IMAGE_LAYOUT_GENERAL;
+    case GL_LAYOUT_COLOR_ATTACHMENT_EXT:
+      return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    case GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT:
+      return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    case GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT:
+      return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+    case GL_LAYOUT_SHADER_READ_ONLY_EXT:
+      return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    case GL_LAYOUT_TRANSFER_SRC_EXT:
+      return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    case GL_LAYOUT_TRANSFER_DST_EXT:
+      return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    case GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT:
+      return VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR;
+    case GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT:
+      return VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR;
+    default:
+      break;
+  }
+  NOTREACHED() << "Invalid image layout " << layout;
+  return VK_IMAGE_LAYOUT_UNDEFINED;
+}
+
+uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout) {
+  switch (layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      return GL_NONE;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      return GL_LAYOUT_GENERAL_EXT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      return GL_LAYOUT_COLOR_ATTACHMENT_EXT;
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL:
+      return GL_LAYOUT_DEPTH_STENCIL_ATTACHMENT_EXT;
+    case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL:
+      return GL_LAYOUT_DEPTH_STENCIL_READ_ONLY_EXT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      return GL_LAYOUT_SHADER_READ_ONLY_EXT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+      return GL_LAYOUT_TRANSFER_SRC_EXT;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      return GL_LAYOUT_TRANSFER_DST_EXT;
+    case VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR:
+      return GL_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_EXT;
+    case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR:
+      return GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT;
+    default:
+      NOTREACHED() << "Invalid image layout " << layout;
+      return GL_NONE;
+  }
 }
 
 }  // namespace gpu

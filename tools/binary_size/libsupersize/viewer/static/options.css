@@ -1,0 +1,337 @@
+/* Copyright 2018 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/** Body modifier class, indicates when options should be visible. */
+.show-options {
+  grid-template-columns: auto 306px;
+}
+
+.show-options .options {
+  visibility: visible;
+}
+.show-options .settings {
+  fill: #1a73e8;
+}
+
+/** Black overlay shown on smaller screens when options is visible. */
+.scrim {
+  z-index: 5; /* Side panel layer */
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 256px;
+  background: #00000050;
+}
+
+/** Options side panel */
+.options {
+  z-index: 5; /* Side panel layer */
+  grid-area: options;
+  padding: 0 16px;
+  overflow-y: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  background: #fffffff5;
+  box-shadow: 0 1px 2px #3c40434d, 0 2px 6px 2px #3c404326;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 1em 0;
+}
+.options fieldset:first-of-type {
+  margin-top: 1em;
+}
+legend {
+  margin: 1em 0;
+  padding: 0;
+}
+
+/** Toolbar */
+.form-bar {
+  display: flex;
+  justify-content: flex-end;
+  height: 64px;
+  align-items: center;
+}
+
+/** Buttons */
+.icon-button,
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+.icon-button {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+}
+.icon-button:hover {
+  background: #0000001f;
+}
+
+.text-button {
+  padding: 0 8px;
+  height: 36px;
+  border-radius: 4px;
+  color: #1a73e8;
+  font-family: 'Google Sans', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+}
+.text-button:hover {
+  background: #d2e3fc80;
+}
+.text-button:hover:focus {
+  background: #d2e3fc;
+}
+.text-button:focus,
+.text-button:active {
+  background: #d2e3fce6;
+}
+.text-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.text-button:disabled:hover {
+  background: #bbb;
+}
+
+.text-button.with-icon {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 12px;
+  margin: 0 8px;
+}
+
+.filled-button {
+  background: #1a73e8;
+  color: white;
+}
+.filled-button:hover {
+  background: #287ae6;
+  box-shadow: 0 1px 2px #3c40434d, 0 1px 3px 1px #3c404326;
+}
+input:focus + label.filled-button:hover {
+  background: #5d9cee;
+}
+input:focus + label.filled-button {
+  background: #5094ed;
+  outline: #2e3436 dotted 1px;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+.filled-button:active,
+input:focus + label.filled-button:active {
+  background: #1a73e8;
+  box-shadow: 0 1px 2px #3c40434d, 0 2px 6px 2px #3c404326;
+}
+
+select {
+  cursor: pointer;
+}
+
+select.sel-small {
+  background: #fff;
+  color: #3c4043;
+  font-family: "Google Sans", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+/** <input type='text'> or <select> elements */
+.input-wrapper,
+.select-wrapper {
+  position: relative;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+input[type='text'],
+input[type='number'],
+select.sel-big {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  padding: 20px 12px 13px;
+  width: 100%;
+  caret-color: #1a73e8;
+}
+.input-label,
+.select-label {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  line-height: 20px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: #5f6368;
+  border-bottom: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.04);
+}
+.select-label::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 5px);
+  right: 4px;
+  margin: 5px 7px 5px 8px;
+  border-style: solid;
+  border-width: 5px 5px 0 5px;
+  border-color: currentColor transparent transparent transparent;
+  transition: transform 0.2s ease-out;
+}
+input[type='text']:focus + .input-label,
+input[type='number']:focus + .input-label,
+select.sel-big:focus + .select-label {
+  color: #1a73e8;
+  bottom: -2px;
+  border-width: 2px;
+}
+select.sel-big:focus + .select-label::after {
+  transform: rotate(180deg);
+}
+.mode-view .hide-on-mode-view {
+  display: none;
+}
+
+.input-error {
+  margin: 4px 0;
+  min-height: 2.5em;
+  opacity: 0;
+  color: #d93025;
+  font-size: 12px;
+}
+.input-regex:invalid,
+.input-regex[aria-invalid='true'] {
+  caret-color: #d93025;
+}
+.input-regex:invalid + .input-label,
+.input-regex[aria-invalid='true'] + .input-label {
+  color: #d93025;
+}
+.input-regex:invalid ~ .input-error,
+.input-regex[aria-invalid='true'] ~ .input-error {
+  opacity: 1;
+}
+
+/** <input type='checkbox' or 'radio'> elements */
+input[type='checkbox'],
+input[type='radio'] {
+  position: absolute;
+  margin: 0;
+  height: 18px;
+  width: 18px;
+  opacity: 0;
+}
+.checkbox-wrapper,
+.radio-wrapper {
+  position: relative;
+}
+.checkbox-label,
+.radio-label {
+  display: block;
+  position: relative;
+  padding-left: 34px;
+  margin: 4px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+.checkbox-label::before,
+.checkbox-label::after,
+.radio-label::before,
+.radio-label::after {
+  position: absolute;
+  content: '';
+  border: 2px solid currentColor;
+}
+.checkbox-label::before,
+.radio-label::before {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  left: 0;
+}
+.checkbox-label::after,
+.radio-label::after {
+  width: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.checkbox-label::after {
+  height: 9px;
+  left: 6px;
+  top: 2px;
+  border-top-width: 0;
+  border-left-width: 0;
+  transform: rotate(45deg);
+}
+.radio-label::before {
+  border-radius: 50%;
+}
+.radio-label::after {
+  height: 4px;
+  left: 5px;
+  top: 5px;
+  background: currentColor;
+  border-radius: 50%;
+}
+input[type='checkbox']:checked + .checkbox-label,
+input[type='radio']:checked + .radio-label {
+  color: #1a73e8;
+}
+input[type='checkbox']:checked + .checkbox-label::after,
+input[type='radio']:checked + .radio-label::after {
+  opacity: 1;
+}
+input[type='checkbox']:disabled + .checkbox-label,
+input[type='radio']:disabled + .radio-label {
+  color: #80868b;
+}
+input[type='checkbox']:focus + .checkbox-label,
+input[type='radio']:focus + .radio-label {
+  outline: #2e3436 dotted 1px;
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
+input[type='file'] {
+  position: absolute;
+  top: -100%;
+  opacity: 0;
+}
+
+/** Tweaks for smaller screen sizes */
+@media (max-width: 700px) {
+  .show-options {
+    grid-template-columns: auto 0;
+  }
+  .show-options .scrim {
+    display: block;
+  }
+
+  .symbols {
+    padding: 0 16px;
+  }
+
+  .text-button.with-icon {
+    padding-right: 6px;
+  }
+  .text-button.with-icon .label-text {
+    display: none;
+  }
+}

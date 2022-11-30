@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ TEST(ServiceConfigImplTest, TestApi) {
 
   config.max_scheduled_downloads = 7;
   config.max_concurrent_downloads = 12;
-  config.file_keep_alive_time = base::TimeDelta::FromSeconds(12);
+  config.file_keep_alive_time = base::Seconds(12);
 
   EXPECT_EQ(config.max_scheduled_downloads,
             impl.GetMaxScheduledDownloadsPerClient());

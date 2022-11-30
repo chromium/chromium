@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Canvas Uses CALayerOverlay Test</title>
+
+<script>
+// This test should render a green square if GPU acceleration is enabled
+// and a blue square if GPU accelerated 2d canvas is disabled.
+// Red means the canvas is not using an overlay.
+
+// '--enable-gpu-benchmarking' is required for this test.
+
+function main() {
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "Red";
+  context.fillRect(0, 0, 100, 100);
+
+  function errorCodeHandler(errorCode) {
+    // gfx::kCALayerSuccess = 0
+    if (errorCode == 0) {
+      // If gpuBenchmarking is not supported, the test will not reach here and
+      // the quad will not be drawn.
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(canvas) ? "Green" : "Blue";
+      context.fillRect(0, 0, 100, 100);
+      window.domAutomationController.send("SUCCESS");
+    } else {
+      console.log("CALayerOverlay is not used. Error code:" , errorCode);
+      window.domAutomationController.send("FAILED");
+    }
+  }
+
+  function draw() {
+     if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+       console.log("addCoreAnimationStatusEventListener fails!");
+       window.domAutomationController.send("FAILED");
+     }
+  }
+
+  window.requestAnimationFrame(draw);
+}
+
+</script>
+</head>
+<body onload="main()">
+<canvas id="canvas" width="100" height="100" style="position:absolute; top:0px; left:0px"></canvas>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,10 @@ AutofillCreditCardPolicyHandler::~AutofillCreditCardPolicyHandler() {}
 void AutofillCreditCardPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
-  const base::Value* value = policies.GetValue(policy_name());
-  bool autofill_credit_card_enabled;
-  if (value && value->GetAsBoolean(&autofill_credit_card_enabled) &&
-      !autofill_credit_card_enabled) {
-    prefs->SetBoolean(autofill::prefs::kAutofillCreditCardEnabled, false);
-  }
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
+  if (value && !value->GetBool())
+    prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, false);
 }
 
 }  // namespace autofill

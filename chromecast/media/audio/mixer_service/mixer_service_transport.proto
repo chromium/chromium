@@ -1,0 +1,287 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromecast.media.mixer_service;
+
+import "chromecast/media/audio/net/common.proto";
+
+message OutputStreamParams {
+  enum StreamType {
+    STREAM_TYPE_DEFAULT = 0;
+    STREAM_TYPE_SFX = 1;
+  }
+  optional StreamType stream_type = 1;
+
+  optional audio_service.ContentType content_type = 2;
+  optional audio_service.SampleFormat sample_format = 3;
+
+  optional string device_id = 4;
+
+  optional int32 sample_rate = 5;
+  optional int32 num_channels = 6;
+  optional audio_service.ChannelLayout channel_layout = 7;
+  optional sint32 channel_selection = 8 [default = -1];
+
+  optional int32 fill_size_frames = 9;
+  optional int32 start_threshold_frames = 10;
+  optional int32 max_buffered_frames = 11;
+
+  optional int32 fade_frames = 12;
+
+  // If |true|, playback will not start until a start timestamp has been
+  // provided via a SetStartTimestamp message.
+  optional bool use_start_timestamp = 13;
+
+  // If |true|, this stream will not be included in the mixer's stream counts.
+  optional bool ignore_for_stream_count = 14;
+
+  // If |true|, the receiver will not close the stream after a period of
+  // inactivity.
+  optional bool never_timeout_connection = 15;
+
+  // If present, volume limits apply to this stream based on the |focus_type|
+  // instead of the |content_type|.
+  optional audio_service.ContentType focus_type = 16;
+
+  message TimestampedAudioConfig {
+    // How frequently to change clock rate to fix timestamp errors, in
+    // microseconds.
+    optional int64 rate_change_interval = 1;
+
+    // How long to make the linear regression window for smoothing errors, in
+    // microseconds.
+    optional int64 linear_regression_window = 2;
+
+    // The maximum current error to ignore, in microseconds.
+    optional int64 max_ignored_current_error = 3;
+
+    // The maximum current absolute error that should be adjusted for in a
+    // single clock rate adjustment.
+    optional double max_current_error_correction = 4;
+
+    // The minimum difference between the optimal clock rate and the current
+    // clock rate required to actually change the rate.
+    optional double min_rate_change = 5;
+
+    // Maximum error to allow before a hard correction.
+    optional int64 max_timestamp_error = 6;
+
+    // If true, audio will always be played, even if it would play late.
+    optional bool never_crop = 7;
+  }
+
+  // If present, the PTS value for each audio buffer indicates the desired
+  // playout time (relative to DefaultMonotonicClock::Now()) of the first frame
+  // of that buffer (instead of the usual arbitrary PTS value).
+  optional TimestampedAudioConfig timestamped_audio_config = 17;
+
+  //  Enables audio clock simulation for AV sync.
+  optional bool enable_audio_clock_simulation = 18;
+}
+
+// Indicates that we want to start playing the sample with PTS |start_pts|
+// at audio clock timestamp |start_timestamp| in microseconds. May be sent
+// multiple times to restart playback at a new timestamp (ie for hard
+// corrections).
+message SetStartTimestamp {
+  optional int64 start_timestamp = 1;
+  optional int64 start_pts = 2;
+}
+
+// Informs the mixer how fast the PTS increases per frame. For example if the
+// playback rate is 2.0, then each frame increases the PTS by 2.0 / sample_rate
+// seconds.
+message SetPlaybackRate {
+  optional float playback_rate = 1;
+}
+
+// Changes the volume multiplier for an audio output stream.
+message StreamVolume {
+  optional float volume = 1;
+}
+
+// Immediately pauses/resumes playback for an audio output stream.
+message SetPaused {
+  optional bool paused = 1;
+}
+
+// Sets (or simulates setting) the audio clock rate. If the provided rate is
+// not supported, the rate will be clamped to the supported range.
+message SetAudioClockRate {
+  optional double rate = 1;
+}
+
+// Indicates that previously pushed audio data has been queued for playback,
+// and the next audio data that is pushed to the mixer will start playing at
+// |next_playback_timestamp|.
+message BufferPushResult {
+  optional fixed64 delay_timestamp = 1;
+  optional int64 delay = 2;
+}
+
+// Indicates that EOS for an audio output stream has been played out.
+message EosPlayedOut {}
+
+// Indicates that an audio output stream is ready for playback (ie, has enough
+// audio data to exceed the start threshold, and has output delay information).
+message ReadyForPlayback {
+  optional fixed64 delay_microseconds = 1;
+}
+
+// Indicates current stream config for a loopback / redirected audio stream.
+// Sent whenever the config changes; will be sent at least once before any audio
+// data is sent.
+message StreamConfig {
+  optional audio_service.SampleFormat sample_format = 1;
+  optional int32 sample_rate = 2;
+  optional int32 num_channels = 3;
+  optional int32 data_size = 4;  // Expected size of audio data in bytes.
+}
+
+// Sent to indicate that the mixer should stream loopback audio data back over
+// this connection.
+message LoopbackDataRequest {}
+
+// Sent when a loopback audio stream is interrupted (ie, is discontinuous).
+message StreamInterruption {
+  enum InterruptionReason {
+    INTERRUPTED_UNKNOWN = 0;
+    INTERRUPTED_DISCONNECTED = 1;     // Disconnected from mixer.
+    INTERRUPTED_UNDERRUN = 2;         // Mixer output underrun.
+    INTERRUPTED_CONFIG_CHANGE = 3;    // Mixer output config changed.
+    INTERRUPTED_OUTPUT_STOPPED = 4;   // Mixer stopped playing out audio.
+    INTERRUPTED_SOCKET_OVERFLOW = 5;  // Mixer couldn't send over the socket.
+  }
+
+  optional InterruptionReason reason = 1;
+}
+
+// Sent to indicate that the mixer should redirect specific audio output
+// stream data back over this connection.
+message RedirectionRequest {
+  optional int32 order = 1;
+  optional int32 num_channels = 2;
+  optional audio_service.ChannelLayout channel_layout = 3;
+  optional bool apply_volume = 4;
+  optional int64 extra_delay_microseconds = 5;
+}
+
+// Sets the patterns to determine which audio output streams should be
+// redirected.
+message RedirectedStreamPatterns {
+  message Pattern {
+    optional audio_service.ContentType content_type = 1;
+    optional string device_id_pattern = 2;
+  }
+  repeated Pattern patterns = 1;
+}
+
+// Sets volume multiplier for all streams of a given content type.
+message SetDeviceVolume {
+  optional audio_service.ContentType content_type = 1;
+  optional float volume_multiplier = 2;
+}
+
+// Sets mute state all streams of a given content type.
+message SetDeviceMuted {
+  optional audio_service.ContentType content_type = 1;
+  optional bool muted = 2;
+}
+
+// Sets the maximum effective volume multiplier for a given content type.
+message SetVolumeLimit {
+  optional audio_service.ContentType content_type = 1;
+  optional float max_volume_multiplier = 2;
+}
+
+// Asks the mixer to return a list of registered builtin post processors.
+message ListPostprocessors {}
+
+message PostprocessorList {
+  repeated string postprocessors = 1;
+}
+
+// Sends arbitrary config data to a specific postprocessor.
+message ConfigurePostprocessor {
+  optional string name = 1;
+  optional bytes config = 2;
+}
+
+// Instructs the mixer to reload postprocessors based on the config file.
+message ReloadPostprocessors {}
+
+// Asks the mixer to send / stop sending stream count updates.
+message RequestStreamCount {
+  optional bool subscribe = 1;
+}
+
+// Indicates how many output streams are currently being handled by the mixer.
+message StreamCount {
+  optional int32 primary = 1;
+  optional int32 sfx = 2;
+}
+
+// Sets the desired number of output channels used by the mixer.
+message NumOutputChannels {
+  optional int32 channels = 1;
+}
+
+// Indicates an error on an audio stream.
+message Error {
+  enum Type {
+    INVALID_STREAM_ERROR = 0;
+    XRUN_ERROR = 1;  // Underrun or overrun.
+  }
+  optional Type type = 1;
+  optional string message = 2;
+}
+
+message MixerUnderrun {
+  // Keep in sync with OutputStreamConnection::Delegate::MixerUnderrunType
+  enum Type {
+    // An underrun was detected on mixer input.
+    INPUT_UNDERRUN = 0;
+    // An underrun was detected on mixer output.
+    OUTPUT_UNDERRUN = 1;
+  }
+  optional Type type = 1;
+}
+
+message TimestampAdjustment {
+  optional int64 adjustment = 1;
+}
+
+message Generic {
+  optional OutputStreamParams output_stream_params = 1;
+  optional SetStartTimestamp set_start_timestamp = 2;
+  optional SetPlaybackRate set_playback_rate = 3;
+  optional StreamVolume set_stream_volume = 4;
+  optional SetPaused set_paused = 5;
+  optional BufferPushResult push_result = 6;
+  optional EosPlayedOut eos_played_out = 7;
+  optional ReadyForPlayback ready_for_playback = 8;
+  optional StreamConfig stream_config = 9;
+  optional LoopbackDataRequest loopback_request = 10;
+  optional RedirectionRequest redirection_request = 11;
+  optional RedirectedStreamPatterns redirected_stream_patterns = 12;
+  optional SetDeviceVolume set_device_volume = 13;
+  optional SetDeviceMuted set_device_muted = 14;
+  optional SetVolumeLimit set_volume_limit = 15;
+  optional ConfigurePostprocessor configure_postprocessor = 16;
+  optional ReloadPostprocessors reload_postprocessors = 17;
+  optional RequestStreamCount request_stream_count = 18;
+  optional StreamCount stream_count = 19;
+  optional Error error = 20;
+  optional NumOutputChannels set_num_output_channels = 21;
+  optional StreamInterruption stream_interruption = 22;
+  optional SetAudioClockRate set_audio_clock_rate = 23;
+  optional MixerUnderrun mixer_underrun = 24;
+  optional ListPostprocessors list_postprocessors = 25;
+  optional PostprocessorList postprocessor_list = 26;
+  optional TimestampAdjustment timestamp_adjustment = 27;
+}

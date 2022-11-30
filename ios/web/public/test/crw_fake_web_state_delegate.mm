@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@
   // Backs up the property with the same name.
   std::unique_ptr<web::WebState::OpenURLParams> _openURLParams;
   // Backs up the property with the same name.
-  std::unique_ptr<web::ContextMenuParams> _contextMenuParams;
-  // Backs up the property with the same name.
   BOOL _javaScriptDialogPresenterRequested;
 }
 
@@ -25,14 +23,6 @@
 @synthesize webStateClosingRequested = _webStateClosingRequested;
 @synthesize repostFormWarningRequested = _repostFormWarningRequested;
 @synthesize authenticationRequested = _authenticationRequested;
-@synthesize shouldPreviewLinkWithURLReturnValue =
-    _shouldPreviewLinkWithURLReturnValue;
-@synthesize linkURL = _linkURL;
-@synthesize previewingViewControllerForLinkWithURLReturnValue =
-    _previewingViewControllerForLinkWithURLReturnValue;
-@synthesize previewingViewController = _previewingViewController;
-@synthesize commitPreviewingViewControllerRequested =
-    _commitPreviewingViewControllerRequested;
 @synthesize isAppLaunchingAllowedForWebStateReturnValue =
     _isAppLaunchingAllowedForWebStateReturnValue;
 
@@ -55,12 +45,6 @@
   _webState = webState;
   _openURLParams.reset(new web::WebState::OpenURLParams(params));
   return webState;
-}
-
-- (void)webState:(web::WebState*)webState
-    handleContextMenu:(const web::ContextMenuParams&)params {
-  _webState = webState;
-  _contextMenuParams.reset(new web::ContextMenuParams(params));
 }
 
 - (void)webState:(web::WebState*)webState
@@ -89,33 +73,8 @@
   return _openURLParams.get();
 }
 
-- (web::ContextMenuParams*)contextMenuParams {
-  return _contextMenuParams.get();
-}
-
 - (BOOL)javaScriptDialogPresenterRequested {
   return _javaScriptDialogPresenterRequested;
-}
-
-- (BOOL)webState:(web::WebState*)webState
-    shouldPreviewLinkWithURL:(const GURL&)linkURL {
-  _webState = webState;
-  _linkURL = linkURL;
-  return _shouldPreviewLinkWithURLReturnValue;
-}
-
-- (UIViewController*)webState:(web::WebState*)webState
-    previewingViewControllerForLinkWithURL:(const GURL&)linkURL {
-  _webState = webState;
-  _linkURL = linkURL;
-  return _previewingViewControllerForLinkWithURLReturnValue;
-}
-
-- (void)webState:(web::WebState*)webState
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  _webState = webState;
-  _previewingViewController = previewingViewController;
-  _commitPreviewingViewControllerRequested = YES;
 }
 
 - (BOOL)isAppLaunchingAllowedForWebState:(web::WebState*)webState {

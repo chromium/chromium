@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,18 +14,18 @@ namespace ash {
 
 ClockModel::ClockModel() : hour_clock_type_(base::GetHourClockType()) {
   // SystemClockClient may be null in tests.
-  if (chromeos::SystemClockClient::Get()) {
-    chromeos::SystemClockClient::Get()->AddObserver(this);
-    can_set_time_ = chromeos::SystemClockClient::Get()->CanSetTime();
+  if (SystemClockClient::Get()) {
+    SystemClockClient::Get()->AddObserver(this);
+    can_set_time_ = SystemClockClient::Get()->CanSetTime();
   }
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  system::TimezoneSettings::GetInstance()->AddObserver(this);
 }
 
 ClockModel::~ClockModel() {
   // SystemClockClient may be null in tests.
-  if (chromeos::SystemClockClient::Get())
-    chromeos::SystemClockClient::Get()->RemoveObserver(this);
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  if (SystemClockClient::Get())
+    SystemClockClient::Get()->RemoveObserver(this);
+  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
 void ClockModel::AddObserver(ClockObserver* observer) {
@@ -53,6 +53,10 @@ bool ClockModel::IsSettingsAvailable() const {
 
 void ClockModel::ShowDateSettings() {
   Shell::Get()->system_tray_model()->client()->ShowDateSettings();
+}
+
+void ClockModel::ShowPowerSettings() {
+  Shell::Get()->system_tray_model()->client()->ShowPowerSettings();
 }
 
 void ClockModel::ShowSetTimeDialog() {

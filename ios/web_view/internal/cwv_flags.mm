@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/flags_ui/feature_entry.h"
@@ -22,9 +20,9 @@
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "ios/web_view/internal/app/application_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,7 +48,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {kUseSyncSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",
      flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(
-         switches::kSyncServiceURL,
+         syncer::kSyncServiceURL,
          "https://chrome-sync.sandbox.google.com/chrome-sync/alpha")},
     // Controls if wallet connects to the sandbox server instead of production.
     {kUseWalletSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",
@@ -114,52 +112,45 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
   BOOL usesSyncSandbox = NO;
   BOOL usesWalletSandbox = NO;
 
-  base::ListValue supportedFeatures;
-  base::ListValue unsupportedFeatures;
+  base::Value::List supportedFeatures;
+  base::Value::List unsupportedFeatures;
 
   _flagsState->GetFlagFeatureEntries(
-      _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly,
-      &supportedFeatures, &unsupportedFeatures,
+      _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly, supportedFeatures,
+      unsupportedFeatures,
       base::BindRepeating(&ios_web_view::SkipConditionalFeatureEntry));
-  for (size_t i = 0; i < supportedFeatures.GetSize(); i++) {
-    base::DictionaryValue* featureEntry;
-    if (!supportedFeatures.GetDictionary(i, &featureEntry)) {
-      NOTREACHED();
-    }
-    std::string internalName;
-    if (!featureEntry->GetString("internal_name", &internalName)) {
-      NOTREACHED();
-    }
-    if (internalName == ios_web_view::kUseSyncSandboxFlagName) {
-      bool enabled;
-      if (!featureEntry->GetBoolean("enabled", &enabled)) {
-        NOTREACHED();
-      }
-      usesSyncSandbox = enabled;
-    } else if (internalName == ios_web_view::kUseWalletSandboxFlagName) {
-      base::ListValue* options;
-      if (!featureEntry->GetList("options", &options)) {
-        NOTREACHED();
-      }
-      for (size_t j = 0; j < options->GetSize(); j++) {
-        base::DictionaryValue* option;
-        if (!options->GetDictionary(j, &option)) {
-          NOTREACHED();
-        }
-        std::string internalName;
-        if (!option->GetString("internal_name", &internalName)) {
-          NOTREACHED();
-        }
-        if (internalName == ios_web_view::kUseWalletSandboxFlagNameEnabled) {
-          bool selected;
-          if (!option->GetBoolean("selected", &selected)) {
-            NOTREACHED();
-          }
-          usesWalletSandbox = selected;
+
+  for (const base::Value& supportedFeature : supportedFeatures) {
+    DCHECK(supportedFeature.is_dict());
+
+    const std::string* featureName =
+        supportedFeature.FindStringKey("internal_name");
+    DCHECK(featureName);
+
+    if (*featureName == ios_web_view::kUseSyncSandboxFlagName) {
+      absl::optional<bool> maybeEnabled =
+          supportedFeature.FindBoolKey("enabled");
+      DCHECK(maybeEnabled.has_value());
+      usesSyncSandbox = *maybeEnabled;
+    } else if (*featureName == ios_web_view::kUseWalletSandboxFlagName) {
+      const base::Value* options = supportedFeature.FindListKey("options");
+      DCHECK(options);
+
+      for (const base::Value& option : options->GetListDeprecated()) {
+        DCHECK(option.is_dict());
+
+        const std::string* optionName = option.FindStringKey("internal_name");
+        DCHECK(optionName);
+
+        if (*optionName == ios_web_view::kUseWalletSandboxFlagNameEnabled) {
+          absl::optional<bool> maybeSelected = option.FindBoolKey("selected");
+          DCHECK(maybeSelected.has_value());
+          usesWalletSandbox = *maybeSelected;
         }
       }
     }
   }
+
   return usesSyncSandbox && usesWalletSandbox;
 }
 

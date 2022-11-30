@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -21,17 +21,22 @@ class MockTpmChallengeKey : public TpmChallengeKey {
 
   void EnableFake();
 
+  void EnableFakeError(TpmChallengeKeyResultCode error_code);
+
   MOCK_METHOD(void,
               BuildResponse,
-              (chromeos::attestation::AttestationKeyType key_type,
+              (AttestationKeyType key_type,
                Profile* profile,
                TpmChallengeKeyCallback callback,
                const std::string& challenge,
                bool register_key,
-               const std::string& key_name_for_spkac),
+               const std::string& key_name_for_spkac,
+               const absl::optional<std::string>& signals),
               (override));
 
   void FakeBuildResponseSuccess(TpmChallengeKeyCallback callback);
+  void FakeBuildResponseError(TpmChallengeKeyCallback callback,
+                              TpmChallengeKeyResultCode error_code);
 };
 
 }  // namespace attestation

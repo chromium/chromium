@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #endif
 
@@ -34,7 +34,7 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Notifies kiosk session about the added guest.
-  ash::AppSession* app_session = ash::KioskAppManager::Get()->app_session();
+  ash::AppSessionAsh* app_session = ash::KioskAppManager::Get()->app_session();
   if (app_session)
     app_session->OnGuestAdded(guest_web_contents);
 #endif

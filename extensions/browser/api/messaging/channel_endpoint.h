@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_MESSAGING_CHANNEL_ENDPOINT_H_
 #define EXTENSIONS_BROWSER_API_MESSAGING_CHANNEL_ENDPOINT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/service_worker/worker_id.h"
 
 #include "extensions/common/api/messaging/port_context.h"
@@ -17,12 +18,12 @@ class RenderFrameHost;
 namespace extensions {
 
 // Represents an endpoint (tab, frame or worker) of a message channel in a
-// render process.
+// render process or a native messaging host.
 // TODO(crbug.com/939594): Consolidate all classes/structs around extension
 // message ports.
 class ChannelEndpoint {
  public:
-  // An endpoint for a PortContext.
+  // An endpoint for a renderer PortContext.
   ChannelEndpoint(content::BrowserContext* browser_context,
                   int render_process_id,
                   const PortContext& port_context);
@@ -50,7 +51,7 @@ class ChannelEndpoint {
   bool IsValid() const;
 
  private:
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   const int render_process_id_;
   const PortContext port_context_;
 };

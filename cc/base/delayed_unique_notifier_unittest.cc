@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/test/test_pending_task.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -56,7 +57,7 @@ class DelayedUniqueNotifierTest : public testing::Test {
 };
 
 TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
+  base::TimeDelta delay = base::Microseconds(20);
   TestNotifier notifier(task_runner_.get(),
                         base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
                                             base::Unretained(this)),
@@ -65,8 +66,7 @@ TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
   EXPECT_EQ(0, NotificationCount());
 
   // Basic schedule for |delay| from now (now: 30, run time: 50).
-  base::TimeTicks schedule_time =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(30);
+  base::TimeTicks schedule_time = base::TimeTicks() + base::Microseconds(30);
 
   notifier.SetNow(schedule_time);
   notifier.Schedule();
@@ -91,7 +91,7 @@ TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
   EXPECT_EQ(scheduled_delay, tasks[0].GetTimeToRun());
 
   // Move closer to the run time (time: 49, run time: 50).
-  notifier.SetNow(notifier.Now() + base::TimeDelta::FromMicroseconds(19));
+  notifier.SetNow(notifier.Now() + base::Microseconds(19));
 
   // It's not yet time to run, so we expect no notifications.
   std::move(tasks[0].task).Run();
@@ -105,7 +105,7 @@ TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
   EXPECT_EQ(scheduled_delay, tasks[0].GetTimeToRun());
 
   // Move to exactly the run time (time: 50, run time: 50).
-  notifier.SetNow(notifier.Now() + base::TimeDelta::FromMicroseconds(1));
+  notifier.SetNow(notifier.Now() + base::Microseconds(1));
 
   // It's time to run!
   std::move(tasks[0].task).Run();
@@ -116,7 +116,7 @@ TEST_F(DelayedUniqueNotifierTest, SmallDelay) {
 }
 
 TEST_F(DelayedUniqueNotifierTest, RescheduleDelay) {
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
+  base::TimeDelta delay = base::Microseconds(20);
   TestNotifier notifier(task_runner_.get(),
                         base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
                                             base::Unretained(this)),
@@ -129,7 +129,7 @@ TEST_F(DelayedUniqueNotifierTest, RescheduleDelay) {
     EXPECT_EQ(0, NotificationCount());
 
     // Move time forward 19 units.
-    schedule_time = notifier.Now() + base::TimeDelta::FromMicroseconds(19);
+    schedule_time = notifier.Now() + base::Microseconds(19);
     notifier.SetNow(schedule_time);
     notifier.Schedule();
 
@@ -144,7 +144,7 @@ TEST_F(DelayedUniqueNotifierTest, RescheduleDelay) {
   }
 
   // Move time forward 20 units, expecting a notification.
-  schedule_time = notifier.Now() + base::TimeDelta::FromMicroseconds(20);
+  schedule_time = notifier.Now() + base::Microseconds(20);
   notifier.SetNow(schedule_time);
 
   base::circular_deque<base::TestPendingTask> tasks = TakePendingTasks();
@@ -158,7 +158,7 @@ TEST_F(DelayedUniqueNotifierTest, RescheduleDelay) {
 }
 
 TEST_F(DelayedUniqueNotifierTest, CancelAndHasPendingNotification) {
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
+  base::TimeDelta delay = base::Microseconds(20);
   TestNotifier notifier(task_runner_.get(),
                         base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
                                             base::Unretained(this)),
@@ -167,8 +167,7 @@ TEST_F(DelayedUniqueNotifierTest, CancelAndHasPendingNotification) {
   EXPECT_EQ(0, NotificationCount());
 
   // Schedule for |delay| seconds from now.
-  base::TimeTicks schedule_time =
-      notifier.Now() + base::TimeDelta::FromMicroseconds(10);
+  base::TimeTicks schedule_time = notifier.Now() + base::Microseconds(10);
   notifier.SetNow(schedule_time);
   notifier.Schedule();
   EXPECT_TRUE(notifier.HasPendingNotification());
@@ -228,7 +227,7 @@ TEST_F(DelayedUniqueNotifierTest, CancelAndHasPendingNotification) {
 }
 
 TEST_F(DelayedUniqueNotifierTest, ShutdownWithScheduledTask) {
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
+  base::TimeDelta delay = base::Microseconds(20);
   TestNotifier notifier(task_runner_.get(),
                         base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
                                             base::Unretained(this)),
@@ -237,8 +236,7 @@ TEST_F(DelayedUniqueNotifierTest, ShutdownWithScheduledTask) {
   EXPECT_EQ(0, NotificationCount());
 
   // Schedule for |delay| seconds from now.
-  base::TimeTicks schedule_time =
-      notifier.Now() + base::TimeDelta::FromMicroseconds(10);
+  base::TimeTicks schedule_time = notifier.Now() + base::Microseconds(10);
   notifier.SetNow(schedule_time);
   notifier.Schedule();
   EXPECT_TRUE(notifier.HasPendingNotification());
@@ -269,7 +267,7 @@ TEST_F(DelayedUniqueNotifierTest, ShutdownWithScheduledTask) {
 }
 
 TEST_F(DelayedUniqueNotifierTest, ShutdownPreventsSchedule) {
-  base::TimeDelta delay = base::TimeDelta::FromMicroseconds(20);
+  base::TimeDelta delay = base::Microseconds(20);
   TestNotifier notifier(task_runner_.get(),
                         base::BindRepeating(&DelayedUniqueNotifierTest::Notify,
                                             base::Unretained(this)),
@@ -278,8 +276,7 @@ TEST_F(DelayedUniqueNotifierTest, ShutdownPreventsSchedule) {
   EXPECT_EQ(0, NotificationCount());
 
   // Schedule for |delay| seconds from now.
-  base::TimeTicks schedule_time =
-      notifier.Now() + base::TimeDelta::FromMicroseconds(10);
+  base::TimeTicks schedule_time = notifier.Now() + base::Microseconds(10);
   notifier.SetNow(schedule_time);
 
   // Shutdown the notifier.

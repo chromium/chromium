@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ class InputHandlerProxyEventQueueTest;
 class PLATFORM_EXPORT CompositorThreadEventQueue {
  public:
   CompositorThreadEventQueue();
+  CompositorThreadEventQueue(const CompositorThreadEventQueue&) = delete;
+  CompositorThreadEventQueue& operator=(const CompositorThreadEventQueue&) =
+      delete;
   ~CompositorThreadEventQueue();
 
   // Adds an event to the queue. The event may be coalesced with the last event.
@@ -39,8 +42,6 @@ class PLATFORM_EXPORT CompositorThreadEventQueue {
   friend class test::InputHandlerProxyEventQueueTest;
   using EventQueue = base::circular_deque<std::unique_ptr<EventWithCallback>>;
   EventQueue queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorThreadEventQueue);
 };
 
 }  // namespace blink

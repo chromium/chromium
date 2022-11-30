@@ -12,6 +12,22 @@
       }
     </style>
 
+<if expr="is_chromeos">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+    <div class="settings-box first">
+      <localized-link class="secondary"
+          localized-string="$i18n{browserSyncFeatureLabel}"
+          link-url="$i18n{osSyncSettingsUrl}">
+      </localized-link>
+    </div>
+</if>
+
     <div id="sync-data-radio" class="cr-row first">
       <cr-radio-group
           selected="[[selectedSyncDataRadio_(syncPrefs)]]"
@@ -89,13 +105,13 @@
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.themesRegistered]]">
-        <div id="themesAndWallpapersCheckboxLabel">
-          $i18n{themesAndWallpapersCheckboxLabel}
+        <div id="themeCheckboxLabel">
+          $i18n{themeCheckboxLabel}
         </div>
         <cr-toggle checked="{{syncPrefs.themesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[syncPrefs.syncAllDataTypes]]"
-            aria-labelledby="themesAndWallpapersCheckboxLabel">
+            aria-labelledby="themeCheckboxLabel">
         </cr-toggle>
       </div>
 
@@ -160,7 +176,7 @@
         </cr-toggle>
       </div>
 
-<if expr="chromeos">
+<if expr="chromeos_ash">
       <div class="list-item"
            hidden="[[!syncPrefs.wifiConfigurationsRegistered]]">
         <div id="wifiConfigurationsCheckboxLabel">

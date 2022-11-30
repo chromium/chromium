@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,9 @@ class ParserSandboxTargetHooks : public MojoSandboxTargetHooks {
  public:
   explicit ParserSandboxTargetHooks(MojoTaskRunner* mojo_task_runner)
       : mojo_task_runner_(mojo_task_runner) {}
+
+  ParserSandboxTargetHooks(const ParserSandboxTargetHooks&) = delete;
+  ParserSandboxTargetHooks& operator=(const ParserSandboxTargetHooks&) = delete;
 
   ~ParserSandboxTargetHooks() override {
     // Delete the mojo objects on the IPC thread.
@@ -60,8 +63,6 @@ class ParserSandboxTargetHooks : public MojoSandboxTargetHooks {
   MojoTaskRunner* mojo_task_runner_;
   base::SingleThreadTaskExecutor main_thread_task_executor_;
   std::unique_ptr<ParserImpl> parser_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParserSandboxTargetHooks);
 };
 
 }  // namespace

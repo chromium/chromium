@@ -28,6 +28,13 @@
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenSpecific}">
         </controlled-radio-button>
+        <controlled-radio-button name="[[getName_(
+          prefValues_.CONTINUE_AND_OPEN_SPECIFIC)]]"
+            pref="[[prefs.session.restore_on_startup]]"
+            label="$i18n{onStartupContinueAndOpenSpecific}"
+            hidden="[[!showContinueAndOpenSpecific_(
+              prefs.session.restore_on_startup)]]">
+        </controlled-radio-button>
       </settings-radio-group>
     </div>
     <template is="dom-if"

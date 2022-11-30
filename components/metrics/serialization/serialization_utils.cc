@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -24,7 +26,6 @@
 
 namespace metrics {
 namespace {
-
 // Reads the next message from |file_descriptor| into |message|.
 //
 // |message| will be set to the empty string if no message could be read (EOF)
@@ -88,6 +89,8 @@ bool ReadMessage(int fd, std::string* message) {
 
 }  // namespace
 
+const int SerializationUtils::kMaxMessagesPerRead = 100000;
+
 std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
     const std::string& sample) {
   if (sample.empty())
@@ -106,15 +109,15 @@ std::unique_ptr<MetricSample> SerializationUtils::ParseSample(
   const std::string& name = parts[0];
   const std::string& value = parts[1];
 
-  if (base::LowerCaseEqualsASCII(name, "crash"))
+  if (base::EqualsCaseInsensitiveASCII(name, "crash"))
     return MetricSample::CrashSample(value);
-  if (base::LowerCaseEqualsASCII(name, "histogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "histogram"))
     return MetricSample::ParseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "linearhistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "linearhistogram"))
     return MetricSample::ParseLinearHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "sparsehistogram"))
+  if (base::EqualsCaseInsensitiveASCII(name, "sparsehistogram"))
     return MetricSample::ParseSparseHistogram(value);
-  if (base::LowerCaseEqualsASCII(name, "useraction"))
+  if (base::EqualsCaseInsensitiveASCII(name, "useraction"))
     return MetricSample::UserActionSample(value);
   DLOG(ERROR) << "invalid event type: " << name << ", value: " << value;
   return nullptr;
@@ -128,10 +131,12 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
 
   result = stat(filename.c_str(), &stat_buf);
   if (result < 0) {
-    if (errno != ENOENT)
+    if (errno == ENOENT) {
+      // File doesn't exist, nothing to collect. This isn't an error, it just
+      // means nothing on the ChromeOS side has written to the file yet.
+    } else {
       DPLOG(ERROR) << "bad metrics file stat: " << filename;
-
-    // Nothing to collect---try later.
+    }
     return;
   }
   if (stat_buf.st_size == 0) {
@@ -150,12 +155,16 @@ void SerializationUtils::ReadAndTruncateMetricsFromFile(
   }
 
   // This processes all messages in the log. When all messages are
-  // read and processed, or an error occurs, truncate the file to zero size.
-  for (;;) {
+  // read and processed, or an error occurs, or we've read so many that the
+  // buffer is at risk of overflowing, truncate the file to zero size. If we
+  // hit kMaxMessagesPerRead, don't add them to the vector to avoid memory
+  // overflow.
+  while (metrics->size() < kMaxMessagesPerRead) {
     std::string message;
 
-    if (!ReadMessage(fd.get(), &message))
+    if (!ReadMessage(fd.get(), &message)) {
       break;
+    }
 
     std::unique_ptr<MetricSample> sample = ParseSample(message);
     if (sample)
@@ -205,15 +214,14 @@ bool SerializationUtils::WriteMetricToFile(const MetricSample& sample,
   // The file containing the metrics samples will only be read by programs on
   // the same device so we do not check endianness.
   uint32_t encoded_size = base::checked_cast<uint32_t>(size);
-  if (!base::WriteFileDescriptor(file_descriptor.get(),
-                                 reinterpret_cast<char*>(&encoded_size),
-                                 sizeof(uint32_t))) {
+  if (!base::WriteFileDescriptor(
+          file_descriptor.get(),
+          base::as_bytes(base::make_span(&encoded_size, 1)))) {
     DPLOG(ERROR) << "error writing message length: " << filename;
     return false;
   }
 
-  if (!base::WriteFileDescriptor(
-          file_descriptor.get(), msg.c_str(), msg.size())) {
+  if (!base::WriteFileDescriptor(file_descriptor.get(), msg)) {
     DPLOG(ERROR) << "error writing message: " << filename;
     return false;
   }

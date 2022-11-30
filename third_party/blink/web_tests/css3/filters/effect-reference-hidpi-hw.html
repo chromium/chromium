@@ -1,12 +1,10 @@
 <script>
-    function startTest() {
-        if (window.testRunner) {
-            testRunner.waitUntilDone();
-            testRunner.setBackingScaleFactor(2, function() { testRunner.notifyDone(); });
-        }
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.setBackingScaleFactor(2, function() { testRunner.notifyDone(); });
     }
 </script>
-<body onload="startTest();"></body>
+<body></body>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" version="1.1">
   <defs>
     <filter id="displacement" color-interpolation-filters="sRGB">

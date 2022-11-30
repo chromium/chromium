@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Change color of grammar error</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo/#selectordef-grammar-error">
+<meta name="assert" content="This test checks that it's possible to modify the color of a grammar error through ::grammar-error pseudo-element.">
+<link rel="mismatch" href="grammar-error-color-001-ref.html">
+<script src="../support/markers.js"></script>
+<style>
+  ::grammar-error {
+    text-decoration-color: rgba(200, 225, 50, 0.75);
+  }
+</style>
+
+<p>The test passes if "quikc" has a grammar error marker that is not the default color (usually green).</p>
+<div id="target" contenteditable spellcheck>The quikc brown fox.</div>
+
+<script>
+  target.focus();
+  addGrammarMarker(target, 4, 9);
+</script>
+</html>

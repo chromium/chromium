@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -25,8 +24,7 @@ void ExposeGpuInterfacesToBrowser(
   }
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    ui::OzonePlatform::GetInstance()->AddInterfaces(binders);
+  ui::OzonePlatform::GetInstance()->AddInterfaces(binders);
 #endif
 }
 

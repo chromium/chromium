@@ -1,0 +1,27 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Print Management is ash-chrome only")
+
+static_library("print_management") {
+  sources = [
+    "print_management_ui.cc",
+    "print_management_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/print_management/mojom",
+    "//ash/webui/print_management/resources:resources",
+    "//ash/webui/web_applications",
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/resources",
+    "//ui/webui",
+  ]
+}

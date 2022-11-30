@@ -23,14 +23,14 @@
                     return mediaKeySession.generateRequest(initDataType, initData);
                 }).then(function() {
                     // Wait for the session to be closed.
-                    mediaKeySession.closed.then(function(result) {
-                        assert_equals(result, undefined);
+                    mediaKeySession.closed.then(function(reason) {
+                        assert_equals(reason, "closed-by-application");
                         // Now that the session is closed, verify that the
                         // closed attribute immediately returns a fulfilled
                         // promise.
                         return mediaKeySession.closed;
-                    }).then(function(result) {
-                        assert_equals(result, undefined);
+                    }).then(function(reason) {
+                        assert_equals(reason, "closed-by-application");
                         test.done();
                     });
 

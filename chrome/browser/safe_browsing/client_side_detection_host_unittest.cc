@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include <memory>
 #include <tuple>
@@ -11,45 +12,53 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
-#include "components/safe_browsing/content/browser/client_side_model_loader.h"
+#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "ipc/ipc_test_sink.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -66,6 +75,7 @@ using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
@@ -89,6 +99,21 @@ std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
 
 namespace safe_browsing {
 namespace {
+
+class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
+ public:
+  MockSafeBrowsingTokenFetcher() = default;
+
+  MockSafeBrowsingTokenFetcher(const MockSafeBrowsingTokenFetcher&) = delete;
+  MockSafeBrowsingTokenFetcher& operator=(const MockSafeBrowsingTokenFetcher&) =
+      delete;
+
+  ~MockSafeBrowsingTokenFetcher() override = default;
+
+  MOCK_METHOD1(Start, void(Callback));
+  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
+};
+
 // This matcher verifies that the client computed verdict
 // (ClientPhishingRequest) which is passed to SendClientReportPhishingRequest
 // has the expected fields set.  Note: we can't simply compare the protocol
@@ -105,40 +130,42 @@ MATCHER(CallbackIsNull, "") {
   return arg.is_null();
 }
 
-class MockModelLoader : public ModelLoader {
- public:
-  MockModelLoader() : ModelLoader(base::RepeatingClosure(), nullptr, false) {}
-  ~MockModelLoader() override = default;
-
-  MOCK_METHOD1(ScheduleFetch, void(int64_t));
-  MOCK_METHOD0(CancelFetcher, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockModelLoader);
-};
-
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
   MockClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
+
+  MockClientSideDetectionService(const MockClientSideDetectionService&) =
+      delete;
+  MockClientSideDetectionService& operator=(
+      const MockClientSideDetectionService&) = delete;
+
   ~MockClientSideDetectionService() override {}
 
-  MOCK_METHOD2(SendClientReportPhishingRequest,
+  MOCK_METHOD3(SendClientReportPhishingRequest,
                void(std::unique_ptr<ClientPhishingRequest>,
-                    ClientReportPhishingRequestCallback));
-  MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const std::string&));
+                    ClientReportPhishingRequestCallback,
+                    const std::string&));
+  MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const net::IPAddress&));
+  MOCK_CONST_METHOD1(IsLocalResource, bool(const net::IPAddress&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
   MOCK_METHOD1(IsInCache, bool(const GURL&));
   MOCK_METHOD0(OverPhishingReportLimit, bool());
-  MOCK_METHOD0(GetModelStr, std::string());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientSideDetectionService);
+  MOCK_METHOD0(GetModelStr, std::string&());
+  MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
+  MOCK_METHOD0(GetModelType, CSDModelType());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
  public:
-  explicit MockSafeBrowsingUIManager(SafeBrowsingService* service)
-      : SafeBrowsingUIManager(service) { }
+  MockSafeBrowsingUIManager()
+      : SafeBrowsingUIManager(
+            std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+            GURL(chrome::kChromeUINewTabURL)) {}
+
+  MockSafeBrowsingUIManager(const MockSafeBrowsingUIManager&) = delete;
+  MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
+      delete;
 
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
 
@@ -155,23 +182,25 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
  protected:
   ~MockSafeBrowsingUIManager() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingUIManager);
 };
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
-  MockSafeBrowsingDatabaseManager() {}
+  MockSafeBrowsingDatabaseManager()
+      : safe_browsing::TestSafeBrowsingDatabaseManager(
+            content::GetUIThreadTaskRunner({}),
+            content::GetIOThreadTaskRunner({})) {}
+
+  MockSafeBrowsingDatabaseManager(const MockSafeBrowsingDatabaseManager&) =
+      delete;
+  MockSafeBrowsingDatabaseManager& operator=(
+      const MockSafeBrowsingDatabaseManager&) = delete;
 
   MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
  protected:
   ~MockSafeBrowsingDatabaseManager() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingDatabaseManager);
 };
 
 }  // namespace
@@ -180,15 +209,16 @@ class FakePhishingDetector : public mojom::PhishingDetector {
  public:
   FakePhishingDetector() = default;
 
+  FakePhishingDetector(const FakePhishingDetector&) = delete;
+  FakePhishingDetector& operator=(const FakePhishingDetector&) = delete;
+
   ~FakePhishingDetector() override = default;
 
-  void BindReceiver(mojo::ScopedMessagePipeHandle handle) {
-    receivers_.Add(this, mojo::PendingReceiver<mojom::PhishingDetector>(
-                             std::move(handle)));
+  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingAssociatedReceiver<mojom::PhishingDetector>(
+                       std::move(handle)));
   }
-
-  // mojom::PhishingDetector
-  void SetPhishingModel(const std::string& model) override { model_ = model; }
 
   // mojom::PhishingDetector
   void StartPhishingDetection(
@@ -216,37 +246,42 @@ class FakePhishingDetector : public mojom::PhishingDetector {
     }
   }
 
-  void CheckModel(const std::string& model) { EXPECT_EQ(model, model_); }
-
   void Reset() {
     phishing_detection_started_ = false;
     url_ = GURL();
-    model_ = "";
   }
 
  private:
-  mojo::ReceiverSet<mojom::PhishingDetector> receivers_;
+  mojo::AssociatedReceiverSet<mojom::PhishingDetector> receivers_;
   bool phishing_detection_started_ = false;
   GURL url_;
-  std::string model_ = "";
-
-  DISALLOW_COPY_AND_ASSIGN(FakePhishingDetector);
 };
 
 class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
  public:
   typedef security_interstitials::UnsafeResource UnsafeResource;
 
+  class WebContentsObserver : public content::WebContentsObserver {
+   public:
+    WebContentsObserver(ClientSideDetectionHostTestBase* harness,
+                        content::WebContents* contents)
+        : content::WebContentsObserver(contents), harness_(harness) {}
+
+    void RenderFrameCreated(
+        content::RenderFrameHost* render_frame_host) override {
+      harness_->InitTestApi(render_frame_host);
+    }
+
+   private:
+    // The raw pointer is safe because `harness_` owns this.
+    raw_ptr<ClientSideDetectionHostTestBase> harness_;
+  };
+
   explicit ClientSideDetectionHostTestBase(bool is_incognito)
-      : is_incognito_(is_incognito) {}
+      : is_incognito_(is_incognito), model_str_("model_str") {}
 
-  void InitTestApi() {
-    service_manager::InterfaceProvider* remote_interfaces =
-        web_contents()->GetMainFrame()->GetRemoteInterfaces();
-
-    service_manager::InterfaceProvider::TestApi test_api(remote_interfaces);
-
-    test_api.SetBinderForName(
+  void InitTestApi(content::RenderFrameHost* rfh) {
+    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
         mojom::PhishingDetector::Name_,
         base::BindRepeating(&FakePhishingDetector::BindReceiver,
                             base::Unretained(&fake_phishing_detector_)));
@@ -255,32 +290,45 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
+    observer_ = std::make_unique<WebContentsObserver>(this, web_contents());
+
     if (is_incognito_) {
       auto incognito_web_contents =
           content::WebContentsTester::CreateTestWebContents(
-              profile()->GetPrimaryOTRProfile(), nullptr);
+              profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+              nullptr);
       SetContents(std::move(incognito_web_contents));
     }
 
     // Initiate the connection to a (pretend) renderer process.
     NavigateAndCommit(GURL("about:blank"));
 
-    InitTestApi();
+    InitTestApi(web_contents()->GetPrimaryMainFrame());
 
     // Inject service classes.
-    csd_service_.reset(new StrictMock<MockClientSideDetectionService>());
+    csd_service_ = std::make_unique<MockClientSideDetectionService>();
     database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
-    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>(
-        // TODO(crbug/925153): Port consumers of the SafeBrowsingService to
-        // use the interface in components/safe_browsing, and remove this cast.
-        static_cast<safe_browsing::SafeBrowsingService*>(
-            SafeBrowsingService::CreateSafeBrowsingService()));
+    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
 
-    csd_host_ = ClientSideDetectionHostDelegate::CreateHost(web_contents());
-    csd_host_->set_client_side_detection_service(csd_service_.get());
+    identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                   signin::ConsentLevel::kSync);
+
+    csd_host_ =
+        ChromeClientSideDetectionHostDelegate::CreateHost(web_contents());
+    csd_host_->set_client_side_detection_service(csd_service_->GetWeakPtr());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());
     csd_host_->set_tick_clock_for_testing(&clock_);
+    csd_host_->set_is_off_the_record_for_testing(is_incognito_);
+    csd_host_->set_account_signed_in_for_testing(
+        base::BindRepeating(&safe_browsing::SyncUtils::IsPrimaryAccountSignedIn,
+                            identity_test_env_.identity_manager()));
+    auto token_fetcher =
+        std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
+    raw_token_fetcher_ = token_fetcher.get();
+    csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
+
+    testing::DefaultValue<CSDModelType>::Set(CSDModelType::kProtobuf);
   }
 
   void TearDown() override {
@@ -288,6 +336,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     // SafeBrowsingService.
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
                                                    csd_host_.release());
+
+    // RenderProcessHostCreationObserver expects to be torn down on UI.
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   csd_service_.release());
     database_manager_.reset();
     ui_manager_.reset();
     base::RunLoop().RunUntilIdle();
@@ -309,7 +361,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
                                      const bool* match_csd_allowlist,
                                      const bool* get_valid_cached_result,
                                      const bool* is_in_cache,
-                                     const bool* over_phishing_report_limit) {
+                                     const bool* over_phishing_report_limit,
+                                     const bool* is_local) {
     if (is_private) {
       EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
           .WillOnce(Return(*is_private));
@@ -331,6 +384,10 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*csd_service_, OverPhishingReportLimit())
           .WillOnce(Return(*over_phishing_report_limit));
     }
+    if (is_local) {
+      EXPECT_CALL(*csd_service_, IsLocalResource(_))
+          .WillOnce(Return(*is_local));
+    }
   }
 
   void WaitAndCheckPreClassificationChecks() {
@@ -351,14 +408,26 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void AdvanceTimeTickClock(base::TimeDelta delta) { clock_.Advance(delta); }
 
+  void SetFeatures(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
-  std::unique_ptr<StrictMock<MockClientSideDetectionService>> csd_service_;
+  std::unique_ptr<MockClientSideDetectionService> csd_service_;
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
-  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager> > database_manager_;
+  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
+  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
+      nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<WebContentsObserver> observer_;
+  std::string model_str_;
 };
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
@@ -375,14 +444,20 @@ class ClientSideDetectionHostIncognitoTest
 };
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 0: renderer sends an invalid verdict string that we're unable to
   // parse.
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
   PhishingDetectionDone("Invalid Protocol Buffer");
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 1: client thinks the page is phishing.  The server does not agree.
   // No interstitial is shown.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
@@ -392,7 +467,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -406,6 +481,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 2: client thinks the page is phishing and so does the server but
   // showing the interstitial is disabled => no interstitial is shown.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
@@ -415,7 +493,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -429,6 +507,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 3: client thinks the page is phishing and so does the server.
   // We show an interstitial.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
@@ -439,7 +520,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -458,7 +539,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_FALSE(resource.is_subresource);
   EXPECT_EQ(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
-  EXPECT_EQ(web_contents(), resource.web_contents_getter.Run());
+  EXPECT_EQ(web_contents(),
+            security_interstitials::GetWebContentsForResource(resource));
 
   // Make sure the client object will be deleted.
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -468,6 +550,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 4 & 5: client thinks a page is phishing then navigates to
   // another page which is also considered phishing by the client
   // before the server responds with a verdict.  After a while the
@@ -481,7 +566,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -490,8 +575,9 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 
   GURL other_phishing_url("http://other_phishing_url.com/bla");
   ExpectPreClassificationChecks(other_phishing_url, &kFalse, &kFalse, &kFalse,
-                                &kFalse, &kFalse);
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+                                &kFalse, &kFalse, &kFalse);
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   // We navigate away.  The callback cb should be revoked.
   NavigateAndCommit(other_phishing_url);
   // Wait for the pre-classification checks to finish for other_phishing_url.
@@ -501,7 +587,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   verdict.set_url(other_phishing_url.spec());
   verdict.set_client_score(0.8f);
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb_other));
   PhishingDetectionDone(verdict.SerializeAsString());
   base::RunLoop().RunUntilIdle();
@@ -526,7 +612,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_FALSE(resource.is_subresource);
   EXPECT_EQ(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
-  EXPECT_EQ(web_contents(), resource.web_contents_getter.Run());
+  EXPECT_EQ(web_contents(),
+            security_interstitials::GetWebContentsForResource(resource));
 
   // Make sure the client object will be deleted.
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -536,19 +623,25 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 6: renderer sends a verdict string that isn't phishing.
   ClientPhishingRequest verdict;
   verdict.set_url("http://not-phishing.com/");
   verdict.set_client_score(0.1f);
   verdict.set_is_phishing(false);
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneVerdictNotPhishingButSBMatchSubResource) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Case 7: renderer sends a verdict string that isn't phishing but the URL
   // of a subresource was on the regular phishing or malware lists.
   GURL url("http://not-phishing.com/");
@@ -558,9 +651,10 @@ TEST_F(ClientSideDetectionHostTest,
   verdict.set_is_phishing(false);
 
   // First we have to navigate to the URL to set the unique page ID.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -569,15 +663,19 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        PhishingDetectionDoneVerdictNotPhishingButSBMatchOnNewRVH) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // When navigating to a different host (thus creating a pending RVH) which
   // matches regular malware list, and after navigation the renderer sends a
   // verdict string that isn't phishing, we should still send the report.
 
   // Do an initial navigation to a safe host.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
 
@@ -589,9 +687,10 @@ TEST_F(ClientSideDetectionHostTest,
   verdict.set_client_score(0.1f);
   verdict.set_is_phishing(false);
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -601,14 +700,18 @@ TEST_F(ClientSideDetectionHostTest,
 TEST_F(
     ClientSideDetectionHostTest,
     PhishingDetectionDoneVerdictNotPhishingButSBMatchOnSubresourceWhileNavPending) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // When a malware hit happens on a committed page while a slow pending load is
   // in progress, the csd report should be sent for the committed page.
 
   // Do an initial navigation to a safe host.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
 
@@ -619,9 +722,10 @@ TEST_F(
   verdict.set_client_score(0.1f);
   verdict.set_is_phishing(false);
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(url);
 
   // Create a pending navigation, but don't commit it.
@@ -636,12 +740,141 @@ TEST_F(
   PhishingDetectionDone(verdict.SerializeAsString());
 }
 
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneEnhancedProtectionShouldHaveToken) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token");
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneCalledTwiceShouldSucceed) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token_1"))
+      .Times(1);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token_2"))
+      .Times(1);
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&cb));
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_1");
+
+  // Make the call again.
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&cb));
+  PhishingDetectionDone(verdict.SerializeAsString());
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token_2");
+}
+
+TEST_F(ClientSideDetectionHostIncognitoTest,
+       PhishingDetectionDoneIncognitoShouldNotHaveToken) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, ""));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneNoEnhancedProtectionShouldNotHaveToken) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, ""));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+}
+
 // This test doesn't work because it makes assumption about how
 // the message loop is run, and those assumptions are wrong when properly
 // simulating a navigation with browser-side navigations.
 // TODO(clamy): Fix the test and re-enable. See crbug.com/753357.
 TEST_F(ClientSideDetectionHostTest,
        DISABLED_NavigationCancelsShouldClassifyUrl) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Test that canceling pending should classify requests works as expected.
   GURL first_url("http://first.phishy.url.com");
   GURL second_url("http://second.url.com/");
@@ -650,14 +883,15 @@ TEST_F(ClientSideDetectionHostTest,
   // need to manually set up the IsPrivateIPAddress mock since if the same mock
   // expectation is specified twice, gmock will only use the last instance of
   // it, meaning the first will never be matched.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
       .WillOnce(Return(false))
       .WillOnce(Return(false));
   ExpectPreClassificationChecks(first_url, nullptr, &kFalse, nullptr, nullptr,
-                                nullptr);
+                                nullptr, nullptr);
   ExpectPreClassificationChecks(second_url, nullptr, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, nullptr);
 
   NavigateAndCommit(first_url);
   // Don't flush the message loop, as we want to navigate to a different
@@ -667,11 +901,15 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -679,20 +917,28 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckMatchAllowlist) {
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr,
-                                nullptr);
+  ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr, nullptr,
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 }
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckSameDocumentNavigation) {
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -703,7 +949,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_)).Times(0);
   GURL inpage("http://host.com/#foo");
   ExpectPreClassificationChecks(inpage, nullptr, nullptr, nullptr, nullptr,
-                                nullptr);
+                                nullptr, nullptr);
   NavigateAndKeepLoading(web_contents(), inpage);
   WaitAndCheckPreClassificationChecks();
 
@@ -711,15 +957,19 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Check that XHTML is supported, in addition to the default HTML type.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host.com/xhtml");
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
   navigation->SetContentsMimeType("application/xhtml+xml");
   navigation->SetKeepLoading(true);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   navigation->Commit();
   WaitAndCheckPreClassificationChecks();
 
@@ -727,24 +977,26 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckXHTML) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // Navigate to two hosts, which should cause two IPCs.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url1("http://host1.com/");
   ExpectPreClassificationChecks(url1, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndKeepLoading(web_contents(), url1);
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url1);
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url2("http://host2.com/");
   ExpectPreClassificationChecks(url2, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndKeepLoading(web_contents(), url2);
-  // Re-override the binder for PhishingDetector because navigation causes
-  // a new web InterfaceProvider to be created
-  InitTestApi();
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url2);
@@ -752,11 +1004,31 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckPrivateIpAddress) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // If IsPrivateIPAddress returns true, no IPC should be triggered.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host3.com/");
-  ExpectPreClassificationChecks(url, &kTrue, nullptr, nullptr, nullptr,
+  ExpectPreClassificationChecks(url, &kTrue, nullptr, nullptr, nullptr, nullptr,
                                 nullptr);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.CheckMessage(nullptr);
+}
+
+TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckLocalResource) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  // If IsLocalResource returns true, no IPC should be triggered.
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  GURL url("http://host3.com/");
+  ExpectPreClassificationChecks(url, nullptr, nullptr, nullptr, nullptr,
+                                nullptr, &kTrue);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
 
@@ -765,12 +1037,16 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostIncognitoTest,
        TestPreClassificationCheckIncognito) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // If the tab is incognito there should be no IPC.  Also, we shouldn't
   // even check the csd-allowlist.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host4.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr);
+                                nullptr, &kFalse);
 
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
@@ -779,12 +1055,16 @@ TEST_F(ClientSideDetectionHostIncognitoTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckInvalidCache) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // If item is in the cache but it isn't valid, we will classify regardless
   // of whether we are over the reporting limit.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host6.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
-                                nullptr);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue, nullptr,
+                                &kFalse);
 
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -794,12 +1074,16 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckInvalidCache) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckOverPhishingReportingLimit) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host7.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kTrue);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse, &kTrue,
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -808,10 +1092,14 @@ TEST_F(ClientSideDetectionHostTest,
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckOverBothReportingLimits) {
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kTrue);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse, &kTrue,
+                                &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -819,10 +1107,14 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("https://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -831,10 +1123,14 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckHttpsUrl) {
 
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckNoneHttpOrHttpsUrl) {
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("file://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr);
+                                nullptr, &kFalse);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
@@ -842,11 +1138,15 @@ TEST_F(ClientSideDetectionHostTest,
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   // If result is cached, we will try and display the blocking page directly
   // with no start classification message.
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://host8.com/");
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kTrue, &kFalse,
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kTrue, &kFalse, &kFalse,
                                 &kFalse);
 
   UnsafeResource resource;
@@ -862,15 +1162,19 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
 }
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
-  // Configures enterprise allowlist.
-  ListPrefUpdate update(profile()->GetPrefs(),
-                        prefs::kSafeBrowsingAllowlistDomains);
-  update->AppendString("example.com");
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  // Configures enterprise allowlist.
+  ScopedListPrefUpdate update(profile()->GetPrefs(),
+                              prefs::kSafeBrowsingAllowlistDomains);
+  update->Append("example.com");
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL url("http://example.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
-                                nullptr);
+                                nullptr, &kFalse);
 
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
@@ -879,6 +1183,9 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   {
     ClientPhishingRequest verdict;
     verdict.set_url("http://not-phishing.com/");
@@ -887,7 +1194,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionDone(verdict.SerializeAsString());
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
@@ -899,7 +1207,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
   {
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionError(mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY);
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
@@ -911,7 +1220,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
   {
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionError(
         mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION);
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
@@ -923,14 +1233,18 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 }
 
 TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectionDuration", 0);
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   GURL start_url("http://safe.example.com/");
   ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(start_url);
   WaitAndCheckPreClassificationChecks();
   histogram_tester.ExpectTotalCount(
@@ -942,12 +1256,13 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
   verdict.set_client_score(0.1f);
   verdict.set_is_phishing(false);
 
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+                                &kFalse, &kFalse);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
-  const base::TimeDelta duration = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta duration = base::Milliseconds(10);
   AdvanceTimeTickClock(duration);
 
   PhishingDetectionDone(verdict.SerializeAsString());
@@ -961,60 +1276,94 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectionDuration) {
                 .min);
 }
 
-TEST_F(ClientSideDetectionHostTest, TestSendModelToRenderFrame) {
-  StrictMock<MockModelLoader> loader;
-  loader.SetModelStrForTesting("standard");
-  EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("standard"));
-  csd_host_->SendModelToRenderFrame();
-  base::RunLoop().RunUntilIdle();
-  fake_phishing_detector_.CheckModel("standard");
-  fake_phishing_detector_.Reset();
+TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  GURL url("http://phishing.example.com/");
+  ClientPhishingRequest verdict;
+  verdict.set_client_score(1.0);
+  verdict.set_is_phishing(true);
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
+                                &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  std::unique_ptr<ClientPhishingRequest> verdict_sent;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(MoveArg<0>(&verdict_sent));
+  PhishingDetectionDone(verdict.SerializeAsString());
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  ASSERT_EQ(1, verdict_sent->population().page_load_tokens_size());
 }
 
-TEST_F(ClientSideDetectionHostTest, ClearsScreenshotData) {
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
-                                    false);
+class ClientSideDetectionHostDebugFeaturesTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostDebugFeaturesTest() = default;
 
-  ClientPhishingRequest verdict;
-  verdict.set_url("http://phishingurl.com/");
-  verdict.set_client_score(1.0f);
-  verdict.set_is_phishing(true);
-  verdict.set_screenshot_digest("screenshot_digest");
-  verdict.set_screenshot_phash("screenshot_phash");
-  verdict.set_phash_dimension_size(48);
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    command_line_.GetProcessCommandLine()->AppendSwitchPath(
+        "--csd-debug-feature-directory", temp_dir_.GetPath());
 
-  ClientPhishingRequest request;
+    ClientSideDetectionHostTest::SetUp();
+  }
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _))
-      .WillOnce(testing::SaveArgPointee<0>(&request));
-  PhishingDetectionDone(verdict.SerializeAsString());
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
-  EXPECT_FALSE(request.has_phash_dimension_size());
-  EXPECT_FALSE(request.has_screenshot_phash());
-  EXPECT_FALSE(request.has_screenshot_digest());
+ private:
+  base::ScopedTempDir temp_dir_;
+  base::test::ScopedCommandLine command_line_;
+};
+
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsAllowlistWhenDumpingFeatures) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
+
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr, &kFalse);
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _)).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
 }
 
-TEST_F(ClientSideDetectionHostTest, AllowsScreenshotDataForSBER) {
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,
-                                    true);
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsCacheWhenDumpingFeatures) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
 
-  ClientPhishingRequest verdict;
-  verdict.set_url("http://phishingurl.com/");
-  verdict.set_client_score(1.0f);
-  verdict.set_is_phishing(true);
-  verdict.set_screenshot_digest("screenshot_digest");
-  verdict.set_screenshot_phash("screenshot_phash");
-  verdict.set_phash_dimension_size(48);
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr, &kFalse);
+  EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull())).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
+}
 
-  ClientPhishingRequest request;
+TEST_F(ClientSideDetectionHostDebugFeaturesTest,
+       SkipsReportLimitWhenDumpingFeatures) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
+    GTEST_SKIP();
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _))
-      .WillOnce(testing::SaveArgPointee<0>(&request));
-  PhishingDetectionDone(verdict.SerializeAsString());
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
-  EXPECT_TRUE(request.has_phash_dimension_size());
-  EXPECT_TRUE(request.has_screenshot_phash());
-  EXPECT_TRUE(request.has_screenshot_digest());
+  EXPECT_CALL(*csd_service_, GetModelStr())
+      .WillRepeatedly(ReturnRef(model_str_));
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
+                                nullptr, &kFalse);
+  EXPECT_CALL(*csd_service_, OverPhishingReportLimit()).Times(0);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+  fake_phishing_detector_.CheckMessage(&url);
 }
 
 }  // namespace safe_browsing

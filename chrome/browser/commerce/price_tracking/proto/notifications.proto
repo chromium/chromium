@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package commerce.proto;
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.price_tracking.proto";
+
+import "components/commerce/core/proto/price_tracking.proto";
+
+// Copied from
+// google3/java/com/google/chrome/memex/service/proto/shopping/notifications.proto,
+// must synced with the google3 proto. Contains either a ChromeMessage to
+// display a generic message or an Any that can be parsed on the client-side.
+message ChromeNotification {
+  // Generic Chrome notification message.
+  optional ChromeMessage chrome_message = 1;
+
+  // Identifier that Chrome can use to determine how to parse notification_data.
+  enum NotificationDataType {
+    NONE = 0;
+    PRICE_DROP_NOTIFICATION = 1;
+  }
+  optional NotificationDataType notification_data_type = 2;
+
+  // Notification data payload that Chrome can parse from a compatible proto.
+  // TODO(crbug.com/1252902): This should be a google.protobuf.Any, but
+  // currently chromium can't import any.proto. Use bytes for now.
+  optional bytes notification_data = 3;
+}
+
+// A flexible and generic notification message that can be displayed in Chrome.
+message ChromeMessage {
+  optional string display_title = 1;
+  optional string display_text = 2;
+  optional string icon_image_url = 3;
+  optional string destination_url = 4;
+  optional ExpandedView expanded_view = 5;
+}
+
+// The associated actions for a notification.
+message ExpandedView {
+  repeated Action action = 1;
+}
+
+// Identifier and metadata for an associated Action.
+message Action {
+  optional string action_id = 1;
+  optional string text = 2;
+}
+
+// Contains notification metadata for Chrome Price Drop notifications.
+message PriceDropNotificationPayload {
+  optional string product_name = 1;
+  optional uint64 offer_id = 2;
+  optional string destination_url = 3;
+  optional commerce.ProductPrice current_price = 4;
+  optional commerce.ProductPrice previous_price = 5;
+  optional uint64 product_cluster_id = 6;
+}

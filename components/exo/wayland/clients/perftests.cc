@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,12 +62,14 @@ class WaylandClientBlurPerfTests
       public ::testing::WithParamInterface<double> {
  public:
   WaylandClientBlurPerfTests() = default;
+
+  WaylandClientBlurPerfTests(const WaylandClientBlurPerfTests&) = delete;
+  WaylandClientBlurPerfTests& operator=(const WaylandClientBlurPerfTests&) =
+      delete;
+
   ~WaylandClientBlurPerfTests() override = default;
 
   double max_sigma() const { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandClientBlurPerfTests);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

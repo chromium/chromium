@@ -1,0 +1,224 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/camera_app_ui/resources/css/css.gni")
+import("//ash/webui/camera_app_ui/resources/images/images.gni")
+import("//ash/webui/camera_app_ui/resources/js/js.gni")
+import("//ash/webui/camera_app_ui/resources/sounds/sounds.gni")
+import("//ash/webui/camera_app_ui/resources/views/views.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Camera App is ash-chrome only")
+
+static_library("camera_app_ui") {
+  sources = [
+    "camera_app_helper_impl.cc",
+    "camera_app_helper_impl.h",
+    "camera_app_ui.cc",
+    "camera_app_ui.h",
+    "camera_app_ui_delegate.h",
+    "camera_app_untrusted_ui.cc",
+    "camera_app_untrusted_ui.h",
+    "resources.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  public_deps = [
+    "resources/strings",
+    "//ash/webui/resources:camera_app_resources",
+  ]
+
+  deps = [
+    ":document_scanning",
+    ":mojo_bindings",
+    ":mojo_bindings_js",
+    ":window_managemet",
+    "//ash/public/cpp",
+    "//ash/webui/web_applications",
+    "//chromeos/utils",
+    "//components/arc",
+    "//content/public/browser",
+    "//content/public/common",
+    "//media/capture:capture_lib",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/js:resources_grit",
+    "//net",
+    "//services/network/public/mojom",
+    "//ui/webui",
+  ]
+}
+
+source_set("window_managemet") {
+  sources = [
+    "camera_app_window_manager.cc",
+    "camera_app_window_manager.h",
+    "camera_app_window_state_controller.cc",
+    "camera_app_window_state_controller.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/public/cpp",
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/aura",
+    "//ui/views",
+  ]
+}
+
+source_set("document_scanning") {
+  sources = [
+    "document_scanner_installer.cc",
+    "document_scanner_installer.h",
+    "document_scanner_service_client.cc",
+    "document_scanner_service_client.h",
+  ]
+
+  public_deps = [ "//dbus" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/device_event_log",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "camera_app_window_manager_unittest.cc" ]
+
+  deps = [
+    ":window_managemet",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "camera_app_helper.mojom" ]
+
+  deps = [
+    "//ash/components/arc/mojom:camera_intent",
+    "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/ash/webui/camera_app_ui"
+}
+
+cca_grd_prefix = "ash_camera_app"
+resources_grd_file = "$target_gen_dir/${cca_grd_prefix}_resources.grd"
+
+mojo_grdp_file = "$target_gen_dir/mojo.grdp"
+generated_grdp_file = "$target_gen_dir/generated.grdp"
+
+generate_grd("build_grd") {
+  deps = [
+    ":build_generated_grdp",
+    ":build_mojo_grdp",
+    "resources/js:build_ts",
+  ]
+
+  grd_prefix = cca_grd_prefix
+  out_grd = resources_grd_file
+  grdp_files = [
+    mojo_grdp_file,
+    generated_grdp_file,
+  ]
+
+  manifest_files = [ "$target_gen_dir/resources/js/build_ts.manifest" ]
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = []
+
+  # CSS Files.
+  foreach(css, css_files) {
+    input_files += [ "css/$css" ]
+  }
+
+  # View Files.
+  foreach(view, view_files) {
+    input_files += [ "views/$view" ]
+  }
+
+  # Image Files.
+  foreach(image, in_app_images) {
+    input_files += [ "images/$image" ]
+  }
+  foreach(image, icon_images) {
+    input_files += [ "images/$image" ]
+  }
+
+  # JS Files.
+  foreach(js, no_compile_js_files) {
+    input_files += [ "js/$js" ]
+  }
+  foreach(wasm, wasm_files) {
+    input_files += [ "js/$wasm" ]
+  }
+
+  # Sound Files.
+  foreach(sound, sound_files) {
+    input_files += [ "sounds/$sound" ]
+  }
+
+  # Other Files.
+  input_files += [
+    # We put test.html outside of views/ directory to avoid test page and the
+    # main window sharing the same shelf icon.
+    "test/test.html",
+  ]
+}
+
+generate_grd("build_mojo_grdp") {
+  deps = [
+    "//ash/components/arc/mojom:camera_intent_js",
+    "//ash/webui/camera_app_ui:mojo_bindings_js",
+    "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types_js",
+    "//media/capture/mojom:image_capture_js",
+    "//media/capture/video/chromeos/mojom:cros_camera_js",
+  ]
+
+  grd_prefix = "ash_camera_app_js_mojo"
+  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
+
+  input_files = [
+    "mojom-webui/ash/components/arc/mojom/camera_intent.mojom-webui.js",
+    "mojom-webui/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js",
+    "mojom-webui/chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.js",
+    "mojom-webui/media/capture/mojom/image_capture.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera3.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js",
+  ]
+
+  out_grd = mojo_grdp_file
+}
+
+generate_grd("build_generated_grdp") {
+  deps = [ "//ash/webui/camera_app_ui/resources/js:gen_preload_images_js" ]
+  grd_prefix = "ash_camera_app_js"
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/ash/webui/camera_app_ui/resources",
+                  root_build_dir)
+  input_files = [ "js/preload_images.js" ]
+  out_grd = generated_grdp_file
+}

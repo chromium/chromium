@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -29,7 +28,6 @@ import java.util.concurrent.TimeoutException;
  * testing its functionality.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
-@CommandLineFlags.Add("enable-features=ContentCapture")
 public class ContentCaptureTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =

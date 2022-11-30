@@ -1,27 +1,36 @@
 <style>
   :host {
     display: flex;
-    flex-direction: column;
+    height: var(--emoji-size);
+    justify-content: center;
+    scroll-snap-align: none;
+    width: var(--emoji-size);
   }
 
-  #button {
-    font-size: 32px;
-    height: 36px;
+  #group-button {
+    --cr-icon-button-size: var(--emoji-size);
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-icon-size: 20px;
+    font-size: 20px;
     margin: 0;
     padding: 0;
-    width: 36px;
   }
 
-  #button.emoji-group-active {
-    --cr-icon-button-fill-color: var(--cr-checked-color);
+  :host([v2-enabled]) #group-button:not(.emoji-group-active) {
+    --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+  }
+
+  #group-button.emoji-group-active {
+    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
   }
 </style>
 
 <cr-icon-button
-    id="button"
+    id="group-button"
     iron-icon="[[icon]]"
-    class$="[[_className(active)]]"
+    class$="[[calculateClassName(active)]]"
     on-click="handleClick"
     aria-label="[[name]]"
-    >
+    disabled="[[disabled]]"
+    custom-tab-index="[[customTabIndex]]">
 </cr-icon-button>

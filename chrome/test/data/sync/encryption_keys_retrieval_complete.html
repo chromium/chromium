@@ -14,6 +14,7 @@ function base64DecodeToArrayBuffer(encoded) {
 
 window.onload = function() {
   if (typeof chrome.setSyncEncryptionKeys == "undefined") {
+    console.log("chrome.setSyncEncryptionKeys() not defined");
     document.title = "UNDEFINED";
   } else {
     chrome.setSyncEncryptionKeys(() => { window.close(); },

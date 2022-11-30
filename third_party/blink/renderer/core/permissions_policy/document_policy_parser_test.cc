@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ class DocumentPolicyParserTest
 
   ~DocumentPolicyParserTest() override = default;
 
-  base::Optional<DocumentPolicy::ParsedDocumentPolicy> Parse(
+  absl::optional<DocumentPolicy::ParsedDocumentPolicy> Parse(
       const String& policy_string,
       PolicyParserMessageBuffer& logger) {
     return DocumentPolicyParser::ParseInternal(policy_string, name_feature_map,
@@ -61,7 +61,7 @@ class DocumentPolicyParserTest
                                                available_features, logger);
   }
 
-  base::Optional<std::string> Serialize(
+  absl::optional<std::string> Serialize(
       const DocumentPolicyFeatureState& policy) {
     return DocumentPolicy::SerializeInternal(policy, feature_info_map);
   }
@@ -424,10 +424,10 @@ const DocumentPolicyFeatureState kParsedPolicies[] = {
 // PolicyValue::CreateDecDouble(1.0) and get serialized to value=1.0.
 TEST_F(DocumentPolicyParserTest, SerializeAndParse) {
   for (const auto& policy : kParsedPolicies) {
-    const base::Optional<std::string> policy_string = Serialize(policy);
+    const absl::optional<std::string> policy_string = Serialize(policy);
     ASSERT_TRUE(policy_string.has_value());
     PolicyParserMessageBuffer logger;
-    const base::Optional<DocumentPolicy::ParsedDocumentPolicy> reparsed_policy =
+    const absl::optional<DocumentPolicy::ParsedDocumentPolicy> reparsed_policy =
         Parse(policy_string.value().c_str(), logger);
 
     ASSERT_TRUE(reparsed_policy.has_value());
@@ -460,7 +460,7 @@ TEST_P(DocumentPolicyParserTest, ParseResultShouldMatch) {
 
   const auto result = Parse(test_case.input_string, logger);
 
-  // All tese cases should not return base::nullopt because they all comply to
+  // All tese cases should not return absl::nullopt because they all comply to
   // structured header syntax.
   ASSERT_TRUE(result.has_value());
 
@@ -476,7 +476,7 @@ TEST_P(DocumentPolicyParserTest, ParseResultShouldMatch) {
 
   ASSERT_EQ(actual_messages.size(), expected_messages.size())
       << "message count should match";
-  for (size_t i = 0; i < expected_messages.size(); ++i) {
+  for (wtf_size_t i = 0; i < expected_messages.size(); ++i) {
     const auto& actual_message = actual_messages[i];
     const MessageForTest& expected_message = expected_messages[i];
 

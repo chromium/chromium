@@ -31,12 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDER_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDER_HANDLE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -63,14 +62,15 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
   static PrerenderHandle* Create(
       Document&,
       const KURL&,
-      mojom::blink::PrerenderRelType prerender_rel_type);
+      mojom::blink::PrerenderTriggerType prerender_trigger_type);
 
   using PassKey = base::PassKey<PrerenderHandle>;
   PrerenderHandle(PassKey,
                   ExecutionContext*,
                   const KURL&,
-                  HeapMojoRemote<mojom::blink::PrerenderProcessor>,
                   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>);
+  PrerenderHandle(const PrerenderHandle&) = delete;
+  PrerenderHandle& operator=(const PrerenderHandle&) = delete;
   ~PrerenderHandle();
 
   // Asks the browser process to cancel the running prerender.
@@ -82,11 +82,8 @@ class PrerenderHandle final : public GarbageCollected<PrerenderHandle> {
 
  private:
   const KURL url_;
-  HeapMojoRemote<mojom::blink::PrerenderProcessor> remote_prerender_processor_;
   HeapMojoRemote<mojom::blink::NoStatePrefetchProcessor>
       remote_prefetch_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrerenderHandle);
 };
 
 }  // namespace blink

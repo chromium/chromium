@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,9 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_USE_ADDRESS_ACTION_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_fields_fallback_handler.h"
@@ -28,20 +24,24 @@ class ClientStatus;
 class UseAddressAction : public Action {
  public:
   explicit UseAddressAction(ActionDelegate* delegate, const ActionProto& proto);
+
+  UseAddressAction(const UseAddressAction&) = delete;
+  UseAddressAction& operator=(const UseAddressAction&) = delete;
+
   ~UseAddressAction() override;
 
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void EndAction(const ClientStatus& final_status,
-                 const base::Optional<ClientStatus>& optional_details_status =
-                     base::nullopt);
+  void EndAction(const ClientStatus& status);
 
   // Fill the form using |profile_|. Return whether filling succeeded or not
   // through OnFormFilled.
   void FillFormWithData();
   void OnWaitForElement(const ClientStatus& element_status);
+
+  void InitFallbackHandler(const autofill::AutofillProfile& profile);
 
   // Called when the address has been filled.
   void ExecuteFallback(const ClientStatus& status);
@@ -54,9 +54,7 @@ class UseAddressAction : public Action {
 
   ProcessActionCallback process_action_callback_;
   base::WeakPtrFactory<UseAddressAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UseAddressAction);
 };
 
 }  // namespace autofill_assistant
-#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_AUTOFILL_ACTION_H_
+#endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_USE_ADDRESS_ACTION_H_

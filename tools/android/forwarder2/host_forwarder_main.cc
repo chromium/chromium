@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -72,6 +71,9 @@ class ServerDelegate : public Daemon::ServerDelegate {
         has_failed_(false),
         controllers_manager_(base::BindRepeating(&GetExitNotifierFD)) {}
 
+  ServerDelegate(const ServerDelegate&) = delete;
+  ServerDelegate& operator=(const ServerDelegate&) = delete;
+
   bool has_failed() const {
     return has_failed_ || controllers_manager_.has_failed();
   }
@@ -123,8 +125,6 @@ class ServerDelegate : public Daemon::ServerDelegate {
   std::string adb_path_;
   bool has_failed_;
   HostControllersManager controllers_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerDelegate);
 };
 
 class ClientDelegate : public Daemon::ClientDelegate {

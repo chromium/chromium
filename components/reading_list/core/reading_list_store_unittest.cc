@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/sync/test/model/mock_model_type_change_processor.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
+#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +71,7 @@ void ExpectAB(const sync_pb::ReadingListSpecifics& entryA,
 }
 
 base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
-  clock->Advance(base::TimeDelta::FromMilliseconds(10));
+  clock->Advance(base::Milliseconds(10));
   return clock->Now();
 }
 
@@ -251,7 +251,9 @@ TEST_F(ReadingListStoreTest, ApplySyncChangesOneMerge) {
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
-  EXPECT_CALL(processor_, Put("http://unread.example.com/", _, _));
+  // ApplySyncChanges() must *not* result in any Put() calls - that would risk
+  // triggering ping-pong between two syncing devices.
+  EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
@@ -280,7 +282,9 @@ TEST_F(ReadingListStoreTest, ApplySyncChangesOneIgnored) {
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
-  EXPECT_CALL(processor_, Put("http://unread.example.com/", _, _));
+  // ApplySyncChanges() must *not* result in any Put() calls - that would risk
+  // triggering ping-pong between two syncing devices.
+  EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
@@ -316,6 +320,8 @@ TEST_F(ReadingListStoreTest, CompareEntriesForSync) {
   entryB.set_status(sync_pb::ReadingListSpecifics::UNREAD);
   entryA.set_creation_time_us(10);
   entryB.set_creation_time_us(10);
+  entryA.set_estimated_read_time_seconds(420);
+  entryB.set_estimated_read_time_seconds(420);
   entryA.set_first_read_time_us(50);
   entryB.set_first_read_time_us(50);
   entryA.set_update_time_us(100);
@@ -396,6 +402,13 @@ TEST_F(ReadingListStoreTest, CompareEntriesForSync) {
   ExpectAB(entryA, entryB, true);
   ExpectAB(entryB, entryA, false);
   entryA.set_first_read_time_us(50);
+
+  entryA.set_creation_time_us(11);
+  entryA.set_estimated_read_time_seconds(400);
+  ExpectAB(entryB, entryA, true);
+  ExpectAB(entryA, entryB, false);
+  entryA.set_estimated_read_time_seconds(420);
+  entryA.set_creation_time_us(10);
 
   entryA.set_update_time_us(99);
   ExpectAB(entryA, entryB, true);

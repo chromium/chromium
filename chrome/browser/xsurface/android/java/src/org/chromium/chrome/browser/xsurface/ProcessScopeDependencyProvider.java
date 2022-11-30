@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,11 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Provides application-level dependencies for an external surface.
@@ -39,9 +43,37 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the collection of currently active experiment ids. */
-    @Deprecated
     default int[] getExperimentIds() {
         return new int[0];
+    }
+
+    /**
+     * Provides experimental feature state to xsurface implementations.
+     */
+    public interface FeatureStateProvider {
+        boolean isFeatureActive(String featureName);
+        boolean getBooleanParameterValue(
+                String featureName, String paramName, boolean defaultValue);
+    }
+
+    /**
+     * Returns whether a feature is active.
+     *
+     * The returned function must be called on the UI thread.
+     */
+    default FeatureStateProvider getFeatureStateProvider() {
+        return new FeatureStateProvider() {
+            @Override
+            public boolean isFeatureActive(String featureName) {
+                return false;
+            }
+
+            @Override
+            public boolean getBooleanParameterValue(
+                    String featureName, String paramName, boolean defaultValue) {
+                return false;
+            }
+        };
     }
 
     /** @see {Log.e} */
@@ -89,4 +121,79 @@ public interface ProcessScopeDependencyProvider {
     default boolean isXsurfaceUsageAndCrashReportingEnabled() {
         return false;
     }
+
+    /** Returns the reliability logging id. */
+    default long getReliabilityLoggingId() {
+        return 0L;
+    }
+
+    /** Returns the google API key. */
+    default String getGoogleApiKey() {
+        return null;
+    }
+
+    /** Returns Chrome's version string. */
+    default String getChromeVersion() {
+        return "";
+    }
+
+    /** Returns Chrome's channel as enumerated in components/version_info/channel.h. */
+    default int getChromeChannel() {
+        return 0;
+    }
+
+    /** Returns the percentage size that the memory cache is allowed to use. */
+    default int getImageMemoryCacheSizePercentage() {
+        return 100;
+    }
+
+    /** Returns the percentage size that the bitmap pool is allowed to use. */
+    default int getBitmapPoolSizePercentage() {
+        return 100;
+    }
+
+    /** Returns the signed-out session id */
+    default String getSignedOutSessionId() {
+        return "";
+    }
+
+    /**
+     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
+     * message.
+     */
+    default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
+
+    /**
+     * Reports whether the visibility log upload was successful.
+     *
+     * @param success - whether the upload was successful
+     */
+    @Deprecated
+    default void reportOnUploadVisibilityLog(boolean success) {
+        reportOnUploadVisibilityLog(VisibilityLogType.UNSPECIFIED, success);
+    }
+
+    // Visibility log types that can be uploaded.
+    @IntDef({VisibilityLogType.UNSPECIFIED, VisibilityLogType.VIEW, VisibilityLogType.CLICK})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface VisibilityLogType {
+        int UNSPECIFIED = 0;
+        int VIEW = 1;
+        int CLICK = 2;
+    }
+
+    /**
+     * Reports whether the visibility log upload was successful.
+     *
+     * @param logType - the type of visibility log being uploaded
+     * @param success - whether the upload was successful
+     */
+    default void reportOnUploadVisibilityLog(@VisibilityLogType int logType, boolean success) {}
+
+    /**
+     * Reports whether visibility logging is enabled.
+     *
+     * @param enabled - whether logging is enabled
+     */
+    default void reportVisibilityLoggingEnabled(boolean enabled) {}
 }

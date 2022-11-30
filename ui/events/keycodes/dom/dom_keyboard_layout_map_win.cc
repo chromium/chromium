@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map_base.h"
@@ -26,6 +24,10 @@ namespace {
 class DomKeyboardLayoutMapWin : public DomKeyboardLayoutMapBase {
  public:
   DomKeyboardLayoutMapWin();
+
+  DomKeyboardLayoutMapWin(const DomKeyboardLayoutMapWin&) = delete;
+  DomKeyboardLayoutMapWin& operator=(const DomKeyboardLayoutMapWin&) = delete;
+
   ~DomKeyboardLayoutMapWin() override;
 
  private:
@@ -38,8 +40,6 @@ class DomKeyboardLayoutMapWin : public DomKeyboardLayoutMapBase {
   // Set of keyboard layout handles provided by the operating system.
   // The handles stored do not need to be released when the vector is destroyed.
   std::vector<HKL> keyboard_layout_handles_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomKeyboardLayoutMapWin);
 };
 
 DomKeyboardLayoutMapWin::DomKeyboardLayoutMapWin() = default;
@@ -101,7 +101,7 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
   wchar_t char_buffer[1] = {0};
   int key_type =
       ::ToUnicodeEx(virtual_key_code, scan_code, keyboard_state, char_buffer,
-                    base::size(char_buffer), /*wFlags=*/0, keyboard_layout);
+                    std::size(char_buffer), /*wFlags=*/0, keyboard_layout);
 
   // Handle special cases for Japanese keyboard layout.
   if (0x04110411 == reinterpret_cast<uintptr_t>(keyboard_layout)) {
@@ -143,7 +143,7 @@ ui::DomKey DomKeyboardLayoutMapWin::GetDomKeyFromDomCodeForLayout(
     // the dead key state. See crbug/977609 for details on how this problem
     // exhibits itself to users.
     ::ToUnicodeEx(0x0020, 0x0039, keyboard_state, char_buffer,
-                  base::size(char_buffer), /*wFlags=*/0, keyboard_layout);
+                  std::size(char_buffer), /*wFlags=*/0, keyboard_layout);
   }
   return key;
 }

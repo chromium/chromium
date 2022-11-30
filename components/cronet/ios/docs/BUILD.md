@@ -2,7 +2,7 @@
 
 ## Get source and dependencies
 ### source
-- Install depot_tools per https://chromium.googlesource.com/chromium/src/+/master/docs/ios/build_instructions.md
+- Install depot_tools per https://chromium.googlesource.com/chromium/src/+/main/docs/ios/build_instructions.md
 - Make directory for the chromium source, and then fetch:
 ```
     ~ $ mkdir chromium && cd chromium

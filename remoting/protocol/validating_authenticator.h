@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,11 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // This authenticator class provides a way to check the validity of a connection
 // as it is being established through an asynchronous callback.  The validation
@@ -40,6 +38,10 @@ class ValidatingAuthenticator : public Authenticator {
   ValidatingAuthenticator(const std::string& remote_jid,
                           const ValidationCallback& validation_callback,
                           std::unique_ptr<Authenticator> current_authenticator);
+
+  ValidatingAuthenticator(const ValidatingAuthenticator&) = delete;
+  ValidatingAuthenticator& operator=(const ValidatingAuthenticator&) = delete;
+
   ~ValidatingAuthenticator() override;
 
   // Authenticator interface.
@@ -72,18 +74,16 @@ class ValidatingAuthenticator : public Authenticator {
   State state_ = Authenticator::WAITING_MESSAGE;
 
   // Returns the rejection reason. Can be called only when in REJECTED state.
-  RejectionReason rejection_reason_ = Authenticator::INVALID_CREDENTIALS;
+  RejectionReason rejection_reason_ =
+      Authenticator::RejectionReason::INVALID_CREDENTIALS;
 
   std::unique_ptr<Authenticator> current_authenticator_;
 
   std::unique_ptr<jingle_xmpp::XmlElement> pending_auth_message_;
 
   base::WeakPtrFactory<ValidatingAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticator);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_VALIDATING_AUTHENTICATOR_H_

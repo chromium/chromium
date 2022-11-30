@@ -1,11 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,6 +53,11 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
  public:
   explicit TestManagePasswordsUIController(content::WebContents* web_contents);
 
+  TestManagePasswordsUIController(const TestManagePasswordsUIController&) =
+      delete;
+  TestManagePasswordsUIController& operator=(
+      const TestManagePasswordsUIController&) = delete;
+
   void OnDialogHidden() override;
   AccountChooserPrompt* CreateAccountChooser(
       CredentialManagerDialogController* controller) override;
@@ -76,11 +83,9 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
   MOCK_METHOD0(OnDialogClosed, void());
 
  private:
-  AccountChooserPrompt* current_account_chooser_;
-  AutoSigninFirstRunPrompt* current_autosignin_prompt_;
-  CredentialLeakPrompt* current_credential_leak_prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestManagePasswordsUIController);
+  raw_ptr<AccountChooserPrompt> current_account_chooser_;
+  raw_ptr<AutoSigninFirstRunPrompt> current_autosignin_prompt_;
+  raw_ptr<CredentialLeakPrompt> current_credential_leak_prompt_;
 };
 
 TestManagePasswordsUIController::TestManagePasswordsUIController(
@@ -167,11 +172,11 @@ class PasswordDialogViewTest : public DialogBrowserTest {
   }
 
  private:
-  TestManagePasswordsUIController* controller_;
+  raw_ptr<TestManagePasswordsUIController> controller_;
 };
 
 void PasswordDialogViewTest::SetUpOnMainThread() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On non-Mac platforms, animations are globally disabled during tests; on
   // Mac they are generally not, but these tests are dramatically slower and
   // flakier with animations.
@@ -211,8 +216,8 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   browser->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
 
   // Navigate to a Web URL.
-  EXPECT_NO_FATAL_FAILURE(
-      ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com")));
+  EXPECT_NO_FATAL_FAILURE(EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com"))));
   EXPECT_EQ(controller_,
             ManagePasswordsUIController::FromWebContents(raw_new_tab));
   return raw_new_tab;
@@ -336,10 +341,10 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
   EXPECT_TRUE(controller()->current_account_chooser());
   views::BubbleDialogDelegateView* dialog =
       controller()->current_account_chooser();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   EXPECT_CALL(*this, OnChooseCredential(testing::Pointee(form)));
   dialog->Accept();
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
@@ -448,11 +453,11 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
   AutoSigninFirstRunDialogView* dialog =
       controller()->current_autosignin_prompt();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
   EXPECT_CALL(*controller(), OnDialogClosed());
   EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
   content::RunAllPendingInMessageLoop();
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(controller());
@@ -465,15 +470,16 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
   CredentialLeakType leak_type = CredentialLeakFlags::kPasswordSaved |
                                  CredentialLeakFlags::kPasswordUsedOnOtherSites;
   GURL origin("https://example.com");
-  controller()->OnCredentialLeak(leak_type, origin);
+  std::u16string username(u"Eve");
+  controller()->OnCredentialLeak(leak_type, origin, username);
   ASSERT_TRUE(controller()->current_credential_leak_prompt());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
   CredentialLeakDialogView* dialog =
       controller()->current_credential_leak_prompt();
-  views::test::WidgetClosingObserver bubble_observer(dialog->GetWidget());
+  views::test::WidgetDestroyedWaiter bubble_observer(dialog->GetWidget());
   ui::Accelerator esc(ui::VKEY_ESCAPE, 0);
   EXPECT_TRUE(dialog->GetWidget()->client_view()->AcceleratorPressed(esc));
-  EXPECT_TRUE(bubble_observer.widget_closed());
+  bubble_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest,
@@ -531,6 +537,15 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
   }
 
   GURL origin("https://example.com");
+  std::u16string username(u"Eve");
+  if (name == "CredentialLeak") {
+    CredentialLeakType leak_type =
+        CredentialLeakFlags::kPasswordSaved |
+        CredentialLeakFlags::kPasswordUsedOnOtherSites;
+    controller()->OnCredentialLeak(leak_type, origin, username);
+    return;
+  }
+
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials;
   password_manager::PasswordForm form;
@@ -584,6 +599,14 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, InvokeUi_AutoSigninFirstRun) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, InvokeUi_CredentialLeak) {
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, InvokeUi_PopupAutoSigninPrompt) {
   ShowAndVerifyUi();
 }
@@ -597,10 +620,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PasswordDialogViewTest,
     InvokeUi_PopupAccountChooserWithMultipleCredentialClickSignIn) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, InvokeUi_AutoSigninFirstRun) {
   ShowAndVerifyUi();
 }
 

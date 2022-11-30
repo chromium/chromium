@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@
   "accessibilityPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015",  // http://crbug.com/1039158
       "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E"
@@ -82,11 +83,22 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "certificateProvider": {
+  "certificateProvider": [{
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension", "platform_app"]
-  },
+  }, {
+    // https://crbug.com/1194693
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+    ]
+  }],
   "chromePrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
@@ -99,7 +111,7 @@
   "chromeosInfoPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/293683
@@ -116,9 +128,6 @@
       // TODO(ntang): Remove these 2 hashes when the app is no longer active.
       "B620CF4203315F9F2E046EDED22C7571A935958D",  // http://crbug.com/510270
       "B206D8716769728278D2D300349C6CB7D7DE2EF9",  // http://crbug.com/510270
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/590259
-      "C2ABD68C33A5B485971C9638B80D6A2E9CBA78C4",  // http://crbug.com/590259
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/1019094
       "8EBDF73405D0B84CEABB8C7513C9B9FA9F1DC2CE",  // http://crbug.com/644446
       "72445193EB86716465275D4E2E84DACF47558FCF",  // http://crbug.com/644446
       "51E46A03961884A4BA74CE7CA30A75CC6F360D74",  // http://crbug.com/644446
@@ -133,7 +142,9 @@
       "46578A13607D38F1DC8E280C4F499FB0A2F9565C",  // http://crbug.com/841089
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/841089
       "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/841089
-      "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/957772
+      "C74B2AF138F9EDECD04D0965AB36CA66C8290466",  // http://crbug.com/957772
+      "754A9CB3C8623093180E10CF4C3AB64837179E68",  // https://crbug.com/1201800
+      "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
     ]
   },
   "clipboardRead": {
@@ -251,6 +262,10 @@
     "channel": "stable",
     "extension_types": ["extension"]
   },
+  "downloads.ui": {
+    "channel": "stable",
+    "extension_types": ["extension"]
+  },
   "enterprise.deviceAttributes": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
@@ -267,7 +282,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -323,7 +338,8 @@
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/882461 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
       "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
-      "2012C0122892D332325339998251D1CC3CAE396A"   // https://crbug.com/882461 SecureConnect
+      "2012C0122892D332325339998251D1CC3CAE396A",  // https://crbug.com/882461 SecureConnect
+      "C8F4673FC69965390BC376C0761EC341492F9D87"   // Contact Center Insights
     ]
   },
   "experimental": {
@@ -333,10 +349,14 @@
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
   },
+  "favicon": {
+    "channel": "stable",
+    "extension_types": ["extension"]
+  },
   "fileBrowserHandler": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "fileManagerPrivate": {
     "channel": "stable",
@@ -344,24 +364,17 @@
     "platforms": ["chromeos"],
     "allowlist": [
       "74E2D32A61B08D29521A8C4E360F581DE78F5CA5",  // Image loader
-      "A948368FC53BE437A55FEB414106E207925482F5",  // Files app
-      "A13373C881097323F4DEF392474BE2E28DA6D4ED",  // Gallery
-      "8C726564C6DBE7380BAB388DE6CC7EC93EB44B06",  // Video player
-      "5065C83E84321221675D20FBE4DC43C655CC8C6F",  // Files app tests
-      "397F221E63F86BE34C30165613E95B6CC8D22A52",  // http://crbug.com/415846
-      "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/854551
-      "C2ABD68C33A5B485971C9638B80D6A2E9CBA78C4",  // http://crbug.com/854551
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07"   // http://crbug.com/854551
+      "A948368FC53BE437A55FEB414106E207925482F5"   // Files app
     ]
   },
   "fileSystemProvider": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004
@@ -379,6 +392,22 @@
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+    ]
+  },
+  // Used by gnubbyd in ash and lacros.  Stores small amounts of data in ash
+  // prefs which is shared by ash and lacros versions of the extension.
+  // TODO(b/231890240): Once Terminal SWA runs in lacros rather than ash, we can
+  // migrate gnubbyd back to using chrome.storage.local and remove this private
+  // API.
+  "sharedStoragePrivate": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "6F9E349A0561C78A0D3F41496FE521C5151C7F71", // gnubbyd app stable
+      "C06709A259378015404ED20F75C7D08547E0F10B", // gnubbyd app dev
+      "57A1B95957F9EDB159FA9278BF87FE70DF62BED8", // ske stable
+      "05E9C7F02C6E55E1DE334A1B1EFD2D9A68F10E34"  // ske dev
     ]
   },
   "history": {
@@ -423,24 +452,27 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component"
   }],
-  "languageSettingsPrivate": {
-    "channel": "trunk",
-    "extension_types": ["extension", "platform_app"],
-    "location": "component"
-  },
-  "launcherSearchProvider": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "A948368FC53BE437A55FEB414106E207925482F5"  // File Manager
-    ]
-  },
+  "languageSettingsPrivate": [
+    {
+      "channel": "trunk",
+      "extension_types": ["extension", "platform_app"],
+      "location": "component"
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "location": "component",
+      "platforms": ["chromeos"],
+      "allowlist": [
+        "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
+      ]
+    }
+  ],
   "lockWindowFullscreenPrivate": {
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "6A4A0389E8D47118E96E6221B0B7221CA3715801",  // Apitest extension
       "EC8EA268128FECE14CEC68B90686D87755D87083",  // Assessment Assistant
@@ -456,24 +488,33 @@
   "dependencies": ["behavior:imprivata_extension"],
   "extension_types": ["extension","login_screen_extension"],
   "location": "policy",
-  "platforms": ["chromeos"]
+  "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
     ]
   }],
-  "loginScreenStorage": {
+  "loginScreenStorage": [{
     "channel": "stable",
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
-  },
+    "platforms": ["chromeos", "lacros"]
+  }, {
+    "channel": "canary",
+    "extension_types": ["extension","login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
+    ]
+  }],
   "loginScreenUi": [{
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -492,7 +533,20 @@
   "loginState": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
+  }, {
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      // https://crbug.com/1233881
+      "EC3DE21E048B67319893889529354DFBFA96FD23",   // Smart Card Connector
+      // https://crbug.com/1194693
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+    ]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],
@@ -501,7 +555,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "EC3DE21E048B67319893889529354DFBFA96FD23"  // Smart Card Connector
     ]
@@ -519,19 +573,6 @@
       "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB",  // http://crbug.com/891460
       "81986D4F846CEDDDB962643FA501D1780DD441BB",  // http://crbug.com/891460
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/891460
-    ]
-  },
-  "networking.castPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos", "mac", "win"],
-    "allowlist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // http://crbug.com/588179
-      "FA01E0B81978950F2BC5A50512FD769725F57510",  // http://crbug.com/588179
-      "B11A93E7E5B541F8010245EBDE2C74647D6C14B9",  // http://crbug.com/588179
-      "F155646B5D1CA545F7E1E4E20D573DFDD44C2540",  // http://crbug.com/588179
-      "16CA7A47AAE4BE49B1E75A6B960C3875E945B264",  // http://crbug.com/588179
-      "226CF815E39A363090A1E547D53063472B8279FA"   // http://crbug.com/588179
     ]
   },
   "management": [
@@ -604,8 +645,12 @@
   {
     "channel": "stable",
     "extension_types": ["platform_app"]
+  },
+  {
+    "channel": "dev",
+    "extension_types": ["extension"]
   }],
-  "notifications": {
+  "notifications": [{
     // The chrome.notifications functionality listed in notifications.idl is
     // available only to extension/platform_app types. The implementation of
     // that functionality enforces that restriction in
@@ -616,12 +661,23 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
-  },
+  }, {
+    // https://crbug.com/1194693
+    "channel": "stable",
+    "component_extensions_auto_granted": false,
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
+    ]
+  }],
   "echoPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "pageCapture": {
     "channel": "stable",
@@ -648,12 +704,12 @@
   },
   "printing": {
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension"]
   },
   "printingMetrics": {
     "channel": "stable",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "extension_types": ["extension"],
     "location": "policy"
   },
@@ -703,7 +759,9 @@
       "2B6C6A4A5940017146F3E58B7F90116206E84685",  // http://crbug.com/642141
       "B6C2EFAB3EC3BF6EF03701408B6B09A67B2D0069",  // http://crbug.com/642141
       "96FF2FFA5C9173C76D47184B3E86D267B37781DE",  // http://crbug.com/642141
-      "0136FCB13DB29FD5CD442F56E59E53B61F1DF96F"   // http://crbug.com/642141
+      "0136FCB13DB29FD5CD442F56E59E53B61F1DF96F",  // http://crbug.com/642141
+      "754A9CB3C8623093180E10CF4C3AB64837179E68",  // https://crbug.com/1201800
+      "CF6B19571334F49878327D557597D23B1458AA39"   // https://crbug.com/1201800
     ]
   },
   "resourcesPrivate": {
@@ -775,19 +833,19 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // https://crbug.com/839189
     ]
   }],
-  "autofillAssistantPrivate": {
-    "channel": "trunk",
+  "sidePanel": {
+    "channel": "canary",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
+  "speechRecognitionPrivate": {
+    "channel": "stable",
     "extension_types": ["extension"],
     "location": "component",
+    "platforms": ["chromeos"],
     "allowlist": [
-      // api_test extension "jjeoclcdfjddkdjokiejckgcildcflpp"
-      // https://crbug.com/1015753
-      "64B58C7B53E3E1447FD0DEA62C5E654206179F99"
+      "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
     ]
-  },
-  "signedInDevices": {
-    "channel": "dev",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
   "systemPrivate": {
     "channel": "stable",
@@ -859,14 +917,25 @@
   "wallpaper": {
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
-  "wallpaperPrivate": {
+  "webAuthenticationProxy": [{
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3,
+    "platforms": ["win", "linux", "mac"]
+  }, {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "location": "component",
-    "platforms": ["chromeos"]
-  },
+    "extension_types": ["extension"],
+    "min_manifest_version": 3,
+    "platforms": ["win", "linux", "mac"],
+    "allowlist": [
+      // Chrome Remote Desktop Security Key extension
+      "3CDF65D2CA48FCA9A96B01936FA97049F8332737",
+      // Chrome Remote Desktop Security Key dev extension
+      "2981AC9CF0999EEFFB4599E3C02395054167A521"
+    ]
+  }],
   "webNavigation": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
@@ -933,8 +1002,20 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "hosted_app"],
     "allowlist": [
-      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5",  // Web Store
-      "2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4"   // Enterprise Web Store
+      "B44D08FD98F1523ED5837D78D0A606EA9D6206E5"  // Web Store
+    ]
+  },
+  "wmDesksPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["chromeos"],
+    "allowlist": [
+      // Extension id hash for API test.
+      "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",
+      "6A4D7AEC6414492BD25219C7A479265BF1177D42",  // http://crbug.com/1206836
+      "F80B163C896D50A685E0B683BEEEA94217F253D6",  // http://crbug.com/1206836
+      "454738352012A22901C55B348E5E530BDE1AF2B0",  // http://crbug.com/1259253
+      "7D5A66C88A25019F997E548DEC5E0011E2855591"   // http://crbug.com/1206836
     ]
   }
 }

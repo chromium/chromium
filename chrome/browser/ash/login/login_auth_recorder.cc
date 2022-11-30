@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
+namespace {
 
 using AuthMethod = LoginAuthRecorder::AuthMethod;
 using AuthMethodSwitchType = LoginAuthRecorder::AuthMethodSwitchType;
 
-namespace {
-
-base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPassword, current);
   switch (current) {
     case AuthMethod::kPin:
@@ -29,11 +28,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
     case AuthMethod::kPassword:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPin, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -46,11 +45,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kSmartlock, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -63,11 +62,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
+absl::optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     AuthMethod current) {
   DCHECK_NE(AuthMethod::kFingerprint, current);
   switch (current) {
@@ -81,11 +80,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
+absl::optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kNothing, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -100,11 +99,11 @@ base::Optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
       return AuthMethodSwitchType::kNothingToChallengeResponse;
     case AuthMethod::kNothing:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
+absl::optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
                                                     AuthMethod current) {
   DCHECK_NE(previous, current);
   switch (previous) {
@@ -120,7 +119,7 @@ base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
       return SwitchFromNothingTo(current);
     case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -153,7 +152,7 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
       is_locked ? "Ash.Login.Lock.AuthMethod." : "Ash.Login.Login.AuthMethod.";
 
   // Record usage of the authentication method in login/lock screen.
-  const bool is_tablet_mode = ash::TabletMode::Get()->InTabletMode();
+  const bool is_tablet_mode = TabletMode::Get()->InTabletMode();
   std::string used_metric_name;
   if (is_tablet_mode) {
     base::UmaHistogramEnumeration(prefix + "Used.TabletMode", method);
@@ -163,7 +162,7 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
 
   if (last_auth_method_ != method) {
     // Record switching between unlock methods.
-    const base::Optional<AuthMethodSwitchType> switch_type =
+    const absl::optional<AuthMethodSwitchType> switch_type =
         FindSwitchType(last_auth_method_, method);
     if (switch_type) {
       base::UmaHistogramEnumeration(prefix + "Switched", *switch_type);
@@ -178,4 +177,4 @@ void LoginAuthRecorder::OnSessionStateChanged() {
   last_auth_method_ = AuthMethod::kNothing;
 }
 
-}  // namespace chromeos
+}  // namespace ash

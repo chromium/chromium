@@ -1,38 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-testRunner.waitUntilDone();
-</script>
-<script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
-<input type='color' id='color' value='#EA5FB0'>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 
-<p id='description' style='opacity: 0'></p>
-<div id='console' style='opacity: 0'></div>
+<input type='color' value='#EA5FB0'>
 
 <script>
-openPickerAppearanceOnly(document.getElementById('color'), openPickerSuccessfulCallback);
-
-function openPickerSuccessfulCallback() {
-  popupWindow.focus();
-  const popupDocument = popupWindow.document;
-  const formatToggler = popupDocument.querySelector('format-toggler');
-  formatToggler.click();
-  const hValueContainer = popupDocument.getElementById('hValueContainer');
-  const hValueContainerRect = hValueContainer.getBoundingClientRect();
-  eventSender.mouseMoveTo(hValueContainerRect.right - 1, hValueContainerRect.top);
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-  eventSender.keyDown('Backspace');
-  eventSender.keyDown('Backspace');
-  eventSender.keyDown('Backspace');
-  eventSender.keyDown('2');
-  eventSender.keyDown('7');
-  eventSender.keyDown('6');
-  testRunner.notifyDone();
-}
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
+    const formatToggler = popupDocument.querySelector('format-toggler');
+    formatToggler.click();
+    const hValueContainer = popupDocument.getElementById('hValueContainer');
+    const hValueContainerRect = hValueContainer.getBoundingClientRect();
+    eventSender.mouseMoveTo(hValueContainerRect.right - 1, hValueContainerRect.top);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    eventSender.keyDown('Backspace');
+    eventSender.keyDown('Backspace');
+    eventSender.keyDown('Backspace');
+    eventSender.keyDown('2');
+    eventSender.keyDown('7');
+    eventSender.keyDown('6');
+  });
 </script>
-</body>
-</html>

@@ -1,10 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.page_info;
 
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import android.app.Activity;
+
+import androidx.annotation.Nullable;
+
+import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
 /**
  * Interface for a page info main page controller.
@@ -29,12 +35,30 @@ public interface PageInfoMainController {
     void recordAction(@PageInfoAction int action);
 
     /**
-     * Refreshes the permissions of the page info.
+     * Inform the native controller that the AboutThisSite section was shown.
+     * This signal is used for metrics.
+     *
+     * @param wasAboutThisSiteShown Whether the section was shown.
      */
+    void setAboutThisSiteShown(boolean wasAboutThisSiteShown);
+
+    /** Refreshes the permissions of the page info. */
     void refreshPermissions();
 
-    /**
-     * @return A BrowserContext for this dialog.
-     */
+    /** Returns a valid ConnectionSecurityLevel. */
+    @ConnectionSecurityLevel
+    int getSecurityLevel();
+
+    /** @return A BrowserContext for this dialog. */
     BrowserContextHandle getBrowserContext();
+
+    /** @return The Activity associated with the controller. */
+    @Nullable
+    Activity getActivity();
+
+    /** @return The GURL of the page associated with the controller. */
+    GURL getURL();
+
+    /** Dismiss the page info dialog. */
+    void dismiss();
 }

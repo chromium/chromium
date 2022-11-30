@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<meta charset='utf-8'>
+<title>Geolocation Test: getCurrentPosition returns after visibilityState changes</title>
+<link rel='help' href='http://www.w3.org/TR/geolocation-API/#get-current-position'>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<p>Clear all Geolocation permissions before running this test. If prompted for permission, please allow.</p>
+<div id='log'></div>
+
+<script>
+setup(test_driver.set_permission({name: 'geolocation'}, 'granted', true));
+
+promise_test(async t => {
+  assert_equals(document.visibilityState, "visible");
+
+  const gcp = new Promise(resolve => navigator.geolocation.getCurrentPosition(
+    p => resolve(pos),
+    e => resolve(e),
+    {timeout: 100, maximumAge: 0}))
+  await gcp;
+
+  const changed = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(true);
+  await changed;
+  assert_equals(document.visibilityState, "hidden");
+
+  const gcp2 = new Promise(resolve => navigator.geolocation.getCurrentPosition(
+    p => resolve(pos),
+    e => resolve(e),
+    {timeout: 100, maximumAge: 0}));
+
+  const changed2 = new Promise(resolve => document.addEventListener("visibilitychange", resolve, {once:true}));
+  testRunner.setMainWindowHidden(false);
+  await changed2;
+  assert_equals(document.visibilityState, "visible");
+
+  await gcp2;
+}, "getCurrentPosition returns after visibilityState changes");
+</script>

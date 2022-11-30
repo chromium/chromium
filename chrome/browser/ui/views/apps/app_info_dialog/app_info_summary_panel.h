@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
 #include "extensions/common/constants.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
 class LaunchOptionsComboboxModel;
@@ -72,13 +72,13 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   // CanDisplayLicenses() returns true.
   void DisplayLicenses();
   bool CanDisplayLicenses() const;
-  const std::vector<GURL> GetLicenseUrls() const;
+  std::vector<GURL> GetLicenseUrls() const;
 
   // UI elements on the dialog.
-  views::Label* size_value_ = nullptr;
+  raw_ptr<views::Label> size_value_ = nullptr;
 
   std::unique_ptr<LaunchOptionsComboboxModel> launch_options_combobox_model_;
-  views::Combobox* launch_options_combobox_ = nullptr;
+  raw_ptr<views::Combobox> launch_options_combobox_ = nullptr;
 
   base::WeakPtrFactory<AppInfoSummaryPanel> weak_ptr_factory_{this};
 };

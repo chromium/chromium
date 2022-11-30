@@ -135,7 +135,9 @@
         testDirectTouches();
         e.sandbox.style.display = 'none';
     }
+    testRunner.waitUntilDone();
     runTests();
+    testRunner.notifyDone();
 </script>
 </body>
 </html>

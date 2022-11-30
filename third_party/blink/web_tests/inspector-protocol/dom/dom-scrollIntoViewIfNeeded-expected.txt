@@ -5,4 +5,5 @@ Tests DOM.scrollIntoViewIfNeeded.
 202;1902
 600;2300
 423;2234
+0;0
 

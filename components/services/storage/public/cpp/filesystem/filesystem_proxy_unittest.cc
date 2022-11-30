@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/public/cpp/filesystem/file_error_or.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +20,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+template <typename ValueType>
+using FileErrorOr = base::FileErrorOr<ValueType>;
 
 namespace storage {
 
@@ -64,15 +65,15 @@ class FilesystemProxyTest : public testing::TestWithParam<bool> {
     CHECK(base::CreateDirectory(root.Append(kDir1).Append(kDir1Dir1)));
     CHECK(base::CreateDirectory(root.Append(kDir2)));
     CHECK(base::WriteFile(root.Append(kFile1), kFile1Contents,
-                          base::size(kFile1Contents) - 1));
+                          std::size(kFile1Contents) - 1));
     CHECK(base::WriteFile(root.Append(kFile2), kFile2Contents,
-                          base::size(kFile2Contents) - 1));
+                          std::size(kFile2Contents) - 1));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File1),
                           kDir1File1Contents,
-                          base::size(kDir1File1Contents) - 1));
+                          std::size(kDir1File1Contents) - 1));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File2),
                           kDir1File2Contents,
-                          base::size(kDir1File2Contents) - 1));
+                          std::size(kDir1File2Contents) - 1));
 
     if (UseRestrictedFilesystem()) {
       // Run a remote FilesystemImpl on a background thread to exercise
@@ -135,28 +136,28 @@ TEST_P(FilesystemProxyTest, PathExists) {
 TEST_P(FilesystemProxyTest, GetDirectoryEntries) {
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       base::FilePath(), FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2)));
 
   result = proxy().GetDirectoryEntries(
       base::FilePath(),
       FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2),
                                    MakeAbsolute(kDir1), MakeAbsolute(kDir2)));
 
   result = proxy().GetDirectoryEntries(
       kDir1, FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
                                    MakeAbsolute(kDir1.Append(kDir1File2))));
 
   result = proxy().GetDirectoryEntries(
       kDir1, FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_TRUE(result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
                                    MakeAbsolute(kDir1.Append(kDir1File2)),
@@ -182,7 +183,7 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExists) {
   FileErrorOr<base::File> file1 =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                    base::File::FLAG_WRITE);
-  EXPECT_FALSE(file1.is_error());
+  EXPECT_TRUE(file1.has_value());
   EXPECT_EQ(kFile1Contents, ReadFileContents(&file1.value()));
 }
 
@@ -198,7 +199,7 @@ TEST_P(FilesystemProxyTest, OpenFileCreateAndOpenOnlyIfNotExists) {
   FileErrorOr<base::File> new_file = proxy().OpenFile(
       kNewFilename,
       base::File::FLAG_CREATE | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  ASSERT_FALSE(new_file.is_error());
+  ASSERT_TRUE(new_file.has_value());
   EXPECT_EQ("", ReadFileContents(&new_file.value()));
 
   const std::string kData = "yeet";
@@ -211,7 +212,7 @@ TEST_P(FilesystemProxyTest, OpenFileAlwaysOpen) {
   FileErrorOr<base::File> file1 = proxy().OpenFile(
       kFile1, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                   base::File::FLAG_WRITE);
-  ASSERT_FALSE(file1.is_error());
+  ASSERT_TRUE(file1.has_value());
   EXPECT_TRUE(file1->IsValid());
   EXPECT_EQ(kFile1Contents, ReadFileContents(&file1.value()));
 
@@ -219,7 +220,7 @@ TEST_P(FilesystemProxyTest, OpenFileAlwaysOpen) {
   FileErrorOr<base::File> new_file = proxy().OpenFile(
       kNewFilename, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                         base::File::FLAG_WRITE);
-  ASSERT_FALSE(new_file.is_error());
+  ASSERT_TRUE(new_file.has_value());
   EXPECT_TRUE(new_file->IsValid());
   EXPECT_EQ("", ReadFileContents(&new_file.value()));
 }
@@ -228,7 +229,7 @@ TEST_P(FilesystemProxyTest, OpenFileAlwaysCreate) {
   FileErrorOr<base::File> file1 = proxy().OpenFile(
       kFile1, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                   base::File::FLAG_WRITE);
-  ASSERT_FALSE(file1.is_error());
+  ASSERT_TRUE(file1.has_value());
   EXPECT_TRUE(file1->IsValid());
   EXPECT_EQ("", ReadFileContents(&file1.value()));
 
@@ -236,7 +237,7 @@ TEST_P(FilesystemProxyTest, OpenFileAlwaysCreate) {
   FileErrorOr<base::File> new_file = proxy().OpenFile(
       kNewFilename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                         base::File::FLAG_WRITE);
-  ASSERT_FALSE(new_file.is_error());
+  ASSERT_TRUE(new_file.has_value());
   EXPECT_TRUE(new_file->IsValid());
   EXPECT_EQ("", ReadFileContents(&new_file.value()));
 }
@@ -253,7 +254,7 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExistsAndTruncate) {
   FileErrorOr<base::File> file1 = proxy().OpenFile(
       kFile1, base::File::FLAG_OPEN_TRUNCATED | base::File::FLAG_READ |
                   base::File::FLAG_WRITE);
-  ASSERT_FALSE(file1.is_error());
+  ASSERT_TRUE(file1.has_value());
   EXPECT_TRUE(file1->IsValid());
   EXPECT_EQ("", ReadFileContents(&file1.value()));
 }
@@ -261,7 +262,7 @@ TEST_P(FilesystemProxyTest, OpenFileOpenIfExistsAndTruncate) {
 TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
   FileErrorOr<base::File> file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  ASSERT_FALSE(file.is_error());
+  ASSERT_TRUE(file.has_value());
   EXPECT_TRUE(file->IsValid());
 
   // Writes should fail.
@@ -270,10 +271,16 @@ TEST_P(FilesystemProxyTest, OpenFileReadOnly) {
   EXPECT_EQ(kFile1Contents, ReadFileContents(&file.value()));
 }
 
-TEST_P(FilesystemProxyTest, OpenFileWriteOnly) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314081): Re-enable when OpenFileWriteOnly works on Fuchsia.
+#define MAYBE_OpenFileWriteOnly DISABLED_OpenFileWriteOnly
+#else
+#define MAYBE_OpenFileWriteOnly OpenFileWriteOnly
+#endif
+TEST_P(FilesystemProxyTest, MAYBE_OpenFileWriteOnly) {
   FileErrorOr<base::File> file = proxy().OpenFile(
       kFile2, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  ASSERT_FALSE(file.is_error());
+  ASSERT_TRUE(file.has_value());
   EXPECT_TRUE(file->IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
@@ -288,11 +295,17 @@ TEST_P(FilesystemProxyTest, OpenFileWriteOnly) {
   EXPECT_EQ(kData, ReadFileContentsAtPath(kFile2));
 }
 
-TEST_P(FilesystemProxyTest, OpenFileAppendOnly) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314079): Re-enable when OpenFileAppendOnly works on Fuchsia.
+#define MAYBE_OpenFileAppendOnly DISABLED_OpenFileAppendOnly
+#else
+#define MAYBE_OpenFileAppendOnly OpenFileAppendOnly
+#endif
+TEST_P(FilesystemProxyTest, MAYBE_OpenFileAppendOnly) {
   const base::FilePath kFile3{FILE_PATH_LITERAL("file3")};
   FileErrorOr<base::File> file = proxy().OpenFile(
       kFile3, base::File::FLAG_CREATE | base::File::FLAG_APPEND);
-  ASSERT_FALSE(file.is_error());
+  ASSERT_TRUE(file.has_value());
   EXPECT_TRUE(file->IsValid());
 
   const std::string kData{"files can have a little data, as a treat"};
@@ -314,17 +327,23 @@ TEST_P(FilesystemProxyTest, OpenFileAppendOnly) {
   EXPECT_EQ(kData + kMoreData, ReadFileContentsAtPath(kFile3));
 }
 
-TEST_P(FilesystemProxyTest, DeleteFile) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314076): Re-enable when DeleteFile works on Fuchsia.
+#define MAYBE_DeleteFile DISABLED_DeleteFile
+#else
+#define MAYBE_DeleteFile DeleteFile
+#endif
+TEST_P(FilesystemProxyTest, MAYBE_DeleteFile) {
   FileErrorOr<base::File> file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
-  ASSERT_FALSE(file.is_error());
+  ASSERT_TRUE(file.has_value());
   EXPECT_TRUE(file->IsValid());
   file->Close();
 
   EXPECT_TRUE(proxy().DeleteFile(kFile1));
   file =
       proxy().OpenFile(kFile1, base::File::FLAG_OPEN | base ::File::FLAG_READ);
-  EXPECT_TRUE(file.is_error());
+  EXPECT_FALSE(file.has_value());
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, file.error());
 }
 
@@ -342,7 +361,15 @@ TEST_P(FilesystemProxyTest, CreateAndRemoveDirectory) {
   EXPECT_TRUE(proxy().DeleteFile(kNewDirectoryName));
 }
 
-TEST_P(FilesystemProxyTest, DeleteFileFailsOnSubDirectory) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1314076): Re-enable when DeleteFileFailsOnSubDirectory works
+// on Fuchsia.
+#define MAYBE_DeleteFileFailsOnSubDirectory \
+  DISABLED_DeleteFileFailsOnSubDirectory
+#else
+#define MAYBE_DeleteFileFailsOnSubDirectory DeleteFileFailsOnSubDirectory
+#endif
+TEST_P(FilesystemProxyTest, MAYBE_DeleteFileFailsOnSubDirectory) {
   // kDir1 has a subdirectory kDir1Dir1, which DeleteFile can't remove.
   EXPECT_TRUE(proxy().PathExists(kDir1));
   EXPECT_FALSE(proxy().DeleteFile(kDir1));
@@ -359,26 +386,26 @@ TEST_P(FilesystemProxyTest, DeletePathRecursively) {
 TEST_P(FilesystemProxyTest, GetMaximumPathComponentLength) {
   // This has different values on different platforms, so merely smoke test
   // this to make sure it returns a reasonable valid value.
-  base::Optional<int> max = proxy().GetMaximumPathComponentLength(kDir1);
+  absl::optional<int> max = proxy().GetMaximumPathComponentLength(kDir1);
   ASSERT_TRUE(max.has_value());
   EXPECT_GT(*max, 50);
 }
 
 TEST_P(FilesystemProxyTest, GetFileInfo) {
-  base::Optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
+  absl::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
   ASSERT_TRUE(file1_info.has_value());
   EXPECT_FALSE(file1_info->is_directory);
-  EXPECT_EQ(static_cast<int>(base::size(kFile1Contents) - 1), file1_info->size);
+  EXPECT_EQ(static_cast<int>(std::size(kFile1Contents) - 1), file1_info->size);
 
-  base::Optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
+  absl::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
   ASSERT_TRUE(dir1_info.has_value());
   EXPECT_TRUE(dir1_info->is_directory);
 
-  base::Optional<base::File::Info> dir1_file1_info =
+  absl::optional<base::File::Info> dir1_file1_info =
       proxy().GetFileInfo(kDir1.Append(kDir1File1));
   ASSERT_TRUE(dir1_file1_info.has_value());
   EXPECT_FALSE(dir1_file1_info->is_directory);
-  EXPECT_EQ(static_cast<int>(base::size(kDir1File1Contents) - 1),
+  EXPECT_EQ(static_cast<int>(std::size(kDir1File1Contents) - 1),
             dir1_file1_info->size);
 
   const base::FilePath kBadFilename{FILE_PATH_LITERAL("bad_file")};
@@ -399,7 +426,7 @@ TEST_P(FilesystemProxyTest, RenameFile) {
   FileErrorOr<base::File> new_file = proxy().OpenFile(
       kNewFilename,
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  ASSERT_FALSE(new_file.is_error());
+  ASSERT_TRUE(new_file.has_value());
   EXPECT_TRUE(new_file->IsValid());
   EXPECT_EQ(kFile1Contents, ReadFileContents(&new_file.value()));
 }
@@ -415,34 +442,34 @@ TEST_P(FilesystemProxyTest, LockFile) {
   const base::FilePath kLockFilename{FILE_PATH_LITERAL("lox")};
   FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result =
       proxy().LockFile(kLockFilename);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_FALSE(!result.has_value());
   EXPECT_NE(nullptr, result.value());
 
   FileErrorOr<std::unique_ptr<FilesystemProxy::FileLock>> result2 =
       proxy().LockFile(kLockFilename);
-  EXPECT_TRUE(result2.is_error());
+  EXPECT_FALSE(result2.has_value());
   EXPECT_EQ(base::File::FILE_ERROR_IN_USE, result2.error());
 
   // Synchronously release so we can re-acquire the lock.
   EXPECT_EQ(base::File::Error::FILE_OK, result.value()->Release());
 
   result2 = proxy().LockFile(kLockFilename);
-  ASSERT_FALSE(result2.is_error());
+  ASSERT_TRUE(result2.has_value());
   EXPECT_NE(nullptr, result2.value());
 
   // Test that destruction also implicitly releases the lock.
-  result2 = base::File::FILE_ERROR_FAILED;
+  result2 = base::unexpected(base::File::FILE_ERROR_FAILED);
 
   // And once again we should be able to reacquire the lock.
   result = proxy().LockFile(kLockFilename);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_FALSE(!result.has_value());
   EXPECT_NE(nullptr, result.value());
 }
 
 TEST_P(FilesystemProxyTest, ComputeDirectorySize) {
   // The file size does not include the null terminator, so subtract 1 per file.
   int64_t expected_size =
-      base::size(kDir1File1Contents) + base::size(kDir1File2Contents) - 2;
+      std::size(kDir1File1Contents) + std::size(kDir1File2Contents) - 2;
   EXPECT_EQ(proxy().ComputeDirectorySize(kDir1), expected_size);
 }
 
@@ -452,7 +479,7 @@ TEST_P(FilesystemProxyTest, AbsolutePathEqualToRoot) {
   // operate correctly.
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot(), FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_FALSE(!result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kFile1), MakeAbsolute(kFile2),
                                    MakeAbsolute(kDir1), MakeAbsolute(kDir2)));
@@ -465,7 +492,7 @@ TEST_P(FilesystemProxyTest, AbsolutePathWithinRoot) {
   FileErrorOr<std::vector<base::FilePath>> result = proxy().GetDirectoryEntries(
       GetTestRoot().Append(kDir1),
       FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  ASSERT_FALSE(result.is_error());
+  ASSERT_FALSE(!result.has_value());
   EXPECT_THAT(result.value(),
               UnorderedElementsAre(MakeAbsolute(kDir1.Append(kDir1File1)),
                                    MakeAbsolute(kDir1.Append(kDir1File2)),

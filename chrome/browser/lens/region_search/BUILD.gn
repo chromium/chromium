@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Contained Lens dependencies are currently for desktop platforms only
+assert(!is_android, "Lens Region Search is for desktop platforms only")
+
+static_library("region_search") {
+  sources = [
+    "../metrics/lens_metrics.h",
+    "lens_region_search_controller.cc",
+    "lens_region_search_controller.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/image_editor",
+    "//chrome/browser/ui",
+    "//components/lens",
+    "//content/public/browser",
+  ]
+}

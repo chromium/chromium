@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,30 +9,88 @@
 #include <limits>
 #include <ostream>
 
+#include "base/types/id_type.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/id_type.h"
+#include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
-// LocalFrameToken is a unique identifier of a frame. The type is essentially
-// identical to blink::LocalFrameToken, except that the default constructor
-// initializes to zero instead of creating a new randomly generated token.
-// The purpose of this duplicate is to avoid dependencies on blink here and in
-// the mojo code, since iOS depends on the code.
-class LocalFrameToken : public base::StrongAlias<class LocalFrameTokenMarker,
-                                                 base::UnguessableToken> {
+namespace internal {
+
+// TokenType wraps an base::UnguessableToken just like base::TokenType but
+// initializes to zero by default. We use it to define our own versions of
+// LocalFrameToken and RemoteFrameToken to avoid dependencies on blink here and
+// in the mojo code, since iOS depends on this code.
+template <typename TokenTypeMarker>
+class TokenType
+    : public base::StrongAlias<TokenTypeMarker, base::UnguessableToken> {
  public:
-  using base::StrongAlias<class LocalFrameTokenMarker,
-                          base::UnguessableToken>::StrongAlias;
-  bool is_empty() const { return value().is_empty(); }
-  std::string ToString() const { return value().ToString(); }
+  using base::StrongAlias<TokenTypeMarker, base::UnguessableToken>::StrongAlias;
+  bool is_empty() const { return this->value().is_empty(); }
+  explicit constexpr operator bool() const { return !is_empty(); }
+  std::string ToString() const { return this->value().ToString(); }
 };
+
+}  // namespace internal
+
+// LocalFrameToken and RemoteFrameToken identifiers of frames. LocalFrameToken
+// is the unique identifier of the frame, which changes upon a cross-origin
+// navigation in that frame. A RemoteFrameToken is an identifier used by a
+// renderer process for a frame in a different renderer process.
+//
+// FrameTokens are not necessarily persistent across page loads.
+//
+// They serve the same purpose as blink::LocalFrameToken and
+// blink::RemoteFrameToken, but avoid dependencies on blink since this code is
+// shared with iOS. Also, they default-initialize to zero instead of a random
+// number.
+//
+// They must not be leaked to renderer processes other than the one they
+// originate from, so Autofill should generally not send them to any renderer
+// process.
+using RemoteFrameToken = internal::TokenType<class RemoteFrameTokenMarker>;
+using LocalFrameToken = internal::TokenType<class LocalFrameTokenMarker>;
+using FrameToken = absl::variant<RemoteFrameToken, LocalFrameToken>;
 
 namespace internal {
 
-using FormRendererIdType = ::util::IdTypeU32<class FormRendererIdMarker>;
+#if BUILDFLAG(IS_IOS)
+using FormRendererIdType = ::base::IdTypeU32<class FormRendererIdMarker>;
+using FieldRendererIdType = ::base::IdTypeU32<class FieldRendererIdMarker>;
+#else
+using FormRendererIdType = ::base::IdTypeU64<class FormRendererIdMarker>;
+using FieldRendererIdType = ::base::IdTypeU64<class FieldRendererIdMarker>;
+#endif
 
-using FieldRendererIdType = ::util::IdTypeU32<class FieldRendererIdMarker>;
+}  // namespace internal
+
+// FormRendererId and FieldRendererId uniquely identify a DOM form or field
+// element, respectively, among all such elements in one frame.
+//
+// To uniquely identify frames across frames, see FormGlobalId and
+// FieldGlobalId.
+//
+// As a sentinel value, the FormRendererId of a synthetic form converts to
+// `false` (== is_null()). A synthetic form is the collection of form fields
+// outside of the scope of any <form> tag in a page.
+//
+// Since each page can trigger an overflow, security must not rely on their
+// uniqueness.
+//
+// RendererIds are not necessarily persistent across page loads.
+//
+// The types are defined as subclasses instead of typedefs in order to avoid
+// having to define out-of-line constructors in all structs that contain
+// renderer IDs.
+class FormRendererId : public internal::FormRendererIdType {
+  using internal::FormRendererIdType::IdType;
+};
+class FieldRendererId : public internal::FieldRendererIdType {
+  using internal::FieldRendererIdType::IdType;
+};
+
+namespace internal {
 
 template <typename RendererId>
 struct GlobalId {
@@ -65,20 +123,20 @@ bool operator<(const GlobalId<RendererId>& a, const GlobalId<RendererId>& b) {
 
 }  // namespace internal
 
-// The below strong aliases are defined as subclasses instead of typedefs in
-// order to avoid having to define out-of-line constructors in all structs that
-// contain renderer IDs.
-
-// The FormRendererId of a synthetic form is_null(). A synthetic form is the
-// collection of form fields outside of the scope of any <form> tag in a page.
-class FormRendererId : public internal::FormRendererIdType {
-  using internal::FormRendererIdType::IdType;
-};
-
-class FieldRendererId : public internal::FieldRendererIdType {
-  using internal::FieldRendererIdType::IdType;
-};
-
+// FormGlobalId and FieldGlobalId uniquely identify a DOM form or field
+// element, respectively, among all such elements in all frames.
+//
+// As a sentinel value, the FormRendererId of a synthetic form converts to
+// `false`. A synthetic form is the collection of form fields outside of the
+// scope of any <form> tag in a page.
+//
+// GlobalIds are not necessarily persistent across page loads.
+//
+// Since LocalFrameTokens must not be leaked to renderer processes other than
+// the one they originate from, so Autofill should generally not send GlobalIds
+// to any renderer process.
+//
+// TODO(crbug/1207920) Move to core/browser.
 using FormGlobalId = internal::GlobalId<FormRendererId>;
 using FieldGlobalId = internal::GlobalId<FieldRendererId>;
 

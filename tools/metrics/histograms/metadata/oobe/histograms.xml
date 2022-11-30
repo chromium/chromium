@@ -1,0 +1,830 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of OOBE histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="OOBEGestureNavigationPage">
+  <variant name="Back" summary="Gesture Navigation Back Page"/>
+  <variant name="Home" summary="Gesture Navigation Home Page"/>
+  <variant name="Intro" summary="Gesture Navigation Intro Page"/>
+  <variant name="Overview" summary="Gesture Navigation Overview Page"/>
+</variants>
+
+<variants name="OOBELegacyScreenName">
+  <variant name="Adb-sideloading"/>
+  <variant name="App-downloading"/>
+  <variant name="App-launch-splash"/>
+  <variant name="Arc_tos"/>
+  <variant name="Assistant-optin-flow"/>
+  <variant name="Auto-enrollment-check"/>
+  <variant name="Autolaunch"/>
+  <variant name="Consolidated-consent"/>
+  <variant name="Debugging"/>
+  <variant name="Demo-preferences"/>
+  <variant name="Demo-setup"/>
+  <variant name="Device-disabled"/>
+  <variant name="Edu-coexistence-login"/>
+  <variant name="Encryption-migration"/>
+  <variant name="Enroll"/>
+  <variant name="Error-message"/>
+  <variant name="Family-link-notice"/>
+  <variant name="Fingerprint-setup"/>
+  <variant name="Gaia-signin"/>
+  <variant name="Gesture-navigation"/>
+  <variant name="Guest-tos"/>
+  <variant name="Hid-detection"/>
+  <variant name="Image"/>
+  <variant name="Kiosk-enable"/>
+  <variant name="Locale-switch"/>
+  <variant name="Management-transition"/>
+  <variant name="Marketing-opt-in"/>
+  <variant name="Multidevice-setup-screen"/>
+  <variant name="Network"/>
+  <variant name="Network-selection"/>
+  <variant name="Offline-login"/>
+  <variant name="Oobe-eula-md"/>
+  <variant name="Oobe-update"/>
+  <variant name="Packaged-license"/>
+  <variant name="Parental-handoff"/>
+  <variant name="Pin-setup"/>
+  <variant name="Recommend-apps"/>
+  <variant name="Reset"/>
+  <variant name="Sync-consent"/>
+  <variant name="Tos"/>
+  <variant name="Update-required"/>
+  <variant name="User-creation"/>
+  <variant name="Wrong-hwid"/>
+</variants>
+
+<variants name="OOBEMarketingCountry">
+  <variant name="" summary="all countries"/>
+  <variant name="au" summary="Australia"/>
+  <variant name="ca" summary="Canada"/>
+  <variant name="de" summary="Germany"/>
+  <variant name="dk" summary="Denmark"/>
+  <variant name="es" summary="Spain"/>
+  <variant name="fi" summary="Finland"/>
+  <variant name="fr" summary="France"/>
+  <variant name="gb" summary="United Kingdom"/>
+  <variant name="it" summary="Italy"/>
+  <variant name="jp" summary="Japan"/>
+  <variant name="nl" summary="Netherlands"/>
+  <variant name="no" summary="Norway"/>
+  <variant name="se" summary="Sweden"/>
+  <variant name="us" summary="United States"/>
+</variants>
+
+<variants name="OOBENetworkError">
+  <variant name="AuthExtTimeout"/>
+  <variant name="Offline"/>
+  <variant name="Portal"/>
+  <variant name="Proxy"/>
+</variants>
+
+<variants name="OOBEScreenName_ExitReason">
+  <variant name="Adb-sideloading.Next"/>
+  <variant name="App-downloading.Next"/>
+  <variant name="Arc-tos.Accepted"/>
+  <variant name="Arc-tos.Back"/>
+  <variant name="Arc-tos.Skipped"/>
+  <variant name="Assistant-optin-flow.Next"/>
+  <variant name="Auto-enrollment-check.Next"/>
+  <variant name="Autolaunch.Canceled"/>
+  <variant name="Autolaunch.Completed"/>
+  <variant name="Connect.EnableDebugging"/>
+  <variant name="Connect.Next"/>
+  <variant name="Connect.QuickStart"/>
+  <variant name="Connect.SetupDemo"/>
+  <variant name="Connect.StartDemo"/>
+  <variant name="Connect.StartOsInstall"/>
+  <variant name="Consolidated-consent.AcceptedDemo"/>
+  <variant name="Consolidated-consent.AcceptedRegular"/>
+  <variant name="Consolidated-consent.BackDemo"/>
+  <variant name="Debugging.Next"/>
+  <variant name="Demo-preferences.Canceled"/>
+  <variant name="Demo-preferences.Completed"/>
+  <variant name="Demo-setup.Completed"/>
+  <variant name="Device-disabled.Canceled"/>
+  <variant name="Edu-coexistence-login.Done"/>
+  <variant name="Enterprise-enrollment.Back"/>
+  <variant name="Enterprise-enrollment.BackToAutoEnrollmentCheck"/>
+  <variant name="Enterprise-enrollment.Completed"/>
+  <variant name="Enterprise-enrollment.TpmDbusError"/>
+  <variant name="Enterprise-enrollment.TpmError"/>
+  <variant name="Family-link-notice.Done"/>
+  <variant name="Fingerprint-setup.Done"/>
+  <variant name="Fingerprint-setup.Skipped"/>
+  <variant name="Gaia-signin.Back"/>
+  <variant name="Gaia-signin.Cancel"/>
+  <variant name="Gaia-signin.EnterpriseEnroll"/>
+  <variant name="Gaia-signin.SAMLVideoTimeout"/>
+  <variant name="Gaia-signin.StartConsumerKiosk"/>
+  <variant name="Gesture-navigation.Next"/>
+  <variant name="Guest-Tos.Accept"/>
+  <variant name="Guest-Tos.Back"/>
+  <variant name="Guest-Tos.Cancel"/>
+  <variant name="Hid-detection.Next"/>
+  <variant name="Hid-detection.StartDemo"/>
+  <variant name="Kiosk-enable.Next"/>
+  <variant name="Locale-switch.LocaleFetchFailed"/>
+  <variant name="Locale-switch.LocaleFetchTimeout"/>
+  <variant name="Locale-switch.NoSwitchNeeded"/>
+  <variant name="Locale-switch.SwitchFailed"/>
+  <variant name="Locale-switch.SwitchSucceded"/>
+  <variant name="Management-transition.Next"/>
+  <variant name="Marketing-opt-in.Next"/>
+  <variant name="Multidevice-setup-screen.Next"/>
+  <variant name="Network-selection.Back"/>
+  <variant name="Network-selection.Connected"/>
+  <variant name="Network-selection.OfflineDemoSetup"/>
+  <variant name="Oauth-enrollment.Back"/>
+  <variant name="Oauth-enrollment.Completed"/>
+  <variant name="Offline-login.Back"/>
+  <variant name="Offline-login.ReloadOnlineLogin"/>
+  <variant name="Oobe-eula-md.AcceptedWithoutStats"/>
+  <variant name="Oobe-eula-md.AcceptedWithStats"/>
+  <variant name="Oobe-eula-md.Back"/>
+  <variant name="Oobe-update.UpdateError"/>
+  <variant name="Oobe-update.UpdateNotRequired"/>
+  <variant name="Packaged-license.DontEnroll"/>
+  <variant name="Packaged-license.Enroll"/>
+  <variant name="Parental-Handoff.Done"/>
+  <variant name="Pin-setup.Done"/>
+  <variant name="Pin-setup.Skipped"/>
+  <variant name="Pin-setup.TimedOut"/>
+  <variant name="Recommend-apps.Selected"/>
+  <variant name="Recommend-apps.Skipped"/>
+  <variant name="Reset.Cancel"/>
+  <variant name="Saml-confirm-password.Cancel"/>
+  <variant name="Saml-confirm-password.TooManyAttempts"/>
+  <variant name="Sync-consent.Next"/>
+  <variant name="Terms-of-service.Accepted"/>
+  <variant name="Terms-of-service.Declined"/>
+  <variant name="User-creation.Cancel"/>
+  <variant name="User-creation.CreateChildAccount"/>
+  <variant name="User-creation.EnterpriseEnroll"/>
+  <variant name="User-creation.SignIn"/>
+  <variant name="User-creation.SignInAsChild"/>
+  <variant name="Wrong-hwid.Next"/>
+</variants>
+
+<histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
+    enum="BooleanChecked" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether the review Google Play following setup box is checked. Recorded when
+    user leaves ArcTermsOfService screeen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ArcTermsOfServiceScreen.UserActions"
+    enum="ArcTosScreenUserActions" expires_after="2023-02-12">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the ArcTermsOfService screen. Recorded when user
+    clicks on buttons on the ArcTermsOfService screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.BootToSignInCompleted" units="ms"
+    expires_after="2022-04-03">
+  <owner>alemate@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>Time from the login screen start to user session start.</summary>
+</histogram>
+
+<histogram name="OOBE.ConsolidatedConsentScreen.UserActions"
+    enum="ConsolidatedConsentScreenUserAction" expires_after="2023-09-01">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Tracks user actions on the consolidated consent screen. Recorded when user
+    clicks on buttons on the consolidated consent screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.ErrorScreensTime.Enrollment.{OOBENetworkError}"
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on error screens during enrollment or autoenrollment when the
+    last error is {OOBENetworkError} error. Recorded when user leaves error
+    screen.
+  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
+</histogram>
+
+<histogram name="OOBE.ErrorScreensTime.Signin.{OOBENetworkError}" units="ms"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on error screens during signin when the last error is
+    {OOBENetworkError} error. Recorded when user leaves error screen.
+  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
+</histogram>
+
+<histogram name="OOBE.ErrorScreensTime.Supervised.{OOBENetworkError}"
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on error screens during supervised user creation when the last
+    error is {OOBENetworkError} error. Recorded when user leaves error screen.
+  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
+</histogram>
+
+<histogram name="OOBE.ErrorScreensTime.Update.{OOBENetworkError}" units="ms"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on error screens during update when the last error is
+    {OOBENetworkError} error. Recorded when user leaves error screen.
+  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
+</histogram>
+
+<histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the EULA screen. Recorded when user clicks on
+    buttons on the EULA screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.EULAToSignInTime" units="ms" expires_after="never">
+<!-- expires-never: Core metric for monitoring initial Gaia loading regressions.
+-->
+
+  <owner>rsorokin@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time from acceptance of the EULA until the login screen is first displayed.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.FingerprintSetupScreen.UserActions"
+    enum="FingerprintSetupScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the fingerprint screen. Recorded when user clicks
+    on buttons on the fingerprint screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.GaiaLoginTime" units="ms" expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the amount of time spent by user to complete GAIA login during
+    first-run OOBE. Recorded after receiving authentication success signal. Not
+    recorded for SAML flow.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the GaiaPasswordChanged screen. Recorded when
+    user clicks on buttons on the screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.GaiaScreen.LoginRequests" enum="GaiaLoginVariant"
+    expires_after="2023-08-18">
+  <owner>dkuzmin@google.com</owner>
+  <owner>rsorokin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Tracks all user login requests differentiated by flows on the Gaia screen.
+    Recorded when password is entered for authentication. Note: this is not
+    recorded for SAML flows.
+
+    Warning: this histogram was expired from 2022-04-25 to 2022-08-18; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.GaiaScreen.SuccessLoginRequests" enum="GaiaLoginVariant"
+    expires_after="2023-08-18">
+  <owner>dkuzmin@google.com</owner>
+  <owner>rsorokin@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Tracks all successful user login requests differentiated by flows on the
+    Gaia screen. Recorded when authentication is successful. Note: this is not
+    recorded for SAML flows.
+
+    Warning: this histogram was expired from 2022-04-25 to 2022-08-18; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="OOBE.GestureNavigationScreen.PageShownTime.{OOBEGestureNavigationPage}"
+    units="ms" expires_after="2021-08-09">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Records the amount of time that each page within the gesture navigation OOBE
+    screen is shown. Recorded when the gesture navigation oobe screen is
+    exiting.
+  </summary>
+  <token key="OOBEGestureNavigationPage" variants="OOBEGestureNavigationPage"/>
+</histogram>
+
+<histogram
+    name="OOBE.HidDetectionScreen.BluetoothPairing.Duration.{PairingResult}"
+    units="ms" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records how long it takes for a pairing attempt, initiated automatically
+    during the OOBE HID detection screen, to finish. If the user needed to go
+    through an auth process during pairing, the time the user took to confirm
+    that is included.
+  </summary>
+  <token key="PairingResult">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
+    enum="BooleanSuccess" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records success or failure of a pairing attempt (initiated automatically by
+    the OOBE HID detection screen) to a HID.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
+    units="attempts" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the total number of pairing attempts with Bluetooth human interface
+    devices (HID). This metric is emitted after the HID detection screen exits
+    in OOBE. It does not include devices attempted to be paired with before or
+    after the HID detection screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.HidConnected" enum="HidType"
+    expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of a connected human interface device (HID). This metric is
+    emitted each time a HID is connected during the HID detection screen in
+    OOBE. It does not include devices connected before the screen is shown or
+    after the screen is hidden.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.HidDisconnected" enum="HidType"
+    expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of a connected human interface device (HID) that is
+    disconnected. This metric is emitted each time a HID is disconnected during
+    the HID detection screen in OOBE. It does not include devices disconnected
+    before the screen is shown or after the screen is hidden.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.InitialHidsMissing" enum="HidsMissing"
+    expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the types of human interface devices (HIDs) that are not connected
+    when OOBE starts. This metric is not emitted for Chrome OS devices that have
+    the OOBE HID detection screen disabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2023-08-01">
+  <owner>rrsilva@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The result of a request performed by the MarketingBackendConnector used in
+    the OOBE MarketingOptInScreen when subscribing users in
+    {OOBEMarketingCountry} to Chromebook emails. This data is used to determine
+    the success rate of the requests being performed.
+  </summary>
+  <token key="OOBEMarketingCountry" variants="OOBEMarketingCountry"/>
+</histogram>
+
+<histogram name="OOBE.MarketingOptInScreen.Event.{OOBEMarketingCountry}"
+    enum="MarketingOptInScreenEvent" expires_after="2023-08-01">
+  <owner>rrsilva@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the choice users in {OOBEMarketingCountry} takes when prompted with
+    a toggle on the OOBE MarketingOptInScreen to subscribe to Chromebook emails.
+  </summary>
+  <token key="OOBEMarketingCountry" variants="OOBEMarketingCountry"/>
+</histogram>
+
+<histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
+    enum="MarketingOptInGeolocationEvent" expires_after="2023-08-01">
+  <owner>rrsilva@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records whether the user's geolocation was resolved successfully.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.NetworkErrorShown.Enrollment" enum="NetworkErrorType"
+    expires_after="M77">
+  <owner>achuith@google.com</owner>
+  <summary>
+    Number of times error screen has appeared during enrollment or
+    autoenrollment.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.NetworkErrorShown.Signin" enum="NetworkErrorType"
+    expires_after="M77">
+  <owner>achuith@google.com</owner>
+  <summary>Number of times error screen has appeared during signin.</summary>
+</histogram>
+
+<histogram name="OOBE.NetworkErrorShown.Update" enum="NetworkErrorType"
+    expires_after="M77">
+  <owner>achuith@google.com</owner>
+  <summary>Number of times error screen has appeared during update.</summary>
+</histogram>
+
+<histogram name="OOBE.PinSetupScreen.UserActions"
+    enum="PinSetupScreenUserAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the PinSetup screen. Recorded when user clicks on
+    buttons on the PinSetup screen or when screen is automatically skipped.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.QuickStart.FastPair.AdvertisingStart.ErrorCode"
+    enum="QuickStartFastPairAdvertisingStartErrorCode"
+    expires_after="2023-07-07">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Reason a Fast Pair BLE advertisment failed to register. Recorded whenever a
+    Bluetooth Advertisement error occurs after attempting to register the
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.QuickStart.FastPair.AdvertisingStart.Result"
+    enum="BooleanSuccess" expires_after="2023-07-07">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to start Fast Pair BLE
+    advertisement. Recorded when the FastPairAdvertiser attempts to register an
+    advertisement.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The number of recommended apps.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The time it takes to fetch the recommended apps.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
+    enum="HttpResponseCode" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The response code of fetching the recommended apps.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Fetcher.ResponseParseResult"
+    enum="RecommendAppsResponseParseResult" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The result of parsing the recommend-apps response.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Screen.Action"
+    enum="RecommendAppsScreenAction" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The user action on the recommend apps screen.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Screen.SelectedAppCount" units="apps"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The number of apps user selected.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
+    units="%" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>The ratio of selected and recommended apps.</summary>
+</histogram>
+
+<histogram name="OOBE.RecommendApps.Screen.State"
+    enum="RecommendAppsScreenState" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromesky-eng@google.com</owner>
+  <summary>Whether the reocmmend apps screen is shown.</summary>
+</histogram>
+
+<histogram name="OOBE.StepCompletionTime.{OOBELegacyScreenName}" units="ms"
+    expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>Time spent on {OOBELegacyScreenName} OOBE screen.</summary>
+  <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
+</histogram>
+
+<histogram
+    name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
+    units="ms" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
+  <token key="OOBEScreenName_ExitReason" variants="OOBEScreenName_ExitReason"/>
+</histogram>
+
+<histogram name="OOBE.StepShownStatus.{OOBELegacyScreenName}"
+    enum="BooleanShown" expires_after="never">
+<!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
+
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether {OOBELegacyScreenName} screen was shown or not. Recorded before
+    showing screen.
+  </summary>
+  <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"
+    expires_after="2023-04-24">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether the sync consent screen was shown, skipped with sync disabled, or
+    skipped with sync enabled. Recorded when the screen is closed. Metrics
+    Sync.InitialState and OOBE.SyncConsentScreen.SyncEnabled provide more detail
+    on the state of the sync engine.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.IsCapabilityKnown" enum="BooleanKnown"
+    expires_after="2023-04-10">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Indicates whether account capability information is fetched for user when
+    SyncConsent screen is shown.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.IsMinorUser" enum="Boolean"
+    expires_after="2023-04-10">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Indicates whether the current user is a minor user (impacted by AADC
+    regulations). We cannot use nudge techniques on UI if the user is a minor
+    user.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.LoadingTime" units="ms"
+    expires_after="2023-04-10">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the amount of time while waiting for sync engine to be initialized,
+    before the SyncConsent screen is shown.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
+    enum="BooleanChecked" expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether the review following setup box is checked. Recorded when user leaves
+    SyncConsent screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
+    expires_after="2023-04-24">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Final state of the sync service at the end of the sync consent OOBE step.
+    The dialog may have been shown or skipped (e.g. by enterprise policy). See
+    OOBE.SyncConsentScreen.Behavior for skip reasons.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.SyncConsentScreen.UserChoice"
+    enum="SyncConsentUserChoice" expires_after="2023-04-10">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Which button the user clicked on the out-of-box sync consent screen.
+    Recorded when the user clicks the button, which also closes the screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.UpdateScreen.StageTime.Check" units="ms"
+    expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on Checking of the ChromeOS update. Recorded when the stage is
+    done and the next stage is about to start.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.UpdateScreen.StageTime.Download" units="ms"
+    expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on Downloading of the ChromeOS update. Recorded when the stage is
+    done and the next stage is about to start.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.UpdateScreen.StageTime.Finalize" units="ms"
+    expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on Finalizing of the ChromeOS update. Recorded when the stage is
+    done and the next stage is about to start.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.UpdateScreen.StageTime.Verify" units="ms"
+    expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on Verifying of the ChromeOS update. Recorded when the stage is
+    done and the next stage is about to start.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on downloading ChromeOS update when critical updated is found
+    during OOBE. Recorded when update is uploaded and ChromeOS device is about
+    to restart to apply the update.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.WebUI.LoadTime.FirstRun" units="ms"
+    expires_after="2023-03-05">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time required for ChromeOS to load the First Run WebUI (i.e. out-of-box
+    experience). Recorded at most once per Chrome lifetime (if OOBE is shown).
+  </summary>
+</histogram>
+
+<histogram name="OOBE.WebViewLoader.FirstLoadResult.{WebViewID}"
+    enum="OobeWebViewLoadResult" expires_after="2023-07-12">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the first result of loading the webview {WebViewID} in OOBE flow.
+    This metric is emitted every time a webview in OOBE is loaded using OOBE
+    WebViewLoader. Only the first load result of each load is emitted, ignoring
+    the re-load results.
+  </summary>
+  <token key="WebViewID">
+    <variant name="ArcTosView"/>
+    <variant name="ConsolidatedConsentArcTosWebview"/>
+    <variant name="ConsolidatedConsentCrosEulaWebview"/>
+    <variant name="ConsolidatedConsentGoogleEulaWebview"/>
+    <variant name="ConsolidatedConsentPrivacyPolicyWebview"/>
+    <variant name="GuestTosCrosEulaWebview"/>
+    <variant name="GuestTosGoogleEulaWebview"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.WelcomeScreen.A11yUserActions"
+    enum="WelcomeScreenA11yUserAction" expires_after="2023-02-12">
+  <owner>dkuzmin@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Measures usage of the accessibility options on the welcome screen during
+    OOBE. Recorded when user enables or disables any of the accessibility
+    options from accessibility menu on the welcome screen.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.WelcomeScreen.AcceptChromeVoxHint" enum="BooleanEnabled"
+    expires_after="2023-02-12">
+  <owner>akihiroota@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether or not the user accepted the ChromeVox hint. Recorded when the user
+    interacts with the ChromeVox hint dialog.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess"
+    enum="BooleanEnabled" expires_after="2022-10-04">
+  <owner>akihiroota@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether or not the ChromeVox hint was successfully spoken. Recorded when the
+    ChromeVox hint dialog is shown.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.WelcomeScreen.UserChangedLocale" enum="Boolean"
+    expires_after="2023-03-26">
+  <owner>bohdanty@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Whether or not the user changed the language on the Welcome Screen. Records
+    when the user leaves the Welcome Screen if they have changed the locale in
+    the UI.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

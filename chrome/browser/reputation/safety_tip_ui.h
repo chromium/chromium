@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,11 @@ enum class SafetyTipInteraction {
   // bubble closing.
   kCloseTab = 8,
   kSwitchTab = 9,
+  // It is deprecated in favor of kChangePrimaryPage.
   kStartNewNavigation = 10,
+  kChangePrimaryPage = 11,
 
-  kMaxValue = kStartNewNavigation,
+  kMaxValue = kChangePrimaryPage,
 };
 
 // Shows Safety Tip UI using the specified information if it is not already

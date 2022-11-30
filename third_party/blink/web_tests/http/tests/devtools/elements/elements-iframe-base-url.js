@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that nodes have correct baseURL, documentURL.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -15,8 +15,7 @@
   ElementsTestRunner.expandElementsTree(step1);
 
   async function step1() {
-    const innerMapping = TestRunner.domModel._idToDOMNode;
-    const docs = Object.values(innerMapping).filter(n => n instanceof SDK.DOMDocument);
+    const docs = ElementsTestRunner.getDocumentElements();
     for (const doc of docs) {
       if (doc.parentNode)
         TestRunner.addResult(`${doc.nodeName()} has parent ${doc.parentNode.nodeName()}.`);

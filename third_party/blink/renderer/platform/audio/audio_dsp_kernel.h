@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DSP_KERNEL_H_
 
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel_processor.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -43,7 +44,7 @@ class PLATFORM_EXPORT AudioDSPKernel {
   USING_FAST_MALLOC(AudioDSPKernel);
 
  public:
-  AudioDSPKernel(AudioDSPKernelProcessor* kernel_processor)
+  explicit AudioDSPKernel(AudioDSPKernelProcessor* kernel_processor)
       : kernel_processor_(kernel_processor),
         sample_rate_(kernel_processor->SampleRate()),
         render_quantum_frames_(kernel_processor->RenderQuantumFrames()) {}

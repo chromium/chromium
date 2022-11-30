@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,12 +24,12 @@ constexpr char kMaxUrlLengthMessage[] = "URLTooLong";
 
 // Using a simple global assumes that all access to it will be done on the same
 // thread, namely the UI thread. If this becomes not the case then it can be
-// changed to an Atomic32 (make CustomTabState derive from int32_t) and accessed
-// with no-barrier loads and stores.
-UkmSource::CustomTabState g_custom_tab_state = UkmSource::kCustomTabUnset;
+// changed to an Atomic32 (make AndroidActivityTypeState derive from int32_t)
+// and accessed with no-barrier loads and stores.
+int32_t g_android_activity_type_state = -1;
 
 // Returns a URL that is under the length limit, by returning a constant
-// string when the URl is too long.
+// string when the URL is too long.
 std::string GetShortenedURL(const GURL& url) {
   if (url.spec().length() > kMaxURLLength)
     return kMaxUrlLengthMessage;
@@ -55,16 +55,38 @@ SourceType ToProtobufSourceType(SourceIdType source_id_type) {
       return SourceType::DESKTOP_WEB_APP_ID;
     case SourceIdType::WORKER_ID:
       return SourceType::WORKER_ID;
-    default:
-      NOTREACHED();
-      return SourceType::DEFAULT;
+    case SourceIdType::NO_URL_ID:
+      return SourceType::NO_URL_ID;
+    case SourceIdType::REDIRECT_ID:
+      return SourceType::REDIRECT_ID;
+    case SourceIdType::WEB_IDENTITY_ID:
+      return SourceType::WEB_IDENTITY_ID;
   }
 }
+
+AndroidActivityType ToProtobufActivityType(int32_t type) {
+  switch (type) {
+    case 0:
+      return AndroidActivityType::TABBED;
+    case 1:
+      return AndroidActivityType::CUSTOM_TAB;
+    case 2:
+      return AndroidActivityType::TRUSTED_WEB_ACTIVITY;
+    case 3:
+      return AndroidActivityType::WEB_APP;
+    case 4:
+      return AndroidActivityType::WEB_APK;
+    default:
+      NOTREACHED();
+      return AndroidActivityType::TABBED;
+  }
+}
+
 }  // namespace
 
 // static
-void UkmSource::SetCustomTabVisible(bool visible) {
-  g_custom_tab_state = visible ? kCustomTabTrue : kCustomTabFalse;
+void UkmSource::SetAndroidActivityTypeState(int32_t activity_type) {
+  g_android_activity_type_state = activity_type;
 }
 
 UkmSource::NavigationData::NavigationData() = default;
@@ -89,6 +111,9 @@ UkmSource::NavigationData UkmSource::NavigationData::CopyWithSanitizedUrls(
   sanitized_navigation_data.tab_id = tab_id;
   sanitized_navigation_data.is_same_document_navigation =
       is_same_document_navigation;
+  sanitized_navigation_data.same_origin_status = same_origin_status;
+  sanitized_navigation_data.is_renderer_initiated = is_renderer_initiated;
+  sanitized_navigation_data.is_error_page = is_error_page;
   sanitized_navigation_data.navigation_time = navigation_time;
   return sanitized_navigation_data;
 }
@@ -96,7 +121,7 @@ UkmSource::NavigationData UkmSource::NavigationData::CopyWithSanitizedUrls(
 UkmSource::UkmSource(ukm::SourceId id, const GURL& url)
     : id_(id),
       type_(GetSourceIdType(id_)),
-      custom_tab_state_(g_custom_tab_state),
+      android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
   navigation_data_.urls = {url};
   DCHECK(!url.is_empty());
@@ -106,7 +131,7 @@ UkmSource::UkmSource(ukm::SourceId id, const NavigationData& navigation_data)
     : id_(id),
       type_(GetSourceIdType(id_)),
       navigation_data_(navigation_data),
-      custom_tab_state_(g_custom_tab_state),
+      android_activity_type_state_(g_android_activity_type_state),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(type_ == SourceIdType::NAVIGATION_ID);
   DCHECK(!navigation_data.urls.empty());
@@ -135,8 +160,11 @@ void UkmSource::PopulateProto(Source* proto_source) const {
     proto_source->add_urls()->set_url(GetShortenedURL(url));
   }
 
-  if (custom_tab_state_ != kCustomTabUnset)
-    proto_source->set_is_custom_tab(custom_tab_state_ == kCustomTabTrue);
+  // -1 corresponds to the unset state. Android activity type values start at 0.
+  // See chrome/browser/flags/ActivityType.java
+  if (android_activity_type_state_ != -1)
+    proto_source->set_android_activity_type(
+        ToProtobufActivityType(android_activity_type_state_));
 
   if (navigation_data_.previous_source_id != kInvalidSourceId)
     proto_source->set_previous_source_id(navigation_data_.previous_source_id);
@@ -156,6 +184,21 @@ void UkmSource::PopulateProto(Source* proto_source) const {
 
   if (navigation_data_.is_same_document_navigation)
     proto_source->set_is_same_document_navigation(true);
+
+  ukm::Source_SameOriginStatus status = ukm::Source::UNSET;
+  if (navigation_data_.same_origin_status ==
+      UkmSource::NavigationData::SameOriginStatus::SAME_ORIGIN) {
+    status = ukm::Source::SAME_ORIGIN;
+  } else if (navigation_data_.same_origin_status ==
+             UkmSource::NavigationData::SameOriginStatus::CROSS_ORIGIN) {
+    status = ukm::Source::CROSS_ORIGIN;
+  }
+
+  proto_source->mutable_navigation_metadata()->set_same_origin_status(status);
+  proto_source->mutable_navigation_metadata()->set_is_renderer_initiated(
+      navigation_data_.is_renderer_initiated);
+  proto_source->mutable_navigation_metadata()->set_is_error_page(
+      navigation_data_.is_error_page);
 
   if (navigation_data_.navigation_time) {
     proto_source->set_navigation_time_msec(

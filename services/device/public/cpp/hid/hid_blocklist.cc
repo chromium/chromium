@@ -1,15 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
+#include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
 
@@ -72,6 +74,8 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     VENDOR_PRODUCT_RULE(0x18d1, 0x5026),
     // VASCO
     VENDOR_PRODUCT_RULE(0x1a44, 0x00bb),
+    // OnlyKey
+    VENDOR_PRODUCT_RULE(0x1d50, 0x60fc),
     // Keydo AES
     VENDOR_PRODUCT_RULE(0x1e0d, 0xf1ae),
     // Neowave Keydo
@@ -91,7 +95,7 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
 
     // Block Jabra access to certain proprietary functionality.
     {true, /*vendorId=*/0x0b0e, false, 0, true, /*usagePage=*/0xff00, false, 0,
-     false, 0, HidBlocklist::ReportType::kReportTypeOutput},
+     true, /*reportId=*/0x05, HidBlocklist::ReportType::kReportTypeOutput},
 };
 
 bool IsValidBlocklistEntry(const HidBlocklist::Entry& entry) {
@@ -194,48 +198,52 @@ bool IsReportTypeComponent(base::StringPiece string) {
 
 }  // namespace
 
+BASE_FEATURE(kWebHidBlocklist,
+             "WebHIDBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<std::string> kWebHidBlocklistAdditions{
+    &kWebHidBlocklist, "blocklist_additions", /*default_value=*/""};
+
 // static
 HidBlocklist& HidBlocklist::Get() {
   static base::NoDestructor<HidBlocklist> instance;
   return *instance;
 }
 
-// static
-bool HidBlocklist::IsDeviceExcluded(const mojom::HidDeviceInfo& device_info) {
-  // A device should only be excluded if all its reports are protected.
-  for (const auto& collection : device_info.collections) {
-    if (device_info.protected_input_report_ids) {
-      for (const auto& report : collection->input_reports) {
-        if (!base::Contains(*device_info.protected_input_report_ids,
-                            report->report_id)) {
-          return false;
-        }
-      }
-    } else if (!collection->input_reports.empty()) {
-      return false;
-    }
-    if (device_info.protected_output_report_ids) {
-      for (const auto& report : collection->output_reports) {
-        if (!base::Contains(*device_info.protected_output_report_ids,
-                            report->report_id)) {
-          return false;
-        }
-      }
-    } else if (!collection->output_reports.empty()) {
-      return false;
-    }
-    if (device_info.protected_feature_report_ids) {
-      for (const auto& report : collection->feature_reports) {
-        if (!base::Contains(*device_info.protected_feature_report_ids,
-                            report->report_id)) {
-          return false;
-        }
-      }
-    } else if (!collection->feature_reports.empty()) {
-      return false;
-    }
+bool HidBlocklist::IsVendorProductBlocked(uint16_t vendor_id,
+                                          uint16_t product_id) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableHidBlocklist)) {
+    return false;
   }
-  return true;
+
+  for (const auto& entry : kStaticEntries) {
+    if (IsVendorProductBlockedByEntry(entry, vendor_id, product_id))
+      return true;
+  }
+  for (const auto& entry : dynamic_entries_) {
+    if (IsVendorProductBlockedByEntry(entry, vendor_id, product_id))
+      return true;
+  }
+  return false;
+}
+
+// static
+bool HidBlocklist::IsVendorProductBlockedByEntry(
+    const HidBlocklist::Entry& entry,
+    uint16_t vendor_id,
+    uint16_t product_id) {
+  // The blocklist `entry` must match on device IDs and nothing else.
+  if (!entry.has_vendor_id || entry.has_usage_page || entry.has_report_id ||
+      entry.report_type != kReportTypeAny) {
+    return false;
+  }
+  // If `product_id` is specified, it must match.
+  if (entry.has_product_id && entry.product_id != product_id)
+    return false;
+  // `vendor_id` must match.
+  return entry.vendor_id == vendor_id;
 }
 
 std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
@@ -262,8 +270,7 @@ std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
 }
 
 void HidBlocklist::PopulateWithServerProvidedValues() {
-  std::string blocklist_string = variations::GetVariationParamValue(
-      "WebHIDBlocklist", "blocklist_additions");
+  std::string blocklist_string = kWebHidBlocklistAdditions.Get();
   DLOG(WARNING) << "HID blocklist additions: " << blocklist_string;
   for (const auto& blocklist_rule :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,

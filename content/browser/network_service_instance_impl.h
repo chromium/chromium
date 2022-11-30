@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "content/common/content_export.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace content {
 
@@ -60,10 +64,6 @@ void PingNetworkService(base::OnceClosure closure);
 // Shuts down the in-process network service or disconnects from the out-of-
 // process one, allowing it to shut down.
 CONTENT_EXPORT void ShutDownNetworkService();
-
-// Returns whether the network sandbox should be enabled for the current
-// platform configuration.
-bool IsNetworkSandboxEnabled();
 
 }  // namespace content
 

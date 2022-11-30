@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,13 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/macros.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,11 +33,11 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
-using chromeos::assistant::AssistantTimer;
-using chromeos::assistant::AssistantTimerState;
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
+using assistant::AssistantTimer;
+using assistant::AssistantTimerState;
 
 // Constants.
 constexpr char kClientId[] = "assistant/timer<timer-id>";
@@ -79,7 +78,7 @@ class TimerEvent {
     return *this;
   }
 
-  TimerEvent& WithCreationTime(base::Optional<base::Time> creation_time) {
+  TimerEvent& WithCreationTime(absl::optional<base::Time> creation_time) {
     timer_.creation_time = creation_time;
     return *this;
   }
@@ -221,14 +220,14 @@ class ExpectedNotification {
   }
 
  private:
-  base::Optional<GURL> action_url_;
-  base::Optional<std::string> client_id_;
-  base::Optional<bool> is_pinned_;
-  base::Optional<std::string> message_;
-  base::Optional<AssistantNotificationPriority> priority_;
-  base::Optional<bool> remove_on_click_;
-  base::Optional<bool> renotify_;
-  base::Optional<std::string> title_;
+  absl::optional<GURL> action_url_;
+  absl::optional<std::string> client_id_;
+  absl::optional<bool> is_pinned_;
+  absl::optional<std::string> message_;
+  absl::optional<AssistantNotificationPriority> priority_;
+  absl::optional<bool> remove_on_click_;
+  absl::optional<bool> renotify_;
+  absl::optional<std::string> title_;
 };
 
 class ExpectedButton {
@@ -275,9 +274,9 @@ class ExpectedButton {
   }
 
  private:
-  base::Optional<GURL> action_url_;
-  base::Optional<std::string> label_;
-  base::Optional<bool> remove_notification_on_click_;
+  absl::optional<GURL> action_url_;
+  absl::optional<std::string> label_;
+  absl::optional<bool> remove_notification_on_click_;
 };
 
 // ScopedNotificationModelObserver ---------------------------------------------
@@ -292,6 +291,11 @@ class ScopedNotificationModelObserver
         ->model()
         ->AddObserver(this);
   }
+
+  ScopedNotificationModelObserver(const ScopedNotificationModelObserver&) =
+      delete;
+  ScopedNotificationModelObserver& operator=(
+      const ScopedNotificationModelObserver&) = delete;
 
   ~ScopedNotificationModelObserver() override {
     Shell::Get()
@@ -317,8 +321,6 @@ class ScopedNotificationModelObserver
 
  private:
   AssistantNotification last_notification_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNotificationModelObserver);
 };
 
 }  // namespace
@@ -330,6 +332,11 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
   AssistantAlarmTimerControllerTest()
       : AssistantAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  AssistantAlarmTimerControllerTest(const AssistantAlarmTimerControllerTest&) =
+      delete;
+  AssistantAlarmTimerControllerTest& operator=(
+      const AssistantAlarmTimerControllerTest&) = delete;
 
   ~AssistantAlarmTimerControllerTest() override = default;
 
@@ -367,9 +374,6 @@ class AssistantAlarmTimerControllerTest : public AssistantAshTestBase {
   AssistantAlarmTimerController* controller() {
     return AssistantAlarmTimerController::Get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerControllerTest);
 };
 
 // Tests -----------------------------------------------------------------------
@@ -394,7 +398,7 @@ TEST_F(AssistantAlarmTimerControllerTest, AddedTimersShouldHaveCreationTime) {
   testing::Mock::VerifyAndClearExpectations(&mock);
 
   // If specified, |creation_time| should be respected.
-  creation_time -= base::TimeDelta::FromMinutes(1);
+  creation_time -= base::Minutes(1);
   EXPECT_CALL(mock, OnTimerAdded)
       .WillOnce(testing::Invoke([&](const AssistantTimer& timer) {
         EXPECT_EQ(creation_time, timer.creation_time.value());
@@ -418,12 +422,12 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
       /*ticks=*/
       {
           {base::TimeDelta(), "1:01:01"},
-          {base::TimeDelta::FromHours(1), "1:01"},
-          {base::TimeDelta::FromMinutes(1), "0:01"},
-          {base::TimeDelta::FromSeconds(1), "0:00"},
-          {base::TimeDelta::FromSeconds(1), "-0:01"},
-          {base::TimeDelta::FromMinutes(1), "-1:01"},
-          {base::TimeDelta::FromHours(1), "-1:01:01"},
+          {base::Hours(1), "1:01"},
+          {base::Minutes(1), "0:01"},
+          {base::Seconds(1), "0:00"},
+          {base::Seconds(1), "-0:01"},
+          {base::Minutes(1), "-1:01"},
+          {base::Hours(1), "-1:01:01"},
       },
   });
 
@@ -433,12 +437,12 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
       /*ticks=*/
       {
           {base::TimeDelta(), "1.01.01"},
-          {base::TimeDelta::FromHours(1), "1.01"},
-          {base::TimeDelta::FromMinutes(1), "0.01"},
-          {base::TimeDelta::FromSeconds(1), "0.00"},
-          {base::TimeDelta::FromSeconds(1), "-0.01"},
-          {base::TimeDelta::FromMinutes(1), "-1.01"},
-          {base::TimeDelta::FromHours(1), "-1.01.01"},
+          {base::Hours(1), "1.01"},
+          {base::Minutes(1), "0.01"},
+          {base::Seconds(1), "0.00"},
+          {base::Seconds(1), "-0.01"},
+          {base::Minutes(1), "-1.01"},
+          {base::Hours(1), "-1.01.01"},
       },
   });
 
@@ -450,9 +454,8 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
     ScopedNotificationModelObserver observer;
 
     // Schedule a timer.
-    ScheduleTimer(kTimerId).WithRemainingTime(base::TimeDelta::FromHours(1) +
-                                              base::TimeDelta::FromMinutes(1) +
-                                              base::TimeDelta::FromSeconds(1));
+    ScheduleTimer(kTimerId).WithRemainingTime(
+        base::Hours(1) + base::Minutes(1) + base::Seconds(1));
 
     // Run each tick of the clock in the test.
     for (auto& tick : i18n_test_case.ticks) {
@@ -471,9 +474,9 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedTitle) {
 // Tests that a notification is added for a timer and has the expected message.
 TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
   constexpr char kEmptyLabel[] = "";
-  constexpr base::TimeDelta kOneSec = base::TimeDelta::FromSeconds(1);
-  constexpr base::TimeDelta kOneMin = base::TimeDelta::FromMinutes(1);
-  constexpr base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kOneSec = base::Seconds(1);
+  constexpr base::TimeDelta kOneMin = base::Minutes(1);
+  constexpr base::TimeDelta kOneHour = base::Hours(1);
 
   // We'll verify the message of our notification with various timers.
   typedef struct {
@@ -487,9 +490,9 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedMessage) {
   typedef struct {
     std::string locale;
     std::vector<TestTimer> timers;
-  } I18nTestCase;
+  } I18nTimerTestCase;
 
-  std::vector<I18nTestCase> i18n_test_cases;
+  std::vector<I18nTimerTestCase> i18n_test_cases;
 
   // We'll test in English (United States).
   i18n_test_cases.push_back({
@@ -559,7 +562,7 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
   // Observe notifications.
   ScopedNotificationModelObserver observer;
 
-  constexpr base::TimeDelta kTimeRemaining = base::TimeDelta::FromMinutes(1);
+  constexpr base::TimeDelta kTimeRemaining = base::Minutes(1);
 
   // Schedule a timer.
   ScheduleTimer(kTimerId).WithRemainingTime(kTimeRemaining);
@@ -640,7 +643,7 @@ TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationHasExpectedButtons) {
           .WithLabel(IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON)
           .WithActionUrl(assistant::util::CreateAlarmTimerDeepLink(
                              assistant::util::AlarmTimerAction::kAddTimeToTimer,
-                             kTimerId, base::TimeDelta::FromMinutes(1))
+                             kTimerId, base::Minutes(1))
                              .value())
           .WithRemoveNotificationOnClick(false),
       observer.last_notification().buttons.at(1));
@@ -692,7 +695,7 @@ TEST_F(AssistantAlarmTimerControllerTest,
   ScopedNotificationModelObserver notification_model_observer;
 
   // Schedule a timer.
-  ScheduleTimer(kTimerId).WithRemainingTime(base::TimeDelta::FromSeconds(10));
+  ScheduleTimer(kTimerId).WithRemainingTime(base::Seconds(10));
 
   // Make assertions about the notification.
   EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithPriority(
@@ -701,7 +704,7 @@ TEST_F(AssistantAlarmTimerControllerTest,
 
   // Advance the clock.
   // NOTE: Six seconds is the threshold for popping up our notification.
-  AdvanceClockAndWaitForTimerUpdate(base::TimeDelta::FromSeconds(6));
+  AdvanceClockAndWaitForTimerUpdate(base::Seconds(6));
 
   // Make assertions about the notification.
   EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithPriority(

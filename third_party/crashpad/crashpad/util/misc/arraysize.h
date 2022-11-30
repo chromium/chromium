@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ constexpr size_t ArraySizeHelper() noexcept {
 
 //! \brief A way of computing an array’s size.
 //!
-//! Use this only where `base::size()` or `std::size()` won’t work, such as in
-//! constant expressions (including `static_assert` expressions) that consider
-//! the sizes of non-static data members.
+//! Use this only where `std::size()` won’t work, such as in constant
+//! expressions (including `static_assert` expressions) that consider the
+//! sizes of non-static data members.
 #define ArraySize(array) crashpad::internal::ArraySizeHelper<decltype(array)>()
 
 #endif  // CRASHPAD_UTIL_MISC_ARRAYSIZE_H_

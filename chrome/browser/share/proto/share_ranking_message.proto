@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package sharing.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// A ShareRanking represents an ordered list of share targets for a specific
+// share type. There is a ShareRanking for text shares, a ShareRanking for image
+// shares, and so on.
+message ShareRanking {
+  repeated string targets = 1;
+}

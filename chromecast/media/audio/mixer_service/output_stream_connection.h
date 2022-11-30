@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "net/base/io_buffer.h"
 
 namespace chromecast {
+class CastEventBuilder;
 class IOBufferPool;
 
 namespace media {
@@ -45,7 +45,8 @@ class OutputStreamConnection : public MixerConnection,
     // data is expected to play out.
     virtual void FillNextBuffer(void* buffer,
                                 int frames,
-                                int64_t playout_timestamp) = 0;
+                                int64_t delay_timestamp,
+                                int64_t delay) = 0;
 
     // Called when audio is ready to begin playing out, ie the start threshold
     // has been reached. |mixer_delay| is the delay before the first buffered
@@ -63,11 +64,19 @@ class OutputStreamConnection : public MixerConnection,
     // Called when an underrun happens on mixer input/output.
     virtual void OnMixerUnderrun(MixerUnderrunType type) {}
 
+    // Called when OutputStreamConnection records a cast event. It allows
+    // the Delegate to provide some extra data to the event.
+    virtual void ProcessCastEvent(CastEventBuilder* event) {}
+
    protected:
     virtual ~Delegate() = default;
   };
 
   OutputStreamConnection(Delegate* delegate, const OutputStreamParams& params);
+
+  OutputStreamConnection(const OutputStreamConnection&) = delete;
+  OutputStreamConnection& operator=(const OutputStreamConnection&) = delete;
+
   ~OutputStreamConnection() override;
 
   // Connects to the mixer. After this is called, delegate methods may start
@@ -111,6 +120,9 @@ class OutputStreamConnection : public MixerConnection,
   // Resumes playback.
   void Resume();
 
+  // Adjusts timestamps.
+  void SendTimestampAdjustment(int64_t timestamp_adjustment);
+
  private:
   // MixerConnection implementation:
   void OnConnected(std::unique_ptr<MixerSocket> socket) override;
@@ -141,8 +153,6 @@ class OutputStreamConnection : public MixerConnection,
   bool sent_eos_ = false;
 
   bool dropping_audio_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputStreamConnection);
 };
 
 }  // namespace mixer_service

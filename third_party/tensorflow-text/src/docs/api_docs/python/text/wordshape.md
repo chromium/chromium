@@ -26,6 +26,15 @@ Determine wordshape features for each input string.
 
 <!-- Placeholder for "Used in" -->
 
+In this example, we test for title case (the first character is upper or title
+case, and the remaining characters are lowercase). ```
+
+> > > input = [ ... u"abc", u"ABc", u"ABC", u"Abc", u"aBcd",
+> > > u"\u01c8bc".encode("utf-8") ... ] wordshape(input,
+> > > WordShape.HAS_TITLE_CASE)
+> > > <tf.Tensor: shape=(6,), dtype=bool, numpy=array([False, False, False, True, False, True])>
+> > > ```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>

@@ -1,25 +1,33 @@
-#!/usr/bin/env vpython
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import absolute_import
 import json
 import os
 import shutil
 import tempfile
 import unittest
 
+import six
+
 from core import path_util
 path_util.AddTelemetryToPath()
 
 from telemetry import decorators
 
-import mock
+if six.PY2:
+  import mock
+else:
+  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 import process_perf_results as ppr_module
 
 
 UUID_SIZE = 36
+
+BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
 
 
 class _FakeLogdogStream(object):
@@ -40,22 +48,22 @@ class DataFormatParsingUnitTest(unittest.TestCase):
     ppr_module._data_format_cache = {}
 
   def testGtest(self):
-    with mock.patch('__builtin__.open', mock.mock_open(read_data='{}')):
+    with mock.patch(BUILTIN_MODULE + '.open', mock.mock_open(read_data='{}')):
       self.assertTrue(ppr_module._is_gtest('test.json'))
       self.assertFalse(ppr_module._is_histogram('test.json'))
     self.assertTrue(ppr_module._is_gtest('test.json'))
     self.assertFalse(ppr_module._is_histogram('test.json'))
 
   def testChartJSON(self):
-    with mock.patch('__builtin__.open',
-        mock.mock_open(read_data='{"charts": 1}')):
+    with mock.patch(BUILTIN_MODULE + '.open',
+                    mock.mock_open(read_data='{"charts": 1}')):
       self.assertFalse(ppr_module._is_gtest('test.json'))
       self.assertFalse(ppr_module._is_histogram('test.json'))
     self.assertFalse(ppr_module._is_gtest('test.json'))
     self.assertFalse(ppr_module._is_histogram('test.json'))
 
   def testHistogram(self):
-    with mock.patch('__builtin__.open', mock.mock_open(read_data='[]')):
+    with mock.patch(BUILTIN_MODULE + '.open', mock.mock_open(read_data='[]')):
       self.assertTrue(ppr_module._is_histogram('test.json'))
       self.assertFalse(ppr_module._is_gtest('test.json'))
     self.assertTrue(ppr_module._is_histogram('test.json'))
@@ -90,7 +98,7 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
 
   @decorators.Disabled('chromeos')  # crbug.com/865800
   @decorators.Disabled('win')  # crbug.com/860677, mock doesn't integrate well
-                               # with multiprocessing on Windows.
+  # with multiprocessing on Windows.
   @decorators.Disabled('all')  # crbug.com/967125
   def testIntegration(self):
     build_properties = json.dumps({
@@ -129,7 +137,7 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
         filename[UUID_SIZE:]: os.stat(os.path.join(
             output_results_dir, filename)).st_size
         for filename in os.listdir(output_results_dir)}
-    self.assertEquals(32, len(output_results))
+    self.assertEqual(32, len(output_results))
 
     self.assertLess(10 << 10, output_results["power.desktop.reference"])
     self.assertLess(10 << 10, output_results["blink_perf.image_decoder"])
@@ -172,41 +180,43 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
     self.assertLess(10 << 10, output_results["octane"])
     self.assertLess(10 << 10, output_results["speedometer.reference"])
 
-    self.assertEquals(return_code, 1)
-    self.assertEquals(benchmark_upload_result_map,
+    self.assertEqual(return_code, 1)
+    self.assertEqual(
+        benchmark_upload_result_map,
         {
-          "power.desktop.reference": True,
-          "blink_perf.image_decoder": True,
-          "octane.reference": True,
-          "power.desktop": True,
-          "speedometer-future": True,
-          "blink_perf.owp_storage": True,
-          "memory.desktop": True,
-          "wasm": True,
-          "dummy_benchmark.histogram_benchmark_1": True,
-          "dummy_benchmark.histogram_benchmark_1.reference": True,
-          "wasm.reference": True,
-          "speedometer": True,
-          "memory.long_running_idle_gmail_tbmv2": True,
-          "v8.runtime_stats.top_25": True,
-          "dummy_benchmark.noisy_benchmark_1": True,
-          "blink_perf.svg": True,
-          "v8.runtime_stats.top_25.reference": True,
-          "jetstream.reference": True,
-          "jetstream": True,
-          "speedometer2-future.reference": True,
-          "speedometer2-future": False,  # Only this fails due to malformed data
-          "blink_perf.svg.reference": True,
-          "blink_perf.image_decoder.reference": True,
-          "power.idle_platform.reference": True,
-          "power.idle_platform": True,
-          "dummy_benchmark.noisy_benchmark_1.reference": True,
-          "speedometer-future.reference": True,
-          "memory.long_running_idle_gmail_tbmv2.reference": True,
-          "memory.desktop.reference": True,
-          "blink_perf.owp_storage.reference": True,
-          "octane": True,
-          "speedometer.reference": True
+            "power.desktop.reference": True,
+            "blink_perf.image_decoder": True,
+            "octane.reference": True,
+            "power.desktop": True,
+            "speedometer-future": True,
+            "blink_perf.owp_storage": True,
+            "memory.desktop": True,
+            "wasm": True,
+            "dummy_benchmark.histogram_benchmark_1": True,
+            "dummy_benchmark.histogram_benchmark_1.reference": True,
+            "wasm.reference": True,
+            "speedometer": True,
+            "memory.long_running_idle_gmail_tbmv2": True,
+            "v8.runtime_stats.top_25": True,
+            "dummy_benchmark.noisy_benchmark_1": True,
+            "blink_perf.svg": True,
+            "v8.runtime_stats.top_25.reference": True,
+            "jetstream.reference": True,
+            "jetstream": True,
+            "speedometer2-future.reference": True,
+            "speedometer2-future":
+            False,  # Only this fails due to malformed data
+            "blink_perf.svg.reference": True,
+            "blink_perf.image_decoder.reference": True,
+            "power.idle_platform.reference": True,
+            "power.idle_platform": True,
+            "dummy_benchmark.noisy_benchmark_1.reference": True,
+            "speedometer-future.reference": True,
+            "memory.long_running_idle_gmail_tbmv2.reference": True,
+            "memory.desktop.reference": True,
+            "blink_perf.owp_storage.reference": True,
+            "octane": True,
+            "speedometer.reference": True
         })
 
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "build/build_config.h"
 #include "tools/accessibility/inspect/ax_event_server.h"
 #include "tools/accessibility/inspect/ax_utils.h"
 
@@ -20,18 +21,7 @@ using ui::AXTreeSelector;
 
 namespace {
 
-constexpr char kPidSwitch[] = "pid";
 constexpr char kHelpSwitch[] = "help";
-
-// Convert from string to int, whether in 0x hex format or decimal format.
-bool StringToInt(std::string str, int* result) {
-  if (str.empty())
-    return false;
-  bool is_hex =
-      str.size() > 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X');
-  return is_hex ? base::HexStringToInt(str, result)
-                : base::StringToInt(str, result);
-}
 
 bool AXDumpEventsLogMessageHandler(int severity,
                                    const char* file,
@@ -47,10 +37,7 @@ void PrintHelp() {
       "ax_dump_evemts is a tool designed to dump platform accessible events "
       "of running applications.\n");
   printf("\nusage: ax_dump_events <options>\n");
-  printf("options:\n");
-  printf(
-      "  --pid\t\tprocess id of an application to dump accessible tree for\n");
-  tools::PrintHelpForTreeSelectors();
+  tools::PrintHelpShared();
 }
 
 }  // namespace
@@ -67,28 +54,34 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  const std::string pid_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kPidSwitch);
-  const AXTreeSelector selector =
-      tools::TreeSelectorFromCommandLine(command_line);
+  absl::optional<ui::AXInspectScenario> scenario =
+      tools::ScenarioFromCommandLine(*command_line);
+  if (!scenario) {
+    return 1;
+  }
 
-  if (pid_str.empty() && selector.empty()) {
+  absl::optional<AXTreeSelector> selector =
+      tools::TreeSelectorFromCommandLine(*command_line);
+
+  if (!selector || selector->empty()) {
     LOG(ERROR) << "* Error: no application was identified to dump events for. "
                   "Run with --help for help.";
     return 1;
   }
-
-  int pid = 0;
-  if (!pid_str.empty()) {
-    if (!StringToInt(pid_str, &pid)) {
-      LOG(ERROR) << "* Error: Could not convert process id to integer.";
-      return 1;
-    }
-  }
-
   base::AtExitManager exit_manager;
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-  const auto server = std::make_unique<tools::AXEventServer>(pid, selector);
+
+  // The following code is temporary. The `pid` is set to ZERO for windows
+  // because `selector->widget` is a HWND for windows, otherwise, it is a PID.
+  // The window's code uses `selector->widget` to find the application later on.
+  // A future patch will update mac and linux to use selector->widget and remove
+  // the `pid` argument.
+  unsigned int pid = 0;
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
+  pid = selector->widget;
+#endif
+  const auto server =
+      std::make_unique<tools::AXEventServer>(pid, *selector, *scenario);
   base::RunLoop().Run();
   return 0;
 }

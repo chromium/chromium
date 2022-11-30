@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf_test_runner.h"
 
 namespace sandbox {
@@ -26,6 +25,11 @@ class BPFTesterCompatibilityDelegate : public BPFTesterDelegate {
 
   explicit BPFTesterCompatibilityDelegate(TestFunction test_function)
       : aux_(), test_function_(test_function) {}
+
+  BPFTesterCompatibilityDelegate(const BPFTesterCompatibilityDelegate&) =
+      delete;
+  BPFTesterCompatibilityDelegate& operator=(
+      const BPFTesterCompatibilityDelegate&) = delete;
 
   ~BPFTesterCompatibilityDelegate() override {}
 
@@ -47,8 +51,6 @@ class BPFTesterCompatibilityDelegate : public BPFTesterDelegate {
  private:
   Aux aux_;
   TestFunction test_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(BPFTesterCompatibilityDelegate);
 };
 
 }  // namespace sandbox

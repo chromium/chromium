@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 namespace blink {
 
 void PendingLayoutRegistry::NotifyLayoutReady(const AtomicString& name) {
-  PendingSet* set = pending_layouts_.at(name);
-  if (set) {
-    for (const auto& node : *set) {
+  auto it = pending_layouts_.find(name);
+  if (it != pending_layouts_.end()) {
+    for (const auto& node : *it->value) {
       // If the node hasn't been gc'd, trigger a reattachment so that the
       // children are correctly blockified.
       //

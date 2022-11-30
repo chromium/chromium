@@ -1,16 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_HTTP_HTTP_CACHE_LOOKUP_MANAGER_H_
 #define NET_HTTP_HTTP_CACHE_LOOKUP_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/spdy/server_push_delegate.h"
 
 namespace net {
+
+struct HttpRequestInfo;
 
 // An implementation of ServerPushDelegate that issues an HttpCache::Transaction
 // to lookup whether the response to the pushed URL is cached and cancel the
@@ -55,7 +58,7 @@ class NET_EXPORT_PRIVATE HttpCacheLookupManager : public ServerPushDelegate {
   };
 
   // HttpCache must outlive the HttpCacheLookupManager.
-  HttpCache* http_cache_;
+  raw_ptr<HttpCache> http_cache_;
   std::map<GURL, std::unique_ptr<LookupTransaction>> lookup_transactions_;
   base::WeakPtrFactory<HttpCacheLookupManager> weak_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,9 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // Does not allocate any memory for the allocator, to finish initializing call
   // Init().
   GuardedPageAllocator();
+
+  GuardedPageAllocator(const GuardedPageAllocator&) = delete;
+  GuardedPageAllocator& operator=(const GuardedPageAllocator&) = delete;
 
   // Configures this allocator to allocate up to max_alloced_pages pages at a
   // time, holding metadata for up to num_metadata allocations, from a pool of
@@ -101,6 +104,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
     FreeList() = default;
     virtual ~FreeList() = default;
     virtual void Initialize(T max_entries) = 0;
+    virtual void Initialize(T max_entries, std::vector<T>&& free_list) = 0;
     virtual bool Allocate(T* out, const char* type) = 0;
     virtual void Free(T entry) = 0;
   };
@@ -115,6 +119,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
    public:
     ~SimpleFreeList() final = default;
     void Initialize(T max_entries) final;
+    void Initialize(T max_entries, std::vector<T>&& free_list) final;
     bool Allocate(T* out, const char* type) final;
     void Free(T entry) final;
 
@@ -145,12 +150,15 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
     PartitionAllocSlotFreeList();
     ~PartitionAllocSlotFreeList() final;
     void Initialize(AllocatorState::SlotIdx max_entries) final;
+    void Initialize(AllocatorState::SlotIdx max_entries,
+                    std::vector<AllocatorState::SlotIdx>&& free_list) final;
     bool Allocate(AllocatorState::SlotIdx* out, const char* type) final;
     void Free(AllocatorState::SlotIdx entry) final;
 
    private:
     std::vector<const char*> type_mapping_;
     std::map<const char*, std::vector<AllocatorState::SlotIdx>> free_list_;
+    std::vector<AllocatorState::SlotIdx> initial_free_list_;
 
     // Number of used entries. This counter ensures all free entries are used
     // before starting to use random eviction.
@@ -234,8 +242,6 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
-
-  DISALLOW_COPY_AND_ASSIGN(GuardedPageAllocator);
 };
 
 }  // namespace internal

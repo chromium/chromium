@@ -1,0 +1,8 @@
+AXValueChanged on AXTextField AXDescription='role only, rich' AXValue='foo'
+=== Start Continuation ===
+AXValueChanged on AXTextField AXDescription='focusable' AXValue='foo'
+=== Start Continuation ===
+AXValueChanged on AXTextArea AXDescription='editable' AXValue='foo'
+AXValueChanged on AXWebArea
+=== Start Continuation ===
+AXValueChanged on AXTextField AXDescription='role only, plain' AXValue='foook'

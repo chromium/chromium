@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler_app_interface.h"
+#import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler_app_interface.h"
 
-#include <map>
+#import <map>
 
-#include "base/check.h"
-#include "ios/testing/scoped_block_swizzler.h"
+#import "base/check.h"
+#import "ios/testing/scoped_block_swizzler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,7 +22,7 @@
   std::map<int, std::unique_ptr<ScopedBlockSwizzler>> _map;
 }
 
-// Inserts and removes from |map|.
+// Inserts and removes from `map`.
 - (int)insertScopedBlockSwizzler:(std::unique_ptr<ScopedBlockSwizzler>)swizzler;
 - (void)removeScopedBlockSwizzler:(int)uniqueID;
 @end

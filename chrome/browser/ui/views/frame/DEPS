@@ -5,7 +5,7 @@ specific_include_rules = {
   ],
   "browser_frame_ash\.*": [
     "+ash",
-    "+components/full_restore",
+    "+components/app_restore",
   ],
   "dbus_appmenu\.*": [
     "+dbus",

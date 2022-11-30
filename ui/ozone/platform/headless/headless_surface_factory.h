@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -18,11 +17,20 @@ namespace ui {
 class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
  public:
   explicit HeadlessSurfaceFactory(base::FilePath base_path);
+
+  HeadlessSurfaceFactory(const HeadlessSurfaceFactory&) = delete;
+  HeadlessSurfaceFactory& operator=(const HeadlessSurfaceFactory&) = delete;
+
   ~HeadlessSurfaceFactory() override;
 
   // SurfaceFactoryOzone:
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool use_swiftshader,
+      bool allow_protected_memory) override;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
@@ -31,7 +39,7 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      base::Optional<gfx::Size> framebuffer_size = base::nullopt) override;
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
 
  private:
   void CheckBasePath() const;
@@ -40,8 +48,6 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
   base::FilePath base_path_;
 
   std::unique_ptr<GLOzone> swiftshader_implementation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessSurfaceFactory);
 };
 
 }  // namespace ui

@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -16,18 +16,11 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV",
       "position": [8, 25],
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#D3D3D3"
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='foo'",
-      "position": [8, 50],
-      "bounds": [100, 100],
+      "bounds": [100, 125],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "invalidations": [
-        [0, 0, 100, 100]
+        [0, 25, 100, 100]
       ]
     }
   ],
@@ -46,7 +39,7 @@
  {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -61,18 +54,11 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV",
       "position": [8, 25],
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#D3D3D3"
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='foo'",
-      "position": [8, 50],
-      "bounds": [100, 100],
+      "bounds": [100, 125],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "invalidations": [
-        [0, 0, 100, 100]
+        [0, 25, 100, 100]
       ]
     }
   ],

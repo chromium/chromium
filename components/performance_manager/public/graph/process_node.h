@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_PROCESS_NODE_H_
 
 #include "base/callback_forward.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -44,7 +44,31 @@ class ProcessNode : public Node {
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 
+  // The type of content a renderer can host.
+  enum class ContentType : uint32_t {
+    // Hosted an extension.
+    kExtension = 1 << 0,
+    // Hosted a frame with no parent.
+    kMainFrame = 1 << 1,
+    // Hosted a frame with a parent.
+    kSubframe = 1 << 2,
+    // Hosted a frame (main frame or subframe) with a committed navigation. A
+    // "speculative" frame will not have a committed navigation.
+    kNavigatedFrame = 1 << 3,
+    // Hosted a frame that was tagged as an ad.
+    kAd = 1 << 4,
+    // Hosted a worker (service worker, dedicated worker, shared worker).
+    kWorker = 1 << 5,
+  };
+
+  using ContentTypes =
+      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kWorker>;
+
   ProcessNode();
+
+  ProcessNode(const ProcessNode&) = delete;
+  ProcessNode& operator=(const ProcessNode&) = delete;
+
   ~ProcessNode() override;
 
   // Returns the type of this process.
@@ -56,20 +80,23 @@ class ProcessNode : public Node {
   // process ID for a process that has exited (at least until the underlying
   // RenderProcessHost gets reused in the case of a crash). Refrain from using
   // this as a unique identifier as on some platforms PIDs are reused
-  // aggressively. See GetLaunchTime for more information.
+  // aggressively.
   virtual base::ProcessId GetProcessId() const = 0;
 
   // Returns the base::Process backing this process. This will be an invalid
   // process if it has not yet started, or if it has exited.
   virtual const base::Process& GetProcess() const = 0;
 
-  // Returns the launch time associated with the process. Combined with the
-  // process ID this can be used as a unique identifier for the process.
-  virtual base::Time GetLaunchTime() const = 0;
+  // Returns a time captured as early as possible after the process is launched.
+  virtual base::TimeTicks GetLaunchTime() const = 0;
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.
-  virtual base::Optional<int32_t> GetExitStatus() const = 0;
+  virtual absl::optional<int32_t> GetExitStatus() const = 0;
+
+  // Returns the non-localized name of the process used for metrics reporting
+  // metrics as specified in content::ChildProcessData during process creation.
+  virtual const std::string& GetMetricsName() const = 0;
 
   // Visits the frame nodes that are hosted in this process. The iteration is
   // halted if the visitor returns false. Returns true if every call to the
@@ -91,6 +118,10 @@ class ProcessNode : public Node {
   // Returns the most recently measured private memory footprint of the process.
   // This is roughly private, anonymous, non-discardable, resident or swapped
   // memory in kilobytes. For more details, see https://goo.gl/3kPb9S.
+  //
+  // Note: This is only valid if at least one component has expressed interest
+  // for process memory metrics by calling
+  // ProcessMetricsDecorator::RegisterInterestForProcessMetrics.
   virtual uint64_t GetPrivateFootprintKb() const = 0;
 
   // Returns the most recently measured resident set of the process, in
@@ -108,8 +139,9 @@ class ProcessNode : public Node {
   // Returns the current priority of the process.
   virtual base::TaskPriority GetPriority() const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNode);
+  // Returns a bit field indicating what type of content this process has
+  // hosted, either currently or in the past.
+  virtual ContentTypes GetHostedContentTypes() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -117,6 +149,10 @@ class ProcessNode : public Node {
 class ProcessNodeObserver {
  public:
   ProcessNodeObserver();
+
+  ProcessNodeObserver(const ProcessNodeObserver&) = delete;
+  ProcessNodeObserver& operator=(const ProcessNodeObserver&) = delete;
+
   virtual ~ProcessNodeObserver();
 
   // Node lifetime notifications.
@@ -148,9 +184,6 @@ class ProcessNodeObserver {
 
   // Fired when all frames in a process have transitioned to being frozen.
   virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -159,6 +192,10 @@ class ProcessNodeObserver {
 class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // ProcessNodeObserver implementation:
@@ -169,9 +206,6 @@ class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
   void OnPriorityChanged(const ProcessNode* process_node,
                          base::TaskPriority previous_value) override {}
   void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

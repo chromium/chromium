@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -159,8 +159,7 @@ void SettingsPrivateEventRouter::SendPrefChange(const std::string& pref_name) {
   if (pref_object)
     prefs.push_back(std::move(*pref_object));
 
-  std::unique_ptr<base::ListValue> args(
-      api::settings_private::OnPrefsChanged::Create(prefs));
+  auto args(api::settings_private::OnPrefsChanged::Create(prefs));
 
   std::unique_ptr<Event> extension_event(new Event(
       events::SETTINGS_PRIVATE_ON_PREFS_CHANGED,

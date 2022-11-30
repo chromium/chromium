@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,20 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/google/google_search_domain_mixing_metrics_emitter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+
+// Flag to enable computing domain mixing metrics based on the Google search
+// activity of the user.
+// For more details, see http://goto.google.com/chrome-no-searchdomaincheck.
+BASE_DECLARE_FEATURE(kEmitGoogleSearchDomainMixingMetrics);
 
 // Singleton that owns all GoogleSearchDomainMixingMetricsEmitters and
 // associates them with Profiles.
 class GoogleSearchDomainMixingMetricsEmitterFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
-  // Flag to enable computing domain mixing metrics based on the Google search
-  // activity of the user.
-  // For more details, see http://goto.google.com/chrome-no-searchdomaincheck.
-  static const base::Feature kFeature;
-
   // Returns the singleton instance of the factory.
   static GoogleSearchDomainMixingMetricsEmitterFactory* GetInstance();
 

@@ -1,0 +1,40 @@
+caption: Enable Battery Saver Mode
+default: null
+desc: "This policy enables or disables the Battery Saver Mode setting. This setting\
+  \ makes it so that frame rate is throttled to lower power consumption.\n      If\
+  \ this policy is unset, the end user can control this setting in chrome://settings/performance.\n\
+  \      The different levels are:\n      <ph name=\"BATTERY_SAVER_MODE_DISABLED\"\
+  >Disabled</ph> (0): Battery Saver Mode will be disabled.\n      <ph name=\"BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD\"\
+  >EnabledBelowThreshold</ph> (1): Battery Saver Mode will be enabled when the device\
+  \ is on battery power and battery level is low.\n      <ph name=\"BATTERY_SAVER_MODE_ENABLED_ON_BATTERY\"\
+  >EnabledOnBattery</ph> (2): Battery Saver Mode will be enabled when the device is\
+  \ on battery power.\n      "
+example_value: 1
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.*
+items:
+- caption: Battery Saver Mode will be disabled.
+  name: Disabled
+  value: 0
+- caption: Battery Saver Mode will be enabled when the device is on battery power
+    and battery level is low.
+  name: EnabledBelowThreshold
+  value: 1
+- caption: Battery Saver Mode will be enabled when the device is on battery power.
+  name: EnabledOnBattery
+  value: 2
+owners:
+- anthonyvd@chromium.org
+- file://components/performance_manager/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  type: integer
+tags: []
+type: int-enum

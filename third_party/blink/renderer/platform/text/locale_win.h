@@ -90,4 +90,4 @@ class PLATFORM_EXPORT LocaleWin : public Locale {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_WIN_H_

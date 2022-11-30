@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_TRANSFORM_LIST_H_
 
 #include <memory>
+
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -22,8 +25,6 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   InterpolableTransformList(TransformOperations&& operations)
       : operations_(std::move(operations)) {}
 
-  static std::unique_ptr<InterpolableTransformList> Create(
-      TransformOperations&&);
   static std::unique_ptr<InterpolableTransformList> ConvertCSSValue(
       const CSSValue&,
       const StyleResolverState*);

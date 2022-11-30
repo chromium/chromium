@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/download_manager_delegate.h"
 
@@ -25,6 +24,11 @@ class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
                                   public base::SupportsUserData::Data {
  public:
   AwDownloadManagerDelegate();
+
+  AwDownloadManagerDelegate(const AwDownloadManagerDelegate&) = delete;
+  AwDownloadManagerDelegate& operator=(const AwDownloadManagerDelegate&) =
+      delete;
+
   ~AwDownloadManagerDelegate() override;
 
   // content::DownloadManagerDelegate implementation.
@@ -37,9 +41,6 @@ class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
       int64_t content_length,
       bool is_transient,
       content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwDownloadManagerDelegate);
 };
 
 }  // namespace android_webview

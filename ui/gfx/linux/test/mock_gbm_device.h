@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace ui {
 class MockGbmDevice : public GbmDevice {
  public:
   MockGbmDevice();
+
+  MockGbmDevice(const MockGbmDevice&) = delete;
+  MockGbmDevice& operator=(const MockGbmDevice&) = delete;
+
   ~MockGbmDevice() override;
 
   void set_allocation_failure(bool should_fail_allocations);
@@ -33,6 +37,7 @@ class MockGbmDevice : public GbmDevice {
       uint32_t format,
       const gfx::Size& size,
       gfx::NativePixmapHandle handle) override;
+  bool CanCreateBufferForFormat(uint32_t format) override;
 
  private:
   uint32_t next_handle_ = 0;
@@ -42,8 +47,6 @@ class MockGbmDevice : public GbmDevice {
   const std::vector<uint64_t> supported_modifiers_ = {
       DRM_FORMAT_MOD_LINEAR, I915_FORMAT_MOD_X_TILED, I915_FORMAT_MOD_Y_TILED,
       I915_FORMAT_MOD_Yf_TILED_CCS};
-
-  DISALLOW_COPY_AND_ASSIGN(MockGbmDevice);
 };
 
 }  // namespace ui

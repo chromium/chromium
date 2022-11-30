@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,14 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockGetKeysOperation::EasyUnlockGetKeysOperation(
     const UserContext& user_context,
@@ -65,11 +64,16 @@ void EasyUnlockGetKeysOperation::GetKeyData() {
 }
 
 void EasyUnlockGetKeysOperation::OnGetKeyData(
-    base::Optional<user_data_auth::GetKeyDataReply> reply) {
+    absl::optional<user_data_auth::GetKeyDataReply> reply) {
   cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
-  std::vector<cryptohome::KeyDefinition> key_definitions =
-      user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
-  if (return_code != cryptohome::MOUNT_ERROR_NONE || key_definitions.empty()) {
+
+  std::vector<cryptohome::KeyDefinition> key_definitions;
+  if (return_code == cryptohome::MOUNT_ERROR_NONE) {
+    key_definitions =
+        user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
+  }
+  
+  if (key_definitions.empty()) {
     // MOUNT_ERROR_KEY_FAILURE is considered as success.
     // Other error codes are treated as failures.
     if (return_code == cryptohome::MOUNT_ERROR_NONE ||
@@ -154,4 +158,4 @@ void EasyUnlockGetKeysOperation::OnGetKeyData(
   GetKeyData();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+source_set("integration") {
+  testonly = true
+  public = [
+    "cast_runner_features.h",
+    "cast_runner_launcher.h",
+  ]
+  sources = [
+    "cast_runner_features.cc",
+    "cast_runner_launcher.cc",
+  ]
+  public_deps = [
+    "//fuchsia_web/common/test:test_support",
+    "//media/fuchsia/audio:test_support_components",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+  deps = [
+    "//base",
+    "//fuchsia_web/runners:cast_runner_core",
+    "//fuchsia_web/runners/cast/fidl",
+    "//media/fuchsia/audio:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+  ]
+}

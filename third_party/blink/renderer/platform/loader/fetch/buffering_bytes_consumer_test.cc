@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -165,7 +165,7 @@ TEST_F(BufferingBytesConsumerTest, BufferingWithDelay) {
   EXPECT_EQ(PublicState::kReadableOrWaiting,
             replaying_bytes_consumer->GetPublicState());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(51));
+  task_environment_.FastForwardBy(base::Milliseconds(51));
   task_runner->RunUntilIdle();
 
   // After the delay expires the underlying consumer should be completely read.
@@ -258,7 +258,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeFailsWithExpiredDelay) {
   auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
       data_pipe_consumer, scheduler::GetSingleThreadTaskRunnerForTesting());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(51));
+  task_environment_.FastForwardBy(base::Milliseconds(51));
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
   auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe();

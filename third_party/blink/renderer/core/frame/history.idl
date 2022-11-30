@@ -36,6 +36,6 @@ enum ScrollRestoration {"auto", "manual"};
     [CallWith=ScriptState, RaisesException] void go(optional long delta = 0);
     [CallWith=ScriptState, RaisesException] void back();
     [CallWith=ScriptState, RaisesException] void forward();
-    [CallWith=Isolate, MeasureAs=HistoryPushState, RaisesException] void pushState(any data, DOMString title, optional DOMString? url = null);
-    [CallWith=Isolate, MeasureAs=HistoryReplaceState, RaisesException] void replaceState(any data, DOMString title, optional DOMString? url = null);
+    [CallWith=ScriptState, MeasureAs=HistoryPushState, RaisesException] void pushState(any data, DOMString title, optional DOMString? url = null);
+    [CallWith=ScriptState, MeasureAs=HistoryReplaceState, RaisesException] void replaceState(any data, DOMString title, optional DOMString? url = null);
 };

@@ -1,13 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/block_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -22,6 +23,22 @@
 
 namespace blink {
 
+namespace {
+
+bool ShouldPaintCursorCaret(const LayoutBlock& block) {
+  return block.GetFrame()->Selection().ShouldPaintCaret(block);
+}
+
+bool ShouldPaintDragCaret(const LayoutBlock& block) {
+  return block.GetFrame()->GetPage()->GetDragCaret().ShouldPaintCaret(block);
+}
+
+bool ShouldPaintCarets(const LayoutBlock& block) {
+  return ShouldPaintCursorCaret(block) || ShouldPaintDragCaret(block);
+}
+
+}  // namespace
+
 DISABLE_CFI_PERF
 void BlockPainter::Paint(const PaintInfo& paint_info) {
   ScopedPaintState paint_state(layout_block_, paint_info);
@@ -34,31 +51,34 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
   auto paint_offset = paint_state.PaintOffset();
   auto& local_paint_info = paint_state.MutablePaintInfo();
   PaintPhase original_phase = local_paint_info.phase;
+  bool painted_overflow_controls = false;
 
   if (original_phase == PaintPhase::kOutline) {
     local_paint_info.phase = PaintPhase::kDescendantOutlinesOnly;
   } else if (ShouldPaintSelfBlockBackground(original_phase)) {
     local_paint_info.phase = PaintPhase::kSelfBlockBackgroundOnly;
-    // With CompositeAfterPaint we need to call PaintObject twice: once for the
-    // background painting that does not scroll, and a second time for the
-    // background painting that scrolls.
-    // Without CompositeAfterPaint, this happens as the main graphics layer
-    // paints the background, and then the scrolling contents graphics layer
-    // paints the background.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto paint_location = layout_block_.GetBackgroundPaintLocation();
-      if (!(paint_location & kBackgroundPaintInGraphicsLayer))
-        local_paint_info.SetSkipsBackground(true);
-      layout_block_.PaintObject(local_paint_info, paint_offset);
-      local_paint_info.SetSkipsBackground(false);
+    // We need to call PaintObject twice: one for painting background in the
+    // border box space, and the other for painting background in the scrolling
+    // contents space.
+    auto paint_location = layout_block_.GetBackgroundPaintLocation();
+    if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
+      local_paint_info.SetSkipsBackground(true);
+    layout_block_.PaintObject(local_paint_info, paint_offset);
+    local_paint_info.SetSkipsBackground(false);
 
-      if (paint_location & kBackgroundPaintInScrollingContents) {
-        local_paint_info.SetIsPaintingScrollingBackground(true);
-        layout_block_.PaintObject(local_paint_info, paint_offset);
-        local_paint_info.SetIsPaintingScrollingBackground(false);
-      }
-    } else {
+    // If possible, paint overflow controls before scrolling background to make
+    // it easier to merge scrolling background and scrolling contents into the
+    // same layer. The function checks if it's appropriate to paint overflow
+    // controls now.
+    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+      painted_overflow_controls =
+          PaintOverflowControls(local_paint_info, paint_offset);
+    }
+
+    if (paint_location & kBackgroundPaintInContentsSpace) {
+      local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);
       layout_block_.PaintObject(local_paint_info, paint_offset);
+      local_paint_info.SetIsPaintingBackgroundInContentsSpace(false);
     }
     if (ShouldPaintDescendantBlockBackgrounds(original_phase))
       local_paint_info.phase = PaintPhase::kDescendantBlockBackgroundsOnly;
@@ -68,9 +88,8 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     layout_block_.PaintObject(local_paint_info, paint_offset);
   } else if (original_phase != PaintPhase::kSelfBlockBackgroundOnly &&
              original_phase != PaintPhase::kSelfOutlineOnly &&
-             // For now all scrollers with overlay overflow controls are
-             // self-painting layers, so we don't need to traverse descendants
-             // here.
+             // kOverlayOverflowControls is for the current object itself,
+             // so we don't need to traverse descendants here.
              original_phase != PaintPhase::kOverlayOverflowControls) {
     ScopedBoxContentsPaintState contents_paint_state(paint_state,
                                                      layout_block_);
@@ -82,11 +101,11 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
   // properties block. Note that caret painting does not seem to correspond to
   // any painting order steps within the CSS spec.
   if (original_phase == PaintPhase::kForeground &&
-      layout_block_.ShouldPaintCarets()) {
+      ShouldPaintCarets(layout_block_)) {
     // Apply overflow clip if needed. TODO(wangxianzhu): Move PaintCarets()
     // under |contents_paint_state| in the above block and let the caret
     // painters paint in the space of scrolling contents.
-    base::Optional<ScopedPaintChunkProperties> paint_chunk_properties;
+    absl::optional<ScopedPaintChunkProperties> paint_chunk_properties;
     if (const auto* fragment = paint_state.FragmentToPaint()) {
       if (const auto* properties = fragment->PaintProperties()) {
         if (const auto* overflow_clip = properties->OverflowClip()) {
@@ -105,12 +124,11 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     layout_block_.PaintObject(local_paint_info, paint_offset);
   }
 
-  // We paint scrollbars after we painted the other things, so that the
-  // scrollbars will sit above them.
-  local_paint_info.phase = original_phase;
-  if (auto* scrollable_area = layout_block_.GetScrollableArea()) {
-    ScrollableAreaPainter(*scrollable_area)
-        .PaintOverflowControls(local_paint_info, RoundedIntPoint(paint_offset));
+  // If we haven't painted overflow controls, paint scrollbars after we painted
+  // the other things, so that the scrollbars will sit above them.
+  if (!painted_overflow_controls) {
+    local_paint_info.phase = original_phase;
+    PaintOverflowControls(local_paint_info, paint_offset);
   }
 }
 
@@ -118,17 +136,8 @@ void BlockPainter::PaintChildren(const PaintInfo& paint_info) {
   if (paint_info.DescendantPaintingBlocked())
     return;
 
-  // We may use legacy paint to paint the anonymous fieldset child. The layout
-  // object for the rendered legend will be a child of that one, and has to be
-  // skipped here, since it's handled by a special NG fieldset painter.
-  bool may_contain_rendered_legend =
-      layout_block_.IsAnonymousNGFieldsetContentWrapper();
   for (LayoutBox* child = layout_block_.FirstChildBox(); child;
        child = child->NextSiblingBox()) {
-    if (may_contain_rendered_legend && child->IsRenderedLegend()) {
-      may_contain_rendered_legend = false;
-      continue;
-    }
     PaintChild(*child, paint_info);
   }
 }
@@ -320,10 +329,10 @@ void BlockPainter::PaintCarets(const PaintInfo& paint_info,
                                const PhysicalOffset& paint_offset) {
   LocalFrame* frame = layout_block_.GetFrame();
 
-  if (layout_block_.ShouldPaintCursorCaret())
+  if (ShouldPaintCursorCaret(layout_block_))
     frame->Selection().PaintCaret(paint_info.context, paint_offset);
 
-  if (layout_block_.ShouldPaintDragCaret()) {
+  if (ShouldPaintDragCaret(layout_block_)) {
     frame->GetPage()->GetDragCaret().PaintDragCaret(frame, paint_info.context,
                                                     paint_offset);
   }
@@ -339,17 +348,12 @@ PhysicalRect BlockPainter::OverflowRectForCullRectTesting() const {
     // which covers the continuations, as if we included <a>'s PDF URL rect into
     // layout_block_'s visual overflow.
     auto rects = layout_block_.OutlineRects(
-        PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+        nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
     overflow_rect = UnionRect(rects);
   }
   overflow_rect.Unite(layout_block_.PhysicalVisualOverflowRect());
 
-  bool include_layout_overflow =
-      layout_block_.ScrollsOverflow() &&
-      (layout_block_.UsesCompositedScrolling() ||
-       RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  if (include_layout_overflow) {
+  if (layout_block_.ScrollsOverflow()) {
     overflow_rect.Unite(layout_block_.PhysicalLayoutOverflowRect());
     overflow_rect.Move(
         -PhysicalOffset(layout_block_.PixelSnappedScrolledContentOffset()));
@@ -376,6 +380,16 @@ void BlockPainter::PaintContents(const PaintInfo& paint_info,
   DCHECK(!layout_block_.ChildrenInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   layout_block_.PaintChildren(paint_info_for_descendants, paint_offset);
+}
+
+bool BlockPainter::PaintOverflowControls(const PaintInfo& paint_info,
+                                         const PhysicalOffset& paint_offset) {
+  if (auto* scrollable_area = layout_block_.GetScrollableArea()) {
+    return ScrollableAreaPainter(*scrollable_area)
+        .PaintOverflowControls(paint_info,
+                               ToRoundedPoint(paint_offset).OffsetFromOrigin());
+  }
+  return false;
 }
 
 }  // namespace blink

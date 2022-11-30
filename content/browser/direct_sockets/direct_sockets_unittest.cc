@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,42 +10,32 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
-
-#if defined(OS_WIN)
-#include "base/win/win_util.h"
-#endif
 
 namespace content {
 
 class DirectSocketsUnitTest : public RenderViewHostTestHarness {
  public:
-  DirectSocketsUnitTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsUnitTest() override = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    direct_sockets_service_ =
-        std::make_unique<DirectSocketsServiceImpl>(*main_rfh());
     SimulateUserActivation();
   }
 
-  DirectSocketsServiceImpl& direct_sockets_service() {
-    return *direct_sockets_service_;
-  }
-
-  net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options) {
-    return direct_sockets_service().ValidateOptions(options);
-  }
-
-  base::Optional<net::IPEndPoint> GetLocalAddr(
+  absl::optional<net::IPEndPoint> GetLocalAddr(
       const blink::mojom::DirectSocketOptions& options) {
-    return DirectSocketsServiceImpl::GetLocalAddrForTesting(options);
+    if (net::IPAddress address;
+        options.local_hostname &&
+        address.AssignFromIPLiteral(*options.local_hostname)) {
+      return net::IPEndPoint{std::move(address), options.local_port};
+    }
+    return {};
   }
 
  private:
@@ -57,40 +47,14 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<DirectSocketsServiceImpl> direct_sockets_service_;
 };
-
-TEST_F(DirectSocketsUnitTest, RenderFrameDeleted) {
-  direct_sockets_service().RenderFrameDeleted(main_rfh());
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
-
-TEST_F(DirectSocketsUnitTest, WebContentsDestroyed) {
-  direct_sockets_service().WebContentsDestroyed();
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
-
-// TODO(crbug.com/1119597): Allow the user to enter the address.
-TEST_F(DirectSocketsUnitTest, RemoteAddressCurrentlyRequired) {
-// Mark as not enterprise managed.
-#if defined(OS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain(false);
-#endif
-
-  blink::mojom::DirectSocketOptions options;
-  EXPECT_EQ(ValidateOptions(options), net::ERR_NAME_NOT_RESOLVED);
-}
 
 TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {
   blink::mojom::DirectSocketOptions options;
 
   // Test for default condition.
-  base::Optional<net::IPEndPoint> local_addr = GetLocalAddr(options);
-  EXPECT_EQ(local_addr, base::nullopt);
+  absl::optional<net::IPEndPoint> local_addr = GetLocalAddr(options);
+  EXPECT_EQ(local_addr, absl::nullopt);
 
   // Test with IPv4 address and default port(0) provided.
   options.local_hostname = "12.34.56.78";

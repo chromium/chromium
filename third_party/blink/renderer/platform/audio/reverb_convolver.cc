@@ -32,11 +32,9 @@
 #include <utility>
 
 #include "base/location.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -55,12 +53,12 @@ const int kInputBufferSize = 8 * 16384;
 // be incorrect.
 const size_t kRealtimeFrameLimit = 8192 + 4096;  // ~278msec @ 44.1KHz
 
-const size_t kMinFFTSize = 128;
-const size_t kMaxRealtimeFFTSize = 2048;
+const unsigned kMinFFTSize = 128;
+const unsigned kMaxRealtimeFFTSize = 2048;
 
 ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
-                                 size_t render_slice_size,
-                                 size_t max_fft_size,
+                                 unsigned render_slice_size,
+                                 unsigned max_fft_size,
                                  size_t convolver_render_phase,
                                  bool use_background_threads,
                                  float scale)
@@ -80,27 +78,28 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
   max_realtime_fft_size_ = kMaxRealtimeFFTSize;
 
   const float* response = impulse_response->Data();
-  size_t total_response_length = impulse_response->length();
+  uint32_t total_response_length = impulse_response->length();
 
   // The total latency is zero because the direct-convolution is used in the
   // leading portion.
   size_t reverb_total_latency = 0;
 
-  size_t stage_offset = 0;
+  unsigned stage_offset = 0;
   int i = 0;
-  size_t fft_size = min_fft_size_;
+  unsigned fft_size = min_fft_size_;
   while (stage_offset < total_response_length) {
-    size_t stage_size = fft_size / 2;
+    unsigned stage_size = fft_size / 2;
 
     // For the last stage, it's possible that stageOffset is such that we're
     // straddling the end of the impulse response buffer (if we use stageSize),
     // so reduce the last stage's length...
-    if (stage_size + stage_offset > total_response_length)
+    if (stage_size + stage_offset > total_response_length) {
       stage_size = total_response_length - stage_offset;
+    }
 
     // This "staggers" the time when each FFT happens so they don't all happen
     // at the same time
-    int render_phase = convolver_render_phase + i * render_slice_size;
+    size_t render_phase = convolver_render_phase + i * render_slice_size;
 
     bool use_direct_convolver = !stage_offset;
 
@@ -128,17 +127,19 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
     }
 
     if (use_background_threads && !is_background_stage &&
-        fft_size > max_realtime_fft_size_)
+        fft_size > max_realtime_fft_size_) {
       fft_size = max_realtime_fft_size_;
-    if (fft_size > max_fft_size_)
+    }
+    if (fft_size > max_fft_size_) {
       fft_size = max_fft_size_;
+    }
   }
 
   // Start up background thread
   // FIXME: would be better to up the thread priority here.  It doesn't need to
   // be real-time, but higher than the default...
   if (use_background_threads && background_stages_.size() > 0) {
-    background_thread_ = Platform::Current()->CreateThread(
+    background_thread_ = NonMainThread::CreateThread(
         ThreadCreationParams(ThreadType::kReverbConvolutionBackgroundThread));
   }
 }
@@ -151,22 +152,21 @@ ReverbConvolver::~ReverbConvolver() {
 void ReverbConvolver::ProcessInBackground() {
   // Process all of the stages until their read indices reach the input buffer's
   // write index
-  int write_index = input_buffer_.WriteIndex();
+  size_t write_index = input_buffer_.WriteIndex();
 
   // Even though it doesn't seem like every stage needs to maintain its own
   // version of readIndex we do this in case we want to run in more than one
   // background thread.
-  int read_index;
-
-  while ((read_index = background_stages_[0]->InputReadIndex()) !=
-         write_index) {  // FIXME: do better to detect buffer overrun...
+  // FIXME: do better to detect buffer overrun...
+  while (background_stages_[0]->InputReadIndex() != write_index) {
     // The ReverbConvolverStages need to process in amounts which evenly divide
     // half the FFT size
     const int kSliceSize = kMinFFTSize / 2;
 
     // Accumulate contributions from each stage
-    for (size_t i = 0; i < background_stages_.size(); ++i)
-      background_stages_[i]->ProcessInBackground(this, kSliceSize);
+    for (auto& background_stage : background_stages_) {
+      background_stage->ProcessInBackground(this, kSliceSize);
+    }
   }
 }
 
@@ -187,8 +187,9 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   input_buffer_.Write(source, frames_to_process);
 
   // Accumulate contributions from each stage
-  for (size_t i = 0; i < stages_.size(); ++i)
-    stages_[i]->Process(source, frames_to_process);
+  for (auto& stage : stages_) {
+    stage->Process(source, frames_to_process);
+  }
 
   // Finally read from accumulation buffer
   accumulation_buffer_.ReadAndClear(destination, frames_to_process);
@@ -204,11 +205,13 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
 }
 
 void ReverbConvolver::Reset() {
-  for (size_t i = 0; i < stages_.size(); ++i)
-    stages_[i]->Reset();
+  for (auto& stage : stages_) {
+    stage->Reset();
+  }
 
-  for (size_t i = 0; i < background_stages_.size(); ++i)
-    background_stages_[i]->Reset();
+  for (auto& background_stage : background_stages_) {
+    background_stage->Reset();
+  }
 
   accumulation_buffer_.Reset();
   input_buffer_.Reset();

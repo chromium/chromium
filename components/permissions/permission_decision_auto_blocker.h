@@ -1,19 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_DECISION_AUTO_BLOCKER_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_DECISION_AUTO_BLOCKER_H_
 
+#include <set>
+
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/memory/singleton.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/time/default_clock.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -39,30 +42,52 @@ namespace permissions {
 // threshold.
 class PermissionDecisionAutoBlocker : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnEmbargoStarted(const GURL& origin,
+                                  ContentSettingsType content_setting) = 0;
+  };
+
+  PermissionDecisionAutoBlocker() = delete;
+
   explicit PermissionDecisionAutoBlocker(HostContentSettingsMap* settings_map);
+
+  PermissionDecisionAutoBlocker(const PermissionDecisionAutoBlocker&) = delete;
+  PermissionDecisionAutoBlocker& operator=(
+      const PermissionDecisionAutoBlocker&) = delete;
+
   ~PermissionDecisionAutoBlocker() override;
+
+  // Returns whether the permission auto blocker is enabled for the passed-in
+  // content setting.
+  static bool IsEnabledForContentSetting(ContentSettingsType content_setting);
 
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
   // Prefer to use PermissionManager::GetPermissionStatus when possible. This
   // method is only exposed to facilitate permission checks from threads other
   // than the UI thread. See https://crbug.com/658020.
-  static PermissionResult GetEmbargoResult(HostContentSettingsMap* settings_map,
-                                           const GURL& request_origin,
-                                           ContentSettingsType permission,
-                                           base::Time current_time);
+  static absl::optional<PermissionResult> GetEmbargoResult(
+      HostContentSettingsMap* settings_map,
+      const GURL& request_origin,
+      ContentSettingsType permission,
+      base::Time current_time);
 
   // Updates the threshold to start blocking prompts from the field trial.
   static void UpdateFromVariations();
 
+  // Returns whether |request_origin| is under embargo for |permission|.
+  bool IsEmbargoed(const GURL& request_origin, ContentSettingsType permission);
+
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
-  PermissionResult GetEmbargoResult(const GURL& request_origin,
-                                    ContentSettingsType permission);
+  absl::optional<PermissionResult> GetEmbargoResult(
+      const GURL& request_origin,
+      ContentSettingsType permission);
 
   // Returns the most recent recorded time either an ignore or dismiss embargo
-  // was started. Records of embargo start times persist beyond the duration of
-  // the embargo, but are removed along with embargoes when
+  // was started. Records of embargo start times persist beyond the duration
+  // of the embargo, but are removed along with embargoes when
   // RemoveEmbargoAndResetCounts is used. Returns base::Time() if no record is
   // found.
   base::Time GetEmbargoStartTime(const GURL& request_origin,
@@ -94,19 +119,20 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                                ContentSettingsType permission,
                                bool dismissed_prompt_was_quiet);
 
-  // Records that an ignore of a prompt for |permission| was made. If the total
-  // number of ignores exceeds a threshold and
-  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url| under
-  // embargo for |permission|. |ignored_prompt_was_quiet| will inform the
-  // decision of which threshold to pick, depending on whether the prompt that
-  // was presented to the user was quiet or not.
+  // Records that an ignore of a prompt for |permission| was made. If the
+  // total number of ignores exceeds a threshold and
+  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
+  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
   bool RecordIgnoreAndEmbargo(const GURL& url,
                               ContentSettingsType permission,
                               bool ignored_prompt_was_quiet);
 
-  // Clears any existing embargo status for |url|, |permission|. For permissions
-  // embargoed under repeated dismissals, this means a prompt will be shown to
-  // the user on next permission request. Clears dismiss and ignore counts.
+  // Clears any existing embargo status for |url|, |permission|. For
+  // permissions embargoed under repeated dismissals, this means a prompt will
+  // be shown to the user on next permission request. Clears dismiss and
+  // ignore counts.
   void RemoveEmbargoAndResetCounts(const GURL& url,
                                    ContentSettingsType permission);
 
@@ -114,6 +140,10 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // matching |filter|.
   void RemoveEmbargoAndResetCounts(
       base::RepeatingCallback<bool(const GURL& url)> filter);
+
+  // Add and remove observers that want to receive embargo status updates.
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
 
   static const char* GetPromptDismissCountKeyForTesting();
 
@@ -129,6 +159,9 @@ class PermissionDecisionAutoBlocker : public KeyedService {
                          ContentSettingsType permission,
                          const char* key);
 
+  void NotifyEmbargoStarted(const GURL& origin,
+                            ContentSettingsType content_setting);
+
   void SetClockForTesting(base::Clock* clock);
 
   // Keys used for storing count data in a website setting.
@@ -139,11 +172,11 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   static const char kPermissionDismissalEmbargoKey[];
   static const char kPermissionIgnoreEmbargoKey[];
 
-  HostContentSettingsMap* settings_map_;
+  raw_ptr<HostContentSettingsMap> settings_map_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionDecisionAutoBlocker);
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace permissions

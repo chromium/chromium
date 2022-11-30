@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_PASSWORD_PROTECTION_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_PASSWORD_PROTECTION_JAVA_SCRIPT_FEATURE_H_
+
+#include <map>
 
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
@@ -25,16 +27,16 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   static PasswordProtectionJavaScriptFeature* GetInstance();
 
   // JavaScriptFeature:
-  base::Optional<std::string> GetScriptMessageHandlerName() const override;
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(web::WebState* web_state,
                              const web::ScriptMessage& message) override;
 
   // Adds observer for key presses and paste actions, only for the WebState
-  // specified in |observer|. It is an error to add more than one observer per
+  // specified in `observer`. It is an error to add more than one observer per
   // WebState, or more than one WebState per observer.
   void AddObserver(InputEventObserver* observer);
 
-  // Removes the observer. It is an error to call this method if |observer| is
+  // Removes the observer. It is an error to call this method if `observer` is
   // not already added.
   void RemoveObserver(InputEventObserver* observer);
 

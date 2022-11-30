@@ -1,0 +1,66 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+//   tests/colors_ref_tokens_test.json5
+//   tests/colors_sys_tokens_test.json5
+
+#include "None"
+
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_recipe.h"
+
+namespace test_tokens {
+
+
+void AddCrosRefColorsToMixer(ui::ColorMixer& mixer, bool dark_mode) {
+  mixer[kCrosRefPrimary50] = {SkColorSetRGB(0x20, 0x21, 0x24)};
+}
+
+
+void AddCrosSysColorsToMixer(ui::ColorMixer& mixer, bool dark_mode) {
+  if (dark_mode) {
+    mixer[kCrosSysPrimary] = {SkColorSetARGB(0x7F, 0x0, 0x0, 0x0)};
+  } else {
+    mixer[kCrosSysPrimary] = {kCrosRefPrimary50};
+  }
+  if (dark_mode) {
+    mixer[kCrosSysOnPrimary] = {kCrosRefPrimary50};
+  } else {
+    mixer[kCrosSysOnPrimary] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+  }
+  if (dark_mode) {
+    mixer[kCrosSysPrimaryContainer] = ui::SetAlpha({kCrosRefPrimary50}, 0x60);
+  } else {
+    mixer[kCrosSysPrimaryContainer] = ui::SetAlpha({kCrosRefPrimary50}, 0x19);
+  }
+  if (dark_mode) {
+    mixer[kCrosSysOnPrimaryContainer] = ui::GetResultingPaintColor({SkColorSetARGB(0xA, 0xFF, 0xFF, 0xFF)}, {kCrosRefPrimary50});
+  } else {
+    mixer[kCrosSysOnPrimaryContainer] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+  }
+}
+
+
+
+
+std::string ColorIdName(ui::ColorId id) {
+  switch(id) {
+    case kCrosRefPrimary50:
+      return "--cros-ref-primary50";
+    case kCrosSysPrimary:
+      return "--cros-sys-primary";
+    case kCrosSysOnPrimary:
+      return "--cros-sys-on_primary";
+    case kCrosSysPrimaryContainer:
+      return "--cros-sys-primary_container";
+    case kCrosSysOnPrimaryContainer:
+      return "--cros-sys-on_primary_container";
+  }
+  NOTREACHED();
+  return "";
+}
+
+}  // namespace test_tokens

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-class ARQuickLookTabHelper;
+namespace web {
+class WebState;
+}  // namespace web
 
 @protocol ARQuickLookTabHelperDelegate
 
-// Called to preview the downloaded USDZ format file |fileURL| points to.
-// |fileURL| cannot be nil.
-- (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL
-              allowsContentScaling:(BOOL)allowsScaling;
+// Called to preview the downloaded USDZ format file `fileURL` points to.
+// `fileURL` cannot be nil.
+- (void)presentUSDZFileWithURL:(NSURL*)fileURL
+                  canonicalURL:(NSURL*)canonicalURL
+                      webState:(web::WebState*)webState
+           allowContentScaling:(BOOL)allowContentScaling;
 
 @end
 

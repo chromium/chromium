@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
@@ -24,6 +23,10 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
  public:
   ExtensionIconPlaceholder(extension_misc::ExtensionIcons size,
                            const std::string& name);
+
+  ExtensionIconPlaceholder(const ExtensionIconPlaceholder&) = delete;
+  ExtensionIconPlaceholder& operator=(const ExtensionIconPlaceholder&) = delete;
+
   ~ExtensionIconPlaceholder() override;
 
   // Creates an image backed by an ImageSkia with the ExtensionIconPlaceholder
@@ -43,8 +46,6 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
 
   // The gray background image, on top of which the letter is drawn.
   gfx::Image base_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionIconPlaceholder);
 };
 
 }  // namespace extensions

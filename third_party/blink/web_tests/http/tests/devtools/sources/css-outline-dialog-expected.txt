@@ -1,4 +1,0 @@
-Top-down test to verify css outline dialog.
-
-Cursor position: line 2, column 3
-

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
 #include "services/device/generic_sensor/fake_platform_sensor_and_provider.h"
+#include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
+#include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,44 +28,122 @@ namespace device {
 
 using mojom::SensorType;
 
+namespace {
+
+void ExpectNoReadingChangedEvent(MockPlatformSensorClient* sensor_client,
+                                 mojom::SensorType sensor_type) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(*sensor_client, OnSensorReadingChanged(sensor_type)).Times(0);
+  run_loop.RunUntilIdle();
+}
+
+void ExpectReadingChangedEvent(MockPlatformSensorClient* sensor_client,
+                               mojom::SensorType sensor_type) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(*sensor_client, OnSensorReadingChanged(sensor_type))
+      .WillOnce(Invoke([&](SensorType) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+// Attempts to add a new reading to the sensor owned by |sensor_client|, and
+// asserts that it does not lead to OnSensorReadingChanged() being called (i.e.
+// PlatformSensor's significance check has failed).
+void AddNewReadingAndExpectNoReadingChangedEvent(
+    MockPlatformSensorClient* sensor_client,
+    const SensorReading& new_reading,
+    mojom::SensorType sensor_type) {
+  scoped_refptr<FakePlatformSensor> fake_sensor =
+      static_cast<FakePlatformSensor*>(sensor_client->sensor().get());
+  fake_sensor->AddNewReading(new_reading);
+  ExpectNoReadingChangedEvent(sensor_client, sensor_type);
+}
+
+// Add a new reading to the sensor owned by |sensor_client|, and expect reading
+// change event.
+void AddNewReadingAndExpectReadingChangedEvent(
+    MockPlatformSensorClient* sensor_client,
+    const SensorReading& new_reading,
+    mojom::SensorType sensor_type) {
+  scoped_refptr<FakePlatformSensor> fake_sensor =
+      static_cast<FakePlatformSensor*>(sensor_client->sensor().get());
+  fake_sensor->AddNewReading(new_reading);
+  ExpectReadingChangedEvent(sensor_client, sensor_type);
+}
+
+void FusionAlgorithmCopyLowLevelValues(const SensorReading& low_level_reading,
+                                       SensorReading* fused_reading) {
+  fused_reading->raw.values[0] = low_level_reading.raw.values[0];
+  fused_reading->raw.values[1] = low_level_reading.raw.values[1];
+  fused_reading->raw.values[2] = low_level_reading.raw.values[2];
+}
+
+void FusionAlgorithmSubtractEpsilonFromX(const SensorReading& low_level_reading,
+                                         SensorReading* fused_reading) {
+  fused_reading->raw.values[0] = low_level_reading.raw.values[0] - kEpsilon;
+  fused_reading->raw.values[1] = low_level_reading.raw.values[1];
+  fused_reading->raw.values[2] = low_level_reading.raw.values[2];
+}
+
+// A PlatformSensorFusionAlgorithm whose fusion algorithm can be customized
+// at runtime via set_fusion_function().
+class CustomizableFusionAlgorithm : public PlatformSensorFusionAlgorithm {
+ public:
+  using FusionFunction =
+      base::RepeatingCallback<void(const SensorReading& low_level_reading,
+                                   SensorReading* fused_reading)>;
+  static constexpr mojom::SensorType kLowLevelSensorType =
+      SensorType::ACCELEROMETER;
+  static constexpr mojom::SensorType kFusionSensorType = SensorType::GRAVITY;
+
+  CustomizableFusionAlgorithm()
+      : PlatformSensorFusionAlgorithm(kFusionSensorType,
+                                      {kLowLevelSensorType}) {}
+  ~CustomizableFusionAlgorithm() override = default;
+
+  bool GetFusedDataInternal(mojom::SensorType which_sensor_changed,
+                            SensorReading* fused_reading) override {
+    EXPECT_EQ(which_sensor_changed, kLowLevelSensorType);
+
+    SensorReading low_level_reading;
+    EXPECT_TRUE(fusion_sensor_->GetSourceReading(kLowLevelSensorType,
+                                                 &low_level_reading));
+
+    fusion_function_.Run(low_level_reading, fused_reading);
+    return true;
+  }
+
+  void set_fusion_function(FusionFunction fusion_function) {
+    fusion_function_ = std::move(fusion_function);
+  }
+
+ private:
+  FusionFunction fusion_function_;
+};
+
+}  // namespace
+
 class PlatformSensorFusionTest : public testing::Test {
  public:
   PlatformSensorFusionTest() {
     provider_ = std::make_unique<FakePlatformSensorProvider>();
   }
 
+  PlatformSensorFusionTest(const PlatformSensorFusionTest&) = delete;
+  PlatformSensorFusionTest& operator=(const PlatformSensorFusionTest&) = delete;
+
  protected:
-  void AccelerometerCallback(scoped_refptr<PlatformSensor> sensor) {
-    accelerometer_callback_called_ = true;
-    accelerometer_ = static_cast<FakePlatformSensor*>(sensor.get());
-  }
-
-  void MagnetometerCallback(scoped_refptr<PlatformSensor> sensor) {
-    magnetometer_callback_called_ = true;
-    magnetometer_ = static_cast<FakePlatformSensor*>(sensor.get());
-  }
-
-  void PlatformSensorFusionCallback(scoped_refptr<PlatformSensor> sensor) {
-    platform_sensor_fusion_callback_called_ = true;
-    fusion_sensor_ = static_cast<PlatformSensorFusion*>(sensor.get());
-  }
-
   void CreateAccelerometer() {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::AccelerometerCallback,
-                       base::Unretained(this));
-    provider_->CreateSensor(SensorType::ACCELEROMETER, std::move(callback));
-    EXPECT_TRUE(accelerometer_callback_called_);
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    provider_->CreateSensor(SensorType::ACCELEROMETER, future.GetCallback());
+    accelerometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(accelerometer_);
     EXPECT_EQ(SensorType::ACCELEROMETER, accelerometer_->GetType());
   }
 
   void CreateMagnetometer() {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::MagnetometerCallback,
-                       base::Unretained(this));
-    provider_->CreateSensor(SensorType::MAGNETOMETER, std::move(callback));
-    EXPECT_TRUE(magnetometer_callback_called_);
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    provider_->CreateSensor(SensorType::MAGNETOMETER, future.GetCallback());
+    magnetometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(magnetometer_);
     EXPECT_EQ(SensorType::MAGNETOMETER, magnetometer_->GetType());
   }
@@ -81,27 +162,19 @@ class PlatformSensorFusionTest : public testing::Test {
 
   void CreateFusionSensor(
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm) {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::PlatformSensorFusionCallback,
-                       base::Unretained(this));
-    SensorType type = fusion_algorithm->fused_type();
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    const SensorType type = fusion_algorithm->fused_type();
     PlatformSensorFusion::Create(provider_->GetSensorReadingBuffer(type),
                                  provider_.get(), std::move(fusion_algorithm),
-                                 std::move(callback));
-    EXPECT_TRUE(platform_sensor_fusion_callback_called_);
+                                 future.GetCallback());
+    fusion_sensor_ = static_cast<PlatformSensorFusion*>(future.Get().get());
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakePlatformSensorProvider> provider_;
-  bool accelerometer_callback_called_ = false;
   scoped_refptr<FakePlatformSensor> accelerometer_;
-  bool magnetometer_callback_called_ = false;
   scoped_refptr<FakePlatformSensor> magnetometer_;
-  bool platform_sensor_fusion_callback_called_ = false;
   scoped_refptr<PlatformSensorFusion> fusion_sensor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorFusionTest);
 };
 
 // The following code tests creating a fusion sensor that needs one source
@@ -356,6 +429,184 @@ TEST_F(PlatformSensorFusionTest,
       fusion_sensor_);
   EXPECT_TRUE(fusion_sensor_->StartListening(
       client.get(), PlatformSensorConfiguration(30.0)));
+}
+
+TEST_F(PlatformSensorFusionTest, FusionIsSignificantlyDifferent) {
+  // Due to inaccuracy of calculations between doubles, difference between two
+  // input values has to be bigger than the threshold value used in
+  // significantly different check.
+  CreateLinearAccelerationFusionSensor();
+  const auto* const fusion_algorithm = fusion_sensor_->fusion_algorithm();
+
+  const double kValueToFlipThreshold = fusion_algorithm->threshold() + kEpsilon;
+  const double kValueNotToFlipThreshold =
+      fusion_algorithm->threshold() - kEpsilon;
+  SensorReading reading1;
+  SensorReading reading2;
+  // Made up test values.
+  reading1.accel.x = reading2.accel.x = 0.1;
+  reading1.accel.y = reading2.accel.y = 0.5;
+  reading1.accel.z = reading2.accel.z = 10.0;
+
+  // Compared values are same.
+  // reading1: 0.1, 0.5, 10.0
+  // reading2: 0.1, 0.5, 10.0
+  EXPECT_FALSE(fusion_sensor_->IsSignificantlyDifferent(
+      reading1, reading2, fusion_sensor_->GetType()));
+
+  // Compared values do not significantly differ from each other.
+  // reading1: 0.1, 0.5, 10.0
+  // reading2: 0.1, 0.5, 10.00001
+  reading2.accel.z = reading2.accel.z + kValueNotToFlipThreshold;
+  EXPECT_FALSE(fusion_sensor_->IsSignificantlyDifferent(
+      reading1, reading2, fusion_sensor_->GetType()));
+
+  // Compared values significantly differ from each other.
+  // reading1: 0.1, 0.5, 10.0
+  // reading2: 0.1, 0.5, 10.11001
+  reading2.accel.z = reading2.accel.z + kValueToFlipThreshold;
+  EXPECT_TRUE(fusion_sensor_->IsSignificantlyDifferent(
+      reading1, reading2, fusion_sensor_->GetType()));
+}
+
+TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
+  // Accelerometer is selected as low-level sensor.
+  CreateAccelerometer();
+  EXPECT_TRUE(accelerometer_);
+  auto client_low_level_ =
+      std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
+          accelerometer_);
+
+  CreateFusionSensor(std::make_unique<CustomizableFusionAlgorithm>());
+  ASSERT_TRUE(fusion_sensor_);
+  auto* fusion_algorithm = static_cast<CustomizableFusionAlgorithm*>(
+      fusion_sensor_->fusion_algorithm());
+  EXPECT_EQ(CustomizableFusionAlgorithm::kFusionSensorType,
+            fusion_sensor_->GetType());
+
+  auto client_fusion =
+      std::make_unique<testing::NiceMock<MockPlatformSensorClient>>(
+          fusion_sensor_);
+  fusion_sensor_->StartListening(client_fusion.get(),
+                                 PlatformSensorConfiguration(10));
+
+  // Made up test values.
+  const double kTestValueX = 0.6;
+  const double kTestValueY = 0.9;
+  const double kTestValueZ = 1.1;
+  const double kValueToFlipThreshold = fusion_algorithm->threshold() + kEpsilon;
+  const double kValueToFlipThresholdRounded = fusion_algorithm->threshold();
+
+  struct TestSensorReading {
+    const struct {
+      double x;
+      double y;
+      double z;
+    } input, expected;
+    const bool expect_reading_changed_event;
+  };
+
+  const struct {
+    TestSensorReading low_level;
+    TestSensorReading fusion;
+    CustomizableFusionAlgorithm::FusionFunction fusion_function;
+  } kTestSteps[] = {
+      // Test set 1
+      // Triggers low-level and fusion reading as initial sensor
+      // values are zero.
+      {// Low-level sensor
+       {{kTestValueX, kTestValueY, kTestValueZ},
+        {kTestValueX, kTestValueY, kTestValueZ},
+        true},
+       // Fusion sensor
+       {{kTestValueX, kTestValueY, kTestValueZ},
+        {kTestValueX, kTestValueY, kTestValueZ},
+        true},
+       base::BindRepeating(&FusionAlgorithmCopyLowLevelValues)},
+
+      // Test set 2
+      // Doesn't trigger low-level reading event as rounded value is same as
+      // earlier. Because of that fusion sensor event is not either triggered.
+      {// Low-level sensor
+       {{kTestValueX + kEpsilon, kTestValueY, kTestValueZ},
+        {kTestValueX, kTestValueY, kTestValueZ},
+        false},
+       // Fusion sensor
+       {{kTestValueX, kTestValueY, kTestValueZ},
+        {kTestValueX, kTestValueY, kTestValueZ},
+        false},
+       base::BindRepeating(&FusionAlgorithmSubtractEpsilonFromX)},
+
+      // Test set 3
+      // In current code as fusion sensor values are rounded before
+      // PlatformSensorFusionAlgorithm::IsReadingSignificantlyDifferent() call
+      // the difference between values must much bigger than threshold value.
+      {// Low-level sensor
+       {{kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
+        {kTestValueX + kValueToFlipThresholdRounded, kTestValueY, kTestValueZ},
+        true},
+       // Fusion sensor
+       {{kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
+        {kTestValueX + kValueToFlipThresholdRounded, kTestValueY, kTestValueZ},
+        true},
+       base::BindRepeating(&FusionAlgorithmCopyLowLevelValues)},
+  };
+
+  for (const auto& test_step : kTestSteps) {
+    fusion_algorithm->set_fusion_function(test_step.fusion_function);
+
+    // First add low-level sensor readings.
+    SensorReading reading;
+    reading.accel.x = test_step.low_level.input.x;
+    reading.accel.y = test_step.low_level.input.y;
+    reading.accel.z = test_step.low_level.input.z;
+
+    // Code checks if PlatformSensor::OnSensorReadingChanged() is called
+    // or not called as expected.
+    if (test_step.low_level.expect_reading_changed_event) {
+      AddNewReadingAndExpectReadingChangedEvent(
+          client_low_level_.get(), reading,
+          CustomizableFusionAlgorithm::kLowLevelSensorType);
+    } else {
+      AddNewReadingAndExpectNoReadingChangedEvent(
+          client_low_level_.get(), reading,
+          CustomizableFusionAlgorithm::kLowLevelSensorType);
+    }
+
+    if (test_step.fusion.expect_reading_changed_event) {
+      ExpectReadingChangedEvent(client_fusion.get(),
+                                CustomizableFusionAlgorithm::kFusionSensorType);
+    } else {
+      ExpectNoReadingChangedEvent(
+          client_fusion.get(), CustomizableFusionAlgorithm::kFusionSensorType);
+    }
+
+    // Once new values are added, we can check that low-level sensors and
+    // fusion sensor have correct values.
+    // Check rounded low-level sensor values.
+    EXPECT_TRUE(accelerometer_->GetLatestReading(&reading));
+    EXPECT_DOUBLE_EQ(test_step.low_level.expected.x, reading.accel.x);
+    EXPECT_DOUBLE_EQ(test_step.low_level.expected.y, reading.accel.y);
+    EXPECT_DOUBLE_EQ(test_step.low_level.expected.z, reading.accel.z);
+
+    // Check raw low-level sensor values.
+    EXPECT_TRUE(accelerometer_->GetLatestRawReading(&reading));
+    EXPECT_DOUBLE_EQ(test_step.low_level.input.x, reading.accel.x);
+    EXPECT_DOUBLE_EQ(test_step.low_level.input.y, reading.accel.y);
+    EXPECT_DOUBLE_EQ(test_step.low_level.input.z, reading.accel.z);
+
+    // Check rounded fusion sensor values.
+    EXPECT_TRUE(fusion_sensor_->GetLatestReading(&reading));
+    EXPECT_DOUBLE_EQ(test_step.fusion.expected.x, reading.accel.x);
+    EXPECT_DOUBLE_EQ(test_step.fusion.expected.y, reading.accel.y);
+    EXPECT_DOUBLE_EQ(test_step.fusion.expected.z, reading.accel.z);
+
+    // Check raw fusion sensor values.
+    EXPECT_TRUE(fusion_sensor_->GetLatestRawReading(&reading));
+    EXPECT_DOUBLE_EQ(test_step.fusion.input.x, reading.accel.x);
+    EXPECT_DOUBLE_EQ(test_step.fusion.input.y, reading.accel.y);
+    EXPECT_DOUBLE_EQ(test_step.fusion.input.z, reading.accel.z);
+  }
 }
 
 }  //  namespace device

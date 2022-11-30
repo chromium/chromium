@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
 
 namespace gpu {
 class SharedContextState;
@@ -37,6 +38,7 @@ class OutputSurfaceProviderWebView {
   std::unique_ptr<viz::OutputSurface> CreateOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController*
           display_compositor_controller);
+  void MarkExpectContextLoss();
 
   const viz::RendererSettings& renderer_settings() const {
     return renderer_settings_;
@@ -52,7 +54,7 @@ class OutputSurfaceProviderWebView {
  private:
   void InitializeContext();
 
-  AwVulkanContextProvider* const vulkan_context_provider_;
+  const raw_ptr<AwVulkanContextProvider> vulkan_context_provider_;
   // The member variables are effectively const after constructor, so it's safe
   // to call accessors on different threads.
   viz::RendererSettings renderer_settings_;
@@ -60,6 +62,7 @@ class OutputSurfaceProviderWebView {
   scoped_refptr<AwGLSurface> gl_surface_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   bool enable_vulkan_;
+  raw_ptr<bool> expect_context_loss_ = nullptr;
 };
 
 }  // namespace android_webview

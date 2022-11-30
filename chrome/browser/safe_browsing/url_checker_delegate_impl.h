@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +18,9 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
   UrlCheckerDelegateImpl(
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<SafeBrowsingUIManager> ui_manager);
+
+  UrlCheckerDelegateImpl(const UrlCheckerDelegateImpl&) = delete;
+  UrlCheckerDelegateImpl& operator=(const UrlCheckerDelegateImpl&) = delete;
 
  private:
   ~UrlCheckerDelegateImpl() override;
@@ -57,8 +59,6 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
   // A list of domains allowlisted by the enterprise policy.
   std::vector<std::string> allowlist_domains_;
   SBThreatTypeSet threat_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlCheckerDelegateImpl);
 };
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -37,7 +37,7 @@ void OnHSTSQueryResultHelper(
 
 HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
     const url::Origin& https_origin,
-    PasswordStore* store,
+    PasswordStoreInterface* store,
     network::mojom::NetworkContext* network_context,
     Consumer* consumer)
     : store_(store), consumer_(consumer) {
@@ -48,14 +48,15 @@ HttpPasswordStoreMigrator::HttpPasswordStoreMigrator(
   GURL::Replacements rep;
   rep.SetSchemeStr(url::kHttpScheme);
   GURL http_origin = https_origin.GetURL().ReplaceComponents(rep);
-  PasswordStore::FormDigest form(PasswordForm::Scheme::kHtml,
-                                 http_origin.GetOrigin().spec(), http_origin);
+  PasswordFormDigest form(PasswordForm::Scheme::kHtml,
+                          http_origin.DeprecatedGetOriginAsURL().spec(),
+                          http_origin);
   http_origin_domain_ = url::Origin::Create(http_origin);
-  store_->GetLogins(form, this);
+  store_->GetLogins(form, weak_ptr_factory_.GetWeakPtr());
 
   PostHSTSQueryForHostAndNetworkContext(
       https_origin, network_context,
-      base::BindOnce(&OnHSTSQueryResultHelper, GetWeakPtr()));
+      base::BindOnce(&OnHSTSQueryResultHelper, weak_ptr_factory_.GetWeakPtr()));
 }
 
 HttpPasswordStoreMigrator::~HttpPasswordStoreMigrator() = default;
@@ -104,8 +105,11 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
                                         : HttpPasswordMigrationMode::kCopy;
   got_hsts_query_result_ = true;
 
-  if (is_hsts == HSTSResult::kYes)
-    store_->RemoveSiteStats(http_origin_domain_.GetURL());
+  if (is_hsts == HSTSResult::kYes) {
+    SmartBubbleStatsStore* stats_store = store_->GetSmartBubbleStatsStore();
+    if (stats_store)
+      stats_store->RemoveSiteStats(http_origin_domain_.GetURL());
+  }
 
   if (got_password_store_results_)
     ProcessPasswordStoreResults();

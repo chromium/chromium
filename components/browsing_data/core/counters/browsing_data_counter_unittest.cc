@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ class MockBrowsingDataCounter : public BrowsingDataCounter {
                            &MockBrowsingDataCounter::ReportResult),
                        base::Unretained(this),
                        static_cast<BrowsingDataCounter::ResultInt>(0)),
-        base::TimeDelta::FromMilliseconds(delay_ms_));
+        base::Milliseconds(delay_ms_));
   }
 
   void OnInitialized() override {}
@@ -63,7 +63,7 @@ class MockBrowsingDataCounter : public BrowsingDataCounter {
 
   // Blocks the UI thread until the counter has finished.
   void WaitForResult() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -80,11 +80,11 @@ class BrowsingDataCounterTest : public testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
-    pref_service_.reset(new TestingPrefServiceSimple());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterBooleanPref(kTestingDatatypePref, true);
     pref_service_->registry()->RegisterIntegerPref(prefs::kDeleteTimePeriod, 0);
 
-    counter_.reset(new MockBrowsingDataCounter());
+    counter_ = std::make_unique<MockBrowsingDataCounter>();
     counter_->Init(pref_service_.get(),
                    browsing_data::ClearBrowsingDataTab::ADVANCED,
                    base::DoNothing());

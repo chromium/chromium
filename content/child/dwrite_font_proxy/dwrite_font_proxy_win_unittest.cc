@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;
 
@@ -153,6 +153,24 @@ TEST_F(DWriteFontProxyUnitTest, GetFontFamilyShouldCreateFamily) {
   EXPECT_EQ(S_OK, hr);
   EXPECT_EQ(2u, fake_collection_->MessageCount());
   EXPECT_NE(nullptr, family.Get());
+}
+
+TEST_F(DWriteFontProxyUnitTest, PrewarmFamilyShouldCreateFamily) {
+  collection_->InitializePrewarmerForTesting(fake_collection_->CreateRemote());
+
+  collection_->PrewarmFamily("Arial");
+  // Run posted tasks in |ThreadPool|.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3u, fake_collection_->MessageCount());
+
+  // |FindFamilyName| should not make any mojo calls, because |PrewarmFamily|
+  // should have already created the family.
+  UINT32 index = UINT_MAX;
+  BOOL exists = FALSE;
+  HRESULT hr = collection_->FindFamilyName(L"Arial", &index, &exists);
+  EXPECT_EQ(S_OK, hr);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(3u, fake_collection_->MessageCount());
 }
 
 void CheckLocale(const std::wstring& locale_name,
@@ -337,9 +355,9 @@ TEST_F(DWriteFontProxyUnitTest, TestCustomFontFiles) {
   FakeFontCollection fonts;
   FakeFont& arial = fonts.AddFont(u"Arial").AddFamilyName(u"en-us", u"Arial");
   for (auto& path : arial_font_files) {
-    base::File file(base::FilePath(path), base::File::FLAG_OPEN |
-                                              base::File::FLAG_READ |
-                                              base::File::FLAG_EXCLUSIVE_WRITE);
+    base::File file(base::FilePath(path),
+                    base::File::FLAG_OPEN | base::File::FLAG_READ |
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     arial.AddFileHandle(std::move(file));
   }
   mswr::ComPtr<DWriteFontCollectionProxy> collection;

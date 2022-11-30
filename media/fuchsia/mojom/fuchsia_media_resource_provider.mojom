@@ -1,36 +1,44 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
+import "media/mojo/mojom/media_types.mojom";
+
 // Mojo struct for
-// fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>.
+// `fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>`.
 struct CdmRequest {
   handle<platform> request;
 };
 
-// Mojo struct for fidl::InterfaceRequest<fuchsia::media::AudioConsumer>.
-struct AudioConsumerRequest {
+// Mojo struct for `fidl::InterfaceRequest<fuchsia::media::StreamProcessor>`.
+struct StreamProcessorRequest {
   handle<platform> request;
 };
 
-// Mojo struct for fidl::InterfaceRequest<fuchsia::media::AudioCapturer>.
-struct AudioCapturerRequest {
-  handle<platform> request;
+enum VideoDecoderSecureMemoryMode {
+  // Input and output buffers are not protected.
+  CLEAR,
+
+  // Input and output buffers must be allocated in protected memory.
+  SECURE,
+
+  // Input buffers are not protected. Output buffers may be allocated in
+  // protected memory.
+  CLEAR_INPUT,
 };
 
-// Interface used by the render to create media resources. Instances are
-// document-scoped.
+// Interface used by the renderer to connect to CDM and mediacodec resources.
+// Instances are document-scoped.
 interface FuchsiaMediaResourceProvider {
   // Create connection to fuchsia::media::drm::ContentDecryptionModule for
-  // |key_system|. Implementation should make sure the persistent storage is
+  // `key_system`. Implementation should make sure the persistent storage is
   // isolated per web origin.
   CreateCdm(string key_system, CdmRequest cdm_request);
 
-  // Creates a fuchsia.media.AudioConsumer for the current frame.
-  CreateAudioConsumer(AudioConsumerRequest request);
-
-  // Creates a fuchsia.media.AudioCapturer for the current frame.
-  CreateAudioCapturer(AudioCapturerRequest request);
+  // Create connection to fuchsia::media::StreamProcessor for the specified
+  // `codec`.
+  CreateVideoDecoder(VideoCodec codec, VideoDecoderSecureMemoryMode secure_mode,
+                     StreamProcessorRequest stream_processor_request);
 };

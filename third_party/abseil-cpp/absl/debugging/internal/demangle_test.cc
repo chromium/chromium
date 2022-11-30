@@ -70,14 +70,60 @@ TEST(Demangle, Clones) {
   EXPECT_STREQ("Foo()", tmp);
   EXPECT_TRUE(Demangle("_ZL3Foov.isra.2.constprop.18", tmp, sizeof(tmp)));
   EXPECT_STREQ("Foo()", tmp);
-  // Invalid (truncated), should not demangle.
-  EXPECT_FALSE(Demangle("_ZL3Foov.clo", tmp, sizeof(tmp)));
+  // Demangle suffixes produced by -funique-internal-linkage-names.
+  EXPECT_TRUE(Demangle("_ZL3Foov.__uniq.12345", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  EXPECT_TRUE(Demangle("_ZL3Foov.__uniq.12345.isra.2.constprop.18", tmp,
+                       sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Suffixes without the number should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clo", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Suffixes with just the number should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.123", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (.clone. followed by non-number), should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clone.foo", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (.clone. followed by multiple numbers), should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clone.123.456", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (a long valid suffix), should demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.part.9.165493.constprop.775.31805", tmp,
+                       sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Invalid (. without anything else), should not demangle.
+  EXPECT_FALSE(Demangle("_ZL3Foov.", tmp, sizeof(tmp)));
+  // Invalid (. with mix of alpha and digits), should not demangle.
+  EXPECT_FALSE(Demangle("_ZL3Foov.abc123", tmp, sizeof(tmp)));
   // Invalid (.clone. not followed by number), should not demangle.
   EXPECT_FALSE(Demangle("_ZL3Foov.clone.", tmp, sizeof(tmp)));
-  // Invalid (.clone. followed by non-number), should not demangle.
-  EXPECT_FALSE(Demangle("_ZL3Foov.clone.foo", tmp, sizeof(tmp)));
   // Invalid (.constprop. not followed by number), should not demangle.
   EXPECT_FALSE(Demangle("_ZL3Foov.isra.2.constprop.", tmp, sizeof(tmp)));
+}
+
+// Test the GNU abi_tag extension.
+TEST(Demangle, AbiTags) {
+  char tmp[80];
+
+  // Mangled name generated via:
+  // struct [[gnu::abi_tag("abc")]] A{};
+  // A a;
+  EXPECT_TRUE(Demangle("_Z1aB3abc", tmp, sizeof(tmp)));
+  EXPECT_STREQ("a[abi:abc]", tmp);
+
+  // Mangled name generated via:
+  // struct B {
+  //   B [[gnu::abi_tag("xyz")]] (){};
+  // };
+  // B b;
+  EXPECT_TRUE(Demangle("_ZN1BC2B3xyzEv", tmp, sizeof(tmp)));
+  EXPECT_STREQ("B::B[abi:xyz]()", tmp);
+
+  // Mangled name generated via:
+  // [[gnu::abi_tag("foo", "bar")]] void C() {}
+  EXPECT_TRUE(Demangle("_Z1CB3barB3foov", tmp, sizeof(tmp)));
+  EXPECT_STREQ("C[abi:bar][abi:foo]()", tmp);
 }
 
 // Tests that verify that Demangle footprint is within some limit.

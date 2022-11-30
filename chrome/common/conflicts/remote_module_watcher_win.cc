@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/common/conflicts/remote_module_watcher_win.h"
 
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace {
 
@@ -70,7 +70,7 @@ void RemoteModuleWatcher::HandleModuleEvent(
 
   // Accumulate events. They will be sent when the |delay_timer_| fires.
   module_load_addresses_.push_back(
-      reinterpret_cast<uintptr_t>(event.module_load_address));
+      reinterpret_cast<uintptr_t>(event.module_load_address.get()));
 
   // Ensure the timer is running.
   delay_timer_.Reset();

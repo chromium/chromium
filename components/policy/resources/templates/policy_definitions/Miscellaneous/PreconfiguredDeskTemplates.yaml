@@ -1,0 +1,28 @@
+caption: Allow users to select a preconfigured desktop layout to load
+desc: |-
+  If set, this policy contains information to download a desk template file.  The file contains a desk template to be provisioned for the current user.
+        If not set, no preconfigured desk template will be included in the list of desk templates.  If the <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME">DeskTemplatesEnabled</ph>
+        policy is not set to true, this policy has no effect.
+example_value:
+  hash: 842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32
+  url: https://example.com/a.json
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+max_size: 1048576
+owners:
+- brianbeck@chromium.org
+- yzd@chromium.org
+schema:
+  properties:
+    hash:
+      description: The SHA-256 hash of the desk template.
+      type: string
+    url:
+      description: The URL from which the desk template can be downloaded.
+      type: string
+  type: object
+tags: []
+type: external

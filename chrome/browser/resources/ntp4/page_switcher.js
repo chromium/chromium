@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DragWrapper} from 'chrome://resources/js/cr/ui/drag_wrapper.m.js';
+import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getCardSlider} from './new_tab.js';
@@ -51,7 +51,7 @@ PageSwitcher.prototype = {
   updateButtonAccessibleLabel(dots) {
     const currentIndex = getCardSlider().currentCard;
     const nextCardIndex = this.nextCardIndex_();
-    if (nextCardIndex == currentIndex) {
+    if (nextCardIndex === currentIndex) {
       this.setAttribute('aria-label', '');  // No next card.
       return;
     }
@@ -65,7 +65,7 @@ PageSwitcher.prototype = {
 
     const currentPageTitle = currentDot.displayTitle;
     const nextPageTitle = nextDot.displayTitle;
-    const msgName = (currentPageTitle == nextPageTitle) ?
+    const msgName = (currentPageTitle === nextPageTitle) ?
         'page_switcher_same_title' :
         'page_switcher_change_title';
     const ariaLabel = loadTimeData.getStringF(msgName, nextPageTitle);
@@ -107,7 +107,7 @@ PageSwitcher.prototype = {
 
     const sourcePage = tile.tilePage;
     const targetPage = getCardSlider().currentCardValue;
-    if (targetPage == sourcePage || !targetPage.shouldAcceptDrag(e)) {
+    if (targetPage === sourcePage || !targetPage.shouldAcceptDrag(e)) {
       return;
     }
 
@@ -153,7 +153,7 @@ export function initializePageSwitcher(el) {
 
   el.addEventListener('click', el.activate_);
 
-  el.direction_ = el.id == 'page-switcher-start' ? -1 : 1;
+  el.direction_ = el.id === 'page-switcher-start' ? -1 : 1;
 
   el.dragWrapper_ = new DragWrapper(el, el);
 }

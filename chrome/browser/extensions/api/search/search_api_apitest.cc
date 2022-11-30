@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, Normal) {
 IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Incognito) {
   ResultCatcher catcher;
   CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(RunExtensionTest({.name = "search/query/incognito"},
+  ASSERT_TRUE(RunExtensionTest("search/query/incognito", {},
                                {.allow_in_incognito = true}))
       << message_;
 }
@@ -36,9 +36,9 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, MAYBE_Incognito) {
 IN_PROC_BROWSER_TEST_F(SearchApiTest, IncognitoSplit) {
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(
-      browser()->profile()->GetPrimaryOTRProfile());
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(RunExtensionTest({.name = "search/query/incognito_split"},
+  ASSERT_TRUE(RunExtensionTest("search/query/incognito_split", {},
                                {.allow_in_incognito = true}))
       << message_;
 }

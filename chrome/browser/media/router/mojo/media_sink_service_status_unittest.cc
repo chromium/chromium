@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptySinks) {
   const char expected_str[] = R"(
       {
         "available_sinks": {
-          "EXTENSION:dial:youtube" : ["3610", "id2"]
+          "DIAL:dial:youtube" : ["3610", "id2"]
         },
         "discovered_sinks": { }
       })";
@@ -68,7 +68,7 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptySinks) {
   std::vector<MediaSinkInternal> available_sinks = {dial_sink1, dial_sink2};
 
   MediaSinkServiceStatus status;
-  status.UpdateAvailableSinks(MediaRouteProviderId::EXTENSION, "dial:youtube",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::DIAL, "dial:youtube",
                               available_sinks);
 
   std::string str = status.GetStatusAsJSONString();
@@ -116,8 +116,8 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringMultipleProviders) {
   const char expected_str[] = R"(
       {
         "available_sinks": {
-          "EXTENSION:cast:netflix" : ["id2"],
-          "EXTENSION:dial:youtube" : ["id1"]
+          "CAST:cast:netflix" : ["id2"],
+          "DIAL:dial:youtube" : ["id1"]
         },
         "discovered_sinks": {
           "dial": [
@@ -151,9 +151,9 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringMultipleProviders) {
   MediaSinkServiceStatus status;
   status.UpdateDiscoveredSinks("dial", sinks1);
   status.UpdateDiscoveredSinks("cast", sinks2);
-  status.UpdateAvailableSinks(MediaRouteProviderId::EXTENSION, "dial:youtube",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::DIAL, "dial:youtube",
                               sinks1);
-  status.UpdateAvailableSinks(MediaRouteProviderId::EXTENSION, "cast:netflix",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::CAST, "cast:netflix",
                               sinks2);
 
   std::string str = status.GetStatusAsJSONString();

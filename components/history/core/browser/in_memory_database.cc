@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/history/core/browser/in_memory_database.h"
+
+#include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,7 +27,7 @@ bool InMemoryDatabase::InitDB() {
   }
 
   // No reason to leave data behind in memory when rows are removed.
-  ignore_result(db_.Execute("PRAGMA auto_vacuum=1"));
+  std::ignore = db_.Execute("PRAGMA auto_vacuum=1");
 
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {
@@ -61,7 +63,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // Attach to the history database on disk.  (We can't ATTACH in the middle of
   // a transaction.)
   sql::Statement attach(GetDB().GetUniqueStatement("ATTACH ? AS history"));
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   attach.BindString(0, history_name.value());
 #else
   attach.BindString(0, base::WideToUTF8(history_name.value()));
@@ -70,7 +72,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     return false;
 
   // Copy URL data to memory.
-  base::TimeTicks begin_load = base::TimeTicks::Now();
 
   // Need to explicitly specify the column names here since databases on disk
   // may or may not have a favicon_id column, but the in-memory one will never
@@ -91,13 +92,10 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
     // Unable to get data from the history database. This is OK, the file may
     // just not exist yet.
   }
-  UMA_HISTOGRAM_MEDIUM_TIMES("History.InMemoryDBPopulate",
-                             base::TimeTicks::Now() - begin_load);
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBItemCount",
                           db_.GetLastChangeCount());
 
   // Insert keyword search related URLs.
-  begin_load = base::TimeTicks::Now();
   if (!db_.Execute("INSERT OR IGNORE INTO urls SELECT u.id, u.url, u.title, "
                    "u.visit_count, u.typed_count, u.last_visit_time, u.hidden "
                    "FROM history.urls u JOIN history.keyword_search_terms kst "
@@ -109,7 +107,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
                           db_.GetLastChangeCount());
 
   // Copy search terms to memory.
-  begin_load = base::TimeTicks::Now();
   if (!db_.Execute(
       "INSERT INTO keyword_search_terms SELECT * FROM "
       "history.keyword_search_terms")) {

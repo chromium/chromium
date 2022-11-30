@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,14 +27,17 @@ class GeneratedResolveTimezoneByGeolocationMethodShort
     : public GeneratedTimeZonePrefBase {
  public:
   explicit GeneratedResolveTimezoneByGeolocationMethodShort(Profile* profile);
+
+  GeneratedResolveTimezoneByGeolocationMethodShort(
+      const GeneratedResolveTimezoneByGeolocationMethodShort&) = delete;
+  GeneratedResolveTimezoneByGeolocationMethodShort& operator=(
+      const GeneratedResolveTimezoneByGeolocationMethodShort&) = delete;
+
   ~GeneratedResolveTimezoneByGeolocationMethodShort() override;
 
   // GeneratedPrefsChromeOSImpl implementation:
   std::unique_ptr<settings_api::PrefObject> GetPrefObject() const override;
   SetPrefResult SetPref(const base::Value* value) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GeneratedResolveTimezoneByGeolocationMethodShort);
 };
 
 GeneratedResolveTimezoneByGeolocationMethodShort::
@@ -52,7 +55,7 @@ GeneratedResolveTimezoneByGeolocationMethodShort::GetPrefObject() const {
 
   pref_object->key = pref_name_;
   pref_object->type = settings_api::PREF_TYPE_NUMBER;
-  pref_object->value = std::make_unique<base::Value>(static_cast<int>(
+  pref_object->value = base::Value(static_cast<int>(
       g_browser_process->platform_part()
           ->GetTimezoneResolverManager()
           ->GetEffectiveUserTimeZoneResolveMethod(profile_->GetPrefs(), true)));

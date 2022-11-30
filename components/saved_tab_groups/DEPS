@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/tab_groups",
+  "+components/sync",
+  "+ui/gfx"
+]

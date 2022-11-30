@@ -1,16 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_ENTERPRISE_REPORTING_SERVICE_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/mojom/enterprise_reporting.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -30,13 +27,23 @@ class ArcEnterpriseReportingService
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcEnterpriseReportingService* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcEnterpriseReportingService* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcEnterpriseReportingService(content::BrowserContext* context,
                                 ArcBridgeService* arc_bridge_service);
+
+  ArcEnterpriseReportingService(const ArcEnterpriseReportingService&) = delete;
+  ArcEnterpriseReportingService& operator=(
+      const ArcEnterpriseReportingService&) = delete;
+
   ~ArcEnterpriseReportingService() override;
 
   // mojom::EnterpriseReportingHost overrides:
   void ReportManagementState(mojom::ManagementState state) override;
+  void ReportCloudDpcOperationTime(int64_t time_ms,
+                                   mojom::TimedCloudDpcOp op,
+                                   bool success) override;
 
  private:
   THREAD_CHECKER(thread_checker_);
@@ -44,8 +51,6 @@ class ArcEnterpriseReportingService
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
   base::WeakPtrFactory<ArcEnterpriseReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcEnterpriseReportingService);
 };
 
 }  // namespace arc

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,19 +28,19 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
 // Refreshes the UI.
 - (void)refreshContents;
 
-// Starts an asynchronous favicon load for the row at the given |indexPath|. Can
+// Starts an asynchronous favicon load for the row at the given `indexPath`. Can
 // optionally fetch a favicon from a Google server if nothing suitable is found
 // locally; otherwise uses the fallback icon style.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
         fallbackToGoogleServer:(BOOL)fallbackToGoogleServer;
 
-// Displays the table view background for the given |style|.
+// Displays the table view background for the given `style`.
 - (void)updateTableViewBackgroundStyle:(BookmarkHomeBackgroundStyle)style;
 
-// Displays the signin UI configured by |command|.
+// Displays the signin UI configured by `command`.
 - (void)showSignin:(ShowSigninCommand*)command;
 
-// Reconfigures the cell at the given |indexPath| with the given |configurator|.
+// Reconfigures the cell at the given `indexPath` with the given `configurator`.
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                                  atIndexPath:(NSIndexPath*)indexPath;

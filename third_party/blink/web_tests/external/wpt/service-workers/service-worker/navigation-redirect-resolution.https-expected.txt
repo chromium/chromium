@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL test relative opaqueredirect assert_equals: expected "https://web-platform.test:8444/service-workers/service-worker/resources/blank.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/subdir/blank.html"
+FAIL test relative opaqueredirect with CacheStorage assert_equals: expected "https://web-platform.test:8444/service-workers/service-worker/resources/blank.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/subdir/blank.html"
+FAIL test relative opaqueredirect with clone assert_equals: expected "https://web-platform.test:8444/service-workers/service-worker/resources/blank.html" but got "https://web-platform.test:8444/service-workers/service-worker/resources/subdir/blank.html"
+Harness: the test ran to completion.
+

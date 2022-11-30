@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -27,16 +27,20 @@ using testing::_;
 class MockObserver : public PartnerBookmarksShim::Observer {
  public:
   MockObserver() {}
+
+  MockObserver(const MockObserver&) = delete;
+  MockObserver& operator=(const MockObserver&) = delete;
+
   MOCK_METHOD1(PartnerShimChanged, void(PartnerBookmarksShim*));
   MOCK_METHOD1(PartnerShimLoaded, void(PartnerBookmarksShim*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockObserver);
 };
 
 class PartnerBookmarksShimTest : public testing::Test {
  public:
   PartnerBookmarksShimTest() = default;
+
+  PartnerBookmarksShimTest(const PartnerBookmarksShimTest&) = delete;
+  PartnerBookmarksShimTest& operator=(const PartnerBookmarksShimTest&) = delete;
 
   PartnerBookmarksShim* partner_bookmarks_shim() const {
     return PartnerBookmarksShim::BuildForBrowserContext(profile_.get());
@@ -64,9 +68,6 @@ class PartnerBookmarksShimTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   MockObserver observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PartnerBookmarksShimTest);
 };
 
 TEST_F(PartnerBookmarksShimTest, GetNodeByID) {
@@ -428,7 +429,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that search returns case-insensitive matches for title only.
   std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new std::u16string(u"WX"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"WX");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[1]);
@@ -436,14 +437,14 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
 
   // Ensure that every word in the search must have a match.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"WX Y"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"WX Y");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark2, nodes[0]);
 
   // Ensure that search returns matches for URL only.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"dat.com"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"dat.com");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[0]);
@@ -451,7 +452,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that folders appear in search results, and that max_count is
   // effective.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"folder"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"folder");
 
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
@@ -466,7 +467,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
 
   // Test a scenario with no search results.
   nodes.clear();
-  query.word_phrase_query.reset(new std::u16string(u"foo.com"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"foo.com");
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(0u, nodes.size());
 }

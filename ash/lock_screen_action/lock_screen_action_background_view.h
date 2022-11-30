@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -24,6 +23,12 @@ class ASH_EXPORT LockScreenActionBackgroundView
       public views::InkDropObserver {
  public:
   LockScreenActionBackgroundView();
+
+  LockScreenActionBackgroundView(const LockScreenActionBackgroundView&) =
+      delete;
+  LockScreenActionBackgroundView& operator=(
+      const LockScreenActionBackgroundView&) = delete;
+
   ~LockScreenActionBackgroundView() override;
 
   // Request the ink drop to be activated.
@@ -52,8 +57,6 @@ class ASH_EXPORT LockScreenActionBackgroundView
   views::InkDropState animating_to_state_;
 
   NoteBackground* background_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundView);
 };
 
 }  // namespace ash

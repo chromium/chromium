@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,7 @@ class ExtensionRequestNotificationTest
     return GetParam();
   }
 
-  base::Optional<message_center::Notification> GetNotification() {
+  absl::optional<message_center::Notification> GetNotification() {
     return display_service_tester_->GetNotification(
         kNotificationIds[GetNotifyType()]);
   }
@@ -92,7 +92,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   request_notification.Show(base::BindOnce(&OnNotificationClosed, true));
   show_run_loop.Run();
 
-  base::Optional<message_center::Notification> notification = GetNotification();
+  absl::optional<message_center::Notification> notification = GetNotification();
   ASSERT_TRUE(notification.has_value());
 
   EXPECT_THAT(base::UTF16ToUTF8(notification->title()),
@@ -105,14 +105,14 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
       close_run_loop.QuitClosure());
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationIds[GetNotifyType()],
-      base::Optional<int>(), base::Optional<std::u16string>());
+      absl::optional<int>(), absl::optional<std::u16string>());
   close_run_loop.Run();
 
   EXPECT_FALSE(GetNotification().has_value());
   std::string expected_url =
       std::string(kChromeWebstoreUrl) + std::string(kFakeExtensionId);
   EXPECT_EQ(GURL(expected_url),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL());
 }
 
 TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {
@@ -125,7 +125,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {
   request_notification.Show(base::BindOnce(&OnNotificationClosed, false));
   show_run_loop.Run();
 
-  base::Optional<message_center::Notification> notification = GetNotification();
+  absl::optional<message_center::Notification> notification = GetNotification();
   ASSERT_TRUE(notification.has_value());
 
   base::RunLoop close_run_loop;

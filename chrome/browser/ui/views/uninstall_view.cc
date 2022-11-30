@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,63 +14,29 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/installer/util/shell_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 UninstallView::UninstallView(int* user_selection,
                              const base::RepeatingClosure& quit_closure)
-    : confirm_label_(nullptr),
-      delete_profile_(nullptr),
-      change_default_browser_(nullptr),
-      browsers_combo_(nullptr),
-      user_selection_(*user_selection),
-      quit_closure_(quit_closure) {
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_UNINSTALL_BUTTON_TEXT));
-  SetTitle(IDS_UNINSTALL_CHROME);
-  SetAcceptCallback(
-      base::BindOnce(&UninstallView::OnDialogAccepted, base::Unretained(this)));
-  SetCancelCallback(base::BindOnce(&UninstallView::OnDialogCancelled,
-                                   base::Unretained(this)));
-  SetCloseCallback(base::BindOnce(&UninstallView::OnDialogCancelled,
-                                  base::Unretained(this)));
-  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+    : user_selection_(*user_selection), quit_closure_(quit_closure) {
   SetupControls();
 }
 
 UninstallView::~UninstallView() {
   // Exit the message loop we were started with so that uninstall can continue.
   quit_closure_.Run();
-
-  // Delete Combobox as it holds a reference to us.
-  delete browsers_combo_;
 }
 
 void UninstallView::SetupControls() {
-  using views::ColumnSet;
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // Message to confirm uninstallation.
-  int column_set_id = 0;
-  ColumnSet* column_set = layout->AddColumnSet(column_set_id);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, column_set_id);
-  auto confirm_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_UNINSTALL_VERIFY));
-  confirm_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  confirm_label_ = layout->AddView(std::move(confirm_label));
-
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-
   const int checkbox_indent = provider->GetDistanceMetric(
       DISTANCE_SUBSECTION_HORIZONTAL_INDENT);
   const int unrelated_vertical_spacing =
@@ -82,19 +48,36 @@ void UninstallView::SetupControls() {
   const int related_vertical_small = provider->GetDistanceMetric(
       DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
 
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        unrelated_vertical_spacing);
-
-  // The "delete profile" check box.
-  ++column_set_id;
-  column_set = layout->AddColumnSet(column_set_id);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, checkbox_indent);
-  column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, column_set_id);
-  delete_profile_ = layout->AddView(std::make_unique<views::Checkbox>(
-      l10n_util::GetStringUTF16(IDS_UNINSTALL_DELETE_PROFILE)));
+  auto builder =
+      views::Builder<UninstallView>(this)
+          .SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                          l10n_util::GetStringUTF16(IDS_UNINSTALL_BUTTON_TEXT))
+          .SetTitle(IDS_UNINSTALL_CHROME)
+          .SetAcceptCallback(base::BindOnce(&UninstallView::OnDialogAccepted,
+                                            base::Unretained(this)))
+          .SetCancelCallback(base::BindOnce(&UninstallView::OnDialogCancelled,
+                                            base::Unretained(this)))
+          .SetCloseCallback(base::BindOnce(&UninstallView::OnDialogCancelled,
+                                           base::Unretained(this)))
+          .set_margins(provider->GetDialogInsetsForContentType(
+              views::DialogContentType::kText, views::DialogContentType::kText))
+          .SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical))
+          .AddChildren(
+              // Message to confirm uninstallation.
+              views::Builder<views::Label>()
+                  .SetText(l10n_util::GetStringUTF16(IDS_UNINSTALL_VERIFY))
+                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetProperty(
+                      views::kMarginsKey,
+                      gfx::Insets::TLBR(0, 0, unrelated_vertical_spacing, 0)),
+              // The "delete profile" check box.
+              views::Builder<views::Checkbox>()
+                  .CopyAddressTo(&delete_profile_)
+                  .SetText(
+                      l10n_util::GetStringUTF16(IDS_UNINSTALL_DELETE_PROFILE))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, checkbox_indent, 0, 0)));
 
   // Set default browser combo box. If the default should not or cannot be
   // changed, widgets are not shown. We assume here that if Chrome cannot
@@ -105,40 +88,38 @@ void UninstallView::SetupControls() {
     browsers_ = std::make_unique<BrowsersMap>();
     ShellUtil::GetRegisteredBrowsers(browsers_.get());
     if (!browsers_->empty()) {
-      layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                            related_vertical_spacing);
-
-      ++column_set_id;
-      column_set = layout->AddColumnSet(column_set_id);
-      column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                   checkbox_indent);
-      column_set->AddColumn(views::GridLayout::LEADING,
-                            views::GridLayout::CENTER,
-                            views::GridLayout::kFixedSize,
-                            views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-      column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                   related_horizontal_spacing);
-      column_set->AddColumn(views::GridLayout::LEADING,
-                            views::GridLayout::CENTER,
-                            views::GridLayout::kFixedSize,
-                            views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-      layout->StartRow(views::GridLayout::kFixedSize, column_set_id);
-      change_default_browser_ =
-          layout->AddView(std::make_unique<views::Checkbox>(
-              l10n_util::GetStringUTF16(IDS_UNINSTALL_SET_DEFAULT_BROWSER),
-              base::BindRepeating(
-                  [](UninstallView* view) {
-                    view->browsers_combo_->SetEnabled(
-                        view->change_default_browser_->GetChecked());
-                  },
-                  this)));
-      browsers_combo_ =
-          layout->AddView(std::make_unique<views::Combobox>(this));
-      browsers_combo_->SetEnabled(false);
+      builder.AddChildren(
+          views::Builder<views::View>().SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(related_vertical_spacing, 0, 0, 0)),
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+              .SetBetweenChildSpacing(related_horizontal_spacing)
+              .AddChildren(
+                  views::Builder<views::Checkbox>()
+                      .CopyAddressTo(&change_default_browser_)
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_UNINSTALL_SET_DEFAULT_BROWSER))
+                      .SetCallback(base::BindRepeating(
+                          [](UninstallView* view) {
+                            view->browsers_combo_->SetEnabled(
+                                view->change_default_browser_->GetChecked());
+                          },
+                          base::Unretained(this)))
+                      .SetProperty(views::kMarginsKey,
+                                   gfx::Insets::TLBR(0, checkbox_indent, 0, 0)),
+                  views::Builder<views::Combobox>()
+                      .CopyAddressTo(&browsers_combo_)
+                      .SetModel(this)
+                      .SetEnabled(false)));
     }
   }
 
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, related_vertical_small);
+  std::move(builder)
+      .AddChild(views::Builder<views::View>().SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(related_vertical_small, 0, 0, 0)))
+      .BuildChildren();
 }
 
 void UninstallView::OnDialogAccepted() {
@@ -147,7 +128,7 @@ void UninstallView::OnDialogAccepted() {
     user_selection_ = chrome::RESULT_CODE_UNINSTALL_DELETE_PROFILE;
   if (change_default_browser_ && change_default_browser_->GetChecked()) {
     BrowsersMap::const_iterator i = browsers_->begin();
-    std::advance(i, browsers_combo_->GetSelectedIndex());
+    std::advance(i, browsers_combo_->GetSelectedIndex().value());
     base::LaunchOptions options;
     options.start_hidden = true;
     base::LaunchProcess(i->second, options);
@@ -158,13 +139,13 @@ void UninstallView::OnDialogCancelled() {
   user_selection_ = chrome::RESULT_CODE_UNINSTALL_USER_CANCEL;
 }
 
-int UninstallView::GetItemCount() const {
+size_t UninstallView::GetItemCount() const {
   DCHECK(!browsers_->empty());
   return browsers_->size();
 }
 
-std::u16string UninstallView::GetItemAt(int index) const {
-  DCHECK_LT(index, static_cast<int>(browsers_->size()));
+std::u16string UninstallView::GetItemAt(size_t index) const {
+  DCHECK_LT(index, browsers_->size());
   BrowsersMap::const_iterator i = browsers_->begin();
   std::advance(i, index);
   return base::WideToUTF16(i->first);

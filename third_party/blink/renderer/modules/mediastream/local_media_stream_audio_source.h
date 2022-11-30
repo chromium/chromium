@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "media/base/audio_capturer_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -38,12 +39,16 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
       ConstraintsRepeatingCallback started_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  LocalMediaStreamAudioSource(const LocalMediaStreamAudioSource&) = delete;
+  LocalMediaStreamAudioSource& operator=(const LocalMediaStreamAudioSource&) =
+      delete;
+
   ~LocalMediaStreamAudioSource() final;
 
   // MediaStreamAudioSource implementation.
   void ChangeSourceImpl(const MediaStreamDevice& new_device) final;
 
-  base::Optional<AudioProcessingProperties> GetAudioProcessingProperties()
+  absl::optional<AudioProcessingProperties> GetAudioProcessingProperties()
       const final;
 
  private:
@@ -57,7 +62,8 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
                base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) final;
-  void OnCaptureError(const std::string& message) final;
+  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
+                      const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final;
 
   // The LocalFrame that will consume the audio data. Used when creating
@@ -77,8 +83,6 @@ class MODULES_EXPORT LocalMediaStreamAudioSource final
   // In debug builds, check that all methods that could cause object graph
   // or data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMediaStreamAudioSource);
 };
 
 }  // namespace blink

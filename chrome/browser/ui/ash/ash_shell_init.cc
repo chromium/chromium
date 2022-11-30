@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/shell_init_params.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/chrome_shell_delegate.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui_factory.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/browser/context_factory.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -26,8 +26,7 @@ void CreateShell() {
   shell_init_params.local_state = g_browser_process->local_state();
   shell_init_params.keyboard_ui_factory =
       std::make_unique<ChromeKeyboardUIFactory>();
-  shell_init_params.dbus_bus =
-      chromeos::DBusThreadManager::Get()->GetSystemBus();
+  shell_init_params.dbus_bus = ash::DBusThreadManager::Get()->GetSystemBus();
 
   ash::Shell::CreateInstance(std::move(shell_init_params));
 }

@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview provides a reusable youtube UI component given a youtube data
@@ -59,137 +51,15 @@
  *     'https://www.youtube.com/watch?v=ddl5f44spwQ');
  * </pre>
  *
- * Requires flash to actually work.
  */
 
-
-goog.provide('goog.ui.media.Youtube');
 goog.provide('goog.ui.media.YoutubeModel');
 
-goog.require('goog.dom.TagName');
 goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.string');
 goog.require('goog.string.Const');
-goog.require('goog.ui.Component');
-goog.require('goog.ui.media.FlashObject');
-goog.require('goog.ui.media.Media');
+
 goog.require('goog.ui.media.MediaModel');
-goog.require('goog.ui.media.MediaRenderer');
-
-
-
-/**
- * Subclasses a goog.ui.media.MediaRenderer to provide a Youtube specific media
- * renderer.
- *
- * This class knows how to parse youtube urls, and render the DOM structure
- * of youtube video players and previews. This class is meant to be used as a
- * singleton static stateless class, that takes `goog.ui.media.Media`
- * instances and renders it. It expects `goog.ui.media.Media.getModel` to
- * return a well formed, previously constructed, youtube video id, which is the
- * data model this renderer will use to construct the DOM structure.
- * {@see goog.ui.media.Youtube.newControl} for a example of constructing a
- * control with this renderer.
- *
- * goog.ui.media.Youtube currently supports all {@link goog.ui.Component.State}.
- * It will change its DOM structure between SELECTED and !SELECTED, and rely on
- * CSS definitions on the others. On !SELECTED, the renderer will render a
- * youtube static `<img>`, with a thumbnail of the video. On SELECTED, the
- * renderer will append to the DOM a flash object, that contains the youtube
- * video.
- *
- * This design is patterned after http://go/closure_control_subclassing
- *
- * It uses {@link goog.ui.media.FlashObject} to embed the flash object.
- *
- * @constructor
- * @extends {goog.ui.media.MediaRenderer}
- * @final
- */
-goog.ui.media.Youtube = function() {
-  goog.ui.media.MediaRenderer.call(this);
-};
-goog.inherits(goog.ui.media.Youtube, goog.ui.media.MediaRenderer);
-goog.addSingletonGetter(goog.ui.media.Youtube);
-
-
-/**
- * A static convenient method to construct a goog.ui.media.Media control out of
- * a youtube model. It sets it as the data model goog.ui.media.Youtube renderer
- * uses, sets the states supported by the renderer, and returns a Control that
- * binds everything together. This is what you should be using for constructing
- * Youtube videos, except if you need finer control over the configuration.
- *
- * @param {goog.ui.media.YoutubeModel} youtubeModel The youtube data model.
- * @param {goog.dom.DomHelper=} opt_domHelper Optional DOM helper, used for
- *     document interaction.
- * @return {!goog.ui.media.Media} A Control binded to the youtube renderer.
- */
-goog.ui.media.Youtube.newControl = function(youtubeModel, opt_domHelper) {
-  var control = new goog.ui.media.Media(
-      youtubeModel, goog.ui.media.Youtube.getInstance(), opt_domHelper);
-  control.setStateInternal(goog.ui.Component.State.ACTIVE);
-  return control;
-};
-
-
-/**
- * Default CSS class to be applied to the root element of components rendered
- * by this renderer.
- * @type {string}
- */
-goog.ui.media.Youtube.CSS_CLASS = goog.getCssName('goog-ui-media-youtube');
-
-
-/**
- * Changes the state of a `control`. Currently only changes the DOM
- * structure when the youtube movie is SELECTED (by default fired by a MOUSEUP
- * on the thumbnail), which means we have to embed the youtube flash video and
- * play it.
- *
- * @param {goog.ui.Control} c The media control.
- * @param {goog.ui.Component.State} state The state to be set or cleared.
- * @param {boolean} enable Whether the state is enabled or disabled.
- * @override
- */
-goog.ui.media.Youtube.prototype.setState = function(c, state, enable) {
-  var control = /** @type {goog.ui.media.Media} */ (c);
-  goog.ui.media.Youtube.superClass_.setState.call(this, control, state, enable);
-
-  // control.createDom has to be called before any state is set.
-  // Use control.setStateInternal if you need to set states
-  if (!control.getElement()) {
-    throw new Error(goog.ui.Component.Error.STATE_INVALID);
-  }
-
-  var domHelper = control.getDomHelper();
-  var dataModel =
-      /** @type {goog.ui.media.YoutubeModel} */ (control.getDataModel());
-
-  if (!!(state & goog.ui.Component.State.SELECTED) && enable) {
-    var flashEls = domHelper.getElementsByTagNameAndClass(
-        goog.dom.TagName.DIV, goog.ui.media.FlashObject.CSS_CLASS,
-        control.getElement());
-    if (flashEls.length > 0) {
-      return;
-    }
-    var youtubeFlash = new goog.ui.media.FlashObject(
-        dataModel.getPlayer().getTrustedResourceUrl(), domHelper);
-    control.addChild(youtubeFlash, true);
-  }
-};
-
-
-/**
- * Returns the CSS class to be applied to the root element of components
- * rendered using this renderer.
- *
- * @return {string} Renderer-specific CSS class.
- * @override
- */
-goog.ui.media.Youtube.prototype.getCssClass = function() {
-  return goog.ui.media.Youtube.CSS_CLASS;
-};
 
 
 
@@ -207,6 +77,7 @@ goog.ui.media.Youtube.prototype.getCssClass = function() {
  * @final
  */
 goog.ui.media.YoutubeModel = function(videoId, opt_caption, opt_description) {
+  'use strict';
   goog.ui.media.MediaModel.call(
       this, goog.ui.media.YoutubeModel.buildUrl(videoId), opt_caption,
       opt_description, goog.ui.media.MediaModel.MimeType.FLASH);
@@ -290,9 +161,10 @@ goog.ui.media.YoutubeModel.MATCHER_ = new RegExp(
  */
 goog.ui.media.YoutubeModel.newInstance = function(
     youtubeUrl, opt_caption, opt_description) {
-  var extract = goog.ui.media.YoutubeModel.MATCHER_.exec(youtubeUrl);
+  'use strict';
+  const extract = goog.ui.media.YoutubeModel.MATCHER_.exec(youtubeUrl);
   if (extract) {
-    var videoId = extract[1] || extract[2] || extract[3];
+    const videoId = extract[1] || extract[2] || extract[3];
     return new goog.ui.media.YoutubeModel(
         videoId, opt_caption, opt_description);
   }
@@ -309,6 +181,7 @@ goog.ui.media.YoutubeModel.newInstance = function(
  * @return {string} The youtube URL.
  */
 goog.ui.media.YoutubeModel.buildUrl = function(videoId) {
+  'use strict';
   return 'https://www.youtube.com/watch?v=' + goog.string.urlEncode(videoId);
 };
 
@@ -317,9 +190,9 @@ goog.ui.media.YoutubeModel.buildUrl = function(videoId) {
  * A static auxiliary method that builds a static image URL with a preview of
  * the youtube video.
  *
- * NOTE(user): patterned after Gmail's gadgets/youtube,
+ * NOTE(goto): patterned after Gmail's gadgets/youtube,
  *
- * TODO(user): how do I specify the width/height of the resulting image on the
+ * TODO(goto): how do I specify the width/height of the resulting image on the
  * url ? is there an official API for https://ytimg.com ?
  *
  * @param {string} youtubeId The youtube video ID.
@@ -327,6 +200,7 @@ goog.ui.media.YoutubeModel.buildUrl = function(videoId) {
  *     movie.
  */
 goog.ui.media.YoutubeModel.getThumbnailUrl = function(youtubeId) {
+  'use strict';
   return 'https://i.ytimg.com/vi/' + youtubeId + '/default.jpg';
 };
 
@@ -342,6 +216,7 @@ goog.ui.media.YoutubeModel.getThumbnailUrl = function(youtubeId) {
  *     page.
  */
 goog.ui.media.YoutubeModel.getFlashUrl = function(videoId, opt_autoplay) {
+  'use strict';
   // YouTube video ids are extracted from youtube URLs, which are user
   // generated input. The video id is later used to embed a flash object,
   // which is generated through HTML construction.
@@ -360,5 +235,6 @@ goog.ui.media.YoutubeModel.getFlashUrl = function(videoId, opt_autoplay) {
  * @return {string} The Youtube video id.
  */
 goog.ui.media.YoutubeModel.prototype.getVideoId = function() {
+  'use strict';
   return this.videoId_;
 };

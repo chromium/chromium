@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -22,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -46,6 +46,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,24 +89,30 @@ public class LocationBarModelTest {
     @SmallTest
     public void testDisplayAndEditText() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestLocationBarModel model = new TestLocationBarModel();
-            model.mUrl = UrlConstants.NTP_URL;
+            TestLocationBarModel model = new TestLocationBarModel(mActivityTestRule.getActivity());
+            model.mUrl = UrlConstants.ntpGurl();
             assertDisplayAndEditText(model, "", null);
 
-            model.mUrl = "chrome://about";
-            model.mDisplayUrl = "chrome://about";
-            model.mFullUrl = "chrome://about";
+            model.mUrl = new GURL(JUnitTestGURLs.CHROME_ABOUT);
+            model.mDisplayUrl = JUnitTestGURLs.CHROME_ABOUT;
+            model.mFullUrl = JUnitTestGURLs.CHROME_ABOUT;
             assertDisplayAndEditText(model, "chrome://about", "chrome://about");
 
-            model.mUrl = "https://www.foo.com";
-            model.mDisplayUrl = "https://foo.com";
-            model.mFullUrl = "https://foo.com";
-            assertDisplayAndEditText(model, "https://foo.com", "https://foo.com");
+            model.mUrl = new GURL(JUnitTestGURLs.URL_1);
+            model.mDisplayUrl = "https://one.com";
+            model.mFullUrl = "https://one.com";
+            assertDisplayAndEditText(model, "https://one.com", "https://one.com");
 
-            model.mUrl = "https://www.foo.com";
-            model.mDisplayUrl = "foo.com";
-            model.mFullUrl = "https://foo.com";
-            assertDisplayAndEditText(model, "foo.com", "https://foo.com");
+            model.mDisplayUrl = "one.com";
+            assertDisplayAndEditText(model, "one.com", "https://one.com");
+
+            // https://crbug.com/1214481
+            model.mUrl = GURL.emptyGURL();
+            model.mDisplayUrl = "about:blank";
+            model.mFullUrl = "about:blank";
+            assertDisplayAndEditText(model, "about:blank", "about:blank");
+
+            model.destroy();
         });
     }
 
@@ -154,7 +162,7 @@ public class LocationBarModelTest {
             mActivityTestRule.getActivity().getTabModelSelector().selectModel(/*incognito=*/
                     toIncognito);
             mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER);
+                    0, TabSelectionType.FROM_USER, false);
         });
 
         assertEquals(toIncognito, locationBarModel.isIncognito());
@@ -242,11 +250,11 @@ public class LocationBarModelTest {
     private class TestLocationBarModel extends LocationBarModel {
         private String mDisplayUrl;
         private String mFullUrl;
-        private String mUrl;
+        private GURL mUrl;
 
-        public TestLocationBarModel() {
+        public TestLocationBarModel(Context context) {
             // clang-format off
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
+            super(context, NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                     window -> null, new LocationBarModel.OfflineStatus() {},
                     SearchEngineLogoUtils.getInstance());
@@ -269,7 +277,12 @@ public class LocationBarModelTest {
 
         @Override
         public String getCurrentUrl() {
-            return mUrl == null ? super.getCurrentUrl() : mUrl;
+            return mUrl == null ? super.getCurrentUrl() : mUrl.getSpec();
+        }
+
+        @Override
+        public GURL getCurrentGurl() {
+            return mUrl == null ? super.getCurrentGurl() : mUrl;
         }
 
         @Override

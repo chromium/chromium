@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,38 +11,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId WrongHWIDScreenView::kScreenId;
+WrongHWIDScreenHandler::WrongHWIDScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-WrongHWIDScreenHandler::WrongHWIDScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.WrongHWIDMessageScreen.userActed");
-}
-
-WrongHWIDScreenHandler::~WrongHWIDScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+WrongHWIDScreenHandler::~WrongHWIDScreenHandler() = default;
 
 void WrongHWIDScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void WrongHWIDScreenHandler::Hide() {
-}
-
-void WrongHWIDScreenHandler::Bind(WrongHWIDScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void WrongHWIDScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  ShowInWebUI();
 }
 
 void WrongHWIDScreenHandler::DeclareLocalizedValues(
@@ -54,13 +29,6 @@ void WrongHWIDScreenHandler::DeclareLocalizedValues(
                 IDS_WRONG_HWID_SCREEN_MESSAGE_SECOND_PART);
   builder->Add("wrongHWIDScreenSkipLink",
                 IDS_WRONG_HWID_SCREEN_SKIP_LINK);
-}
-
-void WrongHWIDScreenHandler::Initialize() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
 }
 
 }  // namespace chromeos

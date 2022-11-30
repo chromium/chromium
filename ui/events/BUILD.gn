@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ if (is_ios) {
 static_library("dom_keycode_converter") {
   public = [
     "keycodes/dom/dom_code.h",
-    "keycodes/dom/dom_codes.h",
+    "keycodes/dom/dom_codes_array.h",
     "keycodes/dom/dom_key.h",
     "keycodes/dom/keycode_converter.h",
   ]
@@ -54,7 +54,7 @@ static_library("dom_keyboard_layout") {
     "//base",
   ]
 
-  if (is_win || is_mac || use_ozone || use_x11) {
+  if (is_win || is_mac || use_ozone) {
     public += [ "keycodes/dom/dom_keyboard_layout_map.h" ]
 
     sources += [
@@ -90,6 +90,8 @@ source_set("event_constants") {
 
 source_set("platform_event") {
   sources = [ "platform_event.h" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("events_base") {
@@ -99,8 +101,6 @@ component("events_base") {
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
-    "fraction_of_time_without_user_input_recorder.cc",
-    "fraction_of_time_without_user_input_recorder.h",
     "gesture_curve.h",
     "gesture_event_details.cc",
     "gesture_event_details.h",
@@ -138,6 +138,8 @@ component("events_base") {
     sources += [
       "keycodes/keyboard_code_conversion_win.cc",
       "keycodes/keyboard_code_conversion_win.h",
+      "keycodes/keyboard_codes_win.h",
+      "keycodes/keyboard_defines_win.h",
     ]
   }
 
@@ -158,7 +160,16 @@ component("events_base") {
     "//ui/gfx/geometry",
   ]
 
-  if (use_x11 || ozone_platform_x11) {
+  if (is_fuchsia) {
+    sources += [
+      "keycodes/keyboard_code_conversion_fuchsia.cc",
+      "keycodes/keyboard_code_conversion_fuchsia.h",
+    ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3" ]
+  }
+
+  if (ozone_platform_x11) {
     public_deps += [ "//ui/events/keycodes:x11" ]
 
     # TODO(https://crbug.com/1076277): This dependency on //ui/gfx/x
@@ -200,7 +211,6 @@ component("events") {
     "events_export.h",
     "gestures/gesture_recognizer.h",
     "gestures/gesture_types.h",
-    "keyboard_hook.h",
     "null_event_targeter.h",
     "scoped_target_handler.h",
   ]
@@ -220,8 +230,6 @@ component("events") {
     "events_stub.cc",
     "gestures/gesture_recognizer.cc",
     "gestures/gesture_types.cc",
-    "keyboard_hook_base.cc",
-    "keyboard_hook_base.h",
     "null_event_targeter.cc",
     "scoped_target_handler.cc",
   ]
@@ -229,8 +237,6 @@ component("events") {
   if (is_win) {
     public += [
       "win/events_win_utils.h",
-      "win/keyboard_hook_monitor.h",
-      "win/keyboard_hook_observer.h",
       "win/system_event_state_lookup.h",
     ]
 
@@ -239,12 +245,6 @@ component("events") {
       "keycodes/platform_key_map_win.h",
       "win/events_win.cc",
       "win/events_win_utils.cc",
-      "win/keyboard_hook_monitor_impl.cc",
-      "win/keyboard_hook_monitor_impl.h",
-      "win/keyboard_hook_win_base.cc",
-      "win/keyboard_hook_win_base.h",
-      "win/media_keyboard_hook_win.cc",
-      "win/modifier_keyboard_hook_win.cc",
       "win/system_event_state_lookup.cc",
     ]
   }
@@ -256,7 +256,6 @@ component("events") {
       "cocoa/cocoa_event_utils.mm",
       "cocoa/events_mac.mm",
       "gestures/gesture_recognizer_impl_mac.cc",
-      "mac/keyboard_hook_mac.mm",
     ]
   }
 
@@ -288,14 +287,7 @@ component("events") {
   # template which generates different target names on different platforms.
   friend = [ ":*" ]
 
-  if (use_x11) {
-    sources += [
-      "x/keyboard_hook_x11.cc",
-      "x/keyboard_hook_x11.h",
-    ]
-  }
-
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     public += [ "x/x11_event_translation.h" ]
     sources += [ "x/x11_event_translation.cc" ]
     deps += [
@@ -311,14 +303,8 @@ component("events") {
     configs += [ "//build/config/linux:glib" ]
   }
 
-  if (use_ozone || use_x11) {
+  if (use_ozone) {
     sources += [ "events_default.cc" ]
-
-    if (is_linux || is_chromeos) {
-      # TODO(https://crbug.com/1099225): refactor X11 kbd hook and implement
-      # that for Ozone.
-      sources += [ "keyboard_hook_linux.cc" ]
-    }
   }
 
   if (is_win && use_ozone) {
@@ -326,14 +312,8 @@ component("events") {
   }
 
   if (use_ozone) {
-    public += [
-      "ozone/events_ozone.h",
-      "ozone/keyboard_hook_ozone.h",
-    ]
-    sources += [
-      "ozone/events_ozone.cc",
-      "ozone/keyboard_hook_ozone.cc",
-    ]
+    public += [ "ozone/events_ozone.h" ]
+    sources += [ "ozone/events_ozone.cc" ]
     deps += [
       "//ui/base:features",
       "//ui/events/ozone/layout",
@@ -355,7 +335,7 @@ component("events") {
     deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (is_win || is_mac || use_x11 || use_ozone) {
+  if (is_win || is_mac || use_ozone) {
     sources -= [ "events_stub.cc" ]
   }
 
@@ -375,7 +355,6 @@ component("events") {
       "android/gesture_event_android.cc",
       "android/key_event_android.cc",
       "android/key_event_utils.cc",
-      "android/keyboard_hook_android.cc",
       "android/motion_event_android.cc",
     ]
     deps += [
@@ -392,9 +371,71 @@ component("events") {
     public += [
       "fuchsia/input_event_dispatcher.h",
       "fuchsia/input_event_sink.h",
+      "fuchsia/pointer_events_handler.h",
     ]
-    sources += [ "fuchsia/input_event_dispatcher.cc" ]
-    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input" ]
+    sources += [
+      "fuchsia/input_event_dispatcher.cc",
+      "fuchsia/pointer_events_handler.cc",
+    ]
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+    ]
+  }
+}
+
+component("keyboard_hook") {
+  public = [ "keyboard_hook.h" ]
+
+  defines = [ "IS_KEYBOARD_HOOK_IMPL" ]
+
+  sources = [
+    "keyboard_hook_base.cc",
+    "keyboard_hook_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+  ]
+
+  # Expose the internals of this target to other packages in this BUILD file
+  # so the unit tests can access the private header files.
+  friend = [ ":*" ]
+
+  if (is_win) {
+    public += [
+      "win/keyboard_hook_monitor.h",
+      "win/keyboard_hook_observer.h",
+    ]
+
+    sources += [
+      "win/keyboard_hook_monitor_impl.cc",
+      "win/keyboard_hook_monitor_impl.h",
+      "win/keyboard_hook_win_base.cc",
+      "win/keyboard_hook_win_base.h",
+      "win/media_keyboard_hook_win.cc",
+      "win/modifier_keyboard_hook_win.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [ "mac/keyboard_hook_mac.mm" ]
+  }
+
+  if (use_ozone) {
+    public += [ "ozone/keyboard_hook_ozone.h" ]
+    sources += [ "ozone/keyboard_hook_ozone.cc" ]
+    deps += [
+      "//ui/base:features",
+      "//ui/ozone",
+    ]
+  }
+
+  if (is_android) {
+    sources += [ "android/keyboard_hook_android.cc" ]
   }
 }
 
@@ -454,7 +495,7 @@ component("gesture_detection") {
 
   if (is_android) {
     sources += [ "gesture_detection/gesture_configuration_android.cc" ]
-  } else if (is_chromecast) {
+  } else if (is_castos) {
     sources += [ "gesture_detection/gesture_configuration_cast.cc" ]
   } else if (use_aura) {
     sources += [ "gesture_detection/gesture_configuration_aura.cc" ]
@@ -475,6 +516,8 @@ static_library("test_support") {
     "test/motion_event_test_utils.h",
     "test/platform_event_source_test_api.cc",
     "test/platform_event_source_test_api.h",
+    "test/test_event.cc",
+    "test/test_event.h",
     "test/test_event_handler.cc",
     "test/test_event_handler.h",
     "test/test_event_processor.cc",
@@ -489,14 +532,6 @@ static_library("test_support") {
     "test/test_event_targeter.cc",
     "test/test_event_targeter.h",
   ]
-
-  if (is_win) {
-    sources += [
-      "test/keyboard_hook_monitor_utils.cc",
-      "test/keyboard_hook_monitor_utils.h",
-      "test/keyboard_layout_win.cc",
-    ]
-  }
 
   if (is_mac) {
     sources += [
@@ -522,11 +557,20 @@ static_library("test_support") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_win) {
+    sources += [
+      "test/keyboard_hook_monitor_utils.cc",
+      "test/keyboard_hook_monitor_utils.h",
+      "test/keyboard_layout_win.cc",
+    ]
+    deps += [ "//ui/events:keyboard_hook" ]
+  }
+
   if (is_mac) {
     frameworks = [ "Carbon.framework" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     sources += [
       "test/events_test_utils_x11.cc",
       "test/events_test_utils_x11.h",
@@ -548,6 +592,19 @@ static_library("test_support") {
       "//ui/events/ozone/layout",
     ]
   }
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/fakes/fake_mouse_source.cc",
+      "fuchsia/fakes/fake_mouse_source.h",
+      "fuchsia/fakes/fake_touch_source.cc",
+      "fuchsia/fakes/fake_touch_source.h",
+      "fuchsia/fakes/pointer_event_utility.cc",
+      "fuchsia/fakes/pointer_event_utility.h",
+    ]
+
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer" ]
+  }
 }
 
 if (!is_ios) {
@@ -564,7 +621,6 @@ if (!is_ios) {
       "event_rewriter_unittest.cc",
       "event_target_unittest.cc",
       "event_unittest.cc",
-      "fraction_of_time_without_user_input_recorder_unittest.cc",
       "gesture_detection/bitset_32_unittest.cc",
       "gesture_detection/filtered_gesture_provider_unittest.cc",
       "gesture_detection/gesture_event_data_packet_unittest.cc",
@@ -589,14 +645,6 @@ if (!is_ios) {
       sources += [ "cocoa/events_mac_unittest.mm" ]
     }
 
-    if (is_win) {
-      sources += [
-        "keycodes/platform_key_map_win_unittest.cc",
-        "win/event_utils_win_unittest.cc",
-        "win/media_keyboard_hook_win_unittest.cc",
-        "win/modifier_keyboard_hook_win_unittest.cc",
-      ]
-    }
     if (is_linux || is_chromeos || is_win) {
       sources += [ "keyboard_event_counter_unittest.cc" ]
     }
@@ -637,7 +685,7 @@ if (!is_ios) {
       data_deps = [ "//third_party/mesa_headers" ]
     }
 
-    if (use_x11 || use_ozone) {
+    if (use_ozone) {
       sources += [ "devices/device_data_manager_unittest.cc" ]
     }
 
@@ -656,16 +704,32 @@ if (!is_ios) {
     }
 
     if (is_win) {
-      sources += [ "blink/web_input_event_builders_win_unittest.cc" ]
+      sources += [
+        "blink/web_input_event_builders_win_unittest.cc",
+        "keycodes/platform_key_map_win_unittest.cc",
+        "win/event_utils_win_unittest.cc",
+        "win/media_keyboard_hook_win_unittest.cc",
+        "win/modifier_keyboard_hook_win_unittest.cc",
+      ]
+      deps += [ "//ui/events:keyboard_hook" ]
     }
 
-    if (is_chromecast && !is_android) {
+    if (is_castos) {
       sources += [ "chromecast/scroller_unittest.cc" ]
     }
 
     if (is_fuchsia) {
-      sources += [ "fuchsia/input_event_dispatcher_unittest.cc" ]
-      deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input" ]
+      sources += [
+        "fuchsia/input_event_dispatcher_unittest.cc",
+        "fuchsia/pointer_events_handler_unittest.cc",
+        "keycodes/keyboard_code_conversion_fuchsia_unittest.cc",
+      ]
+
+      deps += [
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+        "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+      ]
     }
 
     if (is_win || is_mac || use_ozone) {
@@ -694,6 +758,7 @@ source_set("events_interactive_ui_tests") {
 
     deps = [
       ":events",
+      ":keyboard_hook",
       ":test_support",
       "//base/test:test_support",
       "//testing/gtest",

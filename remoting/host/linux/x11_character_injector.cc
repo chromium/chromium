@@ -1,18 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/linux/x11_character_injector.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "remoting/host/linux/x11_keyboard.h"
 
 namespace {
 
-constexpr base::TimeDelta kMappingExpireDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kMappingExpireDuration = base::Milliseconds(200);
 
 }  // namespace
 
@@ -38,7 +37,7 @@ X11CharacterInjector::X11CharacterInjector(
     std::unique_ptr<X11Keyboard> keyboard)
     : keyboard_(std::move(keyboard)) {
   std::vector<uint32_t> keycodes = keyboard_->GetUnusedKeycodes();
-  for (int keycode : keycodes) {
+  for (uint32_t keycode : keycodes) {
     available_keycodes_.push_back({keycode, base::TimeTicks()});
   }
 }
@@ -97,9 +96,8 @@ X11CharacterInjector::MapResult X11CharacterInjector::MapCharacter(
 
   if (keyboard_->FindKeycode(code_point, &result.keycode, &result.modifiers)) {
     uint32_t keycode = result.keycode;
-    auto position = std::find_if(
-        available_keycodes_.begin(), available_keycodes_.end(),
-        [keycode](const KeyInfo& info) { return info.keycode == keycode; });
+    auto position =
+        base::ranges::find(available_keycodes_, keycode, &KeyInfo::keycode);
     if (position != available_keycodes_.end()) {
       ResetKeyInfoExpirationTime(now, position);
     }

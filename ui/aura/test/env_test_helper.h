@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/input_state_lookup.h"
@@ -20,6 +20,10 @@ class EnvTestHelper {
  public:
   EnvTestHelper() : EnvTestHelper(Env::GetInstance()) {}
   explicit EnvTestHelper(Env* env) : env_(env) {}
+
+  EnvTestHelper(const EnvTestHelper&) = delete;
+  EnvTestHelper& operator=(const EnvTestHelper&) = delete;
+
   ~EnvTestHelper() {}
 
   void SetInputStateLookup(
@@ -34,19 +38,13 @@ class EnvTestHelper {
     env_->env_controller_->touch_ids_down_ = 0;
   }
 
-  // Reset aura::Env to eliminate potential test dependency.
-  // (https://crbug.com/586514)
-  void ResetEnvForTesting() { env_->is_touch_down_ = false; }
-
   void SetGestureRecognizer(
       std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
     env_->gesture_recognizer_ = std::move(gesture_recognizer);
   }
 
  private:
-  Env* env_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnvTestHelper);
+  raw_ptr<Env> env_;
 };
 
 }  // namespace test

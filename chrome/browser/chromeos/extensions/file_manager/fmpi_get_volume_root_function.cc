@@ -1,16 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/file_manager/fmpi_get_volume_root_function.h"
 
+#include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
-#include "chromeos/components/file_manager/url_constants.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -19,7 +19,7 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   using extensions::api::file_manager_private_internal::GetVolumeRoot::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string& volume_id = params->options.volume_id;
@@ -43,7 +43,7 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   const auto process_id = source_process_id();
   // Read-only permisisons.
   policy->GrantReadFile(process_id, volume->mount_path());
-  if (params->options.writable.get() && *params->options.writable.get()) {
+  if (params->options.writable.value_or(false)) {
     // Additional write permissions.
     policy->GrantCreateReadWriteFile(process_id, volume->mount_path());
     policy->GrantCopyInto(process_id, volume->mount_path());
@@ -58,17 +58,17 @@ FileManagerPrivateInternalGetVolumeRootFunction::Run() {
   DCHECK(backend);
   file_manager::util::FileDefinition fd;
   if (!backend->GetVirtualPath(volume->mount_path(), &fd.virtual_path)) {
-    return RespondNow(Error("Volume with ID '*' not found", volume_id));
+    return RespondNow(
+        Error("Cannot get virtual path for volume with ID '*'", volume_id));
   }
 
   // Grant the caller right rights to crack URLs based on the virtual path.
-  const GURL origin = source_url().GetOrigin();
-  const std::string origin_id = origin.host();
-  backend->GrantFileAccessToExtension(origin_id, fd.virtual_path);
+  const url::Origin origin = url::Origin::Create(source_url());
+  backend->GrantFileAccessToOrigin(origin, fd.virtual_path);
 
   // Convert volume's mount path to an EntryDefinition.
   file_manager::util::ConvertFileDefinitionToEntryDefinition(
-      file_system_context, url::Origin::Create(origin), fd,
+      file_system_context, origin, fd,
       base::BindOnce(
           &FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone,
           this));
@@ -82,8 +82,7 @@ void FileManagerPrivateInternalGetVolumeRootFunction::OnRequestDone(
     Respond(Error("Failed to resolve volume's root directory: *",
                   base::NumberToString(entry_definition.error)));
   } else {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(
-        ConvertEntryDefinitionToValue(entry_definition))));
+    Respond(WithArguments(ConvertEntryDefinitionToValue(entry_definition)));
   }
 }
 

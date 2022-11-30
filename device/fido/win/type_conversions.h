@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,24 +10,25 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
 
+class DiscoverableCredentialMetadata;
 enum class GetAssertionStatus;
 enum class MakeCredentialStatus;
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorMakeCredentialResponse>
+absl::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorGetAssertionResponse>
+absl::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& credential_attestation,
     const std::vector<PublicKeyCredentialDescriptor>& allow_list);
@@ -79,7 +80,13 @@ GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinAttestationConveyancePreference(
-    const AttestationConveyancePreference&);
+    const AttestationConveyancePreference&,
+    int api_version);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::vector<DiscoverableCredentialMetadata>
+WinCredentialDetailsListToCredentialMetadata(
+    const WEBAUTHN_CREDENTIAL_DETAILS_LIST& credentials);
 
 }  // namespace device
 

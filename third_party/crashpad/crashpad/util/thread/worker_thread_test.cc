@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 #include "util/thread/worker_thread.h"
 
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/misc/clock.h"
 #include "util/synchronization/semaphore.h"
@@ -27,6 +28,10 @@ constexpr uint64_t kNanosecondsPerSecond = static_cast<uint64_t>(1E9);
 class WorkDelegate : public WorkerThread::Delegate {
  public:
   WorkDelegate() {}
+
+  WorkDelegate(const WorkDelegate&) = delete;
+  WorkDelegate& operator=(const WorkDelegate&) = delete;
+
   ~WorkDelegate() {}
 
   void DoWork(const WorkerThread* thread) override {
@@ -53,8 +58,6 @@ class WorkDelegate : public WorkerThread::Delegate {
   Semaphore semaphore_{0};
   int work_count_ = 0;
   int waiting_for_count_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkDelegate);
 };
 
 TEST(WorkerThread, DoWork) {
@@ -76,7 +79,7 @@ TEST(WorkerThread, DoWork) {
 // also somewhat useful. The expected time "should" be ~40-50ms with a work
 // interval of 0.05s, but on Fuchsia, 1200ms was observed. So, on Fuchsia, use a
 // much larger timeout. See https://crashpad.chromium.org/bug/231.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   constexpr uint64_t kUpperBoundTime = 10;
 #else
   constexpr uint64_t kUpperBoundTime = 1;

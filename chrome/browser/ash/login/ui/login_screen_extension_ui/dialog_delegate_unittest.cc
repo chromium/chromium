@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,19 +21,18 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
+namespace ash {
+namespace login_screen_extension_ui {
 namespace {
 
+using DialogDelegateUnittest = ::testing::Test;
+
 const char kExtensionName[] = "extension-name";
+const char16_t kExtensionName16[] = u"extension-name";
 const char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 const char kResourcePath[] = "path/to/file.html";
 
 }  // namespace
-
-namespace chromeos {
-
-namespace login_screen_extension_ui {
-
-using DialogDelegateUnittest = testing::Test;
 
 TEST_F(DialogDelegateUnittest, Test) {
   content::BrowserTaskEnvironment task_environment_;
@@ -53,7 +52,7 @@ TEST_F(DialogDelegateUnittest, Test) {
 
   EXPECT_EQ(ui::MODAL_TYPE_WINDOW, delegate->GetDialogModalType());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_LOGIN_EXTENSION_UI_DIALOG_TITLE,
-                                       base::UTF8ToUTF16(kExtensionName)),
+                                       kExtensionName16),
             delegate->GetDialogTitle());
   EXPECT_EQ(extensions::Extension::GetResourceURL(
                 extensions::Extension::GetBaseURLFromExtensionId(kExtensionId),
@@ -73,5 +72,4 @@ TEST_F(DialogDelegateUnittest, Test) {
 }
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

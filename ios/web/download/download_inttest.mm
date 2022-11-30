@@ -1,24 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
-#include "ios/web/public/test/fakes/fake_download_controller_delegate.h"
+#import "ios/web/public/test/download_task_test_util.h"
+#import "ios/web/public/test/fakes/fake_download_controller_delegate.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
-#include "net/http/http_request_headers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/url_request/url_fetcher_response_writer.h"
+#import "net/http/http_request_headers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,7 +59,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetDownloadResponse(
 // DownloadTask integration tests.
 class DownloadTest : public WebTestWithWebState {
  protected:
-  DownloadTest() : delegate_(download_controller()) {
+  DownloadTest() = default;
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+    delegate_ =
+        std::make_unique<FakeDownloadControllerDelegate>(download_controller());
     server_.RegisterRequestHandler(base::BindRepeating(&GetDownloadResponse));
   }
 
@@ -68,11 +74,11 @@ class DownloadTest : public WebTestWithWebState {
 
  protected:
   net::EmbeddedTestServer server_;
-  FakeDownloadControllerDelegate delegate_;
+  std::unique_ptr<FakeDownloadControllerDelegate> delegate_;
 };
 
 // Tests sucessfull download flow.
-TEST_F(DownloadTest, SucessfullDownload) {
+TEST_F(DownloadTest, SuccessfulDownload) {
   // Load download URL.
   ASSERT_TRUE(server_.Start());
   GURL url(server_.GetURL("/"));
@@ -80,14 +86,14 @@ TEST_F(DownloadTest, SucessfullDownload) {
 
   // Wait until download task is created.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
-    return !delegate_.alive_download_tasks().empty();
+    return !delegate_->alive_download_tasks().empty();
   }));
-  ASSERT_EQ(1U, delegate_.alive_download_tasks().size());
+  ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
 
   // Verify the initial state of the download task.
-  DownloadTask* task = delegate_.alive_download_tasks()[0].second.get();
+  DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
   ASSERT_TRUE(task);
-  EXPECT_TRUE(task->GetIndentifier());
+  EXPECT_TRUE(task->GetIdentifier());
   EXPECT_EQ(url, task->GetOriginalUrl());
   EXPECT_FALSE(task->IsDone());
   EXPECT_EQ(0, task->GetErrorCode());
@@ -95,21 +101,25 @@ TEST_F(DownloadTest, SucessfullDownload) {
   EXPECT_EQ(-1, task->GetPercentComplete());
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
   EXPECT_EQ(kMimeType, task->GetMimeType());
-  EXPECT_EQ("download.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("download.test")),
+            task->GenerateFileName());
 
   // Start the download task and wait for completion.
-  task->Start(std::make_unique<net::URLFetcherStringWriter>());
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    base::RunLoop().RunUntilIdle();
-    return task->IsDone();
-  }));
+  {
+    web::test::WaitDownloadTaskDone observer(task);
+    task->Start(base::FilePath());
+    observer.Wait();
+  }
 
   // Verify the completed state of the download task.
   EXPECT_EQ(0, task->GetErrorCode());
   EXPECT_EQ(static_cast<int64_t>(strlen(kContent)), task->GetTotalBytes());
   EXPECT_EQ(100, task->GetPercentComplete());
   EXPECT_EQ(200, task->GetHttpCode());
-  EXPECT_EQ(kContent, task->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kContent),
+              [[NSString alloc]
+                  initWithData:web::test::GetDownloadTaskResponseData(task)
+                      encoding:NSUTF8StringEncoding]);
 }
 
 }  // namespace web

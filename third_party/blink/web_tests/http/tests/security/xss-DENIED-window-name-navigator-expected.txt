@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 6: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
-CONSOLE MESSAGE: line 14: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
-CONSOLE MESSAGE: line 6: iframe2: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe1: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
+CONSOLE MESSAGE: iframe2: SecurityError: Blocked a frame with origin "null" from accessing a cross-origin frame.
  

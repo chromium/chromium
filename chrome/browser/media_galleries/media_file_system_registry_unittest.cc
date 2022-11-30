@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -99,7 +100,7 @@ class TestMediaFileSystemContext : public MediaFileSystemContext {
                   const base::FilePath& path,
                   const std::string& fs_name);
 
-  MediaFileSystemRegistry* registry_;
+  raw_ptr<MediaFileSystemRegistry> registry_;
 
   // The currently allocated mock file systems.
   std::map<std::string /*fs_name*/, FSInfo> file_systems_by_name_;
@@ -196,6 +197,12 @@ class MockProfileSharedRenderProcessHostFactory
     : public content::RenderProcessHostFactory {
  public:
   MockProfileSharedRenderProcessHostFactory() {}
+
+  MockProfileSharedRenderProcessHostFactory(
+      const MockProfileSharedRenderProcessHostFactory&) = delete;
+  MockProfileSharedRenderProcessHostFactory& operator=(
+      const MockProfileSharedRenderProcessHostFactory&) = delete;
+
   ~MockProfileSharedRenderProcessHostFactory() override;
 
   // RPH created with this factory are owned by it.  If the RPH is destroyed
@@ -214,25 +221,28 @@ class MockProfileSharedRenderProcessHostFactory
         content::BrowserContext* browser_context)
         : content::MockRenderProcessHost(browser_context) {}
 
+    SharedMockRenderProcessHost(const SharedMockRenderProcessHost&) = delete;
+    SharedMockRenderProcessHost& operator=(const SharedMockRenderProcessHost&) =
+        delete;
+
     // This test class lies that the process has not been used to allow
     // testing of process sharing/reuse inherent in the unit tests that depend
     // on the MockProfileSharedRenderProcessHostFactory.
     bool HostHasNotBeenUsed() override { return true; }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SharedMockRenderProcessHost);
   };
 
   mutable std::map<content::BrowserContext*,
                    std::unique_ptr<content::MockRenderProcessHost>>
       rph_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockProfileSharedRenderProcessHostFactory);
 };
 
 class ProfileState {
  public:
   explicit ProfileState(MockProfileSharedRenderProcessHostFactory* rph_factory);
+
+  ProfileState(const ProfileState&) = delete;
+  ProfileState& operator=(const ProfileState&) = delete;
+
   ~ProfileState();
 
   MediaGalleriesPreferences* GetMediaGalleriesPrefs();
@@ -280,8 +290,6 @@ class ProfileState {
 
   std::vector<std::u16string> compare_names_read_;
   std::vector<std::u16string> compare_names_all_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileState);
 };
 
 std::u16string GetExpectedFolderName(const base::FilePath& path) {
@@ -297,6 +305,10 @@ std::u16string GetExpectedFolderName(const base::FilePath& path) {
 class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
  public:
   MediaFileSystemRegistryTest() = default;
+
+  MediaFileSystemRegistryTest(const MediaFileSystemRegistryTest&) = delete;
+  MediaFileSystemRegistryTest& operator=(const MediaFileSystemRegistryTest&) =
+      delete;
 
   ~MediaFileSystemRegistryTest() override = default;
 
@@ -388,7 +400,7 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   base::FilePath dcim_dir_;
 
   // MediaFileSystemRegistry owns this.
-  TestMediaFileSystemContext* test_file_system_context_;
+  raw_ptr<TestMediaFileSystemContext> test_file_system_context_;
 
   // Needed for extension service & friends to work.
 
@@ -399,8 +411,6 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   MockProfileSharedRenderProcessHostFactory rph_factory_;
 
   std::vector<std::unique_ptr<ProfileState>> profile_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaFileSystemRegistryTest);
 };
 
 namespace {
@@ -694,7 +704,7 @@ void MediaFileSystemRegistryTest::AssertAllAutoAddedGalleries() {
     // Make sure that we have at least one gallery and that they are all
     // auto added galleries.
     const MediaGalleriesPrefInfoMap& galleries = prefs->known_galleries();
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     ASSERT_GT(galleries.size(), 0U);
 #endif
     for (auto it = galleries.begin(); it != galleries.end(); ++it) {
@@ -712,7 +722,7 @@ void MediaFileSystemRegistryTest::InitForGalleriesInfoTest(
   ProfileState* profile_state = GetProfileState(0U);
   *galleries_info = profile_state->GetGalleriesInfo(
       profile_state->all_permission_extension());
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(3U, galleries_info->size());
 #else
   ASSERT_EQ(0U, galleries_info->size());
@@ -880,9 +890,9 @@ TEST_F(MediaFileSystemRegistryTest, EraseGalleries) {
 }
 
 // Regression test to make sure calling GetPreferences() does not re-insert
-// galleries on auto-detected removable devices that were blacklisted.
+// galleries on auto-detected removable devices that were blocklisted.
 TEST_F(MediaFileSystemRegistryTest,
-       GetPreferencesDoesNotReinsertBlacklistedGalleries) {
+       GetPreferencesDoesNotReinsertBlocklistedGalleries) {
   CreateProfileState(1);
   AssertAllAutoAddedGalleries();
 
@@ -929,7 +939,7 @@ TEST_F(MediaFileSystemRegistryTest, GalleryNameDefault) {
 }
 
 // TODO(gbillock): Move the remaining test into the linux directory.
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(MediaFileSystemRegistryTest, GalleryMTP) {
   FSInfoMap galleries_info;
   InitForGalleriesInfoTest(&galleries_info);

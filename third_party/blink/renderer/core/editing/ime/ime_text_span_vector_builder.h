@@ -52,4 +52,4 @@ class ImeTextSpanVectorBuilder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_IME_TEXT_SPAN_VECTOR_BUILDER_H_

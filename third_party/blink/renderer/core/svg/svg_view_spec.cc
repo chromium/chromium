@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
@@ -50,7 +50,7 @@ const SVGViewSpec* SVGViewSpec::CreateFromFragment(const String& fragment) {
 const SVGViewSpec* SVGViewSpec::CreateForViewElement(
     const SVGViewElement& view) {
   SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
-  if (view.viewBox()->CurrentValue()->IsValid())
+  if (view.HasValidViewBox())
     view_spec->view_box_ = view.viewBox()->CurrentValue()->Clone();
   if (view.preserveAspectRatio()->IsSpecified()) {
     view_spec->preserve_aspect_ratio_ =
@@ -62,7 +62,7 @@ const SVGViewSpec* SVGViewSpec::CreateForViewElement(
 }
 
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
-  if (spec.IsEmpty())
+  if (spec.empty())
     return false;
   return WTF::VisitCharacters(spec, [&](const auto* chars, unsigned length) {
     return ParseViewSpecInternal(chars, chars + length);
@@ -136,8 +136,9 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
               ParseNumber(ptr, end, width) &&
               ParseNumber(ptr, end, height, kDisallowWhitespace)))
           return false;
-        view_box_ =
-            MakeGarbageCollected<SVGRect>(FloatRect(x, y, width, height));
+        if (width < 0 || height < 0)
+          return false;
+        view_box_ = MakeGarbageCollected<SVGRect>(x, y, width, height);
         break;
       }
       case kViewTarget: {

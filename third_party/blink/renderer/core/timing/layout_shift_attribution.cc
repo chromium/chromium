@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,6 @@ DOMRectReadOnly* LayoutShiftAttribution::currentRect() const {
 ScriptValue LayoutShiftAttribution::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
-  builder.Add("node", node());
   builder.Add("previousRect", previous_rect_);
   builder.Add("currentRect", current_rect_);
   return builder.GetScriptValue();

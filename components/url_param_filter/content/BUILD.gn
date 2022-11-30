@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("content") {
+  if (is_component_build) {
+    check_includes = false
+  }
+  sources = [
+    "cross_otr_web_contents_observer.cc",
+    "cross_otr_web_contents_observer.h",
+    "url_param_filter_throttle.cc",
+    "url_param_filter_throttle.h",
+  ]
+  deps = [ "//components/url_param_filter/core" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/common",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cross_otr_web_contents_observer_unittest.cc",
+    "url_param_filter_throttle_unittest.cc",
+  ]
+  deps = [
+    ":content",
+    "//base/test:test_support",
+    "//components/url_param_filter/core",
+    "//components/url_param_filter/core:test_support",
+    "//components/url_param_filter/core:url_param_filter_classification_proto",
+  ]
+  public_deps = [
+    "//content/test:test_support",
+    "//services/network/public/mojom",
+  ]
+}

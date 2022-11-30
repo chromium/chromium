@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_GCM_GCM_DESKTOP_UTILS_H_
-#define COMPONENTS_GCM_DRIVER_GCM_GCM_DESKTOP_UTILS_H_
+#ifndef COMPONENTS_GCM_DRIVER_GCM_DESKTOP_UTILS_H_
+#define COMPONENTS_GCM_DRIVER_GCM_DESKTOP_UTILS_H_
 
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom-forward.h"
@@ -46,4 +46,4 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
 
 }  // namespace gcm
 
-#endif  // COMPONENTS_GCM_DRIVER_GCM_GCM_DESKTOP_UTILS_H_
+#endif  // COMPONENTS_GCM_DRIVER_GCM_DESKTOP_UTILS_H_

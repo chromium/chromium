@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -37,9 +37,9 @@ proto::UrlRule MakeProtoRule(proto::RuleSemantics semantics,
   rule.set_anchor_left(url_pattern.anchor_left());
   rule.set_anchor_right(url_pattern.anchor_right());
   rule.set_match_case(url_pattern.match_case());
-  rule.set_url_pattern(url_pattern.url_pattern().as_string());
+  rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
-  testing::AddDomains(domains, &rule);
+  testing::AddInitiatorDomains(domains, &rule);
 
   return rule;
 }
@@ -50,6 +50,10 @@ struct RuleTest {
 };
 
 class UrlRuleUtilTest : public ::testing::Test {
+ public:
+  UrlRuleUtilTest(const UrlRuleUtilTest&) = delete;
+  UrlRuleUtilTest& operator=(const UrlRuleUtilTest&) = delete;
+
  protected:
   UrlRuleUtilTest() = default;
 
@@ -74,9 +78,6 @@ class UrlRuleUtilTest : public ::testing::Test {
   flatbuffers::FlatBufferBuilder flat_builder_;
 
   FlatDomainMap domain_map_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UrlRuleUtilTest);
 };
 
 TEST_F(UrlRuleUtilTest, Blocklist) {
@@ -201,7 +202,7 @@ TEST_F(UrlRuleUtilTest, ElementType) {
   std::string expected =
       "example.com/"
       "$script,image,stylesheet,object,xmlhttprequest,object-subrequest,"
-      "subdocument,ping,media,font,websocket";
+      "subdocument,ping,media,font,websocket,webtransport,webbundle";
 
   EXPECT_EQ(expected, FlatUrlRuleToFilterlistString(flat_rule));
 }

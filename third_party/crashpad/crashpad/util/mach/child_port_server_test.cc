@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -89,13 +89,14 @@ struct MIGReply : public mig_reply_error_t {
 
 class MockChildPortServerInterface : public ChildPortServer::Interface {
  public:
-  MOCK_METHOD6(HandleChildPortCheckIn,
-               kern_return_t(child_port_server_t server,
-                             const child_port_token_t token,
-                             mach_port_t port,
-                             mach_msg_type_name_t right_type,
-                             const mach_msg_trailer_t* trailer,
-                             bool* destroy_request));
+  MOCK_METHOD(kern_return_t,
+              HandleChildPortCheckIn,
+              (child_port_server_t server,
+               const child_port_token_t token,
+               mach_port_t port,
+               mach_msg_type_name_t right_type,
+               const mach_msg_trailer_t* trailer,
+               bool* destroy_request));
 };
 
 TEST(ChildPortServer, MockChildPortCheckIn) {

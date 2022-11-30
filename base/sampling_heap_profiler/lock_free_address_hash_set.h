@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 
@@ -83,7 +84,7 @@ class BASE_EXPORT LockFreeAddressHashSet {
   ALWAYS_INLINE Node* FindNode(void* key) const;
 
   std::vector<std::atomic<Node*>> buckets_;
-  int size_ = 0;
+  size_t size_ = 0;
   const size_t bucket_mask_;
 };
 

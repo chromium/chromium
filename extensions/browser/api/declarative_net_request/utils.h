@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,13 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace base {
@@ -56,17 +55,27 @@ int GetChecksum(base::span<const uint8_t> data);
 // |checksum|. Note: If |checksum| is -1, no such override is performed.
 void OverrideGetChecksumForTest(int checksum);
 
+// Returns the indexed ruleset data to be persisted to disk. The ruleset is
+// composed of a version header corresponding to the current ruleset format
+// version, followed by the actual ruleset data.
+std::string GetIndexedRulesetData(base::span<const uint8_t> data);
+
 // Helper function to persist the indexed ruleset |data| at the given |path|.
 // The ruleset is composed of a version header corresponding to the current
 // ruleset format version, followed by the actual ruleset data.
 bool PersistIndexedRuleset(const base::FilePath& path,
                            base::span<const uint8_t> data);
 
-// Helper to clear each renderer's in-memory cache the next time it navigates.
+// Helper to clear any back-forward caches and each renderer's in-memory cache
+// the next time it navigates.
 void ClearRendererCacheOnNavigation();
 
 // Helper to log the |kReadDynamicRulesJSONStatusHistogram| histogram.
 void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status);
+
+// Maps dnr_api::ResourceType to WebRequestResourceType.
+WebRequestResourceType GetWebRequestResourceType(
+    api::declarative_net_request::ResourceType resource_type);
 
 // Constructs an api::declarative_net_request::RequestDetails from a
 // WebRequestInfo.
@@ -137,7 +146,27 @@ size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher);
 // for the specified |tab_id|. If |tab_is| is omitted, then non-tab specific
 // permissions are checked.
 bool HasDNRFeedbackPermission(const Extension* extension,
-                              const base::Optional<int>& tab_id);
+                              const absl::optional<int>& tab_id);
+
+// Returns the appropriate error string for an unsuccessful rule parsing result.
+std::string GetParseError(ParseResult error_reason, int rule_id);
+
+// Maps resource types to flat_rule::ElementType.
+url_pattern_index::flat::ElementType GetElementType(
+    WebRequestResourceType web_request_type);
+url_pattern_index::flat::ElementType GetElementType(
+    api::declarative_net_request::ResourceType resource_type);
+
+// Maps HTTP request methods to flat_rule::RequestMethod.
+// Returns `flat::RequestMethod_NON_HTTP` for non-HTTP(s) requests.
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    bool http_or_https,
+    const std::string& method);
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    api::declarative_net_request::RequestMethod request_method);
+url_pattern_index::flat::RequestMethod GetRequestMethod(
+    bool http_or_https,
+    api::declarative_net_request::RequestMethod request_method);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

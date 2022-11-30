@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     CHECK(next_dst_it >= dst_it);
 
     offset_t gap = static_cast<offset_t>(next_dst_it - dst_it);
-    base::Optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
+    absl::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
     if (!extra_data) {
       LOG(ERROR) << "Error reading extra_data";
       return false;
@@ -46,7 +46,7 @@ bool ApplyEquivalenceAndExtraData(ConstBufferView old_image,
     CHECK_EQ(dst_it, next_dst_it + equivalence->length);
   }
   offset_t gap = static_cast<offset_t>(new_image.end() - dst_it);
-  base::Optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
+  absl::optional<ConstBufferView> extra_data = extra_data_source.GetNext(gap);
   if (!extra_data) {
     LOG(ERROR) << "Error reading extra_data";
     return false;

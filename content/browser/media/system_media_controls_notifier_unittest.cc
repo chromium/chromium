@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/idle/scoped_set_idle_state.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -28,10 +28,17 @@ using PlaybackStatus =
     system_media_controls::SystemMediaControls::PlaybackStatus;
 using testing::_;
 using testing::Expectation;
+using testing::WithArg;
 
 class SystemMediaControlsNotifierTest : public testing::Test {
  public:
   SystemMediaControlsNotifierTest() = default;
+
+  SystemMediaControlsNotifierTest(const SystemMediaControlsNotifierTest&) =
+      delete;
+  SystemMediaControlsNotifierTest& operator=(
+      const SystemMediaControlsNotifierTest&) = delete;
+
   ~SystemMediaControlsNotifierTest() override = default;
 
   void SetUp() override {
@@ -62,9 +69,9 @@ class SystemMediaControlsNotifierTest : public testing::Test {
       metadata.title = title;
       metadata.artist = artist;
       notifier_->MediaSessionMetadataChanged(
-          base::Optional<media_session::MediaMetadata>(metadata));
+          absl::optional<media_session::MediaMetadata>(metadata));
     } else {
-      notifier_->MediaSessionMetadataChanged(base::nullopt);
+      notifier_->MediaSessionMetadataChanged(absl::nullopt);
     }
   }
 
@@ -83,21 +90,19 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     return mock_system_media_controls_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::RepeatingTimer& lock_polling_timer() {
     return notifier_->lock_polling_timer_;
   }
 
   base::OneShotTimer& hide_smtc_timer() { return notifier_->hide_smtc_timer_; }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<SystemMediaControlsNotifier> notifier_;
   system_media_controls::testing::MockSystemMediaControls
       mock_system_media_controls_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsNotifierTest);
 };
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
@@ -143,7 +148,24 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {
   SimulateImageChanged();
 }
 
-#if defined(OS_WIN)
+TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
+  // When a request ID is set, the system media controls should receive that ID.
+  auto request_id = base::UnguessableToken::Create();
+  EXPECT_CALL(mock_system_media_controls(), SetID(_))
+      .WillOnce(WithArg<0>([request_id](const std::string* value) {
+        ASSERT_NE(nullptr, value);
+        EXPECT_EQ(request_id.ToString(), *value);
+      }));
+  notifier().MediaSessionChanged(request_id);
+  testing::Mock::VerifyAndClearExpectations(&mock_system_media_controls());
+
+  // When the request ID is cleared, the system media controls should receive
+  // null.
+  EXPECT_CALL(mock_system_media_controls(), SetID(nullptr));
+  notifier().MediaSessionChanged(absl::nullopt);
+}
+
+#if BUILDFLAG(IS_WIN)
 TEST_F(SystemMediaControlsNotifierTest, DisablesOnLockAndEnablesOnUnlock) {
   EXPECT_CALL(mock_system_media_controls(), SetEnabled(false));
 
@@ -218,6 +240,6 @@ TEST_F(SystemMediaControlsNotifierTest, DisablesAfterPausingOnLockScreen) {
   // Force the timer to fire now. This should disable the service.
   hide_smtc_timer().FireNow();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

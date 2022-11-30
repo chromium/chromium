@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ambient;
+
+// Types of photos, indicating which topic category it comes from.
+enum TopicType {
+  kCurated = 0;
+  kPersonal = 1;
+  kFeatured = 2;
+  kGeo = 3;
+  kCulturalInstitute = 4;
+  kRss = 5;
+  kCapturedOnPixel = 6;
+  kOther = 7;
+}
+
+// Contains image and attributes.
+message Photo {
+  // Content of the photo.
+  optional bytes image = 1;
+
+  // Details of the photo.
+  optional string details = 2;
+
+  // Whether the uncropped photo is portrait.
+  optional bool is_portrait = 3 [default = false];
+
+  optional TopicType type = 4;
+}
+
+// Contains two of ambient photos.
+message PhotoCacheEntry {
+  optional Photo primary_photo = 1;
+
+  optional Photo related_photo = 2;
+}

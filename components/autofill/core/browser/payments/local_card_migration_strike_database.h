@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 #include <stdint.h>
 #include <string>
 
-#include "components/autofill/core/browser/payments/strike_database.h"
-#include "components/autofill/core/browser/payments/strike_database_integrator_base.h"
+#include "components/autofill/core/browser/strike_database.h"
+#include "components/autofill/core/browser/strike_database_integrator_base.h"
 
 namespace autofill {
 
 // Implementation of StrikeDatabaseIntegratorBase for local card migrations.
 class LocalCardMigrationStrikeDatabase : public StrikeDatabaseIntegratorBase {
  public:
-  LocalCardMigrationStrikeDatabase(StrikeDatabase* strike_database);
+  explicit LocalCardMigrationStrikeDatabase(StrikeDatabase* strike_database);
   ~LocalCardMigrationStrikeDatabase() override;
 
   // Strikes to remove when user adds new local card.
@@ -29,10 +29,10 @@ class LocalCardMigrationStrikeDatabase : public StrikeDatabaseIntegratorBase {
   // migration.
   static const int kStrikesToAddWhenCardsDeselectedAtMigration;
 
-  std::string GetProjectPrefix() override;
-  int GetMaxStrikesLimit() override;
-  base::Optional<int64_t> GetExpiryTimeMicros() override;
-  bool UniqueIdsRequired() override;
+  std::string GetProjectPrefix() const override;
+  int GetMaxStrikesLimit() const override;
+  absl::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
+  bool UniqueIdsRequired() const override;
 };
 
 }  // namespace autofill

@@ -1,0 +1,11 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_STATICTEXT name='Some '
+++IA2_ROLE_MARK details-roles:comment definition doc-footnote
+++++ROLE_SYSTEM_STATICTEXT name='highlighted text'
+++ROLE_SYSTEM_STATICTEXT name=' example.'
+++IA2_ROLE_COMMENT
+++++ROLE_SYSTEM_STATICTEXT name='Good job!'
+++IA2_ROLE_FOOTNOTE
+++++ROLE_SYSTEM_STATICTEXT name='Some footnote.'
+++IA2_ROLE_PARAGRAPH READONLY
+++++ROLE_SYSTEM_STATICTEXT name='The meaning is.'

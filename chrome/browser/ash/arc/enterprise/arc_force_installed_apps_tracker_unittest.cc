@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
@@ -51,10 +51,14 @@ constexpr char kArcPolicyValue2[] =
 constexpr char kComplianceReportEmptyJson[] = "{}";
 constexpr char kComplianceReportNonCompliantJson[] =
     "{\"nonComplianceDetails\":"
-    "[{\"key\":\"value\"},{\"nonComplianceReason\":1}]}";
+    "[{\"settingName\":\"applications\",\"nonComplianceReason\":1}]}";
 constexpr char kComplianceReportCompliantJson[] =
     "{\"nonComplianceDetails\":"
-    "[{\"key\":\"value\"},{\"nonComplianceReason\":\"value\"}]}";
+    "[{\"settingName\":\"value\",\"nonComplianceReason\":\"value\"}]}";
+constexpr char kComplianceReportAndroidIdNonCompliantJson[] =
+    "{\"nonComplianceDetails\":"
+    "[{\"settingName\":\"resetAndroidIdEnabled\","
+    "\"nonComplianceReason\":1}]}";
 }  // namespace
 
 class ArcForceInstalledAppsTrackerTest : public testing::Test {
@@ -106,6 +110,10 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
     ReportCompliance(kComplianceReportNonCompliantJson);
   }
 
+  void ReportAndroidIdNonCompliant() {
+    ReportCompliance(kComplianceReportAndroidIdNonCompliantJson);
+  }
+
   policy::PolicyMap& policy_map() { return policy_map_; }
   policy::MockPolicyService* policy_service() { return &policy_service_; }
   arc::ArcPolicyBridge* arc_policy_bridge() { return policy_bridge_.get(); }
@@ -122,7 +130,7 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
   }
 
   ArcAppListPrefs* prefs() { return arc_app_test_.arc_app_list_prefs(); }
-  arc::mojom::AppHost* const app_host() { return prefs(); }
+  arc::mojom::AppHost* app_host() { return prefs(); }
 
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -304,6 +312,9 @@ TEST_F(ArcForceInstalledAppsTrackerTest, PolicyCompliance) {
   EXPECT_FALSE(is_policy_compliant);
 
   ReportNonCompliant();
+  EXPECT_FALSE(is_policy_compliant);
+
+  ReportAndroidIdNonCompliant();
   EXPECT_FALSE(is_policy_compliant);
 
   EXPECT_CALL(*policy_service(), RemoveObserver(_, _));

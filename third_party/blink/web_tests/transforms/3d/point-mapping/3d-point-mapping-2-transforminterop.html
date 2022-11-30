@@ -1,0 +1,156 @@
+<html>
+<head>
+  <title>More point mapping through 3D transform hierarchies</title>
+  <script src="point-mapping-helpers.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+
+    if (window.testRunner)
+      testRunner.dumpAsText()
+
+    function test()
+    {
+      // Scroll so that frame view offsets are non-zero
+      // window.scrollTo(20, 100);
+
+      // document.getElementById('overflow').scrollLeft = 80;
+      // document.getElementById('overflow').scrollTop = 60;
+
+      // In non-test mode, show the mouse coords for testing
+      if (!window.testRunner)
+        document.body.addEventListener('mousemove', mousemoved, false);
+
+      dispatchEvent(120, 128, 'box4', 1, 1);
+      dispatchEvent(336, 87, 'box7', 1, 1);
+      dispatchEvent(348, 86, 'box7', 15, 1);
+
+      dispatchEvent(582, 87, 'box11', 1, 1);
+      dispatchEvent(594, 86, 'box11', 15, 1);
+    }
+  </script>
+  <style type="text/css" media="screen">
+
+    body {
+      margin: 0;
+      border: 1px solid black;
+      cursor: crosshair;
+    }
+
+    .test {
+      display: inline-block;
+      height: 200px;
+      width: 200px;
+      border: 1px solid black;
+      margin: 20px;
+    }
+
+    .box {
+      height: 100px;
+      width: 100px;
+      -webkit-box-sizing: border-box;
+      background-color: #DDD;
+      border: 1px solid black;
+    }
+
+    .box:hover {
+      outline: 3px solid orange;
+    }
+
+    .container {
+      height: 140px;
+      width: 140px;
+      margin: 20px;
+      border: 1px solid black;
+      -webkit-box-sizing: border-box;
+      -webkit-perspective: 400;
+    }
+
+    .transformed-3d {
+      position: relative;
+      height: 100px;
+      width: 100px;
+      padding: 20px;
+      margin: 20px;
+      border: 1px solid black;
+      background-color: #81AA8A;
+      -webkit-transform-style: preserve-3d;
+      -webkit-box-sizing: border-box;
+    }
+
+    .transformed-flat {
+      position: relative;
+      height: 100px;
+      width: 100px;
+      padding: 20px;
+      margin: 20px;
+      border: 1px solid black;
+      background-color: #AA7994;
+      -webkit-transform-style: flat;
+      -webkit-box-sizing: border-box;
+    }
+
+    .inner {
+      background-color: blue;
+      height: 90px;
+      width: 90px;
+      transform: rotateY(30deg);
+    }
+
+    #results {
+      position: absolute;
+      left: 30px;
+      top: 500px;
+    }
+
+    #mousepos {
+      position: absolute;
+      left: 430px;
+      top: 400px;
+      color: gray;
+      font-size: smaller;
+    }
+  </style>
+</head>
+<body onclick="clicked(event)">
+
+<div id="results"></div>
+
+<div class="test">
+  <!-- preserve-3d element with no transform-->
+  <div class="container box" id="box1">
+    <div class="transformed-3d box" style="transform: rotateY(-30deg);" id="box2">
+      <div class="transformed-3d box" id="box3">
+        <div class="inner box" id="box4">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="test">
+  <!-- layer with no transform-->
+  <div class="container box" id="box5">
+    <div class="transformed-3d box" style="transform: rotateY(-30deg);" id="box6">
+      <div class="box" style="position: relative; padding-left: 20px" id="box7">
+        <div class="inner box" id="box8">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="test">
+  <!-- non-layer with no transform-->
+  <div class="container box" id="box9">
+    <div class="transformed-3d box" style="transform: rotateY(-30deg);" id="box10">
+      <div class="box" style="padding-left: 20px" id="box11">
+        <div class="inner box" id="box12">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="mousepos"></div>
+
+</body>
+</html>

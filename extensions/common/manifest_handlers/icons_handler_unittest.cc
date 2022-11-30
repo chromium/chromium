@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ namespace extensions {
 class ProductIconManifestTest : public ManifestTest {
  public:
   ProductIconManifestTest() = default;
+
+  ProductIconManifestTest(const ProductIconManifestTest&) = delete;
+  ProductIconManifestTest& operator=(const ProductIconManifestTest&) = delete;
 
  protected:
   base::Value CreateManifest(const std::string& extra_icons) {
@@ -31,9 +34,6 @@ class ProductIconManifestTest : public ManifestTest {
     EXPECT_TRUE(manifest.is_dict());
     return manifest;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProductIconManifestTest);
 };
 
 TEST_F(ProductIconManifestTest, Sizes) {

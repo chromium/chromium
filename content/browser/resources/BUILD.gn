@@ -1,14 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-
-if (enable_js_type_check) {
-  group("closure_compile") {
-    deps = [
-      "histograms:closure_compile",
-      "process:closure_compile",
-    ]
-  }
+group("resources") {
+  public_deps = [
+    "indexed_db:resources",
+    "quota:resources",
+  ]
 }

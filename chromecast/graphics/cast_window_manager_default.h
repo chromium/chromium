@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/graphics/cast_window_manager.h"
 
 namespace chromecast {
@@ -15,6 +14,10 @@ namespace chromecast {
 class CastWindowManagerDefault : public CastWindowManager {
  public:
   CastWindowManagerDefault();
+
+  CastWindowManagerDefault(const CastWindowManagerDefault&) = delete;
+  CastWindowManagerDefault& operator=(const CastWindowManagerDefault&) = delete;
+
   ~CastWindowManagerDefault() override;
 
   // CastWindowManager implementation:
@@ -35,11 +38,6 @@ class CastWindowManagerDefault : public CastWindowManager {
   void AddTouchActivityObserver(CastTouchActivityObserver* observer) override;
   void RemoveTouchActivityObserver(
       CastTouchActivityObserver* observer) override;
-  void SetEnableRoundedCorners(bool enable) override;
-  void NotifyColorInversionEnabled(bool enabled) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastWindowManagerDefault);
 };
 
 }  // namespace chromecast

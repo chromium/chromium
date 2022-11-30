@@ -3,7 +3,6 @@ Document
 ++++Group IsControlElement=false
 ++++++Text Name='Choose one:'
 ++++Button Name='Choose one: Foo' ExpandCollapse.ExpandCollapseState='LeafNode'
-++++++Text Name='Foo'
 ++++List Name='Choose one:' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++++ListItem Name='Baz' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='Choose one:'
 ++++++ListItem Name='Bar' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='Choose one:'

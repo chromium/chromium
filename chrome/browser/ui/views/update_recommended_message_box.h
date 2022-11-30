@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_
 #define CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -19,6 +19,10 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
  public:
   static void Show(gfx::NativeWindow parent_window);
 
+  UpdateRecommendedMessageBox(const UpdateRecommendedMessageBox&) = delete;
+  UpdateRecommendedMessageBox& operator=(const UpdateRecommendedMessageBox&) =
+      delete;
+
  private:
   UpdateRecommendedMessageBox();
   ~UpdateRecommendedMessageBox() override;
@@ -31,9 +35,7 @@ class UpdateRecommendedMessageBox : public views::DialogDelegate {
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
-  views::MessageBoxView* message_box_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRecommendedMessageBox);
+  raw_ptr<views::MessageBoxView> message_box_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UPDATE_RECOMMENDED_MESSAGE_BOX_H_

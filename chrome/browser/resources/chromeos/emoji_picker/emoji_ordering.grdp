@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+      <include name="IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_START" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_15_0_ordering_start.json" resource_path="emoji_15_0_ordering_start.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOJI_15_0_ORDERING_JSON_REMAINING" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_15_0_ordering_remaining.json" resource_path="emoji_15_0_ordering_remaining.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOJI_TEST_ORDERING_JSON_START" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_test_ordering_start.json" resource_path="emoji_test_ordering_start.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOJI_TEST_ORDERING_JSON_REMAINING" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoji_test_ordering_remaining.json" resource_path="emoji_test_ordering_remaining.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOTICON_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoticon_ordering.json" resource_path="emoticon_ordering.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_EMOTICON_TEST_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/emoticon_test_ordering.json" resource_path="emoticon_test_ordering.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/symbol_ordering.json" resource_path="symbol_ordering.json" use_base_dir="false" type="chrome_html" />
+      <include name="IDR_EMOJI_PICKER_SYMBOL_TEST_ORDERING_JSON" compress="gzip" file="${root_gen_dir}/chrome/browser/resources/chromeos/emoji_picker/symbol_test_ordering.json" resource_path="symbol_test_ordering.json" use_base_dir="false" type="chrome_html" />
+</grit-part>

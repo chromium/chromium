@@ -1,0 +1,5 @@
+Tests that target for oopif is attached after BFCache navigation
+OOPIF attached: http://devtools.oopif.test:8000/inspector-protocol/resources/test-page.html
+detached OOPIF
+OOPIF attached after BFCache navigation: http://devtools.oopif.test:8000/inspector-protocol/resources/test-page.html
+

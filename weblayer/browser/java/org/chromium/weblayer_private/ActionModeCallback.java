@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@ package org.chromium.weblayer_private;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.RemoteException;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -26,7 +28,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * A class that handles selection action mode for WebLayer.
  */
-public final class ActionModeCallback implements ActionMode.Callback {
+public final class ActionModeCallback extends ActionMode.Callback2 {
     private final ActionModeCallbackHelper mHelper;
     // Can be null during init.
     private @Nullable ITabClient mTabClient;
@@ -79,8 +81,7 @@ public final class ActionModeCallback implements ActionMode.Callback {
     private boolean isWebSearchAvailable() {
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.EXTRA_NEW_SEARCH, true);
-        return !PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                        .isEmpty();
+        return PackageManagerUtils.canResolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
     }
 
     @Override
@@ -108,5 +109,10 @@ public final class ActionModeCallback implements ActionMode.Callback {
     @Override
     public final void onDestroyActionMode(ActionMode mode) {
         mHelper.onDestroyActionMode();
+    }
+
+    @Override
+    public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+        mHelper.onGetContentRect(mode, view, outRect);
     }
 }

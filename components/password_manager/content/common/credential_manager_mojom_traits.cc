@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,27 +84,6 @@ bool EnumTraits<blink::mojom::CredentialManagerError,
       *output =
           password_manager::CredentialManagerError::PASSWORDSTOREUNAVAILABLE;
       return true;
-    case blink::mojom::CredentialManagerError::NOT_ALLOWED:
-    case blink::mojom::CredentialManagerError::ANDROID_NOT_SUPPORTED_ERROR:
-    case blink::mojom::CredentialManagerError::ANDROID_ALGORITHM_UNSUPPORTED:
-    case blink::mojom::CredentialManagerError::ANDROID_EMPTY_ALLOW_CREDENTIALS:
-    case blink::mojom::CredentialManagerError::
-        ANDROID_USER_VERIFICATION_UNSUPPORTED:
-    case blink::mojom::CredentialManagerError::INVALID_DOMAIN:
-    case blink::mojom::CredentialManagerError::INVALID_ICON_URL:
-    case blink::mojom::CredentialManagerError::CREDENTIAL_EXCLUDED:
-    case blink::mojom::CredentialManagerError::CREDENTIAL_NOT_RECOGNIZED:
-    case blink::mojom::CredentialManagerError::NOT_IMPLEMENTED:
-    case blink::mojom::CredentialManagerError::NOT_FOCUSED:
-    case blink::mojom::CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
-    case blink::mojom::CredentialManagerError::PROTECTION_POLICY_INCONSISTENT:
-    case blink::mojom::CredentialManagerError::ABORT:
-    case blink::mojom::CredentialManagerError::OPAQUE_DOMAIN:
-    case blink::mojom::CredentialManagerError::INVALID_PROTOCOL:
-    case blink::mojom::CredentialManagerError::BAD_RELYING_PARTY_ID:
-    case blink::mojom::CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
-    case blink::mojom::CredentialManagerError::
-        INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
     case blink::mojom::CredentialManagerError::UNKNOWN:
       *output = password_manager::CredentialManagerError::UNKNOWN;
       return true;

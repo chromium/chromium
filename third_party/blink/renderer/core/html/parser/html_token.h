@@ -29,9 +29,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -44,21 +46,21 @@ class DoctypeData {
       : has_public_identifier_(false),
         has_system_identifier_(false),
         force_quirks_(false) {}
+  DoctypeData(const DoctypeData&) = delete;
+  DoctypeData& operator=(const DoctypeData&) = delete;
 
   bool has_public_identifier_;
   bool has_system_identifier_;
   WTF::Vector<UChar> public_identifier_;
   WTF::Vector<UChar> system_identifier_;
   bool force_quirks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DoctypeData);
 };
 
-static inline Attribute* FindAttributeInVector(Vector<Attribute>& attributes,
+static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
                                                const QualifiedName& name) {
-  for (unsigned i = 0; i < attributes.size(); ++i) {
-    if (attributes.at(i).GetName().Matches(name))
-      return &attributes.at(i);
+  for (Attribute& attr : attributes) {
+    if (attr.GetName().Matches(name))
+      return &attr;
   }
   return nullptr;
 }
@@ -112,22 +114,28 @@ class HTMLToken {
       int end;
     };
 
-    AtomicString GetName() const { return AtomicString(name_); }
+    AtomicString GetName() const { return name_.AsAtomicString(); }
+    AtomicString GetValue() const { return value_.AsAtomicString(); }
+
+    const UCharLiteralBuffer<32>& NameBuffer() const { return name_; }
+
     String NameAttemptStaticStringCreation() const {
       return AttemptStaticStringCreation(name_, kLikely8Bit);
     }
-    const Vector<UChar, 32>& NameAsVector() const { return name_; }
-    const Vector<UChar, 32>& ValueAsVector() const { return value_; }
 
-    void AppendToName(UChar c) { name_.push_back(c); }
+    bool NameIsEmpty() const { return name_.IsEmpty(); }
+    void AppendToName(UChar c) { name_.AddChar(c); }
 
-    scoped_refptr<StringImpl> Value8BitIfNecessary() const {
-      return StringImpl::Create8BitIfPossible(value_);
+    String Value8BitIfNecessary() const {
+      // TODO(sky): remove this function and convert callers to Value() once
+      // `g_literal_buffer_create_string_with_encoding` is removed.
+      if (!g_literal_buffer_create_string_with_encoding)
+        return StringImpl::Create8BitIfPossible(value_.data(), value_.size());
+      return value_.AsString();
     }
-    String Value() const { return String(value_); }
+    String Value() const { return value_.AsString(); }
 
-    void AppendToValue(UChar c) { value_.push_back(c); }
-    void AppendToValue(const String& value) { value.AppendTo(value_); }
+    void AppendToValue(UChar c) { value_.AddChar(c); }
     void ClearValue() { value_.clear(); }
 
     const Range& NameRange() const { return name_range_; }
@@ -136,33 +144,40 @@ class HTMLToken {
     Range& MutableValueRange() { return value_range_; }
 
    private:
-    Vector<UChar, 32> name_;
-    Vector<UChar, 32> value_;
+    // TODO(chromium:1204030): Do a more rigorous study and select a
+    // better-informed inline capacity.
+    UCharLiteralBuffer<32> name_;
+    UCharLiteralBuffer<32> value_;
     Range name_range_;
     Range value_range_;
   };
 
-  typedef Vector<Attribute, 10> AttributeList;
+  typedef Vector<Attribute, kAttributePrealloc> AttributeList;
 
   // By using an inline capacity of 256, we avoid spilling over into an malloced
   // buffer approximately 99% of the time based on a non-scientific browse
   // around a number of popular web sites on 23 May 2013.
-  typedef Vector<UChar, 256> DataVector;
+  // TODO(chromium:1204030): Do a more rigorous study and select a
+  // better-informed inline capacity.
+  using DataVector = UCharLiteralBuffer<256>;
 
-  HTMLToken() { Clear(); }
+  HTMLToken() {
+    range_.Clear();
+    range_.start = 0;
+  }
+
+  HTMLToken(const HTMLToken&) = delete;
+  HTMLToken& operator=(const HTMLToken&) = delete;
 
   void Clear() {
+    if (type_ == kUninitialized)
+      return;
+
     type_ = kUninitialized;
     range_.Clear();
     range_.start = 0;
     base_offset_ = 0;
-    // Don't call Vector::clear() as that would destroy the
-    // alloced VectorBuffer. If the innerHTML'd content has
-    // two 257 character text nodes in a row, we'll needlessly
-    // thrash malloc. When we finally finish the parse the
-    // HTMLToken will be destroyed and the VectorBuffer released.
-    data_.Shrink(0);
-    or_all_data_ = 0;
+    data_.clear();
   }
 
   bool IsUninitialized() { return type_ == kUninitialized; }
@@ -188,7 +203,7 @@ class HTMLToken {
     return data_;
   }
 
-  bool IsAll8BitData() const { return (or_all_data_ <= 0xff); }
+  ALWAYS_INLINE bool IsAll8BitData() const { return data_.Is8Bit(); }
 
   const DataVector& GetName() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
@@ -198,8 +213,7 @@ class HTMLToken {
   void AppendToName(UChar character) {
     DCHECK(type_ == kStartTag || type_ == kEndTag || type_ == DOCTYPE);
     DCHECK(character);
-    data_.push_back(character);
-    or_all_data_ |= character;
+    data_.AddChar(character);
   }
 
   /* DOCTYPE Tokens */
@@ -223,8 +237,7 @@ class HTMLToken {
   void BeginDOCTYPE(UChar character) {
     DCHECK(character);
     BeginDOCTYPE();
-    data_.push_back(character);
-    or_all_data_ |= character;
+    data_.AddChar(character);
   }
 
   // FIXME: Distinguish between a missing public identifer and an empty one.
@@ -289,8 +302,7 @@ class HTMLToken {
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.push_back(character);
-    or_all_data_ |= character;
+    data_.AddChar(character);
   }
 
   void BeginEndTag(LChar character) {
@@ -300,17 +312,17 @@ class HTMLToken {
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.push_back(character);
+    data_.AddChar(character);
   }
 
-  void BeginEndTag(const Vector<LChar, 32>& characters) {
+  void BeginEndTag(const LCharLiteralBuffer<32>& characters) {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kEndTag;
     self_closing_ = false;
     current_attribute_ = nullptr;
     attributes_.clear();
 
-    data_.AppendVector(characters);
+    data_.AppendLiteral(characters);
   }
 
   void AddNewAttribute() {
@@ -359,12 +371,6 @@ class HTMLToken {
     current_attribute_->AppendToValue(character);
   }
 
-  void AppendToAttributeValue(wtf_size_t i, const String& value) {
-    DCHECK(!value.IsEmpty());
-    DCHECK(type_ == kStartTag || type_ == kEndTag);
-    attributes_[i].AppendToValue(value);
-  }
-
   const AttributeList& Attributes() const {
     DCHECK(type_ == kStartTag || type_ == kEndTag);
     return attributes_;
@@ -394,18 +400,17 @@ class HTMLToken {
 
   void AppendToCharacter(char character) {
     DCHECK_EQ(type_, kCharacter);
-    data_.push_back(character);
+    data_.AddChar(character);
   }
 
   void AppendToCharacter(UChar character) {
     DCHECK_EQ(type_, kCharacter);
-    data_.push_back(character);
-    or_all_data_ |= character;
+    data_.AddChar(character);
   }
 
-  void AppendToCharacter(const Vector<LChar, 32>& characters) {
+  void AppendToCharacter(const LCharLiteralBuffer<32>& characters) {
     DCHECK_EQ(type_, kCharacter);
-    data_.AppendVector(characters);
+    data_.AppendLiteral(characters);
   }
 
   /* Comment Tokens */
@@ -423,16 +428,14 @@ class HTMLToken {
   void AppendToComment(UChar character) {
     DCHECK(character);
     DCHECK_EQ(type_, kComment);
-    data_.push_back(character);
-    or_all_data_ |= character;
+    data_.AddChar(character);
   }
 
  private:
-  TokenType type_;
+  TokenType type_ = kUninitialized;
   Attribute::Range range_;  // Always starts at zero.
-  int base_offset_;
+  int base_offset_ = 0;
   DataVector data_;
-  UChar or_all_data_;
 
   // For StartTag and EndTag
   bool self_closing_;
@@ -443,8 +446,6 @@ class HTMLToken {
 
   // For DOCTYPE
   std::unique_ptr<DoctypeData> doctype_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLToken);
 };
 
 #ifndef NDEBUG
@@ -453,4 +454,4 @@ const char* ToString(HTMLToken::TokenType);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKEN_H_

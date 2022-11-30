@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,9 @@
 #include <tuple>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/switches.h"
 #include "cc/paint/draw_image.h"
@@ -112,7 +114,7 @@ class FakeDiscardableManager {
   std::map<GLuint, int32_t> textures_;
   size_t live_textures_count_ = 0;
   size_t cached_textures_limit_ = std::numeric_limits<size_t>::max();
-  viz::TestGLES2Interface* gl_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
 };
 
 class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
@@ -252,8 +254,8 @@ class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,
 
  private:
   const std::string extension_string_;
-  FakeDiscardableManager* discardable_manager_;
-  TransferCacheTestHelper* transfer_cache_helper_;
+  raw_ptr<FakeDiscardableManager> discardable_manager_;
+  raw_ptr<TransferCacheTestHelper> transfer_cache_helper_;
   bool advertise_accelerated_decoding_ = false;
   size_t mapped_entry_size_ = 0;
   std::unique_ptr<uint8_t[]> mapped_entry_;
@@ -312,7 +314,7 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
         std::move(support), std::move(gl), std::move(raster));
   }
 
-  void SetContextCapabilitiesOverride(base::Optional<gpu::Capabilities> caps) {
+  void SetContextCapabilitiesOverride(absl::optional<gpu::Capabilities> caps) {
     capabilities_override_ = caps;
   }
 
@@ -335,7 +337,7 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
                             nullptr /* sii */,
                             true) {}
 
-  base::Optional<gpu::Capabilities> capabilities_override_;
+  absl::optional<gpu::Capabilities> capabilities_override_;
 };
 
 class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
@@ -357,10 +359,8 @@ class FakeRasterDarkModeFilter : public RasterDarkModeFilter {
   sk_sp<SkColorFilter> color_filter_;
 };
 
-SkMatrix CreateMatrix(const SkSize& scale) {
-  SkMatrix matrix;
-  matrix.setScale(scale.width(), scale.height());
-  return matrix;
+SkM44 CreateMatrix(const SkSize& scale) {
+  return SkM44::Scale(scale.width(), scale.height());
 }
 
 #define EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE(condition) \
@@ -381,16 +381,21 @@ class GpuImageDecodeCacheTest
                      bool /* allow_accelerated_jpeg_decoding */,
                      bool /* allow_accelerated_webp_decoding */,
                      bool /* advertise_accelerated_decoding */,
-                     bool /* enable_clipped_image_scaling */>> {
+                     bool /* enable_clipped_image_scaling */,
+                     bool /* no_discardable_memory */>> {
  public:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     allow_accelerated_jpeg_decoding_ = std::get<3>(GetParam());
     if (allow_accelerated_jpeg_decoding_)
       enabled_features.push_back(features::kVaapiJpegImageDecodeAcceleration);
     allow_accelerated_webp_decoding_ = std::get<4>(GetParam());
     if (allow_accelerated_webp_decoding_)
       enabled_features.push_back(features::kVaapiWebPImageDecodeAcceleration);
+    no_discardable_memory_ = std::get<7>(GetParam());
+    if (no_discardable_memory_)
+      enabled_features.push_back(
+          features::kNoDiscardableMemoryForGpuDecodePath);
     feature_list_.InitWithFeatures(enabled_features,
                                    {} /* disabled_features */);
     advertise_accelerated_decoding_ = std::get<5>(GetParam());
@@ -423,8 +428,7 @@ class GpuImageDecodeCacheTest
       RasterDarkModeFilter* const dark_mode_filter = nullptr) {
     return std::make_unique<GpuImageDecodeCache>(
         context_provider_.get(), use_transfer_cache_, color_type_,
-        memory_limit_bytes, max_texture_size_,
-        PaintImage::kDefaultGeneratorClientId, dark_mode_filter);
+        memory_limit_bytes, max_texture_size_, dark_mode_filter);
   }
 
   // Returns dimensions for an image that will not fit in GPU memory and hence
@@ -456,14 +460,18 @@ class GpuImageDecodeCacheTest
 
   // Create an image that's too large to upload and will trigger falling back to
   // software rendering and decoded data storage.
-  PaintImage CreateLargePaintImageForSoftwareFallback() {
-    return CreatePaintImageForFallbackToRGB(GetLargeImageSize());
+  PaintImage CreateLargePaintImageForSoftwareFallback(
+      sk_sp<SkColorSpace> image_color_space = SkColorSpace::MakeSRGB()) {
+    return CreatePaintImageForFallbackToRGB(GetLargeImageSize(),
+                                            image_color_space);
   }
 
-  PaintImage CreatePaintImageForFallbackToRGB(const gfx::Size test_image_size) {
-    SkImageInfo info = SkImageInfo::Make(
-        test_image_size.width(), test_image_size.height(), color_type_,
-        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  PaintImage CreatePaintImageForFallbackToRGB(
+      const gfx::Size test_image_size,
+      sk_sp<SkColorSpace> image_color_space = SkColorSpace::MakeSRGB()) {
+    SkImageInfo info =
+        SkImageInfo::Make(test_image_size.width(), test_image_size.height(),
+                          color_type_, kPremul_SkAlphaType, image_color_space);
     sk_sp<FakePaintImageGenerator> generator;
     if (do_yuv_decode_) {
       SkYUVAPixmapInfo yuva_pixmap_info =
@@ -487,39 +495,45 @@ class GpuImageDecodeCacheTest
   gfx::ColorSpace DefaultColorSpace() {
     if (color_type_ != kRGBA_F16_SkColorType)
       return gfx::ColorSpace::CreateSRGB();
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTEST432_1,  // P3
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::P3,
                            gfx::ColorSpace::TransferID::LINEAR);
+  }
+
+  TargetColorParams DefaultTargetColorParams() {
+    return TargetColorParams(DefaultColorSpace());
   }
 
   DrawImage CreateDrawImageInternal(
       const PaintImage& paint_image,
-      const SkMatrix& matrix = SkMatrix::I(),
+      const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
-      SkFilterQuality filter_quality = kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality filter_quality =
+          PaintFlags::FilterQuality::kMedium,
       SkIRect* src_rect = nullptr,
       size_t frame_index = PaintImage::kDefaultFrameIndex,
       float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel,
       bool use_dark_mode = false) {
     SkIRect src_rectangle;
-    gfx::ColorSpace cs;
     if (!src_rect) {
       src_rectangle =
           SkIRect::MakeWH(paint_image.width(), paint_image.height());
       src_rect = &src_rectangle;
     }
-    if (!color_space) {
-      cs = DefaultColorSpace();
-      color_space = &cs;
-    }
+    TargetColorParams target_color_params = DefaultTargetColorParams();
+    if (color_space)
+      target_color_params.color_space = *color_space;
+    target_color_params.sdr_max_luminance_nits = sdr_white_level;
+
     return DrawImage(paint_image, use_dark_mode, *src_rect, filter_quality,
-                     matrix, frame_index, *color_space, sdr_white_level);
+                     matrix, frame_index, target_color_params);
   }
 
   DrawImage CreateDrawImageWithDarkModeInternal(
       const PaintImage& paint_image,
-      const SkMatrix& matrix = SkMatrix::I(),
+      const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
-      SkFilterQuality filter_quality = kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality filter_quality =
+          PaintFlags::FilterQuality::kMedium,
       SkIRect* src_rect = nullptr,
       size_t frame_index = PaintImage::kDefaultFrameIndex,
       float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel) {
@@ -603,7 +617,7 @@ class GpuImageDecodeCacheTest
   void CompareAllPlanesToMippedVersions(
       GpuImageDecodeCache* cache,
       const DrawImage& draw_image,
-      const base::Optional<uint32_t> transfer_cache_id,
+      const absl::optional<uint32_t> transfer_cache_id,
       bool should_have_mips) {
     for (size_t i = 0; i < kNumYUVPlanes; ++i) {
       sk_sp<SkImage> original_uploaded_plane;
@@ -629,7 +643,7 @@ class GpuImageDecodeCacheTest
   void VerifyUploadedPlaneSizes(
       GpuImageDecodeCache* cache,
       const DrawImage& draw_image,
-      const base::Optional<uint32_t> transfer_cache_id,
+      const absl::optional<uint32_t> transfer_cache_id,
       const SkISize plane_sizes[SkYUVAInfo::kMaxPlanes],
       SkYUVAPixmapInfo::DataType expected_type =
           SkYUVAPixmapInfo::DataType::kUnorm8,
@@ -682,6 +696,7 @@ class GpuImageDecodeCacheTest
   bool allow_accelerated_webp_decoding_;
   bool advertise_accelerated_decoding_;
   bool enable_clipped_image_scaling_;
+  bool no_discardable_memory_;
   int max_texture_size_ = 0;
 };
 
@@ -748,15 +763,16 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageSmallerScale) {
 TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLowerQuality) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   DrawImage draw_image = CreateDrawImageInternal(image, matrix);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
   EXPECT_TRUE(result.task);
 
-  DrawImage another_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage another_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
       another_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(another_result.need_unref);
@@ -871,10 +887,11 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLargerScaleNoReuse) {
 
 TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
   auto cache = CreateCache();
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
-      first_image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage first_draw_image =
+      CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       first_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(first_result.need_unref);
@@ -885,8 +902,9 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
 
   cache->UnrefImage(first_draw_image);
 
-  DrawImage second_draw_image = CreateDrawImageInternal(
-      first_image, matrix, nullptr /* color_space */, kMedium_SkFilterQuality);
+  DrawImage second_draw_image =
+      CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kMedium);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
@@ -1175,8 +1193,8 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   constexpr float kCustomWhiteLevel = 200.f;
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &color_space,
-      kMedium_SkFilterQuality, nullptr, PaintImage::kDefaultFrameIndex,
-      kCustomWhiteLevel);
+      PaintFlags::FilterQuality::kMedium, nullptr,
+      PaintImage::kDefaultFrameIndex, kCustomWhiteLevel);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_EQ(draw_image.target_color_space(), color_space);
@@ -1196,12 +1214,12 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   EXPECT_TRUE(decoded_draw_image.image());
   EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
-  EXPECT_EQ(decoded_draw_image.image()->colorType(), kRGBA_F16_SkColorType);
 
-  auto cs = gfx::ColorSpace(*decoded_draw_image.image()->colorSpace());
-  float sdr_white_level;
-  ASSERT_TRUE(cs.GetSDRWhiteLevel(&sdr_white_level));
-  EXPECT_FLOAT_EQ(sdr_white_level, kCustomWhiteLevel);
+  // When testing in configurations that do not support rendering to F16, this
+  // will fall back to N32.
+  EXPECT_TRUE(decoded_draw_image.image()->colorType() ==
+                  kRGBA_F16_SkColorType ||
+              decoded_draw_image.image()->colorType() == kN32_SkColorType);
 
   EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
 
@@ -1318,9 +1336,9 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
 TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
+      PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1366,10 +1384,11 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
 
 TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawHigherQuality) {
   auto cache = CreateCache();
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1448,9 +1467,9 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeScaledDecodedImageForDraw) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageForFallbackToRGB(
       gfx::Size(GetLargeImageSize().width(), GetLargeImageSize().height() * 2));
-  DrawImage draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr /* color_space */, kHigh_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
+      PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1470,7 +1489,8 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeScaledDecodedImageForDraw) {
   EXPECT_EQ(GetLargeImageSize().width(), decoded_draw_image.image()->width());
   EXPECT_EQ(GetLargeImageSize().height(), decoded_draw_image.image()->height());
 
-  EXPECT_EQ(decoded_draw_image.filter_quality(), kMedium_SkFilterQuality);
+  EXPECT_EQ(decoded_draw_image.filter_quality(),
+            PaintFlags::FilterQuality::kMedium);
 
   EXPECT_FALSE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE(
@@ -1609,12 +1629,12 @@ TEST_P(GpuImageDecodeCacheTest, ZeroSizedImagesAreSkipped) {
 TEST_P(GpuImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image(image, false,
-                       SkIRect::MakeXYWH(image.width() + 1, image.height() + 1,
-                                         image.width(), image.height()),
-                       kMedium_SkFilterQuality,
-                       CreateMatrix(SkSize::Make(1.f, 1.f)),
-                       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+  DrawImage draw_image(
+      image, false,
+      SkIRect::MakeXYWH(image.width() + 1, image.height() + 1, image.width(),
+                        image.height()),
+      PaintFlags::FilterQuality::kMedium, CreateMatrix(SkSize::Make(1.f, 1.f)),
+      PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
 
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1637,7 +1657,7 @@ TEST_P(GpuImageDecodeCacheTest, CanceledTasksDoNotCountAgainstBudget) {
   SkIRect src_rect = SkIRect::MakeXYWH(0, 0, image.width(), image.height());
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.f, 1.f)), nullptr /* color_space */,
-      kMedium_SkFilterQuality, &src_rect);
+      PaintFlags::FilterQuality::kMedium, &src_rect);
 
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1792,18 +1812,19 @@ TEST_P(GpuImageDecodeCacheTest, OrphanedZeroRefImagesImmediatelyDeleted) {
 TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
+  SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
 
   // Create an image with kLow_FilterQuality.
-  DrawImage low_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage low_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult low_result = cache->GetTaskForImageAndRef(
       low_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(low_result.need_unref);
   EXPECT_TRUE(low_result.task);
 
-  // Get the same image at kMedium_SkFilterQuality. We can't re-use low, so we
-  // should get a new task/ref.
+  // Get the same image at PaintFlags::FilterQuality::kMedium. We can't re-use
+  // low, so we should get a new task/ref.
   DrawImage medium_draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult medium_result = cache->GetTaskForImageAndRef(
       medium_draw_image, ImageDecodeCache::TracingInfo());
@@ -1811,9 +1832,11 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   EXPECT_TRUE(medium_result.task.get());
   EXPECT_FALSE(low_result.task.get() == medium_result.task.get());
 
-  // Get the same image at kHigh_SkFilterQuality. We should re-use medium.
-  DrawImage high_quality_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kHigh_SkFilterQuality);
+  // Get the same image at PaintFlags::FilterQuality::kHigh. We should re-use
+  // medium.
+  DrawImage high_quality_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult high_quality_result =
       cache->GetTaskForImageAndRef(high_quality_draw_image,
                                    ImageDecodeCache::TracingInfo());
@@ -1865,9 +1888,10 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawMipUsageChange) {
 TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTask) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  SkMatrix matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
-  DrawImage draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
 
   ImageDecodeCache::TaskResult result =
       cache->GetOutOfRasterDecodeTaskForImageAndRef(draw_image);
@@ -1939,8 +1963,9 @@ TEST_P(GpuImageDecodeCacheTest, SmallCacheNormalWorkingSet) {
   PaintImage image2 = CreatePaintImageInternal(GetNormalImageSize());
   DrawImage draw_image2(
       image2, false, SkIRect::MakeWH(image2.width(), image2.height()),
-      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(1.0f, 1.0f)),
-      PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+      PaintFlags::FilterQuality::kMedium,
+      CreateMatrix(SkSize::Make(1.0f, 1.0f)), PaintImage::kDefaultFrameIndex,
+      DefaultTargetColorParams());
 
   // Add an image to the cache and un-ref it.
   {
@@ -2118,10 +2143,10 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForLargeImageNonSRGBColorSpace) {
 TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   auto cache = CreateCache();
   std::vector<FrameMetadata> frames = {
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(2)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(3)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(4)),
-      FrameMetadata(true, base::TimeDelta::FromMilliseconds(5)),
+      FrameMetadata(true, base::Milliseconds(2)),
+      FrameMetadata(true, base::Milliseconds(3)),
+      FrameMetadata(true, base::Milliseconds(4)),
+      FrameMetadata(true, base::Milliseconds(5)),
   };
   const gfx::Size test_image_size = GetNormalImageSize();
   SkImageInfo info =
@@ -2143,10 +2168,10 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
 
   viz::ContextProvider::ScopedContextLock context_lock(context_provider());
 
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
   DrawImage draw_image(
       image, false, SkIRect::MakeWH(image.width(), image.height()), quality,
-      CreateMatrix(SkSize::Make(1.0f, 1.0f)), 1u, DefaultColorSpace());
+      CreateMatrix(SkSize::Make(1.0f, 1.0f)), 1u, DefaultTargetColorParams());
   auto decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2156,8 +2181,9 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   cache->DrawWithImageFinished(draw_image, decoded_image);
 
   // Scaled.
-  DrawImage scaled_draw_image(draw_image, 0.5f, 2u,
-                              draw_image.target_color_space());
+  TargetColorParams target_color_params;
+  target_color_params.color_space = draw_image.target_color_space();
+  DrawImage scaled_draw_image(draw_image, 0.5f, 2u, target_color_params);
   decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(scaled_draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2173,7 +2199,7 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   ASSERT_LT(subset_height, test_image_size.height());
   DrawImage subset_draw_image(
       image, false, SkIRect::MakeWH(subset_width, subset_height), quality,
-      CreateMatrix(SkSize::Make(1.0f, 1.0f)), 3u, DefaultColorSpace());
+      CreateMatrix(SkSize::Make(1.0f, 1.0f)), 3u, DefaultTargetColorParams());
   decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(subset_draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2350,9 +2376,12 @@ TEST_P(GpuImageDecodeCacheTest, ImageBudgetingBySize) {
 TEST_P(GpuImageDecodeCacheTest,
        ColorConversionDuringDecodeForLargeImageNonSRGBColorSpace) {
   auto cache = CreateCache();
+  sk_sp<SkColorSpace> image_color_space =
+      gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateXYZD50();
 
-  PaintImage image = CreateLargePaintImageForSoftwareFallback();
+  PaintImage image =
+      CreateLargePaintImageForSoftwareFallback(image_color_space);
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
   ImageDecodeCache::TaskResult result =
@@ -2391,7 +2420,9 @@ TEST_P(GpuImageDecodeCacheTest,
     EXPECT_TRUE(decoded_image == decoded_draw_image.image());
     // Ensure that the SW decoded image had colorspace conversion applied.
     EXPECT_TRUE(SkColorSpace::Equals(decoded_image->colorSpace(),
-                                     target_color_space.get()));
+                                     cache->SupportsColorSpaceConversion()
+                                         ? image_color_space.get()
+                                         : nullptr));
   }
 
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -2505,33 +2536,25 @@ TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadTaskCancelled) {
   cache->UnrefImage(draw_image);
 }
 
-TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageColorConverted) {
+TEST_P(GpuImageDecodeCacheTest, NonLazyImageLargeImageNotColorConverted) {
   if (do_yuv_decode_) {
     // YUV bitmap images do not happen, so this test will always skip for YUV.
     return;
   }
   auto cache = CreateCache();
-  const bool should_cache_sw_image =
-      cache->SupportsColorSpaceConversion() && !use_transfer_cache_;
 
   PaintImage image = CreateBitmapImageInternal(GetLargeImageSize());
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateDisplayP3D65();
   DrawImage draw_image = CreateDrawImageInternal(
-      image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &color_space);
+      image, CreateMatrix(SkSize::Make(1.0f, 1.0f)), &target_color_space);
   viz::ContextProvider::ScopedContextLock context_lock(context_provider());
   DecodedDrawImage decoded_draw_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
   EXPECT_TRUE(decoded_draw_image.image());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
   cache->DrawWithImageFinished(draw_image, decoded_draw_image);
-  // For non-lazy images color converted during scaling, cpu component should be
-  // cached.
   auto sw_image = cache->GetSWImageDecodeForTesting(draw_image);
-  ASSERT_EQ(!!sw_image, should_cache_sw_image);
-  if (should_cache_sw_image) {
-    EXPECT_TRUE(SkColorSpace::Equals(sw_image->colorSpace(),
-                                     color_space.ToSkColorSpace().get()));
-  }
+  ASSERT_EQ(!!sw_image, false);
 }
 
 TEST_P(GpuImageDecodeCacheTest, NonLazyImageUploadDownscaled) {
@@ -2659,9 +2682,9 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  DrawImage draw_image =
-      CreateDrawImageInternal(paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)),
-                              nullptr /* color_space */, kNone_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)),
+      nullptr /* color_space */, PaintFlags::FilterQuality::kNone);
   DecodedDrawImage decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2680,7 +2703,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
 }
 
 TEST_P(GpuImageDecodeCacheTest, BasicMips) {
-  auto decode_and_check_mips = [this](SkFilterQuality filter_quality,
+  auto decode_and_check_mips = [this](PaintFlags::FilterQuality filter_quality,
                                       SkSize scale, gfx::ColorSpace color_space,
                                       bool should_have_mips) {
     auto cache = CreateCache();
@@ -2703,7 +2726,7 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2728,22 +2751,23 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
   };
 
   // No scale == no mips.
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(1.0f, 1.0f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(1.0f, 1.0f), DefaultColorSpace(), false);
   // Full mip level scale == no mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.5f, 0.5f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.5f, 0.5f), DefaultColorSpace(), false);
   // Low filter quality == no mips
-  decode_and_check_mips(kLow_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kLow,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), false);
   // None filter quality == no mips
-  decode_and_check_mips(kNone_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kNone,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), false);
   // Medium filter quality == mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), true);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), true);
   // Color conversion preserves mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.6f, 0.6f),
                         gfx::ColorSpace::CreateXYZD50(), true);
 }
 
@@ -2770,7 +2794,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2817,7 +2841,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedSubsequentDraw) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2872,7 +2896,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2912,7 +2936,7 @@ TEST_P(GpuImageDecodeCacheTest, MipsAddedWhileOriginalInUse) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -2974,8 +2998,8 @@ TEST_P(GpuImageDecodeCacheTest,
   // This test creates an image that will be YUV decoded and drawn at 80% scale.
   // Because the final size is between mip levels, we expect the image to be
   // decoded and uploaded at original size (mip level 0 for all planes) but to
-  // have mips attached since kMedium_SkFilterQuality uses bilinear filtering
-  // between mip levels.
+  // have mips attached since PaintFlags::FilterQuality::kMedium uses bilinear
+  // filtering between mip levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -2983,14 +3007,15 @@ TEST_P(GpuImageDecodeCacheTest,
   }
   auto owned_cache = CreateCache();
   auto decode_and_check_plane_sizes = [this, cache = owned_cache.get()]() {
-    SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+    PaintFlags::FilterQuality filter_quality =
+        PaintFlags::FilterQuality::kMedium;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
     PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
     DrawImage draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),
         filter_quality, CreateMatrix(requires_decode_at_original_scale),
-        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+        PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3006,7 +3031,7 @@ TEST_P(GpuImageDecodeCacheTest,
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -3043,8 +3068,8 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
   // This test creates a high bit depth image that will be YUV decoded and drawn
   // at 80% scale. Because the final size is between mip levels, we expect the
   // image to be decoded and uploaded at original size (mip level 0 for all
-  // planes) but to have mips attached since kMedium_SkFilterQuality uses
-  // bilinear filtering between mip levels.
+  // planes) but to have mips attached since PaintFlags::FilterQuality::kMedium
+  // uses bilinear filtering between mip levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -3059,7 +3084,8 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                                   DataType::kUnorm8,
                                           gfx::ColorSpace target_cs =
                                               gfx::ColorSpace::CreateSRGB()) {
-    SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+    PaintFlags::FilterQuality filter_quality =
+        PaintFlags::FilterQuality::kMedium;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
     // When we're targeting HDR output, select a reasonable HDR color space for
@@ -3067,6 +3093,9 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     gfx::ColorSpace decoded_cs;
     if (target_cs.IsHDR())
       decoded_cs = gfx::ColorSpace::CreateHDR10();
+    auto sk_decoded_cs = cache->SupportsColorSpaceConversion()
+                             ? decoded_cs.ToSkColorSpace()
+                             : nullptr;
 
     // An unknown SkColorType means we expect fallback to RGB.
     PaintImage image =
@@ -3074,14 +3103,15 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                                   decoded_cs.ToSkColorSpace())
                        : CreatePaintImageForFallbackToRGB(GetNormalImageSize());
 
-    float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
-    if (target_cs.IsHDR())
-      ASSERT_TRUE(target_cs.GetSDRWhiteLevel(&sdr_white_level));
+    TargetColorParams target_color_params;
+    target_color_params.color_space = target_cs;
+    target_color_params.sdr_max_luminance_nits =
+        gfx::ColorSpace::kDefaultSDRWhiteLevel;
 
     DrawImage draw_image(
         image, false, SkIRect::MakeWH(image.width(), image.height()),
         filter_quality, CreateMatrix(requires_decode_at_original_scale),
-        PaintImage::kDefaultFrameIndex, target_cs, sdr_white_level);
+        PaintImage::kDefaultFrameIndex, target_color_params);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3097,14 +3127,20 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     // it attached.
     DecodedDrawImage serialized_decoded_draw_image =
         cache->GetDecodedImageForDraw(draw_image);
-    const base::Optional<uint32_t> transfer_cache_entry_id =
+    const absl::optional<uint32_t> transfer_cache_entry_id =
         serialized_decoded_draw_image.transfer_cache_entry_id();
     DecodedDrawImage decoded_draw_image =
         EnsureImageBacked(std::move(serialized_decoded_draw_image));
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-    if (decodes_to_yuv) {
+    // If `draw_image` is tone mapped, then it will be converted to RGBA
+    // during tone mapping.
+    bool color_converted_to_rgba = use_transfer_cache_ &&
+                                   decoded_cs.IsToneMappedByDefault() &&
+                                   cache->SupportsColorSpaceConversion();
+
+    if (decodes_to_yuv && !color_converted_to_rgba) {
       // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus, we
       // must separately request mips for each plane and compare to the original
       // uploaded planes.
@@ -3114,22 +3150,18 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
       SkYUVAPixmapInfo yuva_pixmap_info =
           GetYUVAPixmapInfo(GetNormalImageSize(), yuv_format_, yuv_data_type_);
 
-      // Decoded HDR images should have their SDR white level adjusted to match
-      // the display so we avoid scaling them by variable SDR brightness levels.
-      auto expected_cs = decoded_cs.IsHDR()
-                             ? decoded_cs.GetWithSDRWhiteLevel(sdr_white_level)
-                             : decoded_cs;
-
       SkISize plane_sizes[SkYUVAInfo::kMaxPlanes];
       yuva_pixmap_info.yuvaInfo().planeDimensions(plane_sizes);
       VerifyUploadedPlaneSizes(cache, draw_image, transfer_cache_entry_id,
-                               plane_sizes, yuv_data_type,
-                               expected_cs.ToSkColorSpace().get());
+                               plane_sizes, yuv_data_type, sk_decoded_cs.get());
 
-      if (expected_cs.IsValid()) {
-        EXPECT_TRUE(
-            SkColorSpace::Equals(expected_cs.ToSkColorSpace().get(),
-                                 decoded_draw_image.image()->colorSpace()));
+      auto expected_image_cs =
+          cache->SupportsColorSpaceConversion() && sk_decoded_cs
+              ? target_color_params.color_space.ToSkColorSpace()
+              : nullptr;
+      if (expected_image_cs) {
+        EXPECT_TRUE(SkColorSpace::Equals(
+            expected_image_cs.get(), decoded_draw_image.image()->colorSpace()));
       }
     } else {
       if (use_transfer_cache_) {
@@ -3156,7 +3188,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     original_caps = context_provider_->ContextCapabilities();
   }
 
-  const auto hdr_cs = gfx::ColorSpace::CreateHDR10(/*sdr_white_level=*/200.0f);
+  const auto hdr_cs = gfx::ColorSpace::CreateHDR10();
 
   // Test that decoding to R16 works when supported.
   {
@@ -3222,7 +3254,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                  SkYUVAPixmapInfo::DataType::kFloat16,
                                  DefaultColorSpace());
 
-    // Verify HDR decoding has white level adjustment.
+    // Verify HDR decoding.
     yuv_format_ = YUVSubsampling::k420;
     decode_and_check_plane_sizes(f16_cache.get(), true,
                                  SkYUVAPixmapInfo::DataType::kFloat16, hdr_cs);
@@ -3273,7 +3305,8 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
   // Because the final size is between mip levels, we expect the image to be
   // decoded and uploaded at half its original size (mip level 1 for Y plane but
   // level 0 for chroma planes) and to have mips attached since
-  // kMedium_SkFilterQuality uses bilinear filtering between mip levels.
+  // PaintFlags::FilterQuality::kMedium uses bilinear filtering between mip
+  // levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -3284,14 +3317,15 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
       [this, cache = owned_cache.get()](
           SkSize scaled_size,
           const SkISize mipped_plane_sizes[SkYUVAInfo::kMaxPlanes]) {
-        SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+        PaintFlags::FilterQuality filter_quality =
+            PaintFlags::FilterQuality::kMedium;
 
         gfx::Size image_size = GetNormalImageSize();
         PaintImage image = CreatePaintImageInternal(image_size);
         DrawImage draw_image(
             image, false, SkIRect::MakeWH(image.width(), image.height()),
             filter_quality, CreateMatrix(scaled_size),
-            PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+            PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
         ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
             draw_image, ImageDecodeCache::TracingInfo());
         EXPECT_TRUE(result.need_unref);
@@ -3308,7 +3342,7 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
         // has it attached.
         DecodedDrawImage serialized_decoded_draw_image =
             cache->GetDecodedImageForDraw(draw_image);
-        const base::Optional<uint32_t> transfer_cache_entry_id =
+        const absl::optional<uint32_t> transfer_cache_entry_id =
             serialized_decoded_draw_image.transfer_cache_entry_id();
         DecodedDrawImage decoded_draw_image =
             EnsureImageBacked(std::move(serialized_decoded_draw_image));
@@ -3480,7 +3514,7 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   // Another draw image with smaller src rect for image1.
   SkIRect src = SkIRect::MakeWH(10, 10);
   DrawImage draw_image12 = CreateDrawImageWithDarkModeInternal(
-      image1, SkMatrix::I(), nullptr, kMedium_SkFilterQuality, &src);
+      image1, SkM44(), nullptr, PaintFlags::FilterQuality::kMedium, &src);
   ImageDecodeCache::TaskResult result12 = cache->GetTaskForImageAndRef(
       draw_image12, ImageDecodeCache::TracingInfo());
   GetImageAndDrawFinishedForDarkMode(cache.get(), draw_image12,
@@ -3575,9 +3609,9 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
 
   // Get task for clipped and scaled image.
   auto clipped_rect = SkIRect::MakeWH(image.width() * 0.9f, image.height());
-  DrawImage clipped_draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr, kMedium_SkFilterQuality, &clipped_rect);
+  DrawImage clipped_draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr,
+      PaintFlags::FilterQuality::kMedium, &clipped_rect);
   ImageDecodeCache::TaskResult clipped_result = cache->GetTaskForImageAndRef(
       clipped_draw_image, ImageDecodeCache::TracingInfo());
 
@@ -3589,32 +3623,32 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
 
 SkColorType test_color_types[] = {kN32_SkColorType, kARGB_4444_SkColorType,
                                   kRGBA_F16_SkColorType};
-bool false_array[] = {false};
-bool true_array[] = {true};
 
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsInProcessRaster,
     GpuImageDecodeCacheTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(false_array) /* use_transfer_cache */,
+        testing::Values(false) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
-        testing::Bool() /* enable_clipped_image_scaling */));
+        testing::Values(false) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(false) /* allow_accelerated_webp_decoding */,
+        testing::Values(false) /* advertise_accelerated_decoding */,
+        testing::Bool() /* enable_clipped_image_scaling */,
+        testing::Values(false) /* no_discardable_memory */));
 
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
     GpuImageDecodeCacheTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Values(true) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(false_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(false_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(false_array) /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+        testing::Values(false) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(false) /* allow_accelerated_webp_decoding */,
+        testing::Values(false) /* advertise_accelerated_decoding */,
+        testing::Values(false) /* enable_clipped_image_scaling */,
+        testing::Values(false) /* no_discardable_memory */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesTest
     : public GpuImageDecodeCacheTest {
@@ -3666,15 +3700,13 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   for (const auto& subsampling_and_expected_data_size :
        subsamplings_and_expected_data_sizes) {
     auto cache = CreateCache();
-    const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-    ASSERT_TRUE(target_color_space.IsValid());
     const PaintImage image = CreatePaintImageForDecodeAcceleration(
         ImageType::kJPEG, subsampling_and_expected_data_size.first);
-    const SkFilterQuality quality = kHigh_SkFilterQuality;
+    const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
     DrawImage draw_image(image, false,
                          SkIRect::MakeWH(image.width(), image.height()),
                          quality, CreateMatrix(SkSize::Make(0.75f, 0.75f)),
-                         PaintImage::kDefaultFrameIndex, target_color_space);
+                         PaintImage::kDefaultFrameIndex, TargetColorParams());
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3707,14 +3739,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        RequestAcceleratedDecodeSuccessfullyWithColorSpaceConversion) {
   auto cache = CreateCache();
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params(gfx::ColorSpace::CreateXYZD50());
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3724,12 +3756,13 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   // Accelerated decodes should not produce decode tasks.
   ASSERT_TRUE(result.task->dependencies().empty());
   ASSERT_TRUE(image.GetImageHeaderMetadata());
-  EXPECT_CALL(*raster_implementation(),
-              DoScheduleImageDecode(
-                  image.GetImageHeaderMetadata()->image_size, _,
-                  cache->SupportsColorSpaceConversion() ? target_color_space
-                                                        : gfx::ColorSpace(),
-                  _))
+  EXPECT_CALL(
+      *raster_implementation(),
+      DoScheduleImageDecode(image.GetImageHeaderMetadata()->image_size, _,
+                            cache->SupportsColorSpaceConversion()
+                                ? target_color_params.color_space
+                                : gfx::ColorSpace(),
+                            _))
       .Times(1);
   TestTileTaskRunner::ProcessTask(result.task.get());
 
@@ -3746,14 +3779,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        AcceleratedDecodeRequestFails) {
   auto cache = CreateCache();
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params(gfx::ColorSpace::CreateXYZD50());
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3764,12 +3797,13 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   ASSERT_TRUE(result.task->dependencies().empty());
   raster_implementation()->SetAcceleratedDecodingFailed();
   ASSERT_TRUE(image.GetImageHeaderMetadata());
-  EXPECT_CALL(*raster_implementation(),
-              DoScheduleImageDecode(
-                  image.GetImageHeaderMetadata()->image_size, _,
-                  cache->SupportsColorSpaceConversion() ? target_color_space
-                                                        : gfx::ColorSpace(),
-                  _))
+  EXPECT_CALL(
+      *raster_implementation(),
+      DoScheduleImageDecode(image.GetImageHeaderMetadata()->image_size, _,
+                            cache->SupportsColorSpaceConversion()
+                                ? target_color_params.color_space
+                                : gfx::ColorSpace(),
+                            _))
       .Times(1);
   TestTileTaskRunner::ProcessTask(result.task.get());
 
@@ -3794,14 +3828,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        CannotRequestAcceleratedDecodeBecauseOfStandAloneDecode) {
   auto cache = CreateCache();
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params;
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(1.0f, 1.0f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetOutOfRasterDecodeTaskForImageAndRef(draw_image);
   EXPECT_TRUE(result.need_unref);
@@ -3817,14 +3851,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        CannotRequestAcceleratedDecodeBecauseOfNonZeroUploadMipLevel) {
   auto cache = CreateCache();
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params;
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3842,14 +3876,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        RequestAcceleratedDecodeSuccessfullyAfterCancellation) {
   auto cache = CreateCache();
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params;
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -3892,14 +3926,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
        RequestAcceleratedDecodeSuccessfullyAtRasterTime) {
   // We force at-raster decodes by setting the cache memory limit to 0 bytes.
   auto cache = CreateCache(0u /* memory_limit_bytes */);
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const TargetColorParams target_color_params;
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
-                       PaintImage::kDefaultFrameIndex, target_color_space);
+                       PaintImage::kDefaultFrameIndex, target_color_params);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_FALSE(result.need_unref);
@@ -3925,12 +3959,13 @@ INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheWithAcceleratedDecodesTest,
     testing::Combine(
         testing::ValuesIn(test_color_types),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
+        testing::Values(true) /* use_transfer_cache */,
         testing::Bool() /* do_yuv_decode */,
-        testing::ValuesIn(true_array) /* allow_accelerated_jpeg_decoding */,
-        testing::ValuesIn(true_array) /* allow_accelerated_webp_decoding */,
-        testing::ValuesIn(true_array) /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+        testing::Values(true) /* allow_accelerated_jpeg_decoding */,
+        testing::Values(true) /* allow_accelerated_webp_decoding */,
+        testing::Values(true) /* advertise_accelerated_decoding */,
+        testing::Values(false) /* enable_clipped_image_scaling */,
+        testing::Bool() /* no_discardable_memory */));
 
 class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
     : public GpuImageDecodeCacheWithAcceleratedDecodesTest {};
@@ -3938,9 +3973,9 @@ class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
        RequestAcceleratedDecodeSuccessfully) {
   auto cache = CreateCache();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
-  const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
-  ASSERT_TRUE(target_color_space.IsValid());
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
+  const TargetColorParams target_color_params;
+  ASSERT_TRUE(target_color_params.color_space.IsValid());
 
   // Try a JPEG image.
   const PaintImage jpeg_image =
@@ -3949,7 +3984,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
       jpeg_image, false,
       SkIRect::MakeWH(jpeg_image.width(), jpeg_image.height()), quality,
       CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_space);
+      target_color_params);
   ImageDecodeCache::TaskResult jpeg_task = cache->GetTaskForImageAndRef(
       jpeg_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(jpeg_task.need_unref);
@@ -4010,7 +4045,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
       webp_image, false,
       SkIRect::MakeWH(webp_image.width(), webp_image.height()), quality,
       CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_space);
+      target_color_params);
   ImageDecodeCache::TaskResult webp_task = cache->GetTaskForImageAndRef(
       webp_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(webp_task.need_unref);
@@ -4050,7 +4085,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
       png_image, false,
       SkIRect::MakeWH(jpeg_image.width(), jpeg_image.height()), quality,
       CreateMatrix(SkSize::Make(0.75f, 0.75f)), PaintImage::kDefaultFrameIndex,
-      target_color_space);
+      target_color_params);
   ImageDecodeCache::TaskResult png_task = cache->GetTaskForImageAndRef(
       png_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(png_task.need_unref);
@@ -4066,14 +4101,14 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
 INSTANTIATE_TEST_SUITE_P(
     GpuImageDecodeCacheTestsOOPR,
     GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
-    testing::Combine(
-        testing::Values(kN32_SkColorType),
-        testing::ValuesIn(true_array) /* use_transfer_cache */,
-        testing::Bool() /* do_yuv_decode */,
-        testing::Bool() /* allow_accelerated_jpeg_decoding */,
-        testing::Bool() /* allow_accelerated_webp_decoding */,
-        testing::Bool() /* advertise_accelerated_decoding */,
-        testing::ValuesIn(false_array) /* enable_clipped_image_scaling */));
+    testing::Combine(testing::Values(kN32_SkColorType),
+                     testing::Values(true) /* use_transfer_cache */,
+                     testing::Bool() /* do_yuv_decode */,
+                     testing::Bool() /* allow_accelerated_jpeg_decoding */,
+                     testing::Bool() /* allow_accelerated_webp_decoding */,
+                     testing::Bool() /* advertise_accelerated_decoding */,
+                     testing::Values(false) /* enable_clipped_image_scaling */,
+                     testing::Bool() /* no_discardable_memory */));
 
 #undef EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE
 #undef EXPECT_FALSE_IF_NOT_USING_TRANSFER_CACHE

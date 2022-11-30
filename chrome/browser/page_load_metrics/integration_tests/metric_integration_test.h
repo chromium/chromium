@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_
 
+#include "base/strings/string_piece_forward.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -65,6 +66,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   // resource at the URL "/test.html".
   void LoadHTML(const std::string& content);
 
+  content::RenderWidgetHost* GetRenderWidgetHost();
+
   // Begin trace collection for the specified trace categories. The
   // trace includes events from all processes (browser and renderer).
   void StartTracing(const std::vector<std::string>& categories);
@@ -91,6 +94,10 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
                                int64_t expected_value);
 
+  void ExpectUKMPageLoadMetricFlagSet(base::StringPiece metric_name,
+                                      uint32_t flag_set,
+                                      bool expected);
+
   void ExpectUKMPageLoadMetricNear(base::StringPiece metric_name,
                                    double expected_value,
                                    double epsilon);
@@ -100,6 +107,15 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   void ExpectUniqueUMAPageLoadMetricNear(base::StringPiece metric_name,
                                          double expected_value);
 
+  // Checks that the value of |metric_name| in the latest timing update trace
+  // event emitted by UkmPageLoadMetricsObserver is within |epsilon| of
+  // |expected_value|.
+  void ExpectMetricInLastUKMUpdateTraceEventNear(
+      trace_analyzer::TraceAnalyzer& trace_analyzer,
+      base::StringPiece metric_name,
+      double expected_value,
+      double epsilon);
+
  private:
   static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const std::string& relative_url,
@@ -107,8 +123,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
       base::TimeDelta delay,
       const net::test_server::HttpRequest& request);
 
-  base::Optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
-  base::Optional<base::HistogramTester> histogram_tester_;
+  absl::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  absl::optional<base::HistogramTester> histogram_tester_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_INTEGRATION_TESTS_METRIC_INTEGRATION_TEST_H_

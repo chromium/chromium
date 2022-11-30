@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,19 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace views {
 namespace {
@@ -64,22 +67,23 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   const bool hovered = GetState() != Button::STATE_NORMAL;
   cc::PaintFlags fill_flags;
   fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-  fill_flags.setColor(GetNativeTheme()->GetSystemColor(
-      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill
-              : ui::NativeTheme::kColorId_OverlayScrollbarThumbFill));
+  fill_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarFillHovered
+              : ui::kColorOverlayScrollbarFill));
   gfx::RectF fill_bounds(GetLocalBounds());
-  fill_bounds.Inset(gfx::InsetsF(IsHorizontal() ? kThumbHoverOffset : 0,
-                                 IsHorizontal() ? 0 : kThumbHoverOffset, 0, 0));
-  fill_bounds.Inset(gfx::InsetsF(kThumbStroke, kThumbStroke,
-                                 IsHorizontal() ? 0 : kThumbStroke,
-                                 IsHorizontal() ? kThumbStroke : 0));
+  fill_bounds.Inset(gfx::InsetsF::TLBR(IsHorizontal() ? kThumbHoverOffset : 0,
+                                       IsHorizontal() ? 0 : kThumbHoverOffset,
+                                       0, 0));
+  fill_bounds.Inset(gfx::InsetsF::TLBR(kThumbStroke, kThumbStroke,
+                                       IsHorizontal() ? 0 : kThumbStroke,
+                                       IsHorizontal() ? kThumbStroke : 0));
   canvas->DrawRect(fill_bounds, fill_flags);
 
   cc::PaintFlags stroke_flags;
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  stroke_flags.setColor(GetNativeTheme()->GetSystemColor(
-      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke
-              : ui::NativeTheme::kColorId_OverlayScrollbarThumbStroke));
+  stroke_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarStrokeHovered
+              : ui::kColorOverlayScrollbarStroke));
   stroke_flags.setStrokeWidth(kThumbStrokeVisualSize);
   stroke_flags.setStrokeCap(cc::PaintFlags::kSquare_Cap);
 
@@ -147,8 +151,8 @@ OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
 OverlayScrollBar::~OverlayScrollBar() = default;
 
 gfx::Insets OverlayScrollBar::GetInsets() const {
-  return IsHorizontal() ? gfx::Insets(-kThumbHoverOffset, 0, 0, 0)
-                        : gfx::Insets(0, -kThumbHoverOffset, 0, 0);
+  return IsHorizontal() ? gfx::Insets::TLBR(-kThumbHoverOffset, 0, 0, 0)
+                        : gfx::Insets::TLBR(0, -kThumbHoverOffset, 0, 0);
 }
 
 void OverlayScrollBar::OnMouseEntered(const ui::MouseEvent& event) {

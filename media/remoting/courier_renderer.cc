@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +16,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/buffering_state.h"
 #include "media/base/media_resource.h"
@@ -22,9 +25,9 @@
 #include "media/base/video_renderer_sink.h"
 #include "media/base/waiting.h"
 #include "media/remoting/demuxer_stream_adapter.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/renderer_controller.h"
+
+using openscreen::cast::RpcMessenger;
 
 namespace media {
 namespace remoting {
@@ -32,13 +35,13 @@ namespace remoting {
 namespace {
 
 // The moving time window to track the media time and statistics updates.
-constexpr base::TimeDelta kTrackingWindow = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kTrackingWindow = base::Seconds(5);
 
 // The allowed delay for the remoting playback. When continuously exceeds this
 // limit for |kPlaybackDelayCountThreshold| times, the user experience is likely
 // poor and the controller is notified.
 constexpr base::TimeDelta kMediaPlaybackDelayThreshold =
-    base::TimeDelta::FromMilliseconds(750);
+    base::Milliseconds(750);
 constexpr int kPlaybackDelayCountThreshold = 10;
 
 // The allowed percentage of the number of video frames dropped vs. the number
@@ -48,13 +51,30 @@ constexpr int kMaxNumVideoFramesDroppedPercentage = 3;
 
 // The time period to allow receiver get stable after playback rate change or
 // Flush().
-constexpr base::TimeDelta kStabilizationPeriod =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kStabilizationPeriod = base::Seconds(2);
 
 // The amount of time between polling the DemuxerStreamAdapters to measure their
 // data flow rates for metrics.
-constexpr base::TimeDelta kDataFlowPollPeriod =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDataFlowPollPeriod = base::Seconds(10);
+
+// base::Bind* doesn't understand openscreen::WeakPtr, so we must manually
+// check the RpcMessenger pointer before calling into it.
+void RegisterForRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle,
+    openscreen::cast::RpcMessenger::ReceiveMessageCallback message_cb) {
+  if (rpc_messenger) {
+    rpc_messenger->RegisterMessageReceiverCallback(rpc_handle,
+                                                   std::move(message_cb));
+  }
+}
+void DeregisterFromRpcTask(
+    openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
+    int rpc_handle) {
+  if (rpc_messenger) {
+    rpc_messenger->UnregisterMessageReceiverCallback(rpc_handle);
+  }
+}
 
 }  // namespace
 
@@ -68,28 +88,23 @@ CourierRenderer::CourierRenderer(
       media_resource_(nullptr),
       client_(nullptr),
       controller_(controller),
-      rpc_broker_(controller_->GetRpcBroker()),
-      rpc_handle_(rpc_broker_->GetUniqueHandle()),
-      remote_renderer_handle_(RpcBroker::kInvalidHandle),
+      rpc_messenger_(controller_->GetRpcMessenger()),
+      rpc_handle_(rpc_messenger_->GetUniqueHandle()),
+      remote_renderer_handle_(RpcMessenger::kInvalidHandle),
       video_renderer_sink_(video_renderer_sink),
       clock_(base::DefaultTickClock::GetInstance()) {
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
-  const RpcBroker::ReceiveMessageCallback receive_callback =
-      base::BindRepeating(&CourierRenderer::OnMessageReceivedOnMainThread,
-                          media_task_runner_, weak_factory_.GetWeakPtr());
-  rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&CourierRenderer::RegisterForRpcMessaging,
+                                weak_factory_.GetWeakPtr()));
 }
 
 CourierRenderer::~CourierRenderer() {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  // Post task on main thread to unregister message receiver.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RpcBroker::UnregisterMessageReceiverCallback,
-                                rpc_broker_, rpc_handle_));
-
+  DeregisterFromRpcMessaging();
   if (video_renderer_sink_) {
     video_renderer_sink_->PaintSingleFrame(
         VideoFrame::CreateBlackFrame(gfx::Size(1280, 720)));
@@ -133,11 +148,11 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
           audio_demuxer_stream, video_demuxer_stream,
           base::BindOnce(&CourierRenderer::OnDataPipeCreatedOnMainThread,
                          media_task_runner_, weak_factory_.GetWeakPtr(),
-                         rpc_broker_)));
+                         rpc_messenger_)));
 }
 
 void CourierRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {}
+    absl::optional<base::TimeDelta> latency_hint) {}
 
 void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
@@ -153,10 +168,10 @@ void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   }
 
   state_ = STATE_FLUSHING;
-  base::Optional<uint32_t> flush_audio_count;
+  absl::optional<uint32_t> flush_audio_count;
   if (audio_demuxer_stream_adapter_)
     flush_audio_count = audio_demuxer_stream_adapter_->SignalFlush(true);
-  base::Optional<uint32_t> flush_video_count;
+  absl::optional<uint32_t> flush_video_count;
   if (video_demuxer_stream_adapter_)
     flush_video_count = video_demuxer_stream_adapter_->SignalFlush(true);
   // Makes sure flush count is valid if stream is available or both audio and
@@ -171,10 +186,11 @@ void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   flush_cb_ = std::move(flush_cb);
 
   // Issues RPC_R_FLUSHUNTIL RPC message.
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_R_FLUSHUNTIL);
-  pb::RendererFlushUntil* message = rpc->mutable_renderer_flushuntil_rpc();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL);
+  openscreen::cast::RendererFlushUntil* message =
+      rpc->mutable_renderer_flushuntil_rpc();
   if (flush_audio_count.has_value())
     message->set_audio_count(*flush_audio_count);
   if (flush_video_count.has_value())
@@ -192,9 +208,9 @@ void CourierRenderer::StartPlayingFrom(base::TimeDelta time) {
   }
 
   // Issues RPC_R_STARTPLAYINGFROM RPC message.
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_R_STARTPLAYINGFROM);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_STARTPLAYINGFROM);
   rpc->set_integer64_value(time.InMicroseconds());
   SendRpcToRemote(std::move(rpc));
 
@@ -214,9 +230,9 @@ void CourierRenderer::SetPlaybackRate(double playback_rate) {
   }
 
   // Issues RPC_R_SETPLAYBACKRATE RPC message.
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_R_SETPLAYBACKRATE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_SETPLAYBACKRATE);
   rpc->set_double_value(playback_rate);
   SendRpcToRemote(std::move(rpc));
   playback_rate_ = playback_rate;
@@ -231,9 +247,9 @@ void CourierRenderer::SetVolume(float volume) {
     return;
 
   // Issues RPC_R_SETVOLUME RPC message.
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_R_SETVOLUME);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
   rpc->set_double_value(volume);
   SendRpcToRemote(std::move(rpc));
 }
@@ -253,7 +269,7 @@ base::TimeDelta CourierRenderer::GetMediaTime() {
 void CourierRenderer::OnDataPipeCreatedOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
-    base::WeakPtr<RpcBroker> rpc_broker,
+    openscreen::WeakPtr<RpcMessenger> rpc_messenger,
     mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
     mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
     mojo::ScopedDataPipeProducerHandle audio_handle,
@@ -263,10 +279,10 @@ void CourierRenderer::OnDataPipeCreatedOnMainThread(
       base::BindOnce(&CourierRenderer::OnDataPipeCreated, self,
                      std::move(audio), std::move(video),
                      std::move(audio_handle), std::move(video_handle),
-                     rpc_broker ? rpc_broker->GetUniqueHandle()
-                                : RpcBroker::kInvalidHandle,
-                     rpc_broker ? rpc_broker->GetUniqueHandle()
-                                : RpcBroker::kInvalidHandle));
+                     rpc_messenger ? rpc_messenger->GetUniqueHandle()
+                                   : RpcMessenger::kInvalidHandle,
+                     rpc_messenger ? rpc_messenger->GetUniqueHandle()
+                                   : RpcMessenger::kInvalidHandle));
 }
 
 void CourierRenderer::OnDataPipeCreated(
@@ -292,24 +308,22 @@ void CourierRenderer::OnDataPipeCreated(
 
   // Create audio demuxer stream adapter if audio is available.
   if (audio_demuxer_stream && audio.is_valid() && audio_handle.is_valid() &&
-      audio_rpc_handle != RpcBroker::kInvalidHandle) {
-    audio_demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+      audio_rpc_handle != RpcMessenger::kInvalidHandle) {
+    audio_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "audio", audio_demuxer_stream,
-        rpc_broker_, audio_rpc_handle, std::move(audio),
+        rpc_messenger_, audio_rpc_handle, std::move(audio),
         std::move(audio_handle),
-        base::BindOnce(&CourierRenderer::OnFatalError,
-                       base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
 
   // Create video demuxer stream adapter if video is available.
   if (video_demuxer_stream && video.is_valid() && video_handle.is_valid() &&
-      video_rpc_handle != RpcBroker::kInvalidHandle) {
-    video_demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+      video_rpc_handle != RpcMessenger::kInvalidHandle) {
+    video_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "video", video_demuxer_stream,
-        rpc_broker_, video_rpc_handle, std::move(video),
+        rpc_messenger_, video_rpc_handle, std::move(video),
         std::move(video_handle),
-        base::BindOnce(&CourierRenderer::OnFatalError,
-                       base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
 
   // Checks if data pipe is created successfully.
@@ -321,24 +335,25 @@ void CourierRenderer::OnDataPipeCreated(
   state_ = STATE_ACQUIRING;
 
   // Issues RPC_ACQUIRE_DEMUXER RPC message.
-  auto rpc = std::make_unique<pb::RpcMessage>();
-  rpc->set_handle(RpcBroker::kAcquireDemuxerHandle);
-  rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_DEMUXER);
-  pb::AcquireDemuxer* message = rpc->mutable_acquire_demuxer_rpc();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_handle(RpcMessenger::kAcquireDemuxerHandle);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER);
+  openscreen::cast::AcquireDemuxer* message =
+      rpc->mutable_acquire_demuxer_rpc();
   message->set_audio_demuxer_handle(
       audio_demuxer_stream_adapter_
           ? audio_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   message->set_video_demuxer_handle(
       video_demuxer_stream_adapter_
           ? video_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   SendRpcToRemote(std::move(rpc));
 
   // Issues RPC_ACQUIRE_RENDERER RPC message.
-  rpc = std::make_unique<pb::RpcMessage>();
-  rpc->set_handle(RpcBroker::kAcquireRendererHandle);
-  rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER);
+  rpc = std::make_unique<openscreen::cast::RpcMessage>();
+  rpc->set_handle(RpcMessenger::kAcquireRendererHandle);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER);
   rpc->set_integer_value(rpc_handle_);
   SendRpcToRemote(std::move(rpc));
 }
@@ -347,50 +362,55 @@ void CourierRenderer::OnDataPipeCreated(
 void CourierRenderer::OnMessageReceivedOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
-    std::unique_ptr<pb::RpcMessage> message) {
-  media_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&CourierRenderer::OnReceivedRpc, self,
-                                std::move(message)));
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+  if (media_task_runner) {
+    media_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&CourierRenderer::OnReceivedRpc, self,
+                                  std::move(message)));
+  } else {
+    LOG(WARNING) << "No valid task runner.";
+  }
 }
 
-void CourierRenderer::OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
+void CourierRenderer::OnReceivedRpc(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   switch (message->proc()) {
-    case pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE:
+    case openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE:
       AcquireRendererDone(std::move(message));
       break;
-    case pb::RpcMessage::RPC_R_INITIALIZE_CALLBACK:
+    case openscreen::cast::RpcMessage::RPC_R_INITIALIZE_CALLBACK:
       InitializeCallback(std::move(message));
       break;
-    case pb::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK:
+    case openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL_CALLBACK:
       FlushUntilCallback();
       break;
-    case pb::RpcMessage::RPC_RC_ONTIMEUPDATE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONTIMEUPDATE:
       OnTimeUpdate(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE:
       OnBufferingStateChange(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONENDED:
+    case openscreen::cast::RpcMessage::RPC_RC_ONENDED:
       client_->OnEnded();
       break;
-    case pb::RpcMessage::RPC_RC_ONERROR:
+    case openscreen::cast::RpcMessage::RPC_RC_ONERROR:
       OnFatalError(RECEIVER_PIPELINE_ERROR);
       break;
-    case pb::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONAUDIOCONFIGCHANGE:
       OnAudioConfigChange(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONVIDEOCONFIGCHANGE:
       OnVideoConfigChange(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONVIDEONATURALSIZECHANGE:
       OnVideoNaturalSizeChange(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE:
       OnVideoOpacityChange(std::move(message));
       break;
-    case pb::RpcMessage::RPC_RC_ONSTATISTICSUPDATE:
+    case openscreen::cast::RpcMessage::RPC_RC_ONSTATISTICSUPDATE:
       OnStatisticsUpdate(std::move(message));
       break;
 
@@ -399,16 +419,17 @@ void CourierRenderer::OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
   }
 }
 
-void CourierRenderer::SendRpcToRemote(std::unique_ptr<pb::RpcMessage> message) {
+void CourierRenderer::SendRpcToRemote(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(main_task_runner_);
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&RpcBroker::SendMessageToRemote, rpc_broker_,
-                                std::move(message)));
+  main_task_runner_->PostTask(FROM_HERE,
+                              base::BindOnce(&RpcMessenger::SendMessageToRemote,
+                                             rpc_messenger_, *message));
 }
 
 void CourierRenderer::AcquireRendererDone(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
 
@@ -421,25 +442,26 @@ void CourierRenderer::AcquireRendererDone(
   state_ = STATE_INITIALIZING;
 
   // Issues RPC_R_INITIALIZE RPC message to initialize renderer.
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_R_INITIALIZE);
-  pb::RendererInitialize* init = rpc->mutable_renderer_initialize_rpc();
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_R_INITIALIZE);
+  openscreen::cast::RendererInitialize* init =
+      rpc->mutable_renderer_initialize_rpc();
   init->set_client_handle(rpc_handle_);
   init->set_audio_demuxer_handle(
       audio_demuxer_stream_adapter_
           ? audio_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   init->set_video_demuxer_handle(
       video_demuxer_stream_adapter_
           ? video_demuxer_stream_adapter_->rpc_handle()
-          : RpcBroker::kInvalidHandle);
+          : RpcMessenger::kInvalidHandle);
   init->set_callback_handle(rpc_handle_);
   SendRpcToRemote(std::move(rpc));
 }
 
 void CourierRenderer::InitializeCallback(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
 
@@ -479,7 +501,8 @@ void CourierRenderer::FlushUntilCallback() {
   ResetMeasurements();
 }
 
-void CourierRenderer::OnTimeUpdate(std::unique_ptr<pb::RpcMessage> message) {
+void CourierRenderer::OnTimeUpdate(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
@@ -499,8 +522,8 @@ void CourierRenderer::OnTimeUpdate(std::unique_ptr<pb::RpcMessage> message) {
   {
     // Updates current time information.
     base::AutoLock auto_lock(time_lock_);
-    current_media_time_ = base::TimeDelta::FromMicroseconds(time_usec);
-    current_max_time_ = base::TimeDelta::FromMicroseconds(max_time_usec);
+    current_media_time_ = base::Microseconds(time_usec);
+    current_max_time_ = base::Microseconds(max_time_usec);
   }
 
   metrics_recorder_.OnEvidenceOfPlayoutAtReceiver();
@@ -508,15 +531,16 @@ void CourierRenderer::OnTimeUpdate(std::unique_ptr<pb::RpcMessage> message) {
 }
 
 void CourierRenderer::OnBufferingStateChange(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   if (!message->has_rendererclient_onbufferingstatechange_rpc()) {
     OnFatalError(RPC_INVALID);
     return;
   }
-  base::Optional<BufferingState> state = ToMediaBufferingState(
-      message->rendererclient_onbufferingstatechange_rpc().state());
+  absl::optional<BufferingState> state =
+      cast_streaming::remoting::ToMediaBufferingState(
+          message->rendererclient_onbufferingstatechange_rpc().state());
   BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN;
   if (!state.has_value())
     return;
@@ -534,7 +558,7 @@ void CourierRenderer::OnBufferingStateChange(
 }
 
 void CourierRenderer::OnAudioConfigChange(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
@@ -545,17 +569,18 @@ void CourierRenderer::OnAudioConfigChange(
 
   const auto* audio_config_message =
       message->mutable_rendererclient_onaudioconfigchange_rpc();
-  const pb::AudioDecoderConfig pb_audio_config =
+  const openscreen::cast::AudioDecoderConfig pb_audio_config =
       audio_config_message->audio_decoder_config();
   AudioDecoderConfig out_audio_config;
-  ConvertProtoToAudioDecoderConfig(pb_audio_config, &out_audio_config);
+  cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(pb_audio_config,
+                                                             &out_audio_config);
   DCHECK(out_audio_config.IsValidConfig());
 
   client_->OnAudioConfigChange(out_audio_config);
 }
 
 void CourierRenderer::OnVideoConfigChange(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
@@ -566,17 +591,18 @@ void CourierRenderer::OnVideoConfigChange(
 
   const auto* video_config_message =
       message->mutable_rendererclient_onvideoconfigchange_rpc();
-  const pb::VideoDecoderConfig pb_video_config =
+  const openscreen::cast::VideoDecoderConfig pb_video_config =
       video_config_message->video_decoder_config();
   VideoDecoderConfig out_video_config;
-  ConvertProtoToVideoDecoderConfig(pb_video_config, &out_video_config);
+  cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(pb_video_config,
+                                                             &out_video_config);
   DCHECK(out_video_config.IsValidConfig());
 
   client_->OnVideoConfigChange(out_video_config);
 }
 
 void CourierRenderer::OnVideoNaturalSizeChange(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
@@ -593,7 +619,7 @@ void CourierRenderer::OnVideoNaturalSizeChange(
 }
 
 void CourierRenderer::OnVideoOpacityChange(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   const bool opaque = message->boolean_value();
@@ -601,7 +627,7 @@ void CourierRenderer::OnVideoOpacityChange(
 }
 
 void CourierRenderer::OnStatisticsUpdate(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
@@ -610,7 +636,7 @@ void CourierRenderer::OnStatisticsUpdate(
     return;
   }
   PipelineStatistics stats;
-  ConvertProtoToPipelineStatistics(
+  cast_streaming::remoting::ConvertProtoToPipelineStatistics(
       message->rendererclient_onstatisticsupdate_rpc(), &stats);
   // Note: Each field in |stats| is a delta, not the aggregate amount.
   if (stats.audio_bytes_decoded > 0 || stats.video_frames_decoded > 0 ||
@@ -791,6 +817,31 @@ bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
           (audio_demuxer_stream_adapter_ &&
            audio_demuxer_stream_adapter_->is_processing_read_request() &&
            !audio_demuxer_stream_adapter_->is_data_pending()));
+}
+
+void CourierRenderer::RegisterForRpcMessaging() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  auto receive_callback = BindToCurrentLoop(base::BindRepeating(
+      &CourierRenderer::OnReceivedRpc, weak_factory_.GetWeakPtr()));
+
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RegisterForRpcTask, rpc_messenger_, rpc_handle_,
+          [cb = std::move(receive_callback)](
+
+              std::unique_ptr<openscreen::cast::RpcMessage> message) {
+            cb.Run(std::move(message));
+          }));
+}
+
+void CourierRenderer::DeregisterFromRpcMessaging() {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  if (rpc_messenger_) {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeregisterFromRpcTask, rpc_messenger_, rpc_handle_));
+  }
 }
 
 }  // namespace remoting

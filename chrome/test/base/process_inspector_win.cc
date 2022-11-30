@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -257,7 +257,7 @@ std::unique_ptr<ProcessInspector> ProcessInspector::Create(
   std::unique_ptr<ProcessInspector> inspector;
 #if !defined(_WIN64)
   using base::win::OSInfo;
-  if (OSInfo::GetInstance()->wow64_status() == OSInfo::WOW64_ENABLED)
+  if (OSInfo::GetInstance()->IsWowX86OnAMD64())
     inspector = std::make_unique<Inspector<Wow64Traits>>();
 #endif
   if (!inspector)

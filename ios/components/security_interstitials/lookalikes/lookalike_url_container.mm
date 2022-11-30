@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 
-#include "base/memory/ptr_util.h"
-#include "components/lookalikes/core/lookalike_url_util.h"
+#import "base/memory/ptr_util.h"
+#import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

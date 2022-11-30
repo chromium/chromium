@@ -1,0 +1,27 @@
+caption: Enable the cursor highlight accessibility feature
+desc: |-
+  Enable the cursor highlight accessibility feature.
+
+            This feature is responsible for highlighting the area that surrounds the mouse cursor while moving it.
+
+            If this policy is set to enabled, the cursor highlight will always be enabled.
+
+            If this policy is set to disabled, the cursor highlight will always be disabled.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, the cursor highlight is disabled initially but can be enabled by the user anytime.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- amraboelkher@chromium.org
+- emaxx@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:78-
+tags: []
+type: main

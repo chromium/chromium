@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,10 @@
 #include "base/files/file_path.h"
 
 namespace net {
+
+// Returns the FilePath object representing the absolute path of //net in the
+// source tree.
+base::FilePath GetTestNetDirectory();
 
 // Returns the FilePath object representing the absolute path in the source
 // tree that contains net data files.

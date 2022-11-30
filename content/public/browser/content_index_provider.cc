@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,13 @@ ContentIndexEntry::ContentIndexEntry(
     int64_t service_worker_registration_id,
     blink::mojom::ContentDescriptionPtr description,
     const GURL& launch_url,
-    base::Time registration_time)
+    base::Time registration_time,
+    bool is_top_level_context)
     : service_worker_registration_id(service_worker_registration_id),
       description(std::move(description)),
       launch_url(launch_url),
-      registration_time(registration_time) {}
+      registration_time(registration_time),
+      is_top_level_context(is_top_level_context) {}
 
 ContentIndexEntry::ContentIndexEntry(ContentIndexEntry&& other) = default;
 

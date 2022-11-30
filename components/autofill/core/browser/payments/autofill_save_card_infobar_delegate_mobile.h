@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "ui/gfx/image/image.h"
 
-class PrefService;
+struct AccountInfo;
 
 namespace autofill {
 
@@ -26,6 +26,15 @@ class CreditCard;
 // card information gathered from a form submission. Only used on mobile.
 class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
  public:
+  // |upload| must be true iff the infobar should offer to save the card in the
+  // cloud, as opposed to saving locally. Only one of
+  // |upload_save_card_prompt_callback| and |local_save_card_prompt_callback|
+  // will be executed.
+  // If |upload| is true, |displayed_target_account| should be the account to
+  // which the card will be saved. If |upload| is false, it must be empty.
+  // TODO(crbug.com/1277904): Split into 2 static constructors (local/cloud),
+  // each with the minimum set of required parameters. Also consider merging
+  // the 2 callbacks into one.
   AutofillSaveCardInfoBarDelegateMobile(
       bool upload,
       AutofillClient::SaveCreditCardOptions options,
@@ -35,7 +44,12 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
           upload_save_card_prompt_callback,
       AutofillClient::LocalSaveCardPromptCallback
           local_save_card_prompt_callback,
-      PrefService* pref_service);
+      const AccountInfo& displayed_target_account);
+
+  AutofillSaveCardInfoBarDelegateMobile(
+      const AutofillSaveCardInfoBarDelegateMobile&) = delete;
+  AutofillSaveCardInfoBarDelegateMobile& operator=(
+      const AutofillSaveCardInfoBarDelegateMobile&) = delete;
 
   ~AutofillSaveCardInfoBarDelegateMobile() override;
 
@@ -61,6 +75,12 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   const std::u16string& expiration_date_year() const {
     return expiration_date_year_;
   }
+  const std::u16string& displayed_target_account_email() const {
+    return displayed_target_account_email_;
+  }
+  const gfx::Image& displayed_target_account_avatar() const {
+    return displayed_target_account_avatar_;
+  }
 
   // Called when a link in the legal message text was clicked.
   virtual void OnLegalMessageLinkClicked(GURL url);
@@ -83,14 +103,14 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Updates and then saves the card using |cardholder_name|,
   // |expiration_date_month| and |expiration_date_year|, which were provided
   // as part of the iOS save card Infobar dialog.
   virtual bool UpdateAndAccept(std::u16string cardholder_name,
                                std::u16string expiration_date_month,
                                std::u16string expiration_date_year);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
  private:
   // Runs the appropriate local or upload save callback with the given
@@ -122,9 +142,6 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // local credit card offer-to-save prompt (if |upload_| is false).
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|,
-  PrefService* pref_service_;
-
   // Did the user ever explicitly accept or dismiss this infobar?
   bool had_user_interaction_;
 
@@ -152,7 +169,12 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // The legal message lines to show in the content of the infobar.
   const LegalMessageLines& legal_message_lines_;
 
-  DISALLOW_COPY_AND_ASSIGN(AutofillSaveCardInfoBarDelegateMobile);
+  // Information the infobar should display about the account where the card
+  // will be saved. Both the email and avatar can be empty, e.g. if the card
+  // won't be saved to any account (just locally) or the target account
+  // shouldn't appear.
+  std::u16string displayed_target_account_email_;
+  gfx::Image displayed_target_account_avatar_;
 };
 
 }  // namespace autofill

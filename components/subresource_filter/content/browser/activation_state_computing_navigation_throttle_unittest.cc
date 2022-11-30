@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -30,6 +30,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace subresource_filter {
 
@@ -46,6 +47,12 @@ class ActivationStateComputingNavigationThrottleTest
   ActivationStateComputingNavigationThrottleTest()
       : simple_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         dryrun_speculation_(GetParam()) {}
+
+  ActivationStateComputingNavigationThrottleTest(
+      const ActivationStateComputingNavigationThrottleTest&) = delete;
+  ActivationStateComputingNavigationThrottleTest& operator=(
+      const ActivationStateComputingNavigationThrottleTest&) = delete;
+
   ~ActivationStateComputingNavigationThrottleTest() override {}
 
   void SetUp() override {
@@ -182,10 +189,10 @@ class ActivationStateComputingNavigationThrottleTest
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     std::unique_ptr<ActivationStateComputingNavigationThrottle> throttle =
-        navigation_handle->IsInMainFrame()
-            ? ActivationStateComputingNavigationThrottle::CreateForMainFrame(
+        IsInSubresourceFilterRoot(navigation_handle)
+            ? ActivationStateComputingNavigationThrottle::CreateForRoot(
                   navigation_handle)
-            : ActivationStateComputingNavigationThrottle::CreateForSubframe(
+            : ActivationStateComputingNavigationThrottle::CreateForChild(
                   navigation_handle, ruleset_handle_.get(),
                   parent_activation_state_.value());
     if (navigation_handle->IsInMainFrame() && dryrun_speculation_) {
@@ -237,16 +244,14 @@ class ActivationStateComputingNavigationThrottleTest
   scoped_refptr<base::TestSimpleTaskRunner> simple_task_runner_;
 
   // Owned by the current navigation.
-  ActivationStateComputingNavigationThrottle* test_throttle_;
-  base::Optional<mojom::ActivationState> last_activation_state_;
-  base::Optional<mojom::ActivationState> parent_activation_state_;
+  raw_ptr<ActivationStateComputingNavigationThrottle> test_throttle_;
+  absl::optional<mojom::ActivationState> last_activation_state_;
+  absl::optional<mojom::ActivationState> parent_activation_state_;
 
   // Needed for potential cross process navigations which swap hosts.
-  content::RenderFrameHost* last_committed_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> last_committed_frame_host_ = nullptr;
 
   bool dryrun_speculation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivationStateComputingNavigationThrottleTest);
 };
 
 typedef ActivationStateComputingNavigationThrottleTest

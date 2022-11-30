@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/process/process_iterator.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -32,7 +32,7 @@ bool KillProcesses(const FilePath::StringType& executable_name,
   return result;
 }
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 // Common implementation for platforms under which |process| is a handle to
 // the process, rather than an identifier that must be "reaped".
 void EnsureProcessTerminated(Process process) {
@@ -48,15 +48,15 @@ void EnsureProcessTerminated(Process process) {
           [](Process process) {
             if (process.WaitForExitWithTimeout(TimeDelta(), nullptr))
               return;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
             process.Terminate(win::kProcessKilledExitCode, false);
 #else
             process.Terminate(-1, false);
 #endif
           },
           std::move(process)),
-      TimeDelta::FromSeconds(2));
+      Seconds(2));
 }
-#endif  // defined(OS_WIN) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace base

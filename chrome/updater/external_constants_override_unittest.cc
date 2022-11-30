@@ -1,13 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,61 +20,68 @@ namespace updater {
 class ExternalConstantsOverriderTest : public ::testing::Test {};
 
 TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
-  ExternalConstantsOverrider overrider(
-      base::flat_map<std::string, base::Value>{},
-      CreateDefaultExternalConstantsForTesting());
+  auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
+      base::Value::Dict(), CreateDefaultExternalConstants());
 
-  EXPECT_TRUE(overrider.UseCUP());
+  EXPECT_TRUE(overrider->UseCUP());
 
-  std::vector<GURL> urls = overrider.UpdateURL();
+  std::vector<GURL> urls = overrider->UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL(UPDATE_CHECK_URL));
   EXPECT_TRUE(urls[0].is_valid());
 
-  EXPECT_EQ(overrider.InitialDelay(), kInitialDelay);
-  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
+  EXPECT_EQ(overrider->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
-  base::Value::DictStorage overrides;
-  base::Value::ListStorage url_list;
-  url_list.push_back(base::Value("https://www.example.com"));
-  url_list.push_back(base::Value("https://www.google.com"));
-  overrides[kDevOverrideKeyUseCUP] = base::Value(false);
-  overrides[kDevOverrideKeyUrl] = base::Value(std::move(url_list));
-  overrides[kDevOverrideKeyInitialDelay] = base::Value(137.1);
-  overrides[kDevOverrideKeyServerKeepAliveSeconds] = base::Value(1);
-  ExternalConstantsOverrider overrider(
-      std::move(overrides), CreateDefaultExternalConstantsForTesting());
+  base::Value::Dict overrides;
+  base::Value::List url_list;
+  url_list.Append("https://www.example.com");
+  url_list.Append("https://www.google.com");
+  base::Value::Dict group_policies;
+  group_policies.Set("a", 1);
+  group_policies.Set("b", 2);
 
-  EXPECT_FALSE(overrider.UseCUP());
+  overrides.Set(kDevOverrideKeyUseCUP, false);
+  overrides.Set(kDevOverrideKeyUrl, std::move(url_list));
+  overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
+  overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
+  overrides.Set(kDevOverrideKeyGroupPolicies, std::move(group_policies));
+  auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
+      std::move(overrides), CreateDefaultExternalConstants());
 
-  std::vector<GURL> urls = overrider.UpdateURL();
+  EXPECT_FALSE(overrider->UseCUP());
+
+  std::vector<GURL> urls = overrider->UpdateURL();
   ASSERT_EQ(urls.size(), 2ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
   EXPECT_TRUE(urls[0].is_valid());
   EXPECT_EQ(urls[1], GURL("https://www.google.com"));
   EXPECT_TRUE(urls[1].is_valid());
 
-  EXPECT_EQ(overrider.InitialDelay(), 137.1);
-  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), 1);
+  EXPECT_EQ(overrider->InitialDelay(), 137.1);
+  EXPECT_EQ(overrider->ServerKeepAliveSeconds(), 1);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 2U);
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
-  base::Value::DictStorage overrides;
-  overrides[kDevOverrideKeyUrl] = base::Value("https://www.example.com");
-  ExternalConstantsOverrider overrider(
-      std::move(overrides), CreateDefaultExternalConstantsForTesting());
+  base::Value::Dict overrides;
+  overrides.Set(kDevOverrideKeyUrl, "https://www.example.com");
+  auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
+      std::move(overrides), CreateDefaultExternalConstants());
 
-  std::vector<GURL> urls = overrider.UpdateURL();
+  std::vector<GURL> urls = overrider->UpdateURL();
   ASSERT_EQ(urls.size(), 1ul);
   EXPECT_EQ(urls[0], GURL("https://www.example.com"));
   EXPECT_TRUE(urls[0].is_valid());
 
   // Non-overridden items should fall back to defaults
-  EXPECT_TRUE(overrider.UseCUP());
-  EXPECT_EQ(overrider.InitialDelay(), kInitialDelay);
-  EXPECT_EQ(overrider.ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_TRUE(overrider->UseCUP());
+  EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
+  EXPECT_EQ(overrider->ServerKeepAliveSeconds(), kServerKeepAliveSeconds);
+  EXPECT_EQ(overrider->GroupPolicies().size(), 0U);
 }
 
 }  // namespace updater

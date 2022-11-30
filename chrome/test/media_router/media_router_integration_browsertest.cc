@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
@@ -16,13 +17,18 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/media_router/media_router_cast_ui_for_test.h"
+#include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/issue.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/policy_constants.h"
@@ -30,37 +36,23 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "net/base/filename_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::WebContents;
+using testing::Optional;
 
 namespace media_router {
 
 namespace {
-// Command line argument to specify receiver,
-const char kReceiver[] = "receiver";
-// The path relative to <chromium src>/out/<build config> for media router
-// browser test resources.
-const base::FilePath::StringPieceType kResourcePath =
-    FILE_PATH_LITERAL("media_router/browser_test_resources/");
-const char kTestSinkName[] = "test-sink-1";
-const char kButterflyVideoFileName[] = "butterfly-853x480.webm";
-// The javascript snippets.
-const char kCheckSessionScript[] = "checkSession();";
-const char kCheckStartFailedScript[] = "checkStartFailed('%s', '%s');";
-const char kStartSessionScript[] = "startSession();";
-const char kTerminateSessionScript[] =
-    "terminateSessionAndWaitForStateChange();";
-const char kCloseSessionScript[] = "closeConnectionAndWaitForStateChange();";
-const char kReconnectSessionScript[] = "reconnectSession('%s');";
-const char kCheckSendMessageFailedScript[] = "checkSendMessageFailed('%s');";
-const char kWaitSinkScript[] = "waitUntilDeviceAvailable();";
-const char kSendMessageAndExpectResponseScript[] =
-    "sendMessageAndExpectResponse('%s');";
-const char kSendMessageAndExpectConnectionCloseOnErrorScript[] =
-    "sendMessageAndExpectConnectionCloseOnError()";
 
 std::string GetStartedConnectionId(WebContents* web_contents) {
   std::string session_id;
@@ -79,34 +71,159 @@ std::string GetDefaultRequestSessionId(WebContents* web_contents) {
   return session_id;
 }
 
+// Routes observer that calls a callback once there are no routes.
+class NoRoutesObserver : public MediaRoutesObserver {
+ public:
+  NoRoutesObserver(MediaRouter* router, base::OnceClosure callback)
+      : MediaRoutesObserver(router), callback_(std::move(callback)) {}
+
+  ~NoRoutesObserver() override = default;
+
+  void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override {
+    if (callback_ && routes.empty())
+      std::move(callback_).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
 }  // namespace
 
-MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() =
-    default;
+MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
+  switch (GetParam()) {
+    case UiForBrowserTest::kCast:
+      feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+      break;
+    case UiForBrowserTest::kGmc:
+      feature_list_.InitWithFeatures(
+          {
+            media::kGlobalMediaControls, kGlobalMediaControlsCastStartStop,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                // Without this flag, SodaInstaller::GetInstance() fails a
+                // DCHECK on Chrome OS.  The call to
+                // SodaInstaller::GetInstance() is in
+                // MediaDialogView::AddedToWidget(), which is called indirectly
+                // from MediaDialogView::ShowDialogForPresentationRequest().
+                ash::features::kOnDeviceSpeechRecognition,
+#endif
+          },
+          {});
+      break;
+  }
+}
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
     default;
 
+Browser* MediaRouterIntegrationBrowserTest::browser() {
+  return InProcessBrowserTest::browser();
+}
+
+void MediaRouterIntegrationBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(
+      switches::kAutoplayPolicy,
+      // Needed to allow a video to autoplay from a browser test.
+      switches::autoplay::kNoUserGestureRequiredPolicy);
+  // Disable built-in media route providers.
+  command_line->AppendSwitch(kDisableMediaRouteProvidersForTestSwitch);
+}
+
+void MediaRouterIntegrationBrowserTest::SetUp() {
+  ParseCommandLine();
+  InProcessBrowserTest::SetUp();
+}
+
+void MediaRouterIntegrationBrowserTest::InitTestUi() {
+  auto* const web_contents = GetActiveWebContents();
+  auto* const context = browser()->profile();
+  switch (GetParam()) {
+    case UiForBrowserTest::kCast:
+      CHECK(!GlobalMediaControlsCastStartStopEnabled(context));
+      test_ui_ =
+          MediaRouterCastUiForTest::GetOrCreateForWebContents(web_contents);
+      break;
+    case UiForBrowserTest::kGmc:
+      CHECK(GlobalMediaControlsCastStartStopEnabled(context));
+      test_ui_ =
+          MediaRouterGmcUiForTest::GetOrCreateForWebContents(web_contents);
+      break;
+  }
+}
+
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
-  MediaRouterBaseBrowserTest::TearDownOnMainThread();
+  test_provider_->TearDown();
+  InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();
 }
 
 void MediaRouterIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
-  MediaRouterBaseBrowserTest::SetUpInProcessBrowserTestFixture();
-  ON_CALL(provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
+  InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+      .WillRepeatedly(testing::Return(true));
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
 void MediaRouterIntegrationBrowserTest::SetUpOnMainThread() {
-  MediaRouterBaseBrowserTest::SetUpOnMainThread();
-  // Dialogs created while MediaRouterUiForTest exists will not close on blur.
-  test_ui_ =
-      MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());
+  MediaRouterMojoImpl* router = static_cast<MediaRouterMojoImpl*>(
+      MediaRouterFactory::GetApiForBrowserContext(browser()->profile()));
+  mojo::PendingRemote<mojom::MediaRouter> media_router_remote;
+  mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote;
+  router->BindToMojoReceiver(
+      media_router_remote.InitWithNewPipeAndPassReceiver());
+  test_provider_ = std::make_unique<TestMediaRouteProvider>(
+      provider_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(media_router_remote));
+  router->RegisterMediaRouteProvider(mojom::MediaRouteProviderId::TEST,
+                                     std::move(provider_remote));
+
+  InitTestUi();
+}
+
+bool MediaRouterIntegrationBrowserTest::ConditionalWait(
+    base::TimeDelta timeout,
+    base::TimeDelta interval,
+    const base::RepeatingCallback<bool(void)>& callback) {
+  base::ElapsedTimer timer;
+  do {
+    if (callback.Run())
+      return true;
+
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), interval);
+    run_loop.Run();
+  } while (timer.Elapsed() < timeout);
+
+  return false;
+}
+
+void MediaRouterIntegrationBrowserTest::Wait(base::TimeDelta timeout) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), timeout);
+  run_loop.Run();
+}
+
+void MediaRouterIntegrationBrowserTest::WaitUntilNoRoutes(
+    WebContents* web_contents) {
+  if (!test_provider_->HasRoutes())
+    return;
+
+  // FIXME: There can't be a good reason to use the observer API to check for
+  // routes asynchronously, which is fragile.  However, some browser tests rely
+  // on this behavior.  Either add a callback parameter to TerminateRoute, or
+  // add pass callback to the TestProvider to run when all routes are gone.
+  base::RunLoop run_loop;
+  NoRoutesObserver no_routes_observer(
+      MediaRouterFactory::GetApiForBrowserContext(
+          web_contents->GetBrowserContext()),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
@@ -117,30 +234,27 @@ void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
   // Read the test result, the test result set by javascript is a
   // JSON string with the following format:
   // {"passed": "<true/false>", "errorMessage": "<error_message>"}
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-      result, base::JSON_ALLOW_TRAILING_COMMAS);
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(result, base::JSON_ALLOW_TRAILING_COMMAS);
 
   // Convert to dictionary.
-  base::DictionaryValue* dict_value = nullptr;
-  ASSERT_TRUE(value->GetAsDictionary(&dict_value));
+  base::Value::Dict* dict_value = value->GetIfDict();
+  ASSERT_TRUE(dict_value);
 
   // Extract the fields.
-  bool passed = false;
-  ASSERT_TRUE(dict_value->GetBoolean("passed", &passed));
-  std::string error_message;
-  ASSERT_TRUE(dict_value->GetString("errorMessage", &error_message));
-
-  ASSERT_TRUE(passed) << error_message;
+  const std::string* error_message = dict_value->FindString("errorMessage");
+  ASSERT_TRUE(error_message);
+  ASSERT_THAT(dict_value->FindBool("passed"), Optional(true)) << error_message;
 }
 
 void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
   WebContents* web_contents = GetActiveWebContents();
   CHECK(web_contents);
-  ExecuteJavaScriptAPI(web_contents, kStartSessionScript);
+  ExecuteJavaScriptAPI(web_contents, "startSession();");
 
   // Wait to simulate the user waiting for any sinks to be displayed.
-  Wait(base::TimeDelta::FromSeconds(1));
+  Wait(base::Seconds(1));
   test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotFoundError", "No screens found.");
 }
@@ -150,8 +264,8 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndSink() {
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
   WebContents* web_contents = GetActiveWebContents();
   CHECK(web_contents);
-  ExecuteJavaScriptAPI(web_contents, kWaitSinkScript);
-  ExecuteJavaScriptAPI(web_contents, kStartSessionScript);
+  ExecuteJavaScriptAPI(web_contents, "waitUntilDeviceAvailable();");
+  ExecuteJavaScriptAPI(web_contents, "startSession();");
   test_ui_->WaitForDialogShown();
   return web_contents;
 }
@@ -164,44 +278,14 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
   // TODO(takumif): Remove the HideDialog() call once the dialog can close
   // itself automatically after casting.
   test_ui_->HideDialog();
-
   return web_contents;
-}
-
-void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFile(
-    bool route_success) {
-  SetTestData(route_success
-                  ? FILE_PATH_LITERAL("local_media_sink.json")
-                  : FILE_PATH_LITERAL("local_media_sink_route_fail.json"));
-  GURL file_url = net::FilePathToFileURL(
-      media::GetTestDataFilePath(kButterflyVideoFileName));
-  test_ui_->ShowDialog();
-  // Mock out file dialog operations, as those can't be simulated.
-  test_ui_->SetLocalFile(file_url);
-  test_ui_->WaitForSink(receiver_);
-  test_ui_->ChooseSourceType(CastDialogView::kLocalFile);
-  ASSERT_EQ(CastDialogView::kLocalFile, test_ui_->GetChosenSourceType());
-  test_ui_->WaitForSinkAvailable(receiver_);
-  test_ui_->StartCasting(receiver_);
-  ASSERT_EQ(file_url, GetActiveWebContents()->GetURL());
-}
-
-void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFileFails() {
-  SetTestData(FILE_PATH_LITERAL("local_media_sink.json"));
-  GURL file_url = net::FilePathToFileURL(
-      media::GetTestDataFilePath(kButterflyVideoFileName));
-  test_ui_->ShowDialog();
-  // Mock out file dialog opperations, as those can't be simulated.
-  test_ui_->SetLocalFileSelectionIssue(IssueInfo());
-  test_ui_->WaitForSink(receiver_);
-  test_ui_->ChooseSourceType(CastDialogView::kLocalFile);
-  test_ui_->WaitForAnyIssue();
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
     base::FilePath::StringPieceType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetTestPageUrl(full_path)));
 }
 
 void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
@@ -213,8 +297,7 @@ void MediaRouterIntegrationBrowserTest::OpenTestPageInNewTab(
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Opening a new tab creates new WebContents, so we must re-configure the
   // test UI for it.
-  test_ui_ =
-      MediaRouterUiForTest::GetOrCreateForWebContents(GetActiveWebContents());
+  InitTestUi();
 }
 
 GURL MediaRouterIntegrationBrowserTest::GetTestPageUrl(
@@ -226,37 +309,17 @@ void MediaRouterIntegrationBrowserTest::CheckStartFailed(
     WebContents* web_contents,
     const std::string& error_name,
     const std::string& error_message_substring) {
-  std::string script(base::StringPrintf(kCheckStartFailedScript,
+  std::string script(base::StringPrintf("checkStartFailed('%s', '%s');",
                                         error_name.c_str(),
                                         error_message_substring.c_str()));
   ExecuteJavaScriptAPI(web_contents, script);
 }
 
-void MediaRouterIntegrationBrowserTest::SetTestData(
-    base::FilePath::StringPieceType test_data_file) {
-  base::FilePath full_path = GetResourceFile(test_data_file);
-  JSONFileValueDeserializer deserializer(full_path);
-  int error_code = 0;
-  std::string error_message;
-  std::unique_ptr<base::Value> value;
-  {
-    // crbug.com/724573
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    value = deserializer.Deserialize(&error_code, &error_message);
-  }
-  CHECK(value.get()) << "Deserialize failed: " << error_message;
-  std::string test_data_str;
-  ASSERT_TRUE(base::JSONWriter::Write(*value, &test_data_str));
-  ExecuteScriptInBackgroundPageNoWait(
-      extension_id_, base::StringPrintf("localStorage['testdata'] = '%s'",
-                                        test_data_str.c_str()));
-}
-
 base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
     base::FilePath::StringPieceType relative_path) const {
   const base::FilePath full_path =
-      base::PathService::CheckedGet(base::DIR_MODULE)
-          .Append(kResourcePath)
+      base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT)
+          .Append(FILE_PATH_LITERAL("media_router/browser_test_resources/"))
           .Append(relative_path);
   {
     // crbug.com/724573
@@ -316,17 +379,16 @@ bool MediaRouterIntegrationBrowserTest::IsRouteClosedOnUI() {
 }
 
 void MediaRouterIntegrationBrowserTest::ParseCommandLine() {
-  MediaRouterBaseBrowserTest::ParseCommandLine();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  receiver_ = command_line->GetSwitchValueASCII(kReceiver);
+  receiver_ = command_line->GetSwitchValueASCII("receiver");
   if (receiver_.empty())
-    receiver_ = kTestSinkName;
+    receiver_ = "test-sink-1";
 }
 
 void MediaRouterIntegrationBrowserTest::CheckSessionValidity(
     WebContents* web_contents) {
-  ExecuteJavaScriptAPI(web_contents, kCheckSessionScript);
+  ExecuteJavaScriptAPI(web_contents, "checkSession();");
   std::string session_id(GetStartedConnectionId(web_contents));
   EXPECT_FALSE(session_id.empty());
   std::string default_request_session_id(
@@ -341,41 +403,38 @@ WebContents* MediaRouterIntegrationBrowserTest::GetActiveWebContents() {
 void MediaRouterIntegrationBrowserTest::RunBasicTest() {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
-  ExecuteJavaScriptAPI(web_contents, kTerminateSessionScript);
-  test_ui_->WaitUntilNoRoutes();
+  ExecuteJavaScriptAPI(web_contents,
+                       "terminateSessionAndWaitForStateChange();");
+  WaitUntilNoRoutes(web_contents);
 }
 
 void MediaRouterIntegrationBrowserTest::RunSendMessageTest(
     const std::string& message) {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
-  ExecuteJavaScriptAPI(
-      web_contents,
-      base::StringPrintf(kSendMessageAndExpectResponseScript, message.c_str()));
+  ExecuteJavaScriptAPI(web_contents,
+                       base::StringPrintf("sendMessageAndExpectResponse('%s');",
+                                          message.c_str()));
 }
 
 void MediaRouterIntegrationBrowserTest::RunFailToSendMessageTest() {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
-  ExecuteJavaScriptAPI(web_contents, kCloseSessionScript);
-
-  ExecuteJavaScriptAPI(
-      web_contents,
-      base::StringPrintf(kCheckSendMessageFailedScript, "closed"));
+  ExecuteJavaScriptAPI(web_contents, "closeConnectionAndWaitForStateChange();");
+  ExecuteJavaScriptAPI(web_contents, "checkSendMessageFailed('closed');");
 }
 
 void MediaRouterIntegrationBrowserTest::RunReconnectSessionTest() {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
   std::string session_id(GetStartedConnectionId(web_contents));
-
   OpenTestPageInNewTab(FILE_PATH_LITERAL("basic_test.html"));
   WebContents* new_web_contents = GetActiveWebContents();
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
   ExecuteJavaScriptAPI(
       new_web_contents,
-      base::StringPrintf(kReconnectSessionScript, session_id.c_str()));
+      base::StringPrintf("reconnectSession('%s');", session_id.c_str()));
   std::string reconnected_session_id;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       new_web_contents,
@@ -383,8 +442,27 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionTest() {
       &reconnected_session_id));
   ASSERT_EQ(session_id, reconnected_session_id);
 
-  ExecuteJavaScriptAPI(web_contents, kTerminateSessionScript);
-  test_ui_->WaitUntilNoRoutes();
+  ExecuteJavaScriptAPI(web_contents,
+                       "terminateSessionAndWaitForStateChange();");
+  WaitUntilNoRoutes(web_contents);
+}
+
+void MediaRouterIntegrationBrowserTest::RunFailedReconnectSessionTest() {
+  WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
+  CheckSessionValidity(web_contents);
+  std::string session_id(GetStartedConnectionId(web_contents));
+
+  OpenTestPageInNewTab(FILE_PATH_LITERAL("fail_reconnect_session.html"));
+  WebContents* new_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(new_web_contents);
+  ASSERT_NE(web_contents, new_web_contents);
+  test_provider_->set_route_error_message("Unknown route");
+  ExecuteJavaScriptAPI(new_web_contents,
+                       base::StringPrintf("checkReconnectSessionFails('%s')",
+                                          session_id.c_str()));
+  ExecuteJavaScriptAPI(web_contents,
+                       "terminateSessionAndWaitForStateChange();");
+  WaitUntilNoRoutes(web_contents);
 }
 
 void MediaRouterIntegrationBrowserTest::SetEnableMediaRouter(bool enable) {
@@ -400,10 +478,11 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
   std::string session_id(GetStartedConnectionId(web_contents));
-  ExecuteJavaScriptAPI(web_contents, kCloseSessionScript);
+  ExecuteJavaScriptAPI(web_contents, "closeConnectionAndWaitForStateChange();");
 
-  ExecuteJavaScriptAPI(web_contents, base::StringPrintf(kReconnectSessionScript,
-                                                        session_id.c_str()));
+  ExecuteJavaScriptAPI(
+      web_contents,
+      base::StringPrintf("reconnectSession('%s');", session_id.c_str()));
   std::string reconnected_session_id;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       web_contents,
@@ -412,200 +491,77 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
   ASSERT_EQ(session_id, reconnected_session_id);
 }
 
-// Tests that creating a route with a local file opens the file in a new tab.
-//
-// This test is disabled because the test needs to wait until navigation is
-// complete before looking for the route, but it's not clear how to do that
-// without deadlocking the test.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       DISABLED_OpenLocalMediaFileInCurrentTab) {
-  // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Expect that no new tab has been opened.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  // The dialog will close from navigating to the local file within the tab, so
-  // open it again after it closes.
-  test_ui_->WaitForDialogHidden();
-  test_ui_->ShowDialog();
-
-  // Wait for a route to be created.
-  test_ui_->WaitForAnyRoute();
-}
-
-// Crashes on Linux. http://crbug.com/1095068
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_OpenLocalMediaFileInNewTab DISABLED_OpenLocalMediaFileInNewTab
+// TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_Basic MANUAL_Basic
 #else
-#define MAYBE_OpenLocalMediaFileInNewTab OpenLocalMediaFileInNewTab
+#define MAYBE_Basic Basic
 #endif
-
-// Tests that creating a route with a local file opens the file in a new tab.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MAYBE_OpenLocalMediaFileInNewTab) {
-  // Start at a tab with content in it, the file will open in a new tab.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://google.com"));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Expect that a new tab has been opened.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-
-  test_ui_->ShowDialog();
-
-  // Wait for a route to be created.
-  test_ui_->WaitForAnyRoute();
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
+  RunBasicTest();
 }
 
-// Tests that failing to create a route with a local file shows an issue.
-// TODO(https://crbug.com/907539): Make the Views dialog show the issue.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       DISABLED_OpenLocalMediaFileFailsAndShowsIssue) {
-  OpenDialogAndCastFileFails();
-  // Expect that the issue is showing.
-  ASSERT_TRUE(IsUIShowingIssue());
-}
-
-// Tests that creating a route with a local file opens in fullscreen.
-// TODO(https://crbug.com/903016) Disabled due to flakiness in entering
-// fullscreen.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       DISABLED_OpenLocalMediaFileFullscreen) {
-  // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Increment web contents capturer count so it thinks capture has started.
-  // This will allow the file tab to go fullscreen.
-  content::WebContents* web_contents = GetActiveWebContents();
-  web_contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
-
-  // Wait for capture poll timer to pick up change.
-  Wait(base::TimeDelta::FromSeconds(3));
-
-  // Expect that fullscreen was entered.
-  ASSERT_TRUE(
-      web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
-}
-
-// Flaky on MSan bots: http://crbug.com/879885
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  DISABLED_OpenLocalMediaFileCastFailNoFullscreen
+// TODO(crbug.com/1238728): Test is flaky on Windows and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_SendAndOnMessage MANUAL_SendAndOnMessage
 #else
-#define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  OpenLocalMediaFileCastFailNoFullscreen
+#define MAYBE_SendAndOnMessage SendAndOnMessage
 #endif
-// Tests that failed route creation of local file does not enter fullscreen.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MAYBE_OpenLocalMediaFileCastFailNoFullscreen) {
-  // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile(false);
-
-  // Wait for file to start playing (but not being captured).
-  Wait(base::TimeDelta::FromSeconds(3));
-
-  // Expect no capture is ongoing.
-  content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_FALSE(web_contents->IsBeingCaptured());
-
-  // Expect that fullscreen is not entered.
-  ASSERT_FALSE(
-      web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, SendAndOnMessage) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       MAYBE_SendAndOnMessage) {
   RunSendMessageTest("foo");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, CloseOnError) {
-  SetTestData(FILE_PATH_LITERAL("close_route_with_error_on_send.json"));
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, CloseOnError) {
+  test_provider_->set_close_route_error_on_send();
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
   ExecuteJavaScriptAPI(web_contents,
-                       kSendMessageAndExpectConnectionCloseOnErrorScript);
+                       "sendMessageAndExpectConnectionCloseOnError()");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_SendMessage) {
+// TODO(crbug.com/1238688): Test is flaky on Windows and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_Fail_SendMessage MANUAL_Fail_SendMessage
+#else
+#define MAYBE_Fail_SendMessage Fail_SendMessage
+#endif
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       MAYBE_Fail_SendMessage) {
   RunFailToSendMessageTest();
 }
 
-// TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MANUAL_Fail_NoProvider) {
-  SetTestData(FILE_PATH_LITERAL("no_provider.json"));
-  WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
-  CheckStartFailed(web_contents, "UnknownError",
-                   "No provider supports createRoute with source");
-}
-
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
-  SetTestData(FILE_PATH_LITERAL("fail_create_route.json"));
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_CreateRoute) {
+  test_provider_->set_route_error_message("Unknown sink");
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckStartFailed(web_contents, "UnknownError", "Unknown sink");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, ReconnectSession) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, ReconnectSession) {
   RunReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_ReconnectSession) {
-  WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
-  CheckSessionValidity(web_contents);
-  std::string session_id(GetStartedConnectionId(web_contents));
-
-  SetTestData(FILE_PATH_LITERAL("fail_reconnect_session.json"));
-  OpenTestPageInNewTab(FILE_PATH_LITERAL("fail_reconnect_session.html"));
-  WebContents* new_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(new_web_contents);
-  ExecuteJavaScriptAPI(new_web_contents,
-                       base::StringPrintf("checkReconnectSessionFails('%s');",
-                                          session_id.c_str()));
+  RunFailedReconnectSessionTest();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, Fail_StartCancelled) {
   WebContents* web_contents = StartSessionWithTestPageAndSink();
   test_ui_->HideDialog();
   CheckStartFailed(web_contents, "NotAllowedError", "Dialog closed.");
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSinks) {
-  SetTestData(FILE_PATH_LITERAL("no_sinks.json"));
+  test_provider_->set_empty_sink_list();
   StartSessionAndAssertNotFoundError();
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        Fail_StartCancelledNoSupportedSinks) {
-  SetTestData(FILE_PATH_LITERAL("no_supported_sinks.json"));
+  test_provider_->set_unsupported_media_sources_list();
   StartSessionAndAssertNotFoundError();
-}
-
-void MediaRouterIntegrationIncognitoBrowserTest::InstallAndEnableMRExtension() {
-  const extensions::Extension* extension =
-      LoadExtension(extension_unpacked_, {.allow_in_incognito = true});
-  incognito_extension_id_ = extension->id();
-}
-
-void MediaRouterIntegrationIncognitoBrowserTest::UninstallMRExtension() {
-  if (!incognito_extension_id_.empty()) {
-    UninstallExtension(incognito_extension_id_);
-  }
 }
 
 Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
@@ -614,21 +570,26 @@ Browser* MediaRouterIntegrationIncognitoBrowserTest::browser() {
   return incognito_browser_;
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest, Basic) {
   RunBasicTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
   // dangling Mojo callback at shutdown. So we must wait for the update.
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
 }
 
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationIncognitoBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationIncognitoBrowserTest,
                        ReconnectSession) {
   RunReconnectSessionTest();
   // If we tear down before route observers are notified of route termination,
   // MediaRouter will create another TerminateRoute() request which will have a
   // dangling Mojo callback at shutdown. So we must wait for the update.
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
 }
+
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationBrowserTest);
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationIncognitoBrowserTest);
 
 }  // namespace media_router

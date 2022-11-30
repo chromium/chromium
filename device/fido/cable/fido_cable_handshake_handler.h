@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -48,6 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   FidoCableV1HandshakeHandler(FidoCableDevice* device,
                               base::span<const uint8_t, 8> nonce,
                               base::span<const uint8_t, 32> session_pre_key);
+
+  FidoCableV1HandshakeHandler(const FidoCableV1HandshakeHandler&) = delete;
+  FidoCableV1HandshakeHandler& operator=(const FidoCableV1HandshakeHandler&) =
+      delete;
+
   ~FidoCableV1HandshakeHandler() override;
 
   // FidoCableHandshakeHandler:
@@ -63,15 +67,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   std::vector<uint8_t> GetEncryptionKeyAfterSuccessfulHandshake(
       base::span<const uint8_t, 16> authenticator_random_nonce) const;
 
-  FidoCableDevice* const cable_device_;
+  const raw_ptr<FidoCableDevice> cable_device_;
   std::array<uint8_t, 8> nonce_;
   std::array<uint8_t, 32> session_pre_key_;
   std::array<uint8_t, 16> client_session_random_;
   std::string handshake_key_;
 
   base::WeakPtrFactory<FidoCableV1HandshakeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableV1HandshakeHandler);
 };
 
 }  // namespace device

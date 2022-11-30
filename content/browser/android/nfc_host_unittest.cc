@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/android/nfc_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -11,6 +12,7 @@
 #include "content/test/test_web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
 using testing::_;
 using testing::Return;
@@ -44,21 +46,23 @@ class NFCHostTest : public RenderViewHostImplTestHarness {
   }
 
  private:
-  MockPermissionManager* mock_permission_manager_;
+  raw_ptr<MockPermissionManager> mock_permission_manager_;
 };
 
 TEST_F(NFCHostTest, GetNFCTwice) {
-  constexpr int kSubscriptionId = 42;
+  constexpr MockPermissionManager::SubscriptionId kSubscriptionId(42);
 
   NavigateAndCommit(GURL(kTestUrl));
 
   EXPECT_CALL(mock_permission_manager(),
-              GetPermissionStatusForFrame(PermissionType::NFC, main_rfh(), _))
+              GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
+                                                    main_rfh()))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
       .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
   EXPECT_CALL(mock_permission_manager(),
-              SubscribePermissionStatusChange(PermissionType::NFC, main_rfh(),
-                                              GURL(kTestUrl), _))
+              SubscribePermissionStatusChange(blink::PermissionType::NFC,
+                                              /*render_process_host=*/nullptr,
+                                              main_rfh(), GURL(kTestUrl), _))
       .WillOnce(Return(kSubscriptionId));
 
   mojo::Remote<device::mojom::NFC> nfc1, nfc2;

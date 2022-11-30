@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -46,14 +47,13 @@ class TestButton : public Button {
 
 class AXVirtualViewTest : public ViewsTestBase {
  public:
-  AXVirtualViewTest() = default;
+  AXVirtualViewTest() : ax_mode_setter_(ui::kAXModeComplete) {}
   AXVirtualViewTest(const AXVirtualViewTest&) = delete;
   AXVirtualViewTest& operator=(const AXVirtualViewTest&) = delete;
   ~AXVirtualViewTest() override = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 
     widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
@@ -61,12 +61,13 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     button_ = new TestButton;
     button_->SetSize(gfx::Size(20, 20));
-    widget_->GetContentsView()->AddChildView(button_);
+    button_->SetAccessibleName(u"Button");
+    widget_->GetContentsView()->AddChildView(button_.get());
     virtual_label_ = new AXVirtualView;
     virtual_label_->GetCustomData().role = ax::mojom::Role::kStaticText;
-    virtual_label_->GetCustomData().SetName("Label");
+    virtual_label_->GetCustomData().SetNameChecked("Label");
     button_->GetViewAccessibility().AddVirtualChildView(
-        base::WrapUnique(virtual_label_));
+        base::WrapUnique(virtual_label_.get()));
     widget_->Show();
 
     ViewAccessibility::AccessibilityEventsCallback
@@ -96,6 +97,12 @@ class AXVirtualViewTest : public ViewsTestBase {
         &button_->GetViewAccessibility());
   }
 
+#if defined(USE_AURA)
+  void SetCache(AXVirtualView& virtual_view, AXAuraObjCache& cache) const {
+    virtual_view.set_cache(&cache);
+  }
+#endif  // defined(USE_AURA)
+
   void ExpectReceivedAccessibilityEvents(
       const std::vector<std::pair<const ui::AXPlatformNodeDelegate*,
                                   const ax::mojom::Event>>& expected_events) {
@@ -103,21 +110,22 @@ class AXVirtualViewTest : public ViewsTestBase {
     accessibility_events_.clear();
   }
 
-  Widget* widget_;
-  Button* button_;
+  raw_ptr<Widget> widget_;
+  raw_ptr<Button> button_;
   // Weak, |button_| owns this.
-  AXVirtualView* virtual_label_;
+  raw_ptr<AXVirtualView> virtual_label_;
 
  private:
   std::vector<
       std::pair<const ui::AXPlatformNodeDelegate*, const ax::mojom::Event>>
       accessibility_events_;
+  ScopedAXModeSetter ax_mode_setter_;
 };
 
 TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
-  EXPECT_EQ(ax::mojom::Role::kButton, GetButtonAccessibility()->GetData().role);
-  EXPECT_EQ(ax::mojom::Role::kStaticText, virtual_label_->GetData().role);
-  EXPECT_EQ("Label", virtual_label_->GetData().GetStringAttribute(
+  EXPECT_EQ(ax::mojom::Role::kButton, GetButtonAccessibility()->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, virtual_label_->GetRole());
+  EXPECT_EQ("Label", virtual_label_->GetStringAttribute(
                          ax::mojom::StringAttribute::kName));
 }
 
@@ -125,27 +133,26 @@ TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
 // state of the real view ancestor, however the enabled state should.
 TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
   virtual_label_->GetCustomData().AddState(ax::mojom::State::kFocusable);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             virtual_label_->GetData().GetRestriction());
 
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(
+      GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             virtual_label_->GetData().GetRestriction());
 
   button_->SetEnabled(false);
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(
+      GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kDisabled,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kDisabled,
@@ -154,10 +161,8 @@ TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
   button_->SetEnabled(true);
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   virtual_label_->GetCustomData().RemoveState(ax::mojom::State::kFocusable);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kFocusable));
-  EXPECT_FALSE(
-      virtual_label_->GetData().HasState(ax::mojom::State::kFocusable));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kFocusable));
+  EXPECT_FALSE(virtual_label_->HasState(ax::mojom::State::kFocusable));
   EXPECT_EQ(ax::mojom::Restriction::kNone,
             GetButtonAccessibility()->GetData().GetRestriction());
   EXPECT_EQ(ax::mojom::Restriction::kNone,
@@ -165,8 +170,8 @@ TEST_F(AXVirtualViewTest, FocusableAndEnabledState) {
 }
 
 TEST_F(AXVirtualViewTest, VirtualLabelIsChildOfButton) {
-  EXPECT_EQ(1, GetButtonAccessibility()->GetChildCount());
-  EXPECT_EQ(0, virtual_label_->GetChildCount());
+  EXPECT_EQ(1u, GetButtonAccessibility()->GetChildCount());
+  EXPECT_EQ(0u, virtual_label_->GetChildCount());
   ASSERT_NE(nullptr, virtual_label_->GetParent());
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
   ASSERT_NE(nullptr, GetButtonAccessibility()->ChildAtIndex(0));
@@ -175,7 +180,7 @@ TEST_F(AXVirtualViewTest, VirtualLabelIsChildOfButton) {
 }
 
 TEST_F(AXVirtualViewTest, RemoveFromParentView) {
-  ASSERT_EQ(1, GetButtonAccessibility()->GetChildCount());
+  ASSERT_EQ(1u, GetButtonAccessibility()->GetChildCount());
   std::unique_ptr<AXVirtualView> removed_label =
       virtual_label_->RemoveFromParentView();
   EXPECT_EQ(nullptr, removed_label->GetParent());
@@ -183,21 +188,51 @@ TEST_F(AXVirtualViewTest, RemoveFromParentView) {
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   removed_label->AddChildView(base::WrapUnique(virtual_child_1));
-  ASSERT_EQ(1, removed_label->GetChildCount());
+  ASSERT_EQ(1u, removed_label->GetChildCount());
   ASSERT_NE(nullptr, virtual_child_1->GetParent());
   std::unique_ptr<AXVirtualView> removed_child_1 =
       virtual_child_1->RemoveFromParentView();
   EXPECT_EQ(nullptr, removed_child_1->GetParent());
-  EXPECT_EQ(0, removed_label->GetChildCount());
+  EXPECT_EQ(0u, removed_label->GetChildCount());
 }
 
+#if defined(USE_AURA)
+TEST_F(AXVirtualViewTest, MultipleCaches) {
+  // This test ensures that AXVirtualView objects remove themselves from an
+  // existing cache (if present) when |set_cache| is called.
+  std::unique_ptr<AXAuraObjCache> cache = std::make_unique<AXAuraObjCache>();
+  std::unique_ptr<AXAuraObjCache> second_cache =
+      std::make_unique<AXAuraObjCache>();
+  // Store |virtual_label_| in |cache|.
+  SetCache(*virtual_label_, *cache);
+
+  AXVirtualViewWrapper* wrapper =
+      virtual_label_->GetOrCreateWrapper(cache.get());
+  EXPECT_NE(wrapper, nullptr);
+  EXPECT_NE(wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
+  EXPECT_NE(wrapper->GetParent(), nullptr);
+  EXPECT_NE(cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+
+  // Store |virtual_label_| in |second_cache|.
+  SetCache(*virtual_label_, *second_cache);
+  AXVirtualViewWrapper* second_wrapper =
+      virtual_label_->GetOrCreateWrapper(second_cache.get());
+  EXPECT_NE(second_wrapper, nullptr);
+  EXPECT_NE(second_wrapper->GetUniqueId(), ui::kInvalidAXNodeID);
+
+  // |virtual_label_| should only exist in |second_cache|.
+  EXPECT_NE(second_cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+  EXPECT_EQ(cache->GetID(virtual_label_.get()), ui::kInvalidAXNodeID);
+}
+#endif  // defined(USE_AURA)
+
 TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents({});
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  EXPECT_EQ(1, virtual_label_->GetChildCount());
+  EXPECT_EQ(1u, virtual_label_->GetChildCount());
   ASSERT_NE(nullptr, virtual_child_1->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
   ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
@@ -208,7 +243,7 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
-  EXPECT_EQ(2, virtual_label_->GetChildCount());
+  EXPECT_EQ(2u, virtual_label_->GetChildCount());
   ASSERT_NE(nullptr, virtual_child_2->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_2->GetParent());
   ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(1));
@@ -219,9 +254,9 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
 
   AXVirtualView* virtual_child_3 = new AXVirtualView;
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
-  EXPECT_EQ(2, virtual_label_->GetChildCount());
-  EXPECT_EQ(0, virtual_child_1->GetChildCount());
-  EXPECT_EQ(1, virtual_child_2->GetChildCount());
+  EXPECT_EQ(2u, virtual_label_->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_1->GetChildCount());
+  EXPECT_EQ(1u, virtual_child_2->GetChildCount());
   ASSERT_NE(nullptr, virtual_child_3->GetParent());
   EXPECT_EQ(virtual_child_2->GetNativeObject(), virtual_child_3->GetParent());
   ASSERT_NE(nullptr, virtual_child_2->ChildAtIndex(0));
@@ -231,13 +266,13 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
   virtual_child_2->RemoveChildView(virtual_child_3);
-  EXPECT_EQ(0, virtual_child_2->GetChildCount());
-  EXPECT_EQ(2, virtual_label_->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_2->GetChildCount());
+  EXPECT_EQ(2u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents({std::make_pair(
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
   virtual_label_->RemoveAllChildViews();
-  EXPECT_EQ(0, virtual_label_->GetChildCount());
+  EXPECT_EQ(0u, virtual_label_->GetChildCount());
   // There should be two "kChildrenChanged" events because Two virtual child
   // views are removed in total.
   ExpectReceivedAccessibilityEvents(
@@ -248,18 +283,18 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
 }
 
 TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  ASSERT_EQ(1, virtual_label_->GetChildCount());
+  ASSERT_EQ(1u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
 
-  virtual_label_->ReorderChildView(virtual_child_1, -1);
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  virtual_label_->ReorderChildView(virtual_child_1, 100);
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_2->GetParent());
   ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
@@ -269,7 +304,7 @@ TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {
             virtual_label_->ChildAtIndex(1));
 
   virtual_label_->ReorderChildView(virtual_child_1, 0);
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
   ASSERT_NE(nullptr, virtual_label_->ChildAtIndex(0));
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
@@ -279,23 +314,23 @@ TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {
             virtual_label_->ChildAtIndex(1));
 
   virtual_label_->RemoveAllChildViews();
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 }
 
 TEST_F(AXVirtualViewTest, ContainsVirtualChild) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  ASSERT_EQ(1, virtual_label_->GetChildCount());
+  ASSERT_EQ(1u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_3 = new AXVirtualView;
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
-  ASSERT_EQ(1, virtual_child_2->GetChildCount());
+  ASSERT_EQ(1u, virtual_child_2->GetChildCount());
 
   EXPECT_TRUE(button_->GetViewAccessibility().Contains(virtual_label_));
   EXPECT_TRUE(virtual_label_->Contains(virtual_label_));
@@ -310,47 +345,45 @@ TEST_F(AXVirtualViewTest, ContainsVirtualChild) {
   EXPECT_FALSE(virtual_child_3->Contains(virtual_child_2));
 
   virtual_label_->RemoveAllChildViews();
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 }
 
 TEST_F(AXVirtualViewTest, GetIndexOfVirtualChild) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  ASSERT_EQ(1, virtual_label_->GetChildCount());
+  ASSERT_EQ(1u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_3 = new AXVirtualView;
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
-  ASSERT_EQ(1, virtual_child_2->GetChildCount());
+  ASSERT_EQ(1u, virtual_child_2->GetChildCount());
 
-  EXPECT_EQ(-1, virtual_label_->GetIndexOf(virtual_label_));
-  EXPECT_EQ(0, virtual_label_->GetIndexOf(virtual_child_1));
-  EXPECT_EQ(1, virtual_label_->GetIndexOf(virtual_child_2));
-  EXPECT_EQ(-1, virtual_label_->GetIndexOf(virtual_child_3));
-  EXPECT_EQ(0, virtual_child_2->GetIndexOf(virtual_child_3));
+  EXPECT_FALSE(virtual_label_->GetIndexOf(virtual_label_).has_value());
+  EXPECT_EQ(0u, virtual_label_->GetIndexOf(virtual_child_1).value());
+  EXPECT_EQ(1u, virtual_label_->GetIndexOf(virtual_child_2).value());
+  EXPECT_FALSE(virtual_label_->GetIndexOf(virtual_child_3).has_value());
+  EXPECT_EQ(0u, virtual_child_2->GetIndexOf(virtual_child_3).value());
 
   virtual_label_->RemoveAllChildViews();
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 }
 
 // Verify that virtual views with invisible ancestors inherit the
 // ax::mojom::State::kInvisible state.
 TEST_F(AXVirtualViewTest, InvisibleVirtualViews) {
   EXPECT_TRUE(widget_->IsVisible());
-  EXPECT_FALSE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kInvisible));
   EXPECT_FALSE(
-      virtual_label_->GetData().HasState(ax::mojom::State::kInvisible));
+      GetButtonAccessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_FALSE(virtual_label_->HasState(ax::mojom::State::kInvisible));
 
   button_->SetVisible(false);
-  EXPECT_TRUE(GetButtonAccessibility()->GetData().HasState(
-      ax::mojom::State::kInvisible));
-  EXPECT_TRUE(virtual_label_->GetData().HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(GetButtonAccessibility()->HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(virtual_label_->HasState(ax::mojom::State::kInvisible));
   button_->SetVisible(true);
 }
 
@@ -379,16 +412,16 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   ExpectReceivedAccessibilityEvents(
       {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus)});
 
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
-  ASSERT_EQ(1, virtual_label_->GetChildCount());
+  ASSERT_EQ(1u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents({std::make_pair(
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
-  ASSERT_EQ(2, virtual_label_->GetChildCount());
+  ASSERT_EQ(2u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents({std::make_pair(
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
@@ -400,7 +433,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
 
   AXVirtualView* virtual_child_3 = new AXVirtualView;
   virtual_child_2->AddChildView(base::WrapUnique(virtual_child_3));
-  ASSERT_EQ(1, virtual_child_2->GetChildCount());
+  ASSERT_EQ(1u, virtual_child_2->GetChildCount());
   ExpectReceivedAccessibilityEvents({std::make_pair(
       GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
 
@@ -416,8 +449,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   // return nullptr.
   button_->SetFocusBehavior(View::FocusBehavior::NEVER);
   button_->RequestFocus();
-  ExpectReceivedAccessibilityEvents({std::make_pair(
-      GetButtonAccessibility(), ax::mojom::Event::kChildrenChanged)});
+  ExpectReceivedAccessibilityEvents({});
   EXPECT_EQ(nullptr, virtual_label_->GetFocus());
   EXPECT_EQ(nullptr, virtual_child_1->GetFocus());
   EXPECT_EQ(nullptr, virtual_child_2->GetFocus());
@@ -436,7 +468,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   EXPECT_EQ(virtual_child_3->GetNativeObject(), virtual_child_3->GetFocus());
 
   virtual_label_->RemoveChildView(virtual_child_2);
-  ASSERT_EQ(1, virtual_label_->GetChildCount());
+  ASSERT_EQ(1u, virtual_label_->GetChildCount());
   ExpectReceivedAccessibilityEvents(
       {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
        std::make_pair(GetButtonAccessibility(),
@@ -455,7 +487,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
       {std::make_pair(virtual_child_1, ax::mojom::Event::kFocus)});
 
   virtual_label_->RemoveAllChildViews();
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
   ExpectReceivedAccessibilityEvents(
@@ -465,7 +497,7 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
 }
 
 TEST_F(AXVirtualViewTest, TreeNavigation) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
@@ -485,17 +517,17 @@ TEST_F(AXVirtualViewTest, TreeNavigation) {
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_3->GetParent());
   EXPECT_EQ(virtual_child_2->GetNativeObject(), virtual_child_4->GetParent());
 
-  EXPECT_EQ(0, virtual_label_->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_1->GetIndexInParent());
-  EXPECT_EQ(1, virtual_child_2->GetIndexInParent());
-  EXPECT_EQ(2, virtual_child_3->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_4->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_label_->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_child_1->GetIndexInParent());
+  EXPECT_EQ(1u, virtual_child_2->GetIndexInParent());
+  EXPECT_EQ(2u, virtual_child_3->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_child_4->GetIndexInParent());
 
-  EXPECT_EQ(3, virtual_label_->GetChildCount());
-  EXPECT_EQ(0, virtual_child_1->GetChildCount());
-  EXPECT_EQ(1, virtual_child_2->GetChildCount());
-  EXPECT_EQ(0, virtual_child_3->GetChildCount());
-  EXPECT_EQ(0, virtual_child_4->GetChildCount());
+  EXPECT_EQ(3u, virtual_label_->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_1->GetChildCount());
+  EXPECT_EQ(1u, virtual_child_2->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_3->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_4->GetChildCount());
 
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
@@ -539,14 +571,14 @@ TEST_F(AXVirtualViewTest, TreeNavigation) {
 }
 
 TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   AXVirtualView* virtual_child_1 = new AXVirtualView;
   virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
   virtual_child_1->GetCustomData().AddState(ax::mojom::State::kIgnored);
 
-  EXPECT_EQ(0, virtual_label_->GetChildCount());
-  EXPECT_EQ(0, virtual_child_1->GetChildCount());
+  EXPECT_EQ(0u, virtual_label_->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_1->GetChildCount());
 
   AXVirtualView* virtual_child_2 = new AXVirtualView;
   virtual_child_1->AddChildView(base::WrapUnique(virtual_child_2));
@@ -563,17 +595,17 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   EXPECT_EQ(virtual_child_2->GetNativeObject(), virtual_child_3->GetParent());
   EXPECT_EQ(virtual_child_2->GetNativeObject(), virtual_child_4->GetParent());
 
-  EXPECT_EQ(0, virtual_label_->GetIndexInParent());
-  EXPECT_EQ(-1, virtual_child_1->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_2->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_3->GetIndexInParent());
-  EXPECT_EQ(1, virtual_child_4->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_label_->GetIndexInParent());
+  EXPECT_FALSE(virtual_child_1->GetIndexInParent().has_value());
+  EXPECT_EQ(0u, virtual_child_2->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_child_3->GetIndexInParent());
+  EXPECT_EQ(1u, virtual_child_4->GetIndexInParent());
 
-  EXPECT_EQ(1, virtual_label_->GetChildCount());
-  EXPECT_EQ(1, virtual_child_1->GetChildCount());
-  EXPECT_EQ(2, virtual_child_2->GetChildCount());
-  EXPECT_EQ(0, virtual_child_3->GetChildCount());
-  EXPECT_EQ(0, virtual_child_4->GetChildCount());
+  EXPECT_EQ(1u, virtual_label_->GetChildCount());
+  EXPECT_EQ(1u, virtual_child_1->GetChildCount());
+  EXPECT_EQ(2u, virtual_child_2->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_3->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_4->GetChildCount());
 
   EXPECT_EQ(virtual_child_2->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
@@ -585,7 +617,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
             virtual_child_2->ChildAtIndex(1));
 
   // Try ignoring a node by changing its role, instead of its state.
-  virtual_child_2->GetCustomData().role = ax::mojom::Role::kIgnored;
+  virtual_child_2->GetCustomData().role = ax::mojom::Role::kNone;
 
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_1->GetParent());
@@ -593,17 +625,17 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_3->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_4->GetParent());
 
-  EXPECT_EQ(2, virtual_label_->GetChildCount());
-  EXPECT_EQ(2, virtual_child_1->GetChildCount());
-  EXPECT_EQ(2, virtual_child_2->GetChildCount());
-  EXPECT_EQ(0, virtual_child_3->GetChildCount());
-  EXPECT_EQ(0, virtual_child_4->GetChildCount());
+  EXPECT_EQ(2u, virtual_label_->GetChildCount());
+  EXPECT_EQ(2u, virtual_child_1->GetChildCount());
+  EXPECT_EQ(2u, virtual_child_2->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_3->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_4->GetChildCount());
 
-  EXPECT_EQ(0, virtual_label_->GetIndexInParent());
-  EXPECT_EQ(-1, virtual_child_1->GetIndexInParent());
-  EXPECT_EQ(-1, virtual_child_2->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_3->GetIndexInParent());
-  EXPECT_EQ(1, virtual_child_4->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_label_->GetIndexInParent());
+  EXPECT_FALSE(virtual_child_1->GetIndexInParent().has_value());
+  EXPECT_FALSE(virtual_child_2->GetIndexInParent().has_value());
+  EXPECT_EQ(0u, virtual_child_3->GetIndexInParent());
+  EXPECT_EQ(1u, virtual_child_4->GetIndexInParent());
 
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
@@ -629,19 +661,19 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_4->GetParent());
   EXPECT_EQ(virtual_label_->GetNativeObject(), virtual_child_5->GetParent());
 
-  EXPECT_EQ(3, virtual_label_->GetChildCount());
-  EXPECT_EQ(3, virtual_child_1->GetChildCount());
-  EXPECT_EQ(2, virtual_child_2->GetChildCount());
-  EXPECT_EQ(0, virtual_child_3->GetChildCount());
-  EXPECT_EQ(0, virtual_child_4->GetChildCount());
-  EXPECT_EQ(0, virtual_child_5->GetChildCount());
+  EXPECT_EQ(3u, virtual_label_->GetChildCount());
+  EXPECT_EQ(3u, virtual_child_1->GetChildCount());
+  EXPECT_EQ(2u, virtual_child_2->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_3->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_4->GetChildCount());
+  EXPECT_EQ(0u, virtual_child_5->GetChildCount());
 
-  EXPECT_EQ(0, virtual_label_->GetIndexInParent());
-  EXPECT_EQ(-1, virtual_child_1->GetIndexInParent());
-  EXPECT_EQ(-1, virtual_child_2->GetIndexInParent());
-  EXPECT_EQ(0, virtual_child_3->GetIndexInParent());
-  EXPECT_EQ(1, virtual_child_4->GetIndexInParent());
-  EXPECT_EQ(2, virtual_child_5->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_label_->GetIndexInParent());
+  EXPECT_FALSE(virtual_child_1->GetIndexInParent().has_value());
+  EXPECT_FALSE(virtual_child_2->GetIndexInParent().has_value());
+  EXPECT_EQ(0u, virtual_child_3->GetIndexInParent());
+  EXPECT_EQ(1u, virtual_child_4->GetIndexInParent());
+  EXPECT_EQ(2u, virtual_child_5->GetIndexInParent());
 
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             virtual_label_->ChildAtIndex(0));
@@ -660,11 +692,11 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_child_4->GetParent());
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_child_5->GetParent());
 
-  EXPECT_EQ(3, GetButtonAccessibility()->GetChildCount());
+  EXPECT_EQ(3u, GetButtonAccessibility()->GetChildCount());
 
-  EXPECT_EQ(0, virtual_child_3->GetIndexInParent());
-  EXPECT_EQ(1, virtual_child_4->GetIndexInParent());
-  EXPECT_EQ(2, virtual_child_5->GetIndexInParent());
+  EXPECT_EQ(0u, virtual_child_3->GetIndexInParent());
+  EXPECT_EQ(1u, virtual_child_4->GetIndexInParent());
+  EXPECT_EQ(2u, virtual_child_5->GetIndexInParent());
 
   EXPECT_EQ(virtual_child_3->GetNativeObject(),
             GetButtonAccessibility()->ChildAtIndex(0));
@@ -676,14 +708,14 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   // Test for mixed ignored and unignored root nodes.
   AXVirtualView* virtual_label_2 = new AXVirtualView;
   virtual_label_2->GetCustomData().role = ax::mojom::Role::kStaticText;
-  virtual_label_2->GetCustomData().SetName("Label");
+  virtual_label_2->GetCustomData().SetNameChecked("Label");
   button_->GetViewAccessibility().AddVirtualChildView(
       base::WrapUnique(virtual_label_2));
 
   EXPECT_EQ(button_->GetNativeViewAccessible(), virtual_label_2->GetParent());
 
-  EXPECT_EQ(4, GetButtonAccessibility()->GetChildCount());
-  EXPECT_EQ(0, virtual_label_2->GetChildCount());
+  EXPECT_EQ(4u, GetButtonAccessibility()->GetChildCount());
+  EXPECT_EQ(0u, virtual_label_2->GetChildCount());
 
   EXPECT_EQ(virtual_label_2->GetNativeObject(),
             GetButtonAccessibility()->ChildAtIndex(3));
@@ -691,8 +723,8 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
   // A focusable node should not be ignored.
   virtual_child_1->GetCustomData().AddState(ax::mojom::State::kFocusable);
 
-  EXPECT_EQ(2, GetButtonAccessibility()->GetChildCount());
-  EXPECT_EQ(1, virtual_label_->GetChildCount());
+  EXPECT_EQ(2u, GetButtonAccessibility()->GetChildCount());
+  EXPECT_EQ(1u, virtual_label_->GetChildCount());
 
   EXPECT_EQ(virtual_child_1->GetNativeObject(),
             GetButtonAccessibility()->ChildAtIndex(0));
@@ -701,7 +733,7 @@ TEST_F(AXVirtualViewTest, TreeNavigationWithIgnoredVirtualViews) {
 }
 
 TEST_F(AXVirtualViewTest, HitTesting) {
-  ASSERT_EQ(0, virtual_label_->GetChildCount());
+  ASSERT_EQ(0u, virtual_label_->GetChildCount());
 
   const gfx::Vector2d offset_from_origin =
       button_->GetBoundsInScreen().OffsetFromOrigin();
@@ -745,24 +777,15 @@ TEST_F(AXVirtualViewTest, HitTesting) {
             virtual_label_->HitTestSync(point_3.x(), point_3.y()));
 }
 
-#if defined(USE_AURA)
-TEST_F(AXVirtualViewTest, GetOrCreateWrapper) {
-  std::unique_ptr<AXAuraObjCache> cache;
-  auto* wrapper1 = virtual_label_->GetOrCreateWrapper(cache.get());
-  cache = std::make_unique<AXAuraObjCache>();
-  EXPECT_NE(wrapper1, virtual_label_->GetOrCreateWrapper(cache.get()));
-}
-#endif
-
 // Test for GetTargetForNativeAccessibilityEvent().
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AXVirtualViewTest, GetTargetForEvents) {
   EXPECT_EQ(button_, virtual_label_->GetOwnerView());
   EXPECT_NE(nullptr, HWNDForView(virtual_label_->GetOwnerView()));
   EXPECT_EQ(HWNDForView(button_),
             virtual_label_->GetTargetForNativeAccessibilityEvent());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace test
 }  // namespace views

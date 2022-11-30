@@ -1,14 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -41,43 +41,45 @@ class CommonMenuModel : public ui::MenuModel {
   CommonMenuModel() {
   }
 
+  CommonMenuModel(const CommonMenuModel&) = delete;
+  CommonMenuModel& operator=(const CommonMenuModel&) = delete;
+
   ~CommonMenuModel() override {}
 
  protected:
   // ui::MenuModel implementation.
   bool HasIcons() const override { return false; }
 
-  bool IsItemDynamicAt(int index) const override { return false; }
+  bool IsItemDynamicAt(size_t index) const override { return false; }
 
-  bool GetAcceleratorAt(int index,
+  bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override {
     return false;
   }
 
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override {
     return ui::NORMAL_SEPARATOR;
   }
 
-  bool IsItemCheckedAt(int index) const override { return false; }
+  bool IsItemCheckedAt(size_t index) const override { return false; }
 
-  int GetGroupIdAt(int index) const override { return 0; }
+  int GetGroupIdAt(size_t index) const override { return 0; }
 
-  ui::ImageModel GetIconAt(int index) const override {
+  ui::ImageModel GetIconAt(size_t index) const override {
     return ui::ImageModel();
   }
 
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override {
     return nullptr;
   }
 
-  bool IsEnabledAt(int index) const override { return true; }
+  bool IsEnabledAt(size_t index) const override { return true; }
 
-  ui::MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
+  ui::MenuModel* GetSubmenuModelAt(size_t index) const override {
+    return nullptr;
+  }
 
-  void ActivatedAt(int index) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CommonMenuModel);
+  void ActivatedAt(size_t index) override {}
 };
 
 class SubMenuModel : public CommonMenuModel {
@@ -85,6 +87,9 @@ class SubMenuModel : public CommonMenuModel {
   SubMenuModel()
       : showing_(false) {
   }
+
+  SubMenuModel(const SubMenuModel&) = delete;
+  SubMenuModel& operator=(const SubMenuModel&) = delete;
 
   ~SubMenuModel() override {}
 
@@ -94,15 +99,15 @@ class SubMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
-  int GetItemCount() const override { return 1; }
+  size_t GetItemCount() const override { return 1; }
 
-  ItemType GetTypeAt(int index) const override { return TYPE_COMMAND; }
+  ItemType GetTypeAt(size_t index) const override { return TYPE_COMMAND; }
 
-  int GetCommandIdAt(int index) const override {
-    return index + kSubMenuBaseId;
+  int GetCommandIdAt(size_t index) const override {
+    return static_cast<int>(index) + kSubMenuBaseId;
   }
 
-  std::u16string GetLabelAt(int index) const override { return u"Item"; }
+  std::u16string GetLabelAt(size_t index) const override { return u"Item"; }
 
   void MenuWillShow() override { showing_ = true; }
 
@@ -110,14 +115,15 @@ class SubMenuModel : public CommonMenuModel {
   void MenuWillClose() override { showing_ = false; }
 
   bool showing_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubMenuModel);
 };
 
 class TopMenuModel : public CommonMenuModel {
  public:
   TopMenuModel() {
   }
+
+  TopMenuModel(const TopMenuModel&) = delete;
+  TopMenuModel& operator=(const TopMenuModel&) = delete;
 
   ~TopMenuModel() override {}
 
@@ -127,23 +133,21 @@ class TopMenuModel : public CommonMenuModel {
 
  private:
   // ui::MenuModel implementation.
-  int GetItemCount() const override { return 1; }
+  size_t GetItemCount() const override { return 1; }
 
-  ItemType GetTypeAt(int index) const override { return TYPE_SUBMENU; }
+  ItemType GetTypeAt(size_t index) const override { return TYPE_SUBMENU; }
 
-  int GetCommandIdAt(int index) const override {
-    return index + kTopMenuBaseId;
+  int GetCommandIdAt(size_t index) const override {
+    return static_cast<int>(index) + kTopMenuBaseId;
   }
 
-  std::u16string GetLabelAt(int index) const override { return u"submenu"; }
+  std::u16string GetLabelAt(size_t index) const override { return u"submenu"; }
 
-  MenuModel* GetSubmenuModelAt(int index) const override {
+  MenuModel* GetSubmenuModelAt(size_t index) const override {
     return &sub_menu_model_;
   }
 
   mutable SubMenuModel sub_menu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopMenuModel);
 };
 
 }  // namespace
@@ -253,10 +257,10 @@ class MenuModelAdapterTest : public ViewEventTestBase {
                             ui::MENU_SOURCE_NONE);
   }
 
-  views::MenuButton* button_ = nullptr;
+  raw_ptr<views::MenuButton> button_ = nullptr;
   TopMenuModel top_menu_model_;
   views::MenuModelAdapter menu_model_adapter_{&top_menu_model_};
-  views::MenuItemView* menu_ = nullptr;
+  raw_ptr<views::MenuItemView> menu_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 

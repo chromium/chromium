@@ -26,20 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PANNER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PANNER_NODE_H_
 
-#include <memory>
-#include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_param.h"
-#include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/audio/cone_effect.h"
-#include "third_party/blink/renderer/platform/audio/distance_effect.h"
-#include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
+class AudioListener;
+class AudioParam;
 class BaseAudioContext;
+class PannerHandler;
 class PannerOptions;
 
 // PannerNode is an AudioNode with one input and one output.
@@ -50,177 +44,6 @@ class PannerOptions;
 // listener.  A cone effect will attenuate the gain as the orientation moves
 // away from the listener.  All of these effects follow the OpenAL specification
 // very closely.
-
-class PannerHandler final : public AudioHandler {
- public:
-  // These enums are used to distinguish what cached values of panner are dirty.
-  enum {
-    kAzimuthElevationDirty = 0x1,
-    kDistanceConeGainDirty = 0x2,
-  };
-
-  static scoped_refptr<PannerHandler> Create(AudioNode&,
-                                             float sample_rate,
-                                             AudioParamHandler& position_x,
-                                             AudioParamHandler& position_y,
-                                             AudioParamHandler& position_z,
-                                             AudioParamHandler& orientation_x,
-                                             AudioParamHandler& orientation_y,
-                                             AudioParamHandler& orientation_z);
-
-  ~PannerHandler() override;
-
-  // AudioHandler
-  void ProcessIfNecessary(uint32_t frames_to_process) override;
-  void Process(uint32_t frames_to_process) override;
-  void ProcessSampleAccurateValues(AudioBus* destination,
-                                   const AudioBus* source,
-                                   uint32_t frames_to_process);
-  void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
-  void Initialize() override;
-  void Uninitialize() override;
-
-  // Panning model
-  String PanningModel() const;
-  void SetPanningModel(const String&);
-
-  // Position and orientation
-  void SetPosition(float x, float y, float z, ExceptionState&);
-  void SetOrientation(float x, float y, float z, ExceptionState&);
-
-  // Distance parameters
-  String DistanceModel() const;
-  void SetDistanceModel(const String&);
-
-  double RefDistance() { return distance_effect_.RefDistance(); }
-  void SetRefDistance(double);
-
-  double MaxDistance() { return distance_effect_.MaxDistance(); }
-  void SetMaxDistance(double);
-
-  double RolloffFactor() { return distance_effect_.RolloffFactor(); }
-  void SetRolloffFactor(double);
-
-  // Sound cones - angles in degrees
-  double ConeInnerAngle() const { return cone_effect_.InnerAngle(); }
-  void SetConeInnerAngle(double);
-
-  double ConeOuterAngle() const { return cone_effect_.OuterAngle(); }
-  void SetConeOuterAngle(double);
-
-  double ConeOuterGain() const { return cone_effect_.OuterGain(); }
-  void SetConeOuterGain(double);
-
-  void MarkPannerAsDirty(unsigned);
-
-  double TailTime() const override { return panner_ ? panner_->TailTime() : 0; }
-  double LatencyTime() const override {
-    return panner_ ? panner_->LatencyTime() : 0;
-  }
-  bool RequiresTailProcessing() const final;
-
-  void SetChannelCount(unsigned, ExceptionState&) final;
-  void SetChannelCountMode(const String&, ExceptionState&) final;
-
- private:
-  PannerHandler(AudioNode&,
-                float sample_rate,
-                AudioParamHandler& position_x,
-                AudioParamHandler& position_y,
-                AudioParamHandler& position_z,
-                AudioParamHandler& orientation_x,
-                AudioParamHandler& orientation_y,
-                AudioParamHandler& orientation_z);
-
-  // BaseAudioContext's listener
-  // AudioListener* Listener();
-  CrossThreadPersistent<AudioListener> Listener() const;
-
-  bool SetPanningModel(Panner::PanningModel);  // Returns true on success.
-  bool SetDistanceModel(unsigned);  // Returns true on success.
-
-  void CalculateAzimuthElevation(double* out_azimuth,
-                                 double* out_elevation,
-                                 const FloatPoint3D& position,
-                                 const FloatPoint3D& listener_position,
-                                 const FloatPoint3D& listener_forward,
-                                 const FloatPoint3D& listener_up);
-
-  // Returns the combined distance and cone gain attenuation.
-  float CalculateDistanceConeGain(const FloatPoint3D& position,
-                                  const FloatPoint3D& orientation,
-                                  const FloatPoint3D& listener_position);
-
-  void AzimuthElevation(double* out_azimuth, double* out_elevation);
-  float DistanceConeGain();
-
-  bool IsAzimuthElevationDirty() const { return is_azimuth_elevation_dirty_; }
-  bool IsDistanceConeGainDirty() const { return is_distance_cone_gain_dirty_; }
-  void UpdateDirtyState();
-
-  // AudioListener is held alive by PannerNode.
-  CrossThreadWeakPersistent<AudioListener> listener_;
-  std::unique_ptr<Panner> panner_;
-  Panner::PanningModel panning_model_;
-  unsigned distance_model_;
-
-  bool is_azimuth_elevation_dirty_;
-  bool is_distance_cone_gain_dirty_;
-
-  // Gain
-  DistanceEffect distance_effect_;
-  ConeEffect cone_effect_;
-
-  // Cached values
-  double cached_azimuth_;
-  double cached_elevation_;
-  float cached_distance_cone_gain_;
-
-  const FloatPoint3D GetPosition() const {
-    auto x = position_x_->IsAudioRate() ? position_x_->FinalValue()
-                                        : position_x_->Value();
-    auto y = position_y_->IsAudioRate() ? position_y_->FinalValue()
-                                        : position_y_->Value();
-    auto z = position_z_->IsAudioRate() ? position_z_->FinalValue()
-                                        : position_z_->Value();
-
-    return FloatPoint3D(x, y, z);
-  }
-
-  const FloatPoint3D Orientation() const {
-    auto x = orientation_x_->IsAudioRate() ? orientation_x_->FinalValue()
-                                           : orientation_x_->Value();
-    auto y = orientation_y_->IsAudioRate() ? orientation_y_->FinalValue()
-                                           : orientation_y_->Value();
-    auto z = orientation_z_->IsAudioRate() ? orientation_z_->FinalValue()
-                                           : orientation_z_->Value();
-
-    return FloatPoint3D(x, y, z);
-  }
-
-  // True if any of this panner's AudioParams have automations.
-  bool HasSampleAccurateValues() const;
-
-  // True if any of the panner's AudioParams are set for a-rate
-  // automations (the default).
-  bool IsAudioRate() const;
-
-  scoped_refptr<AudioParamHandler> position_x_;
-  scoped_refptr<AudioParamHandler> position_y_;
-  scoped_refptr<AudioParamHandler> position_z_;
-
-  scoped_refptr<AudioParamHandler> orientation_x_;
-  scoped_refptr<AudioParamHandler> orientation_y_;
-  scoped_refptr<AudioParamHandler> orientation_z_;
-
-  FloatPoint3D last_position_;
-  FloatPoint3D last_orientation_;
-
-  // Synchronize process() with setting of the panning model, source's location
-  // information, listener, distance parameters and sound cones.
-  mutable Mutex process_lock_;
-};
-
 class PannerNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -231,7 +54,7 @@ class PannerNode final : public AudioNode {
                             ExceptionState&);
   PannerHandler& GetPannerHandler() const;
 
-  PannerNode(BaseAudioContext&);
+  explicit PannerNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

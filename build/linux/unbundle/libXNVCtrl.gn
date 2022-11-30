@@ -1,0 +1,19 @@
+import("//build/shim_headers.gni")
+
+shim_headers("libXNVCtrl_shim") {
+  root_path = "../../../../../third_party/libXNVCtrl"
+  prefix = "NVCtrl/"
+  headers = [
+    "NVCtrl.h",
+    "NVCtrlLib.h",
+    "nv_control.h",
+  ]
+}
+
+source_set("libXNVCtrl") {
+  deps = [ ":libXNVCtrl_shim" ]
+  libs = [
+    "XNVCtrl",
+    "xcb",
+  ]
+}

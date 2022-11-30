@@ -1,14 +1,59 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module extensions.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "extensions/common/mojom/activation_sequence.mojom";
+import "extensions/common/mojom/api_permission_id.mojom";
 import "extensions/common/mojom/channel.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
+import "extensions/common/mojom/manifest.mojom";
+import "extensions/common/mojom/permission_set.mojom";
 import "extensions/common/mojom/url_pattern_set.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Mojo struct to be used as argument on the LoadExtension method.
+struct ExtensionLoadedParams {
+  // The subset of the extension manifest data we send to renderers.
+  mojo_base.mojom.Value manifest;
+
+  // The location the extension was installed from. This is used in the renderer
+  // only to generate the extension ID for extensions that are loaded unpacked.
+  ManifestLocation location;
+
+  // The path the extension was loaded from.
+  mojo_base.mojom.FilePath path;
+
+  // The extension's active and withheld permissions.
+  PermissionSet active_permissions;
+  PermissionSet withheld_permissions;
+  map<int32, PermissionSet> tab_specific_permissions;
+
+  // Contains URLPatternSets defining which URLs an extension may not interact
+  // with by policy.
+  URLPatternSet policy_blocked_hosts;
+  URLPatternSet policy_allowed_hosts;
+
+  // If the extension uses the default list of blocked / allowed URLs.
+  bool uses_default_policy_blocked_allowed_hosts;
+
+  // We keep this separate so that it can be used in logging and testing.
+  string id;
+
+  // If this extension is Service Worker based, then this contains the
+  // activation sequence of the extension
+  ActivationSequence? worker_activation_sequence;
+
+  // Send creation flags so that extension is initialized identically.
+  int32 creation_flags;
+
+  // Reuse the extension guid when creating the extension in the renderer.
+  string guid;
+};
 
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to other mojo interfaces like
@@ -24,6 +69,9 @@ interface Renderer {
   // otherwise.
   SetActivityLoggingEnabled(bool enabled);
 
+  // Notifies the renderer that extensions were loaded in the browser.
+  LoadExtensions(array<ExtensionLoadedParams> params);
+
   // Notifies the renderer that an extension was unloaded in the browser.
   UnloadExtension(string extension_id);
 
@@ -34,6 +82,9 @@ interface Renderer {
 
   // Cancels suspending the extension.
   CancelSuspendExtension(string extension_id);
+
+  // Informs the renderer whether or not the developer mode is enabled.
+  SetDeveloperMode(bool developer_mode_only);
 
   // Informs the renderer what channel (dev, beta, stable, etc) and user session
   // type is running. |is_lock_screen_context| represents whether the browser
@@ -63,45 +114,46 @@ interface Renderer {
   // sequential nature of IPCs so that the blob has already been caught.
   TransferBlobs() => ();
 
+  // Tells the renderer to update an extension's permission set.
+  UpdatePermissions(string extension_id,
+                    PermissionSet active_permissions,
+                    PermissionSet withheld_permissions,
+                    URLPatternSet policy_blocked_hosts,
+                    URLPatternSet policy_allowed_hosts,
+                    bool uses_default_policy_host_restrictions);
+
   // Tells the renderer to update an extension's policy_blocked_hosts set.
   UpdateDefaultPolicyHostRestrictions(
         URLPatternSet default_policy_blocked_hosts,
         URLPatternSet default_policy_allowed_hosts);
 
+  // Tells the renderer to update the collection of user-restricted hosts.
+  UpdateUserHostRestrictions(
+        URLPatternSet user_blocked_hosts,
+        URLPatternSet user_allowed_hosts);
+
   // Tells the render view about new tab-specific permissions for an extension.
   UpdateTabSpecificPermissions(string extension_id,
                                URLPatternSet new_hosts,
                                int32 tab_id,
-                               bool update_origin_whitelist);
+                               bool update_origin_allowlist);
 
   // Notifies the renderer that the user scripts have been updated. It has one
   // ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
   // This memory region is valid in the context of the renderer.
-  // If |owner| is not empty, then the shared memory handle refers to |owner|'s
-  // programmatically-defined scripts. Otherwise, the handle refers to all
-  // hosts' statically defined scripts. So far, only extension-hosts support
-  // statically defined scripts; WebUI-hosts don't.
-  // If |changed_hosts| is not empty, only the host in that set will be updated.
-  // Otherwise, all hosts that have scripts in the shared memory region will be
-  // updated. Note that the empty set => all hosts case is not supported for
-  // per-extension programmatically-defined script regions; in such regions, the
-  // owner is expected to list itself as the only changed host. If
-  // |allowlisted_only| is true, this process should only run allowlisted
-  // scripts and not all user scripts.
+  // |owner| must not be empty, and all scripts from |owner| will be updated.
   UpdateUserScripts(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                    HostID owner,
-                    array<HostID> changed_hosts,
-                    bool allowlisted_only);
+                    HostID owner);
 
   // Tells the render view to clear tab-specific permissions for some
   // extensions.
   ClearTabSpecificPermissions(array<string> extension_ids,
                               int32 tab_id,
-                              bool update_origin_whitelist);
+                              bool update_origin_allowlist);
 
   // Notifies the renderer that an extension wants notifications when certain
   // searches match the active page. This method replaces the old set of
-  // searches, and triggers ExtensionHostMsg_OnWatchedPageChange messages from
-  // each tab to keep the browser updated about changes.
+  // searches, and triggers extensions::mojom::LocalFrameHost::WatchedPageChange
+  // from each tab to keep the browser updated about changes.
   WatchPages(array<string> css_selectors);
 };

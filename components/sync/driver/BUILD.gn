@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,6 +25,8 @@ static_library("driver") {
     "glue/sync_engine_backend.h",
     "glue/sync_engine_impl.cc",
     "glue/sync_engine_impl.h",
+    "glue/sync_transport_data_prefs.cc",
+    "glue/sync_transport_data_prefs.h",
     "model_load_manager.cc",
     "model_load_manager.h",
     "model_type_controller.cc",
@@ -33,8 +35,6 @@ static_library("driver") {
     "non_ui_syncable_service_based_model_type_controller.h",
     "passphrase_type_metrics_provider.cc",
     "passphrase_type_metrics_provider.h",
-    "profile_sync_service.cc",
-    "profile_sync_service.h",
     "startup_controller.cc",
     "startup_controller.h",
     "sync_api_component_factory.h",
@@ -43,14 +43,16 @@ static_library("driver") {
     "sync_auth_util.cc",
     "sync_auth_util.h",
     "sync_client.h",
-    "sync_driver_switches.cc",
-    "sync_driver_switches.h",
     "sync_internals_util.cc",
     "sync_internals_util.h",
+    "sync_policy_handler.cc",
+    "sync_policy_handler.h",
     "sync_service.cc",
     "sync_service.h",
     "sync_service_crypto.cc",
     "sync_service_crypto.h",
+    "sync_service_impl.cc",
+    "sync_service_impl.h",
     "sync_service_observer.cc",
     "sync_service_observer.h",
     "sync_service_utils.cc",
@@ -67,6 +69,8 @@ static_library("driver") {
     "syncable_service_based_model_type_controller.cc",
     "syncable_service_based_model_type_controller.h",
     "trusted_vault_client.h",
+    "trusted_vault_histograms.cc",
+    "trusted_vault_histograms.h",
   ]
 
   public_deps = [
@@ -74,7 +78,6 @@ static_library("driver") {
     "//components/invalidation/public",
     "//components/sync/base",
     "//components/sync/engine",
-    "//components/sync/js",
     "//components/sync/model",
     "//components/sync/nigori",
     "//components/sync/protocol",
@@ -84,9 +87,9 @@ static_library("driver") {
     "//url",
   ]
   deps = [
+    "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
     "//components/metrics",
@@ -101,63 +104,9 @@ static_library("driver") {
     "//services/network/public/cpp",
   ]
 
-  if (!is_ios) {
-    sources += [
-      "sync_policy_handler.cc",
-      "sync_policy_handler.h",
-    ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "data_type_manager_mock.cc",
-    "data_type_manager_mock.h",
-    "fake_data_type_controller.cc",
-    "fake_data_type_controller.h",
-    "fake_sync_api_component_factory.cc",
-    "fake_sync_api_component_factory.h",
-    "fake_sync_service.cc",
-    "fake_sync_service.h",
-    "mock_sync_service.cc",
-    "mock_sync_service.h",
-    "profile_sync_service_bundle.cc",
-    "profile_sync_service_bundle.h",
-    "sync_client_mock.cc",
-    "sync_client_mock.h",
-    "sync_user_settings_mock.cc",
-    "sync_user_settings_mock.h",
-    "test_sync_service.cc",
-    "test_sync_service.h",
-    "test_sync_user_settings.cc",
-    "test_sync_user_settings.h",
-  ]
-
-  public_deps = [ "//components/sync/base:test_support" ]
-
-  deps = [
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/invalidation/impl:test_support",
-    "//components/pref_registry",
-    "//components/prefs:test_support",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/sync",
-    "//components/sync:test_support_engine",
-    "//components/sync:test_support_model",
-    "//components/sync/driver",
-    "//components/sync/invalidations:test_support",
-    "//components/version_info",
-    "//components/version_info:generate_version_info",
-    "//google_apis",
-    "//services/network:test_support",
-  ]
 }

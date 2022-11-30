@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,15 +14,35 @@
 
 namespace ownership {
 
-MockOwnerKeyUtil::MockOwnerKeyUtil() {
+static const uint16_t kKeySizeInBits = 2048;
+
+MockOwnerKeyUtil::MockOwnerKeyUtil() = default;
+
+MockOwnerKeyUtil::~MockOwnerKeyUtil() = default;
+
+scoped_refptr<PublicKey> MockOwnerKeyUtil::ImportPublicKey() {
+  return public_key_.empty() ? nullptr
+                             : base::MakeRefCounted<ownership::PublicKey>(
+                                   /*is_persisted=*/true, /*data=*/public_key_);
 }
 
-MockOwnerKeyUtil::~MockOwnerKeyUtil() {
-}
+crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::GenerateKeyPair(
+    PK11SlotInfo* slot) {
+  if (generate_key_fail_times_ > 0) {
+    --generate_key_fail_times_;
+    return nullptr;
+  }
 
-bool MockOwnerKeyUtil::ImportPublicKey(std::vector<uint8_t>* output) {
-  *output = public_key_;
-  return !public_key_.empty();
+  PK11RSAGenParams param;
+  param.keySizeInBits = kKeySizeInBits;
+  param.pe = 65537L;
+  SECKEYPublicKey* public_key_ptr = nullptr;
+
+  crypto::ScopedSECKEYPrivateKey key(PK11_GenerateKeyPair(
+      slot, CKM_RSA_PKCS_KEY_PAIR_GEN, &param, &public_key_ptr,
+      PR_TRUE /* permanent */, PR_TRUE /* sensitive */, nullptr));
+  crypto::ScopedSECKEYPublicKey public_key(public_key_ptr);
+  return key;
 }
 
 crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::FindPrivateKeyInSlot(
@@ -52,7 +72,7 @@ void MockOwnerKeyUtil::SetPublicKeyFromPrivateKey(
   CHECK(key.ExportPublicKey(&public_key_));
 }
 
-void MockOwnerKeyUtil::SetPrivateKey(
+void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKey(
     std::unique_ptr<crypto::RSAPrivateKey> key) {
   crypto::EnsureNSSInit();
 
@@ -66,6 +86,10 @@ void MockOwnerKeyUtil::SetPrivateKey(
   private_key_ = crypto::ImportNSSKeyFromPrivateKeyInfo(
       slot.get(), key_exported, false /* not permanent */);
   CHECK(private_key_);
+}
+
+void MockOwnerKeyUtil::SimulateGenerateKeyFailure(int fail_times) {
+  generate_key_fail_times_ = fail_times;
 }
 
 }  // namespace ownership

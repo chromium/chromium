@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,11 @@
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
-#include "base/macros.h"
 
 namespace ash {
-namespace tray {
-class IMEDetailedView;
-}  // namespace tray
 
 class DetailedViewDelegate;
+class IMEDetailedView;
 class UnifiedSystemTrayController;
 
 // Controller of IME detailed view in UnifiedSystemTray.
@@ -29,6 +26,12 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
  public:
   explicit UnifiedIMEDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
+
+  UnifiedIMEDetailedViewController(const UnifiedIMEDetailedViewController&) =
+      delete;
+  UnifiedIMEDetailedViewController& operator=(
+      const UnifiedIMEDetailedViewController&) = delete;
+
   ~UnifiedIMEDetailedViewController() override;
 
   // DetailedViewControllerBase:
@@ -52,11 +55,9 @@ class UnifiedIMEDetailedViewController : public DetailedViewController,
 
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::IMEDetailedView* view_ = nullptr;
+  IMEDetailedView* view_ = nullptr;
 
   bool keyboard_suppressed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedIMEDetailedViewController);
 };
 
 }  // namespace ash

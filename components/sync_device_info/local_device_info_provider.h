@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ class LocalDeviceInfoProvider {
   // Registers a callback to be called when local device info becomes available.
   // The callback will remain registered until the returned subscription is
   // destroyed, which must occur before the CallbackList is destroyed.
-  virtual base::CallbackListSubscription RegisterOnInitializedCallback(
-      const base::RepeatingClosure& callback) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual base::CallbackListSubscription
+  RegisterOnInitializedCallback(const base::RepeatingClosure& callback) = 0;
 };
 
 class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
@@ -49,6 +49,7 @@ class MutableLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
       const std::string& client_name,
       const std::string& manufacturer_name,
       const std::string& model_name,
+      const std::string& full_hardware_class,
       std::unique_ptr<DeviceInfo> device_info_restored_from_store) = 0;
   virtual void Clear() = 0;
 

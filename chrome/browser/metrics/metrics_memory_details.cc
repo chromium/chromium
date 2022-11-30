@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -168,21 +168,23 @@ void MetricsMemoryDetails::UpdateHistograms() {
   }
 #endif
 
-  UpdateSiteIsolationMetrics();
+  size_t initialized_and_not_dead_rphs;
+  size_t all_rphs;
+  CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
+  UpdateSiteIsolationMetrics(initialized_and_not_dead_rphs);
 
   UMA_HISTOGRAM_COUNTS_100("Memory.ProcessCount",
                            static_cast<int>(browser.processes.size()));
   UMA_HISTOGRAM_COUNTS_100("Memory.RendererProcessCount", renderer_count);
 
-  size_t initialized_and_not_dead_rphs, all_rphs;
-  CountRenderProcessHosts(&initialized_and_not_dead_rphs, &all_rphs);
   UMA_HISTOGRAM_COUNTS_100("Memory.RenderProcessHost.Count.All", all_rphs);
   UMA_HISTOGRAM_COUNTS_100(
       "Memory.RenderProcessHost.Count.InitializedAndNotDead",
       initialized_and_not_dead_rphs);
 }
 
-void MetricsMemoryDetails::UpdateSiteIsolationMetrics() {
+void MetricsMemoryDetails::UpdateSiteIsolationMetrics(
+    size_t live_process_count) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Track site data for predicting process counts with out-of-process iframes.
@@ -207,14 +209,17 @@ void MetricsMemoryDetails::UpdateSiteIsolationMetrics() {
     if (!contents)
       continue;
 
-    // If this is a RVH for a subframe; skip it to avoid double-counting the
-    // WebContents.
-    if (rvh != contents->GetMainFrame()->GetRenderViewHost())
+    // Skip if this is not the RVH for the primary main frame of |contents|, as
+    // we want to call SiteDetails::CollectSiteInfo() once per WebContents.
+    if (rvh !=
+        contents->GetPrimaryPage().GetMainDocument().GetRenderViewHost()) {
+      // |rvh| is for a subframe document or a non primary page main document.
       continue;
+    }
 
     // The rest of this block will happen only once per WebContents.
     SiteData& site_data = site_data_map[contents->GetBrowserContext()];
-    SiteDetails::CollectSiteInfo(contents, &site_data);
+    SiteDetails::CollectSiteInfo(contents->GetPrimaryPage(), &site_data);
   }
-  SiteDetails::UpdateHistograms(site_data_map);
+  SiteDetails::UpdateHistograms(site_data_map, live_process_count);
 }

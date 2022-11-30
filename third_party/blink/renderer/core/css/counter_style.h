@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_COUNTER_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_COUNTER_STYLE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -33,6 +35,14 @@ enum class CounterStyleSystem {
   kUpperArmenian,
   kEthiopicNumeric,
   kUnresolvedExtends,
+};
+
+enum class CounterStyleSpeakAs {
+  kAuto,
+  kBullets,
+  kNumbers,
+  kWords,
+  kReference,
 };
 
 // Represents a valid counter style defined in a tree scope.
@@ -68,8 +78,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   void TraverseAndMarkDirtyIfNeeded(HeapHashSet<Member<CounterStyle>>& visited);
 
-  // Set to true when there's no counter style matching 'extends' or 'fallback',
-  // and therefore we are resorting to 'decimal'.
+  // Set to true when there's no counter style matching 'extends', 'fallback' or
+  // 'speak-as', so this style must be dirtied when new styles are added.
   void SetHasInexistentReferences() { has_inexistent_references_ = true; }
 
   // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
@@ -77,6 +87,10 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   String GetPrefix() const { return prefix_; }
   String GetSuffix() const { return suffix_; }
+
+  String GenerateRepresentationWithPrefixAndSuffix(int value) const {
+    return prefix_ + GenerateRepresentation(value) + suffix_;
+  }
 
   AtomicString GetExtendsName() const { return extends_name_; }
   const CounterStyle& GetExtendedStyle() const { return *extended_style_; }
@@ -89,6 +103,31 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   const CounterStyle& GetFallbackStyle() const { return *fallback_style_; }
   bool HasUnresolvedFallback() const { return !fallback_style_; }
   void ResolveFallback(CounterStyle& fallback) { fallback_style_ = &fallback; }
+
+  CounterStyleSpeakAs GetSpeakAs() const { return speak_as_; }
+  AtomicString GetSpeakAsName() const { return speak_as_name_; }
+  bool HasUnresolvedSpeakAsReference() const {
+    return speak_as_ == CounterStyleSpeakAs::kReference && !speak_as_style_;
+  }
+  void ResolveInvalidSpeakAsReference() {
+    speak_as_ = CounterStyleSpeakAs::kAuto;
+    speak_as_style_ = nullptr;
+  }
+  void ResolveSpeakAsReference(CounterStyle& speak_as) {
+    DCHECK_NE(CounterStyleSpeakAs::kReference, speak_as.speak_as_);
+    speak_as_style_ = speak_as;
+  }
+  const CounterStyle& GetSpeakAsStyle() const {
+    DCHECK_EQ(CounterStyleSpeakAs::kReference, speak_as_);
+    return *speak_as_style_;
+  }
+
+  // Converts kReference and kAuto to one of the remaining values.
+  CounterStyleSpeakAs EffectiveSpeakAs() const;
+
+  // Generates the alternative text for the given counter value according to the
+  // 'speak-as' descriptor. Consumed by accessibility.
+  String GenerateTextAlternative(int value) const;
 
   void Trace(Visitor*) const;
 
@@ -114,6 +153,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   String IndexesToString(const Vector<wtf_size_t>& symbol_indexes) const;
 
+  String GenerateTextAlternativeWithoutPrefixSuffix(int value) const;
+
   // The corresponding style rule in CSS.
   Member<const StyleRuleCounterStyle> style_rule_;
 
@@ -129,6 +170,12 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   AtomicString fallback_name_ = "decimal";
   Member<CounterStyle> fallback_style_;
+
+  CounterStyleSpeakAs speak_as_ = CounterStyleSpeakAs::kAuto;
+
+  // These two members are set if 'speak-as' references another counter style.
+  AtomicString speak_as_name_;
+  Member<CounterStyle> speak_as_style_;
 
   // True if we are looking for a fallback counter style to generate a counter
   // value. Supports cycle detection in fallback.

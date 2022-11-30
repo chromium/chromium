@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class BrowsingDataRemoverDelegate;
 //  0. Instantiation.
 //
 //       content::BrowsingDataRemover* remover =
-//           content::BrowserContext::GetBrowsingDataRemover(browser_context);
+//           browser_context->GetBrowsingDataRemover();
 //
 //  1. No observer.
 //
@@ -63,70 +63,121 @@ class BrowsingDataRemoverDelegate;
 class BrowsingDataRemover {
  public:
   // Mask used for Remove.
-  enum DataType : uint64_t {
-    // Storage datatypes.
-    DATA_TYPE_APP_CACHE = 1 << 0,
-    DATA_TYPE_FILE_SYSTEMS = 1 << 1,
-    DATA_TYPE_INDEXED_DB = 1 << 2,
-    DATA_TYPE_LOCAL_STORAGE = 1 << 3,
-    DATA_TYPE_WEB_SQL = 1 << 4,
-    DATA_TYPE_SERVICE_WORKERS = 1 << 5,
-    DATA_TYPE_CACHE_STORAGE = 1 << 6,
-    // This is also persisted, keep with storage datatypes.
-    DATA_TYPE_BACKGROUND_FETCH = 1 << 14,
+  using DataType = uint64_t;
+  // Storage datatypes.
+  static constexpr DataType DATA_TYPE_APP_CACHE_DEPRECATED = 1 << 0;
+  static constexpr DataType DATA_TYPE_FILE_SYSTEMS = 1 << 1;
+  static constexpr DataType DATA_TYPE_INDEXED_DB = 1 << 2;
+  static constexpr DataType DATA_TYPE_LOCAL_STORAGE = 1 << 3;
+  static constexpr DataType DATA_TYPE_WEB_SQL = 1 << 4;
+  static constexpr DataType DATA_TYPE_SERVICE_WORKERS = 1 << 5;
+  static constexpr DataType DATA_TYPE_CACHE_STORAGE = 1 << 6;
+  // This is also persisted, keep with storage datatypes.
+  static constexpr DataType DATA_TYPE_BACKGROUND_FETCH = 1 << 14;
 
-    // Used to request the deletion of embedder-specific storage datatypes.
-    DATA_TYPE_EMBEDDER_DOM_STORAGE = 1 << 7,
+  // Used to request the deletion of embedder-specific storage datatypes.
+  static constexpr DataType DATA_TYPE_EMBEDDER_DOM_STORAGE = 1 << 7;
 
-    // DOM-accessible storage (https://www.w3.org/TR/clear-site-data/#storage).
-    // Has the same effect as selecting all storage datatypes listed above
-    // and ones defined by the embedder.
-    DATA_TYPE_DOM_STORAGE =
-        DATA_TYPE_APP_CACHE | DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB |
-        DATA_TYPE_LOCAL_STORAGE | DATA_TYPE_WEB_SQL |
-        DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
-        DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH,
+  // DOM-accessible storage (https://www.w3.org/TR/clear-site-data/#storage).
+  // Has the same effect as selecting all storage datatypes listed above
+  // and ones defined by the embedder.
+  static constexpr DataType DATA_TYPE_DOM_STORAGE =
+      DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB | DATA_TYPE_LOCAL_STORAGE |
+      DATA_TYPE_WEB_SQL | DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
+      DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH;
 
-    // Other datatypes.
-    DATA_TYPE_COOKIES = 1 << 8,
-    DATA_TYPE_CACHE = 1 << 10,
-    DATA_TYPE_DOWNLOADS = 1 << 11,
-    DATA_TYPE_MEDIA_LICENSES = 1 << 12,
+  // Other datatypes.
+  static constexpr DataType DATA_TYPE_COOKIES = 1 << 8;
+  static constexpr DataType DATA_TYPE_CACHE = 1 << 10;
+  static constexpr DataType DATA_TYPE_DOWNLOADS = 1 << 11;
+  static constexpr DataType DATA_TYPE_MEDIA_LICENSES = 1 << 12;
 
-    // REMOVE_NOCHECKS intentionally does not check if the browser context is
-    // prohibited from deleting history or downloads.
-    DATA_TYPE_NO_CHECKS = 1 << 13,
+  // REMOVE_NOCHECKS intentionally does not check if the browser context is
+  // prohibited from deleting history or downloads.
+  static constexpr DataType DATA_TYPE_NO_CHECKS = 1 << 13;
 
-    // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
-    // deleting COOKIES, BrowsingDataRemover should skip
-    // storage backends whose deletion would cause closing network connections.
-    // TODO(crbug.com/798760): Remove when fixed.
-    DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15,
+  // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
+  // deleting COOKIES, BrowsingDataRemover should skip
+  // storage backends whose deletion would cause closing network connections.
+  // TODO(crbug.com/798760): Remove when fixed.
+  static constexpr DataType DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15;
 
-    // Trust Token API (https://github.com/wicg/trust-token-api) persistent
-    // storage.
-    DATA_TYPE_TRUST_TOKENS = 1 << 16,
+  // Trust Token API (https://github.com/wicg/trust-token-api) persistent
+  // storage.
+  static constexpr DataType DATA_TYPE_TRUST_TOKENS = 1 << 16;
 
-    // Conversion measurement API
-    // (https://github.com/WICG/conversion-measurement-api) persistent storage.
-    DATA_TYPE_CONVERSIONS = 1 << 17,
+  // Attribution Reporting
+  // (https://github.com/WICG/conversion-measurement-api) persistent
+  // storage that was initiated by a site.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED =
+      1 << 17;
 
-    // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_CONVERSIONS,
-  };
+  // Aggregation Service
+  // (https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md#data-processing-through-a-secure-aggregation-service)
+  // persistent storage.
+  static constexpr DataType DATA_TYPE_AGGREGATION_SERVICE = 1 << 18;
 
-  enum OriginType : uint64_t {
-    // Web storage origins that StoragePartition recognizes as NOT protected
-    // according to its special storage policy.
-    ORIGIN_TYPE_UNPROTECTED_WEB = 1 << 0,
+  // Interest groups are stored as part of the Interest Group API experiment
+  // Public explainer here:
+  // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS = 1 << 19;
 
-    // Web storage origins that StoragePartition recognizes as protected
-    // according to its special storage policy.
-    ORIGIN_TYPE_PROTECTED_WEB = 1 << 1,
+  // Shared storage API
+  // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
+  static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 20;
 
-    // Embedders can add more origin types beyond this point.
-    ORIGIN_TYPE_CONTENT_END = ORIGIN_TYPE_PROTECTED_WEB,
-  };
+  // Similar to DATA_TYPE_ATTRIBUTION_REPORTING_SITE_INITIATED, but only
+  // refers to data stored internally by the API, such as privacy budgeting
+  // information.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL = 1 << 21;
+
+  // Private Aggregation API
+  // (https://github.com/alexmturner/private-aggregation-api) persistent
+  // storage. This only refers to data stored internally by the API, such as
+  // privacy budgeting information. Note that currently the API does not persist
+  // any other data. Should only be cleared by user-initiated deletions.
+  static constexpr DataType DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL = 1 << 22;
+
+  // Similar to DATA_TYPE_INTEREST_GROUPS, but only refers to data stored
+  // internally by the API, such as k-Anonymity cache and rate limiting
+  // information.
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
+
+  // Embedders can add more datatypes beyond this point.
+  static constexpr DataType DATA_TYPE_CONTENT_END =
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+
+  // All data stored by the Attribution Reporting API.
+  static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
+      DATA_TYPE_ATTRIBUTION_REPORTING_SITE_CREATED |
+      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL;
+
+  // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
+  static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
+      DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
+      DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
+      DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+
+  // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
+  // information.
+  static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX_INTERNAL =
+      DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL |
+      DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+
+  using OriginType = uint64_t;
+  // Web storage origins that StoragePartition recognizes as NOT protected
+  // according to its special storage policy.
+  static constexpr OriginType ORIGIN_TYPE_UNPROTECTED_WEB = 1 << 0;
+
+  // Web storage origins that StoragePartition recognizes as protected
+  // according to its special storage policy.
+  static constexpr OriginType ORIGIN_TYPE_PROTECTED_WEB = 1 << 1;
+
+  // Embedders can add more origin types beyond this point.
+  static constexpr OriginType ORIGIN_TYPE_CONTENT_END =
+      ORIGIN_TYPE_PROTECTED_WEB;
 
   // A helper enum to report the deletion of cookies and/or cache. Do not
   // reorder the entries, as this enum is passed to UMA.
@@ -172,6 +223,15 @@ class BrowsingDataRemover {
                       const base::Time& delete_end,
                       uint64_t remove_mask,
                       uint64_t origin_type_mask) = 0;
+
+  // A version of the above that applies only removes entries that match the
+  // provided filter.
+  virtual void RemoveWithFilter(
+      const base::Time& delete_begin,
+      const base::Time& delete_end,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
+      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) = 0;
 
   // A version of the above that in addition informs the |observer| when the
   // removal task is finished.

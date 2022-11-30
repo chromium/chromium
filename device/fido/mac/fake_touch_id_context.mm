@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,17 @@ namespace mac {
 FakeTouchIdContext::FakeTouchIdContext() = default;
 FakeTouchIdContext::~FakeTouchIdContext() = default;
 
+void FakeTouchIdContext::DoNotResolveNextPrompt() {
+  resolve_next_prompt_ = false;
+}
+
 void FakeTouchIdContext::PromptTouchId(const std::u16string& reason,
                                        Callback callback) {
-  std::move(callback).Run(callback_result_);
+  if (resolve_next_prompt_) {
+    std::move(callback).Run(callback_result_);
+  }
+  // After running the callback it is expected that the object will be
+  // destroyed, so no members should be used beyond this point.
 }
 
 }  // namespace mac

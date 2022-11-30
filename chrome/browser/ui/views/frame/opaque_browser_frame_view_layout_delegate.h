@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,16 @@
 
 #include <string>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/base/ui_base_types.h"
+#endif
 
 namespace gfx {
 class Size;
+class Rect;
 }
 
 // Delegate interface to control layout decisions without having to depend on
@@ -46,6 +53,9 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool IsRegularOrGuestSession() const = 0;
 
   // Controls window state.
+  virtual bool CanMaximize() const = 0;
+  virtual bool CanMinimize() const = 0;
+
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual bool IsFullscreen() const = 0;
@@ -77,8 +87,23 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Indicates the type of the frame buttons.
   virtual FrameButtonStyle GetFrameButtonStyle() const;
 
+  virtual void UpdateWindowControlsOverlay(
+      const gfx::Rect& bounding_rect) const = 0;
+
+  // Returns true if the system compositor supports translucent windows.
+  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
+
+  // Returns true if a client-side shadow should be drawn for restored windows.
+  virtual bool ShouldDrawRestoredFrameShadow() const = 0;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns which edges of the window are snapped to the edges of the desktop
+  // (or "tiled").
+  virtual ui::WindowTiledEdges GetTiledEdges() const = 0;
+#endif
+
  protected:
-  virtual ~OpaqueBrowserFrameViewLayoutDelegate() {}
+  virtual ~OpaqueBrowserFrameViewLayoutDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_DELEGATE_H_

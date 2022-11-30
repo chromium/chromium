@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
+class DocumentTransitionSupplement;
 class FragmentData;
+class LayoutObject;
 class PaintLayer;
-class LocalFrameView;
+struct PaintPropertiesChangeInfo;
 
 // This class is used for updating the cull rects of PaintLayer fragments (see:
 // |FragmentData::cull_rect_| and |FragmentData::contents_cull_rect_|.
@@ -28,46 +31,77 @@ class CORE_EXPORT CullRectUpdater {
   STACK_ALLOCATED();
 
  public:
-  explicit CullRectUpdater(PaintLayer& root_layer);
+  explicit CullRectUpdater(PaintLayer& starting_layer);
 
-  void Update() { UpdateInternal(CullRect::Infinite()); }
+  void Update(const CullRect& input_cull_rect = CullRect::Infinite());
+
+  static void PaintPropertiesChanged(const LayoutObject&,
+                                     const PaintPropertiesChangeInfo&);
+
+  static bool IsOverridingCullRects();
 
  private:
   friend class OverriddenCullRectScope;
 
+  struct ContainerInfo {
+    const PaintLayer* container = nullptr;
+    bool subtree_is_out_of_cull_rect = false;
+    bool subtree_should_use_infinite_cull_rect = false;
+    bool subtree_should_skip_changed_enough = false;
+    bool force_update_children = false;
+
+    STACK_ALLOCATED();
+  };
+
+  struct Context {
+    ContainerInfo current;
+    ContainerInfo absolute;
+    ContainerInfo fixed;
+
+    STACK_ALLOCATED();
+  };
+
   void UpdateInternal(const CullRect& input_cull_rect);
-  void UpdateRecursively(PaintLayer&,
-                         const PaintLayer& parent_painting_layer,
-                         bool force_update_self);
+  void UpdateRecursively(const Context&, PaintLayer&);
   // Returns true if the contents cull rect changed which requires forced update
   // for children.
-  bool UpdateForSelf(PaintLayer&, const PaintLayer& parent_painting_layer);
-  void UpdateForDescendants(PaintLayer&, bool force_update_children);
-  CullRect ComputeFragmentCullRect(PaintLayer&,
+  bool UpdateForSelf(Context&, PaintLayer&);
+  void UpdateForDescendants(const Context&, PaintLayer&);
+  CullRect ComputeFragmentCullRect(Context&,
+                                   PaintLayer&,
                                    const FragmentData& fragment,
                                    const FragmentData& parent_fragment);
-  CullRect ComputeFragmentContentsCullRect(PaintLayer&,
+  CullRect ComputeFragmentContentsCullRect(Context&,
+                                           PaintLayer&,
                                            const FragmentData& fragment,
                                            const CullRect& cull_rect);
+  bool ShouldSkipChangedEnough(const Context&, const PaintLayer&) const;
 
-  PaintLayer& root_layer_;
-  PropertyTreeState root_state_;
+  PaintLayer& starting_layer_;
+  PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
+  DocumentTransitionSupplement* document_transition_supplement_;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a
-// page. It temporarily overrides the cull rect on the PaintLayer of the
-// LocalFrameView and marks the PaintLayer as needing to recalculate the cull
-// rect when leaving this scope.
-class OverriddenCullRectScope {
+// page. It temporarily overrides the cull rects on the starting layer and
+// descendant PaintLayers if needed, and restores the original cull rects when
+// leaving this scope.
+class CORE_EXPORT OverriddenCullRectScope {
   STACK_ALLOCATED();
 
  public:
-  OverriddenCullRectScope(LocalFrameView&, const CullRect&);
+  OverriddenCullRectScope(PaintLayer&, const CullRect&);
   ~OverriddenCullRectScope();
 
+  struct FragmentCullRects {
+    explicit FragmentCullRects(FragmentData&);
+    Persistent<FragmentData> fragment;
+    CullRect cull_rect;
+    CullRect contents_cull_rect;
+  };
+
  private:
-  LocalFrameView& frame_view_;
-  bool updated_ = false;
+  Vector<FragmentCullRects> original_cull_rects_;
 };
 
 }  // namespace blink

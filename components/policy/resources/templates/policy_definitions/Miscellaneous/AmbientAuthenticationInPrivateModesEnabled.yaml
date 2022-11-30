@@ -1,0 +1,52 @@
+caption: Enable Ambient Authentication for profile types.
+desc: |-
+  Configuring this policy will allow/disallow ambient authentication for Incognito and Guest profiles in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+        Ambient Authentication is http authentication with default credentials if explicit credentials are not provided via NTLM/Kerberos/Negotiate challenge/response schemes.
+
+        Setting the <ph name="REGULAR_ONLY_OPTION_NAME">RegularOnly</ph> (value 0), allows ambient authentication for Regular sessions only. Incognito and Guest sessions wouldn't be allowed to ambiently authenticate.
+
+        Setting the <ph name="INCOGNITO_AND_REGULAR_OPTION_NAME">IncognitoAndRegular</ph> (value 1), allows ambient authentication for Incognito and Regular sessions. Guest sessions wouldn't be allowed to ambiently authenticate.
+
+        Setting the <ph name="GUEST_AND_REGULAR_OPTION_NAME">GuestAndRegular</ph> (value 2), allows ambient authentication for Guest and Regular sessions. Incognito sessions wouldn't be allowed to ambiently authenticate.
+
+        Setting the  <ph name="ALL_OPTION_NAME">All</ph> (value 3), allows ambient authentication for all sessions.
+
+        Note that, ambient authentication is always allowed on regular profiles.
+
+        In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 81 and later, if the policy is left not set, ambient authentication will be enabled in regular sessions only.
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Enable ambient authentication in regular sessions only.
+  name: RegularOnly
+  value: 0
+- caption: Enable ambient authentication in incognito and regular sessions.
+  name: IncognitoAndRegular
+  value: 1
+- caption: Enable ambient authentication in guest and regular sessions.
+  name: GuestAndRegular
+  value: 2
+- caption: Enable ambient authentication in regular, incognito and guest sessions.
+  name: All
+  value: 3
+owners:
+- rhalavati@chromium.org
+- roagarwal@chromium.org
+- chrome-privacy-core@google.com
+schema:
+  enum:
+  - 0
+  - 1
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome.*:80-
+- chrome_os:80-
+tags: []
+type: int-enum

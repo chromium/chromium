@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TREES_RENDER_FRAME_METADATA_H_
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/vertical_scroll_direction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -64,10 +64,10 @@ class CC_EXPORT RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not
   // specified.
-  SkColor root_background_color = SK_ColorWHITE;
+  SkColor4f root_background_color = SkColors::kWhite;
 
   // Scroll offset of the root layer.
-  base::Optional<gfx::Vector2dF> root_scroll_offset;
+  absl::optional<gfx::PointF> root_scroll_offset;
 
   // Selection region relative to the current viewport. If the selection is
   // empty or otherwise unused, the bound types will indicate such.
@@ -85,7 +85,7 @@ class CC_EXPORT RenderFrameMetadata {
   // information to be used in making the forwarding decision. It exists the
   // entire time points could be forwarded, and forwarding must stop as soon as
   // it is null.
-  base::Optional<DelegatedInkBrowserMetadata> delegated_ink_metadata;
+  absl::optional<DelegatedInkBrowserMetadata> delegated_ink_metadata;
 
   // The device scale factor used to generate a CompositorFrame.
   float device_scale_factor = 1.f;
@@ -95,7 +95,7 @@ class CC_EXPORT RenderFrameMetadata {
   gfx::Size viewport_size_in_pixels;
 
   // The last viz::LocalSurfaceId used to submit a CompositorFrame.
-  base::Optional<viz::LocalSurfaceId> local_surface_id;
+  absl::optional<viz::LocalSurfaceId> local_surface_id;
 
   // Page scale factor (always 1.f for sub-frame renderers).
   float page_scale_factor = 1.f;
@@ -115,7 +115,15 @@ class CC_EXPORT RenderFrameMetadata {
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
 
-#if defined(OS_ANDROID)
+  // The cumulative time spent performing visual updates for all
+  // `local_surface_id` before this one.
+  base::TimeDelta previous_surfaces_visual_update_duration;
+
+  // The cumulative time spent performing visual updates for the current
+  // `local_surface_id`.
+  base::TimeDelta current_surface_visual_update_duration;
+
+#if BUILDFLAG(IS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   float bottom_controls_height = 0.f;

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,39 +24,38 @@ android_library("file_provider_java") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadConstants.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadFilter.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadLaterMetrics.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetrics.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadMessageUiController.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStatus.java",
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+    "java/src/org/chromium/chrome/browser/download/MixedContentDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialog.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialogImpl.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtils.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogChoice.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogController.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogHelper.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogProperties.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogView.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationCustomView.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogController.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogCoordinator.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadTimePickerDialog.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/MixedContentDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfig.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfigHelper.java",
     "java/src/org/chromium/chrome/browser/download/home/FaviconProvider.java",
     "java/src/org/chromium/chrome/browser/download/home/JustNowProvider.java",
-    "java/src/org/chromium/chrome/browser/download/home/LegacyDownloadProvider.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialCoordinator.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/NewDownloadTab.java",
+    "java/src/org/chromium/chrome/browser/download/interstitial/NewDownloadTabProvider.java",
+    "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadDirectoryAdapter.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreference.java",
     "java/src/org/chromium/chrome/browser/download/settings/DownloadLocationPreferenceAdapter.java",
@@ -68,10 +67,14 @@ android_library("java") {
     ":file_provider_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/offline_pages/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",
@@ -83,16 +86,20 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/messages/android:java",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
+    "//net/android:net_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   srcjar_deps = [ "//chrome:download_enum_javagen" ]
@@ -115,17 +122,24 @@ android_library_factory("factory_java") {
 
   # This internal file will be replaced by a generated file so the resulting
   # android_library target does not actually depend on this internal file.
-  sources = [ "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorFactory.java" ]
+  sources = [
+    "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/DownloadMessageUiControllerFactory.java",
+    "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinatorFactory.java",
+    "//chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/interstitial/DownloadInterstitialCoordinatorFactory.java",
+  ]
 }
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/download/DangerousDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadInfo.java",
     "java/src/org/chromium/chrome/browser/download/DownloadManagerBridge.java",
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+    "java/src/org/chromium/chrome/browser/download/MixedContentDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
+    "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
   ]
 }
 
@@ -133,9 +147,9 @@ android_library("download_java_tests") {
   testonly = true
 
   sources = [
-    "javatests/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
-    "javatests/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
+    "java/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
   ]
 
   deps = [
@@ -144,28 +158,32 @@ android_library("download_java_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/util/android:java",
     "//components/offline_items_collection/core:core_java",
+    "//components/policy/android:policy_java_test_support",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
 }
 
-android_library("junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
-
+robolectric_library("junit_tests") {
   sources = [
     "java/src/org/chromium/chrome/browser/download/DownloadDialogBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadDirectoryProviderUnitTest.java",
-    "java/src/org/chromium/chrome/browser/download/DownloadLaterMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/DownloadLocationDialogMetricsUnitTest.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogHelperUnitTest.java",
   ]
 
   deps = [
@@ -176,10 +194,10 @@ android_library("junit_tests") {
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/offline_items_collection/core:core_java",
     "//components/prefs/android:java",
-    "//third_party/android_deps:robolectric_all_java",
+    "//net/android:net_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -188,8 +206,9 @@ android_library("junit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ic_incognito_download_message.xml",
+    "java/res/drawable/infobar_download_complete.xml",
     "java/res/layout/confirm_oma_download.xml",
-    "java/res/layout/download_later_dialog.xml",
     "java/res/layout/download_location_dialog.xml",
     "java/res/layout/download_location_preference.xml",
     "java/res/layout/download_location_preference_item.xml",

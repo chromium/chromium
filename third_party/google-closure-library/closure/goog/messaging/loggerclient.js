@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview This class sends logging messages over a message channel to a
@@ -19,12 +11,10 @@
 
 goog.provide('goog.messaging.LoggerClient');
 
-goog.forwardDeclare('goog.messaging.MessageChannel');
 goog.require('goog.Disposable');
 goog.require('goog.debug');
-goog.require('goog.debug.LogManager');
-goog.require('goog.debug.Logger');
-
+goog.require('goog.log');
+goog.requireType('goog.messaging.MessageChannel');
 
 
 /**
@@ -40,6 +30,7 @@ goog.require('goog.debug.Logger');
  * @final
  */
 goog.messaging.LoggerClient = function(channel, serviceName) {
+  'use strict';
   if (goog.messaging.LoggerClient.instance_) {
     return goog.messaging.LoggerClient.instance_;
   }
@@ -63,11 +54,11 @@ goog.messaging.LoggerClient = function(channel, serviceName) {
   /**
    * The bound handler function for handling log messages. This is kept in a
    * variable so that it can be deregistered when the logger client is disposed.
-   * @type {Function}
+   * @type {!Function}
    * @private
    */
   this.publishHandler_ = goog.bind(this.sendLog_, this);
-  goog.debug.LogManager.getRoot().addHandler(this.publishHandler_);
+  goog.log.addHandler(goog.log.getRootLogger(), this.publishHandler_);
 
   goog.messaging.LoggerClient.instance_ = this;
 };
@@ -84,17 +75,18 @@ goog.messaging.LoggerClient.instance_ = null;
 
 /**
  * Sends a log message through the channel.
- * @param {!goog.debug.LogRecord} logRecord The log message.
+ * @param {!goog.log.LogRecord} logRecord The log message.
  * @private
  */
 goog.messaging.LoggerClient.prototype.sendLog_ = function(logRecord) {
+  'use strict';
   var name = logRecord.getLoggerName();
   var level = logRecord.getLevel();
   var msg = logRecord.getMessage();
   var originalException = logRecord.getException();
 
   var exception;
-  if (originalException) {
+  if (originalException !== undefined) {
     var normalizedException =
         goog.debug.normalizeErrorObject(originalException);
     exception = {
@@ -105,8 +97,7 @@ goog.messaging.LoggerClient.prototype.sendLog_ = function(logRecord) {
       // Normalized exceptions without a stack have 'stack' set to 'Not
       // available', so we check for the existence of 'stack' on the original
       // exception instead.
-      'stack': originalException.stack ||
-          goog.debug.getStacktrace(goog.debug.Logger.prototype.log)
+      'stack': originalException.stack || goog.debug.getStacktrace(goog.log.log)
     };
 
     if (goog.isObject(originalException)) {
@@ -128,8 +119,9 @@ goog.messaging.LoggerClient.prototype.sendLog_ = function(logRecord) {
 
 /** @override */
 goog.messaging.LoggerClient.prototype.disposeInternal = function() {
+  'use strict';
   goog.messaging.LoggerClient.base(this, 'disposeInternal');
-  goog.debug.LogManager.getRoot().removeHandler(this.publishHandler_);
+  goog.log.removeHandler(goog.log.getRootLogger(), this.publishHandler_);
   delete this.channel_;
   goog.messaging.LoggerClient.instance_ = null;
 };

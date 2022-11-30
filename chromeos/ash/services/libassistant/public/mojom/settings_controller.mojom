@@ -1,0 +1,56 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+// Interface managing the settings of Libassistant.
+// This controller is hosted in the Libassistant mojom service, and will be
+// invoked from the browser process.
+// All settings can be set at any time, even before the Libassistant service
+// has been initialized/started.
+// Note that the settings will be reset to their default values when the
+// Libassistant service is stopped.
+interface SettingsController {
+  // Sets the authentication tokens used by Libassistant.
+  // Passing in an empty array will restart Libassistant in signed-out mode.
+  SetAuthenticationTokens(array<AuthenticationToken> tokens);
+
+  // Enables audio input pipeline in Libassistant.
+  SetListeningEnabled(bool value);
+
+  // Sets the locale used on the local ChromeOS device.
+  SetLocale(string locale);
+
+  // Sets whether spoken feedback is enabled.
+  SetSpokenFeedbackEnabled(bool value);
+
+  // Sets whether dark mode is enabled.
+  SetDarkModeEnabled(bool value);
+
+  // Sets whether hotword detection is enabled.
+  SetHotwordEnabled(bool value);
+
+  // Retrieve settings. |selector| is a serialized proto of
+  // |SettingsUiSelector|, indicating which settings sub-pages should be
+  // requested to the server.
+  // On success, the return value is a serialized proto of
+  // |GetSettingsUiResponse| when `include_header` is true; otherwisse, the
+  // return value is a serialized proto of |SettingsUi|, containing the
+  // requested sub-pages.
+  // On failure, the return value is the empty string.
+  GetSettings(string selector, bool include_header) => (string result);
+
+  // Update settings. |update| is a serialized proto of |SettingsUiUpdate|,
+  // indicating the newly updated values.
+  // On success, the return value is a serialized proto of
+  // |SettingsUiUpdateResult|, containing the result of updates.
+  // On failure, the return value is the empty string.
+  UpdateSettings(string settings) => (string result);
+};
+
+// A token used by Libassistant to authenticate the user.
+struct AuthenticationToken {
+  string gaia_id;
+  string access_token;
+};

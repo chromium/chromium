@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,41 +86,6 @@ TEST_F(ServiceWorkerPaymentAppFinderTest,
   ASSERT_NE(apps.end(), apps.find(0));
   EXPECT_EQ(std::vector<std::string>{"basic-card"},
             apps.find(0)->second->enabled_methods);
-}
-
-TEST_F(ServiceWorkerPaymentAppFinderTest,
-       RemoveAppsWithoutMatchingMethodData_NoNetworkCapabilities) {
-  std::vector<mojom::PaymentMethodDataPtr> requested_methods;
-  requested_methods.emplace_back(mojom::PaymentMethodData::New());
-  requested_methods.back()->supported_method = "basic-card";
-  requested_methods.back()->supported_networks = {
-      mojom::BasicCardNetwork::AMEX};
-  content::InstalledPaymentAppsFinder::PaymentApps apps;
-  apps[0] = std::make_unique<content::StoredPaymentApp>();
-  apps[0]->enabled_methods = {"basic-card"};
-
-  RemoveAppsWithoutMatchingMethodData(requested_methods, &apps);
-
-  EXPECT_TRUE(apps.empty());
-}
-
-TEST_F(ServiceWorkerPaymentAppFinderTest,
-       RemoveAppsWithoutMatchingMethodData_NoMatchingNetworkCapabilities) {
-  std::vector<mojom::PaymentMethodDataPtr> requested_methods;
-  requested_methods.emplace_back(mojom::PaymentMethodData::New());
-  requested_methods.back()->supported_method = "basic-card";
-  requested_methods.back()->supported_networks = {
-      mojom::BasicCardNetwork::AMEX};
-  content::InstalledPaymentAppsFinder::PaymentApps apps;
-  apps[0] = std::make_unique<content::StoredPaymentApp>();
-  apps[0]->enabled_methods = {"basic-card"};
-  apps[0]->capabilities.emplace_back();
-  apps[0]->capabilities.back().supported_card_networks = {
-      static_cast<int32_t>(mojom::BasicCardNetwork::VISA)};
-
-  RemoveAppsWithoutMatchingMethodData(requested_methods, &apps);
-
-  EXPECT_TRUE(apps.empty());
 }
 
 TEST_F(ServiceWorkerPaymentAppFinderTest,

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,6 @@ static_library("quarantine") {
 
   if (is_win) {
     sources += [ "quarantine_win.cc" ]
-    deps += [ "//components/services/quarantine/public/cpp:features" ]
   }
 
   if (is_mac) {
@@ -35,6 +34,14 @@ static_library("quarantine") {
     frameworks = [
       "Carbon.framework",
       "Foundation.framework",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "quarantine_chromeos.cc" ]
+    deps += [
+      "//chromeos/dbus/dlp",
+      "//chromeos/dbus/dlp:dlp_proto",
     ]
   }
 }
@@ -109,7 +116,7 @@ source_set("unit_tests") {
   # enabled, the devices use tmpfs which restricts the extended attributes that
   # can be set such that quarantining still would not work. (The platform
   # specific tests include a runtime guard to skip tests that need xattr.)
-  if (!is_chromecast) {
+  if (!is_castos && !is_cast_android) {
     sources += [ "quarantine_unittest.cc" ]
   }
 
@@ -128,7 +135,6 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "quarantine_win_unittest.cc" ]
-    deps += [ "//components/services/quarantine/public/cpp:features" ]
   }
 
   if (is_mac) {

@@ -1,16 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/record_replay.h"
 #include "base/supports_user_data.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
@@ -66,12 +67,14 @@ class SafeBrowserUserData : public base::SupportsUserData::Data {
  public:
   explicit SafeBrowserUserData(std::unique_ptr<MojoSafeBrowsingImpl> impl)
       : impl_(std::move(impl)) {}
+
+  SafeBrowserUserData(const SafeBrowserUserData&) = delete;
+  SafeBrowserUserData& operator=(const SafeBrowserUserData&) = delete;
+
   ~SafeBrowserUserData() override = default;
 
  private:
   std::unique_ptr<MojoSafeBrowsingImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowserUserData);
 };
 
 }  // namespace
@@ -106,8 +109,7 @@ void MojoSafeBrowsingImpl::MaybeCreate(
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
-  if (!resource_context || !delegate ||
-      !delegate->GetDatabaseManager()->IsSupported())
+  if (!resource_context || !delegate)
     return;
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
@@ -134,9 +136,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     CreateCheckerAndCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (delegate_->ShouldSkipRequestCheck(url, -1 /* frame_tree_node_id */,
-                                        render_process_id_, render_frame_id,
-                                        originated_from_service_worker)) {
+  if (delegate_->ShouldSkipRequestCheck(
+          url, content::RenderFrameHost::kNoFrameTreeNodeId, render_process_id_,
+          render_frame_id, originated_from_service_worker)) {
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
       std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
@@ -157,10 +159,13 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromID, render_process_id_,
                           static_cast<int>(render_frame_id)),
+      render_process_id_, render_frame_id,
+      content::RenderFrameHost::kNoFrameTreeNodeId,
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
-      /*can_check_db=*/true,
-      /*url_lookup_service=*/nullptr);
+      /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
+      /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
+      /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
 
   checker_impl->CheckUrl(
       url, method,

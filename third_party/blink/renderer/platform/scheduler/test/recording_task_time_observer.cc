@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ void RecordingTaskTimeObserver::WillProcessTask(base::TimeTicks start_time) {
 
 void RecordingTaskTimeObserver::DidProcessTask(base::TimeTicks start_time,
                                                base::TimeTicks end_time) {
-  DCHECK(!result_.IsEmpty());
+  DCHECK(!result_.empty());
   DCHECK_EQ(result_.back().first, start_time);
   result_.back().second = end_time;
 }

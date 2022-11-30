@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/telemetry_log_writer.h"
@@ -38,6 +38,9 @@ class JniRuntimeDelegate : public ChromotingClientRuntime::Delegate {
   // we close. Its components are reused across |JniRuntimeDelegate|s.
   static JniRuntimeDelegate* GetInstance();
 
+  JniRuntimeDelegate(const JniRuntimeDelegate&) = delete;
+  JniRuntimeDelegate& operator=(const JniRuntimeDelegate&) = delete;
+
   // remoting::ChromotingClientRuntime::Delegate overrides.
   void RuntimeWillShutdown() override;
   void RuntimeDidShutdown() override;
@@ -56,12 +59,10 @@ class JniRuntimeDelegate : public ChromotingClientRuntime::Delegate {
   // Detaches JVM from the current thread, then signals. Doesn't own |waiter|.
   void DetachFromVmAndSignal(base::WaitableEvent* waiter);
 
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
   std::unique_ptr<JniOAuthTokenGetter> token_getter_;
 
   friend struct base::DefaultSingletonTraits<JniRuntimeDelegate>;
-
-  DISALLOW_COPY_AND_ASSIGN(JniRuntimeDelegate);
 };
 
 }  // namespace remoting

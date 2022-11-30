@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/app_window/app_window.h"
 
 namespace content {
@@ -23,6 +22,10 @@ class TestAppWindowContents : public AppWindowContents {
  public:
   explicit TestAppWindowContents(
       std::unique_ptr<content::WebContents> web_contents);
+
+  TestAppWindowContents(const TestAppWindowContents&) = delete;
+  TestAppWindowContents& operator=(const TestAppWindowContents&) = delete;
+
   ~TestAppWindowContents() override;
 
   // apps:AppWindowContents:
@@ -37,8 +40,6 @@ class TestAppWindowContents : public AppWindowContents {
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowContents);
 };
 
 }  // namespace extensions

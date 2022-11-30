@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -77,7 +77,7 @@ AtomicString FontFaceSetDocument::status() const {
 void FontFaceSetDocument::DidLayout() {
   if (!GetExecutionContext())
     return;
-  if (GetDocument()->GetFrame()->IsMainFrame() && loading_fonts_.IsEmpty())
+  if (GetDocument()->IsInOutermostMainFrame() && loading_fonts_.empty())
     font_load_histogram_.Record();
   if (!ShouldSignalReady())
     return;
@@ -135,7 +135,7 @@ ScriptPromise FontFaceSetDocument::ready(ScriptState* script_state) {
 
 const HeapLinkedHashSet<Member<FontFace>>&
 FontFaceSetDocument::CSSConnectedFontFaceList() const {
-  Document* document = this->GetDocument();
+  Document* document = GetDocument();
   document->GetStyleEngine().UpdateActiveStyle();
   return GetFontSelector()->GetFontFaceCache()->CssConnectedFontFaces();
 }
@@ -161,7 +161,7 @@ void FontFaceSetDocument::FireDoneEventIfPossible() {
 
 bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
                                            Font& font) {
-  if (font_string.IsEmpty())
+  if (font_string.empty())
     return false;
 
   // Interpret fontString in the same way as the 'font' attribute of
@@ -182,7 +182,9 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
       GetDocument()->GetStyleResolver().CreateComputedStyle();
 
   FontFamily font_family;
-  font_family.SetFamily(FontFaceSet::kDefaultFontFamily);
+  font_family.SetFamily(
+      FontFaceSet::kDefaultFontFamily,
+      FontFamily::InferredTypeFor(FontFaceSet::kDefaultFontFamily));
 
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);

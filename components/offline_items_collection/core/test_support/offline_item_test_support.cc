@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, const OfflineItem& item) {
   os << ", is_openable: " << item.is_openable;
   os << ", file_path: " << item.file_path;
   os << ", mime_type: " << item.mime_type;
-  os << ", page_url: " << item.page_url;
+  os << ", url: " << item.url;
   os << ", original_url: " << item.original_url;
   os << ", is_off_the_record: " << item.is_off_the_record;
   os << ", attribution: " << item.attribution;

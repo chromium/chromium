@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
@@ -38,7 +36,7 @@ class ServiceProcessHost {
   using LaunchCallback = base::OnceCallback<void(base::ProcessId)>;
   virtual mojo::PendingRemote<mojom::Service> Launch(
       const Identity& identity,
-      sandbox::policy::SandboxType sandbox_type,
+      sandbox::mojom::Sandbox sandbox_type,
       const std::u16string& display_name,
       LaunchCallback callback) = 0;
 };

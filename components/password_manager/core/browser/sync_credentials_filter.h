@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/sync/driver/sync_service.h"
@@ -31,6 +30,10 @@ class SyncCredentialsFilter : public CredentialsFilter {
   SyncCredentialsFilter(
       PasswordManagerClient* client,
       SyncServiceFactoryFunction sync_service_factory_function);
+
+  SyncCredentialsFilter(const SyncCredentialsFilter&) = delete;
+  SyncCredentialsFilter& operator=(const SyncCredentialsFilter&) = delete;
+
   ~SyncCredentialsFilter() override;
 
   // CredentialsFilter
@@ -43,11 +46,9 @@ class SyncCredentialsFilter : public CredentialsFilter {
   bool IsSyncAccountEmail(const std::string& username) const override;
 
  private:
-  PasswordManagerClient* const client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   const SyncServiceFactoryFunction sync_service_factory_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCredentialsFilter);
 };
 
 }  // namespace password_manager

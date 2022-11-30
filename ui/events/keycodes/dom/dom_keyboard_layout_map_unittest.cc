@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout.h"
@@ -104,7 +102,7 @@ DomKey GetKeyFromFullLookupTable(DomCode dom_code) {
   // writing system table used by the class under test.  Ideally this would be a
   // static assert however that doesn't work since the other table is in a
   // different compilation unit.
-  DCHECK_EQ(base::size(kFullLookupTable), kWritingSystemKeyDomCodeEntries);
+  DCHECK_EQ(std::size(kFullLookupTable), kWritingSystemKeyDomCodeEntries);
 
   if (kFullLookupTable.count(dom_code) == 0)
     return DomKey::NONE;
@@ -148,6 +146,10 @@ DomKey GetKeyFromCombiningLayoutTable(DomCode dom_code) {
 class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
  public:
   TestDomKeyboardLayoutMap();
+
+  TestDomKeyboardLayoutMap(const TestDomKeyboardLayoutMap&) = delete;
+  TestDomKeyboardLayoutMap& operator=(const TestDomKeyboardLayoutMap&) = delete;
+
   ~TestDomKeyboardLayoutMap() override;
 
   // DomKeyboardLayoutMapBase overrides.
@@ -166,8 +168,6 @@ class TestDomKeyboardLayoutMap : public DomKeyboardLayoutMapBase {
   DomKey GetDomKeyForLayoutWithNoValidKeys();
 
   std::vector<uint32_t> test_keyboard_layouts_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDomKeyboardLayoutMap);
 };
 
 TestDomKeyboardLayoutMap::TestDomKeyboardLayoutMap() = default;

@@ -30,10 +30,9 @@ def test_no_browsing_context(session, closed_frame):
     assert_error(response, "no such window")
 
 
-def test_element_stale(session, inline):
-    session.url = inline("<input>")
-    element = session.find.css("input", all=False)
-    session.refresh()
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
 
     result = is_element_enabled(session, element.id)
     assert_error(result, "stale element reference")

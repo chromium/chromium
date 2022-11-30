@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/midi/usb_midi_export.h"
 #include "media/midi/usb_midi_jack.h"
 
@@ -22,6 +21,9 @@ namespace midi {
 class USB_MIDI_EXPORT UsbMidiOutputStream {
  public:
   explicit UsbMidiOutputStream(const UsbMidiJack& jack);
+
+  UsbMidiOutputStream(const UsbMidiOutputStream&) = delete;
+  UsbMidiOutputStream& operator=(const UsbMidiOutputStream&) = delete;
 
   // Converts |data| to USB-MIDI data and send it to the jack.
   void Send(const std::vector<uint8_t>& data);
@@ -51,8 +53,6 @@ class USB_MIDI_EXPORT UsbMidiOutputStream {
   size_t pending_size_;
   uint8_t pending_data_[kPacketContentSize];
   bool is_sending_sysex_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiOutputStream);
 };
 
 }  // namespace midi

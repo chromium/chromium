@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget_observer.h"
@@ -30,6 +29,10 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
                                        public views::FocusChangeListener {
  public:
   FocusRingController();
+
+  FocusRingController(const FocusRingController&) = delete;
+  FocusRingController& operator=(const FocusRingController&) = delete;
+
   ~FocusRingController() override;
 
   // Turns on/off the focus ring.
@@ -38,7 +41,6 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
  private:
   // AccessibilityLayerDelegate.
   void OnDeviceScaleFactorChanged() override;
-  void OnAnimationStep(base::TimeTicks timestamp) override;
 
   // Sets the focused |widget|.
   void SetWidget(views::Widget* widget);
@@ -65,8 +67,6 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
 
   views::Widget* widget_;
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingController);
 };
 
 }  // namespace ash

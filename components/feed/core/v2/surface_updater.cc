@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,24 @@
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/public/feed_stream_surface.h"
+#include "components/feed/core/v2/stream_surface_set.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feed {
 namespace {
 
 using DrawState = SurfaceUpdater::DrawState;
 using FeedStreamSurface = FeedStreamSurface;
+using StreamUpdateType = LaunchReliabilityLogger::StreamUpdateType;
 
 // Give each kind of zero state a unique name, so that the UI knows if it
 // changes.
@@ -25,6 +34,8 @@ const char* GetZeroStateSliceId(feedui::ZeroStateSlice::Type type) {
   switch (type) {
     case feedui::ZeroStateSlice::NO_CARDS_AVAILABLE:
       return "no-cards";
+    case feedui::ZeroStateSlice::NO_WEB_FEED_SUBSCRIPTIONS:
+      return "no-subscriptions";
     case feedui::ZeroStateSlice::CANT_REFRESH:  // fall-through
     default:
       return "cant-refresh";
@@ -65,24 +76,33 @@ void AddLoadingSpinner(bool is_at_top, feedui::StreamUpdate* update) {
   slice->set_slice_id(is_at_top ? "loading-spinner" : "load-more-spinner");
 }
 
-feedui::StreamUpdate MakeStreamUpdate(
+struct StreamUpdateAndType {
+  feedui::StreamUpdate stream_update;
+  StreamUpdateType type = StreamUpdateType::kNone;
+};
+
+StreamUpdateAndType MakeStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids,
     const base::flat_set<ContentRevision>& already_sent_content,
     const StreamModel* model,
     const DrawState& state) {
   DCHECK(!state.loading_initial || !state.loading_more)
       << "logic bug: requested both top and bottom spinners.";
-  feedui::StreamUpdate stream_update;
+
+  StreamUpdateAndType update;
+
   // Add content from the model, if it's loaded.
   bool has_content = false;
   if (model) {
     for (ContentRevision content_revision : model->GetContentList()) {
       const bool is_updated = already_sent_content.count(content_revision) == 0;
-      AddSliceUpdate(*model, content_revision, is_updated, &stream_update);
+      AddSliceUpdate(*model, content_revision, is_updated,
+                     &update.stream_update);
       has_content = true;
+      update.type = StreamUpdateType::kContent;
     }
     for (const std::string& name : updated_shared_state_ids) {
-      AddSharedState(*model, name, &stream_update);
+      AddSharedState(*model, name, &update.stream_update);
     }
   }
 
@@ -95,25 +115,39 @@ feedui::StreamUpdate MakeStreamUpdate(
   }
 
   if (zero_state_type != feedui::ZeroStateSlice::UNKNOWN) {
-    feedui::Slice* slice = stream_update.add_updated_slices()->mutable_slice();
+    feedui::Slice* slice =
+        update.stream_update.add_updated_slices()->mutable_slice();
     slice->mutable_zero_state_slice()->set_type(zero_state_type);
     slice->set_slice_id(GetZeroStateSliceId(zero_state_type));
+    update.type = StreamUpdateType::kZeroState;
   } else {
     // Add the initial-load spinner if applicable.
     if (state.loading_initial) {
-      AddLoadingSpinner(/*is_at_top=*/true, &stream_update);
+      AddLoadingSpinner(/*is_at_top=*/true, &update.stream_update);
+      update.type = StreamUpdateType::kInitialLoadingSpinner;
     }
     // Add a loading-more spinner if applicable.
     if (state.loading_more) {
-      AddLoadingSpinner(/*is_at_top=*/false, &stream_update);
+      AddLoadingSpinner(/*is_at_top=*/false, &update.stream_update);
+      update.type = StreamUpdateType::kLoadingMoreSpinner;
     }
   }
 
-  return stream_update;
+  if (model) {
+    update.stream_update.set_fetch_time_ms(
+        model->GetLastAddedTime().ToDeltaSinceWindowsEpoch().InMilliseconds());
+    ToProto(model->GetLoggingParameters(),
+            *update.stream_update.mutable_logging_parameters());
+  } else {
+    ToProto(LoggingParameters{},
+            *update.stream_update.mutable_logging_parameters());
+  }
+
+  return update;
 }
 
-feedui::StreamUpdate GetUpdateForNewSurface(const DrawState& state,
-                                            const StreamModel* model) {
+StreamUpdateAndType GetUpdateForNewSurface(const DrawState& state,
+                                           const StreamModel* model) {
   std::vector<std::string> updated_shared_state_ids;
   if (model) {
     updated_shared_state_ids = model->GetSharedStateIds();
@@ -137,7 +171,12 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kCannotLoadFromNetworkOffline:
     case LoadStreamStatus::kCannotLoadFromNetworkThrottled:
     case LoadStreamStatus::kNetworkFetchFailed:
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+    case LoadStreamStatus::kNetworkFetchTimedOut:
       return feedui::ZeroStateSlice::CANT_REFRESH;
+    case LoadStreamStatus::kNotAWebFeedSubscriber:
+      return feedui::ZeroStateSlice::NO_WEB_FEED_SUBSCRIPTIONS;
     case LoadStreamStatus::kNoStatus:
     case LoadStreamStatus::kLoadedFromStore:
     case LoadStreamStatus::kLoadedFromNetwork:
@@ -156,8 +195,11 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kCannotLoadMoreNoNextPageToken:
     case LoadStreamStatus::kDataInStoreStaleMissedLastRefresh:
     case LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure:
-      break;
     case LoadStreamStatus::kDataInStoreIsExpired:
+    case LoadStreamStatus::kDataInStoreIsForAnotherUser:
+    case LoadStreamStatus::kAbortWithPendingClearAll:
+    case LoadStreamStatus::kAlreadyHaveUnreadContent:
+    case LoadStreamStatus::kLoadNotAllowedDisabled:
       break;
   }
   return feedui::ZeroStateSlice::NO_CARDS_AVAILABLE;
@@ -170,9 +212,20 @@ bool SurfaceUpdater::DrawState::operator==(const DrawState& rhs) const {
          std::tie(rhs.loading_more, rhs.loading_initial, rhs.zero_state_type);
 }
 
-SurfaceUpdater::SurfaceUpdater(MetricsReporter* metrics_reporter)
-    : metrics_reporter_(metrics_reporter) {}
-SurfaceUpdater::~SurfaceUpdater() = default;
+SurfaceUpdater::SurfaceUpdater(
+    MetricsReporter* metrics_reporter,
+    XsurfaceDatastoreDataReader* global_datastore_slice,
+    StreamSurfaceSet* surfaces)
+    : metrics_reporter_(metrics_reporter),
+      surfaces_(surfaces),
+      aggregate_data_({&surface_data_slice_, global_datastore_slice}),
+      launch_reliability_logger_(surfaces) {
+  aggregate_data_.AddObserver(this);
+}
+
+SurfaceUpdater::~SurfaceUpdater() {
+  aggregate_data_.RemoveObserver(this);
+}
 
 void SurfaceUpdater::SetModel(StreamModel* model) {
   if (model_ == model)
@@ -185,6 +238,8 @@ void SurfaceUpdater::SetModel(StreamModel* model) {
     model_->AddObserver(this);
     loading_initial_ = loading_initial_ && model_->GetContentList().empty();
     loading_more_ = false;
+    // TODO(iwells): Avoid sending a second loading spinner in the "valid
+    // response, zero cards" case.
     SendStreamUpdate(model_->GetSharedStateIds());
     last_draw_state_ = GetState();
   }
@@ -205,33 +260,69 @@ void SurfaceUpdater::OnUiUpdate(const StreamModel::UiUpdate& update) {
   SendStreamUpdate(updated_shared_state_ids);
 }
 
-void SurfaceUpdater::SurfaceAdded(FeedStreamSurface* surface) {
-  SendUpdateToSurface(surface, GetUpdateForNewSurface(GetState(), model_));
+void SurfaceUpdater::SurfaceAdded(
+    FeedStreamSurface* surface,
+    feedwire::DiscoverLaunchResult loading_not_allowed_reason) {
+  ReliabilityLoggingBridge& logger = surface->GetReliabilityLoggingBridge();
+  logger.LogFeedLaunchOtherStart(base::TimeTicks::Now());
 
-  for (const auto& datastore_entry : xsurface_datastore_entries_) {
+  if (loading_not_allowed_reason !=
+      feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED) {
+    logger.LogLaunchFinishedAfterStreamUpdate(loading_not_allowed_reason);
+  }
+
+  StreamUpdateAndType update = GetUpdateForNewSurface(GetState(), model_);
+  launch_reliability_logger_.OnStreamUpdate(update.type, *surface);
+  SendUpdateToSurface(surface, update.stream_update);
+
+  for (std::pair<std::string, std::string> datastore_entry :
+       aggregate_data_.GetAllEntries()) {
     surface->ReplaceDataStoreEntry(datastore_entry.first,
                                    datastore_entry.second);
   }
-
-  surfaces_.AddObserver(surface);
 }
 
 void SurfaceUpdater::SurfaceRemoved(FeedStreamSurface* surface) {
-  surfaces_.RemoveObserver(surface);
 }
 
-void SurfaceUpdater::LoadStreamStarted() {
+void SurfaceUpdater::DatastoreEntryUpdated(XsurfaceDatastoreDataReader*,
+                                           const std::string& key) {
+  const std::string* value = aggregate_data_.FindEntry(key);
+  DCHECK(value);
+  for (auto& entry : *surfaces_)
+    entry.surface->ReplaceDataStoreEntry(key, *value);
+}
+
+void SurfaceUpdater::DatastoreEntryRemoved(XsurfaceDatastoreDataReader*,
+                                           const std::string& key) {
+  for (auto& entry : *surfaces_)
+    entry.surface->RemoveDataStoreEntry(key);
+}
+
+void SurfaceUpdater::LoadStreamStarted(bool manual_refreshing) {
   load_stream_failed_ = false;
-  loading_initial_ = true;
+  loading_initial_ = !manual_refreshing;
+  load_stream_started_ = true;
   SendStreamUpdateIfNeeded();
 }
 
-void SurfaceUpdater::LoadStreamComplete(bool success,
-                                        LoadStreamStatus load_stream_status) {
+void SurfaceUpdater::LoadStreamComplete(
+    bool success,
+    LoadStreamStatus load_stream_status,
+    feedwire::DiscoverLaunchResult launch_result) {
   loading_initial_ = false;
   load_stream_status_ = load_stream_status;
   load_stream_failed_ = !success;
-  SendStreamUpdateIfNeeded();
+
+  if (ShouldSendStreamUpdate()) {
+    if (launch_result != feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED) {
+      launch_reliability_logger_.LogLaunchFinishedAfterStreamUpdate(
+          launch_result);
+    }
+    SendStreamUpdate({});
+  }
+
+  load_stream_started_ = false;
 }
 
 int SurfaceUpdater::GetSliceIndexFromSliceId(const std::string& slice_id) {
@@ -245,10 +336,6 @@ int SurfaceUpdater::GetSliceIndexFromSliceId(const std::string& slice_id) {
     ++index;
   }
   return -1;
-}
-
-bool SurfaceUpdater::HasSurfaceAttached() const {
-  return !surfaces_.empty();
 }
 
 void SurfaceUpdater::SetLoadingMore(bool is_loading) {
@@ -267,23 +354,26 @@ DrawState SurfaceUpdater::GetState() const {
   return new_state;
 }
 
+bool SurfaceUpdater::ShouldSendStreamUpdate() const {
+  return !(last_draw_state_ == GetState());
+}
+
 void SurfaceUpdater::SendStreamUpdateIfNeeded() {
-  if (last_draw_state_ == GetState()) {
-    return;
-  }
-  SendStreamUpdate({});
+  if (ShouldSendStreamUpdate())
+    SendStreamUpdate({});
 }
 
 void SurfaceUpdater::SendStreamUpdate(
     const std::vector<std::string>& updated_shared_state_ids) {
   DrawState state = GetState();
-
-  feedui::StreamUpdate stream_update =
+  StreamUpdateAndType update =
       MakeStreamUpdate(updated_shared_state_ids, sent_content_, model_, state);
 
-  for (FeedStreamSurface& surface : surfaces_) {
-    SendUpdateToSurface(&surface, stream_update);
-  }
+  if (load_stream_started_ && !loading_more_)
+    launch_reliability_logger_.OnStreamUpdate(update.type);
+
+  for (auto& entry : *surfaces_)
+    SendUpdateToSurface(entry.surface, update.stream_update);
 
   sent_content_ = GetContentSet(model_);
   last_draw_state_ = state;
@@ -314,25 +404,9 @@ void SurfaceUpdater::SetOfflinePageAvailability(const std::string& badge_id,
     std::string badge_serialized;
     testbadge.set_available_offline(available_offline);
     testbadge.SerializeToString(&badge_serialized);
-    InsertDatastoreEntry(badge_id, badge_serialized);
+    surface_data_slice_.UpdateDatastoreEntry(badge_id, badge_serialized);
   } else {
-    RemoveDatastoreEntry(badge_id);
-  }
-}
-
-void SurfaceUpdater::InsertDatastoreEntry(const std::string& key,
-                                          const std::string& value) {
-  xsurface_datastore_entries_[key] = value;
-  for (FeedStreamSurface& surface : surfaces_) {
-    surface.ReplaceDataStoreEntry(key, value);
-  }
-}
-
-void SurfaceUpdater::RemoveDatastoreEntry(const std::string& key) {
-  if (xsurface_datastore_entries_.erase(key) == 1) {
-    for (FeedStreamSurface& surface : surfaces_) {
-      surface.RemoveDataStoreEntry(key);
-    }
+    surface_data_slice_.RemoveDatastoreEntry(badge_id);
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,9 +55,26 @@ enum ElementType : ushort (bit_flags) {
   MEDIA,
   FONT,
   WEBSOCKET,
+  WEBTRANSPORT,
+  WEBBUNDLE,
   CSP_REPORT,
   MAIN_FRAME,
   // Note: Update the default value for |element_types| field in UrlRule, on
+  // adding/removing values from this enum.
+}
+
+// The request methods that a URL rule should be applied to.
+enum RequestMethod : ushort (bit_flags) {
+  CONNECT,
+  DELETE,
+  GET,
+  HEAD,
+  OPTIONS,
+  PATCH,
+  POST,
+  PUT,
+  NON_HTTP,
+  // Note: Update the default value for `request_methods` field in UrlRule, on
   // adding/removing values from this enum.
 }
 
@@ -71,7 +88,10 @@ table UrlRule {
   // by default for compactness. We expect most rules to not use
   // ElementType_MAIN_FRAME. Keep this in sync with
   // url_pattern_index::kDefaultFlatElementTypesMask.
-  element_types : ushort = 8191;
+  element_types : ushort = 32767;
+
+  // A bitmask of RequestMethod. Equals RequestMethod_ANY by default.
+  request_methods : ushort = 511;
 
   // A bitmask of ActivationType. Disables all activation types by default.
   activation_types : ubyte = 0;
@@ -84,13 +104,15 @@ table UrlRule {
   anchor_left : AnchorType = NONE;
   anchor_right : AnchorType = NONE;
 
-  // The list of domains to be included/excluded from the filter's affected set.
-  // Should either be null or have at least a single element. The domains
-  // should be in lower-case and kept sorted as defined by
+  // The list of initiator and request domains to be included/excluded from the
+  // filter's affected set. Each should either be null or have at least a single
+  // element. The domains should be in lower-case and kept sorted as defined by
   // url_pattern_index::CompareDomains. The entries must consist of only ascii
   // characters. Use punycode encoding for internationalized domains.
-  domains_included : [string];
-  domains_excluded : [string];
+  initiator_domains_included : [string];
+  initiator_domains_excluded : [string];
+  request_domains_included : [string];
+  request_domains_excluded : [string];
 
   // A URL pattern in the format defined by |url_pattern_type|.  This should
   // only consist of ascii characters, since it's matched against a url where
@@ -105,6 +127,10 @@ table UrlRule {
 
   // Priority of the rule. Larger the value, greater the priority.
   priority : uint64;
+
+  // Binary blob for any embedder specific rule conditions. When specified,
+  // these should be interpreted by the url_pattern_index embedder.
+  embedder_conditions : [ubyte];
 }
 
 // Contains an N-gram (acting as a key in a hash table) and a list of URL rules

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html id="top">
+<meta charset="utf-8">
+<title>View timeline delay</title>
+<link rel="help" href="https://drafts.csswg.org/scroll-animations-1/#viewtimeline-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
+<script src="/scroll-animations/scroll-timelines/testcommon.js"></script>
+<script src="/scroll-animations/view-timelines/testcommon.js"></script>
+<style>
+    #container {
+    border:  10px solid lightgray;
+    overflow-x: scroll;
+    height:  200px;
+    width: 200px;
+  }
+  #content {
+    display:  flex;
+    flex-flow:  row nowrap;
+    justify-content:  flex-start;
+    width:  1800px;
+    margin: 0;
+  }
+  .spacer {
+    width:  800px;
+    display:  inline-block;
+  }
+  #target {
+    background-color:  green;
+    height:  100px;
+    width:  100px;
+    display:  inline-block;
+  }
+</style>
+</style>
+<body>
+  <div id="container">
+    <div id="content">
+      <div class="spacer"></div>
+      <div id="target"></div>
+      <div class="spacer"></div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+  promise_test(async t => {
+    // These tests are all based on the cover range, which has bounds
+    // [600, 900] if there are no insets.
+    // rangeStart = target_pos - viewport_size + end_side_inset
+    //            = 600 + end_side_inset
+    // rangeEnd = target_pos + target_size - start_side_inset
+    //          = 900 - start_side_inset
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.px(0), CSS.px(0) ],
+      rangeStart: 600,
+      rangeEnd: 900
+    });
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.px(10), CSS.px(20) ],
+      rangeStart: 620,
+      rangeEnd: 890
+    });
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.px(10) ],
+      rangeStart: 610,
+      rangeEnd: 890
+    });
+  }, 'View timeline with px based inset.');
+
+  promise_test(async t => {
+    // These tests are all based on the cover range, which has bounds
+    // [600, 900].
+    // Percentages are relative to the viewport size, which is 200 for this
+    // test.
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.percent(0), CSS.percent(0) ],
+      rangeStart: 600,
+      rangeEnd: 900
+    });
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.percent(10), CSS.percent(20) ],
+      rangeStart: 640,
+      rangeEnd: 880
+    });
+    await runTimelineInsetTest(t, {
+      inset: [ CSS.percent(10) ],
+      rangeStart: 620,
+      rangeEnd: 880
+    });
+  }, 'View timeline with percent based inset.');
+
+  // Add tests for inset "auto".
+</script>

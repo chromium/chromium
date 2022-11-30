@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_ellipse.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -69,10 +69,9 @@ Path SVGCircleElement::AsPath() const {
   float r =
       length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
   if (r > 0) {
-    FloatPoint center(
+    gfx::PointF center = gfx::PointAtOffsetFromOrigin(
         length_context.ResolveLengthPair(style.Cx(), style.Cy(), style));
-    FloatSize radii(r, r);
-    path.AddEllipse(FloatRect(center - radii, radii.ScaledBy(2)));
+    path.AddEllipse(center, r, r);
   }
   return path;
 }
@@ -117,7 +116,7 @@ bool SVGCircleElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGCircleElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutSVGEllipse(this);
+  return MakeGarbageCollected<LayoutSVGEllipse>(this);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 10: The specified value "purple" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "purple" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
 This test ensures that the correct accessibility properties can be retrieved from input elements of type color.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -1,10 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sessions/core/tab_restore_service.h"
 
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 
 namespace sessions {
 
@@ -17,7 +19,9 @@ TabRestoreService::TimeFactory::~TimeFactory() {}
 TabRestoreService::Entry::~Entry() = default;
 
 TabRestoreService::Entry::Entry(Type type)
-    : id(SessionID::NewUnique()), type(type) {}
+    : id(SessionID::NewUnique()),
+      original_id(SessionID::InvalidValue()),
+      type(type) {}
 
 size_t TabRestoreService::Entry::EstimateMemoryUsage() const {
   return 0;
@@ -41,6 +45,14 @@ size_t TabRestoreService::Window::EstimateMemoryUsage() const {
   return
       EstimateMemoryUsage(tabs) +
       EstimateMemoryUsage(app_name);
+}
+
+TabRestoreService::Group::Group() : Entry(GROUP) {}
+TabRestoreService::Group::~Group() = default;
+
+size_t TabRestoreService::Group::EstimateMemoryUsage() const {
+  using base::trace_event::EstimateMemoryUsage;
+  return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title());
 }
 
 // TabRestoreService ----------------------------------------------------------

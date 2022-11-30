@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/renderer/native_handler.h"
 #include "extensions/renderer/object_backed_native_handler.h"
-#include "extensions/renderer/script_injection_callback.h"
-#include "v8/include/v8.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace extensions {
 
@@ -60,15 +61,22 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   class NativesEnabledScope {
    public:
     explicit NativesEnabledScope(ModuleSystem* module_system);
+
+    NativesEnabledScope(const NativesEnabledScope&) = delete;
+    NativesEnabledScope& operator=(const NativesEnabledScope&) = delete;
+
     ~NativesEnabledScope();
 
    private:
     ModuleSystem* module_system_;
-    DISALLOW_COPY_AND_ASSIGN(NativesEnabledScope);
   };
 
   // |source_map| is a weak pointer.
   ModuleSystem(ScriptContext* context, const SourceMap* source_map);
+
+  ModuleSystem(const ModuleSystem&) = delete;
+  ModuleSystem& operator=(const ModuleSystem&) = delete;
+
   ~ModuleSystem() override;
 
   // ObjectBackedNativeHandler:
@@ -77,12 +85,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   // Require the specified module. This is the equivalent of calling
   // require('module_name') from the loaded JS files.
   v8::MaybeLocal<v8::Object> Require(const std::string& module_name);
-  void Require(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Run |code| in the current context with the name |name| used for stack
-  // traces.
-  v8::Local<v8::Value> RunString(v8::Local<v8::String> code,
-                                 v8::Local<v8::String> name);
 
   // Calls the specified method exported by the specified module. This is
   // equivalent to calling require('module_name').method_name() from JS. Note:
@@ -102,7 +104,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
                             const std::string& method_name,
                             int argc,
                             v8::Local<v8::Value> argv[],
-                            ScriptInjectionCallback::CompleteCallback callback);
+                            blink::WebScriptExecutionCallback callback);
 
   // Register |native_handler| as a potential target for requireNative(), so
   // calls to requireNative(|name|) from JS will return a new object created by
@@ -114,31 +116,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   // instead of using a registered native handler. This can be used in unit
   // tests to mock out native modules.
   void OverrideNativeHandlerForTest(const std::string& name);
-
-  // Make |object|.|field| lazily evaluate to the result of
-  // require(|module_name|)[|module_field|].
-  //
-  // TODO(kalman): All targets for this method are ObjectBackedNativeHandlers,
-  //               move this logic into those classes (in fact, the chrome
-  //               object is the only client, only that needs to implement it).
-  void SetLazyField(v8::Local<v8::Object> object,
-                    const std::string& field,
-                    const std::string& module_name,
-                    const std::string& module_field);
-
-  void SetLazyField(v8::Local<v8::Object> object,
-                    const std::string& field,
-                    const std::string& module_name,
-                    const std::string& module_field,
-                    v8::AccessorNameGetterCallback getter);
-
-  // Make |object|.|field| lazily evaluate to the result of
-  // requireNative(|module_name|)[|module_field|].
-  // TODO(kalman): Same as above.
-  void SetNativeLazyField(v8::Local<v8::Object> object,
-                          const std::string& field,
-                          const std::string& module_name,
-                          const std::string& module_field);
 
   // Passes exceptions to |handler| rather than console::Fatal.
   void SetExceptionHandlerForTest(std::unique_ptr<ExceptionHandler> handler) {
@@ -168,14 +145,25 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   typedef std::map<std::string, std::unique_ptr<NativeHandler>>
       NativeHandlerMap;
 
+  // Run |code| in the current context with the name |name| used for stack
+  // traces.
+  v8::Local<v8::Value> RunString(v8::Local<v8::String> code,
+                                 v8::Local<v8::String> name);
+
+  // Make |object|.|field| lazily evaluate to the result of
+  // require(|module_name|)[|module_field|].
+  //
+  // TODO(kalman): All targets for this method are ObjectBackedNativeHandlers,
+  //               move this logic into those classes (in fact, the chrome
+  //               object is the only client, only that needs to implement it).
+  void SetLazyField(v8::Local<v8::Object> object,
+                    const std::string& field,
+                    const std::string& module_name,
+                    const std::string& module_field);
+
   // Retrieves the lazily defined field specified by |property|.
   static void LazyFieldGetter(v8::Local<v8::Name> property,
                               const v8::PropertyCallbackInfo<v8::Value>& info);
-  // Retrieves the lazily defined field specified by |property| on a native
-  // object.
-  static void NativeLazyFieldGetter(
-      v8::Local<v8::Name> property,
-      const v8::PropertyCallbackInfo<v8::Value>& info);
 
   // Called when an exception is thrown but not caught.
   void HandleException(const v8::TryCatch& try_catch);
@@ -187,15 +175,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   // will only be returned if it has already been loaded.
   v8::Local<v8::Value> RequireForJsInner(v8::Local<v8::String> module_name,
                                          bool create);
-
-  typedef v8::MaybeLocal<v8::Object>(ModuleSystem::*RequireFunction)(
-      const std::string&);
-  // Base implementation of a LazyFieldGetter which uses |require_fn| to require
-  // modules.
-  static void LazyFieldGetterInner(
-      v8::Local<v8::String> property,
-      const v8::PropertyCallbackInfo<v8::Value>& info,
-      RequireFunction require_function);
 
   // Return the named source file stored in the source map.
   // |args[0]| - the name of a source file in source_map_.
@@ -235,6 +214,9 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   ScriptContext* context_;
 
+  // TODO(1276144): remove once investigation finished.
+  bool has_been_invalidated_ = false;
+
   // A map from module names to the JS source for that module. GetSource()
   // performs a lookup on this map.
   const SourceMap* const source_map_;
@@ -267,8 +249,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
 
   // The set of modules that we've attempted to load.
   std::set<std::string> loaded_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSystem);
 };
 
 }  // namespace extensions

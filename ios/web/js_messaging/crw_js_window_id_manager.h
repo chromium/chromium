@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Initializes CRWJSWindowIDManager. |webView| will be used for script
+// Initializes CRWJSWindowIDManager. `webView` will be used for script
 // evaluation to inject window ID and can not be null.
 - (instancetype)initWithWebView:(WKWebView*)webView NS_DESIGNATED_INITIALIZER;
 

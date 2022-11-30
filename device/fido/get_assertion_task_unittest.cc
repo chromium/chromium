@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ namespace {
 using TestGetAssertionTaskCallbackReceiver =
     ::device::test::StatusAndValueCallbackReceiver<
         CtapDeviceResponseCode,
-        base::Optional<AuthenticatorGetAssertionResponse>>;
+        absl::optional<AuthenticatorGetAssertionResponse>>;
 
 class FidoGetAssertionTaskTest : public testing::Test {
  public:
@@ -137,7 +137,7 @@ TEST_F(FidoGetAssertionTaskTest, TestSignSuccessWithFake) {
 TEST_F(FidoGetAssertionTaskTest, TestIncorrectGetAssertionResponse) {
   auto device = MockFidoDevice::MakeCtap();
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorGetAssertion, base::nullopt);
+      CtapRequestCommand::kAuthenticatorGetAssertion, absl::nullopt);
 
   auto task = std::make_unique<GetAssertionTask>(
       device.get(),

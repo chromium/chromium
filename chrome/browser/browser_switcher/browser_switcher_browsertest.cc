@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +42,7 @@ namespace {
 const char kTestUrl[] = "http://example.com/foobar";
 const char kTestUrlWithSpaces[] = "http://example.com/foobar baz";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Only referenced on Windows.
 const char kTestUrlWithQuotes[] = "http://example.com/?q='world'";
 #endif
@@ -52,13 +52,13 @@ const char kOtherUrl[] = "http://google.com/";
 
 // |echo| adds a newline at the end of the file. CRLF on Windows, but just LF on
 // POSIX systems.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kTestUrlWithLineEnding[] = "http://example.com/foobar\r\n";
 #else
 const char kTestUrlWithLineEnding[] = "http://example.com/foobar\n";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string NativeToUTF8(const std::wstring& native) {
   return base::WideToUTF8(native);
 }
@@ -88,15 +88,16 @@ void InitPolicies(policy::MockConfigurationPolicyProvider* provider,
   SetPolicy(&map, policy::key::kAlternativeBrowserPath,
             base::Value(cmd_line.GetProgram().MaybeAsASCII()));
 
-  base::Value params(base::Value::Type::LIST);
+  base::Value::List params;
   for (size_t i = 1; i < cmd_line.argv().size(); i++)
     params.Append(NativeToUTF8(cmd_line.argv()[i]));
   SetPolicy(&map, policy::key::kAlternativeBrowserParameters,
-            std::move(params));
+            base::Value(std::move(params)));
 
-  base::Value sitelist(base::Value::Type::LIST);
+  base::Value::List sitelist;
   sitelist.Append("example.com");
-  SetPolicy(&map, policy::key::kBrowserSwitcherUrlList, std::move(sitelist));
+  SetPolicy(&map, policy::key::kBrowserSwitcherUrlList,
+            base::Value(std::move(sitelist)));
 
   provider->UpdateChromePolicy(map);
   base::RunLoop().RunUntilIdle();
@@ -106,7 +107,7 @@ void InitPolicies(policy::MockConfigurationPolicyProvider* provider,
 // the navigation URL and |output_file| don't contain any special characters or
 // whitespace.
 base::CommandLine GenerateEchoCommandLine(const base::FilePath& output_file) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // cmd.exe /C echo ${url} > "output_file"
   std::vector<std::wstring> args = {
       L"cmd.exe", L"/C", L"echo", L"${url}>", output_file.value().c_str(),
@@ -136,10 +137,9 @@ class BrowserSwitcherBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
   EXPECT_TRUE(base::Contains(output, "%20"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // IE has some quirks with quote characters. Make sure IE doesn't receive them
 // percent-encoded.
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, UnencodesSingleQUotes) {

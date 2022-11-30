@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,9 +16,12 @@ declare_args() {
   # TODO(crbug.com/764576): Enable the feature on more environments.
   # Disable in mac and win cross builds since building Blink twice is slow.
   use_v8_context_snapshot =
-      !is_chromeos_ash && !is_android && !is_chromecast && !is_fuchsia &&
+      !is_chromeos && !is_android && !is_castos && !is_fuchsia &&
       !(host_os == "mac" && current_cpu == "x86") &&
-      v8_target_cpu == target_cpu &&
+      # Android may build for both 64 bit and 32bit. When this happens, the
+      # v8_target_cpu will not equal the target_cpu (for example,
+      # v8_target_cpu == "arm" but target_os == "arm64").
+      (v8_target_cpu == target_cpu || target_os == "android") &&
       !(host_toolchain == default_toolchain && is_msan) &&
       !(is_win && host_os != "win") && !(is_mac && host_os != "mac")
 
@@ -29,6 +32,13 @@ declare_args() {
       v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
     } else if (v8_target_cpu == "arm64") {
       v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
+    }
+  } else if (target_os == "android") {
+    if (v8_current_cpu == "arm" || v8_current_cpu == "x86" ||
+        v8_current_cpu == "mipsel") {
+      v8_context_snapshot_filename = "v8_context_snapshot_32.bin"
+    } else {
+      v8_context_snapshot_filename = "v8_context_snapshot_64.bin"
     }
   } else {
     v8_context_snapshot_filename = "v8_context_snapshot.bin"

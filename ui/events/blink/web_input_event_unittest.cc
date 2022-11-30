@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +36,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     EXPECT_EQ(blink::WebInputEvent::kControlKey | blink::WebInputEvent::kIsLeft,
               webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_LEFT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
   {
     // Release left Ctrl.
@@ -47,7 +46,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     // However, modifier bit for Control in |webkit_event| shouldn't be set.
     EXPECT_EQ(blink::WebInputEvent::kIsLeft, webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_LEFT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
   {
     // Press right Ctrl.
@@ -68,7 +67,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEvent) {
     // However, modifier bit for Control in |webkit_event| shouldn't be set.
     EXPECT_EQ(blink::WebInputEvent::kIsRight, webkit_event.GetModifiers());
     EXPECT_EQ(static_cast<int>(DomCode::CONTROL_RIGHT), webkit_event.dom_code);
-    EXPECT_EQ(static_cast<int>(DomKey::CONTROL), webkit_event.dom_key);
+    EXPECT_EQ(DomKey::CONTROL, webkit_event.dom_key);
   }
 }
 
@@ -88,7 +87,7 @@ TEST(WebInputEventTest, TestMakeWebKeyboardEventWindowsKeyCode) {
     blink::WebKeyboardEvent webkit_event = MakeWebKeyboardEvent(event);
     EXPECT_EQ(VKEY_CONTROL, webkit_event.windows_key_code);
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(yusukes): Add tests for win_aura once keyboardEvent() in
 // third_party/WebKit/Source/web/win/WebInputEventFactory.cpp is modified
 // to return VKEY_[LR]XXX instead of VKEY_XXX.
@@ -380,10 +379,11 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
   }
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST(WebInputEventTest, TestPercentMouseWheelScroll) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPercentBasedScrolling);
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWindowsScrollingPersonality);
 
   base::TimeTicks timestamp = EventTimeForNow();
   MouseWheelEvent ui_event(gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta),
@@ -417,7 +417,7 @@ TEST(WebInputEventTest, KeyEvent) {
       {ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::EF_ALT_DOWN),
        blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kAltKey}};
 
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     blink::WebKeyboardEvent web_event = MakeWebKeyboardEvent(tests[i].event);
     ASSERT_TRUE(blink::WebInputEvent::IsKeyboardEventType(web_event.GetType()));
     ASSERT_EQ(tests[i].web_type, web_event.GetType());
@@ -428,6 +428,9 @@ TEST(WebInputEventTest, KeyEvent) {
 }
 
 TEST(WebInputEventTest, WheelEvent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWindowsScrollingPersonality);
   const int kDeltaX = 14;
   const int kDeltaY = -3;
   ui::MouseWheelEvent ui_event(
@@ -462,7 +465,7 @@ TEST(WebInputEventTest, MousePointerEvent) {
        gfx::Point(13, 3), gfx::Point(53, 3)},
   };
 
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     ui::MouseEvent ui_event(tests[i].ui_type, tests[i].location,
                             tests[i].screen_location, base::TimeTicks(),
                             tests[i].ui_modifiers, 0);
@@ -477,9 +480,9 @@ TEST(WebInputEventTest, MousePointerEvent) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(WebInputEventTest, MouseLeaveScreenCoordinate) {
-  MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
+  CHROME_MSG msg_event = {nullptr, WM_MOUSELEAVE, 0, MAKELPARAM(300, 200)};
   ::SetCursorPos(250, 350);
   ui::MouseEvent ui_event(msg_event);
 

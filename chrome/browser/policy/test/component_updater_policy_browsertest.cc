@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -29,6 +31,9 @@ namespace policy {
 class ComponentUpdaterPolicyTest : public PolicyTest {
  public:
   ComponentUpdaterPolicyTest();
+  ComponentUpdaterPolicyTest(const ComponentUpdaterPolicyTest&) = delete;
+  ComponentUpdaterPolicyTest& operator=(const ComponentUpdaterPolicyTest&) =
+      delete;
   ~ComponentUpdaterPolicyTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -62,13 +67,14 @@ class ComponentUpdaterPolicyTest : public PolicyTest {
   void BeginTest();
   void EndTest();
 
-  void UpdateComponent(const update_client::CrxComponent& crx_component);
+  void UpdateComponent(
+      const component_updater::ComponentRegistration& crx_component);
   void CallAsync(TestCaseAction action);
   void VerifyExpectations(bool update_disabled);
 
   void SetEnableComponentUpdates(bool enable_component_updates);
 
-  static update_client::CrxComponent MakeCrxComponent(
+  static component_updater::ComponentRegistration MakeComponentRegistration(
       bool supports_group_policy_enable_component_updates);
 
   TestCase cur_test_case_;
@@ -84,11 +90,9 @@ class ComponentUpdaterPolicyTest : public PolicyTest {
   std::unique_ptr<update_client::URLLoaderPostInterceptor> post_interceptor_;
 
   // This member is owned by g_browser_process;
-  component_updater::ComponentUpdateService* cus_ = nullptr;
+  raw_ptr<component_updater::ComponentUpdateService> cus_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterPolicyTest);
 };
 
 const char ComponentUpdaterPolicyTest::component_id_[] =
@@ -130,7 +134,8 @@ void ComponentUpdaterPolicyTest::SetEnableComponentUpdates(
   UpdateProviderPolicy(policies);
 }
 
-update_client::CrxComponent ComponentUpdaterPolicyTest::MakeCrxComponent(
+component_updater::ComponentRegistration
+ComponentUpdaterPolicyTest::MakeComponentRegistration(
     bool supports_group_policy_enable_component_updates) {
   class MockInstaller : public update_client::CrxInstaller {
    public:
@@ -158,30 +163,24 @@ update_client::CrxComponent ComponentUpdaterPolicyTest::MakeCrxComponent(
   };
 
   // component id "jebgalgnebhfojomionfpkfelancnnkf".
-  static const uint8_t jebg_hash[] = {
+  std::vector<uint8_t> jebg_hash = {
       0x94, 0x16, 0x0b, 0x6d, 0x41, 0x75, 0xe9, 0xec, 0x8e, 0xd5, 0xfa,
       0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
       0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
 
   // The component uses HTTPS only for network interception purposes.
-  update_client::CrxComponent crx_component;
-  crx_component.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
-  crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
-  crx_component.version = base::Version("0.9");
-  crx_component.installer = scoped_refptr<MockInstaller>(new MockInstaller());
-  crx_component.requires_network_encryption = true;
-  crx_component.supports_group_policy_enable_component_updates =
-      supports_group_policy_enable_component_updates;
-
-  return crx_component;
+  return component_updater::ComponentRegistration(
+      "jebgalgnebhfojomionfpkfelancnnkf", {}, jebg_hash, base::Version("0.9"),
+      {}, {}, nullptr, base::MakeRefCounted<MockInstaller>(), true,
+      supports_group_policy_enable_component_updates);
 }
 
 void ComponentUpdaterPolicyTest::UpdateComponent(
-    const update_client::CrxComponent& crx_component) {
+    const component_updater::ComponentRegistration& reg) {
   post_interceptor_->Reset();
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<update_client::PartialMatch>("updatecheck")));
-  EXPECT_TRUE(cus_->RegisterComponent(crx_component));
+  EXPECT_TRUE(cus_->RegisterComponent(reg));
   cus_->GetOnDemandUpdater().OnDemandUpdate(
       component_id_, component_updater::OnDemandUpdater::Priority::FOREGROUND,
       base::BindOnce(&ComponentUpdaterPolicyTest::OnDemandComplete,
@@ -238,13 +237,14 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto* update_check =
-        root->FindKey("request")->FindKey("app")->GetList()[0].FindKey(
-            "updatecheck");
+        (*root->GetDict().FindDict("request")->FindList("app"))[0]
+            .GetDict()
+            .FindDict("updatecheck");
     ASSERT_TRUE(update_check);
     if (update_disabled) {
-      EXPECT_EQ(true, update_check->FindKey("updatedisabled")->GetBool());
+      EXPECT_EQ(true, update_check->Find("updatedisabled")->GetBool());
     } else {
-      EXPECT_FALSE(update_check->FindKey("updatedisabled"));
+      EXPECT_FALSE(update_check->Find("updatedisabled"));
     }
   } else {
     NOTREACHED();
@@ -252,7 +252,7 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
 }
 
 void ComponentUpdaterPolicyTest::DefaultPolicy_GroupPolicySupported() {
-  UpdateComponent(MakeCrxComponent(true));
+  UpdateComponent(MakeComponentRegistration(true));
 }
 
 void ComponentUpdaterPolicyTest::FinishDefaultPolicy_GroupPolicySupported() {
@@ -266,7 +266,7 @@ void ComponentUpdaterPolicyTest::FinishDefaultPolicy_GroupPolicySupported() {
 }
 
 void ComponentUpdaterPolicyTest::DefaultPolicy_GroupPolicyNotSupported() {
-  UpdateComponent(MakeCrxComponent(false));
+  UpdateComponent(MakeComponentRegistration(false));
 }
 
 void ComponentUpdaterPolicyTest::FinishDefaultPolicy_GroupPolicyNotSupported() {
@@ -281,7 +281,7 @@ void ComponentUpdaterPolicyTest::FinishDefaultPolicy_GroupPolicyNotSupported() {
 
 void ComponentUpdaterPolicyTest::EnabledPolicy_GroupPolicySupported() {
   SetEnableComponentUpdates(true);
-  UpdateComponent(MakeCrxComponent(true));
+  UpdateComponent(MakeComponentRegistration(true));
 }
 
 void ComponentUpdaterPolicyTest::FinishEnabledPolicy_GroupPolicySupported() {
@@ -296,7 +296,7 @@ void ComponentUpdaterPolicyTest::FinishEnabledPolicy_GroupPolicySupported() {
 
 void ComponentUpdaterPolicyTest::EnabledPolicy_GroupPolicyNotSupported() {
   SetEnableComponentUpdates(true);
-  UpdateComponent(MakeCrxComponent(false));
+  UpdateComponent(MakeComponentRegistration(false));
 }
 
 void ComponentUpdaterPolicyTest::FinishEnabledPolicy_GroupPolicyNotSupported() {
@@ -311,7 +311,7 @@ void ComponentUpdaterPolicyTest::FinishEnabledPolicy_GroupPolicyNotSupported() {
 
 void ComponentUpdaterPolicyTest::DisabledPolicy_GroupPolicySupported() {
   SetEnableComponentUpdates(false);
-  UpdateComponent(MakeCrxComponent(true));
+  UpdateComponent(MakeComponentRegistration(true));
 }
 
 void ComponentUpdaterPolicyTest::FinishDisabled_PolicyGroupPolicySupported() {
@@ -327,7 +327,7 @@ void ComponentUpdaterPolicyTest::FinishDisabled_PolicyGroupPolicySupported() {
 
 void ComponentUpdaterPolicyTest::DisabledPolicy_GroupPolicyNotSupported() {
   SetEnableComponentUpdates(false);
-  UpdateComponent(MakeCrxComponent(false));
+  UpdateComponent(MakeComponentRegistration(false));
 }
 
 void ComponentUpdaterPolicyTest::

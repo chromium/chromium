@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "google_apis/gcm/engine/fake_connection_factory.h"
+
+#include <memory>
 
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -26,8 +28,8 @@ void FakeConnectionFactory::Initialize(
     const ConnectionHandler::ProtoReceivedCallback& read_callback,
     const ConnectionHandler::ProtoSentCallback& write_callback) {
   request_builder_ = request_builder;
-  connection_handler_.reset(new FakeConnectionHandler(read_callback,
-                                                      write_callback));
+  connection_handler_ =
+      std::make_unique<FakeConnectionHandler>(read_callback, write_callback);
 }
 
 ConnectionHandler* FakeConnectionFactory::GetConnectionHandler() const {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
@@ -37,7 +36,7 @@ const uint8_t kVersion3 = 3;
 //  To use this with a real browser, use --origin-trial-public-key with the
 //  public key, base-64-encoded:
 //  --origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=
-const uint8_t kTestPublicKey[] = {
+const OriginTrialPublicKey kTestPublicKey = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
@@ -52,7 +51,7 @@ const uint8_t kTestPublicKey[] = {
 //  0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c, 0x47,
 //  0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51, 0x3e,
 //  0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca
-const uint8_t kTestPublicKey2[] = {
+const OriginTrialPublicKey kTestPublicKey2 = {
     0x50, 0x07, 0x4d, 0x76, 0x55, 0x56, 0x42, 0x17, 0x2d, 0x8a, 0x9c,
     0x47, 0x96, 0x25, 0xda, 0x70, 0xaa, 0xb9, 0xfd, 0x53, 0x5d, 0x51,
     0x3e, 0x16, 0xab, 0xb4, 0x86, 0xea, 0xf3, 0x35, 0xc6, 0xca,
@@ -695,40 +694,36 @@ class TrialTokenTest : public testing::Test {
         invalid_timestamp_(base::Time::FromDoubleT(kInvalidTimestamp)),
         expected_v2_signature_(
             std::string(reinterpret_cast<const char*>(kSampleTokenV2Signature),
-                        base::size(kSampleTokenV2Signature))),
+                        std::size(kSampleTokenV2Signature))),
         expected_v3_signature_(
             std::string(reinterpret_cast<const char*>(kSampleTokenV3Signature),
-                        base::size(kSampleTokenV3Signature))),
+                        std::size(kSampleTokenV3Signature))),
         expected_subdomain_signature_(std::string(
             reinterpret_cast<const char*>(kSampleSubdomainTokenSignature),
-            base::size(kSampleSubdomainTokenSignature))),
+            std::size(kSampleSubdomainTokenSignature))),
         expected_nonsubdomain_signature_(std::string(
             reinterpret_cast<const char*>(kSampleNonSubdomainTokenSignature),
-            base::size(kSampleNonSubdomainTokenSignature))),
+            std::size(kSampleNonSubdomainTokenSignature))),
         expected_third_party_signature_(std::string(
             reinterpret_cast<const char*>(kSampleThirdPartyTokenSignature),
-            base::size(kSampleThirdPartyTokenSignature))),
+            std::size(kSampleThirdPartyTokenSignature))),
         expected_non_third_party_signature_(std::string(
             reinterpret_cast<const char*>(kSampleNonThirdPartyTokenSignature),
-            base::size(kSampleNonThirdPartyTokenSignature))),
+            std::size(kSampleNonThirdPartyTokenSignature))),
         expected_third_party_usage_empty_signature_(
             std::string(reinterpret_cast<const char*>(
                             kSampleThirdPartyUsageEmptyTokenSignature),
-                        base::size(kSampleThirdPartyUsageEmptyTokenSignature))),
-        expected_third_party_usage_subset_signature_(std::string(
-            reinterpret_cast<const char*>(
-                kSampleThirdPartyUsageSubsetTokenSignature),
-            base::size(kSampleThirdPartyUsageSubsetTokenSignature))),
-        correct_public_key_(
-            base::StringPiece(reinterpret_cast<const char*>(kTestPublicKey),
-                              base::size(kTestPublicKey))),
-        incorrect_public_key_(
-            base::StringPiece(reinterpret_cast<const char*>(kTestPublicKey2),
-                              base::size(kTestPublicKey2))) {}
+                        std::size(kSampleThirdPartyUsageEmptyTokenSignature))),
+        expected_third_party_usage_subset_signature_(
+            std::string(reinterpret_cast<const char*>(
+                            kSampleThirdPartyUsageSubsetTokenSignature),
+                        std::size(kSampleThirdPartyUsageSubsetTokenSignature))),
+        correct_public_key_(kTestPublicKey),
+        incorrect_public_key_(kTestPublicKey2) {}
 
  protected:
   OriginTrialTokenStatus Extract(const std::string& token_text,
-                                 base::StringPiece public_key,
+                                 const OriginTrialPublicKey& public_key,
                                  std::string* token_payload,
                                  std::string* token_signature,
                                  uint8_t* token_version) {
@@ -736,8 +731,9 @@ class TrialTokenTest : public testing::Test {
                                token_signature, token_version);
   }
 
-  OriginTrialTokenStatus ExtractStatusOnly(const std::string& token_text,
-                                           base::StringPiece public_key) {
+  OriginTrialTokenStatus ExtractStatusOnly(
+      const std::string& token_text,
+      const OriginTrialPublicKey& public_key) {
     std::string token_payload;
     std::string token_signature;
     uint8_t token_version;
@@ -762,8 +758,12 @@ class TrialTokenTest : public testing::Test {
     return token->ValidateDate(now);
   }
 
-  base::StringPiece correct_public_key() { return correct_public_key_; }
-  base::StringPiece incorrect_public_key() { return incorrect_public_key_; }
+  const OriginTrialPublicKey& correct_public_key() {
+    return correct_public_key_;
+  }
+  const OriginTrialPublicKey& incorrect_public_key() {
+    return incorrect_public_key_;
+  }
 
   const url::Origin expected_origin_;
   const url::Origin expected_subdomain_origin_;
@@ -788,8 +788,8 @@ class TrialTokenTest : public testing::Test {
   std::string expected_third_party_usage_subset_signature_;
 
  private:
-  base::StringPiece correct_public_key_;
-  base::StringPiece incorrect_public_key_;
+  OriginTrialPublicKey correct_public_key_;
+  OriginTrialPublicKey incorrect_public_key_;
 };
 
 // Test the extraction of the signed payload from token strings. This includes
@@ -946,7 +946,7 @@ TEST_F(TrialTokenTest, ExtractLargeToken) {
   EXPECT_EQ(kVersion2, token_version);
   std::string expected_signature(
       std::string(reinterpret_cast<const char*>(kLargeValidTokenSignature),
-                  base::size(kLargeValidTokenSignature)));
+                  std::size(kLargeValidTokenSignature)));
   EXPECT_EQ(expected_signature, token_signature);
 }
 

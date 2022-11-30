@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_QUIC_NETWORK_CONNECTION_H_
 #define NET_QUIC_NETWORK_CONNECTION_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
@@ -18,6 +17,10 @@ class NET_EXPORT NetworkConnection
       public NetworkChangeNotifier::ConnectionTypeObserver {
  public:
   NetworkConnection();
+
+  NetworkConnection(const NetworkConnection&) = delete;
+  NetworkConnection& operator=(const NetworkConnection&) = delete;
+
   ~NetworkConnection() override;
 
   // Returns the underlying connection type.
@@ -46,12 +49,11 @@ class NET_EXPORT NetworkConnection
  private:
   // Cache the connection type to avoid calling the potentially expensive
   // NetworkChangeNotifier::GetConnectionType() function.
-  NetworkChangeNotifier::ConnectionType connection_type_;
+  NetworkChangeNotifier::ConnectionType connection_type_ =
+      NetworkChangeNotifier::CONNECTION_UNKNOWN;
   // Cache the connection description string to avoid calling the expensive
   // GetWifiPHYLayerProtocol() function.
-  const char* connection_description_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnection);
+  const char* connection_description_ = nullptr;
 };
 
 }  // namespace net

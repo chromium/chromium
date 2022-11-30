@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,10 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
@@ -54,11 +55,7 @@ public class ContextMenuLoadUrlParamsTest {
 
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
-    // Test activity type that does not restore tab on cold restart.
-    // Any type other than ActivityType.TABBED works.
-    private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+            new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
     private static final String HTML_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -82,7 +79,8 @@ public class ContextMenuLoadUrlParamsTest {
             super(null, tabCreatorManager, tabModelFilterFactory,
                     ()
                             -> NextTabPolicy.HIERARCHICAL,
-                    AsyncTabParamsManagerSingleton.getInstance(), false, NO_RESTORE_TYPE, false);
+                    AsyncTabParamsManagerSingleton.getInstance(), false, ActivityType.TABBED,
+                    false);
         }
     }
 
@@ -98,7 +96,7 @@ public class ContextMenuLoadUrlParamsTest {
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
                         return new RecordingTabModelSelector(activity, tabCreatorManager,
-                                new ChromeTabModelFilterFactory(), selectorIndex);
+                                new ChromeTabModelFilterFactory(activity), selectorIndex);
                     }
                 });
     }
@@ -141,6 +139,9 @@ public class ContextMenuLoadUrlParamsTest {
                 R.id.contextmenu_open_in_incognito_tab);
 
         Assert.assertNotNull(sOpenNewTabLoadUrlParams);
+        Assert.assertNotNull(sOpenNewTabLoadUrlParams.getInitiatorOrigin());
+        Assert.assertEquals(new GURL(sActivityTestRule.getTestServer().getURL(HTML_PATH)).getHost(),
+                sOpenNewTabLoadUrlParams.getInitiatorOrigin().getHost());
         Assert.assertNull(sOpenNewTabLoadUrlParams.getReferrer());
     }
 
@@ -165,7 +166,7 @@ public class ContextMenuLoadUrlParamsTest {
         sActivityTestRule.loadUrl(url);
         sActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
         Tab tab = sActivityTestRule.getActivity().getActivityTab();
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 sActivityTestRule.getActivity(), tab, openerDomId, menuItemId);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

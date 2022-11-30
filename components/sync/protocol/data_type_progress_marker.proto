@@ -1,0 +1,172 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+message DataTypeProgressMarker {
+  // An integer identifying the data type whose progress is tracked by this
+  // marker.  The legitimate values of this field correspond to the protobuf
+  // field numbers of all EntitySpecifics fields supported by the server.
+  // These values are externally declared in per-datatype .proto files.
+  optional int32 data_type_id = 1;
+
+  // An opaque-to-the-client sequence of bytes that the server may interpret
+  // as an indicator of the client's knowledge state.  If this is empty or
+  // omitted by the client, it indicates that the client is initiating a
+  // a first-time sync of this datatype.  Otherwise, clients must supply a
+  // value previously returned by the server in an earlier GetUpdatesResponse.
+  // These values are not comparable or generable on the client.
+  //
+  // The opaque semantics of this field are to afford server implementations
+  // some flexibility in implementing progress tracking.  For instance,
+  // a server implementation built on top of a distributed storage service --
+  // or multiple heterogenous such services -- might need to supply a vector
+  // of totally ordered monotonic update timestamps, rather than a single
+  // monotonically increasing value.  Other optimizations may also be
+  // possible if the server is allowed to embed arbitrary information in
+  // the progress token.
+  //
+  // Server implementations should keep the size of these tokens relatively
+  // small, on the order of tens of bytes, and they should remain small
+  // regardless of the number of items synchronized.  (A possible bad server
+  // implementation would be for progress_token to contain a list of all the
+  // items ever sent to the client.  Servers shouldn't do this.)
+  optional bytes token = 2;
+
+  reserved 3;
+  reserved "timestamp_token_for_migration";
+
+  reserved 4;
+  reserved "notification_hint";
+
+  // This field will be included only in GetUpdates with origin GU_TRIGGER.
+  optional GetUpdateTriggers get_update_triggers = 5;
+
+  // The garbage collection directive for this data type.  The client should
+  // purge items locally based on this directive.  Since this directive is
+  // designed to be sent from server only, the client should persist it locally
+  // as needed and avoid sending it to the server.
+  optional GarbageCollectionDirective gc_directive = 6;
+}
+
+// A single datatype's sync context. Allows the datatype to pass along
+// datatype specific information with its own server backend.
+message DataTypeContext {
+  // The type this context is associated with.
+  optional int32 data_type_id = 1;
+  // The context for the datatype.
+  optional bytes context = 2;
+  // The version of the context.
+  optional int64 version = 3;
+}
+
+message GarbageCollectionDirective {
+  enum Type {
+    UNKNOWN = 0;
+    VERSION_WATERMARK = 1;
+    AGE_WATERMARK = 2;
+    DEPRECATED_MAX_ITEM_COUNT = 3 [deprecated = true];
+  }
+
+  optional Type type = 1 [default = UNKNOWN];
+
+  // This field specifies the watermark for the versions which should get
+  // garbage collected.  The client should purge all sync entities when
+  // receiving any value of this.  This is a change from previous behavior,
+  // where the client would only be required to purge items older than the
+  // specified watermark.
+  // TODO(crbug.com/877951): Rename this to make clear that whenever it's set,
+  // the client will delete ALL data, regardless of its value.
+  optional int64 version_watermark = 2;
+
+  // This field specifies the watermark in terms of age in days.  The client
+  // should purge all sync entities which are older than this specific value
+  // based on last modified time.
+  optional int32 age_watermark_in_days = 3;
+
+  reserved 4;
+  reserved "max_number_of_items";
+}
+
+// This message communicates additional per-type information related to
+// requests with origin GU_TRIGGER.  This message is not relevant when any
+// other origin value is used.
+// Introduced in M29.
+message GetUpdateTriggers {
+  // An opaque-to-the-client string of bytes, received through a notification,
+  // that the server may interpret as a hint about the location of the latest
+  // version of the data for this type.
+  // Introduced in M29.
+  repeated string notification_hint = 1;
+
+  // This flag is set if the client was forced to drop hints because the number
+  // of queued hints exceeded its limit.  The oldest hints will be discarded
+  // first.  Introduced in M29.
+  optional bool client_dropped_hints = 2;
+
+  // This flag is set when the client suspects that its list of invalidation
+  // hints may be incomplete.  This may be the case if:
+  // - The client is syncing for the first time.
+  // - The client has just restarted and it was unable to keep track of
+  //   invalidations that were received prior to the restart.
+  // - The client's connection to the invalidation server is currently or
+  //   was recently broken.
+  //
+  // It's difficult to provide more details here.  This is implemented by
+  // setting the flag to false whenever anything that might adversely affect
+  // notifications happens (eg. a crash, restart on a platform that doesn't
+  // support invalidation ack-tracking, transient invalidation error) and is
+  // unset only after we've experienced one successful sync cycle while
+  // notifications were enabled.
+  //
+  // This flag was introduced in M29.
+  optional bool invalidations_out_of_sync = 3;
+
+  // This counts the number of times the syncer has been asked to commit
+  // changes for this type since the last successful sync cycle.  The number of
+  // nudges may not be related to the actual number of items modified.  It
+  // often correlates with the number of user actions, but that's not always
+  // the case.
+  // Introduced in M29.
+  optional int64 local_modification_nudges = 4;
+
+  // This counts the number of times the syncer has been explicitly asked to
+  // fetch updates for this type since the last successful sync cycle.  These
+  // explicit refresh requests should be relatively rare on most platforms, and
+  // associated with user actions.  For example, at the time of this writing
+  // the most common (only?) source of refresh requests is when a user opens
+  // the new tab page on a platform that does not support sessions
+  // invalidations.
+  // Introduced in M29.
+  optional int64 datatype_refresh_nudges = 5;
+
+  // This flag is set if the invalidation server reports that it may have
+  // dropped some invalidations at some point.  Introduced in M33.
+  optional bool server_dropped_hints = 6;
+
+  // This flag is set if this GetUpdate request is due at least in part due
+  // to the fact that this type has not finished initial sync yet, and the
+  // client would like to initialize itself with the server data.
+  //
+  // Only some types support performing an initial sync as part of a normal
+  // GetUpdate request.  Many types must be in configure mode when fetching
+  // initial sync data.
+  //
+  // Introduced in M38.
+  optional bool initial_sync_in_progress = 7;
+
+  // This flag is set if this GetUpdate request is due to client receiving
+  // conflict response from server, so client needs to sync and then resolve
+  // conflict locally, and then commit again.
+  //
+  // Introduced in M42.
+  optional bool sync_for_resolve_conflict_in_progress = 8;
+}

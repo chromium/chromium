@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,8 +58,6 @@ public class BatteryMonitorFactory implements InterfaceFactory<BatteryMonitor> {
         if (mSubscribedMonitors.isEmpty() && !mManager.start()) {
             Log.e(TAG, "BatteryStatusManager failed to start.");
         }
-        // TODO(ppi): record the "BatteryStatus.StartAndroid" histogram here once we have a Java API
-        //            for UMA - http://crbug.com/442300.
 
         BatteryMonitorImpl monitor = new BatteryMonitorImpl(this);
         if (mHasStatusUpdate) {

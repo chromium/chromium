@@ -27,12 +27,14 @@
 #include "third_party/blink/renderer/core/layout/layout_word_break.h"
 
 #include "third_party/blink/renderer/core/editing/position.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_wbr_element.h"
 
 namespace blink {
 
-LayoutWordBreak::LayoutWordBreak(HTMLElement* element)
-    : LayoutText(element, StringImpl::empty_) {}
+LayoutWordBreak::LayoutWordBreak(Node* node)
+    : LayoutText(node, StringImpl::empty_) {
+  DCHECK(IsA<HTMLWBRElement>(node)) << node;
+}
 
 bool LayoutWordBreak::IsWordBreak() const {
   NOT_DESTROYED();
@@ -49,11 +51,11 @@ Position LayoutWordBreak::PositionForCaretOffset(unsigned offset) const {
   return Position::BeforeNode(*GetNode());
 }
 
-base::Optional<unsigned> LayoutWordBreak::CaretOffsetForPosition(
+absl::optional<unsigned> LayoutWordBreak::CaretOffsetForPosition(
     const Position& position) const {
   NOT_DESTROYED();
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor());
   // The only allowed caret offset is 0, since LayoutWordBreak always has
   // |TextLength() == 0|.

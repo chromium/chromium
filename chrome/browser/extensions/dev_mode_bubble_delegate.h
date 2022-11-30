@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -20,6 +20,10 @@ class DevModeBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
   explicit DevModeBubbleDelegate(Profile* profile);
+
+  DevModeBubbleDelegate(const DevModeBubbleDelegate&) = delete;
+  DevModeBubbleDelegate& operator=(const DevModeBubbleDelegate&) = delete;
+
   ~DevModeBubbleDelegate() override;
 
   // ExtensionMessageBubbleController::Delegate methods.
@@ -43,16 +47,11 @@ class DevModeBubbleDelegate
   void OnAction() override;
   void ClearProfileSetForTesting() override;
   bool ShouldShowExtensionList() const override;
-  bool ShouldHighlightExtensions() const override;
   bool ShouldLimitToEnabledExtensions() const override;
-  void LogExtensionCount(size_t count) override;
-  void LogAction(ExtensionMessageBubbleController::BubbleAction) override;
   bool SupportsPolicyIndicator() override;
 
  private:
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevModeBubbleDelegate);
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/importer/importer_unittest_utils.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
@@ -46,7 +44,7 @@ using password_manager::TestPasswordStore;
 PasswordForm MakePasswordForm() {
   PasswordForm form;
   form.url = GURL("https://example.com/");
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = u"user@gmail.com";
   form.password_value = u"s3cre3t";
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -65,12 +63,14 @@ class TestProfileWriter : public ProfileWriter {
 class ProfileWriterTest : public testing::Test {
  public:
   ProfileWriterTest() {}
+
+  ProfileWriterTest(const ProfileWriterTest&) = delete;
+  ProfileWriterTest& operator=(const ProfileWriterTest&) = delete;
+
   ~ProfileWriterTest() override {}
 
   void SetUp() override {
-    DCHECK(profile_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(profile_dir_.GetPath());
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
@@ -79,9 +79,7 @@ class ProfileWriterTest : public testing::Test {
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
 
-    DCHECK(second_profile_dir_.CreateUniqueTempDir());
     TestingProfile::Builder second_profile_builder;
-    second_profile_builder.SetPath(second_profile_dir_.GetPath());
     second_profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
@@ -113,7 +111,7 @@ class ProfileWriterTest : public testing::Test {
     row.set_visit_count(visit_count);
     row.set_typed_count(typed_count);
     row.set_last_visit(base::Time::NowFromSystemTime() -
-                       base::TimeDelta::FromDays(days_since_last_visit));
+                       base::Days(days_since_last_visit));
     return row;
   }
 
@@ -178,18 +176,10 @@ class ProfileWriterTest : public testing::Test {
     bookmarks_.push_back(entry);
   }
 
-  // Profile directories that outlive |task_environment_| are needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir profile_dir_;
-  base::ScopedTempDir second_profile_dir_;
-
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> second_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileWriterTest);
 };
 
 // Add bookmarks via ProfileWriter to profile1 when profile2 also exists.

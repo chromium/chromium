@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "tools/android/forwarder2/socket.h"
@@ -30,6 +29,10 @@ class DeviceController {
   static std::unique_ptr<DeviceController> Create(
       const std::string& adb_unix_socket,
       int exit_notifier_fd);
+
+  DeviceController(const DeviceController&) = delete;
+  DeviceController& operator=(const DeviceController&) = delete;
+
   ~DeviceController();
 
   void Start();
@@ -60,8 +63,6 @@ class DeviceController {
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
   base::WeakPtrFactory<DeviceController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceController);
 };
 
 }  // namespace forwarder

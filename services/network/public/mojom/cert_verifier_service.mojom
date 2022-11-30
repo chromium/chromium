@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 
@@ -13,8 +15,8 @@ struct RequestParams {
   network.mojom.X509Certificate certificate;
   string hostname;
   int32 flags;
-  string ocsp_response;
-  string sct_list;
+  mojo_base.mojom.ByteString ocsp_response;
+  mojo_base.mojom.ByteString sct_list;
 };
 
 // Temporary config struct--this should eventually be deleted as the network
@@ -53,6 +55,9 @@ interface CertVerifierService {
   // Mojo IPC used to verify a certificate. Sends results to the
   // |cert_verifier_request| interface when verification is complete.
   Verify(RequestParams params,
+         /*NetLogSourceType*/ uint32 netlog_source_type,
+         uint32 netlog_source_id,
+         mojo_base.mojom.TimeTicks netlog_source_start_time,
          pending_remote<CertVerifierRequest> cert_verifier_request);
   // Sets the config for the underlying CertVerifier. Can serialize very large
   // net::CertVerifier::Config's due to the CRLSet.

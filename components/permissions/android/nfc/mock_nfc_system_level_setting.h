@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERMISSIONS_ANDROID_NFC_MOCK_NFC_SYSTEM_LEVEL_SETTING_H_
 #define COMPONENTS_PERMISSIONS_ANDROID_NFC_MOCK_NFC_SYSTEM_LEVEL_SETTING_H_
 
-#include "base/macros.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting.h"
 
 namespace permissions {
@@ -14,6 +13,11 @@ namespace permissions {
 class MockNfcSystemLevelSetting : public NfcSystemLevelSetting {
  public:
   MockNfcSystemLevelSetting();
+
+  MockNfcSystemLevelSetting(const MockNfcSystemLevelSetting&) = delete;
+  MockNfcSystemLevelSetting& operator=(const MockNfcSystemLevelSetting&) =
+      delete;
+
   ~MockNfcSystemLevelSetting() override;
 
   static void SetNfcAccessIsPossible(bool is_possible);
@@ -27,8 +31,6 @@ class MockNfcSystemLevelSetting : public NfcSystemLevelSetting {
   void PromptToEnableNfcSystemLevelSetting(
       content::WebContents* web_contents,
       base::OnceClosure prompt_completed_callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNfcSystemLevelSetting);
 };
 
 }  // namespace permissions

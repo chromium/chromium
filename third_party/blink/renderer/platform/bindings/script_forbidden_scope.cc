@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 unsigned ScriptForbiddenScope::g_main_thread_counter_ = 0;
+unsigned ScriptForbiddenScope::g_blink_lifecycle_counter_ = 0;
 
 unsigned& ScriptForbiddenScope::GetMutableCounter() {
   if (IsMainThread())

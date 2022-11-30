@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
@@ -106,7 +106,7 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   DCHECK(is_in_two_phase_read_);
   is_in_two_phase_read_ = false;
   DCHECK(IsReadableOrWaiting());
-  MojoResult rv = data_pipe_->EndReadData(SafeCast<uint32_t>(read));
+  MojoResult rv = data_pipe_->EndReadData(base::checked_cast<uint32_t>(read));
   if (rv != MOJO_RESULT_OK) {
     SetError(Error("error"));
     return Result::kError;
@@ -132,8 +132,8 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   if (has_pending_notification_) {
     has_pending_notification_ = false;
     task_runner_->PostTask(FROM_HERE,
-                           WTF::Bind(&DataPipeBytesConsumer::Notify,
-                                     WrapPersistent(this), MOJO_RESULT_OK));
+                           WTF::BindOnce(&DataPipeBytesConsumer::Notify,
+                                         WrapPersistent(this), MOJO_RESULT_OK));
   }
   return Result::kOk;
 }
@@ -213,7 +213,7 @@ void DataPipeBytesConsumer::SignalComplete() {
 void DataPipeBytesConsumer::SignalSize(uint64_t size) {
   if (!IsReadableOrWaiting() || has_pending_complete_ || has_pending_error_)
     return;
-  total_size_ = base::make_optional(size);
+  total_size_ = absl::make_optional(size);
   DCHECK_LE(num_read_bytes_, *total_size_);
   if (!data_pipe_.is_valid() && num_read_bytes_ < *total_size_) {
     SignalError(Error());

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,16 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/browser_tabs_model_provider.h"
+#include "ash/components/phonehub/connection_scheduler.h"
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/tether_controller.h"
+#include "ash/components/phonehub/user_action_recorder.h"
+#include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/bluetooth_disabled_view.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_connected_view.h"
@@ -15,23 +23,100 @@
 #include "ash/system/phonehub/phone_disconnected_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/tether_connection_pending_view.h"
-#include "base/logging.h"
+#include "ash/system/status_area_widget.h"
+#include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chromeos/components/phonehub/browser_tabs_model_provider.h"
-#include "chromeos/components/phonehub/connection_scheduler.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "chromeos/components/phonehub/tether_controller.h"
-#include "chromeos/components/phonehub/user_action_recorder.h"
-
-using FeatureStatus = chromeos::phonehub::FeatureStatus;
-using TetherStatus = chromeos::phonehub::TetherController::Status;
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kConnectingViewGracePeriod =
-    base::TimeDelta::FromSeconds(40);
+using FeatureStatus = phonehub::FeatureStatus;
+using TetherStatus = phonehub::TetherController::Status;
+
+constexpr base::TimeDelta kConnectingViewGracePeriod = base::Seconds(40);
+
+phone_hub_metrics::Screen GetMetricsScreen(
+    PhoneHubUiController::UiState ui_state) {
+  switch (ui_state) {
+    case PhoneHubUiController::UiState::kOnboardingWithoutPhone:
+      return phone_hub_metrics::Screen::kOnboardingNewMultideviceUser;
+
+    case PhoneHubUiController::UiState::kOnboardingWithPhone:
+      return phone_hub_metrics::Screen::kOnboardingExistingMultideviceUser;
+
+    case PhoneHubUiController::UiState::kPhoneConnected:
+      return phone_hub_metrics::Screen::kPhoneConnected;
+
+    case PhoneHubUiController::UiState::kPhoneDisconnected:
+      return phone_hub_metrics::Screen::kPhoneDisconnected;
+
+    case PhoneHubUiController::UiState::kPhoneConnecting:
+      return phone_hub_metrics::Screen::kPhoneConnecting;
+
+    case PhoneHubUiController::UiState::kBluetoothDisabled:
+      return phone_hub_metrics::Screen::kBluetoothOrWifiDisabled;
+
+    case PhoneHubUiController::UiState::kTetherConnectionPending:
+      return phone_hub_metrics::Screen::kTetherConnectionPending;
+
+    case PhoneHubUiController::UiState::kHidden:
+      return phone_hub_metrics::Screen::kInvalid;
+  }
+}
+
+std::string PhoneHubUIStateToString(PhoneHubUiController::UiState ui_state) {
+  switch (ui_state) {
+    case PhoneHubUiController::UiState::kOnboardingWithoutPhone:
+      return "[kOnboardingWithoutPhone]";
+
+    case PhoneHubUiController::UiState::kOnboardingWithPhone:
+      return "[kOnboardingWithPhone]";
+
+    case PhoneHubUiController::UiState::kPhoneConnected:
+      return "[kPhoneConnected]";
+
+    case PhoneHubUiController::UiState::kPhoneDisconnected:
+      return "[kPhoneDisconnected]";
+
+    case PhoneHubUiController::UiState::kPhoneConnecting:
+      return "[kPhoneConnecting]";
+
+    case PhoneHubUiController::UiState::kBluetoothDisabled:
+      return "[kBluetoothDisabled]";
+
+    case PhoneHubUiController::UiState::kTetherConnectionPending:
+      return "[kTetherConnectionPending]";
+
+    case PhoneHubUiController::UiState::kHidden:
+      return "[kHidden]";
+  }
+}
+
+std::string FeatureStatusToString(FeatureStatus feature_status) {
+  switch (feature_status) {
+    case FeatureStatus::kNotEligibleForFeature:
+      return "[kNotEligibleForFeature]";
+    case FeatureStatus::kEligiblePhoneButNotSetUp:
+      return "[kEligiblePhoneButNotSetUp]";
+    case FeatureStatus::kPhoneSelectedAndPendingSetup:
+      return "[kPhoneSelectedAndPendingSetup]";
+    case FeatureStatus::kDisabled:
+      return "[kDisabled]";
+    case FeatureStatus::kUnavailableBluetoothOff:
+      return "[kUnavailableBluetoothOff]";
+    case FeatureStatus::kEnabledButDisconnected:
+      return "[kEnabledButDisconnected]";
+    case FeatureStatus::kEnabledAndConnecting:
+      return "[kEnabledAndConnecting]";
+    case FeatureStatus::kEnabledAndConnected:
+      return "[kEnabledAndConnected]";
+    case FeatureStatus::kLockOrSuspended:
+      return "[kLockOrSuspended]";
+  }
+}
 
 }  // namespace
 
@@ -49,7 +134,7 @@ PhoneHubUiController::~PhoneHubUiController() {
 }
 
 void PhoneHubUiController::SetPhoneHubManager(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager) {
+    phonehub::PhoneHubManager* phone_hub_manager) {
   if (phone_hub_manager == phone_hub_manager_)
     return;
 
@@ -75,6 +160,9 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView(
 
 std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
     OnboardingView::Delegate* delegate) {
+  PA_LOG(VERBOSE) << __func__
+                  << ": ui state = " << PhoneHubUIStateToString(ui_state_);
+
   switch (ui_state_) {
     case UiState::kHidden:
       return nullptr;
@@ -103,6 +191,15 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
 }
 
 void PhoneHubUiController::HandleBubbleOpened() {
+  // Make sure Eche window is not shown.
+  if (features::IsEcheSWAEnabled()) {
+    EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->eche_tray();
+    if (eche_tray)
+      eche_tray->CloseBubble();
+  }
+
   if (!phone_hub_manager_)
     return;
 
@@ -112,15 +209,21 @@ void PhoneHubUiController::HandleBubbleOpened() {
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
 
   phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
-  phone_hub_manager_->GetUserActionRecorder()->RecordUiOpened();
+  RecordStatusOnBubbleOpened();
 
   bool is_feature_enabled =
       feature_status == FeatureStatus::kEnabledAndConnected ||
       feature_status == FeatureStatus::kEnabledButDisconnected ||
       feature_status == FeatureStatus::kEnabledAndConnected;
 
-  if (!is_feature_enabled)
+  if (!is_feature_enabled) {
+    PA_LOG(VERBOSE) << __func__ << ": feature is not enabled. Feature status = "
+                    << FeatureStatusToString(feature_status);
     return;
+  }
+
+  PA_LOG(VERBOSE) << __func__ << ": feature is enabled. Feature status = "
+                  << FeatureStatusToString(feature_status);
 
   if (!has_requested_tether_scan_during_session_ &&
       phone_hub_manager_->GetTetherController()->GetStatus() ==
@@ -128,6 +231,47 @@ void PhoneHubUiController::HandleBubbleOpened() {
     phone_hub_manager_->GetTetherController()->ScanForAvailableConnection();
     has_requested_tether_scan_during_session_ = true;
   }
+}
+
+void PhoneHubUiController::RecordStatusOnBubbleOpened() {
+  switch (ui_state_) {
+    case UiState::kHidden:
+    case UiState::kOnboardingWithoutPhone:
+    case UiState::kOnboardingWithPhone:
+    case UiState::kBluetoothDisabled:
+    case UiState::kTetherConnectionPending:
+      return;
+
+    case UiState::kPhoneConnected:
+      base::UmaHistogramEnumeration("PhoneHub.BubbleOpened.Connectable.Page",
+                                    phone_hub_metrics::Screen::kPhoneConnected);
+      return;
+
+    case UiState::kPhoneDisconnected:
+    case UiState::kPhoneConnecting:
+      phone_hub_manager_->GetHostLastSeenTimestamp(
+          base::BindOnce(&PhoneHubUiController::OnGetHostLastSeenTimestamp,
+                         weak_ptr_factory_.GetWeakPtr(), ui_state_));
+      return;
+  }
+}
+
+void PhoneHubUiController::OnGetHostLastSeenTimestamp(
+    UiState ui_state_when_opened,
+    absl::optional<base::Time> timestamp) {
+  if (timestamp) {
+    base::UmaHistogramLongTimes(
+        "PhoneHub.BubbleOpened.Connectable.Failed.HostLastSeen",
+        base::Time::Now() - timestamp.value());
+  }
+
+  // Only log when we've seen the host phone within the last 2 minutes.
+  if (!timestamp || base::Time::Now() - timestamp.value() > base::Minutes(2)) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration("PhoneHub.BubbleOpened.Connectable.Page",
+                                GetMetricsScreen(ui_state_when_opened));
 }
 
 void PhoneHubUiController::AddObserver(Observer* observer) {
@@ -160,6 +304,9 @@ void PhoneHubUiController::UpdateUiState(
   if (new_state == ui_state_)
     return;
 
+  PA_LOG(VERBOSE) << __func__
+                  << ": old ui = " << PhoneHubUIStateToString(ui_state_)
+                  << ", new ui = " << PhoneHubUIStateToString(new_state);
   ui_state_ = new_state;
   for (auto& observer : observer_list_)
     observer.OnPhoneHubUiStateChanged();
@@ -183,7 +330,7 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
 
   switch (feature_status) {
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kNotEligibleForFeature:
       return UiState::kHidden;
 

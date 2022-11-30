@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,6 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
         // Simply waking up native should have triggered all outstanding notifications already.
         // Explicitly calling TriggerNotifications here in case Chrome was already running.
         NotificationTriggerScheduler.getInstance().triggerNotifications();
-        // TODO(knollr): wait until native is done
         mShouldReschedule = false;
         callback.taskFinished(false);
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="confirmation_dialog_width">328dp</dimen>
+    <dimen name="confirmation_dialog_side_margin">16dp</dimen>
+</resources>

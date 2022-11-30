@@ -1,13 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_IN_PROCESS_RESOURCE_CREATION_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "content/renderer/pepper/resource_creation_impl.h"
 #include "ppapi/proxy/connection.h"
 
@@ -39,6 +36,12 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
  public:
   PepperInProcessResourceCreation(RendererPpapiHostImpl* host_impl,
                                   PepperPluginInstanceImpl* instance);
+
+  PepperInProcessResourceCreation(const PepperInProcessResourceCreation&) =
+      delete;
+  PepperInProcessResourceCreation& operator=(
+      const PepperInProcessResourceCreation&) = delete;
+
   ~PepperInProcessResourceCreation() override;
 
   // ResourceCreation_API implementation.
@@ -65,8 +68,6 @@ class PepperInProcessResourceCreation : public ResourceCreationImpl {
  private:
   // Non-owning pointer to the host for the current plugin.
   RendererPpapiHostImpl* host_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperInProcessResourceCreation);
 };
 
 }  // namespace content

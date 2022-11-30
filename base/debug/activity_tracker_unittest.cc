@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pending_task.h"
 #include "base/rand_util.h"
 #include "base/synchronization/condition_variable.h"
@@ -87,7 +88,7 @@ class ActivityTrackerTest : public testing::Test {
     return GlobalActivityTracker::Get()->user_data_allocator_.cache_used();
   }
 
-  void HandleProcessExit(int64_t id,
+  void HandleProcessExit(ProcessId id,
                          int64_t stamp,
                          int code,
                          GlobalActivityTracker::ProcessPhase phase,
@@ -101,7 +102,7 @@ class ActivityTrackerTest : public testing::Test {
     exit_data_ = std::move(data);
   }
 
-  int64_t exit_id_ = 0;
+  ProcessId exit_id_ = 0;
   int64_t exit_stamp_;
   int exit_code_;
   GlobalActivityTracker::ProcessPhase exit_phase_;
@@ -219,8 +220,7 @@ TEST_F(ActivityTrackerTest, ScopedTaskTest) {
   {
     PendingTask task1(FROM_HERE, DoNothing());
     ScopedTaskRunActivity activity1(task1);
-    ActivityUserData& user_data1 = activity1.user_data();
-    (void)user_data1;  // Tell compiler it's been used.
+    [[maybe_unused]] ActivityUserData& user_data1 = activity1.user_data();
     EXPECT_TRUE(activity1.IsRecorded());
 
     ASSERT_TRUE(tracker->CreateSnapshot(&snapshot));
@@ -231,8 +231,7 @@ TEST_F(ActivityTrackerTest, ScopedTaskTest) {
     {
       PendingTask task2(FROM_HERE, DoNothing());
       ScopedTaskRunActivity activity2(task2);
-      ActivityUserData& user_data2 = activity2.user_data();
-      (void)user_data2;  // Tell compiler it's been used.
+      [[maybe_unused]] ActivityUserData& user_data2 = activity2.user_data();
 
       ASSERT_TRUE(tracker->CreateSnapshot(&snapshot));
       ASSERT_EQ(2U, snapshot.activity_stack_depth);
@@ -262,6 +261,9 @@ class SimpleLockThread : public SimpleThread {
         data_changed_(false),
         is_running_(false) {}
 
+  SimpleLockThread(const SimpleLockThread&) = delete;
+  SimpleLockThread& operator=(const SimpleLockThread&) = delete;
+
   ~SimpleLockThread() override = default;
 
   void Run() override {
@@ -281,11 +283,9 @@ class SimpleLockThread : public SimpleThread {
   bool WasDataChanged() { return data_changed_; }
 
  private:
-  Lock* lock_;
+  raw_ptr<Lock> lock_;
   bool data_changed_;
   std::atomic<bool> is_running_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleLockThread);
 };
 
 }  // namespace
@@ -319,11 +319,11 @@ TEST_F(ActivityTrackerTest, LockTest) {
   lock.Acquire();
   t2.Start();
   while (!t2.IsRunning())
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
   // t2 can't join until the lock is released but have to give time for t2 to
   // actually block on the lock before releasing it or the results will not
   // be correct.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(200));
+  PlatformThread::Sleep(Milliseconds(200));
   lock.Release();
   // Now the results will be valid.
   t2.Join();
@@ -404,6 +404,9 @@ class SimpleActivityThread : public SimpleThread {
         exit_(false),
         exit_condition_(&lock_) {}
 
+  SimpleActivityThread(const SimpleActivityThread&) = delete;
+  SimpleActivityThread& operator=(const SimpleActivityThread&) = delete;
+
   ~SimpleActivityThread() override = default;
 
   void Run() override {
@@ -433,7 +436,7 @@ class SimpleActivityThread : public SimpleThread {
   }
 
  private:
-  const void* origin_;
+  raw_ptr<const void> origin_;
   Activity::Type activity_;
   ActivityData data_;
 
@@ -441,8 +444,6 @@ class SimpleActivityThread : public SimpleThread {
   std::atomic<bool> exit_;
   Lock lock_;
   ConditionVariable exit_condition_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleActivityThread);
 };
 
 }  // namespace
@@ -483,7 +484,7 @@ TEST_F(ActivityTrackerTest, ThreadDeathTest) {
 TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   // This doesn't actually create and destroy a process. Instead, it uses for-
   // testing interfaces to simulate data created by other processes.
-  const int64_t other_process_id = GetCurrentProcId() + 1;
+  const ProcessId other_process_id = GetCurrentProcId() + 1;
 
   GlobalActivityTracker::CreateWithLocalMemory(kMemorySize, 0, "", 3, 0);
   GlobalActivityTracker* global = GlobalActivityTracker::Get();
@@ -527,7 +528,7 @@ TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   // Change the objects to appear to be owned by another process. Use a "past"
   // time so that exit-time is always later than create-time.
   const int64_t past_stamp = Time::Now().ToInternalValue() - 1;
-  int64_t owning_id;
+  ProcessId owning_id;
   int64_t stamp;
   ASSERT_TRUE(ActivityUserData::GetOwningProcessId(
       global->process_data().GetBaseAddress(), &owning_id, &stamp));
@@ -553,7 +554,7 @@ TEST_F(ActivityTrackerTest, ProcessDeathTest) {
   EXPECT_EQ(other_process_id, owning_id);
 
   // Check that process exit will perform callback and free the allocations.
-  ASSERT_EQ(0, exit_id_);
+  ASSERT_EQ(ProcessId{0}, exit_id_);
   ASSERT_EQ(GlobalActivityTracker::kTypeIdProcessDataRecord,
             global->allocator()->GetType(proc_data_ref));
   ASSERT_EQ(GlobalActivityTracker::kTypeIdActivityTracker,

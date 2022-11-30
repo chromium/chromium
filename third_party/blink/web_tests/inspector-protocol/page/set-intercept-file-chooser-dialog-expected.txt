@@ -8,6 +8,15 @@ Running test: testAcceptMultipleFiles
 file chooser mode: selectMultiple
 selected files: ["path1","path2"]
 
+Running test: testOpenFilePickerAPI
+Failed to execute 'showOpenFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().
+
+Running test: testSaveFilePickerAPI
+Failed to execute 'showSaveFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().
+
+Running test: testDirectoryPickerAPI
+Failed to execute 'showDirectoryPicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog().
+
 Running test: testErrors
 Try enabling file interception in multiclient
 {

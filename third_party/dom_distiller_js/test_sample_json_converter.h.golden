@@ -119,7 +119,7 @@ namespace dom_distiller {
                 if (!value->is_list()) {
                   goto error;
                 }
-                for (const auto& element : value->GetList()) {
+                for (const auto& element : value->GetListDeprecated()) {
                   if (!element.is_bool()) {
                     goto error;
                   }
@@ -136,8 +136,11 @@ namespace dom_distiller {
               base::Value dict(base::Value::Type::DICTIONARY);
               {
                 const auto& repeated_field = message.dummy();
-                base::Value::ListStorage field_list(
-                    repeated_field.begin(), repeated_field.end());
+                base::Value::List field_list;
+                field_list.reserve(repeated_field.size());
+                for (const auto& element : repeated_field) {
+                  field_list.Append(element);
+                }
                 dict.SetKey("1",
                             base::Value(std::move(field_list)));
               }
@@ -151,7 +154,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!(element.is_int() || element.is_double())) {
                   goto error;
                 }
@@ -162,7 +165,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!(element.is_int() || element.is_double())) {
                   goto error;
                 }
@@ -173,7 +176,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!element.is_int()) {
                   goto error;
                 }
@@ -184,7 +187,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!element.is_bool()) {
                   goto error;
                 }
@@ -195,7 +198,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!element.is_string()) {
                   goto error;
                 }
@@ -206,7 +209,7 @@ namespace dom_distiller {
               if (!value->is_list()) {
                 goto error;
               }
-              for (const auto& element : value->GetList()) {
+              for (const auto& element : value->GetListDeprecated()) {
                 if (!dom_distiller::test_sample::proto::json::Repeated::Message::ReadFromValue(element, message->add_message_value())) {
                   goto error;
                 }
@@ -222,45 +225,60 @@ namespace dom_distiller {
             base::Value dict(base::Value::Type::DICTIONARY);
             {
               const auto& repeated_field = message.float_value();
-              base::Value::ListStorage field_list(
-                  repeated_field.begin(), repeated_field.end());
+              base::Value::List field_list;
+              field_list.reserve(repeated_field.size());
+              for (const auto& element : repeated_field) {
+                field_list.Append(element);
+              }
               dict.SetKey("1",
                           base::Value(std::move(field_list)));
             }
             {
               const auto& repeated_field = message.double_value();
-              base::Value::ListStorage field_list(
-                  repeated_field.begin(), repeated_field.end());
+              base::Value::List field_list;
+              field_list.reserve(repeated_field.size());
+              for (const auto& element : repeated_field) {
+                field_list.Append(element);
+              }
               dict.SetKey("2",
                           base::Value(std::move(field_list)));
             }
             {
               const auto& repeated_field = message.int32_value();
-              base::Value::ListStorage field_list(
-                  repeated_field.begin(), repeated_field.end());
+              base::Value::List field_list;
+              field_list.reserve(repeated_field.size());
+              for (const auto& element : repeated_field) {
+                field_list.Append(element);
+              }
               dict.SetKey("3",
                           base::Value(std::move(field_list)));
             }
             {
               const auto& repeated_field = message.bool_value();
-              base::Value::ListStorage field_list(
-                  repeated_field.begin(), repeated_field.end());
+              base::Value::List field_list;
+              field_list.reserve(repeated_field.size());
+              for (const auto& element : repeated_field) {
+                field_list.Append(element);
+              }
               dict.SetKey("4",
                           base::Value(std::move(field_list)));
             }
             {
               const auto& repeated_field = message.string_value();
-              base::Value::ListStorage field_list(
-                  repeated_field.begin(), repeated_field.end());
+              base::Value::List field_list;
+              field_list.reserve(repeated_field.size());
+              for (const auto& element : repeated_field) {
+                field_list.Append(element);
+              }
               dict.SetKey("5",
                           base::Value(std::move(field_list)));
             }
             {
               const auto& repeated_field = message.message_value();
-              base::Value::ListStorage field_list;
+              base::Value::List field_list;
               field_list.reserve(repeated_field.size());
               for (const auto& element : repeated_field) {
-                field_list.push_back(
+                field_list.Append(
                     dom_distiller::test_sample::proto::json::Repeated::Message::WriteToValue(element));
               }
               dict.SetKey("6",

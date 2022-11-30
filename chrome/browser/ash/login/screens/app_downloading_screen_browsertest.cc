@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -26,24 +27,18 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kAppDownloadingId[] = "app-downloading";
 
 const test::UIPath kTitle = {kAppDownloadingId, "title"};
-const test::UIPath kTitlePlural = {kAppDownloadingId, "title-plural"};
-const test::UIPath kTitleSingular = {kAppDownloadingId, "title-singular"};
 const test::UIPath kContinueSetupButton = {kAppDownloadingId,
                                            "continue-setup-button"};
-
-}  // namespace
 
 class AppDownloadingScreenTest : public OobeBaseTest {
  public:
@@ -95,23 +90,17 @@ class AppDownloadingScreenTest : public OobeBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   ShowAppDownloadingScreen();
 
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().ExpectVisiblePath(kTitle);
-  } else {
-    test::OobeJS().ExpectVisiblePath(kTitlePlural);
-    test::OobeJS().ExpectHiddenPath(kTitleSingular);
-
-    test::OobeJS().ExpectElementText(
-        l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                  u"0"),
-        kTitlePlural);
-  }
+  test::OobeJS().ExpectVisiblePath(kTitle);
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
@@ -119,6 +108,10 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, NoAppsSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   base::Value apps(base::Value::Type::LIST);
   apps.Append("app.test.package.1");
@@ -130,17 +123,7 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().ExpectVisiblePath(kTitle);
-  } else {
-    test::OobeJS().ExpectVisiblePath(kTitleSingular);
-    test::OobeJS().ExpectHiddenPath(kTitlePlural);
-
-    test::OobeJS().ExpectElementText(
-        l10n_util::GetStringUTF8(
-            IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_SINGULAR),
-        kTitleSingular);
-  }
+  test::OobeJS().ExpectVisiblePath(kTitle);
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
@@ -148,6 +131,10 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, SingleAppSelected) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->defer_oobe_flow_finished_for_tests = true;
+
   Login();
   base::Value apps(base::Value::Type::LIST);
   apps.Append("app.test.package.1");
@@ -161,21 +148,12 @@ IN_PROC_BROWSER_TEST_F(AppDownloadingScreenTest, MultipleAppsSelected) {
   test::OobeJS().CreateVisibilityWaiter(true, kContinueSetupButton)->Wait();
   test::OobeJS().ExpectEnabledPath(kContinueSetupButton);
 
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().ExpectVisiblePath(kTitle);
-  } else {
-    test::OobeJS().ExpectVisiblePath(kTitlePlural);
-    test::OobeJS().ExpectHiddenPath(kTitleSingular);
-
-    test::OobeJS().ExpectElementText(
-        l10n_util::GetStringFUTF8(IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE_PLURAL,
-                                  u"2"),
-        kTitlePlural);
-  }
+  test::OobeJS().ExpectVisiblePath(kTitle);
 
   test::OobeJS().TapOnPath(kContinueSetupButton);
 
   WaitForScreenExit();
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

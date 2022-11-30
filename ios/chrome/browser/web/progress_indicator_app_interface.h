@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // called from either app or test code.
 @interface ProgressIndicatorAppInterface : NSObject
 
-// Matcher for an MDCProgressView with |progress|.
+// Matcher for an MDCProgressView with `progress`.
 + (id<GREYMatcher>)progressViewWithProgress:(CGFloat)progress;
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -21,18 +19,30 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 namespace content {
+
+class RenderProcessHost;
 
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderProcessHostImpl. It does not support creating services that require a
 // frame context (ie. CDMs and renderers).
-// It is used in cases without a frame context, e.g. WebRTC's
-// RTCVideoDecoderFactory to create hardware video decoders using
-// MojoVideoDecoder, and WebCodecs audio/video decoding in workers.
-class CONTENT_EXPORT FramelessMediaInterfaceProxy final
+//
+// It is used in cases without a frame context, namely by WebRTC, WebCodecs
+// (which may be operating in a worker context), and for early querying of
+// supported codecs.
+class FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
-  FramelessMediaInterfaceProxy();
+  explicit FramelessMediaInterfaceProxy(RenderProcessHost* render_process_host);
+
+  FramelessMediaInterfaceProxy(const FramelessMediaInterfaceProxy&) = delete;
+  FramelessMediaInterfaceProxy& operator=(const FramelessMediaInterfaceProxy&) =
+      delete;
+
   ~FramelessMediaInterfaceProxy() final;
 
   void Add(mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
@@ -41,7 +51,11 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
-      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) final;
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) final;
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) final;
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
@@ -50,7 +64,7 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
       const base::UnguessableToken& overlay_plane_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void CreateMediaPlayerRenderer(
       mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
           client_extension_remote,
@@ -62,15 +76,17 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
           client_extension,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
-#endif  // defined(OS_ANDROID)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver) final;
-#endif  // defined(OS_WIN)
-  void CreateCdm(const std::string& key_system,
-                 const media::CdmConfig& cdm_config,
+          renderer_extension_receiver,
+      mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
+          client_extension_remote) final;
+#endif  // BUILDFLAG(IS_WIN)
+  void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) final;
 
  private:
@@ -84,8 +100,25 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
   // Connections to the renderer.
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Connection to the StableVideoDecoderFactory that lives in a utility
+  // process. This is only used for out-of-process video decoding and only when
+  // the FramelessMediaInterfaceProxy is created without a RenderProcessHost
+  // (e.g., to get the supported video decoder configurations). Note that we
+  // make this a member instead of a local variable inside CreateVideoDecoder()
+  // in order to keep the video decoder process alive for the lifetime of the
+  // FramelessMediaInterfaceProxy.
+  mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
+      stable_vd_factory_remote_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  // FramelessMediaInterfaceProxy is fully owned by the RenderProcessHostImpl,
+  // and the latter never gives up that ownership. Therefore,
+  // *|render_process_host_| will never be destroyed before it's used by
+  // *|this|.
+  const raw_ptr<RenderProcessHost> render_process_host_ = nullptr;
+
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(FramelessMediaInterfaceProxy);
 };
 
 }  // namespace content

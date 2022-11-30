@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,6 +18,7 @@ component("base") {
 
   public_deps = [
     "//base",
+    "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
   ]
@@ -43,8 +44,8 @@ component("typemap_traits") {
     "string16_mojom_traits.h",
     "text_direction_mojom_traits.cc",
     "text_direction_mojom_traits.h",
-    "thread_priority_mojom_traits.cc",
-    "thread_priority_mojom_traits.h",
+    "thread_type_mojom_traits.cc",
+    "thread_type_mojom_traits.h",
   ]
 
   if (is_android) {
@@ -58,6 +59,8 @@ component("typemap_traits") {
     sources += [
       "logfont_win_mojom_traits.cc",
       "logfont_win_mojom_traits.h",
+      "wstring_mojom_traits.cc",
+      "wstring_mojom_traits.h",
     ]
   }
 
@@ -80,18 +83,26 @@ component("shared_typemap_traits") {
   sources = [
     "big_buffer_mojom_traits.cc",
     "big_buffer_mojom_traits.h",
+    "byte_string_mojom_traits.cc",
+    "byte_string_mojom_traits.h",
     "file_info_mojom_traits.cc",
     "file_info_mojom_traits.h",
     "file_mojom_traits.cc",
     "file_mojom_traits.h",
     "file_path_mojom_traits.cc",
     "file_path_mojom_traits.h",
+    "generic_pending_associated_receiver_mojom_traits.cc",
+    "generic_pending_associated_receiver_mojom_traits.h",
     "generic_pending_receiver_mojom_traits.cc",
     "generic_pending_receiver_mojom_traits.h",
+    "int128_mojom_traits.cc",
+    "int128_mojom_traits.h",
     "read_only_buffer_mojom_traits.cc",
     "read_only_buffer_mojom_traits.h",
     "read_only_file_mojom_traits.cc",
     "read_only_file_mojom_traits.h",
+    "safe_base_name_mojom_traits.cc",
+    "safe_base_name_mojom_traits.h",
     "shared_memory_mojom_traits.cc",
     "shared_memory_mojom_traits.h",
     "time_mojom_traits.cc",
@@ -110,6 +121,7 @@ component("shared_typemap_traits") {
     ":base",
     "//base:i18n",
     "//mojo/public/mojom/base:base_shared",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -119,16 +131,19 @@ source_set("tests") {
   sources = [
     "big_buffer_unittest.cc",
     "big_string_unittest.cc",
+    "byte_string_unittest.cc",
     "file_path_unittest.cc",
     "file_unittest.cc",
+    "int128_unittest.cc",
     "memory_allocator_dump_cross_process_uid_unittest.cc",
     "process_id_unittest.cc",
     "read_only_buffer_unittest.cc",
     "ref_counted_memory_unittest.cc",
+    "safe_base_name_unittest.cc",
     "shared_memory_unittest.cc",
     "string16_unittest.cc",
     "text_direction_unittest.cc",
-    "thread_priority_unittest.cc",
+    "thread_type_unittest.cc",
     "time_unittest.cc",
     "token_unittest.cc",
     "unguessable_token_unittest.cc",
@@ -143,5 +158,10 @@ source_set("tests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
+
+  if (is_fuchsia) {
+    public_deps += [ "//mojo/public/cpp/base/fuchsia:unittests" ]
+  }
 }

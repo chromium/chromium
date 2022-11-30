@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/shortcut.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 
@@ -34,10 +35,10 @@ void OnLnkParseDone(
     mojom::LnkParsingResult* out_result_code,
     base::OnceClosure callback,
     mojom::LnkParsingResult result_code,
-    const base::Optional<std::wstring>& optional_target_path,
-    const base::Optional<std::wstring>& optional_working_dir,
-    const base::Optional<std::wstring>& optional_command_line_arguments,
-    const base::Optional<std::wstring>& optional_icon_location,
+    const absl::optional<std::wstring>& optional_target_path,
+    const absl::optional<std::wstring>& optional_working_dir,
+    const absl::optional<std::wstring>& optional_command_line_arguments,
+    const absl::optional<std::wstring>& optional_icon_location,
     int32_t optional_icon_index);
 
 }  // namespace chrome_cleaner

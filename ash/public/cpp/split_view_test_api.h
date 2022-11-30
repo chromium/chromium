@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_SPLIT_VIEW_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -21,6 +20,10 @@ class ASH_EXPORT SplitViewTestApi {
   enum class SnapPosition { NONE, LEFT, RIGHT };
 
   SplitViewTestApi();
+
+  SplitViewTestApi(const SplitViewTestApi&) = delete;
+  SplitViewTestApi& operator=(const SplitViewTestApi&) = delete;
+
   ~SplitViewTestApi();
 
   // Snaps the window to left/right in the split view.
@@ -29,8 +32,10 @@ class ASH_EXPORT SplitViewTestApi {
   // Swaps left and right windows in the split view.
   void SwapWindows();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SplitViewTestApi);
+  // Gets the left and right window in the split view. May be null if there
+  // isn't one.
+  aura::Window* GetLeftWindow() const;
+  aura::Window* GetRightWindow() const;
 };
 
 }  // namespace ash

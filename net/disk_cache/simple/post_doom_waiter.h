@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/cache_type.h"
 
@@ -20,7 +19,7 @@ namespace disk_cache {
 struct SimplePostDoomWaiter {
   SimplePostDoomWaiter();
   explicit SimplePostDoomWaiter(base::OnceClosure to_run_post_doom);
-  explicit SimplePostDoomWaiter(SimplePostDoomWaiter&& other);
+  SimplePostDoomWaiter(SimplePostDoomWaiter&& other);
   ~SimplePostDoomWaiter();
   SimplePostDoomWaiter& operator=(SimplePostDoomWaiter&& other);
 
@@ -36,6 +35,10 @@ class SimplePostDoomWaiterTable
 
  public:
   explicit SimplePostDoomWaiterTable(net::CacheType cache_type);
+
+  SimplePostDoomWaiterTable(const SimplePostDoomWaiterTable&) = delete;
+  SimplePostDoomWaiterTable& operator=(const SimplePostDoomWaiterTable&) =
+      delete;
 
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // to run new operations for this |entry_hash| until the Doom is completed.
@@ -60,8 +63,6 @@ class SimplePostDoomWaiterTable
   net::CacheType cache_type_;
   std::unordered_map<uint64_t, std::vector<SimplePostDoomWaiter>>
       entries_pending_doom_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimplePostDoomWaiterTable);
 };
 
 }  // namespace disk_cache

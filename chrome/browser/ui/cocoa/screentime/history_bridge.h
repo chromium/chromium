@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class HistoryDeleter;
 // the system ScreenTime backend. HistoryBridge is responsible for observing
 // deletions of part or all of the history in a HistoryService and deleting the
 // corresponding history from ScreenTime. It passes these to the provided
-// HistoryDeleter, which proxies to the system API (when in production use on
-// macOS 11) or to a test fake.
+// HistoryDeleter, which proxies to the system API (when in production use) or
+// to a test fake.
 class HistoryBridge : public KeyedService,
                       public history::HistoryServiceObserver {
  public:

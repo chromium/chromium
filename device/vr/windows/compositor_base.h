@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/util/fps_meter.h"
 #include "device/vr/util/sliding_average.h"
@@ -22,9 +23,13 @@
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"
 #endif
+
+namespace gpu::gles2 {
+class GLES2Interface;
+}  // namespace gpu::gles2
 
 namespace device {
 
@@ -49,6 +54,7 @@ class XRDeviceAbstraction {
   virtual device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode);
   virtual bool CanEnableAntiAliasing() const;
+  virtual std::vector<mojom::XRViewPtr> GetDefaultViews() const = 0;
 };
 
 class XRCompositorCommon : public base::Thread,
@@ -61,6 +67,10 @@ class XRCompositorCommon : public base::Thread,
       base::OnceCallback<void(bool result, mojom::XRSessionPtr)>;
 
   XRCompositorCommon();
+
+  XRCompositorCommon(const XRCompositorCommon&) = delete;
+  XRCompositorCommon& operator=(const XRCompositorCommon&) = delete;
+
   ~XRCompositorCommon() override;
 
   // on_presentation_ended will be called when this the compositor stops
@@ -87,13 +97,15 @@ class XRCompositorCommon : public base::Thread,
 
   void RequestOverlay(mojo::PendingReceiver<mojom::ImmersiveOverlay> receiver);
 
+  virtual gpu::gles2::GLES2Interface* GetContextGL() = 0;
+
  protected:
   virtual bool UsesInputEventing();
   void SetVisibilityState(mojom::XRVisibilityState visibility_state);
   const mojom::VRStageParametersPtr& GetCurrentStageParameters() const;
   void SetStageParameters(mojom::VRStageParametersPtr stage_parameters);
-#if defined(OS_WIN)
-  D3D11TextureHelper texture_helper_;
+#if BUILDFLAG(IS_WIN)
+  D3D11TextureHelper texture_helper_{this};
 #endif
   int16_t next_frame_id_ = 0;
 
@@ -111,8 +123,11 @@ class XRCompositorCommon : public base::Thread,
   // processes
   virtual bool IsUsingSharedImages() const;
 
+#if BUILDFLAG(IS_WIN)
   void SubmitFrameWithTextureHandle(int16_t frame_index,
-                                    mojo::PlatformHandle texture_handle) final;
+                                    mojo::PlatformHandle texture_handle,
+                                    const gpu::SyncToken& sync_token) final;
+#endif
 
  private:
   // base::Thread overrides:
@@ -155,6 +170,7 @@ class XRCompositorCommon : public base::Thread,
   // ImmersiveOverlay:
   void SubmitOverlayTexture(int16_t frame_id,
                             mojo::PlatformHandle texture,
+                            const gpu::SyncToken& sync_token,
                             const gfx::RectF& left_bounds,
                             const gfx::RectF& right_bounds,
                             SubmitOverlayTextureCallback callback) override;
@@ -189,7 +205,7 @@ class XRCompositorCommon : public base::Thread,
   SlidingTimeDeltaAverage webxr_js_time_;
   SlidingTimeDeltaAverage webxr_gpu_time_;
 
-  base::Optional<OutstandingFrame> pending_frame_;
+  absl::optional<OutstandingFrame> pending_frame_;
 
   bool is_presenting_ = false;  // True if we have a presenting session.
   bool webxr_visible_ = true;   // The browser may hide a presenting session.
@@ -214,8 +230,6 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRVisibilityState::VISIBLE;
   mojom::VRStageParametersPtr current_stage_parameters_;
   uint32_t stage_parameters_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRCompositorCommon);
 };
 
 }  // namespace device

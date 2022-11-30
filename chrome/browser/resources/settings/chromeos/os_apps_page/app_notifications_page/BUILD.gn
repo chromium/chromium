@@ -1,0 +1,58 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+polymer_element_files = [
+  "app_notifications_subpage.js",
+  "app_notification_row.js",
+]
+
+js_type_check("closure_compile") {
+  closure_flags = os_settings_closure_flags
+  is_polymer3 = true
+  deps = [
+    ":app_notification_row",
+    ":app_notifications_subpage",
+    ":mojo_interface_provider",
+  ]
+}
+
+js_library("app_notifications_subpage") {
+  deps = [
+    ":app_notification_row",
+    ":mojo_interface_provider",
+    "../..:deep_linking_behavior",
+    "../..:metrics_recorder",
+    "../..:os_route",
+    "../..:route_observer_behavior",
+    "../../..:router",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("app_notification_row") {
+  deps = [
+    "../..:metrics_recorder",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

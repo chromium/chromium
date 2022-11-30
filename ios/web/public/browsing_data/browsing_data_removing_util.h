@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,8 @@ enum class ClearBrowsingDataMask {
 
 };
 
-// Clears the browsing data store in the Web layer. |modified_since| is the data
-// since which all data is removed. |closure| is called when the browsing data
+// Clears the browsing data store in the Web layer. `modified_since` is the data
+// since which all data is removed. `closure` is called when the browsing data
 // have been cleared.
 // TODO(crbug.com/906199): Remove closure once WebStateObserver callback is
 // implemented.
@@ -68,7 +68,7 @@ inline ClearBrowsingDataMask& operator&=(ClearBrowsingDataMask& lhs,
   return lhs;
 }
 
-// Returns whether the |flag| is set in |mask|.
+// Returns whether the `flag` is set in `mask`.
 constexpr bool IsRemoveDataMaskSet(ClearBrowsingDataMask mask,
                                    ClearBrowsingDataMask flag) {
   return (mask & flag) == flag;

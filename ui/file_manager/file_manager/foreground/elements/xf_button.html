@@ -1,0 +1,90 @@
+
+<style>
+  cr-icon-button,
+  cr-button {
+    margin-inline-start: 0;
+  }
+
+  cr-button {
+    --active-bg: var(--cros-button-background-color-secondary-hover);
+    /* The shadow can only be customized via rgb values, to turn the shadow
+       off make the shadow appear as the background color. */
+    --active-shadow-rgb: var(--cros-bg-color-elevation-2-rgb);
+    --border-color: transparent;
+    --focus-shadow-color: var(--cros-focus-ring-color);
+    --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+    --hover-border-color: transparent;
+    --ink-color: var(--cros-button-background-color-secondary-hover);
+    --ripple-opacity: 100%;
+    --text-color: var(--cros-button-label-color-secondary);
+  }
+
+  cr-icon-button {
+    --cr-active-bg-color: var(--cros-icon-button-pressed-color);
+    --cr-focus-outline-color: var(--cros-focus-ring-color);
+    --cr-hover-background-color: var(--cros-ripple-color);
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+  }
+
+  @keyframes setcollapse {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(180deg);
+    }
+  }
+
+  @keyframes setexpand {
+    from {
+      transform: rotate(-180deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  :host([data-category='expand']) {
+      animation: setexpand 200ms forwards;
+  }
+
+  :host([data-category='collapse']) {
+      animation: setcollapse 200ms forwards;
+  }
+
+  :host {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  :host(:not([data-category='dismiss']):not([data-category='extra-button'])) {
+    width: 36px;
+  }
+
+  :host([data-category='dismiss']) #icon {
+    display: none;
+  }
+
+  :host([data-category='extra-button']) #icon {
+    display: none;
+  }
+
+  #dismiss {
+    display: none;
+  }
+
+  #extra-button {
+    display: none;
+  }
+
+  :host([data-category='dismiss']) #dismiss {
+    display: unset;
+  }
+
+  :host([data-category='extra-button']) #extra-button {
+    display: unset;
+  }
+</style>
+<cr-button id='dismiss'>$i18n{DRIVE_WELCOME_DISMISS}</cr-button>
+<cr-button id='extra-button'></cr-button>
+<cr-icon-button id='icon'></cr-icon-button>

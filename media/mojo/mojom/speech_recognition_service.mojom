@@ -1,67 +1,51 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
+import "media/mojo/mojom/audio_data.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/speech_recognition.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/time.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
-// Corresponds to the LangIdEvent.ConfidenceInterval defined in
-// http://google3/speech/soda/public/soda_event.proto.
-enum ConfidenceLevel {
-  kUnknown,
-  kNotConfident,
-  kConfident,
-  kHighlyConfident,
-};
-
-// The main interface a client uses to interact with a speech recognition
-// service process. In Live Caption, every renderer can own one or more
-// Remote<SpeechRecognitionContext>, with the receiver bound through the
-// BrowserInterfaceBroker. In Chrome OS features like Dictation and Projector,
-// every OnDeviceSpeechRecognizer can own a Remote<SpeechRecognitionContext>.
-interface SpeechRecognitionContext {
-  // Bind the recognizers to the speech recognition service. Returns a flag
-  // indicating whether multichannel audio is supported by the speech
-  // recognition service.
-  BindRecognizer(pending_receiver<SpeechRecognitionRecognizer> receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client)
-                 => (bool is_multichannel_supported);
-
+// Like a SpeechRecognitionContext, except it binds AudioSourceFetcher speech
+// recognizer objects, rather than SpeechRecognitionRecognizer objects.  In
+// Chrome OS features like Dictation and Projector, every
+// OnDeviceSpeechRecognizer can own a
+// Remote<AudioSourceSpeechRecognitionContext>.
+interface AudioSourceSpeechRecognitionContext {
   // Prepares microphone audio to be captured from within the
   // SpeechRecognitionService process, with results passed back to the
   // SpeechRecognitionRecognizerClient.
   BindAudioSourceFetcher(
-                 pending_receiver<AudioSourceFetcher> fetcher_receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client,
-                 pending_remote<AudioStreamFactory> factory)
-                 => (bool success);
+      pending_receiver<AudioSourceFetcher> fetcher_receiver,
+      pending_remote<SpeechRecognitionRecognizerClient> client,
+      SpeechRecognitionOptions options)
+      => (bool is_multichannel_supported);
 };
 
 // The main interface to a speech secognition service process.
 // Used by the browser to issue top-level control requests to the service,
 // acquired during process launch.
+[ServiceSandbox=sandbox.mojom.Sandbox.kSpeechRecognition]
 interface SpeechRecognitionService {
-  // Bind the context to a new instance of the speech recognition.
-  BindContext(pending_receiver<SpeechRecognitionContext> context);
+  // Binds a new SpeechRecognitionContext hosted in the service process.
+  BindSpeechRecognitionContext(
+      pending_receiver<SpeechRecognitionContext> context);
 
-  // Sets the URL loader factory used to create network requests.
-  SetUrlLoaderFactory(
-      pending_remote<network.mojom.URLLoaderFactory> url_loader_factory);
+  // Binds a new AudioSourceSpeechRecognitionContext hosted in the service
+  // process.
+  BindAudioSourceSpeechRecognitionContext(
+      pending_receiver<AudioSourceSpeechRecognitionContext> context);
 
   // Sets the file path to the Speech On-Device API (SODA) binary and
   // the config file for the language pack.
   SetSodaPath(mojo_base.mojom.FilePath binary_path,
-      mojo_base.mojom.FilePath config_path);
-
-  // Binds the speech recognition service client used by the speech
-  // recognition service to send messages back to the client.
-  BindSpeechRecognitionServiceClient(
-      pending_remote<SpeechRecognitionServiceClient> client);
+              mojo_base.mojom.FilePath config_path);
 };
 
 // The interface used to start and stop fetching audio from the microphone
@@ -70,88 +54,9 @@ interface AudioSourceFetcher {
   // Begin fetching audio. Results will be returned using the
   // Remote<SpeechRecognitionRecognizerClient> which was passed in
   // BindAudioSourceFetcher.
-  Start();
+  Start(pending_remote<AudioStreamFactory> factory, string device_id,
+        media.mojom.AudioParameters audio_parameters);
 
   // Stops audio fetching.
   Stop();
-};
-
-// The interface used to send messages from the speech recognition service
-// back to the consumer of the service.
-interface SpeechRecognitionServiceClient {
-  // Executed when the network service crashes, prompting the client to
-  // reset the URL loader factory.
-  OnNetworkServiceDisconnect();
-};
-
-// The interface used to pass raw audio from the renderer to the speech
-// recognition service. The remote lives in the renderer process and the
-// receiver lives in the speech recognition process.
-interface SpeechRecognitionRecognizer {
-  // Initialize the speech recognition instance. The speech recognition client
-  // will return the recognition events containing the transcribed audio back
-  // to the originating media.
-  SendAudioToSpeechRecognitionService(AudioDataS16 buffer);
-
-  // Notify the speech recognition recognizer that the caption bubble was
-  // closed. Used to determine whether the caption bubble was visible when
-  // recording watch time.
-  OnCaptionBubbleClosed();
-
-  // Notify the speech recognition recognizer that audio was received by the
-  // renderer after the caption bubble was closed.
-  AudioReceivedAfterBubbleClosed(mojo_base.mojom.TimeDelta duration);
-};
-
-// The interface used to return speech recognition events from the speech
-// recognition service back to the originating media. The remote lives in the
-// speech recognition process and the receiver lives in the renderer process.
-interface SpeechRecognitionRecognizerClient {
-  // Triggered by speech recognition process on a speech recognition event.
-  OnSpeechRecognitionRecognitionEvent(SpeechRecognitionResult result);
-
-  // Triggered by an error within the speech recognition service.
-  OnSpeechRecognitionError();
-
-  // Triggered by speech recognition process on a language identification event.
-  OnLanguageIdentificationEvent(LanguageIdentificationEvent event);
-};
-
-// A speech recognition result created by the speech service and passed to the
-// renderer.
-struct SpeechRecognitionResult {
-  string transcription;
-
-  // A flag indicating whether the result is final. If true, the result is
-  // locked in and the next result returned will not overlap with the previous
-  // final result.
-  bool is_final;
-};
-
-// A language identification event created by the speech recognition service
-// and passed to the browser and renderer.
-struct LanguageIdentificationEvent {
-  // The locale of the language with the highest confidence.
-  string language;
-
-  // The confidence interval.
-  ConfidenceLevel confidence_level;
-};
-
-// The interface used to notify the speech recognition client of events
-// triggered by the browser. The remote lives in the browser process and the
-// receiver lives in the renderer process.
-interface SpeechRecognitionAvailabilityObserver {
-  // Notify the speech recognition client when speech recognition availability
-  // changes.
-  SpeechRecognitionAvailabilityChanged(bool is_speech_recognition_available);
-};
-
-// This interface between the speech recognition client and the browser.
-// The remote lives in the renderer process and the receiver lives in the
-// browser process.
-interface SpeechRecognitionClientBrowserInterface {
-  // Bind the speech recognition availability observer.
-  BindSpeechRecognitionAvailabilityObserver(
-    pending_remote<SpeechRecognitionAvailabilityObserver> observer);
 };

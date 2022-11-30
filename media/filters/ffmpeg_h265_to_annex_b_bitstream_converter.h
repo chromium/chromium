@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 #include "media/formats/mp4/hevc.h"
@@ -29,6 +29,11 @@ class MEDIA_EXPORT FFmpegH265ToAnnexBBitstreamConverter
   explicit FFmpegH265ToAnnexBBitstreamConverter(
       AVCodecParameters* stream_codec_parameters);
 
+  FFmpegH265ToAnnexBBitstreamConverter(
+      const FFmpegH265ToAnnexBBitstreamConverter&) = delete;
+  FFmpegH265ToAnnexBBitstreamConverter& operator=(
+      const FFmpegH265ToAnnexBBitstreamConverter&) = delete;
+
   ~FFmpegH265ToAnnexBBitstreamConverter() override;
 
   // FFmpegBitstreamConverter implementation.
@@ -39,12 +44,9 @@ class MEDIA_EXPORT FFmpegH265ToAnnexBBitstreamConverter
 
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  AVCodecParameters* stream_codec_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegH265ToAnnexBBitstreamConverter);
+  raw_ptr<AVCodecParameters> stream_codec_parameters_;
 };
 
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_FFMPEG_H265_TO_ANNEX_B_BITSTREAM_CONVERTER_H_
-

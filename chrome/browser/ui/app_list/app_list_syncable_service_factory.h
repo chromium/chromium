@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -19,7 +19,7 @@ class AppListSyncableService;
 // Singleton that owns all AppListSyncableServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated AppListSyncableService.
-class AppListSyncableServiceFactory : public BrowserContextKeyedServiceFactory {
+class AppListSyncableServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static AppListSyncableService* GetForProfile(Profile* profile);
 
@@ -46,8 +46,6 @@ class AppListSyncableServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

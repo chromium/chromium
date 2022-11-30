@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Information about Ash's native theme to be propagated to lacros.
+[Stable]
+struct NativeThemeInfo {
+  // If true, then dark mode is enabled
+  // If false, then dark mode is disabled.
+  bool dark_mode;
+};
+
+// Interface for native theme info observers. Implemented by lacros-chrome.
+// Used by ash-chrome to send native theme info updates.
+[Stable, Uuid="87938675-6596-4ddd-a0d1-3110c27651e9"]
+interface NativeThemeInfoObserver {
+  // Called when an observed native theme info changes, subject to throttling
+  // to avoid flodding.
+  OnNativeThemeInfoChanged@0(NativeThemeInfo native_theme_info);
+};
+
+// Interface that allows clients to receive info and configs related to the
+// system (ash) native theme changes. Implemented by ash-chrome.
+[Stable, Uuid="0500f813-27d6-4102-a5d1-0115827c1aae"]
+interface NativeThemeService {
+  // Adds an observer for changes in native theme info. The observer is fired
+  // immediately with the current value. Multiple observers may be registered.
+  AddNativeThemeInfoObserver@0(
+      pending_remote<NativeThemeInfoObserver> observer);
+};

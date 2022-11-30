@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
 import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
+import "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/events/mojom/event_constants.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
@@ -132,6 +133,7 @@ struct GestureData {
   blink.mojom.GestureDevice source_device;
   bool is_source_touch_event_set_blocking;
   ui.mojom.EventPointerType primary_pointer_type;
+  int32 primary_unique_touch_event_id;
   int32 unique_touch_event_id;
   gfx.mojom.Size? contact_size;
   ScrollData? scroll_data;
@@ -191,11 +193,51 @@ struct EditCommand {
   string value;
 };
 
+// A structure that indicates selection offsets if the selection could be
+// established.
+struct SelectAroundCaretResult {
+  // The offset differences between the extended selection and the initial
+  // selection (which is a caret).
+  int32 extended_start_adjust;
+  int32 extended_end_adjust;
+  // The offset differences between the word selection (regardless of the
+  // extended selection granularity) and the initial selection (which is a
+  // caret).
+  int32 word_start_adjust;
+  int32 word_end_adjust;
+};
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.input
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SelectionGranularity
+enum SelectionGranularity {
+  kWord,
+  kSentence,
+};
+
+// An enumeration that describes the allowed non-directional pan action for the
+// element under pointer being considered.
+enum PanAction {
+  // No pan action allowed.
+  kNone,
+  // Pan action is scroll.
+  kScroll,
+  // Pan action moves cursor when initial touch move is in horizontal direction,
+  // or scrolls in the vertical direction.
+  kMoveCursorOrScroll,
+  // Pan action is stylus writable.
+  kStylusWritable,
+};
+
 // Interface exposed by the browser to the renderer.
 interface WidgetInputHandlerHost {
   // When the renderer's main thread computes the touch action, send this to the
   // browser.
   SetTouchActionFromMain(cc.mojom.TouchAction touch_action);
+
+  // Sets the pan action possible for the element under pointer which could be
+  // one of the actions described under enum PanAction. Note that this is
+  // different from TouchAction and does not contain directional pan info.
+  SetPanAction(PanAction pan_action);
 
   // Sent by the compositor when input scroll events are dropped due to bounds
   // restrictions on the root scroll offset.
@@ -278,6 +320,9 @@ interface FrameWidgetInputHandler {
   // editable field.
   SetEditableSelectionOffsets(int32 start, int32 end);
 
+  // Stylus Writing - perform Gesture action in input using gesture data.
+  HandleStylusWritingGestureAction(blink.mojom.StylusWritingGestureData gesture_data);
+
   // Message payload is the name/value of a WebCore edit command to execute.
   ExecuteEditCommand(string command, mojo_base.mojom.String16? value);
 
@@ -313,25 +358,57 @@ interface FrameWidgetInputHandler {
   AdjustSelectionByCharacterOffset(
       int32 start, int32 end, SelectionMenuBehavior behavior);
 
-  // Requests the renderer to select word around caret.
-  // Expects ack with new selection information when finished. |start_adjust|
-  // and |end_adjust| are the start and end offset difference between the
-  // current selection and the previous selection (which is a caret).
+  // Requests the renderer to select the specified granularity around caret and
+  // to potentially show the selection handles and / or context menu after
+  // selection.
+  // Expects ack with new selection information when finished, or null if the
+  // selection failed.
   [EnableIf=is_android]
-  SelectWordAroundCaret()
-      => (bool did_select, int32 start_adjust, int32 end_adjust);
+  SelectAroundCaret(SelectionGranularity granularity, bool should_show_handle,
+                    bool should_show_context_menu)
+      => (SelectAroundCaretResult? result);
 
   // Requests the renderer to move the selection extent point to a new position.
   // Expects a MoveRangeSelectionExtent_ACK message when finished.
   MoveRangeSelectionExtent(gfx.mojom.Point extent);
 
-  // Tells the renderer to scroll the currently focused node into rect only if
+  // Tells the renderer to scroll the currently focused node into view only if
   // the currently focused node is a Text node (textfield, text area or content
   // editable divs).
-  ScrollFocusedEditableNodeIntoRect(gfx.mojom.Rect rect);
+  ScrollFocusedEditableNodeIntoView();
+
+  // Replies when the next PageScaleAnimation has completed. Can only be called
+  // on the outermost main frame. Can be used to reliably wait for a
+  // ScrollFocusedEditableNodeIntoView to complete since that may create a
+  // PageScaleAnimation which can take several frames to complete.
+  // ScrollFocusedEditableNodeIntoView cannot use a reply callback for this
+  // since it may be called on a subframe but the scroll will be completed in
+  // another renderer when it bubbles up to the root. Additionally, the caller
+  // may not be the one to have called ScrollFocusedEditableNodeIntoView; for
+  // example, a test that simulates tapping an input box.
+  WaitForPageScaleAnimationForTesting() => ();
 
   // Requests the renderer to move the caret selection toward the point.
   MoveCaret(gfx.mojom.Point point);
+};
+
+// An enumeration describing the active and focus states. If a widget is
+// focused then it must also be active, therefore there is no focused and
+// not active value in this enumeration. All widgets in a tab will have
+// the same active state. Active state is tab specific, and focus state is
+// frame specific. See
+// https://www.chromium.org/developers/design-documents/aura/focus-and-activation/
+enum FocusState
+{
+  kFocused,
+  kNotFocusedAndActive,
+  kNotFocusedAndNotActive
+};
+
+// TODO(sinansahin): DidOverscrollParams and TouchActionOptional can be moved
+//  into this struct as well.
+struct ScrollResultData {
+  gfx.mojom.PointF? root_scroll_offset;
 };
 
 // Interface exposed by the renderer to the browser. This class represents
@@ -339,7 +416,7 @@ interface FrameWidgetInputHandler {
 // for an interface at the frame level.
 interface WidgetInputHandler {
   // Tells widget focus has been changed.
-  SetFocus(bool focused);
+  SetFocus(FocusState state);
 
   // Tells widget mouse capture has been lost.
   MouseCaptureLost();
@@ -362,12 +439,14 @@ interface WidgetInputHandler {
   CursorVisibilityChanged(bool visible);
 
   // This message sends a string being composed with an input method.
+  // Note, the response is specifically for Devtools to learn about completion
   ImeSetComposition(mojo_base.mojom.String16 text,
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
-                    gfx.mojom.Range range, int32 start, int32 end);
+                    gfx.mojom.Range range, int32 start, int32 end) => ();
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
+   // Note, the response is specifically for Devtools to learn about completion
   ImeCommitText(mojo_base.mojom.String16 text,
                 array<ui.mojom.ImeTextSpan> ime_text_spans,
                 gfx.mojom.Range range, int32 relative_cursor_position) => ();
@@ -396,7 +475,8 @@ interface WidgetInputHandler {
          ui.mojom.LatencyInfo updated_latency,
          blink.mojom.InputEventResultState state,
          DidOverscrollParams? overscroll,
-         TouchActionOptional? touch_action);
+         TouchActionOptional? touch_action,
+         ScrollResultData? scroll_result_data);
 
   // Sends a non-blocking input event to the render widget. The behaviour
   // of this API is the same as DispatchEvent just that there is no callback
@@ -424,4 +504,3 @@ interface WidgetInputHandler {
   GetFrameWidgetInputHandler(
       pending_associated_receiver<FrameWidgetInputHandler> interface_request);
 };
-

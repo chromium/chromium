@@ -1,11 +1,45 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
-<span id="e"></span>
-<span id="f"></span>
-<script src="script-tests/request-animation-frame-prefix.js"></script>
-</body>
-</html>
+<title>Tests the timestamps provided to prefixed webkitRequestAnimationFrame callbacks</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+  async_test(t => {
+    var firstTimestamp;
+    var secondTimestamp;
+    var legacyFirstTimestamp;
+    var legacySecondTimestamp;
+    var deltaError;
+
+    function busyWait(millis) {
+      var start = Date.now();
+      while (Date.now() - start < millis) { }
+    }
+
+    window.requestAnimationFrame(function(timestamp) {
+      firstTimestamp = timestamp;
+    });
+
+    window.webkitRequestAnimationFrame(function(timestamp) {
+      legacyFirstTimestamp = timestamp;
+
+      window.requestAnimationFrame(function(timestamp) {
+        secondTimestamp = timestamp;
+      });
+
+      window.webkitRequestAnimationFrame(function(timestamp) {
+        legacySecondTimestamp = timestamp;
+
+        t.step(function() {
+          assert_greater_than_equal(legacyFirstTimestamp, firstTimestamp);
+          assert_greater_than_equal(legacySecondTimestamp, secondTimestamp);
+          deltaError = Math.abs((legacySecondTimestamp - legacyFirstTimestamp) - (secondTimestamp - firstTimestamp));
+          assert_true(deltaError < 0.001);
+        });
+        t.done();
+      });
+
+      busyWait(10);
+    });
+  }, "Test the timestamps provided to prefixed rAF callbacks");
+</script>

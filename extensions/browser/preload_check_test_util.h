@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/preload_check.h"
 
@@ -22,6 +21,10 @@ namespace extensions {
 class PreloadCheckRunner {
  public:
   PreloadCheckRunner();
+
+  PreloadCheckRunner(const PreloadCheckRunner&) = delete;
+  PreloadCheckRunner& operator=(const PreloadCheckRunner&) = delete;
+
   virtual ~PreloadCheckRunner();
 
   // Starts the check, providing OnCheckComplete as the callback.
@@ -50,14 +53,16 @@ class PreloadCheckRunner {
 
   // Using a RunLoop data member would trigger tricky timing troubles.
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreloadCheckRunner);
 };
 
 // Stub for a PreloadCheck that calls the callback with the given error(s).
 class PreloadCheckStub : public PreloadCheck {
  public:
   explicit PreloadCheckStub(const Errors& errors);
+
+  PreloadCheckStub(const PreloadCheckStub&) = delete;
+  PreloadCheckStub& operator=(const PreloadCheckStub&) = delete;
+
   ~PreloadCheckStub() override;
 
   void set_is_async(bool is_async) { is_async_ = is_async; }
@@ -74,8 +79,6 @@ class PreloadCheckStub : public PreloadCheck {
   Errors errors_;
 
   base::WeakPtrFactory<PreloadCheckStub> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PreloadCheckStub);
 };
 
 }  // namespace extensions

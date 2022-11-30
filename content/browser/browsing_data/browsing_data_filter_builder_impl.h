@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <set>
 
-#include "base/macros.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/storage_partition.h"
 #include "url/origin.h"
 
 namespace content {
@@ -17,14 +18,28 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
     : public BrowsingDataFilterBuilder {
  public:
   explicit BrowsingDataFilterBuilderImpl(Mode mode);
+
+  BrowsingDataFilterBuilderImpl(const BrowsingDataFilterBuilderImpl&) = delete;
+  BrowsingDataFilterBuilderImpl& operator=(
+      const BrowsingDataFilterBuilderImpl&) = delete;
+
   ~BrowsingDataFilterBuilderImpl() override;
 
   // BrowsingDataFilterBuilder implementation:
   void AddOrigin(const url::Origin& origin) override;
   void AddRegisterableDomain(const std::string& registrable_domain) override;
+  void SetCookiePartitionKeyCollection(
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection)
+      override;
+  bool IsCrossSiteClearSiteDataForCookies() const override;
+  void SetStorageKey(
+      const absl::optional<blink::StorageKey>& storage_key) override;
+  bool HasStorageKey() const override;
+  bool MatchesWithSavedStorageKey(
+      const blink::StorageKey& other_key) const override;
   bool MatchesAllOriginsAndDomains() override;
   base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() override;
-  base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter()
+  content::StoragePartition::StorageKeyMatcherFunction BuildStorageKeyFilter()
       override;
   network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() override;
   network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter() override;
@@ -32,15 +47,17 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
       override;
   Mode GetMode() override;
   std::unique_ptr<BrowsingDataFilterBuilder> Copy() override;
-  bool operator==(const BrowsingDataFilterBuilder& other) override;
 
  private:
+  bool IsEqual(const BrowsingDataFilterBuilder& other) const override;
+
   Mode mode_;
 
   std::set<url::Origin> origins_;
   std::set<std::string> domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataFilterBuilderImpl);
+  net::CookiePartitionKeyCollection cookie_partition_key_collection_ =
+      net::CookiePartitionKeyCollection::ContainsAll();
+  absl::optional<blink::StorageKey> storage_key_ = absl::nullopt;
 };
 
 }  // content

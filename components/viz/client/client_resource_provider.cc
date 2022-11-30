@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bits.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -23,13 +23,14 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace viz {
 
 struct ClientResourceProvider::ImportedResource {
   TransferableResource resource;
-  std::unique_ptr<SingleReleaseCallback> release_callback;
+  ReleaseCallback release_callback;
   int exported_count = 0;
   bool marked_for_deletion = false;
 
@@ -42,7 +43,7 @@ struct ClientResourceProvider::ImportedResource {
 
   ImportedResource(ResourceId id,
                    const TransferableResource& resource,
-                   std::unique_ptr<SingleReleaseCallback> release_callback)
+                   ReleaseCallback release_callback)
       : resource(resource),
         release_callback(std::move(release_callback)),
         // If the resource is immediately deleted, it returns the same SyncToken
@@ -260,15 +261,8 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
       continue;
     }
 
-    // Save the ReleaseCallback to run after iterating through internal data
-    // structures, in case it calls back into this class.
-    auto run_callback = [](std::unique_ptr<SingleReleaseCallback> cb,
-                           const gpu::SyncToken& sync_token, bool lost) {
-      cb->Run(sync_token, lost);
-      // |cb| is destroyed when leaving scope.
-    };
     release_callbacks.push_back(
-        base::BindOnce(run_callback, std::move(imported.release_callback),
+        base::BindOnce(std::move(imported.release_callback),
                        imported.returned_sync_token, imported.returned_lost));
     // We don't want to keep this resource, so we leave |imported_keep_end_it|
     // pointing to it (since it points past the end of what we're keeping). We
@@ -291,7 +285,7 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
 
 ResourceId ClientResourceProvider::ImportResource(
     const TransferableResource& resource,
-    std::unique_ptr<SingleReleaseCallback> release_callback) {
+    ReleaseCallback release_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ResourceId id = id_generator_.GenerateNextId();
   auto result = imported_resources_.emplace(
@@ -307,8 +301,8 @@ void ClientResourceProvider::RemoveImportedResource(ResourceId id) {
   ImportedResource& imported = it->second;
   imported.marked_for_deletion = true;
   if (imported.exported_count == 0) {
-    imported.release_callback->Run(imported.returned_sync_token,
-                                   imported.returned_lost);
+    std::move(imported.release_callback)
+        .Run(imported.returned_sync_token, imported.returned_lost);
     imported_resources_.erase(it);
   }
 }
@@ -329,8 +323,8 @@ void ClientResourceProvider::ReleaseAllExportedResources(bool lose) {
           return false;
         }
 
-        imported.release_callback->Run(imported.returned_sync_token,
-                                       imported.returned_lost);
+        std::move(imported.release_callback)
+            .Run(imported.returned_sync_token, imported.returned_lost);
         // Was exported and removed by the client, so return it now.
         return true;
       };
@@ -355,14 +349,16 @@ void ClientResourceProvider::ShutdownAndReleaseAllResources() {
                                     << imported.stack_trace.ToString() << "===";
 #endif
 
-    imported.release_callback->Run(imported.returned_sync_token,
-                                   /*is_lost=*/true);
+    std::move(imported.release_callback)
+        .Run(imported.returned_sync_token,
+             /*is_lost=*/true);
   }
   imported_resources_.clear();
 }
 
 ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
     GrDirectContext* gr_context,
+    const gpu::Capabilities& capabilities,
     sk_sp<SkColorSpace> color_space,
     GLuint texture_id,
     GLenum texture_target,
@@ -373,7 +369,8 @@ ClientResourceProvider::ScopedSkSurface::ScopedSkSurface(
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
   texture_info.fTarget = texture_target;
-  texture_info.fFormat = TextureStorageFormat(format);
+  texture_info.fFormat =
+      TextureStorageFormat(format, capabilities.angle_rgbx_internal_format);
   GrBackendTexture backend_texture(size.width(), size.height(),
                                    GrMipMapped::kNo, texture_info);
   // This type is used only for gpu raster, which implies gpu compositing.

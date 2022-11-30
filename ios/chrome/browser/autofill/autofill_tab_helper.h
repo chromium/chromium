@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -28,12 +27,10 @@ class PasswordManager;
 class AutofillTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<AutofillTabHelper> {
  public:
-  ~AutofillTabHelper() override;
+  AutofillTabHelper(const AutofillTabHelper&) = delete;
+  AutofillTabHelper& operator=(const AutofillTabHelper&) = delete;
 
-  // Create an AutofillTabHelper and attaches it to the given |web_state|.
-  static void CreateForWebState(
-      web::WebState* web_state,
-      password_manager::PasswordManager* password_manager);
+  ~AutofillTabHelper() override;
 
   // Sets a weak reference to the view controller used to present UI.
   void SetBaseViewController(UIViewController* base_view_controller);
@@ -60,8 +57,6 @@ class AutofillTabHelper : public web::WebStateObserver,
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_TAB_HELPER_H_

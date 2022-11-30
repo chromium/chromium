@@ -2,6 +2,6 @@ include_rules = [
   # history is a layered-component, forbid dependency on //content
   "-components/history/content",
   "-content",
-
+  "+components/search_engines",
   "+components/url_formatter",
 ]

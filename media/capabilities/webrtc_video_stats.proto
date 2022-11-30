@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package media;
+
+message WebrtcVideoStatsProto {
+  // Required. Timestamp of this entry from base::Time::ToJsTimeIgnoringNull().
+  // Data will be discarded when the date indicates its very old. This avoids a
+  // circumstance where a few bad outlier playbacks permanently define a
+  // machines capabilities.
+  optional double timestamp = 1;
+  // Required. Number of frames that this entry is based on.
+  optional uint32 frames_processed = 2;
+  // Required. Number of key frames out of the total number of frames.
+  optional uint32 key_frames_processed = 3;
+  // Required. The 99th percentile of the processing time.
+  optional float p99_processing_time_ms = 4;
+}
+
+// Proto representation of WebrtcVideoStatsDB::VideoStatsEntry. The values are
+// associated with a distinct WebrtcVideoStatsDB::VideoDescKey.
+message WebrtcVideoStatsEntryProto {
+  repeated WebrtcVideoStatsProto stats = 1;
+}

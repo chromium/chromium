@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -282,6 +282,9 @@ def generate_callback_interface(callback_interface_identifier):
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/platform/bindings/callback_interface_base.h",
         "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
+    ])
+    source_node.accumulator.add_stdcpp_include_headers([
+        "tuple",
     ])
     source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",

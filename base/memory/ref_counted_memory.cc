@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@ namespace base {
 
 bool RefCountedMemory::Equals(
     const scoped_refptr<RefCountedMemory>& other) const {
-  return other.get() &&
-         size() == other->size() &&
-         (memcmp(front(), other->front(), size()) == 0);
+  return other.get() && size() == other->size() &&
+         (size() == 0 || (memcmp(front(), other->front(), size()) == 0));
 }
 
 RefCountedMemory::RefCountedMemory() = default;
@@ -35,8 +34,10 @@ RefCountedStaticMemory::~RefCountedStaticMemory() = default;
 RefCountedBytes::RefCountedBytes() = default;
 
 RefCountedBytes::RefCountedBytes(const std::vector<unsigned char>& initializer)
-    : data_(initializer) {
-}
+    : data_(initializer) {}
+
+RefCountedBytes::RefCountedBytes(base::span<const unsigned char> initializer)
+    : data_(initializer.begin(), initializer.end()) {}
 
 RefCountedBytes::RefCountedBytes(const unsigned char* p, size_t size)
     : data_(p, p + size) {}
@@ -69,8 +70,14 @@ RefCountedString::~RefCountedString() = default;
 // static
 scoped_refptr<RefCountedString> RefCountedString::TakeString(
     std::string* to_destroy) {
+  return TakeString(std::move(*to_destroy));
+}
+
+// static
+scoped_refptr<RefCountedString> RefCountedString::TakeString(
+    std::string&& str) {
   auto self = MakeRefCounted<RefCountedString>();
-  to_destroy->swap(self->data_);
+  str.swap(self->data_);
   return self;
 }
 
@@ -90,8 +97,14 @@ RefCountedString16::~RefCountedString16() = default;
 // static
 scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
     std::u16string* to_destroy) {
+  return TakeString(std::move(*to_destroy));
+}
+
+// static
+scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
+    std::u16string&& str) {
   auto self = MakeRefCounted<RefCountedString16>();
-  to_destroy->swap(self->data_);
+  str.swap(self->data_);
   return self;
 }
 

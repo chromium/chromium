@@ -1,0 +1,99 @@
+{%- import "method-macro.cc.j2" as method_macro %}
+
+{%- set class_name = "%sTestProvider"|format(interface.mojom_name) %}
+
+std::unique_ptr<{{class_name}}> {{class_name}}::Create(
+    ::ash::cros_healthd::connectivity::Context* context) {
+  return std::unique_ptr<{{class_name}}>(new {{class_name}}(context));
+}
+
+{{class_name}}::{{class_name}}(
+    ::ash::cros_healthd::connectivity::Context* context)
+  : context_(context) {
+{%- for method in interface.methods -%}
+  {{method_macro.define_data_checker(
+      method.mojom_name ~ "__", "context", method.parameters)}}
+  {{method_macro.define_data_generator(
+      method.mojom_name ~ "__", "context", method.response_parameters)}}
+{%- endfor %}
+}
+
+void {{class_name}}::Bind(::mojo::PendingReceiver<{{
+    interface.mojom_name}}> receiver) {
+  receiver_set_.Add(&service_, std::move(receiver));
+}
+
+::mojo::PendingRemote<{{interface.mojom_name}}> {{class_name}}::Generate() {
+  has_next_ = false;
+  ::mojo::PendingReceiver<{{interface.mojom_name}}> receiver;
+  auto remote = receiver.InitWithNewPipeAndPassRemote();
+  receiver_set_.Add(&service_, std::move(receiver));
+  return remote;
+}
+
+void {{class_name}}::RemoveReceiver(::mojo::ReceiverId receiver_id) {
+  receiver_set_.Remove(receiver_id);
+}
+
+{%- for method in interface.methods %}
+void {{class_name}}::{{method.mojom_name}}_Step1({{
+    method_macro.declare_request_params("", method)}}) {
+{#  Bind each receiver to each TestProvider. #}
+{%-   for param in method.parameters | selectattr(
+                                          "kind", "PendingReceiverKind") %}
+    {{method.mojom_name}}__{{
+      param.mojom_name}}__checker__->Bind(std::move({{param.mojom_name}}));
+{%-   endfor %}
+
+{#  Create callback for Step2. #}
+{%-   if method.response_parameters != None -%}
+  auto response_callback = base::BindOnce(
+        std::move(callback)
+        {%- if method.response_parameters %}, {% endif -%}
+        {{method_macro.generate_params(
+            method.mojom_name ~"__", method.response_parameters)}});
+{%-    else -%}
+  auto response_callback = base::DoNothing();
+{%-    endif -%}
+  auto callback_0 = base::BindOnce(
+    &{{class_name}}::{{method.mojom_name}}_Step2,
+    weak_factory_.GetWeakPtr(),
+    std::move(response_callback));
+
+{#  Bind each remote to each TestConsumer and do the checking. The next #}
+{#- action will be run only if the previous one succeeded. #}
+{%-   for param in method.parameters | reverse | selectattr(
+                                              "kind", "PendingRemoteKind")  %}
+  {{method.mojom_name}}__{{
+      param.mojom_name}}__checker__->Bind(std::move({{param.mojom_name}}));
+
+  auto callback_{{loop.index}} = base::BindOnce(
+    &::ash::cros_healthd::connectivity::RunSuccessOrFailed,
+    /*get_result=*/{{
+      method.mojom_name}}__{{param.mojom_name}}__checker__->CheckClosure(),
+    /*on_success=*/std::move(callback_{{loop.index - 1}}),
+    /*on_failed=*/base::BindOnce([](){
+      LOG(ERROR) << "\"{{class_name}}::{{method.mojom_name}}\":"
+                 << " interface \"{{param.mojom_name}}\" check failed.";
+    }).Then(base::BindOnce(&{{class_name}}::RemoveReceiver,
+        weak_factory_.GetWeakPtr(), receiver_set_.current_receiver())));
+{%-     if loop.last %}
+  auto callback_last = std::move(callback_{{loop.index}});
+{%-     endif %}
+{%-   else %}
+  auto callback_last = std::move(callback_0);
+{%    endfor %}
+  std::move(callback_last).Run();
+}
+
+void {{class_name}}::{{method.mojom_name}}_Step2(base::OnceClosure callback) {
+{%-   if method.response_parameters != None %}
+    context_->local_state()->SetLastCallHasNext({{method_macro.params_has_next(
+        method.mojom_name ~"__", method.response_parameters)}});
+{%    else %}
+  context_->local_state()->FulfillLastCallCallback();
+{%    endif %}
+  std::move(callback).Run();
+}
+
+{%- endfor %}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,18 @@
 
 #include <map>
 
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_source.h"
 
-// An image source which draws from a WebApplicationInfo icons list.
+// An image source which draws from a WebAppInstallInfo icons list.
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
-  WebAppInfoImageSource(int dip_size,
-                        const std::map<SquareSizePx, SkBitmap>& icons);
+  WebAppInfoImageSource(int dip_size, std::map<SquareSizePx, SkBitmap> icons);
+
+  WebAppInfoImageSource(const WebAppInfoImageSource&) = delete;
+  WebAppInfoImageSource& operator=(const WebAppInfoImageSource&) = delete;
+
   ~WebAppInfoImageSource() override;
 
  private:
@@ -24,8 +27,6 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
 
   int dip_size_;
   std::map<SquareSizePx, SkBitmap> icons_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppInfoImageSource);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INFO_IMAGE_SOURCE_H_

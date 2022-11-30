@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/media_task_runner.h"
 #include "media/base/timestamp_constants.h"
 
@@ -32,6 +31,11 @@ class MediaTaskRunnerWithNotification : public MediaTaskRunner {
       base::RepeatingClosure new_task_cb,
       base::OnceClosure shutdown_cb);
 
+  MediaTaskRunnerWithNotification(const MediaTaskRunnerWithNotification&) =
+      delete;
+  MediaTaskRunnerWithNotification& operator=(
+      const MediaTaskRunnerWithNotification&) = delete;
+
   // MediaTaskRunner implementation.
   bool PostMediaTask(const base::Location& from_here,
                      base::OnceClosure task,
@@ -44,8 +48,6 @@ class MediaTaskRunnerWithNotification : public MediaTaskRunner {
 
   const base::RepeatingClosure new_task_cb_;
   base::OnceClosure shutdown_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaTaskRunnerWithNotification);
 };
 
 MediaTaskRunnerWithNotification::MediaTaskRunnerWithNotification(
@@ -83,6 +85,9 @@ class BalancedMediaTaskRunner
   explicit BalancedMediaTaskRunner(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  BalancedMediaTaskRunner(const BalancedMediaTaskRunner&) = delete;
+  BalancedMediaTaskRunner& operator=(const BalancedMediaTaskRunner&) = delete;
+
   // Schedule tasks whose timestamp is less than or equal to |max_timestamp|.
   void ScheduleWork(base::TimeDelta max_timestamp);
 
@@ -110,8 +115,6 @@ class BalancedMediaTaskRunner
   // Timestamp of the last posted task.
   // Is initialized to ::media::kNoTimestamp.
   base::TimeDelta last_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(BalancedMediaTaskRunner);
 };
 
 BalancedMediaTaskRunner::BalancedMediaTaskRunner(

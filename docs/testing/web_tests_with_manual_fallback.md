@@ -2,8 +2,8 @@
 
 Some Blink features cannot be automatically tested using the Web Platform. Prime
 examples are the APIs that require
-[user activation](https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation)
-(also known as _a user gesture_), such as [Full Screen](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API).
+[user activation](https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation)
+(also known as _a user gesture_), such as [Fullscreen](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API).
 Automated tests for these Blink features must rely on special APIs, which are
 only exposed in testing environments, and are therefore not available in a
 normal browser session.

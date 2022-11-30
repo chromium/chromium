@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -27,6 +26,9 @@ namespace chromecast {
 class QueryableData {
  public:
   using ValueMap = base::flat_map<std::string, base::Value>;
+
+  QueryableData(const QueryableData&) = delete;
+  QueryableData& operator=(const QueryableData&) = delete;
 
   // Stores a value for the current process. If the key already exists, the
   // value is replaced.
@@ -46,8 +48,6 @@ class QueryableData {
 
   SEQUENCE_CHECKER(sequence_checker_);
   ValueMap queryable_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryableData);
 };
 
 }  // namespace chromecast

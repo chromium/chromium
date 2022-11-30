@@ -1,0 +1,1191 @@
+diff --git a/chrome/browser/component_updater/zxcvbn_data_component_installer.cc b/chrome/browser/component_updater/zxcvbn_data_component_installer.cc
+index 47822d9f0e53..a7c92e252e20 100644
+--- a/chrome/browser/component_updater/zxcvbn_data_component_installer.cc
++++ b/chrome/browser/component_updater/zxcvbn_data_component_installer.cc
+@@ -20,6 +20,7 @@
+ #include "base/logging.h"
+ #include "base/memory/scoped_refptr.h"
+ #include "base/ranges/algorithm.h"
++#include "base/strings/string_piece.h"
+ #include "base/strings/string_split.h"
+ #include "base/task/post_task.h"
+ #include "base/task/thread_pool.h"
+@@ -31,7 +32,6 @@
+ #include "components/update_client/update_client_errors.h"
+ #include "components/update_client/utils.h"
+ #include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
+-#include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp"
+ 
+ namespace component_updater {
+ 
+@@ -50,46 +50,39 @@ constexpr base::FilePath::StringPieceType
+ 
+ namespace {
+ 
+-// Small struct linking a dictionary tag with the corresponding filename.
+-struct TagAndFileName {
+-  zxcvbn::DictionaryTag tag;
+-  base::FilePath::StringPieceType file_name;
+-};
+-
+-constexpr std::array<TagAndFileName, 6> kTagAndFileNamePairs = {{
+-    {zxcvbn::DictionaryTag::ENGLISH_WIKIPEDIA,
+-     ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName},
+-    {zxcvbn::DictionaryTag::FEMALE_NAMES,
+-     ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName},
+-    {zxcvbn::DictionaryTag::MALE_NAMES,
+-     ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName},
+-    {zxcvbn::DictionaryTag::PASSWORDS,
+-     ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName},
+-    {zxcvbn::DictionaryTag::SURNAMES,
+-     ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName},
+-    {zxcvbn::DictionaryTag::US_TV_AND_FILM,
+-     ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName},
++constexpr std::array<base::FilePath::StringPieceType, 6> kFileNames = {{
++    ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName,
++    ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName,
++    ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName,
++    ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName,
++    ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName,
++    ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName,
+ }};
+ 
+-using RankedDictionaries =
+-    base::flat_map<zxcvbn::DictionaryTag, zxcvbn::RankedDict>;
+-RankedDictionaries ParseRankedDictionaries(const base::FilePath& install_dir) {
+-  RankedDictionaries result;
+-  for (const auto& pair : kTagAndFileNamePairs) {
+-    base::FilePath dictionary_path = install_dir.Append(pair.file_name);
++zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
++  std::vector<std::string> raw_dicts;
++  for (const auto& file_name : kFileNames) {
++    base::FilePath dictionary_path = install_dir.Append(file_name);
+     DVLOG(1) << "Reading Dictionary from file: " << dictionary_path;
+ 
+     std::string dictionary;
+     if (base::ReadFileToString(dictionary_path, &dictionary)) {
+-      result.emplace(pair.tag, zxcvbn::build_ranked_dict(base::SplitStringPiece(
+-                                   dictionary, "\r\n", base::TRIM_WHITESPACE,
+-                                   base::SPLIT_WANT_NONEMPTY)));
++      raw_dicts.push_back(std::move(dictionary));
+     } else {
+       VLOG(1) << "Failed reading from " << dictionary_path;
+     }
+   }
+ 
+-  return result;
++  // The contained StringPieces hold references to the strings in raw_dicts.
++  std::vector<std::vector<base::StringPiece>> dicts;
++  for (const auto& raw_dict : raw_dicts) {
++    dicts.push_back(base::SplitStringPiece(
++        raw_dict, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
++  }
++
++  // This copies the words; after this call, the original strings can be
++  // discarded.
++  return zxcvbn::RankedDicts(dicts);
+ }
+ 
+ // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
+@@ -105,8 +98,8 @@ constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
+ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
+     const base::DictionaryValue& manifest,
+     const base::FilePath& install_dir) const {
+-  return base::ranges::all_of(kTagAndFileNamePairs, [&](const auto& pair) {
+-    return base::PathExists(install_dir.Append(pair.file_name));
++  return base::ranges::all_of(kFileNames, [&](const auto& file_name) {
++    return base::PathExists(install_dir.Append(file_name));
+   });
+ }
+ 
+diff --git a/chrome/browser/component_updater/zxcvbn_data_component_installer_unittest.cc b/chrome/browser/component_updater/zxcvbn_data_component_installer_unittest.cc
+index 2f9600abfb2f..3689a5f2504c 100644
+--- a/chrome/browser/component_updater/zxcvbn_data_component_installer_unittest.cc
++++ b/chrome/browser/component_updater/zxcvbn_data_component_installer_unittest.cc
+@@ -7,6 +7,7 @@
+ #include "base/files/file_path.h"
+ #include "base/files/file_util.h"
+ #include "base/files/scoped_temp_dir.h"
++#include "third_party/abseil-cpp/absl/types/optional.h"
+ #include "base/test/task_environment.h"
+ #include "base/values.h"
+ #include "testing/gmock/include/gmock/gmock.h"
+@@ -97,7 +98,6 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
+   // Empty / non-existent files should result in empty dictionaries.
+   policy().ComponentReady(version(), GetPath(), nullptr);
+   task_env().RunUntilIdle();
+-  EXPECT_THAT(zxcvbn::default_ranked_dicts(), ::testing::IsEmpty());
+ 
+   // Populated files should be read and fed to the correct ranked zxcvbn
+   // dictionary.
+@@ -108,11 +108,11 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
+   base::WriteFile(
+       GetPath().Append(
+           ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName),
+-      "female\nnames");
++      "female\nfnames");
+   base::WriteFile(
+       GetPath().Append(
+           ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName),
+-      "male\nnames");
++      "male\nmnames");
+   base::WriteFile(
+       GetPath().Append(
+           ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName),
+@@ -128,27 +128,19 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
+   policy().ComponentReady(version(), GetPath(), nullptr);
+   task_env().RunUntilIdle();
+ 
+-  zxcvbn::RankedDicts ranked_dicts = zxcvbn::default_ranked_dicts();
+-  EXPECT_THAT(
+-      zxcvbn::default_ranked_dicts(),
+-      UnorderedElementsAre(
+-          Pair(zxcvbn::DictionaryTag::ENGLISH_WIKIPEDIA,
+-               Pointee(UnorderedElementsAre(Pair("english", 1),
+-                                            Pair("wikipedia", 2)))),
+-          Pair(zxcvbn::DictionaryTag::FEMALE_NAMES,
+-               Pointee(
+-                   UnorderedElementsAre(Pair("female", 1), Pair("names", 2)))),
+-          Pair(
+-              zxcvbn::DictionaryTag::MALE_NAMES,
+-              Pointee(UnorderedElementsAre(Pair("male", 1), Pair("names", 2)))),
+-          Pair(zxcvbn::DictionaryTag::PASSWORDS,
+-               Pointee(UnorderedElementsAre(Pair("passwords", 1)))),
+-          Pair(zxcvbn::DictionaryTag::SURNAMES,
+-               Pointee(UnorderedElementsAre(Pair("surnames", 1)))),
+-          Pair(
+-              zxcvbn::DictionaryTag::US_TV_AND_FILM,
+-              Pointee(UnorderedElementsAre(Pair("us", 1), Pair("tv", 2),
+-                                           Pair("and", 3), Pair("film", 4))))));
++  zxcvbn::RankedDicts& ranked_dicts = zxcvbn::default_ranked_dicts();
++  EXPECT_EQ(ranked_dicts.Find("english"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("wikipedia"), 2UL);
++  EXPECT_EQ(ranked_dicts.Find("female"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("fnames"), 2UL);
++  EXPECT_EQ(ranked_dicts.Find("male"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("mnames"), 2UL);
++  EXPECT_EQ(ranked_dicts.Find("passwords"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("surnames"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("us"), 1UL);
++  EXPECT_EQ(ranked_dicts.Find("tv"), 2UL);
++  EXPECT_EQ(ranked_dicts.Find("and"), 3UL);
++  EXPECT_EQ(ranked_dicts.Find("film"), 4UL);
+ }
+ 
+ }  // namespace component_updater
+diff --git a/third_party/zxcvbn-cpp/BUILD.gn b/third_party/zxcvbn-cpp/BUILD.gn
+index 65a04ddb9d76..eae90999c976 100644
+--- a/third_party/zxcvbn-cpp/BUILD.gn
++++ b/third_party/zxcvbn-cpp/BUILD.gn
+@@ -14,11 +14,8 @@ source_set("zxcvbn-cpp") {
+     "native-src/zxcvbn/adjacency_graphs.cpp",
+     "native-src/zxcvbn/adjacency_graphs.hpp",
+     "native-src/zxcvbn/common.hpp",
+-    "native-src/zxcvbn/feedback.cpp",
+-    "native-src/zxcvbn/feedback.hpp",
+     "native-src/zxcvbn/frequency_lists.cpp",
+     "native-src/zxcvbn/frequency_lists.hpp",
+-    "native-src/zxcvbn/frequency_lists_common.hpp",
+     "native-src/zxcvbn/matching.cpp",
+     "native-src/zxcvbn/matching.hpp",
+     "native-src/zxcvbn/optional.hpp",
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+index 31e2f7fa937c..1f66367112aa 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp
+@@ -66,7 +66,6 @@ enum class MatchPattern {
+ struct DictionaryMatch {
+   static constexpr auto pattern = MatchPattern::DICTIONARY;
+ 
+-  DictionaryTag dictionary_tag;
+   std::string matched_word;
+   rank_t rank;
+   bool l33t;
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
+deleted file mode 100644
+index 08198d740a48..000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.cpp
++++ /dev/null
+@@ -1,172 +0,0 @@
+-#include <zxcvbn/feedback.hpp>
+-
+-#include <zxcvbn/frequency_lists.hpp>
+-#include <zxcvbn/optional.hpp>
+-#include <zxcvbn/scoring.hpp>
+-#include <zxcvbn/util.hpp>
+-
+-#include <regex>
+-
+-namespace zxcvbn {
+-
+-static
+-optional::optional<Feedback> get_match_feedback(const Match & match, bool is_sole_match);
+-
+-static
+-Feedback get_dictionary_match_feedback(const Match & match, bool is_sole_match);
+-
+-Feedback get_feedback(score_t score,
+-                      const std::vector<Match> & sequence) {
+-  // starting feedback
+-  if (!sequence.size()) {
+-    return {
+-        "",
+-        {
+-            "Use a few words, avoid common phrases",
+-            "No need for symbols, digits, or uppercase letters",
+-        },
+-    };
+-  }
+-
+-  // no feedback if score is good or great.
+-  if (score > 2) return {"", {}};
+-
+-  // tie feedback to the longest match for longer sequences
+-  auto longest_match = sequence.begin();
+-  for (auto match = longest_match + 1; match != sequence.end(); ++match) {
+-    if (match->token.length() > longest_match->token.length()) {
+-      longest_match = match;
+-    }
+-  }
+-
+-  auto maybe_feedback = get_match_feedback(*longest_match, sequence.size() == 1);
+-  auto extra_feedback = "Add another word or two. Uncommon words are better.";
+-  if (maybe_feedback) {
+-    auto & feedback = *maybe_feedback;
+-
+-    feedback.suggestions.insert(maybe_feedback->suggestions.begin(),
+-                                extra_feedback);
+-
+-    return feedback;
+-  }
+-  else {
+-    return {"", {extra_feedback}};
+-  }
+-}
+-
+-optional::optional<Feedback> get_match_feedback(const Match & match_, bool is_sole_match) {
+-  switch (match_.get_pattern()) {
+-  case MatchPattern::DICTIONARY: {
+-    return get_dictionary_match_feedback(match_, is_sole_match);
+-  }
+-
+-  case MatchPattern::SPATIAL: {
+-    auto & match = match_.get_spatial();
+-    auto warning = (match.turns == 1)
+-      ? "Straight rows of keys are easy to guess"
+-      : "Short keyboard patterns are easy to guess";
+-
+-    return Feedback{warning, {
+-        "Use a longer keyboard pattern with more turns",
+-          }};
+-  }
+-
+-  case MatchPattern::REPEAT: {
+-    auto warning = (match_.get_repeat().base_token.length() == 1)
+-      ? "Repeats like \"aaa\" are easy to guess"
+-      : "Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"";
+-
+-    return Feedback{warning, {
+-        "Avoid repeated words and characters",
+-          }};
+-  }
+-
+-  case MatchPattern::SEQUENCE: {
+-    return Feedback{"Sequences like abc or 6543 are easy to guess",
+-        {"Avoid sequences"},
+-        };
+-  }
+-
+-  case MatchPattern::REGEX: {
+-    auto & match = match_.get_regex();
+-    if (match.regex_tag == RegexTag::RECENT_YEAR) {
+-      return Feedback{"Recent years are easy to guess", {
+-          "Avoid recent years",
+-          "Avoid years that are associated with you",
+-        }};
+-    }
+-    break;
+-  }
+-
+-  case MatchPattern::DATE: {
+-    return Feedback{"Dates are often easy to guess", {
+-        "Avoid dates and years that are associated with you",
+-      }};
+-  }
+-  default:
+-    break;
+-  }
+-  return optional::nullopt;
+-}
+-
+-static
+-Feedback get_dictionary_match_feedback(const Match & match_, bool is_sole_match) {
+-  assert(match_.get_pattern() == MatchPattern::DICTIONARY);
+-  auto & match = match_.get_dictionary();
+-  auto warning = [&] {
+-    if (match.dictionary_tag == DictionaryTag::PASSWORDS) {
+-      if (is_sole_match and !match.l33t and !match.reversed) {
+-        if (match.rank <= 10) {
+-          return "This is a top-10 common password";
+-        }
+-        else if (match.rank <= 100) {
+-          return "This is a top-100 common password";
+-        }
+-        else {
+-          return "This is a very common password";
+-        }
+-      }
+-      else if (match_.guesses_log10 <= 4) {
+-        return "This is similar to a commonly used password";
+-      }
+-    }
+-    else if (match.dictionary_tag == DictionaryTag::ENGLISH_WIKIPEDIA) {
+-      if (is_sole_match) {
+-        return "A word by itself is easy to guess";
+-      }
+-    }
+-    else if (match.dictionary_tag == DictionaryTag::SURNAMES ||
+-             match.dictionary_tag == DictionaryTag::MALE_NAMES ||
+-             match.dictionary_tag == DictionaryTag::FEMALE_NAMES) {
+-      if (is_sole_match) {
+-        return "Names and surnames by themselves are easy to guess";
+-      }
+-      else {
+-        return "Common names and surnames are easy to guess";
+-      }
+-    }
+-
+-    return "";
+-  }();
+-
+-  std::vector<std::string> suggestions;
+-  auto & word = match_.token;
+-  if (std::regex_search(word, START_UPPER())) {
+-    suggestions.push_back("Capitalization doesn't help very much");
+-  } else if (std::regex_search(word, ALL_UPPER()) and
+-             // XXX: UTF-8
+-             util::ascii_lower(word) == word) {
+-    suggestions.push_back("All-uppercase is almost as easy to guess as all-lowercase");
+-  }
+-
+-  if (match.reversed and match_.token.length() >= 4) {
+-    suggestions.push_back("Reversed words aren't much harder to guess");
+-  }
+-  if (match.l33t) {
+-    suggestions.push_back("Predictable substitutions like '@' instead of 'a' don't help very much");
+-  }
+-
+-  return {warning, suggestions};
+-}
+-
+-}
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
+deleted file mode 100644
+index 6f6b62b9da05..000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/feedback.hpp
++++ /dev/null
+@@ -1,20 +0,0 @@
+-#ifndef __ZXCVBN__FEEDBACK_HPP
+-#define __ZXCVBN__FEEDBACK_HPP
+-
+-#include <zxcvbn/common.hpp>
+-
+-#include <string>
+-#include <vector>
+-
+-namespace zxcvbn {
+-
+-struct Feedback {
+-  std::string warning;
+-  std::vector<std::string> suggestions;
+-};
+-
+-Feedback get_feedback(score_t score, const std::vector<Match> & sequence);
+-
+-}
+-
+-#endif
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+index 4996f7959be4..332673d93f77 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+@@ -1,39 +1,206 @@
+ #include <zxcvbn/frequency_lists.hpp>
+ 
++#include <algorithm>
++#include <memory>
+ #include <utility>
+ 
+-#include "base/containers/flat_map.h"
++#include "base/check.h"
++#include "base/logging.h"
+ #include "base/no_destructor.h"
++#include "base/notreached.h"
+ 
+ namespace zxcvbn {
+ 
+ namespace {
+ 
+-base::flat_map<DictionaryTag, RankedDict>& ranked_dicts() {
+-  static base::NoDestructor<base::flat_map<DictionaryTag, RankedDict>>
+-      ranked_dicts;
+-  return *ranked_dicts;
+-}
++// A big-endian 16-bit value, consisting of a 15-bit number and a marker bit in
++// the most significant position (in the first byte).
++// No alignment requirements.
++// This is used to store a "rank", which is the position at which a word
++// occurred in a wordlist.
++class MarkedBigEndianU15 {
++ public:
++  static constexpr size_t MAX_VALUE = (1 << 15) - 1;
++  static constexpr uint8_t MARKER_BIT = 0x80;
++  uint16_t get() const {
++    return (encoded_value[0] & ~MARKER_BIT) * 256 + encoded_value[1];
++  }
++  static void AppendToVector(uint16_t value, std::vector<char>& vec) {
++    CHECK(value <= MAX_VALUE);
++    vec.push_back((value >> 8) | MARKER_BIT);
++    vec.push_back(value & 0xff);
++  }
++  // Check whether the given byte has the high bit set.
++  // This always returns true for the first byte of a MarkedBigEndianU15, but
++  // may also be false-positive for the second byte.
++  // To reliably determine whether a given byte really is the start of a
++  // MarkedBigEndianU15, you need to also check the preceding byte if this
++  // returns true.
++  static bool IsPossibleMarkerByte(uint8_t c) { return (c & MARKER_BIT) != 0; }
++
++ private:
++  uint8_t encoded_value[2];
++};
++static_assert(
++    sizeof(MarkedBigEndianU15) == 2,
++    "object layout must fit with assumptions in the rest of this file");
++
++struct MergedEntry {
++  size_t rank;
++  base::StringPiece value;
++};
++
++// A reference to an entry inside a dictionary.
++// The entry consists of a MarkedBigEndianU15 representing the word's rank
++// (the position at which the word appears in the original wordlist) and an
++// inline string (ASCII, terminated with a byte that has the MARKER_BIT set)
++// that stores the actual word.
++class RankedDictEntryRef {
++ public:
++  explicit RankedDictEntryRef(const std::vector<char>& vec, size_t offset) {
++    CHECK_LT(offset + sizeof(MarkedBigEndianU15), vec.size());
++    const char* raw_rank = vec.data() + offset;
++    rank_ = reinterpret_cast<const MarkedBigEndianU15*>(raw_rank)->get();
++
++    size_t value_start = offset + sizeof(MarkedBigEndianU15);
++    size_t value_end = value_start;
++    while (true) {
++      CHECK_LT(value_end, vec.size());
++      if (MarkedBigEndianU15::IsPossibleMarkerByte(vec[value_end]))
++        break;
++      value_end++;
++    }
++    value_ =
++        base::StringPiece(vec.data() + value_start, value_end - value_start);
++  }
++  RankedDictEntryRef(RankedDictEntryRef&) = delete;
++  RankedDictEntryRef& operator=(const RankedDictEntryRef&) = delete;
++
++  uint16_t rank() const { return rank_; }
++  base::StringPiece value() const { return value_; }
++
++  static void AppendToVector(MergedEntry entry, std::vector<char>& vec) {
++    if (entry.rank > MarkedBigEndianU15::MAX_VALUE) {
++      LOG(ERROR) << "MarkedBigEndianU15 clamping";
++      entry.rank = MarkedBigEndianU15::MAX_VALUE;
++    }
++    MarkedBigEndianU15::AppendToVector(entry.rank, vec);
++    vec.insert(vec.end(), entry.value.begin(), entry.value.end());
++  }
+ 
++ private:
++  size_t rank_;
++  base::StringPiece value_;
++};
+ }  // namespace
+ 
+-void SetRankedDicts(base::flat_map<DictionaryTag, RankedDict> dicts) {
+-  ranked_dicts() = std::move(dicts);
++RankedDicts::RankedDicts(
++    const std::vector<std::vector<base::StringPiece>>& ordered_dicts) {
++  std::vector<MergedEntry> merged_dicts;
++  for (const std::vector<base::StringPiece>& strings : ordered_dicts) {
++    size_t rank = 1;
++    for (const base::StringPiece& s : strings) {
++      bool clean_string = true;
++      for (char c : s) {
++        if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
++          NOTREACHED() << "RankedDicts bad character "
++                       << static_cast<unsigned char>(c);
++          clean_string = false;
++        }
++      }
++      if (clean_string) {
++        merged_dicts.push_back({rank++, s});
++      }
++    }
++  }
++  std::sort(merged_dicts.begin(), merged_dicts.end(),
++            [](MergedEntry& a, MergedEntry& b) { return a.value < b.value; });
++
++  if (merged_dicts.size() == 0)
++    return;
++
++  // first pass: calculate required total size
++  size_t dict_size = sizeof(MarkedBigEndianU15) * merged_dicts.size();
++  for (MergedEntry& entry : merged_dicts)
++    dict_size += entry.value.size();
++
++  // 1 byte at the end for trailing marker byte (for finding last string size)
++  data_.reserve(dict_size + 1);
++
++  // second pass: place elements in allocated array
++  for (MergedEntry& entry : merged_dicts)
++    RankedDictEntryRef::AppendToVector(entry, data_);
++  CHECK_EQ(data_.size(), dict_size);
++  data_.push_back(MarkedBigEndianU15::MARKER_BIT);
+ }
+ 
+-RankedDicts convert_to_ranked_dicts(
+-    base::flat_map<DictionaryTag, RankedDict>& ranked_dicts) {
+-  RankedDicts build;
++// Performs a binary search over an array of variable-size elements.
++// To find an element in the middle between two others, we first locate the
++// *byte* in the middle, then seek forward until we hit a marker byte that
++// will only appear at the start of an allocation.
++absl::optional<rank_t> RankedDicts::Find(base::StringPiece needle) const {
++  // special case for empty dictionary
++  if (data_.size() == 0)
++    return absl::nullopt;
++  CHECK_GE(data_.size(), 3UL);  // 2 bytes header, 1 byte trailing marker
+ 
+-  for (const auto & item : ranked_dicts) {
+-    build.emplace(item.first, &item.second);
++  // Create a range whose start and end point to marker bytes.
++  size_t range_start = 0;
++  size_t range_last = data_.size() - 2;
++  CHECK(IsRealMarker(0));
++  while (!IsRealMarker(range_last))
++    range_last--;
++
++  while (true) {
++    size_t midpoint = range_start + (range_last - range_start) / 2;
++    // Find a marker byte from the midpoint onwards. (There must be one, since
++    // there is one at range_last.)
++    size_t adjusted_midpoint = midpoint;
++    while (!IsRealMarker(adjusted_midpoint))
++      adjusted_midpoint++;
++
++    // Perform the actual comparison.
++    RankedDictEntryRef mid_entry(data_, adjusted_midpoint);
++    base::StringPiece mid_value = mid_entry.value();
++    int cmp_result = mid_value.compare(needle);
++    if (cmp_result == 0)
++      return mid_entry.rank();
++    if (cmp_result < 0) {
++      if (adjusted_midpoint == range_last)
++        return absl::nullopt;
++      range_start = adjusted_midpoint + 1;
++      while (!IsRealMarker(range_start))
++        range_start++;
++    } else {
++      if (adjusted_midpoint == range_start)
++        return absl::nullopt;
++      range_last = adjusted_midpoint - 1;
++      while (!IsRealMarker(range_last))
++        range_last--;
++    }
+   }
++}
+ 
+-  return build;
++// Determine whether an entry starts at the given offset; in other words,
++// determine whether a MarkedBigEndianU15 starts there.
++bool RankedDicts::IsRealMarker(size_t offset) const {
++  CHECK_LT(offset, data_.size());
++  if (MarkedBigEndianU15::IsPossibleMarkerByte(data_[offset])) {
++    if (offset == 0)
++      return true;
++    if (!MarkedBigEndianU15::IsPossibleMarkerByte(data_[offset - 1]))
++      return true;
++  }
++  return false;
+ }
+ 
+-RankedDicts default_ranked_dicts() {
+-  return convert_to_ranked_dicts(ranked_dicts());
++void SetRankedDicts(RankedDicts dicts) {
++  default_ranked_dicts() = std::move(dicts);
+ }
+ 
++RankedDicts& default_ranked_dicts() {
++  static base::NoDestructor<RankedDicts> default_dicts;
++  return *default_dicts;
+ }
++
++}  // namespace zxcvbn
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
+index 3757483251e5..2b0f00f9cf35 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
+@@ -1,36 +1,52 @@
+ #ifndef __ZXCVBN__FREQUENCY_LISTS_HPP
+ #define __ZXCVBN__FREQUENCY_LISTS_HPP
+ 
+-#include <zxcvbn/frequency_lists_common.hpp>
+-
+ #include <cstdint>
++#include <memory>
++#include <vector>
+ 
++#include "third_party/abseil-cpp/absl/types/optional.h"
+ #include "base/strings/string_piece.h"
+-#include "base/containers/flat_map.h"
+ 
+ namespace zxcvbn {
+ 
+-enum class DictionaryTag {
+-  ENGLISH_WIKIPEDIA,
+-  FEMALE_NAMES,
+-  MALE_NAMES,
+-  PASSWORDS,
+-  SURNAMES,
+-  US_TV_AND_FILM,
+-  USER_INPUTS
++using rank_t = std::size_t;
++
++// Stores words from a set of dictionaries (originally ordered by word
++// frequency) in a sorted flat array.
++// Lookups run in roughly logarithmic time and, when a match is found, return
++// the position of the word in the original dictionary.
++// This data structure is optimized for memory efficiency over lookup speed.
++// It does not contain any pointers and its format is target-independent, so it
++// could theoretically directly be mapped from disk.
++//
++// Since this data structure sorts words alphabetically, the lookup code could
++// be extended to also answer the question "are there any entries that start
++// with the given prefix", which should permit speeding up dictionary_match().
++// That isn't implemented yet though.
++class RankedDicts {
++ public:
++  explicit RankedDicts(const std::vector<std::vector<base::StringPiece>> &ordered_dicts);
++  RankedDicts() = default;
++  RankedDicts(RankedDicts &&) = default;
++  RankedDicts(RankedDicts &) = delete;
++
++  RankedDicts& operator=(RankedDicts &&) = default;
++  RankedDicts& operator=(const RankedDicts &) = delete;
++
++  absl::optional<rank_t> Find(base::StringPiece needle) const;
++
++ private:
++  bool IsRealMarker(size_t offset) const;
++  // Buffer storing the dictionaries, see RankedDictEntryRef and the rest of
++  // frequency_lists.cpp for documentation of the data structure.
++  std::vector<char> data_;
+ };
+ 
+-}
+-
+-namespace zxcvbn {
+-
+-using RankedDicts = base::flat_map<DictionaryTag, const RankedDict*>;
+-
+-void SetRankedDicts(base::flat_map<DictionaryTag, RankedDict> dicts);
++void SetRankedDicts(RankedDicts dicts);
+ 
+-RankedDicts convert_to_ranked_dicts(base::flat_map<DictionaryTag, RankedDict> & ranked_dicts);
+-RankedDicts default_ranked_dicts();
++RankedDicts &default_ranked_dicts();
+ 
+-}
++} // namespace zxcvbn
+ 
+ #endif
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
+deleted file mode 100644
+index d1c5177fb183..000000000000
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
++++ /dev/null
+@@ -1,29 +0,0 @@
+-#ifndef __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+-#define __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+-
+-#include <cstdint>
+-#include <string>
+-#include <vector>
+-
+-#include "base/containers/flat_map.h"
+-
+-namespace zxcvbn {
+-
+-using rank_t = std::size_t;
+-using RankedDict = base::flat_map<std::string, rank_t>;
+-
+-template<class T>
+-RankedDict build_ranked_dict(const T & ordered_list) {
+-  std::vector<RankedDict::value_type> items;
+-  items.reserve(ordered_list.size());
+-  rank_t idx = 1; // rank starts at 1, not 0
+-  for (const auto & word : ordered_list) {
+-    items.emplace_back(word, idx);
+-    idx += 1;
+-  }
+-  return RankedDict(std::move(items));
+-}
+-
+-}
+-
+-#endif
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index 3d09857fa5fa..1692fe8b4e88 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+@@ -122,13 +122,8 @@ std::string dict_normalize(const std::string & str) {
+   return util::ascii_lower(str);
+ }
+ 
+-std::vector<Match> omnimatch(const std::string & password,
+-                             const std::vector<std::string> & ordered_list) {
+-  auto ranked_dictionaries = default_ranked_dicts();
+-
+-  auto ranked_dict = build_ranked_dict(ordered_list);
+-  ranked_dictionaries.insert(
+-      std::make_pair(DictionaryTag::USER_INPUTS, &ranked_dict));
++std::vector<Match> omnimatch(const std::string& password) {
++  RankedDicts& ranked_dictionaries = default_ranked_dicts();
+ 
+   std::vector<Match> matches;
+   std::function<std::vector<Match>(const std::string&)> matchers[] = {
+@@ -158,29 +153,22 @@ std::vector<Match> omnimatch(const std::string & password,
+ std::vector<Match> dictionary_match(const std::string & password,
+                                     const RankedDicts & ranked_dictionaries) {
+   std::vector<Match> matches;
+-  auto len = password.length();
+-  auto password_lower = dict_normalize(password);
+-  for (const auto & item : ranked_dictionaries) {
+-    auto dictionary_tag = item.first;
+-    auto& ranked_dict = *item.second;
+-    for (decltype(len) i = 0, idx = 0; idx < len; util::utf8_decode(password, idx), ++i) {
+-      for (decltype(len) j = i, jdx = idx; jdx < len; ++j) {
+-        // j is inclusive, but jdx is not so eagerly iterate jdx
+-        util::utf8_decode(password, jdx);
+-
+-        auto word = password_lower.substr(idx, jdx - idx);
+-        auto it = ranked_dict.find(word);
+-        if (it != ranked_dict.end()) {
+-          auto rank = it->second;
+-          matches.push_back(Match(i, j, password.substr(idx, jdx - idx),
+-                                  DictionaryMatch{
+-                                      dictionary_tag,
+-                                      word, rank,
+-                                      false,
+-                                      false, {}, ""}));
+-          matches.back().idx = idx;
+-          matches.back().jdx = jdx;
+-        }
++  size_t len = password.length();
++  std::string password_lower = dict_normalize(password);
++  for (size_t i = 0, idx = 0; idx < len;
++       util::utf8_decode(password, idx), ++i) {
++    for (size_t j = i, jdx = idx; jdx < len; ++j) {
++      // j is inclusive, but jdx is not so eagerly iterate jdx
++      util::utf8_decode(password, jdx);
++
++      std::string word = password_lower.substr(idx, jdx - idx);
++      absl::optional<rank_t> result = ranked_dictionaries.Find(word);
++      if (result.has_value()) {
++        rank_t rank = *result;
++        matches.emplace_back(i, j, password.substr(idx, jdx - idx),
++                             DictionaryMatch{word, rank, false, false, {}, ""});
++        matches.back().idx = idx;
++        matches.back().jdx = jdx;
+       }
+     }
+   }
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
+index ba73b909157c..448603892a5e 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp
+@@ -39,8 +39,7 @@ std::vector<Match> regex_match(const std::string & password,
+ 
+ std::vector<Match> date_match(const std::string & password);
+ 
+-std::vector<Match> omnimatch(const std::string & password,
+-                             const std::vector<std::string> & ordered_list = {});
++std::vector<Match> omnimatch(const std::string & password);
+ 
+ }
+ 
+diff --git a/third_party/zxcvbn-cpp/test/matching_unittest.cc b/third_party/zxcvbn-cpp/test/matching_unittest.cc
+index ec21c413cbf1..1437216c0f5e 100644
+--- a/third_party/zxcvbn-cpp/test/matching_unittest.cc
++++ b/third_party/zxcvbn-cpp/test/matching_unittest.cc
+@@ -14,7 +14,6 @@
+ #include "third_party/zxcvbn-cpp/native-src/zxcvbn/adjacency_graphs.hpp"
+ #include "third_party/zxcvbn-cpp/native-src/zxcvbn/common.hpp"
+ #include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
+-#include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp"
+ 
+ using ::testing::ElementsAre;
+ using ::testing::IsEmpty;
+@@ -59,7 +58,6 @@ struct ExpectedDictionaryMatch {
+   idx_t j;
+   std::string token;
+ 
+-  DictionaryTag dictionary_tag;
+   std::string matched_word;
+   rank_t rank;
+   bool l33t;
+@@ -70,7 +68,6 @@ struct ExpectedDictionaryMatch {
+ bool operator==(const Match& lhs, const ExpectedDictionaryMatch& rhs) {
+   return lhs.i == rhs.i && lhs.j == rhs.j && lhs.token == rhs.token &&
+          lhs.get_pattern() == MatchPattern::DICTIONARY &&
+-         lhs.get_dictionary().dictionary_tag == rhs.dictionary_tag &&
+          lhs.get_dictionary().matched_word == rhs.matched_word &&
+          lhs.get_dictionary().rank == rhs.rank &&
+          lhs.get_dictionary().l33t == rhs.l33t &&
+@@ -162,38 +159,22 @@ bool operator==(const Match& lhs, const ExpectedDateMatch& rhs) {
+ }  // namespace
+ 
+ TEST(ZxcvbnTest, DictionaryMatching) {
+-  auto dict_1 = static_cast<DictionaryTag>(0);
+-  auto dict_2 = static_cast<DictionaryTag>(1);
+-  base::flat_map<DictionaryTag, RankedDict> test_dicts = {
+-      {dict_1,
+-       {
+-           {"motherboard", 1},
+-           {"mother", 2},
+-           {"board", 3},
+-           {"abcd", 4},
+-           {"cdef", 5},
+-       }},
+-      {dict_2,
+-       {
+-           {"z", 1},
+-           {"8", 2},
+-           {"99", 3},
+-           {"$", 4},
+-           {"asdf1234&*", 5},
+-       }},
++  std::vector<std::vector<base::StringPiece>> test_dicts = {
++      {"motherboard", "mother", "board", "abcd", "cdef"},
++      {"z", "8", "99", "$", "asdf1234&*"},
+   };
+ 
+   {
+     // matches words that contain other words
+     std::string password = "motherboard";
++    RankedDicts test_dicts_processed(test_dicts);
+     std::vector<Match> matches =
+-        dictionary_match(password, convert_to_ranked_dicts(test_dicts));
++        dictionary_match(password, test_dicts_processed);
+     EXPECT_THAT(matches, ElementsAre(
+                              ExpectedDictionaryMatch{
+                                  .i = 0,
+                                  .j = 5,
+                                  .token = "mother",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "mother",
+                                  .rank = 2,
+                              },
+@@ -201,7 +182,6 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+                                  .i = 0,
+                                  .j = 10,
+                                  .token = "motherboard",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "motherboard",
+                                  .rank = 1,
+                              },
+@@ -209,7 +189,6 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+                                  .i = 6,
+                                  .j = 10,
+                                  .token = "board",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "board",
+                                  .rank = 3,
+                              }));
+@@ -219,13 +198,12 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+     // matches multiple words when they overlap
+     std::string password = "abcdef";
+     std::vector<Match> matches =
+-        dictionary_match(password, convert_to_ranked_dicts(test_dicts));
++        dictionary_match(password, RankedDicts(test_dicts));
+     EXPECT_THAT(matches, ElementsAre(
+                              ExpectedDictionaryMatch{
+                                  .i = 0,
+                                  .j = 3,
+                                  .token = "abcd",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "abcd",
+                                  .rank = 4,
+                              },
+@@ -233,7 +211,6 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+                                  .i = 2,
+                                  .j = 5,
+                                  .token = "cdef",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "cdef",
+                                  .rank = 5,
+                              }));
+@@ -243,13 +220,12 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+     // ignores uppercasing
+     std::string password = "BoaRdZ";
+     std::vector<Match> matches =
+-        dictionary_match(password, convert_to_ranked_dicts(test_dicts));
++        dictionary_match(password, RankedDicts(test_dicts));
+     EXPECT_THAT(matches, ElementsAre(
+                              ExpectedDictionaryMatch{
+                                  .i = 0,
+                                  .j = 4,
+                                  .token = "BoaRd",
+-                                 .dictionary_tag = dict_1,
+                                  .matched_word = "board",
+                                  .rank = 3,
+                              },
+@@ -257,7 +233,6 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+                                  .i = 5,
+                                  .j = 5,
+                                  .token = "Z",
+-                                 .dictionary_tag = dict_2,
+                                  .matched_word = "z",
+                                  .rank = 1,
+                              }));
+@@ -267,13 +242,12 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+     // identifies words surrounded by non-words
+     std::string word = "asdf1234&*";
+     for (const auto& variation : gen_pws(word, {"q", "%%"}, {"%", "qq"})) {
+-      std::vector<Match> matches = dictionary_match(
+-          variation.password, convert_to_ranked_dicts(test_dicts));
++      std::vector<Match> matches =
++          dictionary_match(variation.password, RankedDicts(test_dicts));
+       EXPECT_THAT(matches, ElementsAre(ExpectedDictionaryMatch{
+                                .i = variation.i,
+                                .j = variation.j,
+                                .token = word,
+-                               .dictionary_tag = dict_2,
+                                .matched_word = word,
+                                .rank = 5,
+                            }));
+@@ -283,20 +257,21 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+   {
+     // matches against all words in provided dictionaries
+     for (const auto& test_dict : test_dicts) {
+-      for (const auto& ranked_word : test_dict.second) {
++      rank_t expected_rank = 0;
++      for (base::StringPiece ranked_word : test_dict) {
++        expected_rank++;
+         // skip words that contain others
+-        if (ranked_word.first == "motherboard")
++        if (ranked_word == "motherboard")
+           continue;
+ 
+-        std::vector<Match> matches = dictionary_match(
+-            ranked_word.first, convert_to_ranked_dicts(test_dicts));
++        std::vector<Match> matches =
++            dictionary_match(std::string(ranked_word), RankedDicts(test_dicts));
+         EXPECT_THAT(matches, ElementsAre(ExpectedDictionaryMatch{
+                                  .i = 0,
+-                                 .j = ranked_word.first.size() - 1,
+-                                 .token = ranked_word.first,
+-                                 .dictionary_tag = test_dict.first,
+-                                 .matched_word = ranked_word.first,
+-                                 .rank = ranked_word.second,
++                                 .j = ranked_word.size() - 1,
++                                 .token = std::string(ranked_word),
++                                 .matched_word = std::string(ranked_word),
++                                 .rank = expected_rank,
+                              }));
+       }
+     }
+@@ -304,66 +279,33 @@ TEST(ZxcvbnTest, DictionaryMatching) {
+ 
+   {
+     // default dictionaries
+-    SetRankedDicts({{DictionaryTag::US_TV_AND_FILM, {{"wow", 1}}}});
++    SetRankedDicts(RankedDicts({{"wow"}}));
+     std::vector<Match> matches =
+         dictionary_match("wow", default_ranked_dicts());
+     EXPECT_THAT(matches, ElementsAre(ExpectedDictionaryMatch{
+                              .i = 0,
+                              .j = 2,
+                              .token = "wow",
+-                             .dictionary_tag = DictionaryTag::US_TV_AND_FILM,
+                              .matched_word = "wow",
+                              .rank = 1,
+                          }));
+   }
+-
+-  {
+-    // matches with provided user input dictionary
+-    SetRankedDicts({{DictionaryTag::USER_INPUTS, {{"foo", 1}, {"bar", 2}}}});
+-    std::vector<Match> matches =
+-        dictionary_match("foobar", default_ranked_dicts());
+-    EXPECT_THAT(matches, ElementsAre(
+-                             ExpectedDictionaryMatch{
+-                                 .i = 0,
+-                                 .j = 2,
+-                                 .token = "foo",
+-                                 .dictionary_tag = DictionaryTag::USER_INPUTS,
+-                                 .matched_word = "foo",
+-                                 .rank = 1,
+-                             },
+-                             ExpectedDictionaryMatch{
+-                                 .i = 3,
+-                                 .j = 5,
+-                                 .token = "bar",
+-                                 .dictionary_tag = DictionaryTag::USER_INPUTS,
+-                                 .matched_word = "bar",
+-                                 .rank = 2,
+-                             }));
+-  }
+ }
+ 
+ TEST(ZxcvbnTest, ReverseDictionaryMatching) {
+-  auto dict_1 = static_cast<DictionaryTag>(0);
+-  base::flat_map<DictionaryTag, RankedDict> test_dicts = {
+-      {dict_1,
+-       {
+-           {"123", 1},
+-           {"321", 2},
+-           {"456", 3},
+-           {"654", 4},
+-       }},
++  std::vector<std::vector<base::StringPiece>> test_dicts = {
++      {"123", "321", "456", "654"},
+   };
+ 
+   // matches against reversed words
+   std::string password = "0123456789";
+   std::vector<Match> matches =
+-      reverse_dictionary_match(password, convert_to_ranked_dicts(test_dicts));
++      reverse_dictionary_match(password, RankedDicts(test_dicts));
+   EXPECT_THAT(matches, ElementsAre(
+                            ExpectedDictionaryMatch{
+                                .i = 1,
+                                .j = 3,
+                                .token = "123",
+-                               .dictionary_tag = dict_1,
+                                .matched_word = "321",
+                                .rank = 2,
+                                .reversed = true,
+@@ -372,7 +314,6 @@ TEST(ZxcvbnTest, ReverseDictionaryMatching) {
+                                .i = 4,
+                                .j = 6,
+                                .token = "456",
+-                               .dictionary_tag = dict_1,
+                                .matched_word = "654",
+                                .rank = 4,
+                                .reversed = true,
+@@ -428,24 +369,13 @@ TEST(ZxcvbnTest, L33tMatching) {
+   }
+ 
+   {
+-    auto words = static_cast<DictionaryTag>(0);
+-    auto words2 = static_cast<DictionaryTag>(1);
+-    base::flat_map<DictionaryTag, RankedDict> dicts = {
+-        {words,
+-         {
+-             {"aac", 1},
+-             {"password", 3},
+-             {"paassword", 4},
+-             {"asdf0", 5},
+-         }},
+-        {words2,
+-         {
+-             {"cgo", 1},
+-         }},
++    std::vector<std::vector<base::StringPiece>> dicts = {
++        {"aac", "password", "paassword", "asdf0"},
++        {"cgo"},
+     };
+ 
+     auto lm = [&](const std::string& password) {
+-      return l33t_match(password, convert_to_ranked_dicts(dicts), test_table);
++      return l33t_match(password, RankedDicts(dicts), test_table);
+     };
+ 
+     // doesn't match ""
+@@ -459,29 +389,14 @@ TEST(ZxcvbnTest, L33tMatching) {
+       std::string password;
+       std::string pattern;
+       std::string word;
+-      DictionaryTag dictionary_tag;
+       rank_t rank;
+       idx_t i;
+       idx_t j;
+       std::unordered_map<std::string, std::string> sub;
+     } tests[] = {
+-        {"p4ssword", "p4ssword", "password", words, 3, 0, 7, {{"4", "a"}}},
+-        {"p@ssw0rd",
+-         "p@ssw0rd",
+-         "password",
+-         words,
+-         3,
+-         0,
+-         7,
+-         {{"@", "a"}, {"0", "o"}}},
+-        {"aSdfO{G0asDfO",
+-         "{G0",
+-         "cgo",
+-         words2,
+-         1,
+-         5,
+-         7,
+-         {{"{", "c"}, {"0", "o"}}},
++        {"p4ssword", "p4ssword", "password", 2, 0, 7, {{"4", "a"}}},
++        {"p@ssw0rd", "p@ssw0rd", "password", 2, 0, 7, {{"@", "a"}, {"0", "o"}}},
++        {"aSdfO{G0asDfO", "{G0", "cgo", 1, 5, 7, {{"{", "c"}, {"0", "o"}}},
+     };
+ 
+     for (const auto& test : tests) {
+@@ -489,7 +404,6 @@ TEST(ZxcvbnTest, L33tMatching) {
+                                          .i = test.i,
+                                          .j = test.j,
+                                          .token = test.pattern,
+-                                         .dictionary_tag = test.dictionary_tag,
+                                          .matched_word = test.word,
+                                          .rank = test.rank,
+                                          .l33t = true,
+@@ -503,7 +417,6 @@ TEST(ZxcvbnTest, L33tMatching) {
+                                         .i = 0,
+                                         .j = 2,
+                                         .token = "@a(",
+-                                        .dictionary_tag = words,
+                                         .matched_word = "aac",
+                                         .rank = 1,
+                                         .l33t = true,
+@@ -513,7 +426,6 @@ TEST(ZxcvbnTest, L33tMatching) {
+                                         .i = 2,
+                                         .j = 4,
+                                         .token = "(go",
+-                                        .dictionary_tag = words2,
+                                         .matched_word = "cgo",
+                                         .rank = 1,
+                                         .l33t = true,
+@@ -523,7 +435,6 @@ TEST(ZxcvbnTest, L33tMatching) {
+                                         .i = 5,
+                                         .j = 7,
+                                         .token = "{G0",
+-                                        .dictionary_tag = words2,
+                                         .matched_word = "cgo",
+                                         .rank = 1,
+                                         .l33t = true,
+@@ -1018,8 +929,7 @@ TEST(ZxcvbnTest, DateMatching) {
+ TEST(ZxcvbnTest, Omnimatch) {
+   EXPECT_THAT(omnimatch(""), IsEmpty());
+ 
+-  SetRankedDicts(
+-      {{DictionaryTag::ENGLISH_WIKIPEDIA, {{"rosebud", 1}, {"maelstrom", 2}}}});
++  SetRankedDicts(RankedDicts({{"rosebud", "maelstrom"}}));
+   std::string password = "r0sebudmaelstrom11/20/91aaaa";
+   std::vector<Match> matches = omnimatch(password);
+ 

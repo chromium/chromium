@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,7 +114,7 @@ void CountEntriesInEachState(sql::Database* db) {
       "SELECT state, COUNT (*) FROM prefetch_items GROUP BY state";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   while (statement.Step()) {
-    base::Optional<PrefetchItemState> state =
+    absl::optional<PrefetchItemState> state =
         ToPrefetchItemState(statement.ColumnInt(0));
     if (!state)
       continue;
@@ -125,8 +125,7 @@ void CountEntriesInEachState(sql::Database* db) {
 
 void ReportMetricsFor(const PrefetchItemStats& url, const base::Time now) {
   // Lifetime reporting.
-  static const int kFourWeeksInSeconds =
-      base::TimeDelta::FromDays(28).InSeconds();
+  static const int kFourWeeksInSeconds = base::Days(28).InSeconds();
   const bool successful = url.error_code == PrefetchItemErrorCode::SUCCESS;
   int64_t lifetime_seconds = (now - url.creation_time).InSeconds();
   if (successful) {

@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "ui/events/event_switches.h"
 
@@ -14,6 +13,9 @@ namespace {
 
 class GestureConfigurationCast : public GestureConfiguration {
  public:
+  GestureConfigurationCast(const GestureConfigurationCast&) = delete;
+  GestureConfigurationCast& operator=(const GestureConfigurationCast&) = delete;
+
   ~GestureConfigurationCast() override {
   }
 
@@ -24,7 +26,7 @@ class GestureConfigurationCast : public GestureConfiguration {
  private:
   GestureConfigurationCast() : GestureConfiguration() {
     set_double_tap_enabled(false);
-    set_double_tap_timeout_in_ms(semi_long_press_time_in_ms());
+    set_double_tap_timeout_in_ms(double_tap_timeout_in_ms());
     set_gesture_begin_end_types_enabled(true);
     set_min_gesture_bounds_length(default_radius());
     set_min_pinch_update_span_delta(
@@ -42,7 +44,6 @@ class GestureConfigurationCast : public GestureConfiguration {
   }
 
   friend struct base::DefaultSingletonTraits<GestureConfigurationCast>;
-  DISALLOW_COPY_AND_ASSIGN(GestureConfigurationCast);
 };
 
 }  // namespace

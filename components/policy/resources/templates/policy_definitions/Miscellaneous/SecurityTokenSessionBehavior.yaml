@@ -1,0 +1,35 @@
+caption: Action on security token removal (e.g., smart card) for <ph name="PRODUCT_OS_NAME">$2<ex>Google
+  ChromeOS</ex></ph>.
+desc: 'Specifies what happens when a user who is authenticating via a security token
+  (e.g., with a smart card) removes that token while in a session. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>:
+  Nothing happens. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK">LOCK</ph>: The
+  screen is locked until the user authenticates again. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT">LOGOUT</ph>:
+  The session is ended and the user is logged out. If this policy is not set, it defaults
+  to <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE">IGNORE</ph>.'
+example_value: LOGOUT
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: No action happens.
+  name: ignore
+  value: IGNORE
+- caption: Log the user out.
+  name: logout
+  value: LOGOUT
+- caption: Lock the current session.
+  name: lock
+  value: LOCK
+owners:
+- fabiansommer@chromium.org, emaxx@chromium.org
+- fabiansommer@chromium.org
+schema:
+  enum:
+  - IGNORE
+  - LOGOUT
+  - LOCK
+  type: string
+supported_on:
+- chrome_os:90-
+tags: []
+type: string-enum

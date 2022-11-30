@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -106,7 +105,7 @@ const DeviceCapabilities kHJCGamepad = {
     /* led */ "0",
     /* ff */ "0",
     kHJCGamepadAbsAxes,
-    base::size(kHJCGamepadAbsAxes),
+    std::size(kHJCGamepadAbsAxes),
 };
 
 // Captured from Xbox 360 gamepad.
@@ -140,7 +139,7 @@ const DeviceCapabilities kXboxGamepad = {
     /* led */ "0",
     /* ff */ "107030000 0",
     kXboxGamepadAbsAxes,
-    base::size(kXboxGamepadAbsAxes),
+    std::size(kXboxGamepadAbsAxes),
 };
 
 // Captured from iBuffalo gamepad.
@@ -169,7 +168,7 @@ const DeviceCapabilities kiBuffaloGamepad = {
     /* led */ "0",
     /* ff */ "0",
     kiBuffaloGamepadAbsAxes,
-    base::size(kiBuffaloGamepadAbsAxes),
+    std::size(kiBuffaloGamepadAbsAxes),
 };
 
 // Captured from Basking.
@@ -206,7 +205,7 @@ const DeviceCapabilities kBaskingTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kBaskingTouchScreenAbsAxes,
-    base::size(kBaskingTouchScreenAbsAxes),
+    std::size(kBaskingTouchScreenAbsAxes),
 };
 
 // Captured from Pixelbook.
@@ -245,7 +244,7 @@ const DeviceCapabilities kEveTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kEveTouchScreenAbsAxes,
-    base::size(kEveTouchScreenAbsAxes),
+    std::size(kEveTouchScreenAbsAxes),
 };
 
 // Captured from Pixel Slate.
@@ -284,7 +283,7 @@ const DeviceCapabilities kNocturneTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kNocturneTouchScreenAbsAxes,
-    base::size(kNocturneTouchScreenAbsAxes),
+    std::size(kNocturneTouchScreenAbsAxes),
 };
 
 // Captured from Chromebook Pixel.
@@ -342,7 +341,7 @@ const DeviceCapabilities kLinkTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kLinkTouchscreenAbsAxes,
-    base::size(kLinkTouchscreenAbsAxes),
+    std::size(kLinkTouchscreenAbsAxes),
 };
 
 // Fake Atmel touchscreen based on real device from Chromebook Pixel,
@@ -381,7 +380,7 @@ const DeviceCapabilities kLinkWithToolTypeTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kLinkWithToolTypeTouchscreenAbsAxes,
-    base::size(kLinkWithToolTypeTouchscreenAbsAxes),
+    std::size(kLinkWithToolTypeTouchscreenAbsAxes),
 };
 
 // Captured from Chromebook Pixel.
@@ -418,7 +417,7 @@ const DeviceCapabilities kLinkTouchpad = {
     /* led */ "0",
     /* ff */ "0",
     kLinkTouchpadAbsAxes,
-    base::size(kLinkTouchpadAbsAxes),
+    std::size(kLinkTouchpadAbsAxes),
 };
 
 const DeviceCapabilities kMorphiusPointingStick = {
@@ -439,6 +438,32 @@ const DeviceCapabilities kMorphiusPointingStick = {
     /* sw */ "0",
     /* led */ "0",
     /* ff */ "0",
+};
+
+const DeviceCapabilities kMorphiusTabletModeSwitch = {
+    /* path */
+    "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/device:00/PNP0C09:00/"
+    "GOOG0006:00/input/input5/event4",
+    /* name */ "Tablet Mode Switch",
+    /* phys */ "GOOG0006",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0000",
+    /* product */ "0000",
+    /* version */ "0001",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "2",
+    /* led */ "0",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "",
 };
 
 // Captured from generic HP KU-1156 USB keyboard.
@@ -491,7 +516,7 @@ const DeviceCapabilities kHpUsbKeyboard_Extra = {
     /* led */ "0",
     /* ff */ "0",
     kHpUsbKeyboard_ExtraAbsAxes,
-    base::size(kHpUsbKeyboard_ExtraAbsAxes),
+    std::size(kHpUsbKeyboard_ExtraAbsAxes),
 };
 
 // Captured from Dell MS111-L 3-Button Optical USB Mouse.
@@ -542,7 +567,7 @@ const DeviceCapabilities kMimoTouch2Touchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kMimoTouch2TouchscreenAbsAxes,
-    base::size(kMimoTouch2TouchscreenAbsAxes),
+    std::size(kMimoTouch2TouchscreenAbsAxes),
 };
 
 // Captured from Wacom Intuos Pen and Touch Small Tablet.
@@ -573,7 +598,7 @@ const DeviceCapabilities kWacomIntuosPtS_Pen = {
     /* led */ "0",
     /* ff */ "0",
     kWacomIntuosPtS_PenAbsAxes,
-    base::size(kWacomIntuosPtS_PenAbsAxes),
+    std::size(kWacomIntuosPtS_PenAbsAxes),
 };
 
 // Captured from Wacom Intuos Pen and Touch Small Tablet.
@@ -608,7 +633,7 @@ const DeviceCapabilities kWacomIntuosPtS_Finger = {
     /* led */ "0",
     /* ff */ "0",
     kWacomIntuosPtS_FingerAbsAxes,
-    base::size(kWacomIntuosPtS_FingerAbsAxes),
+    std::size(kWacomIntuosPtS_FingerAbsAxes),
 };
 
 // Captured from Logitech Wireless Touch Keyboard K400.
@@ -639,7 +664,7 @@ const DeviceCapabilities kLogitechTouchKeyboardK400 = {
     /* led */ "1f",
     /* ff */ "0",
     kLogitechTouchKeyboardK400AbsAxes,
-    base::size(kLogitechTouchKeyboardK400AbsAxes),
+    std::size(kLogitechTouchKeyboardK400AbsAxes),
 };
 
 // Captured from Elo TouchSystems 2700 touchscreen.
@@ -671,7 +696,7 @@ const DeviceCapabilities kElo_TouchSystems_2700 = {
     /* led */ "0",
     /* ff */ "0",
     kElo_TouchSystems_2700AbsAxes,
-    base::size(kElo_TouchSystems_2700AbsAxes),
+    std::size(kElo_TouchSystems_2700AbsAxes),
 };
 
 // Captured from Intel reference design: "Wilson Beach".
@@ -702,7 +727,7 @@ const DeviceCapabilities kWilsonBeachActiveStylus = {
     /* led */ "0",
     /* ff */ "0",
     kWilsonBeachActiveStylusAbsAxes,
-    base::size(kWilsonBeachActiveStylusAbsAxes),
+    std::size(kWilsonBeachActiveStylusAbsAxes),
 };
 
 // Captured from Eve Chromebook
@@ -732,7 +757,7 @@ const DeviceCapabilities kEveStylus = {
     /* led */ "0",
     /* ff */ "0",
     kEveStylusAbsAxes,
-    base::size(kEveStylusAbsAxes),
+    std::size(kEveStylusAbsAxes),
 };
 
 // Captured from Pixel Slate
@@ -762,7 +787,7 @@ const DeviceCapabilities kNocturneStylus = {
     /* led */ "0",
     /* ff */ "0",
     kNocturneStylusAbsAxes,
-    base::size(kNocturneStylusAbsAxes),
+    std::size(kNocturneStylusAbsAxes),
 };
 
 const DeviceCapabilities kHammerKeyboard = {
@@ -823,7 +848,7 @@ const DeviceCapabilities kHammerTouchpad = {
     /* led */ "0",
     /* ff */ "0",
     kHammerTouchpadAbsAxes,
-    base::size(kHammerTouchpadAbsAxes),
+    std::size(kHammerTouchpadAbsAxes),
 };
 
 // Captured from Logitech Tap touch controller
@@ -852,7 +877,7 @@ const DeviceCapabilities kIlitekTP_Mouse = {
     /* led */ "0",
     /* ff */ "0",
     kIlitekTP_Mouse_AbsAxes,
-    base::size(kIlitekTP_Mouse_AbsAxes),
+    std::size(kIlitekTP_Mouse_AbsAxes),
 };
 const DeviceAbsoluteAxis kIlitekTPAbsAxes[] = {
     {ABS_X, {0, 0, 16384, 0, 0, 76}},
@@ -883,7 +908,7 @@ const DeviceCapabilities kIlitekTP = {
     /* led */ "0",
     /* ff */ "0",
     kIlitekTPAbsAxes,
-    base::size(kIlitekTPAbsAxes),
+    std::size(kIlitekTPAbsAxes),
 };
 
 const DeviceCapabilities kSideVolumeButton = {
@@ -943,7 +968,7 @@ const DeviceCapabilities kKohakuTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kKohakuTouchscreenAxes,
-    base::size(kKohakuTouchscreenAxes),
+    std::size(kKohakuTouchscreenAxes),
 };
 
 const DeviceAbsoluteAxis kKohakuStylusAxes[] = {
@@ -976,7 +1001,7 @@ const DeviceCapabilities kKohakuStylus = {
     /* led */ "0",
     /* ff */ "0",
     kKohakuStylusAxes,
-    base::size(kKohakuStylusAxes),
+    std::size(kKohakuStylusAxes),
 };
 
 const DeviceAbsoluteAxis kXboxEliteAxes[] = {
@@ -1004,7 +1029,9 @@ const DeviceCapabilities kXboxElite = {
     /* version */ "0903",
     /* prop */ "0",
     /* ev */ "10001b",
-    /* key */ "4000000 0 7fff000000000000 1000000000000 100040000000 e080ffdf01cfffff fffffffffffffffe",
+    /* key */
+    "4000000 0 7fff000000000000 1000000000000 100040000000 e080ffdf01cfffff "
+    "fffffffffffffffe",
     /* rel */ "0",
     /* abs */ "30627",
     /* msc */ "10",
@@ -1012,7 +1039,7 @@ const DeviceCapabilities kXboxElite = {
     /* led */ "0",
     /* ff */ "0",
     kXboxEliteAxes,
-    base::size(kXboxEliteAxes),
+    std::size(kXboxEliteAxes),
 };
 const DeviceCapabilities kDellActivePenButton = {
     /* path */
@@ -1065,7 +1092,404 @@ const DeviceCapabilities kDrallionStylus = {
     /* led */ "0",
     /* ff */ "0",
     kDrallionStylusAxes,
-    base::size(kDrallionStylusAxes),
+    std::size(kDrallionStylusAxes),
+};
+
+const DeviceCapabilities kDrallionKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab41",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "200000000000100 0 0 0 10000000000000 0 f02000000 3803078f800d001 "
+    "ffffffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "4",
+};
+
+const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.0/PRP0001:00/input/input3/event3",
+    /* name */ "mic_mute_switch",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "4000",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+const DeviceCapabilities kDrawciaStylusGarage = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.2/PRP0001:00/input/input4/event4",
+    /* name */ "PRP0001:00",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "8000",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+// The built-in keyboard for Eve, which has an Assistant key.
+const DeviceCapabilities kEveKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "2",
+};
+
+// The built-in keyboard on Sarien, which has a few more keys than normal.
+const DeviceCapabilities kSarienKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab41",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "100 0 0 0 10000000000000 0 f02000000 3803078f800d001 ffffffdfffefffff "
+    "fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "3",
+};
+
+// The built-in keyboard on Woomax, which has a numeric pad
+const DeviceCapabilities kWoomaxKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1ebfdf524fff80 3fffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The keyboard of a Drobit
+const DeviceCapabilities kDrobitKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1e169a52400000 37ffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The numberpad-aspect of the touchpad on Drobit.
+const DeviceCapabilities kDrobitNumberpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.1/i2c_designware.5/i2c-20/"
+    "i2c-ELAN2701:00/0018:04F3:31C6.0001/input/input5/event5",
+    /* name */ "ELAN2701:00 04F3:31C6 Keyboard",
+    /* phys */ "i2c-ELAN2701:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "04f3",
+    /* product */ "31c6",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */ "5000fffa0 80040000006040",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1",
+    /* ff */ "0",
+};
+
+const DeviceCapabilities kLogitechKeyboardK120 = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:08.1/0000:04:00.3/usb1/1-2/1-2:1.0/"
+    "0003:046D:C31C.0002/input/input18/event16",
+    /* name */ "Logitech USB Keyboard",
+    /* phys */ "usb-0000:04:00.3-2/input0",
+    /* uniq */ "",
+    /* bustype */ "0003",
+    /* vendor */ "046d",
+    /* product */ "c31c",
+    /* version */ "0110",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1f",
+    /* ff */ "0",
+};
+const DeviceAbsoluteAxis kMicrosoftBluetoothNumberPadAbsAxes[] = {
+    {ABS_VOLUME, {0, 0, 1023, 0, 0, 0}},
+};
+const DeviceCapabilities kMicrosoftBluetoothNumberPad = {
+    /* path */
+    "/sys/devices/virtual/misc/uhid/0005:045E:0836.0007/input/input26/event16",
+    /* name */ "Microsoft Number Pad Keyboard",
+    /* phys */ "c8:b2:9b:af:3a:47",
+    /* uniq */ "ce:aa:3f:f5:d9:12",
+    /* bustype */ "0005",
+    /* vendor */ "045e",
+    /* product */ "0836",
+    /* version */ "0125",
+    /* prop */ "0",
+    /* ev */ "12001f",
+    /* key */
+    "3f000303ff 0 0 483ffff17aff32d bfd4444600000000 1 130ff38b17c007 "
+    "ffe77bfad9415fff ffbeffdff3cfffff fffffffffffffffe",
+    /* rel */ "1040",
+    /* abs */ "100000000",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    kMicrosoftBluetoothNumberPadAbsAxes,
+    std::size(kMicrosoftBluetoothNumberPadAbsAxes),
+};
+
+// Captured from Dell Latitude E6510, which report non valid resolutions and is
+// semi-multitouch.
+const ui::DeviceAbsoluteAxis kDellLatitudeE6510TouchpadAbsAxes[] = {
+    {ABS_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_PRESSURE, {0, 0, 127, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 3, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_MT_POSITION_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kDellLatitudeE6510Touchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio1/input/input7/event7",
+    /* name */ "AlpsPS/2 ALPS DualPoint TouchPad",
+    /* phys */ "isa0060/serio1/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0008",
+    /* version */ "0300",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "e420 70000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800001000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kDellLatitudeE6510TouchpadAbsAxes,
+    std::size(kDellLatitudeE6510TouchpadAbsAxes),
+};
+
+// Captured from HP ProBook 6560b. Touchpad that is semi-multitouch.
+const ui::DeviceAbsoluteAxis kHPProBook6560bTouchpadAbsAxes[] = {
+    {ABS_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_TOOL_WIDTH, {0, 0, 15, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_MT_POSITION_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kHPProBook6560bTouchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio4/input/input12/event5",
+    /* name */ "SynPS/2 Synaptics TouchPad",
+    /* phys */ "isa0060/serio4/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0007",
+    /* version */ "01b1",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "6420 30000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800011000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kHPProBook6560bTouchpadAbsAxes,
+    std::size(kHPProBook6560bTouchpadAbsAxes),
+};
+
+const DeviceCapabilities kJinlonKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "200000000000000 0 0 0 10000000000000 0 6300000000 200040004000 "
+    "3d1e169a52400000 37ffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "EA E7 91 92 93 94 95 96 97 98 A0 AE B0",
+    /* kbd_top_row_layout */ "",
+};
+
+// Captured from Redrix. Haptic touchpad.
+const DeviceAbsoluteAxis kRedrixTouchpadAxes[] = {
+    {ABS_X, {0, 0, 3630, 0, 0, 32}},
+    {ABS_Y, {0, 0, 2346, 0, 0, 31}},
+    {ABS_PRESSURE, {0, 0, 4095, 0, 0, 4}},
+    {ABS_MISC, {0, 1, 15, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 4, 0, 0, 0}},
+    {ABS_MT_TOUCH_MAJOR, {0, 0, 4095, 0, 0, 0}},
+    {ABS_MT_TOUCH_MINOR, {0, 0, 4095, 0, 0, 0}},
+    {ABS_MT_ORIENTATION, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 3630, 0, 0, 32}},
+    {ABS_MT_POSITION_Y, {0, 0, 2346, 0, 0, 31}},
+    {ABS_MT_TOOL_TYPE, {0, 0, 2, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+    {ABS_MT_PRESSURE, {0, 0, 4095, 0, 0, 4}},
+};
+const DeviceCapabilities kRedrixTouchpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.1/i2c_designware.5/i2c-18/"
+    "i2c-ELAN2703:00/0018:04F3:323B.0001/input/input7/event6",
+    /* name */ "ELAN2703:00 04F3:323B Touchpad",
+    /* phys */ "i2c-ELAN2703:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "04f3",
+    /* product */ "323b",
+    /* version */ "0100",
+    /* prop */ "85",
+    /* ev */ "20001b",
+    /* key */ "e520 10000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "6f3810001000003",
+    /* msc */ "20",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "8000 0",
+    kRedrixTouchpadAxes,
+    std::size(kRedrixTouchpadAxes),
+};
+
+const DeviceCapabilities kSymbolTechBarcodeScanner = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-6/1-6:1.0/0003:05E0:1200.0009/"
+    "input/input27/event19",
+    /* name */ "Symbol Technologies, Inc, 2008 Symbol Bar Code Scanner",
+    /* phys */ "usb-0000:00:14.0-6/input0",
+    /* uniq */ "S/N:D698905D483448AD806AAC8CD63B8B4A Rev:PAACES00-002-R033",
+    /* bustype */ "0003",
+    /* vendor */ "05e0",
+    /* product */ "1200",
+    /* version */ "0110",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1f",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "",
 };
 
 // NB: Please use the capture_device_capabilities.py script to add more
@@ -1076,7 +1500,7 @@ const DeviceCapabilities kDrallionStylus = {
 //   DEVICE_IP=<your device IP>
 //   cd ui/events/ozone/evdev/
 //   scp capture_device_capabilities.py "root@${DEVICE_IP}:/tmp/"
-//   ssh "root@${DEVICE_IP}" /tmp/capture_device_capabilities.py
+//   ssh "root@${DEVICE_IP}" python /tmp/capture_device_capabilities.py
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
                               EventDeviceInfo* devinfo) {
@@ -1099,6 +1523,11 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   if (!ParseBitfield(capabilities.abs, ABS_CNT, &abs_bits))
     return false;
   devinfo->SetAbsEvents(&abs_bits[0], abs_bits.size());
+
+  std::vector<unsigned long> sw_bits;
+  if (!ParseBitfield(capabilities.sw, SW_CNT, &sw_bits))
+    return false;
+  devinfo->SetSwEvents(&sw_bits[0], sw_bits.size());
 
   std::vector<unsigned long> msc_bits;
   if (!ParseBitfield(capabilities.msc, MSC_CNT, &msc_bits))

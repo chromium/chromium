@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,9 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import os.path
+
+
+USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
@@ -34,10 +37,7 @@ def CommonChecks(input_api, output_api):
   with input_api.temporary_directory() as temp_dir:
     commands = []
     if generating_files:
-      python_executable = input_api.python_executable
-      # TODO(penghuang): Remove it when python3 is used by default.
-      if python_executable != 'vpython3':
-        python_executable = 'vpython3'
+      python_executable = input_api.python3_executable
       commands.append(input_api.Command(name='generate_bindings',
                                         cmd=[python_executable,
                                              'generate_bindings.py',

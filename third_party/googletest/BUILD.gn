@@ -1,11 +1,17 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build_overrides/build.gni")
 
 config("gtest_config") {
-  visibility = [ ":*" ]  # gmock also shares this config.
+  # webrtc wants to push this config without a public_dep chain
+  # TODO(crbug.com/1249254): figure out what to do with this
+  visibility = [
+    ":*",  # gmock also shares this config.
+    "//test:*",  # webrts standalone setup
+    "//third_party/webrtc/test:*",
+  ]
 
   defines = [
     # Chromium always links googletest statically, so no API qualifier is
@@ -68,6 +74,7 @@ source_set("gtest") {
     "custom/gtest/internal/custom/chrome_custom_temp_dir.cc",
     "custom/gtest/internal/custom/chrome_custom_temp_dir.h",
     "custom/gtest/internal/custom/gtest_port_wrapper.cc",
+    "src/googletest/include/gtest/gtest-assertion-result.h",
     "src/googletest/include/gtest/gtest-death-test.h",
     "src/googletest/include/gtest/gtest-matchers.h",
     "src/googletest/include/gtest/gtest-message.h",
@@ -93,6 +100,7 @@ source_set("gtest") {
     "src/googletest/include/gtest/internal/gtest-type-util.h",
 
     #"src/googletest/src/gtest-all.cc",  # Not needed by our build.
+    "src/googletest/src/gtest-assertion-result.cc",
     "src/googletest/src/gtest-death-test.cc",
     "src/googletest/src/gtest-filepath.cc",
     "src/googletest/src/gtest-internal-inl.h",

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,6 +53,9 @@ class PaymentRequestSpec {
 
   // Recomputes spec based on details.
   void RecomputeSpecForDetails(JNIEnv* env);
+
+  // Returns whether the secure-payment-confirmation method is requested.
+  bool IsSecurePaymentConfirmationRequested(JNIEnv* env);
 
   // Returns the selected shipping option error.
   base::android::ScopedJavaLocalRef<jstring> SelectedShippingOptionError(

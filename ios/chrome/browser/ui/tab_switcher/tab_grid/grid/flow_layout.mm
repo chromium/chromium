@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/flow_layout.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,7 +59,7 @@
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path changing from
-  // |itemIndexPath|, which includes any items that were in the layout and whose
+  // `itemIndexPath`, which includes any items that were in the layout and whose
   // index path is changing. For an item whose index path is changing, this
   // method is called before
   // -initialLayoutAttributesForAppearingItemAtIndexPath:
@@ -90,7 +91,7 @@
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path is becoming
-  // |itemIndexPath|, which includes any items that were in the layout but whose
+  // `itemIndexPath`, which includes any items that were in the layout but whose
   // index path is changing. For an item whose index path is changing, this
   // method is called after
   // -finalLayoutAttributesForDisappearingItemAtIndexPath:
@@ -118,6 +119,10 @@
   self.indexPathsOfDeletingItems = @[];
   self.indexPathsOfInsertingItems = @[];
   [super finalizeCollectionViewUpdates];
+}
+
+- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
+  return UseRTLLayout() ? YES : NO;
 }
 
 @end

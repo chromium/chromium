@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -20,7 +19,7 @@
 class GoogleServiceAuthError;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for restoring authenticated web sessions out of
 // OAuth2 refresh tokens or pre-authenticated cookie jar.
@@ -45,22 +44,6 @@ class OAuth2LoginManager : public KeyedService,
     SESSION_RESTORE_CONNECTION_FAILED = 5,
   };
 
-  // Session restore strategy.
-  enum SessionRestoreStrategy {
-    // Generate OAuth2 refresh token from authentication profile's cookie jar.
-    // Restore session from generated OAuth2 refresh token.
-    //
-    // This value is no longer used as generating OAuth 2 refresh tokens from
-    // cookies is no longer supported.
-    // TODO(http://crbug.com/882838) Remove the entry
-    // DEPRECATED_RESTORE_FROM_COOKIE_JAR.
-    DEPRECATED_RESTORE_FROM_COOKIE_JAR,
-    // Restore session from saved OAuth2 refresh token from TokenServices.
-    RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN,
-    // Restore session from OAuth2 refresh token passed via command line.
-    RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN,
-  };
-
   class Observer {
    public:
     virtual ~Observer() {}
@@ -75,18 +58,17 @@ class OAuth2LoginManager : public KeyedService,
   };
 
   explicit OAuth2LoginManager(Profile* user_profile);
+
+  OAuth2LoginManager(const OAuth2LoginManager&) = delete;
+  OAuth2LoginManager& operator=(const OAuth2LoginManager&) = delete;
+
   ~OAuth2LoginManager() override;
 
   void AddObserver(OAuth2LoginManager::Observer* observer);
   void RemoveObserver(OAuth2LoginManager::Observer* observer);
 
-  // Restores and verifies OAuth tokens following specified `restore_strategy`.
-  // For `restore_strategy` RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN, parameter
-  // `oauth2_refresh_token` needs to have a non-empty value.
-  // For `restore_strategy` DDEPRECATED_RESTORE_FROM_COOKIE_JAR.
+  // Restores and verifies OAuth tokens.
   void RestoreSession(
-      SessionRestoreStrategy restore_strategy,
-      const std::string& oauth2_refresh_token,
       const std::string& oauth2_access_token);
 
   // Continues session restore after transient network errors.
@@ -164,12 +146,6 @@ class OAuth2LoginManager : public KeyedService,
   // Retrieves the primary account ID for `user_profile_`.
   CoreAccountId GetUnconsentedPrimaryAccountId();
 
-  // Records `refresh_token_` to token service. The associated account id is
-  // assumed to be the primary account id of the user profile. If the primary
-  // account id is not present, GetAccountInfoOfRefreshToken will be called to
-  // retrieve the associated account info.
-  void StoreOAuth2Token();
-
   // Checks if primary account sessions cookies are stale and restores them
   // if needed.
   void VerifySessionCookies();
@@ -197,16 +173,12 @@ class OAuth2LoginManager : public KeyedService,
                                         MergeVerificationOutcome outcome);
 
   Profile* user_profile_;
-  SessionRestoreStrategy restore_strategy_;
   SessionRestoreState state_;
 
   // Whether there is pending TokenService::LoadCredentials call.
   bool pending_token_service_load_ = false;
 
   std::unique_ptr<OAuth2LoginVerifier> login_verifier_;
-
-  // OAuth2 refresh token.
-  std::string refresh_token_;
 
   // OAuthLogin scoped access token.
   std::string oauthlogin_access_token_;
@@ -219,10 +191,14 @@ class OAuth2LoginManager : public KeyedService,
   // TODO(zelidrag|gspencer): Figure out how to get rid of ProfileHelper so we
   // can change the line below to base::ObserverList<Observer, true>.
   base::ObserverList<Observer, false>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuth2LoginManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OAuth2LoginManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_H_

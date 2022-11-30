@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_POLICY_CORE_COMMON_PROXY_POLICY_PROVIDER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_PROXY_POLICY_PROVIDER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/policy_export.h"
 
@@ -41,6 +41,8 @@ class POLICY_EXPORT ProxyPolicyProvider
       public ConfigurationPolicyProvider::Observer {
  public:
   ProxyPolicyProvider();
+  ProxyPolicyProvider(const ProxyPolicyProvider&) = delete;
+  ProxyPolicyProvider& operator=(const ProxyPolicyProvider&) = delete;
   ~ProxyPolicyProvider() override;
 
   // Updates the provider this proxy delegates to.
@@ -61,10 +63,8 @@ class POLICY_EXPORT ProxyPolicyProvider
   }
 
  private:
-  ConfigurationPolicyProvider* delegate_;
+  raw_ptr<ConfigurationPolicyProvider> delegate_;
   bool block_policy_updates_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyPolicyProvider);
 };
 
 }  // namespace policy

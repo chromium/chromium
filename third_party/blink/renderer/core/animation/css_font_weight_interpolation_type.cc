@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -62,40 +62,18 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
-  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return CreateFontWeightValue(
-        FontSelectionValue(primitive_value->GetFloatValue()));
-  }
-
-  const auto& identifier_value = To<CSSIdentifierValue>(value);
-  CSSValueID keyword = identifier_value.GetValueID();
-
-  switch (keyword) {
-    case CSSValueID::kInvalid:
-      return nullptr;
-    case CSSValueID::kNormal:
-      return CreateFontWeightValue(NormalWeightValue());
-    case CSSValueID::kBold:
-      return CreateFontWeightValue(BoldWeightValue());
-
-    case CSSValueID::kBolder:
-    case CSSValueID::kLighter: {
-      DCHECK(state);
-      FontSelectionValue inherited_font_weight =
-          state->ParentStyle()->GetFontWeight();
+  DCHECK(state);
+  FontSelectionValue inherited_font_weight =
+      state->ParentStyle()->GetFontWeight();
+  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    CSSValueID keyword = identifier_value->GetValueID();
+    if (keyword == CSSValueID::kBolder || keyword == CSSValueID::kLighter) {
       conversion_checkers.push_back(
           std::make_unique<InheritedFontWeightChecker>(inherited_font_weight));
-      if (keyword == CSSValueID::kBolder) {
-        return CreateFontWeightValue(
-            FontDescription::BolderWeight(inherited_font_weight));
-      }
-      return CreateFontWeightValue(
-          FontDescription::LighterWeight(inherited_font_weight));
     }
-    default:
-      NOTREACHED();
-      return nullptr;
   }
+  return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
+      value, inherited_font_weight));
 }
 
 InterpolationValue
@@ -109,7 +87,7 @@ void CSSFontWeightInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue*,
     StyleResolverState& state) const {
   state.GetFontBuilder().SetWeight(FontSelectionValue(
-      clampTo(To<InterpolableNumber>(interpolable_value).Value(),
+      ClampTo(To<InterpolableNumber>(interpolable_value).Value(),
               MinWeightValue(), MaxWeightValue())));
 }
 

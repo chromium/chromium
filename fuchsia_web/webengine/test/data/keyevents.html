@@ -1,0 +1,24 @@
+<html>
+<body>
+<script>
+  var keyDicts = [];
+
+  document.addEventListener("keypress", (e) => {
+    keyDicts.push( { "key" : e.key, "code" : e.code, "type" : e.type});
+    document.title = keyDicts.length;
+  });
+
+  document.addEventListener("keyup", (e) => {
+    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type});
+    document.title = keyDicts.length;
+  });
+
+  document.addEventListener("keydown", (e) => {
+    keyDicts.push({ "key" : e.key, "code" : e.code, "type" : e.type});
+    document.title = keyDicts.length;
+  });
+
+  window.onload = function() { document.title = "loaded"; }
+</script>
+</body>
+</html>

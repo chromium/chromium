@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/fingerprint/fingerprint_export.h"
@@ -25,10 +24,10 @@ namespace device {
 // Implementation of Fingerprint interface for ChromeOS platform.
 // This is used to connect to biod(through dbus) and perform fingerprint related
 // operations. It observes signals from biod. This class requires that
-// chromeos::BiodClient has been initialized.
+// ash::BiodClient has been initialized.
 class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
     : public mojom::Fingerprint,
-      public chromeos::BiodClient::Observer {
+      public ash::BiodClient::Observer {
  public:
   enum class FingerprintSession {
     NONE,
@@ -37,6 +36,10 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   };
 
   explicit FingerprintChromeOS();
+
+  FingerprintChromeOS(const FingerprintChromeOS&) = delete;
+  FingerprintChromeOS& operator=(const FingerprintChromeOS&) = delete;
+
   ~FingerprintChromeOS() override;
 
   // mojom::Fingerprint:
@@ -63,14 +66,13 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
  private:
   friend class FingerprintChromeOSTest;
 
-  // chromeos::BiodClient::Observer:
+  // ash::BiodClient::Observer:
   void BiodServiceRestarted() override;
   void BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
                                   bool enroll_session_complete,
                                   int percent_complete) override;
-  void BiodAuthScanDoneReceived(
-      biod::ScanResult scan_result,
-      const chromeos::AuthScanMatches& matches) override;
+  void BiodAuthScanDoneReceived(const biod::FingerprintMessage& msg,
+                                const ash::AuthScanMatches& matches) override;
   void BiodSessionFailedReceived() override;
 
   void OnFingerprintObserverDisconnected(mojom::FingerprintObserver* observer);
@@ -112,8 +114,6 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   FingerprintSession opened_session_ = FingerprintSession::NONE;
 
   base::WeakPtrFactory<FingerprintChromeOS> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintChromeOS);
 };
 
 }  // namespace device

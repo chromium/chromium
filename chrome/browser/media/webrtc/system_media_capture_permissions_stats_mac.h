@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -25,6 +25,10 @@ void LogSystemMediaPermissionsStartupStats();
 // The new permission is logged as startup state.
 void SystemAudioCapturePermissionDetermined(SystemPermission permission);
 void SystemVideoCapturePermissionDetermined(SystemPermission permission);
+
+// Adds a sample of the passed in permission to the screen capture metric.
+// Called when the screen capture permission is checked.
+void LogSystemScreenCapturePermission(bool allowed);
 
 // Called when a system permission was requested but was blocked. Information
 // stored is later used when logging stats at startup.

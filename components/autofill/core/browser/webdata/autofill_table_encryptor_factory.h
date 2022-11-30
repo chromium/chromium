@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_ENCRYPTOR_FACTORY_H_
@@ -33,6 +33,10 @@ class AutofillTableEncryptorFactory {
 
   static AutofillTableEncryptorFactory* GetInstance();
 
+  AutofillTableEncryptorFactory(const AutofillTableEncryptorFactory&) = delete;
+  AutofillTableEncryptorFactory& operator=(
+      const AutofillTableEncryptorFactory&) = delete;
+
   std::unique_ptr<AutofillTableEncryptor> Create();
 
   void SetDelegate(std::unique_ptr<Delegate> delegate);
@@ -42,10 +46,9 @@ class AutofillTableEncryptorFactory {
   ~AutofillTableEncryptorFactory();
 
   std::unique_ptr<Delegate> delegate_;
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   friend struct base::DefaultSingletonTraits<AutofillTableEncryptorFactory>;
-  DISALLOW_COPY_AND_ASSIGN(AutofillTableEncryptorFactory);
 };
 
 }  // namespace autofill

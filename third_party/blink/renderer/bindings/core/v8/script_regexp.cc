@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -65,7 +64,7 @@ ScriptRegexp::ScriptRegexp(const String& pattern,
                                         static_cast<v8::RegExp::Flags>(flags),
                                         kBacktrackLimit)
           .ToLocal(&regex))
-    regex_.Set(isolate, regex);
+    regex_.Reset(isolate, regex);
   if (try_catch.HasCaught() && !try_catch.Message().IsEmpty())
     exception_message_ =
         ToCoreStringWithUndefinedOrNullCheck(try_catch.Message()->Get());
@@ -94,7 +93,7 @@ int ScriptRegexp::Match(StringView string,
   v8::Context::Scope context_scope(context);
   v8::TryCatch try_catch(isolate);
 
-  v8::Local<v8::RegExp> regex = regex_.NewLocal(isolate);
+  v8::Local<v8::RegExp> regex = regex_.Get(isolate);
   v8::Local<v8::String> subject =
       V8String(isolate, StringView(string, start_from));
   v8::Local<v8::Value> return_value;
@@ -125,7 +124,7 @@ int ScriptRegexp::Match(StringView string,
   }
 
   if (group_list) {
-    DCHECK(group_list->IsEmpty());
+    DCHECK(group_list->empty());
     for (uint32_t i = 1; i < result->Length(); ++i) {
       v8::Local<v8::Value> group;
       if (!result->Get(context, i).ToLocal(&group))

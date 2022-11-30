@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,48 +11,41 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/optional_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 void ExpectDictBooleanValue(bool expected_value,
-                            const DictionaryValue& value,
-                            const std::string& key) {
-  bool boolean_value = false;
-  EXPECT_TRUE(value.GetBoolean(key, &boolean_value)) << key;
-  EXPECT_EQ(expected_value, boolean_value) << key;
-}
-
-void ExpectDictDictionaryValue(const DictionaryValue& expected_value,
-                               const DictionaryValue& value,
-                               const std::string& key) {
-  const DictionaryValue* dict_value = nullptr;
-  EXPECT_TRUE(value.GetDictionary(key, &dict_value)) << key;
-  EXPECT_EQ(expected_value, *dict_value) << key;
+                            const Value::Dict& dict,
+                            StringPiece path) {
+  EXPECT_EQ(dict.FindBoolByDottedPath(path),
+            absl::make_optional(expected_value))
+      << path;
 }
 
 void ExpectDictIntegerValue(int expected_value,
-                            const DictionaryValue& value,
-                            const std::string& key) {
-  int integer_value = 0;
-  EXPECT_TRUE(value.GetInteger(key, &integer_value)) << key;
-  EXPECT_EQ(expected_value, integer_value) << key;
+                            const Value::Dict& dict,
+                            StringPiece path) {
+  EXPECT_EQ(dict.FindIntByDottedPath(path), absl::make_optional(expected_value))
+      << path;
 }
 
-void ExpectDictListValue(const ListValue& expected_value,
-                         const DictionaryValue& value,
-                         const std::string& key) {
-  const ListValue* list_value = nullptr;
-  EXPECT_TRUE(value.GetList(key, &list_value)) << key;
-  EXPECT_EQ(expected_value, *list_value) << key;
+void ExpectDictStringValue(StringPiece expected_value,
+                           const Value::Dict& dict,
+                           StringPiece path) {
+  EXPECT_EQ(OptionalFromPtr(dict.FindStringByDottedPath(path)),
+            absl::make_optional(expected_value))
+      << path;
 }
 
-void ExpectDictStringValue(const std::string& expected_value,
-                           const DictionaryValue& value,
-                           const std::string& key) {
-  std::string string_value;
-  EXPECT_TRUE(value.GetString(key, &string_value)) << key;
-  EXPECT_EQ(expected_value, string_value) << key;
+void ExpectDictValue(const Value& expected_value,
+                     const Value::Dict& dict,
+                     StringPiece path) {
+  const Value* found_value = dict.FindByDottedPath(path);
+  ASSERT_TRUE(found_value) << path;
+  EXPECT_EQ(*found_value, expected_value) << path;
 }
 
 void ExpectStringValue(const std::string& expected_str, const Value& actual) {
@@ -86,7 +79,7 @@ class DictionaryHasValueMatcher
                 << "' is not a dictionary";
       return false;
     }
-    const base::Value* sub_value = value.FindKey(key_);
+    const base::Value* sub_value = value.GetDict().Find(key_);
     if (!sub_value) {
       *listener << "Dictionary '" << FormatAsJSON(value)
                 << "' does not have key '" << key_ << "'";
@@ -138,8 +131,9 @@ class DictionaryHasValuesMatcher
     }
 
     bool ok = true;
-    for (const auto& template_dict_item : template_value_.DictItems()) {
-      const base::Value* sub_value = value.FindKey(template_dict_item.first);
+    for (auto template_dict_item : template_value_.GetDict()) {
+      const base::Value* sub_value =
+          value.GetDict().Find(template_dict_item.first);
       if (!sub_value) {
         *listener << "\nDictionary does not have key '"
                   << template_dict_item.first << "'";
@@ -174,6 +168,27 @@ class DictionaryHasValuesMatcher
   const base::Value template_value_;
 };
 
+// Attempts to parse `json` as JSON. Returns resulting Value on success, has an
+// EXPECT failure and returns nullopt on failure. If `expected_type` is
+// provided, treats `json` parsing as a Value of a different type as a failure.
+//
+absl::optional<Value> ParseJsonHelper(
+    StringPiece json,
+    absl::optional<Value::Type> expected_type) {
+  auto result = JSONReader::ReadAndReturnValueWithError(
+      json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.has_value()) {
+    ADD_FAILURE() << "Failed to parse \"" << json
+                  << "\": " << result.error().message;
+    return absl::nullopt;
+  }
+  if (expected_type && result->type() != *expected_type) {
+    ADD_FAILURE() << "JSON is of wrong type: " << json;
+    return absl::nullopt;
+  }
+  return std::move(*result);
+}
+
 }  // namespace
 
 testing::Matcher<const base::Value&> DictionaryHasValue(
@@ -205,19 +220,30 @@ bool IsJsonMatcher::MatchAndExplain(
   // This is almost the same logic as ParseJson, but the parser uses stricter
   // options for JSON data that is assumed to be generated by the code under
   // test rather than written by hand as part of a unit test.
-  JSONReader::ValueWithError ret =
-      JSONReader::ReadAndReturnValueWithError(json, JSON_PARSE_RFC);
-  if (!ret.value) {
-    *listener << "Failed to parse \"" << json << "\": " << ret.error_message;
+  auto ret = JSONReader::ReadAndReturnValueWithError(json, JSON_PARSE_RFC);
+  if (!ret.has_value()) {
+    *listener << "Failed to parse \"" << json << "\": " << ret.error().message;
     return false;
   }
-  return MatchAndExplain(*ret.value, listener);
+  return MatchAndExplain(*ret, listener);
 }
 
 bool IsJsonMatcher::MatchAndExplain(
     const base::Value& value,
     testing::MatchResultListener* /* listener */) const {
   return expected_value_ == value;
+}
+
+bool IsJsonMatcher::MatchAndExplain(
+    const base::Value::Dict& dict,
+    testing::MatchResultListener* /* listener */) const {
+  return expected_value_.is_dict() && expected_value_.GetDict() == dict;
+}
+
+bool IsJsonMatcher::MatchAndExplain(
+    const base::Value::List& list,
+    testing::MatchResultListener* /* listener */) const {
+  return expected_value_.is_list() && expected_value_.GetList() == list;
 }
 
 void IsJsonMatcher::DescribeTo(std::ostream* os) const {
@@ -229,14 +255,21 @@ void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 Value ParseJson(StringPiece json) {
-  JSONReader::ValueWithError result =
-      JSONReader::ReadAndReturnValueWithError(json, JSON_ALLOW_TRAILING_COMMAS);
-  if (!result.value) {
-    ADD_FAILURE() << "Failed to parse \"" << json
-                  << "\": " << result.error_message;
-    return Value();
-  }
-  return std::move(result.value.value());
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/absl::nullopt);
+  return result.has_value() ? std::move(*result) : Value();
+}
+
+Value::Dict ParseJsonDict(StringPiece json) {
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::DICT);
+  return result.has_value() ? std::move(*result).TakeDict() : Value::Dict();
+}
+
+Value::List ParseJsonList(StringPiece json) {
+  absl::optional<Value> result =
+      ParseJsonHelper(json, /*expected_type=*/Value::Type::LIST);
+  return result.has_value() ? std::move(*result).TakeList() : Value::List();
 }
 
 std::unique_ptr<Value> ParseJsonDeprecated(StringPiece json) {

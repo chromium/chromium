@@ -115,6 +115,8 @@ enum class WebAXUIntAttribute {
 // In order for it to be a sparse attribute the default value
 // must be "".
 enum class WebAXStringAttribute {
+  kAriaBrailleLabel,
+  kAriaBrailleRoleDescription,
   kAriaKeyShortcuts,
   kAriaRoleDescription,
 };
@@ -139,4 +141,4 @@ enum class WebAXObjectVectorAttribute {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_ENUMS_H_

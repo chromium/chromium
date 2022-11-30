@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,8 @@ GPUPipelineLayout* GPUPipelineLayout::Create(
   GPUPipelineLayout* layout = MakeGarbageCollected<GPUPipelineLayout>(
       device, device->GetProcs().deviceCreatePipelineLayout(device->GetHandle(),
                                                             &dawn_desc));
-  layout->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    layout->setLabel(webgpu_desc->label());
   return layout;
 }
 

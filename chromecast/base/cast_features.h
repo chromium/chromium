@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,23 +12,20 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
-
-namespace base {
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 namespace chromecast {
 
 // Add Cast Features here.
-extern const base::Feature kAllowUserMediaAccess;
-extern const base::Feature kEnableQuic;
-extern const base::Feature kTripleBuffer720;
-extern const base::Feature kSingleBuffer;
-extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
-extern const base::Feature kEnableGeneralAudienceBrowsing;
-extern const base::Feature kEnableSideGesturePassThrough;
-extern const base::Feature kEnableChromeAudioManagerAndroid;
+BASE_DECLARE_FEATURE(kAllowUserMediaAccess);
+BASE_DECLARE_FEATURE(kEnableQuic);
+BASE_DECLARE_FEATURE(kTripleBuffer720);
+BASE_DECLARE_FEATURE(kSingleBuffer);
+BASE_DECLARE_FEATURE(kDisableIdleSocketsCloseOnMemoryPressure);
+BASE_DECLARE_FEATURE(kEnableGeneralAudienceBrowsing);
+BASE_DECLARE_FEATURE(kEnableSideGesturePassThrough);
+BASE_DECLARE_FEATURE(kEnableChromeAudioManagerAndroid);
+BASE_DECLARE_FEATURE(kEnableCastAudioOutputDevice);
 
 // Get an iterable list of all of the cast features for checking all features as
 // a collection.
@@ -49,8 +46,8 @@ const std::vector<const base::Feature*>& GetFeatures();
 // called, the other functions in this file may be called on any thread.
 // TODO(juke): Keep type info of params by passing in base::flat_map and
 // std::vector instead of base::Value.
-void InitializeFeatureList(const base::Value& dcs_features,
-                           const base::Value& dcs_experiment_ids,
+void InitializeFeatureList(const base::Value::Dict& dcs_features,
+                           const base::Value::List& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
@@ -63,7 +60,8 @@ bool IsFeatureEnabled(const base::Feature& feature);
 // Given a dictionary of features, create a copy that is ready to be persisted
 // to disk. Encodes all values as strings,  which is how the FieldTrial
 // classes expect the param data.
-base::Value GetOverriddenFeaturesForStorage(const base::Value& features);
+base::Value::Dict GetOverriddenFeaturesForStorage(
+    const base::Value::Dict& features);
 
 // Query the set of experiment ids set for this run. Intended only for metrics
 // reporting. Must be called after InitializeFeatureList(). May be called on any

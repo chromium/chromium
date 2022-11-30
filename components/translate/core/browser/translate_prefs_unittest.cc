@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,7 +25,6 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/translate_util.h"
@@ -32,39 +33,38 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
-namespace {
-
-using ::testing::ElementsAreArray;
-using ::testing::UnorderedElementsAreArray;
-
-const char kTestLanguage[] = "en";
-
-}  // namespace
-
 namespace translate {
 
+namespace {
+
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAreArray;
+
 static void ExpectEqualLanguageLists(
-    const base::ListValue& language_values,
+    const base::Value::List& language_values,
     const std::vector<std::string>& languages) {
   const int input_size = languages.size();
-  ASSERT_EQ(input_size, static_cast<int>(language_values.GetSize()));
+  ASSERT_EQ(input_size, static_cast<int>(language_values.size()));
   for (int i = 0; i < input_size; ++i) {
-    std::string value;
-    language_values.GetString(i, &value);
-    EXPECT_EQ(languages[i], value);
+    ASSERT_TRUE(language_values[i].is_string());
+    EXPECT_EQ(languages[i], language_values[i].GetString());
   }
 }
+
+}  // namespace
 
 class TranslatePrefsTest : public testing::Test {
  protected:
   TranslatePrefsTest() {
     language::LanguagePrefs::RegisterProfilePrefs(prefs_.registry());
     TranslatePrefs::RegisterProfilePrefs(prefs_.registry());
-    translate_prefs_ = std::make_unique<translate::TranslatePrefs>(&prefs_);
+    translate_prefs_ = std::make_unique<TranslatePrefs>(&prefs_);
     accept_languages_tester_ =
         std::make_unique<language::test::LanguagePrefTester>(&prefs_);
     now_ = base::Time::Now();
-    two_days_ago_ = now_ - base::TimeDelta::FromDays(2);
+    two_days_ago_ = now_ - base::Days(2);
   }
 
   void SetUp() override {
@@ -77,21 +77,11 @@ class TranslatePrefsTest : public testing::Test {
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 
-  void SetLastDeniedTime(const std::string& language, base::Time time) {
-    DenialTimeUpdate update(&prefs_, language, 2);
-    update.AddDenialTime(time);
-  }
-
-  base::Time GetLastDeniedTime(const std::string& language) {
-    DenialTimeUpdate update(&prefs_, language, 2);
-    return update.GetOldestDenialTime();
-  }
-
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
-    const base::ListValue* const never_prompt_list =
-        prefs_.GetList(language::prefs::kFluentLanguages);
-    ExpectEqualLanguageLists(*never_prompt_list, list);
+    const base::Value::List& never_prompt_list =
+        prefs_.GetList(prefs::kBlockedLanguages);
+    ExpectEqualLanguageLists(never_prompt_list, list);
   }
 
   // Returns a vector of language codes from the elements of the given
@@ -132,133 +122,13 @@ class TranslatePrefsTest : public testing::Test {
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs_;
+  std::unique_ptr<TranslatePrefs> translate_prefs_;
   std::unique_ptr<language::test::LanguagePrefTester> accept_languages_tester_;
 
   // Shared time constants.
   base::Time now_;
   base::Time two_days_ago_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST_F(TranslatePrefsTest, UpdateLastDeniedTime) {
-  // Test that denials with more than 24 hours difference between them do not
-  // block the language.
-  translate_prefs_->ResetDenialState();
-  SetLastDeniedTime(kTestLanguage, two_days_ago_);
-  ASSERT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  base::Time last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // Ensure the first use simply writes the update time.
-  translate_prefs_->ResetDenialState();
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_FALSE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // If it's denied again within the 24 hour period, language should be
-  // permanently denied.
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_FALSE(last_denied.is_max());
-  EXPECT_GE(last_denied, now_);
-  EXPECT_LT(last_denied - now_, base::TimeDelta::FromSeconds(10));
-  EXPECT_TRUE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-
-  // If the language is already permanently denied, don't bother updating the
-  // last_denied time.
-  ASSERT_TRUE(translate_prefs_->IsTooOftenDenied(kTestLanguage));
-  SetLastDeniedTime(kTestLanguage, two_days_ago_);
-  translate_prefs_->UpdateLastDeniedTime(kTestLanguage);
-  last_denied = GetLastDeniedTime(kTestLanguage);
-  EXPECT_EQ(last_denied, two_days_ago_);
-}
-
-// Test that the default value for non-existing entries is base::Time::Null().
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_DefaultTimeIsNull) {
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  EXPECT_TRUE(update.GetOldestDenialTime().is_null());
-}
-
-// Test that non-existing entries automatically create a ListValue.
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_ForceListExistence) {
-  DictionaryPrefUpdate dict_update(
-      &prefs_, TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage);
-  base::DictionaryValue* denial_dict = dict_update.Get();
-  EXPECT_TRUE(denial_dict);
-
-  base::ListValue* list_value = nullptr;
-  bool has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_FALSE(has_list);
-
-  // Calling GetDenialTimes will force creation of a properly populated list.
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  base::ListValue* time_list = update.GetDenialTimes();
-  EXPECT_TRUE(time_list);
-  EXPECT_EQ(0U, time_list->GetSize());
-}
-
-// Test that an existing update time record (which is a double in a dict)
-// is automatically migrated to a list of update times instead.
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_Migrate) {
-  translate_prefs_->ResetDenialState();
-  DictionaryPrefUpdate dict_update(
-      &prefs_, TranslatePrefs::kPrefTranslateLastDeniedTimeForLanguage);
-  base::DictionaryValue* denial_dict = dict_update.Get();
-  EXPECT_TRUE(denial_dict);
-  denial_dict->SetDouble(kTestLanguage, two_days_ago_.ToJsTime());
-
-  base::ListValue* list_value = nullptr;
-  bool has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_FALSE(has_list);
-
-  // Calling GetDenialTimes will force creation of a properly populated list.
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 2);
-  base::ListValue* time_list = update.GetDenialTimes();
-  EXPECT_TRUE(time_list);
-
-  has_list = denial_dict->GetList(kTestLanguage, &list_value);
-  EXPECT_TRUE(has_list);
-  EXPECT_EQ(time_list, list_value);
-  EXPECT_EQ(1U, time_list->GetSize());
-  EXPECT_EQ(two_days_ago_, update.GetOldestDenialTime());
-}
-
-TEST_F(TranslatePrefsTest, DenialTimeUpdate_SlidingWindow) {
-  DenialTimeUpdate update(&prefs_, kTestLanguage, 4);
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(5));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(4));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(3));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(5));
-
-  update.AddDenialTime(now_ - base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(4));
-
-  update.AddDenialTime(now_);
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(3));
-
-  update.AddDenialTime(now_);
-  EXPECT_EQ(update.GetOldestDenialTime(),
-            now_ - base::TimeDelta::FromMinutes(2));
-}
 
 // Test that GetLanguageInfoList() returns the correct list of languages based
 // on the given locale.
@@ -368,7 +238,7 @@ TEST_F(TranslatePrefsTest, GetTranslatableContentLanguagesCorrectLocale) {
   EXPECT_THAT(result_codes, expected_translatable_codes);
 
   // Test with only untranslatable languages.
-  content_languages = {"wa", "ln"};
+  content_languages = {"wa", "vo"};
   expected_translatable_codes = {};
   accept_languages_tester_->SetLanguagePrefs(content_languages);
 
@@ -465,6 +335,41 @@ TEST_F(TranslatePrefsTest, UnblockLanguage) {
   ExpectBlockedLanguageListContent({"en", "zh-TW"});
 }
 
+TEST_F(TranslatePrefsTest, ResetEmptyBlockedLanguagesToDefaultTest) {
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->BlockLanguage("fr");
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en", "fr"});
+
+  prefs_.Set(translate::prefs::kBlockedLanguages,
+             base::Value(base::Value::Type::LIST));
+  ExpectBlockedLanguageListContent({});
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+}
+
+TEST_F(TranslatePrefsTest, GetNeverTranslateLanguagesTest) {
+  // Default Fluent language is "en".
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en"}));
+
+  // Add two languages with the same base.
+  translate_prefs_->BlockLanguage("fr-FR");
+  translate_prefs_->BlockLanguage("fr-CA");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr"}));
+
+  // Add language that comes before English alphabetically. It should be
+  // appended to the list.
+  translate_prefs_->BlockLanguage("af");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr", "af"}));
+}
+
 TEST_F(TranslatePrefsTest, AddToLanguageList) {
   std::vector<std::string> languages;
 
@@ -523,20 +428,24 @@ TEST_F(TranslatePrefsTest, RemoveFromLanguageListRemovesRemainingUnsupported) {
 }
 
 TEST_F(TranslatePrefsTest, RemoveFromLanguageListClearsRecentLanguage) {
+  // Unset the recent target language when the last language of the target
+  // language family is removed
   std::vector<std::string> languages;
+  languages = {"en", "en-US", "es-AR"};
 
-  // Unblock last language of a family.
-  languages = {"en-US", "es-AR"};
   accept_languages_tester_->SetLanguagePrefs(languages);
-  translate_prefs_->SetRecentTargetLanguage("en-US");
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  translate_prefs_->SetRecentTargetLanguage("es-AR");
+  EXPECT_EQ("es", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->RemoveFromLanguageList("es-AR");
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  EXPECT_EQ("", translate_prefs_->GetRecentTargetLanguage());
 
   accept_languages_tester_->SetLanguagePrefs(languages);
-  EXPECT_EQ("en-US", translate_prefs_->GetRecentTargetLanguage());
+  translate_prefs_->SetRecentTargetLanguage("en-US");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
 
+  translate_prefs_->RemoveFromLanguageList("en");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
   translate_prefs_->RemoveFromLanguageList("en-US");
   EXPECT_EQ("", translate_prefs_->GetRecentTargetLanguage());
 }
@@ -1023,6 +932,60 @@ TEST_F(TranslatePrefsTest, MoveLanguageDown) {
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en,it,es,zh,fr");
 }
 
+TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
+  // Add two sites to the deprecated pref that need to be migrated.
+  translate_prefs_->AddValueToNeverPromptList(
+      TranslatePrefs::kPrefNeverPromptSitesDeprecated, "unmigrated.com");
+  translate_prefs_->AddValueToNeverPromptList(
+      TranslatePrefs::kPrefNeverPromptSitesDeprecated, "migratedWrong.com");
+  EXPECT_EQ(
+      prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).size(),
+      2u);
+  // Also put one of those sites on the new pref but migrated incorrectly.
+  ScopedDictPrefUpdate never_prompt_list_update(
+      &prefs_, prefs::kPrefNeverPromptSitesWithTime);
+  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
+  never_prompt_list.Set("migratedWrong.com", 0);
+
+  // Now migrate and fix the prefs.
+  translate_prefs_->MigrateNeverPromptSites();
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
+                  base::Time::Now() - base::Days(1), base::Time::Max()),
+              ElementsAre("migratedWrong.com", "unmigrated.com"));
+  EXPECT_EQ(
+      prefs_.GetList(TranslatePrefs::kPrefNeverPromptSitesDeprecated).size(),
+      0u);
+}
+
+// Regression test for https://crbug.com/1295549
+TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
+  // Add sites with invalid times.
+  ScopedDictPrefUpdate never_prompt_list_update(
+      &prefs_, prefs::kPrefNeverPromptSitesWithTime);
+  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
+  never_prompt_list.Set("not-a-string.com", 0);
+  never_prompt_list.Set("not-a-valid-time.com", "foo");
+  // Add the null time (valid time).
+  never_prompt_list.Set("null-time.com", "0");
+
+  // This should not crash, and filter invalid times.
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(base::Time::Min(),
+                                                           base::Time::Max()),
+              ElementsAre("null-time.com"));
+}
+
+TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
+  ScopedListPrefUpdate update(&prefs_,
+                              TranslatePrefs::kPrefNeverPromptSitesDeprecated);
+  base::Value::List& never_prompt_list = update.Get();
+  never_prompt_list.Append(1);
+  never_prompt_list.Append("unmigrated.com");
+  translate_prefs_->MigrateNeverPromptSites();
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(
+                  base::Time::Now() - base::Days(1), base::Time::Max()),
+              ElementsAre("unmigrated.com"));
+}
+
 TEST_F(TranslatePrefsTest, SiteNeverPromptList) {
   translate_prefs_->AddSiteToNeverPromptList("a.com");
   base::Time t = base::Time::Now();
@@ -1058,10 +1021,36 @@ TEST_F(TranslatePrefsTest, DefaultBlockedLanguages) {
   ExpectBlockedLanguageListContent(blocked_languages_expected);
 }
 
+TEST_F(TranslatePrefsTest, SetRecentTargetLanguage) {
+  // Make sure setting the recent target language uses the Translate synonym.
+  translate_prefs_->SetRecentTargetLanguage("en-US");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("en-412");
+  EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("fil");
+  EXPECT_EQ("tl", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("nb");
+  EXPECT_EQ("no", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("jv");
+  EXPECT_EQ("jw", translate_prefs_->GetRecentTargetLanguage());
+
+  translate_prefs_->SetRecentTargetLanguage("he");
+  EXPECT_EQ("iw", translate_prefs_->GetRecentTargetLanguage());
+
+  // The only translate languages to have a country code are variants of "zh".
+  translate_prefs_->SetRecentTargetLanguage("zh-TW");
+  EXPECT_EQ("zh-TW", translate_prefs_->GetRecentTargetLanguage());
+}
+
 // Series of tests for the AlwaysTranslateLanguagesList manipulation functions.
 TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
-  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "en");
+  // Add translate language with country code.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af-ZA", "en-US");
   EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 
   // IsLanguagePairOnAlwaysTranslateList
@@ -1112,37 +1101,73 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 }
 
+// Test that a language can not be on both the never and always translate list.
+TEST_F(TranslatePrefsTest, NeverOnAlwaysAndNever) {
+  // "en" is a default blocked language, it should be present already.
+  ExpectBlockedLanguageListContent({"en"});
+
+  // Build up blocked language list to test removing languages.
+  translate_prefs_->BlockLanguage("fr-CA");
+  translate_prefs_->BlockLanguage("es-AR");
+  translate_prefs_->BlockLanguage("de-de");
+  ExpectBlockedLanguageListContent({"en", "fr", "es", "de"});
+
+  // Add "fr" to always translate list.  Should remove from blocked list.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("fr", "en");
+  ExpectBlockedLanguageListContent({"en", "es", "de"});
+  // Adding "es" as a target language does nothing.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "es");
+  ExpectBlockedLanguageListContent({"en", "es", "de"});
+
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("en", "hi");
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("es", "en");
+  ExpectBlockedLanguageListContent({"de"});
+
+  // Can not delete the last item from the blocked list.  In this case the
+  // language will be on both list. (https://crbug.com/1196490).
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("de", "en");
+  ExpectBlockedLanguageListContent({"de"});
+
+  // Check that the always translate list is what we expect.
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"af", "de", "en", "es", "fr"}));
+
+  // Build up blocked language list and remove from always translate list.
+  translate_prefs_->BlockLanguage("fr-CA");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"af", "de", "en", "es"}));
+  translate_prefs_->BlockLanguage("es-AR");
+  translate_prefs_->BlockLanguage("de");
+  translate_prefs_->BlockLanguage("af");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(),
+              ElementsAreArray({"en"}));
+
+  translate_prefs_->BlockLanguage("en");
+  EXPECT_THAT(translate_prefs_->GetAlwaysTranslateLanguages(), IsEmpty());
+}
+
 TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
   prefs_.SetString(language::prefs::kAcceptLanguages, "en");
   TranslateDownloadManager::GetInstance()->set_application_locale("en");
 
   translate_prefs_->ResetToDefaults();
 
-  TranslateAcceptLanguages translate_accept_languages(
-      &prefs_, language::prefs::kAcceptLanguages);
-
   // Unblocked language.
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "fr"));
+  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage("fr"));
 
   // Blocked language.
   translate_prefs_->BlockLanguage("en");
-  EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "en"));
+  EXPECT_FALSE(translate_prefs_->CanTranslateLanguage("en"));
 
-  // Blocked language that is not in accept languages.
-  translate_prefs_->BlockLanguage("de");
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "de"));
-
-  // English in force translate experiment.
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      language::kOverrideTranslateTriggerInIndia,
-      {{"override_model", "heuristic"},
-       {"enforce_ranker", "false"},
-       {"backoff_threshold", "1"}});
-  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-      &translate_accept_languages, "en"));
+  {  // English in force translate experiment scoped feature.
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        language::kOverrideTranslateTriggerInIndia,
+        {{"override_model", "heuristic"},
+         {"enforce_ranker", "false"},
+         {"backoff_threshold", "1"}});
+    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage("en"));
+  }
 }
 
 TEST_F(TranslatePrefsTest, ForceTriggerOnEnglishPagesCount) {
@@ -1168,6 +1193,93 @@ TEST_F(TranslatePrefsTest, ForceTriggerOnEnglishPagesCount) {
   // no effect.
   translate_prefs_->ReportForceTriggerOnEnglishPages();
   EXPECT_EQ(-1, translate_prefs_->GetForceTriggerOnEnglishPagesCount());
+}
+
+class TranslatePrefsMigrationTest : public testing::Test {
+ protected:
+  TranslatePrefsMigrationTest() {
+    language::LanguagePrefs::RegisterProfilePrefs(prefs_.registry());
+    TranslatePrefs::RegisterProfilePrefs(prefs_.registry());
+  }
+
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+};
+
+TEST_F(TranslatePrefsMigrationTest,
+       MigrateObsoleteAlwaysTranslateLanguagesPref_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kMigrateAlwaysTranslateLanguagesFix);
+
+  base::Value::List never_translate_list;
+  never_translate_list.Append("en");
+
+  base::Value::Dict old_always_translate_map;
+  old_always_translate_map.Set("fr", "en");
+
+  base::Value::Dict new_always_translate_map;
+  new_always_translate_map.Set("ru", "en");
+
+  prefs_.SetList(prefs::kBlockedLanguages, never_translate_list.Clone());
+  prefs_.SetDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated,
+                 old_always_translate_map.Clone());
+  prefs_.SetDict(prefs::kPrefAlwaysTranslateList,
+                 new_always_translate_map.Clone());
+
+  // Since the kMigrateAlwaysTranslateLanguagesFix feature is disabled, no
+  // migration should occur during construction.
+  TranslatePrefs translate_prefs(&prefs_);
+
+  EXPECT_EQ(prefs_.GetDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated),
+            old_always_translate_map);
+  EXPECT_EQ(prefs_.GetDict(prefs::kPrefAlwaysTranslateList),
+            new_always_translate_map);
+}
+
+TEST_F(TranslatePrefsMigrationTest,
+       MigrateObsoleteAlwaysTranslateLanguagesPref_Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kMigrateAlwaysTranslateLanguagesFix);
+
+  base::Value::List never_translate_list;
+  never_translate_list.Append("en");
+  never_translate_list.Append("es");
+  prefs_.SetList(prefs::kBlockedLanguages, std::move(never_translate_list));
+
+  base::Value::Dict old_always_translate_map;
+  // A non-conflicting language pair that should be merged.
+  old_always_translate_map.Set("fr", "en");
+  // Conflicts with a new language pair with the same source language.
+  old_always_translate_map.Set("ru", "de");
+  // Conflicts with a new language pair with this source language as the target.
+  old_always_translate_map.Set("jp", "de");
+  // Conflicts with a new language pair with this target language as the source.
+  old_always_translate_map.Set("pt", "hi");
+
+  prefs_.SetDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated,
+                 std::move(old_always_translate_map));
+
+  base::Value::Dict new_always_translate_map;
+  new_always_translate_map.Set("ru", "en");
+  new_always_translate_map.Set("id", "jp");
+  new_always_translate_map.Set("hi", "en");
+  prefs_.SetDict(prefs::kPrefAlwaysTranslateList,
+                 std::move(new_always_translate_map));
+
+  // The always-translate pref migration should be done during construction.
+  TranslatePrefs translate_prefs(&prefs_);
+
+  EXPECT_FALSE(prefs_.GetUserPrefValue(
+      TranslatePrefs::kPrefAlwaysTranslateListDeprecated));
+
+  base::Value::Dict expected_always_translate_map;
+  expected_always_translate_map.Set("ru", "en");
+  expected_always_translate_map.Set("id", "jp");
+  expected_always_translate_map.Set("hi", "en");
+  expected_always_translate_map.Set("fr", "en");
+
+  EXPECT_EQ(prefs_.GetDict(prefs::kPrefAlwaysTranslateList),
+            expected_always_translate_map);
 }
 
 }  // namespace translate

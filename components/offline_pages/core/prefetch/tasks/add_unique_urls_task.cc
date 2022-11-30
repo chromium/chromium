@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_clock.h"
@@ -109,10 +110,8 @@ Result AddUniqueUrlsSync(
   base::Time now = OfflineTimeNow();
   // Insert rows in reverse order to ensure that the beginning of the list has
   // the most recent timestamps so that it is prefetched first.
-  for (auto candidate_iter = candidate_prefetch_urls.rbegin();
-       candidate_iter != candidate_prefetch_urls.rend(); ++candidate_iter) {
-    const PrefetchURL& prefetch_url = *candidate_iter;
-
+  for (const PrefetchURL& prefetch_url :
+       base::Reversed(candidate_prefetch_urls)) {
     if (!prefetch_url.url.is_valid() || !prefetch_url.url.SchemeIsHTTPOrHTTPS())
       continue;
 
@@ -137,7 +136,7 @@ Result AddUniqueUrlsSync(
 
     // We artificially add a microsecond to ensure that the timestamp is
     // different (and guarantee a particular order when sorting by timestamp).
-    now += base::TimeDelta::FromMicroseconds(1);
+    now += base::Microseconds(1);
   }
 
   if (!transaction.Commit())

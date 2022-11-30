@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -47,6 +46,12 @@ class MockStylusButtonEventConverterEvdev
                                       base::FilePath path,
                                       const EventDeviceInfo& devinfo,
                                       DeviceEventDispatcherEvdev* dispatcher);
+
+  MockStylusButtonEventConverterEvdev(
+      const MockStylusButtonEventConverterEvdev&) = delete;
+  MockStylusButtonEventConverterEvdev& operator=(
+      const MockStylusButtonEventConverterEvdev&) = delete;
+
   ~MockStylusButtonEventConverterEvdev() override {}
 
   void ConfigureReadMock(struct input_event* queue,
@@ -64,8 +69,6 @@ class MockStylusButtonEventConverterEvdev
   int write_pipe_;
 
   std::vector<std::unique_ptr<Event>> dispatched_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStylusButtonEventConverterEvdev);
 };
 
 MockStylusButtonEventConverterEvdev::MockStylusButtonEventConverterEvdev(
@@ -108,6 +111,11 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
  public:
   StylusButtonEventConverterEvdevTest() {}
 
+  StylusButtonEventConverterEvdevTest(
+      const StylusButtonEventConverterEvdevTest&) = delete;
+  StylusButtonEventConverterEvdevTest& operator=(
+      const StylusButtonEventConverterEvdevTest&) = delete;
+
   // Overridden from testing::Test:
   void SetUp() override {
     device_manager_ = ui::CreateDeviceManagerForTest();
@@ -145,7 +153,7 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
   }
 
   void DispatchEventForTest(ui::Event* event) {
-    std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(*event);
+    std::unique_ptr<ui::Event> cloned_event = event->Clone();
     dispatched_events_.push_back(std::move(cloned_event));
   }
 
@@ -158,8 +166,6 @@ class StylusButtonEventConverterEvdevTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(StylusButtonEventConverterEvdevTest);
 };
 
 TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenSingleClick) {
@@ -180,7 +186,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenSingleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());
@@ -204,7 +210,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenDoubleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(2u, size());
@@ -236,7 +242,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenLongPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());

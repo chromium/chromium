@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
+#include "device/fido/virtual_fido_device_discovery.h"
 
 namespace device {
 namespace test {
@@ -36,6 +37,11 @@ class MultipleVirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
     VirtualCtap2Device::Config config;
     scoped_refptr<VirtualFidoDevice::State> state =
         base::MakeRefCounted<VirtualFidoDevice::State>();
+    // disconnect_events can be emplaced in order to cause the device to be
+    // disconnected. It is not expected that one would want to disconnect it
+    // multiple times but that is possible to simulate with this interface.
+    // The |bool| argument is ignored (void is not a valid template argument).
+    std::unique_ptr<FidoDeviceDiscovery::EventStream<bool>> disconnect_events;
   };
 
   MultipleVirtualFidoDeviceFactory();
@@ -55,6 +61,8 @@ class MultipleVirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
 
  private:
   std::vector<DeviceDetails> devices_;
+  scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
+      new VirtualFidoDeviceDiscovery::Trace;
 };
 
 }  // namespace test

@@ -35,35 +35,36 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/data_pipe.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
+class WaitableEvent;
 }
 
 namespace network {
+class SharedURLLoaderFactory;
 struct ResourceRequest;
+struct URLLoaderCompletionStatus;
 }
 
 namespace blink {
 
 class ResourceLoadInfoNotifierWrapper;
 class WebBackForwardCacheLoaderHelper;
+class WebBlobInfo;
 class WebData;
 class WebResourceRequestSender;
 class WebURLRequestExtraData;
@@ -85,6 +86,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+  WebURLLoader(const WebURLLoader&) = delete;
+  WebURLLoader& operator=(const WebURLLoader&) = delete;
   WebURLLoader();
 
   // The WebURLLoader may be deleted in a call to its client.
@@ -108,13 +111,12 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      int requestor_id,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
       WebURLLoaderClient* client,
       WebURLResponse& response,
-      base::Optional<WebURLError>& error,
+      absl::optional<WebURLError>& error,
       WebData& data,
       int64_t& encoded_data_length,
       int64_t& encoded_body_length,
@@ -128,25 +130,15 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   virtual void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-      int requestor_id,
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
       WebURLLoaderClient* client);
 
-  // |kDeferred| is when an asynchronous load is suspended.
-  // |kDeferredWithBackForwardCache| is when an asynchronous load is suspended
-  // with BackForwardCache, and BackForwardCache entry can be evicted when
-  // redirects etc. happen.
-  // |kNotDeferred| is when an asynchronous load is resumed.
-  // SetDefersLoading can be called with any value at any point.
-  enum class DeferType {
-    kDeferred,
-    kDeferredWithBackForwardCache,
-    kNotDeferred
-  };
-  // Suspends/resumes an asynchronous load.
-  virtual void SetDefersLoading(DeferType value);
+  // Freezes the loader. See blink/renderer/platform/loader/README.md for the
+  // general concept of "freezing" in the loading module. See
+  // blink/public/platform/web_loader_freezing_mode.h for `mode`.
+  virtual void Freeze(WebLoaderFreezeMode mode);
 
   // Notifies the loader that the priority of a WebURLRequest has changed from
   // its previous value. For example, a preload request starts with low
@@ -168,8 +160,6 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   void Cancel();
 
   scoped_refptr<Context> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoader);
 };
 
 }  // namespace blink

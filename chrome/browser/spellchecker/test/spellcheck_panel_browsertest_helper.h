@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,12 @@ namespace spellcheck {
 class SpellCheckPanelBrowserTestHelper {
  public:
   SpellCheckPanelBrowserTestHelper();
+
+  SpellCheckPanelBrowserTestHelper(const SpellCheckPanelBrowserTestHelper&) =
+      delete;
+  SpellCheckPanelBrowserTestHelper& operator=(
+      const SpellCheckPanelBrowserTestHelper&) = delete;
+
   ~SpellCheckPanelBrowserTestHelper();
 
   SpellCheckMockPanelHost* GetSpellCheckMockPanelHostForProcess(
@@ -29,8 +35,6 @@ class SpellCheckPanelBrowserTestHelper {
 
   base::OnceClosure quit_on_bind_closure_;
   std::vector<std::unique_ptr<SpellCheckMockPanelHost>> hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckPanelBrowserTestHelper);
 };
 
 }  // namespace spellcheck

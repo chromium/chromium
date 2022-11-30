@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_MATH_STRETCH_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_OPENTYPE_OPEN_TYPE_MATH_STRETCH_DATA_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -30,7 +29,7 @@ class PLATFORM_EXPORT OpenTypeMathStretchData {
     bool is_extender;
   };
 
-  // https://mathml-refresh.github.io/mathml-core/#the-glyphassembly-table
+  // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   struct AssemblyParameters {
     float connector_overlap{0};
     unsigned repetition_count{0};

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace predictors {
@@ -50,6 +50,10 @@ class LoadingStatsCollector {
  public:
   LoadingStatsCollector(ResourcePrefetchPredictor* predictor,
                         const LoadingPredictorConfig& config);
+
+  LoadingStatsCollector(const LoadingStatsCollector&) = delete;
+  LoadingStatsCollector& operator=(const LoadingStatsCollector&) = delete;
+
   ~LoadingStatsCollector();
 
   // Records statistics about a finished preconnect operation.
@@ -61,18 +65,16 @@ class LoadingStatsCollector {
   // All results are reported to UMA and UKM.
   void RecordPageRequestSummary(
       const PageRequestSummary& summary,
-      const base::Optional<OptimizationGuidePrediction>&
+      const absl::optional<OptimizationGuidePrediction>&
           optimization_guide_prediction);
   // Evicts all stale stats that are kept in memory. All speculative actions are
   // reported and considered as waste.
   void CleanupAbandonedStats();
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingStatsCollector);
 };
 
 }  // namespace predictors

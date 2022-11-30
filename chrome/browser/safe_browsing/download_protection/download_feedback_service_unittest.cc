@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,10 +15,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SaveArg;
@@ -194,6 +195,9 @@ TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
     EXPECT_EQ(upload_requested,
               WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
                              upload_requested, ok_size));
+    EXPECT_EQ(upload_requested,
+              WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
+                             upload_requested, ok_size));
 
     // Bad sizes never upload
     EXPECT_FALSE(
@@ -208,6 +212,9 @@ TEST_F(DownloadFeedbackServiceTest, MaybeStorePingsForDownload) {
                                 upload_requested, bad_size));
     EXPECT_FALSE(WillStorePings(DownloadCheckResult::POTENTIALLY_UNWANTED,
                                 upload_requested, bad_size));
+    EXPECT_FALSE(
+        WillStorePings(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE,
+                       upload_requested, bad_size));
   }
 }
 
@@ -260,7 +267,7 @@ TEST_F(DownloadFeedbackServiceTest, SingleFeedbackCompleteAndKeepDownload) {
 
   download::DownloadItem::AcquireFileCallback download_discarded_callback;
 
-  download::MockDownloadItem item;
+  NiceMock<download::MockDownloadItem> item;
   EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
   EXPECT_CALL(item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT));

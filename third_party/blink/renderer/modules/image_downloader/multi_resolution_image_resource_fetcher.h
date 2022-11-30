@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
@@ -47,6 +46,11 @@ class MultiResolutionImageResourceFetcher {
                                       bool is_favicon,
                                       mojom::blink::FetchCacheMode cache_mode,
                                       Callback callback);
+
+  MultiResolutionImageResourceFetcher(
+      const MultiResolutionImageResourceFetcher&) = delete;
+  MultiResolutionImageResourceFetcher& operator=(
+      const MultiResolutionImageResourceFetcher&) = delete;
 
   virtual ~MultiResolutionImageResourceFetcher();
 
@@ -101,8 +105,6 @@ class MultiResolutionImageResourceFetcher {
 
   // Request to send.
   WebURLRequest request_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiResolutionImageResourceFetcher);
 };
 
 }  // namespace blink

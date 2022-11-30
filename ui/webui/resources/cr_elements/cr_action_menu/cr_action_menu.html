@@ -1,15 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../../html/assert.html">
-<link rel="import" href="../../html/cr.html">
-<link rel="import" href="../../html/cr/ui/focus_outline_manager.html">
-<link rel="import" href="../../html/cr/ui/focus_row.html">
-<link rel="import" href="../../html/cr/ui/focus_without_ink.html">
-<link rel="import" href="../../html/util.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<dom-module id="cr-action-menu">
-  <template>
     <style>
       :host dialog {
         background-color: var(--cr-menu-background-color);
@@ -21,6 +9,14 @@
         outline: none;
         padding: 0;
         position: absolute;
+      }
+
+      @media (forced-colors: active) {
+        :host dialog {
+          /* Use border instead of box-shadow (which does not work) in Windows
+             HCM. */
+          border: var(--cr-border-hcm);
+        }
       }
 
       :host dialog::backdrop {
@@ -60,6 +56,14 @@
         outline: none;
       }
 
+      @media (forced-colors: active) {
+        :host ::slotted(.dropdown-item:focus) {
+          /* Use outline instead of background-color (which does not work) in
+             Windows HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
+      }
+
       .item-wrapper {
         background: var(--cr-menu-background-sheen);
         outline: none;
@@ -68,10 +72,8 @@
     </style>
     <dialog id="dialog" part="dialog" on-close="onNativeDialogClose_"
         role="application" aria-roledescription$="[[roleDescription]]">
-      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1">
+      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1"
+          aria-label$="[[accessibilityLabel]]">
         <slot id="contentNode"></slot>
       </div>
     </dialog>
-  </template>
-  <script src="cr_action_menu.js"></script>
-</dom-module>

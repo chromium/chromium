@@ -1,16 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/routine_result_entry.js';
 
-import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/diagnostics_types.js';
+import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {ExecutionProgress, ResultStatusItem} from 'chrome://diagnostics/routine_list_executor.js';
-import {BadgeType} from 'chrome://diagnostics/text_badge.js';
+import {RoutineResultEntryElement} from 'chrome://diagnostics/routine_result_entry.js';
+import {RoutineResult, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {BadgeType, TextBadgeElement} from 'chrome://diagnostics/text_badge.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -29,7 +32,8 @@ export function routineResultEntryTestSuite() {
     routineResultEntryElement = null;
   });
 
-  function initializeRoutineResultEntry() {
+  /** @param {boolean=} usingRoutineGroups */
+  function initializeRoutineResultEntry(usingRoutineGroups = false) {
     assertFalse(!!routineResultEntryElement);
 
     // Add the entry to the DOM.
@@ -37,13 +41,13 @@ export function routineResultEntryTestSuite() {
         document.createElement('routine-result-entry'));
     assertTrue(!!routineResultEntryElement);
     document.body.appendChild(routineResultEntryElement);
-
+    routineResultEntryElement.usingRoutineGroups = usingRoutineGroups;
     return flushTasks();
   }
 
   /**
    * Updates the item in the element.
-   * @param {!ResultStatusItem} item
+   * @param {ResultStatusItem|RoutineGroup} item
    * @return {!Promise}
    */
   function updateItem(item) {
@@ -53,11 +57,12 @@ export function routineResultEntryTestSuite() {
 
   /**
    * Initializes the entry then updates the item.
-   * @param {!ResultStatusItem} item
+   * @param {ResultStatusItem|RoutineGroup} item
+   * @param {boolean=} usingRoutineGroups
    * @return {!Promise}
    */
-  function initializeEntryWithItem(item) {
-    return initializeRoutineResultEntry().then(() => {
+  function initializeEntryWithItem(item, usingRoutineGroups = false) {
+    return initializeRoutineResultEntry(usingRoutineGroups).then(() => {
       return updateItem(item);
     });
   }
@@ -69,9 +74,19 @@ export function routineResultEntryTestSuite() {
    * @return {!ResultStatusItem}
    */
   function createCompletedStatus(routine, result) {
-    let status = new ResultStatusItem(routine, ExecutionProgress.kCompleted);
+    const status = new ResultStatusItem(routine, ExecutionProgress.COMPLETED);
     status.result = result;
     return status;
+  }
+
+  /**
+   * @suppress {visibility}
+   * @return {string}
+   */
+  function getAnnoucedText() {
+    assertTrue(!!routineResultEntryElement);
+
+    return routineResultEntryElement.announcedText_;
   }
 
   /**
@@ -79,7 +94,7 @@ export function routineResultEntryTestSuite() {
    * @return {string}
    */
   function getNameText() {
-    const name = routineResultEntryElement.$$('#routine');
+    const name = routineResultEntryElement.shadowRoot.querySelector('#routine');
     assertTrue(!!name);
     return name.textContent.trim();
   }
@@ -90,22 +105,34 @@ export function routineResultEntryTestSuite() {
    */
   function getStatusBadge() {
     const badge = /** @type{!TextBadgeElement} */ (
-        routineResultEntryElement.$$('#status'));
+        routineResultEntryElement.shadowRoot.querySelector('#status'));
     assertTrue(!!badge);
     return badge;
+  }
+
+  /**
+   * Returns the span wrapping the failure reason text.
+   * @return {!HTMLSpanElement}
+   */
+  function getFailedTestContainer() {
+    const failedTestContainer = /** @type {!HTMLSpanElement} */ (
+        routineResultEntryElement.shadowRoot.querySelector(
+            '#failed-test-text'));
+    assertTrue(!!failedTestContainer);
+    return failedTestContainer;
   }
 
   test('ElementRendered', () => {
     return initializeRoutineResultEntry().then(() => {
       // Verify the element rendered.
-      let div = routineResultEntryElement.$$('.entryRow');
+      const div =
+          routineResultEntryElement.shadowRoot.querySelector('.entry-row');
       assertTrue(!!div);
     });
   });
 
   test('NotStartedTest', () => {
-    const item =
-        new ResultStatusItem(chromeos.diagnostics.mojom.RoutineType.kCpuStress);
+    const item = new ResultStatusItem(RoutineType.kCpuStress);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -123,9 +150,8 @@ export function routineResultEntryTestSuite() {
   });
 
   test('RunningTest', () => {
-    const item = new ResultStatusItem(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        ExecutionProgress.kRunning);
+    const item =
+        new ResultStatusItem(RoutineType.kCpuStress, ExecutionProgress.RUNNING);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -143,10 +169,9 @@ export function routineResultEntryTestSuite() {
 
   test('PassedTest', () => {
     const item = createCompletedStatus(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        RoutineType.kCpuStress,
         /** @type {!RoutineResult} */ ({
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed
+          simpleResult: StandardRoutineResult.kTestPassed,
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -156,17 +181,16 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('cpuStressRoutineText')));
 
       // Status should show the passed result.
-      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().value, 'PASSED');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
   });
 
   test('FailedTest', () => {
     const item = createCompletedStatus(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
+        RoutineType.kCpuStress,
         /** @type {!RoutineResult} */ ({
-          simpleResult:
-              chromeos.diagnostics.mojom.StandardRoutineResult.kTestFailed
+          simpleResult: StandardRoutineResult.kTestFailed,
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -183,8 +207,7 @@ export function routineResultEntryTestSuite() {
 
   test('StoppedTest', () => {
     const item = new ResultStatusItem(
-        chromeos.diagnostics.mojom.RoutineType.kCpuStress,
-        ExecutionProgress.kCancelled);
+        RoutineType.kCpuStress, ExecutionProgress.CANCELLED);
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
           getNameText(),
@@ -202,15 +225,14 @@ export function routineResultEntryTestSuite() {
 
   test('PowerTest', () => {
     const item = createCompletedStatus(
-        chromeos.diagnostics.mojom.RoutineType.kBatteryCharge,
+        RoutineType.kBatteryCharge,
         /** @type {!RoutineResult} */ ({
           powerResult: {
-            simpleResult:
-                chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed,
+            simpleResult: StandardRoutineResult.kTestPassed,
             isCharging: true,
             percentDelta: 10,
-            timeDeltaSeconds: 10
-          }
+            timeDeltaSeconds: 10,
+          },
         }));
     return initializeEntryWithItem(item).then(() => {
       assertEquals(
@@ -220,8 +242,82 @@ export function routineResultEntryTestSuite() {
               loadTimeData.getString('batteryChargeRoutineText')));
 
       // Status should show the passed result.
-      assertEquals(getStatusBadge().value, 'SUCCESS');
+      assertEquals(getStatusBadge().value, 'PASSED');
       assertEquals(getStatusBadge().badgeType, BadgeType.SUCCESS);
     });
+  });
+
+  test('NetworkRoutineHasCorrectFailureMessage', () => {
+    const item = new RoutineGroup(
+        [RoutineType.kLanConnectivity], 'lanConnectivityRoutineText');
+    item.failedTest = RoutineType.kLanConnectivity;
+    return initializeEntryWithItem(item, true).then(() => {
+      // Span should not be hidden
+      assertTrue(isVisible(getFailedTestContainer()));
+      dx_utils.assertElementContainsText(
+          getFailedTestContainer(),
+          loadTimeData.getString('lanConnectivityFailedText'));
+    });
+  });
+
+  test('AnnouncesForRunningAndFailure', () => {
+    const routine = RoutineType.kLanConnectivity;
+    let item = new ResultStatusItem(routine, ExecutionProgress.NOT_STARTED);
+    let expectedAnnounceText = '';
+
+    return initializeEntryWithItem(item)
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = createCompletedStatus(
+              routine, /* @type {!RoutineResult} */ ({
+                simpleResult: StandardRoutineResult.kTestPassed,
+              }));
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.SKIPPED);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.CANCELLED);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.WARNING);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.RUNNING);
+          expectedAnnounceText = 'Lan Connectivity test - RUNNING';
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = createCompletedStatus(
+              routine, /* @type {!RoutineResult} */ ({
+                simpleResult: StandardRoutineResult.kTestFailed,
+              }));
+          expectedAnnounceText = 'Lan Connectivity test - FAILED';
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+        });
   });
 }

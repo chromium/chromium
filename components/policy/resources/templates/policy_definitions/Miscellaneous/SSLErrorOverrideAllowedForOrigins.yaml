@@ -1,0 +1,30 @@
+caption: Allow proceeding from the SSL warning page on specific origins
+desc: |-
+  If <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> is Disabled, setting the policy lets you set a list of origin patterns that specify the sites where a user can click through warning pages <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> shows when users navigate to sites that have SSL errors. Users will not be able to click through SSL warning pages on origins that are not on this list.
+
+        If <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> is Enabled or unset, this policy does nothing.
+
+        Leaving the policy unset means <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME">SSLErrorOverrideAllowed</ph> applies for all sites.
+
+        For detailed information on valid input patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy. This policy only matches based on origin, so any path in the URL pattern is ignored.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- agl@chromium.org
+- niarci@microsoft.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:90-
+- chrome_os:90-
+- android:90-
+tags: []
+type: list

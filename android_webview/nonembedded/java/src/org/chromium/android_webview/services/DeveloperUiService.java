@@ -1,9 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.android_webview.services;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,6 +20,8 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
@@ -28,7 +29,8 @@ import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
-import org.chromium.base.BuildInfo;
+import org.chromium.android_webview.common.services.ServiceHelper;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -55,10 +57,9 @@ public final class DeveloperUiService extends Service {
     private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
 
-    public static final String NOTIFICATION_TITLE =
-            "WARNING: experimental WebView features enabled";
-    public static final String NOTIFICATION_CONTENT = "Tap to see experimental features.";
-    public static final String NOTIFICATION_TICKER = "Experimental WebView features enabled";
+    public static final String NOTIFICATION_TITLE = "Experimental WebView features active";
+    public static final String NOTIFICATION_CONTENT = "Tap to see experimental WebView features.";
+    public static final String NOTIFICATION_TICKER = "Experimental WebView features active";
 
     private static final Object sLock = new Object();
     @GuardedBy("sLock")
@@ -74,6 +75,9 @@ public final class DeveloperUiService extends Service {
 
     @GuardedBy("sLock")
     private boolean mDeveloperModeEnabled;
+
+    @GuardedBy("sLock")
+    private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
 
     private final IDeveloperUiService.Stub mBinder = new IDeveloperUiService.Stub() {
         @Override
@@ -92,7 +96,7 @@ public final class DeveloperUiService extends Service {
                     try {
                         enableDeveloperMode();
                     } catch (IllegalStateException e) {
-                        assert BuildInfo.isAtLeastS()
+                        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                             : "Unable enable developer mode, this is only expected on Android S";
                         String msg = "Unable to create foreground service (client is likely in "
                                 + "background). Continuing as a background service.";
@@ -102,6 +106,20 @@ public final class DeveloperUiService extends Service {
             }
         }
     };
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.DEVELOPER_UI_SERVICE);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        final int mode = super.onStartCommand(intent, flags, startId);
+        // Service is always expected to run in foreground, so mark as such when it is started.
+        // Subsequent calls will simply replace the foreground service notification.
+        markAsForegroundService();
+        return mode;
+    }
 
     /**
      * Static method to fetch the flag overrides. If this returns an empty map, this will
@@ -144,13 +162,14 @@ public final class DeveloperUiService extends Service {
             public void onServiceDisconnected(ComponentName name) {}
         };
         Intent intent = new Intent(context, DeveloperUiService.class);
-        if (!context.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+        if (!ServiceHelper.bindService(context, intent, connection, Context.BIND_AUTO_CREATE)) {
             Log.e(TAG, "Failed to bind to Developer UI service");
         }
     }
 
+    @GuardedBy("sLock")
     private static boolean isFlagAllowed(String name) {
-        for (Flag flag : ProductionSupportedFlagList.sFlagList) {
+        for (Flag flag : sFlagList) {
             if (flag.getName().equals(name)) return true;
         }
         return false;
@@ -167,7 +186,8 @@ public final class DeveloperUiService extends Service {
             for (Map.Entry<String, ?> entry : allPreferences.entrySet()) {
                 String flagName = entry.getKey();
                 // Since flags may be persisted by a previous version, we need to filter by the
-                // current version's ProductionSupportedFlagList (in case flags get removed).
+                // current version's sFlagList (in case flags get removed from
+                // ProductionSupportedFlagList).
                 if (!isFlagAllowed(flagName)) {
                     Log.w(TAG, "Toggling '" + flagName + "' is no longer supported");
                     continue;
@@ -206,7 +226,6 @@ public final class DeveloperUiService extends Service {
         return mBinder;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
     private Notification.Builder createNotificationBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return new Notification.Builder(this, CHANNEL_ID);
@@ -214,7 +233,7 @@ public final class DeveloperUiService extends Service {
         return new Notification.Builder(this);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private void registerDefaultNotificationChannel() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         CharSequence name = "WebView DevTools alerts";
@@ -232,21 +251,22 @@ public final class DeveloperUiService extends Service {
             registerDefaultNotificationChannel();
         }
 
-        Intent notificationIntent = new Intent();
+        Intent notificationIntent = new Intent("com.android.webview.SHOW_DEV_UI");
         notificationIntent.setClassName(
                 getPackageName(), "org.chromium.android_webview.devui.MainActivity");
         notificationIntent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, IntentUtils.getPendingIntentMutabilityFlag(false));
 
-        Notification.Builder builder = createNotificationBuilder()
-                                               .setContentTitle(NOTIFICATION_TITLE)
-                                               .setContentText(NOTIFICATION_CONTENT)
-                                               .setSmallIcon(android.R.drawable.stat_notify_error)
-                                               .setContentIntent(pendingIntent)
-                                               .setOngoing(true)
-                                               .setVisibility(Notification.VISIBILITY_PUBLIC)
-                                               .setTicker(NOTIFICATION_TICKER);
+        Notification.Builder builder =
+                createNotificationBuilder()
+                        .setContentTitle(NOTIFICATION_TITLE)
+                        .setContentText(NOTIFICATION_CONTENT)
+                        .setSmallIcon(org.chromium.android_webview.devui.R.drawable.ic_flag)
+                        .setContentIntent(pendingIntent)
+                        .setOngoing(true)
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setTicker(NOTIFICATION_TICKER);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = builder
@@ -282,7 +302,6 @@ public final class DeveloperUiService extends Service {
             } else {
                 startService(intent);
             }
-            markAsForegroundService();
 
             ComponentName developerModeState =
                     new ComponentName(this, DeveloperModeUtils.DEVELOPER_MODE_STATE_COMPONENT);
@@ -317,6 +336,7 @@ public final class DeveloperUiService extends Service {
      *
      * <p><b>Note:</b> {@code newFlags} are not applied atomically.
      */
+    @GuardedBy("sLock")
     private void applyFlagsToCommandLine(
             Map<String, Boolean> oldFlags, Map<String, Boolean> newFlags) {
         // Best-effort attempt to undo oldFlags back to the initial CommandLine.
@@ -333,7 +353,7 @@ public final class DeveloperUiService extends Service {
         }
 
         // Apply newFlags
-        FlagOverrideHelper helper = new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
+        FlagOverrideHelper helper = new FlagOverrideHelper(sFlagList);
         helper.applyFlagOverrides(newFlags);
     }
 
@@ -344,6 +364,13 @@ public final class DeveloperUiService extends Service {
                     .edit()
                     .clear()
                     .apply();
+        }
+    }
+
+    @VisibleForTesting
+    public static void setFlagListForTesting(@NonNull Flag[] flagList) {
+        synchronized (sLock) {
+            sFlagList = flagList;
         }
     }
 }

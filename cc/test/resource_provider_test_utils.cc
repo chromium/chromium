@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ const std::
   DCHECK(child_resource_provider);
   // Transfer resources to the parent.
   std::vector<viz::TransferableResource> send_to_parent;
-  int child_id = resource_provider->CreateChild(base::DoNothing());
+  int child_id =
+      resource_provider->CreateChild(base::DoNothing(), viz::SurfaceId());
   child_resource_provider->PrepareSendToParent(resource_ids, &send_to_parent,
                                                child_context_provider);
   resource_provider->ReceiveFromChild(child_id, send_to_parent);

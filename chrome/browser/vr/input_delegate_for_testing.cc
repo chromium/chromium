@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,11 @@ constexpr gfx::Vector3dF kStartControllerPosition(0.3, -0.3, -0.3);
 void SetOriginAndTransform(vr::ControllerModel* model) {
   gfx::Transform mat;
   mat.Translate3d(kStartControllerPosition);
-  mat.PreconcatTransform(
+  mat.PreConcat(
       gfx::Transform(gfx::Quaternion(kForwardVector, model->laser_direction)));
   model->transform = mat;
   model->laser_origin = kLaserOriginOffset;
-  mat.TransformPoint(&model->laser_origin);
+  model->laser_origin = mat.MapPoint(model->laser_origin);
 }
 
 }  // namespace
@@ -76,7 +76,7 @@ void InputDelegateForTesting::QueueControllerActionForTesting(
 
   switch (controller_input.action) {
     case VrControllerTestAction::kHover:
-      FALLTHROUGH;
+      [[fallthrough]];
     case VrControllerTestAction::kClickUp:
       controller_model.touchpad_button_state =
           ControllerModel::ButtonState::kUp;

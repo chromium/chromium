@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,7 @@
 #include "remoting/protocol/token_validator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ThirdPartyHostAuthenticator::ThirdPartyHostAuthenticator(
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
@@ -34,7 +33,7 @@ void ThirdPartyHostAuthenticator::ProcessTokenMessage(
   if (token.empty()) {
     LOG(ERROR) << "Third-party authentication protocol error: missing token.";
     token_state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }
@@ -73,20 +72,20 @@ void ThirdPartyHostAuthenticator::AddTokenElements(
 void ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated(
     const jingle_xmpp::XmlElement* message,
     base::OnceClosure resume_callback,
-    const std::string& shared_secret) {
-  if (shared_secret.empty()) {
+    const TokenValidator::ValidationResult& validation_result) {
+  if (validation_result.is_error()) {
     token_state_ = REJECTED;
-    rejection_reason_ = INVALID_CREDENTIALS;
+    rejection_reason_ = validation_result.error();
     std::move(resume_callback).Run();
     return;
   }
 
   // The other side already started the SPAKE authentication.
+  DCHECK(!validation_result.success().empty());
   token_state_ = ACCEPTED;
-  underlying_ =
-      create_base_authenticator_callback_.Run(shared_secret, WAITING_MESSAGE);
+  underlying_ = create_base_authenticator_callback_.Run(
+      validation_result.success(), WAITING_MESSAGE);
   underlying_->ProcessMessage(message, std::move(resume_callback));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

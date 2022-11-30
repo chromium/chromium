@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ class Browser;
 
 class BrowserListObserver : public base::CheckedObserver {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called when the value of BrowserList::HasAtLeastOneResumedBrowser()
   // changes.
   virtual void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) {}

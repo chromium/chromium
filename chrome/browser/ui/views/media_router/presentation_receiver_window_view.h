@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater_delegate.h"
@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 class ExclusiveAccessBubbleViews;
@@ -81,7 +81,6 @@ class PresentationReceiverWindowView final
   content::WebContents* GetActiveWebContents() const final;
 
   // views::WidgetDelegateView overrides.
-  void DeleteDelegate() final;
   std::u16string GetWindowTitle() const final;
 
   // ui::AcceleratorTarget overrides.
@@ -98,7 +97,9 @@ class PresentationReceiverWindowView final
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
       bool force_update) final;
+  bool IsExclusiveAccessBubbleDisplayed() const final;
   void OnExclusiveAccessUserInput() final;
   content::WebContents* GetActiveWebContents() final;
   bool CanUserExitFullscreen() const final;
@@ -123,12 +124,12 @@ class PresentationReceiverWindowView final
   // Updates the UI in response to a change to fullscreen state.
   void OnFullscreenChanged();
 
-  PresentationReceiverWindowFrame* const frame_;
-  PresentationReceiverWindowDelegate* const delegate_;
+  const raw_ptr<PresentationReceiverWindowFrame> frame_;
+  const raw_ptr<PresentationReceiverWindowDelegate> delegate_;
   std::u16string title_;
   const std::unique_ptr<LocationBarModelImpl> location_bar_model_;
   CommandUpdaterImpl command_updater_;
-  LocationBarView* location_bar_view_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
   ExclusiveAccessManager exclusive_access_manager_;
   ui::Accelerator fullscreen_accelerator_;
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;

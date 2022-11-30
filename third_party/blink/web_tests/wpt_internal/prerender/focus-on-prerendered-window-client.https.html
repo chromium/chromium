@@ -1,0 +1,68 @@
+<!--
+This file cannot be upstreamed to WPT until:
+* testRunner.setPermission() usage is replaced with a WebDriver API.
+* testRunner.simulateWebNotificationClick() usage is replaced with a
+  WebDriver API.
+-->
+
+<!DOCTYPE html>
+<title>Service Worker should not focus on prerendered window clients</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<meta name="timeout" content="long">
+<body>
+<script>
+
+// Give a permission to show notification as WindowClient::focus() needs
+// user activation like notificationclick.
+// See https://w3c.github.io/ServiceWorker/#client-focus
+testRunner.setPermission('notifications',
+                         'granted',
+                         location.origin,
+                         location.origin);
+
+promise_test(async t => {
+  const uid = token();
+  const workerUrl = `resources/focus-on-prerendered-window-client.js?uid=${uid}`;
+  const scope = 'resources/';
+  const pageUrl = `resources/prerendered-page.html?uid=${uid}`;
+
+  // Register a service worker.
+  const registration =
+      await service_worker_unregister_and_register(t, workerUrl, scope);
+  t.add_cleanup(_ => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+
+  // Observe the message from a prerendered page.
+  const prerenderBc = new PrerenderChannel('prerender-channel', uid);
+  t.add_cleanup(_ => prerenderBc.close());
+  const prerenderBcQueue = new BroadcastMessageQueue(prerenderBc);
+
+  // Start prerendering.
+  startPrerendering(pageUrl);
+  assert_equals(await prerenderBcQueue.nextMessage(), 'prerender success');
+
+  // Send message to the service worker to show notification.
+  const messageFromServiceWorker = await new Promise(resolve => {
+    navigator.serviceWorker.onmessage = resolve;
+    registration.active.postMessage('start');
+  });
+  assert_equals(messageFromServiceWorker.data.type, 'notification was shown');
+
+  const resultBc = new PrerenderChannel('result-channel', uid);
+  t.add_cleanup(_ => resultBc.close());
+  const resultBcQueue = new BroadcastMessageQueue(resultBc);
+
+  // Click notification (cause user activation).
+  testRunner.simulateWebNotificationClick(messageFromServiceWorker.data.title);
+
+  // The prerendered page should not be focused.
+  const resultMessage = await resultBcQueue.nextMessage();
+  assert_equals(resultMessage.result, 'Not focused');
+  assert_false(resultMessage.focused);
+});
+</script>
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,7 @@ class Browser;
 // The browser.
 @property(nonatomic, assign) Browser* browser;
 // Provider of menu configurations for the readingList component.
-@property(nonatomic, weak) id<ReadingListMenuProvider> menuProvider
-    API_AVAILABLE(ios(13.0));
+@property(nonatomic, weak) id<ReadingListMenuProvider> menuProvider;
 
 // Initializers.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

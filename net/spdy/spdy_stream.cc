@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
@@ -38,31 +38,31 @@ namespace {
 base::Value NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
                                         int net_error,
                                         base::StringPiece description) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", static_cast<int>(stream_id));
-  dict.SetStringKey("net_error", ErrorToShortString(net_error));
-  dict.SetStringKey("description", description);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id));
+  dict.Set("net_error", ErrorToShortString(net_error));
+  dict.Set("description", description);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSpdyStreamWindowUpdateParams(spdy::SpdyStreamId stream_id,
                                                int32_t delta,
                                                int32_t window_size) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", stream_id);
-  dict.SetIntKey("delta", delta);
-  dict.SetIntKey("window_size", window_size);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id));
+  dict.Set("delta", delta);
+  dict.Set("window_size", window_size);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
                                  int size,
                                  bool fin) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", static_cast<int>(stream_id));
-  dict.SetIntKey("size", size);
-  dict.SetBoolKey("fin", fin);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(stream_id));
+  dict.Set("size", size);
+  dict.Set("fin", fin);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -80,12 +80,11 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override {
     if (!stream_.get()) {
       NOTREACHED();
-      return std::unique_ptr<SpdyBuffer>();
+      return nullptr;
     }
     DCHECK_GT(stream_->stream_id(), 0u);
     return std::make_unique<SpdyBuffer>(stream_->ProduceHeadersFrame());
   }
-  size_t EstimateMemoryUsage() const override { return 0; }
 
  private:
   const base::WeakPtr<SpdyStream> stream_;
@@ -98,29 +97,20 @@ SpdyStream::SpdyStream(SpdyStreamType type,
                        int32_t initial_send_window_size,
                        int32_t max_recv_window_size,
                        const NetLogWithSource& net_log,
-                       const NetworkTrafficAnnotationTag& traffic_annotation)
+                       const NetworkTrafficAnnotationTag& traffic_annotation,
+                       bool detect_broken_connection)
     : type_(type),
-      stream_id_(0),
       url_(url),
       priority_(priority),
-      send_stalled_by_flow_control_(false),
       send_window_size_(initial_send_window_size),
       max_recv_window_size_(max_recv_window_size),
       recv_window_size_(max_recv_window_size),
-      unacked_recv_window_bytes_(0),
+      last_recv_window_update_(base::TimeTicks::Now()),
       session_(session),
-      delegate_(nullptr),
-      request_headers_valid_(false),
-      pending_send_status_(MORE_DATA_TO_SEND),
       request_time_(base::Time::Now()),
-      response_state_(READY_FOR_HEADERS),
-      io_state_(STATE_IDLE),
       net_log_(net_log),
-      raw_received_bytes_(0),
-      raw_sent_bytes_(0),
-      recv_bytes_(0),
-      write_handler_guard_(false),
-      traffic_annotation_(traffic_annotation) {
+      traffic_annotation_(traffic_annotation),
+      detect_broken_connection_(detect_broken_connection) {
   CHECK(type_ == SPDY_BIDIRECTIONAL_STREAM ||
         type_ == SPDY_REQUEST_RESPONSE_STREAM ||
         type_ == SPDY_PUSH_STREAM);
@@ -333,8 +323,16 @@ void SpdyStream::IncreaseRecvWindowSize(int32_t delta_window_size) {
                                               recv_window_size_);
   });
 
+  // Update the receive window once half of the buffer is ready to be acked
+  // to prevent excessive window updates on fast downloads. Also send an update
+  // if too much time has elapsed since the last update to deal with
+  // slow-reading clients so the server doesn't think the stream is idle.
   unacked_recv_window_bytes_ += delta_window_size;
-  if (unacked_recv_window_bytes_ > max_recv_window_size_ / 2) {
+  const base::TimeDelta elapsed =
+      base::TimeTicks::Now() - last_recv_window_update_;
+  if (unacked_recv_window_bytes_ > max_recv_window_size_ / 2 ||
+      elapsed >= session_->TimeToBufferSmallWindowUpdates()) {
+    last_recv_window_update_ = base::TimeTicks::Now();
     session_->SendStreamWindowUpdate(
         stream_id_, static_cast<uint32_t>(unacked_recv_window_bytes_));
     unacked_recv_window_bytes_ = 0;
@@ -835,15 +833,6 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
       recv_first_byte_time_for_non_informational_response_;
   load_timing_info->first_early_hints_time = first_early_hints_time_;
   return result;
-}
-
-size_t SpdyStream::EstimateMemoryUsage() const {
-  // TODO(xunjieli): https://crbug.com/669108. Estimate |pending_send_data_|
-  // once scoped_refptr support is in.
-  return base::trace_event::EstimateMemoryUsage(url_) +
-         base::trace_event::EstimateMemoryUsage(request_headers_) +
-         base::trace_event::EstimateMemoryUsage(pending_recv_data_) +
-         base::trace_event::EstimateMemoryUsage(response_headers_);
 }
 
 void SpdyStream::QueueNextDataFrame() {

@@ -31,12 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_TO_SCRIPT_MAPPING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_TO_SCRIPT_MAPPING_H_
 
+#include <unicode/uscript.h>
+
 #include "base/check.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
-#include <unicode/uscript.h>
 
 namespace blink {
 
@@ -55,4 +55,4 @@ inline bool IsUnambiguousHanScript(UScriptCode script) {
 }
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_LOCALE_TO_SCRIPT_MAPPING_H_

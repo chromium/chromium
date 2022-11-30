@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/safe_browsing/core/db/util.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
@@ -129,8 +129,8 @@ TEST_F(SubresourceFilterTest, SimpleAllowedLoad_WithObserver) {
   auto* subframe =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   SimulateNavigateAndCommit(GURL(allowed_url), subframe);
-  EXPECT_EQ(LoadPolicy::ALLOW, *observer.GetSubframeLoadPolicy(allowed_url));
-  EXPECT_FALSE(observer.GetIsAdSubframe(subframe->GetFrameTreeNodeId()));
+  EXPECT_EQ(LoadPolicy::ALLOW, *observer.GetChildFrameLoadPolicy(allowed_url));
+  EXPECT_FALSE(observer.GetIsAdFrame(subframe->GetFrameTreeNodeId()));
 }
 
 TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
@@ -155,8 +155,8 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
   navigation_observer.WaitForNavigationFinished();
 
   EXPECT_EQ(LoadPolicy::DISALLOW,
-            *observer.GetSubframeLoadPolicy(disallowed_url));
-  EXPECT_TRUE(observer.GetIsAdSubframe(subframe->GetFrameTreeNodeId()));
+            *observer.GetChildFrameLoadPolicy(disallowed_url));
+  EXPECT_TRUE(observer.GetIsAdFrame(subframe->GetFrameTreeNodeId()));
 }
 
 TEST_F(SubresourceFilterTest, RefreshMetadataOnActivation) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ gfx::Rect GetClientAreaBoundsInScreen(aura::Window* window) {
   const int inset = window->GetProperty(aura::client::kTopViewInset);
   if (inset > 0) {
     gfx::Rect bounds = window->GetBoundsInScreen();
-    bounds.Inset(0, inset, 0, 0);
+    bounds.Inset(gfx::Insets::TLBR(inset, 0, 0, 0));
     return bounds;
   }
   // The source window may not have a widget in unit tests.
@@ -49,8 +49,8 @@ WindowPreviewView::WindowPreviewView(aura::Window* window,
   DCHECK(window);
   aura::client::GetTransientWindowClient()->AddObserver(this);
 
-  for (auto* window : GetTransientTreeIterator(window_))
-    AddWindow(window);
+  for (auto* transient_window : GetTransientTreeIterator(window_))
+    AddWindow(transient_window);
 }
 
 WindowPreviewView::~WindowPreviewView() {
@@ -153,7 +153,7 @@ void WindowPreviewView::AddWindow(aura::Window* window) {
   DCHECK(!unparented_transient_children_.contains(window));
   DCHECK(!window->HasObserver(this));
 
-  if (window->type() == aura::client::WINDOW_TYPE_POPUP)
+  if (window->GetType() == aura::client::WINDOW_TYPE_POPUP)
     return;
 
   if (!window->HasObserver(this))
@@ -180,9 +180,12 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
   if (it == mirror_views_.end())
     return;
 
-  RemoveChildView(it->second);
+  auto* view = it->second;
+  RemoveChildView(view);
   it->first->RemoveObserver(this);
+
   mirror_views_.erase(it);
+  delete view;
 }
 
 gfx::RectF WindowPreviewView::GetUnionRect() const {

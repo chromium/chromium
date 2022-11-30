@@ -1,0 +1,12 @@
+// select 1st word
+ce.AXSelectedTextRange={loc: 0, len: 3}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+ce.AXSelectedText='The'
+// select text inside span
+ce.AXSelectedTextRange={loc: 22, len: 4}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+ce.AXSelectedText='jump'
+// select text that starts in the <span> and ends in the <em>
+ce.AXSelectedTextRange={loc: 24, len: 15}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+ce.AXSelectedText='mps over the la'

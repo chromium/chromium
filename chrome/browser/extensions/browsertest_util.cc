@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,7 +44,7 @@ namespace browsertest_util {
 void CreateAndInitializeLocalCache() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath extension_cache_dir;
-  CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
+  CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                &extension_cache_dir));
   base::FilePath cache_init_file = extension_cache_dir.Append(
       extensions::LocalExtensionCache::kCacheReadyFlagFileName);
@@ -52,21 +53,23 @@ void CreateAndInitializeLocalCache() {
 }
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
-  EXPECT_TRUE(
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
-              extension_app->id(), LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
-              AppLaunchSource::kSourceTest)));
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
 
-  Browser* browser = chrome::FindLastActive();
-  bool is_correct_app_browser =
-      browser && web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-                     extension_app->id();
-  EXPECT_TRUE(is_correct_app_browser);
+  EXPECT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->BrowserAppLauncher()
+                  ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+                      extension_app->id(),
+                      apps::LaunchContainer::kLaunchContainerWindow,
+                      WindowOpenDisposition::CURRENT_TAB,
+                      apps::LaunchSource::kFromTest)));
 
-  return is_correct_app_browser ? browser : nullptr;
+  Browser* const browser = browser_change_observer.Wait();
+  DCHECK(browser);
+  EXPECT_EQ(web_app::GetAppIdFromApplicationName(browser->app_name()),
+            extension_app->id());
+  return browser;
 }
 
 content::WebContents* AddTab(Browser* browser, const GURL& url) {

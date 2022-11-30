@@ -1,0 +1,20 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+        "fuchsia.mediacodec.CodecFactory": "fuchsia-pkg://fuchsia.com/codec_factory#meta/codec_factory.cmx"
+      },
+      "system-services": [
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator"
+      ]
+    }
+  },
+  "sandbox": {
+    "services": [
+      "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
+      "fuchsia.mediacodec.CodecFactory"
+    ]
+  }
+}

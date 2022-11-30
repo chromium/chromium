@@ -1,0 +1,114 @@
+<!--
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+@WAIT-FOR:done
+-->
+<script>
+class CustomDetails extends HTMLElement {
+  constructor() {
+    super();
+    const shadowRoot = this.attachShadow({mode: 'open', slotAssignment: 'manual'});
+
+    this.summarySlot = document.createElement('slot');
+    this.summarySlot.id = 'details-summary';
+    shadowRoot.appendChild(this.summarySlot);
+
+    const defaultSummary = document.createElement('summary');
+    defaultSummary.textContent = 'Details';
+    this.summarySlot.appendChild(defaultSummary);
+
+    this.contentSlot = document.createElement('slot');
+    this.contentSlot.id = 'details-content';
+    this.contentSlot.style = `content-visibility:hidden; display:block;`;
+    shadowRoot.appendChild(this.contentSlot);
+
+    const style = document.createElement('style');
+    style.textContent = `
+:host summary {
+  display: list-item;
+  counter-increment: list-item 0;
+  list-style: disclosure-closed inside;
+}
+:host([open]) summary {
+  list-style-type: disclosure-open;
+}
+`;
+    shadowRoot.appendChild(style);
+  }
+
+  connectedCallback() {
+    this.updateOpen();
+    this.updateAssignment();
+    this.addEventListener('DOMNodeInserted', this.updateAssignment);
+    this.addEventListener('DOMNodeRemoved', this.updateAssignment);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('DOMNodeInserted', this.updateAssignment);
+    this.removeEventListener('DOMNodeRemoved', this.updateAssignment);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.updateOpen();
+  }
+
+  static get observedAttributes() {
+    return ['open'];
+  }
+
+  updateOpen() {
+    if (this.hasAttribute('open')) {
+      this.contentSlot.style = ``;
+    } else {
+      this.contentSlot.style = `content-visibility: hidden; display:block`;
+    }
+  }
+
+  updateAssignment() {
+    let summary = null;
+    const content = [];
+
+    for (let child = this.firstChild; child; child = child.nextSibling) {
+      if (!summary && child.tagName === 'SUMMARY') {
+        summary = child;
+      } else {
+        content.push(child);
+      }
+    }
+
+    if (summary) {
+      this.summarySlot.assign([summary]);
+    } else {
+      this.summarySlot.assign([]);
+    }
+    this.contentSlot.assign(content);
+  }
+};
+customElements.define('x-details', CustomDetails);
+</script>
+
+<script>
+const $ = document.querySelector.bind(document);
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+  $('#dt1').removeChild($('#dt1 > summary'));
+  $('#dt2').removeChild($('#dt2 > summary'));
+  $('#dt3').removeChild($('#dt3 > summary:last-of-type'));
+  $('#dt4').removeChild($('#dt4 > summary'));
+  $('#dt5').removeChild($('#dt5 > summary'));
+  $('#dt6').removeChild($('#dt6 > summary:last-of-type'));
+
+    document.title = 'done';
+  }, 200);
+});
+
+</script>
+<body>
+<x-details id="dt1" class="dt1"><summary>summary</summary></x-details>
+<x-details id="dt2" class="dt2"><summary>summary 1</summary><summary>summary 2</summary></x-details>
+<x-details id="dt3" class="dt3"><summary>summary 1</summary><summary>summary <b>2</b></summary></x-details>
+<x-details id="dt4" class="dt4" open><summary>summary</summary></x-details>
+<x-details id="dt5" class="dt5" open><summary>summary 1</summary><summary>summary <mark>2</mark></summary></x-details>
+<x-details id="dt6" class="dt6" open><summary>summary 1</summary><summary>summary <mark>2</mark></summary></x-details>
+</body>

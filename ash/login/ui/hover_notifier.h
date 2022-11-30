@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_LOGIN_UI_HOVER_NOTIFIER_H_
 #define ASH_LOGIN_UI_HOVER_NOTIFIER_H_
-
-#include <string>
 
 #include "base/callback.h"
 #include "ui/events/event_handler.h"
@@ -23,6 +21,10 @@ class HoverNotifier : public ui::EventHandler {
   using OnHover = base::RepeatingCallback<void(bool has_hover)>;
 
   HoverNotifier(views::View* target_view, const OnHover& on_hover);
+
+  HoverNotifier(const HoverNotifier&) = delete;
+  HoverNotifier& operator=(const HoverNotifier&) = delete;
+
   ~HoverNotifier() override;
 
   // ui::EventHandler:
@@ -32,8 +34,6 @@ class HoverNotifier : public ui::EventHandler {
   bool had_hover_ = false;
   views::View* target_view_ = nullptr;
   OnHover on_hover_;
-
-  DISALLOW_COPY_AND_ASSIGN(HoverNotifier);
 };
 
 }  // namespace ash

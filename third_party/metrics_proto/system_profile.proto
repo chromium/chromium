@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 37
+// Next tag: 42
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -45,6 +45,13 @@ message SystemProfileProto {
   // associated with the request; and including the postfix, may be more
   // specific.
   optional string app_version = 2;
+
+  // The application can create logs about previous versions. In particular the
+  // initial stability log refers to the previous run, which can be an older
+  // version. This field is set by the client when the log being written has an
+  // app_version that's different than the version of the app writing the log.
+  // Note that the version uploading the log may also be different.
+  optional string log_written_by_app_version = 40;
 
   // The brand code or distribution tag assigned to a partner, if available.
   // Brand codes are only available on Windows.  Not every Windows install
@@ -80,8 +87,40 @@ message SystemProfileProto {
   // For privacy, this is rounded to the nearest hour.
   optional int64 install_date = 16;
 
+  // A message about the cloned install detection that helps improve data
+  // quality by identifying potential VMs and bots. This message will be
+  // set in every record after the client has ever been reset due to cloned
+  // install detection. However, the `cloned_from_client_id`
+  // field will only be set in the resetting session because this is not
+  // persisted in the local prefs.
+  // Next tag: 5
+  message ClonedInstallInfo {
+    // The latest timestamp we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 last_timestamp = 1;
+
+    // The client_id that this client is cloned from. This field is tied to the
+    // cloned install detector only; any other way of resetting client_id
+    // doesn't touch this field. This field is only reported in the
+    // resetting session.
+    optional fixed64 cloned_from_client_id = 2;
+
+    // The first timestamp when we reset a cloned client’s client id, in seconds
+    // since the epoch. For privacy, this is rounded to the nearest hour.
+    optional int64 first_timestamp = 3;
+
+    // The number of times this client has been reset due to cloned install.
+    // Increment by one per reset happens.
+    optional int32 count = 4;
+  }
+  optional ClonedInstallInfo cloned_install_info = 39;
+
   // The non-identifying low entropy source value. This value seeds the
-  // pseudorandom generator which picks experimental groups.
+  // pseudorandom generator which picks experimental groups. Clients only report
+  // the value that they used for picking experimental groups on startup which
+  // means this value won't be changed within the session even even if the low
+  // entropy source is reset (e.g. via the UMA checkbox) because group
+  // assignments won't be changed until restart.
   optional int32 low_entropy_source = 31;
 
   // The old low entropy value. This value is thought to be biased in the wild,
@@ -91,13 +130,30 @@ message SystemProfileProto {
   // the new source.
   optional int32 old_low_entropy_source = 32;
 
+  // A pseudo low entropy value. The actual low_entropy_source value is used for
+  // assignment to experiment arms, and this use may cause drift over time (for
+  // example, if a bad experiment arm drives away some users permanently.) This
+  // pseudo low entropy value is generated identically to low_entropy_source,
+  // but it is generated with a different randomization seed and is not used for
+  // experiment randomization. Consequently, it can be used in statistical
+  // validation to answer the question of how our data would be distributed if
+  // we didn't have to worry about low entropy source drift.
+  optional int32 pseudo_low_entropy_source = 37;
+
   // The user's selected application locale, i.e. the user interface language.
   // The locale includes a language code and, possibly, also a country code,
   // e.g. "en-US".
   optional string application_locale = 4;
 
+  // Hashes of command line keys used in the browser session when the MetricsLog
+  // is created. This takes into account the command line switches that were
+  // used when launching the session, as well as any modifications made to them,
+  // for example via CommandLine::AppendSwitch and CommandLine::RemoveSwitch.
+  // Values are the lower 32-bit of SHA1 hash in little-endian.
+  repeated fixed32 command_line_key_hash = 38 [packed = true];
+
   // Information on the user's operating system.
-  // Next tag: 8
+  // Next tag: 11
   message OS {
     // The user's operating system. This should be one of:
     // - 'Android'
@@ -147,15 +203,69 @@ message SystemProfileProto {
     // histogram to determine if ARC is enabled for current report.
     // Logged on ChromeOS only.
     optional Arc arc = 7;
+
+    // Data related to system-level dark mode configuration. This is currently
+    // only uploaded on Android. "*_APP" variants are included to reflect when
+    // the user overrides the system configuration within the browser
+    enum DarkModeState {
+      UNKNOWN = 0;
+
+      // Both the system and the browser are in dark mode.
+      DARK_MODE_SYSTEM = 1;
+
+      // The browser is in dark mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      DARK_MODE_APP = 2;
+
+      // Both the system and the browser are in light mode.
+      LIGHT_MODE_SYSTEM = 3;
+
+      // The browser is in light mode, but the state of the system either cannot
+      // be determined or has been overridden by the user.
+      LIGHT_MODE_APP = 4;
+    }
+    optional DarkModeState dark_mode_state = 8 [default = UNKNOWN];
+
+    // The value returned by the "XDG_SESSION_TYPE" environment variable, as
+    // translated to a base::nix::SessionType, this field is only set on Linux.
+    // Some features are enabled/disabled depending on this value.
+    enum XdgSessionType {
+      UNSET = 0;
+      OTHER_SESSION_TYPE = 1;
+      UNSPECIFIED = 2;
+      TTY = 3;
+      X11 = 4;
+      WAYLAND = 5;
+      MIR = 6;
+    }
+    optional XdgSessionType xdg_session_type = 9;
+
+    // The value returned by the "XDG_CURRENT_DESKTOP" environment variable, as
+    // translated to a base::nix::DesktopEnvironment. Note that all KDE values
+    // from that enum are bucketed together. This field is only set on Linux.
+    // Some bugs reproduce only in particular desktop environments.
+    enum XdgCurrentDesktop {
+      OTHER = 0;
+      CINNAMON = 1;
+      DEEPIN = 2;
+      GNOME = 3;
+      KDE = 4;
+      PANTHEON = 5;
+      UKUI = 6;
+      UNITY = 7;
+      XFCE = 8;
+      LXQT = 9;
+    }
+    optional XdgCurrentDesktop xdg_current_desktop = 10;
   }
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 22
+  // Next tag: 27
   message Hardware {
-    // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
-    // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
-    // Not recorded on iOS.
+    // OS CPU architecture. Common options are: x86, x86_64, armv7l, armv8l,
+    // and aarch64.
+    // Started being correctly recorded on iOS in M90: crrev/c/2723012.
     optional string cpu_architecture = 1;
 
     // Browser process CPU architecture. Will be different from
@@ -197,6 +307,10 @@ message SystemProfileProto {
     // qualification reports, test device tags, etc.
     optional string full_hardware_class = 18;
 
+    // This field is only sent on Chrome OS devices with cellular support.
+    // This represents the variant of cellular modem present on the device.
+    optional string cellular_device_variant = 24;
+
     // The number of physical screens.
     optional int32 screen_count = 5;
 
@@ -210,6 +324,19 @@ message SystemProfileProto {
     // Max DPI for any attached screen. (Windows only)
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
+
+    // The form factor of the device. Added in M101.
+    // Android devices can be phone, tablet, or TV. iOS devices can be phone or
+    // tablet. For Windows, Mac, ChromeOS, Lacros, and Linux, the desktop form
+    // factor is always used.
+    enum FormFactor {
+      FORM_FACTOR_UNKNOWN = 0;
+      FORM_FACTOR_DESKTOP = 1;
+      FORM_FACTOR_PHONE = 2;
+      FORM_FACTOR_TABLET = 3;
+      FORM_FACTOR_TV = 4;
+    }
+    optional FormFactor form_factor = 22;
 
     // Information on the CPU obtained by CPUID.
     message CPU {
@@ -227,6 +354,29 @@ message SystemProfileProto {
       optional bool is_hypervisor = 4;
     }
     optional CPU cpu = 13;
+
+    // Type of BIOS (can change at each boot).
+    enum BiosType {
+      BIOS_TYPE_UNKNOWN = 0;
+      // Legacy BIOS or UEFI with CSM mode.
+      BIOS_TYPE_LEGACY = 1;
+      // BIOS is UEFI and booted into UEFI mode.
+      BIOS_TYPE_UEFI = 2;
+    }
+    // Motherboard information.
+    message Motherboard {
+      // Manufacturer for the motherboard.
+      optional string manufacturer = 1;
+      // Model for the motherboard.
+      optional string model = 2;
+      // Manufacturer for the BIOS.
+      optional string bios_manufacturer = 3;
+      // Version of the BIOS currently installed.
+      optional string bios_version = 4;
+      // What mode of BIOS is booted.
+      optional BiosType bios_type = 5;
+    }
+    optional Motherboard motherboard = 25;
 
     // Information on the GPU
     message Graphics {
@@ -316,6 +466,26 @@ message SystemProfileProto {
     optional Drive app_drive = 16;
     // The drive that the current user data directory was loaded from.
     optional Drive user_data_drive = 17;
+
+    // Type of TPM on the device. This field is only filled in on ChromeOS
+    // devices (both CrOS and LaCrOS platforms). This includes Chromebooks with
+    // TPM1.2 or GSC (cr50 and ti50), flex devices (ChromeOS installed on
+    // devices with other OS) which has TPM type "runtime selection", and lastly
+    // generic TPM2 devices that use TPM2 chips that aren't manufactured by
+    // Google.
+    enum TpmType {
+      TPM_TYPE_UNKNOWN = 0;
+      TPM_TYPE_1 = 1;
+      TPM_TYPE_CR50 = 2;
+      TPM_TYPE_TI50 = 3;
+      TPM_TYPE_RUNTIME_SELECTION = 4;
+      TPM_TYPE_GENERIC_2 = 5;
+    }
+    optional TpmType tpm_type = 23;
+
+    // Firmware version of the TPM on the device. This field is only filled in
+    // on ChromeOS devices (both CrOS and LaCrOS platforms).
+    optional uint64 tpm_firmware_version = 26;
   }
   optional Hardware hardware = 6;
 
@@ -359,6 +529,9 @@ message SystemProfileProto {
       WIFI_PHY_LAYER_PROTOCOL_G = 4;
       WIFI_PHY_LAYER_PROTOCOL_N = 5;
       WIFI_PHY_LAYER_PROTOCOL_UNKNOWN = 6;
+      WIFI_PHY_LAYER_PROTOCOL_AC = 7;
+      WIFI_PHY_LAYER_PROTOCOL_AD = 8;
+      WIFI_PHY_LAYER_PROTOCOL_AX = 9;
     }
     // The physical layer mode of the associated wifi access point, if any.
     optional WifiPHYLayerProtocol wifi_phy_layer_protocol = 4;
@@ -438,25 +611,6 @@ message SystemProfileProto {
   }
   optional GoogleUpdate google_update = 11;
 
-  // Information on all installed plugins.
-  message Plugin {
-    // The plugin's self-reported name and filename (without path).
-    optional string name = 1;
-    optional string filename = 2;
-
-    // The plugin's version.
-    optional string version = 3;
-
-    // True if the plugin is disabled.
-    // If a client has multiple local Chrome user accounts, this is logged based
-    // on the first user account launched during the current session.
-    optional bool is_disabled = 4;
-
-    // True if the plugin is PPAPI.
-    optional bool is_pepper = 5;
-  }
-  repeated Plugin plugin = 7;
-
   // Figures that can be used to generate application stability metrics.
   // All values are counts of events since the last time that these
   // values were reported.
@@ -478,25 +632,13 @@ message SystemProfileProto {
     // This field was added for M-35.
     optional int64 uptime_sec = 23;
 
-    // Page loads along with renderer launches, crashes, hangs and failed
-    // launches, since page load count roughly corresponds to usage.
+    // Logged on Android only as of late Q2 2022. Used by only Android WebView.
+    // Other platforms should use Stability.Counts2.
     optional int32 page_load_count = 2;
-    optional int32 renderer_crash_count = 3;
-    optional int32 renderer_hang_count = 4;
-    optional int32 renderer_failed_launch_count = 24;
+
+    // Logged on Android only as of Q2 2022. Used by only Android WebView. Other
+    // platforms should use Stability.Counts2.
     optional int32 renderer_launch_count = 26;
-
-    // Number of renderer launches, crashes and failed launches that were for
-    // extensions. These are not counted in the renderer counts above.
-    optional int32 extension_renderer_crash_count = 5;
-    optional int32 extension_renderer_failed_launch_count = 25;
-    optional int32 extension_renderer_launch_count = 27;
-
-    // Number of non-renderer child process crashes.
-    optional int32 child_process_crash_count = 6;
-    // Number of gpu crashes that generate a crash dump. Currently only used by
-    // Android Chrome starting with M71.
-    optional int32 gpu_crash_count = 31;
 
     // Number of times the browser has crashed while logged in as the "other
     // user" (guest) account.
@@ -511,78 +653,28 @@ message SystemProfileProto {
     // Logged on ChromeOS only.
     optional int32 unclean_system_shutdown_count = 9;
 
-    //
     // All the remaining fields in the Stability are recorded at most once per
     // client session.
-    //
 
     // The number of times the program was launched since the last time metrics
     // was uploaded. For the initial metrics upload (right after startup), this
-    // will often be equal to 1.  However, it is possible that Chrome was unable
+    // will often be equal to 1. However, it is possible that Chrome was unable
     // to upload stability metrics for previous launches (e.g. due to crashing
-    // early during startup), making this value greater than 1.  For subsequent
+    // early during startup), making this value greater than 1. For subsequent
     // metrics uploads, this value will be 0.
+    //
+    // Logged on Android only as of Q1 2022. Used by only Android WebView. Other
+    // platforms should use Stability.Counts2.
     optional int32 launch_count = 15;
-    // The number of times that it didn't exit cleanly (which we assume to be
-    // mostly crashes). On Android M71+ this does not include times when the Gms
-    // Core version has changed, which is recorded separately below.
-    optional int32 crash_count = 16;
     // Android only. The number of times Chrome didn't exit cleanly and the GMS
     // Core version has changed from the last session. This is in addition to
     // |crash_count| in which we exclude unclean exits that are likely caused by
     // GMS Core updates.
     optional int32 crash_count_due_to_gms_core_update = 30;
 
-    // The number of times the program began, but did not complete, the shutdown
-    // process.  (For example, this may occur when Windows is shutting down, and
-    // it only gives the process a few seconds to clean up.)
-    optional int32 incomplete_shutdown_count = 17;
-
-    // The number of times the program was able register with breakpad crash
-    // services.
-    optional int32 breakpad_registration_success_count = 18;
-
-    // The number of times the program failed to register with breakpad crash
-    // services.  If crash registration fails then when the program crashes no
-    // crash report will be generated.
-    optional int32 breakpad_registration_failure_count = 19;
-
-    // The number of times the program has run under a debugger.  This should
-    // be an exceptional condition.  Running under a debugger prevents crash
-    // dumps from being generated.
-    optional int32 debugger_present_count = 20;
-
-    // The number of times the program has run without a debugger attached.
-    // This should be most common scenario and should be very close to
-    // |launch_count|.
-    optional int32 debugger_not_present_count = 21;
-
     // Whether the metrics being reported are from a previous run picked up via
     // the left-over memory mapped files.
     optional bool from_previous_run = 29;
-
-    // Stability information for all installed plugins.
-    message PluginStability {
-      // The relevant plugin's information (name, etc.)
-      optional Plugin plugin = 1;
-
-      // The number of times this plugin's process was launched.
-      optional int32 launch_count = 2;
-
-      // The number of times this plugin was instantiated on a web page.
-      // This will be >= |launch_count|.
-      // (A page load with multiple sections drawn by this plugin will
-      // increase this count multiple times.)
-      optional int32 instance_count = 3;
-
-      // The number of times this plugin process crashed.
-      // This value will be <= |launch_count|.
-      optional int32 crash_count = 4;
-
-      // The number of times this plugin could not be loaded.
-      optional int32 loading_error_count = 5;
-    }
-    repeated PluginStability plugin_stability = 22;
   }
   optional Stability stability = 8;
 
@@ -948,6 +1040,7 @@ message SystemProfileProto {
     CROS_SMART_DIM = 26;
     ZXCVBN_DATA = 27;
     AUTOFILL_REGEX_CONSTANTS = 28;
+    WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
   }
 
   // Information about what Chrome components are registered and at which
@@ -1014,4 +1107,25 @@ message SystemProfileProto {
     optional bool is_messages_enabled = 4;
   }
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
+
+  // Demo mode related dimension information.
+  // Next Tag: 4
+  message DemoModeDimensions {
+    optional string country = 1;
+
+    // Demo devices retailer id and store id, value is set during demo setup.
+    // Next Tag: 3
+    message Retailer {
+      optional string retailer_id = 1;
+      optional string store_id = 2;
+    }
+    optional Retailer retailer = 2;
+
+    enum CustomizationFacet {
+      UNDEFINED = 0;
+      CLOUD_GAMING_DEVICE = 1;
+    }
+    repeated CustomizationFacet customization_facet = 3 [packed = true];
+  }
+  optional DemoModeDimensions demo_mode_dimensions = 41;
 }

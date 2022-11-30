@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 
@@ -71,7 +71,9 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
   // ExplodedFrameState.
   class BLINK_COMMON_EXPORT FrameAdapter {
    public:
-    FrameAdapter() {}
+    FrameAdapter() = default;
+    FrameAdapter(const FrameAdapter&) = delete;
+    FrameAdapter& operator=(const FrameAdapter&) = delete;
     virtual ~FrameAdapter();
 
     virtual bool IsMainFrame() const = 0;
@@ -102,9 +104,6 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
     // Returns a vector of ints representing the child index of each frame in
     // the chain from this frame to the root.
     virtual std::vector<int> GetFramePosition(BeginPoint begin_point) const = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FrameAdapter);
   };
 
   struct Replacement {
@@ -115,6 +114,8 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
   };
 
   explicit UniqueNameHelper(FrameAdapter* frame);
+  UniqueNameHelper(const UniqueNameHelper&) = delete;
+  UniqueNameHelper& operator=(const UniqueNameHelper&) = delete;
   ~UniqueNameHelper();
 
   // Returns the generated unique name.
@@ -194,11 +195,9 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
   static std::string ExtractStableNameForTesting(base::StringPiece unique_name);
 
  private:
-  FrameAdapter* const frame_;
+  const raw_ptr<FrameAdapter> frame_;
   std::string unique_name_;
   bool frozen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UniqueNameHelper);
 };
 
 }  // namespace blink

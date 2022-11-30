@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -16,24 +15,29 @@
 class VersionHandler : public content::WebUIMessageHandler {
  public:
   VersionHandler();
+
+  VersionHandler(const VersionHandler&) = delete;
+  VersionHandler& operator=(const VersionHandler&) = delete;
+
   ~VersionHandler() override;
 
   // content::WebUIMessageHandler implementation.
+  void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
   // Callback for the "requestVersionInfo" message sent by |chrome.send| in JS.
   // This is still supported for platform-specific asynchronous calls (see
   // derived classes) but the main version information is now retrieved with
   // below messages using |cr.sendWithPromise|.
-  virtual void HandleRequestVersionInfo(const base::ListValue* args);
+  virtual void HandleRequestVersionInfo(const base::Value::List& args);
 
   // Callback for the "requestVariationInfo" message. This resolves immediately
   // with variations list as well as command variations if requested.
-  virtual void HandleRequestVariationInfo(const base::ListValue* args);
+  virtual void HandleRequestVariationInfo(const base::Value::List& args);
 
   // Callback for the "requestPathInfo" message. This resolves asynchronously
   // with |OnGotFilePaths|.
-  virtual void HandleRequestPathInfo(const base::ListValue* args);
+  virtual void HandleRequestPathInfo(const base::Value::List& args);
 
  private:
   // Callback which handles returning the executable and profile paths to the
@@ -44,8 +48,6 @@ class VersionHandler : public content::WebUIMessageHandler {
 
   // Factory for the creating refs in callbacks.
   base::WeakPtrFactory<VersionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VersionHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_VERSION_VERSION_HANDLER_H_

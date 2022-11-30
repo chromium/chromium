@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "media/base/audio_bus.h"
@@ -236,7 +236,7 @@ void ExternalAudioDecoderWrapper::DecodeDeferred(
     ConvertToS16(decoded.get());
   }
 
-  decoded->set_timestamp(base::TimeDelta::FromMicroseconds(data->timestamp()));
+  decoded->set_timestamp(base::Microseconds(data->timestamp()));
   std::move(decode_callback).Run(kDecodeOk, output_config_, std::move(decoded));
 }
 

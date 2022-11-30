@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "media/base/media_drm_key_type.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -32,7 +31,7 @@ class MEDIA_EXPORT MediaDrmStorage
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
-  using MediaDrmOriginId = base::Optional<base::UnguessableToken>;
+  using MediaDrmOriginId = absl::optional<base::UnguessableToken>;
 
   struct MEDIA_EXPORT SessionData {
     SessionData(std::vector<uint8_t> key_set_id,
@@ -47,6 +46,10 @@ class MEDIA_EXPORT MediaDrmStorage
   };
 
   MediaDrmStorage();
+
+  MediaDrmStorage(const MediaDrmStorage&) = delete;
+  MediaDrmStorage& operator=(const MediaDrmStorage&) = delete;
+
   virtual ~MediaDrmStorage();
 
   // Callback to return whether the operation succeeded.
@@ -94,9 +97,6 @@ class MEDIA_EXPORT MediaDrmStorage
   // to the storage backend.
   virtual void RemovePersistentSession(const std::string& session_id,
                                        ResultCB result_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaDrmStorage);
 };
 
 using CreateStorageCB =

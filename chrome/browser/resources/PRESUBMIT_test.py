@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class HTMLActionAdditionTest(unittest.TestCase):
     mock_input_api.files = [MockFile('path/valid.html', lines)]
     mock_input_api.change = MockChange(['path/valid.html','actions.xml'])
     action_xml_path = self._createActionXMLFile()
-    self.assertEqual([], PRESUBMIT.CheckUserActionUpdate(mock_input_api,
+    self.assertEqual([], PRESUBMIT.InternalCheckUserActionUpdate(mock_input_api,
                                                          MockOutputApi(),
                                                          action_xml_path))
 
@@ -78,7 +78,7 @@ class HTMLActionAdditionTest(unittest.TestCase):
     mock_input_api.files = [MockFile('path/test.html', lines)]
 
     action_xml_path = self._createActionXMLFile()
-    return PRESUBMIT.CheckUserActionUpdate(mock_input_api,
+    return PRESUBMIT.InternalCheckUserActionUpdate(mock_input_api,
                                            MockOutputApi(),
                                            action_xml_path)
 

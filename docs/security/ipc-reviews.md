@@ -115,4 +115,4 @@ can help provide IPC reviewers with better context on the security properties
 of the overall system, making it much easier to evaluate individual changes.
 
 [chrome-security-review]: https://www.chromium.org/Home/chromium-security/security-reviews
-[mojo-best-practices]: https://chromium.googlesource.com/chromium/src/+/master/docs/security/mojo.md
+[mojo-best-practices]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md

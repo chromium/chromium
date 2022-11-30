@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
@@ -40,6 +41,10 @@ class GetCatalogTask : public Task {
   GetCatalogTask(ExploreSitesStore* store,
                  bool update_current,
                  CatalogCallback callback);
+
+  GetCatalogTask(const GetCatalogTask&) = delete;
+  GetCatalogTask& operator=(const GetCatalogTask&) = delete;
+
   ~GetCatalogTask() override;
 
  private:
@@ -49,14 +54,12 @@ class GetCatalogTask : public Task {
   void FinishedExecuting(
       std::pair<GetCatalogStatus, std::unique_ptr<CategoryList>> result);
 
-  ExploreSitesStore* store_;  // outlives this class.
+  raw_ptr<ExploreSitesStore> store_;  // outlives this class.
 
   bool update_current_;
   CatalogCallback callback_;
 
   base::WeakPtrFactory<GetCatalogTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetCatalogTask);
 };
 
 }  // namespace explore_sites

@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
 #include "chrome/browser/media/history/media_history_store.h"
@@ -85,7 +85,7 @@ sql::InitStatus MediaHistorySessionImagesTable::CreateTableIfNonExistent() {
 bool MediaHistorySessionImagesTable::LinkImage(
     const int64_t session_id,
     const int64_t image_id,
-    const base::Optional<gfx::Size> size) {
+    const absl::optional<gfx::Size> size) {
   DCHECK_LT(0, DB()->transaction_nesting());
   if (!CanAccessDatabase())
     return false;
@@ -131,7 +131,7 @@ MediaHistorySessionImagesTable::GetImagesForSession(const int64_t session_id) {
           .c_str()));
   statement.BindInt64(0, session_id);
 
-  base::Optional<media_session::MediaImage> current;
+  absl::optional<media_session::MediaImage> current;
   while (statement.Step()) {
     GURL url(statement.ColumnString(2));
 

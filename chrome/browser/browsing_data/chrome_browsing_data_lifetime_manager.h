@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -67,7 +68,7 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
   // Sets the end time of the period for which data must be deleted, for all
   // configurations. If this is |end_time_for_testing| has no value, use the
   // computed end time from each configuration.
-  void SetEndTimeForTesting(base::Optional<base::Time> end_time_for_testing) {
+  void SetEndTimeForTesting(absl::optional<base::Time> end_time_for_testing) {
     end_time_for_testing_ = std::move(end_time_for_testing);
   }
   void SetBrowsingDataRemoverObserverForTesting(
@@ -99,10 +100,10 @@ class ChromeBrowsingDataLifetimeManager : public KeyedService {
 
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings_;
   PrefChangeRegistrar pref_change_registrar_;
-  Profile* profile_;
-  content::BrowsingDataRemover::Observer* testing_data_remover_observer_ =
-      nullptr;
-  base::Optional<base::Time> end_time_for_testing_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::BrowsingDataRemover::Observer>
+      testing_data_remover_observer_ = nullptr;
+  absl::optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{
       this};
 };

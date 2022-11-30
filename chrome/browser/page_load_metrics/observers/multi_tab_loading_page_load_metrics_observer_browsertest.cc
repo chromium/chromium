@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -42,10 +43,11 @@ class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest, SingleTab) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
 
   // Navigate away to force the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   histogram_tester.ExpectTotalCount(
       HistogramNameWithSuffix(internal::kHistogramLoadEventFiredSuffix), 0);
@@ -55,8 +57,14 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest, SingleTab) {
       0);
 }
 
+// TODO(crbug.com/1310328): Test is flaky on Linux, lacros, Chrome OS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MultiTabForeground DISABLED_MultiTabForeground
+#else
+#define MAYBE_MultiTabForeground MultiTabForeground
+#endif
 IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
-                       MultiTabForeground) {
+                       MAYBE_MultiTabForeground) {
   base::HistogramTester histogram_tester;
 
   NavigateToURLWithoutWaiting(embedded_test_server()->GetURL("/hung"));
@@ -67,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate away to force the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   histogram_tester.ExpectTotalCount(
       HistogramNameWithSuffix(internal::kHistogramLoadEventFiredSuffix), 1);
@@ -97,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(MultiTabLoadingPageLoadMetricsBrowserTest,
   // Now the background tab should have moved to the foreground.
 
   // Navigate away to force the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   histogram_tester.ExpectTotalCount(
       HistogramNameWithSuffix(internal::kHistogramLoadEventFiredSuffix), 0);

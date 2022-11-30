@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/driver/data_type_status_table.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/sync/driver/data_type_manager.h"
 
 namespace syncer {
@@ -14,27 +15,27 @@ namespace {
 ModelTypeSet GetTypesFromErrorMap(
     const DataTypeStatusTable::TypeErrorMap& errors) {
   ModelTypeSet result;
-  for (auto it = errors.begin(); it != errors.end(); ++it) {
-    DCHECK(!result.Has(it->first));
-    result.Put(it->first);
+  for (const auto& [type, error] : errors) {
+    DCHECK(!result.Has(type));
+    result.Put(type);
   }
   return result;
 }
 
 }  // namespace
 
-DataTypeStatusTable::DataTypeStatusTable() {}
+DataTypeStatusTable::DataTypeStatusTable() = default;
 
 DataTypeStatusTable::DataTypeStatusTable(const DataTypeStatusTable& other) =
     default;
 
-DataTypeStatusTable::~DataTypeStatusTable() {}
+DataTypeStatusTable::~DataTypeStatusTable() = default;
 
 void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
   DVLOG(1) << "Setting " << errors.size() << " new failed types.";
 
-  for (auto iter = errors.begin(); iter != errors.end(); ++iter) {
-    UpdateFailedDataType(iter->first, iter->second);
+  for (const auto& [model_type, error] : errors) {
+    UpdateFailedDataType(model_type, error);
   }
 }
 

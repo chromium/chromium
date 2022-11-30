@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -18,6 +17,11 @@ namespace {
 class BrowserFinderWithDesksTest : public InProcessBrowserTest {
  public:
   BrowserFinderWithDesksTest() = default;
+
+  BrowserFinderWithDesksTest(const BrowserFinderWithDesksTest&) = delete;
+  BrowserFinderWithDesksTest& operator=(const BrowserFinderWithDesksTest&) =
+      delete;
+
   ~BrowserFinderWithDesksTest() override = default;
 
   // InProcessBrowserTest:
@@ -37,9 +41,6 @@ class BrowserFinderWithDesksTest : public InProcessBrowserTest {
     ActivateBrowser(new_browser);
     return new_browser;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserFinderWithDesksTest);
 };
 
 }  // namespace

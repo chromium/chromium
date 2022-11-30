@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 // Credentials.
 @interface ASPasswordCredentialIdentity (Credential)
 
-// Create instance from |credential| data.
+// Create instance from `credential` data.
 - (instancetype)initWithCredential:(id<Credential>)credential;
 
 @end

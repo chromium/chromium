@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
+
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
 
@@ -10,7 +12,15 @@ namespace blink {
 
 AXVirtualObject::AXVirtualObject(AXObjectCacheImpl& axObjectCache,
                                  AccessibleNode* accessible_node)
-    : AXObject(axObjectCache), accessible_node_(accessible_node) {
+    : AXObject(axObjectCache),
+      accessible_node_(accessible_node),
+      aria_role_(ax::mojom::blink::Role::kUnknown) {
+  DCHECK(accessible_node_);
+  DCHECK(!accessible_node_->element())
+      << "The accessible node directly attached to an element should not "
+         "have its own AXObject, since the AXObject will be keyed off of "
+         "the element instead: "
+      << accessible_node_->element();
 }
 
 AXVirtualObject::~AXVirtualObject() = default;
@@ -57,7 +67,7 @@ void AXVirtualObject::AddChildren() {
   }
 }
 
-void AXVirtualObject::ChildrenChanged() {
+void AXVirtualObject::ChildrenChangedWithCleanLayout() {
   ClearChildren();
   AXObjectCache().PostNotification(this, ax::mojom::Event::kChildrenChanged);
 }
@@ -75,7 +85,7 @@ bool AXVirtualObject::HasAOMPropertyOrARIAAttribute(AOMBooleanProperty property,
   if (!accessible_node_)
     return false;
 
-  base::Optional<bool> property_value = accessible_node_->GetProperty(property);
+  absl::optional<bool> property_value = accessible_node_->GetProperty(property);
   result = property_value.value_or(false);
   return property_value.has_value();
 }
@@ -84,17 +94,18 @@ AccessibleNode* AXVirtualObject::GetAccessibleNode() const {
   return accessible_node_;
 }
 
-String AXVirtualObject::TextAlternative(bool recursive,
-                                        bool in_aria_labelled_by_traversal,
-                                        AXObjectSet& visited,
-                                        ax::mojom::NameFrom& name_from,
-                                        AXRelatedObjectVector* related_objects,
-                                        NameSources* name_sources) const {
+String AXVirtualObject::TextAlternative(
+    bool recursive,
+    const AXObject* aria_label_or_description_root,
+    AXObjectSet& visited,
+    ax::mojom::NameFrom& name_from,
+    AXRelatedObjectVector* related_objects,
+    NameSources* name_sources) const {
   if (!accessible_node_)
     return String();
 
   bool found_text_alternative = false;
-  return AriaTextAlternative(recursive, in_aria_labelled_by_traversal, visited,
+  return AriaTextAlternative(recursive, aria_label_or_description_root, visited,
                              name_from, related_objects, name_sources,
                              &found_text_alternative);
 }
@@ -102,11 +113,19 @@ String AXVirtualObject::TextAlternative(bool recursive,
 ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
   aria_role_ = DetermineAriaRoleAttribute();
 
-  // If no role was assigned, fall back to role="generic".
-  if (aria_role_ == ax::mojom::blink::Role::kUnknown)
-    aria_role_ = ax::mojom::blink::Role::kGenericContainer;
+  if (aria_role_ != ax::mojom::blink::Role::kUnknown)
+    return aria_role_;
 
+  return NativeRoleIgnoringAria();
+}
+
+ax::mojom::blink::Role AXVirtualObject::AriaRoleAttribute() const {
   return aria_role_;
+}
+
+ax::mojom::blink::Role AXVirtualObject::NativeRoleIgnoringAria() const {
+  // If no role was assigned, will fall back to role="generic".
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 void AXVirtualObject::Trace(Visitor* visitor) const {

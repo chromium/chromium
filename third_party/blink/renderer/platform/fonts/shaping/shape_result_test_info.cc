@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ Vector<unsigned> ShapeResultTestInfo::CharacterIndexesForTesting() const {
 void AddGlyphInfo(void* context,
                   unsigned character_index,
                   Glyph glyph,
-                  FloatSize glyph_offset,
+                  gfx::Vector2dF glyph_offset,
                   float advance,
                   bool is_horizontal,
                   CanvasRotationInVertical rotation,

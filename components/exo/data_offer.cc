@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -14,23 +15,22 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/data_offer_observer.h"
 #include "net/base/filename_util.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
-#include "third_party/skia/include/core/SkImageEncoder.h"
-#include "third_party/skia/include/core/SkStream.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
@@ -49,9 +49,7 @@ constexpr char kUTF16[] = "utf16";
 void WriteFileDescriptorOnWorkerThread(
     base::ScopedFD fd,
     scoped_refptr<base::RefCountedMemory> memory) {
-  if (!base::WriteFileDescriptor(fd.get(),
-                                 reinterpret_cast<const char*>(memory->front()),
-                                 memory->size()))
+  if (!base::WriteFileDescriptor(fd.get(), *memory))
     DLOG(ERROR) << "Failed to write drop data";
 }
 
@@ -91,6 +89,29 @@ DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
       text, charset);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ReadDataTransferEndpointFromClipboard(
+    const std::string& charset,
+    const ui::DataTransferEndpoint data_dst,
+    DataOffer::SendDataCallback callback) {
+  const ui::DataTransferEndpoint* data_src =
+      ui::Clipboard::GetForCurrentThread()->GetSource(
+          ui::ClipboardBuffer::kCopyPaste);
+
+  std::u16string encoded_endpoint;
+  if (data_src) {
+    encoded_endpoint =
+        base::UTF8ToUTF16(ui::ConvertDataTransferEndpointToJson(*data_src));
+  } else {
+    DCHECK(data_src) << "Clipboard source DataTransferEndpoint has changed "
+                        "after initial MIME advertising. If you see this "
+                        "please file a bug and contact the chromeos-dlp team.";
+  }
+
+  std::move(callback).Run(EncodeAsRefCountedString(encoded_endpoint, charset));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void ReadTextFromClipboard(const std::string& charset,
                            const ui::DataTransferEndpoint data_dst,
                            DataOffer::SendDataCallback callback) {
@@ -119,36 +140,16 @@ void ReadRTFFromClipboard(const ui::DataTransferEndpoint data_dst,
   std::move(callback).Run(base::RefCountedString::TakeString(&text));
 }
 
-scoped_refptr<base::RefCountedMemory> EncodePNGOnWorkerThread(
-    const SkBitmap& sk_bitmap) {
-  SkDynamicMemoryWStream data_stream;
-  if (SkEncodeImage(&data_stream, sk_bitmap.pixmap(),
-                    SkEncodedImageFormat::kPNG, 100)) {
-    std::vector<uint8_t> data(data_stream.bytesWritten());
-    data_stream.copyToAndReset(data.data());
-    return base::RefCountedBytes::TakeVector(&data);
-  } else {
-    LOG(ERROR) << "Couldn't encode image as PNG";
-    return nullptr;
-  }
-}
-
 void OnReceivePNGFromClipboard(DataOffer::SendDataCallback callback,
-                               const SkBitmap& sk_bitmap) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&EncodePNGOnWorkerThread, std::move(sk_bitmap)),
-      base::BindOnce(
-          [](DataOffer::SendDataCallback callback,
-             scoped_refptr<base::RefCountedMemory> data) {
-            std::move(callback).Run(data);
-          },
-          std::move(callback)));
+                               const std::vector<uint8_t>& png) {
+  scoped_refptr<base::RefCountedMemory> rc_mem =
+      base::MakeRefCounted<base::RefCountedBytes>(png);
+  std::move(callback).Run(std::move(rc_mem));
 }
 
 void ReadPNGFromClipboard(const ui::DataTransferEndpoint data_dst,
                           DataOffer::SendDataCallback callback) {
-  ui::Clipboard::GetForCurrentThread()->ReadImage(
+  ui::Clipboard::GetForCurrentThread()->ReadPng(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnReceivePNGFromClipboard, std::move(callback)));
 }
@@ -237,22 +238,44 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
 
   ui::EndpointType endpoint_type =
       data_exchange_delegate->GetDataTransferEndpointType(target);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag & Drop source metadata (if any) is synced between Ash and Lacros by
+  // encoding the metadata into a custom MIME type.
+  if (endpoint_type == ui::EndpointType::kLacros && data.GetSource()) {
+    std::u16string encoded_endpoint = base::UTF8ToUTF16(
+        ui::ConvertDataTransferEndpointToJson(*data.GetSource()));
+    data_callbacks_.emplace(
+        ui::kMimeTypeDataTransferEndpoint,
+        AsyncEncodeAsRefCountedString(encoded_endpoint, kUTF8));
+    delegate_->OnOffer(ui::kMimeTypeDataTransferEndpoint);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   const std::string uri_list_mime_type =
       data_exchange_delegate->GetMimeTypeForUriList(endpoint_type);
-  if (data.HasFile()) {
-    std::vector<ui::FileInfo> files;
-    if (data.GetFilenames(&files)) {
-      data_callbacks_.emplace(
-          uri_list_mime_type,
-          base::BindOnce(&DataExchangeDelegate::SendFileInfo,
-                         base::Unretained(data_exchange_delegate),
-                         endpoint_type, std::move(files)));
-      delegate_->OnOffer(uri_list_mime_type);
-      return;
-    }
+  // We accept the filenames pickle from FilesApp, or
+  // OSExchangeData::GetFilenames().
+  std::vector<ui::FileInfo> filenames;
+  base::Pickle pickle;
+  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
+                          &pickle)) {
+    filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
+                                                               pickle);
+  }
+  if (filenames.empty() && data.HasFile()) {
+    data.GetFilenames(&filenames);
+  }
+  if (!filenames.empty()) {
+    data_callbacks_.emplace(
+        uri_list_mime_type,
+        base::BindOnce(&DataExchangeDelegate::SendFileInfo,
+                       base::Unretained(data_exchange_delegate), endpoint_type,
+                       std::move(filenames)));
+    delegate_->OnOffer(uri_list_mime_type);
+    return;
   }
 
-  base::Pickle pickle;
   if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
       data_exchange_delegate->HasUrlsInPickle(pickle)) {
     data_callbacks_.emplace(
@@ -262,6 +285,26 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
                        pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;
+  }
+
+  base::FilePath file_contents_filename;
+  std::string file_contents;
+  if (data.provider().HasFileContents() &&
+      data.provider().GetFileContents(&file_contents_filename,
+                                      &file_contents)) {
+    std::string filename = file_contents_filename.value();
+    base::ReplaceChars(filename, "\\", "\\\\", &filename);
+    base::ReplaceChars(filename, "\"", "\\\"", &filename);
+    const std::string mime_type =
+        base::StrCat({"application/octet-stream;name=\"", filename, "\""});
+    auto callback = base::BindOnce(
+        [](scoped_refptr<base::RefCountedString> contents,
+           DataOffer::SendDataCallback callback) {
+          std::move(callback).Run(std::move(contents));
+        },
+        base::RefCountedString::TakeString(&file_contents));
+    data_callbacks_.emplace(mime_type, std::move(callback));
+    delegate_->OnOffer(mime_type);
   }
 
   std::u16string string_content;
@@ -305,7 +348,21 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                                  ui::EndpointType endpoint_type) {
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Clipboard source metadata (if any) is synced between Ash and Lacros by
+  // encoding the metadata into a custom MIME type.
+  if (endpoint_type == ui::EndpointType::kLacros &&
+      data.GetSource(ui::ClipboardBuffer::kCopyPaste)) {
+    delegate_->OnOffer(std::string(ui::kMimeTypeDataTransferEndpoint));
+    data_callbacks_.emplace(
+        std::string(ui::kMimeTypeDataTransferEndpoint),
+        base::BindOnce(&ReadDataTransferEndpointFromClipboard,
+                       std::string(kUTF8), data_dst));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     auto utf8_callback = base::BindRepeating(&ReadTextFromClipboard,
                                              std::string(kUTF8), data_dst);
@@ -319,7 +376,7 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
         std::string(kTextMimeTypeUtf16),
         base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16), data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf8));
     data_callbacks_.emplace(
@@ -330,13 +387,13 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
         std::string(kTextHtmlMimeTypeUtf16),
         base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16), data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::RtfType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kTextRtfMimeType));
     data_callbacks_.emplace(std::string(kTextRtfMimeType),
                             base::BindOnce(&ReadRTFFromClipboard, data_dst));
   }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(),
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::BitmapType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     delegate_->OnOffer(std::string(kImagePngMimeType));
     data_callbacks_.emplace(std::string(kImagePngMimeType),
@@ -344,11 +401,16 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
   }
 
   // We accept the filenames pickle from FilesApp, or text/uri-list from apps.
-  std::vector<ui::FileInfo> filenames =
-      data_exchange_delegate->ParseClipboardFilenamesPickle(endpoint_type,
-                                                            data);
+  std::vector<ui::FileInfo> filenames;
+  std::string buf;
+  data.ReadData(ui::ClipboardFormatType::WebCustomDataType(), &data_dst, &buf);
+  if (!buf.empty()) {
+    base::Pickle pickle(buf.data(), static_cast<int>(buf.size()));
+    filenames = data_exchange_delegate->ParseFileSystemSources(
+        data.GetSource(ui::ClipboardBuffer::kCopyPaste), pickle);
+  }
   if (filenames.empty() &&
-      data.IsFormatAvailable(ui::ClipboardFormatType::GetFilenamesType(),
+      data.IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
     data.ReadFilenames(ui::ClipboardBuffer::kCopyPaste, &data_dst, &filenames);
   }

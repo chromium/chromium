@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_content_client.h"
+#include "content/public/common/webplugininfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class PluginPrefsTest : public ::testing::Test {
@@ -22,13 +23,13 @@ class PluginPrefsTest : public ::testing::Test {
 };
 
 TEST_F(PluginPrefsTest, AlwaysOpenPdfExternally) {
-  EXPECT_EQ(PluginPrefs::NO_POLICY,
-            plugin_prefs_->PolicyStatusForPlugin(base::ASCIIToUTF16(
-                ChromeContentClient::kPDFExtensionPluginName)));
+  content::WebPluginInfo pdf_plugin_info;
+  pdf_plugin_info.name =
+      base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName);
+
+  EXPECT_TRUE(plugin_prefs_->IsPluginEnabled(pdf_plugin_info));
 
   SetAlwaysOpenPdfExternally(true);
 
-  EXPECT_EQ(PluginPrefs::POLICY_DISABLED,
-            plugin_prefs_->PolicyStatusForPlugin(base::ASCIIToUTF16(
-                ChromeContentClient::kPDFExtensionPluginName)));
+  EXPECT_FALSE(plugin_prefs_->IsPluginEnabled(pdf_plugin_info));
 }

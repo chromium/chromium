@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/buildflags.h"
 #include "base/bits.h"
-#include "base/process/process_metrics.h"
+#include "base/callback_helpers.h"
+#include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
@@ -22,12 +25,15 @@ namespace gwp_asan {
 namespace internal {
 
 static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
-static constexpr size_t kMaxSlots = AllocatorState::kMaxSlots;
+static constexpr size_t kMaxSlots = AllocatorState::kMaxRequestedSlots;
 
 class BaseGpaTest : public testing::Test {
  protected:
-  BaseGpaTest(size_t max_allocated_pages, bool is_partition_alloc) {
-    gpa_.Init(max_allocated_pages, kMaxMetadata, kMaxSlots,
+  BaseGpaTest(size_t max_allocated_pages,
+              size_t max_metadata,
+              size_t max_slots,
+              bool is_partition_alloc) {
+    gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
                   [&](size_t allocations) { allocator_oom_ = true; }),
               is_partition_alloc);
@@ -40,7 +46,8 @@ class BaseGpaTest : public testing::Test {
 class GuardedPageAllocatorTest : public BaseGpaTest,
                                  public testing::WithParamInterface<bool> {
  protected:
-  GuardedPageAllocatorTest() : BaseGpaTest(kMaxMetadata, GetParam()) {}
+  GuardedPageAllocatorTest()
+      : BaseGpaTest(kMaxMetadata, kMaxMetadata, kMaxSlots, GetParam()) {}
 
   // Get a left- or right- aligned allocation (or nullptr on error.)
   char* GetAlignedAllocation(bool left_aligned, size_t sz, size_t align = 0) {
@@ -51,7 +58,7 @@ class GuardedPageAllocatorTest : public BaseGpaTest,
 
       uintptr_t addr = reinterpret_cast<uintptr_t>(alloc);
       bool is_left_aligned =
-          (base::bits::Align(addr, base::GetPageSize()) == addr);
+          (base::bits::AlignUp(addr, base::GetPageSize()) == addr);
       if (is_left_aligned == left_aligned)
         return reinterpret_cast<char*>(addr);
 
@@ -110,7 +117,7 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
   EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
 #else
   EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
@@ -171,7 +178,8 @@ class GuardedPageAllocatorParamTest
     : public BaseGpaTest,
       public testing::WithParamInterface<size_t> {
  protected:
-  GuardedPageAllocatorParamTest() : BaseGpaTest(GetParam(), false) {}
+  GuardedPageAllocatorParamTest()
+      : BaseGpaTest(GetParam(), kMaxMetadata, kMaxSlots, false) {}
 };
 
 TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
@@ -212,6 +220,10 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
                              std::array<void*, kMaxMetadata>* allocations)
       : gpa_(gpa), allocations_(allocations) {}
 
+  ThreadedAllocCountDelegate(const ThreadedAllocCountDelegate&) = delete;
+  ThreadedAllocCountDelegate& operator=(const ThreadedAllocCountDelegate&) =
+      delete;
+
   void Run() override {
     for (size_t i = 0; i < kMaxMetadata; i++) {
       (*allocations_)[i] = gpa_->Allocate(1);
@@ -219,10 +231,8 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  GuardedPageAllocator* gpa_;
-  std::array<void*, kMaxMetadata>* allocations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedAllocCountDelegate);
+  raw_ptr<GuardedPageAllocator> gpa_;
+  raw_ptr<std::array<void*, kMaxMetadata>> allocations_;
 };
 
 // Test that no pages are double-allocated or left unallocated, and that no
@@ -260,10 +270,15 @@ class ThreadedHighContentionDelegate
   explicit ThreadedHighContentionDelegate(GuardedPageAllocator* gpa)
       : gpa_(gpa) {}
 
+  ThreadedHighContentionDelegate(const ThreadedHighContentionDelegate&) =
+      delete;
+  ThreadedHighContentionDelegate& operator=(
+      const ThreadedHighContentionDelegate&) = delete;
+
   void Run() override {
     char* buf;
     while ((buf = reinterpret_cast<char*>(gpa_->Allocate(1))) == nullptr) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(5000));
+      base::PlatformThread::Sleep(base::Nanoseconds(5000));
     }
 
     // Verify that no other thread has access to this page.
@@ -272,7 +287,7 @@ class ThreadedHighContentionDelegate
     // Mark this page and allow some time for another thread to potentially
     // gain access to this page.
     buf[0] = 'A';
-    base::PlatformThread::Sleep(base::TimeDelta::FromNanoseconds(10000));
+    base::PlatformThread::Sleep(base::Nanoseconds(10000));
     EXPECT_EQ(buf[0], 'A');
 
     // Unmark this page and deallocate.
@@ -281,15 +296,13 @@ class ThreadedHighContentionDelegate
   }
 
  private:
-  GuardedPageAllocator* gpa_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedHighContentionDelegate);
+  raw_ptr<GuardedPageAllocator> gpa_;
 };
 
 // Test that allocator remains in consistent state under high contention and
 // doesn't double-allocate pages or fail to deallocate pages.
 TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr size_t num_threads = 200;
 #else
   constexpr size_t num_threads = 1000;
@@ -315,7 +328,8 @@ TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
 
 class GuardedPageAllocatorPartitionAllocTest : public BaseGpaTest {
  protected:
-  GuardedPageAllocatorPartitionAllocTest() : BaseGpaTest(kMaxMetadata, true) {}
+  GuardedPageAllocatorPartitionAllocTest()
+      : BaseGpaTest(kMaxMetadata, kMaxMetadata, kMaxSlots, true) {}
 };
 
 TEST_F(GuardedPageAllocatorPartitionAllocTest,
@@ -343,6 +357,36 @@ TEST_F(GuardedPageAllocatorPartitionAllocTest,
 
   EXPECT_EQ(intersection.size(), 0u);
 }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
+constexpr size_t kSmallMaxSlots = kMaxMetadata;
+class GuardedPageAllocatorRawPtrTest : public BaseGpaTest {
+ protected:
+  GuardedPageAllocatorRawPtrTest()
+      // For these tests the number of available slots has to be equal to
+      // the number of metadata entries. We don't want to end up in a
+      // situation where an allocation attempt fails because there's nowhere to
+      // store metadata while there are still available allocation slots.
+      : BaseGpaTest(kSmallMaxSlots, kSmallMaxSlots, kSmallMaxSlots, false) {}
+};
+
+TEST_F(GuardedPageAllocatorRawPtrTest, DeferDeallocation) {
+  for (size_t i = 0; i < kSmallMaxSlots - 1; i++)
+    EXPECT_NE(gpa_.Allocate(1), nullptr);
+
+  raw_ptr<void> ptr = gpa_.Allocate(1);
+  gpa_.Deallocate(ptr);
+
+  // Dangling raw_ptr should prevent the allocation from being reused.
+  EXPECT_EQ(gpa_.Allocate(1), nullptr);
+
+  ptr = nullptr;
+  // Now we should get one slot back...
+  EXPECT_NE(gpa_.Allocate(1), nullptr);
+  // But just one.
+  EXPECT_EQ(gpa_.Allocate(1), nullptr);
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_GWP_ASAN_STORE)
 
 }  // namespace internal
 }  // namespace gwp_asan

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,19 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_channel_override.h"
 #endif
 
 namespace system_logs {
@@ -42,7 +47,21 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsActualVersion) {
       response->at("CHROME VERSION"));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
+  chrome::ScopedChannelOverride channel_override(
+      chrome::ScopedChannelOverride::Channel::kExtendedStable);
+
+  ASSERT_TRUE(chrome::IsExtendedStableChannel());
+  auto response = GetChromeInternalLogs();
+  EXPECT_PRED_FORMAT2(
+      testing::IsSubstring,
+      chrome::GetVersionString(chrome::WithExtendedStable(true)),
+      response->at("CHROME VERSION"));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
 TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {
   auto response = GetChromeInternalLogs();
   auto value = response->at("cpu_arch");

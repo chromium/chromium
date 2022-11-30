@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
 #include "ipc/ipc_channel.h"
-#include "remoting/host/switches.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/win/security_descriptor.h"
 
 namespace {
@@ -94,12 +93,11 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
-  uint32_t result;
   std::string input_pipe_name(kChromePipeNamePrefix);
   input_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_write_handle;
-  result = CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
-                           &temp_write_handle);
+  CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
+                  &temp_write_handle);
   if (!temp_write_handle.IsValid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
@@ -107,8 +105,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   std::string output_pipe_name(kChromePipeNamePrefix);
   output_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_read_handle;
-  result = CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND,
-                           &temp_read_handle);
+  CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND, &temp_read_handle);
   if (!temp_read_handle.IsValid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }

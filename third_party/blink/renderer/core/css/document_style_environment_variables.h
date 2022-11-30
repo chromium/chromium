@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class Document;
+class FeatureContext;
 
 // DocumentStyleEnvironmentVariables is bound 1:1 to a document and provides
 // document level invalidation logic.
@@ -32,12 +35,16 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
   // style. If |record_metrics| is true we will record UseCounter metrics when
   // this function is called.
   CSSVariableData* ResolveVariable(const AtomicString& name,
+                                   WTF::Vector<unsigned> indices,
                                    bool record_metrics);
 
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's
   // style. UseCounter metrics will be recorded when this function is used.
-  CSSVariableData* ResolveVariable(const AtomicString& name) override;
+  CSSVariableData* ResolveVariable(const AtomicString& name,
+                                   WTF::Vector<unsigned> indices) override;
+
+  const FeatureContext* GetFeatureContext() const override;
 
  protected:
   // Called when variable |name| is changed. This will notify any children that

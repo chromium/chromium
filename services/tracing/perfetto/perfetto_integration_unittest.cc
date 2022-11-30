@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "base/tracing/perfetto_platform.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/perfetto/test_utils.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_platform.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -348,7 +348,7 @@ TEST_F(PerfettoIntegrationTest,
   // client2 will trigger a StartTracing call without shutting down the data
   // source first, to prevent this hitting a DCHECK set the previous producer to
   // null.
-  data_source_->SetSystemProducerToNullptr();
+  data_source_->ClearProducerForTesting();
 
   std::unique_ptr<MockProducerClient::Handle> client2 =
       MockProducerClient::Create(
@@ -385,12 +385,9 @@ TEST_F(PerfettoIntegrationTest, PerfettoPlatformTest) {
 }
 
 TEST_F(PerfettoIntegrationTest, PerfettoClientLibraryTest) {
-  // Create a dummy tracing session without a real backend to check that
-  // the client library was initialized.
-  constexpr perfetto::BackendType kInvalidBackend(
-      static_cast<perfetto::BackendType>(1u << 31));
-  auto tracing_session = perfetto::Tracing::NewTrace(kInvalidBackend);
-  EXPECT_TRUE(tracing_session);
+  // Check that PerfettoTracedProcess initialized the client library. Functional
+  // client library tests are in TracingServiceTest.
+  EXPECT_TRUE(perfetto::Tracing::IsInitialized());
 }
 
 }  // namespace

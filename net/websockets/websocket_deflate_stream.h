@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_inflater.h"
@@ -43,6 +43,10 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   WebSocketDeflateStream(std::unique_ptr<WebSocketStream> stream,
                          const WebSocketDeflateParameters& params,
                          std::unique_ptr<WebSocketDeflatePredictor> predictor);
+
+  WebSocketDeflateStream(const WebSocketDeflateStream&) = delete;
+  WebSocketDeflateStream& operator=(const WebSocketDeflateStream&) = delete;
+
   ~WebSocketDeflateStream() override;
 
   // WebSocketStream functions.
@@ -53,6 +57,7 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   void Close() override;
   std::string GetSubProtocol() const override;
   std::string GetExtensions() const override;
+  const NetLogWithSource& GetNetLogWithSource() const override;
 
  private:
   enum ReadingState {
@@ -93,10 +98,12 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   const std::unique_ptr<WebSocketStream> stream_;
   WebSocketDeflater deflater_;
   WebSocketInflater inflater_;
-  ReadingState reading_state_;
-  WritingState writing_state_;
-  WebSocketFrameHeader::OpCode current_reading_opcode_;
-  WebSocketFrameHeader::OpCode current_writing_opcode_;
+  ReadingState reading_state_ = NOT_READING;
+  WritingState writing_state_ = NOT_WRITING;
+  WebSocketFrameHeader::OpCode current_reading_opcode_ =
+      WebSocketFrameHeader::kOpCodeText;
+  WebSocketFrameHeader::OpCode current_writing_opcode_ =
+      WebSocketFrameHeader::kOpCodeText;
   std::unique_ptr<WebSocketDeflatePredictor> predictor_;
 
   // User callback saved for asynchronous reads.
@@ -106,8 +113,6 @@ class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
   std::vector<scoped_refptr<IOBufferWithSize>> deflater_outputs_;
   // References of Inflater outputs kept until next ReadFrames().
   std::vector<scoped_refptr<IOBufferWithSize>> inflater_outputs_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketDeflateStream);
 };
 
 }  // namespace net

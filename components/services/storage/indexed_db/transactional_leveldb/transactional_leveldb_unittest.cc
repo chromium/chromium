@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
-#include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
@@ -66,7 +66,7 @@ class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
 
   leveldb::Status OpenLevelDBDatabase() {
     CHECK(leveldb_);
-    lock_manager_ = std::make_unique<DisjointRangeLockManager>(1);
+    lock_manager_ = std::make_unique<PartitionedLockManagerImpl>(1);
     std::unique_ptr<LevelDBScopes> scopes = std::make_unique<LevelDBScopes>(
         std::vector<uint8_t>{'a'}, 1024ul, leveldb_, lock_manager_.get(),
         base::DoNothing());
@@ -87,7 +87,7 @@ class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
  protected:
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory_;
   std::unique_ptr<TransactionalLevelDBDatabase> transactional_leveldb_database_;
-  std::unique_ptr<DisjointRangeLockManager> lock_manager_;
+  std::unique_ptr<PartitionedLockManagerImpl> lock_manager_;
 };
 
 TEST_F(TransactionalLevelDBDatabaseTest, CorruptionTest) {
@@ -181,7 +181,7 @@ TEST_F(TransactionalLevelDBDatabaseTest, LastModified) {
   std::string put_value;
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   base::SimpleTestClock* clock_ptr = test_clock.get();
-  clock_ptr->Advance(base::TimeDelta::FromHours(2));
+  clock_ptr->Advance(base::Hours(2));
 
   leveldb::Status status = OpenLevelDBDatabase();
   ASSERT_TRUE(status.ok());
@@ -194,14 +194,14 @@ TEST_F(TransactionalLevelDBDatabaseTest, LastModified) {
   EXPECT_EQ(now_time, transactional_leveldb_database_->LastModified());
 
   // Calling |Remove| sets time modified.
-  clock_ptr->Advance(base::TimeDelta::FromSeconds(200));
+  clock_ptr->Advance(base::Seconds(200));
   now_time = clock_ptr->Now();
   status = transactional_leveldb_database_->Remove(key);
   EXPECT_TRUE(status.ok());
   EXPECT_EQ(now_time, transactional_leveldb_database_->LastModified());
 
   // Calling |Write| sets time modified
-  clock_ptr->Advance(base::TimeDelta::FromMinutes(15));
+  clock_ptr->Advance(base::Minutes(15));
   now_time = clock_ptr->Now();
   auto batch = LevelDBWriteBatch::Create();
   batch->Put(key, value);

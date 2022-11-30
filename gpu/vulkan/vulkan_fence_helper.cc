@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,7 +126,7 @@ void VulkanFenceHelper::ProcessCleanupTasks(uint64_t retired_generation_id) {
   }
 
   for (auto& task : tasks_to_run)
-    std::move(task).Run(device_queue_, false /* device_lost */);
+    std::move(task).Run(device_queue_.get(), false /* device_lost */);
 }
 
 VulkanFenceHelper::FenceHandle VulkanFenceHelper::GenerateCleanupFence() {
@@ -269,7 +269,7 @@ void VulkanFenceHelper::PerformImmediateCleanup() {
                       std::make_move_iterator(tasks_pending_fence_.end()));
   tasks_pending_fence_.clear();
   for (auto& task : tasks_to_run)
-    std::move(task).Run(device_queue_, device_lost);
+    std::move(task).Run(device_queue_.get(), device_lost);
 }
 
 VulkanFenceHelper::TasksForFence::TasksForFence(FenceHandle handle,

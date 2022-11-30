@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,10 +7,34 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
+import("//build/ios/extension_bundle_data.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+
+declare_args() {
+  # Controls whether fast_app_terminate_buildflags is enabled
+  # (see crbug.com/1328891 for details).
+  fast_app_terminate_enabled = -1
+}
+
+# If fast_app_terminate_enabled is not enabled, default to true,
+# except in debug mode (as this makes it difficult to debug the
+# app termination crashes).
+if (fast_app_terminate_enabled == -1) {
+  fast_app_terminate_enabled = !is_debug
+}
+
+buildflag_header("background_mode_buildflags") {
+  header = "background_mode_buildflags.h"
+  flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
+}
+
+buildflag_header("fast_app_terminate_buildflags") {
+  header = "fast_app_terminate_buildflags.h"
+  flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
+}
 
 source_set("app") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -24,6 +48,8 @@ source_set("app") {
   deps = [
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
   ]
@@ -36,39 +62,56 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "app_metrics_app_state_agent_unittest.mm",
-    "chrome_overlay_window_testing.h",
     "deferred_initialization_runner_unittest.mm",
     "main_application_delegate_unittest.mm",
+    "post_restore_app_agent_unittest.mm",
+    "safe_mode_app_state_agent_unittest.mm",
     "tab_opener_unittest.mm",
   ]
   deps = [
     ":app",
     ":app_internal",
     ":app_metrics_app_state_agent",
+    ":post_restore_app_agent",
+    ":safe_mode_app_state_agent",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app:enterprise_app_agent",
+    "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/metrics:metrics",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/promos_manager:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main/test",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser:browser",
     "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/distribution",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/testing:block_swizzler",
     "//ios/third_party/material_components_ios",
     "//ios/web/public/test:test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",
@@ -88,65 +131,72 @@ source_set("tests_fake_hook") {
   deps = [ ":tests_hook" ]
 }
 
-tweak_info_plist("info_plist") {
-  info_plists = [
-    "resources/Info.plist",
-    "resources/ChromeAddition+Info.plist",
-  ]
-  if (target_environment == "catalyst") {
-    info_plists += [ "resources/Environment+Catalyst.plist" ]
-  } else {
-    info_plists += [ "resources/Environment+Default.plist" ]
-  }
-  if (ios_chrome_info_plist_additions != []) {
-    info_plists += ios_chrome_info_plist_additions
-  }
-  if (ios_encryption_export_compliance_code != "") {
-    info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
-  }
-  if (ios_chrome_info_plist_addition_targets != []) {
-    if (!defined(deps)) {
-      deps = []
+if (!is_fat_secondary_toolchain) {
+  tweak_info_plist("info_plist") {
+    info_plists = [
+      "resources/Info.plist",
+      "resources/ChromeAddition+Info.plist",
+    ]
+    if (ios_enable_background_mode) {
+      info_plists += [ "resources/Background+Info.plist" ]
     }
-    deps += ios_chrome_info_plist_addition_targets
+    if (target_environment == "catalyst") {
+      info_plists += [ "resources/Environment+Catalyst.plist" ]
+    } else {
+      info_plists += [ "resources/Environment+Default.plist" ]
+    }
+    if (ios_chrome_info_plist_additions != []) {
+      info_plists += ios_chrome_info_plist_additions
+    }
+    if (ios_encryption_export_compliance_code != "") {
+      info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
+    }
+    if (ios_chrome_info_plist_addition_targets != []) {
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += ios_chrome_info_plist_addition_targets
+    }
+    args = [
+      "--breakpad=$breakpad_enabled_as_int",
+      "--branding=$chromium_short_name",
+      "--add-gtm-metadata=1",
+    ]
   }
-  args = [
-    "--breakpad=$breakpad_enabled_as_int",
-    "--branding=$chromium_short_name",
-  ]
 
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args += [ "--lock-to-version=$ios_lock_to_version" ]
+  compile_entitlements("entitlements") {
+    entitlements_templates = [ "resources/Chrome.entitlements" ]
+    if (ios_chrome_entitlements_additions != []) {
+      entitlements_templates += ios_chrome_entitlements_additions
+    }
+    if (target_environment == "catalyst") {
+      entitlements_templates +=
+          [ "resources/Environment+Catalyst.entitlements" ]
+    }
+    substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+    output_name = "$target_gen_dir/$chromium_short_name.entitlements"
   }
 }
 
-compile_entitlements("entitlements") {
-  entitlements_templates = [ "resources/Chrome.entitlements" ]
-  if (ios_chrome_entitlements_additions != []) {
-    entitlements_templates += ios_chrome_entitlements_additions
+if (ios_enable_credential_provider_extension) {
+  source_set("credential_provider_migrator_app_agent") {
+    configs += [ "//build/config/compiler:enable_arc" ]
+    sources = [
+      "credential_provider_migrator_app_agent.h",
+      "credential_provider_migrator_app_agent.mm",
+    ]
+    deps = [
+      "//components/keyed_service/core",
+      "//ios/chrome/app/application_delegate:app_state_header",
+      "//ios/chrome/app/application_delegate:observing_app_state_agent",
+      "//ios/chrome/browser/credential_provider",
+      "//ios/chrome/browser/passwords:store_factory",
+      "//ios/chrome/browser/ui/main:browser_interface_provider",
+      "//ios/chrome/browser/ui/main:scene_state_header",
+      "//ios/chrome/common/app_group",
+      "//ios/chrome/common/credential_provider",
+    ]
   }
-  if (target_environment == "catalyst") {
-    entitlements_templates += [ "resources/Environment+Catalyst.entitlements" ]
-  }
-  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-  output_name = "$target_gen_dir/$chromium_short_name.entitlements"
-}
-
-source_set("content_suggestions_scheduler_app_state_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "content_suggestions_scheduler_app_state_agent.h",
-    "content_suggestions_scheduler_app_state_agent.mm",
-  ]
-  deps = [
-    "//components/ntp_snippets",
-    "//components/previous_session_info",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ntp_snippets",
-    "//ios/chrome/browser/ui/main:scene_state_header",
-  ]
 }
 
 source_set("app_metrics_app_state_agent") {
@@ -157,7 +207,8 @@ source_set("app_metrics_app_state_agent") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
@@ -172,6 +223,130 @@ source_set("safe_mode_app_state_agent") {
   deps = [
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/safe_mode",
+  ]
+}
+
+source_set("variations_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "variations_app_state_agent.h",
+    "variations_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+  ]
+}
+
+source_set("enterprise_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_app_agent.h",
+    "enterprise_app_agent.mm",
+  ]
+
+  deps = [
+    ":enterprise_app_agent_ui",
+    "//base",
+    "//components/policy/core/common",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
+source_set("enterprise_app_agent_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "enterprise_loading_screen_view_controller.h",
+    "enterprise_loading_screen_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+  ]
+}
+
+source_set("first_run_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_app_state_agent.h",
+    "first_run_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:blocking_scene_commands",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browsing_data",
+    "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/blocking_overlay",
+    "//ios/chrome/browser/ui/browser_view",
+    "//ios/chrome/browser/ui/commands:commands",
+    "//ios/chrome/browser/ui/first_run",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/browser/ui/first_run:field_trial_constants",
+    "//ios/chrome/browser/ui/first_run:first_run_provider",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/screen:screen_provider",
+  ]
+}
+
+source_set("post_restore_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "post_restore_app_agent.h",
+    "post_restore_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser/application_context:application_context",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/post_restore_signin:features",
+  ]
+}
+
+source_set("feed_app_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_app_agent.h",
+    "feed_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/discover_feed:discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/signin",
+  ]
+  frameworks = [
+    "BackgroundTasks.framework",
+    "UserNotifications.framework",
   ]
 }
 
@@ -196,19 +371,27 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
-    ":content_suggestions_scheduler_app_state_agent",
+    ":enterprise_app_agent",
+    ":fast_app_terminate_buildflags",
+    ":feed_app_agent",
+    ":first_run_app_state_agent",
     ":mode",
+    ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     ":tests_hook",
+    ":variations_app_state_agent",
     "//base",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/component_updater",
     "//components/component_updater:crl_set_remover",
     "//components/component_updater/installer_policies",
     "//components/crash/core/common",
+    "//components/download/public/background_service:public",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/feature_engagement",
@@ -223,15 +406,12 @@ source_set("app_internal") {
     "//components/prefs/ios",
     "//components/previous_session_info",
     "//components/proxy_config",
-    "//components/suggestions",
     "//components/sync",
-    "//components/ukm/ios:features",
     "//components/web_resource",
     "//ios/chrome/app/application_delegate",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:url_opener_params",
-    "//ios/chrome/app/intents",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:startup_basic",
@@ -242,26 +422,30 @@ source_set("app_internal") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browsing_data",
+    "//ios/chrome/browser/commerce",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
-    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
     "//ios/chrome/browser/credential_provider:buildflags",
     "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/background_service:background_service",
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/memory",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/screenshot",
     "//ios/chrome/browser/search_engines",
@@ -270,7 +454,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/share_extension",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/suggestions",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/appearance",
@@ -278,8 +461,11 @@ source_set("app_internal") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/first_run",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/keyboard:features",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/ui/table_view",
@@ -293,19 +479,21 @@ source_set("app_internal") {
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/session_state",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:main_app",
+    "//ios/chrome/common/intents",
+    "//ios/components/cookie_util",
     "//ios/net",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/distribution",
-    "//ios/public/provider/chrome/browser/mailto",
-    "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/user_feedback",
-    "//ios/testing/perf:startup",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/overrides:overrides_api",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/third_party/material_components_ios",
     "//ios/web/common:features",
+    "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
     "//skia",
@@ -316,7 +504,10 @@ source_set("app_internal") {
   ]
 
   if (ios_enable_credential_provider_extension) {
-    deps += [ "//ios/chrome/browser/credential_provider" ]
+    deps += [
+      ":credential_provider_migrator_app_agent",
+      "//ios/chrome/browser/credential_provider",
+    ]
   }
 
   frameworks = [
@@ -356,7 +547,7 @@ source_set("main") {
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/common",
-    "//ios/testing/perf:startup",
+    "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
@@ -380,11 +571,14 @@ source_set("multitasking_test_app_delegate") {
   sources = [
     "multitasking_test_application_delegate.h",
     "multitasking_test_application_delegate.mm",
+    "multitasking_test_scene_delegate.h",
+    "multitasking_test_scene_delegate.mm",
   ]
   deps = [
     ":app_internal",
     "//base",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/browser/ui/main:scene",
     "//ios/third_party/material_components_ios",
   ]
 }
@@ -394,7 +588,7 @@ ios_app_bundle("chrome") {
 
   entitlements_target = ":entitlements"
   info_plist_target = ":info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id"
+  bundle_identifier = "$chromium_bundle_id"
 
   bundle_deps = [ "//ios/chrome/app/resources" ]
   if (!is_chrome_branded || ios_chrome_app_variants == []) {
@@ -413,6 +607,9 @@ ios_app_bundle("chrome") {
   deps = [
     ":main",
     ":tests_fake_hook",
+
+    # Use the provider API controlled by args.gn.
+    ios_provider_target,
   ]
 
   if (current_toolchain == default_toolchain) {
@@ -430,6 +627,9 @@ ios_app_bundle("chrome") {
     }
     if (ios_enable_widget_kit_extension) {
       deps += [ ":widget_kit_extension_bundle" ]
+    }
+    if (ios_enable_intents_extension) {
+      deps += [ ":intents_extension_bundle" ]
     }
   }
 
@@ -467,46 +667,41 @@ ios_app_bundle("chrome") {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (ios_enable_content_widget_extension) {
-    bundle_data("content_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/content_widget_extension" ]
-      sources = [ "$root_out_dir/content_widget_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+  if (ios_enable_search_widget_extension) {
+    extension_bundle_data("search_widget_extension_bundle") {
+      extension_target =
+          "//ios/chrome/search_widget_extension(${current_toolchain}_13_0)"
     }
   }
 
-  if (ios_enable_search_widget_extension) {
-    bundle_data("search_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/search_widget_extension" ]
-      sources = [ "$root_out_dir/search_widget_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+  if (ios_enable_content_widget_extension) {
+    extension_bundle_data("content_widget_extension_bundle") {
+      extension_target =
+          "//ios/chrome/content_widget_extension(${current_toolchain}_13_0)"
     }
   }
 
   if (ios_enable_share_extension) {
-    bundle_data("share_extension_bundle") {
-      public_deps = [ "//ios/chrome/share_extension" ]
-      sources = [ "$root_out_dir/share_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("share_extension_bundle") {
+      extension_target = "//ios/chrome/share_extension"
     }
   }
 
   if (ios_enable_credential_provider_extension) {
-    bundle_data("credential_provider_extension_bundle") {
-      public_deps = [ "//ios/chrome/credential_provider_extension" ]
-      sources = [ "$root_out_dir/credential_provider_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("credential_provider_extension_bundle") {
+      extension_target = "//ios/chrome/credential_provider_extension"
     }
   }
 
   if (ios_enable_widget_kit_extension) {
-    bundle_data("widget_kit_extension_bundle") {
-      _widget_extension_target =
-          "//ios/chrome/widget_kit_extension(${current_toolchain}_14_0)"
-      public_deps = [ _widget_extension_target ]
-      sources = [ get_label_info(_widget_extension_target, "root_out_dir") +
-                  "/widget_kit_extension.appex" ]
-      outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
+    extension_bundle_data("widget_kit_extension_bundle") {
+      extension_target = "//ios/chrome/widget_kit_extension"
+    }
+  }
+
+  if (ios_enable_intents_extension) {
+    extension_bundle_data("intents_extension_bundle") {
+      extension_target = "//ios/chrome/intents_extension"
     }
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.common.services.ServiceNames;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 
 import java.util.HashMap;
@@ -67,14 +66,14 @@ public final class DeveloperModeUtils {
         try {
             context.startForegroundService(intent);
         } catch (IllegalStateException e) {
-            assert BuildInfo.isAtLeastS()
+            assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 : "Unable to start DeveloperUiService, this is only expected on Android S";
         }
     }
 
     /**
      * Fetch the flag overrides from the developer mode ContentProvider. This should only be called
-     * if {@link #isDeveloperModeEnabled(String}} returns {@code true}, otherwise this may incur
+     * if {@link #isDeveloperModeEnabled(String)} returns {@code true}, otherwise this may incur
      * unnecessary IPC or start up processes unnecessarily.
      *
      * @param webViewPackageName the package name of the WebView implementation to fetch the flags

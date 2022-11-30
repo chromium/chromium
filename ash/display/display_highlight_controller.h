@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,4 +53,4 @@ class ASH_EXPORT DisplayHighlightController
 };
 }  // namespace ash
 
-#endif  // ASH_CORNER_SHORTCUTS_CORNER_SHORTCUTS_CONTROLLER_H_
+#endif  // ASH_DISPLAY_DISPLAY_HIGHLIGHT_CONTROLLER_H_

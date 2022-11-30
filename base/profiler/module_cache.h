@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,19 @@
 #include "base/base_export.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
 #endif
 
 namespace base {
+
+// Converts module id to match the id that Breakpad outputs.
+BASE_EXPORT std::string TransformModuleIDToBreakpadFormat(
+    StringPiece module_id);
 
 // Supports cached lookup of modules by address, with caching based on module
 // address ranges.
@@ -186,7 +192,7 @@ class BASE_EXPORT ModuleCache {
   std::vector<std::unique_ptr<const Module>> inactive_non_native_modules_;
 
   // Auxiliary module provider, for lazily creating native modules.
-  AuxiliaryModuleProvider* auxiliary_module_provider_ = nullptr;
+  raw_ptr<AuxiliaryModuleProvider> auxiliary_module_provider_ = nullptr;
 };
 
 }  // namespace base

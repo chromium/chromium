@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 
 #include <Windows.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/win_utils.h"
@@ -60,23 +60,22 @@ void StartupInformationHelper::SetStdHandles(HANDLE stdout_handle,
 
 void StartupInformationHelper::AddInheritedHandle(HANDLE handle) {
   if (handle != INVALID_HANDLE_VALUE) {
-    auto it = std::find(inherited_handle_list_.begin(),
-                        inherited_handle_list_.end(), handle);
+    auto it = base::ranges::find(inherited_handle_list_, handle);
     if (it == inherited_handle_list_.end())
       inherited_handle_list_.push_back(handle);
   }
 }
 
-void StartupInformationHelper::SetAppContainerProfile(
-    scoped_refptr<AppContainerProfileBase> profile) {
+void StartupInformationHelper::SetAppContainer(
+    scoped_refptr<AppContainer> container) {
   // Only supported for Windows 8+.
   DCHECK(base::win::GetVersion() >= base::win::Version::WIN8);
   // LowPrivilegeAppContainer only supported for Windows 10+
-  DCHECK(!profile->GetEnableLowPrivilegeAppContainer() ||
+  DCHECK(!container->GetEnableLowPrivilegeAppContainer() ||
          base::win::GetVersion() >= base::win::Version::WIN10_RS1);
 
-  app_container_profile_ = profile;
-  security_capabilities_ = app_container_profile_->GetSecurityCapabilities();
+  app_container_ = container;
+  security_capabilities_ = app_container_->GetSecurityCapabilities();
 }
 
 void StartupInformationHelper::AddJobToAssociate(HANDLE job_handle) {
@@ -97,9 +96,10 @@ int StartupInformationHelper::CountAttributes() {
   if (!inherited_handle_list_.empty())
     ++attribute_count;
 
-  if (app_container_profile_) {
+  if (app_container_ &&
+      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
     ++attribute_count;
-    if (app_container_profile_->GetEnableLowPrivilegeAppContainer())
+    if (app_container_->GetEnableLowPrivilegeAppContainer())
       ++attribute_count;
   }
 
@@ -171,14 +171,15 @@ bool StartupInformationHelper::BuildStartupInformation() {
     expected_attributes--;
   }
 
-  if (app_container_profile_) {
+  if (app_container_ &&
+      app_container_->GetAppContainerType() != AppContainerType::kLowbox) {
     if (!startup_info_.UpdateProcThreadAttribute(
             PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES,
             security_capabilities_.get(), sizeof(SECURITY_CAPABILITIES))) {
       return false;
     }
     expected_attributes--;
-    if (app_container_profile_->GetEnableLowPrivilegeAppContainer()) {
+    if (app_container_->GetEnableLowPrivilegeAppContainer()) {
       all_applications_package_policy_ =
           PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT;
       if (!startup_info_.UpdateProcThreadAttribute(

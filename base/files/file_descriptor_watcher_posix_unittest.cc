@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -66,7 +67,7 @@ class FileDescriptorWatcherTest
         FileDescriptorWatcherTestType::MESSAGE_PUMP_FOR_IO_ON_OTHER_THREAD) {
       Thread::Options options;
       options.message_pump_type = MessagePumpType::IO;
-      ASSERT_TRUE(other_thread_.StartWithOptions(options));
+      ASSERT_TRUE(other_thread_.StartWithOptions(std::move(options)));
       file_descriptor_watcher_ =
           std::make_unique<FileDescriptorWatcher>(other_thread_.task_runner());
     }
@@ -126,8 +127,8 @@ class FileDescriptorWatcherTest
 
   void WriteByte() {
     constexpr char kByte = '!';
-    ASSERT_TRUE(
-        WriteFileDescriptor(write_file_descriptor(), &kByte, sizeof(kByte)));
+    ASSERT_TRUE(WriteFileDescriptor(write_file_descriptor(),
+                                    as_bytes(make_span(&kByte, 1))));
   }
 
   void ReadByte() {

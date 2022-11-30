@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,11 @@
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
-FeatureConfigConditionValidator::FeatureConfigConditionValidator()
-    : currently_showing_(false) {}
+FeatureConfigConditionValidator::FeatureConfigConditionValidator() = default;
 
 FeatureConfigConditionValidator::~FeatureConfigConditionValidator() = default;
 
@@ -32,10 +32,11 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
     const EventModel& event_model,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
+    const Configuration* configuration,
     uint32_t current_day) const {
   ConditionValidator::Result result(true);
   result.event_model_ready_ok = event_model.IsReady();
-  result.currently_showing_ok = !currently_showing_;
+  result.currently_showing_ok = !IsBlocked(feature, config, configuration);
   result.feature_enabled_ok = base::FeatureList::IsEnabled(feature);
   result.config_ok = config.valid;
   result.used_ok =
@@ -58,6 +59,20 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
 
   result.display_lock_ok = !display_lock_controller.IsDisplayLocked();
 
+  result.snooze_expiration_ok =
+      !event_model.IsSnoozeDismissed(config.trigger.name) &&
+      (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
+       base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
+
+  result.priority_notification_ok =
+      !pending_priority_notification_.has_value() ||
+      pending_priority_notification_.value() == feature.name;
+
+  result.should_show_snooze =
+      result.snooze_expiration_ok &&
+      event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
+                                 current_day) < config.snooze_params.max_limit;
+
   return result;
 }
 
@@ -65,10 +80,9 @@ void FeatureConfigConditionValidator::NotifyIsShowing(
     const base::Feature& feature,
     const FeatureConfig& config,
     const std::vector<std::string>& all_feature_names) {
-  DCHECK(!currently_showing_);
   DCHECK(base::FeatureList::IsEnabled(feature));
 
-  currently_showing_ = true;
+  currently_showing_features_.insert(feature.name);
 
   switch (config.session_rate_impact.type) {
     case SessionRateImpact::Type::ALL:
@@ -94,7 +108,7 @@ void FeatureConfigConditionValidator::NotifyIsShowing(
 
 void FeatureConfigConditionValidator::NotifyDismissed(
     const base::Feature& feature) {
-  currently_showing_ = false;
+  currently_showing_features_.erase(feature.name);
 }
 
 bool FeatureConfigConditionValidator::EventConfigMeetsConditions(
@@ -106,6 +120,17 @@ bool FeatureConfigConditionValidator::EventConfigMeetsConditions(
   return event_config.comparator.MeetsCriteria(event_count);
 }
 
+void FeatureConfigConditionValidator::SetPriorityNotification(
+    const absl::optional<std::string>& feature) {
+  DCHECK(!pending_priority_notification_.has_value() || !feature.has_value());
+  pending_priority_notification_ = feature;
+}
+
+absl::optional<std::string>
+FeatureConfigConditionValidator::GetPendingPriorityNotification() {
+  return pending_priority_notification_;
+}
+
 bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
     const base::Feature& feature,
     Comparator comparator,
@@ -114,7 +139,7 @@ bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(
   if (comparator.type == ANY)
     return true;
 
-  base::Optional<uint32_t> availability_day =
+  absl::optional<uint32_t> availability_day =
       availability_model.GetAvailability(feature);
   if (!availability_day.has_value())
     return false;
@@ -135,6 +160,40 @@ bool FeatureConfigConditionValidator::SessionRateMeetsConditions(
   if (it == times_shown_for_feature_.end())
     return session_rate.MeetsCriteria(0u);
   return session_rate.MeetsCriteria(it->second);
+}
+
+bool FeatureConfigConditionValidator::IsBlocked(
+    const base::Feature& feature,
+    const FeatureConfig& config,
+    const Configuration* configuration) const {
+  switch (config.blocked_by.type) {
+    case BlockedBy::Type::NONE:
+      return false;
+
+    case BlockedBy::Type::ALL: {
+      bool is_blocked = false;
+      for (const std::string& currently_showing_feature :
+           currently_showing_features_) {
+        auto currently_showing_feature_config =
+            configuration->GetFeatureConfigByName(currently_showing_feature);
+        if (currently_showing_feature_config.blocking.type ==
+            Blocking::Type::NONE)
+          continue;
+        is_blocked = true;
+      }
+      return is_blocked;
+    }
+    case BlockedBy::Type::EXPLICIT:
+      for (const std::string& feature_name :
+           *config.blocked_by.affected_features) {
+        if (base::Contains(currently_showing_features_, feature_name))
+          return true;
+      }
+      return false;
+    default:
+      // All cases should be covered.
+      NOTREACHED();
+  }
 }
 
 }  // namespace feature_engagement

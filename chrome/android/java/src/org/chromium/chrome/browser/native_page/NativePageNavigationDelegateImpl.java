@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,8 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
 
     @Override
     public boolean isOpenInNewWindowEnabled() {
-        return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity);
+        return MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(mActivity)
+                || MultiWindowUtils.getInstance().canEnterMultiWindowMode(mActivity);
     }
 
     @Override
@@ -79,9 +80,16 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
         return loadingTab;
     }
 
+    @Override
+    public Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+        return mTabModelSelector.openNewTab(loadUrlParams,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, /* incognito = */ false);
+    }
+
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {
         TabDelegate tabDelegate = new TabDelegate(false);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, mActivity, mHost.getParentId());
+        tabDelegate.createTabInOtherWindow(loadUrlParams, mActivity, mHost.getParentId(),
+                MultiWindowUtils.getAdjacentWindowActivity(mActivity));
     }
 
     private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {

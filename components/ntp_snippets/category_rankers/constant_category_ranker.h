@@ -1,14 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NTP_SNIPPETS_SECTION_RANKERS_CONSTANT_SECTION_RANKER_H_
-#define COMPONENTS_NTP_SNIPPETS_SECTION_RANKERS_CONSTANT_SECTION_RANKER_H_
+#ifndef COMPONENTS_NTP_SNIPPETS_CATEGORY_RANKERS_CONSTANT_CATEGORY_RANKER_H_
+#define COMPONENTS_NTP_SNIPPETS_CATEGORY_RANKERS_CONSTANT_CATEGORY_RANKER_H_
 
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_rankers/category_ranker.h"
@@ -23,6 +21,8 @@ namespace ntp_snippets {
 class ConstantCategoryRanker : public CategoryRanker {
  public:
   ConstantCategoryRanker();
+  ConstantCategoryRanker(const ConstantCategoryRanker&) = delete;
+  ConstantCategoryRanker& operator=(const ConstantCategoryRanker&) = delete;
   ~ConstantCategoryRanker() override;
 
   // CategoryRanker implementation.
@@ -43,10 +43,8 @@ class ConstantCategoryRanker : public CategoryRanker {
   void AppendKnownCategory(KnownCategories known_category);
 
   std::vector<Category> ordered_categories_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConstantCategoryRanker);
 };
 
 }  // namespace ntp_snippets
 
-#endif  // COMPONENTS_NTP_SNIPPETS_SECTION_RANKERS_CONSTANT_SECTION_RANKER_H_
+#endif  // COMPONENTS_NTP_SNIPPETS_CATEGORY_RANKERS_CONSTANT_CATEGORY_RANKER_H_

@@ -1,4 +1,4 @@
-// Copyright 2021 The Crashpad Authors. All rights reserved.
+// Copyright 2021 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,14 @@
     crashpad::CaptureContext(&cpu_context);                       \
     crashpad::CrashpadClient::DumpWithoutCrashAndDeferProcessing( \
         &cpu_context);                                            \
+  } while (false)
+
+#define CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING_AT_PATH(path)      \
+  do {                                                                  \
+    crashpad::NativeCPUContext cpu_context;                             \
+    crashpad::CaptureContext(&cpu_context);                             \
+    crashpad::CrashpadClient::DumpWithoutCrashAndDeferProcessingAtPath( \
+        &cpu_context, path);                                            \
   } while (false)
 
 #endif  // CRASHPAD_CLIENT_SIMULATE_CRASH_IOS_H_

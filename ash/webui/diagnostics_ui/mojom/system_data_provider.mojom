@@ -1,0 +1,145 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.diagnostics.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Contains the capabilities of the device.
+struct DeviceCapabilities {
+  bool has_battery;
+};
+
+// Contains information about the OS version on the device.
+struct VersionInfo {
+  string milestone_version;
+  string full_version_string;
+};
+
+// Contains a snapshot of static system information.
+struct SystemInfo {
+  string board_name;
+  string marketing_name;
+  string cpu_model_name;
+  uint32 total_memory_kib;
+  uint16 cpu_threads_count;
+  uint32 cpu_max_clock_speed_khz;
+  VersionInfo version_info;
+  DeviceCapabilities device_capabilities;
+};
+
+// Contains information about the battery.
+struct BatteryInfo {
+  string manufacturer;
+  uint32 charge_full_design_milliamp_hours;
+};
+
+enum ExternalPowerSource {
+  kAc,
+  kUsb,
+  kDisconnected,
+};
+
+enum BatteryState {
+  kCharging,
+  kDischarging,
+  kFull,
+};
+
+// Contains information about the charging state of the battery.
+struct BatteryChargeStatus {
+  // String containing a localized time duration. If the time is unreliable
+  // the string will be empty.
+  mojo_base.mojom.String16 power_time;
+  int32 current_now_milliamps;
+  uint32 charge_now_milliamp_hours;
+  BatteryState battery_state;
+  ExternalPowerSource power_adapter_status;
+};
+
+// Contains information about the health of the battery.
+struct BatteryHealth {
+  int32 charge_full_now_milliamp_hours;
+  int32 charge_full_design_milliamp_hours;
+  int32 cycle_count;
+  int8 battery_wear_percentage;
+};
+
+// Contains information about the usage of memory on the device.
+struct MemoryUsage {
+  uint32 total_memory_kib;
+  uint32 available_memory_kib;
+  uint32 free_memory_kib;
+};
+
+struct CpuUsage {
+  uint8 percent_usage_user;
+  uint8 percent_usage_system;
+  uint8 percent_usage_free;
+  uint16 average_cpu_temp_celsius;
+  uint32 scaling_current_frequency_khz;
+};
+
+// Implemented by clients that wish to be updated periodically about changes to
+// the battery charge status.
+interface BatteryChargeStatusObserver {
+  // OnBatteryChargeStatus calls can be triggered by any of 3 conditions:
+  // 1) A BatteryChargeStatusObserver is registered with SystemDataProvider
+  // 2) A PowerManagerClient 'PowerChanged' event is received
+  // 3) A periodic update is sent by SystemDataProvider
+  OnBatteryChargeStatusUpdated(BatteryChargeStatus battery_charge_status);
+};
+
+// Implemented by clients that wish to be updated periodically about the health
+// of the device battery.
+interface BatteryHealthObserver {
+  // OnBatteryHealthUpdated calls can be triggered by either of 2 conditions:
+  // 1) A BatteryHealthObserver is registered with SystemDataProvider
+  // 2) A periodic update is sent by SystemDataProvider
+  OnBatteryHealthUpdated(BatteryHealth battery_health);
+};
+
+// Implemented by clients that wish to be updated periodically about the
+// memory usage of the device.
+interface MemoryUsageObserver {
+  // OnMemoryUsageUpdated calls can be triggered by either of 2 conditions:
+  // 1) A MemoryUsageObserver is registered with SystemDataProvider
+  // 2) A periodic update is sent by SystemDataProvider
+  OnMemoryUsageUpdated(MemoryUsage memory_usage);
+};
+
+// Implemented by clients that wish to be updated periodically about the
+// cpu usage of the device.
+interface CpuUsageObserver {
+  // OnCpuUsageUpdated calls can be triggered by either of 2 conditions:
+  // 1) A CpuUsageObserver is registered with SystemDataProvider
+  // 2) A periodic update is sent by SystemDataProvider
+  OnCpuUsageUpdated(CpuUsage cpu_usage);
+};
+
+// Provides telemetric information about the system. This API is exposed to the
+// Diagnostics SWA.
+interface SystemDataProvider {
+  // Returns a snapshot of system information. |system_info| is static
+  // information that does not change during the lifetime of the service.
+  GetSystemInfo() => (SystemInfo system_info);
+
+  // Returns information about the battery. |battery_info| is static
+  // information that does not change during the lifetime fo the service.
+  // If the device does not have a battery, returns an empty BatteryInfo.
+  GetBatteryInfo() => (BatteryInfo battery_info);
+
+  // Registers an observer of BatteryChargeStatus information.
+  ObserveBatteryChargeStatus(
+      pending_remote<BatteryChargeStatusObserver> observer);
+
+  // Registers an observer of BatteryHealth information.
+  ObserveBatteryHealth(pending_remote<BatteryHealthObserver> observer);
+
+  // Registers an observer of MemoryUsage information.
+  ObserveMemoryUsage(pending_remote<MemoryUsageObserver> observer);
+
+  // Registers an observer of CpuUsage information.
+  ObserveCpuUsage(pending_remote<CpuUsageObserver> observer);
+};

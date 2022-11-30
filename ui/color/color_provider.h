@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,11 @@
 #define UI_COLOR_COLOR_PROVIDER_H_
 
 #include <forward_list>
-#include <map>
+#include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
@@ -23,10 +25,13 @@ namespace ui {
 // TODO(pkasting): Figure out ownership model and lifetime.
 class COMPONENT_EXPORT(COLOR) ColorProvider {
  public:
+  using ColorMap = base::flat_map<ColorId, SkColor>;
+
   ColorProvider();
-  // There should be no reason to copy or move a ColorProvider.
   ColorProvider(const ColorProvider&) = delete;
   ColorProvider& operator=(const ColorProvider&) = delete;
+  ColorProvider(ColorProvider&&);
+  ColorProvider& operator=(ColorProvider&&);
   ~ColorProvider();
 
   // Adds a mixer to the current color pipeline after all other
@@ -44,6 +49,15 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // |id|.
   SkColor GetColor(ColorId id) const;
 
+  // Generates the `color_map_` used by this provider for all ColorIds defined
+  // by attached mixers. After the map is generated attached mixers and their
+  // associated objects are discarded. Mixers should not be added to the
+  // provider after this has been called.
+  void GenerateColorMap();
+
+  void SetColorForTesting(ColorId id, SkColor color);
+  const ColorMap& color_map_for_testing() { return *color_map_; }
+
  private:
   using Mixers = std::forward_list<ColorMixer>;
 
@@ -58,10 +72,9 @@ class COMPONENT_EXPORT(COLOR) ColorProvider {
   // The first mixer in the chain that is a "postprocessing" mixer.
   Mixers::iterator first_postprocessing_mixer_ = mixers_.before_begin();
 
-  // Caches the results of calls to GetColor().  This is invalidated by
-  // AddMixer().  Uses a std::map rather than a base::flat_map since it has
-  // frequent inserts and could grow very large.
-  mutable std::map<ColorId, SkColor> cache_;
+  // A cached map of ColorId => SkColor mappings for this provider. This will be
+  // generated in the call to `GenerateColorMap()`.
+  absl::optional<ColorMap> color_map_;
 };
 
 }  // namespace ui

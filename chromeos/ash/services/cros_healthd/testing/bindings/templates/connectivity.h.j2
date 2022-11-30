@@ -1,0 +1,70 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_CONNECTIVITY_H_"|format(
+        module.path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+{%- macro namespace_begin() %}
+{%-   for namespace in namespaces_as_array %}
+namespace {{namespace}} {
+{%-   endfor %}
+{%- endmacro %}
+
+{%- macro namespace_end() %}
+{%-   for namespace in namespaces_as_array|reverse %}
+}  // namespace {{namespace}}
+{%-   endfor %}
+{%- endmacro %}
+
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include <base/memory/weak_ptr.h>
+#include <mojo/public/cpp/bindings/pending_receiver.h>
+#include <mojo/public/cpp/bindings/receiver_set.h>
+#include <mojo/public/cpp/bindings/remote.h>
+
+#include "chromeos/ash/services/cros_healthd/testing/bindings/context.h"
+#include "chromeos/ash/services/cros_healthd/testing/bindings/data_generator.h"
+#include "{{module.path}}.h"
+#include "{{module.path}}-connectivity-forward.h"
+
+{%- for imp in module.imports %}
+#include "{{imp.path}}-connectivity.h"
+{%  endfor %}
+
+{%- for header in extra_headers %}
+#include "{{header}}"
+{%  endfor %}
+
+{{namespace_begin()}}
+
+{%- for interface in module.interfaces %}
+{%    include "test-provider.h.j2" %}
+{%    include "test-consumer.h.j2" %}
+{%    for enum in interface.enums %}
+{%      include "enum-generator.h.j2" %}
+{%    endfor %}
+{%- endfor %}
+
+{%  for struct in module.structs %}
+{%    include "struct-generator.h.j2" %}
+{%    for enum in struct.enums %}
+{%      include "enum-generator.h.j2" %}
+{%    endfor %}
+{%  endfor %}
+
+{%  for union in module.unions %}
+{%    include "union-generator.h.j2" %}
+{%  endfor %}
+
+{%  for enum in module.enums %}
+{%    include "enum-generator.h.j2" %}
+{%  endfor %}
+
+{{namespace_end()}}
+
+#endif  // {{header_guard}}

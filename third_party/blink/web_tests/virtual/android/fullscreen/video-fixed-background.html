@@ -9,16 +9,20 @@
     <script src="../../../media/media-file.js"></script>
     <script src="../../../media/media-controls.js"></script>
     <script>
-        setSrcById("video", "../../../media/content/test.ogv");
         var video = document.getElementById('video');
-        enableTestMode(video);
-        // Bail out early if the full screen API is not enabled or is missing:
-        if (Element.prototype.webkitRequestFullScreen == undefined) {
-            logResult(false, "Element.prototype.webkitRequestFullScreen == undefined");
-            endTest();
-        } else {
-            waitForEventOnceAndEnd(document, 'webkitfullscreenchange');
-            runWithKeyDown(function(){video.webkitRequestFullScreen()});
+        video.requestVideoFrameCallback(startFullscreenTest);
+        setSrcById("video", "../../../media/content/test.ogv");
+
+        function startFullscreenTest() {
+            enableTestMode(video);
+            // Bail out early if the full screen API is not enabled or is missing:
+            if (Element.prototype.webkitRequestFullScreen == undefined) {
+                logResult(false, "Element.prototype.webkitRequestFullScreen == undefined");
+                endTest();
+            } else {
+                waitForEventOnceAndEnd(document, 'webkitfullscreenchange');
+                runWithKeyDown(function(){video.webkitRequestFullScreen()});
+            }
         }
     </script>
 </body>

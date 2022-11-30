@@ -23,25 +23,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_THEME_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/geometry/length_box.h"
-#include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
 class ComputedStyle;
+class Document;
 class Element;
 class File;
 class FontDescription;
@@ -72,12 +68,11 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   void AdjustStyle(const Element*, ComputedStyle&);
 
   // The remaining methods should be implemented by the platform-specific
-  // portion of the theme, e.g., LayoutThemeMac.cpp for Mac OS X.
+  // portion of the theme, e.g., layout_theme_mac.mm for macOS.
 
   // These methods return the theme's extra style sheets rules, to let each
   // platform adjust the default CSS rules in html.css or quirks.css
   virtual String ExtraDefaultStyleSheet();
-  virtual String ExtraQuirksStyleSheet();
   virtual String ExtraFullscreenStyleSheet();
 
   // Whether or not the control has been styled enough by the author to disable
@@ -122,10 +117,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Highlight and text colors for TextMatches.
   Color PlatformTextSearchHighlightColor(
       bool active_match,
-      bool in_forced_colors_mode,
       mojom::blink::ColorScheme color_scheme) const;
   Color PlatformTextSearchColor(bool active_match,
-                                bool in_forced_colors_mode,
                                 mojom::blink::ColorScheme color_scheme) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
@@ -141,12 +134,13 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   }
   void PlatformColorsDidChange();
   virtual void ColorSchemeDidChange();
+  void ColorProvidersDidChange();
 
   void SetCaretBlinkInterval(base::TimeDelta);
   virtual base::TimeDelta CaretBlinkInterval() const;
 
   // System fonts and colors for CSS.
-  void SystemFont(CSSValueID system_font_id, FontDescription&);
+  void SystemFont(CSSValueID system_font_id, FontDescription&, const Document*);
   virtual Color SystemColor(CSSValueID,
                             mojom::blink::ColorScheme color_scheme) const;
 
@@ -166,7 +160,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Returns size of one slider tick mark for a horizontal track.
   // For vertical tracks we rotate it and use it. i.e. Width is always length
   // along the track.
-  virtual IntSize SliderTickSize() const = 0;
+  virtual gfx::Size SliderTickSize() const = 0;
   // Returns the distance of slider tick origin from the slider track center.
   virtual int SliderTickOffsetFromTrackCenter() const = 0;
 
@@ -184,6 +178,16 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // Adjust style as per platform selection.
   virtual void AdjustControlPartStyle(ComputedStyle&);
+
+  virtual bool IsAccentColorCustomized(
+      mojom::blink::ColorScheme color_scheme) const {
+    return false;
+  }
+  virtual Color GetAccentColor(mojom::blink::ColorScheme color_scheme) const {
+    return Color();
+  }
+
+  bool InForcedColorsMode() const { return in_forced_colors_mode_; }
 
  protected:
   // The platform selection color.
@@ -207,10 +211,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // Methods for each appearance value.
   virtual void AdjustCheckboxStyle(ComputedStyle&) const;
-  virtual void SetCheckboxSize(ComputedStyle&) const {}
-
   virtual void AdjustRadioStyle(ComputedStyle&) const;
-  virtual void SetRadioSize(ComputedStyle&) const {}
 
   virtual void AdjustButtonStyle(ComputedStyle&) const;
   virtual void AdjustInnerSpinButtonStyle(ComputedStyle&) const;
@@ -219,11 +220,16 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustMenuListButtonStyle(ComputedStyle&) const;
   virtual void AdjustSliderContainerStyle(const Element&, ComputedStyle&) const;
   virtual void AdjustSliderThumbStyle(ComputedStyle&) const;
-  virtual void AdjustSearchFieldStyle(ComputedStyle&) const;
   virtual void AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const;
 
   bool HasCustomFocusRingColor() const;
   Color GetCustomFocusRingColor() const;
+
+  Color DefaultSystemColor(CSSValueID,
+                           mojom::blink::ColorScheme color_scheme) const;
+  Color SystemColorFromNativeTheme(
+      CSSValueID,
+      mojom::blink::ColorScheme color_scheme) const;
 
  private:
   // This function is to be implemented in your platform-specific theme
@@ -236,18 +242,22 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   ControlPart AdjustAppearanceWithElementType(const ComputedStyle& style,
                                               const Element* element);
 
+  void UpdateForcedColorsState();
+
   Color custom_focus_ring_color_;
   bool has_custom_focus_ring_color_;
-  base::TimeDelta caret_blink_interval_ =
-      base::TimeDelta::FromMilliseconds(500);
+  base::TimeDelta caret_blink_interval_ = base::Milliseconds(500);
 
   bool delegates_menu_list_rendering_ = false;
+  bool in_forced_colors_mode_ = false;
 
   // This color is expected to be drawn on a semi-transparent overlay,
   // making it more transparent than its alpha value indicates.
-  static const RGBA32 kDefaultTapHighlightColor = 0x66000000;
+  static constexpr Color kDefaultTapHighlightColor =
+      Color::FromRGBA32(0x66000000);
 
-  static const RGBA32 kDefaultCompositionBackgroundColor = 0xFFFFDD55;
+  static constexpr Color kDefaultCompositionBackgroundColor =
+      Color::FromRGBA32(0xFFFFDD55);
 };
 
 }  // namespace blink

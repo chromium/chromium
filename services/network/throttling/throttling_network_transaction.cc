@@ -1,13 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/throttling/throttling_network_transaction.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/time/time.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_network_transaction.h"
@@ -117,11 +119,11 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
       ThrottlingController::GetInterceptor(net_log.source().id);
 
   if (interceptor) {
-    custom_request_.reset(new net::HttpRequestInfo(*request_));
+    custom_request_ = std::make_unique<net::HttpRequestInfo>(*request_);
 
     if (request_->upload_data_stream) {
-      custom_upload_data_stream_.reset(
-          new ThrottlingUploadDataStream(request_->upload_data_stream));
+      custom_upload_data_stream_ = std::make_unique<ThrottlingUploadDataStream>(
+          request_->upload_data_stream);
       custom_request_->upload_data_stream = custom_upload_data_stream_.get();
     }
 
@@ -210,7 +212,7 @@ int ThrottlingNetworkTransaction::Read(net::IOBuffer* buf,
 
   callback_ = std::move(callback);
   int result = network_transaction_->Read(
-      buf, buf_len,
+      buf, interceptor_->GetReadBufLen(buf_len),
       base::BindOnce(&ThrottlingNetworkTransaction::IOCallback,
                      base::Unretained(this), false));
   // URLRequestJob relies on synchronous end-of-stream notification.
@@ -304,9 +306,9 @@ int ThrottlingNetworkTransaction::ResumeNetworkStart() {
   return network_transaction_->ResumeNetworkStart();
 }
 
-void ThrottlingNetworkTransaction::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  network_transaction_->GetConnectionAttempts(out);
+net::ConnectionAttempts ThrottlingNetworkTransaction::GetConnectionAttempts()
+    const {
+  return network_transaction_->GetConnectionAttempts();
 }
 
 void ThrottlingNetworkTransaction::CloseConnectionOnDestruction() {

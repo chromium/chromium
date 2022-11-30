@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,7 @@ base::LazyInstance<ShellPermissionMessageProvider>::DestructorAtExit
 
 ShellExtensionsClient::ShellExtensionsClient()
     : webstore_base_url_(extension_urls::kChromeWebstoreBaseURL),
+      new_webstore_base_url_(extension_urls::kNewChromeWebstoreBaseURL),
       webstore_update_url_(extension_urls::kChromeWebstoreUpdateURL) {
   AddAPIProvider(std::make_unique<CoreExtensionsAPIProvider>());
   AddAPIProvider(std::make_unique<ShellExtensionsAPIProvider>());
@@ -122,13 +123,17 @@ const GURL& ShellExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
 }
 
+const GURL& ShellExtensionsClient::GetNewWebstoreBaseURL() const {
+  return new_webstore_base_url_;
+}
+
 const GURL& ShellExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool ShellExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool ShellExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // TODO(rockot): Maybe we want to do something else here. For now we accept
-  // any URL as a blacklist URL because we don't really care.
+  // any URL as a blocklist URL because we don't really care.
   return true;
 }
 

@@ -1,0 +1,222 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="cy">
+<translation id="1028699632127661925">Wthi'n anfon i <ph name="DEVICE_NAME" />...</translation>
+<translation id="111910763555783249">Gosodiadau hysbysiadau</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
+<translation id="1169783199079129864">{MINUTES,plural, =1{1m}zero{#m}two{#f}few{#m}many{#m}other{#m}}</translation>
+<translation id="1243314992276662751">Uwchlwytho</translation>
+<translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269641567813814718">Ennill</translation>
+<translation id="1291104554099683393">Rhowch gynnig ar rannu'r testun mewn darnau llai.</translation>
+<translation id="1293699935367580298">Esc</translation>
+<translation id="1368832886055348810">O'r Chwith i'r Dde</translation>
+<translation id="1383876407941801731">Chwilio</translation>
+<translation id="1398853756734560583">Mwyhau</translation>
+<translation id="1450753235335490080">Methu â rhannu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1591184457164800433">{MINUTES,plural, =1{1 funud a }zero{# munud a }two{# funud a }few{# munud a }many{# munud a }other{# munud a }}</translation>
+<translation id="1643823602425662293">Hysbysiad</translation>
+<translation id="169515659049020177">Shift</translation>
+<translation id="1710340000377843106">nawr</translation>
+<translation id="1752946267035950200">{MINUTES,plural, =1{1 funud}zero{# munud}two{# funud}few{# munud}many{# munud}other{# munud}}</translation>
+<translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
+<translation id="1801827354178857021">Atalnod llawn</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 mis}zero{# mis}two{# fis}few{# mis}many{# mis}other{# mis}}</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY" /> MB/e</translation>
+<translation id="1830179671306812954">{HOURS,plural, =1{1 awr a }zero{# awr a }two{# awr a }few{# awr a }many{# awr a }other{# awr a }}</translation>
+<translation id="1859234291848436338">Cyfeiriad Ysgrifennu</translation>
+<translation id="1860796786778352021">Cau hysbysiad</translation>
+<translation id="186476001994626254">Cynnwys Gludo Web Smart</translation>
+<translation id="1871244248791675517">Ins</translation>
+<translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
+<translation id="1901303067676059328">Dewis &amp;popeth</translation>
+<translation id="19085484004813472">Mae hon yn nodwedd newydd</translation>
+<translation id="2006524834898217237">Gwnewch yn siŵr bod y ddyfais hon wedi'i chysylltu â'r rhyngrwyd.</translation>
+<translation id="208586643495776849">Rhowch gynnig arall arni</translation>
+<translation id="2141853158323869627">{DAYS,plural, =1{1d}zero{#d}two{#dd}few{#d}many{#d}other{#d}}</translation>
+<translation id="2148716181193084225">Heddiw</translation>
+<translation id="2161656808144014275">Testun</translation>
+<translation id="2168039046890040389">I fyny'r dudalen</translation>
+<translation id="2190355936436201913">(gwag)</translation>
+<translation id="2192232475740621500">Defnyddio dwysedd isel</translation>
+<translation id="2267918077332197517">Rhwystro pob hysbysiad o'r wefan hon</translation>
+<translation id="2283117145434822734">F6</translation>
+<translation id="2289052229480071835">Tapiwch y targedau cyffwrdd ar eich sgrîn.</translation>
+<translation id="2295140143284145483">Arolwg</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY" /> TB/e</translation>
+<translation id="2353636109065292463">Yn gwirio eich cysylltiad â'r we</translation>
+<translation id="2388990488038464401">Ffonio'r rhif hwn o'ch ffôn?</translation>
+<translation id="2435457462613246316">Dangos y cyfrinair</translation>
+<translation id="24452542372838207">Ehangu'r hysbysiad</translation>
+<translation id="2445449901874883781">Defnyddio dwysedd uchel</translation>
+<translation id="2482878487686419369">Hysbysiadau</translation>
+<translation id="2497284189126895209">Pob Ffeil</translation>
+<translation id="2498950423397131220">Arnofio</translation>
+<translation id="2515586267016047495">Alt</translation>
+<translation id="2522350507219695259">Wedi gorffen calibradu</translation>
+<translation id="252373100621549798">Sgrîn Anhysbys</translation>
+<translation id="2545651323591713692">Ailatgoffa</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{mewn 1a}zero{mewn #a}two{mewn #a}few{mewn #a}many{mewn #a}other{mewn #a}}</translation>
+<translation id="2583543531130364912">Calibradu'ch sgrîn gyffwrdd</translation>
+<translation id="2586657967955657006">Clipfwrdd</translation>
+<translation id="2666092431469916601">Brig</translation>
+<translation id="2701330563083355633">Rhannwyd o <ph name="DEVICE_NAME" /></translation>
+<translation id="271033894570825754">Newydd</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 flwyddyn yn ôl}zero{# blynedd yn ôl}two{# flynedd yn ôl}few{# blynedd yn ôl}many{# blynedd yn ôl}other{# blynedd yn ôl}}</translation>
+<translation id="2878511608894704031">Dileu Popeth</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{mewn 1d}zero{mewn #d}two{mewn #dd}few{mewn #d}many{mewn #d}other{mewn #d}}</translation>
+<translation id="2922712708897119705">Mae'r golofn <ph name="COLUMN_NAME" /> wedi'i threfnu mewn trefn ddisgynnol.</translation>
+<translation id="3036649622769666520">Agor Ffeiliau</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3087734570205094154">Gwaelod</translation>
+<translation id="3126026824346185272">Ctrl</translation>
+<translation id="3157931365184549694">Adfer</translation>
+<translation id="3183922693828471536">Sgrolio Yma</translation>
+<translation id="3234408098842461169">Saeth i lawr</translation>
+<translation id="3291688615589870984">{DAYS,plural, =1{1 diwrnod}zero{# diwrnod}two{# ddiwrnod}few{# diwrnod}many{# diwrnod}other{# diwrnod}}</translation>
+<translation id="3295886253693811851">Gwneud galwad o</translation>
+<translation id="3306688585798492231">Sgrîn integredig</translation>
+<translation id="335581015389089642">Llefarydd</translation>
+<translation id="3389286852084373014">Mae'r testun yn rhy fawr</translation>
+<translation id="3406306243914553062">Cynnwys HTML</translation>
+<translation id="3600566671520689681">{DAYS,plural, =1{1 diwrnod ar ôl}zero{# diwrnod ar ôl}two{# ddiwrnod ar ôl}few{# diwrnod ar ôl}many{# diwrnod ar ôl}other{# diwrnod ar ôl}}</translation>
+<translation id="3600969208114796418">Ffeil <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
+<translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
+<translation id="3618849550573277856">Chwilio “<ph name="LOOKUP_STRING" />”</translation>
+<translation id="3622035490309591977">Hanes y clipfwrdd</translation>
+<translation id="364720409959344976">Dewiswch Ffolder i'w Huwchlwytho</translation>
+<translation id="3660179305079774227">Saeth i Fyny</translation>
+<translation id="3670030362669914947">Rhif</translation>
+<translation id="3740362395218339114"><ph name="QUANTITY" /> GB/e</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
+<translation id="3889424535448813030">Saeth Dde</translation>
+<translation id="3897092660631435901">Dewislen</translation>
+<translation id="3909791450649380159">Torr&amp;i</translation>
+<translation id="3924145049010392604">Meta</translation>
+<translation id="3990502903496589789">Ymyl Dde</translation>
+<translation id="3994749195054421561">Mae'r golofn <ph name="COLUMN_NAME" /> wedi'i threfnu mewn trefn esgynnol.</translation>
+<translation id="4031910098617850788">F5</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{Mae 1 Hysbysiad sydd heb ei Ddarllen}zero{Mae # Hysbysiad sydd heb eu Darllen}two{Mae # Hysbysiad sydd heb eu Darllen}few{Mae # Hysbysiad sydd heb eu Darllen}many{Mae # Hysbysiad sydd heb eu Darllen}other{Mae # Hysbysiad sydd heb eu Darllen}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 mis yn ôl}zero{# mis yn ôl}two{# fis yn ôl}few{# mis yn ôl}many{# mis yn ôl}other{# mis yn ôl}}</translation>
+<translation id="4289300219472526559">Dechrau Siarad</translation>
+<translation id="4289540628985791613">Trosolwg</translation>
+<translation id="4306392492252714209">Tynnu o'r clipfwrdd.</translation>
+<translation id="4311195029067684288">Llawn</translation>
+<translation id="4491109536499578614">Llun</translation>
+<translation id="4565377596337484307">Cuddio'r cyfrinair</translation>
+<translation id="4588090240171750605">Sgrolio i'r Dde</translation>
+<translation id="4724120544754982507">Canolfan Hysbysiadau, mae <ph name="UNREAD_NOTIFICATION_COUNT" /> hysbysiad sydd heb eu darllen</translation>
+<translation id="4746179598275229723">Estyniad wedi'i ddadbinio</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{1 mis ar ôl}zero{# mis ar ôl}two{# fis ar ôl}few{# mis ar ôl}many{# mis ar ôl}other{# mis ar ôl}}</translation>
+<translation id="4888938634149558681">Gwneud galwad</translation>
+<translation id="4937657825850660613">Hanner</translation>
+<translation id="4968171027979920686">{SECONDS,plural, =1{1 eiliad}zero{# eiliad}two{# eiliad}few{# eiliad}many{# eiliad}other{# eiliad}}</translation>
+<translation id="4971687151119236543">Trac Cyfryngau Blaenorol</translation>
+<translation id="4971925105143343452">Rhannol</translation>
+<translation id="5046499563572181734">Tapiwch yma</translation>
+<translation id="5076340679995252485">&amp;Gludo</translation>
+<translation id="5123162024343028706">Arnofio ar y brig</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5278860589123563674">Wedi methu ag anfon</translation>
+<translation id="528468243742722775">Diwedd</translation>
+<translation id="5329858601952122676">&amp;Dileu</translation>
+<translation id="5463830097259460683">Emoji a Symbolau</translation>
+<translation id="5528053674512161860">Methwyd â llwytho'r dudalen gan nad yw modiwl UI y datblygwr (dev_ui) wedi'i osod</translation>
+<translation id="5574202486608032840">System <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
+<translation id="5583640892426849032">Backspace</translation>
+<translation id="5613020302032141669">Saeth Chwith</translation>
+<translation id="5754277640426581776">{MINUTES,plural, =1{1 fun}zero{# mun}two{# fun}few{# mun}many{# mun}other{# mun}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Yma heddiw}=1{Yma 1 diwrnod yn ôl}two{Yma # ddiwrnod yn ôl}few{Yma # diwrnod yn ôl}many{Yma # diwrnod yn ôl}other{Yma # diwrnod yn ôl}}</translation>
+<translation id="5768079895599174203">{DAYS,plural, =1{1 diwrnod a }zero{# diwrnod a }two{# ddiwrnod a }few{# diwrnod a }many{# diwrnod a }other{# diwrnod a }}</translation>
+<translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Llun.</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{Mewn 1b}zero{Mewn #b}two{Mewn #f}few{Mewn #b}many{Mewn #b}other{Mewn #b}}</translation>
+<translation id="588258955323874662">Sgrîn lawn</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{1 eiliad ar ôl}zero{# eiliad ar ôl}two{# eiliad ar ôl}few{# eiliad ar ôl}many{# eiliad ar ôl}other{# eiliad ar ôl}}</translation>
+<translation id="5941711191222866238">Lleihau</translation>
+<translation id="5943826764092288734">{HOURS,plural, =1{1 awr}zero{# awr}two{# awr}few{# awr}many{# awr}other{# awr}}</translation>
+<translation id="6007284015834422026">Estyniad wedi'i binio</translation>
+<translation id="6040143037577758943">Cau</translation>
+<translation id="6117103120090651229">Botwm canol</translation>
+<translation id="6129953537138746214">Bwlch</translation>
+<translation id="6135826906199951471">Del</translation>
+<translation id="6142413573757616983"><ph name="QUANTITY" /> B/e</translation>
+<translation id="6237461503717005873">Mae <ph name="ROW_NAME" /> wedi'i ddewis.</translation>
+<translation id="6264365405983206840">Dewis y &amp;Cyfan</translation>
+<translation id="6364916375976753737">Sgrolio i'r Chwith</translation>
+<translation id="6394627529324717982">Coma</translation>
+<translation id="6397363302884558537">Stopio Siarad</translation>
+<translation id="6404817160109697034">{SECONDS,plural, =1{1 eiliad yn ôl}zero{# eiliad yn ôl}two{# eiliad yn ôl}few{# eiliad yn ôl}many{# eiliad yn ôl}other{# eiliad yn ôl}}</translation>
+<translation id="6430678249303439055">Rhwystro pob hysbysiad o'r ap hwn</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 eiliad yn ôl}zero{# eiliad yn ôl}two{# eiliad yn ôl}few{# eiliad yn ôl}many{# eiliad yn ôl}other{# eiliad yn ôl}}</translation>
+<translation id="6503257047630241175">Cynnwys RTF</translation>
+<translation id="6539092367496845964">Aeth rhywbeth o'i le. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="654149438358937226">Rhwystro pob hysbysiad</translation>
+<translation id="6612467943526193239">I stopio calibradu, pwyswch Esc.</translation>
+<translation id="6620110761915583480">Cadw'r Ffeil</translation>
+<translation id="6699343763173986273">Trac Cyfryngau Nesaf</translation>
+<translation id="6808150112686056157">Stopio Cyfryngau</translation>
+<translation id="6845383723252244143">Dewiswch Ffolder</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{1 awr ar ôl}zero{# awr ar ôl}two{# awr ar ôl}few{# awr ar ôl}many{# awr ar ôl}other{# awr ar ôl}}</translation>
+<translation id="688711909580084195">Tudalen We Heb Deitl</translation>
+<translation id="6902419395050653510">Cynnwys HTML.</translation>
+<translation id="6907759265145635167"><ph name="QUANTITY" /> PB/e</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{1 flwyddyn ar ôl}zero{# blynedd ar ôl}two{# flynedd ar ôl}few{# blynedd ar ôl}many{# blynedd ar ôl}other{# blynedd ar ôl}}</translation>
+<translation id="6945221475159498467">Dewis</translation>
+<translation id="6965382102122355670">Iawn</translation>
+<translation id="6974053822202609517">O'r Dde i'r Chwith</translation>
+<translation id="7052633198403197513">F1</translation>
+<translation id="7170202025028120564">Bydd gosodiadau arddangos eich rhaglen yn dod i rym y tro nesaf y byddwch yn ei hailgychwyn.</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="7238427729722629793">{MINUTES,plural, =1{1 funud ar ôl}zero{# munud ar ôl}two{# funud ar ôl}few{# munud ar ôl}many{# munud ar ôl}other{# munud ar ôl}}</translation>
+<translation id="7365057348334984696">{MINUTES,plural, =1{1 funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
+<translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
+<translation id="7410957453383678442">{MINUTES,plural, =1{1 funud ar ôl}zero{# munud ar ôl}two{# funud ar ôl}few{# munud ar ôl}many{# munud ar ôl}other{# munud ar ôl}}</translation>
+<translation id="7437971918971306061">Ni threfnwyd y golofn <ph name="COLUMN_NAME" />.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7507604095951736240">Emoji</translation>
+<translation id="7620655452534002301">Tynnwyd.</translation>
+<translation id="7658239707568436148">Canslo</translation>
+<translation id="7781829728241885113">Ddoe</translation>
+<translation id="7814458197256864873">&amp;Copïo</translation>
+<translation id="7879499977785298635">Peidio â rhwystro</translation>
+<translation id="7907591526440419938">Agor Ffeil</translation>
+<translation id="7969046989155602842">Command</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Mae mwy nag 1 hysbysiad sydd heb eu darllen}zero{Mae mwy na # hysbysiad sydd heb eu darllen}two{Mae mwy na # hysbysiad sydd heb eu darllen}few{Mae mwy na # hysbysiad sydd heb eu darllen}many{Mae mwy na # hysbysiad sydd heb eu darllen}other{Mae mwy na # hysbysiad sydd heb eu darllen}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{mewn 1m}zero{mewn #m}two{mewn #f}few{mewn #m}many{mewn #m}other{mewn #m}}</translation>
+<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
+<translation id="8090736967111090568">Rhif o <ph name="ORIGIN" /></translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 awr yn ôl}zero{# awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{1 eiliad ar ôl}zero{# eiliad ar ôl}two{# eiliad ar ôl}few{# eiliad ar ôl}many{# eiliad ar ôl}other{# eiliad ar ôl}}</translation>
+<translation id="8134065097954893699">Wrthi'n ail-lwytho'r dudalen hon</translation>
+<translation id="815598010540052116">Sgrolio i Lawr</translation>
+<translation id="8179976553408161302">Enter</translation>
+<translation id="8210608804940886430">Page Down</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8245914219290430011">Tab</translation>
+<translation id="8259556432390118667">Gwerth lliw hecs</translation>
+<translation id="8328145009876646418">Ymyl Chwith</translation>
+<translation id="8331626408530291785">Sgrolio i Fyny</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 flwyddyn}zero{# blynedd}two{# flynedd}few{# blynedd}many{# blynedd}other{# blynedd}}</translation>
+<translation id="8393700583063109961">Anfon neges</translation>
+<translation id="8394908167088220973">Chwarae/Seibio Cyfryngau</translation>
+<translation id="8458811141851741261">{YEARS,plural, =1{1f}zero{#b}two{#f}few{#b}many{#b}other{#b}}</translation>
+<translation id="8602707065186045623">Ffeil <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY" /> kB/e</translation>
+<translation id="8725488761726303204">+<ph name="NUMBER" /> arall</translation>
+<translation id="8730621377337864115">Wedi gorffen</translation>
+<translation id="8772073294905169192">{HOURS,plural, =1{1a}zero{#a}two{#a}few{#a}many{#a}other{#a}}</translation>
+<translation id="8798099450830957504">Diofyn</translation>
+<translation id="8841375032071747811">Botwm mynd yn ôl</translation>
+<translation id="8867568208303837180">Wrthi'n anfon yr arian...</translation>
+<translation id="8876215549894133151">Fformat:</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8996630695507351249">Gwnewch yn siŵr bod <ph name="TARGET_DEVICE_NAME" /> wedi'i gysylltu â'r rhyngrwyd.</translation>
+<translation id="9044832324875206639">{SECONDS,plural, =1{1 eiliad}zero{# eiliad}two{# eiliad}few{# eiliad}many{# eiliad}other{# eiliad}}</translation>
+<translation id="9059834730836941392">Crebachu'r hysbysiad</translation>
+<translation id="9170848237812810038">&amp;Dadwneud</translation>
+<translation id="932327136139879170">Cartref</translation>
+<translation id="944069440740578670">Hysbysiadau sydd heb eu darllen</translation>
+</translationbundle>

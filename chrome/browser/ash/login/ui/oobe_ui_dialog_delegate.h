@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,16 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/public/cpp/system_tray_focus_observer.h"
-#include "base/macros.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -30,17 +31,14 @@ class Accelerator;
 }
 
 namespace views {
-class View;
 class WebDialogView;
 class Widget;
 }  // namespace views
 
-namespace chromeos {
-
+namespace ash {
 class CaptivePortalDialogDelegate;
 class LayoutWidgetDelegateView;
 class LoginDisplayHostMojo;
-class OobeUI;
 class OobeWebDialogView;
 
 // This class manages the behavior of the Oobe UI dialog.
@@ -53,10 +51,15 @@ class OobeWebDialogView;
 class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public ChromeKeyboardControllerClient::Observer,
                              public CaptivePortalWindowProxy::Observer,
+                             public OobeUI::Observer,
                              public views::ViewObserver,
-                             public ash::SystemTrayFocusObserver {
+                             public SystemTrayObserver {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
+
+  OobeUIDialogDelegate(const OobeUIDialogDelegate&) = delete;
+  OobeUIDialogDelegate& operator=(const OobeUIDialogDelegate&) = delete;
+
   ~OobeUIDialogDelegate() override;
 
   // Show the dialog widget.
@@ -75,7 +78,7 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   bool IsVisible();
 
   // Update the oobe state of the dialog.
-  void SetState(ash::OobeDialogState state);
+  void SetState(OobeDialogState state);
 
   // Tell the dialog whether to call FixCaptivePortal next time it is shown.
   void SetShouldDisplayCaptivePortal(bool should_display);
@@ -84,6 +87,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   OobeUI* GetOobeUI() const;
   gfx::NativeWindow GetNativeWindow() const;
+
+  views::Widget* GetWebDialogWidget() const;
 
   views::View* GetWebDialogView();
 
@@ -106,13 +111,14 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   std::vector<ui::Accelerator> GetAccelerators() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // ChromeKeyboardControllerClient::Observer:
   void OnKeyboardVisibilityChanged(bool visible) override;
@@ -121,7 +127,12 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void OnBeforeCaptivePortalShown() override;
   void OnAfterCaptivePortalHidden() override;
 
-  // ash::SystemTrayFocusObserver:
+  // OobeUI::Observer:
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override;
+  void OnDestroyingOobeUI() override;
+
+  // SystemTrayObserver:
   void OnFocusLeavingSystemTray(bool reverse) override;
 
   base::WeakPtr<LoginDisplayHostMojo> controller_;
@@ -136,30 +147,31 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // Reference to dialog view stored in widget_.
   OobeWebDialogView* dialog_view_ = nullptr;
 
+  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
+      this};
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       keyboard_observer_{this};
   base::ScopedObservation<CaptivePortalWindowProxy,
                           CaptivePortalWindowProxy::Observer>
       captive_portal_observer_{this};
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
 
-  std::unique_ptr<base::ScopedObservation<
-      LoginScreenClient,
-      ash::SystemTrayFocusObserver,
-      &LoginScreenClient::AddSystemTrayFocusObserver,
-      &LoginScreenClient::RemoveSystemTrayFocusObserver>>
-      scoped_system_tray_focus_observer_;
+  std::unique_ptr<
+      base::ScopedObservation<LoginScreenClientImpl,
+                              SystemTrayObserver,
+                              &LoginScreenClientImpl::AddSystemTrayObserver,
+                              &LoginScreenClientImpl::RemoveSystemTrayObserver>>
+      scoped_system_tray_observer_;
 
-  std::map<ui::Accelerator, ash::LoginAcceleratorAction> accel_map_;
-  ash::OobeDialogState state_ = ash::OobeDialogState::HIDDEN;
+  std::map<ui::Accelerator, LoginAcceleratorAction> accel_map_;
+  OobeDialogState state_ = OobeDialogState::HIDDEN;
 
   // Whether the captive portal screen should be shown the next time the Gaia
   // dialog is opened.
   bool should_display_captive_portal_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeUIDialogDelegate);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_OOBE_UI_DIALOG_DELEGATE_H_

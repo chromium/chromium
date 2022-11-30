@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 // This class implements the native methods of HeapProfilingTestShim.java, and
 // acts as a bridge to TestDriver. Note that this class is only used for
@@ -16,6 +15,9 @@ class HeapProfilingTestShim {
  public:
   HeapProfilingTestShim(JNIEnv* env, jobject obj);
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+
+  HeapProfilingTestShim(const HeapProfilingTestShim&) = delete;
+  HeapProfilingTestShim& operator=(const HeapProfilingTestShim&) = delete;
 
   jboolean RunTestForMode(
       JNIEnv* env,
@@ -28,8 +30,6 @@ class HeapProfilingTestShim {
 
  private:
   ~HeapProfilingTestShim();
-
-  DISALLOW_COPY_AND_ASSIGN(HeapProfilingTestShim);
 };
 
 #endif  // COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_HEAP_PROFILING_TEST_SHIM_H_

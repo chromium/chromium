@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_devtools_bindings.h"
 
@@ -22,24 +22,28 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
  public:
   static ShellDevToolsFrontend* Show(WebContents* inspected_contents);
 
+  ShellDevToolsFrontend(const ShellDevToolsFrontend&) = delete;
+  ShellDevToolsFrontend& operator=(const ShellDevToolsFrontend&) = delete;
+
   void Activate();
   void InspectElementAt(int x, int y);
   void Close() override;
 
   Shell* frontend_shell() const { return frontend_shell_; }
 
+  base::WeakPtr<ShellDevToolsFrontend> GetWeakPtr();
+
  private:
   // WebContentsObserver overrides
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void WebContentsDestroyed() override;
 
   ShellDevToolsFrontend(Shell* frontend_shell, WebContents* inspected_contents);
   ~ShellDevToolsFrontend() override;
-  Shell* frontend_shell_;
+  raw_ptr<Shell> frontend_shell_;
   std::unique_ptr<ShellDevToolsBindings> devtools_bindings_;
 
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsFrontend);
+  base::WeakPtrFactory<ShellDevToolsFrontend> weak_ptr_factory_{this};
 };
 
 }  // namespace content

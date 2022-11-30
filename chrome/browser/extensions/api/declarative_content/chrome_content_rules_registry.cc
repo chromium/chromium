@@ -1,11 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,13 +39,15 @@ class ChromeContentRulesRegistry::EvaluationScope {
   explicit EvaluationScope(ChromeContentRulesRegistry* registry);
   EvaluationScope(ChromeContentRulesRegistry* registry,
                   EvaluationDisposition disposition);
+
+  EvaluationScope(const EvaluationScope&) = delete;
+  EvaluationScope& operator=(const EvaluationScope&) = delete;
+
   ~EvaluationScope();
 
  private:
-  ChromeContentRulesRegistry* const registry_;
+  const raw_ptr<ChromeContentRulesRegistry> registry_;
   const EvaluationDisposition previous_disposition_;
-
-  DISALLOW_COPY_AND_ASSIGN(EvaluationScope);
 };
 
 ChromeContentRulesRegistry::EvaluationScope::EvaluationScope(
@@ -132,6 +135,18 @@ void ChromeContentRulesRegistry::WebContentsDestroyed(
   active_rules_.erase(web_contents);
 }
 
+void ChromeContentRulesRegistry::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {
+  if (base::Contains(active_rules_, contents)) {
+    EvaluationScope evaluation_scope(this);
+    for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
+         evaluators_) {
+      evaluator->OnWatchedPageChanged(contents, css_selectors);
+    }
+  }
+}
+
 ChromeContentRulesRegistry::ContentRule::ContentRule(
     const Extension* extension,
     std::vector<std::unique_ptr<const ContentCondition>> conditions,
@@ -151,19 +166,19 @@ ChromeContentRulesRegistry::CreateRule(
     const api::events::Rule& api_rule,
     std::string* error) {
   std::vector<std::unique_ptr<const ContentCondition>> conditions;
-  for (const std::unique_ptr<base::Value>& value : api_rule.conditions) {
+  for (const base::Value& value : api_rule.conditions) {
     conditions.push_back(
-        CreateContentCondition(extension, predicate_factories, *value, error));
+        CreateContentCondition(extension, predicate_factories, value, error));
     if (!error->empty())
-      return std::unique_ptr<ContentRule>();
+      return nullptr;
   }
 
   std::vector<std::unique_ptr<const ContentAction>> actions;
-  for (const std::unique_ptr<base::Value>& value : api_rule.actions) {
-    actions.push_back(ContentAction::Create(browser_context(), extension,
-                                            *value, error));
+  for (const base::Value& value : api_rule.actions) {
+    actions.push_back(
+        ContentAction::Create(browser_context(), extension, value, error));
     if (!error->empty())
-      return std::unique_ptr<ContentRule>();
+      return nullptr;
   }
 
   // Note: |api_rule| may contain tags, but these are ignored.

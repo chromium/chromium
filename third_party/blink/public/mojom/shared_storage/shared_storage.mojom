@@ -1,0 +1,109 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// The input argument of the shared storage key. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the key's length.
+struct SharedStorageKeyArgument {
+  mojo_base.mojom.String16 data;
+};
+
+// The input argument of the shared storage value. The data will be checked at
+// mojom boundary to ensure it meets the length requirement. Avoid using this
+// type if you don't intend to check the value's length.
+struct SharedStorageValueArgument {
+  mojo_base.mojom.String16 data;
+};
+
+// Bundles a candidate URL for `RunURLSelectionOperationOnWorklet()` with any
+// `reporting metadata` (map of each report event type to report URL) for
+// event-level reporting.
+struct SharedStorageUrlWithMetadata {
+  url.mojom.Url url;
+  map<string, url.mojom.Url> reporting_metadata;
+};
+
+// SharedStorage is an origin-keyed storage mechanism where the output is
+// carefully guarded to mitigate the risk of cross-site correlation.
+// See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+//
+// Implemented by the browser and exposed to the renderer process on a per-frame
+// basis, to allow accessing the shared storage and initiating worklet
+// operations, etc.
+interface SharedStorageDocumentService {
+  // Handle sharedStorage.worklet.addModule(): download and load the script in
+  // the worklet environment. The origin of the `script_source_url` should be
+  // checked at the Mojo boundary to ensure it's from the same origin of the
+  // current context.
+  AddModuleOnWorklet(url.mojom.Url script_source_url)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.runOperation(): run the operation previously
+  // registered by registerOperation() with matching `name`. `serialized_data`
+  // is the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
+  // There's no need to sanitize `serialized_data` at the browser process as the
+  // data will be only consumed in an environment (i.e. the worklet) in control
+  // by the same origin. The only error reported is if the API is disabled;
+  // other errors are suppressed and reported as success.
+  RunOperationOnWorklet(string name, array<uint8> serialized_data)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.runURLSelectionOperation(): run the operation
+  // previously registered by registerURLSelectionOperation() with matching
+  // `name`. Restrictions will be checked at the renderer and enforced at the
+  // browser: the length of the `urls` array is below the configured limit
+  // number `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
+  // `serialized_data` is the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
+  // There's no need to sanitize `serialized_data` at the browser process as the
+  // data will be only consumed in an environment (i.e. the worklet) in control
+  // by the same origin.
+  RunURLSelectionOperationOnWorklet(string name,
+                                    array<SharedStorageUrlWithMetadata>
+                                      urls_with_metadata,
+                                    array<uint8> serialized_data)
+    => (bool success, string error_message, url.mojom.Url opaque_url);
+
+  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
+  // `ignore_if_present` is true, the entry is not updated if `key` already
+  // exists. The only error reported is if the API is disabled; other errors are
+  // suppressed and reported as success.
+  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
+                   blink.mojom.SharedStorageValueArgument value,
+                   bool ignore_if_present)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.append(): append `value` to the entry for `key`.
+  // Equivalent to "set" if the `key` is not present. The only error reported
+  // is if the API is disabled; other errors are suppressed and reported as
+  // success.
+  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
+                      blink.mojom.SharedStorageValueArgument value)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.delete(): delete the entry at the given `key`. The
+  // only error reported is if the API is disabled; other errors are suppressed
+  // and reported as success.
+  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key)
+      => (bool success,
+          string error_message);
+
+  // Handle sharedStorage.clear(): delete all entries. The only error reported
+  // is if the API is disabled; other errors are suppressed and reported as
+  // success.
+  SharedStorageClear()
+      => (bool success,
+          string error_message);
+};
+

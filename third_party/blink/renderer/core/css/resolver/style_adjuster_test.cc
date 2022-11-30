@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -56,7 +57,8 @@ TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls,
+  EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -72,20 +74,22 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls,
+  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   Element* ancestor = GetDocument().getElementById("ancestor");
   ancestor->setAttribute(html_names::kStyleAttr, "touch-action: pan-y");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPanY,
+  EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   Element* potential_scroller =
       GetDocument().getElementById("potential-scroller");
   potential_scroller->setAttribute(html_names::kStyleAttr, "overflow: scroll");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls,
+  EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls |
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -100,85 +104,16 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kPanRight | TouchAction::kInternalPanXScrolls,
+  EXPECT_EQ(TouchAction::kPanRight | TouchAction::kInternalPanXScrolls |
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   Element* parent = GetDocument().getElementById("parent");
   parent->setAttribute(html_names::kStyleAttr, "touch-action: auto");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls,
+  EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
-}
-
-TEST_F(StyleAdjusterTest, AdjustOverflow) {
-  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
-  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
-  SetBodyInnerHTML(R"HTML(
-    <div id='clipauto' style='overflow-x: clip; overflow-y: auto;
-         overflow-clip-margin: 1px;'>
-    <div id='autoclip' style='overflow-x: auto; overflow-y: clip;
-         overflow-clip-margin: 1px;'>
-    <div id='clipclip' style='overflow-x: clip; overflow-y: clip;
-         overflow-clip-margin: 1px;'>
-    <div id='visclip' style='overflow-x: visible; overflow-y: clip;
-         overflow-clip-margin: 1px;'>
-    <div id='clipvis' style='overflow-x: clip; overflow-y: visible;
-         overflow-clip-margin: 1px;'>
-    <div id='hiddenvis' style='overflow-x: hidden; overflow-y: visible;
-         overflow-clip-margin: 1px;'>
-    <div id='vishidden' style='overflow-x: visible; overflow-y: hidden;
-         overflow-clip-margin: 1px;'>
-    <div id='containpaint' style='contain: paint; overflow-clip-margin: 1px;'>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* target = GetDocument().getElementById("clipauto");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("autoclip");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("clipclip");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(1), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("visclip");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("clipvis");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kClip, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kVisible, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("vishidden");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("hiddenvis");
-  ASSERT_TRUE(target);
-  EXPECT_EQ(EOverflow::kHidden, target->GetComputedStyle()->OverflowX());
-  EXPECT_EQ(EOverflow::kAuto, target->GetComputedStyle()->OverflowY());
-  EXPECT_EQ(LayoutUnit(), target->GetComputedStyle()->OverflowClipMargin());
-
-  target = GetDocument().getElementById("containpaint");
-  ASSERT_TRUE(target);
-  EXPECT_TRUE(target->GetComputedStyle()->ContainsPaint());
-  EXPECT_EQ(LayoutUnit(1), target->GetComputedStyle()->OverflowClipMargin());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
@@ -246,12 +181,99 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_EQ(TouchAction::kPanY,
+  EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 
   target->setAttribute(html_names::kContenteditableAttr, "true");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(TouchAction::kPanY,
+  EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
+            target->GetComputedStyle()->GetEffectiveTouchAction());
+}
+
+TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kStylusWritingToInput}, {});
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <style>#ancestor { margin: 0; touch-action: none; }
+    #scroller { overflow: auto; width: 100px; height: 100px; }
+    #target { width: 200px; height: 200px; } </style>
+    <div id='ancestor'><div id='scroller'><div id='target'>
+    </div></div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_TRUE((target->GetComputedStyle()->GetEffectiveTouchAction() &
+               TouchAction::kInternalNotWritable) != TouchAction::kNone);
+}
+
+TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kStylusWritingToInput}, {});
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div id='editable1' contenteditable='false'></div>
+    <input type="text" id='input1' disabled>
+    <input type="password" id='password1' disabled>
+    <textarea id="textarea1" readonly></textarea>
+    <div id='editable2' contenteditable='true'></div>
+    <input type="text" id='input2'>
+    <input type="password" id='password2'>
+    <textarea id="textarea2"></textarea>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("editable1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("input1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("password1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+  EXPECT_EQ(TouchAction::kAuto, GetDocument()
+                                    .getElementById("textarea1")
+                                    ->GetComputedStyle()
+                                    ->GetEffectiveTouchAction());
+
+  TouchAction expected_input_action =
+      (TouchAction::kAuto & ~TouchAction::kInternalNotWritable);
+  TouchAction expected_pwd_action = TouchAction::kAuto;
+  if (::features::IsSwipeToMoveCursorEnabled()) {
+    expected_input_action &= ~TouchAction::kInternalPanXScrolls;
+    expected_pwd_action &= ~TouchAction::kInternalPanXScrolls;
+  }
+
+  EXPECT_EQ(expected_input_action, GetDocument()
+                                       .getElementById("editable2")
+                                       ->GetComputedStyle()
+                                       ->GetEffectiveTouchAction());
+  EXPECT_EQ(expected_input_action, GetDocument()
+                                       .getElementById("input2")
+                                       ->GetComputedStyle()
+                                       ->GetEffectiveTouchAction());
+  EXPECT_EQ(expected_pwd_action, GetDocument()
+                                     .getElementById("password2")
+                                     ->GetComputedStyle()
+                                     ->GetEffectiveTouchAction());
+  EXPECT_EQ(expected_input_action, GetDocument()
+                                       .getElementById("textarea2")
+                                       ->GetComputedStyle()
+                                       ->GetEffectiveTouchAction());
+
+  Element* target = GetDocument().getElementById("editable1");
+  target->setAttribute(html_names::kContenteditableAttr, "true");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(expected_input_action,
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
@@ -273,6 +295,27 @@ TEST_F(StyleAdjusterTest, OverflowClipUseCount) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kOverflowClipAlongEitherAxis));
+}
+
+// crbug.com/1216721
+TEST_F(StyleAdjusterTest, AdjustForSVGCrash) {
+  SetBodyInnerHTML(R"HTML(
+<style>
+.class1 { dominant-baseline: hanging; }
+</style>
+<svg>
+<tref>
+<text id="text5" style="dominant-baseline: no-change;"/>
+</svg>
+<svg>
+<use id="use1" xlink:href="#text5" class="class1" />
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* text =
+      GetDocument().getElementById("use1")->GetShadowRoot()->getElementById(
+          "text5");
+  EXPECT_EQ(EDominantBaseline::kHanging,
+            text->GetComputedStyle()->CssDominantBaseline());
 }
 
 }  // namespace blink

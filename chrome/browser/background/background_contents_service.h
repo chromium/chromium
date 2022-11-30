@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,15 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/background/background_contents.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "net/base/backoff_entry.h"
@@ -31,7 +32,6 @@ class Profile;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
 }  // namespace base
 
 namespace content {
@@ -56,13 +56,19 @@ class BackgroundContentsServiceObserver;
 // It is also responsible for tracking the association between
 // BackgroundContents and their parent app, and shutting them down when the
 // parent app is unloaded.
-class BackgroundContentsService : private content::NotificationObserver,
-                                  public extensions::ExtensionRegistryObserver,
-                                  public BackgroundContents::Delegate,
-                                  public KeyedService {
+class BackgroundContentsService
+    : public extensions::ExtensionRegistryObserver,
+      public extensions::ExtensionHostRegistry::Observer,
+      public BackgroundContents::Delegate,
+      public KeyedService {
  public:
   BackgroundContentsService(Profile* profile,
                             const base::CommandLine* command_line);
+
+  BackgroundContentsService(const BackgroundContentsService&) = delete;
+  BackgroundContentsService& operator=(const BackgroundContentsService&) =
+      delete;
+
   ~BackgroundContentsService() override;
 
   // Allows tests to reduce the time between a force-installed app/extension
@@ -103,7 +109,7 @@ class BackgroundContentsService : private content::NotificationObserver,
   void AddWebContents(std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool* was_blocked) override;
   void OnBackgroundContentsNavigated(BackgroundContents* contents) override;
   void OnBackgroundContentsTerminated(BackgroundContents* contents) override;
@@ -127,7 +133,7 @@ class BackgroundContentsService : private content::NotificationObserver,
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const std::string& application_id,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Removes |contents| from |contents_map_|, deleting it.
@@ -151,10 +157,10 @@ class BackgroundContentsService : private content::NotificationObserver,
   // Registers for various notifications.
   void StartObserving();
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostRenderProcessGone(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* extension_host) override;
 
   // Called when ExtensionSystem is ready.
   void OnExtensionSystemReady();
@@ -178,9 +184,8 @@ class BackgroundContentsService : private content::NotificationObserver,
 
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
-  void LoadBackgroundContentsFromDictionary(
-      const std::string& extension_id,
-      const base::DictionaryValue* contents);
+  void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
+                                            const base::Value::Dict& contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
@@ -229,14 +234,13 @@ class BackgroundContentsService : private content::NotificationObserver,
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  PrefService* prefs_ = nullptr;
-  content::NotificationRegistrar registrar_;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {
@@ -262,13 +266,14 @@ class BackgroundContentsService : private content::NotificationObserver,
       ComponentExtensionBackoffEntryMap;
   ComponentExtensionBackoffEntryMap component_backoff_map_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<extensions::ExtensionHostRegistry,
+                          extensions::ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 
   base::WeakPtrFactory<BackgroundContentsService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundContentsService);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_H_

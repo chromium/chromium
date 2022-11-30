@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 // This class controls Developer Tools remote debugging server.
 class DevToolsServer {
  public:
   explicit DevToolsServer(const std::string& socket_name_prefix);
+
+  DevToolsServer(const DevToolsServer&) = delete;
+  DevToolsServer& operator=(const DevToolsServer&) = delete;
+
   ~DevToolsServer();
 
   // Opens linux abstract socket to be ready for remote debugging.
@@ -27,8 +29,6 @@ class DevToolsServer {
  private:
   std::string socket_name_;
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsServer);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_DEVTOOLS_SERVER_H_

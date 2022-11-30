@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_UPDATED_SCRIPT_LOADER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_UPDATED_SCRIPT_LOADER_H_
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
+#include "content/browser/service_worker/url_loader_client_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -64,7 +65,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   enum class LoaderState {
     kNotStarted,
     kLoadingHeader,
-    kWaitingForBody,
     kLoadingBody,
     kCompleted,
   };
@@ -79,6 +79,11 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ServiceWorkerVersion> version);
 
+  ServiceWorkerUpdatedScriptLoader(const ServiceWorkerUpdatedScriptLoader&) =
+      delete;
+  ServiceWorkerUpdatedScriptLoader& operator=(
+      const ServiceWorkerUpdatedScriptLoader&) = delete;
+
   ~ServiceWorkerUpdatedScriptLoader() override;
 
   // network::mojom::URLLoader:
@@ -86,7 +91,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -95,17 +100,16 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   // network::mojom::URLLoaderClient for the network load:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   // Implements ServiceWorkerCacheWriter::WriteObserver.
@@ -160,10 +164,7 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
 
   const GURL request_url_;
 
-  // This is network::mojom::RequestDestination::kServiceWorker for the main
-  // script or network::mojom::RequestDestination::kScript for an imported
-  // script.
-  const network::mojom::RequestDestination request_destination_;
+  const bool is_main_script_;
 
   // Loader options to pass to the network loader.
   const uint32_t options_;
@@ -185,15 +186,14 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   mojo::SimpleWatcher network_watcher_;
 
   // Used for responding with the fetched script to this loader's client.
-  mojo::Remote<network::mojom::URLLoaderClient> client_;
+  URLLoaderClientCheckedRemote client_;
   mojo::ScopedDataPipeProducerHandle client_producer_;
 
   // Represents the state of |network_loader_|.
   // Corresponds to the steps of calls as a URLLoaderClient.
   //
   // CreateLoaderAndStart(): kNotStarted -> kLoadingHeader
-  // OnReceiveResponse(): kLoadingHeader -> kWaitingForBody
-  // OnStartLoadingResponseBody(): kWaitingForBody -> kLoadingBody
+  // OnReceiveResponse(): kLoadingHeader -> kLoadingBody
   // OnComplete(): kLoadingBody -> kCompleted
   //
   // When this loader is created, the state should be kLoadingBody or kCompleted
@@ -231,8 +231,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   base::OnceCallback<void(net::Error)> write_observer_complete_callback_;
 
   base::WeakPtrFactory<ServiceWorkerUpdatedScriptLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUpdatedScriptLoader);
 };
 
 }  // namespace content

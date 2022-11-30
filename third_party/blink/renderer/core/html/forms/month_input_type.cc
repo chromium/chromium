@@ -58,7 +58,7 @@ const AtomicString& MonthInputType::FormControlType() const {
 
 double MonthInputType::ValueAsDate() const {
   DateComponents date;
-  if (!ParseToDateComponents(GetElement().value(), &date))
+  if (!ParseToDateComponents(GetElement().Value(), &date))
     return DateComponents::InvalidMilliseconds();
   double msec = date.MillisecondsSinceEpoch();
   DCHECK(std::isfinite(msec));
@@ -66,7 +66,7 @@ double MonthInputType::ValueAsDate() const {
 }
 
 String MonthInputType::SerializeWithDate(
-    const base::Optional<base::Time>& value) const {
+    const absl::optional<base::Time>& value) const {
   DateComponents date;
   if (!value ||
       !date.SetMillisecondsSinceEpochForMonth(value->ToJsTimeIgnoringNull()))
@@ -169,7 +169,7 @@ bool MonthInputType::IsValidFormat(bool has_year,
   return has_year && has_month;
 }
 
-String MonthInputType::AriaRoleForPickerIndicator() const {
+String MonthInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_MONTH_PICKER);
 }
 

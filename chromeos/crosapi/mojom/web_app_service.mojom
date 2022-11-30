@@ -1,0 +1,77 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/web_app_types.mojom";
+
+// Describes an Android package associated with a web app.
+[Stable]
+struct WebAppAndroidPackage {
+  // Android package name.
+  string package_name@0;
+
+  // SHA256 fingerprint of the certificate of this Android app.
+  string sha256_fingerprint@1;
+};
+
+// Contains the web app information used to mint an Android WebApk.
+[Stable]
+struct WebApkCreationParams {
+  // The URL of the Web App Manifest.
+  string manifest_url@0;
+
+  // A serialized webapk::WebAppManifest proto containing the information
+  // required for an Android WebApk to be minted.
+  array<uint8> webapk_manifest_proto_bytes@1;
+};
+
+// Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
+// lacros-chrome.
+// Next version: 2
+// Next method id: 3
+[Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
+interface WebAppProviderBridge {
+  // Called when a web app described by |info| is installed in ARC (Android
+  // package containing web app metadata) and installs this web app in the
+  // primary profile of Lacros.
+  // See |web_app::WebAppInstallManager::InstallWebAppFromInfo|.
+  WebAppInstalledInArc@0(ArcWebAppInstallInfo info)
+    => (string app_id, WebAppInstallResultCode install_result);
+
+  // Removes ARC as an install source from the app specified by |app_id|, and
+  // uninstalls the app from the primary profile of Lacros if no other sources
+  // are left.
+  // See |web_app::WebAppInstallFinalizer::UninstallExternalWebApp|.
+  WebAppUninstalledInArc@1(string app_id)
+    => (WebAppUninstallResultCode uninstall_result);
+
+  // Called when a web app defining a share target has been installed in Lacros.
+  // Returns the information required for an Android WebApk to be minted.
+  [MinVersion=1]
+  GetWebApkCreationParams@2(string app_id)
+    => (WebApkCreationParams webapk_creation_params);
+};
+
+// An interface implemented in ash-chrome. Allows lacros-chrome:
+// 1) to query web-app-related information in ash-chrome,
+// 2) to register its own |crosapi::mojom::WebAppProviderBridge| to let
+//    ash-chrome to modify or query WebAppProvider in lacros-chrome.
+//
+// Next version: 2
+// Next method id: 2
+[Stable, Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
+interface WebAppService {
+  // Register a web app provider bridge that lets ash-chrome to update or query
+  // WebAppProvider in lacros-chrome.
+  RegisterWebAppProviderBridge@0(
+    pending_remote<WebAppProviderBridge> web_app_provider_bridge);
+
+  // Gets the information about an Android package matching this web app, if
+  // this app was installed from the Play Store. Returns null if the app was not
+  // installed from the Play Store.
+  [MinVersion=1]
+  GetAssociatedAndroidPackage@1(string web_app_id)
+    => (WebAppAndroidPackage? package);
+};

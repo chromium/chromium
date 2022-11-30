@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,12 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "chrome/credential_provider/gaiacp/scoped_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace credential_provider {
 
@@ -41,7 +46,7 @@ class WinHttpUrlFetcher {
       const base::Value& request_dict,
       const base::TimeDelta& request_timeout,
       unsigned int request_retries,
-      base::Optional<base::Value>* request_result);
+      absl::optional<base::Value>* request_result);
 
   virtual ~WinHttpUrlFetcher();
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ option java_package = "org.chromium.components.metrics";
 
 package ukm;
 
-// Next tag: 9
+// Next tag: 10
 message Aggregate {
   // The id of the Source this Event is associated with. If this is zero
   // then it's an aggregate across all sources.
@@ -27,14 +27,20 @@ message Aggregate {
   // The total number of times this source/event was dropped due to sampling.
   optional uint64 dropped_due_to_sampling = 5;
 
-  // The total number of times this source/event was dropped due to whitelist.
-  optional uint64 dropped_due_to_whitelist = 7;
-
   // The total number of times this source/event was dropped due to filter.
+  // Unlike the others, records dropped for this reason are not included
+  // in the |total_count|.
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/ukm/ukm_entry_filter.h
   optional uint64 dropped_due_to_filter = 8;
 
+  // The total number of times this source/event was dropped due to there
+  // being no configuration of UKM via Finch. Until a full configuration is
+  // delivered by Finch to the client, UKM is disabled but some basic
+  // information is still collected and counted here.
+  optional uint64 dropped_due_to_unconfigured = 9;
+
   // For each Event, we have a list of possible metrics included. Metric names
-  // cannot be repeated. There is no guarentee that all metrics that are
+  // cannot be repeated. There is no guarantee that all metrics that are
   // possible for a given event will be included in a single Aggregate.
   message Metric {
     // The hash of the metric's name.
@@ -50,8 +56,8 @@ message Aggregate {
     optional uint64 total_count = 4;
     optional uint64 dropped_due_to_limits = 5;
     optional uint64 dropped_due_to_sampling = 6;
-    optional uint64 dropped_due_to_whitelist = 7;
     optional uint64 dropped_due_to_filter = 8;
+    optional uint64 dropped_due_to_unconfigured = 9;
   }
   repeated Metric metrics = 6;
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,18 +32,18 @@ UsbDeviceHandleAndroid::UsbDeviceHandleAndroid(
     scoped_refptr<UsbDevice> device,
     base::ScopedFD fd,
     const base::android::JavaRef<jobject>& wrapper)
-    : UsbDeviceHandleUsbfs(device,
-                           std::move(fd),
-                           base::ScopedFD(),
-                           UsbService::CreateBlockingTaskRunner()),
+    : UsbDeviceHandleUsbfs(
+          device,
+          std::move(fd),
+          base::ScopedFD(),
+          "",  // Empty string to indicate an invalid client id.
+          UsbService::CreateBlockingTaskRunner()),
       j_object_(wrapper) {}
 
 UsbDeviceHandleAndroid::~UsbDeviceHandleAndroid() {}
 
-void UsbDeviceHandleAndroid::CloseBlocking() {
-  ReleaseFileDescriptor();
-  task_runner()->PostTask(
-      FROM_HERE,
+void UsbDeviceHandleAndroid::FinishClose() {
+  ReleaseFileDescriptor(
       base::BindOnce(&UsbDeviceHandleAndroid::CloseConnection, this));
 }
 

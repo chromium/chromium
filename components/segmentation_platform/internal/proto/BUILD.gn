@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "model_prediction.proto",
+    "signal.proto",
+    "signal_storage_config.proto",
+  ]
+
+  link_deps = [ "//components/segmentation_platform/public/proto" ]
+}

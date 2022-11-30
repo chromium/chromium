@@ -1,43 +1,28 @@
 <html>
-<title>Tests for 'Save-Data' header.</title>
+<title>Tests for 'Save-Data' header when Data Saver is enabled.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-
-<!-- Enable save data header and the JavaScript attribute -->
-<script> internals.setSaveDataEnabled(true); </script>
-
+<script>
+internals.setSaveDataEnabled(true);
+</script>
 <iframe srcdoc="
 <!DOCTYPE html>
 <script src='/resources/testharness.js'></script>
 <script src='/resources/testharnessreport.js'></script>
-
 <script>
-internals.setSaveDataEnabled(true);
-
 var CHECK_PATH = './resources/check-save-data-header.php';
 var METHODS = ['GET', 'POST', 'PUT'];
 var REQUESTS =
     METHODS.map(method => new Request(CHECK_PATH, {method: method}));
-
 window.top.promise_test(t => {
-  internals.setSaveDataEnabled(true);
   return Promise.all(REQUESTS.map(request => fetch(request.clone())))
     .then(responses => Promise.all(responses.map(response => response.text())))
     .then(texts => {
         for (var i = 0; i < METHODS.length; ++i) {
-          assert_equals(
-              texts[i], 'Save-Data: on',
-              'Save-Data header should be sent when disabled. method: ' +
-              METHODS[i]);
+          assert_equals(texts[i], 'Save-Data: on');
         }
       });
-}, 'fetch() from document with Data-Saver enabled.');
-
-// Tests for dedicated workers and shared workers are implemented as browser
-// tests because they are requested from the browser process, and
-// internals.setSaveDataEnable() doesn't work in those cases.
-
+}, 'Save-Data should be sent when enabled.');
 </script>
 "></iframe>
-
 </html>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
 
@@ -81,7 +83,7 @@ bool ExtensionPrefValueMap::CanExtensionControlPref(
   if (incognito && !ext->second->incognito_enabled)
     return false;
 
-  auto winner = GetEffectivePrefValueController(pref_key, incognito, NULL);
+  auto winner = GetEffectivePrefValueController(pref_key, incognito, nullptr);
   if (winner == entries_.end())
     return true;
 
@@ -108,7 +110,7 @@ bool ExtensionPrefValueMap::DoesExtensionControlPref(
     const std::string& extension_id,
     const std::string& pref_key,
     bool* from_incognito) const {
-  bool incognito = (from_incognito != NULL);
+  bool incognito = (from_incognito != nullptr);
   auto winner =
       GetEffectivePrefValueController(pref_key, incognito, from_incognito);
   if (winner == entries_.end())
@@ -190,7 +192,7 @@ PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
       return &(i->second->incognito_profile_preferences_session_only);
   }
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 const PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
@@ -209,7 +211,7 @@ const PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
       return &(i->second->incognito_profile_preferences_session_only);
   }
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 void ExtensionPrefValueMap::GetExtensionControlledKeys(
@@ -243,9 +245,9 @@ const base::Value* ExtensionPrefValueMap::GetEffectivePrefValue(
     bool* from_incognito) const {
   auto winner = GetEffectivePrefValueController(key, incognito, from_incognito);
   if (winner == entries_.end())
-    return NULL;
+    return nullptr;
 
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   const std::string& ext_id = winner->first;
 
   // First search for incognito session only preferences.
@@ -302,7 +304,7 @@ ExtensionPrefValueMap::GetEffectivePrefValueController(
     if (incognito && !incognito_enabled)
       continue;
 
-    const base::Value* value = NULL;
+    const base::Value* value = nullptr;
     const PrefValueMap* prefs = GetExtensionPrefValueMap(
         ext_id, extensions::kExtensionPrefsScopeRegular);
     if (prefs->GetValue(key, &value)) {
@@ -313,7 +315,7 @@ ExtensionPrefValueMap::GetEffectivePrefValueController(
     }
 
     if (!incognito) {
-      const PrefValueMap* prefs = GetExtensionPrefValueMap(
+      prefs = GetExtensionPrefValueMap(
           ext_id, extensions::kExtensionPrefsScopeRegularOnly);
       if (prefs->GetValue(key, &value)) {
         winner = i;
@@ -368,7 +370,7 @@ void ExtensionPrefValueMap::RemoveObserver(
 
 std::string ExtensionPrefValueMap::GetExtensionControllingPref(
     const std::string& pref_key) const {
-  auto winner = GetEffectivePrefValueController(pref_key, false, NULL);
+  auto winner = GetEffectivePrefValueController(pref_key, false, nullptr);
   if (winner == entries_.end())
     return std::string();
   return winner->first;

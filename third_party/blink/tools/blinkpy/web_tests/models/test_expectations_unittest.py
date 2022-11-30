@@ -37,6 +37,8 @@ from blinkpy.web_tests.models.test_configuration import (
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectations, SystemConfigurationRemover, ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation
+from six.moves import range
+from functools import reduce
 
 
 class Base(unittest.TestCase):
@@ -331,7 +333,7 @@ class SystemConfigurationRemoverTests(Base):
     def __init__(self, testFunc):
         super(SystemConfigurationRemoverTests, self).__init__(testFunc)
         self._port.configuration_specifier_macros_dict = {
-            'mac': ['mac10.10', 'mac10.11', 'mac10.12'],
+            'mac': ['mac10.10', 'mac10.11', 'mac10.12', 'mac10.13'],
             'win': ['win7', 'win10'],
             'linux': ['precise', 'trusty']
         }
@@ -344,6 +346,7 @@ class SystemConfigurationRemoverTests(Base):
         expectations_dict = {self._general_exp_filename: content}
         test_expectations = TestExpectations(self._port, expectations_dict)
         self._system_config_remover = SystemConfigurationRemover(
+            self._port.host.filesystem,
             test_expectations)
 
     def test_remove_mac_version_from_mac_expectation(self):
@@ -464,7 +467,7 @@ class SystemConfigurationRemoverTests(Base):
         self.set_up_using_raw_expectations(raw_expectations)
         all_versions = reduce(
             lambda x, y: x + y,
-            self._port.configuration_specifier_macros_dict.values())
+            list(self._port.configuration_specifier_macros_dict.values()))
         self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
         self._system_config_remover.update_expectations()
@@ -484,7 +487,7 @@ class SystemConfigurationRemoverTests(Base):
         self.set_up_using_raw_expectations(raw_expectations)
         all_versions = reduce(
             lambda x, y: x + y,
-            self._port.configuration_specifier_macros_dict.values())
+            list(self._port.configuration_specifier_macros_dict.values()))
         self._system_config_remover.remove_os_versions(
             'failures/expected/text.html', all_versions)
         self._system_config_remover.update_expectations()
@@ -753,7 +756,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -776,7 +779,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -798,7 +801,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -822,7 +825,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -845,7 +848,7 @@ class AddExpectationsTest(Base):
                             '# results: [ Failure ]\n'
                             '\n'
                             '# this is a block of expectations\n'
-                            'test [ failure ]\n')
+                            'test [ Failure ]\n')
         expectations_dict = OrderedDict()
         expectations_dict['/tmp/TestExpectations'] = ''
         expectations_dict['/tmp/TestExpectations2'] = raw_expectations
@@ -870,10 +873,10 @@ class AddExpectationsTest(Base):
                                    '# results: [ Failure ]\n'
                                    '\n'
                                    '# this is a block of expectations\n'
-                                   'test [ failure ]\n'
+                                   'test [ Failure ]\n'
                                    '\n'
                                    'test1 [ Pass ]\n'
-                                   '[ Release Mac ] test2 [ Failure Crash ]\n'
+                                   '[ Mac Release ] test2 [ Crash Failure ]\n'
                                    'test3 [ Failure ]\n'))
 
     def test_add_after_remove(self):
@@ -927,6 +930,42 @@ class AddExpectationsTest(Base):
                                    '# add expectations after this line\n'
                                    '[ Win ] test2 [ Crash ]\n'
                                    '\n'))
+
+
+class ExpectationsConflictResolutionTest(Base):
+    def test_remove_expectation(self):
+        port = MockHost().port_factory.get('test-win-win7')
+        raw_expectations_1 = ('# tags: [ Mac Win ]\n'
+                            '# results: [ Failure Pass ]\n'
+                            '\n'
+                            'crbug.com/2432 [ Win ] test1 [ Failure ]\n')
+        raw_expectations_2 = ('# tags: [ Mac Win ]\n'
+                            '# results: [ Failure Pass ]\n'
+                            '\n'
+                            'crbug.com/2432 [ Win ] test1 [ Pass ]\n')
+        raw_expectations_3 = ('# tags: [ Mac Win ]\n'
+                            '# results: [ Failure Pass ]\n'
+                            '# conflict_resolution: Override \n'
+                            '\n'
+                            'crbug.com/2432 [ Win ] test1 [ Pass ]\n')
+        expectations_dict = OrderedDict()
+        expectations_dict['/tmp/TestExpectations'] = raw_expectations_1
+        expectations_dict['/tmp/TestExpectations2'] = raw_expectations_2
+        test_expectations = TestExpectations(port, expectations_dict)
+        self.assertEqual(test_expectations.get_expectations('test1'),
+                         Expectation(
+                             test='test1', results=set([ResultType.Pass, ResultType.Failure]),
+                             is_slow_test=False, reason='crbug.com/2432'
+                         ))
+        expectations_dict = OrderedDict()
+        expectations_dict['/tmp/TestExpectations'] = raw_expectations_1
+        expectations_dict['/tmp/TestExpectations2'] = raw_expectations_3
+        test_expectations = TestExpectations(port, expectations_dict)
+        self.assertEqual(test_expectations.get_expectations('test1'),
+                         Expectation(
+                             test='test1', results=set([ResultType.Pass]),
+                             is_slow_test=False, reason='crbug.com/2432'
+                         ))
 
 
 class CommitChangesTests(Base):

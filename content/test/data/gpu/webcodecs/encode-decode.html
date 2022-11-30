@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+The most basic GPU smoke test for WebCodecs: Accelerated VideoEncoder encodes
+several frames and accelerated VideoDecoder needs to successfully decode them.
+-->
+<html>
+
+<head>
+  <title>Encode, decode, render test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    function showFrameForDebug(frame) {
+      const cnv = document.getElementById('debug_cnv');
+      var ctx = cnv.getContext('2d');
+      ctx.drawImage(frame, 0, 0);
+    }
+
+    async function main(arg) {
+      const width = 640;
+      const height = 480;
+      const frames_to_encode = 32;
+      let frames_encoded = 0;
+      let frames_decoded = 0;
+      let errors = 0;
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: arg.acceleration,
+        width: width,
+        height: height,
+        bitrate: 5000000,
+        framerate: 24
+      };
+      if (arg.codec.startsWith('avc1')) {
+        encoder_config.avc = { format: 'annexb' };
+      }
+
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let decoder = new VideoDecoder({
+        output(frame) {
+          let dots = frames_decoded;
+          // Check that we have intended number of dots and no more.
+          // Completely black frame shouldn't pass the test.
+          if(!validateBlackDots(frame, dots) ||
+            validateBlackDots(frame, dots + 1)) {
+            showFrameForDebug(frame);
+            TEST.reportFailure(
+                `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+          }
+          frames_decoded++;
+          frame.close();
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      });
+
+      let timestamps = [];
+
+      const encoder_init = {
+        output(chunk, metadata) {
+          let config = metadata.decoderConfig;
+          if (config) {
+            decoder.configure(config);
+          }
+          decoder.decode(chunk);
+          frames_encoded++;
+
+          let expected_timestamp = timestamps.shift();
+          TEST.assert(
+              chunk.timestamp == expected_timestamp,
+              `EncodedVideoChunk timestamp mismatch. Expected: ${
+                  expected_timestamp} got ${chunk.timestamp}`);
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(encoder_init);
+      encoder.configure(encoder_config);
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
+
+      for (let i = 0; i < frames_to_encode; i++) {
+        let frame = await source.getNextFrame();
+        let keyframe = (i % 10 == 0);
+        timestamps.push(frame.timestamp);
+        encoder.encode(frame, { keyFrame: keyframe });
+        frame.close();
+
+        await waitForNextFrame();
+      }
+      await encoder.flush();
+      await decoder.flush();
+      encoder.close();
+      decoder.close();
+      source.close();
+
+      TEST.assert(
+        frames_encoded == frames_to_encode,
+        'frames_encoded mismatch: ' + frames_encoded);
+      TEST.assert(
+        frames_decoded == frames_to_encode,
+        'frames_decoded mismatch: ' + frames_decoded);
+      TEST.assert(
+        errors == 0, 'Decoding or encoding errors occurred during the test');
+    }
+  </script>
+</head>
+
+<body>
+  <canvas id="debug_cnv" width="640" height="480"></canvas>
+</body>
+
+</html>

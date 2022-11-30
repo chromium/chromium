@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -16,9 +18,40 @@ CSSContainerRule::CSSContainerRule(StyleRuleContainer* container_rule,
 CSSContainerRule::~CSSContainerRule() = default;
 
 String CSSContainerRule::cssText() const {
-  // TODO(crbug.com/1145970): Spec and implement serialization.
-  NOTIMPLEMENTED();
-  return "";
+  StringBuilder result;
+  result.Append("@container ");
+
+  String name = ContainerQuery().Selector().Name();
+  if (!name.empty()) {
+    SerializeIdentifier(name, result);
+    result.Append(' ');
+  }
+  result.Append(ContainerQuery().ToString());
+  result.Append(' ');
+  result.Append("{\n");
+  AppendCSSTextForItems(result);
+  result.Append('}');
+  return result.ReleaseString();
+}
+
+const AtomicString& CSSContainerRule::Name() const {
+  return ContainerQuery().Selector().Name();
+}
+
+const ContainerSelector& CSSContainerRule::Selector() const {
+  return ContainerQuery().Selector();
+}
+
+void CSSContainerRule::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  To<StyleRuleContainer>(group_rule_.Get())
+      ->SetConditionText(execution_context, value);
+}
+
+const ContainerQuery& CSSContainerRule::ContainerQuery() const {
+  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery();
 }
 
 }  // namespace blink

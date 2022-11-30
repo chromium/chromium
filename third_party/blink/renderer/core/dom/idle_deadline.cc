@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,12 @@ IdleDeadline::IdleDeadline(base::TimeTicks deadline,
 
 double IdleDeadline::timeRemaining() const {
   base::TimeDelta time_remaining = deadline_ - clock_->NowTicks();
-  if (time_remaining < base::TimeDelta() ||
+  if (time_remaining.is_negative() ||
       ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
     return 0;
   }
 
-  return 1000.0 *
-         Performance::ClampTimeResolution(time_remaining.InSecondsF(),
+  return Performance::ClampTimeResolution(time_remaining,
                                           cross_origin_isolated_capability_);
 }
 

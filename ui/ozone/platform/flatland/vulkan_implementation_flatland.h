@@ -1,0 +1,79 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_OZONE_PLATFORM_FLATLAND_VULKAN_IMPLEMENTATION_FLATLAND_H_
+#define UI_OZONE_PLATFORM_FLATLAND_VULKAN_IMPLEMENTATION_FLATLAND_H_
+
+#include <memory>
+
+#include "gpu/vulkan/vulkan_implementation.h"
+#include "gpu/vulkan/vulkan_instance.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
+
+namespace ui {
+
+class FlatlandSurfaceFactory;
+class FlatlandSysmemBufferManager;
+
+class VulkanImplementationFlatland : public gpu::VulkanImplementation {
+ public:
+  VulkanImplementationFlatland(
+      FlatlandSurfaceFactory* flatland_surface_factory,
+      FlatlandSysmemBufferManager* flatland_sysmem_buffer_manager,
+      bool use_swiftshader,
+      bool allow_protected_memory);
+  ~VulkanImplementationFlatland() override;
+  VulkanImplementationFlatland(const VulkanImplementationFlatland&) = delete;
+  VulkanImplementationFlatland& operator=(const VulkanImplementationFlatland&) =
+      delete;
+
+  // VulkanImplementation:
+  bool InitializeVulkanInstance(bool using_surface) override;
+  gpu::VulkanInstance* GetVulkanInstance() override;
+  std::unique_ptr<gpu::VulkanSurface> CreateViewSurface(
+      gfx::AcceleratedWidget window) override;
+  bool GetPhysicalDevicePresentationSupport(
+      VkPhysicalDevice device,
+      const std::vector<VkQueueFamilyProperties>& queue_family_properties,
+      uint32_t queue_family_index) override;
+  std::vector<const char*> GetRequiredDeviceExtensions() override;
+  std::vector<const char*> GetOptionalDeviceExtensions() override;
+  VkFence CreateVkFenceForGpuFence(VkDevice vk_device) override;
+  std::unique_ptr<gfx::GpuFence> ExportVkFenceToGpuFence(
+      VkDevice vk_device,
+      VkFence vk_fence) override;
+  VkSemaphore CreateExternalSemaphore(VkDevice vk_device) override;
+  VkSemaphore ImportSemaphoreHandle(VkDevice vk_device,
+                                    gpu::SemaphoreHandle handle) override;
+  gpu::SemaphoreHandle GetSemaphoreHandle(VkDevice vk_device,
+                                          VkSemaphore vk_semaphore) override;
+  VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
+  bool CanImportGpuMemoryBuffer(
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  std::unique_ptr<gpu::VulkanImage> CreateImageFromGpuMemoryHandle(
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::GpuMemoryBufferHandle gmb_handle,
+      gfx::Size size,
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
+  std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(
+      VkDevice device,
+      gfx::SysmemBufferCollectionId id,
+      zx::channel token,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gfx::Size size,
+      size_t min_buffer_count,
+      bool register_with_image_pipe) override;
+
+ private:
+  FlatlandSysmemBufferManager* const flatland_sysmem_buffer_manager_;
+
+  gpu::VulkanInstance vulkan_instance_;
+};
+
+}  // namespace ui
+
+#endif  // UI_OZONE_PLATFORM_FLATLAND_VULKAN_IMPLEMENTATION_FLATLAND_H_

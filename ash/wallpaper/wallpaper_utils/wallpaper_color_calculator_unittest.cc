@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -51,6 +51,11 @@ class TestWallpaperColorCalculatorObserver
  public:
   TestWallpaperColorCalculatorObserver() {}
 
+  TestWallpaperColorCalculatorObserver(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+  TestWallpaperColorCalculatorObserver& operator=(
+      const TestWallpaperColorCalculatorObserver&) = delete;
+
   ~TestWallpaperColorCalculatorObserver() override {}
 
   bool WasNotified() const { return notified_; }
@@ -60,8 +65,6 @@ class TestWallpaperColorCalculatorObserver
 
  private:
   bool notified_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperColorCalculatorObserver);
 };
 
 // Returns an image that will yield a color using the LumaRange::NORMAL and
@@ -84,6 +87,11 @@ gfx::ImageSkia CreateNonColorProducingImage(const gfx::Size& size) {
 class WallpaperColorCalculatorTest : public testing::Test {
  public:
   WallpaperColorCalculatorTest();
+
+  WallpaperColorCalculatorTest(const WallpaperColorCalculatorTest&) = delete;
+  WallpaperColorCalculatorTest& operator=(const WallpaperColorCalculatorTest&) =
+      delete;
+
   ~WallpaperColorCalculatorTest() override;
 
  protected:
@@ -108,8 +116,6 @@ class WallpaperColorCalculatorTest : public testing::Test {
  private:
   // Required for asynchronous calculations, e.g. by PostTaskAndReplyImpl.
   std::unique_ptr<base::ThreadTaskRunnerHandle> task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperColorCalculatorTest);
 };
 
 WallpaperColorCalculatorTest::WallpaperColorCalculatorTest()
@@ -174,7 +180,9 @@ TEST_F(WallPaperColorCalculatorAsyncTest, MetricsWhenPostingTaskFails) {
   EXPECT_THAT(histograms_.GetAllSamples("Ash.Wallpaper.ColorExtractionResult2"),
               IsEmpty());
 
-  EXPECT_EQ(kDefaultColor, calculator_->prominent_colors()[0]);
+  EXPECT_EQ(kDefaultColor,
+            calculator_->get_calculated_colors().prominent_colors[0]);
+  EXPECT_EQ(kDefaultColor, calculator_->get_calculated_colors().k_mean_color);
 }
 
 TEST_F(WallPaperColorCalculatorAsyncTest,
@@ -190,13 +198,19 @@ TEST_F(WallPaperColorCalculatorAsyncTest,
 
 TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
   std::vector<SkColor> colors = {kDefaultColor};
-  calculator_->set_prominent_colors_for_test(colors);
+  SkColor k_mean_color = kDefaultColor;
+  calculator_->set_calculated_colors_for_test(
+      WallpaperCalculatedColors(colors, k_mean_color));
 
   EXPECT_TRUE(calculator_->StartCalculation());
-  EXPECT_EQ(kDefaultColor, calculator_->prominent_colors()[0]);
+  EXPECT_EQ(kDefaultColor,
+            calculator_->get_calculated_colors().prominent_colors[0]);
+  EXPECT_EQ(kDefaultColor, calculator_->get_calculated_colors().k_mean_color);
 
   task_runner_->RunUntilIdle();
-  EXPECT_NE(kDefaultColor, calculator_->prominent_colors()[0]);
+  EXPECT_NE(kDefaultColor,
+            calculator_->get_calculated_colors().prominent_colors[0]);
+  EXPECT_EQ(kGray, calculator_->get_calculated_colors().k_mean_color);
 }
 
 TEST_F(WallPaperColorCalculatorAsyncTest,

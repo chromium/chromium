@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "util/file/file_io.h"
 #include "util/file/file_reader.h"
 #include "util/file/file_writer.h"
@@ -111,6 +110,10 @@ class CrashReportDatabase {
   class NewReport {
    public:
     NewReport();
+
+    NewReport(const NewReport&) = delete;
+    NewReport& operator=(const NewReport&) = delete;
+
     ~NewReport();
 
     //! \brief An open FileWriter with which to write the report.
@@ -125,8 +128,6 @@ class CrashReportDatabase {
     const UUID& ReportID() const { return uuid_; }
 
     //! \brief Adds an attachment to the report.
-    //!
-    //! \note This function is not yet implemented on macOS.
     //!
     //! \param[in] name The key and name for the attachment, which will be
     //!     included in the http upload. The attachment will not appear in the
@@ -152,8 +153,6 @@ class CrashReportDatabase {
     std::vector<ScopedRemoveFile> attachment_removers_;
     UUID uuid_;
     CrashReportDatabase* database_;
-
-    DISALLOW_COPY_AND_ASSIGN(NewReport);
   };
 
   //! \brief A crash report that is in the process of being uploaded.
@@ -162,6 +161,10 @@ class CrashReportDatabase {
   class UploadReport : public Report {
    public:
     UploadReport();
+
+    UploadReport(const UploadReport&) = delete;
+    UploadReport& operator=(const UploadReport&) = delete;
+
     virtual ~UploadReport();
 
     //! \brief An open FileReader with which to read the report.
@@ -169,8 +172,6 @@ class CrashReportDatabase {
 
     //! \brief Obtains a mapping of names to file readers for any attachments
     //!     for the report.
-    //!
-    //! This is not implemented on macOS.
     std::map<std::string, FileReader*> GetAttachments() const {
       return attachment_map_;
     }
@@ -181,7 +182,7 @@ class CrashReportDatabase {
     friend class CrashReportDatabaseMac;
     friend class CrashReportDatabaseWin;
 
-    bool Initialize(const base::FilePath path, CrashReportDatabase* database);
+    bool Initialize(const base::FilePath& path, CrashReportDatabase* database);
     void InitializeAttachments();
 
     std::unique_ptr<FileReader> reader_;
@@ -189,8 +190,6 @@ class CrashReportDatabase {
     std::vector<std::unique_ptr<FileReader>> attachment_readers_;
     std::map<std::string, FileReader*> attachment_map_;
     bool report_metrics_;
-
-    DISALLOW_COPY_AND_ASSIGN(UploadReport);
   };
 
   //! \brief The result code for operations performed on a database.
@@ -232,6 +231,9 @@ class CrashReportDatabase {
     //!     been uploaded.
     kCannotRequestUpload,
   };
+
+  CrashReportDatabase(const CrashReportDatabase&) = delete;
+  CrashReportDatabase& operator=(const CrashReportDatabase&) = delete;
 
   virtual ~CrashReportDatabase() {}
 
@@ -326,13 +328,21 @@ class CrashReportDatabase {
   virtual OperationStatus GetCompletedReports(std::vector<Report>* reports) = 0;
 
   //! \brief Obtains and locks a report object for uploading to a collection
-  //!     server.
+  //!     server. On iOS the file lock is released and mutual-exclusion is kept
+  //!     via a file attribute.
   //!
   //! Callers should upload the crash report using the FileReader provided.
   //! Callers should then call RecordUploadComplete() to record a successful
   //! upload. If RecordUploadComplete() is not called, the upload attempt will
   //! be recorded as unsuccessful and the report lock released when \a report is
   //! destroyed.
+  //!
+  //! On iOS, holding a lock during a slow upload can lead to watchdog kills if
+  //! the app is suspended mid-upload. Instead, if the client can obtain the
+  //! lock, the database sets a lock-time file attribute and releases the lock.
+  //! The attribute is cleared when the upload is completed. The lock-time
+  //! attribute can be used to prevent file access from other processes, or to
+  //! discard reports that likely were terminated mid-upload.
   //!
   //! \param[in] uuid The unique identifier for the crash report record.
   //! \param[out] report A crash report record for the report to be uploaded.
@@ -394,9 +404,11 @@ class CrashReportDatabase {
   virtual OperationStatus RequestUpload(const UUID& uuid) = 0;
 
   //! \brief Cleans the database of expired lockfiles, metadata without report
-  //!     files, and report files without metadata.
+  //!     files, report files without metadata, and attachments without report
+  //!     files.
   //!
-  //! This method does nothing on the macOS implementations of the database.
+  //! As the macOS implementation does not use  lock or metadata files, the
+  //! cleaning is limited to attachments without report files.
   //!
   //! \param[in] lockfile_ttl The number of seconds at which lockfiles or new
   //!     report files are considered expired.
@@ -405,6 +417,30 @@ class CrashReportDatabase {
 
  protected:
   CrashReportDatabase() {}
+
+  //! \brief The path to the database passed to Initialize.
+  //!
+  //! \return The filepath of the database;
+  virtual base::FilePath DatabasePath() = 0;
+
+  //! \brief Build a filepath for the root attachments directory.
+  //!
+  //! \return The filepath to the attachments directory.
+  base::FilePath AttachmentsRootPath();
+
+  //! \brief  Build a filepath for the directory for the report to hold
+  //!     attachments.
+  //!
+  //! \param[in] uuid The unique identifier for the crash report record.
+  //!
+  //! \return The filepath to the report attachments directory.
+  base::FilePath AttachmentsPath(const UUID& uuid);
+
+  //! \brief Attempts to remove any attachments associated with the given
+  //!     report UUID. There may not be any, so failing is not an error.
+  //!
+  //! \param[in] uuid The unique identifier for the crash report record.
+  void RemoveAttachmentsByUUID(const UUID& uuid);
 
  private:
   //! \brief Adjusts a crash report record’s metadata to account for an upload
@@ -422,8 +458,6 @@ class CrashReportDatabase {
   virtual OperationStatus RecordUploadAttempt(UploadReport* report,
                                               bool successful,
                                               const std::string& id) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashReportDatabase);
 };
 
 }  // namespace crashpad

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,8 +125,7 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveInfo receive_info;
     receive_info.connection_id = params.connection_id;
     receive_info.data = std::move(data);
-    std::unique_ptr<base::ListValue> args =
-        serial::OnReceive::Create(receive_info);
+    auto args = serial::OnReceive::Create(receive_info);
     std::unique_ptr<extensions::Event> event(
         new extensions::Event(extensions::events::SERIAL_ON_RECEIVE,
                               serial::OnReceive::kEventName, std::move(args)));
@@ -143,8 +142,7 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
     serial::ReceiveErrorInfo error_info;
     error_info.connection_id = params.connection_id;
     error_info.error = error;
-    std::unique_ptr<base::ListValue> args =
-        serial::OnReceiveError::Create(error_info);
+    auto args = serial::OnReceiveError::Create(error_info);
     std::unique_ptr<extensions::Event> event(new extensions::Event(
         extensions::events::SERIAL_ON_RECEIVE_ERROR,
         serial::OnReceiveError::kEventName, std::move(args)));
@@ -156,8 +154,8 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
 void SerialPortManager::DispatchEvent(
     const ReceiveParams& params,
     std::unique_ptr<extensions::Event> event) {
-  content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(params.browser_context_id);
+  content::BrowserContext* context = reinterpret_cast<content::BrowserContext*>(
+      params.browser_context_id.get());
   if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
     return;
 
@@ -200,7 +198,7 @@ void SerialPortManager::OnGotDevicesToGetPort(
       return;
     }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (device->alternate_path &&
         device->alternate_path->AsUTF8Unsafe() == path) {
       port_manager_->OpenPort(device->token, /*use_alternate_path=*/true,
@@ -209,7 +207,7 @@ void SerialPortManager::OnGotDevicesToGetPort(
                               std::move(callback));
       return;
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 }
 

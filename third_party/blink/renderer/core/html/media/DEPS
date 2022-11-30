@@ -4,6 +4,7 @@ include_rules = [
     "+media/base/media_switches.h",
     "+media/base/video_frame.h",
     "+media/mojo/mojom/media_player.mojom-blink.h",
+    "+services/media_session/public/mojom/media_session.mojom-blink.h",
 ]
 
 specific_include_rules = {

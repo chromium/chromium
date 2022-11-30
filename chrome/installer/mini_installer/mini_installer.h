@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,11 +44,6 @@ ProcessExitResult GetPreviousSetupExePath(const Configuration& configuration,
 // Returns false in case of failure, in which case the contents of |directory|
 // are undefined and may have been modified.
 bool GetModuleDir(HMODULE module, PathString* directory);
-
-// Populates |directory| with the process's current temp directory. Returns
-// false in case of failure, in which case |exit_code| is populated with details
-// and the contents of |directory| are undefined and may have been modified.
-bool GetTempDir(PathString* directory, ProcessExitResult* exit_code);
 
 // Appends everything following the path to the executable in |command_line|
 // verbatim to |buffer|, including all whitespace, quoted arguments,

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -38,13 +39,19 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
     InitializeAndSetClient();
     CreatePredefinedUserSessions(1);
   }
+
+  LockScreenSessionControllerClient(const LockScreenSessionControllerClient&) =
+      delete;
+  LockScreenSessionControllerClient& operator=(
+      const LockScreenSessionControllerClient&) = delete;
+
   ~LockScreenSessionControllerClient() override = default;
 
   // TestSessionControllerClient:
   void RequestLockScreen() override {
     TestSessionControllerClient::RequestLockScreen();
     CreateLockScreen();
-    Shell::Get()->UpdateShelfVisibility();
+    Shelf::UpdateShelfVisibility();
   }
 
   void UnlockScreen() override {
@@ -54,13 +61,13 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
       lock_screen_widget_.reset(nullptr);
     }
 
-    Shell::Get()->UpdateShelfVisibility();
+    Shelf::UpdateShelfVisibility();
   }
 
  private:
   void CreateLockScreen() {
     auto lock_view = std::make_unique<views::View>();
-    lock_screen_widget_.reset(new views::Widget);
+    lock_screen_widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     gfx::Size ps = lock_view->GetPreferredSize();
@@ -80,8 +87,6 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
   }
 
   std::unique_ptr<views::Widget> lock_screen_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenSessionControllerClient);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +96,11 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
 class LockScreenAshFocusRulesTest : public AshTestBase {
  public:
   LockScreenAshFocusRulesTest() = default;
+
+  LockScreenAshFocusRulesTest(const LockScreenAshFocusRulesTest&) = delete;
+  LockScreenAshFocusRulesTest& operator=(const LockScreenAshFocusRulesTest&) =
+      delete;
+
   ~LockScreenAshFocusRulesTest() override = default;
 
   void SetUp() override {
@@ -144,7 +154,7 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
     aura::Window* root_window = Shell::GetPrimaryRootWindow();
     aura::Window* container = Shell::GetContainer(root_window, container_id);
     aura::Window* window = new aura::Window(nullptr);
-    window->set_id(0);
+    window->SetId(0);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     window->Show();
@@ -157,8 +167,6 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   }
 
   std::unique_ptr<LockScreenSessionControllerClient> session_controller_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAshFocusRulesTest);
 };
 
 }  // namespace

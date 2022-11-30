@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.feed.shared.ui.MaterialSpinnerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_spinner"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/feed_suggestion_card_action_min_height"
+    android:layout_gravity="center" />

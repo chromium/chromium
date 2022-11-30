@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/storage/service_worker/service_worker_storage.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
@@ -30,10 +31,9 @@ namespace service_worker_storage_unittest {
 struct ReadResponseHeadResult {
   int result;
   network::mojom::URLResponseHeadPtr response_head;
-  base::Optional<mojo_base::BigBuffer> metadata;
+  absl::optional<mojo_base::BigBuffer> metadata;
 };
 
-using RegistrationData = mojom::ServiceWorkerRegistrationData;
 using ResourceRecord = mojom::ServiceWorkerResourceRecordPtr;
 using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
 
@@ -48,12 +48,14 @@ mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
     int64_t registration_id,
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     const GURL& script_url,
     const std::vector<ResourceRecord>& resources) {
   auto data = mojom::ServiceWorkerRegistrationData::New();
   data->registration_id = registration_id;
   data->version_id = version_id;
   data->scope = scope;
+  data->key = key;
   data->script = script_url;
   data->navigation_preload_state = blink::mojom::NavigationPreloadState::New();
   data->is_active = true;
@@ -69,7 +71,7 @@ mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
 
 void DatabaseStatusCallback(
     base::OnceClosure quit_closure,
-    base::Optional<ServiceWorkerDatabase::Status>* result,
+    absl::optional<ServiceWorkerDatabase::Status>* result,
     ServiceWorkerDatabase::Status status) {
   *result = status;
   std::move(quit_closure).Run();
@@ -104,15 +106,17 @@ class ServiceWorkerStorageTest : public testing::Test {
  protected:
   void LazyInitialize() { storage()->LazyInitializeForTest(); }
 
-  ServiceWorkerDatabase::Status DeleteRegistration(int64_t registration_id,
-                                                   const GURL& origin) {
+  ServiceWorkerDatabase::Status DeleteRegistration(
+      int64_t registration_id,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->DeleteRegistration(
-        registration_id, origin,
+        registration_id, key,
         base::BindLambdaForTesting(
             [&](ServiceWorkerDatabase::Status status,
-                ServiceWorkerStorage::OriginState, int64_t /*deleted_version*/,
+                ServiceWorkerStorage::StorageKeyState,
+                int64_t /*deleted_version*/,
                 uint64_t /*deleted_resources_size*/,
                 const std::vector<int64_t>& /*newly_purgeable_resources*/) {
               result = status;
@@ -138,33 +142,34 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status GetUsageForOrigin(const url::Origin& origin,
-                                                  int64_t& out_usage) {
+  ServiceWorkerDatabase::Status GetUsageForStorageKey(
+      const blink::StorageKey& key,
+      int64_t& out_usage) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    storage()->GetUsageForOrigin(
-        origin, base::BindLambdaForTesting(
-                    [&](ServiceWorkerDatabase::Status status, int64_t usage) {
-                      result = status;
-                      out_usage = usage;
-                      loop.Quit();
-                    }));
+    storage()->GetUsageForStorageKey(
+        key, base::BindLambdaForTesting(
+                 [&](ServiceWorkerDatabase::Status status, int64_t usage) {
+                   result = status;
+                   out_usage = usage;
+                   loop.Quit();
+                 }));
     loop.Run();
     return result;
   }
 
-  ServiceWorkerDatabase::Status GetRegistrationsForOrigin(
-      const url::Origin& origin) {
+  ServiceWorkerDatabase::Status GetRegistrationsForStorageKey(
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
-    storage()->GetRegistrationsForOrigin(
-        origin, base::BindLambdaForTesting(
-                    [&](ServiceWorkerDatabase::Status status,
-                        std::unique_ptr<ServiceWorkerStorage::RegistrationList>,
-                        std::unique_ptr<std::vector<ResourceList>>) {
-                      result = status;
-                      loop.Quit();
-                    }));
+    storage()->GetRegistrationsForStorageKey(
+        key, base::BindLambdaForTesting(
+                 [&](ServiceWorkerDatabase::Status status,
+                     std::unique_ptr<ServiceWorkerStorage::RegistrationList>,
+                     std::unique_ptr<std::vector<ResourceList>>) {
+                   result = status;
+                   loop.Quit();
+                 }));
     loop.Run();
     return result;
   }
@@ -207,7 +212,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   ServiceWorkerDatabase::Status StoreUserData(
       int64_t registration_id,
-      const url::Origin& origin,
+      const blink::StorageKey& key,
       const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
     for (const auto& kv : key_value_pairs) {
@@ -218,7 +223,7 @@ class ServiceWorkerStorageTest : public testing::Test {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->StoreUserData(
-        registration_id, origin, std::move(user_data),
+        registration_id, key, std::move(user_data),
         base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
           result = status;
           loop.Quit();
@@ -290,12 +295,29 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status UpdateToActiveState(int64_t registration_id,
-                                                    const url::Origin& origin) {
+  ServiceWorkerDatabase::Status UpdateToActiveState(
+      int64_t registration_id,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->UpdateToActiveState(
-        registration_id, origin.GetURL(),
+        registration_id, key,
+        base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
+  }
+
+  ServiceWorkerDatabase::Status UpdateFetchHandlerType(
+      int64_t registration_id,
+      const blink::StorageKey& key,
+      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {
+    ServiceWorkerDatabase::Status result;
+    base::RunLoop loop;
+    storage()->UpdateFetchHandlerType(
+        registration_id, key, fetch_handler_type,
         base::BindLambdaForTesting([&](ServiceWorkerDatabase::Status status) {
           result = status;
           loop.Quit();
@@ -305,11 +327,12 @@ class ServiceWorkerStorageTest : public testing::Test {
   }
 
   ServiceWorkerDatabase::Status FindRegistrationForClientUrl(
-      const GURL& document_url) {
+      const GURL& document_url,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForClientUrl(
-        document_url,
+        document_url, key,
         base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
                                        std::unique_ptr<ResourceList>,
                                        ServiceWorkerDatabase::Status status) {
@@ -320,11 +343,13 @@ class ServiceWorkerStorageTest : public testing::Test {
     return result;
   }
 
-  ServiceWorkerDatabase::Status FindRegistrationForScope(const GURL& scope) {
+  ServiceWorkerDatabase::Status FindRegistrationForScope(
+      const GURL& scope,
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForScope(
-        scope,
+        scope, key,
         base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
                                        std::unique_ptr<ResourceList>,
                                        ServiceWorkerDatabase::Status status) {
@@ -337,11 +362,11 @@ class ServiceWorkerStorageTest : public testing::Test {
 
   ServiceWorkerDatabase::Status FindRegistrationForId(
       int64_t registration_id,
-      const url::Origin& origin) {
+      const blink::StorageKey& key) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForId(
-        registration_id, origin,
+        registration_id, key,
         base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
                                        std::unique_ptr<ResourceList>,
                                        ServiceWorkerDatabase::Status status) {
@@ -414,7 +439,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 
     reader->ReadResponseHead(base::BindLambdaForTesting(
         [&](int result, network::mojom::URLResponseHeadPtr response_head,
-            base::Optional<mojo_base::BigBuffer> metadata) {
+            absl::optional<mojo_base::BigBuffer> metadata) {
           out.result = result;
           out.response_head = std::move(response_head);
           out.metadata = std::move(metadata);
@@ -429,7 +454,7 @@ class ServiceWorkerStorageTest : public testing::Test {
         "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
     const std::string kHttpBody = "Hello";
 
-    std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+    std::string headers(kHttpHeaders, std::size(kHttpHeaders));
     mojo_base::BigBuffer body(
         base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
 
@@ -524,6 +549,7 @@ class ServiceWorkerStorageTest : public testing::Test {
 TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   const GURL kScope("http://www.example.com/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
+  const blink::StorageKey kKey(kOrigin);
   const GURL kScript("http://www.example.com/script.js");
   const GURL kDocumentUrl("http://www.example.com/scope/document.html");
   const int64_t kRegistrationId = 0;
@@ -533,16 +559,16 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   LazyInitialize();
   storage()->Disable();
 
-  EXPECT_EQ(FindRegistrationForClientUrl(kDocumentUrl),
+  EXPECT_EQ(FindRegistrationForClientUrl(kDocumentUrl, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
-  EXPECT_EQ(FindRegistrationForScope(kScope),
+  EXPECT_EQ(FindRegistrationForScope(kScope, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
-  EXPECT_EQ(FindRegistrationForId(kRegistrationId, url::Origin::Create(kScope)),
+  EXPECT_EQ(FindRegistrationForId(kRegistrationId, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
   EXPECT_EQ(FindRegistrationForIdOnly(kRegistrationId),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(GetRegistrationsForOrigin(url::Origin::Create(kScope)),
+  EXPECT_EQ(GetRegistrationsForStorageKey(kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
   EXPECT_EQ(GetAllRegistrations(),
@@ -551,16 +577,21 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
   std::vector<ResourceRecord> resources;
   resources.push_back(CreateResourceRecord(kResourceId, kScript, 100));
   mojom::ServiceWorkerRegistrationDataPtr registration_data =
-      CreateRegistrationData(kRegistrationId, kVersionId, kScope, kScript,
+      CreateRegistrationData(kRegistrationId, kVersionId, kScope, kKey, kScript,
                              resources);
   EXPECT_EQ(
       StoreRegistrationData(std::move(registration_data), std::move(resources)),
       ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(UpdateToActiveState(kRegistrationId, kOrigin),
+  EXPECT_EQ(UpdateToActiveState(kRegistrationId, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
-  EXPECT_EQ(DeleteRegistration(kRegistrationId, kScope.GetOrigin()),
+  EXPECT_EQ(UpdateFetchHandlerType(
+                kRegistrationId, kKey,
+                blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable),
+            ServiceWorkerDatabase::Status::kErrorDisabled);
+
+  EXPECT_EQ(DeleteRegistration(kRegistrationId, kKey),
             ServiceWorkerDatabase::Status::kErrorDisabled);
 
   // Response reader and writer created by the disabled storage should fail to
@@ -576,7 +607,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
             ServiceWorkerDatabase::Status::kErrorDisabled);
   EXPECT_EQ(GetUserDataByKeyPrefix(kRegistrationId, "prefix", user_data_out),
             ServiceWorkerDatabase::Status::kErrorDisabled);
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{kUserDataKey, "foo"}}),
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey, {{kUserDataKey, "foo"}}),
             ServiceWorkerDatabase::Status::kErrorDisabled);
   EXPECT_EQ(ClearUserData(kRegistrationId, {kUserDataKey}),
             ServiceWorkerDatabase::Status::kErrorDisabled);
@@ -599,6 +630,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   const int64_t kRegistrationId = 1;
   const GURL kScope("http://www.test.not/scope/");
   const url::Origin kOrigin = url::Origin::Create(kScope);
+  const blink::StorageKey kKey(kOrigin);
   const GURL kScript("http://www.test.not/script.js");
   LazyInitialize();
 
@@ -607,14 +639,15 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   resources.push_back(CreateResourceRecord(1, kScript, 100));
   mojom::ServiceWorkerRegistrationDataPtr registration_data =
       CreateRegistrationData(kRegistrationId,
-                             /*version_id=*/1, kScope, kScript, resources);
+                             /*version_id=*/1, kScope, kKey, kScript,
+                             resources);
   ASSERT_EQ(
       StoreRegistrationData(std::move(registration_data), std::move(resources)),
       ServiceWorkerDatabase::Status::kOk);
 
   // Store user data associated with the registration.
   std::vector<std::string> data_out;
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}),
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey, {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
             ServiceWorkerDatabase::Status::kOk);
@@ -639,7 +672,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 
   // Write/overwrite multiple user data keys.
   EXPECT_EQ(StoreUserData(
-                kRegistrationId, kOrigin,
+                kRegistrationId, kKey,
                 {{"key", "overwrite"}, {"key3", "data3"}, {"key4", "data4"}}),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetUserData(kRegistrationId, {"key2"}, data_out),
@@ -671,7 +704,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   EXPECT_EQ("data4", data_out[0]);
 
   // Get/delete multiple user data keys by prefixes.
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey,
                           {{"prefixA", "data1"},
                            {"prefixA2", "data2"},
                            {"prefixB", "data3"},
@@ -698,14 +731,14 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   EXPECT_TRUE(data_out.empty());
 
   // User data should be deleted when the associated registration is deleted.
-  ASSERT_EQ(StoreUserData(kRegistrationId, kOrigin, {{"key", "data"}}),
+  ASSERT_EQ(StoreUserData(kRegistrationId, kKey, {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
             ServiceWorkerDatabase::Status::kOk);
   ASSERT_EQ(1u, data_out.size());
   ASSERT_EQ("data", data_out[0]);
 
-  EXPECT_EQ(DeleteRegistration(kRegistrationId, kScope.GetOrigin()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId, kKey),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(GetUserData(kRegistrationId, {"key"}, data_out),
             ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -716,7 +749,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 
   // Data access with an invalid registration id should be failed.
   EXPECT_EQ(StoreUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
-                          kOrigin, {{"key", "data"}}),
+                          kKey, {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kErrorFailed);
   EXPECT_EQ(GetUserData(blink::mojom::kInvalidServiceWorkerRegistrationId,
                         {"key"}, data_out),
@@ -733,12 +766,12 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
             ServiceWorkerDatabase::Status::kErrorFailed);
 
   // Data access with an empty key should be failed.
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey,
                           std::vector<std::pair<std::string, std::string>>()),
             ServiceWorkerDatabase::Status::kErrorFailed);
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin, {{std::string(), "data"}}),
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey, {{std::string(), "data"}}),
             ServiceWorkerDatabase::Status::kErrorFailed);
-  EXPECT_EQ(StoreUserData(kRegistrationId, kOrigin,
+  EXPECT_EQ(StoreUserData(kRegistrationId, kKey,
                           {{std::string(), "data"}, {"key", "data"}}),
             ServiceWorkerDatabase::Status::kErrorFailed);
   EXPECT_EQ(GetUserData(kRegistrationId, std::vector<std::string>(), data_out),
@@ -771,7 +804,8 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
 TEST_F(ServiceWorkerStorageTest, StoreUserData_BeforeInitialize) {
   const int kRegistrationId = 0;
   EXPECT_EQ(StoreUserData(kRegistrationId,
-                          url::Origin::Create(GURL("https://example.com")),
+                          blink::StorageKey(
+                              url::Origin::Create(GURL("https://example.com"))),
                           {{"key", "data"}}),
             ServiceWorkerDatabase::Status::kErrorNotFound);
 }
@@ -818,12 +852,14 @@ class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
     // Store a registration with a resource to make sure disk cache and
     // database directories are created.
     const GURL kScope("http://www.example.com/scope/");
+    const blink::StorageKey kKey(url::Origin::Create(kScope));
     const GURL kScript("http://www.example.com/script.js");
     const int64_t kScriptSize = 5;
     auto data = mojom::ServiceWorkerRegistrationData::New();
     data->registration_id = 1;
     data->version_id = 1;
     data->scope = kScope;
+    data->key = kKey;
     data->script = kScript;
     data->navigation_preload_state =
         blink::mojom::NavigationPreloadState::New();
@@ -844,7 +880,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver) {
   ASSERT_TRUE(base::DirectoryExists(storage()->GetDatabasePath()));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
@@ -868,7 +904,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_UnrelatedFileExists) {
   ASSERT_TRUE(base::PathExists(file_path));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
@@ -893,12 +929,12 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
   ASSERT_TRUE(base::PathExists(file_path));
 
   base::RunLoop run_loop;
-  base::Optional<ServiceWorkerDatabase::Status> status;
+  absl::optional<ServiceWorkerDatabase::Status> status;
   storage()->DeleteAndStartOver(
       base::BindOnce(&DatabaseStatusCallback, run_loop.QuitClosure(), &status));
   run_loop.Run();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, deleting the directory containing an opened file should fail.
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorIOError, *status);
   EXPECT_TRUE(storage()->IsDisabled());
@@ -916,6 +952,7 @@ TEST_F(ServiceWorkerStorageDiskTest, DeleteAndStartOver_OpenedFileExists) {
 TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   const int64_t kRegistrationId1 = 1;
   const GURL kScope1("https://www.example.com/foo/");
+  const blink::StorageKey kKey1(url::Origin::Create(kScope1));
   const GURL kScript1("https://www.example.com/foo/sw.js");
   const int64_t kRegistrationId2 = 2;
   const GURL kScope2("https://www.example.com/bar/");
@@ -929,6 +966,7 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
       /*registration_id=*/kRegistrationId1,
       /*version_id=*/1,
       /*scope=*/kScope1,
+      /*key=*/kKey1,
       /*script_url=*/kScript1, resources1);
   int64_t resources_total_size_bytes1 = data1->resources_total_size_bytes;
   ASSERT_EQ(StoreRegistrationData(std::move(data1), std::move(resources1)),
@@ -941,30 +979,30 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
       /*registration_id=*/kRegistrationId2,
       /*version_id=*/1,
       /*scope=*/kScope1,
+      /*key=*/kKey1,
       /*script_url=*/kScript2, resources2);
   int64_t resources_total_size_bytes2 = data2->resources_total_size_bytes;
   ASSERT_EQ(StoreRegistrationData(std::move(data2), std::move(resources2)),
             ServiceWorkerDatabase::Status::kOk);
 
   // Storage usage should report total resource size from two registrations.
-  const url::Origin origin = url::Origin::Create(kScope1.GetOrigin());
   int64_t usage;
-  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+  EXPECT_EQ(GetUsageForStorageKey(kKey1, usage),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, resources_total_size_bytes1 + resources_total_size_bytes2);
 
   // Delete the first registration. Storage usage should report only the second
   // registration.
-  EXPECT_EQ(DeleteRegistration(kRegistrationId1, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId1, kKey1),
             ServiceWorkerDatabase::Status::kOk);
-  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+  EXPECT_EQ(GetUsageForStorageKey(kKey1, usage),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, resources_total_size_bytes2);
 
   // Delete the second registration. No storage usage should be reported.
-  EXPECT_EQ(DeleteRegistration(kRegistrationId2, origin.GetURL()),
+  EXPECT_EQ(DeleteRegistration(kRegistrationId2, kKey1),
             ServiceWorkerDatabase::Status::kOk);
-  EXPECT_EQ(GetUsageForOrigin(origin, usage),
+  EXPECT_EQ(GetUsageForStorageKey(kKey1, usage),
             ServiceWorkerDatabase::Status::kOk);
   EXPECT_EQ(usage, 0);
 }

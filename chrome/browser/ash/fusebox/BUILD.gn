@@ -1,0 +1,11 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+
+proto_library("fusebox_staging_proto") {
+  sources = [ "fusebox_staging.proto" ]
+}

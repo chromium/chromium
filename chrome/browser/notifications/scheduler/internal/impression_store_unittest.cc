@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/proto/client_state.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
@@ -97,7 +98,7 @@ class ImpressionStoreTest : public testing::Test {
   bool load_result_;
   Entries loaded_entries_;
 
-  FakeDB<proto::ClientState, ClientState>* db_;
+  raw_ptr<FakeDB<proto::ClientState, ClientState>> db_;
   std::unique_ptr<CollectionStore<ClientState>> store_;
 };
 

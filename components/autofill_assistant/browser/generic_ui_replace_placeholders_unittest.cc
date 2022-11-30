@@ -1,20 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/generic_ui_replace_placeholders.h"
 
+#include "base/containers/flat_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
 namespace {
 
 using ::testing::_;
-using ::testing::Eq;
-using ::testing::UnorderedElementsAreArray;
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInViews) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* root_view = input.mutable_root_view();
@@ -77,7 +76,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInViews) {
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInEvents) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* on_value_changed = input.mutable_interactions()
@@ -112,7 +111,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInEvents) {
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* callback_with_condition =
@@ -274,6 +273,21 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
   for_each->set_loop_value_model_identifier("loop_${i}");
   for_each->add_callbacks()->set_condition_model_identifier("condition_${i}");
 
+  auto* request_backend_data = input.mutable_interactions()
+                                   ->add_interactions()
+                                   ->add_callbacks()
+                                   ->mutable_request_backend_data();
+  request_backend_data->set_output_success_model_identifier(
+      "backend_output_success_${i}");
+  request_backend_data->mutable_request_phone_numbers()
+      ->set_output_profiles_model_identifier("backend_output_profiles_${i}");
+
+  auto* show_account_screen = input.mutable_interactions()
+                                  ->add_interactions()
+                                  ->add_callbacks()
+                                  ->mutable_show_account_screen();
+  show_account_screen->set_gms_account_intent_screen_id(4);
+
   ReplacePlaceholdersInGenericUi(&input, mappings);
 
   EXPECT_THAT(callback_with_condition->condition_model_identifier(),
@@ -323,10 +337,16 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
   EXPECT_THAT(for_each->loop_value_model_identifier(), "loop_1");
   EXPECT_THAT(for_each->callbacks(0).condition_model_identifier(),
               "condition_1");
+  EXPECT_THAT(request_backend_data->output_success_model_identifier(),
+              "backend_output_success_1");
+  EXPECT_THAT(request_backend_data->request_phone_numbers()
+                  .output_profiles_model_identifier(),
+              "backend_output_profiles_1");
+  EXPECT_THAT(show_account_screen->gms_account_intent_screen_id(), 4);
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInModel) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* value_a = input.mutable_model()->add_values();

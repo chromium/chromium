@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/i18n/string_search.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
@@ -23,7 +24,6 @@
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/escape.h"
 #include "ui/base/models/tree_node_iterator.h"
 
 using bookmarks::BookmarkNode;
@@ -254,31 +254,27 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!prefs_)
     return;
 
-  const base::ListValue* list =
+  const base::Value::List& list =
       prefs_->GetList(prefs::kPartnerBookmarkMappings);
-  if (!list)
-    return;
 
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end(); ++it) {
-    const base::DictionaryValue* dict = NULL;
-    if (!it->GetAsDictionary(&dict)) {
+  for (const auto& entry : list) {
+    if (!entry.is_dict()) {
+      NOTREACHED();
+      continue;
+    }
+    const base::Value::Dict& dict = entry.GetDict();
+
+    const std::string* url = dict.FindString(kMappingUrl);
+    const std::string* provider_title = dict.FindString(kMappingProviderTitle);
+    const std::string* mapped_title = dict.FindString(kMappingTitle);
+    if (!url || !provider_title || !mapped_title) {
       NOTREACHED();
       continue;
     }
 
-    std::string url;
-    std::u16string provider_title;
-    std::u16string mapped_title;
-    if (!dict->GetString(kMappingUrl, &url) ||
-        !dict->GetString(kMappingProviderTitle, &provider_title) ||
-        !dict->GetString(kMappingTitle, &mapped_title)) {
-      NOTREACHED();
-      continue;
-    }
-
-    const NodeRenamingMapKey key(GURL(url), provider_title);
-    node_rename_remove_map_[key] = mapped_title;
+    const NodeRenamingMapKey key(GURL(*url),
+                                 base::UTF8ToUTF16(*provider_title));
+    node_rename_remove_map_[key] = base::UTF8ToUTF16(*mapped_title);
   }
 }
 
@@ -291,11 +287,11 @@ void PartnerBookmarksShim::SaveNodeMapping() {
   for (NodeRenamingMap::const_iterator i = node_rename_remove_map_.begin();
        i != node_rename_remove_map_.end();
        ++i) {
-    auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetString(kMappingUrl, i->first.url().spec());
-    dict->SetString(kMappingProviderTitle, i->first.provider_title());
-    dict->SetString(kMappingTitle, i->second);
-    list.Append(std::move(dict));
+    base::Value::Dict dict;
+    dict.Set(kMappingUrl, i->first.url().spec());
+    dict.Set(kMappingProviderTitle, i->first.provider_title());
+    dict.Set(kMappingTitle, i->second);
+    list.Append(base::Value(std::move(dict)));
   }
   prefs_->Set(prefs::kPartnerBookmarkMappings, list);
 }

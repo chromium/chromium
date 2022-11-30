@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,10 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/port_util.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
 
 namespace net {
-
-namespace {
-
-quic::ParsedQuicVersion ParsedQuicVersionFromAlpn(
-    base::StringPiece str,
-    quic::ParsedQuicVersionVector supported_versions) {
-  for (const quic::ParsedQuicVersion& version : supported_versions) {
-    if (AlpnForVersion(version) == str)
-      return version;
-  }
-  return quic::ParsedQuicVersion::Unsupported();
-}
-
-}  // anonymous namespace
 
 void HistogramAlternateProtocolUsage(AlternateProtocolUsage usage,
                                      bool is_google_host) {
@@ -158,20 +146,13 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
 
     NextProto protocol =
         NextProtoFromString(alternative_service_entry.protocol_id);
-    // Check if QUIC version is supported. Filter supported QUIC versions.
     quic::ParsedQuicVersionVector advertised_versions;
     if (protocol == kProtoQUIC) {
-      if (!IsProtocolEnabled(protocol, is_http2_enabled, is_quic_enabled))
-        continue;
-      if (!alternative_service_entry.version.empty()) {
-        advertised_versions = FilterSupportedAltSvcVersions(
-            alternative_service_entry, supported_quic_versions);
-        if (advertised_versions.empty())
-          continue;
-      }
+      continue;  // Ignore legacy QUIC alt-svc advertisements.
     } else if (!IsAlternateProtocolValid(protocol)) {
-      quic::ParsedQuicVersion version = ParsedQuicVersionFromAlpn(
-          alternative_service_entry.protocol_id, supported_quic_versions);
+      quic::ParsedQuicVersion version =
+          quic::SpdyUtils::ExtractQuicVersionFromAltSvcEntry(
+              alternative_service_entry, supported_quic_versions);
       if (version == quic::ParsedQuicVersion::Unsupported()) {
         continue;
       }
@@ -188,7 +169,7 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
                                            alternative_service_entry.port);
     base::Time expiration =
         base::Time::Now() +
-        base::TimeDelta::FromSeconds(alternative_service_entry.max_age);
+        base::Seconds(alternative_service_entry.max_age_seconds);
     AlternativeServiceInfo alternative_service_info;
     if (protocol == kProtoQUIC) {
       alternative_service_info =

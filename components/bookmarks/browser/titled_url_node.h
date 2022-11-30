@@ -1,11 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 
-#include "base/containers/span.h"
+#include <string>
+#include <vector>
+
 #include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
@@ -28,7 +30,7 @@ class TitledUrlNode {
       const = 0;
 
  protected:
-  virtual ~TitledUrlNode() {}
+  virtual ~TitledUrlNode() = default;
 };
 
 }  // namespace bookmarks

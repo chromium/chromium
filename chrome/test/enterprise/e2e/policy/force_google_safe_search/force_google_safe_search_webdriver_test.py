@@ -1,4 +1,4 @@
-# Copyright (c) 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,9 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-import test_util
+from test_util import create_chrome_webdriver
 
-driver = test_util.create_chrome_webdriver()
+driver = create_chrome_webdriver()
 driver.get('http://www.google.com/xhtml')
 
 # wait for page to be loaded

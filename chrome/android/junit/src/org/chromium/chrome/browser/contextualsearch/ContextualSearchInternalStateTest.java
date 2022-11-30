@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
@@ -23,7 +25,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStat
 /**
  * Tests for the {@link ContextualSearchInternalStateController} class.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchInternalStateTest {
     private ContextualSearchInternalStateController mInternalStateController;
 
@@ -72,6 +74,21 @@ public class ContextualSearchInternalStateTest {
                 mDidResolve = true;
                 mInternalStateController.notifyFinishedWorkOn(InternalState.RESOLVING);
             }
+        }
+
+        @Override
+        public void showingTapSearch() {
+            stubForWorkOnState(InternalState.SHOWING_TAP_SEARCH);
+        }
+
+        @Override
+        public void showingIntelligentLongpress() {
+            stubForWorkOnState(InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
+        }
+
+        @Override
+        public void completeSearch() {
+            stubForWorkOnState(InternalState.SEARCH_COMPLETED);
         }
 
         @Override
@@ -196,5 +213,25 @@ public class ContextualSearchInternalStateTest {
         mocksForTap();
         mInternalStateController.enter(InternalState.TAP_RECOGNIZED);
         assertTrue("Did not Resolve!", mHandlerStub.didResolve());
+    }
+
+    @Test
+    @Feature({"ContextualSearch"})
+    public void testResetDoesntRetryCurrentState() {
+        mInternalStateController.enter(InternalState.IDLE);
+        when(mMockedPolicy.shouldRetryCurrentState(InternalState.IDLE)).thenReturn(false);
+        mInternalStateController.reset(StateChangeReason.BACK_PRESS);
+        verify(mMockedPolicy, times(1)).shouldRetryCurrentState(InternalState.IDLE);
+        assertFalse(didHide());
+    }
+
+    @Test
+    @Feature({"ContextualSearch"})
+    public void testResetDoesRetryCurrentStateWhenNeeded() {
+        mInternalStateController.enter(InternalState.IDLE);
+        when(mMockedPolicy.shouldRetryCurrentState(InternalState.IDLE)).thenReturn(true);
+        mInternalStateController.reset(StateChangeReason.BACK_PRESS);
+        verify(mMockedPolicy, times(1)).shouldRetryCurrentState(InternalState.IDLE);
+        assertTrue(didHide());
     }
 }

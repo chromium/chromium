@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -184,7 +184,7 @@ void AppendScheduledTask(const ScheduledTask& scheduled_task,
   MessageBuilder::ScopedIndent scoped_indent_2(builder);
   builder->AddHeaderLine(L"Actions");
   for (auto action : scheduled_task.actions()) {
-    MessageBuilder::ScopedIndent scoped_indent(builder);
+    MessageBuilder::ScopedIndent scoped_indent_3(builder);
     builder->Add(L"File information: ");
     AppendFileInformation(action.file_information(), builder);
     builder->NewLine();
@@ -411,7 +411,7 @@ void CleanerLoggingService::EnableUploads(bool enable,
   // Make sure not to keep any scheduled logs upload if the user opts-out of
   // logs upload. TODO(csharp): maybe we should also clear all other pending
   // logs, not just ours.
-  if (!enable)
+  if (!enable && registry_logger)
     ClearTempLogFile(registry_logger);
 }
 

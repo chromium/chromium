@@ -1,13 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.contextmenu;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Provides utility methods for generating context menus.
@@ -29,5 +34,41 @@ public final class ContextMenuUtils {
             return URLUtil.guessFileName(params.getSrcUrl().getSpec(), null, null);
         }
         return "";
+    }
+
+    /**
+     * Get the suffix for the context menu type determined by the params. Histogram values should
+     * match with the values defined in histogram_suffixes_list.xml under ContextMenuTypeAndroid
+     * @param params The list of params for the opened context menu.
+     * @return A string value for the histogram suffix.
+     */
+    static String getContextMenuTypeForHistogram(ContextMenuParams params) {
+        if (params.isVideo()) {
+            return "Video";
+        } else if (params.isImage()) {
+            return params.isAnchor() ? "ImageLink" : "Image";
+        } else if (params.getOpenedFromHighlight()) {
+            return "SharedHighlightingInteraction";
+        }
+        assert params.isAnchor();
+        return "Link";
+    }
+
+    /** Whether to force using popup style for context menu. */
+    static boolean forcePopupStyleEnabled() {
+        return ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
+    }
+
+    /**
+     * Whether the context menu is a popup menu in the given context; otherwise, it is shown as a
+     * popup window. Note that only contexts that are meaningfully associated with a display should
+     * be used.
+     *
+     * @see DeviceFormFactor#isNonMultiDisplayContextOnTablet(Context).
+     */
+    public static boolean usePopupContextMenuForContext(Context context) {
+        return ChromeFeatureList.isEnabled(
+                       ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 }

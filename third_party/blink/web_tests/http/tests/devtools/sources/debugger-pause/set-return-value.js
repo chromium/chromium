@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult('Check that return value can be changed.');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
     function testFunction() {
@@ -16,7 +16,7 @@
   await SourcesTestRunner.startDebuggerTestPromise();
   await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 11, url: 'test.js', columnNumber: 37});
   let sidebarUpdated = TestRunner.addSnifferPromise(
-        Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest');
+        Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
   let localScope = SourcesTestRunner.scopeChainSections()[0];
 
@@ -26,19 +26,19 @@
 
   TestRunner.addResult('Set return value to {a:1}');
   let returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement._applyExpression('{a:1}');
+  await returnValueElement.applyExpression('{a:1}');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Try to remove return value');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement._applyExpression('');
+  await returnValueElement.applyExpression('');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to 239');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement._applyExpression('239');
+  await returnValueElement.applyExpression('239');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 

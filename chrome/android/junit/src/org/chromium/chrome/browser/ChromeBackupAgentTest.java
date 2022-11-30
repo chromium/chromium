@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,7 +51,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -94,6 +95,8 @@ public class ChromeBackupAgentTest {
 
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
     @Mock
     private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
     @Mock
@@ -105,12 +108,22 @@ public class ChromeBackupAgentTest {
     private AsyncInitTaskRunner mTaskRunner;
 
     private final CoreAccountInfo mAccountInfo =
-            new CoreAccountInfo(new CoreAccountId("gaia_id_user1"), "user1", "gaia_id_user1");
+            CoreAccountInfo.createFromEmailAndGaiaId("user1", "gaia_id_user1");
+
+    private static final String PREFERENCE_KEY_NOT_BACKED_UP = "not_backed_up";
 
     private void setUpTestPrefs(SharedPreferences prefs) {
         SharedPreferences.Editor editor = prefs.edit();
+        // In production some of these prefs can't be present in SharedPreferences at the same time,
+        // but ChromeBackupAgentImpl is agnostic to that. The focus of these tests is making sure
+        // that all the allowlisted prefs are backed up, and none other.
         editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
-        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, false);
+        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
+        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE, false);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
+
+        editor.putBoolean(PREFERENCE_KEY_NOT_BACKED_UP, false);
+
         doReturn(mAccountInfo).when(mIdentityManagerMock).getPrimaryAccountInfo(anyInt());
         editor.apply();
     }
@@ -180,28 +193,45 @@ public class ChromeBackupAgentTest {
         verify(backupData, times(2)).writeEntityData(new byte[] {1}, 1);
         verify(backupData)
                 .writeEntityHeader(
-                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, 1);
-        verify(backupData).writeEntityData(new byte[] {0}, 1);
+                        "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
+        verify(backupData)
+                .writeEntityHeader("AndroidDefault."
+                                + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
+                        1);
+        verify(backupData)
+                .writeEntityHeader("AndroidDefault."
+                                + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                        1);
+        verify(backupData, times(3)).writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
                 .writeEntityHeader("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
 
+        verify(backupData, times(0))
+                .writeEntityHeader(eq("AndroidDefault." + PREFERENCE_KEY_NOT_BACKED_UP), anyInt());
+
         newState.close();
 
         // Check that the state was saved correctly
         ObjectInputStream newStateStream = new ObjectInputStream(new FileInputStream(stateFile1));
         ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
-        assertThat(names.size(), equalTo(4));
+        assertThat(names.size(), equalTo(6));
         assertThat(names, hasItem("native.pref1"));
         assertThat(
                 names, hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
         assertThat(names,
-                hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP));
+                hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
+        assertThat(names,
+                hasItem("AndroidDefault."
+                        + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
+        assertThat(names,
+                hasItem("AndroidDefault."
+                        + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
         assertThat(names, hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY));
         ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
-        assertThat(values.size(), equalTo(4));
+        assertThat(values.size(), equalTo(6));
         assertThat(values, hasItem(unameBytes));
         assertThat(values, hasItem(new byte[] {0}));
         assertThat(values, hasItem(new byte[] {1}));
@@ -237,8 +267,8 @@ public class ChromeBackupAgentTest {
         mAgent.onBackup(null, backupData, newState);
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(4)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(4)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
 
         newState.close();
 
@@ -297,8 +327,8 @@ public class ChromeBackupAgentTest {
         mAgent.onBackup(null, backupData, newState);
 
         // Minimal check on first backup, this isn't the test here.
-        verify(backupData, times(4)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(4)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
 
         newState.close();
 
@@ -309,15 +339,16 @@ public class ChromeBackupAgentTest {
 
         // Change some data.
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_SETUP, true);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, true);
         editor.apply();
 
         // Do a second backup.
+        reset(backupData);
         mAgent.onBackup(oldState, backupData, newState);
 
         // Check that the second backup wrote something.
-        verify(backupData, times(8)).writeEntityHeader(anyString(), anyInt());
-        verify(backupData, times(8)).writeEntityData(any(byte[].class), anyInt());
+        verify(backupData, times(6)).writeEntityHeader(anyString(), anyInt());
+        verify(backupData, times(6)).writeEntityData(any(byte[].class), anyInt());
 
         oldState.close();
         newState.close();
@@ -443,7 +474,7 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(stateFile, ParcelFileDescriptor.parseMode("w"));
 
         BackupDataInput backupData = createMockBackupData();
-        doReturn(true).when(mAgent).accountExistsOnDevice(any(String.class));
+        mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
 
         // Do a restore.
         mAgent.onRestore(backupData, 0, newState);
@@ -476,7 +507,6 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(stateFile, ParcelFileDescriptor.parseMode("w"));
 
         BackupDataInput backupData = createMockBackupData();
-        doReturn(false).when(mAgent).accountExistsOnDevice(any(String.class));
 
         // Do a restore.
         mAgent.onRestore(backupData, 0, newState);

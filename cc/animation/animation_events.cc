@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ AnimationEvent::AnimationEvent(AnimationEvent::Type type,
 
 AnimationEvent::AnimationEvent(int timeline_id,
                                int animation_id,
-                               base::Optional<base::TimeDelta> local_time)
+                               absl::optional<base::TimeDelta> local_time)
     : type(TIME_UPDATED),
       // Initializing model_id with an invalid value (0).
       // Also initializing keyframe_id with 0 which in its case is a valid

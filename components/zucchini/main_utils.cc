@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/zucchini/io_utils.h"
+#include "components/zucchini/version_info.h"
 #include "components/zucchini/zucchini_commands.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>  // This include must come first.
 
 #include <psapi.h>
@@ -69,6 +70,7 @@ constexpr Command kCommands[] = {
      3, &MainGen},
     {"apply", "-apply <old_file> <patch_file> <new_file> [-keep]", 3,
      &MainApply},
+    {"verify", "-verify <patch_file>", 1, &MainVerify},
     {"read", "-read <exe> [-dump]", 1, &MainRead},
     {"detect", "-detect <archive_file>", 1, &MainDetect},
     {"match", "-match <old_file> <new_file> [-impose=#+#=#+#,#+#=#+#,...]", 2,
@@ -78,7 +80,7 @@ constexpr Command kCommands[] = {
 
 /******** GetPeakMemoryMetrics ********/
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Linux does not have an exact mapping to the values used on Windows so use a
 // close approximation:
 // peak_virtual_memory ~= peak_page_file_usage
@@ -120,9 +122,9 @@ void GetPeakMemoryMetrics(size_t* peak_virtual_memory,
     }
   }
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On failure the input values will be set to 0.
 void GetPeakMemoryMetrics(size_t* peak_page_file_usage,
                           size_t* peak_working_set_size) {
@@ -134,7 +136,7 @@ void GetPeakMemoryMetrics(size_t* peak_page_file_usage,
     *peak_working_set_size = pmc.PeakWorkingSetSize;
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 /******** ScopedResourceUsageTracker ********/
 
@@ -145,17 +147,17 @@ class ScopedResourceUsageTracker {
   ScopedResourceUsageTracker() {
     start_time_ = base::TimeTicks::Now();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     GetPeakMemoryMetrics(&start_peak_page_file_usage_,
                          &start_peak_working_set_size_);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   }
 
   // Computes and prints usage.
   ~ScopedResourceUsageTracker() {
     base::TimeTicks end_time = base::TimeTicks::Now();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     size_t cur_peak_page_file_usage = 0;
     size_t cur_peak_working_set_size = 0;
     GetPeakMemoryMetrics(&cur_peak_page_file_usage, &cur_peak_working_set_size);
@@ -171,7 +173,7 @@ class ScopedResourceUsageTracker {
               << (cur_peak_working_set_size - start_peak_working_set_size_) /
                      1024
               << " KiB";
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
     LOG(INFO) << "Zucchini.TotalTime " << (end_time - start_time_).InSecondsF()
               << " s";
@@ -179,10 +181,10 @@ class ScopedResourceUsageTracker {
 
  private:
   base::TimeTicks start_time_;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   size_t start_peak_page_file_usage_ = 0;
   size_t start_peak_working_set_size_ = 0;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 };
 
 /******** Helper functions ********/
@@ -206,6 +208,8 @@ bool CheckAndGetFilePathParams(const base::CommandLine& command_line,
 
 // Prints main Zucchini usage text.
 void PrintUsage(std::ostream& err) {
+  err << "Version: " << zucchini::kMajorVersion << "."
+      << zucchini::kMinorVersion << std::endl;
   err << "Usage:" << std::endl;
   for (const Command& command : kCommands)
     err << "  zucchini " << command.usage << std::endl;

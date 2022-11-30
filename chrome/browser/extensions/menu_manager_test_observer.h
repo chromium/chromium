@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
 
 #include <set>
-#include <string>
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -44,7 +44,7 @@ class MenuManagerTestObserver : public MenuManager::TestObserver {
  private:
   bool MenusItemsFound(const ExtensionId& extension_id);
 
-  MenuManager* const menu_manager_;
+  const raw_ptr<MenuManager> menu_manager_;
   std::set<ExtensionId> ids_with_reads_;
   std::set<ExtensionId> ids_with_writes_;
   ExtensionId waiting_for_id_;

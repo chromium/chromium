@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,54 +23,51 @@ NetworkConditions::~NetworkConditions() {}
 
 Status FindPresetNetwork(std::string network_name,
                          NetworkConditions* network_conditions) {
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!parsed_json.value)
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      kNetworks, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value())
     return Status(kUnknownError, "could not parse network list because " +
-                                     parsed_json.error_message);
+                                     parsed_json.error().message);
 
-  base::ListValue* networks;
-  if (!parsed_json.value->GetAsList(&networks))
+  if (!parsed_json->is_list())
     return Status(kUnknownError, "malformed networks list");
 
-  for (auto it = networks->begin(); it != networks->end(); ++it) {
-    base::DictionaryValue* network = NULL;
-    if (!it->GetAsDictionary(&network)) {
+  for (const auto& entry : parsed_json->GetList()) {
+    if (!entry.is_dict()) {
       return Status(kUnknownError,
                     "malformed network in list: should be a dictionary");
     }
 
-    if (network == NULL)
-      continue;
+    const base::Value::Dict& network = entry.GetDict();
 
-    std::string title;
-    if (!network->GetString("title", &title)) {
+    const std::string* title = network.FindString("title");
+    if (!title) {
       return Status(kUnknownError,
                     "malformed network title: should be a string");
     }
-    if (title != network_name)
+    if (*title != network_name)
       continue;
 
-    if (!network->GetDouble("latency",  &network_conditions->latency)) {
+    absl::optional<double> maybe_latency = network.FindDouble("latency");
+    absl::optional<double> maybe_throughput = network.FindDouble("throughput");
+
+    if (!maybe_latency.has_value()) {
       return Status(kUnknownError,
                     "malformed network latency: should be a double");
     }
     // Preset list maintains a single "throughput" attribute for each network,
     // so we use that value for both |download_throughput| and
     // |upload_throughput| in the NetworkConditions (as does Chrome).
-    if (!network->GetDouble("throughput",
-                            &network_conditions->download_throughput) ||
-        !network->GetDouble("throughput",
-                            &network_conditions->upload_throughput)) {
+    if (!maybe_throughput.has_value()) {
       return Status(kUnknownError,
                     "malformed network throughput: should be a double");
     }
 
-    // The throughputs of the network presets are listed in kbps, but must be
-    // supplied to the OverrideNetworkConditions command as bps.
-    network_conditions->download_throughput *= 1024;
-    network_conditions->upload_throughput *= 1024;
+    network_conditions->latency = maybe_latency.value();
+    // The throughputs of the network presets are listed in kbps, but
+    // must be supplied to the OverrideNetworkConditions command as bps.
+    network_conditions->download_throughput = maybe_throughput.value() * 1024;
+    network_conditions->upload_throughput = maybe_throughput.value() * 1024;
 
     // |offline| is always false for now.
     network_conditions->offline = false;

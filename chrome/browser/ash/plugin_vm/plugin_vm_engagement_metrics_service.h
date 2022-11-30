@@ -1,14 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_ENGAGEMENT_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_ENGAGEMENT_METRICS_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -19,7 +18,7 @@ namespace plugin_vm {
 // per GuestOsEngagementMetrics.
 class PluginVmEngagementMetricsService : public KeyedService {
  public:
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static PluginVmEngagementMetricsService* GetForProfile(Profile* profile);
     static Factory* GetInstance();
@@ -38,6 +37,12 @@ class PluginVmEngagementMetricsService : public KeyedService {
   };
 
   explicit PluginVmEngagementMetricsService(Profile* profile);
+
+  PluginVmEngagementMetricsService(const PluginVmEngagementMetricsService&) =
+      delete;
+  PluginVmEngagementMetricsService& operator=(
+      const PluginVmEngagementMetricsService&) = delete;
+
   ~PluginVmEngagementMetricsService() override;
 
   // This needs to be called when Plugin Vm starts and stops being active so we
@@ -47,8 +52,6 @@ class PluginVmEngagementMetricsService : public KeyedService {
  private:
   std::unique_ptr<guest_os::GuestOsEngagementMetrics>
       guest_os_engagement_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmEngagementMetricsService);
 };
 
 }  // namespace plugin_vm

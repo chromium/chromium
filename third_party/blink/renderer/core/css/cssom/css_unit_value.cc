@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
   // FIXME: Avoid this CSSProperty::Get call as it can be costly.
   // The caller often has a CSSProperty already, so we can just pass it here.
   if (LengthPropertyFunctions::GetValueRange(CSSProperty::Get(property_id)) ==
-          kValueRangeNonNegative &&
+          Length::ValueRange::kNonNegative &&
       value < 0)
     return true;
 
@@ -146,7 +146,7 @@ CSSUnitValue* CSSUnitValue::ConvertTo(
   return CSSUnitValue::Create(value_ * scale_factor, target_unit);
 }
 
-base::Optional<CSSNumericSumValue> CSSUnitValue::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSUnitValue::SumValue() const {
   CSSNumericSumValue sum;
   CSSNumericSumValue::UnitMap unit_map;
   if (unit_ != CSSPrimitiveValue::UnitType::kNumber)

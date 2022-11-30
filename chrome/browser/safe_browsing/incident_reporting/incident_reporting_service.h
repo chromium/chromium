@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -49,7 +47,7 @@ class TrackedPreferenceValidationDelegate;
 
 namespace safe_browsing {
 
-extern const base::Feature kIncidentReportingEnableUpload;
+BASE_DECLARE_FEATURE(kIncidentReportingEnableUpload);
 
 class ClientDownloadRequest;
 class ClientIncidentReport;
@@ -78,6 +76,9 @@ class IncidentReportingService : public ProfileManagerObserver,
                                  public ProfileObserver {
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
+
+  IncidentReportingService(const IncidentReportingService&) = delete;
+  IncidentReportingService& operator=(const IncidentReportingService&) = delete;
 
   // All incident collection, data collection, and uploads in progress are
   // dropped at destruction.
@@ -328,8 +329,6 @@ class IncidentReportingService : public ProfileManagerObserver,
   // that are posted during normal processing (e.g., environment collection,
   // and report uploads).
   base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportingService);
 };
 
 }  // namespace safe_browsing

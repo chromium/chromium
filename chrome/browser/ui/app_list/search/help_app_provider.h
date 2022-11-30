@@ -1,23 +1,31 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_HELP_APP_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_HELP_APP_PROVIDER_H_
 
-#include "base/macros.h"
+#include <string>
+#include <vector>
+
+#include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
-namespace apps {
-class AppServiceProxy;
-}  // namespace apps
+namespace ash {
+namespace help_app {
+class SearchHandler;
+}  // namespace help_app
+}  // namespace ash
 
 namespace gfx {
 class ImageSkia;
@@ -26,10 +34,14 @@ class ImageSkia;
 namespace app_list {
 
 // Search results for the Help App (aka Explore).
-// TODO(b/171519930): This is still a WIP, and needs to have results added.
 class HelpAppResult : public ChromeSearchResult {
  public:
-  HelpAppResult(float relevance, Profile* profile, const gfx::ImageSkia& icon);
+  HelpAppResult(const float& relevance,
+                Profile* profile,
+                const ash::help_app::mojom::SearchResultPtr& result,
+                const gfx::ImageSkia& icon,
+                const std::u16string& query);
+
   ~HelpAppResult() override;
 
   HelpAppResult(const HelpAppResult&) = delete;
@@ -40,11 +52,14 @@ class HelpAppResult : public ChromeSearchResult {
 
  private:
   Profile* const profile_;
+  const std::string url_path_;
+  const std::string help_app_content_id_;
 };
 
-// Provider results for Help App.
+// Provides results from the Help App based on the search query.
 class HelpAppProvider : public SearchProvider,
-                        public apps::AppRegistryCache::Observer {
+                        public apps::AppRegistryCache::Observer,
+                        public ash::help_app::mojom::SearchResultsObserver {
  public:
   explicit HelpAppProvider(Profile* profile);
   ~HelpAppProvider() override;
@@ -54,21 +69,37 @@ class HelpAppProvider : public SearchProvider,
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
-  void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
+  void StartZeroState() override;
+  void ViewClosing() override;
+  ash::AppListSearchResultType ResultType() const override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  // mojom::SearchResultsObserver:
+  void OnSearchResultAvailabilityChanged() override;
+
  private:
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnSearchReturned(
+      const std::u16string& query,
+      const base::TimeTicks& start_time,
+      std::vector<ash::help_app::mojom::SearchResultPtr> results);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
   void LoadIcon();
 
+  Profile* const profile_;
+
+  ash::help_app::SearchHandler* search_handler_;
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
-  Profile* const profile_;
+
+  // Last search query. It is reset when the view is closed.
+  std::u16string last_query_;
+  mojo::Receiver<ash::help_app::mojom::SearchResultsObserver>
+      search_results_observer_receiver_{this};
+
   base::WeakPtrFactory<HelpAppProvider> weak_factory_{this};
 };
 

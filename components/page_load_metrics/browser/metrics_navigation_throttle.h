@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace page_load_metrics {
@@ -20,6 +19,11 @@ class MetricsNavigationThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<content::NavigationThrottle> Create(
       content::NavigationHandle* handle);
+
+  MetricsNavigationThrottle(const MetricsNavigationThrottle&) = delete;
+  MetricsNavigationThrottle& operator=(const MetricsNavigationThrottle&) =
+      delete;
+
   ~MetricsNavigationThrottle() override;
 
   // content::NavigationThrottle:
@@ -30,8 +34,6 @@ class MetricsNavigationThrottle : public content::NavigationThrottle {
 
  private:
   explicit MetricsNavigationThrottle(content::NavigationHandle* handle);
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsNavigationThrottle);
 };
 
 }  // namespace page_load_metrics

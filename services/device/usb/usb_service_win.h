@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/usb/usb_device_win.h"
 
@@ -25,6 +25,10 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
                             public UsbService {
  public:
   UsbServiceWin();
+
+  UsbServiceWin(const UsbServiceWin&) = delete;
+  UsbServiceWin& operator=(const UsbServiceWin&) = delete;
+
   ~UsbServiceWin() override;
 
  private:
@@ -67,15 +71,14 @@ class UsbServiceWin final : public DeviceMonitorWin::Observer,
   std::list<GetDevicesCallback> enumeration_callbacks_;
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
   std::unordered_map<std::wstring, scoped_refptr<UsbDeviceWin>>
       devices_by_path_;
 
-  ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_;
+  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
+      device_observation_{this};
 
   base::WeakPtrFactory<UsbServiceWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsbServiceWin);
 };
 
 }  // namespace device

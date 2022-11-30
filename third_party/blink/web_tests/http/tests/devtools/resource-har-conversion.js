@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
 
   await TestRunner.NetworkAgent.setCacheDisabled(true);
   await TestRunner.reloadPagePromise();
@@ -24,11 +24,16 @@
     const c1 = new SDK.Cookie('a', 'b');
     c1.addAttribute('path', '/path');
     c1.addAttribute('domain', 'example.com');
-    request._includedRequestCookies = [
-      c1,
-      new SDK.Cookie('a1', 'b1'),
-      new SDK.Cookie('c1', 'd1'),
-    ];
+    request.addExtraRequestInfo({
+      includedRequestCookies: [
+        c1,
+        new SDK.Cookie('a1', 'b1'),
+        new SDK.Cookie('c1', 'd1'),
+      ],
+      blockedRequestCookies: [],
+      requestHeaders: [{name: 'version', value: 'HTTP/1.1'}],
+      connectTiming: {}
+    });
 
     request.responseHeaders = [{
       name: 'Set-Cookie',
@@ -39,7 +44,7 @@
 
   addCookieHeadersToRequest(findRequestByURL(/inspected-page\.html$/));
   const requests = NetworkTestRunner.networkRequests();
-  var log = await SDK.HARLog.build(requests);
+  var log = await NetworkTestRunner.buildHARLog(requests);
   // Filter out favicon.ico requests that only appear on certain platforms.
   log.entries = log.entries.filter(function(entry) {
     return !/favicon\.ico$/.test(entry.request.url);

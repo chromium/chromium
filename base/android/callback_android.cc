@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_jni_headers/Callback_jni.h"
+#include "base/time/time.h"
 
 namespace base {
 namespace android {
@@ -22,8 +23,17 @@ void RunBooleanCallbackAndroid(const JavaRef<jobject>& callback, bool arg) {
                                         static_cast<jboolean>(arg));
 }
 
-void RunIntCallbackAndroid(const JavaRef<jobject>& callback, int arg) {
+void RunIntCallbackAndroid(const JavaRef<jobject>& callback, int32_t arg) {
   Java_Helper_onIntResultFromNative(AttachCurrentThread(), callback, arg);
+}
+
+void RunLongCallbackAndroid(const JavaRef<jobject>& callback, int64_t arg) {
+  Java_Helper_onLongResultFromNative(AttachCurrentThread(), callback, arg);
+}
+
+void RunTimeCallbackAndroid(const JavaRef<jobject>& callback, base::Time time) {
+  Java_Helper_onTimeResultFromNative(AttachCurrentThread(), callback,
+                                     time.ToJavaTime());
 }
 
 void RunStringCallbackAndroid(const JavaRef<jobject>& callback,

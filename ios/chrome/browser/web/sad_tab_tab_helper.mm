@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,28 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/check_op.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/check_op.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#include "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper_delegate.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ios/web/public/navigation/navigation_context.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-const double SadTabTabHelper::kDefaultRepeatFailureInterval = 60.0f;
 
 namespace {
 // Returns true if the application is in UIApplicationStateActive state.
@@ -39,11 +38,8 @@ bool IsApplicationStateActive() {
 }
 }  // namespace
 
-SadTabTabHelper::SadTabTabHelper(web::WebState* web_state)
-    : SadTabTabHelper(web_state, kDefaultRepeatFailureInterval) {}
-
 SadTabTabHelper::SadTabTabHelper(web::WebState* web_state,
-                                 double repeat_failure_interval)
+                                 base::TimeDelta repeat_failure_interval)
     : web_state_(web_state), repeat_failure_interval_(repeat_failure_interval) {
   web_state_->AddObserver(this);
   AddApplicationDidBecomeActiveObserver();
@@ -52,24 +48,6 @@ SadTabTabHelper::SadTabTabHelper(web::WebState* web_state,
 SadTabTabHelper::~SadTabTabHelper() {
   DCHECK(!application_did_become_active_observer_);
   DCHECK(!web_state_);
-}
-
-void SadTabTabHelper::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new SadTabTabHelper(web_state)));
-  }
-}
-
-void SadTabTabHelper::CreateForWebState(web::WebState* web_state,
-                                        double repeat_failure_interval) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new SadTabTabHelper(
-                               web_state, repeat_failure_interval)));
-  }
 }
 
 void SadTabTabHelper::SetDelegate(id<SadTabTabHelperDelegate> delegate) {
@@ -137,7 +115,7 @@ void SadTabTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   // The sad tab is removed when a new navigation begins.
   SetIsShowingSadTab(false);
-  // NO-OP is fine if |delegate_| is nil since the |delegate_| will be updated
+  // NO-OP is fine if `delegate_` is nil since the `delegate_` will be updated
   // when it is set.
   [delegate_ sadTabTabHelperDismissSadTab:this];
 }
@@ -163,8 +141,9 @@ void SadTabTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void SadTabTabHelper::OnVisibleCrash(const GURL& url_causing_failure) {
   // Is this failure a repeat-failure requiring the presentation of the Feedback
   // UI rather than the Reload UI?
-  double seconds_since_last_failure =
-      last_failed_timer_ ? last_failed_timer_->Elapsed().InSecondsF() : DBL_MAX;
+  base::TimeDelta seconds_since_last_failure =
+      last_failed_timer_ ? last_failed_timer_->Elapsed()
+                         : base::TimeDelta::Max();
 
   repeated_failure_ =
       (url_causing_failure.EqualsIgnoringRef(last_failed_url_) &&
@@ -175,13 +154,21 @@ void SadTabTabHelper::OnVisibleCrash(const GURL& url_causing_failure) {
 }
 
 void SadTabTabHelper::PresentSadTab() {
-  // NO-OP is fine if |delegate_| is nil since the |delegate_| will be updated
+  // NO-OP is fine if `delegate_` is nil since the `delegate_` will be updated
   // when it is set.
   [delegate_ sadTabTabHelper:this
       presentSadTabForWebState:web_state_
                repeatedFailure:repeated_failure_];
 
   SetIsShowingSadTab(true);
+
+  bool is_pdf = web_state_->GetContentsMimeType() == "application/pdf";
+  bool is_chrome_external_file_url =
+      last_failed_url_.host() == kChromeUIExternalFileHost &&
+      last_failed_url_.scheme() == kChromeUIScheme;
+  UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.FileIsPDF", is_pdf);
+  UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.URLIsChromeExternalFile",
+                        is_chrome_external_file_url);
 }
 
 void SadTabTabHelper::SetIsShowingSadTab(bool showing_sad_tab) {

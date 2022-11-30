@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/views/views_export.h"
@@ -36,6 +35,10 @@ namespace views {
 class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
  public:
   explicit DesktopCaptureClient(aura::Window* root);
+
+  DesktopCaptureClient(const DesktopCaptureClient&) = delete;
+  DesktopCaptureClient& operator=(const DesktopCaptureClient&) = delete;
+
   ~DesktopCaptureClient() override;
 
   // Exactly the same as GetGlobalCaptureWindow() but static.
@@ -54,8 +57,8 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
                               const base::WeakPtr<DesktopCaptureClient>&);
   using ClientSet = std::set<base::WeakPtr<DesktopCaptureClient>, Comparator>;
 
-  aura::Window* root_;
-  aura::Window* capture_window_ = nullptr;
+  raw_ptr<aura::Window> root_;
+  raw_ptr<aura::Window> capture_window_ = nullptr;
 
   // The global set of DesktopCaptureClients.
   static ClientSet* clients_;
@@ -63,8 +66,6 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<DesktopCaptureClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureClient);
 };
 
 }  // namespace views

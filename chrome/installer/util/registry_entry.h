@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <stdint.h>
 
 #include <string>
-
-#include "base/macros.h"
 
 class WorkItemList;
 
@@ -54,6 +52,9 @@ class RegistryEntry {
   RegistryEntry(const std::wstring& key_path,
                 const std::wstring& name,
                 DWORD value);
+
+  RegistryEntry(const RegistryEntry&) = delete;
+  RegistryEntry& operator=(const RegistryEntry&) = delete;
 
   // Flags this RegistryKey with |removal_flag|, indicating that it should be
   // removed rather than created. Note that this will not result in cleaning up
@@ -122,8 +123,6 @@ class RegistryEntry {
   // Returns the RegistryStatus of the current registry entry in
   // |root|\|key_path_|\|name_|.
   RegistryStatus StatusInRegistryUnderRoot(HKEY root) const;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryEntry);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_REGISTRY_ENTRY_H_

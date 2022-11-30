@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_SHARED_IMPL_RESOURCE_VAR_H_
 #define PPAPI_SHARED_IMPL_RESOURCE_VAR_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
@@ -20,6 +19,9 @@ namespace ppapi {
 // Represents a resource Var.
 class PPAPI_SHARED_EXPORT ResourceVar : public Var {
  public:
+  ResourceVar(const ResourceVar&) = delete;
+  ResourceVar& operator=(const ResourceVar&) = delete;
+
   // Gets the resource ID associated with this var.
   // This is 0 if a resource is still pending (only possible on the host side).
   // NOTE: This can return a PP_Resource with a reference count of 0 on the
@@ -53,9 +55,6 @@ class PPAPI_SHARED_EXPORT ResourceVar : public Var {
   ResourceVar();
 
   ~ResourceVar() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceVar);
 };
 
 }  // namespace ppapi

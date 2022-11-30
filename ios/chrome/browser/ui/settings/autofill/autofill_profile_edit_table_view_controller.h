@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class PersonalDataManager;
 @interface AutofillProfileEditTableViewController
     : AutofillEditTableViewController
 
-// Creates a controller for |profile| and |dataManager| that cannot be null.
+// Creates a controller for `profile` and `dataManager` that cannot be null.
 + (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
                   personalDataManager:
                       (autofill::PersonalDataManager*)dataManager;

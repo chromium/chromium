@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/array_writer.h"
@@ -32,6 +31,10 @@ class PPAPI_PROXY_EXPORT FileChooserResource
                       PP_Instance instance,
                       PP_FileChooserMode_Dev mode,
                       const std::string& accept_types);
+
+  FileChooserResource(const FileChooserResource&) = delete;
+  FileChooserResource& operator=(const FileChooserResource&) = delete;
+
   ~FileChooserResource() override;
 
   // Resource overrides.
@@ -78,8 +81,6 @@ class PPAPI_PROXY_EXPORT FileChooserResource
   base::queue<PP_Resource> file_queue_;
 
   scoped_refptr<TrackedCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileChooserResource);
 };
 
 }  // namespace proxy

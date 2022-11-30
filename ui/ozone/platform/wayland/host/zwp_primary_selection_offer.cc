@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ namespace ui {
 ZwpPrimarySelectionOffer::ZwpPrimarySelectionOffer(
     zwp_primary_selection_offer_v1* data_offer)
     : data_offer_(data_offer) {
-  static const struct zwp_primary_selection_offer_v1_listener kListener = {
-      ZwpPrimarySelectionOffer::OnOffer};
+  static constexpr zwp_primary_selection_offer_v1_listener kListener = {
+      &OnOffer};
   zwp_primary_selection_offer_v1_add_listener(data_offer, &kListener, this);
 }
 

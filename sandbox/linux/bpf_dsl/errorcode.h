@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_BPF_DSL_ERRORCODE_H__
 #define SANDBOX_LINUX_BPF_DSL_ERRORCODE_H__
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {
@@ -27,8 +26,9 @@ class SANDBOX_EXPORT ErrorCode {
 #endif
   };
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ErrorCode);
+  ErrorCode() = delete;
+  ErrorCode(const ErrorCode&) = delete;
+  ErrorCode& operator=(const ErrorCode&) = delete;
 };
 
 }  // namespace bpf_dsl

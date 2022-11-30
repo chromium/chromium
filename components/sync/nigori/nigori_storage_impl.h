@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,26 +11,26 @@
 
 namespace syncer {
 
-class Encryptor;
-
 class NigoriStorageImpl : public NigoriStorage {
  public:
   // |encryptor| must be not null and must outlive this object.
-  NigoriStorageImpl(const base::FilePath& path, const Encryptor* encryptor);
+  explicit NigoriStorageImpl(const base::FilePath& path);
+
+  NigoriStorageImpl(const NigoriStorageImpl&) = delete;
+  NigoriStorageImpl& operator=(const NigoriStorageImpl&) = delete;
+
   ~NigoriStorageImpl() override;
 
   // NigoriStorage implementation.
   // Encrypts |data| and atomically stores it in binary file.
   void StoreData(const sync_pb::NigoriLocalData& data) override;
-  base::Optional<sync_pb::NigoriLocalData> RestoreData() override;
+  absl::optional<sync_pb::NigoriLocalData> RestoreData() override;
   void ClearData() override;
 
  private:
   base::FilePath path_;
-  const Encryptor* const encryptor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(NigoriStorageImpl);
 };
 
 }  // namespace syncer

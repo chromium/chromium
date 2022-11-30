@@ -1,22 +1,22 @@
 AXWebArea
 ++AXOutline AXARIASetSize=2
-++++AXRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=0 AXTitle='Animals' AXValue=2
+++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=0 AXTitle='Animals' AXValue=2
 ++++++AXLink AXDescription='Animals'
 ++++++++AXStaticText AXValue='Animals'
-++++++AXGroup AXARIASetSize=2
-++++++++AXRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=1 AXTitle='Domesticated'
+++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=2
+++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=1 AXTitle='Domesticated'
 ++++++++++AXLink AXDescription='Domesticated'
 ++++++++++++AXStaticText AXValue='Domesticated'
-++++++++++AXGroup AXARIASetSize=2
-++++++++++++AXRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=2 AXTitle='Dog' AXValue=1
+++++++++++AXGroup AXSubrole=AXApplicationGroup AXARIASetSize=2
+++++++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=1 AXARIASetSize=2 AXIndex=2 AXTitle='Dog' AXValue=1
 ++++++++++++++AXLink AXDescription='Dog'
 ++++++++++++++++AXStaticText AXValue='Dog'
-++++++++++++AXRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=3 AXTitle='Cat' AXValue=0
+++++++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=3 AXTitle='Cat' AXValue=0
 ++++++++++++++AXLink AXDescription='Cat'
 ++++++++++++++++AXStaticText AXValue='Cat'
-++++++++AXRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=4 AXTitle='Wild'
+++++++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=4 AXTitle='Wild'
 ++++++++++AXLink AXDescription='Wild'
 ++++++++++++AXStaticText AXValue='Wild'
-++++AXRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=5 AXTitle='Plants'
+++++AXRow AXSubrole=AXOutlineRow AXARIAPosInSet=2 AXARIASetSize=2 AXIndex=5 AXTitle='Plants'
 ++++++AXLink AXDescription='Plants'
 ++++++++AXStaticText AXValue='Plants'

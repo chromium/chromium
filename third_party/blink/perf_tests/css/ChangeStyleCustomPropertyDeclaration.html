@@ -5,15 +5,15 @@
     <script src="resources/utils.js"></script>
 </head>
 <style>
-    .green { --prop: green; }
-    .red { --prop: red; }
+    .crosshair { --prop: crosshair; }
+    .default { --prop: default; }
     body > div > div { background-color: grey; }
 </style>
 <body>
     <script>
         function createDOMTree() {
             let div = document.createElement('div');
-            div.innerHTML = '<div><div><div><div><div style="color: var(--prop)">' + '' + '</div></div></div></div></div>';
+            div.innerHTML = '<div><div><div><div><div style="cursor: var(--prop)">' + '' + '</div></div></div></div></div>';
             for (let i = 0; i < 10000; i++) {
                 document.body.appendChild(div.cloneNode(true));
             }
@@ -24,7 +24,7 @@
             description: "Measures the performance in the propagation of a custom property declaration.",
             setup: () => {
                 document.body.classList.remove(theme);
-                theme = theme == 'green' ? 'red' : 'green';
+                theme = theme == 'crosshair' ? 'default' : 'crosshair';
             },
             run: function() {
                 document.body.classList.add(theme);

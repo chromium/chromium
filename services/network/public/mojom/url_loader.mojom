@@ -1,13 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module network.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cors.mojom";
@@ -19,12 +16,13 @@ import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 [Native]
@@ -46,17 +44,19 @@ interface URLLoader {
   // If the associated request has |auto_follow_redirects| set to false, then
   // upon receiving an URLResponse with a non-NULL |redirect_url| field,
   // |FollowRedirect| may be called to load the URL indicated by the redirect.
+  //
   // |removed_headers| can be used to remove existing headers for the redirect.
   // This parameter is before |modified_headers| since removing headers is
-  // applied first in the URLLoader::FollowRedirect().  |modified_headers| can
-  // be used to add or override existing headers for the redirect.
-  // |modified_cors_exempt_headers| can be used to modify |cors_exempt_headers|
-  // in the URLRequest. See NetworkContextParams::cors_exempt_header_list
-  // and URLRequest::cors_exempt_headers for details.
-  // If |new_url| is specified, then the request will be made to
-  // it instead of the redirected URL.
-  // Note: it has to be in the same origin as the redirected URL, and this is
-  // only supported when the network service is enabled.
+  // applied first in the URLLoader::FollowRedirect().
+  //
+  // |modified_headers| can be used to add or override existing headers for the
+  // redirect. |modified_cors_exempt_headers| can be used to modify
+  // |cors_exempt_headers| in the URLRequest. See
+  // NetworkContextParams::cors_exempt_header_list and
+  // URLRequest::cors_exempt_headers for details.
+  //
+  // If |new_url| is specified, then the request will be made to it instead of
+  // the redirected URL. |new_url| must be same-origin to the redirected URL.
   FollowRedirect(array<string> removed_headers,
                  network.mojom.HttpRequestHeaders modified_headers,
                  network.mojom.HttpRequestHeaders modified_cors_exempt_headers,
@@ -93,7 +93,13 @@ interface URLLoaderClient {
   OnReceiveEarlyHints(EarlyHints early_hints);
 
   // Called when the response head is received.
-  OnReceiveResponse(URLResponseHead head);
+  // The loader is expected to close its end of the pipe after finishing
+  // writing the body, so that the client knows when it is done reading.
+  // Optionally, the response can contain cached metadata, such as a V8 code
+  // cache.
+  OnReceiveResponse(URLResponseHead head,
+                    handle<data_pipe_consumer>? body,
+                    mojo_base.mojom.BigBuffer? cached_metadata);
 
   // Called when the request has been redirected. The receiver is expected to
   // call FollowRedirect or cancel the request.
@@ -104,9 +110,6 @@ interface URLLoaderClient {
   // The implementation should call the response closure when the client is
   // ready to receive the next upload progress.
   OnUploadProgress(int64 current_position, int64 total_size) => ();
-
-  // Called when cached metadata from a resource request is ready.
-  OnReceiveCachedMetadata(mojo_base.mojom.BigBuffer data);
 
   // Called when the transfer size is updated. This is only called if
   // |report_raw_headers| is set or the renderer has permission to read the
@@ -122,13 +125,18 @@ interface URLLoaderClient {
   // done after the upcoming network servicification work.
   OnTransferSizeUpdated(int32 transfer_size_diff);
 
-  // Called when the loader starts loading response body. This is called after
-  // OnReceiveResponse is called.
-  OnStartLoadingResponseBody(handle<data_pipe_consumer> body);
-
   // Called when the loading completes. No notification will be dispatched for
   // this client after this message arrives. |status| has its |ssl_info| field
   // set only when |kURLLoadOptionsSendSSLInfoForCertificateError| was set.
+  //
+  // The loader should only call this after it has finished the load or
+  // errored, as the client could potentially close the Mojo connection upon
+  // receiving this which may delete the loader. For example, if it passed a
+  // data pipe to OnStartLoadingResponseBody(), the loader should only call
+  // OnComplete() after it has finished writing to the data pipe (or errored).
+  // Note that the client might not have finished reading the body by the time
+  // it receives this message, and only knows it is done when the data pipe is
+  // closed.
   OnComplete(URLLoaderCompletionStatus status);
 };
 

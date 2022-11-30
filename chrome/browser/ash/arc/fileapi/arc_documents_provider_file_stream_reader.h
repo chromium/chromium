@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,12 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
  public:
   ArcDocumentsProviderFileStreamReader(const storage::FileSystemURL& url,
                                        int64_t offset);
+
+  ArcDocumentsProviderFileStreamReader(
+      const ArcDocumentsProviderFileStreamReader&) = delete;
+  ArcDocumentsProviderFileStreamReader& operator=(
+      const ArcDocumentsProviderFileStreamReader&) = delete;
+
   ~ArcDocumentsProviderFileStreamReader() override;
 
   // storage::FileStreamReader override:
@@ -53,8 +59,6 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
 
   base::WeakPtrFactory<ArcDocumentsProviderFileStreamReader> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderFileStreamReader);
 };
 
 }  // namespace arc

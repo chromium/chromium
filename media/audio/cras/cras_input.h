@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "media/audio/aecdump_recording_manager.h"
 #include "media/audio/agc_audio_stream.h"
+#include "media/audio/audio_debug_recording_helper.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -26,7 +27,8 @@ class AudioManagerCrasBase;
 // Provides an input stream for audio capture based on CRAS, the ChromeOS Audio
 // Server.  This object is not thread safe and all methods should be invoked in
 // the thread that created the object.
-class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
+class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
+                                     public AecdumpRecordingSource {
  public:
   // The ctor takes all the usual parameters, plus |manager| which is the
   // audio manager who is creating this object.
@@ -34,12 +36,15 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
                   AudioManagerCrasBase* manager,
                   const std::string& device_id);
 
+  CrasInputStream(const CrasInputStream&) = delete;
+  CrasInputStream& operator=(const CrasInputStream&) = delete;
+
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
   ~CrasInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -49,15 +54,14 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   bool IsMuted() override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
+  // Implementation of AecdumpRecordingSource
+  void StartAecdump(base::File aecdump_file) override;
+  void StopAecdump() override;
+
  private:
   // Handles requests to get samples from the provided buffer.  This will be
   // called by the audio server when it has samples ready.
-  static int SamplesReady(cras_client* client,
-                          cras_stream_id_t stream_id,
-                          uint8_t* samples,
-                          size_t frames,
-                          const timespec* sample_ts,
-                          void* arg);
+  static int SamplesReady(struct libcras_stream_cb_data* data);
 
   // Handles notification that there was an error with the playback stream.
   static int StreamError(cras_client* client,
@@ -67,7 +71,7 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
 
   // Reads one or more buffers of audio from the device, passes on to the
   // registered callback. Called from SamplesReady().
-  void ReadAudio(size_t frames, uint8_t* buffer, const timespec* sample_ts);
+  void ReadAudio(size_t frames, uint8_t* buffer, const timespec* latency_ts);
 
   // Deals with an error that occured in the stream.  Called from StreamError().
   void NotifyStreamError(int err);
@@ -81,6 +85,21 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   // Return true to use AEC in CRAS for this input stream.
   inline bool UseCrasAec() const;
 
+  // Return true to use NS in CRAS for this input stream.
+  inline bool UseCrasNs() const;
+
+  // Return true to use AGC in CRAS for this input stream.
+  inline bool UseCrasAgc() const;
+
+  // Return true to allow AEC on DSP for this input stream.
+  inline bool DspBasedAecIsAllowed() const;
+
+  // Return true to allow NS on DSP for this input stream.
+  inline bool DspBasedNsIsAllowed() const;
+
+  // Return true to allow AGC on DSP for this input stream.
+  inline bool DspBasedAgcIsAllowed() const;
+
   // Non-refcounted pointer back to the audio manager.
   // The AudioManager indirectly holds on to stream objects, so we don't
   // want circular references.  Additionally, stream objects live on the audio
@@ -88,14 +107,11 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   // the manager from that thread.
   AudioManagerCrasBase* const audio_manager_;
 
-  // Size of frame in bytes.
-  uint32_t bytes_per_frame_;
-
   // Callback to pass audio samples too, valid while recording.
   AudioInputCallback* callback_;
 
   // The client used to communicate with the audio server.
-  cras_client* client_;
+  struct libcras_client* client_;
 
   // PCM parameters for the stream.
   const AudioParameters params_;
@@ -119,12 +135,17 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   bool mute_system_audio_;
   bool mute_done_;
 
+#if DCHECK_IS_ON()
+  // Flag to indicate if recording has been enabled or not.
+  bool recording_enabled_;
+#endif
+
   // Value of input stream volume, between 0.0 - 1.0.
   double input_volume_;
 
   std::unique_ptr<AudioBus> audio_bus_;
 
-  DISALLOW_COPY_AND_ASSIGN(CrasInputStream);
+  base::WeakPtrFactory<CrasInputStream> weak_factory_{this};
 };
 
 }  // namespace media

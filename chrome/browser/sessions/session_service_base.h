@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_common_utils.h"
@@ -25,6 +24,8 @@
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service_client.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
 class Profile;
@@ -50,14 +51,20 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
                            public sessions::SessionTabHelperDelegate,
                            public KeyedService,
                            public BrowserListObserver {
-  friend class SessionServiceBaseTestHelper;
-
  public:
   enum class SessionServiceType { kAppRestore, kSessionRestore };
 
+  SessionServiceBase(const SessionServiceBase&) = delete;
+  SessionServiceBase& operator=(const SessionServiceBase&) = delete;
+
   ~SessionServiceBase() override;
 
+  static Browser::Type GetBrowserTypeFromWebContents(
+      content::WebContents* web_contents);
+
   Profile* profile() const { return profile_; }
+
+  bool is_saving_enabled() const { return is_saving_enabled_; }
 
   // Sets whether the window is visible on all workspaces or not.
   void SetWindowVisibleOnAllWorkspaces(const SessionID& window_id,
@@ -103,6 +110,10 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
 
   // Called when a tab is closing.
   void TabClosing(content::WebContents* contents);
+
+  // Notification that a tab has restored its entries or a closed tab is being
+  // reused.
+  void TabRestored(content::WebContents* tab, bool pinned);
 
   // Sets the type of window. In order for the contents of a window to be
   // tracked SetWindowType must be invoked with a type we track
@@ -163,6 +174,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Creates a SessionService for the specified profile.
   SessionServiceBase(Profile* profile, SessionServiceType type);
 
+  // This method is implemented by child classes to pass us the type.
+  virtual Browser::Type GetDesiredBrowserTypeForWebContents() = 0;
+
   bool rebuild_on_next_save() const { return rebuild_on_next_save_; }
   void set_rebuild_on_next_save(bool value) { rebuild_on_next_save_ = value; }
   std::map<SessionID, int>* last_selected_tab_in_window() {
@@ -175,6 +189,9 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   sessions::CommandStorageManager* command_storage_manager() {
     return command_storage_manager_.get();
   }
+
+  using WindowsTracking = std::set<SessionID>;
+  WindowsTracking* windows_tracking() { return &windows_tracking_; }
 
   // This should only be used by derived classes in their destructors.
   void DestroyCommandStorageManager();
@@ -207,7 +224,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   virtual void BuildCommandsForTab(const SessionID& window_id,
                                    content::WebContents* tab,
                                    int index_in_window,
-                                   base::Optional<tab_groups::TabGroupId> group,
+                                   absl::optional<tab_groups::TabGroupId> group,
                                    bool is_pinned,
                                    IdToRange* tab_to_available_range);
 
@@ -232,17 +249,16 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Schedules the specified command.
   void ScheduleCommand(std::unique_ptr<sessions::SessionCommand> command);
 
+  virtual void DidScheduleCommand() {}
+
   // Returns true if changes to tabs in the specified window should be tracked.
-  virtual bool ShouldTrackChangesToWindow(const SessionID& window_id) const = 0;
+  bool ShouldTrackChangesToWindow(const SessionID& window_id) const;
 
   // Returns true if we track changes to the specified browser.
   bool ShouldTrackBrowser(Browser* browser) const;
 
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   virtual void RebuildCommandsIfRequired() = 0;
-
-  // Deletes session data if no windows are open for the current profile.
-  virtual void MaybeDeleteSessionOnlyData() = 0;
 
   // Unit test accessors.
   sessions::CommandStorageManager* GetCommandStorageManagerForTest();
@@ -252,9 +268,17 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   bool GetAvailableRangeForTest(const SessionID& tab_id,
                                 std::pair<int, int>* range);
 
+  // Sets whether commands are saved. If false, SessionCommands are effectively
+  // dropped (deleted). This is intended for use after a crash to ensure no
+  // commands are written before the user acknowledges/restores the crash.
+  void SetSavingEnabled(bool enabled);
+
  private:
+  friend class SessionServiceBaseTestHelper;
+  friend class SessionServiceTestHelper;
+
   // This is always non-null.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether to use delayed save. Set to false when constructed with a FilePath
   // (which should only be used for testing).
@@ -276,9 +300,15 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // tab's index hasn't changed.
   std::map<SessionID, int> last_selected_tab_in_window_;
 
-  base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
+  // Set of windows we're tracking changes to. This is only browsers that
+  // return true from |ShouldRestoreWindowOfType|.
+  WindowsTracking windows_tracking_;
 
-  DISALLOW_COPY_AND_ASSIGN(SessionServiceBase);
+  bool is_saving_enabled_ = true;
+
+  bool did_save_commands_at_least_once_ = false;
+
+  base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_BASE_H_

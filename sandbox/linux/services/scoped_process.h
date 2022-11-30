@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define SANDBOX_LINUX_SERVICES_SCOPED_PROCESS_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "sandbox/sandbox_export.h"
 
@@ -25,6 +24,10 @@ class SANDBOX_EXPORT ScopedProcess {
   // process. This callback is allowed to terminate the process or to simply
   // return. If the callback returns, the process will wait forever.
   explicit ScopedProcess(base::OnceClosure child_callback);
+
+  ScopedProcess(const ScopedProcess&) = delete;
+  ScopedProcess& operator=(const ScopedProcess&) = delete;
+
   ~ScopedProcess();
 
   // Wait for the process to exit.
@@ -47,7 +50,6 @@ class SANDBOX_EXPORT ScopedProcess {
   base::ProcessId child_process_id_;
   base::ProcessId process_id_;
   int pipe_fds_[2];
-  DISALLOW_COPY_AND_ASSIGN(ScopedProcess);
 };
 
 }  // namespace sandbox

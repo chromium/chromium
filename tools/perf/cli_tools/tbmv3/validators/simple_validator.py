@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -35,14 +35,9 @@ def OptionalGetHistogram(histogram_set, name, metric, version):
   return hists[0]
 
 
-def CompareHistograms(test_ctx):
-  CheckConfig(test_ctx.simple_config)
-  config = test_ctx.simple_config.config
-
+def CompareSimpleHistograms(test_ctx, config, v2_histograms, v3_histograms):
   v2_metric = config['v2_metric']
   v3_metric = config['v3_metric']
-  v2_histograms = test_ctx.RunTBMv2(v2_metric)
-  v3_histograms = test_ctx.RunTBMv3(v3_metric)
 
   metric_precision = config['float_precision']
 
@@ -82,4 +77,16 @@ def CompareHistograms(test_ctx):
       message = (
           'Error comparing TBMv2 histogram %s with TBMv3 histogram %s: %s' %
           (v2_hist.name, v3_hist.name, err.message))
-      raise AssertionError, message, sys.exc_info()[2]
+      raise AssertionError(message, sys.exc_info()[2])
+
+
+def CompareHistograms(test_ctx):
+  CheckConfig(test_ctx.simple_config)
+  config = test_ctx.simple_config.config
+
+  v2_metric = config['v2_metric']
+  v3_metric = config['v3_metric']
+  v2_histograms = test_ctx.RunTBMv2(v2_metric)
+  v3_histograms = test_ctx.RunTBMv3(v3_metric)
+
+  CompareSimpleHistograms(test_ctx, config, v2_histograms, v3_histograms)

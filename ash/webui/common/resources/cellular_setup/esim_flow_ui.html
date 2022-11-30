@@ -1,0 +1,41 @@
+<style include="iron-flex">
+  :host {
+    align-content: space-between;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+</style>
+<iron-pages attr-for-selected="id"
+    selected="[[selectedESimPageName_]]">
+  <setup-loading-page id="profileLoadingPage"
+      loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
+  </setup-loading-page>
+  <profile-discovery-list-page id="profileDiscoveryPage"
+      pending-profiles="[[pendingProfiles_]]"
+      selected-profile="{{selectedProfile_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </profile-discovery-list-page>
+  <activation-code-page id="activationCodePage"
+      is-from-qr-code="{{isActivationCodeFromQrCode_}}"
+      activation-code="{{activationCode_}}"
+      show-error="{{showError_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </activation-code-page>
+  <setup-loading-page id="activationVerificationPage"
+      loading-message="[[i18n('verifyingActivationCode')]]">
+  </setup-loading-page>
+  <confirmation-code-page id="confirmationCodePage"
+      confirmation-code="{{confirmationCode_}}"
+      profile="[[selectedProfile_]]"
+      show-error="{{showError_}}"
+      show-busy="[[shouldShowSubpageBusy_(state_)]]">
+  </confirmation-code-page>
+  <final-page
+      id="finalPage"
+      delegate="[[delegate]]"
+      show-error="[[showError_]]"
+      message="[[i18n('eSimFinalPageMessage')]]"
+      error-message="[[i18n('eSimFinalPageErrorMessage')]]">
+  </final-page>
+</iron-pages>

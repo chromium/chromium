@@ -1,0 +1,76 @@
+<style include="scanning-fonts scanning-shared">
+  #loadingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--panel-container-margin-top));
+    justify-content: center;
+    text-align: center;
+  }
+
+  h1 {
+    color: var(--scanning-scanners-loading-text-color);
+    font-family: var(--scanning-scanners-loading-font-family);
+    font-size: var(--scanning-scanners-loading-font-size);
+    font-weight: var(--scanning-medium-font-weight);
+    line-height: var(--scanning-scanners-loading-line-height);
+    margin-bottom: 0;
+    margin-top: 32px;
+  }
+
+  #noScannersSubtext {
+    color: var(--scanning-no-scanners-subtext-color);
+    display: inline-block;
+    font-family: var(--scanning-no-scanners-subtext-font-family);
+    font-size: var(--scanning-no-scanners-subtext-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    line-height: var(--scanning-no-scanners-subtext-line-height);
+    margin-top: 16px;
+  }
+
+  paper-progress {
+    --paper-progress-active-color: var(--scanning-progress-bar);
+    --paper-progress-container-color: var(--scanning-progress-bar-track);
+    border-radius: 4px;
+    height: 4px;
+    margin-bottom: 80px;
+    margin-top: 32px;
+    width: 256px;
+  }
+
+  #buttonDiv {
+    margin-top: 32px;
+    margin-bottom: 32px;
+  }
+
+  img {
+    height: 256px;
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
+<div id="loadingContainer">
+  <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
+    <img src$="[[getScannersLoadingSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('scannersLoadingText')]]">
+    <h1>[[i18n('scannersLoadingText')]]</h1>
+    <paper-progress indeterminate></paper-progress>
+  </div>
+  <div id="noScannersDiv" hidden="[[!noScannersAvailable_]]">
+    <img src$="[[getNoScannersSvgSrc_(isDarkModeEnabled_)]]"
+        alt="[[i18n('noScannersText')]]">
+    <h1>[[i18n('noScannersText')]]</h1>
+    <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
+    <div id="buttonDiv">
+      <cr-button id="learnMoreButton" class="cancel-button"
+          on-click="onLearnMoreClick_">
+        [[i18n('learnMoreButtonLabel')]]
+      </cr-button>
+      <cr-button id="retryButton" class="action-button"
+          on-click="onRetryClick_">
+        [[i18n('retryButtonLabel')]]
+      </cr-button>
+    </div>
+  </div>
+</div>

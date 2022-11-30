@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/unguessable_token.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/services/mojo_media_client.h"
 
@@ -25,11 +26,18 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
   using CreateCdmFactoryCB =
       base::RepeatingCallback<std::unique_ptr<::media::CdmFactory>(
           ::media::mojom::FrameInterfaceFactory*)>;
+  using EnableBufferingCB = base::RepeatingCallback<bool()>;
 
   CastMojoMediaClient(CmaBackendFactory* backend_factory,
                       const CreateCdmFactoryCB& create_cdm_factory_cb,
                       VideoModeSwitcher* video_mode_switcher,
-                      VideoResolutionPolicy* video_resolution_policy);
+                      VideoResolutionPolicy* video_resolution_policy,
+                      external_service_support::ExternalConnector* connector,
+                      EnableBufferingCB enable_buffering_cb);
+
+  CastMojoMediaClient(const CastMojoMediaClient&) = delete;
+  CastMojoMediaClient& operator=(const CastMojoMediaClient&) = delete;
+
   ~CastMojoMediaClient() override;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
@@ -56,14 +64,14 @@ class CastMojoMediaClient : public ::media::MojoMediaClient {
  private:
   CmaBackendFactory* const backend_factory_;
   const CreateCdmFactoryCB create_cdm_factory_cb_;
-  VideoModeSwitcher* video_mode_switcher_;
-  VideoResolutionPolicy* video_resolution_policy_;
+  [[maybe_unused]] VideoModeSwitcher* video_mode_switcher_;
+  [[maybe_unused]] VideoResolutionPolicy* video_resolution_policy_;
+  external_service_support::ExternalConnector* const connector_;
+  const EnableBufferingCB enable_buffering_cb_;
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
   VideoGeometrySetterService* video_geometry_setter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CastMojoMediaClient);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
 
   TestRunner.addResult('Dumping next file for each file:');
   for (var uiSourceCode of uiSourceCodes) {
-    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate._nextFile(uiSourceCode);
+    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate.nextFile(uiSourceCode);
     var nextURI = nextUISourceCode ? nextUISourceCode.url() : '<none>';
     TestRunner.addResult(`Next file for ${uiSourceCode.url()} is ${nextURI}.`);
   }

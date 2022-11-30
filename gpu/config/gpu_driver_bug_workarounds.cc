@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,8 @@ void IntSetToWorkarounds(const std::vector<int32_t>& enabled_workarounds,
         NOTIMPLEMENTED();
     }
   }
-  if (workarounds->max_texture_size_limit_4096)
-    workarounds->max_texture_size = 4096;
+  if (workarounds->webgl_or_caps_max_texture_size_limit_4096)
+    workarounds->webgl_or_caps_max_texture_size = 4096;
 
   if (workarounds->max_copy_texture_chromium_size_1048576)
     workarounds->max_copy_texture_chromium_size = 1048576;
@@ -75,7 +75,8 @@ void GpuDriverBugWorkarounds::Append(const GpuDriverBugWorkarounds& extra) {
   GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)
 #undef GPU_OP
 
-  max_texture_size = LowerMax(max_texture_size, extra.max_texture_size);
+  webgl_or_caps_max_texture_size = LowerMax(
+      webgl_or_caps_max_texture_size, extra.webgl_or_caps_max_texture_size);
   max_copy_texture_chromium_size = LowerMax(
       max_copy_texture_chromium_size, extra.max_copy_texture_chromium_size);
   max_3d_array_texture_size =

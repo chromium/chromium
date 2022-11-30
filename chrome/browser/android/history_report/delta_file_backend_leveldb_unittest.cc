@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -21,20 +20,22 @@ namespace history_report {
 class DeltaFileBackendTest : public testing::Test {
  public:
   DeltaFileBackendTest() {}
+
+  DeltaFileBackendTest(const DeltaFileBackendTest&) = delete;
+  DeltaFileBackendTest& operator=(const DeltaFileBackendTest&) = delete;
+
   ~DeltaFileBackendTest() override {}
 
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_.reset(new DeltaFileBackend(temp_dir_.GetPath()));
+    backend_ = std::make_unique<DeltaFileBackend>(temp_dir_.GetPath());
   }
 
   std::unique_ptr<DeltaFileBackend> backend_;
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaFileBackendTest);
 };
 
 TEST_F(DeltaFileBackendTest, AddPage) {

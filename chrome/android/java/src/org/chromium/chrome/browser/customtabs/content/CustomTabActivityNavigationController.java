@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,24 +23,28 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
+import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -81,6 +85,13 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         void onFinish(@FinishReason int reason);
     }
 
+    /** Interface which gets the package name of the default web browser on the device. */
+    public interface DefaultBrowserProvider {
+        /** Returns the package name for the default browser on the device as a string. */
+        @Nullable
+        String getDefaultBrowser();
+    }
+
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -89,7 +100,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
-    private final Lazy<FullscreenManager> mFullscreenManager;
+    private final DefaultBrowserProvider mDefaultBrowserProvider;
 
     @Nullable
     private ToolbarManager mToolbarManager;
@@ -100,6 +111,8 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     private boolean mIsFinishing;
 
     private boolean mIsHandlingUserNavigation;
+
+    private @FinishReason int mFinishReason;
 
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
@@ -117,7 +130,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             Lazy<CustomTabObserver> customTabObserver, CloseButtonNavigator closeButtonNavigator,
             ChromeBrowserInitializer chromeBrowserInitializer, Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Lazy<FullscreenManager> fullscreenManager) {
+            DefaultBrowserProvider customTabsDefaultBrowserProvider) {
         mTabController = tabController;
         mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
@@ -126,7 +139,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         mCloseButtonNavigator = closeButtonNavigator;
         mChromeBrowserInitializer = chromeBrowserInitializer;
         mActivity = activity;
-        mFullscreenManager = fullscreenManager;
+        mDefaultBrowserProvider = customTabsDefaultBrowserProvider;
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
@@ -161,6 +174,12 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             return;
         }
 
+        if (tab.isDestroyed()) {
+            // This code path may be called asynchronously, assume that if the tab has been
+            // destroyed there is no point in continuing.
+            return;
+        }
+
         // TODO(pkotwicz): Figure out whether we want to record these metrics for WebAPKs.
         if (mIntentDataProvider.getWebappExtras() == null) {
             mCustomTabObserver.get().trackNextPageLoadFromTimestamp(tab, timeStamp);
@@ -182,28 +201,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(
                 mIntentDataProvider.getIntent(), transition));
 
-        applyExperimentsToNewTab(tab, mIntentDataProvider);
-
         tab.loadUrl(params);
-    }
-
-    /**
-     * Configures various experiments in tab based on provider. This is intended to be called when a
-     * new tab is created.
-     */
-    public static void applyExperimentsToNewTab(
-            Tab tab, BrowserServicesIntentDataProvider provider) {
-        if (provider.shouldHideOmniboxSuggestionsForCctVisits()) {
-            tab.setAddApi2TransitionToFutureNavigations(true);
-        }
-
-        if (provider.shouldHideCctVisits()) {
-            tab.setHideFutureNavigations(true);
-        }
-
-        if (provider.shouldBlockNewNotificationRequests()) {
-            tab.setShouldBlockNewNotificationRequests(true);
-        }
     }
 
     /**
@@ -214,26 +212,33 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
+        if (!BackPressManager.isEnabled()) {
+            // If enabled, BackPressManager, rather than this class, will trigger their custom
+            // logic of handling back press.
+            final WebContents webContents = mTabProvider.getTab().getWebContents();
+            if (webContents != null) {
+                RenderFrameHost focusedFrame = webContents.getFocusedFrame();
+                if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
+                    BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
+                    return true;
+                }
+            }
 
-        if (mFullscreenManager.get().getPersistentFullscreenMode()) {
-            mFullscreenManager.get().exitPersistentFullscreenMode();
-            return true;
+            if (mToolbarManager != null && mToolbarManager.back()) {
+                BackPressManager.record(BackPressHandler.Type.TOOLBAR_TAB_CONTROLLER);
+                return true;
+            }
         }
 
-        final WebContents webContents = mTabProvider.getTab().getWebContents();
-        if (webContents != null) {
-            RenderFrameHost focusedFrame = webContents.getFocusedFrame();
-            if (focusedFrame != null && focusedFrame.signalModalCloseWatcherIfActive()) return true;
-        }
-
-        if (mToolbarManager != null && mToolbarManager.back()) return true;
-
+        BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         if (mTabController.onlyOneTabRemaining()) {
             // If we're closing the last tab, just finish the Activity manually. If we had called
             // mTabController.closeTab() and waited for the Activity to close as a result we would
             // have a visual glitch: https://crbug.com/1087108.
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
             finish(USER_NAVIGATION);
         } else {
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
             mTabController.closeTab();
         }
 
@@ -258,24 +263,39 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         Tab tab = mTabProvider.getTab();
         if (tab == null) return false;
 
-        String url = tab.getUrlString();
-        if (DomDistillerUrlUtils.isDistilledPage(url)) {
-            url = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(url);
+        GURL gurl = tab.getUrl();
+        if (DomDistillerUrlUtils.isDistilledPage(gurl)) {
+            gurl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(gurl);
         }
+        String url = gurl.getSpec();
         if (TextUtils.isEmpty(url)) url = mIntentDataProvider.getUrlToLoad();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
+        String packageName = mDefaultBrowserProvider.getDefaultBrowser();
+        if (packageName != null) {
+            intent.setPackage(packageName);
+            // crbug.com/1265223
+            if (intent.resolveActivity(mActivity.getPackageManager()) == null) {
+                intent.setPackage(null);
+            }
+        }
 
         boolean willChromeHandleIntent =
                 mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognito();
+
+        // If the tab is opened by TWA or Webapp, do not reparent and finish the Custom Tab
+        // activity because we still want to keep the app alive.
+        boolean canFinishActivity = !mIntentDataProvider.isTrustedWebActivity()
+                && !mIntentDataProvider.isWebappOrWebApkActivity();
 
         willChromeHandleIntent |=
                 ExternalNavigationDelegateImpl.willChromeHandleIntent(intent, true);
 
         Bundle startActivityOptions = ActivityOptionsCompat.makeCustomAnimation(
                 mActivity, R.anim.abc_fade_in, R.anim.abc_fade_out).toBundle();
-        if (willChromeHandleIntent || forceReparenting) {
+
+        if (canFinishActivity && willChromeHandleIntent || forceReparenting) {
             // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll use
             // reparenting finish callback instead.
             mTabProvider.removeObserver(mTabObserver);
@@ -299,6 +319,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     public void finish(@FinishReason int reason) {
         if (mIsFinishing) return;
         mIsFinishing = true;
+        mFinishReason = reason;
 
         if (reason != REPARENTING) {
             // Closing the activity destroys the renderer as well. Re-create a spare renderer some
@@ -313,6 +334,10 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (mFinishHandler != null) {
             mFinishHandler.onFinish(reason);
         }
+    }
+
+    public @FinishReason int getFinishReason() {
+        return mFinishReason;
     }
 
     /**

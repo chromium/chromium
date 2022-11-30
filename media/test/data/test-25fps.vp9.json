@@ -256,17 +256,5 @@
     "5a63e607041536fa3f633c769f0a9e17",
     "3b33f8e78890e8a41d8cd93ebee7078e",
     "fbb59915d51c7f56386777e70ba2dddc"
-  ],
-  "thumbnail_checksums": [
-    "# ARM - GO2001",
-    "7daba42a115da37a463edc2fa6d2ab8e",
-    "# ARM - MediaTek",
-    "4db6e435d694180354a6d763afb27894",
-    "# ARM - RK3399",
-    "82647609e45a19f8e22fd1880a9edf3d",
-    "# Intel - VA_FILTER_SCALING_DEFAULT",
-    "3533e744155fa94830151df0c15b8459",
-    "# Intel - VA decode to NV12, EGLImage CSC",
-    "919bee0d8a8278eeebb2c198a6b51455"
   ]
 }

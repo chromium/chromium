@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
-  await TestRunner.loadModule('changes');
   await TestRunner.loadLegacyModule('workspace_diff');
   await TestRunner.loadLegacyModule('changes');
 
@@ -14,7 +13,7 @@
       new Bindings.ContentProviderBasedProject(workspace, 'mockProject', Workspace.projectTypes.Network, '', false);
   var workspaceDiff = new WorkspaceDiff.WorkspaceDiff(workspace);
   TestRunner.addSniffer(
-      WorkspaceDiff.WorkspaceDiff.prototype, '_uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
+      WorkspaceDiff.WorkspaceDiff.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
 
   var uiSourceCodeList = new Changes.ChangesSidebar(workspaceDiff);
 
@@ -46,12 +45,12 @@
   ]);
 
   function modifiedStatusChanged() {
-    if (!workspaceDiff._loadingUISourceCodes.size)
+    if (!workspaceDiff.loadingUISourceCodes.size)
       fulfill();
   }
 
   function dumpUISourceCodeList() {
-    uiSourceCodeList._treeoutline.rootElement().children().forEach(treeElement => {
+    uiSourceCodeList.treeoutline.rootElement().children().forEach(treeElement => {
       TestRunner.addResult(treeElement.title);
     });
   }

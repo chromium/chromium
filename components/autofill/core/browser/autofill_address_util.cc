@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,145 +10,241 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
-#include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using autofill::AutofillCountry;
-using autofill::ServerFieldType;
+using i18n::addressinput::AddressField;
 using i18n::addressinput::AddressUiComponent;
+using i18n::addressinput::Localization;
 
 namespace autofill {
 
-// Dictionary keys for address components info.
-const char kFieldTypeKey[] = "field";
-const char kFieldLengthKey[] = "isLongField";
-const char kFieldNameKey[] = "fieldName";
+namespace {
 
-// Field names for the address components.
-const char kFullNameField[] = "FULL_NAME";
-const char kCompanyNameField[] = "COMPANY_NAME";
-const char kAddressLineField[] = "ADDRESS_LINES";
-const char kDependentLocalityField[] = "ADDRESS_LEVEL_3";
-const char kCityField[] = "ADDRESS_LEVEL_2";
-const char kStateField[] = "ADDRESS_LEVEL_1";
-const char kPostalCodeField[] = "POSTAL_CODE";
-const char kSortingCodeField[] = "SORTING_CODE";
-const char kCountryField[] = "COUNTY_CODE";
+// Returns a vector of AddressUiComponent for `country_code` when using
+// `ui_language_code`. If no components are available for `country_code`, it
+// defaults back to the US. If `ui_language_code` is not valid,  the default
+// format is returned.
+std::vector<AddressUiComponent> GetAddressComponents(
+    const std::string& country_code,
+    const std::string& ui_language_code,
+    std::string* components_language_code) {
+  DCHECK(components_language_code);
 
-// Address field length values.
-const bool kShortField = false;
-const bool kLongField = true;
-
-ServerFieldType GetFieldTypeFromString(const std::string& type) {
-  if (type == kFullNameField)
-    return NAME_FULL;
-  if (type == kCompanyNameField)
-    return COMPANY_NAME;
-  if (type == kAddressLineField)
-    return ADDRESS_HOME_STREET_ADDRESS;
-  if (type == kDependentLocalityField)
-    return ADDRESS_HOME_DEPENDENT_LOCALITY;
-  if (type == kCityField)
-    return ADDRESS_HOME_CITY;
-  if (type == kStateField)
-    return ADDRESS_HOME_STATE;
-  if (type == kPostalCodeField)
-    return ADDRESS_HOME_ZIP;
-  if (type == kSortingCodeField)
-    return ADDRESS_HOME_SORTING_CODE;
-  if (type == kCountryField)
-    return ADDRESS_HOME_COUNTRY;
+  // Return strings in the current application locale.
+  Localization localization;
+  localization.SetGetter(l10n_util::GetStringUTF8);
+  for (const auto& country : {country_code, std::string("US")}) {
+    std::vector<AddressUiComponent> components =
+        ::i18n::addressinput::BuildComponentsWithLiterals(
+            country, localization, ui_language_code, components_language_code);
+    if (!components.empty()) {
+      ExtendAddressComponents(components, country, localization,
+                              /*include_literals=*/true);
+      return components;
+    }
+  }
   NOTREACHED();
-  return UNKNOWN_TYPE;
+  return {};
 }
 
-// Fills |components| with the address UI components that should be used to
-// input an address for |country_code| when UI BCP 47 language code is
-// |ui_language_code|. If |components_language_code| is not NULL, then sets it
-// to the BCP 47 language code that should be used to format the address for
-// display.
-void GetAddressComponents(const std::string& country_code,
-                          const std::string& ui_language_code,
-                          base::ListValue* address_components,
-                          std::string* components_language_code) {
-  DCHECK(address_components);
+}  // namespace
 
-  ::i18n::addressinput::Localization localization;
-  localization.SetGetter(l10n_util::GetStringUTF8);
+void ExtendAddressComponents(std::vector<AddressUiComponent>& components,
+                             const std::string& country_code,
+                             const Localization& localization,
+                             bool include_literals) {
+  AutofillCountry country(country_code);
+  for (const AutofillCountry::AddressFormatExtension& rule :
+       country.address_format_extensions()) {
+    // Find the location of `rule.placed_after` in `components`.
+    // `components.field` is only valid if `components.literal.empty()`.
+    auto prev_component = base::ranges::find_if(
+        components, [&rule](const AddressUiComponent& component) {
+          return component.literal.empty() &&
+                 component.field == rule.placed_after;
+        });
+    DCHECK(prev_component != components.end());
+
+    // Insert the separator and `rule.type` after `prev_component`.
+    if (include_literals) {
+      prev_component = components.insert(
+          ++prev_component,
+          AddressUiComponent{.literal =
+                                 std::string(rule.separator_before_label)});
+    }
+    components.insert(
+        ++prev_component,
+        AddressUiComponent{
+            .field = rule.type,
+            .name = localization.GetString(rule.label_id),
+            .length_hint = rule.large_sized ? AddressUiComponent::HINT_LONG
+                                            : AddressUiComponent::HINT_SHORT});
+  }
+}
+
+void GetAddressComponents(
+    const std::string& country_code,
+    const std::string& ui_language_code,
+    bool include_literals,
+    std::vector<std::vector<AddressUiComponent>>* address_components,
+    std::string* components_language_code) {
   std::string not_used;
-  std::vector<AddressUiComponent> components =
-      ::i18n::addressinput::BuildComponents(
-          country_code, localization, ui_language_code,
-          components_language_code ? components_language_code : &not_used);
-  if (components.empty()) {
-    static const char kDefaultCountryCode[] = "US";
-    components = ::i18n::addressinput::BuildComponents(
-        kDefaultCountryCode, localization, ui_language_code,
-        components_language_code ? components_language_code : &not_used);
+  std::vector<AddressUiComponent> components = GetAddressComponents(
+      country_code, ui_language_code,
+      components_language_code ? components_language_code : &not_used);
+  std::vector<AddressUiComponent>* line_components = nullptr;
+  for (const AddressUiComponent& component : components) {
+    // Start a new line if this is the first line, or a new line literal exists.
+    if (!line_components || component.literal == "\n") {
+      address_components->push_back(std::vector<AddressUiComponent>());
+      line_components = &address_components->back();
+    }
+
+    if (!component.literal.empty()) {
+      if (!include_literals)
+        continue;
+      // No need to return new line literals since components are split into
+      // different lines anyway (one line per vector).
+      if (component.literal == "\n")
+        continue;
+    }
+
+    line_components->push_back(component);
   }
+  // Filter empty lines. Those can appear e.g. when the line consists only of
+  // literals and |include_literals| is false.
+  address_components->erase(
+      base::ranges::remove_if(*address_components,
+                              [](auto line) { return line.empty(); }),
+      address_components->end());
+}
+
+std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
+                                       const std::string& ui_language_code,
+                                       bool include_recipient,
+                                       bool include_country) {
+  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                  HtmlFieldMode::kNone);
+  const std::u16string& country_code =
+      profile.GetInfo(kCountryCode, ui_language_code);
+
+  std::string not_used;
+  std::vector<AddressUiComponent> components = GetAddressComponents(
+      base::UTF16ToUTF8(country_code), ui_language_code, &not_used);
+
   DCHECK(!components.empty());
-
-  base::ListValue* line = nullptr;
-  for (size_t i = 0; i < components.size(); ++i) {
-    if (i == 0 ||
-        components[i - 1].length_hint == AddressUiComponent::HINT_LONG ||
-        components[i].length_hint == AddressUiComponent::HINT_LONG) {
-      line = new base::ListValue;
-      address_components->Append(std::unique_ptr<base::ListValue>(line));
-      // |line| is invalidated at this point, so it needs to be reset.
-      address_components->GetList(address_components->GetSize() - 1, &line);
+  std::string address;
+  for (const AddressUiComponent& component : components) {
+    // Add string literals directly.
+    if (!component.literal.empty()) {
+      address += component.literal;
+      continue;
     }
-
-    auto component = std::make_unique<base::DictionaryValue>();
-    component->SetString(kFieldNameKey, components[i].name);
-
-    switch (components[i].field) {
-      case ::i18n::addressinput::COUNTRY:
-        component->SetString(kFieldTypeKey, kCountryField);
-        break;
-      case ::i18n::addressinput::ADMIN_AREA:
-        component->SetString(kFieldTypeKey, kStateField);
-        break;
-      case ::i18n::addressinput::LOCALITY:
-        component->SetString(kFieldTypeKey, kCityField);
-        break;
-      case ::i18n::addressinput::DEPENDENT_LOCALITY:
-        component->SetString(kFieldTypeKey, kDependentLocalityField);
-        break;
-      case ::i18n::addressinput::SORTING_CODE:
-        component->SetString(kFieldTypeKey, kSortingCodeField);
-        break;
-      case ::i18n::addressinput::POSTAL_CODE:
-        component->SetString(kFieldTypeKey, kPostalCodeField);
-        break;
-      case ::i18n::addressinput::STREET_ADDRESS:
-        component->SetString(kFieldTypeKey, kAddressLineField);
-        break;
-      case ::i18n::addressinput::ORGANIZATION:
-        component->SetString(kFieldTypeKey, kCompanyNameField);
-        break;
-      case ::i18n::addressinput::RECIPIENT:
-        component->SetString(kFieldTypeKey, kFullNameField);
-        break;
+    if (!include_recipient &&
+        component.field == ::i18n::addressinput::RECIPIENT) {
+      continue;
     }
-
-    switch (components[i].length_hint) {
-      case AddressUiComponent::HINT_LONG:
-        component->SetBoolean(kFieldLengthKey, kLongField);
-        break;
-      case AddressUiComponent::HINT_SHORT:
-        component->SetBoolean(kFieldLengthKey, kShortField);
-        break;
-    }
-
-    line->Append(std::move(component));
+    ServerFieldType type = i18n::TypeForField(component.field);
+    if (type == NAME_FULL)
+      type = NAME_FULL_WITH_HONORIFIC_PREFIX;
+    address += base::UTF16ToUTF8(profile.GetInfo(type, ui_language_code));
   }
+  if (include_country) {
+    address += "\n";
+    address += base::UTF16ToUTF8(
+        profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
+  }
+
+  // Remove all white spaces and new lines from the beginning and the end of the
+  // address.
+  base::TrimString(address, base::kWhitespaceASCII, &address);
+
+  // Collapse new lines to remove empty lines.
+  re2::RE2::GlobalReplace(&address, re2::RE2("\\n+"), "\n");
+
+  // Collapse white spaces.
+  re2::RE2::GlobalReplace(&address, re2::RE2("[ ]+"), " ");
+
+  return base::UTF8ToUTF16(address);
+}
+
+std::u16string GetProfileDescription(const AutofillProfile& profile,
+                                     const std::string& ui_language_code,
+                                     bool include_address_and_contacts) {
+  // All user-visible fields.
+  static constexpr ServerFieldType kDetailsFields[] = {
+      NAME_FULL,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      COMPANY_NAME,
+      ADDRESS_HOME_COUNTRY};
+
+  if (!include_address_and_contacts) {
+    return profile.GetInfo(NAME_FULL, ui_language_code);
+  }
+
+  return profile.ConstructInferredLabel(
+      kDetailsFields, std::size(kDetailsFields),
+      /*num_fields_to_include=*/2, ui_language_code);
+}
+
+std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
+    const AutofillProfile& first_profile,
+    const AutofillProfile& second_profile,
+    const std::string& app_locale) {
+  static constexpr ServerFieldType kTypeToCompare[] = {
+      NAME_FULL_WITH_HONORIFIC_PREFIX, ADDRESS_HOME_ADDRESS, EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER};
+
+  base::flat_map<ServerFieldType, std::pair<std::u16string, std::u16string>>
+      differences = AutofillProfileComparator::GetProfileDifferenceMap(
+          first_profile, second_profile,
+          ServerFieldTypeSet(std::begin(kTypeToCompare),
+                             std::end(kTypeToCompare)),
+          app_locale);
+
+  std::u16string first_address = GetEnvelopeStyleAddress(
+      first_profile, app_locale, /*include_recipient=*/false,
+      /*include_country=*/true);
+  std::u16string second_address = GetEnvelopeStyleAddress(
+      second_profile, app_locale, /*include_recipient=*/false,
+      /*include_country=*/true);
+
+  std::vector<ProfileValueDifference> differences_for_ui;
+  for (ServerFieldType type : kTypeToCompare) {
+    // Address is handled seprately.
+    if (type == ADDRESS_HOME_ADDRESS) {
+      if (first_address != second_address) {
+        differences_for_ui.push_back({type, first_address, second_address});
+      }
+      continue;
+    }
+    auto it = differences.find(type);
+    if (it == differences.end())
+      continue;
+    differences_for_ui.push_back({type, it->second.first, it->second.second});
+  }
+  return differences_for_ui;
 }
 
 }  // namespace autofill

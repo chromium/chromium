@@ -29,7 +29,6 @@
  */
 
 #include "third_party/blink/renderer/core/dom/icon_url.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

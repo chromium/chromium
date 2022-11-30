@@ -29,7 +29,7 @@
 namespace blink {
 
 bool BuildPathFromString(const StringView& path_string, Path& result) {
-  if (path_string.IsEmpty())
+  if (path_string.empty())
     return true;
 
   SVGPathBuilder builder(result);
@@ -65,7 +65,7 @@ String BuildStringFromByteStream(const SVGPathByteStream& stream,
 SVGParsingError BuildByteStreamFromString(const StringView& path_string,
                                           SVGPathByteStream& result) {
   result.clear();
-  if (path_string.IsEmpty())
+  if (path_string.empty())
     return SVGParseStatus::kNoError;
 
   // The string length is typically a minor overestimate of eventual byte stream

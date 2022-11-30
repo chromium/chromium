@@ -1,0 +1,11 @@
+{
+  "name": "system.cpu test",
+  "manifest_version": 2,
+  "version": "1.0",
+  "description": "Test system.cpu API",
+  "permissions": ["system.cpu"],
+  "background": {
+    "scripts": ["test_cpu_api.js"],
+    "persistent": false
+  }
+}

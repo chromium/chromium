@@ -1,26 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_app_interface.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/format_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/titled_url_match.h"
-#include "components/prefs/pref_service.h"
-#include "components/query_parser/query_parser.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/titled_url_match.h"
+#import "components/prefs/pref_service.h"
+#import "components/query_parser/query_parser.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/testing/nserror_util.h"
-#include "ui/base/models/tree_node_iterator.h"
-#include "url/gurl.h"
+#import "ui/base/models/tree_node_iterator.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -252,7 +253,8 @@
   const bookmarks::BookmarkNode* bookmark =
       [self bookmarkModel] -> GetMostRecentlyAddedUserNodeForURL(
                                GURL(base::SysNSStringToUTF16(URL)));
-  if (bookmark->GetTitle().compare(base::SysNSStringToUTF16(name)) != 0) {
+  if (!bookmark ||
+      bookmark->GetTitle().compare(base::SysNSStringToUTF16(name)) != 0) {
     return testing::NSErrorWithLocalizedDescription(
         [NSString stringWithFormat:@"Could not find bookmark named %@ for %@",
                                    name, URL]);

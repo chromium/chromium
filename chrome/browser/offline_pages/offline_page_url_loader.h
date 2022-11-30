@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/offline_pages/offline_page_request_handler.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -46,6 +47,9 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
       const network::ResourceRequest& tentative_resource_request,
       content::URLLoaderRequestInterceptor::LoaderCallback callback);
 
+  OfflinePageURLLoader(const OfflinePageURLLoader&) = delete;
+  OfflinePageURLLoader& operator=(const OfflinePageURLLoader&) = delete;
+
   ~OfflinePageURLLoader() override;
 
   void SetTabIdGetterForTesting(
@@ -63,7 +67,7 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -99,7 +103,7 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   void MaybeDeleteSelf();
 
   // Not owned. The owner of this should outlive this class instance.
-  content::NavigationUIData* navigation_ui_data_;
+  raw_ptr<content::NavigationUIData> navigation_ui_data_;
 
   int frame_tree_node_id_;
   int transition_type_;
@@ -118,8 +122,6 @@ class OfflinePageURLLoader : public network::mojom::URLLoader,
   OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter_;
 
   base::WeakPtrFactory<OfflinePageURLLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageURLLoader);
 };
 
 }  // namespace offline_pages

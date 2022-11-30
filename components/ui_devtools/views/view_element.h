@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_VIEW_ELEMENT_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_VIEW_ELEMENT_H_
 
-#include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "components/ui_devtools/ui_element.h"
+#include "components/ui_devtools/views/ui_element_with_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
@@ -16,11 +17,13 @@ namespace ui_devtools {
 
 class UIElementDelegate;
 
-class ViewElement : public views::ViewObserver, public UIElement {
+class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
  public:
   ViewElement(views::View* view,
               UIElementDelegate* ui_element_delegate,
               UIElement* parent);
+  ViewElement(const ViewElement&) = delete;
+  ViewElement& operator=(const ViewElement&) = delete;
   ~ViewElement() override;
   views::View* view() const { return view_; }
 
@@ -31,25 +34,29 @@ class ViewElement : public views::ViewObserver, public UIElement {
   void OnViewBoundsChanged(views::View* view) override;
 
   // UIElement:
-  std::vector<UIElement::ClassProperties> GetCustomPropertiesForMatchedStyle()
-      const override;
   void GetBounds(gfx::Rect* bounds) const override;
   void SetBounds(const gfx::Rect& bounds) override;
-  void GetVisible(bool* visible) const override;
-  void SetVisible(bool visible) override;
-  bool SetPropertiesFromString(const std::string& text) override;
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
   static views::View* From(const UIElement* element);
   void PaintRect() const override;
-  void InitSources() override;
+  bool FindMatchByElementID(const ui::ElementIdentifier& identifier) override;
   bool DispatchMouseEvent(protocol::DOM::MouseEvent* event) override;
+  bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
+
+ protected:
+  ui::metadata::ClassMetaData* GetClassMetaData() const override;
+  void* GetClassInstance() const override;
+  ui::Layer* GetLayer() const override;
 
  private:
+  // Clears children and rebuilds ViewElement subtree from scratch. Called if an
+  // inconsistency is detected between the current tree and the tree of the
+  // backing view.
+  void RebuildTree();
   views::View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewElement);
+  base::ScopedObservation<views::View, views::ViewObserver> observer_{this};
 };
 
 }  // namespace ui_devtools

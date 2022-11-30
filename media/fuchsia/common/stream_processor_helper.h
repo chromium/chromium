@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/sysmem/cpp/fidl.h>
 
+#include <forward_list>
+
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -23,29 +23,20 @@ namespace media {
 // 1. Data validation check.
 // 2. Stream/Buffer life time management.
 // 3. Configure StreamProcessor and input/output buffer settings.
-class StreamProcessorHelper {
+class MEDIA_EXPORT StreamProcessorHelper {
  public:
-  class IoPacket {
+  class MEDIA_EXPORT IoPacket {
    public:
-    static IoPacket CreateInput(size_t index,
-                                size_t size,
-                                base::TimeDelta timestamp,
-                                bool unit_end,
-                                base::OnceClosure destroy_cb);
-
-    static IoPacket CreateOutput(size_t index,
-                                 size_t offset,
-                                 size_t size,
-                                 base::TimeDelta timestamp,
-                                 bool unit_end,
-                                 base::OnceClosure destroy_cb);
-
     IoPacket(size_t index,
              size_t offset,
              size_t size,
              base::TimeDelta timestamp,
              bool unit_end,
              base::OnceClosure destroy_cb);
+
+    IoPacket(const IoPacket&) = delete;
+    IoPacket& operator=(const IoPacket&) = delete;
+
     ~IoPacket();
 
     IoPacket(IoPacket&&);
@@ -61,6 +52,9 @@ class StreamProcessorHelper {
     }
     const fuchsia::media::FormatDetails& format() const { return format_; }
 
+    // Adds a |closure| that will be called when the packet is destroyed.
+    void AddOnDestroyClosure(base::OnceClosure closure);
+
    private:
     size_t index_;
     size_t offset_;
@@ -68,38 +62,34 @@ class StreamProcessorHelper {
     base::TimeDelta timestamp_;
     bool unit_end_;
     fuchsia::media::FormatDetails format_;
-    base::ScopedClosureRunner destroy_cb_;
-
-    DISALLOW_COPY_AND_ASSIGN(IoPacket);
+    std::forward_list<base::OnceClosure> destroy_callbacks_;
   };
 
   class Client {
    public:
-    // Allocate input/output buffers with the given constraints. Client should
-    // call ProvideInput/OutputBufferCollectionToken to finish the buffer
-    // allocation flow.
-    virtual void AllocateInputBuffers(
-        const fuchsia::media::StreamBufferConstraints& stream_constraints) = 0;
-    virtual void AllocateOutputBuffers(
+    // Allocate output buffers with the given constraints. Client should call
+    // ProvideIOutputBufferCollectionToken to finish the buffer allocation flow.
+    virtual void OnStreamProcessorAllocateOutputBuffers(
         const fuchsia::media::StreamBufferConstraints& stream_constraints) = 0;
 
     // Called when all the pushed packets are processed.
-    virtual void OnProcessEos() = 0;
+    virtual void OnStreamProcessorEndOfStream() = 0;
 
     // Called when output format is available.
-    virtual void OnOutputFormat(fuchsia::media::StreamOutputFormat format) = 0;
+    virtual void OnStreamProcessorOutputFormat(
+        fuchsia::media::StreamOutputFormat format) = 0;
 
     // Called when output packet is available. Deleting |packet| will notify
     // StreamProcessor the output buffer is available to be re-used. Client
     // should delete |packet| on the same thread as this function.
-    virtual void OnOutputPacket(IoPacket packet) = 0;
+    virtual void OnStreamProcessorOutputPacket(IoPacket packet) = 0;
 
     // Only available for decryption, which indicates currently the
     // StreamProcessor doesn't have the content key to process.
-    virtual void OnNoKey() = 0;
+    virtual void OnStreamProcessorNoKey() = 0;
 
     // Called when any fatal errors happens.
-    virtual void OnError() = 0;
+    virtual void OnStreamProcessorError() = 0;
 
    protected:
     virtual ~Client() = default;
@@ -107,6 +97,10 @@ class StreamProcessorHelper {
 
   StreamProcessorHelper(fuchsia::media::StreamProcessorPtr processor,
                         Client* client);
+
+  StreamProcessorHelper(const StreamProcessorHelper&) = delete;
+  StreamProcessorHelper& operator=(const StreamProcessorHelper&) = delete;
+
   ~StreamProcessorHelper();
 
   // Process one packet. Caller can reuse the underlying buffer when the
@@ -117,10 +111,12 @@ class StreamProcessorHelper {
   // StreamProcessor without calling Reset.
   void ProcessEos();
 
-  // Provide input/output BufferCollectionToken to finish StreamProcessor buffer
-  // setup flow.
-  void CompleteInputBuffersAllocation(
+  // Sets buffer collection tocken to use for input buffers.
+  void SetInputBufferCollectionToken(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
+
+  // Provide output BufferCollectionToken to finish StreamProcessor buffer
+  // setup flow. Should be called only after AllocateOutputBuffers.
   void CompleteOutputBuffersAllocation(
       fuchsia::sysmem::BufferCollectionTokenPtr token);
 
@@ -156,10 +152,6 @@ class StreamProcessorHelper {
   // stream_lifetime_ordinal_.
   bool active_stream_ = false;
 
-  // Input buffers.
-  uint64_t input_buffer_lifetime_ordinal_ = 1;
-  fuchsia::media::StreamBufferConstraints input_buffer_constraints_;
-
   // Map from packet index to corresponding input IoPacket. IoPacket should be
   // owned by this class until StreamProcessor released the buffer.
   base::flat_map<size_t, IoPacket> input_packets_;
@@ -176,8 +168,6 @@ class StreamProcessorHelper {
 
   base::WeakPtr<StreamProcessorHelper> weak_this_;
   base::WeakPtrFactory<StreamProcessorHelper> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamProcessorHelper);
 };
 
 }  // namespace media

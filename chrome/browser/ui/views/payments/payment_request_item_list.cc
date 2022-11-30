@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
@@ -17,12 +18,12 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
@@ -32,7 +33,7 @@ namespace {
 
 constexpr SkColor kCheckmarkColor = 0xFF609265;
 
-constexpr gfx::Insets kRowInsets = gfx::Insets(
+constexpr auto kRowInsets = gfx::Insets::TLBR(
     kPaymentRequestRowVerticalInsets,
     kPaymentRequestRowHorizontalInsets,
     kPaymentRequestRowVerticalInsets,
@@ -64,63 +65,52 @@ PaymentRequestItemList::Item::Item(base::WeakPtr<PaymentRequestSpec> spec,
 PaymentRequestItemList::Item::~Item() {}
 
 void PaymentRequestItemList::Item::Init() {
-  std::unique_ptr<views::View> content =
-      CreateContentView(&accessible_item_description_);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::View* content_view =
+      AddChildView(CreateContentView(&accessible_item_description_));
+  content_view->SetCanProcessEventsWithinSubtree(false);
+  layout->SetFlexForView(content_view, 1);
 
-  // Add a column for the item's content view.
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  // The container view contains the checkmark shown next to the selected
+  // profile, an optional extra_view and an optional edit_button.
+  views::View* container = AddChildView(std::make_unique<views::View>());
+  views::BoxLayout* container_layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kExtraViewSpacing));
+  container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Add a column for the checkmark shown next to the selected profile.
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  container->AddChildView(CreateCheckmark(selected() && GetClickable()));
 
-  std::unique_ptr<views::View> extra_view = CreateExtraView();
-  if (extra_view) {
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize, kExtraViewSpacing);
-    // Add a column for the extra_view, which comes after the checkmark.
-    columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  }
-
-  if (show_edit_button_) {
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize, kExtraViewSpacing);
-    // Add a column for the edit_button if it exists.
-    columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kFixed, kEditIconSize,
-                       kEditIconSize);
-  }
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  content->SetCanProcessEventsWithinSubtree(false);
-  layout->AddView(std::move(content));
-
-  layout->AddView(CreateCheckmark(selected() && GetClickable()));
-
-  if (extra_view)
-    layout->AddView(std::move(extra_view));
+  if (std::unique_ptr<views::View> extra_view = CreateExtraView())
+    container->AddChildView(std::move(extra_view));
 
   if (show_edit_button_) {
     auto edit_button = views::CreateVectorImageButton(
         base::BindRepeating(&Item::EditButtonPressed, base::Unretained(this)));
-    const SkColor icon_color =
-        color_utils::DeriveDefaultIconColor(SK_ColorBLACK);
-    edit_button->SetImage(views::Button::STATE_NORMAL,
-                          gfx::CreateVectorIcon(vector_icons::kEditIcon,
-                                                kEditIconSize, icon_color));
-    edit_button->SetInkDropBaseColor(icon_color);
+    edit_button->SetBorder(nullptr);
+    edit_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
+                                       kEditIconSize));
+    views::InkDrop::Get(edit_button.get())
+        ->SetBaseColorCallback(base::BindRepeating(
+            [](views::View* host) {
+              return host->GetColorProvider()->GetColor(ui::kColorIcon);
+            },
+            edit_button.get()));
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT));
-    layout->AddView(std::move(edit_button));
+    container->AddChildView(std::move(edit_button));
   }
 
   UpdateAccessibleName();
@@ -210,7 +200,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::CreateListView() {
 
   content_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kPaymentRequestRowVerticalInsets, 0), 0));
+      gfx::Insets::VH(kPaymentRequestRowVerticalInsets, 0), 0));
 
   for (auto& item : items_)
     content_view->AddChildView(item.release());

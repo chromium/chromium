@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,41 +6,26 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
-#include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
+NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container,
-                                           CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId, js_calls_container),
-      core_oobe_view_(core_oobe_view) {
-  set_user_acted_method_path("login.NetworkScreen.userActed");
-  DCHECK(core_oobe_view_);
-}
-
-NetworkScreenHandler::~NetworkScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+NetworkScreenHandler::~NetworkScreenHandler() = default;
 
 void NetworkScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-
   // In OOBE all physical network technologies should be enabled, so the user is
   // able to select any of the available networks on the device. Enabled
   // technologies should not be changed if network screen is shown outside of
@@ -54,39 +39,18 @@ void NetworkScreenHandler::Show() {
                                   chromeos::network_handler::ErrorCallback());
   }
 
-  base::DictionaryValue data;
-  data.SetBoolean("isDemoModeSetup",
-                  DemoSetupController::IsOobeDemoSetupFlowInProgress());
-  ShowScreenWithData(kScreenId, &data);
-}
-
-void NetworkScreenHandler::Hide() {}
-
-void NetworkScreenHandler::Bind(NetworkScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void NetworkScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  base::Value::Dict data;
+  data.Set("isDemoModeSetup",
+           DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  ShowInWebUI(std::move(data));
 }
 
 void NetworkScreenHandler::ShowError(const std::u16string& message) {
-  CallJS("login.NetworkScreen.showError", message);
+  CallExternalAPI("setError", message);
 }
 
 void NetworkScreenHandler::ClearErrors() {
-  if (page_is_ready())
-    core_oobe_view_->ClearErrors();
-}
-
-void NetworkScreenHandler::ShowConnectingStatus(
-    bool connecting,
-    const std::u16string& network_id) {}
-
-void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
-  CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);
+  CallExternalAPI("setError", std::string());
 }
 
 void NetworkScreenHandler::DeclareLocalizedValues(
@@ -96,22 +60,12 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   builder->Add("proxySettingsListItemName",
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiListItemName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
-  builder->Add("offlineDemoSetupListItemName",
-               IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-  network_element::AddLocalizedValuesToBuilder(builder);
+  ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 
-void NetworkScreenHandler::GetAdditionalParameters(
-    base::DictionaryValue* dict) {
+void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
-}
-
-void NetworkScreenHandler::Initialize() {
-  if (show_on_init_) {
-    show_on_init_ = false;
-    Show();
-  }
 }
 
 }  // namespace chromeos

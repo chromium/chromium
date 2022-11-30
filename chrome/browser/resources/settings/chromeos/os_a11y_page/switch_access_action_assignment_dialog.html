@@ -1,119 +1,21 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared">
+  cr-dialog::part(dialog) {
+    width: 420px;
+  }
+</style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../os_icons.html">
-<link rel="import" href="switch_access_constants.html">
-<link rel="import" href="switch_access_subpage_browser_proxy.html">
-
-<dom-module id="settings-switch-access-action-assignment-dialog">
-  <template>
-    <style include="cr-shared-style settings-shared">
-      cr-dialog::part(dialog) {
-        width: 420px;
-      }
-
-      #prompt {
-        color: var(--cr-primary-text-color);
-        height: 40px;
-        margin-top: 8px;
-        white-space: pre-line;
-      }
-
-      #switchAssignments {
-        background-color: var(--google-grey-refresh-100);
-        border-radius: 4px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        height: 60px;
-        margin-top: 20px;
-        overflow: auto;
-        padding: 16px;
-      }
-
-      .switch-assignment {
-        display: flex;
-      }
-
-      .icon {
-        margin-inline-end: 10px;
-      }
-
-      .add-assignment-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-secondary);
-      }
-
-      .assigned-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-prominent);
-      }
-
-      .remove-assignment-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-      }
-
-      #errorIcon {
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-      }
-
-      #button-container {
-        margin-inline-end: 10px;
-        padding-top: 8px;
-      }
-
-      #errorContainer {
-        height: 40px;
-        margin-top: 16px;
-      }
-
-      #error {
-        color: var(--cros-icon-color-alert);
-        display: flex;
-      }
-    </style>
-    <cr-dialog id="switchAccessActionAssignmentDialog" show-on-attach>
-      <div slot="title">[[dialogTitle_]]</div>
-      <div slot="body">
-        <div id="prompt" aria-live="polite">[[promptText_]]</div>
-        <div id="switchAssignments">
-          <template is="dom-if" if="[[!assignments_.length]]">
-            $i18n{noSwitchesAssigned}
-          </template>
-          <template is="dom-if" if="[[assignments_.length]]">
-            <template is="dom-repeat" items="[[assignments_]]" as="assignment">
-              <div class="switch-assignment">
-                <iron-icon icon="os-settings:[[computeIcon_(assignment, assignmentState_)]]"
-                    class$="icon [[computeIcon_(assignment, assignmentState_)]]-icon"
-                    aria-label="[[computeIconLabel_(assignment, assignmentState_)]]">
-                </iron-icon>
-                [[getLabelForAssignment_(assignment)]]
-              </div>
-            </template>
-          </template>
-        </div>
-        <div id="errorContainer">
-          <template is="dom-if" if="[[errorText_]]">
-            <div id="error" aria-live="polite">
-              <iron-icon id="errorIcon" icon="os-settings:error" class="icon"
-                  aria-label="$i18n{switchAccessActionAssignmentDialogErrorIconLabel}">
-              </iron-icon>
-              [[errorText_]]
-            </div>
-          </template>
-        </div>
-      </div>
-      <div id="button-container" slot="button-container">
-        <cr-button class="exit-button" on-click="onExitClick_"
-            id="exit">
-          $i18n{switchAccessDialogExit}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="switch_access_action_assignment_dialog.js"></script>
-</dom-module>
+<cr-dialog id="switchAccessActionAssignmentDialog" show-on-attach>
+  <div slot="title">[[dialogTitle_]]</div>
+  <div slot="body">
+    <settings-switch-access-action-assignment-pane
+        id="switchAccessActionAssignmentPane"
+        action="[[action]]"
+        context="{{AssignmentContext.DIALOG}}">
+    </settings-switch-access-action-assignment-pane>
+  </div>
+  <div id="button-container" slot="button-container">
+    <cr-button class="exit-button" on-click="onExitClick_" id="exit">
+      $i18n{switchAccessDialogExit}
+    </cr-button>
+  </div>
+</cr-dialog>

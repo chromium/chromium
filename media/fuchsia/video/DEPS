@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/viz/common/gpu/raster_context_provider.h",
+  "+mojo/public",
+  "+third_party/blink/public",
+]

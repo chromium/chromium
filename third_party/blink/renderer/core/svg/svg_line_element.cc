@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -70,10 +70,10 @@ Path SVGLineElement::AsPath() const {
   SVGLengthContext length_context(this);
   DCHECK(GetComputedStyle());
 
-  path.MoveTo(FloatPoint(x1()->CurrentValue()->Value(length_context),
-                         y1()->CurrentValue()->Value(length_context)));
-  path.AddLineTo(FloatPoint(x2()->CurrentValue()->Value(length_context),
-                            y2()->CurrentValue()->Value(length_context)));
+  path.MoveTo(gfx::PointF(x1()->CurrentValue()->Value(length_context),
+                          y1()->CurrentValue()->Value(length_context)));
+  path.AddLineTo(gfx::PointF(x2()->CurrentValue()->Value(length_context),
+                             y2()->CurrentValue()->Value(length_context)));
 
   return path;
 }

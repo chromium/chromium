@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,6 +30,10 @@ class DefaultProvider : public ObservableProvider {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   DefaultProvider(PrefService* prefs, bool off_the_record);
+
+  DefaultProvider(const DefaultProvider&) = delete;
+  DefaultProvider& operator=(const DefaultProvider&) = delete;
+
   ~DefaultProvider() override;
 
   // ProviderInterface implementations.
@@ -42,7 +45,7 @@ class DefaultProvider : public ObservableProvider {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
+      base::Value&& value,
       const ContentSettingConstraints& constraint = {}) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
@@ -53,20 +56,19 @@ class DefaultProvider : public ObservableProvider {
   // Reads all settings from the pref service.
   void ReadDefaultSettings();
 
-  // Change the remembered setting in the memory.
-  void ChangeSetting(ContentSettingsType content_type, base::Value* value);
+  // Change the remembered setting in the memory. Pass NONE value to reset.
+  void ChangeSetting(ContentSettingsType content_type, base::Value value);
 
-  // True if |value| is NULL or it is the default value for |content_type|.
+  // True if |value| is NONE-type or it is the default value for |content_type|.
   bool IsValueEmptyOrDefault(ContentSettingsType content_type,
-                             base::Value* value);
+                             const base::Value& value);
 
   // Reads the preference corresponding to |content_type|.
-  std::unique_ptr<base::Value> ReadFromPref(ContentSettingsType content_type);
+  base::Value ReadFromPref(ContentSettingsType content_type);
 
   // Writes the value |value| to the preference corresponding to |content_type|.
   // It's the responsibility of caller to obtain a lock and notify observers.
-  void WriteToPref(ContentSettingsType content_type,
-                   base::Value* value);
+  void WriteToPref(ContentSettingsType content_type, const base::Value& value);
 
   // Called on prefs change.
   void OnPreferenceChanged(const std::string& pref_name);
@@ -75,9 +77,9 @@ class DefaultProvider : public ObservableProvider {
   void DiscardOrMigrateObsoletePreferences();
 
   // Copies of the pref data, so that we can read it on the IO thread.
-  std::map<ContentSettingsType, std::unique_ptr<base::Value>> default_settings_;
+  std::map<ContentSettingsType, base::Value> default_settings_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Whether this settings map is for an off-the-record session.
   const bool is_off_the_record_;
@@ -91,8 +93,6 @@ class DefaultProvider : public ObservableProvider {
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultProvider);
 };
 
 }  // namespace content_settings

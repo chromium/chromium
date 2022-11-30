@@ -1,0 +1,170 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/inspector_protocol/inspector_protocol.gni")
+import("//v8/gni/v8.gni")
+
+inspector_protocol_generate("protocol_sources") {
+  visibility = [ "//content/services/auction_worklet" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  inspector_protocol_dir = "//third_party/inspector_protocol"
+  out_dir = target_gen_dir
+  config_file = "devtools_protocol_config.json"
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  protocol_path = rebase_path(_blink_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
+  use_embedder_types = true
+
+  inputs = [
+    _blink_protocol_path,
+    config_file,
+  ]
+
+  # These are relative to $target_gen_dir.
+  outputs = [
+    "protocol/event_breakpoints.cc",
+    "protocol/event_breakpoints.h",
+    "protocol/protocol.h",
+  ]
+}
+
+source_set("auction_worklet") {
+  sources = [
+    "auction_downloader.cc",
+    "auction_downloader.h",
+    "auction_v8_devtools_agent.cc",
+    "auction_v8_devtools_agent.h",
+    "auction_v8_devtools_session.cc",
+    "auction_v8_devtools_session.h",
+    "auction_v8_helper.cc",
+    "auction_v8_helper.h",
+    "auction_v8_inspector_util.cc",
+    "auction_v8_inspector_util.h",
+    "auction_worklet_service_impl.cc",
+    "auction_worklet_service_impl.h",
+    "bidder_worklet.cc",
+    "bidder_worklet.h",
+    "context_recycler.cc",
+    "context_recycler.h",
+    "debug_command_queue.cc",
+    "debug_command_queue.h",
+    "for_debugging_only_bindings.cc",
+    "for_debugging_only_bindings.h",
+    "private_aggregation_bindings.cc",
+    "private_aggregation_bindings.h",
+    "register_ad_beacon_bindings.cc",
+    "register_ad_beacon_bindings.h",
+    "report_bindings.cc",
+    "report_bindings.h",
+    "seller_worklet.cc",
+    "seller_worklet.h",
+    "set_bid_bindings.cc",
+    "set_bid_bindings.h",
+    "set_priority_bindings.cc",
+    "set_priority_bindings.h",
+    "set_priority_signals_override_bindings.cc",
+    "set_priority_signals_override_bindings.h",
+    "trusted_signals.cc",
+    "trusted_signals.h",
+    "trusted_signals_request_manager.cc",
+    "trusted_signals_request_manager.h",
+    "worklet_loader.cc",
+    "worklet_loader.h",
+  ]
+
+  sources += get_target_outputs(":protocol_sources")
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//v8:external_startup_data",
+    "//content:content_implementation",
+  ]
+
+  deps = [
+    ":protocol_sources",
+    "//base",
+    "//content:export",
+    "//content/common",
+    "//content/services/worklet_utils",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//third_party/inspector_protocol:crdtp",
+    "//url",
+    "//v8",
+  ]
+
+  public_deps = [ "public/mojom" ]
+}
+
+# See comment at the top of //content/BUILD.gn for how this works.
+group("for_content_tests") {
+  visibility = [ ":tests" ]
+  if (!is_component_build) {
+    public_deps = [ ":auction_worklet" ]
+  } else {
+    # Ensure //content/common:mojo_bindings is built without depending on
+    # internals.
+    public_deps = [ "//content/public/common" ]
+  }
+}
+
+source_set("tests") {
+  testonly = true
+
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "auction_downloader_unittest.cc",
+    "auction_v8_helper_unittest.cc",
+    "auction_v8_inspector_util_unittest.cc",
+    "bidder_worklet_unittest.cc",
+    "context_recycler_unittest.cc",
+    "debug_command_queue_unittest.cc",
+    "seller_worklet_unittest.cc",
+    "trusted_signals_request_manager_unittest.cc",
+    "trusted_signals_unittest.cc",
+    "worklet_devtools_debug_test_util.cc",
+    "worklet_devtools_debug_test_util.h",
+    "worklet_loader_unittest.cc",
+    "worklet_test_util.cc",
+    "worklet_test_util.h",
+    "worklet_v8_debug_test_util.cc",
+    "worklet_v8_debug_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//content/common:for_content_tests",
+    "//gin",
+    "//net",
+    "//services/network:test_support",
+    "//services/service_manager/public/cpp/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//third_party/inspector_protocol:crdtp",
+    "//v8",
+  ]
+
+  public_deps = [ ":for_content_tests" ]
+
+  if (v8_use_external_startup_data) {
+    deps += [ "//gin" ]
+  }
+
+  if (is_android) {
+    deps += [ "//v8:v8_external_startup_data_assets" ]
+  }
+
+  configs += [ "//v8:external_startup_data" ]
+}

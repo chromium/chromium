@@ -1,0 +1,1 @@
+camera=(self "https://*.example.com/"), gyroscope=(self "https://*.example.net/")

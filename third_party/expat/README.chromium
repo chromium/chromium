@@ -1,10 +1,10 @@
 Name: Expat XML Parser
 Short Name: expat
 URL: https://github.com/libexpat/libexpat
-Version: R_2_2_9-91-ge976867
-CPEPrefix: cpe:/a:libexpat:expat:2.2.9
-Date: 20200420
-Revision: e976867fb57a0cd87e3b0fe05d59e0ed63c6febb
+Version: R_2_4_7-4-g53fbdf5b
+CPEPrefix: cpe:/a:libexpat:expat:2.4.7
+Date: 20220309
+Revision: 53fbdf5b8925a426e1b41a9e09b833986b87524e
 Security Critical: yes
 License: MIT
 License File: src/expat/COPYING

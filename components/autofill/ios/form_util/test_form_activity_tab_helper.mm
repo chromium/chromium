@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,16 +29,25 @@ void TestFormActivityTabHelper::FormActivityRegistered(
   }
 }
 
+void TestFormActivityTabHelper::FormRemovalRegistered(
+    web::WebFrame* sender_frame,
+    const FormRemovalParams& params) {
+  autofill::FormActivityTabHelper* form_activity_tab_helper =
+      autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state_);
+  for (auto& observer : form_activity_tab_helper->observers_) {
+    observer.FormRemoved(web_state_, sender_frame, params);
+  }
+}
+
 void TestFormActivityTabHelper::DocumentSubmitted(web::WebFrame* sender_frame,
                                                   const std::string& form_name,
                                                   const std::string& form_data,
-                                                  bool has_user_gesture,
-                                                  bool form_in_main_frame) {
+                                                  bool has_user_gesture) {
   autofill::FormActivityTabHelper* form_activity_tab_helper =
       autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state_);
   for (auto& observer : form_activity_tab_helper->observers_) {
     observer.DocumentSubmitted(web_state_, sender_frame, form_name, form_data,
-                               has_user_gesture, form_in_main_frame);
+                               has_user_gesture);
   }
 }
 }  // namespace autofill

@@ -1,15 +1,15 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_TABS_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_SYNCED_WINDOW_DELEGATE_BROWSER_AGENT_H_
 
-#include "components/sessions/core/session_id.h"
-#include "components/sync_sessions/synced_window_delegate.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "components/sessions/core/session_id.h"
+#import "components/sync_sessions/synced_window_delegate.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 class WebStateList;
 
@@ -17,7 +17,7 @@ namespace browser_sync {
 class SyncedTabDelegate;
 }
 
-// A TabModelSyncedWindowDelegate is the iOS-based implementation of
+// A SyncedWindowDelegateBrowserAgent is the iOS-based implementation of
 // SyncedWindowDelegate.
 class SyncedWindowDelegateBrowserAgent
     : public sync_sessions::SyncedWindowDelegate,
@@ -32,7 +32,7 @@ class SyncedWindowDelegateBrowserAgent
       const SyncedWindowDelegateBrowserAgent&) = delete;
   ~SyncedWindowDelegateBrowserAgent() override;
 
-  // Return the tab id for the tab at |index|.
+  // Return the tab id for the tab at `index`.
   SessionID GetTabIdAt(int index) const override;
   bool IsSessionRestoreInProgress() const override;
   bool ShouldSync() const override;
@@ -58,14 +58,15 @@ class SyncedWindowDelegateBrowserAgent
                           int index) override;
 
  private:
-  explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
-
   friend class BrowserUserData<SyncedWindowDelegateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  explicit SyncedWindowDelegateBrowserAgent(Browser* browser);
+
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
 
-  // Sets the window id of |web_state| to |session_id_|.
+  // Sets the window id of `web_state` to `session_id_`.
   void SetWindowIdForWebState(web::WebState* web_state);
 
   WebStateList* web_state_list_;

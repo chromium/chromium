@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ TEST_F(GeneratePageBundleTaskTest, TaskMakesNetworkRequest) {
   item1.creation_time = item1.freshness_time;
   EXPECT_TRUE(store_util()->InsertPrefetchItem(item1));
 
-  clock.Advance(base::TimeDelta::FromSeconds(1));
+  clock.Advance(base::Seconds(1));
 
   // This item will also be sent with the bundle request but being the freshest
   // it will come first in the list.
@@ -98,7 +98,7 @@ TEST_F(GeneratePageBundleTaskTest, TaskMakesNetworkRequest) {
 
   EXPECT_EQ(3, store_util()->CountPrefetchItems());
 
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
 
   GeneratePageBundleTask task(dispatcher(), store(), gcm_token(),
                               prefetch_request_factory(),

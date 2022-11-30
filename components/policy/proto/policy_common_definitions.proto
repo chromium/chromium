@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
+
+option go_package="chromium/policy/enterprise_management_proto";
 
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).

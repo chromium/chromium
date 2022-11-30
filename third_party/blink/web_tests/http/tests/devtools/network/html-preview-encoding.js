@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 
     const previewView = new Network.RequestPreviewView(request);
     previewView.wasShown();
-    const htmlPreviewView = await previewView._contentViewPromise;
+    const htmlPreviewView = await previewView.contentViewPromise;
     htmlPreviewView.wasShown();
     const iframe = htmlPreviewView.contentElement.firstChild;
     TestRunner.addResult('iframe.src: ' + iframe.src);

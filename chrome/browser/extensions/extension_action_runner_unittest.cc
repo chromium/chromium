@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -46,6 +47,11 @@ const char kAllHostsPermission[] = "*://*/*";
 // ExtensionActionRunner correctly interfaces in the system) is done in the
 // ExtensionActionRunnerBrowserTests.
 class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
+ public:
+  ExtensionActionRunnerUnitTest(const ExtensionActionRunnerUnitTest&) = delete;
+  ExtensionActionRunnerUnitTest& operator=(
+      const ExtensionActionRunnerUnitTest&) = delete;
+
  protected:
   ExtensionActionRunnerUnitTest();
   ~ExtensionActionRunnerUnitTest() override;
@@ -81,14 +87,12 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
 
   // The associated ExtensionActionRunner.
-  ExtensionActionRunner* extension_action_runner_ = nullptr;
+  raw_ptr<ExtensionActionRunner> extension_action_runner_ = nullptr;
 
   // The map of observed executions, keyed by extension id.
   std::map<std::string, int> extension_executions_;
 
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionRunnerUnitTest);
 };
 
 ExtensionActionRunnerUnitTest::ExtensionActionRunnerUnitTest() = default;
@@ -429,20 +433,20 @@ TEST_F(ExtensionActionRunnerUnitTest, TestDifferentScriptRunLocations) {
 
   NavigateAndCommit(GURL("https://www.foo.com"));
 
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension->id()));
 
   RequestInjection(extension, mojom::RunLocation::kDocumentEnd);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
-            runner()->GetBlockedActions(extension));
+            runner()->GetBlockedActions(extension->id()));
   RequestInjection(extension, mojom::RunLocation::kDocumentIdle);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_OTHER,
-            runner()->GetBlockedActions(extension));
+            runner()->GetBlockedActions(extension->id()));
   RequestInjection(extension, mojom::RunLocation::kDocumentStart);
   EXPECT_EQ(BLOCKED_ACTION_SCRIPT_AT_START | BLOCKED_ACTION_SCRIPT_OTHER,
-            runner()->GetBlockedActions(extension));
+            runner()->GetBlockedActions(extension->id()));
 
   runner()->RunForTesting(extension);
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension->id()));
 }
 
 TEST_F(ExtensionActionRunnerUnitTest, TestWebRequestBlocked) {
@@ -451,20 +455,21 @@ TEST_F(ExtensionActionRunnerUnitTest, TestWebRequestBlocked) {
 
   NavigateAndCommit(GURL("https://www.foo.com"));
 
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension->id()));
   EXPECT_FALSE(runner()->WantsToRun(extension));
 
   runner()->OnWebRequestBlocked(extension);
-  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST, runner()->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST,
+            runner()->GetBlockedActions(extension->id()));
   EXPECT_TRUE(runner()->WantsToRun(extension));
 
   RequestInjection(extension);
   EXPECT_EQ(BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_OTHER,
-            runner()->GetBlockedActions(extension));
+            runner()->GetBlockedActions(extension->id()));
   EXPECT_TRUE(runner()->WantsToRun(extension));
 
   NavigateAndCommit(GURL("https://www.bar.com"));
-  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension));
+  EXPECT_EQ(BLOCKED_ACTION_NONE, runner()->GetBlockedActions(extension->id()));
   EXPECT_FALSE(runner()->WantsToRun(extension));
 }
 

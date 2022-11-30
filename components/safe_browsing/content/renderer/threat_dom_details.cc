@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 
-#include <algorithm>
 #include <map>
 #include <string>
 #include <unordered_set>
@@ -13,10 +12,10 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -41,34 +40,14 @@ const char kTagAndAttributeParamName[] = "tag_attribute_csv";
 
 namespace {
 
-// Predicate used to search |tag_and_attributes_list_| by tag_name.
-class TagNameIs {
- public:
-  explicit TagNameIs(const std::string& tag) : tag_(tag) {}
-  bool operator()(const TagAndAttributesItem& tag_and_attribute) {
-    return tag_ == tag_and_attribute.tag_name;
-  }
-
- private:
-  std::string tag_;
-};
-
 void GetDefaultTagAndAttributeList(
     std::vector<TagAndAttributesItem>* tag_and_attributes_list) {
   tag_and_attributes_list->clear();
-  // These entries must be sorted by tag name.
-  bool should_capture_js =
-      base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds);
-  if (should_capture_js)
-    tag_and_attributes_list->push_back(TagAndAttributesItem("a", {"onclick"}));
   // These entries must be sorted by tag name.
   // These tags are related to identifying Google ads.
   tag_and_attributes_list->push_back(
       TagAndAttributesItem("div", {"data-google-query-id", "id"}));
   tag_and_attributes_list->push_back(TagAndAttributesItem("iframe", {"id"}));
-  if (should_capture_js)
-    tag_and_attributes_list->push_back(
-        TagAndAttributesItem("img", {"onclick"}));
 }
 
 void ParseTagAndAttributeParams(
@@ -99,9 +78,8 @@ void ParseTagAndAttributeParams(
   for (size_t i = 0; i < split.size(); i += 2) {
     const std::string& tag_name = split[i];
     const std::string& attribute = split[i + 1];
-    auto item_iter =
-        std::find_if(tag_and_attributes_list->begin(),
-                     tag_and_attributes_list->end(), TagNameIs(tag_name));
+    auto item_iter = base::ranges::find(*tag_and_attributes_list, tag_name,
+                                        &TagAndAttributesItem::tag_name);
     if (item_iter == tag_and_attributes_list->end()) {
       TagAndAttributesItem item;
       item.tag_name = tag_name;
@@ -165,18 +143,13 @@ void HandleElement(
   // element is not a frame then the result of the lookup will be null.
   blink::WebFrame* subframe = blink::WebFrame::FromFrameOwnerElement(element);
   if (subframe) {
-    child_node->child_frame_routing_id =
-        content::RenderFrame::GetRoutingIdForWebFrame(subframe);
-  }
-  if (base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds) &&
-      child_node->tag_name == "SCRIPT") {
-    child_node->inner_html = element.TextContent().Utf8();
+    child_node->child_frame_token = subframe->GetFrameToken();
   }
   // Populate the element's attributes, but only collect the ones that are
   // configured in the finch study.
-  const auto& tag_attribute_iter = std::find_if(
-      tag_and_attributes_list.begin(), tag_and_attributes_list.end(),
-      TagNameIs(base::ToLowerASCII(child_node->tag_name)));
+  const auto& tag_attribute_iter = base::ranges::find(
+      tag_and_attributes_list, base::ToLowerASCII(child_node->tag_name),
+      &TagAndAttributesItem::tag_name);
   if (tag_attribute_iter != tag_and_attributes_list.end()) {
     const std::vector<std::string> attributes_to_collect =
         tag_attribute_iter->attributes;
@@ -230,19 +203,16 @@ bool ShouldHandleElement(
     const blink::WebElement& element,
     const std::vector<TagAndAttributesItem>& tag_and_attributes_list) {
   // Resources with a SRC are always handled.
+  // TODO(1298672): Handle portal elements.
   if ((element.HasHTMLTagName("iframe") || element.HasHTMLTagName("frame") ||
+       element.HasHTMLTagName("fencedframe") ||
        element.HasHTMLTagName("embed") || element.HasHTMLTagName("script")) &&
       element.HasAttribute("src")) {
     return true;
   }
-  if (base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds) &&
-      element.HasHTMLTagName("script")) {
-    return true;
-  }
-  std::string tag_name_lower = base::ToLowerASCII(element.TagName().Ascii());
-  const auto& tag_attribute_iter =
-      std::find_if(tag_and_attributes_list.begin(),
-                   tag_and_attributes_list.end(), TagNameIs(tag_name_lower));
+  const auto& tag_attribute_iter = base::ranges::find(
+      tag_and_attributes_list, base::ToLowerASCII(element.TagName().Ascii()),
+      &TagAndAttributesItem::tag_name);
   if (tag_attribute_iter == tag_and_attributes_list.end()) {
     return false;
   }

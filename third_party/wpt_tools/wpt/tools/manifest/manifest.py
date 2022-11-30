@@ -1,10 +1,8 @@
-import io
 import os
 import sys
 from atomicwrites import atomic_write
 from copy import deepcopy
 from multiprocessing import Pool, cpu_count
-from six import ensure_text
 
 from . import jsonlib
 from . import vcs
@@ -55,15 +53,15 @@ class InvalidCacheError(Exception):
     pass
 
 
-item_classes = {u"testharness": TestharnessTest,
-                u"reftest": RefTest,
-                u"print-reftest": PrintRefTest,
-                u"crashtest": CrashTest,
-                u"manual": ManualTest,
-                u"wdspec": WebDriverSpecTest,
-                u"conformancechecker": ConformanceCheckerTest,
-                u"visual": VisualTest,
-                u"support": SupportFile}  # type: Dict[Text, Type[ManifestItem]]
+item_classes = {"testharness": TestharnessTest,
+                "reftest": RefTest,
+                "print-reftest": PrintRefTest,
+                "crashtest": CrashTest,
+                "manual": ManualTest,
+                "wdspec": WebDriverSpecTest,
+                "conformancechecker": ConformanceCheckerTest,
+                "visual": VisualTest,
+                "support": SupportFile}  # type: Dict[Text, Type[ManifestItem]]
 
 
 def compute_manifest_items(source_file):
@@ -116,7 +114,7 @@ class ManifestData(ManifestDataType):
         return rv
 
 
-class Manifest(object):
+class Manifest:
     def __init__(self, tests_root, url_base="/"):
         # type: (Text, Text) -> None
         assert url_base is not None
@@ -143,8 +141,7 @@ class Manifest(object):
         for type_tests in self._data.values():
             i = type_tests.get(tpath, set())
             assert i is not None
-            for test in i:
-                yield test
+            yield from i
 
     def iterdir(self, dir_name):
         # type: (Text) -> Iterable[ManifestItem]
@@ -154,8 +151,7 @@ class Manifest(object):
         for type_tests in self._data.values():
             for path, tests in type_tests.items():
                 if path[:tpath_len] == tpath:
-                    for test in tests:
-                        yield test
+                    yield from tests
 
     def update(self, tree, parallel=True):
         # type: (Iterable[Tuple[Text, Optional[Text], bool]], bool) -> bool
@@ -360,12 +356,12 @@ def _load(logger,  # type: Logger
         else:
             logger.debug("Creating new manifest at %s" % manifest)
         try:
-            with io.open(manifest, "r", encoding="utf-8") as f:
+            with open(manifest, encoding="utf-8") as f:
                 rv = Manifest.from_json(tests_root,
                                         jsonlib.load(f),
                                         types=types,
                                         callee_owns_obj=True)
-        except IOError:
+        except OSError:
             return None
         except ValueError:
             logger.warning("%r may be corrupted", manifest)
@@ -381,55 +377,19 @@ def _load(logger,  # type: Logger
     return rv
 
 
-def load_and_update(tests_root,  # type: Union[Text, bytes]
-                    manifest_path,  # type: Union[Text, bytes]
+def load_and_update(tests_root,  # type: Text
+                    manifest_path,  # type: Text
                     url_base,  # type: Text
                     update=True,  # type: bool
                     rebuild=False,  # type: bool
-                    metadata_path=None,  # type: Optional[Union[Text, bytes]]
-                    cache_root=None,  # type: Optional[Union[Text, bytes]]
+                    metadata_path=None,  # type: Optional[Text]
+                    cache_root=None,  # type: Optional[Text]
                     working_copy=True,  # type: bool
                     types=None,  # type: Optional[Container[Text]]
                     write_manifest=True,  # type: bool
                     allow_cached=True,  # type: bool
                     parallel=True  # type: bool
                     ):
-    # type: (...) -> Manifest
-
-    # This function is now a facade for the purposes of type conversion, so that
-    # the external API can accept paths as text or (utf8) bytes, but internal
-    # functions always use Text.
-
-    metadata_path_text = ensure_text(metadata_path) if metadata_path is not None else None
-    cache_root_text = ensure_text(cache_root) if cache_root is not None else None
-
-    return _load_and_update(ensure_text(tests_root),
-                            ensure_text(manifest_path),
-                            url_base,
-                            update=update,
-                            rebuild=rebuild,
-                            metadata_path=metadata_path_text,
-                            cache_root=cache_root_text,
-                            working_copy=working_copy,
-                            types=types,
-                            write_manifest=write_manifest,
-                            allow_cached=allow_cached,
-                            parallel=parallel)
-
-
-def _load_and_update(tests_root,  # type: Text
-                     manifest_path,  # type: Text
-                     url_base,  # type: Text
-                     update=True,  # type: bool
-                     rebuild=False,  # type: bool
-                     metadata_path=None,  # type: Optional[Text]
-                     cache_root=None,  # type: Optional[Text]
-                     working_copy=True,  # type: bool
-                     types=None,  # type: Optional[Container[Text]]
-                     write_manifest=True,  # type: bool
-                     allow_cached=True,  # type: bool
-                     parallel=True  # type: bool
-                     ):
     # type: (...) -> Manifest
 
     logger = get_logger()

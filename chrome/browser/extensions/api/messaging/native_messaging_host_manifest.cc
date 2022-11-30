@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 #include "chrome/common/chrome_features.h"
 
 namespace extensions {
@@ -49,21 +48,21 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
 
   JSONFileValueDeserializer deserializer(file_path);
   std::unique_ptr<base::Value> parsed =
-      deserializer.Deserialize(NULL, error_message);
+      deserializer.Deserialize(nullptr, error_message);
   if (!parsed) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
 
-  base::DictionaryValue* dictionary;
-  if (!parsed->GetAsDictionary(&dictionary)) {
+  if (!parsed->is_dict()) {
     *error_message = "Invalid manifest file.";
-    return std::unique_ptr<NativeMessagingHostManifest>();
+    return nullptr;
   }
+  const base::Value::Dict& dict = parsed->GetDict();
 
   std::unique_ptr<NativeMessagingHostManifest> result(
       new NativeMessagingHostManifest());
-  if (!result->Parse(dictionary, error_message)) {
-    return std::unique_ptr<NativeMessagingHostManifest>();
+  if (!result->Parse(dict, error_message)) {
+    return nullptr;
   }
 
   return result;
@@ -72,52 +71,51 @@ std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
 NativeMessagingHostManifest::NativeMessagingHostManifest() {
 }
 
-bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
+bool NativeMessagingHostManifest::Parse(const base::Value::Dict& dict,
                                         std::string* error_message) {
-  if (!dictionary->GetString("name", &name_) ||
-      !IsValidName(name_)) {
+  const std::string* name_str = dict.FindString("name");
+  if (!name_str || !IsValidName(*name_str)) {
     *error_message = "Invalid value for name.";
     return false;
   }
+  name_ = *name_str;
 
-  if (!dictionary->GetString("description", &description_) ||
-      description_.empty()) {
+  const std::string* desc_str = dict.FindString("description");
+  if (!desc_str || desc_str->empty()) {
     *error_message = "Invalid value for description.";
     return false;
   }
+  description_ = *desc_str;
 
-  std::string type;
+  const std::string* type = dict.FindString("type");
   // stdio is the only host type that's currently supported.
-  if (!dictionary->GetString("type", &type) ||
-      type != "stdio") {
+  if (!type || *type != "stdio") {
     *error_message = "Invalid value for type.";
     return false;
   }
   interface_ = HOST_INTERFACE_STDIO;
 
-  std::string path;
+  const std::string* path = dict.FindString("path");
   // JSON parsed checks that all strings are valid UTF8.
-  if (!dictionary->GetString("path", &path) ||
-      (path_ = base::FilePath::FromUTF8Unsafe(path)).empty()) {
+  if (!path || (path_ = base::FilePath::FromUTF8Unsafe(*path)).empty()) {
     *error_message = "Invalid value for path.";
     return false;
   }
 
-  const base::ListValue* allowed_origins_list;
-  if (!dictionary->GetList("allowed_origins", &allowed_origins_list)) {
+  const base::Value::List* allowed_origins_list =
+      dict.FindList("allowed_origins");
+  if (!allowed_origins_list) {
     *error_message =
         "Invalid value for allowed_origins. Expected a list of strings.";
     return false;
   }
   allowed_origins_.ClearPatterns();
-  for (auto it = allowed_origins_list->begin();
-       it != allowed_origins_list->end(); ++it) {
-    std::string pattern_string;
-    if (!it->GetAsString(&pattern_string)) {
+  for (const auto& entry : *allowed_origins_list) {
+    if (!entry.is_string()) {
       *error_message = "allowed_origins must be list of strings.";
       return false;
     }
-
+    std::string pattern_string = entry.GetString();
     URLPattern pattern(URLPattern::SCHEME_EXTENSION);
     URLPattern::ParseResult result = pattern.Parse(pattern_string);
     if (result != URLPattern::ParseResult::kSuccess) {
@@ -138,7 +136,7 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
 
   if (base::FeatureList::IsEnabled(features::kOnConnectNative)) {
     if (const base::Value* supports_native_initiated_connections =
-            dictionary->FindKey("supports_native_initiated_connections")) {
+            dict.Find("supports_native_initiated_connections")) {
       if (!supports_native_initiated_connections->is_bool()) {
         *error_message =
             "supports_native_initiated_connections must be a boolean.";

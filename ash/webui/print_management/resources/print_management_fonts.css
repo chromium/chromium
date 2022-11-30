@@ -1,0 +1,29 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --print-management-title-font-family: "Google Sans", Roboto, sans-serif;
+  --print-management-default-font-family: Roboto, sans-serif;
+  --print-management-header-font-family: Roboto, sans-serif;
+  --print-management-button-font-family: Roboto, sans-serif;
+
+  --print-management-title-font-size: 22px;
+  --print-management-default-font-size: 13px;
+  --print-management-header-font-size: 13px;
+  --print-management-button-font-size: 13px;
+
+  --print-management-title-font-weight: 500; /* medium */
+  --print-management-default-font-weight: 400; /* regular */
+  --print-management-header-font-weight: 500; /* medium */
+  --print-management-button-font-weight: 500; /* medium */
+
+  --print-management-title-text-color: var(--cros-text-color-primary);
+  --print-management-default-text-color: var(--cros-text-color-primary);
+  --print-management-header-text-color: var(--cros-text-color-secondary);
+  --print-management-button-text-color: var(--cros-text-color-prominent);
+}

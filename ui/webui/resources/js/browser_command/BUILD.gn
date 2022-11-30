@@ -1,0 +1,58 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "browser_command.mojom" ]
+  webui_module_path = "chrome://resources/js/browser_command"
+}
+
+# Output folder used to copy() output.
+tmp_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/js/browser_command_tmp"
+
+# Output folder used to hold ts_library() output.
+preprocess_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/js/browser_command"
+
+ts_library("build_ts") {
+  root_dir = tmp_folder
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_command_proxy.ts",
+    "browser_command.mojom-webui.js",
+  ]
+  deps = [ "//ui/webui/resources/mojo:library" ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess_src",
+  ]
+}
+
+copy("copy_mojom") {
+  deps = [ ":mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/js/browser_command/browser_command.mojom-webui.js" ]
+  outputs = [ "$tmp_folder/{{source_file_part}}" ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  in_folder = "."
+  out_folder = tmp_folder
+  in_files = [ "browser_command_proxy.ts" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_js_browser_command"
+  out_grd = "$target_gen_dir/resources.grdp"
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "js/browser_command"
+}

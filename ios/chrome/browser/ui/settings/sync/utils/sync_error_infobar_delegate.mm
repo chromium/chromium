@@ -1,41 +1,89 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
 
 #import <UIKit/UIKit.h>
 
-#include <utility>
+#import <utility>
 
-#include "base/check.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_utils.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/infobars/core/infobar.h"
+#import "components/infobars/core/infobar_delegate.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
-
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Sync error icon.
+NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
+
+// IconConfigs is the container for all configurations of the sync error infobar
+// icon
+struct IconConfigs {
+  bool use_icon_background_tint;
+  UIColor* background_color;
+  UIColor* image_tint_color;
+  UIImage* icon_image;
+};
+
+const IconConfigs& SymbolsIconConfigs() {
+  static const IconConfigs kSymbols = {
+      true,
+      [UIColor colorNamed:kRed500Color],
+      [UIColor colorNamed:kTextPrimaryColor],
+      DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
+                                         kSymbolImagePointSize),
+  };
+  return kSymbols;
+}
+
+// TODO: remove the default configs once the SF Symbols have been launched.
+const IconConfigs& DefaultIconConfigs() {
+  static const IconConfigs kSymbols = {
+      false,
+      nil,
+      nil,
+      [UIImage imageNamed:kGoogleServicesSyncErrorImage],
+  };
+  return kSymbols;
+}
+
+const IconConfigs& GetIconConfigs(bool use_symbol) {
+  return use_symbol ? SymbolsIconConfigs() : DefaultIconConfigs();
+}
+
+}  // namespace
 
 // static
 bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
                                       ChromeBrowserState* browser_state,
                                       id<SyncPresenter> presenter) {
   DCHECK(infobar_manager);
-  std::unique_ptr<ConfirmInfoBarDelegate> delegate(
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(browser_state, presenter));
-  return !!infobar_manager->AddInfoBar(
-      infobar_manager->CreateConfirmInfoBar(std::move(delegate)));
+  std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeSyncError, std::move(delegate));
+  return !!infobar_manager->AddInfoBar(std::move(infobar));
 }
 
 SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
@@ -43,7 +91,7 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     id<SyncPresenter> presenter)
     : browser_state_(browser_state), presenter_(presenter) {
   DCHECK(!browser_state->IsOffTheRecord());
-  icon_ = gfx::Image([UIImage imageNamed:@"infobar_warning"]);
+  icon_ = gfx::Image(GetIconConfigs(UseSymbols()).icon_image);
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   DCHECK(sync_setup_service);
@@ -57,13 +105,13 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
 
   // Register for sync status changes.
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_);
   sync_service->AddObserver(this);
 }
 
 SyncErrorInfoBarDelegate::~SyncErrorInfoBarDelegate() {
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_);
   sync_service->RemoveObserver(this);
 }
 
@@ -86,20 +134,39 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
   return button_text_;
 }
 
-gfx::Image SyncErrorInfoBarDelegate::GetIcon() const {
-  return icon_;
+ui::ImageModel SyncErrorInfoBarDelegate::GetIcon() const {
+  return ui::ImageModel::FromImage(icon_);
+}
+
+bool SyncErrorInfoBarDelegate::UseIconBackgroundTint() const {
+  return GetIconConfigs(UseSymbols()).use_icon_background_tint;
+}
+
+UIColor* SyncErrorInfoBarDelegate::GetIconImageTintColor() const {
+  return GetIconConfigs(UseSymbols()).image_tint_color;
+}
+
+UIColor* SyncErrorInfoBarDelegate::GetIconBackgroundColor() const {
+  return GetIconConfigs(UseSymbols()).background_color;
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {
-  if (ShouldShowSyncSignin(error_state_)) {
+  if (error_state_ == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
     [presenter_ showReauthenticateSignin];
   } else if (ShouldShowSyncSettings(error_state_)) {
-    [presenter_ showGoogleServicesSettings];
-  } else if (ShouldShowSyncPassphraseSettings(error_state_)) {
+    [presenter_ showAccountSettings];
+  } else if (error_state_ == SyncSetupService::kSyncServiceNeedsPassphrase) {
     [presenter_ showSyncPassphraseSettings];
-  } else if (ShouldShowTrustedVaultReauthentication(error_state_)) {
-    [presenter_ showTrustedVaultReauthenticationWithRetrievalTrigger:
-                    syncer::KeyRetrievalTriggerForUMA::kNewTabPageInfobar];
+  } else if (error_state_ ==
+             SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
+    [presenter_
+        showTrustedVaultReauthForFetchKeysWithTrigger:
+            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+  } else if (error_state_ ==
+             SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded) {
+    [presenter_
+        showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
   }
   return false;
 }
@@ -123,9 +190,8 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
     if (infobar_manager) {
       std::unique_ptr<ConfirmInfoBarDelegate> new_infobar_delegate(
           new SyncErrorInfoBarDelegate(browser_state_, presenter_));
-      infobar_manager->ReplaceInfoBar(infobar,
-                                      infobar_manager->CreateConfirmInfoBar(
-                                          std::move(new_infobar_delegate)));
+      infobar_manager->ReplaceInfoBar(
+          infobar, CreateConfirmInfoBar(std::move(new_infobar_delegate)));
     }
   }
 }

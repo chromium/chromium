@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -33,13 +32,13 @@ namespace net {
 namespace {
 
 const char kMsg1[] = "\0hello!\xff";
-const int kLen1 = base::size(kMsg1);
+const int kLen1 = std::size(kMsg1);
 const char kMsg2[] = "\0a2345678\0";
-const int kLen2 = base::size(kMsg2);
+const int kLen2 = std::size(kMsg2);
 const char kMsg3[] = "bye!";
-const int kLen3 = base::size(kMsg3);
+const int kLen3 = std::size(kMsg3);
 const char kMsg4[] = "supercalifragilisticexpialidocious";
-const int kLen4 = base::size(kMsg4);
+const int kLen4 = std::size(kMsg4);
 
 // Helper class for starting the next operation operation reentrantly after the
 // previous operation completed asynchronously. When OnIOComplete is called,
@@ -48,14 +47,10 @@ const int kLen4 = base::size(kMsg4);
 // a read or write operation specified by SetInvokeRead or SetInvokeWrite.
 class ReentrantHelper {
  public:
-  ReentrantHelper(StreamSocket* socket)
-      : socket_(socket),
-        verify_read_(false),
-        first_read_data_(nullptr),
-        first_len_(-1),
-        second_read_(false),
-        second_write_data_(nullptr),
-        second_len_(-1) {}
+  explicit ReentrantHelper(StreamSocket* socket) : socket_(socket) {}
+
+  ReentrantHelper(const ReentrantHelper&) = delete;
+  ReentrantHelper& operator=(const ReentrantHelper&) = delete;
 
   // Expect that the previous operation will return |first_len| and will fill
   // |first_read_data_| with |first_read_data|.
@@ -131,21 +126,19 @@ class ReentrantHelper {
     }
   }
 
-  StreamSocket* socket_;
+  raw_ptr<StreamSocket> socket_;
 
-  bool verify_read_;
+  bool verify_read_ = false;
   scoped_refptr<IOBuffer> first_read_buf_;
-  const char* first_read_data_;
-  int first_len_;
+  const char* first_read_data_ = nullptr;
+  int first_len_ = -1;
 
   CompletionOnceCallback second_callback_;
-  bool second_read_;
+  bool second_read_ = false;
   int second_rv_;
   scoped_refptr<IOBuffer> second_read_buf_;
-  const char* second_write_data_;
-  int second_len_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReentrantHelper);
+  const char* second_write_data_ = nullptr;
+  int second_len_ = -1;
 };
 
 class SequencedSocketDataTest : public TestWithTaskEnvironment {
@@ -227,12 +220,12 @@ class SequencedSocketDataTest : public TestWithTaskEnvironment {
   std::unique_ptr<SequencedSocketData> data_;
 
   MockClientSocketFactory socket_factory_;
-  bool expect_eof_;
+  bool expect_eof_ = true;
 
   std::unique_ptr<StreamSocket> sock_;
 };
 
-SequencedSocketDataTest::SequencedSocketDataTest() : expect_eof_(true) {}
+SequencedSocketDataTest::SequencedSocketDataTest() = default;
 
 SequencedSocketDataTest::~SequencedSocketDataTest() {
   // Make sure no unexpected pending tasks will cause a failure.
@@ -659,7 +652,7 @@ TEST_F(SequencedSocketDataTest, SingleSyncWriteTooSmall) {
       "Expected: (data.length()) >= (expected_data.length())",
       "Value of: actual_data == expected_data\n  Actual: false\nExpected: true",
       "Expected equality of these values:\n  rv"};
-  ASSERT_EQ(base::size(kExpectedFailures),
+  ASSERT_EQ(std::size(kExpectedFailures),
             static_cast<size_t>(gtest_failures.size()));
 
   for (int i = 0; i < gtest_failures.size(); ++i) {

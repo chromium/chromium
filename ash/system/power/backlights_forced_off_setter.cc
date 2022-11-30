@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/power/backlights_forced_off_setter.h"
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/power/scoped_backlights_forced_off.h"
 #include "ash/touch/touch_devices_controller.h"
@@ -38,8 +38,9 @@ void BacklightsForcedOffSetter::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-ScreenState BacklightsForcedOffSetter::GetScreenState() const {
-  return screen_state_;
+ScreenBacklightState BacklightsForcedOffSetter::GetScreenBacklightState()
+    const {
+  return screen_backlight_state_;
 }
 
 std::unique_ptr<ScopedBacklightsForcedOff>
@@ -59,21 +60,22 @@ void BacklightsForcedOffSetter::ScreenBrightnessChanged(
       change.cause() ==
       power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
 
-  const ScreenState old_state = screen_state_;
+  const ScreenBacklightState old_state = screen_backlight_state_;
   if (change.percent() > 0.0)
-    screen_state_ = ScreenState::ON;
+    screen_backlight_state_ = ScreenBacklightState::ON;
   else
-    screen_state_ = user_initiated ? ScreenState::OFF : ScreenState::OFF_AUTO;
+    screen_backlight_state_ = user_initiated ? ScreenBacklightState::OFF
+                                             : ScreenBacklightState::OFF_AUTO;
 
-  if (screen_state_ != old_state) {
+  if (screen_backlight_state_ != old_state) {
     for (auto& observer : observers_)
-      observer.OnScreenStateChanged(screen_state_);
+      observer.OnScreenBacklightStateChanged(screen_backlight_state_);
   }
 
   // Disable the touchscreen when the screen is turned off due to inactivity:
   // https://crbug.com/743291
-  if ((screen_state_ == ScreenState::OFF_AUTO) !=
-          (old_state == ScreenState::OFF_AUTO) &&
+  if ((screen_backlight_state_ == ScreenBacklightState::OFF_AUTO) !=
+          (old_state == ScreenBacklightState::OFF_AUTO) &&
       disable_touchscreen_while_screen_off_) {
     UpdateTouchscreenStatus();
   }
@@ -116,7 +118,7 @@ void BacklightsForcedOffSetter::GetInitialBacklightsForcedOff() {
 }
 
 void BacklightsForcedOffSetter::OnGotInitialBacklightsForcedOff(
-    base::Optional<bool> is_forced_off) {
+    absl::optional<bool> is_forced_off) {
   if (backlights_forced_off_.has_value() || !is_forced_off.has_value())
     return;
 
@@ -156,10 +158,11 @@ void BacklightsForcedOffSetter::UpdateTouchscreenStatus() {
   // kernel blocks wake up events from internal input devices when the screen is
   // off or is in the suspended state.
   // See https://crbug/797411 for more details.
-  const bool disable_touchscreen = backlights_forced_off_.value_or(false) ||
-                                   (screen_state_ == ScreenState::OFF_AUTO &&
-                                    disable_touchscreen_while_screen_off_ &&
-                                    !display::HasExternalTouchscreenDevice());
+  const bool disable_touchscreen =
+      backlights_forced_off_.value_or(false) ||
+      (screen_backlight_state_ == ScreenBacklightState::OFF_AUTO &&
+       disable_touchscreen_while_screen_off_ &&
+       !display::HasExternalTouchscreenDevice());
   Shell::Get()->touch_devices_controller()->SetTouchscreenEnabled(
       !disable_touchscreen, TouchDeviceEnabledSource::GLOBAL);
 }

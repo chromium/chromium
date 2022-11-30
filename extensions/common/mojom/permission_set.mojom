@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "extensions/common/mojom/api_permission_id.mojom";
+import "extensions/common/mojom/url_pattern_set.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+// Mojo struct to represent extensions::APIPermission class that is to handle
+// some complex permissions.
+struct APIPermission {
+  APIPermissionID id;
+  mojo_base.mojom.Value? value;
+};
+
+// Mojo struct to represent extensions::APIPermissionSet class.
+struct APIPermissionSet {
+  map<APIPermissionID, APIPermission> permission_map;
+};
+
+// Mojo struct to represent extensions::ManifestPermission class that represents
+// the custom behavior of a top-level manifest entry contributing to permission
+// messages and storage.
+struct ManifestPermission {
+  string id;
+  mojo_base.mojom.Value? value;
+};
+
+// Mojo struct to represent extensions::ManifestPermissionSet class.
+struct ManifestPermissionSet {
+  map<string, ManifestPermission> permission_map;
+};
+
+// Mojo struct to represent an extensions::PermissionSet which encapsulates an
+// extension's permissions.
+struct PermissionSet {
+  APIPermissionSet apis;
+  ManifestPermissionSet manifest_permissions;
+  URLPatternSet hosts; // explicit_hosts_
+  URLPatternSet user_script_hosts; // scriptable_hosts_
+};

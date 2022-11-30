@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
@@ -49,6 +51,18 @@ DrmOverlayPlane::DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
       enable_blend(enable_blend),
       gpu_fence(std::move(gpu_fence)) {}
 
+DrmOverlayPlane::DrmOverlayPlane(
+    const scoped_refptr<DrmFramebuffer>& buffer,
+    const gfx::OverlayPlaneData& overlay_plane_data,
+    std::unique_ptr<gfx::GpuFence> gpu_fence)
+    : DrmOverlayPlane(buffer,
+                      overlay_plane_data.z_order,
+                      overlay_plane_data.plane_transform,
+                      gfx::ToNearestRect(overlay_plane_data.display_bounds),
+                      overlay_plane_data.crop_rect,
+                      overlay_plane_data.enable_blend,
+                      std::move(gpu_fence)) {}
+
 DrmOverlayPlane::DrmOverlayPlane(DrmOverlayPlane&& other) = default;
 
 DrmOverlayPlane& DrmOverlayPlane::operator=(DrmOverlayPlane&& other) = default;
@@ -82,6 +96,18 @@ const DrmOverlayPlane* DrmOverlayPlane::GetPrimaryPlane(
 DrmOverlayPlane DrmOverlayPlane::Clone() const {
   return DrmOverlayPlane(buffer, z_order, plane_transform, display_bounds,
                          crop_rect, enable_blend, CloneGpuFence(gpu_fence));
+}
+
+void DrmOverlayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("framebuffer_id", buffer ? buffer->framebuffer_id() : -1);
+  dict.Add("z_order", z_order);
+  dict.Add("plane_transform", plane_transform);
+  dict.Add("display_bounds", display_bounds.ToString());
+  dict.Add("crop_rect", crop_rect.ToString());
+  dict.Add("enable_blend", enable_blend);
+  dict.Add("has_fence", !!gpu_fence);
 }
 
 // static

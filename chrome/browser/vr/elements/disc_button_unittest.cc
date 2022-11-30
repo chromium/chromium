@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/disc_button.h"
 
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
@@ -12,8 +11,9 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/transform_operation.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform_operation.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 
@@ -23,16 +23,12 @@ TEST(DiscButton, HoverTest) {
   button.SetSize(1.0f, 1.0f);
   button.set_hover_offset(0.5f);
 
-  gfx::TransformOperation foreground_op =
-      button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation background_op =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation hit_plane_op =
       button.hit_plane()->GetTargetTransform().at(UiElement::kScaleIndex);
 
   button.OnHoverEnter(gfx::PointF(0.5f, 0.5f), base::TimeTicks());
-  gfx::TransformOperation foreground_op_hover =
-      button.foreground()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation background_op_hover =
       button.background()->GetTargetTransform().at(UiElement::kTranslateIndex);
   gfx::TransformOperation hit_plane_op_hover =
@@ -55,11 +51,11 @@ TEST(DiscButton, SizePropagatesToSubElements) {
     switch (child->type()) {
       case kTypeButtonBackground:
       case kTypeButtonHitTarget:
-        EXPECT_SIZE_EQ(size, child->size());
+        EXPECT_SIZEF_EQ(size, child->size());
         EXPECT_FLOAT_EQ(size.width() * 0.5f, child->corner_radius());
         break;
       case kTypeButtonForeground:
-        EXPECT_SIZE_EQ(icon_size, child->size());
+        EXPECT_SIZEF_EQ(icon_size, child->size());
         break;
       default:
         NOTREACHED();

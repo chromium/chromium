@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@ package org.chromium.components.infobars;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +24,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
+import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.List;
 
@@ -293,6 +296,28 @@ public final class InfoBarControlLayout extends ViewGroup {
     }
 
     /**
+     * Adds a center justified image.
+     *
+     * -----------------------------------------------------
+     * |                       IMAGE                       |
+     * -----------------------------------------------------
+     *
+     * @param imageResourceId Resource ID of the image.
+     */
+    public View addLeadImage(int imageResourceId) {
+        ChromeImageView imageView = new ChromeImageView(getContext());
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER;
+        imageView.setLayoutParams(lp);
+
+        addView(imageView, new ControlLayoutParams());
+        imageView.setImageResource(imageResourceId);
+
+        return imageView;
+    }
+
+    /**
      * Adds an icon with a descriptive message to the Title.
      *
      * -----------------------------------------------------
@@ -305,13 +330,13 @@ public final class InfoBarControlLayout extends ViewGroup {
      */
     public View addIconTitle(int iconResourceId, CharSequence titleMessage) {
         LinearLayout layout = (LinearLayout) inflateLayout(
-                getContext(), R.layout.infobar_control_icon_with_description, this);
+                getContext(), R.layout.infobar_control_icon_with_title, this);
         addView(layout, new ControlLayoutParams());
 
-        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        ImageView iconView = (ImageView) layout.findViewById(R.id.control_title_icon);
         iconView.setImageResource(iconResourceId);
 
-        TextView titleView = (TextView) layout.findViewById(R.id.control_message);
+        TextView titleView = (TextView) layout.findViewById(R.id.control_title);
         titleView.setText(titleMessage);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getContext().getResources().getDimension(R.dimen.infobar_text_size));
@@ -362,7 +387,53 @@ public final class InfoBarControlLayout extends ViewGroup {
         ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
         iconView.setImageResource(iconResourceId);
         if (iconColorId != 0) {
-            iconView.setColorFilter(ApiCompatibilityUtils.getColor(getResources(), iconColorId));
+            iconView.setColorFilter(getContext().getColor(iconColorId));
+        }
+
+        // The primary message text is always displayed.
+        TextView primaryView = (TextView) layout.findViewById(R.id.control_message);
+        primaryView.setText(primaryMessage);
+        primaryView.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(resourceId));
+
+        // The secondary message text is optional.
+        TextView secondaryView = (TextView) layout.findViewById(R.id.control_secondary_message);
+        if (secondaryMessage == null) {
+            layout.removeView(secondaryView);
+        } else {
+            secondaryView.setText(secondaryMessage);
+            secondaryView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    getContext().getResources().getDimension(resourceId));
+        }
+
+        return layout;
+    }
+
+    /**
+     * Adds an icon with a descriptive message to the layout.
+     *
+     * -----------------------------------------------------
+     * | ICON | PRIMARY MESSAGE SECONDARY MESSAGE          |
+     * -----------------------------------------------------
+     * If an icon is not provided, the ImageView that would normally show it is hidden.
+     *
+     * @param iconBitmap       Bitmap image of the icon.
+     * @param iconColorId      ID of the tint color for the icon, or 0 for default.
+     * @param primaryMessage   Message to display for the toggle.
+     * @param secondaryMessage Additional descriptive text for the toggle.  May be null.
+     * @param resourceId       Size of resource id to be applied to primaryMessage
+     *                         and secondaryMessage.
+     */
+    public View addIcon(Bitmap iconBitmap, int iconColorId, CharSequence primaryMessage,
+            CharSequence secondaryMessage, int resourceId) {
+        LinearLayout layout = (LinearLayout) inflateLayout(
+                getContext(), R.layout.infobar_control_icon_with_description, this);
+        addView(layout, new ControlLayoutParams());
+
+        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        iconView.setImageBitmap(iconBitmap);
+        if (iconColorId != 0) {
+            iconView.setColorFilter(getContext().getColor(iconColorId));
         }
 
         // The primary message text is always displayed.
@@ -410,8 +481,7 @@ public final class InfoBarControlLayout extends ViewGroup {
         } else {
             iconView.setImageResource(iconResourceId);
             if (iconColorId != 0) {
-                iconView.setColorFilter(
-                        ApiCompatibilityUtils.getColor(getResources(), iconColorId));
+                iconView.setColorFilter(getContext().getColor(iconColorId));
             }
         }
 
@@ -459,6 +529,14 @@ public final class InfoBarControlLayout extends ViewGroup {
      * Creates and adds a full-width control with additional text describing what an InfoBar is for.
      */
     public View addDescription(CharSequence message) {
+        return addDescription(message, ResourcesCompat.ID_NULL);
+    }
+
+    /**
+     * Creates and adds a full-width control with additional text describing what an InfoBar is for.
+     * This method overload allows setting text appearance.
+     */
+    public View addDescription(CharSequence message, int textAppearanceId) {
         ControlLayoutParams params = new ControlLayoutParams();
         params.mMustBeFullWidth = true;
 
@@ -467,6 +545,9 @@ public final class InfoBarControlLayout extends ViewGroup {
         addView(descriptionView, params);
 
         descriptionView.setText(message);
+        if (textAppearanceId != ResourcesCompat.ID_NULL) {
+            descriptionView.setTextAppearance(getContext(), textAppearanceId);
+        }
         descriptionView.setMovementMethod(LinkMovementMethod.getInstance());
         return descriptionView;
     }

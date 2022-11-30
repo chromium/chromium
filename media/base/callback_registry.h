@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/bind_to_current_loop.h"
@@ -24,10 +24,11 @@ namespace media {
 class CallbackRegistration {
  public:
   CallbackRegistration() = default;
-  virtual ~CallbackRegistration() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CallbackRegistration);
+  CallbackRegistration(const CallbackRegistration&) = delete;
+  CallbackRegistration& operator=(const CallbackRegistration&) = delete;
+
+  virtual ~CallbackRegistration() = default;
 };
 
 template <typename Sig>
@@ -45,10 +46,14 @@ class CallbackRegistry<void(Args...)> {
   using CallbackType = base::RepeatingCallback<void(Args...)>;
 
   CallbackRegistry() = default;
+
+  CallbackRegistry(const CallbackRegistry&) = delete;
+  CallbackRegistry& operator=(const CallbackRegistry&) = delete;
+
   ~CallbackRegistry() = default;
 
-  std::unique_ptr<CallbackRegistration> Register(CallbackType cb)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] std::unique_ptr<CallbackRegistration> Register(
+      CallbackType cb) {
     base::AutoLock lock(lock_);
     DCHECK(cb);
     uint32_t registration_id = ++next_registration_id_;
@@ -65,8 +70,8 @@ class CallbackRegistry<void(Args...)> {
   void Notify(Args&&... args) {
     DVLOG(1) << __func__;
     base::AutoLock lock(lock_);
-    for (auto const& entry : callbacks_)
-      entry.second.Run(std::forward<Args>(args)...);
+    for (auto const& [key_id, callback] : callbacks_)
+      callback.Run(std::forward<Args>(args)...);
   }
 
  private:
@@ -76,13 +81,14 @@ class CallbackRegistry<void(Args...)> {
                      uint32_t registration_id)
         : registry_(registry), registration_id_(registration_id) {}
 
+    RegistrationImpl(const RegistrationImpl&) = delete;
+    RegistrationImpl& operator=(const RegistrationImpl&) = delete;
+
     ~RegistrationImpl() override { registry_->Unregister(registration_id_); }
 
    private:
-    CallbackRegistry<void(Args...)>* registry_ = nullptr;
+    raw_ptr<CallbackRegistry<void(Args...)>> registry_ = nullptr;
     uint32_t registration_id_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(RegistrationImpl);
   };
 
   void Unregister(uint32_t registration_id) {
@@ -95,8 +101,6 @@ class CallbackRegistry<void(Args...)> {
   base::Lock lock_;
   uint32_t next_registration_id_ GUARDED_BY(lock_) = 0;
   std::map<uint32_t, CallbackType> callbacks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackRegistry);
 };
 
 using ClosureRegistry = CallbackRegistry<void()>;

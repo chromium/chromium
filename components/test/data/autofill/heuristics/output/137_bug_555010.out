@@ -1,24 +1,24 @@
-CREDIT_CARD_NAME_FULL | cardName | Full Name (First Name Last Name) |  | credit-card-cc
-ADDRESS_HOME_LINE1 | id_skCOShipAddress | Shipping Address |  | cardName_2-default
-UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | cardName_2-default
-PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | cardName_2-default
-EMAIL_ADDRESS | id_skCOEmail | Email |  | cardName_2-default
-CREDIT_CARD_NUMBER | cardNumber | 1234 5647 8901 2345 |  | credit-card-cc
-CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR | expirationMonth | EXP |  | credit-card-cc
-CREDIT_CARD_VERIFICATION_CODE | cvv | CVV |  | credit-card-cc
-CREDIT_CARD_NAME_FULL | id_skCOName | Card Holder Name |  | credit-card-cc
-ADDRESS_HOME_LINE1 | id_skCOShipAddress | Billing Address |  | id_skCOShipAddress_3-default
-UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | id_skCOShipAddress_3-default
-PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | id_skCOShipAddress_3-default
-NAME_FULL | id_skCOName | Name |  | id_skCOShipAddress_3-default
-ADDRESS_HOME_LINE1 | id_skCOShipAddress | Address |  | id_skCOShipAddress_4-default
-UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | id_skCOShipAddress_4-default
-PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | id_skCOShipAddress_4-default
-CREDIT_CARD_NUMBER | cardNumber | 1234 5647 8901 2345 |  | credit-card-cc
-CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR | expirationMonth | EXP |  | credit-card-cc
-CREDIT_CARD_VERIFICATION_CODE | cvv | CVV |  | credit-card-cc
-CREDIT_CARD_NAME_FULL | id_skAltPUName | Name |  | credit-card-cc
-PHONE_HOME_WHOLE_NUMBER | id_skAltPUPhoneno | Phone |  | id_skCOShipAddress_4-default
-EMAIL_ADDRESS | id_skAltPUEmail | Email |  | id_skCOShipAddress_4-default
-UNKNOWN_TYPE | userName | Username or Email address |  | userName_1-default
-UNKNOWN_TYPE | password | Password |  | userName_1-default
+CREDIT_CARD_NAME_FULL | cardName | Full Name (First Name Last Name) |  | cardName_1
+ADDRESS_HOME_LINE1 | id_skCOShipAddress | Shipping Address |  | id_skCOShipAddress_2
+UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | id_skCOShipAddress_2
+PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | id_skCOShipAddress_2
+EMAIL_ADDRESS | id_skCOEmail | Email |  | id_skCOShipAddress_2
+CREDIT_CARD_NUMBER | cardNumber | 1234 5647 8901 2345 |  | cardName_1
+CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR | expirationMonth | EXP |  | cardName_1
+CREDIT_CARD_VERIFICATION_CODE | cvv | CVV |  | cardName_1
+CREDIT_CARD_NAME_FULL | id_skCOName | Card Holder Name |  | cardName_1
+ADDRESS_HOME_LINE1 | id_skCOShipAddress | Billing Address |  | id_skCOShipAddress_3
+UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | id_skCOShipAddress_3
+PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | id_skCOShipAddress_3
+NAME_FULL | id_skCOName | Name |  | id_skCOShipAddress_3
+ADDRESS_HOME_LINE1 | id_skCOShipAddress | Address |  | id_skCOShipAddress_4
+UNKNOWN_TYPE | id_skCOShipAptBldg | Apt/Bldg (optional) |  | id_skCOShipAddress_4
+PHONE_HOME_WHOLE_NUMBER | id_skCOPhoneno | Phone |  | id_skCOShipAddress_4
+CREDIT_CARD_NUMBER | cardNumber | 1234 5647 8901 2345 |  | cardName_1
+CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR | expirationMonth | EXP |  | cardName_1
+CREDIT_CARD_VERIFICATION_CODE | cvv | CVV |  | cardName_1
+CREDIT_CARD_NAME_FULL | id_skAltPUName | Name |  | cardName_1
+PHONE_HOME_WHOLE_NUMBER | id_skAltPUPhoneno | Phone |  | id_skCOShipAddress_4
+EMAIL_ADDRESS | id_skAltPUEmail | Email |  | id_skCOShipAddress_4
+UNKNOWN_TYPE | userName | Username or Email address |  | userName_1
+UNKNOWN_TYPE | password | Password |  | userName_1

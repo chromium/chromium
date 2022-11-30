@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,67 +7,64 @@
  * the automation tree.
  */
 
-goog.provide('cursors.Range');
+import {AutomationPredicate} from '../automation_predicate.js';
+import {AutomationUtil} from '../automation_util.js';
+import {constants} from '../constants.js';
 
-goog.require('AutomationUtil');
-goog.require('constants');
-goog.require('cursors.Cursor');
+import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from './cursor.js';
 
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
-const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-
 
 /**
  * Represents a range in the automation tree. There is no visible selection on
  * the page caused by usage of this object.
  * It is assumed that the caller provides |start| and |end| in document order.
  */
-cursors.Range = class {
+export class CursorRange {
   /**
-   * @param {!cursors.Cursor} start
-   * @param {!cursors.Cursor} end
+   * @param {!Cursor} start
+   * @param {!Cursor} end
    */
   constructor(start, end) {
-    /** @type {!cursors.Cursor} @private */
+    /** @type {!Cursor} @private */
     this.start_ = start;
-    /** @type {!cursors.Cursor} @private */
+    /** @type {!Cursor} @private */
     this.end_ = end;
   }
 
   /**
    * Convenience method to construct a Range surrounding one node.
    * @param {!AutomationNode} node
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   static fromNode(node) {
-    const cursor = cursors.WrappingCursor.fromNode(node);
-    return new cursors.Range(cursor, cursor);
+    const cursor = WrappingCursor.fromNode(node);
+    return new CursorRange(cursor, cursor);
   }
 
   /**
-   * Given |rangeA| and |rangeB| in order, determine which |Dir|
+   * Given |rangeA| and |rangeB| in order, determine which |constants.Dir|
    * relates them.
-   * @param {!cursors.Range} rangeA
-   * @param {!cursors.Range} rangeB
-   * @return {Dir}
+   * @param {!CursorRange} rangeA
+   * @param {!CursorRange} rangeB
+   * @return {constants.Dir}
    */
   static getDirection(rangeA, rangeB) {
     if (!rangeA || !rangeB) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     if (!rangeA.start.node || !rangeA.end.node || !rangeB.start.node ||
         !rangeB.end.node) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     // They are the same range.
     if (rangeA.start.node === rangeB.start.node &&
         rangeB.end.node === rangeA.end.node) {
-      return Dir.FORWARD;
+      return constants.Dir.FORWARD;
     }
 
     const testDirA =
@@ -76,10 +73,10 @@ cursors.Range = class {
         AutomationUtil.getDirection(rangeB.start.node, rangeA.end.node);
 
     // The two ranges are either partly overlapping or non overlapping.
-    if (testDirA === Dir.FORWARD && testDirB === Dir.BACKWARD) {
-      return Dir.FORWARD;
-    } else if (testDirA === Dir.BACKWARD && testDirB === Dir.FORWARD) {
-      return Dir.BACKWARD;
+    if (testDirA === constants.Dir.FORWARD && testDirB === constants.Dir.BACKWARD) {
+      return constants.Dir.FORWARD;
+    } else if (testDirA === constants.Dir.BACKWARD && testDirB === constants.Dir.FORWARD) {
+      return constants.Dir.BACKWARD;
     } else {
       return testDirA;
     }
@@ -88,13 +85,20 @@ cursors.Range = class {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for strict equality between ranges.
-   * @param {!cursors.Range} rhs
+   * @param {!CursorRange} rhs
    * @return {boolean}
    */
   equals(rhs) {
     return this.start_.equals(rhs.start) && this.end_.equals(rhs.end);
   }
 
+
+  /**
+   * Similar to above equals(), but does not trigger recovery in either start or
+   * end cursor. Use this for strict equality between ranges.
+   * @param {!CursorRange} rhs
+   * @return {boolean}
+   */
   equalsWithoutRecovery(rhs) {
     return this.start_.equalsWithoutRecovery(rhs.start) &&
         this.end_.equalsWithoutRecovery(rhs.end);
@@ -103,7 +107,7 @@ cursors.Range = class {
   /**
    * Returns true if |rhs| is equal to this range.
    * Use this for loose equality between ranges.
-   * @param {!cursors.Range} rhs
+   * @param {!CursorRange} rhs
    * @return {boolean}
    */
   contentEquals(rhs) {
@@ -113,24 +117,32 @@ cursors.Range = class {
 
   /**
    * Gets the directed end cursor of this range.
-   * @param {Dir} dir Which endpoint cursor to return;
-   *     Dir.FORWARD for end,
-   * Dir.BACKWARD for start.
-   * @return {!cursors.Cursor}
+   * @param {constants.Dir} dir Which endpoint cursor to return;
+   *     constants.Dir.FORWARD for end,
+   * constants.Dir.BACKWARD for start.
+   * @return {!Cursor}
    */
   getBound(dir) {
-    return dir === Dir.FORWARD ? this.end_ : this.start_;
+    return dir === constants.Dir.FORWARD ? this.end_ : this.start_;
   }
 
   /**
-   * @return {!cursors.Cursor}
+   * Returns true if either start or end of this range requires recovery.
+   * @return {boolean}
+   */
+  requiresRecovery() {
+    return this.start_.requiresRecovery() || this.end_.requiresRecovery();
+  }
+
+  /**
+   * @return {!Cursor}
    */
   get start() {
     return this.start_;
   }
 
   /**
-   * @return {!cursors.Cursor}
+   * @return {!Cursor}
    */
   get end() {
     return this.end_;
@@ -162,9 +174,9 @@ cursors.Range = class {
   /**
    * Makes a Range which has been moved from this range by the given unit and
    * direction.
-   * @param {cursors.Unit} unit
-   * @param {Dir} dir
-   * @return {cursors.Range}
+   * @param {CursorUnit} unit
+   * @param {constants.Dir} dir
+   * @return {CursorRange}
    */
   move(unit, dir) {
     let newStart = this.start_;
@@ -174,36 +186,41 @@ cursors.Range = class {
 
     let newEnd;
     switch (unit) {
-      case cursors.Unit.CHARACTER:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newEnd = newStart.move(unit, cursors.Movement.DIRECTIONAL, Dir.FORWARD);
+      case CursorUnit.CHARACTER:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
+        newEnd = newStart.move(
+            unit, CursorMovement.DIRECTIONAL, constants.Dir.FORWARD);
         // Character crossed a node; collapses to the end of the node.
         if (newStart.node !== newEnd.node) {
-          newEnd = new cursors.Cursor(newStart.node, newStart.index + 1);
+          newEnd = new Cursor(newStart.node, newStart.index + 1);
         }
         break;
-      case cursors.Unit.WORD:
-      case cursors.Unit.LINE:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
-        newStart = newStart.move(unit, cursors.Movement.BOUND, Dir.BACKWARD);
-        newEnd = newStart.move(unit, cursors.Movement.BOUND, Dir.FORWARD);
+      case CursorUnit.WORD:
+      case CursorUnit.LINE:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
+        newStart =
+            newStart.move(unit, CursorMovement.BOUND, constants.Dir.BACKWARD);
+        newEnd =
+            newStart.move(unit, CursorMovement.BOUND, constants.Dir.FORWARD);
         break;
-      case cursors.Unit.NODE:
-        newStart = newStart.move(unit, cursors.Movement.DIRECTIONAL, dir);
+      case CursorUnit.NODE:
+      case CursorUnit.GESTURE_NODE:
+        newStart = newStart.move(unit, CursorMovement.DIRECTIONAL, dir);
         newEnd = newStart;
         break;
       default:
         throw Error('Invalid unit: ' + unit);
     }
-    return new cursors.Range(newStart, newEnd);
+    return new CursorRange(newStart, newEnd);
   }
 
   /**
    * Select the text contained within this range.
    */
   select() {
-    let start = this.start_, end = this.end_;
-    if (this.start.compare(this.end) === Dir.BACKWARD) {
+    let start = this.start_;
+    let end = this.end_;
+    if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
       start = this.end;
       end = this.start;
     }
@@ -220,8 +237,15 @@ cursors.Range = class {
       // We want to adjust to select the entire node for node offsets;
       // otherwise, use the plain character offset.
       const startIndex = start.selectionIndex;
-      let endIndex = end.index === cursors.NODE_INDEX ? end.selectionIndex + 1 :
-                                                        end.selectionIndex;
+      let endIndex = end.index === CURSOR_NODE_INDEX ? end.selectionIndex + 1 :
+                                                       end.selectionIndex;
+
+      // If the range covers more than one node, ends on the node, and is over
+      // text, then adjust the selection to cover the entire end node.
+      if (start.node !== end.node && end.index === CURSOR_NODE_INDEX &&
+          AutomationPredicate.text(end.node)) {
+        endIndex = end.getText().length;
+      }
 
       // Richly editables should always set a caret, but not select. This
       // makes it possible to navigate through content editables using
@@ -235,8 +259,83 @@ cursors.Range = class {
         anchorObject: startNode,
         anchorOffset: startIndex,
         focusObject: endNode,
-        focusOffset: endIndex
+        focusOffset: endIndex,
       });
+    }
+  }
+
+  /**
+   * Returns a new range that matches to the given unit and direction in the
+   * current range. If no matching range is found, then null is returned.
+   * Note that there is a chance that new range's end spans beyond the current
+   * end when the given unit is larger than the current range.
+   * @param {CursorUnit} unit
+   * @param {constants.Dir} dir
+   * @return {CursorRange}
+   */
+  sync(unit, dir) {
+    switch (unit) {
+      case CursorUnit.CHARACTER:
+      case CursorUnit.WORD:
+        let startCursor = this.start;
+        if (!AutomationPredicate.leafWithWordStop(startCursor.node)) {
+          let startNode = startCursor.node;
+          if (dir === constants.Dir.FORWARD) {
+            startNode = AutomationUtil.findNextNode(
+                startNode, constants.Dir.FORWARD, AutomationPredicate.leafWithWordStop,
+                {skipInitialSubtree: false});
+          } else {
+            startNode = AutomationUtil.findNodePost(
+                startNode, dir, AutomationPredicate.leafWithWordStop);
+          }
+          if (!startNode) {
+            return null;
+          }
+          startCursor = WrappingCursor.fromNode(startNode);
+        }
+
+        const start = startCursor.move(unit, CursorMovement.SYNC, dir);
+        if (!start) {
+          return null;
+        }
+        let end = start.move(unit, CursorMovement.BOUND, constants.Dir.FORWARD);
+        if (start.node !== end.node || start.equals(end)) {
+          // Character crossed a node or reached the end.
+          // Collapses to the end of the node.
+          end = new WrappingCursor(start.node, start.getText().length);
+        }
+        return new CursorRange(start, end);
+      case CursorUnit.LINE:
+        let newNode;
+        if (dir === constants.Dir.FORWARD) {
+          newNode = AutomationUtil.findNodeUntil(
+              this.start.node, dir, AutomationPredicate.linebreak);
+        } else {
+          newNode = AutomationUtil.findLastNode(
+              this.start.node, AutomationPredicate.leaf);
+        }
+        if (!newNode) {
+          return null;
+        }
+        return CursorRange.fromNode(newNode);
+      case CursorUnit.TEXT:
+      case CursorUnit.NODE:
+      case CursorUnit.GESTURE_NODE:
+        const pred = Cursor.getLeafPredForUnit(unit);
+        let node;
+        if (dir === constants.Dir.FORWARD) {
+          node = AutomationUtil.findNextNode(
+              this.start.node, constants.Dir.FORWARD, pred, {skipInitialSubtree: false});
+        } else {
+          node = AutomationUtil.findNodePost(this.start.node, dir, pred);
+        }
+        if (!node) {
+          return null;
+        }
+
+        return CursorRange.fromNode(node);
+      default:
+        throw Error('Invalid unit: ' + unit);
     }
   }
 
@@ -260,10 +359,10 @@ cursors.Range = class {
 
   /**
    * Compares this range with |rhs|.
-   * @param {cursors.Range} rhs
-   * @return {Dir|undefined} Dir.BACKWARD if |rhs| comes
+   * @param {CursorRange} rhs
+   * @return {constants.Dir|undefined} constants.Dir.BACKWARD if |rhs| comes
    *     before this range in
-   * document order. Dir.FORWARD if |rhs| comes after this range.
+   * document order. constants.Dir.FORWARD if |rhs| comes after this range.
    * Undefined otherwise.
    */
   compare(rhs) {
@@ -278,13 +377,22 @@ cursors.Range = class {
 
   /**
    * Returns an undirected version of this range.
-   * @return {!cursors.Range}
+   * @return {!CursorRange}
    */
   normalize() {
-    if (this.start.compare(this.end) === Dir.BACKWARD) {
-      return new cursors.Range(this.end, this.start);
+    if (this.start.compare(this.end) === constants.Dir.BACKWARD) {
+      return new CursorRange(this.end, this.start);
     }
     return this;
   }
-};
-});  // goog.scope
+
+  /**
+   * Returns true if this range was created after wrapping. For example, moving
+   * from a range at the end of a web contents to [this] range at the beginning
+   * of the document.
+   * @return {boolean}
+   */
+  get wrapped() {
+    return this.start_.wrapped || this.end_.wrapped;
+  }
+}

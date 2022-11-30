@@ -1,0 +1,344 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.bluetooth_config.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// The maximum number of characters a Bluetooth device's nickname can be set
+// to.
+const uint8 kDeviceNicknameCharacterLimit = 32;
+
+// State of Bluetooth on the device.
+enum BluetoothSystemState {
+  // Device does not have access to Bluetooth.
+  kUnavailable,
+
+  // Bluetooth is turned off.
+  kDisabled,
+
+  // Bluetooth is in the process of turning off.
+  kDisabling,
+
+  // Bluetooth is turned on.
+  kEnabled,
+
+  // Bluetooth is in the process of turning on.
+  kEnabling
+};
+
+// State of whether Bluetooth can be modified.
+enum BluetoothModificationState {
+  // Bluetooth cannot be turned on/off, and devices cannot be connected. E.g.,
+  // the current session may belong to a secondary user, or the screen is
+  // locked.
+  kCannotModifyBluetooth,
+
+  // Bluetooth settings can be modified as part of the current session.
+  kCanModifyBluetooth
+};
+
+// Bluetooth device type, derived from the device's ClassOfDevice attribute.
+enum DeviceType {
+  kUnknown,
+  kComputer,
+  kPhone,
+  kHeadset,
+  kVideoCamera,
+  kGameController,
+  kKeyboard,
+  kKeyboardMouseCombo,
+  kMouse,
+  kTablet
+};
+
+// Audio capability, derived from the device's ClassOfDevice attribute.
+enum AudioOutputCapability {
+  // Cannot provide audio output.
+  kNotCapableOfAudioOutput,
+
+  // Can output audio (e.g., Bluetooth headset).
+  kCapableOfAudioOutput
+};
+
+enum DeviceConnectionState {
+  kNotConnected,
+  kConnecting,
+  kConnected
+};
+
+struct BatteryProperties {
+  // From 0 to 100.
+  uint8 battery_percentage;
+};
+
+// Battery info belonging to a device. Contains an optional "default" set of
+// properties, and may contain information about multiple batteries per device
+// (e.g., Pixel Buds include battery info about the left earbud, right earbud,
+// and case).
+struct DeviceBatteryInfo {
+  BatteryProperties? default_properties;
+  BatteryProperties? left_bud_info;
+  BatteryProperties? right_bud_info;
+  BatteryProperties? case_info;
+};
+
+// True Wireless image info belonging to a device. Contains fields for
+// True Wireless images (stored as base64-encoded data URLs) for the left
+// earbud, right earbud, and case.
+struct TrueWirelessImageInfo {
+  url.mojom.Url left_bud_image_url;
+  url.mojom.Url right_bud_image_url;
+  url.mojom.Url case_image_url;
+};
+
+// Image info belonging to a device. Contains an optional default image (stored
+// as a base64-encoded data URL) as well as optional True Wireless images.
+struct DeviceImageInfo {
+  url.mojom.Url? default_image_url;
+  TrueWirelessImageInfo? true_wireless_images;
+};
+
+// Properties belonging to a Bluetooth device.
+struct BluetoothDeviceProperties {
+  // Unique identifier for this device, which is stable across device reboots.
+  string id;
+
+  // The Bluetooth address of this device.
+  string address;
+
+  // Publicly-visible name provided by the device. If no name is provided by
+  // the device, the device address is used as a name.
+  mojo_base.mojom.String16 public_name;
+
+  // Device type, derived from the ClassOfDevice attribute for the device.
+  DeviceType device_type;
+
+  // Audio output capability of the device; note that this capability is
+  // independent of the device type.
+  AudioOutputCapability audio_capability;
+
+  // Null if no battery information is available for the device.
+  DeviceBatteryInfo? battery_info;
+
+  // Null if no device images are available for the device.
+  DeviceImageInfo? image_info;
+
+  DeviceConnectionState connection_state;
+
+  // Indicates if the device is blocked by an admin policy.
+  bool is_blocked_by_policy;
+};
+
+// Properties belonging to a Bluetooth device which has been paired to this
+// Chrome OS device.
+struct PairedBluetoothDeviceProperties {
+  BluetoothDeviceProperties device_properties;
+
+  // Nickname for this device as provided by the user. Local to the device
+  // (i.e., other devices do not have access to this name). Null if the
+  // device has not been nicknamed by the user.
+  string? nickname;
+};
+
+// Describes the high-level status of system Bluetooth.
+struct BluetoothSystemProperties {
+  BluetoothSystemState system_state;
+  BluetoothModificationState modification_state;
+
+  // List of paired devices. UI surfaces should display devices in the order
+  // indicated by this array.
+  array<PairedBluetoothDeviceProperties> paired_devices;
+};
+
+// Observer for changes to Bluetooth system properties.
+interface SystemPropertiesObserver {
+  // Invoked whenever any property changes, including whenever a property of a
+  // paired device changes (e.g., from connected to disconnected).
+  OnPropertiesUpdated(BluetoothSystemProperties properties);
+};
+
+// Observer for changes to Bluetooth device status.
+// Clients include:
+// * Ash system UI; implemented in C++ as part of the browser process
+interface BluetoothDeviceStatusObserver {
+  // Invoked when a device has been newly-paired.
+  OnDevicePaired(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been connected.
+  OnDeviceConnected(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been disconnected.
+  OnDeviceDisconnected(PairedBluetoothDeviceProperties device);
+};
+
+// Observer for changes to starting/stopping Discovery Sessions.
+interface DiscoverySessionStatusObserver {
+  // Invoked when the number of discovery sessions changes from 0 to 1
+  // or vice versa.
+  OnHasAtLeastOneDiscoverySessionChanged(
+      bool has_at_least_one_discovery_session);
+};
+
+// Provided to the pairing UI to handle keys that have been entered
+// on the user's keyboard during a pairing attempt which requires
+// that the user types in a PIN or passkey.
+//
+// Not all keyboard support providing "key entered" events, so it
+// is possible that KeyEnteredHandlers never have their functions
+// invoked.
+interface KeyEnteredHandler {
+  // Invoked when the user has typed a portion of the PIN or
+  // passkey. For example, if the PIN is "987654" and the user types
+  // "9" and "8", HandleKeyEntered(1) and HandleKeyEntered(2) would
+  // be called.
+  HandleKeyEntered(uint8 num_keys_entered);
+};
+
+// Provided by the pairing UI to handle pairing requests of
+// different types.
+interface DevicePairingDelegate {
+  // Requests that a PIN be provided to complete pairing.
+  RequestPinCode() => (string pin_code);
+
+  // Requests that a passkey be provided to complete pairing.
+  RequestPasskey() => (string passkey);
+
+  // Requests that |pin_code| be displayed to the user, who should
+  // enter the PIN via a Bluetooth keyboard.
+  DisplayPinCode(string pin_code,
+                 pending_receiver<KeyEnteredHandler> handler);
+
+  // Requests that |passkey| be displayed to the user, who should
+  // enter the passkey via a Bluetooth keyboard.
+  DisplayPasskey(string passkey,
+                 pending_receiver<KeyEnteredHandler> handler);
+
+  // Requests that |passkey| be displayed to the user, who should
+  // confirm or reject a pairing request. Returns whether or not the
+  // user confirmed the passkey.
+  ConfirmPasskey(string passkey) => (bool confirmed);
+
+  // Requests that the user is asked to confirm or reject a pairing
+  // request. Returns whether or not the user confirmed the pairing.
+  AuthorizePairing() => (bool confirmed);
+};
+
+// Result of a pairing attempt.
+enum PairingResult {
+  // Pairing succeeded.
+  kSuccess,
+
+  // Authentication failed, either due to an incorrect PIN/passkey or
+  // due to the remote device canceling authentication.
+  kAuthFailed,
+
+  // Pairing failed due to a reason other than authentication issues.
+  kNonAuthFailure
+};
+
+// Handles requests to pair to a device.
+interface DevicePairingHandler {
+  // Attempts to pair to the device with ID |device_id|. Pairing often
+  // requires additional interaction from the user, so callers must
+  // provide a |delegate| which handles requests for these interactions.
+  // For example, pairing a Bluetooth keyboard usually requires that
+  // users type in a PIN.
+  //
+  // |result| is returned when the pairing attempt completes. It is
+  // possible that |result| is returned before any delegate function
+  // is invoked.
+  PairDevice(
+      string device_id,
+      pending_remote<DevicePairingDelegate> delegate) =>
+          (PairingResult result);
+
+  // Returns the device with address |device_address|. This can be used
+  // to find the ID of a device where only its address is known in order
+  // to pair with it. Returns null if no device was found. Devices
+  // returned here may not be found in BluetoothDiscoveryDelegate's
+  // discovered devices list as this method retrieves the devices from the
+  // adapter directly without any filtering.
+  FetchDevice(string device_address) => (BluetoothDeviceProperties? device);
+};
+
+// Allows clients of Bluetooth discovery to be notified of the progress of a
+// discovery session.
+interface BluetoothDiscoveryDelegate {
+  // Invoked when discovery has started.
+  // |handler| can be used to initiate pairing to a discovered device.
+  OnBluetoothDiscoveryStarted(
+      pending_remote<DevicePairingHandler> handler);
+
+  // Invoked when discovery has stopped. This can occur for a variety of
+  // reasons, including:
+  //   * Discovery was attempted while Bluetooth was not enabled.
+  //   * Bluetooth was turned off while the discovery session was active.
+  //   * Internal errors while discovering.
+  OnBluetoothDiscoveryStopped();
+
+  // Invoked when the devices list changes. This function is called whenever
+  // a device is added, removed, or updated in the list. When a client first
+  // begins discovery, this function is immediately called.
+  OnDiscoveredDevicesListChanged(
+      array<BluetoothDeviceProperties> discovered_devices);
+};
+
+// Provides Bluetooth metadata and controls. Embedded in the browser process.
+//
+// Clients include:
+// * Ash system UI; implemented in C++ as part of the browser process
+// * WebUI such as chrome://os-settings; implemented in JS as part of renderer
+//   processes
+interface CrosBluetoothConfig {
+  // Invokes OnPropertiesUpdated() with initial set of properties when observer
+  // is first added, then again whenever properties are updated. To stop
+  // observing, disconnect |observer|.
+  ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
+
+  // Invokes OnDevicePaired() when a device is newly paired, connected or
+  // disconnected. To stop observing, disconnect |observer|.
+  ObserveDeviceStatusChanges(
+    pending_remote<BluetoothDeviceStatusObserver> observer);
+
+  // Invokes OnHasAtLeastOneDiscoverySessionChanged() when the number of
+  // discovery sessions changes from 0 to 1 or vice versa. To stop observing,
+  // disconnect |observer|.
+  ObserveDiscoverySessionStatusChanges(
+    pending_remote<DiscoverySessionStatusObserver> observer);
+
+  // Turns Bluetooth on or off. If Bluetooth is unavailable or if it is
+  // not currently modifiable, this function is a no-op.
+  SetBluetoothEnabledState(bool enabled);
+
+  // Turns Bluetooth on without persisting the enabled state to prefs.
+  SetBluetoothHidDetectionActive();
+
+  // If |is_using_bluetooth| is false, restores the Bluetooth enabled
+  // state that was last persisted to local state. If |is_using_bluetooth|
+  // is true, this function is a no-op. |is_using_bluetooth| should be set
+  // to true if there is at least one HID that is connected via Bluetooth,
+  // and false otherwise.
+  SetBluetoothHidDetectionInactive(bool is_using_bluetooth);
+
+  // Starts a discovery session, during which time it will be possible
+  // to find new devices and pair them. To stop discovery, disconnect
+  // |delegate|.
+  StartDiscovery(pending_remote<BluetoothDiscoveryDelegate> delegate);
+
+  // Initiates a connection to the device with ID |device_id|.
+  Connect(string device_id) => (bool success);
+
+  // Initiates a disconnection from the device with ID |device_id|.
+  Disconnect(string device_id) => (bool success);
+
+  // Forgets the device with ID |device_id|, which in practice means
+  // un-pairing from the device.
+  Forget(string device_id) => (bool success);
+
+  // Sets a |nickname| for the device with ID |device_id|. The nickname is
+  // visible to all users of the device.
+  SetDeviceNickname(string device_id, string nickname);
+};

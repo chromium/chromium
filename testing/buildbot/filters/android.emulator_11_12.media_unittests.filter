@@ -1,0 +1,5 @@
+# https://crbug.com/1189284
+# Not applicable to emulator due to not supporting fence sync
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTexture*
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture*
+-PaintCanvasVideoRendererWithGLTest.Paint*

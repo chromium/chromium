@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ public class LifetimeAssertTest {
     }
 
     @Test
-    public void testAssertAllInstancesDestroyedForTesting() {
+    public void testAssertAllInstancesDestroyedForTesting_notSafeToGc() {
         if (!BuildConfig.ENABLE_ASSERTS) {
             return;
         }
@@ -108,8 +108,40 @@ public class LifetimeAssertTest {
         } catch (LifetimeAssert.LifetimeAssertException e) {
             // Expected.
         }
+    }
+
+    @Test
+    public void testAssertAllInstancesDestroyedForTesting_safeToGc() {
+        if (!BuildConfig.ENABLE_ASSERTS) {
+            return;
+        }
         LifetimeAssert.setSafeToGc(mTestClass.mLifetimeAssert, true);
+        // Should not throw.
+        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+    }
+
+    @Test
+    public void testAssertAllInstancesDestroyedForTesting_resetAfterAssert() {
+        if (!BuildConfig.ENABLE_ASSERTS) {
+            return;
+        }
+        try {
+            LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            Assert.fail();
+        } catch (LifetimeAssert.LifetimeAssertException e) {
+            // Expected.
+        }
         // Should no longer throw.
+        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+    }
+
+    @Test
+    public void testResetForTesting() {
+        if (!BuildConfig.ENABLE_ASSERTS) {
+            return;
+        }
+        LifetimeAssert.resetForTesting();
+        // Should not throw.
         LifetimeAssert.assertAllInstancesDestroyedForTesting();
     }
 }

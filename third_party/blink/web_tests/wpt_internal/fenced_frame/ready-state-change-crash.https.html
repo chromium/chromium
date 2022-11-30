@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+Test passes if it does not crash.
+<body>
+<div id="a"></div>
+<div id="b">
+    <iframe id="f" src="about:blank"></iframe>
+</div>
+
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var listenerActive = false;
+var inner_doc = document.getElementById('f').contentDocument;
+inner_doc.open();
+
+inner_doc.addEventListener('readystatechange', () => {
+    document.getElementById('a').appendChild(document.getElementById('b'));
+});
+
+inner_doc.close();
+</script>
+</body>
+</html>

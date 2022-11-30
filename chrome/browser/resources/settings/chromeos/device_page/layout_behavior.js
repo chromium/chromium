@@ -1,19 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-// clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {getDisplayApi} from './device_page_browser_proxy.m.js';
-// clang-format on
 
 /**
  * @fileoverview Behavior for handling display layout, specifically
  *     edge snapping and collisions.
  */
 
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {getDisplayApi} from './device_page_browser_proxy.js';
+
 /** @polymerBehavior */
-/* #export */ const LayoutBehavior = {
+export const LayoutBehavior = {
   properties: {
     /**
      * Array of display layouts.
@@ -110,7 +109,7 @@
     const oldBounds = this.dragBounds_ || this.getCalculatedDisplayBounds(id);
     const deltaPos = {
       x: newBounds.left - oldBounds.left,
-      y: newBounds.top - oldBounds.top
+      y: newBounds.top - oldBounds.top,
     };
 
     // Check for collisions after snapping. This should not collide with the
@@ -185,7 +184,7 @@
     this.updateOrphans_(orphanIds);
 
     // Send the updated layouts.
-    settings.getDisplayApi().setDisplayLayout(
+    getDisplayApi().setDisplayLayout(
         this.layouts, function() {
           if (chrome.runtime.lastError) {
             console.error(
@@ -278,7 +277,7 @@
     const desiredPos = this.snapBounds_(bounds, newParentId, layoutPosition);
     const deltaPos = {
       x: desiredPos.x - cornerBounds.left,
-      y: desiredPos.y - cornerBounds.top
+      y: desiredPos.y - cornerBounds.top,
     };
 
     // Check for collisions.
@@ -287,7 +286,7 @@
       left: cornerBounds.left + deltaPos.x,
       top: cornerBounds.top + deltaPos.y,
       width: bounds.width,
-      height: bounds.height
+      height: bounds.height,
     };
 
     this.updateOffsetAndPosition_(desiredBounds, layoutPosition, layout);
@@ -324,7 +323,8 @@
    * @private
    */
   calculateBounds_(id, width, height) {
-    let left, top;
+    let left;
+    let top;
     const layout = this.displayLayoutMap_.get(id);
     if (this.mirroring || !layout || !layout.parentId) {
       left = -width / 2;
@@ -395,7 +395,8 @@
       if (x >= left && x < left + width && y >= top && y < top + height) {
         return otherId;
       }  // point is inside rect
-      let dx, dy;
+      let dx;
+      let dy;
       if (x < left) {
         dx = left - x;
       } else if (x > left + width) {
@@ -655,7 +656,9 @@
 
     // Offset is calculated from top or left edge.
     const parentBounds = this.getCalculatedDisplayBounds(layout.parentId);
-    let offset, minOffset, maxOffset;
+    let offset;
+    let minOffset;
+    let maxOffset;
     if (position === chrome.system.display.LayoutPosition.LEFT ||
         position === chrome.system.display.LayoutPosition.RIGHT) {
       offset = bounds.top - parentBounds.top;
@@ -733,3 +736,49 @@
     }
   },
 };
+
+/** @interface */
+export class LayoutBehaviorInterface {
+  constructor() {
+    /**
+     * Array of display layouts.
+     * @type {!Array<!chrome.system.display.DisplayLayout>}
+     */
+    this.layouts;
+
+    /**
+     * Whether or not mirroring is enabled.
+     * @type {boolean}
+     */
+    this.mirroring;
+  }
+
+  /**
+   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
+   * @param {!Array<!chrome.system.display.DisplayLayout>} layouts
+   */
+  initializeDisplayLayout(displays, layouts) {}
+
+
+  /**
+   * Called when a drag event occurs. Checks collisions and updates the layout.
+   * @param {string} id
+   * @param {!chrome.system.display.Bounds} newBounds The new calculated
+   *     bounds for the display.
+   * @return {!chrome.system.display.Bounds}
+   */
+  updateDisplayBounds(id, newBounds) {}
+
+  /**
+   * Called when dragging ends. Sends the updated layout to chrome.
+   * @param {string} id
+   */
+  finishUpdateDisplayBounds(id) {}
+
+  /**
+   * @param {string} displayId
+   * @param {boolean=} opt_notest Set to true if bounds may not be set.
+   * @return {!chrome.system.display.Bounds} bounds
+   */
+  getCalculatedDisplayBounds(displayId, opt_notest) {}
+}

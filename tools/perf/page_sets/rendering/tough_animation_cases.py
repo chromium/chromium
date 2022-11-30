@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry.page import shared_page_state
@@ -597,6 +597,13 @@ class MicrosoftPerformancePage(ToughAnimationPage):
   NEED_MEASUREMENT_READY = False
 
 
+class OffscreenAnimationNoDamagePage(ToughAnimationPage):
+  """Why: Offscreen animations can lead to no damage. These frames should not
+  be reported as dropped. This is a regression test for crbug.com/1248851
+  """
+  BASE_NAME = 'offscreen_animation_no_damage'
+  URL = 'file://../tough_animation_cases/offscreen_animation_no_damage.html'
+
 # TODO(crbug.com/760553):remove this class after
 # smoothness.tough_animation_cases benchmark is completely
 # replaced by rendering benchmarks
@@ -677,7 +684,8 @@ class ToughAnimationCasesPageSet(story.StorySet):
       MixBlendModeAnimationHuePage,
       MixBlendModeAnimationScreenPage,
       MixAnimationPropagatingIsolationPage,
-      MicrosoftPerformancePage
+      MicrosoftPerformancePage,
+      OffscreenAnimationNoDamagePage
     ]
 
     for page_class in page_classes:

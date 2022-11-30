@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,6 +146,22 @@ status::Code ApplyCommon(base::File old_file,
   return status::kStatusSuccess;
 }
 
+status::Code VerifyPatchCommon(base::File patch_file,
+                               base::FilePath patch_name) {
+  MappedFileReader mapped_patch(std::move(patch_file));
+  if (mapped_patch.HasError()) {
+    LOG(ERROR) << "Error with file " << patch_name.value() << ": "
+               << mapped_patch.error();
+    return status::kStatusFileReadError;
+  }
+  auto patch_reader = EnsemblePatchReader::Create(mapped_patch.region());
+  if (!patch_reader.has_value()) {
+    LOG(ERROR) << "Error reading patch header.";
+    return status::kStatusPatchReadError;
+  }
+  return status::kStatusSuccess;
+}
+
 }  // namespace
 
 status::Code Generate(base::File old_file,
@@ -168,11 +184,12 @@ status::Code Generate(const base::FilePath& old_path,
                       std::string imposed_matches) {
   using base::File;
   File old_file(old_path, File::FLAG_OPEN | File::FLAG_READ |
-                              base::File::FLAG_SHARE_DELETE);
+                              base::File::FLAG_WIN_SHARE_DELETE);
   File new_file(new_path, File::FLAG_OPEN | File::FLAG_READ |
-                              base::File::FLAG_SHARE_DELETE);
+                              base::File::FLAG_WIN_SHARE_DELETE);
   File patch_file(patch_path, File::FLAG_CREATE_ALWAYS | File::FLAG_READ |
-                                  File::FLAG_WRITE | File::FLAG_SHARE_DELETE |
+                                  File::FLAG_WRITE |
+                                  File::FLAG_WIN_SHARE_DELETE |
                                   File::FLAG_CAN_DELETE_ON_CLOSE);
   const FileNames file_names(old_path, new_path, patch_path);
   return GenerateCommon(std::move(old_file), std::move(new_file),
@@ -195,15 +212,26 @@ status::Code Apply(const base::FilePath& old_path,
                    bool force_keep) {
   using base::File;
   File old_file(old_path, File::FLAG_OPEN | File::FLAG_READ |
-                              base::File::FLAG_SHARE_DELETE);
+                              base::File::FLAG_WIN_SHARE_DELETE);
   File patch_file(patch_path, File::FLAG_OPEN | File::FLAG_READ |
-                                  base::File::FLAG_SHARE_DELETE);
+                                  base::File::FLAG_WIN_SHARE_DELETE);
   File new_file(new_path, File::FLAG_CREATE_ALWAYS | File::FLAG_READ |
-                              File::FLAG_WRITE | File::FLAG_SHARE_DELETE |
+                              File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE |
                               File::FLAG_CAN_DELETE_ON_CLOSE);
   const FileNames file_names(old_path, new_path, patch_path);
   return ApplyCommon(std::move(old_file), std::move(patch_file),
                      std::move(new_file), file_names, force_keep);
+}
+
+status::Code VerifyPatch(base::File patch_file) {
+  return VerifyPatchCommon(std::move(patch_file), base::FilePath());
+}
+
+status::Code VerifyPatch(const base::FilePath& patch_path) {
+  using base::File;
+  File patch_file(patch_path, File::FLAG_OPEN | File::FLAG_READ |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+  return VerifyPatchCommon(std::move(patch_file), patch_path);
 }
 
 }  // namespace zucchini

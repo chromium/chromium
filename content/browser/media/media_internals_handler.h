@@ -1,18 +1,13 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_INTERNALS_HANDLER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 class MediaInternalsProxy;
@@ -22,13 +17,18 @@ class MediaInternalsProxy;
 class MediaInternalsMessageHandler : public WebUIMessageHandler {
  public:
   MediaInternalsMessageHandler();
+
+  MediaInternalsMessageHandler(const MediaInternalsMessageHandler&) = delete;
+  MediaInternalsMessageHandler& operator=(const MediaInternalsMessageHandler&) =
+      delete;
+
   ~MediaInternalsMessageHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
   // Javascript message handlers.
-  void OnGetEverything(const base::ListValue* list);
+  void OnGetEverything(const base::Value::List& list);
 
   // MediaInternals message handlers.
   void OnUpdate(const std::u16string& update);
@@ -39,8 +39,6 @@ class MediaInternalsMessageHandler : public WebUIMessageHandler {
   // Reflects whether the chrome://media-internals HTML+JS has finished loading.
   // If not, it's not safe to send JavaScript calls targeting the page yet.
   bool page_load_complete_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaInternalsMessageHandler);
 };
 
 }  // namespace content

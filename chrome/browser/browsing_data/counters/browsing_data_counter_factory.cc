@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
@@ -29,7 +30,7 @@
 #include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/web_history_service.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/driver/sync_service.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -37,12 +38,16 @@
 #include "chrome/browser/browsing_data/counters/hosted_apps_counter.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/credential_store.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/fido/cros/credential_store.h"
 #endif
 
 namespace {
@@ -63,7 +68,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         base::BindRepeating(&GetUpdatedWebHistoryService,
                             base::Unretained(profile)),
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile));
   }
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistoryBasic) {
     // The history option on the basic tab doesn't use a counter.
@@ -85,10 +90,13 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
     std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         std::make_unique<::device::fido::mac::TouchIdCredentialStore>(
-            ChromeAuthenticatorRequestDelegate::
+            ChromeWebAuthenticationDelegate::
                 TouchIdAuthenticatorConfigForProfile(profile));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+        std::make_unique<
+            ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
         nullptr;
 #endif
@@ -97,7 +105,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
                                             ServiceAccessType::EXPLICIT_ACCESS),
         AccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        ProfileSyncServiceFactory::GetForProfile(profile),
+        SyncServiceFactory::GetForProfile(profile),
         std::move(credential_store));
   }
 
@@ -105,7 +113,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
     return std::make_unique<browsing_data::AutofillCounter>(
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        ProfileSyncServiceFactory::GetForProfile(profile));
+        SyncServiceFactory::GetForProfile(profile));
   }
 
   if (pref_name == browsing_data::prefs::kDeleteDownloadHistory) {
@@ -115,7 +123,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
   if (pref_name == browsing_data::prefs::kDeleteSiteSettings) {
     return std::make_unique<SiteSettingsCounter>(
         HostContentSettingsMapFactory::GetForProfile(profile),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
         content::HostZoomMap::GetDefaultForBrowserContext(profile),
 #else
         nullptr,

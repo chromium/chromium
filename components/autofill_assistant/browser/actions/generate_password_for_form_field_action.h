@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
@@ -43,6 +42,7 @@ class GeneratePasswordForFormFieldAction : public Action {
   void OnGetFormAndFieldDataForGeneration(
       const std::string& memory_key,
       const ClientStatus& status,
+      content::RenderFrameHost* rfh,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& field_data);
 
@@ -50,7 +50,7 @@ class GeneratePasswordForFormFieldAction : public Action {
                                         const std::string& generated_password,
                                         const autofill::FormData& form_data,
                                         UserData* user_data,
-                                        UserData::FieldChange* field_change);
+                                        UserDataFieldChange* field_change);
 
   Selector selector_;
   ProcessActionCallback callback_;

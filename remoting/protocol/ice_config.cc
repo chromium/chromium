@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@
 #include "net/base/url_util.h"
 #include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -31,7 +30,7 @@ bool ParseLifetime(const std::string& string, base::TimeDelta* result) {
       !base::StringToDouble(string.substr(0, string.size() - 1), &seconds)) {
     return false;
   }
-  *result = base::TimeDelta::FromSecondsD(seconds);
+  *result = base::Seconds(seconds);
   return true;
 }
 
@@ -122,10 +121,10 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
   IceConfig ice_config;
 
   // Parse lifetimeDuration field.
-  std::string lifetime_str;
+  const std::string* lifetime_str =
+      dictionary.FindStringKey("lifetimeDuration");
   base::TimeDelta lifetime;
-  if (!dictionary.GetString("lifetimeDuration", &lifetime_str) ||
-      !ParseLifetime(lifetime_str, &lifetime)) {
+  if (!lifetime_str || !ParseLifetime(*lifetime_str, &lifetime)) {
     LOG(ERROR) << "Received invalid lifetimeDuration value: " << lifetime_str;
 
     // If the |lifetimeDuration| field is missing or cannot be parsed then mark
@@ -138,43 +137,47 @@ IceConfig IceConfig::Parse(const base::DictionaryValue& dictionary) {
   // Parse iceServers list and store them in |ice_config|.
   bool errors_found = false;
   ice_config.max_bitrate_kbps = 0;
-  for (const auto& server : *ice_servers_list) {
-    const base::DictionaryValue* server_dict;
-    if (!server.GetAsDictionary(&server_dict)) {
+  for (const auto& server : ice_servers_list->GetListDeprecated()) {
+    if (!server.is_dict()) {
       errors_found = true;
       continue;
     }
 
-    const base::ListValue* urls_list = nullptr;
-    if (!server_dict->GetList("urls", &urls_list)) {
+    const base::Value* urls_list = server.FindListKey("urls");
+    if (!urls_list) {
       errors_found = true;
       continue;
     }
 
     std::string username;
-    server_dict->GetString("username", &username);
+    const std::string* maybe_username = server.FindStringKey("username");
+    if (maybe_username)
+      username = *maybe_username;
 
     std::string password;
-    server_dict->GetString("credential", &password);
+    const std::string* maybe_password = server.FindStringKey("credential");
+    if (maybe_password)
+      password = *maybe_password;
 
     // Compute the lowest specified bitrate of all the ICE servers.
     // Ideally the bitrate would be stored per ICE server, but it is not
     // possible (at the application level) to look up which particular
     // ICE server was used for the P2P connection.
-    double new_bitrate_double;
-    if (server_dict->GetDouble("maxRateKbps", &new_bitrate_double)) {
-      ice_config.max_bitrate_kbps = MinimumSpecified(
-          ice_config.max_bitrate_kbps, static_cast<int>(new_bitrate_double));
+    auto new_bitrate_double = server.FindDoubleKey("maxRateKbps");
+    if (new_bitrate_double.has_value()) {
+      ice_config.max_bitrate_kbps =
+          MinimumSpecified(ice_config.max_bitrate_kbps,
+                           static_cast<int>(new_bitrate_double.value()));
     }
 
-    for (const auto& url : *urls_list) {
-      std::string url_str;
-      if (!url.GetAsString(&url_str)) {
+    for (const auto& url : urls_list->GetListDeprecated()) {
+      const std::string* url_str = url.GetIfString();
+      if (!url_str) {
         errors_found = true;
         continue;
       }
-      if (!AddServerToConfig(url_str, username, password, &ice_config)) {
-        LOG(ERROR) << "Invalid ICE server URL: " << url_str;
+      if (!AddServerToConfig(*url_str, username, password, &ice_config)) {
+        LOG(ERROR) << "Invalid ICE server URL: " << *url_str;
       }
     }
   }
@@ -206,20 +209,19 @@ IceConfig IceConfig::Parse(const std::string& config_json) {
     return IceConfig();
   }
 
-  base::DictionaryValue* dictionary = nullptr;
-  if (!json->GetAsDictionary(&dictionary)) {
+  if (!json->is_dict()) {
     return IceConfig();
   }
 
   // Handle the case when the config is wrapped in 'data', i.e. as {'data': {
   // 'iceServers': {...} }}.
-  base::DictionaryValue* data_dictionary = nullptr;
-  if (!dictionary->HasKey("iceServers") &&
-      dictionary->GetDictionary("data", &data_dictionary)) {
-    return Parse(*data_dictionary);
+  if (!json->FindKey("iceServers")) {
+    base::Value* data_dictionary = json->FindDictKey("data");
+    if (data_dictionary)
+      return Parse(base::Value::AsDictionaryValue(*data_dictionary));
   }
 
-  return Parse(*dictionary);
+  return Parse(base::Value::AsDictionaryValue(*json));
 }
 
 // static
@@ -228,8 +230,8 @@ IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
 
   // Parse lifetimeDuration field.
   base::TimeDelta lifetime =
-      base::TimeDelta::FromSeconds(config.lifetime_duration().seconds()) +
-      base::TimeDelta::FromNanoseconds(config.lifetime_duration().nanos());
+      base::Seconds(config.lifetime_duration().seconds()) +
+      base::Nanoseconds(config.lifetime_duration().nanos());
   ice_config.expiration_time = base::Time::Now() + lifetime;
 
   // Parse iceServers list and store them in |ice_config|.
@@ -259,5 +261,4 @@ IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
   return ice_config;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

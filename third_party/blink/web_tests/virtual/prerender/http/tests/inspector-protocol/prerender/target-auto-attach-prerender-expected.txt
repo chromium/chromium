@@ -1,0 +1,31 @@
+Tests that prerender targets get auto-attached properly.
+{
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        subtype : prerender
+        targetId : <string>
+        title : 
+        type : page
+        url : 
+    }
+    waitingForDebugger : true
+}
+Navigation: http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+Detached from correct target
+{
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Prerender Test
+        type : page
+        url : http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+    }
+}
+Correct frameId in Page.navigate response: true
+Correct frameId in Network.responseReceived: true
+

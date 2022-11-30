@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ let ImageTransformation;
  * @unrestricted to allow access for properties via '.' or '[]', useful for
  * computed properties.
  */
-/* #export */ class MetadataItem {
+export class MetadataItem {
   constructor() {
     /**
      * Size of the file. -1 for directory.
@@ -280,5 +280,23 @@ let ImageTransformation;
      * @public {boolean|undefined}
      */
     this.isExternalMedia;
+
+    /**
+     * Whether the entry is under any DataLeakPrevention policy.
+     * @public {boolean|undefined}
+     */
+    this.isDlpRestricted;
+
+    /**
+     * Source URL that can be used to check DataLeakPrevention policy.
+     * @public {string|undefined}
+     */
+    this.sourceUrl;
+
+    /**
+     * Status indicating the current syncing behaviour for this item.
+     * @type {string|undefined}
+     */
+    this.syncStatus;
   }
 }

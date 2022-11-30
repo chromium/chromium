@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -28,8 +31,7 @@ TEST(AcceleratorTest, TimeStamp) {
   const Accelerator accelerator_a(VKEY_A, EF_NONE);
   EXPECT_EQ(base::TimeTicks(), accelerator_a.time_stamp());
 
-  const base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1);
+  const base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(1);
   KeyEvent keyevent(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE, event_time);
 
   const Accelerator accelerator_b(keyevent);
@@ -37,7 +39,7 @@ TEST(AcceleratorTest, TimeStamp) {
 }
 
 // Crash on Android builders. https://crbug.com/980267
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GetShortcutText DISABLED_GetShortcutText
 #else
 #define MAYBE_GetShortcutText GetShortcutText
@@ -46,25 +48,25 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
   struct {
     KeyboardCode code;
     int modifiers;
-    const char* expected_long;
-    const char* expected_short;
+    const char16_t* expected_long;
+    const char16_t* expected_short;
   } keys[] = {
-    {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, "Ctrl+Shift+Q", "\u2303\u21e7Q"},
-    {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, "Alt+Shift+A", "\u2325\u21e7A"},
+    {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, u"Ctrl+Shift+Q", u"⌃⇧Q"},
+    {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, u"Alt+Shift+A", u"⌥⇧A"},
     // Regression test for https://crbug.com/867732:
-    {VKEY_OEM_COMMA, EF_CONTROL_DOWN, "Ctrl+Comma", "\u2303,"},
-#if defined(OS_APPLE)
-    {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, "\u2303\u2318T"},
+    {VKEY_OEM_COMMA, EF_CONTROL_DOWN, u"Ctrl+Comma", u"⌃,"},
+#if BUILDFLAG(IS_MAC)
+    {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, u"⌃⌘T"},
 #endif
   };
 
   for (const auto& key : keys) {
     std::u16string text =
         Accelerator(key.code, key.modifiers).GetShortcutText();
-#if defined(OS_APPLE)
-    EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_short));
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(text, key.expected_short);
 #else
-    EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_long));
+    EXPECT_EQ(text, key.expected_long);
 #endif
   }
 }
@@ -73,5 +75,73 @@ TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
   const Accelerator accelerator(VKEY_UNKNOWN, EF_NONE);
   EXPECT_EQ(std::u16string(), accelerator.GetShortcutText());
 }
+
+TEST(AcceleratorTest, ConversionFromKeyEvent) {
+  ui::KeyEvent key_event(
+      ui::ET_KEY_PRESSED, ui::VKEY_F,
+      ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
+  Accelerator accelerator(key_event);
+
+  EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
+  EXPECT_EQ(accelerator.modifiers(),
+            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_FUNCTION_DOWN);
+}
+
+#if BUILDFLAG(IS_MAC)
+class AcceleratorTestMac : public testing::Test {
+ public:
+  AcceleratorTestMac() = default;
+  ~AcceleratorTestMac() override = default;
+
+  // Returns a "short" string representation of the modifier flags in
+  // |modifier_mask|.
+  std::u16string ShortFormStringForModifiers(int modifier_flags) {
+    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, modifier_flags);
+    Accelerator accelerator(key_event);
+
+    // Passing the empty string causes the method to return just the string
+    // representation of the modifier flags.
+    return accelerator.ApplyShortFormModifiers(std::u16string());
+  }
+};
+
+// Checks that a string representation exists for all modifier masks that make
+// sense on the Mac.
+TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
+  int modifier_flag = 1 << 0;
+  while (modifier_flag) {
+    // If |modifier_flag| is a valid modifier flag and it's not EF_ALTGR_DOWN
+    // (the Linux Alt key on the right side of the keyboard), confirm that
+    // a string representation for the modifier flag exists.
+    if (Accelerator::MaskOutKeyEventFlags(modifier_flag) &&
+        modifier_flag != EF_ALTGR_DOWN) {
+      EXPECT_GT(this->ShortFormStringForModifiers(modifier_flag).size(), 0UL);
+    }
+    modifier_flag <<= 1;
+  }
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kImprovedKeyboardShortcuts);
+
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F,
+                         ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  Accelerator accelerator(key_event);
+
+  EXPECT_EQ(accelerator.key_code(), ui::VKEY_F);
+  EXPECT_EQ(accelerator.modifiers(), ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+
+  // Code is set when converting from a KeyEvent.
+  EXPECT_EQ(accelerator.code(), DomCode::US_F);
+
+  // Test resetting code.
+  accelerator.reset_code();
+  EXPECT_EQ(accelerator.code(), DomCode::NONE);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace ui

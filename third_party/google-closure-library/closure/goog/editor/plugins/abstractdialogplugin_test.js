@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.AbstractDialogPluginTest');
 goog.setTestOnly();
@@ -64,10 +56,11 @@ function setUpMockRange() {
  * a plain implementation of createDialogControl().
  * @param {dom.DomHelper} domHelper The dom helper to be used to create the
  *     dialog.
- * @return {AbstractDialog} The created dialog.
+ * @return {!AbstractDialog} The created dialog.
  */
 function createDialog(domHelper) {
   const dialog = new AbstractDialog(domHelper);
+  /** @suppress {visibility} suppression added to enable type checking */
   dialog.createDialogControl = () => new AbstractDialog.Builder(dialog).build();
   return dialog;
 }
@@ -76,11 +69,17 @@ function createDialog(domHelper) {
  * Creates a concrete instance of the abstract class
  * AbstractDialogPlugin
  * and registers it with the mock editable field being used.
- * @return {AbstractDialogPlugin} The created plugin.
+ * @return {!AbstractDialogPlugin} The created plugin.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createDialogPlugin() {
   const plugin = new AbstractDialogPlugin(COMMAND);
+  /** @suppress {visibility} suppression added to enable type checking */
   plugin.createDialog = createDialog;
+  /**
+   * @suppress {strictMissingProperties,visibility} suppression added to enable
+   * type checking
+   */
   plugin.returnControlToEditableField = plugin.restoreOriginalSelection;
   plugin.registerFieldObject(mockField);
   plugin.addEventListener(
@@ -90,7 +89,10 @@ function createDialogPlugin() {
   return plugin;
 }
 
-/** Sets up the mock event handler to expect an OPENED event. */
+/**
+ * Sets up the mock event handler to expect an OPENED event.
+ * @suppress {missingProperties} suppression added to enable type checking
+ */
 function expectOpened(/** number= */ times = undefined) {
   mockOpenedHandler.handleEvent(new ArgumentMatcher(
       (arg) => arg.type == AbstractDialogPlugin.EventType.OPENED));
@@ -101,7 +103,10 @@ function expectOpened(/** number= */ times = undefined) {
   }
 }
 
-/** Sets up the mock event handler to expect a CLOSED event. */
+/**
+ * Sets up the mock event handler to expect a CLOSED event.
+ * @suppress {missingProperties} suppression added to enable type checking
+ */
 function expectClosed(/** number= */ times = undefined) {
   mockClosedHandler.handleEvent(new ArgumentMatcher(
       (arg) => arg.type == AbstractDialogPlugin.EventType.CLOSED));
@@ -140,11 +145,13 @@ function tearDownRealEditableField() {
 }
 
 testSuite({
+  /** @suppress {missingProperties} suppression added to enable type checking */
   setUp() {
     mockCtrl = new MockControl();
     mockOpenedHandler = mockCtrl.createLooseMock(EventHandler);
     mockClosedHandler = mockCtrl.createLooseMock(EventHandler);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mockField = new FieldMock(undefined, undefined, {});
     mockCtrl.addMock(mockField);
     mockField.focus();
@@ -169,6 +176,8 @@ testSuite({
    * Tests the simple flow of calling execCommand (which opens the
    * dialog) and immediately disposing of the plugin (which closes the dialog).
    * @param {boolean=} reuse Whether to set the plugin to reuse its dialog.
+   * @suppress {missingProperties,visibility} suppression added to enable type
+   * checking
    */
   testExecAndDispose(reuse = undefined) {
     setUpMockRange();
@@ -188,6 +197,7 @@ testSuite({
         'Dialog should be open now',
         !!plugin.getDialog() && plugin.getDialog().isOpen());
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const tempDialog = plugin.getDialog();
     plugin.dispose();
     assertFalse(
@@ -205,6 +215,8 @@ testSuite({
    * then hiding it (simulating that a user did somthing to cause the dialog to
    * close).
    * @param {boolean=} reuse Whether to set the plugin to reuse its dialog.
+   * @suppress {missingProperties,visibility} suppression added to enable type
+   * checking
    */
   testExecAndHide(reuse = undefined) {
     setUpMockRange();
@@ -224,6 +236,7 @@ testSuite({
         'Dialog should be open now',
         !!plugin.getDialog() && plugin.getDialog().isOpen());
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const tempDialog = plugin.getDialog();
     plugin.getDialog().hide();
     assertFalse(
@@ -253,6 +266,8 @@ testSuite({
    * since the API makes it possible, I thought it would be good to guard
    * against and unit test.
    * @param {boolean=} reuse Whether to set the plugin to reuse its dialog.
+   * @suppress {visibility,missingProperties} suppression added to enable type
+   * checking
    */
   testExecTwice(reuse = undefined) {
     setUpMockRange();
@@ -283,6 +298,7 @@ testSuite({
         'Dialog should be open now',
         !!plugin.getDialog() && plugin.getDialog().isOpen());
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const tempDialog = plugin.getDialog();
     plugin.execCommand(COMMAND);
     if (reuse) {
@@ -306,17 +322,13 @@ testSuite({
 
   /** Tests execCommand twice while reusing the dialog. */
   testExecTwiceReuse() {
-    // Test is failing with an out-of-memory error in IE7.
-    if (userAgent.IE && !userAgent.isVersionOrHigher('8')) {
-      return;
-    }
-
     this.testExecTwice(true);
   },
 
   /**
    * Tests that the selection is cleared when the dialog opens and is
    * correctly restored after it closes.
+   * @suppress {visibility} suppression added to enable type checking
    */
   testRestoreSelection() {
     setUpRealEditableField();
@@ -330,7 +342,7 @@ testSuite({
         'Incorrect text selected before dialog is opened', '234',
         fieldObj.getRange().getText());
     plugin.execCommand(COMMAND);
-    if (!userAgent.IE && !userAgent.OPERA) {
+    if (!userAgent.IE) {
       // IE returns some bogus range when field doesn't have selection.
       // Opera can't remove the selection from a whitebox field.
       assertNull(
@@ -349,6 +361,7 @@ testSuite({
    * keystroke.
    * There is also a robot test in dialog_robot.html to test debouncing the
    * SELECTIONCHANGE event when the dialog closes.
+   * @suppress {visibility,checkTypes} suppression added to enable type checking
    */
   testDebounceSelectionChange() {
     mockClock = new MockClock(true);
@@ -371,7 +384,12 @@ testSuite({
     assertEquals(2, count);
 
     // Fake the keyup event firing on the field after the dialog closes.
+    /** @suppress {visibility} suppression added to enable type checking */
     const e = new GoogEvent('keyup', plugin.fieldObject.getElement());
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     e.keyCode = 13;
     events.fireBrowserEvent(e);
 

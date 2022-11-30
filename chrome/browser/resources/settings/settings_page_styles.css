@@ -1,0 +1,23 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #css_wrapper_metadata_end */
+
+:host(.showing-subpage) settings-section:not(.expanded) {
+  display: none;
+}
+
+:host > div > :not(.expanded) {
+  /* The margin and padding here are doing two things: make the total
+   * separation 24px; and make scrollIntoView align the section header
+   * with the top item in the side nav menu. Both things are desired
+   * by Alan (bettes@). */
+  margin-bottom: 3px;
+}
+
+.expanded {
+  min-height: 100%;
+}

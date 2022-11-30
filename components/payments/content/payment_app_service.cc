@@ -1,13 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/payments/content/payment_app_service.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_payment_app_factory.h"
-#include "components/payments/content/autofill_payment_app_factory.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/secure_payment_confirmation_app_factory.h"
 #include "components/payments/content/service_worker_payment_app_factory.h"
@@ -18,8 +19,6 @@
 namespace payments {
 
 PaymentAppService::PaymentAppService(content::BrowserContext* context) {
-  factories_.emplace_back(std::make_unique<AutofillPaymentAppFactory>());
-
   if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps)) {
     factories_.push_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
   }
@@ -56,6 +55,11 @@ void PaymentAppService::Create(
 
 void PaymentAppService::Shutdown() {
   factories_.clear();
+}
+
+void PaymentAppService::AddFactoryForTesting(
+    std::unique_ptr<PaymentAppFactory> factory) {
+  factories_.push_back(std::move(factory));
 }
 
 }  // namespace payments

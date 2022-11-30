@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 HttpServerRequestInfo::HttpServerRequestInfo() = default;
 
@@ -43,6 +41,4 @@ bool HttpServerRequestInfo::HasHeaderValue(
   return false;
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

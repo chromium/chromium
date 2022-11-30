@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -65,13 +65,14 @@ class ScopedFunctionOverride {
     std::swap(*target_, replacement_);
   }
 
+  ScopedFunctionOverride(const ScopedFunctionOverride&) = delete;
+  ScopedFunctionOverride& operator=(const ScopedFunctionOverride&) = delete;
+
   ~ScopedFunctionOverride() { std::swap(*target_, replacement_); }
 
  private:
-  Fun* target_;
+  raw_ptr<Fun> target_;
   Fun replacement_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFunctionOverride);
 };
 
 template <typename Fun>
@@ -99,6 +100,10 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
       scoped_refptr<base::TestSimpleTaskRunner> best_effort_task_runner)
       : blocking_task_runner_(std::move(blocking_task_runner)),
         best_effort_task_runner_(std::move(best_effort_task_runner)) {}
+
+  MockRulesetPublisherImpl(const MockRulesetPublisherImpl&) = delete;
+  MockRulesetPublisherImpl& operator=(const MockRulesetPublisherImpl&) = delete;
+
   ~MockRulesetPublisherImpl() override = default;
 
   void TryOpenAndSetRulesetFile(
@@ -141,15 +146,13 @@ class MockRulesetPublisherImpl : public RulesetPublisher {
     return RulesetFilePtr(
         new base::File(file_path, base::File::FLAG_OPEN |
                                       base::File::FLAG_READ |
-                                      base::File::FLAG_SHARE_DELETE),
+                                      base::File::FLAG_WIN_SHARE_DELETE),
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
   }
 
   std::vector<RulesetFilePtr> published_rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner_;
   scoped_refptr<base::TestSimpleTaskRunner> best_effort_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRulesetPublisherImpl);
 };
 
 bool MockFailingReplaceFile(const base::FilePath&,
@@ -190,6 +193,11 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
             base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         best_effort_task_runner_(
             base::MakeRefCounted<base::TestSimpleTaskRunner>()) {}
+
+  SubresourceFilteringRulesetServiceTest(
+      const SubresourceFilteringRulesetServiceTest&) = delete;
+  SubresourceFilteringRulesetServiceTest& operator=(
+      const SubresourceFilteringRulesetServiceTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -441,8 +449,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   TestRulesetPair test_ruleset_3_;
 
   std::unique_ptr<RulesetService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilteringRulesetServiceTest);
 };
 
 // Specialized test fixture for death tests. It exposes the temporary directory
@@ -455,6 +461,11 @@ class SubresourceFilteringRulesetServiceDeathTest
  public:
   SubresourceFilteringRulesetServiceDeathTest()
       : environment_(base::Environment::Create()) {}
+
+  SubresourceFilteringRulesetServiceDeathTest(
+      const SubresourceFilteringRulesetServiceDeathTest&) = delete;
+  SubresourceFilteringRulesetServiceDeathTest& operator=(
+      const SubresourceFilteringRulesetServiceDeathTest&) = delete;
 
  protected:
   void SetUpTempDir() override {
@@ -486,8 +497,6 @@ class SubresourceFilteringRulesetServiceDeathTest
 
   std::unique_ptr<base::Environment> environment_;
   base::FilePath inherited_temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilteringRulesetServiceDeathTest);
 };
 
 // static
@@ -876,9 +885,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   mock_publisher()->RunBestEffortUntilIdle();
 
   const std::string kGarbage(10000, '\xff');
-  ASSERT_TRUE(base::AppendToFile(test_ruleset_1().unindexed.path,
-                                 kGarbage.data(),
-                                 static_cast<int>(kGarbage.size())));
+  ASSERT_TRUE(base::AppendToFile(test_ruleset_1().unindexed.path, kGarbage));
   WaitForIndexAndStoreAndPublishUpdatedRuleset(test_ruleset_1(),
                                                kTestContentVersion1);
 

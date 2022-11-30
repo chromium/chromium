@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
-
+namespace ash {
 class EasyUnlockTpmKeyManager;
 
 // Wraps a user challenge in a SecureMessage that can be verified by the remote
@@ -32,6 +30,11 @@ class EasyUnlockChallengeWrapper {
                              const std::string& channel_binding_data,
                              const AccountId& account_id,
                              EasyUnlockTpmKeyManager* key_manager);
+
+  EasyUnlockChallengeWrapper(const EasyUnlockChallengeWrapper&) = delete;
+  EasyUnlockChallengeWrapper& operator=(const EasyUnlockChallengeWrapper&) =
+      delete;
+
   virtual ~EasyUnlockChallengeWrapper();
 
   // Wraps the challenge and invokes `callback` with the `wrapped_challenge`
@@ -69,10 +72,8 @@ class EasyUnlockChallengeWrapper {
   WrappedChallengeCallback callback_;
 
   base::WeakPtrFactory<EasyUnlockChallengeWrapper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockChallengeWrapper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_CHALLENGE_WRAPPER_H_

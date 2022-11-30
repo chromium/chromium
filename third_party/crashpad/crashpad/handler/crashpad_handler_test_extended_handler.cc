@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "handler/handler_main.h"
 #include "minidump/test/minidump_user_extension_stream_util.h"
 #include "tools/tool_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -30,11 +29,11 @@ class TestUserStreamDataSource : public crashpad::UserStreamDataSource {
  public:
   TestUserStreamDataSource() {}
 
+  TestUserStreamDataSource(const TestUserStreamDataSource&) = delete;
+  TestUserStreamDataSource& operator=(const TestUserStreamDataSource&) = delete;
+
   std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
   ProduceStreamData(crashpad::ProcessSnapshot* process_snapshot) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUserStreamDataSource);
 };
 
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
@@ -56,16 +55,16 @@ int ExtendedHandlerMain(int argc, char* argv[]) {
 
 }  // namespace
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 int main(int argc, char* argv[]) {
   return ExtendedHandlerMain(argc, argv);
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, &ExtendedHandlerMain);
 }
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

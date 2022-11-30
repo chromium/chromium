@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define STORAGE_BROWSER_TEST_MOCK_FILE_CHANGE_OBSERVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
@@ -17,6 +16,10 @@ namespace storage {
 class MockFileChangeObserver : public FileChangeObserver {
  public:
   MockFileChangeObserver();
+
+  MockFileChangeObserver(const MockFileChangeObserver&) = delete;
+  MockFileChangeObserver& operator=(const MockFileChangeObserver&) = delete;
+
   ~MockFileChangeObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
@@ -94,8 +97,6 @@ class MockFileChangeObserver : public FileChangeObserver {
   int modify_file_count_;
   int create_directory_count_;
   int remove_directory_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileChangeObserver);
 };
 
 }  // namespace storage

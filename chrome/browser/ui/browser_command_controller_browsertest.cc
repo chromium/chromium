@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ui/tab_modal_confirm_dialog_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -36,8 +34,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -46,17 +43,20 @@ namespace chrome {
 class BrowserCommandControllerBrowserTest : public InProcessBrowserTest {
  public:
   BrowserCommandControllerBrowserTest() {}
+
+  BrowserCommandControllerBrowserTest(
+      const BrowserCommandControllerBrowserTest&) = delete;
+  BrowserCommandControllerBrowserTest& operator=(
+      const BrowserCommandControllerBrowserTest&) = delete;
+
   ~BrowserCommandControllerBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandControllerBrowserTest);
 };
 
 // Verify that showing a constrained window disables find.
@@ -86,22 +86,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, DisableFind) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_FIND));
 }
 
-// TODO(https://crbug.com/1125474): Expand to cover ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-class GuestBrowserCommandControllerBrowserTest
-    : public BrowserCommandControllerBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  GuestBrowserCommandControllerBrowserTest() {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(GuestBrowserCommandControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
                        NewAvatarMenuEnabledInGuestMode) {
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
@@ -111,10 +97,6 @@ IN_PROC_BROWSER_TEST_P(GuestBrowserCommandControllerBrowserTest,
   const CommandUpdater* command_updater = browser->command_controller();
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestBrowserCommandControllerBrowserTest,
-                         /*is_ephemeral=*/testing::Bool());
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -125,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, LockedFullscreen) {
   // testing.
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_EXIT));
   // Set locked fullscreen mode.
-  browser()->window()->GetNativeWindow()->SetProperty(
-      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kTrustedPinned);
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   // Update the corresponding command_controller state.
   browser()->command_controller()->LockedFullscreenStateChanged();
   // Update some more states just to make sure the wrong commands don't get
@@ -155,8 +136,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest, LockedFullscreen) {
   }
 
   // Exit locked fullscreen mode.
-  browser()->window()->GetNativeWindow()->SetProperty(
-      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kNone);
+  UnpinWindow(browser()->window()->GetNativeWindow());
   // Update the corresponding command_controller state.
   browser()->command_controller()->LockedFullscreenStateChanged();
   // IDC_EXIT is enabled again.
@@ -214,6 +194,42 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   chrome::BrowserCommandController* commandController =
       browser()->command_controller();
   ASSERT_EQ(true, commandController->IsCommandEnabled(IDC_RESTORE_TAB));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForAppBrowser) {
+  auto params = Browser::CreateParams::CreateForApp(
+      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
+      gfx::Rect(), /* window_bounts */
+      browser()->profile(), true /* user_gesture */);
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForAppPopupBrowser) {
+  auto params = Browser::CreateParams::CreateForAppPopup(
+      "abcdefghaghpphfffooibmlghaeopach", true /* trusted_source */,
+      gfx::Rect(), /* window_bounts */
+      browser()->profile(), true /* user_gesture */);
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
+                       OpenDisabledForDevToolsBrowser) {
+  auto params = Browser::CreateParams::CreateForDevTools(browser()->profile());
+  Browser* browser = Browser::Create(params);
+
+  chrome::BrowserCommandController* commandController =
+      browser->command_controller();
+  ASSERT_EQ(false, commandController->IsCommandEnabled(IDC_OPEN_FILE));
 }
 
 }  // namespace chrome

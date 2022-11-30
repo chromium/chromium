@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_OMNIBOX_TEXT_FIELD_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/text_input.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/model/text_input_info.h"
@@ -21,6 +20,10 @@ class VR_UI_EXPORT OmniboxTextField : public TextInput {
                    base::RepeatingCallback<void(const AutocompleteRequest&)>
                        autocomplete_start_callback,
                    base::RepeatingCallback<void()> autocomplete_stop_callback);
+
+  OmniboxTextField(const OmniboxTextField&) = delete;
+  OmniboxTextField& operator=(const OmniboxTextField&) = delete;
+
   ~OmniboxTextField() override;
 
   // This element uses its enabled status to manage outstanding autocomplete
@@ -41,8 +44,6 @@ class VR_UI_EXPORT OmniboxTextField : public TextInput {
   base::RepeatingCallback<void()> autocomplete_stop_callback_;
 
   bool allow_inline_autocomplete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OmniboxTextField);
 };
 
 }  // namespace vr

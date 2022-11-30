@@ -1,16 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <list>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/simple_thread.h"
@@ -23,6 +25,7 @@
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/tests/connect/connect.test-mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Tests that multiple services can be packaged in a single service by
 // implementing ServiceFactory; that these services can be specified by
@@ -33,9 +36,9 @@ namespace {
 
 void QuitLoop(base::RunLoop* loop,
               mojom::ConnectResult* out_result,
-              base::Optional<Identity>* out_resolved_identity,
+              absl::optional<Identity>* out_resolved_identity,
               mojom::ConnectResult result,
-              const base::Optional<Identity>& resolved_identity) {
+              const absl::optional<Identity>& resolved_identity) {
   loop->Quit();
   *out_result = result;
   *out_resolved_identity = resolved_identity;
@@ -59,6 +62,9 @@ class ProvidedService : public Service,
         receiver_(std::move(receiver)) {
     Start();
   }
+
+  ProvidedService(const ProvidedService&) = delete;
+  ProvidedService& operator=(const ProvidedService&) = delete;
 
   ~ProvidedService() override {
     Join();
@@ -154,7 +160,7 @@ class ProvidedService : public Service,
       const service_manager::ServiceFilter& filter,
       ConnectToClassAppWithFilterCallback callback) override {
     mojom::ConnectResult result;
-    base::Optional<Identity> resolved_identity;
+    absl::optional<Identity> resolved_identity;
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     service_receiver_.GetConnector()->WarmService(
         filter, base::BindOnce(&QuitLoop, &loop, &result, &resolved_identity));
@@ -186,7 +192,7 @@ class ProvidedService : public Service,
     }
   }
 
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   service_manager::ServiceReceiver service_receiver_{this};
   const std::string title_;
   mojo::PendingReceiver<mojom::Service> receiver_;
@@ -197,8 +203,6 @@ class ProvidedService : public Service,
   mojo::ReceiverSet<test::mojom::AlwaysAllowedInterface>
       always_allowed_receivers_;
   mojo::ReceiverSet<test::mojom::IdentityTest> identity_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProvidedService);
 };
 
 class ConnectTestService : public Service,
@@ -207,6 +211,10 @@ class ConnectTestService : public Service,
   explicit ConnectTestService(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  ConnectTestService(const ConnectTestService&) = delete;
+  ConnectTestService& operator=(const ConnectTestService&) = delete;
+
   ~ConnectTestService() override = default;
 
  private:
@@ -269,8 +277,6 @@ class ConnectTestService : public Service,
   BinderRegistry registry_;
   mojo::ReceiverSet<test::mojom::ConnectTestService> receivers_;
   std::list<std::unique_ptr<ProvidedService>> provided_services_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestService);
 };
 
 }  // namespace service_manager

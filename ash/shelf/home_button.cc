@@ -1,18 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/home_button.h"
 
 #include <math.h>  // std::ceil
+#include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_navigation_widget.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
@@ -24,9 +29,15 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view.h"
 
 namespace ash {
 namespace {
@@ -34,13 +45,62 @@ namespace {
 constexpr uint8_t kAssistantVisibleAlpha = 255;    // 100% alpha
 constexpr uint8_t kAssistantInvisibleAlpha = 138;  // 54% alpha
 
+// Nudge animation constants
+
+// The offsets that the home button moves up/down from the original home button
+// position at each stage of nudge animation.
+constexpr int kAnimationBounceUpOffset = 12;
+constexpr int kAnimationBounceDownOffset = 3;
+
+// Constants used on `nudge_ripple_layer_` animation.
+constexpr base::TimeDelta kHomeButtonAnimationDuration =
+    base::Milliseconds(250);
+constexpr base::TimeDelta kRippleAnimationDuration = base::Milliseconds(2000);
+
+// Constants used on `nudge_label_` animation.
+//
+// The duration of the showing/hiding animation for nudge label.
+constexpr base::TimeDelta kNudgeLabelTransitionOnDuration =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kNudgeLabelTransitionOffDuration =
+    base::Milliseconds(500);
+
+// The duration of the fade out animation that animates `nudge_label_` when
+// users click on the home button while `nudge_label_` is showing.
+constexpr base::TimeDelta kNudgeLabelFadeOutDuration = base::Milliseconds(100);
+
+// The duration that the nudge label is shown.
+constexpr base::TimeDelta kNudgeLabelShowingDuration = base::Seconds(6);
+
+// The minimum space we want to keep between the `nudge_label_` and the first
+// app in hotseat. Used to determine if `nudge_label_` should be shown.
+constexpr int kMinSpaceBetweenNudgeLabelAndHotseat = 24;
+
 }  // namespace
 
 // static
 const char HomeButton::kViewClassName[] = "ash/HomeButton";
 
+// HomeButton::ScopedNoClipRect ------------------------------------------------
+
+HomeButton::ScopedNoClipRect::ScopedNoClipRect(
+    ShelfNavigationWidget* shelf_navigation_widget)
+    : shelf_navigation_widget_(shelf_navigation_widget),
+      clip_rect_(shelf_navigation_widget_->GetLayer()->clip_rect()) {
+  shelf_navigation_widget_->GetLayer()->SetClipRect(gfx::Rect());
+}
+
+HomeButton::ScopedNoClipRect::~ScopedNoClipRect() {
+  // The shelf_navigation_widget_ may be destructed before this dtor is
+  // called.
+  if (shelf_navigation_widget_->GetLayer())
+    shelf_navigation_widget_->GetLayer()->SetClipRect(clip_rect_);
+}
+
+// HomeButton::ScopedNoClipRect ------------------------------------------------
+
 HomeButton::HomeButton(Shelf* shelf)
-    : ShelfControlButton(shelf, this), controller_(this) {
+    : ShelfControlButton(shelf, this), shelf_(shelf), controller_(this) {
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   button_controller()->set_notify_action(
@@ -49,9 +109,34 @@ HomeButton::HomeButton(Shelf* shelf)
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");
+
+  if (features::IsHomeButtonWithTextEnabled()) {
+    // Directly shows the nudge label if the text-in-shelf feature is enabled.
+    CreateNudgeLabel();
+    label_container_->SetVisible(true);
+    shelf_->shelf_layout_manager()->LayoutShelf(false);
+  }
 }
 
 HomeButton::~HomeButton() = default;
+
+gfx::Size HomeButton::CalculatePreferredSize() const {
+  // Take the preferred size of the nudge label into consideration when it is
+  // visible. Note that the button width is already included in the label width.
+  if (label_container_ && label_container_->GetVisible())
+    return label_container_->GetPreferredSize();
+
+  return ShelfControlButton::CalculatePreferredSize();
+}
+
+void HomeButton::Layout() {
+  ShelfControlButton::Layout();
+
+  if (label_container_) {
+    label_container_->SetSize(
+        gfx::Size(label_container_->GetPreferredSize().width(), height()));
+  }
+}
 
 void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (!controller_.MaybeHandleGestureEvent(event))
@@ -94,10 +179,26 @@ void HomeButton::ButtonPressed(views::Button* sender,
         base::UserMetricsAction("AppList_HomeButtonPressedClamshell"));
   }
 
-  const AppListShowSource show_source =
-      event.IsShiftDown() ? kShelfButtonFullscreen : kShelfButton;
   Shell::Get()->app_list_controller()->ToggleAppList(
-      GetDisplayId(), show_source, event.time_stamp());
+      GetDisplayId(), AppListShowSource::kShelfButton, event.time_stamp());
+
+  // If the home button is pressed, fade out the nudge label if it is showing.
+  if (label_container_) {
+    // The label shouldn't be removed if the text-in-shelf feature is enabled.
+    if (features::IsHomeButtonWithTextEnabled())
+      return;
+
+    if (!label_container_->GetVisible()) {
+      // If the nudge label is not visible and will not be animating, directly
+      // remove them as the nudge won't be showing anymore.
+      RemoveNudgeLabel();
+      return;
+    }
+
+    if (label_nudge_timer_.IsRunning())
+      label_nudge_timer_.AbandonAndStop();
+    AnimateNudgeLabelFadeOut();
+  }
 }
 
 void HomeButton::OnAssistantAvailabilityChanged() {
@@ -105,7 +206,8 @@ void HomeButton::OnAssistantAvailabilityChanged() {
 }
 
 bool HomeButton::IsShowingAppList() const {
-  return controller_.is_showing_app_list();
+  auto* controller = Shell::Get()->app_list_controller();
+  return controller && controller->GetTargetVisibility(GetDisplayId());
 }
 
 void HomeButton::HandleLocaleChange() {
@@ -122,8 +224,112 @@ int64_t HomeButton::GetDisplayId() const {
   return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
 }
 
+std::unique_ptr<HomeButton::ScopedNoClipRect>
+HomeButton::CreateScopedNoClipRect() {
+  return std::make_unique<HomeButton::ScopedNoClipRect>(
+      shelf()->navigation_widget());
+}
+
+bool HomeButton::CanShowNudgeLabel() const {
+  if (!shelf_->IsHorizontalAlignment())
+    return false;
+
+  // If there's no pinned app in shelf, shows the nudge label for the launcher
+  // nudge.
+  ShelfView* shelf_view = shelf_->hotseat_widget()->GetShelfView();
+  int view_size = shelf_view->view_model()->view_size();
+  if (view_size == 0)
+    return true;
+
+  // Need to have nudge_label_ existing to calculate the space for itself.
+  DCHECK(nudge_label_);
+
+  // For the calculation below, convert all points and rects to the root window
+  // coordinate to make sure they are under the same coordinate.
+  gfx::Rect first_app_bounds =
+      shelf_view->view_model()->view_at(0)->GetMirroredBounds();
+  first_app_bounds = shelf_view->ConvertRectToWidget(first_app_bounds);
+  aura::Window* shelf_native_window =
+      shelf_view->GetWidget()->GetNativeWindow();
+  aura::Window::ConvertRectToTarget(shelf_native_window,
+                                    shelf_native_window->GetRootWindow(),
+                                    &first_app_bounds);
+
+  gfx::Rect label_rect =
+      ConvertRectToWidget(label_container_->GetMirroredBounds());
+  aura::Window* native_window = GetWidget()->GetNativeWindow();
+  DCHECK_EQ(shelf_native_window->GetRootWindow(),
+            native_window->GetRootWindow());
+  aura::Window::ConvertRectToTarget(
+      native_window, native_window->GetRootWindow(), &label_rect);
+
+  // Horizontal space between the `label_rect` and the first app in shelf, which
+  // is also the app that is closest to the home button, is calculated here to
+  // check if there's enough space to show the `nudge_label_`.
+  int space = label_rect.ManhattanInternalDistance(first_app_bounds);
+  return space >= kMinSpaceBetweenNudgeLabelAndHotseat;
+}
+
+void HomeButton::StartNudgeAnimation() {
+  // Don't animate the label as it is already visible when text-in-shelf is
+  // enabled.
+  if (features::IsHomeButtonWithTextEnabled())
+    return;
+
+  // Ensure any in-progress nudge animations are completed before initializing
+  // a new nudge animation, and creating a rippler layer. Nudge animation
+  // callbacks may otherwise delete ripple layer mid new animation set up (and
+  // delete the newly created ripple layer just before the layer animation is
+  // set up by animation builder).
+  nudge_ripple_layer_.ReleaseLayer();
+  if (nudge_label_)
+    nudge_label_->layer()->GetAnimator()->AbortAllAnimations();
+  if (label_container_)
+    label_container_->layer()->GetAnimator()->AbortAllAnimations();
+
+  // Create the nudge label first to check if there is enough space to show it.
+  if (!nudge_label_)
+    CreateNudgeLabel();
+
+  const bool can_show_nudge_label = CanShowNudgeLabel();
+
+  views::AnimationBuilder builder;
+  builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnStarted(base::BindOnce(&HomeButton::OnNudgeAnimationStarted,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(can_show_nudge_label
+                                  ? &HomeButton::OnLabelSlideInAnimationEnded
+                                  : &HomeButton::OnNudgeAnimationEnded,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&HomeButton::OnNudgeAnimationEnded,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .Once();
+
+  if (can_show_nudge_label) {
+    AnimateNudgeLabelSlideIn(builder);
+  } else {
+    AnimateNudgeBounce(builder);
+  }
+
+  // Remove clip_rect from the home button and its ancestors as the animation
+  // goes beyond its bounds. The object is deleted once the animation ends.
+  scoped_no_clip_rect_ = CreateScopedNoClipRect();
+  AnimateNudgeRipple(builder);
+}
+
+void HomeButton::AddNudgeAnimationObserverForTest(
+    NudgeAnimationObserver* observer) {
+  observers_.AddObserver(observer);
+}
+void HomeButton::RemoveNudgeAnimationObserverForTest(
+    NudgeAnimationObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::PointF circle_center(GetCenterPoint());
+  gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
   // Paint a white ring as the foreground for the app list circle. The ceil/dsf
   // math assures that the ring draws sharply and is centered at all scale
@@ -169,19 +375,318 @@ void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
 
 void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
+  if (ripple_layer_delegate_) {
+    ripple_layer_delegate_->set_color(
+        GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
+  }
+  if (label_container_) {
+    label_container_->layer()->SetColor(
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::
+                kControlBackgroundColorInactive));
+    nudge_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
   SchedulePaint();
+}
+
+void HomeButton::CreateNudgeLabel() {
+  DCHECK(!label_container_);
+  const int home_button_width =
+      ShelfControlButton::CalculatePreferredSize().width();
+
+  label_container_ = AddChildView(std::make_unique<views::View>());
+  label_container_->SetLayoutManager(std::make_unique<views::FillLayout>());
+  label_container_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, home_button_width, 0, 16)));
+  label_container_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  label_container_->layer()->SetMasksToBounds(true);
+  label_container_->layer()->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::
+              kControlBackgroundColorInactive));
+  label_container_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(home_button_width / 2.f));
+  label_container_->layer()->SetName("NudgeLabelContainer");
+
+  // Create a view to clip the `nudge_label_` to the area right of the home
+  // button during nudge label animation.
+  auto* label_mask =
+      label_container_->AddChildView(std::make_unique<views::View>());
+  label_mask->SetLayoutManager(std::make_unique<views::FillLayout>());
+  label_mask->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 12, 0, 0)));
+  label_mask->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  label_mask->layer()->SetMasksToBounds(true);
+  label_mask->layer()->SetName("NudgeLabelMask");
+
+  nudge_label_ = label_mask->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_SHELF_LAUNCHER_NUDGE_TEXT)));
+  nudge_label_->SetAutoColorReadabilityEnabled(false);
+  nudge_label_->SetPaintToLayer();
+  nudge_label_->layer()->SetFillsBoundsOpaquely(false);
+  nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
+  nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
+  nudge_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  Layout();
+  label_container_->SetVisible(false);
+}
+
+void HomeButton::AnimateNudgeRipple(views::AnimationBuilder& builder) {
+  // Create the ripple layer and its delegate for the nudge animation.
+  nudge_ripple_layer_.Reset(std::make_unique<ui::Layer>());
+  ui::Layer* ripple_layer = nudge_ripple_layer_.layer();
+
+  float ripple_diameter = ShelfControlButton::CalculatePreferredSize().width();
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+  ripple_layer_delegate_ = std::make_unique<views::CircleLayerDelegate>(
+      color_provider->GetColor(kColorAshInkDropOpaqueColor),
+      /*radius=*/ripple_diameter / 2);
+
+  // The bounds are set with respect to |shelf_container_layer| stated below.
+  ripple_layer->SetBounds(
+      gfx::Rect(layer()->parent()->bounds().x() + layer()->bounds().x(),
+                layer()->parent()->bounds().y() + layer()->bounds().y(),
+                ripple_diameter, ripple_diameter));
+
+  ripple_layer->set_delegate(ripple_layer_delegate_.get());
+  ripple_layer->SetMasksToBounds(true);
+  ripple_layer->SetFillsBoundsOpaquely(false);
+
+  // The position of the ripple layer is independent to the home button and its
+  // parent shelf navigation widget. Therefore the ripple layer is added to the
+  // shelf container layer, which is the parent layer of the shelf navigation
+  // widget.
+  ui::Layer* shelf_container_layer = GetWidget()->GetLayer()->parent();
+  shelf_container_layer->Add(ripple_layer);
+  shelf_container_layer->StackBelow(ripple_layer, layer()->parent());
+
+  // The point of the center of the round button.
+  const gfx::PointF ripple_center =
+      gfx::RectF(gfx::SizeF(ripple_layer->size())).CenterPoint();
+
+  gfx::Transform initial_disc_scale;
+  initial_disc_scale.Scale(0.1f, 0.1f);
+  gfx::Transform initial_state =
+      gfx::TransformAboutPivot(ripple_center, initial_disc_scale);
+
+  gfx::Transform final_disc_scale;
+  final_disc_scale.Scale(3.0f, 3.0f);
+  gfx::Transform scale_about_pivot =
+      gfx::TransformAboutPivot(ripple_center, final_disc_scale);
+
+  builder.GetCurrentSequence()
+      .At(base::TimeDelta())
+      // Set up the animation of the `nudge_ripple_layer_`
+      .SetDuration(base::TimeDelta())
+      .SetTransform(ripple_layer, initial_state)
+      .SetOpacity(ripple_layer, 0.5f)
+      .Then()
+      .SetDuration(kRippleAnimationDuration)
+      .SetTransform(ripple_layer, scale_about_pivot,
+                    gfx::Tween::ACCEL_0_40_DECEL_100)
+      .SetOpacity(ripple_layer, 0.0f, gfx::Tween::ACCEL_0_80_DECEL_80);
+}
+
+void HomeButton::AnimateNudgeBounce(views::AnimationBuilder& builder) {
+  gfx::PointF bounce_up_point = shelf()->SelectValueForShelfAlignment(
+      gfx::PointF(0, -kAnimationBounceUpOffset),
+      gfx::PointF(kAnimationBounceUpOffset, 0),
+      gfx::PointF(-kAnimationBounceUpOffset, 0));
+  gfx::PointF bounce_down_point = shelf()->SelectValueForShelfAlignment(
+      gfx::PointF(0, kAnimationBounceDownOffset),
+      gfx::PointF(-kAnimationBounceDownOffset, 0),
+      gfx::PointF(kAnimationBounceDownOffset, 0));
+
+  gfx::Transform move_up;
+  move_up.Translate(bounce_up_point.x(), bounce_up_point.y());
+  gfx::Transform move_down;
+  move_down.Translate(bounce_down_point.x(), bounce_down_point.y());
+
+  // Home button movement settings. Note that the navigation widget layer
+  // contains the non-opaque part of the home button and is also animated along
+  // with the home button.
+  ui::Layer* widget_layer = GetWidget()->GetLayer();
+
+  // Set up the animation of the `widget_layer`, which bounce up and down during
+  // the animation.
+  builder.GetCurrentSequence()
+      .At(base::TimeDelta())
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, move_up, gfx::Tween::FAST_OUT_SLOW_IN_3)
+      .Then()
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, move_down, gfx::Tween::ACCEL_80_DECEL_20)
+      .Then()
+      .SetDuration(kHomeButtonAnimationDuration)
+      .SetTransform(widget_layer, gfx::Transform(),
+                    gfx::Tween::FAST_OUT_SLOW_IN_3);
+}
+
+void HomeButton::AnimateNudgeLabelSlideIn(views::AnimationBuilder& builder) {
+  // Make sure the label is created.
+  DCHECK(label_container_ && nudge_label_);
+
+  // Update the shelf layout to provide space for the navigation widget.
+  label_container_->SetVisible(true);
+  shelf_->shelf_layout_manager()->LayoutShelf(false);
+
+  const int home_button_width =
+      ShelfControlButton::CalculatePreferredSize().width();
+  const int label_visible_width = label_container_->width() - home_button_width;
+
+  gfx::Rect initial_container_clip_rect;
+  gfx::Transform initial_transform;
+
+  // Set up the initial label transform and label container clip rect.
+  if (base::i18n::IsRTL()) {
+    initial_transform.Translate(label_visible_width, 0);
+    initial_container_clip_rect = gfx::Rect(
+        label_visible_width, 0, home_button_width, label_container_->height());
+  } else {
+    initial_transform.Translate(-label_visible_width, 0);
+    initial_container_clip_rect =
+        gfx::Rect(0, 0, home_button_width, label_container_->height());
+  }
+
+  // Calculate the target clip rect on `label_container_`.
+  gfx::Rect container_target_clip_rect = gfx::Rect(label_container_->size());
+
+  // Set up the animation of the `nudge_label_`
+  builder.GetCurrentSequence()
+      .At(base::TimeDelta())
+      .SetDuration(base::TimeDelta())
+      .SetTransform(nudge_label_->layer(), initial_transform)
+      .SetClipRect(label_container_->layer(), initial_container_clip_rect)
+      .SetOpacity(label_container_->layer(), 0)
+      .Then()
+      .SetDuration(kNudgeLabelTransitionOnDuration)
+      .SetTransform(nudge_label_->layer(), gfx::Transform(),
+                    gfx::Tween::ACCEL_5_70_DECEL_90)
+      .SetClipRect(label_container_->layer(), container_target_clip_rect,
+                   gfx::Tween::ACCEL_5_70_DECEL_90)
+      .SetOpacity(label_container_->layer(), 1,
+                  gfx::Tween::ACCEL_5_70_DECEL_90);
+}
+
+void HomeButton::AnimateNudgeLabelSlideOut() {
+  const int home_button_width =
+      ShelfControlButton::CalculatePreferredSize().width();
+  const int label_visible_width = label_container_->width() - home_button_width;
+
+  gfx::Transform target_transform;
+  gfx::Rect container_target_clip_rect;
+
+  // Calculate the target transform and clip rect.
+  if (base::i18n::IsRTL()) {
+    target_transform.Translate(label_visible_width, 0);
+    container_target_clip_rect = gfx::Rect(
+        label_visible_width, 0, home_button_width, label_container_->height());
+  } else {
+    target_transform.Translate(-label_visible_width, 0);
+    container_target_clip_rect =
+        gfx::Rect(0, 0, home_button_width, label_container_->height());
+  }
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&HomeButton::OnNudgeAnimationEnded,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&HomeButton::OnNudgeAnimationEnded,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kNudgeLabelTransitionOffDuration)
+      .SetTransform(nudge_label_->layer(), target_transform,
+                    gfx::Tween::ACCEL_40_DECEL_100_3)
+      .SetClipRect(label_container_->layer(), container_target_clip_rect,
+                   gfx::Tween::ACCEL_40_DECEL_100_3)
+      .SetOpacity(label_container_->layer(), 0,
+                  gfx::Tween::ACCEL_40_DECEL_100_3);
+}
+
+void HomeButton::AnimateNudgeLabelFadeOut() {
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&HomeButton::OnLabelFadeOutAnimationEnded,
+                              weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&HomeButton::OnLabelFadeOutAnimationEnded,
+                                weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kNudgeLabelFadeOutDuration)
+      .SetOpacity(label_container_->layer(), 0, gfx::Tween::LINEAR);
+}
+
+void HomeButton::OnNudgeAnimationStarted() {
+  for (auto& observer : observers_)
+    observer.NudgeAnimationStarted(this);
+}
+
+void HomeButton::OnNudgeAnimationEnded() {
+  // Delete the ripple layer and its delegate after the launcher nudge animation
+  // is completed.
+  nudge_ripple_layer_.ReleaseLayer();
+  ripple_layer_delegate_.reset();
+
+  if (label_container_) {
+    label_container_->SetVisible(false);
+    shelf_->shelf_layout_manager()->LayoutShelf(false);
+  }
+
+  // Reset the clip rect after the animation is completed.
+  scoped_no_clip_rect_.reset();
+
+  for (auto& observer : observers_)
+    observer.NudgeAnimationEnded(this);
+}
+
+void HomeButton::OnLabelSlideInAnimationEnded() {
+  for (auto& observer : observers_)
+    observer.NudgeLabelShown(this);
+
+  // After the label is shown for `kNudgeLabelShowingDuration` amount of time,
+  // move the label back to its original position.
+  label_nudge_timer_.Start(
+      FROM_HERE, kNudgeLabelShowingDuration,
+      base::BindOnce(&HomeButton::AnimateNudgeLabelSlideOut,
+                     base::Unretained(this)));
+}
+
+void HomeButton::OnLabelFadeOutAnimationEnded() {
+  OnNudgeAnimationEnded();
+
+  // If the label is faded out by clicking on it, remove the label as it is
+  // assumed that the nudge won't be shown again.
+  RemoveNudgeLabel();
+}
+
+void HomeButton::RemoveNudgeLabel() {
+  RemoveChildViewT(label_container_);
+  label_container_ = nullptr;
+  nudge_label_ = nullptr;
 }
 
 bool HomeButton::DoesIntersectRect(const views::View* target,
                                    const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);
   gfx::Rect button_bounds = target->GetLocalBounds();
+
+  // If the `label_container_` is visible, set all the area within the label
+  // bounds clickable.
+  if (label_container_ && label_container_->GetVisible())
+    button_bounds = label_container_->layer()->bounds();
+
   // Increase clickable area for the button to account for clicks around the
   // spacing. This will not intercept events outside of the parent widget.
-  button_bounds.Inset(-ShelfConfig::Get()->control_button_edge_spacing(
-                          shelf()->IsHorizontalAlignment()),
+  button_bounds.Inset(
+      gfx::Insets::VH(-ShelfConfig::Get()->control_button_edge_spacing(
+                          !shelf()->IsHorizontalAlignment()),
                       -ShelfConfig::Get()->control_button_edge_spacing(
-                          !shelf()->IsHorizontalAlignment()));
+                          shelf()->IsHorizontalAlignment())));
   return button_bounds.Intersects(rect);
 }
 

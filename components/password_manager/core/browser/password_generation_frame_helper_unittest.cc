@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -107,11 +107,11 @@ class FakePasswordRequirementsSpecFetcher
   ~FakePasswordRequirementsSpecFetcher() override = default;
 
   void Fetch(GURL origin, FetchCallback callback) override {
-    if (origin.GetOrigin().host_piece().find(kNoServerResponse) !=
-        std::string::npos) {
+    if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+            kNoServerResponse) != std::string::npos) {
       std::move(callback).Run(PasswordRequirementsSpec());
-    } else if (origin.GetOrigin().host_piece().find(kHasServerResponse) !=
-               std::string::npos) {
+    } else if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+                   kHasServerResponse) != std::string::npos) {
       std::move(callback).Run(GetDomainWideRequirements());
     } else {
       NOTREACHED();
@@ -129,11 +129,13 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         store_(new TestPasswordStore),
         driver_(this),
         password_requirements_service_(
-            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {}
+            std::make_unique<FakePasswordRequirementsSpecFetcher>()) {
+    store_->Init(prefs_.get(), /*affiliated_match_helper=*/nullptr);
+  }
 
   ~MockPasswordManagerClient() override { store_->ShutdownOnUIThread(); }
 
-  PasswordStore* GetProfilePasswordStore() const override {
+  PasswordStoreInterface* GetProfilePasswordStore() const override {
     return store_.get();
   }
   PrefService* GetPrefs() const override { return prefs_.get(); }
@@ -300,12 +302,12 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     auto* field_suggestion = form_suggestion->add_field_suggestions();
     field_suggestion->set_field_signature(
         CalculateFieldSignatureForField(username).value());
-    field_suggestion->set_primary_type_prediction(9);
+    field_suggestion->add_predictions()->set_type(9);
 
     field_suggestion = form_suggestion->add_field_suggestions();
     field_suggestion->set_field_signature(
         CalculateFieldSignatureForField(password).value());
-    field_suggestion->set_primary_type_prediction(76);
+    field_suggestion->add_predictions()->set_type(76);
 
     if (test.has_field_requirements) {
       *form_suggestion->mutable_field_suggestions(1)
@@ -321,9 +323,9 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
 
     autofill::FormStructure::ParseApiQueryResponse(
         response_string, forms, autofill::test::GetEncodedSignatures(forms),
-        nullptr);
+        /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
-    GetGenerationHelper()->PrefetchSpec(origin.GetOrigin());
+    GetGenerationHelper()->PrefetchSpec(origin.DeprecatedGetOriginAsURL());
 
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)

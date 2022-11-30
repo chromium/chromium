@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,15 @@ public class MessageCardProviderCoordinator {
     public MessageCardProviderMediator.Message getNextMessageItemForType(
             @MessageService.MessageType int messageType) {
         return mMediator.getNextMessageItemForType(messageType);
+    }
+
+    /**
+     * @param messageType The {@link MessageService.MessageType} associated with the message.
+     * @param identifier The identifier associated with the message.
+     * @return Whether the given message is shown.
+     */
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        return mMediator.isMessageShown(messageType, identifier);
     }
 
     /**

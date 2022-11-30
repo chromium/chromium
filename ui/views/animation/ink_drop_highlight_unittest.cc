@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -16,7 +15,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
 #include "ui/views/animation/test/test_ink_drop_highlight_observer.h"
 
@@ -26,6 +25,10 @@ namespace test {
 class InkDropHighlightTest : public testing::Test {
  public:
   InkDropHighlightTest();
+
+  InkDropHighlightTest(const InkDropHighlightTest&) = delete;
+  InkDropHighlightTest& operator=(const InkDropHighlightTest&) = delete;
+
   ~InkDropHighlightTest() override;
 
  protected:
@@ -55,8 +58,6 @@ class InkDropHighlightTest : public testing::Test {
 
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropHighlightTest);
 };
 
 InkDropHighlightTest::InkDropHighlightTest()
@@ -90,13 +91,13 @@ TEST_F(InkDropHighlightTest, InitialStateAfterConstruction) {
 }
 
 TEST_F(InkDropHighlightTest, IsHighlightedStateTransitions) {
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
   EXPECT_TRUE(ink_drop_highlight()->IsFadingInOrVisible());
 
   test_api()->CompleteAnimations();
   EXPECT_TRUE(ink_drop_highlight()->IsFadingInOrVisible());
 
-  ink_drop_highlight()->FadeOut(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeOut(base::Seconds(1));
   EXPECT_FALSE(ink_drop_highlight()->IsFadingInOrVisible());
 
   test_api()->CompleteAnimations();
@@ -109,7 +110,7 @@ TEST_F(InkDropHighlightTest, VerifyObserversAreNotified) {
   if (!gfx::Animation::ShouldRenderRichAnimation())
     return;
 
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
 
   EXPECT_EQ(1, observer()->last_animation_started_ordinal());
   EXPECT_FALSE(observer()->AnimationHasEnded());
@@ -122,7 +123,7 @@ TEST_F(InkDropHighlightTest, VerifyObserversAreNotified) {
 
 TEST_F(InkDropHighlightTest,
        VerifyObserversAreNotifiedWithCorrectAnimationType) {
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
 
   EXPECT_TRUE(observer()->AnimationHasStarted());
   EXPECT_EQ(InkDropHighlight::AnimationType::kFadeIn,
@@ -133,7 +134,7 @@ TEST_F(InkDropHighlightTest,
   EXPECT_EQ(InkDropHighlight::AnimationType::kFadeIn,
             observer()->last_animation_started_context());
 
-  ink_drop_highlight()->FadeOut(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeOut(base::Seconds(1));
   EXPECT_EQ(InkDropHighlight::AnimationType::kFadeOut,
             observer()->last_animation_started_context());
 
@@ -143,7 +144,7 @@ TEST_F(InkDropHighlightTest,
 }
 
 TEST_F(InkDropHighlightTest, VerifyObserversAreNotifiedOfSuccessfulAnimations) {
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
   test_api()->CompleteAnimations();
 
   EXPECT_EQ(2, observer()->last_animation_ended_ordinal());
@@ -157,8 +158,8 @@ TEST_F(InkDropHighlightTest, VerifyObserversAreNotifiedOfPreemptedAnimations) {
   if (!gfx::Animation::ShouldRenderRichAnimation())
     return;
 
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
-  ink_drop_highlight()->FadeOut(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
+  ink_drop_highlight()->FadeOut(base::Seconds(1));
 
   EXPECT_EQ(2, observer()->last_animation_ended_ordinal());
   EXPECT_EQ(InkDropHighlight::AnimationType::kFadeIn,
@@ -171,10 +172,10 @@ TEST_F(InkDropHighlightTest, VerifyObserversAreNotifiedOfPreemptedAnimations) {
 TEST_F(InkDropHighlightTest, NullObserverIsSafe) {
   ink_drop_highlight()->set_observer(nullptr);
 
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
   test_api()->CompleteAnimations();
 
-  ink_drop_highlight()->FadeOut(base::TimeDelta::FromMilliseconds(0));
+  ink_drop_highlight()->FadeOut(base::Milliseconds(0));
   test_api()->CompleteAnimations();
   EXPECT_FALSE(ink_drop_highlight()->IsFadingInOrVisible());
 }
@@ -187,7 +188,7 @@ TEST_F(InkDropHighlightTest, AnimationsAbortedDuringDeletion) {
   if (!gfx::Animation::ShouldRenderRichAnimation())
     return;
 
-  ink_drop_highlight()->FadeIn(base::TimeDelta::FromSeconds(1));
+  ink_drop_highlight()->FadeIn(base::Seconds(1));
   DestroyHighlight();
   EXPECT_EQ(1, observer()->last_animation_started_ordinal());
   EXPECT_EQ(2, observer()->last_animation_ended_ordinal());
@@ -201,7 +202,7 @@ TEST_F(InkDropHighlightTest, AnimationsAbortedDuringDeletion) {
 TEST_F(InkDropHighlightTest, AnimatingAZeroSizeHighlight) {
   InitHighlight(std::make_unique<InkDropHighlight>(
       gfx::Size(0, 0), 3, gfx::PointF(), SK_ColorBLACK));
-  ink_drop_highlight()->FadeOut(base::TimeDelta::FromMilliseconds(0));
+  ink_drop_highlight()->FadeOut(base::Milliseconds(0));
 }
 
 TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
@@ -209,8 +210,6 @@ TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
   constexpr gfx::Size kHighlightSize(10, 10);
   InitHighlight(std::make_unique<InkDropHighlight>(
       kHighlightSize, 3, gfx::PointF(3.5f, 3.5f), SK_ColorYELLOW));
-  const gfx::PointF layer_origin(
-      ink_drop_highlight()->layer()->bounds().origin());
   for (auto dsf : {1.25, 1.33, 1.5, 1.6, 1.75, 1.8, 2.25}) {
     SCOPED_TRACE(testing::Message()
                  << std::endl
@@ -218,14 +217,13 @@ TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
     ink_drop_highlight()->layer()->OnDeviceScaleFactorChanged(dsf);
 
     gfx::Transform transform = test_api()->CalculateTransform();
-    gfx::Point3F transformed_layer_origin(layer_origin.x(), layer_origin.y(),
-                                          0);
-    transform.TransformPoint(&transformed_layer_origin);
+    gfx::PointF transformed_layer_origin = transform.MapPoint(
+        gfx::PointF(ink_drop_highlight()->layer()->bounds().origin()));
 
     // Apply device scale factor to get the final offset.
     gfx::Transform dsf_transform;
     dsf_transform.Scale(dsf, dsf);
-    dsf_transform.TransformPoint(&transformed_layer_origin);
+    transformed_layer_origin = dsf_transform.MapPoint(transformed_layer_origin);
     EXPECT_NEAR(transformed_layer_origin.x(),
                 std::round(transformed_layer_origin.x()), kEpsilon);
     EXPECT_NEAR(transformed_layer_origin.y(),

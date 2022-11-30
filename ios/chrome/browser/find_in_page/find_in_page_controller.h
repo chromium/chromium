@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,17 +31,17 @@ extern NSString* const kFindBarTextFieldDidResignFirstResponderNotification;
 - (id)initWithWebState:(web::WebState*)webState;
 // Is Find In Page available right now (given the state of the WebState)?
 - (BOOL)canFindInPage;
-// Find |query| in page, update model with results of find. Calls
-// |completionHandler| after the find operation is complete. |completionHandler|
+// Find `query` in page, update model with results of find. Calls
+// `completionHandler` after the find operation is complete. `completionHandler`
 // can be nil.
 - (void)findStringInPage:(NSString*)query;
-// Move to the next find result based on |-findInPageModel|, and scroll to
+// Move to the next find result based on `-findInPageModel`, and scroll to
 // match.
 - (void)findNextStringInPage;
-// Move to the previous find result based on |-findInPageModel|.
+// Move to the previous find result based on `-findInPageModel`.
 - (void)findPreviousStringInPage;
-// Disable find in page script and model. |responseDelegate| will be used to
-// respond. Cleanup is not guaranteed to be finished when |responseDelegate|
+// Disable find in page script and model. `responseDelegate` will be used to
+// respond. Cleanup is not guaranteed to be finished when `responseDelegate`
 // receives a response.
 - (void)disableFindInPage;
 
@@ -53,7 +53,7 @@ extern NSString* const kFindBarTextFieldDidResignFirstResponderNotification;
 // Instructs the controller to detach itself from the web state.
 - (void)detachFromWebState;
 
-// Sets the search term to |string|. Stored until the application quit.
+// Sets the search term to `string`. Stored until the application quit.
 + (void)setSearchTerm:(NSString*)string;
 // The search term, stored until the application quit.
 + (NSString*)searchTerm;

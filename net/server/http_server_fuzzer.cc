@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/server/http_server.h"
 #include "net/socket/fuzzed_server_socket.h"
@@ -19,10 +19,13 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
  public:
   WaitTillHttpCloseDelegate(FuzzedDataProvider* data_provider,
                             base::OnceClosure done_closure)
-      : server_(nullptr),
-        data_provider_(data_provider),
+      : data_provider_(data_provider),
         done_closure_(std::move(done_closure)),
         action_flags_(data_provider_->ConsumeIntegral<uint8_t>()) {}
+
+  WaitTillHttpCloseDelegate(const WaitTillHttpCloseDelegate&) = delete;
+  WaitTillHttpCloseDelegate& operator=(const WaitTillHttpCloseDelegate&) =
+      delete;
 
   void set_server(net::HttpServer* server) { server_ = server; }
 
@@ -85,12 +88,10 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
     CLOSE_WEBSOCKET_RATHER_THAN_ACCEPT = 16
   };
 
-  net::HttpServer* server_;
+  net::HttpServer* server_ = nullptr;
   FuzzedDataProvider* const data_provider_;
   base::OnceClosure done_closure_;
   const uint8_t action_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitTillHttpCloseDelegate);
 };
 
 }  // namespace
@@ -99,11 +100,14 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
 //
 // |data| is used to create a FuzzedServerSocket.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  net::RecordingTestNetLog test_net_log;
+  // Including an observer; even though the recorded results aren't currently
+  // used, it'll ensure the netlogging code is fuzzed as well.
+  net::RecordingNetLogObserver net_log_observer;
   FuzzedDataProvider data_provider(data, size);
 
   std::unique_ptr<net::ServerSocket> server_socket(
-      std::make_unique<net::FuzzedServerSocket>(&data_provider, &test_net_log));
+      std::make_unique<net::FuzzedServerSocket>(&data_provider,
+                                                net::NetLog::Get()));
   CHECK_EQ(net::OK,
            server_socket->ListenWithAddressAndPort("127.0.0.1", 80, 5));
 

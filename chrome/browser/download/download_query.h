@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_item.h"
 
 namespace base {
@@ -100,6 +99,10 @@ class DownloadQuery {
                            const download::DownloadItem& item);
 
   DownloadQuery();
+
+  DownloadQuery(const DownloadQuery&) = delete;
+  DownloadQuery& operator=(const DownloadQuery&) = delete;
+
   ~DownloadQuery();
 
   // Adds a new filter of type |type| with value |value| and returns true if
@@ -158,8 +161,6 @@ class DownloadQuery {
   FilterCallbackVector filters_;
   SorterVector sorters_;
   size_t limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadQuery);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_QUERY_H_

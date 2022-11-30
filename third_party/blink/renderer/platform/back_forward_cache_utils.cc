@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,6 @@ bool IsInflightNetworkRequestBackForwardCacheSupportEnabled() {
   // in content/.
   return RuntimeEnabledFeatures::BackForwardCacheEnabled() &&
          base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable);
-}
-
-bool IsFreezeWhileKeepActiveBackForwardCacheSupportEnabled() {
-  // Similar to in IsInflightNetworkRequestBackForwardCacheSupportEnabled(), the
-  // call to RuntimeEnabledFeatures::BackForwardCacheEnabled() must be done
-  // first.
-  return RuntimeEnabledFeatures::BackForwardCacheEnabled() &&
-         base::FeatureList::IsEnabled(features::kFreezeWhileKeepActive);
 }
 
 int GetLoadingTasksUnfreezableParamAsInt(const std::string& param_name,

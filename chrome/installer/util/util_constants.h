@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -18,6 +18,8 @@ namespace installer {
 // to the end. When removing an unused value, retain the deprecated name and
 // value in a comment for posterity's sake, but take the liberty of removing the
 // old doc string.
+// The values in this enum must be kept in sync with the SetupInstallResult enum
+// in enums.xml
 enum InstallStatus {
   FIRST_INSTALL_SUCCESS = 0,      // First install of Chrome succeeded.
   INSTALL_REPAIRED = 1,           // Same version reinstalled for repair.
@@ -117,8 +119,14 @@ enum InstallStatus {
   UNDO_DOWNGRADE_CLEANUP_FAILED = 68,
   UNDO_DOWNGRADE_CLEANUP_SUCCESS = 69,
   DOWNGRADE_CLEANUP_UNKNOWN_OPERATION = 70,
-  MAX_INSTALL_STATUS = 71,  // When adding a new result, bump this and update
-                            // the InstallStatus enum in histograms.xml.
+  ROTATE_DTKEY_FAILED = 71,   // Failed to rotate device trust signing key.
+  ROTATE_DTKEY_SUCCESS = 72,  // Successfully rotated device trust signing key.
+  CREATE_SHORTCUTS_SUCCESS = 73,  // Successfully created Chrome shortcuts.
+  DELETE_DMTOKEN_FAILED = 74,     // Failed to delete DMToken from the registry.
+  DELETE_DMTOKEN_SUCCESS = 75,    // Successfully deleted DMToken from the
+                                  // registry.
+  MAX_INSTALL_STATUS = 76,  // When adding a new result, bump this and update
+                            // the SetupInstallResult enum in enums.xml.
 };
 
 // The type of an update archive.
@@ -156,10 +164,13 @@ namespace switches {
 extern const char kAllowDowngrade[];
 extern const char kChannel[];
 extern const char kConfigureUserSettings[];
+extern const char kCreateShortcuts[];
 extern const char kCriticalUpdateVersion[];
+extern const char kDeleteDMToken[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
 extern const char kDisableLogging[];
+extern const char kDmServerUrl[];
 extern const char kDoNotLaunchChrome[];
 extern const char kDoNotRegisterForUpdateLaunch[];
 extern const char kDoNotRemoveSharedItems[];
@@ -169,10 +180,12 @@ extern const char kForceUninstall[];
 extern const char kInputFile[];
 extern const char kInstallArchive[];
 extern const char kInstallerData[];
+extern const char kInstallLevel[];
 extern const char kLogFile[];
 extern const char kMakeChromeDefault[];
 extern const char kMsi[];
 extern const char kNewSetupExe[];
+extern const char kNonce[];
 extern const char kOnOsUpgrade[];
 extern const char kOutputFile[];
 extern const char kPatch[];
@@ -185,6 +198,7 @@ extern const char kRegisterDevChrome[];
 extern const char kRegisterURLProtocol[];
 extern const char kRemoveChromeRegistration[];
 extern const char kRenameChromeExe[];
+extern const char kRotateDeviceTrustKey[];
 extern const char kRunAsAdmin[];
 extern const char kSelfDestruct[];
 extern const char kShowEula[];
@@ -213,7 +227,9 @@ extern const wchar_t kChromeProxyExe[];
 extern const wchar_t kChromeProxyNewExe[];
 extern const wchar_t kChromeProxyOldExe[];
 extern const wchar_t kCmdOnOsUpgrade[];
+extern const wchar_t kCmdRotateDeviceTrustKey[];
 extern const wchar_t kCmdStoreDMToken[];
+extern const wchar_t kCmdDeleteDMToken[];
 extern const wchar_t kEulaSentinelFile[];
 extern const wchar_t kInstallBinaryDir[];
 extern const wchar_t kInstallerDir[];
@@ -227,6 +243,7 @@ extern const wchar_t kUninstallArgumentsField[];
 extern const wchar_t kUninstallDisplayNameField[];
 extern const wchar_t kUninstallInstallationDate[];
 extern const wchar_t kUninstallStringField[];
+extern const wchar_t kWerDll[];
 
 // Elevation Service constants.
 extern const base::FilePath::CharType kElevationServiceExe[];

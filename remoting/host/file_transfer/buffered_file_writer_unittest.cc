@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ class BufferedFileWriterTest : public testing::Test {
   void OnError(protocol::FileTransfer_Error error);
 
   bool complete_called_ = false;
-  base::Optional<protocol::FileTransfer_Error> error_ = base::nullopt;
+  absl::optional<protocol::FileTransfer_Error> error_ = absl::nullopt;
 
   base::test::TaskEnvironment task_environment_;
 };

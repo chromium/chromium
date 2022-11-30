@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,14 @@
 
 #include <memory>
 #include <utility>
+
+#include "build/build_config.h"
+#include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/display/mac/test/test_screen_mac.h"
+#include "ui/display/screen.h"
+#endif
 
 namespace views {
 
@@ -15,6 +23,13 @@ BaseControlTestWidget::BaseControlTestWidget() = default;
 BaseControlTestWidget::~BaseControlTestWidget() = default;
 
 void BaseControlTestWidget::SetUp() {
+#if BUILDFLAG(IS_MAC)
+  test_screen_ = std::make_unique<display::test::TestScreenMac>(gfx::Size());
+  // Purposely not use ScopedScreenOverride, in which GetScreen() will
+  // create a native screen.
+  display::Screen::SetScreenInstance(test_screen_.get());
+#endif
+
   ViewsTestBase::SetUp();
 
   widget_ = std::make_unique<Widget>();
@@ -31,7 +46,11 @@ void BaseControlTestWidget::SetUp() {
 
 void BaseControlTestWidget::TearDown() {
   widget_.reset();
+
   ViewsTestBase::TearDown();
+#if BUILDFLAG(IS_MAC)
+  display::Screen::SetScreenInstance(nullptr);
+#endif
 }
 
 void BaseControlTestWidget::CreateWidgetContent(View* container) {}

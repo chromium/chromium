@@ -1,12 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/ax_relative_bounds.h"
 
+#include "base/memory/values_equivalent.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 using base::NumberToString;
 
@@ -41,11 +42,7 @@ bool AXRelativeBounds::operator==(const AXRelativeBounds& other) const {
     return false;
   if (bounds != other.bounds)
     return false;
-  if (!transform && !other.transform)
-    return true;
-  if ((transform && !other.transform) || (!transform && other.transform))
-    return false;
-  return *transform == *other.transform;
+  return base::ValuesEquivalent(transform, other.transform);
 }
 
 bool AXRelativeBounds::operator!=(const AXRelativeBounds& other) const {

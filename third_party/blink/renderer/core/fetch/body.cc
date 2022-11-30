@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
@@ -24,7 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -40,6 +39,9 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
       : resolver_(resolver),
         task_runner_(ExecutionContext::From(resolver_->GetScriptState())
                          ->GetTaskRunner(TaskType::kNetworking)) {}
+  BodyConsumerBase(const BodyConsumerBase&) = delete;
+  BodyConsumerBase& operator=(const BodyConsumerBase&) = delete;
+
   ScriptPromiseResolver* Resolver() { return resolver_; }
   void DidFetchDataLoadFailed() override {
     ScriptState::Scope scope(Resolver()->GetScriptState());
@@ -58,8 +60,8 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
   template <typename T>
   void ResolveLater(const T& object) {
     task_runner_->PostTask(FROM_HERE,
-                           WTF::Bind(&BodyConsumerBase::ResolveNow<T>,
-                                     WrapPersistent(this), object));
+                           WTF::BindOnce(&BodyConsumerBase::ResolveNow<T>,
+                                         WrapPersistent(this), object));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -75,37 +77,40 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
 
   const Member<ScriptPromiseResolver> resolver_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(BodyConsumerBase);
 };
 
 class BodyBlobConsumer final : public BodyConsumerBase {
  public:
   explicit BodyBlobConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyBlobConsumer(const BodyBlobConsumer&) = delete;
+  BodyBlobConsumer& operator=(const BodyBlobConsumer&) = delete;
 
   void DidFetchDataLoadedBlobHandle(
       scoped_refptr<BlobDataHandle> blob_data_handle) override {
     ResolveLater(WrapPersistent(
         MakeGarbageCollected<Blob>(std::move(blob_data_handle))));
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyBlobConsumer);
 };
 
 class BodyArrayBufferConsumer final : public BodyConsumerBase {
  public:
   explicit BodyArrayBufferConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyArrayBufferConsumer(const BodyArrayBufferConsumer&) = delete;
+  BodyArrayBufferConsumer& operator=(const BodyArrayBufferConsumer&) = delete;
 
   void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer* array_buffer) override {
     ResolveLater(WrapPersistent(array_buffer));
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyArrayBufferConsumer);
 };
 
 class BodyFormDataConsumer final : public BodyConsumerBase {
  public:
   explicit BodyFormDataConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyFormDataConsumer(const BodyFormDataConsumer&) = delete;
+  BodyFormDataConsumer& operator=(const BodyFormDataConsumer&) = delete;
 
   void DidFetchDataLoadedFormData(FormData* formData) override {
     ResolveLater(WrapPersistent(formData));
@@ -117,24 +122,26 @@ class BodyFormDataConsumer final : public BodyConsumerBase {
       formData->append(pair.first, pair.second);
     DidFetchDataLoadedFormData(formData);
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyFormDataConsumer);
 };
 
 class BodyTextConsumer final : public BodyConsumerBase {
  public:
   explicit BodyTextConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyTextConsumer(const BodyTextConsumer&) = delete;
+  BodyTextConsumer& operator=(const BodyTextConsumer&) = delete;
 
   void DidFetchDataLoadedString(const String& string) override {
     ResolveLater(string);
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyTextConsumer);
 };
 
 class BodyJsonConsumer final : public BodyConsumerBase {
  public:
   explicit BodyJsonConsumer(ScriptPromiseResolver* resolver)
       : BodyConsumerBase(resolver) {}
+  BodyJsonConsumer(const BodyJsonConsumer&) = delete;
+  BodyJsonConsumer& operator=(const BodyJsonConsumer&) = delete;
 
   void DidFetchDataLoadedString(const String& string) override {
     if (!Resolver()->GetExecutionContext() ||
@@ -153,7 +160,6 @@ class BodyJsonConsumer final : public BodyConsumerBase {
     } else
       Resolver()->Reject(trycatch.Exception());
   }
-  DISALLOW_COPY_AND_ASSIGN(BodyJsonConsumer);
 };
 
 }  // namespace
@@ -241,7 +247,7 @@ ScriptPromise Body::formData(ScriptState* script_state,
     const String boundary =
         parsedTypeWithParameters.ParameterValueForName("boundary");
     auto* body_buffer = BodyBuffer();
-    if (body_buffer && !boundary.IsEmpty()) {
+    if (body_buffer && !boundary.empty()) {
       body_buffer->StartLoading(
           FetchDataLoader::CreateLoaderAsFormData(boundary),
           MakeGarbageCollected<BodyFormDataConsumer>(resolver),

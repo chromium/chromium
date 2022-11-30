@@ -33,10 +33,12 @@
 #include <utility>
 
 #include "base/numerics/clamped_math.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -55,12 +58,12 @@ AXInlineTextBox::AXInlineTextBox(
     : AXObject(ax_object_cache), inline_text_box_(std::move(inline_text_box)) {}
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
-                                        FloatRect& out_bounds_in_container,
-                                        SkMatrix44& out_container_transform,
+                                        gfx::RectF& out_bounds_in_container,
+                                        gfx::Transform& out_container_transform,
                                         bool* clips_children) const {
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
-  out_container_transform.setIdentity();
+  out_bounds_in_container = gfx::RectF();
+  out_container_transform.MakeIdentity();
 
   if (!inline_text_box_ || !ParentObject() ||
       !ParentObject()->GetLayoutObject()) {
@@ -68,13 +71,13 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   }
 
   *out_container = ParentObject();
-  out_bounds_in_container = FloatRect(inline_text_box_->LocalBounds());
+  out_bounds_in_container = gfx::RectF(inline_text_box_->LocalBounds());
 
   // Subtract the local bounding box of the parent because they're
   // both in the same coordinate system.
-  FloatRect parent_bounding_box =
+  gfx::RectF parent_bounding_box =
       ParentObject()->LocalBoundingBoxRectForAccessibility();
-  out_bounds_in_container.MoveBy(-parent_bounding_box.Location());
+  out_bounds_in_container.Offset(-parent_bounding_box.OffsetFromOrigin());
 }
 
 bool AXInlineTextBox::ComputeAccessibilityIsIgnored(
@@ -98,7 +101,7 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
 
   Vector<float> widths;
   inline_text_box_->CharacterWidths(widths);
-  DCHECK_EQ(int{widths.size()}, TextLength());
+  DCHECK_EQ(static_cast<int>(widths.size()), TextLength());
   offsets.resize(TextLength());
 
   float width_so_far = 0;
@@ -117,8 +120,8 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
 
   Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   inline_text_box_->GetWordBoundaries(boundaries);
-  word_starts.ReserveCapacity(boundaries.size());
-  word_ends.ReserveCapacity(boundaries.size());
+  word_starts.reserve(boundaries.size());
+  word_ends.reserve(boundaries.size());
   for (const auto& boundary : boundaries) {
     word_starts.push_back(boundary.start_index);
     word_ends.push_back(boundary.end_index);
@@ -131,8 +134,8 @@ int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {
     return 0;
 
   // Retrieve the text offset from the start of the layout block flow ancestor.
-  return int{inline_text_box_->TextOffsetInFormattingContext(
-      static_cast<unsigned int>(offset))};
+  return static_cast<int>(inline_text_box_->TextOffsetInFormattingContext(
+      static_cast<unsigned int>(offset)));
 }
 
 int AXInlineTextBox::TextOffsetInContainer(int offset) const {
@@ -249,8 +252,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 
   if (IsDetached())
     return;
-  if (!GetDocument() ||
-      GetDocument()->IsSlotAssignmentOrLegacyDistributionDirty()) {
+  if (!GetDocument() || GetDocument()->IsSlotAssignmentDirty()) {
     // In order to retrieve the document markers we need access to the flat
     // tree. If the slot assignments in a shadow DOM subtree are dirty,
     // accessing the flat tree will cause them to be updated, which could in
@@ -266,11 +268,12 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   const auto ax_range = AXRange::RangeOfContents(*this);
 
   std::vector<int32_t> marker_types;
+  std::vector<int32_t> highlight_types;
   std::vector<int32_t> marker_starts;
   std::vector<int32_t> marker_ends;
 
   // First use ARIA markers for spelling/grammar if available.
-  base::Optional<DocumentMarker::MarkerType> aria_marker_type =
+  absl::optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
     marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
@@ -301,7 +304,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   const DocumentMarker::MarkerTypes markers_used_by_accessibility(
       DocumentMarker::kSpelling | DocumentMarker::kGrammar |
       DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
-      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment);
+      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment |
+      DocumentMarker::kCustomHighlight);
   // "MarkersIntersectingRange" performs a binary search through the document
   // markers list for markers in the given range and of the given types. It
   // should be of a logarithmic complexity.
@@ -336,7 +340,16 @@ void AXInlineTextBox::SerializeMarkerAttributes(
         end_position.TextOffset() - start_text_offset_in_parent, text_length);
     DCHECK_GE(local_end_offset, 0);
 
+    int32_t highlight_type =
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone);
+    if (marker->GetType() == DocumentMarker::kCustomHighlight) {
+      const auto& highlight_marker = To<CustomHighlightMarker>(*marker);
+      highlight_type =
+          ToAXHighlightType(highlight_marker.GetHighlight()->type());
+    }
+
     marker_types.push_back(int32_t{ToAXMarkerType(marker->GetType())});
+    highlight_types.push_back(static_cast<int32_t>(highlight_type));
     marker_starts.push_back(local_start_offset);
     marker_ends.push_back(local_end_offset);
   }
@@ -350,6 +363,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerTypes, marker_types);
   node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kHighlightTypes, highlight_types);
+  node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerEnds, marker_ends);
@@ -360,6 +375,8 @@ void AXInlineTextBox::Init(AXObject* parent) {
   DCHECK(parent);
   DCHECK(ui::CanHaveInlineTextBoxChildren(parent->RoleValue()))
       << "Unexpected parent of inline text box: " << parent->RoleValue();
+  DCHECK(parent->CanHaveChildren())
+      << "Parent cannot have children: " << parent->ToString(true, true);
   SetParent(parent);
   UpdateCachedAttributeValuesIfNeeded(false);
 }
@@ -387,7 +404,11 @@ bool AXInlineTextBox::IsLineBreakingObject() const {
 int AXInlineTextBox::TextLength() const {
   if (IsDetached())
     return 0;
-  return int{inline_text_box_->Len()};
+  return static_cast<int>(inline_text_box_->Len());
+}
+
+void AXInlineTextBox::ClearChildren() const {
+  // An AXInlineTextBox has no children to clear.
 }
 
 }  // namespace blink

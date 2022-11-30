@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Peer-to-peer socket with datagram semantics.
 class P2PDatagramSocket {
@@ -45,7 +44,6 @@ class P2PDatagramSocket {
                    const net::CompletionRepeatingCallback& callback) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_P2P_DATAGRAM_SOCKET_H_

@@ -34,6 +34,7 @@ import subprocess
 import sys
 import threading
 
+from argparse import Namespace
 from blinkpy.common import exit_codes
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.path_finder import get_chromium_src_dir
@@ -60,16 +61,18 @@ def _import_fuchsia_runner():
     # pylint: disable=import-error
     # pylint: disable=invalid-name
     # pylint: disable=redefined-outer-name
-    global aemu_target
-    import aemu_target
-    global device_target
-    import device_target
+    global ConnectPortForwardingTask
+    from common import ConnectPortForwardingTask
+    global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
+    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
     global fuchsia_target
     import target as fuchsia_target
     global qemu_target
     import qemu_target
     global symbolizer
     import symbolizer
+    global ffx_session
+    import ffx_session
     # pylint: enable=import-error
     # pylint: enable=invalid-name
     # pylint: disable=redefined-outer-name
@@ -88,13 +91,6 @@ WEB_TESTS_PATH_PREFIX = '/third_party/blink/' + WEB_TESTS_LAST_COMPONENT
 # content/shell/app/blink_test_platform_support_fuchsia.cc .
 FONTS_DEVICE_PATH = '/system/fonts'
 
-# Number of CPU cores in qemu.
-CPU_CORES = 4
-
-# Number of content_shell instances to run in parallel.
-# Allow for two CPU cores per instance.
-MAX_WORKERS = CPU_CORES / 2
-
 PROCESS_START_TIMEOUT = 20
 
 _log = logging.getLogger(__name__)
@@ -106,7 +102,7 @@ def _subprocess_log_thread(pipe, prefix):
             line = pipe.readline()
             if not line:
                 return
-            _log.error('%s: %s', prefix, line)
+            _log.error('%s: %s', prefix, line.decode('utf8'))
     finally:
         pipe.close()
 
@@ -130,8 +126,11 @@ class _TargetHost(object):
     def __init__(self, build_path, build_ids_path, ports_to_forward, target,
                  results_directory):
         try:
-            self._amber_repo = None
+            self._pkg_repo = None
             self._target = target
+            self._ffx_session_context = ffx_session.FfxSession(
+                self._target._log_manager)
+            self._ffx_session = self._ffx_session_context.__enter__()
             self._target.Start()
             self._setup_target(build_path, build_ids_path, ports_to_forward,
                                results_directory)
@@ -156,19 +155,12 @@ class _TargetHost(object):
                                                    stdout=subprocess.PIPE,
                                                    stderr=subprocess.STDOUT)
 
-        self._listener = self._target.RunCommandPiped(['log_listener'],
-                                                      stdout=subprocess.PIPE,
-                                                      stderr=subprocess.STDOUT)
-
-        listener_log_path = os.path.join(results_directory, 'system_log')
-        listener_log = open(listener_log_path, 'w')
-        self.symbolizer = symbolizer.RunSymbolizer(
-            self._listener.stdout, listener_log, [build_ids_path])
-
-        self._amber_repo = self._target.GetAmberRepo()
-        self._amber_repo.__enter__()
-
         package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
+        self._target.StartSystemLog([package_path])
+
+        self._pkg_repo = self._target.GetPkgRepo()
+        self._pkg_repo.__enter__()
+
         self._target.InstallPackage([package_path])
 
         # Process will be forked for each worker, which may make QemuTarget
@@ -184,17 +176,22 @@ class _TargetHost(object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
 
+    def run_test_component(self, url, cmd_line):
+        return self._ffx_session.test_run(self._target.GetFfxTarget(), url,
+                                          cmd_line)
+
     def cleanup(self):
-        if self._amber_repo:
-            self._amber_repo.__exit__(None, None, None)
-        if self._target:
-            # Emulator targets will be shutdown during cleanup.
-            # TODO(sergeyu): Currently __init__() always starts Qemu, so we can
-            # just shutdown it. Update this logic when reusing target devices
-            # for multiple test runs.
-            if not isinstance(self._target, device_target.DeviceTarget):
-                self._target.Shutdown()
-            self._target = None
+        self._ffx_session = None
+        self._ffx_session_context.__exit__(None, None, None)
+        try:
+            if self._pkg_repo:
+                self._pkg_repo.__exit__(None, None, None)
+        finally:
+            if self._target:
+                self._target.Stop()
+
+    def setup_forwarded_port(self, port):
+        return ConnectPortForwardingTask(self._target, port)
 
 
 class FuchsiaPort(base.Port):
@@ -207,24 +204,23 @@ class FuchsiaPort(base.Port):
         ['fuchsia'] + linux.LinuxPort.latest_platform_fallback_path()
     }
 
-    def __init__(self, host, port_name, **kwargs):
+    def __init__(self, host, port_name, target_host=None, **kwargs):
         super(FuchsiaPort, self).__init__(host, port_name, **kwargs)
 
         self._operating_system = 'fuchsia'
         self._version = 'fuchsia'
         self._target_device = self.get_option('device')
 
-        # TODO(sergeyu): Add support for arm64.
-        self._architecture = 'x86_64'
+        self._architecture = 'x86_64' if self._target_cpu(
+        ) == 'x64' else 'arm64'
 
         self.server_process_constructor = FuchsiaServerProcess
 
         # Used to implement methods that depend on the host platform.
         self._host_port = factory.PortFactory(host).get(**kwargs)
 
-        self._target_host = self.get_option('fuchsia_target')
+        self._target_host = target_host
         self._zircon_logger = None
-        self._host_ip = self.get_option('fuchsia_host_ip')
         _import_fuchsia_runner()
 
     def _driver_class(self):
@@ -237,54 +233,43 @@ class FuchsiaPort(base.Port):
         if self._zircon_logger:
             self._zircon_logger.close()
 
+    def _target_cpu(self):
+        return self.get_option('fuchsia_target_cpu')
+
+    def _cpu_cores(self):
+        # TODO(crbug.com/1340573): Four parallel jobs always gives reasonable
+        # performance, while using larger numbers may actually slow things.
+        # Hard-code eight virtual CPU cores, so that four jobs will be run.
+        return 8
+
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = {
-                'out_dir': self._build_path(),
-                'system_log_file': None,
-                'fuchsia_out_dir': self.get_option('fuchsia_out_dir')
-            }
-            if self._target_device == 'device':
-                additional_args = {
-                    'target_cpu': self.get_option('fuchsia_target_cpu'),
-                    'ssh_config': self.get_option('fuchsia_ssh_config'),
-                    'os_check': 'ignore',
-                    'host': self.get_option('fuchsia_host'),
-                    'port': self.get_option('fuchsia_port'),
-                    'node_name': self.get_option('fuchsia_node_name')
-                }
-                target_args.update(additional_args)
-                target = device_target.DeviceTarget(**target_args)
-            else:
-                additional_args = {
-                    'target_cpu': 'x64',
-                    'cpu_cores': CPU_CORES,
-                    'require_kvm': True,
-                    'ram_size_mb': 8192
-                }
-                if self._target_device == 'qemu':
-                    target_args.update(additional_args)
-                    target = qemu_target.QemuTarget(**target_args)
-                else:
-                    additional_args.update({
-                        'enable_graphics': False,
-                        'hardware_gpu': False
-                    })
-                    target_args.update(additional_args)
-                    target = aemu_target.AemuTarget(**target_args)
+            target_args = InitializeTargetArgs()
+            target_args.out_dir = self._build_path()
+            target_args.target_cpu = self._target_cpu()
+            target_args.fuchsia_out_dir = self.get_option('fuchsia_out_dir')
+            target_args.custom_image = self.get_option('custom_image')
+            target_args.ssh_config = self.get_option('fuchsia_ssh_config')
+            target_args.host = self.get_option('fuchsia_host')
+            target_args.port = self.get_option('fuchsia_port')
+            target_args.node_name = self.get_option('fuchsia_node_name')
+            target_args.cpu_cores = self._cpu_cores()
+            target_args.logs_dir = self.results_directory()
+            target = _LoadTargetClass(
+                _GetPathToBuiltinTarget(
+                    self._target_device)).CreateFromArgs(target_args)
             self._target_host = _TargetHost(self._build_path(),
                                             self.get_build_ids_path(),
                                             self.SERVER_PORTS, target,
                                             self.results_directory())
 
             if self.get_option('zircon_logging'):
-                self._zircon_logger = SubprocessOutputLogger(
-                    self._target_host.run_command(['dlog', '-f']), 'Zircon')
-
-            # Save fuchsia_target in _options, so it can be shared with other
-            # workers.
-            self._options.fuchsia_target = self._target_host
+                klog_proc = self._target_host.run_command(['dlog', '-f'])
+                symbolized_klog_proc = symbolizer.RunSymbolizer(klog_proc.stdout,
+                    subprocess.PIPE, [self.get_build_ids_path()])
+                self._zircon_logger = SubprocessOutputLogger(symbolized_klog_proc,
+                    'Zircon')
 
         except fuchsia_target.FuchsiaTargetException as e:
             _log.error('Failed to start qemu: %s.', str(e))
@@ -295,9 +280,13 @@ class FuchsiaPort(base.Port):
             self._target_host.cleanup()
             self._target_host = None
 
+    def child_kwargs(self):
+        return {"target_host": self._target_host}
+
     def num_workers(self, requested_num_workers):
-        # Run a single qemu instance.
-        return min(MAX_WORKERS, requested_num_workers)
+        # Allow for multi-process / multi-threading overhead in the browser
+        # by allocating two CPU cores per-worker.
+        return min(self._cpu_cores() / 2, requested_num_workers)
 
     def _default_timeout_ms(self):
         # Use 20s timeout instead of the default 6s. This is necessary because
@@ -305,20 +294,19 @@ class FuchsiaPort(base.Port):
         # platforms.
         return 20000
 
-    def requires_http_server(self):
-        """HTTP server is always required to avoid copying the tests to the VM.
-        """
-        return True
-
     def start_http_server(self, additional_dirs, number_of_drivers):
         additional_dirs['/third_party/blink/PerformanceTests'] = \
             self._perf_tests_dir()
-        additional_dirs[WEB_TESTS_PATH_PREFIX] = self.web_tests_dir()
+        additional_dirs[WEB_TESTS_PATH_PREFIX] = \
+            self._path_finder.web_tests_dir()
         additional_dirs['/gen'] = self.generated_sources_directory()
         additional_dirs['/third_party/blink'] = \
             self._path_from_chromium_base('third_party', 'blink')
         super(FuchsiaPort, self).start_http_server(additional_dirs,
                                                    number_of_drivers)
+
+    def operating_system(self):
+        return self._operating_system
 
     def path_to_apache(self):
         return self._host_port.path_to_apache()
@@ -348,23 +336,19 @@ class ChromiumFuchsiaDriver(driver.Driver):
             server_name,
             cmd_line,
             environment,
-            more_logging=self._port.get_option('driver_logging'),
-            host_ip=self._port._host_ip)
+            more_logging=self._port.get_option('driver_logging'))
 
     def _base_cmd_line(self):
-        cmd = [
-            'run',
-            'fuchsia-pkg://fuchsia.com/content_shell#meta/content_shell.cmx'
-        ]
+        cmd = []
         if self._port._target_device == 'qemu':
             cmd.append('--ozone-platform=headless')
         # Use Scenic on AEMU
         else:
             cmd.extend([
-                '--ozone-platform=scenic', '--enable-oop-rasterization',
-                '--use-vulkan', '--enable-gpu-rasterization',
-                '--force-device-scale-factor=1', '--use-gl=stub',
-                '--enable-features=UseSkiaRenderer,Vulkan'
+                '--ozone-platform=scenic', '--use-vulkan',
+                '--enable-gpu-rasterization', '--force-device-scale-factor=1',
+                '--use-gl=stub', '--enable-features=Vulkan',
+                '--gpu-watchdog-timeout-seconds=60'
             ])
         return cmd
 
@@ -373,9 +357,9 @@ class ChromiumFuchsiaDriver(driver.Driver):
                         self)._command_from_driver_input(driver_input)
         if command.startswith('/'):
             relative_test_filename = \
-                os.path.relpath(command, self._port.web_tests_dir())
-            command = 'http://127.0.0.1:8000' + WEB_TESTS_PATH_PREFIX + \
-                '/' + relative_test_filename
+                os.path.relpath(command,
+                                self._port._path_finder.chromium_base())
+            command = 'http://127.0.0.1:8000' + '/' + relative_test_filename
         return command
 
 
@@ -387,33 +371,40 @@ class FuchsiaServerProcess(server_process.ServerProcess):
                  cmd,
                  env=None,
                  treat_no_data_as_crash=False,
-                 more_logging=False,
-                 host_ip=None):
+                 more_logging=False):
         super(FuchsiaServerProcess, self).__init__(
             port_obj, name, cmd, env, treat_no_data_as_crash, more_logging)
         self._symbolizer_proc = None
-        self._host_ip = host_ip or qemu_target.HOST_IP_ADDRESS
 
     def _start(self):
         if self._proc:
             raise ValueError('%s already running' % self._name)
         self._reset()
 
-        # Fuchsia doesn't support stdin stream for packaged applications, so the
-        # stdin stream for content_shell is routed through a separate TCP
-        # socket. Open a local socket and then pass the address with the port as
-        # --stdin-redirect parameter. content_shell will connect to this address
-        # and will use that connection as its stdin stream.
+        # Fuchsia doesn't support stdin stream for packaged apps, and stdout
+        # from run-test-suite not only has extra emissions from the Fuchsia test
+        # infrastructure, it also merges stderr and stdout together. Combined,
+        # these mean that when running content_shell on Fuchsia it's not
+        # possible to use stdin to pass list of tests or to reliably use stdout
+        # to emit results. To workaround this issue for web tests we redirect
+        # stdin and stdout to a TCP socket connected to the web test runner. The
+        # runner uses --stdio-redirect to specify address and port for stdin and
+        # stdout redirection.
         listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
-        stdin_port = listen_socket.getsockname()[1]
+        stdio_port = int(listen_socket.getsockname()[1])
+        forwarded_stdio_port = \
+            self._port.get_target_host().setup_forwarded_port(stdio_port)
 
-        command = ['%s=%s' % (k, v) for k, v in self._env.items()] + \
-            self._cmd + \
-            ['--no-sandbox', '--stdin-redirect=%s:%s' %
-             (self._host_ip, stdin_port)]
-        proc = self._port.get_target_host().run_command(command)
+        command = self._cmd + \
+            ['--no-sandbox',
+             '--stdio-redirect=127.0.0.1:%d' % forwarded_stdio_port]
+
+        proc = self._port.get_target_host().run_test_component(
+            "fuchsia-pkg://fuchsia.com/content_shell#meta/content_shell.cm",
+            command)
+
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()
         read_fds, _, _ = select.select([fd], [], [], PROCESS_START_TIMEOUT)
@@ -426,16 +417,26 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         # Python's interfaces for sockets and pipes are different. To masquerade
         # the socket as a pipe dup() the file descriptor and pass it to
         # os.fdopen().
-        stdin_socket, _ = listen_socket.accept()
-        fd = stdin_socket.fileno()  # pylint: disable=no-member
-        stdin_pipe = os.fdopen(os.dup(fd), "w", 0)
-        stdin_socket.close()
+        stdio_socket, _ = listen_socket.accept()
+        fd = stdio_socket.fileno()  # pylint: disable=no-member
+        stdin_pipe = os.fdopen(os.dup(fd), "wb", 0)
+        stdout_pipe = os.fdopen(os.dup(fd), "rb", 0)
+        stdio_socket.close()
 
-        proc.stdin.close()
+        assert not proc.stdin
         proc.stdin = stdin_pipe
+
+        # stdout from `proc` is the merged stdout/stderr produced by
+        # run-test-suite, which contains only stderr since we run stdout through
+        # the socket above. Run this combined output through the symbolizer as
+        # if it were stderr.
+        merged_stdout_stderr = proc.stdout
+        proc.stdout = stdout_pipe
+
         # Run symbolizer to filter the stderr stream.
         self._symbolizer_proc = symbolizer.RunSymbolizer(
-            proc.stderr, subprocess.PIPE, [self._port.get_build_ids_path()])
+            merged_stdout_stderr, subprocess.PIPE,
+            [self._port.get_build_ids_path()])
         proc.stderr = self._symbolizer_proc.stdout
 
         self._set_proc(proc)

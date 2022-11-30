@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,18 @@
 
 #include <utility>
 
-#include "ash/components/account_manager/account_manager.h"
-#include "ash/components/account_manager/account_manager_ash.h"
-#include "ash/components/account_manager/account_manager_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -26,7 +27,7 @@ bool IsAccountManagerAvailable(const Profile* const profile) {
   // Signin Profile does not have any accounts associated with it,
   // LockScreenAppProfile and LockScreenProfile do not link to the user's
   // cryptohome.
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile))
+  if (!ProfileHelper::IsRegularProfile(profile))
     return false;
 
   // Account Manager is unavailable on Guest (Incognito) Sessions.
@@ -50,7 +51,7 @@ bool IsAccountManagerAvailable(const Profile* const profile) {
 
 void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                               base::OnceClosure initialization_callback) {
-  ash::AccountManager* account_manager =
+  account_manager::AccountManager* account_manager =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
           ->GetAccountManager(/*profile_path=*/cryptohome_root_dir.value());
@@ -59,17 +60,17 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
       cryptohome_root_dir,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::BindRepeating(&chromeos::DelayNetworkCall,
-                          base::TimeDelta::FromMilliseconds(
-                              chromeos::kDefaultNetworkRetryDelayMS)),
+      base::BindRepeating(&DelayNetworkCall,
+                          base::Milliseconds(kDefaultNetworkRetryDelayMS)),
       std::move(initialization_callback));
 
-  crosapi::AccountManagerAsh* account_manager_ash =
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManagerAsh(/*profile_path=*/cryptohome_root_dir.value());
+          ->GetAccountManagerMojoService(
+              /*profile_path=*/cryptohome_root_dir.value());
 
-  account_manager_ash->SetAccountManagerUI(
+  account_manager_mojo_service->SetAccountManagerUI(
       std::make_unique<ash::AccountManagerUIImpl>());
 }
 

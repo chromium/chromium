@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "net/websockets/websocket_extension_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -218,7 +217,7 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
       {"; hogefuga", kUnknownParameter},
   };
   return std::vector<InitializeTestParameter>(
-      parameters, parameters + base::size(parameters));
+      parameters, parameters + std::size(parameters));
 }
 
 const CompatibilityTestParameter kCompatibilityTestParameters[] = {

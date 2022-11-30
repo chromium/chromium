@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -76,8 +76,8 @@ html[dir='rtl'] div.weakrtl input {
 }
 
 html[dir='rtl'] .favicon-cell.weakrtl {
-  -webkit-padding-end: 22px;
-  -webkit-padding-start: 0;
+  padding-inline-end: 22px;
+  padding-inline-start: 0;
 }
 
 /* weakrtl for selection drop downs needs to account for the fact that

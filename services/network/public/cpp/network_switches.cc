@@ -1,12 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/network_switches.h"
 
-namespace network {
-
-namespace switches {
+namespace network::switches {
 
 // Forces Network Quality Estimator (NQE) to return a specific effective
 // connection type.
@@ -27,7 +25,7 @@ const char kIgnoreUrlFetcherCertRequests[] = "ignore-urlfetcher-cert-requests";
 // or more certificates have public key hashes that match a key from this list,
 // the error is ignored.
 //
-// The switch value must a be a comma-separated list of Base64-encoded SHA-256
+// The switch value must be a comma-separated list of Base64-encoded SHA-256
 // SPKI Fingerprints (RFC 7469, Section 2.4).
 //
 // This switch has no effect unless --user-data-dir (as defined by the content
@@ -55,10 +53,6 @@ const char kNetLogCaptureMode[] = "net-log-capture-mode";
 // https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
 // for the format.
 const char kSSLKeyLogFile[] = "ssl-key-log-file";
-
-// Allows overriding the list of restricted ports by passing a comma-separated
-// list of port numbers.
-const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
 
 // Treat given (insecure) origins as secure origins. Multiple origins can be
 // supplied as a comma-separated list. For the definition of secure contexts,
@@ -92,6 +86,28 @@ const char kAdditionalTrustTokenKeyCommitments[] =
 // set.
 const char kUseFirstPartySet[] = "use-first-party-set";
 
-}  // namespace switches
+// Specifies manual overrides to the IP endpoint -> IP address space mapping.
+// This allows running local tests against "public" and "private" IP addresses.
+//
+// This switch is specified as a comma-separated list of overrides. Each
+// override is given as a colon-separated "<endpoint>:<address space>" pair.
+// Grammar, in pseudo-BNF format:
+//
+//   switch := override-list
+//   override-list := override “,” override-list | <nil>
+//   override := ip-endpoint “=” address-space
+//   address-space := “public” | “private” | “local”
+//   ip-endpoint := ip-address ":" port
+//   ip-address := see `net::ParseURLHostnameToAddress()` for details
+//   port := integer in the [0-65535] range
+//
+// Any invalid entries in the comma-separated list are ignored.
+//
+// See also the design doc:
+// https://docs.google.com/document/d/1-umCGylIOuSG02k9KGDwKayt3bzBXtGwVlCQHHkIcnQ/edit#
+//
+// And the Web Platform Test RFC #72 behind it:
+// https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
+const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
-}  // namespace network
+}  // namespace network::switches

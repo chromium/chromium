@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set -e
+
+if [ "$1" = "remove" ]; then
+  # Stop the service when the package is being removed.
+  echo "Stopping Chrome Remote Desktop service..."
+  systemctl stop 'chrome-remote-desktop@*'
+fi
+
+#DEBHELPER#

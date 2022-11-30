@@ -1,0 +1,9 @@
+// dot -Tpng third_party/blink/renderer/modules/csspaint/images/addModule_registerPaint.png.dot > third_party/blink/renderer/modules/csspaint/images/addModule_registerPaint.png
+// When making modifications run the above command to regenerate the diagram
+
+digraph {
+  label = "Workflow of addModule and registerPaint";
+  addModule -> CreateGlobalScope;
+  registerPaint -> "Create CSSPaintDefinition";
+  registerPaint -> RegisterCSSPaintDefinition -> "Create DocumentPaintDefinition";
+}

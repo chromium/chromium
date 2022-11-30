@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/win_util.h"
@@ -27,10 +29,9 @@
 
 namespace {
 
-constexpr base::TimeDelta kCheckOSKDelay =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kCheckOSKDelay = base::Milliseconds(1000);
 constexpr base::TimeDelta kDismissKeyboardRetryTimeout =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 constexpr int kDismissKeyboardMaxRetries = 5;
 
 constexpr wchar_t kOSKClassName[] = L"IPTip_Main_Window";
@@ -49,6 +50,10 @@ class OnScreenKeyboardDetector {
  public:
   OnScreenKeyboardDetector(
       OnScreenKeyboardDisplayManagerTabTip* display_manager);
+
+  OnScreenKeyboardDetector(const OnScreenKeyboardDetector&) = delete;
+  OnScreenKeyboardDetector& operator=(const OnScreenKeyboardDetector&) = delete;
+
   ~OnScreenKeyboardDetector();
 
   // Schedules a delayed task which detects if the on screen keyboard was
@@ -85,7 +90,7 @@ class OnScreenKeyboardDetector {
   // The observer list is cleared out after this notification.
   void HandleKeyboardHidden();
 
-  OnScreenKeyboardDisplayManagerTabTip* display_manager_;
+  raw_ptr<OnScreenKeyboardDisplayManagerTabTip> display_manager_;
 
   // The main window which displays the on screen keyboard.
   HWND main_window_ = nullptr;
@@ -104,8 +109,6 @@ class OnScreenKeyboardDetector {
   // by this class instance are canceled when it is destroyed.
   base::WeakPtrFactory<OnScreenKeyboardDetector> keyboard_detector_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDetector);
 };
 
 // OnScreenKeyboardDetector member definitions.

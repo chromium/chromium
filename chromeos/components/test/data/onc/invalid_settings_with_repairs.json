@@ -1,0 +1,696 @@
+{
+    "global-disabled-technologies": {
+         "DisableNetworkTypes": ["Cellular"]
+    },
+    "duplicate-network-guid": {
+          "NetworkConfigurations": [
+             {
+               "GUID": "1",
+                "Type": "WiFi",
+                "Name": "My WiFi Network",
+                "WiFi": {
+                  "Passphrase": "dummy",
+                  "SSID": "dummySSID",
+                  "Security": "WPA-PSK"
+               }
+              },
+              {
+                 "GUID": "1",
+                 "Type": "WiFi",
+                 "Name": "My WiFi Network",
+                 "WiFi": {
+                   "Passphrase": "dummy1",
+                   "SSID": "dummySSID1",
+                   "Security": "WPA-PSK"
+               }
+              }
+          ],
+          "Type": "UnencryptedConfiguration"
+    },
+    "repaired-duplicate-network-guid": {
+          "NetworkConfigurations": [
+             {
+               "GUID": "1",
+                "Type": "WiFi",
+                "Name": "My WiFi Network",
+                "WiFi": {
+                  "Passphrase": "dummy",
+                  "SSID": "dummySSID",
+                  "Security": "WPA-PSK"
+               }
+              }
+          ],
+          "Type": "UnencryptedConfiguration"
+    },
+    "duplicate-cert-guid": {
+      "Type": "UnencryptedConfiguration",
+      "Certificates": [
+        { "GUID": "2",
+          "Type": "Server",
+          "X509": "abc" },
+        { "GUID": "2",
+          "PKCS12": "abc" ,
+          "Type": "Client" }
+       ]
+    },
+    "repaired-duplicate-cert-guid": {
+      "Type": "UnencryptedConfiguration",
+      "Certificates": [
+        { "GUID": "2",
+          "Type": "Server",
+          "X509": "abc" }
+       ]
+    },
+    "managed-network-repaired": {
+        "Recommended": [],
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-unknown-fieldname": {
+        "abc": "def",
+        "Recommended": [],
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-unknown-value": {
+        "GUID": "guid",
+        "Type": "LTE",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-value-out-of-range": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "IPAddressConfigType": "Static",
+        "StaticIPConfig": {
+            "Type": "IPv4",
+            "IPAddress": "127.0.0.1",
+            "RoutingPrefix": 123
+        },
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-wrong-type": {
+        "GUID": "guid",
+        "Type": "LTE",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": 123
+        }
+    },
+    "managed-network-unknown-recommended": {
+        "Recommended": ["abc"],
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-dict-recommended": {
+        "Recommended": ["Ethernet"],
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "managed-network-missing-required": {
+        "Recommended": [],
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-repaired": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-unknown-fieldname": {
+        "GUID": "guid",
+        "abc": "def",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-state-field": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        },
+        "ConnectionState": "NotConnected"
+    },
+    "wifi-hexssid-invalid-length": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "HexSSID": "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEFAB",
+            "Security": "WPA-PSK"
+        }
+    },
+    "wifi-ssid-invalid-length": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "SSID": "a ssid longer than 32 bytes is invalid",
+            "Security": "WPA-PSK"
+        }
+    },
+    "wifi-invalid-hexssid": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "HexSSID": "invalidhex",
+            "Security": "WPA-PSK"
+        }
+    },
+    "wifi-ssid-and-hexssid-inconsistent": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "SSID": "ssid",
+            "HexSSID": "FFFFFF",
+            "Security": "WPA-PSK"
+        }
+    },
+    "wifi-ssid-and-hexssid-partially-invalid": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "SSID": "a ssid longer than 32 bytes is invalid",
+            "HexSSID": "FFFFFF",
+            "Security": "WPA-PSK"
+        }
+    },
+    "wifi-ssid-and-hexssid-repaired": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "HexSSID": "FFFFFF",
+            "Security": "WPA-PSK"
+        }
+    },
+    "network-unknown-value": {
+        "GUID": "guid",
+        "Type": "LTE",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-value-out-of-range": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "IPAddressConfigType": "Static",
+        "StaticIPConfig": {
+            "Type": "IPv4",
+            "IPAddress": "127.0.0.1",
+            "RoutingPrefix": 123
+        },
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-wrong-type": {
+        "GUID": "guid",
+        "Type": "LTE",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": 123
+        }
+    },
+    "network-missing-required": {
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-missing-required-type": {
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-nested-state-field-repaired": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "SSID": "ssid",
+            "Security": "WPA-PSK"
+        }
+    },
+    "network-nested-state-field": {
+        "GUID": "guid",
+        "Type": "WiFi",
+        "Name": "name",
+        "WiFi": {
+            "Passphrase": "some passphrase",
+            "SSID": "ssid",
+            "Security": "WPA-PSK",
+            "SignalStrength": 123
+        }
+    },
+    "network-with-illegal-recommended": {
+        "GUID": "guid",
+        "Recommended": ["Name"],
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        }
+    },
+    "network-with-ipconfigs": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        },
+        "IPConfigs": [ {
+            "Type": "IPv4",
+            "IPAddress": "127.0.0.1",
+            "RoutingPrefix": 123
+        } ],
+    },
+    "ipsec-with-psk-and-cacert": {
+      "AuthenticationType": "PSK",
+      "IKEVersion": 1,
+      "PSK": "some psk",
+      "ServerCARef": "a cert ref"
+    },
+    "ipsec-with-client-cert-missing-cacert": {
+      "AuthenticationType": "Cert",
+      "IKEVersion": 1,
+      "ClientCertType": "Ref",
+      "ClientCertRef": "a cert ref"
+    },
+    "ipsec-with-empty-cacertrefs": {
+      "AuthenticationType": "Cert",
+      "IKEVersion": 1,
+      "ClientCertType": "Ref",
+      "ClientCertRef": "a cert ref",
+      "ServerCARefs": []
+    },
+    "ipsec-with-servercaref-and-servercarefs": {
+      "AuthenticationType": "Cert",
+      "ClientCertType": "Ref",
+      "ClientCertRef": "a cert ref",
+      "IKEVersion": 1,
+      "ServerCARef": "a cert ref",
+      "ServerCARefs": ["ref1", "ref2"]
+    },
+    "openvpn-with-servercaref-and-servercarefs": {
+      "ClientCertType": "None",
+      "ServerCARef": "a cert ref",
+      "ServerCARefs": ["ref1", "ref2"]
+    },
+    "eap-with-servercaref-and-servercarefs": {
+      "ClientCertType": "Ref",
+      "ClientCertRef": "a cert ref",
+      "Outer": "LEAP",
+      "ServerCARef": "a cert ref",
+      "ServerCARefs": ["ref1", "ref2"]
+    },
+    "openvpn-missing-verify-x509-name": {
+      "GUID": "guid",
+      "Type": "VPN",
+      "Name": "name",
+      "VPN": {
+        "Host": "host",
+        "Type": "OpenVPN",
+        "OpenVPN": {
+          "ClientCertType": "None",
+          "VerifyX509": {
+            "Type": "name"
+          }
+        }
+      }
+    },
+    "openvpn-invalid-verify-x509-type": {
+      "GUID": "guid",
+      "Type": "VPN",
+      "Name": "name",
+      "VPN": {
+        "Host": "host",
+        "Type": "OpenVPN",
+        "OpenVPN": {
+          "ClientCertType": "None",
+          "VerifyX509": {
+            "Type": "unknown type"
+          }
+        }
+      }
+    },
+    "tether-missing-battery-percentage": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+        "SignalStrength": 75
+      }
+    },
+    "tether-negative-battery": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": -1,
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+        "SignalStrength": 75
+      }
+    },
+    "tether-battery-over-100": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 101,
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+        "SignalStrength": 75
+      }
+    },
+    "tether-missing-carrier": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 85,
+        "HasConnectedToHost": true,
+        "SignalStrength": 75
+      }
+    },
+    "tether-missing-has-connected-to-host": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 85,
+        "Carrier": "Project Fi",
+        "SignalStrength": 75
+      }
+    },
+    "tether-missing-signal-strength": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 85,
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+      }
+    },
+    "tether-negative-signal-strength": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 85,
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+        "SignalStrength": -1
+      }
+    },
+    "tether-signal-strength-over-100": {
+      "GUID": "guid",
+      "Name": "name",
+      "Type": "Tether",
+      "Tether": {
+        "BatteryPercentage": 85,
+        "Carrier": "Project Fi",
+        "HasConnectedToHost": true,
+        "SignalStrength": 101
+      }
+    },
+    "third-party-vpn-missing-extension-id": {
+      "GUID": "guid",
+      "Name": "third-party VPN",
+      "Type": "VPN",
+      "VPN": {
+        "Type": "ThirdPartyVPN",
+        "ThirdPartyVPN": { }
+      }
+    },
+    "managed-network-invalid-vpn-type-third-party": {
+      "GUID": "guid",
+      "Name": "third-party VPN",
+      "Type": "VPN",
+      "VPN": {
+        "Type": "ThirdPartyVPN",
+        "ThirdPartyVPN": {
+          "ExtensionID": "deadbeefdeadbeefdeadbeefdeadbeef",
+        }
+      }
+    },
+    "managed-network-invalid-vpn-type-arc": {
+      "GUID": "guid",
+      "Name": "third-party VPN",
+      "Type": "VPN",
+      "VPN": {
+        "Type": "ARCVPN",
+        "ARCVPN": {
+          "TunnelChrome": "true"
+        }
+      }
+    },
+    "toplevel-empty": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations": [ ]
+    },
+    "toplevel-repaired": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid",
+            "Type": "Ethernet",
+            "Name": "eth0",
+            "Ethernet": {
+                "Authentication": "None"
+            }
+          }
+        ]
+    },
+    "toplevel-with-vpn": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid",
+            "Type": "VPN",
+            "Name": "name",
+            "VPN": {
+                "Host": "host",
+                "Type": "OpenVPN",
+                "OpenVPN": {
+                  "ClientCertType": "None"
+                }
+            }
+          }
+        ]
+    },
+    "toplevel-with-nested-warning": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid",
+            "Type": "Ethernet",
+            "unknown-field": "abc",
+            "Name": "eth0",
+            "Ethernet": {
+                "Authentication": "None"
+            }
+          }
+        ]
+    },
+    "toplevel-invalid-network": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid",
+            "Type": "unknown",
+            "Name": "unknown name",
+            "Ethernet": {
+                "Authentication": "None"
+            }
+          },
+          { "GUID": "guid",
+            "Type": "Ethernet",
+            "Name": "eth0",
+            "Ethernet": {
+                "Authentication": "None"
+            }
+          }
+        ]
+    },
+    "toplevel-with-repaired-networks": {
+      "NetworkConfigurations":
+      [ { "GUID": "{485d6076-dd44-6b6d-69787465725f5045}",
+          "Type": "WiFi",
+          "Name": "My WiFi Network",
+          "WiFi": {
+            "SSID": "ssid-none",
+            "Security": "None" }
+        },
+        { "GUID": "{485d6076-dd44-6b6d-69787465725f5046}",
+          "Type": "WiFi",
+          "Name": "My WiFi Network2",
+          "WiFi": {
+            "Passphrase": "12345678",
+            "SSID": "ssid-wpa",
+            "Security": "WPA-PSK" }
+        }
+      ],
+      "Certificates": [],
+      "Type": "UnencryptedConfiguration",
+    },
+    "toplevel-multiple-ethernet-configs": {
+        "Type": "UnencryptedConfiguration",
+        "NetworkConfigurations":
+        [ { "GUID": "guid-eth0",
+            "Type": "Ethernet",
+            "Name": "eth0",
+            "Ethernet": {
+              "Authentication": "None"
+            }
+          },
+          { "GUID": "guid-eth1",
+            "Type": "Ethernet",
+            "Name": "eth1",
+            "Ethernet": {
+              "Authentication": "None"
+            }
+          },
+          { "GUID": "guid-eap-eth0",
+            "Type": "Ethernet",
+            "Name": "eap-eth0",
+            "Ethernet": {
+              "Authentication": "8021X",
+              "EAP": {
+                "Identity": "user",
+                "Inner": "Automatic",
+                "Outer": "PEAP",
+                "Password": "test"
+              }
+            }
+          },
+          { "GUID": "guid-eap-eth1",
+            "Type": "Ethernet",
+            "Name": "eap-eth1",
+            "Ethernet": {
+              "Authentication": "8021X",
+              "EAP": {
+                "Identity": "user",
+                "Inner": "Automatic",
+                "Outer": "PEAP",
+                "Password": "test"
+              }
+            }
+          }
+        ]
+    },
+    "toplevel-multiple-ethernet-configs-repaired": {
+      "NetworkConfigurations":
+      [ { "GUID": "guid-eth1",
+          "Type": "Ethernet",
+          "Name": "eth1",
+          "Ethernet": {
+              "Authentication": "None"
+          }
+        },
+        { "GUID": "guid-eap-eth1",
+          "Type": "Ethernet",
+          "Name": "eap-eth1",
+          "Ethernet": {
+            "Authentication": "8021X",
+            "EAP": {
+              "Identity": "user",
+              "Inner": "Automatic",
+              "Outer": "PEAP",
+              "Password": "test"
+            }
+          }
+        }
+      ],
+      "Type": "UnencryptedConfiguration",
+    },
+    "toplevel-with-repairable-networks": {
+      "NetworkConfigurations":
+      [ { "GUID": "{485d6076-dd44-6b6d-69787465725f5045}",
+          "Type": "WiFi",
+          "Name": "My WiFi Network",
+          "UnknownField1": "Value1",
+          "UnknownField2": {
+            "UnknownSubField": "Value2" },
+          "WiFi": {
+            "SSID": "ssid-none",
+            "Security": "None" }
+        },
+        { "GUID": "{485d6076-dd44-6b6d-69787465725f5046}",
+          "Type": "WiFi",
+          "Name": "My WiFi Network2",
+          "WiFi": {
+            "Passphrase": "12345678",
+            "SSID": "ssid-wpa",
+            "UnknownField1": "Value1",
+            "Security": "WPA-PSK" }
+        }
+      ],
+      "Certificates": [],
+      "Type": "UnencryptedConfiguration",
+      "UnknownField3": [],
+    },
+    "invalid-scope-due-to-type": {
+      "Type": "Bla",
+      "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
+    },
+    "invalid-scope-due-to-missing-id": {
+      "Type": "Extension",
+    },
+    "invalid-scope-due-to-invalid-id-length": {
+      "Type": "Extension",
+      "Id": "blabla"
+    },
+    "invalid-scope-due-to-invalid-id-character": {
+      "Type": "Extension",
+      "Id": "9gjobkbdodapjbbncmagbccommkggmnj"
+    },
+    "invalid-scope-due-to-missing-type": {
+      "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
+    }
+}

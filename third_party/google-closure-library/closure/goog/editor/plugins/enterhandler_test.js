@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.EnterHandlerTest');
 goog.setTestOnly();
@@ -70,7 +62,7 @@ function selectNodeAndHitEnter(field, id) {
 /**
  * Creates a field with only the enter handler plugged in, for testing.
  * @param {string} id A DOM id.
- * @return {Field} A field.
+ * @return {!Field} A field.
  */
 function makeField(id, classnameRequiredToSplitBlockquote) {
   const field = new Field(id);
@@ -107,15 +99,13 @@ function waitForChangeEvents() {
 }
 
 function getNbsp() {
-  // On WebKit (pre-528) and Opera, &nbsp; shows up as its unicode character in
-  // innerHTML under some circumstances.
-  return (userAgent.WEBKIT && !userAgent.isVersionOrHigher('528')) ||
-          userAgent.OPERA ?
-      '\u00a0' :
-      '&nbsp;';
+  return '&nbsp;';
 }
 
-/** Assert that the prepared contents matches the expected. */
+/**
+ * Assert that the prepared contents matches the expected.
+ * @suppress {visibility} suppression added to enable type checking
+ */
 function assertPreparedContents(expected, original) {
   assertEquals(
       expected, field1.reduceOp_(Plugin.Op.PREPARE_CONTENTS_HTML, original));
@@ -153,11 +143,6 @@ testSuite({
     // deleted.
     const elem = field1.getElement();
     const dom = field1.getEditableDomHelper();
-    EXPECTEDFAILURES.expectFailureFor(
-        userAgent.OPERA,
-        'The blockquote is overwritten with DIV due to CORE-22104 -- Opera ' +
-            'overwrites the BLOCKQUOTE ancestor with DIV when doing FormatBlock ' +
-            'for DIV');
     try {
       assertEquals(
           'Blockquote should not be split', 1,
@@ -426,12 +411,6 @@ testSuite({
         false,
         testing.newSafeHtmlForTest(
             '<ol><li>hi!<span id="field1cursor"></span></li></ol>'));
-    if (userAgent.OPERA) {
-      // Opera doesn't actually place the selection in the empty span
-      // unless we add a text node first.
-      const dom = field1.getEditableDomHelper();
-      dom.getElement('field1cursor').appendChild(dom.createTextNode(''));
-    }
     const prevented = !selectNodeAndHitEnter(field1, 'field1cursor');
     assertFalse('<enter> in a list should not be prevented', prevented);
   },
@@ -659,18 +638,6 @@ testSuite({
    */
   testCollapsedSelectionKeepsBrOpera() {
     setUpFields(true);
-
-    if (userAgent.OPERA) {
-      field1.setSafeHtml(
-          false,
-          testing.newSafeHtmlForTest(
-              '<div><br id="pleasedontdeleteme"></div>'));
-      field1.focus();
-      testingEvents.fireKeySequence(field1.getElement(), KeyCodes.ENTER);
-      assertNotNull(
-          'The <br> must not have been deleted',
-          googDom.getElement('pleasedontdeleteme'));
-    }
   },
 
   testPrepareContent() {
@@ -680,6 +647,10 @@ testSuite({
         BrowserFeature.COLLAPSES_EMPTY_NODES ? '<br>' : '', '   ');
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testDeleteW3CSimple() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML = '<div>abcd</div>';
@@ -693,6 +664,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testDeleteW3CAll() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML = '<div>abcd</div>';
@@ -706,6 +681,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testDeleteW3CPartialEnd() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML = '<div>ab</div><div>cd</div>';
@@ -719,6 +698,10 @@ testSuite({
     }
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testDeleteW3CNonPartialEnd() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML = '<div>ab</div><div>cd</div>';
@@ -732,6 +715,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testIsInOneContainer() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML = '<div><br></div>';
@@ -744,6 +728,7 @@ testSuite({
     }
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testDeletingEndNodesWithNoNewLine() {
     if (BrowserFeature.HAS_W3C_RANGES) {
       container.innerHTML =
@@ -751,11 +736,82 @@ testSuite({
       const range = Range.createFromNodes(
           container.childNodes[2], 0, container.childNodes[4].childNodes[0], 1);
       range.select();
+      /** @suppress {visibility} suppression added to enable type checking */
       const newRange = EnterHandler.deleteW3cRange_(range);
       testingDom.assertHtmlContentsMatch('a<div>b</div>', container);
       assertTrue(newRange.isCollapsed());
       assertEquals(container, newRange.getStartNode());
       assertEquals(2, newRange.getStartOffset());
     }
+  },
+
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
+  testDeleteW3CRemoveEntireLineWithShiftDown() {
+    if (!BrowserFeature.HAS_W3C_RANGES) {
+      return;
+    }
+    container.innerHTML = '<div>a</div><div>b</div><div>cc</div><div>d</div>';
+    // anchor: |, focus: ||
+    // <div>a</div><div>|b</div><div>||cc</div><div>d</div>
+    const range = Range.createFromNodes(
+        container.children[1].firstChild, 0, container.children[2], 0);
+    range.select();
+    EnterHandler.deleteW3cRange_(range);
+
+    // Browsers will add a newline between the a and cc lines, but this doesn't
+    // happen in unit tests as we can't trigger the browser's behavior when
+    // editing content-editable divs.
+    testingDom.assertHtmlContentsMatch(
+        '<div>a</div><div>cc</div><div>d</div>', container);
+  },
+
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
+  testDeleteW3CRemoveEntireFirstLineWithShiftDown() {
+    if (!BrowserFeature.HAS_W3C_RANGES) {
+      return;
+    }
+    container.innerHTML = '<div>a</div><div>b</div><div>cc</div><div>d</div>';
+    // anchor: |, focus: ||
+    // <div>|a</div><div>||b</div><div>cc</div><div>d</div>
+    const range = Range.createFromNodes(
+        container.children[0].firstChild, 0, container.children[1], 0);
+    range.select();
+    EnterHandler.deleteW3cRange_(range);
+
+    // Browsers will add a newline between the a and cc lines, but this doesn't
+    // happen in unit tests as we can't trigger the browser's behavior when
+    // editing content-editable divs.
+    testingDom.assertHtmlContentsMatch(
+        '<div>b</div><div>cc</div><div>d</div>', container);
+  },
+
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
+  testDeleteW3CRemoveEntireLineWithPartialSecondLine() {
+    if (BrowserFeature.HAS_W3C_RANGES) {
+      return;
+    }
+    container.innerHTML = '<div>a</div><div>b</div><div>cc</div><div>d</div>';
+    // anchor: |, focus: ||
+    // <div>a</div><div>|b</div><div>c||c</div><div>d</div>
+    const range = Range.createFromNodes(
+        container.children[1].firstChild, 0, container.children[2].firstChild,
+        1);
+    range.select();
+    EnterHandler.deleteW3cRange_(range);
+
+    // Browsers will add a newline between the a and cc lines, but this doesn't
+    // happen in unit tests as we can't trigger the browser's behavior when
+    // editing content-editable divs.
+    testingDom.assertHtmlContentsMatch(
+        '<div>a</div><div>c</div><div>d</div>', container);
   },
 });

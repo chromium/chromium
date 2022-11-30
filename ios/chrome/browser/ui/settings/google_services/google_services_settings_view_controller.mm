@@ -1,30 +1,34 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface GoogleServicesSettingsViewController () <
-    PopoverLabelViewControllerDelegate> {
-}
+    PopoverLabelViewControllerDelegate>
+
+@property(nonatomic, strong)
+    EnterpriseInfoPopoverViewController* bubbleViewController;
 
 @end
 
@@ -37,6 +41,20 @@
   self.title = l10n_util::GetNSString(IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE);
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  // Close popover when font size changed for accessibility because it does not
+  // resize properly and the arrow is not aligned.
+  if (self.bubbleViewController) {
+    [self.bubbleViewController dismissViewControllerAnimated:YES
+                                                  completion:nil];
+    UIButton* buttonView = base::mac::ObjCCastStrict<UIButton>(
+        self.bubbleViewController.popoverPresentationController.sourceView);
+    buttonView.enabled = YES;
+  }
+}
+
 #pragma mark - Private
 
 - (void)switchAction:(UISwitch*)sender {
@@ -44,7 +62,40 @@
       [self.tableViewModel indexPathForItemType:sender.tag];
   DCHECK(indexPath);
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.serviceDelegate toggleSwitchItem:item withValue:sender.isOn];
+  CGRect targetRect = [self.view convertRect:sender.bounds fromView:sender];
+  [self.serviceDelegate toggleSwitchItem:item
+                               withValue:sender.isOn
+                              targetRect:targetRect];
+}
+
+// Shows an enterprise info popover anchored on  `buttonView` giving `message`.
+// A default message is used when `message` is nil.
+- (void)showEntepriseInfoPopoverOnButton:(UIButton*)buttonView
+                             withMessage:(NSString*)message {
+  if (message) {
+    self.bubbleViewController =
+        [[EnterpriseInfoPopoverViewController alloc] initWithMessage:message
+                                                      enterpriseName:nil];
+  } else {
+    self.bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
+        initWithEnterpriseName:nil];
+  }
+
+  self.bubbleViewController.delegate = self;
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  self.bubbleViewController.popoverPresentationController.sourceView =
+      buttonView;
+  self.bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  self.bubbleViewController.popoverPresentationController
+      .permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+  [self presentViewController:self.bubbleViewController
+                     animated:YES
+                   completion:nil];
 }
 
 #pragma mark - UITableViewDataSource
@@ -53,9 +104,9 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -64,9 +115,24 @@
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
         base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
+    if ([self.modelDelegate
+            isAllowChromeSigninItem:[self.tableViewModel
+                                        itemAtIndexPath:indexPath]
+                                        .type] &&
+        self.forcedSigninEnabled) {
+      // Use a specific target when tapping the info button of the allow
+      // sign-in item while forced sign-in is enabled. This is because the info
+      // bubble has different textual content.
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapForcedSigninUIInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+    } else {
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapManagedUIInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+    }
   }
   return cell;
 }
@@ -144,16 +210,6 @@
   }
 }
 
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.serviceDelegate didSelectItem:item];
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
@@ -167,28 +223,23 @@
 // Called when the user clicks on the information button of the managed
 // setting's UI. Shows a textual bubble with the information of the enterprise.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  EnterpriseInfoPopoverViewController* bubbleViewController =
-      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+  [self showEntepriseInfoPopoverOnButton:buttonView withMessage:nil];
+}
 
-  bubbleViewController.delegate = self;
-  // Disable the button when showing the bubble.
-  buttonView.enabled = NO;
-
-  // Set the anchor and arrow direction of the bubble.
-  bubbleViewController.popoverPresentationController.sourceView = buttonView;
-  bubbleViewController.popoverPresentationController.sourceRect =
-      buttonView.bounds;
-  bubbleViewController.popoverPresentationController.permittedArrowDirections =
-      UIPopoverArrowDirectionAny;
-
-  [self presentViewController:bubbleViewController animated:YES completion:nil];
+// Called when the user taps on the information button of the allow sign-in
+// item while forced sign-in is enabled. Shows a textual bubble with
+// information about the forced sign-in policy.
+- (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
+  [self showEntepriseInfoPopoverOnButton:buttonView
+                             withMessage:
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  GURL convertedURL = net::GURLWithNSURL(URL);
-  [self view:nil didTapLinkURL:convertedURL];
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 @end

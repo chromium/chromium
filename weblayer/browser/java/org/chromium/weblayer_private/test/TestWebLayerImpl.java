@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.components.autofill.AutofillProviderTestHelper;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.location.LocationUtils;
@@ -23,6 +25,8 @@ import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
 import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.MockFido2CredentialRequest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -30,6 +34,7 @@ import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.weblayer_private.BrowserImpl;
+import org.chromium.weblayer_private.DownloadImpl;
 import org.chromium.weblayer_private.InfoBarContainer;
 import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.TabImpl;
@@ -170,13 +175,6 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                 () -> { NetworkChangeNotifier.forceConnectivityState(true); });
     }
 
-    @NativeMethods
-    interface Natives {
-        void waitForBrowserControlsMetadataState(
-                long tabImpl, int top, int bottom, Runnable runnable);
-        void setIgnoreMissingKeyForTranslateManager(boolean ignore);
-    }
-
     @Override
     public boolean canInfoBarContainerScroll(ITab tab) {
         return ((TabImpl) tab).canInfoBarContainerScrollForTesting();
@@ -285,8 +283,80 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowserImpl browserImpl = (BrowserImpl) browser;
             browserImpl.getViewController().addContentCaptureConsumerForTesting(
-                    new TestContentCaptureConsumer(browserImpl.getActiveTab().getWebContents(),
-                            unwrappedOnNewEvents, unwrappedEventsObserved));
+                    new TestContentCaptureConsumer(unwrappedOnNewEvents, unwrappedEventsObserved));
         });
+    }
+
+    @Override
+    public void notifyOfAutofillEvents(IBrowser browser, IObjectWrapper /* Runnable */ onNewEvents,
+            IObjectWrapper /* ArrayList<Integer>*/ eventsObserved) {
+        Runnable unwrappedOnNewEvents = ObjectWrapper.unwrap(onNewEvents, Runnable.class);
+        ArrayList<Integer> unwrappedEventsObserved =
+                ObjectWrapper.unwrap(eventsObserved, ArrayList.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AutofillProviderTestHelper.disableDownloadServerForTesting();
+            BrowserImpl browserImpl = (BrowserImpl) browser;
+            TabImpl tab = browserImpl.getActiveTab();
+            tab.getAutofillProviderForTesting().replaceAutofillManagerWrapperForTesting(
+                    new TestAutofillManagerWrapper(browserImpl.getContext(), unwrappedOnNewEvents,
+                            unwrappedEventsObserved));
+        });
+    }
+
+    @Override
+    public void activateBackgroundFetchNotification(int id) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> DownloadImpl.activateNotificationForTesting(id));
+    }
+
+    @Override
+    public void expediteDownloadService() {
+        TestWebLayerImplJni.get().expediteDownloadService();
+    }
+
+    @Override
+    public void setMockWebAuthnEnabled(boolean enabled) {
+        if (enabled) {
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(
+                    new MockFido2CredentialRequest());
+        } else {
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(null);
+        }
+    }
+
+    @Override
+    public void fireOnAccessTokenIdentifiedAsInvalid(IProfile profile,
+            IObjectWrapper /* Set<String> */ scopes, IObjectWrapper /* String */ token)
+            throws RemoteException {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        profileImpl.fireOnAccessTokenIdentifiedAsInvalidForTesting(scopes, token);
+    }
+
+    @Override
+    public void grantLocationPermission(String url) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { TestWebLayerImplJni.get().grantLocationPermission(url); });
+    }
+
+    @Override
+    public void setTextScaling(IProfile profile, float value) {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        FontSizePrefs.getInstance(profileImpl).setUserFontScaleFactor(value);
+    }
+
+    @Override
+    public boolean getForceEnableZoom(IProfile profile) {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        return FontSizePrefs.getInstance(profileImpl).getForceEnableZoom();
+    }
+
+    @NativeMethods
+    interface Natives {
+        void waitForBrowserControlsMetadataState(
+                long tabImpl, int top, int bottom, Runnable runnable);
+        void setIgnoreMissingKeyForTranslateManager(boolean ignore);
+        void expediteDownloadService();
+        void grantLocationPermission(String url);
     }
 }

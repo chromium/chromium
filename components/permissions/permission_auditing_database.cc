@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,26 +13,16 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace permissions {
 
 namespace {
-
-int64_t TimeToInt64(base::Time time) {
-  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-}
-
-base::Time Int64ToTime(const int64_t& time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(time));
-}
 
 // For this database, schema migration is supported for at least 1 year.
 // This means we can deprecate old versions that landed more than a year ago.
@@ -125,8 +115,8 @@ bool PermissionAuditingDatabase::StorePermissionUsage(
                              "VALUES (?, ?, ?, ?, ?, ?, ?)"));
   statement.BindString(0, session.origin.Serialize());
   statement.BindInt(1, static_cast<int32_t>(session.type));
-  statement.BindInt64(2, TimeToInt64(session.usage_start));
-  statement.BindInt64(3, TimeToInt64(session.usage_end));
+  statement.BindTime(2, session.usage_start);
+  statement.BindTime(3, session.usage_end);
   statement.BindBool(4, session.had_user_activation);
   statement.BindBool(5, session.was_foreground);
   statement.BindBool(6, session.had_focus);
@@ -156,15 +146,13 @@ PermissionAuditingDatabase::GetPermissionUsageHistory(ContentSettingsType type,
       "AND usage_end_time >= ?"));
   statement.BindString(0, origin.Serialize());
   statement.BindInt(1, static_cast<int32_t>(type));
-  statement.BindInt64(2, start_time.is_null()
-                             ? std::numeric_limits<int64_t>::min()
-                             : TimeToInt64(start_time));
+  statement.BindTime(2, start_time.is_null() ? base::Time::Min() : start_time);
 
   while (statement.Step()) {
     sessions.push_back({.origin = origin,
                         .type = type,
-                        .usage_start = Int64ToTime(statement.ColumnInt64(0)),
-                        .usage_end = Int64ToTime(statement.ColumnInt64(1)),
+                        .usage_start = statement.ColumnTime(0),
+                        .usage_end = statement.ColumnTime(1),
                         .had_user_activation = statement.ColumnBool(2),
                         .was_foreground = statement.ColumnBool(3),
                         .had_focus = statement.ColumnBool(4)});
@@ -172,7 +160,7 @@ PermissionAuditingDatabase::GetPermissionUsageHistory(ContentSettingsType type,
   return sessions;
 }
 
-base::Optional<base::Time>
+absl::optional<base::Time>
 PermissionAuditingDatabase::GetLastPermissionUsageTime(
     ContentSettingsType type,
     const url::Origin& origin) {
@@ -186,9 +174,9 @@ PermissionAuditingDatabase::GetLastPermissionUsageTime(
                              "LIMIT 1"));
   statement.BindString(0, origin.Serialize());
   statement.BindInt(1, static_cast<int32_t>(type));
-  base::Optional<base::Time> last_usage;
+  absl::optional<base::Time> last_usage;
   if (statement.Step()) {
-    last_usage = Int64ToTime(statement.ColumnInt64(0));
+    last_usage = statement.ColumnTime(0);
   }
   return last_usage;
 }
@@ -207,10 +195,10 @@ bool PermissionAuditingDatabase::UpdateEndTime(ContentSettingsType type,
                              "SET usage_end_time = ? "
                              "WHERE origin = ? AND content_setting_type = ? "
                              "AND usage_start_time = ?"));
-  statement.BindInt64(0, TimeToInt64(new_end_time));
+  statement.BindTime(0, new_end_time);
   statement.BindString(1, origin.Serialize());
   statement.BindInt(2, static_cast<int32_t>(type));
-  statement.BindInt64(3, TimeToInt64(start_time));
+  statement.BindTime(3, start_time);
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -230,14 +218,11 @@ bool PermissionAuditingDatabase::DeleteSessionsBetween(base::Time start_time,
                              "DELETE FROM uses "
                              "WHERE usage_start_time BETWEEN ? AND ? "
                              "OR usage_end_time BETWEEN ? AND ?"));
-  auto start = start_time.is_null() ? std::numeric_limits<int64_t>::min()
-                                    : TimeToInt64(start_time);
-  auto end = end_time.is_null() ? std::numeric_limits<int64_t>::max()
-                                : TimeToInt64(end_time);
-  statement.BindInt64(0, start);
-  statement.BindInt64(1, end);
-  statement.BindInt64(2, start);
-  statement.BindInt64(3, end);
+  statement.BindTime(0, start_time.is_null() ? base::Time::Min() : start_time);
+  statement.BindTime(1, end_time.is_null() ? base::Time::Max() : end_time);
+  statement.BindTime(2, start_time.is_null() ? base::Time::Min() : start_time);
+  statement.BindTime(3, end_time.is_null() ? base::Time::Max() : end_time);
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return false;

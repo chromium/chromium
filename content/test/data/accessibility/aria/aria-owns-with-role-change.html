@@ -1,0 +1,16 @@
+<!--
+@WAIT-FOR:region
+-->
+<div id="owner" role="doc-glossary" aria-owns="owned" aria-label="Stuff">
+  Text
+</div>
+<div id="owned" role="button">Button</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('owner').role = 'doc-toc';
+    document.getElementById('owner').role = 'region';
+  }, 50);
+});
+</script>

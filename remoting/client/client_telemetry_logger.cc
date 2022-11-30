@@ -1,19 +1,21 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/client_telemetry_logger.h"
 
+#include <memory>
+
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "remoting/base/telemetry_log_writer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/log.h>
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -55,7 +57,8 @@ void ClientTelemetryLogger::SetHostInfo(const std::string& host_version,
                                         ChromotingEvent::Os host_os,
                                         const std::string& host_os_version) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  host_info_.reset(new HostInfo{host_version, host_os, host_os_version});
+  host_info_ = std::make_unique<HostInfo>(
+      HostInfo{host_version, host_os, host_os_version});
 }
 
 void ClientTelemetryLogger::SetTransportRoute(
@@ -111,12 +114,12 @@ void ClientTelemetryLogger::LogStatistics(
 
 void ClientTelemetryLogger::PrintLogStatistics(
     const protocol::PerformanceTracker& perf_tracker) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   __android_log_print(
       ANDROID_LOG_INFO, "stats",
 #else
   VLOG(0) << base::StringPrintf(
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       "Bandwidth:%.0f FrameRate:%.1f;"
       " (Avg, Max) Capture:%.1f, %" PRId64 " Encode:%.1f, %" PRId64
       " Decode:%.1f, %" PRId64 " Render:%.1f, %" PRId64 " RTL:%.0f, %" PRId64,
@@ -252,7 +255,7 @@ void ClientTelemetryLogger::FillEventContext(ChromotingEvent* event) const {
 void ClientTelemetryLogger::GenerateSessionId() {
   session_id_.resize(kSessionIdLength);
   for (int i = 0; i < kSessionIdLength; i++) {
-    const int alphabet_size = base::size(kSessionIdAlphabet) - 1;
+    const int alphabet_size = std::size(kSessionIdAlphabet) - 1;
     session_id_[i] = kSessionIdAlphabet[base::RandGenerator(alphabet_size)];
   }
   session_id_generation_time_ = base::TimeTicks::Now();
@@ -264,7 +267,7 @@ void ClientTelemetryLogger::RefreshSessionIdIfOutdated() {
     return;
   }
 
-  base::TimeDelta max_age = base::TimeDelta::FromDays(kMaxSessionIdAgeDays);
+  base::TimeDelta max_age = base::Days(kMaxSessionIdAgeDays);
   if (base::TimeTicks::Now() - session_id_generation_time_ > max_age) {
     // Log the old session ID.
     ChromotingEvent event = MakeSessionIdOldEvent();

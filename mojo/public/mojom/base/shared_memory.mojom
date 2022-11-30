@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ module mojo_base.mojom;
 
 // Wraps a shared memory handle with additional type information to convey that
 // the handle is only mappable to read-only memory.
+[Stable]
 struct ReadOnlySharedMemoryRegion {
   handle<shared_buffer> buffer;
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,15 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -39,7 +41,7 @@ class AutoCompleteHandlerTest : public testing::Test,
   class TestAXTreeSourceArc : public AXTreeSourceArc {
    public:
     explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate) {}
+        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
 
     // AXTreeSourceArc overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
@@ -184,10 +186,10 @@ TEST_F(AutoCompleteHandlerTest, Create) {
   ASSERT_EQ(2U, create_result.size());
 
   // Check both IDs are included.
-  ASSERT_TRUE(std::any_of(create_result.begin(), create_result.end(),
-                          [](const auto& p) { return p.first == 1; }));
-  ASSERT_TRUE(std::any_of(create_result.begin(), create_result.end(),
-                          [](const auto& p) { return p.first == 2; }));
+  ASSERT_TRUE(base::Contains(create_result, 1,
+                             &AutoCompleteHandler::IdAndHandler::first));
+  ASSERT_TRUE(base::Contains(create_result, 2,
+                             &AutoCompleteHandler::IdAndHandler::first));
 }
 
 TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
@@ -206,12 +208,10 @@ TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {
       AutoCompleteHandler::CreateIfNecessary(tree_source(), *event_data);
   ASSERT_EQ(2U, create_result.size());
 
-  auto editable1_handler =
-      std::find_if(create_result.begin(), create_result.end(),
-                   [](const auto& p) { return p.first == 1; });
-  auto editable2_handler =
-      std::find_if(create_result.begin(), create_result.end(),
-                   [](const auto& p) { return p.first == 2; });
+  auto editable1_handler = base::ranges::find(
+      create_result, 1, &AutoCompleteHandler::IdAndHandler::first);
+  auto editable2_handler = base::ranges::find(
+      create_result, 2, &AutoCompleteHandler::IdAndHandler::first);
   ASSERT_NE(editable1_handler, create_result.end());
   ASSERT_NE(editable2_handler, create_result.end());
 

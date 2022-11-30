@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View CollectionInfo:[hierarchical, rows=2, cols=0] actions:[AX_FOCUS] bundle:[chromeRole="tree", roleDescription="tree"]
+++++View text:"card content" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]
+++++TextView actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"card content" clickable focusable CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="treeItem", roleDescription="tree item"]

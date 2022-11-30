@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,16 +16,43 @@
 
 namespace blink {
 
+class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ExceptionStateScope(ScriptPromiseResolver* resolver)
+      : ExceptionState(resolver->script_state_->GetIsolate(),
+                       resolver->exception_context_),
+        resolver_(resolver) {
+    CHECK_NE(resolver->exception_context_.GetContext(),
+             ExceptionContext::Context::kEmpty);
+  }
+  ~ExceptionStateScope() {
+    DCHECK(HadException());
+    resolver_->Reject(GetException());
+    ClearException();
+  }
+
+ private:
+  ScriptPromiseResolver* resolver_;
+};
+
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       state_(kPending),
       script_state_(script_state),
-      resolver_(script_state),
-      keep_alive_(PERSISTENT_FROM_HERE) {
+      resolver_(script_state) {
   if (GetExecutionContext()->IsContextDestroyed()) {
     state_ = kDetached;
     resolver_.Clear();
   }
+}
+
+ScriptPromiseResolver::ScriptPromiseResolver(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context)
+    : ScriptPromiseResolver(script_state) {
+  exception_context_ = exception_context;
 }
 
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
@@ -62,13 +89,38 @@ void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
   exception_state.ClearException();
 }
 
+void ScriptPromiseResolver::RejectWithDOMException(
+    DOMExceptionCode exception_code,
+    const String& message) {
+  ExceptionStateScope(this).ThrowDOMException(exception_code, message);
+}
+
+void ScriptPromiseResolver::RejectWithSecurityError(
+    const String& sanitized_message,
+    const String& unsanitized_message) {
+  ExceptionStateScope(this).ThrowSecurityError(sanitized_message,
+                                               unsanitized_message);
+}
+
+void ScriptPromiseResolver::RejectWithTypeError(const String& message) {
+  ExceptionStateScope(this).ThrowTypeError(message);
+}
+
+void ScriptPromiseResolver::RejectWithRangeError(const String& message) {
+  ExceptionStateScope(this).ThrowRangeError(message);
+}
+
+void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
+  ExceptionStateScope(this).ThrowWasmCompileError(message);
+}
+
 void ScriptPromiseResolver::Detach() {
   if (state_ == kDetached)
     return;
   deferred_resolve_task_.Cancel();
   state_ = kDetached;
   resolver_.Clear();
-  value_.Clear();
+  value_.Reset();
   keep_alive_.Clear();
 }
 
@@ -89,10 +141,10 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextPaused());
   {
     if (state_ == kResolving) {
-      resolver_.Resolve(value_.NewLocal(script_state_->GetIsolate()));
+      resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
     } else {
       DCHECK_EQ(state_, kRejecting);
-      resolver_.Reject(value_.NewLocal(script_state_->GetIsolate()));
+      resolver_.Reject(value_.Get(script_state_->GetIsolate()));
     }
   }
   Detach();
@@ -101,8 +153,8 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
 void ScriptPromiseResolver::ScheduleResolveOrReject() {
   deferred_resolve_task_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMicrotask), FROM_HERE,
-      WTF::Bind(&ScriptPromiseResolver::ResolveOrRejectDeferred,
-                WrapPersistent(this)));
+      WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
+                    WrapPersistent(this)));
 }
 
 void ScriptPromiseResolver::ResolveOrRejectDeferred() {

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """TestResultSink uploads test results and artifacts to ResultDB via ResultSink.
@@ -20,6 +20,7 @@ import requests
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models.typ_types import ResultType
 
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 _log = logging.getLogger(__name__)
 
 
@@ -105,22 +106,45 @@ class TestResultSink(object):
         assert status is not None, 'unsupported result.type %r' % result.type
         return status
 
-    def _tags(self, result):
+    def _tags(self, result, expectations):
         """Returns a list of tags that should be added into a given test result.
 
         Args:
             result: The TestResult object to generate Tags for.
+            expectations: A test_expectations.TestExpectations object to pull
+                expectation data from.
         Returns:
             A list of {'key': 'tag-name', 'value': 'tag-value'} dicts.
         """
         # the message structure of the dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/master/resultdb/proto/type/common.proto#56
         pair = lambda k, v: {'key': k, 'value': v}
-        return [
+
+        tags = [
             pair('test_name', result.test_name),
             pair('web_tests_device_failed', str(result.device_failed)),
             pair('web_tests_result_type', result.type),
+            pair('web_tests_flag_specific_config_name',
+                 self._port.flag_specific_config_name() or ''),
+            pair('web_tests_base_timeout',
+                 str(int(self._port.timeout_ms() / 1000))),
         ]
+
+        for used_file in self._port.used_expectations_files():
+            tags.append(
+                pair('web_tests_used_expectations_file',
+                     self._port.relative_test_filename(used_file)))
+
+        if expectations:
+            expectation_tags = expectations.system_condition_tags
+            test_expectation = expectations.get_expectations(result.test_name)
+            raw_expected_results = test_expectation.raw_results
+            for expectation in raw_expected_results:
+                tags.append(pair('raw_typ_expectation', expectation))
+            for tag in expectation_tags:
+                tags.append(pair('typ_tag', tag))
+
+        return tags
 
     def _artifacts(self, result):
         """Returns a dict of artifacts with the absolute file paths.
@@ -136,7 +160,7 @@ class TestResultSink(object):
         ret = {}
         summaries = []
         base_dir = self._port.results_directory()
-        for name, paths in result.artifacts.artifacts.iteritems():
+        for name, paths in result.artifacts.artifacts.items():
             for p in paths:
                 art_id = name
                 i = 1
@@ -170,13 +194,15 @@ class TestResultSink(object):
         # Sort summaries to display "command" at the top of the summary.
         return sorted(summaries), ret
 
-    def sink(self, expected, result):
+    def sink(self, expected, result, expectations):
         """Reports the test result to ResultSink.
 
         Args:
             expected: True if the test was expected to fail and actually failed.
                 False, otherwise.
             result: The TestResult object to report.
+            expectations: A test_expectations.TestExpectations object to pull
+                expectation data from.
         Exceptions:
             requests.exceptions.ConnectionError, if there was a network
               connection error.
@@ -204,7 +230,7 @@ class TestResultSink(object):
             # TODO(crbug/1093659): web_tests report TestResult with the start
             # time.
             # 'startTime': result.start_time
-            'tags': self._tags(result),
+            'tags': self._tags(result, expectations),
             'testId': result.test_name,
             'testMetadata': {
                 'name': result.test_name,
@@ -221,6 +247,13 @@ class TestResultSink(object):
         if summaries:
             r['summaryHtml'] = '\n'.join(summaries)
 
+        if result.failure_reason:
+            primary_error_message = _truncate_to_utf8_bytes(
+                result.failure_reason.primary_error_message, 1024)
+            r['failureReason'] = {
+                'primaryErrorMessage': primary_error_message,
+            }
+
         self._send({'testResults': [r]})
 
     def close(self):
@@ -231,3 +264,31 @@ class TestResultSink(object):
         if not self.is_closed:
             self.is_closed = True
             self._session.close()
+
+
+def _truncate_to_utf8_bytes(s, length):
+    """ Truncates a string to a given number of bytes when encoded as UTF-8.
+
+    Ensures the given string does not take more than length bytes when encoded
+    as UTF-8. Adds trailing ellipsis (...) if truncation occurred. A truncated
+    string may end up encoding to a length slightly shorter than length
+    because only whole Unicode codepoints are dropped.
+
+    Args:
+        s: The string to truncate.
+        length: the length (in bytes) to truncate to.
+    """
+    try:
+        encoded = s.encode('utf-8')
+    # When encode throws UnicodeDecodeError in py2, it usually means the str is
+    # already encoded and has non-ascii chars. So skip re-encoding it.
+    except UnicodeDecodeError:
+        encoded = s
+    if len(encoded) > length:
+        # Truncate, leaving space for trailing ellipsis (...).
+        encoded = encoded[:length - 3]
+        # Truncating the string encoded as UTF-8 may have left the final
+        # codepoint only partially present. Pass 'ignore' to acknowledge
+        # and ensure this is dropped.
+        return encoded.decode('utf-8', 'ignore') + "..."
+    return s

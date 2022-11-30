@@ -31,14 +31,13 @@
     iframeWindow.addEventListener("load", () => {
       t.step(function() {
         nonFastScrollableRects = internals.nonFastScrollableRects(document);
-        assert_equals(nonFastScrollableRects.length, 3);
+        assert_equals(nonFastScrollableRects.length, 2);
         var rectStrings = [];
         for (var rect of nonFastScrollableRects)
           rectStrings.push(rectToString(rect));
         rectStrings.sort();
         assert_equals(rectStrings[0], '[51, 102, 200, 200]');
         assert_equals(rectStrings[1], '[51, 402, 211, 211]');
-        assert_equals(rectStrings[2], '[51, 702, 222, 222]');
         var iframeElement = document.querySelector("iframe");
         iframeElement.style.visibility = 'hidden';
       });

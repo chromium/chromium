@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,15 @@
 let shouldBarcodeDetectionFail = false;
 
 /**
+ * The barcode returned by successful calls to detect().
+ * @type {string}
+ */
+let detectedBarcode = 'LPA:1$ACTIVATION_CODE';
+
+/**
  * @implements {BarcodeDetector}
  */
-/* #export */ class FakeBarcodeDetector {
+export class FakeBarcodeDetector {
   constructor() {}
 
   /** @override */
@@ -20,7 +26,7 @@ let shouldBarcodeDetectionFail = false;
     if (shouldBarcodeDetectionFail) {
       return Promise.reject('Failed to detect code');
     }
-    return Promise.resolve([{rawValue: 'testbarcode'}]);
+    return Promise.resolve([{rawValue: detectedBarcode}]);
   }
 
   /** @override */
@@ -35,13 +41,26 @@ let shouldBarcodeDetectionFail = false;
   static setShouldFail(shouldFail) {
     shouldBarcodeDetectionFail = shouldFail;
   }
+
+  /**
+   * @param {string} barcode
+   */
+  static setDetectedBarcode(barcode) {
+    detectedBarcode = barcode;
+  }
 }
 
 /**
  * @implements {ImageCapture}
  */
-/* #export */ class FakeImageCapture {
-  constructor(mediaStream) {}
+export class FakeImageCapture {
+  constructor(mediaStream) {
+    this.track = {
+      readyState: 'live',
+      enabled: true,
+      muted: false,
+    };
+  }
 
   /** @override */
   grabFrame() {

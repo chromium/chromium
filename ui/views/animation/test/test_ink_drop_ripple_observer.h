@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_RIPPLE_OBSERVER_H_
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_RIPPLE_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_ripple_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
@@ -22,6 +23,11 @@ class TestInkDropRippleObserver
       public TestInkDropAnimationObserverHelper<InkDropState> {
  public:
   TestInkDropRippleObserver();
+
+  TestInkDropRippleObserver(const TestInkDropRippleObserver&) = delete;
+  TestInkDropRippleObserver& operator=(const TestInkDropRippleObserver&) =
+      delete;
+
   ~TestInkDropRippleObserver() override;
 
   void set_ink_drop_ripple(InkDropRipple* ink_drop_ripple) {
@@ -56,9 +62,7 @@ class TestInkDropRippleObserver
   InkDropState target_state_at_last_animation_ended_ = InkDropState::HIDDEN;
 
   // An InkDropRipple to spy info from when notifications are handled.
-  InkDropRipple* ink_drop_ripple_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropRippleObserver);
+  raw_ptr<InkDropRipple> ink_drop_ripple_;
 };
 
 }  // namespace test

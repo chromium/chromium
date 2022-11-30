@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_EMBEDDER_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_EMBEDDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,6 +19,10 @@ namespace content {
 class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
+
+namespace guest_view {
+class GuestViewBase;
+}  // namespace guest_view
 
 namespace extensions {
 
@@ -49,7 +54,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -73,7 +78,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
   void DidCreateMimeHandlerViewGuest(
       mojo::PendingRemote<mime_handler::BeforeUnloadControl>
           before_unload_control_remote,
-      content::WebContents* guest_web_contents);
+      std::unique_ptr<guest_view::GuestViewBase> guest);
   // Returns null before |render_frame_host_| is known.
   mojom::MimeHandlerViewContainerManager* GetContainerManager();
 
@@ -85,12 +90,12 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
 
   // The frame associated with |frame_tree_node_id_|. Known to MHVE after the
   // navigation commits.
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
       container_manager_;
 
   // The child frame of the template page at which we attach the guest contents.
-  content::RenderFrameHost* outer_contents_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> outer_contents_rfh_ = nullptr;
 
   bool ready_to_create_mime_handler_view_ = false;
 

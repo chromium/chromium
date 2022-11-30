@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace i18n {
@@ -26,6 +25,10 @@ class ValidationRulesStorageFactory {
  public:
   static std::unique_ptr<::i18n::addressinput::Storage> CreateStorage();
 
+  ValidationRulesStorageFactory(const ValidationRulesStorageFactory&) = delete;
+  ValidationRulesStorageFactory& operator=(
+      const ValidationRulesStorageFactory&) = delete;
+
  private:
   friend struct base::LazyInstanceTraitsBase<ValidationRulesStorageFactory>;
 
@@ -33,8 +36,6 @@ class ValidationRulesStorageFactory {
   ~ValidationRulesStorageFactory();
 
   scoped_refptr<JsonPrefStore> json_pref_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidationRulesStorageFactory);
 };
 
 }  // namespace autofill

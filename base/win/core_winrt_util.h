@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <inspectable.h>
 #include <roapi.h>
 #include <windef.h>
-
-#include <string>
 
 #include "base/base_export.h"
 #include "base/win/scoped_hstring.h"
@@ -26,10 +24,6 @@ BASE_EXPORT bool ResolveCoreWinRTDelayload();
 
 // The following stubs are provided for when component build is enabled, in
 // order to avoid the propagation of delay-loading CoreWinRT to other modules.
-
-BASE_EXPORT HRESULT RoInitialize(RO_INIT_TYPE init_type);
-
-BASE_EXPORT void RoUninitialize();
 
 BASE_EXPORT HRESULT RoGetActivationFactory(HSTRING class_id,
                                            const IID& iid,

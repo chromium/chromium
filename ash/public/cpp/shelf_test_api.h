@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_SHELF_TEST_API_H_
 #define ASH_PUBLIC_CPP_SHELF_TEST_API_H_
-
-#include <memory>
 
 #include "ash/ash_export.h"
 
@@ -32,10 +30,6 @@ class ASH_EXPORT ShelfTestApi {
   bool IsAlignmentBottomLocked();
 
   views::View* GetHomeButton();
-
-  // Whether the shelf has a login shelf gesture handler set up, which would
-  // imply that swipe from shelf gesture detection is active.
-  bool HasLoginShelfGestureHandler() const;
 
   // Returns ui information of scrollable shelf for the given state. If |state|
   // specifies the scroll distance, the target offset, which is the offset value

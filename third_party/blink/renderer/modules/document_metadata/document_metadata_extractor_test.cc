@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -77,8 +78,7 @@ PropertyPtr DocumentMetadataExtractorTest::CreateStringProperty(
     const String& value) {
   PropertyPtr property = Property::New();
   property->name = name;
-  property->values = Values::New();
-  property->values->set_string_values({value});
+  property->values = Values::NewStringValues({value});
   return property;
 }
 
@@ -87,8 +87,7 @@ PropertyPtr DocumentMetadataExtractorTest::CreateBooleanProperty(
     const bool& value) {
   PropertyPtr property = Property::New();
   property->name = name;
-  property->values = Values::New();
-  property->values->set_bool_values({value});
+  property->values = Values::NewBoolValues({value});
   return property;
 }
 
@@ -97,8 +96,7 @@ PropertyPtr DocumentMetadataExtractorTest::CreateLongProperty(
     const int64_t& value) {
   PropertyPtr property = Property::New();
   property->name = name;
-  property->values = Values::New();
-  property->values->set_long_values({value});
+  property->values = Values::NewLongValues({value});
   return property;
 }
 
@@ -107,9 +105,9 @@ PropertyPtr DocumentMetadataExtractorTest::CreateEntityProperty(
     EntityPtr value) {
   PropertyPtr property = Property::New();
   property->name = name;
-  property->values = Values::New();
-  property->values->set_entity_values(Vector<EntityPtr>());
-  property->values->get_entity_values().push_back(std::move(value));
+  Vector<EntityPtr> entities;
+  entities.push_back(std::move(value));
+  property->values = Values::NewEntityValues(std::move(entities));
   return property;
 }
 
@@ -395,11 +393,10 @@ TEST_F(DocumentMetadataExtractorTest, repeated) {
 
   PropertyPtr name = Property::New();
   name->name = "name";
-  name->values = Values::New();
-  Vector<String> nameValues;
-  nameValues.push_back("First name");
-  nameValues.push_back("Second name");
-  name->values->set_string_values(nameValues);
+  Vector<String> name_values;
+  name_values.push_back("First name");
+  name_values.push_back("Second name");
+  name->values = Values::NewStringValues(name_values);
 
   restaurant->properties.push_back(std::move(name));
 
@@ -445,10 +442,9 @@ TEST_F(DocumentMetadataExtractorTest, repeatedObject) {
   restaurant->properties.push_back(
       CreateStringProperty("name", "Ye ol greasy diner"));
 
-  PropertyPtr addressProperty = Property::New();
-  addressProperty->name = "address";
-  addressProperty->values = Values::New();
-  addressProperty->values->set_entity_values(Vector<EntityPtr>());
+  PropertyPtr address_property = Property::New();
+  address_property->name = "address";
+  Vector<EntityPtr> entities;
   for (int i = 0; i < 2; ++i) {
     EntityPtr address = Entity::New();
     address->type = "Thing";
@@ -456,9 +452,10 @@ TEST_F(DocumentMetadataExtractorTest, repeatedObject) {
         CreateStringProperty("streetAddress", "123 Big Oak Road"));
     address->properties.push_back(
         CreateStringProperty("addressLocality", "San Francisco"));
-    addressProperty->values->get_entity_values().push_back(std::move(address));
+    entities.push_back(std::move(address));
   }
-  restaurant->properties.push_back(std::move(addressProperty));
+  address_property->values = Values::NewEntityValues(std::move(entities));
+  restaurant->properties.push_back(std::move(address_property));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);
@@ -576,12 +573,11 @@ TEST_F(DocumentMetadataExtractorTest, truncateTooManyValuesInField) {
 
   PropertyPtr name = Property::New();
   name->name = "name";
-  name->values = Values::New();
-  Vector<String> nameValues;
+  Vector<String> name_values;
   for (int i = 0; i < 100; ++i) {
-    nameValues.push_back("a");
+    name_values.push_back("a");
   }
-  name->values->set_string_values(nameValues);
+  name->values = Values::NewStringValues(name_values);
 
   restaurant->properties.push_back(std::move(name));
 

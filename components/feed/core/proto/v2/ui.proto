@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,10 +34,37 @@ message StreamUpdate {
   // Additional shared states to be used. Usually just one, and sent only on the
   // first update.
   repeated SharedState new_shared_states = 2;
+  // Time of the last full server fetch. Populated only after the stream data is
+  // loaded. Not updated on NextPage requests.
+  int64 fetch_time_ms = 3;
+  // Logging parameters to be associated with updated_slices.
+  LoggingParameters logging_parameters = 4;
+}
+
+message LoggingParameters {
+  // Either email or session_id should be set to enable activity logging.
+
+  // The session ID is for signed out users.
+  string session_id = 1;
+  string email = 2;
+
+  // A client ID used for reliability logging.
+  string client_instance_id = 3;
+
+  // Whether attention / interaction logging is enabled.
+  bool logging_enabled = 4;
+  // Whether view actions may be recorded.
+  bool view_actions_enabled = 5;
+  // The EventID of the first page response. Must be present for attention
+  // logging.
+  bytes root_event_id = 6;
 }
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.
 message Slice {
+  // Deprecated slice metadata
+  reserved 5;
+
   oneof SliceData {
     XSurfaceSlice xsurface_slice = 1;
     ZeroStateSlice zero_state_slice = 3;
@@ -54,6 +81,8 @@ message ZeroStateSlice {
     NO_CARDS_AVAILABLE = 1;
     // An error indicating there were problems refreshing the feed.
     CANT_REFRESH = 2;
+    // There is no content because there are no web feed subscriptions.
+    NO_WEB_FEED_SUBSCRIPTIONS = 3;
   };
   Type type = 1;
 }

@@ -1,15 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {LanguagesBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
-// #import {FakeSettingsPrivate} from '../fake_settings_private.js';
-// #import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.m.js';
-// clang-format on
+import {LanguagesBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
 
 suite('edit dictionary page', () => {
   function getFakePrefs() {
@@ -55,26 +53,25 @@ suite('edit dictionary page', () => {
 
   /** @type {?settings.SettingsEditDictionaryPageElement} */
   let editDictPage;
-  /** @type {?settings.FakeLanguageSettingsPrivate} */
+  /** @type {?FakeLanguageSettingsPrivate} */
   let languageSettingsPrivate;
-  /** @type {?settings.FakeSettingsPrivate} */
+  /** @type {?FakeSettingsPrivate} */
   let settingsPrefs;
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
-    loadTimeData.overrideValues({enableLanguageSettingsV2: true});
   });
 
   setup(() => {
     document.body.innerHTML = '';
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new settings.FakeSettingsPrivate(getFakePrefs());
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
     settingsPrefs.initialize(settingsPrivate);
 
-    languageSettingsPrivate = new settings.FakeLanguageSettingsPrivate();
+    languageSettingsPrivate = new FakeLanguageSettingsPrivate();
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
-    const browserProxy = new settings.TestLanguagesBrowserProxy();
-    settings.LanguagesBrowserProxyImpl.instance_ = browserProxy;
+    const browserProxy = new TestLanguagesBrowserProxy();
+    LanguagesBrowserProxyImpl.setInstanceForTesting(browserProxy);
     browserProxy.setLanguageSettingsPrivate(languageSettingsPrivate);
 
     editDictPage = document.createElement('os-settings-edit-dictionary-page');
@@ -104,21 +101,21 @@ suite('edit dictionary page', () => {
     // add word
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([WORD], []);
     editDictPage.$.newWord.value = `${WORD} ${WORD}`;
-    Polymer.dom.flush();
+    flush();
     assertFalse(editDictPage.$.addWord.disabled);
     assertFalse(editDictPage.$.newWord.invalid);
     assertEquals(editDictPage.$.newWord.errorMessage, '');
 
     // add duplicate word
     editDictPage.$.newWord.value = WORD;
-    Polymer.dom.flush();
+    flush();
     assertTrue(editDictPage.$.addWord.disabled);
     assertTrue(editDictPage.$.newWord.invalid);
     assertEquals(editDictPage.$.newWord.errorMessage, 'duplicate');
 
     // remove word
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners([], [WORD]);
-    Polymer.dom.flush();
+    flush();
     assertFalse(editDictPage.$.addWord.disabled);
     assertFalse(editDictPage.$.newWord.invalid);
     assertEquals(editDictPage.$.newWord.errorMessage, '');
@@ -134,21 +131,21 @@ suite('edit dictionary page', () => {
     });
 
     editDictPage.$.newWord.value = OK_WORD;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(editDictPage.$.addWord.disabled);
     assertFalse(editDictPage.$.newWord.invalid);
     assertEquals(editDictPage.$.newWord.errorMessage, '');
 
     editDictPage.$.newWord.value = TOO_LONG_WORD;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(editDictPage.$.addWord.disabled);
     assertTrue(editDictPage.$.newWord.invalid);
     assertEquals(editDictPage.$.newWord.errorMessage, 'too long');
 
     editDictPage.$.newWord.value = TOO_BIG_WORD;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(editDictPage.$.addWord.disabled);
     assertTrue(editDictPage.$.newWord.invalid);
@@ -158,23 +155,23 @@ suite('edit dictionary page', () => {
   test('shows message when empty', () => {
     assertTrue(!!editDictPage);
     return languageSettingsPrivate.whenCalled('getSpellcheckWords').then(() => {
-      Polymer.dom.flush();
+      flush();
 
       assertFalse(editDictPage.$.noWordsLabel.hidden);
     });
   });
 
   test('adds words', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     editDictPage.$.newWord.value = 'valid word2';
     addWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    const listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    const listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(2, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('valid word2', listItems[0]);
@@ -182,30 +179,33 @@ suite('edit dictionary page', () => {
   });
 
   test('removes word', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
 
-    const removeWordButton = editDictPage.$$('cr-icon-button');
+    const removeWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     removeWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(0, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        0, editDictPage.shadowRoot.querySelector('#list').items.length);
   });
 
   test('syncs removed and added words', () => {
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners(
         /*added=*/['word1', 'word2', 'word3'], /*removed=*/[]);
-    Polymer.dom.flush();
+    flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    let listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    let listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(3, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('word3', listItems[0]);
@@ -214,10 +214,10 @@ suite('edit dictionary page', () => {
 
     languageSettingsPrivate.onCustomDictionaryChanged.callListeners(
         /*added=*/['word4'], /*removed=*/['word2', 'word3']);
-    Polymer.dom.flush();
+    flush();
 
-    assertTrue(!!editDictPage.$$('#list'));
-    listItems = editDictPage.$$('#list').items;
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    listItems = editDictPage.shadowRoot.querySelector('#list').items;
     assertEquals(2, listItems.length);
     // list is shown with latest word added on top.
     assertEquals('word4', listItems[0]);
@@ -225,31 +225,35 @@ suite('edit dictionary page', () => {
   });
 
   test('removes is in tab order', () => {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
 
-    const removeWordButton = editDictPage.$$('cr-icon-button');
+    const removeWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', removeWordButton.getAttribute('tabindex'));
     removeWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(editDictPage.$.noWordsLabel.hidden);
 
     editDictPage.$.newWord.value = 'valid word2';
     addWordButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
-    const newRemoveWordButton = editDictPage.$$('cr-icon-button');
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
+    const newRemoveWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', newRemoveWordButton.getAttribute('tabindex'));
   });

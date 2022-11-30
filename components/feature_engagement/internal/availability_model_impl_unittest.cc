@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,21 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/feature_engagement/internal/persistent_availability_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
 namespace {
 
-const base::Feature kTestFeatureFoo{"test_foo",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureBar{"test_bar",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureQux{"test_qux",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTestFeatureNop{"test_nop",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeatureFoo, "test_foo", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureBar, "test_bar", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureQux, "test_qux", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureNop, "test_nop", base::FEATURE_DISABLED_BY_DEFAULT);
 
 class AvailabilityModelImplTest : public testing::Test {
  public:
@@ -34,6 +28,10 @@ class AvailabilityModelImplTest : public testing::Test {
     initialized_callback_ = base::BindOnce(
         &AvailabilityModelImplTest::OnInitialized, base::Unretained(this));
   }
+
+  AvailabilityModelImplTest(const AvailabilityModelImplTest&) = delete;
+  AvailabilityModelImplTest& operator=(const AvailabilityModelImplTest&) =
+      delete;
 
   ~AvailabilityModelImplTest() override = default;
 
@@ -63,11 +61,8 @@ class AvailabilityModelImplTest : public testing::Test {
   std::unique_ptr<AvailabilityModelImpl> availability_model_;
 
   AvailabilityModel::OnInitializedCallback initialized_callback_;
-  base::Optional<bool> success_;
-  base::Optional<uint32_t> current_day_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModelImplTest);
+  absl::optional<bool> success_;
+  absl::optional<uint32_t> current_day_;
 };
 
 }  // namespace
@@ -105,7 +100,7 @@ TEST_F(AvailabilityModelImplTest, SuccessfullyLoadThreeFeatures) {
   EXPECT_EQ(100u, availability_model_->GetAvailability(kTestFeatureFoo));
   EXPECT_EQ(200u, availability_model_->GetAvailability(kTestFeatureBar));
   EXPECT_EQ(300u, availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 
@@ -120,13 +115,13 @@ TEST_F(AvailabilityModelImplTest, FailToLoadThreeFeatures) {
   EXPECT_FALSE(availability_model_->IsReady());
 
   // Load failed, so all results should be ignored.
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureFoo));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureBar));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureNop));
-  EXPECT_EQ(base::nullopt,
+  EXPECT_EQ(absl::nullopt,
             availability_model_->GetAvailability(kTestFeatureQux));
 }
 

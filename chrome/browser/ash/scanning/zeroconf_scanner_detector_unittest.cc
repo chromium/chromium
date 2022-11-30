@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/fake_service_discovery_device_lister.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +28,6 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::Scanner;
 using local_discovery::FakeServiceDiscoveryDeviceLister;
 using local_discovery::ServiceDescription;
 using local_discovery::ServiceDiscoveryDeviceLister;
@@ -59,7 +58,7 @@ MATCHER_P(ScannersAreEqual, expected_scanners, "") {
   return true;
 }
 
-// TODO(jschettler): Move these functions and the copies in
+// TODO(b/184743530): Move these functions and the copies in
 // zeroconf_printer_detector_unittest.cc into a shared file.
 // Determine basic scanner attributes deterministically but pseudorandomly based
 // on the scanner name. The exact values returned here are not important. The
@@ -95,8 +94,7 @@ Scanner MakeExpectedScanner(const std::string& name,
                             const std::string& rs) {
   const net::IPAddress ip_address = GetIPAddressFor(name);
   const int port = GetPortFor(name);
-  auto scanner =
-      CreateSaneAirscanScanner(name, service_type, rs, ip_address, port);
+  auto scanner = CreateSaneScanner(name, service_type, rs, ip_address, port);
   return scanner.value();
 }
 
@@ -147,10 +145,16 @@ class ZeroconfScannerDetectorTest : public testing::Test {
     auto escls_lister = std::make_unique<FakeServiceDiscoveryDeviceLister>(
         runner, ZeroconfScannerDetector::kEsclsServiceType);
     escls_lister_ = escls_lister.get();
+    auto generic_scanner_lister =
+        std::make_unique<FakeServiceDiscoveryDeviceLister>(
+            runner, ZeroconfScannerDetector::kGenericScannerServiceType);
+    generic_scanner_lister_ = generic_scanner_lister.get();
     listers_[ZeroconfScannerDetector::kEsclServiceType] =
         std::move(escl_lister);
     listers_[ZeroconfScannerDetector::kEsclsServiceType] =
         std::move(escls_lister);
+    listers_[ZeroconfScannerDetector::kGenericScannerServiceType] =
+        std::move(generic_scanner_lister);
   }
 
   void CreateDetector() {
@@ -167,6 +171,7 @@ class ZeroconfScannerDetectorTest : public testing::Test {
                             base::Unretained(this)));
     escl_lister_->SetDelegate(detector_.get());
     escls_lister_->SetDelegate(detector_.get());
+    generic_scanner_lister_->SetDelegate(detector_.get());
   }
 
   // ScannerDetector callback.
@@ -188,6 +193,7 @@ class ZeroconfScannerDetectorTest : public testing::Test {
   // available to the test via these pointers.
   FakeServiceDiscoveryDeviceLister* escl_lister_;
   FakeServiceDiscoveryDeviceLister* escls_lister_;
+  FakeServiceDiscoveryDeviceLister* generic_scanner_lister_;
 
   // Detector under test.
   std::unique_ptr<ZeroconfScannerDetector> detector_;
@@ -224,6 +230,28 @@ TEST_F(ZeroconfScannerDetectorTest, EsclsScanner) {
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 
+// Test that a generic Epson _scanner._tcp scanner can be detected.
+TEST_F(ZeroconfScannerDetectorTest, EpsonGenericScanner) {
+  generic_scanner_lister_->Announce(MakeServiceDescription(
+      "EPSONScanner1", ZeroconfScannerDetector::kGenericScannerServiceType,
+      ""));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {MakeExpectedScanner(
+      "EPSONScanner1", ZeroconfScannerDetector::kGenericScannerServiceType,
+      "")};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that a generic non-Epson _scanner._tcp scanner is not listed.
+TEST_F(ZeroconfScannerDetectorTest, NonEpsonGenericScanner) {
+  generic_scanner_lister_->Announce(MakeServiceDescription(
+      "Scanner1", ZeroconfScannerDetector::kGenericScannerServiceType, ""));
+  CreateDetector();
+  CompleteTasks();
+  EXPECT_TRUE(scanners_.empty());
+}
+
 // Test that the same scanner detected by two listers is merged into a single
 // Scanner.
 TEST_F(ZeroconfScannerDetectorTest, MergedScanner) {
@@ -238,6 +266,29 @@ TEST_F(ZeroconfScannerDetectorTest, MergedScanner) {
                            ZeroconfScannerDetector::kEsclServiceType, ""),
        MakeExpectedScanner("Scanner1",
                            ZeroconfScannerDetector::kEsclsServiceType, "")})};
+  EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
+}
+
+// Test that the same Epson scanner detected by three listers is merged into a
+// single Scanner.
+TEST_F(ZeroconfScannerDetectorTest, MergedEpsonScanner) {
+  escl_lister_->Announce(MakeServiceDescription(
+      "EPSONScanner1", ZeroconfScannerDetector::kEsclServiceType, ""));
+  escls_lister_->Announce(MakeServiceDescription(
+      "EPSONScanner1", ZeroconfScannerDetector::kEsclsServiceType, ""));
+  generic_scanner_lister_->Announce(MakeServiceDescription(
+      "EPSONScanner1", ZeroconfScannerDetector::kGenericScannerServiceType,
+      ""));
+  CreateDetector();
+  CompleteTasks();
+  std::vector<Scanner> expected_scanners = {MergeScanners(
+      {MakeExpectedScanner("EPSONScanner1",
+                           ZeroconfScannerDetector::kEsclServiceType, ""),
+       MakeExpectedScanner("EPSONScanner1",
+                           ZeroconfScannerDetector::kEsclsServiceType, ""),
+       MakeExpectedScanner("EPSONScanner1",
+                           ZeroconfScannerDetector::kGenericScannerServiceType,
+                           "")})};
   EXPECT_THAT(scanners_, ScannersAreEqual(expected_scanners));
 }
 

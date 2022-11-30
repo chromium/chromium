@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Деактивиране на всички анимирани изображения.</translation>
 <translation id="1703735871906654364">Caret Browsing</translation>
 <translation id="1791496371305830581">Разрешаване на всички анимирани изображения.</translation>
+<translation id="1974060860693918893">Разширени</translation>
 <translation id="1996252509865389616">Да се активира ли?</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2179565792157161713">Отваряне на дългото описание в нов раздел</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Натиснете и задръжте &lt;span class='key'&gt;Control&lt;/span&gt;, за да се придвижвате дума по дума.</translation>
 <translation id="6550675742724504774">Опции</translation>
+<translation id="6699630355767768222">Стъпка 3: Заменете цветовата ос за корекцията.</translation>
 <translation id="6838518108677880446">Настройване:</translation>
 <translation id="690628312087070417">Когато курсорът се премести на голямо разстояние:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Правило за анимациите</translation>
 <translation id="8480209185614411573">High Contrast</translation>
 <translation id="8609925175482059018">Натиснете &lt;span class='key'&gt;F7&lt;/span&gt; веднъж, за да включите функцията Caret Browsing, и втори път, за да я изключите.</translation>
+<translation id="8798099450830957504">По подразбиране</translation>
 <translation id="894241283505723656">Long Descriptions in Context Menu</translation>
 </translationbundle>

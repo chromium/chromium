@@ -1,0 +1,12 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+[Desktop Entry]
+Name={{ gettext("URL_FORWARDER_NAME")|format(gettext("PRODUCT_NAME")) }}
+Exec=/opt/google/chrome-remote-desktop/remote-open-url %U
+Type=Application
+Terminal=false
+Comment={{
+    gettext("URL_FORWARDER_DESCRIPTION")|format(gettext("PRODUCT_NAME")) }}
+MimeType=x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/mailto;

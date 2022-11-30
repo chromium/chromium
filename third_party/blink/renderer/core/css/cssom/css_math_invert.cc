@@ -1,18 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-base::Optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
+V8CSSNumberish* CSSMathInvert::value() {
+  return MakeGarbageCollected<V8CSSNumberish>(value_);
+}
+
+absl::optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
   auto sum = value_->SumValue();
-  if (!sum || sum->terms.size() != 1)
-    return base::nullopt;
+  if (!sum.has_value() || sum->terms.size() != 1)
+    return absl::nullopt;
 
   for (auto& unit_exponent : sum->terms[0].units)
     unit_exponent.value *= -1;
@@ -32,6 +39,16 @@ void CSSMathInvert::BuildCSSText(Nested nested,
 
   if (paren_less == ParenLess::kNo)
     result.Append(")");
+}
+
+CSSMathExpressionNode* CSSMathInvert::ToCalcExpressionNode() const {
+  CSSMathExpressionNode* right_side = value_->ToCalcExpressionNode();
+  if (!right_side)
+    return nullptr;
+  return CSSMathExpressionOperation::CreateArithmeticOperation(
+      CSSMathExpressionNumericLiteral::Create(
+          1, CSSPrimitiveValue::UnitType::kNumber),
+      right_side, CSSMathOperator::kDivide);
 }
 
 }  // namespace blink

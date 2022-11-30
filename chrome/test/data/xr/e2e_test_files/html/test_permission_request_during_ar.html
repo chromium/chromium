@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      immersiveArSessionInit.requiredFeatures.push('dom-overlay');
+      immersiveArSessionInit.domOverlay = { root: document.body };
+      function setupCanvasClick() {
+        webglCanvas.onclick = function() {
+          console.log("Requesting Permission");
+          navigator.geolocation.getCurrentPosition(
+            ()=> {
+              console.log('Permission request resolved');
+            },
+            ()=>{
+              console.log('Permission request rejected');
+            });
+        };
+      }
+    </script>
+  </body>
+</html>

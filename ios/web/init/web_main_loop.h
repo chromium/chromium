@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace web {
@@ -22,12 +21,16 @@ class WebSubThread;
 class WebMainLoop {
  public:
   explicit WebMainLoop();
+
+  WebMainLoop(const WebMainLoop&) = delete;
+  WebMainLoop& operator=(const WebMainLoop&) = delete;
+
   virtual ~WebMainLoop();
 
   void Init();
 
   void EarlyInitialization();
-  void MainMessageLoopStart();
+  void CreateMainMessageLoop();
 
   // Creates and starts running the tasks needed to complete startup.
   void CreateStartupTasks();
@@ -58,7 +61,7 @@ class WebMainLoop {
   // True if the non-UI threads were created.
   bool created_threads_;
 
-  // Members initialized in |MainMessageLoopStart()| ---------------------------
+  // Members initialized in `CreateMainMessageLoop()` --------------------------
   // The SingleThreadTaskExecutor and NetworkChangeNotifier are not owned by the
   // WebMainLoop but still need to be destroyed in correct order so use
   // ScopedClosureRunner.
@@ -69,17 +72,15 @@ class WebMainLoop {
   // classes constructed in web (but after main_thread_).
   std::unique_ptr<WebMainParts> parts_;
 
-  // Members initialized in |InitializeMainThread()| ---------------------------
+  // Members initialized in `InitializeMainThread()` ---------------------------
   // This must get destroyed after other threads that are created in parts_.
   std::unique_ptr<WebThreadImpl> main_thread_;
 
-  // Members initialized in |CreateThreads()| ------------------------
+  // Members initialized in `CreateThreads()` ------------------------
   std::unique_ptr<WebSubThread> io_thread_;
 
-  // Members initialized in |WebThreadsStarted()| --------------------------
+  // Members initialized in `WebThreadsStarted()` --------------------------
   std::unique_ptr<CookieNotificationBridge> cookie_notification_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMainLoop);
 };
 
 }  // namespace web

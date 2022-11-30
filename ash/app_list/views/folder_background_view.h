@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ class AppListFolderView;
 class FolderBackgroundView : public views::View {
  public:
   explicit FolderBackgroundView(AppListFolderView* folder_view);
+
+  FolderBackgroundView(const FolderBackgroundView&) = delete;
+  FolderBackgroundView& operator=(const FolderBackgroundView&) = delete;
+
   ~FolderBackgroundView() override;
 
   void set_folder_view(AppListFolderView* folder_view) {
@@ -34,8 +38,6 @@ class FolderBackgroundView : public views::View {
   void HandleClickOrTap();
 
   AppListFolderView* folder_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderBackgroundView);
 };
 
 }  // namespace ash

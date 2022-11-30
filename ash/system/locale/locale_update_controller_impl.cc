@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -35,18 +36,20 @@ class LocaleNotificationDelegate : public message_center::NotificationDelegate {
   explicit LocaleNotificationDelegate(
       base::OnceCallback<void(LocaleNotificationResult)> callback);
 
+  LocaleNotificationDelegate(const LocaleNotificationDelegate&) = delete;
+  LocaleNotificationDelegate& operator=(const LocaleNotificationDelegate&) =
+      delete;
+
  protected:
   ~LocaleNotificationDelegate() override;
 
   // message_center::NotificationDelegate overrides:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 
  private:
   base::OnceCallback<void(LocaleNotificationResult)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocaleNotificationDelegate);
 };
 
 LocaleNotificationDelegate::LocaleNotificationDelegate(
@@ -68,8 +71,8 @@ void LocaleNotificationDelegate::Close(bool by_user) {
 }
 
 void LocaleNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (!callback_)
     return;
 
@@ -118,7 +121,8 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
                                  from_locale_name, to_locale_name),
       std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierLocale),
+                                 kNotifierLocale,
+                                 NotificationCatalogName::kLocaleUpdate),
       optional, new LocaleNotificationDelegate(std::move(callback)),
       vector_icons::kSettingsIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);

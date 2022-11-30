@@ -7,7 +7,7 @@
 <div id="console"></div>
 <script>
 var can = document.createElement('canvas');
-can.width = can.height = 17000;
+can.width = can.height = 7326;  // crbug.com/angleproject/6922#c15
 document.body.appendChild(can);
 var ctx = can.getContext("webgl");
 ctx.clearColor(0, 0, 0, 1);

@@ -1,0 +1,32 @@
+<style>
+  #pageBody {
+    height: 282px;
+    margin-top: -20px;
+    overflow: hidden;
+  }
+
+  #animationContainer {
+    display: flex;
+    height: 216px;
+    margin-bottom: 30px;
+    margin-top: 24px;
+  }
+
+  cr-lottie {
+    margin: auto;
+  }
+</style>
+
+<base-page>
+  <div slot="page-body" id="pageBody" class="layout vertical center-center">
+    <span>[[i18n('verifyingActivationCode')]]</span>
+    <div id="animationContainer">
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <cr-lottie id="spinner"
+          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]" autoplay>
+      </cr-lottie>
+    </div>
+  </div>
+</base-page>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU experimentalImportTexture test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      const canvas2d = document.getElementById('canvas_2d');
+      const c2d = canvas2d.getContext("2d");
+      if (!c2d) {
+        console.error('getContext(2d) failed');
+        return null;
+      }
+
+      const gpuCanvas = document.getElementById('canvas_gpu');
+      const [gpuDevice, gpuContext] = await webGpuUtils.init(gpuCanvas);
+      if (!gpuDevice || !gpuContext) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const renderCallback = function() {
+        c2d.fillStyle = "rgb(0, 255, 0)";
+        c2d.fillRect(0, 0, 100, 100);
+
+        c2d.fillStyle = "rgb(255, 0, 0)";
+        c2d.fillRect(0, 100, 100, 100);
+
+        c2d.fillStyle = "rgb(255, 255, 0)";
+        c2d.fillRect(100, 100, 100, 100);
+
+        c2d.fillStyle = "rgb(0, 0, 255)";
+        c2d.fillRect(100, 0, 100, 100);
+
+        webGpuUtils.uploadToGPUTextureTest(gpuDevice, gpuContext, canvas2d,
+                                           {useImport: true, isWebGLCanvas: false});
+
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="canvas_2d" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

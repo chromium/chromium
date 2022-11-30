@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,12 +56,12 @@ void ReceiverPresentationServiceDelegateImpl::Reset(int render_process_id,
 ReceiverPresentationServiceDelegateImpl::
     ReceiverPresentationServiceDelegateImpl(content::WebContents* web_contents,
                                             const std::string& presentation_id)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<ReceiverPresentationServiceDelegateImpl>(
+          *web_contents),
       presentation_id_(presentation_id),
       local_presentation_manager_(
           LocalPresentationManagerFactory::GetOrCreateForWebContents(
-              web_contents_)) {
-  DCHECK(web_contents_);
+              web_contents)) {
   DCHECK(!presentation_id.empty());
   DCHECK(local_presentation_manager_);
 }
@@ -71,11 +71,11 @@ void ReceiverPresentationServiceDelegateImpl::
         const content::ReceiverConnectionAvailableCallback&
             receiver_available_callback) {
   local_presentation_manager_->OnLocalPresentationReceiverCreated(
-      blink::mojom::PresentationInfo(web_contents_->GetLastCommittedURL(),
+      blink::mojom::PresentationInfo(GetWebContents().GetLastCommittedURL(),
                                      presentation_id_),
-      receiver_available_callback, web_contents_);
+      receiver_available_callback, &GetWebContents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ReceiverPresentationServiceDelegateImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReceiverPresentationServiceDelegateImpl);
 
 }  // namespace media_router

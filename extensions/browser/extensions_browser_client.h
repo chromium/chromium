@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
@@ -25,6 +28,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 class ExtensionFunctionRegistry;
 class PrefService;
@@ -32,7 +36,6 @@ class PrefService;
 namespace base {
 class CommandLine;
 class FilePath;
-class ListValue;
 }  // namespace base
 
 namespace content {
@@ -40,6 +43,10 @@ class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace network {
 struct ResourceRequest;
@@ -50,11 +57,15 @@ class NetworkContext;
 
 namespace update_client {
 class UpdateClient;
-}
+}  // namespace update_client
 
 namespace url {
 class Origin;
-}
+}  // namespace url
+
+namespace base {
+class CancelableTaskTracker;
+}  // namespace base
 
 namespace extensions {
 
@@ -68,10 +79,11 @@ class ExtensionSystem;
 class ExtensionSystemProvider;
 class ExtensionWebContentsObserver;
 class KioskDelegate;
-class MediaRouterExtensionAccessLogger;
+class PermissionSet;
 class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
+class ScopedExtensionUpdaterKeepAlive;
 class UserScriptListener;
 
 // Interface to allow the extensions module to make browser-process-specific
@@ -133,11 +145,44 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
+  // The below methods include a test for the experiment
+  // `kSystemProfileSelectionDefaultNone` and will include a similar experiment
+  // for Guest Profile, these two experiment can be bypassed by setting the
+  // force_* to true. The naming of the functions follows the logic of
+  // `ProfileSelections` predefined experimental builders.
+  // - `force_guest_profile`: to force Guest Profile selection in experiment.
+  // - `force_system_profile`: to force System Profile selection in experiment.
+  //
+  // Returns the Original Profile for Regular Profile and redirects Incognito
+  // to the Original Profile.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetRedirectedContextInIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+  // Returns Profile for Regular and Incognito.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetContextForRegularAndIncognito(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+  // Returns Profile only for Original Regular profile.
+  // Force values to have the same behavior for Guest and System Profile.
+  virtual content::BrowserContext* GetRegularProfile(
+      content::BrowserContext* context,
+      bool force_guest_profile,
+      bool force_system_profile) = 0;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(
       content::BrowserContext* context) = 0;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns if a browser |context| belongs to the main profile or not.
+  virtual bool IsFromMainProfile(content::BrowserContext* context) = 0;
 #endif
 
   // Returns true if |context| corresponds to a guest session.
@@ -167,9 +212,8 @@ class ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) = 0;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) = 0;
 
   // Returns true if the embedder wants to allow a chrome-extension:// resource
   // request coming from renderer A to access a resource in an extension running
@@ -258,7 +302,7 @@ class ExtensionsBrowserClient {
   virtual void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args,
+      base::Value::List args,
       bool dispatch_to_off_the_record_profiles) = 0;
 
   // Gets the single ExtensionCache instance shared across the browser process.
@@ -287,6 +331,10 @@ class ExtensionsBrowserClient {
                               int embedder_process_id,
                               int view_instance_id) {}
 
+  // Clears the back-forward cache for all active tabs across all browser
+  // contexts.
+  virtual void ClearBackForwardCache() {}
+
   // Attaches the task manager extension tag to |web_contents|, if needed based
   // on |view_type|, so that its corresponding task shows up in the task
   // manager.
@@ -297,9 +345,10 @@ class ExtensionsBrowserClient {
   virtual scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context);
 
-  virtual std::unique_ptr<content::BluetoothChooser> CreateBluetoothChooser(
-      content::RenderFrameHost* frame,
-      const content::BluetoothChooser::EventHandler& event_handler);
+  // Returns a new ScopedExtensionUpdaterKeepAlive, or nullptr if the embedder
+  // does not support keeping the context alive while the updater is running.
+  virtual std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+  CreateUpdaterKeepAlive(content::BrowserContext* context);
 
   // Returns true if activity logging is enabled for the given |context|.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);
@@ -343,6 +392,10 @@ class ExtensionsBrowserClient {
 
   virtual UserScriptListener* GetUserScriptListener();
 
+  // Called when all initial script loads from extensions have been completed
+  // for the given BrowserContext.
+  virtual void SignalContentScriptsLoaded(content::BrowserContext* context);
+
   // Returns the user agent used by the content module.
   virtual std::string GetUserAgent() const;
 
@@ -357,10 +410,6 @@ class ExtensionsBrowserClient {
   virtual void SetLastSaveFilePath(content::BrowserContext* context,
                                    const base::FilePath& path);
 
-  // Retrieves the media router access logger for this session.
-  virtual const MediaRouterExtensionAccessLogger* GetMediaRouterAccessLogger()
-      const;
-
   // Returns true if the |extension_id| requires its own isolated storage
   // partition.
   virtual bool HasIsolatedStorage(const std::string& extension_id,
@@ -372,6 +421,62 @@ class ExtensionsBrowserClient {
 
   // Returns true if the given |tab_id| exists.
   virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
+
+  // Returns true if chrome extension telemetry service is enabled.
+  virtual bool IsExtensionTelemetryServiceEnabled(
+      content::BrowserContext* context) const;
+
+  // Returns true if remote host contacted signal feature is enabled.
+  // TODO(zackhan): This function is for measuring the impacts in finch
+  // experiments, will remove afterwards.
+  virtual bool IsExtensionTelemetryRemoteHostContactedSignalEnabled() const;
+
+  // TODO(anunoy): This is a temporary implementation of notifying the
+  // extension telemetry service of the tabs.executeScript API invocation
+  // while its usefulness is evaluated.
+  virtual void NotifyExtensionApiTabExecuteScript(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const std::string& code) const;
+
+  // TODO(zackhan): This is a temporary implementation of notifying the
+  // extension telemetry service when there are web requests initiated from
+  // chrome extensions. Its usefulness will be evaluated.
+  virtual void NotifyExtensionRemoteHostContacted(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const GURL& url) const;
+
+  // Return true if the USB device is allowed by policy.
+  virtual bool IsUsbDeviceAllowedByPolicy(content::BrowserContext* context,
+                                          const ExtensionId& extension_id,
+                                          int vendor_id,
+                                          int product_id) const;
+
+  // Populate callback with the asynchronously retrieved cached favicon image.
+  virtual void GetFavicon(
+      content::BrowserContext* browser_context,
+      const Extension* extension,
+      const GURL& url,
+      base::CancelableTaskTracker* tracker,
+      base::OnceCallback<void(
+          scoped_refptr<base::RefCountedMemory> bitmap_data)> callback) const;
+
+  // Returns all BrowserContexts related to the given extension. For an
+  // extension limited to a signal context, this will be a vector of the single
+  // passed-in context. For extensions allowed to run in incognito contexts
+  // associated with `browser_context`, this will include all those contexts.
+  // Note: It may not be appropriate to treat these the same depending on
+  // whether the extension runs in "split" or "spanning" mode.
+  virtual std::vector<content::BrowserContext*> GetRelatedContextsForExtension(
+      content::BrowserContext* browser_context,
+      const Extension& extension) const;
+
+  // Adds any hosts that should be automatically considered "granted" if
+  // requested to `granted_permissions`.
+  virtual void AddAdditionalAllowedHosts(
+      const PermissionSet& desired_permissions,
+      PermissionSet* granted_permissions) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

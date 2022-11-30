@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<canvas id="pcanvas" width="320" height="320">
+  This is a canvas.
+</canvas>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script>
+
+assert_true(document.prerendering);
+
+const params = new URLSearchParams(location.search);
+const uid = params.get('uid');
+
+async function requestPointerLock(){
+  const bc = new PrerenderChannel('prerender-channel', uid);
+  try {
+    const canvas = document.getElementById('pcanvas');
+    const _ = await canvas.requestPointerLock();
+    bc.postMessage('unexpected success');
+  } catch (err){
+    bc.postMessage(err.name);
+  } finally {
+    bc.close();
+  }
+}
+
+requestPointerLock();
+
+</script>

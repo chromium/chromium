@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,9 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
       main_frame_before_activation_enabled;
   scheduler_settings.using_synchronous_renderer_compositor =
       using_synchronous_renderer_compositor;
-  scheduler_settings.enable_impl_latency_recovery =
-      enable_impl_latency_recovery;
-  scheduler_settings.enable_main_latency_recovery =
-      enable_main_latency_recovery;
   scheduler_settings.wait_for_all_pipeline_stages_before_draw =
       wait_for_all_pipeline_stages_before_draw;
+  scheduler_settings.disable_frame_rate_limit = disable_frame_rate_limit;
   return scheduler_settings;
 }
 
@@ -40,6 +37,8 @@ TileManagerSettings LayerTreeSettings::ToTileManagerSettings() const {
   tile_manager_settings.use_partial_raster = use_partial_raster;
   tile_manager_settings.enable_checker_imaging = enable_checker_imaging;
   tile_manager_settings.min_image_bytes_to_checker = min_image_bytes_to_checker;
+  tile_manager_settings.needs_notify_ready_to_draw =
+      commit_to_active_tree | wait_for_all_pipeline_stages_before_draw;
   return tile_manager_settings;
 }
 

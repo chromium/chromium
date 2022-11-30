@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "tab_strip.mojom" ]
+  public_deps = [
+    "//chrome/browser/ui/webui/tabs:mojo_bindings",
+    "//mojo/public/mojom/base",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "tab_strip.mojom.TabNetworkState"
+          cpp = "::TabNetworkState"
+        },
+      ]
+      traits_headers = [ "tab_strip_mojom_traits.h" ]
+      traits_public_deps = [ "//chrome/browser/extensions:extensions" ]
+    },
+  ]
+}

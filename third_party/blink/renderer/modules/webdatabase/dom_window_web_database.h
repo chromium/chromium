@@ -27,7 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DOM_WINDOW_WEB_DATABASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DOM_WINDOW_WEB_DATABASE_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -37,7 +38,7 @@ class ExceptionState;
 class LocalDOMWindow;
 class V8DatabaseCallback;
 
-class DOMWindowWebDatabase {
+class MODULES_EXPORT DOMWindowWebDatabase {
   STATIC_ONLY(DOMWindowWebDatabase);
 
  public:

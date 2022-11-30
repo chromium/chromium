@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,10 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 WizardControllerExitWaiter::WizardControllerExitWaiter(OobeScreenId screen_id)
-    : WizardControllerExitWaiter(
-          WizardController::default_controller()->GetScreen(screen_id)) {}
-
-WizardControllerExitWaiter::WizardControllerExitWaiter(
-    BaseScreen* target_screen)
-    : target_screen_(target_screen) {}
+    : target_screen_id_(screen_id) {}
 
 WizardControllerExitWaiter::~WizardControllerExitWaiter() = default;
 
@@ -26,18 +21,17 @@ void WizardControllerExitWaiter::Wait() {
 
   WizardController* wizard_controller = WizardController::default_controller();
   if (!wizard_controller ||
-      wizard_controller->current_screen() != target_screen_) {
+      wizard_controller->current_screen()->screen_id() != target_screen_id_) {
     state_ = State::DONE;
     return;
   }
   ASSERT_FALSE(run_loop_);
 
-  screen_observer_.Add(wizard_controller);
+  screen_observation_.Observe(wizard_controller);
 
   state_ = State::WAITING_FOR_SCREEN_EXIT;
 
-  LOG(INFO) << "Actually waiting for exiting screen "
-            << target_screen_->screen_id();
+  LOG(INFO) << "Actually waiting for exiting screen " << target_screen_id_;
 
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
@@ -45,18 +39,18 @@ void WizardControllerExitWaiter::Wait() {
 
   ASSERT_EQ(State::DONE, state_);
 
-  screen_observer_.RemoveAll();
+  screen_observation_.Reset();
 }
 
 void WizardControllerExitWaiter::OnCurrentScreenChanged(
     BaseScreen* new_screen) {
   ASSERT_NE(state_, State::IDLE);
-  if (new_screen != target_screen_)
+  if (new_screen->screen_id() != target_screen_id_)
     EndWait();
 }
 
 void WizardControllerExitWaiter::OnShutdown() {
-  screen_observer_.RemoveAll();
+  screen_observation_.Reset();
   EndWait();
 }
 
@@ -68,4 +62,4 @@ void WizardControllerExitWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,0 +1,34 @@
+<!doctype html>
+<head>
+<title>Test Clear-Site-Data and partitioned cookies</title>
+<script src="/resources/testharness.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(async () => {
+  assert_equals(window.location.hostname, TEST_HOST);
+  assert_equals(document.cookie, "");
+
+  const cookieLine = "__Host-pc=0; Secure; Path=/; SameSite=None; Partitioned";
+
+  document.cookie = cookieLine;
+  assert_true(document.cookie.includes("__Host-pc"));
+
+  // Test that Clear-Site-Data deletes the cookie in this partition.
+  const resp = await fetch(
+      "/cookies/resources/clear-site-data.php", {method: "GET"});
+  assert_equals(resp.status, 200);
+  assert_equals(document.cookie, "");
+
+  const url = new URL(
+      "/cookies/partitioned-cookies/resources/" +
+          "clear-site-data-same-site-window.html",
+      `https://${ORIGINAL_HOST}:${window.location.port}`);
+  const popup = window.open(String(url));
+  fetch_tests_from_window(popup);
+}, "Clearing partitioned cookies in another partition");
+
+</script>
+</body>

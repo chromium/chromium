@@ -1,17 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {ListContainer} from './ui/list_container.m.js';
-// #import {util} from '../../common/js/util.m.js';
+import {util} from '../../common/js/util.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
+import {ListContainer} from './ui/list_container.js';
 
 /**
  * Controller for list contents update.
  */
-/* #export */ class MetadataUpdateController {
+export class MetadataUpdateController {
   /**
    * @param {!ListContainer} listContainer
    * @param {!DirectoryModel} directoryModel
@@ -79,6 +80,7 @@
    * @private
    */
   onCachedMetadataUpdate_(event) {
+    this.listContainer_.dataModel.refreshGroupBySnapshot();
     // TODO(hirono): Specify property name instead of metadata type.
     this.listContainer_.currentView.updateListItemsMetadata(
         'filesystem', event.entries);

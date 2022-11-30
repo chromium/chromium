@@ -1,7 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
@@ -72,7 +74,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
   }
 
  private:
-  AppWindowGeometryCache* cache_;
+  raw_ptr<AppWindowGeometryCache> cache_;
   std::string extension_id_;
   std::string window_id_;
   gfx::Rect bounds_;
@@ -100,7 +102,8 @@ class AppWindowAPITest : public extensions::PlatformAppBrowserTest {
     if (!BeginAppWindowAPITest(testName))
       return false;
 
-    ExtensionTestMessageListener round_trip_listener("WaitForRoundTrip", true);
+    ExtensionTestMessageListener round_trip_listener("WaitForRoundTrip",
+                                                     ReplyBehavior::kWillReply);
     if (!round_trip_listener.WaitUntilSatisfied()) {
       message_ = "Did not get the 'WaitForRoundTrip' message.";
       return false;
@@ -119,7 +122,8 @@ class AppWindowAPITest : public extensions::PlatformAppBrowserTest {
 
  private:
   bool BeginAppWindowAPITest(const char* testName) {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp("window_api", &launched_listener);
     if (!launched_listener.WaitUntilSatisfied()) {
       message_ = "Did not get the 'Launched' message.";
@@ -153,10 +157,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestMaximize) {
 // Flaky on Linux. http://crbug.com/424399.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TestMinimize DISABLED_TestMinimize
-#elif defined(OS_MAC)
-// Fails on Mac: https://crbug.com/834908
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestMinimize DISABLED_TestMinimize
 #else
 #define MAYBE_TestMinimize TestMinimize
@@ -175,20 +176,11 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestRestoreAfterClose) {
 }
 
 // These tests will be flaky in Linux as window bounds change asynchronously.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestDeprecatedBounds DISABLED_TestDeprecatedBounds
 #define MAYBE_TestInitialBounds DISABLED_TestInitialBounds
 #define MAYBE_TestInitialConstraints DISABLED_TestInitialConstraints
 #define MAYBE_TestSetBounds DISABLED_TestSetBounds
-#define MAYBE_TestSetSizeConstraints DISABLED_TestSetSizeConstraints
-#elif defined(OS_MAC)
-// Most of these don't work under MacViews, which has never had complete support
-// for old-style app windows.
-// https://crbug.com/834908
-#define MAYBE_TestDeprecatedBounds TestDeprecatedBounds
-#define MAYBE_TestInitialBounds DISABLED_TestInitialBounds
-#define MAYBE_TestInitialConstraints DISABLED_TestInitialConstraints
-#define MAYBE_TestSetBounds TestSetBounds
 #define MAYBE_TestSetSizeConstraints DISABLED_TestSetSizeConstraints
 #else
 #define MAYBE_TestDeprecatedBounds TestDeprecatedBounds
@@ -227,7 +219,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   // test will check if the geometry cache entry for the test window has
   // changed. When the change happens, the test will let the app know so it can
   // continue running.
-  ExtensionTestMessageListener launched_listener("Launched", true);
+  ExtensionTestMessageListener launched_listener("Launched",
+                                                 ReplyBehavior::kWillReply);
 
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
@@ -239,12 +232,12 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
 
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceTest));
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
+          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 
-  ExtensionTestMessageListener geometry_listener("ListenGeometryChange", true);
+  ExtensionTestMessageListener geometry_listener("ListenGeometryChange",
+                                                 ReplyBehavior::kWillReply);
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   launched_listener.Reply("testRestoreAfterGeometryCacheChange");

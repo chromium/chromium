@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_modal_completion_notifier.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 
@@ -15,9 +15,9 @@
 class InfobarBannerOverlayRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| from |queue|.  |inserter|
+  // Constructor for a handler that cancels `request` from `queue`.  `inserter`
   // is used to insert replacement requests when an infobar is replaced.
-  // |modal_completion_notifier| is used to detect the completion of any modal
+  // `modal_completion_notifier` is used to detect the completion of any modal
   // UI that was presented from the banner.
   InfobarBannerOverlayRequestCancelHandler(
       OverlayRequest* request,
@@ -44,9 +44,9 @@ class InfobarBannerOverlayRequestCancelHandler
     InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
     // The infobar for which to look for modal insertions.
     InfoBarIOS* infobar_ = nullptr;
-    ScopedObserver<InfobarOverlayRequestInserter,
-                   InfobarOverlayRequestInserter::Observer>
-        scoped_observer_;
+    base::ScopedObservation<InfobarOverlayRequestInserter,
+                            InfobarOverlayRequestInserter::Observer>
+        scoped_observation_{this};
   };
 
   // Helper object that triggers request cancellation for the completion of
@@ -71,16 +71,16 @@ class InfobarBannerOverlayRequestCancelHandler
     InfobarBannerOverlayRequestCancelHandler* cancel_handler_ = nullptr;
     // The infobar whose modal dismissals should trigger cancellation.
     InfoBarIOS* infobar_ = nullptr;
-    ScopedObserver<InfobarModalCompletionNotifier,
-                   InfobarModalCompletionNotifier::Observer>
-        scoped_observer_;
+    base::ScopedObservation<InfobarModalCompletionNotifier,
+                            InfobarModalCompletionNotifier::Observer>
+        scoped_observation_{this};
   };
 
   // Indicates to the cancel handler that its banner presented a modal.
   void ModalPresentedFromBanner() { presenting_modal_ = true; }
 
   // Indicates that a modal completed. Only called for modal completions of
-  // infobars that match the one used to configure |request|.
+  // infobars that match the one used to configure `request`.
   void ModalCompleted();
 
   // InfobarOverlayRequestCancelHandler:

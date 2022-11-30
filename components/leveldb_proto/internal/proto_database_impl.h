@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,6 +124,11 @@ class ProtoDatabaseImpl : public ProtoDatabase<P, T> {
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
+      override;
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
       typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
       override;
 
@@ -498,6 +503,20 @@ void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesInRange(
   base::OnceClosure load_task =
       base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesInRange,
                      db_wrapper_, start, end,
+                     base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
+                                    base::SequencedTaskRunnerHandle::Get(),
+                                    std::move(callback)));
+  PostTransaction(std::move(load_task));
+}
+
+template <typename P, typename T>
+void ProtoDatabaseImpl<P, T>::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const KeyIteratorController& controller,
+    typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
+  base::OnceClosure load_task =
+      base::BindOnce(&ProtoDatabaseSelector::LoadKeysAndEntriesWhile,
+                     db_wrapper_, start, controller,
                      base::BindOnce(&ParseLoadedKeysAndEntries<P, T>,
                                     base::SequencedTaskRunnerHandle::Get(),
                                     std::move(callback)));

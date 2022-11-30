@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CUSTOM_ELEMENT_DEFINITION_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_CUSTOM_ELEMENT_DEFINITION_BUILDER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_custom_element_definition_data.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition_builder.h"
@@ -25,6 +24,12 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
                                        CustomElementRegistry*,
                                        V8CustomElementConstructor* constructor,
                                        ExceptionState&);
+
+  ScriptCustomElementDefinitionBuilder(
+      const ScriptCustomElementDefinitionBuilder&) = delete;
+  ScriptCustomElementDefinitionBuilder& operator=(
+      const ScriptCustomElementDefinitionBuilder&) = delete;
+
   ~ScriptCustomElementDefinitionBuilder() = default;
 
   bool CheckConstructorIntrinsics() override;
@@ -51,8 +56,6 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
   v8::Local<v8::Value> v8_form_reset_callback_;
   v8::Local<v8::Value> v8_form_disabled_callback_;
   v8::Local<v8::Value> v8_form_state_restore_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinitionBuilder);
 };
 
 }  // namespace blink

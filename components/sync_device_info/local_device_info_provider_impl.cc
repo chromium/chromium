@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,24 +43,32 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
 
   // Do not update previous values if the service is not fully initialized.
-  // base::nullopt means that the value is unknown yet and the previous value
+  // absl::nullopt means that the value is unknown yet and the previous value
   // should be kept.
-  const base::Optional<std::string> fcm_token =
+  const absl::optional<std::string> fcm_token =
       sync_client_->GetFCMRegistrationToken();
   if (fcm_token) {
     local_device_info_->set_fcm_registration_token(*fcm_token);
   }
 
-  const base::Optional<ModelTypeSet> interested_data_types =
+  const absl::optional<ModelTypeSet> interested_data_types =
       sync_client_->GetInterestedDataTypes();
   if (interested_data_types) {
     local_device_info_->set_interested_data_types(*interested_data_types);
   }
 
-  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
+  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info =
       sync_client_->GetPhoneAsASecurityKeyInfo();
   if (paask_info) {
     local_device_info_->set_paask_info(std::move(*paask_info));
+  }
+
+  // This check is required to ensure user's who toggle UMA have their
+  // hardware class data updated on next sync.
+  if (!IsUmaEnabledOnCrOSDevice()) {
+    local_device_info_->set_full_hardware_class("");
+  } else {
+    local_device_info_->set_full_hardware_class(full_hardware_class_);
   }
 
   return local_device_info_.get();
@@ -74,11 +82,19 @@ LocalDeviceInfoProviderImpl::RegisterOnInitializedCallback(
   return closure_list_.Add(callback);
 }
 
+// Returns whether a ChromeOS device has UMA enabled.
+// Returns false when called on non-CrOS devices.
+bool LocalDeviceInfoProviderImpl::IsUmaEnabledOnCrOSDevice() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_client_->IsUmaEnabledOnCrOSDevice();
+}
+
 void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& cache_guid,
     const std::string& client_name,
     const std::string& manufacturer_name,
     const std::string& model_name,
+    const std::string& full_hardware_class,
     std::unique_ptr<DeviceInfo> device_info_restored_from_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cache_guid.empty());
@@ -89,7 +105,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
   // become ready by then.
   std::string last_fcm_registration_token;
   ModelTypeSet last_interested_data_types;
-  base::Optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
+  absl::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
   if (device_info_restored_from_store) {
     last_fcm_registration_token =
         device_info_restored_from_store->fcm_registration_token();
@@ -102,13 +118,16 @@ void LocalDeviceInfoProviderImpl::Initialize(
   // the specifics when it will be synced up.
   local_device_info_ = std::make_unique<DeviceInfo>(
       cache_guid, client_name, version_, MakeUserAgentForSync(channel_),
-      GetLocalDeviceType(), sync_client_->GetSigninScopedDeviceId(),
-      manufacturer_name, model_name,
+      GetLocalDeviceType(), GetLocalDeviceOSType(), GetLocalDeviceFormFactor(),
+      sync_client_->GetSigninScopedDeviceId(), manufacturer_name, model_name,
+      full_hardware_class,
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
       sync_client_->GetLocalSharingInfo(), paask_info,
       last_fcm_registration_token, last_interested_data_types);
+
+  full_hardware_class_ = full_hardware_class;
 
   // Notify observers.
   closure_list_.Notify();

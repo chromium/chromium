@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,8 +57,7 @@ bool IsInvalidationExpired(const invalidation::Invalidation& invalidation,
   // invalidation occurred before the last fetch, then the invalidation
   // is expired.
   base::Time invalidation_time =
-      base::Time::UnixEpoch() +
-      base::TimeDelta::FromMicroseconds(invalidation.version()) +
+      base::Time::UnixEpoch() + base::Microseconds(invalidation.version()) +
       invalidation_timeouts::kMaxInvalidationTimeDelta;
   return invalidation_time < last_fetch_time;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -23,6 +23,8 @@ namespace ash {
 class AccessibilityControllerClient;
 enum class AccessibilityPanelState;
 enum class DictationToggleSource;
+enum class DictationBubbleHintType;
+enum class DictationBubbleIconType;
 class SelectToSpeakEventHandlerDelegate;
 enum class SelectToSpeakState;
 
@@ -31,6 +33,9 @@ enum class SelectToSpeakState;
 class ASH_PUBLIC_EXPORT AccessibilityController {
  public:
   static AccessibilityController* Get();
+
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
 
   // Sets the client interface.
   virtual void SetClient(AccessibilityControllerClient* client) = 0;
@@ -111,6 +116,12 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
   virtual void ToggleDictationFromSource(DictationToggleSource source) = 0;
 
+  // Shows a nudge explaining that a user's dictation language was upgraded to
+  // work offline.
+  virtual void ShowDictationLanguageUpgradedNudge(
+      const std::string& dictation_locale,
+      const std::string& application_locale) = 0;
+
   // Called when the Automatic Clicks extension finds scrollable bounds.
   virtual void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) = 0;
@@ -161,12 +172,34 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
                                       base::OnceClosure on_cancel_callback,
                                       base::OnceClosure on_close_callback) {}
 
+  // Updates the enabled state, tooltip, and progress ring of the dictation
+  // button in the status tray when speech recognition file download state
+  // changes. `download_progress` indicates SODA download progress and is
+  // guaranteed to be between 0 and 100 (inclusive).
+  virtual void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
+      int download_progress) = 0;
+
+  // Shows a notification card in the message center informing the user that
+  // speech recognition files have either downloaded successfully or failed.
+  // Specific to the Dictation feature.
+  virtual void ShowSpeechRecognitionDownloadNotificationForDictation(
+      bool succeeded,
+      const std::u16string& display_language) = 0;
+
+  // Updates the Dictation UI bubble. `text` is optional to allow clients to
+  // clear the bubble's text.
+  virtual void UpdateDictationBubble(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints) = 0;
+
+  // Cancels all of spoken feedback's current and queued speech immediately.
+  virtual void SilenceSpokenFeedback() = 0;
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };
 
 }  // namespace ash

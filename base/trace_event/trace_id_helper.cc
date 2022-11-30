@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace trace_event {
 uint64_t GetNextGlobalTraceId() {
   static const uint64_t kPerProcessRandomValue = base::RandUint64();
   static base::AtomicSequenceNumber counter;
-  return kPerProcessRandomValue ^ counter.GetNext();
+  return kPerProcessRandomValue ^ static_cast<uint64_t>(counter.GetNext());
 }
 
 }  // namespace trace_event

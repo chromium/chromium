@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+# Only allow use by WebEngine-related Fuchsia targets.
+visibility = [ "//fuchsia_web/*" ]
+
+source_set("common") {
+  sources = [
+    "fuchsia_dir_scheme.cc",
+    "init_logging.cc",
+    "string_util.cc",
+  ]
+  public = [
+    "fuchsia_dir_scheme.h",
+    "init_logging.h",
+    "string_util.h",
+  ]
+  deps = [
+    "//components/version_info",
+    "//url",
+  ]
+}

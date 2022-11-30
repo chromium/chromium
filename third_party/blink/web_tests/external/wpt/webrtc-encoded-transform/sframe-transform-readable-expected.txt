@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL sframe-transform-readable promise_test: Unhandled rejection with value: object "TypeError: frame.contentWindow.SFrameTransform is not a constructor"
+Harness: the test ran to completion.
+

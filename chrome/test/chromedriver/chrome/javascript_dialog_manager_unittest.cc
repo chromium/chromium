@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/recorder_devtools_client.h"
@@ -22,7 +23,7 @@ TEST(JavaScriptDialogManager, NoDialog) {
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_STREQ("HI", message.c_str());
-  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }
 
 TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
@@ -38,10 +39,10 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
   std::string given_text("text");
   ASSERT_EQ(kOk, manager.HandleDialog(false, &given_text).code());
-  std::string text;
-  ASSERT_TRUE(client.commands_[0].params.GetString("promptText", &text));
-  ASSERT_EQ(given_text, text);
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  const std::string* text = client.commands_[0].params.FindString("promptText");
+  ASSERT_TRUE(text);
+  ASSERT_EQ(given_text, *text);
+  ASSERT_TRUE(client.commands_[0].params.contains("accept"));
 }
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
@@ -55,9 +56,9 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
   ASSERT_EQ(
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
-  ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
-  ASSERT_TRUE(client.commands_[0].params.HasKey("promptText"));
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  ASSERT_EQ(kOk, manager.HandleDialog(false, nullptr).code());
+  ASSERT_TRUE(client.commands_[0].params.contains("promptText"));
+  ASSERT_TRUE(client.commands_[0].params.contains("accept"));
 }
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
@@ -79,7 +80,7 @@ TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
   ASSERT_EQ("Page.enable", client.commands_[0].method);
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
-  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }
 
 namespace {
@@ -94,10 +95,9 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from StubDevToolsClient:
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::Value::Dict& params,
+                                 base::Value* result) override {
     while (closing_count_ > 0) {
       base::DictionaryValue empty;
       Status status =
@@ -106,6 +106,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
         return status;
       closing_count_--;
     }
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
   void AddListener(DevToolsEventListener* listener) override {
@@ -113,7 +114,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
  private:
-  DevToolsEventListener* listener_;
+  raw_ptr<DevToolsEventListener> listener_;
   int closing_count_;
 };
 
@@ -142,10 +143,10 @@ TEST(JavaScriptDialogManager, OneDialog) {
   ASSERT_EQ("alert", type);
 
   client.set_closing_count(1);
-  ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kOk, manager.HandleDialog(false, nullptr).code());
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
-  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }
 
 TEST(JavaScriptDialogManager, TwoDialogs) {
@@ -173,7 +174,7 @@ TEST(JavaScriptDialogManager, TwoDialogs) {
   ASSERT_EQ("1", message);
   ASSERT_EQ("confirm", type);
 
-  ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kOk, manager.HandleDialog(false, nullptr).code());
   ASSERT_TRUE(manager.IsDialogOpen());
   ASSERT_EQ(kOk, manager.GetDialogMessage(&message).code());
   ASSERT_EQ(kOk, manager.GetTypeOfDialog(&type).code());
@@ -181,10 +182,10 @@ TEST(JavaScriptDialogManager, TwoDialogs) {
   ASSERT_EQ("alert", type);
 
   client.set_closing_count(2);
-  ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kOk, manager.HandleDialog(false, nullptr).code());
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
-  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }
 
 TEST(JavaScriptDialogManager, OneDialogManualClose) {
@@ -214,5 +215,5 @@ TEST(JavaScriptDialogManager, OneDialogManualClose) {
       manager.OnEvent(&client, "Page.javascriptDialogClosed", params).code());
   ASSERT_FALSE(manager.IsDialogOpen());
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
-  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, NULL).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }

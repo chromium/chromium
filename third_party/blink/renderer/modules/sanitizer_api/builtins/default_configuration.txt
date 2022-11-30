@@ -1,0 +1,755 @@
+{
+  "allowCustomElements": false,
+  "allowUnknownMarkup": false,
+  "allowElements": [
+    "a",
+    "abbr",
+    "acronym",
+    "address",
+    "area",
+    "article",
+    "aside",
+    "audio",
+    "b",
+    "bdi",
+    "bdo",
+    "bgsound",
+    "big",
+    "blockquote",
+    "body",
+    "br",
+    "button",
+    "canvas",
+    "caption",
+    "center",
+    "cite",
+    "code",
+    "col",
+    "colgroup",
+    "datalist",
+    "dd",
+    "del",
+    "details",
+    "dfn",
+    "dialog",
+    "dir",
+    "div",
+    "dl",
+    "dt",
+    "em",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "font",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "head",
+    "header",
+    "hgroup",
+    "hr",
+    "html",
+    "i",
+    "img",
+    "input",
+    "ins",
+    "kbd",
+    "keygen",
+    "label",
+    "layer",
+    "legend",
+    "li",
+    "link",
+    "listing",
+    "main",
+    "map",
+    "mark",
+    "marquee",
+    "menu",
+    "meta",
+    "meter",
+    "nav",
+    "nobr",
+    "ol",
+    "optgroup",
+    "option",
+    "output",
+    "p",
+    "picture",
+    "popup",
+    "pre",
+    "progress",
+    "q",
+    "rb",
+    "rp",
+    "rt",
+    "rtc",
+    "ruby",
+    "s",
+    "samp",
+    "section",
+    "select",
+    "selectmenu",
+    "small",
+    "source",
+    "span",
+    "strike",
+    "strong",
+    "style",
+    "sub",
+    "summary",
+    "sup",
+    "table",
+    "tbody",
+    "td",
+    "tfoot",
+    "th",
+    "thead",
+    "time",
+    "tr",
+    "track",
+    "tt",
+    "u",
+    "ul",
+    "var",
+    "video",
+    "wbr"
+  ],
+  "allowAttributes": {
+    "abbr": [
+      "*"
+    ],
+    "accept": [
+      "*"
+    ],
+    "accept-charset": [
+      "*"
+    ],
+    "accesskey": [
+      "*"
+    ],
+    "action": [
+      "*"
+    ],
+    "align": [
+      "*"
+    ],
+    "alink": [
+      "*"
+    ],
+    "allow": [
+      "*"
+    ],
+    "allowfullscreen": [
+      "*"
+    ],
+    "alt": [
+      "*"
+    ],
+    "anchor": [
+      "*"
+    ],
+    "archive": [
+      "*"
+    ],
+    "as": [
+      "*"
+    ],
+    "async": [
+      "*"
+    ],
+    "autocapitalize": [
+      "*"
+    ],
+    "autocomplete": [
+      "*"
+    ],
+    "autocorrect": [
+      "*"
+    ],
+    "autofocus": [
+      "*"
+    ],
+    "autopictureinpicture": [
+      "*"
+    ],
+    "autoplay": [
+      "*"
+    ],
+    "axis": [
+      "*"
+    ],
+    "background": [
+      "*"
+    ],
+    "behavior": [
+      "*"
+    ],
+    "bgcolor": [
+      "*"
+    ],
+    "border": [
+      "*"
+    ],
+    "bordercolor": [
+      "*"
+    ],
+    "capture": [
+      "*"
+    ],
+    "cellpadding": [
+      "*"
+    ],
+    "cellspacing": [
+      "*"
+    ],
+    "challenge": [
+      "*"
+    ],
+    "char": [
+      "*"
+    ],
+    "charoff": [
+      "*"
+    ],
+    "charset": [
+      "*"
+    ],
+    "checked": [
+      "*"
+    ],
+    "cite": [
+      "*"
+    ],
+    "class": [
+      "*"
+    ],
+    "classid": [
+      "*"
+    ],
+    "clear": [
+      "*"
+    ],
+    "code": [
+      "*"
+    ],
+    "codebase": [
+      "*"
+    ],
+    "codetype": [
+      "*"
+    ],
+    "color": [
+      "*"
+    ],
+    "cols": [
+      "*"
+    ],
+    "colspan": [
+      "*"
+    ],
+    "compact": [
+      "*"
+    ],
+    "content": [
+      "*"
+    ],
+    "contenteditable": [
+      "*"
+    ],
+    "controls": [
+      "*"
+    ],
+    "controlslist": [
+      "*"
+    ],
+    "conversiondestination": [
+      "*"
+    ],
+    "coords": [
+      "*"
+    ],
+    "crossorigin": [
+      "*"
+    ],
+    "csp": [
+      "*"
+    ],
+    "data": [
+      "*"
+    ],
+    "datetime": [
+      "*"
+    ],
+    "declare": [
+      "*"
+    ],
+    "decoding": [
+      "*"
+    ],
+    "default": [
+      "*"
+    ],
+    "defer": [
+      "*"
+    ],
+    "dir": [
+      "*"
+    ],
+    "direction": [
+      "*"
+    ],
+    "dirname": [
+      "*"
+    ],
+    "disabled": [
+      "*"
+    ],
+    "disablepictureinpicture": [
+      "*"
+    ],
+    "disableremoteplayback": [
+      "*"
+    ],
+    "disallowdocumentaccess": [
+      "*"
+    ],
+    "download": [
+      "*"
+    ],
+    "draggable": [
+      "*"
+    ],
+    "elementtiming": [
+      "*"
+    ],
+    "enctype": [
+      "*"
+    ],
+    "end": [
+      "*"
+    ],
+    "enterkeyhint": [
+      "*"
+    ],
+    "event": [
+      "*"
+    ],
+    "exportparts": [
+      "*"
+    ],
+    "face": [
+      "*"
+    ],
+    "fetchpriority": [
+      "*"
+    ],
+    "for": [
+      "*"
+    ],
+    "form": [
+      "*"
+    ],
+    "formaction": [
+      "*"
+    ],
+    "formenctype": [
+      "*"
+    ],
+    "formmethod": [
+      "*"
+    ],
+    "formnovalidate": [
+      "*"
+    ],
+    "formtarget": [
+      "*"
+    ],
+    "frame": [
+      "*"
+    ],
+    "frameborder": [
+      "*"
+    ],
+    "headers": [
+      "*"
+    ],
+    "height": [
+      "*"
+    ],
+    "hidden": [
+      "*"
+    ],
+    "high": [
+      "*"
+    ],
+    "href": [
+      "*"
+    ],
+    "hreflang": [
+      "*"
+    ],
+    "hreftranslate": [
+      "*"
+    ],
+    "hspace": [
+      "*"
+    ],
+    "http-equiv": [
+      "*"
+    ],
+    "id": [
+      "*"
+    ],
+    "imagesizes": [
+      "*"
+    ],
+    "imagesrcset": [
+      "*"
+    ],
+    "impressiondata": [
+      "*"
+    ],
+    "impressionexpiry": [
+      "*"
+    ],
+    "incremental": [
+      "*"
+    ],
+    "inert": [
+      "*"
+    ],
+    "inputmode": [
+      "*"
+    ],
+    "integrity": [
+      "*"
+    ],
+    "invisible": [
+      "*"
+    ],
+    "is": [
+      "*"
+    ],
+    "ismap": [
+      "*"
+    ],
+    "keytype": [
+      "*"
+    ],
+    "kind": [
+      "*"
+    ],
+    "label": [
+      "*"
+    ],
+    "lang": [
+      "*"
+    ],
+    "language": [
+      "*"
+    ],
+    "latencyhint": [
+      "*"
+    ],
+    "leftmargin": [
+      "*"
+    ],
+    "link": [
+      "*"
+    ],
+    "list": [
+      "*"
+    ],
+    "loading": [
+      "*"
+    ],
+    "longdesc": [
+      "*"
+    ],
+    "loop": [
+      "*"
+    ],
+    "low": [
+      "*"
+    ],
+    "lowsrc": [
+      "*"
+    ],
+    "manifest": [
+      "*"
+    ],
+    "marginheight": [
+      "*"
+    ],
+    "marginwidth": [
+      "*"
+    ],
+    "max": [
+      "*"
+    ],
+    "maxlength": [
+      "*"
+    ],
+    "mayscript": [
+      "*"
+    ],
+    "media": [
+      "*"
+    ],
+    "method": [
+      "*"
+    ],
+    "min": [
+      "*"
+    ],
+    "minlength": [
+      "*"
+    ],
+    "multiple": [
+      "*"
+    ],
+    "muted": [
+      "*"
+    ],
+    "name": [
+      "*"
+    ],
+    "nohref": [
+      "*"
+    ],
+    "nomodule": [
+      "*"
+    ],
+    "nonce": [
+      "*"
+    ],
+    "noresize": [
+      "*"
+    ],
+    "noshade": [
+      "*"
+    ],
+    "novalidate": [
+      "*"
+    ],
+    "nowrap": [
+      "*"
+    ],
+    "object": [
+      "*"
+    ],
+    "open": [
+      "*"
+    ],
+    "optimum": [
+      "*"
+    ],
+    "part": [
+      "*"
+    ],
+    "pattern": [
+      "*"
+    ],
+    "ping": [
+      "*"
+    ],
+    "placeholder": [
+      "*"
+    ],
+    "playsinline": [
+      "*"
+    ],
+    "policy": [
+      "*"
+    ],
+    "poster": [
+      "*"
+    ],
+    "preload": [
+      "*"
+    ],
+    "pseudo": [
+      "*"
+    ],
+    "readonly": [
+      "*"
+    ],
+    "referrerpolicy": [
+      "*"
+    ],
+    "rel": [
+      "*"
+    ],
+    "reportingorigin": [
+      "*"
+    ],
+    "required": [
+      "*"
+    ],
+    "resources": [
+      "*"
+    ],
+    "rev": [
+      "*"
+    ],
+    "reversed": [
+      "*"
+    ],
+    "role": [
+      "*"
+    ],
+    "rows": [
+      "*"
+    ],
+    "rowspan": [
+      "*"
+    ],
+    "rules": [
+      "*"
+    ],
+    "sandbox": [
+      "*"
+    ],
+    "scheme": [
+      "*"
+    ],
+    "scope": [
+      "*"
+    ],
+    "scopes": [
+      "*"
+    ],
+    "scrollamount": [
+      "*"
+    ],
+    "scrolldelay": [
+      "*"
+    ],
+    "scrolling": [
+      "*"
+    ],
+    "select": [
+      "*"
+    ],
+    "selected": [
+      "*"
+    ],
+    "shadowroot": [
+      "*"
+    ],
+    "shadowrootdelegatesfocus": [
+      "*"
+    ],
+    "shape": [
+      "*"
+    ],
+    "size": [
+      "*"
+    ],
+    "sizes": [
+      "*"
+    ],
+    "slot": [
+      "*"
+    ],
+    "span": [
+      "*"
+    ],
+    "spellcheck": [
+      "*"
+    ],
+    "src": [
+      "*"
+    ],
+    "srcdoc": [
+      "*"
+    ],
+    "srclang": [
+      "*"
+    ],
+    "srcset": [
+      "*"
+    ],
+    "standby": [
+      "*"
+    ],
+    "start": [
+      "*"
+    ],
+    "step": [
+      "*"
+    ],
+    "style": [
+      "*"
+    ],
+    "summary": [
+      "*"
+    ],
+    "tabindex": [
+      "*"
+    ],
+    "target": [
+      "*"
+    ],
+    "text": [
+      "*"
+    ],
+    "title": [
+      "*"
+    ],
+    "topmargin": [
+      "*"
+    ],
+    "translate": [
+      "*"
+    ],
+    "truespeed": [
+      "*"
+    ],
+    "trusttoken": [
+      "*"
+    ],
+    "type": [
+      "*"
+    ],
+    "usemap": [
+      "*"
+    ],
+    "valign": [
+      "*"
+    ],
+    "value": [
+      "*"
+    ],
+    "valuetype": [
+      "*"
+    ],
+    "version": [
+      "*"
+    ],
+    "virtualkeyboardpolicy": [
+      "*"
+    ],
+    "vlink": [
+      "*"
+    ],
+    "vspace": [
+      "*"
+    ],
+    "webkitdirectory": [
+      "*"
+    ],
+    "width": [
+      "*"
+    ],
+    "wrap": [
+      "*"
+    ]
+  }
+}

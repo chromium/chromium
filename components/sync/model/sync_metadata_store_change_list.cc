@@ -1,28 +1,28 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
-#include "base/location.h"
+#include <utility>
 
-using base::Optional;
-using syncer::ModelError;
+#include "base/location.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 
 namespace syncer {
 
 SyncMetadataStoreChangeList::SyncMetadataStoreChangeList(
     SyncMetadataStore* store,
-    syncer::ModelType type)
-    : store_(store), type_(type) {
+    syncer::ModelType type,
+    ErrorCallback error_callback)
+    : store_(store), type_(type), error_callback_(std::move(error_callback)) {
   if (!store_) {
-    error_ = ModelError(FROM_HERE, "Invalid SyncMetadataStore");
+    SetError(ModelError(FROM_HERE, "Invalid SyncMetadataStore"));
   }
 }
 
-SyncMetadataStoreChangeList::~SyncMetadataStoreChangeList() {
-  DCHECK(!error_);
-}
+SyncMetadataStoreChangeList::~SyncMetadataStoreChangeList() = default;
 
 void SyncMetadataStoreChangeList::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
@@ -31,7 +31,7 @@ void SyncMetadataStoreChangeList::UpdateModelTypeState(
   }
 
   if (!store_->UpdateModelTypeState(type_, model_type_state)) {
-    error_ = ModelError(FROM_HERE, "Failed to update ModelTypeState.");
+    SetError(ModelError(FROM_HERE, "Failed to update ModelTypeState."));
   }
 }
 
@@ -41,7 +41,7 @@ void SyncMetadataStoreChangeList::ClearModelTypeState() {
   }
 
   if (!store_->ClearModelTypeState(type_)) {
-    error_ = ModelError(FROM_HERE, "Failed to clear ModelTypeState.");
+    SetError(ModelError(FROM_HERE, "Failed to clear ModelTypeState."));
   }
 }
 
@@ -53,7 +53,7 @@ void SyncMetadataStoreChangeList::UpdateMetadata(
   }
 
   if (!store_->UpdateSyncMetadata(type_, storage_key, metadata)) {
-    error_ = ModelError(FROM_HERE, "Failed to update entity metadata.");
+    SetError(ModelError(FROM_HERE, "Failed to update entity metadata."));
   }
 }
 
@@ -64,12 +64,12 @@ void SyncMetadataStoreChangeList::ClearMetadata(
   }
 
   if (!store_->ClearSyncMetadata(type_, storage_key)) {
-    error_ = ModelError(FROM_HERE, "Failed to clear entity metadata.");
+    SetError(ModelError(FROM_HERE, "Failed to clear entity metadata."));
   }
 }
 
-Optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
-  Optional<ModelError> temp = error_;
+absl::optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
+  absl::optional<ModelError> temp = error_;
   error_.reset();
   return temp;
 }
@@ -77,6 +77,13 @@ Optional<ModelError> SyncMetadataStoreChangeList::TakeError() {
 const SyncMetadataStore*
 SyncMetadataStoreChangeList::GetMetadataStoreForTesting() const {
   return store_;
+}
+
+void SyncMetadataStoreChangeList::SetError(ModelError error) {
+  if (!error_) {
+    error_ = std::move(error);
+    error_callback_.Run(*error_);
+  }
 }
 
 }  // namespace syncer

@@ -38,7 +38,7 @@ describe('examples in README', function() {
             'const firstModule = goog.require(\'first.module\');'),
         '/second.js').dependencies;
     const graph = new depGraph.Graph([goog, firstFile, secondFile]);
-    expect(graph.order(secondFile)).toEqual([goog, firstFile, secondFile]);
+    expect(graph.order(secondFile)).toEqual([firstFile, secondFile]);
     expect(graph.depsBySymbol.get('first.module')).toBe(firstFile);
     expect(graph.depsByPath.get('/second.js')).toBe(secondFile);
   });
@@ -64,7 +64,7 @@ describe('examples in README', function() {
 
     const graph = new depGraph.Graph([goog, firstFile, secondFile, thirdFile]);
     expect(graph.order(secondFile, thirdFile)).toEqual([
-      goog, firstFile, secondFile, thirdFile
+      firstFile, secondFile, thirdFile
     ]);
   });
 });

@@ -1,15 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/printing_restrictions_policy_handler.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace policy {
 
@@ -49,7 +52,7 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
                                                Mode* result) {
   const base::Value* value;
   if (CheckAndGetValue(policies, errors, &value) && value) {
-    base::Optional<Mode> mode;
+    absl::optional<Mode> mode;
     auto it = policy_value_to_mode_.find(value->GetString());
     if (it != policy_value_to_mode_.end())
       mode = it->second;
@@ -59,7 +62,8 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
       return true;
     }
     if (errors)
-      errors->AddError(policy_name_, IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name_, IDS_POLICY_INVALID_SELECTION_ERROR,
+                       "printing mode");
   }
   return false;
 }
@@ -142,6 +146,7 @@ PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
 PrintingPinDefaultPolicyHandler::~PrintingPinDefaultPolicyHandler() = default;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 PrintingAllowedBackgroundGraphicsModesPolicyHandler::
     PrintingAllowedBackgroundGraphicsModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::BackgroundGraphicsModeRestriction>(
@@ -187,14 +192,16 @@ bool PrintingPaperSizeDefaultPolicyHandler::CheckIntSubkey(
   const base::Value* value = dict->FindKey(key);
   if (!value) {
     if (errors) {
-      errors->AddError(policy_name(), key, IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{key});
     }
     return false;
   }
   if (!value->is_int()) {
     if (errors) {
-      errors->AddError(policy_name(), key, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER));
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::INTEGER),
+                       PolicyErrorPath{key});
     }
     return false;
   }
@@ -220,14 +227,15 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
   const base::Value* name = value->FindKey(printing::kPaperSizeName);
   if (!name) {
     if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
+                       "paper size");
     return false;
   }
   if (!name->is_string()) {
     if (errors) {
-      errors->AddError(policy_name(), printing::kPaperSizeName,
-                       IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::STRING));
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::STRING),
+                       PolicyErrorPath{printing::kPaperSizeName});
     }
     return false;
   }
@@ -241,9 +249,9 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
     if (!custom_size->is_dict()) {
       if (errors) {
         errors->AddError(
-            policy_name(), printing::kPaperSizeCustomSize,
-            IDS_POLICY_TYPE_ERROR,
-            base::Value::GetTypeName(base::Value::Type::DICTIONARY));
+            policy_name(), IDS_POLICY_TYPE_ERROR,
+            base::Value::GetTypeName(base::Value::Type::DICTIONARY),
+            PolicyErrorPath{printing::kPaperSizeCustomSize});
       }
       return false;
     }
@@ -256,7 +264,10 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
 
   if (custom_option_specified != custom_size_property_found) {
     if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(),
+                       custom_option_specified
+                           ? IDS_POLICY_PAPER_SIZE_CUSTOM_NO_SIZE_ERROR
+                           : IDS_POLICY_PAPER_SIZE_NOT_CUSTOM_ERROR);
     return false;
   }
 
@@ -277,5 +288,50 @@ void PrintingPaperSizeDefaultPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(prefs::kPrintingPaperSizeDefault, value->Clone());
   }
 }
+
+PrintPdfAsImageDefaultPolicyHandler::PrintPdfAsImageDefaultPolicyHandler()
+    : TypeCheckingPolicyHandler(key::kPrintPdfAsImageDefault,
+                                base::Value::Type::BOOLEAN) {}
+
+PrintPdfAsImageDefaultPolicyHandler::~PrintPdfAsImageDefaultPolicyHandler() =
+    default;
+
+bool PrintPdfAsImageDefaultPolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors))
+    return false;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Platforms which require a policy to enable the "Print as image" option
+  // should have that policy specified with availability enabled before trying
+  // to specify a default behavior for the option.
+  if (policies.GetValue(key::kPrintPdfAsImageDefault,
+                        base::Value::Type::BOOLEAN)) {
+    const base::Value* option_availability = policies.GetValue(
+        key::kPrintPdfAsImageAvailability, base::Value::Type::BOOLEAN);
+    if (!option_availability || !option_availability->GetBool()) {
+      errors->AddError(key::kPrintPdfAsImageDefault,
+                       IDS_POLICY_DEPENDENCY_ERROR,
+                       key::kPrintPdfAsImageAvailability, "Enabled");
+      return false;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return true;
+}
+
+void PrintPdfAsImageDefaultPolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+  const base::Value* option_default_value = policies.GetValue(
+      key::kPrintPdfAsImageDefault, base::Value::Type::BOOLEAN);
+  if (option_default_value) {
+    prefs->SetValue(prefs::kPrintPdfAsImageDefault,
+                    option_default_value->Clone());
+  }
+}
+
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace policy

@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accessibility/chromevox/touch_exploration_manager.h"
 
 #include "ash/accessibility/test_accessibility_controller_client.h"
-#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ash {

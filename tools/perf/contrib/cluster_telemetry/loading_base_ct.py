@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from benchmarks import loading
@@ -15,7 +15,7 @@ class _LoadingBaseClusterTelemetry(loading._LoadingBase):
 
   options = {'upload_results': True}
 
-  _ALL_NET_CONFIGS = traffic_setting.NETWORK_CONFIGS.keys()
+  _ALL_NET_CONFIGS = list(traffic_setting.NETWORK_CONFIGS.keys())
   _ALL_CACHE_TEMPERATURES = cache_temperature_module.ALL_CACHE_TEMPERATURES
 
   @classmethod

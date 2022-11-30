@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,30 @@
 
 #include <cmath>
 #include <map>
+#include <tuple>
 
+#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/numerics/ranges.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/tablet_state.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_sink.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -26,11 +38,13 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
+#include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/caption_button_types.h"
 #include "ui/views/window/frame_caption_button.h"
+#include "ui/views/window/vector_icons/vector_icons.h"
 
 namespace chromeos {
 
@@ -38,15 +52,14 @@ namespace {
 
 // Duration of the animation of the position of buttons to the left of
 // |size_button_|.
-constexpr auto kPositionAnimationDuration =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr auto kPositionAnimationDuration = base::Milliseconds(500);
 
 // Duration of the animation of the alpha of |size_button_|.
-constexpr auto kAlphaAnimationDuration = base::TimeDelta::FromMilliseconds(250);
+constexpr auto kAlphaAnimationDuration = base::Milliseconds(250);
 
 // Delay during |tablet_mode_animation_| hide to wait before beginning to
 // animate the position of buttons to the left of |size_button_|.
-constexpr auto kHidePositionDelay = base::TimeDelta::FromMilliseconds(100);
+constexpr auto kHidePositionDelay = base::Milliseconds(100);
 
 // Duration of |tablet_mode_animation_| hiding.
 // Hiding size button 250
@@ -58,8 +71,7 @@ constexpr auto kHideAnimationDuration =
 
 // Delay during |tablet_mode_animation_| show to wait before beginning to
 // animate the alpha of |size_button_|.
-constexpr auto kShowAnimationAlphaDelay =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr auto kShowAnimationAlphaDelay = base::Milliseconds(100);
 
 // Duration of |tablet_mode_animation_| showing.
 // Slide other buttons 500
@@ -96,20 +108,7 @@ float HidePositionStartValue() {
 // animations to the expected range so that gfx::Tween::CalculateValue() can be
 // used.
 double CapAnimationValue(double value) {
-  return base::ClampToRange(value, 0.0, 1.0);
-}
-
-// Returns a |views::BoxLayout| layout manager with the settings needed by
-// FrameCaptionButtonContainerView.
-std::unique_ptr<views::BoxLayout> MakeBoxLayoutManager(
-    int minimum_cross_axis_size) {
-  std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
-  layout->set_minimum_cross_axis_size(minimum_cross_axis_size);
-  return layout;
+  return base::clamp(value, 0.0, 1.0);
 }
 
 // A default CaptionButtonModel that uses the widget delegate's state
@@ -128,18 +127,25 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
       case views::CAPTION_BUTTON_ICON_MINIMIZE:
         return frame_->widget_delegate()->CanMinimize();
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
-        return frame_->widget_delegate()->CanMaximize();
+        return !chromeos::TabletState::Get()->InTabletMode() &&
+               frame_->widget_delegate()->CanMaximize();
       // Resizable widget can be snapped.
-      case views::CAPTION_BUTTON_ICON_LEFT_SNAPPED:
-      case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
+      case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
         return frame_->widget_delegate()->CanResize();
       case views::CAPTION_BUTTON_ICON_CLOSE:
         return frame_->widget_delegate()->ShouldShowCloseButton();
-
+      case views::CAPTION_BUTTON_ICON_CUSTOM:
+        return true;
+      case views::CAPTION_BUTTON_ICON_FLOAT:
+        return chromeos::wm::features::IsFloatWindowEnabled() &&
+               frame_->IsNativeWidgetInitialized() &&
+               chromeos::wm::CanFloatWindow(frame_->GetNativeWindow());
       // No back or menu button by default.
       case views::CAPTION_BUTTON_ICON_BACK:
       case views::CAPTION_BUTTON_ICON_MENU:
       case views::CAPTION_BUTTON_ICON_ZOOM:
+      case views::CAPTION_BUTTON_ICON_CENTER:
         return false;
       case views::CAPTION_BUTTON_ICON_LOCATION:
         // not used
@@ -154,18 +160,21 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
   bool InZoomMode() const override { return false; }
 
  private:
-  views::Widget* frame_;
+  raw_ptr<views::Widget> frame_;
 };
 
 }  // namespace
 
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
-    views::Widget* frame)
+    views::Widget* frame,
+    std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(frame->GetRootView()),
       frame_(frame),
       model_(std::make_unique<DefaultCaptionButtonModel>(frame)) {
-  SetLayoutManager(MakeBoxLayoutManager(/*minimum_cross_axis_size=*/0));
-  tablet_mode_animation_.reset(new gfx::SlideAnimation(this));
+  SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  tablet_mode_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   tablet_mode_animation_->SetTweenType(gfx::Tween::LINEAR);
 
   // Ensure animation tracks visibility of size button.
@@ -175,12 +184,15 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   }
 
   // Insert the buttons left to right.
+  if (custom_button)
+    custom_button_ = AddChildView(std::move(custom_button));
+
   menu_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::MenuButtonPressed,
                           base::Unretained(this)),
       views::CAPTION_BUTTON_ICON_MENU, HTMENU);
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MENU));
-  AddChildView(menu_button_);
+  AddChildView(menu_button_.get());
 
   minimize_button_ = new views::FrameCaptionButton(
       base::BindRepeating(
@@ -189,7 +201,17 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON);
   minimize_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
-  AddChildView(minimize_button_);
+  AddChildView(minimize_button_.get());
+
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    float_button_ = AddChildView(std::make_unique<views::FrameCaptionButton>(
+        base::BindRepeating(
+            &FrameCaptionButtonContainerView::FloatButtonPressed,
+            base::Unretained(this)),
+        views::CAPTION_BUTTON_ICON_FLOAT, HTMENU));
+    float_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+  }
 
   size_button_ = new FrameSizeButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::SizeButtonPressed,
@@ -197,7 +219,7 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       this);
   size_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
-  AddChildView(size_button_);
+  AddChildView(size_button_.get());
 
   close_button_ = new views::FrameCaptionButton(
       base::BindRepeating(&FrameCaptionButtonContainerView::CloseButtonPressed,
@@ -205,9 +227,24 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
       views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  AddChildView(close_button_);
+  AddChildView(close_button_.get());
 
-  UpdateCaptionButtonState(false /* animate */);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT, chromeos::kFloatButtonIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
+                 views::kWindowControlMinimizeIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
+                 views::kWindowControlCloseIcon);
+
+  // The float button relies on minimum size to know if it can be floated, which
+  // can only be checked after the widget has been initialized.
+  if (frame->IsNativeWidgetInitialized()) {
+    UpdateCaptionButtonState(/*animate=*/false);
+  } else {
+    frame->widget_delegate()->RegisterWidgetInitializedCallback(base::BindOnce(
+        &FrameCaptionButtonContainerView::UpdateCaptionButtonState,
+        base::Unretained(this), /*animate=*/false));
+  }
 }
 
 FrameCaptionButtonContainerView::~FrameCaptionButtonContainerView() = default;
@@ -216,21 +253,11 @@ void FrameCaptionButtonContainerView::TestApi::EndAnimations() {
   container_view_->tablet_mode_animation_->End();
 }
 
-void FrameCaptionButtonContainerView::SetButtonImage(
-    views::CaptionButtonIcon icon,
-    const gfx::VectorIcon& icon_definition) {
-  button_icon_map_[icon] = &icon_definition;
-
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
-    if (buttons[i]->GetIcon() == icon)
-      buttons[i]->SetImage(icon, views::FrameCaptionButton::ANIMATE_NO,
-                           icon_definition);
-  }
-}
-
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
+  if (custom_button_)
+    custom_button_->SetPaintAsActive(paint_as_active);
+  if (float_button_)
+    float_button_->SetPaintAsActive(paint_as_active);
   menu_button_->SetPaintAsActive(paint_as_active);
   minimize_button_->SetPaintAsActive(paint_as_active);
   size_button_->SetPaintAsActive(paint_as_active);
@@ -238,16 +265,67 @@ void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
   SchedulePaint();
 }
 
+void FrameCaptionButtonContainerView::SetButtonImage(
+    views::CaptionButtonIcon icon,
+    const gfx::VectorIcon& icon_definition) {
+  button_icon_map_[icon] = &icon_definition;
+  views::FrameCaptionButton* buttons[] = {float_button_, menu_button_,
+                                          minimize_button_, size_button_,
+                                          close_button_};
+  for (size_t i = 0; i < std::size(buttons); ++i) {
+    if (buttons[i] && buttons[i]->GetIcon() == icon)
+      buttons[i]->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
+                           icon_definition);
+  }
+}
+
 void FrameCaptionButtonContainerView::SetBackgroundColor(
     SkColor background_color) {
+  if (custom_button_)
+    custom_button_->SetBackgroundColor(background_color);
+  if (float_button_)
+    float_button_->SetBackgroundColor(background_color);
   menu_button_->SetBackgroundColor(background_color);
   minimize_button_->SetBackgroundColor(background_color);
   size_button_->SetBackgroundColor(background_color);
   close_button_->SetBackgroundColor(background_color);
+
+  // When buttons' background color changes, the entire view's background color
+  // changes if WCO is enabled.
+  if (window_controls_overlay_enabled_) {
+    SetBackground(views::CreateSolidBackground(background_color));
+  }
 }
 
 void FrameCaptionButtonContainerView::ResetWindowControls() {
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
+}
+
+void FrameCaptionButtonContainerView::OnWindowControlsOverlayEnabledChanged(
+    bool enabled,
+    SkColor background_color) {
+  window_controls_overlay_enabled_ = enabled;
+  if (enabled) {
+    SetBackground(views::CreateSolidBackground(background_color));
+    // The view needs to paint to a layer so that it is painted on top of the
+    // web content.
+    SetPaintToLayer();
+  } else {
+    SetBackground(nullptr);
+    DestroyLayer();
+  }
+}
+
+void FrameCaptionButtonContainerView::UpdateBorderlessModeEnabled(
+    bool enabled) {
+  if (is_borderless_mode_enabled_ == enabled)
+    return;
+
+  // In borderless mode, the windowing controls will be drawn in web content,
+  // so similarly to hiding the title bar, also the caption button container
+  // containing them will be hidden.
+  is_borderless_mode_enabled_ = enabled;
+  SetVisible(enabled);
 }
 
 void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
@@ -268,6 +346,18 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       size_button_->SetVisible(false);
     }
   }
+  if (custom_button_) {
+    custom_button_->SetEnabled(
+        model_->IsEnabled(views::CAPTION_BUTTON_ICON_CUSTOM));
+    custom_button_->SetVisible(
+        model_->IsVisible(views::CAPTION_BUTTON_ICON_CUSTOM));
+  }
+  if (float_button_) {
+    float_button_->SetEnabled(
+        model_->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
+    float_button_->SetVisible(
+        model_->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
+  }
   size_button_->SetEnabled(
       (model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
        model_->InZoomMode()));
@@ -281,25 +371,37 @@ void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
       model_->IsVisible(views::CAPTION_BUTTON_ICON_CLOSE));
 }
 
-void FrameCaptionButtonContainerView::UpdateSizeButtonTooltip(
-    bool use_restore_frame) {
-  size_button_->SetTooltipText(
-      use_restore_frame ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE)
-                        : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
+void FrameCaptionButtonContainerView::UpdateButtonsImageAndTooltip() {
+  UpdateSizeButton();
+  UpdateSnapButtons();
+  UpdateFloatButton();
 }
 
 void FrameCaptionButtonContainerView::SetButtonSize(const gfx::Size& size) {
+  if (custom_button_)
+    custom_button_->SetPreferredSize(size);
+  if (float_button_)
+    float_button_->SetPreferredSize(size);
   menu_button_->SetPreferredSize(size);
   minimize_button_->SetPreferredSize(size);
   size_button_->SetPreferredSize(size);
   close_button_->SetPreferredSize(size);
 
-  SetLayoutManager(MakeBoxLayoutManager(size.height()));
+  SetMinimumCrossAxisSize(size.height());
 }
 
 void FrameCaptionButtonContainerView::SetModel(
     std::unique_ptr<CaptionButtonModel> model) {
   model_ = std::move(model);
+}
+
+void FrameCaptionButtonContainerView::SetOnSizeButtonPressedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  on_size_button_pressed_callback_ = std::move(callback);
+}
+
+void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
+  on_size_button_pressed_callback_.Reset();
 }
 
 void FrameCaptionButtonContainerView::Layout() {
@@ -387,24 +489,72 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
     views::CaptionButtonIcon icon,
     Animate animate) {
   // The early return is dependent on |animate| because callers use
-  // SetButtonIcon() with ANIMATE_NO to progress |button|'s crossfade animation
-  // to the end.
+  // SetButtonIcon() with Animate::kNo to progress |button|'s crossfade
+  // animation to the end.
   if (button->GetIcon() == icon &&
-      (animate == ANIMATE_YES || !button->IsAnimatingImageSwap())) {
+      (animate == Animate::kYes || !button->IsAnimatingImageSwap())) {
     return;
   }
 
   views::FrameCaptionButton::Animate fcb_animate =
-      (animate == ANIMATE_YES) ? views::FrameCaptionButton::ANIMATE_YES
-                               : views::FrameCaptionButton::ANIMATE_NO;
+      (animate == Animate::kYes) ? views::FrameCaptionButton::Animate::kYes
+                                 : views::FrameCaptionButton::Animate::kNo;
   auto it = button_icon_map_.find(icon);
   if (it != button_icon_map_.end())
     button->SetImage(icon, fcb_animate, *it->second);
 }
 
+void FrameCaptionButtonContainerView::UpdateSizeButton() {
+  const bool use_zoom_icons = model_->InZoomMode();
+  const gfx::VectorIcon& restore_icon = use_zoom_icons
+                                            ? chromeos::kWindowControlDezoomIcon
+                                            : views::kWindowControlRestoreIcon;
+  const gfx::VectorIcon& maximize_icon =
+      use_zoom_icons ? chromeos::kWindowControlZoomIcon
+                     : views::kWindowControlMaximizeIcon;
+
+  const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(frame_);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
+                 use_restore_frame ? maximize_icon : restore_icon);
+  size_button_->SetTooltipText(
+      use_restore_frame ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE)
+                        : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
+}
+
+void FrameCaptionButtonContainerView::UpdateSnapButtons() {
+  const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          frame_->GetNativeWindow()));
+  SetButtonImage(views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
+                 is_horizontal_display
+                     ? chromeos::kWindowControlLeftSnappedIcon
+                     : chromeos::kWindowControlTopSnappedIcon);
+  SetButtonImage(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
+                 is_horizontal_display
+                     ? chromeos::kWindowControlRightSnappedIcon
+                     : chromeos::kWindowControlBottomSnappedIcon);
+}
+
+void FrameCaptionButtonContainerView::UpdateFloatButton() {
+  if (!float_button_)
+    return;
+
+  const bool floated = frame_->GetNativeWindow()->GetProperty(
+                           kWindowStateTypeKey) == WindowStateType::kFloated;
+  SetButtonImage(
+      views::CAPTION_BUTTON_ICON_FLOAT,
+      floated ? chromeos::kUnfloatButtonIcon : chromeos::kFloatButtonIcon);
+  float_button_->SetTooltipText(
+      floated
+          // TODO(sammiequon|shidi): Update this to the correct string once UX
+          // writing has a decision.
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE)
+          : l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT));
+}
+
 void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   frame_->Minimize();
   base::RecordAction(base::UserMetricsAction("MinButton_Clk"));
@@ -412,9 +562,13 @@ void FrameCaptionButtonContainerView::MinimizeButtonPressed() {
 
 void FrameCaptionButtonContainerView::SizeButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
-  if (frame_->IsFullscreen()) {  // Can be clicked in immersive fullscreen.
+  if (on_size_button_pressed_callback_ &&
+      on_size_button_pressed_callback_.Run()) {
+    // no-op if the override callback returned true.
+  } else if (frame_->IsFullscreen()) {
+    // Can be clicked in immersive fullscreen.
     frame_->Restore();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_ExitFS"));
   } else if (frame_->IsMaximized()) {
@@ -428,7 +582,7 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
 
 void FrameCaptionButtonContainerView::CloseButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   frame_->Close();
   if (chromeos::TabletState::Get()->InTabletMode()) {
@@ -441,18 +595,27 @@ void FrameCaptionButtonContainerView::CloseButtonPressed() {
 
 void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // Abort any animations of the button icons.
-  SetButtonsToNormal(ANIMATE_NO);
+  SetButtonsToNormal(Animate::kNo);
 
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
-  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
-      &press_key_event));
+  std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
+      &press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
-      &release_key_event));
+  std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
+      &release_key_event);
   // TODO(oshima): Add metrics
+}
+
+void FrameCaptionButtonContainerView::FloatButtonPressed() {
+  // Abort any animations of the button icons.
+  SetButtonsToNormal(Animate::kNo);
+  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+
+  // Toggle float current window.
+  FloatControllerBase::Get()->ToggleFloat(GetWidget()->GetNativeWindow());
 }
 
 bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {
@@ -462,6 +625,10 @@ bool FrameCaptionButtonContainerView::IsMinimizeButtonVisible() const {
 void FrameCaptionButtonContainerView::SetButtonsToNormal(Animate animate) {
   SetButtonIcons(views::CAPTION_BUTTON_ICON_MINIMIZE,
                  views::CAPTION_BUTTON_ICON_CLOSE, animate);
+  if (custom_button_)
+    custom_button_->SetState(views::Button::STATE_NORMAL);
+  if (float_button_)
+    float_button_->SetState(views::Button::STATE_NORMAL);
   menu_button_->SetState(views::Button::STATE_NORMAL);
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   size_button_->SetState(views::Button::STATE_NORMAL);
@@ -485,13 +652,14 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
   gfx::Point position(position_in_screen);
   views::View::ConvertPointFromScreen(this, &position);
 
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
+  views::FrameCaptionButton* buttons[] = {custom_button_, float_button_,
+                                          menu_button_,   minimize_button_,
+                                          size_button_,   close_button_};
   int min_squared_distance = INT_MAX;
   views::FrameCaptionButton* closest_button = nullptr;
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
-    if (!button->GetVisible())
+    if (!button || !button->GetVisible())
       continue;
 
     gfx::Point center_point = button->GetLocalBounds().CenterPoint();
@@ -510,10 +678,13 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
 void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
     const views::FrameCaptionButton* to_hover,
     const views::FrameCaptionButton* to_press) {
-  views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
-                                          size_button_, close_button_};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  views::FrameCaptionButton* buttons[] = {custom_button_, float_button_,
+                                          menu_button_,   minimize_button_,
+                                          size_button_,   close_button_};
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
+    if (!button)
+      continue;
     views::Button::ButtonState new_state = views::Button::STATE_NORMAL;
     if (button == to_hover)
       new_state = views::Button::STATE_HOVERED;
@@ -527,8 +698,11 @@ bool FrameCaptionButtonContainerView::CanSnap() {
   return SnapController::Get()->CanSnap(frame_->GetNativeWindow());
 }
 
-void FrameCaptionButtonContainerView::ShowSnapPreview(SnapDirection snap) {
-  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap);
+void FrameCaptionButtonContainerView::ShowSnapPreview(
+    SnapDirection snap,
+    bool allow_haptic_feedback) {
+  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap,
+                                         allow_haptic_feedback);
 }
 
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {

@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/credential_manager_pending_prevent_silent_access_task.h"
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
@@ -17,11 +18,13 @@ CredentialManagerPendingPreventSilentAccessTask::
     ~CredentialManagerPendingPreventSilentAccessTask() = default;
 
 void CredentialManagerPendingPreventSilentAccessTask::AddOrigin(
-    const PasswordStore::FormDigest& form_digest) {
-  delegate_->GetProfilePasswordStore()->GetLogins(form_digest, this);
+    const PasswordFormDigest& form_digest) {
+  delegate_->GetProfilePasswordStore()->GetLogins(
+      form_digest, weak_ptr_factory_.GetWeakPtr());
   pending_requests_++;
-  if (PasswordStore* account_store = delegate_->GetAccountPasswordStore()) {
-    account_store->GetLogins(form_digest, this);
+  if (PasswordStoreInterface* account_store =
+          delegate_->GetAccountPasswordStore()) {
+    account_store->GetLogins(form_digest, weak_ptr_factory_.GetWeakPtr());
     pending_requests_++;
   }
 }
@@ -36,7 +39,7 @@ void CredentialManagerPendingPreventSilentAccessTask::OnGetPasswordStoreResults(
 
 void CredentialManagerPendingPreventSilentAccessTask::
     OnGetPasswordStoreResultsFrom(
-        PasswordStore* store,
+        PasswordStoreInterface* store,
         std::vector<std::unique_ptr<PasswordForm>> results) {
   for (const auto& form : results) {
     if (!form->skip_zero_click) {

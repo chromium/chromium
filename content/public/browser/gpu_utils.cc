@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/switches.h"
 #include "components/viz/common/viz_utils.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -27,21 +26,17 @@
 #include "media/media_buildflags.h"
 #include "ui/gfx/switches.h"
 
+// TODO(b/192563524): remove it when the legacy video decoder is replaced for
+// all devices.
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/ozone/public/ozone_switches.h"  // nogncheck
+#endif                                       // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
-
-void RunTaskOnTaskRunner(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceClosure callback) {
-  task_runner->PostTask(FROM_HERE, std::move(callback));
-}
-
-void StopGpuProcessImpl(base::OnceClosure callback,
-                        content::GpuProcessHost* host) {
-  if (host)
-    host->gpu_service()->Stop(std::move(callback));
-  else
-    std::move(callback).Run();
-}
 
 void KillGpuProcessImpl(content::GpuProcessHost* host) {
   if (host) {
@@ -61,7 +56,7 @@ bool GetUintFromSwitch(const base::CommandLine* command_line,
 namespace content {
 
 bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return false;
 #else
   if (viz::PreferRGB565ResourcesForDisplay())
@@ -80,7 +75,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode);
   gpu_preferences.disable_accelerated_video_encode =
       command_line->HasSwitch(switches::kDisableAcceleratedVideoEncode);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_low_latency_dxva =
       !command_line->HasSwitch(switches::kDisableLowLatencyDxva);
   gpu_preferences.enable_zero_copy_dxgi_video =
@@ -98,24 +93,38 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kDisableGpuWatchdog) ||
       command_line->HasSwitch(switches::kSingleProcess) ||
       command_line->HasSwitch(switches::kInProcessGPU);
+
   gpu_preferences.gpu_sandbox_start_early =
       command_line->HasSwitch(switches::kGpuSandboxStartEarly);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!gpu_preferences.gpu_sandbox_start_early) {
+    const chromeos::BrowserParamsProxy* init_params =
+        chromeos::BrowserParamsProxy::Get();
+    CHECK(init_params);
+    switch (init_params->GpuSandboxStartMode()) {
+      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kUnspecified:
+        // In practice, this is expected to be reached due to version skewing:
+        // when ash-chrome is too old to provide a useful value for
+        // BrowserInitParams.gpu_sandbox_start_early. In that case, it's better
+        // to start the sandbox early than to crash the GPU process (since that
+        // process is started with --gpu-sandbox-failures-fatal=yes).
+        // This can also be reached on tests when
+        // |init_params|->DisableCrosapiForTesting() is true.
+      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kEarly:
+        gpu_preferences.gpu_sandbox_start_early = true;
+        break;
+      case crosapi::mojom::BrowserInitParams::GpuSandboxStartMode::kNormal:
+        break;
+    }
+  }
+#endif
 
-  gpu_preferences.enable_oop_rasterization =
-      command_line->HasSwitch(switches::kEnableOopRasterization);
-  gpu_preferences.disable_oop_rasterization =
-      command_line->HasSwitch(switches::kDisableOopRasterization);
-
-  gpu_preferences.enable_oop_rasterization_ddl =
-      base::FeatureList::IsEnabled(features::kOopRasterizationDDL);
   gpu_preferences.enable_vulkan_protected_memory =
       command_line->HasSwitch(switches::kEnableVulkanProtectedMemory);
-  gpu_preferences.enforce_vulkan_protected_memory =
-      command_line->HasSwitch(switches::kEnforceVulkanProtectedMemory);
   gpu_preferences.disable_vulkan_fallback_to_gl_for_testing =
       command_line->HasSwitch(switches::kDisableVulkanFallbackToGLForTesting);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   gpu_preferences.enable_metal = base::FeatureList::IsEnabled(features::kMetal);
 #endif
 
@@ -128,7 +137,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // The direct VideoDecoder is disallowed on some particular SoC/platforms.
   const bool should_use_direct_video_decoder =
@@ -149,9 +158,9 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   gpu_preferences.enable_chromeos_direct_video_decoder = false;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   gpu_preferences.disable_oopr_debug_crash_dump =
       command_line->HasSwitch(switches::kDisableOoprDebugCrashDump);
 #endif
@@ -170,17 +179,9 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   return gpu_preferences;
 }
 
-void StopGpuProcess(base::OnceClosure callback) {
-  GpuProcessHost::CallOnIO(
-      GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindOnce(&StopGpuProcessImpl,
-                     base::BindOnce(RunTaskOnTaskRunner,
-                                    base::ThreadTaskRunnerHandle::Get(),
-                                    std::move(callback))));
-}
-
 void KillGpuProcess() {
-  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+  GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           false /* force_create */,
                            base::BindOnce(&KillGpuProcessImpl));
 }
 
@@ -191,7 +192,7 @@ gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory() {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 void DumpGpuProfilingData(base::OnceClosure callback) {
   content::GpuProcessHost::CallOnIO(
-      content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, content::GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
       base::BindOnce(
           [](base::OnceClosure callback, content::GpuProcessHost* host) {
             host->gpu_service()->WriteClangProfilingProfile(

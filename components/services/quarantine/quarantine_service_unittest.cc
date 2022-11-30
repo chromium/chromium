@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ const char kInternetReferrerURL[] = "http://example.com/some-other-url";
 class QuarantineServiceTest : public testing::Test {
  public:
   QuarantineServiceTest() = default;
+
+  QuarantineServiceTest(const QuarantineServiceTest&) = delete;
+  QuarantineServiceTest& operator=(const QuarantineServiceTest&) = delete;
+
   ~QuarantineServiceTest() override = default;
 
   void OnFileQuarantined(const base::FilePath& test_file,
@@ -44,8 +48,6 @@ class QuarantineServiceTest : public testing::Test {
 
  private:
   QuarantineImpl service_{quarantine_.BindNewPipeAndPassReceiver()};
-
-  DISALLOW_COPY_AND_ASSIGN(QuarantineServiceTest);
 };
 
 TEST_F(QuarantineServiceTest, QuarantineFile) {
@@ -53,8 +55,8 @@ TEST_F(QuarantineServiceTest, QuarantineFile) {
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
 
   base::FilePath test_file = test_dir.GetPath().AppendASCII("foo.class");
-  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
-            base::WriteFile(test_file, kTestData, base::size(kTestData)));
+  ASSERT_EQ(static_cast<int>(std::size(kTestData)),
+            base::WriteFile(test_file, kTestData, std::size(kTestData)));
 
   base::RunLoop run_loop;
   quarantine_->QuarantineFile(

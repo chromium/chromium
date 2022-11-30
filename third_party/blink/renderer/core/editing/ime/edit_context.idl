@@ -1,22 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // The goal of the EditContext is to expose the lower-level APIs provided by
 // modern operating systems to facilitate various input modalities to unlock
-// advanced editing scenarios. For more information please refer
-// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/EditContext/explainer.md
+// advanced editing scenarios.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#the-editcontext-interface
+
 [
     Exposed=Window,
     ActiveScriptWrappable,
     RuntimeEnabled=EditContext
 ] interface EditContext : EventTarget {
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
-    void focus();
-    void blur();
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
-    void updateLayout(DOMRect controlBounds, DOMRect selectionBounds);
+    void updateControlBounds(DOMRect controlBounds);
+    void updateSelectionBounds(DOMRect selectionBounds);
+    void updateCharacterBounds(unsigned long rangeStart, sequence<DOMRect> characterBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
+    sequence<Element> attachedElements();
 
     attribute DOMString text;
     [RaisesException=Setter] attribute unsigned long selectionStart;
@@ -24,10 +28,13 @@
     attribute EditContextInputMode inputMode;
     attribute EditContextInputPanelPolicy inputPanelPolicy;
     attribute EditContextEnterKeyHint enterKeyHint;
+    readonly attribute unsigned long characterBoundsRangeStart;
+    sequence<DOMRect> characterBounds();
 
     // Event handler attributes
     attribute EventHandler ontextupdate;
     attribute EventHandler ontextformatupdate;
+    attribute EventHandler oncharacterboundsupdate;
     attribute EventHandler oncompositionstart;
     attribute EventHandler oncompositionend;
 };

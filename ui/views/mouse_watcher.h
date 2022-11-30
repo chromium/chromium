@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/native_widget_types.h"
@@ -50,6 +50,10 @@ class VIEWS_EXPORT MouseWatcher {
   // listener must remain alive for the lifetime of this object.
   MouseWatcher(std::unique_ptr<MouseWatcherHost> host,
                MouseWatcherListener* listener);
+
+  MouseWatcher(const MouseWatcher&) = delete;
+  MouseWatcher& operator=(const MouseWatcher&) = delete;
+
   ~MouseWatcher();
 
   // Sets the amount to delay before notifying the listener when the mouse exits
@@ -82,15 +86,13 @@ class VIEWS_EXPORT MouseWatcher {
   std::unique_ptr<MouseWatcherHost> host_;
 
   // Our listener.
-  MouseWatcherListener* listener_;
+  raw_ptr<MouseWatcherListener> listener_;
 
   // Does the actual work of listening for mouse events.
   std::unique_ptr<Observer> observer_;
 
   // See description above setter.
   base::TimeDelta notify_on_exit_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWatcher);
 };
 
 }  // namespace views

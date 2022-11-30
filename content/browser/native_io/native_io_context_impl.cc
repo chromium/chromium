@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include "build/build_config.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -42,7 +43,7 @@ void NativeIOContextImpl::Initialize(
 }
 
 void NativeIOContextImpl::BindReceiver(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
@@ -51,13 +52,13 @@ void NativeIOContextImpl::BindReceiver(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeIOContextImpl::BindReceiverOnIOThread,
-                     scoped_refptr<NativeIOContextImpl>(this), origin,
+                     scoped_refptr<NativeIOContextImpl>(this), storage_key,
                      std::move(receiver), mojo::GetBadMessageCallback()));
 }
 
-void NativeIOContextImpl::DeleteOriginData(
-    const url::Origin& origin,
-    storage::mojom::QuotaClient::DeleteOriginDataCallback success_callback) {
+void NativeIOContextImpl::DeleteStorageKeyData(
+    const blink::StorageKey& storage_key,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(initialize_called_) << __func__ << " called before Initialize()";
@@ -65,11 +66,11 @@ void NativeIOContextImpl::DeleteOriginData(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &NativeIOContextImpl::DeleteOriginDataOnIOThread,
-          scoped_refptr<NativeIOContextImpl>(this), std::move(origin),
+          &NativeIOContextImpl::DeleteStorageKeyDataOnIOThread,
+          scoped_refptr<NativeIOContextImpl>(this), std::move(storage_key),
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 storage::mojom::QuotaClient::DeleteOriginDataCallback callback,
+                 storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
                  blink::mojom::QuotaStatusCode result) {
                 task_runner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -78,8 +79,8 @@ void NativeIOContextImpl::DeleteOriginData(
               std::move(success_callback))));
 }
 
-void NativeIOContextImpl::GetOriginUsageMap(
-    base::OnceCallback<void(const std::map<url::Origin, int64_t>)>
+void NativeIOContextImpl::GetStorageKeyUsageMap(
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
         success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
@@ -88,13 +89,13 @@ void NativeIOContextImpl::GetOriginUsageMap(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &NativeIOContextImpl::GetOriginUsageMapOnIOThread,
+          &NativeIOContextImpl::GetStorageKeyUsageMapOnIOThread,
           scoped_refptr<NativeIOContextImpl>(this),
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 base::OnceCallback<void(const std::map<url::Origin, int64_t>)>
-                     callback,
-                 std::map<url::Origin, int64_t> result) {
+                 base::OnceCallback<void(
+                     const std::map<blink::StorageKey, int64_t>&)> callback,
+                 const std::map<blink::StorageKey, int64_t>& result) {
                 task_runner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), result));
               },
@@ -111,37 +112,36 @@ void NativeIOContextImpl::InitializeOnIOThread(
 
   native_io_manager_ = std::make_unique<NativeIOManager>(
       profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       !base::mac::IsAtLeastOS10_15(),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       std::move(special_storage_policy), std::move(quota_manager_proxy));
 }
 
 void NativeIOContextImpl::BindReceiverOnIOThread(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  native_io_manager_->BindReceiver(origin, std::move(receiver),
+  native_io_manager_->BindReceiver(storage_key, std::move(receiver),
                                    std::move(bad_message_callback));
 }
 
-void NativeIOContextImpl::DeleteOriginDataOnIOThread(
-    const url::Origin& origin,
-    storage::mojom::QuotaClient::DeleteOriginDataCallback callback) {
+void NativeIOContextImpl::DeleteStorageKeyDataOnIOThread(
+    const blink::StorageKey& storage_key,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  native_io_manager_->DeleteOriginData(origin, std::move(callback));
+  native_io_manager_->DeleteStorageKeyData(storage_key, std::move(callback));
 }
 
-void NativeIOContextImpl::GetOriginUsageMapOnIOThread(
-    base::OnceCallback<void(const std::map<url::Origin, int64_t>)> callback) {
+void NativeIOContextImpl::GetStorageKeyUsageMapOnIOThread(
+    base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  std::map<url::Origin, int64_t> result = std::map<url::Origin, int64_t>();
-
-  native_io_manager_->GetOriginUsageMap(std::move(callback));
+  native_io_manager_->GetStorageKeyUsageMap(std::move(callback));
 }
 
 }  // namespace content

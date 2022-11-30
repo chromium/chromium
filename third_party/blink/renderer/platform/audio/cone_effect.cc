@@ -28,24 +28,28 @@
 
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
 ConeEffect::ConeEffect()
     : inner_angle_(360.0), outer_angle_(360.0), outer_gain_(0.0) {}
 
-double ConeEffect::Gain(FloatPoint3D source_position,
-                        FloatPoint3D source_orientation,
-                        FloatPoint3D listener_position) {
+double ConeEffect::Gain(gfx::Point3F source_position,
+                        gfx::Vector3dF source_orientation,
+                        gfx::Point3F listener_position) {
   if (source_orientation.IsZero() ||
-      ((inner_angle_ == 360.0) && (outer_angle_ == 360.0)))
+      ((inner_angle_ == 360.0) && (outer_angle_ == 360.0))) {
     return 1.0;  // no cone specified - unity gain
+  }
 
   // Source-listener vector
-  FloatPoint3D source_to_listener = listener_position - source_position;
+  gfx::Vector3dF source_to_listener = listener_position - source_position;
 
   // Angle between the source orientation vector and the source-listener vector
-  double angle = rad2deg(source_to_listener.AngleBetween(source_orientation));
+  double angle =
+      gfx::AngleBetweenVectorsInDegrees(source_to_listener, source_orientation);
   double abs_angle = fabs(angle);
 
   // Divide by 2.0 here since API is entire angle (not half-angle)

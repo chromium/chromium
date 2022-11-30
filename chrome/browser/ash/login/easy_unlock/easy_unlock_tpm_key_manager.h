@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -20,7 +19,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // Manages per user RSA keys stored in system TPM slot used in easy signin
 // protocol. The keys are used to sign a nonce exchanged during signin.
@@ -40,6 +39,10 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   EasyUnlockTpmKeyManager(const AccountId& account_id,
                           const std::string& username_hash,
                           PrefService* local_state);
+
+  EasyUnlockTpmKeyManager(const EasyUnlockTpmKeyManager&) = delete;
+  EasyUnlockTpmKeyManager& operator=(const EasyUnlockTpmKeyManager&) = delete;
+
   ~EasyUnlockTpmKeyManager() override;
 
   // Checks if the RSA public key is set in the local state. If not, creates
@@ -147,10 +150,8 @@ class EasyUnlockTpmKeyManager : public KeyedService {
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> get_tpm_slot_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<EasyUnlockTpmKeyManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockTpmKeyManager);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_TPM_KEY_MANAGER_H_

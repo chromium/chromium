@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+// This should be after all other #includes.
+#if defined(_WINDOWS_)  // Detect whether windows.h was included.
+#include "base/win/windows_h_disallowed.h"
+#endif  // defined(_WINDOWS_)
 
 namespace views {
 
@@ -45,8 +52,13 @@ void BoundsAnimator::AnimateViewTo(
 
   // Return early if the existing animation on |view| has the same target
   // bounds.
-  if (is_animating && target == data_[view].target_bounds)
+  if (is_animating && target == data_[view].target_bounds) {
+    // If this animation specifies a different delegate, swap them out.
+    if (delegate && delegate != data_[view].delegate)
+      SetAnimationDelegate(view, std::move(delegate));
+
     return;
+  }
 
   Data existing_data;
   if (is_animating) {
@@ -149,6 +161,17 @@ bool BoundsAnimator::IsAnimating() const {
   return !data_.empty();
 }
 
+void BoundsAnimator::Complete() {
+  if (data_.empty())
+    return;
+
+  while (!data_.empty())
+    data_.begin()->second.animation->End();
+
+  // Invoke AnimationContainerProgressed to force a repaint and notify delegate.
+  AnimationContainerProgressed(container_.get());
+}
+
 void BoundsAnimator::Cancel() {
   if (data_.empty())
     return;
@@ -230,6 +253,13 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
   View* view = animation_to_view_[animation];
   DCHECK(view);
 
+  // Notify the delegate so it has a chance to paint the final state of a
+  // completed animation.
+  if (type == AnimationEndType::kEnded) {
+    DCHECK_EQ(animation->GetCurrentValue(), 1.0);
+    AnimationProgressed(animation);
+  }
+
   // Save the data for later clean up.
   Data data = RemoveFromMaps(view);
 
@@ -241,11 +271,12 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
       DCHECK_EQ(AnimationEndType::kCanceled, type);
       // Get the existing transform and apply it to the start bounds which is
       // the current bounds of the view. This will place the bounds at the place
-      // where the animation stopped.
+      // where the animation stopped. See comment in AnimateViewTo() for details
+      // as to why GetMirroredRect() is used.
       const gfx::Transform transform = view->GetTransform();
-      gfx::RectF bounds_f(view->bounds());
-      transform.TransformRect(&bounds_f);
-      view->SetBoundsRect(gfx::ToRoundedRect(bounds_f));
+      gfx::Rect bounds = parent_->GetMirroredRect(view->bounds());
+      bounds = gfx::ToRoundedRect(transform.MapRect(gfx::RectF(bounds)));
+      view->SetBoundsRect(parent_->GetMirroredRect(bounds));
     }
     view->SetTransform(gfx::Transform());
   }

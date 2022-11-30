@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
@@ -37,6 +38,10 @@ class WebSocket;
 class WebSocketFactory final {
  public:
   explicit WebSocketFactory(NetworkContext* context);
+
+  WebSocketFactory(const WebSocketFactory&) = delete;
+  WebSocketFactory& operator=(const WebSocketFactory&) = delete;
+
   ~WebSocketFactory();
 
   void CreateWebSocket(
@@ -53,7 +58,8 @@ class WebSocketFactory final {
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
-      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client);
+      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id);
 
   // Returns a URLRequestContext associated with this factory.
   net::URLRequestContext* GetURLRequestContext();
@@ -71,15 +77,15 @@ class WebSocketFactory final {
   void Remove(WebSocket* impl);
 
  private:
+  using WebSocketSet =
+      std::set<std::unique_ptr<WebSocket>, base::UniquePtrComparator>;
   // The connections held by this factory.
-  std::set<std::unique_ptr<WebSocket>, base::UniquePtrComparator> connections_;
+  WebSocketSet connections_;
 
   WebSocketThrottler throttler_;
 
   // |context_| outlives this object.
-  NetworkContext* const context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFactory);
+  const raw_ptr<NetworkContext> context_;
 };
 
 }  // namespace network

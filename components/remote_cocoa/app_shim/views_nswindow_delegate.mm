@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/mac/mac_util.h"
-#include "base/numerics/ranges.h"
 #include "base/threading/thread_task_runner_handle.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -119,10 +119,16 @@
 
   gfx::Rect resizedWindowRect(gfx::Point([window frame].origin),
                               gfx::Size(size));
+
+  absl::optional<gfx::Size> maxSizeParam;
+  gfx::Size maxSize([window maxSize]);
+  if (!maxSize.IsEmpty())
+    maxSizeParam = maxSize;
+
   gfx::SizeRectToAspectRatio(*_resizingHorizontally ? gfx::ResizeEdge::kRight
                                                     : gfx::ResizeEdge::kBottom,
                              *_aspectRatio, gfx::Size([window minSize]),
-                             gfx::Size([window maxSize]), &resizedWindowRect);
+                             maxSizeParam, &resizedWindowRect);
   // Discard any updates to |resizedWindowRect| origin as Cocoa takes care of
   // that.
   return resizedWindowRect.size().ToCGSize();
@@ -200,38 +206,35 @@
   _parent->OnVisibilityChanged();
 }
 
+// The delegate or the window class should implement this method so that
+// -[NSWindow isZoomed] can be then determined by whether or not the current
+// window frame is equal to the zoomed frame.
+- (NSRect)windowWillUseStandardFrame:(NSWindow*)window
+                        defaultFrame:(NSRect)newFrame {
+  return newFrame;
+}
+
 - (void)windowDidChangeBackingProperties:(NSNotification*)notification {
   _parent->OnBackingPropertiesChanged();
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(true);
+  _parent->fullscreen_controller().OnWindowWillEnterFullscreen();
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionComplete(true);
+  _parent->fullscreen_controller().OnWindowDidEnterFullscreen();
 }
 
 - (void)windowWillExitFullScreen:(NSNotification*)notification {
-  _parent->OnFullscreenTransitionStart(false);
+  _parent->fullscreen_controller().OnWindowWillExitFullscreen();
 }
 
 - (void)windowDidExitFullScreen:(NSNotification*)notification {
-  if (base::mac::IsOS10_12()) {
-    // There is a window activation/fullscreen bug present only in macOS 10.12
-    // that might cause a security surface to appear over the wrong parent
-    // window. As much as this code appears to be a no-op, it is not; it causes
-    // AppKit to shuffle all the windows around to properly obey the
-    // relationships that they should already be obeying.
-    [[NSApp orderedWindows][0] performSelector:@selector(orderFront:)
-                                    withObject:self
-                                    afterDelay:0];
-  }
-
-  _parent->OnFullscreenTransitionComplete(false);
+  _parent->fullscreen_controller().OnWindowDidExitFullscreen();
 }
 
-// Allow non-resizable windows (without NSResizableWindowMask) to fill the
+// Allow non-resizable windows (without NSWindowStyleMaskResizable) to fill the
 // screen in fullscreen mode. This only happens when
 // -[NSWindow toggleFullscreen:] is called since non-resizable windows have no
 // fullscreen button. Without this they would only enter fullscreen at their

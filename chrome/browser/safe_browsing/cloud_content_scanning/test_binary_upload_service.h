@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 
@@ -19,6 +19,7 @@ class TestBinaryUploadService : public BinaryUploadService {
   ~TestBinaryUploadService() override = default;
 
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
+  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {}
   void SetResponse(Result result,
                    enterprise_connectors::ContentAnalysisResponse response);
 

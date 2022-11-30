@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_REPORTER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace base {
 class UnguessableToken;
@@ -15,6 +15,7 @@ class UnguessableToken;
 namespace blink {
 class CoreProbeSink;
 class DocumentLoader;
+class LocalFrame;
 class ResourceError;
 class InspectorIssueStorage;
 
@@ -35,11 +36,12 @@ class CORE_EXPORT InspectorIssueReporter final
                       DocumentLoader* loader,
                       const ResourceError& error,
                       const base::UnguessableToken& token);
+  void DomContentLoadedEventFired(LocalFrame*);
 
   void Trace(Visitor*) const;
 
  private:
-  WeakMember<InspectorIssueStorage> storage_;
+  InspectorIssueStorage* storage_;
 };
 
 }  // namespace blink

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/port.h"
@@ -43,7 +42,7 @@ String CandidateTypeToString(const std::string& type) {
 RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
-    base::Optional<uint16_t> sdp_m_line_index,
+    absl::optional<uint16_t> sdp_m_line_index,
     String username_fragment)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
@@ -55,7 +54,7 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
 RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
-    base::Optional<uint16_t> sdp_m_line_index)
+    absl::optional<uint16_t> sdp_m_line_index)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
       sdp_m_line_index_(std::move(sdp_m_line_index)) {

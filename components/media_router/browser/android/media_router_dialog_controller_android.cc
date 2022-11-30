@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "components/media_router/browser/android/media_router_android.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/media_source.h"
 #include "content/public/browser/browser_context.h"
@@ -71,6 +72,8 @@ void MediaRouterDialogControllerAndroid::OnSinkSelected(
       base::BindOnce(&StartPresentationContext::HandleRouteResponse,
                      std::move(start_presentation_context)),
       base::TimeDelta(), browser_context->IsOffTheRecord());
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
+      MediaRouterAndroidDialogAction::kStartRoute);
 }
 
 void MediaRouterDialogControllerAndroid::OnRouteClosed(
@@ -85,6 +88,8 @@ void MediaRouterDialogControllerAndroid::OnRouteClosed(
   router->TerminateRoute(media_route_id);
 
   CancelPresentationRequest();
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
+      MediaRouterAndroidDialogAction::kTerminateRoute);
 }
 
 void MediaRouterDialogControllerAndroid::OnDialogCancelled(
@@ -117,7 +122,9 @@ void MediaRouterDialogControllerAndroid::CancelPresentationRequest() {
 
 MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
     WebContents* web_contents)
-    : MediaRouterDialogController(web_contents) {
+    : content::WebContentsUserData<MediaRouterDialogControllerAndroid>(
+          *web_contents),
+      MediaRouterDialogController(web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_dialog_controller_.Reset(Java_BrowserMediaRouterDialogController_create(
       env, reinterpret_cast<jlong>(this), web_contents->GetJavaWebContents()));
@@ -126,7 +133,7 @@ MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
 MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() {}
 
 void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
-    MediaRouterDialogOpenOrigin activation_location) {
+    MediaRouterDialogActivationLocation activation_location) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   std::vector<MediaSource> sources;
@@ -156,6 +163,8 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
 
     Java_BrowserMediaRouterDialogController_openRouteControllerDialog(
         env, java_dialog_controller_, jsource_id, jmedia_route_id);
+    MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
+        MediaRouterAndroidDialogType::kRouteController);
     return;
   }
 
@@ -167,6 +176,8 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
       base::android::ToJavaArrayOfStrings(env, source_ids);
   Java_BrowserMediaRouterDialogController_openRouteChooserDialog(
       env, java_dialog_controller_, jsource_ids);
+  MediaRouterMetrics::RecordMediaRouterAndroidDialogType(
+      MediaRouterAndroidDialogType::kRouteChooser);
 }
 
 void MediaRouterDialogControllerAndroid::CloseMediaRouterDialog() {
@@ -182,6 +193,6 @@ bool MediaRouterDialogControllerAndroid::IsShowingMediaRouterDialog() const {
       env, java_dialog_controller_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerAndroid)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterDialogControllerAndroid);
 
 }  // namespace media_router

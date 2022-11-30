@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import fnmatch
 import os
 import re
@@ -98,7 +100,7 @@ class UpdateManifest(Step):
     provides = ["manifest_path", "test_manifest"]
 
     def create(self, state):
-        from manifest import manifest
+        from manifest import manifest  # type: ignore
         state.manifest_path = os.path.join(state.metadata_path, "MANIFEST.json")
         state.test_manifest = manifest.load_and_update(state.sync["path"],
                                                        state.manifest_path,
@@ -127,7 +129,7 @@ class CreateSyncPatch(Step):
         sync_tree = state.sync_tree
 
         local_tree.create_patch("web-platform-tests_update_%s" % sync_tree.rev,
-                                "Update %s to revision %s" % (state.suite_name, sync_tree.rev))
+                                f"Update {state.suite_name} to revision {sync_tree.rev}")
         test_prefix = os.path.relpath(state.tests_path, local_tree.root)
         local_tree.add_new(test_prefix)
         local_tree.add_ignored(sync_tree, test_prefix)

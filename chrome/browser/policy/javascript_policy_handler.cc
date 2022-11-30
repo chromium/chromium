@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,12 @@ JavascriptPolicyHandler::~JavascriptPolicyHandler() {}
 
 bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
   const base::Value* javascript_enabled =
-      policies.GetValue(key::kJavascriptEnabled);
+      policies.GetValueUnsafe(key::kJavascriptEnabled);
   const base::Value* default_setting =
-      policies.GetValue(key::kDefaultJavaScriptSetting);
+      policies.GetValueUnsafe(key::kDefaultJavaScriptSetting);
 
   if (javascript_enabled && !javascript_enabled->is_bool()) {
     errors->AddError(key::kJavascriptEnabled, IDS_POLICY_TYPE_ERROR,
@@ -48,18 +50,15 @@ bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 void JavascriptPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                   PrefValueMap* prefs) {
   int setting = CONTENT_SETTING_DEFAULT;
-  const base::Value* default_setting =
-      policies.GetValue(key::kDefaultJavaScriptSetting);
+  const base::Value* default_setting = policies.GetValue(
+      key::kDefaultJavaScriptSetting, base::Value::Type::INTEGER);
 
   if (default_setting) {
-    default_setting->GetAsInteger(&setting);
+    setting = default_setting->GetInt();
   } else {
     const base::Value* javascript_enabled =
-        policies.GetValue(key::kJavascriptEnabled);
-    bool enabled = true;
-    if (javascript_enabled &&
-        javascript_enabled->GetAsBoolean(&enabled) &&
-        !enabled) {
+        policies.GetValue(key::kJavascriptEnabled, base::Value::Type::BOOLEAN);
+    if (javascript_enabled && !javascript_enabled->GetBool()) {
       setting = CONTENT_SETTING_BLOCK;
     }
   }

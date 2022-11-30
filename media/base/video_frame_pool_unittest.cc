@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class VideoFramePoolTest
   VideoFramePoolTest() : pool_(new VideoFramePool()) {
     // Seed test clock with some dummy non-zero value to avoid confusion with
     // empty base::TimeTicks values.
-    test_clock_.Advance(base::TimeDelta::FromSeconds(1234));
+    test_clock_.Advance(base::Seconds(1234));
     pool_->SetTickClockForTesting(&test_clock_);
   }
 
@@ -31,17 +31,15 @@ class VideoFramePoolTest
     gfx::Size natural_size(coded_size);
 
     scoped_refptr<VideoFrame> frame =
-        pool_->CreateFrame(
-            format, coded_size, visible_rect, natural_size,
-            base::TimeDelta::FromMilliseconds(timestamp_ms));
+        pool_->CreateFrame(format, coded_size, visible_rect, natural_size,
+                           base::Milliseconds(timestamp_ms));
     EXPECT_EQ(format, frame->format());
-    EXPECT_EQ(base::TimeDelta::FromMilliseconds(timestamp_ms),
-              frame->timestamp());
+    EXPECT_EQ(base::Milliseconds(timestamp_ms), frame->timestamp());
     if (format == PIXEL_FORMAT_ARGB) {
       EXPECT_EQ(coded_size, frame->coded_size());
     } else {
-      const gfx::Size adjusted(base::bits::Align(coded_size.width(), 2),
-                               base::bits::Align(coded_size.height(), 2));
+      const gfx::Size adjusted(base::bits::AlignUp(coded_size.width(), 2),
+                               base::bits::AlignUp(coded_size.height(), 2));
       EXPECT_EQ(adjusted, frame->coded_size());
     }
     EXPECT_EQ(visible_rect, frame->visible_rect());
@@ -122,7 +120,7 @@ TEST_F(VideoFramePoolTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(frame->data(VideoFrame::kYPlane), 0xff,
+  memset(frame->writable_data(VideoFrame::kYPlane), 0xff,
          frame->rows(VideoFrame::kYPlane) * frame->stride(VideoFrame::kYPlane));
 }
 
@@ -140,7 +138,7 @@ TEST_F(VideoFramePoolTest, StaleFramesAreExpired) {
 
   // Advance clock far enough to hit stale timer; ensure only frame_1 has its
   // resources released.
-  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::Minutes(1));
   frame_2 = nullptr;
   CheckPoolSize(1u);
 }

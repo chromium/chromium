@@ -1,0 +1,31 @@
+Verifies that ExtraInfo events are emitted for each redirect in a chain in subsequent requests.
+
+requestWillBeSents: 2
+  url: http://127.0.0.1:8000/inspector-protocol/resources/redirect2.php
+  redirectHasExtraInfo: false
+  url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
+  redirectHasExtraInfo: true
+responseReceiveds: 1
+  url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
+requestWillBeSentExtraInfos: 2
+  has headers: true
+  has headers: true
+responseReceivedExtraInfos: 2
+  has headers: true
+  has headers: true
+
+requestWillBeSents: 2
+  url: http://127.0.0.1:8000/inspector-protocol/resources/redirect2.php
+  redirectHasExtraInfo: false
+  url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
+  redirectHasExtraInfo: true
+responseReceiveds: 1
+  url: http://127.0.0.1:8000/inspector-protocol/resources/final.html
+requestWillBeSentExtraInfos: 2
+  has headers: true
+  has headers: false
+responseReceivedExtraInfos: 2
+  has headers: true
+  has headers: true
+
+

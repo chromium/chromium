@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+Take frames coming from various sources and check that:
+- VideoEncoder can encode frames without resizing
+- VideoEncoder can change bitrate and frame size
+- VideoEncoder can encoder frames while resizing to the new width and height
+-->
+<html>
+
+<head>
+  <title>Encode test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    async function main(arg) {
+      // Use 16x16 aligned resolution since some platforms require that.
+      // See https://crbug.com/1084702.
+      const width = 640;
+      const height = 480;
+      const frames_in_one_pass = 15;
+      let errors = 0;
+      let chunks = [];
+      let decoder_configs = [];
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: arg.acceleration,
+        width: width,
+        height: height,
+        bitrate: 1000000,
+        framerate: 24
+      };
+
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
+
+      const init = {
+        output(chunk, metadata) {
+          if (metadata.decoderConfig)
+            decoder_configs.push(metadata.decoderConfig);
+
+          chunks.push(chunk);
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(init);
+      encoder.configure(encoder_config);
+
+      for (let i = 0; i < frames_in_one_pass; i++) {
+        let frame = await source.getNextFrame();
+        encoder.encode(frame, { keyFrame: false });
+        frame.close();
+        await waitForNextFrame();
+      }
+
+      TEST.log('First pass completed');
+
+      // Reconfigure on-the-fly. Use 16x16 aligned resolution since some
+      // platforms require that. See https://crbug.com/1084702. 720x576 is
+      // the maximum supported by AVC level 3.0.
+      encoder_config.width = 720;
+      encoder_config.height = 576;
+      encoder_config.bitrate += encoder_config.bitrate / 2;
+      encoder.configure(encoder_config);
+
+      for (let i = 0; i < frames_in_one_pass; i++) {
+        let frame = await source.getNextFrame();
+        encoder.encode(frame, { keyFrame: false });
+        frame.close();
+        await waitForNextFrame();
+      }
+
+      await encoder.flush();
+      encoder.close();
+      source.close();
+
+      TEST.assert(
+        decoder_configs.length >= 2,
+        'There should be 2 configs, for each configure()');
+
+      TEST.assert(
+        chunks.length == frames_in_one_pass * 2,
+        'Output count mismatch: ' + chunks.length);
+
+      TEST.assert(errors == 0, 'Encoding errors occurred during the test');
+      TEST.log('Test completed');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

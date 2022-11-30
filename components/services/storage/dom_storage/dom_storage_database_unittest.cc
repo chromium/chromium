@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -59,7 +57,7 @@ DomStorageDatabase::KeyValuePair MakeKeyValuePair(base::StringPiece key,
 }
 
 std::string MakePrefixedKey(base::StringPiece prefix, base::StringPiece key) {
-  return prefix.as_string() + key.as_string();
+  return std::string(prefix) + std::string(key);
 }
 
 class StorageServiceDomStorageDatabaseTest : public testing::Test {
@@ -68,6 +66,11 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
       : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
+  StorageServiceDomStorageDatabaseTest(
+      const StorageServiceDomStorageDatabaseTest&) = delete;
+  StorageServiceDomStorageDatabaseTest& operator=(
+      const StorageServiceDomStorageDatabaseTest&) = delete;
+
  protected:
   // Helper for tests to block on the result of an OpenInMemory call.
   base::SequenceBound<DomStorageDatabase> OpenInMemorySync(
@@ -75,7 +78,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
     base::SequenceBound<DomStorageDatabase> result;
     base::RunLoop loop;
     DomStorageDatabase::OpenInMemory(
-        db_name, /*memory_dump_id=*/base::nullopt, blocking_task_runner_,
+        db_name, /*memory_dump_id=*/absl::nullopt, blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
                 leveldb::Status status) {
@@ -94,7 +97,7 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
     base::SequenceBound<DomStorageDatabase> result;
     base::RunLoop loop;
     DomStorageDatabase::OpenDirectory(
-        directory, db_name, options, /*memory_dump_id=*/base::nullopt,
+        directory, db_name, options, /*memory_dump_id=*/absl::nullopt,
         blocking_task_runner_,
         base::BindLambdaForTesting(
             [&](base::SequenceBound<DomStorageDatabase> database,
@@ -128,7 +131,6 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
                      Func operation) {
     base::RunLoop loop;
     database.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindLambdaForTesting([&](const DomStorageDatabase& database) {
           operation(database);
           loop.Quit();
@@ -139,8 +141,6 @@ class StorageServiceDomStorageDatabaseTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageServiceDomStorageDatabaseTest);
 };
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "media/base/bitstream_buffer.h"
-#include "media/base/unaligned_shared_memory.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
@@ -32,11 +32,17 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
  public:
   explicit VaapiJpegEncodeAccelerator(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  VaapiJpegEncodeAccelerator(const VaapiJpegEncodeAccelerator&) = delete;
+  VaapiJpegEncodeAccelerator& operator=(const VaapiJpegEncodeAccelerator&) =
+      delete;
+
   ~VaapiJpegEncodeAccelerator() override;
 
   // JpegEncodeAccelerator implementation.
-  chromeos_camera::JpegEncodeAccelerator::Status Initialize(
-      chromeos_camera::JpegEncodeAccelerator::Client* client) override;
+  void InitializeAsync(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      chromeos_camera::JpegEncodeAccelerator::InitCB init_cb) override;
   size_t GetMaxCodedBufferSize(const gfx::Size& picture_size) override;
 
   // Currently only I420 format is supported for |video_frame|.
@@ -57,23 +63,33 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   struct EncodeRequest {
     EncodeRequest(int32_t task_id,
                   scoped_refptr<VideoFrame> video_frame,
-                  std::unique_ptr<UnalignedSharedMemory> exif_shm,
-                  std::unique_ptr<UnalignedSharedMemory> output_shm,
+                  base::WritableSharedMemoryMapping exif_mapping,
+                  base::WritableSharedMemoryMapping output_mapping,
                   int quality);
+
+    EncodeRequest(const EncodeRequest&) = delete;
+    EncodeRequest& operator=(const EncodeRequest&) = delete;
+
     ~EncodeRequest();
 
     int32_t task_id;
     scoped_refptr<VideoFrame> video_frame;
-    std::unique_ptr<UnalignedSharedMemory> exif_shm;
-    std::unique_ptr<UnalignedSharedMemory> output_shm;
+    base::WritableSharedMemoryMapping exif_mapping;
+    base::WritableSharedMemoryMapping output_mapping;
     int quality;
-
-    DISALLOW_COPY_AND_ASSIGN(EncodeRequest);
   };
 
   // The Encoder class is a collection of methods that run on
   // |encoder_task_runner_|.
   class Encoder;
+
+  void InitializeOnEncoderTaskRunner(InitCB init_cb);
+
+  void InitializeOnTaskRunner(
+      chromeos_camera::JpegEncodeAccelerator::Client* client,
+      InitCB init_cb);
+
+  void CleanUpOnEncoderThread();
 
   // Notifies the client that an error has occurred and encoding cannot
   // continue.
@@ -88,7 +104,9 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The client of this class.
-  Client* client_;
+  Client* client_ = nullptr;
+
+  base::Thread encoder_thread_;
 
   // Use this to post tasks to encoder thread.
   scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
@@ -99,8 +117,6 @@ class MEDIA_GPU_EXPORT VaapiJpegEncodeAccelerator
   // |task_runner_|.
   base::WeakPtr<VaapiJpegEncodeAccelerator> weak_this_;
   base::WeakPtrFactory<VaapiJpegEncodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiJpegEncodeAccelerator);
 };
 
 }  // namespace media

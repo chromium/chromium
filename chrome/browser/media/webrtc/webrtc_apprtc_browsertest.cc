@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_responder.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -98,7 +98,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
     }
 
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    EXPECT_TRUE(GetPythonCommand(&command_line));
+    EXPECT_TRUE(GetPython3Command(&command_line));
 
     command_line.AppendArgPath(appengine_dev_appserver);
     command_line.AppendArgPath(apprtc_dir);
@@ -116,7 +116,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
                                  const std::string& collider_port) {
     // The go workspace should be created, and collidermain built, at the
     // runhooks stage when webrtc.DEPS/build_apprtc_collider.py runs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath collider_server = GetSourceDir().Append(
         FILE_PATH_LITERAL("third_party/webrtc/rtc_tools/testing/"
                           "browsertest/collider/collidermain.exe"));
@@ -144,7 +144,8 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
 
   bool LocalApprtcInstanceIsUp() {
     // Load the admin page and see if we manage to load it right.
-    ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998"));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998")));
     content::WebContents* tab_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     std::string javascript =
@@ -232,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   InfoBarResponder left_infobar_responder(
-      InfoBarService::FromWebContents(left_tab), InfoBarResponder::ACCEPT);
-  ui_test_utils::NavigateToURL(browser(), room_url);
+      infobars::ContentInfoBarManager::FromWebContents(left_tab),
+      InfoBarResponder::ACCEPT);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), room_url));
 
   // Wait for the local video to start playing. This is needed, because opening
   // a new tab too quickly, by sending the current tab to the background, can
@@ -250,8 +252,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
   InfoBarResponder right_infobar_responder(
-      InfoBarService::FromWebContents(right_tab), InfoBarResponder::ACCEPT);
-  ui_test_utils::NavigateToURL(browser(), room_url);
+      infobars::ContentInfoBarManager::FromWebContents(right_tab),
+      InfoBarResponder::ACCEPT);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), room_url));
 
   ASSERT_TRUE(WaitForCallToComeUp(left_tab));
   ASSERT_TRUE(WaitForCallToComeUp(right_tab));

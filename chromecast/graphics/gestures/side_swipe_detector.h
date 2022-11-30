@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ class SideSwipeDetector : public ui::EventRewriter {
   SideSwipeDetector(CastGestureHandler* gesture_handler,
                     aura::Window* root_window);
 
+  SideSwipeDetector(const SideSwipeDetector&) = delete;
+  SideSwipeDetector& operator=(const SideSwipeDetector&) = delete;
+
   ~SideSwipeDetector() override;
 
   CastSideSwipeOrigin GetDragPosition(const gfx::Point& point,
@@ -52,8 +55,6 @@ class SideSwipeDetector : public ui::EventRewriter {
   base::ElapsedTimer current_swipe_time_;
 
   std::deque<ui::TouchEvent> stashed_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(SideSwipeDetector);
 };
 
 }  // namespace chromecast

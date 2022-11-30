@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,3 +13,20 @@ NSString* const kDataFromChromeSyncAccessibilityIdentifier =
 
 NSString* const kManageSyncTableViewAccessibilityIdentifier =
     @"ManageSyncTableViewAccessibilityIdentifier";
+
+NSString* const kSyncEverythingItemAccessibilityIdentifier =
+    @"syncEverythingItemAccessibilityIdentifier";
+
+NSString* const kSyncBookmarksIdentifier = @"syncBookmarksIdentifier";
+
+NSString* const kSyncOmniboxHistoryIdentifier = @"syncOmniboxHistoryIdentifier";
+
+NSString* const kSyncPasswordsIdentifier = @"syncPasswordsIdentifier";
+
+NSString* const kSyncOpenTabsIdentifier = @"syncOpenTabsIdentifier";
+
+NSString* const kSyncAutofillIdentifier = @"syncAutofillIdentifier";
+
+NSString* const kSyncPreferencesIdentifier = @"syncPreferencesIdentifier";
+
+NSString* const kSyncReadingListIdentifier = @"syncReadingListIdentifier";

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -76,6 +77,10 @@ class AccountsCookieMutatorTest
                            &prefs_,
                            AccountConsistencyMethod::kDisabled,
                            &test_signin_client_) {}
+
+  AccountsCookieMutatorTest(const AccountsCookieMutatorTest&) = delete;
+  AccountsCookieMutatorTest& operator=(const AccountsCookieMutatorTest&) =
+      delete;
 
   ~AccountsCookieMutatorTest() override {}
 
@@ -173,8 +178,6 @@ class AccountsCookieMutatorTest
   TestSigninClient test_signin_client_;
   IdentityTestEnvironment identity_test_env_;
   network::TestCookieManager cookie_manager_for_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutatorTest);
 };
 
 // Test that adding a non existing account without providing an access token
@@ -227,8 +230,7 @@ TEST_F(AccountsCookieMutatorTest, AddAccountToCookie_ExistingAccount) {
       account_id, gaia::GaiaSource::kChrome, std::move(completion_callback));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   run_loop.Run();
 
   EXPECT_EQ(account_id_from_add_account_to_cookie_completed_callback,
@@ -374,11 +376,9 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_AllExistingAccounts) {
           run_loop.QuitClosure()));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
 }
@@ -412,11 +412,9 @@ TEST_F(AccountsCookieMutatorTest,
               run_loop.QuitClosure()));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
 }
@@ -495,7 +493,7 @@ TEST_F(AccountsCookieMutatorTest, TriggerCookieJarUpdate_OneListedAccounts) {
             GoogleServiceAuthError::NONE);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 TEST_F(AccountsCookieMutatorTest, ForceTriggerOnCookieChange) {
   PrepareURLLoaderResponsesForAction(
       AccountsCookiesMutatorAction::kTriggerOnCookieChangeNoAccounts);

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame_content_dumper.h"
 
 namespace optimization_guide {
@@ -16,7 +17,7 @@ namespace {
 
 constexpr size_t kChunkSize = 4096;
 
-base::Optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
+absl::optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
     blink::WebMeaningfulLayout layout_event) {
   switch (layout_event) {
     case blink::WebMeaningfulLayout::kFinishedParsing:
@@ -26,7 +27,7 @@ base::Optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
     default:
       break;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -38,7 +39,7 @@ PageTextAgent::PageTextAgent(content::RenderFrame* frame)
     // For unittesting.
     return;
   }
-  frame->GetAssociatedInterfaceRegistry()->AddInterface(
+  frame->GetAssociatedInterfaceRegistry()->AddInterface<mojom::PageTextService>(
       base::BindRepeating(&PageTextAgent::Bind, weak_factory_.GetWeakPtr()));
 }
 PageTextAgent::~PageTextAgent() = default;
@@ -57,7 +58,7 @@ PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
     return base::NullCallback();
   }
 
-  base::Optional<mojom::TextDumpEvent> mojo_event =
+  absl::optional<mojom::TextDumpEvent> mojo_event =
       LayoutEventAsMojoEvent(event);
   if (!mojo_event) {
     return base::NullCallback();
@@ -136,7 +137,7 @@ void PageTextAgent::DidFinishLoad() {
 
 void PageTextAgent::DidStartNavigation(
     const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
+    absl::optional<blink::WebNavigationType> navigation_type) {
   is_amp_page_ = false;
   // Note that |requests_by_event_| should NOT be reset here. Requests and
   // navigations from the browser race with each other, and the text dump

@@ -1,0 +1,27 @@
+{
+  "name": "PWA with only wide screenshots",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  "screenshots": [
+    {
+      "src": "screenshot1.jpeg",
+      "type": "image/jpeg",
+      "sizes": "728x409",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot1-samesize.jpeg",
+      "type": "image/jpeg",
+      "sizes": "728x409"
+    }
+  ],
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "scope": ".",
+  "start_url": "manifest_test_page.html",
+  "display": "standalone"
+}

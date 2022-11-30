@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page that fetches User Agent using a Dedicated Worker</title>
+<script src="test_utils.js"></script>
+<script language="javascript">
+  const myWorker = new Worker('dedicated_worker.js');
+  myWorker.onmessage = (e) => {
+    sendValueToTest('Done');
+  }
+  myWorker.postMessage("Start");
+</script>

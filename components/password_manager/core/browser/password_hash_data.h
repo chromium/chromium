@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,15 +16,16 @@ namespace password_manager {
 struct PasswordHashData {
   PasswordHashData();
   PasswordHashData(const PasswordHashData& other);
+  PasswordHashData& operator=(const PasswordHashData& other);
   PasswordHashData(const std::string& username,
                    const std::u16string& password,
                    bool force_update,
                    bool is_gaia_password = true);
-  // Returns true iff |*this| represents the credential (|username|,
-  // |password|), also with respect to whether it |is_gaia_password|.
-  bool MatchesPassword(const std::string& username,
-                       const std::u16string& password,
-                       bool is_gaia_password) const;
+  // Returns true iff |*this| represents the credential (|user|, |pass|), also
+  // with respect to whether it |is_gaia_pass|.
+  bool MatchesPassword(const std::string& user,
+                       const std::u16string& pass,
+                       bool is_gaia_pass) const;
 
   std::string username;
   size_t length = 0;

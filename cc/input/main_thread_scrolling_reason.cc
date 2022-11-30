@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/input/main_thread_scrolling_reason.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 
@@ -58,6 +58,18 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("Touch event handler region");
 
   traced_value.EndArray();
+}
+
+int MainThreadScrollingReason::BucketIndexForTesting(uint32_t reason) {
+  // These two values are already bucket indices.
+  DCHECK_NE(reason, kNotScrollingOnMain);
+  DCHECK_NE(reason, kScrollingOnMainForAnyReason);
+
+  int index = 0;
+  while (reason >>= 1)
+    ++index;
+  DCHECK_NE(index, 0);
+  return index;
 }
 
 }  // namespace cc

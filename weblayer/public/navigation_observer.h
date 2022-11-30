@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,10 +76,10 @@ class NavigationObserver {
   virtual void NavigationFailed(Navigation* navigation) {}
 
   // Indicates that loading has started (|is_loading| is true) or is done
-  // (|is_loading| is false). |to_different_document| will be true unless the
+  // (|is_loading| is false). |should_show_loading_ui| will be true unless the
   // load is a fragment navigation, or triggered by
   // history.pushState/replaceState.
-  virtual void LoadStateChanged(bool is_loading, bool to_different_document) {}
+  virtual void LoadStateChanged(bool is_loading, bool should_show_loading_ui) {}
 
   // Indicates that the load progress of the page has changed. |progress|
   // ranges from 0.0 to 1.0.
@@ -118,6 +118,13 @@ class NavigationObserver {
   // method will either be called when the back-forward cache entry is evicted
   // or if it is used then this cycle repeats.
   virtual void OnPageDestroyed(Page* page) {}
+
+  // Called when the source language for |page| has been determined to be
+  // |language|.
+  // Note: |language| is an ISO 639 language code (two letters, except for
+  // Chinese where a localization is necessary).
+  virtual void OnPageLanguageDetermined(Page* page,
+                                        const std::string& language) {}
 };
 
 }  // namespace weblayer

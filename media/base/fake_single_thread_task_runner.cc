@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,8 +36,8 @@ bool FakeSingleThreadTaskRunner::PostDelayedTask(
   // scheduling delayed tasks to be run via base::MessageLoop in a
   // multi-threaded application.
   if (!tasks_.empty()) {
-    const auto after_it = tasks_.lower_bound(
-        TaskKey(run_time + base::TimeDelta::FromMicroseconds(1), 0));
+    const auto after_it =
+        tasks_.lower_bound(TaskKey(run_time + base::Microseconds(1), 0));
     if (after_it != tasks_.begin()) {
       auto it = after_it;
       --it;
@@ -79,7 +79,7 @@ void FakeSingleThreadTaskRunner::Sleep(base::TimeDelta t) {
   CHECK_LE(base::TimeDelta(), t);
   const base::TimeTicks run_until = clock_->NowTicks() + t;
 
-  while (1) {
+  while (true) {
     // Run up to 100000 tasks that were scheduled to run during the sleep
     // period. 100000 should be enough for everybody (see comments below).
     for (int i = 0; i < 100000; i++) {

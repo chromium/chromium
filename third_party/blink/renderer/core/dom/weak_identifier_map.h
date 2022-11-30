@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_WEAK_IDENTIFIER_MAP_H_
 
 #include <limits>
-#include "third_party/blink/renderer/platform/heap/handle.h"
+
+#include "base/check_op.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -28,12 +30,15 @@ class WeakIdentifierMap final
   }
 
   static IdentifierType Identifier(T* object) {
-    IdentifierType result = Instance().object_to_identifier_.at(object);
+    IdentifierType result;
 
-    if (WTF::IsHashTraitsEmptyValue<HashTraits<IdentifierType>>(result)) {
+    auto it = Instance().object_to_identifier_.find(object);
+    if (it == Instance().object_to_identifier_.end()) {
       do {
         result = Next();
       } while (!LIKELY(Instance().Put(object, result)));
+    } else {
+      result = it->value;
     }
     return result;
   }
@@ -43,7 +48,8 @@ class WeakIdentifierMap final
   }
 
   static T* Lookup(IdentifierType identifier) {
-    return Instance().identifier_to_object_.at(identifier);
+    auto it = Instance().identifier_to_object_.find(identifier);
+    return it != Instance().identifier_to_object_.end() ? it->value : nullptr;
   }
 
   static void NotifyObjectDestroyed(T* object) {

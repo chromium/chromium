@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-extern const char kSamlChallengeKeyHandlerResultMetric[];
 
 // This class handles "samlChallengeMachineKey" request for GaiaScreenHandler.
 // It calculates response for a challenge from Verified Access server for remote
 // attestation during SAML authentication.
 class SamlChallengeKeyHandler final {
  public:
-  using CallbackType = base::OnceCallback<void(const base::Value& response)>;
+  using CallbackType =
+      base::OnceCallback<void(const base::Value::Dict response)>;
 
   SamlChallengeKeyHandler();
   SamlChallengeKeyHandler(const SamlChallengeKeyHandler&) = delete;
@@ -56,9 +56,8 @@ class SamlChallengeKeyHandler final {
   CallbackType callback_;
 
   // Timeout for `tpm_key_challenger_` to response.
-  const base::TimeDelta default_tpm_response_timeout_ =
-      base::TimeDelta::FromSeconds(15);
-  base::Optional<base::TimeDelta> tpm_response_timeout_for_testing_;
+  const base::TimeDelta default_tpm_response_timeout_ = base::Seconds(15);
+  absl::optional<base::TimeDelta> tpm_response_timeout_for_testing_;
 
   // Performs attestation flow.
   std::unique_ptr<attestation::TpmChallengeKeyWithTimeout> tpm_key_challenger_;
@@ -67,5 +66,11 @@ class SamlChallengeKeyHandler final {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SamlChallengeKeyHandler;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SAML_CHALLENGE_KEY_HANDLER_H_

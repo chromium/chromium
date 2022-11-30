@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -41,14 +40,23 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback);
+
+  ExclusiveAccessBubbleViews(const ExclusiveAccessBubbleViews&) = delete;
+  ExclusiveAccessBubbleViews& operator=(const ExclusiveAccessBubbleViews&) =
+      delete;
+
   ~ExclusiveAccessBubbleViews() override;
 
   // |force_update| indicates the caller wishes to show the bubble contents
-  // regardless of whether the contents have changed.
+  // regardless of whether the contents have changed. |notify_download|
+  // indicates if the notification should be about a new download. Note that
+  // bubble_type may be an invalid one for notify_download, as we want to
+  // preserve the current type.
   void UpdateContent(
       const GURL& url,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
       bool force_update);
 
   // Repositions |popup_| if it is visible.
@@ -75,13 +83,16 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void UpdateViewContent(ExclusiveAccessBubbleType bubble_type);
 
+  // Returns whether the popup is visible.
+  bool IsVisible();
+
   // Returns the root view containing |browser_view_|.
   views::View* GetBrowserRootView() const;
 
   // ExclusiveAccessBubble:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
-  gfx::Rect GetPopupRect(bool ignore_animation_state) const override;
+  gfx::Rect GetPopupRect() const override;
   gfx::Point GetCursorScreenPoint() override;
   bool WindowContainsPoint(gfx::Point pos) override;
   bool IsWindowActive() override;
@@ -99,9 +110,9 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   void RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason reason);
 
-  ExclusiveAccessBubbleViewsContext* const bubble_view_context_;
+  const raw_ptr<ExclusiveAccessBubbleViewsContext> bubble_view_context_;
 
-  views::Widget* popup_;
+  raw_ptr<views::Widget> popup_;
 
   // Classic mode: Bubble may show & hide multiple times. The callback only runs
   // for the first hide.
@@ -112,13 +123,11 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   // The contents of the popup.
-  SubtleNotificationView* view_;
+  raw_ptr<SubtleNotificationView> view_;
   std::u16string browser_fullscreen_exit_accelerator_;
 
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubbleViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXCLUSIVE_ACCESS_BUBBLE_VIEWS_H_

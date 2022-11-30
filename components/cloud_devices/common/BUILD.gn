@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,10 +9,6 @@ static_library("common") {
     "cloud_device_description.h",
     "cloud_device_description_consts.cc",
     "cloud_device_description_consts.h",
-    "cloud_devices_switches.cc",
-    "cloud_devices_switches.h",
-    "cloud_devices_urls.cc",
-    "cloud_devices_urls.h",
     "description_items.h",
     "description_items_inl.h",
     "printer_description.cc",
@@ -21,22 +17,18 @@ static_library("common") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//google_apis",
-    "//net",
-    "//url",
+    "//ui/gfx/geometry",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "cloud_devices_urls_unittest.cc",
-    "printer_description_unittest.cc",
-  ]
+  sources = [ "printer_description_unittest.cc" ]
 
   deps = [
     ":common",
     "//base",
+    "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",

@@ -1,0 +1,200 @@
+Tests Accessibility.getAXNodeAndAncestors
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 133
+    }
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : paragraph
+    }
+}
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 5
+    }
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : article
+    }
+}
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 118
+    }
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : main
+    }
+}
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : uninteresting
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    parentId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
+    ignored : true
+    ignoredReasons : [
+    ]
+    nodeId : <string>
+    parentId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
+    frameId : <string>
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : aria-label
+                superseded : true
+                type : attribute
+            }
+            [3] : {
+                nativeSource : title
+                type : relatedElement
+            }
+            [4] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : internalRole
+        value : RootWebArea
+    }
+}
+

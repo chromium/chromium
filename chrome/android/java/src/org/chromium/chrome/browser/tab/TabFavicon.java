@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.tab;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Fetches a favicon for active WebContents in a Tab.
@@ -31,7 +35,8 @@ public class TabFavicon extends TabWebContentsUserData {
     private Bitmap mFavicon;
     private int mFaviconWidth;
     private int mFaviconHeight;
-    private String mFaviconUrl;
+    // The URL of the tab when mFavicon was fetched.
+    private GURL mFaviconTabUrl;
 
     static TabFavicon from(Tab tab) {
         TabFavicon favicon = get(tab);
@@ -87,7 +92,7 @@ public class TabFavicon extends TabWebContentsUserData {
         if (mTab.isNativePage() || mTab.getWebContents() == null) return null;
 
         // Use the cached favicon only if the page wasn't changed.
-        if (mFavicon != null && mFaviconUrl != null && mFaviconUrl.equals(mTab.getUrlString())) {
+        if (mFavicon != null && mFaviconTabUrl != null && mFaviconTabUrl.equals(mTab.getUrl())) {
             return mFavicon;
         }
 
@@ -100,7 +105,12 @@ public class TabFavicon extends TabWebContentsUserData {
      * @return true iff the new favicon should replace the current one.
      */
     private boolean isBetterFavicon(int width, int height) {
+        assert width >= 0 && height >= 0;
+
         if (isIdealFaviconSize(width, height)) return true;
+
+        // The page may be dynamically updating its URL, let it through.
+        if (mFaviconWidth == width && mFaviconHeight == height) return true;
 
         // Prefer square favicons over rectangular ones
         if (mFaviconWidth != mFaviconHeight && width == height) return true;
@@ -119,10 +129,11 @@ public class TabFavicon extends TabWebContentsUserData {
     }
 
     @CalledByNative
-    private void onFaviconAvailable(Bitmap icon) {
+    @VisibleForTesting
+    void onFaviconAvailable(Bitmap icon, GURL iconUrl) {
         if (icon == null) return;
-        String url = mTab.getUrlString();
-        boolean pageUrlChanged = !url.equals(mFaviconUrl);
+        GURL currentTabUrl = mTab.getUrl();
+        boolean pageUrlChanged = !currentTabUrl.equals(mFaviconTabUrl);
         // This method will be called multiple times if the page has more than one favicon.
         // We are trying to use the |mIdealFaviconSize|x|mIdealFaviconSize| DP icon here, or the
         // first one larger than that received. Bitmap.createScaledBitmap will return the original
@@ -131,11 +142,17 @@ public class TabFavicon extends TabWebContentsUserData {
             mFavicon = Bitmap.createScaledBitmap(icon, mIdealFaviconSize, mIdealFaviconSize, true);
             mFaviconWidth = icon.getWidth();
             mFaviconHeight = icon.getHeight();
-            mFaviconUrl = url;
+            mFaviconTabUrl = currentTabUrl;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) {
+                RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+                while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
+            }
         }
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)) return;
+        // TODO(yfriedman): Remove this code after ANDROID_SCROLL_OPTIMIZATIONS is fully rolled out.
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon);
+        while (observers.hasNext()) observers.next().onFaviconUpdated(mTab, icon, iconUrl);
     }
 
     @NativeMethods

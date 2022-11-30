@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -116,7 +115,7 @@ class TelemetryLogWriterTest : public testing::Test {
     // Mock clock will auto-fast-forward, so the delay here is somewhat
     // arbitrary.
     timer.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1),
+        FROM_HERE, base::Seconds(1),
         base::BindRepeating(
             [](TelemetryLogWriter* log_writer,
                base::RepeatingClosure quit_closure) {

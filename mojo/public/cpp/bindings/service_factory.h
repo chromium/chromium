@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -71,6 +70,10 @@ struct ServiceFactoryTraits;
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
  public:
   ServiceFactory();
+
+  ServiceFactory(const ServiceFactory&) = delete;
+  ServiceFactory& operator=(const ServiceFactory&) = delete;
+
   ~ServiceFactory();
 
   // Adds a new service to the factory. The argument may be any function that
@@ -105,6 +108,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InstanceHolderBase {
    public:
     InstanceHolderBase();
+
+    InstanceHolderBase(const InstanceHolderBase&) = delete;
+    InstanceHolderBase& operator=(const InstanceHolderBase&) = delete;
+
     virtual ~InstanceHolderBase();
 
     void WatchPipe(MessagePipeHandle pipe,
@@ -115,8 +122,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
 
     SimpleWatcher watcher_;
     base::OnceClosure disconnect_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(InstanceHolderBase);
   };
 
   template <typename Interface>
@@ -124,12 +129,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
    public:
     explicit InstanceHolder(std::unique_ptr<Interface> instance)
         : instance_(std::move(instance)) {}
+
+    InstanceHolder(const InstanceHolder&) = delete;
+    InstanceHolder& operator=(const InstanceHolder&) = delete;
+
     ~InstanceHolder() override = default;
 
    private:
     const std::unique_ptr<Interface> instance_;
-
-    DISALLOW_COPY_AND_ASSIGN(InstanceHolder);
   };
 
   template <typename Func>
@@ -137,8 +144,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       Func fn,
       GenericPendingReceiver receiver) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
-    return std::make_unique<InstanceHolder<Interface>>(
-        fn(receiver.As<Interface>()));
+    auto impl = fn(receiver.As<Interface>());
+    if (!impl)
+      return nullptr;
+
+    return std::make_unique<InstanceHolder<Interface>>(std::move(impl));
   }
 
   void OnInstanceDisconnected(InstanceHolderBase* instance);
@@ -152,8 +162,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       instances_;
 
   base::WeakPtrFactory<ServiceFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactory);
 };
 
 namespace internal {

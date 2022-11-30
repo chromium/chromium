@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generate report files to view and/or compare (diff) milestones.
@@ -12,11 +12,6 @@ Desired CPUs, APKs, and milestone versions are set in constants below. If
 specified by the --skip-existing flag, the script checks what HTML report files
 have already been uploaded to the GCS bucket, then works on generating the
 remaining desired files.
-
-Size files are fetched by streaming them from the source bucket, then the
-html_report module handles creating a report file to diff two size files.
-Reports are saved to a local directory, and once all reports are created they
-can be uploaded to the destination bucket.
 
 Reports can be uploaded automatically with the --sync flag. Otherwise, they can
 be uploaded at a later point.
@@ -81,7 +76,25 @@ _DESIRED_VERSIONS = [
     '86.0.4240.198',
     '87.0.4280.66',
     '88.0.4324.93',
-    '89.0.4389.48',  # Beta
+    '89.0.4389.105',
+    '90.0.4430.82',
+    '91.0.4472.120',
+    '92.0.4515.70',
+    '93.0.4577.37',
+    '94.0.4606.6',
+    '94.0.4606.85',
+    '95.0.4638.7',
+    '96.0.4664.6',
+    '97.0.4692.9',
+    '98.0.4758.8',
+    '99.0.4844.7',
+    '100.0.4896.12',
+    '101.0.4951.20',
+    '102.0.5005.37',
+    '103.0.5060.9',
+    '104.0.5112.9',
+    '105.0.5195.7',
+    '106.0.5249.7',
 ]
 
 
@@ -116,7 +129,9 @@ def _EnumerateReports():
 class Report(collections.namedtuple('Report', 'cpu,apk,version')):
 
   def GetSizeFileSubpath(self, local):
-    if not local and self.apk == 'TrichromeGoogle':
+    # TrichromeGoogle at older milestones lived in a subdir.
+    if not local and self.apk == 'TrichromeGoogle' and _VersionMajor(
+        self.version) < 91:
       template = '{version}/{cpu}/for-signing-only/{apk}.size'
     else:
       template = '{version}/{cpu}/{apk}.size'
@@ -225,7 +240,7 @@ def main():
 
     if args.sync:
       subprocess.check_call(
-          [_GSUTIL, '-m', 'rsync', '-J', '-r', staging_dir, _PUSH_URL])
+          [_GSUTIL, '-m', 'rsync', '-r', staging_dir, _PUSH_URL])
       milestones_json = _PUSH_URL + 'milestones.json'
       # The main index.html page has no authentication code, so make .json file
       # world-readable.

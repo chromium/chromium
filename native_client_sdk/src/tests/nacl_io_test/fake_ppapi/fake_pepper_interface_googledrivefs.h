@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_
-#define LIBRARIES_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_
 
 #include <string>
 
@@ -38,6 +38,10 @@ class FakeDriveURLLoaderInterface : public FakeURLLoaderInterface {
  public:
   explicit FakeDriveURLLoaderInterface(FakeCoreInterface* core_interface);
 
+  FakeDriveURLLoaderInterface(const FakeDriveURLLoaderInterface&) = delete;
+  FakeDriveURLLoaderInterface& operator=(const FakeDriveURLLoaderInterface&) =
+      delete;
+
   virtual PP_Resource Create(PP_Instance instance);
   virtual int32_t Open(PP_Resource loader,
                        PP_Resource request_info,
@@ -46,9 +50,6 @@ class FakeDriveURLLoaderInterface : public FakeURLLoaderInterface {
   virtual int32_t FinishStreamingToFile(PP_Resource loader,
                                         PP_CompletionCallback callback);
   virtual void Close(PP_Resource loader);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLLoaderInterface);
 };
 
 class FakeDriveURLRequestInfoInterface : public FakeURLRequestInfoInterface {
@@ -56,10 +57,12 @@ class FakeDriveURLRequestInfoInterface : public FakeURLRequestInfoInterface {
   FakeDriveURLRequestInfoInterface(FakeCoreInterface* core_interface,
                                    FakeVarInterface* var_interface);
 
-  virtual PP_Resource Create(PP_Instance instance);
+  FakeDriveURLRequestInfoInterface(const FakeDriveURLRequestInfoInterface&) =
+      delete;
+  FakeDriveURLRequestInfoInterface& operator=(
+      const FakeDriveURLRequestInfoInterface&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLRequestInfoInterface);
+  virtual PP_Resource Create(PP_Instance instance);
 };
 
 class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
@@ -67,6 +70,12 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
   FakeDriveURLResponseInfoInterface(FakeCoreInterface* core_interface,
                                     FakeVarInterface* var_interface,
                                     FakeFileRefInterface* file_ref_interface);
+
+  FakeDriveURLResponseInfoInterface(const FakeDriveURLResponseInfoInterface&) =
+      delete;
+  FakeDriveURLResponseInfoInterface& operator=(
+      const FakeDriveURLResponseInfoInterface&) = delete;
+
   ~FakeDriveURLResponseInfoInterface();
 
   virtual PP_Var GetProperty(PP_Resource response,
@@ -76,8 +85,6 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
  private:
   FakeFileRefInterface* file_ref_interface_;
   PP_Resource filesystem_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLResponseInfoInterface);
 };
 
 // This class is a fake implementation of the interfaces necessary to access
@@ -97,6 +104,12 @@ class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {
 class FakePepperInterfaceGoogleDriveFs : public nacl_io::PepperInterfaceDummy {
  public:
   FakePepperInterfaceGoogleDriveFs();
+
+  FakePepperInterfaceGoogleDriveFs(const FakePepperInterfaceGoogleDriveFs&) =
+      delete;
+  FakePepperInterfaceGoogleDriveFs& operator=(
+      const FakePepperInterfaceGoogleDriveFs&) = delete;
+
   ~FakePepperInterfaceGoogleDriveFs();
 
   virtual PP_Instance GetInstance() { return instance_; }
@@ -126,8 +139,6 @@ class FakePepperInterfaceGoogleDriveFs : public nacl_io::PepperInterfaceDummy {
   FakeDriveURLRequestInfoInterface drive_url_request_info_interface_;
   FakeDriveURLResponseInfoInterface drive_url_response_info_interface_;
   PP_Instance instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakePepperInterfaceGoogleDriveFs);
 };
 
-#endif  // LIBRARIES_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_GOOGLEDRIVEFS_H_

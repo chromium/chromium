@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/http/http_auth.h"
@@ -39,16 +39,16 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kProxyAuthURL[] = "https://example.com/";
 const char kProxyAuthRealm[] = "realm";
 const char kProxyAuthChallenge[] = "challenge";
-const char kProxyAuthPassword1[] = "password 1";
-const char kProxyAuthPassword2[] = "password 2";
+const char16_t kProxyAuthPassword1[] = u"password 1";
+const char16_t kProxyAuthPassword2[] = u"password 2";
 
 const char kGAIACookieURL[] = "https://google.com/";
 const char kSAMLIdPCookieURL[] = "https://example.com/";
@@ -70,8 +70,8 @@ CreateNetworkContextForDefaultStoragePartition(
   auto network_context = std::make_unique<network::NetworkContext>(
       network_service, network_context_remote.InitWithNewPipeAndPassReceiver(),
       std::move(params));
-  content::BrowserContext::GetDefaultStoragePartition(browser_context)
-      ->SetNetworkContextForTesting(std::move(network_context_remote));
+  browser_context->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      std::move(network_context_remote));
   return network_context;
 }
 
@@ -105,7 +105,7 @@ class ProfileAuthDataTest : public testing::Test {
  private:
   void PopulateBrowserContext(TestingProfile* browser_context,
                               network::NetworkContext* network_context,
-                              const std::string& proxy_auth_password,
+                              const std::u16string& proxy_auth_password,
                               const std::string& cookie_value);
 
   net::HttpAuthCache* GetAuthCache(network::NetworkContext* network_context);
@@ -143,10 +143,8 @@ void ProfileAuthDataTest::Transfer(
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login) {
   base::RunLoop run_loop;
-  ProfileAuthData::Transfer(content::BrowserContext::GetDefaultStoragePartition(
-                                &login_browser_context_),
-                            content::BrowserContext::GetDefaultStoragePartition(
-                                &user_browser_context_),
+  ProfileAuthData::Transfer(login_browser_context_.GetDefaultStoragePartition(),
+                            user_browser_context_.GetDefaultStoragePartition(),
                             transfer_auth_cookies_on_first_login,
                             transfer_saml_auth_cookies_on_subsequent_login,
                             run_loop.QuitClosure());
@@ -176,12 +174,12 @@ net::CookieList ProfileAuthDataTest::GetUserCookies() {
 void ProfileAuthDataTest::VerifyTransferredUserProxyAuthEntry() {
   net::HttpAuthCache::Entry* entry =
       GetAuthCache(user_network_context_.get())
-          ->Lookup(GURL(kProxyAuthURL), net::HttpAuth::AUTH_PROXY,
-                   kProxyAuthRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
-                   net::NetworkIsolationKey());
+          ->Lookup(url::SchemeHostPort(GURL(kProxyAuthURL)),
+                   net::HttpAuth::AUTH_PROXY, kProxyAuthRealm,
+                   net::HttpAuth::AUTH_SCHEME_BASIC,
+                   net::NetworkAnonymizationKey());
   ASSERT_TRUE(entry);
-  EXPECT_EQ(base::ASCIIToUTF16(kProxyAuthPassword1),
-            entry->credentials().password());
+  EXPECT_EQ(kProxyAuthPassword1, entry->credentials().password());
 }
 
 void ProfileAuthDataTest::VerifyUserCookies(
@@ -210,14 +208,13 @@ void ProfileAuthDataTest::VerifyUserCookies(
 void ProfileAuthDataTest::PopulateBrowserContext(
     TestingProfile* browser_context,
     network::NetworkContext* network_context,
-    const std::string& proxy_auth_password,
+    const std::u16string& proxy_auth_password,
     const std::string& cookie_value) {
   GetAuthCache(network_context)
-      ->Add(GURL(kProxyAuthURL), net::HttpAuth::AUTH_PROXY, kProxyAuthRealm,
-            net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
-            kProxyAuthChallenge,
-            net::AuthCredentials(std::u16string(),
-                                 base::ASCIIToUTF16(proxy_auth_password)),
+      ->Add(url::SchemeHostPort(GURL(kProxyAuthURL)), net::HttpAuth::AUTH_PROXY,
+            kProxyAuthRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
+            net::NetworkAnonymizationKey(), kProxyAuthChallenge,
+            net::AuthCredentials(std::u16string(), proxy_auth_password),
             std::string());
 
   network::mojom::CookieManager* cookies = GetCookies(browser_context);
@@ -235,7 +232,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
           kSAMLIdPCookieDomainWithWildcard, std::string(), base::Time(),
           base::Time(), base::Time(), true, false,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false),
+          false, absl::nullopt),
       GURL(kSAMLIdPCookieURL), options, base::DoNothing());
 
   cookies->SetCanonicalCookie(
@@ -243,7 +240,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
           GURL(kSAMLIdPCookieURL), kCookieName, cookie_value, std::string(),
           std::string(), base::Time(), base::Time(), base::Time(), true, false,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false),
+          false, absl::nullopt),
       GURL(kSAMLIdPCookieURL), options, base::DoNothing());
 
   cookies->SetCanonicalCookie(
@@ -251,7 +248,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
           GURL(kGAIACookieURL), kCookieName, cookie_value, std::string(),
           std::string(), base::Time(), base::Time(), base::Time(), true, false,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          false),
+          false, absl::nullopt),
       GURL(kGAIACookieURL), options, base::DoNothing());
 }
 
@@ -265,7 +262,7 @@ net::HttpAuthCache* ProfileAuthDataTest::GetAuthCache(
 
 network::mojom::CookieManager* ProfileAuthDataTest::GetCookies(
     content::BrowserContext* browser_context) {
-  return content::BrowserContext::GetDefaultStoragePartition(browser_context)
+  return browser_context->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -310,4 +307,4 @@ TEST_F(ProfileAuthDataTest, TransferOnSubsequentLogin) {
   VerifyUserCookies(kCookieValue2, kCookieValue1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

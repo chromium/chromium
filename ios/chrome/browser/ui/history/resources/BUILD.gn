@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,13 +9,5 @@ imageset("history_empty") {
     "history_empty.imageset/Contents.json",
     "history_empty.imageset/history_empty.pdf",
     "history_empty.imageset/history_empty_dark.pdf",
-  ]
-}
-
-imageset("legacy_empty_history") {
-  sources = [
-    "legacy_empty_history.imageset/Contents.json",
-    "legacy_empty_history.imageset/legacy_empty_history@2x.png",
-    "legacy_empty_history.imageset/legacy_empty_history@3x.png",
   ]
 }

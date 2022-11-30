@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,12 +49,12 @@ public class JUnitTestGURLsTest {
 
     @SmallTest
     @Test
-    public void testGURLEquivalence() throws Exception {
+    public void testGURLEquivalence() throws Throwable {
         doThrow(new RuntimeException("Deserialization required re-initialization."))
                 .when(mGURLMocks)
                 .init(any(), any());
 
-        Exception exception = null;
+        Throwable exception = null;
         for (Map.Entry<String, String> entry : JUnitTestGURLs.sGURLMap.entrySet()) {
             GURL gurl = new GURL(entry.getKey());
             try {
@@ -62,7 +62,7 @@ public class JUnitTestGURLsTest {
                 GURL deserialized = JUnitTestGURLs.getGURL(entry.getKey());
                 GURLJni.TEST_HOOKS.setInstanceForTesting(null);
                 GURLJavaTest.deepAssertEquals(deserialized, gurl);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 GURLJni.TEST_HOOKS.setInstanceForTesting(null);
                 exception = getErrorForGURL(gurl);
                 Log.e(TAG, "Error: ", exception);

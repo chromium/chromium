@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ public class MediaLauncherActivity extends Activity {
 
         // TODO(https://crbug.com/800880): Determine file:// URI when possible.
         Intent intent = MediaViewerUtils.getMediaViewerIntent(
-                contentUri, contentUri, mimeType, false /* allowExternalAppHandlers */);
+                contentUri, contentUri, mimeType, false /* allowExternalAppHandlers */, this);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
                 CustomTabIntentDataProvider.LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY);

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_PPAPI_TEST_UTILS_H_
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,21 +27,16 @@ namespace ppapi {
 
 // Registers the PPAPI test plugin to application/x-ppapi-tests. Returns true
 // on success, and false otherwise.
-bool RegisterTestPlugin(base::CommandLine* command_line) WARN_UNUSED_RESULT;
+[[nodiscard]] bool RegisterTestPlugin(base::CommandLine* command_line);
 
 // Registers the PPAPI test plugin with some some extra parameters. Returns true
 // on success and false otherwise.
-bool RegisterTestPluginWithExtraParameters(
+[[nodiscard]] bool RegisterTestPluginWithExtraParameters(
     base::CommandLine* command_line,
-    const base::FilePath::StringType& extra_registration_parameters)
-    WARN_UNUSED_RESULT;
-
-// Registers the PDF-imitating CORB-testing plugin.
-bool RegisterCorbTestPlugin(base::CommandLine* command_line) WARN_UNUSED_RESULT;
+    const base::FilePath::StringType& extra_registration_parameters);
 
 // Registers the Blink test plugin to application/x-blink-test-plugin.
-bool RegisterBlinkTestPlugin(base::CommandLine* command_line)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool RegisterBlinkTestPlugin(base::CommandLine* command_line);
 
 using CreateUDPSocketCallback = base::RepeatingCallback<void(
     network::mojom::NetworkContext* network_context,

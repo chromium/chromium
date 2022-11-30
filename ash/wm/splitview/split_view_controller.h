@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -17,29 +19,33 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
 class Layer;
+class PresentationTimeRecorder;
 }  // namespace ui
 
 namespace ash {
-class PresentationTimeRecorder;
 class OverviewSession;
 class SplitViewControllerTest;
 class SplitViewDivider;
+class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
 
-// The controller for the split view. It snaps a window to left/right side of
-// the screen. It also observes the two snapped windows and decides when to exit
-// the split view mode.
+// `SplitViewController` handles how window snapping interacts with overview
+// mode and tablet mode. There is an instance for each display. In clamshell
+// mode, `SplitViewController` is relevant on displays with a snapped window
+// on one side and an overview grid (empty or not) on the other side. In
+// tablet mode, `SplitViewController` is relevant on all displays with snapped
+// windows.
 // TODO(xdai): Make it work for multi-display non mirror environment.
 class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public WindowStateObserver,
@@ -47,7 +53,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public OverviewObserver,
                                        public display::DisplayObserver,
                                        public TabletModeObserver,
-                                       public AccessibilityObserver {
+                                       public AccessibilityObserver,
+                                       public ash::KeyboardControllerObserver,
+                                       public wm::ActivationChangeObserver {
  public:
   // |LEFT| and |RIGHT| are named for the positions to which they correspond in
   // clamshell mode or primary-landscape-oriented tablet mode. In portrait-
@@ -55,8 +63,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // in clamshell mode, although the display orientation may sometimes be
   // portrait, we always snap windows on the left and right (see
   // |IsLayoutHorizontal|). The snap positions are swapped in secondary-oriented
-  // tablet mode (see |IsLayoutRightSideUp|).
-  enum SnapPosition { NONE, LEFT, RIGHT };
+  // tablet mode (see |IsLayoutPrimary|).
+  enum class SnapPosition { kNone, kPrimary, kSecondary };
 
   // Why splitview was ended.
   enum class EndReason {
@@ -69,6 +77,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     // Splitview is being ended due to a change in Virtual Desks, such as
     // switching desks or removing a desk.
     kDesksChange,
+    // Splitview is being ended due to the `root_window_` is destroyed and the
+    // SplitViewController is being destroyed.
+    kRootWindowDestroyed,
   };
 
   // The behaviors of split view are very different when in tablet mode and in
@@ -86,9 +97,17 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   enum class State {
     kNoSnap,
-    kLeftSnapped,
-    kRightSnapped,
+    kPrimarySnapped,
+    kSecondarySnapped,
     kBothSnapped,
+  };
+
+  // The split view resize behavior in tablet mode. The normal mode resizes
+  // windows on drag events. In the fast mode, windows are instead moved. A
+  // single drag "session" may involve both modes.
+  enum class TabletResizeMode {
+    kNormal,
+    kFast,
   };
 
   // Gets the |SplitViewController| for the root window of |window|. |window| is
@@ -97,36 +116,45 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // window and it does not matter. For code that only applies to tablet mode,
   // you may simply use the primary root (see |Shell::GetPrimaryRootWindow|).
   // The user actually can go to the display settings while in tablet mode and
-  // choose extend; we just are not yet trying to support it really well. When
-  // the |ash::features::kMultiDisplayOverviewAndSplitView| feature flag is
-  // disabled, |window| is ignored as there is only one |SplitViewController|.
+  // choose extend; we just are not yet trying to support it really well.
   static SplitViewController* Get(const aura::Window* window);
 
   // The return values of these two functions together indicate what actual
-  // positions correspond to |LEFT| and |RIGHT|:
-  // |IsLayoutHorizontal|  |IsLayoutRightSideUp|  |LEFT|               |RIGHT|
-  // -------------------------------------------------------------------------
+  // positions correspond to |PRIMARY| and |SECONDARY|:
+  // |IsLayoutHorizontal|  |IsLayoutPrimary|    |PRIMARY|           |SECONDARY|
+  // --------------------------------------------------------------------------
   // true                  true                   left                 right
   // true                  false                  right                left
   // false                 true                   top                  bottom
   // false                 false                  bottom               top
-  // In tablet mode, these functions return values based on display orientation.
-  // In clamshell mode, these functions return true.
-  static bool IsLayoutHorizontal();
-  static bool IsLayoutRightSideUp();
+  // In both clamshell and tablet mode, these functions return values based on
+  // display orientation. |window| is used to find the nearest display to check
+  // if the display layout is horizontal and is primary or not.
+  static bool IsLayoutHorizontal(aura::Window* window);
+  static bool IsLayoutHorizontal(const display::Display& display);
+  static bool IsLayoutPrimary(aura::Window* window);
+  static bool IsLayoutPrimary(const display::Display& display);
 
   // Returns true if |position| actually signifies a left or top position,
   // according to the return values of |IsLayoutHorizontal| and
-  // |IsLayoutRightSideUp|.
-  static bool IsPhysicalLeftOrTop(SnapPosition position);
+  // |IsLayoutPrimary|. Physical position refers to the position of the window
+  // on the display that is held upward.
+  static bool IsPhysicalLeftOrTop(SnapPosition position, aura::Window* window);
+  static bool IsPhysicalLeftOrTop(SnapPosition position,
+                                  const display::Display& display);
 
   explicit SplitViewController(aura::Window* root_window);
+
+  SplitViewController(const SplitViewController&) = delete;
+  SplitViewController& operator=(const SplitViewController&) = delete;
+
   ~SplitViewController() override;
 
   // Returns true if split view mode is active. Please see SplitViewType above
   // to see the difference between tablet mode and clamshell mode splitview
   // mode.
   bool InSplitViewMode() const;
+  bool BothSnapped() const;
   bool InClamshellSplitViewMode() const;
   bool InTabletSplitViewMode() const;
 
@@ -155,8 +183,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                   bool activate_window = false);
 
   // This is called by WindowState::State when receiving a snap WMEvent (i.e.,
-  // WM_EVENT_SNAP_LEFT or WM_EVENT_SNAP_RIGHT). SplitViewController will decide
-  // if this window needs to be snapped in split view.
+  // WM_EVENT_SNAP_PRIMARY or WM_EVENT_SNAP_SECONDARY). SplitViewController will
+  // decide if this window needs to be snapped in split view.
   void OnWindowSnapWMEvent(aura::Window* window, WMEventType event_type);
 
   // Attaches the to-be-snapped |window| to split view at |snap_position|. It
@@ -170,32 +198,60 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // windows is not snapped.
   void SwapWindows();
 
-  // |window| should be |left_window_| or |right_window_|, and this function
-  // returns |LEFT| or |RIGHT| accordingly.
+  // |window| should be |primary_window_| or |secondary_window_|, and this
+  // function returns |LEFT| or |RIGHT| accordingly.
   SnapPosition GetPositionOfSnappedWindow(const aura::Window* window) const;
 
   // |position| should be |LEFT| or |RIGHT|, and this function returns
-  // |left_window_| or |right_window_| accordingly.
+  // |primary_window_| or |secondary_window_| accordingly.
   aura::Window* GetSnappedWindow(SnapPosition position);
 
   // Returns the default snapped window. It's the window that remains open until
   // the split mode ends. It's decided by |default_snap_position_|. E.g., If
   // |default_snap_position_| equals LEFT, then the default snapped window is
-  // |left_window_|. All the other window will open on the right side.
+  // |primary_window_|. All the other window will open on the right side.
   aura::Window* GetDefaultSnappedWindow();
 
-  // Gets snapped bounds based on |snap_position| and |divider_position_|,
-  // adjusted to accommodate the minimum size of |window_for_minimum_size| if
-  // |window_for_minimum_size| is not null.
+  // Gets snapped bounds based on |snap_position|, the side of the screen to
+  // snap to, and |snap_ratio|, the ratio of the screen that the snapped window
+  // will occupy, adjusted to accommodate the minimum size of
+  // |window_for_minimum_size| if |window_for_minimum_size| is not null.
+  gfx::Rect GetSnappedWindowBoundsInParent(
+      SnapPosition snap_position,
+      aura::Window* window_for_minimum_size,
+      float snap_ratio);
+
+  // Gets snapped bounds based on |snap_position|, |divider_position_|, and
+  // |kDefaultSnapRatio|, adjusted to accommodate the minimum size of
+  // |window_for_minimum_size| if |window_for_minimum_size| is not null.
   gfx::Rect GetSnappedWindowBoundsInParent(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
+
+  // Gets snapped bounds in screen coordinates based on |snap_position| and
+  // |snap_ratio|.
+  gfx::Rect GetSnappedWindowBoundsInScreen(
+      SnapPosition snap_position,
+      aura::Window* window_for_minimum_size,
+      float snap_ratio);
+
+  // Gets snapped bounds in screen coordinates for |kDefaultSnapRatio|.
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
 
+  // Returns true if we are resizing with the fast resize
+  // mode. `GetSnappedWindowBoundsInScreen()` should then return the windows
+  // current bounds in screen coordinates.
+  bool ShouldUseWindowBoundsDuringFastResize();
+
   // Gets the default value of |divider_position_|.
   int GetDefaultDividerPosition() const;
+
+  // Calculates the new divider position to move |divider_position_| to, such
+  // that the primary window will occupy |snap_ratio| of the screen, and the
+  // secondary window will occupy the rest.
+  int GetDividerPosition(SnapPosition snap_position, float snap_ratio) const;
 
   // Returns true during the divider snap animation.
   bool IsDividerAnimating() const;
@@ -237,6 +293,19 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          SnapPosition desired_snap_position,
                          const gfx::Point& last_location_in_screen);
   void OnWindowDragCanceled();
+
+  // Computes the snap position for a dragged window, based on the last
+  // mouse/gesture event location. Called by |EndWindowDragImpl| when
+  // desired_snap_position is |NONE| but because split view is already active,
+  // the dragged window needs to be snapped anyway.
+  SplitViewController::SnapPosition ComputeSnapPosition(
+      const gfx::Point& last_location_in_screen);
+
+  // In portrait mode split view, if the virtual keyboard occludes the input
+  // field in the bottom window. The bottom window will be pushed up above the
+  // virtual keyboard. In this case, we allow window state to set bounds for
+  // snapped window.
+  bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) const;
 
   void AddObserver(SplitViewObserver* observer);
   void RemoveObserver(SplitViewObserver* observer);
@@ -280,15 +349,29 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnAccessibilityStatusChanged() override;
   void OnAccessibilityControllerShutdown() override;
 
+  // KeyboardControllerObserver
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
   aura::Window* root_window() const { return root_window_; }
-  aura::Window* left_window() { return left_window_; }
-  aura::Window* right_window() { return right_window_; }
+  aura::Window* primary_window() { return primary_window_; }
+  aura::Window* secondary_window() { return secondary_window_; }
   int divider_position() const { return divider_position_; }
   State state() const { return state_; }
   SnapPosition default_snap_position() const { return default_snap_position_; }
   SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
   bool is_resizing() const { return is_resizing_; }
   EndReason end_reason() const { return end_reason_; }
+  SplitViewMetricsController* split_view_metrics_controller() {
+    return split_view_metrics_controller_.get();
+  }
+  aura::Window* to_be_activated_window() const {
+    return to_be_activated_window_;
+  }
 
  private:
   friend class SplitViewControllerTest;
@@ -303,17 +386,18 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kWindowMinimized,
     kWindowDestroyed,
     kWindowDragged,
+    kWindowFloated,
   };
 
-  // These functions return |left_window_| and |right_window_|, swapped in
-  // nonprimary screen orientations. Note that they may return null.
+  // These functions return |primary_window_| and |secondary_window_|, swapped
+  // in nonprimary screen orientations. Note that they may return null.
   aura::Window* GetPhysicalLeftOrTopWindow();
   aura::Window* GetPhysicalRightOrBottomWindow();
 
   // Start observing |window|.
   void StartObserving(aura::Window* window);
   // Stop observing the window at associated with |snap_position|. Also updates
-  // shadows and sets |left_window_| or |right_window_| to nullptr.
+  // shadows and sets |primary_window_| or |secondary_window_| to nullptr.
   void StopObserving(SnapPosition snap_position);
 
   // Update split view state and notify its observer about the change.
@@ -322,10 +406,21 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Notifies observers that the split view divider position has been changed.
   void NotifyDividerPositionChanged();
 
+  // Notifies observers that the windows in split view is resized.
+  void NotifyWindowResized();
+
+  // Notifies observers that the windows are swappped.
+  void NotifyWindowSwapped();
+
   // Updates the black scrim layer's bounds and opacity while dragging the
   // divider. The opacity increases as the split divider gets closer to the edge
   // of the screen.
   void UpdateBlackScrim(const gfx::Point& location_in_screen);
+
+  // Updates the resize mode backdrop. This is drawn behind windows to ensure
+  // that the allotted space is always filled, even if the window itself hasn't
+  // resized yet.
+  void UpdateResizeBackdrop();
 
   // Updates the bounds for the snapped windows and divider according to the
   // current snap direction.
@@ -363,8 +458,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Called after a to-be-snapped window |window| got snapped. It updates the
   // split view states and notifies observers about the change. It also restore
-  // the snapped window's transform if it's not identity and activate it.
-  void OnWindowSnapped(aura::Window* window);
+  // the snapped window's transform if it's not identity and activate it. If
+  // `previous_state` is given and it is a floated window, attempt to snap the
+  // next MRU window if possible.
+  void OnWindowSnapped(
+      aura::Window* window,
+      absl::optional<chromeos::WindowStateType> previous_state);
 
   // If there are two snapped windows, closing/minimizing/tab-dragging one of
   // them will open overview window grid on the closed/minimized/tab-dragged
@@ -433,6 +532,15 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // snapping animation completes or is interrupted or totally skipped.
   void EndResizeImpl();
 
+  // Called from a timer during resizing. Facilitates switching between fast and
+  // normal tablet resizing modes.
+  void OnResizeTimer();
+
+  // Figure out which resize mode we should be using. This is based on the speed
+  // at which the divider is dragged.
+  void UpdateTabletResizeMode(base::TimeTicks event_time_ticks,
+                              const gfx::Point& event_location);
+
   // Called by OnWindowDragEnded to do the actual work of finishing the window
   // dragging. If |is_being_destroyed| equals true, the dragged window is to be
   // destroyed, and SplitViewController should not try to put it in splitview.
@@ -441,13 +549,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          SnapPosition desired_snap_position,
                          const gfx::Point& last_location_in_screen);
 
-  // Computes the snap position for a dragged window, based on the last
-  // mouse/gesture event location. Called by |EndWindowDragImpl| when
-  // desired_snap_position is |NONE| but because split view is already active,
-  // the dragged window needs to be snapped anyway.
-  SplitViewController::SnapPosition ComputeSnapPosition(
-      const gfx::Point& last_location_in_screen);
-
   // Do the split divider spawn animation. It will add a finishing touch to the
   // |window| animation that generally accommodates snapping by dragging.
   void DoSplitDividerSpawnAnimation(aura::Window* window);
@@ -455,9 +556,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Root window the split view is in.
   aura::Window* root_window_;
 
-  // The current left/right snapped window.
-  aura::Window* left_window_ = nullptr;
-  aura::Window* right_window_ = nullptr;
+  // The current primary/secondary snapped window.
+  aura::Window* primary_window_ = nullptr;
+  aura::Window* secondary_window_ = nullptr;
 
   // Observe the windows that are to be snapped in split screen.
   std::unique_ptr<ToBeSnappedWindowsObserver> to_be_snapped_windows_observer_;
@@ -473,17 +574,21 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // closer to the edge of the screen.
   std::unique_ptr<ui::Layer> black_scrim_layer_;
 
+  // Backdrop layers that may be visible below windows when resizing.
+  std::unique_ptr<ui::Layer> left_resize_backdrop_layer_;
+  std::unique_ptr<ui::Layer> right_resize_backdrop_layer_;
+
   // The window observer that obseves the tab-dragged window in tablet mode.
   std::unique_ptr<TabDraggedWindowObserver> dragged_window_observer_;
 
   // The distance between the origin of the divider and the origin of the
   // current display's work area in screen coordinates.
   //     |<---     divider_position_    --->|
-  //     ----------------------------------------------------------
-  //     |                                  | |                    |
-  //     |        left_window_              | |   right_window_    |
-  //     |                                  | |                    |
-  //     ----------------------------------------------------------
+  //     ---------------------------------------------------------------
+  //     |                                  | |                        |
+  //     |        primary_window_           | |   secondary_window_    |
+  //     |                                  | |                        |
+  //     ---------------------------------------------------------------
   int divider_position_ = -1;
 
   // The closest position ratio of divider among kFixedPositionRatios,
@@ -505,10 +610,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // first window was snapped left, then |default_snap_position_| equals LEFT,
   // i.e., all the other windows will open snapped on the right side - and vice
   // versa.
-  SnapPosition default_snap_position_ = NONE;
+  SnapPosition default_snap_position_ = SnapPosition::kNone;
 
-  // Whether the previous layout is right-side-up (see |IsLayoutRightSideUp|).
-  // Consistent with |IsLayoutRightSideUp|, |is_previous_layout_right_side_up_|
+  // Whether the previous layout is right-side-up (see |IsLayoutPrimary|).
+  // Consistent with |IsLayoutPrimary|, |is_previous_layout_right_side_up_|
   // is always true in clamshell mode. It is not really used in clamshell mode,
   // but it is kept up to date in anticipation that future code changes could
   // introduce a bug similar to https://crbug.com/1029181 which could be
@@ -535,10 +640,16 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   base::ObserverList<SplitViewObserver>::Unchecked observers_;
 
   // Records the presentation time of resize operation in split view mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
+
+  // The metrics controller for the same root window.
+  std::unique_ptr<SplitViewMetricsController> split_view_metrics_controller_;
+
+  // Register for DisplayObserver callbacks.
+  display::ScopedDisplayObserver display_observer_{this};
 
   // A pointer to the to-be-snapped window that will be activated after it's
   // snapped in splitview. There can be two cases when this value can be
@@ -548,7 +659,24 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // should remain to be the active window.
   aura::Window* to_be_activated_window_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(SplitViewController);
+  // The split view resize mode for tablet mode.
+  TabletResizeMode tablet_resize_mode_ = TabletResizeMode::kNormal;
+
+  // True *while* a resize event is being processed.
+  bool processing_resize_event_ = false;
+
+  // Accumulated drag distance, during a time interval.
+  int accumulated_drag_distance_ = 0;
+  base::TimeTicks accumulated_drag_time_ticks_;
+
+  // Used to potentially invoke `Resize()` during resizes. This is so that
+  // tablet resize mode can switch to normal mode (letting windows be resized)
+  // even if the divider isn't moved.
+  base::OneShotTimer resize_timer_;
+
+  // A flag indicates the window bounds is currently changed due to the virtual
+  // keyboard.
+  bool changing_bounds_by_vk_ = false;
 };
 
 }  // namespace ash

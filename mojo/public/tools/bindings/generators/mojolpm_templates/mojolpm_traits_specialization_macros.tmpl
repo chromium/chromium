@@ -55,7 +55,7 @@ struct UnionTraits<{{dataview_type}}, {{union_type}}> {
 {%-       set kind = field.kind %}
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
       case {{union_type}}::k{{("m_" ~ name)|under_to_camel}}:
-        return {{dataview_type}}::Tag::{{name|upper}};
+        return {{dataview_type}}::Tag::k{{name|under_to_camel}};
 {%-    endfor %}
       default:
         return static_cast<{{dataview_type}}::Tag>(0);

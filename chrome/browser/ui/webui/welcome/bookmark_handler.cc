@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,21 +28,20 @@ void BookmarkHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void BookmarkHandler::HandleToggleBookmarkBar(const base::ListValue* args) {
-  bool show;
-  CHECK(args->GetBoolean(0, &show));
+void BookmarkHandler::HandleToggleBookmarkBar(const base::Value::List& args) {
+  CHECK(!args.empty());
+  const bool show = args[0].GetBool();
   prefs_->SetBoolean(bookmarks::prefs::kShowBookmarkBar, show);
 }
 
-void BookmarkHandler::HandleIsBookmarkBarShown(const base::ListValue* args) {
+void BookmarkHandler::HandleIsBookmarkBarShown(const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       base::Value(prefs_->GetBoolean(bookmarks::prefs::kShowBookmarkBar)));
 }
 

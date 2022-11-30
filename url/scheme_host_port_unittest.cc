@@ -1,14 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "url/scheme_host_port.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
 namespace {
@@ -16,12 +16,14 @@ namespace {
 class SchemeHostPortTest : public testing::Test {
  public:
   SchemeHostPortTest() = default;
+
+  SchemeHostPortTest(const SchemeHostPortTest&) = delete;
+  SchemeHostPortTest& operator=(const SchemeHostPortTest&) = delete;
+
   ~SchemeHostPortTest() override = default;
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemeHostPortTest);
 };
 
 void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {
@@ -260,10 +262,10 @@ TEST_F(SchemeHostPortTest, Comparison) {
       {"https", "b", 81},
   };
 
-  for (size_t i = 0; i < base::size(tuples); i++) {
+  for (size_t i = 0; i < std::size(tuples); i++) {
     url::SchemeHostPort current(tuples[i].scheme, tuples[i].host,
                                 tuples[i].port);
-    for (size_t j = i; j < base::size(tuples); j++) {
+    for (size_t j = i; j < std::size(tuples); j++) {
       url::SchemeHostPort to_compare(tuples[j].scheme, tuples[j].host,
                                      tuples[j].port);
       EXPECT_EQ(i < j, current < to_compare) << i << " < " << j;

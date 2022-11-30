@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 // Exposes shared functionality for OverlayRequestMediator subclasses.
 @interface OverlayRequestMediator (Subclassing)
 
-// Dispatches |response| through the mediator's request callback manager.  Does
+// Dispatches `response` through the mediator's request callback manager.  Does
 // nothing if the request has been cancelled.
 - (void)dispatchResponse:(std::unique_ptr<OverlayResponse>)response;
 

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,8 +22,8 @@ def _setup_sys_path():
         # //third_party/blink/renderer/build/scripts/blinkbuild
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'build',
                      'scripts'),
-        # //third_party/mako/mako
-        os.path.join(root_dir, 'third_party', 'mako'),
+        # //third_party/mako/mako/mako
+        os.path.join(root_dir, 'third_party', 'mako', 'mako'),
     )
     for module_dir in reversed(module_dirs):
         # Preserve sys.path[0] as is.
@@ -39,12 +39,14 @@ from .dictionary import generate_dictionaries
 from .enumeration import generate_enumerations
 from .interface import generate_interfaces
 from .namespace import generate_namespaces
+from .observable_array import generate_observable_arrays
 from .task_queue import TaskQueue
 from .typedef import generate_typedefs
 from .union import generate_unions
 
 
-def init(web_idl_database_path, root_src_dir, root_gen_dir, component_reldirs):
+def init(web_idl_database_path, root_src_dir, root_gen_dir, component_reldirs,
+         enable_style_format):
     """
     Args:
         web_idl_database_path: File path to the web_idl.Database.
@@ -52,10 +54,12 @@ def init(web_idl_database_path, root_src_dir, root_gen_dir, component_reldirs):
         root_gen_dir: Root directory of generated files, which corresponds to
             "//out/Default/gen" in GN.
         component_reldirs: Pairs of component and output directory.
+        enable_style_format: Enable style formatting of the generated files.
     """
 
     from . import package_initializer
     package_initializer.init(web_idl_database_path=web_idl_database_path,
                              root_src_dir=root_src_dir,
                              root_gen_dir=root_gen_dir,
-                             component_reldirs=component_reldirs)
+                             component_reldirs=component_reldirs,
+                             enable_style_format=enable_style_format)

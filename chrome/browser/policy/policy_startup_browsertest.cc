@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 // PolicyMakeDefaultBrowserTest is not valid for this platform.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -18,6 +17,11 @@
 #include "content/public/test/browser_test.h"
 
 class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
+ public:
+  PolicyMakeDefaultBrowserTest(const PolicyMakeDefaultBrowserTest&) = delete;
+  PolicyMakeDefaultBrowserTest& operator=(const PolicyMakeDefaultBrowserTest&) =
+      delete;
+
  protected:
   PolicyMakeDefaultBrowserTest() : InProcessBrowserTest() {
     set_expected_exit_code(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
@@ -26,10 +30,9 @@ class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kMakeDefaultBrowser);
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
@@ -42,7 +45,6 @@ class PolicyMakeDefaultBrowserTest : public InProcessBrowserTest {
 
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
-  DISALLOW_COPY_AND_ASSIGN(PolicyMakeDefaultBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PolicyMakeDefaultBrowserTest, MakeDefaultDisabled) {

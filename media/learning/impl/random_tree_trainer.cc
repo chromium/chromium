@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace learning {
@@ -78,7 +78,7 @@ struct InteriorNode : public Model {
 
   // Add |child| has the node for feature value |v|.
   void AddChild(FeatureValue v, std::unique_ptr<Model> child) {
-    DCHECK_EQ(children_.count(v), 0u);
+    DCHECK(!children_.contains(v));
     children_.emplace(v, std::move(child));
   }
 
@@ -177,9 +177,9 @@ std::unique_ptr<Model> RandomTreeTrainer::Build(
   // and the target value, if the Optional has a value then it's the singular
   // value that we've found so far.  If we find a second one, then we'll clear
   // the Optional.
-  base::Optional<TargetValue> target_value(
+  absl::optional<TargetValue> target_value(
       training_data[training_idx[0]].target_value);
-  std::vector<base::Optional<FeatureValue>> feature_values;
+  std::vector<absl::optional<FeatureValue>> feature_values;
   feature_values.resize(training_data[0].features.size());
   for (size_t feature_idx : unused_set) {
     feature_values[feature_idx] =

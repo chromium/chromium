@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,7 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     const TickClock* clock,
     SequenceManager::Settings settings) {
+  settings.clock = clock;
   std::unique_ptr<SequenceManagerForTest> manager(new SequenceManagerForTest(
       std::make_unique<ThreadControllerForTest>(funneled_sequence_manager,
                                                 std::move(task_runner), clock),
@@ -71,7 +72,7 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
 std::unique_ptr<SequenceManagerForTest>
 SequenceManagerForTest::CreateOnCurrentThread(
     SequenceManager::Settings settings) {
-  const auto* clock = settings.clock;
+  const auto* clock = settings.clock.get();
   return Create(CreateThreadControllerImplForCurrentThread(clock),
                 std::move(settings));
 }

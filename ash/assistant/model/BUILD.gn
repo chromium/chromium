@@ -1,8 +1,10 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos)
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
 
 component("model") {
   output_name = "assistant_model"
@@ -26,9 +28,6 @@ component("model") {
     "assistant_response.cc",
     "assistant_response.h",
     "assistant_response_observer.h",
-    "assistant_screen_context_model.cc",
-    "assistant_screen_context_model.h",
-    "assistant_screen_context_model_observer.h",
     "assistant_suggestions_model.cc",
     "assistant_suggestions_model.h",
     "assistant_suggestions_model_observer.h",
@@ -48,10 +47,10 @@ component("model") {
   deps = [
     "//ash/assistant/ui:constants",
     "//ash/public/cpp",
-    "//chromeos/services/assistant/public/cpp",
-    "//chromeos/services/assistant/public/mojom",
-    "//chromeos/services/libassistant/public/cpp:structs",
-    "//ui/accessibility/mojom",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/assistant/public/mojom",
+    "//chromeos/ash/services/libassistant/public/cpp:structs",
+    "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry",
   ]
 }

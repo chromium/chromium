@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,21 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace em = enterprise_management;
 
@@ -28,9 +32,8 @@ namespace {
 
 constexpr char kSamlAuthErrorMessage[] = "SAML authentication failed. ";
 
-policy::BrowserPolicyConnectorChromeOS* GetConnector() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos();
+policy::BrowserPolicyConnectorAsh* GetConnector() {
+  return g_browser_process->platform_part()->browser_policy_connector_ash();
 }
 
 policy::DeviceManagementService* GetDeviceManagementService() {
@@ -97,7 +100,7 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
           policy::DeviceManagementService::JobConfiguration::
               TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER,
           GetClientId(), /*critical=*/false,
-          policy::DMAuth::FromDMToken(dm_token_), /*oauth_token=*/base::nullopt,
+          policy::DMAuth::FromDMToken(dm_token_), /*oauth_token=*/absl::nullopt,
           url_loader_factory_for_testing()
               ? url_loader_factory_for_testing()
               : g_browser_process->system_network_context_manager()
@@ -119,27 +122,24 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::DoFetchEnrollmentToken() {
 }
 
 void ArcActiveDirectoryEnrollmentTokenFetcher::
-    OnEnrollmentTokenResponseReceived(
-        policy::DeviceManagementService::Job* job,
-        policy::DeviceManagementStatus dm_status,
-        int net_error,
-        const em::DeviceManagementResponse& response) {
-  VLOG(1) << "Enrollment token response received. DM Status: " << dm_status;
+    OnEnrollmentTokenResponseReceived(policy::DMServerJobResult result) {
+  VLOG(1) << "Enrollment token response received. DM Status: "
+          << result.dm_status;
   fetch_request_job_.reset();
 
   Status fetch_status;
   std::string enrollment_token;
   std::string user_id;
 
-  switch (dm_status) {
+  switch (result.dm_status) {
     case policy::DM_STATUS_SUCCESS: {
-      if (!response.has_active_directory_enroll_play_user_response()) {
+      if (!result.response.has_active_directory_enroll_play_user_response()) {
         LOG(WARNING) << "Invalid Active Directory enroll Play user response.";
         fetch_status = Status::FAILURE;
         break;
       }
       const em::ActiveDirectoryEnrollPlayUserResponse& enroll_response =
-          response.active_directory_enroll_play_user_response();
+          result.response.active_directory_enroll_play_user_response();
 
       if (enroll_response.has_saml_parameters()) {
         // SAML authentication required.
@@ -166,7 +166,7 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::
     }
     default: {  // All other error cases
       LOG(ERROR) << "Fetching an enrollment token failed. DM Status: "
-                 << dm_status;
+                 << result.dm_status;
       fetch_status = Status::FAILURE;
       break;
     }
@@ -226,7 +226,8 @@ void ArcActiveDirectoryEnrollmentTokenFetcher::OnAuthFailed(
   support_host_->ShowError(
       ArcSupportHost::ErrorInfo(
           ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR),
-      true /* should_show_send_feedback */);
+      true /* should_show_send_feedback */,
+      true /* should_show_run_network_tests */);
   UpdateOptInCancelUMA(OptInCancelReason::NETWORK_ERROR);
 }
 

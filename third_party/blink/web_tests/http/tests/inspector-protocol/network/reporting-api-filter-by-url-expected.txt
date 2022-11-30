@@ -1,0 +1,51 @@
+Tests filtering of ReportingApiReportAdded events (Session 1).
+
+Tests filtering of ReportingApiReportAdded events (Session 2).
+
+Session 1:
+{
+    body : {
+        blockedURL : inline
+        disposition : report
+        documentURL : <string>
+        effectiveDirective : script-src-elem
+        lineNumber : 9
+        originalPolicy : script-src 'none'; object-src 'none'; report-to csp
+        referrer : 
+        sample : 
+        sourceFile : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+        statusCode : 200
+    }
+    completedAttempts : 0
+    depth : 0
+    destination : csp
+    id : <string>
+    initiatorUrl : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+    status : Queued
+    timestamp : <number>
+    type : csp-violation
+}
+Session 1:
+{
+    body : {
+        blockedURL : inline
+        disposition : report
+        documentURL : <string>
+        effectiveDirective : script-src-elem
+        lineNumber : 9
+        originalPolicy : script-src 'none'; object-src 'none'; report-to csp
+        referrer : 
+        sample : 
+        sourceFile : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+        statusCode : 200
+    }
+    completedAttempts : 0
+    depth : 0
+    destination : csp
+    id : <string>
+    initiatorUrl : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+    status : Queued
+    timestamp : <number>
+    type : csp-violation
+}
+

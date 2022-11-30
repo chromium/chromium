@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/layer_impl.h"
@@ -35,7 +35,6 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -51,7 +50,7 @@ namespace {
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 // These tests deal with losing the 3d graphics context.
@@ -165,8 +164,8 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   // Protects use of gl_ so LoseContext and
   // CreateDisplayLayerTreeFrameSink can both use it on different threads.
   base::Lock gl_lock_;
-  viz::TestGLES2Interface* gl_ = nullptr;
-  viz::TestSharedImageInterface* sii_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  raw_ptr<viz::TestSharedImageInterface> sii_ = nullptr;
 
   int times_to_fail_create_;
   int times_to_lose_during_commit_;
@@ -330,7 +329,7 @@ class LayerTreeHostContextTestLostContextSucceeds
         },
     };
 
-    if (test_case_ >= base::size(kTests))
+    if (test_case_ >= std::size(kTests))
       return false;
     // Make sure that we lost our context at least once in the last test run so
     // the test did something.
@@ -535,77 +534,6 @@ class FailedCreateDoesNotCreateExtraLayerTreeFrameSink
 // This test uses Composite() which only exists for single thread.
 SINGLE_THREAD_TEST_F(FailedCreateDoesNotCreateExtraLayerTreeFrameSink);
 
-class LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink
-    : public LayerTreeHostContextTest {
- public:
-  LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink()
-      : LayerTreeHostContextTest(), creating_output_(false) {}
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->single_thread_proxy_scheduler = false;
-    settings->use_zero_copy = true;
-  }
-
-  void RequestNewLayerTreeFrameSink() override {
-    MainThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink::
-                CreateAndSetLayerTreeFrameSink,
-            base::Unretained(this)));
-  }
-
-  void CreateAndSetLayerTreeFrameSink() {
-    creating_output_ = true;
-    LayerTreeHostContextTest::RequestNewLayerTreeFrameSink();
-  }
-
-  void BeginTest() override {
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
-  }
-
-  void ScheduleComposite() override {
-    if (creating_output_)
-      EndTest();
-  }
-
-  bool creating_output_;
-};
-
-// This test uses Composite() which only exists for single thread.
-SINGLE_THREAD_TEST_F(
-    LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink);
-
-class LayerTreeHostContextTestAvoidUnnecessaryComposite
-    : public LayerTreeHostContextTest {
- public:
-  LayerTreeHostContextTestAvoidUnnecessaryComposite()
-      : LayerTreeHostContextTest(), in_composite_(false) {}
-
-  void InitializeSettings(LayerTreeSettings* settings) override {
-    settings->single_thread_proxy_scheduler = false;
-    settings->use_zero_copy = true;
-  }
-
-  void RequestNewLayerTreeFrameSink() override {
-    LayerTreeHostContextTest::RequestNewLayerTreeFrameSink();
-    EndTest();
-  }
-
-  void BeginTest() override {
-    in_composite_ = true;
-    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
-    in_composite_ = false;
-  }
-
-  void ScheduleComposite() override { EXPECT_FALSE(in_composite_); }
-
-  bool in_composite_;
-};
-
-// This test uses Composite() which only exists for single thread.
-SINGLE_THREAD_TEST_F(LayerTreeHostContextTestAvoidUnnecessaryComposite);
-
 // This test uses PictureLayer to check for a working context.
 class LayerTreeHostContextTestLostContextSucceedsWithContent
     : public LayerTreeHostContextTestLostContextSucceeds {
@@ -767,7 +695,7 @@ class LayerTreeHostContextTestLostContextAndEvictTextures
  protected:
   bool lose_after_evict_;
   FakeContentLayerClient client_;
-  LayerTreeHostImpl* impl_host_;
+  raw_ptr<LayerTreeHostImpl> impl_host_;
   int num_commits_;
   bool lost_context_;
 };
@@ -918,13 +846,12 @@ class LayerTreeHostContextTestDontUseLostResources
     texture->SetBounds(gfx::Size(10, 10));
     texture->SetIsDrawable(true);
     constexpr gfx::Size size(64, 64);
-    auto resource = viz::TransferableResource::MakeGL(
-        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
+    auto resource = viz::TransferableResource::MakeGpu(
+        mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size, viz::RGBA_8888,
         false /* is_overlay_candidate */);
     texture->SetTransferableResource(
-        resource, viz::SingleReleaseCallback::Create(base::BindOnce(
-                      &LayerTreeHostContextTestDontUseLostResources::
-                          EmptyReleaseCallback)));
+        resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
+                                     EmptyReleaseCallback));
     root->AddChild(texture);
 
     scoped_refptr<PictureLayer> mask = PictureLayer::Create(&client_);
@@ -1675,6 +1602,9 @@ SINGLE_AND_MULTI_THREAD_TEST_F(TileResourceFreedIfLostWhileExported);
 
 class SoftwareTileResourceFreedIfLostWhileExported : public LayerTreeTest {
  protected:
+  SoftwareTileResourceFreedIfLostWhileExported()
+      : LayerTreeTest(viz::RendererType::kSoftware) {}
+
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
       double refresh_rate,
@@ -1684,14 +1614,6 @@ class SoftwareTileResourceFreedIfLostWhileExported : public LayerTreeTest {
     // Induce software compositing in cc.
     return LayerTreeTest::CreateLayerTreeFrameSink(
         renderer_settings, refresh_rate, nullptr, nullptr);
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    // Induce software compositing in the display compositor.
-    return viz::FakeOutputSurface::CreateSoftware(
-        std::make_unique<viz::SoftwareOutputDevice>());
   }
 
   void SetupTree() override {

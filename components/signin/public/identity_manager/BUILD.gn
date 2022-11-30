@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,13 +16,14 @@ source_set("identity_manager") {
     "access_token_fetcher.h",
     "access_token_info.cc",
     "access_token_info.h",
+    "account_capabilities.cc",
+    "account_capabilities.h",
     "account_info.cc",
     "account_info.h",
     "accounts_cookie_mutator.h",
     "accounts_in_cookie_jar_info.cc",
     "accounts_in_cookie_jar_info.h",
     "accounts_mutator.h",
-    "consent_level.h",
     "device_accounts_synchronizer.h",
     "diagnostics_provider.h",
     "identity_manager.cc",
@@ -41,6 +42,8 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "scope_set.h",
     "set_accounts_in_cookie_result.h",
+    "tribool.cc",
+    "tribool.h",
     "ubertoken_fetcher.cc",
     "ubertoken_fetcher.h",
   ]
@@ -85,8 +88,8 @@ source_set("identity_manager") {
 }
 
 if (is_android) {
-  java_cpp_enum("identity_manager_enum_javagen") {
-    sources = [ "consent_level.h" ]
+  java_cpp_enum("primary_account_mutator_enum_javagen") {
+    sources = [ "primary_account_mutator.h" ]
   }
 }
 
@@ -95,6 +98,7 @@ source_set("unit_tests") {
 
   sources = [
     "access_token_fetcher_unittest.cc",
+    "account_capabilities_unittest.cc",
     "account_info_unittest.cc",
     "accounts_cookie_mutator_unittest.cc",
     "accounts_mutator_unittest.cc",
@@ -133,8 +137,15 @@ source_set("unit_tests") {
     deps += [ "//components/signin/public/identity_manager/ios:test_support" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//components/account_manager_core" ]
+  if (is_chromeos) {
+    deps += [
+      "//components/account_manager_core",
+      "//components/account_manager_core:test_support",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/account_manager" ]
   }
 }
 
@@ -142,6 +153,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "account_capabilities_test_mutator.cc",
+    "account_capabilities_test_mutator.h",
     "identity_test_environment.cc",
     "identity_test_environment.h",
     "identity_test_utils.cc",
@@ -166,6 +179,10 @@ source_set("test_support") {
     "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/account_manager" ]
+  }
 
   if (is_chromeos_lacros) {
     deps += [ "//components/account_manager_core" ]

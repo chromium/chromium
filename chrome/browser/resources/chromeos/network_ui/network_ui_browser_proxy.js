@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,11 @@ export class NetworkUIBrowserProxy {
   getShillNetworkProperties(guid) {}
 
   /**
+   * @return {Promise<!Array>}
+   */
+  getFirstWifiNetworkProperties() {}
+
+  /**
    * @param {string} content
    * @return {Promise<!Array>}
    */
@@ -36,6 +41,8 @@ export class NetworkUIBrowserProxy {
    * @return {Promise<!Array>}
    */
   openCellularActivationUi() {}
+
+  resetESimCache() {}
 
   /**
    * @param {string} debugging
@@ -66,6 +73,42 @@ export class NetworkUIBrowserProxy {
    * @param {string} hostname
    */
   setHostname(hostname) {}
+
+  disableActiveESimProfile() {}
+
+  resetEuicc() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringCapabilities() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringStatus() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringConfig() {}
+
+  /**
+   * @param {string} config
+   * @return {Promise<string>}
+   */
+  setTetheringConfig(config) {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  checkTetheringReadiness() {}
+
+  /**
+   * @param {boolean} enabled
+   * @return {Promise<string>}
+   */
+  setTetheringEnabled(enabled) {}
 }
 
 /**
@@ -93,6 +136,11 @@ export class NetworkUIBrowserProxyImpl {
   }
 
   /** @override */
+  getFirstWifiNetworkProperties() {
+    return sendWithPromise('getFirstWifiNetworkProperties');
+  }
+
+  /** @override */
   importONC(content) {
     return sendWithPromise('importONC', content);
   }
@@ -100,6 +148,11 @@ export class NetworkUIBrowserProxyImpl {
   /** @override */
   openCellularActivationUi() {
     return sendWithPromise('openCellularActivationUi');
+  }
+
+  /** @override */
+  resetESimCache() {
+    chrome.send('resetESimCache');
   }
 
   /** @override */
@@ -139,6 +192,60 @@ export class NetworkUIBrowserProxyImpl {
    */
   setHostname(hostname) {
     chrome.send('setHostname', [hostname]);
+  }
+
+  /** @override */
+  disableActiveESimProfile() {
+    chrome.send('disableActiveESimProfile');
+  }
+
+  /** @override */
+  resetEuicc() {
+    chrome.send('resetEuicc');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringCapabilities() {
+    return sendWithPromise('getTetheringCapabilities');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringStatus() {
+    return sendWithPromise('getTetheringStatus');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringConfig() {
+    return sendWithPromise('getTetheringConfig');
+  }
+
+  /**
+   * @param {string} config
+   * @return {Promise<string>}
+   */
+  setTetheringConfig(config) {
+    return sendWithPromise('setTetheringConfig', config);
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  checkTetheringReadiness() {
+    return sendWithPromise('checkTetheringReadiness');
+  }
+
+  /**
+   * @param {boolean} enabled
+   * @return {Promise<string>}
+   */
+  setTetheringEnabled(enabled) {
+    return sendWithPromise('setTetheringEnabled', enabled);
   }
 }
 

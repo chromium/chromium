@@ -1,6 +1,9 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//chrome/browser/buildflags.gni")
 
 source_set("browser_updater_client") {
   sources = [
@@ -10,19 +13,53 @@ source_set("browser_updater_client") {
     "browser_updater_client_util.h",
   ]
 
+  deps = [
+    "//base",
+    "//chrome/browser:buildflags",
+    "//chrome/common:version_header",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:browser_sources",
+    "//components/version_info",
+  ]
+
   if (is_mac) {
     sources += [
       "browser_updater_client_mac.h",
       "browser_updater_client_mac.mm",
       "browser_updater_client_util_mac.mm",
+      "browser_updater_helper_client_mac.h",
+      "browser_updater_helper_client_mac.mm",
+    ]
+
+    deps += [
+      "//chrome/browser/google",
+      "//chrome/common:channel_info",
     ]
   }
 
-  deps = [
-    "//base",
-    "//chrome/browser:buildflags",
-    "//chrome/common:version_header",
-    "//chrome/updater:browser_sources",
-    "//components/version_info",
+  frameworks = [ "OpenDirectory.framework" ]
+}
+
+source_set("scheduler") {
+  sources = [
+    "scheduler.cc",
+    "scheduler.h",
   ]
+
+  deps = [ "//base" ]
+
+  if (is_mac) {
+    if (enable_chromium_updater) {
+      sources += [ "scheduler_mac.cc" ]
+      deps += [ ":browser_updater_client" ]
+    } else if (is_chrome_branded) {
+      sources += [ "scheduler_mac_keystone.cc" ]
+      deps += [
+        "//chrome/browser/mac:keystone_glue",
+        "//chrome/updater:browser_sources",
+      ]
+    } else {
+      sources += [ "scheduler_mac_noimpl.cc" ]
+    }
+  }
 }

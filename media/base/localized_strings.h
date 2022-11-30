@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
-#define MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
+#ifndef MEDIA_BASE_LOCALIZED_STRINGS_H_
+#define MEDIA_BASE_LOCALIZED_STRINGS_H_
 
 #include <string>
 
@@ -20,7 +20,7 @@ namespace media {
 // chrome/app/generated_resources.grd.
 enum MessageId {
   DEFAULT_AUDIO_DEVICE_NAME,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   COMMUNICATIONS_AUDIO_DEVICE_NAME,
 #endif
 };
@@ -33,7 +33,7 @@ using LocalizedStringProvider = std::u16string (*)(MessageId message_id);
 // Initializes the global LocalizedStringProvider function.
 MEDIA_EXPORT void SetLocalizedStringProvider(LocalizedStringProvider func);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // The LocalizedStringProvider has probably not been initialized on iOS. This
 // will give an early compile warning for clients attempting to use it.
 
@@ -46,4 +46,4 @@ std::u16string GetLocalizedStringUTF16(MessageId message_id);
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_MEDIA_LOCALIZED_STRINGS_H_
+#endif  // MEDIA_BASE_LOCALIZED_STRINGS_H_

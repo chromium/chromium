@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/localized_strings.h"
 
@@ -45,7 +46,7 @@ bool AudioDeviceDescription::UseSessionIdToSelectDevice(
 
 // static
 std::string AudioDeviceDescription::GetDefaultDeviceName() {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   return GetLocalizedStringUTF8(DEFAULT_AUDIO_DEVICE_NAME);
 #else
   NOTREACHED();
@@ -55,9 +56,11 @@ std::string AudioDeviceDescription::GetDefaultDeviceName() {
 
 // static
 std::string AudioDeviceDescription::GetCommunicationsDeviceName() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetLocalizedStringUTF8(COMMUNICATIONS_AUDIO_DEVICE_NAME);
-#elif BUILDFLAG(IS_CHROMECAST)
+#elif BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+  // TODO(crbug.com/1336055): Re-evaluate if this is still needed now that CMA
+  // is deprecated.
   return "";
 #else
   NOTREACHED();

@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/widget/device_emulation_params.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/screen_orientation.mojom-shared.h"
+#include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,7 +26,7 @@ struct DeviceEmulationParams {
 
   // Position of view on the screen. Missing position means using default value:
   // original one for kDesktop screen position, (0, 0) for kMobile.
-  base::Optional<gfx::Point> view_position;
+  absl::optional<gfx::Point> view_position;
 
   // Emulated view size. A width or height of 0 means no override in that
   // dimension, but the other can still be applied. When both are 0, then the
@@ -49,8 +49,8 @@ struct DeviceEmulationParams {
 
   // Optional screen orientation type, with mojom::ScreenOrientation::kUndefined
   // value meaning no emulation necessary.
-  mojom::ScreenOrientation screen_orientation_type =
-      mojom::ScreenOrientation::kUndefined;
+  display::mojom::ScreenOrientation screen_orientation_type =
+      display::mojom::ScreenOrientation::kUndefined;
 
   // Screen orientation angle, used together with screenOrientationType.
   uint32_t screen_orientation_angle = 0;
@@ -81,4 +81,4 @@ inline bool operator!=(const DeviceEmulationParams& a,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_

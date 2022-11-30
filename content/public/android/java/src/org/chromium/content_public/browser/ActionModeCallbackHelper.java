@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 
@@ -42,17 +44,9 @@ public abstract class ActionModeCallbackHelper {
     }
 
     /**
-     * Tell if the platform supports floating type action mode. Used not to repeatedly
-     * attempt the creation if the request fails once at the beginning. Also check
-     * platform version since the floating type is supported only on M or later version
-     * of Android platform.
-     */
-    public abstract boolean supportsFloatingActionMode();
-
-    /**
      * Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}.
      */
-    private static class EmptyActionCallback implements ActionMode.Callback {
+    private static class EmptyActionCallback extends ActionMode.Callback2 {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             return false;
@@ -70,6 +64,9 @@ public abstract class ActionModeCallbackHelper {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {}
+
+        @Override
+        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
     };
 
     /**
@@ -87,6 +84,13 @@ public abstract class ActionModeCallbackHelper {
      * @return The selected text (empty if no text is selected).
      */
     public abstract String getSelectedText();
+
+    /**
+     * @return {@link RenderFrameHost} object only available during page selection,
+     *      if there is a valid ActionMode available.
+     */
+    @Nullable
+    public abstract RenderFrameHost getRenderFrameHost();
 
     /**
      * Called when the processed text is replied from an activity that supports

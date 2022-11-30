@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,12 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -29,20 +28,18 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_platform_file.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/chromoting_messages.h"
+#include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/sas_injector.h"
-#include "remoting/host/screen_resolution.h"
-#include "remoting/host/switches.h"
 // MIDL-generated declarations and definitions.
 #include "remoting/host/win/chromoting_lib.h"
 #include "remoting/host/win/host_service.h"
+#include "remoting/host/win/trust_util.h"
 #include "remoting/host/win/worker_process_launcher.h"
 #include "remoting/host/win/wts_session_process_delegate.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
@@ -72,13 +69,33 @@ const char* kCopiedSwitchNames[] = { switches::kV, switches::kVModule };
 const int kDefaultRdpScreenWidth = 1280;
 const int kDefaultRdpScreenHeight = 768;
 
-// RDC 6.1 (W2K8) supports dimensions of up to 4096x2048.
-const int kMaxRdpScreenWidth = 4096;
-const int kMaxRdpScreenHeight = 2048;
-
 // The minimum effective screen dimensions supported by Windows are 800x600.
 const int kMinRdpScreenWidth = 800;
 const int kMinRdpScreenHeight = 600;
+
+// Win7 SP1 (and Vista) supports dimensions up to 4096x2048.
+const int kMaxRdpScreenWidthForWin7 = 4096;
+const int kMaxRdpScreenHeightForWin7 = 2048;
+
+// Win8+ supports dimensions up to 8192x8192.
+const int kMaxRdpScreenWidthForWin8AndLater = 8192;
+const int kMaxRdpScreenHeightForWin8AndLater = 8192;
+
+int GetMaxRdpScreenWidth() {
+  static int max_rdp_screen_width =
+      base::win::GetVersion() >= base::win::Version::WIN8
+          ? kMaxRdpScreenWidthForWin8AndLater
+          : kMaxRdpScreenWidthForWin7;
+  return max_rdp_screen_width;
+}
+
+int GetMaxRdpScreenHeight() {
+  static int max_rdp_screen_height =
+      base::win::GetVersion() >= base::win::Version::WIN8
+          ? kMaxRdpScreenHeightForWin8AndLater
+          : kMaxRdpScreenHeightForWin7;
+  return max_rdp_screen_height;
+}
 
 // Default dots per inch used by RDP is 96 DPI.
 const int kDefaultRdpDpi = 96;
@@ -106,8 +123,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      base::ClampToRange(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
-      base::ClampToRange(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
+      base::clamp(width, kMinRdpScreenWidth, GetMaxRdpScreenWidth()),
+      base::clamp(height, kMinRdpScreenHeight, GetMaxRdpScreenHeight()));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.
@@ -123,6 +140,10 @@ class ConsoleSession : public DesktopSessionWin {
     DaemonProcess* daemon_process,
     int id,
     WtsTerminalMonitor* monitor);
+
+  ConsoleSession(const ConsoleSession&) = delete;
+  ConsoleSession& operator=(const ConsoleSession&) = delete;
+
   ~ConsoleSession() override;
 
  protected:
@@ -134,8 +155,6 @@ class ConsoleSession : public DesktopSessionWin {
 
  private:
   std::unique_ptr<SasInjector> sas_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsoleSession);
 };
 
 // DesktopSession implementation which attaches to virtual RDP console.
@@ -151,6 +170,10 @@ class RdpSession : public DesktopSessionWin {
     DaemonProcess* daemon_process,
     int id,
     WtsTerminalMonitor* monitor);
+
+  RdpSession(const RdpSession&) = delete;
+  RdpSession& operator=(const RdpSession&) = delete;
+
   ~RdpSession() override;
 
   // Performs the part of initialization that can fail.
@@ -173,6 +196,10 @@ class RdpSession : public DesktopSessionWin {
   class EventHandler : public IRdpDesktopSessionEventHandler {
    public:
     explicit EventHandler(base::WeakPtr<RdpSession> desktop_session);
+
+    EventHandler(const EventHandler&) = delete;
+    EventHandler& operator=(const EventHandler&) = delete;
+
     virtual ~EventHandler();
 
     // IUnknown interface.
@@ -192,8 +219,6 @@ class RdpSession : public DesktopSessionWin {
 
     // This class must be used on a single thread.
     base::ThreadChecker thread_checker_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventHandler);
   };
 
   // Examines the system settings required to establish an RDP session.
@@ -213,8 +238,6 @@ class RdpSession : public DesktopSessionWin {
   std::string terminal_id_;
 
   base::WeakPtrFactory<RdpSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RdpSession);
 };
 
 ConsoleSession::ConsoleSession(
@@ -438,7 +461,8 @@ ULONG STDMETHODCALLTYPE RdpSession::EventHandler::Release() {
   return ref_count_;
 }
 
-STDMETHODIMP RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
+STDMETHODIMP
+RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (riid == IID_IUnknown ||
@@ -540,9 +564,9 @@ void DesktopSessionWin::StartMonitoring(const std::string& terminal_id) {
 
   ReportElapsedTime("started monitoring");
 
-  session_attach_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kSessionAttachTimeoutSeconds),
-      this, &DesktopSessionWin::OnSessionAttachTimeout);
+  session_attach_timer_.Start(FROM_HERE,
+                              base::Seconds(kSessionAttachTimeoutSeconds), this,
+                              &DesktopSessionWin::OnSessionAttachTimeout);
 
   monitoring_notifications_ = true;
   monitor_->AddWtsTerminalObserver(terminal_id, this);
@@ -579,26 +603,6 @@ void DesktopSessionWin::OnChannelConnected(int32_t peer_pid) {
   VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
 }
 
-bool DesktopSessionWin::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(DesktopSessionWin, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopDaemonMsg_DesktopAttached,
-                        OnDesktopSessionAgentAttached)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopDaemonMsg_InjectSas,
-                        InjectSas)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-
-  if (!handled) {
-    LOG(ERROR) << "Received unexpected IPC type: " << message.type();
-    CrashDesktopProcess(FROM_HERE);
-  }
-
-  return handled;
-}
-
 void DesktopSessionWin::OnPermanentError(int exit_code) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
@@ -606,6 +610,30 @@ void DesktopSessionWin::OnPermanentError(int exit_code) {
 }
 
 void DesktopSessionWin::OnWorkerProcessStopped() {}
+
+void DesktopSessionWin::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  if (interface_name == mojom::DesktopSessionRequestHandler::Name_) {
+    if (desktop_session_request_handler_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::DesktopSessionRequestHandler::Name_;
+      CrashDesktopProcess(FROM_HERE);
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionRequestHandler>
+        pending_receiver(std::move(handle));
+    desktop_session_request_handler_.Bind(std::move(pending_receiver));
+
+    // Reset the receiver on disconnect so |desktop_session_request_handler_|
+    // can be re-bound if |launcher_| spawns a new desktop process.
+    desktop_session_request_handler_.reset_on_disconnect();
+  } else {
+    LOG(ERROR) << "Unknown associated interface requested: " << interface_name
+               << ", crashing the desktop process";
+    CrashDesktopProcess(FROM_HERE);
+  }
+}
 
 void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -618,12 +646,14 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   bool launch_elevated = base::win::GetVersion() >= base::win::Version::WIN8;
 
   // Get the name of the executable to run. |kDesktopBinaryName| specifies
-  // uiAccess="true" in its manifest.
+  // uiAccess="true" in its manifest.  Prefer kDesktopBinaryName for Win8+ but
+  // fall back to kHostBinaryName if there is a problem loading it.
   base::FilePath desktop_binary;
-  bool result;
+  bool result = false;
   if (launch_elevated) {
     result = GetInstalledBinaryPath(kDesktopBinaryName, &desktop_binary);
-  } else {
+  }
+  if (!result || !IsBinaryTrusted(desktop_binary)) {
     result = GetInstalledBinaryPath(kHostBinaryName, &desktop_binary);
   }
 
@@ -639,7 +669,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeDesktop);
   // Copy the command line switches enabling verbose logging.
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, base::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
 
   // Create a delegate capable of launching a process in a different session.
   std::unique_ptr<WtsSessionProcessDelegate> delegate(
@@ -652,7 +682,8 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   }
 
   // Create a launcher for the desktop process, using the per-session delegate.
-  launcher_.reset(new WorkerProcessLauncher(std::move(delegate), this));
+  launcher_ =
+      std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
   session_id_ = session_id;
 }
 
@@ -660,23 +691,34 @@ void DesktopSessionWin::OnSessionDetached() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   launcher_.reset();
+  desktop_session_request_handler_.reset();
   session_id_ = UINT32_MAX;
 
   if (monitoring_notifications_) {
     ReportElapsedTime("detached");
 
     session_attach_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kSessionAttachTimeoutSeconds),
-        this, &DesktopSessionWin::OnSessionAttachTimeout);
+        FROM_HERE, base::Seconds(kSessionAttachTimeoutSeconds), this,
+        &DesktopSessionWin::OnSessionAttachTimeout);
   }
 }
 
-void DesktopSessionWin::OnDesktopSessionAgentAttached(
-      const IPC::ChannelHandle& desktop_pipe) {
-  if (!daemon_process()->OnDesktopSessionAgentAttached(id(), session_id_,
-                                                       desktop_pipe)) {
+void DesktopSessionWin::ConnectDesktopChannel(
+    mojo::ScopedMessagePipeHandle desktop_pipe) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (!daemon_process()->OnDesktopSessionAgentAttached(
+          id(), session_id_, std::move(desktop_pipe))) {
     CrashDesktopProcess(FROM_HERE);
   }
+}
+
+void DesktopSessionWin::InjectSecureAttentionSequence() {
+  InjectSas();
+}
+
+void DesktopSessionWin::CrashNetworkProcess() {
+  daemon_process()->CrashNetworkProcess(FROM_HERE);
 }
 
 void DesktopSessionWin::CrashDesktopProcess(const base::Location& location) {

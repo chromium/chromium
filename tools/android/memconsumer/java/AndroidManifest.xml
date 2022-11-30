@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2013 The Chromium Authors. All rights reserved.
+<!-- Copyright 2013 The Chromium Authors
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
  -->
@@ -11,7 +11,7 @@
 
     <application
             android:label="MemConsumer">
-        <activity android:name=".MemConsumer" android:icon="@drawable/icon" android:launchMode="singleTop">
+        <activity android:name=".MemConsumer" android:icon="@drawable/icon" android:launchMode="singleTop" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

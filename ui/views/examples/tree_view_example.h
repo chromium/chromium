@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -33,6 +33,10 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
       public ui::SimpleMenuModel::Delegate {
  public:
   TreeViewExample();
+
+  TreeViewExample(const TreeViewExample&) = delete;
+  TreeViewExample& operator=(const TreeViewExample&) = delete;
+
   ~TreeViewExample() override;
 
   // ExampleBase:
@@ -64,12 +68,12 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // The tree view to be tested.
-  TreeView* tree_view_ = nullptr;
+  raw_ptr<TreeView> tree_view_ = nullptr;
 
   // Control buttons to modify the model.
-  LabelButton* add_ = nullptr;
-  LabelButton* remove_ = nullptr;
-  LabelButton* change_title_ = nullptr;
+  raw_ptr<LabelButton> add_ = nullptr;
+  raw_ptr<LabelButton> remove_ = nullptr;
+  raw_ptr<LabelButton> change_title_ = nullptr;
 
   using NodeType = ui::TreeNodeWithValue<int>;
 
@@ -77,8 +81,6 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeViewExample);
 };
 
 }  // namespace examples

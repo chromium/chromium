@@ -26,13 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_MANAGER_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_error.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -48,6 +47,9 @@ class DatabaseManager {
 
  public:
   static DatabaseManager& Manager();
+
+  DatabaseManager(const DatabaseManager&) = delete;
+  DatabaseManager& operator=(const DatabaseManager&) = delete;
 
   // These 2 methods are for DatabaseContext (un)registration, and should only
   // be called by the DatabaseContext constructor and destructor.
@@ -110,8 +112,6 @@ class DatabaseManager {
   int database_context_registered_count_ = 0;
   int database_context_instance_count_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseManager);
 };
 
 }  // namespace blink

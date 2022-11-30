@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <utility>
@@ -14,9 +13,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
@@ -37,15 +37,8 @@ void OnTransferIn(mojom::UsbDevice::GenericTransferInCallback callback,
                   UsbTransferStatus status,
                   scoped_refptr<base::RefCountedBytes> buffer,
                   size_t buffer_size) {
-  std::vector<uint8_t> data;
-  if (buffer) {
-    // TODO(rockot/reillyg): Take advantage of the ability to access the
-    // std::vector<uint8_t> within a base::RefCountedBytes to move instead of
-    // copy.
-    data.resize(buffer_size);
-    std::copy(buffer->front(), buffer->front() + buffer_size, data.begin());
-  }
-
+  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+                     : base::span<const uint8_t>();
   std::move(callback).Run(mojo::ConvertTo<mojom::UsbTransferStatus>(status),
                           data);
 }
@@ -61,19 +54,13 @@ void OnIsochronousTransferIn(
     mojom::UsbDevice::IsochronousTransferInCallback callback,
     scoped_refptr<base::RefCountedBytes> buffer,
     std::vector<UsbIsochronousPacketPtr> packets) {
-  std::vector<uint8_t> data;
-  if (buffer) {
-    // TODO(rockot/reillyg): Take advantage of the ability to access the
-    // std::vector<uint8_t> within a base::RefCountedBytes to move instead of
-    // copy.
-    uint32_t buffer_size = std::accumulate(
-        packets.begin(), packets.end(), 0u,
-        [](const uint32_t& a, const UsbIsochronousPacketPtr& packet) {
-          return a + packet->length;
-        });
-    data.resize(buffer_size);
-    std::copy(buffer->front(), buffer->front() + buffer_size, data.begin());
-  }
+  uint32_t buffer_size = std::accumulate(
+      packets.begin(), packets.end(), 0u,
+      [](const uint32_t& a, const UsbIsochronousPacketPtr& packet) {
+        return a + packet->length;
+      });
+  auto data = buffer ? base::make_span(buffer->front(), buffer_size)
+                     : base::span<const uint8_t>();
   std::move(callback).Run(data, std::move(packets));
 }
 
@@ -88,7 +75,7 @@ void OnIsochronousTransferOut(
 // configure an Android phone to act as a security key.
 bool IsAndroidSecurityKeyRequest(
     const mojom::UsbControlTransferParamsPtr& params,
-    const std::vector<uint8_t>& data) {
+    base::span<const uint8_t> data) {
   // This matches a request to send an AOA model string:
   // https://source.android.com/devices/accessories/aoa#attempt-to-start-in-accessory-mode
   //
@@ -127,13 +114,12 @@ DeviceImpl::DeviceImpl(scoped_refptr<device::UsbDevice> device,
                        base::span<const uint8_t> blocked_interface_classes,
                        bool allow_security_key_requests)
     : device_(std::move(device)),
-      observer_(this),
       blocked_interface_classes_(blocked_interface_classes.begin(),
                                  blocked_interface_classes.end()),
       allow_security_key_requests_(allow_security_key_requests),
       client_(std::move(client)) {
   DCHECK(device_);
-  observer_.Add(device_.get());
+  observation_.Observe(device_.get());
 
   if (client_) {
     client_.set_disconnect_handler(base::BindOnce(
@@ -169,10 +155,8 @@ bool DeviceImpl::HasControlTransferPermission(
     interface = device_handle_->FindInterfaceByEndpoint(index & 0xff);
   } else {
     auto interface_it =
-        std::find_if(config->interfaces.begin(), config->interfaces.end(),
-                     [index](const mojom::UsbInterfaceInfoPtr& this_iface) {
-                       return this_iface->interface_number == (index & 0xff);
-                     });
+        base::ranges::find(config->interfaces, index & 0xff,
+                           &mojom::UsbInterfaceInfo::interface_number);
     if (interface_it != config->interfaces.end())
       interface = interface_it->get();
   }
@@ -258,11 +242,9 @@ void DeviceImpl::ClaimInterface(uint8_t interface_number,
     return;
   }
 
-  auto interface_it = std::find_if(
-      config->interfaces.begin(), config->interfaces.end(),
-      [interface_number](const mojom::UsbInterfaceInfoPtr& interface) {
-        return interface->interface_number == interface_number;
-      });
+  auto interface_it =
+      base::ranges::find(config->interfaces, interface_number,
+                         &mojom::UsbInterfaceInfo::interface_number);
   if (interface_it == config->interfaces.end()) {
     std::move(callback).Run(mojom::UsbClaimInterfaceResult::kFailure);
     return;
@@ -345,7 +327,7 @@ void DeviceImpl::ControlTransferIn(UsbControlTransferParamsPtr params,
 }
 
 void DeviceImpl::ControlTransferOut(UsbControlTransferParamsPtr params,
-                                    const std::vector<uint8_t>& data,
+                                    base::span<const uint8_t> data,
                                     uint32_t timeout,
                                     ControlTransferOutCallback callback) {
   if (!device_handle_) {
@@ -383,7 +365,7 @@ void DeviceImpl::GenericTransferIn(uint8_t endpoint_number,
 }
 
 void DeviceImpl::GenericTransferOut(uint8_t endpoint_number,
-                                    const std::vector<uint8_t>& data,
+                                    base::span<const uint8_t> data,
                                     uint32_t timeout,
                                     GenericTransferOutCallback callback) {
   if (!device_handle_) {
@@ -418,7 +400,7 @@ void DeviceImpl::IsochronousTransferIn(
 
 void DeviceImpl::IsochronousTransferOut(
     uint8_t endpoint_number,
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     const std::vector<uint32_t>& packet_lengths,
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {

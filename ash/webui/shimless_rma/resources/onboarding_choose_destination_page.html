@@ -1,0 +1,25 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page left-pane-only>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('chooseDestinationTitleText')]]</h1>
+    <cr-radio-group
+        id="chooseDestinationGroup"
+        on-selected-changed="onDestinationSelectionChanged_"
+        disabled="[[allButtonsDisabled]]">
+      <cr-radio-button name="newOwner" id="destinationNewOwner"
+          label="[[i18n('newOwnerText')]]">
+        <div class="indented-description" aria-hidden="true">
+          [[i18n('newOwnerDescriptionText')]]
+        </div>
+      </cr-radio-button>
+      <cr-radio-button name="originalOwner" id="destinationOriginalOwner"
+          label="[[i18n('sameOwnerText')]]">
+      </cr-radio-button>
+      <cr-radio-button name="notSureOwner" id="destinationNotSureOwner"
+          label="[[i18n('notSureOwnerText')]]">
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+</base-page>

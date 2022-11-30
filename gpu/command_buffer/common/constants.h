@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,6 +86,13 @@ enum class TransferBufferAllocationOption : int8_t {
   kLoseContextOnOOM,
   kReturnNullOnOOM,
 };
+
+#if BUILDFLAG(IS_WIN)
+// Value used for DXGI keyed mutex AcquireSync and ReleaseSync. Exposed here so
+// that external clients such as media and video capture can use the same key as
+// gpu which is essential for correct operation of the keyed mutex.
+constexpr uint64_t kDXGIKeyedMutexAcquireKey = 0;
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/location_bar_status_icon"
+        style="@style/OmniboxIcon"
+        android:layout_gravity="center"
+        android:src="@android:color/transparent"
+        android:visibility="gone"
+        android:scaleType="center"
+        android:focusable="false" />
+</merge>

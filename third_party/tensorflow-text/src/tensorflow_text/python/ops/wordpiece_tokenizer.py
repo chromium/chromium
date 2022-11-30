@@ -49,7 +49,60 @@ _tf_text_wordpiece_tokenizer_op_create_counter = monitoring.Counter(
 
 
 class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
-  """Tokenizes a tensor of UTF-8 string tokens into subword pieces."""
+  r"""Tokenizes a tensor of UTF-8 string tokens into subword pieces.
+
+  Each UTF-8 string token in the input is split into its corresponding
+  wordpieces, drawing from the list in the file `vocab_lookup_table`.
+
+  Algorithm summary: For each token, the longest token prefix that is in the
+  vocabulary is split off. Any part of the token that remains is prefixed using
+  the `suffix_indicator`, and the process of removing the longest token prefix
+  continues. The `unknown_token` (UNK) is used when what remains of the token is
+  not in the vocabulary, or if the token is too long.
+
+  When `token_out_type` is tf.string, the output tensor contains strings
+  in the vocabulary (or UNK). When it is an integer type, the output tensor
+  contains indices into the vocabulary list (with UNK being after the last
+  entry).
+
+  Example:
+  >>> import pathlib
+  >>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+  ...   "they ##' ##re the great ##est".replace(' ', '\n'))
+  >>> tokenizer = WordpieceTokenizer('/tmp/tok_vocab.txt',
+  ...   token_out_type=tf.string)
+
+  >>> tokenizer.tokenize(["they're", "the", "greatest"])
+  <tf.RaggedTensor [[b'they', b"##'", b'##re'], [b'the'], [b'great', b'##est']]>
+
+  >>> tokenizer.tokenize(["they", "are", "great"])
+  <tf.RaggedTensor [[b'they'], [b'[UNK]'], [b'great']]>
+
+  >>> int_tokenizer = WordpieceTokenizer('/tmp/tok_vocab.txt',
+  ...   token_out_type=tf.int32)
+
+  >>> int_tokenizer.tokenize(["the", "greatest"])
+  <tf.RaggedTensor [[3], [4, 5]]>
+
+  >>> int_tokenizer.tokenize(["really", "the", "greatest"])
+  <tf.RaggedTensor [[6], [3], [4, 5]]>
+
+  Tensor or ragged tensor inputs result in ragged tensor outputs. Scalar
+  inputs (which are just a single token) result in tensor outputs.
+
+  >>> tokenizer.tokenize("they're")
+  <tf.Tensor: shape=(3,), dtype=string, numpy=array([b'they', b"##'", b'##re'],
+  dtype=object)>
+  >>> tokenizer.tokenize(["they're"])
+  <tf.RaggedTensor [[b'they', b"##'", b'##re']]>
+  >>> tokenizer.tokenize(tf.ragged.constant([["they're"]]))
+  <tf.RaggedTensor [[[b'they', b"##'", b'##re']]]>
+
+  Empty strings are tokenized into empty (ragged) tensors.
+
+  >>> tokenizer.tokenize([""])
+  <tf.RaggedTensor []>
+  """
 
   def __init__(self,
                vocab_lookup_table,
@@ -130,16 +183,32 @@ class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
 
     return vocab, ids
 
+  def vocab_size(self, name=None):
+    """Returns the vocabulary size.
+
+    Args:
+      name: The name argument that is passed to the op function.
+
+    Returns:
+      A scalar representing the vocabulary size.
+    """
+    with ops.name_scope(name, 'WordpieceTokenizerVocabSize', [self]):
+      return self._vocab_lookup_table.size()
+
   def tokenize(self, input):  # pylint: disable=redefined-builtin
-    """Tokenizes a tensor of UTF-8 string tokens further into subword tokens.
+    r"""Tokenizes a tensor of UTF-8 string tokens further into subword tokens.
 
     ### Example:
-    ```python
-    >>> tokens = [["they're", "the", "greatest"]],
-    >>> tokenizer = WordpieceTokenizer(vocab, token_out_type=tf.string)
+
+    >>> import pathlib
+    >>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+    ...     "they ##' ##re the great ##est".replace(' ', '\n'))
+    >>> tokens = [["they're", 'the', 'greatest']]
+    >>> tokenizer = WordpieceTokenizer('/tmp/tok_vocab.txt',
+    ...                                token_out_type=tf.string)
     >>> tokenizer.tokenize(tokens)
-    [[['they', "##'", '##re'], ['the'], ['great', '##est']]]
-    ```
+    <tf.RaggedTensor [[[b'they', b"##'", b'##re'], [b'the'],
+                       [b'great', b'##est']]]>
 
     Args:
       input: An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
@@ -153,21 +222,24 @@ class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
     return subword
 
   def tokenize_with_offsets(self, input):  # pylint: disable=redefined-builtin
-    """Tokenizes a tensor of UTF-8 string tokens further into subword tokens.
+    r"""Tokenizes a tensor of UTF-8 string tokens further into subword tokens.
 
     ### Example:
 
-    ```python
-    >>> tokens = [["they're", "the", "greatest"]],
-    >>> tokenizer = WordpieceTokenizer(vocab, token_out_type=tf.string)
-    >>> result = tokenizer.tokenize_with_offsets(tokens)
-    >>> result[0].to_list()  # subwords
-    [[['they', "##'", '##re'], ['the'], ['great', '##est']]]
-    >>> result[1].to_list()  # start offsets
-    [[[0, 4, 5], [0], [0, 5]]]
-    >>> result[2].to_list()  # end offsets
-    [[[4, 5, 7], [3], [5, 8]]]
-    ```
+    >>> import pathlib
+    >>> pathlib.Path('/tmp/tok_vocab.txt').write_text(
+    ...     "they ##' ##re the great ##est".replace(' ', '\n'))
+    >>> tokens = [["they're", 'the', 'greatest']]
+    >>> tokenizer = WordpieceTokenizer('/tmp/tok_vocab.txt',
+    ...                                token_out_type=tf.string)
+    >>> subtokens, starts, ends = tokenizer.tokenize_with_offsets(tokens)
+    >>> subtokens
+    <tf.RaggedTensor [[[b'they', b"##'", b'##re'], [b'the'],
+                       [b'great', b'##est']]]>
+    >>> starts
+    <tf.RaggedTensor [[[0, 4, 5], [0], [0, 5]]]>
+    >>> ends
+    <tf.RaggedTensor [[[4, 5, 7], [3], [5, 8]]]>
 
     Args:
       input: An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
@@ -175,14 +247,14 @@ class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
     Returns:
       A tuple `(tokens, start_offsets, end_offsets)` where:
 
-        * `tokens[i1...iN, j]` is a `RaggedTensor` of the string contents (or ID
-          in the vocab_lookup_table representing that string) of the `jth` token
-          in `input[i1...iN]`.
-        * `start_offsets[i1...iN, j]` is a `RaggedTensor` of the byte offsets
-          for the inclusive start of the `jth` token in `input[i1...iN]`.
-        * `end_offsets[i1...iN, j]` is a `RaggedTensor` of the byte offsets for
-          the exclusive end of the `jth` token in `input[i`...iN]` (exclusive,
-          i.e., first byte after the end of the token).
+      tokens[i1...iN, j]: is a `RaggedTensor` of the string contents (or ID
+        in the vocab_lookup_table representing that string) of the `jth` token
+        in `input[i1...iN]`.
+      start_offsets[i1...iN, j]: is a `RaggedTensor` of the byte offsets
+        for the inclusive start of the `jth` token in `input[i1...iN]`.
+      end_offsets[i1...iN, j]: is a `RaggedTensor` of the byte offsets for
+        the exclusive end of the `jth` token in `input[i`...iN]` (exclusive,
+        i.e., first byte after the end of the token).
     """
     name = None
     if not isinstance(self._vocab_lookup_table, lookup_ops.LookupInterface):
@@ -254,12 +326,12 @@ class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
     r"""Convert a `Tensor` or `RaggedTensor` of wordpiece IDs to string-words.
 
     >>> import pathlib
-    >>> pathlib.Path('vocab.txt').write_text(
-    ...     "a b c ##a ##b ##c".replace(' ', '\n'))
-    >>> wordpiece = text.WordpieceTokenizer('vocab.txt')
+    >>> pathlib.Path('/tmp/detok_vocab.txt').write_text(
+    ...     'a b c ##a ##b ##c'.replace(' ', '\n'))
+    >>> wordpiece = WordpieceTokenizer('/tmp/detok_vocab.txt')
     >>> token_ids = [[0, 4, 5, 2, 5, 5, 5]]
     >>> wordpiece.detokenize(token_ids)
-    <tf.RaggedTensor [[b'ab', b'cccc']]>
+    <tf.RaggedTensor [[b'abc', b'cccc']]>
 
     The word pieces are joined along the innermost axis to make words. So the
     result has the same rank as the input, but the innermost axis of the result
@@ -285,6 +357,7 @@ class WordpieceTokenizer(TokenizerWithOffsets, Detokenizer):
     # If there are performance issues with this method or problems with lookup
     # tables using sparse IDs see the notes in b/177610044.
     vocab, ids = self._get_vocab_and_ids()
+    token_ids = ragged_tensor.convert_to_tensor_or_ragged_tensor(token_ids)
 
     first_is_zero = math_ops.equal(ids[0], 0)
     steps = ids[1:] - ids[:-1]

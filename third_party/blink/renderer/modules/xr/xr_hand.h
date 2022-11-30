@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,54 +16,37 @@ class XRInputSource;
 class XRJointSpace;
 
 class XRHand : public ScriptWrappable,
-               public PairIterable<String, Member<XRJointSpace>> {
+               public PairIterable<String,
+                                   IDLString,
+                                   Member<XRJointSpace>,
+                                   XRJointSpace> {
   DEFINE_WRAPPERTYPEINFO();
 
   static const unsigned kNumJoints =
       static_cast<unsigned>(device::mojom::blink::XRHandJoint::kMaxValue) + 1u;
-
-  using THandJointsMapKey = String;
-  using THandJointsMapValue = Member<XRJointSpace>;
-  using THandJointCollection =
-      std::array<std::tuple<THandJointsMapKey, THandJointsMapValue>,
-                 kNumJoints>;
 
  public:
   explicit XRHand(const device::mojom::blink::XRHandTrackingData* state,
                   XRInputSource* input_source);
   ~XRHand() override = default;
 
-  size_t size() const { return joint_spaces_.size(); }
+  size_t size() const { return joints_.size(); }
 
   XRJointSpace* get(const String& key);
+
+  void updateFromHandTrackingData(
+      const device::mojom::blink::XRHandTrackingData* state,
+      XRInputSource* input_source);
+
+  bool hasMissingPoses() const { return has_missing_poses_; }
 
   void Trace(Visitor*) const override;
 
  private:
-  class HandJointIterationSource final
-      : public PairIterable<THandJointsMapKey,
-                            THandJointsMapValue>::IterationSource {
-   public:
-    explicit HandJointIterationSource(const THandJointCollection& joint_spaces);
+  IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
-    bool Next(ScriptState* script_state,
-              THandJointsMapKey& key,
-              THandJointsMapValue& value,
-              ExceptionState& exception_state) override;
-
-   private:
-    const THandJointCollection& joint_spaces_;
-
-    uint32_t current;
-  };
-
-  using Iterationsource =
-      PairIterable<String, Member<XRJointSpace>>::IterationSource;
-  IterationSource* StartIteration(ScriptState*, ExceptionState&) override {
-    return MakeGarbageCollected<HandJointIterationSource>(joint_spaces_);
-  }
-
-  THandJointCollection joint_spaces_;
+  HeapVector<Member<XRJointSpace>> joints_;
+  bool has_missing_poses_ = true;
 };
 
 }  // namespace blink

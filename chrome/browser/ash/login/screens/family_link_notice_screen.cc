@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
-#include "ash/constants/ash_features.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -12,11 +12,12 @@
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+namespace ash {
 namespace {
-constexpr char kUserActionContinue[] = "continue";
-}  // namespace
 
-namespace chromeos {
+constexpr char kUserActionContinue[] = "continue";
+
+}  // namespace
 
 std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
   switch (result) {
@@ -28,27 +29,16 @@ std::string FamilyLinkNoticeScreen::GetResultString(Result result) {
 }
 
 FamilyLinkNoticeScreen::FamilyLinkNoticeScreen(
-    FamilyLinkNoticeView* view,
+    base::WeakPtr<FamilyLinkNoticeView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(FamilyLinkNoticeView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-FamilyLinkNoticeScreen::~FamilyLinkNoticeScreen() {
-  if (view_)
-    view_->Unbind();
-}
+FamilyLinkNoticeScreen::~FamilyLinkNoticeScreen() = default;
 
-void FamilyLinkNoticeScreen::OnViewDestroyed(FamilyLinkNoticeView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
-bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext* context) {
-  if (features::IsChildSpecificSigninEnabled() && context->sign_in_as_child &&
+bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext& context) {
+  if (!context.skip_post_login_screens_for_tests && context.sign_in_as_child &&
       !ProfileManager::GetActiveUserProfile()->IsChild()) {
     return false;
   }
@@ -74,12 +64,13 @@ void FamilyLinkNoticeScreen::ShowImpl() {
 
 void FamilyLinkNoticeScreen::HideImpl() {}
 
-void FamilyLinkNoticeScreen::OnUserAction(const std::string& action_id) {
+void FamilyLinkNoticeScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     exit_callback_.Run(Result::DONE);
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

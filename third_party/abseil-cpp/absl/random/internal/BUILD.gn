@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,11 @@ import("//third_party/abseil-cpp/absl.gni")
 
 absl_source_set("traits") {
   public = [ "traits.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/numeric:int128",
+  ]
 }
 
 absl_source_set("distribution_caller") {
@@ -21,6 +25,7 @@ absl_source_set("distribution_caller") {
 absl_source_set("fast_uniform_bits") {
   public = [ "fast_uniform_bits.h" ]
   deps = [
+    ":traits",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
@@ -36,6 +41,7 @@ absl_source_set("seed_material") {
   deps = [
     ":fast_uniform_bits",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/types:optional",
@@ -126,8 +132,8 @@ absl_source_set("nonsecure_base") {
     ":salted_seed_seq",
     ":seed_material",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/meta:type_traits",
-    "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
   ]
 }
@@ -184,6 +190,8 @@ absl_source_set("randen_slow") {
     ":platform",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:endian",
+    "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }
 
@@ -209,6 +217,7 @@ absl_source_set("randen_hwaes_impl") {
     ":platform",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }
 
@@ -240,16 +249,20 @@ absl_source_set("distribution_test_util") {
   ]
 }
 
-absl_source_set("nanobenchmark") {
-  sources = [ "nanobenchmark.cc" ]
-  deps = [
-    ":platform",
-    ":randen_engine",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-  ]
-}
+# TODO(danilchap): Enable when can be compiled on all chromium bots.
+# nanobenchmark uses platform specific functions to take accurate current time,
+# and fallbacks to clock_gettime. Several chromium configurations lack both
+# dedicated code and the clock_gettime system function.
+# absl_source_set("nanobenchmark") {
+#  sources = [ "nanobenchmark.cc" ]
+#  deps = [
+#    ":platform",
+#    ":randen_engine",
+#    "//third_party/abseil-cpp/absl/base:config",
+#    "//third_party/abseil-cpp/absl/base:core_headers",
+#    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+#  ]
+# }
 
 absl_source_set("uniform_helper") {
   public = [ "uniform_helper.h" ]
@@ -257,5 +270,6 @@ absl_source_set("uniform_helper") {
     ":traits",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }

@@ -1,7 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/command_line.h"
@@ -58,7 +59,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     content::WebContents* web_contents = GetActiveTab();
 
     // Create a bubble with the given camera and microphone access state.
-    PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
+    PageSpecificContentSettings::GetForFrame(
+        web_contents->GetPrimaryMainFrame())
         ->OnMediaStreamPermissionSet(web_contents->GetLastCommittedURL(), state,
                                      std::string(), std::string(),
                                      std::string(), std::string());
@@ -77,7 +79,7 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     // Open a tab for which we will invoke the media bubble.
     GURL url(
         https_server_->GetURL("/content_setting_bubble/mixed_script.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return GetActiveTab();
   }
 
@@ -179,8 +181,8 @@ class ContentSettingBubbleModelPopupTest : public InProcessBrowserTest {
   static constexpr int kDisallowButtonIndex = 1;
 
   void SetUpInProcessBrowserTestFixture() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_->Start());
   }
@@ -194,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelPopupTest,
   base::HistogramTester histograms;
   histograms.ExpectTotalCount("ContentSettings.Popups", 0);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   histograms.ExpectBucketCount(
         "ContentSettings.Popups",

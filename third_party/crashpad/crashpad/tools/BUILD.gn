@@ -1,4 +1,4 @@
-# Copyright 2015 The Crashpad Authors. All rights reserved.
+# Copyright 2015 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ source_set("tool_support") {
 
   public_configs = [ "..:crashpad_config" ]
 
-  deps = [ "../third_party/mini_chromium:base" ]
+  deps = [ "$mini_chromium_source_parent:base" ]
 }
 
 if (!crashpad_is_ios) {
@@ -34,7 +34,7 @@ if (!crashpad_is_ios) {
       "../build:default_exe_manifest_win",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -46,8 +46,9 @@ if (!crashpad_is_ios) {
       ":tool_support",
       "../build:default_exe_manifest_win",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
+      "../util:net",
     ]
   }
 }
@@ -57,7 +58,7 @@ crashpad_executable("base94_encoder") {
   deps = [
     ":tool_support",
     "../build:default_exe_manifest_win",
-    "../third_party/mini_chromium:base",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 }
@@ -72,7 +73,7 @@ if (!crashpad_is_fuchsia && !crashpad_is_ios) {
       "../compat",
       "../minidump",
       "../snapshot",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
 
@@ -104,7 +105,7 @@ if (crashpad_is_mac || crashpad_is_fuchsia) {
       ":tool_support",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -117,7 +118,7 @@ if (crashpad_is_mac) {
     deps = [
       ":tool_support",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -138,7 +139,7 @@ if (crashpad_is_mac) {
     deps = [
       ":tool_support",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }
@@ -154,7 +155,7 @@ if (crashpad_is_mac) {
     deps = [
       ":tool_support",
       "../compat",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
       "../util",
     ]
   }

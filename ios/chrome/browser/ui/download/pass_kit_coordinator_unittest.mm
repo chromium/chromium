@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,26 @@
 
 #import <memory>
 
-#include "base/logging.h"
+#import "base/logging.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/infobars/core/infobar.h"
-#include "ios/chrome/browser/download/download_test_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/download/download_test_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_pass_kit_tab_helper_delegate.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,18 +39,20 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for PassKitCoordinator class.
 class PassKitCoordinatorTest : public PlatformTest {
  protected:
-  PassKitCoordinatorTest()
-      : base_view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()),
-        coordinator_([[PassKitCoordinator alloc]
-            initWithBaseViewController:base_view_controller_
-                               browser:browser_.get()]),
-        web_state_(std::make_unique<web::FakeWebState>()),
-        delegate_([[FakePassKitTabHelperDelegate alloc]
-            initWithWebState:web_state_.get()]),
-        test_navigation_manager_(
-            std::make_unique<web::FakeNavigationManager>()) {
-    PassKitTabHelper::CreateForWebState(web_state_.get(), delegate_);
+  PassKitCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    base_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[PassKitCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
+    web_state_ = std::make_unique<web::FakeWebState>();
+    delegate_ = [[FakePassKitTabHelperDelegate alloc]
+        initWithWebState:web_state_.get()];
+    test_navigation_manager_ = std::make_unique<web::FakeNavigationManager>();
+
+    PassKitTabHelper::CreateForWebState(web_state_.get());
+    PassKitTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     web_state_->SetNavigationManager(std::move(test_navigation_manager_));
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
@@ -60,9 +63,9 @@ class PassKitCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<Browser> browser_;
   PassKitCoordinator* coordinator_;
   std::unique_ptr<web::FakeWebState> web_state_;
   FakePassKitTabHelperDelegate* delegate_;
@@ -84,7 +87,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
             presentDialogForPass:pass
                         webState:web_state_.get()];
 
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
   } else {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
@@ -112,7 +115,7 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
 // Tests presenting multiple valid PKPass objects.
 // TODO(crbug.com/804250): this test is flaky.
 TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
     return;
   }
@@ -166,7 +169,7 @@ TEST_F(PassKitCoordinatorTest, MultiplePassKitObjects) {
 // Tests presenting valid PKPass object, while another view controller is
 // already presented.
 TEST_F(PassKitCoordinatorTest, AnotherViewControllerIsPresented) {
-  if (IsIPadIdiom()) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Wallet app is not supported on iPads.
     return;
   }

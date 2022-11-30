@@ -1,11 +1,10 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_NET_CONNECTION_TYPE_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_NET_CONNECTION_TYPE_OBSERVER_BRIDGE_H_
 
-#include "base/macros.h"
 #include "net/base/network_change_notifier.h"
 
 // Protocol mirroring net::NetworkChangeNotifier::ConnectionTypeObserver.
@@ -20,6 +19,11 @@ class ConnectionTypeObserverBridge
  public:
   explicit ConnectionTypeObserverBridge(
       id<CRConnectionTypeObserverBridge> delegate);
+
+  ConnectionTypeObserverBridge(const ConnectionTypeObserverBridge&) = delete;
+  ConnectionTypeObserverBridge& operator=(const ConnectionTypeObserverBridge&) =
+      delete;
+
   ~ConnectionTypeObserverBridge() override;
 
  private:
@@ -28,7 +32,6 @@ class ConnectionTypeObserverBridge
       net::NetworkChangeNotifier::ConnectionType type) override;
 
   __weak id<CRConnectionTypeObserverBridge> delegate_;
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTypeObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_CONNECTION_TYPE_OBSERVER_BRIDGE_H_

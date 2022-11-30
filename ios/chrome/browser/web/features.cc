@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,20 @@
 
 namespace web {
 
-const base::Feature kWebPageTextAccessibility{"WebPageTextAccessibility",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWebPageDefaultZoomFromDynamicType,
+             "WebPageDefaultZoomFromDynamicType",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kWebPageDefaultZoomFromDynamicType{
-    "WebPageDefaultZoomFromDynamicType", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebPageAlternativeTextZoom,
+             "WebPageAlternativeTextZoom",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kWebPageAlternativeTextZoom{
-    "WebPageAlternativeTextZoom", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebPageTextZoomIPad,
+             "WebPageTextZoomIPad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kMobileGoogleSRP{"MobileGoogleSRP",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRestoreSessionFromCache,
+             "RestoreSessionFromCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ UChar32 ConsumeEscape(CSSTokenizerInputStream& input) {
     };
     ConsumeSingleWhitespaceIfNext(input);
     bool ok = false;
-    UChar32 code_point = hex_chars.ToString().HexToUIntStrict(&ok);
+    UChar32 code_point = hex_chars.ReleaseString().HexToUIntStrict(&ok);
     DCHECK(ok);
     if (code_point == 0 || (0xD800 <= code_point && code_point <= 0xDFFF) ||
         code_point > 0x10FFFF)
@@ -66,7 +66,7 @@ String ConsumeName(CSSTokenizerInputStream& input) {
       continue;
     }
     input.PushBack(cc);
-    return result.ToString();
+    return result.ReleaseString();
   }
 }
 

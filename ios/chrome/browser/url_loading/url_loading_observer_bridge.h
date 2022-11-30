@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,14 @@
 @protocol URLLoadingObserver <NSObject>
 @optional
 
-// The loader will load |URL| in the current tab. Next state will be
+// The loader will load `URL` in the current tab. Next state will be
 // one of: tabFailedToLoadURL, tabDidPrerenderURL,
 // tabDidReloadURL or tabDidLoadURL.
 // Invoked by UrlLoadingObserverBridge::TabWillLoadUrl.
 - (void)tabWillLoadURL:(GURL)URL
         transitionType:(ui::PageTransition)transitionType;
 
-// The loader didn't succeed loading the requested |URL|. Reason
+// The loader didn't succeed loading the requested `URL`. Reason
 // can, for example be an incognito mismatch or an induced crash.
 // It is possible that the url was loaded, but in another tab.
 // Invoked by UrlLoadingObserverBridge::TabFailedToLoadUrl.
@@ -33,32 +33,32 @@
 - (void)tabDidPrerenderURL:(GURL)URL
             transitionType:(ui::PageTransition)transitionType;
 
-// The loader reloaded the |URL| in the current tab.
+// The loader reloaded the `URL` in the current tab.
 // Invoked by UrlLoadingObserverBridge::TabDidReloadUrl.
 - (void)tabDidReloadURL:(GURL)URL
          transitionType:(ui::PageTransition)transitionType;
 
-// The loader initiated the |url| loading successfully.
+// The loader initiated the `url` loading successfully.
 // Invoked by UrlLoadingObserverBridge::TabDidLoadUrl.
 - (void)tabDidLoadURL:(GURL)URL
        transitionType:(ui::PageTransition)transitionType;
 
-// The loader will load |URL| in a new tab. Next state will be:
+// The loader will load `URL` in a new tab. Next state will be:
 // newTabDidLoadURL.
 // Invoked by UrlLoadingObserverBridge::NewTabWillLoadUrl.
 - (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated;
 
-// The loader initiated the |URL| loading in a new tab successfully.
+// The loader initiated the `URL` loading in a new tab successfully.
 // Invoked by UrlLoadingObserverBridge::NewTabDidLoadUrl.
 - (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated;
 
-// The loader will switch to an existing tab with |URL| instead of loading it.
+// The loader will switch to an existing tab with `URL` instead of loading it.
 // Next state will be: didSwitchToTabWithURL. Invoked by
 // UrlLoadingObserverBridge::NewTabWillLoadUrl.
 - (void)willSwitchToTabWithURL:(GURL)URL
               newWebStateIndex:(NSInteger)newWebStateIndex;
 
-// The loader switched to an existing tab with |URL|.
+// The loader switched to an existing tab with `URL`.
 // Invoked by UrlLoadingObserverBridge::NewTabDidLoadUrl.
 - (void)didSwitchToTabWithURL:(GURL)URL
              newWebStateIndex:(NSInteger)newWebStateIndex;

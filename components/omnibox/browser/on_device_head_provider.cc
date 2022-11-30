@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,19 +14,19 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
 namespace {
@@ -43,6 +43,16 @@ bool IsDefaultSearchProviderGoogle(
   return default_provider &&
          default_provider->GetEngineType(
              template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+}
+
+int OnDeviceHeadSuggestMaxScoreForNonUrlInput(bool is_incognito) {
+  const int kDefaultScore =
+#if BUILDFLAG(IS_IOS)
+      99;
+#else
+      is_incognito ? 99 : 1000;
+#endif  // BUILDFLAG(IS_IOS)
+  return kDefaultScore;
 }
 
 }  // namespace
@@ -87,11 +97,12 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
     AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_ON_DEVICE_HEAD),
       client_(client),
-      listener_(listener),
       worker_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})),
-      on_device_search_request_id_(0) {}
+      on_device_search_request_id_(0) {
+  AddListener(listener);
+}
 
 OnDeviceHeadProvider::~OnDeviceHeadProvider() {}
 
@@ -100,7 +111,7 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // Only accept asynchronous request.
-  if (!input.want_asynchronous_matches() ||
+  if (input.omit_asynchronous_matches() ||
       input.type() == metrics::OmniboxInputType::EMPTY)
     return false;
 
@@ -117,7 +128,7 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     return false;
 
   // Reject on focus request.
-  if (input.focus_type() != OmniboxFocusType::DEFAULT)
+  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
     return false;
 
   // Do not proceed if default search provider is not Google.
@@ -150,35 +161,21 @@ void OnDeviceHeadProvider::Start(const AutocompleteInput& input,
       new OnDeviceHeadProviderParams(on_device_search_request_id_, input));
 
   done_ = false;
-  // Since the On Device provider usually runs much faster than online
-  // providers, it will be very likely users will see on device suggestions
-  // first and then the Omnibox UI gets refreshed to show suggestions fetched
-  // from server, if we issue both requests simultaneously.
-  // Therefore, we might want to delay the On Device suggest requests (and also
-  // apply a timeout to search default loader) to mitigate this issue. Note this
-  // delay is not needed for incognito where server suggestion is not served.
-  int delay = OmniboxFieldTrial::OnDeviceHeadSuggestDelaySuggestRequestMs(
-      client()->IsOffTheRecord());
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&OnDeviceHeadProvider::DoSearch,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(params)),
-      delay > 0 ? base::TimeDelta::FromMilliseconds(delay)
-                : base::TimeDelta());
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 }
 
 void OnDeviceHeadProvider::Stop(bool clear_cached_results,
                                 bool due_to_user_inactivity) {
+  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
+
   // Increase the request_id so that any in-progress requests will become
   // obsolete.
   on_device_search_request_id_ =
       (on_device_search_request_id_ + 1) % kMaxRequestId;
   weak_ptr_factory_.InvalidateWeakPtrs();
-
-  if (clear_cached_results)
-    matches_.clear();
-
-  done_ = true;
 }
 
 // TODO(crbug.com/925072): post OnDeviceHeadModel::GetSuggestionsForPrefix
@@ -256,11 +253,10 @@ void OnDeviceHeadProvider::SearchDone(
                                 params->suggestions.size(), 1, 5, 6);
     matches_.clear();
 
-    int relevance =
-        params->input.type() == metrics::OmniboxInputType::URL
-            ? kBaseRelevanceForUrlInput
-            : OmniboxFieldTrial::OnDeviceHeadSuggestMaxScoreForNonUrlInput(
-                  client()->IsOffTheRecord());
+    int relevance = params->input.type() == metrics::OmniboxInputType::URL
+                        ? kBaseRelevanceForUrlInput
+                        : OnDeviceHeadSuggestMaxScoreForNonUrlInput(
+                              client()->IsOffTheRecord());
 
     for (const auto& item : params->suggestions) {
       matches_.push_back(BaseSearchProvider::CreateOnDeviceSearchSuggestion(
@@ -277,7 +273,7 @@ void OnDeviceHeadProvider::SearchDone(
   }
 
   done_ = true;
-  listener_->OnProviderUpdate(true);
+  NotifyListeners(true);
 }
 
 std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {

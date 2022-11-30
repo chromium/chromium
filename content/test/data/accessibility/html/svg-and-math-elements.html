@@ -1,0 +1,34 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:htmlTag*
+@WAIT-FOR:Done
+-->
+<!doctype>
+<html>
+<body>
+  <div id="svg" class="svg-container">
+    <svg aria-label="original" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div id="math" class="math-container">
+    <math aria-label="original" xmlns="http://www.w3.org/1998/Math/MathML"></math>
+  </div>
+  <script>
+    ["svg", "math"].forEach(tagName => {
+      let div = document.getElementById(tagName);
+      // HTML namespace.
+      let child = document.createElement(tagName);
+      child.setAttribute("class", "html-namespace");
+      child.setAttribute("aria-label", "created");
+      div.appendChild(child);
+      // Custom namespace.
+      let custom = document.createElementNS("https://example.com/namespace", tagName);
+      custom.setAttribute("class", "custom-namespace");
+      custom.setAttribute("aria-label", "created");
+      div.appendChild(custom);
+    });
+    document.body.appendChild(document.createTextNode("Done"));
+  </script>
+</body>
+</html>

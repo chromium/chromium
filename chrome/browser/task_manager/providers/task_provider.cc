@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@ TaskProvider::TaskProvider()
     : observer_(nullptr) {
 }
 
-TaskProvider::~TaskProvider() {
-}
+TaskProvider::~TaskProvider() = default;
 
 void TaskProvider::SetObserver(TaskProviderObserver* observer) {
   DCHECK(observer);
@@ -53,5 +52,12 @@ void TaskProvider::UpdateTaskProcessInfoAndNotifyObserver(
   existing_task->UpdateProcessInfo(new_process_handle, new_process_id,
                                    observer_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void TaskProvider::NotifyObserverTaskIdsListToBeInvalidated() const {
+  DCHECK(observer_);
+  observer_->TaskIdsListToBeInvalidated();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace task_manager

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,6 @@ BrowserPersister::BrowserPersister(const base::FilePath& path,
               sessions::CommandStorageManager::kOther,
               path,
               this,
-              /* use_marker */ false,
               browser->profile()->GetBrowserContext()->IsOffTheRecord(),
               decryption_key)),
       rebuild_on_next_save_(false),
@@ -106,13 +105,13 @@ void BrowserPersister::OnGeneratedNewCryptoKey(
 }
 
 void BrowserPersister::OnErrorWritingSessionCommands() {
-  // TODO(https://crbug.com/648266): implement this.
-  NOTIMPLEMENTED();
+  rebuild_on_next_save_ = true;
+  command_storage_manager_->StartSaveTimer();
 }
 
 void BrowserPersister::OnTabAdded(Tab* tab) {
   auto* tab_impl = static_cast<TabImpl*>(tab);
-  data_observer_.Add(tab_impl);
+  data_observations_.AddObservation(tab_impl);
   content::WebContents* web_contents = tab_impl->web_contents();
   auto* tab_helper = sessions::SessionTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
@@ -138,7 +137,7 @@ void BrowserPersister::OnTabAdded(Tab* tab) {
 
 void BrowserPersister::OnTabRemoved(Tab* tab, bool active_tab_changed) {
   auto* tab_impl = static_cast<TabImpl*>(tab);
-  data_observer_.Remove(tab_impl);
+  data_observations_.RemoveObservation(tab_impl);
   // Allow the associated sessionStorage to get deleted; it won't be needed
   // in the session restore.
   content::WebContents* web_contents = tab_impl->web_contents();
@@ -297,7 +296,17 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
   const SessionID& session_id = GetSessionIDForTab(tab);
   content::NavigationController& controller =
       tab->web_contents()->GetController();
-  const int current_index = controller.GetCurrentEntryIndex();
+  // Ensure that we don't try to persist initial NavigationEntry, as it is
+  // not actually associated with any navigation and will just result in
+  // about:blank on session restore.
+  bool is_on_initial_entry =
+      (tab->web_contents()->GetController().GetLastCommittedEntry() &&
+       tab->web_contents()
+           ->GetController()
+           .GetLastCommittedEntry()
+           ->IsInitialEntry());
+  const int current_index =
+      is_on_initial_entry ? -1 : controller.GetCurrentEntryIndex();
   const int min_index =
       std::max(current_index - sessions::gMaxPersistNavigationCount, 0);
   const int max_index =
@@ -312,6 +321,8 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
                                           ? controller.GetPendingEntry()
                                           : controller.GetEntryAtIndex(i);
     DCHECK(entry);
+    if (entry->IsInitialEntry())
+      continue;
     const SerializedNavigationEntry navigation =
         ContentSerializedNavigationBuilder::FromNavigationEntry(i, entry);
     command_storage_manager_->AppendRebuildCommand(

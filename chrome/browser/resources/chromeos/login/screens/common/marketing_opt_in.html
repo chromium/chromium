@@ -1,0 +1,230 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+
+<style include="oobe-dialog-host-styles">
+  #legalFooter {
+    margin-top: 20px;
+  }
+
+  :host-context([orientation=vertical ]) #contentArea {
+    justify-content: center;
+  }
+
+  :host {
+    --marketing-opt-in-dialog-list-item-border:
+      1px solid var(--cros-separator-color);
+    --oobe-a11y-dialog-list-item-border:
+      1px solid var(--cros-separator-color);
+    --marketing-opt-in-row-height: 50px;
+    --marketing-opt-in-line-height: 20px;
+  }
+
+  .marketing-animation-content {
+    height: 100%;
+    /* Lower the animation a bit to make it look more centered. */
+    margin-top: 20px;
+    overflow-y: hidden;
+    width: 100%;
+  }
+
+  .legal-info {
+    color: var(--cros-text-color-secondary);
+  }
+
+  .toggle-title {
+    color: var(--cros-text-color-primary);
+  }
+
+  #toggleRow {
+    border-bottom: var(--marketing-opt-in-dialog-list-item-border);
+    border-top: var(--marketing-opt-in-dialog-list-item-border);
+    color: var(--cros-bg-color);
+    margin-top: 20px;
+  }
+
+  /* Keep the text in the toggle row aligned to the left/right in
+      LTR/RTL languages. */
+  #chromebookUpdatesOptionLabel {
+    text-align: initial;
+  }
+
+  #toggleRowIcon,
+  #chromebookUpdatesOptionLabel,
+  #chromebookUpdatesOption {
+    align-self: flex-start;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+
+  #toggleRowIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    --iron-icon-fill-color: var(--cros-icon-color-blue);
+    padding-inline-end: 16px;
+  }
+
+  #googleUrl {
+    color: var(--cros-color-prominent);
+  }
+
+  #finalAccessibilityPage oobe-a11y-option {
+    border-top: var(--oobe-a11y-dialog-list-item-border);
+    min-height: 64px;
+  }
+
+  #finalAccessibilityPage oobe-a11y-option:last-of-type {
+    border-bottom: var(--oobe-a11y-dialog-list-item-border);
+  }
+
+  h1 {
+    color: var(--cros-text-color-primary);
+  }
+
+  #marketingOptInGameDeviceSubtitle,
+  #marketingOptInSubtitleWithDeviceName,
+  #marketingOptInSubtitle,
+  #chromebookUpdatesOptionLabel {
+    color: var(--cros-text-color-secondary);
+  }
+
+</style>
+<oobe-adaptive-dialog id="marketingOptInOverviewDialog" role="dialog"
+    for-step="overview"
+    aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
+    aria-describedby="marketing-opt-in-subtitle">
+  <iron-icon slot="icon"
+      icon="[[getIcon_(isCloudGamingDevice_)]]">
+  </iron-icon>
+
+  <h1 hidden="[[isCloudGamingDevice_]]" slot="title">
+    [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
+  </h1>
+  <h1 id ="marketingOptInGameDeviceTitle"
+      hidden="[[!isCloudGamingDevice_]]" slot="title">
+    [[i18nDynamic(locale, 'marketingOptInScreenGameDeviceTitle')]]
+  </h1>
+  <div slot="subtitle">
+    <!-- No marketing opt in -->
+    <div hidden="[[isCloudGamingDevice_]]">
+      <div hidden="[[marketingOptInVisible_]]"
+        id="marketingOptInSubtitleWithDeviceName">
+        [[i18nDynamic(locale,
+              'marketingOptInScreenSubtitleWithDeviceName')]]
+      </div>
+      <!-- Marketing opt in -->
+      <div hidden="[[!marketingOptInVisible_]]" id="marketingOptInSubtitle">
+        [[i18nDynamic(locale,
+                'marketingOptInScreenSubtitle')]]
+      </div>
+    </div>
+    <div hidden="[[!isCloudGamingDevice_]]"
+          id="marketingOptInGameDeviceSubtitle">
+      [[i18nDynamic(locale,
+              'marketingOptInScreenGameDeviceSubtitle')]]
+    </div>
+    <!-- Toggle row -->
+    <div class="layout horizontal center"
+        hidden="[[!marketingOptInVisible_]]"
+        id="toggleRow" style="[[getMarginTop_(isCloudGamingDevice_)]]">
+      <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
+      <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
+          aria-hidden="true">
+        <div class="toggle-title" hidden="[[isCloudGamingDevice_]]">
+          [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
+        </div>
+        <div class="toggle-title" hidden="[[!isCloudGamingDevice_]]">
+          [[i18nDynamic(locale, 'marketingOptInGameDeviceUpdates')]]
+        </div>
+        <div class="legal-info" hidden="[[!isCloudGamingDevice_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+        </div>
+        <div class="legal-info">
+          [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
+        </div>
+      </div>
+      <cr-toggle id="chromebookUpdatesOption" checked
+          aria-labelledby="chromebookUpdatesOptionLabel">
+      </cr-toggle>
+    </div>
+
+    <!-- Legal footer  -->
+    <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
+      <div>
+        Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+      </div>
+      <div id="googleUrl">www.google.com</div>
+    </div>
+  </div>
+
+  <div hidden="[[isCloudGamingDevice_]]" id="contentArea"
+        slot="content" class="layout flex vertical">
+    <!-- Animation -->
+    <div  class="marketing-animation-content">
+      <iron-media-query query="(prefers-color-scheme: dark)"
+          query-matches="{{isDarkModeActive_}}">
+      </iron-media-query>
+      <oobe-cr-lottie id="animation"
+          animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
+          singleLoop="true">
+      </oobe-cr-lottie>
+    </div>
+  </div>
+  <div hidden="[[!isCloudGamingDevice_]]" slot="content"
+        class="flex layout vertical center-justified center">
+    <img class="oobe-illustration"
+        srcset="[[getImageSource_(isDarkModeActive_)]]" aria-hidden="true">
+  </div>
+  <oobe-icon-button slot="bottom-buttons"
+      hidden="[[!isA11ySettingsButtonVisible_]]"
+      id="marketing-opt-in-accessibility-button"
+      on-click="onToggleAccessibilityPage_"
+      icon1x="oobe-32:accessibility"
+      icon2x="oobe-32:accessibility"
+      text-key="marketingOptInA11yButtonLabel">
+  </oobe-icon-button>
+  <oobe-text-button slot="bottom-buttons"
+      on-click="onGetStarted_" class="focus-on-show"
+      inverse text-key="marketingOptInScreenAllSet"
+      id="marketing-opt-in-next-button">
+  </oobe-text-button>
+</oobe-adaptive-dialog>
+
+<oobe-adaptive-dialog id="finalAccessibilityPage" role="dialog"
+    for-step="accessibility"
+    aria-label$="[[i18nDynamic(locale, 'finalA11yPageTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:accessibility">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'finalA11yPageTitle')]]
+  </h1>
+  <div slot="content" class="layout vertical">
+    <oobe-a11y-option id="a11yNavButtonToggle"
+        on-change="onA11yNavButtonsSettingChanged_">
+      <span slot="title">
+        [[i18nDynamic(locale, 'finalA11yPageNavButtonSettingTitle')]]
+      </span>
+      <span slot="checked-value">
+        [[i18nDynamic(locale, 'finalA11yPageNavButtonSettingDescription')]]
+      </span>
+      <span slot="unchecked-value">
+        [[i18nDynamic(locale, 'finalA11yPageNavButtonSettingDescription')]]
+      </span>
+    </oobe-a11y-option>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button on-click="onToggleAccessibilityPage_"
+        id="final-accessibility-back-button"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
+        id="final-accessibility-next-button" inverse
+        text-key="finalA11yPageDoneButtonTitle">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
+ 

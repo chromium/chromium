@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/run_loop.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -19,6 +20,10 @@ class ASH_PUBLIC_EXPORT TabletMode {
   class Waiter : public TabletModeObserver {
    public:
     explicit Waiter(bool enable);
+
+    Waiter(const Waiter&) = delete;
+    Waiter& operator=(const Waiter&) = delete;
+
     ~Waiter() override;
 
     void Wait();
@@ -30,8 +35,6 @@ class ASH_PUBLIC_EXPORT TabletMode {
    private:
     bool enable_;
     base::RunLoop run_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(Waiter);
   };
 
   // Returns true if the device's board is tablet mode capable.
@@ -46,6 +49,9 @@ class ASH_PUBLIC_EXPORT TabletMode {
   // Returns true if the system is in tablet mode.
   virtual bool InTabletMode() const = 0;
 
+  // Returns true if TabletMode singleton exists and is in the tablet mode.
+  static bool IsInTabletMode();
+
   // Force the tablet mode state for integration tests. The meaning of |enabled|
   // are as follows:
   //   true: UI in the tablet mode
@@ -53,7 +59,7 @@ class ASH_PUBLIC_EXPORT TabletMode {
   //   nullopt: reset the forcing, UI in the default behavior (i.e. checking the
   //   physical state).
   // Returns true if it actually initiates the change of the tablet mode state.
-  virtual bool ForceUiTabletModeState(base::Optional<bool> enabled) = 0;
+  virtual bool ForceUiTabletModeState(absl::optional<bool> enabled) = 0;
 
   // Enable/disable the tablet mode. Used only by test cases.
   virtual void SetEnabledForTest(bool enabled) = 0;

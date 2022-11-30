@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_win) {
+  source_set("fetcher") {
+    public = [
+      "win_network_fetcher.h",
+      "win_network_fetcher_factory.h",
+    ]
+
+    sources = [
+      "win_network_fetcher_factory.cc",
+      "win_network_fetcher_impl.cc",
+      "win_network_fetcher_impl.h",
+    ]
+
+    deps = [
+      "//base",
+      "//net",
+      "//url",
+    ]
+
+    public_deps = [ "//components/winhttp" ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    public = [
+      "mock_win_network_fetcher.h",
+      "mock_win_network_fetcher_factory.h",
+    ]
+
+    sources = [
+      "mock_win_network_fetcher.cc",
+      "mock_win_network_fetcher_factory.cc",
+    ]
+
+    public_deps = [
+      ":fetcher",
+      "//testing/gmock",
+    ]
+  }
+}

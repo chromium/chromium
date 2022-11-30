@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,14 @@
 #define IOS_CHROME_BROWSER_POLICY_POLICY_UTIL_H_
 
 class PrefService;
+
+// Values for the BrowserSignin policy.
+// VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
+enum class BrowserSigninMode {
+  kDisabled = 0,
+  kEnabled = 1,
+  kForced = 2,
+};
 
 // The enum class for IncognitoModeAvalibility pref value, explains the meaning
 // of each value.
@@ -29,5 +37,9 @@ bool IsIncognitoModeDisabled(PrefService* pref_service);
 
 // Returns true if incognito mode is forced by enterprise policy.
 bool IsIncognitoModeForced(PrefService* pref_service);
+
+// Returns whether the browser is managed based on the presence of policy data
+// in the App Configuration from the platform.
+bool IsApplicationManagedByPlatform();
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_UTIL_H_

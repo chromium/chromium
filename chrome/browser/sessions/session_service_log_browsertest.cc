@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/optional.h"
+#include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +29,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 class SessionServiceLogTest : public InProcessBrowserTest {
@@ -55,14 +57,14 @@ class SessionServiceLogTest : public InProcessBrowserTest {
     SessionStartupPref::SetStartupPref(browser()->profile(), pref);
   }
 
-  base::Optional<SessionServiceEvent> FindMostRecentEventOfType(
+  absl::optional<SessionServiceEvent> FindMostRecentEventOfType(
       SessionServiceEventLogType type) const {
     auto events = GetSessionServiceEvents(profile_);
-    for (auto i = events.rbegin(); i != events.rend(); ++i) {
-      if (i->type == type)
-        return *i;
+    for (const SessionServiceEvent& event : base::Reversed(events)) {
+      if (event.type == type)
+        return event;
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::list<SessionServiceEvent>::reverse_iterator
@@ -86,7 +88,7 @@ class SessionServiceLogTest : public InProcessBrowserTest {
 
  protected:
   // Cached as browser() may be destroyed.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

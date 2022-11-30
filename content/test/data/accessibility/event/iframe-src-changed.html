@@ -1,0 +1,25 @@
+<!--
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT:TRUE*
+@AURALINUX-DENY:CHILDREN-CHANGED:*
+-->
+<!DOCTYPE html>
+<html>
+<head><title>Outer Document</title></head>
+<body>
+<iframe id="iframe"></iframe>
+<script>
+  var go_passes = [
+    () => document.getElementById("iframe").srcdoc =
+      "<head><title>Inner Document 1</title></head><body>foo</body>",
+    () => document.getElementById("iframe").srcdoc =
+      "<head><title>Inner Document 2</title></head><body>bar</body>",
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

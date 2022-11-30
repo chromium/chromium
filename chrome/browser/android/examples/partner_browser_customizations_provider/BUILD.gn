@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,8 +18,8 @@ android_apk("partner_browser_customizations_example_apk") {
     "src/org/chromium/example/partnercustomizations/PartnerBrowserCustomizationsProviderExample.java",
   ]
   android_manifest = "AndroidManifest.xml"
-  min_sdk_version = 21
-  target_sdk_version = 21
+  min_sdk_version = 23
+  target_sdk_version = 23
   apk_name = "PartnerCustomizationProviderExample"
   deps = [ ":partner_browser_customizations_example_apk_resources" ]
   chromium_code = false

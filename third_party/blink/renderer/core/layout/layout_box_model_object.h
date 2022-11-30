@@ -24,7 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_MODEL_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_BOX_MODEL_OBJECT_H_
 
-#include <memory>
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/content_change_type.h"
@@ -124,7 +124,7 @@ enum LineDirectionMode { kHorizontalLine, kVerticalLine };
 //   "LogicalLeft" and "LogicalRight".
 //
 // For more information, see the following doc about coordinate spaces:
-// https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
+// https://chromium.googlesource.com/chromium/src.git/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
  public:
   LayoutBoxModelObject(ContainerNode*);
@@ -143,13 +143,22 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                                                 : offset.TransposedSize();
   }
 
-  // Populates StickyPositionConstraints, setting the sticky box rect,
-  // containing block rect and updating the constraint offsets according to the
-  // available space.
-  PhysicalRect ComputeStickyConstrainingRect() const;
-  void UpdateStickyPositionConstraints() const;
+  // If needed, populates StickyPositionConstraints, setting the sticky box
+  // rect, containing block rect and updating the constraint offsets according
+  // to the available space, and returns true. Otherwise returns false.
+  bool UpdateStickyPositionConstraints();
+
   PhysicalOffset StickyPositionOffset() const;
   virtual LayoutBlock* StickyContainer() const;
+
+  StickyPositionScrollingConstraints* StickyConstraints() const {
+    NOT_DESTROYED();
+    return FirstFragment().StickyConstraints();
+  }
+  void SetStickyConstraints(StickyPositionScrollingConstraints* constraints) {
+    NOT_DESTROYED();
+    GetMutableForPainting().FirstFragment().SetStickyConstraints(constraints);
+  }
 
   PhysicalOffset OffsetForInFlowPosition() const;
 
@@ -186,15 +195,11 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // This will work on inlines to return the bounding box of all of the lines'
   // border boxes.
-  virtual IntRect BorderBoundingBox() const = 0;
+  virtual gfx::Rect BorderBoundingBox() const = 0;
 
   virtual PhysicalRect PhysicalVisualOverflowRect() const = 0;
 
   bool UsesCompositedScrolling() const;
-
-  // Returns which layers backgrounds should be painted into for a overflow
-  // scrolling box if it uses composited scrolling.
-  BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
 
   // These return the CSS computed padding values.
   LayoutUnit ComputedCSSPaddingTop() const {
@@ -398,7 +403,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return StyleRef().IsHorizontalWritingMode() ? BorderLeft() + PaddingLeft()
                                                 : BorderTop() + PaddingTop();
   }
-
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalRight() const {
+    NOT_DESTROYED();
+    return StyleRef().IsHorizontalWritingMode()
+               ? BorderRight() + PaddingRight()
+               : BorderBottom() + PaddingBottom();
+  }
   LayoutUnit BorderLogicalLeft() const {
     NOT_DESTROYED();
     return LayoutUnit(StyleRef().IsHorizontalWritingMode() ? BorderLeft()
@@ -451,13 +461,13 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return PhysicalMarginToLogical(other_style).End();
   }
-  LayoutUnit MarginLineLeft() const {
+  LayoutUnit MarginLineLeft(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(nullptr).LineLeft();
+    return PhysicalMarginToLogical(other_style).LineLeft();
   }
-  LayoutUnit MarginLineRight() const {
+  LayoutUnit MarginLineRight(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(nullptr).LineRight();
+    return PhysicalMarginToLogical(other_style).LineRight();
   }
   LayoutUnit MarginOver() const {
     NOT_DESTROYED();
@@ -511,8 +521,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const = 0;
 
-  void ContentChanged(ContentChangeType);
-
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
   virtual bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
@@ -539,13 +547,13 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // Same as AbsoluteQuads, but in the local border box coordinates of this
   // object.
-  void LocalQuads(Vector<FloatQuad>& quads) const;
+  void LocalQuads(Vector<gfx::QuadF>& quads) const;
 
-  void AbsoluteQuads(Vector<FloatQuad>& quads,
+  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode = 0) const override;
 
   // Returns the bounodiong box of all quads returned by LocalQuads.
-  FloatRect LocalBoundingBoxFloatRect() const;
+  gfx::RectF LocalBoundingBoxRectF() const;
 
   virtual LayoutUnit OverrideContainingBlockContentWidth() const {
     NOT_DESTROYED();
@@ -583,12 +591,13 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // Compute absolute quads for |this|, but not any continuations. May only be
   // called for objects which can be or have continuations, i.e. LayoutInline or
   // LayoutBlockFlow.
-  virtual void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+  virtual void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode = 0) const;
   // Same as AbsoluteQuadsForSelf, but in the local border box coordinates.
-  virtual void LocalQuadsForSelf(Vector<FloatQuad>& quads) const;
+  virtual void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const;
 
   void WillBeDestroyed() override;
+  void InsertedIntoTree() override;
 
   PhysicalOffset AdjustedPositionRelativeTo(const PhysicalOffset&,
                                             const Element*) const;
@@ -626,8 +635,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
-  void InvalidateStickyConstraints();
 
  public:
   // These functions are only used internally to manipulate the layout tree
@@ -674,8 +681,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                               LayoutObject* before_child,
                               bool full_remove_insert = false);
 
+  LayoutObject* SplitAnonymousBoxesAroundChild(LayoutObject* before_child);
+  virtual LayoutBox* CreateAnonymousBoxToSplit(
+      const LayoutBox* box_to_split) const;
+
  private:
-  void QuadsInternal(Vector<FloatQuad>& quads,
+  void QuadsInternal(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode,
                      bool map_to_absolute) const;
 
@@ -715,6 +726,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
         &LayoutBoxModelObject::BorderTop, &LayoutBoxModelObject::BorderRight,
         &LayoutBoxModelObject::BorderBottom, &LayoutBoxModelObject::BorderLeft);
   }
+  void DisallowDeferredShapingIfNegativePositioned() const;
 };
 
 template <>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/test_radio_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- RadioButtonWithDescription - With icon and primary, without description. -->
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+              android:id="@+id/icon_primary_only"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
+              app:primaryText="@string/test_string" />
+
+        <!-- RadioButtonWithDescription - With icon, primary and description. -->
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/icon_primary_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
+            app:primaryText="@string/test_string"
+            app:descriptionText="@string/test_string" />
+
+        <!-- RadioButtonWithDescription - With background override. -->
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/icon_bg_override"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/modern_grey_100"
+            app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
+            app:primaryText="@string/test_string"
+            app:descriptionText="@string/test_string" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+            android:id="@+id/icon_disabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:state_enabled="false"
+            app:iconSrc="@drawable/test_ic_more_vert_black_24dp"
+            app:primaryText="@string/test_string"
+            app:descriptionText="@string/test_string" />
+
+    </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
+</FrameLayout>

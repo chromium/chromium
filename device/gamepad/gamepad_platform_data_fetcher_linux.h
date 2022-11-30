@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_device_linux.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -42,6 +41,12 @@ class DEVICE_GAMEPAD_EXPORT GamepadPlatformDataFetcherLinux
 
   GamepadPlatformDataFetcherLinux(
       scoped_refptr<base::SequencedTaskRunner> dbus_runner);
+
+  GamepadPlatformDataFetcherLinux(const GamepadPlatformDataFetcherLinux&) =
+      delete;
+  GamepadPlatformDataFetcherLinux& operator=(
+      const GamepadPlatformDataFetcherLinux&) = delete;
+
   ~GamepadPlatformDataFetcherLinux() override;
 
   GamepadSource source() override;
@@ -89,8 +94,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadPlatformDataFetcherLinux
   scoped_refptr<base::SequencedTaskRunner> dbus_runner_;
 
   base::WeakPtrFactory<GamepadPlatformDataFetcherLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadPlatformDataFetcherLinux);
 };
 
 }  // namespace device

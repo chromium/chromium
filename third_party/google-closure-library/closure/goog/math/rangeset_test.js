@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.math.RangeSetTest');
 goog.setTestOnly();
@@ -36,7 +28,7 @@ function assertRangesEqual(a, b, c = undefined) {
   let expected = c ? b : a;
   const actual = c ? c : b;
 
-  if (goog.isArray(expected)) {
+  if (Array.isArray(expected)) {
     assertEquals(
         `${message}
 ` +
@@ -68,6 +60,7 @@ function assertRangesEqual(a, b, c = undefined) {
  *     descriptive string is present, or the list of ranges to compare.
  * @param {Array<Range>=} c The list of ranges to compare when a descriptive
  *     string is present.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertRangeListsEqual(a, b, c = undefined) {
   const message = c ? `${a}
@@ -85,9 +78,11 @@ function assertRangeListsEqual(a, b, c = undefined) {
 }
 
 testSuite({
+  /** @suppress {visibility} suppression added to enable type checking */
   testClone() {
     const r = new RangeSet();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let test = new RangeSet(r);
     assertRangeListsEqual([], test.ranges_);
 
@@ -112,6 +107,7 @@ testSuite({
     }
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddNoCorruption() {
     const r = new RangeSet();
 
@@ -129,6 +125,7 @@ testSuite({
         [[1, 2]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAdd() {
     const r = new RangeSet();
 
@@ -164,6 +161,7 @@ testSuite({
         [[-22, -15], [1, 3], [3.1, 6.9], [7, 12], [13, 18]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddWithOverlaps() {
     const r = new RangeSet();
 
@@ -185,6 +183,7 @@ testSuite({
     assertRangeListsEqual([[-4, 25]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddWithAdjacentSpans() {
     const r = new RangeSet();
 
@@ -214,6 +213,7 @@ testSuite({
     assertRangeListsEqual([[-3, 22]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testAddWithSubsets() {
     const r = new RangeSet();
 
@@ -236,6 +236,7 @@ testSuite({
     assertRangeListsEqual([[1, 30]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemove() {
     const r = new RangeSet();
 
@@ -275,6 +276,7 @@ testSuite({
     assertRangeListsEqual([], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveWithNonOverlappingRanges() {
     const r = new RangeSet();
 
@@ -293,6 +295,7 @@ testSuite({
         'Zero-length ranges should be ignored.', [[10, 20]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveWithIdenticalRanges() {
     const r = new RangeSet();
 
@@ -311,6 +314,7 @@ testSuite({
     assertRangeListsEqual([], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveWithOverlappingSubsets() {
     const r = new RangeSet();
 
@@ -323,6 +327,7 @@ testSuite({
     assertRangeListsEqual([[4, 8]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveMultiple() {
     const r = new RangeSet();
 
@@ -343,6 +348,7 @@ testSuite({
     assertRangeListsEqual([[5, 8], [10, 15], [32, 35]], r.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRemoveWithRealNumbers() {
     const r = new RangeSet();
 
@@ -381,6 +387,7 @@ testSuite({
     assertTrue(RangeSet.equals(a, b));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testContains() {
     const r = new RangeSet();
 
@@ -428,6 +435,7 @@ testSuite({
     assertTrue(r.containsValue(19.999));
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testUnion() {
     const a = new RangeSet();
 
@@ -450,6 +458,7 @@ testSuite({
     assertRangeListsEqual(a.ranges_, test3.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDifference() {
     const a = new RangeSet();
 
@@ -475,6 +484,7 @@ testSuite({
     assertRangeListsEqual([], test4.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testIntersection() {
     const a = new RangeSet();
 
@@ -497,6 +507,7 @@ testSuite({
     assertRangeListsEqual(a.ranges_, test3.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSlice() {
     const r = new RangeSet();
 
@@ -530,6 +541,7 @@ testSuite({
         'An invalid range should produce an empty set.', [], test.ranges_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testInverse() {
     const r = new RangeSet();
 
@@ -584,6 +596,7 @@ testSuite({
     assertEquals(14.5, r.coveredLength());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testGetBounds() {
     const r = new RangeSet();
 
@@ -630,14 +643,18 @@ testSuite({
     assertRangeListsEqual([[1, 3], [5, 6], [8, 10]], iter.toArray(r));
 
     let i = 0;
-    iter.forEach(r, (testRange) => {
-      assertRangesEqual(
-          'Iterated set values should match the originals.', r.ranges_[i],
-          testRange);
-      assertNotEquals(
-          'Iterated range should not be a reference to the original.',
-          r.ranges_[i], testRange);
-      i++;
-    });
+    iter.forEach(
+        r, /**
+              @suppress {visibility} suppression added to enable type checking
+            */
+        (testRange) => {
+          assertRangesEqual(
+              'Iterated set values should match the originals.', r.ranges_[i],
+              testRange);
+          assertNotEquals(
+              'Iterated range should not be a reference to the original.',
+              r.ranges_[i], testRange);
+          i++;
+        });
   },
 });

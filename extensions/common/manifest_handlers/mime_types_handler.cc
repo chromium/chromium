@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -26,7 +26,7 @@ namespace {
 // This has to by in sync with MimeHandlerType enum.
 // Note that if multiple versions of quickoffice are installed, the
 // higher-indexed entry will clobber earlier entries.
-constexpr const char* const kMIMETypeHandlersAllowlist[] = {
+const char* kMIMETypeHandlersAllowlist[] = {
     extension_misc::kPdfExtensionId,
     extension_misc::kQuickOfficeComponentExtensionId,
     extension_misc::kQuickOfficeInternalExtensionId,
@@ -47,7 +47,7 @@ enum class MimeHandlerType {
 };
 
 static_assert(
-    base::size(kMIMETypeHandlersAllowlist) ==
+    std::size(kMIMETypeHandlersAllowlist) ==
         static_cast<size_t>(MimeHandlerType::kMaxValue) + 1,
     "MimeHandlerType enum is not in sync with kMIMETypeHandlersAllowlist.");
 
@@ -79,8 +79,7 @@ const std::vector<std::string>& MimeTypesHandler::GetMIMETypeAllowlist() {
 // static
 void MimeTypesHandler::ReportUsedHandler(const std::string& extension_id) {
   auto* const* it =
-      std::find(std::begin(kMIMETypeHandlersAllowlist),
-                std::end(kMIMETypeHandlersAllowlist), extension_id);
+      base::ranges::find(kMIMETypeHandlersAllowlist, extension_id);
   if (it != std::end(kMIMETypeHandlersAllowlist)) {
     MimeHandlerType type = static_cast<MimeHandlerType>(
         it - std::begin(kMIMETypeHandlersAllowlist));
@@ -107,9 +106,7 @@ SkColor MimeTypesHandler::GetBackgroundColor() const {
   if (extension_id_ == extension_misc::kPdfExtensionId) {
     return kPdfExtensionBackgroundColor;
   }
-  if (extension_id_ == extension_misc::kQuickOfficeExtensionId ||
-      extension_id_ == extension_misc::kQuickOfficeInternalExtensionId ||
-      extension_id_ == extension_misc::kQuickOfficeComponentExtensionId) {
+  if (extension_misc::IsQuickOfficeExtension(extension_id_)) {
     return kQuickOfficeExtensionBackgroundColor;
   }
   return content::WebPluginInfo::kDefaultBackgroundColor;
@@ -130,7 +127,7 @@ MimeTypesHandler* MimeTypesHandler::GetHandler(
       extension->GetManifestData(keys::kMimeTypesHandler));
   if (info)
     return &info->handler_;
-  return NULL;
+  return nullptr;
 }
 
 MimeTypesHandlerParser::MimeTypesHandlerParser() {
@@ -143,7 +140,7 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
                                    std::u16string* error) {
   const base::Value* mime_types_value = nullptr;
   if (!extension->manifest()->GetList(keys::kMIMETypes, &mime_types_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidMimeTypesHandler);
+    *error = errors::kInvalidMimeTypesHandler;
     return false;
   }
 
@@ -151,16 +148,15 @@ bool MimeTypesHandlerParser::Parse(extensions::Extension* extension,
   info->handler_.set_extension_id(extension->id());
   for (const auto& entry : mime_types_value->GetList()) {
     if (!entry.is_string()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidMIMETypes);
+      *error = errors::kInvalidMIMETypes;
       return false;
     }
     info->handler_.AddMIMEType(entry.GetString());
   }
 
-  std::string mime_types_handler;
-  if (extension->manifest()->GetString(keys::kMimeTypesHandler,
-                                       &mime_types_handler)) {
-    info->handler_.set_handler_url(mime_types_handler);
+  if (const std::string* mime_types_handler =
+          extension->manifest()->FindStringPath(keys::kMimeTypesHandler)) {
+    info->handler_.set_handler_url(*mime_types_handler);
   }
 
   extension->SetManifestData(keys::kMimeTypesHandler, std::move(info));

@@ -35,7 +35,8 @@ using ::testing::IsTrue;
 using ::testing::TestWithParam;
 using ::testing::Values;
 
-std::string StreamHelper(absl::LogSeverity value) {
+template <typename T>
+std::string StreamHelper(T value) {
   std::ostringstream stream;
   stream << value;
   return stream.str();
@@ -52,9 +53,9 @@ TEST(StreamTest, Works) {
               Eq("absl::LogSeverity(4)"));
 }
 
-static_assert(
-    absl::flags_internal::FlagUseOneWordStorage<absl::LogSeverity>::value,
-    "Flags of type absl::LogSeverity ought to be lock-free.");
+static_assert(absl::flags_internal::FlagUseValueAndInitBitStorage<
+                  absl::LogSeverity>::value,
+              "Flags of type absl::LogSeverity ought to be lock-free.");
 
 using ParseFlagFromOutOfRangeIntegerTest = TestWithParam<int64_t>;
 INSTANTIATE_TEST_SUITE_P(
@@ -201,4 +202,44 @@ TEST_P(UnparseFlagToOtherIntegerTest, ReturnsExpectedValueAndRoundTrips) {
               IsTrue());
   EXPECT_THAT(reparsed_value, Eq(to_unparse));
 }
+
+TEST(LogThresholdTest, LogSeverityAtLeastTest) {
+  EXPECT_LT(absl::LogSeverity::kError, absl::LogSeverityAtLeast::kFatal);
+  EXPECT_GT(absl::LogSeverityAtLeast::kError, absl::LogSeverity::kInfo);
+
+  EXPECT_LE(absl::LogSeverityAtLeast::kInfo, absl::LogSeverity::kError);
+  EXPECT_GE(absl::LogSeverity::kError, absl::LogSeverityAtLeast::kInfo);
+}
+
+TEST(LogThresholdTest, LogSeverityAtMostTest) {
+  EXPECT_GT(absl::LogSeverity::kError, absl::LogSeverityAtMost::kWarning);
+  EXPECT_LT(absl::LogSeverityAtMost::kError, absl::LogSeverity::kFatal);
+
+  EXPECT_GE(absl::LogSeverityAtMost::kFatal, absl::LogSeverity::kError);
+  EXPECT_LE(absl::LogSeverity::kWarning, absl::LogSeverityAtMost::kError);
+}
+
+TEST(LogThresholdTest, Extremes) {
+  EXPECT_LT(absl::LogSeverity::kFatal, absl::LogSeverityAtLeast::kInfinity);
+  EXPECT_GT(absl::LogSeverity::kInfo,
+            absl::LogSeverityAtMost::kNegativeInfinity);
+}
+
+TEST(LogThresholdTest, Output) {
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtLeast::kInfo), Eq(">=INFO"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtLeast::kWarning),
+              Eq(">=WARNING"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtLeast::kError), Eq(">=ERROR"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtLeast::kFatal), Eq(">=FATAL"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtLeast::kInfinity),
+              Eq("INFINITY"));
+
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtMost::kInfo), Eq("<=INFO"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtMost::kWarning), Eq("<=WARNING"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtMost::kError), Eq("<=ERROR"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtMost::kFatal), Eq("<=FATAL"));
+  EXPECT_THAT(StreamHelper(absl::LogSeverityAtMost::kNegativeInfinity),
+              Eq("NEGATIVE_INFINITY"));
+}
+
 }  // namespace

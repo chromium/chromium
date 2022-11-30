@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,9 @@ ChunkedUploadDataStream::Writer::Writer(
     base::WeakPtr<ChunkedUploadDataStream> upload_data_stream)
     : upload_data_stream_(upload_data_stream) {}
 
-ChunkedUploadDataStream::ChunkedUploadDataStream(int64_t identifier)
-    : UploadDataStream(true, identifier) {}
+ChunkedUploadDataStream::ChunkedUploadDataStream(int64_t identifier,
+                                                 bool has_null_source)
+    : UploadDataStream(/*is_chunked=*/true, has_null_source, identifier) {}
 
 ChunkedUploadDataStream::~ChunkedUploadDataStream() = default;
 

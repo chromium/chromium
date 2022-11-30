@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/content_renderer_pepper_host_factory.h"
 #include "ppapi/host/ppapi_host.h"
@@ -20,9 +19,13 @@ class FakePepperPluginInstance;
 // resources through this will get added to the test sink.
 class MockRendererPpapiHost : public RendererPpapiHost {
  public:
-  // This function takes the RenderView and instance that the mock resource
-  // host will be associated with.
-  MockRendererPpapiHost(RenderView* render_view, PP_Instance instance);
+  // This function takes the RenderFrame and instance that the mock
+  // resource host will be associated with.
+  MockRendererPpapiHost(RenderFrame* render_frame, PP_Instance instance);
+
+  MockRendererPpapiHost(const MockRendererPpapiHost&) = delete;
+  MockRendererPpapiHost& operator=(const MockRendererPpapiHost&) = delete;
+
   ~MockRendererPpapiHost() override;
 
   ppapi::proxy::ResourceMessageTestSink& sink() { return sink_; }
@@ -36,11 +39,10 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   bool IsValidInstance(PP_Instance instance) override;
   PepperPluginInstance* GetPluginInstance(PP_Instance instance) override;
   RenderFrame* GetRenderFrameForInstance(PP_Instance instance) override;
-  RenderView* GetRenderViewForInstance(PP_Instance instance) override;
   blink::WebPluginContainer* GetContainerForInstance(
       PP_Instance instance) override;
   bool HasUserGesture(PP_Instance instance) override;
-  int GetRoutingIDForWidget(PP_Instance instance) override;
+  int GetRoutingIDForFrame(PP_Instance instance) override;
   gfx::Point PluginPointToRenderFrame(PP_Instance instance,
                                       const gfx::Point& pt) override;
   IPC::PlatformFileForTransit ShareHandleWithRemote(
@@ -63,15 +65,12 @@ class MockRendererPpapiHost : public RendererPpapiHost {
   ppapi::proxy::ResourceMessageTestSink sink_;
   ppapi::host::PpapiHost ppapi_host_;
 
-  RenderView* render_view_;
   RenderFrame* render_frame_;
   PP_Instance pp_instance_;
 
   bool has_user_gesture_;
 
   std::unique_ptr<FakePepperPluginInstance> plugin_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRendererPpapiHost);
 };
 
 }  // namespace content

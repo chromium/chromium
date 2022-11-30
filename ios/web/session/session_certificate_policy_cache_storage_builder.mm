@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/session/session_certificate_policy_cache_storage_builder.h"
+#import "ios/web/session/session_certificate_policy_cache_storage_builder.h"
 
 #import <Foundation/Foundation.h>
 
@@ -15,19 +15,21 @@
 
 namespace web {
 
+// static
 CRWSessionCertificatePolicyCacheStorage*
 SessionCertificatePolicyCacheStorageBuilder::BuildStorage(
-    SessionCertificatePolicyCacheImpl* cache) const {
+    const SessionCertificatePolicyCacheImpl& cache) {
   CRWSessionCertificatePolicyCacheStorage* storage =
       [[CRWSessionCertificatePolicyCacheStorage alloc] init];
-  storage.certificateStorages = [NSSet setWithSet:cache->GetAllowedCerts()];
+  storage.certificateStorages = [NSSet setWithSet:cache.GetAllowedCerts()];
   return storage;
 }
 
+// static
 std::unique_ptr<SessionCertificatePolicyCacheImpl>
 SessionCertificatePolicyCacheStorageBuilder::BuildSessionCertificatePolicyCache(
     CRWSessionCertificatePolicyCacheStorage* cache_storage,
-    BrowserState* browser_state) const {
+    BrowserState* browser_state) {
   std::unique_ptr<SessionCertificatePolicyCacheImpl> cache =
       std::make_unique<SessionCertificatePolicyCacheImpl>(browser_state);
   cache->SetAllowedCerts(cache_storage.certificateStorages);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,7 +169,7 @@ TEST(ZxcvbnTest, RepeatGuesses) {
   struct {
     std::string token;
     std::string base_token;
-    int repeat_count;
+    size_t repeat_count;
   } tests[] = {
       {"aa", "a", 2},
       {"999", "9", 3},

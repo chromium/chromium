@@ -1,0 +1,4 @@
+Tests that Page.setWebLifecycleState() in a fenced frame is not allowed.
+Page.setWebLifecycleState() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+

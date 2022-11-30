@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
  *  could be seen if the user would scroll up/down.
  */
 
-/* #export */ const WebviewScrollShadowsHelper = (function() {
+export const WebviewScrollShadowsHelper = (function() {
   function WebviewScrollShadowsHelper() {}
 
   WebviewScrollShadowsHelper.prototype = {
@@ -38,7 +38,7 @@
       this.channel_.send({
         name: 'scrollInfo',
         scrollTop: window.scrollY,
-        scrollHeight: document.body.scrollHeight
+        scrollHeight: document.body.scrollHeight,
       });
     },
   };
@@ -46,6 +46,6 @@
   return WebviewScrollShadowsHelper;
 })();
 
-const WebviewScrollShadowsHelperConstructor = function() {
+export const WebviewScrollShadowsHelperConstructor = function() {
   return new WebviewScrollShadowsHelper();
 };

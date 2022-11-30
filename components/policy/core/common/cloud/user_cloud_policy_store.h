@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store_base.h"
@@ -72,8 +71,9 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
       const base::FilePath& key_file,
       PolicyLoadFilter policy_load_filter,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope,
-      PolicySource policy_source);
+      PolicyScope policy_scope);
+  DesktopCloudPolicyStore(const DesktopCloudPolicyStore&) = delete;
+  DesktopCloudPolicyStore& operator=(const DesktopCloudPolicyStore&) = delete;
   ~DesktopCloudPolicyStore() override;
 
   // Loads policy immediately on the current thread. Virtual for mocks.
@@ -153,8 +153,6 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
 
   // WeakPtrFactory used to create callbacks for validating and storing policy.
   base::WeakPtrFactory<DesktopCloudPolicyStore> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCloudPolicyStore);
 };
 
 // Implements a cloud policy store that is stored in a simple file in the user's
@@ -174,6 +172,8 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
       const base::FilePath& policy_file,
       const base::FilePath& key_file,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+  UserCloudPolicyStore(const UserCloudPolicyStore&) = delete;
+  UserCloudPolicyStore& operator=(const UserCloudPolicyStore&) = delete;
   ~UserCloudPolicyStore() override;
 
   // Factory method for creating a UserCloudPolicyStore for a profile with path
@@ -197,8 +197,6 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
 
   // The account id from signin for validation of the policy.
   AccountId account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStore);
 };
 
 }  // namespace policy

@@ -1,0 +1,89 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.auth.mojom;
+
+// This module defines interfaces to query properties of and configure
+// authentication factors. The interfaces are implemented by services running
+// on ash-chrome and intended to be consumed by the following webuis:
+// * chrome://os-settings
+// * chrome://oobe
+//
+// Since both the service implementations and the clients are part of
+// ash-chrome, the interfaces are not guaranteed to remain stable between
+// versions.
+//
+// The interfaces exposed here are intended as replacement for the
+// quickUnlockPrivate extension API. Most methods take an |auth_token|
+// parameter, which can be obtained via |quickUnlockPrivate.getAuthToken|.
+
+// An enumeration of all authentication factors.
+enum AuthFactor {
+  kRecovery,
+  // TODO(crbug.com/1327627): Add support for other authentication factors:
+  // kPassword,
+  // kPin,
+  // kFingerprint,
+};
+
+// The type of a policy that can affect auth factor configuration.
+enum ManagementType {
+  kNone,
+  kDevice,
+  kUser,
+};
+
+// An interface for clients of |AuthFactorConfig| (see there for a list of
+// clients) that need to be notified if configuration of auth factors changes.
+interface FactorObserver {
+  // Called when the configuration of some |factor| changes.
+  OnFactorChanged(AuthFactor factor);
+};
+
+// An interface to query generic properties of how authentication factors are
+// configured. Served from chrome ash, intended to be consumed by the following
+// webuis:
+// * chrome://os-settings
+// * chrome://oobe
+interface AuthFactorConfig {
+  // Registers an observer that is called whenever authentication factor
+  // configuration changes.
+  ObserveFactorChanges(pending_remote<FactorObserver> observer);
+
+  // Checks whether |factor| is supported for the current user and device, e.g.
+  // if there is a fingerprint sensor.
+  IsSupported(string auth_token, AuthFactor factor) => (bool supported);
+
+  // Checks whether |factor| is configured, e.g. if the user has set up at least
+  // one fingerprint.
+  IsConfigured(string auth_token, AuthFactor factor) => (bool configured);
+
+  // Retrieves how |factor| is managed (if at all), e.g. in case there is a
+  // policy for minimum PIN length.
+  GetManagementType(string auth_token, AuthFactor factor) =>
+      (ManagementType management);
+
+  // Checks whether the user can configure |factor|. Is false if the factor is
+  // not supported or e.g. a policy forces |factor| to be enabled/disabled.
+  IsEditable(string auth_token, AuthFactor factor) => (bool editable);
+};
+
+// Interface for methods specific to recovery authentication. Served from chrome
+// ash, intended to be consumed by the following webuis:
+// * chrome://os-settings
+// * chrome://oobe
+interface RecoveryFactorEditor {
+  // Return code of |Configure|.
+  enum ConfigureResult {
+    kSuccess,
+    kInvalidTokenError,
+    // Returned if the client uses the API incorrectly, e.g. if the client
+    // enables recovery even though it is not supported.
+    kClientError,
+  };
+  // Enables or disables recovery authentication. Clients must not attempt to
+  // enable recovery if recovery is not editable. Enabling recovery when it is
+  // already enabled is a no-op and succeeds; similarly for disabling.
+  Configure(string auth_token, bool enabled) => (ConfigureResult result);
+};

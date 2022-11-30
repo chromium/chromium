@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,18 +57,20 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
     const std::string& /* audio_device_id */) {
   // If called the first time, do one time initialization.
   if (!decoder_factory_) {
-    decoder_factory_.reset(new media::DefaultDecoderFactory(nullptr));
+    decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
   }
 
+  media::MediaPlayerLoggingID player_id = media::GetNextMediaPlayerLoggingID();
+
   if (!renderer_factory_) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     renderer_factory_ = std::make_unique<DefaultRendererFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB());
+        DefaultRendererFactory::GetGpuFactoriesCB(), player_id);
 #else
     renderer_factory_ = std::make_unique<DefaultRendererFactory>(
         media_log, decoder_factory_.get(),
-        DefaultRendererFactory::GetGpuFactoriesCB(), nullptr);
+        DefaultRendererFactory::GetGpuFactoriesCB(), player_id, nullptr);
 #endif
   }
 
@@ -76,8 +78,7 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
   // RendererImpls. Thus create one for each Renderer creation.
   auto audio_sink = base::MakeRefCounted<AudioOutputStreamSink>();
   auto video_sink = std::make_unique<NullVideoSink>(
-      false, base::TimeDelta::FromSecondsD(1.0 / 60),
-      NullVideoSink::NewFrameCB(), task_runner);
+      false, base::Seconds(1.0 / 60), NullVideoSink::NewFrameCB(), task_runner);
   auto* video_sink_ptr = video_sink.get();
 
   // Hold created sinks since DefaultRendererFactory only takes raw pointers to

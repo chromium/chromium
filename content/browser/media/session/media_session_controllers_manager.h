@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
-#include "base/time/time.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"  // For MediaPlayerId.
+#include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace media {
 enum class MediaContentType;
@@ -33,6 +33,12 @@ class WebContentsImpl;
 class CONTENT_EXPORT MediaSessionControllersManager {
  public:
   explicit MediaSessionControllersManager(WebContentsImpl* web_contents);
+
+  MediaSessionControllersManager(const MediaSessionControllersManager&) =
+      delete;
+  MediaSessionControllersManager& operator=(
+      const MediaSessionControllersManager&) = delete;
+
   ~MediaSessionControllersManager();
 
   // Clear all the MediaSessionController associated with the given
@@ -68,6 +74,9 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // Called when the WebContents was muted or unmuted.
   void WebContentsMutedStateChanged(bool muted);
 
+  // Called when the player's mute status changed.
+  void OnMediaMutedStatusChanged(const MediaPlayerId& id, bool mute);
+
   // Called when picture-in-picture availability for the player |id| has
   // changed.
   void OnPictureInPictureAvailabilityChanged(const MediaPlayerId& id,
@@ -81,6 +90,11 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // has been disabled.
   void OnAudioOutputSinkChangingDisabled(const MediaPlayerId& id);
 
+  // Called when the RemotePlayback metadata has changed.
+  void OnRemotePlaybackMetadataChange(
+      const MediaPlayerId& id,
+      media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata);
+
  private:
   using ControllersMap =
       std::map<MediaPlayerId, std::unique_ptr<MediaSessionController>>;
@@ -89,11 +103,9 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // one and placing it in |controllers_map_| if necessary.
   MediaSessionController* FindOrCreateController(const MediaPlayerId& id);
 
-  WebContentsImpl* const web_contents_;
+  const raw_ptr<WebContentsImpl> web_contents_;
 
   ControllersMap controllers_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionControllersManager);
 };
 
 }  // namespace content

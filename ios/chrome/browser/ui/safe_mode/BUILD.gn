@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,9 +19,12 @@ source_set("safe_mode") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/safe_mode",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
+    "//ui/base",
     "//ui/gfx",
   ]
 
@@ -29,7 +32,6 @@ source_set("safe_mode") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -46,18 +48,20 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "safe_mode_app_interface.h" ]
+  sources = [
+    "safe_mode_app_interface.h",
+    "safe_mode_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -67,7 +71,7 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base:base",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -87,11 +91,15 @@ source_set("unit_tests") {
     ":safe_mode",
     "//base",
     "//base/test:test_support",
+    "//components/crash/core/app",
+    "//components/crash/core/common:reporter_running_ios",
     "//ios/chrome/browser/crash_report",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/test/ocmock",
     "//ios/testing:block_swizzler",
     "//testing/gtest",
     "//third_party/breakpad:client",
+    "//third_party/crashpad/crashpad/client",
     "//third_party/ocmock",
   ]
   frameworks = [ "UIKit.framework" ]

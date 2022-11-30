@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/aura/window_occlusion_tracker.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -19,6 +19,7 @@
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -31,11 +32,15 @@ namespace aura {
 
 namespace {
 
-constexpr base::TimeDelta kTransitionDuration = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTransitionDuration = base::Seconds(3);
 
 class MockWindowDelegate : public test::ColorTestWindowDelegate {
  public:
   MockWindowDelegate() : test::ColorTestWindowDelegate(SK_ColorWHITE) {}
+
+  MockWindowDelegate(const MockWindowDelegate&) = delete;
+  MockWindowDelegate& operator=(const MockWindowDelegate&) = delete;
+
   ~MockWindowDelegate() override { EXPECT_FALSE(is_expecting_call()); }
 
   void set_window(Window* window) { window_ = window; }
@@ -68,16 +73,18 @@ class MockWindowDelegate : public test::ColorTestWindowDelegate {
   Window::OcclusionState expected_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion expected_occluded_region_ = SkRegion();
-  Window* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockWindowDelegate);
+  raw_ptr<Window> window_ = nullptr;
 };
 
 class WindowOcclusionTrackerTest : public test::AuraTestBase {
  public:
   WindowOcclusionTrackerTest() = default;
 
-#if defined(OS_WIN)
+  WindowOcclusionTrackerTest(const WindowOcclusionTrackerTest&) = delete;
+  WindowOcclusionTrackerTest& operator=(const WindowOcclusionTrackerTest&) =
+      delete;
+
+#if BUILDFLAG(IS_WIN)
   void SetUp() override {
     // Native Window Occlusion calculation runs in the background and can
     // interfere with the expectations of these tests, so, disable it.
@@ -132,8 +139,6 @@ class WindowOcclusionTrackerTest : public test::AuraTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowOcclusionTrackerTest);
 };
 
 SkRegion SkRegionFromSkIRects(std::initializer_list<SkIRect> rects) {
@@ -1102,6 +1107,9 @@ class ResizeWindowObserver : public WindowObserver {
   ResizeWindowObserver(Window* window_to_resize)
       : window_to_resize_(window_to_resize) {}
 
+  ResizeWindowObserver(const ResizeWindowObserver&) = delete;
+  ResizeWindowObserver& operator=(const ResizeWindowObserver&) = delete;
+
   void OnWindowBoundsChanged(Window* window,
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
@@ -1110,9 +1118,7 @@ class ResizeWindowObserver : public WindowObserver {
   }
 
  private:
-  Window* const window_to_resize_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeWindowObserver);
+  const raw_ptr<Window> window_to_resize_;
 };
 
 }  // namespace
@@ -1365,13 +1371,14 @@ class ObserverChangingWindowBounds : public WindowObserver {
  public:
   ObserverChangingWindowBounds() = default;
 
+  ObserverChangingWindowBounds(const ObserverChangingWindowBounds&) = delete;
+  ObserverChangingWindowBounds& operator=(const ObserverChangingWindowBounds&) =
+      delete;
+
   // WindowObserver:
   void OnWindowParentChanged(Window* window, Window* parent) override {
     window->SetBounds(gfx::Rect(1, 2, 3, 4));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverChangingWindowBounds);
 };
 
 }  // namespace
@@ -1408,6 +1415,11 @@ class ObserverDestroyingWindowOnAnimationEnded
  public:
   ObserverDestroyingWindowOnAnimationEnded(Window* window) : window_(window) {}
 
+  ObserverDestroyingWindowOnAnimationEnded(
+      const ObserverDestroyingWindowOnAnimationEnded&) = delete;
+  ObserverDestroyingWindowOnAnimationEnded& operator=(
+      const ObserverDestroyingWindowOnAnimationEnded&) = delete;
+
   ~ObserverDestroyingWindowOnAnimationEnded() override {
     EXPECT_FALSE(window_);
   }
@@ -1423,9 +1435,7 @@ class ObserverDestroyingWindowOnAnimationEnded
       ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverDestroyingWindowOnAnimationEnded);
+  raw_ptr<Window> window_;
 };
 
 }  // namespace
@@ -1565,6 +1575,11 @@ class WindowDelegateHidingWindowIfOccluded : public MockWindowDelegate {
   explicit WindowDelegateHidingWindowIfOccluded(Window* other_window)
       : other_window_(other_window) {}
 
+  WindowDelegateHidingWindowIfOccluded(
+      const WindowDelegateHidingWindowIfOccluded&) = delete;
+  WindowDelegateHidingWindowIfOccluded& operator=(
+      const WindowDelegateHidingWindowIfOccluded&) = delete;
+
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
       Window::OcclusionState occlusion_state) override {
@@ -1574,14 +1589,17 @@ class WindowDelegateHidingWindowIfOccluded : public MockWindowDelegate {
   }
 
  private:
-  Window* other_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateHidingWindowIfOccluded);
+  raw_ptr<Window> other_window_;
 };
 
 class WindowDelegateWithQueuedExpectation : public MockWindowDelegate {
  public:
   WindowDelegateWithQueuedExpectation() = default;
+
+  WindowDelegateWithQueuedExpectation(
+      const WindowDelegateWithQueuedExpectation&) = delete;
+  WindowDelegateWithQueuedExpectation& operator=(
+      const WindowDelegateWithQueuedExpectation&) = delete;
 
   void set_queued_expectation(Window::OcclusionState occlusion_state,
                               const SkRegion& occluded_region) {
@@ -1605,8 +1623,6 @@ class WindowDelegateWithQueuedExpectation : public MockWindowDelegate {
   Window::OcclusionState queued_expected_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion queued_expected_occluded_region_ = SkRegion();
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateWithQueuedExpectation);
 };
 
 }  // namespace
@@ -1652,6 +1668,10 @@ class WindowDelegateDeletingWindow : public MockWindowDelegate {
  public:
   WindowDelegateDeletingWindow() = default;
 
+  WindowDelegateDeletingWindow(const WindowDelegateDeletingWindow&) = delete;
+  WindowDelegateDeletingWindow& operator=(const WindowDelegateDeletingWindow&) =
+      delete;
+
   void set_other_window(Window* other_window) { other_window_ = other_window; }
 
   // MockWindowDelegate:
@@ -1665,9 +1685,7 @@ class WindowDelegateDeletingWindow : public MockWindowDelegate {
   }
 
  private:
-  Window* other_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateDeletingWindow);
+  raw_ptr<Window> other_window_ = nullptr;
 };
 
 }  // namespace
@@ -1722,6 +1740,11 @@ class WindowDelegateChangingWindowVisibility : public MockWindowDelegate {
  public:
   WindowDelegateChangingWindowVisibility() = default;
 
+  WindowDelegateChangingWindowVisibility(
+      const WindowDelegateChangingWindowVisibility&) = delete;
+  WindowDelegateChangingWindowVisibility& operator=(
+      const WindowDelegateChangingWindowVisibility&) = delete;
+
   void set_window_to_update(Window* window) { window_to_update_ = window; }
 
   // MockWindowDelegate:
@@ -1744,10 +1767,8 @@ class WindowDelegateChangingWindowVisibility : public MockWindowDelegate {
   }
 
  private:
-  Window* window_to_update_ = nullptr;
+  raw_ptr<Window> window_to_update_ = nullptr;
   int num_occlusion_change_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateChangingWindowVisibility);
 };
 
 }  // namespace
@@ -1913,6 +1934,10 @@ class WindowDelegateHidingWindow : public MockWindowDelegate {
  public:
   WindowDelegateHidingWindow() = default;
 
+  WindowDelegateHidingWindow(const WindowDelegateHidingWindow&) = delete;
+  WindowDelegateHidingWindow& operator=(const WindowDelegateHidingWindow&) =
+      delete;
+
   void set_window_to_update(Window* window) { window_to_update_ = window; }
 
   // MockWindowDelegate:
@@ -1926,15 +1951,18 @@ class WindowDelegateHidingWindow : public MockWindowDelegate {
   }
 
  private:
-  Window* window_to_update_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateHidingWindow);
+  raw_ptr<Window> window_to_update_ = nullptr;
 };
 
 class WindowDelegateAddingAndHidingChild : public MockWindowDelegate {
  public:
   explicit WindowDelegateAddingAndHidingChild(WindowOcclusionTrackerTest* test)
       : test_(test) {}
+
+  WindowDelegateAddingAndHidingChild(
+      const WindowDelegateAddingAndHidingChild&) = delete;
+  WindowDelegateAddingAndHidingChild& operator=(
+      const WindowDelegateAddingAndHidingChild&) = delete;
 
   void set_queued_expectation(Window::OcclusionState occlusion_state,
                               const SkRegion& occluded_region) {
@@ -1967,13 +1995,11 @@ class WindowDelegateAddingAndHidingChild : public MockWindowDelegate {
   }
 
  private:
-  WindowOcclusionTrackerTest* test_;
-  Window* window_to_update_ = nullptr;
+  raw_ptr<WindowOcclusionTrackerTest> test_;
+  raw_ptr<Window> window_to_update_ = nullptr;
   Window::OcclusionState queued_expected_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion queued_expected_occluded_region_ = SkRegion();
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDelegateAddingAndHidingChild);
 };
 
 }  // namespace
@@ -2269,11 +2295,11 @@ TEST_F(WindowOcclusionTrackerTest, NativeWindowOcclusion) {
 
   delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, SkRegion());
   // Make the host call OnOcclusionStateChanged on the root window.
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
   EXPECT_FALSE(delegate_a->is_expecting_call());
 
   delegate_a->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
   EXPECT_FALSE(delegate_a->is_expecting_call());
 }
 
@@ -2411,7 +2437,7 @@ TEST_F(WindowOcclusionTrackerTest, ScopedForceVisibleHiddenContainer) {
   EXPECT_FALSE(browser_delegate->is_expecting_call());
   EXPECT_FALSE(webcontents_delegate->is_expecting_call());
 
-  EXPECT_EQ(Window::OcclusionState::VISIBLE, webcontents->occlusion_state());
+  EXPECT_EQ(Window::OcclusionState::VISIBLE, webcontents->GetOcclusionState());
   EXPECT_TRUE(webcontents->TargetVisibility());
 
   container_delegate->set_expectation(Window::OcclusionState::VISIBLE);

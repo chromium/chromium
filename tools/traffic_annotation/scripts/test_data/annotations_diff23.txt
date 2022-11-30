@@ -1,0 +1,14 @@
+--- 
++++ 
+@@ -8,10 +8,5 @@
+ -->
+ 
+ <annotations>
+- <item id="A" added_in_milestone="62" hash_code="1" content_hash_code="10" os_list="linux,windows"/>
+- <item id="C" added_in_milestone="62" hash_code="3" content_hash_code="30" os_list="linux,windows"/>
+- <item id="E" added_in_milestone="62" hash_code="5" content_hash_code="50" os_list="linux,windows"/>
+- <item id="M" added_in_milestone="62" hash_code="7" content_hash_code="70" os_list="linux,windows"/>
+- <item id="X" added_in_milestone="62" hash_code="8" content_hash_code="80" os_list="linux,windows"/>
+- <item id="Z" added_in_milestone="62" hash_code="9" content_hash_code="90" os_list="linux,windows"/>
++ <item id="G" added_in_milestone="62" hash_code="4" content_hash_code="40" os_list="linux,windows"/>
+ </annotations>

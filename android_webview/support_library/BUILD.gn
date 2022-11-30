@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,11 +19,13 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageCallbackAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessageListenerAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebMessagePayloadAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebMessagePortAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebResourceRequest.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebSettingsAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewChromium.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebViewCookieManagerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebkitToCompatConverterAdapter.java",
@@ -35,6 +37,7 @@ android_library("support_lib_glue_java") {
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

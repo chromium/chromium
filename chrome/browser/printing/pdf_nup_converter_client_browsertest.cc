@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -17,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "pdf/pdf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace printing {
@@ -67,11 +67,11 @@ base::MappedReadOnlyRegion GetPdfRegion(const char* file_name) {
 base::MappedReadOnlyRegion GetBadDataRegion() {
   static const char kBadData[] = "BADDATA";
   base::MappedReadOnlyRegion pdf_region =
-      base::ReadOnlySharedMemoryRegion::Create(base::size(kBadData));
+      base::ReadOnlySharedMemoryRegion::Create(std::size(kBadData));
   if (!pdf_region.IsValid())
     return pdf_region;
 
-  memcpy(pdf_region.mapping.memory(), kBadData, base::size(kBadData));
+  memcpy(pdf_region.mapping.memory(), kBadData, std::size(kBadData));
   return pdf_region;
 }
 
@@ -84,7 +84,7 @@ std::vector<gfx::SizeF> GetPdfPageSizes(base::span<const uint8_t> pdf_data) {
 
   std::vector<gfx::SizeF> sizes;
   for (int i = 0; i < num_pages; ++i) {
-    base::Optional<gfx::SizeF> page_size =
+    absl::optional<gfx::SizeF> page_size =
         chrome_pdf::GetPDFPageSizeByIndex(pdf_data, i);
     if (!page_size.has_value())
       return {};
@@ -124,7 +124,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
   PdfNupConverterClientBrowserTest() = default;
   ~PdfNupConverterClientBrowserTest() override = default;
 
-  base::Optional<mojom::PdfNupConverter::Status> Convert(
+  absl::optional<mojom::PdfNupConverter::Status> Convert(
       base::ReadOnlySharedMemoryRegion pdf_region,
       int pages_per_sheet,
       base::ReadOnlySharedMemoryRegion* out_nup_pdf_region) {
@@ -146,7 +146,7 @@ class PdfNupConverterClientBrowserTest : public InProcessBrowserTest {
     }
 
     if (!called)
-      return base::nullopt;
+      return absl::nullopt;
 
     *out_nup_pdf_region = std::move(nup_pdf_region);
     return status;
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
             GetExpectedPdfSizes("pdf_converter_basic.pdf"));
 
   base::ReadOnlySharedMemoryRegion nup_pdf_region;
-  base::Optional<mojom::PdfNupConverter::Status> status = Convert(
+  absl::optional<mojom::PdfNupConverter::Status> status = Convert(
       std::move(pdf_region.region), /*pages_per_sheet=*/2, &nup_pdf_region);
 
   ASSERT_TRUE(status.has_value());
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
             GetExpectedPdfSizes("pdf_converter_basic.pdf"));
 
   base::ReadOnlySharedMemoryRegion nup_pdf_region;
-  base::Optional<mojom::PdfNupConverter::Status> status = Convert(
+  absl::optional<mojom::PdfNupConverter::Status> status = Convert(
       std::move(pdf_region.region), /*pages_per_sheet=*/4, &nup_pdf_region);
 
   ASSERT_TRUE(status.has_value());
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PdfNupConverterClientBrowserTest,
   ASSERT_TRUE(pdf_region.IsValid());
 
   base::ReadOnlySharedMemoryRegion nup_pdf_region;
-  base::Optional<mojom::PdfNupConverter::Status> status = Convert(
+  absl::optional<mojom::PdfNupConverter::Status> status = Convert(
       std::move(pdf_region.region), /*pages_per_sheet=*/2, &nup_pdf_region);
 
   ASSERT_TRUE(status.has_value());

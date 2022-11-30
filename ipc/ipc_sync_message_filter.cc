@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -178,23 +179,21 @@ void SyncMessageFilter::SignalAllEvents() {
   }
 }
 
-void SyncMessageFilter::GetGenericRemoteAssociatedInterface(
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
+void SyncMessageFilter::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
   base::AutoLock auto_lock(lock_);
   DCHECK(io_task_runner_ && io_task_runner_->BelongsToCurrentThread());
   if (!channel_) {
     // Attach the associated interface to a disconnected pipe, so that the
     // associated interface pointer can be used to make calls (which are
     // dropped).
-    mojo::AssociateWithDisconnectedPipe(std::move(handle));
+    mojo::AssociateWithDisconnectedPipe(receiver.PassHandle());
     return;
   }
 
   Channel::AssociatedInterfaceSupport* support =
       channel_->GetAssociatedInterfaceSupport();
-  support->GetGenericRemoteAssociatedInterface(
-      interface_name, std::move(handle));
+  support->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 }  // namespace IPC

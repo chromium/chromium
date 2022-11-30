@@ -1,13 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sessions/core/serialized_navigation_entry.h"
 
 #include <stddef.h>
+
+#include <tuple>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sessions/core/serialized_navigation_driver.h"
@@ -206,7 +207,7 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
     // and ignored. A correct referrer policy is extracted later (see
     // |correct_referrer_policy| below).
     int ignored_referrer_policy;
-    ignore_result(iterator->ReadInt(&ignored_referrer_policy));
+    std::ignore = iterator->ReadInt(&ignored_referrer_policy);
 
     // If the original URL can't be found, leave it empty.
     std::string original_request_url_spec;
@@ -228,7 +229,7 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
     // The |search_terms_| field was removed, but it still exists in the binary
     // format to keep backwards compatibility. Just get rid of it.
     std::u16string search_terms;
-    ignore_result(iterator->ReadString16(&search_terms));
+    std::ignore = iterator->ReadString16(&search_terms);
 
     if (!iterator->ReadInt(&http_status_code_))
       http_status_code_ = 0;
@@ -267,7 +268,7 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
 
     // Child task ids are no longer used.
     int children_task_ids_size = 0;
-    ignore_result(iterator->ReadInt(&children_task_ids_size));
+    std::ignore = iterator->ReadInt(&children_task_ids_size);
   }
 
   SerializedNavigationDriver::Get()->Sanitize(this);
@@ -287,7 +288,6 @@ size_t SerializedNavigationEntry::EstimateMemoryUsage() const {
          EstimateMemoryUsage(redirect_chain_) +
          EstimateMemoryUsage(
              replaced_entry_data_.value_or(ReplacedNavigationEntryData())) +
-         EstimateMemoryUsage(content_pack_categories_) +
          EstimateMemoryUsage(extended_info_map_);
 }
 

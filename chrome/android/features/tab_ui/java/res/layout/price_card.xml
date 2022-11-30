@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
@@ -21,7 +23,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginBottom="4dp"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.TextMediumThick.Green.Dark"
+            android:textAppearance="@style/TextAppearance.TextMediumThick"
             android:textAlignment="viewStart" />
         <TextView
             android:id="@+id/previous_price"
@@ -31,7 +33,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="4dp"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Dark"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Dark"
             android:textAlignment="viewStart" />
     </LinearLayout>
 </merge>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ std::vector<std::unique_ptr<Tile>> BuildFakeTree() {
   return top_tiles;
 }
 
-base::Optional<Tile> FindTile(std::vector<std::unique_ptr<Tile>>& tiles,
+absl::optional<Tile> FindTile(std::vector<std::unique_ptr<Tile>>& tiles,
                               const std::string& id) {
   for (const auto& tile : tiles) {
     if (id == tile->id)
@@ -64,7 +64,7 @@ base::Optional<Tile> FindTile(std::vector<std::unique_ptr<Tile>>& tiles,
     }
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -106,7 +106,7 @@ void FakeTileService::SetServerUrl(const std::string& url) {}
 void FakeTileService::OnTileClicked(const std::string& url) {}
 
 void FakeTileService::OnQuerySelected(
-    const base::Optional<std::string>& parent_tile_id,
+    const absl::optional<std::string>& parent_tile_id,
     const std::u16string& query_text) {}
 
 Logger* FakeTileService::GetLogger() {

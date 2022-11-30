@@ -28,14 +28,15 @@
 namespace blink {
 
 MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(
-    base::RepeatingClosure set_needs_flush_callback)
-    : set_needs_flush_callback_(std::move(set_needs_flush_callback)) {}
+    MemoryManagedPaintCanvas::Client* client)
+    : client_(client) {
+  DCHECK(client);
+}
 
 std::unique_ptr<cc::RecordPaintCanvas> MemoryManagedPaintRecorder::CreateCanvas(
     cc::DisplayItemList* list,
     const SkRect& bounds) {
-  return std::make_unique<MemoryManagedPaintCanvas>(list, bounds,
-                                                    set_needs_flush_callback_);
+  return std::make_unique<MemoryManagedPaintCanvas>(list, bounds, client_);
 }
 
 }  // namespace blink

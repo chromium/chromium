@@ -1,11 +1,9 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_HANDLER_H_
-
-#include "base/macros.h"
 
 namespace content {
 class WebContents;
@@ -15,17 +13,27 @@ namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
-class SaveAddressProfileBubbleController;
+class SaveUpdateAddressProfileBubbleController;
 class EditAddressProfileDialogController;
 class SaveCardBubbleController;
 class SaveUPIBubble;
 class SaveUPIBubbleController;
+class VirtualCardManualFallbackBubbleController;
+class VirtualCardEnrollBubbleController;
 
+// TODO(crbug.com/1337392): consider removing this class and give the logic back
+// to each bubble's controller. This class serves also the avatar button /
+// personal data manager observer for saving feedback. If we end up not doing it
+// the same way, this class may be unnecessary.
 // Responsible for receiving calls from controllers and showing autofill
 // bubbles.
 class AutofillBubbleHandler {
  public:
   AutofillBubbleHandler() = default;
+
+  AutofillBubbleHandler(const AutofillBubbleHandler&) = delete;
+  AutofillBubbleHandler& operator=(const AutofillBubbleHandler&) = delete;
+
   virtual ~AutofillBubbleHandler() = default;
 
   virtual AutofillBubbleBase* ShowSaveCreditCardBubble(
@@ -49,22 +57,32 @@ class AutofillBubbleHandler {
 
   virtual AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
-      SaveAddressProfileBubbleController* controller,
+      SaveUpdateAddressProfileBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowUpdateAddressProfileBubble(
+      content::WebContents* web_contents,
+      SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* web_contents,
       EditAddressProfileDialogController* controller) = 0;
 
+  virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+      content::WebContents* web_contents,
+      VirtualCardManualFallbackBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowVirtualCardEnrollBubble(
+      content::WebContents* web_contents,
+      VirtualCardEnrollBubbleController* controller,
+      bool is_user_gesture) = 0;
+
   // TODO(crbug.com/964127): Wait for the integration with sign in after local
   // save to be landed to see if we need to merge password saved and credit card
   // saved functions.
   virtual void OnPasswordSaved() = 0;
-
-  // TODO(crbug.com/964127): Move password bubble here.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillBubbleHandler);
 };
 
 }  // namespace autofill

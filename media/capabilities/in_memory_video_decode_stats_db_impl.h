@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "media/base/media_export.h"
@@ -35,6 +35,12 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // seed DB is available.
   explicit InMemoryVideoDecodeStatsDBImpl(
       VideoDecodeStatsDBProvider* seed_db_provider);
+
+  InMemoryVideoDecodeStatsDBImpl(const InMemoryVideoDecodeStatsDBImpl&) =
+      delete;
+  InMemoryVideoDecodeStatsDBImpl& operator=(
+      const InMemoryVideoDecodeStatsDBImpl&) = delete;
+
   ~InMemoryVideoDecodeStatsDBImpl() override;
 
   // Implement VideoDecodeStatsDB.
@@ -73,13 +79,13 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
 
   // Lazily provides |seed_db_| from original profile. Owned by original profile
   // and may be null.
-  VideoDecodeStatsDBProvider* seed_db_provider_ = nullptr;
+  raw_ptr<VideoDecodeStatsDBProvider> seed_db_provider_ = nullptr;
 
   // On-disk DB owned by the base profile for the off-the-record session. For
   // incognito sessions, this will contain the original profile's stats. For
   // guest sessions, this will be null (no notion of base profile). See
   // |in_memory_db_|.
-  VideoDecodeStatsDB* seed_db_ = nullptr;
+  raw_ptr<VideoDecodeStatsDB> seed_db_ = nullptr;
 
   // In-memory DB, mapping VideoDescKey strings -> DecodeStatsEntries. This is
   // the primary storage (read and write) for this class. The |seed_db_| is
@@ -94,8 +100,6 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<InMemoryVideoDecodeStatsDBImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryVideoDecodeStatsDBImpl);
 };
 
 }  // namespace media

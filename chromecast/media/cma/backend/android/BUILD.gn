@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -60,6 +60,8 @@ android_library("audio_track_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chromecast/base:base_java",
     "//chromecast/public:volume_control_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

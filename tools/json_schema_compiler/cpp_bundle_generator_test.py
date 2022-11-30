@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,29 +21,28 @@ def _createCppBundleGenerator(file_path):
 
 def _getPlatformIfdefs(cpp_bundle_generator, model):
   return cpp_bundle_generator._GetPlatformIfdefs(
-      model.namespaces.values()[0].functions.values()[0])
+      list(list(model.namespaces.values())[0].functions.values())[0])
 
 class CppBundleGeneratorTest(unittest.TestCase):
   def testIfDefsForWinLinux(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_win_linux.json')
-    self.assertEquals(
-        'defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))',
+    self.assertEqual(
+        'BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)',
         _getPlatformIfdefs(cpp_bundle_generator, model))
 
   def testIfDefsForAll(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_all.json')
-    self.assertEquals(
-        'defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || '
-        '(defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS))',
+    self.assertEqual(
+        'BUILDFLAG(IS_CHROMEOS_ASH) || '
+        'BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)',
         _getPlatformIfdefs(cpp_bundle_generator, model))
 
   def testIfDefsForChromeOS(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_chromeos.json')
-    self.assertEquals('(defined(OS_CHROMEOS) && '
-                      '!BUILDFLAG(IS_CHROMEOS_LACROS))',
+    self.assertEqual('BUILDFLAG(IS_CHROMEOS_ASH)',
                       _getPlatformIfdefs(cpp_bundle_generator, model))
 
 

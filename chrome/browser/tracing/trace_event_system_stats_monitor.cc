@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,19 +26,21 @@ class SystemStatsHolder : public base::trace_event::ConvertableToTraceFormat {
  public:
   explicit SystemStatsHolder(const base::SystemMetrics& system_metrics)
       : system_metrics_(system_metrics) {}
+
+  SystemStatsHolder(const SystemStatsHolder&) = delete;
+  SystemStatsHolder& operator=(const SystemStatsHolder&) = delete;
+
   ~SystemStatsHolder() override = default;
 
   // base::trace_event::ConvertableToTraceFormat overrides:
   void AppendAsTraceFormat(std::string* out) const override {
     std::string tmp;
-    base::JSONWriter::Write(*system_metrics_.ToValue(), &tmp);
+    base::JSONWriter::Write(system_metrics_.ToValue(), &tmp);
     *out += tmp;
   }
 
  private:
   const base::SystemMetrics system_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemStatsHolder);
 };
 
 }  // namespace

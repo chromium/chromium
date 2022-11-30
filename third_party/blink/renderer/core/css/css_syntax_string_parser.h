@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_STRING_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_STRING_PARSER_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -24,7 +25,7 @@ class CORE_EXPORT CSSSyntaxStringParser {
   explicit CSSSyntaxStringParser(const String&);
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#consume-syntax-definition
-  base::Optional<CSSSyntaxDefinition> Parse();
+  absl::optional<CSSSyntaxDefinition> Parse();
 
  private:
   // https://drafts.css-houdini.org/css-properties-values-api-1/#consume-syntax-component

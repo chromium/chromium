@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Convenience helper to wrap the pairing of a receiving associated interface
+// endpoint and the name of the interface expected by the remote endpoint.
+//
+// This should be used sparingly, in cases where APIs need to dynamically pass
+// different types of asspcoated receivers that cannot or should not be known at
+// compile time.
+struct GenericPendingAssociatedReceiver {
+  // The name of the interface which defines the messages to be received by
+  // `receiver`.
+  string interface_name;
+
+  // A generic associated interface receiver which is actually expected to
+  // receive messages defined by the interface named by `interface_name` above.
+  pending_associated_receiver<GenericAssociatedInterface> receiver;
+};
+
+// A generic placeholder interface for the associated endpoint to be passed by a
+// GenericPendingAssociatedReceiver.
+interface GenericAssociatedInterface {};

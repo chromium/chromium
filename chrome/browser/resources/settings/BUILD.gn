@@ -1,56 +1,44 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
+import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
-import("../tools/optimize_webui.gni")
-import("settings.gni")
+import("./settings.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+assert(!is_android, "Android does not use these settings")
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "settings"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    js_module_in_files = [
-      "settings.js",
-      "lazy_load.js",
-    ]
-    js_out_files = [
-      "settings.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
-    out_manifest = "$target_gen_dir/$build_manifest"
-
+if (is_chromeos_ash) {
+  group("closure_compile") {
     deps = [
-      ":preprocess",
-      ":preprocess_generated",
-      "../../../../ui/webui/resources:preprocess",
+      ":closure_compile_local",
+      "chromeos:closure_compile_module",
     ]
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+  }
+
+  js_type_check("closure_compile_local") {
+    is_polymer3 = true
+    closure_flags = settings_closure_flags
+    deps = [ ":router" ]
+  }
+
+  js_library("router") {
+    deps = [
+      "//ui/webui/resources/js:assert",
+      "//ui/webui/resources/js:load_time_data.m",
     ]
+    externs_list = [ "$externs_path/metrics_private.js" ]
   }
 }
 
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "settings"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
+
+  static_files = [
     "images/cookies_banner_dark.svg",
     "images/cookies_banner.svg",
     "images/googleg_standard_clr_32px.svg",
@@ -60,8 +48,52 @@ generate_grd("build_grd") {
     "images/password_check_positive.svg",
     "images/permissions_banner_dark.svg",
     "images/permissions_banner.svg",
-    "images/privacy_sandbox_banner_dark.svg",
-    "images/privacy_sandbox_banner.svg",
+    "images/privacy_guide/clear_on_exit_graphic_dark_v2.svg",
+    "images/privacy_guide/clear_on_exit_graphic_dark.svg",
+    "images/privacy_guide/clear_on_exit_graphic_v2.svg",
+    "images/privacy_guide/clear_on_exit_graphic.svg",
+    "images/privacy_guide/clouds_graphic_dark.svg",
+    "images/privacy_guide/clouds_graphic.svg",
+    "images/privacy_guide/completion_banner_circle.svg",
+    "images/privacy_guide/completion_banner_dark_v2.svg",
+    "images/privacy_guide/completion_banner_dark.svg",
+    "images/privacy_guide/completion_banner_pill.svg",
+    "images/privacy_guide/completion_banner_square.svg",
+    "images/privacy_guide/completion_banner_triangle.svg",
+    "images/privacy_guide/completion_banner_v2.svg",
+    "images/privacy_guide/completion_banner.svg",
+    "images/privacy_guide/cookies_graphic_dark_v2.svg",
+    "images/privacy_guide/cookies_graphic_dark.svg",
+    "images/privacy_guide/cookies_graphic_v2.svg",
+    "images/privacy_guide/cookies_graphic.svg",
+    "images/privacy_guide/hills_graphic_dark.svg",
+    "images/privacy_guide/hills_graphic.svg",
+    "images/privacy_guide/history_sync_graphic_dark_v2.svg",
+    "images/privacy_guide/history_sync_graphic_dark.svg",
+    "images/privacy_guide/history_sync_graphic_v2.svg",
+    "images/privacy_guide/history_sync_graphic.svg",
+    "images/privacy_guide/horizon_graphic_dark.svg",
+    "images/privacy_guide/horizon_graphic.svg",
+    "images/privacy_guide/msbb_graphic_dark_v2.svg",
+    "images/privacy_guide/msbb_graphic_dark.svg",
+    "images/privacy_guide/msbb_graphic_v2.svg",
+    "images/privacy_guide/msbb_graphic.svg",
+    "images/privacy_guide/privacy_sandbox_graphic_dark.svg",
+    "images/privacy_guide/privacy_sandbox_graphic.svg",
+    "images/privacy_guide/promo_banner_dark.svg",
+    "images/privacy_guide/promo_banner.svg",
+    "images/privacy_guide/safe_browsing_graphic_dark_v2.svg",
+    "images/privacy_guide/safe_browsing_graphic_dark.svg",
+    "images/privacy_guide/safe_browsing_graphic_v2.svg",
+    "images/privacy_guide/safe_browsing_graphic.svg",
+    "images/privacy_guide/waa_graphic_dark.svg",
+    "images/privacy_guide/waa_graphic.svg",
+    "images/privacy_guide/welcome_banner_dark.svg",
+    "images/privacy_guide/welcome_banner.svg",
+    "images/privacy_sandbox_banner_v3_dark.svg",
+    "images/privacy_sandbox_banner_v3.svg",
+    "images/privacy_sandbox_floc_banner_dark.svg",
+    "images/privacy_sandbox_floc_banner.svg",
     "images/safe_browsing_banner_dark.svg",
     "images/safe_browsing_banner.svg",
     "images/sync_banner_dark.svg",
@@ -69,539 +101,392 @@ generate_grd("build_grd") {
     "privacy_sandbox/privacy_sandbox.html",
     "settings.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
-  deps = [ "privacy_sandbox:build_grdp" ]
-
-  if (optimize_webui) {
-    deps += [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
-      "settings.rollup.js|settings.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
-  } else {
-    deps += [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
-  }
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "a11y_page/captions_browser_proxy.js",
-    "about_page/about_page_browser_proxy.js",
-    "appearance_page/appearance_browser_proxy.js",
-    "appearance_page/fonts_browser_proxy.js",
-    "autofill_page/merge_exceptions_store_copies_behavior.js",
-    "autofill_page/merge_passwords_store_copies_behavior.js",
-    "autofill_page/multi_store_exception_entry.js",
-    "autofill_page/multi_store_id_handler.js",
-    "autofill_page/multi_store_password_ui_entry.js",
-    "autofill_page/password_check_behavior.js",
-    "autofill_page/password_manager_proxy.js",
-    "autofill_page/show_password_behavior.js",
-    "chrome_cleanup_page/chrome_cleanup_proxy.js",
-    "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js",
-    "controls/pref_control_behavior.js",
-    "controls/settings_boolean_control_behavior.js",
-    "controls/settings_idle_load.js",
-    "downloads_page/downloads_browser_proxy.js",
-    "ensure_lazy_loaded.js",
-    "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.js",
-    "hats_browser_proxy.js",
-    "i18n_setup.js",
-    "incompatible_applications_page/incompatible_applications_browser_proxy.js",
-    "languages_page/languages.js",
-    "languages_page/languages_browser_proxy.js",
-    "languages_page/languages_settings_metrics_proxy.js",
-    "lazy_load.js",
-    "lifetime_browser_proxy.js",
-    "metrics_browser_proxy.js",
-    "on_startup_page/on_startup_browser_proxy.js",
-    "on_startup_page/startup_urls_page_browser_proxy.js",
-    "open_window_proxy.js",
-    "page_visibility.js",
-    "people_page/sync_browser_proxy.js",
-    "people_page/profile_info_browser_proxy.js",
-    "prefs/prefs_behavior.js",
-    "prefs/prefs.js",
-    "prefs/prefs_types.js",
-    "prefs/pref_util.js",
-    "privacy_page/privacy_page_browser_proxy.js",
-    "privacy_page/security_keys_browser_proxy.js",
-    "reset_page/reset_browser_proxy.js",
-    "route.js",
-    "router.js",
-    "safety_check_page/safety_check_browser_proxy.js",
-    "search_engines_page/search_engines_browser_proxy.js",
-    "search_settings.js",
-    "setting_id_param_util.js",
-    "settings.js",
-    "settings_page/main_page_behavior.js",
-    "settings_routes.js",
-    "site_settings/constants.js",
-    "site_settings/cookie_info.js",
-    "site_settings/local_data_browser_proxy.js",
-    "site_settings/site_settings_behavior.js",
-    "site_settings/site_settings_prefs_browser_proxy.js",
-    "site_settings/website_usage_browser_proxy.js",
+  # -----------------web_component_files start ---------------------------------
+  web_component_files = [
+    "a11y_page/a11y_page.ts",
+    "a11y_page/live_caption_section.ts",
+    "about_page/about_page.ts",
+    "appearance_page/appearance_fonts_page.ts",
+    "appearance_page/appearance_page.ts",
+    "appearance_page/home_url_input.ts",
+    "autofill_page/address_edit_dialog.ts",
+    "autofill_page/address_remove_confirmation_dialog.ts",
+    "autofill_page/autofill_page.ts",
+    "autofill_page/autofill_section.ts",
+    "autofill_page/avatar_icon.ts",
+    "autofill_page/credit_card_edit_dialog.ts",
+    "autofill_page/credit_card_list_entry.ts",
+    "autofill_page/password_check_edit_disclaimer_dialog.ts",
+    "autofill_page/password_check_list_item.ts",
+    "autofill_page/password_check.ts",
+    "autofill_page/password_edit_dialog.ts",
+    "autofill_page/password_list_item.ts",
+    "autofill_page/password_move_multiple_passwords_to_account_dialog.ts",
+    "autofill_page/password_move_to_account_dialog.ts",
+    "autofill_page/password_remove_confirmation_dialog.ts",
+    "autofill_page/password_remove_dialog.ts",
+    "autofill_page/password_view.ts",
+    "autofill_page/passwords_device_section.ts",
+    "autofill_page/passwords_export_dialog.ts",
+    "autofill_page/passwords_import_dialog.ts",
+    "autofill_page/passwords_list_handler.ts",
+    "autofill_page/passwords_section.ts",
+    "autofill_page/payments_list.ts",
+    "autofill_page/payments_section.ts",
+    "autofill_page/upi_id_list_entry.ts",
+    "autofill_page/virtual_card_unenroll_dialog.ts",
+    "basic_page/basic_page.ts",
+    "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
+    "clear_browsing_data_dialog/history_deletion_dialog.ts",
+    "clear_browsing_data_dialog/installed_app_checkbox.ts",
+    "clear_browsing_data_dialog/passwords_deletion_dialog.ts",
+    "controls/controlled_button.ts",
+    "controls/controlled_radio_button.ts",
+    "controls/extension_controlled_indicator.ts",
+    "controls/settings_checkbox.ts",
+    "controls/settings_dropdown_menu.ts",
+    "controls/settings_radio_group.ts",
+    "controls/settings_slider.ts",
+    "controls/settings_textarea.ts",
+    "controls/settings_toggle_button.ts",
+    "downloads_page/downloads_page.ts",
+    "on_startup_page/on_startup_page.ts",
+    "on_startup_page/startup_url_dialog.ts",
+    "on_startup_page/startup_url_entry.ts",
+    "on_startup_page/startup_urls_page.ts",
+    "performance_page/battery_page.ts",
+    "performance_page/performance_page.ts",
+    "performance_page/tab_discard_exception_dialog.ts",
+    "performance_page/tab_discard_exception_entry.ts",
+    "performance_page/tab_discard_exception_list.ts",
+    "people_page/people_page.ts",
+    "people_page/signout_dialog.ts",
+    "people_page/sync_account_control.ts",
+    "people_page/sync_controls.ts",
+    "people_page/sync_encryption_options.ts",
+    "people_page/sync_page.ts",
+    "privacy_page/collapse_radio_button.ts",
+    "privacy_page/cookies_page.ts",
+    "privacy_page/disable_safebrowsing_dialog.ts",
+    "privacy_page/do_not_track_toggle.ts",
+    "privacy_page/personalization_options.ts",
+    "privacy_page/privacy_guide_promo.ts",
+    "privacy_page/privacy_guide/privacy_guide_clear_on_exit_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_completion_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_completion_link_row.ts",
+    "privacy_page/privacy_guide/privacy_guide_cookies_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_description_item.ts",
+    "privacy_page/privacy_guide/privacy_guide_dialog.ts",
+    "privacy_page/privacy_guide/privacy_guide_history_sync_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_msbb_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_page.ts",
+    "privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.ts",
+    "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
+    "privacy_page/privacy_guide/step_indicator.ts",
+    "privacy_page/privacy_page.ts",
+    "privacy_page/secure_dns.ts",
+    "privacy_page/secure_dns_input.ts",
+    "privacy_page/security_keys_bio_enroll_dialog.ts",
+    "privacy_page/security_keys_credential_management_dialog.ts",
+    "privacy_page/security_keys_pin_field.ts",
+    "privacy_page/security_keys_reset_dialog.ts",
+    "privacy_page/security_keys_set_pin_dialog.ts",
+    "privacy_page/security_keys_subpage.ts",
+    "privacy_page/security_keys_phones_subpage.ts",
+    "privacy_page/security_keys_phones_list.ts",
+    "privacy_page/security_keys_phones_dialog.ts",
+    "privacy_page/security_page.ts",
+    "privacy_sandbox/app.ts",
+    "privacy_sandbox/interest_item.ts",
+    "reset_page/reset_page.ts",
+    "reset_page/reset_profile_banner.ts",
+    "reset_page/reset_profile_dialog.ts",
+    "safety_check_page/safety_check_child.ts",
+    "safety_check_page/safety_check_extensions_child.ts",
+    "safety_check_page/safety_check_notification_permissions.ts",
+    "safety_check_page/safety_check_page.ts",
+    "safety_check_page/safety_check_passwords_child.ts",
+    "safety_check_page/safety_check_safe_browsing_child.ts",
+    "safety_check_page/safety_check_unused_site_permissions.ts",
+    "safety_check_page/safety_check_updates_child.ts",
+    "search_engines_page/omnibox_extension_entry.ts",
+    "search_engines_page/search_engine_delete_confirmation_dialog.ts",
+    "search_engines_page/search_engine_edit_dialog.ts",
+    "search_engines_page/search_engine_entry.ts",
+    "search_engines_page/search_engines_list.ts",
+    "search_engines_page/search_engines_page.ts",
+    "search_page/search_page.ts",
+    "settings_main/settings_main.ts",
+    "settings_menu/settings_menu.ts",
+    "settings_page/settings_animated_pages.ts",
+    "settings_page/settings_section.ts",
+    "settings_page/settings_subpage.ts",
+    "settings_ui/settings_ui.ts",
+    "site_favicon.ts",
+    "site_settings/add_site_dialog.ts",
+    "site_settings/all_sites.ts",
+    "site_settings/category_default_setting.ts",
+    "site_settings/category_setting_exceptions.ts",
+    "site_settings/chooser_exception_list_entry.ts",
+    "site_settings/chooser_exception_list.ts",
+    "site_settings/edit_exception_dialog.ts",
+    "site_settings/media_picker.ts",
+    "site_settings/review_notification_permissions.ts",
+    "site_settings_page/recent_site_permissions.ts",
+    "site_settings_page/site_settings_list.ts",
+    "site_settings_page/site_settings_page.ts",
+    "site_settings/pdf_documents.ts",
+    "site_settings/protocol_handlers.ts",
+    "site_settings/settings_category_default_radio_group.ts",
+    "site_settings/site_details_permission.ts",
+    "site_settings/site_details.ts",
+    "site_settings/site_entry.ts",
+    "site_settings/site_list_entry.ts",
+    "site_settings/site_list.ts",
+    "site_settings/zoom_levels.ts",
   ]
 
-  if (is_chromeos_ash) {
-    in_files += [
-      "autofill_page/blocking_request_manager.js",
-      "languages_page/languages_metrics_proxy.js",
-      "people_page/account_manager_browser_proxy.js",
-      "site_settings/android_info_browser_proxy.js",
-    ]
-  } else {
-    if (!is_chromeos_lacros) {
-      in_files += [
-        "default_browser_page/default_browser_browser_proxy.js",
-        "system_page/system_page_browser_proxy.js",
-      ]
-    }
-    in_files += [
-      "people_page/import_data_browser_proxy.js",
-      "people_page/manage_profile_browser_proxy.js",
+  if (!is_chromeos_ash) {
+    web_component_files += [
+      "people_page/manage_profile.ts",
+      "relaunch_confirmation_dialog.ts",
+      "languages_page/add_languages_dialog.ts",
+      "languages_page/languages_page.ts",
+      "languages_page/spell_check_page.ts",
+      "languages_page/translate_page.ts",
+      "system_page/system_page.ts",
     ]
   }
-}
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":polymer3_elements" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "a11y_page/a11y_page.js",
-    "a11y_page/captions_subpage.js",
-    "a11y_page/live_caption_section.js",
-    "about_page/about_page.js",
-    "appearance_page/appearance_fonts_page.js",
-    "appearance_page/appearance_page.js",
-    "appearance_page/home_url_input.js",
-    "autofill_page/autofill_page.js",
-    "autofill_page/avatar_icon.js",
-    "autofill_page/payments_list.js",
-    "autofill_page/credit_card_list_entry.js",
-    "autofill_page/upi_id_list_entry.js",
-    "autofill_page/passwords_shared_css.js",
-    "autofill_page/credit_card_edit_dialog.js",
-    "autofill_page/autofill_section.js",
-    "autofill_page/address_edit_dialog.js",
-    "autofill_page/address_remove_confirmation_dialog.js",
-    "autofill_page/password_check.js",
-    "autofill_page/password_check_edit_dialog.js",
-    "autofill_page/password_check_edit_disclaimer_dialog.js",
-    "autofill_page/password_check_list_item.js",
-    "autofill_page/password_list_item.js",
-    "autofill_page/passwords_list_handler.js",
-    "autofill_page/password_remove_confirmation_dialog.js",
-    "autofill_page/passwords_section.js",
-    "autofill_page/passwords_device_section.js",
-    "autofill_page/password_edit_dialog.js",
-    "autofill_page/password_move_multiple_passwords_to_account_dialog.js",
-    "autofill_page/password_move_to_account_dialog.js",
-    "autofill_page/password_remove_dialog.js",
-    "autofill_page/passwords_export_dialog.js",
-    "autofill_page/payments_section.js",
-    "basic_page/basic_page.js",
-    "clear_browsing_data_dialog/clear_browsing_data_dialog.js",
-    "clear_browsing_data_dialog/history_deletion_dialog.js",
-    "clear_browsing_data_dialog/installed_app_checkbox.js",
-    "clear_browsing_data_dialog/passwords_deletion_dialog.js",
-    "controls/controlled_button.js",
-    "controls/controlled_radio_button.js",
-    "controls/extension_controlled_indicator.js",
-    "controls/password_prompt_dialog.js",
-    "controls/settings_checkbox.js",
-    "controls/settings_dropdown_menu.js",
-    "controls/settings_radio_group.js",
-    "controls/settings_slider.js",
-    "controls/settings_textarea.js",
-    "controls/settings_toggle_button.js",
-    "downloads_page/downloads_page.js",
-    "icons.js",
-    "languages_page/add_languages_dialog.js",
-    "languages_page/languages_page.js",
-    "languages_page/languages_subpage.js",
-    "settings_menu/settings_menu.js",
-    "on_startup_page/on_startup_page.js",
-    "on_startup_page/startup_url_dialog.js",
-    "on_startup_page/startup_url_entry.js",
-    "on_startup_page/startup_urls_page.js",
-    "people_page/sync_account_control.js",
-    "people_page/sync_encryption_options.js",
-    "people_page/people_page.js",
-    "people_page/signout_dialog.js",
-    "people_page/sync_controls.js",
-    "people_page/sync_page.js",
-    "privacy_page/collapse_radio_button.js",
-    "privacy_page/cookies_page.js",
-    "privacy_page/do_not_track_toggle.js",
-    "privacy_page/privacy_page.js",
-    "privacy_page/personalization_options.js",
-    "privacy_page/secure_dns.js",
-    "privacy_page/secure_dns_input.js",
-    "privacy_page/security_page.js",
-    "privacy_page/disable_safebrowsing_dialog.js",
-    "privacy_page/security_keys_bio_enroll_dialog.js",
-    "privacy_page/security_keys_credential_management_dialog.js",
-    "privacy_page/security_keys_pin_field.js",
-    "privacy_page/security_keys_reset_dialog.js",
-    "privacy_page/security_keys_set_pin_dialog.js",
-    "privacy_page/security_keys_subpage.js",
-    "reset_page/reset_page.js",
-    "reset_page/reset_profile_dialog.js",
-    "reset_page/reset_profile_banner.js",
-    "safety_check_page/safety_check_child.js",
-    "safety_check_page/safety_check_extensions_child.js",
-    "safety_check_page/safety_check_page.js",
-    "safety_check_page/safety_check_passwords_child.js",
-    "safety_check_page/safety_check_safe_browsing_child.js",
-    "safety_check_page/safety_check_updates_child.js",
-    "search_engines_page/omnibox_extension_entry.js",
-    "search_engines_page/search_engine_dialog.js",
-    "search_engines_page/search_engine_entry_css.js",
-    "search_engines_page/search_engine_entry.js",
-    "search_engines_page/search_engines_list.js",
-    "search_engines_page/search_engines_page.js",
-    "search_page/search_page.js",
-    "settings_main/settings_main.js",
-    "settings_page/settings_animated_pages.js",
-    "settings_page/settings_section.js",
-    "settings_page/settings_subpage.js",
-    "settings_ui/settings_ui.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
-    "settings_vars_css.js",
-    "site_favicon.js",
-    "site_settings/add_site_dialog.js",
-    "site_settings/all_sites.js",
-    "site_settings/all_sites_icons.js",
-    "site_settings/category_default_setting.js",
-    "site_settings/category_setting_exceptions.js",
-    "site_settings/chooser_exception_list.js",
-    "site_settings/chooser_exception_list_entry.js",
-    "site_settings/clear_storage_dialog_css.js",
-    "site_settings/edit_exception_dialog.js",
-    "site_settings/media_picker.js",
-    "site_settings/pdf_documents.js",
-    "site_settings/protocol_handlers.js",
-    "site_settings/settings_category_default_radio_group.js",
-    "site_settings/site_data.js",
-    "site_settings/site_data_details_subpage.js",
-    "site_settings/site_data_entry.js",
-    "site_settings/site_details.js",
-    "site_settings/site_details_permission.js",
-    "site_settings/site_entry.js",
-    "site_settings/site_list.js",
-    "site_settings/site_list_entry.js",
-    "site_settings/zoom_levels.js",
-    "site_settings_page/recent_site_permissions.js",
-    "site_settings_page/site_settings_list.js",
-    "site_settings_page/site_settings_page.js",
-  ]
-
-  if (is_win) {
-    in_files += [
-      "chrome_cleanup_page/chrome_cleanup_page.js",
-      "chrome_cleanup_page/items_to_remove_list.js",
-      "incompatible_applications_page/incompatible_applications_page.js",
-      "incompatible_applications_page/incompatible_application_item.js",
-      "safety_check_page/safety_check_chrome_cleaner_child.js",
+  if (!is_chromeos) {
+    web_component_files += [
+      "default_browser_page/default_browser_page.ts",
+      "people_page/import_data_dialog.ts",
     ]
+  }
+
+  if (!is_chromeos_ash && !is_mac) {
+    web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
   if (!is_mac) {
-    in_files += [ "languages_page/edit_dictionary_page.js" ]
-  }
-
-  if (!is_chromeos_ash) {
-    if (!is_chromeos_lacros) {
-      in_files += [
-        "default_browser_page/default_browser_page.js",
-        "system_page/system_page.js",
-      ]
-    }
-    in_files += [
-      "people_page/import_data_dialog.js",
-      "people_page/manage_profile.js",
-    ]
-  }
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/settings_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/settings_resources.h",
-    "grit/settings_resources_map.cc",
-    "grit/settings_resources_map.h",
-    "settings_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-group("closure_compile") {
-  deps = [
-    ":closure_compile_local_module",
-    "a11y_page:closure_compile_module",
-    "about_page:closure_compile_module",
-    "appearance_page:closure_compile_module",
-    "autofill_page:closure_compile_module",
-    "basic_page:closure_compile_module",
-    "clear_browsing_data_dialog:closure_compile_module",
-    "controls:closure_compile_module",
-    "downloads_page:closure_compile_module",
-    "languages_page:closure_compile_module",
-    "on_startup_page:closure_compile_module",
-    "people_page:closure_compile_module",
-    "prefs:closure_compile_module",
-    "privacy_page:closure_compile_module",
-    "privacy_sandbox:closure_compile",
-    "reset_page:closure_compile_module",
-    "safety_check_page:closure_compile_module",
-    "search_engines_page:closure_compile_module",
-    "search_page:closure_compile_module",
-    "settings_main:closure_compile_module",
-    "settings_menu:closure_compile_module",
-    "settings_page:closure_compile_module",
-    "settings_ui:closure_compile_module",
-    "site_settings:closure_compile_module",
-    "site_settings_page:closure_compile_module",
-  ]
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
-    deps += [
-      "default_browser_page:closure_compile_module",
-      "system_page:closure_compile_module",
-    ]
+    web_component_files += [ "a11y_page/captions_subpage.ts" ]
+  } else {
+    web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
   }
 
   if (is_win) {
-    deps += [
-      "chrome_cleanup_page:closure_compile_module",
-      "incompatible_applications_page:closure_compile_module",
+    web_component_files += [
+      "safety_check_page/safety_check_chrome_cleaner_child.ts",
+      "chrome_cleanup_page/chrome_cleanup_page.ts",
+      "chrome_cleanup_page/items_to_remove_list.ts",
+      "incompatible_applications_page/incompatible_application_item.ts",
+      "incompatible_applications_page/incompatible_applications_page.ts",
     ]
+  }
+  if (is_win || is_mac) {
+    web_component_files += [
+      "autofill_page/passkeys_subpage.ts",
+      "autofill_page/passkeys_delete_confirmation_dialog.ts",
+    ]
+  }
+  if (is_chromeos) {
+    web_component_files += [ "controls/password_prompt_dialog.ts" ]
+  }
+
+  # -----------------web_component_files end ----------------------------------
+
+  # -----------------non_web_component_files start ----------------------------
+
+  non_web_component_files = [
+    "a11y_page/captions_browser_proxy.ts",
+    "about_page/about_page_browser_proxy.ts",
+    "appearance_page/appearance_browser_proxy.ts",
+    "appearance_page/fonts_browser_proxy.ts",
+    "autofill_page/autofill_manager_proxy.ts",
+    "autofill_page/merge_passwords_store_copies_mixin.ts",
+    "autofill_page/user_util_mixin.ts",
+    "autofill_page/password_check_mixin.ts",
+    "autofill_page/password_manager_proxy.ts",
+    "autofill_page/password_removal_mixin.ts",
+    "autofill_page/password_requestor_mixin.ts",
+    "autofill_page/payments_manager_proxy.ts",
+    "autofill_page/show_password_mixin.ts",
+    "base_mixin.ts",
+    "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
+    "controls/cr_policy_pref_mixin.ts",
+    "controls/pref_control_mixin.ts",
+    "controls/settings_boolean_control_mixin.ts",
+    "controls/settings_idle_load.ts",
+    "downloads_page/downloads_browser_proxy.ts",
+    "ensure_lazy_loaded.ts",
+    "extension_control_browser_proxy.ts",
+    "focus_config.ts",
+    "global_scroll_target_mixin.ts",
+    "hats_browser_proxy.ts",
+    "i18n_setup.ts",
+    "lazy_load.ts",
+    "lifetime_browser_proxy.ts",
+    "metrics_browser_proxy.ts",
+    "on_startup_page/on_startup_browser_proxy.ts",
+    "on_startup_page/startup_urls_page_browser_proxy.ts",
+    "open_window_proxy.ts",
+    "page_visibility.ts",
+    "people_page/sync_browser_proxy.ts",
+    "people_page/profile_info_browser_proxy.ts",
+    "performance_page/performance_browser_proxy.ts",
+    "performance_page/performance_metrics_proxy.ts",
+    "prefs/prefs_mixin.ts",
+    "prefs/prefs.ts",
+    "prefs/prefs_types.ts",
+    "prefs/pref_util.ts",
+    "privacy_page/autofill_assistant_browser_proxy.ts",
+    "privacy_page/privacy_guide/constants.ts",
+    "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
+    "privacy_page/privacy_page_browser_proxy.ts",
+    "privacy_page/security_keys_browser_proxy.ts",
+    "privacy_sandbox/icons.html.ts",
+    "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
+    "relaunch_mixin.ts",
+    "reset_page/reset_browser_proxy.ts",
+    "route.ts",
+    "router.js",
+    "safety_check_page/safety_check_browser_proxy.ts",
+    "search_engines_page/search_engines_browser_proxy.ts",
+    "search_settings.ts",
+    "setting_id_param_util.ts",
+    "settings.ts",
+    "settings_page/main_page_mixin.ts",
+    "settings_routes.ts",
+    "site_settings/constants.ts",
+    "site_settings/site_settings_mixin.ts",
+    "site_settings/site_settings_prefs_browser_proxy.ts",
+    "site_settings/website_usage_browser_proxy.ts",
+  ]
+
+  if (is_chromeos) {
+    non_web_component_files += [ "autofill_page/blocking_request_manager.ts" ]
   }
 
   if (is_chromeos_ash) {
-    deps += [ "chromeos:closure_compile_module" ]
-  }
-}
-
-js_type_check("closure_compile_local_module") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":extension_control_browser_proxy",
-    ":global_scroll_target_behavior",
-    ":hats_browser_proxy",
-    ":i18n_setup",
-    ":lazy_load",
-    ":lifetime_browser_proxy",
-    ":metrics_browser_proxy",
-    ":open_window_proxy",
-    ":page_visibility",
-    ":route",
-    ":router",
-    ":search_settings",
-    ":setting_id_param_util",
-    ":settings",
-    ":settings_routes",
-    ":site_favicon",
-  ]
-}
-
-js_library("settings") {
-  deps = [
-    ":hats_browser_proxy",
-    ":lifetime_browser_proxy",
-    ":metrics_browser_proxy",
-    ":open_window_proxy",
-    "about_page:about_page_browser_proxy",
-    "autofill_page:multi_store_exception_entry",
-    "autofill_page:multi_store_password_ui_entry",
-    "autofill_page:password_manager_proxy",
-    "people_page:sync_browser_proxy",
-    "privacy_page:privacy_page_browser_proxy",
-    "safety_check_page:safety_check_browser_proxy",
-    "search_engines_page:search_engines_browser_proxy",
-    "settings_ui:settings_ui",
-  ]
-}
-
-js_library("extension_control_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("i18n_setup") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-}
-
-js_library("hats_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("lazy_load") {
-  deps = [
-    "autofill_page:autofill_section",
-    "autofill_page:payments_section",
-    "chrome_cleanup_page:chrome_cleanup_proxy",
-    "clear_browsing_data_dialog:clear_browsing_data_browser_proxy",
-    "languages_page:languages_browser_proxy",
-    "languages_page:languages_metrics_proxy",
-    "languages_page:languages_page",
-    "languages_page:languages_settings_metrics_proxy",
-    "privacy_page:cookies_page",
-    "privacy_page:security_page",
-    "site_settings:category_setting_exceptions",
-    "site_settings:local_data_browser_proxy",
-    "site_settings:protocol_handlers",
-    "site_settings:settings_category_default_radio_group",
-    "site_settings:site_settings_prefs_browser_proxy",
-    "site_settings_page",
-  ]
-}
-
-js_library("lifetime_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("metrics_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("open_window_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("page_visibility") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("route") {
-  deps = [
-    ":page_visibility",
-    ":router",
-    ":settings_routes",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("router") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("search_settings") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:search_highlight_utils.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("setting_id_param_util") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("settings_routes") {
-  deps = [ ":router" ]
-}
-
-js_library("site_favicon") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon.m",
-  ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    # Sub-folder targets
-    "a11y_page:web_components",
-    "about_page:web_components",
-    "appearance_page:web_components",
-    "autofill_page:web_components",
-    "basic_page:web_components",
-    "clear_browsing_data_dialog:web_components",
-    "controls:web_components",
-    "downloads_page:web_components",
-    "languages_page:web_components",
-    "on_startup_page:web_components",
-    "people_page:web_components",
-    "privacy_page:polymer3_elements",
-    "reset_page:web_components",
-    "safety_check_page:web_components",
-    "search_engines_page:web_components",
-    "search_page:web_components",
-    "settings_main:web_components",
-    "settings_menu:web_components",
-    "settings_page:web_components",
-    "settings_ui:web_components",
-    "site_settings:web_components",
-    "site_settings_page:web_components",
-
-    # Local targets
-    ":web_components_local",
-  ]
-
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
-    public_deps += [
-      "default_browser_page:web_components",
-      "system_page:web_components",
+    non_web_component_files += [
+      "people_page/account_manager_browser_proxy.ts",
+      "site_settings/android_info_browser_proxy.ts",
+    ]
+  } else {
+    if (!is_chromeos_lacros) {
+      non_web_component_files += [
+        "default_browser_page/default_browser_browser_proxy.ts",
+        "people_page/import_data_browser_proxy.ts",
+      ]
+    }
+    non_web_component_files += [
+      "languages_page/languages.ts",
+      "languages_page/languages_browser_proxy.ts",
+      "languages_page/languages_settings_metrics_proxy.ts",
+      "languages_page/languages_types.ts",
+      "people_page/manage_profile_browser_proxy.ts",
+      "system_page/system_page_browser_proxy.ts",
     ]
   }
 
   if (is_win) {
-    public_deps += [
-      "chrome_cleanup_page:web_components",
-      "incompatible_applications_page:web_components",
+    non_web_component_files += [
+      "chrome_cleanup_page/chrome_cleanup_proxy.ts",
+      "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     ]
   }
-}
+  if (is_win || is_mac) {
+    non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
+  }
 
-html_to_js("web_components_local") {
-  js_files = [
-    "icons.js",
-    "settings_vars_css.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
-    "site_favicon.js",
+  # -----------------non_web_component_files end -------------------------------
+
+  icons_html_files = [
+    "icons.html",
+    "site_settings/all_sites_icons.html",
   ]
+
+  css_files = [
+    "settings_page_styles.css",
+    "settings_shared.css",
+    "settings_vars.css",
+
+    # subfolder files
+    "autofill_page/passwords_shared.css",
+    "search_engines_page/search_engine_entry.css",
+    "site_settings/clear_storage_dialog_shared.css",
+    "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
+  ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+    "//tools/typescript/definitions/management.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+  if (is_chromeos) {
+    ts_definitions +=
+        [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
+  }
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
+  ]
+
+  if (!is_chromeos_ash) {
+    ts_deps +=
+        [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
+  }
+
+  if (use_nss_certs) {
+    ts_deps +=
+        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
+  }
+
+  if (is_chromeos_ash) {
+    # TODO(crbug.com/1013466): Browser Settings should not depend on ash/webui/
+    # code. The codepath needing this (in people_page.ts) should be removed when
+    # the SplitSettings effort makes progress (unclear status as of this
+    # writing, unfortunately).
+    ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+  }
+
+  if (optimize_webui) {
+    extra_grdp_deps = [ "privacy_sandbox:build_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/privacy_sandbox/resources.grdp" ]
+  }
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "settings"
+    optimize_webui_in_files = [
+      "settings.js",
+      "lazy_load.js",
+    ]
+    optimize_webui_out_files = [
+      "settings.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+    ]
+    optimize_webui_resource_paths_rewrites = [
+      "settings.rollup.js|settings.js",
+      "lazy_load.rollup.js|lazy_load.js",
+    ]
+  }
 }

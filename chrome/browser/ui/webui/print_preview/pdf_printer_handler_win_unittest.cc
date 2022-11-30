@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,8 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
   }
 
   void StartPrintToPdf(const std::u16string& job_title) {
-    StartPrint(job_title, base::Value(), nullptr, base::DoNothing());
+    StartPrint(job_title, /*settings=*/base::Value::Dict(),
+               /*print_data=*/nullptr, base::DoNothing());
     run_loop_.Run();
   }
 
@@ -95,6 +96,10 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
 class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
  public:
   PdfPrinterHandlerWinTest() {}
+
+  PdfPrinterHandlerWinTest(const PdfPrinterHandlerWinTest&) = delete;
+  PdfPrinterHandlerWinTest& operator=(const PdfPrinterHandlerWinTest&) = delete;
+
   ~PdfPrinterHandlerWinTest() override {}
 
   void SetUp() override {
@@ -111,9 +116,6 @@ class PdfPrinterHandlerWinTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<FakePdfPrinterHandler> pdf_printer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PdfPrinterHandlerWinTest);
 };
 
 TEST_F(PdfPrinterHandlerWinTest, TestSaveAsPdf) {

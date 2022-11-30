@@ -1,0 +1,28 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Placeholder option'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Placeholder option' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 2' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 2'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden focusable label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable selected label='Option 2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 3' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 3' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option 2' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option 3' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option 2' actions='{DEFAULT}'
+++++++++++UNKNOWN focusable label='Option 3' actions='{DEFAULT}'

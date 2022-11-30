@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,30 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/util/resource_util.h"
+#include "ash/style/ash_color_id.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace ash {
 
@@ -29,11 +42,9 @@ namespace {
 using assistant::util::ResourceLinkType;
 
 // Appearance.
-constexpr SkColor kBackgroundColor = SK_ColorWHITE;
-constexpr SkColor kFocusColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
-constexpr SkColor kStrokeColor = SkColorSetA(gfx::kGoogleGrey900, 0x24);
-constexpr SkColor kTextColor = gfx::kGoogleGrey700;
 constexpr int kStrokeWidthDip = 1;
+constexpr int kFocusedStrokeWidthDip = 2;
+
 constexpr int kIconMarginDip = 8;
 constexpr int kIconSizeDip = 16;
 constexpr int kChipPaddingDip = 16;
@@ -66,7 +77,7 @@ void SuggestionChipView::ChildVisibilityChanged(views::View* child) {
     const int padding_left_dip =
         icon_view_->GetVisible() ? kIconMarginDip : kChipPaddingDip;
     layout_manager_->set_inside_border_insets(
-        gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip));
+        gfx::Insets::TLBR(0, padding_left_dip, 0, kChipPaddingDip));
   }
   PreferredSizeChanged();
 }
@@ -78,10 +89,25 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
   SetAccessibleName(text);
 
   // Focus.
-  // Note that we don't install the default focus ring as we use custom
-  // highlighting instead.
+  // 1. Dark light mode is OFF
+  // We change background color of a suggestion chip view. No focus ring is
+  // used.
+  // 2. Dark light mode is ON
+  // We use focus ring. No background color change with focus.
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetInstallFocusRingOnFocus(false);
+  SetInstallFocusRingOnFocus(true);
+
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetHaloThickness(kFocusedStrokeWidthDip);
+  focus_ring->SetHaloInset(0.0f);
+
+  // Path is used for the focus ring, i.e. path is not necessary for dark and
+  // light mode flag off case. But we always install this as it shouldn't be a
+  // problem even if we provide the path to the UI framework.
+  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, size());
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), radius);
 
   // Layout.
   // Note that padding differs depending on icon visibility.
@@ -90,7 +116,8 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip), kIconMarginDip));
+      gfx::Insets::TLBR(0, padding_left_dip, 0, kChipPaddingDip),
+      kIconMarginDip));
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -117,46 +144,13 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
 
   // Text.
   text_view_ = AddChildView(std::make_unique<views::Label>());
+  text_view_->SetID(kSuggestionChipViewLabel);
   text_view_->SetAutoColorReadabilityEnabled(false);
-  text_view_->SetEnabledColor(kTextColor);
   text_view_->SetSubpixelRenderingEnabled(false);
-  text_view_->SetFontList(
-      assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1));
+  const gfx::FontList& font_list = assistant::ui::GetDefaultFontList();
+  text_view_->SetFontList(font_list.Derive(
+      /*size_delta=*/1, font_list.GetFontStyle(), gfx::Font::Weight::MEDIUM));
   SetText(text);
-}
-
-void SuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-
-  gfx::Rect bounds = GetContentsBounds();
-
-  // Background.
-  flags.setColor(kBackgroundColor);
-  canvas->DrawRoundRect(bounds, height() / 2, flags);
-  if (HasFocus()) {
-    flags.setColor(kFocusColor);
-    canvas->DrawRoundRect(bounds, height() / 2, flags);
-  }
-
-  // Border.
-  // Stroke should be drawn within our contents bounds.
-  bounds.Inset(gfx::Insets(kStrokeWidthDip));
-
-  // Stroke.
-  flags.setColor(kStrokeColor);
-  flags.setStrokeWidth(kStrokeWidthDip);
-  flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
-  canvas->DrawRoundRect(bounds, height() / 2, flags);
-}
-
-void SuggestionChipView::OnFocus() {
-  SchedulePaint();
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-}
-
-void SuggestionChipView::OnBlur() {
-  SchedulePaint();
 }
 
 bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -165,12 +159,49 @@ bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
   return Button::OnKeyPressed(event);
 }
 
+void SuggestionChipView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  Button::OnBoundsChanged(previous_bounds);
+
+  // If there is no change in height, we don't need to do anything as the code
+  // below is to update corner radius values.
+  if (height() == previous_bounds.height())
+    return;
+
+  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, size());
+
+  // Only set the border if a ColorProvider is available. Otherwise, we cannot
+  // compute the stroke color.
+  auto* color_provider = GetColorProvider();
+  if (color_provider) {
+    SetBorder(views::CreateRoundedRectBorder(
+        kStrokeWidthDip, radius,
+        color_provider->GetColor(kColorAshSeparatorColor)));
+  }
+
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), radius);
+}
+
+void SuggestionChipView::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+  text_view_->SetEnabledColor(
+      color_provider->GetColor(kColorAshSuggestionChipViewTextView));
+  const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, size());
+  SetBorder(views::CreateRoundedRectBorder(
+      kStrokeWidthDip, radius,
+      color_provider->GetColor(kColorAshSeparatorColor)));
+}
+
 void SuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
   icon_view_->SetImage(icon);
   icon_view_->SetVisible(!icon.isNull());
 }
 
-const gfx::ImageSkia& SuggestionChipView::GetIcon() const {
+gfx::ImageSkia SuggestionChipView::GetIcon() const {
   return icon_view_->GetImage();
 }
 

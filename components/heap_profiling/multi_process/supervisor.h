@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 #define COMPONENTS_HEAP_PROFILING_MULTI_PROCESS_SUPERVISOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -30,6 +30,9 @@ enum class Mode;
 class Supervisor {
  public:
   static Supervisor* GetInstance();
+
+  Supervisor(const Supervisor&) = delete;
+  Supervisor& operator=(const Supervisor&) = delete;
 
   // When this returns |false|, no method other than Start() or
   // SetClientConnectionManagerConstructor() can be called.
@@ -131,8 +134,6 @@ class Supervisor {
   ClientConnectionManagerConstructor constructor_ = nullptr;
 
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Supervisor);
 };
 
 }  // namespace heap_profiling

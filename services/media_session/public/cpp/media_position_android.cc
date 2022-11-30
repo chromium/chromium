@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,10 @@ namespace media_session {
 base::android::ScopedJavaLocalRef<jobject> MediaPosition::CreateJavaObject(
     JNIEnv* env) const {
   return Java_MediaPosition_create(
-      env, duration_.InMilliseconds(), position_.InMilliseconds(),
-      playback_rate_,
+      env,
+      (duration_.is_max() || duration_.is_zero()) ? -1
+                                                  : duration_.InMilliseconds(),
+      position_.InMilliseconds(), playback_rate_,
       (last_updated_time_ - base::TimeTicks::UnixEpoch()).InMilliseconds());
 }
 

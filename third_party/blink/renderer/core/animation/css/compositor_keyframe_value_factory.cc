@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_filter_operations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_transform.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -68,7 +68,8 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       return CreateFromTransformProperties(style.Scale(), style.EffectiveZoom(),
                                            nullptr);
     }
-    case CSSPropertyID::kBackgroundColor: {
+    case CSSPropertyID::kBackgroundColor:
+    case CSSPropertyID::kClipPath: {
       return MakeGarbageCollected<CompositorKeyframeDouble>(offset);
     }
     case CSSPropertyID::kVariable: {
@@ -86,7 +87,7 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
 
       // TODO: Add supported for interpolable color values from
       // CSSIdentifierValue when given a value of currentcolor
-      if (const auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value)) {
+      if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
         Color color = color_value->Value();
         return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
             color.Alpha(), color.Red(), color.Green(), color.Blue()));

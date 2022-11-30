@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
-namespace chromeos {
 namespace quick_answers {
 
 // Parser interface.
@@ -41,5 +40,5 @@ class ResultParserFactory {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_RESULT_PARSER_H_

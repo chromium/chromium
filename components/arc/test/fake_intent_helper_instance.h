@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/callback.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -55,6 +55,9 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   const std::vector<HandledIntent>& handled_intents() const {
     return handled_intents_;
   }
+  const std::map<std::string, bool>& verified_links() const {
+    return verified_links_;
+  }
 
   std::vector<Broadcast> GetBroadcastsForAction(
       const std::string& action) const;
@@ -63,6 +66,9 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   // RequestIntentHandlerList() calls with intents containing |action|.
   void SetIntentHandlers(const std::string& action,
                          std::vector<mojom::IntentHandlerInfoPtr> handlers);
+
+  FakeIntentHelperInstance(const FakeIntentHelperInstance&) = delete;
+  FakeIntentHelperInstance& operator=(const FakeIntentHelperInstance&) = delete;
 
   // mojom::IntentHelperInstance:
   ~FakeIntentHelperInstance() override;
@@ -73,11 +79,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                        IntentFilter intent_filter,
                        mojom::IntentInfoPtr intent) override;
 
-  void ResetVerifiedLinks(
-      const std::vector<std::string>& package_names) override;
-
-  void GetFileSizeDeprecated(const std::string& url,
-                             GetFileSizeDeprecatedCallback callback) override;
+  void SetVerifiedLinks(const std::vector<std::string>& package_names,
+                        bool always_open) override;
 
   void HandleIntent(mojom::IntentInfoPtr intent,
                     mojom::ActivityNamePtr activity) override;
@@ -89,15 +92,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   void HandleUrl(const std::string& url,
                  const std::string& package_name) override;
 
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::IntentHelperHost> host_remote) override;
-
   void Init(mojo::PendingRemote<mojom::IntentHelperHost> host_remote,
             InitCallback callback) override;
-
-  void OpenFileToReadDeprecated(
-      const std::string& url,
-      OpenFileToReadDeprecatedCallback callback) override;
 
   void RequestActivityIcons(std::vector<mojom::ActivityNamePtr> activities,
                             ::arc::mojom::ScaleFactor scale_factor,
@@ -118,11 +114,6 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                      const std::string& package_name,
                      const std::string& cls,
                      const std::string& extras) override;
-
-  void ClassifySelectionDeprecated(
-      const std::string& text,
-      ::arc::mojom::ScaleFactor scale_factor,
-      ClassifySelectionDeprecatedCallback callback) override;
 
   void RequestTextSelectionActions(
       const std::string& text,
@@ -147,11 +138,11 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   std::map<std::string, std::vector<mojom::IntentHandlerInfoPtr>>
       intent_handlers_;
 
+  std::map<std::string, bool> verified_links_;
+
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::IntentHelperHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIntentHelperInstance);
 };
 
 }  // namespace arc

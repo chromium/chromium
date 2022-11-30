@@ -1,3 +1,0 @@
-# TODO(crbug.com/1190837): Remove this TabIndex test disable when the LTS bot
-# moves forward and builds at >= Chrome M88.
--TabIndex/FilesAppBrowserTest*

@@ -1,6 +1,5 @@
 include_rules = [
   "+chromecast/ui",
-  "+components/exo",
   "+components/viz/common/frame_sinks",
   "+ui/aura",
   "+ui/base",
@@ -13,6 +12,7 @@ include_rules = [
   "+ui/gl/test",
   "+ui/ozone/public",
   "+ui/platform_window",
+  "+ui/touch_selection",
   "+ui/views",
   "+ui/wm/core",
   "+ui/wm/public",

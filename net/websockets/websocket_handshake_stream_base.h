@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 // this file must not introduce any link-time dependencies on websockets.
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
@@ -83,6 +83,11 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
   };
 
   WebSocketHandshakeStreamBase() = default;
+
+  WebSocketHandshakeStreamBase(const WebSocketHandshakeStreamBase&) = delete;
+  WebSocketHandshakeStreamBase& operator=(const WebSocketHandshakeStreamBase&) =
+      delete;
+
   ~WebSocketHandshakeStreamBase() override = default;
 
   // An object that stores data needed for the creation of a
@@ -90,7 +95,7 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
   // WebSocket connection.
   class NET_EXPORT_PRIVATE CreateHelper : public base::SupportsUserData::Data {
    public:
-    ~CreateHelper() override {}
+    ~CreateHelper() override = default;
 
     // Create a WebSocketBasicHandshakeStream. This is called after the
     // underlying connection has been established but before any handshake data
@@ -106,7 +111,7 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
         base::WeakPtr<SpdySession> session,
-        std::vector<std::string> dns_aliases) = 0;
+        std::set<std::string> dns_aliases) = 0;
   };
 
   // After the handshake has completed, this method creates a WebSocketStream
@@ -148,9 +153,6 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
                                  WebSocketExtensionParams* params);
 
   void RecordHandshakeResult(HandshakeResult result);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeStreamBase);
 };
 
 }  // namespace net

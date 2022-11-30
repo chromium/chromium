@@ -13,11 +13,6 @@
         if (counter == 1) {
             assert_equals(message.data, "resize");
             ++counter;
-            if (child.testRunner) {
-              // resizeTo() doesn't seem to trigger selection of different
-              // <source> otherwise.
-              child.testRunner.useUnfortunateSynchronousResizeMode();
-            }
             child.resizeTo(600, 600);
         } else {
             assert_equals(message.data, "success");

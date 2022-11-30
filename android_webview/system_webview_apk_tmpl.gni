@@ -1,14 +1,17 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//android_webview/variables.gni")
 import("//base/android/resource_exclusions.gni")
+import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
-import("//build/util/version.gni")
 import("//chrome/android/trichrome.gni")
+import("//chrome/version.gni")
+import("//components/crash/android/silent_java_assert_reporting.gni")
+import("//device/vr/buildflags/buildflags.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 import("//weblayer/weblayer_resource_exclusions.gni")
@@ -43,6 +46,8 @@ template("system_webview_apk_or_module_tmpl") {
                              "include_64_bit_webview",
                            ])
 
+    _omit_dex = defined(omit_dex) && omit_dex
+
     deps += [
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
@@ -63,7 +68,7 @@ template("system_webview_apk_or_module_tmpl") {
           _bundle_target_gen_dir =
               get_label_info(invoker.bundle_target, "target_gen_dir")
           _bundle_name = get_label_info(invoker.bundle_target, "name")
-          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__weblayer_bundle_module_manifest/AndroidManifest.xml"
+          extra_verification_manifest = "${_bundle_target_gen_dir}/${_bundle_name}__weblayer_bundle_module/AndroidManifest.merged.xml"
           extra_verification_manifest_dep = "${invoker.bundle_target}__weblayer_bundle_module__merge_manifests"
         }
       } else {
@@ -78,7 +83,9 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    product_config_java_packages = [ webview_product_config_java_package ]
+    if (!_omit_dex) {
+      product_config_java_packages = [ webview_product_config_java_package ]
+    }
 
     if (webview_includes_weblayer) {
       if (_is_bundle_module) {
@@ -86,7 +93,9 @@ template("system_webview_apk_or_module_tmpl") {
       } else {
         deps += [ "//weblayer:locale_pak_assets" ]
       }
-      product_config_java_packages += [ weblayer_product_config_java_package ]
+      if (!_omit_dex) {
+        product_config_java_packages += [ weblayer_product_config_java_package ]
+      }
     }
 
     if (!defined(alternative_android_sdk_dep)) {
@@ -104,11 +113,21 @@ template("system_webview_apk_or_module_tmpl") {
         "If trichrome library is used, static_library_provider must be set " +
             "so that a dep can be added on the library APK.")
 
+    _include_32_bit_webview = !defined(invoker.include_32_bit_webview) ||
+                              invoker.include_32_bit_webview
+    if (android_64bit_target_cpu) {
+      _include_64_bit_webview = !defined(invoker.include_64_bit_webview) ||
+                                invoker.include_64_bit_webview
+    }
+
     # Pure 32-bit implies a 32-bit only Webview built on a 64-bit configuration.
-    _pure_32_bit =
-        android_64bit_target_cpu && defined(invoker.include_64_bit_webview) &&
-        !invoker.include_64_bit_webview
-    not_needed([ "_pure_32_bit" ])
+    _pure_32_bit = android_64bit_target_cpu && !_include_64_bit_webview
+    _pure_64_bit = android_64bit_target_cpu && !_include_32_bit_webview
+    not_needed([
+                 "_include_32_bit_webview",
+                 "_pure_32_bit",
+                 "_pure_64_bit",
+               ])
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
@@ -117,11 +136,12 @@ template("system_webview_apk_or_module_tmpl") {
     if (!_use_trichrome_library) {
       shared_resources = true
 
-      if (!android_64bit_target_cpu || !_pure_32_bit) {
+      if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
+          (android_64bit_target_cpu && !_pure_32_bit)) {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
         _include_primary_support = true
       }
-      if (android_64bit_target_cpu) {
+      if (android_64bit_target_cpu && !_pure_64_bit) {
         secondary_abi_shared_libraries = [ "//android_webview:libwebviewchromium($android_secondary_abi_toolchain)" ]
         _include_secondary_support = true
       }
@@ -135,21 +155,40 @@ template("system_webview_apk_or_module_tmpl") {
       if (android_64bit_target_cpu) {
         if (invoker.is_64_bit_browser) {
           native_lib_placeholders = [ "libdummy.so" ]
-          if (invoker.include_32_bit_webview) {
+          if (_include_32_bit_webview) {
             secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
             _include_secondary_support = true
           }
         } else {
-          if (invoker.include_64_bit_webview) {
+          if (_include_64_bit_webview) {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
           }
           secondary_native_lib_placeholders = [ "libdummy.so" ]
+          static_library_provider_use_secondary_abi = true
+        }
+
+        # http://crbug.com/1042107.
+        if (is_component_build) {
+          if (invoker.is_64_bit_browser) {
+            main_component_library = "libmonochrome_64.cr.so"
+          } else {
+            main_component_library = "libmonochrome.cr.so"
+          }
         }
       } else {
         native_lib_placeholders = [ "libdummy.so" ]
       }
     }
+
+    _libarcore_dir = get_label_info(
+                         "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
+                         "target_out_dir") + "/com_google_ar_core_java/jni"
+    not_needed([ "_libarcore_dir" ])
+
+    _include_arcore =
+        webview_includes_weblayer && enable_arcore && !_exclude_weblayer_java &&
+        (_include_secondary_support || _include_primary_support)
 
     if (_include_primary_support) {
       deps += [
@@ -161,6 +200,10 @@ template("system_webview_apk_or_module_tmpl") {
         deps += [ "//base/android/linker:chromium_android_linker" ]
         loadable_modules +=
             [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
+      }
+      if (_include_arcore) {
+        loadable_modules +=
+            [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
       }
     }
     if (_include_secondary_support) {
@@ -177,18 +220,17 @@ template("system_webview_apk_or_module_tmpl") {
         secondary_abi_loadable_modules +=
             [ "$_secondary_out_dir/libchromium_android_linker$shlib_extension" ]
       }
+      if (_include_arcore) {
+        secondary_abi_loadable_modules +=
+            [ "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so" ]
+      }
     }
 
-    if (!_use_trichrome_library || android_64bit_target_cpu) {
-      # 32-bit TrichromeWebView doesn't have a native library, so only do this
-      # for other configs.
-      native_lib_version_rule = "//build/util:chrome_version_json"
-      _native_lib_file =
-          rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-      native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
+    if (_include_arcore) {
+      deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
     }
 
-    aapt_locale_allowlist = locales
+    aapt_locale_allowlist = platform_pak_locales
 
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
@@ -202,60 +244,107 @@ template("system_webview_apk_or_module_tmpl") {
       resource_exclusion_regex += "|" + weblayer_resource_exclusion_regex
     }
 
+    # We only optimize resources for bundles since APKs are not shipped.
+    # Resources only live in the base module atm as such we only need to set
+    # these on the base module
+    if (_is_bundle_module) {
+      # Removes metadata needed for Resources.getIdentifier("resource_name").
+      strip_resource_names = !is_java_debug
+
+      # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
+      short_resource_paths = !is_java_debug
+
+      # Removes unused resources from the apk. Only enabled on official builds
+      # since it adds a slow step and serializes the build graph causing fewer
+      # expensive tasks (eg: proguarding, resource optimization) to be run in
+      # parallel by adding dependencies between them (adds around 10-20
+      # seconds on my machine).
+      strip_unused_resources = is_official_build
+    }
+
     if (!_is_bundle_module) {
       # Used as an additional apk in test scripts.
       never_incremental = true
       command_line_flags_file = "webview-command-line"
     }
 
-    if (!is_java_debug) {
+    if (!is_java_debug && !_omit_dex) {
       proguard_enabled = true
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }
-      proguard_configs += [
-        "//android_webview/nonembedded/java/proguard.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-      ]
+      proguard_configs +=
+          [ "//android_webview/nonembedded/java/proguard.flags" ]
       png_to_webp = true
+    }
+
+    if (enable_silent_java_assert_reporting && !_omit_dex) {
+      custom_assertion_handler = crash_reporting_assertion_handler
     }
 
     if (!defined(version_code)) {
       if (_use_trichrome_library) {
+        _use_stable_package_name_for_trichrome =
+            use_stable_package_name_for_trichrome && android_channel == "beta"
         if (android_64bit_target_cpu) {
           if (invoker.is_64_bit_browser) {
-            if (invoker.include_32_bit_webview) {
-              version_code = trichrome_64_32_version_code
+            if (_include_32_bit_webview) {
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_64_32_beta_version_code
+              } else {
+                version_code = trichrome_64_32_version_code
+              }
             } else {
-              version_code = trichrome_64_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_64_beta_version_code
+              } else {
+                version_code = trichrome_64_version_code
+              }
             }
           } else {
-            if (invoker.include_64_bit_webview) {
-              version_code = trichrome_32_64_version_code
+            if (_include_64_bit_webview) {
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_32_64_beta_version_code
+              } else {
+                version_code = trichrome_32_64_version_code
+              }
             } else {
-              version_code = trichrome_32_version_code
+              if (_use_stable_package_name_for_trichrome) {
+                version_code = trichrome_32_beta_version_code
+              } else {
+                version_code = trichrome_32_version_code
+              }
             }
           }
         } else {
-          version_code = trichrome_version_code
+          if (_use_stable_package_name_for_trichrome) {
+            version_code = trichrome_beta_version_code
+          } else {
+            version_code = trichrome_version_code
+          }
         }
       } else {
         if (android_channel == "dev") {
           if (_pure_32_bit) {
             version_code = webview_32_dev_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_dev_version_code
           } else {
             version_code = webview_dev_version_code
           }
         } else if (android_channel == "beta") {
           if (_pure_32_bit) {
             version_code = webview_32_beta_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_beta_version_code
           } else {
             version_code = webview_beta_version_code
           }
         } else {
           if (_pure_32_bit) {
             version_code = webview_32_stable_version_code
+          } else if (_pure_64_bit) {
+            version_code = webview_64_stable_version_code
           } else {
             version_code = webview_stable_version_code
           }

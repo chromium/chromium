@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,8 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kSettingsAccountsTableViewId = @"kSettingsAccountsTableViewId";
+NSString* const kSettingsAccountsTableViewId = @"SettingsAccountsTableViewId";
 NSString* const kSettingsAccountsTableViewAddAccountCellId =
-    @"kSettingsAccountsTableViewAddAccountCellId";
+    @"SettingsAccountsTableViewAddAccountCellId";
 NSString* const kSettingsAccountsTableViewSignoutCellId =
-    @"kSettingsAccountsTableViewSignoutCellId";
-NSString* const kSettingsAccountsTableViewSignoutAndClearDataCellId =
-    @"kSettingsAccountsTableViewSignoutAndClearDataCellId";
-NSString* const kSettingsAccountsTableViewSyncCellId =
-    @"kSettingsAccountsTableViewSyncCellId";
+    @"SettingsAccountsTableViewSignoutCellId";

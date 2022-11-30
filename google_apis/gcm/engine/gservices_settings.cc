@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -178,7 +177,7 @@ namespace gcm {
 
 // static
 const base::TimeDelta GServicesSettings::MinimumCheckinInterval() {
-  return base::TimeDelta::FromSeconds(kMinimumCheckinInterval);
+  return base::Seconds(kMinimumCheckinInterval);
 }
 
 // static
@@ -231,7 +230,7 @@ bool GServicesSettings::UpdateFromCheckinResponse(
     if (settings_diff && base::StartsWith(name, kDeleteSettingPrefix,
                                           base::CompareCase::SENSITIVE)) {
       std::string setting_to_delete =
-          name.substr(base::size(kDeleteSettingPrefix) - 1);
+          name.substr(std::size(kDeleteSettingPrefix) - 1);
       new_settings.erase(setting_to_delete);
       DVLOG(1) << "Setting deleted: " << setting_to_delete;
     } else {
@@ -279,7 +278,7 @@ base::TimeDelta GServicesSettings::GetCheckinInterval() const {
   if (checkin_interval < kMinimumCheckinInterval)
     checkin_interval = kMinimumCheckinInterval;
 
-  return base::TimeDelta::FromSeconds(checkin_interval);
+  return base::Seconds(checkin_interval);
 }
 
 GURL GServicesSettings::GetCheckinURL() const {

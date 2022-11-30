@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "components/security_state/core/features.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -67,10 +66,6 @@ std::string GetHistogramSuffixForSafetyTipStatus(
 // Sets |level| to the right value if status should be set.
 bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
                                          SecurityLevel* level) {
-  if (!IsSafetyTipUIFeatureEnabled()) {
-    return false;
-  }
-
   switch (status) {
     case security_state::SafetyTipStatus::kBadReputation:
       *level = security_state::NONE;
@@ -102,6 +97,21 @@ SecurityLevel GetSecurityLevel(
     return DANGEROUS;
   }
 
+  // If the navigation was upgraded to HTTPS because of HTTPS-Only Mode, but did
+  // not succeed (either currently showing the HTTPS-Only Mode interstitial, or
+  // the navigation fell back to HTTP), set the security level to WARNING. The
+  // HTTPS-Only Mode interstitial warning is considered "less serious" than the
+  // general certificate error interstitials.
+  //
+  // This check must come before the checks for `connection_info_initialized`
+  // (because the HTTPS-Only Mode intersitital can trigger if the HTTPS version
+  // of the page does not commit) and certificate errors (because the HTTPS-Only
+  // Mode interstitial takes precedent if the certificate error occurred due to
+  // an upgraded main-frame navigation).
+  if (visible_security_state.is_https_only_mode_upgraded) {
+    return WARNING;
+  }
+
   if (!visible_security_state.connection_info_initialized) {
     return NONE;
   }
@@ -115,11 +125,8 @@ SecurityLevel GetSecurityLevel(
   const GURL& url = visible_security_state.url;
 
   // data: URLs don't define a secure context, and are a vector for spoofing.
-  // Likewise, ftp: URLs are always non-secure, and are uncommon enough that
-  // we can treat them as such without significant user impact.
-  //
   // Display a "Not secure" badge for all these URLs.
-  if (url.SchemeIs(url::kDataScheme) || url.SchemeIs(url::kFtpScheme)) {
+  if (url.SchemeIs(url::kDataScheme)) {
     return WARNING;
   }
 
@@ -148,7 +155,7 @@ SecurityLevel GetSecurityLevel(
     if (!visible_security_state.is_error_page &&
         !network::IsUrlPotentiallyTrustworthy(url) &&
         (url.IsStandard() || url.SchemeIs(url::kBlobScheme))) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       // On Desktop, Reader Mode pages have their own visible security state in
       // the omnibox. Display ReaderMode pages as neutral even if the original
       // URL was secure, because Chrome has modified the content so we don't
@@ -160,7 +167,7 @@ SecurityLevel GetSecurityLevel(
       if (visible_security_state.is_reader_mode) {
         return NONE;
       }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
       return WARNING;
     }
     return NONE;
@@ -240,7 +247,8 @@ VisibleSecurityState::VisibleSecurityState()
       is_view_source(false),
       is_devtools(false),
       is_reader_mode(false),
-      should_treat_displayed_mixed_forms_as_secure(false) {}
+      should_treat_displayed_mixed_forms_as_secure(false),
+      is_https_only_mode_upgraded(false) {}
 
 VisibleSecurityState::VisibleSecurityState(const VisibleSecurityState& other) =
     default;
@@ -277,13 +285,6 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {
   return visible_security_state.certificate &&
          (visible_security_state.cert_status &
           net::CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-}
-
-bool IsSafetyTipUIFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
-         base::FeatureList::IsEnabled(
-             features::kSafetyTipUIForSimplifiedDomainDisplay) ||
-         base::FeatureList::IsEnabled(features::kSafetyTipUIOnDelayedWarning);
 }
 
 }  // namespace security_state

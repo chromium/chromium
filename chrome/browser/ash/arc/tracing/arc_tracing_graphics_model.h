@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
@@ -120,6 +120,10 @@ class ArcTracingGraphicsModel {
   class EventsContainer {
    public:
     EventsContainer();
+
+    EventsContainer(const EventsContainer&) = delete;
+    EventsContainer& operator=(const EventsContainer&) = delete;
+
     ~EventsContainer();
 
     void Reset();
@@ -138,13 +142,15 @@ class ArcTracingGraphicsModel {
     std::vector<BufferEvents> buffer_events_;
     // Global events that do not belong to any graphics buffer.
     BufferEvents global_events_;
-
-    DISALLOW_COPY_AND_ASSIGN(EventsContainer);
   };
 
   using ViewMap = std::map<ViewId, EventsContainer>;
 
   ArcTracingGraphicsModel();
+
+  ArcTracingGraphicsModel(const ArcTracingGraphicsModel&) = delete;
+  ArcTracingGraphicsModel& operator=(const ArcTracingGraphicsModel&) = delete;
+
   ~ArcTracingGraphicsModel();
 
   // Trims container events by |trim_timestamp|. All global events are discarded
@@ -159,15 +165,15 @@ class ArcTracingGraphicsModel {
   // Builds the model from the common tracing model |common_model|.
   bool Build(const ArcTracingModel& common_model);
 
-  // Serializes the model to |base::DictionaryValue|, this can be passed to
+  // Serializes the model to |base::Value::Dict|, this can be passed to
   // javascript for rendering.
-  std::unique_ptr<base::DictionaryValue> Serialize() const;
+  base::Value::Dict Serialize() const;
   // Serializes the model to Json string.
   std::string SerializeToJson() const;
   // Loads the model from Json string.
   bool LoadFromJson(const std::string& json_data);
-  // Loads the model from |base::DictionaryValue|.
-  bool LoadFromValue(const base::DictionaryValue& root);
+  // Loads the model from |base::Value::Dict|.
+  bool LoadFromValue(const base::Value::Dict& root);
 
   uint64_t duration() const { return duration_; }
   base::Time timestamp() const { return timestamp_; }
@@ -238,8 +244,6 @@ class ArcTracingGraphicsModel {
   ArcSystemModel system_model_;
   // Allows to have model incomplete, used in overview and in tests.
   bool skip_structure_validation_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingGraphicsModel);
 };
 
 std::ostream& operator<<(std::ostream& os,

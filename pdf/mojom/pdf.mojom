@@ -1,0 +1,43 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module pdf.mojom;
+
+import "services/network/public/mojom/referrer_policy.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+interface PdfListener {
+  // Sets the current caret position.
+  SetCaretPosition(gfx.mojom.PointF position);
+
+  // Move the end of the range selection to |extent|.
+  MoveRangeSelectionExtent(gfx.mojom.PointF extent);
+
+  // Sets the selection to be between |base| and |extent|. The |extent| will
+  // be moved if the selection is modified.
+  SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
+};
+
+// Browser-side interface shared by PDF plugins and PDF renderers.
+interface PdfService {
+  SetListener(pending_remote<PdfListener> client);
+
+  // Updates the content restrictions, i.e. to disable print/copy.
+  UpdateContentRestrictions(int32 restrictions);
+
+  // The currently displayed PDF has an unsupported feature.
+  HasUnsupportedFeature();
+
+  // Brings up SaveAs... dialog to save specified URL.
+  SaveUrlAs(url.mojom.Url url, network.mojom.ReferrerPolicy policy);
+
+  // Notifies the embedder of the top-left and bottom-right coordinates of the
+  // current selection.
+  SelectionChanged(gfx.mojom.PointF left, int32 left_height,
+                   gfx.mojom.PointF right, int32 right_height);
+
+  // Notifies the embedder know the plugin can handle save commands internally.
+  SetPluginCanSave(bool can_save);
+};

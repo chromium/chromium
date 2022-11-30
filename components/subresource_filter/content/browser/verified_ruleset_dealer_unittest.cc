@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
+#include "base/hash/hash.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -26,6 +27,9 @@ namespace {
 class TestRulesets {
  public:
   TestRulesets() = default;
+
+  TestRulesets(const TestRulesets&) = delete;
+  TestRulesets& operator=(const TestRulesets&) = delete;
 
   void CreateRulesets(bool many_rules = false) {
     if (many_rules) {
@@ -63,8 +67,6 @@ class TestRulesets {
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_1_;
   testing::TestRulesetPair test_ruleset_pair_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesets);
 };
 
 constexpr const char TestRulesets::kTestRulesetSuffix1[];
@@ -108,10 +110,15 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
  public:
   SubresourceFilterVerifiedRulesetDealerTest() = default;
 
+  SubresourceFilterVerifiedRulesetDealerTest(
+      const SubresourceFilterVerifiedRulesetDealerTest&) = delete;
+  SubresourceFilterVerifiedRulesetDealerTest& operator=(
+      const SubresourceFilterVerifiedRulesetDealerTest&) = delete;
+
  protected:
   void SetUp() override {
     rulesets_.CreateRulesets(true /* many_rules */);
-    ruleset_dealer_.reset(new VerifiedRulesetDealer);
+    ruleset_dealer_ = std::make_unique<VerifiedRulesetDealer>();
   }
 
   const TestRulesets& rulesets() const { return rulesets_; }
@@ -130,8 +137,6 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
   TestRulesets rulesets_;
   std::unique_ptr<VerifiedRulesetDealer> ruleset_dealer_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterVerifiedRulesetDealerTest);
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -307,7 +312,7 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
        OpenAndSetRulesetFileValidNoChecksum) {
   // See also SubresourceFilterBrowserTest.InvalidRuleset_Checksum, corrupting
   // in this manner doesn't invalidate the Flatbuffer Verifier check.
-  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28250, 28251,
+  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28246, 28247,
                                          32);
   RulesetFilePtr file = ruleset_dealer()->OpenAndSetRulesetFile(
       /*expected_checksum=*/0, rulesets().indexed_1().path);
@@ -340,7 +345,7 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
                            rulesets().indexed_1().contents.size());
   // See also SubresourceFilterBrowserTest.InvalidRuleset_Checksum, corrupting
   // in this manner doesn't invalidate the Flatbuffer Verifier check.
-  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28250, 28251,
+  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28246, 28247,
                                          32);
   RulesetFilePtr file = ruleset_dealer()->OpenAndSetRulesetFile(
       expected_checksum, rulesets().indexed_1().path);
@@ -400,6 +405,11 @@ class TestVerifiedRulesetDealerClient {
  public:
   TestVerifiedRulesetDealerClient() = default;
 
+  TestVerifiedRulesetDealerClient(const TestVerifiedRulesetDealerClient&) =
+      delete;
+  TestVerifiedRulesetDealerClient& operator=(
+      const TestVerifiedRulesetDealerClient&) = delete;
+
   base::OnceCallback<void(VerifiedRulesetDealer*)> GetCallback() {
     return base::BindOnce(&TestVerifiedRulesetDealerClient::Callback,
                           base::Unretained(this));
@@ -446,8 +456,6 @@ class TestVerifiedRulesetDealerClient {
   std::vector<uint8_t> contents_;
 
   int invocation_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVerifiedRulesetDealerClient);
 };
 
 }  // namespace
@@ -456,6 +464,11 @@ class SubresourceFilterVerifiedRulesetDealerHandleTest
     : public ::testing::Test {
  public:
   SubresourceFilterVerifiedRulesetDealerHandleTest() = default;
+
+  SubresourceFilterVerifiedRulesetDealerHandleTest(
+      const SubresourceFilterVerifiedRulesetDealerHandleTest&) = delete;
+  SubresourceFilterVerifiedRulesetDealerHandleTest& operator=(
+      const SubresourceFilterVerifiedRulesetDealerHandleTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -478,8 +491,6 @@ class SubresourceFilterVerifiedRulesetDealerHandleTest
   TestRulesets rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterVerifiedRulesetDealerHandleTest);
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerHandleTest,
@@ -572,6 +583,10 @@ class TestVerifiedRulesetClient {
  public:
   TestVerifiedRulesetClient() = default;
 
+  TestVerifiedRulesetClient(const TestVerifiedRulesetClient&) = delete;
+  TestVerifiedRulesetClient& operator=(const TestVerifiedRulesetClient&) =
+      delete;
+
   base::OnceCallback<void(VerifiedRuleset*)> GetCallback() {
     return base::BindOnce(&TestVerifiedRulesetClient::Callback,
                           base::Unretained(this));
@@ -601,8 +616,6 @@ class TestVerifiedRulesetClient {
   std::vector<uint8_t> contents_;
 
   int invocation_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVerifiedRulesetClient);
 };
 
 }  // namespace
@@ -611,11 +624,17 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
  public:
   SubresourceFilterVerifiedRulesetHandleTest() = default;
 
+  SubresourceFilterVerifiedRulesetHandleTest(
+      const SubresourceFilterVerifiedRulesetHandleTest&) = delete;
+  SubresourceFilterVerifiedRulesetHandleTest& operator=(
+      const SubresourceFilterVerifiedRulesetHandleTest&) = delete;
+
  protected:
   void SetUp() override {
     rulesets_.CreateRulesets(true /* many_rules */);
     task_runner_ = new base::TestSimpleTaskRunner;
-    dealer_handle_.reset(new VerifiedRulesetDealer::Handle(task_runner_));
+    dealer_handle_ =
+        std::make_unique<VerifiedRulesetDealer::Handle>(task_runner_);
   }
 
   void TearDown() override {
@@ -636,8 +655,7 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   }
 
   std::unique_ptr<VerifiedRuleset::Handle> CreateRulesetHandle() {
-    return std::unique_ptr<VerifiedRuleset::Handle>(
-        new VerifiedRuleset::Handle(dealer_handle()));
+    return std::make_unique<VerifiedRuleset::Handle>(dealer_handle());
   }
 
  private:
@@ -645,8 +663,6 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterVerifiedRulesetHandleTest);
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetHandleTest,

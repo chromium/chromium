@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <cmath>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/cpu.h"
 #include "base/memory/aligned_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
@@ -26,7 +26,6 @@ static const int kVectorSize = 8192;
 
 class VectorMathTest : public testing::Test {
  public:
-
   VectorMathTest() {
     // Initialize input and output vectors.
     input_vector_.reset(static_cast<float*>(base::AlignedAlloc(
@@ -34,6 +33,9 @@ class VectorMathTest : public testing::Test {
     output_vector_.reset(static_cast<float*>(base::AlignedAlloc(
         sizeof(float) * kVectorSize, vector_math::kRequiredAlignment)));
   }
+
+  VectorMathTest(const VectorMathTest&) = delete;
+  VectorMathTest& operator=(const VectorMathTest&) = delete;
 
   void FillTestVectors(float input, float output) {
     // Setup input and output vectors.
@@ -49,8 +51,6 @@ class VectorMathTest : public testing::Test {
  protected:
   std::unique_ptr<float[], base::AlignedFreeDeleter> input_vector_;
   std::unique_ptr<float[], base::AlignedFreeDeleter> output_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorMathTest);
 };
 
 // Ensure each optimized vector_math::FMAC() method returns the same value.
@@ -80,6 +80,16 @@ TEST_F(VectorMathTest, FMAC) {
     vector_math::FMAC_SSE(
         input_vector_.get(), kScale, kVectorSize, output_vector_.get());
     VerifyOutput(kResult);
+  }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx2() && cpu.has_fma3()) {
+      SCOPED_TRACE("FMAC_AVX2");
+      FillTestVectors(kInputFillValue, kOutputFillValue);
+      vector_math::FMAC_AVX2(input_vector_.get(), kScale, kVectorSize,
+                             output_vector_.get());
+      VerifyOutput(kResult);
+    }
   }
 #endif
 
@@ -121,6 +131,16 @@ TEST_F(VectorMathTest, FMUL) {
     vector_math::FMUL_SSE(
         input_vector_.get(), kScale, kVectorSize, output_vector_.get());
     VerifyOutput(kResult);
+  }
+  {
+    base::CPU cpu;
+    if (cpu.has_avx2()) {
+      SCOPED_TRACE("FMUL_AVX2");
+      FillTestVectors(kInputFillValue, kOutputFillValue);
+      vector_math::FMUL_AVX2(input_vector_.get(), kScale, kVectorSize,
+                             output_vector_.get());
+      VerifyOutput(kResult);
+    }
   }
 #endif
 
@@ -219,6 +239,17 @@ class EWMATestScenario {
           initial_value_, data_.get(), data_len_, smoothing_factor_);
       EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
       EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
+    }
+    {
+      base::CPU cpu;
+      if (cpu.has_avx2() && cpu.has_fma3()) {
+        SCOPED_TRACE("EWMAAndMaxPower_AVX2");
+        const std::pair<float, float>& result =
+            vector_math::EWMAAndMaxPower_AVX2(initial_value_, data_.get(),
+                                              data_len_, smoothing_factor_);
+        EXPECT_NEAR(expected_final_avg_, result.first, 0.0000001f);
+        EXPECT_NEAR(expected_max_, result.second, 0.0000001f);
+      }
     }
 #endif
 

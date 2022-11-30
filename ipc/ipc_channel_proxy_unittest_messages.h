@@ -1,12 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 
 // Singly-included section for enums and custom IPC traits.
-#ifndef IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
-#define IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
+#ifndef IPC_IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
+#define IPC_IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
 
 class BadType {
  public:
@@ -28,7 +29,7 @@ struct ParamTraits<BadType> {
 
 }
 
-#endif  // IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
+#endif  // IPC_IPC_CHANNEL_PROXY_UNITTEST_MESSAGES_H_
 
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START TestMsgStart

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,8 @@ class GURL;
 @property(nonatomic, assign) ReadingListUIDistillationStatus distillationState;
 // The string that displays the distillation size.
 @property(nonatomic, copy) NSString* distillationSizeText;
+// The string that displays the estimated read time.
+@property(nonatomic, copy) NSString* estimatedReadTimeText;
 // The string that displays the distillation date.
 @property(nonatomic, copy) NSString* distillationDateText;
 // The custom action factory.

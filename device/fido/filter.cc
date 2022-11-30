@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,23 @@
 
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido_filter {
 
 namespace {
 
-const base::Feature kFilter{"WebAuthenticationFilter",
-                            base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kFilter,
+             "WebAuthenticationFilter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kFilterJSON{
     &kFilter,
@@ -28,13 +31,13 @@ const base::FeatureParam<std::string> kFilterJSON{
 };
 
 struct FilterStep {
-  base::Optional<std::string> operation;
+  absl::optional<std::string> operation;
   std::vector<std::string> rp_id;
-  base::Optional<std::string> device;
-  base::Optional<std::string> id_type;
+  absl::optional<std::string> device;
+  absl::optional<std::string> id_type;
   std::vector<std::string> id;
-  base::Optional<size_t> id_min_size;
-  base::Optional<size_t> id_max_size;
+  absl::optional<size_t> id_min_size;
+  absl::optional<size_t> id_max_size;
   Action action;
 };
 
@@ -50,9 +53,8 @@ bool IsListOf(const base::Value* v, bool (*predicate)(const base::Value&)) {
   if (!v->is_list()) {
     return false;
   }
-  auto contents = v->GetList();
-  return !contents.empty() &&
-         std::all_of(contents.begin(), contents.end(), predicate);
+  auto contents = v->GetListDeprecated();
+  return !contents.empty() && base::ranges::all_of(contents, predicate);
 }
 
 std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
@@ -61,29 +63,29 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
   }
 
   std::vector<std::string> ret;
-  for (const auto& elem : v->GetList()) {
+  for (const auto& elem : v->GetListDeprecated()) {
     ret.push_back(elem.GetString());
   }
   return ret;
 }
 
-base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
-  base::Optional<base::Value> v =
+absl::optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
+  absl::optional<base::Value> v =
       base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!v || !v->is_dict()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   const base::Value* filters = v->FindKey("filters");
   if (!filters || !filters->is_list()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<FilterStep> ret;
-  const auto filter_list = filters->GetList();
+  const auto filter_list = filters->GetListDeprecated();
   for (const auto& filter : filter_list) {
     if (!filter.is_dict()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // These are the keys that are extracted from the JSON:
@@ -97,7 +99,7 @@ base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
     const base::Value* action = nullptr;
 
     // DictItems is used so that unknown keys in the dictionary can be rejected.
-    for (const auto& pair : filter.DictItems()) {
+    for (auto pair : filter.DictItems()) {
       if (pair.first == "operation") {
         operation = &pair.second;
       } else if (pair.first == "rp_id") {
@@ -116,7 +118,7 @@ base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
         action = &pair.second;
       } else {
         // Unknown keys are an error.
-        return base::nullopt;
+        return absl::nullopt;
       }
     }
 
@@ -129,19 +131,19 @@ base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
         (id && !IsString(*id) && !IsListOf(id, IsString)) ||
         (id_min_size && !id_min_size->is_int()) ||
         (id_max_size && !id_max_size->is_int())) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     if ((id_min_size || id_max_size || id) && !id_type) {
       // If matches on the contents or size of an ID are given then the type
       // must also be matched.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     if (!rp_id && !device) {
       // Filter is too broad. For safety this is disallowed, although one can
       // still explicitly use a wildcard.
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     FilterStep step;
@@ -153,7 +155,7 @@ base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
     } else if (action_str == "no-attestation") {
       step.action = Action::NO_ATTESTATION;
     } else {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     if (operation) {
@@ -172,18 +174,18 @@ base::Optional<std::vector<FilterStep>> ParseJSON(base::StringPiece json) {
       step.id = GetStringOrListOfStrings(id);
     }
     if (id_min_size) {
-      const int v = id_min_size->GetInt();
-      if (v < 0) {
-        return base::nullopt;
+      const int min_size_int = id_min_size->GetInt();
+      if (min_size_int < 0) {
+        return absl::nullopt;
       }
-      step.id_min_size = v;
+      step.id_min_size = min_size_int;
     }
     if (id_max_size) {
-      const int v = id_max_size->GetInt();
-      if (v < 0) {
-        return base::nullopt;
+      const int max_size_int = id_max_size->GetInt();
+      if (max_size_int < 0) {
+        return absl::nullopt;
       }
-      step.id_max_size = v;
+      step.id_max_size = max_size_int;
     }
 
     ret.emplace_back(std::move(step));
@@ -213,8 +215,8 @@ const char* IDTypeToString(IDType id_type) {
 size_t g_testing_depth = 0;
 
 struct CurrentFilter {
-  base::Optional<std::vector<FilterStep>> steps;
-  base::Optional<std::string> json;
+  absl::optional<std::vector<FilterStep>> steps;
+  absl::optional<std::string> json;
 };
 
 CurrentFilter* GetCurrentFilter() {
@@ -240,7 +242,7 @@ bool MaybeParseFilter(base::StringPiece json) {
     return false;
   }
 
-  current_filter->json = json.as_string();
+  current_filter->json = std::string(json);
   return true;
 }
 
@@ -260,14 +262,14 @@ void MaybeInitialize() {
 Action Evaluate(
     Operation op,
     base::StringPiece rp_id,
-    base::Optional<base::StringPiece> device,
-    base::Optional<std::pair<IDType, base::span<const uint8_t>>> id) {
+    absl::optional<base::StringPiece> device,
+    absl::optional<std::pair<IDType, base::span<const uint8_t>>> id) {
   CurrentFilter* const current_filter = GetCurrentFilter();
   if (!current_filter->steps) {
     return Action::ALLOW;
   }
 
-  base::Optional<std::string> id_hex;
+  absl::optional<std::string> id_hex;
   if (id) {
     id_hex = base::HexEncode(id->second);
   }
@@ -276,10 +278,10 @@ Action Evaluate(
     if ((!filter.operation ||
          base::MatchPattern(OperationToString(op), *filter.operation)) &&
         (filter.rp_id.empty() ||
-         std::any_of(filter.rp_id.begin(), filter.rp_id.end(),
-                     [rp_id](const std::string& pattern) -> bool {
-                       return base::MatchPattern(rp_id, pattern);
-                     })) &&
+         base::ranges::any_of(filter.rp_id,
+                              [rp_id](const std::string& pattern) {
+                                return base::MatchPattern(rp_id, pattern);
+                              })) &&
         (!filter.device ||
          base::MatchPattern(device.value_or(""), *filter.device)) &&
         (!filter.id_type || (id && base::MatchPattern(IDTypeToString(id->first),
@@ -289,10 +291,10 @@ Action Evaluate(
         (!filter.id_max_size ||
          (id && *filter.id_max_size >= id->second.size())) &&
         (filter.id.empty() ||
-         (id_hex && std::any_of(filter.id.begin(), filter.id.end(),
-                                [&id_hex](const std::string& pattern) -> bool {
-                                  return base::MatchPattern(*id_hex, pattern);
-                                })))) {
+         (id_hex && base::ranges::any_of(
+                        filter.id, [&id_hex](const std::string& pattern) {
+                          return base::MatchPattern(*id_hex, pattern);
+                        })))) {
       return filter.action;
     }
   }

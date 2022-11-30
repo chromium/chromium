@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_GUEST_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_GUEST_TASK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace task_manager {
@@ -15,6 +14,8 @@ namespace task_manager {
 class GuestTask : public RendererTask {
  public:
   explicit GuestTask(content::WebContents* web_contents);
+  GuestTask(const GuestTask&) = delete;
+  GuestTask& operator=(const GuestTask&) = delete;
   ~GuestTask() override;
 
   // task_manager::RendererTask:
@@ -24,8 +25,6 @@ class GuestTask : public RendererTask {
 
  private:
   std::u16string GetCurrentTitle(content::WebContents* web_contents) const;
-
-  DISALLOW_COPY_AND_ASSIGN(GuestTask);
 };
 
 }  // namespace task_manager

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,10 @@ class WorkerInternalsFetch {
 
  public:
   static Vector<String> getInternalResponseURLList(WorkerInternals&, Response*);
-  static ScriptPromise getResourcePriority(ScriptState*,
-                                           WorkerInternals&,
-                                           const String& url,
-                                           WorkerGlobalScope*);
+  static ScriptPromise getInitialResourcePriority(ScriptState*,
+                                                  WorkerInternals&,
+                                                  const String& url,
+                                                  WorkerGlobalScope*);
 
  private:
   static void ResolveResourcePriority(ScriptPromiseResolver*,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "weblayer/browser/browser_process.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/favicon/favicon_service_impl.h"
 #include "weblayer/browser/favicon/favicon_service_impl_factory.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
@@ -96,10 +95,10 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   // between UNPROTECTED_WEB and PROTECTED_WEB.
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* safe_browsing_context = nullptr;
-#if defined(OS_ANDROID)
-    auto* sb_service = BrowserProcess::GetInstance()->GetSafeBrowsingService();
-    if (sb_service)
-      safe_browsing_context = sb_service->GetNetworkContext();
+#if BUILDFLAG(IS_ANDROID)
+    safe_browsing_context = BrowserProcess::GetInstance()
+                                ->GetSafeBrowsingService()
+                                ->GetNetworkContext();
 #endif
     browsing_data::RemoveEmbedderCookieData(
         delete_begin, delete_end, filter_builder, host_content_settings_map,
@@ -112,9 +111,8 @@ void BrowsingDataRemoverDelegate::RemoveEmbedderData(
   if (remove_mask & DATA_TYPE_SITE_SETTINGS) {
     browsing_data::RemoveSiteSettingsData(delete_begin, delete_end,
                                           host_content_settings_map);
-
-    // Reset the Default Search Engine permissions to their default.
-    ResetDsePermissions(browser_context_);
+    browsing_data::RemovePersistentOriginTrials(
+        user_prefs::UserPrefs::Get(browser_context_));
   }
 
   RunCallbackIfDone();

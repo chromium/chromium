@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/public/cast_egl_platform.h"
@@ -48,6 +48,10 @@ class OzonePlatformCast : public OzonePlatform {
  public:
   explicit OzonePlatformCast(std::unique_ptr<CastEglPlatform> egl_platform)
       : egl_platform_(std::move(egl_platform)) {}
+
+  OzonePlatformCast(const OzonePlatformCast&) = delete;
+  OzonePlatformCast& operator=(const OzonePlatformCast&) = delete;
+
   ~OzonePlatformCast() override {}
 
   // OzonePlatform implementation:
@@ -91,6 +95,7 @@ class OzonePlatformCast : public OzonePlatform {
     NOTREACHED();
     return nullptr;
   }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return gpu_platform_support_host_.get();
   }
@@ -108,9 +113,9 @@ class OzonePlatformCast : public OzonePlatform {
     return nullptr;
   }
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate,
+      ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget) override {
-    return std::make_unique<InputMethodMinimal>(delegate);
+    return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
   }
 
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
@@ -119,7 +124,7 @@ class OzonePlatformCast : public OzonePlatform {
            usage == gfx::BufferUsage::SCANOUT;
   }
 
-  void InitializeUI(const InitParams& params) override {
+  bool InitializeUI(const InitParams& params) override {
     device_manager_ = CreateDeviceManager();
     cursor_factory_ = std::make_unique<CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
@@ -143,6 +148,8 @@ class OzonePlatformCast : public OzonePlatform {
 
     if (enable_dummy_software_rendering)
       surface_factory_ = std::make_unique<SurfaceFactoryCast>();
+
+    return true;
   }
   void InitializeGPU(const InitParams& params) override {
     overlay_manager_ = std::make_unique<OverlayManagerCast>();
@@ -159,8 +166,6 @@ class OzonePlatformCast : public OzonePlatform {
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   std::unique_ptr<EventFactoryEvdev> event_factory_ozone_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformCast);
 };
 
 }  // namespace

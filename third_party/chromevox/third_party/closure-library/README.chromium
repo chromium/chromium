@@ -18,3 +18,5 @@ closure dependencies.  In addition:
   in the Closure library.
 - Most of closure/goog/string/string.js was deleted.  The only function
   left is goog.string.subs as it is needed by goog.asserts.
+- goog.define is updated to v20210406 version so that it can be compiled
+  successfullys after rolling closure_compiler to v20210505.

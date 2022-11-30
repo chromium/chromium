@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -27,6 +29,11 @@ class ReopenTabInProductHelpTrigger {
  public:
   ReopenTabInProductHelpTrigger(feature_engagement::Tracker* tracker,
                                 const base::TickClock* clock);
+
+  ReopenTabInProductHelpTrigger(const ReopenTabInProductHelpTrigger&) = delete;
+  ReopenTabInProductHelpTrigger& operator=(
+      const ReopenTabInProductHelpTrigger&) = delete;
+
   ~ReopenTabInProductHelpTrigger();
 
   using ShowHelpCallback = base::RepeatingCallback<void()>;
@@ -52,8 +59,8 @@ class ReopenTabInProductHelpTrigger {
   // Sets state as if user has not performed any actions.
   void ResetTriggerState();
 
-  feature_engagement::Tracker* const tracker_;
-  const base::TickClock* const clock_;
+  const raw_ptr<feature_engagement::Tracker> tracker_;
+  const raw_ptr<const base::TickClock> clock_;
 
   ShowHelpCallback cb_;
 
@@ -68,8 +75,6 @@ class ReopenTabInProductHelpTrigger {
   TriggerState trigger_state_;
 
   base::TimeTicks time_of_last_step_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReopenTabInProductHelpTrigger);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_REOPEN_TAB_IN_PRODUCT_HELP_TRIGGER_H_

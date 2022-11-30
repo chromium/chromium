@@ -1,23 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_slider/cr_slider.m.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import './strings.m.js';
+import 'chrome://crostini-installer/strings.m.js';
+import 'chrome://resources/cros_elements/button/button.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {BrowserProxy} from 'chrome://crostini-installer/browser_proxy.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {BrowserProxy} from './browser_proxy.js';
 
 /**
  * Enum for the state of `crostini-installer-app`. Not to confused with
@@ -67,7 +67,7 @@ const UNAVAILABLE_USERNAMES = [
   'pulse',
   'android-root',
   'chronos-access',
-  'android-everybody'
+  'android-everybody',
 ];
 
 Polymer({
@@ -190,29 +190,9 @@ Polymer({
       callbackRouter.requestClose.addListener(() => this.cancelOrBack_(true)),
     ];
 
-    // TODO(lxj): The listener should only be invoked once, so it is fine to use
-    // it with a promise. However, it is probably better to just make the mojom
-    // method requestAmountOfFreeDiskSpace() returns the result directly.
-    this.diskSpacePromise_ = new Promise((resolve, reject) => {
-      this.listenerIds_.push(callbackRouter.onAmountOfFreeDiskSpace.addListener(
-          (ticks, defaultIndex, isLowSpaceAvailable) => {
-            if (ticks.length === 0) {
-              reject();
-            } else {
-              this.defaultDiskSizeTick_ = defaultIndex;
-              this.diskSizeTicks_ = ticks;
-
-              this.minDisk_ = ticks[0].label;
-              this.maxDisk_ = ticks[ticks.length - 1].label;
-
-              this.isLowSpaceAvailable_ = isLowSpaceAvailable;
-              if (isLowSpaceAvailable) {
-                this.showDiskSlider_ = true;
-              }
-              resolve();
-            }
-          }));
-    });
+    // Query the disk space sooner than later to minimize delay.
+    this.diskSpacePromise_ =
+        BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
 
     document.addEventListener('keyup', event => {
       if (event.key == 'Escape') {
@@ -221,8 +201,7 @@ Polymer({
       }
     });
 
-    BrowserProxy.getInstance().handler.requestAmountOfFreeDiskSpace();
-    this.$$('.action-button:not([hidden])').focus();
+    this.$$('[primary]:not([hidden])').focus();
   },
 
   /** @override */
@@ -232,29 +211,43 @@ Polymer({
   },
 
   /** @private */
-  onNextButtonClick_() {
+  async onNextButtonClick_() {
     if (!this.onNextButtonClickIsRunning_) {
       assert(this.state_ === State.PROMPT);
       this.onNextButtonClickIsRunning_ = true;
-      // Making this async is not ideal, but we should get the disk space very
-      // soon (if have not already got it) so the user will at worst see a very
-      // short delay.
-      this.diskSpacePromise_
-          .then(() => {
-            this.state_ = State.CONFIGURE;
-            // Focus the username input and move the cursor to the end.
-            this.$.username.select(
-                this.username_.length, this.username_.length);
-          })
-          .catch(() => {
-            this.errorMessage_ =
-                loadTimeData.getString('minimumFreeSpaceUnmetError');
-            this.error_ = NoDiskSpaceError;
-            this.state_ = State.ERROR;
-          })
-          .finally(() => {
-            this.onNextButtonClickIsRunning_ = false;
-          });
+
+      // We should get the disk space very soon (if we have not already got it)
+      // so the user will at worst see a very short delay.
+      const diskSpace = await this.diskSpacePromise_;
+      const ticks = diskSpace.ticks;
+
+      if (ticks.length === 0) {
+        this.errorMessage_ =
+            loadTimeData.getString('minimumFreeSpaceUnmetError');
+        this.error_ = NoDiskSpaceError;
+        this.state_ = State.ERROR;
+
+        this.onNextButtonClickIsRunning_ = false;
+        return;
+      }
+
+
+      this.defaultDiskSizeTick_ = diskSpace.defaultIndex;
+      this.diskSizeTicks_ = ticks;
+
+      this.minDisk_ = ticks[0].label;
+      this.maxDisk_ = ticks[ticks.length - 1].label;
+
+      this.isLowSpaceAvailable_ = diskSpace.isLowSpaceAvailable;
+      if (this.isLowSpaceAvailable_) {
+        this.showDiskSlider_ = true;
+      }
+
+      this.state_ = State.CONFIGURE;
+      // Focus the username input and move the cursor to the end.
+      this.$.username.select(this.username_.length, this.username_.length);
+
+      this.onNextButtonClickIsRunning_ = false;
     }
   },
 
@@ -450,12 +443,6 @@ Polymer({
         messageId = 'startLxdMessage';
         break;
       case InstallerState.kCreateContainer:
-        // TODO(crbug.com/1015722): we are using the same message as for
-        // |START_CONTAINER|, which is weird because user is going to see
-        // message "start container" then "setup container" and then "start
-        // container" again.
-        messageId = 'startContainerMessage';
-        break;
       case InstallerState.kSetupContainer:
         messageId = 'setupContainerMessage';
         break;
@@ -464,12 +451,6 @@ Polymer({
         break;
       case InstallerState.kConfigureContainer:
         messageId = 'configureContainerMessage';
-        break;
-      case InstallerState.kFetchSshKeys:
-        messageId = 'fetchSshKeysMessage';
-        break;
-      case InstallerState.kMountContainer:
-        messageId = 'mountContainerMessage';
         break;
       default:
         assertNotReached();
@@ -510,12 +491,6 @@ Polymer({
       case InstallerError.kErrorOffline:
         messageId = 'offlineError';
         break;
-      case InstallerError.kErrorFetchingSshKeys:
-        messageId = 'fetchSshKeysError';
-        break;
-      case InstallerError.kErrorMountingContainer:
-        messageId = 'mountContainerError';
-        break;
       case InstallerError.kErrorSettingUpContainer:
         messageId = 'setupContainerError';
         break;
@@ -548,8 +523,9 @@ Polymer({
   getConfigureMessageTitle_() {
     // If the flags only allow username config, then we show a username specific
     // subtitle instead of a generic configure subtitle.
-    if (!this.showDiskResizing_())
+    if (!this.showDiskResizing_()) {
       return loadTimeData.getString('usernameMessage');
+    }
     return loadTimeData.getString('configureMessage');
   },
 
@@ -586,5 +562,5 @@ Polymer({
   onDiskSizeRadioChanged_(event) {
     this.showDiskSlider_ =
         (event.detail.value !== 'recommended' || !!this.isLowSpaceAvailable_);
-  }
+  },
 });

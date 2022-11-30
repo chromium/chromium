@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -131,6 +131,7 @@ bool StructTraits<media_session::mojom::MediaPositionDataView,
     return false;
 
   out->playback_rate_ = data.playback_rate();
+  out->end_of_media_ = data.end_of_media();
 
   return true;
 }

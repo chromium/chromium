@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,16 @@ import("//remoting/build/config/remoting_build.gni")
 
 source_set("chromeos") {
   sources = [
+    "ash_mojom_video_consumer.cc",
+    "ash_mojom_video_consumer.h",
+    "ash_proxy.cc",
+    "ash_proxy.h",
     "aura_desktop_capturer.cc",
     "aura_desktop_capturer.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
+    "frame_sink_desktop_capturer.cc",
+    "frame_sink_desktop_capturer.h",
     "message_box.cc",
     "message_box.h",
     "mouse_cursor_monitor_aura.cc",
@@ -24,23 +30,87 @@ source_set("chromeos") {
     "//ash",
     "//build:chromeos_buildflags",
     "//cc",
+    "//components/viz/host",
     "//gpu/command_buffer/common",
-    "//ppapi/host",
     "//remoting/protocol",
+    "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/aura",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/compositor",
     "//ui/events",
     "//ui/views",
   ]
 
   deps = [
+    ":features",
     "//remoting/base:base",
     "//remoting/host:clipboard",
-    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
+    "//ui/display/manager",
+    "//ui/wm",
+  ]
+}
+
+# ChromeOS enterprise specific stuff that is also accessed from other areas
+# like //remoting/host/it2me.
+# Split out in its own target to prevent cyclic dependencies.
+source_set("enterprise_support") {
+  sources = [ "chromeos_enterprise_params.h" ]
+}
+
+source_set("remoting_service") {
+  sources = [
+    "remote_support_host_ash.cc",
+    "remote_support_host_ash.h",
+    "remoting_service.cc",
+    "remoting_service.h",
+  ]
+
+  public_deps = [
+    ":enterprise_support",
+    "//remoting/host/it2me:chrome_os_host",
+  ]
+
+  configs += [ "//remoting/build/config:version" ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//content/public/browser:browser",
+    "//mojo/public/cpp/bindings",
+    "//remoting/base:base",
+    "//remoting/host",
+    "//remoting/host/mojom:mojom",
+  ]
+}
+
+static_library("host_event_reporter_impl") {
+  sources = [
+    "host_event_reporter_impl.cc",
+    "host_event_reporter_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
+    "//components/reporting/proto:record_constants",
+    "//remoting/host:common",
+    "//remoting/protocol",
+  ]
+}
+
+# All unit tests are built as part of the //remoting/host:unit_tests target
+# and must be one target named "unit_tests".
+source_set("reporter_unit_tests") {
+  testonly = true
+  sources = [ "host_event_reporter_impl_unittest.cc" ]
+  deps = [
+    ":host_event_reporter_impl",
+    "//base",
+    "//base/test:test_support",
+    "//remoting/host:common",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
@@ -51,13 +121,18 @@ source_set("unit_tests") {
   sources = [
     "aura_desktop_capturer_unittest.cc",
     "clipboard_aura_unittest.cc",
+    "frame_sink_desktop_capturer_unittest.cc",
+    "scoped_fake_ash_proxy.cc",
+    "scoped_fake_ash_proxy.h",
   ]
 
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":chromeos",
+    ":features",
     "//base/test:test_support",
+    "//components/viz/service",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/proto",
@@ -65,5 +140,14 @@ source_set("unit_tests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/display/manager",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
 }

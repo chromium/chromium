@@ -1,18 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/net/cast_transport_impl.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/sender_rtcp_session.h"
 #include "media/cast/net/transport_util.h"
@@ -59,6 +63,9 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
         media_type_(media_type),
         cast_transport_impl_(cast_transport_impl) {}
 
+  RtcpClient(const RtcpClient&) = delete;
+  RtcpClient& operator=(const RtcpClient&) = delete;
+
   void OnReceivedCastMessage(const RtcpCastMessage& cast_message) override {
     rtcp_observer_->OnReceivedCastMessage(cast_message);
     cast_transport_impl_->OnReceivedCastMessage(rtp_sender_ssrc_, cast_message);
@@ -78,9 +85,7 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
   const uint32_t rtp_sender_ssrc_;
   const std::unique_ptr<RtcpObserver> rtcp_observer_;
   const EventMediaType media_type_;
-  CastTransportImpl* const cast_transport_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RtcpClient);
+  const raw_ptr<CastTransportImpl> cast_transport_impl_;
 };
 
 struct CastTransportImpl::RtpStreamSession {
@@ -118,8 +123,8 @@ CastTransportImpl::CastTransportImpl(
       pacer_(kTargetBurstSize,
              kMaxBurstSize,
              clock,
-             logging_flush_interval > base::TimeDelta() ? &recent_packet_events_
-                                                        : nullptr,
+             logging_flush_interval.is_positive() ? &recent_packet_events_
+                                                  : nullptr,
              transport_.get(),
              transport_task_runner),
       last_byte_acked_for_audio_(0) {
@@ -127,7 +132,7 @@ CastTransportImpl::CastTransportImpl(
   DCHECK(transport_client_);
   DCHECK(transport_);
   DCHECK(transport_task_runner_);
-  if (logging_flush_interval_ > base::TimeDelta()) {
+  if (logging_flush_interval_.is_positive()) {
     transport_task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CastTransportImpl::SendRawEvents,
@@ -159,7 +164,8 @@ void CastTransportImpl::InitializeStream(
     return;
   }
 
-  session->rtp_sender.reset(new RtpSender(transport_task_runner_, &pacer_));
+  session->rtp_sender =
+      std::make_unique<RtpSender>(transport_task_runner_, &pacer_);
   if (!session->rtp_sender->Initialize(config)) {
     session->rtp_sender.reset();
     transport_client_->OnStatusChanged(TRANSPORT_STREAM_UNINITIALIZED);
@@ -171,12 +177,12 @@ void CastTransportImpl::InitializeStream(
   if (is_audio)
     pacer_.RegisterPrioritySsrc(config.ssrc);
 
-  session->rtcp_observer.reset(
-      new RtcpClient(std::move(rtcp_observer), config.ssrc,
-                     is_audio ? AUDIO_EVENT : VIDEO_EVENT, this));
-  session->rtcp_session.reset(
-      new SenderRtcpSession(clock_, &pacer_, session->rtcp_observer.get(),
-                            config.ssrc, config.feedback_ssrc));
+  session->rtcp_observer =
+      std::make_unique<RtcpClient>(std::move(rtcp_observer), config.ssrc,
+                                   is_audio ? AUDIO_EVENT : VIDEO_EVENT, this);
+  session->rtcp_session = std::make_unique<SenderRtcpSession>(
+      clock_, &pacer_, session->rtcp_observer.get(), config.ssrc,
+      config.feedback_ssrc);
 
   valid_sender_ssrcs_.insert(config.feedback_ssrc);
   sessions_[config.ssrc] = std::move(session);
@@ -277,7 +283,7 @@ PacketReceiverCallback CastTransportImpl::PacketReceiverForTesting() {
 }
 
 void CastTransportImpl::SendRawEvents() {
-  DCHECK(logging_flush_interval_ > base::TimeDelta());
+  DCHECK(logging_flush_interval_.is_positive());
 
   if (!recent_frame_events_.empty() || !recent_packet_events_.empty()) {
     std::unique_ptr<std::vector<FrameEvent>> frame_events(
@@ -412,7 +418,7 @@ void CastTransportImpl::AddValidRtpReceiver(uint32_t rtp_sender_ssrc,
   valid_rtp_receiver_ssrcs_.insert(rtp_receiver_ssrc);
 }
 
-void CastTransportImpl::SetOptions(const base::DictionaryValue& options) {
+void CastTransportImpl::SetOptions(const base::Value::Dict& options) {
   // Set PacedSender options.
   int burst_size = LookupOptionWithDefault(options, kOptionPacerTargetBurstSize,
                                            media::cast::kTargetBurstSize);
@@ -425,10 +431,10 @@ void CastTransportImpl::SetOptions(const base::DictionaryValue& options) {
 
   // Set Wifi options.
   int wifi_options = 0;
-  if (options.HasKey(kOptionWifiDisableScan)) {
+  if (options.contains(kOptionWifiDisableScan)) {
     wifi_options |= net::WIFI_OPTIONS_DISABLE_SCAN;
   }
-  if (options.HasKey(kOptionWifiMediaStreamingMode)) {
+  if (options.contains(kOptionWifiMediaStreamingMode)) {
     wifi_options |= net::WIFI_OPTIONS_MEDIA_STREAMING_MODE;
   }
   if (wifi_options)
@@ -449,7 +455,8 @@ void CastTransportImpl::InitializeRtpReceiverRtcpBuilder(
                "CastTransportImpl.";
     return;
   }
-  rtcp_builder_at_rtp_receiver_.reset(new RtcpBuilder(rtp_receiver_ssrc));
+  rtcp_builder_at_rtp_receiver_ =
+      std::make_unique<RtcpBuilder>(rtp_receiver_ssrc);
   rtcp_builder_at_rtp_receiver_->Start();
   RtcpReceiverReferenceTimeReport rrtr;
   rrtr.ntp_seconds = time_data.ntp_seconds;

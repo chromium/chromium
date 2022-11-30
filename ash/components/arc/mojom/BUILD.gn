@@ -1,0 +1,427 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "accessibility_helper.mojom",
+    "adbd.mojom",
+    "anr.mojom",
+    "app.mojom",
+    "app_permissions.mojom",
+    "appfuse.mojom",
+    "arc_bridge.mojom",
+    "audio.mojom",
+    "auth.mojom",
+    "backup_settings.mojom",
+    "bluetooth.mojom",
+    "boot_phase_monitor.mojom",
+    "camera.mojom",
+    "cert_store.mojom",
+    "clipboard.mojom",
+    "compatibility_mode.mojom",
+    "crash_collector.mojom",
+    "digital_goods.mojom",
+    "disk_quota.mojom",
+    "enterprise_reporting.mojom",
+    "file_system.mojom",
+    "iio_sensor.mojom",
+    "ime.mojom",
+    "input_method_manager.mojom",
+    "intent_common.mojom",
+    "intent_helper.mojom",
+    "keyboard_shortcut.mojom",
+    "keymaster.mojom",
+    "kiosk.mojom",
+    "lock_screen.mojom",
+    "media_session.mojom",
+    "memory.mojom",
+    "metrics.mojom",
+    "midis.mojom",
+    "nearby_share.mojom",
+    "net.mojom",
+    "obb_mounter.mojom",
+    "payment_app.mojom",
+    "pip.mojom",
+    "policy.mojom",
+    "power.mojom",
+    "print_common.mojom",
+    "print_spooler.mojom",
+    "privacy_items.mojom",
+    "process.mojom",
+    "property.mojom",
+    "rotation_lock.mojom",
+    "scale_factor.mojom",
+    "screen_capture.mojom",
+    "sensor.mojom",
+    "sensor_service.mojom",
+    "sharesheet.mojom",
+    "storage_manager.mojom",
+    "system_ui.mojom",
+    "timer.mojom",
+    "tracing.mojom",
+    "tts.mojom",
+    "usb_host.mojom",
+    "volume_mounter.mojom",
+    "wake_lock.mojom",
+    "wallpaper.mojom",
+    "webapk.mojom",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom:camera_intent",
+    "//ash/components/arc/mojom:media",
+    "//ash/components/arc/mojom:notifications",
+    "//ash/components/arc/mojom:oemcrypto",
+    "//chromeos/components/sensors/mojom:mojom",
+    "//components/digital_goods/mojom",
+    "//components/payments/mojom:mojom",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//mojo/public/mojom/base",
+    "//printing/mojom",
+    "//sandbox/policy/mojom",
+    "//services/device/public/mojom:usb",
+    "//services/media_session/public/mojom",
+    "//services/resource_coordinator/public/mojom",
+    "//ui/accessibility/mojom:ax_assistant_mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "arc.mojom.AppDiscoveryRequestState"
+          cpp = "::arc::ArcPlayStoreSearchRequestState"
+        },
+      ]
+      traits_headers = [ "app_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.BluetoothDeviceType"
+          cpp = "::device::BluetoothTransport"
+        },
+        {
+          mojom = "arc.mojom.BluetoothSdpAttributeType"
+          cpp = "::bluez::BluetoothServiceAttributeValueBlueZ::Type"
+        },
+        {
+          mojom = "arc.mojom.BluetoothUUID"
+          cpp = "::device::BluetoothUUID"
+        },
+        {
+          mojom = "arc.mojom.BluetoothAdvertisement"
+          cpp = "::std::unique_ptr<::device::BluetoothAdvertisement::Data>"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//device/bluetooth/bluetooth_advertisement.h",
+        "//device/bluetooth/bluetooth_common.h",
+        "//device/bluetooth/public/cpp/bluetooth_uuid.h",
+        "//device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h",
+      ]
+      traits_private_headers =
+          [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.h" ]
+      traits_sources =
+          [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//device/bluetooth",
+        "//device/bluetooth/public/cpp",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.ChangeType"
+          cpp = "::storage::WatcherManager::ChangeType"
+        },
+      ]
+      traits_headers =
+          [ "//ash/components/arc/file_system/file_system_mojom_traits.h" ]
+      traits_sources =
+          [ "//ash/components/arc/file_system/file_system_mojom_traits.cc" ]
+      traits_public_deps = [ "//storage/browser" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.TextInputType"
+          cpp = "::ui::TextInputType"
+        },
+        {
+          mojom = "arc.mojom.KeyEventData"
+          cpp = "::std::unique_ptr<::ui::KeyEvent>"
+          move_only = true
+        },
+      ]
+
+      traits_headers = [ "ime_mojom_traits.h" ]
+      traits_sources = [ "ime_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ui/base/ime",
+        "//ui/base/ime:text_input_types",
+        "//ui/events",
+        "//ui/events/ozone/layout",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.IntentFilter"
+          cpp = "::arc::IntentFilter"
+          move_only = true
+        },
+        {
+          mojom = "arc.mojom.AuthorityEntry"
+          cpp = "::arc::IntentFilter::AuthorityEntry"
+          move_only = true
+        },
+        {
+          mojom = "arc.mojom.PatternMatcher"
+          cpp = "::arc::IntentFilter::PatternMatcher"
+          move_only = true
+        },
+      ]
+      traits_headers =
+          [ "//ash/components/arc/intent_helper/intent_filter_mojom_traits.h" ]
+      traits_sources =
+          [ "//ash/components/arc/intent_helper/intent_filter_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.PrintPageRange"
+          cpp = "::printing::PageRange"
+        },
+        {
+          mojom = "arc.mojom.PrintResolution"
+          cpp = "::gfx::Size"
+        },
+        {
+          mojom = "arc.mojom.PrinterCapabilities"
+          cpp = "::printing::PrinterSemanticCapsAndDefaults"
+        },
+      ]
+      traits_headers = [
+        "//printing/backend/print_backend.h",
+        "//printing/page_range.h",
+        "//ui/gfx/geometry/size.h",
+      ]
+
+      traits_private_headers = [ "print_mojom_traits.h" ]
+      traits_sources = [ "print_mojom_traits.cc" ]
+      traits_public_deps = [ "//printing" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.ClockId"
+          cpp = "::clockid_t"
+        },
+      ]
+      traits_headers = [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
+      traits_sources =
+          [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.DeviceType"
+          cpp = "::ash::DeviceType"
+        },
+        {
+          mojom = "arc.mojom.MountEvent"
+          cpp = "::chromeos::disks::DiskMountManager::MountEvent"
+        },
+      ]
+      traits_headers = [
+        "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.cc",
+      ]
+    },
+  ]
+}
+
+# Media related mojo interfaces. These are used by
+# //services/viz/public/mojom. We have this separate mojom target to
+# avoid pulling in unnecessary interfaces.
+mojom("media") {
+  sources = [
+    "gfx.mojom",
+    "video.mojom",
+    "video_common.mojom",
+    "video_decode_accelerator.mojom",
+    "video_decoder.mojom",
+    "video_encode_accelerator.mojom",
+    "video_frame_pool.mojom",
+    "video_protected_buffer_allocator.mojom",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom:protected_buffer_manager",
+    "//chromeos/components/cdm_factory_daemon/mojom",
+    "//sandbox/policy/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "arc.mojom.Rect"
+          cpp = "::gfx::Rect"
+        },
+        {
+          mojom = "arc.mojom.Range"
+          cpp = "::gfx::Range"
+        },
+      ]
+      traits_headers = [ "arc_gfx_mojom_traits.h" ]
+      traits_sources = [ "arc_gfx_mojom_traits.cc" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.ColorPlaneLayout"
+          cpp = "media::ColorPlaneLayout"
+        },
+        {
+          mojom = "arc.mojom.Size"
+          cpp = "gfx::Size"
+        },
+        {
+          mojom = "arc.mojom.VideoCodecProfile"
+          cpp = "media::VideoCodecProfile"
+        },
+
+        {
+          mojom = "arc.mojom.VideoFrameLayout"
+
+          # media::VideoFrameLayout doesn't have default constructor, so we
+          # cannot convert directly.
+          cpp = "std::unique_ptr<media::VideoFrameLayout>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "arc.mojom.VideoFramePlane"
+          cpp = "arc::VideoFramePlane"
+          move_only = true
+        },
+        {
+          mojom = "arc.mojom.VideoPixelFormat"
+          cpp = "media::VideoPixelFormat"
+        },
+        {
+          mojom = "arc.mojom.DecoderStatus"
+          cpp = "media::DecoderStatus"
+        },
+      ]
+      traits_headers = [ "video_accelerator_mojom_traits.h" ]
+      traits_sources = [ "video_accelerator_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//ash/components/arc/video_accelerator:common",
+        "//media",
+        "//ui/gfx/geometry",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.VideoFrameStorageType"
+          cpp = "::media::VideoEncodeAccelerator::Config::StorageType"
+        },
+        {
+          mojom = "arc.mojom.VideoEncodeAccelerator.Error"
+          cpp = "::media::VideoEncodeAccelerator::Error"
+        },
+        {
+          mojom = "arc.mojom.VideoEncodeProfile"
+          cpp = "::media::VideoEncodeAccelerator::SupportedProfile"
+        },
+        {
+          mojom = "arc.mojom.VideoEncodeAcceleratorConfig"
+          cpp = "::media::VideoEncodeAccelerator::Config"
+        },
+        {
+          mojom = "arc.mojom.Bitrate"
+          cpp = "::media::Bitrate"
+        },
+      ]
+      traits_headers = [ "video_encode_accelerator_mojom_traits.h" ]
+      traits_sources = [ "video_encode_accelerator_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//media/gpu",
+      ]
+    },
+  ]
+}
+
+mojom("camera_intent") {
+  sources = [ "camera_intent.mojom" ]
+  webui_module_path = "/ash/components/arc/mojom"
+}
+
+mojom("notifications") {
+  sources = [
+    "bitmap.mojom",
+    "notifications.mojom",
+  ]
+
+  deps = [ ":media" ]  # for gfx.mojom
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "arc.mojom.ArcBitmap"
+          cpp = "::SkBitmap"
+        },
+      ]
+      traits_headers = [ "//ash/components/arc/bitmap/bitmap_mojom_traits.h" ]
+      traits_sources = [ "//ash/components/arc/bitmap/bitmap_mojom_traits.cc" ]
+      traits_public_deps = [ "//skia" ]
+    },
+  ]
+}
+
+mojom("oemcrypto") {
+  sources = [ "oemcrypto.mojom" ]
+}
+
+mojom("protected_buffer_manager") {
+  sources = [ "protected_buffer_manager.mojom" ]
+  public_deps = [
+    "//media/mojo/mojom/stable:native_pixmap_handle",
+    "//sandbox/policy/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ime_mojom_traits_unittest.cc",
+    "video_accelerator_mojom_traits_unittest.cc",
+    "video_encode_accelerator_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom",
+    "//media",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

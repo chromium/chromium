@@ -1,12 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 
-#include "base/macros.h"
-#include "components/arc/mojom/notifications.mojom.h"
+#include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {

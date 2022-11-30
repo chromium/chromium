@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+test(function() {
+    var childAccessibleNode = new AccessibleNode();
+    document.body.accessibleNode.appendChild(childAccessibleNode);
+    document.body.remove();
+
+    // Validate that childAccessibleNode has no child.
+    assert_equals(0, childAccessibleNode.childNodes.length);
+
+    // childAccessibleNode by now would be already detached from document, by
+    // appending a child to detached childAccessibleNode should not cause an
+    // exception.
+    childAccessibleNode.appendChild(new AccessibleNode());
+
+    // Validate that childAccessibleNode has a new child.
+    assert_equals(1, childAccessibleNode.childNodes.length);
+});
+</script>
+
+</body>
+</html>

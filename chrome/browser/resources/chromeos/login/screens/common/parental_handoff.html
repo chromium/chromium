@@ -1,0 +1,29 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<style include="oobe-dialog-host-styles"></style>
+<oobe-adaptive-dialog id="parentalHandoffDialog" role="dialog"
+  aria-label$="[[i18nDynamic(locale, 
+    'parentalHandoffDialogTitle', username_)]]">
+<iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+<h1 slot="title">
+  [[i18nDynamic(locale, 'parentalHandoffDialogTitle', username_)]]
+</h1>
+<p slot="subtitle">
+  [[i18nDynamic(locale, 'parentalHandoffDialogSubtitle', username_)]]
+</p>
+<div slot="content" class="flex layout vertical center center-justified">
+  <img src="/images/kids_turn.svg" class="oobe-illustration"
+      aria-hidden="true">
+</div>
+<div slot="bottom-buttons">
+  <oobe-next-button id="nextButton"
+      text-key="parentalHandoffDialogNextButton" class="focus-on-show"
+      inverse on-click="onNextButtonPressed_"></oobe-next-button>
+</div>
+</oobe-adaptive-dialog>
+

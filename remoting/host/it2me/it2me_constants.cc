@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,8 @@
 
 namespace remoting {
 
-const char kMessageId[] = "id";
-const char kMessageType[] = "type";
-
-const char kHelloMessage[] = "hello";
-const char kHostVersion[] = "version";
-const char kSupportedFeatures[] = "supportedFeatures";
-const char kHelloResponse[] = "helloResponse";
+const char kFeatureAccessTokenAuth[] = "accessTokenAuth";
+const char kFeatureDelegatedSignaling[] = "delegatedSignaling";
 
 const char kConnectMessage[] = "connect";
 const char kUserName[] = "userName";
@@ -20,12 +15,14 @@ const char kAuthServiceWithToken[] = "authServiceWithToken";
 const char kLocalJid[] = "localJid";
 const char kDirectoryBotJidValue[] = "remoting@bot.talk.google.com";
 const char kSuppressUserDialogs[] = "suppressUserDialogs";
+const char kIsEnterpriseAdminUser[] = "isEnterpriseAdminUser";
 const char kSuppressNotifications[] = "suppressNotifications";
+const char kCurtainLocalUserSession[] = "curtainLocalUserSession";
 const char kTerminateUponInput[] = "terminateUponInput";
 const char kUseElevatedHost[] = "useElevatedHost";
 const char kUseSignalingProxy[] = "useSignalingProxy";
 const char kIceConfig[] = "iceConfig";
-const char kConnectResponseConnect[] = "connectResponse";
+const char kConnectResponse[] = "connectResponse";
 
 const char kHostStateChangedMessage[] = "hostStateChanged";
 const char kState[] = "state";
@@ -40,6 +37,7 @@ const char kHostStateConnected[] = "CONNECTED";
 const char kAccessCode[] = "accessCode";
 const char kAccessCodeLifetime[] = "accessCodeLifetime";
 const char kClient[] = "client";
+const char kDisconnectReason[] = "disconnectReason";
 
 const char kDisconnectMessage[] = "disconnect";
 const char kDisconnectResponse[] = "disconnectResponse";

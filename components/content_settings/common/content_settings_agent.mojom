@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module content_settings.mojom;
+
+import "components/content_settings/core/common/content_settings.mojom";
 
 // An interface to the content settings agent running in the renderer process.
 interface ContentSettingsAgent {
@@ -13,4 +15,8 @@ interface ContentSettingsAgent {
   // Sent to inform the renderer automatic upgrades for mixed content are
   // disabled.
   SetDisabledMixedContentUpgrades();
+
+  // Sends content setting rules for each frame to the renderer process.
+  SendRendererContentSettingRules(
+      RendererContentSettingRules renderer_settings);
 };

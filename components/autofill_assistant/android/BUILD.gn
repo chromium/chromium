@@ -1,0 +1,503 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+import("//build/config/locales.gni")
+import("//build/config/zip.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+android_library("java") {
+  resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    ":autofill_assistant_public_java",
+    ":java_resources",
+    ":public_dependencies_java",
+    ":public_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/autofill/android:autofill_java",
+    "//components/autofill/android:prefeditor_autofill_java",
+    "//components/autofill_assistant/guided_browsing/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/payments/content/android:java",
+    "//components/policy/android:policy_java",
+    "//components/signin/public/android:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
+    "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_gridlayout_gridlayout_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/autofill_assistant/AbstractListObserver.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantAccessibilityUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomBarCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomBarDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomBarNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomSheetContent.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantDialogButton.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantInfoPopup.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantKeyboardCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantModel.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelperImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantPeekHeightCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantRootViewContainer.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTagsForTesting.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTextLinkDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTextUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantActionHandlerImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantClient.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantDependencyInjector.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantDirectActionImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntryImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantUiController.java",
+    "java/src/org/chromium/components/autofill_assistant/BottomSheetUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/FeedbackContext.java",
+    "java/src/org/chromium/components/autofill_assistant/LayoutUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/ScrollToHideGestureListener.java",
+    "java/src/org/chromium/components/autofill_assistant/SizeListenableLinearLayout.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantActionsCarouselCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantActionsDecoration.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantCarouselModel.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantChip.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantChipAdapter.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantChipViewHolder.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/ButtonView.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetails.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetailsAdapter.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetailsCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetailsModel.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantPlaceholdersConfiguration.java",
+    "java/src/org/chromium/components/autofill_assistant/details/ImageClickthroughData.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormCounter.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormCounterInput.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormInput.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormModel.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormSelectionChoice.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormSelectionInput.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantColor.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDeviceConfig.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDimension.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDrawable.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiModel.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiViewBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantToggleButton.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantValue.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewEvents.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewFactory.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewInteractions.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderModel.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderViewBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantStepProgressBar.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBox.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBoxCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBoxModel.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBoxViewBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimer.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimerCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimerDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimerModel.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimerViewBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/BaseOnboardingCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/BottomSheetOnboardingCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/BottomSheetOnboardingWithPopupAndBubbleCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/BottomSheetOnboardingWithPopupCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/DialogOnboardingCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/OnboardingCoordinatorFactory.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/OnboardingView.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayDrawable.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayEventFilter.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayImage.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayModel.java",
+    "java/src/org/chromium/components/autofill_assistant/parse_xml/AssistantParseSingleTagXmlUtilWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeCameraScanModelWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeImagePickerModelWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeUtil.java",
+    "java/src/org/chromium/components/autofill_assistant/trigger_scripts/AssistantTriggerScript.java",
+    "java/src/org/chromium/components/autofill_assistant/trigger_scripts/AssistantTriggerScriptBridge.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantChoiceList.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataBinder.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataModel.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantContactDetailsSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantDataOriginNotice.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantDateTime.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantInfoSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantLoadingSpinner.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantLoginChoice.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantLoginSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantPaymentMethodSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantPhoneNumberSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantShippingAddressSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantTermsSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantVerticalExpander.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantVerticalExpanderAccordion.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantAdditionalSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantAdditionalSectionContainer.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantAdditionalSectionFactory.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantPopupListSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantStaticTextSection.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/additional_sections/AssistantTextInputSection.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+android_library("public_java") {
+  resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    ":autofill_assistant_public_java",
+    ":public_dependencies_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+    "//components/payments/content/android:java_resources",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAddressEditorGms.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeatures.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantModuleInstallUi.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelper.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrumentEditorGms.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantActionHandler.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantDirectAction.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantMetrics.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntry.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantModuleEntryProvider.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferenceManager.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPublicTags.java",
+    "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
+    "public/java/src/org/chromium/components/autofill_assistant/TriggerContext.java",
+  ]
+
+  annotation_processor_deps = [
+    "//base/android/jni_generator:jni_processor",
+    "//components/module_installer/android:module_interface_processor",
+  ]
+}
+
+android_library("public_dependencies_java") {
+  resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/payments/content/android:java_resources",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAccessTokenUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControls.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControlsFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditor.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditorFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeedbackUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantInfoPageUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsGsaFunction.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsMsbbEnabledFunction.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantOptionModel.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrument.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantProfileImageUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSettingsUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbar.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbarFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabChangeObserver.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObscuringUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObserver.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabUtil.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [
+    "//components/autofill_assistant/browser:autofill_assistant_enums_java",
+    "//components/autofill_assistant/browser:autofill_assistant_intent_strings_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomBarNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantDialogButton.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantInfoPopup.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantModel.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelperImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantClient.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantDependencyInjector.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantDirectActionImpl.java",
+    "java/src/org/chromium/components/autofill_assistant/AutofillAssistantUiController.java",
+    "java/src/org/chromium/components/autofill_assistant/carousel/AssistantChip.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetails.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantDetailsModel.java",
+    "java/src/org/chromium/components/autofill_assistant/details/AssistantPlaceholdersConfiguration.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormInput.java",
+    "java/src/org/chromium/components/autofill_assistant/form/AssistantFormModel.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantColor.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDeviceConfig.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDimension.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantDrawable.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantGenericUiModel.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantValue.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewEvents.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewFactory.java",
+    "java/src/org/chromium/components/autofill_assistant/generic_ui/AssistantViewInteractions.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/header/AssistantHeaderModel.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBox.java",
+    "java/src/org/chromium/components/autofill_assistant/infobox/AssistantInfoBoxModel.java",
+    "java/src/org/chromium/components/autofill_assistant/legal_disclaimer/AssistantLegalDisclaimerModel.java",
+    "java/src/org/chromium/components/autofill_assistant/onboarding/BaseOnboardingCoordinator.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/overlay/AssistantOverlayModel.java",
+    "java/src/org/chromium/components/autofill_assistant/parse_xml/AssistantParseSingleTagXmlUtilWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeCameraScanModelWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeImagePickerModelWrapper.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/qr_code/AssistantQrCodeUtil.java",
+    "java/src/org/chromium/components/autofill_assistant/trigger_scripts/AssistantTriggerScriptBridge.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataModel.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantCollectUserDataNativeDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/AssistantDateTime.java",
+  ]
+  split_name = "autofill_assistant"
+}
+
+generate_jni("jni_headers_public") {
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeatures.java",
+    "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
+  ]
+}
+
+generate_jni("jni_headers_public_dependencies") {
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
+  ]
+}
+
+android_resources("animated_poodle_resources") {
+  sources =
+      [ "internal/java/res_poodle/drawable/ic_autofill_assistant_24dp.xml" ]
+}
+
+# These java targets are overridden downstream and used instead of these ones.
+android_library("autofill_assistant_public_java") {
+  resources_package = "org.chromium.components.autofill_assistant.common"
+
+  deps = [
+    ":animated_poodle_resources",
+    "//base:base_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [
+    "*/AnimatedPoodle.class",
+    "*/GmsIntegrator.class",
+  ]
+}
+
+android_library("autofill_assistant_public_impl_java") {
+  resources_package = "org.chromium.components.autofill_assistant.common"
+
+  deps = [
+    ":animated_poodle_resources",
+    "//base:base_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/autofill_assistant/header/AnimatedPoodle.java",
+    "java/src/org/chromium/components/autofill_assistant/user_data/GmsIntegrator.java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "internal/java/res/drawable-v23/autofill_assistant_actions_gradient.xml",
+    "internal/java/res/drawable-v31/autofill_assistant_actions_gradient.xml",
+    "internal/java/res/drawable/autofill_assistant_circle_background.xml",
+    "internal/java/res/drawable/autofill_assistant_default_details.xml",
+    "internal/java/res/drawable/autofill_assistant_details_bg.xml",
+    "internal/java/res/drawable/autofill_assistant_details_list_divider.xml",
+    "internal/java/res/drawable/autofill_assistant_lightblue_rect_bg.xml",
+    "internal/java/res/drawable/autofill_assistant_rounded_corner_background.xml",
+    "internal/java/res/drawable/autofill_assistant_swipe_indicator.xml",
+    "internal/java/res/drawable/ic_add_outline_white_24dp.xml",
+    "internal/java/res/drawable/ic_airline_seat_recline_normal_black_24dp.xml",
+    "internal/java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
+    "internal/java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
+    "internal/java/res/drawable/ic_check_circle_black_24dp.xml",
+    "internal/java/res/drawable/ic_clear_black_chrome_24dp.xml",
+    "internal/java/res/drawable/ic_confirmation_number_black_24dp.xml",
+    "internal/java/res/drawable/ic_directions_car_black_24dp.xml",
+    "internal/java/res/drawable/ic_done_black_24dp.xml",
+    "internal/java/res/drawable/ic_fastfood_black_24dp.xml",
+    "internal/java/res/drawable/ic_grocery_black_24dp.xml",
+    "internal/java/res/drawable/ic_local_dining_black_24dp.xml",
+    "internal/java/res/drawable/ic_overflow_black_24dp.xml",
+    "internal/java/res/drawable/ic_payment_black_24dp.xml",
+    "internal/java/res/drawable/ic_refresh_black_24dp.xml",
+    "internal/java/res/drawable/ic_remove_outline_white_24dp.xml",
+    "internal/java/res/drawable/ic_settings_black_24dp.xml",
+    "internal/java/res/drawable/ic_shopping_basket_black_24dp.xml",
+    "internal/java/res/drawable/ic_shopping_basket_black_24dp.xml",
+    "internal/java/res/drawable/ic_vpn_key_black_24dp.xml",
+    "internal/java/res/layout/autofill_assistant_address_full.xml",
+    "internal/java/res/layout/autofill_assistant_address_summary.xml",
+    "internal/java/res/layout/autofill_assistant_base_onboarding.xml",
+    "internal/java/res/layout/autofill_assistant_bottom_sheet_content.xml",
+    "internal/java/res/layout/autofill_assistant_bottom_sheet_toolbar.xml",
+    "internal/java/res/layout/autofill_assistant_button_assistive.xml",
+    "internal/java/res/layout/autofill_assistant_button_filled.xml",
+    "internal/java/res/layout/autofill_assistant_button_hairline.xml",
+    "internal/java/res/layout/autofill_assistant_button_text_view.xml",
+    "internal/java/res/layout/autofill_assistant_contact_full.xml",
+    "internal/java/res/layout/autofill_assistant_contact_summary.xml",
+    "internal/java/res/layout/autofill_assistant_data_origin_notice.xml",
+    "internal/java/res/layout/autofill_assistant_details.xml",
+    "internal/java/res/layout/autofill_assistant_form_checkbox.xml",
+    "internal/java/res/layout/autofill_assistant_form_counter.xml",
+    "internal/java/res/layout/autofill_assistant_form_counter_input.xml",
+    "internal/java/res/layout/autofill_assistant_form_information.xml",
+    "internal/java/res/layout/autofill_assistant_form_radiobutton.xml",
+    "internal/java/res/layout/autofill_assistant_form_selection_input.xml",
+    "internal/java/res/layout/autofill_assistant_header.xml",
+    "internal/java/res/layout/autofill_assistant_info_box.xml",
+    "internal/java/res/layout/autofill_assistant_legal_disclaimer.xml",
+    "internal/java/res/layout/autofill_assistant_loading_spinner.xml",
+    "internal/java/res/layout/autofill_assistant_login.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_no_button.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_terms.xml",
+    "internal/java/res/layout/autofill_assistant_onboarding_yes_button.xml",
+    "internal/java/res/layout/autofill_assistant_payment_method_full.xml",
+    "internal/java/res/layout/autofill_assistant_payment_method_summary.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_section_divider.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_section_title.xml",
+    "internal/java/res/layout/autofill_assistant_payment_request_terms_and_conditions.xml",
+    "internal/java/res/layout/autofill_assistant_popup_list_section.xml",
+    "internal/java/res/layout/autofill_assistant_static_text_section.xml",
+    "internal/java/res/menu/profile_icon_menu.xml",
+    "internal/java/res/values-night-v17/colors.xml",
+    "internal/java/res/values-v17/attrs.xml",
+    "internal/java/res/values-v17/colors.xml",
+    "internal/java/res/values-v17/dimens.xml",
+    "internal/java/res/values-v17/styles.xml",
+  ]
+  deps = [
+    ":java_strings_grd",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//components/payments/content/android:java_resources",
+    "//components/signin/public/android:java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}
+
+java_strings_grd("java_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file =
+      "internal/java/strings/android_chrome_autofill_assistant_strings.grd"
+  outputs = [ "values/android_chrome_autofill_assistant_strings.xml" ] + process_file_template(
+                android_bundle_locales_as_resources,
+                [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "public/junit/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferenceManagerTest.java" ]
+
+  deps = [
+    ":public_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//components/prefs/android:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

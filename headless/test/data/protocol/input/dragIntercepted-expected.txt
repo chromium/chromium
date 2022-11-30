@@ -1,0 +1,20 @@
+Tests Input.dragIntercepted event.
+{
+  "items": [
+    {
+      "mimeType": "text/uri-list",
+      "data": "https://example.com/",
+      "title": "Drag Me!"
+    },
+    {
+      "mimeType": "text/plain",
+      "data": "https://example.com/"
+    },
+    {
+      "mimeType": "text/html",
+      "data": "<a href=\"https://example.com/\">Drag Me!</a>",
+      "baseURL": "https://example.com/"
+    }
+  ],
+  "dragOperationsMask": -1
+}

@@ -19,6 +19,8 @@
 #include <libxml/globals.h>
 #include <libxml/xmlerror.h>
 
+#include "private/error.h"
+
 /**
  * MAX_URI_LENGTH:
  *
@@ -1638,23 +1640,24 @@ xmlURIUnescapeString(const char *str, int len, char *target) {
     out = ret;
     while(len > 0) {
 	if ((len > 2) && (*in == '%') && (is_hex(in[1])) && (is_hex(in[2]))) {
+            int c = 0;
 	    in++;
 	    if ((*in >= '0') && (*in <= '9'))
-	        *out = (*in - '0');
+	        c = (*in - '0');
 	    else if ((*in >= 'a') && (*in <= 'f'))
-	        *out = (*in - 'a') + 10;
+	        c = (*in - 'a') + 10;
 	    else if ((*in >= 'A') && (*in <= 'F'))
-	        *out = (*in - 'A') + 10;
+	        c = (*in - 'A') + 10;
 	    in++;
 	    if ((*in >= '0') && (*in <= '9'))
-	        *out = *out * 16 + (*in - '0');
+	        c = c * 16 + (*in - '0');
 	    else if ((*in >= 'a') && (*in <= 'f'))
-	        *out = *out * 16 + (*in - 'a') + 10;
+	        c = c * 16 + (*in - 'a') + 10;
 	    else if ((*in >= 'A') && (*in <= 'F'))
-	        *out = *out * 16 + (*in - 'A') + 10;
+	        c = c * 16 + (*in - 'A') + 10;
 	    in++;
 	    len -= 3;
-	    out++;
+	    *out++ = (char) c;
 	} else {
 	    *out++ = *in++;
 	    len--;
@@ -2382,7 +2385,7 @@ xmlCanonicPath(const xmlChar *path)
  * For Windows implementations, additional work needs to be done to
  * replace backslashes in pathnames with "forward slashes"
  */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     int len = 0;
     char *p = NULL;
 #endif
@@ -2454,7 +2457,7 @@ xmlCanonicPath(const xmlChar *path)
 
 path_processing:
 /* For Windows implementations, replace backslashes with 'forward slashes' */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     /*
      * Create a URI structure
      */
@@ -2533,7 +2536,7 @@ xmlPathToURI(const xmlChar *path)
     cal = xmlCanonicPath(path);
     if (cal == NULL)
         return(NULL);
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     /* xmlCanonicPath can return an URI on Windows (is that the intended behaviour?)
        If 'cal' is a valid URI already then we are done here, as continuing would make
        it invalid. */
@@ -2557,5 +2560,3 @@ xmlPathToURI(const xmlChar *path)
     xmlFree(cal);
     return(ret);
 }
-#define bottom_uri
-#include "elfgcchack.h"

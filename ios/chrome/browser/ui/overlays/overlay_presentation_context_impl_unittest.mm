@@ -1,24 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl.h"
 
-#include "base/bind.h"
-#include "base/ios/ios_util.h"
+#import "base/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_presentation_context_observer.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_contained_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_impl_delegate.h"
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_util.h"
 #import "ios/chrome/browser/ui/overlays/test/test_overlay_presentation_context.h"
 #import "ios/chrome/test/scoped_key_window.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,7 +37,7 @@ class MockOverlayPresentationContextImplObserver
     : public OverlayPresentationContextObserver {
  public:
   MockOverlayPresentationContextImplObserver() {}
-  ~MockOverlayPresentationContextImplObserver() {}
+  ~MockOverlayPresentationContextImplObserver() override {}
 
   MOCK_METHOD2(OverlayPresentationContextWillChangePresentationCapabilities,
                void(OverlayPresentationContext*,
@@ -48,8 +49,8 @@ class MockOverlayPresentationContextImplObserver
 };
 
 // Returns the presentation capabilities for a context whose contained and
-// presented overlay UI support is described by |supports_contained| and
-// |supports_presented|.
+// presented overlay UI support is described by `supports_contained` and
+// `supports_presented`.
 OverlayPresentationContext::UIPresentationCapabilities GetCapabilities(
     bool supports_contained,
     bool supports_presented) {
@@ -82,27 +83,28 @@ class OverlayPresentationContextImplTest;
 // Test fixture for OverlayPresentationContextImpl.
 class OverlayPresentationContextImplTest : public PlatformTest {
  public:
-  OverlayPresentationContextImplTest()
-      : browser_(std::make_unique<TestBrowser>()),
-        context_(browser_.get()),
-        delegate_([[FakeOverlayPresenationContextDelegate alloc] init]),
-        root_view_controller_([[UIViewController alloc] init]) {
+  OverlayPresentationContextImplTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
+    delegate_ = [[FakeOverlayPresenationContextDelegate alloc] init];
+    root_view_controller_ = [[UIViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
     delegate_.test = this;
-    context_.SetDelegate(delegate_);
-    context_.AddObserver(&observer_);
+    context_->SetDelegate(delegate_);
+    context_->AddObserver(&observer_);
     EXPECT_CALL(observer_, OverlayPresentationContextDidMoveToWindow(
-                               &context_, scoped_window_.Get()));
-    context_.SetWindow(scoped_window_.Get());
+                               context_.get(), scoped_window_.Get()));
+    context_->SetWindow(scoped_window_.Get());
   }
   ~OverlayPresentationContextImplTest() override {
-    context_.RemoveObserver(&observer_);
-    // The browser needs to be destroyed before |context_| so that observers
+    context_->RemoveObserver(&observer_);
+    // The browser needs to be destroyed before `context_` so that observers
     // can be unhooked due to BrowserDestroyed().  This is not a problem for
     // non-test OverlayPresentationContextImpls since they're owned by the
     // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_ = nullptr;
+    browser_.reset();
   }
 
   // Setter for whether the presentation context should support overlay UI
@@ -113,20 +115,21 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
     // Updating the support for contained overlay UI will notifiy the observer
     // of this change.
-    EXPECT_CALL(observer_,
-                OverlayPresentationContextWillChangePresentationCapabilities(
-                    &context_, GetCapabilities(true, supports_presented_ui_)));
     EXPECT_CALL(
         observer_,
-        OverlayPresentationContextDidChangePresentationCapabilities(&context_));
+        OverlayPresentationContextWillChangePresentationCapabilities(
+            context_.get(), GetCapabilities(true, supports_presented_ui_)));
+    EXPECT_CALL(observer_,
+                OverlayPresentationContextDidChangePresentationCapabilities(
+                    context_.get()));
 
     supports_contained_ui_ = true;
 
-    context_.SetContainerViewController(root_view_controller_);
+    context_->SetContainerViewController(root_view_controller_);
 
     // Check that the presentation capabilities have been updated.
     ASSERT_EQ(supports_contained_ui_,
-              OverlayPresentationContextSupportsContainedUI(&context_));
+              OverlayPresentationContextSupportsContainedUI(context_.get()));
   }
 
   // Setter for whether the presentation context should support overlay UI
@@ -137,16 +140,17 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
     // Updating the support for presented overlay UI will notifiy the observer
     // of this change.
-    EXPECT_CALL(observer_,
-                OverlayPresentationContextWillChangePresentationCapabilities(
-                    &context_, GetCapabilities(supports_contained_ui_, true)));
     EXPECT_CALL(
         observer_,
-        OverlayPresentationContextDidChangePresentationCapabilities(&context_));
+        OverlayPresentationContextWillChangePresentationCapabilities(
+            context_.get(), GetCapabilities(supports_contained_ui_, true)));
+    EXPECT_CALL(observer_,
+                OverlayPresentationContextDidChangePresentationCapabilities(
+                    context_.get()));
 
     supports_presented_ui_ = true;
 
-    // Present a UIViewController over |root_view_controller_|'s context, then
+    // Present a UIViewController over `root_view_controller_`'s context, then
     // supply the view controller to the presentation context.
     UIViewController* presentation_context_view_controller =
         [[UIViewController alloc] init];
@@ -158,7 +162,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
         presentViewController:presentation_context_view_controller
                      animated:NO
                    completion:^{
-                     context_.SetPresentationContextViewController(
+                     context_->SetPresentationContextViewController(
                          presentation_context_view_controller);
                      presentation_finished = YES;
                    }];
@@ -169,27 +173,28 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
     // Check that the presentation capabilities have been updated.
     ASSERT_EQ(supports_presented_ui_,
-              OverlayPresentationContextSupportsPresentedUI(&context_));
+              OverlayPresentationContextSupportsPresentedUI(context_.get()));
   }
 
-  // Shows the overlay UI for |request| in the context.
+  // Shows the overlay UI for `request` in the context.
   void ShowOverlayUI(OverlayRequest* request) {
     overlay_presentation_finished_ = false;
     overlay_dismissal_finished_ = false;
     overlay_dismissal_reason_ = OverlayDismissalReason::kUserInteraction;
-    context_.ShowOverlayUI(request, base::BindOnce(^{
-                             overlay_presentation_finished_ = true;
-                           }),
-                           base::BindOnce(^(OverlayDismissalReason reason) {
-                             overlay_dismissal_finished_ = true;
-                             overlay_dismissal_reason_ = reason;
-                           }));
+    context_->ShowOverlayUI(request, base::BindOnce(^{
+                              overlay_presentation_finished_ = true;
+                            }),
+                            base::BindOnce(^(OverlayDismissalReason reason) {
+                              overlay_dismissal_finished_ = true;
+                              overlay_dismissal_reason_ = reason;
+                            }));
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  TestOverlayPresentationContext context_;
+  std::unique_ptr<TestOverlayPresentationContext> context_;
   MockOverlayPresentationContextImplObserver observer_;
   FakeOverlayPresenationContextDelegate* delegate_ = nil;
   ScopedKeyWindow scoped_window_;
@@ -228,15 +233,15 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 // Tests that neither contained nor presented overlay UI can be shown in the
 // context if no view controllers have been provided.
 TEST_F(OverlayPresentationContextImplTest, NoPresentationCapabilities) {
-  ASSERT_EQ(context_.GetPresentationCapabilities(),
+  ASSERT_EQ(context_->GetPresentationCapabilities(),
             OverlayPresentationContext::UIPresentationCapabilities::kNone);
 
   std::unique_ptr<OverlayRequest> contained_request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  EXPECT_FALSE(context_.CanShowUIForRequest(contained_request.get()));
+  EXPECT_FALSE(context_->CanShowUIForRequest(contained_request.get()));
   std::unique_ptr<OverlayRequest> presented_request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  EXPECT_FALSE(context_.CanShowUIForRequest(presented_request.get()));
+  EXPECT_FALSE(context_->CanShowUIForRequest(presented_request.get()));
 }
 
 // Tests that contained overlay UI can be shown if the container
@@ -244,12 +249,12 @@ TEST_F(OverlayPresentationContextImplTest, NoPresentationCapabilities) {
 TEST_F(OverlayPresentationContextImplTest, ContainedPresentationCapability) {
   std::unique_ptr<OverlayRequest> contained_request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  context_.PrepareToShowOverlayUI(contained_request.get());
-  EXPECT_TRUE(context_.CanShowUIForRequest(contained_request.get()));
+  context_->PrepareToShowOverlayUI(contained_request.get());
+  EXPECT_TRUE(context_->CanShowUIForRequest(contained_request.get()));
 
   std::unique_ptr<OverlayRequest> presented_request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  EXPECT_FALSE(context_.CanShowUIForRequest(presented_request.get()));
+  EXPECT_FALSE(context_->CanShowUIForRequest(presented_request.get()));
 }
 
 // Tests that presented overlay UI can be shown if the presentation context
@@ -257,12 +262,12 @@ TEST_F(OverlayPresentationContextImplTest, ContainedPresentationCapability) {
 TEST_F(OverlayPresentationContextImplTest, PresentedPresentationCapability) {
   std::unique_ptr<OverlayRequest> presented_request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  context_.PrepareToShowOverlayUI(presented_request.get());
-  EXPECT_TRUE(context_.CanShowUIForRequest(presented_request.get()));
+  context_->PrepareToShowOverlayUI(presented_request.get());
+  EXPECT_TRUE(context_->CanShowUIForRequest(presented_request.get()));
 
   std::unique_ptr<OverlayRequest> contained_request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  EXPECT_FALSE(context_.CanShowUIForRequest(contained_request.get()));
+  EXPECT_FALSE(context_->CanShowUIForRequest(contained_request.get()));
 }
 
 // Tests that CanShowRequest() returns the expected value when the presentation
@@ -270,48 +275,41 @@ TEST_F(OverlayPresentationContextImplTest, PresentedPresentationCapability) {
 TEST_F(OverlayPresentationContextImplTest, CanShowRequest) {
   std::unique_ptr<OverlayRequest> contained_request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  EXPECT_TRUE(context_.CanShowUIForRequest(
+  EXPECT_TRUE(context_->CanShowUIForRequest(
       contained_request.get(),
       OverlayPresentationContext::UIPresentationCapabilities::kContained));
-  EXPECT_FALSE(context_.CanShowUIForRequest(
+  EXPECT_FALSE(context_->CanShowUIForRequest(
       contained_request.get(),
       OverlayPresentationContext::UIPresentationCapabilities::kPresented));
 
   std::unique_ptr<OverlayRequest> presented_request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  EXPECT_FALSE(context_.CanShowUIForRequest(
+  EXPECT_FALSE(context_->CanShowUIForRequest(
       presented_request.get(),
       OverlayPresentationContext::UIPresentationCapabilities::kContained));
-  EXPECT_TRUE(context_.CanShowUIForRequest(
+  EXPECT_TRUE(context_->CanShowUIForRequest(
       presented_request.get(),
       OverlayPresentationContext::UIPresentationCapabilities::kPresented));
 }
 
 // Tests the presentation flow for contained overlay UI.
 TEST_F(OverlayPresentationContextImplTest, ContainedOverlayUI) {
-#if !TARGET_OS_SIMULATOR
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    // TODO(crbug.com/1099287): Test is failing on iOS 12.4 device.
-    return;
-  }
-#endif  // TARGET_OS_SIMULATOR
-
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestContainedOverlay>();
-  context_.PrepareToShowOverlayUI(request.get());
+  context_->PrepareToShowOverlayUI(request.get());
   ASSERT_EQ(0U, root_view_controller_.view.subviews.count);
   ASSERT_EQ(0U, root_view_controller_.childViewControllers.count);
 
-  // Show the UI for |request| and verify that the overlay UI is added to the
-  // |root_view_controller_|'s view.
+  // Show the UI for `request` and verify that the overlay UI is added to the
+  // `root_view_controller_`'s view.
   ShowOverlayUI(request.get());
   EXPECT_EQ(1U, root_view_controller_.view.subviews.count);
   EXPECT_EQ(1U, root_view_controller_.childViewControllers.count);
   EXPECT_TRUE(overlay_presentation_finished_);
 
   // Hide the overlay UI and verify that it was removed from
-  // |root_view_controller_|'s view.
-  context_.HideOverlayUI(request.get());
+  // `root_view_controller_`'s view.
+  context_->HideOverlayUI(request.get());
   EXPECT_EQ(0U, root_view_controller_.view.subviews.count);
   EXPECT_EQ(0U, root_view_controller_.childViewControllers.count);
   EXPECT_TRUE(overlay_dismissal_finished_);
@@ -319,7 +317,7 @@ TEST_F(OverlayPresentationContextImplTest, ContainedOverlayUI) {
 
   // Show the UI again, then cancel it and verify that the view was removed.
   ShowOverlayUI(request.get());
-  context_.CancelOverlayUI(request.get());
+  context_->CancelOverlayUI(request.get());
   EXPECT_EQ(0U, root_view_controller_.view.subviews.count);
   EXPECT_EQ(0U, root_view_controller_.childViewControllers.count);
   EXPECT_TRUE(overlay_dismissal_finished_);
@@ -330,7 +328,7 @@ TEST_F(OverlayPresentationContextImplTest, ContainedOverlayUI) {
 TEST_F(OverlayPresentationContextImplTest, PresentedOverlayUI) {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<TestPresentedOverlay>();
-  context_.PrepareToShowOverlayUI(request.get());
+  context_->PrepareToShowOverlayUI(request.get());
   UIViewController* presentation_base_view_controller =
       root_view_controller_.presentedViewController;
   ASSERT_TRUE(presentation_base_view_controller);
@@ -349,14 +347,14 @@ TEST_F(OverlayPresentationContextImplTest, PresentedOverlayUI) {
            overlay_dismissal_finished_;
   };
 
-  // Show the UI for |request| and verify that the overlay UI is presented over
-  // |presentation_base_view_controller|.
+  // Show the UI for `request` and verify that the overlay UI is presented over
+  // `presentation_base_view_controller`.
   ShowOverlayUI(request.get());
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                           presentation_completion_condition));
 
   // Hide the overlay UI and verify that it was dismissed.
-  context_.HideOverlayUI(request.get());
+  context_->HideOverlayUI(request.get());
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                           dismissal_completion_condition));
   EXPECT_EQ(OverlayDismissalReason::kHiding, overlay_dismissal_reason_);
@@ -365,7 +363,7 @@ TEST_F(OverlayPresentationContextImplTest, PresentedOverlayUI) {
   ShowOverlayUI(request.get());
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                           presentation_completion_condition));
-  context_.CancelOverlayUI(request.get());
+  context_->CancelOverlayUI(request.get());
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout,
                                           dismissal_completion_condition));
   EXPECT_EQ(OverlayDismissalReason::kCancellation, overlay_dismissal_reason_);

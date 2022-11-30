@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+message NewTabButtonParams {
+  optional string url = 1;
+}
+
+// A proto representing the "tab_strip" manifest field.
+// This mirrors ManifestTabStrip in:
+// third_party/blink/public/mojom/manifest/manifest.mojom
+message TabStrip {
+  enum Visibility {
+    AUTO = 0;
+    ABSENT = 1;
+  }
+
+  oneof new_tab_button {
+    Visibility new_tab_button_visibility = 1;
+    NewTabButtonParams new_tab_button_params = 2;
+  }
+
+  oneof home_tab {
+    Visibility home_tab_visibility = 3;
+    // TODO(crbug.com/897314): Add HomeTabParams containing icons.
+  }
+}

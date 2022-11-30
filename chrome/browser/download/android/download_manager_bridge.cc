@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/download/android/jni_headers/DownloadManagerBridge_jni.h"
 #include "components/download/public/common/download_features.h"
 #include "url/gurl.h"
@@ -34,10 +35,8 @@ static void JNI_DownloadManagerBridge_OnAddCompletedDownloadDone(
 void DownloadManagerBridge::AddCompletedDownload(
     download::DownloadItem* download,
     AddCompletedDownloadCallback callback) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kUseDownloadOfflineContentProvider)) {
-    return;
-  }
+  DCHECK(base::FeatureList::IsEnabled(
+      download::features::kUseDownloadOfflineContentProvider));
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jfile_name =

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,12 +18,11 @@
 #include "base/process/process_metrics_iocounters.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/values.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace {
-
-// System pagesize. This value remains constant on x86/64 architectures.
-const int PAGESIZE_KB = 4;
 
 // ntstatus.h conflicts with windows.h so define this locally.
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000L)
@@ -147,10 +146,10 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
   FILETIME kernel_time;
   FILETIME user_time;
 
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return TimeDelta();
 
-  if (!GetProcessTimes(process_.Get(), &creation_time, &exit_time, &kernel_time,
+  if (!GetProcessTimes(process_.get(), &creation_time, &exit_time, &kernel_time,
                        &user_time)) {
     // This should never fail because we duplicate the handle to guarantee it
     // will remain valid.
@@ -162,11 +161,36 @@ TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
          TimeDelta::FromFileTime(user_time);
 }
 
+TimeDelta ProcessMetrics::GetPreciseCumulativeCPUUsage() {
+#if defined(ARCH_CPU_ARM64)
+  // Precise CPU usage is not available on Arm CPUs because they don't support
+  // constant rate TSC.
+  return GetCumulativeCPUUsage();
+#else   // !defined(ARCH_CPU_ARM64)
+  if (!time_internal::HasConstantRateTSC())
+    return GetCumulativeCPUUsage();
+
+  ULONG64 process_cycle_time = 0;
+  if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
+    NOTREACHED();
+    return TimeDelta();
+  }
+
+  const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
+  if (tsc_ticks_per_second == 0) {
+    return TimeDelta();
+  }
+
+  const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
+  return Seconds(process_time_seconds);
+#endif  // !defined(ARCH_CPU_ARM64)
+}
+
 bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  if (!process_.IsValid())
+  if (!process_.is_valid())
     return false;
 
-  return GetProcessIoCounters(process_.Get(), io_counters) != FALSE;
+  return GetProcessIoCounters(process_.get(), io_counters) != FALSE;
 }
 
 uint64_t ProcessMetrics::GetCumulativeDiskUsageInBytes() {
@@ -202,10 +226,6 @@ size_t GetSystemCommitCharge() {
   return (info.CommitTotal * system_info.dwPageSize) / 1024;
 }
 
-size_t GetPageSize() {
-  return PAGESIZE_KB * 1024;
-}
-
 // This function uses the following mapping between MEMORYSTATUSEX and
 // SystemMemoryInfoKB:
 //   ullTotalPhys ==> total
@@ -218,10 +238,10 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   if (!::GlobalMemoryStatusEx(&mem_status))
     return false;
 
-  meminfo->total = mem_status.ullTotalPhys / 1024;
-  meminfo->avail_phys = mem_status.ullAvailPhys / 1024;
-  meminfo->swap_total = mem_status.ullTotalPageFile / 1024;
-  meminfo->swap_free = mem_status.ullAvailPageFile / 1024;
+  meminfo->total = saturated_cast<int>(mem_status.ullTotalPhys / 1024);
+  meminfo->avail_phys = saturated_cast<int>(mem_status.ullAvailPhys / 1024);
+  meminfo->swap_total = saturated_cast<int>(mem_status.ullTotalPageFile / 1024);
+  meminfo->swap_free = saturated_cast<int>(mem_status.ullAvailPageFile / 1024);
 
   return true;
 }
@@ -235,32 +255,34 @@ size_t ProcessMetrics::GetMallocUsage() {
 SystemPerformanceInfo::SystemPerformanceInfo() = default;
 SystemPerformanceInfo::SystemPerformanceInfo(
     const SystemPerformanceInfo& other) = default;
+SystemPerformanceInfo& SystemPerformanceInfo::operator=(
+    const SystemPerformanceInfo& other) = default;
 
-std::unique_ptr<Value> SystemPerformanceInfo::ToValue() const {
-  std::unique_ptr<DictionaryValue> result(new DictionaryValue());
+Value SystemPerformanceInfo::ToValue() const {
+  Value result(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  result->SetDouble("idle_time", strict_cast<double>(idle_time));
-  result->SetDouble("read_transfer_count",
-                    strict_cast<double>(read_transfer_count));
-  result->SetDouble("write_transfer_count",
-                    strict_cast<double>(write_transfer_count));
-  result->SetDouble("other_transfer_count",
-                    strict_cast<double>(other_transfer_count));
-  result->SetDouble("read_operation_count",
-                    strict_cast<double>(read_operation_count));
-  result->SetDouble("write_operation_count",
-                    strict_cast<double>(write_operation_count));
-  result->SetDouble("other_operation_count",
-                    strict_cast<double>(other_operation_count));
-  result->SetDouble("pagefile_pages_written",
-                    strict_cast<double>(pagefile_pages_written));
-  result->SetDouble("pagefile_pages_write_ios",
-                    strict_cast<double>(pagefile_pages_write_ios));
-  result->SetDouble("available_pages", strict_cast<double>(available_pages));
-  result->SetDouble("pages_read", strict_cast<double>(pages_read));
-  result->SetDouble("page_read_ios", strict_cast<double>(page_read_ios));
+  result.SetDoubleKey("idle_time", strict_cast<double>(idle_time));
+  result.SetDoubleKey("read_transfer_count",
+                      strict_cast<double>(read_transfer_count));
+  result.SetDoubleKey("write_transfer_count",
+                      strict_cast<double>(write_transfer_count));
+  result.SetDoubleKey("other_transfer_count",
+                      strict_cast<double>(other_transfer_count));
+  result.SetDoubleKey("read_operation_count",
+                      strict_cast<double>(read_operation_count));
+  result.SetDoubleKey("write_operation_count",
+                      strict_cast<double>(write_operation_count));
+  result.SetDoubleKey("other_operation_count",
+                      strict_cast<double>(other_operation_count));
+  result.SetDoubleKey("pagefile_pages_written",
+                      strict_cast<double>(pagefile_pages_written));
+  result.SetDoubleKey("pagefile_pages_write_ios",
+                      strict_cast<double>(pagefile_pages_write_ios));
+  result.SetDoubleKey("available_pages", strict_cast<double>(available_pages));
+  result.SetDoubleKey("pages_read", strict_cast<double>(pages_read));
+  result.SetDoubleKey("page_read_ios", strict_cast<double>(page_read_ios));
 
   return result;
 }
@@ -286,10 +308,13 @@ BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
     }
   }
 
-  info->idle_time = counters.IdleTime.QuadPart;
-  info->read_transfer_count = counters.ReadTransferCount.QuadPart;
-  info->write_transfer_count = counters.WriteTransferCount.QuadPart;
-  info->other_transfer_count = counters.OtherTransferCount.QuadPart;
+  info->idle_time = static_cast<uint64_t>(counters.IdleTime.QuadPart);
+  info->read_transfer_count =
+      static_cast<uint64_t>(counters.ReadTransferCount.QuadPart);
+  info->write_transfer_count =
+      static_cast<uint64_t>(counters.WriteTransferCount.QuadPart);
+  info->other_transfer_count =
+      static_cast<uint64_t>(counters.OtherTransferCount.QuadPart);
   info->read_operation_count = counters.ReadOperationCount;
   info->write_operation_count = counters.WriteOperationCount;
   info->other_operation_count = counters.OtherOperationCount;

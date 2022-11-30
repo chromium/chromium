@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ void NotifyInitializationDoneForTesting() {
   // it's ready using the same event before continuing. If the test takes
   // longer than that stop waiting to prevent hangs.
   if (notifier_event)
-    notifier_event->TimedWait(base::TimeDelta::FromSeconds(5));
+    notifier_event->TimedWait(base::Seconds(5));
 }
 
 }  // namespace updater

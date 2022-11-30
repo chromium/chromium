@@ -30,6 +30,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -80,11 +81,22 @@ class LayoutTreeBuilder {
     // next layout object. Otherwise we would need to add code to various
     // AddChild() implementations to walk up the tree to find the correct
     // layout tree parent/siblings.
-    if (next && next->IsText() && next->Parent()->IsAnonymous() &&
-        next->Parent()->IsInline()) {
-      return next->Parent();
-    }
-    return next;
+    if (!next || !next->IsText())
+      return next;
+    auto* const parent = next->Parent();
+    if (!IsAnonymousInline(parent))
+      return next;
+    if (!LIKELY(parent->IsLayoutNGTextCombine()))
+      return parent;
+    auto* const text_combine_parent = parent->Parent();
+    if (IsAnonymousInline(text_combine_parent))
+      return text_combine_parent;
+    return parent;
+  }
+
+  static bool IsAnonymousInline(const LayoutObject* layout_object) {
+    return layout_object && layout_object->IsAnonymous() &&
+           layout_object->IsInline();
   }
 
   NodeType* node_;
@@ -118,9 +130,12 @@ class LayoutTreeBuilderForText : public LayoutTreeBuilder<Text> {
   void CreateLayoutObject();
 
  private:
-  LayoutObject* CreateInlineWrapperForDisplayContentsIfNeeded();
+  scoped_refptr<ComputedStyle>
+  CreateInlineWrapperStyleForDisplayContentsIfNeeded() const;
+  LayoutObject* CreateInlineWrapperForDisplayContentsIfNeeded(
+      ComputedStyle* wrappter_style) const;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_LAYOUT_TREE_BUILDER_H_

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/notreached.h"
-#include "content/common/frame_messages.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/pepper/pepper_in_process_router.h"
 #include "content/renderer/render_frame_impl.h"
@@ -43,16 +42,12 @@ void PepperBrowserConnection::DidCreateInProcessInstance(
     int render_frame_id,
     const GURL& document_url,
     const GURL& plugin_url) {
-  if (!GetIOHost())
-    return;
-  GetIOHost()->DidCreateInProcessInstance(instance, render_frame_id,
-                                          document_url, plugin_url);
+  GetHost()->DidCreateInProcessInstance(instance, render_frame_id, document_url,
+                                        plugin_url);
 }
 
 void PepperBrowserConnection::DidDeleteInProcessInstance(PP_Instance instance) {
-  if (!GetIOHost())
-    return;
-  GetIOHost()->DidDeleteInProcessInstance(instance);
+  GetHost()->DidDeleteInProcessInstance(instance);
 }
 
 void PepperBrowserConnection::DidCreateOutOfProcessPepperInstance(
@@ -63,9 +58,7 @@ void PepperBrowserConnection::DidCreateOutOfProcessPepperInstance(
     const GURL& document_url,
     const GURL& plugin_url,
     bool is_priviledged_context) {
-  if (!GetIOHost())
-    return;
-  GetIOHost()->DidCreateOutOfProcessPepperInstance(
+  GetHost()->DidCreateOutOfProcessPepperInstance(
       plugin_child_id, pp_instance, is_external, render_frame_id, document_url,
       plugin_url, is_priviledged_context);
 }
@@ -74,10 +67,8 @@ void PepperBrowserConnection::DidDeleteOutOfProcessPepperInstance(
     int32_t plugin_child_id,
     int32_t pp_instance,
     bool is_external) {
-  if (!GetIOHost())
-    return;
-  GetIOHost()->DidDeleteOutOfProcessPepperInstance(plugin_child_id, pp_instance,
-                                                   is_external);
+  GetHost()->DidDeleteOutOfProcessPepperInstance(plugin_child_id, pp_instance,
+                                                 is_external);
 }
 
 void PepperBrowserConnection::SendBrowserCreate(
@@ -122,16 +113,10 @@ void PepperBrowserConnection::OnDestruct() {
   delete this;
 }
 
-mojom::PepperIOHost* PepperBrowserConnection::GetIOHost() {
-  if (!io_host_) {
-    // There may be no channel when MockRenderThread is used.
-    IPC::SyncChannel* sync_channel = RenderThread::Get()->GetChannel();
-    if (sync_channel)
-      sync_channel->GetRemoteAssociatedInterface(&io_host_);
-    else
-      return nullptr;
-  }
-  return io_host_.get();
+mojom::PepperHost* PepperBrowserConnection::GetHost() {
+  RenderFrameImpl* render_frame_impl =
+      static_cast<RenderFrameImpl*>(render_frame());
+  return render_frame_impl->GetPepperHost();
 }
 
 }  // namespace content

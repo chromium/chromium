@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,39 +52,42 @@ function run() {
    * are found, they are executed.
    *
    * @param {!Entry} entry File entry for which getFileTasks was called.
-   * @param {Array<Object>} tasks List of found task objects.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks List of
+   *     found task objects.
    */
-  function onGotTasks(entry, tasks) {
-    if (!tasks) {
+  function onGotTasks(entry, resultingTasks) {
+    if (!resultingTasks || !resultingTasks.tasks) {
       onError('Failed getting tasks for ' + entry.fullPath);
       return;
     }
+    const tasks = resultingTasks.tasks;
+
     if (tasks.length != 1) {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);
     }
+
+    const {appId, taskType, actionId} = tasks[0].descriptor;
+    const encodedTaskId = `${appId}|${taskType}|${actionId}`;
     // Check this test extension which explicitly declares itself as a handler
     // for the filename extension '.tiff' will match and set itself as default
     // for a path ending in '.tiff'
     const tiffex = /.*\.tiff/;
     if (tiffex.test(entry.fullPath)) {
-      if (tasks[0].taskId != "pkplfbidichfdicaijlchgnapepdginl|app|image") {
-        onError('Got invalid taskId ' + tasks[0].taskId + ' for "' +
-                entry.fullPath + '"');
+      if (encodedTaskId != 'pkplfbidichfdicaijlchgnapepdginl|app|image') {
+        onError(`Got invalid task ${encodedTaskId} for "${entry.fullPath}"`);
       }
       if (!tasks[0].isDefault) {
-        onError('Task "' + tasks[0].taskId + '" should be default for "' +
-            entry.fullPath + '"');
+        onError(`Task "${encodedTaskId}" should be default for "${
+            entry.fullPath}"`);
       }
     }
     else {  // Matched file extension that's not '.tiff'
-      if (tasks[0].taskId != "pkplfbidichfdicaijlchgnapepdginl|app|any") {
-        onError('Got invalid taskId ' + tasks[0].taskId + ' for "' +
-                entry.fullPath + '"');
+      if (encodedTaskId != 'pkplfbidichfdicaijlchgnapepdginl|app|any') {
+        onError(`Got invalid task ${encodedTaskId} for "${entry.fullPath}"`);
       }
       if (tasks[0].isDefault) {
-        onError('Task "' + tasks[0].taskId + '" is default for "' +
-            entry.fullPath + '"');
+        onError(`Task "${encodedTaskId}" is default for "${entry.fullPath}"`);
       }
     }
     if (resolvedEntries.length == kTestPaths.length) {

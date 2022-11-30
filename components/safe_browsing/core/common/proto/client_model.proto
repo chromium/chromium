@@ -1,0 +1,135 @@
+// Copyright 2011 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This proto represents a machine learning model which is used to compute
+// the probability that a particular page visited by Chrome is phishing.
+//
+// Note: sine the machine learning model is trained on the server-side and then
+// downloaded onto the client it is important that this proto file stays in
+// sync with the server-side copy.  Otherwise, the client may not be able to
+// parse the server generated model anymore.  If you want to change this
+// protocol definition or you have questions regarding its format please contact
+// chrome-anti-phishing@googlegroups.com.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+// This protocol buffer represents a machine learning model that is used in
+// client-side phishing detection (in Chrome).  The client extracts a set
+// of features from every website the user visits.  Extracted features map
+// feature names to floating point values (e.g., PageSecureLinksFreq -> 0.9).
+//
+// To compute the phishing score (i.e., the probability that the website is
+// phishing) a scorer will simply compute the sum of all rule scores for a
+// given set of extracted features.  The score of a particular rule corresponds
+// to the product of all feature values that are part of the rule times the
+// rule weight.  If a feature has no value (i.e., is not part of the extracted
+// features) its value will be set to zero.  The overall score is computed
+// by summing up all the rule scores.  This overall score is a logodds and can
+// be converted to a probability like this:
+// p = exp(logodds) / (exp(logodds) + 1).
+//
+// To make it harder for phishers to reverse engineer our machine learning model
+// all the features in the model are hashed with a sha256 hash function.  The
+// feature extractors also hash the extracted features before scoring happens.
+message ClientSideModel {
+  // In order to save some space we store all the hashed strings in a
+  // single repeated field and then the rules as well as page terms
+  // and page words refer to an index in that repeated field.  All
+  // hashes are sha256 hashes stored in binary format.
+  repeated bytes hashes = 1;
+
+  message Rule {
+    // List of indexes into hashes above which are basically hashed
+    // features that form the current rule.
+    repeated int32 feature = 1;
+
+    // The weight for this particular rule.
+    required float weight = 2;
+  }
+
+  // List of rules which make up the model
+  repeated Rule rule = 2;
+
+  // List of indexes that point to the hashed page terms that appear in
+  // the model.  The hashes are computed over page terms that are encoded
+  // as lowercase UTF-8 strings.
+  repeated int32 page_term = 3;
+
+  // List of hashed page words.  The page words correspond to all words that
+  // appear in page terms.  If the term "one two" is in the list of page terms
+  // then "one" and "two" will be in the list of page words.  For page words
+  // we don't use SHA256 because it is too expensive.  We use MurmurHash3
+  // instead.  See: http://code.google.com/p/smhasher.
+  repeated fixed32 page_word = 4;
+
+  // Page terms in page_term contain at most this many page words.
+  required int32 max_words_per_term = 5;
+
+  optional int32 dom_model_version = 18;
+
+  // The overall client model version number.  Every model update should have a
+  // different version number and it should always be larger than the previous
+  // model version.
+  optional int32 version = 6;
+
+  // List of known bad IP subnets.
+  message IPSubnet {
+    // The subnet prefix is a valid 16-byte IPv6 address (in network order) that
+    // is hashed using sha256.
+    required bytes prefix = 1;
+
+    // Network prefix size in bits.  Default is an exact-host match.
+    optional int32 size = 2 [default = 128];
+  };
+  repeated IPSubnet bad_subnet = 7;
+
+  // Murmur hash seed that was used to hash the page words.
+  optional fixed32 murmur_hash_seed = 8;
+
+  // Maximum number of unique shingle hashes per page.
+  optional int32 max_shingles_per_page = 9 [default = 200];
+
+  // The number of words in a shingle.
+  optional int32 shingle_size = 10 [default = 4];
+
+  // The threshold probability that causes this model to send a ping.
+  optional float threshold_probability = 11 [default = 0.5];
+
+  // Reserved tag numbers holding deprecated fields.
+  reserved 12;
+  reserved 13;
+  reserved 14;
+  reserved 15;
+  reserved 16;
+
+  optional TfLiteModelMetadata tflite_metadata = 17;
+
+  // next available tag number: 19
+}
+
+message TfLiteModelMetadata {
+  // The version number of the visual TFLite model.
+  optional int32 model_version = 1;
+
+  message Threshold {
+    // The label for the category
+    optional string label = 1;
+
+    // The threshold value
+    optional float threshold = 2;
+  }
+
+  // The list of threshold values for each category in the TFLite model. Pages
+  // where the model score exceeds one of these thresholds will be sent to
+  // Safe Browsing for a more definitive classification.
+  repeated Threshold thresholds = 2;
+
+  // The width and height of the input tensor to the corresponding TFLite model.
+  optional int32 input_width = 3;
+  optional int32 input_height = 4;
+}

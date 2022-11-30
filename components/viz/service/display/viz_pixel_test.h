@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PIXEL_TEST_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PIXEL_TEST_H_
-
-#include <vector>
 
 #include "cc/test/pixel_test.h"
 #include "components/viz/test/test_types.h"
@@ -35,8 +33,6 @@ class VizPixelTest : public cc::PixelTest {
     switch (renderer_type_) {
       case RendererType::kSoftware:
         return "software";
-      case RendererType::kGL:
-        return "gl";
       case RendererType::kSkiaGL:
       case RendererType::kSkiaVk:
         return "skia";
@@ -48,8 +44,6 @@ class VizPixelTest : public cc::PixelTest {
   bool is_software_renderer() const {
     return renderer_type_ == RendererType::kSoftware;
   }
-
-  bool is_gl_renderer() const { return renderer_type_ == RendererType::kGL; }
 
  protected:
   static GraphicsBackend RenderTypeToBackend(RendererType renderer_type);

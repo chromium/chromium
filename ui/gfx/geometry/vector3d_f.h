@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,6 +67,11 @@ class GEOMETRY_EXPORT Vector3dF {
   void Scale(float scale) { Scale(scale, scale, scale); }
   // Scale the each component of the vector by the given scale factors.
   void Scale(float x_scale, float y_scale, float z_scale);
+
+  // Divides all components of the vector by |scale|.
+  void InvScale(float inv_scale) { InvScale(inv_scale, inv_scale, inv_scale); }
+  // Divides each component of the vector by the given scale factors.
+  void InvScale(float inv_x_scale, float inv_y_scale, float inv_z_scale);
 
   // Take the cross product of this vector with |other| and become the result.
   void Cross(const Vector3dF& other);

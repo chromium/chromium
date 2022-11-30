@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -71,9 +70,11 @@ void DrawContents(SkImage* background_grid_image,
                   base::TimeDelta elapsed_time,
                   SkCanvas* canvas) {
   // Draw background grid.
-  SkPaint paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
+  {
+    SkPaint paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
+    canvas->drawImage(background_grid_image, 0, 0, SkSamplingOptions(), &paint);
+  }
 
   // Draw rotated rectangles.
   SkScalar rect_size =
@@ -87,7 +88,7 @@ void DrawContents(SkImage* background_grid_image,
                                  SK_ColorRED,  SK_ColorYELLOW,
                                  SK_ColorCYAN, SK_ColorMAGENTA};
       SkPaint paint;
-      paint.setColor(kColors[(y * kGridSize + x) % base::size(kColors)]);
+      paint.setColor(kColors[(y * kGridSize + x) % std::size(kColors)]);
       canvas->save();
       canvas->translate(
           x * cell_size.width() + SkScalarHalf(cell_size.width()),

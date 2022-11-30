@@ -17,7 +17,7 @@
     document.fonts.load("40px dummy");
 
     if (window.internals)
-        shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "5");
+        shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
 
     shouldBeEqualToString("getComputedStyle(x).color", "rgb(0, 128, 0)");
 </script>

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -24,6 +23,11 @@ class ASH_EXPORT EventTransformationHandler : public ui::EventHandler {
   };
 
   EventTransformationHandler();
+
+  EventTransformationHandler(const EventTransformationHandler&) = delete;
+  EventTransformationHandler& operator=(const EventTransformationHandler&) =
+      delete;
+
   ~EventTransformationHandler() override;
 
   void set_transformation_mode(TransformationMode transformation_mode) {
@@ -35,8 +39,6 @@ class ASH_EXPORT EventTransformationHandler : public ui::EventHandler {
 
  private:
   TransformationMode transformation_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventTransformationHandler);
 };
 
 }  // namespace ash

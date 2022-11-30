@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/vr/input_event.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_controller.h"
@@ -27,8 +27,8 @@ constexpr float kFadeDistanceFromFace = 0.34f;
 constexpr float kDeltaAlpha = 3.0f;
 
 void ClampTouchpadPosition(gfx::PointF* position) {
-  position->set_x(base::ClampToRange(position->x(), 0.0f, 1.0f));
-  position->set_y(base::ClampToRange(position->y(), 0.0f, 1.0f));
+  position->set_x(base::clamp(position->x(), 0.0f, 1.0f));
+  position->set_y(base::clamp(position->y(), 0.0f, 1.0f));
 }
 
 float DeltaTimeSeconds(int64_t last_timestamp_nanos) {
@@ -191,8 +191,7 @@ gfx::Point3F VrController::Position() const {
 
 void VrController::GetTransform(gfx::Transform* out) const {
   *out = gfx::Transform(Orientation());
-  const gfx::Point3F& position = Position();
-  out->matrix().postTranslate(position.x(), position.y(), position.z());
+  out->PostTranslate3d(Position().OffsetFromOrigin());
 }
 
 void VrController::GetRelativePointerTransform(gfx::Transform* out) const {
@@ -206,7 +205,7 @@ void VrController::GetPointerTransform(gfx::Transform* out) const {
   GetTransform(&controller);
 
   GetRelativePointerTransform(out);
-  out->ConcatTransform(controller);
+  out->PostConcat(controller);
 }
 
 float VrController::GetOpacity() const {
@@ -217,8 +216,7 @@ gfx::Point3F VrController::GetPointerStart() const {
   gfx::Transform pointer_transform;
   GetPointerTransform(&pointer_transform);
 
-  gfx::Point3F pointer_position;
-  pointer_transform.TransformPoint(&pointer_position);
+  gfx::Point3F pointer_position = pointer_transform.MapPoint(gfx::Point3F());
   return pointer_position;
 }
 
@@ -256,11 +254,8 @@ bool VrController::IsConnected() {
 
 void VrController::UpdateState(const gfx::Transform& head_pose) {
   gfx::Transform inv_pose;
-  if (head_pose.GetInverse(&inv_pose)) {
-    auto current_head_offset = gfx::Point3F();
-    inv_pose.TransformPoint(&current_head_offset);
-    head_offset_ = current_head_offset;
-  }
+  if (head_pose.GetInverse(&inv_pose))
+    head_offset_ = inv_pose.MapPoint(gfx::Point3F());
 
   gvr::Mat4f gvr_head_pose;
   TransformToGvrMat(head_pose, &gvr_head_pose);
@@ -323,10 +318,10 @@ void VrController::UpdateTimestamps() {
 void VrController::UpdateAlpha() {
   float distance_to_face = (Position() - gfx::Point3F()).Length();
   float alpha_change = kDeltaAlpha * DeltaTimeSeconds(last_timestamp_nanos_);
-  alpha_value_ = base::ClampToRange(distance_to_face < kFadeDistanceFromFace
-                                        ? alpha_value_ - alpha_change
-                                        : alpha_value_ + alpha_change,
-                                    0.0f, 1.0f);
+  alpha_value_ = base::clamp(distance_to_face < kFadeDistanceFromFace
+                                 ? alpha_value_ - alpha_change
+                                 : alpha_value_ + alpha_change,
+                             0.0f, 1.0f);
 }
 
 }  // namespace vr

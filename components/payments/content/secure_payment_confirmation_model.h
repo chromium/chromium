@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
@@ -35,10 +37,21 @@ class SecurePaymentConfirmationModel {
     merchant_label_ = merchant_label;
   }
 
-  // Label for the merchant row value, e.g. "merchant.com"
-  const std::u16string& merchant_value() const { return merchant_value_; }
-  void set_merchant_value(const std::u16string& merchant_value) {
-    merchant_value_ = merchant_value;
+  // Label for the merchant name, e.g. "Merchant"
+  const absl::optional<std::u16string>& merchant_name() const {
+    return merchant_name_;
+  }
+  void set_merchant_name(const absl::optional<std::u16string>& merchant_name) {
+    merchant_name_ = merchant_name;
+  }
+
+  // Label for the merchant origin, e.g. "merchant.com"
+  const absl::optional<std::u16string>& merchant_origin() const {
+    return merchant_origin_;
+  }
+  void set_merchant_origin(
+      const absl::optional<std::u16string>& merchant_origin) {
+    merchant_origin_ = merchant_origin;
   }
 
   // Label for the instrument row, e.g. "Payment".
@@ -117,17 +130,40 @@ class SecurePaymentConfirmationModel {
     cancel_button_visible_ = cancel_button_visible;
   }
 
+  // Opt Out text visibility and label.
+  bool opt_out_visible() const { return opt_out_visible_; }
+  void set_opt_out_visible(const bool opt_out_visible) {
+    opt_out_visible_ = opt_out_visible;
+  }
+  const std::u16string& opt_out_label() const { return opt_out_label_; }
+  void set_opt_out_label(const std::u16string& opt_out_label) {
+    opt_out_label_ = opt_out_label;
+  }
+  const std::u16string& opt_out_link_label() const {
+    return opt_out_link_label_;
+  }
+  void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
+    opt_out_link_label_ = opt_out_link_label;
+  }
+
+  // Relying Party id (origin); used in the opt out dialog.
+  const std::u16string& relying_party_id() const { return relying_party_id_; }
+  void set_relying_party_id(const std::u16string& relying_party_id) {
+    relying_party_id_ = relying_party_id;
+  }
+
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
   std::u16string title_;
 
   std::u16string merchant_label_;
-  std::u16string merchant_value_;
+  absl::optional<std::u16string> merchant_name_;
+  absl::optional<std::u16string> merchant_origin_;
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
-  const SkBitmap* instrument_icon_ = nullptr;
+  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;
@@ -142,6 +178,12 @@ class SecurePaymentConfirmationModel {
 
   bool cancel_button_enabled_ = true;
   bool cancel_button_visible_ = true;
+
+  bool opt_out_visible_ = false;
+  std::u16string opt_out_label_;
+  std::u16string opt_out_link_label_;
+
+  std::u16string relying_party_id_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationModel> weak_ptr_factory_{this};
 };

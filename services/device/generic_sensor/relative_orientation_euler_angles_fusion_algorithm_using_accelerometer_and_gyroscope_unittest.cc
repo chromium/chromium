@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_gyroscope.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/math_constants.h"
 #include "base/test/task_environment.h"
@@ -72,7 +73,8 @@ class
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope*
+  raw_ptr<
+      RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndGyroscope>
       fusion_algorithm_;
 };
 

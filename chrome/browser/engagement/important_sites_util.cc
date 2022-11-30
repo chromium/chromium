@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,13 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/installable/installable_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -37,10 +39,8 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/search_permissions/search_permissions_service.h"
-#else
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
@@ -102,28 +102,28 @@ enum CrossedReason {
   CROSSED_REASON_BOUNDARY
 };
 
-void RecordIgnore(base::DictionaryValue* dict) {
-  int times_ignored = 0;
-  dict->GetInteger(kNumTimesIgnoredName, &times_ignored);
-  dict->SetInteger(kNumTimesIgnoredName, ++times_ignored);
-  dict->SetDouble(kTimeLastIgnored, base::Time::Now().ToDoubleT());
+void RecordIgnore(base::Value& dict) {
+  DCHECK(dict.is_dict());
+  int times_ignored = dict.FindIntKey(kNumTimesIgnoredName).value_or(0);
+  dict.SetIntKey(kNumTimesIgnoredName, ++times_ignored);
+  dict.SetDoubleKey(kTimeLastIgnored, base::Time::Now().ToDoubleT());
 }
 
 // If we should suppress the item with the given dictionary ignored record.
 bool ShouldSuppressItem(base::Value* dict) {
-  base::Optional<double> last_ignored_time =
+  absl::optional<double> last_ignored_time =
       dict->FindDoubleKey(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
         base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
-    if (diff >= base::TimeDelta::FromDays(kSuppressionExpirationTimeDays)) {
+    if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
       dict->SetIntKey(kNumTimesIgnoredName, 0);
       dict->RemoveKey(kTimeLastIgnored);
       return false;
     }
   }
 
-  base::Optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
+  absl::optional<int> times_ignored = dict->FindIntKey(kNumTimesIgnoredName);
   return times_ignored && *times_ignored >= kTimesIgnoredForSuppression;
 }
 
@@ -153,7 +153,7 @@ void MaybePopulateImportantInfoForReason(
     const GURL& origin,
     std::set<GURL>* visited_origins,
     ImportantReason reason,
-    base::Optional<std::string> app_name,
+    absl::optional<std::string> app_name,
     std::map<std::string, ImportantDomainInfo>* output) {
   if (!origin.is_valid() || !visited_origins->insert(origin).second)
     return;
@@ -254,13 +254,15 @@ void PopulateInfoMapWithEngagement(
     if (detail.installed_bonus > 0) {
       MaybePopulateImportantInfoForReason(detail.origin, &content_origins,
                                           ImportantReason::HOME_SCREEN,
-                                          base::nullopt, output);
+                                          absl::nullopt, output);
     }
 
     (*engagement_map)[detail.origin] = detail.total_score;
 
-    if (!service->IsEngagementAtLeast(detail.origin, minimum_engagement))
+    if (!SiteEngagementService::IsEngagementAtLeast(detail.total_score,
+                                                    minimum_engagement)) {
       continue;
+    }
 
     std::string registerable_domain =
         ImportantSitesUtil::GetRegisterableDomainOrIP(detail.origin);
@@ -292,21 +294,8 @@ void PopulateInfoMapWithContentTypeAllowed(
       continue;
     GURL url(site.primary_pattern.ToString());
 
-#if defined(OS_ANDROID)
-    SearchPermissionsService* search_permissions_service =
-        SearchPermissionsService::Factory::GetInstance()->GetForBrowserContext(
-            profile);
-    // If the permission is controlled by the Default Search Engine then don't
-    // consider it important. The DSE gets these permissions by default.
-    if (search_permissions_service &&
-        search_permissions_service->IsPermissionControlledByDSE(
-            content_type, url::Origin::Create(url))) {
-      continue;
-    }
-#endif
-
     MaybePopulateImportantInfoForReason(url, &content_origins, reason,
-                                        base::nullopt, output);
+                                        absl::nullopt, output);
   }
 }
 
@@ -314,7 +303,6 @@ void PopulateInfoMapWithBookmarks(
     Profile* profile,
     const std::map<GURL, double>& engagement_map,
     std::map<std::string, ImportantDomainInfo>* output) {
-  SiteEngagementService* service = SiteEngagementService::Get(profile);
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContextIfExists(profile);
   if (!model)
@@ -325,21 +313,23 @@ void PopulateInfoMapWithBookmarks(
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;
   if (untrimmed_bookmarks.size() > kMaxBookmarks) {
-    std::copy_if(untrimmed_bookmarks.begin(), untrimmed_bookmarks.end(),
-                 std::back_inserter(result_bookmarks),
-                 [service](const UrlAndTitle& entry) {
-                   return service->IsEngagementAtLeast(
-                       entry.url.GetOrigin(),
-                       blink::mojom::EngagementLevel::LOW);
-                 });
+    std::copy_if(
+        untrimmed_bookmarks.begin(), untrimmed_bookmarks.end(),
+        std::back_inserter(result_bookmarks),
+        [&engagement_map](const UrlAndTitle& entry) {
+          auto it = engagement_map.find(entry.url.DeprecatedGetOriginAsURL());
+          double score = it == engagement_map.end() ? 0 : it->second;
+          return SiteEngagementService::IsEngagementAtLeast(
+              score, blink::mojom::EngagementLevel::LOW);
+        });
     // TODO(dmurph): Simplify this (and probably much more) once
     // SiteEngagementService::GetAllDetails lands (crbug/703848), as that will
     // allow us to remove most of these lookups and merging of signals.
     std::sort(
         result_bookmarks.begin(), result_bookmarks.end(),
         [&engagement_map](const UrlAndTitle& a, const UrlAndTitle& b) {
-          auto a_it = engagement_map.find(a.url.GetOrigin());
-          auto b_it = engagement_map.find(b.url.GetOrigin());
+          auto a_it = engagement_map.find(a.url.DeprecatedGetOriginAsURL());
+          auto b_it = engagement_map.find(b.url.DeprecatedGetOriginAsURL());
           double a_score = a_it == engagement_map.end() ? 0 : a_it->second;
           double b_score = b_it == engagement_map.end() ? 0 : b_it->second;
           return a_score > b_score;
@@ -354,7 +344,7 @@ void PopulateInfoMapWithBookmarks(
   for (const UrlAndTitle& bookmark : result_bookmarks) {
     MaybePopulateImportantInfoForReason(bookmark.url, &content_origins,
                                         ImportantReason::BOOKMARKS,
-                                        base::nullopt, output);
+                                        absl::nullopt, output);
   }
 }
 
@@ -362,7 +352,7 @@ void PopulateInfoMapWithBookmarks(
 // about clearing data for installed apps, so this and any functions explicitly
 // used to warn about clearing data for installed apps can be excluded from the
 // Android build.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void PopulateInfoMapWithInstalledEngagedInTimePeriod(
     browsing_data::TimePeriod time_period,
     Profile* profile,
@@ -372,18 +362,20 @@ void PopulateInfoMapWithInstalledEngagedInTimePeriod(
       service->GetAllDetailsEngagedInTimePeriod(time_period);
   std::set<GURL> content_origins;
 
-  // Check with AppRegistrar to make sure the apps have not yet been
+  // Check with WebAppRegistrar to make sure the apps have not yet been
   // uninstalled.
-  const web_app::AppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile)->registrar();
-  auto app_ids = registrar.GetAppIds();
   std::map<std::string, std::string> installed_origins_map;
-  for (auto& app_id : app_ids) {
-    GURL scope = registrar.GetAppScope(app_id);
-    DCHECK(scope.is_valid());
-    auto app_name = registrar.GetAppShortName(app_id);
-    installed_origins_map.emplace(
-        std::make_pair(scope.GetOrigin().spec(), app_name));
+  if (web_app::AreWebAppsUserInstallable(profile)) {
+    const web_app::WebAppRegistrar& registrar =
+        web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+    auto app_ids = registrar.GetAppIds();
+    for (auto& app_id : app_ids) {
+      GURL scope = registrar.GetAppScope(app_id);
+      DCHECK(scope.is_valid());
+      auto app_name = registrar.GetAppShortName(app_id);
+      installed_origins_map.emplace(
+          std::make_pair(scope.DeprecatedGetOriginAsURL().spec(), app_name));
+    }
   }
 
   for (const auto& detail : engagement_details) {
@@ -491,7 +483,7 @@ ImportantSitesUtil::GetImportantRegisterableDomains(Profile* profile,
   return final_list;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<ImportantDomainInfo>
 ImportantSitesUtil::GetInstalledRegisterableDomains(
     browsing_data::TimePeriod time_period,
@@ -547,15 +539,13 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   if (!excluded_sites.empty()) {
     for (const std::string& ignored_site : ignored_sites) {
       GURL origin("http://" + ignored_site);
-      std::unique_ptr<base::DictionaryValue> dict =
-          base::DictionaryValue::From(map->GetWebsiteSetting(
-              origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
-              nullptr));
+      base::Value dict = map->GetWebsiteSetting(
+          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, nullptr);
 
-      if (!dict)
-        dict = std::make_unique<base::DictionaryValue>();
+      if (!dict.is_dict())
+        dict = base::Value(base::Value::Type::DICTIONARY);
 
-      RecordIgnore(dict.get());
+      RecordIgnore(dict);
 
       map->SetWebsiteSettingDefaultScope(
           origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
@@ -565,15 +555,15 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     // Record that the user did not interact with the dialog.
     PrefService* service = profile->GetPrefs();
     DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
-    RecordIgnore(update.Get());
+    RecordIgnore(*update.Get());
   }
 
   // We clear our ignore counter for sites that the user chose.
   for (const std::string& excluded_site : excluded_sites) {
     GURL origin("http://" + excluded_site);
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetInteger(kNumTimesIgnoredName, 0);
-    dict->Remove(kTimeLastIgnored, nullptr);
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetIntKey(kNumTimesIgnoredName, 0);
+    dict.RemoveKey(kTimeLastIgnored);
     map->SetWebsiteSettingDefaultScope(origin, origin,
                                        ContentSettingsType::IMPORTANT_SITE_INFO,
                                        std::move(dict));
@@ -597,8 +587,9 @@ void ImportantSitesUtil::MarkOriginAsImportantForTesting(Profile* profile,
       SiteEngagementService::Get(profile);
   site_engagement_service->ResetBaseScoreForURL(
       origin, SiteEngagementScore::GetMediumEngagementBoundary());
-  DCHECK(site_engagement_service->IsEngagementAtLeast(
-      origin, blink::mojom::EngagementLevel::MEDIUM));
+  double score = site_engagement_service->GetScore(origin);
+  DCHECK(SiteEngagementService::IsEngagementAtLeast(
+      score, blink::mojom::EngagementLevel::MEDIUM));
 }
 
 }  // namespace site_engagement

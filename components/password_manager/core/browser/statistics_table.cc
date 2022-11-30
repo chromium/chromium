@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,14 +107,6 @@ bool StatisticsTable::RemoveRow(const GURL& domain) {
   return s.Run();
 }
 
-std::vector<InteractionsStats> StatisticsTable::GetAllRows() {
-  static constexpr char query[] =
-      "SELECT origin_domain, username_value, "
-      "dismissal_count, update_time FROM stats";
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
-  return StatementToInteractionsStats(&s);
-}
-
 std::vector<InteractionsStats> StatisticsTable::GetRows(const GURL& domain) {
   if (!domain.is_valid())
     return std::vector<InteractionsStats>();
@@ -180,6 +172,14 @@ int StatisticsTable::GetNumAccounts() {
   sql::Statement select_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, "SELECT COUNT(1) FROM stats"));
   return select_statement.Step() ? select_statement.ColumnInt(0) : 0u;
+}
+
+std::vector<InteractionsStats> StatisticsTable::GetAllRowsForTest() {
+  static constexpr char query[] =
+      "SELECT origin_domain, username_value, "
+      "dismissal_count, update_time FROM stats";
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE, query));
+  return StatementToInteractionsStats(&s);
 }
 
 }  // namespace password_manager

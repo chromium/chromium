@@ -1,0 +1,6 @@
+Name: cxx-gen
+URL: https://crates.io/crates/cxx-gen
+Description: C++ code generator for integrating `cxx` crate into higher level tools.
+Version: 0.7.68
+Security Critical: no
+License: Apache 2.0

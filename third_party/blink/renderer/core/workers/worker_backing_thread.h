@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
@@ -38,7 +37,7 @@ class CORE_EXPORT WorkerBackingThread final {
   void InitializeOnBackingThread(const WorkerBackingThreadStartupData&);
   void ShutdownOnBackingThread();
 
-  blink::Thread& BackingThread() {
+  blink::NonMainThread& BackingThread() {
     DCHECK(backing_thread_);
     return *backing_thread_;
   }
@@ -49,7 +48,7 @@ class CORE_EXPORT WorkerBackingThread final {
       v8::MemoryPressureLevel);
 
  private:
-  std::unique_ptr<blink::Thread> backing_thread_;
+  std::unique_ptr<blink::NonMainThread> backing_thread_;
   v8::Isolate* isolate_ = nullptr;
 };
 

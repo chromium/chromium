@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@
     function step3(row) {
       row.collapse();
       row.expand();
-      var visibleChildren = row.children.filter(c => c._element.classList.contains('revealed'));
+      var visibleChildren = row.children.filter(c => c.element().classList.contains('revealed'));
       TestRunner.assertEquals(11, visibleChildren.length);
       next();
     }

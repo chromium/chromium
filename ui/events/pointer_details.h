@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,11 @@ struct EVENTS_BASE_EXPORT PointerDetails {
                  float tilt_y = 0.0f,
                  float tangential_pressure = 0.0f);
   PointerDetails(const PointerDetails& other);
+  PointerDetails& operator=(const PointerDetails& other);
 
   bool operator==(const PointerDetails& other) const;
+
+  std::string ToString() const;
 
   // The type of pointer device.
   EventPointerType pointer_type = EventPointerType::kUnknown;

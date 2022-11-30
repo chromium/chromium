@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/payload_tracker.h"
 
 #include "base/callback.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
+#include "chromeos/constants/chromeos_features.h"
 
 PayloadTracker::PayloadTracker(
     const ShareTarget& share_target,
@@ -39,7 +41,7 @@ PayloadTracker::PayloadTracker(
     if (it == attachment_info_map.end() || !it->second.payload_id) {
       NS_LOG(WARNING)
           << __func__
-          << ": Failed to retrieve payload for text  attachment id - "
+          << ": Failed to retrieve payload for text attachment id - "
           << text.id();
       continue;
     }
@@ -48,12 +50,27 @@ PayloadTracker::PayloadTracker(
     ++num_text_attachments_;
     total_transfer_size_ += text.size();
   }
+
+  for (const auto& wifi_credentials :
+       share_target.wifi_credentials_attachments) {
+    auto it = attachment_info_map.find(wifi_credentials.id());
+    if (it == attachment_info_map.end() || !it->second.payload_id) {
+      NS_LOG(WARNING) << __func__
+                      << ": Failed to retrieve payload for Wi-Fi Credentials "
+                      << "attachment id - " << wifi_credentials.id();
+      continue;
+    }
+
+    payload_state_.emplace(*it->second.payload_id, State(0));
+    ++num_wifi_credentials_attachments_;
+    total_transfer_size_ += wifi_credentials.size();
+  }
 }
 
 PayloadTracker::~PayloadTracker() = default;
 
 void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
-                                    base::Optional<Medium> upgraded_medium) {
+                                    absl::optional<Medium> upgraded_medium) {
   auto it = payload_state_.find(update->payload_id);
   if (it == payload_state_.end())
     return;
@@ -195,8 +212,9 @@ void PayloadTracker::EmitFinalMetrics(
   RecordNearbySharePayloadSizeMetric(share_target_.is_incoming,
                                      share_target_.type, last_upgraded_medium_,
                                      status, total_transfer_size_);
-  RecordNearbySharePayloadNumAttachmentsMetric(num_text_attachments_,
-                                               num_file_attachments_);
+  RecordNearbySharePayloadNumAttachmentsMetric(
+      num_text_attachments_, num_file_attachments_,
+      num_wifi_credentials_attachments_);
 
   // Because we only start tracking after receiving the first status update,
   // subtract off that first transfer size.
@@ -217,5 +235,11 @@ void PayloadTracker::EmitFinalMetrics(
   for (const auto& text_attachment : share_target_.text_attachments) {
     RecordNearbySharePayloadTextAttachmentTypeMetric(
         text_attachment.type(), share_target_.is_incoming, status);
+  }
+
+  for (size_t i = 0; i < share_target_.wifi_credentials_attachments.size();
+       ++i) {
+    RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
+        share_target_.is_incoming, status);
   }
 }

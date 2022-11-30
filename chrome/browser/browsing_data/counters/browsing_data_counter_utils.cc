@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #endif
 
@@ -60,7 +59,7 @@ bool ShouldShowCookieException(Profile* profile) {
   }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile)) {
-    return sync_ui_util::GetStatus(profile) == sync_ui_util::SYNCED;
+    return GetSyncStatusMessageType(profile) == SyncStatusMessageType::kSynced;
   }
 #endif
   return false;

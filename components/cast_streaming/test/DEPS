@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/cast/message_port",
+  "+components/openscreen_platform",
+  "+media/base",
+  "+net/base",
+  "+third_party/openscreen/src/cast/common/public",
+  "+third_party/openscreen/src/cast/streaming",
+  "+third_party/openscreen/src/platform",
+]

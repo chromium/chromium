@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 
-namespace chromeos {
-
-class DemoSetupScreenView;
+namespace ash {
 
 // Controls demo mode setup. The screen can be shown during OOBE. It allows
 // user to setup retail demo mode on the device.
@@ -26,13 +26,13 @@ class DemoSetupScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  DemoSetupScreen(DemoSetupScreenView* view,
+  DemoSetupScreen(base::WeakPtr<DemoSetupScreenView> view,
                   const ScreenExitCallback& exit_callback);
-  ~DemoSetupScreen() override;
 
-  // Called when view is being destroyed. If Screen is destroyed earlier
-  // then it has to call Bind(nullptr).
-  void OnViewDestroyed(DemoSetupScreenView* view);
+  DemoSetupScreen(const DemoSetupScreen&) = delete;
+  DemoSetupScreen& operator=(const DemoSetupScreen&) = delete;
+
+  ~DemoSetupScreen() override;
 
   // Test utilities.
   void SetCurrentSetupStepForTest(
@@ -42,7 +42,7 @@ class DemoSetupScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
@@ -59,14 +59,18 @@ class DemoSetupScreen : public BaseScreen {
   // Called when the setup flow finished successfully.
   void OnSetupSuccess();
 
-  DemoSetupScreenView* view_;
+  base::WeakPtr<DemoSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<DemoSetupScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSetupScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DemoSetupScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_DEMO_SETUP_SCREEN_H_

@@ -34,9 +34,9 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -65,7 +65,6 @@ static void RejectWithTypeError(const String& error_details,
 class CryptoResultImpl::Resolver final : public ScriptPromiseResolver {
  public:
   static Resolver* Create(ScriptState* script_state, CryptoResultImpl* result) {
-    DCHECK(script_state->ContextIsValid());
     Resolver* resolver = MakeGarbageCollected<Resolver>(script_state, result);
     resolver->KeepAliveWhilePending();
     return resolver;
@@ -114,7 +113,7 @@ CryptoResultImpl::CryptoResultImpl(ScriptState* script_state)
       cancel_(base::MakeRefCounted<CryptoResultCancel>()) {
   // Sync cancellation state.
   if (ExecutionContext::From(script_state)->IsContextDestroyed())
-    cancel_->Cancel();
+    Cancel();
 }
 
 CryptoResultImpl::~CryptoResultImpl() {
@@ -135,6 +134,13 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   if (!resolver_)
     return;
 
+  ScriptState* resolver_script_state = resolver_->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
+
   ExceptionCode exception_code = WebCryptoErrorToExceptionCode(error_type);
 
   // Handle TypeError separately, as it cannot be created using
@@ -142,12 +148,14 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
   if (exception_code == ToExceptionCode(ESErrorType::kTypeError)) {
     RejectWithTypeError(error_details, resolver_);
   } else if (IsDOMExceptionCode(exception_code)) {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(),
         static_cast<DOMExceptionCode>(exception_code), error_details));
   } else {
     NOTREACHED();
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, error_details));
+    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
+        error_details));
   }
   ClearResolver();
 }
@@ -170,7 +178,11 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  // Crashes if longer than v8::String::kMaxLength.
+  if (length > v8::String::kMaxLength) {
+    // TODO(crbug.com/1316976): this should probably raise an exception instead.
+    LOG(FATAL) << "Result string is longer than v8::String::kMaxLength";
+  }
+
   v8::Local<v8::String> json_string =
       v8::String::NewFromUtf8(isolate, utf8_data, v8::NewStringType::kNormal,
                               length)
@@ -232,9 +244,7 @@ void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
 }
 
 void CryptoResultImpl::Cancel() {
-  DCHECK(cancel_);
   cancel_->Cancel();
-  cancel_ = nullptr;
   ClearResolver();
 }
 

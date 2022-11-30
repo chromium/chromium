@@ -1,5 +1,8 @@
+# mypy: allow-untyped-defs
+
 import subprocess
 from functools import partial
+from typing import Callable
 
 from mozlog import get_default_logger
 
@@ -7,7 +10,7 @@ from wptserve.utils import isomorphic_decode
 
 logger = None
 
-def vcs(bin_name):
+def vcs(bin_name: str) -> Callable[..., None]:
     def inner(command, *args, **kwargs):
         global logger
 

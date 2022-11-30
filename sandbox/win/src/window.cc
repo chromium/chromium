@@ -1,17 +1,20 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "sandbox/win/src/window.h"
+
+#include <windows.h>
 
 #include <aclapi.h>
 
 #include <memory>
 
 #include "base/notreached.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
-#include "sandbox/win/src/sid.h"
 
 namespace {
 
@@ -87,6 +90,17 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
   if (!GetSecurityAttributes(current_desktop, &attributes))
     return SBOX_ERROR_CANNOT_QUERY_DESKTOP_SECURITY;
 
+  // Detect when the current desktop has a null DACL since it will require
+  // special casing below.
+  bool is_null_dacl = false;
+  BOOL dacl_present = false;
+  ACL* acl = nullptr;
+  BOOL dacl_defaulted = false;
+  if (::GetSecurityDescriptorDacl(attributes.lpSecurityDescriptor,
+                                  &dacl_present, &acl, &dacl_defaulted)) {
+    is_null_dacl = dacl_present && (acl == nullptr);
+  }
+
   // Back up the current window station, in case we need to switch it.
   HWINSTA current_winsta = ::GetProcessWindowStation();
 
@@ -114,14 +128,33 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
   }
 
   if (*desktop) {
+    if (is_null_dacl) {
+      // If the desktop had a NULL DACL, it allowed access to everything. When
+      // we apply a new ACE with |kDesktopDenyMask| below, a NULL DACL would be
+      // replaced with a new DACL with one ACE that denies access - which means
+      // there is no ACE to allow anything access to the desktop. In this case,
+      // replace the NULL DACL with one that has a single ACE that allows access
+      // to everyone, so the desktop remains accessible when we further modify
+      // the DACL. Also need WinBuiltinAnyPackageSid for AppContainer processes.
+      if (base::win::GetVersion() >= base::win::Version::WIN8) {
+        AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                            base::win::WellKnownSid::kAllApplicationPackages,
+                            SecurityAccessMode::kGrant, GENERIC_ALL);
+      }
+      AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                          base::win::WellKnownSid::kWorld,
+                          SecurityAccessMode::kGrant, GENERIC_ALL);
+    }
+
     // Replace the DACL on the new Desktop with a reduced privilege version.
     // We can soft fail on this for now, as it's just an extra mitigation.
     static const ACCESS_MASK kDesktopDenyMask =
         WRITE_DAC | WRITE_OWNER | DELETE | DESKTOP_CREATEMENU |
         DESKTOP_CREATEWINDOW | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK |
         DESKTOP_JOURNALRECORD | DESKTOP_SWITCHDESKTOP;
-    AddKnownSidToObject(*desktop, SE_WINDOW_OBJECT, Sid(WinRestrictedCodeSid),
-                        DENY_ACCESS, kDesktopDenyMask);
+    AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                        base::win::WellKnownSid::kRestricted,
+                        SecurityAccessMode::kDeny, kDesktopDenyMask);
     return SBOX_ALL_OK;
   }
 

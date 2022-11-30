@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ AccessibilityTest.define('WelcomeA11y', {
     'rules': {
       // TODO(crbug.com/761461): enable after addressing flaky tests.
       'color-contrast': {enabled: false},
-    }
+    },
   },
 
   // Optional. Filter on failures. Use this for individual false positives.
@@ -55,8 +55,8 @@ AccessibilityTest.define('WelcomeA11y', {
       assertEquals(
           'Make Chrome your own',
           document.body.querySelector('welcome-app')
-              .$$('landing-view')
-              .$$('h1')
+              .shadowRoot.querySelector('landing-view')
+              .shadowRoot.querySelector('h1')
               .textContent);
     },
   },

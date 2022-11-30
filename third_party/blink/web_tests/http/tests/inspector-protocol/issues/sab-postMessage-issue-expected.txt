@@ -7,7 +7,7 @@ Creation issue: {
             sharedArrayBufferIssueDetails : {
                 isWarning : true
                 sourceCodeLocation : {
-                    columnNumber : 13
+                    columnNumber : 18
                     lineNumber : 0
                     scriptId : <string>
                     url : 
@@ -17,12 +17,31 @@ Creation issue: {
         }
     }
 }
+Deprecation issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 18
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : SharedArrayBufferConstructedWithoutIsolation
+            }
+        }
+    }
+}
 Transfer issue: {
     issue : {
         code : SharedArrayBufferIssue
         details : {
             sharedArrayBufferIssueDetails : {
-                isWarning : true
+                isWarning : false
                 sourceCodeLocation : {
                     columnNumber : 1
                     lineNumber : 0

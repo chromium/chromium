@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "content/public/browser/navigation_handle.h"
@@ -82,16 +83,22 @@ bool GetModifiedQuery(const GURL& url,
   // order of different params specified by the extension is respected. We use a
   // std::list to support fast removal from middle of the list. Note that the
   // key value pairs should already be escaped.
-  std::list<std::pair<base::StringPiece, base::StringPiece>>
-      add_or_replace_query_params;
+  struct QueryReplace {
+    base::StringPiece key;
+    base::StringPiece value;
+    bool replace_only = false;
+  };
+  std::list<QueryReplace> add_or_replace_query_params;
+
   if (!IsEmpty(transform.add_or_replace_query_params())) {
     for (const flat::QueryKeyValue* query_pair :
          *transform.add_or_replace_query_params()) {
       DCHECK(query_pair->key());
       DCHECK(query_pair->value());
       add_or_replace_query_params.emplace_back(
-          CreateString<base::StringPiece>(*query_pair->key()),
-          CreateString<base::StringPiece>(*query_pair->value()));
+          QueryReplace{CreateString<base::StringPiece>(*query_pair->key()),
+                       CreateString<base::StringPiece>(*query_pair->value()),
+                       query_pair->replace_only()});
     }
   }
 
@@ -104,7 +111,7 @@ bool GetModifiedQuery(const GURL& url,
 
   bool query_changed = false;
   for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    std::string key = it.GetKey();
+    const base::StringPiece key = it.GetKey();
     // Remove query param.
     if (std::binary_search(remove_query_params.begin(),
                            remove_query_params.end(), key)) {
@@ -112,11 +119,8 @@ bool GetModifiedQuery(const GURL& url,
       continue;
     }
 
-    auto replace_iterator = std::find_if(
-        add_or_replace_query_params.begin(), add_or_replace_query_params.end(),
-        [&key](const std::pair<base::StringPiece, base::StringPiece>& param) {
-          return param.first == key;
-        });
+    auto replace_iterator = base::ranges::find(add_or_replace_query_params, key,
+                                               &QueryReplace::key);
 
     // Nothing to do.
     if (replace_iterator == add_or_replace_query_params.end()) {
@@ -126,15 +130,17 @@ bool GetModifiedQuery(const GURL& url,
 
     // Replace query param.
     query_changed = true;
-    query_parts.push_back(create_query_part(key, replace_iterator->second));
+    query_parts.push_back(create_query_part(key, replace_iterator->value));
     add_or_replace_query_params.erase(replace_iterator);
   }
 
   // Append any remaining query params.
-  for (const auto& params : add_or_replace_query_params)
-    query_parts.push_back(create_query_part(params.first, params.second));
-
-  query_changed |= !add_or_replace_query_params.empty();
+  for (const auto& params : add_or_replace_query_params) {
+    if (!params.replace_only) {
+      query_parts.push_back(create_query_part(params.key, params.value));
+      query_changed = true;
+    }
+  }
 
   if (!query_changed)
     return false;
@@ -203,11 +209,11 @@ RulesetMatcherBase::RulesetMatcherBase(const ExtensionId& extension_id,
     : extension_id_(extension_id), ruleset_id_(ruleset_id) {}
 RulesetMatcherBase::~RulesetMatcherBase() = default;
 
-base::Optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
+absl::optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
     const RequestParams& params) const {
-  base::Optional<RequestAction> action =
+  absl::optional<RequestAction> action =
       GetBeforeRequestActionIgnoringAncestors(params);
-  base::Optional<RequestAction> parent_action =
+  absl::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(params.parent_routing_id);
 
   return GetMaxPriorityAction(std::move(action), std::move(parent_action));
@@ -215,7 +221,7 @@ base::Optional<RequestAction> RulesetMatcherBase::GetBeforeRequestAction(
 
 void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   DCHECK(host);
-  content::RenderFrameHost* parent = host->GetParent();
+  content::RenderFrameHost* parent = host->GetParentOrOuterDocument();
   if (!parent)
     return;
 
@@ -224,26 +230,20 @@ void RulesetMatcherBase::OnRenderFrameCreated(content::RenderFrameHost* host) {
   // commit for the frame is received in the browser (via DidFinishNavigation).
   // Hence if the parent frame is allowlisted, we allow list the current frame
   // as well in OnRenderFrameCreated.
-  content::GlobalFrameRoutingId parent_frame_id(parent->GetProcess()->GetID(),
-                                                parent->GetRoutingID());
-  base::Optional<RequestAction> parent_action =
-      GetAllowlistedFrameAction(parent_frame_id);
+  absl::optional<RequestAction> parent_action =
+      GetAllowlistedFrameAction(parent->GetGlobalId());
   if (!parent_action)
     return;
 
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
-
   bool inserted = false;
   std::tie(std::ignore, inserted) = allowlisted_frames_.insert(
-      std::make_pair(frame_id, std::move(*parent_action)));
+      std::make_pair(host->GetGlobalId(), std::move(*parent_action)));
   DCHECK(inserted);
 }
 
 void RulesetMatcherBase::OnRenderFrameDeleted(content::RenderFrameHost* host) {
   DCHECK(host);
-  allowlisted_frames_.erase(content::GlobalFrameRoutingId(
-      host->GetProcess()->GetID(), host->GetRoutingID()));
+  allowlisted_frames_.erase(host->GetGlobalId());
 }
 
 void RulesetMatcherBase::OnDidFinishNavigation(
@@ -255,34 +255,29 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   // Hence we need not listen to OnRenderFrameCreated.
   DCHECK(host);
 
-  RequestParams params(host);
+  RequestParams params(host, navigation_handle->IsPost());
 
   // Find the highest priority allowAllRequests action corresponding to this
   // frame.
-  base::Optional<RequestAction> parent_action =
+  absl::optional<RequestAction> parent_action =
       GetAllowlistedFrameAction(params.parent_routing_id);
-  base::Optional<RequestAction> frame_action =
+  absl::optional<RequestAction> frame_action =
       GetAllowAllRequestsAction(params);
-  base::Optional<RequestAction> action =
+  absl::optional<RequestAction> action =
       GetMaxPriorityAction(std::move(parent_action), std::move(frame_action));
 
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
-
+  content::GlobalRenderFrameHostId frame_id = host->GetGlobalId();
   allowlisted_frames_.erase(frame_id);
 
   if (action)
     allowlisted_frames_.insert(std::make_pair(frame_id, std::move(*action)));
 }
 
-base::Optional<RequestAction>
+absl::optional<RequestAction>
 RulesetMatcherBase::GetAllowlistedFrameActionForTesting(
     content::RenderFrameHost* host) const {
   DCHECK(host);
-
-  content::GlobalFrameRoutingId frame_id(host->GetProcess()->GetID(),
-                                         host->GetRoutingID());
-  return GetAllowlistedFrameAction(frame_id);
+  return GetAllowlistedFrameAction(host->GetGlobalId());
 }
 
 RequestAction RulesetMatcherBase::CreateBlockOrCollapseRequestAction(
@@ -306,12 +301,12 @@ RequestAction RulesetMatcherBase::CreateAllowAllRequestsAction(
   return CreateRequestAction(RequestAction::Type::ALLOW_ALL_REQUESTS, rule);
 }
 
-base::Optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
+absl::optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule) const {
   if (!IsUpgradeableUrl(*params.url)) {
     // TODO(crbug.com/1033780): this results in counterintuitive behavior.
-    return base::nullopt;
+    return absl::nullopt;
   }
   RequestAction upgrade_action =
       CreateRequestAction(RequestAction::Type::UPGRADE, rule);
@@ -319,7 +314,7 @@ base::Optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
   return upgrade_action;
 }
 
-base::Optional<RequestAction>
+absl::optional<RequestAction>
 RulesetMatcherBase::CreateRedirectActionFromMetadata(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule,
@@ -349,18 +344,18 @@ RulesetMatcherBase::CreateRedirectActionFromMetadata(
   return CreateRedirectAction(params, rule, std::move(redirect_url));
 }
 
-base::Optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
+absl::optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule,
     GURL redirect_url) const {
   // Redirecting WebSocket handshake request is prohibited.
   // TODO(crbug.com/1033780): this results in counterintuitive behavior.
   if (params.element_type == flat_rule::ElementType_WEBSOCKET)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Prevent a redirect loop where a URL continuously redirects to itself.
   if (!redirect_url.is_valid() || *params.url == redirect_url)
-    return base::nullopt;
+    return absl::nullopt;
 
   RequestAction redirect_action =
       CreateRequestAction(RequestAction::Type::REDIRECT, rule);
@@ -414,11 +409,11 @@ RequestAction RulesetMatcherBase::CreateRequestAction(
                        extension_id());
 }
 
-base::Optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
-    content::GlobalFrameRoutingId frame_id) const {
+absl::optional<RequestAction> RulesetMatcherBase::GetAllowlistedFrameAction(
+    content::GlobalRenderFrameHostId frame_id) const {
   auto it = allowlisted_frames_.find(frame_id);
   if (it == allowlisted_frames_.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return it->second.Clone();
 }

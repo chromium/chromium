@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ namespace test {
 
 namespace {
 
-constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromMilliseconds(15);
-constexpr base::TimeDelta kTimeAdvance = base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kTimeLimit = base::Milliseconds(15);
+constexpr base::TimeDelta kTimeAdvance = base::Milliseconds(1);
 constexpr int kWarmupRuns = 5;
 constexpr int kTimeCheckInterval = 10;
 
@@ -49,7 +49,7 @@ TEST(LapTimer, UsageExample) {
   EXPECT_TRUE(timer.IsWarmedUp());
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // iOS simulator does not support using ThreadTicks.
 TEST(LapTimer, ThreadTicksUsageExample) {
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);

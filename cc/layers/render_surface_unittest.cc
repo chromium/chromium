@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_picture_layer_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/mock_occlusion_tracker.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -19,7 +18,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include "base/memory/ptr_util.h"
 #include "cc/test/fake_raster_source.h"
@@ -49,7 +48,7 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
   }
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) override {
+      LayerTreeImpl* tree_impl) const override {
     return base::WrapUnique(
         new FakePictureLayerImplForRenderSurfaceTest(tree_impl, id()));
   }
@@ -171,12 +170,8 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->shared_quad_state_list.front();
 
-  EXPECT_EQ(
-      30.0,
-      shared_quad_state->quad_to_target_transform.matrix().getDouble(0, 3));
-  EXPECT_EQ(
-      40.0,
-      shared_quad_state->quad_to_target_transform.matrix().getDouble(1, 3));
+  EXPECT_EQ(30.0, shared_quad_state->quad_to_target_transform.rc(0, 3));
+  EXPECT_EQ(40.0, shared_quad_state->quad_to_target_transform.rc(1, 3));
   EXPECT_EQ(content_rect,
             gfx::Rect(shared_quad_state->visible_quad_layer_rect));
   EXPECT_EQ(1.f, shared_quad_state->opacity);

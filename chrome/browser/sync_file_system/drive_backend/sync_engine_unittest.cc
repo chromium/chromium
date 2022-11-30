@@ -1,18 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_engine.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
@@ -36,6 +35,10 @@ class SyncEngineTest : public testing::Test,
   typedef RemoteFileSyncService::OriginStatusMap RemoteOriginStatusMap;
 
   SyncEngineTest() {}
+
+  SyncEngineTest(const SyncEngineTest&) = delete;
+  SyncEngineTest& operator=(const SyncEngineTest&) = delete;
+
   ~SyncEngineTest() override {}
 
   void SetUp() override {
@@ -128,8 +131,6 @@ class SyncEngineTest : public testing::Test,
   std::unique_ptr<drive_backend::SyncEngine> sync_engine_;
 
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineTest);
 };
 
 TEST_F(SyncEngineTest, OriginTest) {
@@ -215,7 +216,7 @@ TEST_F(SyncEngineTest, UpdateServiceState) {
     {REMOTE_SERVICE_DISABLED, "DISABLED"},
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     PostUpdateServiceState(test_data[i].state, test_data[i].description);
     EXPECT_EQ(test_data[i].state, sync_engine()->GetCurrentState())
         << "Expected state: REMOTE_SERVICE_" << test_data[i].description;

@@ -32,10 +32,10 @@
 
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 using blink::WebServiceWorkerError;
 
@@ -47,7 +47,7 @@ struct ExceptionParams {
   ExceptionParams(DOMExceptionCode code,
                   const String& default_message = String(),
                   const String& message = String())
-      : code(code), message(message.IsEmpty() ? default_message : message) {}
+      : code(code), message(message.empty() ? default_message : message) {}
 
   DOMExceptionCode code;
   String message;

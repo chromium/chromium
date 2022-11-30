@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,19 @@
 
 #include <algorithm>
 
+#include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -21,8 +28,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -33,7 +38,7 @@ std::unique_ptr<views::Border> CreateBorderWithVerticalSpacing(
   const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
   return views::CreateEmptyBorder(
-      gfx::Insets(vertical_spacing, horizontal_spacing));
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 }
 
 // Wrapper class for the icon that maintains consistent spacing for both badged
@@ -54,7 +59,7 @@ class IconWrapper : public views::View {
     // |MenuButton| already does this with its own image.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetProperty(views::kMarginsKey, gfx::Insets(vertical_spacing, 0));
+    SetProperty(views::kMarginsKey, gfx::Insets::VH(vertical_spacing, 0));
   }
 
   // views::View:
@@ -69,7 +74,7 @@ class IconWrapper : public views::View {
   views::View* icon() { return icon_; }
 
  private:
-  views::View* icon_;
+  raw_ptr<views::View> icon_;
 };
 
 BEGIN_METADATA(IconWrapper, views::View)
@@ -93,7 +98,12 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
                            2;
   SetBorder(CreateBorderWithVerticalSpacing(vert_spacing));
 
-  SetInkDropMode(InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/false,
+                                               /*highlight_on_focus=*/true);
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+      [](views::View* host) { return GetInkDropColor(host); }, this));
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
@@ -102,10 +112,10 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
 }
 
 HoverButton::HoverButton(PressedCallback callback,
-                         const gfx::ImageSkia& icon,
+                         const ui::ImageModel& icon,
                          const std::u16string& text)
     : HoverButton(std::move(callback), text) {
-  SetImage(STATE_NORMAL, icon);
+  SetImageModel(STATE_NORMAL, icon);
 }
 
 HoverButton::HoverButton(PressedCallback callback,
@@ -164,11 +174,11 @@ HoverButton::HoverButton(PressedCallback callback,
                                views::MaximumFlexSizeRule::kUnbounded));
   label_wrapper->SetCanProcessEventsWithinSubtree(false);
   label_wrapper->SetProperty(views::kMarginsKey,
-                             gfx::Insets(vertical_spacing, 0));
+                             gfx::Insets::VH(vertical_spacing, 0));
   label_wrapper_ = AddChildView(std::move(label_wrapper));
   // Observe |label_wrapper_| bounds changes to ensure the HoverButton tooltip
   // is kept in sync with the size.
-  label_observation_.Observe(label_wrapper_);
+  label_observation_.Observe(label_wrapper_.get());
 
   if (secondary_view) {
     secondary_view->SetCanProcessEventsWithinSubtree(
@@ -189,8 +199,9 @@ HoverButton::HoverButton(PressedCallback callback,
     const int secondary_spacing =
         resize_row_for_secondary_view ? vertical_spacing : 0;
     secondary_view->SetProperty(
-        views::kMarginsKey, gfx::Insets(secondary_spacing, icon_label_spacing,
-                                        secondary_spacing, 0));
+        views::kMarginsKey,
+        gfx::Insets::TLBR(secondary_spacing, icon_label_spacing,
+                          secondary_spacing, 0));
     secondary_view_ = AddChildView(std::move(secondary_view));
   }
 
@@ -209,13 +220,17 @@ SkColor HoverButton::GetInkDropColor(const views::View* view) {
 
 void HoverButton::SetBorder(std::unique_ptr<views::Border> b) {
   LabelButton::SetBorder(std::move(b));
-  // Make sure the minimum size is correct according to the layout (if any).
-  if (GetLayoutManager())
-    SetMinSize(GetLayoutManager()->GetPreferredSize(this));
+  PreferredSizeChanged();
 }
 
 void HoverButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
+}
+
+void HoverButton::PreferredSizeChanged() {
+  LabelButton::PreferredSizeChanged();
+  if (GetLayoutManager())
+    SetMinSize(GetLayoutManager()->GetPreferredSize(this));
 }
 
 void HoverButton::OnViewBoundsChanged(View* observed_view) {
@@ -228,6 +243,18 @@ void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
                                     SkColor background_color) {
   title_->SetDisplayedOnBackgroundColor(background_color);
   title_->SetDefaultTextStyle(text_style);
+}
+
+void HoverButton::SetSubtitleTextStyle(int text_context,
+                                       views::style::TextStyle text_style) {
+  subtitle()->SetTextContext(text_context);
+  subtitle()->SetTextStyle(text_style);
+  subtitle()->SetAutoColorReadabilityEnabled(true);
+
+  // `subtitle_`'s preferred size may have changed. Notify the view because
+  // `subtitle_` is an indirect child and thus
+  // HoverButton::ChildPreferredSizeChanged() is not called.
+  PreferredSizeChanged();
 }
 
 void HoverButton::SetTooltipAndAccessibleName() {
@@ -267,19 +294,6 @@ void HoverButton::StateChanged(ButtonState old_state) {
   } else if (GetState() == STATE_NORMAL && HasFocus()) {
     GetFocusManager()->SetFocusedView(nullptr);
   }
-}
-
-SkColor HoverButton::GetInkDropBaseColor() const {
-  return GetInkDropColor(this);
-}
-
-std::unique_ptr<views::InkDrop> HoverButton::CreateInkDrop() {
-  std::unique_ptr<views::InkDrop> ink_drop = LabelButton::CreateInkDrop();
-  // Turn on highlighting when the button is focused only - hovering the button
-  // will request focus.
-  ink_drop->SetShowHighlightOnFocus(true);
-  ink_drop->SetShowHighlightOnHover(false);
-  return ink_drop;
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {

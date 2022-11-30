@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
@@ -32,6 +30,9 @@ class MEDIA_EXPORT AudioOutputStreamSink
       public AudioOutputStream::AudioSourceCallback {
  public:
   AudioOutputStreamSink();
+
+  AudioOutputStreamSink(const AudioOutputStreamSink&) = delete;
+  AudioOutputStreamSink& operator=(const AudioOutputStreamSink&) = delete;
 
   // RestartableAudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
@@ -71,7 +72,7 @@ class MEDIA_EXPORT AudioOutputStreamSink
 
   // Parameters provided by Initialize().
   AudioParameters params_;
-  RenderCallback* render_callback_;
+  raw_ptr<RenderCallback> render_callback_;
 
   // State latched for the audio thread.
   // |active_render_callback_| allows Stop()/Pause() to synchronously prevent
@@ -79,7 +80,7 @@ class MEDIA_EXPORT AudioOutputStreamSink
   // |active_params_| is set on the audio thread and therefore does not need
   // synchronization.
   AudioParameters active_params_;
-  RenderCallback* active_render_callback_ GUARDED_BY(callback_lock_);
+  raw_ptr<RenderCallback> active_render_callback_ GUARDED_BY(callback_lock_);
 
   // Lock to synchronize setting and clearing of |active_render_callback_|.
   base::Lock callback_lock_;
@@ -88,9 +89,7 @@ class MEDIA_EXPORT AudioOutputStreamSink
   const scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   // The actual AudioOutputStream, must only be accessed on the audio thread.
-  AudioOutputStream* stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamSink);
+  raw_ptr<AudioOutputStream> stream_;
 };
 
 }  // namespace media

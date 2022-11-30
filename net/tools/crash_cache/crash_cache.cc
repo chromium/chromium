@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/test_completion_callback.h"
@@ -117,7 +117,7 @@ bool CreateTargetFolder(const base::FilePath& path, RankCrashes action,
     "remove_load2",
     "remove_load3"
   };
-  static_assert(base::size(folders) == disk_cache::MAX_CRASH, "sync folders");
+  static_assert(std::size(folders) == disk_cache::MAX_CRASH, "sync folders");
   DCHECK(action > disk_cache::NO_CRASH && action < disk_cache::MAX_CRASH);
 
   *full_path = path.AppendASCII(folders[action]);
@@ -147,9 +147,9 @@ bool CreateCache(const base::FilePath& path,
       net::DISK_CACHE, /* net_log = */ nullptr);
   backend->SetMaxSize(size);
   backend->SetFlags(disk_cache::kNoRandom);
-  int rv = backend->Init(cb->callback());
+  backend->Init(cb->callback());
   *cache = backend;
-  return (cb->GetResult(rv) == net::OK && !(*cache)->GetEntryCount());
+  return (cb->WaitForResult() == net::OK && !(*cache)->GetEntryCount());
 }
 
 // Generates the files for an empty and one item cache.
@@ -286,8 +286,8 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
   // No experiments and use a simple LRU.
   cache->SetFlags(disk_cache::kNoRandom);
   net::TestCompletionCallback cb;
-  int rv = cache->Init(cb.callback());
-  if (cb.GetResult(rv) != net::OK || cache->GetEntryCount())
+  cache->Init(cb.callback());
+  if (cb.WaitForResult() != net::OK || cache->GetEntryCount())
     return GENERIC;
 
   int seed = static_cast<int>(Time::Now().ToInternalValue());

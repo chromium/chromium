@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 // Weak handles provides a way to refer to weak pointers from another sequence.
 // This is useful because it is not safe to reference a weak pointer from a
@@ -71,6 +70,9 @@ class WeakHandleCoreBase {
   // Assumes the current thread is the owner thread.
   WeakHandleCoreBase();
 
+  WeakHandleCoreBase(const WeakHandleCoreBase&) = delete;
+  WeakHandleCoreBase& operator=(const WeakHandleCoreBase&) = delete;
+
   // May be called on any thread.
   bool IsOnOwnerThread() const;
 
@@ -85,8 +87,6 @@ class WeakHandleCoreBase {
  private:
   // May be used on any thread.
   const scoped_refptr<base::SequencedTaskRunner> owner_loop_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakHandleCoreBase);
 };
 
 // WeakHandleCore<T> contains all the logic for WeakHandle<T>.
@@ -97,6 +97,9 @@ class WeakHandleCore : public WeakHandleCoreBase,
   // Must be called on |ptr|'s owner thread, which is assumed to be
   // the current thread.
   explicit WeakHandleCore(const base::WeakPtr<T>& ptr) : ptr_(ptr) {}
+
+  WeakHandleCore(const WeakHandleCore&) = delete;
+  WeakHandleCore& operator=(const WeakHandleCore&) = delete;
 
   // Must be called on |ptr_|'s owner thread.
   base::WeakPtr<T> Get() const {
@@ -118,13 +121,11 @@ class WeakHandleCore : public WeakHandleCoreBase,
   friend class base::RefCountedThreadSafe<WeakHandleCore<T>>;
 
   // May be destroyed on any thread.
-  ~WeakHandleCore() {}
+  ~WeakHandleCore() = default;
 
   // Must be dereferenced only on the owner thread.  May be destroyed
   // from any thread.
   base::WeakPtr<T> ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakHandleCore);
 };
 
 }  // namespace internal
@@ -135,7 +136,7 @@ template <typename T>
 class WeakHandle {
  public:
   // Creates an uninitialized WeakHandle.
-  WeakHandle() {}
+  WeakHandle() = default;
 
   // Creates an initialized WeakHandle from |ptr|.
   explicit WeakHandle(const base::WeakPtr<T>& ptr)

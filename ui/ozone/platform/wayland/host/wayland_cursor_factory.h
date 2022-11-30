@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "ui/base/cursor/cursor_theme_manager.h"
-#include "ui/base/cursor/cursor_theme_manager_observer.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/linux/cursor_theme_manager_observer.h"
+#include "ui/linux/linux_ui.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
@@ -21,10 +22,11 @@ struct wl_cursor_theme;
 
 namespace ui {
 
+class BitmapCursor;
 class WaylandConnection;
 
 // CursorFactory implementation for Wayland.
-class WaylandCursorFactory : public BitmapCursorFactoryOzone,
+class WaylandCursorFactory : public BitmapCursorFactory,
                              public CursorThemeManagerObserver,
                              public WaylandCursorBufferListener {
  public:
@@ -36,8 +38,8 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   // CursorFactory:
   void ObserveThemeChanges() override;
 
-  // CursorFactoryOzone:
-  base::Optional<PlatformCursor> GetDefaultCursor(
+  // CursorFactory:
+  scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
   void SetDeviceScaleFactor(float scale) override;
 
@@ -49,12 +51,14 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandCursorFactoryTest,
                            RetainOldThemeUntilNewBufferIsAttached);
+  FRIEND_TEST_ALL_PREFIXES(WaylandCursorFactoryTest,
+                           CachesSizesUntilThemeNameIsChanged);
 
   struct ThemeData {
     ThemeData();
     ~ThemeData();
     wl::Object<wl_cursor_theme> theme;
-    base::flat_map<mojom::CursorType, scoped_refptr<BitmapCursorOzone>> cache;
+    base::flat_map<mojom::CursorType, scoped_refptr<BitmapCursor>> cache;
   };
 
   // CusorThemeManagerObserver:
@@ -64,25 +68,36 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   // WaylandCursorBufferListener:
   void OnCursorBufferAttached(wl_cursor* cursor_data) override;
 
+  // Returns the theme cached for the size and scale set currently.
+  // May return nullptr, which means that the data is not yet loaded.
+  ThemeData* GetCurrentTheme();
+  // Resets the theme cache and triggers loading the theme again, optionally
+  // keeping the existing data until the cursor changes next time.
   void ReloadThemeCursors();
+  // Loads the theme with the current size and scale.  Does nothing if data
+  // already exists.
+  void MaybeLoadThemeCursors();
   void OnThemeLoaded(const std::string& loaded_theme_name,
                      int loaded_theme_size,
                      wl_cursor_theme* loaded_theme);
 
-  WaylandConnection* const connection_;
+  const raw_ptr<WaylandConnection> connection_;
 
-  base::ScopedObservation<CursorThemeManager, CursorThemeManagerObserver>
+  base::ScopedObservation<LinuxUi,
+                          CursorThemeManagerObserver,
+                          &LinuxUi::AddCursorThemeObserver,
+                          &LinuxUi::RemoveCursorThemeObserver>
       cursor_theme_observer_{this};
 
   // Name of the current theme.
   std::string name_;
   // Current size of cursors
   int size_ = 24;
-
   // The current scale of the mouse cursor icon.
   float scale_ = 1.0f;
 
-  std::unique_ptr<ThemeData> current_theme_;
+  // Maps sizes of the cursor to the cached shapes of those sizes.
+  std::map<int, std::unique_ptr<ThemeData>> theme_cache_;
   // Holds the reference on the unloaded theme until the cursor is released.
   std::unique_ptr<ThemeData> unloaded_theme_;
 

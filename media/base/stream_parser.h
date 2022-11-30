@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/demuxer_stream.h"
@@ -62,7 +60,7 @@ class MEDIA_EXPORT StreamParser {
     base::Time timeline_offset;
 
     // Indicates live stream.
-    DemuxerStream::Liveness liveness;
+    StreamLiveness liveness = StreamLiveness::kUnknown;
 
     // Counts of tracks detected by type within this stream. Not all of these
     // tracks may be selected for use by the parser.
@@ -110,6 +108,10 @@ class MEDIA_EXPORT StreamParser {
       EncryptedMediaInitDataCB;
 
   StreamParser();
+
+  StreamParser(const StreamParser&) = delete;
+  StreamParser& operator=(const StreamParser&) = delete;
+
   virtual ~StreamParser();
 
   // Initializes the parser with necessary callbacks. Must be called before any
@@ -117,15 +119,14 @@ class MEDIA_EXPORT StreamParser {
   // been parsed to determine the initial stream configurations, presentation
   // start time, and duration. If |ignore_text_track| is true, then no text
   // buffers should be passed later by the parser to |new_buffers_cb|.
-  virtual void Init(
-      InitCB init_cb,
-      const NewConfigCB& config_cb,
-      const NewBuffersCB& new_buffers_cb,
-      bool ignore_text_track,
-      const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-      const NewMediaSegmentCB& new_segment_cb,
-      const EndMediaSegmentCB& end_of_segment_cb,
-      MediaLog* media_log) = 0;
+  virtual void Init(InitCB init_cb,
+                    NewConfigCB config_cb,
+                    NewBuffersCB new_buffers_cb,
+                    bool ignore_text_track,
+                    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+                    NewMediaSegmentCB new_segment_cb,
+                    EndMediaSegmentCB end_of_segment_cb,
+                    MediaLog* media_log) = 0;
 
   // Called during the reset parser state algorithm.  This flushes the current
   // parser and puts the parser in a state where it can receive data.  This
@@ -146,9 +147,6 @@ class MEDIA_EXPORT StreamParser {
   // implement ProcessChunks().
   virtual bool Parse(const uint8_t* buf, int size) = 0;
   virtual bool ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamParser);
 };
 
 // Appends to |merged_buffers| the provided buffers in decode-timestamp order.

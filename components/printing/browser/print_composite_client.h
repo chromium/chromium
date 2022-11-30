@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,13 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -119,8 +122,7 @@ class PrintCompositeClient
       mojom::PrintCompositor::Status status,
       base::ReadOnlySharedMemoryRegion region);
 
-  void OnDidPrintFrameContent(int render_process_id,
-                              int render_frame_id,
+  void OnDidPrintFrameContent(content::GlobalRenderFrameHostId rfh_id,
                               int document_cookie,
                               mojom::DidPrintContentParamsPtr params);
 
@@ -162,7 +164,7 @@ class PrintCompositeClient
 
   // Stores the the frame that initiated the composite request;
   // Holds nullptr if no document is being composited.
-  content::RenderFrameHost* initiator_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> initiator_frame_ = nullptr;
 
   // Stores the pending subframes for the composited document.
   base::flat_set<content::RenderFrameHost*> pending_subframes_;
@@ -171,18 +173,15 @@ class PrintCompositeClient
   base::flat_set<content::RenderFrameHost*> printed_subframes_;
 
   struct RequestedSubFrame {
-    RequestedSubFrame(int render_process_id,
-                      int render_frame_id,
+    RequestedSubFrame(content::GlobalRenderFrameHostId rfh_id,
                       int document_cookie,
                       mojom::DidPrintContentParamsPtr params,
                       bool is_live);
     ~RequestedSubFrame();
-    RequestedSubFrame(const PrintCompositeClient::RequestedSubFrame&) = delete;
-    RequestedSubFrame& operator=(
-        const PrintCompositeClient::RequestedSubFrame&) = delete;
+    RequestedSubFrame(const RequestedSubFrame&) = delete;
+    RequestedSubFrame& operator=(const RequestedSubFrame&) = delete;
 
-    int render_process_id_;
-    int render_frame_id_;
+    content::GlobalRenderFrameHostId rfh_id_;
     int document_cookie_;
     mojom::DidPrintContentParamsPtr params_;
     bool is_live_;

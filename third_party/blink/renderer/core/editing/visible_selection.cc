@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -402,20 +402,20 @@ std::ostream& operator<<(std::ostream& ostream,
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::VisibleSelection& sel) {
+void ShowTree(const blink::VisibleSelection& sel) {
   sel.ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelection* sel) {
+void ShowTree(const blink::VisibleSelection* sel) {
   if (sel)
     sel->ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelectionInFlatTree& sel) {
+void ShowTree(const blink::VisibleSelectionInFlatTree& sel) {
   sel.ShowTreeForThis();
 }
 
-void showTree(const blink::VisibleSelectionInFlatTree* sel) {
+void ShowTree(const blink::VisibleSelectionInFlatTree* sel) {
   if (sel)
     sel->ShowTreeForThis();
 }

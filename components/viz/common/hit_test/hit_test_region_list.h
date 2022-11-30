@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 
@@ -36,9 +36,6 @@ enum HitTestRegionFlags : uint32_t {
 
   // Client hasn't submitted its own hit-test data yet.
   kHitTestNotActive = 0x40,
-
-  // Hit-test debugging is enabled.
-  kHitTestDebug = 0x80,
 };
 
 // In viz hit testing surface layer, hit test regions are marked as kHitTestAsk

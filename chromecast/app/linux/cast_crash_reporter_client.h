@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 namespace chromecast {
@@ -19,6 +18,10 @@ class CastCrashReporterClient : public crash_reporter::CrashReporterClient {
   static void InitCrashReporter(const std::string& process_type);
 
   CastCrashReporterClient();
+
+  CastCrashReporterClient(const CastCrashReporterClient&) = delete;
+  CastCrashReporterClient& operator=(const CastCrashReporterClient&) = delete;
+
   ~CastCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient implementation:
@@ -28,8 +31,6 @@ class CastCrashReporterClient : public crash_reporter::CrashReporterClient {
 
  private:
   static uint64_t GetProcessStartTime();
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClient);
 };
 
 }  // namespace chromecast

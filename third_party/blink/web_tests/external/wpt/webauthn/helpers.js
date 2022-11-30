@@ -19,7 +19,6 @@ var createCredentialDefaultArgs = {
             // Relying Party:
             rp: {
                 name: "Acme",
-                icon: "https://www.w3.org/StyleSheets/TR/2016/logos/W3C"
             },
 
             // User:
@@ -27,7 +26,6 @@ var createCredentialDefaultArgs = {
                 id: new Uint8Array(16), // Won't survive the copy, must be rebuilt
                 name: "john.p.smith@example.com",
                 displayName: "John P. Smith",
-                icon: "https://pics.acme.com/00/p/aBjjjpqPb.png"
             },
 
             pubKeyCredParams: [{
@@ -343,7 +341,7 @@ function cloneObject(o) {
 
 function extendObject(dst, src) {
     Object.keys(src).forEach(function(key) {
-        if (isSimpleObject(src[key])) {
+        if (isSimpleObject(src[key]) && !isAbortSignal(src[key])) {
             dst[key] ||= {};
             extendObject(dst[key], src[key]);
         } else {
@@ -356,6 +354,10 @@ function isSimpleObject(o) {
     return (typeof o === "object" &&
         !Array.isArray(o) &&
         !(o instanceof ArrayBuffer));
+}
+
+function isAbortSignal(o) {
+    return (o instanceof AbortSignal);
 }
 
 /**
@@ -494,6 +496,15 @@ class GetCredentialsTest extends TestCase {
 }
 
 /**
+ * converts a uint8array to base64 url-safe encoding
+ * based on similar function in resources/utils.js
+ */
+function base64urlEncode(array) {
+  let string = String.fromCharCode.apply(null, array);
+  let result = btoa(string);
+  return result.replace(/=+$/g, '').replace(/\+/g, "-").replace(/\//g, "_");
+}
+/**
  * runs assertions against a PublicKeyCredential object to ensure it is properly formatted
  */
 function validatePublicKeyCredential(cred) {
@@ -505,6 +516,8 @@ function validatePublicKeyCredential(cred) {
     // rawId
     assert_idl_attribute(cred, "rawId", "should return PublicKeyCredential with rawId attribute");
     assert_readonly(cred, "rawId", "should return PublicKeyCredential with readonly rawId attribute");
+    assert_equals(cred.id, base64urlEncode(new Uint8Array(cred.rawId)), "should return PublicKeyCredential with id attribute set to base64 encoding of rawId attribute");
+
     // type
     assert_idl_attribute(cred, "type", "should return PublicKeyCredential with type attribute");
     assert_equals(cred.type, "public-key", "should return PublicKeyCredential with type 'public-key'");

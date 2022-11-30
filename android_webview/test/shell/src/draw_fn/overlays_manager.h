@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 struct AwDrawFn_DrawGLParams;
@@ -45,7 +46,7 @@ class OverlaysManager {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_surface_;
-  ANativeWindow* native_window_ = nullptr;
+  raw_ptr<ANativeWindow> native_window_ = nullptr;
 };
 
 }  // namespace draw_fn

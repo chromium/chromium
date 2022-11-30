@@ -1,0 +1,52 @@
+#ifndef _LIBCPP_CONFIG_SITE
+#define _LIBCPP_CONFIG_SITE
+
+// We set a custom _LIBCPP_ABI_NAMESPACE for the following reasons:
+//
+// 1. When libcxx_is_shared is true, symbols from libc++.so are exported for all
+//    DSOs to use.  If the system libc++ gets loaded (indirectly through a
+//    a system library), then it will conflict with our libc++.so.
+// 2. The default value of _LIBCPP_ABI_NAMESPACE is the string
+//    "_LIBCPP_ABI_NAMESPACE". This contributes to an increase in binary size;
+//    on Windows, the increase is great enough that we go above the 4GB size
+//    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
+//    _LIBCPP_ABI_NAMESPACE to a shorter value.
+#define _LIBCPP_ABI_NAMESPACE Cr
+#define _LIBCPP_ABI_VERSION 2
+
+/* #undef _LIBCPP_ABI_FORCE_ITANIUM */
+/* #undef _LIBCPP_ABI_FORCE_MICROSOFT */
+/* #undef _LIBCPP_HAS_NO_THREADS */
+/* #undef _LIBCPP_HAS_NO_MONOTONIC_CLOCK */
+/* #undef _LIBCPP_HAS_MUSL_LIBC */
+/* #undef _LIBCPP_HAS_THREAD_API_PTHREAD */
+/* #undef _LIBCPP_HAS_THREAD_API_EXTERNAL */
+/* #undef _LIBCPP_HAS_THREAD_API_WIN32 */
+/* #undef _LIBCPP_HAS_THREAD_LIBRARY_EXTERNAL */
+/* #undef _LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS */
+#define _LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS
+/* #undef _LIBCPP_NO_VCRUNTIME */
+/* #undef _LIBCPP_TYPEINFO_COMPARISON_IMPLEMENTATION */
+/* #undef _LIBCPP_HAS_NO_FILESYSTEM_LIBRARY */
+/* #undef _LIBCPP_HAS_PARALLEL_ALGORITHMS */
+/* #undef _LIBCPP_HAS_NO_RANDOM_DEVICE */
+/* #undef _LIBCPP_HAS_NO_LOCALIZATION */
+/* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
+
+// Enable libc++ assertions for hardening and safety
+// (https://crbug.com/1335422).
+#define _LIBCPP_ENABLE_ASSERTIONS_DEFAULT 1
+
+// Settings below aren't part of __config_site upstream.
+// We set them here since we want them to take effect everywhere,
+// unconditionally.
+
+// Prevent libc++ from embedding linker flags to try to automatically link
+// against its runtime library. This is unnecessary with our build system,
+// and can also result in build failures if libc++'s name for a library
+// does not match ours.  Only has an effect on Windows.
+#define _LIBCPP_NO_AUTO_LINK
+
+#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
+
+#endif // _LIBCPP_CONFIG_SITE

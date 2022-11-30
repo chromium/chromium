@@ -40,7 +40,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -108,6 +107,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
       "blob:http://a.test/b3aae9c8-7f90-440d-8d7c-43aa20d72fde";
   const char kFilesystemURL[] = "filesystem:http://a.test/path/t/file.html";
   const char kInvalidURL[] = "not-a-valid-url";
+  const char kEmptyURL[] = "";
 
   bool reduced_granularity =
       base::FeatureList::IsEnabled(features::kReducedReferrerGranularity);
@@ -148,6 +148,10 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
        kInsecureURLB, kInsecureOriginA},
       {network::mojom::ReferrerPolicy::kSameOrigin, kInsecureURLA,
        kInsecureURLB, nullptr},
+      {network::mojom::ReferrerPolicy::kSameOrigin, kInsecureURLB,
+       kFilesystemURL, nullptr},
+      {network::mojom::ReferrerPolicy::kSameOrigin, kInsecureURLB, kBlobURL,
+       nullptr},
       {network::mojom::ReferrerPolicy::kStrictOrigin, kInsecureURLA,
        kInsecureURLB, kInsecureOriginA},
       {network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
@@ -235,16 +239,18 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
 
       // blob, filesystem, and invalid URL handling
       {network::mojom::ReferrerPolicy::kAlways, kInsecureURLA, kBlobURL,
-       nullptr},
+       kInsecureURLA},
       {network::mojom::ReferrerPolicy::kAlways, kBlobURL, kInsecureURLA,
        nullptr},
       {network::mojom::ReferrerPolicy::kAlways, kInsecureURLA, kFilesystemURL,
-       nullptr},
+       kInsecureURLA},
       {network::mojom::ReferrerPolicy::kAlways, kFilesystemURL, kInsecureURLA,
        nullptr},
       {network::mojom::ReferrerPolicy::kAlways, kInsecureURLA, kInvalidURL,
        kInsecureURLA},
       {network::mojom::ReferrerPolicy::kAlways, kInvalidURL, kInsecureURLA,
+       nullptr},
+      {network::mojom::ReferrerPolicy::kAlways, kEmptyURL, kInsecureURLA,
        nullptr},
   };
 
@@ -259,7 +265,7 @@ TEST(SecurityPolicyTest, GenerateReferrer) {
           << " should have been '" << test.expected << "': was '"
           << result.referrer.Utf8() << "'.";
     } else {
-      EXPECT_TRUE(result.referrer.IsEmpty())
+      EXPECT_TRUE(result.referrer.empty())
           << "'" << test.referrer << "' to '" << test.destination
           << "' should have been empty: was '" << result.referrer.Utf8()
           << "'.";
@@ -411,9 +417,31 @@ TEST(SecurityPolicyTest, TrustworthySafelist) {
   }
 }
 
+TEST(SecurityPolicyTest, ReferrerPolicyToAndFromString) {
+  const char* policies[] = {"no-referrer",
+                            "unsafe-url",
+                            "origin",
+                            "origin-when-cross-origin",
+                            "same-origin",
+                            "strict-origin",
+                            "strict-origin-when-cross-origin",
+                            "no-referrer-when-downgrade"};
+
+  for (const char* policy : policies) {
+    network::mojom::ReferrerPolicy result =
+        network::mojom::ReferrerPolicy::kDefault;
+    EXPECT_TRUE(SecurityPolicy::ReferrerPolicyFromString(
+        policy, kDoNotSupportReferrerPolicyLegacyKeywords, &result));
+    String string_result = SecurityPolicy::ReferrerPolicyAsString(result);
+    EXPECT_EQ(string_result, policy);
+  }
+}
+
 class SecurityPolicyAccessTest : public testing::Test {
  public:
   SecurityPolicyAccessTest() = default;
+  SecurityPolicyAccessTest(const SecurityPolicyAccessTest&) = delete;
+  SecurityPolicyAccessTest& operator=(const SecurityPolicyAccessTest&) = delete;
   ~SecurityPolicyAccessTest() override = default;
 
   void SetUp() override {
@@ -453,8 +481,6 @@ class SecurityPolicyAccessTest : public testing::Test {
   scoped_refptr<const SecurityOrigin> http_example_origin_;
   scoped_refptr<const SecurityOrigin> https_chromium_origin_;
   scoped_refptr<const SecurityOrigin> https_google_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityPolicyAccessTest);
 };
 
 // TODO(toyoshim): Simplify origin access related tests since all we need here

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
-#include "base/stl_util.h"
-#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
@@ -36,9 +34,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 
 // See the design doc at
@@ -60,8 +57,8 @@ namespace blink {
 namespace {
 
 template <typename T, typename... Args>
-NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<NewScriptFunction>(
+ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
 }
 
@@ -79,10 +76,10 @@ v8::Local<v8::Object> CreateKeyValueObject(v8::Isolate* isolate,
   v8::Local<v8::Name> names[] = {V8AtomicString(isolate, key1),
                                  V8AtomicString(isolate, key2)};
   v8::Local<v8::Value> values[] = {value1, value2};
-  static_assert(base::size(names) == base::size(values),
+  static_assert(std::size(names) == std::size(values),
                 "names and values arrays must be the same size");
   return v8::Object::New(isolate, v8::Null(isolate), names, values,
-                         base::size(names));
+                         std::size(names));
 }
 
 // Unpacks an object created by CreateKeyValueObject(). |value1| and |value2|
@@ -113,6 +110,7 @@ void PackAndPostMessage(ScriptState* script_state,
                         MessagePort* port,
                         MessageType type,
                         v8::Local<v8::Value> value,
+                        AllowPerChunkTransferring allow_per_chunk_transferring,
                         ExceptionState& exception_state) {
   DVLOG(3) << "PackAndPostMessage sending message type "
            << static_cast<int>(type);
@@ -126,13 +124,23 @@ void PackAndPostMessage(ScriptState* script_state,
       isolate, "t", v8::Number::New(isolate, static_cast<int>(type)), "v",
       value);
 
+  // 5. Let options be «[ "transfer" → « » ]».
+  PostMessageOptions* options = PostMessageOptions::Create();
+  if (allow_per_chunk_transferring && type == MessageType::kChunk) {
+    // Here we set a non-empty transfer list: This is a non-standardized and
+    // non-default behavior, and the one who set `allow_per_chunk_transferring`
+    // to true must guarantee the validity.
+    HeapVector<ScriptValue> transfer;
+    transfer.push_back(ScriptValue(isolate, value));
+    options->setTransfer(transfer);
+  }
+
   // 4. Let targetPort be the port with which port is entangled, if any;
   //    otherwise let it be null.
-  // 5. Let options be «[ "transfer" → « » ]».
   // 6. Run the message port post message steps providing targetPort, message,
   //    and options.
-  port->postMessage(script_state, ScriptValue(isolate, packed),
-                    PostMessageOptions::Create(), exception_state);
+  port->postMessage(script_state, ScriptValue(isolate, packed), options,
+                    exception_state);
 }
 
 // Sends a kError message to the remote side, disregarding failure.
@@ -145,7 +153,7 @@ void CrossRealmTransformSendError(ScriptState* script_state,
   // https://streams.spec.whatwg.org/#abstract-opdef-crossrealmtransformsenderror
   // 1. Perform PackAndPostMessage(port, "error", error), discarding the result.
   PackAndPostMessage(script_state, port, MessageType::kError, error,
-                     exception_state);
+                     AllowPerChunkTransferring(false), exception_state);
   if (exception_state.HadException()) {
     DLOG(WARNING) << "Disregarding exception while sending error";
     exception_state.ClearException();
@@ -160,17 +168,20 @@ void CrossRealmTransformSendError(ScriptState* script_state,
 // verbosity at the calling sites. The function returns true for a normal
 // completion and false for an abrupt completion.When there's an abrupt
 // completion result.[[Value]] is stored into |error|.
-bool PackAndPostMessageHandlingError(ScriptState* script_state,
-                                     MessagePort* port,
-                                     MessageType type,
-                                     v8::Local<v8::Value> value,
-                                     v8::Local<v8::Value>* error) {
+bool PackAndPostMessageHandlingError(
+    ScriptState* script_state,
+    MessagePort* port,
+    MessageType type,
+    v8::Local<v8::Value> value,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
+    v8::Local<v8::Value>* error) {
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionState::kUnknownContext, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-packandpostmessagehandlingerror
   // 1. Let result be PackAndPostMessage(port, type, value).
-  PackAndPostMessage(script_state, port, type, value, exception_state);
+  PackAndPostMessage(script_state, port, type, value,
+                     allow_per_chunk_transferring, exception_state);
 
   // 2. If result is an abrupt completion,
   if (exception_state.HadException()) {
@@ -183,6 +194,15 @@ bool PackAndPostMessageHandlingError(ScriptState* script_state,
   }
 
   return true;
+}
+
+bool PackAndPostMessageHandlingError(ScriptState* script_state,
+                                     MessagePort* port,
+                                     MessageType type,
+                                     v8::Local<v8::Value> value,
+                                     v8::Local<v8::Value>* error) {
+  return PackAndPostMessageHandlingError(
+      script_state, port, type, value, AllowPerChunkTransferring(false), error);
 }
 
 // Base class for CrossRealmTransformWritable and CrossRealmTransformReadable.
@@ -313,11 +333,15 @@ class CrossRealmTransformErrorListener final : public NativeEventListener {
 // stream.
 class CrossRealmTransformWritable final : public CrossRealmTransformStream {
  public:
-  CrossRealmTransformWritable(ScriptState* script_state, MessagePort* port)
+  CrossRealmTransformWritable(
+      ScriptState* script_state,
+      MessagePort* port,
+      AllowPerChunkTransferring allow_per_chunk_transferring)
       : script_state_(script_state),
         message_port_(port),
         backpressure_promise_(
-            MakeGarbageCollected<StreamPromiseResolver>(script_state)) {}
+            MakeGarbageCollected<StreamPromiseResolver>(script_state)),
+        allow_per_chunk_transferring_(allow_per_chunk_transferring) {}
 
   WritableStream* CreateWritableStream(ExceptionState&);
 
@@ -343,6 +367,7 @@ class CrossRealmTransformWritable final : public CrossRealmTransformStream {
   const Member<MessagePort> message_port_;
   Member<StreamPromiseResolver> backpressure_promise_;
   Member<WritableStreamDefaultController> controller_;
+  const AllowPerChunkTransferring allow_per_chunk_transferring_;
 };
 
 class CrossRealmTransformWritable::WriteAlgorithm final
@@ -379,7 +404,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     return StreamThenPromise(
         script_state->GetContext(),
         writable_->backpressure_promise_->V8Promise(isolate),
-        MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this));
+        MakeGarbageCollected<ScriptFunction>(
+            script_state,
+            MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -394,14 +421,12 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     DoWriteOnResolve(ScriptState* script_state,
                      v8::Local<v8::Value> chunk,
                      WriteAlgorithm* target)
-        : PromiseHandlerWithValue(script_state),
-          chunk_(script_state->GetIsolate(), chunk),
-          target_(target) {}
+        : chunk_(script_state->GetIsolate(), chunk), target_(target) {}
 
-    v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
-      ScriptState* script_state = GetScriptState();
+    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                       v8::Local<v8::Value>) override {
       return target_->DoWrite(script_state,
-                              chunk_.NewLocal(script_state->GetIsolate()));
+                              chunk_.Get(script_state->GetIsolate()));
     }
 
     void Trace(Visitor* visitor) const override {
@@ -430,9 +455,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
 
     //     2. Let result be PackAndPostMessageHandlingError(port, "chunk",
     //        chunk).
-    bool success =
-        PackAndPostMessageHandlingError(script_state, writable_->message_port_,
-                                        MessageType::kChunk, chunk, &error);
+    bool success = PackAndPostMessageHandlingError(
+        script_state, writable_->message_port_, MessageType::kChunk, chunk,
+        writable_->allow_per_chunk_transferring_, &error);
     //     3. If result is an abrupt completion,
     if (!success) {
       //     1. Disentangle port.
@@ -754,9 +779,9 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  using Constant = NewScriptFunction::Constant;
+  using Constant = ScriptFunction::Constant;
 
-  class PullSource2 final : public NewScriptFunction::Callable {
+  class PullSource2 final : public ScriptFunction::Callable {
    public:
     explicit PullSource2(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
@@ -766,21 +791,21 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     }
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Success final : public NewScriptFunction::Callable {
+  class OnReadingSource1Success final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Success(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
     ScriptValue Call(ScriptState* script_state,
                      ScriptValue read_result) override {
@@ -809,14 +834,14 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Fail final : public NewScriptFunction::Callable {
+  class OnReadingSource1Fail final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Fail(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
@@ -1019,11 +1044,12 @@ void CrossRealmTransformReadable::HandleError(v8::Local<v8::Value> error) {
 CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(
     ScriptState* script_state,
     MessagePort* port,
+    AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  WritableStream* stream =
-      MakeGarbageCollected<CrossRealmTransformWritable>(script_state, port)
-          ->CreateWritableStream(exception_state);
+  WritableStream* stream = MakeGarbageCollected<CrossRealmTransformWritable>(
+                               script_state, port, allow_per_chunk_transferring)
+                               ->CreateWritableStream(exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ function SHA256() {
     0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
     0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
   ];
 
   this._pad[0] = 0x80;
@@ -41,8 +41,14 @@ function SHA256() {
 /** Reset the hasher */
 SHA256.prototype.reset = function() {
   this._chain = [
-    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c,
-    0x1f83d9ab, 0x5be0cd19
+    0x6a09e667,
+    0xbb67ae85,
+    0x3c6ef372,
+    0xa54ff53a,
+    0x510e527f,
+    0x9b05688c,
+    0x1f83d9ab,
+    0x5be0cd19,
   ];
 
   this._inbuf = 0;
@@ -122,7 +128,7 @@ SHA256.prototype.update = function(bytes, opt_length) {
   this._total += opt_length;
   for (var n = 0; n < opt_length; ++n) {
     this._buf[this._inbuf++] = bytes[n];
-    if (this._inbuf == 64) {
+    if (this._inbuf === 64) {
       this._compress(this._buf);
       this._inbuf = 0;
     }
@@ -138,7 +144,7 @@ SHA256.prototype.updateRange = function(bytes, start, end) {
   this._total += (end - start);
   for (var n = start; n < end; ++n) {
     this._buf[this._inbuf++] = bytes[n];
-    if (this._inbuf == 64) {
+    if (this._inbuf === 64) {
       this._compress(this._buf);
       this._inbuf = 0;
     }

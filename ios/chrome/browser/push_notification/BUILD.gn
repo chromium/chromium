@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("push_notification_service") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "push_notification_client_manager.h",
+    "push_notification_client_manager.mm",
+    "push_notification_configuration.h",
+    "push_notification_configuration.mm",
+    "push_notification_delegate.h",
+    "push_notification_delegate.mm",
+    "push_notification_service.h",
+    "push_notification_service.mm",
+    "push_notification_util.h",
+    "push_notification_util.mm",
+  ]
+  deps = [
+    ":push_notification_client",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
+  ]
+}
+
+source_set("push_notification_client") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "push_notification_client.h",
+    "push_notification_client.mm",
+    "push_notification_client_id.h",
+  ]
+  deps = [ "//base" ]
+}

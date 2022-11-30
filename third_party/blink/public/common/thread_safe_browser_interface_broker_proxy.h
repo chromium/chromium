@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,10 @@ class BLINK_COMMON_EXPORT ThreadSafeBrowserInterfaceBrokerProxy
     : public base::RefCountedThreadSafe<ThreadSafeBrowserInterfaceBrokerProxy> {
  public:
   ThreadSafeBrowserInterfaceBrokerProxy();
+  ThreadSafeBrowserInterfaceBrokerProxy(
+      const ThreadSafeBrowserInterfaceBrokerProxy&) = delete;
+  ThreadSafeBrowserInterfaceBrokerProxy& operator=(
+      const ThreadSafeBrowserInterfaceBrokerProxy&) = delete;
 
   // Asks the browser to bind the given receiver. If a non-null testing override
   // was set by |SetBinderForTesting()|, the request will be intercepted by that
@@ -51,8 +55,6 @@ class BLINK_COMMON_EXPORT ThreadSafeBrowserInterfaceBrokerProxy
   base::Lock binder_map_lock_;
   std::map<std::string, Binder> binder_map_for_testing_
       GUARDED_BY(binder_map_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeBrowserInterfaceBrokerProxy);
 };
 
 }  // namespace blink

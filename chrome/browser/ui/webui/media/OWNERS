@@ -1,5 +1,0 @@
-# For Media Engagement
-mlamouri@chromium.org
-
-# For WebRTC
-per-file webrtc_*=file://third_party/webrtc_overrides/OWNERS

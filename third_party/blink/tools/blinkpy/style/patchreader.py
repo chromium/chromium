@@ -50,7 +50,7 @@ class PatchReader(object):
         """Checks style in the given patch."""
         patch_files = DiffParser(patch_string.splitlines()).files
 
-        for path, diff_file in patch_files.iteritems():
+        for path, diff_file in patch_files.items():
             line_numbers = diff_file.added_or_modified_line_numbers()
             _log.debug('Found %s new or modified lines in: %s',
                        len(line_numbers), path)

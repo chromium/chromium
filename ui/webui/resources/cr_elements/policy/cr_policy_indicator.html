@@ -1,16 +1,5 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="cr_policy_indicator_behavior.html">
-<link rel="import" href="cr_tooltip_icon.html">
-
-<dom-module id="cr-policy-indicator">
-  <template>
     <style include="cr-hidden-style"></style>
     <cr-tooltip-icon hidden$="[[!indicatorVisible]]"
         tooltip-text="[[indicatorTooltip_]]" icon-class="[[indicatorIcon]]"
         icon-aria-label="[[iconAriaLabel]]">
     </cr-tooltip-icon>
-  </template>
-  <script src="cr_policy_indicator.js"></script>
-</dom-module>

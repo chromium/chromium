@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
 
+import org.chromium.base.FeatureList;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.omnibox.SecurityButtonAnimationDelegate;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 /**
- * A delegate class to handle the title animation and security icon fading animation in
+ * A delegate class to handle the title animation and security icon animation in
  * {@link CustomTabToolbar}.
  * <p>
  * How does the title animation work?
@@ -29,14 +32,23 @@ import org.chromium.ui.interpolators.BakedBezierInterpolator;
  * exactly the same as before the relayout. (Note the scale factor is calculated based on
  * {@link TextView#getTextSize()}, not height or width.) 3. Finally the urlbar will be animated to
  * its new position.
+ *
+ * <p>
+ * How does the security button animation work?
+ * </p>
+ * See {@link SecurityButtonAnimationDelegate} and {@link BrandingSecurityButtonAnimationDelegate}.
  */
 class CustomTabToolbarAnimationDelegate {
     private final SecurityButtonAnimationDelegate mSecurityButtonAnimationDelegate;
+    private final BrandingSecurityButtonAnimationDelegate mBrandingAnimationDelegate;
 
     private TextView mUrlBar;
     private TextView mTitleBar;
     // A flag controlling whether the animation has run before.
     private boolean mShouldRunTitleAnimation;
+    private boolean mUseRotationTransition;
+    private @DrawableRes int mSecurityIconRes;
+    private boolean mIsInAnimation;
 
     /**
      * Constructs an instance of {@link CustomTabToolbarAnimationDelegate}.
@@ -48,6 +60,7 @@ class CustomTabToolbarAnimationDelegate {
         titleUrlContainer.setTranslationX(-securityButtonWidth);
         mSecurityButtonAnimationDelegate = new SecurityButtonAnimationDelegate(
                 securityButton, titleUrlContainer, securityStatusIconSize);
+        mBrandingAnimationDelegate = new BrandingSecurityButtonAnimationDelegate(securityButton);
     }
 
     /**
@@ -103,6 +116,7 @@ class CustomTabToolbarAnimationDelegate {
                 mUrlBar.setTranslationX(oldLoc[0] - newLoc[0]);
                 mUrlBar.setTranslationY(oldLoc[1] - newLoc[1]);
 
+                mIsInAnimation = true;
                 mUrlBar.animate()
                         .scaleX(1f)
                         .scaleY(1f)
@@ -118,6 +132,12 @@ class CustomTabToolbarAnimationDelegate {
                                         .setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE)
                                         .setDuration(
                                                 SecurityButtonAnimationDelegate.FADE_DURATION_MS)
+                                        .setListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                mIsInAnimation = false;
+                                            }
+                                        })
                                         .start();
                             }
                         })
@@ -131,7 +151,34 @@ class CustomTabToolbarAnimationDelegate {
      * @param securityIconResource  The updated resource to be assigned to the security status icon.
      * When this is null, the icon is animated to the left and faded out.
      */
-    void updateSecurityButton(int securityIconResource) {
-        mSecurityButtonAnimationDelegate.updateSecurityButton(securityIconResource);
+    void updateSecurityButton(@DrawableRes int securityIconResource) {
+        if (mUseRotationTransition) {
+            mBrandingAnimationDelegate.updateDrawableResource(securityIconResource);
+        } else {
+            boolean isActualResourceChange = true;
+            if (FeatureList.isNativeInitialized()
+                    && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                isActualResourceChange = securityIconResource != mSecurityIconRes;
+            }
+            mSecurityButtonAnimationDelegate.updateSecurityButton(securityIconResource,
+                    /*animate=*/true, isActualResourceChange);
+        }
+        mSecurityIconRes = securityIconResource;
+    }
+
+    void setUseRotationSecurityButtonTransition(boolean useRotation) {
+        mUseRotationTransition = useRotation;
+    }
+
+    /** Returns the resource id for the current icon when in a steady state. */
+    @DrawableRes
+    int getSecurityIconRes() {
+        return mSecurityIconRes;
+    }
+
+    /** Returns whether an animation is currently running. */
+    boolean isInAnimation() {
+        return mIsInAnimation || mBrandingAnimationDelegate.isInAnimation()
+                || mSecurityButtonAnimationDelegate.isInAnimation();
     }
 }

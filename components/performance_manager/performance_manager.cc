@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,14 +58,29 @@ void PerformanceManager::PassToGraph(const base::Location& from_here,
 }
 
 // static
-base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForWebContents(
+base::WeakPtr<PageNode> PerformanceManager::GetPrimaryPageNodeForWebContents(
     content::WebContents* wc) {
   DCHECK(wc);
   PerformanceManagerTabHelper* helper =
       PerformanceManagerTabHelper::FromWebContents(wc);
   if (!helper)
     return nullptr;
-  return helper->page_node()->GetWeakPtrOnUIThread();
+  return helper->primary_page_node()->GetWeakPtrOnUIThread();
+}
+
+// static
+base::WeakPtr<PageNode> PerformanceManager::GetPageNodeForRenderFrameHost(
+    content::RenderFrameHost* rfh) {
+  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+  DCHECK(wc);
+  PerformanceManagerTabHelper* helper =
+      PerformanceManagerTabHelper::FromWebContents(wc);
+  if (!helper)
+    return nullptr;
+  auto* page_node = helper->GetPageNodeForRenderFrameHost(rfh);
+  if (!page_node)
+    return nullptr;
+  return page_node->GetWeakPtrOnUIThread();
 }
 
 // static
@@ -80,8 +95,8 @@ base::WeakPtr<FrameNode> PerformanceManager::GetFrameNodeForRenderFrameHost(
   auto* frame_node = helper->GetFrameNode(rfh);
   if (!frame_node) {
     // This should only happen if GetFrameNodeForRenderFrameHost is called
-    // before the RenderFrameCreate notification is dispatched.
-    DCHECK(!rfh->IsRenderFrameCreated());
+    // before the RenderFrameCreated notification is dispatched.
+    DCHECK(!rfh->IsRenderFrameLive());
     return nullptr;
   }
   return frame_node->GetWeakPtrOnUIThread();

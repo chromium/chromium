@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <map>
 #include <set>
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace execution_context_priority {
@@ -59,9 +58,9 @@ class BoostingVote {
   void Reset();
 
  private:
-  BoostingVoteAggregator* aggregator_ = nullptr;
-  const ExecutionContext* input_execution_context_ = nullptr;
-  const ExecutionContext* output_execution_context_ = nullptr;
+  raw_ptr<BoostingVoteAggregator> aggregator_ = nullptr;
+  raw_ptr<const ExecutionContext> input_execution_context_ = nullptr;
+  raw_ptr<const ExecutionContext> output_execution_context_ = nullptr;
   const char* reason_ = nullptr;
 };
 
@@ -74,6 +73,8 @@ class BoostingVote {
 class BoostingVoteAggregator : public VoteObserver {
  public:
   BoostingVoteAggregator();
+  BoostingVoteAggregator(const BoostingVoteAggregator&) = delete;
+  BoostingVoteAggregator& operator=(const BoostingVoteAggregator&) = delete;
   ~BoostingVoteAggregator() override;
 
   // Both of these must be called in order for the aggregator to be setup
@@ -137,7 +138,7 @@ class BoostingVoteAggregator : public VoteObserver {
     }
     void RemoveIncomingVote() {
       DCHECK(incoming_vote_.has_value());
-      incoming_vote_ = base::nullopt;
+      incoming_vote_ = absl::nullopt;
     }
     // Updates the incoming vote.
     void UpdateIncomingVote(const Vote& incoming_vote) {
@@ -152,7 +153,7 @@ class BoostingVoteAggregator : public VoteObserver {
     }
     void CancelOutgoingVote() {
       DCHECK(outgoing_vote_.has_value());
-      outgoing_vote_ = base::nullopt;
+      outgoing_vote_ = absl::nullopt;
     }
     // Updates the outgoing vote. Returns true if it changed.
     bool UpdateOutgoingVote(const Vote& outgoing_vote) {
@@ -192,10 +193,10 @@ class BoostingVoteAggregator : public VoteObserver {
     size_t edge_count_ = 0;
 
     // The input vote we've received, if any.
-    base::Optional<Vote> incoming_vote_;
+    absl::optional<Vote> incoming_vote_;
 
     // The output vote we're emitted, if any.
-    base::Optional<Vote> outgoing_vote_;
+    absl::optional<Vote> outgoing_vote_;
   };
 
   // NOTE: It is important that NodeDataMap preserve pointers to NodeData
@@ -270,8 +271,9 @@ class BoostingVoteAggregator : public VoteObserver {
     const ExecutionContext* dst() const { return dst_; }
 
    private:
-    const ExecutionContext* src_ = nullptr;
-    const ExecutionContext* dst_ = nullptr;
+    // TODO(crbug.com/1298696): Breaks component_unittests.
+    raw_ptr<const ExecutionContext, DegradeToNoOpWhenMTE> src_ = nullptr;
+    raw_ptr<const ExecutionContext, DegradeToNoOpWhenMTE> dst_ = nullptr;
   };
   using ForwardEdge = Edge<true>;
   using ReverseEdge = Edge<false>;
@@ -397,8 +399,6 @@ class BoostingVoteAggregator : public VoteObserver {
   // NodeData.
   ForwardEdges forward_edges_;
   ReverseEdges reverse_edges_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoostingVoteAggregator);
 };
 
 }  // namespace execution_context_priority

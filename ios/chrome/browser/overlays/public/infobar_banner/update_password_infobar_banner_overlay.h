@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_UPDATE_PASSWORD_INFOBAR_BANNER_OVERLAY_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_BANNER_UPDATE_PASSWORD_INFOBAR_BANNER_OVERLAY_H_
+
+#include <CoreFoundation/CoreFoundation.h>
 
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_user_data.h"
@@ -42,7 +44,7 @@ class UpdatePasswordInfobarBannerOverlayRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s update passwords delegate.
+  // Configuration data extracted from `infobar_`'s update passwords delegate.
   NSString* message_ = nil;
   NSString* username_ = nil;
   NSString* button_text_ = nil;

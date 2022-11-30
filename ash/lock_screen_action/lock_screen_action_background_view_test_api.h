@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_view.h"
-#include "base/macros.h"
 
 namespace views {
 class View;
@@ -24,6 +23,12 @@ class ASH_EXPORT LockScreenActionBackgroundViewTestApi {
   explicit LockScreenActionBackgroundViewTestApi(
       LockScreenActionBackgroundView* action_background_view)
       : action_background_view_(action_background_view) {}
+
+  LockScreenActionBackgroundViewTestApi(
+      const LockScreenActionBackgroundViewTestApi&) = delete;
+  LockScreenActionBackgroundViewTestApi& operator=(
+      const LockScreenActionBackgroundViewTestApi&) = delete;
+
   ~LockScreenActionBackgroundViewTestApi() = default;
 
   views::View* GetBackground() {
@@ -32,8 +37,6 @@ class ASH_EXPORT LockScreenActionBackgroundViewTestApi {
 
  private:
   LockScreenActionBackgroundView* action_background_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundViewTestApi);
 };
 
 }  // namespace ash

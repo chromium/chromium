@@ -1,0 +1,16 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+const std::string Converter::kValueLookupTable[] = {
+  "",  // This is just to fill the zeroth spot. It should not be used.
+{{value_keywords}}
+  "INVALID_VALUE",
+};
+
+const std::string Converter::kPropertyLookupTable[] = {
+  "",  // This is just to fill the zeroth spot. It should not be used.
+{{property_names}}
+  "INVALID_PROPERTY",
+};

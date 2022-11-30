@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/cast/net/pacing/paced_sender.h"
 
 namespace media {
@@ -18,6 +17,10 @@ namespace cast {
 class PacketStorage {
  public:
   PacketStorage();
+
+  PacketStorage(const PacketStorage&) = delete;
+  PacketStorage& operator=(const PacketStorage&) = delete;
+
   virtual ~PacketStorage();
 
   // Store all of the packets for a frame.
@@ -39,8 +42,6 @@ class PacketStorage {
   // The number of frames whose packets have been released, but the entry in the
   // |frames_| queue has not yet been popped.
   size_t zombie_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PacketStorage);
 };
 
 }  // namespace cast

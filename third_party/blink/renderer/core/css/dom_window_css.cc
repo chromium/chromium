@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -54,8 +54,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
     return CSSParser::ParseValueForCustomProperty(
                dummy_style, "--valid", value, false,
                execution_context->GetSecureContextMode(), nullptr,
-               is_animation_tainted)
-        .did_parse;
+               is_animation_tainted) != MutableCSSPropertyValueSet::kParseError;
   }
 
 #if DCHECK_IS_ON()
@@ -67,8 +66,8 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
   auto* dummy_style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   return CSSParser::ParseValue(dummy_style, unresolved_property, value, false,
-                               execution_context)
-      .did_parse;
+                               execution_context) !=
+         MutableCSSPropertyValueSet::kParseError;
 }
 
 bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
@@ -79,7 +78,7 @@ bool DOMWindowCSS::supports(const ExecutionContext* execution_context,
 String DOMWindowCSS::escape(const String& ident) {
   StringBuilder builder;
   SerializeIdentifier(ident, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

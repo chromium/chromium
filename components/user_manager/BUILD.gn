@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,12 +18,14 @@ component("user_manager") {
 
   public_deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/account_id",
     "//ui/gfx",
   ]
 
-  deps = [ "//google_apis" ]
+  deps = [
+    "//components/crash/core/common",
+    "//google_apis",
+  ]
 
   defines = [ "USER_MANAGER_IMPLEMENTATION" ]
 
@@ -36,6 +38,8 @@ component("user_manager") {
       "scoped_user_manager.h",
       "user.cc",
       "user.h",
+      "user_directory_integrity_manager.cc",
+      "user_directory_integrity_manager.h",
       "user_image/user_image.cc",
       "user_image/user_image.h",
       "user_manager.cc",
@@ -71,10 +75,17 @@ if (is_chromeos_ash) {
 
   source_set("unit_tests") {
     testonly = true
-    sources = [ "user_unittest.cc" ]
+    sources = [
+      "known_user_unittest.cc",
+      "user_unittest.cc",
+    ]
     deps = [
+      ":test_support",
       ":user_manager",
+      "//base/test:test_support",
       "//components/account_id",
+      "//components/prefs:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }

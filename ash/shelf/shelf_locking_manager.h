@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,15 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
                                        public LockStateObserver {
  public:
   explicit ShelfLockingManager(Shelf* shelf);
+
+  ShelfLockingManager(const ShelfLockingManager&) = delete;
+  ShelfLockingManager& operator=(const ShelfLockingManager&) = delete;
+
   ~ShelfLockingManager() override;
 
   bool is_locked() const { return session_locked_ || screen_locked_; }
   void set_stored_alignment(ShelfAlignment value) { stored_alignment_ = value; }
+  ShelfAlignment stored_alignment() const { return stored_alignment_; }
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
@@ -39,11 +44,9 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
   Shelf* const shelf_;
   bool session_locked_ = false;
   bool screen_locked_ = false;
-  ShelfAlignment stored_alignment_;
+  ShelfAlignment stored_alignment_ = ShelfAlignment::kBottomLocked;
 
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfLockingManager);
 };
 
 }  // namespace ash

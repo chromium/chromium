@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,9 @@ const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
 
 // Switches the ui compositor to use layer lists instead of layer trees.
 const char kUIEnableLayerLists[] = "ui-enable-layer-lists";
+
+// Enables the resume method on animated images.
+const char kAnimatedImageResume[] = "animated-image-resume";
 
 // Allows scaling clipped images in GpuImageDecodeCache. Note that this may
 // cause color-bleeding.

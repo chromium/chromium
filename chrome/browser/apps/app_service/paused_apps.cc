@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,14 @@ apps::mojom::AppPtr PausedApps::GetAppWithPauseStatus(
   app->app_id = app_id;
   app->paused = (paused) ? apps::mojom::OptionalBool::kTrue
                          : apps::mojom::OptionalBool::kFalse;
+  return app;
+}
+
+AppPtr PausedApps::CreateAppWithPauseStatus(AppType app_type,
+                                            const std::string& app_id,
+                                            bool paused) {
+  auto app = std::make_unique<App>(app_type, app_id);
+  app->paused = paused;
   return app;
 }
 

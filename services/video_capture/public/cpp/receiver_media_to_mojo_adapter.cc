@@ -1,30 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 
+#include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "services/video_capture/public/mojom/scoped_access_permission.mojom.h"
-
-namespace {
-
-class ScopedAccessPermissionMojoToMediaAdapter
-    : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
- public:
-  ScopedAccessPermissionMojoToMediaAdapter(
-      mojo::PendingRemote<video_capture::mojom::ScopedAccessPermission>
-          access_permission)
-      : access_permission_(std::move(access_permission)) {}
-
- private:
-  mojo::Remote<video_capture::mojom::ScopedAccessPermission> access_permission_;
-};
-
-}  // anonymous namespace
 
 namespace video_capture {
+
+namespace {
+void OnFramePropagationComplete(
+    scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote,
+    int32_t buffer_id) {
+  // Notify the VideoFrameAccessHandler that the buffer is no longer valid.
+  (*frame_access_handler_remote)->OnFinishedConsumingBuffer(buffer_id);
+}
+}  // namespace
 
 ReceiverMediaToMojoAdapter::ReceiverMediaToMojoAdapter(
     std::unique_ptr<media::VideoFrameReceiver> receiver)
@@ -38,13 +31,25 @@ void ReceiverMediaToMojoAdapter::OnNewBuffer(
   receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
 }
 
+void ReceiverMediaToMojoAdapter::OnFrameAccessHandlerReady(
+    mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
+        pending_frame_access_handler) {
+  DCHECK(!frame_access_handler_);
+  frame_access_handler_ = base::MakeRefCounted<VideoFrameAccessHandlerRemote>(
+      mojo::Remote<video_capture::mojom::VideoFrameAccessHandler>(
+          std::move(pending_frame_access_handler)));
+}
+
 void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
     mojom::ReadyFrameInBufferPtr buffer,
     std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) {
+  DCHECK(frame_access_handler_);
+
   media::ReadyFrameInBuffer media_buffer(
       buffer->buffer_id, buffer->frame_feedback_id,
-      std::make_unique<ScopedAccessPermissionMojoToMediaAdapter>(
-          std::move(buffer->access_permission)),
+      std::make_unique<media::ScopedFrameDoneHelper>(
+          base::BindOnce(&OnFramePropagationComplete, frame_access_handler_,
+                         buffer->buffer_id)),
       std::move(buffer->frame_info));
 
   std::vector<media::ReadyFrameInBuffer> media_scaled_buffers;
@@ -52,8 +57,9 @@ void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
   for (auto& scaled_buffer : scaled_buffers) {
     media_scaled_buffers.emplace_back(
         scaled_buffer->buffer_id, scaled_buffer->frame_feedback_id,
-        std::make_unique<ScopedAccessPermissionMojoToMediaAdapter>(
-            std::move(scaled_buffer->access_permission)),
+        std::make_unique<media::ScopedFrameDoneHelper>(
+            base::BindOnce(&OnFramePropagationComplete, frame_access_handler_,
+                           scaled_buffer->buffer_id)),
         std::move(scaled_buffer->frame_info));
   }
   receiver_->OnFrameReadyInBuffer(std::move(media_buffer),
@@ -71,6 +77,14 @@ void ReceiverMediaToMojoAdapter::OnError(media::VideoCaptureError error) {
 void ReceiverMediaToMojoAdapter::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   receiver_->OnFrameDropped(reason);
+}
+
+void ReceiverMediaToMojoAdapter::OnNewCropVersion(uint32_t crop_version) {
+  receiver_->OnNewCropVersion(crop_version);
+}
+
+void ReceiverMediaToMojoAdapter::OnFrameWithEmptyRegionCapture() {
+  receiver_->OnFrameWithEmptyRegionCapture();
 }
 
 void ReceiverMediaToMojoAdapter::OnLog(const std::string& message) {

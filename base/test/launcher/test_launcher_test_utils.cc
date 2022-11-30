@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -17,11 +17,11 @@ namespace test_launcher_utils {
 
 namespace {
 
-// Helper function to return |Value::FindStringKey| by value instead of
+// Helper function to return |Value::Dict::FindString| by value instead of
 // pointer to string, or empty string if nullptr.
-std::string FindStringKeyOrEmpty(const Value& dict_value,
+std::string FindStringKeyOrEmpty(const Value::Dict& dict,
                                  const std::string& key) {
-  const std::string* value = dict_value.FindStringKey(key);
+  const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
@@ -39,10 +39,10 @@ const testing::TestCase* GetTestCase(const std::string& test_case_name) {
 
 }  // namespace
 
-bool ValidateKeyValue(const Value& dict_value,
+bool ValidateKeyValue(const Value::Dict& dict,
                       const std::string& key,
                       const std::string& expected_value) {
-  std::string actual_value = FindStringKeyOrEmpty(dict_value, key);
+  std::string actual_value = FindStringKeyOrEmpty(dict, key);
   bool result = !actual_value.compare(expected_value);
   if (!result)
     ADD_FAILURE() << key << " expected value: " << expected_value
@@ -50,10 +50,10 @@ bool ValidateKeyValue(const Value& dict_value,
   return result;
 }
 
-bool ValidateKeyValue(const Value& dict_value,
+bool ValidateKeyValue(const Value::Dict& dict,
                       const std::string& key,
                       int64_t expected_value) {
-  int actual_value = dict_value.FindIntKey(key).value_or(0);
+  int actual_value = dict.FindInt(key).value_or(0);
   bool result = (actual_value == expected_value);
   if (!result)
     ADD_FAILURE() << key << " expected value: " << expected_value
@@ -61,44 +61,59 @@ bool ValidateKeyValue(const Value& dict_value,
   return result;
 }
 
-bool ValidateTestResult(const Value* iteration_data,
+bool ValidateTestResult(const Value::Dict& iteration_data,
                         const std::string& test_name,
                         const std::string& status,
-                        size_t result_part_count) {
-  const Value* results = iteration_data->FindListKey(test_name);
+                        size_t result_part_count,
+                        bool have_running_info) {
+  const Value::List* results = iteration_data.FindList(test_name);
   if (!results) {
     ADD_FAILURE() << "Cannot find result";
     return false;
   }
-  if (1u != results->GetList().size()) {
+  if (1u != results->size()) {
     ADD_FAILURE() << "Expected one result";
     return false;
   }
 
-  const Value& val = results->GetList()[0];
-  if (!val.is_dict()) {
+  const Value::Dict* dict = (*results)[0].GetIfDict();
+  if (!dict) {
     ADD_FAILURE() << "Value must be of type DICTIONARY";
     return false;
   }
 
-  if (!ValidateKeyValue(val, "status", status))
+  if (!ValidateKeyValue(*dict, "status", status))
     return false;
 
-  const Value* value = val.FindListKey("result_parts");
-  if (!value) {
+  // Verify the keys that only exists when have_running_info, if the test didn't
+  // run, it wouldn't have these information.
+  for (auto* key : {"process_num", "thread_id", "timestamp"}) {
+    bool have_key = dict->Find(key);
+    if (have_running_info && !have_key) {
+      ADD_FAILURE() << "Result must contain '" << key << "' key";
+      return false;
+    }
+    if (!have_running_info && have_key) {
+      ADD_FAILURE() << "Result shouldn't contain '" << key << "' key";
+      return false;
+    }
+  }
+
+  const Value::List* list = dict->FindList("result_parts");
+  if (!list) {
     ADD_FAILURE() << "Result must contain 'result_parts' key";
     return false;
   }
 
-  if (result_part_count != value->GetList().size()) {
+  if (result_part_count != list->size()) {
     ADD_FAILURE() << "result_parts count expected: " << result_part_count
-                  << ", actual:" << value->GetList().size();
+                  << ", actual:" << list->size();
     return false;
   }
   return true;
 }
 
-bool ValidateTestLocations(const Value* test_locations,
+bool ValidateTestLocations(const Value::Dict& test_locations,
                            const std::string& test_case_name) {
   const testing::TestCase* test_case = GetTestCase(test_case_name);
   if (test_case == nullptr) {
@@ -116,28 +131,32 @@ bool ValidateTestLocations(const Value* test_locations,
   return result;
 }
 
-bool ValidateTestLocation(const Value* test_locations,
+bool ValidateTestLocation(const Value::Dict& test_locations,
                           const std::string& test_name,
                           const std::string& file,
                           int line) {
-  const Value* val = test_locations->FindDictKey(test_name);
-  if (!val) {
+  const Value::Dict* dict =
+      test_locations.FindDict(TestNameWithoutDisabledPrefix(test_name));
+  if (!dict) {
     ADD_FAILURE() << "|test_locations| missing location for " << test_name;
     return false;
   }
 
-  bool result = ValidateKeyValue(*val, "file", file);
-  result &= ValidateKeyValue(*val, "line", line);
+  bool result = ValidateKeyValue(*dict, "file", file);
+  result &= ValidateKeyValue(*dict, "line", line);
   return result;
 }
 
-Optional<Value> ReadSummary(const FilePath& path) {
-  Optional<Value> result;
+absl::optional<Value::Dict> ReadSummary(const FilePath& path) {
+  absl::optional<Value::Dict> result;
   File resultFile(path, File::FLAG_OPEN | File::FLAG_READ);
   const int size = 2e7;
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
-  result = JSONReader::Read(json);
+  absl::optional<Value> value = JSONReader::Read(json);
+  if (value && value->is_dict())
+    result = std::move(*value).TakeDict();
+
   return result;
 }
 

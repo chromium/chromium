@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL FetchEvent#request.isReloadNavigation is true for manual reload. assert_equals: expected "method = GET, isReloadNavigation = false" but got "method = GET, isReloadNavigation = undefined"
-Harness: the test ran to completion.
-

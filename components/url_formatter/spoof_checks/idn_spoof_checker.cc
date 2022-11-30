@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
+#include "base/bits.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,19 +27,10 @@ namespace url_formatter {
 
 namespace {
 
-uint8_t BitLength(uint32_t input) {
-  uint8_t number_of_bits = 0;
-  while (input != 0) {
-    number_of_bits++;
-    input >>= 1;
-  }
-  return number_of_bits;
-}
-
 class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
  public:
   using net::extras::PreloadDecoder::PreloadDecoder;
-  ~TopDomainPreloadDecoder() override {}
+  ~TopDomainPreloadDecoder() override = default;
 
   bool ReadEntry(net::extras::PreloadDecoder::BitReader* reader,
                  const std::string& search,
@@ -45,8 +38,9 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
                  bool* out_found) override {
     // Make sure the assigned bit length is enough to encode all SkeletonType
     // values.
-    DCHECK_EQ(kSkeletonTypeBitLength,
-              BitLength(url_formatter::SkeletonType::kMaxValue));
+    DCHECK_EQ(
+        kSkeletonTypeBitLength,
+        base::bits::Log2Floor(url_formatter::SkeletonType::kMaxValue) + 1);
 
     bool is_same_skeleton;
 
@@ -291,7 +285,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
   // The ideal fix would be to change the omnibox font used for Thai. In
   // that case, the Linux-only list should be revisited and potentially
   // removed.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
        "[ทนบพรหเแ๐ดลปฟม]",
 #else
        "[บพเแ๐]",
@@ -323,10 +317,12 @@ IDNSpoofChecker::IDNSpoofChecker() {
 
   // These characters are, or look like, digits. A domain label entirely made of
   // digit-lookalikes or digits is blocked.
+  // IMPORTANT: When you add a new character here, make sure to add it to
+  // extra_confusable_mapper_ in skeleton_generator.cc too.
   digits_ = icu::UnicodeSet(UNICODE_STRING_SIMPLE("[0-9]"), status);
   digits_.freeze();
   digit_lookalikes_ = icu::UnicodeSet(
-      icu::UnicodeString::fromUTF8("[θ२২੨੨૨೩೭շзҙӡउওਤ੩૩౩ဒვპੜ੫丩ㄐճ৪੪୫૭୨౨]"),
+      icu::UnicodeString::fromUTF8("[θ२২੨੨૨೩೭շзҙӡउওਤ੩૩౩ဒვპੜკ੫丩ㄐճ৪੪୫૭୨౨]"),
       status);
   digit_lookalikes_.freeze();
 
@@ -423,6 +419,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
       }
     }
     // Disallow domains that contain only numbers and number-spoofs.
+    // This check is reached if domain characters come from single script.
     if (IsDigitLookalike(label_string))
       return Result::kDigitLookalikes;
 
@@ -430,6 +427,10 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
+  // This check is reached if domain characters are from different scripts.
+  // This is generally rare. An example case when it would return true is when
+  // the domain contains Latin + Japanese characters that are also digit
+  // lookalikes.
   if (IsDigitLookalike(label_string))
     return Result::kDigitLookalikes;
 
@@ -439,7 +440,8 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // label is made of Latin. Checking with lgc_letters set here should be fine
   // because script mixing of LGC is already rejected.
   if (non_ascii_latin_letters_.containsSome(label_string) &&
-      !skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string)) {
+      !(skeleton_generator_ &&
+        skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string))) {
     return Result::kNonAsciiLatinCharMixedWithNonLatin;
   }
 
@@ -560,8 +562,6 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
 }
 
 Skeletons IDNSpoofChecker::GetSkeletons(base::StringPiece16 hostname) const {
-  // skeleton_generator_ may be null if uspoof_open fails. It's unclear why this
-  // happens, see crbug.com/1169079.
   return skeleton_generator_ ? skeleton_generator_->GetSkeletons(hostname)
                              : Skeletons();
 }
@@ -602,6 +602,30 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
     labels.erase(labels.begin());
   }
   return TopDomainEntry();
+}
+
+std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
+    const std::u16string& hostname) {
+  return skeleton_generator_
+             ? skeleton_generator_->MaybeRemoveDiacritics(hostname)
+             : hostname;
+}
+
+IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
+    base::StringPiece16 hostname) const {
+  if (hostname.find(u"\u00df") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kEszett;
+  }
+  if (hostname.find(u"\u03c2") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kGreekFinalSigma;
+  }
+  if (hostname.find(u"\u200d") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kZeroWidthJoiner;
+  }
+  if (hostname.find(u"\u200c") != base::StringPiece16::npos) {
+    return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
+  }
+  return IDNA2008DeviationCharacter::kNone;
 }
 
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
@@ -662,7 +686,7 @@ void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
   // No need to block U+144A (Canadian Syllabics West-Cree P) separately
   // because it's blocked from mixing with other scripts including Latin.
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // The following characters are reported as present in the default macOS
   // system UI font, but they render as blank. Remove them from the allowed
   // set to prevent spoofing until the font issue is resolved.

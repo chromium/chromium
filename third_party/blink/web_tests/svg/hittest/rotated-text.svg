@@ -1,4 +1,4 @@
-<svg onload="runTest()" width="500" height="150" viewBox="0 0 500 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg onload="runTest()" width="1000" height="300" viewBox="0 0 500 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <script src="../../resources/ahem.js"></script>
     <rect id="background" width="100%" height="100%" fill="blue" />
     <text id="upright" x="1em" y="1em">A B</text>
@@ -14,6 +14,10 @@
         </style>
         <script type="text/javascript">
         <![CDATA[
+            function elementFromPoint(x, y) {
+                return document.elementFromPoint(x * 2, y * 2);
+            }
+
             function runTest() {
                 if (window.testRunner)
                     testRunner.dumpAsText();
@@ -23,18 +27,18 @@
                 var background = document.getElementById("background");
 
                 // (135,25) is within a glyph cell of #upright, (165,25) is not.
-                if (document.elementFromPoint(135, 25) === uprightText && document.elementFromPoint(165, 25) === background)
+                if (elementFromPoint(135, 25) === uprightText && elementFromPoint(165, 25) === background)
                     uprightText.textContent = "PASS";
                 else
                     uprightText.textContent = "FAIL";
 
                 // (45,100) and (150,110) are both outside the rotated glyph cells of #rotated.
                 // (60,140), (125,110), and (220,110) are all inside the rotated glyph cells of #rotated.
-                if (document.elementFromPoint(45, 100) === background
-                        && document.elementFromPoint(150, 110) === background
-                        && document.elementFromPoint(60, 140) === rotatedText
-                        && document.elementFromPoint(125, 110) === rotatedText
-                        && document.elementFromPoint(220, 110) === rotatedText)
+                if (elementFromPoint(45, 100) === background
+                        && elementFromPoint(150, 110) === background
+                        && elementFromPoint(60, 140) === rotatedText
+                        && elementFromPoint(125, 110) === rotatedText
+                        && elementFromPoint(220, 110) === rotatedText)
                     rotatedText.textContent = "PASS";
                 else
                     rotatedText.textContent = "FAIL";

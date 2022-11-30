@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -121,7 +121,7 @@ class TwoKeysAdapterMap {
   size_t PrimarySize() const { return entries_by_primary_.size(); }
   // The number of elements in the map which have secondary keys.
   size_t SecondarySize() const { return entries_by_secondary_.size(); }
-  bool empty() const { return entries_by_primary_.IsEmpty(); }
+  bool empty() const { return entries_by_primary_.empty(); }
 
  private:
   struct Entry {
@@ -140,8 +140,8 @@ class TwoKeysAdapterMap {
 
     // However, for |secondary_key|, calling EraseByPrimaryKey() can
     // read an uninitialized secondary_key in case it is left uninitialized.
-    // Hence, it is guarded with base::Optional.
-    base::Optional<SecondaryKey> secondary_key;
+    // Hence, it is guarded with absl::optional.
+    absl::optional<SecondaryKey> secondary_key;
   };
 
   using PrimaryMap = WTF::HashMap<PrimaryKey, std::unique_ptr<Entry>>;

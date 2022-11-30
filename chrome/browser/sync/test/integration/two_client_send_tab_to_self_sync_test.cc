@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_bridge.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -32,10 +31,12 @@ class TwoClientSendTabToSelfSyncTest : public SyncTest {
  public:
   TwoClientSendTabToSelfSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientSendTabToSelfSyncTest() override {}
+  TwoClientSendTabToSelfSyncTest(const TwoClientSendTabToSelfSyncTest&) =
+      delete;
+  TwoClientSendTabToSelfSyncTest& operator=(
+      const TwoClientSendTabToSelfSyncTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientSendTabToSelfSyncTest);
+  ~TwoClientSendTabToSelfSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -44,7 +45,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const base::Time kHistoryEntryTime = base::Time::Now();
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
-  const base::Time kTime = base::Time::FromDoubleT(1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -61,8 +61,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));
@@ -75,17 +74,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
                        ModelsMatchAfterAddWhenBothClientsAlreadySyncing) {
   const GURL kGurl0("https://www.example0.com");
   const std::string kTitle0("example0");
-  const base::Time kTime0 = base::Time::FromDoubleT(1);
   const std::string kTargetDeviceSyncCacheGuid0("target0");
 
   const GURL kGurl1("https://www.example1.com");
   const std::string kTitle1("example1");
-  const base::Time kTime1 = base::Time::FromDoubleT(2);
   const std::string kTargetDeviceSyncCacheGuid1("target1");
 
   const GURL kGurl2("https://www.example2.com");
   const std::string kTitle2("example2");
-  const base::Time kTime2 = base::Time::FromDoubleT(3);
   const std::string kTargetDeviceSyncCacheGuid2("target2");
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -94,16 +90,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kGurl0, kTitle0, kTime0, kTargetDeviceSyncCacheGuid0));
+  ASSERT_TRUE(model0->AddEntry(kGurl0, kTitle0, kTargetDeviceSyncCacheGuid0));
 
-  ASSERT_TRUE(
-      model0->AddEntry(kGurl1, kTitle1, kTime1, kTargetDeviceSyncCacheGuid1));
+  ASSERT_TRUE(model0->AddEntry(kGurl1, kTitle1, kTargetDeviceSyncCacheGuid1));
 
-  ASSERT_TRUE(
-      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetSendTabToSelfModel()
-          ->AddEntry(kGurl2, kTitle2, kTime2, kTargetDeviceSyncCacheGuid2));
+  ASSERT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->AddEntry(kGurl2, kTitle2, kTargetDeviceSyncCacheGuid2));
 
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfModelEqualityChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1)),
@@ -117,22 +110,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, IsActive) {
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfActiveChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)))
                   .Wait());
-  EXPECT_TRUE(send_tab_to_self::IsUserSyncTypeActive(GetProfile(0)));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, HasValidTargetDevice) {
-  ASSERT_TRUE(SetupSync());
-
-  static_cast<send_tab_to_self::SendTabToSelfBridge*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
-          ->GetSendTabToSelfModel())
-      ->SetLocalDeviceNameForTest("device1");
-  static_cast<send_tab_to_self::SendTabToSelfBridge*>(
-      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetSendTabToSelfModel())
-      ->SetLocalDeviceNameForTest("device2");
-
-  EXPECT_TRUE(send_tab_to_self::HasValidTargetDevice(GetProfile(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -161,35 +138,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
-                       SendTabToSelfReceivingDisabled) {
-  ASSERT_TRUE(SetupSync());
-  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs);
-
-  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
-      ->GetDeviceInfoTracker()
-      ->ForcePulseForTest();
-
-  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfDeviceDisabledChecker(
-                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-                      ->GetDeviceInfoTracker(),
-                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
-                      ->GetLocalDeviceInfoProvider()
-                      ->GetLocalDeviceInfo()
-                      ->guid())
-                  .Wait());
-
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
-      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetDeviceInfoTracker()
-          ->GetAllDeviceInfo();
-  EXPECT_EQ(2u, device_infos.size());
-
-  EXPECT_NE(device_infos[0]->send_tab_to_self_receiving_enabled(),
-            device_infos[1]->send_tab_to_self_receiving_enabled());
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
-                       SendTabToSelfTargetDeviceMap) {
+                       SendTabToSelfTargetDeviceInfoList) {
   ASSERT_TRUE(SetupSync());
 
   DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
@@ -207,6 +156,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   // Explicitly set the two profiles to have different client names to simulate
   // them being on different devices. Otherwise their device infos will get
   // deduped.
+  // TODO(crbug.com/1257573): This is rather misleading. The "device1"/"device2"
+  // strings below are never sent to the server, they just ensure the local
+  // device name is different from the other entry. The same string could even
+  // be used in both calls. The most robust test would be: update the device
+  // info name and wait for the right value of GetTargetDeviceInfoSortedList().
   static_cast<send_tab_to_self::SendTabToSelfBridge*>(
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel())
@@ -216,17 +170,31 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
           ->GetSendTabToSelfModel())
       ->SetLocalDeviceNameForTest("device2");
 
-  std::vector<send_tab_to_self::TargetDeviceInfo> profile1_target_device_map =
+  // Emulate a device info update to force the target device list to refresh.
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+
+  std::vector<send_tab_to_self::TargetDeviceInfo> profile1_target_devices =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetSendTabToSelfModel()
           ->GetTargetDeviceInfoSortedList();
-  std::vector<send_tab_to_self::TargetDeviceInfo> profile2_target_device_map =
+  std::vector<send_tab_to_self::TargetDeviceInfo> profile2_target_devices =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
           ->GetSendTabToSelfModel()
           ->GetTargetDeviceInfoSortedList();
 
-  EXPECT_EQ(1u, profile1_target_device_map.size());
-  EXPECT_EQ(1u, profile2_target_device_map.size());
+  EXPECT_EQ(1u, profile1_target_devices.size());
+  EXPECT_EQ(1u, profile2_target_devices.size());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -235,7 +203,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   const base::Time kHistoryEntryTime = base::Time::Now();
   const std::string kTitle("example");
   const std::string kTargetDeviceSyncCacheGuid("target_device");
-  const base::Time kTime = base::Time::FromDoubleT(1);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -254,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   send_tab_to_self::SendTabToSelfModel* model0 =
       service0->GetSendTabToSelfModel();
 
-  ASSERT_TRUE(
-      model0->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
+  ASSERT_TRUE(model0->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid));
 
   send_tab_to_self::SendTabToSelfSyncService* service1 =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1));
@@ -272,15 +238,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
           .Wait());
 }
 
-class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
+class TwoClientSendTabToSelfWithTransportModeSyncTest
     : public TwoClientSendTabToSelfSyncTest {
  public:
-  TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() {
-    feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfWhenSignedIn);
-  }
-  ~TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() override =
-      default;
+  TwoClientSendTabToSelfWithTransportModeSyncTest() = default;
+  ~TwoClientSendTabToSelfWithTransportModeSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     TwoClientSendTabToSelfSyncTest::SetUpInProcessBrowserTestFixture();
@@ -288,31 +250,20 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
 
- protected:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
 // Non-primary accounts don't exist on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1166032): Test times out in component builds.
-#if defined(COMPONENT_BUILD)
-#define MAYBE_SignedInClientCanReceive DISABLED_SignedInClientCanReceive
-#else
-#define MAYBE_SignedInClientCanReceive SignedInClientCanReceive
-#endif
 
-IN_PROC_BROWSER_TEST_F(
-    TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn,
-    MAYBE_SignedInClientCanReceive) {
+IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
+                       SignedInClientCanReceive) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Set up one client syncing and the other signed-in but not syncing.
   GetClient(0)->SetupSync();
-  secondary_account_helper::SignInSecondaryAccount(
+  secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(1), &test_url_loader_factory_, "user@g.com");
   GetClient(1)->AwaitSyncTransportActive();
 
@@ -336,4 +287,5 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
   EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
 }
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

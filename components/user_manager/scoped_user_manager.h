@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/user_manager/user_manager_export.h"
 
 namespace user_manager {
@@ -21,13 +21,15 @@ class UserManager;
 class USER_MANAGER_EXPORT ScopedUserManager {
  public:
   explicit ScopedUserManager(std::unique_ptr<UserManager> user_manager);
+
+  ScopedUserManager(const ScopedUserManager&) = delete;
+  ScopedUserManager& operator=(const ScopedUserManager&) = delete;
+
   ~ScopedUserManager();
 
  private:
   const std::unique_ptr<UserManager> user_manager_;
-  UserManager* previous_user_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUserManager);
+  raw_ptr<UserManager> previous_user_manager_ = nullptr;
 };
 
 }  // namespace user_manager

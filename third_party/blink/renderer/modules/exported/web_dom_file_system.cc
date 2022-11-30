@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/modules/filesystem/directory_entry.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry.h"
+#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "v8/include/v8.h"
 
@@ -118,7 +119,8 @@ v8::Local<v8::Value> WebDOMFileSystem::ToV8Value(
     v8::Isolate* isolate) {
   // We no longer use |creationContext| because it's often misused and points
   // to a context faked by user script.
-  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  DCHECK(creation_context->GetCreationContextChecked() ==
+         isolate->GetCurrentContext());
   if (!private_.Get())
     return v8::Local<v8::Value>();
   return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);
@@ -131,7 +133,8 @@ v8::Local<v8::Value> WebDOMFileSystem::CreateV8Entry(
     v8::Isolate* isolate) {
   // We no longer use |creationContext| because it's often misused and points
   // to a context faked by user script.
-  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  DCHECK(creation_context->GetCreationContextChecked() ==
+         isolate->GetCurrentContext());
   if (!private_.Get())
     return v8::Local<v8::Value>();
   if (entry_type == kEntryTypeDirectory) {

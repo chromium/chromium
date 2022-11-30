@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_MULTIPART_IMAGE_RESOURCE_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_MULTIPART_IMAGE_RESOURCE_PARSER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -64,6 +64,9 @@ class CORE_EXPORT MultipartImageResourceParser final
   MultipartImageResourceParser(const ResourceResponse&,
                                const Vector<char>& boundary,
                                Client*);
+  MultipartImageResourceParser(const MultipartImageResourceParser&) = delete;
+  MultipartImageResourceParser& operator=(const MultipartImageResourceParser&) =
+      delete;
   void AppendData(const char* bytes, wtf_size_t);
   void Finish();
   void Cancel() { is_cancelled_ = true; }
@@ -96,8 +99,6 @@ class CORE_EXPORT MultipartImageResourceParser final
   bool is_parsing_headers_ = false;
   bool saw_last_boundary_ = false;
   bool is_cancelled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MultipartImageResourceParser);
 };
 
 }  // namespace blink

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@macro/default_icon_color">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M18.09,8L18.09,4.2h1.71v4.67h-1.71L18.09,8ZM18.09,11.8h1.71v-1.73h-1.71v1.73ZM11.66,13.13c2.29,0 6.85,1.16 6.85,3.47v2.6L4.8,19.2v-2.6c0,-2.3 4.57,-3.47 6.86,-3.47ZM11.66,5.33c0.9,0 1.78,0.37 2.42,1.02a3.49,3.49 0,0 1,-2.42 5.92c-0.91,0 -1.78,-0.37 -2.43,-1.02a3.49,3.49 0,0 1,2.43 -5.92ZM11.66,14.78c-2.55,0 -5.23,1.27 -5.23,1.82v0.95h10.46v-0.95c0,-0.55 -2.69,-1.82 -5.23,-1.82ZM11.66,6.98c-0.48,0 -0.94,0.2 -1.28,0.53a1.83,1.83 0,0 0,1.28 3.11c0.47,0 0.93,-0.2 1.27,-0.53a1.83,1.83 0,0 0,-1.27 -3.11Z"/>
+</vector>

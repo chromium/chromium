@@ -1,0 +1,994 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of UMA histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="PersistentAllocatorType">
+  <variant name="BrowserMetrics" summary="For browser process metrics."/>
+  <variant name="CrashpadMetrics" summary="For metrics from Crashpad."/>
+  <variant name="FieldTrialAllocator" summary="For field-trial allocator."/>
+  <variant name="GpuMetrics" summary="For GPU process metrics."/>
+  <variant name="NotificationHelperMetrics"
+      summary="For notification_helper process metrics."/>
+  <variant name="PpapiBrokerMetrics"
+      summary="For &quot;PPAPI broker&quot; process metrics."/>
+  <variant name="PpapiPluginMetrics"
+      summary="For &quot;PPAPI plugin&quot; process metrics."/>
+  <variant name="RendererMetrics" summary="For renderer process metrics."/>
+  <variant name="SandboxHelperMetrics"
+      summary="For &quot;sandbox helper&quot; process metrics."/>
+  <variant name="SetupMetrics" summary="For setup metrics."/>
+  <variant name="UtilityMetrics"
+      summary="For &quot;utility&quot; process metrics."/>
+  <variant name="ZygoteMetrics"
+      summary="For &quot;zygote&quot; process metrics."/>
+</variants>
+
+<histogram name="Histogram.BadConstructionArguments" enum="HistogramNameHash"
+    expires_after="never">
+<!-- expires-never: Needed for tracking missing histogram data. -->
+
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The hash codes of histograms that were found to have bad construction
+    arguments. These would be DCHECK exceptions in debug builds but have simply
+    been logged and corrected as best as possible rather than crash.
+  </summary>
+</histogram>
+
+<histogram name="Histogram.MismatchedConstructionArguments"
+    enum="HistogramNameHash" expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The hash codes of histograms that were found to have construction arguments
+    different from a previous instantiation of the same name. Entries here have
+    conflicting definitions and should be investigated. Data collected for the
+    secondary definitions will be silently dropped.
+  </summary>
+</histogram>
+
+<histogram name="Histogram.TooManyBuckets.1000" enum="HistogramNameHash"
+    expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The hash codes of histograms that were found to request more than 1000
+    buckets. These would be DCHECK exceptions in debug builds if the limit is
+    lowered so are being logged before that change.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ActualLogUploadInterval" units="minutes"
+    expires_after="2023-02-12">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The actual interval between log upload start and previous log upload
+    finished within the same process. A value of 0 indicates there was no
+    previous upload. Prior to M71, logging for this metric was broken.
+  </summary>
+</histogram>
+
+<histogram name="UMA.AntiVirusMetricsProvider.Result"
+    enum="AntiVirusMetricsProviderResult" expires_after="never">
+<!-- expires-never: needed to proactively diagnose changes in the Windows API used here. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the result of the attempt to enumerate the installed AntiVirus on
+    the machine. This is recorded once during metrics initialization.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeacon.BeaconFileConsistency"
+    enum="UmaCleanExitConsistency2" expires_after="2023-05-31">
+  <obsolete>
+    Removed in M105.
+  </obsolete>
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The combined state of distinct beacons stored in the beacon file and in
+    Local State. Emitted once during startup when the CleanExitBeacon is
+    initialized.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeacon.MonitoringStage"
+    enum="BeaconMonitoringStage" expires_after="2022-10-04">
+  <obsolete>
+    Removed in M104.
+  </obsolete>
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The stage during which Chrome was monitoring for browser crashes via the
+    CleanExitBeacon when Chrome failed to exit cleanly. As a result of the
+    Extended Variations Safe Mode work, Chrome monitors earlier on in startup
+    for crashes. This metric allows early crashes detected due to this work to
+    be distinguished from crashes that the original Variations Safe Mode could
+    detect. Emitted during startup when the CleanExitBeacon is initialized.
+
+    Note that the status quo monitoring stage refers to when crash monitoring
+    would start in the absence of the new Extended Variations Safe Mode
+    behavior, which (a) is later on in startup and (b) depends on the platform.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeaconConsistency2"
+    enum="UmaCleanExitConsistency2" expires_after="2023-05-31">
+  <obsolete>
+    Removed in M105.
+  </obsolete>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when the CleanExitBeacon is initialized on Windows and iOS. Reports
+    the combined state of distinct beacons stored in a platform-specific
+    location (e.g. the Windows registry or NSUserDefaults on iOS) and in Local
+    State. They are normally expected to be identical.
+
+    Unlike its predecessor, UMA.CleanExitBeaconConsistency, this histogram has
+    buckets that account for the situation in which Local State is missing a
+    beacon value.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeaconConsistency3"
+    enum="UmaCleanExitConsistency3" expires_after="2023-05-31">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The combined state of distinct beacons stored in the beacon file and in a
+    platform-specific location (e.g. the Windows registry or NSUserDefaults on
+    iOS). They are normally expected to be identical. Recorded when the
+    CleanExitBeacon is initialized on Windows and iOS.
+
+    Unlike UMA.CleanExitBeaconConsistency2, this histogram excludes the Local
+    State beacon.
+
+    As of M102 for desktop and iOS and M103 for Android Chrome, any client may
+    emit this metric. Prior to this, the metric was emitted by only clients in
+    an enabled group that used the beacon file.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ClientIdBackupRecoveredWithAge" units="hours"
+    expires_after="2023-02-12">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when we are somehow missing the client ID stored in Local State yet
+    are able to recover it from a backup location along with the backed up
+    installation date. This report carries the age in hours of the recovered
+    client id.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2023-02-19">
+  <owner>pdyson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when the client id is cleared due to the device opting out of UMA
+    metrics.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ClientIdSource" enum="ClientIdSource"
+    expires_after="2023-02-12">
+  <owner>pdyson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>The source of the client id when its creation is forced.</summary>
+</histogram>
+
+<histogram name="UMA.CrosPerUser.DaemonStoreWriteFailed"
+    enum="PerUserDaemonStoreFail" expires_after="2023-02-12">
+  <owner>jongahn@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the status of writing the per-user metrics state to daemon-store (or
+    the boot state to /home/chronos/). Written on login or logout, and when a
+    user changes their consent state.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CrosPerUser.IdReset" enum="PerUserIdType"
+    expires_after="2023-02-12">
+  <owner>jongahn@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Counts the number of times an ID was reset. The client ID is reset when a
+    known user who has sent metrics before re-enables metrics collection. This
+    is to preserve pseudo-anonymity of the (client_id, user_id) pair. The user
+    ID is reset whenever per-user eligible user turns off metrics collection.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CrosPerUser.UserLogStoreState" enum="PerUserLogStoreState"
+    expires_after="2023-02-12">
+  <owner>jongahn@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Records the state that metrics service is in when user log store was set or
+    unset. This should be recorded once when a valid user that can use per-user
+    logs in and unsetting should be recorded once when a user logs out.
+  </summary>
+</histogram>
+
+<histogram name="UMA.DataValidation.LogNormal" units="random values"
+    expires_after="never">
+<!-- expires-never: needed for ensuring correct UMA operation -->
+
+  <owner>sweilun@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This is logged with a random value drawn from an artificial log normal
+    distribution in every ongoing metrics logs (not logs about the previous
+    session) and used for data validation. The mean and standard deviation
+    parameters of the log normal distribution are controlled by artificial A/B
+    experiments so that we can assess the accuracy and power of data from field
+    trials.
+  </summary>
+</histogram>
+
+<histogram name="UMA.EnrollmentStatus" enum="EnrollmentStatus"
+    expires_after="never">
+<!-- expires-never: used internally for filtering -->
+
+  <owner>asvitkine@chromium.org</owner>
+  <owner>kaznacheev@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logs the device enrollment status for Chrome OS device. Logged with every
+    UMA upload.
+  </summary>
+</histogram>
+
+<histogram name="UMA.EntropySourceType" enum="UmaEntropySourceType"
+    expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logs the entropy source type that was used for field trial randomization.
+    Logged once at each start up.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ExternalExperiment.GroupCount" units="groups"
+    expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged on Android whenever an external experiment is registered. The logged
+    value is the number of groups in the experiment. This will not be logged at
+    all if there are no external experiments, but will be logged on group
+    transitions (e.g. when going from 1 to 0 groups).
+  </summary>
+</histogram>
+
+<histogram name="UMA.FileMetricsProvider.AccessResult"
+    enum="FileMetricsProviderAccessResult" expires_after="2022-12-04">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records attempts to access a file for the purpose of extracting metrics.
+  </summary>
+</histogram>
+
+<histogram name="UMA.FileMetricsProvider.InitialAccessResult"
+    enum="FileMetricsProviderAccessResult" expires_after="2023-04-04">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records attempts to access a file for the purpose of extracting initial
+    stability metrics.
+  </summary>
+</histogram>
+
+<histogram name="UMA.InitSequence" enum="UmaInitSequence"
+    expires_after="2023-04-09">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged during MetricsService initialization whether the init task or the
+    initial log timer completed first. The expectation is the vast majority of
+    the time, the init task should complete first. If metrics show otherwise,
+    then it may indicate there's a bug in the MetricsService init sequence and
+    that it should be investigated.
+  </summary>
+</histogram>
+
+<histogram name="UMA.IsClonedInstall" enum="BooleanCloned"
+    expires_after="2023-02-12">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This is logged with a value of true in every log when the UMA client code
+    has detected that this is a potentially cloned install and has set the pref
+    to reset its UMA client id on the next startup.
+  </summary>
+</histogram>
+
+<histogram name="UMA.JavaCachingRecorder.DroppedHistogramSampleCount"
+    units="samples" expires_after="2023-02-26">
+  <owner>bttk@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of histogram samples that were not recorded when flushing due to
+    cache size limits in the Java in-memory cache. There are separate limits on
+    the number of cached histograms, and the number of samples in a histogram.
+  </summary>
+</histogram>
+
+<histogram name="UMA.JavaCachingRecorder.DroppedUserActionCount"
+    units="samples" expires_after="2023-02-26">
+  <owner>bttk@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of user actions that were not recorded when flushing due to a cache
+    size limit in Java the in-memory cache.
+  </summary>
+</histogram>
+
+<histogram name="UMA.JavaCachingRecorder.FlushedHistogramCount"
+    units="histograms" expires_after="2022-03-21">
+  <owner>bttk@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of histograms recorded when flushing the Java in-memory cache.
+  </summary>
+</histogram>
+
+<histogram name="UMA.JavaCachingRecorder.InputHistogramSampleCount"
+    units="samples" expires_after="2022-03-21">
+  <owner>bttk@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of histogram samples seen by the time the Java in-memory cache was
+    flushed. This includes samples counted in DroppedHistogramSampleCount.
+  </summary>
+</histogram>
+
+<histogram name="UMA.JavaCachingRecorder.InputUserActionCount" units="samples"
+    expires_after="2022-03-21">
+  <owner>bttk@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of user actions seen by the time the in-memory cache was flushed.
+    This includes actions counted in DroppedUserActionCount.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Posix"
+    enum="PopularOSErrno" expires_after="M85">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Failures, as reported in errno, encountered while allocating local
+    persistent memory under Posix.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LocalPersistentMemoryAllocator.Failures.Win"
+    enum="WinGetLastError" expires_after="M85">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Failures, as reported by GetLastError(), encountered while allocating local
+    persistent memory under Windows.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2023-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Size in kilobytes (after compression) of an uploaded UMA log. Recorded after
+    a successful UMA upload.
+
+    Note: A related metric (UMA.ProtoCompressionRatio) logs the compression
+    ratio.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LogUpload.Canceled.CellularConstraint"
+    enum="BooleanCanceled" expires_after="2023-08-01">
+  <owner>holte@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logs whether a log was not uploaded due to cellular log throttling logic.
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LogUpload.ResponseOrErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-01">
+  <owner>holte@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    HTTP response codes and network errors encountered by UMA when attempting to
+    upload logs to the server through an HTTPS connection.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LogUpload.ResponseOrErrorCode.HTTP"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-01">
+  <owner>holte@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    HTTP response codes and network errors encountered by UMA when attempting to
+    upload logs to the server through an HTTP connection.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LowEntropySource3Value" units="units"
+    expires_after="2023-02-12">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Distribution of the new low entropy source value. Corresponds to
+    metrics::prefs::kMetricsLowEntropySource. Used for field trial
+    randomization. Recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="UMA.LowEntropySourceValue" units="units"
+    expires_after="2023-04-04">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Distribution of the old low entropy source value. Corresponds to
+    metrics::prefs::kMetricsOldLowEntropySource. Used for field trial
+    randomization on clients that already have it, but not created on new
+    installs. Recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
+    expires_after="2023-02-12">
+  <owner>jwd@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Tracks if the machine ID is generated successfully and if it changes from
+    one run to the next. The machine ID is a 24-bit hash of machine
+    characteristics. It is expected to change if an install of Chrome is copied
+    to multiple machines. This check happens once per browser startup.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsIDsReset" enum="BooleanHit"
+    expires_after="2023-02-12">
+  <owner>jwd@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records when the metrics IDs (client id and low entry source) are reset due
+    to a cloned install detection. This is done during startup when
+    MetricsStateManager is created.
+
+    A cloned install is detected when the current machine ID (24-bit hash of
+    machine characteristics) is different than the one stored in local state. A
+    pref is then written to local state to indicate a clone. The metrics IDs are
+    reset on the next startup assuming the cloned install pref is still set.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsReporting.Toggle" enum="MetricsReportingChange"
+    expires_after="2023-02-26">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged when user successfully enables/disables MetricsReporting or when an
+    error occurs.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.Initialize.Time" units="microseconds"
+    expires_after="2023-02-12">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Time taken by MetricsService::InitializeMetricsState().
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram name="UMA.NegativeSamples.Histogram" enum="HistogramNameHash"
+    expires_after="2023-04-04">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The lower 32 bits of the ID of the histogram that went negative.
+  </summary>
+</histogram>
+
+<histogram name="UMA.NegativeSamples.Increment" units="increment"
+    expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The amount of increment that caused a sample count to become negative.
+  </summary>
+</histogram>
+
+<histogram name="UMA.NegativeSamples.Reason" enum="NegativeSampleReason"
+    expires_after="2022-08-01">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Reasons why a negative sample count would have been created. Currently, only
+    negative samples from persistent sparse histograms are being checked.
+  </summary>
+</histogram>
+
+<histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.Errors"
+    enum="PersistentAllocatorErrors" expires_after="M85">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Errors detected by the persistent memory allocator. These are set when they
+    occur. {PersistentAllocatorType}
+  </summary>
+  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
+</histogram>
+
+<histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
+    units="%" expires_after="M87">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Percentage of persistent memory segment that has been allocated. This is
+    updated only once per reporting cycle. {PersistentAllocatorType}
+  </summary>
+  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
+</histogram>
+
+<histogram name="UMA.PersistentHistograms.InitResult"
+    enum="PersistentHistogramsInitResult" expires_after="2023-04-09">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    A count of successes and failures for the creation of various forms of
+    persistent memory used to store histograms.
+  </summary>
+</histogram>
+
+<histogram name="UMA.PrimaryUserType" enum="UserType"
+    expires_after="2023-04-09">
+  <owner>michaelpg@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This UMA logs the primary user type per metrics recording interval.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ProfileSignInStatus" enum="ProfileSyncConsentStatus"
+    expires_after="2022-05-15">
+  <obsolete>
+    In May 2022, replaced with UMA.ProfileSignInStatusV2 and
+    UMA.ProfileSyncStatusV2, which actually monitors sign-in and sync status.
+    This earlier version actually monitored sync consent status.
+  </obsolete>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>isherman@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    WARNING: despite the name, this histogram is about *sync*, not sign-in.
+
+    An enum representing the sync consent status of all opened profiles during
+    one UMA session. Recorded once in every ongoing metrics log; not recorded in
+    logs about the previous session.
+
+    This does not mean the user is actively syncing. Some common reasons for
+    consent but not syncing: (i) user signed out of the web (which disables sync
+    but doesn't remove consent for it so it will resume when the user signs in
+    again) and (ii) user changed password and hasn't yet reauthenticated. There
+    are a variety of rarer reasons as well. Examples: user disabled syncing for
+    all sync data types but did not revoke consent, user enabled the sync
+    passphrase and hasn't entered the passphrase in the current profile yet.
+
+    Reported incorrect data on ChromeOS before M80. Removed from ChromeOS in
+    M97.
+  </summary>
+</histogram>
+
+<histogram name="UMA.ProfileSignInStatusV2" enum="ProfileSignInStatus"
+    expires_after="never">
+<!-- expires-never: powers UMA dashboard filter -->
+
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    An enum representing the sign-in status of all regular profiles with open
+    browser windows at the time a UMA log record is closed (i.e., excluding
+    system and guest profiles). Recorded once in every ongoing metrics log; not
+    recorded in logs about the previous session. System, Guest and Incognito
+    profiles are ignored because the user cannot sign-in into them.
+
+    Being signed into the browser means, for example, the user sees their Google
+    account on the New Tab Page and in the toolbar at the top of the browser. It
+    does NOT mean the user has a currently-valid token; they may need to refresh
+    their credentials. As a concrete example, it means the user may not get
+    personalized results and suggestions when using google.com.
+
+    On desktop, when Chrome is running and there are no profiles with open
+    browser windows (this can happen on Mac), this histogram will report
+    &quot;Unknown sign-in status&quot;.
+
+    On Android, when Chrome is running and there are no profiles with open
+    browser windows (this can happen when Chrome is doing something in the
+    background), it will report the sign-in status as if there were an open
+    browser window.
+
+    If a profile is open during the time period covered by this log record but
+    closed before the log record is closed, the profile's status will not be
+    reflected in this histogram.
+
+    Not supported on ChromeOS Ash. (Supported on Lacros.)
+  </summary>
+</histogram>
+
+<histogram name="UMA.ProfileSyncStatusV2" enum="ProfileSyncStatus"
+    expires_after="never">
+<!-- expires-never: powers UMA dashboard filter -->
+
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    An enum representing the sync status of all regular profiles with open
+    browser windows at the time a UMA log record is closed (i.e., excluding
+    system and guest profiles). Recorded once in every ongoing metrics log; not
+    recorded in logs about the previous session. System, Guest and Incognito
+    profiles are ignored because the user cannot sign-in into them.
+
+    If a profile is open during the time period covered by this log record but
+    closed before the log record is closed, the profile's status will not be
+    reflected in this histogram.
+
+    Sync status indicates the profile has consented to sync and has a valid
+    credential for the account (i.e., is signed-in), meaning sync in principle
+    should be working. For example, if the user signs out of the web, their
+    credentials will be put into an error state; they will not be valid. The
+    profile will not be considered to be syncing. It is possible that the user
+    is technically syncing (according to this histogram and Chrome) yet not
+    syncing at that instant. Examples of this include (i) user is offline and
+    (ii) user disabled syncing for all sync data types but didn't revoke
+    consent.
+
+    Not supported on ChromeOS Ash. (Supported on Lacros.)
+  </summary>
+</histogram>
+
+<histogram name="UMA.ProtoCompressionRatio" units="%"
+    expires_after="2023-04-09">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Compression ratio of the serialized protobuf that will be uploaded to the
+    UMA server. This serialized protobuf is compressed using gzip. See also
+    UMA.LogSize.OnSuccess.
+  </summary>
+</histogram>
+
+<histogram name="UMA.Pseudo.{Metrics}" units="seconds/MB" expires_after="never">
+<!-- expires-never: needed for ensuring correct UMA operation -->
+
+  <owner>sweilun@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    This is the pseudo {Metrics} metric. It's logged alongside with the real
+    metric. The value of this pseudo metric is a linear function (ax + b) of the
+    real value (x). The multiplicative factor (a) and additive factor (b) are
+    controlled by field trial experiments. This metric is used for data
+    validation and to help us better assess the accuracy and power of data from
+    field trials.
+  </summary>
+  <token key="Metrics">
+    <variant name="Memory.Browser.MemoryFootprint"/>
+    <variant name="Memory.Total.PrivateMemoryFootprint"/>
+    <variant name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
+    <variant name="PageLoad.LayoutInstability.CumulativeShiftScore"/>
+    <variant
+        name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"/>
+    <variant name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
+  </token>
+</histogram>
+
+<histogram name="UMA.SamplingRatePerMille" units="samples per mille"
+    expires_after="2023-02-12">
+  <owner>jwd@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Sample rate applied to this client, expressed as number of clients per 1000
+    that are in the sample. Recorded on every log upload but only if the client
+    is eligible for sampling. (As of September 2019, the only clients eligible
+    for sampling are Windows and Android installs on which the UMA checkbox was
+    enabled by default.)
+
+    Clients not eligible for sampling will not have this histogram recorded.
+
+    Clients that are eligible for sampling but are sampled out (i.e., not
+    uploading logs) will not have this histogram recorded. Notably, it will not
+    appear in chrome://histograms! (Obviously, it also won't appear in the UMA
+    logs because the client is not uploading logs.)
+
+    Additional nuance, hopefully not important: the rate refers to the session
+    that the log was generated in, not the session the log was generated about.
+    This means when UMA uploads information about the last session (such as
+    stability statistics), it is possible--though extremely unlikely--that the
+    sampling rate config has changed from the previous session to the current
+    one. As such, the sampling rate emitted in a previous-session log record may
+    not be the right one that should've applied to that record.
+  </summary>
+</histogram>
+
+<histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
+    expires_after="2023-02-12">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Denotes whether or not the Local State file exists during startup. Emitted
+    when the PrefService is created. Android Chrome only.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StartupVisibility" enum="StartupVisibility"
+    expires_after="2023-03-05">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether the session is a background or foreground session. Recorded just
+    before the MetricsStateManager is created. Android Chrome only.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.EventRecordingState"
+    enum="StructuredMetricsEventRecordingState" expires_after="2023-03-19">
+  <owner>tby@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Emitted when a structured metrics event is sent for recording. This records
+    whether that event was recorded successfully, or otherwise what error
+    occurred.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.EventsRecordedBeforeInit" units="count"
+    expires_after="2023-02-12">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Number of events recorded before private keys are initialized to hash
+    events. This metric should be recorded once per session.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.EventsRecordedUsingMojo" enum="Boolean"
+    expires_after="2022-03-27">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Emitted each time a structured metric event is written. Records true if the
+    mojo API was used.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.InternalError2"
+    enum="StructuredMetricsInternalError2" expires_after="2023-03-05">
+  <owner>tby@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    Records unexpected internal errors of the structured metrics system. The
+    bucket proportion of this metric is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.KeyValidationState"
+    enum="StructuredMetricsKeyValidationState" expires_after="2022-11-01">
+  <owner>tby@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    When a user event key is validated (and possibly updated), whether the key
+    was valid and required no changes, missing and required creation, or old and
+    required rotation.
+  </summary>
+</histogram>
+
+<histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
+    expires_after="2023-03-19">
+  <owner>tby@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    How many events are provided when the structured metrics system is called on
+    to provide its current session data.
+  </summary>
+</histogram>
+
+<histogram name="UMA.TruncatedEvents.Omnibox" units="events"
+    expires_after="M85">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of omnibox events that existed in the metrics log before we
+    truncated them to save bandwidth.
+  </summary>
+</histogram>
+
+<histogram name="UMA.TruncatedEvents.UserAction" units="events"
+    expires_after="2023-04-09">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of user actions events that existed in the metrics log before we
+    truncated them to save bandwidth.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.Dropped" units="logs"
+    expires_after="2023-08-01">
+  <owner>holte@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of unsent UMA logs removed from persistent storage. Emitted just
+    before unsent logs are trimmed. Unsent log trimming occurs immediately after
+    logs creation, upon successful log upload, or whenever MetricsService stops
+    recording.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.DroppedSize" units="bytes"
+    expires_after="2023-08-01">
+  <owner>akirabaruah@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Size of unsent logs removed from persistent storage due to exceeding the
+    individual log size limit. Unsent log trimming occurs immediately after logs
+    creation, upon successful log upload, or whenever MetricsService stops
+    recording.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.PersistedSizeInKB" units="KB"
+    expires_after="2023-08-01">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The size of all persistent initial or ongoing logs that have been
+    proto-encoded and compressed in the previous browser run; it is recorded on
+    the browser start up. The value '0' means no unsent logs.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.SentCount" units="samples"
+    expires_after="2023-08-01">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of UMA histogram samples that were sent in the previous browser
+    run. Emitted when the browser starts up.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.UnsentCount" units="samples"
+    expires_after="2023-08-01">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of UMA histogram samples that were not yet sent in the previous
+    browser run. Emitted when the browser starts up.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.UnsentPercentage" units="%"
+    expires_after="2023-08-01">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The percentage of the unsent samples over the total in the previous browser
+    run; it is recorded on the browser start up.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UserActionsCount" enum="Boolean"
+    expires_after="2023-02-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Emitted when a user action is recorded.
+
+    Intended to be used to estimate how many user actions are lost due lack of
+    being persisted in the same way histograms are. One way to use this
+    histogram is to look as the count in this histogram in logs that come from
+    the previous session. All of those user actions will have been lost.
+
+    Also note that user actions can be lost due to being truncated before
+    uploading a UMA record. Those logs user actions are recorded in the
+    histogram UMA.TruncatedEvents.UserAction.
+
+    There may be other ways user actions are dropped too.
+  </summary>
+</histogram>
+
+<histogram name="UMA.UserDemographics.IsNoisedAgeOver21Under85"
+    enum="BooleanNoisedAgeOver21Under85" expires_after="2023-03-26">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    True indicates that the current user is over the age of 21 and under the age
+    of 85 inclusive, and unknown otherwise. Specifically, this histogram can't
+    identify users under 21 and over 85. The user's age includes a random offset
+    for privacy. This metric is logged periodically through
+    ProvideCurrentSessionData().
+  </summary>
+</histogram>
+
+<histogram name="UMA.UserDemographics.Status" enum="UserDemographicsStatus"
+    expires_after="2023-02-12">
+  <owner>rogerm@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The status of the retrieval of user demographics from sync that are reported
+    to UMA. Emitted each time UMA metrics are reported.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

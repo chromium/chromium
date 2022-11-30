@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -40,7 +40,8 @@ SVGLength* SVGLengthInterpolationType::ResolveInterpolableSVGLength(
     bool negative_values_forbidden) {
   const InterpolableLength& length = To<InterpolableLength>(interpolable_value);
   const CSSPrimitiveValue* primitive_value = length.CreateCSSValue(
-      negative_values_forbidden ? kValueRangeNonNegative : kValueRangeAll);
+      negative_values_forbidden ? Length::ValueRange::kNonNegative
+                                : Length::ValueRange::kAll);
 
   // We optimise for the common case where only one unit type is involved.
   if (primitive_value->IsNumericLiteralValue())

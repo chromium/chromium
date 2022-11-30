@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
@@ -23,9 +24,9 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/saml_password_attributes.h"
+#include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -36,21 +37,17 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-using message_center::ButtonInfo;
-using message_center::HandleNotificationClickDelegate;
-using message_center::Notification;
-using message_center::NotificationDelegate;
-using message_center::NotificationObserver;
-using message_center::NotificationType;
-using message_center::NotifierId;
-using message_center::NotifierType;
-using message_center::RichNotificationData;
-using message_center::SystemNotificationWarningLevel;
-using message_center::ThunkNotificationDelegate;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::message_center::ButtonInfo;
+using ::message_center::Notification;
+using ::message_center::NotificationDelegate;
+using ::message_center::NotificationType;
+using ::message_center::NotifierId;
+using ::message_center::NotifierType;
+using ::message_center::RichNotificationData;
+using ::message_center::SystemNotificationWarningLevel;
 
 // Unique ID for this notification.
 const char kNotificationId[] = "saml.password-expiry-notification";
@@ -71,7 +68,7 @@ constexpr SystemNotificationWarningLevel kWarningLevel =
     SystemNotificationWarningLevel::WARNING;
 
 // A time-delta of length one minute.
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
 std::u16string GetBodyText() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_EXPIRY_CALL_TO_ACTION);
@@ -92,10 +89,10 @@ class PasswordExpiryNotificationDelegate : public NotificationDelegate {
  protected:
   ~PasswordExpiryNotificationDelegate() override;
 
-  // message_center::NotificationDelegate:
+  // NotificationDelegate:
   void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<std::u16string>& reply) override;
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override;
 };
 
 PasswordExpiryNotificationDelegate::PasswordExpiryNotificationDelegate() =
@@ -111,8 +108,8 @@ void PasswordExpiryNotificationDelegate::Close(bool by_user) {
 }
 
 void PasswordExpiryNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   bool clicked_on_button = button_index.has_value();
   if (clicked_on_button) {
     InSessionPasswordChangeManager::Get()->StartInSessionPasswordChange();
@@ -128,7 +125,8 @@ void PasswordExpiryNotification::Show(Profile* profile,
 
   // NotifierId for histogram reporting.
   static const base::NoDestructor<NotifierId> kNotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId);
+      NotifierType::SYSTEM_COMPONENT, kNotificationId,
+      NotificationCatalogName::kPasswordExpiry);
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.
@@ -143,7 +141,7 @@ void PasswordExpiryNotification::Show(Profile* profile,
   const scoped_refptr<PasswordExpiryNotificationDelegate> delegate =
       base::MakeRefCounted<PasswordExpiryNotificationDelegate>();
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       kNotificationType, kNotificationId, title, body, *kEmptyDisplaySource,
       *kEmptyOriginUrl, *kNotifierId, rich_notification_data, delegate, kIcon,
       kWarningLevel);
@@ -176,4 +174,4 @@ void PasswordExpiryNotification::Dismiss(Profile* profile) {
       kNotificationHandlerType, kNotificationId);
 }
 
-}  // namespace chromeos
+}  // namespace ash

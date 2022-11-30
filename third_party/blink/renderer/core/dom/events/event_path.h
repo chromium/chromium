@@ -27,10 +27,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_PATH_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/node_event_context.h"
 #include "third_party/blink/renderer/core/dom/events/tree_scope_event_context.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -44,6 +46,8 @@ class WindowEventContext;
 
 class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
  public:
+  using NodePath = HeapVector<Member<Node>, 64>;
+
   explicit EventPath(Node&, Event* = nullptr);
   EventPath(const EventPath&) = delete;
   EventPath& operator=(const EventPath&) = delete;
@@ -70,7 +74,7 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   }
   void EnsureWindowEventContext();
 
-  bool IsEmpty() const { return node_event_contexts_.IsEmpty(); }
+  bool IsEmpty() const { return node_event_contexts_.empty(); }
   wtf_size_t size() const { return node_event_contexts_.size(); }
 
   void AdjustForRelatedTarget(Node&, EventTarget* related_target);
@@ -82,6 +86,7 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   NodeEventContext& TopNodeEventContext();
 
   static EventTarget& EventTargetRespectingTargetRules(Node&);
+  static NodePath CalculateNodePath(Node&);
 
   void Trace(Visitor*) const;
   void Clear() {
@@ -94,6 +99,8 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
 
   void Initialize();
   void CalculatePath();
+  void CalculatePathCachingEnabled();
+  void CalculatePathCachingDisabled();
   void CalculateAdjustedTargets();
   void CalculateTreeOrderAndSetNearestAncestorClosedTree();
 
@@ -133,4 +140,4 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_PATH_H_

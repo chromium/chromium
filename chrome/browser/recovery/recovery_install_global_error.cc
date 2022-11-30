@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
 
 RecoveryInstallGlobalError::RecoveryInstallGlobalError(Profile* profile)
         : elevation_needed_(false),
@@ -65,12 +65,12 @@ int RecoveryInstallGlobalError::MenuItemCommandID() {
 }
 
 std::u16string RecoveryInstallGlobalError::MenuItemLabel() {
-  return l10n_util::GetStringUTF16(IDS_UPDATE_NOW);
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 }
 
 ui::ImageModel RecoveryInstallGlobalError::MenuItemIcon() {
-  return ui::ImageModel::FromVectorIcon(
-      kBrowserToolsUpdateIcon, ui::NativeTheme::kColorId_AlertSeverityHigh);
+  return ui::ImageModel::FromVectorIcon(kBrowserToolsUpdateIcon,
+                                        ui::kColorAlertHighSeverity);
 }
 
 void RecoveryInstallGlobalError::ExecuteMenuItem(Browser* browser) {

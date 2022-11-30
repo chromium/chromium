@@ -1,14 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_ACCESS_RATE_LIMITER_H_
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_ACCESS_RATE_LIMITER_H_
 
-#include <algorithm>
-#include <memory>
-
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -50,6 +46,10 @@ class AccessRateLimiter {
   AccessRateLimiter(size_t max_num_accesses,
                     const base::TimeDelta& recharge_period,
                     const base::TickClock* tick_clock);
+
+  AccessRateLimiter(const AccessRateLimiter&) = delete;
+  AccessRateLimiter& operator=(const AccessRateLimiter&) = delete;
+
   ~AccessRateLimiter();
 
   // Attempt to access a resource. Will update |counter_| based on how much time
@@ -77,8 +77,6 @@ class AccessRateLimiter {
 
   // Points to a timer clock implementation for keeping track of access times.
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessRateLimiter);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace content {
 class WebContents;
@@ -28,7 +28,8 @@ IntentPickerView::IntentPickerView(
     : PageActionIconView(nullptr,
                          0,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate),
+                         page_action_icon_delegate,
+                         "IntentPicker"),
       browser_(browser) {}
 
 IntentPickerView::~IntentPickerView() = default;
@@ -47,7 +48,7 @@ void IntentPickerView::OnExecuting(
   DCHECK(GetShowIcon());
   content::WebContents* web_contents = GetWebContents();
   const GURL& url = chrome::GetURLToBookmark(web_contents);
-  apps::ShowIntentPickerBubble(web_contents, url);
+  apps::ShowIntentPickerOrLaunchApp(web_contents, url);
 }
 
 views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {

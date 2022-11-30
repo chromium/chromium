@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_INTERCEPTING_CANVAS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_INTERCEPTING_CANVAS_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
@@ -44,6 +44,10 @@ class InterceptingCanvasBase : public SkCanvas {
   template <typename DerivedCanvas>
   class CanvasInterceptorBase {
     STACK_ALLOCATED();
+
+   public:
+    CanvasInterceptorBase(const CanvasInterceptorBase&) = delete;
+    CanvasInterceptorBase& operator=(const CanvasInterceptorBase&) = delete;
 
    protected:
     CanvasInterceptorBase(InterceptingCanvasBase* canvas) : canvas_(canvas) {
@@ -59,10 +63,10 @@ class InterceptingCanvasBase : public SkCanvas {
     DerivedCanvas* Canvas() { return static_cast<DerivedCanvas*>(canvas_); }
     bool TopLevelCall() const { return canvas_->CallNestingDepth() == 1; }
     InterceptingCanvasBase* canvas_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CanvasInterceptorBase);
   };
+
+  InterceptingCanvasBase(const InterceptingCanvasBase&) = delete;
+  InterceptingCanvasBase& operator=(const InterceptingCanvasBase&) = delete;
 
   void ResetStepCount() { call_count_ = 0; }
 
@@ -131,8 +135,6 @@ class InterceptingCanvasBase : public SkCanvas {
  private:
   unsigned call_nesting_depth_;
   unsigned call_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterceptingCanvasBase);
 };
 
 template <typename DerivedCanvas>
@@ -149,7 +151,7 @@ class InterceptingCanvas : public InterceptingCanvasBase {
 
   void onDrawPaint(const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawPaint(paint);
+    SkCanvas::onDrawPaint(paint);
   }
 
   void onDrawPoints(PointMode mode,
@@ -157,27 +159,27 @@ class InterceptingCanvas : public InterceptingCanvasBase {
                     const SkPoint pts[],
                     const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawPoints(mode, count, pts, paint);
+    SkCanvas::onDrawPoints(mode, count, pts, paint);
   }
 
   void onDrawRect(const SkRect& rect, const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawRect(rect, paint);
+    SkCanvas::onDrawRect(rect, paint);
   }
 
   void onDrawOval(const SkRect& rect, const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawOval(rect, paint);
+    SkCanvas::onDrawOval(rect, paint);
   }
 
   void onDrawRRect(const SkRRect& rrect, const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawRRect(rrect, paint);
+    SkCanvas::onDrawRRect(rrect, paint);
   }
 
   void onDrawPath(const SkPath& path, const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawPath(path, paint);
+    SkCanvas::onDrawPath(path, paint);
   }
 
   void onDrawImage2(const SkImage* image,
@@ -186,7 +188,7 @@ class InterceptingCanvas : public InterceptingCanvasBase {
                     const SkSamplingOptions& sampling,
                     const SkPaint* paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawImage2(image, x, y, sampling, paint);
+    SkCanvas::onDrawImage2(image, x, y, sampling, paint);
   }
 
   void onDrawImageRect2(const SkImage* image,
@@ -196,22 +198,21 @@ class InterceptingCanvas : public InterceptingCanvasBase {
                         const SkPaint* paint,
                         SrcRectConstraint constraint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawImageRect2(image, src, dst, sampling, paint,
-                                     constraint);
+    SkCanvas::onDrawImageRect2(image, src, dst, sampling, paint, constraint);
   }
 
   void onDrawVerticesObject(const SkVertices* vertices,
                             SkBlendMode bmode,
                             const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawVerticesObject(vertices, bmode, paint);
+    SkCanvas::onDrawVerticesObject(vertices, bmode, paint);
   }
 
   void onDrawDRRect(const SkRRect& outer,
                     const SkRRect& inner,
                     const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawDRRect(outer, inner, paint);
+    SkCanvas::onDrawDRRect(outer, inner, paint);
   }
 
   void onDrawTextBlob(const SkTextBlob* blob,
@@ -219,39 +220,39 @@ class InterceptingCanvas : public InterceptingCanvasBase {
                       SkScalar y,
                       const SkPaint& paint) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onDrawTextBlob(blob, x, y, paint);
+    SkCanvas::onDrawTextBlob(blob, x, y, paint);
   }
 
   void onClipRect(const SkRect& rect,
                   SkClipOp op,
                   ClipEdgeStyle edge_style) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onClipRect(rect, op, edge_style);
+    SkCanvas::onClipRect(rect, op, edge_style);
   }
 
   void onClipRRect(const SkRRect& rrect,
                    SkClipOp op,
                    ClipEdgeStyle edge_style) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onClipRRect(rrect, op, edge_style);
+    SkCanvas::onClipRRect(rrect, op, edge_style);
   }
 
   void onClipPath(const SkPath& path,
                   SkClipOp op,
                   ClipEdgeStyle edge_style) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onClipPath(path, op, edge_style);
+    SkCanvas::onClipPath(path, op, edge_style);
   }
 
   void onClipRegion(const SkRegion& region, SkClipOp op) override {
     Interceptor interceptor(this);
-    this->SkCanvas::onClipRegion(region, op);
+    SkCanvas::onClipRegion(region, op);
   }
 
   void onDrawPicture(const SkPicture* picture,
                      const SkMatrix* matrix,
                      const SkPaint* paint) override {
-    this->UnrollDrawPicture(picture, matrix, paint, nullptr);
+    UnrollDrawPicture(picture, matrix, paint, nullptr);
   }
 
   void didSetM44(const SkM44&) override { Interceptor interceptor(this); }
@@ -268,18 +269,18 @@ class InterceptingCanvas : public InterceptingCanvasBase {
 
   void willSave() override {
     Interceptor interceptor(this);
-    this->SkCanvas::willSave();
+    SkCanvas::willSave();
   }
 
   SkCanvas::SaveLayerStrategy getSaveLayerStrategy(
       const SaveLayerRec& rec) override {
     Interceptor interceptor(this);
-    return this->SkCanvas::getSaveLayerStrategy(rec);
+    return SkCanvas::getSaveLayerStrategy(rec);
   }
 
   void willRestore() override {
     Interceptor interceptor(this);
-    this->SkCanvas::willRestore();
+    SkCanvas::willRestore();
   }
 };
 

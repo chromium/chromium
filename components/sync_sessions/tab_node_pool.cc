@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,9 @@
 #include "base/logging.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/session_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 
 namespace sync_sessions {
-
-const size_t TabNodePool::kFreeNodesLowWatermark = 25;
-const size_t TabNodePool::kFreeNodesHighWatermark = 100;
-
-const base::Feature kTabNodePoolImmediateDeletion{
-    "TabNodePoolImmediateDeletion", base::FEATURE_ENABLED_BY_DEFAULT};
 
 TabNodePool::TabNodePool() : max_used_tab_node_id_(kInvalidTabNodeID) {}
 
@@ -28,7 +21,7 @@ TabNodePool::TabNodePool() : max_used_tab_node_id_(kInvalidTabNodeID) {}
 // We start vending tab node IDs at 0.
 const int TabNodePool::kInvalidTabNodeID = -1;
 
-TabNodePool::~TabNodePool() {}
+TabNodePool::~TabNodePool() = default;
 
 void TabNodePool::AddTabNode(int tab_node_id) {
   DCHECK_GT(tab_node_id, kInvalidTabNodeID);
@@ -148,44 +141,23 @@ SessionID TabNodePool::GetTabIdFromTabNodeId(int tab_node_id) const {
 }
 
 std::set<int> TabNodePool::CleanupFreeTabNodes() {
-  if (base::FeatureList::IsEnabled(kTabNodePoolImmediateDeletion)) {
-    // Convert all free nodes into missing nodes, each representing a deletion.
-    missing_nodes_pool_.insert(free_nodes_pool_.begin(),
-                               free_nodes_pool_.end());
-    std::set<int> deleted_node_ids = std::move(free_nodes_pool_);
-    free_nodes_pool_.clear();
+  // Convert all free nodes into missing nodes, each representing a deletion.
+  missing_nodes_pool_.insert(free_nodes_pool_.begin(), free_nodes_pool_.end());
+  std::set<int> deleted_node_ids = std::move(free_nodes_pool_);
+  free_nodes_pool_.clear();
 
-    // As an optimization to save memory, update |max_used_tab_node_id_| and
-    // shrink |missing_nodes_pool_| appropriately.
-    if (nodeid_tabid_map_.empty()) {
-      max_used_tab_node_id_ = kInvalidTabNodeID;
-    } else {
-      max_used_tab_node_id_ = nodeid_tabid_map_.rbegin()->first;
-    }
-
-    missing_nodes_pool_.erase(
-        missing_nodes_pool_.upper_bound(max_used_tab_node_id_),
-        missing_nodes_pool_.end());
-
-    return deleted_node_ids;
+  // As an optimization to save memory, update |max_used_tab_node_id_| and
+  // shrink |missing_nodes_pool_| appropriately.
+  if (nodeid_tabid_map_.empty()) {
+    max_used_tab_node_id_ = kInvalidTabNodeID;
+  } else {
+    max_used_tab_node_id_ = nodeid_tabid_map_.rbegin()->first;
   }
 
-  // If number of free nodes exceed kFreeNodesHighWatermark,
-  // delete sync nodes till number reaches kFreeNodesLowWatermark.
-  // Note: This logic is to mitigate temporary disassociation issues with old
-  // clients: https://crbug.com/259918. Newer versions do not need this.
-  if (free_nodes_pool_.size() <= kFreeNodesHighWatermark) {
-    return std::set<int>();
-  }
+  missing_nodes_pool_.erase(
+      missing_nodes_pool_.upper_bound(max_used_tab_node_id_),
+      missing_nodes_pool_.end());
 
-  std::set<int> deleted_node_ids;
-  while (free_nodes_pool_.size() > kFreeNodesLowWatermark) {
-    // We delete the largest IDs first, to achieve more compaction.
-    const int tab_node_id = *free_nodes_pool_.rbegin();
-    deleted_node_ids.insert(tab_node_id);
-    missing_nodes_pool_.insert(tab_node_id);
-    free_nodes_pool_.erase(tab_node_id);
-  }
   return deleted_node_ids;
 }
 
@@ -206,8 +178,8 @@ void TabNodePool::DeleteTabNode(int tab_node_id) {
 
 std::set<int> TabNodePool::GetAllTabNodeIds() const {
   std::set<int> tab_node_ids = free_nodes_pool_;
-  for (const auto& entry : nodeid_tabid_map_) {
-    tab_node_ids.insert(entry.first);
+  for (const auto& [tab_node_id, tab_id] : nodeid_tabid_map_) {
+    tab_node_ids.insert(tab_node_id);
   }
   return tab_node_ids;
 }

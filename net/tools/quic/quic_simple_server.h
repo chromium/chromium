@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,17 +10,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/quic/quic_chromium_connection_helper.h"
-#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_server_config.h"
-#include "net/third_party/quiche/src/quic/core/quic_config.h"
-#include "net/third_party/quiche/src/quic/core/quic_version_manager.h"
-#include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
-#include "net/third_party/quiche/src/quic/tools/quic_spdy_server_base.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/deterministic_connection_id_generator.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_version_manager.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_spdy_server_base.h"
 
 namespace net {
 
@@ -44,6 +44,9 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
       const quic::QuicCryptoServerConfig::ConfigOptions& crypto_config_options,
       const quic::ParsedQuicVersionVector& supported_versions,
       quic::QuicSimpleServerBackend* quic_simple_server_backend);
+
+  QuicSimpleServer(const QuicSimpleServer&) = delete;
+  QuicSimpleServer& operator=(const QuicSimpleServer&) = delete;
 
   ~QuicSimpleServer() override;
 
@@ -107,11 +110,11 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
 
   // Keeps track of whether a read is currently in flight, after which
   // OnReadComplete will be called.
-  bool read_pending_;
+  bool read_pending_ = false;
 
   // The number of iterations of the read loop that have completed synchronously
   // and without posting a new task to the message loop.
-  int synchronous_read_count_;
+  int synchronous_read_count_ = 0;
 
   // The target buffer of the current read.
   scoped_refptr<IOBufferWithSize> read_buffer_;
@@ -121,9 +124,9 @@ class QuicSimpleServer : public quic::QuicSpdyServerBase {
 
   quic::QuicSimpleServerBackend* quic_simple_server_backend_;
 
-  base::WeakPtrFactory<QuicSimpleServer> weak_factory_{this};
+  quic::DeterministicConnectionIdGenerator connection_id_generator_;
 
-  DISALLOW_COPY_AND_ASSIGN(QuicSimpleServer);
+  base::WeakPtrFactory<QuicSimpleServer> weak_factory_{this};
 };
 
 }  // namespace net

@@ -5,12 +5,17 @@
     "parser": "create_parser",
     "help": "Run tests in a browser",
     "virtualenv": true,
-    "install": [
-      "zstandard"
-    ],
     "requirements": [
+      "../manifest/requirements.txt",
       "../wptrunner/requirements.txt"
-    ]
+    ],
+    "conditional_requirements": {
+      "commandline_flag": {
+        "enable_webtransport_h3": [
+          "../webtransport/requirements.txt"
+        ]
+      }
+    }
   },
   "create": {
     "path": "create.py",
@@ -48,8 +53,8 @@
     "parser": "get_parser",
     "help": "Install browser components",
     "virtualenv": true,
-    "install": [
-      "mozinstall"
+    "requirements": [
+      "requirements_install.txt"
     ]
   },
   "branch-point": {
@@ -72,8 +77,8 @@
     "parser": "get_parser_install",
     "help": "Setup the x86 android emulator",
     "virtualenv": true,
-    "install": [
-      "requests"
+    "requirements": [
+      "requirements.txt"
     ]
   },
   "start-android-emulator": {
@@ -82,8 +87,8 @@
     "parser": "get_parser_start",
     "help": "Start the x86 android emulator",
     "virtualenv": true,
-    "install": [
-      "requests"
+    "requirements": [
+      "requirements.txt"
     ]
   }
 }

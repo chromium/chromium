@@ -6,7 +6,7 @@
  *
  * Other contributors:
  *   Robert O'Callahan <roc+@cs.cmu.edu>
- *   David Baron <dbaron@fas.harvard.edu>
+ *   David Baron <dbaron@dbaron.org>
  *   Christian Biesinger <cbiesinger@web.de>
  *   Randall Jesup <rjesup@wgate.com>
  *   Roland Mainz <roland.mainz@informatik.med.uni-giessen.de>
@@ -45,17 +45,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_STACKING_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_STACKING_NODE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class PaintLayer;
-class PaintLayerCompositor;
 class ComputedStyle;
 
 // This class is only for PaintLayer, PaintLayerPaintOrderIterator and
@@ -64,7 +62,7 @@ class ComputedStyle;
 // PaintLayerStackingNode represents a stacked element which is either a
 // stacking context or a positioned element.
 // See
-// https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md
+// https://chromium.googlesource.com/chromium/src.git/+/main/third_party/blink/renderer/core/paint/README.md
 // for more details of stacked elements.
 //
 // Stacked elements are the basis for the CSS painting algorithm. The paint
@@ -89,14 +87,13 @@ class ComputedStyle;
 // We create PaintLayerStackingNode only for real stacking contexts with stacked
 // children. PaintLayerPaintOrder[Reverse]Iterator can iterate normal flow
 // children in paint order with or without a stacking node.
-class CORE_EXPORT PaintLayerStackingNode {
-  USING_FAST_MALLOC(PaintLayerStackingNode);
-
+class CORE_EXPORT PaintLayerStackingNode
+    : public GarbageCollected<PaintLayerStackingNode> {
  public:
-  explicit PaintLayerStackingNode(PaintLayer&);
+  explicit PaintLayerStackingNode(PaintLayer*);
   PaintLayerStackingNode(const PaintLayerStackingNode&) = delete;
   PaintLayerStackingNode& operator=(const PaintLayerStackingNode&) = delete;
-  ~PaintLayerStackingNode();
+  ~PaintLayerStackingNode() = default;
 
   void DirtyZOrderLists();
   void UpdateZOrderLists();
@@ -105,7 +102,7 @@ class CORE_EXPORT PaintLayerStackingNode {
   static bool StyleDidChange(PaintLayer& paint_layer,
                              const ComputedStyle* old_style);
 
-  using PaintLayers = Vector<PaintLayer*>;
+  using PaintLayers = HeapVector<Member<PaintLayer>>;
 
   const PaintLayers& PosZOrderList() const {
     DCHECK(!z_order_lists_dirty_);
@@ -122,7 +119,7 @@ class CORE_EXPORT PaintLayerStackingNode {
     auto it = layer_to_overlay_overflow_controls_painting_after_.find(layer);
     return it == layer_to_overlay_overflow_controls_painting_after_.end()
                ? nullptr
-               : &it->value;
+               : it->value;
   }
 
   const PaintLayers& OverlayOverflowControlsReorderedList() const {
@@ -132,20 +129,13 @@ class CORE_EXPORT PaintLayerStackingNode {
 
   void ClearNeedsReorderOverlayOverflowControls();
 
+  void Trace(Visitor* visitor) const;
+
  private:
   void RebuildZOrderLists();
 
   struct HighestLayers;
   void CollectLayers(PaintLayer&, HighestLayers*);
-
-#if DCHECK_IS_ON()
-  void UpdateStackingParentForZOrderLists(
-      PaintLayerStackingNode* stacking_parent);
-#endif
-
-  PaintLayerCompositor* Compositor() const;
-
-  PaintLayer& layer_;
 
   // Holds a sorted list of all the descendant nodes within that have z-indices
   // of 0 (or is treated as 0 for positioned objects) or greater.
@@ -187,18 +177,22 @@ class CORE_EXPORT PaintLayerStackingNode {
   //                          |
   //               overlay overflow controls
   //
-  // This map records which PaintLayers (the values of the map) have overlay
-  // overflow controls which should paint after the given PaintLayer (the key of
+  // This map records the PaintLayers (the values of the map) that have overlay
+  // overflow controls that should paint after the given PaintLayer (the key of
   // the map). The value of the map is a list of PaintLayers because there may
   // be more than one scrolling or resizing container in the same stacking
   // context with overlay overflow controls.
-  HashMap<const PaintLayer*, PaintLayers>
+  // For the above example, this map has one entry {child: target} which means
+  // that |target|'s overlay overflow controls should be painted after |child|.
+  HeapHashMap<Member<const PaintLayer>, Member<PaintLayers>>
       layer_to_overlay_overflow_controls_painting_after_;
 
   // All PaintLayers (just in current stacking context, child stacking contexts
-  // will have their own list) that have overlay overflow controls which should
-  // paint reordered.
+  // will have their own list) that have overlay overflow controls that should
+  // paint reordered. For the above example, this has one entry {target}.
   PaintLayers overlay_overflow_controls_reordered_list_;
+
+  Member<PaintLayer> layer_;
 
   // Indicates whether the z-order lists above are dirty.
   bool z_order_lists_dirty_ = true;

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<!-- TODO(crbug.com/1119550): explore replacing with programatically created
+<!-- TODO(crbug.com/1119550): explore replacing with a programmatically created
      menu.  -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
@@ -31,7 +33,7 @@
                 android:icon="@drawable/btn_info" />
               <item android:id="@+id/reload_menu_id"
                 android:title="@string/accessibility_btn_refresh"
-                android:titleCondensed="@string/menu_refresh"
+                android:titleCondensed="@string/refresh"
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
@@ -44,9 +46,15 @@
         <item android:id="@+id/new_incognito_tab_menu_id"
             android:title="@string/menu_new_incognito_tab"
             android:icon="@drawable/incognito_simple" />
+        <item android:id="@+id/new_window_menu_id"
+            android:title="@string/menu_new_window"
+            android:icon="@drawable/ic_new_window" />
         <item android:id="@+id/move_to_other_window_menu_id"
             android:title="@string/menu_move_to_other_window"
             android:icon="@drawable/ic_open_in_browser" />
+        <item android:id="@+id/manage_all_windows_menu_id"
+            android:title="@string/menu_manage_all_windows"
+            android:icon="@drawable/ic_select_window" />
         <item android:id="@+id/divider_line_id"
             android:title="@null" />
         <item android:id="@+id/open_history_menu_id"
@@ -73,6 +81,24 @@
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/add_bookmark_menu_id"
+            android:title="@string/menu_add_bookmark"
+            android:icon="@drawable/btn_star"/>
+        <item android:id="@+id/edit_bookmark_menu_id"
+            android:title="@string/menu_edit_bookmark"
+            android:icon="@drawable/btn_star_filled"/>
+        <item android:id="@+id/add_to_reading_list_menu_id"
+            android:title="@string/menu_add_to_reading_list"
+            android:icon="@drawable/ic_reading_list_folder_24dp" />
+        <item android:id="@+id/delete_from_reading_list_menu_id"
+            android:title="@string/menu_delete_from_reading_list"
+            android:icon="@drawable/ic_reading_list_folder_24dp" />
+        <item android:id="@+id/enable_price_tracking_menu_id"
+            android:title="@string/enable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_disabled" />
+        <item android:id="@+id/disable_price_tracking_menu_id"
+            android:title="@string/disable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_enabled_filled" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />
@@ -96,6 +122,20 @@
                 android:checkable="true" />
           </menu>
         </item>
+        <item android:id="@+id/auto_dark_web_contents_row_menu_id"
+            android:title="@null">
+          <menu>
+              <item android:id="@+id/auto_dark_web_contents_id"
+                android:title="@string/menu_auto_dark_web_contents"
+                android:icon="@drawable/ic_brightness_medium_24dp" />
+              <item android:id="@+id/auto_dark_web_contents_check_id"
+                android:title="@null"
+                android:checkable="true" />
+          </menu>
+        </item>
+        <item android:id="@+id/page_zoom_id"
+            android:title="@string/page_zoom_title"
+            android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/paint_preview_show_id"
             android:title="@string/menu_paint_preview_show"
             android:icon="@drawable/ic_photo_camera" />
@@ -115,9 +155,12 @@
             android:icon="@drawable/help_outline" />
         <item android:id="@+id/enter_vr_id"
             android:title="@string/enter_vr"
-            android:icon="@drawable/vr_headset" />
+            android:icon="@drawable/gm_filled_cardboard_24" />
+        <item android:id="@+id/managed_by_divider_line_id"
+            android:title="@null" />
         <item android:id="@+id/managed_by_menu_id"
-            android:title="@string/managed" />
+            android:title="@string/managed_browser"
+            android:icon="@drawable/ic_business" />
     </group>
 
     <!-- Items shown only in the tab switcher -->
@@ -138,49 +181,10 @@
         <item android:id="@+id/menu_group_tabs"
             android:title="@string/menu_group_tabs"
             android:icon="@drawable/ic_widgets" />
+        <item android:id="@+id/menu_select_tabs"
+            android:title="@string/menu_select_tabs"
+            android:icon="@drawable/ic_select_tabs" />
         <item android:id="@+id/track_prices_row_menu_id"
-            android:title="@string/menu_track_prices"
-            android:icon="@drawable/ic_trending_down_black" />
-        <item android:id="@id/preferences_id"
-            android:title="@string/menu_settings"
-            android:icon="@drawable/settings_cog" />
-    </group>
-
-    <!-- Items shown only in the tab switcher when start surface is enabled -->
-    <group android:id="@+id/START_SURFACE_MODE_MENU"
-        android:visible="false">
-        <item android:id="@id/new_tab_menu_id"
-            android:title="@string/menu_new_tab"
-            android:icon="@drawable/ic_add_box_rounded_corner" />
-        <item android:id="@id/new_incognito_tab_menu_id"
-            android:title="@string/menu_new_incognito_tab"
-            android:icon="@drawable/incognito_simple" />
-        <item android:id="@id/divider_line_id"
-            android:title="@null" />
-        <item android:id="@id/open_history_menu_id"
-            android:title="@string/menu_history"
-            android:icon="@drawable/ic_history_googblue_24dp" />
-        <item android:id="@id/downloads_menu_id"
-            android:title="@string/menu_downloads"
-            android:icon="@drawable/infobar_download_complete" />
-        <item android:id="@id/all_bookmarks_menu_id"
-            android:title="@string/menu_bookmarks"
-            android:icon="@drawable/btn_star_filled" />
-        <item android:id="@id/recent_tabs_menu_id"
-            android:title="@string/menu_recent_tabs"
-            android:icon="@drawable/devices_black_24dp" />
-        <item android:id="@id/divider_line_id"
-            android:title="@null" />
-        <item android:id="@id/close_all_tabs_menu_id"
-            android:title="@string/menu_close_all_tabs"
-            android:icon="@drawable/btn_close_white" />
-        <item android:id="@id/close_all_incognito_tabs_menu_id"
-            android:title="@string/menu_close_all_incognito_tabs"
-            android:icon="@drawable/btn_close_white" />
-        <item android:id="@id/menu_group_tabs"
-            android:title="@string/menu_group_tabs"
-            android:icon="@drawable/ic_widgets" />
-        <item android:id="@id/track_prices_row_menu_id"
             android:title="@string/menu_track_prices"
             android:icon="@drawable/ic_trending_down_black" />
         <item android:id="@id/preferences_id"

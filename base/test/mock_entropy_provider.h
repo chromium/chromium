@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ class MockEntropyProvider : public base::FieldTrial::EntropyProvider {
  public:
   MockEntropyProvider();
   explicit MockEntropyProvider(double entropy_value);
+
+  MockEntropyProvider(const MockEntropyProvider&) = delete;
+  MockEntropyProvider& operator=(const MockEntropyProvider&) = delete;
+
   ~MockEntropyProvider() override;
 
   // base::FieldTrial::EntropyProvider:
@@ -23,8 +27,6 @@ class MockEntropyProvider : public base::FieldTrial::EntropyProvider {
 
  private:
   double entropy_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockEntropyProvider);
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,58 +22,63 @@ NinePatchLayer::NinePatchLayer()
 NinePatchLayer::~NinePatchLayer() = default;
 
 std::unique_ptr<LayerImpl> NinePatchLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return NinePatchLayerImpl::Create(tree_impl, id());
 }
 
 void NinePatchLayer::SetBorder(const gfx::Rect& border) {
-  if (border == border_)
+  if (border == border_.Read(*this))
     return;
-  border_ = border;
+  border_.Write(*this) = border;
   SetNeedsCommit();
 }
 
 void NinePatchLayer::SetAperture(const gfx::Rect& aperture) {
-  if (image_aperture_ == aperture)
+  if (image_aperture_.Read(*this) == aperture)
     return;
 
-  image_aperture_ = aperture;
+  image_aperture_.Write(*this) = aperture;
   SetNeedsCommit();
 }
 
 void NinePatchLayer::SetFillCenter(bool fill_center) {
-  if (fill_center_ == fill_center)
+  if (fill_center_.Read(*this) == fill_center)
     return;
 
-  fill_center_ = fill_center;
+  fill_center_.Write(*this) = fill_center;
   SetNeedsCommit();
 }
 
 void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_ == nearest_neighbor)
+  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
     return;
 
-  nearest_neighbor_ = nearest_neighbor;
+  nearest_neighbor_.Write(*this) = nearest_neighbor;
   SetNeedsCommit();
 }
 
 void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
-  if (layer_occlusion_ == occlusion)
+  if (layer_occlusion_.Read(*this) == occlusion)
     return;
 
-  layer_occlusion_ = occlusion;
+  layer_occlusion_.Write(*this) = occlusion;
   SetNeedsCommit();
 }
 
-void NinePatchLayer::PushPropertiesTo(LayerImpl* layer) {
-  UIResourceLayer::PushPropertiesTo(layer);
+void NinePatchLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  UIResourceLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "NinePatchLayer::PushPropertiesTo");
   NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
 
   if (resource_id()) {
-    DCHECK(layer_tree_host());
-    layer_impl->SetLayout(image_aperture_, border_, layer_occlusion_,
-                          fill_center_, nearest_neighbor_);
+    DCHECK(IsAttached());
+    layer_impl->SetLayout(image_aperture_.Read(*this), border_.Read(*this),
+                          layer_occlusion_.Read(*this),
+                          fill_center_.Read(*this),
+                          nearest_neighbor_.Read(*this));
   }
 }
 

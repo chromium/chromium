@@ -33,4 +33,6 @@
     readonly attribute DeviceMotionEventAcceleration? accelerationIncludingGravity;
     readonly attribute DeviceMotionEventRotationRate? rotationRate;
     readonly attribute double interval;
+
+    [RuntimeEnabled=DeviceOrientationRequestPermission, CallWith=ScriptState, MeasureAs=DeviceMotionPermissionRequested] static Promise<DeviceOrientationPermissionState> requestPermission();
 };

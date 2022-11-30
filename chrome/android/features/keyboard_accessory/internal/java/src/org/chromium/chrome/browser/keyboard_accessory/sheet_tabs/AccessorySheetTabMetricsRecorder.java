@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetric
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.ADDRESS_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.CREDIT_CARD_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.PROMO_CODE_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.getType;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -44,6 +45,8 @@ class AccessorySheetTabMetricsRecorder {
                 for (UserInfoField field : info.getFields()) {
                     if (field.isSelectable()) ++interactiveSuggestions;
                 }
+            } else if (getType(suggestionList.get(i)) == PROMO_CODE_INFO) {
+                ++interactiveSuggestions;
             }
         }
         RecordHistogram.recordCount100Histogram(

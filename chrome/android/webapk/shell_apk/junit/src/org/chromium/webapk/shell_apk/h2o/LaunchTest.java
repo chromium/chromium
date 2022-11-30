@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -54,6 +55,7 @@ import java.util.stream.Collectors;
 /** Tests launching WebAPK. */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomAndroidOsShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public final class LaunchTest {
     /** Values based on manifest specified in GN file. */
     private static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
@@ -91,7 +93,7 @@ public final class LaunchTest {
      * 2) That no activities have been enabled/disabled.
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testDeepLinkPreN() {
         registerWebApk(true /* isNewStyleWebApk */);
 
@@ -424,7 +426,7 @@ public final class LaunchTest {
      * - Android API level < N
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testCheckH2OOpaqueMainActivityEnabledPreN() {
         changeWebApkActivityEnabledSetting(mPackageManager, H2OOpaqueMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
@@ -441,7 +443,7 @@ public final class LaunchTest {
      * - Android API level < N
      */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testCheckH2oMainActivityEnabledPreN() {
         changeWebApkActivityEnabledSetting(mPackageManager, H2OMainActivity.class,
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
@@ -548,7 +550,7 @@ public final class LaunchTest {
 
     /** Tests that we do not attempt to add a shortcut on Android versions lower than N. */
     @Test
-    @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+    @Config(sdk = Build.VERSION_CODES.M)
     public void testDoesNotAddSiteSettingsWhenSdkLow() {
         registerApkForSiteSettings(true /*enableInMetadata*/, true /*addCategory*/);
 

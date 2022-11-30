@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/task_traits.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
@@ -28,51 +32,47 @@ const std::vector<std::string>& WaylandDataDeviceBase::GetAvailableMimeTypes()
   return data_offer_->mime_types();
 }
 
-bool WaylandDataDeviceBase::RequestSelectionData(const std::string& mime_type) {
+PlatformClipboard::Data WaylandDataDeviceBase::ReadSelectionData(
+    const std::string& mime_type) {
   if (!data_offer_)
-    return false;
+    return {};
 
   base::ScopedFD fd = data_offer_->Receive(mime_type);
   if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to open file descriptor.";
-    return false;
+    DPLOG(ERROR) << "Failed to open file descriptor.";
+    return {};
   }
 
-  // Ensure there is not pending operation to be performed by the compositor,
-  // otherwise read(..) can block awaiting data to be sent to pipe.
-  RegisterDeferredReadClosure(
-      base::BindOnce(&WaylandDataDeviceBase::ReadClipboardDataFromFD,
-                     base::Unretained(this), std::move(fd), mime_type));
-  RegisterDeferredReadCallback();
-  return true;
+  // Do a roundtrip to ensure the above request reaches the server and the
+  // resulting events get processed. Otherwise, the source client won’t send any
+  // data, thus getting the owning thread stuck at the blocking read call below.
+  connection_->RoundTripQueue();
+
+  return ReadFromFD(std::move(fd));
 }
 
 void WaylandDataDeviceBase::ResetDataOffer() {
   data_offer_.reset();
 }
 
-void WaylandDataDeviceBase::ReadClipboardDataFromFD(
-    base::ScopedFD fd,
-    const std::string& mime_type) {
+PlatformClipboard::Data WaylandDataDeviceBase::ReadFromFD(
+    base::ScopedFD fd) const {
   std::vector<uint8_t> contents;
   wl::ReadDataFromFD(std::move(fd), &contents);
-  if (!selection_delegate_)
-    return;
-  selection_delegate_->OnSelectionDataReceived(
-      mime_type, base::RefCountedBytes::TakeVector(&contents));
+  return base::RefCountedBytes::TakeVector(&contents);
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
   DCHECK(!deferred_read_callback_);
 
-  deferred_read_callback_.reset(wl_display_sync(connection_->display()));
+  deferred_read_callback_.reset(
+      wl_display_sync(connection_->display_wrapper()));
 
-  static const wl_callback_listener kListener = {
-      WaylandDataDeviceBase::DeferredReadCallback};
+  static constexpr wl_callback_listener kListener = {&DeferredReadCallback};
 
   wl_callback_add_listener(deferred_read_callback_.get(), &kListener, this);
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadClosure(
@@ -94,12 +94,18 @@ void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
   DCHECK(!deferred_read_closure_.is_null());
 
   // The callback must be reset before invoking the closure because the latter
-  // may want to set another callback.  That typically happens when non-trivial
-  // data types are dropped; they have fallbacks to plain text so several
-  // roundtrips to data are chained.
+  // may want to set another callback.  That typically happens when
+  // non-trivial data types are dropped; they have fallbacks to plain text so
+  // several roundtrips to data are chained.
   deferred_read_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
+}
+
+void WaylandDataDeviceBase::NotifySelectionOffer(
+    WaylandDataOfferBase* offer) const {
+  if (selection_offer_callback_)
+    selection_offer_callback_.Run(offer);
 }
 
 }  // namespace ui

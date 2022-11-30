@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,43 +11,35 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/model/data_type_error_handler.h"
 
 namespace syncer {
 
 struct ConfigureContext;
+struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
-class ModelTypeConfigurer;
 class SyncError;
 
 // DataTypeControllers are responsible for managing the state of a single data
 // type. They are not thread safe and should only be used on the UI thread.
 class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
  public:
+  // TODO(crbug.com/967677): Should MODEL_LOADED be renamed to
+  // MODEL_READY_TO_CONNECT?
   enum State {
     NOT_RUNNING,     // The controller has never been started or has previously
                      // been stopped.  Must be in this state to start.
     MODEL_STARTING,  // The model is loading.
-    MODEL_LOADED,    // The model has finished loading and can start running.
+    MODEL_LOADED,    // The model has finished loading and is ready to connect.
     RUNNING,         // The controller is running and the data type is
                      // in sync with the cloud.
     STOPPING,        // The controller is in the process of stopping
                      // and is waiting for dependent services to stop.
     FAILED           // The controller was started but encountered an error.
-  };
-
-  // Returned from ActivateDataType.
-  enum ActivateDataTypeResult {
-    // Indicates that the initial download for this type is already complete, or
-    // wasn't needed in the first place (e.g. for proxy types).
-    TYPE_ALREADY_DOWNLOADED,
-    // Indicates that the initial download for this type still needs to be done.
-    TYPE_NOT_YET_DOWNLOADED,
   };
 
   // Note: This seems like it should be a OnceCallback, but it can actually be
@@ -58,8 +50,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   using StopCallback = base::OnceClosure;
 
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType,
-                              std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType, base::Value::List)>;
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -76,15 +67,11 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void LoadModels(const ConfigureContext& configure_context,
                           const ModelLoadCallback& model_load_callback) = 0;
 
-  // Called by DataTypeManager once the local model has loaded, but before
-  // downloading initial data (if necessary). Returns whether the initial
-  // download for this type is already complete.
-  virtual ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) = 0;
-
-  // Called by DataTypeManager to deactivate the controlled data type.
-  // See comments for ModelAssociationManager::OnSingleDataTypeWillStop.
-  virtual void DeactivateDataType(ModelTypeConfigurer* configurer) = 0;
+  // Called by DataTypeManager once the local model has loaded (MODEL_LOADED),
+  // in order to enable the sync engine's propagation of sync changes between
+  // the server and the local processor. Upon return, the controller assumes
+  // that the caller will take care of actually instrumenting the sync engine.
+  virtual std::unique_ptr<DataTypeActivationResponse> Connect() = 0;
 
   // Stops the data type. If LoadModels() has not completed it will enter
   // STOPPING state first and eventually STOPPED. Once stopped, |callback| will
@@ -98,7 +85,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   virtual void Stop(ShutdownReason shutdown_reason, StopCallback callback) = 0;
 
   // Name of this data type.  For logging purposes only.
-  std::string name() const { return ModelTypeToString(type()); }
+  std::string name() const { return ModelTypeToDebugString(type()); }
 
   // Current state of the data type controller.
   virtual State state() const = 0;
@@ -120,7 +107,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // transport-only mode (see syncer::SyncMode enum).
   virtual bool ShouldRunInTransportOnlyMode() const = 0;
 
-  // Returns a ListValue representing all nodes for this data type through
+  // Returns a Value::List representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   virtual void GetAllNodes(AllNodesCallback callback) = 0;

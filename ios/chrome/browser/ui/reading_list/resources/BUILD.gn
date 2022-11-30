@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,22 +28,5 @@ imageset("reading_list_empty_state") {
     "reading_list_empty_state.imageset/reading_list_empty_state.png",
     "reading_list_empty_state.imageset/reading_list_empty_state@2x.png",
     "reading_list_empty_state.imageset/reading_list_empty_state@3x.png",
-  ]
-}
-
-imageset("reading_list_empty_state_new") {
-  sources = [
-    "reading_list_empty_state_new.imageset/Contents.json",
-    "reading_list_empty_state_new.imageset/reading_list_empty_state_new@2x.png",
-    "reading_list_empty_state_new.imageset/reading_list_empty_state_new@3x.png",
-  ]
-}
-
-imageset("reading_list_tools_icon") {
-  sources = [
-    "reading_list_tools_icon.imageset/Contents.json",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@2x.png",
-    "reading_list_tools_icon.imageset/reading_list_tools_icon@3x.png",
   ]
 }

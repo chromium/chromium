@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_IMPL_H_
 
 #include <memory>
-#include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "chrome/browser/autofill/accessory_controller.h"
@@ -32,6 +31,10 @@ class ManualFillingControllerImpl
       public content::WebContentsUserData<ManualFillingControllerImpl>,
       public base::trace_event::MemoryDumpProvider {
  public:
+  ManualFillingControllerImpl(const ManualFillingControllerImpl&) = delete;
+  ManualFillingControllerImpl& operator=(const ManualFillingControllerImpl&) =
+      delete;
+
   ~ManualFillingControllerImpl() override;
 
   // ManualFillingController:
@@ -44,12 +47,19 @@ class ManualFillingControllerImpl
                                 bool has_suggestions) override;
   void Hide() override;
   void OnAutomaticGenerationStatusChanged(bool available) override;
-  void OnFillingTriggered(autofill::AccessoryTabType type,
-                          const autofill::UserInfo::Field& selection) override;
+  void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) override;
+  void OnFillingTriggered(
+      autofill::AccessoryTabType type,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(
       autofill::AccessoryAction selected_action) const override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) const override;
+  void RequestAccessorySheet(
+      autofill::AccessoryTabType tab_type,
+      base::OnceCallback<void(autofill::AccessorySheetData)> callback) override;
+
   gfx::NativeView container_view() const override;
 
   // Returns a weak pointer for this object.
@@ -104,20 +114,28 @@ class ManualFillingControllerImpl
   // Adjusts visibility based on focused field type and available suggestions.
   void UpdateVisibility();
 
+  // Registers this filling controller as observer on all sources which are
+  // allowed for this tab. This means `OnSourceAvailabilityChanged()` triggers
+  // as soon as the observed source changes.
+  void RegisterObserverForAllowedSources();
+
   void OnSourceAvailabilityChanged(
       FillingSource source,
       AccessoryController* source_controller,
       AccessoryController::IsFillingSourceAvailable is_source_available);
 
-  // Returns the controller that is responsible for a tab of given |type|.
-  AccessoryController* GetControllerForTab(autofill::AccessoryTabType type);
+  // Returns the controller that is responsible for a tab of given `type`.
+  AccessoryController* GetControllerForTabType(
+      autofill::AccessoryTabType type) const;
 
-  // Returns the controller that is responsible for a given |action|.
+  // Returns the controller that is responsible to handle requests for a given
+  // `filling_source`.
+  AccessoryController* GetControllerForFillingSource(
+      const FillingSource& filling_source) const;
+
+  // Returns the controller that is responsible for a given `action`.
   AccessoryController* GetControllerForAction(
       autofill::AccessoryAction action) const;
-
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
 
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;
@@ -142,13 +160,11 @@ class ManualFillingControllerImpl
   // member so the view can be created in the constructor with a fully set up
   // controller instance.
   std::unique_ptr<ManualFillingViewInterface> view_ =
-      ManualFillingViewInterface::Create(this);
+      ManualFillingViewInterface::Create(this, &GetWebContents());
 
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ManualFillingControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MANUAL_FILLING_CONTROLLER_IMPL_H_

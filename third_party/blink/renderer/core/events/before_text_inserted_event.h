@@ -49,4 +49,4 @@ class BeforeTextInsertedEvent final : public Event {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_BEFORE_TEXT_INSERTED_EVENT_H_

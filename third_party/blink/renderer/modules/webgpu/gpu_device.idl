@@ -1,28 +1,27 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUDevice : EventTarget {
-    [SameObject] readonly attribute GPUAdapter adapter;
-
-    readonly attribute FrozenArray<GPUFeatureName> features;
-    // Deprecated
-    readonly attribute FrozenArray<GPUFeatureName> extensions;
+    [SameObject] readonly attribute GPUSupportedFeatures features;
+    [SameObject] readonly attribute GPUSupportedLimits limits;
 
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
     [SameObject] readonly attribute GPUQueue queue;
-    // Deprecated
-    [SameObject] readonly attribute GPUQueue defaultQueue;
+
+    [CallWith=ScriptState] void destroy();
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);
-    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLVideoElement video, GPUTextureUsageFlags usage);
+    [RuntimeEnabled=WebGPUImportTexture, RaisesException] GPUTexture experimentalImportTexture(HTMLCanvasElement canvas, GPUTextureUsageFlags usage);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor = {});
+    [RaisesException] GPUExternalTexture importExternalTexture(GPUExternalTextureDescriptor descriptor);
 
     [RaisesException] GPUBindGroup createBindGroup(GPUBindGroupDescriptor descriptor);
     [RaisesException] GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
@@ -30,19 +29,15 @@
 
     [RaisesException] GPUShaderModule createShaderModule(GPUShaderModuleDescriptor descriptor);
     [CallWith=ScriptState] GPURenderPipeline createRenderPipeline(GPURenderPipelineDescriptor descriptor);
-    GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
+    [RaisesException] GPUComputePipeline createComputePipeline(GPUComputePipelineDescriptor descriptor);
 
     [CallWith=ScriptState] Promise<GPURenderPipeline?> createRenderPipelineAsync(GPURenderPipelineDescriptor descriptor);
     [CallWith=ScriptState] Promise<GPUComputePipeline?> createComputePipelineAsync(GPUComputePipelineDescriptor descriptor);
 
-    // Deprecated
-    [CallWith=ScriptState] Promise<GPURenderPipeline?> createReadyRenderPipeline(GPURenderPipelineDescriptor descriptor);
-    [CallWith=ScriptState] Promise<GPUComputePipeline?> createReadyComputePipeline(GPUComputePipelineDescriptor descriptor);
-
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor = {});
-    GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
+    [RaisesException] GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
 
-    GPUQuerySet createQuerySet(GPUQuerySetDescriptor descriptor);
+    [RaisesException] GPUQuerySet createQuerySet(GPUQuerySetDescriptor descriptor);
 
     void pushErrorScope(GPUErrorFilter filter);
     [CallWith=ScriptState] Promise<GPUError?> popErrorScope();
@@ -52,10 +47,9 @@
 GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
-    "none",
     "out-of-memory",
-    "validation"
+    "validation",
+    "internal",
 };
 
 typedef sequence<(GPUBuffer or ArrayBuffer)> GPUMappedBuffer;
-typedef (GPUOutOfMemoryError or GPUValidationError) GPUError;

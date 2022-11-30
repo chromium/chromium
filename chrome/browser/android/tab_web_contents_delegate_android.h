@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -41,6 +39,11 @@ class TabWebContentsDelegateAndroid
       public find_in_page::FindResultObserver {
  public:
   TabWebContentsDelegateAndroid(JNIEnv* env, jobject obj);
+
+  TabWebContentsDelegateAndroid(const TabWebContentsDelegateAndroid&) = delete;
+  TabWebContentsDelegateAndroid& operator=(
+      const TabWebContentsDelegateAndroid&) = delete;
+
   ~TabWebContentsDelegateAndroid() override;
 
   void PortalWebContentsCreated(content::WebContents* portal_contents) override;
@@ -65,9 +68,6 @@ class TabWebContentsDelegateAndroid
                            const gfx::RectF& active_rect) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
-  void AdjustPreviewsStateForNavigation(
-      content::WebContents* web_contents,
-      blink::PreviewsState* previews_state) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -84,12 +84,9 @@ class TabWebContentsDelegateAndroid
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
@@ -98,10 +95,10 @@ class TabWebContentsDelegateAndroid
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;
   content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId&,
-      const gfx::Size&) override;
+      content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
+  bool IsBackForwardCacheSupported() override;
+  bool IsPrerender2Supported(content::WebContents& web_contents) override;
   std::unique_ptr<content::WebContents> ActivatePortalWebContents(
       content::WebContents* predecessor_contents,
       std::unique_ptr<content::WebContents> portal_contents) override;
@@ -131,6 +128,7 @@ class TabWebContentsDelegateAndroid
   bool ShouldEnableEmbeddedMediaExperience() const;
   bool IsPictureInPictureEnabled() const;
   bool IsNightModeEnabled() const;
+  bool IsForceDarkWebContentEnabled() const;
   bool CanShowAppBanners() const;
   bool IsTabLargeEnoughForDesktopSite() const;
 
@@ -145,10 +143,9 @@ class TabWebContentsDelegateAndroid
   std::unique_ptr<device::mojom::GeolocationContext>
       installed_webapp_geolocation_context_;
 
-  ScopedObserver<find_in_page::FindTabHelper, find_in_page::FindResultObserver>
-      find_result_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabWebContentsDelegateAndroid);
+  base::ScopedMultiSourceObservation<find_in_page::FindTabHelper,
+                                     find_in_page::FindResultObserver>
+      find_result_observations_{this};
 };
 
 }  // namespace android

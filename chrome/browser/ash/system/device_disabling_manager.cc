@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/server_backed_device_state.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/system/statistics_provider.h"
-#include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -37,8 +37,8 @@ DeviceDisablingManager::DeviceDisablingManager(
     CrosSettings* cros_settings,
     user_manager::UserManager* user_manager)
     : delegate_(delegate),
-      browser_policy_connector_(g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()),
+      browser_policy_connector_(
+          g_browser_process->platform_part()->browser_policy_connector_ash()),
       cros_settings_(cros_settings),
       user_manager_(user_manager),
       device_disabled_(false) {
@@ -126,21 +126,24 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
   // Update the enrollment domain.
   enrollment_domain_.clear();
-  g_browser_process->local_state()->GetDictionary(
-      prefs::kServerBackedDeviceState)->GetString(
-          policy::kDeviceStateManagementDomain,
-          &enrollment_domain_);
+  const std::string* maybe_enrollment_domain =
+      g_browser_process->local_state()
+          ->GetDict(prefs::kServerBackedDeviceState)
+          .FindString(policy::kDeviceStateManagementDomain);
+  enrollment_domain_ =
+      maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
 
   // Update the serial number.
   serial_number_ = chromeos::system::StatisticsProvider::GetInstance()
                        ->GetEnterpriseMachineID();
 
   // Update the disabled message.
-  std::string disabled_message;
-  g_browser_process->local_state()->GetDictionary(
-      prefs::kServerBackedDeviceState)->GetString(
-          policy::kDeviceStateDisabledMessage,
-          &disabled_message);
+  const std::string* maybe_disabled_message =
+      g_browser_process->local_state()
+          ->GetDict(prefs::kServerBackedDeviceState)
+          .FindString(policy::kDeviceStateDisabledMessage);
+  std::string disabled_message =
+      maybe_disabled_message ? *maybe_disabled_message : std::string();
   CacheDisabledMessageAndNotify(disabled_message);
 
   // Indicate that the device is disabled.
@@ -163,8 +166,8 @@ bool DeviceDisablingManager::HonorDeviceDisablingDuringNormalOperation() {
   // Device disabling should be honored when the device is enterprise managed
   // and device disabling has not been turned off by flag.
   return g_browser_process->platform_part()
-             ->browser_policy_connector_chromeos()
-             ->IsEnterpriseManaged() &&
+             ->browser_policy_connector_ash()
+             ->IsDeviceEnterpriseManaged() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableDeviceDisabling);
 }

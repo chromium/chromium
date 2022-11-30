@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -33,6 +32,9 @@ class MockPaymentStateResolver final
         .WillByDefault(testing::ReturnPointee(&dummy_promise_));
   }
 
+  MockPaymentStateResolver(const MockPaymentStateResolver&) = delete;
+  MockPaymentStateResolver& operator=(const MockPaymentStateResolver&) = delete;
+
   ~MockPaymentStateResolver() override = default;
 
   MOCK_METHOD3(Complete,
@@ -50,8 +52,6 @@ class MockPaymentStateResolver final
 
  private:
   ScriptPromise dummy_promise_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPaymentStateResolver);
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {

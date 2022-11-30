@@ -2,6 +2,84 @@
   Methods for percent-based scrolling webtests
 */
 
+// The scroll percentage per mousewheel tick. Used to determine scroll delta
+// if percent based scrolling is enabled. See kScrollPercentPerLineOrChar.
+const SCROLL_PERCENT_PER_LINE_OR_CHAR = 0.05;
+
+// Returns true if the feature flag is on and the platform is supported
+function isPercentBasedScrollingEnabled() {
+  return (
+    internals.runtimeFlags.percentBasedScrollingEnabled
+    && (
+      navigator.userAgent.includes("Linux")
+      || navigator.userAgent.includes("Windows")
+    )
+  );
+}
+
+// Calculates expected scrollX/scrollY for a given container or window and
+// amount pixels to scroll for x/y axes when the percent-based scrolling
+// feature is enabled.
+// Returns unchanged pixelsToScrollX/pixelsToScrollY if the feature is disabled.
+function calculateExpectedScroll(container, pixelsToScrollX, pixelsToScrollY) {
+  if (!isPercentBasedScrollingEnabled()) {
+    return {x: pixelsToScrollX, y: pixelsToScrollY};
+  }
+
+  let expectedScrollX = (
+    pixelsToScrollX * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
+  );
+  let expectedScrollY = (
+    pixelsToScrollY * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
+  );
+
+  if (container === document.scrollingElement) {
+    expectedScrollX *= window.visualViewport.width;
+    expectedScrollY *= window.visualViewport.height;
+  } else {
+    expectedScrollX *= Math.min(
+      container.clientWidth, window.visualViewport.width
+    );
+    expectedScrollY *= Math.min(
+      container.clientHeight, window.visualViewport.height
+    );
+  }
+
+  return {x: expectedScrollX, y: expectedScrollY};
+}
+
+// This is an inverse of the above function.
+// Calculates amount of pixels to scroll for x/y axes when the percent-based
+// scrolling feature is enabled to match expected scrollX/scrollY for a given
+// container or window.
+// Returns unchanged expectedScrollX/expectedScrollY if the feature is disabled.
+function calculatePixelsToScroll(container, expectedScrollX, expectedScrollY) {
+  if (!isPercentBasedScrollingEnabled()) {
+    return {x: expectedScrollX, y: expectedScrollY};
+  }
+
+  let pixelsToScrollX = (
+    expectedScrollX * pixelsPerTick() / SCROLL_PERCENT_PER_LINE_OR_CHAR
+  );
+  let pixelsToScrollY = (
+    expectedScrollY * pixelsPerTick() / SCROLL_PERCENT_PER_LINE_OR_CHAR
+  );
+
+  if (container === document.scrollingElement) {
+    pixelsToScrollX /= window.visualViewport.width;
+    pixelsToScrollY /= window.visualViewport.height;
+  } else {
+    pixelsToScrollX /= Math.min(
+      container.clientWidth, window.visualViewport.width
+    );
+    pixelsToScrollY /= Math.min(
+      container.clientHeight, window.visualViewport.height
+    );
+  }
+
+  return {x: Math.floor(pixelsToScrollX), y: Math.floor(pixelsToScrollY)};
+}
+
 // Scrollbar Arrows Tests
 
 // Tests if scrolling the |scroller| element through its scrollbar arrows
@@ -99,7 +177,6 @@ function moveViewportToVisible(point) {
   let visual_rect = shrink(getVisualViewportRect(), 10);
   let visual_delta = offsetFromBounds(point, visual_rect);
   let visual_target = cssVisualToCssClient(visual_delta)
-  visual_target = scaleCssToBlinkPixels(visual_target);
   internals.setVisualViewportOffset(visual_target.x, visual_target.y);
 
   // Note that layout viewport = client

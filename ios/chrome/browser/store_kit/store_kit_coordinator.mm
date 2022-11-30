@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
-#include "base/check.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/check.h"
+#import "base/metrics/histogram_macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,14 +48,14 @@
 
 - (void)stop {
   // Do not call -dismissViewControllerAnimated:completion: on
-  // |self.baseViewController|, since the receiver of the method can be
+  // `self.baseViewController`, since the receiver of the method can be
   // dismissed if there is no presented view controller. On iOS 12
   // SKStoreProductViewControllerDelegate is responsible for dismissing
   // SKStoreProductViewController. On iOS 13.0 OS dismisses
   // SKStoreProductViewController after calling -productViewControllerDidFinish:
   // On iOS 13.2 OS dismisses SKStoreProductViewController before calling
   // -productViewControllerDidFinish: Calling
-  // -dismissViewControllerAnimated:completion: on |self.baseViewController| on
+  // -dismissViewControllerAnimated:completion: on `self.baseViewController` on
   // iOS 13.2 will dismiss base view controller and break the application UI.
   // According to SKStoreProductViewController documentation the delegate is
   // responsible for calling deprecated dismissModalViewControllerAnimated: so

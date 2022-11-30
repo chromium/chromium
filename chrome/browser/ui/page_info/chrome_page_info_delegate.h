@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_DELEGATE_H_
 #define CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -13,13 +14,14 @@
 
 class Profile;
 class StatefulSSLHostStateDelegate;
+class TrustSafetySentimentService;
 
 namespace content_settings {
 class PageSpecificContentSettings;
 }
 
 namespace permissions {
-class ChooserContextBase;
+class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
 }  // namespace permissions
 
@@ -38,7 +40,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       security_state::VisibleSecurityState visible_security_state);
 
   // PageInfoDelegate implementation
-  permissions::ChooserContextBase* GetChooserContext(
+  permissions::ObjectPermissionContextBase* GetChooserContext(
       ContentSettingsType type) override;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
@@ -46,17 +48,30 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OnUserActionOnPasswordUi(safe_browsing::WarningAction action) override;
   std::u16string GetWarningDetailText() override;
 #endif
-  permissions::PermissionResult GetPermissionStatus(
-      ContentSettingsType type,
-      const GURL& site_url) override;
-
-#if !defined(OS_ANDROID)
+  permissions::PermissionResult GetPermissionResult(
+      blink::PermissionType permission,
+      const url::Origin& origin) override;
+#if !BUILDFLAG(IS_ANDROID)
+  absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
+  bool IsFpsManaged() override;
   bool CreateInfoBarDelegate() override;
+  std::unique_ptr<content_settings::CookieControlsController>
+  CreateCookieControlsController() override;
+  std::u16string GetWebAppShortName() override;
+  // In Chrome's case, this may show the site settings page or an app settings
+  // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
+  void ShowCookiesSettings() override;
+  void ShowAllSitesSettingsFilteredByFpsOwner(
+      const std::u16string& fps_owner) override;
   void OpenCookiesDialog() override;
   void OpenCertificateDialog(net::X509Certificate* certificate) override;
   void OpenConnectionHelpCenterPage(const ui::Event& event) override;
   void OpenSafetyTipHelpCenterPage() override;
+  void OpenContentSettingsExceptions(
+      ContentSettingsType content_settings_type) override;
+  void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) override;
+  void OnUIClosing() override;
 #endif
 
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
@@ -70,17 +85,29 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>
   GetPageSpecificContentSettingsDelegate() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const std::u16string GetClientApplicationName() override;
 #endif
 
  private:
   Profile* GetProfile() const;
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::ChromePasswordProtectionService*
   GetChromePasswordProtectionService() const;
 #endif
-  content::WebContents* web_contents_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Focus the window and tab for the web contents.
+  void FocusWebContents();
+
+  // The sentiment service is owned by the profile and will outlive this. The
+  // service cannot be retrieved via |web_contents_| as that may be destroyed
+  // before this is.
+  raw_ptr<TrustSafetySentimentService> sentiment_service_;
+#endif
+
+  raw_ptr<content::WebContents> web_contents_;
   security_state::SecurityLevel security_level_for_tests_;
   security_state::VisibleSecurityState visible_security_state_for_tests_;
   bool security_state_for_tests_set_ = false;

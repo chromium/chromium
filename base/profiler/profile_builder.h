@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define BASE_PROFILER_PROFILE_BUILDER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
@@ -23,6 +22,10 @@ namespace base {
 class BASE_EXPORT ProfileBuilder {
  public:
   ProfileBuilder() = default;
+
+  ProfileBuilder(const ProfileBuilder&) = delete;
+  ProfileBuilder& operator=(const ProfileBuilder&) = delete;
+
   virtual ~ProfileBuilder() = default;
 
   // Gets the ModuleCache to be used by the StackSamplingProfiler when looking
@@ -57,9 +60,6 @@ class BASE_EXPORT ProfileBuilder {
   // |sampling_period|. Invoked when sampling a profile completes.
   virtual void OnProfileCompleted(TimeDelta profile_duration,
                                   TimeDelta sampling_period) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileBuilder);
 };
 
 }  // namespace base

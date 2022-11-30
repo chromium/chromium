@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_ORIENTATION_SENSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_ORIENTATION_SENSOR_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/float32_array_or_float64_array_or_dom_matrix.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_spatial_sensor_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/sensor/sensor.h"
 
@@ -16,8 +16,9 @@ class OrientationSensor : public Sensor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  base::Optional<Vector<double>> quaternion();
-  void populateMatrix(Float32ArrayOrFloat64ArrayOrDOMMatrix&, ExceptionState&);
+  absl::optional<Vector<double>> quaternion();
+  void populateMatrix(const V8RotationMatrixType* target_buffer,
+                      ExceptionState& exception_state);
 
   bool isReadingDirty() const;
 

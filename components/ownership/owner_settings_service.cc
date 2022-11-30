@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/ownership/owner_key_util.h"
@@ -70,7 +70,7 @@ std::unique_ptr<em::PolicyFetchResponse> AssembleAndSignPolicy(
   return policy_response;
 }
 
-}  // namepace
+}  // namespace
 
 OwnerSettingsService::OwnerSettingsService(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
@@ -140,6 +140,13 @@ bool OwnerSettingsService::SetDouble(const std::string& setting, double value) {
   return Set(setting, in_value);
 }
 
+void OwnerSettingsService::RunPendingIsOwnerCallbacksForTesting(bool is_owner) {
+  std::vector<IsOwnerCallback> is_owner_callbacks;
+  is_owner_callbacks.swap(pending_is_owner_callbacks_);
+  for (auto& callback : is_owner_callbacks)
+    std::move(callback).Run(is_owner);
+}
+
 bool OwnerSettingsService::SetString(const std::string& setting,
                                      const std::string& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -153,12 +160,20 @@ void OwnerSettingsService::ReloadKeypair() {
 }
 
 void OwnerSettingsService::OnKeypairLoaded(
-    const scoped_refptr<PublicKey>& public_key,
-    const scoped_refptr<PrivateKey>& private_key) {
+    scoped_refptr<PublicKey> public_key,
+    scoped_refptr<PrivateKey> private_key) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  public_key_ = public_key;
-  private_key_ = private_key;
+  // The pointers themself should not be null to indicate that the keys finished
+  // loading (even if unsuccessfully). Absence of the actual data inside can
+  // indicate that the keys are unavailable.
+  public_key_ =
+      public_key ? public_key
+                 : base::MakeRefCounted<ownership::PublicKey>(
+                       /*is_persisted=*/false, /*data=*/std::vector<uint8_t>());
+  private_key_ = private_key
+                     ? private_key
+                     : base::MakeRefCounted<ownership::PrivateKey>(nullptr);
 
   std::vector<IsOwnerCallback> is_owner_callbacks;
   is_owner_callbacks.swap(pending_is_owner_callbacks_);

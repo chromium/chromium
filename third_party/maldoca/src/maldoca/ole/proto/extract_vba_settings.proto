@@ -1,0 +1,34 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca.vba;
+
+option optimize_for = LITE_RUNTIME;
+
+enum VBAExtractionMethod {
+  EXTRACTION_TYPE_UNKNOWN = 0;
+  // Same as ExtractVBAFromString, but OOXML content is not
+  // considered. This is the preferred interface for the SuperSkimmer
+  // transformer.
+  EXTRACTION_TYPE_LIGHTWEIGHT = 1;
+  // Default VBA extraction method.
+  EXTRACTION_TYPE_DEFAULT = 2;
+}
+
+message ExtractVBASettings {
+  // Method of extracting VBA.
+  optional VBAExtractionMethod extraction_method = 1;
+}

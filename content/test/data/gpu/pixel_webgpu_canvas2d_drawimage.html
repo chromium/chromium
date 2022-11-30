@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU drawImage test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      const canvas2d = document.getElementById('canvas_2d');
+      const ctx2d = canvas2d.getContext('2d');
+      if (!ctx2d) {
+        console.error('getContext(2d) failed');
+        return null;
+      }
+
+      const gpuCanvas = document.getElementById('canvas_gpu');
+      const [gpuDevice, gpuContext] = await webGpuUtils.init(gpuCanvas);
+      if (!gpuDevice || !gpuContext) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const renderCallback = function() {
+        webGpuUtils.fourColorsTest(gpuDevice, gpuContext, gpuCanvas.width,
+                                   gpuCanvas.height);
+        ctx2d.drawImage(gpuCanvas, 0, 0);
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="canvas_2d" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

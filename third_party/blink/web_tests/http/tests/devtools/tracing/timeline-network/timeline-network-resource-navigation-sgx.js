@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
   const panel = UI.panels.timeline;
   PerformanceTestRunner.runWhenTimelineIsReady(recordingStopped);
-  panel._millisecondsToRecordAfterLoadEvent = 1;
-  panel._recordReload();
+  panel.millisecondsToRecordAfterLoadEvent = 1;
+  panel.recordReload();
 
   async function recordingStopped() {
     TestRunner.addResult('Recording stopped');
@@ -28,7 +28,7 @@
         } else if (requestId !== event.args.data.requestId) {
           TestRunner.addResult(`Events did not have the same request id.`)
         }
-        TestRunner.addResult(`${event.name} from thread ${event.thread._name}`);
+        TestRunner.addResult(`${event.name} from thread ${event.thread.name()}`);
       }
     }
     TestRunner.completeTest();

@@ -1,21 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-// clang-format off
-// #import {FileOperationProgressEvent, FileOperationError} from '../../common/js/file_operation_common.m.js';
-// #import {TrashEntry} from '../../common/js/trash.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {metadataProxy} from './metadata_proxy.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {metrics} from '../../common/js/metrics.js';
+import {TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
+
+import {metadataProxy} from './metadata_proxy.js';
 
 /**
  * Utilities for file operations.
@@ -28,8 +24,8 @@ const fileOperationUtil = {};
  *
  * @param {DirectoryEntry} root The root of the filesystem to search.
  * @param {string} path The path to be resolved.
- * @return {Promise} Promise fulfilled with the resolved entry, or rejected with
- *     FileError.
+ * @return {!Promise<DirectoryEntry|FileEntry>} Promise fulfilled with the
+ *     resolved entry, or rejected with FileError.
  */
 fileOperationUtil.resolvePath = (root, path) => {
   if (path === '' || path === '/') {
@@ -61,7 +57,7 @@ fileOperationUtil.resolvePath = (root, path) => {
  *     deduplicated path on success.
  * @param {function(FileOperationError)=} opt_errorCallback
  *     Callback run on error.
- * @return {Promise} Promise fulfilled with available path.
+ * @return {!Promise<string>} Promise fulfilled with available path.
  */
 fileOperationUtil.deduplicatePath =
     (dirEntry, relativePath, opt_successCallback, opt_errorCallback) => {
@@ -427,11 +423,16 @@ fileOperationUtil.copyTo =
           }
 
           switch (status.type) {
-            case 'begin_copy_entry':
+            case 'begin':
               callback();
               break;
 
-            case 'end_copy_entry':
+            case 'progress':
+              progressCallback(status.sourceUrl, status.size);
+              callback();
+              break;
+
+            case 'end_copy':
               // TODO(mtomasz): Convert URL to Entry in custom bindings.
               (source.isFile ? parent.getFile : parent.getDirectory)
                   .call(
@@ -446,8 +447,17 @@ fileOperationUtil.copyTo =
                       });
               break;
 
-            case 'progress':
-              progressCallback(status.sourceUrl, status.size);
+            case 'end_move':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
+              callback();
+              break;
+
+            case 'end_remove_source':
+              console.error(
+                  'Unexpected event: ' + status.type +
+                  ' (move not implemented yet)');
               callback();
               break;
 
@@ -524,35 +534,6 @@ fileOperationUtil.copyTo =
     };
 
 /**
- * Thin wrapper of chrome.fileManagerPrivate.zipSelection to adapt its
- * interface similar to copyTo().
- *
- * @param {!Array<!Entry>} sources The array of entries to be archived.
- * @param {!DirectoryEntry} parent The entry of the destination directory.
- * @param {string} newName The name of the archive to be created.
- * @param {function(FileEntry)} successCallback Callback invoked when the
- *     operation is successfully done with the entry of the created archive.
- * @param {function(DOMError)} errorCallback Callback invoked when an error
- *     is found.
- */
-fileOperationUtil.zipSelection =
-    (sources, parent, newName, successCallback, errorCallback) => {
-      chrome.fileManagerPrivate.zipSelection(
-          sources, parent, newName, success => {
-            if (!success) {
-              // Failed to create a zip archive.
-              errorCallback(
-                  util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
-              return;
-            }
-
-            // Returns the created entry via callback.
-            parent.getFile(
-                newName, {create: false}, successCallback, errorCallback);
-          });
-    };
-
-/**
  * A record of a queued copy operation.
  *
  * Multiple copy operations may be queued at any given time.  Additional
@@ -586,7 +567,7 @@ fileOperationUtil.Task = class {
     this.processingEntries = null;
 
     /**
-     * Total number of bytes to be processed. Filled in initialize().
+     * Total number of bytes to be processed. Filled in initialize() or run().
      * Use 1 as an initial value to indicate that the task is not completed.
      * @type {number}
      */
@@ -649,7 +630,9 @@ fileOperationUtil.Task = class {
   /**
    * @param {function()} callback When entries resolved.
    */
-  initialize(callback) {}
+  initialize(callback) {
+    callback();
+  }
 
   /**
    * Requests cancellation of this task.
@@ -691,9 +674,7 @@ fileOperationUtil.Task = class {
       processedBytes: this.processedBytes,
       processingEntryName: processingEntry ? processingEntry.name : '',
       targetDirEntryName: this.targetDirEntry.name,
-      currentSpeed: this.speedometer_.getCurrentSpeed(),
-      averageSpeed: this.speedometer_.getAverageSpeed(),
-      remainingTime: this.speedometer_.getRemainingTime()
+      remainingTime: this.speedometer_.getRemainingTime(),
     };
   }
 
@@ -803,7 +784,7 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
               callback();
             },
             error => {
-              console.error('Failed to resolve for copy: %s', error.name);
+              console.warn('Failed to resolve for copy: %s', error.name);
               callback();
             });
       }.bind(this, i));
@@ -908,13 +889,13 @@ fileOperationUtil.CopyTask = class extends fileOperationUtil.Task {
       }
 
       // Updates progress bar in limited frequency so that intervals between
-      // updates have at least 200ms.
+      // updates have at least one second.
       this.updateProgressRateLimiter_.run();
     };
     updateProgress = updateProgress.bind(this);
 
     this.updateProgressRateLimiter_ =
-        new AsyncUtil.RateLimiter(progressCallback);
+        new AsyncUtil.RateLimiter(progressCallback, 1000);
 
     this.numRemainingItems = this.calcNumRemainingItems_();
 
@@ -1172,42 +1153,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
   constructor(taskId, sourceEntries, targetDirEntry, zipBaseDirEntry) {
     super(taskId, util.FileOperationType.ZIP, sourceEntries, targetDirEntry);
     this.zipBaseDirEntry = zipBaseDirEntry;
-
-    /** @type {boolean} */
-    this.zip = true;
-  }
-
-
-  /**
-   * Initializes the ZipTask.
-   * @param {function()} callback Called when the initialize is completed.
-   */
-  initialize(callback) {
-    const resolvedEntryMap = {};
-    const group = new AsyncUtil.Group();
-    for (let i = 0; i < this.sourceEntries.length; i++) {
-      group.add(function(index, callback) {
-        fileOperationUtil.resolveRecursively_(
-            this.sourceEntries[index], entries => {
-              for (let j = 0; j < entries.length; j++) {
-                resolvedEntryMap[entries[j].toURL()] = entries[j];
-              }
-              callback();
-            }, callback);
-      }.bind(this, i));
-    }
-
-    group.run(() => {
-      // For zip archiving, all the entries are processed at once.
-      this.processingEntries = [resolvedEntryMap];
-
-      this.totalBytes = 0;
-      for (const url in resolvedEntryMap) {
-        this.totalBytes += resolvedEntryMap[url].size;
-      }
-
-      callback();
-    });
   }
 
   /**
@@ -1222,41 +1167,88 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
    * @override
    */
   run(entryChangedCallback, progressCallback, successCallback, errorCallback) {
-    // TODO(hidehiko): we should localize the name.
-    let destName = 'Archive';
-    if (this.sourceEntries.length == 1) {
-      const entryName = this.sourceEntries[0].name;
-      const i = entryName.lastIndexOf('.');
-      destName = ((i < 0) ? entryName : entryName.substr(0, i));
-    }
+    const f = async () => {
+      try {
+        // TODO(crbug.com/1238237) Localize the name.
+        let destName = 'Archive';
 
-    fileOperationUtil.deduplicatePath(
-        this.targetDirEntry, destName + '.zip', destPath => {
-          // TODO: per-entry zip progress update with accurate byte count.
-          // For now just set completedBytes to 0 so that it is not full until
-          // the zip operatoin is done.
-          this.processedBytes = 0;
-          progressCallback();
+        // If there is only one entry to zip, use this entry's name for the ZIP
+        // filename.
+        if (this.sourceEntries.length == 1) {
+          const entryName = this.sourceEntries[0].name;
+          const i = entryName.lastIndexOf('.');
+          destName = ((i < 0) ? entryName : entryName.substr(0, i));
+        }
 
-          // The number of elements in processingEntries is 1. See also
-          // initialize().
-          const entries = [];
-          for (const url in this.processingEntries[0]) {
-            entries.push(this.processingEntries[0][url]);
+        const destPath = await fileOperationUtil.deduplicatePath(
+            this.targetDirEntry, destName + '.zip');
+
+        if (this.cancelRequested_) {
+          throw util.createDOMError(util.FileError.ABORT_ERR);
+        }
+
+        // Start ZIP operation.
+        const startTime = Date.now();
+        const {zipId, totalBytes} = await new Promise(
+            (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
+                assert(this.sourceEntries), this.zipBaseDirEntry, destPath,
+                (zipId, totalBytes) => chrome.runtime.lastError ?
+                    reject(chrome.runtime.lastError) :
+                    resolve({zipId, totalBytes})));
+
+        this.totalBytes = totalBytes;
+        this.speedometer_.setTotalBytes(this.totalBytes);
+
+        if (this.cancelRequested_) {
+          // Cancellation was requested while fileManagerPrivate.zipSelection()
+          // was running.
+          chrome.fileManagerPrivate.cancelZip(zipId);
+        } else {
+          // Set up cancellation callback.
+          this.cancelCallback_ = () =>
+              chrome.fileManagerPrivate.cancelZip(zipId);
+        }
+
+        // Monitor progress.
+        while (true) {
+          const {result, bytes} = await new Promise(
+              (resolve, reject) => chrome.fileManagerPrivate.getZipProgress(
+                  zipId, (result, bytes) => {
+                    if (chrome.runtime.lastError) {
+                      reject(chrome.runtime.lastError);
+                    } else {
+                      resolve({result, bytes});
+                    }
+                  }));
+
+          // Check for error.
+          if (result > 0) {
+            throw this.cancelRequested_ ?
+                util.createDOMError(util.FileError.ABORT_ERR) :
+                util.createDOMError(util.FileError.INVALID_MODIFICATION_ERR);
           }
 
-          fileOperationUtil.zipSelection(
-              entries, this.zipBaseDirEntry, destPath,
-              entry => {
-                this.processedBytes = this.totalBytes;
-                entryChangedCallback(util.EntryChangedKind.CREATED, entry);
-                successCallback();
-              },
-              error => {
-                errorCallback(new FileOperationError(
-                    util.FileOperationErrorType.FILESYSTEM_ERROR, error));
-              });
-        }, errorCallback);
+          // Report progress.
+          this.processedBytes = bytes;
+          this.speedometer_.update(this.processedBytes);
+          progressCallback();
+
+          // Check for success.
+          if (result == 0) {
+            // On success, record zip time UMA.
+            metrics.recordTime(`ZipTask.Time`, Date.now() - startTime);
+            successCallback();
+            return;
+          }
+        }
+      } catch (error) {
+        errorCallback(new FileOperationError(
+            util.FileOperationErrorType.FILESYSTEM_ERROR,
+            /** @type DOMError */ (error)));
+      }
+    };
+
+    f();
   }
 };
 
@@ -1268,8 +1260,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
  *   processedBytes: number,
  *   processingEntryName: string,
  *   targetDirEntryName: string,
- *   currentSpeed: number,
- *   averageSpeed: number,
  *   remainingTime: number,
  * }}
  */
@@ -1297,7 +1287,7 @@ fileOperationUtil.DeleteTask;
  *
  * TODO(hidehiko): Reorganize the event dispatching mechanism.
  */
-fileOperationUtil.EventRouter = class extends cr.EventTarget {
+fileOperationUtil.EventRouter = class extends EventTarget {
   constructor() {
     super();
     this.pendingDeletedEntries_ = {};
@@ -1404,8 +1394,6 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
       processedBytes: task.processedBytes,
       processingEntryName: task.entries.length > 0 ? task.entries[0].name : '',
       targetDirEntryName: '',
-      currentSpeed: 0,
-      averageSpeed: 0,
       remainingTime: 0,
     };
     event.trashedEntries = task.trashedEntries;
@@ -1414,139 +1402,68 @@ fileOperationUtil.EventRouter = class extends cr.EventTarget {
 };
 
 /**
- * Class to calculate transfer speed and remaining time. Each update from
- * transfer task stores the last speed in a ring buffer and recalculates the
- * cumulative moving average (CMA).
+ * Class to calculate transfer speed and remaining time.
  *
- * Current speed (average of window) and remaining time is calculated per calls
- * from progress updater in the task.
+ * Each update from the transfer task stores a sample in a queue.
  *
- * The length of buffer specifies the moving window length.
+ * Current speed and remaining time are calculated using a linear interpolation
+ * of the kept samples.
  */
 fileOperationUtil.Speedometer = class {
   /**
-   * @param {number} bufferLength Max number of recent data used in
-   * calculation as time window.
+   * @param {number} maxSamples Max number of samples to keep.
    */
-  constructor(bufferLength) {
-    /***
-     * The buffer length controlling average window length.
-     * @type {number}
-     * @private
+  constructor(maxSamples = 20) {
+    /**
+     * @private @const {number} Max number of samples to keep.
      */
-    this.length_ = bufferLength;
+    this.maxSamples_ = maxSamples;
 
     /**
-     * @private {!Array} internal buffer to track recent data.
+     * @private @const {!Array<!{time: number, bytes: number}>} Recent samples.
+     *     |time| is in milliseconds.
      */
-    this.buffer_ = [];
+    this.samples_ = [];
 
     /**
-     * @private {number} index of current position in buffer.
+     * @private {?{time: number, bytes: number}} First sample.
+     *     |time| is in milliseconds.
      */
-    this.index_ = 0;
+    this.first_ = null;
 
     /**
-     * @private {number} Count of how many updates have been processed.
-     * It helps to update CMA speed without keeping all data.
-     */
-    this.count_ = 0;
-
-    /**
-     * @private {number} Current cumulative moving average speed in bytes per
-     *     second.
-     */
-    this.cma_ = 0;
-
-    /**
-     * @private {number} Last timestamp the speed calculated in millisecond.
-     */
-    this.lastTimestamp_ = 0;
-
-    /**
-     * @private {number} Last reported processed bytes.
-     */
-    this.lastProcessedBytes_ = 0;
-
-    /**
-     *
-     * @private {number} Total bytes to be processed by the task.
+     * @private {number} Total number of bytes to be processed by the task.
      */
     this.totalBytes_ = 0;
   }
 
   /**
-   * Pushes the new speed into the internal queue and call to update CMA.
-   * @param {number} speed The last calculated speed to track.
+   * @returns {number} Number of kept samples.
    */
-  push_(speed) {
-    this.buffer_[this.index_] = speed;
-    this.index_ = (this.index_ + 1) % this.length_;
+  getSampleCount() {
+    return this.samples_.length;
   }
 
   /**
-   * Updates cumulative average speed and count.
-   *
-   * It updates cma progressively using this formula:
-   * CMAnew = (CMAprev * count_ + SPEEDcurr) / (count_ + 1)
-   *
-   * @param {number} speed The last speed added to the ring.
-   */
-  updateCMA_(speed) {
-    this.count_++;
-    this.cma_ = Math.floor((this.cma_ * this.count_ + speed) / (this.count_));
-  }
-
-  /**
-   * Returns internal buffer for unit testing purposes.
-   *
-   * @returns {!Array} The internal buffer.
-   */
-  getBufferForTesting() {
-    return this.buffer_;
-  }
-
-  /**
-   * Calculates and returns the current speed in bytes per second.
-   */
-  getCurrentSpeed() {
-    if (this.buffer_.length == 0) {
-      return 0;
-    }
-
-    const sum =
-        this.buffer_.reduce((accumulated, current) => accumulated + current, 0);
-    return Math.floor(sum / this.buffer_.length);
-  }
-
-  /**
-   * @returns {number} Returns calculated cumulative average speed in bytes per
-   *     second.
-   */
-  getAverageSpeed() {
-    return this.cma_;
-  }
-
-  /**
-   * Calculates the remaining time of the task based on remaining bytes and
-   * current speed.
-   *
-   * @returns {number} The remaining time in seconds.
+   * @returns {number} Remaining time in seconds, or NaN if there aren't enough
+   *     samples.
    */
   getRemainingTime() {
-    // Return zero if no data added yet or the last calculated speed was zero.
-    // It is mapped in UI to show unknown remaining time.
-    const currentSpeed = this.getCurrentSpeed();
-    if (currentSpeed == 0) {
-      return 0;
+    const a = this.interpolate_();
+    if (!a) {
+      return NaN;
     }
 
-    return Math.ceil(
-        (this.totalBytes_ - this.lastProcessedBytes_) / currentSpeed);
+    // Compute remaining time in milliseconds.
+    const targetTime =
+        (this.totalBytes_ - a.averageBytes) / a.speed + a.averageTime;
+    const remainingTime = targetTime - Date.now();
+
+    // Convert remaining time from milliseconds to seconds.
+    return remainingTime / 1000;
   }
 
   /**
-   *
    * @param {number} totalBytes Number of total bytes task handles.
    */
   setTotalBytes(totalBytes) {
@@ -1554,26 +1471,84 @@ fileOperationUtil.Speedometer = class {
   }
 
   /**
-   * Update speedometer with the latest status.
-   *
-   * It calculates speed using the processed bytes reported in the status and
-   * previous status.
-   * @param {number} processedBytes Number of processed bytes calculated by the
-   *     task.
-   * processed bytes.
+   * Adds a sample with the current timestamp and the given number of |bytes|
+   * if the previous sample was received more than a second ago.
+   * Does nothing if the previous sample was received less than a second ago.
+   * @param {number} bytes Total number of bytes processed by the task so far.
    */
-  update(processedBytes) {
-    const currentTime = Date.now();
-    const currSpeed = Math.floor(
-        (processedBytes - this.lastProcessedBytes_) /
-        ((currentTime - this.lastTimestamp_) / 1000));
-    this.push_(currSpeed);
-    this.updateCMA_(currSpeed);
+  update(bytes) {
+    const time = Date.now();
+    const sample = {time, bytes};
 
-    this.lastProcessedBytes_ = processedBytes;
-    this.lastTimestamp_ = currentTime;
+    // Is this the first sample?
+    if (this.first_ == null) {
+      // Remember this sample as the first one.
+      this.first_ = sample;
+    } else {
+      // Drop this sample if we already received one less than a second ago.
+      const last = this.samples_[this.samples_.length - 1];
+      if (sample.time - last.time < 1000) {
+        return;
+      }
+    }
+
+    // Queue this sample.
+    if (this.samples_.push(sample) > this.maxSamples_) {
+      // Remove old sample.
+      this.samples_.shift();
+    }
+  }
+
+  /**
+   * Computes a linear interpolation of the samples stored in |this.samples_|.
+   * @private
+   * @returns {?{speed: number, averageTime: number, averageBytes: number}} null
+   *     if there aren't enough samples, or the result of the linear
+   *     interpolation. |speed| is the slope of the linear interpolation in
+   *     bytes per millisecond. The linear interpolation goes through the point
+   *     |(averageTime, averageBytes)|.
+   */
+  interpolate_() {
+    // Don't even try to compute the linear interpolation unless we have enough
+    // samples.
+    const n = this.samples_.length;
+    if (n < 2) {
+      return null;
+    }
+
+    // First pass to compute averages.
+    let averageTime = 0;
+    let averageBytes = 0;
+
+    for (const {time, bytes} of this.samples_) {
+      averageTime += time;
+      averageBytes += bytes;
+    }
+
+    averageTime /= n;
+    averageBytes /= n;
+
+    // Second pass to compute variances.
+    let varianceTime = 0;
+    let covarianceTimeBytes = 0;
+
+    for (const {time, bytes} of this.samples_) {
+      const timeDiff = time - averageTime;
+      varianceTime += timeDiff * timeDiff;
+      covarianceTimeBytes += timeDiff * (bytes - averageBytes);
+    }
+
+    // Strictly speaking, both varianceTime and covarianceTimeBytes should be
+    // scaled down by the number of samples n. But since we're only interested
+    // in the ratio of these two quantities, we can avoid these two divisions.
+    //
+    // varianceTime /= n;
+    // covarianceTimeBytes /= n;
+
+    // Compute speed.
+    const speed = covarianceTimeBytes / varianceTime;
+    return {speed, averageTime, averageBytes};
   }
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {fileOperationUtil};
+export {fileOperationUtil};

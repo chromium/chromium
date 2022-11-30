@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_controller.h"
-#include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
 namespace url {
@@ -39,14 +38,14 @@ class AppActivity : public CastActivity {
               CastSessionTracker* session_tracker);
   ~AppActivity() override;
 
-  void SendMediaStatusToClients(const base::Value& media_status,
-                                base::Optional<int> request_id) override;
+  void SendMediaStatusToClients(const base::Value::Dict& media_status,
+                                absl::optional<int> request_id) override;
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
   void CreateMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
-  base::Optional<int> SendMediaRequestToReceiver(
+  absl::optional<int> SendMediaRequestToReceiver(
       const CastInternalMessage& cast_message) override;
   cast_channel::Result SendAppMessageToReceiver(
       const CastInternalMessage& cast_message) override;

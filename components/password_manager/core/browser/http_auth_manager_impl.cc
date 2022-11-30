@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,9 +58,8 @@ void HttpAuthManagerImpl::SetObserverAndDeliverCredentials(
   observer_ = observer;
   // Initialize the form manager.
   form_manager_ = std::make_unique<PasswordFormManager>(
-      client_, PasswordStore::FormDigest(observed_form),
-      nullptr /* form_fetcher */,
-      PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client_));
+      client_, PasswordFormDigest(observed_form), nullptr /* form_fetcher */,
+      std::make_unique<PasswordSaveManagerImpl>(client_));
 }
 
 void HttpAuthManagerImpl::ProvisionallySaveForm(

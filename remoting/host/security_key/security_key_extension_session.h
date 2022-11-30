@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "remoting/host/host_extension_session.h"
 
 namespace base {
-class DictionaryValue;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -35,6 +35,11 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
       ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub,
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
+
+  SecurityKeyExtensionSession(const SecurityKeyExtensionSession&) = delete;
+  SecurityKeyExtensionSession& operator=(const SecurityKeyExtensionSession&) =
+      delete;
+
   ~SecurityKeyExtensionSession() override;
 
   // HostExtensionSession interface.
@@ -48,9 +53,9 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
 
  private:
   // These methods process specific security key extension message types.
-  void ProcessControlMessage(base::DictionaryValue* message_data) const;
-  void ProcessDataMessage(base::DictionaryValue* message_data) const;
-  void ProcessErrorMessage(base::DictionaryValue* message_data) const;
+  void ProcessControlMessage(const base::Value::Dict& message_data) const;
+  void ProcessDataMessage(const base::Value::Dict& message_data) const;
+  void ProcessErrorMessage(const base::Value::Dict& message_data) const;
 
   void SendMessageToClient(int connection_id, const std::string& data) const;
 
@@ -58,12 +63,10 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
   base::ThreadChecker thread_checker_;
 
   // Interface through which messages can be sent to the client.
-  protocol::ClientStub* client_stub_ = nullptr;
+  raw_ptr<protocol::ClientStub> client_stub_ = nullptr;
 
   // Handles platform specific security key operations.
   std::unique_ptr<SecurityKeyAuthHandler> security_key_auth_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyExtensionSession);
 };
 
 }  // namespace remoting

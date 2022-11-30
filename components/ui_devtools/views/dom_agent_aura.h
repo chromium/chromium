@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,9 @@ class DOMAgentAura : public DOMAgentViews,
  public:
   DOMAgentAura();
 
+  DOMAgentAura(const DOMAgentAura&) = delete;
+  DOMAgentAura& operator=(const DOMAgentAura&) = delete;
+
   ~DOMAgentAura() override;
   static DOMAgentAura* GetInstance() { return dom_agent_aura_; }
 
@@ -42,8 +45,6 @@ class DOMAgentAura : public DOMAgentViews,
   static DOMAgentAura* dom_agent_aura_;
 
   std::vector<aura::Window*> roots_;
-
-  DISALLOW_COPY_AND_ASSIGN(DOMAgentAura);
 };
 }  // namespace ui_devtools
 

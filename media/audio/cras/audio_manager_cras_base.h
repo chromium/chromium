@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_manager_base.h"
 
@@ -22,6 +21,10 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
  public:
   AudioManagerCrasBase(std::unique_ptr<AudioThread> audio_thread,
                    AudioLogFactory* audio_log_factory);
+
+  AudioManagerCrasBase(const AudioManagerCrasBase&) = delete;
+  AudioManagerCrasBase& operator=(const AudioManagerCrasBase&) = delete;
+
   ~AudioManagerCrasBase() override;
 
   // AudioManager implementation.
@@ -51,6 +54,16 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   // Returns CRAS client type.
   virtual enum CRAS_CLIENT_TYPE GetClientType() = 0;
 
+  // Registers a CrasInputStream as the source of system AEC dump.
+  virtual void RegisterSystemAecDumpSource(AecdumpRecordingSource* stream);
+
+  // Unregisters system AEC dump. Virtual to mock in unittest.
+  virtual void DeregisterSystemAecDumpSource(AecdumpRecordingSource* stream);
+
+  virtual void SetAecDumpRecordingManager(
+      base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager)
+      override;
+
  protected:
   // Called by MakeLinearOutputStream and MakeLowLatencyOutputStream.
   AudioOutputStream* MakeOutputStream(const AudioParameters& params,
@@ -61,7 +74,8 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
                                     const std::string& device_id);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AudioManagerCrasBase);
+  // Manages starting / stopping of aecdump recording.
+  base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager_;
 };
 
 }  // namespace media

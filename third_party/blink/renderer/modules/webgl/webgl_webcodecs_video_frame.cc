@@ -1,220 +1,42 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webgl/webgl_webcodecs_video_frame.h"
 
+#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_matrix_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_primary_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_range_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_transfer_id.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_video_frame_handle.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "ui/gfx/color_transform.h"
 
 namespace blink {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kRequiredExtension[] = "GL_NV_EGL_stream_consumer_external";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const char kRequiredExtension[] = "GL_ANGLE_texture_rectangle";
-#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 const char kRequiredExtension[] = "GL_OES_EGL_image_external";
 #else
 const char kRequiredExtension[] = "";
+#define NO_REQUIRED_EXTENSIONS
 #endif
-
-void FillVideoColorSpace(VideoColorSpace* video_color_space,
-                         gfx::ColorSpace& gfx_color_space) {
-  gfx::ColorSpace::PrimaryID primaries = gfx_color_space.GetPrimaryID();
-  base::Optional<V8ColorSpacePrimaryID> primary_id;
-  switch (primaries) {
-    case gfx::ColorSpace::PrimaryID::BT709:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT470M:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470M);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT470BG:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470BG);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTE240M:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::PrimaryID::FILM:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kFILM);
-      break;
-    case gfx::ColorSpace::PrimaryID::BT2020:
-      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT2020);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4281);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4312);
-      break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
-      primary_id =
-          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4321);
-      break;
-    // TODO(jie.a.chen@intel.com): Need to check EBU_3213_E.
-    default:;
-  }
-  if (primary_id) {
-    video_color_space->setPrimaryID(*primary_id);
-  }
-
-  gfx::ColorSpace::TransferID transfer = gfx_color_space.GetTransferID();
-  base::Optional<V8ColorSpaceTransferID> transfer_id;
-  switch (transfer) {
-    case gfx::ColorSpace::TransferID::BT709:
-#if defined(OS_MAC)
-    // TODO(jie.a.chen@intel.com): BT709_APPLE is not available in WebCodecs.
-    case gfx::ColorSpace::TransferID::BT709_APPLE:
-#endif
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::TransferID::GAMMA22:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA22);
-      break;
-    case gfx::ColorSpace::TransferID::GAMMA28:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA28);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTE170M:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTE240M:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::TransferID::LINEAR:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLINEAR);
-      break;
-    case gfx::ColorSpace::TransferID::LOG:
-      transfer_id = V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLOG);
-      break;
-    case gfx::ColorSpace::TransferID::LOG_SQRT:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLogSqrt);
-      break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_4:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196624);
-      break;
-    case gfx::ColorSpace::TransferID::BT1361_ECG:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt1361Ecg);
-      break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_1:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196621);
-      break;
-    case gfx::ColorSpace::TransferID::BT2020_10:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202010);
-      break;
-
-    case gfx::ColorSpace::TransferID::BT2020_12:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202012);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTEST2084);
-      break;
-    case gfx::ColorSpace::TransferID::SMPTEST428_1:
-      transfer_id =
-          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSmptest4281);
-      break;
-    default:;
-  }
-  if (transfer_id) {
-    video_color_space->setTransferID(*transfer_id);
-  }
-
-  gfx::ColorSpace::MatrixID matrix = gfx_color_space.GetMatrixID();
-  base::Optional<V8ColorSpaceMatrixID> matrix_id;
-  switch (matrix) {
-    case gfx::ColorSpace::MatrixID::RGB:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kRGB);
-      break;
-    case gfx::ColorSpace::MatrixID::BT709:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT709);
-      break;
-    case gfx::ColorSpace::MatrixID::FCC:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kFCC);
-      break;
-    case gfx::ColorSpace::MatrixID::BT470BG:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT470BG);
-      break;
-    case gfx::ColorSpace::MatrixID::SMPTE170M:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE170M);
-      break;
-    case gfx::ColorSpace::MatrixID::SMPTE240M:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE240M);
-      break;
-    case gfx::ColorSpace::MatrixID::YCOCG:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYCOCG);
-      break;
-    case gfx::ColorSpace::MatrixID::BT2020_NCL:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Ncl);
-      break;
-    case gfx::ColorSpace::MatrixID::BT2020_CL:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Cl);
-      break;
-    case gfx::ColorSpace::MatrixID::YDZDX:
-      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYDZDX);
-      break;
-    default:;
-  }
-  if (matrix_id) {
-    video_color_space->setMatrixID(*matrix_id);
-  }
-
-  gfx::ColorSpace::RangeID range = gfx_color_space.GetRangeID();
-  base::Optional<V8ColorSpaceRangeID> range_id;
-  switch (range) {
-    case gfx::ColorSpace::RangeID::LIMITED:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kLIMITED);
-      break;
-    case gfx::ColorSpace::RangeID::FULL:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kFULL);
-      break;
-    case gfx::ColorSpace::RangeID::DERIVED:
-      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kDERIVED);
-      break;
-    default:;
-  }
-  if (range_id) {
-    video_color_space->setRangeID(*range_id);
-  }
-}
 
 void GetMediaTaskRunnerAndGpuFactoriesOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner>* media_task_runner_out,
@@ -233,21 +55,21 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
     : WebGLExtension(context) {
   context->ContextGL()->RequestExtensionCHROMIUM(kRequiredExtension);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // texture_rectangle needs to be turned on for MAC.
   context->ContextGL()->Enable(GC3D_TEXTURE_RECTANGLE_ARB);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   formats_supported[media::PIXEL_FORMAT_NV12] = true;
   auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
   components_nv12[media::VideoFrame::kYPlane] = "r";
   components_nv12[media::VideoFrame::kUPlane] = "rg";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   formats_supported[media::PIXEL_FORMAT_XRGB] = true;
   auto& components_xrgb = format_to_components_map_[media::PIXEL_FORMAT_XRGB];
   components_xrgb[media::VideoFrame::kYPlane] = "rgba";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   formats_supported[media::PIXEL_FORMAT_ABGR] = true;
   auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
   components_abgr[media::VideoFrame::kYPlane] = "rgb";
@@ -257,7 +79,7 @@ WebGLWebCodecsVideoFrame::WebGLWebCodecsVideoFrame(
   auto& components_nv12 = format_to_components_map_[media::PIXEL_FORMAT_NV12];
   components_nv12[media::VideoFrame::kYPlane] = "r";
   components_nv12[media::VideoFrame::kUPlane] = "rg";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   formats_supported[media::PIXEL_FORMAT_ABGR] = true;
   auto& components_abgr = format_to_components_map_[media::PIXEL_FORMAT_ABGR];
   components_abgr[media::VideoFrame::kYPlane] = "rgb";
@@ -278,9 +100,17 @@ WebGLExtensionName WebGLWebCodecsVideoFrame::GetName() const {
 bool WebGLWebCodecsVideoFrame::Supported(WebGLRenderingContextBase* context) {
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_FUCHSIA)
   // TODO(jie.a.chen@intel.com): Add Linux support.
   return false;
+#elif BUILDFLAG(IS_MAC)
+  // This extension is only supported on the passthrough command
+  // decoder on macOS.
+  DrawingBuffer* drawing_buffer = context->GetDrawingBuffer();
+  if (!drawing_buffer)
+    return false;
+  return drawing_buffer->GetGraphicsInfo().using_passthrough_command_decoder;
 #else
   return true;
 #endif
@@ -306,14 +136,14 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   const char* sampler_func = "texture2D";
   gfx::ColorSpace src_color_space = gfx::ColorSpace::CreateREC709();
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_UNKNOWN;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   sampler_type = "samplerExternalOES";
   pixel_format = media::PIXEL_FORMAT_NV12;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   sampler_type = "sampler2DRect";
   sampler_func = "texture2DRect";
   pixel_format = media::PIXEL_FORMAT_XRGB;
-#elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   sampler_type = "samplerExternalOES";
   pixel_format = media::PIXEL_FORMAT_ABGR;
   src_color_space = gfx::ColorSpace::CreateSRGB();
@@ -325,13 +155,13 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
     base::WaitableEvent waitable_event;
     media_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
+        WTF::BindOnce(
             &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
             base::Unretained(gpu_memory_buffer_pool_.get()),
             base::RetainedRef(frame),
-            base::BindOnce(
+            WTF::BindOnce(
                 &WebGLWebCodecsVideoFrame::OnHardwareVideoFrameCreated,
-                base::Unretained(this), base::Unretained(&waitable_event))));
+                WrapWeakPersistent(this), WTF::Unretained(&waitable_event))));
     waitable_event.Wait();
 
     if (frame == hardware_video_frame_) {
@@ -340,9 +170,9 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
       return nullptr;
     }
     frame = std::move(hardware_video_frame_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     sampler_type = "sampler2D";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     sampler_type = "sampler2D";
     pixel_format = frame->format();
     src_color_space = frame->ColorSpace();
@@ -390,9 +220,9 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   WebGLWebCodecsVideoFrameHandle* video_frame_handle =
       MakeGarbageCollected<WebGLWebCodecsVideoFrameHandle>();
   video_frame_handle->setTextureInfoArray(info_array);
-  if (std::string(kRequiredExtension) != "") {
-    video_frame_handle->setRequiredExtension(kRequiredExtension);
-  }
+#ifndef NO_REQUIRED_EXTENSIONS
+  video_frame_handle->setRequiredExtension(kRequiredExtension);
+#endif
   // Remove "PIXEL_FORMAT_" prefix
   auto&& video_pixel_format =
       V8VideoPixelFormat::Create(&VideoPixelFormatToString(pixel_format)[13]);
@@ -404,27 +234,18 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   // video streams?
   video_frame_handle->setFlipY(true);
   video_frame_handle->setPremultipliedAlpha(false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(frame->format() == media::PIXEL_FORMAT_NV12);
   src_color_space = frame->ColorSpace();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   video_frame_handle->setRequiredExtension("GL_ARB_texture_rectangle");
   video_frame_handle->setPremultipliedAlpha(true);
   src_color_space = frame->ColorSpace();
   src_color_space = src_color_space.GetAsFullRangeRGB();
 #endif
   VideoColorSpace* video_frame_color_space =
-      MakeGarbageCollected<VideoColorSpace>();
-  FillVideoColorSpace(video_frame_color_space, src_color_space);
+      MakeGarbageCollected<VideoColorSpace>(src_color_space);
   video_frame_handle->setColorSpace(video_frame_color_space);
-
-  gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
-  std::unique_ptr<gfx::ColorTransform> color_transform(
-      gfx::ColorTransform::NewColorTransform(
-          src_color_space, dst_color_space,
-          gfx::ColorTransform::Intent::INTENT_ABSOLUTE));
-  video_frame_handle->setColorConversionShaderFunc(
-      color_transform->GetShaderSource().c_str());
 
   // Bookkeeping of imported video frames.
   GLuint tex0 = info_array[0]->texture()->Object();
@@ -477,7 +298,9 @@ void WebGLWebCodecsVideoFrame::InitializeGpuMemoryBufferPool() {
       base::WaitableEvent waitable_event;
       // TODO(crbug.com/1164152): Lift the main thread restriction.
       if (PostCrossThreadTask(
-              *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+              *Thread::MainThread()->GetTaskRunner(
+                  MainThreadTaskRunnerRestricted()),
+              FROM_HERE,
               CrossThreadBindOnce(
                   &GetMediaTaskRunnerAndGpuFactoriesOnMainThread,
                   CrossThreadUnretained(&media_task_runner_),

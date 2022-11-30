@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
@@ -25,6 +24,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattManagerClient
     // TODO(armansito): This parameter is not yet clearly defined. Add fields
     // later as we know more about how this will be used.
   };
+
+  BluetoothGattManagerClient(const BluetoothGattManagerClient&) = delete;
+  BluetoothGattManagerClient& operator=(const BluetoothGattManagerClient&) =
+      delete;
 
   ~BluetoothGattManagerClient() override;
 
@@ -69,9 +72,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattManagerClient
 
  protected:
   BluetoothGattManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattManagerClient);
 };
 
 }  // namespace bluez

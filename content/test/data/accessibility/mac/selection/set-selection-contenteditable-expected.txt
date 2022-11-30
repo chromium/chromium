@@ -1,0 +1,48 @@
+// Select the 1st word via text marker associated with container AXTextArea.
+text_range={anchor: {:2, 0, down}, focus: {:2, 45, down}}
+marker_0={:2, 0, down}
+marker_1={:2, 3, down}
+target_selected_marker_range={anchor: {:2, 0, down}, focus: {:2, 3, down}}
+ce1.AXSelectedTextMarkerRange={anchor: {:2, 0, down}, focus: {:2, 3, down}}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+ce1.AXSelectedText='The'
+// Select the 2nd word via the marker associated with AXStaticText.
+text=:4
+text.AXValue='The quick brown foxes '
+text_range={anchor: {:4, 0, down}, focus: {:4, 22, down}}
+marker_0={:4, 0, down}
+marker_1={:4, 3, down}
+marker_2={:4, 9, down}
+marker_3={:4, 4, down}
+target_selected_marker_range={anchor: {:4, 4, down}, focus: {:4, 9, down}}
+ce1.AXSelectedTextMarkerRange={anchor: {:4, 4, down}, focus: {:4, 9, down}}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+ce1.AXSelectedText='quick'
+// Select text inside a span.
+text=:8
+text.AXValue='lazy'
+text_range={anchor: {:8, 0, down}, focus: {:8, 4, down}}
+marker_0={:8, 0, down}
+marker_1={:8, 4, down}
+marker_2={:8, 3, down}
+target_selected_marker_range={anchor: {:8, 0, down}, focus: {:8, 3, down}}
+ce1.AXSelectedTextMarkerRange={anchor: {:8, 0, down}, focus: {:8, 3, down}}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+ce1.AXSelectedText='laz'
+// Select the text inside the block with incorrect grammar.
+text=:6
+text.AXValue='jumps'
+text_range={anchor: {:6, 0, down}, focus: {:6, 5, down}}
+ce1.AXSelectedTextMarkerRange={anchor: {:6, 0, down}, focus: {:6, 5, down}}
+AXSelectedTextChanged on AXTextArea AXValue='The quick brown foxes jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeUnknown
+ce1.AXSelectedText='jumps'
+// Select the text after a forced break.
+text=:14
+text.AXValue='with five dozen liquor jugs.'
+text_range={anchor: {:14, 0, down}, focus: {:14, 28, down}}
+marker_0={:14, 0, down}
+marker_1={:14, 4, down}
+target_selected_marker_range={anchor: {:14, 0, down}, focus: {:14, 4, down}}
+ce2.AXSelectedTextMarkerRange={anchor: {:14, 0, down}, focus: {:14, 4, down}}
+AXSelectedTextChanged on AXTextArea AXValue='Pack my box<newline>with five dozen liquor jugs.' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
+ce2.AXSelectedText='with'

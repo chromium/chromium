@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr char kDirection[] = "direction";
 constexpr char kDefaultPageOrientation[] = "defaultPageOrientation";
 constexpr char kTwoUpViewEnabled[] = "twoUpViewEnabled";
 
@@ -31,8 +32,8 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
 gfx::Rect InsetRect(const gfx::Rect& rect,
                     const draw_utils::PageInsetSizes& inset_sizes) {
   gfx::Rect inset_rect(rect);
-  inset_rect.Inset(inset_sizes.left, inset_sizes.top, inset_sizes.right,
-                   inset_sizes.bottom);
+  inset_rect.Inset(gfx::Insets::TLBR(inset_sizes.top, inset_sizes.left,
+                                     inset_sizes.bottom, inset_sizes.right));
   return inset_rect;
 }
 
@@ -49,19 +50,23 @@ DocumentLayout::Options& DocumentLayout::Options::operator=(
 
 DocumentLayout::Options::~Options() = default;
 
-base::Value DocumentLayout::Options::ToValue() const {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetIntKey(kDefaultPageOrientation,
-                       static_cast<int32_t>(default_page_orientation_));
-  dictionary.SetBoolKey(kTwoUpViewEnabled, two_up_view_enabled_);
+base::Value::Dict DocumentLayout::Options::ToValue() const {
+  base::Value::Dict dictionary;
+  dictionary.Set(kDirection, direction_);
+  dictionary.Set(kDefaultPageOrientation,
+                 static_cast<int>(default_page_orientation_));
+  dictionary.Set(kTwoUpViewEnabled, page_spread_ == PageSpread::kTwoUpOdd);
   return dictionary;
 }
 
-void DocumentLayout::Options::FromValue(const base::Value& value) {
-  DCHECK(value.is_dict());
+void DocumentLayout::Options::FromValue(const base::Value::Dict& value) {
+  int32_t direction = value.FindInt(kDirection).value();
+  DCHECK_GE(direction, base::i18n::UNKNOWN_DIRECTION);
+  DCHECK_LE(direction, base::i18n::TEXT_DIRECTION_MAX);
+  direction_ = static_cast<base::i18n::TextDirection>(direction);
 
   int32_t default_page_orientation =
-      value.FindKey(kDefaultPageOrientation)->GetInt();
+      value.FindInt(kDefaultPageOrientation).value();
   DCHECK_GE(default_page_orientation,
             static_cast<int32_t>(PageOrientation::kOriginal));
   DCHECK_LE(default_page_orientation,
@@ -69,7 +74,9 @@ void DocumentLayout::Options::FromValue(const base::Value& value) {
   default_page_orientation_ =
       static_cast<PageOrientation>(default_page_orientation);
 
-  two_up_view_enabled_ = value.FindKey(kTwoUpViewEnabled)->GetBool();
+  page_spread_ = value.FindBool(kTwoUpViewEnabled).value()
+                     ? PageSpread::kTwoUpOdd
+                     : PageSpread::kOneUp;
 }
 
 void DocumentLayout::Options::RotatePagesClockwise() {
@@ -98,7 +105,16 @@ void DocumentLayout::SetOptions(const Options& options) {
   options_ = options;
 }
 
-void DocumentLayout::ComputeSingleViewLayout(
+void DocumentLayout::ComputeLayout(const std::vector<gfx::Size>& page_sizes) {
+  switch (options_.page_spread()) {
+    case PageSpread::kOneUp:
+      return ComputeOneUpLayout(page_sizes);
+    case PageSpread::kTwoUpOdd:
+      return ComputeTwoUpOddLayout(page_sizes);
+  }
+}
+
+void DocumentLayout::ComputeOneUpLayout(
     const std::vector<gfx::Size>& page_sizes) {
   gfx::Size document_size(GetWidestPageWidth(page_sizes), 0);
 
@@ -130,7 +146,7 @@ void DocumentLayout::ComputeSingleViewLayout(
   }
 }
 
-void DocumentLayout::ComputeTwoUpViewLayout(
+void DocumentLayout::ComputeTwoUpOddLayout(
     const std::vector<gfx::Size>& page_sizes) {
   gfx::Size document_size(GetWidestPageWidth(page_sizes), 0);
 

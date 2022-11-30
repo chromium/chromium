@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 #include <algorithm>
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "base/bind.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_local.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "crypto/capi_util.h"
 #include "crypto/scoped_capi_types.h"
@@ -42,27 +46,7 @@ namespace net {
 
 namespace {
 
-struct FreeChainEngineFunctor {
-  void operator()(HCERTCHAINENGINE engine) const {
-    if (engine)
-      CertFreeCertificateChainEngine(engine);
-  }
-};
-
-struct FreeCertChainContextFunctor {
-  void operator()(PCCERT_CHAIN_CONTEXT chain_context) const {
-    if (chain_context)
-      CertFreeCertificateChain(chain_context);
-  }
-};
-
-typedef crypto::ScopedCAPIHandle<HCERTCHAINENGINE, FreeChainEngineFunctor>
-    ScopedHCERTCHAINENGINE;
-
-typedef std::unique_ptr<const CERT_CHAIN_CONTEXT, FreeCertChainContextFunctor>
-    ScopedPCCERT_CHAIN_CONTEXT;
-
-//-----------------------------------------------------------------------------
+const void* kResultDebugDataKey = &kResultDebugDataKey;
 
 int MapSecurityError(SECURITY_STATUS err) {
   // There are numerous security error codes, but these are the ones we thus
@@ -301,8 +285,8 @@ void GetCertChainInfo(PCCERT_CHAIN_CONTEXT chain_context,
               NULL, X509_ASN_ENCODING, CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT,
               const_cast<PCERT_CONTEXT>(cert),
               CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
-              const_cast<PCERT_CONTEXT>(issuer), 0, NULL)) {
-        verify_result->cert_status |= CERT_STATUS_INVALID;
+              const_cast<PCERT_CONTEXT>(issuer), 0, nullptr)) {
+        verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
         break;
       }
     }
@@ -469,7 +453,7 @@ CRLSetResult CheckRevocationWithCRLSet(CRLSet* crl_set,
   // Compute the subject's serial.
   const CRYPT_INTEGER_BLOB* serial_blob =
       &subject_cert->pCertInfo->SerialNumber;
-  std::unique_ptr<uint8_t[]> serial_bytes(new uint8_t[serial_blob->cbData]);
+  auto serial_bytes = std::make_unique<uint8_t[]>(serial_blob->cbData);
   // The bytes of the serial number are stored little-endian.
   // Note: While MSDN implies that bytes are stripped from this serial,
   // they are not - only CertCompareIntegerBlob actually removes bytes.
@@ -655,7 +639,7 @@ class RevocationInjector {
     };
     BOOL ok = CryptInstallOIDFunctionAddress(
         nullptr, X509_ASN_ENCODING, CRYPT_OID_VERIFY_REVOCATION_FUNC,
-        base::size(kInterceptFunction), kInterceptFunction,
+        std::size(kInterceptFunction), kInterceptFunction,
         CRYPT_INSTALL_OID_FUNC_BEFORE_FLAG);
     DCHECK(ok);
   }
@@ -765,7 +749,7 @@ CertDllVerifyRevocationWithCRLSet(DWORD encoding_type,
   }
 
   // Determine the issuer cert for the incoming cert
-  ScopedPCCERT_CONTEXT issuer_cert;
+  crypto::ScopedPCCERT_CONTEXT issuer_cert;
   if (local_params.pIssuerCert &&
       CryptVerifyCertificateSignatureEx(
           NULL, subject_cert->dwCertEncodingType,
@@ -859,11 +843,221 @@ class ScopedThreadLocalCRLSet {
   ~ScopedThreadLocalCRLSet() { g_revocation_injector.Get().SetCRLSet(nullptr); }
 };
 
+// Helper class to determine the current version of AuthRoot, as stored in the
+// registry. Because calling `RegNotifyChangeKeyValue` associates the event
+// with the current thread, and `CertVerifyProc` exists to be used on
+// short-lived worker threads, this class handles the thread management to
+// ensure a cached, current value is always available.
+class AuthRootVersionChecker {
+ public:
+  struct AuthRootVersion {
+    // The sequence number of the CTL.
+    // Note: This is sorted big endian, similar to the encoded representation,
+    // and not little-endian, like CRYPT_INTEGER_BLOBs are stored by Windows.
+    std::vector<uint8_t> sequence_number;
+
+    // The ThisUpdate of the AuthRoot CTL.
+    // Note: If the AuthRoot version could not be determined, this will be the
+    // default time, and is_null() will return true.
+    base::Time this_update;
+  };
+
+  // Initializes the AuthRootVersionChecker. Note that this will open a
+  // registry key on the current thread, which is expected to be persistent,
+  // and begin monitoring for changes. This can be simplified once Windows 7
+  // support is dropped.
+  AuthRootVersionChecker();
+
+  // Returns the current (potentially cached) version details from the
+  // AuthRoot stored in the registry (if any).
+  AuthRootVersion GetAuthRootVersion();
+
+ private:
+  ~AuthRootVersionChecker() = default;
+
+  // Begins monitoring the registry for subsequent changes (e.g. to refresh
+  // the cached value).
+  void RefreshWatch();
+
+  // Returns true if the currently cached value may be stale and requires
+  // re-processing. If it returns true, the caller is responsible for calling
+  // `UpdateAuthRootVersion()` and `RefreshWatch()` (in any order).
+  bool ShouldUpdate() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Updates the current AuthRoot version, which may block due to reading
+  // the registry and parsing AuthRoot. Should only be called on a worker,
+  // and while holding `lock_`.
+  void UpdateAuthRootVersion() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  base::win::RegKey key_;
+
+  // On >= Win 8, the event signalled by Windows whenever the registry has
+  // changed.
+  const base::win::ScopedHandle event_;
+
+  base::Lock lock_;
+  AuthRootVersion auth_root_version_ GUARDED_BY(lock_);
+
+  // On <= Win 7, stores the last update time of the registry key; used to
+  // avoid needing to constantly reparse the registry value.
+  base::Time last_update_ GUARDED_BY(lock_);
+};
+
+AuthRootVersionChecker::AuthRootVersionChecker()
+    : event_(CreateEvent(nullptr, FALSE, TRUE, nullptr)) {
+  DCHECK(event_.IsValid());
+
+  constexpr wchar_t kAuthRootPath[] =
+      L"SOFTWARE\\Microsoft\\SystemCertificates\\AuthRoot\\AutoUpdate";
+  if (key_.Open(HKEY_LOCAL_MACHINE, kAuthRootPath, KEY_READ) != ERROR_SUCCESS)
+    return;
+
+  // On Win 7, last_update_ is the zero time, and thus will dirty the cache.
+  // On Win 8+, event_ is initially signalled, simulating a dirty cache.
+}
+
+AuthRootVersionChecker::AuthRootVersion
+AuthRootVersionChecker::GetAuthRootVersion() {
+  base::AutoLock guard(lock_);
+
+  if (ShouldUpdate()) {
+    UpdateAuthRootVersion();
+    RefreshWatch();
+  }
+
+  return auth_root_version_;
+}
+
+void AuthRootVersionChecker::RefreshWatch() {
+  // If the registry is corrupted, don't bother.
+  if (!key_.Valid())
+    return;
+
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    // On Windows 7 and earlier, using RegNotifyChangeKeyValue from a worker
+    // thread will abandon the notification if that thread ends. Rather than
+    // marshalling to a persistent thread, on these versions, `ShouldUpdate()`
+    // just takes a less-optimized path.
+    return;
+  }
+
+  // On Windows 8 or later, any thread can monitor the registry for changes,
+  // and monitoring is not abandoned if the thread ends.
+  DWORD flags = REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_THREAD_AGNOSTIC;
+  RegNotifyChangeKeyValue(key_.Handle(), FALSE, flags, event_.Get(), TRUE);
+}
+
+bool AuthRootVersionChecker::ShouldUpdate() {
+  lock_.AssertAcquired();
+
+  // If the registry is corrupted, don't bother.
+  if (!key_.Valid())
+    return false;
+
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    // On Win 8+, just check if the event is signaled.
+    return WaitForSingleObject(event_.Get(), 0) == WAIT_OBJECT_0;
+  }
+
+  // On Win 7 and earlier, check the last modification time of the registry.
+  // This is less efficient than using the event, but a simpler implementation
+  // than needing to marshal RegNotifyChangeKeyValue to a persistent thread.
+  FILETIME current_timestamp = {0, 0};
+  LSTATUS result = RegQueryInfoKeyW(key_.Handle(), nullptr, nullptr, nullptr,
+                                    nullptr, nullptr, nullptr, nullptr, nullptr,
+                                    nullptr, nullptr, &current_timestamp);
+
+  // If for some reason things failed, rather than constantly querying the
+  // registry every time, fail closed and just use the stale value.
+  if (result != ERROR_SUCCESS)
+    return false;
+
+  base::Time update_time = base::Time::FromFileTime(current_timestamp);
+  if (update_time > last_update_) {
+    last_update_ = update_time;
+    return true;
+  }
+  return false;
+}
+
+void AuthRootVersionChecker::UpdateAuthRootVersion() {
+  lock_.AssertAcquired();
+
+  if (!key_.Valid())
+    return;
+
+  constexpr wchar_t kCtlValueName[] = L"EncodedCtl";
+
+  DWORD data_type = REG_BINARY;
+  DWORD value_size = 0;
+  LONG rv = key_.ReadValue(kCtlValueName, nullptr, &value_size, &data_type);
+  if (rv != ERROR_SUCCESS || !value_size || data_type != REG_BINARY)
+    return;
+
+  std::vector<uint8_t> value(value_size);
+  rv = key_.ReadValue(kCtlValueName, value.data(), &value_size, &data_type);
+  if (rv != ERROR_SUCCESS || value_size == 0 || data_type != REG_BINARY)
+    return;
+
+  value.resize(value_size);
+
+  crypto::ScopedPCCTL_CONTEXT ctl_context(
+      CertCreateCTLContext(PKCS_7_ASN_ENCODING, value.data(), value.size()));
+  if (!ctl_context || ctl_context->pCtlInfo->SequenceNumber.cbData == 0)
+    return;
+
+  auth_root_version_.sequence_number.assign(
+      ctl_context->pCtlInfo->SequenceNumber.pbData,
+      ctl_context->pCtlInfo->SequenceNumber.pbData +
+          ctl_context->pCtlInfo->SequenceNumber.cbData);
+  // Convert from Windows' little-endian representation to the expected (as
+  // encoded) big-endian form.
+  std::reverse(std::begin(auth_root_version_.sequence_number),
+               std::end(auth_root_version_.sequence_number));
+  auth_root_version_.this_update =
+      base::Time::FromFileTime(ctl_context->pCtlInfo->ThisUpdate);
+}
+
 }  // namespace
 
-CertVerifyProcWin::CertVerifyProcWin() {}
+CertVerifyProcWin::ResultDebugData::ResultDebugData(
+    base::Time authroot_this_update,
+    std::vector<uint8_t> authroot_sequence_number)
+    : authroot_this_update_(authroot_this_update),
+      authroot_sequence_number_(std::move(authroot_sequence_number)) {}
 
-CertVerifyProcWin::~CertVerifyProcWin() {}
+CertVerifyProcWin::ResultDebugData::ResultDebugData(
+    const ResultDebugData& other) = default;
+
+CertVerifyProcWin::ResultDebugData::~ResultDebugData() = default;
+
+// static
+const CertVerifyProcWin::ResultDebugData*
+CertVerifyProcWin::ResultDebugData::Get(
+    const base::SupportsUserData* debug_data) {
+  return static_cast<ResultDebugData*>(
+      debug_data->GetUserData(kResultDebugDataKey));
+}
+
+// static
+void CertVerifyProcWin::ResultDebugData::Create(
+    base::Time authroot_this_update,
+    std::vector<uint8_t> authroot_sequence_number,
+    base::SupportsUserData* debug_data) {
+  debug_data->SetUserData(
+      kResultDebugDataKey,
+      std::make_unique<ResultDebugData>(authroot_this_update,
+                                        std::move(authroot_sequence_number)));
+}
+
+std::unique_ptr<base::SupportsUserData::Data>
+CertVerifyProcWin::ResultDebugData::Clone() {
+  return std::make_unique<ResultDebugData>(*this);
+}
+
+CertVerifyProcWin::CertVerifyProcWin() = default;
+
+CertVerifyProcWin::~CertVerifyProcWin() = default;
 
 bool CertVerifyProcWin::SupportsAdditionalTrustAnchors() const {
   return false;
@@ -883,8 +1077,9 @@ int CertVerifyProcWin::VerifyInternal(
   // CRLSet.
   ScopedThreadLocalCRLSet thread_local_crlset(crl_set);
 
-  ScopedPCCERT_CONTEXT cert_list = x509_util::CreateCertContextWithChain(
-      cert, x509_util::InvalidIntermediateBehavior::kIgnore);
+  crypto::ScopedPCCERT_CONTEXT cert_list =
+      x509_util::CreateCertContextWithChain(
+          cert, x509_util::InvalidIntermediateBehavior::kIgnore);
   if (!cert_list) {
     verify_result->cert_status |= CERT_STATUS_INVALID;
     return ERR_CERT_INVALID;
@@ -904,7 +1099,7 @@ int CertVerifyProcWin::VerifyInternal(
     szOID_SGC_NETSCAPE
   };
   chain_para.RequestedUsage.dwType = USAGE_MATCH_TYPE_OR;
-  chain_para.RequestedUsage.Usage.cUsageIdentifier = base::size(usage);
+  chain_para.RequestedUsage.Usage.cUsageIdentifier = std::size(usage);
   chain_para.RequestedUsage.Usage.rgpszUsageIdentifier =
       const_cast<LPSTR*>(usage);
 
@@ -956,9 +1151,9 @@ int CertVerifyProcWin::VerifyInternal(
   // Root store used by TestRootCerts as changed, via CertControlStore with the
   // CERT_STORE_CTRL_NOTIFY_CHANGE / CERT_STORE_CTRL_RESYNC, but that's more
   // complexity for what is test-only code.
-  ScopedHCERTCHAINENGINE chain_engine(NULL);
+  crypto::ScopedHCERTCHAINENGINE chain_engine;
   if (TestRootCerts::HasInstance())
-    chain_engine.reset(TestRootCerts::GetInstance()->GetChainEngine());
+    chain_engine = TestRootCerts::GetInstance()->GetChainEngine();
 
   // Add stapled OCSP response data, which will be preferred over online checks
   // and used when in cache-only mode.
@@ -1009,7 +1204,7 @@ int CertVerifyProcWin::VerifyInternal(
   // chain is rejected, then clear it from |chain_para| so that all subsequent
   // calls will use the fallback path.
   BOOL chain_result =
-      CertGetCertificateChain(chain_engine, cert_list.get(),
+      CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                               nullptr,  // current system time
                               cert_list->hCertStore, &chain_para, chain_flags,
                               nullptr,  // reserved
@@ -1026,7 +1221,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_para.pStrongSignPara = nullptr;
     chain_para.dwStrongSignFlags = 0;
     chain_result =
-        CertGetCertificateChain(chain_engine, cert_list.get(),
+        CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                 nullptr,  // current system time
                                 cert_list->hCertStore, &chain_para, chain_flags,
                                 nullptr,  // reserved
@@ -1038,6 +1233,14 @@ int CertVerifyProcWin::VerifyInternal(
     return MapSecurityError(GetLastError());
   }
 
+  // Include diagnostics about the current AuthRoot version.
+  static base::NoDestructor<AuthRootVersionChecker> authroot_version_checker;
+  AuthRootVersionChecker::AuthRootVersion authroot_version =
+      authroot_version_checker->GetAuthRootVersion();
+  ResultDebugData::Create(std::move(authroot_version.this_update),
+                          std::move(authroot_version.sequence_number),
+                          verify_result);
+
   // Perform a second check with CRLSets. Although the Revocation Provider
   // should have prevented invalid paths from being built, the behaviour and
   // timing of how a Revocation Provider is invoked is not well documented. This
@@ -1047,25 +1250,10 @@ int CertVerifyProcWin::VerifyInternal(
 
   if (crl_set_result == kCRLSetRevoked) {
     verify_result->cert_status |= CERT_STATUS_REVOKED;
-  } else if (crl_set_result == kCRLSetUnknown && !rev_checking_enabled &&
-             ev_policy_oid) {
-    // We don't have fresh information about this chain from the CRLSet and
-    // it's probably an EV certificate. Retry with online revocation checking.
-    rev_checking_enabled = true;
-    chain_flags &= ~CERT_CHAIN_REVOCATION_CHECK_CACHE_ONLY;
-    verify_result->cert_status |= CERT_STATUS_REV_CHECKING_ENABLED;
-
-    CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
-                                 nullptr,  // current system time
-                                 cert_list->hCertStore, &chain_para,
-                                 chain_flags,
-                                 nullptr,  // reserved
-                                 &chain_context)) {
-      verify_result->cert_status |= CERT_STATUS_INVALID;
-      return MapSecurityError(GetLastError());
-    }
   }
+
+  // Even if the cert is possibly EV and crl_set_result == kCRLSetUnknown, we
+  // don't check with online revocation checking enabled. See crbug.com/1268848.
 
   if (chain_context->TrustStatus.dwErrorStatus &
       CERT_TRUST_IS_NOT_VALID_FOR_USAGE) {
@@ -1075,7 +1263,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_para.RequestedIssuancePolicy.Usage.cUsageIdentifier = 0;
     chain_para.RequestedIssuancePolicy.Usage.rgpszUsageIdentifier = nullptr;
     CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
+    if (!CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                  nullptr,  // current system time
                                  cert_list->hCertStore, &chain_para,
                                  chain_flags,
@@ -1097,7 +1285,7 @@ int CertVerifyProcWin::VerifyInternal(
     chain_flags &= ~CERT_CHAIN_REVOCATION_CHECK_CACHE_ONLY;
 
     CertFreeCertificateChain(chain_context);
-    if (!CertGetCertificateChain(chain_engine, cert_list.get(),
+    if (!CertGetCertificateChain(chain_engine.get(), cert_list.get(),
                                  nullptr,  // current system time
                                  cert_list->hCertStore, &chain_para,
                                  chain_flags,
@@ -1109,7 +1297,7 @@ int CertVerifyProcWin::VerifyInternal(
     GetCertChainInfo(chain_context, verify_result);
   }
 
-  ScopedPCCERT_CHAIN_CONTEXT scoped_chain_context(chain_context);
+  crypto::ScopedPCCERT_CHAIN_CONTEXT scoped_chain_context(chain_context);
 
   verify_result->cert_status |= MapCertChainErrorStatusToCertStatus(
       chain_context->TrustStatus.dwErrorStatus);

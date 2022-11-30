@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_arc_media_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_disk_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_drive_source.h"
@@ -31,12 +30,12 @@ namespace chromeos {
 namespace {
 
 // Cut-off time. Files older than this are filtered out.
-constexpr base::TimeDelta kCutoffTimeDelta = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kCutoffTimeDelta = base::Days(30);
 
 // Recent file cache will be cleared this duration after it is built.
 // Note: Do not make this value large. When cache is used, cut-off criteria is
 // not strictly honored.
-constexpr base::TimeDelta kCacheExpiration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kCacheExpiration = base::Seconds(10);
 
 std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     Profile* profile) {
@@ -50,7 +49,7 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
   // Downloads / MyFiles.
   sources.emplace_back(std::make_unique<RecentDiskSource>(
       file_manager::util::GetDownloadsMountPointName(profile),
-      false /* ignore_dotfiles */, 0 /* max_depth unlimited */,
+      true /* ignore_dotfiles */, 0 /* max_depth unlimited */,
       "FileBrowser.Recent.LoadDownloads"));
   sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
   return sources;
@@ -88,12 +87,19 @@ void RecentModel::GetRecentFiles(
     storage::FileSystemContext* file_system_context,
     const GURL& origin,
     FileType file_type,
+    bool invalidate_cache,
     GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Use cache if available.
+  /**
+   * Use cache only if:
+   *  * cache has value.
+   *  * invalidate_cache = false.
+   *  * cached file type matches the query file type.
+   * Otherwise clear cache if it has values.
+   */
   if (cached_files_.has_value()) {
-    if (cached_files_type_ == file_type) {
+    if (!invalidate_cache && cached_files_type_ == file_type) {
       std::move(callback).Run(cached_files_.value());
       return;
     }

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
@@ -15,7 +16,7 @@
 
 NS_AVAILABLE_MAC(11.0)
 @implementation BlockedObserver {
-  screentime::WebpageControllerImpl* _controller;
+  raw_ptr<screentime::WebpageControllerImpl> _controller;
   STWebpageController* _nativeController;
 }
 

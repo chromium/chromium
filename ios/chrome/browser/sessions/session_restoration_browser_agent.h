@@ -1,20 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_BROWSER_AGENT_H_
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import <memory>
+#import <string>
+#import <vector>
+
+#import "base/observer_list.h"
+#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/web/public/web_state_observer.h"
 
 class AllWebStateObservationForwarder;
 class ChromeBrowserState;
@@ -36,10 +37,6 @@ class SessionRestorationBrowserAgent
       WebStateListObserver,
       public web::WebStateObserver {
  public:
-  // Creates an SessionRestorationBrowserAgent scoped to |browser|.
-  static void CreateForBrowser(Browser* browser,
-                               SessionServiceIOS* session_service);
-
   ~SessionRestorationBrowserAgent() override;
 
   SessionRestorationBrowserAgent(const SessionRestorationBrowserAgent&) =
@@ -55,7 +52,7 @@ class SessionRestorationBrowserAgent
   void AddObserver(SessionRestorationObserver* observer);
   void RemoveObserver(SessionRestorationObserver* observer);
 
-  // Restores the |window| (for example, after a crash). If there is only one ,
+  // Restores the `window` (for example, after a crash). If there is only one ,
   // tab showing the NTP, then this tab should be clobbered, otherwise, the tabs
   // from the restored sessions should be added at the end of the current list
   // of tabs. Returns YES if the single NTP tab is closed.
@@ -67,7 +64,7 @@ class SessionRestorationBrowserAgent
   bool RestoreSession();
 
   // Persists the current list of tabs to disk, either immediately or deferred
-  // based on the value of |immediately|.
+  // based on the value of `immediately`.
   void SaveSession(const bool immediately);
 
   // Returns true if there is a session restoration in progress, otherwise it
@@ -76,11 +73,11 @@ class SessionRestorationBrowserAgent
   bool IsRestoringSession();
 
  private:
-  SessionRestorationBrowserAgent(Browser* browser,
-                                 SessionServiceIOS* session_service);
-
   friend class BrowserUserData<SessionRestorationBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
+
+  SessionRestorationBrowserAgent(Browser* browser,
+                                 SessionServiceIOS* session_service);
 
   // Returns true if the current session can be saved.
   bool CanSaveSession();
@@ -136,7 +133,7 @@ class SessionRestorationBrowserAgent
   // True when session restoration is in progress.
   bool restoring_session_ = false;
 
-  // Observer for the active web state in |browser_|'s web state list.
+  // Observer for the active web state in `browser_`'s web state list.
   std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;
 };
 

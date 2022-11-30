@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_workarounds.h"
@@ -40,7 +40,7 @@ class GL_EXPORT GLApiBase : public GLApi {
   ~GLApiBase() override;
   void InitializeBase(DriverGL* driver);
 
-  DriverGL* driver_;
+  raw_ptr<DriverGL> driver_;
 };
 
 // Implemenents the GL API by calling directly into the driver.
@@ -97,7 +97,8 @@ class GL_EXPORT RealGLApi : public GLApiBase {
                                      GLuint memory,
                                      GLuint64 offset,
                                      GLbitfield createFlags,
-                                     GLbitfield usageFlags) override;
+                                     GLbitfield usageFlags,
+                                     const void* imageCreateInfoPNext) override;
 
   void glRenderbufferStorageEXTFn(GLenum target,
                                   GLenum internalformat,
@@ -148,6 +149,7 @@ class GL_EXPORT RealGLApi : public GLApiBase {
   // Compute |filtered_exts_| & |filtered_exts_str_| from |disabled_ext_|.
   void InitializeFilteredExtensionsIfNeeded();
 
+  const bool logging_enabled_;
   std::vector<std::string> disabled_exts_;
   // Filtered GL_EXTENSIONS we return to glGetString(i) calls.
   std::vector<std::string> filtered_exts_;
@@ -169,7 +171,7 @@ class TraceGLApi : public GLApi {
   #include "gl_bindings_api_autogen_gl.h"
 
  private:
-  GLApi* gl_api_;
+  raw_ptr<GLApi> gl_api_;
 };
 
 // Logs debug information for every GL call.
@@ -184,7 +186,7 @@ class LogGLApi : public GLApi {
   #include "gl_bindings_api_autogen_gl.h"
 
  private:
-  GLApi* gl_api_;
+  raw_ptr<GLApi> gl_api_;
 };
 
 // Catches incorrect usage when GL calls are made without a current context.

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,6 @@ class SyncUtils {
   // may be null, in which case this method returns false.
   static bool IsHistorySyncEnabled(syncer::SyncService* sync_service);
 
- private:
   // Whether the primary account is signed in. Sync is not required.
   static bool IsPrimaryAccountSignedIn(
       signin::IdentityManager* identity_manager);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,16 +19,16 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -61,6 +61,9 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
         timeout_(timeout),
         user_data_dir_(user_data_dir),
         initial_command_line_for_relaunch_(initial_command_line_for_relaunch) {}
+
+  ChromeStarter(const ChromeStarter&) = delete;
+  ChromeStarter& operator=(const ChromeStarter&) = delete;
 
   // We must reset some data members since we reuse the same ChromeStarter
   // object and start/stop it a few times. We must start fresh! :-)
@@ -127,8 +130,6 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
   base::TimeDelta timeout_;
   base::FilePath user_data_dir_;
   base::CommandLine initial_command_line_for_relaunch_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStarter);
 };
 
 }  // namespace
@@ -215,7 +216,7 @@ class ProcessSingletonTest : public InProcessBrowserTest {
 };
 
 // ChromeOS hits DCHECKS on ProcessSingleton rendezvous: crbug.com/782487
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_StartupRaceCondition DISABLED_StartupRaceCondition
 #else
 #define MAYBE_StartupRaceCondition StartupRaceCondition
@@ -239,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
 
     // Test both with and without the first-run dialog, since they exercise
     // different paths.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     // TODO(mattm): test first run dialog singleton handling on linux too.
     // On posix if we test the first run dialog, GracefulShutdownHandler gets
     // the TERM signal, but since the message loop isn't running during the gtk
@@ -254,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
     // Here we prime all the threads with a ChromeStarter that will wait for
     // our signal to launch its chrome process.
     for (size_t i = 0; i < kNbThreads; ++i) {
-      ASSERT_NE(static_cast<ChromeStarter*>(NULL), chrome_starters_[i].get());
+      ASSERT_NE(static_cast<ChromeStarter*>(nullptr),
+                chrome_starters_[i].get());
       chrome_starters_[i]->Reset();
 
       ASSERT_TRUE(chrome_starter_threads_[i]->IsRunning());

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,28 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/url_loader_factory_getter.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/browser/url_loader_throttles.h"
+#include "content/public/common/content_client.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_info.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
 namespace content {
 
@@ -52,10 +59,13 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    int64_t cache_resource_id) {
+    int64_t cache_resource_id,
+    bool is_throttle_needed,
+    const GlobalRenderFrameHostId& requesting_frame_id) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
       request_id, options, original_request, std::move(client), version,
-      loader_factory, traffic_annotation, cache_resource_id));
+      loader_factory, traffic_annotation, cache_resource_id, is_throttle_needed,
+      requesting_frame_id));
 }
 
 // TODO(nhiroki): We're doing multiple things in the ctor. Consider factors out
@@ -68,22 +78,28 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    int64_t cache_resource_id)
+    int64_t cache_resource_id,
+    bool is_throttle_needed,
+    const GlobalRenderFrameHostId& requesting_frame_id)
     : request_url_(original_request.url),
-      resource_destination_(original_request.destination),
+      is_main_script_(original_request.destination ==
+                          network::mojom::RequestDestination::kServiceWorker &&
+                      original_request.mode ==
+                          network::mojom::RequestMode::kSameOrigin),
       original_options_(options),
       version_(version),
       network_watcher_(FROM_HERE,
                        mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                        base::SequencedTaskRunnerHandle::Get()),
       loader_factory_(std::move(loader_factory)),
-      client_(std::move(client)) {
+      client_(std::move(client)),
+      requesting_frame_id_(requesting_frame_id) {
   DCHECK_NE(cache_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
 
   network::ResourceRequest resource_request(original_request);
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), resource_destination_);
+      version_->status(), is_main_script_, version_->script_type());
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -91,15 +107,14 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   // ServiceWorkerVersion keeps the registration alive while the service
   // worker is starting up, and it must be starting up here.
   DCHECK(registration);
-  const bool is_main_script =
-      (resource_destination_ ==
-       network::mojom::RequestDestination::kServiceWorker);
-  if (is_main_script) {
+
+  // We need to filter on mode, since module imports use kServiceWorker as
+  // destination, but only top level module scripts are same-origin.
+  if (is_main_script_) {
     // Request SSLInfo. It will be persisted in service worker storage and
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
     // by this service worker.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-
     resource_request.headers.SetHeader("Service-Worker", "script");
   }
 
@@ -108,7 +123,7 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   base::TimeDelta time_since_last_check =
       base::Time::Now() - registration->last_update_check();
   if (service_worker_loader_helpers::ShouldValidateBrowserCacheForScript(
-          is_main_script, version_->force_bypass_cache_for_scripts(),
+          is_main_script_, version_->force_bypass_cache_for_scripts(),
           registration->update_via_cache(), time_since_last_check)) {
     resource_request.load_flags |= net::LOAD_VALIDATE_CACHE;
   }
@@ -130,10 +145,24 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   // JavaScript MIME type. Therefore, no sniffing is needed.
   options &= ~network::mojom::kURLLoadOptionSniffMimeType;
 
-  loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), request_id, options,
-      resource_request, network_client_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation);
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  if (is_throttle_needed) {
+    // A service worker is independent from WebContents and FrameTreeNode.
+    // Return null or empty values when queried for either.
+    base::RepeatingCallback<WebContents*()> web_contents_getter =
+        base::BindRepeating([]() -> WebContents* { return nullptr; });
+    throttles = CreateContentBrowserURLLoaderThrottles(
+        resource_request, version_->context()->wrapper()->browser_context(),
+        std::move(web_contents_getter),
+        /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
+  }
+
+  network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+      std::move(loader_factory_), std::move(throttles), request_id, options,
+      &resource_request, this,
+      net::NetworkTrafficAnnotationTag(traffic_annotation),
+      base::ThreadTaskRunnerHandle::Get());
+
   DCHECK_EQ(LoaderState::kNotStarted, network_loader_state_);
   network_loader_state_ = LoaderState::kLoadingHeader;
 }
@@ -149,7 +178,8 @@ ServiceWorkerNewScriptLoader::~ServiceWorkerNewScriptLoader() {
   if (network_loader_state_ == LoaderState::kCompleted && !writers_completed) {
     DCHECK(client_);
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError);
+                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError,
+                    nullptr);
   }
 }
 
@@ -157,7 +187,7 @@ void ServiceWorkerNewScriptLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   // Resource requests for service worker scripts should not follow redirects.
   // See comments in OnReceiveRedirect().
   NOTREACHED();
@@ -185,11 +215,14 @@ void ServiceWorkerNewScriptLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void ServiceWorkerNewScriptLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_EQ(LoaderState::kLoadingHeader, network_loader_state_);
   if (!version_->context() || version_->is_redundant()) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError);
+                    ServiceWorkerConsts::kServiceWorkerInvalidVersionError,
+                    std::move(response_head));
     return;
   }
 
@@ -201,25 +234,39 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
           *response_head, &service_worker_state, &completion_status,
           &error_message)) {
     DCHECK_NE(net::OK, completion_status.error_code);
-    CommitCompleted(completion_status, error_message);
+    CommitCompleted(completion_status, error_message, std::move(response_head));
     return;
   }
 
-  if (resource_destination_ ==
-      network::mojom::RequestDestination::kServiceWorker) {
+  if (is_main_script_) {
     // Check the path restriction defined in the spec:
     // https://w3c.github.io/ServiceWorker/#service-worker-script-response
     std::string service_worker_allowed;
     bool has_header = response_head->headers->EnumerateHeader(
         nullptr, ServiceWorkerConsts::kServiceWorkerAllowed,
         &service_worker_allowed);
-    if (!ServiceWorkerUtils::IsPathRestrictionSatisfied(
+    if (!service_worker_loader_helpers::IsPathRestrictionSatisfied(
             version_->scope(), request_url_,
             has_header ? &service_worker_allowed : nullptr, &error_message)) {
       CommitCompleted(
           network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE),
-          error_message);
+          error_message, std::move(response_head));
       return;
+    }
+
+    if (!GetContentClient()
+             ->browser()
+             ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
+                 request_url_)) {
+      version_->set_policy_container_host(
+          base::MakeRefCounted<PolicyContainerHost>(
+              // TODO(crbug.com/1352929): Add DCHECK to parsed_headers
+              response_head->parsed_headers
+                  // This does not parse the referrer policy, which will be
+                  // updated in ServiceWorkerGlobalScope::Initialize
+                  ? PolicyContainerPolicies(request_url_, response_head.get(),
+                                            /*client=*/nullptr)
+                  : PolicyContainerPolicies()));
     }
 
     version_->set_cross_origin_embedder_policy(
@@ -235,8 +282,6 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
             *response_head));
   }
 
-  network_loader_state_ = LoaderState::kWaitingForBody;
-
   WriteHeaders(response_head.Clone());
 
   // Don't pass SSLInfo to the client when the original request doesn't ask
@@ -246,7 +291,32 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse)) {
     response_head->ssl_info.reset();
   }
-  client_->OnReceiveResponse(std::move(response_head));
+
+  if (!body) {
+    client_->OnReceiveResponse(std::move(response_head),
+                               mojo::ScopedDataPipeConsumerHandle(),
+                               std::move(cached_metadata));
+    return;
+  }
+
+  // Create a pair of the consumer and producer for responding to the client.
+  mojo::ScopedDataPipeConsumerHandle client_consumer;
+  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
+      MOJO_RESULT_OK) {
+    CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
+                    ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                    std::move(response_head));
+    return;
+  }
+
+  // Pass the consumer handle for responding with the response to the client.
+  client_->OnReceiveResponse(std::move(response_head),
+                             std::move(client_consumer),
+                             std::move(cached_metadata));
+
+  network_consumer_ = std::move(body);
+  network_loader_state_ = LoaderState::kLoadingBody;
+  MaybeStartNetworkConsumerHandleWatcher();
 }
 
 void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
@@ -259,7 +329,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
   //
   // TODO(https://crbug.com/889798): Follow redirects for imported scripts.
   CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT),
-                  ServiceWorkerConsts::kServiceWorkerRedirectError);
+                  ServiceWorkerConsts::kServiceWorkerRedirectError,
+                  std::move(response_head));
 }
 
 void ServiceWorkerNewScriptLoader::OnUploadProgress(
@@ -270,34 +341,9 @@ void ServiceWorkerNewScriptLoader::OnUploadProgress(
                             std::move(ack_callback));
 }
 
-void ServiceWorkerNewScriptLoader::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
-  client_->OnReceiveCachedMetadata(std::move(data));
-}
-
 void ServiceWorkerNewScriptLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle consumer) {
-  DCHECK_EQ(LoaderState::kWaitingForBody, network_loader_state_);
-  // Create a pair of the consumer and producer for responding to the client.
-  mojo::ScopedDataPipeConsumerHandle client_consumer;
-  if (mojo::CreateDataPipe(nullptr, client_producer_, client_consumer) !=
-      MOJO_RESULT_OK) {
-    CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
-    return;
-  }
-
-  // Pass the consumer handle for responding with the response to the client.
-  client_->OnStartLoadingResponseBody(std::move(client_consumer));
-
-  network_consumer_ = std::move(consumer);
-  network_loader_state_ = LoaderState::kLoadingBody;
-  MaybeStartNetworkConsumerHandleWatcher();
 }
 
 void ServiceWorkerNewScriptLoader::OnComplete(
@@ -305,8 +351,8 @@ void ServiceWorkerNewScriptLoader::OnComplete(
   LoaderState previous_state = network_loader_state_;
   network_loader_state_ = LoaderState::kCompleted;
   if (status.error_code != net::OK) {
-    CommitCompleted(status,
-                    ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+    CommitCompleted(status, ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                    nullptr);
     return;
   }
 
@@ -328,7 +374,7 @@ void ServiceWorkerNewScriptLoader::OnComplete(
     case WriterState::kCompleted:
       DCHECK_EQ(WriterState::kCompleted, header_writer_state_);
       CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                      std::string() /* status_message */);
+                      std::string() /* status_message */, nullptr);
       return;
   }
   NOTREACHED();
@@ -360,7 +406,7 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
     ServiceWorkerMetrics::CountWriteResponseResult(
         ServiceWorkerMetrics::WRITE_HEADERS_ERROR);
     CommitCompleted(network::URLLoaderCompletionStatus(error),
-                    ServiceWorkerConsts::kDatabaseErrorMessage);
+                    ServiceWorkerConsts::kDatabaseErrorMessage, nullptr);
     return;
   }
   header_writer_state_ = WriterState::kCompleted;
@@ -370,7 +416,7 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
   if (network_loader_state_ == LoaderState::kCompleted &&
       body_writer_state_ == WriterState::kCompleted) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                    std::string() /* status_message */);
+                    std::string() /* status_message */, nullptr);
     return;
   }
 
@@ -378,10 +424,11 @@ void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
 }
 
 void ServiceWorkerNewScriptLoader::MaybeStartNetworkConsumerHandleWatcher() {
-  if (network_loader_state_ == LoaderState::kWaitingForBody) {
-    // OnStartLoadingResponseBody() or OnComplete() will continue the sequence.
+  if (network_loader_state_ == LoaderState::kLoadingHeader) {
+    // OnReceiveResponse() or OnComplete() will continue the sequence.
     return;
   }
+
   if (header_writer_state_ != WriterState::kCompleted) {
     DCHECK_EQ(WriterState::kWriting, header_writer_state_);
     // OnWriteHeadersComplete() will continue the sequence.
@@ -441,7 +488,8 @@ void ServiceWorkerNewScriptLoader::WriteData(
       ServiceWorkerMetrics::CountWriteResponseResult(
           ServiceWorkerMetrics::WRITE_DATA_ERROR);
       CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
-                      ServiceWorkerConsts::kServiceWorkerFetchScriptError);
+                      ServiceWorkerConsts::kServiceWorkerFetchScriptError,
+                      nullptr);
       return;
     case MOJO_RESULT_SHOULD_WAIT:
       // No data was written to |client_producer_| because the pipe was full.
@@ -482,7 +530,7 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
     ServiceWorkerMetrics::CountWriteResponseResult(
         ServiceWorkerMetrics::WRITE_DATA_ERROR);
     CommitCompleted(network::URLLoaderCompletionStatus(error),
-                    ServiceWorkerConsts::kDatabaseErrorMessage);
+                    ServiceWorkerConsts::kDatabaseErrorMessage, nullptr);
     return;
   }
   ServiceWorkerMetrics::CountWriteResponseResult(
@@ -496,7 +544,7 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
     body_writer_state_ = WriterState::kCompleted;
     if (network_loader_state_ == LoaderState::kCompleted) {
       CommitCompleted(network::URLLoaderCompletionStatus(net::OK),
-                      std::string() /* status_message */);
+                      std::string() /* status_message */, nullptr);
     }
     return;
   }
@@ -510,7 +558,8 @@ void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
 
 void ServiceWorkerNewScriptLoader::CommitCompleted(
     const network::URLLoaderCompletionStatus& status,
-    const std::string& status_message) {
+    const std::string& status_message,
+    const network::mojom::URLResponseHeadPtr response_head) {
   net::Error error_code = static_cast<net::Error>(status.error_code);
   int bytes_written = -1;
   if (error_code == net::OK) {
@@ -520,12 +569,22 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     DCHECK(cache_writer_->did_replace());
     bytes_written = cache_writer_->bytes_written();
   } else {
-    // AddMessageConsole must be called before notifying that an error occurred
-    // because the worker stops soon after receiving the error response.
-    // TODO(nhiroki): Consider replacing this hacky way with the new error code
-    // handling mechanism in URLLoader.
-    version_->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
-                                  status_message);
+    // When we fail a main script fetch, we do not have a renderer in which to
+    // log the failure. We call into devtools with the frame id instead.
+    if (requesting_frame_id_ && version_->context()) {
+      devtools_instrumentation::OnServiceWorkerMainScriptFetchingFailed(
+          requesting_frame_id_, version_->context()->wrapper(),
+          version_->version_id(), status_message, status, response_head.get(),
+          request_url_);
+    } else {
+      // AddMessageConsole must be called before notifying that an error
+      // occurred because the worker stops soon after receiving the error
+      // response.
+      // TODO(nhiroki): Consider replacing this hacky way with the new error
+      // code handling mechanism in URLLoader.
+      version_->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                                    status_message);
+    }
   }
   version_->script_cache_map()->NotifyFinishedCaching(
       request_url_, bytes_written, error_code, status_message);
@@ -534,7 +593,6 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
   client_producer_.reset();
 
   network_loader_.reset();
-  network_client_receiver_.reset();
   network_consumer_.reset();
   network_watcher_.Cancel();
   cache_writer_.reset();

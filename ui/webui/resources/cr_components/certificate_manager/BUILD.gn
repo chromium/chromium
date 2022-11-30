@@ -1,190 +1,72 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//crypto/features.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+import("certificate_manager.gni")
 
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
+assert(use_nss_certs)
+
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager_tmp"
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager"
+
+preprocess_if_expr("preprocess") {
+  visibility = [
+    ":build_ts",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
+  in_folder = "."
+  out_folder = preprocess_folder_tmp
+  in_files = ts_files + html_files + css_files
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = css_files
+  minify = optimize_webui
+}
+
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = html_files
+  minify = optimize_webui
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
   deps = [
-    ":ca_trust_edit_dialog",
-    ":certificate_delete_confirmation_dialog",
-    ":certificate_entry",
-    ":certificate_list",
-    ":certificate_manager",
-    ":certificate_manager_types",
-    ":certificate_password_decryption_dialog",
-    ":certificate_password_encryption_dialog",
-    ":certificate_subentry",
-    ":certificates_browser_proxy",
-    ":certificates_error_dialog",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-
-  # These are Chrome OS specific but always included because of limitations
-  # around conditional imports (https://crbug.com/1071641#c10).
-  deps += [
-    ":certificate_provisioning_browser_proxy",
-    ":certificate_provisioning_details_dialog",
-    ":certificate_provisioning_entry",
-    ":certificate_provisioning_list",
+  extra_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
   ]
 }
 
-js_library("ca_trust_edit_dialog") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificate_delete_confirmation_dialog") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificate_entry") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("certificate_list") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificates_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("certificate_manager_types") {
-  deps = [ ":certificates_browser_proxy" ]
-}
-
-js_library("certificates_error_dialog") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificate_provisioning_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("certificate_provisioning_details_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificate_provisioning_entry") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("certificate_provisioning_list") {
-  deps = [
-    ":certificate_provisioning_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("certificate_password_decryption_dialog") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("certificate_password_encryption_dialog") {
-  deps = [
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("certificate_subentry") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("certificate_manager") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "ca_trust_edit_dialog.js",
-    "certificate_delete_confirmation_dialog.js",
-    "certificate_entry.js",
-    "certificate_list.js",
-    "certificate_manager.js",
-    "certificate_password_decryption_dialog.js",
-    "certificate_password_encryption_dialog.js",
-    "certificate_shared_css.js",
-    "certificate_subentry.js",
-    "certificates_error_dialog.js",
-  ]
-
-  # These are Chrome OS specific but always included because of limitations
-  # around conditional imports (https://crbug.com/1071641#c10).
-  js_files += [
-    "certificate_provisioning_details_dialog.js",
-    "certificate_provisioning_entry.js",
-    "certificate_provisioning_list.js",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_certificate_manager"
+  out_grd = "$target_gen_dir/resources.grdp"
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "cr_components/certificate_manager"
 }

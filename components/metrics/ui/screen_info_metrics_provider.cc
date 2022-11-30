@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 namespace metrics {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -58,7 +58,7 @@ void WriteScreenDPIInformationProto(SystemProfileProto::Hardware* hardware) {
 
 }  // namespace
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 ScreenInfoMetricsProvider::ScreenInfoMetricsProvider() {
 }
@@ -70,7 +70,7 @@ void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile_proto) {
   // This may be called before the screen info has been initialized, such as
   // when the persistent system profile gets filled in initially.
-  const base::Optional<gfx::Size> display_size = GetScreenSize();
+  const absl::optional<gfx::Size> display_size = GetScreenSize();
   if (!display_size.has_value())
     return;
 
@@ -82,16 +82,16 @@ void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
   hardware->set_primary_screen_scale_factor(GetScreenDeviceScaleFactor());
   hardware->set_screen_count(GetScreenCount());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   WriteScreenDPIInformationProto(hardware);
 #endif
 }
 
-base::Optional<gfx::Size> ScreenInfoMetricsProvider::GetScreenSize() const {
+absl::optional<gfx::Size> ScreenInfoMetricsProvider::GetScreenSize() const {
   auto* screen = display::Screen::GetScreen();
   if (!screen)
-    return base::nullopt;
-  return base::make_optional(screen->GetPrimaryDisplay().GetSizeInPixel());
+    return absl::nullopt;
+  return absl::make_optional(screen->GetPrimaryDisplay().GetSizeInPixel());
 }
 
 float ScreenInfoMetricsProvider::GetScreenDeviceScaleFactor() const {

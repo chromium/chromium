@@ -31,55 +31,55 @@ PASS select1.options[2].textContent is 'C'
 
 
 1.4 Add a non-Option element
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.5 Add a non-element (string)
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.6 Add a non-element (number)
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.7 Add a non-element (boolean)
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.8 Add undefined
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.9 Add null
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.10 Add negative infinity
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.11 Add NaN
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
 
 1.12 Add positive infinity
-PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select1.options.add(option1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select1.options.length is 3
 PASS select1.selectedIndex is 0
 
@@ -200,55 +200,55 @@ PASS select2.selectedIndex is 4
 
 
 2.12 Add a non-Option element
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.13 Add a non-element (string)
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.14 Add a non-element (number)
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.15 Add a non-element (boolean)
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.16 Add undefined
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.17 Add null
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.18 Add negative infinity
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.19 Add NaN
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 
 
 2.20 Add positive infinity
-PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptionElement or HTMLOptGroupElement)'.
+PASS select2.options.add(option2, 1) threw exception TypeError: Failed to execute 'add' on 'HTMLOptionsCollection': The provided value is not of type '(HTMLOptGroupElement or HTMLOptionElement)'..
 PASS select2.options.length is 11
 PASS select2.selectedIndex is 4
 

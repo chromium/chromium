@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -842,7 +841,8 @@ TEST(TilingDataTest, ExpandRectIgnoringBordersToTileBounds) {
 
   // Inside other tile border texels doesn't include other tiles.
   gfx::Rect inner_rect_src(data2.TileBounds(1, 1));
-  inner_rect_src.Inset(data2.border_texels(), data.border_texels());
+  inner_rect_src.Inset(
+      gfx::Insets::VH(data.border_texels(), data2.border_texels()));
   gfx::Rect inner_rect_result(data2.TileBounds(1, 1));
   gfx::Rect expanded =
       data2.ExpandRectIgnoringBordersToTileBounds(inner_rect_src);
@@ -891,7 +891,8 @@ TEST(TilingDataTest, ExpandRectToTileBounds) {
 
   // Inside other tile border texels doesn't include other tiles.
   gfx::Rect inner_rect_src(data2.TileBounds(1, 1));
-  inner_rect_src.Inset(data2.border_texels(), data.border_texels());
+  inner_rect_src.Inset(
+      gfx::Insets::VH(data.border_texels(), data2.border_texels()));
   gfx::Rect inner_rect_result(data2.TileBounds(1, 1));
   gfx::Rect expanded = data2.ExpandRectToTileBounds(inner_rect_src);
   EXPECT_EQ(inner_rect_result.ToString(), expanded.ToString());

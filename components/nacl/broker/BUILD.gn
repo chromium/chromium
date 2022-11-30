@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,6 +31,7 @@ source_set("broker") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//sandbox",
+    "//sandbox/policy/mojom",
     "//services/service_manager/public/cpp",
   ]
 
@@ -47,7 +48,7 @@ source_set("broker") {
 source_set("content_dummy") {
   check_includes = false
   sources = [
-    "//content/public/common/sandbox_init.h",
+    "//content/public/common/sandbox_init_win.h",
     "//content/public/common/sandboxed_process_launcher_delegate.h",
   ]
 }
@@ -104,7 +105,6 @@ if (current_cpu == "x86") {
       "//chrome/install_static:install_static_util",
       "//components/crash/content/app:deprecated_breakpad_win",
       "//components/nacl/loader:nacl_helper_win_64",
-      "//content/public/common:static_features",
       "//content/public/common:static_switches",
       "//ppapi/proxy:ipc",
       "//sandbox",
@@ -154,6 +154,7 @@ if (current_cpu == "x86") {
     check_includes = false
 
     deps = [
+      "//chrome/chrome_elf:constants",
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_no_strings",

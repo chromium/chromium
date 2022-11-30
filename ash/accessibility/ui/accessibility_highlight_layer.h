@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/ui/accessibility_layer.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -19,27 +18,33 @@ namespace ash {
 class ASH_EXPORT AccessibilityHighlightLayer : public AccessibilityLayer {
  public:
   explicit AccessibilityHighlightLayer(AccessibilityLayerDelegate* delegate);
+
+  AccessibilityHighlightLayer(const AccessibilityHighlightLayer&) = delete;
+  AccessibilityHighlightLayer& operator=(const AccessibilityHighlightLayer&) =
+      delete;
+
   ~AccessibilityHighlightLayer() override;
 
   // Create the layer and update its bounds and position in the hierarchy.
   void Set(const std::vector<gfx::Rect>& rects, SkColor color);
 
   // AccessibilityLayer overrides:
-  bool CanAnimate() const override;
-  bool NeedToAnimate() const override;
   int GetInset() const override;
+
+  std::vector<gfx::Rect> rects_for_test() { return rects_; }
+
+  SkColor color_for_test() { return highlight_color_; }
 
  private:
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
-  // The current rects to be highlighted.
+  // The current rects to be highlighted, relative to the
+  // AccessibilityPanelContainer window.
   std::vector<gfx::Rect> rects_;
 
   // The highlight color.
   SkColor highlight_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityHighlightLayer);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,11 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.extra_data();
   }
 
+  static media::EncryptionScheme encryption_scheme(
+      const media::AudioDecoderConfig& input) {
+    return input.encryption_scheme();
+  }
+
   static base::TimeDelta seek_preroll(const media::AudioDecoderConfig& input) {
     return input.seek_preroll();
   }
@@ -45,14 +50,29 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.codec_delay();
   }
 
-  static media::EncryptionScheme encryption_scheme(
-      const media::AudioDecoderConfig& input) {
-    return input.encryption_scheme();
-  }
-
   static media::AudioCodecProfile profile(
       const media::AudioDecoderConfig& input) {
     return input.profile();
+  }
+
+  static media::ChannelLayout target_output_channel_layout(
+      const media::AudioDecoderConfig& input) {
+    return input.target_output_channel_layout();
+  }
+
+  static media::SampleFormat target_output_sample_format(
+      const media::AudioDecoderConfig& input) {
+    return input.target_output_sample_format();
+  }
+
+  static bool should_discard_decoder_delay(
+      const media::AudioDecoderConfig& input) {
+    return input.should_discard_decoder_delay();
+  }
+
+  static const std::vector<uint8_t>& aac_extra_data(
+      const media::AudioDecoderConfig& input) {
+    return input.aac_extra_data();
   }
 
   static bool Read(media::mojom::AudioDecoderConfigDataView input,

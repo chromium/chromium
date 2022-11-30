@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 #include <jni.h>
 
 #include <memory>
-#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 namespace net {
 struct BidirectionalStreamRequestInfo;
@@ -25,7 +25,7 @@ struct BidirectionalStreamRequestInfo;
 
 namespace cronet {
 
-class CronetURLRequestContextAdapter;
+class CronetContextAdapter;
 class IOBufferWithByteBuffer;
 
 // Convenient wrapper to hold Java references and data to represent the pending
@@ -37,6 +37,10 @@ struct PendingWriteData {
       const base::android::JavaRef<jintArray>& jwrite_buffer_pos_list,
       const base::android::JavaRef<jintArray>& jwrite_buffer_limit_list,
       jboolean jwrite_end_of_stream);
+
+  PendingWriteData(const PendingWriteData&) = delete;
+  PendingWriteData& operator=(const PendingWriteData&) = delete;
+
   ~PendingWriteData();
 
   // Arguments passed in from Java. Retain a global ref so they won't get GC-ed
@@ -51,8 +55,6 @@ struct PendingWriteData {
   std::vector<scoped_refptr<net::IOBuffer>> write_buffer_list;
   // A list of the length of each IOBuffer in |write_buffer_list|.
   std::vector<int> write_buffer_len_list;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingWriteData);
 };
 
 // An adapter from Java BidirectionalStream object to net::BidirectionalStream.
@@ -67,15 +69,21 @@ class CronetBidirectionalStreamAdapter
     : public net::BidirectionalStream::Delegate {
  public:
   CronetBidirectionalStreamAdapter(
-      CronetURLRequestContextAdapter* context,
+      CronetContextAdapter* context,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbidi_stream,
       bool jsend_request_headers_automatically,
-      bool enable_metrics,
       bool traffic_stats_tag_set,
       int32_t traffic_stats_tag,
       bool traffic_stats_uid_set,
-      int32_t traffic_stats_uid);
+      int32_t traffic_stats_uid,
+      net::handles::NetworkHandle network);
+
+  CronetBidirectionalStreamAdapter(const CronetBidirectionalStreamAdapter&) =
+      delete;
+  CronetBidirectionalStreamAdapter& operator=(
+      const CronetBidirectionalStreamAdapter&) = delete;
+
   ~CronetBidirectionalStreamAdapter() override;
 
   // Validates method and headers, initializes and starts the request. If
@@ -161,13 +169,11 @@ class CronetBidirectionalStreamAdapter
       const spdy::Http2HeaderBlock& header_block);
   // Helper method to report metrics to the Java layer.
   void MaybeReportMetrics();
-  CronetURLRequestContextAdapter* const context_;
+  const raw_ptr<CronetContextAdapter> context_;
 
   // Java object that owns this CronetBidirectionalStreamAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
   const bool send_request_headers_automatically_;
-  // Whether metrics collection is enabled when |this| is created.
-  const bool enable_metrics_;
   // Whether |traffic_stats_tag_| should be applied.
   const bool traffic_stats_tag_set_;
   // TrafficStats tag to apply to URLRequest.
@@ -176,6 +182,9 @@ class CronetBidirectionalStreamAdapter
   const bool traffic_stats_uid_set_;
   // UID to be applied to URLRequest.
   const int32_t traffic_stats_uid_;
+  // If not equal to net::handles::kInvalidNetworkHandle, the network to be used
+  // to send this request.
+  const net::handles::NetworkHandle network_;
 
   scoped_refptr<IOBufferWithByteBuffer> read_buffer_;
   std::unique_ptr<PendingWriteData> pending_write_data_;
@@ -183,8 +192,6 @@ class CronetBidirectionalStreamAdapter
 
   // Whether BidirectionalStream::Delegate::OnFailed callback is invoked.
   bool stream_failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetBidirectionalStreamAdapter);
 };
 
 }  // namespace cronet

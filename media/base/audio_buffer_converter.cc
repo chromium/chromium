@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #include "base/check_op.h"
 #include "media/base/audio_bus.h"
@@ -139,14 +140,14 @@ void AudioBufferConverter::ResetConverter(const AudioBuffer& buffer) {
   Flush();
   audio_converter_.reset();
   input_params_.Reset(
-      input_params_.format(), buffer.channel_layout(), buffer.sample_rate(),
+      input_params_.format(), {buffer.channel_layout(), buffer.channel_count()},
+      buffer.sample_rate(),
       // If resampling is needed and the FIFO disabled, the AudioConverter will
       // always request SincResampler::kDefaultRequestSize frames.  Otherwise it
       // will use the output frame size.
       buffer.sample_rate() == output_params_.sample_rate()
           ? output_params_.frames_per_buffer()
           : SincResampler::kDefaultRequestSize);
-  input_params_.set_channels_for_discrete(buffer.channel_count());
 
   io_sample_rate_ratio_ = static_cast<double>(input_params_.sample_rate()) /
                           output_params_.sample_rate();
@@ -157,8 +158,8 @@ void AudioBufferConverter::ResetConverter(const AudioBuffer& buffer) {
     return;
 
   // Note: The FIFO is disabled to avoid extraneous memcpy().
-  audio_converter_.reset(
-      new AudioConverter(input_params_, output_params_, true));
+  audio_converter_ =
+      std::make_unique<AudioConverter>(input_params_, output_params_, true);
   audio_converter_->AddInput(this);
 }
 

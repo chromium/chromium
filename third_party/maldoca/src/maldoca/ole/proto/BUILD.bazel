@@ -1,0 +1,119 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+
+package(
+    default_visibility = ["//:__subpackages__"],
+)
+
+licenses(["notice"])
+
+
+
+proto_library(
+    name = "excel4_extraction_proto",
+    srcs = ["excel4_extraction.proto"],
+    deps = [
+        "//maldoca/ole/excel4:ast_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "excel4_extraction_cc_proto",
+    deps = [":excel4_extraction_proto"],
+)
+
+proto_library(
+    name = "ole_to_proto_settings_proto",
+    srcs = ["ole_to_proto_settings.proto"],
+)
+
+cc_proto_library(
+    name = "ole_to_proto_settings_cc_proto",
+    deps = [":ole_to_proto_settings_proto"],
+)
+
+proto_library(
+    name = "ooxml_to_proto_settings_proto",
+    srcs = ["ooxml_to_proto_settings.proto"],
+)
+
+cc_proto_library(
+    name = "ooxml_to_proto_settings_cc_proto",
+    deps = [":ooxml_to_proto_settings_proto"],
+)
+
+proto_library(
+    name = "vba_extraction_proto",
+    srcs = ["vba_extraction.proto"],
+)
+
+cc_proto_library(
+    name = "vba_extraction_cc_proto",
+    deps = [":vba_extraction_proto"],
+)
+
+proto_library(
+    name = "office_proto",
+    srcs = ["office.proto"],
+    deps = [
+        "ole_proto",
+        "ooxml_proto",
+        ":excel4_extraction_proto",
+        ":vba_extraction_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "office_cc_proto",
+    deps = [":office_proto"],
+)
+
+proto_library(
+    name = "ole_proto",
+    srcs = ["ole.proto"],
+    deps = [
+        ":excel4_extraction_proto",
+        ":vba_extraction_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "ole_cc_proto",
+    deps = [":ole_proto"],
+)
+
+proto_library(
+    name = "ooxml_proto",
+    srcs = ["ooxml.proto"],
+    deps = [
+        ":ole_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "ooxml_cc_proto",
+    deps = [":ooxml_proto"],
+)
+
+proto_library(
+    name = "extract_vba_settings_proto",
+    srcs = ["extract_vba_settings.proto"],
+)
+
+cc_proto_library(
+    name = "extract_vba_settings_cc_proto",
+    deps = [":extract_vba_settings_proto"],
+)

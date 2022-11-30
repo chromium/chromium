@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/pref_value_map.h"
@@ -22,10 +22,13 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
 
   DefaultPrefStore();
 
+  DefaultPrefStore(const DefaultPrefStore&) = delete;
+  DefaultPrefStore& operator=(const DefaultPrefStore&) = delete;
+
   // PrefStore implementation:
-  bool GetValue(const std::string& key,
+  bool GetValue(base::StringPiece key,
                 const base::Value** result) const override;
-  std::unique_ptr<base::DictionaryValue> GetValues() const override;
+  base::Value::Dict GetValues() const override;
   void AddObserver(PrefStore::Observer* observer) override;
   void RemoveObserver(PrefStore::Observer* observer) override;
   bool HasObservers() const override;
@@ -47,8 +50,6 @@ class COMPONENTS_PREFS_EXPORT DefaultPrefStore : public PrefStore {
   PrefValueMap prefs_;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultPrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_DEFAULT_PREF_STORE_H_

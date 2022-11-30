@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 #define ASH_SYSTEM_MEDIA_MEDIA_TRAY_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/media_notification_provider_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/style/icon_button.h"
+#include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;
@@ -39,7 +39,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   // Pin button showed in media tray bubble's title view and media controls
   // detailed view's title view.
-  class PinButton : public TopShortcutButton {
+  class PinButton : public IconButton {
    public:
     PinButton();
     ~PinButton() override = default;
@@ -65,6 +65,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void AnchorUpdated() override;
+  void OnThemeChanged() override;
 
   // SessionObserver implementation.
   void OnLockStateChanged(bool locked) override;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -35,13 +34,19 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
         base::BindRepeating(&WtsRegistrationNotificationManager::OnWndProc,
                             base::Unretained(this)));
 
-    base::OnceClosure wts_register = base::BindOnce(
-        base::IgnoreResult(&WTSRegisterSessionNotification),
-        gfx::SingletonHwnd::GetInstance()->hwnd(), NOTIFY_FOR_THIS_SESSION);
+    base::OnceClosure wts_register =
+        base::BindOnce(base::IgnoreResult(&WTSRegisterSessionNotification),
+                       gfx::SingletonHwnd::GetInstance()->hwnd(),
+                       DWORD{NOTIFY_FOR_THIS_SESSION});
 
     base::ThreadPool::CreateCOMSTATaskRunner({})->PostTask(
         FROM_HERE, std::move(wts_register));
   }
+
+  WtsRegistrationNotificationManager(
+      const WtsRegistrationNotificationManager&) = delete;
+  WtsRegistrationNotificationManager& operator=(
+      const WtsRegistrationNotificationManager&) = delete;
 
   ~WtsRegistrationNotificationManager() { RemoveSingletonHwndObserver(); }
 
@@ -101,8 +106,6 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
 
   base::ObserverList<SessionChangeObserver, true>::Unchecked observer_list_;
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WtsRegistrationNotificationManager);
 };
 
 SessionChangeObserver::SessionChangeObserver(const WtsCallback& callback)

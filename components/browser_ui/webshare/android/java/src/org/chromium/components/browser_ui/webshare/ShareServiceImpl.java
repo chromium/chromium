@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,7 @@ public class ShareServiceImpl implements ShareService {
     // clang-format off
     private static final Set<String> PERMITTED_EXTENSIONS =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
+                    "avif", // image/avif
                     "bmp", // image/bmp / image/x-ms-bmp
                     "css", // text/css
                     "csv", // text/csv / text/comma-separated-values
@@ -95,6 +96,7 @@ public class ShareServiceImpl implements ShareService {
                     "ogm", // video/ogg
                     "ogv", // video/ogg
                     "opus", // audio/ogg
+                    "pdf", // application/pdf
                     "pjp", // image/jpeg
                     "pjpeg", // image/jpeg
                     "png", // image/png
@@ -116,12 +118,14 @@ public class ShareServiceImpl implements ShareService {
     private static final Set<String> PERMITTED_MIME_TYPES =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
                      "audio/flac",
+                     "application/pdf",
                      "audio/mp3",
                      "audio/mpeg",
                      "audio/ogg",
                      "audio/wav",
                      "audio/webm",
                      "audio/x-m4a",
+                     "image/avif",
                      "image/bmp",
                      "image/gif",
                      "image/jpeg",
@@ -174,7 +178,7 @@ public class ShareServiceImpl implements ShareService {
 
     @Override
     public void share(String title, String text, Url url, final SharedFile[] files,
-            final ShareResponse callback) {
+            final Share_Response callback) {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebShare.ApiCount", WEBSHARE_METHOD_SHARE, WEBSHARE_METHOD_COUNT);
 
@@ -215,7 +219,8 @@ public class ShareServiceImpl implements ShareService {
         }
 
         for (SharedFile file : files) {
-            if (isDangerousFilename(file.name) || isDangerousMimeType(file.blob.contentType)) {
+            if (isDangerousFilename(file.name.path.path)
+                    || isDangerousMimeType(file.blob.contentType)) {
                 Log.i(TAG,
                         "Cannot share potentially dangerous \"" + file.blob.contentType
                                 + "\" file \"" + file.name + "\".");
@@ -245,7 +250,8 @@ public class ShareServiceImpl implements ShareService {
 
                     for (int index = 0; index < files.length; ++index) {
                         File tempFile = File.createTempFile("share",
-                                "." + FileUtils.getExtension(files[index].name), sharePath);
+                                "." + FileUtils.getExtension(files[index].name.path.path),
+                                sharePath);
                         fileUris.add(ContentUriUtils.getContentUriFromFile(tempFile));
                         blobReceivers.add(new BlobReceiver(
                                 new FileOutputStream(tempFile), MAX_SHARED_FILE_BYTES));

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "base/debug/crash_logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 namespace mojo {
 namespace internal {
@@ -26,7 +27,7 @@ SerializationWarningObserverForTesting* g_serialization_warning_observer =
     nullptr;
 bool g_suppress_logging = false;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 std::string MessageHeaderAsHexString(Message* message) {
   if (!message) {
     return "<null>";
@@ -38,7 +39,7 @@ std::string MessageHeaderAsHexString(Message* message) {
   }
   return base::HexEncode(message->header(), sizeof(*message->header()));
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 
@@ -90,10 +91,10 @@ const char* ValidationErrorToString(ValidationError error) {
 void ReportValidationError(ValidationContext* context,
                            ValidationError error,
                            const char* description) {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   SCOPED_CRASH_KEY_STRING64("mojo-message", "header-bytes",
                             MessageHeaderAsHexString(context->message()));
-#endif  // !defined (OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   if (g_validation_error_observer) {
     g_validation_error_observer->set_last_error(error);

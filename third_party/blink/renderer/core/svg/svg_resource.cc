@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -121,11 +123,17 @@ bool SVGResource::FindCycle(SVGResourceClient& client) const {
       entry.cached_cycle_check = has_cycle ? kHasCycle : kNoCycle;
       return false;
     }
+    case kNoCycle: {
+      entry.cached_cycle_check = kPerformingCheck;
+      bool has_cycle = container->FindCycle();
+      DCHECK_EQ(entry.cached_cycle_check, kPerformingCheck);
+      entry.cached_cycle_check = kNoCycle;
+      return has_cycle;
+    }
     case kPerformingCheck:
       // If we're on the current checking path, signal a cycle.
       return true;
     case kHasCycle:
-    case kNoCycle:
       // We have a cached result, but don't signal a cycle since
       // ResourceContainer() will consider the resource invalid if one is
       // present.
@@ -182,6 +190,10 @@ ExternalSVGResource::ExternalSVGResource(const KURL& url) : url_(url) {}
 void ExternalSVGResource::Load(Document& document) {
   if (document_content_)
     return;
+  // Loading SVG resources should not trigger script, see
+  // https://crbug.com/1196853 This could be allowed if DOMContentLoaded and
+  // other checkpoints were asynchronous per https://crbug.com/961428
+  ScriptForbiddenScope forbid_script;
   ExecutionContext* execution_context = document.GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;
@@ -193,6 +205,10 @@ void ExternalSVGResource::Load(Document& document) {
 void ExternalSVGResource::LoadWithoutCSP(Document& document) {
   if (document_content_)
     return;
+  // Loading SVG resources should not trigger script, see
+  // https://crbug.com/1196853 This could be allowed if DOMContentLoaded and
+  // other checkpoints were asynchronous per https://crbug.com/961428
+  ScriptForbiddenScope forbid_script;
   ExecutionContext* execution_context = document.GetExecutionContext();
   ResourceLoaderOptions options(execution_context->GetCurrentWorld());
   options.initiator_info.name = fetch_initiator_type_names::kCSS;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -37,6 +37,10 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
     virtual void OnInvalidFrameToken(uint32_t frame_token) = 0;
   };
   FrameTokenMessageQueue();
+
+  FrameTokenMessageQueue(const FrameTokenMessageQueue&) = delete;
+  FrameTokenMessageQueue& operator=(const FrameTokenMessageQueue&) = delete;
+
   virtual ~FrameTokenMessageQueue();
 
   // Initializes this instance. This should always be the first method called
@@ -63,7 +67,7 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
 
  private:
   // Not owned.
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   // Last non-zero frame token received from the renderer. Any swap messsages
   // having a token less than or equal to this value will be processed.
@@ -78,8 +82,6 @@ class CONTENT_EXPORT FrameTokenMessageQueue {
   // The frame token last seen when Reset() is called. To determine if we are
   // getting delayed frame acknowledgements after a reset.
   uint32_t last_received_frame_token_reset_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTokenMessageQueue);
 };
 
 }  // namespace content

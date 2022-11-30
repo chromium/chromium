@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.WebviewErrorCode;
-import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.AndroidNetworkLibraryTestUtil;
@@ -89,7 +89,7 @@ public class AwContentsStaticsTest {
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
             String url = testServer.getURL("/android_webview/test/data/hello_world.html");
-            OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+            OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
             int errorCount = errorHelper.getCallCount();
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
@@ -121,7 +121,7 @@ public class AwContentsStaticsTest {
                 InstrumentationRegistry.getInstrumentation().getContext());
         try {
             String url = testServer.getURL("/android_webview/test/data/hello_world.html");
-            OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+            OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
             int errorCount = errorHelper.getCallCount();
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), url);

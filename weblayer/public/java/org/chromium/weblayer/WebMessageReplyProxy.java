@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,13 @@ import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
  * Each {@link WebMessageReplyProxy} represents a single endpoint. Multiple messages sent to the
  * same endpoint use the same {@link WebMessageReplyProxy}.
  */
-public class WebMessageReplyProxy {
+class WebMessageReplyProxy {
     private final IWebMessageReplyProxy mIReplyProxy;
     private final boolean mIsMainFrame;
     private final String mSourceOrigin;
     private boolean mIsClosed;
+    // Added in 99.
+    private Page mPage;
 
     // Constructor for test mocking.
     protected WebMessageReplyProxy() {
@@ -100,5 +102,26 @@ public class WebMessageReplyProxy {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Returns the Page associated with this proxy. For child frame, the Page of the main frame is
+     * returned.
+     *
+     * @return The Page.
+     *
+     * @since 99
+     */
+    public Page getPage() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 99) {
+            throw new UnsupportedOperationException();
+        }
+        return mPage;
+    }
+
+    // Only called in >= 99.
+    void setPage(Page page) {
+        mPage = page;
     }
 }

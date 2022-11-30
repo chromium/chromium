@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -218,11 +218,14 @@ message AutofillRandomizedFieldMetadata {
   // Example: <input value="VVVVVVV">
   //          XXXXXXXX = hash("VVVVVVV"")
   optional AutofillRandomizedValue initial_value_hash = 9;
+
+  // Value of the autocomplete attribute. Example: <input autocomplete="XXX">
+  optional AutofillRandomizedValue autocomplete = 10;
 }
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 41
+// Next available id: 46
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -340,13 +343,30 @@ message AutofillUploadContents {
       repeated int32 validity = 2;
     }
     // A list of possible types for the field with their corresponding validity
-    // states based on the user's data.
-    repeated AutofillTypeValiditiesPair autofill_type_validities = 35;
+    // states based on the user's data. Deprecated in M99 after unsuccessful
+    // experiments.
+    repeated AutofillTypeValiditiesPair autofill_type_validities = 35
+        [deprecated = true];
 
     // A low-entropy hash of the field's initial value before user-interactions
     // or automatic fillings. This field is used to detect static
     // placeholders.
     optional uint32 initial_value_hash = 40;
+
+    // The type of the username first flow signal.
+    enum SingleUsernameVoteType {
+      DEFAULT = 0;
+      // Votes with low confidence (i.e. recorded if Save/Update prompt was
+      // accepted without username edits).
+      WEAK = 1;
+      // Votes with high confidence (i.e. recorded if Save/Update prompt was
+      // accepted after username edits).
+      STRONG = 2;
+    }
+
+    // The type of the username first flow vote signal, set iff |autofill_type|
+    // is SINGLE_USERNAME or NOT_USERNAME.
+    optional SingleUsernameVoteType single_username_vote_type = 41;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
@@ -371,8 +391,8 @@ message AutofillUploadContents {
   // Upload only when a password is saved.
   // Used to adjust the password generator's settings to site's requirements.
 
-  // Whether the password has any lowercase letter.
-  optional bool password_has_lowercase_letter = 25;
+  // Whether the password has any letter.
+  optional bool password_has_letter = 25;
 
   // Deprecated since M80: Whether the password has any uppercase letter.
   optional bool password_has_uppercase_letter = 26 [deprecated = true];
@@ -439,6 +459,46 @@ message AutofillUploadContents {
 
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38;
+
+  // Type of the value seen in the potential single username field.
+  enum ValueType {
+    TYPE_UNSPECIFIED = 0;
+    NO_VALUE_TYPE = 1;
+    STORED_FOR_CURRENT_DOMAIN = 2;
+    // TODO(crbug.com/959776) Not used yet. Check against all domains to be
+    // implemented.
+    STORED_FOR_ANOTHER_DOMAIN = 3;
+    EMAIL = 4;
+    PHONE = 5;
+    USERNAME_LIKE = 6;
+    VALUE_WITH_NO_WHITESPACE = 7;
+    VALUE_WITH_WHITESPACE = 8;
+  }
+  // Information received from user interaction with the prompt.
+  enum SingleUsernamePromptEdit {
+    EDIT_UNSPECIFIED = 0;
+    NOT_EDITED_POSITIVE = 1;
+    NOT_EDITED_NEGATIVE = 2;
+    EDITED_POSITIVE = 3;
+    EDITED_NEGATIVE = 4;
+  }
+  message SingleUsernameData {
+    optional fixed64 username_form_signature = 1;
+    optional fixed32 username_field_signature = 2;
+    optional ValueType value_type = 3;
+    optional SingleUsernamePromptEdit prompt_edit = 4;
+  }
+  // This message is recorded on forms that do not have a username field.
+  // The message contains data on a preceding form with potential username
+  // field.
+  optional SingleUsernameData single_username_data = 42;
+
+  // The form signature of related forms, which were submitted on the same
+  // origin shortly prior. If set, `last_address_form_submitted` or
+  // `last_credit_card_form_submitted` is equal to `form_signature`.
+  optional fixed64 last_address_form_submitted = 43;
+  optional fixed64 second_last_address_form_submitted = 44;
+  optional fixed64 last_credit_card_form_submitted = 45;
 }
 
 // This proto contains information about the validity of each field in an

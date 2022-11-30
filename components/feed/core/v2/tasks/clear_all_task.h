@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class ClearAllTask : public offline_pages::Task {
 
   void StoreClearComplete(bool ok);
 
-  FeedStream* stream_;
+  FeedStream& stream_;
   base::WeakPtrFactory<ClearAllTask> weak_ptr_factory_{this};
 };
 }  // namespace feed

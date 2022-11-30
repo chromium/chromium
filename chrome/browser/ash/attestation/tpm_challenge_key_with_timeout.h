@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace attestation {
@@ -37,7 +38,8 @@ class TpmChallengeKeyWithTimeout final {
                      TpmChallengeKeyCallback callback,
                      const std::string& challenge,
                      bool register_key,
-                     const std::string& key_name_for_spkac);
+                     const std::string& key_name_for_spkac,
+                     const absl::optional<std::string>& signals);
 
  private:
   void ResolveCallback(const TpmChallengeKeyResult& result);

@@ -1,0 +1,10 @@
+include_rules = [
+  "+ui/events",
+  "+content/public/browser",
+]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+content/public/test",
+  ],
+}

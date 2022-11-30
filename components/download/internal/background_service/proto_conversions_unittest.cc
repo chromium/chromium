@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,13 @@
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/proto_conversions.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-std::string TEST_URL = "https://google.com";
-
+constexpr char kTestUrl[] = "https://www.example.com";
+constexpr char kKey[] = "k";
+constexpr char kValue[] = "v";
 }  // namespace
 
 namespace download {
@@ -95,10 +97,11 @@ TEST_F(ProtoConversionsTest, SchedulingParamsConversion) {
 
 TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   RequestParams expected;
-  expected.url = GURL(TEST_URL);
+  expected.url = GURL(kTestUrl);
   expected.method = "GET";
   expected.fetch_error_body = true;
   expected.require_safety_checks = false;
+  expected.credentials_mode = ::network::mojom::CredentialsMode::kInclude;
   expected.request_headers.SetHeader("key1", "value1");
   expected.request_headers.SetHeader("key2", "value2");
 
@@ -110,6 +113,7 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   EXPECT_EQ(expected.method, actual.method);
   EXPECT_EQ(expected.fetch_error_body, actual.fetch_error_body);
   EXPECT_EQ(expected.require_safety_checks, actual.require_safety_checks);
+  EXPECT_EQ(expected.credentials_mode, actual.credentials_mode);
 
   std::string out;
   actual.request_headers.GetHeader("key1", &out);
@@ -118,6 +122,19 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   EXPECT_EQ("value2", out);
   EXPECT_EQ(expected.request_headers.ToString(),
             actual.request_headers.ToString());
+}
+
+TEST_F(ProtoConversionsTest, RequestParamsWithMissingCredentialsMode) {
+  RequestParams expected;
+  expected.url = GURL(kTestUrl);
+  expected.method = "GET";
+
+  protodb::RequestParams proto;
+  RequestParamsToProto(expected, &proto);
+  RequestParams actual = RequestParamsFromProto(proto);
+
+  EXPECT_EQ(expected.credentials_mode,
+            ::network::mojom::CredentialsMode::kInclude);
 }
 
 TEST_F(ProtoConversionsTest, EntryConversion) {
@@ -129,9 +146,10 @@ TEST_F(ProtoConversionsTest, EntryConversion) {
       DownloadClient::TEST, base::GenerateGUID(), base::Time::Now(),
       SchedulingParams::NetworkRequirements::OPTIMISTIC,
       SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE,
-      SchedulingParams::Priority::HIGH, GURL(TEST_URL), "GET",
+      SchedulingParams::Priority::HIGH, GURL(kTestUrl), "GET",
       Entry::State::ACTIVE, base::FilePath(FILE_PATH_LITERAL("/test/xyz")),
       base::Time::Now(), base::Time::Now(), base::Time::Now(), 1024u, 3, 8);
+  expected.custom_data = {{kKey, kValue}};
   actual = EntryFromProto(EntryToProto(expected));
   EXPECT_TRUE(test::CompareEntry(&expected, &actual));
 }
@@ -146,7 +164,7 @@ TEST_F(ProtoConversionsTest, EntryVectorConversion) {
       DownloadClient::TEST, base::GenerateGUID(), base::Time::Now(),
       SchedulingParams::NetworkRequirements::OPTIMISTIC,
       SchedulingParams::BatteryRequirements::BATTERY_SENSITIVE,
-      SchedulingParams::Priority::HIGH, GURL(TEST_URL), "GET",
+      SchedulingParams::Priority::HIGH, GURL(kTestUrl), "GET",
       Entry::State::ACTIVE, base::FilePath(FILE_PATH_LITERAL("/test/xyz")),
       base::Time::Now(), base::Time::Now(), base::Time::Now(), 1024u, 2, 8));
 

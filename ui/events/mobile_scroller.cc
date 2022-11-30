@@ -1,14 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/mobile_scroller.h"
 
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
 
@@ -43,6 +43,9 @@ struct ViscosityConstants {
     viscous_fluid_normalize_ = 1.0f / ApplyViscosity(1.0f);
   }
 
+  ViscosityConstants(const ViscosityConstants&) = delete;
+  ViscosityConstants& operator=(const ViscosityConstants&) = delete;
+
   float ApplyViscosity(float x) {
     x *= viscous_fluid_scale_;
     if (x < 1.0f) {
@@ -60,8 +63,6 @@ struct ViscosityConstants {
   // This controls the intensity of the viscous fluid effect.
   float viscous_fluid_scale_;
   float viscous_fluid_normalize_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViscosityConstants);
 };
 
 struct SplineConstants {
@@ -74,7 +75,7 @@ struct SplineConstants {
     float x_min = 0.0f;
     float y_min = 0.0f;
     for (int i = 0; i < NUM_SAMPLES; i++) {
-      const float alpha = static_cast<float>(i) / NUM_SAMPLES;
+      const float alpha = i / float{NUM_SAMPLES};
 
       float x_max = 1.0f;
       float x, tx, coef;
@@ -109,15 +110,18 @@ struct SplineConstants {
     spline_position_[NUM_SAMPLES] = spline_time_[NUM_SAMPLES] = 1.0f;
   }
 
+  SplineConstants(const SplineConstants&) = delete;
+  SplineConstants& operator=(const SplineConstants&) = delete;
+
   void CalculateCoefficients(float t,
                              float* distance_coef,
                              float* velocity_coef) {
     *distance_coef = 1.f;
     *velocity_coef = 0.f;
-    const int index = static_cast<int>(NUM_SAMPLES * t);
+    const int index = base::ClampFloor(float{NUM_SAMPLES} * t);
     if (index < NUM_SAMPLES) {
-      const float t_inf = static_cast<float>(index) / NUM_SAMPLES;
-      const float t_sup = static_cast<float>(index + 1) / NUM_SAMPLES;
+      const float t_inf = index / float{NUM_SAMPLES};
+      const float t_sup = (index + 1) / float{NUM_SAMPLES};
       const float d_inf = spline_position_[index];
       const float d_sup = spline_position_[index + 1];
       *velocity_coef = (d_sup - d_inf) / (t_sup - t_inf);
@@ -130,8 +134,6 @@ struct SplineConstants {
 
   float spline_position_[NUM_SAMPLES + 1];
   float spline_time_[NUM_SAMPLES + 1];
-
-  DISALLOW_COPY_AND_ASSIGN(SplineConstants);
 };
 
 float ComputeDeceleration(float friction) {
@@ -216,7 +218,7 @@ void MobileScroller::StartScroll(float start_x,
                                  float dy,
                                  base::TimeTicks start_time) {
   StartScroll(start_x, start_y, dx, dy, start_time,
-              base::TimeDelta::FromMilliseconds(kDefaultDurationMs));
+              base::Milliseconds(kDefaultDurationMs));
 }
 
 void MobileScroller::StartScroll(float start_x,
@@ -461,8 +463,7 @@ base::TimeDelta MobileScroller::GetSplineFlingDuration(float velocity) const {
   const double l = GetSplineDeceleration(velocity);
   const double decel_minus_one = kDecelerationRate - 1.0;
   const double time_seconds = std::exp(l / decel_minus_one);
-  return base::TimeDelta::FromMicroseconds(time_seconds *
-                                           base::Time::kMicrosecondsPerSecond);
+  return base::Microseconds(time_seconds * base::Time::kMicrosecondsPerSecond);
 }
 
 double MobileScroller::GetSplineFlingDistance(float velocity) const {

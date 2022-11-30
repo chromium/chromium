@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "components/arc/mojom/pip.mojom.h"
-#include "components/arc/session/connection_observer.h"
+#include "ash/components/arc/mojom/pip.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -32,6 +32,10 @@ class ArcPipBridge : public KeyedService,
 
   ArcPipBridge(content::BrowserContext* context,
                ArcBridgeService* bridge_service);
+
+  ArcPipBridge(const ArcPipBridge&) = delete;
+  ArcPipBridge& operator=(const ArcPipBridge&) = delete;
+
   ~ArcPipBridge() override;
 
   // ConnectionObserver<mojom::PipInstance> overrides.
@@ -51,8 +55,6 @@ class ArcPipBridge : public KeyedService,
       pip_window_controller_;
 
   bool prevent_closing_pip_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPipBridge);
 };
 
 }  // namespace arc

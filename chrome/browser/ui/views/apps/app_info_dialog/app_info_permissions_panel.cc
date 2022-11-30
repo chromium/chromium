@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 
 #include "apps/saved_files_service.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -31,15 +33,10 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace {
-
-// IDs for the two bullet column sets.
-const int kBulletColumnSetId = 1;
-const int kNestedBulletColumnSetId = 2;
 
 // Pixel spacing measurements for different parts of the permissions list.
 const int kSpacingBetweenBulletAndStartOfText = 5;
@@ -53,7 +50,7 @@ class RevokeButton : public views::ImageButton {
  public:
   METADATA_HEADER(RevokeButton);
   explicit RevokeButton(PressedCallback callback,
-                        std::u16string permission_message)
+                        const std::u16string& permission_message)
       : views::ImageButton(std::move(callback)) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     SetImage(views::Button::STATE_NORMAL,
@@ -80,48 +77,14 @@ BEGIN_METADATA(RevokeButton, views::ImageButton)
 END_METADATA
 
 // A bulleted list of permissions.
-// TODO(sashab): Fix BoxLayout to correctly display multi-line strings and then
-// remove this class (since the GridLayout will no longer be needed).
 class BulletedPermissionsList : public views::View {
  public:
   METADATA_HEADER(BulletedPermissionsList);
   BulletedPermissionsList() {
-    layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
-
-    using ColumnSize = views::GridLayout::ColumnSize;
-    // Create 3 columns: the bullet, the bullet text, and the revoke button.
-    views::ColumnSet* column_set = layout_->AddColumnSet(kBulletColumnSetId);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                          views::GridLayout::kFixedSize,
-                          ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 kSpacingBetweenBulletAndStartOfText);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                          1.0 /* stretch to fill space */,
-                          ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 kSpacingBetweenTextAndRevokeButton);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                          views::GridLayout::kFixedSize,
-                          ColumnSize::kUsePreferred, 0, 0);
-
-    views::ColumnSet* nested_column_set =
-        layout_->AddColumnSet(kNestedBulletColumnSetId);
-    nested_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                        kIndentationBeforeNestedBullet);
-    nested_column_set->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::LEADING,
-        views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
-    nested_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                        kSpacingBetweenBulletAndStartOfText);
-    nested_column_set->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::LEADING,
-        1.0 /* stretch to fill space */, ColumnSize::kUsePreferred, 0, 0);
-    nested_column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                        kSpacingBetweenTextAndRevokeButton);
-    nested_column_set->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::LEADING,
-        views::GridLayout::kFixedSize, ColumnSize::kUsePreferred, 0, 0);
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   }
   BulletedPermissionsList(const BulletedPermissionsList&) = delete;
   BulletedPermissionsList& operator=(const BulletedPermissionsList&) = delete;
@@ -133,12 +96,13 @@ class BulletedPermissionsList : public views::View {
   // provided, also adds an X button next to the bullet which calls the callback
   // when clicked.
   void AddPermissionBullets(std::u16string message,
-                            std::vector<std::u16string> submessages,
+                            const std::vector<std::u16string>& submessages,
                             gfx::ElideBehavior elide_behavior_for_submessages,
                             base::RepeatingClosure revoke_callback) {
     std::unique_ptr<RevokeButton> revoke_button;
     if (!revoke_callback.is_null())
-      revoke_button = std::make_unique<RevokeButton>(revoke_callback, message);
+      revoke_button = std::make_unique<RevokeButton>(std::move(revoke_callback),
+                                                     std::move(message));
 
     auto permission_label = std::make_unique<AppInfoLabel>(message);
     permission_label->SetMultiLine(true);
@@ -156,29 +120,33 @@ class BulletedPermissionsList : public views::View {
   void AddSinglePermissionBullet(bool is_nested,
                                  std::unique_ptr<views::Label> permission_label,
                                  std::unique_ptr<RevokeButton> revoke_button) {
-    // Add a padding row before every item except the first.
-    if (!children().empty()) {
-      layout_->AddPaddingRow(views::GridLayout::kFixedSize,
-                             ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                 views::DISTANCE_RELATED_CONTROL_VERTICAL));
+    auto* row = AddChildView(std::make_unique<views::FlexLayoutView>());
+    row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+
+    auto* bullet_label =
+        row->AddChildView(std::make_unique<views::Label>(u"•"));
+    if (is_nested) {
+      bullet_label->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0, kIndentationBeforeNestedBullet, 0, 0));
     }
 
-    const char16_t bullet_point[] = {0x2022, 0};
-    auto bullet_label =
-        std::make_unique<views::Label>(std::u16string(bullet_point));
+    permission_label->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, kSpacingBetweenBulletAndStartOfText, 0, 0));
+    permission_label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded, true));
+    row->AddChildView(std::move(permission_label));
 
-    layout_->StartRow(
-        1.0, is_nested ? kNestedBulletColumnSetId : kBulletColumnSetId);
-    layout_->AddView(std::move(bullet_label));
-    layout_->AddView(std::move(permission_label));
-
-    if (revoke_button)
-      layout_->AddView(std::move(revoke_button));
-    else
-      layout_->SkipColumns(1);
+    if (revoke_button) {
+      revoke_button->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0, kSpacingBetweenTextAndRevokeButton, 0, 0));
+      row->AddChildView(std::move(revoke_button));
+    }
   }
-
-  views::GridLayout* layout_;
 };
 
 BEGIN_METADATA(BulletedPermissionsList, views::View)
@@ -256,7 +224,7 @@ AppInfoPermissionsPanel::GetActivePermissionMessages() const {
 
 int AppInfoPermissionsPanel::GetRetainedFileCount() const {
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles. See
     // http://crbug.com/467795.
@@ -271,11 +239,11 @@ std::u16string AppInfoPermissionsPanel::GetRetainedFileHeading() const {
       IDS_APPLICATION_INFO_RETAINED_FILES, GetRetainedFileCount());
 }
 
-const std::vector<std::u16string>
-AppInfoPermissionsPanel::GetRetainedFilePaths() const {
+std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedFilePaths()
+    const {
   std::vector<std::u16string> retained_file_paths;
   if (app_->permissions_data()->HasAPIPermission(
-          extensions::APIPermission::kFileSystem)) {
+          extensions::mojom::APIPermissionID::kFileSystem)) {
     apps::SavedFilesService* service = apps::SavedFilesService::Get(profile_);
     // The SavedFilesService can be null for incognito profiles.
     if (service) {
@@ -312,7 +280,7 @@ std::u16string AppInfoPermissionsPanel::GetRetainedDeviceHeading() const {
       IDS_APPLICATION_INFO_RETAINED_DEVICES, GetRetainedDeviceCount());
 }
 
-const std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
+std::vector<std::u16string> AppInfoPermissionsPanel::GetRetainedDevices()
     const {
   return extensions::DevicePermissionsManager::Get(profile_)
       ->GetPermissionMessageStrings(app_->id());

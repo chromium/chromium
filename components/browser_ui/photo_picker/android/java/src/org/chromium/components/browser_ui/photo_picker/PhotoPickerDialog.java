@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.photo_picker;
 import android.content.ContentResolver;
 import android.net.Uri;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
@@ -84,34 +85,31 @@ public class PhotoPickerDialog
      * @param listener The listener object that gets notified when an action is taken.
      * @param multiSelectionAllowed Whether the photo picker should allow multiple items to be
      *                              selected.
-     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
-     *         clips.
      * @param mimeTypes A list of mime types to show in the dialog.
      */
     public PhotoPickerDialog(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            PhotoPickerListener listener, boolean multiSelectionAllowed,
-            boolean animatedThumbnailsSupported, List<String> mimeTypes) {
-        super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
+            PhotoPickerListener listener, boolean multiSelectionAllowed, List<String> mimeTypes) {
+        super(windowAndroid.getContext().get(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
 
         mWindowAndroid = windowAndroid;
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 
         // Initialize the main content view.
-        mCategoryView = new PickerCategoryView(windowAndroid, contentResolver,
-                multiSelectionAllowed, animatedThumbnailsSupported, this);
+        mCategoryView =
+                new PickerCategoryView(windowAndroid, contentResolver, multiSelectionAllowed, this);
         mCategoryView.initialize(this, mListenerWrapper, mimeTypes);
         setView(mCategoryView);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // Pressing Back when a video is playing, should only end the video playback.
-        boolean videoWasStopped = mCategoryView.closeVideoPlayer();
-        if (videoWasStopped) {
-            return;
-        } else {
-            super.onBackPressed();
-        }
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Pressing Back when a video is playing, should only end the video playback.
+                boolean videoWasStopped = mCategoryView.closeVideoPlayer();
+                if (!videoWasStopped) {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
     }
 
     @Override

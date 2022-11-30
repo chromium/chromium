@@ -38,23 +38,27 @@ AudioResampler::AudioResampler() : rate_(1.0) {
 }
 
 AudioResampler::AudioResampler(unsigned number_of_channels) : rate_(1.0) {
-  for (unsigned i = 0; i < number_of_channels; ++i)
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     kernels_.push_back(std::make_unique<AudioResamplerKernel>(this));
+  }
 
   source_bus_ = AudioBus::Create(number_of_channels, 0, false);
 }
 
 void AudioResampler::ConfigureChannels(unsigned number_of_channels) {
   unsigned current_size = kernels_.size();
-  if (number_of_channels == current_size)
+  if (number_of_channels == current_size) {
     return;  // already setup
+  }
 
   // First deal with adding or removing kernels.
   if (number_of_channels > current_size) {
-    for (unsigned i = current_size; i < number_of_channels; ++i)
+    for (unsigned i = current_size; i < number_of_channels; ++i) {
       kernels_.push_back(std::make_unique<AudioResamplerKernel>(this));
-  } else
+    }
+  } else {
     kernels_.resize(number_of_channels);
+  }
 
   // Reconfigure our source bus to the new channel size.
   source_bus_ = AudioBus::Create(number_of_channels, 0, false);
@@ -75,7 +79,7 @@ void AudioResampler::Process(AudioSourceProvider* provider,
   for (unsigned i = 0; i < number_of_channels; ++i) {
     // Figure out how many frames we need to get from the provider, and a
     // pointer to the buffer.
-    size_t frames_needed;
+    unsigned frames_needed;
     float* fill_pointer =
         kernels_[i]->GetSourcePointer(frames_to_process, &frames_needed);
     DCHECK(fill_pointer);
@@ -84,7 +88,8 @@ void AudioResampler::Process(AudioSourceProvider* provider,
   }
 
   // Ask the provider to supply the desired number of source frames.
-  provider->ProvideInput(source_bus_.get(), source_bus_->length());
+  provider->ProvideInput(source_bus_.get(),
+                         base::checked_cast<int>(source_bus_->length()));
 
   // Now that we have the source data, resample each channel into the
   // destination bus.
@@ -97,16 +102,18 @@ void AudioResampler::Process(AudioSourceProvider* provider,
 }
 
 void AudioResampler::SetRate(double rate) {
-  if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0)
+  if (std::isnan(rate) || std::isinf(rate) || rate <= 0.0) {
     return;
+  }
 
   rate_ = std::min(AudioResampler::kMaxRate, rate);
 }
 
 void AudioResampler::Reset() {
   unsigned number_of_channels = kernels_.size();
-  for (unsigned i = 0; i < number_of_channels; ++i)
+  for (unsigned i = 0; i < number_of_channels; ++i) {
     kernels_[i]->Reset();
+  }
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/metrics/login_metrics_recorder.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
-#include "ash/metrics/user_metrics_action.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -20,17 +18,20 @@ class DemoSessionMetricsRecorder;
 class DesktopTaskSwitchMetricRecorder;
 enum class DictationToggleSource;
 class PointerMetricsRecorder;
+class StylusMetricsRecorder;
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
 // on a timer to allow recording of state data over time to the UMA records.
 // Any additional states (in ash) that require monitoring can be added to
-// this class. As well calls to record on action metrics
-// (RecordUserMetricsAction) are passed through the UserMetricsRecorder.
+// this class.
 class ASH_EXPORT UserMetricsRecorder {
  public:
   // Creates a UserMetricsRecorder that records metrics periodically. Equivalent
   // to calling UserMetricsRecorder(true).
   UserMetricsRecorder();
+
+  UserMetricsRecorder(const UserMetricsRecorder&) = delete;
+  UserMetricsRecorder& operator=(const UserMetricsRecorder&) = delete;
 
   virtual ~UserMetricsRecorder();
 
@@ -41,12 +42,6 @@ class ASH_EXPORT UserMetricsRecorder {
   // Record user clicks on shelf buttons on lock, login screens and in OOBE.
   static void RecordUserClickOnShelfButton(
       LoginMetricsRecorder::ShelfButtonClickTarget target);
-
-  // Record the method used to activate dictation.
-  static void RecordUserToggleDictation(DictationToggleSource source);
-
-  // Records an Ash owned user action.
-  void RecordUserMetricsAction(UserMetricsAction action);
 
   // Starts recording demo session metrics. Used in Demo Mode.
   void StartDemoSessionMetricsRecording();
@@ -99,13 +94,14 @@ class ASH_EXPORT UserMetricsRecorder {
   // Metric recorder to track pointer down events.
   std::unique_ptr<PointerMetricsRecorder> pointer_metrics_recorder_;
 
+  // Metric recorder to track stylus events.
+  std::unique_ptr<StylusMetricsRecorder> stylus_metrics_recorder_;
+
   // Metric recorder to track login authentication activity.
   std::unique_ptr<LoginMetricsRecorder> login_metrics_recorder_;
 
   // Metric recorder to track app use in demo sessions.
   std::unique_ptr<DemoSessionMetricsRecorder> demo_session_metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserMetricsRecorder);
 };
 
 }  // namespace ash

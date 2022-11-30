@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ class PrefRegistrySyncable;
 }
 
 // Factory methods that create and initialize a new instance of a PrefService
-// for Chrome on iOS with the applicable PrefStores. The |pref_filename| points
+// for Chrome on iOS with the applicable PrefStores. The `pref_filename` points
 // to the user preference file. This is the usual way to create a new
-// PrefService. |pref_registry| keeps the list of registered prefs and their
+// PrefService. `pref_registry` keeps the list of registered prefs and their
 // default values.
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
@@ -49,7 +49,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
     policy::PolicyService* policy_service,
     policy::BrowserPolicyConnector* policy_connector);
 
-// Creates an incognito copy of |pref_service| that shares most prefs but uses
+// Creates an incognito copy of `pref_service` that shares most prefs but uses
 // a fresh non-persistent overlay for the user pref store.
 std::unique_ptr<sync_preferences::PrefServiceSyncable>
 CreateIncognitoBrowserStatePrefs(

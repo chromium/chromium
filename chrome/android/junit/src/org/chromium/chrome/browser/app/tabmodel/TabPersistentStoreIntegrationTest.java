@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.res.Resources;
 import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
@@ -29,13 +30,11 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,14 +63,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @LooperMode(Mode.PAUSED)
 public class TabPersistentStoreIntegrationTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();
     @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -97,6 +94,8 @@ public class TabPersistentStoreIntegrationTest {
     private TabModelJniBridge.Natives mTabModelJniBridgeJni;
     @Mock
     private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    @Mock
+    private Resources mResources;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -108,8 +107,11 @@ public class TabPersistentStoreIntegrationTest {
         // Create TabPersistentStore and TabModelSelectorImpl through orchestrator like
         // ChromeActivity does.
         when(mChromeActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mChromeActivity.getResources()).thenReturn(mResources);
+        when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
+                .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
-        mOrchestrator = new TabbedModeTabModelOrchestrator();
+        mOrchestrator = new TabbedModeTabModelOrchestrator(/*tabMergingEnabled=*/true);
         mOrchestrator.createTabModels(
                 mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 0);
         mTabModelSelector = mOrchestrator.getTabModelSelector();

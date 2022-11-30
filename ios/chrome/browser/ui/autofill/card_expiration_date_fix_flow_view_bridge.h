@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,12 @@ class CardExpirationDateFixFlowViewBridge
   CardExpirationDateFixFlowViewBridge(
       CardExpirationDateFixFlowController* controller,
       UIViewController* base_view_controller);
+
+  CardExpirationDateFixFlowViewBridge(
+      const CardExpirationDateFixFlowViewBridge&) = delete;
+  CardExpirationDateFixFlowViewBridge& operator=(
+      const CardExpirationDateFixFlowViewBridge&) = delete;
+
   ~CardExpirationDateFixFlowViewBridge() override;
 
   // CardExpirationDateFixFlowView:
@@ -49,7 +55,7 @@ class CardExpirationDateFixFlowViewBridge
   UIViewController* view_controller_;
 
  private:
-  // The controller |this| queries for logic and state.
+  // The controller `this` queries for logic and state.
   CardExpirationDateFixFlowController* controller_;  // weak
 
   // Weak reference to the view controller used to present UI.
@@ -57,15 +63,13 @@ class CardExpirationDateFixFlowViewBridge
 
   base::WeakPtrFactory<CardExpirationDateFixFlowViewBridge> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardExpirationDateFixFlowViewBridge);
 };
 
 }  // namespace autofill
 
 @interface CardExpirationDateFixFlowViewController : UITableViewController
 
-// Designated initializer. |bridge| must not be null.
+// Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:
     (autofill::CardExpirationDateFixFlowViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;

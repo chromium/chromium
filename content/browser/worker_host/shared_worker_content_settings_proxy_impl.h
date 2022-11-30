@@ -1,14 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "content/common/content_export.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"
@@ -24,13 +22,18 @@ class SharedWorkerHost;
 // at the moment.
 // SharedWorkerHost owns this class, so the lifetime of this class is strongly
 // associated to it.
-class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
+class SharedWorkerContentSettingsProxyImpl
     : public blink::mojom::WorkerContentSettingsProxy {
  public:
   SharedWorkerContentSettingsProxyImpl(
       const GURL& script_url,
       SharedWorkerHost* owner,
       mojo::PendingReceiver<blink::mojom::WorkerContentSettingsProxy> receiver);
+
+  SharedWorkerContentSettingsProxyImpl(
+      const SharedWorkerContentSettingsProxyImpl&) = delete;
+  SharedWorkerContentSettingsProxyImpl& operator=(
+      const SharedWorkerContentSettingsProxyImpl&) = delete;
 
   ~SharedWorkerContentSettingsProxyImpl() override;
 
@@ -43,10 +46,8 @@ class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
 
  private:
   const url::Origin origin_;
-  SharedWorkerHost* owner_;
+  raw_ptr<SharedWorkerHost> owner_;
   mojo::Receiver<blink::mojom::WorkerContentSettingsProxy> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerContentSettingsProxyImpl);
 };
 
 }  // namespace content

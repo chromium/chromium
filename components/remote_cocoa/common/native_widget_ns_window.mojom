@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@ module remote_cocoa.mojom;
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
+import "ui/events/mojom/event_constants.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 
@@ -71,12 +73,22 @@ struct NativeWidgetNSWindowInitParams {
   bool has_window_server_shadow;
   // If true, the NSWindow's collection behavior is set to include
   // NSWindowCollectionBehaviorParticipatesInCycle (this is not the
-  // default for NSWindows with NSBorderlessWindowMask).
+  // default for NSWindows with NSWindowStyleMaskBorderless).
   bool force_into_collection_cycle;
+  // If true, the window was created in headless mode.
+  bool is_headless_mode_window;
   // An opaque blob of AppKit data which includes, among other things, a
   // window's workspace and fullscreen state, and can be retrieved from or
   // applied to a window.
   array<uint8> state_restoration_data;
+  // If true, this window is functionally a tooltip, and shouldn't be presented
+  // as a new window to the accessibility system.
+  bool is_tooltip;
+};
+
+enum WindowControlsOverlayNSViewType {
+  kCaptionButtonContainer,
+  kWebAppFrameToolbar,
 };
 
 // The interface through which a NativeWidgetMac may interact with an NSWindow
@@ -163,9 +175,13 @@ interface NativeWidgetNSWindow {
   // on all spaces.
   SetVisibleOnAllSpaces(bool always_visible);
 
-  // Called by NativeWidgetMac to initiate a transition to the specified target
-  // fullscreen state.
-  SetFullscreen(bool fullscreen);
+  // Initiate a transition to fullscreen on the specified display.  If
+  // `target_display_id` is invalid, then fullscreen should be entered on the
+  // current display.
+  EnterFullscreen(int64 target_display_id);
+
+  // Initiate a transition out of fullscreen.
+  ExitFullscreen();
 
   // Called by NativeWidgetMac; sets whether the window can share fullscreen
   // windows' spaces by changing the NSWindow's collectionBehavior.
@@ -174,6 +190,9 @@ interface NativeWidgetNSWindow {
 
   // Miniaturize or deminiaturize the window.
   SetMiniaturized(bool miniaturized);
+
+  // Zoom or un-zoom the window.
+  SetZoomed(bool zoomed);
 
   // Called by NativeWidgetMac when the window size constraints change.
   SetSizeConstraints(gfx.mojom.Size min_size,
@@ -220,4 +239,50 @@ interface NativeWidgetNSWindow {
 
   // Redispatch a keyboard event using the widget's window's CommandDispatcher.
   RedispatchKeyEvent(array<uint8> native_event_data);
+
+  // Enable or disable this widget's local event monitor.
+  SetLocalEventMonitorEnabled(bool enabled);
+
+  // Add the overlay NSView for a PWA with window controls overlay
+  // display override given a |overlay_type|.
+  CreateWindowControlsOverlayNSView(
+      WindowControlsOverlayNSViewType overlay_type);
+
+  // Update the overlay NSView with |bounds| for a PWA with window controls
+  // overlay display override for a |overlay_type|.
+  UpdateWindowControlsOverlayNSView(
+    gfx.mojom.Rect bounds, WindowControlsOverlayNSViewType overlay_type);
+
+  // Remove the overlay NSView with |bounds| for a PWA with window controls
+  // overlay display override for a |overlay_type|.
+  RemoveWindowControlsOverlayNSView(
+      WindowControlsOverlayNSViewType overlay_type);
+
+  // Set the cursor type to display.
+  SetCursor(ui.mojom.Cursor cursor);
+
+  // Enables immersive fullscreen. Pass the id of the overlay widget which is
+  // hosting top chrome. The callback is run once the top chrome NSView has
+  // been reparented into the AppKit controlled fullscreen NSWindow, indicating
+  // the immersive transition has started.
+  EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id) => ();
+
+  // Rollback the immersive transition. The top chrome NSView is reparented into
+  // the overlay widget.
+  DisableImmersiveFullscreen();
+
+  // Update the visibility of the toolbar (top chrome) while in immersive
+  // fullscreen. Typically this is used in response to the
+  // View -> "Always Show Toolbar in Full Screen" menu changing.
+  UpdateToolbarVisibility(bool always_show);
+
+  // Also used during immersive fullscreen. Update the bounds of the AppKit
+  // NSWindow hosting top chrome.
+  OnTopContainerViewBoundsChanged(gfx.mojom.Rect bounds);
+
+  // Set whether can go back to the previous page.
+  SetCanGoBack(bool can_go_back);
+
+  // Set whether can go forward to the following page.
+  SetCanGoForward(bool can_go_forward);
 };

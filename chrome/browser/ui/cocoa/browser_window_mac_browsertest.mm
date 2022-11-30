@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #import "base/mac/scoped_nsobject.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
@@ -23,8 +23,8 @@ class BrowserWindowMacTest : public InProcessBrowserTest {
  public:
   BrowserWindowMacTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacTest);
+  BrowserWindowMacTest(const BrowserWindowMacTest&) = delete;
+  BrowserWindowMacTest& operator=(const BrowserWindowMacTest&) = delete;
 };
 
 // Test that mainMenu commands do not attempt to validate against a Browser*
@@ -38,12 +38,6 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
           itemWithTag:IDC_BOOKMARK_THIS_TAB],
       base::scoped_policy::RETAIN);
-
-  // The mainMenu item doesn't have an action associated while the browser
-  // window isn't focused, which we can't do in a browser test. So associate one
-  // manually.
-  EXPECT_EQ([bookmark_menu_item action], nullptr);
-  [bookmark_menu_item setAction:@selector(commandDispatch:)];
 
   EXPECT_TRUE(window.get());
   EXPECT_TRUE(bookmark_menu_item.get());
@@ -63,21 +57,22 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
 class BrowserWindowMacA11yTest : public BrowserWindowMacTest {
  public:
   BrowserWindowMacA11yTest() = default;
+
+  BrowserWindowMacA11yTest(const BrowserWindowMacA11yTest&) = delete;
+  BrowserWindowMacA11yTest& operator=(const BrowserWindowMacA11yTest&) = delete;
+
   ~BrowserWindowMacA11yTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     BrowserWindowMacTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForceRendererAccessibility);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacA11yTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
   NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
   size_t nodes_visited = 0;
-  base::Optional<ui::NSAXTreeProblemDetails> details =
+  absl::optional<ui::NSAXTreeProblemDetails> details =
       ui::ValidateNSAXTree(window, &nodes_visited);
   EXPECT_FALSE(details.has_value()) << details->ToString();
 

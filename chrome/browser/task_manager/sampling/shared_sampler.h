@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,13 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace task_manager {
 
@@ -38,6 +37,9 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   explicit SharedSampler(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_pool_runner);
 
+  SharedSampler(const SharedSampler&) = delete;
+  SharedSampler& operator=(const SharedSampler&) = delete;
+
   struct SamplingResult {
     base::TimeDelta cpu_time;
     int64_t hard_faults_per_second;
@@ -45,7 +47,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
     base::Time start_time;
   };
   using OnSamplingCompleteCallback =
-      base::RepeatingCallback<void(base::Optional<SamplingResult>)>;
+      base::RepeatingCallback<void(absl::optional<SamplingResult>)>;
 
   // Returns a combination of refresh flags supported by the shared sampler.
   int64_t GetSupportedFlags() const;
@@ -60,13 +62,13 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   // Triggers a refresh of the expensive process' stats, on the worker thread.
   void Refresh(base::ProcessId process_id, int64_t refresh_flags);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Specifies a function to use in place of NtQuerySystemInformation.
   typedef int (*QuerySystemInformationForTest)(unsigned char* buffer,
                                                int buffer_size);
   static void SetQuerySystemInformationForTest(
       QuerySystemInformationForTest query_system_information);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   friend class base::RefCountedThreadSafe<SharedSampler>;
@@ -74,7 +76,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 
   typedef std::map<base::ProcessId, OnSamplingCompleteCallback> CallbacksMap;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Contains all results of refresh for a single process.
   struct ProcessIdAndSamplingResult {
     base::ProcessId process_id;
@@ -130,10 +132,8 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   scoped_refptr<base::SequencedTaskRunner> blocking_pool_runner_;
 
   // To assert we're running on the correct thread.
-  base::SequenceChecker worker_pool_sequenced_checker_;
-#endif  // defined(OS_WIN)
-
-  DISALLOW_COPY_AND_ASSIGN(SharedSampler);
+  SEQUENCE_CHECKER(worker_pool_sequenced_checker_);
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace task_manager

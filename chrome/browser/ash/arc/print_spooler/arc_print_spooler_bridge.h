@@ -1,18 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 #define CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_BRIDGE_H_
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/print_spooler.mojom.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/mojom/print_spooler.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 class Profile;
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -35,16 +38,13 @@ class ArcPrintSpoolerBridge : public KeyedService,
 
   ArcPrintSpoolerBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcPrintSpoolerBridge(const ArcPrintSpoolerBridge&) = delete;
+  ArcPrintSpoolerBridge& operator=(const ArcPrintSpoolerBridge&) = delete;
+
   ~ArcPrintSpoolerBridge() override;
 
   // mojom::PrintSpoolerHost:
-  void StartPrintInCustomTabDeprecated(
-      mojo::ScopedHandle scoped_handle,
-      int32_t task_id,
-      int32_t surface_id,
-      int32_t top_margin,
-      mojo::PendingRemote<mojom::PrintSessionInstance> instance,
-      StartPrintInCustomTabCallback callback) override;
   void StartPrintInCustomTab(
       mojo::ScopedHandle scoped_handle,
       int32_t task_id,
@@ -63,8 +63,6 @@ class ArcPrintSpoolerBridge : public KeyedService,
   Profile* const profile_;
 
   base::WeakPtrFactory<ArcPrintSpoolerBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPrintSpoolerBridge);
 };
 
 }  // namespace arc

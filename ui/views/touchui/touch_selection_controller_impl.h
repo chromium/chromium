@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/events/event_observer.h"
@@ -76,7 +77,7 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   std::u16string GetSelectedText() override;
 
   // WidgetObserver:
-  void OnWidgetClosing(Widget* widget) override;
+  void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
@@ -111,13 +112,13 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   View* GetHandle1View();
   View* GetHandle2View();
 
-  ui::TouchEditable* client_view_;
-  Widget* client_widget_ = nullptr;
+  raw_ptr<ui::TouchEditable> client_view_;
+  raw_ptr<Widget> client_widget_ = nullptr;
   // Non-owning pointers to EditingHandleViews. These views are owned by their
   // Widget and cleaned up when their Widget closes.
-  EditingHandleView* selection_handle_1_;
-  EditingHandleView* selection_handle_2_;
-  EditingHandleView* cursor_handle_;
+  raw_ptr<EditingHandleView> selection_handle_1_;
+  raw_ptr<EditingHandleView> selection_handle_2_;
+  raw_ptr<EditingHandleView> cursor_handle_;
   bool command_executed_ = false;
   base::TimeTicks selection_start_time_;
 
@@ -127,7 +128,7 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   base::OneShotTimer quick_menu_timer_;
 
   // Pointer to the SelectionHandleView being dragged during a drag session.
-  EditingHandleView* dragging_handle_ = nullptr;
+  raw_ptr<EditingHandleView> dragging_handle_ = nullptr;
 
   // In cursor mode, the two selection bounds are the same and correspond to
   // |cursor_handle_|; otherwise, they correspond to |selection_handle_1_| and

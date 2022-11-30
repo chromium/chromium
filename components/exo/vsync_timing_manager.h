@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/frame_throttler/frame_throttling_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
@@ -41,6 +41,10 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   };
 
   explicit VSyncTimingManager(Delegate* delegate);
+
+  VSyncTimingManager(const VSyncTimingManager&) = delete;
+  VSyncTimingManager& operator=(const VSyncTimingManager&) = delete;
+
   ~VSyncTimingManager() override;
 
   void AddObserver(Observer* obs);
@@ -73,8 +77,6 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
   mojo::Receiver<viz::mojom::VSyncParameterObserver> receiver_{this};
 
   base::WeakPtrFactory<VSyncTimingManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncTimingManager);
 };
 
 }  // namespace exo

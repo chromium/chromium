@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,8 +36,9 @@ class BaseFencedAllocatorTest : public testing::Test {
   static const int kAllocAlignment = 16;
 
   void SetUp() override {
-    command_buffer_.reset(new CommandBufferDirect());
-    api_mock_.reset(new AsyncAPIMock(true, command_buffer_->service()));
+    command_buffer_ = std::make_unique<CommandBufferDirect>();
+    api_mock_ =
+        std::make_unique<AsyncAPIMock>(true, command_buffer_->service());
     command_buffer_->set_handler(api_mock_.get());
 
     // ignore noops in the mock - we don't want to inspect the internals of the
@@ -49,7 +50,7 @@ class BaseFencedAllocatorTest : public testing::Test {
         .WillRepeatedly(DoAll(Invoke(api_mock_.get(), &AsyncAPIMock::SetToken),
                               Return(error::kNoError)));
 
-    helper_.reset(new CommandBufferHelper(command_buffer_.get()));
+    helper_ = std::make_unique<CommandBufferHelper>(command_buffer_.get());
     helper_->Initialize(kBufferSize);
   }
 
@@ -61,9 +62,7 @@ class BaseFencedAllocatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-#ifndef _MSC_VER
 const unsigned int BaseFencedAllocatorTest::kBufferSize;
-#endif
 
 // Test fixture for FencedAllocator test - Creates a FencedAllocator, using a
 // CommandBufferHelper with a mock AsyncAPIInterface for its interface (calling
@@ -73,7 +72,7 @@ class FencedAllocatorTest : public BaseFencedAllocatorTest {
  protected:
   void SetUp() override {
     BaseFencedAllocatorTest::SetUp();
-    allocator_.reset(new FencedAllocator(kBufferSize, helper_.get()));
+    allocator_ = std::make_unique<FencedAllocator>(kBufferSize, helper_.get());
   }
 
   void TearDown() override {
@@ -383,9 +382,8 @@ class FencedAllocatorWrapperTest : public BaseFencedAllocatorTest {
     // something.
     buffer_.reset(static_cast<char*>(base::AlignedAlloc(
         kBufferSize, kAllocAlignment)));
-    allocator_.reset(new FencedAllocatorWrapper(kBufferSize,
-                                                helper_.get(),
-                                                buffer_.get()));
+    allocator_ = std::make_unique<FencedAllocatorWrapper>(
+        kBufferSize, helper_.get(), buffer_.get());
   }
 
   void TearDown() override {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,19 +18,20 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 // static
-void ShowAuthenticatorRequestDialog(
-    content::WebContents* web_contents,
-    std::unique_ptr<AuthenticatorRequestDialogModel> model) {
+void ShowAuthenticatorRequestDialog(content::WebContents* web_contents,
+                                    AuthenticatorRequestDialogModel* model) {
   // The authenticator request dialog will only be shown for common user-facing
   // WebContents, which have a |manager|. Most other sources without managers,
   // like service workers and extension background pages, do not allow WebAuthn
@@ -46,11 +47,13 @@ void ShowAuthenticatorRequestDialog(
   if (!manager)
     return;
 
-  new AuthenticatorRequestDialogView(web_contents, std::move(model));
+  new AuthenticatorRequestDialogView(web_contents, model);
 }
 
 AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
-  model_->RemoveObserver(this);
+  if (model_) {
+    model_->RemoveObserver(this);
+  }
 
   // AuthenticatorRequestDialogView is a WidgetDelegate, owned by views::Widget.
   // It's only destroyed by Widget::OnNativeWidgetDestroyed() invoking
@@ -63,14 +66,14 @@ AuthenticatorRequestDialogView::~AuthenticatorRequestDialogView() {
   // ObservableAuthenticatorList is owned by AuthenticatorRequestDialogModel,
   // destroy all view components that might own models observing the list prior
   // to destroying AuthenticatorRequestDialogModel.
-  RemoveAllChildViews(true /* delete_children */);
+  RemoveAllChildViews();
 }
 
 void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
-  other_transports_menu_runner_.reset();
+  other_mechanisms_menu_runner_.reset();
 
   delete sheet_;
   DCHECK(children().empty());
@@ -101,7 +104,9 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Whether to show the `Choose another option` button, or other dialog
   // configuration is delegated to the |sheet_|, and the new sheet likely wants
   // to provide a new configuration.
-  ToggleOtherTransportsButtonVisibility();
+  other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
+  manage_devices_button_->SetVisible(
+      sheet_->model()->IsManageDevicesButtonVisible());
   DialogModelChanged();
 
   // If the widget is not yet shown or already being torn down, we are done. In
@@ -141,14 +146,14 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     GetInitiallyFocusedView()->RequestFocus();
 }
 
-void AuthenticatorRequestDialogView::ToggleOtherTransportsButtonVisibility() {
-  other_transports_button_->SetVisible(ShouldOtherTransportsButtonBeVisible());
-}
-
-bool AuthenticatorRequestDialogView::ShouldOtherTransportsButtonBeVisible()
+bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
     const {
-  return sheet_->model()->GetOtherTransportsMenuModel() &&
-         sheet_->model()->GetOtherTransportsMenuModel()->GetItemCount();
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return sheet_->model()->IsOtherMechanismButtonVisible();
+  }
+  return sheet_->model()->GetOtherMechanismsMenuModel() &&
+         sheet_->model()->GetOtherMechanismsMenuModel()->GetItemCount();
 }
 
 bool AuthenticatorRequestDialogView::Accept() {
@@ -193,8 +198,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
     return GetOkButton();
   }
 
-  if (ShouldOtherTransportsButtonBeVisible())
-    return other_transports_button_;
+  if (ShouldOtherMechanismsButtonBeVisible())
+    return other_mechanisms_button_;
 
   if (sheet()->model()->IsCancelButtonVisible())
     return GetCancelButton();
@@ -208,10 +213,11 @@ std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
 
 void AuthenticatorRequestDialogView::OnModelDestroyed(
     AuthenticatorRequestDialogModel* model) {
-  NOTREACHED();
+  model_ = nullptr;
 }
 
 void AuthenticatorRequestDialogView::OnStepTransition() {
+  DCHECK(model_) << "Model must be valid since this is a model observer method";
   if (model_->should_dialog_be_closed()) {
     if (!first_shown_) {
       // No widget has ever been created for this dialog, thus there will be no
@@ -225,14 +231,7 @@ void AuthenticatorRequestDialogView::OnStepTransition() {
     }
     return;
   }
-  if (model_->should_dialog_be_hidden()) {
-    if (GetWidget()) {
-      GetWidget()->Hide();
-    }
-    return;
-  }
-
-  ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_.get()));
+  ReplaceCurrentSheetWith(CreateSheetViewForCurrentStepOf(model_));
   Show();
 }
 
@@ -248,27 +247,53 @@ void AuthenticatorRequestDialogView::OnVisibilityChanged(
   // Show() does not actually show the dialog while the parent WebContents are
   // hidden. Instead, show it when the WebContents become visible again.
   if (web_contents_was_hidden && !web_contents_hidden_ &&
-      !model_->should_dialog_be_hidden() && !GetWidget()->IsVisible()) {
+      !GetWidget()->IsVisible()) {
     GetWidget()->Show();
   }
 }
 
 AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     content::WebContents* web_contents,
-    std::unique_ptr<AuthenticatorRequestDialogModel> model)
+    AuthenticatorRequestDialogModel* model)
     : content::WebContentsObserver(web_contents),
-      model_(std::move(model)),
-      other_transports_button_(
-          SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
-              base::BindRepeating(
-                  &AuthenticatorRequestDialogView::OtherTransportsButtonPressed,
-                  base::Unretained(this)),
-              l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL)))),
+      model_(model),
       web_contents_hidden_(web_contents->GetVisibility() ==
                            content::Visibility::HIDDEN) {
   SetShowTitle(false);
   DCHECK(!model_->should_dialog_be_closed());
   model_->AddObserver(this);
+
+  // This View contains buttons that can appear at the bottom left of the
+  // dialog. Only a single button is expected to be visible at a time so the
+  // padding between them is zero.
+  auto hbox = std::make_unique<views::View>();
+  hbox->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    other_mechanisms_button_ = new views::MdTextButton(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRY_ANOTHER_WAY));
+  } else {
+    other_mechanisms_button_ = new views::MdTextButtonWithDownArrow(
+        base::BindRepeating(
+            &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+            base::Unretained(this)),
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL));
+  }
+  hbox->AddChildView(other_mechanisms_button_.get());
+
+  manage_devices_button_ = new views::MdTextButton(
+      base::BindRepeating(
+          &AuthenticatorRequestDialogView::ManageDevicesButtonPressed,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_DEVICES));
+  hbox->AddChildView(manage_devices_button_.get());
+
+  SetExtraView(std::move(hbox));
 
   SetCloseCallback(
       base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,
@@ -305,20 +330,30 @@ void AuthenticatorRequestDialogView::Show() {
   GetWidget()->Show();
 }
 
-void AuthenticatorRequestDialogView::OtherTransportsButtonPressed() {
-  auto* other_transports_menu_model =
-      sheet_->model()->GetOtherTransportsMenuModel();
-  DCHECK(other_transports_menu_model);
-  DCHECK_GE(other_transports_menu_model->GetItemCount(), 1);
+void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    sheet_->model()->OnBack();
+    return;
+  }
 
-  other_transports_menu_runner_ = std::make_unique<views::MenuRunner>(
-      other_transports_menu_model, views::MenuRunner::COMBOBOX);
+  auto* other_mechanisms_menu_model =
+      sheet_->model()->GetOtherMechanismsMenuModel();
+  DCHECK(other_mechanisms_menu_model);
+  DCHECK_GE(other_mechanisms_menu_model->GetItemCount(), 1u);
 
-  gfx::Rect anchor_bounds = other_transports_button_->GetBoundsInScreen();
-  other_transports_menu_runner_->RunMenuAt(
-      other_transports_button_->GetWidget(), nullptr /* MenuButtonController */,
+  other_mechanisms_menu_runner_ = std::make_unique<views::MenuRunner>(
+      other_mechanisms_menu_model, views::MenuRunner::COMBOBOX);
+
+  gfx::Rect anchor_bounds = other_mechanisms_button_->GetBoundsInScreen();
+  other_mechanisms_menu_runner_->RunMenuAt(
+      other_mechanisms_button_->GetWidget(), nullptr /* MenuButtonController */,
       anchor_bounds, views::MenuAnchorPosition::kTopLeft,
       ui::MENU_SOURCE_MOUSE);
+}
+
+void AuthenticatorRequestDialogView::ManageDevicesButtonPressed() {
+  sheet_->model()->OnManageDevices();
 }
 
 void AuthenticatorRequestDialogView::OnDialogClosing() {
@@ -347,7 +382,7 @@ void AuthenticatorRequestDialogView::OnDialogClosing() {
   // This should not be a problem as the native widget will never synchronously
   // close and hence not synchronously destroy the model while it's iterating
   // over observers in SetCurrentStep().
-  if (!model_->should_dialog_be_closed())
+  if (model_ && !model_->should_dialog_be_closed())
     Cancel();
 }
 

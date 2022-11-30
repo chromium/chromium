@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,9 +108,10 @@ public class TabContext {
          */
         public static TabInfo createFromTab(Tab tab) {
             String referrerUrl = getReferrerUrlFromTab(tab);
-            return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrlString(),
+            // TODO(crbug/783819): convert TabInfo to GURL
+            return new TabInfo(tab.getId(), tab.getTitle(), tab.getUrl().getSpec(),
                     tab.getOriginalUrl().getSpec(), referrerUrl != null ? referrerUrl : "",
-                    CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrlString(),
+                    CriticalPersistedTabData.from(tab).getTimestampMillis(), tab.getUrl().getSpec(),
                     tab.isIncognito());
         }
 

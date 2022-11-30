@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<!--Test page with window controls overlay support-->
+<head>
+  <title>Site WCO</title>
+  <link rel="icon" href="basic-48.png">
+  <script src="/webapps_integration/test_utils.js"></script>
+  <script>
+    addManifestLinkTag("manifest_window_controls_overlay.json");
+  </script>
+</head>
+<body onload="startWorker('/webapps_integration/wco/service_worker.js', { scope: '/webapps_integration/wco/' })">
+  <h1>Site WCO</h1>
+</body>
+</html>

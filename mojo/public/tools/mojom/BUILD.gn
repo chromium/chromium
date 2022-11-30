@@ -1,0 +1,17 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("tests") {
+  data = [
+    "check_stable_mojom_compatibility_unittest.py",
+    "check_stable_mojom_compatibility.py",
+    "const_unittest.py",
+    "enum_unittest.py",
+    "mojom_parser_test_case.py",
+    "mojom_parser_unittest.py",
+    "mojom_parser.py",
+    "stable_attribute_unittest.py",
+    "version_compatibility_unittest.py",
+  ]
+}

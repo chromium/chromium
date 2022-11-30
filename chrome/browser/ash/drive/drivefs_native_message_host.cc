@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
@@ -21,6 +20,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,7 +34,7 @@ const char* const kDriveFsNativeMessageHostOrigins[] = {
 };
 
 constexpr size_t kDriveFsNativeMessageHostOriginsSize =
-    base::size(kDriveFsNativeMessageHostOrigins);
+    std::size(kDriveFsNativeMessageHostOrigins);
 
 class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
                                  public drivefs::mojom::NativeMessagingPort {
@@ -57,6 +57,9 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
   explicit DriveFsNativeMessageHost(
       drivefs::mojom::DriveFs* drivefs_for_testing)
       : drivefs_for_testing_(drivefs_for_testing) {}
+
+  DriveFsNativeMessageHost(const DriveFsNativeMessageHost&) = delete;
+  DriveFsNativeMessageHost& operator=(const DriveFsNativeMessageHost&) = delete;
 
   ~DriveFsNativeMessageHost() override = default;
 
@@ -90,9 +93,17 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       // The session was initiated by the extension.
       mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> extension_port;
       pending_receiver_ = extension_port.InitWithNewPipeAndPassReceiver();
-      drivefs::mojom::DriveFs* drivefs =
-          drivefs_for_testing_ ? drivefs_for_testing_
-                               : drive_service_->GetDriveFsInterface();
+
+      drivefs::mojom::DriveFs* drivefs;
+      if (drivefs_for_testing_) {
+        drivefs = drivefs_for_testing_;
+      } else if (!drive_service_ || !drive_service_->GetDriveFsInterface()) {
+        OnDriveFsResponse(FILE_ERROR_SERVICE_UNAVAILABLE, "");
+        return;
+      } else {
+        drivefs = drive_service_->GetDriveFsInterface();
+      }
+
       drivefs->CreateNativeHostSession(
           drivefs::mojom::ExtensionConnectionParams::New(
               GURL(kDriveFsNativeMessageHostOrigins[0]).host()),
@@ -148,8 +159,6 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
       base::ThreadTaskRunnerHandle::Get();
 
   base::WeakPtrFactory<DriveFsNativeMessageHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHost);
 };
 
 std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
@@ -197,14 +206,15 @@ ConnectToDriveFsNativeMessageExtension(
   }
 
   const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   /* port_number= */ 1, /* is_opener= */ true);
+                                   /* port_number= */ 1, /* is_opener= */ true,
+                                   extensions::SerializationFormat::kJson);
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
   auto native_message_host = CreateDriveFsInitiatedNativeMessageHost(
       std::move(extension_receiver), std::move(drivefs_remote));
   if (!native_message_host) {
     return drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus::
-        kExtensionNotFound;
+        kFeatureNotEnabled;
   }
 
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(

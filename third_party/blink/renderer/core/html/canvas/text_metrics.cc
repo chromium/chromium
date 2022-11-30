@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,7 +78,7 @@ void TextMetrics::Update(const Font& font,
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
   // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
   String text16 = text;
   text16.Ensure16Bit();
   NGBidiParagraph bidi;
@@ -93,12 +93,12 @@ void TextMetrics::Update(const Font& font,
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
         run.Direction(), /* directional_override */ false);
     text_run.SetNormalizeSpace(true);
-    FloatRect run_glyph_bounds;
+    gfx::RectF run_glyph_bounds;
     float run_width = font.Width(text_run, nullptr, &run_glyph_bounds);
 
     // Accumulate the position and the glyph bounding box.
-    run_glyph_bounds.Move(xpos, 0);
-    glyph_bounds.Unite(run_glyph_bounds);
+    run_glyph_bounds.Offset(xpos, 0);
+    glyph_bounds.Union(run_glyph_bounds);
     xpos += run_width;
   }
   double real_width = xpos;
@@ -111,8 +111,8 @@ void TextMetrics::Update(const Font& font,
            (align == kStartTextAlign && direction == TextDirection::kRtl) ||
            (align == kEndTextAlign && direction != TextDirection::kRtl))
     dx = real_width;
-  actual_bounding_box_left_ = -glyph_bounds.X() + dx;
-  actual_bounding_box_right_ = glyph_bounds.MaxX() - dx;
+  actual_bounding_box_left_ = -glyph_bounds.x() + dx;
+  actual_bounding_box_right_ = glyph_bounds.right() - dx;
 
   // y direction
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
@@ -121,8 +121,8 @@ void TextMetrics::Update(const Font& font,
   const float baseline_y = GetFontBaseline(baseline, *font_data);
   font_bounding_box_ascent_ = ascent - baseline_y;
   font_bounding_box_descent_ = descent + baseline_y;
-  actual_bounding_box_ascent_ = -glyph_bounds.Y() - baseline_y;
-  actual_bounding_box_descent_ = glyph_bounds.MaxY() + baseline_y;
+  actual_bounding_box_ascent_ = -glyph_bounds.y() - baseline_y;
+  actual_bounding_box_descent_ = glyph_bounds.bottom() + baseline_y;
   // TODO(kojii): We use normalized sTypoAscent/Descent here, but this should be
   // revisited when the spec evolves.
   const FontHeight normalized_typo_metrics =

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,9 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/text_constants.h"
 
@@ -36,7 +35,7 @@ class GFX_EXPORT StringSlicer {
   // Warning: Retains a reference to |text| and |ellipsis|. They must have a
   // longer lifetime than the StringSlicer.
   //
-  // Note: if |elide_whitespace| is base::nullopt, the default whitespace
+  // Note: if |elide_whitespace| is absl::nullopt, the default whitespace
   // elision strategy for the type of elision being done will be chosen.
   // Defaults are to trim for beginning and end elision; no trimming for middle
   // elision.
@@ -44,7 +43,10 @@ class GFX_EXPORT StringSlicer {
                const std::u16string& ellipsis,
                bool elide_in_middle,
                bool elide_at_beginning,
-               base::Optional<bool> elide_whitespace = base::nullopt);
+               absl::optional<bool> elide_whitespace = absl::nullopt);
+
+  StringSlicer(const StringSlicer&) = delete;
+  StringSlicer& operator=(const StringSlicer&) = delete;
 
   // Cuts |text_| to be at most |length| UTF-16 code units long. If
   // |elide_in_middle_| is true, the middle of the string is removed to leave
@@ -72,8 +74,6 @@ class GFX_EXPORT StringSlicer {
 
   // How whitespace around an elision point is handled.
   const bool elide_whitespace_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringSlicer);
 };
 
 // Elides |text| to fit the |available_pixel_width| with the specified behavior.

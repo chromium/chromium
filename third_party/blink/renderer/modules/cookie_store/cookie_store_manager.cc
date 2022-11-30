@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
@@ -16,12 +16,10 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_change_event.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -72,7 +70,7 @@ CookieStoreGetOptions* ToCookieChangeSubscription(
   CookieStoreGetOptions* subscription = CookieStoreGetOptions::Create();
   subscription->setUrl(backend_subscription.url);
 
-  if (!backend_subscription.name.IsEmpty())
+  if (!backend_subscription.name.empty())
     subscription->setName(backend_subscription.name);
 
   return subscription;
@@ -132,8 +130,8 @@ ScriptPromise CookieStoreManager::subscribe(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->AddSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::Bind(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -157,8 +155,8 @@ ScriptPromise CookieStoreManager::unsubscribe(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->RemoveSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::Bind(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
-                WrapPersistent(resolver)));
+      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -174,8 +172,8 @@ ScriptPromise CookieStoreManager::getSubscriptions(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->GetSubscriptions(
       registration_->RegistrationId(),
-      WTF::Bind(&CookieStoreManager::OnGetSubscriptionsResult,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&CookieStoreManager::OnGetSubscriptionsResult,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

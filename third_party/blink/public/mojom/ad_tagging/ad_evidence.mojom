@@ -1,0 +1,39 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Ordered by increasing severity, see
+// `blink::MoreRestrictiveFilterListEvidence()`.
+enum FilterListResult {
+  // No URL the frame has navigated to has been checked against the filter list.
+  // This occurs for initial navigations that are either not handled by the
+  // network stack or were not committed.
+  kNotChecked = 0,
+  // The last URL checked against the filter list matched an allowing rule.
+  kMatchedAllowingRule = 1,
+  // The last URL checked against the filter list did not match any rules.
+  kMatchedNoRules = 2,
+  // The last URL checked against the filter list matched a blocking rule.
+  kMatchedBlockingRule = 3,
+};
+
+enum FrameCreationStackEvidence {
+  // At the time the frame was created, no ad script was on the v8 stack.
+  kNotCreatedByAdScript,
+  // At the time the frame was created, ad script was on the v8 stack.
+  kCreatedByAdScript
+};
+
+// Mapped to `blink::FrameAdEvidence`.
+struct FrameAdEvidence {
+  bool is_complete;
+  bool parent_is_ad;
+  FilterListResult latest_filter_list_result = kNotChecked;
+
+  // This should always have a value at least as restrictive as
+  // `latest_filter_list_result` (according to the `FilterListResult` ordering).
+  FilterListResult most_restrictive_filter_list_result = kNotChecked;
+  FrameCreationStackEvidence created_by_ad_script = kNotCreatedByAdScript;
+};

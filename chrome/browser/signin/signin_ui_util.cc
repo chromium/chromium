@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,21 +21,28 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -44,20 +51,26 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
+#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
-#endif
+#include "chrome/browser/signin/signin_ui_delegate_impl_dice.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+namespace signin_ui_util {
 namespace {
 
 // Key for storing animated identity per-profile data.
 const char kAnimatedIdentityKeyName[] = "animated_identity_user_data";
 
 constexpr base::TimeDelta kDelayForCrossWindowAnimationReplay =
-    base::TimeDelta::FromSeconds(5);
+    base::Seconds(5);
 
 // UserData attached to the user profile, keeping track of the last time the
 // animation was shown to the user.
@@ -82,22 +95,6 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
     GetOrCreateForProfile(profile)->animated_identity_last_shown_ = time;
   }
 
-  // Returns the last time the avatar was highlighted. Returns the null time if
-  // it was never shown.
-  static base::TimeTicks GetAvatarLastHighlighted(Profile* profile) {
-    DCHECK(profile);
-    AvatarButtonUserData* data = GetForProfile(profile);
-    if (!data)
-      return base::TimeTicks();
-    return data->avatar_last_highlighted_;
-  }
-
-  // Sets the time when the avatar was highlighted.
-  static void SetAvatarLastHighlighted(Profile* profile, base::TimeTicks time) {
-    DCHECK(!time.is_null());
-    GetOrCreateForProfile(profile)->avatar_last_highlighted_ = time;
-  }
-
  private:
   // Returns nullptr if there is no AvatarButtonUserData attached to the
   // profile.
@@ -120,25 +117,7 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   }
 
   base::TimeTicks animated_identity_last_shown_;
-  base::TimeTicks avatar_last_highlighted_;
 };
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void CreateDiceTurnSyncOnHelper(
-    Profile* profile,
-    Browser* browser,
-    signin_metrics::AccessPoint signin_access_point,
-    signin_metrics::PromoAction signin_promo_action,
-    signin_metrics::Reason signin_reason,
-    const CoreAccountId& account_id,
-    DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-  // DiceTurnSyncOnHelper is suicidal (it will delete itself once it finishes
-  // enabling sync).
-  new DiceTurnSyncOnHelper(profile, browser, signin_access_point,
-                           signin_promo_action, signin_reason, account_id,
-                           signin_aborted_mode);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::string GetReauthAccessPointHistogramSuffix(
     signin_metrics::ReauthAccessPoint access_point) {
@@ -157,12 +136,30 @@ std::string GetReauthAccessPointHistogramSuffix(
       return "ToGeneratePassword";
     case signin_metrics::ReauthAccessPoint::kPasswordMoveBubble:
       return "ToMovePassword";
+    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
+      return "ToSavePasswordLocallyThenMove";
   }
 }
 
-}  // namespace
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-namespace signin_ui_util {
+SigninUiDelegate* g_signin_ui_delegate_for_testing = nullptr;
+
+SigninUiDelegate* GetSigninUiDelegate() {
+  if (g_signin_ui_delegate_for_testing)
+    return g_signin_ui_delegate_for_testing;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  static SigninUiDelegateImplLacros delegate;
+#else
+  static SigninUiDelegateImplDice delegate;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  return &delegate;
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 std::u16string GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);
@@ -175,7 +172,7 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // See https://crbug.com/994798 for details.
     user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     // |user| may be null in tests.
     if (user)
       user_display_name = user->GetDisplayEmail();
@@ -183,14 +180,6 @@ std::u16string GetAuthenticatedUsername(Profile* profile) {
   }
 
   return base::UTF8ToUTF16(user_display_name);
-}
-
-void InitializePrefsForProfile(Profile* profile) {
-  if (profile->IsNewProfile()) {
-    // Suppresses the upgrade tutorial for a new profile.
-    profile->GetPrefs()->SetInteger(prefs::kProfileAvatarTutorialShown,
-                                    kUpgradeWelcomeTutorialShowMax + 1);
-  }
 }
 
 void ShowSigninErrorLearnMorePage(Profile* profile) {
@@ -202,93 +191,154 @@ void ShowSigninErrorLearnMorePage(Profile* profile) {
   Navigate(&params);
 }
 
-void EnableSyncFromSingleAccountPromo(
-    Browser* browser,
-    const AccountInfo& account,
+void ShowReauthForPrimaryAccountWithAuthError(
+    Profile* profile,
     signin_metrics::AccessPoint access_point) {
-  EnableSyncFromMultiAccountPromo(browser, account, access_point,
-                                  /*is_default_promo_account=*/true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS, sync errors are fixed by re-signing into the OS.
+  NOTREACHED();
+#else
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  DCHECK(!primary_account_info.IsEmpty());
+  DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+      primary_account_info.account_id));
+  ShowReauthForAccount(profile, primary_account_info.email, access_point);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void EnableSyncFromMultiAccountPromo(Browser* browser,
-                                     const AccountInfo& account,
-                                     signin_metrics::AccessPoint access_point,
-                                     bool is_default_promo_account) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  internal::EnableSyncFromPromo(browser, account, access_point,
-                                is_default_promo_account,
-                                base::BindOnce(&CreateDiceTurnSyncOnHelper));
+void ShowReauthForAccount(Profile* profile,
+                          const std::string& email,
+                          signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Only `ACCESS_POINT_WEB_SIGNIN` is supported, because `kContentAreaReauth`
+  // is hardcoded.
+  DCHECK_EQ(access_point, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  ::GetAccountManagerFacade(profile->GetPath().value())
+      ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
+                                    AccountAdditionSource::kContentAreaReauth,
+                                email, base::OnceClosure());
 #else
-  NOTREACHED();
+  // Pass `false` for `enable_sync`, as this function is not expected to start a
+  // sync setup flow after the reauth.
+  GetSigninUiDelegate()->ShowReauthUI(
+      profile, email,
+      /*enable_sync=*/false, access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 #endif
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-namespace internal {
-void EnableSyncFromPromo(
-    Browser* browser,
-    const AccountInfo& account,
-    signin_metrics::AccessPoint access_point,
-    bool is_default_promo_account,
-    base::OnceCallback<
-        void(Profile* profile,
-             Browser* browser,
-             signin_metrics::AccessPoint signin_access_point,
-             signin_metrics::PromoAction signin_promo_action,
-             signin_metrics::Reason signin_reason,
-             const CoreAccountId& account_id,
-             DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
-        create_dice_turn_sync_on_helper_callback) {
-  DCHECK(browser);
+void ShowExtensionSigninPrompt(Profile* profile,
+                               bool enable_sync,
+                               const std::string& email_hint) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  // There is no sign-in flow for guest or system profile.
+  if (profile->IsGuestSession() || profile->IsSystemProfile())
+    return;
+  // Locked profile should be unlocked with UserManager only.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (entry && entry->IsSigninRequired()) {
+    return;
+  }
+
+  // This may be called in incognito. Redirect to the original profile.
+  profile = profile->GetOriginalProfile();
+
+  if (email_hint.empty()) {
+    // Add a new account.
+    GetSigninUiDelegate()->ShowSigninUI(
+        profile, enable_sync,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+    return;
+  }
+
+  // Re-authenticate an existing account.
+  GetSigninUiDelegate()->ShowReauthUI(
+      profile, email_hint, enable_sync,
+      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void EnableSyncFromSingleAccountPromo(
+    Profile* profile,
+    const CoreAccountInfo& account,
+    signin_metrics::AccessPoint access_point) {
+  EnableSyncFromMultiAccountPromo(profile, account, access_point,
+                                  /*is_default_promo_account=*/true);
+}
+
+void EnableSyncFromMultiAccountPromo(Profile* profile,
+                                     const CoreAccountInfo& account,
+                                     signin_metrics::AccessPoint access_point,
+                                     bool is_default_promo_account) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
-  Profile* profile = browser->profile();
   DCHECK(!profile->IsOffTheRecord());
 
-  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     DVLOG(1) << "There is already a primary account.";
     return;
   }
 
   if (account.IsEmpty()) {
-    chrome::ShowBrowserSignin(browser, access_point,
-                              signin::ConsentLevel::kSync);
+    signin_metrics::PromoAction new_account_promo_action =
+        identity_manager->GetAccountsWithRefreshTokens().empty()
+            ? signin_metrics::PromoAction::
+                  PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+            : signin_metrics::PromoAction::
+                  PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
+    GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/true,
+                                        access_point, new_account_promo_action);
     return;
   }
 
   DCHECK(!account.account_id.empty());
   DCHECK(!account.email.empty());
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile));
+  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
+         AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
 
-  signin_metrics::PromoAction promo_action =
+  signin_metrics::PromoAction existing_account_promo_action =
       is_default_promo_account
           ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
           : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
   bool needs_reauth_before_enable_sync =
       !identity_manager->HasAccountWithRefreshToken(account.account_id) ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account.account_id);
   if (needs_reauth_before_enable_sync) {
-    browser->signin_view_controller()->ShowDiceEnableSyncTab(
-        access_point, promo_action, account.email);
+    GetSigninUiDelegate()->ShowReauthUI(profile, account.email,
+                                        /*enable_sync=*/true, access_point,
+                                        existing_account_promo_action);
     return;
   }
 
-  signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
-  signin_metrics::RecordSigninUserActionForAccessPoint(access_point,
-                                                       promo_action);
-  std::move(create_dice_turn_sync_on_helper_callback)
-      .Run(profile, browser, access_point, promo_action,
-           signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT,
-           account.account_id,
-           DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  signin_metrics::LogSigninAccessPointStarted(access_point,
+                                              existing_account_promo_action);
+  signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
+  GetSigninUiDelegate()->ShowTurnSyncOnUI(
+      profile, access_point, existing_account_promo_action,
+      signin_metrics::Reason::kSigninPrimaryAccount, account.account_id,
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
-}  // namespace internal
 
-std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile) {
+std::vector<AccountInfo> GetOrderedAccountsForDisplay(
+    Profile* profile,
+    bool restrict_to_accounts_eligible_for_sync) {
   // Fetch account ids for accounts that have a token.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -304,7 +354,8 @@ std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile) {
   std::vector<AccountInfo> accounts;
   for (auto& account_info : accounts_with_tokens) {
     DCHECK(!account_info.IsEmpty());
-    if (!signin::IsUsernameAllowedByPatternFromPrefs(
+    if (restrict_to_accounts_eligible_for_sync &&
+        !signin::IsUsernameAllowedByPatternFromPrefs(
             g_browser_process->local_state(), account_info.email)) {
       continue;
     }
@@ -316,14 +367,17 @@ std::vector<AccountInfo> GetAccountsForDicePromos(Profile* profile) {
   return accounts;
 }
 
-AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
-  std::vector<AccountInfo> accounts = GetAccountsForDicePromos(profile);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+AccountInfo GetSingleAccountForPromos(Profile* profile) {
+  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
+      profile, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
     return accounts[0];
   return AccountInfo();
 }
 
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,
@@ -338,15 +392,14 @@ std::u16string GetShortProfileIdentityToDisplay(
   if (core_info.IsEmpty())
     return profile_attributes_entry.GetName();
 
-  base::Optional<AccountInfo> extended_info =
-      identity_manager
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
-              core_info.account_id);
+  AccountInfo extended_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          core_info.account_id);
   // If there's no given name available, return the user email.
-  if (!extended_info.has_value() || extended_info->given_name.empty())
+  if (extended_info.given_name.empty())
     return base::UTF8ToUTF16(core_info.email);
 
-  return base::UTF8ToUTF16(extended_info->given_name);
+  return base::UTF8ToUTF16(extended_info.given_name);
 }
 
 std::string GetAllowedDomain(std::string signin_pattern) {
@@ -404,6 +457,14 @@ bool ShouldShowAnimatedIdentityOnOpeningWindow(
   return identity_manager->GetAccountsWithRefreshTokens().size() > 1;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+base::AutoReset<SigninUiDelegate*> SetSigninUiDelegateForTesting(  // IN-TEST
+    SigninUiDelegate* delegate) {
+  return base::AutoReset<SigninUiDelegate*>(&g_signin_ui_delegate_for_testing,
+                                            delegate);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void RecordAnimatedIdentityTriggered(Profile* profile) {
   AvatarButtonUserData::SetAnimatedIdentityLastShown(profile,
                                                      base::TimeTicks::Now());
@@ -411,31 +472,19 @@ void RecordAnimatedIdentityTriggered(Profile* profile) {
 
 void RecordAvatarIconHighlighted(Profile* profile) {
   base::RecordAction(base::UserMetricsAction("AvatarToolbarButtonHighlighted"));
-  AvatarButtonUserData::SetAvatarLastHighlighted(profile,
-                                                 base::TimeTicks::Now());
 }
 
 void RecordProfileMenuViewShown(Profile* profile) {
   base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened"));
   if (profile->IsRegularProfile()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Regular"));
+    // Record usage for profile switch promo.
+    feature_engagement::TrackerFactory::GetForBrowserContext(profile)
+        ->NotifyEvent("profile_menu_shown");
   } else if (profile->IsGuestSession()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Guest"));
   } else if (profile->IsIncognitoProfile()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Incognito"));
-  }
-
-  base::TimeTicks last_shown =
-      AvatarButtonUserData::GetAnimatedIdentityLastShown(profile);
-  if (!last_shown.is_null()) {
-    base::UmaHistogramLongTimes("Profile.Menu.OpenedAfterAvatarAnimation",
-                                base::TimeTicks::Now() - last_shown);
-  }
-
-  last_shown = AvatarButtonUserData::GetAvatarLastHighlighted(profile);
-  if (!last_shown.is_null()) {
-    base::UmaHistogramLongTimes("Profile.Menu.OpenedAfterAvatarHighlight",
-                                base::TimeTicks::Now() - last_shown);
   }
 }
 

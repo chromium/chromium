@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!--
 Note: This is a jinja2 template, processed at build time into the final manifest.
@@ -18,6 +20,7 @@ Note: This is a jinja2 template, processed at build time into the final manifest
 
     <!-- TODO(torne): we should specify an icon, roundIcon, and label from resources. -->
     <application
+        android:hasCode="false"
         android:label="{{ application_label|default('Trichrome Library') }}"
         android:icon="@drawable/icon_webview"
         android:multiArch="true"

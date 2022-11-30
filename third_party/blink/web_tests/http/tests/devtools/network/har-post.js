@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@
     const stream = new TestRunner.StringOutputStream(resolve);
     const progress = new Common.Progress();
     const networkRequests = NetworkTestRunner.networkRequests();
-    await Network.HARWriter.write(stream, networkRequests, progress);
+    await NetworkTestRunner.writeHARLog(stream, networkRequests, progress);
     progress.done();
     stream.close();
   });

@@ -24,9 +24,10 @@
 
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -35,12 +36,14 @@
 namespace blink {
 
 StyleRuleImport::StyleRuleImport(const String& href,
-                                 scoped_refptr<MediaQuerySet> media,
+                                 LayerName&& layer,
+                                 const MediaQuerySet* media,
                                  OriginClean origin_clean)
     : StyleRuleBase(kImport),
       parent_style_sheet_(nullptr),
       style_sheet_client_(MakeGarbageCollected<ImportedStyleSheetClient>(this)),
       str_href_(href),
+      layer_(std::move(layer)),
       media_queries_(media),
       loading_(false),
       origin_clean_(origin_clean) {
@@ -57,6 +60,7 @@ void StyleRuleImport::Dispose() {
 void StyleRuleImport::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_sheet_client_);
   visitor->Trace(parent_style_sheet_);
+  visitor->Trace(media_queries_);
   visitor->Trace(style_sheet_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
@@ -112,17 +116,7 @@ void StyleRuleImport::RequestStyleSheet() {
   if (!document)
     return;
 
-  Document* document_for_origin = document;
-  if (document->ImportsController()) {
-    // For @imports from HTML imported Documents, we use the
-    // context document for getting origin and ResourceFetcher to use the main
-    // Document's origin, while using the element document for CompleteURL() to
-    // use imported Documents' base URLs.
-    document_for_origin =
-        To<LocalDOMWindow>(document->GetExecutionContext())->document();
-  }
-
-  ResourceFetcher* fetcher = document_for_origin->Fetcher();
+  ResourceFetcher* fetcher = document->Fetcher();
   if (!fetcher)
     return;
 
@@ -172,9 +166,13 @@ void StyleRuleImport::RequestStyleSheet() {
     // the sheet being imported is pending.
     if (parent_style_sheet_ && parent_style_sheet_->LoadCompleted() &&
         root_sheet == parent_style_sheet_) {
-      parent_style_sheet_->StartLoadingDynamicSheet();
+      parent_style_sheet_->SetToPendingState();
     }
   }
+}
+
+String StyleRuleImport::GetLayerNameAsString() const {
+  return LayerNameAsString(layer_);
 }
 
 }  // namespace blink

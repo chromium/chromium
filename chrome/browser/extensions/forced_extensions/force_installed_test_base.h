@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_FORCE_INSTALLED_TEST_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +28,11 @@ class InstallStageTracker;
 // setting ExtensionInstallForcelist policy value.
 class ForceInstalledTestBase : public testing::Test {
  public:
+  enum class ExtensionOrigin {
+    kWebStore,
+    kOffStore,
+  };
+
   ForceInstalledTestBase();
   ~ForceInstalledTestBase() override;
 
@@ -37,15 +43,15 @@ class ForceInstalledTestBase : public testing::Test {
   void SetUp() override;
 
   // Creates and sets value for ExtensionInstallForcelist policy and
-  // kInstallForceList preference. |is_from_store| tells whether the extensions
+  // kInstallForceList preference. `source` tells whether the extensions
   // specified in the policy should have an update URL from CWS or not.
-  void SetupForceList(bool is_from_store);
+  void SetupForceList(ExtensionOrigin origin);
 
   // Creates and sets empty value for ExtensionInstallForcelist policy and
   // kInstallForceList preference.
   void SetupEmptyForceList();
 
-  // Creates a new extension with |extension_id| and |extension_name| and fakes
+  // Creates a new extension with `extension_id` and `extension_name` and fakes
   // its status by calling one of ForceInstalledTracker's
   // ExtensionRegistryObserver override.
   scoped_refptr<const Extension> CreateNewExtension(
@@ -78,12 +84,12 @@ class ForceInstalledTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  ExtensionRegistry* registry_;
-  InstallStageTracker* install_stage_tracker_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<InstallStageTracker> install_stage_tracker_;
   std::unique_ptr<ForceInstalledTracker> force_installed_tracker_;
 };
 

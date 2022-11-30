@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@
 namespace content {
 class RenderFrameHostImpl;
 class WebContents;
+
+// Returns an InterfaceProvider for global Java-implemented interfaces on the IO
+// thread.
+service_manager::InterfaceProvider* GetGlobalJavaInterfacesOnIOThread();
 
 void BindInterfaceRegistryForWebContents(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver,

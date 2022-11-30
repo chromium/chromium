@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -22,16 +23,14 @@ class Surface;
 // also responsible for expiring saved frames after a set timeout.
 class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
  public:
-  // Each Surface has its own storage, and the storage has a backpointer to the
-  // surface in order to append copy output requests to the active frame.
-  explicit SurfaceSavedFrameStorage(Surface* surface);
-
+  SurfaceSavedFrameStorage();
   ~SurfaceSavedFrameStorage();
 
   // Processes the save directive from a compositor frame. This interfaces with
   // the Surface to append copy output requests, so it should only be called
-  // after the surface with the save directive has been activated.
-  void ProcessSaveDirective(
+  // after the surface with the save directive has been activated. Returns a set
+  // of resource ids that were deemed to be "empty".
+  base::flat_set<SharedElementResourceId> ProcessSaveDirective(
       const CompositorFrameTransitionDirective& directive,
       SurfaceSavedFrame::TransitionDirectiveCompleteCallback
           directive_finished_callback);
@@ -39,16 +38,20 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   // This takes the saved frame stored on this storage. Returns nullptr if there
   // is no saved frame, or the frame has expired.
   std::unique_ptr<SurfaceSavedFrame> TakeSavedFrame();
+  bool HasValidFrame() const;
 
   // For testing functionality.
   void ExpireForTesting();
   void CompleteForTesting();
 
+  bool has_active_surface() const { return !!surface_; }
+  void set_active_surface(Surface* surface) { surface_ = surface; }
+
  private:
   // This expires the saved frame, if any.
   void ExpireSavedFrame();
 
-  Surface* const surface_;
+  raw_ptr<Surface> surface_ = nullptr;
 
   base::CancelableOnceClosure expiry_closure_;
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,9 +29,9 @@ const int kMD5BufferSize = 1024;
 
 // Returns true if the file at |image_path| is an archived image.
 bool IsArchive(const base::FilePath& image_path) {
-  // TODO(tetsui): Support .tar.xz file format.
   return ZipExtractor::IsZipFile(image_path) ||
-         TarExtractor::IsTarFile(image_path);
+         TarExtractor::IsTarFile(image_path) ||
+         XzExtractor::IsXzFile(image_path);
 }
 
 // Extracts the archive at |image_path| using to |temp_dir_path| using a proper
@@ -40,8 +41,11 @@ void ExtractArchive(ExtractionProperties properties) {
     ZipExtractor::Extract(std::move(properties));
   } else if (TarExtractor::IsTarFile(properties.image_path)) {
     TarExtractor::Extract(std::move(properties));
+  } else if (XzExtractor::IsXzFile(properties.image_path)) {
+    XzExtractor::Extract(std::move(properties));
+  } else {
+    NOTREACHED();
   }
-  // TODO(tetsui): Support .tar.xz file format.
 }
 
 }  // namespace
@@ -52,7 +56,7 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
                      const base::FilePath& download_folder)
     : manager_(manager),
       extension_id_(extension_id),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       device_path_(base::FilePath::FromUTF8Unsafe(device_path)),
 #else
       device_path_(device_path),

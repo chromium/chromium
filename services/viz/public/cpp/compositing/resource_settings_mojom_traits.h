@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_SETTINGS_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_RESOURCE_SETTINGS_MOJOM_TRAITS_H_
-
-#include <utility>
 
 #include "components/viz/common/resources/resource_settings.h"
 #include "services/viz/public/mojom/compositing/resource_settings.mojom.h"

@@ -9,6 +9,7 @@
   },
   "gn-builder-mac": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -16,6 +17,7 @@
   },
   "gn-builder-win": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,

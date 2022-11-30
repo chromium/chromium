@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ namespace {
 static const char kMaxDailyQuotaBytesParamName[] =
     "offline_pages_max_daily_quota_bytes";
 
-constexpr base::TimeDelta kQuotaPeriod = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kQuotaPeriod = base::Days(1);
 
 // Normalize quota to [0, GetMaxDailyQuotaBytes()].
 int64_t NormalizeQuota(int64_t quota) {

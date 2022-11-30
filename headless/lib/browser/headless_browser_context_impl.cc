@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,13 @@
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "headless/grit/headless_lib_resources.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
@@ -24,7 +26,37 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if defined(HEADLESS_USE_PREFS)
+#include "components/origin_trials/browser/origin_trials.h"  // nogncheck
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"  // nogncheck
+#include "components/origin_trials/common/features.h"  // nogncheck
+#include "components/user_prefs/user_prefs.h"  // nogncheck
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"  // nogncheck
+#endif  // defined(HEADLESS_USE_PREFS)
+
 namespace headless {
+
+namespace {
+
+base::FilePath MakeAbsolutePath(const base::FilePath& path) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows it's common to omit drive specification assuming the current
+  // drive, which makes the path specification not absolute, but relative to
+  // the current drive. Handle this case by prepending the current drive to
+  // the "\path" specification.
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
+  if (components.size() > 0 && components[0].length() == 1 &&
+      base::FilePath::IsSeparator(components[0].front())) {
+    components =
+        base::PathService::CheckedGet(base::DIR_CURRENT).GetComponents();
+    return base::FilePath(components[0]).Append(path);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  return base::PathService::CheckedGet(base::DIR_CURRENT).Append(path);
+}
+
+}  // namespace
 
 HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
     HeadlessBrowserImpl* browser,
@@ -33,6 +65,7 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
       context_options_(std::move(context_options)),
       permission_controller_delegate_(
           std::make_unique<HeadlessPermissionManager>(this)) {
+  BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
   InitWhileIOAllowed();
   simple_factory_key_ =
       std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
@@ -43,15 +76,28 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
           : path_;
   request_context_manager_ = std::make_unique<HeadlessRequestContextManager>(
       context_options_.get(), user_data_path);
+  profile_metrics::SetBrowserProfileType(
+      this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
+                             : profile_metrics::BrowserProfileType::kRegular);
+#if defined(HEADLESS_USE_PREFS)
+  if (PrefService* pref_service = browser->GetPrefs())
+    user_prefs::UserPrefs::Set(this, pref_service);
+#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SimpleKeyMap::GetInstance()->Dissociate(this);
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
-  // Destroy all web contents before shutting down storage partitions.
+  // Destroy all web contents before shutting down in process renderer and
+  // storage partitions.
   web_contents_map_.clear();
+
+  // In single process mode we can only have one browser context, so it's
+  // safe to shutdown the in-process renderer here.
+  if (content::RenderProcessHost::run_renderer_in_process())
+    content::RenderProcessHost::ShutDownInProcessRenderer();
 
   if (request_context_manager_) {
     content::GetIOThreadTaskRunner({})->DeleteSoon(
@@ -59,6 +105,9 @@ HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   }
 
   ShutdownStoragePartitions();
+
+  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
+      this);
 }
 
 // static
@@ -106,7 +155,7 @@ void HeadlessBrowserContextImpl::SetDevToolsFrameToken(
     const base::UnguessableToken& devtools_frame_token,
     int frame_tree_node_id) {
   base::AutoLock lock(devtools_frame_token_map_lock_);
-  devtools_frame_token_map_[content::GlobalFrameRoutingId(
+  devtools_frame_token_map_[content::GlobalRenderFrameHostId(
       render_process_id, render_frame_routing_id)] = devtools_frame_token;
   frame_tree_node_id_to_devtools_frame_token_map_[frame_tree_node_id] =
       devtools_frame_token;
@@ -117,7 +166,7 @@ void HeadlessBrowserContextImpl::RemoveDevToolsFrameToken(
     int render_frame_routing_id,
     int frame_tree_node_id) {
   base::AutoLock lock(devtools_frame_token_map_lock_);
-  devtools_frame_token_map_.erase(content::GlobalFrameRoutingId(
+  devtools_frame_token_map_.erase(content::GlobalRenderFrameHostId(
       render_process_id, render_frame_routing_id));
   frame_tree_node_id_to_devtools_frame_token_map_.erase(frame_tree_node_id);
 }
@@ -127,7 +176,7 @@ const base::UnguessableToken* HeadlessBrowserContextImpl::GetDevToolsFrameToken(
     int render_frame_id) const {
   base::AutoLock lock(devtools_frame_token_map_lock_);
   const auto& find_it = devtools_frame_token_map_.find(
-      content::GlobalFrameRoutingId(render_process_id, render_frame_id));
+      content::GlobalRenderFrameHostId(render_process_id, render_frame_id));
   if (find_it == devtools_frame_token_map_.end())
     return nullptr;
   return &find_it->second;
@@ -154,7 +203,8 @@ void HeadlessBrowserContextImpl::InitWhileIOAllowed() {
     base::FilePath path =
         context_options_->user_data_dir().Append(kDefaultProfileName);
     if (!path.IsAbsolute())
-      path = base::PathService::CheckedGet(base::DIR_CURRENT).Append(path);
+      path = MakeAbsolutePath(path);
+
     path_ = std::move(path);
   } else {
     base::PathService::Get(base::DIR_EXE, &path_);
@@ -165,7 +215,7 @@ void HeadlessBrowserContextImpl::InitWhileIOAllowed() {
 std::unique_ptr<content::ZoomLevelDelegate>
 HeadlessBrowserContextImpl::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
-  return std::unique_ptr<content::ZoomLevelDelegate>();
+  return nullptr;
 }
 
 base::FilePath HeadlessBrowserContextImpl::GetPath() {
@@ -193,6 +243,11 @@ HeadlessBrowserContextImpl::GetGuestManager() {
 
 storage::SpecialStoragePolicy*
 HeadlessBrowserContextImpl::GetSpecialStoragePolicy() {
+  return nullptr;
+}
+
+content::PlatformNotificationService*
+HeadlessBrowserContextImpl::GetPlatformNotificationService() {
   return nullptr;
 }
 
@@ -233,6 +288,30 @@ HeadlessBrowserContextImpl::GetBackgroundSyncController() {
 content::BrowsingDataRemoverDelegate*
 HeadlessBrowserContextImpl::GetBrowsingDataRemoverDelegate() {
   return nullptr;
+}
+
+content::ReduceAcceptLanguageControllerDelegate*
+HeadlessBrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
+  return nullptr;
+}
+
+content::OriginTrialsControllerDelegate*
+HeadlessBrowserContextImpl::GetOriginTrialsControllerDelegate() {
+#if defined(HEADLESS_USE_PREFS)
+  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
+    return nullptr;
+
+  if (!origin_trials_controller_delegate_) {
+    origin_trials_controller_delegate_ =
+        std::make_unique<origin_trials::OriginTrials>(
+            std::make_unique<origin_trials::PrefServicePersistenceProvider>(
+                this),
+            std::make_unique<blink::TrialTokenValidator>());
+  }
+  return origin_trials_controller_delegate_.get();
+#else   // defined(HEADLESS_USE_PREFS)
+  return nullptr;
+#endif  // defined(HEADLESS_USE_PREFS)
 }
 
 HeadlessWebContents* HeadlessBrowserContextImpl::CreateWebContents(

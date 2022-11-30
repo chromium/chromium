@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,8 @@ message OmniboxEventProto {
   // the field |typing_duration_ms|.
   optional int64 duration_since_last_default_match_update_ms = 13;
 
-  // The type of page currently displayed when the user used the omnibox.
+  // The type of page the user was on when they used the omnibox. Or the type of
+  // page for which suggestions were prefetched from the server.
   enum PageClassification {
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
@@ -119,8 +120,8 @@ message OmniboxEventProto {
     // on this list.
     OTHER = 4;
 
-    // The instant new tab page enum value was deprecated on August 2, 2013.
-    OBSOLETE_INSTANT_NTP = 5;
+    // The instant new tab page.
+    OBSOLETE_INSTANT_NTP = 5;  // DEPRECATED on August 2, 2013.
 
     // The user is on a search result page that does search term replacement.
     // This means the search terms are shown in the omnibox instead of the URL.
@@ -132,8 +133,8 @@ message OmniboxEventProto {
     INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS = 7;
 
     // The new tab page in which this omnibox interaction first started with the
-    // user having focus in the fakebox. Note that this started being replaced
-    // by NTP_REALBOX in Aug 2020 and will eventually be obsolete.
+    // user having focus in the fakebox. This is replaced by NTP_REALBOX.
+    // DEPRECATED on Aug 17, 2020.
     INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS = 8;
 
     // The user is on a search result page that does not do search term
@@ -163,6 +164,35 @@ message OmniboxEventProto {
 
     // Android's Search Widget started directly from Launcher.
     ANDROID_SEARCH_WIDGET = 16;
+
+    // Android's Start surface homepage.
+    START_SURFACE_HOMEPAGE = 17;  // DEPRECATED on Jun 17, 2022.
+    // New Tab with Omnibox focused with Android's start surface finale enabled.
+    START_SURFACE_NEW_TAB = 18;  // DEPRECATED on Jun 17, 2022.
+
+    // Android's improved Search Widget with new suggestions.
+    ANDROID_SHORTCUTS_WIDGET = 19;
+
+    // The New Tab Page zero-prefix suggestion prefetch.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    NTP_ZPS_PREFETCH = 20;
+
+    // Note: PageClassification 21 has never been used.
+
+    // The Search Results Page zero-prefix suggestion prefetch.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    SRP_ZPS_PREFETCH = 22;
+
+    // The catch-all zero-prefix suggestion prefetch for everything other than
+    // NTP and SRP.
+    // Used for prefetching suggestions and should never appear in an
+    // OmniboxEventProto or any of its derived histograms. (PageClassification
+    // enum is used in other places too, and not only OmniboxEventProto.)
+    OTHER_ZPS_PREFETCH = 23;
 
     // When adding new classifications, please consider adding them in
     // chromium's chrome/browser/resources/omnibox/omnibox.html
@@ -215,6 +245,12 @@ message OmniboxEventProto {
     // Only used by Android Chrome. Represents a suggestion showing query tiles
     // that users can tap on for bulding queries.
     QUERY_TILE = 19;
+    // Clusters generated on-device from the user's Chrome history.
+    HISTORY_CLUSTER = 20;
+    // Suggestions from history derived from input with automatic corrections.
+    HISTORY_FUZZY = 21;
+    // URLs amongst the user's currently open tabs.
+    OPEN_TAB = 22;
   }
 
   // The result set displayed on the completion popup
@@ -291,6 +327,15 @@ message OmniboxEventProto {
       CLIPBOARD_IMAGE = 29;        // An image based on the clipboard.
       TILE_SUGGESTION = 30;        // A search query from Chrome Query Tiles
                                    // feature. Only used by Android.
+      HISTORY_CLUSTER = 31;        // A past page that is a member of a cluster
+                                   // (an aggregation of related searches and
+                                   // URLs from the user's history) that
+                                   // contains the input (the input might or
+                                   // might not also match the title or URL of
+                                   // this page).
+      OPEN_TAB = 32;      // A currently open tab whose URL contains the input.
+      STARTER_PACK = 33;  // A built-in URL suggestion specifically created for
+                          // the starter pack keyword mode chip to attach to.
     }
     optional ResultType result_type = 2;
 

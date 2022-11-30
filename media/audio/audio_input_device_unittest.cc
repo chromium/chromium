@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/sync_socket.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +57,9 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
                     double volume,
                     bool key_pressed));
 
-  MOCK_METHOD1(OnCaptureError, void(const std::string& message));
+  MOCK_METHOD2(OnCaptureError,
+               void(AudioCapturerSource::ErrorCode code,
+                    const std::string& message));
   MOCK_METHOD1(OnCaptureMuted, void(bool is_muted));
 };
 
@@ -77,13 +79,14 @@ TEST_P(AudioInputDeviceTest, Noop) {
 }
 
 ACTION_P(ReportStateChange, device) {
-  static_cast<AudioInputIPCDelegate*>(device)->OnError();
+  static_cast<AudioInputIPCDelegate*>(device)->OnError(
+      media::AudioCapturerSource::ErrorCode::kUnknown);
 }
 
 // Verify that we get an OnCaptureError() callback if CreateStream fails.
 TEST_P(AudioInputDeviceTest, FailToCreateStream) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
 
   MockCaptureCallback callback;
   MockAudioInputIPC* input_ipc = new MockAudioInputIPC();
@@ -93,7 +96,8 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
   device->Initialize(params, &callback);
   EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
       .WillOnce(ReportStateChange(device.get()));
-  EXPECT_CALL(callback, OnCaptureError(_));
+  EXPECT_CALL(callback,
+              OnCaptureError(AudioCapturerSource::ErrorCode::kUnknown, _));
   EXPECT_CALL(*input_ipc, CloseStream());
   device->Start();
   device->Stop();
@@ -101,7 +105,7 @@ TEST_P(AudioInputDeviceTest, FailToCreateStream) {
 
 TEST_P(AudioInputDeviceTest, CreateStream) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         CHANNEL_LAYOUT_STEREO, 48000, 480);
+                         ChannelLayoutConfig::Stereo(), 48000, 480);
   base::MappedReadOnlyRegion shared_memory;
   CancelableSyncSocket browser_socket;
   CancelableSyncSocket renderer_socket;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,13 +12,11 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace google_brand {
 
 // Returns in |brand| the brand code or distribution tag that has been
 // assigned to a partner. Returns false if the information is not available.
-// TODO(asvitkine): These APIs should return base::Optional<std::string>.
+// TODO(asvitkine): These APIs should return absl::optional<std::string>.
 bool GetBrand(std::string* brand);
 
 // Returns in |brand| the reactivation brand code or distribution tag
@@ -42,17 +40,22 @@ bool IsOrganicFirstRun(const std::string& brand);
 // True if |brand| is an internet cafe brand code.
 bool IsInternetCafeBrandCode(const std::string& brand);
 
+// True if |brand| is an enterprise brand code.
+bool IsEnterprise(const std::string& brand);
+
 // This class is meant to be used only from test code, and sets the brand
 // code returned by the function GetBrand() above while the object exists.
 class BrandForTesting {
  public:
   explicit BrandForTesting(const std::string& brand);
+
+  BrandForTesting(const BrandForTesting&) = delete;
+  BrandForTesting& operator=(const BrandForTesting&) = delete;
+
   ~BrandForTesting();
 
  private:
   std::string brand_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrandForTesting);
 };
 
 }  // namespace google_brand

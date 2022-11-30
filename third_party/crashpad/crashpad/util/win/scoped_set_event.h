@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -28,6 +27,10 @@ namespace crashpad {
 class ScopedSetEvent {
  public:
   explicit ScopedSetEvent(HANDLE event);
+
+  ScopedSetEvent(const ScopedSetEvent&) = delete;
+  ScopedSetEvent& operator=(const ScopedSetEvent&) = delete;
+
   ~ScopedSetEvent();
 
   //! \brief Calls `SetEvent()` immediately.
@@ -39,8 +42,6 @@ class ScopedSetEvent {
 
  private:
   HANDLE event_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetEvent);
 };
 
 }  // namespace crashpad

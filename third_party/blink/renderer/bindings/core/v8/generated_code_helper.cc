@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_declaration.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,20 +21,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 
 namespace blink {
-
-void V8ConstructorAttributeGetter(
-    v8::Local<v8::Name> property_name,
-    const v8::PropertyCallbackInfo<v8::Value>& info,
-    const WrapperTypeInfo* wrapper_type_info) {
-  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(
-      info.GetIsolate(), "Blink_V8ConstructorAttributeGetter");
-  V8PerContextData* per_context_data =
-      V8PerContextData::From(info.Holder()->CreationContext());
-  if (!per_context_data)
-    return;
-  V8SetReturnValue(info,
-                   per_context_data->ConstructorForType(wrapper_type_info));
-}
 
 namespace {
 
@@ -103,55 +90,13 @@ bool IsCallbackFunctionRunnableIgnoringPause(
                                             IgnorePause::kIgnore);
 }
 
-void V8SetReflectedBooleanAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const char* interface_name,
-    const char* idl_attribute_name,
-    const QualifiedName& content_attr) {
-  v8::Isolate* isolate = info.GetIsolate();
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
-                                 interface_name, idl_attribute_name);
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  bool cpp_value = NativeValueTraits<IDLBoolean>::NativeValue(isolate, info[0],
-                                                              exception_state);
-  if (exception_state.HadException())
-    return;
-
-  impl->SetBooleanAttribute(content_attr, cpp_value);
-}
-
-void V8SetReflectedDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr) {
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  V8StringResource<> cpp_value{info[0]};
-  if (!cpp_value.Prepare())
-    return;
-
-  impl->setAttribute(content_attr, cpp_value);
-}
-
-void V8SetReflectedNullableDOMStringAttribute(
-    const v8::FunctionCallbackInfo<v8::Value>& info,
-    const QualifiedName& content_attr) {
-  Element* impl = V8Element::ToImpl(info.Holder());
-
-  CEReactionsScope ce_reactions_scope;
-
-  // Prepare the value to be set.
-  V8StringResource<kTreatNullAndUndefinedAsNullString> cpp_value{info[0]};
-  if (!cpp_value.Prepare())
-    return;
-
-  impl->setAttribute(content_attr, cpp_value);
+void ExceptionToRejectPromiseScope::ConvertExceptionToRejectPromise() {
+  // As exceptions must always be created in the current realm, reject
+  // promises must also be created in the current realm while regular promises
+  // are created in the relevant realm of the context object.
+  ScriptState* script_state = ScriptState::ForCurrentRealm(info_);
+  V8SetReturnValue(
+      info_, ScriptPromise::Reject(script_state, exception_state_).V8Value());
 }
 
 namespace bindings {
@@ -199,21 +144,32 @@ void SetupIDLCallbackInterfaceTemplate(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 }
 
-base::Optional<size_t> FindIndexInEnumStringTable(
+void SetupIDLObservableArrayBackingListTemplate(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::ObjectTemplate> instance_template,
+    v8::Local<v8::FunctionTemplate> interface_template) {
+  interface_template->SetClassName(
+      V8AtomicString(isolate, wrapper_type_info->interface_name));
+
+  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+}
+
+absl::optional<size_t> FindIndexInEnumStringTable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     base::span<const char* const> enum_value_table,
     const char* enum_type_name,
     ExceptionState& exception_state) {
-  const String& str_value = NativeValueTraits<IDLStringV2>::NativeValue(
+  const String& str_value = NativeValueTraits<IDLString>::NativeValue(
       isolate, value, exception_state);
-  if (exception_state.HadException())
-    return base::nullopt;
+  if (UNLIKELY(exception_state.HadException()))
+    return absl::nullopt;
 
-  base::Optional<size_t> index =
+  absl::optional<size_t> index =
       FindIndexInEnumStringTable(str_value, enum_value_table);
 
-  if (!index.has_value()) {
+  if (UNLIKELY(!index.has_value())) {
     exception_state.ThrowTypeError("The provided value '" + str_value +
                                    "' is not a valid enum value of type " +
                                    enum_type_name + ".");
@@ -221,14 +177,14 @@ base::Optional<size_t> FindIndexInEnumStringTable(
   return index;
 }
 
-base::Optional<size_t> FindIndexInEnumStringTable(
+absl::optional<size_t> FindIndexInEnumStringTable(
     const String& str_value,
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
     if (Equal(str_value.Impl(), enum_value_table[i]))
       return i;
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
@@ -247,13 +203,13 @@ void ReportInvalidEnumSetToAttribute(v8::Isolate* isolate,
   execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kWarning, message,
-      SourceLocation::Capture(execution_context)));
+      CaptureSourceLocation(execution_context)));
 }
 
 bool IsEsIterableObject(v8::Isolate* isolate,
                         v8::Local<v8::Value> value,
                         ExceptionState& exception_state) {
-  // https://heycam.github.io/webidl/#es-overloads
+  // https://webidl.spec.whatwg.org/#es-overloads
   // step 9. Otherwise: if Type(V) is Object and ...
   if (!value->IsObject())
     return false;
@@ -353,7 +309,7 @@ void InstallUnscopablePropertyNames(
     v8::Local<v8::Object> prototype_object,
     base::span<const char* const> property_name_table) {
   // 3.6.3. Interface prototype object
-  // https://heycam.github.io/webidl/#interface-prototype-object
+  // https://webidl.spec.whatwg.org/#interface-prototype-object
   // step 8. If interface has any member declared with the [Unscopable]
   //   extended attribute, then:
   // step 8.1. Let unscopableObject be the result of performing
@@ -381,13 +337,11 @@ void InstallUnscopablePropertyNames(
 v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
                                                 uint32_t length) {
   Vector<v8::Local<v8::Value>> elements;
-  elements.ReserveCapacity(length);
+  elements.reserve(length);
   for (uint32_t i = 0; i < length; ++i)
     elements.UncheckedAppend(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
 }
-
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
 
 void InstallCSSPropertyAttributes(
     v8::Isolate* isolate,
@@ -425,7 +379,9 @@ void CSSPropertyAttributeGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
       V8CSSStyleDeclaration::ToWrappableUnsafe(info.This());
   const char* property_name =
       reinterpret_cast<const char*>(info.Data().As<v8::External>()->Value());
-  auto&& return_value = blink_receiver->GetPropertyAttribute(property_name);
+  // TODO(andruud): AnonymousNamedGetter is not the best function.  Change the
+  // function to a more appropriate one.
+  auto&& return_value = blink_receiver->AnonymousNamedGetter(property_name);
   bindings::V8SetReturnValue(info, return_value, info.GetIsolate(),
                              bindings::V8ReturnValue::kNonNullable);
 }
@@ -445,17 +401,19 @@ void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
   CSSStyleDeclaration* blink_receiver =
       V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
   v8::Local<v8::Value> v8_property_value = info[0];
-  auto&& arg1_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyStringV2>::NativeValue(
-          isolate, v8_property_value, exception_state);
-  if (exception_state.HadException()) {
+  auto&& arg1_value = NativeValueTraits<IDLAny>::NativeValue(
+      isolate, v8_property_value, exception_state);
+  if (UNLIKELY(exception_state.HadException())) {
     return;
   }
-  v8::Local<v8::Context> receiver_context = v8_receiver->CreationContext();
-  ExecutionContext* execution_context =
-      ExecutionContext::From(receiver_context);
-  blink_receiver->SetPropertyAttribute(execution_context, property_name,
-                                       arg1_value, exception_state);
+  v8::Local<v8::Context> receiver_context =
+      v8_receiver->GetCreationContextChecked();
+  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
+  // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
+  // function to a more appropriate one.  It's better to pass |exception_state|
+  // as the implementation of AnonymousNamedSetter needs it.
+  blink_receiver->AnonymousNamedSetter(receiver_script_state, property_name,
+                                       arg1_value);
 }
 
 template <typename IDLType,
@@ -480,7 +438,7 @@ void PerformAttributeSetCEReactionsReflect(
   Element* blink_receiver = V8Element::ToWrappableUnsafe(info.This());
   auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(isolate, info[0],
                                                              exception_state);
-  if (exception_state.HadException())
+  if (UNLIKELY(exception_state.HadException()))
     return;
 
   (blink_receiver->*MemFunc)(content_attribute, arg_value);
@@ -501,7 +459,7 @@ void PerformAttributeSetCEReactionsReflectTypeString(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name) {
-  PerformAttributeSetCEReactionsReflect<IDLStringV2, const AtomicString&,
+  PerformAttributeSetCEReactionsReflect<IDLString, const AtomicString&,
                                         &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
 }
@@ -511,7 +469,7 @@ void PerformAttributeSetCEReactionsReflectTypeStringLegacyNullToEmptyString(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name) {
-  PerformAttributeSetCEReactionsReflect<IDLStringTreatNullAsEmptyStringV2,
+  PerformAttributeSetCEReactionsReflect<IDLStringTreatNullAsEmptyString,
                                         const AtomicString&,
                                         &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
@@ -523,11 +481,9 @@ void PerformAttributeSetCEReactionsReflectTypeStringOrNull(
     const char* interface_name,
     const char* attribute_name) {
   PerformAttributeSetCEReactionsReflect<
-      IDLNullable<IDLStringV2>, const AtomicString&, &Element::setAttribute>(
+      IDLNullable<IDLString>, const AtomicString&, &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);
 }
-
-#endif  // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
 
 }  // namespace bindings
 

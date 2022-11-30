@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,30 +8,38 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <string>
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace blink {
 
-class FakeFunction : public ScriptFunction {
+class DOMRectInit;
+class PlaneLayout;
+
+base::ScopedClosureRunner MakeScopedGarbageCollectionRequest();
+
+class FakeFunction : public ScriptFunction::Callable {
  public:
-  static FakeFunction* Create(ScriptState* script_state, std::string name);
+  explicit FakeFunction(std::string name);
 
-  explicit FakeFunction(ScriptState* script_state, std::string name);
-
-  v8::Local<v8::Function> Bind();
-  ScriptValue Call(ScriptValue) override;
+  ScriptValue Call(ScriptState*, ScriptValue) override;
 
  private:
   const std::string name_;
@@ -43,8 +51,11 @@ VideoDecoderConfig* MakeVideoDecoderConfig(
 AudioDecoderConfig* MakeAudioDecoderConfig(
     const wc_fuzzer::ConfigureAudioDecoder& proto);
 
-VideoEncoderConfig* MakeEncoderConfig(
+VideoEncoderConfig* MakeVideoEncoderConfig(
     const wc_fuzzer::ConfigureVideoEncoder& proto);
+
+AudioEncoderConfig* MakeAudioEncoderConfig(
+    const wc_fuzzer::ConfigureAudioEncoder& proto);
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto);
@@ -52,8 +63,24 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 EncodedAudioChunk* MakeEncodedAudioChunk(
     const wc_fuzzer::EncodedAudioChunk& proto);
 
+AllowSharedBufferSource* MakeAllowSharedBufferSource(
+    const wc_fuzzer::AllowSharedBufferSource& proto);
+
+PlaneLayout* MakePlaneLayout(const wc_fuzzer::PlaneLayout& proto);
+
+DOMRectInit* MakeDOMRectInit(const wc_fuzzer::DOMRectInit& proto);
+
+VideoFrame* MakeVideoFrame(
+    ScriptState* script_state,
+    const wc_fuzzer::VideoFrameBufferInitInvocation& proto);
+
 VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            const wc_fuzzer::VideoFrameBitmapInit& proto);
+
+AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto);
+
+AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
+    const wc_fuzzer::AudioDataCopyToOptions& proto);
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(
     const wc_fuzzer::EncodeVideo_EncodeOptions& proto);

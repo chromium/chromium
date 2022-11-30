@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,16 @@ namespace ash {
 class ASH_EXPORT WindowMirrorViewPip : public WindowMirrorView {
  public:
   WindowMirrorViewPip(aura::Window* source, bool trilinear_filtering_on_init);
+
+  WindowMirrorViewPip(const WindowMirrorViewPip&) = delete;
+  WindowMirrorViewPip& operator=(const WindowMirrorViewPip&) = delete;
+
   ~WindowMirrorViewPip() override;
 
  protected:
   // WindowMirrorView:
   void InitLayerOwner() override;
   ui::Layer* GetMirrorLayer() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowMirrorViewPip);
 };
 
 }  // namespace ash

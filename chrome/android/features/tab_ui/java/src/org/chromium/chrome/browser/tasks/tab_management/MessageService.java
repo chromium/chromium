@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,15 +21,43 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class MessageService {
     @IntDef({MessageType.TAB_SUGGESTION, MessageType.IPH, MessageType.PRICE_MESSAGE,
-            MessageType.ALL})
+            MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, MessageType.ALL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface MessageType {
         int FOR_TESTING = 0;
         int TAB_SUGGESTION = 1;
         int IPH = 2;
         int PRICE_MESSAGE = 3;
-        int ALL = 4;
+        int INCOGNITO_REAUTH_PROMO_MESSAGE = 4;
+        int ALL = 5;
     }
+
+    /**
+     * The reason why we disable the message in grid tab switcher and no longer show it.
+     *
+     * Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
+     * are persisted to logs. Entries should not be renumbered and numeric values should never be
+     * reused.
+     */
+    @IntDef({MessageDisableReason.UNKNOWN, MessageDisableReason.MESSAGE_ACCEPTED,
+            MessageDisableReason.MESSAGE_DISMISSED, MessageDisableReason.MESSAGE_IGNORED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MessageDisableReason {
+        int UNKNOWN = 0;
+        // User accepts the message by tapping the primary button on it.
+        int MESSAGE_ACCEPTED = 1;
+        // User dismisses the message by tapping the close button on it.
+        int MESSAGE_DISMISSED = 2;
+        // We no longer show the message because the message is ignored by users many times.
+        int MESSAGE_IGNORED = 3;
+        // Always update MAX_VALUE to match the last item in the list.
+        int MAX_VALUE = 3;
+    }
+
+    // This identifier is used to serve messages that have no subtype, such as IPH. If one message
+    // type has multiple subtypes such as PRICE_MESSAGE, its service needs to define its own
+    // identifiers which should be used when creating the message card view model.
+    public static final int DEFAULT_MESSAGE_IDENTIFIER = -1;
 
     /**
      * This is a data wrapper. Implement this interface to send notification with data to all the
@@ -81,6 +111,11 @@ public class MessageService {
         mObservers.removeObserver(observer);
     }
 
+    @VisibleForTesting
+    protected ObserverList<MessageObserver> getObserversForTesting() {
+        return mObservers;
+    }
+
     /**
      * Notifies all {@link MessageObserver} that a message is available.
      * @param data {@link MessageData} to send to all the observers.
@@ -98,5 +133,16 @@ public class MessageService {
         for (MessageObserver observer : mObservers) {
             observer.messageInvalidate(mMessageType);
         }
+    }
+
+    /**
+     * Log metrics related to the message disable reason.
+     * @param messageType the message type or identifier.
+     * @param reason the message disable reason.
+     */
+    void logMessageDisableMetrics(String messageType, @MessageDisableReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                String.format("GridTabSwitcher.%s.DisableReason", messageType), reason,
+                MessageDisableReason.MAX_VALUE + 1);
     }
 }

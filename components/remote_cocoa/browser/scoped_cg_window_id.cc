@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,6 +53,14 @@ void ScopedCGWindowID::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void ScopedCGWindowID::OnMouseMoved(const gfx::PointF& location_in_window,
+                                    const gfx::Size& window_size) {
+  for (auto& observer : observer_list_) {
+    observer.OnScopedCGWindowIDMouseMoved(cg_window_id_, location_in_window,
+                                          window_size);
+  }
+}
+
 // static
 base::WeakPtr<ScopedCGWindowID> ScopedCGWindowID::Get(uint32_t cg_window_id) {
   auto found = GetMap().find(cg_window_id);
@@ -61,7 +69,6 @@ base::WeakPtr<ScopedCGWindowID> ScopedCGWindowID::Get(uint32_t cg_window_id) {
   DCHECK_CALLED_ON_VALID_THREAD(found->second->thread_checker_);
 
   return found->second->weak_factory_.GetWeakPtr();
-  return nullptr;
 }
 
 }  // namespace remote_cocoa

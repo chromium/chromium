@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,12 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/optional.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -31,7 +30,7 @@ class MockBluetoothDevice : public BluetoothDevice {
                       uint32_t bluetooth_class,
                       const char* name,
                       const std::string& address,
-                      bool paired,
+                      bool initially_paired,
                       bool connected);
   ~MockBluetoothDevice() override;
 
@@ -45,48 +44,39 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(GetProductID, uint16_t());
   MOCK_CONST_METHOD0(GetDeviceID, uint16_t());
   MOCK_CONST_METHOD0(GetAppearance, uint16_t());
-  MOCK_CONST_METHOD0(GetName, base::Optional<std::string>());
+  MOCK_CONST_METHOD0(GetName, absl::optional<std::string>());
   MOCK_CONST_METHOD0(GetNameForDisplay, std::u16string());
   MOCK_CONST_METHOD0(GetDeviceType, BluetoothDeviceType());
   MOCK_CONST_METHOD0(IsPaired, bool());
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_CONST_METHOD0(IsBonded, bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   MOCK_CONST_METHOD0(IsConnected, bool());
   MOCK_CONST_METHOD0(IsGattConnected, bool());
   MOCK_CONST_METHOD0(IsConnectable, bool());
   MOCK_CONST_METHOD0(IsConnecting, bool());
   MOCK_CONST_METHOD0(GetUUIDs, UUIDSet());
-  MOCK_CONST_METHOD0(GetInquiryRSSI, base::Optional<int8_t>());
-  MOCK_CONST_METHOD0(GetInquiryTxPower, base::Optional<int8_t>());
+  MOCK_CONST_METHOD0(GetInquiryRSSI, absl::optional<int8_t>());
+  MOCK_CONST_METHOD0(GetInquiryTxPower, absl::optional<int8_t>());
   MOCK_CONST_METHOD0(ExpectingPinCode, bool());
   MOCK_CONST_METHOD0(ExpectingPasskey, bool());
   MOCK_CONST_METHOD0(ExpectingConfirmation, bool());
   MOCK_METHOD1(GetConnectionInfo, void(ConnectionInfoCallback callback));
-  void SetConnectionLatency(ConnectionLatency connection_latency,
-                            base::OnceClosure callback,
-                            ErrorCallback error_callback) override {
-    SetConnectionLatency_(connection_latency, callback, error_callback);
-  }
-  MOCK_METHOD3(SetConnectionLatency_,
+  MOCK_METHOD3(SetConnectionLatency,
                void(ConnectionLatency connection_latency,
-                    base::OnceClosure& callback,
-                    ErrorCallback& error_callback));
-  void Connect(BluetoothDevice::PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               BluetoothDevice::ConnectErrorCallback error_callback) override {
-    Connect_(pairing_delegate, callback, error_callback);
-  }
-  MOCK_METHOD3(Connect_,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback));
+  MOCK_METHOD2(Connect,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    base::OnceClosure& callback,
-                    BluetoothDevice::ConnectErrorCallback& error_callback));
-  void Pair(BluetoothDevice::PairingDelegate* pairing_delegate,
-            base::OnceClosure callback,
-            BluetoothDevice::ConnectErrorCallback error_callback) override {
-    Pair_(pairing_delegate, callback, error_callback);
-  }
-  MOCK_METHOD3(Pair_,
+                    ConnectCallback callback));
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD2(ConnectClassic,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    base::OnceClosure& callback,
-                    BluetoothDevice::ConnectErrorCallback& error_callback));
+                    ConnectCallback callback));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD2(Pair,
+               void(BluetoothDevice::PairingDelegate* pairing_delegate,
+                    ConnectCallback callback));
   MOCK_METHOD1(SetPinCode, void(const std::string&));
   MOCK_METHOD1(SetPasskey, void(uint32_t));
   MOCK_METHOD0(ConfirmPairing, void());
@@ -106,17 +96,9 @@ class MockBluetoothDevice : public BluetoothDevice {
                void(const BluetoothUUID& uuid,
                     ConnectToServiceCallback callback,
                     ConnectToServiceErrorCallback error_callback));
-  void CreateGattConnection(
-      GattConnectionCallback callback,
-      ConnectErrorCallback error_callback,
-      base::Optional<BluetoothUUID> service_uuid) override {
-    CreateGattConnection_(callback, error_callback);
-  }
-  MOCK_METHOD2(CreateGattConnection_,
-               void(GattConnectionCallback& callback,
-                    ConnectErrorCallback& error_callback));
-
-  MOCK_METHOD1(SetGattServicesDiscoveryComplete, void(bool));
+  MOCK_METHOD2(CreateGattConnection,
+               void(GattConnectionCallback callback,
+                    absl::optional<BluetoothUUID> service_uuid));
   MOCK_CONST_METHOD0(IsGattServicesDiscoveryComplete, bool());
 
   MOCK_CONST_METHOD0(GetGattServices,
@@ -124,16 +106,16 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothRemoteGattService*(const std::string&));
   MOCK_METHOD1(CreateGattConnectionImpl,
-               void(base::Optional<BluetoothUUID> service_uuid));
+               void(absl::optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD2(ExecuteWrite,
                void(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback));
   MOCK_METHOD2(AbortWrite,
                void(base::OnceClosure callback,
                     AbortWriteErrorCallback error_callback));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // BluetoothDevice manages the lifetime of its BluetoothGATTServices.
   // This method takes ownership of the MockBluetoothGATTServices. This is only
@@ -143,12 +125,23 @@ class MockBluetoothDevice : public BluetoothDevice {
   // ON_CALL(*mock_device, GetGattServices))
   //   .WillByDefault(Invoke(*mock_device,
   //                         &MockBluetoothDevice::GetMockServices));
-  void AddMockService(std::unique_ptr<MockBluetoothGattService> mock_device);
+  void AddMockService(std::unique_ptr<MockBluetoothGattService> mock_service);
   std::vector<BluetoothRemoteGattService*> GetMockServices() const;
   BluetoothRemoteGattService* GetMockService(
       const std::string& identifier) const;
 
   void AddUUID(const BluetoothUUID& uuid) { uuids_.insert(uuid); }
+
+  void SetServiceDataForUUID(const BluetoothUUID& uuid,
+                             const std::vector<uint8_t>& service_data) {
+    service_data_[uuid] = service_data;
+  }
+
+  // Updates the device's Manufacturer Data that are returned by
+  // BluetoothDevice::GetManufacturerData().
+  void SetManufacturerData(ManufacturerDataMap manufacturer_data) {
+    manufacturer_data_ = std::move(manufacturer_data);
+  }
 
   // Functions to save and run callbacks from this device. Useful when
   // trying to run callbacks in response to other actions e.g. run a read
@@ -160,12 +153,15 @@ class MockBluetoothDevice : public BluetoothDevice {
 
   void SetConnected(bool connected) { connected_ = connected; }
 
+  void SetPaired(bool paired) { paired_ = paired; }
+
  private:
   uint32_t bluetooth_class_;
-  base::Optional<std::string> name_;
+  absl::optional<std::string> name_;
   std::string address_;
   BluetoothDevice::UUIDSet uuids_;
   bool connected_;
+  bool paired_;
 
   // Used by tests to save callbacks that will be run in the future.
   base::queue<base::OnceClosure> pending_callbacks_;

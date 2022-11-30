@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@
 IPC_ENUM_TRAITS_VALIDATE(
     safe_browsing::ClientDownloadRequest_DownloadType,
     safe_browsing::ClientDownloadRequest_DownloadType_IsValid(value))
+
+IPC_ENUM_TRAITS_MAX_VALUE(safe_browsing::ArchiveAnalysisResult,
+                          safe_browsing::ArchiveAnalysisResult::kMaxValue)
 
 IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(safe_browsing::ClientDownloadRequest_Digests)
   IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_COMPLEX_MEMBER(sha256)
@@ -104,10 +107,11 @@ IPC_STRUCT_TRAITS_BEGIN(safe_browsing::ArchiveAnalyzerResults)
   IPC_STRUCT_TRAITS_MEMBER(has_archive)
   IPC_STRUCT_TRAITS_MEMBER(archived_binary)
   IPC_STRUCT_TRAITS_MEMBER(archived_archive_filenames)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   IPC_STRUCT_TRAITS_MEMBER(signature_blob)
   IPC_STRUCT_TRAITS_MEMBER(detached_code_signatures)
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   IPC_STRUCT_TRAITS_MEMBER(file_count)
   IPC_STRUCT_TRAITS_MEMBER(directory_count)
+  IPC_STRUCT_TRAITS_MEMBER(analysis_result)
 IPC_STRUCT_TRAITS_END()

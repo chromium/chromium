@@ -1,6 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {constants} from '../common/constants.js';
 
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 
@@ -95,6 +97,24 @@ export class ItemNavigatorInterface {
    */
   moveToValidNode() {}
 
+  /**
+   * Restarts item scanning from the last point chosen by point scanning.
+   * @abstract
+   */
+  restart() {}
+
+  /**
+   * Restores the suspended group and focus, if there is one.
+   * @abstract
+   */
+  restoreSuspendedGroup() {}
+
+  /**
+   * Saves the current focus and group, and then exits the group.
+   * @abstract
+   */
+  suspendCurrentGroup() {}
+
   // =============== Getter Methods ==============
 
   /**
@@ -125,4 +145,10 @@ export class PointNavigatorInterface {
 
   /** Stops point scanning. */
   stop() {}
+
+  /**
+   * Performs a mouse action at the currentPoint().
+   * @param {chrome.accessibilityPrivate.SwitchAccessMenuAction} action
+   */
+  performMouseAction(action) {}
 }

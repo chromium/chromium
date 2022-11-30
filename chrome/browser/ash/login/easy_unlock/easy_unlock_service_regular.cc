@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "apps/app_lifetime_monitor_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_names.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
+#include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -34,12 +36,12 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/components/proximity_auth/proximity_auth_profile_pref_manager.h"
-#include "chromeos/components/proximity_auth/proximity_auth_system.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_system.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -53,7 +55,7 @@
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -122,7 +124,7 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
     // changes.
     PA_LOG(VERBOSE) << "Smart Lock is not enabled by user; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt /* local_device */);
+                            absl::nullopt /* local_device */);
     return;
   }
 
@@ -143,7 +145,7 @@ void EasyUnlockServiceRegular::LoadRemoteDevices() {
     PA_LOG(ERROR) << "Smart Lock is enabled by user, but no unlock key is "
                      "present; aborting.";
     SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            base::nullopt /* local_device */);
+                            absl::nullopt /* local_device */);
 
     if (pref_manager_->IsEasyUnlockEnabledStateSet()) {
       LogSmartLockEnabledState(SmartLockEnabledState::DISABLED);
@@ -171,11 +173,23 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   if (remote_devices.size() != 1u) {
     PA_LOG(ERROR) << "There should only be 1 Smart Lock host, but there are: "
                   << remote_devices.size();
+    SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
+                            absl::nullopt);
     NOTREACHED();
+    return;
   }
 
-  SetProximityAuthDevices(GetAccountId(), remote_devices,
-                          device_sync_client_->GetLocalDeviceMetadata());
+  absl::optional<multidevice::RemoteDeviceRef> local_device =
+      device_sync_client_->GetLocalDeviceMetadata();
+  if (!local_device) {
+    PA_LOG(ERROR) << "EasyUnlockServiceRegular::" << __func__
+                  << ": Local device unexpectedly null.";
+    SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
+                            absl::nullopt);
+    return;
+  }
+
+  SetProximityAuthDevices(GetAccountId(), remote_devices, local_device);
 
   // We need to store a copy of `local_and_remote_devices` in the TPM, so it can
   // be retrieved on the sign-in screen when a user session has not been started
@@ -186,12 +200,11 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
   // be persisted in a dictionary.
   multidevice::RemoteDeviceRefList local_and_remote_devices;
   local_and_remote_devices.push_back(remote_devices[0]);
-  local_and_remote_devices.push_back(
-      *device_sync_client_->GetLocalDeviceMetadata());
+  local_and_remote_devices.push_back(*local_device);
 
-  std::unique_ptr<base::ListValue> device_list(new base::ListValue());
+  base::ListValue device_list;
   for (const auto& device : local_and_remote_devices) {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+    base::Value::Dict dict;
     std::string b64_public_key, b64_psk;
     base::Base64UrlEncode(device.public_key(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
@@ -200,58 +213,58 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &b64_psk);
 
-    dict->SetString(key_names::kKeyPsk, b64_psk);
+    dict.Set(key_names::kKeyPsk, b64_psk);
 
     // TODO(jhawkins): Remove the bluetoothAddress field from this proto.
-    dict->SetString(key_names::kKeyBluetoothAddress, std::string());
+    dict.Set(key_names::kKeyBluetoothAddress, std::string());
 
-    dict->SetString(
+    dict.SetByDottedPath(
         key_names::kKeyPermitPermitId,
         base::StringPrintf(
             key_names::kPermitPermitIdFormat,
             gaia::CanonicalizeEmail(GetAccountId().GetUserEmail()).c_str()));
 
-    dict->SetString(key_names::kKeyPermitId, b64_public_key);
-    dict->SetString(key_names::kKeyPermitType, key_names::kPermitTypeLicence);
-    dict->SetString(key_names::kKeyPermitData, b64_public_key);
+    dict.SetByDottedPath(key_names::kKeyPermitId, b64_public_key);
+    dict.SetByDottedPath(key_names::kKeyPermitType,
+                         key_names::kPermitTypeLicence);
+    dict.SetByDottedPath(key_names::kKeyPermitData, b64_public_key);
 
-    std::unique_ptr<base::ListValue> beacon_seed_list(new base::ListValue());
+    base::Value::List beacon_seed_list;
     for (const auto& beacon_seed : device.beacon_seeds()) {
       std::string b64_beacon_seed;
       base::Base64UrlEncode(
           multidevice::ToCryptAuthSeed(beacon_seed).SerializeAsString(),
           base::Base64UrlEncodePolicy::INCLUDE_PADDING, &b64_beacon_seed);
-      beacon_seed_list->AppendString(b64_beacon_seed);
+      beacon_seed_list.Append(b64_beacon_seed);
     }
 
     std::string serialized_beacon_seeds;
     JSONStringValueSerializer serializer(&serialized_beacon_seeds);
-    serializer.Serialize(*beacon_seed_list);
-    dict->SetString(key_names::kKeySerializedBeaconSeeds,
-                    serialized_beacon_seeds);
+    serializer.Serialize(beacon_seed_list);
+    dict.Set(key_names::kKeySerializedBeaconSeeds, serialized_beacon_seeds);
 
     // This differentiates the local device from the remote device.
     bool unlock_key = device.GetSoftwareFeatureState(
                           multidevice::SoftwareFeature::kSmartLockHost) ==
                       multidevice::SoftwareFeatureState::kEnabled;
-    dict->SetBoolean(key_names::kKeyUnlockKey, unlock_key);
+    dict.Set(key_names::kKeyUnlockKey, unlock_key);
 
     PA_LOG(VERBOSE) << "Storing RemoteDevice: { "
                     << "name: " << device.name()
                     << ", unlock_key: " << unlock_key
                     << ", id: " << device.GetTruncatedDeviceIdForLogs()
                     << " }.";
-    device_list->Append(std::move(dict));
+    device_list.GetList().Append(std::move(dict));
   }
 
-  if (device_list->GetSize() != 2u) {
+  if (device_list.GetList().size() != 2u) {
     PA_LOG(ERROR) << "There should only be 2 devices persisted, the host and "
                      "the client, but there are: "
-                  << device_list->GetSize();
+                  << device_list.GetList().size();
     NOTREACHED();
   }
 
-  SetStoredRemoteDevices(*device_list);
+  SetStoredRemoteDevices(device_list);
 }
 
 void EasyUnlockServiceRegular::SetStoredRemoteDevices(
@@ -260,12 +273,12 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
   JSONStringValueSerializer serializer(&remote_devices_json);
   serializer.Serialize(devices);
 
-  DictionaryPrefUpdate pairing_update(profile()->GetPrefs(),
+  ScopedDictPrefUpdate pairing_update(profile()->GetPrefs(),
                                       prefs::kEasyUnlockPairing);
-  if (devices.empty())
-    pairing_update->RemoveKey(kKeyDevices);
+  if (devices.GetList().empty())
+    pairing_update->Remove(kKeyDevices);
   else
-    pairing_update->SetKey(kKeyDevices, devices.Clone());
+    pairing_update->Set(kKeyDevices, devices.Clone());
 
   CheckCryptohomeKeysAndMaybeHardlock();
 }
@@ -286,13 +299,11 @@ AccountId EasyUnlockServiceRegular::GetAccountId() const {
   return primary_user->GetAccountId();
 }
 
-const base::ListValue* EasyUnlockServiceRegular::GetRemoteDevices() const {
-  const base::DictionaryValue* pairing_dict =
-      profile()->GetPrefs()->GetDictionary(prefs::kEasyUnlockPairing);
-  const base::ListValue* devices = NULL;
-  if (pairing_dict && pairing_dict->GetList(kKeyDevices, &devices))
-    return devices;
-  return NULL;
+const base::Value::List* EasyUnlockServiceRegular::GetRemoteDevices() const {
+  const base::Value::Dict& pairing_dict =
+      profile()->GetPrefs()->GetDict(prefs::kEasyUnlockPairing);
+
+  return pairing_dict.FindList(kKeyDevices);
 }
 
 std::string EasyUnlockServiceRegular::GetChallenge() const {
@@ -317,8 +328,9 @@ void EasyUnlockServiceRegular::RecordPasswordLoginEvent(
 }
 
 void EasyUnlockServiceRegular::InitializeInternal() {
-  pref_manager_.reset(new proximity_auth::ProximityAuthProfilePrefManager(
-      profile()->GetPrefs(), multidevice_setup_client_));
+  pref_manager_ =
+      std::make_unique<proximity_auth::ProximityAuthProfilePrefManager>(
+          profile()->GetPrefs(), multidevice_setup_client_);
   pref_manager_->StartSyncingToLocalState(g_browser_process->local_state(),
                                           GetAccountId());
 
@@ -337,8 +349,7 @@ void EasyUnlockServiceRegular::InitializeInternal() {
 
   OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
   multidevice_setup_client_->AddObserver(this);
-
-  proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
+  StartFeatureUsageMetrics();
 
   LoadRemoteDevices();
 }
@@ -347,13 +358,13 @@ void EasyUnlockServiceRegular::ShutdownInternal() {
   pref_manager_.reset();
   notification_controller_.reset();
 
-  proximity_auth::ScreenlockBridge::Get()->RemoveObserver(this);
-
   registrar_.RemoveAll();
 
   device_sync_client_->RemoveObserver(this);
 
   multidevice_setup_client_->RemoveObserver(this);
+
+  StopFeatureUsageMetrics();
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -476,8 +487,23 @@ void EasyUnlockServiceRegular::ShowNotificationIfNewDevicePresent(
   }
 }
 
+void EasyUnlockServiceRegular::StartFeatureUsageMetrics() {
+  feature_usage_metrics_ =
+      std::make_unique<SmartLockFeatureUsageMetrics>(multidevice_setup_client_);
+
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(
+      feature_usage_metrics_.get());
+}
+
+void EasyUnlockServiceRegular::StopFeatureUsageMetrics() {
+  feature_usage_metrics_.reset();
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(nullptr);
+}
+
 void EasyUnlockServiceRegular::OnScreenDidLock(
     proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type) {
+  EasyUnlockService::OnScreenDidLock(screen_type);
+
   set_will_authenticate_using_easy_unlock(false);
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
 }
@@ -555,4 +581,4 @@ multidevice::RemoteDeviceRefList EasyUnlockServiceRegular::GetUnlockKeys() {
   return unlock_keys;
 }
 
-}  // namespace chromeos
+}  // namespace ash

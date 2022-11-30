@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -82,7 +82,7 @@ public class WarmupManager {
      */
     private class RenderProcessGoneObserver extends WebContentsObserver {
         @Override
-        public void renderProcessGone(boolean wasOomProtected) {
+        public void renderProcessGone() {
             long elapsed = SystemClock.elapsedRealtime() - mWebContentsCreationTimeMs;
             RecordHistogram.recordLongTimesHistogram(
                     "CustomTabs.SpareWebContents.TimeBeforeDeath", elapsed);
@@ -144,11 +144,11 @@ public class WarmupManager {
             Context baseContext, int toolbarContainerId, int toolbarId) {
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.inflateViewHierarchy")) {
             ContextThemeWrapper context =
-                    new ContextThemeWrapper(baseContext, ChromeActivity.getThemeId());
+                    new ContextThemeWrapper(baseContext, ActivityUtils.getThemeId());
             FrameLayout contentHolder = new FrameLayout(context);
             ViewGroup mainView =
                     (ViewGroup) LayoutInflaterUtils.inflate(context, R.layout.main, contentHolder);
-            if (toolbarContainerId != ChromeActivity.NO_CONTROL_CONTAINER) {
+            if (toolbarContainerId != ActivityUtils.NO_RESOURCE_ID) {
                 ViewStub stub = (ViewStub) mainView.findViewById(R.id.control_container_stub);
                 stub.setLayoutResource(toolbarContainerId);
                 stub.inflate();
@@ -158,13 +158,20 @@ public class WarmupManager {
             ControlContainer controlContainer =
                     (ControlContainer) mainView.findViewById(R.id.control_container);
 
-            if (toolbarId != ChromeActivity.NO_TOOLBAR_LAYOUT && controlContainer != null) {
+            if (toolbarId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
                 controlContainer.initWithToolbar(toolbarId);
             }
             return mainView;
         } catch (InflateException e) {
-            // See https://crbug.com/606715.
+            // Warmup manager is only a performance improvement. If inflation failed, it will be
+            // redone when the CCT is actually launched using an activity context. So, swallow
+            // exceptions here to improve resilience. See https://crbug.com/606715.
             Log.e(TAG, "Inflation exception.", e);
+            // An exception caught here may indicate a real bug in production code. We report the
+            // exceptions to monitor any spikes or stacks that point to Chrome code.
+            Throwable throwable = new Throwable(
+                    "This is not a crash. See https://crbug.com/1259276 for details.", e);
+            ChromePureJavaExceptionReporter.reportJavaException(throwable);
             return null;
         }
     }
@@ -270,22 +277,6 @@ public class WarmupManager {
         WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
     }
 
-    /**
-     * Reports to WarmupManager on the next set of URLs that the user is expected to navigate to
-     * next. The set of URLs are reported by an external Android app.
-     *
-     * @param profile The profile to use.
-     * @param packagesName Possible names of the external Android apps that may have reported the
-     *         set of URLs.
-     * @param urls Ordered list of URLs that the user is expected to navigate to next. The URLs are
-     *         ordered in non-increasing probability of navigation.
-     */
-    public static void reportNextLikelyNavigationsOnUiThread(
-            Profile profile, String[] packagesName, String[] urls) {
-        ThreadUtils.assertOnUiThread();
-        WarmupManagerJni.get().reportNextLikelyNavigations(profile, packagesName, urls);
-    }
-
     /** Asynchronously preconnects to a given URL if the data reduction proxy is not in use.
      *
      * @param profile The profile to use for the preconnection.
@@ -316,25 +307,6 @@ public class WarmupManager {
         } else {
             WarmupManagerJni.get().preconnectUrlAndSubresources(profile, url);
         }
-    }
-
-    /**
-     * Warms up a spare, empty RenderProcessHost that may be used for subsequent navigations.
-     *
-     * The spare RenderProcessHost will be used automatically in subsequent navigations.
-     * There is nothing further the WarmupManager needs to do to enable that use.
-     *
-     * This uses a different mechanism than createSpareWebContents, below, and is subject
-     * to fewer restrictions.
-     *
-     * This must be called from the UI thread.
-     */
-    public void createSpareRenderProcessHost(Profile profile) {
-        ThreadUtils.assertOnUiThread();
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-
-        destroySpareWebContents();
-        WarmupManagerJni.get().warmupSpareRenderer(profile);
     }
 
     /**
@@ -415,7 +387,5 @@ public class WarmupManager {
     interface Natives {
         void startPreconnectPredictorInitialization(Profile profile);
         void preconnectUrlAndSubresources(Profile profile, String url);
-        void warmupSpareRenderer(Profile profile);
-        void reportNextLikelyNavigations(Profile profile, String[] packagesName, String[] urls);
     }
 }

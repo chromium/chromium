@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/types/display_constants.h"
@@ -27,7 +26,6 @@ class SequencedTaskRunner;
 
 namespace display {
 class DisplaySnapshot;
-class Screen;
 struct GammaRampRGBEntry;
 }  // namespace display
 
@@ -53,8 +51,11 @@ class ASH_EXPORT DisplayColorManager
     kMaxValue = kAll,
   };
 
-  DisplayColorManager(display::DisplayConfigurator* configurator,
-                      display::Screen* screen_to_observe);
+  explicit DisplayColorManager(display::DisplayConfigurator* configurator);
+
+  DisplayColorManager(const DisplayColorManager&) = delete;
+  DisplayColorManager& operator=(const DisplayColorManager&) = delete;
+
   ~DisplayColorManager() override;
 
   DisplayCtmSupport displays_ctm_support() const {
@@ -66,13 +67,12 @@ class ASH_EXPORT DisplayColorManager
   // this display. This doesn't affect gamma or degamma values.
   // Returns true if the hardware supports this operation and the matrix was
   // successfully sent to the GPU.
-  bool SetDisplayColorMatrix(int64_t display_id,
-                             const SkMatrix44& color_matrix);
+  bool SetDisplayColorMatrix(int64_t display_id, const SkM44& color_matrix);
 
   // Similar to the above but can be used when a display snapshot is known to
   // the caller.
   bool SetDisplayColorMatrix(const display::DisplaySnapshot* display_snapshot,
-                             const SkMatrix44& color_matrix);
+                             const SkM44& color_matrix);
 
   // display::DisplayConfigurator::Observer
   void OnDisplayModeChanged(
@@ -156,7 +156,7 @@ class ASH_EXPORT DisplayColorManager
   // Contains a per display color transform matrix that can be post-multiplied
   // by any available color calibration matrix for the corresponding display.
   // The key is the display ID.
-  base::flat_map<int64_t, SkMatrix44> displays_color_matrix_map_;
+  base::flat_map<int64_t, SkM44> displays_color_matrix_map_;
 
   // Maps a display's color calibration data by the display's product code as
   // the key.
@@ -168,13 +168,10 @@ class ASH_EXPORT DisplayColorManager
 
   DisplayCtmSupport displays_ctm_support_;
 
-  // This is null in DisplayColorManagerTest.
-  display::Screen* screen_to_observe_;
+  display::ScopedOptionalDisplayObserver display_observer_{this};
 
   // Factory for callbacks.
   base::WeakPtrFactory<DisplayColorManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayColorManager);
 };
 
 }  // namespace ash

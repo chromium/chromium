@@ -1,17 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
 namespace color_space_utilities {
 
-ColorSpaceGamut GetColorSpaceGamut(const ScreenInfo& screen_info) {
+ColorSpaceGamut GetColorSpaceGamut(const display::ScreenInfo& screen_info) {
   const gfx::ColorSpace& color_space =
       screen_info.display_color_spaces.GetScreenInfoColorSpace();
   if (!color_space.IsValid())

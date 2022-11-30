@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -19,7 +21,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar.h"
@@ -33,7 +35,7 @@ KnownInterceptionDisclosureCooldown::GetInstance() {
 bool KnownInterceptionDisclosureCooldown::IsActive(Profile* profile) {
   base::Time last_dismissal;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   last_dismissal = profile->GetPrefs()->GetTime(
       prefs::kKnownInterceptionDisclosureInfobarLastShown);
 #else
@@ -41,11 +43,11 @@ bool KnownInterceptionDisclosureCooldown::IsActive(Profile* profile) {
 #endif
 
   // Suppress the disclosure UI for 7 days after showing it to the user.
-  return (clock_->Now() - last_dismissal) <= base::TimeDelta::FromDays(7);
+  return (clock_->Now() - last_dismissal) <= base::Days(7);
 }
 
 void KnownInterceptionDisclosureCooldown::Activate(Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   profile->GetPrefs()->SetTime(
       prefs::kKnownInterceptionDisclosureInfobarLastShown, clock_->Now());
 #else
@@ -75,20 +77,19 @@ void MaybeShowKnownInterceptionDisclosureDialog(
 
   disclosure_tracker->set_has_seen_known_interception(true);
 
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto delegate =
       std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
 
   if (!KnownInterceptionDisclosureCooldown::GetInstance()->IsActive(profile)) {
-#if defined(OS_ANDROID)
-    infobar_service->AddInfoBar(
+#if BUILDFLAG(IS_ANDROID)
+    infobar_manager->AddInfoBar(
         KnownInterceptionDisclosureInfoBar::CreateInfoBar(std::move(delegate)));
 #else
-    infobar_service->AddInfoBar(
-        infobar_service->CreateConfirmInfoBar(std::move(delegate)));
+    infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
 #endif
   }
 }
@@ -126,7 +127,7 @@ std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetMessageText()
 }
 
 int KnownInterceptionDisclosureInfoBarDelegate::GetButtons() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return BUTTON_OK;
 #else
   return BUTTON_NONE;
@@ -139,7 +140,7 @@ bool KnownInterceptionDisclosureInfoBarDelegate::Accept() {
 }
 
 // Platform specific implementations.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int KnownInterceptionDisclosureInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_WARNING;
 }

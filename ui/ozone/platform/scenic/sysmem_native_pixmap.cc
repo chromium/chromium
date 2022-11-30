@@ -1,15 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/scenic/sysmem_native_pixmap.h"
 
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/logging.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/ozone/platform/scenic/scenic_surface.h"
-#include "ui/ozone/platform/scenic/scenic_surface_factory.h"
+#include "ui/gfx/overlay_plane_data.h"
 
 namespace ui {
 
@@ -20,26 +16,18 @@ zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
   return fence.GetGpuFenceHandle().Clone().owned_event;
 }
 
-std::vector<zx::event> DuplicateZxEvents(
-    const std::vector<zx::event>& acquire_events) {
-  std::vector<zx::event> duped_events;
-  for (auto& event : acquire_events) {
-    duped_events.emplace_back();
-    zx_status_t status =
-        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &duped_events.back());
-    ZX_DCHECK(status == ZX_OK, status);
-  }
-  return duped_events;
-}
-
 }  // namespace
 
 SysmemNativePixmap::SysmemNativePixmap(
     scoped_refptr<SysmemBufferCollection> collection,
-    gfx::NativePixmapHandle handle)
-    : collection_(collection), handle_(std::move(handle)) {}
+    gfx::NativePixmapHandle handle,
+    gfx::Size size)
+    : collection_(collection), handle_(std::move(handle)), size_(size) {}
 
-SysmemNativePixmap::~SysmemNativePixmap() = default;
+SysmemNativePixmap::~SysmemNativePixmap() {
+  if (overlay_image_id_)
+    collection_->scenic_overlay_view()->RemoveImage(overlay_image_id_);
+}
 
 bool SysmemNativePixmap::AreDmaBufFdsValid() const {
   return false;
@@ -70,6 +58,11 @@ size_t SysmemNativePixmap::GetNumberOfPlanes() const {
   return 0;
 }
 
+bool SysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
+  NOTREACHED();
+  return false;
+}
+
 uint64_t SysmemNativePixmap::GetBufferFormatModifier() const {
   NOTREACHED();
   return 0;
@@ -80,7 +73,7 @@ gfx::BufferFormat SysmemNativePixmap::GetBufferFormat() const {
 }
 
 gfx::Size SysmemNativePixmap::GetBufferSize() const {
-  return collection_->size();
+  return size_;
 }
 
 uint32_t SysmemNativePixmap::GetUniqueId() const {
@@ -89,27 +82,11 @@ uint32_t SysmemNativePixmap::GetUniqueId() const {
 
 bool SysmemNativePixmap::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
+    const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
-  DCHECK(collection_->surface_factory());
-  ScenicSurface* surface = collection_->surface_factory()->GetSurface(widget);
-  if (!surface) {
-    DLOG(ERROR) << "Failed to find surface.";
-    return false;
-  }
-
   DCHECK(collection_->scenic_overlay_view());
   ScenicOverlayView* overlay_view = collection_->scenic_overlay_view();
-  const auto& buffer_collection_id = handle_.buffer_collection_id.value();
-  if (!overlay_view->AttachToScenicSurface(widget, buffer_collection_id)) {
-    DLOG(ERROR) << "Failed to attach to surface.";
-    return false;
-  }
 
   // Convert gfx::GpuFence to zx::event for PresentImage call.
   std::vector<zx::event> acquire_events;
@@ -119,12 +96,12 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   for (auto& fence : release_fences)
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
 
-  surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds, crop_rect, plane_transform,
-                                     DuplicateZxEvents(acquire_events));
+  overlay_view->SetBlendMode(overlay_plane_data.enable_blend);
 
-  overlay_view->SetBlendMode(enable_blend);
-  overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
+  if (!overlay_image_id_)
+    overlay_image_id_ = overlay_view->AddImage(handle_.buffer_index, size_);
+
+  overlay_view->PresentImage(overlay_image_id_, std::move(acquire_events),
                              std::move(release_events));
 
   return true;
@@ -134,13 +111,21 @@ gfx::NativePixmapHandle SysmemNativePixmap::ExportHandle() {
   return gfx::CloneHandleForIPC(handle_);
 }
 
-bool SysmemNativePixmap::SupportsOverlayPlane(
-    gfx::AcceleratedWidget widget) const {
-  if (!collection_->scenic_overlay_view())
-    return false;
+const gfx::NativePixmapHandle& SysmemNativePixmap::PeekHandle() const {
+  return handle_;
+}
 
-  return collection_->scenic_overlay_view()->CanAttachToAcceleratedWidget(
-      widget);
+bool SysmemNativePixmap::SupportsOverlayPlane() const {
+  // We can display an overlay as long as we have a ScenicOverlayView. Note that
+  // ScenicOverlayView can migrate from one surface to another, but it can't
+  // be used across multiple surfaces similtaneously. But on Fuchsia each buffer
+  // collection is allocated (in FuchsiaVideoDecoder) for a specific web frame,
+  // and each frame can be displayed only on one specific surface.
+  return !!collection_->scenic_overlay_view();
+}
+
+ScenicOverlayView* SysmemNativePixmap::GetScenicOverlayView() {
+  return collection_->scenic_overlay_view();
 }
 
 }  // namespace ui

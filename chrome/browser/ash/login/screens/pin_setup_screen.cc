@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -18,13 +19,15 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionDoneButtonClicked[] = "done-button";
@@ -49,14 +52,6 @@ const PinSetupUserAction actions[] = {
 
 void RecordPinSetupScreenAction(PinSetupScreen::UserAction value) {
   base::UmaHistogramEnumeration("OOBE.PinSetupScreen.UserActions", value);
-}
-
-bool IsPinSetupUserAction(const std::string& action_id) {
-  for (const auto& el : actions) {
-    if (action_id == el.name_)
-      return true;
-  }
-  return false;
 }
 
 void RecordUserAction(const std::string& action_id) {
@@ -89,95 +84,95 @@ std::string PinSetupScreen::GetResultString(Result result) {
 bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
-      !quick_unlock::IsPinEnabled(prefs) ||
-      quick_unlock::IsPinDisabledByPolicy(prefs)) {
+      quick_unlock::IsPinDisabledByPolicy(prefs, quick_unlock::Purpose::kAny)) {
     return true;
   }
 
   return false;
 }
 
-PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
+PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(PinSetupScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 
-  if (features::IsPinSetupForFamilyLinkEnabled()) {
-    quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
-        &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
-  }
+  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
-PinSetupScreen::~PinSetupScreen() {
-  if (view_)
-    view_->Bind(nullptr);
+PinSetupScreen::~PinSetupScreen() = default;
+
+bool PinSetupScreen::SkipScreen(WizardContext& context) {
+  ClearAuthData(context);
+  exit_callback_.Run(Result::NOT_APPLICABLE);
+  return true;
 }
 
-bool PinSetupScreen::MaybeSkip(WizardContext* context) {
-  if (ShouldSkipBecauseOfPolicy()) {
-    ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
+bool PinSetupScreen::MaybeSkip(WizardContext& context) {
+  if (context.skip_post_login_screens_for_tests || ShouldSkipBecauseOfPolicy())
+    return SkipScreen(context);
 
-  // Show setup for Family Link users on tablet and clamshell if the device
-  // supports PIN for login.
-  bool show_for_family_link_user =
-      features::IsPinSetupForFamilyLinkEnabled() &&
-      ProfileManager::GetActiveUserProfile()->IsChild() &&
-      has_login_support_.value_or(false);
-
-  // Skip the screen if the device is not in tablet mode, unless tablet mode
-  // first user run is forced on the device.
-  if (!ash::TabletMode::Get()->InTabletMode() &&
-      !switches::ShouldOobeUseTabletModeFirstRun() &&
-      !show_for_family_link_user) {
-    ClearAuthData(context);
-    exit_callback_.Run(Result::NOT_APPLICABLE);
-    return true;
-  }
   // Just a precaution:
-  if (!context->extra_factors_auth_session) {
-    exit_callback_.Run(Result::TIMED_OUT);
-    return true;
+  if (!context.extra_factors_auth_session)
+    return SkipScreen(context);
+
+  // If cryptohome takes very long to respond, `has_login_support_` may be null
+  // here, but this is very unusual.
+  LOG_IF(WARNING, !has_login_support_.has_value())
+      << "Could not determine hardware support support for login";
+  // Show pin setup if we have hardware support for login with pin.
+  if (has_login_support_.value_or(false)) {
+    return false;
   }
-  return false;
+
+  // Show the screen if the device is in tablet mode or tablet mode first user
+  // run is forced on the device.
+  if (TabletMode::Get()->InTabletMode() ||
+      switches::ShouldOobeUseTabletModeFirstRun()) {
+    return false;
+  }
+
+  return SkipScreen(context);
 }
 
 void PinSetupScreen::ShowImpl() {
-  token_lifetime_timeout_.Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(
-          chromeos::quick_unlock::AuthToken::kTokenExpirationSeconds),
-      base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
-                     weak_ptr_factory_.GetWeakPtr()));
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(
+  token_lifetime_timeout_.Start(FROM_HERE,
+                                quick_unlock::AuthToken::kTokenExpiration,
+                                base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
+                                               weak_ptr_factory_.GetWeakPtr()));
+  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   quick_unlock_storage->MarkStrongAuth();
   std::unique_ptr<UserContext> user_context =
       std::move(context()->extra_factors_auth_session);
+
+  // Due to crbug.com/1203420 we need to mark the key as a wildcard (no label).
+  if (user_context->GetKey()->GetLabel() == kCryptohomeGaiaKeyLabel) {
+    user_context->GetKey()->SetLabel(kCryptohomeWildcardLabel);
+  }
+
   const std::string token =
       quick_unlock_storage->CreateAuthToken(*user_context);
+  bool is_child_account =
+      user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   if (view_)
-    view_->Show(token);
+    view_->Show(token, is_child_account);
 
-  chromeos::quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
-      base::BindOnce(&PinSetupScreen::OnHasLoginSupport,
-                     weak_ptr_factory_.GetWeakPtr()));
+  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PinSetupScreen::HideImpl() {
-  view_->Hide();
   token_lifetime_timeout_.Stop();
-  ClearAuthData(context());
+  ClearAuthData(*context());
 }
 
-void PinSetupScreen::OnUserAction(const std::string& action_id) {
+void PinSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
@@ -191,11 +186,11 @@ void PinSetupScreen::OnUserAction(const std::string& action_id) {
     exit_callback_.Run(Result::USER_SKIP);
     return;
   }
-  BaseScreen::OnUserAction(action_id);
+  BaseScreen::OnUserAction(args);
 }
 
-void PinSetupScreen::ClearAuthData(WizardContext* context) {
-  context->extra_factors_auth_session.reset();
+void PinSetupScreen::ClearAuthData(WizardContext& context) {
+  context.extra_factors_auth_session.reset();
 }
 
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
@@ -205,8 +200,8 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 }
 
 void PinSetupScreen::OnTokenTimedOut() {
-  ClearAuthData(context());
+  ClearAuthData(*context());
   exit_callback_.Run(Result::TIMED_OUT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

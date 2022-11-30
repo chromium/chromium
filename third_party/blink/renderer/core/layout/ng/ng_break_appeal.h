@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,9 @@ enum NGBreakAppeal {
   // forced breaks are always perfect, since they trump everything else.
   kBreakAppealPerfect,
 };
+
+// Keep this one in sync with the above enum.
+const int kNGBreakAppealBitsNeeded = 2;
 
 }  // namespace blink
 

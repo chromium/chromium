@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   TCPBoundSocket(SocketFactory* socket_factory,
                  net::NetLog* net_log,
                  const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  TCPBoundSocket(const TCPBoundSocket&) = delete;
+  TCPBoundSocket& operator=(const TCPBoundSocket&) = delete;
+
   ~TCPBoundSocket() override;
 
   // Attempts to bind a socket to the specified address. Returns net::OK on
@@ -62,8 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
 
  private:
   void OnConnectComplete(int result,
-                         const base::Optional<net::IPEndPoint>& local_addr,
-                         const base::Optional<net::IPEndPoint>& peer_addr,
+                         const absl::optional<net::IPEndPoint>& local_addr,
+                         const absl::optional<net::IPEndPoint>& peer_addr,
                          mojo::ScopedDataPipeConsumerHandle receive_stream,
                          mojo::ScopedDataPipeProducerHandle send_stream);
 
@@ -72,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   net::IPEndPoint bind_address_;
 
   mojo::ReceiverId receiver_id_ = -1;
-  SocketFactory* const socket_factory_;
+  const raw_ptr<SocketFactory> socket_factory_;
   std::unique_ptr<net::TCPSocket> socket_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
@@ -83,8 +87,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   std::unique_ptr<TCPConnectedSocket> connecting_socket_;
 
   base::WeakPtrFactory<TCPBoundSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TCPBoundSocket);
 };
 
 }  // namespace network

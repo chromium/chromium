@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,9 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   MainThreadSchedulerHelper(
       base::sequence_manager::SequenceManager* sequence_manager,
       MainThreadSchedulerImpl* main_thread_scheduler);
+  MainThreadSchedulerHelper(const MainThreadSchedulerHelper&) = delete;
+  MainThreadSchedulerHelper& operator=(const MainThreadSchedulerHelper&) =
+      delete;
   ~MainThreadSchedulerHelper() override;
 
   scoped_refptr<MainThreadTaskQueue> NewTaskQueue(
@@ -32,8 +35,6 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   scoped_refptr<MainThreadTaskQueue> ControlMainThreadTaskQueue();
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner();
 
-  const scoped_refptr<base::SingleThreadTaskRunner>& DefaultTaskRunner()
-      override;
   const scoped_refptr<base::SingleThreadTaskRunner>& ControlTaskRunner()
       override;
 
@@ -45,8 +46,6 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
 
   const scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThreadSchedulerHelper);
 };
 
 }  // namespace scheduler

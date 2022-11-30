@@ -1,48 +1,70 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_IMAGE_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_IMAGE_H_
 
-#include <memory>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
+// TODO(crbug.com/1189945): Rename and move to more generic location.
 // A wrapper around a `gfx::ImageSkia` that supports dynamic updates.
 class ASH_PUBLIC_EXPORT HoldingSpaceImage {
  public:
   using CallbackList = base::RepeatingClosureList;
 
-  // Returns a bitmap.
+  // Returns an `SkBitmap`.
   using BitmapCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  // Returns a bitmap asynchronously for a given size.
+  // Returns an `SkBitmap` asynchronously for a given `file_path` and `size`.
   using AsyncBitmapResolver =
       base::RepeatingCallback<void(const base::FilePath& file_path,
                                    const gfx::Size& size,
                                    BitmapCallback callback)>;
 
+  // Returns a `gfx::ImageSkia` to be used as a placeholder prior to the async
+  // `SkBitmap` being resolved or when async `SkBitmap` resolution fails.
+  // NOTE: The placeholder resolver will be invoked during `HoldingSpaceImage`
+  // construction, at which time `dark_background` and `is_folder` are absent.
+  using PlaceholderImageSkiaResolver = base::RepeatingCallback<gfx::ImageSkia(
+      const base::FilePath& file_path,
+      const gfx::Size& size,
+      const absl::optional<bool>& dark_background,
+      const absl::optional<bool>& is_folder)>;
+
   HoldingSpaceImage(const gfx::Size& max_size,
                     const base::FilePath& backing_file_path,
                     AsyncBitmapResolver async_bitmap_resolver);
+
+  HoldingSpaceImage(
+      const gfx::Size& max_size,
+      const base::FilePath& backing_file_path,
+      AsyncBitmapResolver async_bitmap_resolver,
+      PlaceholderImageSkiaResolver placeholder_image_skia_resolver);
+
   HoldingSpaceImage(const HoldingSpaceImage&) = delete;
   HoldingSpaceImage& operator=(const HoldingSpaceImage&) = delete;
   ~HoldingSpaceImage();
 
-  // Returns the maximum size required for a holding space item of `type`.
-  static gfx::Size GetMaxSizeForType(HoldingSpaceItem::Type type);
+  // Returns a placeholder resolver which creates an image corresponding to the
+  // file type of the provided `file_path`.
+  static PlaceholderImageSkiaResolver CreateDefaultPlaceholderImageSkiaResolver(
+      bool use_light_mode_as_default = false);
 
+  // Sets whether image invalidation should be done without delay. This makes it
+  // possible to disable invalidation throttling that reduces the number of
+  // async bitmap requests in production.
   static void SetUseZeroInvalidationDelayForTesting(bool value);
 
   bool operator==(const HoldingSpaceImage& rhs) const;
@@ -54,11 +76,13 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   // Returns the underlying `gfx::ImageSkia`. If `size` is omitted, the
   // `max_size_` passed in the constructor is used. If `size` is present, it
   // must be less than or equal to the `max_size_` passed in the constructor in
-  // order to prevent pixelation that would otherwise occur due to upscaling.
-  // Note that the image source may be dynamically updated, so UI classes should
-  // observe and react to updates.
+  // order to prevent pixelation that would otherwise occur due to upscaling. If
+  // `dark_background` is `true`, file type icons will use lighter foreground
+  // colors to ensure sufficient contrast. Note that the image source may be
+  // dynamically updated, so UI classes should observe and react to updates.
   gfx::ImageSkia GetImageSkia(
-      const base::Optional<gfx::Size>& size = base::nullopt) const;
+      const absl::optional<gfx::Size>& size = absl::nullopt,
+      bool dark_background = false) const;
 
   // Creates new image skia for the item, and thus invalidates currently loaded
   // representation. When the image is requested next time, the image
@@ -98,7 +122,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceImage {
   const gfx::Size max_size_;
   base::FilePath backing_file_path_;
   AsyncBitmapResolver async_bitmap_resolver_;
-  base::Optional<base::File::Error> async_bitmap_resolver_error_;
+  absl::optional<base::File::Error> async_bitmap_resolver_error_;
+  PlaceholderImageSkiaResolver placeholder_image_skia_resolver_;
 
   gfx::ImageSkia image_skia_;
   gfx::ImageSkia placeholder_;

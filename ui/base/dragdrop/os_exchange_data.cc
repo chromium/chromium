@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/pickle.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
@@ -32,6 +33,14 @@ void OSExchangeData::MarkOriginatedFromRenderer() {
 
 bool OSExchangeData::DidOriginateFromRenderer() const {
   return provider_->DidOriginateFromRenderer();
+}
+
+void OSExchangeData::MarkAsFromPrivileged() {
+  provider_->MarkAsFromPrivileged();
+}
+
+bool OSExchangeData::IsFromPrivileged() const {
+  return provider_->IsFromPrivileged();
 }
 
 void OSExchangeData::SetString(const std::u16string& data) {
@@ -91,6 +100,10 @@ bool OSExchangeData::HasFile() const {
   return provider_->HasFile();
 }
 
+bool OSExchangeData::HasFileContents() const {
+  return provider_->HasFileContents();
+}
+
 bool OSExchangeData::HasCustomFormat(const ClipboardFormatType& format) const {
   return provider_->HasCustomFormat(format);
 }
@@ -102,10 +115,8 @@ bool OSExchangeData::HasAnyFormat(
     return true;
   if ((formats & URL) != 0 && HasURL(FilenameToURLPolicy::CONVERT_FILENAMES))
     return true;
-#if defined(OS_WIN)
   if ((formats & FILE_CONTENTS) != 0 && provider_->HasFileContents())
     return true;
-#endif
 #if defined(USE_AURA)
   if ((formats & HTML) != 0 && provider_->HasHtml())
     return true;
@@ -119,7 +130,6 @@ bool OSExchangeData::HasAnyFormat(
   return false;
 }
 
-#if defined(OS_WIN)
 void OSExchangeData::SetFileContents(const base::FilePath& filename,
                                      const std::string& file_contents) {
   provider_->SetFileContents(filename, file_contents);
@@ -130,6 +140,7 @@ bool OSExchangeData::GetFileContents(base::FilePath* filename,
   return provider_->GetFileContents(filename, file_contents);
 }
 
+#if BUILDFLAG(IS_WIN)
 bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }

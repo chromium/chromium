@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/error_reporting/constants.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Per the memfd_create man page, we need _GNU_SOURCE
 #ifndef _GNU_SOURCE
@@ -76,12 +79,38 @@ base::File GetMemfdOrTempFile(base::ScopedClosureRunner& cleanup,
                 << output_path.value();
 
   // Need to actually delete the temp file once we're done.
-  cleanup.ReplaceClosure(
-      base::BindOnce(base::GetDeleteFileCallback(), std::move(output_path)));
+  cleanup.ReplaceClosure(base::GetDeleteFileCallback(std::move(output_path)));
   return base::FILEToFile(output_file.release());
 }
 
 }  // namespace
+
+// Called after giving crash_reporter time to finish. If crash_reporter is
+// taking too long, kills it. Either way, triggers the callbacks once
+// crash_reporter is done.
+void ChromeJsErrorReportProcessor::WaitForCrashReporter(
+    base::Process process,
+    base::Time process_creation_time,
+    base::ScopedClosureRunner file_cleanup,
+    base::ScopedClosureRunner external_callback_runner) {
+  int return_code = 0;
+  bool process_done =
+      process.WaitForExitWithTimeout(base::Seconds(0), &return_code);
+
+  if (process_done) {
+    if (return_code != 0) {
+      LOG(WARNING) << "crash_reporter subprocess failed with return value "
+                   << return_code
+                   << (return_code == -1 ? " or maybe crashed" : "");
+    }
+    return;
+  }
+
+  // Kill the stuck process to avoid zombies.
+  LOG(WARNING) << "crash_reporter failed to complete within "
+               << maximium_wait_for_crash_reporter_;
+  process.Terminate(0, false /*wait*/);
+}
 
 std::vector<std::string>
 ChromeJsErrorReportProcessor::GetCrashReporterArgvStart() {
@@ -90,7 +119,7 @@ ChromeJsErrorReportProcessor::GetCrashReporterArgvStart() {
 
 std::string ChromeJsErrorReportProcessor::ParamsToCrashReporterString(
     const ParameterMap& params,
-    const base::Optional<std::string>& stack_trace) {
+    const absl::optional<std::string>& stack_trace) {
   std::string result;
   for (const auto& param : params) {
     std::string key = param.first;
@@ -112,7 +141,8 @@ std::string ChromeJsErrorReportProcessor::ParamsToCrashReporterString(
 
 void ChromeJsErrorReportProcessor::SendReportViaCrashReporter(
     ParameterMap params,
-    base::Optional<std::string> stack_trace) {
+    absl::optional<std::string> stack_trace,
+    base::ScopedClosureRunner callback_runner) {
   base::ScopedClosureRunner cleanup;
   base::File output(GetMemfdOrTempFile(cleanup, force_non_memfd_for_test_));
   if (!output.IsValid()) {
@@ -146,31 +176,26 @@ void ChromeJsErrorReportProcessor::SendReportViaCrashReporter(
     return;
   }
 
-  {
-    base::ScopedAllowBaseSyncPrimitives allow_wait_for_exit;
-    // Wait for crash_reporter to finish. We need to wait for it to finish
-    // before we delete the temporary files that may have been created in
-    // GetMemfdOrTempFile().
-    int return_code = 0;
-    constexpr base::TimeDelta kMaximumWait = base::TimeDelta::FromMinutes(1);
-    if (process.WaitForExitWithTimeout(kMaximumWait, &return_code)) {
-      if (return_code != 0) {
-        LOG(WARNING) << "crash_reporter subprocess failed with return value "
-                     << return_code
-                     << (return_code == -1 ? " or maybe crashed" : "");
-      }
-    } else {
-      // Kill the stuck process to avoid zombies.
-      LOG(WARNING) << "crash_reporter failed to complete within "
-                   << kMaximumWait;
-      process.Terminate(0, false /*wait*/);
-    }
-  }
+  // Wait for crash_reporter to finish. We need to wait for it to finish before
+  // we delete the temporary files that may have been created in
+  // GetMemfdOrTempFile(). (Also, it makes the unit tests much easier.)
+  // However, we can't just
+  // process.WaitForExitWithTimeout(maximium_wait_for_crash_reporter_) here
+  // because it causes shutdown hangs if the user tries to exit right after the
+  // crash_reporter is spawned. So call a delayed task to clean up after
+  // crash_reporter is finished.
+  base::Time process_creation_time = process.CreationTime();
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ChromeJsErrorReportProcessor::WaitForCrashReporter, this,
+                     std::move(process), process_creation_time,
+                     std::move(cleanup), std::move(callback_runner)),
+      maximium_wait_for_crash_reporter_);
 }
 
 void ChromeJsErrorReportProcessor::SendReport(
     ParameterMap params,
-    base::Optional<std::string> stack_trace,
+    absl::optional<std::string> stack_trace,
     bool send_to_production_servers,
     base::ScopedClosureRunner callback_runner,
     base::Time report_time,
@@ -179,9 +204,11 @@ void ChromeJsErrorReportProcessor::SendReport(
   // get more metadata and to keep all the consent logic in one place. We need
   // to do file I/O, so over to a blockable thread for the send and then back to
   // the UI thread for the finished callback.
-  base::ThreadPool::PostTaskAndReply(
+  base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ChromeJsErrorReportProcessor::SendReportViaCrashReporter,
-                     this, std::move(params), std::move(stack_trace)),
-      callback_runner.Release());
+      base::BindOnce(
+          &ChromeJsErrorReportProcessor::SendReportViaCrashReporter, this,
+          std::move(params), std::move(stack_trace),
+          base::ScopedClosureRunner(base::BindPostTask(
+              content::GetUIThreadTaskRunner({}), callback_runner.Release()))));
 }

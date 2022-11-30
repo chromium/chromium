@@ -1,269 +1,86 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("../../tools/optimize_webui.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//ui/webui/webui_features.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+assert(!is_chromeos_ash)
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
-
-  optimize_webui("build") {
-    host = "profile-picker"
-    js_module_in_files = [
-      "profile_picker.js",
-      "lazy_load.js",
-    ]
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    out_manifest = "$target_gen_dir/$build_manifest"
-    js_out_files = [
-      "profile_picker.rollup.js",
-      "lazy_load.rollup.js",
-      "shared.rollup.js",
-    ]
-
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-      "../../../../../ui/webui/resources:preprocess",
-    ]
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-    ]
-  }
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "profile_picker"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
+
+  static_files = [
     "profile_picker.html",
     "images/left_banner_image.svg",
     "images/right_banner_image.svg",
     "images/dark_mode_left_banner_image.svg",
     "images/dark_mode_right_banner_image.svg",
-    "profile_creation_flow/images/banner_dark_image.svg",
-    "profile_creation_flow/images/banner_light_image.svg",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [
+  web_component_files = [
+    "profile_card_menu.ts",
+    "profile_card.ts",
+    "profile_creation_flow/local_profile_customization.ts",
+    "profile_creation_flow/profile_type_choice.ts",
+    "profile_picker_app.ts",
+    "profile_picker_main_view.ts",
+    "profile_switch.ts",
+  ]
+
+  if (is_chromeos_lacros) {
+    web_component_files +=
+        [ "profile_creation_flow/account_selection_lacros.ts" ]
+  }
+
+  non_web_component_files = [
+    "ensure_lazy_loaded.ts",
+    "lazy_load.ts",
+    "manage_profiles_browser_proxy.ts",
+    "navigation_mixin.ts",
+    "policy_helper.ts",
+    "profile_picker.ts",
+  ]
+
+  icons_html_files = [ "icons.html" ]
+
+  css_files = [
+    "profile_creation_flow/profile_creation_shared.css",
+    "profile_picker_shared.css",
+  ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+  ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "profile-picker"
+    optimize_webui_in_files = [
+      "profile_picker.js",
+      "lazy_load.js",
+    ]
+    optimize_webui_out_files = [
+      "profile_picker.rollup.js",
+      "lazy_load.rollup.js",
+      "shared.rollup.js",
+    ]
+    optimize_webui_excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+    ]
+    optimize_webui_resource_paths_rewrites = [
       "profile_picker.rollup.js|profile_picker.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
-  } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
   }
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "profile_picker.js",
-    "navigation_behavior.js",
-    "policy_helper.js",
-    "icons.js",
-    "lazy_load.js",
-    "ensure_lazy_loaded.js",
-    "manage_profiles_browser_proxy.js",
-  ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "profile_picker_app.js",
-    "profile_picker_main_view.js",
-    "profile_card.js",
-    "profile_card_menu.js",
-    "profile_creation_flow/profile_type_choice.js",
-    "profile_creation_flow/local_profile_customization.js",
-    "profile_picker_shared_css.js",
-    "profile_creation_flow/shared_css.js",
-    "profile_switch.js",
-  ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/profile_picker_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/profile_picker_resources.h",
-    "grit/profile_picker_resources_map.cc",
-    "grit/profile_picker_resources_map.h",
-    "profile_picker_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-group("closure_compile") {
-  deps = [
-    ":profile_picker_files",
-    "profile_creation_flow:closure_compile",
-  ]
-}
-
-js_type_check("profile_picker_files") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=../../chrome/browser/resources/signin/profile_picker/",
-        "js_module_root=./gen/chrome/browser/resources/signin/profile_picker/",
-      ]
-  deps = [
-    ":ensure_lazy_loaded",
-    ":lazy_load",
-    ":navigation_behavior",
-    ":policy_helper",
-    ":profile_card",
-    ":profile_card_menu",
-    ":profile_picker",
-    ":profile_picker_app",
-    ":profile_picker_main_view",
-    ":profile_switch",
-  ]
-}
-
-js_library("profile_picker") {
-  deps = [
-    ":ensure_lazy_loaded",
-    ":manage_profiles_browser_proxy",
-    ":navigation_behavior",
-    ":profile_picker_app",
-  ]
-}
-
-js_library("ensure_lazy_loaded") {
-  deps = [ ":lazy_load" ]
-}
-
-js_library("lazy_load") {
-  deps = [
-    ":profile_switch",
-    "profile_creation_flow:local_profile_customization",
-    "profile_creation_flow:profile_type_choice",
-  ]
-}
-
-js_library("profile_picker_main_view") {
-  deps = [
-    ":manage_profiles_browser_proxy",
-    ":navigation_behavior",
-    ":profile_card",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigation_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("profile_picker_app") {
-  deps = [
-    ":ensure_lazy_loaded",
-    ":navigation_behavior",
-    ":profile_picker_main_view",
-    ":profile_switch",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
-  ]
-}
-
-js_library("profile_card") {
-  deps = [
-    ":manage_profiles_browser_proxy",
-    ":profile_card_menu",
-    "//third_party/polymer/v3_0/components-chromium/paper-tooltip:paper-tooltip",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("profile_card_menu") {
-  deps = [
-    ":manage_profiles_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("manage_profiles_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("policy_helper") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("profile_switch") {
-  deps = [ ":manage_profiles_browser_proxy" ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "profile_creation_flow:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "profile_picker_app.js",
-    "profile_picker_main_view.js",
-    "profile_card.js",
-    "profile_card_menu.js",
-    "profile_picker_shared_css.js",
-    "profile_switch.js",
-  ]
 }

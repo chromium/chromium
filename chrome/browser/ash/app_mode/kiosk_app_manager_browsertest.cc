@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -26,17 +24,17 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -52,8 +50,6 @@ using content::BrowserThread;
 namespace ash {
 
 namespace {
-
-using ::chromeos::InstallAttributes;
 
 // An app to test local fs data persistence across app update. V1 app writes
 // data into local fs. V2 app reads and verifies the data.
@@ -105,15 +101,15 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& id,
     const std::string& required_platform_version) {
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", version);
-  std::unique_ptr<base::ListValue> scripts(new base::ListValue);
-  scripts->AppendString("main.js");
-  value.Set("app.background.scripts", std::move(scripts));
-  value.SetBoolean("kiosk_enabled", true);
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
+  base::ListValue scripts;
+  scripts.Append("main.js");
+  value.SetPath("app.background.scripts", std::move(scripts));
+  value.SetBoolKey("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
-    value.SetString("kiosk.required_platform_version",
-                    required_platform_version);
+    value.SetStringPath("kiosk.required_platform_version",
+                        required_platform_version);
   }
 
   std::string err;
@@ -124,19 +120,14 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
   return app;
 }
 
-void SetPlatformVersion(const std::string& platform_version) {
-  const std::string lsb_release = base::StringPrintf(
-      "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-  base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, base::Time::Now());
-}
-
 class AppDataLoadWaiter : public KioskAppManagerObserver {
  public:
   AppDataLoadWaiter(KioskAppManager* manager, int expected_data_change)
       : manager_(manager), expected_data_change_(expected_data_change) {
     manager_->AddObserver(this);
   }
-
+  AppDataLoadWaiter(const AppDataLoadWaiter&) = delete;
+  AppDataLoadWaiter& operator=(const AppDataLoadWaiter&) = delete;
   ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
@@ -194,14 +185,14 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   int data_change_count_ = 0;
   int expected_data_change_;
   int data_load_failure_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDataLoadWaiter);
 };
 
 // A class to wait for ExternalCache to finish putting the extension crx.
 class ExternalCachePutWaiter {
  public:
   ExternalCachePutWaiter() {}
+  ExternalCachePutWaiter(const ExternalCachePutWaiter&) = delete;
+  ExternalCachePutWaiter& operator=(const ExternalCachePutWaiter&) = delete;
   ~ExternalCachePutWaiter() {}
 
   void Wait() {
@@ -224,8 +215,6 @@ class ExternalCachePutWaiter {
   std::unique_ptr<base::RunLoop> run_loop_;
   bool quit_ = false;
   bool success_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCachePutWaiter);
 };
 
 }  // namespace
@@ -236,6 +225,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
       : settings_helper_(false),
         fake_cws_(new FakeCWS()),
         verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
+  KioskAppManagerTest(const KioskAppManagerTest&) = delete;
+  KioskAppManagerTest& operator=(const KioskAppManagerTest&) = delete;
   ~KioskAppManagerTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -298,8 +289,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         std::make_unique<InstallAttributes::LockResult>(
             InstallAttributes::LOCK_NOT_READY);
     base::RunLoop run_loop;
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->GetInstallAttributes()->LockDevice(
         policy::DEVICE_MODE_ENTERPRISE, "domain.com",
         std::string(),  // realm
@@ -323,32 +314,30 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     base::FilePath icon_path =
         CopyFileToTempDir(data_dir.AppendASCII(icon_file_name));
 
-    std::unique_ptr<base::DictionaryValue> apps_dict(new base::DictionaryValue);
-    apps_dict->SetString(app_id + ".name", app_name);
-    apps_dict->SetString(app_id + ".icon", icon_path.MaybeAsASCII());
-    apps_dict->SetString(app_id + ".required_platform_version",
-                         required_platform_version);
+    base::DictionaryValue apps_dict;
+    apps_dict.SetStringPath(app_id + ".name", app_name);
+    apps_dict.SetStringPath(app_id + ".icon", icon_path.MaybeAsASCII());
+    apps_dict.SetStringPath(app_id + ".required_platform_version",
+                            required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
-    DictionaryPrefUpdate dict_update(local_state,
+    ScopedDictPrefUpdate dict_update(local_state,
                                      KioskAppManager::kKioskDictionaryName);
     dict_update->Set(KioskAppDataBase::kKeyApps, std::move(apps_dict));
 
     // Make the app appear in device settings.
-    base::ListValue device_local_accounts;
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
+    base::Value::List device_local_accounts;
+    base::Value::Dict entry;
     // Fake an account id. Note this needs to match GenerateKioskAppAccountId
     // in kiosk_app_manager.cc to make SetAutoLaunchApp work with the
     // existing app entry created here.
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                  base::Value(app_id + "@kiosk-apps"));
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyType,
-                  base::Value(policy::DeviceLocalAccount::TYPE_KIOSK_APP));
-    entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                  base::Value(app_id));
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyId, app_id + "@kiosk-apps");
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+              policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    entry.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId, app_id);
     device_local_accounts.Append(std::move(entry));
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
-                                 device_local_accounts);
+                                 base::Value(std::move(device_local_accounts)));
   }
 
   bool GetCachedCrx(const std::string& app_id,
@@ -381,30 +370,31 @@ class KioskAppManagerTest : public InProcessBrowserTest {
 
     // Check data is cached in local state correctly.
     PrefService* local_state = g_browser_process->local_state();
-    const base::DictionaryValue* dict =
-        local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
+    const base::Value::Dict& dict =
+        local_state->GetDict(KioskAppManager::kKioskDictionaryName);
 
-    std::string name;
     const std::string name_key = "apps." + app_id + ".name";
-    EXPECT_TRUE(dict->GetString(name_key, &name));
-    EXPECT_EQ(expected_app_name, name);
+    const std::string* name = dict.FindStringByDottedPath(name_key);
+    ASSERT_TRUE(name);
+    EXPECT_EQ(expected_app_name, *name);
 
-    std::string icon_path_string;
     const std::string icon_path_key = "apps." + app_id + ".icon";
-    EXPECT_TRUE(dict->GetString(icon_path_key, &icon_path_string));
+    const std::string* icon_path_string =
+        dict.FindStringByDottedPath(icon_path_key);
+    ASSERT_TRUE(icon_path_string);
 
-    std::string required_platform_version;
     const std::string required_platform_version_key =
         "apps." + app_id + ".required_platform_version";
-    EXPECT_TRUE(dict->GetString(required_platform_version_key,
-                                &required_platform_version));
-    EXPECT_EQ(expected_required_platform_version, required_platform_version);
+    const std::string* required_platform_version =
+        dict.FindStringByDottedPath(required_platform_version_key);
+    ASSERT_TRUE(required_platform_version);
+    EXPECT_EQ(expected_required_platform_version, *required_platform_version);
 
     base::FilePath expected_icon_path;
     manager()->GetKioskAppIconCacheDir(&expected_icon_path);
     expected_icon_path =
         expected_icon_path.AppendASCII(app_id).AddExtension(".png");
-    EXPECT_EQ(expected_icon_path.value(), icon_path_string);
+    EXPECT_EQ(expected_icon_path.value(), *icon_path_string);
   }
 
   void RunAddNewAppTest(const std::string& id,
@@ -472,8 +462,6 @@ class KioskAppManagerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeCWS> fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, Basic) {
@@ -556,15 +544,16 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
   SetExistingApp("app_1", "Cached App1 Name", "red16x16.png", "");
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
-      local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  const base::DictionaryValue* apps_dict;
-  EXPECT_TRUE(dict->GetDictionary(KioskAppDataBase::kKeyApps, &apps_dict));
-  EXPECT_TRUE(apps_dict->HasKey("app_1"));
+  const base::Value::Dict& dict =
+      local_state->GetDict(KioskAppManager::kKioskDictionaryName);
+  const base::Value::Dict* apps_dict =
+      dict.FindDict(KioskAppDataBase::kKeyApps);
+  EXPECT_TRUE(apps_dict);
+  EXPECT_TRUE(apps_dict->contains("app_1"));
 
   manager()->ClearAppData("app_1");
 
-  EXPECT_FALSE(apps_dict->HasKey("app_1"));
+  EXPECT_FALSE(apps_dict->contains("app_1"));
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {
@@ -999,7 +988,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliant) {
-  SetPlatformVersion("1234.1.2");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.1.2", base::Time::Now());
 
   EXPECT_TRUE(manager()->IsPlatformCompliant(""));
   EXPECT_TRUE(manager()->IsPlatformCompliant("1234"));
@@ -1016,7 +1006,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliant) {
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
-  SetPlatformVersion("1234.1.2");
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_RELEASE_VERSION=1234.1.2", base::Time::Now());
 
   const char kAppId[] = "app_id";
   SetExistingApp(kAppId, "App Name", "red16x16.png", "");
@@ -1034,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
       {"1234.1.1", false}, {"1234.1.3", false},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     scoped_refptr<extensions::Extension> app = MakeKioskApp(
         "App Name", "1.0", kAppId, kTestCases[i].required_platform_version);
     EXPECT_EQ(kTestCases[i].expected_compliant,
@@ -1045,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, IsPlatformCompliantWithApp) {
 
   // If an app is not auto launched with zero delay, it is always compliant.
   const char kNoneAutoLaucnhedAppId[] = "none_auto_launch_app_id";
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     scoped_refptr<extensions::Extension> app =
         MakeKioskApp("App Name", "1.0", kNoneAutoLaucnhedAppId,
                      kTestCases[i].required_platform_version);

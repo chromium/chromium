@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (service_uuid) {
-    base::Optional<LeScanResult::UuidList> all_uuids =
+    absl::optional<LeScanResult::UuidList> all_uuids =
         scan_result.AllServiceUuids();
     if (!all_uuids) {
       return false;
@@ -41,7 +41,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (!name && regex_name) {
-    base::Optional<std::string> scan_name = scan_result.Name();
+    absl::optional<std::string> scan_name = scan_result.Name();
     if (!scan_name || !RE2::PartialMatch(*scan_name, *regex_name)) {
       return false;
     }

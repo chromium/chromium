@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "crypto/openssl_util.h"
@@ -27,8 +26,11 @@ class SSLPlatformKeyTaskRunner {
   SSLPlatformKeyTaskRunner() : worker_thread_("Platform Key Thread") {
     base::Thread::Options options;
     options.joinable = false;
-    worker_thread_.StartWithOptions(options);
+    worker_thread_.StartWithOptions(std::move(options));
   }
+
+  SSLPlatformKeyTaskRunner(const SSLPlatformKeyTaskRunner&) = delete;
+  SSLPlatformKeyTaskRunner& operator=(const SSLPlatformKeyTaskRunner&) = delete;
 
   ~SSLPlatformKeyTaskRunner() = default;
 
@@ -38,8 +40,6 @@ class SSLPlatformKeyTaskRunner {
 
  private:
   base::Thread worker_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyTaskRunner);
 };
 
 base::LazyInstance<SSLPlatformKeyTaskRunner>::Leaky g_platform_key_task_runner =
@@ -87,19 +87,19 @@ bool GetClientCertInfo(const X509Certificate* certificate,
   return true;
 }
 
-base::Optional<std::vector<uint8_t>> AddPSSPadding(
+absl::optional<std::vector<uint8_t>> AddPSSPadding(
     EVP_PKEY* pubkey,
     const EVP_MD* md,
     base::span<const uint8_t> digest) {
   RSA* rsa = EVP_PKEY_get0_RSA(pubkey);
   if (!rsa) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::vector<uint8_t> ret(RSA_size(rsa));
   if (digest.size() != EVP_MD_size(md) ||
       !RSA_padding_add_PKCS1_PSS_mgf1(rsa, ret.data(), digest.data(), md, md,
                                       -1 /* salt length is digest length */)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return ret;
 }

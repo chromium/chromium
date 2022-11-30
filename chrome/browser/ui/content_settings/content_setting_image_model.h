@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
@@ -52,6 +52,9 @@ class ContentSettingImageModel {
 
     NUM_IMAGE_TYPES
   };
+
+  ContentSettingImageModel(const ContentSettingImageModel&) = delete;
+  ContentSettingImageModel& operator=(const ContentSettingImageModel&) = delete;
 
   virtual ~ContentSettingImageModel() {}
 
@@ -98,6 +101,7 @@ class ContentSettingImageModel {
   // Returns the resource ID of a string to show when the icon appears, or 0 if
   // we don't wish to show anything.
   int explanatory_string_id() const { return explanatory_string_id_; }
+  int AccessibilityAnnouncementStringId() const;
   const std::u16string& get_tooltip() const { return tooltip_; }
   const gfx::VectorIcon* get_icon_badge() const { return icon_badge_; }
 
@@ -114,7 +118,12 @@ class ContentSettingImageModel {
   bool ShouldShowPromo(content::WebContents* contents);
   virtual void SetPromoWasShown(content::WebContents* contents);
 
+  bool IsMacRestoreLocationPermissionExperimentActive();
+
  protected:
+  // Note: image_type_should_notify_accessibility by itself does not guarantee
+  // the item will be read; it also needs a valid explanatory_text_id or
+  // accessibility_string_id.
   explicit ContentSettingImageModel(
       ImageType type,
       bool image_type_should_notify_accessibility = false);
@@ -134,6 +143,8 @@ class ContentSettingImageModel {
     icon_badge_ = &badge;
   }
 
+  void set_accessibility_string_id(int id) { accessibility_string_id_ = id; }
+
   void set_tooltip(const std::u16string& tooltip) { tooltip_ = tooltip; }
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
@@ -145,15 +156,15 @@ class ContentSettingImageModel {
  private:
   bool is_visible_ = false;
 
-  const gfx::VectorIcon* icon_;
-  const gfx::VectorIcon* icon_badge_;
+  raw_ptr<const gfx::VectorIcon> icon_;
+  raw_ptr<const gfx::VectorIcon> icon_badge_;
   int explanatory_string_id_ = 0;
+  int accessibility_string_id_ = 0;
   std::u16string tooltip_;
   const ImageType image_type_;
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModel);
 };
 
 // A subclass for an image model tied to a single content type.
@@ -164,6 +175,11 @@ class ContentSettingSimpleImageModel : public ContentSettingImageModel {
       ContentSettingsType content_type,
       bool image_type_should_notify_accessibility = false);
 
+  ContentSettingSimpleImageModel(const ContentSettingSimpleImageModel&) =
+      delete;
+  ContentSettingSimpleImageModel& operator=(
+      const ContentSettingSimpleImageModel&) = delete;
+
   // ContentSettingImageModel implementation.
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
@@ -173,22 +189,22 @@ class ContentSettingSimpleImageModel : public ContentSettingImageModel {
 
  private:
   ContentSettingsType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSimpleImageModel);
 };
 
 class ContentSettingFramebustBlockImageModel : public ContentSettingImageModel {
  public:
   ContentSettingFramebustBlockImageModel();
 
+  ContentSettingFramebustBlockImageModel(
+      const ContentSettingFramebustBlockImageModel&) = delete;
+  ContentSettingFramebustBlockImageModel& operator=(
+      const ContentSettingFramebustBlockImageModel&) = delete;
+
   bool UpdateAndGetVisibility(content::WebContents* web_contents) override;
 
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingFramebustBlockImageModel);
 };
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile_base.h"
+#include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/security_capabilities.h"
 
@@ -42,8 +42,8 @@ class StartupInformationHelper {
   void AddInheritedHandle(HANDLE handle);
   // Create PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES and
   //        PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY
-  // based on |profile|. |profile| should be valid.
-  void SetAppContainerProfile(scoped_refptr<AppContainerProfileBase> profile);
+  // based on |container|. |container| should be valid.
+  void SetAppContainer(scoped_refptr<AppContainer> container);
   // Creates PROC_THREAD_ATTRIBUTE_JOB_LIST with |job_handle|. Not valid before
   // Windows 10.
   void AddJobToAssociate(HANDLE job_handle);
@@ -69,7 +69,7 @@ class StartupInformationHelper {
   int CountAttributes();
 
   // Fields that are not passed into CreateProcessAsUserW().
-  scoped_refptr<AppContainerProfileBase> app_container_profile_ = nullptr;
+  scoped_refptr<AppContainer> app_container_;
   bool restrict_child_process_creation_ = false;
   HANDLE stdout_handle_ = INVALID_HANDLE_VALUE;
   HANDLE stderr_handle_ = INVALID_HANDLE_VALUE;
@@ -87,7 +87,7 @@ class StartupInformationHelper {
   DWORD all_applications_package_policy_ = 0;
   std::vector<HANDLE> inherited_handle_list_;
   std::vector<HANDLE> job_handle_list_;
-  std::unique_ptr<SecurityCapabilities> security_capabilities_ = nullptr;
+  std::unique_ptr<SecurityCapabilities> security_capabilities_;
 };
 }  // namespace sandbox
 

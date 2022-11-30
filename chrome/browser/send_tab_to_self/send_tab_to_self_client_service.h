@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -27,6 +27,12 @@ class SendTabToSelfClientService : public KeyedService,
                                    public SendTabToSelfModelObserver {
  public:
   SendTabToSelfClientService(Profile* profile, SendTabToSelfModel* model);
+
+  SendTabToSelfClientService(const SendTabToSelfClientService&) = delete;
+  SendTabToSelfClientService& operator=(const SendTabToSelfClientService&) =
+      delete;
+
+  void Shutdown() override;
 
   // Keeps track of when the model is loaded so that updates to the
   // model can be pushed afterwards.
@@ -51,12 +57,11 @@ class SendTabToSelfClientService : public KeyedService,
 
  private:
   // Owned by the SendTabToSelfSyncService which should outlive this class
-  SendTabToSelfModel* model_;
+  raw_ptr<SendTabToSelfModel> model_;
   // Singleton instance not owned by this class
-  ReceivingUiHandlerRegistry* registry_;
+  raw_ptr<ReceivingUiHandlerRegistry> registry_;
   // Profile for which this service is associated.
-  Profile* profile_;
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfClientService);
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace send_tab_to_self

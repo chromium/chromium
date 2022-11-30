@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace chrome_cleaner {
@@ -15,7 +16,7 @@ MessageBuilder::MessageItem::MessageItem(base::WStringPiece value)
     : value_(value) {}
 
 MessageBuilder::MessageItem::MessageItem(base::StringPiece value)
-    : value_(base::UTF8ToWide(value.as_string())) {}
+    : value_(base::UTF8ToWide(value)) {}
 
 MessageBuilder::MessageItem::MessageItem(int value)
     : value_(base::NumberToWString(value)) {}

@@ -1,6 +1,8 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+USE_PYTHON3 = True
 
 
 def _CommonChecks(input_api, output_api):
@@ -21,11 +23,10 @@ def _CheckOwnershipForContribSubDir(sub_dir, input_api, output_api):
 
 
 def _CheckContribDir(input_api, output_api):
-  """ Check to make sure that:
-    1) tools/perf/contrib/ contains only directories, except __init__.py,
-    README.md, and PRESUBMIT.py file
-    2) Every subdirectory in tools/perf/contrib/ must have an OWNERS file with
-    at least two OWNERS.
+  """Check that:
+  - tools/perf/contrib/ contains only directories (except for
+    __init__.py, README.md, and PRESUBMIT.py)
+  - Each directory under tools/perf/contrib has an OWNERS file.
   """
   results = []
   contrib_dir = input_api.PresubmitLocalPath()
@@ -41,16 +42,19 @@ def _CheckContribDir(input_api, output_api):
       invalid_contrib_files.append(file_path)
 
   for f in input_api.os_listdir(contrib_dir):
+    if f == '__pycache__':
+      continue
     path = input_api.os_path.join(contrib_dir, f)
     if input_api.os_path.isdir(path):
       results.extend(
           _CheckOwnershipForContribSubDir(path, input_api, output_api))
 
   if invalid_contrib_files:
-    results.append(output_api.PresubmitError(
-        'You cannot add files to top level of contrib directory. '
-        'Please moves these files to a sub directory:\n %s' %
-        '\n'.join(invalid_contrib_files)))
+    results.append(
+        output_api.PresubmitError(
+            'You cannot add files to the top level of a contrib directory. '
+            'Please move these files to a sub directory:\n %s' %
+            '\n'.join(invalid_contrib_files)))
   return results
 
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -25,9 +25,12 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
     kCenter
   };
 
-  // Constructs a new rounded image view with rounded corners of radius
-  // |corner_radius|.
+  RoundedImageView();
   RoundedImageView(int corner_radius, Alignment alignment);
+
+  RoundedImageView(const RoundedImageView&) = delete;
+  RoundedImageView& operator=(const RoundedImageView&) = delete;
+
   ~RoundedImageView() override;
 
   // Set the image that should be displayed. The image contents is copied to the
@@ -42,6 +45,9 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
                       int top_right,
                       int bottom_right,
                       int bottom_left);
+
+  // Sets all radii of the corners collectively.
+  void SetCornerRadius(int corner_radius);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -59,10 +65,14 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   int corner_radius_[4];
 
   const Alignment alignment_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundedImageView);
 };
 
+BEGIN_VIEW_BUILDER(ASH_PUBLIC_EXPORT, RoundedImageView, views::View)
+VIEW_BUILDER_PROPERTY(int, CornerRadius)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_PUBLIC_EXPORT, ash::RoundedImageView)
 
 #endif  // ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_

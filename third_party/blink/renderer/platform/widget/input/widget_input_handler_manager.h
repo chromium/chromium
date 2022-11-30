@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,18 @@
 #include <atomic>
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 
 namespace cc {
@@ -30,10 +32,10 @@ struct PresentationFeedback;
 
 namespace blink {
 namespace scheduler {
-class WebWidgetScheduler;
-class WebThreadScheduler;
+class WidgetScheduler;
 }  // namespace scheduler
 
+class CompositorThreadScheduler;
 class SynchronousCompositorRegistry;
 class SynchronousCompositorProxyRegistry;
 class WebInputEventAttribution;
@@ -54,18 +56,28 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kBeforeLifecycle = 0,
     // Input is before commit
     kBeforeCommit = 1,
-    // Input comes only after commit
-    kAfterCommit = 2,
-    kMaxValue = kAfterCommit
+    // Input comes before first paint
+    kBeforeFirstPaint = 2,
+    // Input comes only after first paint
+    kAfterFirstPaint = 3,
+    kMaxValue = kAfterFirstPaint
   };
 
-  // For use in bitfields to keep track of what, if anything, the rendering
-  // pipeline is currently deferring. Input is suppressed if anything is
-  // being deferred, and we use the combination of states to correctly report
-  // UMA for input that is suppressed.
-  enum class RenderingDeferralBits {
-    kDeferMainFrameUpdates = 1,
-    kDeferCommits = 2
+  // For use in bitfields to keep track of why we should keep suppressing input
+  // events. Maybe the rendering pipeline is currently deferring something, or
+  // we are still waiting for the user to see some non empty paint. And we use
+  // the combination of states to correctly report UMA for input that is
+  // suppressed.
+  enum class SuppressingInputEventsBits {
+    // if set, suppress events because pipeline is deferring main frame updates
+    kDeferMainFrameUpdates = 1 << 0,
+    // if set, suppress events because pipeline is deferring commits
+    kDeferCommits = 1 << 1,
+    // if set, we have not painted a main frame from the current navigation yet
+    kHasNotPainted = 1 << 2,
+    // if set, suppress events because pipeline has paused rendering (both main
+    // and compositor thread driven updates).
+    kRenderingPaused = 1 << 3,
   };
 
  public:
@@ -76,9 +88,14 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      scheduler::WebThreadScheduler* main_thread_scheduler,
-      bool needs_input_handler);
+      CompositorThreadScheduler* compositor_thread_scheduler,
+      scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
+      bool needs_input_handler,
+      bool allow_scroll_resampling);
+
+  WidgetInputHandlerManager(const WidgetInputHandlerManager&) = delete;
+  WidgetInputHandlerManager& operator=(const WidgetInputHandlerManager&) =
+      delete;
 
   void AddInterface(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver,
@@ -88,7 +105,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool HandleInputEvent(const WebCoalescedInputEvent& event,
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
+  void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
+
+  void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
@@ -107,6 +127,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       cc::TouchAction touch_action,
       uint32_t unique_touch_event_id,
       InputHandlerProxy::EventDisposition event_disposition) override;
+  bool AllowsScrollResampling() override { return allow_scroll_resampling_; }
 
   void ObserveGestureEventOnMainThread(
       const WebGestureEvent& gesture_event,
@@ -122,7 +143,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   mojom::blink::WidgetInputHandlerHost* GetWidgetInputHandlerHost();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
           control_host,
@@ -139,7 +160,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void WaitForInputProcessed(base::OnceClosure callback);
 
   // Called when the WidgetBase is notified of a navigation. Resets
-  // the renderer pipeline deferral status, and resets the UMA recorder for
+  // the suppressing of input events state, and resets the UMA recorder for
   // time of first input.
   void DidNavigate();
 
@@ -147,7 +168,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void OnDeferMainFrameUpdatesChanged(bool);
 
   // Called to inform us when the system starts or stops deferring commits.
-  void OnDeferCommitsChanged(bool);
+  void OnDeferCommitsChanged(bool defer_status, cc::PaintHoldingReason reason);
+
+  // Called to inform us when the system pauses or resumes rendering.
+  void OnPauseRenderingChanged(bool);
 
   // Allow tests, headless etc. to have input events processed before the
   // compositor is ready to commit frames.
@@ -161,10 +185,15 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   using ElementAtPointCallback = base::OnceCallback<void(uint64_t)>;
   void FindScrollTargetOnMainThread(const gfx::PointF& point,
                                     ElementAtPointCallback callback);
+  void SendDroppedPointerDownCounts();
 
   void ClearClient();
 
   MainThreadEventQueue* input_event_queue() { return input_event_queue_.get(); }
+
+  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
+    return main_thread_task_runner_.get();
+  }
 
  protected:
   friend class base::RefCountedThreadSafe<WidgetInputHandlerManager>;
@@ -176,8 +205,9 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      scheduler::WebThreadScheduler* main_thread_scheduler);
+      CompositorThreadScheduler* compositor_thread_scheduler,
+      scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
+      bool allow_scroll_resampling);
   void InitInputHandler();
   void InitOnInputHandlingThread(
       const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
@@ -217,7 +247,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       std::unique_ptr<WebCoalescedInputEvent> event,
       std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
       const WebInputEventAttribution& attribution,
-      std::unique_ptr<cc::EventMetrics> metrics);
+      std::unique_ptr<cc::EventMetrics> metrics,
+      mojom::blink::ScrollResultDataPtr scroll_result_data);
 
   // Similar to the above; this is used by the main thread input handler to
   // communicate back the result of handling the event. Note: this may be
@@ -225,10 +256,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // will be ACKed immediately when added to the main thread event queue.
   void DidHandleInputEventSentToMain(
       mojom::blink::WidgetInputHandler::DispatchEventCallback callback,
+      absl::optional<cc::TouchAction> touch_action_from_compositor,
       mojom::blink::InputEventResultState ack_state,
       const ui::LatencyInfo& latency_info,
       mojom::blink::DidOverscrollParamsPtr overscroll_params,
-      base::Optional<cc::TouchAction> touch_action);
+      absl::optional<cc::TouchAction> touch_action_from_main);
 
   // This method calls into DidHandleInputEventSentToMain but has a
   // slightly different signature. TODO(dtapuska): Remove this
@@ -240,7 +272,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       const ui::LatencyInfo& latency_info,
       std::unique_ptr<blink::InputHandlerProxy::DidOverscrollParams>
           overscroll_params,
-      base::Optional<cc::TouchAction> touch_action);
+      absl::optional<cc::TouchAction> touch_action);
 
   void ObserveGestureEventOnInputHandlingThread(
       const WebGestureEvent& gesture_event,
@@ -249,19 +281,25 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void HandleInputEventWithLatencyOnInputHandlingThread(
       std::unique_ptr<WebCoalescedInputEvent>);
 
+  // The kInputBlocking task runner is for tasks which are on the critical path
+  // of showing the effect of an already-received input event, and should be
+  // prioritized above handling new input.
+  enum class TaskRunnerType { kDefault = 0, kInputBlocking = 1 };
+
   // Returns the task runner for the thread that receives input. i.e. the
   // "Mojo-bound" thread.
-  const scoped_refptr<base::SingleThreadTaskRunner>& InputThreadTaskRunner()
-      const;
+  const scoped_refptr<base::SingleThreadTaskRunner>& InputThreadTaskRunner(
+      TaskRunnerType type = TaskRunnerType::kDefault) const;
 
   void LogInputTimingUMA();
+
+  void RecordMetricsForDroppedEventsBeforePaint(const base::TimeTicks&);
 
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
       frame_widget_input_handler_;
-  std::unique_ptr<scheduler::WebWidgetScheduler> widget_scheduler_;
-  scheduler::WebThreadScheduler* main_thread_scheduler_;
+  scoped_refptr<scheduler::WidgetScheduler> widget_scheduler_;
 
   // InputHandlerProxy is only interacted with on the compositor
   // thread.
@@ -274,9 +312,14 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Any thread can access these variables.
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      compositor_thread_default_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      compositor_thread_input_blocking_task_runner_;
 
-  base::Optional<cc::TouchAction> allowed_touch_action_;
+  // The touch action that InputHandlerProxy has asked us to allow. This should
+  // only be accessed on the compositor thread!
+  absl::optional<cc::TouchAction> compositor_allowed_touch_action_;
 
   // Callback used to respond to the WaitForInputProcessed Mojo message. This
   // callback is set from and must be invoked from the Mojo-bound thread (i.e.
@@ -290,18 +333,31 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // we definitely don't have a compositor thread.
   bool uses_input_handler_ = false;
 
-  // State tracking which parts of the rendering pipeline are currently
-  // deferred. We use this state to suppress all events until the user can see
-  // the content; that is, while rendering stages are being deferred and
-  // this value is zero.
+  // State tracking why we should keep suppressing input events, keeps track of
+  // which parts of the rendering pipeline are currently deferred, or whether
+  // we are waiting for the first non empty paint. We use this state to suppress
+  // all events while user has not seen first paint or rendering pipeline is
+  // deferring something.
   // Move events are still processed to allow tracking of mouse position.
   // Metrics also report the lifecycle state when the first non-move event is
   // seen.
-  // This is a bitfield, using the bit values from RenderingDeferralBits.
+  // This is a bitfield, using the bit values from SuppressingInputEventsBits.
   // The compositor thread accesses this value when processing input (to decide
   // whether to suppress input) and the renderer thread accesses it when the
   // status of deferrals changes, so it needs to be thread safe.
-  std::atomic<uint16_t> renderer_deferral_state_{0};
+  std::atomic<uint16_t> suppressing_input_events_state_;
+
+  // Saves most recent input event time that would be dropped by the
+  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+  // presentation of content). If this is after the first paint timestamp,
+  // we log the difference to track the worst dropped event experienced.
+  base::TimeTicks most_recent_suppressed_event_time_;
+
+  // Saves the number of events that would be dropped by the
+  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+  // presentation of content). This is important because it shows how many times
+  // user tried to interact with page but the event was dropped.
+  int suppressed_events_count_ = 0;
 
   // Allow input suppression to be disabled for tests and non-browser uses
   // of chromium that do not wait for the first commit, or that may never
@@ -324,12 +380,19 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   std::unique_ptr<power_scheduler::PowerModeVoter> response_power_mode_voter_;
 
-#if defined(OS_ANDROID)
+  // Timer for count dropped events.
+  std::unique_ptr<base::OneShotTimer> dropped_event_counts_timer_;
+
+  unsigned dropped_pointer_down_ = 0;
+
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SynchronousCompositorProxyRegistry>
       synchronous_compositor_registry_;
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(WidgetInputHandlerManager);
+  // Whether to use ScrollPredictor to resample scroll events. This is false for
+  // web_tests to ensure that scroll deltas are not timing-dependent.
+  const bool allow_scroll_resampling_ = true;
 };
 
 }  // namespace blink

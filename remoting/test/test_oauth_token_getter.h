@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/oauth_token_getter.h"
 
@@ -24,7 +24,7 @@ class TestTokenStorage;
 
 // An OAuthTokenGetter implementation for testing that runs the authentication
 // flow on the console.
-// If the account is whitelisted to use 1P scope with consent page then it will
+// If the account is allowlisted to use 1P scope with consent page then it will
 // store the refresh token, otherwise it will just cache the access token, which
 // will expire in ~1h.
 class TestOAuthTokenGetter final : public OAuthTokenGetter {
@@ -35,6 +35,10 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
 
   // |token_storage| must outlive |this|.
   explicit TestOAuthTokenGetter(TestTokenStorage* token_storage);
+
+  TestOAuthTokenGetter(const TestOAuthTokenGetter&) = delete;
+  TestOAuthTokenGetter& operator=(const TestOAuthTokenGetter&) = delete;
+
   ~TestOAuthTokenGetter() override;
 
   // Initializes the token getter and runs the authentication flow on the
@@ -71,13 +75,12 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
 
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-  TestTokenStorage* token_storage_ = nullptr;
+  raw_ptr<TestTokenStorage> token_storage_ = nullptr;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
   bool is_authenticating_ = false;
   base::queue<base::OnceClosure> on_authentication_done_;
 
   base::WeakPtrFactory<TestOAuthTokenGetter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TestOAuthTokenGetter);
 };
 
 }  // namespace test

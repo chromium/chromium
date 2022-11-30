@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,98 +12,124 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
+#include "chrome/common/pref_names.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "crypto/random.h"
-#include "extensions/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "ui/base/buildflags.h"
 
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/user_prefs/user_prefs.h"
-#include "media/base/media_switches.h"
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/prefs/pref_registry_simple.h"
 #endif
 
 namespace media_router {
 
-#if !defined(OS_ANDROID)
-const base::Feature kMediaRouter{"MediaRouter",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-// Controls if browser side DialMediaRouteProvider is enabled.
-const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCastMediaRouteProvider{"CastMediaRouteProvider",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kCastAllowAllIPsFeature{"CastAllowAllIPs",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kGlobalMediaControlsCastStartStop{
-    "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kAllowAllSitesToInitiateMirroring{
-    "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kCastToMeetingFromCastDialog{
-    "CastToMeetingFromCastDialog", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMediaRouter, "MediaRouter", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCastAllowAllIPsFeature,
+             "CastAllowAllIPs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
+             "AllowAllSitesToInitiateMirroring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDialMediaRouteProvider,
+             "DialMediaRouteProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDialEnforceUrlIPAddress,
+             "DialEnforceUrlIPAddress",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaRemotingWithoutFullscreen,
+             "MediaRemotingWithoutFullscreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kGlobalMediaControlsCastStartStop,
+             "GlobalMediaControlsCastStartStop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kGlobalMediaControlsCastStartStop,
+             "GlobalMediaControlsCastStartStop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 const PrefService::Preference* GetMediaRouterPref(
     content::BrowserContext* context) {
   return user_prefs::UserPrefs::Get(context)->FindPreference(
       ::prefs::kEnableMediaRouter);
 }
-}  // namespace
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
 
-bool MediaRouterEnabled(content::BrowserContext* context) {
-#if !defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kMediaRouter))
-    return false;
-#endif  // !defined(OS_ANDROID)
-
-#if defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+base::flat_map<content::BrowserContext*, bool>& GetStoredPrefValues() {
   static base::NoDestructor<base::flat_map<content::BrowserContext*, bool>>
       stored_pref_values;
+
+  return *stored_pref_values;
+}
+}  // namespace
+
+void ClearMediaRouterStoredPrefsForTesting() {
+  GetStoredPrefValues().clear();
+}
+
+bool MediaRouterEnabled(content::BrowserContext* context) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(kMediaRouter))
+    return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // The MediaRouter service is shared across the original and the incognito
+  // profiles, so we must use the original context for consistency between them.
+  context = chrome::GetBrowserContextRedirectedInIncognito(context);
 
   // If the Media Router was already enabled or disabled for |context|, then it
   // must remain so.  The Media Router does not support dynamic
   // enabling/disabling.
-  auto const it = stored_pref_values->find(context);
-  if (it != stored_pref_values->end())
+  base::flat_map<content::BrowserContext*, bool>& pref_values =
+      GetStoredPrefValues();
+  auto const it = pref_values.find(context);
+  if (it != pref_values.end())
     return it->second;
 
   // Check the enterprise policy.
   const PrefService::Preference* pref = GetMediaRouterPref(context);
   if (pref->IsManaged() && !pref->IsDefaultValue()) {
-    bool allowed;
-    CHECK(pref->GetValue()->GetAsBoolean(&allowed));
-    stored_pref_values->insert(std::make_pair(context, allowed));
+    CHECK(pref->GetValue()->is_bool());
+    bool allowed = pref->GetValue()->GetBool();
+    pref_values.insert(std::make_pair(context, allowed));
     return allowed;
   }
-
-  // The component extension cannot be loaded in guest sessions.
-  // TODO(crbug.com/756243): Figure out why.
-  return !Profile::FromBrowserContext(context)->IsGuestSession();
-#else   // !(defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS))
-  return false;
-#endif  // defined(OS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+  return true;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMediaRouterCastAllowAllIPs, false,
                                 PrefRegistry::PUBLIC);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // TODO(imcheng): Migrate existing Media Router prefs to here.
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
+
+  registry->RegisterBooleanPref(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
+  registry->RegisterListPref(
+      media_router::prefs::kMediaRouterTabMirroringSources);
+
+// TODO(crbug.com/1308053): Register it on ChromeOS after Cast+GMC ships on
+// ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(
+      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
+      true);
+#endif
 }
 
 bool GetCastAllowAllIPsPref(PrefService* pref_service) {
@@ -112,7 +138,8 @@ bool GetCastAllowAllIPsPref(PrefService* pref_service) {
   // Only use the pref value if it is set from a mandatory policy.
   bool allow_all_ips = false;
   if (pref->IsManaged() && !pref->IsDefaultValue()) {
-    CHECK(pref->GetValue()->GetAsBoolean(&allow_all_ips));
+    CHECK(pref->GetValue()->is_bool());
+    allow_all_ips = pref->GetValue()->GetBool();
   } else {
     allow_all_ips = base::FeatureList::IsEnabled(kCastAllowAllIPsFeature);
   }
@@ -137,14 +164,11 @@ bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
 }
 
-bool CastMediaRouteProviderEnabled() {
-  return base::FeatureList::IsEnabled(kCastMediaRouteProvider);
+bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
+  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
+         MediaRouterEnabled(context);
 }
 
-bool GlobalMediaControlsCastStartStopEnabled() {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
-}
-
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

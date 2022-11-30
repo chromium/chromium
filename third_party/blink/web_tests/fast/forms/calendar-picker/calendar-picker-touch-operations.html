@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/common.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
@@ -16,22 +18,22 @@ description("Tests if calendar picker mouse operations work as expected.");
 debug('Check that page popup doesn\'t exist at first.');
 shouldBeNull('document.getElementById("mock-page-popup")');
 
-openPicker(document.getElementById('date'), test);
+openPickerDeprecatedJsTest(document.getElementById('date'), test);
 
 var position;
 eventSender.clearTouchPoints();
 
 function test() {
     debug('Open the month popup.');
-    shouldBeFalse('popupWindow.global.picker.monthPopupView.isVisible');
+    shouldBeFalse('internals.pagePopupWindow.global.picker.monthPopupView.isVisible');
     clickMonthPopupButton();
-    shouldBeTrue('popupWindow.global.picker.monthPopupView.isVisible');
+    shouldBeTrue('internals.pagePopupWindow.global.picker.monthPopupView.isVisible');
 
     debug('Check that touch swiping scrolls the list in the month popup.');
 
     checkYearListViewScrollOffset();
 
-    popupWindow.global.picker.monthPopupView.yearListView.element.addEventListener('touchend', testAfterSwipingDown, false);
+    internals.pagePopupWindow.global.picker.monthPopupView.yearListView.element.addEventListener('touchend', testAfterSwipingDown, false);
 
     position = skipAnimationAndGetPositionOfMonthButton(2000, 0);
     eventSender.addTouchPoint(position.x, position.y);
@@ -45,13 +47,13 @@ function test() {
 
 function testAfterSwipingDown() {
     shouldBeTrue('checkYearListViewScrollOffset() > 0');
-    popupWindow.global.picker.monthPopupView.yearListView.element.removeEventListener('touchend', testAfterSwipingDown, false);
+    internals.pagePopupWindow.global.picker.monthPopupView.yearListView.element.removeEventListener('touchend', testAfterSwipingDown, false);
     setTimeout(testSwipingUp, 0);
 }
 
 function testSwipingUp() {
     checkYearListViewScrollOffset();
-    popupWindow.global.picker.monthPopupView.yearListView.element.addEventListener('touchend', testAfterSwipingUp, false);
+    internals.pagePopupWindow.global.picker.monthPopupView.yearListView.element.addEventListener('touchend', testAfterSwipingUp, false);
 
     eventSender.addTouchPoint(position.x, position.y);
     eventSender.touchStart();
@@ -64,7 +66,7 @@ function testSwipingUp() {
 
 function testAfterSwipingUp() {
     shouldBeTrue('checkYearListViewScrollOffset() < 0');
-    popupWindow.global.picker.monthPopupView.yearListView.element.removeEventListener('touchend', testAfterSwipingUp, false);
+    internals.pagePopupWindow.global.picker.monthPopupView.yearListView.element.removeEventListener('touchend', testAfterSwipingUp, false);
     finishJSTest();
 }
 </script>

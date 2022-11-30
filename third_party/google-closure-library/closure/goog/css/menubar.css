@@ -7,9 +7,9 @@
 
 /*
  * styling for goog.ui.menuBar and child buttons.
- *
- * @provide {goog.css.menubar}
  */
+
+@provide 'goog.css.menubar';
 
 .goog-menubar {
   cursor: default;

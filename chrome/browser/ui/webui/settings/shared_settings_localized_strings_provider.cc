@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -20,8 +21,10 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
+#include "components/live_caption/caption_util.h"
 #include "components/soda/constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
@@ -29,11 +32,20 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/devicetype_utils.h"
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/common/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#endif
 
 namespace settings {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -48,6 +60,33 @@ std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
 }
 
 }  // namespace
+#endif
+
+// Lacros side-by-side warning should be shown as long as both Lacros and Ash
+// browsers enabled.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool ShouldShowLacrosSideBySideWarningInAsh() {
+  return base::FeatureList::IsEnabled(
+             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
+         crosapi::browser_util::IsAshWebBrowserEnabled() &&
+         crosapi::browser_util::IsLacrosEnabled();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowLacrosSideBySideWarningInLacros() {
+  return base::FeatureList::IsEnabled(
+             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
+         !chromeos::BrowserParamsProxy::Get()->StandaloneBrowserIsOnlyBrowser();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+std::string BuildOSSettingsUrl(const std::string& sub_page) {
+  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
+  os_settings_url.append(sub_page);
+  return os_settings_url;
+}
 #endif
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
@@ -95,8 +134,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE);
 
   const bool liveCaptionMultiLanguageEnabled =
-      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
-      base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
   const int live_caption_subtitle_message =
       liveCaptionMultiLanguageEnabled
           ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
@@ -104,35 +142,35 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString("captionsEnableLiveCaptionSubtitle",
                                   live_caption_subtitle_message);
 
-  base::Optional<speech::SodaLanguagePackComponentConfig> englishConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> englishConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kEnUs);
   html_source->AddString("sodaLanguageCodeEnglish",
                          englishConfig->language_name);
   html_source->AddLocalizedString("sodaLanguageDisplayNameEnglish",
                                   englishConfig->display_name);
-  base::Optional<speech::SodaLanguagePackComponentConfig> frenchConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> frenchConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kFrFr);
   html_source->AddString("sodaLanguageCodeFrench", frenchConfig->language_name);
   html_source->AddLocalizedString("sodaLanguageDisplayNameFrench",
                                   frenchConfig->display_name);
-  base::Optional<speech::SodaLanguagePackComponentConfig> germanConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> germanConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kDeDe);
   html_source->AddString("sodaLanguageCodeGerman", germanConfig->language_name);
   html_source->AddLocalizedString("sodaLanguageDisplayNameGerman",
                                   germanConfig->display_name);
-  base::Optional<speech::SodaLanguagePackComponentConfig> italianConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> italianConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kItIt);
   html_source->AddString("sodaLanguageCodeItalian",
                          italianConfig->language_name);
   html_source->AddLocalizedString("sodaLanguageDisplayNameItalian",
                                   italianConfig->display_name);
-  base::Optional<speech::SodaLanguagePackComponentConfig> japaneseConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> japaneseConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kJaJp);
   html_source->AddString("sodaLanguageCodeJapanese",
                          japaneseConfig->language_name);
   html_source->AddLocalizedString("sodaLanguageDisplayNameJapanese",
                                   japaneseConfig->display_name);
-  base::Optional<speech::SodaLanguagePackComponentConfig> spanishConfig =
+  absl::optional<speech::SodaLanguagePackComponentConfig> spanishConfig =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kEsEs);
   html_source->AddString("sodaLanguageCodeSpanish",
                          spanishConfig->language_name);
@@ -140,7 +178,7 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
                                   spanishConfig->display_name);
 
   html_source->AddBoolean("enableLiveCaption",
-                          base::FeatureList::IsEnabled(media::kLiveCaption));
+                          captions::IsLiveCaptionFeatureSupported());
   html_source->AddBoolean("enableLiveCaptionMultiLanguage",
                           liveCaptionMultiLanguageEnabled);
 }
@@ -152,7 +190,7 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"urlKeyedAnonymizedDataCollectionDesc",
      IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION_DESC},
     {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     {"signinAllowedTitle", IDS_SETTINGS_SIGNIN_ALLOWED},
     {"signinAllowedDescription", IDS_SETTINGS_SIGNIN_ALLOWED_DESC},
 #endif
@@ -165,6 +203,11 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"linkDoctorPrefDesc", IDS_SETTINGS_LINKDOCTOR_PREF_DESC},
     {"driveSuggestPref", IDS_DRIVE_SUGGEST_PREF},
     {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
+    {"autofillAssistantPref", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF},
+    {"autofillAssistantPrefDesc", IDS_SETTINGS_AUTOFILL_ASSISTANT_PREF_DESC},
+    {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
+    {"priceEmailNotificationsPrefDesc",
+     IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -208,7 +251,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"passwordPromptTitle", IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE},
@@ -219,44 +262,57 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AddSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"syncDisabledByAdministrator",
-       IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
-      {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
-      {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
-      {"peopleSignInSyncPagePromptSecondaryWithAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
-      {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
-      {"encryptWithGoogleCredentialsLabel",
-       IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
-      {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
-      {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
-      {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
-      {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
-      {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
-      {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
-      {"passphraseConfirmationPlaceholder",
-       IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
-      {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
-      {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
-      {"themesAndWallpapersCheckboxLabel",
-       IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL},
-      {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
-      {"sync", IDS_SETTINGS_SYNC},
-      {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
-      {"syncSetupCancelDialogTitle",
-       IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE},
-      {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
-      {"personalizeGoogleServicesTitle",
-       IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
-      {"manageSyncedDataTitle",
-       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
+    {"syncDisabledByAdministrator", IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
+    {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
+    {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
+    {"peopleSignInSyncPagePromptSecondaryWithAccount",
+     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
+    {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
+     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
+    {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
+    {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
+    {"encryptWithGoogleCredentialsLabel",
+     IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
+    {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
+    {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
+    {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
+    {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
+    {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
+    {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
+    {"passphraseConfirmationPlaceholder",
+     IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
+    {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
+    {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
+    {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
+    {"sync", IDS_SETTINGS_SYNC},
+    {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
+    {"syncSetupCancelDialogTitle", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE},
+    {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
+    {"personalizeGoogleServicesTitle",
+     IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
+    {"manageSyncedDataTitle",
+     IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
+    {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
+    {"enterPassphraseLabelWithDate", IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
+    {"existingPassphraseLabelWithDate",
+     IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
+    {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
+    {"themeCheckboxLabel", IDS_SETTINGS_THEME_CHECKBOX_LABEL},
+  // Settings warning for Lacros side-by-side mode.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"syncSettingsLacrosSideBySideWarning",
+     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH},
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"syncSettingsLacrosSideBySideWarning",
+     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+    {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -276,6 +332,9 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
                                 base::ASCIIToUTF16(sync_dashboard_url)));
   html_source->AddString("activityControlsUrl",
                          chrome::kGoogleAccountActivityControlsURL);
+  html_source->AddString(
+      "activityControlsUrlInPrivacyGuide",
+      chrome::kGoogleAccountActivityControlsURLInPrivacyGuide);
   html_source->AddString("syncDashboardUrl", sync_dashboard_url);
   html_source->AddString(
       "passphraseExplanationText",
@@ -290,6 +349,27 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #else
           base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
+                          ShouldShowLacrosSideBySideWarningInAsh());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
+                          ShouldShowLacrosSideBySideWarningInLacros());
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddString(
+      "osSyncSetupSettingsUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  html_source->AddString(
+      "osSyncSettingsUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath));
+#endif
+
+  html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -305,8 +385,16 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareDeviceNameFieldLabel",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_FIELD_LABEL},
       {"nearbyShareEditDeviceName", IDS_SETTINGS_NEARBY_SHARE_EDIT_DEVICE_NAME},
+      {"fastInitiationNotificationToggleTitle",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE},
+      {"fastInitiationNotificationToggleDescription",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION},
+      {"fastInitiationNotificationToggleAriaLabel",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_ARIA_LABEL},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
+      {"nearbyShareConfirmDeviceName",
+       IDS_SETTINGS_NEARBY_SHARE_CONFIRM_DEVICE_NAME},
       {"nearbyShareManageContactsLabel",
        IDS_SETTINGS_NEARBY_SHARE_MANAGE_CONTACTS_LABEL},
       {"nearbyShareManageContactsRowTitle",
@@ -347,7 +435,9 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareHighVisibilityOn",
        IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_ON},
       {"nearbyShareHighVisibilityOff",
-       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF}};
+       IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF},
+      {"nearbyShareVisibilityDialogSave",
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_SAVE}};
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -360,5 +450,35 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"secureDns", IDS_SETTINGS_SECURE_DNS},
+      {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
+      {"secureDnsDisabledForManagedEnvironment",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
+      {"secureDnsDisabledForParentalControl",
+       IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
+      {"secureDnsAutomaticModeDescription",
+       IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
+      {"secureDnsAutomaticModeDescriptionSecondary",
+       IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION_SECONDARY},
+      {"secureDnsSecureModeA11yLabel",
+       IDS_SETTINGS_SECURE_MODE_DESCRIPTION_ACCESSIBILITY_LABEL},
+      {"secureDnsDropdownA11yLabel",
+       IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
+      {"secureDnsSecureDropdownModeDescription",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION},
+      {"secureDnsSecureDropdownModePrivacyPolicy",
+       IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY},
+      {"secureDnsCustomPlaceholder",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER},
+      {"secureDnsCustomFormatError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR},
+      {"secureDnsCustomConnectionError",
+       IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
 
 }  // namespace settings

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,11 @@ namespace background_loader {
 class BackgroundLoaderContentsStub : public BackgroundLoaderContents {
  public:
   BackgroundLoaderContentsStub(content::BrowserContext* browser_context);
+
+  BackgroundLoaderContentsStub(const BackgroundLoaderContentsStub&) = delete;
+  BackgroundLoaderContentsStub& operator=(const BackgroundLoaderContentsStub&) =
+      delete;
+
   ~BackgroundLoaderContentsStub() override;
 
   void LoadPage(const GURL& url) override;
@@ -24,7 +29,6 @@ class BackgroundLoaderContentsStub : public BackgroundLoaderContents {
 
  private:
   bool is_loading_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundLoaderContentsStub);
 };
 
 }  // namespace background_loader

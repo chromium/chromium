@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_API_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
+#include "base/observer_list.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class Profile;
@@ -29,6 +32,7 @@ class ManagedConfigurationAPI : public KeyedService {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnManagedConfigurationChanged() = 0;
+    virtual const url::Origin& GetOrigin() = 0;
   };
 
   static const char kOriginKey[];
@@ -45,11 +49,17 @@ class ManagedConfigurationAPI : public KeyedService {
   void GetOriginPolicyConfiguration(
       const url::Origin& origin,
       const std::vector<std::string>& keys,
-      base::OnceCallback<void(std::unique_ptr<base::DictionaryValue>)>
-          callback);
+      base::OnceCallback<void(absl::optional<base::Value::Dict>)> callback);
 
-  void AddObserver(const url::Origin& origin, Observer* observer);
-  void RemoveObserver(const url::Origin& origin, Observer* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Whether this application can have managed configuration set. essentially,
+  // this checks whether the application is managed.
+  bool CanHaveManagedStore(const url::Origin& origin);
+
+  // Returns the list of all origins that have a managed configuration set.
+  const std::set<url::Origin>& GetManagedOrigins() const;
 
  private:
   class ManagedConfigurationDownloader;
@@ -73,27 +83,35 @@ class ManagedConfigurationAPI : public KeyedService {
 
   // Sends an operation to set the configured value on FILE thread.
   void PostStoreConfiguration(const url::Origin& origin,
-                              base::DictionaryValue configuration);
+                              base::Value::Dict configuration);
+  void InformObserversIfConfigurationChanged(const url::Origin& origin,
+                                             bool changed);
 
-  std::unique_ptr<base::DictionaryValue> GetConfigurationOnBackend(
-      const url::Origin& origin,
-      const std::vector<std::string>& keys);
-  void StoreConfigurationOnBackend(const url::Origin& origin,
-                                   base::DictionaryValue configuration);
-
-  ManagedConfigurationStore* GetOrLoadStoreForOrigin(const url::Origin& origin);
+  void MaybeCreateStoreForOrigin(const url::Origin& origin);
   base::FilePath GetStoreLocation(const url::Origin& origin);
 
-  Profile* const profile_;
+  // Assigns observers from |unmanaged_observers_| to a particular store if
+  // their origin has a configuration. There is no need to unassign those
+  // observers when the origin becomes unmanaged, since the managed data is
+  // cleared in the ManagedConfigurationStore, without destroying the actual
+  // store object.
+  void PromoteObservers();
+
+  const raw_ptr<Profile> profile_;
 
   const base::FilePath stores_path_;
-  std::map<url::Origin, std::unique_ptr<ManagedConfigurationStore>> store_map_;
+  std::map<url::Origin, base::SequenceBound<ManagedConfigurationStore>>
+      store_map_;
   // Stores current configuration downloading managers.
   std::map<url::Origin, std::unique_ptr<ManagedConfigurationDownloader>>
       downloaders_;
+  std::map<url::Origin, base::ObserverList<Observer>> observers_;
 
-  // Blocking task runner for IO related tasks.
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  // Stores the list of orrigins which have a managed configuration(may not yet
+  // loaded).
+  std::set<url::Origin> managed_origins_;
+
+  std::set<Observer*> unmanaged_observers_;
 
   // Observes changes to WebAppInstallForceList.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,8 @@
 #include <sys/eventfd.h>
 #include <sys/mman.h>
 #include <sys/syscall.h>
-#include <unistd.h>
-
-#if defined(OS_ANDROID)
 #include <sys/utsname.h>
-#endif
+#include <unistd.h>
 
 #include <algorithm>
 #include <atomic>
@@ -23,24 +20,29 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/features.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 #ifndef EFD_ZERO_ON_WAKE
 #define EFD_ZERO_ON_WAKE O_NOFOLLOW
@@ -51,7 +53,6 @@ namespace core {
 
 namespace {
 
-#if defined(OS_ANDROID)
 // On Android base::SysInfo::OperatingSystemVersionNumbers actually returns the
 // build numbers and not the kernel version as the other posix OSes would.
 void KernelVersionNumbers(int32_t* major_version,
@@ -74,7 +75,6 @@ void KernelVersionNumbers(int32_t* major_version,
   if (num_read < 3)
     *bugfix_version = 0;
 }
-#endif  // defined(OS_ANDROID)
 
 }  // namespace
 
@@ -134,7 +134,7 @@ struct UpgradeOfferMessage {
 };
 
 constexpr size_t RoundUpToWordBoundary(size_t size) {
-  return (size + (sizeof(void*) - 1)) & ~(sizeof(void*) - 1);
+  return base::bits::AlignUp(size, sizeof(void*));
 }
 
 base::ScopedFD CreateSealedMemFD(size_t size) {
@@ -181,19 +181,24 @@ class EventFDNotifier : public DataAvailableNotifier,
                         public base::MessagePumpForIO::FdWatcher {
  public:
   EventFDNotifier(EventFDNotifier&& efd) = default;
+
+  EventFDNotifier(const EventFDNotifier&) = delete;
+  EventFDNotifier& operator=(const EventFDNotifier&) = delete;
+
   ~EventFDNotifier() override { reset(); }
 
   static constexpr int kEfdFlags = EFD_CLOEXEC | EFD_NONBLOCK;
 
   static std::unique_ptr<EventFDNotifier> CreateWriteNotifier() {
     static bool zero_on_wake_supported = []() -> bool {
-      base::ScopedFD fd(eventfd(0, kEfdFlags | EFD_ZERO_ON_WAKE));
+      base::ScopedFD fd(
+          syscall(__NR_eventfd2, 0, kEfdFlags | EFD_ZERO_ON_WAKE));
       return fd.is_valid();
     }();
 
     bool use_zero_on_wake = zero_on_wake_supported && g_use_zero_on_wake;
     int extra_flags = use_zero_on_wake ? EFD_ZERO_ON_WAKE : 0;
-    int fd = eventfd(0, kEfdFlags | extra_flags);
+    int fd = syscall(__NR_eventfd2, 0, kEfdFlags | extra_flags);
     if (fd < 0) {
       PLOG(ERROR) << "Unable to create an eventfd";
       return nullptr;
@@ -221,7 +226,7 @@ class EventFDNotifier : public DataAvailableNotifier,
     // Try to create an eventfd with bad flags if we get -EINVAL it's supported
     // if we get -ENOSYS it's not, we also support -EPERM because seccomp
     // policies can cause it to be returned.
-    int ret = eventfd(0, ~0);
+    int ret = syscall(__NR_eventfd2, 0, ~0);
     PCHECK(ret < 0 && (errno == EINVAL || errno == ENOSYS || errno == EPERM));
     return (ret < 0 && errno == EINVAL);
   }
@@ -317,8 +322,6 @@ class EventFDNotifier : public DataAvailableNotifier,
   base::ScopedFD fd_;
   std::unique_ptr<base::MessagePumpForIO::FdWatchController> watcher_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventFDNotifier);
 };
 
 }  // namespace
@@ -330,6 +333,10 @@ class EventFDNotifier : public DataAvailableNotifier,
 class ChannelLinux::SharedBuffer {
  public:
   SharedBuffer(SharedBuffer&& other) = default;
+
+  SharedBuffer(const SharedBuffer&) = delete;
+  SharedBuffer& operator=(const SharedBuffer&) = delete;
+
   ~SharedBuffer() { reset(); }
 
   enum class Error { kSuccess = 0, kGeneralError = 1, kControlCorruption = 2 };
@@ -579,30 +586,28 @@ class ChannelLinux::SharedBuffer {
 
   std::atomic_flag& write_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_flag;
   }
 
   std::atomic_flag& read_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_flag;
   }
 
   std::atomic_uint32_t& read_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_pos;
   }
 
   std::atomic_uint32_t& write_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_pos;
   }
 
   SharedBuffer(uint8_t* ptr, size_t len) : base_ptr_(ptr), len_(len) {}
 
-  uint8_t* base_ptr_ = nullptr;
+  raw_ptr<uint8_t> base_ptr_ = nullptr;
   size_t len_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBuffer);
 };
 
 ChannelLinux::ChannelLinux(
@@ -645,8 +650,6 @@ void ChannelLinux::Write(MessagePtr message) {
   }
 
   //  The write with shared memory was successful.
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.Linux.SharedMemWriteBytes",
-                              message->data_num_bytes());
   write_notifier_->Notify();
 }
 
@@ -780,6 +783,7 @@ void ChannelLinux::SharedMemReadReady() {
   CHECK(read_buffer_);
   if (read_buffer_->TryLockForReading()) {
     read_notifier_->Clear();
+    bool read_fail = false;
     do {
       uint32_t bytes_read = 0;
       SharedBuffer::Error read_res = read_buffer_->TryReadLocked(
@@ -787,16 +791,12 @@ void ChannelLinux::SharedMemReadReady() {
       if (read_res == SharedBuffer::Error::kControlCorruption) {
         // This is an error we cannot recover from.
         OnError(Error::kReceivedMalformedData);
-        read_buffer_->UnlockForReading();
         break;
       }
 
       if (bytes_read == 0) {
         break;
       }
-
-      UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.Linux.SharedMemReadBytes",
-                                  bytes_read);
 
       // Now dispatch the message, we KNOW it's at least one full message
       // because we checked the message size before putting it into the
@@ -814,6 +814,7 @@ void ChannelLinux::SharedMemReadReady() {
         // full message if we get one something has gone horribly wrong.
         if (result != DispatchResult::kOK) {
           LOG(ERROR) << "Recevied a bad message via shared memory";
+          read_fail = true;
           OnError(Error::kReceivedMalformedData);
           break;
         }
@@ -824,7 +825,7 @@ void ChannelLinux::SharedMemReadReady() {
         // starts.
         data_offset += read_size_hint;
       }
-    } while (true);
+    } while (!read_fail);
     read_buffer_->UnlockForReading();
   }
 }
@@ -902,9 +903,9 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   UpgradeOfferMessage offer_msg;
   offer_msg.num_pages = num_pages_;
   offer_msg.version = notifier_version;
-  MessagePtr msg(new Channel::Message(sizeof(UpgradeOfferMessage),
-                                      /*num handles=*/fds.size(),
-                                      Message::MessageType::UPGRADE_OFFER));
+  MessagePtr msg = Message::CreateMessage(sizeof(UpgradeOfferMessage),
+                                          /*num handles=*/fds.size(),
+                                          Message::MessageType::UPGRADE_OFFER);
   msg->SetHandles(std::move(fds));
   memcpy(msg->mutable_payload(), &offer_msg, sizeof(offer_msg));
 
@@ -914,25 +915,37 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
 // static
 bool ChannelLinux::KernelSupportsUpgradeRequirements() {
   static bool supported = []() -> bool {
-#if defined(OS_ANDROID)
     // See https://crbug.com/1192696 for more context, but some Android vendor
     // kernels pre-3.17 would use higher undefined syscall numbers for private
     // syscalls. To start we'll validate the kernel version is greater than or
     // equal to 3.17 before even bothering to call memfd_create.
+    //
+    // Additionally, the behavior of eventfd prior to the 4.0 kernel could be
+    // racy.
     int os_major_version = 0;
     int os_minor_version = 0;
     int os_bugfix_version = 0;
     KernelVersionNumbers(&os_major_version, &os_minor_version,
                          &os_bugfix_version);
-    if (os_major_version < 3 ||
-        (os_major_version == 3 && os_minor_version < 17)) {
+    if (os_major_version < 4) {
+      // Due to the potentially races in 3.17/3.18 kernels with eventfd,
+      // explicitly require a 4.x+ kernel.
+      return false;
+    }
+
+#if BUILDFLAG(IS_ANDROID)
+    // Finally, if running on Android it must have API version of at
+    // least 29 (Q). The reason for this was SELinux seccomp policies prior to
+    // that API version wouldn't allow moving a memfd.
+    if (base::android::BuildInfo::GetInstance()->sdk_int() <
+        base::android::SdkVersion::SDK_VERSION_Q) {
       return false;
     }
 #endif
 
-    // Do we have memfd_create support, we check by seeing if we get an -ENOSYS
-    // or an -EINVAL. We also support -EPERM because of seccomp rules this is
-    // another possible outcome.
+    // Do we have memfd_create support, we check by seeing if we get an
+    // -ENOSYS or an -EINVAL. We also support -EPERM because of seccomp
+    // rules this is another possible outcome.
     int ret = syscall(__NR_memfd_create, "", ~0);
     PCHECK(ret < 0 && (errno == EINVAL || errno == ENOSYS || errno == EPERM));
     bool memfd_supported = (ret < 0 && errno == EINVAL);

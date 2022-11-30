@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -46,7 +46,6 @@ void ChildFrameCompositingHelper::ChildFrameGone(float device_scale_factor) {
 
 void ChildFrameCompositingHelper::SetSurfaceId(
     const viz::SurfaceId& surface_id,
-    const gfx::Size& frame_size_in_dip,
     bool capture_sequence_number_changed) {
   if (surface_id_ == surface_id)
     return;
@@ -56,7 +55,7 @@ void ChildFrameCompositingHelper::SetSurfaceId(
   surface_layer_ = cc::SurfaceLayer::Create();
   surface_layer_->SetMasksToBounds(true);
   surface_layer_->SetSurfaceHitTestable(true);
-  surface_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  surface_layer_->SetBackgroundColor(SkColors::kTransparent);
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
   // everything is synchronized.
@@ -71,8 +70,6 @@ void ChildFrameCompositingHelper::SetSurfaceId(
                                       true /* is_surface_layer */);
 
   UpdateVisibility(true);
-
-  surface_layer_->SetBounds(frame_size_in_dip);
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
@@ -94,16 +91,16 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
   auto layer_size = crash_ui_layer_->bounds();
   auto display_list = base::MakeRefCounted<cc::DisplayItemList>();
   display_list->StartPaint();
-  display_list->push<cc::DrawColorOp>(SK_ColorGRAY, SkBlendMode::kSrc);
+  display_list->push<cc::DrawColorOp>(SkColors::kGray, SkBlendMode::kSrc);
 
   SkBitmap* sad_bitmap = child_frame_compositor_->GetSadPageBitmap();
   if (sad_bitmap) {
-    int paint_width = sad_bitmap->width() * device_scale_factor_;
-    int paint_height = sad_bitmap->height() * device_scale_factor_;
+    float paint_width = sad_bitmap->width() * device_scale_factor_;
+    float paint_height = sad_bitmap->height() * device_scale_factor_;
     if (layer_size.width() >= paint_width &&
         layer_size.height() >= paint_height) {
-      int x = (layer_size.width() - paint_width) / 2;
-      int y = (layer_size.height() - paint_height) / 2;
+      float x = (layer_size.width() - paint_width) / 2.0f;
+      float y = (layer_size.height() - paint_height) / 2.0f;
       if (device_scale_factor_ != 1.f) {
         display_list->push<cc::SaveOp>();
         display_list->push<cc::TranslateOp>(x, y);

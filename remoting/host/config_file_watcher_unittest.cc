@@ -1,12 +1,13 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/config_file_watcher.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -26,13 +27,15 @@ namespace {
 class ConfigFileWatcherDelegate : public ConfigFileWatcher::Delegate {
  public:
   ConfigFileWatcherDelegate() = default;
+
+  ConfigFileWatcherDelegate(const ConfigFileWatcherDelegate&) = delete;
+  ConfigFileWatcherDelegate& operator=(const ConfigFileWatcherDelegate&) =
+      delete;
+
   ~ConfigFileWatcherDelegate() override = default;
 
   MOCK_METHOD1(OnConfigUpdated, void(const std::string&));
   MOCK_METHOD0(OnConfigWatcherError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherDelegate);
 };
 
 }  // namespace
@@ -83,8 +86,8 @@ void ConfigFileWatcherTest::SetUp() {
                                  base::MessagePumpType::IO);
 
   // Create an instance of the config watcher.
-  watcher_.reset(
-      new ConfigFileWatcher(task_runner, io_task_runner, config_file_));
+  watcher_ = std::make_unique<ConfigFileWatcher>(task_runner, io_task_runner,
+                                                 config_file_);
 }
 
 void ConfigFileWatcherTest::TearDown() {

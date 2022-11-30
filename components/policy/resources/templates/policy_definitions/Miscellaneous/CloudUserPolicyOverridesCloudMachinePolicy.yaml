@@ -1,0 +1,35 @@
+caption: Allow user cloud policies to override <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome
+  Browser Cloud Management</ph> policies.
+default: false
+desc: |-
+  Setting the policy to Enabled allows policies associated with a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph> account to take precedence if they conflict with <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> policies.
+
+        Only policies originating from secure users can take precedence. A secure user is affiliated with the organization that manages their browser using <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. All other user-level policies will have default precedence.
+
+        The policy can be combined with <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY">CloudPolicyOverridesPlatformPolicy</ph>. If both policies are enabled, user cloud policies will also take precedence over conflicting platform policies.
+
+        Leaving the policy unset or setting it to disabled causes user-level cloud policies to have default priority.
+example_value: false
+features:
+  dynamic_refresh: true
+  metapolicy_type: precedence
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Allow user cloud policies to override machine cloud policies.
+  value: true
+- caption: Prevent user cloud policies from overriding machine cloud policies.
+  value: false
+owners:
+- igorruvinov@chromium.org
+- zmin@chromium.org
+- pastarmovj@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:96-
+- android:97-
+- ios:105-
+tags: []
+type: main

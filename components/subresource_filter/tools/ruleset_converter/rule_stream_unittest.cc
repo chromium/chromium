@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
@@ -358,9 +358,12 @@ TEST(RuleStreamTest, DeleteUrlRuleOrAmend) {
       {"/a[0-9].com/$image", nullptr, nullptr},
       {"a.com$image,popup", "a.com$image,~popup", "#54"},
       {"a.com$popup", nullptr, nullptr},
-      {"a.com$~image", "a.com$~image,~popup,~websocket", "#0"},
-      {"a.com$~popup", "a.com$~popup,~websocket", "a.com"},
-      {"a.com$~image,~popup", "a.com$~image,~popup,~websocket", "#0"},
+      {"a.com$~image",
+       "a.com$~image,~popup,~websocket,~webtransport,~webbundle", "#0"},
+      {"a.com$~popup", "a.com$~popup,~websocket,~webtransport,~webbundle",
+       "a.com"},
+      {"a.com$~image,~popup",
+       "a.com$~image,~popup,~websocket,~webtransport,~webbundle", "#0"},
       {"@@a.com$subdocument,document", "#0", "#0"},
       {"@@a.com$document,generichide", "@@a.com$document", "#54"},
       {"@@a.com$document", "#0", "#0"},

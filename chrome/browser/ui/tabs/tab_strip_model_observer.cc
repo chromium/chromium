@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,18 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 using content::WebContents;
+
+TabStripModelChange::RemovedTab::RemovedTab(
+    content::WebContents* contents,
+    int index,
+    RemoveReason remove_reason,
+    absl::optional<SessionID> session_id)
+    : contents(contents),
+      index(index),
+      remove_reason(remove_reason),
+      session_id(session_id) {}
+TabStripModelChange::RemovedTab::~RemovedTab() = default;
+TabStripModelChange::RemovedTab::RemovedTab(RemovedTab&& other) = default;
 
 TabStripModelChange::Insert::Insert() = default;
 TabStripModelChange::Insert::Insert(Insert&& other) = default;
@@ -72,37 +84,37 @@ TabStripModelChange::TabStripModelChange(Type type,
                                          std::unique_ptr<Delta> delta)
     : type_(type), delta_(std::move(delta)) {}
 
-void TabStripModelChange::ContentsWithIndexAndWillBeDeleted::
-    WriteIntoTracedValue(perfetto::TracedValue context) const {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("contents", contents);
-  dict.Add("index", index);
-  dict.Add("will_be_deleted", will_be_deleted);
-}
-
-void TabStripModelChange::ContentsWithIndex::WriteIntoTracedValue(
+void TabStripModelChange::RemovedTab::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("contents", contents);
   dict.Add("index", index);
+  dict.Add("remove_reason", remove_reason);
 }
 
-void TabStripModelChange::Insert::WriteIntoTracedValue(
+void TabStripModelChange::ContentsWithIndex::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("contents", contents);
+  dict.Add("index", index);
+}
+
+void TabStripModelChange::Insert::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Remove::WriteIntoTracedValue(
+void TabStripModelChange::Remove::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Move::WriteIntoTracedValue(
+void TabStripModelChange::Move::WriteIntoTrace(
     perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), contents);
 }
 
-void TabStripModelChange::Replace::WriteIntoTracedValue(
+void TabStripModelChange::Replace::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("old_contents", old_contents);
@@ -110,8 +122,7 @@ void TabStripModelChange::Replace::WriteIntoTracedValue(
   dict.Add("index", index);
 }
 
-void TabStripModelChange::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void TabStripModelChange::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", type_);
   dict.Add("delta", delta_);
@@ -142,10 +153,11 @@ TabStripSelectionChange& TabStripSelectionChange::operator=(
 ////////////////////////////////////////////////////////////////////////////////
 // TabGroupChange
 //
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                Type type,
                                std::unique_ptr<Delta> deltap)
-    : group(group), type(type), delta(std::move(deltap)) {}
+    : group(group), model(model), type(type), delta(std::move(deltap)) {}
 
 TabGroupChange::~TabGroupChange() = default;
 
@@ -157,9 +169,11 @@ const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
   return static_cast<const VisualsChange*>(delta.get());
 }
 
-TabGroupChange::TabGroupChange(tab_groups::TabGroupId group,
+TabGroupChange::TabGroupChange(TabStripModel* model,
+                               tab_groups::TabGroupId group,
                                VisualsChange deltap)
-    : TabGroupChange(group,
+    : TabGroupChange(model,
+                     group,
                      Type::kVisualsChanged,
                      std::make_unique<VisualsChange>(std::move(deltap))) {}
 
@@ -181,6 +195,11 @@ void TabStripModelObserver::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {}
 
+void TabStripModelObserver::OnTabWillBeAdded() {}
+
+void TabStripModelObserver::OnTabWillBeRemoved(content::WebContents* contents,
+                                               int index) {}
+
 void TabStripModelObserver::OnTabGroupChanged(const TabGroupChange& change) {}
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
@@ -199,7 +218,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 }
 
 void TabStripModelObserver::TabGroupedStateChanged(
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     content::WebContents* contents,
     int index) {}
 

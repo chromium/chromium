@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,6 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::IsEmpty;
-using ::testing::IsNull;
-using ::testing::Pointee;
-using ::testing::Property;
-using ::testing::SizeIs;
 
 class ConfigureBottomSheetActionTest : public testing::Test {
  public:
@@ -44,9 +39,9 @@ class ConfigureBottomSheetActionTest : public testing::Test {
             Invoke([this](ConfigureBottomSheetProto::PeekMode peek_mode) {
               peek_mode_ = peek_mode;
             }));
-    ON_CALL(mock_action_delegate_, OnWaitForWindowHeightChange(_))
+    ON_CALL(mock_action_delegate_, WaitForWindowHeightChange(_))
         .WillByDefault(Invoke(
-            [this](base::OnceCallback<void(const ClientStatus&)>& callback) {
+            [this](base::OnceCallback<void(const ClientStatus&)> callback) {
               on_resize_cb_ = std::move(callback);
             }));
   }
@@ -62,11 +57,10 @@ class ConfigureBottomSheetActionTest : public testing::Test {
     *action_proto.mutable_configure_bottom_sheet() = proto_;
     action_ = std::make_unique<ConfigureBottomSheetAction>(
         &mock_action_delegate_, action_proto);
-    action_->ProcessAction(
-        base::BindOnce(base::BindLambdaForTesting(
-            [&](std::unique_ptr<ProcessedActionProto> result) {
-              processed_action_ = *result;
-            })));
+    action_->ProcessAction(base::BindLambdaForTesting(
+        [&](std::unique_ptr<ProcessedActionProto> result) {
+          processed_action_ = *result;
+        }));
   }
 
   // Runs an action that waits for a resize.
@@ -78,8 +72,8 @@ class ConfigureBottomSheetActionTest : public testing::Test {
   // Fast forward time enough for an action created by RunWithTimeout() to time
   // out.
   void ForceTimeout() {
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
-    task_env_.FastForwardBy(base::TimeDelta::FromMilliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
+    task_env_.FastForwardBy(base::Milliseconds(100));
   }
 
   // task_env_ must be first to guarantee other field

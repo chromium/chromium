@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -24,7 +23,7 @@ class SampleToGroupIteratorTest : public testing::Test {
  public:
   SampleToGroupIteratorTest() {
     // Build sample group description index table from kSampleToGroupTable.
-    for (size_t i = 0; i < base::size(kCompactSampleToGroupTable); ++i) {
+    for (size_t i = 0; i < std::size(kCompactSampleToGroupTable); ++i) {
       for (uint32_t j = 0; j < kCompactSampleToGroupTable[i].sample_count;
            ++j) {
         sample_to_group_table_.push_back(
@@ -34,18 +33,19 @@ class SampleToGroupIteratorTest : public testing::Test {
 
     sample_to_group_.entries.assign(
         kCompactSampleToGroupTable,
-        kCompactSampleToGroupTable + base::size(kCompactSampleToGroupTable));
+        kCompactSampleToGroupTable + std::size(kCompactSampleToGroupTable));
     sample_to_group_iterator_.reset(
         new SampleToGroupIterator(sample_to_group_));
   }
+
+  SampleToGroupIteratorTest(const SampleToGroupIteratorTest&) = delete;
+  SampleToGroupIteratorTest& operator=(const SampleToGroupIteratorTest&) =
+      delete;
 
  protected:
   std::vector<uint32_t> sample_to_group_table_;
   SampleToGroup sample_to_group_;
   std::unique_ptr<SampleToGroupIterator> sample_to_group_iterator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SampleToGroupIteratorTest);
 };
 
 TEST_F(SampleToGroupIteratorTest, EmptyTable) {

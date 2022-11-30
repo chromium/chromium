@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,9 @@
 // Voice search button.
 @property(nonatomic, strong, readonly) UIButton* voiceSearchButton;
 
+// The button that opens Lens. May be nil if Lens is not enabled.
+@property(nonatomic, strong, readonly) UIButton* lensButton;
+
 // Fake cancel button, used for animations. Hidden by default.
 @property(nonatomic, strong) UIView* cancelButton;
 // Fake omnibox, used for animations. Hidden by default.
@@ -33,24 +36,27 @@
 @property(nonatomic, strong) UIView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
 
+// `YES` if Google is the default search engine.
+@property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
+
 // Adds the separator to the searchField. Must be called after the searchField
 // is added as a subview.
 - (void)addSeparatorToSearchField:(UIView*)searchField;
 
-// Adds the |toolbarView| to the view implementing this protocol.
+// Adds the `toolbarView` to the view implementing this protocol.
 // Can only be added once.
 - (void)addToolbarView:(UIView*)toolbarView;
 
 // Returns the progress of the search field position along
-// |ntp_header::kAnimationDistance| as the offset changes.
+// `ntp_header::kAnimationDistance` as the offset changes.
 - (CGFloat)searchFieldProgressForOffset:(CGFloat)offset
                          safeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 
 // Changes the constraints of searchField based on its initialFrame and the
-// scroll view's y |offset|. Also adjust the alpha values for |_searchBoxBorder|
-// and |_shadow| and the constant values for the |constraints|.|screenWidth| is
+// scroll view's y `offset`. Also adjust the alpha values for `_searchBoxBorder`
+// and `_shadow` and the constant values for the `constraints`.|screenWidth` is
 // the width of the screen, including the space outside the safe area. The
-// |safeAreaInsets| is relative to the view used to calculate the |width|.
+// `safeAreaInsets` is relative to the view used to calculate the `width`.
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint
                         height:(NSLayoutConstraint*)heightConstraint
                      topMargin:(NSLayoutConstraint*)topMarginConstraint
@@ -64,7 +70,7 @@
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 
-// Updates the different constraints using |topSafeAreaInset|. This is needed
+// Updates the different constraints using `topSafeAreaInset`. This is needed
 // because sometimes the safe area isn't correctly updated. See
 // crbug.com/1041831.
 - (void)updateForTopSafeAreaInset:(CGFloat)topSafeAreaInset;

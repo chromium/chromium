@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,12 +55,14 @@ function appendDebuggingField(title, value, fixedWidth) {
   pElem.classList.add('debugging-content');
   pElem.appendChild(spanTitle);
   pElem.appendChild(spanValue);
-  $('error-debugging-info').appendChild(pElem);
+  document.querySelector('#error-debugging-info').appendChild(pElem);
 }
 
 function toggleDebuggingInfo() {
-  const hiddenDebug = $('error-debugging-info').classList.toggle(HIDDEN_CLASS);
-  $('error-code').setAttribute('aria-expanded', !hiddenDebug);
+  const hiddenDebug = document.querySelector('#error-debugging-info')
+                          .classList.toggle(HIDDEN_CLASS);
+  document.querySelector('#error-code')
+      .setAttribute('aria-expanded', !hiddenDebug);
 }
 
 function setupEvents() {
@@ -72,50 +74,51 @@ function setupEvents() {
   const lookalike = interstitialType === 'LOOKALIKE';
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
-  const originPolicy = interstitialType === 'ORIGIN_POLICY';
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
-  const legacyTls = interstitialType == 'LEGACY_TLS';
   const insecureForm = interstitialType == 'INSECURE_FORM';
+  const httpsOnly = interstitialType == 'HTTPS_ONLY';
   const hidePrimaryButton = loadTimeData.getBoolean('hide_primary_button');
   const showRecurrentErrorParagraph = loadTimeData.getBoolean(
     'show_recurrent_error_paragraph');
 
-  if (ssl || originPolicy || blockedInterception || legacyTls) {
-    $('body').classList.add(badClock ? 'bad-clock' : 'ssl');
-    $('error-code').textContent = loadTimeData.getString('errorCode');
-    $('error-code').classList.remove(HIDDEN_CLASS);
+  const body = document.querySelector('#body');
+  if (ssl || blockedInterception) {
+    body.classList.add(badClock ? 'bad-clock' : 'ssl');
+    if (loadTimeData.valueExists('errorCode')) {
+      const errorCode = document.querySelector('#error-code');
+      errorCode.textContent = loadTimeData.getString('errorCode');
+      errorCode.classList.remove(HIDDEN_CLASS);
+    }
   } else if (captivePortal) {
-    $('body').classList.add('captive-portal');
+    body.classList.add('captive-portal');
   } else if (billing) {
-    $('body').classList.add('safe-browsing-billing');
+    body.classList.add('safe-browsing-billing');
   } else if (lookalike) {
-    $('body').classList.add('lookalike-url');
+    body.classList.add('lookalike-url');
   } else if (insecureForm) {
-    $('body').classList.add('insecure-form');
+    body.classList.add('insecure-form');
+  } else if (httpsOnly) {
+    body.classList.add('https-only');
   } else {
-    $('body').classList.add('safe-browsing');
+    body.classList.add('safe-browsing');
     // Override the default theme color.
     document.querySelector('meta[name=theme-color]').setAttribute('content',
-      'rgb(206, 52, 38)');
+      'rgb(217, 48, 37)');
   }
 
-  $('icon').classList.add('icon');
+  document.querySelector('#icon').classList.add('icon');
 
-  if (legacyTls) {
-    $('icon').classList.add('legacy-tls');
-  }
-
+  const primaryButton = document.querySelector('#primary-button');
   if (hidePrimaryButton) {
-    $('primary-button').classList.add(HIDDEN_CLASS);
+    primaryButton.classList.add(HIDDEN_CLASS);
   } else {
-    $('primary-button').addEventListener('click', function() {
+    primaryButton.addEventListener('click', function() {
       switch (interstitialType) {
         case 'CAPTIVE_PORTAL':
           sendCommand(SecurityInterstitialCommandId.CMD_OPEN_LOGIN);
           break;
 
         case 'SSL':
-        case 'LEGACY_TLS':
           if (badClock) {
             sendCommand(SecurityInterstitialCommandId.CMD_OPEN_DATE_SETTINGS);
           } else if (overridable) {
@@ -129,22 +132,23 @@ function setupEvents() {
         case 'ORIGIN_POLICY':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
+        case 'HTTPS_ONLY':
         case 'INSECURE_FORM':
         case 'LOOKALIKE':
           sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
           break;
 
         default:
-          throw 'Invalid interstitial type';
+          throw new Error('Invalid interstitial type');
       }
     });
   }
 
-  if (lookalike || insecureForm) {
-    const proceedButton = 'proceed-button';
-    $(proceedButton).classList.remove(HIDDEN_CLASS);
-    $(proceedButton).textContent = loadTimeData.getString('proceedButtonText');
-    $(proceedButton).addEventListener('click', function(event) {
+  if (lookalike || insecureForm || httpsOnly) {
+    const proceedButton = document.querySelector('#proceed-button');
+    proceedButton.classList.remove(HIDDEN_CLASS);
+    proceedButton.textContent = loadTimeData.getString('proceedButtonText');
+    proceedButton.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
     });
   }
@@ -152,71 +156,77 @@ function setupEvents() {
     // Lookalike interstitials with a suggested URL have a link in the title:
     // "Did you mean <link>example.com</link>?". Handle those clicks. Lookalike
     // interstitails without a suggested URL don't have this link.
-    const dontProceedLink = 'dont-proceed-link';
-    if ($(dontProceedLink)) {
-      $(dontProceedLink).addEventListener('click', function(event) {
+    const dontProceedLink = document.querySelector('#dont-proceed-link');
+    if (dontProceedLink) {
+      dontProceedLink.addEventListener('click', function(event) {
         sendCommand(SecurityInterstitialCommandId.CMD_DONT_PROCEED);
       });
     }
   }
 
   if (overridable) {
-    const overrideElement = billing ? 'proceed-button' : 'proceed-link';
+    const overrideElement =
+        document.querySelector(billing ? '#proceed-button' : '#proceed-link');
     // Captive portal page isn't overridable.
-    $(overrideElement).addEventListener('click', function(event) {
+    overrideElement.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
     });
 
     if (ssl) {
-      $(overrideElement).classList.add('small-link');
+      overrideElement.classList.add('small-link');
     } else if (billing) {
-      $(overrideElement).classList.remove(HIDDEN_CLASS);
-      $(overrideElement).textContent =
-          loadTimeData.getString('proceedButtonText');
+      overrideElement.classList.remove(HIDDEN_CLASS);
+      overrideElement.textContent = loadTimeData.getString('proceedButtonText');
     }
   } else if (!ssl) {
-    $('final-paragraph').classList.add(HIDDEN_CLASS);
+    document.querySelector('#final-paragraph').classList.add(HIDDEN_CLASS);
   }
 
 
   if (!ssl || !showRecurrentErrorParagraph) {
-    $('recurrent-error-message').classList.add(HIDDEN_CLASS);
+    document.querySelector('#recurrent-error-message')
+        .classList.add(HIDDEN_CLASS);
   } else {
-    $('body').classList.add('showing-recurrent-error-message');
+    body.classList.add('showing-recurrent-error-message');
   }
 
-  if ($('diagnostic-link')) {
-    $('diagnostic-link').addEventListener('click', function(event) {
+  const diagnosticLink = document.querySelector('#diagnostic-link');
+  if (diagnosticLink) {
+    diagnosticLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_DIAGNOSTIC);
     });
   }
 
-  if ($('learn-more-link')) {
-    $('learn-more-link').addEventListener('click', function(event) {
+  const learnMoreLink = document.querySelector('#learn-more-link');
+  if (learnMoreLink) {
+    learnMoreLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER);
     });
   }
 
-  if (captivePortal || billing || lookalike || insecureForm) {
-    // Captive portal, billing, lookalike pages, and insecure form
-    // interstitials don't have details buttons.
-    $('details-button').classList.add('hidden');
+  const detailsButton = document.querySelector('#details-button');
+  if (captivePortal || billing || lookalike || insecureForm || httpsOnly) {
+    // Captive portal, billing, lookalike pages, insecure form, and
+    // HTTPS only mode interstitials don't have details buttons.
+    detailsButton.classList.add('hidden');
   } else {
-    $('details-button')
-        .setAttribute(
-            'aria-expanded', !$('details').classList.contains(HIDDEN_CLASS));
-    $('details-button').addEventListener('click', function(event) {
-      const hiddenDetails = $('details').classList.toggle(HIDDEN_CLASS);
-      $('details-button').setAttribute('aria-expanded', !hiddenDetails);
+    detailsButton.setAttribute(
+        'aria-expanded',
+        !document.querySelector('#details').classList.contains(HIDDEN_CLASS));
+    detailsButton.addEventListener('click', function(event) {
+      const hiddenDetails =
+          document.querySelector('#details').classList.toggle(HIDDEN_CLASS);
+      detailsButton.setAttribute('aria-expanded', !hiddenDetails);
 
+      const mainContent = document.querySelector('#main-content');
       if (mobileNav) {
         // Details appear over the main content on small screens.
-        $('main-content').classList.toggle(HIDDEN_CLASS, !hiddenDetails);
+        mainContent.classList.toggle(HIDDEN_CLASS, !hiddenDetails);
       } else {
-        $('main-content').classList.remove(HIDDEN_CLASS);
+        mainContent.classList.remove(HIDDEN_CLASS);
       }
 
-      $('details-button').innerText = hiddenDetails ?
+      detailsButton.innerText = hiddenDetails ?
           loadTimeData.getString('openDetails') :
           loadTimeData.getString('closeDetails');
       if (!expandedDetails) {
@@ -227,20 +237,15 @@ function setupEvents() {
     });
   }
 
-  if ($('report-error-link')) {
-    $('report-error-link').addEventListener('click', function(event) {
+  const reportErrorLink = document.querySelector('#report-error-link');
+  if (reportErrorLink) {
+    reportErrorLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR);
     });
   }
 
   if (lookalike) {
-    console.log(
-        'Chrome has determined that ' +
-        loadTimeData.getString('lookalikeRequestHostname') +
-        ' could be fake or fraudulent.\n\n' +
-        'If you believe this is shown in error please visit ' +
-        'https://bugs.chromium.org/p/chromium/issues/entry?' +
-        'template=Safety+Tips+Appeals');
+    console.warn(loadTimeData.getString('lookalikeConsoleMessage'));
   }
 
   preventDefaultOnPoundLinkClicks();

@@ -1,0 +1,635 @@
+// Copyright 2014 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for calls to the CryptAuth back-end. The DeviceSync service
+// performs two main functions:
+//   (1) Enroll (i.e., register) the Chromebook with the CryptAuth server by
+//       providing information about the device.
+//   (2) Download metadata about other devices associated with the user's
+//       account.
+//
+// This file defines the protocol messages and enums used to perform these RPCs.
+syntax = "proto2";
+
+package cryptauth;
+
+option optimize_for = LITE_RUNTIME;
+
+// Basic device information used to classify the source of a request.
+message DeviceClassifier {
+  // The Operating System version number on the device.
+  // (e.g., an android.os.Build.VERSION.SDK_INT)
+  optional int64 device_os_version_code = 14;
+
+  // The software version number running on the device
+  // (e.g., GmsCore version code).
+  optional int64 device_software_version_code = 18;
+
+  // Software package information if applicable
+  // (e.g., com.google.android.apps.authenticator2).
+  optional string device_software_package = 19;
+
+  // Device type/platform.
+  optional string device_type = 32 [default = "unknown"];
+}
+
+enum DeviceType {
+  UNKNOWN = 0;
+  ANDROID = 1;
+  CHROME = 2;
+  IOS = 3;
+  BROWSER = 4;
+}
+
+// MultiDevice features which may be supported and enabled on a device.
+enum SoftwareFeature {
+  UNKNOWN_FEATURE = 0;
+  BETTER_TOGETHER_HOST = 1;
+  BETTER_TOGETHER_CLIENT = 2;
+  EASY_UNLOCK_HOST = 3;
+  EASY_UNLOCK_CLIENT = 4;
+  MAGIC_TETHER_HOST = 5;
+  MAGIC_TETHER_CLIENT = 6;
+  SMS_CONNECT_HOST = 7;
+  SMS_CONNECT_CLIENT = 8;
+  PHONE_HUB_HOST = 9;
+  PHONE_HUB_CLIENT = 10;
+  WIFI_SYNC_HOST = 11;
+  WIFI_SYNC_CLIENT = 12;
+  ECHE_HOST = 13;
+  ECHE_CLIENT = 14;
+  PHONE_HUB_CAMERA_ROLL_HOST = 15;
+  PHONE_HUB_CAMERA_ROLL_CLIENT = 16;
+}
+
+// A seed used to feed an EID BLE advertisement for some time period. This
+// key is specific to the device being targeted by the advertisement.
+// Next ID: 4
+message BeaconSeed {
+  // The actual key bytes.
+  optional bytes data = 1;
+
+  // The time at which this key becomes active.
+  optional int64 start_time_millis = 2;
+
+  // The time at which this key becomes inactive.
+  optional int64 end_time_millis = 3;
+}
+
+// Device information provided to external clients that need to sync
+// device state.
+message ExternalDeviceInfo {
+  // A cryptographic public key associated with the device.
+  // The format of this key is a serialized SecureMessage.GenericPublicKey
+  // for all GCM_V1 devices.
+  optional bytes public_key = 1;
+
+  // A user friendly (human readable) name for this device.
+  optional string friendly_device_name = 2;
+
+  // If available, the device's bluetooth MAC address
+  optional string bluetooth_address = 3;
+
+  // Whether or not this device can be used as an unlock key
+  optional bool unlock_key = 4 [default = false];
+
+  // Whether or not this device can be unlocked
+  optional bool unlockable = 5 [default = false];
+
+  // The last time this device updated its info with the server.
+  optional int64 last_update_time_millis = 6;
+
+  // Whether or not this device hardware supports providing a mobile hotspot.
+  optional bool mobile_hotspot_supported = 7 [default = false];
+
+  // The type of the device (e.g. Android vs iOS).
+  optional string device_type = 8 [default = "unknown"];
+
+  // A list of seeds for EID BLE advertisements targeting this device.
+  repeated BeaconSeed beacon_seeds = 9;
+
+  // Whether this device is an ARC++ device enrolled via gmscore.
+  optional bool arc_plus_plus = 10 [default = false];
+
+  // Whether this is a "Pixel Experience" phone.
+  optional bool pixel_phone = 11 [default = false];
+
+  // A list of multi-device software features supported by the device.
+  repeated string supported_software_features = 12;
+
+  // A list of multi-device software features currently enabled (active) on the
+  // device.
+  repeated string enabled_software_features = 13;
+
+  // A device model name that's guaranteed not to contain any PII.
+  optional string no_pii_device_name = 14;
+}
+
+// Determine if the calling device is allowed to promote the SmartLock
+// feature to the user and contact the user's authzen enrolled devices to make
+// them update their enrollments and to check if they're reachable (we don't
+// want to show a promotional popup if the user has no reachable devices).
+message FindEligibleForPromotionRequest {
+  // The public key of the device that is asking us whether it should show
+  // promotional material. Required.
+  optional bytes promoter_public_key = 2;
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 3;
+}
+
+// Contains the authzen transaction id that the caller can use to check if
+// there are reachable devices.
+message FindEligibleForPromotionResponse {
+  // Whether the caller is allowed to show promotional material.
+  optional bool may_show_promo = 1;
+}
+
+// Request for a list of devices that could be used as Unlock Keys, optionally
+// requesting a callback over bluetooth (for proximity detection).
+message FindEligibleUnlockDevicesRequest {
+  // A bluetooth MAC address to be contacted if a device that may be eligible
+  // for unlock is nearby. If set, a message will be pushed to all eligible
+  // unlock devices requesting that they contact the specified MAC address. If
+  // this field is left unset, no callback will be made, and no message will be
+  // pushed to the user's devices.
+  optional string callback_bluetooth_address = 2;
+
+  // During setup, we call find and sendDeviceSyncTickle. If no devices are
+  // found, we call find again, in hopes that the tickle caused a state
+  // change that made some device eligible. This is the count for these
+  // retries (in practice, this will always be 0 or 1).
+  // Should always be set.
+  optional int32 retry_count = 3;
+
+  // If present and positive, the devices must have been updated within this
+  // many milliseconds of the RPC in order to be considered eligible.
+  optional int64 max_last_update_time_delta_millis = 4;
+
+  // If true, we will not examine the push connectivity status of devices
+  // when determining eligibility.
+  optional bool offline_allowed = 5 [default = false];
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 6;
+
+  // The version of the setup protocol that the calling device expects to use.
+  optional int32 protocol_version = 7;
+
+  // The feature for which eligibility should be checked. Note that this RPC is
+  // overloaded instead of adding new RPCs due to the ongoing V2 transition.
+  // See go/unified-better-together-cryptauth for more details.
+  optional string feature = 8 [default = "easyUnlockHost"];
+}
+
+// Response containing a list of devices that could be made Unlock Keys
+message FindEligibleUnlockDevicesResponse {
+  // Devices that could be made Unlock Keys (even if they aren't enabled yet)
+  repeated ExternalDeviceInfo eligible_devices = 1;
+
+  // Devices that cannot be made unlock keys, and reasons for this. This list
+  // will not contain any non-gms core devices, even though these are also not
+  // eligible to be unlock keys.
+  repeated IneligibleDevice ineligible_devices = 2;
+}
+
+// Request to complete a device enrollment.
+message FinishEnrollmentRequest {
+  // The enrollment session identifer from the <code>setup</code> response.
+  optional bytes enrollment_session_id = 2;
+
+  // An encrypted payload containing enrollment information for the device.
+  optional bytes enrollment_message = 3;
+
+  // A Diffie-Hellman public key for the device, to complete the key exchange.
+  optional bytes device_ephemeral_key = 4;
+
+  // An integer encoding the reason this enrollment was invoked (triggered).
+  // See InvocationReason enum for definitions.
+  optional int32 invocation_reason = 11 [default = 0];
+
+  // How many retries of this operation have happened thus far.
+  optional int32 retry_count = 12 [default = 0];
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 13;
+}
+
+// Response indicating whether a device enrollment completed successfully.
+message FinishEnrollmentResponse {
+  // Status should be OK if the request was successful.
+  optional string status = 1;
+
+  // A detailed error message if there was a failure.
+  optional string error_message = 2;
+}
+
+// Device info uploaded during enrollment.
+message GcmDeviceInfo {
+  // This field's name does not match the one in DeviceInfo for legacy reasons.
+  // Consider using long_device_id and device_type instead when enrolling
+  // non-android devices.
+  optional fixed64 android_device_id = 1;
+
+  // Used for device_address of DeviceInfo field 2, but for GCM capable devices.
+  optional bytes gcm_registration_id = 102;
+
+  // Used for device_address of DeviceInfo field 2, but for iOS devices.
+  optional bytes apn_registration_id = 202;
+
+  // Has the user enabled the associated apn_registration_id for notifications.
+  optional bool apn_notification_enabled = 203 [default = false];
+
+  // Used for device_address of DeviceInfo field 2, a Bluetooth Mac address for
+  // the device (e.g., to be used with EasyUnlock).
+  optional string bluetooth_mac_address = 302;
+
+  // SHA-256 hash of the device authzen key (from the key exchange).
+  // Differs from DeviceInfo field 3, which contains the actual symmetric key.
+  optional bytes device_authzen_key_hash = 103;
+
+  // A SecureMessage.EcP256PublicKey.
+  required bytes user_public_key = 4;
+
+  // device's model name
+  // (e.g., an android.os.Build.MODEL or UIDevice.model).
+  optional string device_model = 7;
+
+  // device's locale
+  optional string locale = 8;
+
+  // The handle for user_public_key (and implicitly, a authzen key).
+  optional bytes key_handle = 9;
+
+  // The initial counter value for the device, sent by the device.
+  optional int64 counter = 12 [default = 0];
+
+  // The Operating System version on the device
+  // (e.g., an android.os.Build.DISPLAY or UIDevice.systemVersion).
+  optional string device_os_version = 13;
+
+  // The Operating System version number on the device
+  // (e.g., an android.os.Build.VERSION.SDK_INT).
+  optional int64 device_os_version_code = 14;
+
+  // The Operating System release on the device
+  // (e.g., an android.os.Build.VERSION.RELEASE).
+  optional string device_os_release = 15;
+
+  // The Operating System codename on the device
+  // (e.g., an android.os.Build.VERSION.CODENAME or UIDevice.systemName).
+  optional string device_os_codename = 16;
+
+  // The software version running on the device
+  // (e.g., Authenticator app version string).
+  optional string device_software_version = 17;
+
+  // The software version number running on the device
+  // (e.g., Authenticator app version code).
+  optional int64 device_software_version_code = 18;
+
+  // Software package information if applicable
+  // (e.g., com.google.android.apps.authenticator2).
+  optional string device_software_package = 19;
+
+  // Size of the display in thousandths of an inch (e.g., 7000 mils = 7 in).
+  optional int32 device_display_diagonal_mils = 22;
+
+  // For Authzen capable devices, their Authzen protocol version.
+  optional int32 device_authzen_version = 24;
+
+  // Not all devices have device identifiers that fit in 64 bits.
+  optional bytes long_device_id = 29;
+
+  // The device manufacturer name
+  // (e.g., android.os.Build.MANUFACTURER).
+  optional string device_manufacturer = 31;
+
+  // Used to indicate which type of device this is.
+  optional DeviceType device_type = 32 [default = ANDROID];
+
+  // Fields corresponding to screenlock type/features and hardware features
+  // should be numbered in the 400 range.
+
+  // Is this device using  a secure screenlock (e.g., pattern or pin unlock)
+  optional bool using_secure_screenlock = 400 [default = false];
+
+  // Is auto-unlocking the screenlock (e.g., when at "home") supported?
+  optional bool auto_unlock_screenlock_supported = 401 [default = false];
+
+  // Is auto-unlocking the screenlock (e.g., when at "home") enabled?
+  optional bool auto_unlock_screenlock_enabled = 402 [default = false];
+
+  // Does the device have a Bluetooth (classic) radio?
+  optional bool bluetooth_radio_supported = 403 [default = false];
+
+  // Is the Bluetooth (classic) radio on?
+  optional bool bluetooth_radio_enabled = 404 [default = false];
+
+  // Does the device hardware support a mobile data connection?
+  optional bool mobile_data_supported = 405 [default = false];
+
+  // Does the device support tethering?
+  optional bool tethering_supported = 406 [default = false];
+
+  // Does the device have a BLE radio?
+  optional bool ble_radio_supported = 407 [default = false];
+
+  // Is the device a "Pixel Experience" Android device?
+  optional bool pixel_experience = 408 [default = false];
+
+  // Is the device running in the ARC++ container on a chromebook?
+  optional bool arc_plus_plus = 409 [default = false];
+
+  // Is the value set in |using_secure_screenlock| reliable? On some Android
+  // devices, the platform API to get the screenlock state is not trustworthy.
+  // See b/32212161.
+  optional bool is_screenlock_state_flaky = 410 [default = false];
+
+  // A list of multi-device software features supported by the device.
+  repeated SoftwareFeature supported_software_features = 411;
+
+  // Previously, field 412 referred to "enabled_software_features". However,
+  // this is not an intrinsic property of a device type, so this field has been
+  // removed.
+
+  // The enrollment session id this is sent with
+  optional bytes enrollment_session_id = 1000;
+
+  // A copy of the user's OAuth token
+  optional string oauth_token = 1001;
+}
+
+message GcmMetadata {
+  required MessageType type = 1;
+  optional int32 version = 2 [default = 0];
+}
+
+// Request for a listing of a user's own devices.
+message GetMyDevicesRequest {
+  // Return only devices that can act as EasyUnlock keys.
+  optional bool approved_for_unlock_required = 2;
+
+  // Allow the returned list to be somewhat out of date (read will be faster).
+  optional bool allow_stale_read = 3 [default = false];
+
+  // An integer encoding the reason this request was invoked (triggered).
+  // See InvocationReason enum for definitions.
+  optional int32 invocation_reason = 4 [default = 0];
+
+  // How many retries of this operation have happened thus far.
+  optional int32 retry_count = 5 [default = 0];
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 6;
+}
+
+// Response containing a listing of the users devices.
+message GetMyDevicesResponse {
+  // A listing of all sync-able devices.
+  repeated ExternalDeviceInfo devices = 1;
+}
+
+// Reasons why the server thinks a certain device is not eligible to be an
+// EasyUnlock key.
+enum IneligibilityReason {
+  UNKNOWN_INELIGIBILITY_REASON = 0;
+
+  // The screen is larger than 6.9 inches (which most likely means this is
+  // a tablet).
+  SCREEN_TOO_LARGE = 1;
+
+  // The device has reported that it does not support bluetooth.
+  BLUETOOTH_NOT_SUPPORTED = 2;
+
+  // The devices last known credentials are no longer valid.
+  INVALID_CREDENTIALS = 3;
+
+  // The device has reported that it does not support auto-unlocking.
+  AUTO_UNLOCKING_NOT_SUPPORTED = 4;
+
+  // We think the device is offline.
+  DEVICE_OFFLINE = 5;
+
+  // The database entry for this device was not updated in the last
+  // max_last_update_time_delta_millis (see FindEligibleUnlockDevicesRequest).
+  NO_RECENT_UPDATES = 6;
+
+  // Operating system version is not accepted.
+  BAD_OS_VERSION = 7;
+
+  // SmartLock client software version is not accepted.
+  BAD_DEVICE_SOFTWARE_VERSION = 8;
+
+  // Feature is not in supported_software_features for this device.
+  FEATURE_UNSUPPORTED = 9;
+}
+
+// A device that the server thinks is not eligible to be an unlock key, and the
+// reason for this.
+message IneligibleDevice {
+  // The device that is not eligible to be an unlock key.
+  optional ExternalDeviceInfo device = 1;
+
+  // The reasons why the server thinks it is not an unlock key.
+  // NOTE: for now, this list of reasons will contain exactly one element.
+  // It is a repeated field because, in principle, there can be more than
+  // one reason that makes a device not eligible to be an unlock key,
+  // and we want to be able to add multiple reasons in the future.
+  repeated IneligibilityReason reasons = 2;
+}
+
+// A list of "reasons" that can be provided for calling server-side APIs.
+// This is particularly important for calls that can be triggered by different
+// kinds of events.
+// NOTE: Added INVOCATION_* prefix to enum names due to name conflict with
+// preprocessor MACRO on Windows.
+enum InvocationReason {
+  INVOCATION_REASON_UNKNOWN = 0;
+  // First run of the software package invoking this call.
+  INVOCATION_REASON_INITIALIZATION = 1;
+  // Ordinary periodic actions (e.g. monthly key rotation).
+  INVOCATION_REASON_PERIODIC = 2;
+  // Slow-cycle periodic action (e.g. yearly keypair rotation???).
+  INVOCATION_REASON_SLOW_PERIODIC = 3;
+  // Fast-cycle periodic action (e.g. daily sync for Smart Lock users).
+  INVOCATION_REASON_FAST_PERIODIC = 4;
+  // Expired state (e.g. expired credentials, or cached entries) was detected.
+  INVOCATION_REASON_EXPIRATION = 5;
+  // An unexpected protocol failure occurred (so attempting to repair state).
+  INVOCATION_REASON_FAILURE_RECOVERY = 6;
+  // A new account has been added to the device.
+  INVOCATION_REASON_NEW_ACCOUNT = 7;
+  // An existing account on the device has been changed.
+  INVOCATION_REASON_CHANGED_ACCOUNT = 8;
+  // The user toggled the state of a feature (e.g. Smart Lock enabled via BT).
+  INVOCATION_REASON_FEATURE_TOGGLED = 9;
+  // A "push" from the server caused this action (e.g. a sync tickle).
+  INVOCATION_REASON_SERVER_INITIATED = 10;
+  // A local address change triggered this (e.g. GCM registration id changed).
+  INVOCATION_REASON_ADDRESS_CHANGE = 11;
+  // A software update has triggered this.
+  INVOCATION_REASON_SOFTWARE_UPDATE = 12;
+  // A manual action by the user triggered this (e.g. commands sent via adb).
+  INVOCATION_REASON_MANUAL = 13;
+}
+
+// Note: This is the same enum as securegcm.Type in securegcm.proto in the
+// server definitions. Renamed for clarity here.
+enum MessageType {
+  ENROLLMENT = 0;
+  TICKLE = 1;
+  TX_REQUEST = 2;
+  TX_REPLY = 3;
+  TX_SYNC_REQUEST = 4;
+  TX_SYNC_RESPONSE = 5;
+  TX_PING = 6;
+  DEVICE_INFO_UPDATE = 7;
+  TX_CANCEL_REQUEST = 8;
+  PROXIMITYAUTH_PAIRING = 10;
+  GCMV1_IDENTITY_ASSERTION = 11;
+
+  // Device-to-device communications are protected by an unauthenticated
+  // Diffie-Hellman exchange. The InitiatorHello message is simply the
+  // initiator's public DH key, and is not encoded as a SecureMessage, so
+  // it doesn't have a tag.
+  // The ResponderHello message (which is sent by the responder
+  // to the initiator), on the other hand, carries a payload that is protected
+  // by the derived shared key. It also contains the responder's
+  // public DH key. ResponderHelloAndPayload messages have the
+  // DEVICE_TO_DEVICE_RESPONDER_HELLO tag.
+  DEVICE_TO_DEVICE_RESPONDER_HELLO_PAYLOAD = 12;
+
+  // Device-to-device communications are protected by an unauthenticated
+  // Diffie-Hellman exchange. Once the initiator and responder
+  // agree on a shared key (through Diffie-Hellman), they will use messages
+  // tagged with DEVICE_TO_DEVICE_MESSAGE to exchange data.
+  DEVICE_TO_DEVICE_MESSAGE = 13;
+
+  // Notification to let a device know it should contact a nearby device.
+  DEVICE_PROXIMITY_CALLBACK = 14;
+
+  // Device-to-device communications are protected by an unauthenticated
+  // Diffie-Hellman exchange. During device-to-device authentication, the first
+  // message from initiator (the challenge) is signed and put into the payload
+  // of the message sent back to the initiator.
+  UNLOCK_KEY_SIGNED_CHALLENGE = 15;
+}
+
+// GCM tickles related to registration management.
+enum RegistrationTickleType {
+  UNKNOWN_REGISTRATION_TICKLE_TYPE = 0;
+
+  // Force a re-enrollment with the server.
+  FORCE_ENROLLMENT = 1;
+
+  // Update enrollment information with the server. This could either be an
+  // authzen re-enrollment or a SyncTx.
+  UPDATE_ENROLLMENT = 2;
+
+  // Devices that receive this should sync the user's list of devices.
+  DEVICES_SYNC = 3;
+}
+
+// Requests to send a "tickle" requesting to sync all of a user's devices now
+message SendDeviceSyncTickleRequest {
+  // The type of tickle. *_ENROLLMENT tickles will only be sent to
+  // android devices. DEVICES_SYNC will be sent to chromebooks and android
+  // devices. UNKNOWN_TICKLE_TYPE or absent will be treated as
+  // UPDATE_ENROLLMENT.
+  // This field will also determine GCM parameters, such as
+  // TTL and collapse token.
+  optional RegistrationTickleType tickle_type = 3;
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 4;
+}
+
+message SendDeviceSyncTickleResponse {
+  // empty for now.
+}
+
+// Contains information needed to begin a device enrollment.
+message SetupEnrollmentInfo {
+  // Type of protocol this setup information was requested for.
+  optional string type = 1;
+
+  // A session identifier to be used for this enrollment session.
+  optional bytes enrollment_session_id = 2;
+
+  // A Diffie-Hellman public key used to perform a key exchange during
+  // enrollment.
+  optional bytes server_ephemeral_key = 3;
+}
+
+// Requests information needed to begin a device enrollment.
+message SetupEnrollmentRequest {
+  // Deprecated. See <code>application_id</code>.
+  optional string origin = 2;
+
+  // Type(s) of protocol supported by this enrolling device (e.g. "gcmV1").
+  repeated string types = 3;
+
+  // Indicates whether a legacy crypto suite must be used with this device.
+  optional bool use_legacy_crypto = 4;
+
+  // A URL describing which application facets this enrollment can be used (see
+  // http://go/appid).
+  optional string application_id = 5;
+
+  // An integer encoding the reason this enrollment was invoked (triggered).
+  // See InvocationReason enum for definitions.
+  optional int32 invocation_reason = 6 [default = 0];
+
+  // How many retries of this operation have happened thus far.
+  optional int32 retry_count = 7 [default = 0];
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 8;
+}
+
+// Contains information needed to begin a device enrollment.
+message SetupEnrollmentResponse {
+  // Should return OK if the request was well formed.
+  optional string status = 1;
+
+  // Information for each of the requested protocol <code>type</code>s.
+  repeated SetupEnrollmentInfo infos = 2;
+}
+
+// Used to enable or disable EasyUnlock features on a specified device, and also
+// causes other devices to sync the new EasyUnlock state.
+message ToggleEasyUnlockRequest {
+  // If true, Easy Unlock will be enabled for the device with public key equal
+  // to public_key. Otherwise, it will be disabled for that device.
+  optional bool enable = 1;
+
+  // Encoded public key of the device to enable/disable (here you must use the
+  // same exact encoding that was sent during device enrollment).
+  optional bytes public_key = 2;
+
+  // If true, EasyUnlock enabled state will be set to the value of "enable" for
+  // all of a user's devices. This is the same as calling the toggle RPC for
+  // every device. However, this removes the need for calling GetMyDevices, so
+  // it reduces network overhead. If this field is set "public_key" must not be
+  // set.  NOTE: the case enable=true is not yet supported, so this option can
+  // only disable EasyUnlock for all devices.
+  optional bool apply_to_all = 3;
+
+  // Information about the requesting device and its platform.
+  optional DeviceClassifier device_classifier = 4;
+
+  // The feature for which enabled state should be toggled. Note that this RPC
+  // is overloaded instead of adding new RPCs due to the ongoing V2 transition.
+  // See go/unified-better-together-cryptauth for more details.
+  optional string feature = 5 [default = "easyUnlockHost"];
+
+  // True if enabling one device for this feature should disable all others on
+  // the account.
+  optional bool is_exclusive = 6 [default = true];
+}
+
+message ToggleEasyUnlockResponse {
+  // empty for now.
+}

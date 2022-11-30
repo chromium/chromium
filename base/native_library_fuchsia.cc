@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
 
-#include "base/base_paths_fuchsia.h"
+#include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base_paths.h"
 
 namespace base {
 
@@ -36,26 +37,35 @@ std::string NativeLibraryLoadError::ToString() const {
 NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
                                            const NativeLibraryOptions& options,
                                            NativeLibraryLoadError* error) {
-  std::vector<base::FilePath::StringType> components;
-  library_path.GetComponents(&components);
-  if (components.size() != 1u) {
-    NOTREACHED() << "library_path is a path, should be a filename: "
-                 << library_path.MaybeAsASCII();
-    return nullptr;
-  }
-
   FilePath computed_path;
-  base::PathService::Get(DIR_SOURCE_ROOT, &computed_path);
-  computed_path = computed_path.AppendASCII("lib").Append(components[0]);
+  FilePath library_root_path =
+      base::PathService::CheckedGet(DIR_ASSETS).Append("lib");
+  if (library_path.IsAbsolute()) {
+    // See more info in fxbug.dev/105910.
+    if (!library_root_path.IsParent(library_path)) {
+      auto error_message =
+          base::StringPrintf("Absolute library paths must begin with %s",
+                             library_root_path.value().c_str());
+      DLOG(ERROR) << error_message;
+      if (error) {
+        error->message = std::move(error_message);
+      }
+      return nullptr;
+    }
+    computed_path = library_path;
+  } else {
+    computed_path = library_root_path.Append(library_path);
+  }
 
   // Use fdio_open_fd (a Fuchsia-specific API) here so we can pass the
   // appropriate FS rights flags to request executability.
-  // TODO(1018538): Teach base::File about FLAG_EXECUTE on Fuchsia, and then
-  // use it here instead of using fdio_open_fd() directly.
+  // TODO(crbug.com/1018538): Teach base::File about FLAG_WIN_EXECUTE on
+  // Fuchsia, and then use it here instead of using fdio_open_fd() directly.
   base::ScopedFD fd;
   zx_status_t status = fdio_open_fd(
       computed_path.value().c_str(),
-      fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_EXECUTABLE,
+      static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                            fuchsia::io::OpenFlags::RIGHT_EXECUTABLE),
       base::ScopedFD::Receiver(fd).get());
   if (status != ZX_OK) {
     if (error) {

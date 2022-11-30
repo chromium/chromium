@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash, "Only ash builds can depend on //chromeos/ash")
+
+mojom("mojom") {
+  sources = [ "auth_factor_config.mojom" ]
+  webui_module_path = "chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom"
+}

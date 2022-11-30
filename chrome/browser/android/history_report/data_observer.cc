@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,8 @@ void DataObserver::BookmarkNodeMoved(BookmarkModel* model,
 
 void DataObserver::BookmarkNodeAdded(BookmarkModel* model,
                                      const BookmarkNode* parent,
-                                     size_t index) {
+                                     size_t index,
+                                     bool added_by_user) {
   delta_file_service_->PageAdded(parent->children()[index]->url());
   data_changed_callback_.Run();
 }
@@ -94,36 +95,23 @@ void DataObserver::DeleteBookmarks(const std::set<GURL>& removed_urls) {
 }
 
 void DataObserver::OnURLVisited(history::HistoryService* history_service,
-                                ui::PageTransition transition,
-                                const history::URLRow& row,
-                                const history::RedirectList& redirects,
-                                base::Time visit_time) {
-  if (row.hidden() || ui::PageTransitionIsRedirect(transition))
+                                const history::URLRow& url_row,
+                                const history::VisitRow& new_visit) {
+  if (url_row.hidden() || ui::PageTransitionIsRedirect(new_visit.transition))
     return;
 
-  delta_file_service_->PageAdded(row.url());
+  delta_file_service_->PageAdded(url_row.url());
   // TODO(haaawk): check if this is really a data change not just a
   //               visit of already seen page.
   data_changed_callback_.Run();
-  std::string id = DeltaFileEntryWithData::UrlToId(row.url().spec());
+  std::string id = DeltaFileEntryWithData::UrlToId(url_row.url().spec());
   usage_reports_buffer_service_->AddVisit(
-      id,
-      visit_time.ToJavaTime(),
-      usage_report_util::IsTypedVisit(transition));
+      id, new_visit.visit_time.ToJavaTime(),
+      usage_report_util::IsTypedVisit(new_visit.transition));
   // We stop any usage reporting to wait for gmscore to query the provider
   // for this url. We do not want to report usage for a URL which might
   // not be known to gmscore.
   stop_reporting_callback_.Run();
-}
-
-void DataObserver::OnURLsModified(history::HistoryService* history_service,
-                                  const history::URLRows& changed_urls) {
-  for (const auto& row : changed_urls) {
-    if (!row.hidden())
-      delta_file_service_->PageAdded(row.url());
-  }
-
-  data_changed_callback_.Run();
 }
 
 void DataObserver::OnURLsDeleted(history::HistoryService* history_service,

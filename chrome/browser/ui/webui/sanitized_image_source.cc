@@ -1,44 +1,114 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
+#include <map>
+#include <memory>
+#include <string>
+
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "ipc/ipc_channel.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkWebpEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
 
+namespace {
+
+const int64_t kMaxImageSizeInBytes =
+    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
+
+constexpr char kUrlKey[] = "url";
+constexpr char kStaticEncodeKey[] = "staticEncode";
+constexpr char kIsGooglePhotosKey[] = "isGooglePhotos";
+
+std::map<std::string, std::string> ParseParams(
+    const std::string& param_string) {
+  url::Component query(0, param_string.size());
+  url::Component key;
+  url::Component value;
+  constexpr int kMaxUriDecodeLen = 2048;
+  std::map<std::string, std::string> params;
+  while (
+      url::ExtractQueryKeyValue(param_string.c_str(), &query, &key, &value)) {
+    url::RawCanonOutputW<kMaxUriDecodeLen> output;
+    url::DecodeURLEscapeSequences(param_string.c_str() + value.begin, value.len,
+                                  url::DecodeURLMode::kUTF8OrIsomorphic,
+                                  &output);
+    params.insert({param_string.substr(key.begin, key.len),
+                   base::UTF16ToUTF8(
+                       base::StringPiece16(output.data(), output.length()))});
+  }
+  return params;
+}
+
+bool IsGooglePhotosUrl(const GURL& url) {
+  static const char* const kGooglePhotosHostSuffixes[] = {
+      ".ggpht.com",
+      ".google.com",
+      ".googleusercontent.com",
+  };
+
+  for (const char* const suffix : kGooglePhotosHostSuffixes) {
+    if (base::EndsWith(url.host_piece(), suffix))
+      return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+void SanitizedImageSource::DataDecoderDelegate::DecodeAnimation(
+    const std::string& data,
+    DecodeAnimationCallback callback) {
+  base::span<const uint8_t> bytes = base::make_span(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+
+  data_decoder::DecodeAnimation(&data_decoder_, bytes, /*shrink_to_fit=*/true,
+                                kMaxImageSizeInBytes, std::move(callback));
+}
+
 SanitizedImageSource::SanitizedImageSource(Profile* profile)
-    : SanitizedImageSource(
-          profile,
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess(),
-          std::make_unique<ImageDecoderImpl>()) {}
+    : SanitizedImageSource(profile,
+                           profile->GetDefaultStoragePartition()
+                               ->GetURLLoaderFactoryForBrowserProcess(),
+                           std::make_unique<DataDecoderDelegate>()) {}
 
 SanitizedImageSource::SanitizedImageSource(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder)
-    : url_loader_factory_(url_loader_factory),
-      image_decoder_(std::move(image_decoder)),
-      encode_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+    std::unique_ptr<DataDecoderDelegate> delegate)
+    : identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
+      url_loader_factory_(url_loader_factory),
+      data_decoder_delegate_(std::move(delegate)) {}
 
 SanitizedImageSource::~SanitizedImageSource() = default;
 
@@ -52,15 +122,87 @@ void SanitizedImageSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GURL url_param = GURL(url.query());
-  if (!url_param.is_valid() ||
-      url != GURL(base::StrCat(
-                 {chrome::kChromeUIImageURL, "?", url_param.spec()}))) {
+  std::string image_url_or_params = url.query();
+  if (url != GURL(base::StrCat(
+                 {chrome::kChromeUIImageURL, "?", image_url_or_params}))) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
+  RequestAttributes request_attributes;
+  GURL image_url = GURL(image_url_or_params);
+  bool send_auth_token = false;
+  if (!image_url.is_valid()) {
+    // Attempt to parse URL and additional options from params.
+    auto params = ParseParams(image_url_or_params);
+
+    auto url_it = params.find(kUrlKey);
+    if (url_it == params.end()) {
+      std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+      return;
+    }
+    image_url = GURL(url_it->second);
+
+    auto static_encode_it = params.find(kStaticEncodeKey);
+    if (static_encode_it != params.end()) {
+      request_attributes.static_encode = static_encode_it->second == "true";
+    }
+
+    auto google_photos_it = params.find(kIsGooglePhotosKey);
+    if (google_photos_it != params.end() &&
+        google_photos_it->second == "true" && IsGooglePhotosUrl(image_url)) {
+      send_auth_token = true;
+    }
+  }
+  request_attributes.image_url = image_url;
+
   // Download the image body.
+  if (!send_auth_token) {
+    StartImageDownload(std::move(request_attributes), std::move(callback));
+    return;
+  }
+
+  // Request an auth token for downloading the image body.
+  auto fetcher = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+      "sanitized_image_source", identity_manager_,
+      signin::ScopeSet({GaiaConstants::kPhotosModuleImageOAuth2Scope}),
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+      signin::ConsentLevel::kSignin);
+  auto* fetcher_ptr = fetcher.get();
+  fetcher_ptr->Start(base::BindOnce(
+      [](const base::WeakPtr<SanitizedImageSource>& self,
+         std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> fetcher,
+         RequestAttributes request_attributes,
+         content::URLDataSource::GotDataCallback callback,
+         GoogleServiceAuthError error,
+         signin::AccessTokenInfo access_token_info) {
+        if (error.state() != GoogleServiceAuthError::NONE) {
+          LOG(ERROR) << "Failed to authenticate for Google Photos in order to "
+                        "download "
+                     << request_attributes.image_url.spec()
+                     << ". Error message: " << error.ToString();
+          return;
+        }
+
+        request_attributes.access_token_info = access_token_info;
+
+        if (self) {
+          self->StartImageDownload(std::move(request_attributes),
+                                   std::move(callback));
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(fetcher),
+      std::move(request_attributes), std::move(callback)));
+}
+
+SanitizedImageSource::RequestAttributes::RequestAttributes() = default;
+SanitizedImageSource::RequestAttributes::RequestAttributes(
+    const RequestAttributes&) = default;
+SanitizedImageSource::RequestAttributes::~RequestAttributes() = default;
+
+void SanitizedImageSource::StartImageDownload(
+    RequestAttributes request_attributes,
+    content::URLDataSource::GotDataCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("sanitized_image_source", R"(
         semantics {
@@ -69,9 +211,11 @@ void SanitizedImageSource::StartDataRequest(
             "This data source fetches an arbitrary image to be displayed in a "
             "WebUI."
           trigger:
-            "When a WebUI triggers the download of chrome://image?<URL> by "
-            "e.g. setting that URL as a src on an img tag."
-          data: "NONE"
+            "When a WebUI triggers the download of chrome://image?<URL> or "
+            "chrome://image?url=<URL>&isGooglePhotos=<bool> by e.g. setting "
+            "that URL as a src on an img tag."
+          data: "OAuth credentials for the user's Google Photos account when "
+                "isGooglePhotos is true."
           destination: WEBSITE
         }
         policy {
@@ -82,18 +226,26 @@ void SanitizedImageSource::StartDataRequest(
             "disabling the requester WebUI."
         })");
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url_param;
-  loaders_.push_back(
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation));
-  loaders_.back()->DownloadToString(
+  request->url = request_attributes.image_url;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (request_attributes.access_token_info) {
+    request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        "Bearer " + request_attributes.access_token_info->token);
+  }
+
+  auto loader =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&SanitizedImageSource::OnImageLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), loaders_.back().get(),
-                     std::move(callback)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(loader),
+                     std::move(request_attributes), std::move(callback)),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-std::string SanitizedImageSource::GetMimeType(const std::string& path) {
+std::string SanitizedImageSource::GetMimeType(const GURL& url) {
   return "image/png";
 }
 
@@ -104,40 +256,55 @@ bool SanitizedImageSource::ShouldReplaceExistingSource() {
 }
 
 void SanitizedImageSource::OnImageLoaded(
-    network::SimpleURLLoader* loader,
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
     std::unique_ptr<std::string> body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Take loader out of |loaders_| list and store it in a unique_ptr on the
-  // stack to make sure the loader gets cleaned upon return.
-  auto it = std::find_if(
-      loaders_.begin(), loaders_.end(),
-      [loader](const std::unique_ptr<network::SimpleURLLoader>& target) {
-        return loader == target.get();
-      });
-  std::unique_ptr<network::SimpleURLLoader> loader_ptr(std::move(*it));
-  loaders_.erase(it);
 
   if (loader->NetError() != net::OK || !body) {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
-  // Send image body to image decoder in isolated process.
-  image_decoder_->DecodeImage(
-      *body, gfx::Size() /* No particular size desired. */,
-      base::BindOnce(&SanitizedImageSource::OnImageDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  data_decoder_delegate_->DecodeAnimation(
+      *body,
+      base::BindOnce(&SanitizedImageSource::OnAnimationDecoded,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(request_attributes), std::move(callback)));
 }
 
-void SanitizedImageSource::OnImageDecoded(
+void SanitizedImageSource::OnAnimationDecoded(
+    RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
-    const gfx::Image& image) {
+    std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Re-encode vetted image as PNG and send to requester.
-  encode_task_runner_->PostTaskAndReplyWithResult(
+  if (!mojo_frames.size()) {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Re-encode static image as PNG and send to requester.
+  if (request_attributes.static_encode || mojo_frames.size() == 1) {
+    EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
+    return;
+  }
+
+  // The image is animated, re-encode as WebP animated image and send to
+  // requester.
+  EncodeAndReplyAnimatedImage(std::move(callback), std::move(mojo_frames));
+#else
+  // Re-encode as static image for non ChromeOS builds.
+  EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void SanitizedImageSource::EncodeAndReplyStaticImage(
+    content::URLDataSource::GotDataCallback callback,
+    const SkBitmap& bitmap) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           [](const SkBitmap& bitmap) {
@@ -147,6 +314,40 @@ void SanitizedImageSource::OnImageDecoded(
                        ? encoded
                        : base::MakeRefCounted<base::RefCountedBytes>();
           },
-          image.AsBitmap()),
+          bitmap),
+      std::move(callback));
+  return;
+}
+
+void SanitizedImageSource::EncodeAndReplyAnimatedImage(
+    content::URLDataSource::GotDataCallback callback,
+    std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
+  std::vector<gfx::WebpCodec::Frame> frames;
+  for (auto& mojo_frame : mojo_frames) {
+    gfx::WebpCodec::Frame frame;
+    frame.bitmap = mojo_frame->bitmap;
+    frame.duration = mojo_frame->duration.InMilliseconds();
+    frames.push_back(frame);
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::vector<gfx::WebpCodec::Frame>& frames) {
+            SkWebpEncoder::Options options;
+            options.fCompression = SkWebpEncoder::Compression::kLossless;
+            // Lower quality under kLosless compression means compress faster
+            // into larger files.
+            options.fQuality = 0;
+
+            auto encoded = gfx::WebpCodec::EncodeAnimated(frames, options);
+            if (encoded.has_value()) {
+              return base::MakeRefCounted<base::RefCountedBytes>(
+                  encoded.value());
+            }
+
+            return base::MakeRefCounted<base::RefCountedBytes>();
+          },
+          frames),
       std::move(callback));
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,34 +19,35 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_delegate.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/net_buildflags.h"
+#include "net/network_error_logging/network_error_logging_service.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
 
-namespace base {
-namespace android {
+namespace base::android {
 class ApplicationStatusListener;
-}
-}  // namespace base
+}  // namespace base::android
 
 namespace net {
 
@@ -108,35 +109,50 @@ class NET_EXPORT URLRequestContextBuilder {
     ~HttpCacheParams();
 
     // The type of HTTP cache. Default is IN_MEMORY.
-    Type type;
+    Type type = IN_MEMORY;
 
     // The max size of the cache in bytes. Default is algorithmically determined
     // based off available disk space.
-    int max_size;
+    int max_size = 0;
 
     // Whether or not we need to reset the cache due to an experiment change.
-    bool reset_cache;
+    bool reset_cache = false;
 
     // The cache path (when type is DISK).
     base::FilePath path;
 
-#if defined(OS_ANDROID)
+    // A factory to broker file operations. This is needed for network process
+    // sandboxing in some platforms.
+    scoped_refptr<disk_cache::BackendFileOperationsFactory>
+        file_operations_factory;
+
+#if BUILDFLAG(IS_ANDROID)
     // If this is set, will override the default ApplicationStatusListener. This
     // is useful if the cache will not be in the main process.
-    base::android::ApplicationStatusListener* app_status_listener = nullptr;
+    raw_ptr<base::android::ApplicationStatusListener> app_status_listener =
+        nullptr;
 #endif
   };
 
   URLRequestContextBuilder();
-  virtual ~URLRequestContextBuilder();
 
-  // Sets a name for this URLRequestContext. Currently the name is used in
-  // MemoryDumpProvier to annotate memory usage. The name does not need to be
-  // unique.
-  void set_name(const std::string& name) { name_ = name; }
+  URLRequestContextBuilder(const URLRequestContextBuilder&) = delete;
+  URLRequestContextBuilder& operator=(const URLRequestContextBuilder&) = delete;
+
+  virtual ~URLRequestContextBuilder();
 
   // Sets whether Brotli compression is enabled.  Disabled by default;
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
+
+  // Sets the |check_cleartext_permitted| flag, which controls whether to check
+  // system policy before allowing a cleartext http or ws request.
+  void set_check_cleartext_permitted(bool value) {
+    check_cleartext_permitted_ = value;
+  }
+
+  void set_require_network_isolation_key(bool value) {
+    require_network_isolation_key_ = value;
+  }
 
   // Unlike most other setters, the builder does not take ownership of the
   // NetworkQualityEstimator.
@@ -144,14 +160,6 @@ class NET_EXPORT URLRequestContextBuilder {
       NetworkQualityEstimator* network_quality_estimator) {
     network_quality_estimator_ = network_quality_estimator;
   }
-
-  // Extracts the component pointers required to construct an HttpNetworkSession
-  // and copies them into the HttpNetworkSession::Context used to create the
-  // session. This function should be used to ensure that a context and its
-  // associated HttpNetworkSession are consistent.
-  static void SetHttpNetworkSessionComponents(
-      const URLRequestContext* request_context,
-      HttpNetworkSession::Context* session_context);
 
   // These functions are mutually exclusive.  The ProxyConfigService, if
   // set, will be used to construct a ConfiguredProxyResolutionService.
@@ -193,11 +201,6 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_http_user_agent_settings(
       std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings);
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Control support for ftp:// requests. By default it's disabled.
-  void set_ftp_enabled(bool enable) { ftp_enabled_ = enable; }
-#endif
-
   // Sets a valid ProtocolHandler for a scheme.
   // A ProtocolHandler already exists for |scheme| will be overwritten.
   void SetProtocolHandler(
@@ -232,11 +235,14 @@ class NET_EXPORT URLRequestContextBuilder {
   // used.
   void set_host_resolver_factory(HostResolver::Factory* factory);
 
-  // Uses BasicNetworkDelegate by default. Note that calling Build will unset
+  // Uses NetworkDelegateImpl by default. Note that calling Build will unset
   // any custom delegate in builder, so this must be called each time before
   // Build is called.
-  void set_network_delegate(std::unique_ptr<NetworkDelegate> delegate) {
+  // Returns a raw pointer to the set delegate.
+  template <typename T>
+  T* set_network_delegate(std::unique_ptr<T> delegate) {
     network_delegate_ = std::move(delegate);
+    return static_cast<T*>(network_delegate_.get());
   }
 
   // Sets the ProxyDelegate.
@@ -253,15 +259,16 @@ class NET_EXPORT URLRequestContextBuilder {
   void EnableHttpCache(const HttpCacheParams& params);
   void DisableHttpCache();
 
-  // Override default HttpNetworkSession::Params settings.
+  // Override default HttpNetworkSessionParams settings.
   void set_http_network_session_params(
-      const HttpNetworkSession::Params& http_network_session_params) {
+      const HttpNetworkSessionParams& http_network_session_params) {
     http_network_session_params_ = http_network_session_params;
   }
 
-  void set_transport_security_persister_path(
-      const base::FilePath& transport_security_persister_path) {
-    transport_security_persister_path_ = transport_security_persister_path;
+  void set_transport_security_persister_file_path(
+      const base::FilePath& transport_security_persister_file_path) {
+    transport_security_persister_file_path_ =
+        transport_security_persister_file_path;
   }
 
   void set_hsts_policy_bypass_list(
@@ -284,10 +291,18 @@ class NET_EXPORT URLRequestContextBuilder {
   void SetCertVerifier(std::unique_ptr<CertVerifier> cert_verifier);
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  void set_reporting_service(
+      std::unique_ptr<ReportingService> reporting_service);
   void set_reporting_policy(std::unique_ptr<ReportingPolicy> reporting_policy);
 
   void set_network_error_logging_enabled(bool network_error_logging_enabled) {
     network_error_logging_enabled_ = network_error_logging_enabled;
+  }
+
+  template <typename T>
+  T* SetNetworkErrorLoggingServiceForTesting(std::unique_ptr<T> service) {
+    network_error_logging_service_ = std::move(service);
+    return static_cast<T*>(network_error_logging_service_.get());
   }
 
   void set_persistent_reporting_and_nel_store(
@@ -312,17 +327,47 @@ class NET_EXPORT URLRequestContextBuilder {
       CreateHttpTransactionFactoryCallback
           create_http_network_transaction_factory);
 
-  // Sets a ClientSocketFactory so a test can mock out sockets. The
-  // ClientSocketFactory must be destroyed after the creates URLRequestContext.
+  template <typename T>
+  T* SetHttpTransactionFactoryForTesting(std::unique_ptr<T> factory) {
+    create_http_network_transaction_factory_.Reset();
+    http_transaction_factory_ = std::move(factory);
+    return static_cast<T*>(http_transaction_factory_.get());
+  }
+
+  // Sets a ClientSocketFactory so a test can mock out sockets. This must
+  // outlive the URLRequestContext that will be built.
   void set_client_socket_factory_for_testing(
       ClientSocketFactory* client_socket_factory_for_testing) {
-    client_socket_factory_for_testing_ = client_socket_factory_for_testing;
+    set_client_socket_factory(client_socket_factory_for_testing);
   }
+
+  // Sets a ClientSocketFactory when the network service sandbox is enabled. The
+  // unique_ptr is moved to a URLRequestContext once Build() is called.
+  void set_client_socket_factory(
+      std::unique_ptr<ClientSocketFactory> client_socket_factory) {
+    set_client_socket_factory(client_socket_factory.get());
+    client_socket_factory_ = std::move(client_socket_factory);
+  }
+
+  // Binds the context to `network`. All requests scheduled through the context
+  // built by this builder will be sent using `network`. Requests will fail if
+  // `network` disconnects. `options` allows to specify the ManagerOptions that
+  // will be passed to the special purpose HostResolver created internally.
+  // This also imposes some limitations on the context capabilities:
+  // * By design, QUIC connection migration will be turned off.
+  // Only implemented for Android (API level > 23).
+  void BindToNetwork(
+      handles::NetworkHandle network,
+      absl::optional<HostResolver::ManagerOptions> options = absl::nullopt);
 
   // Creates a mostly self-contained URLRequestContext. May only be called once
   // per URLRequestContextBuilder. After this is called, the Builder can be
   // safely destroyed.
   std::unique_ptr<URLRequestContext> Build();
+
+  void SuppressSettingSocketPerformanceWatcherFactoryForTesting() {
+    suppress_setting_socket_performance_watcher_factory_for_testing_ = true;
+  }
 
  protected:
   // Lets subclasses override ProxyResolutionService creation, using a
@@ -338,32 +383,53 @@ class NET_EXPORT URLRequestContextBuilder {
       bool pac_quick_check_enabled);
 
  private:
-  std::string name_;
+  // Extracts the component pointers required to construct an HttpNetworkSession
+  // and copies them into the HttpNetworkSession::Context used to create the
+  // session. This function should be used to ensure that a context and its
+  // associated HttpNetworkSession are consistent.
+  static void SetHttpNetworkSessionComponents(
+      const URLRequestContext* request_context,
+      HttpNetworkSessionContext* session_context,
+      bool suppress_setting_socket_performance_watcher_factory = false,
+      ClientSocketFactory* client_socket_factory = nullptr);
+
+  // Factory that will be used to create all client sockets used by the
+  // URLRequestContext that will be built.
+  // `client_socket_factory` must outlive the context.
+  void set_client_socket_factory(ClientSocketFactory* client_socket_factory) {
+    client_socket_factory_raw_ = client_socket_factory;
+  }
+
   bool enable_brotli_ = false;
-  NetworkQualityEstimator* network_quality_estimator_ = nullptr;
+  bool check_cleartext_permitted_ = false;
+  bool require_network_isolation_key_ = false;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   std::string accept_language_;
   std::string user_agent_;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
 
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  // Include support for ftp:// requests.
-  bool ftp_enabled_ = false;
-#endif
   bool http_cache_enabled_ = true;
   bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
+  bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
+
+  handles::NetworkHandle bound_network_ = handles::kInvalidNetworkHandle;
+  // Used only if the context is bound to a network to customize the
+  // HostResolver created internally.
+  HostResolver::ManagerOptions manager_options_;
 
   HttpCacheParams http_cache_params_;
-  HttpNetworkSession::Params http_network_session_params_;
+  HttpNetworkSessionParams http_network_session_params_;
   CreateHttpTransactionFactoryCallback create_http_network_transaction_factory_;
-  base::FilePath transport_security_persister_path_;
+  std::unique_ptr<HttpTransactionFactory> http_transaction_factory_;
+  base::FilePath transport_security_persister_file_path_;
   std::vector<std::string> hsts_policy_bypass_list_;
-  NetLog* net_log_ = nullptr;
+  raw_ptr<NetLog> net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
   std::string host_mapping_rules_;
-  HostResolverManager* host_resolver_manager_ = nullptr;
-  HostResolver::Factory* host_resolver_factory_ = nullptr;
+  raw_ptr<HostResolverManager> host_resolver_manager_ = nullptr;
+  raw_ptr<HostResolver::Factory> host_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyConfigService> proxy_config_service_;
   bool pac_quick_check_enabled_ = true;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
@@ -376,9 +442,12 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
+  std::unique_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
 #if BUILDFLAG(ENABLE_REPORTING)
+  std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<ReportingPolicy> reporting_policy_;
   bool network_error_logging_enabled_ = false;
+  std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
   std::unique_ptr<PersistentReportingAndNelStore>
       persistent_reporting_and_nel_store_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
@@ -386,9 +455,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  ClientSocketFactory* client_socket_factory_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextBuilder);
+  raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;
 };
 
 }  // namespace net

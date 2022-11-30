@@ -1,0 +1,37 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+enum PressureFactor {
+  // Current pressure factor is thermal.
+  kThermal,
+  // Current pressure factor is power supply.
+  kPowerSupply,
+};
+
+enum PressureState {
+  // Current workloads are causing minimal pressure, allowing the
+  // system to run at a lower clock frequency to preserve power.
+  kNominal,
+  // The system is doing fine, everything is smooth and it can
+  // take on additional work without issues.
+  kFair,
+  // There is some serious pressure on the system, but it is
+  // sustainable and the system is doing well, but it is getting
+  // close to its limits.
+  kSerious,
+  // The system is now about to reach its limits, but it hasn’t
+  // reached the limit yet.
+  kCritical,
+};
+
+// Represents availability of compute resources.
+struct PressureUpdate {
+  PressureState state;
+  array<PressureFactor> factors;
+  mojo_base.mojom.Time timestamp;
+};

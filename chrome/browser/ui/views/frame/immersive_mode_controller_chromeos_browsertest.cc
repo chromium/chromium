@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
+
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/macros.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -22,16 +22,16 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
+#include "components/permissions/request_type.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/content_mock_cert_verifier.h"
-#include "net/cert/mock_cert_verifier.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -42,16 +42,21 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   ImmersiveModeControllerChromeosWebAppBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  ImmersiveModeControllerChromeosWebAppBrowserTest(
+      const ImmersiveModeControllerChromeosWebAppBrowserTest&) = delete;
+  ImmersiveModeControllerChromeosWebAppBrowserTest& operator=(
+      const ImmersiveModeControllerChromeosWebAppBrowserTest&) = delete;
+
   ~ImmersiveModeControllerChromeosWebAppBrowserTest() override = default;
 
-  // InProcessBrowserTest override:
+  // WebAppControllerBrowserTest override:
   void SetUpOnMainThread() override {
-    cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
     const GURL app_url = GetAppUrl();
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
     web_app_info->theme_color = SK_ColorBLUE;
@@ -82,21 +87,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
     browser_->window()->Show();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-    cert_verifier_.SetUpInProcessBrowserTestFixture();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    cert_verifier_.TearDownInProcessBrowserTestFixture();
-    extensions::ExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-    cert_verifier_.SetUpCommandLine(command_line);
-  }
-
   // Returns the bounds of |view| in widget coordinates.
   gfx::Rect GetBoundsInWidget(views::View* view) {
     return view->ConvertRectToWidget(view->GetLocalBounds());
@@ -115,8 +105,8 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   // Attempt revealing the top-of-window views.
   void AttemptReveal() {
     if (!revealed_lock_.get()) {
-      revealed_lock_.reset(controller_->GetRevealedLock(
-          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO));
+      revealed_lock_ = controller_->GetRevealedLock(
+          ImmersiveModeControllerChromeos::ANIMATE_REVEAL_NO);
     }
   }
 
@@ -124,10 +114,10 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
       BrowserNonClientFrameViewChromeOS* frame_view) {
     WebAppFrameToolbarView* container =
         frame_view->web_app_frame_toolbar_for_testing();
-    views::test::InkDropHostViewTestApi ink_drop_api(
-        container->GetAppMenuButton());
+    views::test::InkDropHostTestApi ink_drop_api(
+        views::InkDrop::Get(container->GetAppMenuButton()));
     EXPECT_TRUE(container->GetContentSettingContainerForTesting()->layer());
-    EXPECT_EQ(views::InkDropHostView::InkDropMode::ON,
+    EXPECT_EQ(views::InkDropHost::InkDropMode::ON,
               ink_drop_api.ink_drop_mode());
   }
 
@@ -148,11 +138,6 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   std::unique_ptr<ImmersiveRevealedLock> revealed_lock_;
 
   net::EmbeddedTestServer https_server_;
-  // Similar to net::MockCertVerifier, but also updates the CertVerifier
-  // used by the NetworkService.
-  content::ContentMockCertVerifier cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeosWebAppBrowserTest);
 };
 
 // Test the layout and visibility of the TopContainerView and web contents when
@@ -270,8 +255,15 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
 // Verify that the frame layout is as expected when using immersive mode in
 // tablet mode.
+// Fails on Linux Chromium OS.
+// TODO(crbug.com/1191327): reenable the test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_FrameLayoutToggleTabletMode DISABLED_FrameLayoutToggleTabletMode
+#else
+#define MAYBE_FrameLayoutToggleTabletMode FrameLayoutToggleTabletMode
+#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       FrameLayoutToggleTabletMode) {
+                       MAYBE_FrameLayoutToggleTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -350,26 +342,15 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EXPECT_TRUE(test_api->manager());
 
   // Add a permission bubble using the test api.
-  test_api->AddSimpleRequest(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
-      ContentSettingsType::GEOLOCATION);
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kGeolocation);
 
   // The permission prompt is shown asynchronously. Without immersive mode
   // enabled the anchor should exist.
   base::RunLoop().RunUntilIdle();
-
-  // If the permission request is displayed using the chip UI, simulate a click
-  // on the chip to trigger showing the prompt.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  PermissionChip* permission_chip =
-      browser_view->toolbar()->location_bar()->permission_chip();
-  if (permission_chip->GetVisible()) {
-    views::test::ButtonTestApi(permission_chip->button())
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
-    base::RunLoop().RunUntilIdle();
-  }
 
   views::Widget* prompt_widget = test_api->GetPromptWindow();
   views::BubbleDialogDelegate* bubble_dialog =
@@ -390,9 +371,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   // Reveal the header. The anchor should exist since the app menu button is now
   // visible.
   {
-    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock(
+    std::unique_ptr<ImmersiveRevealedLock> focus_reveal_lock =
         immersive_mode_controller->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES));
+            ImmersiveModeController::ANIMATE_REVEAL_YES);
     EXPECT_TRUE(immersive_mode_controller->IsRevealed());
     EXPECT_TRUE(bubble_dialog->GetAnchorView());
   }

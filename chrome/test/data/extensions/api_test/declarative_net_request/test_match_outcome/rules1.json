@@ -1,0 +1,41 @@
+[{
+  "id" : 1,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["allow-all-requests.example"],
+    "resourceTypes": ["main_frame"],
+    "requestMethods": ["post"]
+  },
+  "action": {
+    "type" : "allowAllRequests"
+  }
+},
+{
+  "id": 4,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["block2.example"],
+    "excludedRequestMethods": ["get"]
+  },
+  "action": {"type" : "block"}
+},
+{
+  "id": 5,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["block3.example"],
+    "initiatorDomains": ["initiator.example"]
+  },
+  "action": {"type" : "block"}
+},
+{
+  "id": 6,
+  "priority": 1,
+  "condition" : {
+    "requestDomains": ["block4.example"],
+    "domainType": "thirdParty"
+  },
+  "action": {
+    "type" : "block"
+  }
+}]

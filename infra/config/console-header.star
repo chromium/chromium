@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,7 +14,7 @@ HEADER = headers.header(
         ),
         headers.oncall(
             name = "Chromium Branches",
-            branch_selector = branches.STANDARD_BRANCHES,
+            branch_selector = [branches.STANDARD_BRANCHES, branches.DESKTOP_EXTENDED_STABLE_BRANCHES],
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-branch-sheriff",
         ),
         headers.oncall(
@@ -23,15 +23,19 @@ HEADER = headers.header(
         ),
         headers.oncall(
             name = "iOS",
-            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ios-build-sheriff",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-ios",
         ),
         headers.oncall(
             name = "ChromeOS",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chromeos-gardeners",
         ),
         headers.oncall(
+            name = "Fuchsia",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-fuchsia-gardener",
+        ),
+        headers.oncall(
             name = "GPU",
-            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-gpu-pixel-wrangling",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler-weekly",
         ),
         headers.oncall(
             name = "ANGLE",
@@ -105,8 +109,10 @@ HEADER = headers.header(
                     text = "source",
                     branch_selector = branches.ALL_BRANCHES,
                     url = branches.value(
-                        for_main = "https://chromium.googlesource.com/chromium/src",
-                        for_branches = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
+                        {
+                            branches.MAIN: "https://chromium.googlesource.com/chromium/src",
+                        },
+                        default = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
                     ),
                     alt = "Chromium source code repository",
                 ),
@@ -125,7 +131,7 @@ HEADER = headers.header(
                 headers.link(
                     text = "coverage",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://analysis.chromium.org/p/chromium/coverage",
+                    url = "https://analysis.chromium.org/coverage/p/chromium",
                     alt = "Chromium code coverage dashboard",
                 ),
                 headers.link(
@@ -168,6 +174,12 @@ HEADER = headers.header(
                     alt = "Chromium Fuzz console",
                 ),
                 headers.link(
+                    text = "fuchsia",
+                    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+                    url = "/p/{}/g/chromium.fuchsia".format(settings.project),
+                    alt = "Chromium Fuchsia console",
+                ),
+                headers.link(
                     text = "fyi",
                     branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.fyi".format(settings.project),
@@ -178,6 +190,11 @@ HEADER = headers.header(
                     branch_selector = branches.STANDARD_MILESTONE,
                     url = "/p/{}/g/chromium.gpu".format(settings.project),
                     alt = "Chromium GPU console",
+                ),
+                headers.link(
+                    text = "packager",
+                    url = "/p/{}/g/chromium.packager".format(settings.project),
+                    alt = "Chromium Packager console",
                 ),
                 headers.link(
                     text = "perf",
@@ -200,15 +217,25 @@ HEADER = headers.header(
                     alt = "Chromium SWANGLE console",
                 ),
                 headers.link(
+                    text = "updater",
+                    url = "/p/{}/g/chromium.updater".format(settings.project),
+                    alt = "Chromium Updater console",
+                ),
+                headers.link(
                     text = "webrtc",
                     url = "/p/{}/g/chromium.webrtc".format(settings.project),
                     alt = "Chromium WebRTC console",
                 ),
                 headers.link(
                     text = "chromiumos",
-                    branch_selector = branches.LTS_MILESTONE,
+                    branch_selector = branches.CROS_LTS_MILESTONE,
                     url = "/p/{}/g/chromium.chromiumos".format(settings.project),
                     alt = "ChromiumOS console",
+                ),
+                headers.link(
+                    text = "flakiness",
+                    url = "/p/{}/g/chromium.flakiness".format(settings.project),
+                    alt = "Chromium Flakiness console",
                 ),
             ],
         ),
@@ -219,7 +246,7 @@ HEADER = headers.header(
                     text = milestone,
                     url = "/p/{}/g/main/console".format(details.project),
                 )
-                for milestone, details in sorted(ACTIVE_MILESTONES.items())
+                for milestone, details in ACTIVE_MILESTONES.items()
             ] + [
                 headers.link(
                     text = "trunk",
@@ -256,9 +283,15 @@ HEADER = headers.header(
                 ),
                 headers.link(
                     text = "chromiumos",
-                    branch_selector = branches.LTS_MILESTONE,
+                    branch_selector = branches.CROS_LTS_MILESTONE,
                     url = "/p/{}/g/tryserver.chromium.chromiumos/builders".format(settings.project),
                     alt = "ChromiumOS",
+                ),
+                headers.link(
+                    text = "fuchsia",
+                    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+                    url = "/p/{}/g/tryserver.chromium.fuchsia/builders".format(settings.project),
+                    alt = "Fuchsia",
                 ),
                 headers.link(
                     text = "linux",
@@ -276,6 +309,11 @@ HEADER = headers.header(
                     text = "swangle",
                     url = "/p/{}/g/tryserver.chromium.swangle/builders".format(settings.project),
                     alt = "SWANGLE",
+                ),
+                headers.link(
+                    text = "tricium",
+                    url = "/p/{}/g/tryserver.chromium.tricium/builders".format(settings.project),
+                    alt = "Tricium",
                 ),
                 headers.link(
                     text = "win",
@@ -297,7 +335,7 @@ HEADER = headers.header(
                 headers.link(
                     text = "customize",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci-milo.cfg".format(settings.ref),
+                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci/luci-milo.cfg".format(settings.ref),
                     alt = "Customize this console",
                 ),
             ],
@@ -315,6 +353,7 @@ HEADER = headers.header(
                 "chromium/chromium.mac",
                 "chromium/chromium.linux",
                 "chromium/chromium.chromiumos",
+                "chromium/chromium.fuchsia",
                 "chrome/chrome",
                 "chromium/chromium.memory",
                 "chromium/chromium.gpu",
@@ -324,6 +363,7 @@ HEADER = headers.header(
             console_ids = [
                 "chromium/chromium.android",
                 "chrome/chrome.perf",
+                "chromium/chromium.fuchsia.fyi",
                 "chromium/chromium.gpu.fyi",
                 "chromium/chromium.angle",
                 "chromium/chromium.swangle",
@@ -344,11 +384,11 @@ HEADER = headers.header(
             ]],
         ),
         headers.console_group(
-            branch_selector = branches.LTS_BRANCHES,
+            branch_selector = branches.CROS_LTS_BRANCHES,
             console_ids = ["{}/{}".format(settings.project, c) for c in [
                 "chromium.chromiumos",
             ]],
         ),
     ],
-    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
+    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
 )

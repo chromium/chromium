@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="164dp"
+    android:height="82dp"
+    android:autoMirrored="true"
+    android:viewportHeight="82"
+    android:viewportWidth="164">
+    <path
+        android:fillColor="@color/default_control_color_normal_baseline"
+        android:fillType="evenOdd"
+        android:pathData="M26.687,24.687H29.075H31.463H33.851H36.239H38.627H41.015H43.403H45.791L45.791,27.075H48.179V37.821H45.791H43.403H41.015H38.627H36.239V40.209H43.403V42.597H36.239H33.851V47.373H38.627V49.761L38.627,52.149H36.239V49.761H33.851L33.851,58.119H31.463V61.701H29.075V64.09H26.687V73.642H29.075V76.03H26.687H24.299V68.866H21.91V66.478H19.522V68.866H17.134L17.134,71.254H14.746V73.642H17.134V76.03H14.746H12.358V66.478H9.97L9.97,64.09H7.582V61.701H5.194V59.313H2.806L2.806,56.925H0.418V42.597H2.806L2.806,47.373H5.194V49.761H7.582V52.149H9.97H12.358V49.761H14.746V47.373H17.134L18.328,47.373V44.985H21.91L21.91,42.597H24.299V27.075H26.687V24.687ZM31.463,30.657V28.269H29.075V30.657H31.463Z" />
+    <path
+        android:pathData="M31,68L98,68"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M-0,68L8,68"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M113,68L164,68"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M82,75L89,75"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M0,81L8,81"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M66,81L79,81"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M34,81L37,81"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M121,81L123,81"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M53,75L60,75"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:pathData="M141,75L153,75"
+        android:strokeColor="@color/default_control_color_normal_baseline"
+        android:strokeWidth="2" />
+    <path
+        android:fillColor="@color/default_control_color_normal_baseline"
+        android:fillType="evenOdd"
+        android:pathData="M103.105,28.269H107.881V30.657H109.075L109.075,49.761H112.657V34.239H113.851H115.045V31.851H116.239V34.239H117.433H118.627V50.955H117.433L116.239,50.955V53.343H113.851L113.851,55.731H109.075L109.075,76.03L107.881,76.03L105.493,76.03L103.105,76.03L101.911,76.03L101.911,60.507H97.134V58.119H94.746V55.731H93.552H92.358V39.015H93.552H94.746V36.627H95.94V39.015H97.134H98.328V54.537H101.911L101.911,30.657H103.105V28.269Z" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M117.433,15.328L149.671,15.328"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M106.687,15.328L110.269,15.328"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M111.463,9.358L118.627,9.358"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M138.926,9.358L147.284,9.358"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M129.373,1L135.343,1"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M125.791,3.388L130.567,3.388"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M134.149,3.388L136.537,3.388"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M122.209,5.776L128.179,5.776"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M135.343,5.776L138.925,5.776"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M136.537,8.164L138.925,8.164"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M134.149,10.552L136.537,10.552"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M115.045,14.134L117.433,14.134"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M118.627,6.97L122.209,6.97"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M118.627,9.358L121.015,9.358"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M110.463,13.94L110.463,10.358"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+    <path
+        android:fillAlpha="0.3"
+        android:pathData="M148.672,13.94L148.672,10.358"
+        android:strokeAlpha="0.3"
+        android:strokeColor="@color/progress_bar_secondary"
+        android:strokeWidth="2" />
+</vector>

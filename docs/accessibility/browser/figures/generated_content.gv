@@ -1,0 +1,40 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+
+    subgraph cluster_ax_tree {
+        label = "Accessibility Tree";
+		
+        document [label="Document"];
+        document -> list;
+        list [label="List"];
+	list -> li1;
+        li1 [label="ListItem"];
+	li1 -> li1marker;
+        li1marker [label="1."];
+	li1 -> li1Text;
+        li1Text [label="Alpha"];
+	list -> li2;
+        li2 [label="ListItem"];
+	li2 -> li2marker;
+        li2marker [label="2."];
+	li2 -> li2text;
+        li2text [label="Bravo"];
+    }
+
+    subgraph cluster_ui_tree {
+        label = "DOM Tree";
+
+        Body [label="<body>"];
+        Body -> OL;
+        OL [label="<ol>"];
+	OL -> LI1;
+        LI1 [label="<li>"];
+	LI1 -> LI1Text;
+        LI1Text [label="Alpha"];
+	OL -> LI2;
+        LI2 [label="<li>"];
+	LI2 -> LI2Text;
+        LI2Text [label="Bravo"];
+    }
+}

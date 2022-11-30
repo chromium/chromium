@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/history/core/browser/history_client.h"
 
@@ -23,6 +22,11 @@ class HistoryBackendClient;
 class HistoryClientFakeBookmarks : public HistoryClient {
  public:
   HistoryClientFakeBookmarks();
+
+  HistoryClientFakeBookmarks(const HistoryClientFakeBookmarks&) = delete;
+  HistoryClientFakeBookmarks& operator=(const HistoryClientFakeBookmarks&) =
+      delete;
+
   ~HistoryClientFakeBookmarks() override;
 
   void ClearAllBookmarks();
@@ -38,11 +42,11 @@ class HistoryClientFakeBookmarks : public HistoryClient {
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<HistoryBackendClient> CreateBackendClient() override;
+  void UpdateBookmarkLastUsedTime(int64_t bookmark_node_id,
+                                  base::Time time) override;
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryClientFakeBookmarks);
 };
 
 }  // namespace history

@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/log/test_net_log.h"
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "net/log/net_log_capture_mode.h"
@@ -109,91 +108,6 @@ void RecordingNetLogObserver::SetThreadsafeAddEntryCallback(
     base::RepeatingClosure add_entry_callback) {
   base::AutoLock lock(lock_);
   add_entry_callback_ = add_entry_callback;
-}
-
-TestNetLog::TestNetLog() : NetLog(base::PassKey<TestNetLog>()) {}
-TestNetLog::~TestNetLog() = default;
-
-RecordingTestNetLog::RecordingTestNetLog()
-    : observer_(this, NetLogCaptureMode::kIncludeSensitive) {}
-RecordingTestNetLog::~RecordingTestNetLog() = default;
-
-std::vector<NetLogEntry> RecordingTestNetLog::GetEntries() const {
-  return observer_.GetEntries();
-}
-
-std::vector<NetLogEntry> RecordingTestNetLog::GetEntriesForSource(
-    NetLogSource source) const {
-  return observer_.GetEntriesForSource(source);
-}
-
-std::vector<NetLogEntry> RecordingTestNetLog::GetEntriesWithType(
-    NetLogEventType type) const {
-  return observer_.GetEntriesWithType(type);
-}
-
-std::vector<NetLogEntry> RecordingTestNetLog::GetEntriesForSourceWithType(
-    NetLogSource source,
-    NetLogEventType type,
-    NetLogEventPhase phase) const {
-  return observer_.GetEntriesForSourceWithType(source, type, phase);
-}
-
-size_t RecordingTestNetLog::GetSize() const {
-  return observer_.GetSize();
-}
-
-void RecordingTestNetLog::Clear() {
-  return observer_.Clear();
-}
-
-NetLog::ThreadSafeObserver* RecordingTestNetLog::GetObserver() {
-  return &observer_;
-}
-
-void RecordingTestNetLog::SetObserverCaptureMode(
-    NetLogCaptureMode capture_mode) {
-  observer_.SetObserverCaptureMode(capture_mode);
-}
-
-RecordingBoundTestNetLog::RecordingBoundTestNetLog()
-    : net_log_(NetLogWithSource::Make(&test_net_log_, NetLogSourceType::NONE)) {
-}
-
-RecordingBoundTestNetLog::~RecordingBoundTestNetLog() = default;
-
-std::vector<NetLogEntry> RecordingBoundTestNetLog::GetEntries() const {
-  return test_net_log_.GetEntries();
-}
-
-std::vector<NetLogEntry> RecordingBoundTestNetLog::GetEntriesForSource(
-    NetLogSource source) const {
-  return test_net_log_.GetEntriesForSource(source);
-}
-
-std::vector<NetLogEntry> RecordingBoundTestNetLog::GetEntriesWithType(
-    NetLogEventType type) const {
-  return test_net_log_.GetEntriesWithType(type);
-}
-
-std::vector<NetLogEntry> RecordingBoundTestNetLog::GetEntriesForSourceWithType(
-    NetLogSource source,
-    NetLogEventType type,
-    NetLogEventPhase phase) const {
-  return test_net_log_.GetEntriesForSourceWithType(source, type, phase);
-}
-
-size_t RecordingBoundTestNetLog::GetSize() const {
-  return test_net_log_.GetSize();
-}
-
-void RecordingBoundTestNetLog::Clear() {
-  test_net_log_.Clear();
-}
-
-void RecordingBoundTestNetLog::SetObserverCaptureMode(
-    NetLogCaptureMode capture_mode) {
-  test_net_log_.SetObserverCaptureMode(capture_mode);
 }
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -232,8 +232,9 @@ public class PermissionDialogController
                         .with(ModalDialogProperties.TITLE,
                                 context.getString(R.string.overlay_detected_dialog_title,
                                         BuildInfo.getInstance().hostPackageLabel))
-                        .with(ModalDialogProperties.MESSAGE, context.getResources(),
-                                R.string.overlay_detected_dialog_message)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                context.getResources().getString(
+                                        R.string.overlay_detected_dialog_message))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, context.getResources(),
                                 R.string.cancel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,14 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class TimingFunction;
@@ -32,7 +36,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
    public:
     ~Target() = default;
 
-    virtual void OnScrollOffsetAnimated(const gfx::ScrollOffset& value,
+    virtual void OnScrollOffsetAnimated(const gfx::PointF& value,
                                         int target_property_id,
                                         gfx::KeyframeModel* keyframe_model) = 0;
   };
@@ -81,22 +85,22 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
       delete;
 
   // Sets the initial offset and velocity (in pixels per second).
-  void SetInitialValue(const gfx::ScrollOffset& initial_value,
+  void SetInitialValue(const gfx::PointF& initial_value,
                        base::TimeDelta delayed_by = base::TimeDelta(),
                        float velocity = 0);
   bool HasSetInitialValue() const;
-  gfx::ScrollOffset GetValue(base::TimeDelta t) const;
-  gfx::ScrollOffset target_value() const { return target_value_; }
+  gfx::PointF GetValue(base::TimeDelta t) const;
+  gfx::PointF target_value() const { return target_value_; }
 
   // Updates the current curve to aim at a new target, starting at time t
   // relative to the start of the animation. The duration is recomputed based
   // on the animation type the curve was constructed with. The timing function
   // is modified to preserve velocity at t.
-  void UpdateTarget(base::TimeDelta t, const gfx::ScrollOffset& new_target);
+  void UpdateTarget(base::TimeDelta t, const gfx::PointF& new_target);
 
   // Shifts the entire curve by a delta without affecting its shape or timing.
   // Used for scroll anchoring adjustments that happen during scroll animations
-  // (see blink::ScrollAnimator::AdjustAnimationAndSetScrollOffset).
+  // (see blink::ScrollAnimator::AdjustAnimation).
   void ApplyAdjustment(const gfx::Vector2dF& adjustment);
 
   // AnimationCurve implementation
@@ -113,28 +117,25 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   void set_target(Target* target) { target_ = target; }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest, ImpulseUpdateTarget);
-  FRIEND_TEST_ALL_PREFIXES(ScrollOffsetAnimationCurveTest,
-                           ImpulseUpdateTargetSwitchDirections);
   friend class ScrollOffsetAnimationCurveFactory;
   enum class AnimationType { kLinear, kEaseInOut, kImpulse };
 
   // |duration_behavior| should be provided if (and only if) |animation_type| is
   // kEaseInOut.
   ScrollOffsetAnimationCurve(
-      const gfx::ScrollOffset& target_value,
+      const gfx::PointF& target_value,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior = base::nullopt);
+      absl::optional<DurationBehavior> duration_behavior = absl::nullopt);
   ScrollOffsetAnimationCurve(
-      const gfx::ScrollOffset& target_value,
+      const gfx::PointF& target_value,
       std::unique_ptr<gfx::TimingFunction> timing_function,
       AnimationType animation_type,
-      base::Optional<DurationBehavior> duration_behavior);
+      absl::optional<DurationBehavior> duration_behavior);
 
   base::TimeDelta SegmentDuration(
       const gfx::Vector2dF& delta,
       base::TimeDelta delayed_by,
-      base::Optional<double> velocity = base::nullopt);
+      absl::optional<double> velocity = absl::nullopt);
 
   base::TimeDelta EaseInOutBoundedSegmentDuration(
       const gfx::Vector2dF& new_delta,
@@ -144,8 +145,8 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   // Returns the velocity at time t in units of pixels per second.
   double CalculateVelocity(base::TimeDelta t);
 
-  gfx::ScrollOffset initial_value_;
-  gfx::ScrollOffset target_value_;
+  gfx::PointF initial_value_;
+  gfx::PointF target_value_;
   base::TimeDelta total_animation_duration_;
 
   // Time from animation start to most recent UpdateTarget.
@@ -155,13 +156,13 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
   AnimationType animation_type_;
 
   // Only valid when |animation_type_| is EASE_IN_OUT.
-  base::Optional<DurationBehavior> duration_behavior_;
+  absl::optional<DurationBehavior> duration_behavior_;
 
   bool has_set_initial_value_;
 
-  static base::Optional<double> animation_duration_for_testing_;
+  static absl::optional<double> animation_duration_for_testing_;
 
-  Target* target_ = nullptr;
+  raw_ptr<Target> target_ = nullptr;
 };
 
 }  // namespace cc

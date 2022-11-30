@@ -1,18 +1,26 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/bubble/tooltip_icon.h"
 
+#include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_watcher_view_host.h"
+#include "ui/views/style/platform_style.h"
 
 namespace views {
 
@@ -22,7 +30,12 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       mouse_inside_(false),
       bubble_(nullptr),
       preferred_width_(0) {
-  SetDrawAsHovered(false);
+  SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
+  set_suppress_default_focus_handling();
+  FocusRing::Install(this);
+  SetBorder(CreateEmptyBorder(
+      LayoutProvider::Get()->GetInsetsMetric(INSETS_VECTOR_IMAGE_BUTTON)));
+  InstallCircleHighlightPathGenerator(this);
 }
 
 TooltipIcon::~TooltipIcon() {
@@ -33,7 +46,7 @@ TooltipIcon::~TooltipIcon() {
 
 void TooltipIcon::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_inside_ = true;
-  show_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(150), this,
+  show_timer_.Start(FROM_HERE, base::Milliseconds(150), this,
                     &TooltipIcon::ShowBubble);
 }
 
@@ -46,6 +59,18 @@ bool TooltipIcon::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
+void TooltipIcon::OnFocus() {
+  ShowBubble();
+#if BUILDFLAG(IS_WIN)
+  // Tooltip text does not announce on Windows; crbug.com/1245470
+  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+#endif
+}
+
+void TooltipIcon::OnBlur() {
+  HideBubble();
+}
+
 void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_TAP) {
     ShowBubble();
@@ -54,8 +79,19 @@ void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TooltipIcon::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTooltip;
-  node_data->SetName(tooltip_);
+  // The tooltip icon, despite visually being an icon with no text, actually
+  // opens a bubble whenever the user mouses over it or focuses it, so it's
+  // essentially a text control that hides itself when not in view without
+  // altering the bubble's layout when shown. As such, have it behave like
+  // static text for screenreader users, since that's the role it serves here
+  // anyway.
+  node_data->role = ax::mojom::Role::kStaticText;
+  node_data->SetNameChecked(tooltip_);
+}
+
+void TooltipIcon::OnThemeChanged() {
+  ImageView::OnThemeChanged();
+  SetDrawAsHovered(false);
 }
 
 void TooltipIcon::MouseMovedOutOfHost() {
@@ -79,9 +115,8 @@ void TooltipIcon::RemoveObserver(Observer* observer) {
 void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(gfx::CreateVectorIcon(
       vector_icons::kInfoOutlineIcon, tooltip_icon_size_,
-      GetNativeTheme()->GetSystemColor(
-          hovered ? ui::NativeTheme::kColorId_TooltipIconHovered
-                  : ui::NativeTheme::kColorId_TooltipIcon)));
+      GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
+                                           : ui::kColorHelpIconInactive)));
 }
 
 void TooltipIcon::ShowBubble() {
@@ -90,9 +125,8 @@ void TooltipIcon::ShowBubble() {
 
   SetDrawAsHovered(true);
 
-  bubble_ = new InfoBubble(this, tooltip_);
+  bubble_ = new InfoBubble(this, anchor_point_arrow_, tooltip_);
   bubble_->set_preferred_width(preferred_width_);
-  bubble_->SetArrow(anchor_point_arrow_);
   // When shown due to a gesture event, close on deactivate (i.e. don't use
   // "focusless").
   bubble_->SetCanActivate(!mouse_inside_);

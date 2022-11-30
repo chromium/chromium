@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace remoting {
 
@@ -109,6 +108,10 @@ class SecurityKeyMessage final {
   static const int kMessageTypeSizeBytes;
 
   SecurityKeyMessage();
+
+  SecurityKeyMessage(const SecurityKeyMessage&) = delete;
+  SecurityKeyMessage& operator=(const SecurityKeyMessage&) = delete;
+
   ~SecurityKeyMessage();
 
   // When given a header value (uint32_t), this method will return whether the
@@ -136,14 +139,11 @@ class SecurityKeyMessage final {
  private:
   SecurityKeyMessageType type_ = SecurityKeyMessageType::INVALID;
   std::string payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessage);
 };
 
 // Used to pass security key message data between classes.
-typedef base::RepeatingCallback<void(
-    std::unique_ptr<SecurityKeyMessage> message)>
-    SecurityKeyMessageCallback;
+using SecurityKeyMessageCallback =
+    base::RepeatingCallback<void(std::unique_ptr<SecurityKeyMessage> message)>;
 
 }  // namespace remoting
 

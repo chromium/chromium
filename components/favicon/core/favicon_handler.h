@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,13 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/favicon/core/favicon_url.h"
 #include "components/favicon_base/favicon_callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -132,6 +132,10 @@ class FaviconHandler {
   FaviconHandler(CoreFaviconService* service,
                  Delegate* delegate,
                  FaviconDriverObserver::NotificationIconType handler_type);
+
+  FaviconHandler(const FaviconHandler&) = delete;
+  FaviconHandler& operator=(const FaviconHandler&) = delete;
+
   ~FaviconHandler();
 
   // Initiates loading the favicon for the specified url. |is_same_document| is
@@ -238,7 +242,9 @@ class FaviconHandler {
   void ScheduleImageDownload(const GURL& image_url,
                              favicon_base::IconType icon_type);
 
-  // Triggered when a download of an image has finished.
+  // Triggered when a download of an image has finished. |bitmaps| and
+  // |original_bitmap_sizes| must contain the same number of elements (i.e. same
+  // vector size).
   void OnDidDownloadFavicon(
       favicon_base::IconType icon_type,
       int id,
@@ -261,7 +267,6 @@ class FaviconHandler {
   // - A mapping is known to exist (reflected by |notification_icon_type_|).
   // - All download attempts returned 404s OR no relevant candidate was
   //   provided (as per |icon_types_|).
-  // - The corresponding feature is enabled (currently behind variations).
   void MaybeDeleteFaviconMappings();
 
   // Notifies |driver_| that FaviconHandler found an icon which matches the
@@ -353,7 +358,7 @@ class FaviconHandler {
 
   // The prioritized favicon candidates from the page back from the renderer.
   // Populated by OnGotFinalIconURLCandidates().
-  base::Optional<std::vector<FaviconCandidate>> final_candidates_;
+  absl::optional<std::vector<FaviconCandidate>> final_candidates_;
 
   // The icon URL and the icon type of the favicon in the most recent
   // FaviconDriver::OnFaviconAvailable() notification.
@@ -361,10 +366,10 @@ class FaviconHandler {
   favicon_base::IconType notification_icon_type_;
 
   // The CoreFaviconService which implements favicon operations. May be null.
-  CoreFaviconService* service_;
+  raw_ptr<CoreFaviconService> service_;
 
   // This handler's delegate.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The index of the favicon URL in |image_urls_| which is currently being
   // requested from history or downloaded.
@@ -375,8 +380,6 @@ class FaviconHandler {
   // UpdateFaviconCandidate()), the favicon service and the delegate are
   // notified.
   DownloadedFavicon best_favicon_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconHandler);
 };
 
 }  // namespace favicon

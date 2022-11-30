@@ -1,13 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -29,7 +31,7 @@ void CheckNoItemsAreAssociated(const NGPhysicalBoxFragment& fragment) {
 void CheckIsLast(const NGFragmentItem& item) {
   if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
     if (!fragment->IsInline()) {
-      DCHECK(fragment->IsFloating());
+      DCHECK(!fragment->IsInlineBox());
       DCHECK_EQ(item.IsLastForNode(), !fragment->BreakToken());
     }
   }
@@ -70,7 +72,7 @@ NGFragmentItems::NGFragmentItems(const NGFragmentItems& other)
 }
 
 NGFragmentItems::~NGFragmentItems() {
-  for (unsigned i = 0; i < size_; ++i)
+  for (wtf_size_t i = 0; i < size_; ++i)
     items_[i].~NGFragmentItem();
 }
 
@@ -80,7 +82,7 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void NGFragmentItems::FinalizeAfterLayout(
-    const Vector<scoped_refptr<const NGLayoutResult>, 1>& results) {
+    const HeapVector<Member<const NGLayoutResult>, 1>& results) {
 #if DCHECK_IS_ON()
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     for (const auto& result : results) {
@@ -94,8 +96,11 @@ void NGFragmentItems::FinalizeAfterLayout(
     wtf_size_t fragment_id;
     wtf_size_t item_index;
   };
-  HashMap<const LayoutObject*, LastItem> last_items;
+  HeapHashMap<Member<const LayoutObject>, LastItem> last_items;
+  ClearCollectionScope<HeapHashMap<Member<const LayoutObject>, LastItem>>
+      clear_scope(&last_items);
   wtf_size_t item_index = 0;
+  wtf_size_t line_fragment_id = NGFragmentItem::kInitialLineFragmentId;
   for (const auto& result : results) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
@@ -109,6 +114,7 @@ void NGFragmentItems::FinalizeAfterLayout(
       ++item_index;
       if (item.Type() == NGFragmentItem::kLine) {
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
+        item.SetFragmentId(line_fragment_id++);
         continue;
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
@@ -116,14 +122,16 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
 
       item.SetDeltaToNextForSameLayoutObject(0);
-      if (UNLIKELY(layout_object->IsFloating())) {
+      const bool use_break_token =
+          layout_object->IsFloating() || !layout_object->IsInline();
+      if (UNLIKELY(use_break_token)) {
         // Fragments that aren't really on a line, such as floats, will have
         // block break tokens if they continue in a subsequent fragmentainer, so
         // just check that. Floats in particular will continue as regular box
         // fragment children in subsequent fragmentainers, i.e. they will not be
         // fragment items (even if we're in an inline formatting context). So
         // we're not going to find the last fragment by just looking for items.
-        DCHECK(item.BoxFragment() && item.BoxFragment()->IsFloating());
+        DCHECK(item.BoxFragment() && !item.BoxFragment()->IsInlineBox());
         item.SetIsLastForNode(!item.BoxFragment()->BreakToken());
       } else {
         DCHECK(layout_object->IsInline());
@@ -154,7 +162,13 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK_LT(last_index, fragment_items->EndItemIndex());
       DCHECK_LT(last_index, item_index);
       last_item->SetDeltaToNextForSameLayoutObject(item_index - last_index);
-      if (!layout_object->IsFloating())
+      // Because we found a following fragment, reset |IsLastForNode| for the
+      // last item except:
+      // a. |IsLastForNode| is computed from break token. The last item already
+      //    has the correct value.
+      // b. Ellipses for atomic inlines. |IsLastForNode| of the last box item
+      //    should be set to ease handling of this edge case.
+      if (!use_break_token && !(layout_object->IsBox() && item.IsEllipsis()))
         last_item->SetIsLastForNode(false);
 #if DCHECK_IS_ON()
       CheckIsLast(*last_item);
@@ -220,9 +234,6 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (item.Type() != NGFragmentItem::kLine)
       return &item;
 
-    const NGPhysicalLineBoxFragment* line_box_fragment = item.LineBoxFragment();
-    DCHECK(line_box_fragment);
-
     // If there is a dirty item in the middle of a line, its previous line is
     // not reusable, because the dirty item may affect the previous line to wrap
     // differently.
@@ -230,9 +241,22 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (!CanReuseAll(&line))
       return last_line_start;
 
+    const NGPhysicalLineBoxFragment& line_box_fragment =
+        *item.LineBoxFragment();
+
     // Abort if the line propagated its descendants to outside of the line.
     // They are propagated through NGLayoutResult, which we don't cache.
-    if (line_box_fragment->HasPropagatedDescendants())
+    if (line_box_fragment.HasPropagatedDescendants())
+      return &item;
+
+    // Abort if we are an empty line-box. We don't have any content, and might
+    // resolve the BFC block-offset at the incorrect position.
+    if (line_box_fragment.IsEmptyLineBox())
+      return &item;
+
+    // Abort reusing block-in-inline because it may need to set
+    // |NGPreviousInflowData|.
+    if (UNLIKELY(line_box_fragment.IsBlockInInline()))
       return &item;
 
     // TODO(kojii): Running the normal layout code at least once for this
@@ -240,13 +264,90 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    if (!line_box_fragment->BreakToken())
+    if (!line_box_fragment.BreakToken())
       return &item;
 
     last_line_start = &item;
     cursor.MoveToNextSkippingChildren();
   }
   return nullptr;  // all items are reusable.
+}
+
+bool NGFragmentItems::IsContainerForCulledInline(
+    const LayoutInline& layout_inline,
+    bool* is_first_container,
+    bool* is_last_container) const {
+  DCHECK(!layout_inline.HasInlineFragments());
+  const wtf_size_t start_idx = size_of_earlier_fragments_;
+  const wtf_size_t end_idx = EndItemIndex();
+  const LayoutObject* next_descendant;
+  bool found_item = false;
+  *is_first_container = true;
+  for (const LayoutObject* descendant = layout_inline.FirstChild(); descendant;
+       descendant = next_descendant) {
+    wtf_size_t item_idx = descendant->FirstInlineFragmentItemIndex();
+    if (descendant->IsBox() || item_idx)
+      next_descendant = descendant->NextInPreOrderAfterChildren(&layout_inline);
+    else
+      next_descendant = descendant->NextInPreOrder(&layout_inline);
+    if (!item_idx)
+      continue;
+
+    // |FirstInlineFragmentItemIndex| is 1-based. Convert to 0-based index.
+    item_idx--;
+
+    if (item_idx >= end_idx) {
+      // This descendant starts in a later container. So this isn't the last
+      // container for the culled inline.
+      *is_last_container = false;
+      return found_item;
+    }
+
+    if (item_idx < start_idx) {
+      // This descendant doesn't start here. But does it occur here?
+      *is_first_container = false;
+      NGInlineCursor cursor;
+      for (cursor.MoveTo(*descendant); cursor.Current() && item_idx < end_idx;
+           cursor.MoveToNextForSameLayoutObject()) {
+        item_idx += cursor.Current()->DeltaToNextForSameLayoutObject();
+        if (item_idx >= start_idx) {
+          if (item_idx >= end_idx) {
+            // The descendant occurs in a later container. So this isn't the
+            // last container for the culled inline.
+            *is_last_container = false;
+            return found_item;
+          }
+          // The descendant occurs here. Proceed to figure out if it ends here
+          // as well.
+          found_item = true;
+        }
+      }
+      continue;
+    }
+
+    // This descendant starts here. Does it end here as well?
+    found_item = true;
+    const NGFragmentItem* item = &items_[item_idx - start_idx];
+    do {
+      if (const wtf_size_t delta = item->DeltaToNextForSameLayoutObject()) {
+        item_idx += delta;
+        if (item_idx >= end_idx) {
+          // This descendant also occurs in a later container. So this isn't the
+          // last container for the culled inline.
+          *is_last_container = false;
+          return true;
+        }
+        item = &items_[item_idx - start_idx];
+      } else {
+        item = nullptr;
+      }
+    } while (item);
+  }
+
+  // We didn't find anything that occurs in a later container, so this *is* the
+  // last container for the culled inline.
+  *is_last_container = true;
+  return found_item;
 }
 
 // static
@@ -334,11 +435,10 @@ void NGFragmentItems::DirtyFirstItem(const LayoutBlockFlow& container) {
 // static
 void NGFragmentItems::DirtyLinesFromNeedsLayout(
     const LayoutBlockFlow& container) {
-  DCHECK(std::any_of(container.PhysicalFragments().begin(),
-                     container.PhysicalFragments().end(),
-                     [](const NGPhysicalBoxFragment& fragment) {
-                       return fragment.HasItems();
-                     }));
+  DCHECK(base::ranges::any_of(container.PhysicalFragments(),
+                              [](const NGPhysicalBoxFragment& fragment) {
+                                return fragment.HasItems();
+                              }));
 
   // Mark dirty for the first top-level child that has |NeedsLayout|.
   //
@@ -359,6 +459,22 @@ void NGFragmentItems::DirtyLinesFromNeedsLayout(
       return;
     }
   }
+}
+
+// static
+bool NGFragmentItems::ReplaceBoxFragment(
+    const NGPhysicalBoxFragment& old_fragment,
+    const NGPhysicalBoxFragment& new_fragment,
+    const NGPhysicalBoxFragment& containing_fragment) {
+  for (NGInlineCursor cursor(containing_fragment); cursor;
+       cursor.MoveToNext()) {
+    const NGFragmentItem* item = cursor.Current().Item();
+    if (item->BoxFragment() != &old_fragment)
+      continue;
+    item->GetMutableForCloning().ReplaceBoxFragment(new_fragment);
+    return true;
+  }
+  return false;
 }
 
 // static
@@ -389,5 +505,10 @@ void NGFragmentItems::CheckAllItemsAreValid() const {
     DCHECK(!item.IsLayoutObjectDestroyedOrMoved());
 }
 #endif
+
+void NGFragmentItems::Trace(Visitor* visitor) const {
+  for (const NGFragmentItem& item : Items())
+    visitor->Trace(item);
+}
 
 }  // namespace blink

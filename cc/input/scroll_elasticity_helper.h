@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 #define CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 
-#include "base/time/time.h"
 #include "cc/cc_export.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -53,7 +52,8 @@ class CC_EXPORT ScrollElasticityHelper {
 
   virtual ~ScrollElasticityHelper() {}
 
-  virtual bool IsUserScrollable() const = 0;
+  virtual bool IsUserScrollableHorizontal() const = 0;
+  virtual bool IsUserScrollableVertical() const = 0;
 
   // The bounds of the root scroller.
   virtual gfx::Size ScrollBounds() const = 0;
@@ -63,8 +63,8 @@ class CC_EXPORT ScrollElasticityHelper {
   virtual void SetStretchAmount(const gfx::Vector2dF& stretch_amount) = 0;
 
   // Functions for the scrolling of the root scroll layer.
-  virtual gfx::ScrollOffset ScrollOffset() const = 0;
-  virtual gfx::ScrollOffset MaxScrollOffset() const = 0;
+  virtual gfx::PointF ScrollOffset() const = 0;
+  virtual gfx::PointF MaxScrollOffset() const = 0;
   virtual void ScrollBy(const gfx::Vector2dF& delta) = 0;
 
   // Requests that another frame happens for the controller to continue ticking

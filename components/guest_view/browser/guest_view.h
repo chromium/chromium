@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace guest_view {
@@ -18,25 +18,30 @@ namespace guest_view {
 template <typename T>
 class GuestView : public GuestViewBase {
  public:
-  static T* From(int embedder_process_id, int guest_instance_id) {
-    return AsDerivedGuest(
-        GuestViewBase::From(embedder_process_id, guest_instance_id));
+  static T* FromGuestViewBase(GuestViewBase* guest_view_base) {
+    return AsDerivedGuest(guest_view_base);
   }
 
+  static T* FromInstanceID(int embedder_process_id, int guest_instance_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
+  }
+
+  // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
   static T* FromWebContents(const content::WebContents* contents) {
     return AsDerivedGuest(GuestViewBase::FromWebContents(contents));
   }
 
-  static T* FromFrameID(int render_process_id, int render_frame_id) {
-    auto* render_frame_host =
-        content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-    if (!render_frame_host)
-      return nullptr;
-
-    auto* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    return FromWebContents(web_contents);
+  static T* FromRenderFrameHost(content::RenderFrameHost* rfh) {
+    return AsDerivedGuest(GuestViewBase::FromRenderFrameHost(rfh));
   }
+  static T* FromRenderFrameHostId(
+      const content::GlobalRenderFrameHostId& rfh_id) {
+    return AsDerivedGuest(GuestViewBase::FromRenderFrameHostId(rfh_id));
+  }
+
+  GuestView(const GuestView&) = delete;
+  GuestView& operator=(const GuestView&) = delete;
 
   // GuestViewBase implementation.
   const char* GetViewType() const final {
@@ -46,7 +51,7 @@ class GuestView : public GuestViewBase {
  protected:
   explicit GuestView(content::WebContents* owner_web_contents)
       : GuestViewBase(owner_web_contents) {}
-  ~GuestView() override {}
+  ~GuestView() override = default;
 
   T* GetOpener() const { return AsDerivedGuest(GuestViewBase::GetOpener()); }
 
@@ -65,8 +70,6 @@ class GuestView : public GuestViewBase {
 
     return static_cast<T*>(guest);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(GuestView);
 };
 
 }  // namespace guest_view

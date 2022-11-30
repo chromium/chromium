@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     {
       // Set-up the input so downstream won't reject it.
       if (value->is_list()) {
-        base::Value::ConstListView root_list = value->GetList();
+        const base::Value::List& root_list = value->GetList();
         if (!root_list.empty() && root_list[0].is_string()) {
           std::string query = root_list[0].GetString();
           input = AutocompleteInput(base::UTF8ToUTF16(query),

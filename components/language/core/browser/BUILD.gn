@@ -1,15 +1,11 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 static_library("browser") {
   sources = [
-    "baseline_language_model.cc",
-    "baseline_language_model.h",
-    "fluent_language_model.cc",
-    "fluent_language_model.h",
-    "heuristic_language_model.cc",
-    "heuristic_language_model.h",
+    "accept_languages_service.cc",
+    "accept_languages_service.h",
     "language_model.cc",
     "language_model.h",
     "language_model_manager.cc",
@@ -22,12 +18,15 @@ static_library("browser") {
     "locale_util.h",
     "pref_names.cc",
     "pref_names.h",
+    "ulp_metrics_logger.cc",
+    "ulp_metrics_logger.h",
     "url_language_histogram.cc",
     "url_language_histogram.h",
   ]
 
   deps = [
     "//base",
+    "//base:i18n",
     "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//components/language/core/common",
@@ -41,17 +40,19 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "baseline_language_model_unittest.cc",
-    "fluent_language_model_unittest.cc",
-    "heuristic_language_model_unittest.cc",
+    "accept_languages_service_unittest.cc",
+    "language_model_manager_unittest.cc",
     "language_prefs_unittest.cc",
     "language_usage_metrics_unittest.cc",
+    "ulp_metrics_logger_unittest.cc",
     "url_language_histogram_unittest.cc",
   ]
   deps = [
     ":browser",
     ":test_support",
     "//base",
+    "//build:chromeos_buildflags",
+    "//components/language/core/language_model",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",

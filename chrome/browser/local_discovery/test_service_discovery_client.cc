@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/local_discovery/test_service_discovery_client.h"
+
+#include <memory>
 
 #include "base/check_op.h"
 #include "chrome/browser/local_discovery/service_discovery_client_impl.h"
@@ -21,9 +23,9 @@ TestServiceDiscoveryClient::~TestServiceDiscoveryClient() {
 }
 
 void TestServiceDiscoveryClient::Start() {
-  mdns_client_.reset(new net::MDnsClientImpl());
-  service_discovery_client_impl_.reset(new ServiceDiscoveryClientImpl(
-      mdns_client_.get()));
+  mdns_client_ = std::make_unique<net::MDnsClientImpl>();
+  service_discovery_client_impl_ =
+      std::make_unique<ServiceDiscoveryClientImpl>(mdns_client_.get());
   int result = mdns_client_->StartListening(&mock_socket_factory_);
   DCHECK_EQ(net::OK, result);
 

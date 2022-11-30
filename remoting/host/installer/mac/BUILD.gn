@@ -1,14 +1,12 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//build/config/zip.gni")
 import("//chrome/installer/mac/mac_signing_sources.gni")
 import("//remoting/build/config/remoting_build.gni")
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("remoting_me2me_host_archive") {
+action("remoting_me2me_host_archive") {
   _installer_mac_files = [
     "app-entitlements.plist",
     "do_signing.sh",
@@ -138,6 +136,7 @@ mac_app_bundle("remoting_host_uninstaller") {
     "//base",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/mac:constants",
+    "//remoting/resources:strings",
     "//ui/base:base",
   ]
   foreach(locale, remoting_locales_with_underscores) {

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,9 @@
 
 #include <vector>
 
+#include "base/values.h"
 #include "extensions/common/api/printer_provider.h"
 #include "extensions/common/api/printer_provider_internal.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 
@@ -34,12 +31,12 @@ class PrinterProviderInternalAPIObserver {
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onGetCapabilityRequested result returned by the
-  // extension |extensiod|.
+  // extension |extension|.
   // |request_id| is the request id passed to the original
   // chrome.printerProvider.onGetCapabilityRequested event.
   virtual void OnGetCapabilityResult(const Extension* extension,
                                      int request_id,
-                                     const base::DictionaryValue& result) = 0;
+                                     base::Value::Dict result) = 0;
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onPrintRequested result returned by the extension

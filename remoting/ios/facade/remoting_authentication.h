@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ typedef void (^AccessTokenCallback)(RemotingAuthenticationStatus status,
 // This is the interface that will manage the details around authentication
 // management and currently active user. It will make sure the user object is
 // saved to the keychain correctly and loaded on startup. It also is the entry
-// point for gaining access to an auth token for authrized calls.
+// point for gaining access to an auth token for authorized calls.
 // TODO(yuweih): Refactor and rewrite this class in C++.
 @protocol RemotingAuthentication<NSObject>
 
@@ -50,7 +50,7 @@ typedef void (^AccessTokenCallback)(RemotingAuthenticationStatus status,
 // Returns the currently logged in user or nil.
 @property(strong, nonatomic, readonly) UserInfo* user;
 
-// Delegate recieves updates on user changes.
+// Delegate receives updates on user changes.
 @property(weak, nonatomic) id<RemotingAuthenticationDelegate> delegate;
 
 @end

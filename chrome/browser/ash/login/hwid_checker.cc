@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -19,6 +20,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/zlib.h"
 
+namespace ash {
 namespace {
 
 unsigned CalculateCRC32(const std::string& data) {
@@ -142,8 +144,6 @@ bool IsCorrectHWIDv3(const std::string& hwid) {
 
 }  // anonymous namespace
 
-namespace chromeos {
-
 bool IsHWIDCorrect(const std::string& hwid) {
   return IsCorrectHWIDv2(hwid) || IsCorrectExceptionalHWID(hwid) ||
          IsCorrectHWIDv3(hwid);
@@ -151,8 +151,16 @@ bool IsHWIDCorrect(const std::string& hwid) {
 
 bool IsMachineHWIDCorrect() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(chromeos::switches::kForceHWIDCheckFailureForTest))
-    return false;
+  if (cmd_line->HasSwitch(switches::kForceHWIDCheckResultForTest)) {
+    const std::string check_result =
+        cmd_line->GetSwitchValueASCII(switches::kForceHWIDCheckResultForTest);
+    if (check_result == "failure")
+      return false;
+    if (check_result == "success")
+      return true;
+    NOTREACHED() << "Wrong " << switches::kForceHWIDCheckResultForTest
+                 << "value: " << check_result;
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (cmd_line->HasSwitch(::switches::kTestType))
     return true;
@@ -169,7 +177,7 @@ bool IsMachineHWIDCorrect() {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";
     return false;
   }
-  if (!chromeos::IsHWIDCorrect(hwid)) {
+  if (!IsHWIDCorrect(hwid)) {
     LOG(ERROR) << "Machine has malformed HWID '" << hwid << "'. ";
     return false;
   }
@@ -177,4 +185,4 @@ bool IsMachineHWIDCorrect() {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

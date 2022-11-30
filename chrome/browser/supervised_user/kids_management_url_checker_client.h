@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 class GURL;
 
@@ -27,6 +27,12 @@ class KidsManagementURLCheckerClient
   // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
   // "us".
   explicit KidsManagementURLCheckerClient(const std::string& country);
+
+  KidsManagementURLCheckerClient(const KidsManagementURLCheckerClient&) =
+      delete;
+  KidsManagementURLCheckerClient& operator=(
+      const KidsManagementURLCheckerClient&) = delete;
+
   ~KidsManagementURLCheckerClient() override;
 
   // Checks whether an |url| is restricted according to KidsManagement
@@ -46,8 +52,6 @@ class KidsManagementURLCheckerClient
   const std::string country_;
 
   base::WeakPtrFactory<KidsManagementURLCheckerClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClient);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_KIDS_MANAGEMENT_URL_CHECKER_CLIENT_H_

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Web Notifications -->
+    <style name="WebNotificationTitle"
+        parent="@android:style/TextAppearance.Material.Notification.Title"/>
+    <style name="WebNotificationBody"
+        parent="@android:style/TextAppearance.Material.Notification.Line2"/>
+    <style name="WebNotificationBodyBig"
+        parent="@android:style/TextAppearance.Material.Notification"/>
+    <style name="WebNotificationOrigin"
+        parent="@android:style/TextAppearance.Material.Notification.Info"/>
+    <style name="WebNotificationTime"
+        parent="@android:style/TextAppearance.Material.Notification.Time"/>
+    <style name="WebNotificationDivider">
+        <!-- From the non-public Drawable notification_template_divider -->
+        <item name="android:background">#29000000</item>
+    </style>
+    <style name="WebNotificationButtons">
+        <item name="android:layout_marginStart">-8dp</item>
+    </style>
+    <style name="WebNotificationButton"
+        parent="@android:style/Widget.DeviceDefault.Light.Button.Borderless.Small">
+        <item name="android:background">@drawable/web_notification_button_background</item>
+        <item name="android:textAppearance">@style/TextAppearance.WebNotificationButton</item>
+    </style>
+    <style name="TextAppearance.WebNotificationButton"
+        parent="android:TextAppearance.DeviceDefault.Widget.Button">
+        <item name="android:textColor">@color/secondary_text_default_material_light</item>
+    </style>
+    <style name="WebNotificationSettingsButton"
+        parent="@style/WebNotificationButton">
+        <item name="android:textAppearance">@android:style/TextAppearance.Material.Notification.Info</item>
+        <item name="android:paddingStart">32dp</item>
+    </style>
+    <style name="WebNotificationSettingsIcon">
+        <!-- This is a blank override of the v17 style. -->
+    </style>
+    <style name="WebNotificationLargeIcon">
+        <item name="android:padding">12dp</item>
+    </style>
+    <style name="WebNotificationSmallIcon">
+        <item name="android:background">@drawable/web_notification_small_icon_background</item>
+        <item name="android:padding">3dp</item>
+    </style>
+</resources>

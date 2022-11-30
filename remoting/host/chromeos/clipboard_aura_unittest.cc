@@ -1,16 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/chromeos/clipboard_aura.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "remoting/base/constants.h"
@@ -30,17 +31,17 @@ namespace remoting {
 
 namespace {
 
-const base::TimeDelta kTestOverridePollingInterval =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kTestOverridePollingInterval = base::Milliseconds(1);
 
 class ClientClipboard : public protocol::ClipboardStub {
  public:
   ClientClipboard();
+
+  ClientClipboard(const ClientClipboard&) = delete;
+  ClientClipboard& operator=(const ClientClipboard&) = delete;
+
   MOCK_METHOD1(InjectClipboardEvent,
                void(const protocol::ClipboardEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientClipboard);
 };
 
 ClientClipboard::ClientClipboard() = default;
@@ -56,8 +57,8 @@ class ClipboardAuraTest : public testing::Test {
  protected:
   void StopAndResetClipboard();
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   ClientClipboard* client_clipboard_;
   std::unique_ptr<ClipboardAura> clipboard_;
 };
@@ -71,7 +72,7 @@ void ClipboardAuraTest::SetUp() {
 
   // Setup the clipboard.
   client_clipboard_ = new ClientClipboard();
-  clipboard_.reset(new ClipboardAura());
+  clipboard_ = std::make_unique<ClipboardAura>();
 
   EXPECT_GT(TestTimeouts::tiny_timeout(), kTestOverridePollingInterval * 10)
       << "The test timeout should be greater than the polling interval";

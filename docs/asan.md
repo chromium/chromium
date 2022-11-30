@@ -37,7 +37,10 @@ specific releases by specifying a prefix like
 [linux-debug/asan-linux-debug-83](https://commondatastorage.googleapis.com/chromium-browser-asan/index.html?prefix=linux-debug/asan-linux-debug-83).
 This is useful for finding a build for a specific revision, since filenames are of
 the form `asan-<platform>-<buildtype>-<revision>` (but not every revision has an
-archived ASan build).
+archived ASan build). The
+[get_asan_chrome](https://source.chromium.org/chromium/chromium/src/+/main:tools/get_asan_chrome/get_asan_chrome.py)
+helper script is a handy way to download builds; its --help flag provides
+usage instructions.
 
 ## Build tests with ASan
 
@@ -141,7 +144,7 @@ to avoid crashes inside gtk.
 `NSS_DISABLE_ARENA_FREE_LIST=1` and `NSS_DISABLE_UNLOAD=1` are required as well.
 
 When filing a bug found by AddressSanitizer, please add a label
-`Stability-AddressSanitizer`.
+`Stability-Memory-AddressSanitizer`.
 
 ## ASan runtime options
 
@@ -150,7 +153,7 @@ the useful options are listed on this page, others can be obtained from running
 an ASanified binary with `ASAN_OPTIONS=help=1`. Note that Chromium sets its own
 defaults for some options, so the default behavior may be different from that
 observed in other projects.
-See `base/debug/sanitizer_options.cc` for more details.
+See `build/sanitizers/sanitizer_options.cc` for more details.
 
 ## NaCl support under ASan
 
@@ -205,14 +208,13 @@ build/android/test_runner.py instrumentation --test-apk ContentShellTest \
     --tool=asan --release
 ```
 
-To run stuff without Chromium testing script (ex. ContentShell.apk, or any third
-party apk or binary), device setup is needed:
+If the above step fails or to run stuff without Chromium testing script (ex.
+ContentShell.apk, or any third party apk or binary), device setup is needed:
 ```shell
 tools/android/asan/third_party/asan_device_setup.sh \
-    --lib third_party/llvm-build/Release+Asserts/lib/clang/*/lib/linux/libclang_rt.asan-arm-android.so
+    --lib third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
 # wait a few seconds for the device to reload
 ```
-
 It only needs to be run once per device. It is safe to run it multiple times.
 Examine the output to ensure that setup was successful (you may need to run
 `adb disable-verity` and restart the device first). When this is done, the
@@ -261,6 +263,28 @@ ninja -C out_asan_chroot/Release chrome
 ```
 
 **Note**: `disable_nacl=1` is needed for now.
+
+## Running on Chrome OS
+
+For the linux-chromeos "emulator" build, run Asan following the instructions
+above, just like you would for Linux.
+
+For Chromebook hardware, add `is_asan = true` to your args.gn and build.
+`deploy_chrome` with `--mount` and `--nostrip`. ASan logs can be found in
+`/var/log/asan/`.
+
+To catch crashes in gdb:
+
+-   Edit `/etc/chrome_dev.conf` and add `ASAN_OPTIONS=abort_on_error=1`
+-   `restart ui`
+-   gdb -p 12345  # Find the pid from /var/log/chrome/chrome
+
+When you trigger the crash, you'll get a SIGABRT in gdb. `bt` will show the
+stack.
+
+See
+[Chrome OS stack traces](https://chromium.googlesource.com/chromiumos/docs/+/main/stack_traces.md)
+for more details.
 
 ## AsanCoverage
 

@@ -1,10 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
+#include "skia/public/mojom/image_info.mojom-shared.h"
 #include "skia/public/mojom/image_info.mojom.h"
 #include "skia/public/mojom/tile_mode.mojom.h"
 #include "skia/public/mojom/tile_mode_mojom_traits.h"
@@ -14,7 +16,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTileMode.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/skia_util.h"
 
 namespace skia {
@@ -69,6 +71,21 @@ mojo::StructPtr<skia::mojom::InlineBitmap> ConstructInlineBitmap(
   return mojom_bitmap;
 }
 
+// A helper to construct a skia.mojom.ImageInfo without using StructTraits
+// to bypass checks on the sending/serialization side.
+mojo::StructPtr<skia::mojom::ImageInfo> ConstructImageInfo(
+    SkColorType color_type,
+    SkAlphaType alpha_type,
+    uint32_t width,
+    uint32_t height) {
+  auto mojom_info = skia::mojom::ImageInfo::New();
+  mojom_info->color_type = color_type;
+  mojom_info->alpha_type = alpha_type;
+  mojom_info->width = width;
+  mojom_info->height = height;
+  return mojom_info;
+}
+
 TEST(StructTraitsTest, ImageInfo) {
   SkImageInfo input = SkImageInfo::Make(
       34, 56, SkColorType::kGray_8_SkColorType,
@@ -86,6 +103,31 @@ TEST(StructTraitsTest, ImageInfo) {
       another_input_with_null_color_space, output));
   EXPECT_FALSE(output.colorSpace());
   EXPECT_EQ(another_input_with_null_color_space, output);
+}
+
+// We catch negative integers on the sending side and crash, when struct traits
+// are used.
+TEST(StructTraitsDeathTest, ImageInfoOverflowSizeWithStructTrait) {
+  SkImageInfo input = SkImageInfo::Make(
+      std::numeric_limits<uint32_t>::max(),
+      std::numeric_limits<uint32_t>::max(), SkColorType::kGray_8_SkColorType,
+      SkAlphaType::kUnpremul_SkAlphaType,
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kAdobeRGB));
+  SkImageInfo output;
+  EXPECT_DEATH(skia::mojom::ImageInfo::SerializeAsMessage(&input), "");
+}
+
+// We must reject sizes that would cause integer overflow on the receiving side.
+// The wire format is `uint32_t`, but Skia needs us to convert that to an `int`
+// for the SkImageInfo type.
+TEST(StructTraitsTest, ImageInfoOverflowSizeWithoutStructTrait) {
+  SkImageInfo output;
+  mojo::StructPtr<skia::mojom::ImageInfo> input = ConstructImageInfo(
+      SkColorType::kGray_8_SkColorType, SkAlphaType::kUnpremul_SkAlphaType,
+      std::numeric_limits<uint32_t>::max(),
+      std::numeric_limits<uint32_t>::max());
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<skia::mojom::ImageInfo>(
+      input, output));
 }
 
 TEST(StructTraitsTest, ImageInfoCustomColorSpace) {

@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_WEB_CONTENTS_CAPTURE_CLIENT_H_
 #define EXTENSIONS_BROWSER_API_WEB_CONTENTS_CAPTURE_CLIENT_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/extension_types.h"
 
@@ -23,10 +22,18 @@ class WebContentsCaptureClient {
  public:
   WebContentsCaptureClient() {}
 
+  WebContentsCaptureClient(const WebContentsCaptureClient&) = delete;
+  WebContentsCaptureClient& operator=(const WebContentsCaptureClient&) = delete;
+
  protected:
   virtual ~WebContentsCaptureClient() {}
 
-  virtual bool IsScreenshotEnabled(
+  enum class ScreenshotAccess {
+    kEnabled,
+    kDisabledByPreferences,
+    kDisabledByDlp,
+  };
+  virtual ScreenshotAccess GetScreenshotAccess(
       content::WebContents* web_contents) const = 0;
   virtual bool ClientAllowsTransparency() = 0;
 
@@ -35,6 +42,7 @@ class WebContentsCaptureClient {
     FAILURE_REASON_READBACK_FAILED,
     FAILURE_REASON_ENCODING_FAILED,
     FAILURE_REASON_SCREEN_SHOTS_DISABLED,
+    FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP,
     FAILURE_REASON_VIEW_INVISIBLE,
   };
   CaptureResult CaptureAsync(
@@ -52,8 +60,6 @@ class WebContentsCaptureClient {
 
   // Quality setting to use when encoding jpegs.  Set in RunAsync().
   int image_quality_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsCaptureClient);
 };
 
 }  // namespace extensions

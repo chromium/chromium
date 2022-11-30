@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -77,6 +78,9 @@ class UsageStatsDatabaseTest : public testing::Test {
         std::move(fake_token_mapping_db));
   }
 
+  UsageStatsDatabaseTest(const UsageStatsDatabaseTest&) = delete;
+  UsageStatsDatabaseTest& operator=(const UsageStatsDatabaseTest&) = delete;
+
   UsageStatsDatabase* usage_stats_database() {
     return usage_stats_database_.get();
   }
@@ -104,13 +108,11 @@ class UsageStatsDatabaseTest : public testing::Test {
   std::map<std::string, Suspension> suspension_store_;
   std::map<std::string, TokenMapping> token_mapping_store_;
 
-  FakeDB<WebsiteEvent>* website_event_db_unowned_;
-  FakeDB<Suspension>* suspension_db_unowned_;
-  FakeDB<TokenMapping>* token_mapping_db_unowned_;
+  raw_ptr<FakeDB<WebsiteEvent>> website_event_db_unowned_;
+  raw_ptr<FakeDB<Suspension>> suspension_db_unowned_;
+  raw_ptr<FakeDB<TokenMapping>> token_mapping_db_unowned_;
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageStatsDatabaseTest);
 };
 
 TEST_F(UsageStatsDatabaseTest, Initialization) {
@@ -332,9 +334,8 @@ TEST_F(UsageStatsDatabaseTest, ExpiryDeletesOldEvents) {
 
   // Advance "now" by 7 days + 9 seconds so that the first two events are > 7
   // days old.
-  now = now +
-        base::TimeDelta::FromDays(UsageStatsDatabase::EXPIRY_THRESHOLD_DAYS) +
-        base::TimeDelta::FromSeconds(9);
+  now = now + base::Days(UsageStatsDatabase::EXPIRY_THRESHOLD_DAYS) +
+        base::Seconds(9);
   usage_stats_database()->ExpireEvents(now);
 
   fake_website_event_db()->LoadCallback(true);

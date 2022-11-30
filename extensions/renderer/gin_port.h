@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "gin/wrappable.h"
-#include "v8/include/v8.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 class Arguments;
@@ -53,6 +52,10 @@ class GinPort final : public gin::Wrappable<GinPort> {
           const std::string& name,
           APIEventHandler* event_handler,
           Delegate* delegate);
+
+  GinPort(const GinPort&) = delete;
+  GinPort& operator=(const GinPort&) = delete;
+
   ~GinPort() override;
 
   static gin::WrapperInfo kWrapperInfo;
@@ -128,14 +131,14 @@ class GinPort final : public gin::Wrappable<GinPort> {
   State state_ = kActive;
 
   // The associated port id.
-  PortId port_id_;
+  const PortId port_id_;
 
   // The routing id associated with the port's context's render frame.
   // TODO(devlin/lazyboy): This won't work with service workers.
-  int routing_id_;
+  const int routing_id_;
 
   // The port's name.
-  std::string name_;
+  const std::string name_;
 
   // The associated APIEventHandler. Guaranteed to outlive this object.
   APIEventHandler* const event_handler_;
@@ -151,12 +154,10 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // A listener for context invalidation. Note: this isn't actually optional;
   // it just needs to be created after |weak_factory_|, which needs to be the
   // final member.
-  base::Optional<binding::ContextInvalidationListener>
+  absl::optional<binding::ContextInvalidationListener>
       context_invalidation_listener_;
 
   base::WeakPtrFactory<GinPort> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GinPort);
 };
 
 }  // namespace extensions

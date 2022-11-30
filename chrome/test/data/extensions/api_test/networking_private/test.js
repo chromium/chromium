@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,6 @@ var callbackPass = chrome.test.callbackPass;
 
 var kFailure = 'Failure';
 var kGuid = 'SOME_GUID';
-
-// Test properties for the verification API.
-var verificationProperties = {
-  "certificate": "certificate",
-  "intermediateCertificates": ["ica1", "ica2", "ica3"],
-  "publicKey": "cHVibGljX2tleQ==",  // Base64("public_key")
-  "nonce": "nonce",
-  "signedData": "c2lnbmVkX2RhdGE=",  // Base64("signed_data")
-  "deviceSerial": "device_serial",
-  "deviceSsid": "Device 0123",
-  "deviceBssid": "00:01:02:03:04:05"
-};
 
 function callbackResult(result) {
   if (chrome.runtime.lastError)
@@ -94,14 +82,6 @@ var availableTests = [
   function startActivate() {
     chrome.networkingPrivate.startActivate(
         kGuid, '' /* carrier */, callbackPass(callbackResult));
-  },
-  function verifyDestination() {
-    chrome.networkingPrivate.verifyDestination(
-        verificationProperties, callbackPass(callbackResult));
-  },
-  function verifyAndEncryptData() {
-    chrome.networkingPrivate.verifyAndEncryptData(
-        verificationProperties, 'data', callbackPass(callbackResult));
   },
   function getCaptivePortalStatus() {
     chrome.networkingPrivate.getCaptivePortalStatus(

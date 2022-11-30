@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "sql/recover_module/cursor.h"
 #include "sql/recover_module/integers.h"
 #include "sql/recover_module/pager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 namespace recover {
@@ -20,23 +21,23 @@ namespace recover {
 // Returns a null optional if the operation fails in any way. The failure is
 // most likely due to an incorrect table spec (missing attachment or table).
 // Corrupted SQLite metadata can cause failures here.
-base::Optional<int> GetTableRootPageId(sqlite3* sqlite_db,
+absl::optional<int> GetTableRootPageId(sqlite3* sqlite_db,
                                        const TargetTableSpec& table) {
-  if (table.table_name == "sqlite_master") {
-    // The sqlite_master table is always rooted at the first page.
+  if (table.table_name == "sqlite_schema") {
+    // The sqlite_schema table is always rooted at the first page.
     // SQLite page IDs use 1-based indexing.
-    return base::Optional<int64_t>(1);
+    return absl::optional<int64_t>(1);
   }
 
   std::string select_sql =
       base::StrCat({"SELECT rootpage FROM ", table.db_name,
-                    ".sqlite_master WHERE type='table' AND tbl_name=?"});
+                    ".sqlite_schema WHERE type='table' AND tbl_name=?"});
   sqlite3_stmt* sqlite_statement;
   if (sqlite3_prepare_v3(sqlite_db, select_sql.c_str(), select_sql.size() + 1,
                          SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
                          nullptr) != SQLITE_OK) {
-    // The sqlite_master table is missing or its schema is corrupted.
-    return base::nullopt;
+    // The sqlite_schema table is missing or its schema is corrupted.
+    return absl::nullopt;
   }
 
   if (sqlite3_bind_text(sqlite_statement, 1, table.table_name.c_str(),
@@ -44,13 +45,13 @@ base::Optional<int> GetTableRootPageId(sqlite3* sqlite_db,
                         SQLITE_STATIC) != SQLITE_OK) {
     // Binding the table name failed. This shouldn't happen.
     sqlite3_finalize(sqlite_statement);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (sqlite3_step(sqlite_statement) != SQLITE_ROW) {
     // The database attachment point or table does not exist.
     sqlite3_finalize(sqlite_statement);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   int64_t root_page = sqlite3_column_int64(sqlite_statement, 0);
@@ -58,13 +59,13 @@ base::Optional<int> GetTableRootPageId(sqlite3* sqlite_db,
 
   if (!DatabasePageReader::IsValidPageId(root_page)) {
     // Database corruption.
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   static_assert(
       DatabasePageReader::kMaxPageId <= std::numeric_limits<int>::max(),
       "Converting the page ID to int may overflow");
-  return base::make_optional(static_cast<int>(root_page));
+  return absl::make_optional(static_cast<int>(root_page));
 }
 
 // Returns (SQLite status, a SQLite database's page size).
@@ -125,7 +126,7 @@ std::pair<int, std::unique_ptr<VirtualTable>> VirtualTable::Create(
     std::vector<RecoveredColumnSpec> column_specs) {
   DCHECK(backing_table_spec.IsValid());
 
-  base::Optional<int64_t> backing_table_root_page_id =
+  absl::optional<int64_t> backing_table_root_page_id =
       GetTableRootPageId(sqlite_db, backing_table_spec);
   if (!backing_table_root_page_id.has_value()) {
     // Either the backing table specification is incorrect, or the database

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ const char kGcpwServiceFetchUserPoliciesQueryTemplate[] =
 
 // Default timeout when trying to make requests to the GCPW service.
 const base::TimeDelta kDefaultFetchPoliciesRequestTimeout =
-    base::TimeDelta::FromMilliseconds(5000);
+    base::Milliseconds(5000);
 
 // Path elements for the path where the policies are stored on disk.
 constexpr wchar_t kGcpwPoliciesDirectory[] = L"Policies";
@@ -55,8 +55,7 @@ const wchar_t kCloudPoliciesEnabledRegKey[] = L"cloud_policies_enabled";
 const char kPolicyFetchResponseKeyName[] = "policies";
 
 // The period of refreshing cloud policies.
-const base::TimeDelta kCloudPoliciesExecutionPeriod =
-    base::TimeDelta::FromHours(1);
+const base::TimeDelta kCloudPoliciesExecutionPeriod = base::Hours(1);
 
 // True when cloud policies feature is enabled.
 bool g_cloud_policies_enabled = false;
@@ -218,7 +217,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   // Make the fetch policies HTTP request.
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       user_policies_url, access_token, {}, {},
       kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
@@ -242,7 +241,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
 
   uint32_t open_flags = base::File::FLAG_CREATE_ALWAYS |
                         base::File::FLAG_WRITE |
-                        base::File::FLAG_EXCLUSIVE_WRITE;
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   std::unique_ptr<base::File> policy_file = GetOpenedFileForUser(
       sid, open_flags, kGcpwPoliciesDirectory, kGcpwUserPolicyFileName);
   if (!policy_file) {
@@ -286,7 +285,7 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   policy_file->Read(0, buffer.data(), buffer.size());
   policy_file.reset();
 
-  base::Optional<base::Value> policy_data =
+  absl::optional<base::Value> policy_data =
       base::JSONReader::Read(base::StringPiece(buffer.data(), buffer.size()),
                              base::JSON_ALLOW_TRAILING_COMMAS);
   if (!policy_data || !policy_data->is_dict()) {

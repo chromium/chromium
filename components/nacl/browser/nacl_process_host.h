@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_NACL_BROWSER_NACL_PROCESS_HOST_H_
 #define COMPONENTS_NACL_BROWSER_NACL_PROCESS_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #include <stddef.h>
@@ -14,7 +15,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -66,9 +66,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // nexe_token: A cache validation token for nexe_file.
   // prefetched_resource_files_info: An array of resource files prefetched.
   // permissions: PPAPI permissions, to control access to private APIs.
-  // render_view_id: RenderView routing id, to control access to private APIs.
   // permission_bits: controls which interfaces the NaCl plugin can use.
-  // uses_nonsfi_mode: whether the program should be loaded under non-SFI mode.
   // off_the_record: was the process launched from an incognito renderer?
   // process_type: the type of NaCl process.
   // profile_directory: is the path of current profile directory.
@@ -78,13 +76,14 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
       const NaClFileToken& nexe_token,
       const std::vector<NaClResourcePrefetchResult>& prefetched_resource_files,
       ppapi::PpapiPermissions permissions,
-      int render_view_id,
       uint32_t permission_bits,
-      bool uses_nonsfi_mode,
-      bool nonsfi_mode_allowed,
       bool off_the_record,
       NaClAppProcessType process_type,
       const base::FilePath& profile_directory);
+
+  NaClProcessHost(const NaClProcessHost&) = delete;
+  NaClProcessHost& operator=(const NaClProcessHost&) = delete;
+
   ~NaClProcessHost() override;
 
   void OnProcessCrashed(int exit_status) override;
@@ -103,7 +102,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   void OnChannelConnected(int32_t peer_pid) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnProcessLaunchedByBroker(base::Process process);
   void OnDebugExceptionHandlerLaunchedByBroker(bool success);
 #endif
@@ -120,14 +119,14 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // listeners (if the port is not kGdbDebugStubPortUnknown).
   void SetDebugStubPort(int port);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Create bound TCP socket in the browser process so that the NaCl GDB debug
   // stub can use it to accept incoming connections even when the Chrome sandbox
   // is enabled.
   net::SocketDescriptor GetDebugStubSocketHandle();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called when the debug stub port has been selected.
   void OnDebugStubPortSelected(uint16_t debug_stub_port);
 #endif
@@ -182,7 +181,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
                     uint64_t file_token_hi,
                     const base::FilePath& file_path,
                     base::File file);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Message handler for Windows hardware exception handling.
   void OnAttachDebugExceptionHandler(const std::string& info,
                                      IPC::Message* reply_msg);
@@ -206,7 +205,7 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
 
   ppapi::PpapiPermissions permissions_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This field becomes true when the broker successfully launched
   // the NaCl loader.
   bool process_launched_by_broker_;
@@ -218,8 +217,8 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // The reply message to send. We must always send this message when the
   // sub-process either succeeds or fails to unblock the renderer waiting for
   // the reply. NULL when there is no reply to send.
-  IPC::Message* reply_msg_;
-#if defined(OS_WIN)
+  raw_ptr<IPC::Message> reply_msg_;
+#if BUILDFLAG(IS_WIN)
   bool debug_exception_handler_requested_;
   std::unique_ptr<IPC::Message> attach_debug_exception_handler_reply_msg_;
 #endif
@@ -229,9 +228,6 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   base::FilePath manifest_path_;
 
   std::unique_ptr<content::BrowserChildProcessHost> process_;
-
-  bool uses_nonsfi_mode_;
-  bool nonsfi_mode_allowed_;
 
   bool enable_debug_stub_;
   bool enable_crash_throttling_;
@@ -245,14 +241,10 @@ class NaClProcessHost : public content::BrowserChildProcessHostDelegate {
   // Browser host for plugin process.
   std::unique_ptr<content::BrowserPpapiHost> ppapi_host_;
 
-  int render_view_id_;
-
   // Throttling time in milliseconds for PpapiHostMsg_Keepalive IPCs.
   static unsigned keepalive_throttle_interval_milliseconds_;
 
   base::WeakPtrFactory<NaClProcessHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NaClProcessHost);
 };
 
 }  // namespace nacl

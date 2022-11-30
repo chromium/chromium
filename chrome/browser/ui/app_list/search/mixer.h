@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
 class ChromeSearchResult;
@@ -26,7 +26,7 @@ FORWARD_DECLARE_TEST(MixerTest, Publish);
 }
 
 class ChipRanker;
-class SearchController;
+class SearchControllerImpl;
 class SearchProvider;
 class SearchResultRanker;
 enum class RankingItemType;
@@ -36,7 +36,12 @@ enum class RankingItemType;
 // result.
 class Mixer {
  public:
-  explicit Mixer(AppListModelUpdater* model_updater);
+  Mixer(AppListModelUpdater* model_updater,
+        SearchControllerImpl* search_controller);
+
+  Mixer(const Mixer&) = delete;
+  Mixer& operator=(const Mixer&) = delete;
+
   ~Mixer();
 
   // Adds a new mixer group. A "soft" maximum of |max_results| results will be
@@ -55,7 +60,7 @@ class Mixer {
   // published.
   void SetNonAppSearchResultRanker(std::unique_ptr<SearchResultRanker> ranker);
 
-  void InitializeRankers(Profile* profile, SearchController* search_controller);
+  void InitializeRankers(Profile* profile);
 
   SearchResultRanker* search_result_ranker() {
     if (!search_result_ranker_)
@@ -67,7 +72,7 @@ class Mixer {
   void SetChipRanker(std::unique_ptr<ChipRanker> ranker);
 
   // Handle a training signal.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // Used for sorting and mixing results.
   struct SortData {
@@ -76,7 +81,7 @@ class Mixer {
 
     bool operator<(const SortData& other) const;
 
-    ChromeSearchResult* result;  // Not owned.
+    raw_ptr<ChromeSearchResult> result;  // Not owned.
     double score;
   };
   typedef std::vector<Mixer::SortData> SortedResults;
@@ -89,15 +94,14 @@ class Mixer {
 
   void FetchResults(const std::u16string& query);
 
-  AppListModelUpdater* const model_updater_;  // Not owned.
+  const raw_ptr<AppListModelUpdater> model_updater_;       // Not owned.
+  const raw_ptr<SearchControllerImpl> search_controller_;  // Not owned.
 
   Groups groups_;
 
   // Adaptive models used for re-ranking search results.
   std::unique_ptr<SearchResultRanker> search_result_ranker_;
   std::unique_ptr<ChipRanker> chip_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Mixer);
 };
 
 }  // namespace app_list

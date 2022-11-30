@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,7 +11,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -23,6 +22,10 @@ namespace media {
 class MEDIA_EXPORT H264BitReader {
  public:
   H264BitReader();
+
+  H264BitReader(const H264BitReader&) = delete;
+  H264BitReader& operator=(const H264BitReader&) = delete;
+
   ~H264BitReader();
 
   // Initialize the reader to start reading at |data|, |size| being size
@@ -34,7 +37,7 @@ class MEDIA_EXPORT H264BitReader {
 
   // Read |num_bits| next bits from stream and return in |*out|, first bit
   // from the stream starting at |num_bits| position in |*out|.
-  // |num_bits| may be 1-32, inclusive.
+  // |num_bits| may be 1-31, inclusive.
   // Return false if the given number of bits cannot be read (not enough
   // bits in the stream), true otherwise.
   bool ReadBits(int num_bits, int* out);
@@ -72,8 +75,6 @@ class MEDIA_EXPORT H264BitReader {
 
   // Number of emulation preventation bytes (0x000003) we met.
   size_t emulation_prevention_bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264BitReader);
 };
 
 }  // namespace media

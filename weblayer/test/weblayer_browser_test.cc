@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
+#include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_context.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/common/features.h"
-#include "weblayer/public/common/switches.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/shell/common/shell_switches.h"
 
@@ -28,8 +29,8 @@ void WebLayerBrowserTest::SetUp() {
 
   // Disable auto reload since most browser tests do not expect error pages to
   // reload automatically. Tests that want auto reload can explicitly append
-  // switches::kEnableAutoReload, which will override the disable here.
-  command_line->AppendSwitch(switches::kDisableAutoReload);
+  // embedder_support::kEnableAutoReload, which will override the disable here.
+  command_line->AppendSwitch(embedder_support::kDisableAutoReload);
 
   if (start_in_incognito_mode_)
     command_line->AppendSwitch(switches::kStartInIncognito);

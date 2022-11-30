@@ -20,11 +20,11 @@ AppleWebKit/603.1.23 (KHTML, like Gecko) Version/10.0
 Mobile/14E5239e Safari/602.1
 ```
 
-When the Request Desktop Site feature is enabled, the **Desktop Safari** UA is
-sent:
+When the Request Desktop Site feature is enabled, the UA is the same as
+**Desktop Safari** with `CriOS/<ChromeMajorRevision>` being added:
 
 ```
-Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4)
-AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7
-Safari/600.7.12
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5)
+AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/85
+Version/11.1.1 Safari/605.1.15
 ```

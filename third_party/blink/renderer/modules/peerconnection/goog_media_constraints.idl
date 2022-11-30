@@ -1,0 +1,20 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/1318448): When all goog-constraints have been removed,
+// delete these non-standard dictionaries.
+
+dictionary GoogMediaConstraintsSet {
+  // Already ignored on all platforms except for Fuchsia.
+  // TODO(https://crbug.com/804275): Delete when Fuchsia dependency is gone.
+  boolean DtlsSrtpKeyAgreement;
+};
+
+dictionary GoogMediaConstraints {
+  GoogMediaConstraintsSet mandatory;
+
+  // The JavaScript observable name is "optional". The underscore is used to
+  // tell WebIDL not to treat this as a special keyword.
+  sequence<GoogMediaConstraintsSet> _optional;
+};

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,19 +19,23 @@ TEST(AdvancedProtectionStatusManagerFactoryTest, OffTheRecordUseSameService) {
   std::unique_ptr<TestingProfile> testing_profile = builder.Build();
 
   // The regular profile and the off-the-record profile must be different.
-  ASSERT_NE(testing_profile.get(), testing_profile->GetPrimaryOTRProfile());
+  ASSERT_NE(testing_profile.get(),
+            testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  EXPECT_EQ(AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile.get()),
-            AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile->GetPrimaryOTRProfile()));
+  EXPECT_EQ(
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile.get()),
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   // Two different off-the-record profiles must be different.
-  EXPECT_EQ(AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile->GetPrimaryOTRProfile()),
-            AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile->GetOffTheRecordProfile(
-                    Profile::OTRProfileID("Test::AdvancedProtection"))));
+  EXPECT_EQ(
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetOffTheRecordProfile(
+              Profile::OTRProfileID::CreateUniqueForTesting(),
+              /*create_if_needed=*/true)));
 }
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,31 +36,30 @@ void MultideviceSetupHandler::RegisterMessages() {
 }
 
 void MultideviceSetupHandler::HandleGetProfileInfo(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
-  std::string callback_id;
-  bool result = args->GetString(0, &callback_id);
-  DCHECK(result);
+  DCHECK(!args.empty());
+  std::string callback_id = args[0].GetString();
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           Profile::FromWebUI(web_ui()));
 
-  base::DictionaryValue response;
-  response.SetString("email", user->GetDisplayEmail());
+  base::Value::Dict response;
+  response.Set("email", user->GetDisplayEmail());
 
   scoped_refptr<base::RefCountedMemory> image =
       chromeos::UserImageSource::GetUserImage(user->GetAccountId());
-  response.SetString("profilePhotoUrl",
-                     webui::GetPngDataUrl(image->front(), image->size()));
+  response.Set("profilePhotoUrl",
+               webui::GetPngDataUrl(image->front(), image->size()));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
-    const base::ListValue* args) {
-  DCHECK(args->empty());
+    const base::Value::List& args) {
+  DCHECK(args.empty());
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       Profile::FromWebUI(web_ui()),
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);

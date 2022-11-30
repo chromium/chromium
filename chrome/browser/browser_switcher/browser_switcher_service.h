@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -96,7 +95,7 @@ class XmlDownloader {
   scoped_refptr<network::SharedURLLoaderFactory> other_url_factory_;
 
   // This |BrowserSwitcherService| owns this object.
-  BrowserSwitcherService* service_;
+  raw_ptr<BrowserSwitcherService> service_;
 
   std::vector<RulesetSource> sources_;
 
@@ -120,7 +119,13 @@ class BrowserSwitcherService : public KeyedService {
       base::RepeatingCallback<AllRulesetsParsedCallbackSignature>;
 
  public:
+  BrowserSwitcherService() = delete;
+
   explicit BrowserSwitcherService(Profile* profile);
+
+  BrowserSwitcherService(const BrowserSwitcherService&) = delete;
+  BrowserSwitcherService& operator=(const BrowserSwitcherService&) = delete;
+
   ~BrowserSwitcherService() override;
 
   virtual void Init();
@@ -190,7 +195,7 @@ class BrowserSwitcherService : public KeyedService {
 
   std::unique_ptr<XmlDownloader> sitelist_downloader_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   BrowserSwitcherPrefs prefs_;
   base::CallbackListSubscription prefs_subscription_;
 
@@ -205,9 +210,6 @@ class BrowserSwitcherService : public KeyedService {
   std::unique_ptr<BrowserSwitcherSitelist> sitelist_;
 
   base::WeakPtrFactory<BrowserSwitcherService> weak_ptr_factory_{this};
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherService);
 };
 
 }  // namespace browser_switcher

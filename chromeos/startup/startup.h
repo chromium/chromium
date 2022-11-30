@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "base/files/scoped_file.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -16,7 +18,19 @@ namespace chromeos {
 // specified via the kCrosStartupDataFD command line flag. This function
 // consumes the FD, so this must not be called twice in a process.
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
-base::Optional<std::string> ReadStartupData();
+absl::optional<std::string> ReadStartupData();
+
+// Reads the post-login data. The FD to be read for the startup data should be
+// specified via the kCrosPostLoginDataFD command line flag. This function
+// consumes the FD, so this must not be called twice in a process.
+COMPONENT_EXPORT(CHROMEOS_STARTUP)
+absl::optional<std::string> ReadPostLoginData();
+
+// Creates a memory backed file containing the serialized |params|,
+// and returns its FD.
+COMPONENT_EXPORT(CHROMEOS_STARTUP)
+base::ScopedFD CreateMemFDFromBrowserInitParams(
+    const crosapi::mojom::BrowserInitParamsPtr& data);
 
 }  // namespace chromeos
 

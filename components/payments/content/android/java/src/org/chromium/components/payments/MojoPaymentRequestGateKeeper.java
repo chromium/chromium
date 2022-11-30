@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ public class MojoPaymentRequestGateKeeper implements PaymentRequest {
     // Implement PaymentRequest:
     @Override
     public void init(PaymentRequestClient client, PaymentMethodData[] methodData,
-            PaymentDetails details, PaymentOptions options, boolean googlePayBridgeEligible) {
+            PaymentDetails details, PaymentOptions options) {
         if (mPaymentRequestService != null) {
             mPaymentRequestService.abortForInvalidDataFromRenderer(
                     ErrorStrings.ATTEMPTED_INITIALIZATION_TWICE);
@@ -54,7 +54,7 @@ public class MojoPaymentRequestGateKeeper implements PaymentRequest {
 
         PaymentRequestService service =
                 mDelegate.createPaymentRequestService(client, this::onPaymentRequestServiceClosed);
-        if (!service.init(methodData, details, options, googlePayBridgeEligible)) return;
+        if (!service.init(methodData, details, options)) return;
         mPaymentRequestService = service;
     }
 
@@ -64,9 +64,9 @@ public class MojoPaymentRequestGateKeeper implements PaymentRequest {
 
     // Implement PaymentRequest:
     @Override
-    public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
+    public void show(boolean waitForUpdatedDetails) {
         if (mPaymentRequestService == null) return;
-        mPaymentRequestService.show(isUserGesture, waitForUpdatedDetails);
+        mPaymentRequestService.show(waitForUpdatedDetails);
     }
 
     // Implement PaymentRequest:

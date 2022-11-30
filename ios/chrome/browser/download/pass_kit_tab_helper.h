@@ -1,17 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_PASS_KIT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_PASS_KIT_TAB_HELPER_H_
 
+#import <Foundation/Foundation.h>
+
 #include <memory>
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "ios/web/public/web_state_user_data.h"
 
 @protocol PassKitTabHelperDelegate;
 namespace web {
@@ -44,21 +46,21 @@ enum class DownloadPassKitResult {
 class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
                          public web::DownloadTaskObserver {
  public:
+  PassKitTabHelper(const PassKitTabHelper&) = delete;
+  PassKitTabHelper& operator=(const PassKitTabHelper&) = delete;
+
   ~PassKitTabHelper() override;
 
-  // Creates TabHelper. |delegate| is not retained by TabHelper. |web_state|
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state,
-                                id<PassKitTabHelperDelegate> delegate);
-
-  // Asynchronously downloads pkpass file using the given |task|. Asks delegate
+  // Asynchronously downloads pkpass file using the given `task`. Asks delegate
   // to present "Add pkpass" dialog when the download is complete.
   virtual void Download(std::unique_ptr<web::DownloadTask> task);
 
+  // Set the delegate. The tab helper will no-op if used when delegate is nil.
+  void SetDelegate(id<PassKitTabHelperDelegate> delegate);
+
  protected:
   // Allow subclassing from PassKitTabHelper for testing purposes.
-  PassKitTabHelper(web::WebState* web_state,
-                   id<PassKitTabHelperDelegate> delegate);
+  explicit PassKitTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<PassKitTabHelper>;
@@ -66,15 +68,19 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
 
+  // Called when the downloaded data is available.
+  void OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
+                          NSData* data);
+
   web::WebState* web_state_;
   __weak id<PassKitTabHelperDelegate> delegate_ = nil;
   // Set of unfinished download tasks.
   std::set<std::unique_ptr<web::DownloadTask>, base::UniquePtrComparator>
       tasks_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<PassKitTabHelper> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PassKitTabHelper);
+  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_PASS_KIT_TAB_HELPER_H_

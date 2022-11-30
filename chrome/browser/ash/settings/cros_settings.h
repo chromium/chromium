@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,20 +12,18 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
+#include "base/values.h"
+#include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/user_manager/user_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -55,6 +53,10 @@ class CrosSettings {
   // production code uses the singleton returned by Get() above.
   CrosSettings(DeviceSettingsService* device_settings_service,
                PrefService* local_state);
+
+  CrosSettings(const CrosSettings&) = delete;
+  CrosSettings& operator=(const CrosSettings&) = delete;
+
   virtual ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
@@ -87,9 +89,9 @@ class CrosSettings {
   bool GetDouble(const std::string& path, double* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
   bool GetList(const std::string& path,
-               const base::ListValue** out_value) const;
+               const base::Value::List** out_value) const;
   bool GetDictionary(const std::string& path,
-                     const base::DictionaryValue** out_value) const;
+                     const base::Value::Dict** out_value) const;
 
   // Checks if the given username is on the list of users allowed to sign-in to
   // this device. |wildcard_match| may be nullptr. If it's present, it'll be set
@@ -99,7 +101,7 @@ class CrosSettings {
   bool IsUserAllowlisted(
       const std::string& username,
       bool* wildcard_match,
-      const base::Optional<user_manager::UserType>& user_type) const;
+      const absl::optional<user_manager::UserType>& user_type) const;
 
   // Helper function for the allowlist op. Implemented here because we will need
   // this in a few places. The functions searches for |email| in the pref |path|
@@ -110,7 +112,7 @@ class CrosSettings {
                        bool* wildcard_match) const;
 
   // Same as above, but receives already populated user list.
-  static bool FindEmailInList(const base::ListValue* list,
+  static bool FindEmailInList(const base::Value::List& list,
                               const std::string& email,
                               bool* wildcard_match);
 
@@ -120,9 +122,9 @@ class CrosSettings {
       CrosSettingsProvider* provider);
 
   // Add an observer Callback for changes for the given |path|.
-  base::CallbackListSubscription AddSettingsObserver(
+  [[nodiscard]] base::CallbackListSubscription AddSettingsObserver(
       const std::string& path,
-      base::RepeatingClosure callback) WARN_UNUSED_RESULT;
+      base::RepeatingClosure callback);
 
   // Returns the provider that handles settings with the |path| or prefix.
   CrosSettingsProvider* GetProvider(const std::string& path) const;
@@ -142,7 +144,8 @@ class CrosSettings {
   std::vector<std::unique_ptr<CrosSettingsProvider>> providers_;
 
   // Owner unique pointer in |providers_|.
-  SupervisedUserCrosSettingsProvider* supervised_user_cros_settings_provider_;
+  raw_ptr<SupervisedUserCrosSettingsProvider>
+      supervised_user_cros_settings_provider_;
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.
@@ -150,8 +153,6 @@ class CrosSettings {
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrosSettings);
 };
 
 // Helper class for tests. Initializes the CrosSettings singleton on
@@ -159,10 +160,11 @@ class CrosSettings {
 class ScopedTestCrosSettings {
  public:
   explicit ScopedTestCrosSettings(PrefService* local_state);
-  ~ScopedTestCrosSettings();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestCrosSettings);
+  ScopedTestCrosSettings(const ScopedTestCrosSettings&) = delete;
+  ScopedTestCrosSettings& operator=(const ScopedTestCrosSettings&) = delete;
+
+  ~ScopedTestCrosSettings();
 };
 
 }  // namespace ash

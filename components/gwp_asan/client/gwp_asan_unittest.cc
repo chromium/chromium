@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,27 +10,29 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gwp_asan {
 namespace internal {
 
-base::Optional<AllocatorSettings> GetAllocatorSettings(
+absl::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
     bool boost_sampling);
 
 namespace {
 
 constexpr size_t kLoopIterations = 100;
-const base::Feature kTestFeature1{"GwpAsanTestFeature1",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kTestFeature2{"GwpAsanTestFeature2",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestFeature1,
+             "GwpAsanTestFeature1",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2,
+             "GwpAsanTestFeature2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Tries to enable hooking with the given process sampling parameters
 // kLoopIterations times and return the number of times hooking was enabled.

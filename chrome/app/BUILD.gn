@@ -1,36 +1,36 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
+import("//crypto/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+} else if (is_fuchsia) {
+  import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 }
 
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
   sources = [ "chrome_command_ids.h" ]
-  deps = [ "//build:chromeos_buildflags" ]
-}
-
-# TODO: put back in chrome/browser if necessary. http://crbug.com/771801.
-source_set("shutdown_signal_handlers") {
-  if (is_posix || is_fuchsia) {
-    sources = [
-      "shutdown_signal_handlers_posix.cc",
-      "shutdown_signal_handlers_posix.h",
-    ]
-  }
-  deps = [ "//base" ]
+  public_deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//components/services/screen_ai/buildflags",
+  ]
 }
 
 # On Windows, links chrome_dll.rc. On other platforms, does nothing so you can
@@ -55,22 +55,57 @@ source_set("chrome_dll_resources") {
   }
 }
 
+if (is_win) {
+  source_set("chrome_exe_main_exports") {
+    sources = [ "chrome_exe_main_win.h" ]
+  }
+  source_set("crash_reporter_client_win_unit_tests") {
+    testonly = true
+    sources = [ "chrome_crash_reporter_client_win_unittest.cc" ]
+    deps = [
+      "//base:base",
+      "//chrome/chrome_elf:crash",
+      "//testing/gtest:gtest",
+    ]
+  }
+}
+
+if (is_mac) {
+  source_set("notification_metrics") {
+    sources = [
+      "notification_metrics.cc",
+      "notification_metrics.h",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
 if (is_android) {
-  import("//build/config/android/rules.gni")
   android_generated_java_resources =
       [ "java/res/values/generated_resources.xml" ] +
       process_file_template(
           android_bundle_locales_as_resources,
           [ "java/res/values-{{source_name_part}}/generated_resources.xml" ])
+
+  google_chrome_strings_java_resources =
+      [ "java/res/values/google_chrome_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/google_chrome_strings.xml" ])
+  chromium_strings_java_resources =
+      [ "java/res/values/chromium_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/chromium_strings.xml" ])
 }
 
 grit("generated_resources") {
   source = "generated_resources.grd"
-  defines = chrome_grit_defines
+  defines = chrome_grit_defines + [ "is_cfm=${is_cfm}" ]
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/generated_resources.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "generated_resources_{{source_name_part}}.pak" ])
   if (is_android) {
     outputs += android_generated_java_resources
@@ -83,6 +118,15 @@ if (is_android) {
     generated_files =
         rebase_path(android_generated_java_resources, "java/res", ".")
     deps = [ ":generated_resources" ]
+    if (is_chrome_branded) {
+      generated_files +=
+          rebase_path(google_chrome_strings_java_resources, "java/res", ".")
+      deps += [ ":google_chrome_strings" ]
+    } else {
+      generated_files +=
+          rebase_path(chromium_strings_java_resources, "java/res", ".")
+      deps += [ ":chromium_strings" ]
+    }
   }
 }
 
@@ -92,8 +136,12 @@ grit("google_chrome_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs = [ "grit/google_chrome_strings.h" ] +
             process_file_template(
-                locales_with_pseudolocales,
+                all_chrome_locales,
                 [ "google_chrome_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += google_chrome_strings_java_resources
+  }
 }
 
 grit("chromium_strings") {
@@ -102,8 +150,12 @@ grit("chromium_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/chromium_strings.h" ] +
-      process_file_template(locales_with_pseudolocales,
+      process_file_template(all_chrome_locales,
                             [ "chromium_strings_{{source_name_part}}.pak" ])
+
+  if (is_android) {
+    outputs += chromium_strings_java_resources
+  }
 }
 
 static_library("test_support") {
@@ -118,7 +170,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/app:shutdown_signal_handlers",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
@@ -126,6 +177,7 @@ static_library("test_support") {
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
+    "//components/about_ui",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",
@@ -133,19 +185,27 @@ static_library("test_support") {
     "//components/startup_metric_utils/browser",
     "//content/public/app",
     "//content/public/common",
-    "//pdf:pdf_ppapi",
+    "//extensions/buildflags",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/tracing/public/cpp",
     "//ui/base",
     "//v8:v8_headers",
   ]
+  public_deps = []
 
   if (!is_fuchsia) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     deps += [
       "//components/crash/core/app",
       "//components/crash/core/app:test_support",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//components/crash/android:crash_android",
     ]
   }
 
@@ -164,18 +224,29 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/dbus/constants" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
-      "//chrome/browser/chromeos",
+      "//chrome/browser/ash",
       "//chromeos",
-      "//chromeos/dbus/constants",
-      "//chromeos/memory:memory",
+      "//chromeos/ash/components/memory:memory",
     ]
+    public_deps += [ "//ui/lottie" ]
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [
+      "//chromeos/crosapi/cpp:crosapi_constants",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+      "//chromeos/lacros:lacros_paths",
+      "//chromeos/lacros/dbus",
+      "//chromeos/startup",
+    ]
   }
 
   if (enable_plugins && enable_nacl) {
@@ -187,5 +258,43 @@ static_library("test_support") {
 
   if (enable_gwp_asan) {
     deps += [ "//components/gwp_asan/client" ]
+  }
+}
+
+if (is_fuchsia) {
+  # Generate a packaged component, and an installer script to aid development.
+
+  # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
+  fuchsia_component("chrome_component_v1") {
+    visibility = [ ":*" ]
+    manifest = "chrome_v1.cmx"
+    data_deps = [ "//chrome:chrome_initial" ]
+  }
+
+  fuchsia_component("chrome_component") {
+    visibility = [ ":*" ]
+    manifest = "chrome.cml"
+    data_deps = [ "//chrome:chrome_initial" ]
+  }
+
+  fuchsia_package("chrome_pkg") {
+    package_name = "chrome"
+    deps = [
+      ":chrome_component",
+      ":chrome_component_v1",
+    ]
+
+    excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
+  }
+
+  fuchsia_package_installer("chrome_fuchsia") {
+    visibility = [
+      ":*",  # See https://crbug.com/1328459#c4.
+      "//:gn_all",
+      "//chrome/test/*",
+      "//content/test/*",
+    ]
+    package = ":chrome_pkg"
+    package_name = "chrome"
   }
 }

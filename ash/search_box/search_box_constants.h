@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,14 +29,24 @@ constexpr int kSearchBoxBorderCornerRadius = 24;
 // The background border corner radius of the expanded search box.
 constexpr int kSearchBoxBorderCornerRadiusSearchResult = 20;
 
+// The background border corner radius of the active/expanded search box with
+// productivity launcher enabled.
+constexpr int kExpandedSearchBoxCornerRadiusForProductivityLauncher = 28;
+
 // Preferred height of search box.
 constexpr int kSearchBoxPreferredHeight = 48;
 
 // The size of the icon in the search box.
-constexpr int kSearchBoxIconSize = 24;
+constexpr int kClassicSearchBoxIconSize = 24;
 
 // The size of the image button in the search box.
-constexpr int kSearchBoxButtonSizeDip = 40;
+constexpr int kClassicSearchBoxButtonSizeDip = 40;
+
+// The size of the icon in the search box.
+constexpr int kBubbleLauncherSearchBoxIconSize = 20;
+
+// The size of the image button in the search box.
+constexpr int kBubbleLauncherSearchBoxButtonSizeDip = 36;
 
 // Color of placeholder text in zero query state.
 constexpr SkColor kZeroQuerySearchboxColor =

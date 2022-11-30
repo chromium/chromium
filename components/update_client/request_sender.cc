@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,10 @@ namespace update_client {
 namespace {
 
 // This is an ECDSA prime256v1 named-curve key.
-constexpr int kKeyVersion = 10;
+constexpr int kKeyVersion = 12;
 constexpr char kKeyPubBytesBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzOqC8cKNUYIi0UkNu0smZKDW8w5/"
-    "0EmEw1KQ6Aj/5JWBMdUVm13EIVwFwPlkO/U6vXa+iu4wyUB89GFaldJ7Bg==";
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAETGhzuDJHRFx7//YqqdaNTY3dZ8X9"
+    "XhUC0o7fmZtOFe9cjPML9KVHPa2M5hxhJThIbRQMElksHy4llZoWg6KTZw==";
 
 // The content type for all protocol requests.
 constexpr char kContentType[] = "application/json";

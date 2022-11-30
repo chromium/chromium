@@ -1,16 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -20,9 +24,9 @@ namespace {
 // An option struct to simplify setting up a specific navigation throttle.
 struct NavigationThrottleOptions {
   GURL url;
-  content::RenderFrameHost* rfh = nullptr;
+  raw_ptr<content::RenderFrameHost> rfh = nullptr;
   ui::PageTransition page_transition = ui::PAGE_TRANSITION_FROM_API;
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 };
 
 }  // namespace
@@ -42,8 +46,8 @@ class WellKnownChangePasswordNavigationThrottleTest
 
   std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
   CreateNavigationThrottle(NavigationThrottleOptions opts) {
-    content::MockNavigationHandle handle(opts.url,
-                                         opts.rfh ? opts.rfh : main_rfh());
+    content::MockNavigationHandle handle(
+        opts.url, opts.rfh ? opts.rfh.get() : main_rfh());
     handle.set_page_transition(opts.page_transition);
     if (opts.initiator_origin)
       handle.set_initiator_origin(*opts.initiator_origin);
@@ -52,7 +56,9 @@ class WellKnownChangePasswordNavigationThrottleTest
   }
 
  private:
-  content::RenderFrameHost* subframe_ = nullptr;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  raw_ptr<content::RenderFrameHost> subframe_ = nullptr;
 };
 
 TEST_F(WellKnownChangePasswordNavigationThrottleTest,
@@ -124,4 +130,29 @@ TEST_F(WellKnownChangePasswordNavigationThrottleTest,
   // change-password url with trailing slash
   url = GURL("https://google.com/.well-known/change-password/");
   EXPECT_FALSE(CreateNavigationThrottle({url, subframe()}));
+}
+
+class WellKnownChangePasswordNavigationThrottleFencedFramesTest
+    : public WellKnownChangePasswordNavigationThrottleTest {
+ public:
+  WellKnownChangePasswordNavigationThrottleFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~WellKnownChangePasswordNavigationThrottleFencedFramesTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A WellKnownChangePasswordNavigationThrottle should never be created for a
+// navigation initiated by a fenced frame.
+TEST_F(WellKnownChangePasswordNavigationThrottleFencedFramesTest,
+       NeverCreateNavigationThrottle_FencedFrame) {
+  content::RenderFrameHost* fenced_frame =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  GURL url("https://google.com/.well-known/change-password");
+  EXPECT_FALSE(CreateNavigationThrottle({url, fenced_frame}));
 }

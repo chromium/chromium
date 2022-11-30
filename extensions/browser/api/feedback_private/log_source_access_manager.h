@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/feedback/redaction_tool.h"
@@ -34,6 +33,10 @@ class LogSourceAccessManager {
       std::unique_ptr<api::feedback_private::ReadLogSourceResult>)>;
 
   explicit LogSourceAccessManager(content::BrowserContext* context);
+
+  LogSourceAccessManager(const LogSourceAccessManager&) = delete;
+  LogSourceAccessManager& operator=(const LogSourceAccessManager&) = delete;
+
   ~LogSourceAccessManager();
 
   // Call this to override the maximum burst access count of the rate limiter.
@@ -160,8 +163,6 @@ class LogSourceAccessManager {
   scoped_refptr<feedback::RedactionToolContainer> redactor_container_;
 
   base::WeakPtrFactory<LogSourceAccessManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LogSourceAccessManager);
 };
 
 }  // namespace extensions

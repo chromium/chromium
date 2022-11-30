@@ -1,20 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 struct WindowFeatures {
-    float x;
+    gfx.mojom.Rect bounds;
+
+    // Rect cannot differentiate between 0 and unset values.
+    // These explicitly define which values were set in |bounds|.
     bool has_x = false;
-
-    float y;
     bool has_y = false;
-
-    float width;
     bool has_width = false;
-
-    float height;
     bool has_height = false;
 
     bool menu_bar_visible = true;

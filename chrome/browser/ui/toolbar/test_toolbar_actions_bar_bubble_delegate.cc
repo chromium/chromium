@@ -1,12 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h"
 
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
 
 class TestToolbarActionsBarBubbleDelegate::DelegateImpl
@@ -14,6 +15,10 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
  public:
   explicit DelegateImpl(TestToolbarActionsBarBubbleDelegate* parent)
       : parent_(parent) {}
+
+  DelegateImpl(const DelegateImpl&) = delete;
+  DelegateImpl& operator=(const DelegateImpl&) = delete;
+
   ~DelegateImpl() override {}
 
  private:
@@ -38,7 +43,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
           *parent_->info_);
     return nullptr;
   }
-  std::string GetAnchorActionId() override { return std::string(); }
+  std::string GetAnchorActionId() override { return parent_->action_id_; }
   void OnBubbleShown(base::OnceClosure close_bubble_callback) override {
     CHECK(!parent_->shown_);
     parent_->shown_ = true;
@@ -48,19 +53,19 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
     parent_->close_action_ = std::make_unique<CloseAction>(action);
   }
 
-  TestToolbarActionsBarBubbleDelegate* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateImpl);
+  raw_ptr<TestToolbarActionsBarBubbleDelegate> parent_;
 };
 
 TestToolbarActionsBarBubbleDelegate::TestToolbarActionsBarBubbleDelegate(
     const std::u16string& heading,
     const std::u16string& body,
-    const std::u16string& action)
+    const std::u16string& action,
+    const std::u16string& dismiss)
     : shown_(false),
       heading_(heading),
       body_(body),
       action_(action),
+      dismiss_(dismiss),
       default_button_(ui::DIALOG_BUTTON_NONE),
       close_on_deactivate_(true) {}
 

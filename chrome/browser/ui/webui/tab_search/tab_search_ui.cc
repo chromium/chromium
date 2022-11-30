@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/ranges.h"
+#include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -37,38 +38,62 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"noResultsFound", IDS_TAB_SEARCH_NO_RESULTS_FOUND},
       {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
-      {"submitFeedback", IDS_TAB_SEARCH_SUBMIT_FEEDBACK},
       {"a11yTabClosed", IDS_TAB_SEARCH_A11Y_TAB_CLOSED},
       {"a11yFoundTab", IDS_TAB_SEARCH_A11Y_FOUND_TAB},
       {"a11yFoundTabs", IDS_TAB_SEARCH_A11Y_FOUND_TABS},
       {"a11yFoundTabFor", IDS_TAB_SEARCH_A11Y_FOUND_TAB_FOR},
       {"a11yFoundTabsFor", IDS_TAB_SEARCH_A11Y_FOUND_TABS_FOR},
+      {"a11yOpenTab", IDS_TAB_SEARCH_A11Y_OPEN_TAB},
+      {"a11yRecentlyClosedTab", IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB},
+      {"a11yRecentlyClosedTabGroup",
+       IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB_GROUP},
+      {"mediaTabs", IDS_TAB_SEARCH_MEDIA_TABS},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
-      {"recentlyClosedTabs", IDS_TAB_SEARCH_RECENTLY_CLOSED_TABS},
+      {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
+      {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
+      {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
+      {"recentlyClosedExpandA11yLabel",
+       IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED_ITEMS},
+      {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
+      {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
+      {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
+      {"expandRecentlyClosed", IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED},
+      {"collapseRecentlyClosed", IDS_TAB_SEARCH_COLLAPSE_RECENTLY_CLOSED},
+
   };
   source->AddLocalizedStrings(kStrings);
-
-  source->AddBoolean(
-      "submitFeedbackEnabled",
-      base::FeatureList::IsEnabled(features::kTabSearchFeedback));
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   // Add the configuration parameters for fuzzy search.
+  source->AddBoolean("useFuzzySearch", base::FeatureList::IsEnabled(
+                                           features::kTabSearchFuzzySearch));
+
+  source->AddBoolean(
+      "useMetricsReporter",
+      base::FeatureList::IsEnabled(features::kTabSearchUseMetricsReporter));
+
   source->AddBoolean("searchIgnoreLocation",
                      features::kTabSearchSearchIgnoreLocation.Get());
   source->AddInteger("searchDistance",
                      features::kTabSearchSearchDistance.Get());
   source->AddDouble(
       "searchThreshold",
-      base::ClampToRange<double>(features::kTabSearchSearchThreshold.Get(),
-                                 features::kTabSearchSearchThresholdMin,
-                                 features::kTabSearchSearchThresholdMax));
-  source->AddDouble("searchTitleToHostnameWeightRatio",
-                    features::kTabSearchTitleToHostnameWeightRatio.Get());
+      base::clamp<double>(features::kTabSearchSearchThreshold.Get(),
+                          features::kTabSearchSearchThresholdMin,
+                          features::kTabSearchSearchThresholdMax));
+  source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
+  source->AddDouble("searchHostnameWeight",
+                    features::kTabSearchHostnameWeight.Get());
+  source->AddDouble("searchGroupTitleWeight",
+                    features::kTabSearchGroupTitleWeight.Get());
 
   source->AddBoolean("moveActiveTabToBottom",
                      features::kTabSearchMoveActiveTabToBottom.Get());
   source->AddLocalizedString("close", IDS_CLOSE);
+
+  source->AddInteger(
+      "recentlyClosedDefaultItemDisplayCount",
+      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
@@ -100,6 +125,11 @@ void TabSearchUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void TabSearchUI::BindInterface(
+    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
+  metrics_reporter_.BindInterface(std::move(receiver));
+}
+
 void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
@@ -120,5 +150,5 @@ void TabSearchUI::CreatePageHandler(
   // TODO(tluk): Investigate whether we can avoid recreating this multiple times
   // per instance of the TabSearchUI.
   page_handler_ = std::make_unique<TabSearchPageHandler>(
-      std::move(receiver), std::move(page), web_ui(), this);
+      std::move(receiver), std::move(page), web_ui(), this, &metrics_reporter_);
 }

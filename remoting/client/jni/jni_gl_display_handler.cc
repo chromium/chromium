@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/android/jni_headers/GlDisplay_jni.h"
 #include "remoting/client/chromoting_client_runtime.h"
 #include "remoting/client/cursor_shape_stub_proxy.h"
@@ -28,6 +29,10 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
                                   public GlRendererDelegate {
  public:
   Core(base::WeakPtr<JniGlDisplayHandler> shell);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   // GlRendererDelegate interface.
@@ -60,7 +65,7 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
   // Initializes the core on the display thread.
   void Initialize();
 
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
   base::WeakPtr<JniGlDisplayHandler> shell_;
 
   // Will be std::move'd when GrabFrameConsumer() is called.
@@ -68,15 +73,13 @@ class JniGlDisplayHandler::Core : public protocol::CursorShapeStub,
 
   base::WeakPtr<DualBufferFrameConsumer> frame_consumer_;
 
-  ANativeWindow* window_ = nullptr;
+  raw_ptr<ANativeWindow> window_ = nullptr;
   std::unique_ptr<EglThreadContext> egl_context_;
   std::unique_ptr<GlRenderer> renderer_;
 
   // Used on display thread.
   base::WeakPtr<Core> weak_ptr_;
   base::WeakPtrFactory<Core> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 JniGlDisplayHandler::Core::Core(base::WeakPtr<JniGlDisplayHandler> shell)
@@ -147,7 +150,7 @@ void JniGlDisplayHandler::Core::SurfaceCreated(
   renderer_->RequestCanvasSize();
   window_ = ANativeWindow_fromSurface(base::android::AttachCurrentThread(),
                                       surface.obj());
-  egl_context_.reset(new EglThreadContext());
+  egl_context_ = std::make_unique<EglThreadContext>();
   egl_context_->BindToWindow(window_);
 
   renderer_->OnSurfaceCreated(std::make_unique<GlCanvas>(
@@ -219,7 +222,7 @@ JniGlDisplayHandler::JniGlDisplayHandler(
     const base::android::JavaRef<jobject>& java_client)
     : runtime_(ChromotingClientRuntime::GetInstance()),
       ui_task_poster_(runtime_->display_task_runner()) {
-  core_.reset(new Core(weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   JNIEnv* env = base::android::AttachCurrentThread();
   java_display_.Reset(Java_GlDisplay_createJavaDisplayObject(
       env, reinterpret_cast<intptr_t>(this)));

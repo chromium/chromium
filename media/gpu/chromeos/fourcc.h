@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/optional.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -23,38 +23,13 @@ constexpr uint32_t ComposeFourcc(char a, char b, char c, char d) {
 
 // Fourcc enum holder and converters.
 // Usage:
-// Fourcc f1(Fourcc::AR24);
-// EXPECT_EQ("AR24", f1.ToString());
-// Fourcc f2 = Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_ARGB);
+// Fourcc f1(Fourcc::NV12);
+// EXPECT_EQ("NV12", f1.ToString());
+// Fourcc f2 = Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_NV12);
 // EXPECT_EQ(f2, f1);
 class MEDIA_GPU_EXPORT Fourcc {
  public:
   enum Value : uint32_t {
-    // RGB formats.
-    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-rgb.html
-    // Maps to PIXEL_FORMAT_ARGB, V4L2_PIX_FMT_ABGR32, VA_FOURCC_BGRA.
-    // 32bpp BGRA (byte-order), 1 plane.
-    AR24 = ComposeFourcc('A', 'R', '2', '4'),
-
-    // Maps to PIXEL_FORMAT_ABGR, V4L2_PIX_FMT_RGBA32, VA_FOURCC_RGBA.
-    // 32bpp RGBA (byte-order), 1 plane
-    AB24 = ComposeFourcc('A', 'B', '2', '4'),
-
-    // Maps to PIXEL_FORMAT_XRGB, V4L2_PIX_FMT_XBGR32, VA_FOURCC_BGRX.
-    // 32bpp BGRX (byte-order), 1 plane.
-    XR24 = ComposeFourcc('X', 'R', '2', '4'),
-
-    // Maps to PIXEL_FORMAT_XBGR, V4L2_PIX_FMT_RGBX32, VA_FOURCC_RGBX.
-    // 32bpp RGBX (byte-order), 1 plane.
-    XB24 = ComposeFourcc('X', 'B', '2', '4'),
-
-    // Maps to PIXEL_FORMAT_BGRA, V4L2_PIX_FMT_RGB32, VA_FOURCC_ARGB.
-    // 32bpp ARGB (byte-order), 1 plane.
-    // Note that V4L2_PIX_FMT_RGB32("RGB4") is deprecated and replaced by
-    // V4L2_PIX_FMT_ARGB32("BA24"), however, some board relies on the fourcc
-    // mapping so we keep it as-is.
-    RGB4 = ComposeFourcc('R', 'G', 'B', '4'),
-
     // YUV420 single-planar formats.
     // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv420.html
     // Maps to PIXEL_FORMAT_I420, V4L2_PIX_FMT_YUV420, VA_FOURCC_I420.
@@ -93,6 +68,11 @@ class MEDIA_GPU_EXPORT Fourcc {
     // Maps to PIXEL_FORMAT_NV21, V4L2_PIX_FMT_NV21M.
     NM21 = ComposeFourcc('N', 'M', '2', '1'),
 
+    // YUV422 single-planar format.
+    // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv422p.html
+    // Maps to PIXEL_FORMAT_I422, V4L2_PIX_FMT_YUV422P.
+    YU16 = ComposeFourcc('4', '2', '2', 'P'),
+
     // YUV422 multi-planar format.
     // https://linuxtv.org/downloads/v4l-dvb-apis-new/userspace-api/v4l/pixfmt-yuv422m.html
     // Maps to PIXEL_FORMAT_I422, V4L2_PIX_FMT_YUV422M
@@ -114,9 +94,7 @@ class MEDIA_GPU_EXPORT Fourcc {
     P010 = ComposeFourcc('P', '0', '1', '0'),
   };
 
-  explicit Fourcc(Fourcc::Value fourcc);
-  Fourcc& operator=(const Fourcc& fourcc);
-  ~Fourcc();
+  explicit constexpr Fourcc(Fourcc::Value fourcc) : value_(fourcc) {}
 
   bool operator==(const Fourcc& rhs) const { return value_ == rhs.value_; }
 
@@ -124,24 +102,24 @@ class MEDIA_GPU_EXPORT Fourcc {
 
   // Builds a Fourcc from a given fourcc code. This will return a valid
   // Fourcc if the argument is part of the |Value| enum, or nullopt otherwise.
-  static base::Optional<Fourcc> FromUint32(uint32_t fourcc);
+  static absl::optional<Fourcc> FromUint32(uint32_t fourcc);
 
   // Converts a VideoPixelFormat to Fourcc.
   // Returns nullopt for invalid input.
   // Note that a VideoPixelFormat may have two Fourcc counterparts. Caller has
   // to specify if it is for single-planar or multi-planar format.
-  static base::Optional<Fourcc> FromVideoPixelFormat(
+  static absl::optional<Fourcc> FromVideoPixelFormat(
       VideoPixelFormat pixel_format,
       bool single_planar = true);
 #if BUILDFLAG(USE_V4L2_CODEC)
   // Converts a V4L2PixFmt to Fourcc.
   // Returns nullopt for invalid input.
-  static base::Optional<Fourcc> FromV4L2PixFmt(uint32_t v4l2_pix_fmt);
+  static absl::optional<Fourcc> FromV4L2PixFmt(uint32_t v4l2_pix_fmt);
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 #if BUILDFLAG(USE_VAAPI)
   // Converts a VAFourCC to Fourcc.
   // Returns nullopt for invalid input.
-  static base::Optional<Fourcc> FromVAFourCC(uint32_t va_fourcc);
+  static absl::optional<Fourcc> FromVAFourCC(uint32_t va_fourcc);
 #endif  // BUILDFLAG(USE_VAAPI)
 
   // Value getters:
@@ -156,12 +134,12 @@ class MEDIA_GPU_EXPORT Fourcc {
 #if BUILDFLAG(USE_VAAPI)
   // Returns the VAFourCC counterpart of the value.
   // Returns nullopt if no mapping is found.
-  base::Optional<uint32_t> ToVAFourCC() const;
+  absl::optional<uint32_t> ToVAFourCC() const;
 #endif  // BUILDFLAG(USE_VAAPI)
 
   // Returns the single-planar Fourcc of the value. If value is a single-planar,
   // returns the same Fourcc. Returns nullopt if no mapping is found.
-  base::Optional<Fourcc> ToSinglePlanar() const;
+  absl::optional<Fourcc> ToSinglePlanar() const;
 
   // Returns whether |value_| is multi planar format.
   bool IsMultiPlanar() const;

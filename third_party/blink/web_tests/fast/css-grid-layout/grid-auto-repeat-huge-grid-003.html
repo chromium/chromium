@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Test for auto-fit and auto-fill with huge grids (lots of tracks)</title>
+<link href="resources/grid.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
+<link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
+<link href="resources/huge-grids.css" rel="stylesheet">
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/grid-definitions-parsing-utils.js"></script>
+<script src="resources/grid-tracks-length.js"></script>
+
+<div id="autoFillGrid" class="grid tallGrid lotsOfFixedRepeatWithAutoFillRows"></div>
+
+<script>
+
+test(function() {
+     var autoFillGrid = testElement("autoFillGrid", "grid-template-rows", 3570505);
+
+     assert_equals(autoFillGrid[3570505 - 1], "1px");
+     assert_equals(autoFillGrid[3570505 - 2], "1px");
+     assert_equals(autoFillGrid[0], "10px");
+     assert_equals(autoFillGrid[1], "2px");
+}, "Test that we don't get more than kGridMaxTracks repetitions even on very tall grids (normal tracks clamped).");
+
+</script>

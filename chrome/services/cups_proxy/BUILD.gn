@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,16 +33,13 @@ source_set("cups_proxy") {
     "//chrome/services/cups_proxy/public/mojom",
     "//chrome/services/ipp_parser/public/cpp",
     "//chrome/services/ipp_parser/public/cpp/browser",
-    "//chromeos",
-    "//chromeos/dbus",
-    "//chromeos/dbus/cups_proxy",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/cups_proxy",
+    "//chromeos/printing",
     "//net",
     "//net/traffic_annotation",
+    "//printing/backend",
   ]
-
-  public_deps = [ "//printing" ]
-
-  configs += [ "//printing:cups" ]
 }
 
 static_library("test_support") {
@@ -52,7 +49,10 @@ static_library("test_support") {
     "fake_cups_proxy_service_delegate.h",
   ]
 
-  deps = [ "//chromeos" ]
+  deps = [
+    "//base",
+    "//chromeos/printing",
+  ]
 
   public_deps = [ ":cups_proxy" ]
 }
@@ -66,8 +66,6 @@ test("libcups_unittests") {
     "socket_manager_unittest.cc",
   ]
 
-  configs += [ "//printing:cups" ]
-
   deps = [
     ":cups_proxy",
     ":test_support",
@@ -77,7 +75,7 @@ test("libcups_unittests") {
     "//chrome/services/cups_proxy/public/cpp",
     "//chrome/services/cups_proxy/public/cpp:unit_tests",
     "//chrome/services/cups_proxy/test:test_support",
-    "//chromeos",
+    "//chromeos/printing",
     "//content/public/browser",
     "//testing/gmock",
     "//testing/gtest",

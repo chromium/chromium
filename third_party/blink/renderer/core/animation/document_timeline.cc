@@ -29,6 +29,8 @@
  */
 
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+
+#include "cc/animation/animation_id_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -70,8 +72,7 @@ DocumentTimeline* DocumentTimeline::Create(
     const DocumentTimelineOptions* options) {
   Document* document = To<LocalDOMWindow>(execution_context)->document();
   return MakeGarbageCollected<DocumentTimeline>(
-      document, base::TimeDelta::FromMillisecondsD(options->originTime()),
-      nullptr);
+      document, base::Milliseconds(options->originTime()), nullptr);
 }
 
 DocumentTimeline::DocumentTimeline(Document* document,
@@ -80,8 +81,8 @@ DocumentTimeline::DocumentTimeline(Document* document,
     : AnimationTimeline(document),
       origin_time_(origin_time),
       zero_time_(base::TimeTicks() + origin_time_),
-      zero_time_initialized_(false),
-      playback_rate_(1) {
+      playback_rate_(1),
+      zero_time_initialized_(false) {
   if (!timing)
     timing_ = MakeGarbageCollected<DocumentTimelineTiming>(this);
   else
@@ -98,21 +99,21 @@ bool DocumentTimeline::IsActive() const {
 
 // Document-linked animations are initialized with start time of the document
 // timeline current time.
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 DocumentTimeline::InitialStartTimeForAnimations() {
-  base::Optional<double> current_time_ms = CurrentTimeMilliseconds();
+  absl::optional<double> current_time_ms = CurrentTimeMilliseconds();
   if (current_time_ms.has_value()) {
-    return base::TimeDelta::FromMillisecondsD(current_time_ms.value());
+    return base::Milliseconds(current_time_ms.value());
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DocumentTimeline::ScheduleNextService() {
   DCHECK_EQ(outdated_animation_count_, 0U);
 
-  base::Optional<AnimationTimeDelta> time_to_next_effect;
+  absl::optional<AnimationTimeDelta> time_to_next_effect;
   for (const auto& animation : animations_needing_update_) {
-    base::Optional<AnimationTimeDelta> time_to_effect_change =
+    absl::optional<AnimationTimeDelta> time_to_effect_change =
         animation->TimeToEffectChange();
     if (!time_to_effect_change)
       continue;
@@ -129,8 +130,7 @@ void DocumentTimeline::ScheduleNextService() {
   if (next_effect_delay < kMinimumDelay) {
     ScheduleServiceOnNextFrame();
   } else {
-    timing_->WakeAfter(
-        base::TimeDelta::FromSecondsD(next_effect_delay - kMinimumDelay));
+    timing_->WakeAfter(base::Seconds(next_effect_delay - kMinimumDelay));
   }
 }
 
@@ -169,10 +169,10 @@ void DocumentTimeline::SetTimingForTesting(PlatformTiming* timing) {
 
 AnimationTimeline::PhaseAndTime DocumentTimeline::CurrentPhaseAndTime() {
   if (!IsActive()) {
-    return {TimelinePhase::kInactive, /*current_time*/ base::nullopt};
+    return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt};
   }
 
-  base::Optional<base::TimeDelta> result =
+  absl::optional<base::TimeDelta> result =
       playback_rate_ == 0
           ? CalculateZeroTime().since_origin()
           : (CurrentAnimationTime(GetDocument()) - CalculateZeroTime()) *
@@ -217,11 +217,12 @@ void DocumentTimeline::InvalidateKeyframeEffects(const TreeScope& tree_scope) {
     animation->InvalidateKeyframeEffect(tree_scope);
 }
 
-CompositorAnimationTimeline* DocumentTimeline::EnsureCompositorTimeline() {
+cc::AnimationTimeline* DocumentTimeline::EnsureCompositorTimeline() {
   if (compositor_timeline_)
     return compositor_timeline_.get();
 
-  compositor_timeline_ = std::make_unique<CompositorAnimationTimeline>();
+  compositor_timeline_ =
+      cc::AnimationTimeline::Create(cc::AnimationIdProvider::NextTimelineId());
   return compositor_timeline_.get();
 }
 

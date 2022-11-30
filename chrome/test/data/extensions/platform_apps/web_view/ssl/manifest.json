@@ -1,0 +1,14 @@
+{
+  "name": "<webview> SSL error page check.",
+  "manifest_version": 2,
+  "description": "Check <webview>'s behavior when a SSL error is encountered in the guest.",
+  "version": "1",
+  "permissions": [
+    "webview"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}

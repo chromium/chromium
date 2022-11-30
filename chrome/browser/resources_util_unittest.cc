@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/grit/components_scaled_resources.h"
@@ -35,6 +34,6 @@ TEST(ResourcesUtil, SpotCheckIds) {
     {"backstar", -1},
   };
 
-  for (size_t i = 0; i < base::size(kCases); ++i)
+  for (size_t i = 0; i < std::size(kCases); ++i)
     EXPECT_EQ(kCases[i].id, ResourcesUtil::GetThemeResourceId(kCases[i].name));
 }

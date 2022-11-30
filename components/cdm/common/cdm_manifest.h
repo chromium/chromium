@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ class Value;
 class Version;
 }  // namespace base
 
-namespace content {
+namespace media {
 struct CdmCapability;
 }
 
@@ -26,7 +26,7 @@ bool IsCdmManifestCompatibleWithChrome(const base::Value& manifest);
 // Returns true on success, false if there are errors in the manifest.
 // If this method returns false, |capability| may or may not be updated.
 bool ParseCdmManifest(const base::Value& manifest,
-                      content::CdmCapability* capability);
+                      media::CdmCapability* capability);
 
 // Reads the file |manifest_path| which is assumed to be a CDM manifest and
 // extracts the necessary information from it to update |version| and
@@ -37,6 +37,6 @@ bool ParseCdmManifest(const base::Value& manifest,
 // |version| and |capability| may or may not be updated.
 bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
                               base::Version* version,
-                              content::CdmCapability* capability);
+                              media::CdmCapability* capability);
 
-#endif  // CHROME_COMMON_MEDIA_CDM_MANIFEST_H_
+#endif  // COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_

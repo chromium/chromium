@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,12 @@ public class BrowserStartupControllerTest {
         private boolean mMinimalBrowserStarted;
 
         @Override
-        void prepareToStartBrowserProcess(boolean singleProcess) {
+        void prepareToStartBrowserProcess(boolean singleProcess, final Runnable deferrableTask) {
             if (!mLibraryLoadSucceeds) {
                 throw new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED);
+            }
+            if (deferrableTask != null) {
+                deferrableTask.run();
             }
         }
 

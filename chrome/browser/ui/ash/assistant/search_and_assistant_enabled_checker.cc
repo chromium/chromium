@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,14 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -25,6 +27,39 @@ namespace {
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 
 constexpr int kMaxBodySize = 1024;
+
+constexpr net::NetworkTrafficAnnotationTag
+    kSearchAndAssistantEnabledCheckerNetworkTag =
+        net::DefineNetworkTrafficAnnotation(
+            "search_and_assistant_enabled_checker",
+            R"(
+        semantics {
+          sender: "Search and Assistant Enabled Checker"
+          description:
+            "HTTP request used to check if Search and Assistant (SAA) "
+            "service has been disabled by dasher admin. When service is "
+            "disabled, SAA will provide offline experiences for user."
+          trigger:
+            "User logs in, switches active profile, enables SAA or "
+            "updates account information so that assistant is allowed. "
+            "Also triggered when dasher admin enables SAA service for "
+            "user. "
+          data: "User GAIA Credentials"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: YES
+         cookies_store: "user"
+         chrome_policy {
+           AssistantVoiceMatchEnabledDuringOobe {
+             AssistantVoiceMatchEnabledDuringOobe : false
+           }
+         }
+         setting:
+           "User can turn on/off SAA in ChromeOS Settings under the "
+           "Search and Assistant menu. For managed devices, dasher "
+           "admin can disable SAA from the Additional Services menu."
+        })");
 
 bool HasJsonSafetyPrefix(std::string& json_body) {
   return base::StartsWith(json_body, kJsonSafetyPrefix,
@@ -47,8 +82,8 @@ void SearchAndAssistantEnabledChecker::SyncSearchAndAssistantState() {
           GURL(chromeos::assistant::kServiceIdEndpoint),
           chromeos::assistant::kPayloadParamName,
           chromeos::assistant::kServiceIdRequestPayload);
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 NO_TRAFFIC_ANNOTATION_YET);
+  url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), kSearchAndAssistantEnabledCheckerNetworkTag);
   url_loader_->DownloadToString(
       url_loader_factory_,
       base::BindOnce(
@@ -81,14 +116,14 @@ void SearchAndAssistantEnabledChecker::OnSimpleURLLoaderComplete(
 
 void SearchAndAssistantEnabledChecker::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError response) {
-  if (!response.value) {
-    LOG(ERROR) << "JSON parsing failed: " << *response.error;
+  if (!response.has_value()) {
+    LOG(ERROR) << "JSON parsing failed: " << response.error();
     delegate_->OnError();
     return;
   }
 
   // |result| is true if the Search and Assistant bit is disabled.
-  auto is_disabled = response.value->FindBoolPath("result");
+  auto is_disabled = response->FindBoolPath("result");
 
   delegate_->OnSearchAndAssistantStateReceived(is_disabled.value());
 }

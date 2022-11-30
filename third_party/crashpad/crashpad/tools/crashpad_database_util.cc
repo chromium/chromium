@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <time.h>
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client/crash_report_database.h"
@@ -44,6 +44,7 @@ namespace crashpad {
 namespace {
 
 void Usage(const base::FilePath& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %" PRFilePath " [OPTION]... PID\n"
 "Operate on Crashpad crash report databases.\n"
@@ -66,6 +67,7 @@ void Usage(const base::FilePath& me) {
 "      --help                      display this help and exit\n"
 "      --version                   output version information and exit\n",
           me.value().c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 
@@ -109,14 +111,14 @@ bool StringToBool(const char* string, bool* boolean) {
       "set",
   };
 
-  for (size_t index = 0; index < base::size(kFalseWords); ++index) {
+  for (size_t index = 0; index < std::size(kFalseWords); ++index) {
     if (strcasecmp(string, kFalseWords[index]) == 0) {
       *boolean = false;
       return true;
     }
   }
 
-  for (size_t index = 0; index < base::size(kTrueWords); ++index) {
+  for (size_t index = 0; index < std::size(kTrueWords); ++index) {
     if (strcasecmp(string, kTrueWords[index]) == 0) {
       *boolean = true;
       return true;
@@ -159,7 +161,7 @@ bool StringToTime(const char* string, time_t* out_time, bool utc) {
       "%+",
   };
 
-  for (size_t index = 0; index < base::size(kFormats); ++index) {
+  for (size_t index = 0; index < std::size(kFormats); ++index) {
     tm time_tm;
     const char* strptime_result = strptime(string, kFormats[index], &time_tm);
     if (strptime_result == end) {
@@ -214,7 +216,7 @@ std::string TimeToString(time_t out_time, bool utc) {
 
   char string[64];
   CHECK_NE(
-      strftime(string, base::size(string), "%Y-%m-%d %H:%M:%S %Z", &time_tm),
+      strftime(string, std::size(string), "%Y-%m-%d %H:%M:%S %Z", &time_tm),
       0u);
 
   return std::string(string);
@@ -619,12 +621,12 @@ int DatabaseUtilMain(int argc, char* argv[]) {
 }  // namespace
 }  // namespace crashpad
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 int main(int argc, char* argv[]) {
   return crashpad::DatabaseUtilMain(argc, argv);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, crashpad::DatabaseUtilMain);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

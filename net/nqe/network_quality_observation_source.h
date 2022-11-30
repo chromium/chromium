@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,9 +54,7 @@ enum NetworkQualityObservationSource {
   NETWORK_QUALITY_OBSERVATION_SOURCE_MAX,
 };
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // Different categories to which an observation source can belong to. Each
 // observation source belongs to exactly one category.
@@ -77,9 +75,7 @@ enum ObservationCategory {
   OBSERVATION_CATEGORY_COUNT = 3
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,6 +23,9 @@ class TabGroupContentLayer : public ContentLayer {
  public:
   static scoped_refptr<TabGroupContentLayer> Create(
       TabContentManager* tab_content_manager);
+
+  TabGroupContentLayer(const TabGroupContentLayer&) = delete;
+  TabGroupContentLayer& operator=(const TabGroupContentLayer&) = delete;
 
   void SetProperties(int id,
                      const std::vector<int>& tab_ids,
@@ -43,7 +45,6 @@ class TabGroupContentLayer : public ContentLayer {
 
  private:
   std::vector<scoped_refptr<TabGroupTabContentLayer>> group_tab_content_layers_;
-  DISALLOW_COPY_AND_ASSIGN(TabGroupContentLayer);
 };
 
 }  //  namespace android

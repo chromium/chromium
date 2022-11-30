@@ -1,16 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_RENDERER_PREFERENCES_RENDERER_PREFERENCES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_RENDERER_PREFERENCES_RENDERER_PREFERENCES_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/gfx/font_render_params.h"
@@ -35,7 +37,7 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   uint32_t inactive_selection_bg_color{0xFFC8C8C8};
   uint32_t inactive_selection_fg_color{0xFF323232};
   bool browser_handles_all_top_level_requests{false};
-  base::Optional<base::TimeDelta> caret_blink_interval;
+  absl::optional<base::TimeDelta> caret_blink_interval;
   bool use_custom_colors{true};
   bool enable_referrers{true};
   bool allow_cross_origin_auth_prompt{false};
@@ -48,10 +50,10 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool webrtc_allow_legacy_tls_protocols{false};
   UserAgentOverride user_agent_override;
   std::string accept_languages;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::string system_font_family_name;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string caption_font_family_name;
   int32_t caption_font_height{0};
   std::u16string small_caption_font_family_name;
@@ -67,11 +69,12 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   int32_t arrow_bitmap_height_vertical_scroll_bar_in_dips{0};
   int32_t arrow_bitmap_width_horizontal_scroll_bar_in_dips{0};
 #endif
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   bool selection_clipboard_buffer_available{false};
 #endif
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
+  std::vector<uint16_t> explicitly_allowed_network_ports;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);

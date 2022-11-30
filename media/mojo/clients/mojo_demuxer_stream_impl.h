@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/mojom/demuxer_stream.mojom.h"
@@ -28,6 +28,10 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   // Note: |this| does not take ownership of |stream|.
   MojoDemuxerStreamImpl(media::DemuxerStream* stream,
                         mojo::PendingReceiver<mojom::DemuxerStream> receiver);
+
+  MojoDemuxerStreamImpl(const MojoDemuxerStreamImpl&) = delete;
+  MojoDemuxerStreamImpl& operator=(const MojoDemuxerStreamImpl&) = delete;
+
   ~MojoDemuxerStreamImpl() override;
 
   // mojom::DemuxerStream implementation.
@@ -54,12 +58,11 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   mojo::Receiver<mojom::DemuxerStream> receiver_;
 
   // See constructor.  We do not own |stream_|.
-  media::DemuxerStream* stream_;
+  raw_ptr<media::DemuxerStream> stream_;
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_;
 
   base::WeakPtrFactory<MojoDemuxerStreamImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MojoDemuxerStreamImpl);
 };
 
 }  // namespace media

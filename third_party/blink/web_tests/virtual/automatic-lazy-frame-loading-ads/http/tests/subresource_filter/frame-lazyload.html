@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<title>Makes sure that the ad iframe loading are defered</title>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="../../../../../http/tests/resources/get-host-info.js"></script>
+<script src="./resources/lazyload-helper.js"></script>
+
+<body>
+  <div id="atf_div"></div>
+  <div style="height:1000vh;"></div>
+  <div id="btf_div"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      promise_test(async t => {
+        const atf = document.querySelector('#atf_div');
+        const btf = document.querySelector('#btf_div');
+        appendAdFrame('atf', atf);
+        appendAdFrame('btf', btf);
+
+        let result;
+        result = await waitForElementLoad('atf');
+        assert_true(result, 'iframe above the fold is successfully loaded');
+        // To detect the frame src is not loaded, wait until idle
+        result = await waitUntilIdle().then(() => isElementLoaded('btf'));
+        assert_false(result, "iframe below the fold is not loaded on navigation");
+
+        // Then scroll to below the fold.
+        btf.scrollIntoView();
+
+        // If viewport is close to the frame, then start loading.
+        result = await waitForElementLoad("btf");
+        assert_true(result, "iframe below the fold is loaded when close to the element");
+      }, "Ad frame lazy loading");
+    })
+  </script>
+</body>

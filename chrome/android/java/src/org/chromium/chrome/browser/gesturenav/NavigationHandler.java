@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,10 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.compositor.CompositorViewHolder.TouchEventObserver;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -116,7 +116,6 @@ class NavigationHandler implements TouchEventObserver {
         mParentView = parentView;
         mContext = parentView.getContext();
         mBackActionDelegate = backActionDelegate;
-
         mState = GestureState.NONE;
 
         mEdgeWidthPx = EDGE_WIDTH_DP * parentView.getResources().getDisplayMetrics().density;
@@ -139,21 +138,21 @@ class NavigationHandler implements TouchEventObserver {
 
     @Override
     public boolean shouldInterceptTouchEvent(MotionEvent e) {
-        // Forward gesture events only for native pages. Rendered pages receive events
+        // Forward gesture events only for native pages/start surface. Rendered pages receive events
         // from SwipeRefreshHandler.
-        if (!isNativePage()) return false;
+        if (!shouldProcessTouchEvents()) return false;
         return isActive();
     }
 
     @Override
     public void handleTouchEvent(MotionEvent e) {
-        if (!isNativePage()) return;
+        if (!shouldProcessTouchEvents()) return;
         mDetector.onTouchEvent(e);
         if (e.getAction() == MotionEvent.ACTION_UP) release(true);
     }
 
-    private boolean isNativePage() {
-        return mTab != null && mTab.isNativePage();
+    private boolean shouldProcessTouchEvents() {
+        return mTab != null && mTab.isNativePage() || mBackActionDelegate.isNavigable();
     }
 
     /**
@@ -175,7 +174,7 @@ class NavigationHandler implements TouchEventObserver {
     @VisibleForTesting
     boolean onScroll(float startX, float distanceX, float distanceY, float endX, float endY) {
         // onScroll needs handling only after the state moves away from |NONE|.
-        if (mState == GestureState.NONE || mTab == null) return true;
+        if (mState == GestureState.NONE || !isValidState()) return true;
 
         if (mState == GestureState.STARTED) {
             if (shouldTriggerUi(startX, distanceX, distanceY)) {
@@ -187,6 +186,12 @@ class NavigationHandler implements TouchEventObserver {
         return true;
     }
 
+    private boolean isValidState() {
+        // We are in a valid state for UI process if the underlying tab is alive, or
+        // start surface is showing.
+        return mTab != null && !mTab.isDestroyed() || mBackActionDelegate.isNavigable();
+    }
+
     private boolean shouldTriggerUi(float sX, float dX, float dY) {
         return Math.abs(dX) > Math.abs(dY) * WEIGTHED_TRIGGER_THRESHOLD
                 && (sX < mEdgeWidthPx || (mParentView.getWidth() - mEdgeWidthPx) < sX);
@@ -196,9 +201,8 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#triggerUi(boolean, float, float)}
      */
     boolean triggerUi(boolean forward, float x, float y) {
-        // Triggering requests may come after the tab is nulled out
-        // when the activity is being destroyed. Ignore it.
-        if (mTab == null || mTab.isDestroyed()) return false;
+        if (!isValidState()) return false;
+
         mModel.set(DIRECTION, forward);
         boolean navigable = canNavigate(forward);
         if (navigable) {
@@ -218,7 +222,7 @@ class NavigationHandler implements TouchEventObserver {
     private boolean canNavigate(boolean forward) {
         // Navigating back is considered always possible (actual navigation, closing
         // tab, or exiting app).
-        return forward ? mTab.canGoForward() : true;
+        return !forward || mTab != null && mTab.canGoForward();
     }
 
     /**
@@ -226,7 +230,7 @@ class NavigationHandler implements TouchEventObserver {
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     void navigate(boolean forward) {
-        if (mTab == null || mTab.isDestroyed()) return;
+        if (!isValidState()) return;
         if (forward) {
             mTab.goForward();
         } else {
@@ -298,7 +302,7 @@ class NavigationHandler implements TouchEventObserver {
      * @return {@code true} if navigation was triggered and its UI is in action, or
      *         edge glow effect is visible.
      */
-    private boolean isActive() {
+    boolean isActive() {
         return mState == GestureState.DRAGGED || mState == GestureState.GLOW;
     }
 

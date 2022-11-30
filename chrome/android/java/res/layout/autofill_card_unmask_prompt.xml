@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <RelativeLayout
@@ -107,6 +107,7 @@
             <EditText
                 tools:ignore="Autofill"
                 android:id="@+id/card_unmask_input"
+                android:importantForAutofill="no"
                 android:inputType="number"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
@@ -131,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMedium.Blue"
+                android:textAppearance="@style/TextAppearance.TextMedium.Link"
                 android:text="@string/autofill_card_unmask_new_card_link"
                 android:visibility="gone" />
         </LinearLayout>
@@ -145,38 +146,6 @@
             android:gravity="start"
             android:textAppearance="@style/TextAppearance.AutofillCardErrorMessage"
             android:visibility="gone" />
-
-        <RelativeLayout
-            android:id="@+id/store_locally_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp">
-
-            <ImageView
-                android:id="@+id/store_locally_tooltip_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:padding="12dp"
-                android:src="@drawable/help_outline"
-                android:contentDescription="@string/learn_more" />
-
-           <CheckBox
-                android:id="@+id/store_locally_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_toStartOf="@id/store_locally_tooltip_icon"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="17dp"
-                android:layout_marginEnd="10dp"
-                android:textAppearance="@style/TextAppearance.AutofillCardCheckBoxText"
-                android:text="@string/autofill_card_unmask_prompt_storage_checkbox" />
-
-        </RelativeLayout>
 
         <CheckBox
             android:id="@+id/use_screenlock_checkbox"
@@ -226,6 +195,6 @@
             android:id="@+id/verification_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMediumThick.Blue" />
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
     </LinearLayout>
 </RelativeLayout>

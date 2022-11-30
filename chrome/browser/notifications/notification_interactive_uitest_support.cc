@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,8 @@ class MessageCenterChangeObserver::Impl
 
   void OnNotificationClicked(
       const std::string& notification_id,
-      const base::Optional<int>& button_index,
-      const base::Optional<std::u16string>& reply) override {
+      const absl::optional<int>& button_index,
+      const absl::optional<std::u16string>& reply) override {
     OnMessageCenterChanged();
   }
 
@@ -198,7 +198,7 @@ bool NotificationsTest::RequestAndDismissPermission(Browser* browser) {
 
 bool NotificationsTest::RequestPermissionAndWait(Browser* browser) {
   content::WebContents* web_contents = GetActiveWebContents(browser);
-  ui_test_utils::NavigateToURL(browser, GetTestPageURL());
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GetTestPageURL()));
   permissions::PermissionRequestObserver observer(web_contents);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(

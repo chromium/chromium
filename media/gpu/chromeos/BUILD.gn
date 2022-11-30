@@ -1,9 +1,11 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(use_v4l2_codec || use_vaapi)
 
@@ -15,27 +17,37 @@ source_set("chromeos") {
   # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
-    "chromeos_video_decoder_factory.cc",
-    "chromeos_video_decoder_factory.h",
     "image_processor_factory.cc",
+    "oop_video_decoder.cc",
+    "video_decoder_pipeline.cc",
   ]
 
   public_deps = [ ":common" ]
 
   deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//media",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
+    "//media/mojo/common:common",
   ]
 
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi" ]
+    deps += [
+      "//media/gpu/vaapi",
+      "//media/gpu/vaapi:common",
+    ]
   }
 
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]
+  }
+
+  if (is_chromeos) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
 }
 
@@ -43,8 +55,11 @@ source_set("chromeos") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
+    "gl_image_processor_backend.cc",
+    "gl_image_processor_backend.h",
     "gpu_buffer_layout.cc",
     "gpu_buffer_layout.h",
     "image_processor.cc",
@@ -58,6 +73,7 @@ source_set("common") {
     "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
+    "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
     "platform_video_frame_utils.cc",
@@ -66,21 +82,26 @@ source_set("common") {
     "vd_video_decode_accelerator.h",
     "vda_video_frame_pool.cc",
     "vda_video_frame_pool.h",
-    "video_decoder_pipeline.cc",
     "video_decoder_pipeline.h",
     "video_frame_converter.cc",
     "video_frame_converter.h",
   ]
 
   # TODO(crbug.com/1012587): Merge :fourcc to :common.
-  public_deps = [ ":fourcc" ]
+  public_deps = [
+    ":fourcc",
+    "//gpu/ipc/service",
+    "//media/mojo/mojom/stable:stable_video_decoder",
+  ]
 
   deps = [
     ":fourcc",
     "//base",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",
+    "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
@@ -93,6 +114,16 @@ source_set("common") {
     "//ui/gfx/linux:gbm",
     "//ui/gl",
   ]
+  if (is_chromeos) {
+    sources += [
+      "decoder_buffer_transcryptor.cc",
+      "decoder_buffer_transcryptor.h",
+    ]
+    deps += [
+      ":cdm-oemcrypto-proto",
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
+    ]
+  }
 }
 
 # Although fourcc is platform-agnostic; however, it is restricted by the above
@@ -130,6 +161,15 @@ source_set("video_frame_mapper") {
   ]
 }
 
+if (is_chromeos) {
+  proto_library("cdm-oemcrypto-proto") {
+    sources = [
+      "//third_party/cros_system_api/dbus/cdm_oemcrypto/secure_buffer.proto",
+    ]
+    proto_out_dir = "media/gpu/chromeos"
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
@@ -154,6 +194,10 @@ source_set("unit_tests") {
     "platform_video_frame_utils_unittest.cc",
     "video_decoder_pipeline_unittest.cc",
   ]
+  if (is_chromeos_ash) {
+    deps +=
+        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+  }
 }
 
 test("image_processor_test") {

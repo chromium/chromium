@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,22 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class HostContentSettingsMap;
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace subresource_filter {
 
 // This class contains helpers to get/set content and website settings related
 // to subresource filtering.
 //
-// Site metadata is stored in two formats as a base::DictionaryValue:
+// Site metadata is stored in two formats as a base::Value::Dict:
 // -  V1 (or legacy) metadata, which uses the presence of metadata to indicate
 //    activation due to safe browsing and may store additional data for
 //    the time since UI was shown, see OnDidShowUI. The absence of metadata
@@ -64,6 +62,12 @@ class SubresourceFilterContentSettingsManager {
  public:
   explicit SubresourceFilterContentSettingsManager(
       HostContentSettingsMap* settings_map);
+
+  SubresourceFilterContentSettingsManager(
+      const SubresourceFilterContentSettingsManager&) = delete;
+  SubresourceFilterContentSettingsManager& operator=(
+      const SubresourceFilterContentSettingsManager&) = delete;
+
   ~SubresourceFilterContentSettingsManager();
 
   ContentSetting GetSitePermission(const GURL& url) const;
@@ -73,7 +77,7 @@ class SubresourceFilterContentSettingsManager {
   void AllowlistSite(const GURL& url);
 
   // Public for testing.
-  std::unique_ptr<base::DictionaryValue> GetSiteMetadata(const GURL& url) const;
+  absl::optional<base::Value::Dict> GetSiteMetadata(const GURL& url) const;
 
   // Specific logic for more intelligent UI.
   void OnDidShowUI(const GURL& url);
@@ -102,7 +106,7 @@ class SubresourceFilterContentSettingsManager {
       const GURL& url,
       bool is_activated,
       ActivationSource activation_source,
-      std::unique_ptr<base::DictionaryValue> additional_metadata = nullptr);
+      absl::optional<base::Value::Dict> additional_metadata = absl::nullopt);
 
   // Returns the activation status based on the |url|'s site metadata. See
   // class comment for information on the metadata data model.
@@ -121,37 +125,33 @@ class SubresourceFilterContentSettingsManager {
   // Time before showing the UI again on a domain.
   // TODO(csharrison): Consider setting this via a finch param.
   static constexpr base::TimeDelta kDelayBeforeShowingInfobarAgain =
-      base::TimeDelta::FromHours(24);
+      base::Hours(24);
 
   // Maximum duration to persist metadata for.
-  static constexpr base::TimeDelta kMaxPersistMetadataDuration =
-      base::TimeDelta::FromDays(7);
+  static constexpr base::TimeDelta kMaxPersistMetadataDuration = base::Days(7);
 
   // Overwrites existing site metadata for testing.
   void SetSiteMetadataForTesting(const GURL& url,
-                                 std::unique_ptr<base::DictionaryValue> dict);
+                                 absl::optional<base::Value::Dict> dict);
 
  private:
-  void SetSiteMetadata(const GURL& url,
-                       std::unique_ptr<base::DictionaryValue> dict);
+  void SetSiteMetadata(const GURL& url, absl::optional<base::Value::Dict> dict);
 
-  std::unique_ptr<base::DictionaryValue> CreateMetadataDictWithActivation(
-      bool is_activated);
+  base::Value::Dict CreateMetadataDictWithActivation(bool is_activated);
 
   // Whether the site metadata stored in |dict| is being persisted with an
   // expiry time set by an ads intervention.
-  bool ShouldDeleteDataWithNoActivation(base::DictionaryValue* dict,
-                                        ActivationSource activation_source);
+  bool ShouldDeleteDataWithNoActivation(
+      const absl::optional<base::Value::Dict>& dict,
+      ActivationSource activation_source);
 
-  HostContentSettingsMap* settings_map_;
+  raw_ptr<HostContentSettingsMap> settings_map_;
 
   // A clock is injected into this class so tests can set arbitrary timestamps
   // in website settings.
   std::unique_ptr<base::Clock> clock_;
 
   bool should_use_smart_ui_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterContentSettingsManager);
 };
 
 }  // namespace subresource_filter

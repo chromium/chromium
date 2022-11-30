@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,6 +145,7 @@ AutomationPredicate.focused = function(node) {
 AutomationPredicate.leaf = function(node) {
   return !node.firstChild || node.role == RoleType.BUTTON ||
       node.role == RoleType.BUTTONDROPDOWN ||
+      node.role == RoleType.COMBO_BOX_SELECT ||
       node.role == RoleType.POP_UP_BUTTON || node.role == RoleType.SLIDER ||
       node.role == RoleType.TEXT_FIELD || node.state.invisible ||
       node.children.every(function(n) {

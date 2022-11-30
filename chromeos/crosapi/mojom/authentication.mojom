@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// This structure is based on quickUnlockPrivate::TokenInfo in
+// chrome/common/extensions/api/quick_unlock_private.idl.
+[Stable]
+struct QuickUnlockPrivateTokenInfo {
+  // The authentication token that can be passed to quickUnlockPrivate::SetModes
+  // calls.
+  string token@0;
+
+  // The number of seconds until the token expires. UI that uses this should
+  // refresh token before it expires.
+  int32 lifetime_seconds@1;
+};
+
+// Returned by CreateQuickUnlockPrivateTokenInfo().
+[Stable]
+union CreateQuickUnlockPrivateTokenInfoResult {
+  // Implies failure.
+  string error_message;
+
+  // Implies success.
+  QuickUnlockPrivateTokenInfo token_info;
+};
+
+// An interface implemented by Ash to expose Ash's authentication capabilities.
+// Used by Lacros for extension API authentication in Settings.
+[Stable, Uuid="7548cbb8-944f-4db0-8f5d-a37512733c78"]
+interface Authentication {
+  // Authenticates the Ash profile with given |password| and returns the result,
+  // which is a QuickUnlockPrivateTokenInfo on success, or an error message on
+  // failure.
+  CreateQuickUnlockPrivateTokenInfo@0(string password) =>
+      (CreateQuickUnlockPrivateTokenInfoResult result);
+
+  // Returns whether the active user profile can input password, and has an
+  // auth token no older than |auth_token_lifetime|.
+  IsOsReauthAllowedForActiveUserProfile@1(
+      mojo_base.mojom.TimeDelta auth_token_lifetime) => (bool allowed);
+};

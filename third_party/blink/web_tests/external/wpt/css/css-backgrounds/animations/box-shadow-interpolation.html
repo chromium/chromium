@@ -94,6 +94,19 @@ test_interpolation({
   {at: 1.5, expect: 'rgb(255, 248, 0) -30px -20px 35px -9px'},
 ]);
 
+test_interpolation({
+  property: 'box-shadow',
+  from: '0px 0px 0px 0px black',
+  to: '1px 1px 1px 1px black',
+}, [
+  {at: -0.3, expect: 'rgb(0, 0, 0) -0.3px -0.3px 0px -0.3px'},
+  {at: 0, expect: 'rgb(0, 0, 0) 0px 0px 0px 0px'},
+  {at: 0.3, expect: 'rgb(0, 0, 0) 0.3px 0.3px 0.3px 0.3px'},
+  {at: 0.6, expect: 'rgb(0, 0, 0) 0.6px 0.6px 0.6px 0.6px'},
+  {at: 1, expect: 'rgb(0, 0, 0) 1px 1px 1px 1px'},
+  {at: 1.5, expect: 'rgb(0, 0, 0) 1.5px 1.5px 1.5px 1.5px'},
+]);
+
 // Test with color as first value.
 test_interpolation({
   property: 'box-shadow',
@@ -159,6 +172,20 @@ test_interpolation({
   {at: 0.6, expect: 'rgba(255, 255, 0, 0.2) 4px 8px 0px 0px, rgba(0, 128, 0, 0.4) 2px 12px 0px 0px inset'},
   {at: 1, expect: 'rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px inset'},
   {at: 1.5, expect: 'rgba(0, 0, 0, 0) -5px -10px 0px 0px, rgba(0, 0, 0, 0) -2.5px -15px 0px 0px inset'},
+]);
+
+// Test calc with comparison functions
+test_interpolation({
+  property: 'box-shadow',
+  from: 'inset 0 0 0 0 black',
+  to: 'inset 0 0 0 calc(max(10em, 20px) / 2) black',
+}, [
+  {at: -0.3, expect: 'rgb(0, 0, 0) 0px 0px 0px -4.5px inset'},
+  {at: 0, expect: 'rgb(0, 0, 0) 0px 0px 0px 0px inset'},
+  {at: 0.3, expect: 'rgb(0, 0, 0) 0px 0px 0px 4.5px inset'},
+  {at: 0.6, expect: 'rgb(0, 0, 0) 0px 0px 0px 9px inset'},
+  {at: 1, expect: 'rgb(0, 0, 0) 0px 0px 0px 15px inset'},
+  {at: 1.5, expect: 'rgb(0, 0, 0) 0px 0px 0px 22.5px inset'},
 ]);
 
 // Test unmatched inset

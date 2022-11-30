@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "gin/converter.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 
@@ -52,7 +56,7 @@ v8::Local<v8::Context> Arguments::GetHolderCreationContext() const {
   v8::Local<v8::Object> holder = is_for_property_
                                      ? info_for_property_->Holder()
                                      : info_for_function_->Holder();
-  return holder->CreationContext();
+  return holder->GetCreationContextChecked();
 }
 
 std::string V8TypeAsString(v8::Isolate* isolate, v8::Local<v8::Value> value) {

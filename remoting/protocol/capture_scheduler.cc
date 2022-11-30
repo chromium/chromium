@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,7 @@ static const int kMaxUnacknowledgedFrames = 4;
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // We assume that the number of available cores is constant.
 CaptureScheduler::CaptureScheduler(
@@ -49,8 +48,7 @@ CaptureScheduler::CaptureScheduler(
     : capture_closure_(capture_closure),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       capture_timer_(new base::OneShotTimer()),
-      minimum_interval_(
-          base::TimeDelta::FromMilliseconds(kDefaultMinimumIntervalMs)),
+      minimum_interval_(base::Milliseconds(kDefaultMinimumIntervalMs)),
       num_of_processors_(base::SysInfo::NumberOfProcessors()),
       capture_time_(kStatisticsWindow),
       encode_time_(kStatisticsWindow),
@@ -63,17 +61,17 @@ CaptureScheduler::CaptureScheduler(
 }
 
 CaptureScheduler::~CaptureScheduler() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void CaptureScheduler::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScheduleNextCapture();
 }
 
 void CaptureScheduler::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_paused_ != pause) {
     is_paused_ = pause;
@@ -87,7 +85,7 @@ void CaptureScheduler::Pause(bool pause) {
 }
 
 void CaptureScheduler::OnCaptureCompleted() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_pending_ = false;
   capture_time_.Record(
@@ -99,7 +97,7 @@ void CaptureScheduler::OnCaptureCompleted() {
 }
 
 void CaptureScheduler::OnFrameEncoded(VideoPacket* packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Set packet_id for the outgoing packet.
   packet->set_frame_id(next_frame_id_);
@@ -115,13 +113,13 @@ void CaptureScheduler::OnFrameEncoded(VideoPacket* packet) {
 }
 
 void CaptureScheduler::OnFrameSent() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   ScheduleNextCapture();
 }
 
 void CaptureScheduler::ProcessVideoAck(std::unique_ptr<VideoAck> video_ack) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   --num_unacknowledged_frames_;
   DCHECK_GE(num_unacknowledged_frames_, 0);
@@ -143,7 +141,7 @@ void CaptureScheduler::SetNumOfProcessorsForTest(int num_of_processors) {
 }
 
 void CaptureScheduler::ScheduleNextCapture() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_paused_ || capture_pending_ ||
       num_encoding_frames_ >= kMaxFramesInEncodingQueue) {
@@ -158,11 +156,10 @@ void CaptureScheduler::ScheduleNextCapture() {
   // Delay by an amount chosen such that if capture and encode times
   // continue to follow the averages, then we'll consume the target
   // fraction of CPU across all cores.
-  base::TimeDelta delay =
-      std::max(minimum_interval_,
-               base::TimeDelta::FromMilliseconds(
-                   (capture_time_.Average() + encode_time_.Average()) /
-                   (kRecordingCpuConsumption * num_of_processors_)));
+  base::TimeDelta delay = std::max(
+      minimum_interval_,
+      base::Milliseconds((capture_time_.Average() + encode_time_.Average()) /
+                         (kRecordingCpuConsumption * num_of_processors_)));
 
   // Account for the time that has passed since the last capture.
   delay = std::max(base::TimeDelta(), delay - (tick_clock_->NowTicks() -
@@ -174,7 +171,7 @@ void CaptureScheduler::ScheduleNextCapture() {
 }
 
 void CaptureScheduler::CaptureNextFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_paused_);
   DCHECK(!capture_pending_);
 
@@ -183,5 +180,4 @@ void CaptureScheduler::CaptureNextFrame() {
   capture_closure_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

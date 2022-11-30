@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/common/logging_constants.h"
 #include "extensions/common/stack_frame.h"
+#include "extensions/renderer/extension_frame_helper.h"
+#include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -26,7 +26,7 @@ namespace extensions {
 namespace {
 
 // The delimiter for a stack trace provided by WebKit.
-const char kStackFrameDelimiter[] = "\n    at ";
+const char16_t kStackFrameDelimiter[] = u"\n    at ";
 
 // Get a stack trace from a WebKit console message.
 // There are three possible scenarios:
@@ -46,17 +46,16 @@ StackTrace GetStackTraceFromMessage(std::u16string* message,
   std::vector<std::u16string> pieces;
   size_t index = 0;
 
-  if (message->find(base::UTF8ToUTF16(kStackFrameDelimiter)) !=
-      std::u16string::npos) {
-    pieces = base::SplitStringUsingSubstr(
-        *message, base::UTF8ToUTF16(kStackFrameDelimiter),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (message->find(kStackFrameDelimiter) != std::u16string::npos) {
+    pieces = base::SplitStringUsingSubstr(*message, kStackFrameDelimiter,
+                                          base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_ALL);
     *message = pieces[0];
     index = 1;
   } else if (!stack_trace.empty()) {
-    pieces = base::SplitStringUsingSubstr(
-        stack_trace, base::UTF8ToUTF16(kStackFrameDelimiter),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    pieces = base::SplitStringUsingSubstr(stack_trace, kStackFrameDelimiter,
+                                          base::TRIM_WHITESPACE,
+                                          base::SPLIT_WANT_ALL);
   }
 
   // If we got a stack trace, parse each frame from the text.
@@ -118,8 +117,8 @@ void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
     const std::u16string& source,
     const std::u16string& stack_trace_string,
     uint32_t line_number,
-    int32_t severity_level) {
-  if (severity_level <
+    blink::mojom::ConsoleMessageLevel level) {
+  if (blink::ConsoleMessageLevelToLogSeverity(level) <
       static_cast<int32_t>(extension_misc::kMinimumSeverityToReportError)) {
     // We don't report certain low-severity errors.
     return;
@@ -131,8 +130,10 @@ void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
       source,
       stack_trace_string,
       line_number);
-  Send(new ExtensionHostMsg_DetailedConsoleMessageAdded(
-      routing_id(), trimmed_message, source, stack_trace, severity_level));
+  ExtensionFrameHelper::Get(render_frame())
+      ->GetLocalFrameHost()
+      ->DetailedConsoleMessageAdded(trimmed_message, source, stack_trace,
+                                    level);
 }
 
 void ExtensionsRenderFrameObserver::OnDestruct() {

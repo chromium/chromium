@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/ash_constants.h"
-#include "base/macros.h"
+#include "ash/constants/ash_constants.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/aura/window.h"
@@ -18,6 +17,11 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+namespace gfx {
+class ImageSkia;
+class ImageSkiaRep;
+}  // namespace gfx
 
 namespace ash {
 
@@ -39,6 +43,10 @@ class ASH_EXPORT CursorWindowController {
   };
 
   CursorWindowController();
+
+  CursorWindowController(const CursorWindowController&) = delete;
+  CursorWindowController& operator=(const CursorWindowController&) = delete;
+
   ~CursorWindowController();
 
   bool is_cursor_compositing_enabled() const {
@@ -66,11 +74,21 @@ class ASH_EXPORT CursorWindowController {
   // Only applicable when cursor compositing is enabled.
   void SetDisplay(const display::Display& display);
 
+  // When the mouse starts or stops hovering/resizing the docked magnifier
+  // separator, update the container that holds the cursor (so that the cursor
+  // is shown on top of the docked magnifier viewport when hovering/resizing).
+  // |is_active| is true when user starts hovering the separator.
+  // |is_active| is false when user stops hovering and is no longer resizing.
+  void OnDockedMagnifierResizingStateChanged(bool is_active);
+
   // Sets cursor location, shape, set and visibility.
   void UpdateLocation();
   void SetCursor(gfx::NativeCursor cursor);
   void SetCursorSize(ui::CursorSize cursor_size);
   void SetVisibility(bool visible);
+
+  // Gets the cursor container for testing purposes.
+  const aura::Window* GetContainerForTest() const;
 
  private:
   friend class CursorWindowControllerTest;
@@ -132,8 +150,6 @@ class ASH_EXPORT CursorWindowController {
   views::UniqueWidgetPtr cursor_view_widget_;
 
   const bool is_cursor_motion_blur_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(CursorWindowController);
 };
 
 }  // namespace ash

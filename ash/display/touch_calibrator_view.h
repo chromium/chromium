@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
@@ -112,6 +111,8 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
  private:
   TouchCalibratorView(const display::Display& target_display,
                       bool is_primary_view);
+  TouchCalibratorView(const TouchCalibratorView&) = delete;
+  TouchCalibratorView& operator=(const TouchCalibratorView&) = delete;
 
   void InitViewContents();
 
@@ -156,8 +157,6 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   views::View* touch_point_view_ = nullptr;
 
   State state_ = UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchCalibratorView);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@
 
 @implementation RenderWidgetPopupWindow
 
-- (id)initWithContentRect:(NSRect)contentRect
-                styleMask:(NSUInteger)windowStyle
-                  backing:(NSBackingStoreType)bufferingType
-                    defer:(BOOL)deferCreation {
+- (instancetype)initWithContentRect:(NSRect)contentRect
+                          styleMask:(NSUInteger)windowStyle
+                            backing:(NSBackingStoreType)bufferingType
+                              defer:(BOOL)deferCreation {
   if (self = [super initWithContentRect:contentRect
                               styleMask:windowStyle
                                 backing:bufferingType
@@ -28,6 +28,11 @@
     [self startObservingClicks];
   }
   return self;
+}
+
+- (void)dealloc {
+  [self stopObservingClicks];
+  [super dealloc];
 }
 
 - (void)close {
@@ -44,13 +49,14 @@
 // Install the callback.
 - (void)startObservingClicks {
   _clickEventTap = [NSEvent
-      addLocalMonitorForEventsMatchingMask:NSAnyEventMask
+      addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                    handler:^NSEvent*(NSEvent* event) {
                                      if ([event window] == self)
                                        return event;
                                      NSEventType eventType = [event type];
-                                     if (eventType == NSLeftMouseDown ||
-                                         eventType == NSRightMouseDown)
+                                     if (eventType ==
+                                             NSEventTypeLeftMouseDown ||
+                                         eventType == NSEventTypeRightMouseDown)
                                        [self close];
                                      return event;
                                    }];
@@ -83,7 +89,6 @@
 namespace remote_cocoa {
 
 PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
-                               bool has_shadow,
                                RenderWidgetHostViewCocoa* cocoa_view)
     : cocoa_view_(cocoa_view) {
   [cocoa_view_ setCloseOnDeactivate:YES];
@@ -91,10 +96,10 @@ PopupWindowMac::PopupWindowMac(const gfx::Rect& content_rect,
 
   popup_window_.reset([[RenderWidgetPopupWindow alloc]
       initWithContentRect:gfx::ScreenRectToNSRect(content_rect)
-                styleMask:NSBorderlessWindowMask
+                styleMask:NSWindowStyleMaskBorderless
                   backing:NSBackingStoreBuffered
                     defer:NO]);
-  [popup_window_ setHasShadow:has_shadow];
+  [popup_window_ setHasShadow:YES];
   [popup_window_ setLevel:NSPopUpMenuWindowLevel];
   [popup_window_ setReleasedWhenClosed:NO];
   [popup_window_ makeKeyAndOrderFront:nil];

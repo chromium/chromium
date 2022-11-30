@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Help App is ash-chrome only")
+
+js_type_check("closure_compile") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":app_bin" ]
+}
+
+js_library("app_bin") {
+  externs_list = [ "//ash/webui/help_app_ui/resources/help_app.externs.js" ]
+}

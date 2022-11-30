@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -122,13 +122,13 @@ int HttpTransportTestServerMain(int argc, char* argv[]) {
 }  // namespace
 }  // namespace crashpad
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 int main(int argc, char* argv[]) {
   return crashpad::HttpTransportTestServerMain(argc, argv);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(
       argc, argv, crashpad::HttpTransportTestServerMain);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

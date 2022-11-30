@@ -26,18 +26,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_POINTER_LOCK_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -54,6 +52,8 @@ class CORE_EXPORT PointerLockController final
     : public GarbageCollected<PointerLockController> {
  public:
   explicit PointerLockController(Page*);
+  PointerLockController(const PointerLockController&) = delete;
+  PointerLockController& operator=(const PointerLockController&) = delete;
 
   using ResultCallback =
       base::OnceCallback<void(mojom::blink::PointerLockResult)>;
@@ -79,8 +79,8 @@ class CORE_EXPORT PointerLockController final
 
   // Fetch the locked mouse position when pointer is locked. The values are not
   // changed if pointer is not locked.
-  void GetPointerLockPosition(FloatPoint* lock_position,
-                              FloatPoint* lock_screen_position);
+  void GetPointerLockPosition(gfx::PointF* lock_position,
+                              gfx::PointF* lock_screen_position);
   void Trace(Visitor*) const;
 
   static Element* GetPointerLockedElement(LocalFrame* frame);
@@ -120,12 +120,10 @@ class CORE_EXPORT PointerLockController final
 
   // Store the locked position so that the event position keeps unchanged when
   // in locked states. These values only get set when entering lock states.
-  FloatPoint pointer_lock_position_;
-  FloatPoint pointer_lock_screen_position_;
+  gfx::PointF pointer_lock_position_;
+  gfx::PointF pointer_lock_screen_position_;
 
   bool current_unadjusted_movement_setting_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PointerLockController);
 };
 
 }  // namespace blink

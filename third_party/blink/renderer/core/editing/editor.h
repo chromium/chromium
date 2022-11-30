@@ -28,7 +28,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -38,7 +37,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -52,6 +51,7 @@ class HitTestResult;
 class KeyboardEvent;
 class KillRing;
 class SpellChecker;
+enum class SyncCondition;
 class CSSPropertyValueSet;
 class TextEvent;
 class UndoStack;
@@ -66,6 +66,8 @@ enum class EditorCommandSource { kMenuOrKeyBinding, kDOM };
 class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
  public:
   explicit Editor(LocalFrame&);
+  Editor(const Editor&) = delete;
+  Editor& operator=(const Editor&) = delete;
   ~Editor();
 
   CompositeEditCommand* LastEditCommand() { return last_edit_command_.Get(); }
@@ -123,9 +125,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   bool InsertLineBreak();
   bool InsertParagraphSeparator();
 
-  bool IsOverwriteModeEnabled() const { return overwrite_mode_enabled_; }
-  void ToggleOverwriteModeEnabled();
-
   bool CanUndo();
   void Undo();
   bool CanRedo();
@@ -175,9 +174,12 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void ComputeAndSetTypingStyle(CSSPropertyValueSet*, InputEvent::InputType);
 
-  EphemeralRange RangeForPoint(const IntPoint&) const;
+  EphemeralRange RangeForPoint(const gfx::Point&) const;
+  EphemeralRange RangeBetweenPoints(const gfx::Point& start_point,
+                                    const gfx::Point& end_point) const;
 
   void RespondToChangedSelection();
+  void SyncSelection(blink::SyncCondition force_sync);
 
   bool MarkedTextMatchesAreHighlighted() const;
   void SetMarkedTextMatchesAreHighlighted(bool);
@@ -240,7 +242,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   VisibleSelection mark_;
   bool are_marked_text_matches_highlighted_;
   EditorParagraphSeparator default_paragraph_separator_;
-  bool overwrite_mode_enabled_;
   Member<EditingStyle> typing_style_;
   bool mark_is_directional_ = false;
 
@@ -253,8 +254,6 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   FrameSelection& GetFrameSelection() const;
 
   bool HandleEditingKeyboardEvent(KeyboardEvent*);
-
-  DISALLOW_COPY_AND_ASSIGN(Editor);
 };
 
 inline void Editor::SetStartNewKillRingSequence(bool flag) {

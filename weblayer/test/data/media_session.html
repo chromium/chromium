@@ -1,13 +1,12 @@
 <html>
-  <body>
-    <p>Some text so the document is ready for input.</p>
-  </body>
   <script>
-    let audio = document.createElement('audio');
     function playAudio() {
+      let audio = document.createElement('audio');
       audio.src = 'test_audio.ogg';
       audio.play();
     }
-    document.addEventListener('touchend', function(e) { playAudio(); }, false);
   </script>
+  <body onclick="playAudio();">
+    <p>Some text so the document is ready for input.</p>
+  </body>
 </html>

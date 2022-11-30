@@ -1,22 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-/**
- * Namespace for common constnats used in Files app.
+ * Namespace for common constants used in Files app.
  * @namespace
  */
-const constants = {};
+export const constants = {};
 
 /**
  * @const {!Array<string>}
  */
-constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = ['hosted', 'pinned'];
+constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
+  'canPin',
+  'hosted',
+  'pinned',
+];
 
 /**
  * The list of executable file extensions.
@@ -42,6 +41,7 @@ constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
   'availableOffline',
   'contentMimeType',
   'hosted',
+  'canPin',
 ];
 
 /**
@@ -67,35 +67,22 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
   'canRename',
   'canAddChildren',
   'canShare',
+  'canPin',
   'isMachineRoot',
   'isExternalMedia',
   'isArbitrarySyncFolder',
 ];
 
 /**
- * Path for files_quick_view.html file.  Allow override for testing.
- * @type {string}
+ * Metadata properties used to inform the user about DLP (Data Leak Prevention)
+ * Files restrictions. These metadata is expected to be cached.
+ *
+ * @const {!Array<string>}
  */
-constants.FILES_QUICK_VIEW_HTML = 'foreground/elements/files_quick_view.html';
-
-/**
- * Path for drive_welcome.css file.  Allow override for testing.
- * @type {string}
- */
-constants.DRIVE_WELCOME_CSS = 'foreground/css/drive_welcome.css';
-
-/**
- * Path for photos_welcome.css file.
- * @type {string}
- */
-constants.PHOTOS_WELCOME_CSS = 'foreground/css/photos_welcome.css';
-
-/**
- * Path for holding_space_welcome.css file. Allow override for testing.
- * @type {string}
- */
-constants.HOLDING_SPACE_WELCOME_CSS =
-    'foreground/css/holding_space_welcome.css';
+constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
+  'isDlpRestricted',
+  'sourceUrl',
+];
 
 /**
  * Name of the default crostini VM.
@@ -114,6 +101,3 @@ constants.PLUGIN_VM = 'PvmDefault';
  * @const {string}
  */
 constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
-
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {constants};

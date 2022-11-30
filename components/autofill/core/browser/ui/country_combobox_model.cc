@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ void CountryComboboxModel::SetCountries(
   if (filter.is_null() || filter.Run(default_country_code)) {
     countries_.push_back(
         std::make_unique<AutofillCountry>(default_country_code, app_locale));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // The separator item. On Android, there are separators after all items, so
     // this is unnecessary.
     countries_.push_back(nullptr);
@@ -75,11 +75,11 @@ void CountryComboboxModel::SetCountries(
             std::back_inserter(countries_));
 }
 
-int CountryComboboxModel::GetItemCount() const {
+size_t CountryComboboxModel::GetItemCount() const {
   return countries_.size();
 }
 
-std::u16string CountryComboboxModel::GetItemAt(int index) const {
+std::u16string CountryComboboxModel::GetItemAt(size_t index) const {
   AutofillCountry* country = countries_[index].get();
   if (country)
     return countries_[index]->name();
@@ -89,12 +89,12 @@ std::u16string CountryComboboxModel::GetItemAt(int index) const {
   return u"---";
 }
 
-bool CountryComboboxModel::IsItemSeparatorAt(int index) const {
+bool CountryComboboxModel::IsItemSeparatorAt(size_t index) const {
   return !countries_[index];
 }
 
 std::string CountryComboboxModel::GetDefaultCountryCode() const {
-  return countries_[GetDefaultIndex()]->country_code();
+  return countries_[GetDefaultIndex().value()]->country_code();
 }
 
 }  // namespace autofill

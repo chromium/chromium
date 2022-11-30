@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "net/base/data_url.h"
 #include "net/base/load_flags.h"
@@ -16,6 +15,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -57,7 +57,7 @@ ImageDataFetcher::~ImageDataFetcher() {
 }
 
 void ImageDataFetcher::SetImageDownloadLimit(
-    base::Optional<int64_t> max_download_bytes) {
+    absl::optional<int64_t> max_download_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   max_download_bytes_ = max_download_bytes;
 }
@@ -133,8 +133,7 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
   // body will get thrown out anyway, though.
   loader->SetAllowHttpErrorResults(true);
 
-  loader->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kDownloadTimeoutSeconds));
+  loader->SetTimeoutDuration(base::Seconds(kDownloadTimeoutSeconds));
 
   if (max_download_bytes_.has_value()) {
     loader->DownloadToString(

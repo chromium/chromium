@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #include <queue>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/proxy/audio_decoder_pipeline_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
@@ -153,7 +155,7 @@ class BufferIdManager {
   int64_t pending_playback_time_in_microseconds_ = 0;
 
   // Information about the most recently played buffer.
-  mutable base::Optional<BufferPlayoutInfo> most_recently_played_buffer_;
+  mutable absl::optional<BufferPlayoutInfo> most_recently_played_buffer_;
 
   BufferIdQueue buffer_id_queue_;
   std::queue<BufferInfo> buffer_infos_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +18,12 @@ class MockMojoIndexedDBDatabaseCallbacks
     : public blink::mojom::IDBDatabaseCallbacks {
  public:
   MockMojoIndexedDBDatabaseCallbacks();
+
+  MockMojoIndexedDBDatabaseCallbacks(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+  MockMojoIndexedDBDatabaseCallbacks& operator=(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+
   ~MockMojoIndexedDBDatabaseCallbacks() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
@@ -34,8 +39,6 @@ class MockMojoIndexedDBDatabaseCallbacks
 
  private:
   mojo::AssociatedReceiver<blink::mojom::IDBDatabaseCallbacks> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoIndexedDBDatabaseCallbacks);
 };
 
 }  // namespace content

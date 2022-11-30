@@ -1,5 +1,10 @@
 include_rules = [
-  "+components/system_media_controls",
+  "+chromeos/crosapi/cpp/crosapi_constants.h",
+  "+chromeos/crosapi/mojom/emoji_picker.mojom.h",
+  "+chromeos/lacros/lacros_paths.h",
+  "+chromeos/lacros/lacros_service.h",
+  "+components/vector_icons",
+  "+components/version_info",
   "+media/media_buildflags.h",
   "+net",
   "+skia/ext",
@@ -8,14 +13,15 @@ include_rules = [
   "+third_party/skia",
   "+third_party/zlib",
   "+ui/base/ui_base_jni_headers",
+  "+ui/color",
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
   "+ui/resources/grit/ui_resources.h",
   "+ui/resources/grit/ui_unscaled_resources.h",
   "+ui/resources/grit/webui_generated_resources.h",
-  "+ui/resources/grit/webui_resources.h",
   "+ui/strings/grit/app_locale_settings.h",
+  "+ui/strings/grit/ax_strings.h",
   "+ui/strings/grit/ui_strings.h",
   "+url"
 ]

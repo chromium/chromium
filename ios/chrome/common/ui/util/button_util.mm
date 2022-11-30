@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kButtonVerticalInsets = 17;
-constexpr CGFloat kPrimaryButtonCornerRadius = 13;
+const CGFloat kButtonVerticalInsets = 14.5;
+const CGFloat kPrimaryButtonCornerRadius = 15;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -27,6 +27,8 @@ UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   primary_blue_button.titleLabel.adjustsFontForContentSizeCategory = NO;
   primary_blue_button.translatesAutoresizingMaskIntoConstraints = NO;
 
+  // TODO(crbug.com/1129483): Remove once minimum supported version for
+  // extensions is at least 14
   if (@available(iOS 13.4, *)) {
     if (pointer_interaction_enabled) {
       primary_blue_button.pointerInteractionEnabled = YES;

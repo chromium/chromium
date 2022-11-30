@@ -1,10 +1,11 @@
-/// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_BASE_PROFILE_WAITER_H_
 #define CHROME_TEST_BASE_PROFILE_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,7 +29,7 @@ class ProfileWaiter : public ProfileManagerObserver {
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
   base::RunLoop run_loop_;

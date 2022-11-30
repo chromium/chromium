@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,10 +71,10 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
     switch (draw_function) {
       case MultiDrawManager::DrawFunction::DrawArraysInstancedBaseInstance:
         EXPECT_TRUE(result.baseinstances.size() == count);
-        FALLTHROUGH;
+        [[fallthrough]];
       case MultiDrawManager::DrawFunction::DrawArraysInstanced:
         EXPECT_TRUE(result.instance_counts.size() == count);
-        FALLTHROUGH;
+        [[fallthrough]];
       case MultiDrawManager::DrawFunction::DrawArrays:
         EXPECT_TRUE(result.firsts.size() == count);
         EXPECT_TRUE(result.counts.size() == count);
@@ -83,10 +83,10 @@ class MultiDrawManagerTest : public testing::TestWithParam<Param> {
           DrawElementsInstancedBaseVertexBaseInstance:
         EXPECT_TRUE(result.basevertices.size() == count);
         EXPECT_TRUE(result.baseinstances.size() == count);
-        FALLTHROUGH;
+        [[fallthrough]];
       case MultiDrawManager::DrawFunction::DrawElementsInstanced:
         EXPECT_TRUE(result.instance_counts.size() == count);
-        FALLTHROUGH;
+        [[fallthrough]];
       case MultiDrawManager::DrawFunction::DrawElements:
         EXPECT_TRUE(result.counts.size() == count);
         switch (std::get<0>(GetParam())) {

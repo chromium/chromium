@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
@@ -32,6 +32,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
       Properties properties,
       Permissions permissions,
       BluetoothLocalGattServiceBlueZ* service);
+
+  BluetoothLocalGattCharacteristicBlueZ(
+      const BluetoothLocalGattCharacteristicBlueZ&) = delete;
+  BluetoothLocalGattCharacteristicBlueZ& operator=(
+      const BluetoothLocalGattCharacteristicBlueZ&) = delete;
+
   ~BluetoothLocalGattCharacteristicBlueZ() override;
 
   // device::BluetoothGattCharacteristic overrides:
@@ -67,7 +73,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
   Permissions permissions_;
 
   // Service that contains this characteristic.
-  BluetoothLocalGattServiceBlueZ* service_;
+  raw_ptr<BluetoothLocalGattServiceBlueZ> service_;
 
   // Descriptors contained by this characteristic.
   std::vector<std::unique_ptr<BluetoothLocalGattDescriptorBlueZ>> descriptors_;
@@ -76,8 +82,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothLocalGattCharacteristicBlueZ> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattCharacteristicBlueZ);
 };
 
 }  // namespace bluez

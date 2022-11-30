@@ -29,8 +29,7 @@ const numTicksY = givenScrollTop / pixelsPerTick();
 const expectedWheelDeltaX = numTicksX * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 const expectedWheelDeltaY = numTicksY * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 
-function mousewheelHandler(e)
-{
+function mousewheelHandler(e) {
     assert_equals(last_event, null);
     last_event = e;
 }
@@ -40,11 +39,25 @@ promise_test(async () => {
     overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
     var ele_center = elementCenter(overflowElement);
     // Wheel event will scroll by one page
-    await smoothScrollWithXY(givenScrollLeft, givenScrollTop, ele_center.x, ele_center.y, source, SPEED_INSTANT, false, true);
-    await waitFor( () => {
-        return overflowElement.scrollLeft == window.expectedScrollLeft &&
-               overflowElement.scrollTop == window.expectedScrollTop;
+    await smoothScrollWithXY(
+      givenScrollLeft, givenScrollTop, ele_center.x, ele_center.y, source,
+      SPEED_INSTANT, false, true
+    );
+    await waitForAnimationEndTimeBased(() => {
+      return overflowElement.scrollLeft;
     });
+    await waitForAnimationEndTimeBased(() => {
+      return overflowElement.scrollTop;
+    });
+
+    // There is some minor inconsistency between main and compositor threads in
+    // which direction they round so allow up to one pixel of slack.
+    assert_approx_equals(
+      overflowElement.scrollLeft, expectedScrollLeft, 1
+    );
+    assert_approx_equals(
+      overflowElement.scrollTop, expectedScrollTop, 1
+    );
 
     // When a user operates the device for scrolling to down, wheelDeltaX is negative, otherwise positive.
     // https://developer.mozilla.org/en-US/docs/Web/API/Element/mousewheel_event.

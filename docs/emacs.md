@@ -286,7 +286,17 @@ for details.
 
 See [ErcIrc](erc_irc.md).
 
-## TODO
+## Compilation with M-x compile
 
-*   Figure out how to make `M-x compile` default to
-    `cd /path/to/chrome/root; make -r chrome`.
+It's usually useful to first find the top directory with locate-dominating-file,
+and run `M-x compile`
+
+```lisp
+(defun chromium-compile ()
+  "Run compile for chromium."
+  (interactive)
+  (let ((chrome-dir (locate-dominating-file "." "chrome/BUILD.gn")))
+    (when chrome-dir
+      (let* ((default-directory chrome-dir))
+        (compile "ninja -C out/Debug chrome chrome_sandbox ")))))
+```

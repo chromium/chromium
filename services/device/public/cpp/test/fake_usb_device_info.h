@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -68,6 +68,9 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
                     uint8_t device_class,
                     std::vector<mojom::UsbConfigurationInfoPtr> configurations);
 
+  FakeUsbDeviceInfo(const FakeUsbDeviceInfo&) = delete;
+  FakeUsbDeviceInfo& operator=(const FakeUsbDeviceInfo&) = delete;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   void NotifyDeviceRemoved();
@@ -86,15 +89,14 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
       uint8_t configuration_value = 1);
 
  protected:
-  friend class RefCounted<FakeUsbDeviceInfo>;
+  friend class base::RefCounted<FakeUsbDeviceInfo>;
   virtual ~FakeUsbDeviceInfo();
 
  private:
   void SetDefault();
   mojom::UsbDeviceInfo device_info_;
   base::ObserverList<Observer> observer_list_;
-  MockUsbMojoDevice* mock_device_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDeviceInfo);
+  raw_ptr<MockUsbMojoDevice> mock_device_ = nullptr;
 };
 
 }  // namespace device

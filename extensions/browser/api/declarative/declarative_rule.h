@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -17,9 +17,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/common/api/events.h"
@@ -61,9 +59,12 @@ namespace extensions {
 template<typename ConditionT>
 class DeclarativeConditionSet {
  public:
-  using Values = std::vector<std::unique_ptr<base::Value>>;
+  using Values = std::vector<base::Value>;
   using Conditions = std::vector<std::unique_ptr<const ConditionT>>;
   using const_iterator = typename Conditions::const_iterator;
+
+  DeclarativeConditionSet(const DeclarativeConditionSet&) = delete;
+  DeclarativeConditionSet& operator=(const DeclarativeConditionSet&) = delete;
 
   // Factory method that creates a DeclarativeConditionSet for |extension|
   // according to the JSON array |conditions| passed by the extension API. Sets
@@ -86,7 +87,7 @@ class DeclarativeConditionSet {
   // IsFulfilled(|match_data|). If there is no such condition, then false is
   // returned. If |url_match_trigger| is -1, this function returns whether any
   // of the conditions without URL attributes is satisfied.
-  bool IsFulfilled(url_matcher::URLMatcherConditionSet::ID url_match_trigger,
+  bool IsFulfilled(base::MatcherStringPattern::ID url_match_trigger,
                    const typename ConditionT::MatchData& match_data) const;
 
   // Appends the URLMatcherConditionSet from all conditions to |condition_sets|.
@@ -100,7 +101,7 @@ class DeclarativeConditionSet {
 
  private:
   using URLMatcherIdToCondition =
-      std::map<url_matcher::URLMatcherConditionSet::ID, const ConditionT*>;
+      std::map<base::MatcherStringPattern::ID, const ConditionT*>;
 
   DeclarativeConditionSet(
       Conditions conditions,
@@ -110,8 +111,6 @@ class DeclarativeConditionSet {
   const URLMatcherIdToCondition match_id_to_condition_;
   const Conditions conditions_;
   const std::vector<const ConditionT*> conditions_without_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeConditionSet);
 };
 
 // Immutable container for multiple actions.
@@ -144,10 +143,13 @@ class DeclarativeConditionSet {
 template<typename ActionT>
 class DeclarativeActionSet {
  public:
-  using Values = std::vector<std::unique_ptr<base::Value>>;
+  using Values = std::vector<base::Value>;
   using Actions = std::vector<scoped_refptr<const ActionT>>;
 
   explicit DeclarativeActionSet(const Actions& actions);
+
+  DeclarativeActionSet(const DeclarativeActionSet&) = delete;
+  DeclarativeActionSet& operator=(const DeclarativeActionSet&) = delete;
 
   // Factory method that instantiates a DeclarativeActionSet for |extension|
   // according to |actions| which represents the array of actions received from
@@ -185,8 +187,6 @@ class DeclarativeActionSet {
 
  private:
   const Actions actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeActionSet);
 };
 
 // Representation of a rule of a declarative API:
@@ -220,6 +220,9 @@ class DeclarativeRule {
                   std::unique_ptr<ConditionSet> conditions,
                   std::unique_ptr<ActionSet> actions,
                   Priority priority);
+
+  DeclarativeRule(const DeclarativeRule&) = delete;
+  DeclarativeRule& operator=(const DeclarativeRule&) = delete;
 
   // Creates a DeclarativeRule for |extension| given a json definition.  The
   // format of each condition and action's json is up to the specific ConditionT
@@ -263,8 +266,6 @@ class DeclarativeRule {
   std::unique_ptr<ConditionSet> conditions_;
   std::unique_ptr<ActionSet> actions_;
   Priority priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeRule);
 };
 
 // Implementation details below here.
@@ -273,11 +274,11 @@ class DeclarativeRule {
 // DeclarativeConditionSet
 //
 
-template<typename ConditionT>
+template <typename ConditionT>
 bool DeclarativeConditionSet<ConditionT>::IsFulfilled(
-    url_matcher::URLMatcherConditionSet::ID url_match_trigger,
+    base::MatcherStringPattern::ID url_match_trigger,
     const typename ConditionT::MatchData& match_data) const {
-  if (url_match_trigger == -1) {
+  if (url_match_trigger == base::MatcherStringPattern::kInvalidId) {
     // Invalid trigger -- indication that we should only check conditions
     // without URL attributes.
     for (const ConditionT* condition : conditions_without_urls_) {
@@ -311,9 +312,8 @@ DeclarativeConditionSet<ConditionT>::Create(
   Conditions result;
 
   for (const auto& value : condition_values) {
-    CHECK(value.get());
     std::unique_ptr<ConditionT> condition = ConditionT::Create(
-        extension, url_matcher_condition_factory, *value, error);
+        extension, url_matcher_condition_factory, value, error);
     if (!error->empty())
       return nullptr;
     result.push_back(std::move(condition));
@@ -369,11 +369,10 @@ DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
   Actions result;
 
   for (const auto& value : action_values) {
-    CHECK(value.get());
     scoped_refptr<const ActionT> action =
-        ActionT::Create(browser_context, extension, *value, error, bad_message);
+        ActionT::Create(browser_context, extension, value, error, bad_message);
     if (!error->empty() || *bad_message)
-      return std::unique_ptr<DeclarativeActionSet>();
+      return nullptr;
     result.push_back(action);
   }
 
@@ -479,7 +478,7 @@ DeclarativeRule<ConditionT, ActionT>::Create(
     return std::move(error_result);
   }
 
-  CHECK(rule.priority.get());
+  CHECK(rule.priority);
   int priority = *(rule.priority);
 
   GlobalRuleId rule_id(extension->id(), *(rule.id));

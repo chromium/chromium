@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that debugger will copy valid stack trace upon context menu action.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -27,12 +27,12 @@
 
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
-    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2);
+    TestRunner.addSniffer(Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2() {
     InspectorFrontendHost.copyText = text => TestRunner.addResult(TestRunner.clearSpecificInfoFromStackFrames(text));
-    Sources.CallStackSidebarPane.instance()._copyStackTrace();
+    Sources.CallStackSidebarPane.instance().copyStackTrace();
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

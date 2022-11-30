@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 namespace content {
 class WebContents;
 }
+
+class Profile;
 
 // Observer of events during session restore. This observer does not cover
 // SessionRestoreImpl::RestoreForeignTab() which restores a single foreign tab.
@@ -30,6 +32,12 @@ class SessionRestoreObserver {
   // OnWillRestoreTab() is called right after a tab is created by session
   // restore.
   virtual void OnWillRestoreTab(content::WebContents* web_contents) {}
+
+  // OnGotSession() is called right after windows are read from the last session
+  // restore file. If windows are read by AppSessionService for app windows,
+  // `for_app` is true. Otherwise, `for_app` is false. This function is used
+  // for debug only.
+  virtual void OnGotSession(Profile* profile, bool for_app, int window_count) {}
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_OBSERVER_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,6 @@ const char kSelfId[] = "self_id";
 const char kOAuthToken[] = "oauth_token";
 const char kTestAccount[] = "test@test.test";
 const char kCountryCode[] = "US";
-
-chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
-CreateRequest() {
-  return chrome_browser_nearby_sharing_instantmessaging::
-      ReceiveMessagesExpressRequest();
-}
 
 chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
 CreateReceiveMessagesResponse(const std::string& msg) {
@@ -76,11 +70,11 @@ class FakeIncomingMessagesListener
     return messages_received_;
   }
 
-  base::Optional<bool> on_complete_result() { return on_complete_result_; }
+  absl::optional<bool> on_complete_result() { return on_complete_result_; }
 
  private:
   std::vector<std::string> messages_received_;
-  base::Optional<bool> on_complete_result_;
+  absl::optional<bool> on_complete_result_;
 };
 
 class ReceiveMessagesExpressTest : public testing::Test {
@@ -89,8 +83,8 @@ class ReceiveMessagesExpressTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    identity_test_environment_.MakeUnconsentedPrimaryAccountAvailable(
-        kTestAccount);
+    identity_test_environment_.MakePrimaryAccountAvailable(
+        kTestAccount, signin::ConsentLevel::kSignin);
   }
   ~ReceiveMessagesExpressTest() override = default;
 
@@ -116,7 +110,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
     return message_listener_.messages_received();
   }
 
-  base::Optional<bool> OnCompleteResult() {
+  absl::optional<bool> OnCompleteResult() {
     return message_listener_.on_complete_result();
   }
 
@@ -158,7 +152,7 @@ class ReceiveMessagesExpressTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 
-  base::Optional<bool> start_receive_success_;
+  absl::optional<bool> start_receive_success_;
   FakeIncomingMessagesListener message_listener_;
   mojo::Receiver<sharing::mojom::IncomingMessagesListener> listener_receiver_{
       &message_listener_};
@@ -249,7 +243,6 @@ TEST_F(ReceiveMessagesExpressTest, SuccessfulPartialResponse) {
 
 TEST_F(ReceiveMessagesExpressTest, StopPreventsPendingTransfer) {
   base::RunLoop run_loop;
-
   StartReceivingMessages(&run_loop, /*token_success=*/true);
 
   // Calls OnDataReceived() in ReceiveMessagesExpress.

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <list>
-
-#include "base/macros.h"
 #include "ppapi/proxy/network_list_resource.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/shared_impl/scoped_pp_resource.h"
@@ -23,6 +20,10 @@ class NetworkMonitorResource : public PluginResource,
  public:
   explicit NetworkMonitorResource(Connection connection,
                                   PP_Instance instance);
+
+  NetworkMonitorResource(const NetworkMonitorResource&) = delete;
+  NetworkMonitorResource& operator=(const NetworkMonitorResource&) = delete;
+
   ~NetworkMonitorResource() override;
 
   // PluginResource overrides.
@@ -47,8 +48,6 @@ class NetworkMonitorResource : public PluginResource,
   // Parameters passed to UpdateNetworkList().
   PP_Resource* network_list_;
   scoped_refptr<TrackedCallback> update_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkMonitorResource);
 };
 
 }  // namespace proxy

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,8 @@
   async function makeHAR() {
     var stream = new TestRunner.StringOutputStream(onSaved);
     var progress = new Common.Progress();
-    await Network.HARWriter.write(stream, NetworkTestRunner.networkRequests(), progress);
+    await NetworkTestRunner.writeHARLog(
+        stream, NetworkTestRunner.networkRequests(), progress);
     progress.done();
     stream.close();
   }

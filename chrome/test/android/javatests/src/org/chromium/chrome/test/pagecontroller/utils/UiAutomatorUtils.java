@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@ import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.UiObject2;
 
 import androidx.annotation.NonNull;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 
 import org.chromium.base.Log;
 
@@ -42,7 +42,7 @@ public class UiAutomatorUtils {
     private static final long SHORT_CLICK_DURATION = 10L;
     private static final long LONG_CLICK_DURATION = 1000L;
     // Give applications more time to launch.
-    private static final long LAUNCH_TIMEOUT_MULTIPLIER = 3L;
+    private static final long LAUNCH_TIMEOUT_MS = 9000L;
     // 100 steps corresponds to ~1 secs, this was determined
     // experimentally.  Internally uses UiDevice.drag to simulate
     // clicking, steps is one of the parameters to drag.
@@ -69,20 +69,12 @@ public class UiAutomatorUtils {
     }
 
     /**
-     * Returns the timeout used for location operations.
-     * @return Timeout in milliseconds.
-     */
-    public long getTimeout() {
-        return mLocatorHelper.getTimeout();
-    }
-
-    /**
      * Launch application.
      * @param packageName Package name of the application.
      */
     public void launchApplication(String packageName) {
         Log.d(TAG, "Launching " + packageName);
-        launchApplication(packageName, mLocatorHelper.getTimeout() * LAUNCH_TIMEOUT_MULTIPLIER);
+        launchApplication(packageName, LAUNCH_TIMEOUT_MS);
     }
 
     /**

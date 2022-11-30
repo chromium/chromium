@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,102 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_
 
-#include "build/chromeos_buildflags.h"
+#include <string>
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/platform_keys/platform_keys_api_lacros.h"
-#else
-#include "chrome/browser/extensions/api/platform_keys/platform_keys_api_ash.h"
-#endif
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace extensions {
+namespace platform_keys {
+
+extern const char kErrorInvalidToken[];
+extern const char kErrorInvalidX509Cert[];
+
+// Returns a known token if |token_id| is valid and returns nullopt for both
+// empty or unknown |token_id|.
+absl::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
+    const std::string& token_id);
+
+}  // namespace platform_keys
+
+class PlatformKeysInternalSelectClientCertificatesFunction
+    : public ExtensionFunction {
+ public:
+  // Interactive selection of certs requires a dialog box, which isn't
+  // possible from an extension's background context. However, during
+  // tests, a delegate performs the actual cert selection without using a
+  // dialog box, so this allows skipping the check for the sake of
+  // simplifying automated testing.
+  static void SetSkipInteractiveCheckForTest(bool skip_interactive_check);
+
+ private:
+  ~PlatformKeysInternalSelectClientCertificatesFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the certificates were selected. If an error occurred, |certs|
+  // will be null.
+  void OnSelectedCertificates(
+      std::unique_ptr<net::CertificateList> matches,
+      absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.selectClientCertificates",
+                             PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES)
+};
+
+class PlatformKeysInternalGetPublicKeyFunction : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalGetPublicKeyFunction() override;
+  ResponseAction Run() override;
+
+  void OnGetPublicKey(
+      crosapi::mojom::DEPRECATED_GetPublicKeyResultPtr result_ptr);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKey",
+                             PLATFORMKEYSINTERNAL_GETPUBLICKEY)
+};
+
+class PlatformKeysInternalGetPublicKeyBySpkiFunction
+    : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalGetPublicKeyBySpkiFunction() override;
+  ResponseAction Run() override;
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.getPublicKeyBySpki",
+                             PLATFORMKEYSINTERNAL_GETPUBLICKEYBYSPKI)
+};
+
+class PlatformKeysInternalSignFunction : public ExtensionFunction {
+ private:
+  ~PlatformKeysInternalSignFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the signature was generated. If an error occurred,
+  // |signature| will be empty.
+  void OnSigned(const std::string& signature,
+                absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeysInternal.sign",
+                             PLATFORMKEYSINTERNAL_SIGN)
+};
+
+class PlatformKeysVerifyTLSServerCertificateFunction
+    : public ExtensionFunction {
+ private:
+  ~PlatformKeysVerifyTLSServerCertificateFunction() override;
+  ResponseAction Run() override;
+
+  void FinishedVerification(const std::string& error,
+                            int verify_result,
+                            int cert_status);
+
+  DECLARE_EXTENSION_FUNCTION("platformKeys.verifyTLSServerCertificate",
+                             PLATFORMKEYS_VERIFYTLSSERVERCERTIFICATE)
+};
+
+}  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_PLATFORM_KEYS_API_H_

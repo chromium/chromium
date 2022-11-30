@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,17 @@
 
 #include <string>
 
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
+
+CONTENT_EXPORT const char* MessageSourceToString(
+    blink::mojom::ConsoleMessageSource source);
+
+CONTENT_EXPORT logging::LogSeverity ConsoleMessageLevelToLogSeverity(
+    blink::mojom::ConsoleMessageLevel level);
 
 // A collection of information about a message that has been added to the
 // console.

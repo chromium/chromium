@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 namespace blink {
 
 MediaValues* MediaValuesDynamic::Create(Document& document) {
-  return MediaValuesDynamic::Create(document.GetFrameOfTreeRootDocument());
+  return MediaValuesDynamic::Create(document.GetFrame());
 }
 
 MediaValues* MediaValuesDynamic::Create(LocalFrame* frame) {
@@ -45,26 +45,29 @@ MediaValuesDynamic::MediaValuesDynamic(LocalFrame* frame,
   DCHECK(frame_);
 }
 
-MediaValues* MediaValuesDynamic::Copy() const {
-  return MakeGarbageCollected<MediaValuesDynamic>(
-      frame_, viewport_dimensions_overridden_, viewport_width_override_,
-      viewport_height_override_);
+float MediaValuesDynamic::EmFontSize() const {
+  return CalculateEmSize(frame_);
 }
 
-bool MediaValuesDynamic::ComputeLength(double value,
-                                       CSSPrimitiveValue::UnitType type,
-                                       int& result) const {
-  return MediaValues::ComputeLength(value, type,
-                                    CalculateDefaultFontSize(frame_),
-                                    ViewportWidth(), ViewportHeight(), result);
+float MediaValuesDynamic::RemFontSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return CalculateEmSize(frame_);
 }
 
-bool MediaValuesDynamic::ComputeLength(double value,
-                                       CSSPrimitiveValue::UnitType type,
-                                       double& result) const {
-  return MediaValues::ComputeLength(value, type,
-                                    CalculateDefaultFontSize(frame_),
-                                    ViewportWidth(), ViewportHeight(), result);
+float MediaValuesDynamic::ExFontSize() const {
+  return CalculateExSize(frame_);
+}
+
+float MediaValuesDynamic::ChFontSize() const {
+  return CalculateChSize(frame_);
+}
+
+float MediaValuesDynamic::IcFontSize() const {
+  return CalculateIcSize(frame_);
+}
+
+float MediaValuesDynamic::LineHeight() const {
+  return CalculateLineHeight(frame_);
 }
 
 double MediaValuesDynamic::ViewportWidth() const {
@@ -79,6 +82,38 @@ double MediaValuesDynamic::ViewportHeight() const {
   return CalculateViewportHeight(frame_);
 }
 
+double MediaValuesDynamic::SmallViewportWidth() const {
+  return CalculateSmallViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::SmallViewportHeight() const {
+  return CalculateSmallViewportHeight(frame_);
+}
+
+double MediaValuesDynamic::LargeViewportWidth() const {
+  return CalculateLargeViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::LargeViewportHeight() const {
+  return CalculateLargeViewportHeight(frame_);
+}
+
+double MediaValuesDynamic::DynamicViewportWidth() const {
+  return CalculateDynamicViewportWidth(frame_);
+}
+
+double MediaValuesDynamic::DynamicViewportHeight() const {
+  return CalculateDynamicViewportHeight(frame_);
+}
+
+double MediaValuesDynamic::ContainerWidth() const {
+  return SmallViewportWidth();
+}
+
+double MediaValuesDynamic::ContainerHeight() const {
+  return SmallViewportHeight();
+}
+
 int MediaValuesDynamic::DeviceWidth() const {
   return CalculateDeviceWidth(frame_);
 }
@@ -89,6 +124,10 @@ int MediaValuesDynamic::DeviceHeight() const {
 
 float MediaValuesDynamic::DevicePixelRatio() const {
   return CalculateDevicePixelRatio(frame_);
+}
+
+bool MediaValuesDynamic::DeviceSupportsHDR() const {
+  return CalculateDeviceSupportsHDR(frame_);
 }
 
 int MediaValuesDynamic::ColorBitsPerComponent() const {
@@ -158,18 +197,23 @@ bool MediaValuesDynamic::PrefersReducedData() const {
 }
 
 ForcedColors MediaValuesDynamic::GetForcedColors() const {
-  return CalculateForcedColors();
+  return CalculateForcedColors(frame_);
 }
 
 NavigationControls MediaValuesDynamic::GetNavigationControls() const {
   return CalculateNavigationControls(frame_);
 }
 
-ScreenSpanning MediaValuesDynamic::GetScreenSpanning() const {
-  return CalculateScreenSpanning(frame_);
+int MediaValuesDynamic::GetHorizontalViewportSegments() const {
+  return CalculateHorizontalViewportSegments(frame_);
 }
 
-DevicePosture MediaValuesDynamic::GetDevicePosture() const {
+int MediaValuesDynamic::GetVerticalViewportSegments() const {
+  return CalculateVerticalViewportSegments(frame_);
+}
+
+device::mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture()
+    const {
   return CalculateDevicePosture(frame_);
 }
 
@@ -184,13 +228,6 @@ bool MediaValuesDynamic::HasValues() const {
 void MediaValuesDynamic::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   MediaValues::Trace(visitor);
-}
-
-void MediaValuesDynamic::OverrideViewportDimensions(double width,
-                                                    double height) {
-  viewport_dimensions_overridden_ = true;
-  viewport_width_override_ = width;
-  viewport_height_override_ = height;
 }
 
 }  // namespace blink

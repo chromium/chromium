@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,25 +6,24 @@
 #define CONTENT_BROWSER_QUOTA_QUOTA_CHANGE_DISPATCHER_H_
 
 #include <map>
-#include <utility>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
-#include "url/origin.h"
-
-class TimeDelta;
 
 namespace content {
 
-// Dispatches a storage pressure event to listeners across multiple origins.
+// Dispatches a storage pressure event to listeners across multiple storage
+// keys.
 //
 // This class handles dispatching the event with randomized delays,
-// to avoid creating a cross-origin user identifier.
+// to avoid creating a cross-storage-key user identifier.
 //
 // There is one instance per QuotaContext instance. All methods must
 // be called on the same sequence.
@@ -37,36 +36,39 @@ class CONTENT_EXPORT QuotaChangeDispatcher
   QuotaChangeDispatcher(const QuotaChangeDispatcher&) = delete;
   QuotaChangeDispatcher& operator=(const QuotaChangeDispatcher&) = delete;
 
-  // Dispatch OnQuotaChange for every origin and its corresponding listeners.
+  // Dispatch OnQuotaChange for every storage key and its corresponding
+  // listeners.
   void MaybeDispatchEvents();
-  void DispatchEventsForOrigin(const url::Origin& origin);
+  void DispatchEventsForStorageKey(const blink::StorageKey& storage_key);
   void AddChangeListener(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener);
-  void OnRemoteDisconnect(const url::Origin& origin,
+  void OnRemoteDisconnect(const blink::StorageKey& storage_key,
                           mojo::RemoteSetElementId id);
 
  private:
   friend class QuotaChangeDispatcherTest;
   friend class QuotaContext;
-  friend class RefCountedDeleteOnSequence<QuotaChangeDispatcher>;
+  friend class base::RefCountedDeleteOnSequence<QuotaChangeDispatcher>;
   friend class base::DeleteHelper<QuotaChangeDispatcher>;
 
   ~QuotaChangeDispatcher();
   const base::TimeDelta GetQuotaChangeEventInterval();
 
-  struct DelayedOriginListener {
-    DelayedOriginListener();
-    ~DelayedOriginListener();
+  struct DelayedStorageKeyListener {
+    DelayedStorageKeyListener();
+    ~DelayedStorageKeyListener();
     // This delay is used to introduce noise to the event, to prevent
-    // bad actors from using the event to determine cross-origin
-    // resource size or to correlate and identify users across origins/profiles.
+    // bad actors from using the event to determine cross-storage-key
+    // resource size or to correlate and identify users across storage
+    // key/profiles.
     base::TimeDelta delay;
     mojo::RemoteSet<blink::mojom::QuotaChangeListener> listeners;
   };
-  // Stores all of the listeners associated with a unique origin
-  // corresponding to a randomized delay for that origin.
-  std::map<url::Origin, DelayedOriginListener> listeners_by_origin_;
+  // Stores all of the listeners associated with a unique storage key
+  // corresponding to a randomized delay for that storage key.
+  std::map<blink::StorageKey, DelayedStorageKeyListener>
+      listeners_by_storage_key_;
 
   // Keeps track of last time events were dispatched for debouncing events.
   base::TimeTicks last_event_dispatched_at_;

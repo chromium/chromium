@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,15 +36,10 @@
 #include <inttypes.h>
 #include <io.h>
 
-#include <memory>
-
 // The ATL headers don't like to be compiled with INITGUID defined.
 #if !defined(INITGUID)
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS  // some CString ctors are explicit
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlstr.h>
+#include "base/win/atl.h"
 
 #endif
 

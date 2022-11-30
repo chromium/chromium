@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,9 @@ constexpr int kAlertIconSizeDp = 20;
 
 }  // namespace
 LoginErrorBubble::LoginErrorBubble()
-    : LoginErrorBubble(nullptr /*content*/, nullptr /*anchor_view*/) {}
+    : LoginErrorBubble(nullptr /*anchor_view*/) {}
 
-LoginErrorBubble::LoginErrorBubble(views::View* content,
-                                   views::View* anchor_view)
+LoginErrorBubble::LoginErrorBubble(views::View* anchor_view)
     : LoginBaseBubbleView(anchor_view) {
   alert_icon_ = AddChildView(std::make_unique<views::ImageView>());
   alert_icon_->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
@@ -36,10 +35,14 @@ LoginErrorBubble::LoginErrorBubble(views::View* content,
 
 LoginErrorBubble::~LoginErrorBubble() = default;
 
-void LoginErrorBubble::SetContent(views::View* content) {
+void LoginErrorBubble::SetContent(std::unique_ptr<views::View> content) {
   if (content_)
-    delete content_;
-  content_ = AddChildView(content);
+    RemoveChildViewT(content_);
+  content_ = AddChildView(std::move(content));
+}
+
+views::View* LoginErrorBubble::GetContent() {
+  return content_;
 }
 
 void LoginErrorBubble::SetTextContent(const std::u16string& message) {

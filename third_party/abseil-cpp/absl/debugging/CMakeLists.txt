@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+find_library(EXECINFO_LIBRARY execinfo)
+
 absl_cc_library(
   NAME
     stacktrace
@@ -22,8 +24,10 @@ absl_cc_library(
     "internal/stacktrace_aarch64-inl.inc"
     "internal/stacktrace_arm-inl.inc"
     "internal/stacktrace_config.h"
+    "internal/stacktrace_emscripten-inl.inc"
     "internal/stacktrace_generic-inl.inc"
     "internal/stacktrace_powerpc-inl.inc"
+    "internal/stacktrace_riscv-inl.inc"
     "internal/stacktrace_unimplemented-inl.inc"
     "internal/stacktrace_win32-inl.inc"
     "internal/stacktrace_x86-inl.inc"
@@ -31,10 +35,13 @@ absl_cc_library(
     "stacktrace.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    $<$<BOOL:${EXECINFO_LIBRARY}>:${EXECINFO_LIBRARY}>
   DEPS
     absl::debugging_internal
     absl::config
     absl::core_headers
+    absl::raw_logging_internal
   PUBLIC
 )
 
@@ -48,6 +55,7 @@ absl_cc_library(
     "symbolize.cc"
     "symbolize_darwin.inc"
     "symbolize_elf.inc"
+    "symbolize_emscripten.inc"
     "symbolize_unimplemented.inc"
     "symbolize_win32.inc"
   COPTS
@@ -87,9 +95,10 @@ absl_cc_test(
     absl::memory
     absl::raw_logging_internal
     absl::strings
-    gmock
+    GTest::gmock
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     examine_stack
@@ -122,7 +131,6 @@ absl_cc_library(
     absl::base
     absl::config
     absl::core_headers
-    absl::errno_saver
     absl::raw_logging_internal
   PUBLIC
 )
@@ -141,9 +149,10 @@ absl_cc_test(
     absl::strings
     absl::raw_logging_internal
     Threads::Threads
-    gmock
+    GTest::gmock
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     debugging_internal
@@ -165,6 +174,7 @@ absl_cc_library(
     absl::raw_logging_internal
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     demangle_internal
@@ -194,7 +204,7 @@ absl_cc_test(
     absl::core_headers
     absl::memory
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_library(
@@ -212,42 +222,6 @@ absl_cc_library(
   PUBLIC
 )
 
-absl_cc_library(
-  NAME
-    leak_check_disable
-  SRCS
-    "leak_check_disable.cc"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-  PUBLIC
-)
-
-absl_cc_library(
-  NAME
-    leak_check_api_enabled_for_testing
-  HDRS
-    "leak_check.h"
-  SRCS
-    "leak_check.cc"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-    $<$<BOOL:${ABSL_HAVE_LSAN}>:-DLEAK_SANITIZER>
-  TESTONLY
-)
-
-absl_cc_library(
-  NAME
-    leak_check_api_disabled_for_testing
-  HDRS
-    "leak_check.h"
-  SRCS
-    "leak_check.cc"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-    "-ULEAK_SANITIZER"
-  TESTONLY
-)
-
 absl_cc_test(
   NAME
     leak_check_test
@@ -255,46 +229,15 @@ absl_cc_test(
     "leak_check_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
-    "$<$<BOOL:${ABSL_HAVE_LSAN}>:-DABSL_EXPECT_LEAK_SANITIZER>"
   LINKOPTS
-    "${ABSL_LSAN_LINKOPTS}"
+    ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::leak_check_api_enabled_for_testing
+    absl::leak_check
     absl::base
-    gmock_main
+    GTest::gmock_main
 )
 
-absl_cc_test(
-  NAME
-    leak_check_no_lsan_test
-  SRCS
-    "leak_check_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-    "-UABSL_EXPECT_LEAK_SANITIZER"
-  DEPS
-    absl::leak_check_api_disabled_for_testing
-    absl::base
-    gmock_main
-)
-
-absl_cc_test(
-  NAME
-    disabled_leak_check_test
-  SRCS
-    "leak_check_fail_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  LINKOPTS
-    "${ABSL_LSAN_LINKOPTS}"
-  DEPS
-    absl::leak_check_api_enabled_for_testing
-    absl::leak_check_disable
-    absl::base
-    absl::raw_logging_internal
-    gmock_main
-)
-
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     stack_consumption
@@ -322,7 +265,7 @@ absl_cc_test(
     absl::stack_consumption
     absl::core_headers
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
 # component target

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,20 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/task/task_scheduler.h"
 
 namespace download {
 
-class DownloadService;
+class BackgroundDownloadService;
 
 // A TaskScheduler implementation that doesn't do anything but posts the task
 // after the specified delay.
 class BasicTaskScheduler : public download::TaskScheduler {
  public:
   explicit BasicTaskScheduler(
-      const base::RepeatingCallback<DownloadService*()>& get_download_service);
+      const base::RepeatingCallback<BackgroundDownloadService*()>&
+          get_download_service);
   BasicTaskScheduler(const BasicTaskScheduler& other) = delete;
   BasicTaskScheduler& operator=(const BasicTaskScheduler& other) = delete;
   ~BasicTaskScheduler() override;
@@ -44,11 +44,11 @@ class BasicTaskScheduler : public download::TaskScheduler {
   std::map<download::DownloadTaskType, base::CancelableOnceClosure>
       scheduled_tasks_;
 
-  base::RepeatingCallback<DownloadService*()> get_download_service_;
+  base::RepeatingCallback<BackgroundDownloadService*()> get_download_service_;
 
   base::WeakPtrFactory<BasicTaskScheduler> weak_factory_{this};
 };
 
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_PUBLIC_TASK_TASK_SCHEDULER_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BASIC_TASK_SCHEDULER_H_

@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -12,9 +13,8 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGBreakToken : RefCounted<NGBreakToken> {
-  virtual ~SameSizeAsNGBreakToken() = default;
-  void* pointer;
+struct SameSizeAsNGBreakToken : GarbageCollected<NGBreakToken> {
+  Member<void*> member;
   unsigned flags;
 };
 
@@ -40,18 +40,20 @@ void AppendBreakTokenToString(const NGBreakToken* token,
 
   if (auto* block_break_token = DynamicTo<NGBlockBreakToken>(token)) {
     const auto children = block_break_token->ChildBreakTokens();
-    for (const auto* child : children)
+    for (const auto& child : children)
       AppendBreakTokenToString(child, string_builder, indent + 2);
   }
 }
 }  // namespace
 
 String NGBreakToken::ToString() const {
-  StringBuilder string_builder;
-  string_builder.Append("(");
-  string_builder.Append(InputNode().ToString());
-  string_builder.Append(")");
-  return string_builder.ToString();
+  switch (Type()) {
+    case kBlockBreakToken:
+      return To<NGBlockBreakToken>(this)->ToString();
+    case kInlineBreakToken:
+      return To<NGInlineBreakToken>(this)->ToString();
+  }
+  NOTREACHED();
 }
 
 void NGBreakToken::ShowBreakTokenTree() const {
@@ -61,5 +63,21 @@ void NGBreakToken::ShowBreakTokenTree() const {
   fprintf(stderr, "%s\n", string_builder.ToString().Utf8().c_str());
 }
 #endif  // DCHECK_IS_ON()
+
+void NGBreakToken::Trace(Visitor* visitor) const {
+  switch (Type()) {
+    case kBlockBreakToken:
+      To<NGBlockBreakToken>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kInlineBreakToken:
+      To<NGInlineBreakToken>(this)->TraceAfterDispatch(visitor);
+      return;
+  }
+  NOTREACHED();
+}
+
+void NGBreakToken::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(box_);
+}
 
 }  // namespace blink

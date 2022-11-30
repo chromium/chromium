@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,9 +98,8 @@ class HourAppLaunchPredictorTest : public testing::Test {
   // Sets local time according to |day_of_week| and |hour_of_day|.
   void SetLocalTime(const int day_of_week, const int hour_of_day) {
     AdvanceToNextLocalSunday();
-    const auto advance = base::TimeDelta::FromDays(day_of_week) +
-                         base::TimeDelta::FromHours(hour_of_day);
-    if (advance > base::TimeDelta()) {
+    const auto advance = base::Days(day_of_week) + base::Hours(hour_of_day);
+    if (advance.is_positive()) {
       time_.Advance(advance);
     }
   }
@@ -111,9 +111,9 @@ class HourAppLaunchPredictorTest : public testing::Test {
   void AdvanceToNextLocalSunday() {
     base::Time::Exploded now;
     base::Time::Now().LocalExplode(&now);
-    const auto advance = base::TimeDelta::FromDays(6 - now.day_of_week) +
-                         base::TimeDelta::FromHours(24 - now.hour);
-    if (advance > base::TimeDelta()) {
+    const auto advance =
+        base::Days(6 - now.day_of_week) + base::Hours(24 - now.hour);
+    if (advance.is_positive()) {
       time_.Advance(advance);
     }
     base::Time::Now().LocalExplode(&now);
@@ -296,12 +296,12 @@ TEST_F(HourAppLaunchPredictorTest, FromProtoDecay) {
   EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
 
   // FromProto will not decay since last_decay_timestamp is within 7 days.
-  time_.Advance(base::TimeDelta::FromDays(6));
+  time_.Advance(base::Days(6));
   predictor.FromProto(proto);
   EXPECT_TRUE(EquivToProtoLite(predictor.ToProto(), proto));
 
   // FromProto will decay since last_decay_timestamp is over 7 days.
-  time_.Advance(base::TimeDelta::FromDays(2));
+  time_.Advance(base::Days(2));
   predictor.FromProto(proto);
   const int new_frequency1 =
       static_cast<int>(frequency1 * HourAppLaunchPredictor::kWeeklyDecayCoeff);

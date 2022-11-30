@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/proxy/ppapi_param_traits.h"
@@ -61,6 +60,10 @@ class PPAPI_PROXY_EXPORT RawVarDataGraph {
 
   // Constructs an empty RawVarDataGraph.
   RawVarDataGraph();
+
+  RawVarDataGraph(const RawVarDataGraph&) = delete;
+  RawVarDataGraph& operator=(const RawVarDataGraph&) = delete;
+
   ~RawVarDataGraph();
 
   // Construct a new PP_Var from the graph. All of the PP_Vars referenced by
@@ -89,8 +92,6 @@ class PPAPI_PROXY_EXPORT RawVarDataGraph {
  private:
   // A list of the nodes in the graph.
   std::vector<std::unique_ptr<RawVarData>> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RawVarDataGraph);
 };
 
 // Abstract base class for the data contained in a PP_Var.

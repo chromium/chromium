@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="$i18n{language}" dir="$i18n{textdirection}">
+  <head>
+    <meta charset="utf-8">
+    <title>Feed Untrusted Frame</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+    html {
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+    }
+    body {
+      height: 100%;
+      margin: 0;
+      width: 100%;
+    }
+    #feed-frame {
+      border: 0;
+      height: 100%;
+      width: 100%;
+    }
+    </style>
+  </head>
+  <body>
+    <iframe id="feed-frame"
+      src="$i18n{feedUrl}">
+    </iframe>
+  </body>
+</html>

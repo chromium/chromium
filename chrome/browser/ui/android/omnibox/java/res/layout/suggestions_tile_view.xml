@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A site suggestion tile. -->
+<org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/tile_view_width"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/tile_view_padding"
+    android:paddingEnd="@dimen/tile_view_padding" >
+      <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/tile_view_modern" />
+</org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView>

@@ -29,7 +29,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 {%-   set name = field.name %}
 {%-   set kind = field.kind %}
 {%-   set serializer_type = kind|unmapped_type_for_serializer %}
-      case {{data_view}}::Tag::{{field.name|upper}}: {
+      case {{data_view}}::Tag::k{{field.name|under_to_camel}}: {
         decltype(Traits::{{name}}(input))
             in_{{name}} = Traits::{{name}}(input);
 {%-   if kind|is_object_kind %}

@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_CROSSCALL_SERVER_H_
-#define SANDBOX_SRC_CROSSCALL_SERVER_H_
+#ifndef SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
+#define SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_
 
 #include <stdint.h>
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/ipc_tags.h"
 
@@ -61,6 +61,9 @@ class CrossCallParamsEx : public CrossCallParams {
                                              uint32_t buffer_size,
                                              uint32_t* output_size);
 
+  CrossCallParamsEx(const CrossCallParamsEx&) = delete;
+  CrossCallParamsEx& operator=(const CrossCallParamsEx&) = delete;
+
   // Provides IPCinput parameter raw access:
   // index : the parameter to read; 0 is the first parameter
   // returns nullptr if the parameter is non-existent. If it exists it also
@@ -92,7 +95,6 @@ class CrossCallParamsEx : public CrossCallParams {
   CrossCallParamsEx();
 
   ParamInfo param_info_[1];
-  DISALLOW_COPY_AND_ASSIGN(CrossCallParamsEx);
 };
 
 // Simple helper function that sets the members of CrossCallReturn
@@ -113,7 +115,7 @@ struct ClientInfo {
 // All IPC-related information to be passed to the IPC handler.
 struct IPCInfo {
   IpcTag ipc_tag;
-  const ClientInfo* client_info;
+  raw_ptr<const ClientInfo> client_info;
   CrossCallReturn return_info;
 };
 
@@ -135,7 +137,7 @@ struct IPCParams {
 // 2) When the  IPC finally obtains a valid Dispatcher the IPC
 //    implementation creates a CrossCallParamsEx from the raw IPC buffer.
 // 3) It calls the returned callback, with the IPC info and arguments.
-class Dispatcher {
+class [[clang::lto_visibility_public]] Dispatcher {
  public:
   // Called from the  IPC implementation to handle a specific IPC message.
   typedef bool (Dispatcher::*CallbackGeneric)();
@@ -218,4 +220,4 @@ class Dispatcher {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_CROSSCALL_SERVER_H_
+#endif  // SANDBOX_WIN_SRC_CROSSCALL_SERVER_H_

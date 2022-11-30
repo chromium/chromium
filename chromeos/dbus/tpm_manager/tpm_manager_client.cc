@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,8 +30,7 @@ namespace chromeos {
 namespace {
 
 // An arbitrary timeout for taking ownership.
-constexpr base::TimeDelta kTakeOwnershipTimeout =
-    base::TimeDelta::FromSeconds(80);
+constexpr base::TimeDelta kTakeOwnershipTimeout = base::Seconds(80);
 
 TpmManagerClient* g_instance = nullptr;
 
@@ -83,6 +83,12 @@ class TpmManagerClientImpl : public TpmManagerClient {
   void GetVersionInfo(const ::tpm_manager::GetVersionInfoRequest& request,
                       GetVersionInfoCallback callback) override {
     CallProtoMethod(::tpm_manager::kGetVersionInfo, request,
+                    std::move(callback));
+  }
+  void GetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesRequest& request,
+      GetSupportedFeaturesCallback callback) override {
+    CallProtoMethod(::tpm_manager::kGetSupportedFeatures, request,
                     std::move(callback));
   }
   void GetDictionaryAttackInfo(
@@ -191,7 +197,7 @@ class TpmManagerClientImpl : public TpmManagerClient {
   }
 
   // D-Bus proxy for the TpmManager daemon, not owned.
-  dbus::ObjectProxy* proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // The observer list of ownership taken signal.
   base::ObserverList<Observer> observer_list_;

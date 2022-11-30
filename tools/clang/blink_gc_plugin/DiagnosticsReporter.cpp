@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,6 +137,14 @@ const char kMemberInStackAllocated[] =
     "[blink-gc] Member field %0 in stack allocated class declared here (use "
     "raw pointer or reference instead):";
 
+const char kMemberOnStack[] =
+    "[blink-gc] Member variable %0 declared on stack here (use raw pointer or "
+    "reference instead):";
+
+const char kAdditionalPadding[] =
+    "[blink-gc] Additional padding causes the sizeof(%0) to grow by %1. "
+    "Consider reordering fields.";
+
 const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
@@ -215,6 +223,10 @@ DiagnosticsReporter::DiagnosticsReporter(
       getErrorLevel(), kTraceMethodOfStackAllocatedParentNote);
   diag_member_in_stack_allocated_class_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberInStackAllocated);
+  diag_member_on_stack_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kMemberOnStack);
+  diag_additional_padding_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kAdditionalPadding);
 
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
@@ -570,4 +582,15 @@ void DiagnosticsReporter::VariantUsedWithGC(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_variant_used_with_gc_)
       << variant << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::MemberOnStack(const clang::VarDecl* var) {
+  ReportDiagnostic(var->getBeginLoc(), diag_member_on_stack_)
+      << var->getName() << var->getSourceRange();
+}
+
+void DiagnosticsReporter::AdditionalPadding(const clang::RecordDecl* record,
+                                            size_t padding_size) {
+  ReportDiagnostic(record->getBeginLoc(), diag_additional_padding_)
+      << record->getName() << padding_size << record->getSourceRange();
 }

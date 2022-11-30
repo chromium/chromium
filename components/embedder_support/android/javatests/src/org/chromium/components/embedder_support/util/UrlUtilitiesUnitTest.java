@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,22 +141,6 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
-    public void testIsValidForIntentFallbackUrl() {
-        Assert.assertTrue(UrlUtilities.isValidForIntentFallbackNavigation(
-                "https://user:pass@awesome.com:9000/bad-scheme:#fake:"));
-        Assert.assertTrue(
-                UrlUtilities.isValidForIntentFallbackNavigation("http://awesome.example.com/"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("inline:skates.co.uk"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("javascript:alert(1)"));
-        Assert.assertFalse(
-                UrlUtilities.isValidForIntentFallbackNavigation("file://hostname/path/to/file"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("data:data"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation("about:awesome"));
-        Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation(""));
-    }
-
-    @Test
-    @SmallTest
     public void testIsUrlWithinScope() {
         String scope = "http://www.example.com/sub";
         Assert.assertTrue(UrlUtilities.isUrlWithinScope(scope, scope));
@@ -240,5 +224,30 @@ public class UrlUtilitiesUnitTest {
         Assert.assertEquals("123456789", UrlUtilities.getTelNumber(new GURL("tel:123456789")));
         Assert.assertEquals("", UrlUtilities.getTelNumber(new GURL("about:123456789")));
         Assert.assertEquals("", UrlUtilities.getTelNumber(null));
+    }
+
+    @Test
+    @SmallTest
+    public void testEscapeQueryParamValue() {
+        Assert.assertEquals("foo", UrlUtilities.escapeQueryParamValue("foo", false));
+        Assert.assertEquals("foo%20bar", UrlUtilities.escapeQueryParamValue("foo bar", false));
+        Assert.assertEquals("foo%2B%2B", UrlUtilities.escapeQueryParamValue("foo++", false));
+
+        Assert.assertEquals("foo", UrlUtilities.escapeQueryParamValue("foo", true));
+        Assert.assertEquals("foo+bar", UrlUtilities.escapeQueryParamValue("foo bar", true));
+        Assert.assertEquals("foo%2B%2B", UrlUtilities.escapeQueryParamValue("foo++", true));
+    }
+
+    // Note that this just tests the plumbing of the Java code to the native
+    // net::GetValueForKeyInQuery function, which is tested much more thoroughly there.
+    @Test
+    @SmallTest
+    public void testGetValueForKeyInQuery() {
+        GURL url = new GURL("https://www.example.com/?q1=foo&q2=bar&q11=#q2=notbar&q3=baz");
+        Assert.assertEquals("foo", UrlUtilities.getValueForKeyInQuery(url, "q1"));
+        Assert.assertEquals("bar", UrlUtilities.getValueForKeyInQuery(url, "q2"));
+        Assert.assertEquals("", UrlUtilities.getValueForKeyInQuery(url, "q11"));
+        Assert.assertNull(UrlUtilities.getValueForKeyInQuery(url, "1"));
+        Assert.assertNull(UrlUtilities.getValueForKeyInQuery(url, "q3"));
     }
 }

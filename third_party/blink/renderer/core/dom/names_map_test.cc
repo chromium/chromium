@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ void ExpectEqMap(const ExpectedMap& exp, NamesMap& map) {
   EXPECT_EQ(exp.size(), map.size());
 
   for (auto kv : exp) {
-    base::Optional<SpaceSplitString> value = map.Get(AtomicString(kv.key));
+    absl::optional<SpaceSplitString> value = map.Get(AtomicString(kv.key));
     if (!value) {
       ADD_FAILURE() << "key: " << kv.key << " was nullptr";
       return;

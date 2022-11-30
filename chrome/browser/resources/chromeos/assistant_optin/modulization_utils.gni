@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file contains directives that assists the Polymer modulizer.
+# For an explanation, see ../login/oobe_auto_imports.gni
+
+assistant_auto_imports = [
+  # Note that the path below does not contain 'login' after 'chromeos'. This is needed in order
+  # to overcome a limitation of the Polymer moduliser tooling when the folder structure does not
+  # perfectly match the resource paths used in the WebUI.
+  "chrome/browser/resources/chromeos/components/behaviors/oobe_i18n_behavior.html|OobeI18nBehavior,OobeI18nBehaviorInterface",
+  "chrome/browser/resources/chromeos/components/behaviors/oobe_dialog_host_behavior.html|OobeDialogHostBehavior",
+  "chrome/browser/resources/chromeos/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
+  "chrome/browser/resources/chromeos/assistant_optin/browser_proxy.html|BrowserProxyImpl",
+  "chrome/browser/resources/chromeos/assistant_optin/utils.html|HtmlSanitizer,webviewStripLinksContentScript,AssistantNativeIconType",
+  "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,mixinBehaviors",
+  "ui/webui/resources/html/util.html|announceAccessibleMessage",
+]
+
+assistant_namespace_rewrites = [
+  "assistant.BrowserProxyImpl|BrowserProxyImpl",
+  "assistant.BrowserProxy|BrowserProxy",
+  "Polymer.mixinBehaviors|mixinBehaviors",
+  "Polymer.Element|PolymerElement",
+]
+
+assistant_migrated_imports = [
+  "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html",
+  "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html",
+  "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
+  "ui/webui/resources/html/util.html",
+]

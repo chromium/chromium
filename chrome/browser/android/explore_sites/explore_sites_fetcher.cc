@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace explore_sites {
@@ -61,6 +62,8 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
           }
           policy {
             cookies_allowed: NO
+            policy_exception_justification:
+              "TODO(crbug.com/1231780): Add this field."
           })");
 
 }  // namespace
@@ -155,16 +158,6 @@ void ExploreSitesFetcher::Start() {
   if (!accept_languages_.empty()) {
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAcceptLanguage, accept_languages_);
-  }
-
-  // Get field trial value, if any.
-  std::string tag = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kExploreSites,
-      chrome::android::explore_sites::
-          kExploreSitesHeadersExperimentParameterName);
-
-  if (!tag.empty()) {
-    resource_request->headers.SetHeader("X-Goog-Chrome-Experiment-Tag", tag);
   }
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

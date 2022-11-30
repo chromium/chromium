@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -60,6 +59,10 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
 
   explicit OwnerSettingsService(
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
+
+  OwnerSettingsService(const OwnerSettingsService&) = delete;
+  OwnerSettingsService& operator=(const OwnerSettingsService&) = delete;
+
   ~OwnerSettingsService() override;
 
   base::WeakPtr<OwnerSettingsService> as_weak_ptr() {
@@ -119,16 +122,23 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   bool SetDouble(const std::string& setting, double value);
   bool SetString(const std::string& setting, const std::string& value);
 
+  // Run callbacks in test setting. Mocks ownership when full device setup is
+  // not needed.
+  void RunPendingIsOwnerCallbacksForTesting(bool is_owner);
+
  protected:
   void ReloadKeypair();
 
-  void OnKeypairLoaded(const scoped_refptr<PublicKey>& public_key,
-                       const scoped_refptr<PrivateKey>& private_key);
+  // Stores the provided keys. Ensures that |public_key_| and |private_key_| are
+  // not null (even if the key objects themself are empty) to indicate that the
+  // key loading finished.
+  void OnKeypairLoaded(scoped_refptr<PublicKey> public_key,
+                       scoped_refptr<PrivateKey> private_key);
 
   // Platform-specific keypair loading algorithm.
   virtual void ReloadKeypairImpl(
-      base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
-                              const scoped_refptr<PrivateKey>& private_key)>
+      base::OnceCallback<void(scoped_refptr<PublicKey> public_key,
+                              scoped_refptr<PrivateKey> private_key)>
           callback) = 0;
 
   // Plafrom-specific actions which should be performed when keypair is loaded.
@@ -148,8 +158,6 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
 
  private:
   base::WeakPtrFactory<OwnerSettingsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsService);
 };
 
 }  // namespace ownership

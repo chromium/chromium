@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 
@@ -20,6 +20,9 @@ class MEDIA_EXPORT ChannelMixingMatrix {
                       ChannelLayout output_layout,
                       int output_channels);
 
+  ChannelMixingMatrix(const ChannelMixingMatrix&) = delete;
+  ChannelMixingMatrix& operator=(const ChannelMixingMatrix&) = delete;
+
   ~ChannelMixingMatrix();
 
   // Create the transformation matrix of input channels to output channels.
@@ -29,7 +32,7 @@ class MEDIA_EXPORT ChannelMixingMatrix {
 
  private:
   // Result transformation of input channels to output channels
-  std::vector<std::vector<float>>* matrix_;
+  raw_ptr<std::vector<std::vector<float>>> matrix_;
 
   // Input and output channel layout provided during construction.
   ChannelLayout input_layout_;
@@ -55,8 +58,6 @@ class MEDIA_EXPORT ChannelMixingMatrix {
   // remove the channel from |unaccounted_inputs_|.
   void Mix(Channels input_ch, Channels output_ch, float scale);
   void MixWithoutAccounting(Channels input_ch, Channels output_ch, float scale);
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMixingMatrix);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -60,6 +60,9 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
       : data_(static_cast<const unsigned char*>(length ? data : nullptr)),
         length_(length) {}
 
+  RefCountedStaticMemory(const RefCountedStaticMemory&) = delete;
+  RefCountedStaticMemory& operator=(const RefCountedStaticMemory&) = delete;
+
   // RefCountedMemory:
   const unsigned char* front() const override;
   size_t size() const override;
@@ -69,8 +72,6 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
 
   const unsigned char* data_;
   size_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedStaticMemory);
 };
 
 // An implementation of RefCountedMemory, where the data is stored in a STL
@@ -81,6 +82,7 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
 
   // Constructs a RefCountedBytes object by copying from |initializer|.
   explicit RefCountedBytes(const std::vector<unsigned char>& initializer);
+  explicit RefCountedBytes(base::span<const unsigned char> initializer);
 
   // Constructs a RefCountedBytes object by copying |size| bytes from |p|.
   RefCountedBytes(const unsigned char* p, size_t size);
@@ -88,6 +90,9 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
   // Constructs a RefCountedBytes object by zero-initializing a new vector of
   // |size| bytes.
   explicit RefCountedBytes(size_t size);
+
+  RefCountedBytes(const RefCountedBytes&) = delete;
+  RefCountedBytes& operator=(const RefCountedBytes&) = delete;
 
   // Constructs a RefCountedBytes object by performing a swap. (To non
   // destructively build a RefCountedBytes, use the constructor that takes a
@@ -114,8 +119,6 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
   ~RefCountedBytes() override;
 
   std::vector<unsigned char> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedBytes);
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in a STL
@@ -124,10 +127,15 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
  public:
   RefCountedString();
 
+  RefCountedString(const RefCountedString&) = delete;
+  RefCountedString& operator=(const RefCountedString&) = delete;
+
   // Constructs a RefCountedString object by performing a swap. (To non
   // destructively build a RefCountedString, use the default constructor and
   // copy into object->data()).
   static scoped_refptr<RefCountedString> TakeString(std::string* to_destroy);
+
+  static scoped_refptr<RefCountedString> TakeString(std::string&& str);
 
   // RefCountedMemory:
   const unsigned char* front() const override;
@@ -140,8 +148,6 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
   ~RefCountedString() override;
 
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedString);
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in a
@@ -150,9 +156,14 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
  public:
   RefCountedString16();
 
+  RefCountedString16(const RefCountedString16&) = delete;
+  RefCountedString16& operator=(const RefCountedString16&) = delete;
+
   // Constructs a RefCountedString16 object by performing a swap.
   static scoped_refptr<RefCountedString16> TakeString(
       std::u16string* to_destroy);
+
+  static scoped_refptr<RefCountedString16> TakeString(std::u16string&& str);
 
   // RefCountedMemory:
   const unsigned char* front() const override;
@@ -163,8 +174,6 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
 
  private:
   std::u16string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedString16);
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in
@@ -174,6 +183,10 @@ class BASE_EXPORT RefCountedSharedMemoryMapping : public RefCountedMemory {
   // Constructs a RefCountedMemory object by taking ownership of an already
   // mapped ReadOnlySharedMemoryMapping object.
   explicit RefCountedSharedMemoryMapping(ReadOnlySharedMemoryMapping mapping);
+
+  RefCountedSharedMemoryMapping(const RefCountedSharedMemoryMapping&) = delete;
+  RefCountedSharedMemoryMapping& operator=(
+      const RefCountedSharedMemoryMapping&) = delete;
 
   // Convenience method to map all of |region| and take ownership of the
   // mapping. Returns an empty scoped_refptr if the map operation fails.
@@ -189,8 +202,6 @@ class BASE_EXPORT RefCountedSharedMemoryMapping : public RefCountedMemory {
 
   const ReadOnlySharedMemoryMapping mapping_;
   const size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedSharedMemoryMapping);
 };
 
 }  // namespace base

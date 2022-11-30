@@ -7,15 +7,11 @@
 <script>
   'use strict';
   let priority = 123;
-  let highlightName = "example";
 
   test(() => {
-    let customHighlight = new Highlight(highlightName);
-    assert_equals(customHighlight.name, highlightName, 'Highlight sets the name correctly.');
-    assert_readonly(customHighlight.name, 'Highlight.name is read-only');
+    let customHighlight = new Highlight();
     assert_equals(customHighlight.priority, 0, 'Highlight uses 0 as priority by default.');
 
-    customHighlight = new Highlight(highlightName);
     customHighlight.priority = priority;
     assert_equals(customHighlight.priority, priority, 'Highlight sets priority correctly.');
 
@@ -44,7 +40,7 @@
     rangesCombinationDescription += "])";
 
     test(() => {
-      let customHighlight = new Highlight(highlightName);
+      let customHighlight = new Highlight();
       assert_false(customHighlight.has(rangeCollections[i][0]), 'Highlight.has returns false when it doesn\'t contain the range which is passed as the argument');
       assert_false(customHighlight.has(rangeCollections[i][1]), 'Highlight.has returns false when it doesn\'t contain the range which is passed as the argument');
       assert_false(customHighlight.has(rangeCollections[i][2]), 'Highlight.has returns false when it doesn\'t contain the range which is passed as the argument');
@@ -66,7 +62,7 @@
     }, 'Highlight add and has methods work as expected' + rangesCombinationDescription);
 
     test(() => {
-      let customHighlight = new Highlight(highlightName, rangeCollections[i][0], rangeCollections[i][1]);
+      let customHighlight = new Highlight(rangeCollections[i][0], rangeCollections[i][1]);
       assert_false(customHighlight.delete(rangeCollections[i][2]), 'Highlight.delete returns false when trying to delete a range that is not in the highlight');
       assert_true(customHighlight.delete(rangeCollections[i][1]), 'Highlight.delete returns true when trying to delete a range that is in the highlight');
       assert_false(customHighlight.delete(rangeCollections[i][1]), 'Highlight.delete returns false when trying to delete a range that was in the highlight before but it\'s not there anymore');
@@ -75,31 +71,31 @@
     }, 'Highlight delete method works as expected' + rangesCombinationDescription);
 
     test(() => {
-      let customHighlight = new Highlight(highlightName, rangeCollections[i][0], rangeCollections[i][0]);
+      let customHighlight = new Highlight(rangeCollections[i][0], rangeCollections[i][0]);
       assert_true(customHighlight.has(rangeCollections[i][0]), 'Highlight.has returns true when it is called with the range used twice in the constructor');
       assert_equals(customHighlight.size, 1, 'Highlight behaves like a set when constructing it with two equal ranges.');
 
-      customHighlight = new Highlight(highlightName, rangeCollections[i][0], rangeCollections[i][1], rangeCollections[i][0], rangeCollections[i][1]);
+      customHighlight = new Highlight(rangeCollections[i][0], rangeCollections[i][1], rangeCollections[i][0], rangeCollections[i][1]);
       assert_true(customHighlight.has(rangeCollections[i][0]), 'Highlight.has returns true when it is called with one of the ranges used twice in the constructor');
       assert_true(customHighlight.has(rangeCollections[i][1]), 'Highlight.has returns true when it is called with the other range used twice in the constructor');
       assert_equals(customHighlight.size, 2, 'Highlight behaves like a set when constructing it with two pairs of equal ranges.');
     }, 'Highlight constructor behaves like a set when using equal ranges' + rangesCombinationDescription);
 
     test(() => {
-      let customHighlight = new Highlight(highlightName, rangeCollections[i][0]);
+      let customHighlight = new Highlight(rangeCollections[i][0]);
       assert_true(customHighlight.has(rangeCollections[i][0]), 'Highlight.has returns true when it is called with the range used in its constructor');
       assert_equals(customHighlight.size, 1, 'Highlight.size is 1 after constructing it with one range');
     }, 'Highlight constructor works as expected when called with one range' + rangesCombinationDescription);
 
     test(() => {
-      let customHighlight = new Highlight(highlightName, rangeCollections[i][0], rangeCollections[i][1]);
+      let customHighlight = new Highlight(rangeCollections[i][0], rangeCollections[i][1]);
       assert_true(customHighlight.has(rangeCollections[i][0]), 'Highlight.has returns true when it is called with the first range used in its constructor');
       assert_true(customHighlight.has(rangeCollections[i][1]), 'Highlight.has returns true when it is called with the second range used in its constructor');
       assert_equals(customHighlight.size, 2, 'Highlight.size is 2 after constructing it with two ranges');
     }, 'Highlight constructor works as expected when called with two ranges' + rangesCombinationDescription);
 
     test(() => {
-      let customHighlight = new Highlight(highlightName, rangeCollections[i][0], rangeCollections[i][1]);
+      let customHighlight = new Highlight(rangeCollections[i][0], rangeCollections[i][1]);
       assert_equals(customHighlight.size, 2, 'Highlight has size 2 after constructing it with two ranges');
       customHighlight.clear();
       assert_equals(customHighlight.size, 0, 'Highlight becomes empty after executing clear()');
@@ -107,9 +103,4 @@
       assert_equals(customHighlight.size, 0, 'Highlight is still empty after executing clear() twice');
     }, 'Highlight clear method works as expected' + rangesCombinationDescription);
   }
-
-  test(() => {
-    assert_throws_js(TypeError, () => { new Highlight(); }, 'Highlight cannot be constructed with no name');
-  }, 'Constructor throws on missing name argument');
-
 </script>

@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests $x for iterator and non-iterator types.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <a href="http://chromium.org"></a>
@@ -12,7 +12,7 @@
   `);
 
   TestRunner.addSniffer(
-      Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest', formattedParameter, true);
+      Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest', formattedParameter, true);
   ConsoleTestRunner.addConsoleViewSniffer(messageSniffer, true);
 
   await ConsoleTestRunner.evaluateInConsolePromise('$x(\'42\')');                           // number

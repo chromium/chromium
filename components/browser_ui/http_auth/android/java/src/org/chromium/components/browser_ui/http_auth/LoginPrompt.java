@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ public class LoginPrompt {
         TextView explanationView = (TextView) v.findViewById(R.id.explanation);
         explanationView.setText(mMessageBody);
 
-        mDialog = new AlertDialog.Builder(mContext, R.style.Theme_Chromium_AlertDialog)
+        mDialog = new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
                           .setTitle(R.string.login_dialog_title)
                           .setView(v)
                           .setPositiveButton(R.string.login_dialog_ok_button_label,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,23 +11,28 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_source.h"
 #include "net/spdy/header_coalescer.h"
-#include "net/third_party/quiche/src/spdy/core/http2_frame_decoder_adapter.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_frame_decoder_adapter.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
  public:
-  BufferedSpdyFramerVisitorInterface() {}
+  BufferedSpdyFramerVisitorInterface() = default;
+
+  BufferedSpdyFramerVisitorInterface(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
+  BufferedSpdyFramerVisitorInterface& operator=(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
 
   // Called if an error is detected in the spdy::SpdySerializedFrame protocol.
   virtual void OnError(
@@ -118,21 +123,22 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
                               uint8_t frame_type) = 0;
 
  protected:
-  virtual ~BufferedSpdyFramerVisitorInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramerVisitorInterface);
+  virtual ~BufferedSpdyFramerVisitorInterface() = default;
 };
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramer
     : public spdy::SpdyFramerVisitorInterface {
  public:
-  using TimeFunc = base::TimeTicks (*)(void);
+  using TimeFunc = base::TimeTicks (*)();
 
   BufferedSpdyFramer(uint32_t max_header_list_size,
                      const NetLogWithSource& net_log,
                      TimeFunc time_func = base::TimeTicks::Now);
   BufferedSpdyFramer() = delete;
+
+  BufferedSpdyFramer(const BufferedSpdyFramer&) = delete;
+  BufferedSpdyFramer& operator=(const BufferedSpdyFramer&) = delete;
+
   ~BufferedSpdyFramer() override;
 
   // Sets callbacks to be called from the buffered spdy framer.  A visitor must
@@ -150,6 +156,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnError(http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error,
                std::string detailed_error) override;
   void OnHeaders(spdy::SpdyStreamId stream_id,
+                 size_t payload_length,
                  bool has_priority,
                  int weight,
                  spdy::SpdyStreamId parent_stream_id,
@@ -187,7 +194,9 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnDataFrameHeader(spdy::SpdyStreamId stream_id,
                          size_t length,
                          bool fin) override;
-  void OnContinuation(spdy::SpdyStreamId stream_id, bool end) override;
+  void OnContinuation(spdy::SpdyStreamId stream_id,
+                      size_t payload_length,
+                      bool end) override;
   void OnPriority(spdy::SpdyStreamId stream_id,
                   spdy::SpdyStreamId parent_stream_id,
                   int weight,
@@ -196,11 +205,16 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                         absl::string_view priority_field_value) override {}
   bool OnUnknownFrame(spdy::SpdyStreamId stream_id,
                       uint8_t frame_type) override;
+  void OnUnknownFrameStart(spdy::SpdyStreamId stream_id,
+                           size_t length,
+                           uint8_t type,
+                           uint8_t flags) override {}
+  void OnUnknownFramePayload(spdy::SpdyStreamId stream_id,
+                             absl::string_view payload) override {}
 
   // spdy::SpdyFramer methods.
   size_t ProcessInput(const char* data, size_t len);
   void UpdateHeaderDecoderTableSize(uint32_t value);
-  void Reset();
   http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error() const;
   http2::Http2DecoderAdapter::SpdyState state() const;
   bool MessageFullyRead();
@@ -239,13 +253,10 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   // Returns the maximum size of the header encoder compression table.
   uint32_t header_encoder_table_size() const;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
  private:
   spdy::SpdyFramer spdy_framer_;
   http2::Http2DecoderAdapter deframer_;
-  BufferedSpdyFramerVisitorInterface* visitor_;
+  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_ = nullptr;
 
   int frames_received_ = 0;
 
@@ -274,9 +285,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
     spdy::SpdyStreamId last_accepted_stream_id;
     spdy::SpdyErrorCode error_code;
     std::string debug_data;
-
-    // Returns the estimate of dynamically allocated memory in bytes.
-    size_t EstimateMemoryUsage() const;
   };
   std::unique_ptr<GoAwayFields> goaway_fields_;
 
@@ -285,8 +293,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   const uint32_t max_header_list_size_;
   NetLogWithSource net_log_;
   TimeFunc time_func_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramer);
 };
 
 }  // namespace net

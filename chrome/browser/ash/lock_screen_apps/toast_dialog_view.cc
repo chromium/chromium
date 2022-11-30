@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace lock_screen_apps {
 
@@ -49,16 +48,13 @@ ToastDialogView::ToastDialogView(const std::u16string& app_name,
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_TITLE, app_name));
 
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::LOCK_SCREEN_NOTE_APP_TOAST);
-
   SetArrow(views::BubbleBorder::NONE);
-  set_margins(
-      gfx::Insets(kDialogMessageMarginTopDp, kDialogMessageMarginStartDp,
-                  kDialogMessageMarginBottomDp, kDialogMessageMarginEndDp));
+  set_margins(gfx::Insets::TLBR(
+      kDialogMessageMarginTopDp, kDialogMessageMarginStartDp,
+      kDialogMessageMarginBottomDp, kDialogMessageMarginEndDp));
   set_title_margins(
-      gfx::Insets(kDialogTitleMarginTopDp, kDialogTitleMarginStartDp,
-                  kDialogTitleMarginBottomDp, kDialogTitleMarginEndDp));
+      gfx::Insets::TLBR(kDialogTitleMarginTopDp, kDialogTitleMarginStartDp,
+                        kDialogTitleMarginBottomDp, kDialogTitleMarginEndDp));
   set_shadow(views::BubbleBorder::STANDARD_SHADOW);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());

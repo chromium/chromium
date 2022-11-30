@@ -1,9 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_TEST_WINDOWED_NSNOTIFICATION_OBSERVER_H_
 #define UI_BASE_TEST_WINDOWED_NSNOTIFICATION_OBSERVER_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <Foundation/Foundation.h>
 
@@ -21,7 +23,7 @@ class RunLoop;
  @private
   base::scoped_nsobject<NSString> _bundleId;
   int _notificationCount;
-  base::RunLoop* _runLoop;
+  raw_ptr<base::RunLoop> _runLoop;
 }
 
 @property(readonly, nonatomic) int notificationCount;

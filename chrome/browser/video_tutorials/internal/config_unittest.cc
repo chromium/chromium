@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,21 +23,23 @@ TEST(VideoTutorialsConfigTest, FinchConfigEnabled) {
   feature_list.InitAndEnableFeatureWithParameters(features::kVideoTutorials,
                                                   params);
 
-  EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
+  EXPECT_EQ(Config::GetTutorialsServerURL("").spec(),
+            "https://test.com/v1/videotutorials");
+  EXPECT_EQ(Config::GetTutorialsServerURL("https://abc.com").spec(),
             "https://test.com/v1/videotutorials");
   EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
-  EXPECT_EQ(Config::GetFetchFrequency(), base::TimeDelta::FromDays(10));
+  EXPECT_EQ(Config::GetFetchFrequency(), base::Days(10));
   EXPECT_EQ(Config::GetExperimentTag(), "{some_param:some_value}");
 }
 
 TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVideoTutorials);
-  EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
-            "https://chromeupboarding-pa.googleapis.com/v1/"
-            "videotutorials");
+  EXPECT_EQ(Config::GetTutorialsServerURL("https://testing.com").spec(),
+            "https://testing.com/v1/videotutorials");
+  EXPECT_EQ(Config::GetTutorialsServerURL(""), GURL());
   EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
-  EXPECT_EQ(Config::GetFetchFrequency(), base::TimeDelta::FromDays(15));
+  EXPECT_EQ(Config::GetFetchFrequency(), base::Days(15));
   EXPECT_EQ(Config::GetExperimentTag(), "");
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,11 @@ class TextDetectionImpl {
   // Binds TextDetection receiver to an implementation of mojom::TextDetection.
   static void Create(mojo::PendingReceiver<mojom::TextDetection> receiver);
 
+  TextDetectionImpl(const TextDetectionImpl&) = delete;
+  TextDetectionImpl& operator=(const TextDetectionImpl&) = delete;
+
  private:
   ~TextDetectionImpl() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TextDetectionImpl);
 };
 
 }  // namespace shape_detection

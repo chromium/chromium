@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 
 #include <memory>
@@ -72,7 +73,7 @@ class WebServiceWorkerContextProxy {
   virtual bool IsWindowInteractionAllowed() = 0;
   virtual void PauseEvaluation() = 0;
   virtual void ResumeEvaluation() = 0;
-  virtual bool HasFetchHandler() = 0;
+  virtual mojom::ServiceWorkerFetchHandlerType FetchHandlerType() = 0;
 };
 
 }  // namespace blink

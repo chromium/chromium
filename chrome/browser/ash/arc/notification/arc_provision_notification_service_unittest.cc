@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/values.h"
@@ -20,11 +26,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/test/fake_arc_session.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -43,14 +45,18 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   ArcProvisionNotificationServiceTest()
       : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
+  ArcProvisionNotificationServiceTest(
+      const ArcProvisionNotificationServiceTest&) = delete;
+  ArcProvisionNotificationServiceTest& operator=(
+      const ArcProvisionNotificationServiceTest&) = delete;
+
   void SetUp() override {
     SetUpInternal(/*should_create_session_manager=*/true);
   }
 
   void SetUpInternal(bool should_create_session_manager) {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
@@ -60,8 +66,11 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
 
-    if (should_create_session_manager)
-      session_manager_ = std::make_unique<session_manager::SessionManager>();
+    if (should_create_session_manager) {
+      // SessionManager is created by
+      // |AshTestHelper::bluetooth_config_test_helper()|.
+      session_manager_ = session_manager::SessionManager::Get();
+    }
 
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();
@@ -72,6 +81,9 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     // Create the service (normally handled by ArcServiceLauncher).
     ArcProvisionNotificationService::GetForBrowserContext(profile());
 
+    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    arc::StabilityMetricsManager::Initialize(&local_state_);
+
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), "1234567890"));
     GetFakeUserManager()->AddUser(account_id);
@@ -79,6 +91,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    arc::StabilityMetricsManager::Shutdown();
     // The session manager has to be shutdown before the profile is destroyed so
     // it stops observing prefs, but can't be reset completely because some
     // profile keyed services call into it.
@@ -88,8 +101,8 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    session_manager_.reset();
-    chromeos::DBusThreadManager::Shutdown();
+
+    ash::ConciergeClient::Shutdown();
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() {
@@ -100,12 +113,11 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  session_manager::SessionManager* session_manager_;
 
  private:
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationServiceTest);
+  TestingPrefServiceSimple local_state_;
 };
 
 }  // namespace
@@ -135,7 +147,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -174,6 +186,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // shown when session starts.
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
+  arc_session_manager_->AllowActivation();
   arc_session_manager_->RequestEnable();
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
@@ -216,7 +229,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -257,7 +270,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::CHECKING_ANDROID_MANAGEMENT,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
@@ -294,12 +307,11 @@ TEST_F(ArcProvisionNotificationServiceTest,
   session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
 
   // Emulate accepting the terms of service.
-  arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager_->StartArcForTesting();
+  arc_session_manager_->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
 
   // Emulate successful provisioning.
@@ -318,13 +330,18 @@ class ArcProvisionNotificationServiceOobeTest
     : public ArcProvisionNotificationServiceTest {
  protected:
   ArcProvisionNotificationServiceOobeTest() = default;
+
+  ArcProvisionNotificationServiceOobeTest(
+      const ArcProvisionNotificationServiceOobeTest&) = delete;
+  ArcProvisionNotificationServiceOobeTest& operator=(
+      const ArcProvisionNotificationServiceOobeTest&) = delete;
+
   void SetUp() override {
     // SessionManager is created in FakeLoginDisplayHost. We should not create
     // another one here.
     ArcProvisionNotificationServiceTest::SetUpInternal(
         /*should_create_session_manager=*/false);
 
-    GetFakeUserManager()->set_current_user_new(true);
     CreateLoginDisplayHost();
   }
 
@@ -334,14 +351,11 @@ class ArcProvisionNotificationServiceOobeTest
   }
 
   void CreateLoginDisplayHost() {
-    fake_login_display_host_ =
-        std::make_unique<chromeos::FakeLoginDisplayHost>();
+    fake_login_display_host_ = std::make_unique<ash::FakeLoginDisplayHost>();
   }
 
  private:
-  std::unique_ptr<chromeos::FakeLoginDisplayHost> fake_login_display_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProvisionNotificationServiceOobeTest);
+  std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
 };
 
 // For mananged user whose B&R or GLS is not managed, Arc Tos is shown during
@@ -364,12 +378,11 @@ TEST_F(ArcProvisionNotificationServiceOobeTest,
   arc_session_manager_->RequestEnable();
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+  EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
 
   // Emulate accepting the terms of service.
-  arc_session_manager_->OnTermsOfServiceNegotiatedForTesting(true);
-  arc_session_manager_->StartArcForTesting();
+  arc_session_manager_->EmulateRequirementCheckCompletionForTesting();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
 
   // Emulate successful provisioning.

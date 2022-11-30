@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "net/base/features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -27,7 +31,10 @@
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -47,8 +54,6 @@ const char kCnameAliasWasBlockedHistogram[] =
     "SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias";
 
 class ResourceLoaderTest : public testing::Test {
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoaderTest);
-
  public:
   enum class From {
     kServiceWorker,
@@ -57,6 +62,8 @@ class ResourceLoaderTest : public testing::Test {
 
   ResourceLoaderTest()
       : foo_url_("https://foo.test"), bar_url_("https://bar.test") {}
+  ResourceLoaderTest(const ResourceLoaderTest&) = delete;
+  ResourceLoaderTest& operator=(const ResourceLoaderTest&) = delete;
 
  protected:
   using RequestMode = network::mojom::RequestMode;
@@ -88,7 +95,7 @@ class ResourceLoaderTest : public testing::Test {
           std::move(freezable_task_runner));
     }
     std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
-      return Platform::Current()->CreateCodeCacheLoader();
+      return std::make_unique<CodeCacheLoaderMock>();
     }
   };
 
@@ -107,51 +114,7 @@ class ResourceLoaderTest : public testing::Test {
   }
 
  private:
-  class NoopWebURLLoader final : public WebURLLoader {
-   public:
-    explicit NoopWebURLLoader(
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-        : task_runner_(task_runner) {}
-    ~NoopWebURLLoader() override = default;
-    void LoadSynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        int requestor_id,
-        bool pass_response_pipe_to_client,
-        bool no_mime_sniffing,
-        base::TimeDelta timeout_interval,
-        WebURLLoaderClient*,
-        WebURLResponse&,
-        base::Optional<WebURLError>&,
-        WebData&,
-        int64_t& encoded_data_length,
-        int64_t& encoded_body_length,
-        WebBlobInfo& downloaded_blob,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper) override {
-      NOTREACHED();
-    }
-    void LoadAsynchronously(
-        std::unique_ptr<network::ResourceRequest> request,
-        scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-        int requestor_id,
-        bool no_mime_sniffing,
-        std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
-            resource_load_info_notifier_wrapper,
-        WebURLLoaderClient*) override {}
-
-    void SetDefersLoading(WebURLLoader::DeferType) override {}
-    void DidChangePriority(WebURLRequest::Priority, int) override {
-      NOTREACHED();
-    }
-    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
-        override {
-      return task_runner_;
-    }
-
-   private:
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  };
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 std::ostream& operator<<(std::ostream& o, const ResourceLoaderTest::From& f) {
@@ -223,7 +186,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "hello");
 }
@@ -248,7 +211,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -303,9 +266,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   // Read through the bytes consumer passed back from the ResourceLoader.
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
-  Vector<char> body;
-  BytesConsumer::Result result;
-  std::tie(result, body) = test_reader->Run(task_runner);
+  auto [result, body] = test_reader->Run(task_runner);
   EXPECT_EQ(result, BytesConsumer::Result::kDone);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   EXPECT_EQ(std::string(body.data(), body.size()), "Hello World!");
@@ -355,7 +316,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -395,30 +356,30 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending since it's deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending since it's deferred again.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending if it's unset and set in a single
   // task.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource has a parsed body.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), span.size());
+    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -439,7 +400,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   auto* raw_resource_client = MakeGarbageCollected<TestRawResourceClient>();
   Resource* resource = RawResource::Fetch(params, fetcher, raw_resource_client);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
 
   // It's still pending because the body should not provided yet.
@@ -448,14 +409,14 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
 
   // The body should be provided since not deferring now, but it's still pending
   // since we haven't read the body yet.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   EXPECT_TRUE(raw_resource_client->body());
 
   // The resource should still be pending when it's set to deferred again. No
   // body is provided when deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   const char* buffer;
@@ -466,15 +427,15 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
 
   // The resource should still be pending if it's unset and set in a single
   // task. No body is provided when deferred.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
   task_runner->RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   result = raw_resource_client->body()->BeginRead(&buffer, &available);
   EXPECT_EQ(BytesConsumer::Result::kShouldWait, result);
 
   // Read through the bytes consumer passed back from the ResourceLoader.
-  fetcher->SetDefersLoading(WebURLLoader::DeferType::kNotDeferred);
+  fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   task_runner->RunUntilIdle();
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
@@ -835,6 +796,108 @@ TEST_F(ResourceLoaderSubresourceFilterCnameAliasTest,
   CnameAliasMetricInfo info = {.has_aliases = false};
 
   ExpectHistogramsMatching(info);
+}
+
+class ResourceLoaderCacheTransparencyTest : public ResourceLoaderTest {
+ public:
+  ResourceLoaderCacheTransparencyTest() = default;
+  ~ResourceLoaderCacheTransparencyTest() override = default;
+
+  void SetUp() override {
+    std::string pervasive_payloads_params =
+        "1,http://127.0.0.1:4353/pervasive.js,"
+        "2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829";
+    feature_list_.InitWithFeaturesAndParameters(
+        {{network::features::kPervasivePayloadsList,
+          {{"pervasive-payloads", pervasive_payloads_params}}},
+         {network::features::kCacheTransparency, {}},
+         {net::features::kSplitCacheByNetworkIsolationKey, {}}},
+        {/* disabled_features */});
+
+    ResourceLoaderTest::SetUp();
+  }
+
+  const ukm::TestUkmRecorder* GetUkmRecorder() {
+    return scoped_fake_ukm_recorder_.recorder();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
+};
+
+TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadRequested) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("http://127.0.0.1:4353/pervasive.js");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  loader->DidReceiveResponse(WrappedResourceResponse(response));
+  loader->DidFinishLoading(base::TimeTicks(),
+                           /*encoded_data_length=*/0,
+                           /*encoded_body_length=*/0,
+                           /*decoded_body_length=*/0,
+                           /*should_report_corb_blocking=*/false,
+                           /*pervasive_payload_requested=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check UKM recording
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Network_CacheTransparency::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  GetUkmRecorder()->ExpectEntryMetric(
+      entry,
+      ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
+      true);
+}
+
+TEST_F(ResourceLoaderCacheTransparencyTest, PervasivePayloadNotRequested) {
+  auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
+  FetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  auto* fetcher = MakeResourceFetcher(properties, context);
+
+  KURL url("http://127.0.0.1:4353/cacheable.js");
+  ResourceRequest request(url);
+  request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
+
+  FetchParameters params = FetchParameters::CreateForTest(std::move(request));
+  Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
+  ResourceLoader* loader = resource->Loader();
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+
+  loader->DidReceiveResponse(WrappedResourceResponse(response));
+  loader->DidFinishLoading(base::TimeTicks(),
+                           /*encoded_data_length=*/0,
+                           /*encoded_body_length=*/0,
+                           /*decoded_body_length=*/0,
+                           /*should_report_corb_blocking=*/false,
+                           /*pervasive_payload_requested=*/false);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Check UKM recording
+  auto entries = GetUkmRecorder()->GetEntriesByName(
+      ukm::builders::Network_CacheTransparency::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  GetUkmRecorder()->ExpectEntryMetric(
+      entry,
+      ukm::builders::Network_CacheTransparency::kFoundPervasivePayloadName,
+      false);
 }
 
 }  // namespace blink

@@ -1,0 +1,47 @@
+<style include="diagnostics-shared">
+  ::slotted([slot=chip]) {
+    background-color: var(--diagnostics-chip-bg-color);
+    border-radius: 16px;
+  }
+
+  ::slotted([slot=title]) {
+    color: var(--cros-text-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 14px;
+    font-weight: var(--diagnostics-medium-font-weight);
+  }
+
+  ::slotted([slot=left-panel]) {
+    flex: 1;
+    margin-bottom: 16px;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    margin: 12px 0 12px;
+  }
+
+  .card-header {
+    display: flex;
+    height: 20px;
+    justify-content: space-between;
+    padding-top: 10px;
+  }
+
+  .card-wrapper {
+    background-color: var(--diagnostics-card-bg-color);
+    border-radius: 4px;
+    box-shadow: var(--diagnostics-box-shadow);
+    margin: 10px 0;
+  }
+</style>
+<div class="card-container">
+  <div id="title" class="card-header">
+    <slot name="title"></slot>
+    <slot name="chip"></slot>
+  </div>
+  <div class="card-wrapper">
+    <slot name="contents"></slot>
+  </div>
+</div>

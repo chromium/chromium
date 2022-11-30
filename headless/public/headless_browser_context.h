@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <list>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
-#include "content/public/browser/browser_context.h"
+#include "base/memory/raw_ptr.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -37,6 +35,9 @@ using blink::web_pref::WebPreferences;
 class HEADLESS_EXPORT HeadlessBrowserContext {
  public:
   class Builder;
+
+  HeadlessBrowserContext(const HeadlessBrowserContext&) = delete;
+  HeadlessBrowserContext& operator=(const HeadlessBrowserContext&) = delete;
 
   virtual ~HeadlessBrowserContext() {}
 
@@ -65,14 +66,15 @@ class HEADLESS_EXPORT HeadlessBrowserContext {
 
  protected:
   HeadlessBrowserContext() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserContext);
 };
 
 class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
  public:
   Builder(Builder&&);
+
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
+
   ~Builder();
 
   // By default if you add mojo bindings, http and https are disabled because
@@ -113,22 +115,21 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
   struct MojoBindings {
     MojoBindings();
     MojoBindings(const std::string& mojom_name, const std::string& js_bindings);
+
+    MojoBindings(const MojoBindings&) = delete;
+    MojoBindings& operator=(const MojoBindings&) = delete;
+
     ~MojoBindings();
 
     std::string mojom_name;
     std::string js_bindings;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(MojoBindings);
   };
 
-  HeadlessBrowserImpl* browser_;
+  raw_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowserContextOptions> options_;
 
   std::list<MojoBindings> mojo_bindings_;
   bool enable_http_and_https_if_mojo_used_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace headless

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,13 @@ export const Curriculum = {
 
 /**
  * The user’s interaction medium. Influences tutorial content.
+ * Note: keep in sync with the enum in
+ * c/b/r/c/accessibility/common/constants.js.
+ * TODO: Unify with the above file when ES6 is standard in ChromeVox.
  * @enum {string}
  */
 export const InteractionMedium = {
+  NONE: 'none',
   KEYBOARD: 'keyboard',
   TOUCH: 'touch',
   BRAILLE: 'braille',
@@ -54,7 +58,8 @@ export let LessonData;
  * Defines a type for data used to generate main menu buttons.
  * @typedef {{
  *    title: string,
- *    curriculum: Curriculum
+ *    curriculum: Curriculum,
+ *    medium: InteractionMedium,
  * }}
  */
 export let MainMenuButtonData;

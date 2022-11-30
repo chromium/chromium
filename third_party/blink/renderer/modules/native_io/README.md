@@ -80,3 +80,4 @@ new data without issuing a new request.
 - [Quota Management](https://docs.google.com/document/d/1wUrtCOsyH3qGwKuqLhV9AJD-bDAjAzfPL5r1GT8H4IY)
 - [Error handling](https://docs.google.com/document/d/1rvs615AU2s8kVsmUlukbmtQNvUWFny0yzAS_gsnYZEs)
 - [Filename length](https://docs.google.com/document/u/1/d/1gjnHg9b0vuTul54MHAzRFfQ6T1XKdayYoGKs6Td8yuQ)
+- [Replacing SharedArrayBuffers](https://docs.google.com/document/d/1yJv2b5yBhyIj4kOEExEu1s6oZELm2IjywbOrWwNdkuU)

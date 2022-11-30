@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,11 +28,9 @@
 
   // Enable virtual time through the second session.
   await dp2.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp2.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
-
   await dp.Page.navigate({url: 'https://test.com/index.html'});
+  dp2.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
 
   // Pause page with VT paused using request interception, then detach
   // session, then let the time expire.

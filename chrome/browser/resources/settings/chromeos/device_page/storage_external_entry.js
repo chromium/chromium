@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,34 +8,60 @@
  * external storage device with a toggle switch. When the switch is ON,
  * the storage's uuid will be saved to a preference.
  */
-Polymer({
-  is: 'storage-external-entry',
+import '../../prefs/prefs.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [WebUIListenerBehavior, PrefsBehavior],
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * FileSystem UUID of an external storage.
-     */
-    uuid: String,
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-    /**
-     * Label of an external storage.
-     */
-    label: String,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {WebUIListenerBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ */
+const StorageExternalEntryElementBase =
+    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement);
 
-    /** @private {chrome.settingsPrivate.PrefObject} */
-    visiblePref_: {
-      type: Object,
-      value() {
-        return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+/** @polymer */
+class StorageExternalEntryElement extends StorageExternalEntryElementBase {
+  static get is() {
+    return 'storage-external-entry';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * FileSystem UUID of an external storage.
+       */
+      uuid: String,
+
+      /**
+       * Label of an external storage.
+       */
+      label: String,
+
+      /** @private {chrome.settingsPrivate.PrefObject} */
+      visiblePref_: {
+        type: Object,
+        value() {
+          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+        },
       },
-    },
-  },
+    };
+  }
 
-  observers: [
-    'updateVisible_(prefs.arc.visible_external_storages.*)',
-  ],
+  static get observers() {
+    return [
+      'updateVisible_(prefs.arc.visible_external_storages.*)',
+    ];
+  }
 
   /**
    * Handler for when the toggle button for this entry is clicked by a user.
@@ -51,7 +77,7 @@ Polymer({
     }
     chrome.metricsPrivate.recordBoolean(
         'Arc.ExternalStorage.SetVisible', visible);
-  },
+  }
 
   /**
    * Updates |visiblePref_| by reading the preference and check if it contains
@@ -68,5 +94,8 @@ Polymer({
       value: visible,
     };
     this.visiblePref_ = pref;
-  },
-});
+  }
+}
+
+customElements.define(
+    StorageExternalEntryElement.is, StorageExternalEntryElement);

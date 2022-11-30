@@ -1,11 +1,14 @@
-from configparser import SafeConfigParser
+# mypy: allow-untyped-defs
+
+from configparser import ConfigParser
 import os
 import sys
 from collections import OrderedDict
+from typing import Any, Dict
 
 here = os.path.dirname(__file__)
 
-class ConfigDict(dict):
+class ConfigDict(Dict[str, Any]):
     def __init__(self, base_path, *args, **kwargs):
         self.base_path = base_path
         dict.__init__(self, *args, **kwargs)
@@ -20,7 +23,7 @@ class ConfigDict(dict):
 def read(config_path):
     config_path = os.path.abspath(config_path)
     config_root = os.path.dirname(config_path)
-    parser = SafeConfigParser()
+    parser = ConfigParser()
     success = parser.read(config_path)
     assert config_path in success, success
 

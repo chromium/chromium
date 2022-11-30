@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -36,7 +37,7 @@ class DownstreamLoader : public network::SimpleURLLoaderStreamConsumer {
 
  private:
   // The DownstreamLoaderClient must outlive the DownstreamLoader.
-  DownstreamLoaderClient* const downstream_loader_client_;
+  const raw_ptr<DownstreamLoaderClient> downstream_loader_client_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };

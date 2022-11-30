@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_browser_util.h"
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace {
@@ -42,6 +43,22 @@ bool ShouldAllowCreditCardFallbacks(const AutofillClient* client,
   if (form.unique_renderer_id.is_null())
     return client->IsContextSecure();
   return !IsFormOrClientNonSecure(client, form);
+}
+
+bool IsCompleteCreditCardFormIncludingCvcField(
+    const FormStructure& form_structure) {
+  // If card number field or expiration date field is not detected, return
+  // false.
+  if (!form_structure.IsCompleteCreditCardForm())
+    return false;
+
+  // If CVC field is detected, then all requirements are met, otherwise return
+  // false.
+  for (auto& field : form_structure) {
+    if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace autofill

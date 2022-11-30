@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -37,6 +36,11 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
   };
 
   explicit SingleDebugDaemonLogSource(SupportedSource source);
+
+  SingleDebugDaemonLogSource(const SingleDebugDaemonLogSource&) = delete;
+  SingleDebugDaemonLogSource& operator=(const SingleDebugDaemonLogSource&) =
+      delete;
+
   ~SingleDebugDaemonLogSource() override;
 
   // system_logs::SystemLogsSource:
@@ -46,11 +50,9 @@ class SingleDebugDaemonLogSource : public SystemLogsSource {
   // Callback for handling response from DebugDaemonClient.
   void OnFetchComplete(const std::string& log_name,
                        SysLogsSourceCallback callback,
-                       base::Optional<std::string> result) const;
+                       absl::optional<std::string> result) const;
 
   base::WeakPtrFactory<SingleDebugDaemonLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleDebugDaemonLogSource);
 };
 
 }  // namespace system_logs

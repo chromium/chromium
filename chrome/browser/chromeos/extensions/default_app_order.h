@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 
 namespace chromeos {
@@ -26,6 +25,10 @@ class ExternalLoader {
   // Constructs an ExternalLoader and starts file loading. |async| is true to
   // load the file asynchronously on the blocking pool.
   explicit ExternalLoader(bool async);
+
+  ExternalLoader(const ExternalLoader&) = delete;
+  ExternalLoader& operator=(const ExternalLoader&) = delete;
+
   ~ExternalLoader();
 
   const std::vector<std::string>& GetAppIds();
@@ -40,8 +43,6 @@ class ExternalLoader {
   std::string oem_apps_folder_name_;
 
   base::WaitableEvent loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalLoader);
 };
 
 // Gets the ordered list of app ids.
@@ -51,7 +52,7 @@ void Get(std::vector<std::string>* app_ids);
 std::string GetOemAppsFolderName();
 
 // Number of apps in hard-coded apps order.
-extern const size_t kDefaultAppOrderCount;
+size_t DefaultAppCount();
 
 }  // namespace default_app_order
 }  // namespace chromeos

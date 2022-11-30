@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,19 +23,48 @@ GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const dxTestSuites = 'chromeos/diagnostics/diagnostics_app_unified_test.js';
+const diagnosticsUrl =
+    `chrome://diagnostics/test_loader.html?module=${dxTestSuites}&host=test`;
 
-this['DiagnosticsApp'] = class extends PolymerTest {
+this.DiagnosticsApp = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return `chrome://diagnostics/test_loader.html?module=${dxTestSuites}`;
+    return diagnosticsUrl;
+  }
+
+  /** @override */
+  get featureList() {}
+};
+
+this.DiagnosticsAppWithNetwork = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return diagnosticsUrl;
   }
 
   /** @override */
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kDiagnosticsApp',
         'chromeos::features::kEnableNetworkingInDiagnosticsApp',
+      ],
+    };
+  }
+};
+
+this.DiagnosticsAppWithInput = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return diagnosticsUrl;
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kEnableInputInDiagnosticsApp',
+        'chromeos::features::kEnableTouchpadsInDiagnosticsApp',
+        'chromeos::features::kEnableTouchscreensInDiagnosticsApp',
       ],
     };
   }
@@ -46,38 +75,76 @@ this['DiagnosticsApp'] = class extends PolymerTest {
 // although technically is not necessary.
 const debug_suites_list = [
   'App',
+  'AppForInputHiding',
   'BatteryStatusCard',
+  'CellularInfo',
   'ConnectivityCard',
   'CpuCard',
   'DataPoint',
+  'DiagnosticsNetworkIcon',
+  'DiagnosticsStickyBanner',
   'DiagnosticsUtils',
-  'FakeMethodProvider',
+  'DrawingProvider',
+  'EthernetInfo',
   'FakeMojoInterface',
-  'FakeObservables',
+  'FakeNetworkHealthProvider',
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',
+  'FrequencyChannelUtils',
+  'InputCard',
+  'InputList',
+  'IpConfigInfoDrawer',
+  'KeyboardTester',
   'MemoryCard',
+  'NetworkCard',
+  'NetworkInfo',
+  'NetworkList',
+  'NetworkTroubleshooting',
   'OverviewCard',
   'PercentBarChart',
   'RealtimeCpuChart',
+  'RoutineGroup',
   'RoutineListExecutor',
   'RoutineResultEntry',
   'RoutineResultList',
   'RoutineSection',
-  'TextBadge'
+  'SystemPage',
+  'TextBadge',
+  'TouchscreenTester',
+  'WifiInfo',
 ];
 
-TEST_F('DiagnosticsApp', 'BrowserTest', function() {
+// Flaky: https://crbug.com/1372958
+TEST_F('DiagnosticsApp', 'DISABLED_BrowserTest', function() {
   assertDeepEquals(
-      debug_suites_list, test_suites_list,
+      debug_suites_list, Object.keys(test_suites_list),
       'List of registered tests suites and debug suites do not match.\n' +
           'Did you forget to add your test in debug_suites_list?');
+
+  mocha.run();
+});
+
+// Flaky: https://crbug.com/1372958
+TEST_F('DiagnosticsAppWithNetwork', 'DISABLED_BrowserTest', function() {
+  mocha.run();
+});
+
+// Flaky: https://crbug.com/1372958
+TEST_F('DiagnosticsAppWithInput', 'DISABLED_BrowserTest', function() {
   mocha.run();
 });
 
 // Register each suite listed as individual tests for debugging purposes.
 for (const suiteName of debug_suites_list) {
   TEST_F('DiagnosticsApp', `MANUAL_${suiteName}`, function() {
+    runMochaSuite(suiteName);
+  });
+
+  TEST_F('DiagnosticsAppWithNetwork', `MANUAL_${suiteName}`, function() {
+    runMochaSuite(suiteName);
+  });
+
+  TEST_F('DiagnosticsAppWithInput', `MANUAL_${suiteName}`, function() {
     runMochaSuite(suiteName);
   });
 }

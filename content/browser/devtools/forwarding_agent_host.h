@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,9 @@ class ForwardingAgentHost : public DevToolsAgentHostImpl {
   ForwardingAgentHost(
       const std::string& id,
       std::unique_ptr<DevToolsExternalAgentProxyDelegate> delegate);
+
+  ForwardingAgentHost(const ForwardingAgentHost&) = delete;
+  ForwardingAgentHost& operator=(const ForwardingAgentHost&) = delete;
 
  private:
   ~ForwardingAgentHost() override;
@@ -39,7 +42,6 @@ class ForwardingAgentHost : public DevToolsAgentHostImpl {
   std::string GetDescription() override;
 
   std::unique_ptr<DevToolsExternalAgentProxyDelegate> delegate_;
-  DISALLOW_COPY_AND_ASSIGN(ForwardingAgentHost);
 };
 
 }  // namespace content

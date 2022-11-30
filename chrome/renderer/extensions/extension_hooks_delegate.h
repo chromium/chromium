@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
+#include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -20,6 +20,10 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
  public:
   explicit ExtensionHooksDelegate(
       NativeRendererMessagingService* messaging_service);
+
+  ExtensionHooksDelegate(const ExtensionHooksDelegate&) = delete;
+  ExtensionHooksDelegate& operator=(const ExtensionHooksDelegate&) = delete;
+
   ~ExtensionHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -39,25 +43,23 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
   // Request handlers for the corresponding API methods.
   APIBindingHooks::RequestResult HandleSendRequest(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetURL(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetViews(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetExtensionTabs(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetBackgroundPage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const APISignature::V8ParseResult& parse_result);
 
   // The messaging service to handle messaging calls.
   // Guaranteed to outlive this object.
   NativeRendererMessagingService* const messaging_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHooksDelegate);
 };
 
 }  // namespace extensions

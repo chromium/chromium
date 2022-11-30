@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/validating_authenticator.h"
@@ -29,6 +28,11 @@ class It2MeHostAuthenticatorFactory : public AuthenticatorFactory {
       scoped_refptr<RsaKeyPair> key_pair,
       const std::string& access_code,
       const ValidatingAuthenticator::ValidationCallback& callback);
+
+  It2MeHostAuthenticatorFactory(const It2MeHostAuthenticatorFactory&) = delete;
+  It2MeHostAuthenticatorFactory& operator=(
+      const It2MeHostAuthenticatorFactory&) = delete;
+
   ~It2MeHostAuthenticatorFactory() override;
 
   // AuthenticatorFactory interface.
@@ -41,8 +45,6 @@ class It2MeHostAuthenticatorFactory : public AuthenticatorFactory {
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string access_code_hash_;
   ValidatingAuthenticator::ValidationCallback validation_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeHostAuthenticatorFactory);
 };
 
 }  // namespace protocol

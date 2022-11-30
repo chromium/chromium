@@ -1,0 +1,272 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+ body {
+  -webkit-font-smoothing: antialiased;
+  font-size: 100%;
+  margin: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/** Typography -------------------------------------------------------------- */
+
+.content {
+  color: rgb(232, 234, 237);  /* --google-grey-200 */
+  font-size: calc(100% - 2px);
+  line-height: calc(100% + 6px);
+  min-width: 240px;
+}
+
+h1 {
+  font-size: calc(100% + 8px);
+  font-weight: 700;
+  line-height: calc(100% + 8px);
+  text-align: center;
+}
+
+h2 {
+  font-size: 17px;
+  font-weight: 500;
+  margin-block-start: 0;
+  margin-block-end: 8px;
+}
+
+em {
+  color: white;
+  font-style: normal;
+}
+
+.learn-more-wrapper > a {
+  color: rgb(138, 180, 248);
+}
+
+/* Small font on small screens. */
+@media (max-width: 240px),
+       (max-height: 320px) {
+  .content {
+    font-size: calc(100% - 4px);
+    line-height: calc(100% + 6px);
+  }
+
+  h1 {
+    font-size: calc(100% + 4px);
+    line-height: calc(100% + 4px);
+  }
+}
+
+/** Icon -------------------------------------------------------------------- */
+
+.icon {
+  content: url(../../../../ui/webui/resources/images/incognito_splash.svg);
+  height: 96px;
+  width: 96px;
+}
+
+/* Medium-sized icon on medium-sized screens. */
+@media (max-height: 480px),
+       (max-width: 720px) {
+  .icon {
+    height: 72px;
+    width: 72px;
+  }
+}
+
+/* Very small icon on very small screens. */
+@media (max-width: 720px) {
+  @media (max-width: 240px),
+         (max-height: 480px) {
+    .icon {
+      height: 48px;
+      width: 48px;
+    }
+  }
+}
+
+/** Cookie Controls --------------------------------------------------------- */
+#cookie-controls {
+  align-items: center;
+  background-color: rgb(42, 42, 43);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  padding: 16px;
+}
+
+#cookie-controls-description {
+  flex: 1;
+  padding-inline-end: 12px;
+}
+
+#cookie-controls-description em {
+  display: block;
+}
+
+#cookie-controls-toggle,
+#cookie-controls-tooltip-icon {
+  flex: none;
+}
+
+#cookie-controls-toggle:not(:defined) {
+  width: 34px;
+}
+
+#cookie-controls-tooltip-icon {
+  margin-inline-end: 24px; /* var(--cr-controlled-by-spacing) */
+}
+
+#cookie-controls-tooltip-icon:not(:defined) {
+  width: 20px; /* var(--cr-icon-size) */
+}
+
+/** Layout ------------------------------------------------------------------ */
+
+/* Align the content, icon, and title to to the center. */
+.content {
+  --content-max-width: 680px;
+  --description-item-spacing: 16px;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+  max-width: var(--content-max-width);
+}
+
+.icon {
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+}
+
+/* Align the two columns of descriptions next to each other. */
+#descriptions-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.descriptions {
+  flex-basis: calc((100% - var(--description-item-spacing)) / 2);
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+.descriptions.first {
+  margin-inline-end: var(--description-item-spacing);
+}
+
+h1,
+.learn-more-wrapper,
+.descriptions {
+  margin-block-end: 32px;
+}
+
+.icon {
+  margin-block-end: 16px;
+}
+
+/* On narrow screens, align everything to the left. */
+@media (max-width: 720px) {
+  .content {
+    max-width: var(--content-max-width) !important;  /* must override the rule set by JS which
+                                                      * is only valid for width > 720px cases. */
+    text-align: start;
+  }
+
+  .icon {
+    margin-inline-start: 0;
+  }
+
+  h1 {
+    text-align: start;
+  }
+
+  #descriptions-wrapper {
+    flex-direction: column;
+  }
+
+  .descriptions.first {
+    margin-inline-end: 0;
+  }
+}
+
+/** Paddings and margins ---------------------------------------------------- */
+
+.descriptions ul {
+  margin: 8px 0 0;
+  padding-inline-start: 16px;
+}
+
+/* Wide screens. */
+@media (min-width: 721px) {
+  .icon {
+    margin-top: 1.5rem;
+  }
+
+  .content {
+    margin-top: 40px;
+    min-width: 240px;
+    padding: 8px 48px 24px;
+  }
+
+  /* Snap the content box to the whole height on short screens. */
+  @media (max-height: 480px) {
+    html,
+    body,
+    .content {
+      height: 100%;
+    }
+
+    .content {
+      margin-bottom: 0;
+      margin-top: 0;
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+
+    .icon {
+      margin-top: 0;
+      padding-top: 32px;  /* Define the top offset through the icon's padding,
+                           * otherwise the screen height would be 100% + 32px */
+    }
+  }
+}
+
+/* Narrow screens */
+@media (max-width: 720px) {
+  .content {
+    min-width: 176px;
+    padding: 72px 32px;
+  }
+
+  .icon {
+    margin-top: 1.5rem;
+  }
+
+  /* Smaller offsets on smaller screens. */
+  @media (max-height: 600px) {
+    .content {
+      padding-top: 48px;
+    }
+
+    .icon {
+      margin-top: 1rem;
+    }
+  }
+
+  /* Small top offset on very small screens. */
+  @media (max-height: 480px) {
+    .content {
+      padding-top: 32px;
+    }
+  }
+}
+
+/* Very narrow screens. */
+@media (max-width: 240px) {
+  .content {
+    min-width: 192px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+  }
+}

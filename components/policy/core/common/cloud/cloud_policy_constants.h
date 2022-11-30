@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,17 +31,21 @@ POLICY_EXPORT extern const char kAuthHeader[];
 POLICY_EXPORT extern const char kServiceTokenAuthHeaderPrefix[];
 POLICY_EXPORT extern const char kDMTokenAuthHeaderPrefix[];
 POLICY_EXPORT extern const char kEnrollmentTokenAuthHeaderPrefix[];
+POLICY_EXPORT extern const char kOAuthTokenHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 POLICY_EXPORT extern const char kValueAppType[];
+POLICY_EXPORT extern const char kValueBrowserUploadPublicKey[];
 POLICY_EXPORT extern const char kValueDeviceType[];
 POLICY_EXPORT extern const char kValueRequestAutoEnrollment[];
 POLICY_EXPORT extern const char kValueRequestPsmHasDeviceState[];
+POLICY_EXPORT extern const char kValueCheckUserAccount[];
 POLICY_EXPORT extern const char kValueRequestPolicy[];
 POLICY_EXPORT extern const char kValueRequestRegister[];
 POLICY_EXPORT extern const char kValueRequestApiAuthorization[];
 POLICY_EXPORT extern const char kValueRequestUnregister[];
 POLICY_EXPORT extern const char kValueRequestUploadCertificate[];
+POLICY_EXPORT extern const char kValueRequestUploadEuiccInfo[];
 POLICY_EXPORT extern const char kValueRequestDeviceStateRetrieval[];
 POLICY_EXPORT extern const char kValueRequestUploadStatus[];
 POLICY_EXPORT extern const char kValueRequestRemoteCommands[];
@@ -60,6 +64,7 @@ POLICY_EXPORT extern const char kValueRequestUploadPolicyValidationReport[];
 POLICY_EXPORT extern const char kValueRequestPublicSamlUser[];
 POLICY_EXPORT extern const char kValueRequestChromeOsUserReport[];
 POLICY_EXPORT extern const char kValueRequestCertProvisioningRequest[];
+POLICY_EXPORT extern const char kValueRequestChromeProfileReport[];
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
 POLICY_EXPORT extern const char kChromeDevicePolicyType[];
@@ -68,6 +73,7 @@ POLICY_EXPORT extern const char kChromePublicAccountPolicyType[];
 POLICY_EXPORT extern const char kChromeExtensionPolicyType[];
 POLICY_EXPORT extern const char kChromeSigninExtensionPolicyType[];
 POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyType[];
+POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyAndroidType[];
 POLICY_EXPORT extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
 POLICY_EXPORT extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 POLICY_EXPORT extern const char kChromeRemoteCommandPolicyType[];
@@ -131,6 +137,8 @@ enum DeviceManagementStatus {
   DM_STATUS_REQUEST_TOO_LARGE = 16,
   // Client error: Too many request.
   DM_STATUS_SERVICE_TOO_MANY_REQUESTS = 17,
+  // Service error: The device needs to be reset (ex. for re-enrollment).
+  DM_STATUS_SERVICE_DEVICE_NEEDS_RESET = 18,
   // Service error: Policy not found. Error code defined by the DM folks.
   DM_STATUS_SERVICE_POLICY_NOT_FOUND = 902,
   // Service error: ARC is not enabled on this domain.
@@ -143,31 +151,29 @@ enum DeviceManagementStatus {
   DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED = 907,
   // Service error: Illegal account for packaged EDU license.
   DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE = 908,
+  // Service error: Packaged license device can't enroll KIOSK.
+  DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK = 909,
 };
 
 // List of modes that the device can be locked into.
 enum DeviceMode {
-  DEVICE_MODE_PENDING,             // The device mode is not yet available.
-  DEVICE_MODE_NOT_SET,             // The device is not yet enrolled or owned.
-  DEVICE_MODE_CONSUMER,            // The device is locally owned as consumer
-                                   // device.
-  DEVICE_MODE_ENTERPRISE,          // The device is enrolled as an enterprise
-                                   // device.
-  DEVICE_MODE_ENTERPRISE_AD,       // The device has joined AD.
-  DEVICE_MODE_LEGACY_RETAIL_MODE,  // The device is enrolled as a retail kiosk
-                                   // device. Even though retail mode is
-                                   // deprecated, we still check for this device
-                                   // mode so that if an existing device is
-                                   // still enrolled in retail mode, we take the
-                                   // appropriate action (currently, launching
-                                   // offline demo mode).
-  DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,  // The device is locally owned as
+  DEVICE_MODE_PENDING,        // The device mode is not yet available.
+  DEVICE_MODE_NOT_SET,        // The device is not yet enrolled or owned.
+  DEVICE_MODE_CONSUMER,       // The device is locally owned as consumer
+                              // device.
+  DEVICE_MODE_ENTERPRISE,     // The device is enrolled as an enterprise
+                              // device.
+  DEVICE_MODE_ENTERPRISE_AD,  // The device has joined AD.
+  DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE,  // The device is enrolled as a
+                                              // retail kiosk device. This is
+                                              // deprecated.
+  DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,      // The device is locally owned as
                                           // consumer kiosk with ability to auto
                                           // launch a kiosk webapp.
-  DEVICE_MODE_DEMO,                       // The device is in demo mode. It was
-                                          // either enrolled online or setup
-                                          // offline into demo mode domain -
-                                          // see kDemoModeDomain.
+  DEVICE_MODE_DEMO,  // The device is in demo mode. It was
+                     // either enrolled online or setup
+                     // offline into demo mode domain -
+                     // see kDemoModeDomain.
 };
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com
@@ -189,6 +195,10 @@ enum class MarketSegment {
 // Sender ID of FCM (Firebase Cloud Messaging)
 // Policy Invalidation sender coming from the Firebase console.
 extern const char kPolicyFCMInvalidationSenderID[];
+
+// Kiosk SKU name. This is the constant of the enrollment license type that
+// exists on the server side.
+inline static const char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
 
 }  // namespace policy
 

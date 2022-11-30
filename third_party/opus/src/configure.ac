@@ -195,6 +195,7 @@ AC_ARG_ENABLE([intrinsics],
 
 rtcd_support=no
 cpu_arm=no
+cpu_x86=no
 
 AS_IF([test x"${enable_asm}" = x"yes"],[
     inline_optimization="No inline ASM for your platform, please send patches"
@@ -535,6 +536,7 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
    ],
    [i?86|x86_64],
    [
+      cpu_x86=yes
       OPUS_CHECK_INTRINSICS(
          [SSE],
          [$X86_SSE_CFLAGS],
@@ -724,7 +726,7 @@ AS_IF([test x"$enable_intrinsics" = x"yes"],[
                  unsigned int CPUInfo2;
                  unsigned int CPUInfo3;
                  unsigned int InfoType;
-                 __get_cpuid(InfoType, &CPUInfo0, &CPUInfo1, &CPUInfo2, &CPUInfo3);
+                 __get_cpuid_count(InfoType, 0, &CPUInfo0, &CPUInfo1, &CPUInfo2, &CPUInfo3);
             ]])],
             [AC_MSG_RESULT([C method])
                  AC_DEFINE([CPU_INFO_BY_C], [1], [Get CPU Info by c method])],
@@ -744,6 +746,7 @@ AM_CONDITIONAL([HAVE_ARM_NEON_INTR],
     [test x"$OPUS_ARM_MAY_HAVE_NEON_INTR" = x"1"])
 AM_CONDITIONAL([HAVE_ARM_NE10],
     [test x"$HAVE_ARM_NE10" = x"1"])
+AM_CONDITIONAL([CPU_X86], [test "$cpu_x86" = "yes"])
 AM_CONDITIONAL([HAVE_SSE],
     [test x"$OPUS_X86_MAY_HAVE_SSE" = x"1"])
 AM_CONDITIONAL([HAVE_SSE2],
@@ -753,6 +756,8 @@ AM_CONDITIONAL([HAVE_SSE4_1],
 AM_CONDITIONAL([HAVE_AVX],
     [test x"$OPUS_X86_MAY_HAVE_AVX" = x"1"])
 
+AM_CONDITIONAL([HAVE_RTCD],
+ [test x"$enable_rtcd" = x"yes" -a x"$rtcd_support" != x"no"])
 AS_IF([test x"$enable_rtcd" = x"yes"],[
     AS_IF([test x"$rtcd_support" != x"no"],[
         AC_DEFINE([OPUS_HAVE_RTCD], [1],

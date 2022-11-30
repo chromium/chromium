@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Protocol Buffer 2 Serializer which serializes messages
@@ -41,6 +33,7 @@ goog.require('goog.asserts');
 goog.require('goog.proto2.FieldDescriptor');
 goog.require('goog.proto2.LazyDeserializer');
 goog.require('goog.proto2.Serializer');
+goog.requireType('goog.proto2.Message');
 
 
 
@@ -74,6 +67,7 @@ goog.proto2.PbLiteSerializer.prototype.zeroIndexing_ = false;
  *     0-indexed protos.
  */
 goog.proto2.PbLiteSerializer.prototype.setZeroIndexed = function(zeroIndexing) {
+  'use strict';
   this.zeroIndexing_ = zeroIndexing;
 };
 
@@ -86,6 +80,7 @@ goog.proto2.PbLiteSerializer.prototype.setZeroIndexed = function(zeroIndexing) {
  * @override
  */
 goog.proto2.PbLiteSerializer.prototype.serialize = function(message) {
+  'use strict';
   var descriptor = message.getDescriptor();
   var fields = descriptor.getFields();
 
@@ -117,6 +112,7 @@ goog.proto2.PbLiteSerializer.prototype.serialize = function(message) {
 
   // Add any unknown fields.
   message.forEachUnknown(function(tag, value) {
+    'use strict';
     var index = zeroIndexing ? tag - 1 : tag;
     serialized[index] = value;
   });
@@ -128,7 +124,7 @@ goog.proto2.PbLiteSerializer.prototype.serialize = function(message) {
 /** @override */
 goog.proto2.PbLiteSerializer.prototype.deserializeField = function(
     message, field, value) {
-
+  'use strict';
   if (value == null) {
     // Since value double-equals null, it may be either null or undefined.
     // Ensure we return the same one, since they have different meanings.
@@ -140,7 +136,7 @@ goog.proto2.PbLiteSerializer.prototype.deserializeField = function(
   if (field.isRepeated()) {
     var data = [];
 
-    goog.asserts.assert(goog.isArray(value), 'Value must be array: %s', value);
+    goog.asserts.assert(Array.isArray(value), 'Value must be array: %s', value);
 
     for (var i = 0; i < value.length; i++) {
       data[i] = this.getDeserializedValue(field, value[i]);
@@ -156,6 +152,7 @@ goog.proto2.PbLiteSerializer.prototype.deserializeField = function(
 /** @override */
 goog.proto2.PbLiteSerializer.prototype.getSerializedValue = function(
     field, value) {
+  'use strict';
   if (field.getFieldType() == goog.proto2.FieldDescriptor.FieldType.BOOL) {
     // Booleans are serialized in numeric form.
     return value ? 1 : 0;
@@ -169,7 +166,7 @@ goog.proto2.PbLiteSerializer.prototype.getSerializedValue = function(
 /** @override */
 goog.proto2.PbLiteSerializer.prototype.getDeserializedValue = function(
     field, value) {
-
+  'use strict';
   if (field.getFieldType() == goog.proto2.FieldDescriptor.FieldType.BOOL) {
     goog.asserts.assert(
         typeof value === 'number' || typeof value === 'boolean',
@@ -185,6 +182,7 @@ goog.proto2.PbLiteSerializer.prototype.getDeserializedValue = function(
 /** @override */
 goog.proto2.PbLiteSerializer.prototype.deserialize = function(
     descriptor, data) {
+  'use strict';
   var toConvert = data;
   if (this.zeroIndexing_) {
     // Make the data align with tag-IDs (1-indexed) by shifting everything

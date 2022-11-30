@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,42 +7,70 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "cc/base/region.h"
+#include "components/exo/client_controlled_shell_surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace exo {
+class ClientControlledShellSurface;
+class SecurityDelegate;
 class ShellSurface;
 class ShellSurfaceBase;
 class Surface;
 
 namespace test {
 
-// A builder to create a ShellSurface for testing purpose. Its surface and
-// buffer, which are typically owned by a client, are owned by the host window
-// as an owned property, therefore are destroyed when the shell surface is
-// destroyed.
+// A builder to create a ShellSurface or ClientControlledShellSurface for
+// testing purpose. Its surface and buffer, which are typically owned by a
+// client, are owned by the host window as an owned property, therefore are
+// destroyed when the shell surface is destroyed.
 class ShellSurfaceBuilder {
  public:
-  ShellSurfaceBuilder(const gfx::Size& buffer_size);
+  explicit ShellSurfaceBuilder(const gfx::Size& buffer_size = {0, 0});
   ShellSurfaceBuilder(ShellSurfaceBuilder& other) = delete;
   ShellSurfaceBuilder& operator=(ShellSurfaceBuilder& other) = delete;
   ~ShellSurfaceBuilder();
 
-  // Sets parameters that are used when creating a test window.
+  // Sets parameters common for all ShellSurfaceType.
+  ShellSurfaceBuilder& SetNoRootBuffer();
   ShellSurfaceBuilder& SetRootBufferFormat(gfx::BufferFormat buffer_format);
   ShellSurfaceBuilder& SetOrigin(const gfx::Point& origin);
-  ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
   ShellSurfaceBuilder& SetUseSystemModalContainer();
+  ShellSurfaceBuilder& EnableSystemModal();
+  // When set true, some properties such as kAppType may not be set by this
+  // builder as they need the widget created in the commit process.
   ShellSurfaceBuilder& SetNoCommit();
   ShellSurfaceBuilder& SetCanMinimize(bool can_minimize);
+  ShellSurfaceBuilder& SetMaximumSize(const gfx::Size& size);
+  ShellSurfaceBuilder& SetMinimumSize(const gfx::Size& size);
+  ShellSurfaceBuilder& SetGeometry(const gfx::Rect& geometry);
+  ShellSurfaceBuilder& SetInputRegion(const cc::Region& region);
+  ShellSurfaceBuilder& SetFrame(SurfaceFrameType type);
+  ShellSurfaceBuilder& SetApplicationId(const std::string& application_id);
   ShellSurfaceBuilder& SetDisableMovement();
   ShellSurfaceBuilder& SetCentered();
+  ShellSurfaceBuilder& SetSecurityDelegate(SecurityDelegate* security_delegate);
 
-  // once and the object cannot be used to create multiple windows.
-  std::unique_ptr<ShellSurface> BuildShellSurface() WARN_UNUSED_RESULT;
+  // Sets parameters defined in ShellSurface.
+  ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
+  ShellSurfaceBuilder& SetAsPopup();
+  ShellSurfaceBuilder& SetAsMenu();
+
+  // Sets parameters defined in ClientControlledShellSurface.
+  ShellSurfaceBuilder& SetWindowState(chromeos::WindowStateType window_state);
+  ShellSurfaceBuilder& EnableDefaultScaleCancellation();
+  ShellSurfaceBuilder& SetDelegate(
+      std::unique_ptr<ClientControlledShellSurface::Delegate> delegate);
+
+  // Must be called only once for either of the below and the object cannot
+  // be used to create multiple windows.
+  [[nodiscard]] std::unique_ptr<ShellSurface> BuildShellSurface();
+  [[nodiscard]] std::unique_ptr<ClientControlledShellSurface>
+  BuildClientControlledShellSurface();
 
   // Destroy's the root surface of the given 'shell_surface'.
   static void DestroyRootSurface(ShellSurfaceBase* shell_surface);
@@ -50,17 +78,39 @@ class ShellSurfaceBuilder {
                                   const gfx::Rect& bounds);
 
  private:
+  bool isConfigurationValidForShellSurface();
+  bool isConfigurationValidForClientControlledShellSurface();
+  void SetCommonPropertiesAndCommitIfNecessary(ShellSurfaceBase* shell_surface);
+  int GetContainer();
+
   gfx::Size root_buffer_size_;
-  gfx::BufferFormat root_buffer_format_ = gfx::BufferFormat::RGBA_8888;
+  absl::optional<gfx::BufferFormat> root_buffer_format_ =
+      gfx::BufferFormat::RGBA_8888;
   gfx::Point origin_;
-  ShellSurface* parent_shell_surface_ = nullptr;
+  absl::optional<gfx::Size> max_size_;
+  absl::optional<gfx::Size> min_size_;
+  absl::optional<gfx::Rect> geometry_;
+  absl::optional<cc::Region> input_region_;
+  absl::optional<SurfaceFrameType> type_;
+  SecurityDelegate* security_delegate_ = nullptr;
+  std::string application_id_;
   bool use_system_modal_container_ = false;
+  bool system_modal_ = false;
   bool commit_on_build_ = true;
   bool can_minimize_ = true;
   bool disable_movement_ = false;
   bool centered_ = false;
-
   bool built_ = false;
+
+  // ShellSurface-specific parameters.
+  ShellSurface* parent_shell_surface_ = nullptr;
+  bool popup_ = false;
+  bool menu_ = false;
+
+  // ClientControlledShellSurface-specific parameters.
+  absl::optional<chromeos::WindowStateType> window_state_;
+  bool default_scale_cancellation_ = false;
+  std::unique_ptr<ClientControlledShellSurface::Delegate> delegate_;
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace policies {
 // feature.
 class WorkingSetTrimmerPolicyWin : public WorkingSetTrimmerPolicy {
  public:
+  WorkingSetTrimmerPolicyWin(const WorkingSetTrimmerPolicyWin&) = delete;
+  WorkingSetTrimmerPolicyWin& operator=(const WorkingSetTrimmerPolicyWin&) =
+      delete;
+
   ~WorkingSetTrimmerPolicyWin() override;
   WorkingSetTrimmerPolicyWin();
 
@@ -22,9 +26,6 @@ class WorkingSetTrimmerPolicyWin : public WorkingSetTrimmerPolicy {
   // Windows this will check that the appropriate flags are set for working set
   // trim.
   static bool PlatformSupportsWorkingSetTrim();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkingSetTrimmerPolicyWin);
 };
 
 }  // namespace policies

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "extensions/renderer/native_handler.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 #include "v8/include/v8-util.h"
-#include "v8/include/v8.h"
 
 namespace extensions {
 class ScriptContext;
@@ -24,6 +24,11 @@ class ScriptContext;
 class ObjectBackedNativeHandler : public NativeHandler {
  public:
   explicit ObjectBackedNativeHandler(ScriptContext* context);
+
+  ObjectBackedNativeHandler(const ObjectBackedNativeHandler&) = delete;
+  ObjectBackedNativeHandler& operator=(const ObjectBackedNativeHandler&) =
+      delete;
+
   ~ObjectBackedNativeHandler() override;
 
   // NativeHandler:
@@ -76,10 +81,11 @@ class ObjectBackedNativeHandler : public NativeHandler {
 
   // The following methods are convenience wrappers for methods on v8::Object
   // with the corresponding names.
-  void SetPrivate(v8::Local<v8::Object> obj,
+  // Returns whether or not setting privates was successful.
+  bool SetPrivate(v8::Local<v8::Object> obj,
                   const char* key,
                   v8::Local<v8::Value> value);
-  static void SetPrivate(v8::Local<v8::Context> context,
+  static bool SetPrivate(v8::Local<v8::Context> context,
                          v8::Local<v8::Object> obj,
                          const char* key,
                          v8::Local<v8::Value> value);
@@ -119,15 +125,13 @@ class ObjectBackedNativeHandler : public NativeHandler {
   //
   // So, we use v8::Objects here to hold that data, effectively refcounting
   // the data. When |this| is destroyed we remove the base::Bound function from
-  // the object to indicate that it shoudn't be called.
-  typedef v8::PersistentValueVector<v8::Object> RouterData;
+  // the object to indicate that it shouldn't be called.
+  using RouterData = std::vector<v8::Global<v8::Object>>;
   RouterData router_data_;
 
   ScriptContext* context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectBackedNativeHandler);
 };
 
 }  // namespace extensions

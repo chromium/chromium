@@ -1,11 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/url_request/url_request_filter.h"
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
@@ -71,10 +70,6 @@ void URLRequestFilter::RemoveHostnameHandler(const std::string& scheme,
   DCHECK(OnMessageLoopForInterceptorRemoval());
   int removed = hostname_interceptor_map_.erase(make_pair(scheme, hostname));
   DCHECK(removed);
-
-  // Note that we don't unregister from the URLRequest ProtocolFactory as
-  // this would leave no protocol factory for the remaining hostname and URL
-  // handlers.
 }
 
 bool URLRequestFilter::AddUrlInterceptor(
@@ -97,9 +92,6 @@ void URLRequestFilter::RemoveUrlHandler(const GURL& url) {
   DCHECK(OnMessageLoopForInterceptorRemoval());
   size_t removed = url_interceptor_map_.erase(url.spec());
   DCHECK(removed);
-  // Note that we don't unregister from the URLRequest ProtocolFactory as
-  // this would leave no protocol factory for the remaining hostname and URL
-  // handlers.
 }
 
 void URLRequestFilter::ClearHandlers() {
@@ -141,7 +133,7 @@ std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
   return job;
 }
 
-URLRequestFilter::URLRequestFilter() : hit_count_(0) {
+URLRequestFilter::URLRequestFilter() {
   DCHECK(OnMessageLoopForInterceptorAddition());
   URLRequestJobFactory::SetInterceptorForTesting(this);
 }

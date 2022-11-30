@@ -1,0 +1,108 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("feed_management") {
+  sources = [
+    "feed_management_coordinator.h",
+    "feed_management_coordinator.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":feed_management_ui",
+    ":follow_management",
+    ":follow_management_ui",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/table_view",
+  ]
+  public_deps = [ ":navigation_delegate" ]
+}
+
+source_set("feed_management_ui") {
+  sources = [
+    "feed_management_follow_delegate.h",
+    "feed_management_view_controller.h",
+    "feed_management_view_controller.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":navigation_delegate",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("navigation_delegate") {
+  sources = [ "feed_management_navigation_delegate.h" ]
+}
+
+source_set("follow_management") {
+  sources = [
+    "follow_management_mediator.h",
+    "follow_management_mediator.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":follow_management_ui",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+  ]
+}
+
+source_set("follow_management_ui") {
+  sources = [
+    "follow_management_follow_delegate.h",
+    "follow_management_ui_updater.h",
+    "follow_management_view_controller.h",
+    "follow_management_view_controller.mm",
+    "follow_management_view_delegate.h",
+    "followed_web_channel_item.h",
+    "followed_web_channel_item.mm",
+    "followed_web_channels_data_source.h",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":feed_management_ui",
+    "resources:following_empty",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/ntp/feed_management:navigation_delegate",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "feed_management_egtest.mm" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}

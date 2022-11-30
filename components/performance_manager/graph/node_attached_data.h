@@ -1,14 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_ATTACHED_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_ATTACHED_DATA_H_
 
-#include <memory>
-
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -26,7 +24,14 @@ class InternalNodeAttachedDataStorage {
 
   InternalNodeAttachedDataStorage() {}
 
+  InternalNodeAttachedDataStorage(const InternalNodeAttachedDataStorage&) =
+      delete;
+  InternalNodeAttachedDataStorage& operator=(
+      const InternalNodeAttachedDataStorage&) = delete;
+
   ~InternalNodeAttachedDataStorage() { Reset(); }
+
+  operator bool() const { return data_; }
 
   // Returns a pointer to the data object, if allocated.
   NodeAttachedData* Get() { return data_; }
@@ -55,9 +60,8 @@ class InternalNodeAttachedDataStorage {
   }
 
  private:
-  NodeAttachedData* data_ = nullptr;
+  raw_ptr<NodeAttachedData> data_ = nullptr;
   uint8_t buffer_[kDataSize];
-  DISALLOW_COPY_AND_ASSIGN(InternalNodeAttachedDataStorage);
 };
 
 }  // namespace performance_manager

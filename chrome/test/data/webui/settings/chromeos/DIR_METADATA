@@ -1,3 +1,1 @@
-monorail {
-  component: "OS>Systems>Settings"
-}
+mixins: "//chrome/browser/resources/settings/chromeos/COMMON_METADATA"

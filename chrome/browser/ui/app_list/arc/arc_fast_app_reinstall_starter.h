@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class ArcFastAppReinstallStarter : public ArcAppListPrefs::Observer {
  public:
   ArcFastAppReinstallStarter(content::BrowserContext* context,
                              PrefService* pref_service);
+
+  ArcFastAppReinstallStarter(const ArcFastAppReinstallStarter&) = delete;
+  ArcFastAppReinstallStarter& operator=(const ArcFastAppReinstallStarter&) =
+      delete;
+
   ~ArcFastAppReinstallStarter() override;
 
   // Creating Fast App Reinstall starter will call MaybeStartFastAppReinstall().
@@ -45,8 +50,6 @@ class ArcFastAppReinstallStarter : public ArcAppListPrefs::Observer {
   content::BrowserContext* const context_;
   PrefService* const pref_service_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcFastAppReinstallStarter);
 };
 
 }  // namespace arc

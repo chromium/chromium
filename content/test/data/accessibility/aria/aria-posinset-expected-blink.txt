@@ -9,11 +9,19 @@ rootWebArea
 ++++++++++inlineTextBox name='This is an ARIA article 2.'
 ++++++listBox setSize=2
 ++++++++listBoxOption name='Item 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
 ++++++listBox setSize=2
 ++++++++listBoxOption name='Item 1' setSize=2 posInSet=1 selected=false
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
 ++++++++listBoxOption name='Item 2' setSize=2 posInSet=2 selected=false
-++++++form
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
+++++++section
 ++++++++radioButton setSize=4 posInSet=3 checkedState=false
 ++++++++staticText name='1'
 ++++++++++inlineTextBox name='1'
@@ -34,11 +42,15 @@ rootWebArea
 ++++++++legend
 ++++++++++staticText name='Cake'
 ++++++++++++inlineTextBox name='Cake'
-++++++++radioButton name='Chiffon cakes' setSize=2 posInSet=1 checkedState=true
+++++++++labelText ignored
+++++++++++radioButton name='Chiffon cakes' setSize=2 posInSet=1 checkedState=true
+++++++++++staticText ignored name='Chiffon cakes'
 ++++++++lineBreak name='<newline>'
 ++++++++++inlineTextBox name='<newline>'
-++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
-++++++form
+++++++++labelText ignored
+++++++++++radioButton name='Chocolate cakes' setSize=2 posInSet=2 checkedState=false
+++++++++++staticText ignored name='Chocolate cakes'
+++++++section
 ++++++++paragraph
 ++++++++++button name='changedFromRadio'
 ++++++++++++staticText name='changedFromRadio'
@@ -48,6 +60,23 @@ rootWebArea
 ++++++++++++++inlineTextBox name='red'
 ++++++++++lineBreak name='<newline>'
 ++++++++++++inlineTextBox name='<newline>'
-++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
+++++++++++labelText ignored
+++++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
+++++++++++++staticText ignored name='blue'
+++++++treeGrid
+++++++++row name='content' setSize=100 posInSet=2
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
+++++++grid
+++++++++row
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
+++++++table
+++++++++row
+++++++++++cell name='content'
+++++++++++++staticText name='content'
+++++++++++++++inlineTextBox name='content'
 ++++++staticText name='Done'
 ++++++++inlineTextBox name='Done'

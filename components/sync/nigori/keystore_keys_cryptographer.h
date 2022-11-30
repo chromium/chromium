@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace sync_pb {
 
@@ -31,6 +29,10 @@ class KeystoreKeysCryptographer {
   // Returns null if crypto error occurs.
   static std::unique_ptr<KeystoreKeysCryptographer> FromKeystoreKeys(
       const std::vector<std::string>& keystore_keys);
+
+  KeystoreKeysCryptographer(const KeystoreKeysCryptographer&) = delete;
+  KeystoreKeysCryptographer& operator=(const KeystoreKeysCryptographer&) =
+      delete;
 
   ~KeystoreKeysCryptographer();
 
@@ -70,8 +72,6 @@ class KeystoreKeysCryptographer {
 
   std::unique_ptr<CryptographerImpl> cryptographer_;
   std::vector<std::string> keystore_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeystoreKeysCryptographer);
 };
 
 }  // namespace syncer

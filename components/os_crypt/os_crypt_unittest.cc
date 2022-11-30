@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,12 +20,11 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/os_crypt/os_crypt_mocker_linux.h"
 #endif
 
-#if defined(OS_WIN)
-#include "base/strings/string_util.h"
+#if BUILDFLAG(IS_WIN)
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/random.h"
 #endif
@@ -37,10 +35,10 @@ class OSCryptTest : public testing::Test {
  public:
   OSCryptTest() { OSCryptMocker::SetUp(); }
 
-  ~OSCryptTest() override { OSCryptMocker::TearDown(); }
+  OSCryptTest(const OSCryptTest&) = delete;
+  OSCryptTest& operator=(const OSCryptTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptTest);
+  ~OSCryptTest() override { OSCryptMocker::TearDown(); }
 };
 
 TEST_F(OSCryptTest, String16EncryptionDecryption) {
@@ -160,14 +158,14 @@ class OSCryptConcurrencyTest : public testing::Test {
  public:
   OSCryptConcurrencyTest() { OSCryptMocker::SetUp(); }
 
-  ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
+  OSCryptConcurrencyTest(const OSCryptConcurrencyTest&) = delete;
+  OSCryptConcurrencyTest& operator=(const OSCryptConcurrencyTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptConcurrencyTest);
+  ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
 };
 
 // Flaky on Win 7 (dbg) and win-asan, see https://crbug.com/1066699
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ConcurrentInitialization DISABLED_ConcurrentInitialization
 #else
 #define MAYBE_ConcurrentInitialization ConcurrentInitialization
@@ -200,16 +198,16 @@ TEST_F(OSCryptConcurrencyTest, MAYBE_ConcurrentInitialization) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class OSCryptTestWin : public testing::Test {
  public:
   OSCryptTestWin() {}
 
-  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
+  OSCryptTestWin(const OSCryptTestWin&) = delete;
+  OSCryptTestWin& operator=(const OSCryptTestWin&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OSCryptTestWin);
+  ~OSCryptTestWin() override { OSCryptMocker::ResetState(); }
 };
 
 // This test verifies that the header of the data returned from CryptProtectData
@@ -309,6 +307,6 @@ TEST_F(OSCryptTestWin, PrefsKeyTest) {
   EXPECT_EQ(plaintext, decrypted);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

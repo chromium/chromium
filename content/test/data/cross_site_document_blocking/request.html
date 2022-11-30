@@ -8,10 +8,10 @@ Policy turned off in the renderer. The Same Origin Policy can be circumvented
 when the renderer is compromised, but site isolation ought to block cross-site
 documents at the IPC layer.</p>
 
-<p>We only block cross-site documents with a blacklisted mime type (text/html,
+<p>We only block cross-site documents with a blocklisted mime type (text/html,
 text/xml, application/json), that are correctly sniffed as the content type that
 they claim to be. We also block text/plain documents when their body looks like
-one of the blacklisted content types.</p>
+one of the blocklisted content types.</p>
 
 <script>
 var pathPrefix = "http://bar.com/site_isolation/";

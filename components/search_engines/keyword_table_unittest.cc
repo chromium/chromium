@@ -1,12 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -18,11 +18,14 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using base::TimeDelta;
 
 class KeywordTableTest : public testing::Test {
  public:
   KeywordTableTest() {}
+
+  KeywordTableTest(const KeywordTableTest&) = delete;
+  KeywordTableTest& operator=(const KeywordTableTest&) = delete;
+
   ~KeywordTableTest() override {}
 
  protected:
@@ -30,8 +33,8 @@ class KeywordTableTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_.reset(new KeywordTable);
-    db_.reset(new WebDatabase);
+    table_ = std::make_unique<KeywordTable>();
+    db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }
@@ -65,6 +68,7 @@ class KeywordTableTest : public testing::Test {
     keyword.sync_guid = "1234-5678-90AB-CDEF";
     keyword.alternate_urls.push_back("a_url1");
     keyword.alternate_urls.push_back("a_url2");
+    keyword.starter_pack_id = 1;
     AddKeyword(keyword);
     return keyword;
   }
@@ -103,8 +107,6 @@ class KeywordTableTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<KeywordTable> table_;
   std::unique_ptr<WebDatabase> db_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordTableTest);
 };
 
 
@@ -137,6 +139,8 @@ TEST_F(KeywordTableTest, Keywords) {
             restored_keyword.created_from_play_api);
   EXPECT_EQ(keyword.usage_count, restored_keyword.usage_count);
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
+  EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
+  EXPECT_EQ(keyword.starter_pack_id, restored_keyword.starter_pack_id);
 
   RemoveKeyword(restored_keyword.id);
 
@@ -155,6 +159,7 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   keyword.input_encodings.push_back("Shift_JIS");
   keyword.prepopulate_id = 5;
   keyword.created_from_play_api = true;
+  keyword.starter_pack_id = 0;
   UpdateKeyword(keyword);
 
   KeywordTable::Keywords keywords(GetKeywords());
@@ -173,6 +178,8 @@ TEST_F(KeywordTableTest, UpdateKeyword) {
   EXPECT_EQ(keyword.prepopulate_id, restored_keyword.prepopulate_id);
   EXPECT_EQ(keyword.created_from_play_api,
             restored_keyword.created_from_play_api);
+  EXPECT_EQ(keyword.is_active, restored_keyword.is_active);
+  EXPECT_EQ(keyword.starter_pack_id, restored_keyword.starter_pack_id);
 }
 
 TEST_F(KeywordTableTest, KeywordWithNoFavicon) {

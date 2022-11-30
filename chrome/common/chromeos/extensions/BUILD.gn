@@ -1,0 +1,59 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions)
+
+# Use a static library here because many test binaries depend on this but don't
+# require many files from it. This makes linking more efficient.
+static_library("extensions") {
+  sources = [
+    "chromeos_system_extension_info.cc",
+    "chromeos_system_extension_info.h",
+    "chromeos_system_extensions_api_permissions.cc",
+    "chromeos_system_extensions_api_permissions.h",
+    "chromeos_system_extensions_api_provider.cc",
+    "chromeos_system_extensions_api_provider.h",
+    "chromeos_system_extensions_manifest_constants.cc",
+    "chromeos_system_extensions_manifest_constants.h",
+    "chromeos_system_extensions_manifest_handler.cc",
+    "chromeos_system_extensions_manifest_handler.h",
+  ]
+
+  deps = [
+    ":resources",
+    "api:api",
+    "api:extensions_features",
+    "//base",
+    "//extensions/common",
+  ]
+}
+
+grd_file = "$target_gen_dir/chromeos_system_extensions_resources.grd"
+
+generate_grd("build_grd") {
+  grd_prefix = "chromeos_system_extensions"
+  out_grd = grd_file
+  input_files = [ "api/_api_features.json" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+grit("resources") {
+  source = grd_file
+  defines = chrome_grit_defines
+  enable_input_discovery_for_gn_analyze = false
+  output_dir = "$root_gen_dir/chrome/common/chromeos/extensions"
+  output_name = "chromeos_system_extensions_resources"
+  outputs = [
+    "grit/chromeos_system_extensions_resources.h",
+    "grit/chromeos_system_extensions_resources_map.cc",
+    "grit/chromeos_system_extensions_resources_map.h",
+    "chromeos_system_extensions_resources.pak",
+  ]
+  deps = [ ":build_grd" ]
+}

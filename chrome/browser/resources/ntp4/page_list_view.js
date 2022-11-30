@@ -1,13 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, isRTL} from 'chrome://resources/js/util.m.js';
+import {$, isRTL} from 'chrome://resources/js/util.js';
 
 import {AppInfo} from './app_info.js';
 import {App, AppsPage} from './apps_page.js';
@@ -96,7 +96,7 @@ PageListView.prototype = {
    * EventTracker for managing event listeners for page events.
    * @type {!EventTracker}
    */
-  eventTracker: new EventTracker,
+  eventTracker: new EventTracker(),
 
   /**
    * If non-null, this is the ID of the app to highlight to the user the next
@@ -233,7 +233,7 @@ PageListView.prototype = {
     this.dotList.insertBefore(
         newDot, opt_refNode ? opt_refNode.navigationDot : null);
     // Set a tab index on the first dot.
-    if (this.dotList.dots.length == 1) {
+    if (this.dotList.dots.length === 1) {
       newDot.tabIndex = 3;
     }
 
@@ -247,7 +247,9 @@ PageListView.prototype = {
    */
   appMoved(appData) {
     const app = /** @type {App} */ ($(appData.id));
-    assert(app, 'trying to move an app that doesn\'t exist');
+    if (!app) {
+      return;
+    }
     app.remove(false);
 
     this.appsPages[appData.page_index].insertApp(appData, false);
@@ -264,7 +266,9 @@ PageListView.prototype = {
    */
   appRemoved(appData, isUninstall, fromPage) {
     const app = /** @type {App} */ ($(appData.id));
-    assert(app, 'trying to remove an app that doesn\'t exist');
+    if (!app) {
+      return;
+    }
 
     if (!isUninstall) {
       app.replaceAppData(appData);
@@ -294,8 +298,9 @@ PageListView.prototype = {
    * Note that calls to this function can occur at any time, not just in
    * response to a getApps request. For example, when a user
    * installs/uninstalls an app on another synchronized devices.
-   * @param {{apps: Array<AppInfo>, appPageNames: Array<string>}} data
-   *     An object with all the data on available applications.
+   * @param {{apps: Array<AppInfo>, appPageNames: Array<string>,
+   *     deprecatedAppsDialogLinkText: string}} data An object with all the data
+   *     on available applications.
    */
   getAppsCallback(data) {
     // Remember this to select the correct card when done rebuilding.
@@ -349,7 +354,7 @@ PageListView.prototype = {
         Array.prototype.indexOf.call(this.tilePages, lastAppsPage) :
         -1;
     const nextPageAfterApps =
-        lastAppsPageIndex != -1 ? this.tilePages[lastAppsPageIndex + 1] : null;
+        lastAppsPageIndex !== -1 ? this.tilePages[lastAppsPageIndex + 1] : null;
 
     // Add the apps, creating pages as necessary
     for (let i = 0; i < apps.length; i++) {
@@ -365,10 +370,11 @@ PageListView.prototype = {
         this.appendTilePage(new AppsPage(), pageName, true, nextPageAfterApps);
         // Confirm that appsPages is a live object, updated when a new page is
         // added (otherwise we'd have an infinite loop)
-        assert(this.appsPages.length == origPageCount + 1, 'expected new page');
+        assert(
+            this.appsPages.length === origPageCount + 1, 'expected new page');
       }
 
-      if (app.id == this.highlightAppId) {
+      if (app.id === this.highlightAppId) {
         highlightApp = app;
       } else {
         this.appsPages[pageIndex].insertApp(app, false);
@@ -400,7 +406,7 @@ PageListView.prototype = {
    *     be highlighted.
    */
   appAdded(appData, opt_highlight) {
-    if (appData.id == this.highlightAppId) {
+    if (appData.id === this.highlightAppId) {
       opt_highlight = true;
       this.highlightAppId = null;
     }
@@ -484,7 +490,8 @@ PageListView.prototype = {
         document.querySelector('.tile-page.temporary'));
     if (tempPage) {
       const dot = tempPage.navigationDot;
-      if (!tempPage.tileCount && tempPage != this.cardSlider.currentCardValue) {
+      if (!tempPage.tileCount &&
+          tempPage !== this.cardSlider.currentCardValue) {
         this.removeTilePageAndDot_(tempPage, true);
       } else {
         tempPage.classList.remove('temporary');
@@ -503,7 +510,7 @@ PageListView.prototype = {
    * @param {Event} e The event.
    */
   onPageLayout_(e) {
-    if (Array.prototype.indexOf.call(this.tilePages, e.currentTarget) !=
+    if (Array.prototype.indexOf.call(this.tilePages, e.currentTarget) !==
         this.cardSlider.currentCard) {
       return;
     }
@@ -524,9 +531,10 @@ PageListView.prototype = {
     const page =
         /** @type {?TilePage} */ (this.cardSlider.currentCardValue);
 
-    this.pageSwitcherStart.hidden = !page || (this.cardSlider.currentCard == 0);
-    this.pageSwitcherEnd.hidden =
-        !page || (this.cardSlider.currentCard == this.cardSlider.cardCount - 1);
+    this.pageSwitcherStart.hidden =
+        !page || (this.cardSlider.currentCard === 0);
+    this.pageSwitcherEnd.hidden = !page ||
+        (this.cardSlider.currentCard === this.cardSlider.cardCount - 1);
 
     if (!page) {
       return;
@@ -647,7 +655,7 @@ PageListView.prototype = {
    */
   saveAppPageName(appPage, name) {
     const index = this.getAppsPageIndex(appPage);
-    assert(index != -1);
+    assert(index !== -1);
     chrome.send('saveAppPageName', [name, index]);
   },
 
@@ -688,9 +696,9 @@ PageListView.prototype = {
     }
 
     let direction = 0;
-    if (e.key == 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       direction = -1;
-    } else if (e.key == 'ArrowRight') {
+    } else if (e.key === 'ArrowRight') {
       direction = 1;
     } else {
       return;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 namespace web {
 
-// Action to longpress on the element found by |selector| in the shell's
+// Action to longpress on the element found by `selector` in the shell's
 // webview.  This gesture is expected to cause the context menu to appear, and
 // is not expected to trigger events in the webview. This action doesn't fail if
 // the context menu isn't displayed; calling code should check for that

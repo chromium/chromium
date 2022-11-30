@@ -1,0 +1,258 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * cros.sys Color Tokens
+ *
+ * High level color semantics for ChromeOS.
+ */
+{
+  token_namespace: 'cros.sys',
+  options: {
+    ColorMappings: {
+      set_name: 'CrosSys',
+    },
+    proto: {
+      field_name: 'palette_colors',
+      field_id: 1,
+    },
+  },
+  colors: {
+    /* Primary */
+    primary: {
+      light: '$cros.ref.primary40',
+      dark: '$cros.ref.primary80',
+      generate_per_mode: true,
+    },
+    'on-primary': {
+      light: '$cros.ref.primary100',
+      dark:  '$cros.ref.primary20',
+    },
+    'primary-container': {
+      light: '$cros.ref.primary90',
+      dark:  'blend(rgba($cros.ref.primary30.rgb, 0.08), $cros.ref.secondary30)',
+    },
+    'on-primary-container': {
+      light: '$cros.ref.primary10',
+      dark:  '$cros.ref.primary90',
+    },
+
+    /* Secondary */
+    secondary: {
+      light: '$cros.ref.secondary40',
+      dark:  '$cros.ref.secondary80',
+      generate_per_mode: true,
+    },
+    'on-secondary': {
+      light: '$cros.ref.secondary100',
+      dark:  '$cros.ref.secondary20',
+    },
+    'secondary-container': {
+      light: '$cros.ref.secondary90',
+      dark:  '$cros.ref.secondary30',
+    },
+    'on-secondary-container': {
+      light: '$cros.ref.secondary10',
+      dark:  '$cros.ref.secondary90',
+    },
+
+    /* Tertiary */
+    tertiary: {
+      light: '$cros.ref.tertiary40',
+      dark:  '$cros.ref.tertiary80',
+    },
+    'on-tertiary': {
+      light: '$cros.ref.tertiary100',
+      dark:  '$cros.ref.tertiary20',
+    },
+    'tertiary-container': {
+      light: '$cros.ref.tertiary90',
+      dark:  '$cros.ref.tertiary30',
+    },
+    'on-tertiary-container': {
+      light: '$cros.ref.tertiary10',
+      dark:  '$cros.ref.tertiary90',
+    },
+
+    /* Error */
+    error: {
+      light: '$cros.ref.error40',
+      dark:  '$cros.ref.error80',
+    },
+    'on-error': {
+      light: '$cros.ref.error100',
+      dark:  '$cros.ref.error20',
+    },
+    'error-container': {
+      light: '$cros.ref.error90',
+      dark:  '$cros.ref.error30',
+    },
+    'on-error-container': {
+      light: '$cros.ref.error10',
+      dark:  '$cros.ref.error90',
+    },
+
+    /* Neutral */
+    'surface-variant': {
+      light: '$cros.ref.neutralvariant90',
+      dark:  '$cros.ref.neutralvariant30',
+    },
+    'on-surface-variant': {
+      light: '$cros.ref.neutralvariant30',
+      dark:  '$cros.ref.neutralvariant80',
+    },
+    outline: {
+      light: '$cros.ref.neutralvariant50',
+      dark:  '$cros.ref.neutralvariant60',
+    },
+    separator: {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.14)',
+      dark:  'rgba($cros.ref.neutral90.rgb, 0.14)',
+    },
+
+    /* Bases */
+    header: {
+      light: '$cros.ref.secondary90',
+      dark:  '$cros.ref.secondary20',
+    },
+    'app-base1': {
+      light: '$cros.ref.neutralvariant90',
+      dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)'
+    },
+    'app-base2': {
+      light: '$cros.ref.neutral99',
+      dark:  '$cros.ref.neutral10',
+    },
+    'app-base-elevated': {
+      light: '$cros.ref.neutralvariant100',
+      dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)',
+      generate_per_mode: true,
+    },
+
+    'sys-base': {
+      light: '$cros.ref.neutralvariant90',
+      dark: '$cros.ref.neutralvariant0',
+    },
+    'sys-base-elevated': {
+      light: 'rgba($cros.sys.surface3.rgb, 0.9)',
+      dark: 'rgba($cros.sys.surface3.rgb, 0.9)',
+    },
+
+    /* Surfaces */
+    surface: {
+      light: '$cros.ref.neutral99',
+      dark: '$cros.ref.neutral10',
+    },
+    surface1: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.05), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.05), $cros.ref.neutral10)',
+    },
+    surface2: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.08), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.08), $cros.ref.neutral10)',
+    },
+    surface3: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.11), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.11), $cros.ref.neutral10)',
+    },
+    surface4: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.12), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.12), $cros.ref.neutral10)',
+    },
+    surface5: {
+      light: 'blend(rgba($cros.ref.primary40.rgb, 0.14), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, 0.14), $cros.ref.neutral10)',
+    },
+    scrim: {
+      light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
+      dark:  'rgba($cros.ref.neutralvariant10.rgb, 0.6)',
+    },
+    'inverse-surface': {
+      light: '$cros.ref.neutral20',
+      dark:  '$cros.ref.neutral90',
+    },
+    'input-field-light': {
+      light: '$cros.ref.neutral99',
+      dark: 'rgba($cros.ref.neutral50.rgb, 0.4)'
+    },
+    'input-field-dark': {
+      light: '$cros.ref.neutral95',
+      dark: 'rgba($cros.ref.neutral0.rgb, 0.6)'
+    },
+    'sys-on-base': {
+      light: '$cros.ref.neutralvariant95',
+      dark: 'rgba($cros.ref.neutralvariant40.rgb, 0.4)',
+    },
+    'sys-primary-container': {
+      light: '$cros.ref.primary80',
+      dark: '$cros.ref.primary80',
+    },
+    'sys-on-primary-container': {
+      light: '$cros.ref.primary10',
+      dark: '$cros.ref.primary10',
+    },
+
+
+    /* Text and icons */
+    'on-surface': {
+      light: '$cros.ref.neutral10',
+      dark: '$cros.ref.neutral90',
+      generate_per_mode: true,
+    },
+    'on-surface-bodytext': {
+      light: '$cros.ref.neutral40',
+      dark: '$cros.ref.neutral70',
+    },
+    'disabled': {
+      light: 'rgba($cros.sys.on-surface.rgb, 0.38)',
+      dark: 'rgba($cros.sys.on-surface.rgb, 0.38)',
+    },
+    // TODO(b/224402466): Add cros.sys.warning
+    // TODO(b/224402466): Add cros.sys.success
+
+    // These values have a very specific meaning and should never be tinted.
+    'privacy-indicator': {
+      light: '#146c2e',
+      dark: '#37be5f',
+    },
+
+    /* Effects */
+    'hover-on-prominent': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.10)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+    },
+    'hover-on-quiet': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.16)',
+    },
+    'hover-on-base': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+      dark: 'rgba($cros.ref.neutral99.rgb, 0.1)',
+    },
+    'hover-alt': {
+      light: 'rgba($cros.ref.neutral99.rgb, 0.1)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+    },
+    'ripple-primary': {
+      light: 'rgba($cros.ref.primary70.rgb, 0.32)',
+      dark: 'rgba($cros.ref.primary60.rgb, 0.32)',
+    },
+    'ripple-neutral-on-prominent': {
+      light: 'rgba($cros.ref.neutral99.rgb, 0.16)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.12)',
+    },
+    'ripple-neutral-on-quiet': {
+      light: 'rgba($cros.ref.neutral10.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutral90.rgb, 0.16)',
+    },
+    'highlight-shape': {
+      light: 'rgba($cros.ref.primary70.rgb, 0.3)',
+      dark: 'rgba($cros.ref.primary70.rgb, 0.3)',
+    },
+    'highlight-text': {
+      light: 'rgba($cros.ref.primary70.rgb, 0.6)',
+      dark: 'rgba($cros.ref.primary70.rgb, 0.6)',
+    }
+  },
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -33,8 +33,9 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
   if (navigated_to.is_empty()) {
     navigated_to = GURL(kSafetyTipLeaveSiteUrl);
 
-#if defined(OS_ANDROID)
-    if (TabAndroid::FromWebContents(web_contents)->IsCustomTab()) {
+#if BUILDFLAG(IS_ANDROID)
+    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+    if (tab && tab->IsCustomTab()) {
       auto& controller = web_contents->GetController();
       // For CCTs, just go back if we can...
       if (controller.CanGoBack()) {

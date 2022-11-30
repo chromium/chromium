@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_INITIAL_DATA_H_
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/style_variables.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
+class Document;
 class PropertyRegistry;
 
 // Holds data stored on the initial ComputedStyle only.
@@ -24,8 +25,9 @@ class PropertyRegistry;
 class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
  public:
   static scoped_refptr<StyleInitialData> Create(
+      Document& document,
       const PropertyRegistry& registry) {
-    return base::AdoptRef(new StyleInitialData(registry));
+    return base::AdoptRef(new StyleInitialData(document, registry));
   }
 
   bool operator==(const StyleInitialData& other) const;
@@ -47,13 +49,28 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
     return variables_.GetValue(name).value_or(nullptr);
   }
 
+  unsigned GetViewportUnitFlags() const { return viewport_unit_flags_; }
+
  private:
-  StyleInitialData(const PropertyRegistry&);
+  StyleInitialData(Document&, const PropertyRegistry&);
 
   // Initial values for all registered properties. This is set on
   // the initial style, and then shared with all other styles that directly or
   // indirectly inherit from that.
   StyleVariables variables_;
+  // This is equal to `PropertyRegistry::GetViewportUnitFlags()` at the time the
+  // `StyleInitialData` was created.
+  //
+  // Since StyleInitialData is only (re)created during style resolution, this
+  // tells us whether ComputedStyles from that process depend on viewport units
+  // or not, which in turns tells us if we need to recalculate any styles when
+  // we resize.
+  //
+  // PropertyRegistry::GetViewportUnitFlags on the other hand, can change
+  // immediately via JavaScript, and is also affected by active style updates.
+  // Hence this is not useful for understanding whether or not any current
+  // ComputedStyles need to be invalidated by a resize.
+  unsigned viewport_unit_flags_ = 0;
 };
 
 }  // namespace blink

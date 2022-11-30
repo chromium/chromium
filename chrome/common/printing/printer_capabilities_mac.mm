@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,14 +72,14 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizesFromFile(
     if (![paper isKindOfClass:[NSDictionary class]])
       continue;
 
-    int width = [[paper objectForKey:@"width"] intValue];
-    int height = [[paper objectForKey:@"height"] intValue];
+    int width = [paper[@"width"] intValue];
+    int height = [paper[@"height"] intValue];
     if (width <= 0 || height <= 0 || width > kMacPaperDimensionLimit ||
         height > kMacPaperDimensionLimit) {
       continue;
     }
 
-    NSString* name = [paper objectForKey:@"name"];
+    NSString* name = paper[@"name"];
     if (![name isKindOfClass:[NSString class]] || [name length] == 0)
       continue;
 

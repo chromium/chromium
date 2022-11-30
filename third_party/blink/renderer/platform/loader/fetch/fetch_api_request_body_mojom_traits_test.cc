@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h"
+
+#include <tuple>
 
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
@@ -75,7 +77,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFile) {
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
   ResourceRequestBody src(EncodedFormData::Create());
-  src.FormBody()->AppendFileRange("abc", 4, 8, base::nullopt);
+  src.FormBody()->AppendFileRange("abc", 4, 8, absl::nullopt);
 
   ResourceRequestBody dest;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
@@ -88,7 +90,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFileRange) {
   EXPECT_EQ(e.filename_, "abc");
   EXPECT_EQ(e.file_start_, 4);
   EXPECT_EQ(e.file_length_, 8);
-  EXPECT_EQ(e.expected_file_modification_time_, base::nullopt);
+  EXPECT_EQ(e.expected_file_modification_time_, absl::nullopt);
 }
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
@@ -115,7 +117,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripDataPipeGetter) {
   ResourceRequestBody src(EncodedFormData::Create());
   mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter;
-  ignore_result(data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  std::ignore = data_pipe_getter.InitWithNewPipeAndPassReceiver();
   src.FormBody()->AppendDataPipe(
       base::MakeRefCounted<blink::WrappedDataPipeGetter>(
           std::move(data_pipe_getter)));
@@ -134,7 +136,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripDataPipeGetter) {
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripStreamBody) {
   mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
       chunked_data_pipe_getter;
-  ignore_result(chunked_data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  std::ignore = chunked_data_pipe_getter.InitWithNewPipeAndPassReceiver();
   ResourceRequestBody src(std::move(chunked_data_pipe_getter));
 
   ResourceRequestBody dest;

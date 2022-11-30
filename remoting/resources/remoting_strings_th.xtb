@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดรายงานปัญหานี้ให้นักพัฒนาซอฟต์แวร์ทราบ</translation>
 <translation id="1697532407822776718">คุณพร้อมแล้ว!</translation>
 <translation id="1742469581923031760">กำลังเชื่อมต่อ…</translation>
+<translation id="177040763384871009">หากต้องการอนุญาตให้ลิงก์ที่คลิกบนอุปกรณ์ระยะไกลเปิดในเบราว์เซอร์ไคลเอ็นต์ คุณต้องเปลี่ยนเว็บเบราว์เซอร์ของระบบเป็น "<ph name="URL_FORWARDER_NAME" />"</translation>
 <translation id="177096447311351977">IP ช่องสำหรับไคลเอ็นต์: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ลบ</translation>
 <translation id="2009755455353575666">การเชื่อมต่อล้มเหลว</translation>
@@ -24,7 +25,7 @@
 หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
 <translation id="225614027745146050">ยินดีต้อนรับ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
-<translation id="2333212046079545895">ลิขสิทธิ์ 2021 Google LLC สงวนลิขสิทธิ์</translation>
+<translation id="2329392777730037872">เปิด <ph name="URL" /> ในไคลเอ็นต์ไม่สำเร็จ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2366718077645204424">ไม่สามารถเข้าถึงโฮสต์ อาจเป็นเพราะการกำหนดค่าของเครือข่ายที่คุณกำลังใช้อยู่</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ออนไลน์ล่าสุด<ph name="RELATIVE_TIMESTAMP" /></translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">บริการนี้จะช่วยให้สามารถใช้การเชื่อมต่อขาเข้าจากไคลเอ็นต์ Chrome Remote Desktop</translation>
 <translation id="2647232381348739934">Chromoting Service</translation>
 <translation id="2676780859508944670">กำลังทำงาน…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. All Rights Reserved.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">มีปัญหาในการตรวจสอบสิทธิ์ โปรดเข้าสู่ระบบอีกครั้ง</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">ออฟไลน์</translation>
 <translation id="3695446226812920698">เรียนรู้วิธี</translation>
 <translation id="3776024066357219166">เซสชัน Chrome Remote Desktop ของคุณสิ้นสุดแล้ว</translation>
+<translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3905196214175737742">โดเมนเจ้าของโฮสต์ไม่ถูกต้อง</translation>
 <translation id="3931191050278863510">หยุดโฮสต์แล้ว</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">รหัสการเข้าถึง</translation>
 <translation id="4227991223508142681">ยูทิลิตีของการจัดสรรการโฮสต์</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
+<translation id="4257751272692708833">ผู้ส่งต่อ URL ของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">รหัสการเข้าถึงไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">เปิดค่ากำหนดการเข้าถึง</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4563926062592110512">ไคลเอ็นต์ที่ยกเลิกการเชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ได้รับการกำหนดค่าไม่ถูกต้อง โปรดเลือกเว็บเบราว์เซอร์เริ่มต้นรายการอื่นแล้วเปิดใช้การส่งต่อ URL อีกครั้ง</translation>
 <translation id="4635770493235256822">อุปกรณ์ระยะไกล</translation>
 <translation id="4660011489602794167">แสดงแป้นพิมพ์</translation>
 <translation id="4703799847237267011">เซสชัน Chromoting ของคุณได้สิ้นสุดลงแล้ว</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">ส่ง PrtScn</translation>
 <translation id="4974476491460646149">ปิดการเชื่อมต่อของ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="4985296110227979402">คุณต้องตั้งค่าคอมพิวเตอร์สำหรับการเข้าถึงระยะไกลก่อน</translation>
+<translation id="4987330545941822761">Chrome Remote Desktop ไม่สามารถระบุเบราว์เซอร์ที่จะเปิด URL ในอุปกรณ์ โปรดเลือกจากรายการด้านล่าง</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ออฟไลน์)</translation>
 <translation id="507204348399810022">คุณแน่ใจไหมว่าต้องการปิดใช้การเชื่อมต่อระยะไกลกับ <ph name="HOSTNAME" /></translation>
 <translation id="5170982930780719864">รหัสโฮสต์ไม่ถูกต้อง</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
-<translation id="5327248766486351172">ชื่อ</translation>
 <translation id="533625276787323658">ไม่มีปลายทางให้เชื่อมต่อ</translation>
 <translation id="5397086374758643919">Chrome Remote Desktop Host Uninstaller</translation>
 <translation id="5419418238395129586">ออนไลน์ครั้งล่าสุด: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="579702532610384533">เชื่อมต่อใหม่</translation>
 <translation id="5810269635982033450">หน้าจอทำหน้าที่เหมือนแทร็กแพด</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ขอสิทธิ์เข้าถึงเพื่อดูหน้าจอ รวมถึงควบคุมแป้นพิมพ์และเมาส์ของคุณ กด "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" หากคุณไม่คาดว่าจะได้รับคำขอนี้ ไม่เช่นนั้นให้เลือก ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' เพื่ออนุญาตการเชื่อมต่อเมื่อพร้อม</translation>
 <translation id="5823658491130719298">ในคอมพิวเตอร์ที่ต้องการเข้าถึงจากระยะไกล ให้เปิด Chrome แล้วไปที่ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ตัวเลือกการแสดงผล</translation>
 <translation id="6033507038939587647">ตัวเลือกแป้นพิมพ์</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">ส่ง Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">แชร์</translation>
 <translation id="677755392401385740">โฮสต์เริ่มใช้งานสำหรับผู้ใช้: <ph name="HOST_USERNAME" /></translation>
+<translation id="6902524959760471898">แอปพลิเคชันตัวช่วยที่จะเปิด URL ในไคลเอ็นต์ของ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">แสดง/ซ่อนแป้นพิมพ์</translation>
 <translation id="6963936880795878952">การเชื่อมต่อกับคอมพิวเตอร์ระยะไกลถูกบล็อกไว้ชั่วคราว เนื่องจากมีผู้พยายามเชื่อมต่อกับคอมพิวเตอร์ดังกล่าวโดยใช้ PIN ที่ไม่ถูกต้อง โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7312846573060934304">โฮสต์ออฟไลน์</translation>
 <translation id="7319983568955948908">หยุดการแชร์</translation>
+<translation id="7359298090707901886">เบราว์เซอร์ที่เลือกไม่สามารถใช้เปิด URL ในคอมพิวเตอร์ในพื้นที่</translation>
 <translation id="7401733114166276557">Chrome Remote Desktop</translation>
 <translation id="7434397035092923453">การเข้าถึงถูกปฏิเสธสำหรับไคลเอ็นต์: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">ไคลเอ็นต์ที่เชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7526139040829362392">เปลี่ยนบัญชี</translation>
+<translation id="7535110896613603182">เปิดการตั้งค่าแอปเริ่มต้น</translation>
 <translation id="7628469622942688817">จำ PIN ของฉันในอุปกรณ์นี้</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
@@ -161,6 +170,7 @@
 หากต้องการให้สิทธิ์นี้ ให้คลิกปุ่ม "<ph name="BUTTON_NAME" />" ด้านล่าง จากนั้นเลือกช่องข้าง "<ph name="SERVICE_SCRIPT_NAME" />" ในแผงค่ากำหนด "การเข้าถึง" ที่เปิดขึ้นมา
 
 หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
+<translation id="8305209735512572429">กระบวนการทำงานระยะไกลของการตรวจสอบสิทธิ์ผ่านเว็บ</translation>
 <translation id="8383794970363966105">ในการใช้ Chromoting คุณจะต้องเพิ่มบัญชี Google ลงในอุปกรณ์ของคุณ</translation>
 <translation id="8386846956409881180">โฮสต์ได้รับการกำหนดค่าด้วยข้อมูลรับรอง OAuth ที่ไม่ถูกต้อง</translation>
 <translation id="8397385476380433240">ให้สิทธิ์แก่ <ph name="PRODUCT_NAME" /></translation>

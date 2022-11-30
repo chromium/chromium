@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,12 +58,6 @@ mojom::StackMode ConvertStringToStackMode(const std::string& input);
 // interval. If |sampling_rate| is N, then on average, an allocation will be
 // recorded every N bytes of allocated objects.
 uint32_t GetSamplingRateForStartup();
-
-bool IsBackgroundHeapProfilingEnabled();
-
-// Exposed for testing.
-extern const base::Feature kOOPHeapProfilingFeature;
-extern const char kOOPHeapProfilingFeatureMode[];
 
 }  // namespace heap_profiling
 

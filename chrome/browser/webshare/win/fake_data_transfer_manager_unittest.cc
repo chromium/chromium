@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,15 +14,18 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/scoped_winrt_initializer.h"
 #include "base/win/vector.h"
 #include "chrome/browser/webshare/win/fake_storage_file_statics.h"
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ABI::Windows::ApplicationModel::DataTransfer::DataRequestedEventArgs;
 using ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
+using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage2;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackagePropertySet;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequest;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequestDeferral;
@@ -89,32 +92,21 @@ class DataRequestedTestCallback {
 
 class FakeDataTransferManagerTest : public ::testing::Test {
  protected:
-  bool IsSupportedEnvironment() {
-    return FakeDataTransferManager::IsSupportedEnvironment();
-  }
-
   void SetUp() override {
-    if (!IsSupportedEnvironment())
-      return;
-    ASSERT_HRESULT_SUCCEEDED(
-        base::win::RoInitialize(RO_INIT_TYPE::RO_INIT_MULTITHREADED));
+    if (!FakeDataTransferManager::IsSupportedEnvironment())
+      GTEST_SKIP();
+
+    winrt_initializer_.emplace();
+    ASSERT_TRUE(winrt_initializer_->Succeeded());
     fake_data_transfer_manager_ =
         Microsoft::WRL::Make<FakeDataTransferManager>();
   }
 
-  void TearDown() override {
-    if (!IsSupportedEnvironment())
-      return;
-    base::win::RoUninitialize();
-  }
-
+  absl::optional<base::win::ScopedWinrtInitializer> winrt_initializer_;
   ComPtr<FakeDataTransferManager> fake_data_transfer_manager_;
 };
 
 TEST_F(FakeDataTransferManagerTest, RemovingHandlerForInvalidToken) {
-  if (!IsSupportedEnvironment())
-    return;
-
   // Validate removing an invalid token both fails and creates a test failure
   // when there is no listener
   EventRegistrationToken invalid_token;
@@ -150,9 +142,6 @@ TEST_F(FakeDataTransferManagerTest, RemovingHandlerForInvalidToken) {
 }
 
 TEST_F(FakeDataTransferManagerTest, OutOfOrderEventUnsubscribing) {
-  if (!IsSupportedEnvironment())
-    return;
-
   ASSERT_FALSE(fake_data_transfer_manager_->HasDataRequestedListener());
 
   DataRequestedTestCallback callback_1;
@@ -205,9 +194,6 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventUnsubscribing) {
 }
 
 TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
-  if (!IsSupportedEnvironment())
-    return;
-
   DataRequestedTestCallback callback_1;
   EventRegistrationToken token_1;
   ASSERT_HRESULT_SUCCEEDED(fake_data_transfer_manager_->add_DataRequested(
@@ -257,8 +243,8 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
-  if (!IsSupportedEnvironment())
-    return;
+  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
+    GTEST_SKIP();
 
   base::test::SingleThreadTaskEnvironment task_environment;
 
@@ -319,7 +305,9 @@ TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
         auto url_h = base::win::ScopedHString::Create("https://my.url.com");
         ComPtr<IUriRuntimeClass> uri;
         EXPECT_HRESULT_SUCCEEDED(uri_factory->CreateUri(url_h.get(), &uri));
-        EXPECT_HRESULT_SUCCEEDED(data_package->SetUri(uri.Get()));
+        ComPtr<IDataPackage2> data_package_2;
+        EXPECT_HRESULT_SUCCEEDED(data_package.As(&data_package_2));
+        EXPECT_HRESULT_SUCCEEDED(data_package_2->SetWebLink(uri.Get()));
 
         auto storage_items = Make<base::win::Vector<IStorageItem*>>();
         storage_items->Append(storage_item.Get());
@@ -363,9 +351,6 @@ TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback_Deferral) {
-  if (!IsSupportedEnvironment())
-    return;
-
   // Set up a handler for the DataRequested event that requests a deferral
   ComPtr<IDataRequestDeferral> data_request_deferral;
   auto callback = Callback<

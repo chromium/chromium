@@ -1,0 +1,10 @@
+{
+  "name": "Module service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test importing a module service script with dynamic import.",
+  "background": {
+    "service_worker": "service_worker_background.js",
+    "type": "module"
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ ViewsTestHelperMac::~ViewsTestHelperMac() {
 
 void ViewsTestHelperMac::SetUpTestViewsDelegate(
     TestViewsDelegate* delegate,
-    base::Optional<ViewsDelegate::NativeWidgetFactory> factory) {
+    absl::optional<ViewsDelegate::NativeWidgetFactory> factory) {
   ViewsTestHelper::SetUpTestViewsDelegate(delegate, std::move(factory));
   delegate->set_context_factory(context_factories_.GetContextFactory());
 }

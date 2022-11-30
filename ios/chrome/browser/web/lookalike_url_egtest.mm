@@ -1,35 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
+#import <string>
 
-#include "base/bind.h"
-#include "base/strings/stringprintf.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/strings/stringprintf.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/web/lookalike_url_app_interface.h"
 #import "ios/chrome/browser/web/lookalike_url_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(LookalikeUrlAppInterface);
-#pragma clang diagnostic pop
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
@@ -96,6 +91,19 @@ const char kLookalikeInNewTabContent[] = "New tab";
       l10n_util::GetStringUTF8(IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH);
   _lookalikeBlockingPageNoSuggestionContent = l10n_util::GetStringUTF8(
       IDS_LOOKALIKE_URL_PRIMARY_PARAGRAPH_NO_SUGGESTED_URL);
+
+  if (@available(iOS 15.1, *)) {
+  } else {
+    if (@available(iOS 14.5, *)) {
+      // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which breaks
+      // some back/forward navigations between pages that share a renderer
+      // process. Use 'localhost' instead of '127.0.0.1' for the safe URL to
+      // prevent sharing renderer processes with unsafe URLs.
+      GURL::Replacements replacements;
+      replacements.SetHostStr("localhost");
+      _safeURL = _safeURL.ReplaceComponents(replacements);
+    }
+  }
 }
 
 - (void)tearDown {
@@ -329,10 +337,14 @@ const char kLookalikeInNewTabContent[] = "New tab";
 
   // Do a session restoration and verify that all navigation history is
   // preserved. For this test, the policy decider doesn't get installed for
-  // the first page load, so expect the page content instead of the warning.
+  // the first page load, so goForward first and install the policy decider
+  // after a load.
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
-  [ChromeEarlGrey waitForWebStateContainingText:kLookalikeContent];
   [LookalikeUrlAppInterface setUpLookalikeUrlDeciderForWebState];
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:safeContent2];

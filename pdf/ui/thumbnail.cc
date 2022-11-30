@@ -1,18 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "pdf/ui/thumbnail.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/numerics/ranges.h"
-#include "base/numerics/safe_math.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
+#include "base/cxx17_backports.h"
+#include "base/numerics/checked_math.h"
+#include "base/values.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
@@ -36,7 +38,7 @@ constexpr int kMaxThumbnailPixels = 255 * 1024 / kImageColorChannels;
 // Maximum CSS dimensions are set to match UX specifications.
 // These constants should be kept in sync with `PORTRAIT_WIDTH` and
 // `LANDSCAPE_WIDTH` in
-// chrome/browser/resources/pdf/elements/viewer-thumbnail.js.
+// chrome/browser/resources/pdf/elements/viewer-thumbnail.ts.
 constexpr int kMaxWidthPortraitPx = 108;
 constexpr int kMaxWidthLandscapePx = 140;
 
@@ -59,8 +61,8 @@ gfx::Size LimitAspectRatio(gfx::Size page_size) {
   return page_size;
 }
 
-// Calculate the size of a thumbnail image in device pixels using |page_size| in
-// any units and |device_pixel_ratio|.
+// Calculate the size of a thumbnail image in device pixels using `page_size` in
+// any units and `device_pixel_ratio`.
 gfx::Size CalculateBestFitSize(const gfx::Size& page_size,
                                float device_pixel_ratio) {
   gfx::Size safe_page_size = LimitAspectRatio(page_size);
@@ -92,28 +94,28 @@ gfx::Size CalculateBestFitSize(const gfx::Size& page_size,
   return scaled_size;
 }
 
+int CalculateStride(int width) {
+  base::CheckedNumeric<size_t> stride = kImageColorChannels;
+  stride *= width;
+  return stride.ValueOrDie<int>();
+}
+
+size_t CalculateImageDataSize(int stride, int height) {
+  base::CheckedNumeric<int> size = stride;
+  size *= height;
+  return size.ValueOrDie<size_t>();
+}
+
 }  // namespace
 
-Thumbnail::Thumbnail() = default;
-
-Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio) {
-  DCHECK_GE(device_pixel_ratio, kMinDevicePixelRatio);
-  DCHECK_LE(device_pixel_ratio, kMaxDevicePixelRatio);
-  device_pixel_ratio_ = base::ClampToRange(
-      device_pixel_ratio, kMinDevicePixelRatio, kMaxDevicePixelRatio);
-
-  const gfx::Size thumbnail_size_device_pixels =
-      CalculateBestFitSize(page_size, device_pixel_ratio_);
-
-  // Note that <canvas> can only hold data in RGBA format. It is the
-  // responsibility of the thumbnail's renderer to fill `bitmap_` with RGBA
-  // data.
-  const SkImageInfo info =
-      SkImageInfo::Make(thumbnail_size_device_pixels.width(),
-                        thumbnail_size_device_pixels.height(),
-                        kRGBA_8888_SkColorType, kPremul_SkAlphaType);
-  bool success = bitmap_.tryAllocPixels(info, info.minRowBytes());
-  DCHECK(success);
+Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio)
+    : device_pixel_ratio_(base::clamp(device_pixel_ratio,
+                                      kMinDevicePixelRatio,
+                                      kMaxDevicePixelRatio)),
+      image_size_(CalculateBestFitSize(page_size, device_pixel_ratio_)),
+      stride_(CalculateStride(image_size_.width())),
+      image_data_(CalculateImageDataSize(stride(), image_size().height())) {
+  DCHECK(!image_data_.empty());
 }
 
 Thumbnail::Thumbnail(Thumbnail&& other) = default;
@@ -121,5 +123,15 @@ Thumbnail::Thumbnail(Thumbnail&& other) = default;
 Thumbnail& Thumbnail::operator=(Thumbnail&& other) = default;
 
 Thumbnail::~Thumbnail() = default;
+
+base::Value::BlobStorage& Thumbnail::GetImageData() {
+  DCHECK(!image_data_.empty());
+  return image_data_;
+}
+
+base::Value::BlobStorage Thumbnail::TakeData() {
+  DCHECK(!image_data_.empty());
+  return std::move(image_data_);
+}
 
 }  // namespace chrome_pdf

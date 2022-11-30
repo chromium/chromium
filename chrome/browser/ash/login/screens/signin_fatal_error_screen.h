@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,23 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
+#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace chromeos {
-
 class SignInFatalErrorView;
+}
+
+namespace ash {
 
 // Controller for the gaia fatal error screen.
 class SignInFatalErrorScreen : public BaseScreen {
  public:
-  using TView = SignInFatalErrorView;
+  using TView = chromeos::SignInFatalErrorView;
 
   // Sets the error information to be shown on the screen
   enum class Error {
@@ -28,34 +32,51 @@ class SignInFatalErrorScreen : public BaseScreen {
     SCRAPED_PASSWORD_VERIFICATION_FAILURE = 1,
     INSECURE_CONTENT_BLOCKED = 2,
     MISSING_GAIA_INFO = 3,
+    CUSTOM = 4,
   };
 
-  explicit SignInFatalErrorScreen(SignInFatalErrorView* view,
-                                  const base::RepeatingClosure& exit_callback);
+  explicit SignInFatalErrorScreen(
+      base::WeakPtr<chromeos::SignInFatalErrorView> view,
+      const base::RepeatingClosure& exit_callback);
   SignInFatalErrorScreen(const SignInFatalErrorScreen&) = delete;
   SignInFatalErrorScreen& operator=(const SignInFatalErrorScreen&) = delete;
   ~SignInFatalErrorScreen() override;
 
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(SignInFatalErrorView* view);
-
-  // Setting the error state.
-  void SetErrorState(Error error, const base::Value* params);
+  // Setting the error methods.
+  void SetErrorState(Error error, base::Value::Dict params);
+  void SetCustomError(const std::string& error_text,
+                      const std::string& keyboard_hint,
+                      const std::string& details,
+                      const std::string& help_link_text);
 
  private:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   Error error_state_ = Error::UNKNOWN;
-  base::Optional<base::Value> extra_error_info_;
+  base::Value::Dict extra_error_info_;
 
-  SignInFatalErrorView* view_ = nullptr;
+  base::WeakPtr<chromeos::SignInFatalErrorView> view_;
   base::RepeatingClosure exit_callback_;
+
+  // Help application used for help dialogs.
+  scoped_refptr<HelpAppLauncher> help_app_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::SignInFatalErrorScreen;
+}
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SignInFatalErrorScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_SIGNIN_FATAL_ERROR_SCREEN_H_

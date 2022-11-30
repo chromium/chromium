@@ -7,7 +7,7 @@
 description("Checks that passing invalid strings to window.open() is properly handled.");
 
 if (window.testRunner)
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 
 var nonConvertibleToString = { toString: function() { throw "Exception in toString()"; } };
 var newWindow = null;

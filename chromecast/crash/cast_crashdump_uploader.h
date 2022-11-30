@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
-namespace google_breakpad {
-class LibcurlWrapper;
-}
-
 namespace chromecast {
+class LibcurlWrapper;
 
 struct CastCrashdumpData {
   CastCrashdumpData();
@@ -33,14 +28,18 @@ struct CastCrashdumpData {
   std::string crash_server;
   std::string proxy_host;
   std::string proxy_userpassword;
+  std::string upload_filename;
 };
 
 class CastCrashdumpUploader {
  public:
-  CastCrashdumpUploader(
-      const CastCrashdumpData& data,
-      std::unique_ptr<google_breakpad::LibcurlWrapper> http_layer);
+  CastCrashdumpUploader(const CastCrashdumpData& data,
+                        std::unique_ptr<LibcurlWrapper> http_layer);
   explicit CastCrashdumpUploader(const CastCrashdumpData& data);
+
+  CastCrashdumpUploader(const CastCrashdumpUploader&) = delete;
+  CastCrashdumpUploader& operator=(const CastCrashdumpUploader&) = delete;
+
   virtual ~CastCrashdumpUploader();
 
   virtual bool AddAttachment(const std::string& label,
@@ -51,7 +50,7 @@ class CastCrashdumpUploader {
  private:
   bool CheckRequiredParametersArePresent();
 
-  std::unique_ptr<google_breakpad::LibcurlWrapper> http_layer_;
+  std::unique_ptr<LibcurlWrapper> http_layer_;
   CastCrashdumpData data_;
 
   // Holds the following mapping for attachments: <label, filepath>
@@ -59,8 +58,6 @@ class CastCrashdumpUploader {
 
   // Holds the following mapping for HTTP request params: <key, value>
   std::map<std::string, std::string> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashdumpUploader);
 };
 
 }  // namespace chromecast

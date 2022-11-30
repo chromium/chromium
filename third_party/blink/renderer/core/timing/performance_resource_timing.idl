@@ -30,10 +30,16 @@
 
 // https://w3c.github.io/resource-timing/#performanceresourcetiming
 
+enum RenderBlockingStatusType {
+    "blocking",
+    "non-blocking"
+};
+
 [Exposed=(Window,Worker)]
 interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingInitiatorType] readonly attribute DOMString initiatorType;
     readonly attribute DOMString nextHopProtocol;
+    [RuntimeEnabled=DeliveryType] readonly attribute DOMString deliveryType;
     readonly attribute DOMHighResTimeStamp workerStart;
     readonly attribute DOMHighResTimeStamp redirectStart;
     readonly attribute DOMHighResTimeStamp redirectEnd;
@@ -50,9 +56,13 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long encodedBodySize;
     [MeasureAs=PerformanceResourceTimingSizes] readonly attribute unsigned long long decodedBodySize;
     readonly attribute FrozenArray<PerformanceServerTiming> serverTiming;
-    // PerformanceResourceTiming#workerTiming
-    // See: https://github.com/wanderview/fetchevent-worker-timing/blob/master/explainer.md
-    [RuntimeEnabled=ServiceWorkerFetchEventWorkerTiming]
-        readonly attribute FrozenArray<PerformanceEntry> workerTiming;
+    // PerformanceResourceTiming#renderBlockingStatus
+    // See: https://github.com/abinpaul1/resource-timing/blob/render-blocking-status-explainer/Explainer/Render_Blocking_Status.md
+    [RuntimeEnabled=RenderBlockingStatus]
+        readonly attribute RenderBlockingStatusType renderBlockingStatus;
+    // PerformanceResourceTiming#responseStatus
+    // See: https://github.com/abinpaul1/resource-timing/blob/explainer-resource-response-status/Explainers/Response_Status_Code.md
+    [RuntimeEnabled=ResourceTimingResponseStatus]
+        readonly attribute short responseStatus;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

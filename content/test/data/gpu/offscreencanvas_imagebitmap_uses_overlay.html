@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Canvas Uses CALayerOverlay Test</title>
+
+<script>
+// '--enable-gpu-benchmarking' is required for this test.
+
+// Diagnostics:
+// * Page is blank: something fundamental is broken with workers,
+//   OffscreenCanvas, ImageBitmap, or ImageBitmapRendering context.
+//   Check the console output.
+// * Black square: You probably forgot to run with the
+//   --enable-gpu-benchmarking flag or
+//   addCoreAnimationStatusEventListener failed for some reason.
+// * Red square: Test failed, CALayerOverlay is not being used.
+// * Green square: Test passed, CALayerOverlay is being used.
+// * None of the above: You're in big trouble!
+
+async function main() {
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('bitmaprenderer');
+  const bg_canvas = new OffscreenCanvas(canvas.width, canvas.height);
+  const bg_ctx = bg_canvas.getContext('2d');
+
+  bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
+  bg_ctx.fillStyle = "Black";
+  bg_ctx.fillRect(0, 0, 100, 100);
+
+  const image1 = await createImageBitmap(bg_canvas);
+  context.transferFromImageBitmap(image1);
+
+  async function errorCodeHandler(errorCode) {
+    // gfx::kCALayerSuccess = 0
+    bg_ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (errorCode == 0) {
+      console.log("CALayerOverlay is being used");
+      bg_ctx.fillStyle = "DarkGreen";
+      if (window.domAutomationController) {
+        window.domAutomationController.send("SUCCESS");
+      }
+    } else {
+      console.log("CALayerOverlay is not used. Error code:" , errorCode);
+      bg_ctx.fillStyle = "Red";
+      if (window.domAutomationController) {
+        window.domAutomationController.send("FAILED");
+      }
+    }
+    bg_ctx.fillRect(0, 0, 100, 100);
+    const image = await createImageBitmap(bg_canvas);
+    context.transferFromImageBitmap(image);
+  }
+
+  async function draw() {
+    if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+      console.log("addCoreAnimationStatusEventListener fails!");
+      if (window.domAutomationController) {
+        window.domAutomationController.send("FAILED");
+      }
+    }
+  }
+
+  window.requestAnimationFrame(draw);
+}
+
+</script>
+</head>
+<body onload="main()">
+<canvas id="canvas" width="100" height="100">
+</body>
+</html>

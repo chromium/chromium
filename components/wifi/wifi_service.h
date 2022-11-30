@@ -1,21 +1,19 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_WIFI_WIFI_SERVICE_H_
 #define COMPONENTS_WIFI_WIFI_SERVICE_H_
 
-#include <list>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/wifi/wifi_export.h"
 
@@ -32,6 +30,9 @@ class WIFI_EXPORT WiFiService {
   using NetworkGuidListCallback =
       base::RepeatingCallback<void(const NetworkGuidList& network_guid_list)>;
 
+  WiFiService(const WiFiService&) = delete;
+  WiFiService& operator=(const WiFiService&) = delete;
+
   virtual ~WiFiService() {}
 
   // Initialize WiFiService, store |task_runner| for posting worker tasks.
@@ -47,7 +48,7 @@ class WIFI_EXPORT WiFiService {
   // Get Properties of network identified by |network_guid|. Populates
   // |properties| on success, |error| on failure.
   virtual void GetProperties(const std::string& network_guid,
-                             base::DictionaryValue* properties,
+                             base::Value::Dict* properties,
                              std::string* error) = 0;
 
   // Gets the merged properties of the network with id |network_guid| from the
@@ -55,7 +56,7 @@ class WIFI_EXPORT WiFiService {
   // the currently active settings. Populates |managed_properties| on success,
   // |error| on failure.
   virtual void GetManagedProperties(const std::string& network_guid,
-                                    base::DictionaryValue* managed_properties,
+                                    base::Value::Dict* managed_properties,
                                     std::string* error) = 0;
 
   // Get the cached read-only properties of the network with id |network_guid|.
@@ -64,13 +65,13 @@ class WIFI_EXPORT WiFiService {
   // returns a subset of the properties returned by |GetProperties|. Populates
   // |properties| on success, |error| on failure.
   virtual void GetState(const std::string& network_guid,
-                        base::DictionaryValue* properties,
+                        base::Value::Dict* properties,
                         std::string* error) = 0;
 
   // Set Properties of network identified by |network_guid|. Populates |error|
   // on failure.
   virtual void SetProperties(const std::string& network_guid,
-                             std::unique_ptr<base::DictionaryValue> properties,
+                             base::Value::Dict properties,
                              std::string* error) = 0;
 
   // Creates a new network configuration from |properties|. If |shared| is true,
@@ -78,15 +79,15 @@ class WIFI_EXPORT WiFiService {
   // network already exists, this will fail and populate |error|. On success
   // populates the |network_guid| of the new network.
   virtual void CreateNetwork(bool shared,
-                             std::unique_ptr<base::DictionaryValue> properties,
+                             base::Value::Dict properties,
                              std::string* network_guid,
                              std::string* error) = 0;
 
   // Get list of visible networks of |network_type| (one of onc::network_type).
   // Populates |network_list| on success.
   virtual void GetVisibleNetworks(const std::string& network_type,
-                                  base::ListValue* network_list,
-                                  bool include_details) = 0;
+                                  bool include_details,
+                                  base::Value::List* network_list) = 0;
 
   // Request network scan. Send |NetworkListChanged| event on completion.
   virtual void RequestNetworkScan() = 0;
@@ -136,9 +137,6 @@ class WIFI_EXPORT WiFiService {
   static const char kErrorNotImplemented[];
   static const char kErrorScanForNetworksWithName[];
   static const char kErrorWiFiService[];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WiFiService);
 };
 
 }  // namespace wifi

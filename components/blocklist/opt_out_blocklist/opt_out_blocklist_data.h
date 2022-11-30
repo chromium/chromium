@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"
 
@@ -89,6 +87,10 @@ class BlocklistData {
                 std::unique_ptr<Policy> type_policy,
                 size_t max_hosts,
                 AllowedTypesAndVersions allowed_types);
+
+  BlocklistData(const BlocklistData&) = delete;
+  BlocklistData& operator=(const BlocklistData&) = delete;
+
   ~BlocklistData();
 
   // Adds a new entry for all rules to use when evaluating blocklisting state.
@@ -167,8 +169,6 @@ class BlocklistData {
   // to remove stale entries from the database and to DCHECK that other methods
   // are not using disallowed types.
   AllowedTypesAndVersions allowed_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlocklistData);
 };
 
 }  // namespace blocklist

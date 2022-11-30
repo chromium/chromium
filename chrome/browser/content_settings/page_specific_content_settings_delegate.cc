@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,28 +14,37 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
+#include "ipc/ipc_channel_proxy.h"
 
 namespace {
 
 void RecordOriginStorageAccess(const url::Origin& origin,
                                AccessContextAuditDatabase::StorageAPIType type,
-                               content::WebContents* web_contents) {
+                               content::Page& page) {
+  if (page.GetMainDocument().IsFencedFrameRoot())
+    return;
   auto* access_context_audit_service =
       AccessContextAuditServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+          Profile::FromBrowserContext(
+              page.GetMainDocument().GetBrowserContext()));
   if (access_context_audit_service)
     access_context_audit_service->RecordStorageAPIAccess(
-        origin, type, url::Origin::Create(web_contents->GetLastCommittedURL()));
+        origin, type, page.GetMainDocument().GetLastCommittedOrigin());
 }
 
 }  // namespace
@@ -72,19 +81,6 @@ void PageSpecificContentSettingsDelegate::UpdateLocationBar() {
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
 
-void PageSpecificContentSettingsDelegate::SetContentSettingRules(
-    content::RenderProcessHost* process,
-    const RendererContentSettingRules& rules) {
-  // |channel| may be null in tests.
-  IPC::ChannelProxy* channel = process->GetChannel();
-  if (!channel)
-    return;
-
-  mojo::AssociatedRemote<chrome::mojom::RendererConfiguration> rc_interface;
-  channel->GetRemoteAssociatedInterface(&rc_interface);
-  rc_interface->SetContentSettingRules(rules);
-}
-
 PrefService* PageSpecificContentSettingsDelegate::GetPrefs() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -99,13 +95,60 @@ HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
-ContentSetting PageSpecificContentSettingsDelegate::GetEmbargoSetting(
-    const GURL& request_origin,
-    ContentSettingsType permission) {
-  return PermissionDecisionAutoBlockerFactory::GetForProfile(
-             Profile::FromBrowserContext(web_contents()->GetBrowserContext()))
-      ->GetEmbargoResult(request_origin, permission)
-      .content_setting;
+namespace {
+// By default, JavaScript, images and auto dark are allowed, and blockable mixed
+// content is blocked in guest content
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void GetGuestViewDefaultContentSettingRules(
+    bool incognito,
+    RendererContentSettingRules* rules) {
+  rules->image_rules.clear();
+  rules->image_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->auto_dark_content_rules.clear();
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->script_rules.clear();
+  rules->script_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+      std::string(), incognito));
+  rules->mixed_content_rules.clear();
+  rules->mixed_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
+      std::string(), incognito));
+}
+#endif
+}  // namespace
+
+void PageSpecificContentSettingsDelegate::SetDefaultRendererContentSettingRules(
+    content::RenderFrameHost* rfh,
+    RendererContentSettingRules* rules) {
+  bool is_off_the_record =
+      web_contents()->GetBrowserContext()->IsOffTheRecord();
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (guest_view::GuestViewBase::IsGuest(rfh)) {
+    GetGuestViewDefaultContentSettingRules(is_off_the_record, rules);
+    return;
+  }
+#endif
+  // Always allow scripting in PDF renderers to retain the functionality of
+  // the scripted messaging proxy in between the plugins in the PDF renderers
+  // and the PDF extension UI. Content settings for JavaScript embedded in
+  // PDFs are enforced by the PDF plugin.
+  if (rfh->GetProcess()->IsPdf()) {
+    rules->script_rules.clear();
+    rules->script_rules.emplace_back(
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+        std::string(), is_off_the_record);
+  }
 }
 
 std::vector<storage::FileSystemType>
@@ -163,6 +206,29 @@ PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
   return state;
 }
 
+content::WebContents* PageSpecificContentSettingsDelegate::
+    MaybeGetSyncedWebContentsForPictureInPicture(
+        content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  content::WebContents* parent_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetWebContents();
+  content::WebContents* child_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+
+  // For document picture-in-picture window, return the opener web contents.
+  if (web_contents == child_web_contents) {
+    DCHECK(parent_web_contents);
+    return parent_web_contents;
+  }
+
+  // For browser window that has opened a document picture-in-picture window,
+  // return the PiP window web contents.
+  if ((web_contents == parent_web_contents) && child_web_contents) {
+    return child_web_contents;
+  }
+  return nullptr;
+}
+
 void PageSpecificContentSettingsDelegate::OnContentAllowed(
     ContentSettingsType type) {
   if (!(type == ContentSettingsType::GEOLOCATION ||
@@ -174,12 +240,14 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   GetSettingsMap()->GetWebsiteSetting(web_contents()->GetLastCommittedURL(),
                                       web_contents()->GetLastCommittedURL(),
                                       type, &setting_info);
-  const base::Time grant_time = GetSettingsMap()->GetSettingLastModifiedDate(
-      setting_info.primary_pattern, setting_info.secondary_pattern, type);
+  const base::Time grant_time = setting_info.metadata.last_modified;
   if (grant_time.is_null())
     return;
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
       type, base::Time::Now() - grant_time);
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      type, web_contents()->GetBrowserContext(), web_contents(),
+      web_contents()->GetLastCommittedURL());
 }
 
 void PageSpecificContentSettingsDelegate::OnContentBlocked(
@@ -190,65 +258,52 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
   }
 }
 
-void PageSpecificContentSettingsDelegate::OnCacheStorageAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kCacheStorage,
-      web_contents());
-}
-
 void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
-    const net::CookieList& accessed_cookies) {
+    const net::CookieList& accessed_cookies,
+    content::Page& page) {
+  if (page.GetMainDocument().IsFencedFrameRoot())
+    return;
   if (cookie_access_helper_) {
     cookie_access_helper_->RecordCookieAccess(
-        accessed_cookies,
-        url::Origin::Create(web_contents()->GetLastCommittedURL()));
+        accessed_cookies, page.GetMainDocument().GetLastCommittedOrigin());
   }
-}
-
-void PageSpecificContentSettingsDelegate::OnDomStorageAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kLocalStorage,
-      web_contents());
-}
-
-void PageSpecificContentSettingsDelegate::OnFileSystemAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kFileSystem,
-      web_contents());
-}
-
-void PageSpecificContentSettingsDelegate::OnIndexedDBAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kIndexedDB,
-      web_contents());
 }
 
 void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    content::Page& page) {
   RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker,
-      web_contents());
+      origin, AccessContextAuditDatabase::StorageAPIType::kServiceWorker, page);
 }
 
-void PageSpecificContentSettingsDelegate::OnWebDatabaseAccessAllowed(
-    const url::Origin& origin) {
-  RecordOriginStorageAccess(
-      origin, AccessContextAuditDatabase::StorageAPIType::kWebDatabase,
-      web_contents());
+void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
+    content_settings::mojom::ContentSettingsManager::StorageType storage_type,
+    const url::Origin& origin,
+    content::Page& page) {
+  AccessContextAuditDatabase::StorageAPIType out_type = ([storage_type]() {
+    switch (storage_type) {
+      case StorageType::CACHE:
+        return AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
+      case StorageType::DATABASE:
+        return AccessContextAuditDatabase::StorageAPIType::kWebDatabase;
+      case StorageType::FILE_SYSTEM:
+        return AccessContextAuditDatabase::StorageAPIType::kFileSystem;
+      case StorageType::INDEXED_DB:
+        return AccessContextAuditDatabase::StorageAPIType::kIndexedDB;
+      case StorageType::LOCAL_STORAGE:
+        return AccessContextAuditDatabase::StorageAPIType::kLocalStorage;
+      case StorageType::SESSION_STORAGE:
+        return AccessContextAuditDatabase::StorageAPIType::kSessionStorage;
+      case StorageType::WEB_LOCKS:
+        NOTREACHED();
+        return AccessContextAuditDatabase::StorageAPIType::kCacheStorage;
+    }
+  })();
+  RecordOriginStorageAccess(origin, out_type, page);
 }
 
-void PageSpecificContentSettingsDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
+void PageSpecificContentSettingsDelegate::PrimaryPageChanged(
+    content::Page& page) {
   ClearPendingProtocolHandler();
 
   if (web_contents()->GetVisibleURL().SchemeIsHTTPOrHTTPS()) {

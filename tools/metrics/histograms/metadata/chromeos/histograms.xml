@@ -1,0 +1,2360 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome OS histograms along
+with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Prefer owners from the OWNERS file in this directory. If you need a metrics
+reviewer, please send CLs to chromium-metrics-reviews@google.com rather than to
+specific individuals. These CLs will be automatically reassigned to a reviewer
+within about 5 minutes. This approach helps the metrics team to load-balance
+incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="FeaturesLoggingUsageEvents">
+<!-- The variants are names of Chrome OS features. These are used for the
+  ChromeOS.FeatureUsage.* histograms to record different events related to the
+  feature -->
+
+  <variant name="ClamshellLauncher" summary="app launcher in clamshell mode">
+    <owner>jamescook@chromium.org</owner>
+    <owner>tbarzic@chromium.org</owner>
+    <owner>chromeos-launcher@google.com</owner>
+  </variant>
+  <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
+    <owner>jimmyxgong@chromium.org</owner>
+    <owner>zentaro@chromium.org</owner>
+    <owner>cros-peripherals@google.com</owner>
+  </variant>
+  <variant name="ESim" summary="esim">
+    <owner>azeemarshad@chromium.org</owner>
+    <owner>cros-connectivity@google.com</owner>
+    <owner>hsuregan@chromium.org</owner>
+  </variant>
+  <variant name="FakeKeyboardHeuristic" summary="Fake Keyboard Heuristic">
+    <owner>wmahon@chromium.org</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="FastPair" summary="Fast Pair">
+    <owner>shanefitz@google.com</owner>
+    <owner>julietlevesque@google.com</owner>
+    <owner>chromeos-cross-device-eng@google.com</owner>
+  </variant>
+  <variant name="Fingerprint" summary="fingerprint">
+    <owner>rsorokin@chromium.org</owner>
+    <owner>tomhughes@chromium.org</owner>
+    <owner>cros-oac@google.com</owner>
+    <owner>chromeos-fingerprint@google.com</owner>
+  </variant>
+  <variant name="LockOnSuspend" summary="lock screen on device suspend">
+    <owner>rsorokin@chromium.org</owner>
+    <owner>cros-oac@google.com</owner>
+  </variant>
+  <variant name="NearbyShare" summary="Nearby Share">
+    <owner>hansenmichael@google.com</owner>
+    <owner>nearby-share-chromeos-eng@google.com</owner>
+  </variant>
+  <variant name="NearbyShareBackgroundScanning"
+      summary="Background scanning for Nearby Share to detect and notify the
+               user of devices nearby that are attempting to share">
+    <owner>hansenmichael@google.com</owner>
+    <owner>nearby-share-chromeos-eng@google.com</owner>
+  </variant>
+  <variant name="NumberpadDynamicActivations"
+      summary="Turning on number pad mode for a dynamic numberpad.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadDynamicCancellations"
+      summary="Turning off number pad mode for a dynamic numberpad, without
+               having used a number-pad key.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadDynamicEnterKeystrokes"
+      summary="Pressing enter on dynamic number pad.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadDynamicNonEnterKeystrokes"
+      summary="Pressing key other than enter on dynamic number pad.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadExternalEnterKeystrokes"
+      summary="Pressing number pad enter on external keyboard.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadExternalNonEnterKeystrokes"
+      summary="Pressing number pad key other than enter on external keyboard.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadInternalEnterKeystrokes"
+      summary="Pressing enter on number pad on internal keyboard.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="NumberpadInternalNonEnterKeystrokes"
+      summary="Pressing number pad key other than enter on internal keyboard.">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="SmartLock" summary="Smart Lock">
+    <owner>hansberry@chromium.org</owner>
+    <owner>chromeos-cross-device-eng@google.com</owner>
+  </variant>
+  <variant name="StylusDetachedFromDockSession"
+      summary="Time spent from stylus being undocked, to being re-docked">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="StylusDetachedFromGarageOrDockSession"
+      summary="Time spent while either out of garage or un-docked">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="StylusDetachedFromGarageSession"
+      summary="Time spent from stylus being removed from garage, to being
+               replaced into garage">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="TabletLauncher" summary="app launcher in tablet mode">
+    <owner>jamescook@chromium.org</owner>
+    <owner>tbarzic@chromium.org</owner>
+    <owner>chromeos-launcher@google.com</owner>
+  </variant>
+</variants>
+
+<histogram name="ChromeOS.Apps.ExternalProtocolDialog"
+    enum="ArcIntentHandlerAction" expires_after="2022-05-21">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Records the response when the intent picker is shown to the user on Chrome
+    OS to allow them to open an external protocol in an app.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Apps.ExternalProtocolDialog.Accepted"
+    enum="ArcExternalProtocolAction" expires_after="2022-05-21">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Records the response when users that are shown the intent picker accept
+    opening an external protocol in an app as well as whether the app is
+    persisted.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Apps.ExternalProtocolDialog.Rejected"
+    enum="ArcExternalProtocolAction" expires_after="2022-05-21">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Records the response when users that are shown the intent picker reject
+    opening an external protocol in an app.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Apps.IntentPickerDestinationPlatform"
+    enum="ArcIntentHandlerDestinationPlatform" expires_after="2023-04-12">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the app platform shown as the result of link intent handling.
+    Recorded when the user makes a choice in the Intent Picker dialog, and when
+    the result of a previous user preference is applied during a link click.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Apps.NumberOfAppsForNotification"
+    enum="BooleanMultipleApps" expires_after="2022-07-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    Records whether a notification matches multiple apps, when there is one or
+    multiple web apps matching a web page nonpersistent notification.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Apps.OpenBrowser" enum="OpenBrowserType"
+    expires_after="2022-05-21">
+  <owner>ajlinker@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <owner>mxcai@chromium.org</owner>
+  <summary>
+    Records the type of app sending a link to the browser to be opened.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Attestation.AttestationFlowStatus"
+    enum="AttestationFlowStatus" expires_after="2023-02-12">
+  <owner>cylai@chromium.org</owner>
+  <owner>cros-hwsec+umas@chromium.org</owner>
+  <summary>
+    Records the status of attestation flow. The value represents 6 flags in 6
+    rightmost bits; starting from more significant bits they mean: 1. Has proxy.
+    2. Is System proxy active. 3. Run the default flow. 4. The default flow
+    succeeds. 5. Run the fallback flow. 6. The fallback flow succeeds.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Attestation.GetCertificateStatus"
+    enum="AttestationStatus" expires_after="2022-10-08">
+  <owner>cylai@chromium.org</owner>
+  <owner>cros-hwsec+umas@chromium.org</owner>
+  <summary>
+    Records the status of `AttesttionClient::GetCertificate()` called by
+    `AttestationFlowIntegrated`.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.AverageDetectionLatency"
+    units="microseconds" expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average latency in running the detector during an Auto Framing
+    enabled camera session. Emitted when the camera session is closed.
+
+    This metric is reported on ChromeOS devices with Auto Framing enabled.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.DetectionHitRate" units="%"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the rate that the detector successfully detects a subject in the
+    scene during an Auto Framing enabled camera session. Emitted when the camera
+    session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.EnabledCount" units="times"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of times that Auto Framing is toggled from off to on by
+    the user during a camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.EnabledTime" units="%"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the percentage of time that Auto Framing is turned on during a
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.Error" enum="AutoFramingError"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records errors in Auto Framing that can break camera functionality or cause
+    frame drops. Emitted at most once for each error when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.AutoFraming.MedianZoomRatio" units="tenths"
+    expires_after="2023-03-01">
+  <owner>kamesan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the median of sampled zoom ratios when Auto Framing zooms in camera
+    frames to the subject during a camera session.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="ChromeOS.Camera.ConfigureStreams.Output.Resolution" units="pixels"
+    expires_after="2023-10-01">
+<!-- Name completed by histogram_suffixes
+     name="ChromeOS.Camera.StreamFormat" -->
+
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the resolution of output stream that is configured by Chrome OS
+    camera service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.ConfigureStreamsLatency" units="microseconds"
+    expires_after="2023-10-01">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the process time of ConfigureStreams() method in Chrome OS camera
+    service.
+
+    This metric is reported for all users and will not cause abnormal
+    distribution since the metric is Chrome OS specified.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.ErrorType" enum="ChromeOSCameraErrorType"
+    expires_after="2023-10-01">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the type of the error which triggers the Notify() method in Chrome
+    OS camera service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.FaceAutoExposure.FunctionStatus"
+    enum="ChromeOSCameraFaceAutoExposureFunctionStatus"
+    expires_after="2023-10-01">
+  <owner>mojahsu@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records face auto exposure function status of the Chrome OS device. The
+    metric is reported when the camera is detected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.FaceAutoExposure.MaxNumDetectedFaces"
+    units="faces" expires_after="2023-10-01">
+  <owner>mojahsu@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records max number of detected faces of the camera session in Chrome OS
+    camera service. The metric is reported when the camera is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Facing" enum="ChromeOSCameraFacing"
+    expires_after="2023-10-01">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the camera facing of the camera session in Chrome OS camera service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageConvergenceLatency"
+    units="frames" expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average auto exposure convergence latency in frame count
+    throughout a camera session that runs Gcam auto exposure. Emitted when the
+    camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageHdrRatio"
+    units="ratio" expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average HDR ratio throughout a camera session that runs Gcam
+    auto exposure. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.GcamAutoExposure.AverageTet" units="TET"
+    expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average total exposure time (TET) throughout a camera session
+    that runs Gcam auto exposure. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="ChromeOS.Camera.HDRnet.AverageLatency.{ProcessingType}"
+    units="microseconds" expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the average CPU latency in running a given type of processing
+    throughout a HDRnet camera session. Emitted when the camera session is
+    closed.
+
+    This metric is reported on all ChromeOS devices with HDRnet enabled.
+  </summary>
+  <token key="ProcessingType">
+    <variant name="Postprocessing"
+        summary="Post-processing of HDRnet RGB output to final YUV output(s)"/>
+    <variant name="Preprocessing"
+        summary="Pre-processing of input YUV into linear RGB domain"/>
+    <variant name="RgbPipeline"
+        summary="Main HDRnet inferencing and rendering"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.Error" enum="HdrnetError"
+    expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records whether there's an error that can compromise the HDRnet feature,
+    either causing frame drops or stops the pipeline from running completely,
+    throughout a HDRnet camera session. Emitted when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.MaxOutputBuffersRendered"
+    units="buffers" expires_after="2023-03-05">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the maximum number of output buffers a HDRnet stream produces
+    (greater than 1 means there are multiple streams with the same aspect ratio)
+    throughtout a HDRnet camera session. Emitted when the camera session is
+    closed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Camera.HDRnet.MaxStreamSize.{StreamType}"
+    units="pixels" expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the maximum size (in width * height pixels) of the HDRnet stream
+    configured for a given output in a HDRnet camera session. Emitted when the
+    camera session is closed.
+  </summary>
+  <token key="StreamType">
+    <variant name="BLOB" summary="HDRnet stream for BLOB output"/>
+    <variant name="YUV" summary="HDRnet stream for YUV output"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.NumConcurrentStreams" units="streams"
+    expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of concurrent HDRnet streams in a HDRnet camera session.
+    Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.NumStillShotsTaken" units="captures"
+    expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of HDRnet-rendered still capture shots taken in a HDRnet
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.HDRnet.StreamConfiguration"
+    enum="HdrnetStreamConfiguration" expires_after="2023-10-01">
+  <owner>jcliang@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the stream configuration including the number of streams, the type
+    of streams, and if the streams are of the same aspect ratio in a HDRnet
+    camera session. Emitted when the camera session is closed.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Camera.Jpeg.Latency" units="microseconds"
+    expires_after="2023-10-01">
+<!-- Name completed by histogram_suffixes
+     name="ChromeOS.Camera.JpegProcessMethod" and
+     name="ChromeOS.Camera.JpegProcessType" -->
+
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the process time of the JDA (Jpeg Decode Accelerator) or JEA (Jpeg
+    Encode Accelerator) run on Chrome OS camera service. There are suffixes that
+    record the runner method (hardware/software), the runner type
+    (decode/encode).
+
+    This metric is reported for all users and will not cause abnormal
+    distribution since the metric is Chrome OS specified.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.Camera.Jpeg.Resolution" units="pixels"
+    expires_after="2023-10-01">
+<!-- Name completed by histogram_suffixes
+     name="ChromeOS.Camera.JpegProcessMethod" and
+     name="ChromeOS.Camera.JpegProcessType" -->
+
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the resolution of the image that JDA/JEA process by Chrome OS camera
+    service. The resolution represents by the total pixels contained in the
+    image. There are suffixes that record the runner method (hardware/software),
+    the runner type (decode/encode).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.OpenDeviceClientType"
+    enum="ChromeOSCameraClientType" expires_after="2023-10-01">
+  <owner>lnishan@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records which client type (e.g., Chrome, Android) is opening a camera
+    device.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.OpenDeviceLatency" units="microseconds"
+    expires_after="2023-10-01">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the process time of OpenDevice() method in Chrome OS camera service.
+
+    This metric is reported for all users and will not cause abnormal
+    distribution since the metric is Chrome OS specified.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.SessionDuration" units="seconds"
+    expires_after="2023-10-01">
+  <owner>wtlee@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>Records the session duration in Chrome OS camera service.</summary>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.CsrSignTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    The amount of time it took the certificate provisioning worker to sign a
+    CSR. Emitted after the sign is complete.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.Event" enum="CertProvisioningEvent"
+    expires_after="2023-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Number of times each event is reached during the certificate provisioning
+    flow.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.KeypairGenerationTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    The amount of time it took the certificate provisioning worker to generate
+    one key pair. Emitted after the generation is complete.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.Result"
+    enum="CertProvisioningWorkerState" expires_after="2023-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    For final states (see the list in cert_provisioning::IsFinalState): number
+    of times the certificate provisioning worker finished on every state. For
+    other states: number of times the worker failed on every state.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CertProvisioning.VaTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>miersh@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    The amount of time it took the certificate provisioning worker to build one
+    Verified Access response. Emitted after the response is built.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.CollectPerf"
+    enum="ChromeOSProfileCollectionStatus" expires_after="2023-05-01">
+  <owner>aalexand@google.com</owner>
+  <owner>gmx@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to collecting and
+    processing profile data obtained via &quot;perf events&quot; on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.CollectProcessTypes"
+    enum="ChromeOSProcessTypeCollectionStatus" expires_after="2023-01-19">
+  <owner>aalexand@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    Record the collection status (success or failure) when the Chrome process
+    and thread types are collected as part of the ChromeOS perf profile
+    collection.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.JankinessTriggerStatus"
+    enum="ChromeOSJankinessTriggerStatus" expires_after="2023-03-30">
+  <owner>chinglinyu@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    Records the status of collection attempts triggered by jankiness on Chrome
+    OS.
+
+    Warning: this histogram was expired from 08/30/2020 to 03/30/2022; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.ParseCPUFrequencies"
+    enum="ChromeOSParseCPUFrequencyStatus" expires_after="2023-05-01">
+  <owner>gmx@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to the parsing of
+    logical CPU frequencies on Chrome OS. Recorded when the browser process
+    starts.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.ParseLacrosPath" enum="ChromeOSParseLacrosPath"
+    expires_after="2023-04-06">
+  <owner>shantuo@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of various locations gotten from parsing a Lacros binary path. This
+    is used to monitor any change to the Lacros path. Recorded when a Lacros
+    binary path was found when CWP collects browser processes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.ParsePSICPU" enum="ChromeOSParsePSICPUStatus"
+    expires_after="2023-05-01">
+  <owner>shantuo@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to the parsing of PSI
+    CPU data on Chrome OS. Recorded after each perf collection.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.ParsePSIMemory" enum="ChromeOSParsePSIMemStatus"
+    expires_after="2023-02-12">
+  <owner>raging@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to the parsing of PSI
+    Memory data on Chrome OS. Recorded after each perf collection.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.PSIMemPressure.{PType}" units="failures"
+    expires_after="2022-12-01">
+  <owner>raging@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Reports periodic memory pressure metrics, as seen ChromeOS-wide. Metrics
+    originally come from /proc/pressure/memory readings, expressed as a
+    percentage with 2 decimal points (99.99%), but expressed as p*100, in an
+    integer in the range (1-9999) meaning (00.01% to 99.99%). Underflow value 0
+    means &quot;no pressure&quot; - 0%.
+  </summary>
+  <token key="PType">
+    <variant name="ArcFull"
+        summary="Percentage of time ARC was fully halted waiting on memory"/>
+    <variant name="ArcSome"
+        summary="Percentage of ARC had some blocking on memory"/>
+    <variant name="Full"
+        summary="Percentage of time fully halted waiting on memory operations"/>
+    <variant name="Some"
+        summary="Percentage of time when there was some blocking on memory"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
+    expires_after="2023-02-19">
+  <owner>shantuo@google.com</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    A count of the various outcomes related to recording the profile data
+    collected via &quot;perf events&quot; on Chrome OS. The histogram is
+    recorded when system-wide CPU profiling finishes and the collected data is
+    being saved to memory for later upload.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.UploadPerf" units="reports"
+    expires_after="2023-03-30">
+  <owner>aalexand@google.com</owner>
+  <owner>gmx@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
+  <summary>
+    Records the number of &quot;perf events&quot; reports included in an UMA
+    upload on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Debugd.Perf.GetBigFeedbackLogs.{SubTaskName}"
+    units="ms" expires_after="2023-07-01">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the total time it takes for each sub task of
+    LogTool::GetBigFeedbackLogs to complete. Recording happens on each call to
+    debugd's GetBigFeedbackLogs.
+  </summary>
+  <token key="SubTaskName">
+    <variant name="CreateConnectivityReport"/>
+    <variant name="GetArcBugReport"/>
+    <variant name="GetBluetoothBqr"/>
+    <variant name="GetLsbReleaseInfo"/>
+    <variant name="GetOsReleaseInfo"/>
+    <variant name="GetPerfData"/>
+    <variant name="kCommandLogs"/>
+    <variant name="kCommandLogsVerbose"/>
+    <variant name="kFeedbackLogs"/>
+    <variant name="kVarLogFileLogs"/>
+    <variant name="PopulateDictionaryValue"/>
+    <variant name="SerializeLogsAsJSON"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Debugd.Perf.{FunctionName}" units="ms"
+    expires_after="2023-01-01">
+  <owner>enlightened@google.com</owner>
+  <owner>jorgelo@google.com</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the total time it takes for each call to LogTool::{FunctionName} to
+    complete. Recording happens on each D-Bus call to debugd.
+  </summary>
+  <token key="FunctionName">
+    <variant name="GetAllDebugLogs"/>
+    <variant name="GetAllLogs"/>
+    <variant name="GetBigFeedbackLogs"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.DeviceSettings.FeatureFlagsMigration"
+    enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2022-04-10">
+  <owner>mnissler@chromium.org</owner>
+  <owner>src/chrome/browser/ash/settings/OWNERS</owner>
+  <summary>
+    Migration status for Chrome OS feature flags configuration in device
+    settings. This is intended to track migration progress in the field, so the
+    migration code can be removed when the old approach of storing bare flags is
+    no longer relevant in the field.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the ProbeError::ErrorType returned on request for
+    {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
+    probe service returns a ProbeError.
+  </summary>
+  <token key="ProbeErrorSourceStruct">
+    <variant name="BatteryInfo"/>
+    <variant name="CpuInfo"/>
+    <variant name="MemoryInfo"/>
+    <variant name="SystemInfo"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
+    enum="CrosDiagnosticsDataError" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>zhangwenyu@google.com</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records error type such as no data error, not a number error and expectation
+    not met error when receiving system information including battery info,
+    network info and system info. All errors are recorded.
+  </summary>
+  <token key="ErrorSource">
+    <variant name="Battery"/>
+    <variant name="Network"/>
+    <variant name="System"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
+    units="CrosDiagnosticsNavigationView" expires_after="2023-03-19">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records requested initial screen when opening the Diagnostics App.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
+    expires_after="2023-02-12">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration that the Memory Routine took to complete. Emitted when
+    the routine completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
+    expires_after="2023-02-12">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration that the Diagnostics App is open. emitted when the app
+    is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
+    expires_after="2023-02-12">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of routines run while the Chrome OS Diagnostics App was
+    open. Begins at zero each time the app is open and recorded each time the
+    app is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
+    units="ms" expires_after="2023-02-12">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration that the Diagnostics App is open for a given page view.
+    Emitted when the active page changes or when the app is closed. Cumulatively
+    adds up to the total duration recorded by
+    &quot;ChromeOS.DiagnosticsUi.OpenDuration&quot; or
+    &quot;ChromeOS.FeatureUsage.DiagnosticsUi.Usetime&quot;.
+  </summary>
+  <token key="NavigationView">
+    <variant name="Connectivity" summary="chrome://diagnostics/?connectivity"/>
+    <variant name="Input" summary="chrome://diagnostics/?input"/>
+    <variant name="System"
+        summary="chrome://diagnostics/?system or chrome://diagnostics"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
+    enum="CrosDiagnosticsRoutineResult" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the result of the {RoutineType} Routine.</summary>
+  <token key="RoutineType">
+    <variant name="BatteryCharge"/>
+    <variant name="BatteryDischarge"/>
+    <variant name="CaptivePortal"/>
+    <variant name="CpuCache"/>
+    <variant name="CpuFloatingPoint"/>
+    <variant name="CpuPrime"/>
+    <variant name="CpuStress"/>
+    <variant name="DnsLatency"/>
+    <variant name="DnsResolution"/>
+    <variant name="DnsResolverPresent"/>
+    <variant name="GatewayCanBePinged"/>
+    <variant name="HasSecureWiFiConnection"/>
+    <variant name="HttpFirewall"/>
+    <variant name="HttpsFirewall"/>
+    <variant name="HttpsLatency"/>
+    <variant name="LanConnectivity"/>
+    <variant name="Memory"/>
+    <variant name="SignalStrength"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
+    expires_after="2023-05-11">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records device eligibility, enabled status, and success rate for the
+    {FeatureName} feature. Different events are recorded at different times, as
+    described in the enum labels.
+  </summary>
+  <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
+</histogram>
+
+<histogram name="ChromeOS.FeatureUsage.{FeatureName}.Usetime" units="ms"
+    expires_after="2023-05-11">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the duration of time (ms) a given {FeatureName} feature was used.
+  </summary>
+  <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
+</histogram>
+
+<histogram name="ChromeOS.FirmwareUpdateUi.InstallResult"
+    enum="FirmwareUpdateInstallResult" expires_after="2023-03-05">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the result of installing a firmware update. Recorded once per
+    install and the histogram is emitted either when an install is completed or
+    when a failure state is reached. An example failure state is if we're unable
+    to create a firmware update directory.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
+    units="devices" expires_after="2023-01-01">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total number of devices found. OnStartup is recorded when a user
+    first logs in and OnRefresh is recorded for any subsequent request. The
+    cases in which a subsequent request will be made are when the Firmware
+    Update SWA is launched, when an install is completed, and when we detect
+    that a device has been added or removed.
+  </summary>
+  <token key="Source">
+    <variant name="OnRefresh"/>
+    <variant name="OnStartup"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.FirmwareUpdateUi.{Source}.{Severity}UpdateCount"
+    units="updates" expires_after="2023-01-01">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total number of {Severity} firmware updates found for all of the
+    peripherals currently connected. The histogram is emitted once we've
+    received the list of updates (if any) for all peripherals. OnStartup is
+    recorded when a user first logs in and OnRefresh is recorded for any
+    subsequent request. The cases in which a subsequent request will be made are
+    when the Firmware Update SWA is launched, when an install is completed, and
+    when we detect that a device has been added or removed.
+  </summary>
+  <token key="Source">
+    <variant name="OnRefresh"/>
+    <variant name="OnStartup"/>
+  </token>
+  <token key="Severity">
+    <variant name="Critical"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Gaia.Done.ElapsedTime" units="ms"
+    expires_after="2023-03-01">
+  <owner>bchikhaoui@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the amount of time spent by user to complete GAIA login. Recorded
+    during user sign-in when Chrome received all the signals from Gaia.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
+    enum="BooleanReceived" expires_after="2023-03-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records whether or not {MessageName} was received during the {GaiaAuthFlow}
+    authentication on the login screen. Recorded on the successful online
+    authentication only.
+  </summary>
+  <token key="GaiaAuthFlow">
+    <variant name="Gaia"/>
+    <variant name="Saml"/>
+  </token>
+  <token key="MessageName">
+    <variant name="CloseView"/>
+    <variant name="UserInfo"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Gaia.PasswordFlow" enum="BooleanStartedCompleted"
+    expires_after="2023-03-01">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records events for the Gaia password flow. &quot;Started&quot; is recorded
+    on each password entry on the Gaia page. &quot;Completed&quot; is recorded
+    when Gaia authentication succeeds. Note: this is not recorded for SAML
+    flows.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.HardwareVerifier.Report"
+    enum="HardwareVerifierQualificationStatus" expires_after="2023-03-01">
+<!-- Name completed by histogram_suffixes name="HardwareVerifierSupportCategory" -->
+
+  <owner>itspeter@chromium.org</owner>
+  <owner>stimim@chromium.org</owner>
+  <owner>chromeos-runtime-probe@google.com</owner>
+  <summary>
+    Qualification status of each component types. This entry is generated by
+    hardware_verifier.conf at boot time.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.HardwareVerifier.Report.IsCompliant" enum="Boolean"
+    expires_after="2023-03-01">
+  <owner>itspeter@chromium.org</owner>
+  <owner>stimim@chromium.org</owner>
+  <owner>chromeos-runtime-probe@google.com</owner>
+  <summary>Aggregated result of hardware verifier check.</summary>
+</histogram>
+
+<histogram name="ChromeOS.HardwareVerifier.TimeToFinish" units="ms"
+    expires_after="2023-03-01">
+  <owner>itspeter@chromium.org</owner>
+  <owner>stimim@chromium.org</owner>
+  <owner>chromeos-runtime-probe@google.com</owner>
+  <summary>
+    The amount of time it takes to finish one hardware verification run.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.HardwareVerifier.TimeToProbe" units="ms"
+    expires_after="2023-03-01">
+  <owner>itspeter@chromium.org</owner>
+  <owner>stimim@chromium.org</owner>
+  <owner>chromeos-runtime-probe@google.com</owner>
+  <summary>The amount of time it takes to probe hardware components.</summary>
+</histogram>
+
+<histogram name="ChromeOS.HaTS.{Survey}" enum="HaTSSurvey"
+    expires_after="2023-10-06">
+  <owner>aalsum@chromium.org</owner>
+  <owner>jackshira@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the responses for HaTS questions, to be analyzed against other OS
+    metrics like performance or number of crashes. Emitted during the lifecycle
+    of a survey and when a user answers any question on a HaTS survey.
+  </summary>
+  <token key="Survey">
+    <variant name="Stability"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorClientConcurrent" units="clients"
+    expires_after="2023-05-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the maximum number of concurrent sensor clients within an hour,
+    which indicates how many apps are using sensors. Recorded once every hour.
+    Might not be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorObserver" units="observers"
+    expires_after="2023-05-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the maximum number of running observers within an hour to any
+    sensor. It indicates how widely used the sensor samples are. Recorded once
+    every hour. Might not be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorObserverOpen" units="observers"
+    expires_after="2023-05-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the number of opened observer within an hour, which indicates how
+    often sensors are enabled and disabled. Recorded once every hour. Might not
+    be recorded for tail-end usage during a session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.IioService.SensorUsage.{Frequency}Hz"
+    enum="ChromeOSIioServiceSensorUsage" expires_after="2023-05-01">
+  <owner>chenghaoyang@chromium.org</owner>
+  <owner>chromeos-sensors-eng@google.com</owner>
+  <summary>
+    Records the usage of the sensor within an hour with at least {Frequency} Hz.
+    Recorded once every hour. Might not be recorded for tail-end usage during a
+    session.
+  </summary>
+  <token key="Frequency">
+    <variant name="0"/>
+    <variant name="10"/>
+    <variant name="50"/>
+    <variant name="100"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Intents.IntentPickerAction"
+    enum="IntentPickerDialogAction" expires_after="2023-02-19">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The intent picker dialog is shown (either automatically, or though a page
+    action button) when the user navigates to a page whose URL can be handled by
+    an installed app. This metric is recorded when the dialog is closed and
+    records the user action which caused it to close.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.IntentPickerAction.From{LaunchSource}"
+    enum="IntentPickerDialogAction" expires_after="2023-02-19">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The intent picker dialog is shown when the user navigates to a page whose
+    URL can be handled by an installed app. This metric is recorded when the
+    dialog is closed and records the user action which caused it to close. Only
+    recorded when the Intent Picker dialog is shown from {LaunchSource}.
+  </summary>
+  <token key="LaunchSource">
+    <variant name="AutoPopOut"/>
+    <variant name="OmniboxIcon"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Intents.IntentPickerIconEvent"
+    enum="IntentPickerIconEvent" expires_after="2023-02-12">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records events associated with the intent picker icon in the omnibox.
+    Recorded when the icon is shown or interacted with.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent" enum="LinkCapturingEvent"
+    expires_after="2022-12-01">
+  <obsolete>
+    Replaced by ChromeOS.Intents.LinkCapturingEvent2 in M106.
+  </obsolete>
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown, when a link is
+    successfully captured and results in opening an app, and when the user
+    changes their settings to automatically capture similar links in the future.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent.{AppType}App"
+    enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <obsolete>
+    Replaced by ChromeOS.Intents.LinkCapturingEvent2 in M106.
+  </obsolete>
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown for the {AppType} app
+    type, when a link is successfully captured and results in opening a/ an
+    {AppType} app, and when the user changes their settings to automatically
+    capture similar links in the future.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent2"
+    enum="LinkCapturingEvent" expires_after="2023-04-09">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown, when a link is
+    successfully captured and results in opening an app, and when the user
+    changes their settings to automatically capture similar links in the future.
+
+    Replaces ChromeOS.Intents.LinkCapturingEvent, which incorrectly recorded
+    events when the user changed settings to stay in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent2.{AppType}App"
+    enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown for the {AppType} app
+    type, when a link is successfully captured and results in opening a/ an
+    {AppType} app, and when the user changes their settings to automatically
+    capture similar links in the future.
+
+    Replaces ChromeOS.Intents.LinkCapturingEvent.{AppType}App, which incorrectly
+    recorded events when the user changed settings to stay in Chrome.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.IsLacrosBrowser" enum="Boolean" expires_after="never">
+<!-- expires-never: Used to identify lacros binary in metrics backend. -->
+
+  <owner>jamescook@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    Recorded as part of the metrics session data to identify the lacros-chrome
+    browser binary.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdate"
+    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2022-02-06">
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@google.com</owner>
+  <summary>
+    Counts the number of times the arc usage flags update started as well as the
+    number of times it succeeded and failed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime" units="ms"
+    expires_after="2022-02-06">
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Records the time taken to successfully update chaps with the new ARC usage
+    flags.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.KeyPermissionsManager.Migration"
+    enum="KeyPermissionsManagerMigrationStatus" expires_after="2023-03-19">
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@google.com</owner>
+  <summary>
+    Counts the number of times the migration started as well as the number of
+    times it succeeded and failed. It also counts the number of necessary
+    migrations. Necessary migrations are the ones that work on migrating
+    permissions for at least one key. Currently, some migration processes start
+    when there are 0 keys saved in preferences.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.KeyPermissionsManager.MigrationTime" units="ms"
+    expires_after="2022-02-06">
+  <obsolete>
+    Removed in M103
+  </obsolete>
+  <owner>omorsi@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <summary>
+    Records the time taken to successfully migrate key permissions to chaps.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Lacros.LoadTime" units="ms"
+    expires_after="2023-04-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>tvignatti@igalia.com</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    Time to load Lacros binary. The bulk of load time may be spent in mounting
+    Lacros browser binary through squashfs in the component manager. If the user
+    has explicitly specified a path for the Lacros browser binary though, load
+    time will very likely be insignificant. Recorded by ash each time the lacros
+    binary is started.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Lacros.OSChannel" enum="ChromeOSChannel"
+    expires_after="2022-10-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The release channel of the Chrome OS system on which Lacros is running. May
+    be different than the Lacros browser release channel. Recorded by the lacros
+    binary shortly after startup.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Lacros.StartTime" units="ms"
+    expires_after="2022-10-01">
+  <owner>erikchen@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    Time to start the lacros binary, specifically the time between when the
+    process is launched and the mojo connection is established between ash and
+    lacros. Recorded by ash each time the lacros binary is started.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
+    enum="LanguagePackFeatureIds" expires_after="2023-01-30">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records which feature requested a Pack from Language Packs Manager;
+    specifically an entry is recorded each time GetPackState is called.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.GetPackState.LanguageCode"
+    enum="LanguagePackLanguageCodes" expires_after="2023-01-30">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records which language was requested from Language Packs Manager;
+    specifically an entry is recorded each time GetPackState is called.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
+    enum="BooleanSuccess" expires_after="2023-01-30">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether a language pack installation was successful after a language
+    pack installation attempt.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.BasePackStateResponse"
+    enum="LanguagePackMojoPackState" expires_after="2023-01-30">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records the state of what state a base pack is in (whether it's installed or
+    not) when the language packs Mojo interface responds to an IPC.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature"
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records which feature was requested by callers of the language packs Mojo
+    interface's &quot;GetPackInfo&quot; IPC call.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.InstallBasePack.Feature"
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records which feature was requested by callers of the language packs Mojo
+    interface's &quot;InstallBasePack&quot; IPC call.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.InstallPack.Feature"
+    enum="LanguagePackMojoFeatureId" expires_after="2023-01-30">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records which feature was requested by callers of the language packs Mojo
+    interface's &quot;InstallPack&quot; IPC call.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.Mojo.PackStateResponse"
+    enum="LanguagePackMojoPackState" expires_after="2023-01-30">
+  <owner>mlcui@google.com</owner>
+  <owner>cros-borders-eng@google.com</owner>
+  <summary>
+    Records the state of what state a language pack is in (whether it's
+    installed or not) when the language packs Mojo interface responds to an IPC.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
+    enum="BooleanSuccess" expires_after="2023-01-30">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether a language pack uninstallation was successful after a
+    language pack uninstallation attempt.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Liveness.BrowserStateAtTimeout"
+    enum="ChromeOSBrowserProcessState" expires_after="2023-04-09">
+  <owner>iby@google.com</owner>
+  <owner>xiyuan@google.com</owner>
+  <owner>kaznacheev@google.com</owner>
+  <summary>
+    Records the state of the Chrome browser process at the moment
+    session_manager's LivenessChecker ping times out. This is the moment when
+    LivenessChecker will send an abort signal, if sending an abort signal is
+    enabled, but this metric is recorded regardless of whether or not aborting
+    from LivenessChecker is enabled. Exactly one sample of this metric is
+    recorded when the timeout occurs. If aborting is enabled, this should mean
+    one sample per abort.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Liveness.PingResponseTime" units="ms"
+    expires_after="2023-02-12">
+  <owner>rtinkoff@google.com</owner>
+  <owner>xiyuan@google.com</owner>
+  <summary>
+    Reports the time (ms) elapsed between sending of a LivenessChecker ping and
+    receipt of the response. Recorded when LivenessChecker receives a ping
+    response.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Liveness.PingResult" enum="BooleanSuccess"
+    expires_after="2023-04-09">
+  <owner>iby@google.com</owner>
+  <owner>xiyuan@google.com</owner>
+  <summary>
+    Records whether the dbus liveness pings successfully go through. True is
+    recorded when the session manager daemon receives the pong back from chrome
+    in time. False is recorded when it times out waiting for the pong.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}EntryCountPerDay"
+    units="log entries per day" expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Metrics of the numbers of log entries recorded in {LogType}s. Recorded when
+    the daily job &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}LogFileSizePerDay" units="MB"
+    expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    File sizes of {LogType} files in megabytes. Recorded when the daily job
+    &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemArc"/>
+    <variant name="SystemAudit"/>
+    <variant name="SystemChrome"/>
+    <variant name="SystemMessage"/>
+    <variant name="SystemNet"/>
+    <variant name="UserChrome"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}MaxThroughputPerMin"
+    units="log entries per min" expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Metrics of the number of maximum throughput (entries per minute) recorded in
+    {LogType}s within a day. Recorded when the daily job
+    &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Logging.{LogType}TotalFileSize" units="MB"
+    expires_after="2021-07-31">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>chromeos-velocity@chromium.org</owner>
+  <summary>
+    Total file sizes of {LogType} files in megabytes. Recorded when the daily
+    job &quot;chromeos-cleanup-logs&quot; is executed.
+  </summary>
+  <token key="LogType">
+    <variant name="SystemLog"/>
+    <variant name="UserLog"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.MachineIdRegen.AgeSeconds" units="seconds"
+    expires_after="2022-02-02">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The number of seconds of uptime since the last time the Chrome OS machine-id
+    was regenerated. This is reported every time the machine-id is regenerated
+    except for the first time since reboot.
+
+    NB: Data before M90 is incomplete.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MachineIdRegen.Lock" enum="BooleanLockingSuccess"
+    expires_after="2022-02-02">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    Measures whether the MachineIdRegen script acquires the lock. Success / Fail
+    is recorded every time the script is invoked. This is to test if the locking
+    is working as expected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MachineIdRegen.Reason" enum="ChromeOSMachineIdReason"
+    expires_after="2022-05-01">
+  <owner>ahassani@chromium.org</owner>
+  <owner>chromeos-core-services@google.com</owner>
+  <summary>
+    The reason why the Chrome OS machine-id was regenerated. This is reported
+    when the machine-id is re-generated.
+
+    NB: Data before M90 is incomplete.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MemoryPressureLevel" enum="MemoryPressureLevel"
+    expires_after="2022-04-24">
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The memory pressure level in Chrome OS, which is recorded periodically (once
+    per second). This is used to show the relative frequency of the system being
+    in a critical vs relaxed memory pressure state.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.MessageCenter.ScrollActionReason"
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2023-03-26">
+  <owner>yoshiki@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    The cause of the scroll event by the user on the message center. Only the
+    first event after the message center opens is recorded. For example, the
+    user opens the message center and scrolls by mouse then by key, only the
+    mouse event is recorded. If the user closes and reopens the message center
+    before the second event, both events are recorded.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PlatformVerification.Available"
+    enum="BooleanAvailable" expires_after="2021-12-21">
+  <owner>apronin@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Whether platform verification subsystem features are available at the time a
+    platform verification request is made for content protection on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PlatformVerification.BrowserResult"
+    enum="ChromeOSPlatformVerificationBrowserResult" expires_after="2022-05-21">
+  <owner>erikchen@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The result of a platform verification attempt for content protection on
+    Chrome OS, limited to the browser-specific checks. It's still possible for
+    platform verification to fail at later layers.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PlatformVerification.Result2"
+    enum="ChromeOSPlatformVerificationResult2" expires_after="2023-03-19">
+  <owner>erikchen@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The result of a platform verification attempt for content protection on
+    Chrome OS. Does not include browser-related failures. Those are tracked in
+    ChromeOS.PlatformVerification.BrowserResult.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PrivacyHub.Opened" enum="PrivacyHubNavigationOrigin"
+    expires_after="2023-09-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records when the user visits the Privacy Hub page in system settings.
+    Capturing the origin where the user navigated from.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PrivacyHub.{FeatureName}.{Source}.Enabled"
+    enum="BooleanEnabled" expires_after="2023-09-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records when the user changes the device-wide {FeatureName} access from the
+    {Source}. This can happen directly from the settings page
+    &quot;Settings&quot;&gt;&quot;Security and Privacy&quot;&gt;&quot;Privacy
+    hub&quot; or through notifications.
+  </summary>
+  <token key="FeatureName">
+    <variant name="Camera"/>
+    <variant name="Microphone"/>
+  </token>
+  <token key="Source">
+    <variant name="Notification"/>
+    <variant name="Settings"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.PrivacyScreen.Toggled"
+    enum="PrivacyScreenToggleUISurface" expires_after="2022-04-01">
+  <owner>tengs@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Record when the user toggles the integrated privacy screen on/off. See the
+    PrivacyScreenToggleUISurface enum for all UI surfaces for toggling the
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.RgbKeyboard.RgbKeyboardCapabilityType"
+    enum="RgbKeyboardCapabilityType" expires_after="2023-07-07">
+  <owner>michaelcheco@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records whether or not RGB keyboard is supported for the current device.
+    Most devices will return RgbKeyboardCapabilityType::None since RGB keyboard
+    is currently only supported on a handful of devices. We still include these
+    samples since it'll be useful for finding real failures, i.e,
+    RgbKeyboardCapabilityType::None is recorded for a device that supports RGB.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.RgbKeyboard.{Type}"
+    enum="RgbKeyboardBacklightChangeType" expires_after="2023-07-07">
+  <owner>michaelcheco@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>Records the source of RGB backlight change for a device.</summary>
+<!-- This must be kept current with RgbKeyboardCapabilityType located in
+  tools/metrics/histograms/enums.xml. RgbKeyboardCapabilityType::None is omitted
+  since the backlight can not be changed on unsupported devices. -->
+
+  <token key="Type">
+    <variant name="FourZoneFifteenLed"/>
+    <variant name="FourZoneFortyLed"/>
+    <variant name="FourZoneTwelveLed"/>
+    <variant name="IndividualKey"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.SAML.APILogin" enum="ChromeOSSamlApiUsed"
+    expires_after="2023-04-02">
+  <owner>mslus@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <summary>
+    Records every online login authenticated purely with GAIA or with SAML.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
+    enum="SamlInSessionPasswordChangeEvent" expires_after="2023-03-12">
+  <owner>mslus@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <summary>
+    Records how often users are guided through the SAML in-session password
+    change flow, and how often it is completed succesfully.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SAML.InSessionPasswordSyncEvent"
+    enum="SamlInSessionPasswordSyncEvent" expires_after="2023-03-19">
+  <owner>mslus@chromium.org</owner>
+  <owner>mohammedabdon@chromium.org</owner>
+  <summary>
+    Records how often password sync token API is called. Tracks results of token
+    verify operation and API errors.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
+    expires_after="2023-02-26">
+  <owner>mslus@chromium.org</owner>
+  <owner>mohammedabdon@chromium.org</owner>
+  <summary>Records SAML provider when SAML login flow is used.</summary>
+</histogram>
+
+<histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
+    expires_after="2023-03-26">
+  <owner>mslus@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <summary>
+    The number of passwords that were scraped during a Chrome OS login via SAML.
+    This is set only when the Chrome Credentials Passing API is not used.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SAML.Scraping.VerificationResult"
+    enum="BooleanSuccess" expires_after="M78">
+  <obsolete>
+    Removed in M102
+  </obsolete>
+  <owner>bartfab@chromium.org</owner>
+  <summary>
+    Whether one of the scraped passwords was successfully verified as the user's
+    password. This is set only when the Chrome Credentials Passing API is not
+    used.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SecurityAnomaly" enum="SecurityAnomaly"
+    expires_after="2023-02-12">
+  <owner>jorgelo@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records when an event representing a deviation from the Chrome OS security
+    posture happens.
+
+    Writable+executable mount events are checked every thirty seconds, but each
+    anomalous event is reported only once per boot.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SecurityAnomalyUploadSuccess" enum="Boolean"
+    expires_after="2023-02-19">
+  <owner>jorgelo@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the result (boolean success or failure) of attempting to report a
+    Chrome OS system as anomalous via the crash reporting service.
+
+    Reporting is only attempted if one or more anomalies are detected (see the
+    previous histogram's description for the types of anomalies considered),
+    *and* once per boot, even if reporting fails.
+
+    So this histogram will be recorded at most once per boot, and only if a
+    system is detected as anomalous (i.e. presents any of the tracked
+    anomalies.)
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.AppCount2.{AppType}" units="apps"
+    expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records number of {AppType} apps found for a given intent in the Sharesheet
+    when the sharesheet is invoked. Has 100 exponential buckets. (The original
+    histogram had 1000 linear buckets).
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
+  </summary>
+  <token key="AppType">
+    <variant name="All" summary="all apps"/>
+    <variant name="Arc" summary="arc app"/>
+    <variant name="Web" summary="web app"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.CopyToClipboard.FormFactor"
+    enum="ChromeOSSharesheetFormFactor" expires_after="2023-02-19">
+  <owner>melzhang@chromium.org</owner>
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the form factor when the Copy To Clipboard option is selected from
+    the sharesheet.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.FileCount" units="files"
+    expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records the number of files a user is trying to share from the Sharesheet
+    when the sharesheet is invoked.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.FormFactor"
+    enum="ChromeOSSharesheetFormFactor" expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>Records the form factor when the Sharesheet is invoked.</summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.IsDriveFolder" enum="Boolean"
+    expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    If the value is true, the data being shared from the Sharesheet is a folder
+    from Drive. Recorded when the sharesheet is invoked.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
+    enum="BooleanSelected" expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    If the value is true, the image preview was pressed during the current
+    invocation. Recorded when the sharesheet closes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.LaunchSource"
+    enum="ChromeOSSharesheetLaunchSource" expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records the source from which the Sharesheet is invoked.
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.ShareActionCount"
+    enum="ChromeOSSharesheetAction" expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records each action found for a given intent when the Sharesheet is invoked.
+
+    Warning: this histogram was expired from M95 to M96; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.UserAction"
+    enum="ChromeOSSharesheetAction" expires_after="2023-02-19">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>Records user action on sharesheet invocations.</summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.{Location}.MimeType"
+    enum="ChromeOSSharesheetMimeType" expires_after="2023-02-19">
+  <owner>melzhang@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the mime type of the content being copied at the {Location} point in
+    the Sharesheet flow.
+
+    This histogram could record multiple times in a single share in the event
+    that the user shares data of mime types at once. However, a single share
+    will not record the same mime type twice. E.g. sharing 2 images in one share
+    will record the image mimetype once.
+  </summary>
+  <token key="Location">
+    <variant name="CopyToClipboard"
+        summary="After copy to clipboard is selected"/>
+    <variant name="Invocation" summary="When the sharesheet is first invoked"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Sync.PreferencesMigrated" enum="BooleanMigrated"
+    expires_after="2023-02-12">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks whether browser sync preferences were migrated to the new OS sync
+    feature (project SplitSettingsSync). Recorded once per session during login.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.SystemTray.AnimationSmoothness" units="%"
+    expires_after="2023-04-13">
+<!-- Name completed by histogram suffixes
+     name="SystemTrayTransitionType" -->
+
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    Tracks the animation smoothness for the collapse / expand animation of the
+    system tray.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.BlockedNotifiersAfterUpdate"
+    units="notifiers" expires_after="2023-05-10">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    Tracks the number of blocked notifiers in the system tray after the user
+    blocks one or multiple notifiers. Note that this metric records the number
+    of blocked notifiers *after* the update.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.BlockedNotifiersOnOpen" units="notifiers"
+    expires_after="2023-05-10">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    Tracks the number of blocked notifiers in the system tray when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.FirstInteraction"
+    enum="CrosSystemTrayFirstInteraction" expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    Records the first interaction the user has with the system tray, which can
+    be a click/tap on the quick settings or message center bubble. Note that
+    this interaction could be at any time after the user opens the tray (e.g. 30
+    seconds later before the first click).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.Interaction"
+    enum="CrosSystemTrayInteraction" expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    An enum value how system tray bubble is interacted e.g. by tap (touch
+    screen), or click (mouse, trackpad, etc.) Reported every time the region
+    inside system tray bubble is tapped or clicked.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.IsExpandedOnOpen" enum="Boolean"
+    expires_after="2023-05-10">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    If the value is true, SystemTray is expanded when it's opened. Otherwise,
+    it's closed when it's opened.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.Network.RowClickedAction"
+    enum="NetworkRowClickedAction" expires_after="2023-06-20">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tjohnsonkanu@chromium.org</owner>
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    This metric will record each action taken as a result of a user clicking a
+    Network from Network list within system tray. Metric emitted each time a
+    user clicks on a network list row.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.Network.SectionShown"
+    enum="DetailedViewSection" expires_after="2023-06-20">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tjohnsonkanu@chromium.org</owner>
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records when different sections within the detailed network view in the
+    system tray shown. This metric is emitted each time a user opens the system
+    tray and each time a different network section is newly shown.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.Network.{NetworkType}.Toggled"
+    enum="BooleanToggled" expires_after="2023-06-20">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>tjohnsonkanu@chromium.org</owner>
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the new value of the WiFi/Mobile toggle button in system tray.
+    Metric emitted each time a user clicks on the enable/disable WiFi or Mobile
+    toggle.
+  </summary>
+  <token key="NetworkType">
+    <variant name="Mobile"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.NotificationsRemovedByClearAll"
+    units="notifications" expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    Records the number of notifications that are removed in a single clear all
+    action by the user.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.OpenHelpPageForManaged"
+    enum="CrosSystemTrayManagedType" expires_after="M83">
+  <owner>yamaguchi@chromium.org</owner>
+  <summary>
+    Type of the support page which user opened by clicking the indicator of
+    managed device type in the unified system tray bubble.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.ShelfPodCount" units="count"
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    The number of status area item pods (e.g. IME, Palette, Dictation, etc.) in
+    the shelf status area whenever a pod appears/disappears. This histogram is
+    only logged when the device is not in tablet mode, otherwise
+    ChromeOS.SystemTray.Tablet.ShelfPodCount is logged.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.Tablet.ShelfPodCount" units="count"
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    The number of status area item pods (e.g. IME, Palette, Dictation, etc.) in
+    the shelf status area whenever a pod appears/disappears. This histogram is
+    only logged when the device is in tablet mode, otherwise
+    ChromeOS.SystemTray.ShelfPodCount is logged.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.TimeToClick" units="ms"
+    expires_after="2021-08-22">
+  <owner>tengs@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The amount of time a user took from clicking on the button in status area,
+    to clicking on an item in the system tray bubble. (Obsolete M90 onwards).
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.TimeToClick2" units="ms"
+    expires_after="2023-04-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    The amount of time a user took after opening the system tray bubble, to
+    clicking on an item in the system tray bubble.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.SystemTray.ToggleExpanded"
+    enum="CrosSystemTrayToggleExpanded" expires_after="2023-05-10">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <summary>
+    An enum value how system tray bubble is expanded or collapsed. It can be
+    toggled by the button and touch gesture.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.CableSpeed" enum="CableSpeedMetric"
+    expires_after="2023-03-19">
+  <owner>pmalani@chromium.org</owner>
+  <owner>chromeos-power@google.com</owner>
+  <summary>
+    This value represents the speed of the USB Type-C cable which is connected
+    to a device. It is recorded every time a new peripheral is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.PartnerType" enum="PartnerTypeMetric"
+    expires_after="2023-03-19">
+  <owner>pmalani@chromium.org</owner>
+  <owner>chromeos-power@google.com</owner>
+  <summary>
+    This value represents the type of a USB Type-C peripheral (the Partner)
+    which is connected to a device. It is recorded every time a new peripheral
+    is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.UsbDeviceSpeed" enum="UsbDeviceSpeedMetric"
+    expires_after="2023-02-12">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents the speed (USB standard) of USB device connected. It
+    is recorded every time a new USB device is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.WrongConfiguration"
+    enum="WrongConfigurationMetric" expires_after="2023-04-09">
+  <owner>pmalani@chromium.org</owner>
+  <owner>chromeos-power@google.com</owner>
+  <summary>
+    This value represents events where a USB Type-C peripheral couldn't be
+    configured correctly, or experienced some other unexpected behaviour. It is
+    recorded every time a new peripheral is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.UrlXattrsCount" units="units"
+    expires_after="2023-02-12">
+  <owner>jorgelo@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <summary>
+    The number of files with URL extended attributes found in the users' home
+    directories. This is emitted once per boot. See crbug.com/919486 and
+    crbug.com/939386 for more details.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeOS.USB.DeviceAttached"
+    enum="ChromeOSUsbEventTiming" expires_after="2023-03-19">
+  <owner>allenwebb@chromium.org</owner>
+  <owner>jorgelo@chromium.org</owner>
+  <owner>mnissler@chromium.org</owner>
+  <summary>Timing and number of USB devices attached.</summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.USB.ExternalDeviceAttached.{USBDeviceRecognized}.{USBDeviceClass}"
+    enum="ChromeOSUsbEventTiming" expires_after="2022-12-31">
+  <owner>wonchung@google.com</owner>
+  <owner>allenwebb@chromium.org</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    Timing and number of external USB devices attached. This is emitted each
+    time an external device is attached via USB and when user logs in with an
+    external device attached.
+  </summary>
+  <token key="USBDeviceRecognized">
+    <variant name="Recognized"
+        summary="A device that was already added to the list of trusted
+                 devices"/>
+    <variant name="Unrecognized"
+        summary="A device that was not in the list of trusted devices yet"/>
+  </token>
+  <token key="USBDeviceClass">
+    <variant name="App"
+        summary="A device with only the application specific interface class"/>
+    <variant name="Audio" summary="An audio device"/>
+    <variant name="AV" summary="An audio/video device"/>
+    <variant name="Card" summary="A smart card reader"/>
+    <variant name="Comm" summary="A communication device"/>
+    <variant name="Health" summary="A personal healthcare device"/>
+    <variant name="HID" summary="A human-interface device"/>
+    <variant name="Hub" summary="A USB hub"/>
+    <variant name="Image" summary="A still image capture device"/>
+    <variant name="Misc"
+        summary="A device with only the misc. interface class"/>
+    <variant name="Other"
+        summary="All devices not covered by the other groups"/>
+    <variant name="Phys" summary="A physical device"/>
+    <variant name="Print" summary="A printer"/>
+    <variant name="Sec" summary="A security device (e.g. fingerprint reader)"/>
+    <variant name="Storage" summary="A storage device"/>
+    <variant name="Vendor"
+        summary="A device with only the vendor specific interface class"/>
+    <variant name="Video" summary="A video device"/>
+    <variant name="Wireless" summary="A wireless controller device"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
+    enum="ChromeOSUsbDeviceClass" expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    USB device class per {USBPortType}. This is emitted each time an external
+    device is attached via USB and when user logs in with an external device
+    attached.
+  </summary>
+  <token key="USBPortType">
+    <variant name="TypeA"/>
+    <variant name="TypeC"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
+    enum="ChromeOSUsbDeviceSpeed" expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    USB device speed per {USBPortType}. This is emitted each time an external
+    device is attached via USB and when user logs in with an external device
+    attached.
+  </summary>
+  <token key="USBPortType">
+    <variant name="TypeA"/>
+    <variant name="TypeC"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
+    enum="UserDeviceMatrix" expires_after="2023-04-24">
+  <owner>bmalcolm@chromium.org</owner>
+  <owner>cros-client-wa@google.com</owner>
+  <summary>
+    This value is reported at the start of a user session, and is a 32-bit value
+    that reports the primary user account type and the device type (umanaged
+    user on managed device, K12 user on an education device, etc.). The upper
+    16-bits represent the device type (found at http://shortn/_3iFWcdjy0P), and
+    the lower 16-bits represent the user type (found at
+    http://shortn/_uK3ZM4pC0a). So a nonprofit user (0x03) on an enterprise
+    device (0x02) would be 0x00020003 or 131075.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.WebAPK.{InstallType}.Result"
+    enum="WebApkInstallResultChromeOS" expires_after="2023-10-14">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records the overall final state of a WebAPK {InstallType} operation on
+    ChromeOS. A WebAPK is generated and installed when a PWA which supports Web
+    Share Target is installed in the browser, and updated when the PWA's
+    manifest updates.
+  </summary>
+  <token key="InstallType">
+    <variant name="Install"/>
+    <variant name="Update"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.WXMountCount" units="count"
+    expires_after="2023-02-12">
+  <owner>jorgelo@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the number of writable+executable mounts on the system. The count
+    itself is updated every 30 seconds, but this metric is reported every two
+    hours of runtime. This metric is reported regardless of whether users are
+    logged in or not. This metric is only reported on Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{CountMetric}" units="count"
+    expires_after="2023-03-30">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {CountMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="CountMetric">
+    <variant name="BdCount"
+        summary="the number of blocks currently written on the backing device"/>
+    <variant name="BdReads"
+        summary="the number of block reads from backing device"/>
+    <variant name="BdWrites"
+        summary="the number of block writes to backing device"/>
+    <variant name="FailedReads" summary="the number of failed reads in zram"/>
+    <variant name="FailedWrites" summary="the number of failed writes in zram"/>
+    <variant name="HugePages" summary="the number of incompressible pages"/>
+    <variant name="HugePagesSince"
+        summary="number of huge pages since zram set up"/>
+    <variant name="InvalidIo"
+        summary="number of non-page-size-aligned I/O requests in zram"/>
+    <variant name="NotifyFree"
+        summary="depending on device usage scenario it may account a) the
+                 number of pages freed because of swap slot free
+                 notifications or b) the number of pages freed because of
+                 REQ_OP_DISCARD requests sent by bio"/>
+    <variant name="PagesCompacted"
+        summary="the number of pages freed during compaction"/>
+    <variant name="SamePages"
+        summary="the number of same element filled pages written to this disk"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{HugePageActivityMetric}" units="pages"
+    expires_after="2023-03-30">
+  <owner>ctshao@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records the {HugePageActivityMetric} in a period of time. Recorded every 10s
+    from boot to shutdown. Period is the time between recordings (10s).
+  </summary>
+  <token key="HugePageActivityMetric">
+    <variant name="HugePagesRemoved"
+        summary="number of incompressible(huge) pages removed"/>
+    <variant name="HugePagesStored"
+        summary="number of incompressible(huge) pages added"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{PctMetric}" units="%"
+    expires_after="2023-03-30">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {PctMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="PctMetric">
+    <variant name="CompressedSizePct"
+        summary="the overall compression ratio of data store in zram disk"/>
+    <variant name="HugePagesPct"
+        summary="the percentage of incompressible pages in zram"/>
+    <variant name="SamePagesPct"
+        summary="the percentage of stored pages which are same pages, these
+                 pages have only repeated content"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Zram.{SizeMetric}" units="MB"
+    expires_after="2023-03-30">
+  <owner>ctshao@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records {SizeMetric}. Recorded every 10s from boot to shutdown.
+  </summary>
+  <token key="SizeMetric">
+    <variant name="ComprDataSizeMB"
+        summary="the compressed size of data stored in zram disk"/>
+    <variant name="MemLimitMB"
+        summary="the maximum amount of memory zram can use to store The
+                 compressed data"/>
+    <variant name="MemUsedMaxMB" summary="the peak memory that has zram used"/>
+    <variant name="MemUsedTotalMB"
+        summary="the total amount of memory in use for a zram disk"/>
+    <variant name="OrigDataSizeMB"
+        summary="the uncompressed size of data stored in zram disk"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

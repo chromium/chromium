@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Contains information to assist in making a decision about forwarding
@@ -27,11 +28,11 @@ struct RenderFrameMetadata {
   // The background color of a CompositorFrame. It can be used for filling the
   // content area if the primary surface is unavailable and fallback is not
   // specified.
-  uint32 root_background_color;
+  skia.mojom.SkColor4f root_background_color;
 
   // Scroll offset of the root layer. This optional parameter is only sent
   // during tests.
-  gfx.mojom.Vector2dF? root_scroll_offset;
+  gfx.mojom.PointF? root_scroll_offset;
 
   // Indicates whether the scroll offset of the root layer is at top, i.e.,
   // whether scroll_offset.y() == 0.
@@ -79,6 +80,14 @@ struct RenderFrameMetadata {
   float top_controls_shown_ratio;
 
   viz.mojom.VerticalScrollDirection new_vertical_scroll_direction;
+
+  // The cumulative time spent performing visual updates since the last commit.
+  // Tracked for all `local_surface_id` before this one.
+  mojo_base.mojom.TimeDelta previous_surfaces_visual_update_duration;
+
+  // The cumulative time spend performing visual updates for the current
+  // `local_surface_id` since the last commit.
+  mojo_base.mojom.TimeDelta current_surface_visual_update_duration;
 
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
@@ -151,5 +160,5 @@ interface RenderFrameMetadataObserverClient {
   // Only called if ReportAllRootScrolls(true) has been called. See
   // ReportAllRootScrolls() for details.
   [EnableIf=is_android]
-  OnRootScrollOffsetChanged(gfx.mojom.Vector2dF root_scroll_offset);
+  OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
 };

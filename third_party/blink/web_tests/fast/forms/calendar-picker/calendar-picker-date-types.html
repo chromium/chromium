@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
 </head>
@@ -14,11 +16,11 @@
 <script>
 description('Test if step limits available dates in calendar picker.');
 
-openPicker(document.getElementById('date'), test1);
+openPickerDeprecatedJsTest(document.getElementById('date'), test1);
 
 var pw = null;
 function test1() {
-    pw = popupWindow;
+    pw = internals.pagePopupWindow;
 
     testDay();
     testWeek();

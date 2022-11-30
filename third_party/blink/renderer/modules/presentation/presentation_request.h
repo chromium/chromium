@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExceptionState;
+class V8UnionPresentationSourceOrUSVString;
 
 // Implements the PresentationRequest interface from the Presentation API from
 // which websites can start or join presentation connections.
@@ -35,9 +34,10 @@ class MODULES_EXPORT PresentationRequest final
   static PresentationRequest* Create(ExecutionContext*,
                                      const String& url,
                                      ExceptionState&);
-  static PresentationRequest* Create(ExecutionContext*,
-                                     const Vector<String>& urls,
-                                     ExceptionState&);
+  static PresentationRequest* Create(
+      ExecutionContext*,
+      const HeapVector<Member<V8UnionPresentationSourceOrUSVString>>& sources,
+      ExceptionState&);
 
   // EventTarget implementation.
   const AtomicString& InterfaceName() const override;

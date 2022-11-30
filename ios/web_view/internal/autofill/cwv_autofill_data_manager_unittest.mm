@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
+#import "ios/web_view/public/cwv_credential_provider_extension_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -57,8 +58,10 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
-    password_store_ = new password_manager::TestPasswordStore();
-    password_store_->Init(nullptr);
+    password_store_ = new password_manager::TestPasswordStore(
+        password_manager::IsAccountStore(true));
+    password_store_->Init(/*prefs=*/nullptr,
+                          /*affiliated_match_helper=*/nullptr);
 
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
         initWithPersonalDataManager:personal_data_manager_.get()
@@ -67,8 +70,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
   // Fetches profiles from |autofill_data_manager_| and returns them in
   // |completion_handler|. Returns true if fetch was successful.
-  bool FetchProfiles(void (^completion_handler)(
-      NSArray<CWVAutofillProfile*>* profiles)) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool FetchProfiles(
+      void (^completion_handler)(NSArray<CWVAutofillProfile*>* profiles)) {
     __block BOOL fetch_completion_was_called = NO;
     [autofill_data_manager_ fetchProfilesWithCompletionHandler:^(
                                 NSArray<CWVAutofillProfile*>* profiles) {
@@ -83,8 +86,8 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
   // Fetches credit cards from |autofill_data_manager_| and returns them in
   // |completion_handler|. Returns true if fetch was successful.
-  bool FetchCreditCards(void (^completion_handler)(
-      NSArray<CWVCreditCard*>* credit_cards)) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool FetchCreditCards(
+      void (^completion_handler)(NSArray<CWVCreditCard*>* credit_cards)) {
     __block BOOL fetch_completion_was_called = NO;
     [autofill_data_manager_ fetchCreditCardsWithCompletionHandler:^(
                                 NSArray<CWVCreditCard*>* credit_cards) {
@@ -114,7 +117,7 @@ class CWVAutofillDataManagerTest : public PlatformTest {
   }
 
   // Fetches passwords from |autofill_data_manager_| and returns them.
-  NSArray<CWVPassword*>* FetchPasswords() WARN_UNUSED_RESULT {
+  [[nodiscard]] NSArray<CWVPassword*>* FetchPasswords() {
     __block NSArray<CWVPassword*>* fetched_passwords = nil;
     [autofill_data_manager_ fetchPasswordsWithCompletionHandler:^(
                                 NSArray<CWVPassword*>* passwords) {
@@ -222,6 +225,94 @@ TEST_F(CWVAutofillDataManagerTest, ReturnPassword) {
                                  *[fetched_passwords[0] internalPasswordForm]));
 }
 
+// Tests CWVAutofillDataManager no ops when nil is passed to updatePassword.
+TEST_F(CWVAutofillDataManagerTest, UpdatePasswordNilArguments) {
+  password_store_->AddLogin(GetTestPassword());
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* old_password = passwords.firstObject;
+
+  [autofill_data_manager_ updatePassword:old_password
+                             newUsername:nil
+                             newPassword:nil];
+
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* new_password = passwords.firstObject;
+  EXPECT_NSEQ(old_password.username, new_password.username);
+  EXPECT_NSEQ(old_password.password, new_password.password);
+}
+
+// Tests CWVAutofillDataManager properly updates just the username.
+TEST_F(CWVAutofillDataManagerTest, UpdateUsernameOnly) {
+  password_store_->AddLogin(GetTestPassword());
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  NSString* old_password_value = password.password;
+  EXPECT_NSNE(@"new-username", password.username);
+
+  [autofill_data_manager_ updatePassword:password
+                             newUsername:@"new-username"
+                             newPassword:nil];
+  EXPECT_NSEQ(@"new-username", password.username);
+  EXPECT_NSEQ(old_password_value, password.password);
+
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  password = passwords.firstObject;
+  EXPECT_NSEQ(@"new-username", password.username);
+  EXPECT_NSEQ(old_password_value, password.password);
+}
+
+// Tests CWVAutofillDataManager properly updates just the password.
+TEST_F(CWVAutofillDataManagerTest, UpdatePasswordOnly) {
+  password_store_->AddLogin(GetTestPassword());
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  NSString* old_username_value = password.username;
+  EXPECT_NSNE(@"new-password", password.password);
+
+  [autofill_data_manager_ updatePassword:password
+                             newUsername:nil
+                             newPassword:@"new-password"];
+  EXPECT_NSEQ(old_username_value, password.username);
+  EXPECT_NSEQ(@"new-password", password.password);
+
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  password = passwords.firstObject;
+  EXPECT_NSEQ(old_username_value, password.username);
+  EXPECT_NSEQ(@"new-password", password.password);
+}
+
+// Tests CWVAutofillDataManager properly updates both the username and password.
+TEST_F(CWVAutofillDataManagerTest, UpdateUsernameAndPassword) {
+  password_store_->AddLogin(GetTestPassword());
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSNE(@"new-username", password.username);
+  EXPECT_NSNE(@"new-password", password.password);
+
+  [autofill_data_manager_ updatePassword:password
+                             newUsername:@"new-username"
+                             newPassword:@"new-password"];
+  EXPECT_NSEQ(@"new-username", password.username);
+  EXPECT_NSEQ(@"new-password", password.password);
+
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  password = passwords.firstObject;
+  EXPECT_NSEQ(@"new-username", password.username);
+  EXPECT_NSEQ(@"new-password", password.password);
+}
+
 // Tests CWVAutofillDataManager properly deletes passwords.
 TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
   password_store_->AddLogin(GetTestPassword());
@@ -230,6 +321,102 @@ TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
   [autofill_data_manager_ deletePassword:passwords[0]];
   passwords = FetchPasswords();
   EXPECT_EQ(0ul, passwords.count);
+}
+
+// Tests CWVAutofillDataManager properly adds new passwords.
+TEST_F(CWVAutofillDataManagerTest, AddNewPassword) {
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(0ul, passwords.count);
+
+  [autofill_data_manager_
+      addNewPasswordForUsername:@"new-username"
+                       password:@"new-password"
+                           site:@"https://www.chromium.org/"];
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSEQ(@"new-username", password.username);
+  EXPECT_NSEQ(@"new-password", password.password);
+  EXPECT_NSEQ(@"https://www.chromium.org/", password.site);
+}
+
+// Tests CWVAutofillDataManager properly handles conflicts when adding passwords
+// whose primary key already exists.
+TEST_F(CWVAutofillDataManagerTest, AddNewPasswordWithConflictingPrimaryKey) {
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(0ul, passwords.count);
+
+  [autofill_data_manager_
+      addNewPasswordForUsername:@"some-username"
+                       password:@"some-password"
+                           site:@"https://www.chromium.org/"];
+  [autofill_data_manager_
+      addNewPasswordForUsername:@"some-username"
+                       password:@"different-password"
+                           site:@"https://www.chromium.org/"];
+  passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSEQ(@"some-username", password.username);
+  EXPECT_NSEQ(@"different-password", password.password);
+  EXPECT_NSEQ(@"https://www.chromium.org/", password.site);
+}
+
+// Tests CWVAutofillDataManager invokes password did change callback.
+TEST_F(CWVAutofillDataManagerTest, PasswordsDidChangeCallback) {
+  // OCMock objects are often autoreleased, but it must be destroyed before this
+  // test exits to avoid holding on to |autofill_data_manager_|.
+  @autoreleasepool {
+    id observer = OCMProtocolMock(@protocol(CWVAutofillDataManagerObserver));
+    [autofill_data_manager_ addObserver:observer];
+
+    password_manager::PasswordForm test_password = GetTestPassword();
+    [[observer expect]
+               autofillDataManager:autofill_data_manager_
+        didChangePasswordsByAdding:[OCMArg checkWithBlock:^BOOL(
+                                               NSArray<CWVPassword*>* added) {
+          EXPECT_EQ(1U, added.count);
+          CWVPassword* added_password = added.firstObject;
+          return *[added_password internalPasswordForm] == test_password;
+        }]
+                          updating:@[]
+                          removing:@[]];
+
+    // AddLogin is async, so the run loop needs to run until idle so the
+    // callback will be invoked.
+    password_store_->AddLogin(test_password);
+    base::RunLoop().RunUntilIdle();
+
+    [observer verify];
+  }
+}
+
+// Tests CWVAutofillDataManager can add a new password created from the
+// credential provider extension.
+TEST_F(CWVAutofillDataManagerTest,
+       AddNewPasswordFromCredentialProviderExtension) {
+  NSString* keychain_identifier = @"keychain-identifier";
+  [CWVCredentialProviderExtensionUtils
+      storePasswordForKeychainIdentifier:keychain_identifier
+                                password:@"testpassword"];
+  [autofill_data_manager_ addNewPasswordForUsername:@"testusername"
+                                  serviceIdentifier:@"https://www.chromium.org/"
+                                 keychainIdentifier:keychain_identifier];
+
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  CWVPassword* password = passwords.firstObject;
+  EXPECT_NSEQ(@"testusername", password.username);
+
+  // The following expectation fails because the TestPasswordStore does not
+  // use the LoginDatabase underneath. A LoginDatabase will properly decrypt
+  // the password from the keychain identifier and fill it out.
+  // EXPECT_NSEQ(@"testpassword", password.password);
+
+  EXPECT_NSEQ(@"https://www.chromium.org/", password.site);
+  EXPECT_NSEQ(keychain_identifier, password.keychainIdentifier);
 }
 
 }  // namespace ios_web_view

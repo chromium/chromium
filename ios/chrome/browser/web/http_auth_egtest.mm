@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/threading/platform_thread.h"
-#include "base/time/time.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "base/threading/platform_thread.h"
+#import "base/time/time.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -17,9 +17,9 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_auth_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,24 +38,14 @@ id<GREYMatcher> HttpAuthDialog() {
 
 // Returns matcher for Username text field.
 id<GREYMatcher> UsernameField() {
-  if (@available(iOS 13.0, *)) {
-    return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
-        IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER));
-  } else {
-    return chrome_test_util::StaticTextWithAccessibilityLabelId(
-        IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER);
-  }
+  return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HTTP_LOGIN_DIALOG_USERNAME_PLACEHOLDER));
 }
 
 // Returns matcher for Password text field.
 id<GREYMatcher> PasswordField() {
-  if (@available(iOS 13.0, *)) {
-    return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
-        IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER));
-  } else {
-    return chrome_test_util::StaticTextWithAccessibilityLabelId(
-        IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER);
-  }
+  return grey_accessibilityValue(l10n_util::GetNSStringWithFixup(
+      IDS_IOS_HTTP_LOGIN_DIALOG_PASSWORD_PLACEHOLDER));
 }
 
 // Returns matcher for Login button.
@@ -104,6 +94,12 @@ void WaitForHttpAuthDialog() {
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
+    [[EarlGrey selectElementWithMatcher:UsernameField()]
+        performAction:grey_tap()];
+
+    // Wait for the keyboard to be shown.
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
+
     // Enter valid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
         performAction:grey_typeText(@"gooduser")];
@@ -146,7 +142,7 @@ void WaitForHttpAuthDialog() {
         performAction:grey_tap()];
 
     // Ensure first dialog is dismissed before waiting for the second one.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
     // Verifies that authentication was requested again.
     WaitForHttpAuthDialog();
     [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]

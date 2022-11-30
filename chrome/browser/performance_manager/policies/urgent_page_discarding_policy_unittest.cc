@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
+#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -43,26 +44,34 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
-  UrgentPageDiscardingPolicy* policy_;
+  raw_ptr<UrgentPageDiscardingPolicy> policy_;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
+  base::RunLoop run_loop;
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
-      .WillOnce(::testing::Return(true));
+      .WillOnce(
+          ::testing::DoAll(::testing::Invoke(&run_loop, &base::RunLoop::Quit),
+                           ::testing::Return(true)));
   system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
+  run_loop.Run();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 
   // Send a second memory pressure notification without switching back to the
   // no pressure state. This happens when a single discard isn't sufficient to
   // exit memory pressure.
+  base::RunLoop run_loop2;
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
-      .WillOnce(::testing::Return(true));
+      .WillOnce(
+          ::testing::DoAll(::testing::Invoke(&run_loop2, &base::RunLoop::Quit),
+                           ::testing::Return(true)));
   PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(page_node());
   system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_CRITICAL);
+  run_loop2.Run();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 
@@ -71,6 +80,7 @@ TEST_F(UrgentPageDiscardingPolicyTest, NoDiscardOnModeratePressure) {
   system_node()->OnMemoryPressureForTesting(
       base::MemoryPressureListener::MemoryPressureLevel::
           MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(discarder());
 }
 

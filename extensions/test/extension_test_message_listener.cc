@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,40 +7,29 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/browser/notification_types.h"
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
-    bool will_reply)
-    : expected_message_(expected_message),
-      satisfied_(false),
-      wait_for_any_message_(false),
-      will_reply_(will_reply),
-      replied_(false),
-      failed_(false) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                 content::NotificationService::AllSources());
+    ReplyBehavior reply_behavior)
+    : expected_message_(expected_message), reply_behavior_(reply_behavior) {
+  test_api_observation_.Observe(
+      extensions::TestApiObserverRegistry::GetInstance());
 }
 
-ExtensionTestMessageListener::ExtensionTestMessageListener(bool will_reply)
-    : satisfied_(false),
-      wait_for_any_message_(true),
-      will_reply_(will_reply),
-      replied_(false),
-      failed_(false) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                 content::NotificationService::AllSources());
+ExtensionTestMessageListener::ExtensionTestMessageListener(
+    ReplyBehavior reply_behavior)
+    : reply_behavior_(reply_behavior) {
+  test_api_observation_.Observe(
+      extensions::TestApiObserverRegistry::GetInstance());
 }
 
-ExtensionTestMessageListener::~ExtensionTestMessageListener() {}
+ExtensionTestMessageListener::~ExtensionTestMessageListener() {
+  DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
+}
 
-bool ExtensionTestMessageListener::WaitUntilSatisfied()  {
+bool ExtensionTestMessageListener::WaitUntilSatisfied() {
   if (satisfied_)
     return !failed_;
   base::RunLoop run_loop;
@@ -51,9 +40,8 @@ bool ExtensionTestMessageListener::WaitUntilSatisfied()  {
 
 void ExtensionTestMessageListener::Reply(const std::string& message) {
   CHECK(satisfied_);
-  CHECK(!replied_);
+  CHECK(function_);
 
-  replied_ = true;
   function_->Reply(message);
   function_.reset();
 }
@@ -64,64 +52,68 @@ void ExtensionTestMessageListener::Reply(int message) {
 
 void ExtensionTestMessageListener::ReplyWithError(const std::string& error) {
   CHECK(satisfied_);
-  CHECK(!replied_);
+  CHECK(function_);
 
-  replied_ = true;
   function_->ReplyWithError(error);
   function_.reset();
 }
 
 void ExtensionTestMessageListener::Reset() {
+  DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
   satisfied_ = false;
   failed_ = false;
   message_.clear();
+  had_user_gesture_ = false;
   extension_id_for_message_.clear();
-  replied_ = false;
 }
 
-void ExtensionTestMessageListener::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE, type);
-
+bool ExtensionTestMessageListener::OnTestMessage(
+    extensions::TestSendMessageFunction* function,
+    const std::string& message) {
   // Return immediately if we're already satisfied or it's not the right
   // extension.
-  extensions::TestSendMessageFunction* function =
-      content::Source<extensions::TestSendMessageFunction>(source).ptr();
-
   std::string sender_extension_id;
   if (function->extension())
     sender_extension_id = function->extension_id();
 
   if (satisfied_ ||
-      (!extension_id_.empty() && sender_extension_id != extension_id_)) {
-    return;
+      (!extension_id_.empty() && sender_extension_id != extension_id_) ||
+      (browser_context_ && function->browser_context() != browser_context_)) {
+    return false;
   }
 
   // We should have an empty message if we're not already satisfied.
   CHECK(message_.empty());
   CHECK(extension_id_for_message_.empty());
 
-  std::pair<std::string, bool*>* message_details =
-      content::Details<std::pair<std::string, bool*>>(details).ptr();
-  const std::string& message = message_details->first;
-  if (message == expected_message_ || wait_for_any_message_ ||
-      (!failure_message_.empty() && message == failure_message_)) {
-    // We always reply to the message we were waiting for, even if it's just an
-    // empty string.
-    *message_details->second = true;
+  bool listener_will_respond = false;
+
+  const bool wait_for_any_message = !expected_message_;
+  const bool is_expected_message =
+      expected_message_ && message == *expected_message_;
+  const bool is_failure_message =
+      failure_message_ && message == *failure_message_;
+
+  if (is_expected_message || wait_for_any_message || is_failure_message) {
     message_ = message;
     extension_id_for_message_ = sender_extension_id;
     satisfied_ = true;
-    failed_ = (message_ == failure_message_);
+    failed_ = is_failure_message;
+    had_user_gesture_ = function->user_gesture();
 
-    // Reply immediately, or save the function for future use.
-    function_ = function;
-    if (!will_reply_)
-      Reply(std::string());
+    if (reply_behavior_ == ReplyBehavior::kWillReply) {
+      listener_will_respond = true;
+      function_ = function;
+    }
 
     if (quit_wait_closure_)
       std::move(quit_wait_closure_).Run();
+
+    if (on_satisfied_)
+      std::move(on_satisfied_).Run(message);
+    if (on_repeatedly_satisfied_)
+      on_repeatedly_satisfied_.Run(message);
   }
+
+  return listener_will_respond;
 }

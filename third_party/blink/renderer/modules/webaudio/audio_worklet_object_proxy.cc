@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -28,25 +29,24 @@ void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(
     WorkerOrWorkletGlobalScope* global_scope) {
   global_scope_ = To<AudioWorkletGlobalScope>(global_scope);
   global_scope_->SetSampleRate(context_sample_rate_);
+  global_scope_->SetObjectProxy(*this);
 }
 
-void AudioWorkletObjectProxy::DidEvaluateTopLevelScript(bool success) {
+void AudioWorkletObjectProxy::SynchronizeProcessorInfoList() {
   DCHECK(global_scope_);
 
-  if (!success || global_scope_->NumberOfRegisteredDefinitions() == 0)
+  if (global_scope_->NumberOfRegisteredDefinitions() == 0) {
     return;
+  }
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
       processor_info_list =
           global_scope_->WorkletProcessorInfoListForSynchronization();
 
-  if (processor_info_list->size() == 0)
+  if (processor_info_list->size() == 0) {
     return;
+  }
 
-  // This method is called by a loading task which calls
-  // WorkletModuleTreeClient::NotifyModuleTreeLoadFinished and
-  // SynchronizeWorkletProcessorInfoList needs to run in FIFO order with other
-  // loading tasks.
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalLoading),
       FROM_HERE,

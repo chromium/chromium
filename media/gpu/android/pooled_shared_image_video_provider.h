@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,22 +17,25 @@ class PooledSharedImageVideoProviderTest;
 
 // Provider class for shared images.
 class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
-    : public SharedImageVideoProvider {
+    : public SharedImageVideoProvider,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   // Helper class that processes image returns on the gpu thread.
   class GpuHelper {
    public:
     GpuHelper() = default;
+
+    GpuHelper(const GpuHelper&) = delete;
+    GpuHelper& operator=(const GpuHelper&) = delete;
+
     virtual ~GpuHelper() = default;
 
     // Called (on the gpu thread) to handle image return.
     virtual void OnImageReturned(
         const gpu::SyncToken& sync_token,
         scoped_refptr<CodecImageHolder> codec_image_holder,
-        base::OnceClosure cb) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GpuHelper);
+        base::OnceClosure cb,
+        scoped_refptr<gpu::RefCountedLock> drdc_lock) = 0;
   };
 
   // Create a default implementation.  |provider| is the underlying provider to
@@ -40,22 +43,27 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
   static std::unique_ptr<PooledSharedImageVideoProvider> Create(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetStubCB get_stub_cb,
-      std::unique_ptr<SharedImageVideoProvider> provider);
+      std::unique_ptr<SharedImageVideoProvider> provider,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  PooledSharedImageVideoProvider(const PooledSharedImageVideoProvider&) =
+      delete;
+  PooledSharedImageVideoProvider& operator=(
+      const PooledSharedImageVideoProvider&) = delete;
 
   ~PooledSharedImageVideoProvider() override;
 
   // SharedImageVideoProvider
   void Initialize(GpuInitCB gpu_init_cb) override;
-  void RequestImage(ImageReadyCB cb,
-                    const ImageSpec& spec,
-                    scoped_refptr<gpu::TextureOwner> texture_owner) override;
+  void RequestImage(ImageReadyCB cb, const ImageSpec& spec) override;
 
  private:
   friend class PooledSharedImageVideoProviderTest;
 
   PooledSharedImageVideoProvider(
       base::SequenceBound<GpuHelper> gpu_helper,
-      std::unique_ptr<SharedImageVideoProvider> provider);
+      std::unique_ptr<SharedImageVideoProvider> provider,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   class GpuHelperImpl : public GpuHelper {
    public:
@@ -65,11 +73,13 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
     // GpuHelper
     void OnImageReturned(const gpu::SyncToken& sync_token,
                          scoped_refptr<CodecImageHolder> codec_image_holder,
-                         base::OnceClosure cb) override;
+                         base::OnceClosure cb,
+                         scoped_refptr<gpu::RefCountedLock> drdc_lock) override;
 
    private:
     void OnSyncTokenCleared(scoped_refptr<CodecImageHolder> codec_image_holder,
-                            base::OnceClosure cb);
+                            base::OnceClosure cb,
+                            scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
     scoped_refptr<CommandBufferHelper> command_buffer_helper_;
     base::WeakPtrFactory<GpuHelperImpl> weak_factory_;
@@ -125,8 +135,6 @@ class MEDIA_GPU_EXPORT PooledSharedImageVideoProvider
   base::SequenceBound<GpuHelper> gpu_helper_;
 
   base::WeakPtrFactory<PooledSharedImageVideoProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PooledSharedImageVideoProvider);
 };
 
 }  // namespace media

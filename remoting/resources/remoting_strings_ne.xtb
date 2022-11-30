@@ -11,20 +11,21 @@
 <translation id="1546934824884762070">एक अनपेक्षित त्रुटि भयो। कृपया यस समस्यालाई विकासकर्तालाई प्रतिवेदन गर्नुहोस्।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1742469581923031760">जडान हुँदै...</translation>
+<translation id="177040763384871009">रिमोट डिभाइसमा क्लिक गरिएका लिंकहरू क्लाइन्ट ब्राउजरमा खोल्ने अनुमति दिन तपाईंले "<ph name="URL_FORWARDER_NAME" />" लाई सिस्टमको वेब ब्राउजर बनाउनु पर्ने हुन्छ।</translation>
 <translation id="177096447311351977">ग्राहकको लागि च्यानल IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip= ' <ph name="CLIENT_IP_ADDRESS_AND_PORT" /> 'host_ip =' <ph name="HOST_IP_ADDRESS_AND_PORT" /> 'च्यानल =' <ph name="CHANNEL_TYPE" /> 'जडान =' <ph name="CONNECTION_TYPE" /> '।</translation>
 <translation id="1897488610212723051">मेट्नुहोस्</translation>
 <translation id="2009755455353575666">जडान असफल भयो</translation>
 <translation id="2038229918502634450">नीति परिवर्तनलाई ग्रहण गर्नका लागि होस्ट पुनः सुरु हुँदैछ।</translation>
 <translation id="2078880767960296260">होस्ट प्रक्रिया</translation>
 <translation id="20876857123010370">ट्र्याकप्याड मोड</translation>
-<translation id="2198363917176605566"><ph name="PRODUCT_NAME" /> प्रयोग गर्न, यस Mac को स्क्रिनमा देखिने सामग्रीहरू दूरवर्ती यन्त्रमा पठाउन सकियोस् भन्नाका खातिर तपाईंले 'स्क्रिन रेकर्ड गर्ने' अनुमति दिनु पर्ने हुन्छ।
+<translation id="2198363917176605566"><ph name="PRODUCT_NAME" /> प्रयोग गर्न, यस Mac को स्क्रिनमा देखिने सामग्रीहरू दूरवर्ती यन्त्रमा पठाउन सकियोस् भन्नाका लागि तपाईंले 'स्क्रिन रेकर्ड गर्ने' अनुमति दिनु पर्ने हुन्छ।
 
 यो अनुमति दिन, तलको '<ph name="BUTTON_NAME" />' नामक बटनमा क्लिक गरी 'स्क्रिनको रेकर्डिङ' सम्बन्धी प्राथमिकताहरूको पेन खोल्नुहोस् र त्यसपछि '<ph name="SERVICE_SCRIPT_NAME" />' को छेउमा रहेको बाकसमा चिन्ह लगाउनुहोस्।
 
 '<ph name="SERVICE_SCRIPT_NAME" />' मा पहिले नै चिन्ह लगाइएको छ भने उक्त जाँच चिन्ह हटाउनुहोस् र त्यसपछि उक्त बाकसमा फेरि चिन्ह लगाउनुहोस्।</translation>
 <translation id="225614027745146050">स्वागत छ</translation>
 <translation id="2320166752086256636">किबोर्ड लुकाउनुहोस्</translation>
-<translation id="2333212046079545895">कपिराइट २०२१ Google LLC। सर्वाधिकार सुरक्षित।</translation>
+<translation id="2329392777730037872">क्लाइन्टमा <ph name="URL" /> खोल्न सकिएन।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2366718077645204424">होस्टसम्म पुग्न असफल। यसको कारण तपाइँले प्रयोग गरिरहनुभएको सञ्जालको विन्यास हुन सक्छ।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> अन्तिम पटक अनलाइन देखिएको <ph name="RELATIVE_TIMESTAMP" />।</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">यस सेवाले Chrome दूर डेस्कटप ग्राहकहरूबाट आउने जडानहरू सक्षम गर्छ।</translation>
 <translation id="2647232381348739934">क्रोमोटिङ सेवा</translation>
 <translation id="2676780859508944670">काम गर्दै...</translation>
+<translation id="2692522824157224199">प्रतिलिपि अधिकार २०२२ Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="2699970397166997657">Chromeोटिङ</translation>
 <translation id="2758123043070977469">प्रमाणीकरण गर्दा एउटा समस्या भयो, कृपया फेरि लग इन गर्नुहोस्।</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">अफलाइन।</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3776024066357219166">तपाईंको Chrome रिमोट डेस्कटप सत्र समाप्त भएको छ ।</translation>
+<translation id="3858860766373142691">नाम</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3905196214175737742">अमान्य होस्ट मालिक डोमेन।</translation>
 <translation id="3931191050278863510">होस्ट रोकियो।</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">पहुँच कोड</translation>
 <translation id="4227991223508142681">Host Provisioning Utility</translation>
 <translation id="4240294130679914010">Chromoting होस्ट स्थापना हटाउने</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> को URL फर्वार्डर</translation>
 <translation id="4277736576214464567">पहुँच कोड अवैध छ। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
+<translation id="4372650392690220936">कपिराइट २०२२ The Chromium Authors। सर्वाधिकार सुरक्षित।</translation>
 <translation id="4405930547258349619">कोर पुस्तकालय</translation>
 <translation id="443560535555262820">पहुँचसम्बन्धी प्राथमिकताहरू खोल्नुहोस्</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
-<translation id="4512952200932940229">कपिराइट २०२१ The Chromium Authors। सर्वाधिकार सुरक्षित।</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4563926062592110512">ग्राहक विच्छेदन: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> सही तरिकाले कन्फिगर गरिएको छैन। कृपया कुनै अर्को डिफल्ट वेब ब्राउजर छनौट गर्नुहोस् र URL फर्वार्डिङ अन गर्नुहोस्।</translation>
 <translation id="4635770493235256822">रिमोट यन्त्रहरू</translation>
 <translation id="4660011489602794167">किबोर्ड देखाउनुहोस्</translation>
 <translation id="4703799847237267011">तपाईंको Chromoting सत्र समाप्त भएको छ।</translation>
@@ -87,14 +92,14 @@
 <translation id="4867841927763172006">PrtScn पठाउनुहोस्</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> सँगको जडान बन्द गरियो</translation>
 <translation id="4985296110227979402">दूर पहुँचका लागि तपाईँले पहिला आफ्नो कम्प्युटरलाई सेटअप गर्नुपर्छ</translation>
+<translation id="4987330545941822761">Chrome को रिमोट डेस्कटपले कम्प्युटरमा URL खोल्न कुन ब्राउजर प्रयोग गर्ने हो भन्ने कुरा यकिन गर्न सकेन। कृपया तलको सूचीबाट कुनै ब्राउजर छनौट गर्नुहोस्।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (अफलाइन)</translation>
 <translation id="507204348399810022">तपाईं पक्का <ph name="HOSTNAME" /> का दूरवर्ती जडानहरूलाई असक्षम गर्न चाहनुहुन्छ?</translation>
 <translation id="5170982930780719864">अमान्य होस्ट id।</translation>
 <translation id="5204575267916639804">प्राय: जसो सोधिने प्रश्नहरू</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
-<translation id="5308380583665731573">जडान गर्नुहोस्</translation>
-<translation id="5327248766486351172">नाम</translation>
+<translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="533625276787323658">जडान गर्नका लागि केही पनि उपलब्ध छैन</translation>
 <translation id="5397086374758643919">Chrome रिमोट डेस्कटप होस्ट अनस्टलर</translation>
 <translation id="5419418238395129586">पछिल्लोपटक अनलाइन हुनुभएको मिति: <ph name="DATE" /></translation>
@@ -103,8 +108,9 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">तपाईंको डेस्कटप अहिले <ph name="USER" /> सँग साझा गरिएको छ ।</translation>
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> का रूपमा साइन इन गरियो।</translation>
-<translation id="579702532610384533">पुन: जडान गर्नुहोस्</translation>
+<translation id="579702532610384533">पुन: कनेक्ट गर्नुहोस्</translation>
 <translation id="5810269635982033450">स्क्रिनले ट्र्याकप्याडको काम गर्छ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ले तपाईंको कम्प्युटरको स्क्रिन हेर्ने र तपाईंको किबोर्ड र माउस नियन्त्रण गर्ने अनुमति मागेका छन्। उहाँले तपाईंलाई अग्रिम रूपमा जानकारी नगराइकन यो अनुमति मागेका हुन् भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' थिच्नुहोस्। अथवा तपाईं उहाँलाई तपाईंको कम्प्युटरमा कनेक्ट गर्ने अनुमति दिन तयार हुनुहुन्छ भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' चयन गर्नुहोस्।</translation>
 <translation id="5823658491130719298">तपाईंले दूरवर्ती रूपमा पहुँच राख्न चाहनुभएको कम्प्युटरमा Chrome खोलेर <ph name="INSTALLATION_LINK" /> मा जानुहोस्‌</translation>
 <translation id="5841343754884244200">विकल्पहरू देखाउनुहोस्</translation>
 <translation id="6033507038939587647">किबोर्डका विकल्पहरू</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del पठाउनुहोस्</translation>
 <translation id="6654753848497929428">साझा गर्नुहोस्</translation>
 <translation id="677755392401385740">यस प्रयोगकर्ताको लागि होस्ट सुरुवातकर्ता: <ph name="HOST_USERNAME" /></translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> क्लाइन्टमा URL खोल्न प्रयोग गरिने सहयोगी एप</translation>
 <translation id="6939719207673461467">कुञ्जीपाटी देखाउनुहोस्/लुकाउनुहोस्।</translation>
 <translation id="6963936880795878952">कसैले अमान्य PIN मार्फत जडान गर्ने प्रयास गरिरहेको हुनाले दूरवर्ती कम्प्युटरमा गरिने जडानहरूलाई सदाका लागि रोक लगाइएको छ। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
@@ -133,11 +140,13 @@
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7312846573060934304">होस्ट अफलाइन छ।</translation>
 <translation id="7319983568955948908">साझा गर्न बन्द गर्नुहोस्</translation>
+<translation id="7359298090707901886">चयन गरिएको ब्राउजर प्रयोग गरी लोकल मेसिनमा URL खोल्न सकिँदैन।</translation>
 <translation id="7401733114166276557">Chrome दूर डेस्कटप</translation>
 <translation id="7434397035092923453">ग्राहको लागि पहूँच अस्वीकार गरियो: <ph name="CLIENT_USERNAME" /></translation>
 <translation id="7444276978508498879">जडित ग्राहक: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="7526139040829362392">खाता परिवर्तन गर्नुहोस्</translation>
-<translation id="7628469622942688817">यो यन्त्रमा मेरो PIN सम्झनुहोस्।</translation>
+<translation id="7535110896613603182">डिफल्ट एपसम्बन्धी सेटिङ खोल्नुहोस्</translation>
+<translation id="7628469622942688817">यो डिभाइसमा मेरो PIN सम्झनुहोस्।</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7665369617277396874">खाता थप्नुहोस्</translation>
@@ -149,18 +158,19 @@
 <translation id="7936528439960309876">दायाँतिर डक गर्नुहोस्</translation>
 <translation id="7970576581263377361">प्रमाणीकरण विफल भयो। कृपया फेरि Chromium मा साइन इन गर्नुहोस्।</translation>
 <translation id="7981525049612125370">रिमोट सत्रको म्याद समाप्त भएको छ।</translation>
-<translation id="8038111231936746805">(पूर्वनिर्धारित)</translation>
+<translation id="8038111231936746805">(डिफल्ट)</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8060029310790625334">मद्दत केन्द्र</translation>
 <translation id="806699900641041263"><ph name="HOSTNAME" /> मा जडान हुँदै</translation>
 <translation id="8073845705237259513">Chrome दूर डेस्कटप प्रयोग गर्नको लागि, तपाइँले तपाइँको यन्त्रमा एउटा Google खाता थप्न आवश्यक छ।</translation>
 <translation id="809687642899217504">मेरा कम्प्युटरहरू</translation>
 <translation id="8116630183974937060">नेटवर्क त्रुटि देखापर्यो । कृपया तपाईंको उपकरण अनलाईनमा भएको जाँच गरी पुनः प्रयास गर्नुहोस् ।</translation>
-<translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> प्रयोग गर्न, दूरवर्ती यन्त्रको इनपुट यस Mac मा प्रवेश गराउन सकियोस् भन्नाका खातिर तपाईंले 'पहुँच' सम्बन्धी अनुमति दिनु पर्ने हुन्छ।
+<translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> प्रयोग गर्न, दूरवर्ती यन्त्रको इनपुट यस Mac मा प्रवेश गराउन सकियोस् भन्नाका लागि तपाईंले 'पहुँच' सम्बन्धी अनुमति दिनु पर्ने हुन्छ।
 
 यो अनुमति दिन, तलको '<ph name="BUTTON_NAME" />' नामक बटनमा क्लिक गर्नुहोस्। त्यसपछि खुल्ने 'पहुँच' सम्बन्धी प्राथमिकताहरूको पेनमा '<ph name="SERVICE_SCRIPT_NAME" />' को छेउमा रहेको बाकसमा चिन्ह लगाउनुहोस्।'
 
 '<ph name="SERVICE_SCRIPT_NAME" />' मा पहिले नै चिन्ह लगाइएको छ भने उक्त चिन्ह हटाउनुहोस् र फेरि चिन्ह लगाउनुहोस्।</translation>
+<translation id="8305209735512572429">Web Authentication Remoting नामक प्रक्रिया</translation>
 <translation id="8383794970363966105">Chromoting प्रयोग गर्न, तपाईँले आफ्नो यन्त्रमा Google खाता थप्न आवश्यक छ।</translation>
 <translation id="8386846956409881180">होस्टलाई अमान्य OAuth प्रमाणहरूमार्फत कन्फिगर गरिएको छ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> लाई अनुमति दिनुहोस्</translation>
@@ -177,7 +187,7 @@
 <translation id="8906511416443321782">अडियो क्याप्चर गर्न र उक्त अडियो Chrome को रिमोट डेस्कटप क्लाइन्टलाई स्ट्रिम गर्न माइक्रोफोन प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ।</translation>
 <translation id="9111855907838866522">तपाईं आफ्नो रिमोट यन्त्रसँग जोडिनुभएको छ। मेनु खोल्नका लागि कृपया चार औंलाहरूले स्क्रिनमा ट्याप गर्नुहोस्।</translation>
 <translation id="9126115402994542723">यस उपकरणबाट यो होस्टमा जडान गर्दै गर्दा फेरि PIN को लागि नसोध्नुहोस्।</translation>
-<translation id="916856682307586697">पूर्वनिर्धारित XSession सुरु गर्नुहोस्</translation>
+<translation id="916856682307586697">डिफल्ट XSession सुरु गर्नुहोस्</translation>
 <translation id="9187628920394877737"><ph name="PRODUCT_NAME" /> लाई 'स्क्रिन रेकर्ड गर्ने' अनुमति दिनुहोस्</translation>
 <translation id="9213184081240281106">अमान्य होस्ट कन्फिगुरेसन।</translation>
 <translation id="981121421437150478">अफलाइन</translation>

@@ -1,58 +1,12 @@
-    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex settings-shared">
+    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex">
       :host([is-subpage-animating]) {
         /* Prevent an unwanted horizontal scrollbar when transitioning back from
          * a sub-page. */
         overflow: hidden;
       }
 
-      :host([advanced-toggling-in-progress_]) {
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      #advancedToggle {
-        --ink-color: currentColor;
-        align-items: center;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        color: currentColor;
-        display: flex;
-        font-weight: 400;
-        margin-bottom: 3px;
-        margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-        min-height: 32px;
-        padding: 0 12px;
-      }
-
-      :host-context(.focus-outline-visible) #advancedToggle:focus {
-        outline: auto 5px -webkit-focus-ring-color;
-      }
-
-      #osSettingsBanner {
-        background-color: var(--cr-card-background-color);
-        border-radius: var(--cr-card-border-radius);
-        box-shadow: var(--cr-card-shadow);
-        margin-top: 21px;
-      }
-
-      #toggleContainer {
-        align-items: center;
-        color: var(--cr-primary-text-color);
-        display: flex;
-        font: inherit;
-        justify-content: center;
-        margin-bottom: 0;
-        margin-top: 0;
-        padding-bottom: 0;
-        padding-top: 0;
-      }
-
-      #toggleSpacer {
-        padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-      }
-
-      iron-icon {
-        margin-inline-start: 16px;
+      :host(:not([in-search-mode])) settings-section:not([active]) {
+        display: none;
       }
     </style>
     <template is="dom-if" if="[[showBasicPage_(
@@ -62,20 +16,6 @@
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
           </settings-reset-profile-banner>
         </template>
-<if expr="chromeos or lacros">
-        <template is="dom-if" if="[[showOSSettingsBanner_]]">
-          <div id="osSettingsBanner" class="cr-row first">
-            <div class="flex cr-padded-text"
-                on-click="onOSSettingsBannerClick_">
-              $i18nRaw{osSettingsBannerText}
-            </div>
-            <cr-icon-button class="icon-clear"
-                title="$i18n{close}"
-                on-click="onOSSettingsBannerClosed_">
-            </cr-icon-button>
-          </div>
-        </template>
-</if>
         <template is="dom-if" if="[[showPage_(pageVisibility.people)]]" restamp>
           <settings-section page-title="$i18n{peoplePageTitle}"
               section="people">
@@ -91,10 +31,17 @@
             <settings-autofill-page prefs="{{prefs}}"></settings-autofill-page>
           </settings-section>
         </template>
+        <settings-section id="privacyGuidePromoSection" page-title=""
+            hidden$="[[!showPrivacyGuidePromo_]]" nest-under-section="privacy"
+            no-search>
+          <settings-privacy-guide-promo id="privacyGuidePromo"
+              prefs="{{prefs}}">
+          </settings-privacy-guide-promo>
+        </settings-section>
         <template is="dom-if" if="[[showPage_(pageVisibility.safetyCheck)]]"
             restamp>
           <settings-section page-title="$i18n{safetyCheckSectionTitle}"
-              section="safetyCheck"
+              section="safetyCheck" nest-under-section="privacy"
               id="safetyCheckSettingsSection">
             <settings-safety-check-page prefs="{{prefs}}">
             </settings-safety-check-page>
@@ -107,6 +54,25 @@
             <settings-privacy-page prefs="{{prefs}}"
                 page-visibility="[[pageVisibility.privacy]]">
             </settings-privacy-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showPerformancePage_(pageVisibility.performance)]]"
+            restamp>
+          <settings-section page-title="$i18n{performancePageTitle}"
+              section="performance" id="performanceSettingsSection">
+            <settings-performance-page prefs="{{prefs}}">
+            </settings-performance-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showBatteryPage_(pageVisibility.performance)]]"
+            restamp>
+          <settings-section page-title="$i18n{batteryPageTitle}"
+              section="battery" nest-under-section="performance"
+              id="batterySettingsSection">
+            <settings-battery-page prefs="{{prefs}}">
+            </settings-battery-page>
           </settings-section>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.appearance)]]"
@@ -122,7 +88,7 @@
             section="search">
           <settings-search-page prefs="{{prefs}}"></settings-search-page>
         </settings-section>
-<if expr="not chromeos and not lacros">
+<if expr="not is_chromeos">
         <template is="dom-if" if="[[showPage_(pageVisibility.defaultBrowser)]]"
             restamp>
           <settings-section page-title="$i18n{defaultBrowser}"
@@ -140,34 +106,65 @@
         </template>
       </div>
     </template>
-
-    <template is="dom-if" if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
-      <template is="dom-if" if="[[showAdvancedToggle_(
-          inSearchMode, hasExpandedSection_)]]">
-        <div id="toggleSpacer"></div>
-        <h2 id="toggleContainer">
-          <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-              aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
-            <span>$i18n{advancedPageTitle}</span>
-            <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
-            </iron-icon>
-          </cr-button>
-        </h2>
-      </template>
-
-      <settings-idle-load id="advancedPageTemplate" url="/lazy_load.html">
+    <template is="dom-if"
+        if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
+      <settings-idle-load id="advancedPageTemplate">
         <template>
           <div id="advancedPage" hidden$="[[!showAdvancedPage_(
               currentRoute_, inSearchMode, hasExpandedSection_,
               advancedToggleExpanded)]]">
             <template is="dom-if" if="[[showPage_(pageVisibility.languages)]]"
                 restamp>
-              <settings-section page-title="$i18n{languagesPageTitle}"
+<if expr="not chromeos_ash">
+              <settings-languages languages="{{languages}}" prefs="{{prefs}}"
+                  language-helper="{{languageHelper}}">
+              </settings-languages>
+</if>
+              <settings-section
+<if expr="not chromeos_ash">
+                  page-title="$i18n{languagesCardTitle}"
+</if>
+<if expr="chromeos_ash">
+                  page-title="$i18n{languagesPageTitle}"
+</if>
                   section="languages">
-                <settings-languages-page prefs="{{prefs}}">
+<if expr="chromeos_ash">
+                <cr-link-row id="openChromeOSLanguagesSettings"
+                    on-click="onOpenChromeOSLanguagesSettingsClick_"
+                    label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
+                </cr-link-row>
+</if>
+<if expr="not chromeos_ash">
+                <settings-languages-page prefs="{{prefs}}"
+                    languages="{{languages}}"
+                    language-helper="{{languageHelper}}">
                 </settings-languages-page>
+</if>
               </settings-section>
             </template>
+<if expr="not chromeos_ash">
+            <template is="dom-if" if="[[showPage_(pageVisibility.spellCheck)]]"
+                restamp>
+              <settings-section page-title="$i18n{spellCheckTitle}"
+                  section="spellCheck" nest-under-section="languages"
+                  id="spellCheckSettingsSection">
+                <settings-spell-check-page prefs="{{prefs}}"
+                    languages="{{languages}}"
+                    language-helper="{{languageHelper}}">
+                </settings-spell-check-page>
+              </settings-section>
+            </template>
+            <template is="dom-if"
+                if="[[enableDesktopDetailedLanguageSettings_]]" restamp>
+              <settings-section page-title="$i18n{translatePageTitle}"
+                  section="translate" nest-under-section="languages">
+                <settings-translate-page prefs="{{prefs}}"
+                    languages="{{languages}}"
+                    language-helper="{{languageHelper}}">
+                </settings-translate-page>
+              </settings-section>
+            </template>
+</if>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"
@@ -183,7 +180,7 @@
                 <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
               </settings-section>
             </template>
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash">
             <settings-section page-title="$i18n{systemPageTitle}"
                 section="system">
               <settings-system-page prefs="{{prefs}}"></settings-system-page>

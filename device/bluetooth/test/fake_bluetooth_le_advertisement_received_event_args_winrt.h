@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace device {
@@ -27,6 +26,12 @@ class FakeBluetoothLEAdvertisementReceivedEventArgsWinrt
       base::StringPiece address,
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                                  IBluetoothLEAdvertisement> advertisement);
+
+  FakeBluetoothLEAdvertisementReceivedEventArgsWinrt(
+      const FakeBluetoothLEAdvertisementReceivedEventArgsWinrt&) = delete;
+  FakeBluetoothLEAdvertisementReceivedEventArgsWinrt& operator=(
+      const FakeBluetoothLEAdvertisementReceivedEventArgsWinrt&) = delete;
+
   ~FakeBluetoothLEAdvertisementReceivedEventArgsWinrt() override;
 
   // IBluetoothLEAdvertisementReceivedEventArgs:
@@ -47,8 +52,6 @@ class FakeBluetoothLEAdvertisementReceivedEventArgsWinrt
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                              IBluetoothLEAdvertisement>
       advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementReceivedEventArgsWinrt);
 };
 
 }  // namespace device

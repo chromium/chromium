@@ -1,6 +1,15 @@
 include_rules = [
   "+content/public/browser",
+  "+mojo/public/c/system",
   "+mojo/public/cpp/bindings",
+  "+mojo/public/cpp/system",
+  "+net/base/net_errors.h",
+  "+net/http/http_response_headers.h",
+  "+pdf/mojom/pdf.mojom.h",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
+  "+third_party/skia/include/core",
   "+ui/base",
   "+ui/touch_selection",
 ]

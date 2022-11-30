@@ -33,10 +33,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace display {
+struct ScreenInfos;
+}
 
 namespace mojo {
 class BinderMap;
@@ -46,6 +52,7 @@ namespace blink {
 
 class DevToolsSession;
 class Document;
+class ExecutionContext;
 class HTMLMediaElement;
 class InspectedFrames;
 class InspectorDOMAgent;
@@ -53,6 +60,7 @@ class LocalFrame;
 class MediaControls;
 class Page;
 class PictureInPictureController;
+class ServiceWorkerGlobalScope;
 class Settings;
 class ShadowRoot;
 class WebLocalFrameClient;
@@ -63,7 +71,6 @@ class WebRemotePlaybackClient;
 
 class CORE_EXPORT CoreInitializer {
   USING_FAST_MALLOC(CoreInitializer);
-  DISALLOW_COPY_AND_ASSIGN(CoreInitializer);
 
  public:
   // Initialize must be called before GetInstance.
@@ -72,6 +79,8 @@ class CORE_EXPORT CoreInitializer {
     return *instance_;
   }
 
+  CoreInitializer(const CoreInitializer&) = delete;
+  CoreInitializer& operator=(const CoreInitializer&) = delete;
   virtual ~CoreInitializer() = default;
 
   // Should be called by clients before trying to create Frames.
@@ -84,6 +93,9 @@ class CORE_EXPORT CoreInitializer {
   // bypass the inverted dependency from core/ to modules/.
   // Mojo Interfaces registered with LocalFrame
   virtual void InitLocalFrame(LocalFrame&) const = 0;
+  // Mojo Interfaces registered with ServiceWorkerGlobalScope.
+  virtual void InitServiceWorkerGlobalScope(
+      ServiceWorkerGlobalScope&) const = 0;
   // Supplements installed on a frame using ChromeClient
   virtual void InstallSupplements(LocalFrame&) const = 0;
   virtual MediaControls* CreateMediaControls(HTMLMediaElement&,
@@ -123,9 +135,29 @@ class CORE_EXPORT CoreInitializer {
       Page* clone_from_page,
       const SessionStorageNamespaceId& clone_to_namespace) = 0;
 
+  // Evicts the cached data of Session Storage. Called after dispatching a
+  // document unload or freeze event to avoid reusing old data in the cache in
+  // case the same renderer process is reused after the session storage has been
+  // modified by another renderer process. (Eg: Back navigation from a
+  // prerendered page.)
+  virtual void EvictSessionStorageCachedData(Page*) = 0;
+
   virtual void DidChangeManifest(LocalFrame&) = 0;
   virtual void NotifyOrientationChanged(LocalFrame&) = 0;
-  virtual void NotifyScreensChanged(LocalFrame&) = 0;
+  // Called with an updated set of ScreenInfos for a local root frame
+  // during a visual property update.
+  virtual void DidUpdateScreens(LocalFrame& frame,
+                                const display::ScreenInfos&) = 0;
+
+  virtual void SetLocalStorageArea(
+      LocalFrame& frame,
+      mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) = 0;
+  virtual void SetSessionStorageArea(
+      LocalFrame& frame,
+      mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) = 0;
+
+  virtual mojom::blink::FileSystemManager& GetFileSystemManager(
+      ExecutionContext* context) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

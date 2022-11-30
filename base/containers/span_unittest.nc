@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class Base {
 class Derived : Base {
 };
 
-#if defined(NCTEST_DEFAULT_SPAN_WITH_NON_ZERO_STATIC_EXTENT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '1UL == dynamic_extent || 1UL == 0' \"Invalid Extent\""]
+#if defined(NCTEST_DEFAULT_SPAN_WITH_NON_ZERO_STATIC_EXTENT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '1UL == dynamic_extent || 1UL == 0': Invalid Extent"]
 
 // A default constructed span must have an extent of 0 or dynamic_extent.
 void WontCompile() {
@@ -55,7 +55,7 @@ void WontCompile() {
   span<int, 3> static_span(dynamic_span);
 }
 
-#elif defined(NCTEST_DERIVED_TO_BASE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<base::Base \*>'"]
+#elif defined(NCTEST_DERIVED_TO_BASE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<Base \*>'"]
 
 // Internally, this is represented as a pointer to pointers to Derived. An
 // implicit conversion to a pointer to pointers to Base must not be allowed.
@@ -126,7 +126,7 @@ void WontCompile() {
   span<int> span(set);
 }
 
-#elif defined(NCTEST_STATIC_FRONT_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r" fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL' \"Count must not exceed Extent\""]
+#elif defined(NCTEST_STATIC_FRONT_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r" fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static first called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -135,7 +135,7 @@ void WontCompile() {
   auto first = span.first<4>();
 }
 
-#elif defined(NCTEST_STATIC_LAST_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL' \"Count must not exceed Extent\""]
+#elif defined(NCTEST_STATIC_LAST_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static last called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -144,7 +144,7 @@ void WontCompile() {
   auto last = span.last<4>();
 }
 
-#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_OFFSET_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL' \"Count must not exceed Extent\""]
+#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_OFFSET_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL <= 3UL': Count must not exceed Extent"]
 
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -153,7 +153,7 @@ void WontCompile() {
   auto subspan = span.subspan<4>();
 }
 
-#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL == dynamic_extent || 4UL <= 3UL - 0UL' \"Count must not exceed Extent - Offset\""]
+#elif defined(NCTEST_STATIC_SUBSPAN_WITH_EXCEEDING_COUNT_DISALLOWED)  // [r"fatal error: static_assert failed due to requirement '3UL == dynamic_extent || 4UL == dynamic_extent || 4UL <= 3UL - 0UL': Count must not exceed Extent - Offset"]
 
 // Static subspan called on a span with static extent must not exceed the size.
 void WontCompile() {
@@ -219,7 +219,7 @@ void WontCompile() {
   auto span = make_span(set);
 }
 
-#elif defined(NCTEST_CONST_VECTOR_DEDUCES_AS_CONST_SPAN)  // [r"fatal error: no viable conversion from 'span<const int, \[...\]>' to 'span<int, \[...\]>'"]
+#elif defined(NCTEST_CONST_VECTOR_DEDUCES_AS_CONST_SPAN)  // [r"fatal error: no viable conversion from 'span<(T|const int), \[...\]>' to 'span<int, \[...\]>'"]
 
 int WontCompile() {
   const std::vector<int> v;
@@ -265,6 +265,20 @@ int WontCompile() {
 void WontCompile() {
   std::vector<uint8_t> vector;
   static_assert(EXTENT(vector) == 0, "Should not compile");
+}
+
+#elif defined(NCTEST_DANGLING_STD_ARRAY)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
+
+void WontCompile() {
+  span<const int, 3> s{std::array<int, 3>()};
+  (void)s;
+}
+
+#elif defined(NCTEST_DANGLING_CONTAINER)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
+
+void WontCompile() {
+  span<const int> s{std::vector<int>({1, 2, 3})};
+  (void)s;
 }
 
 #endif

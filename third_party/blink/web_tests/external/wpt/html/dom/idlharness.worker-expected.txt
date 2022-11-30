@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-Found 803 tests; 795 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 748 tests; 739 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
 PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
 PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: original interface mixin defined
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Partial interface HTMLAnchorElement: original interface defined
@@ -54,8 +56,6 @@ PASS Partial interface HTMLOListElement: original interface defined
 PASS Partial interface HTMLOListElement: member names are unique
 PASS Partial interface HTMLParagraphElement: original interface defined
 PASS Partial interface HTMLParagraphElement: member names are unique
-PASS Partial interface HTMLParamElement: original interface defined
-PASS Partial interface HTMLParamElement: member names are unique
 PASS Partial interface HTMLPreElement: original interface defined
 PASS Partial interface HTMLPreElement: member names are unique
 PASS Partial interface HTMLStyleElement: original interface defined
@@ -77,17 +77,15 @@ PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Window: original interface defined
 PASS Partial interface Window: member names are unique
 PASS Partial interface UIEvent: member names are unique
+PASS Partial interface MouseEvent: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
+PASS Partial dictionary UIEventInit: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
 PASS Document includes DocumentAndElementEventHandlers: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes DocumentOrShadowRoot: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
 PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS HTMLLinkElement includes LinkStyle: member names are unique
 PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
@@ -129,9 +127,6 @@ PASS ElementInternals includes ARIAMixin: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
@@ -140,6 +135,7 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
 PASS DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
 PASS Worker includes AbstractWorker: member names are unique
 PASS SharedWorker includes AbstractWorker: member names are unique
@@ -147,15 +143,22 @@ PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
 PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
 PASS HTMLFrameSetElement includes WindowEventHandlers: member names are unique
 PASS Element includes ARIAMixin: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS DocumentFragment includes NonElementParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
+PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
 PASS Element includes Slottable: member names are unique
-PASS DocumentFragment includes NonElementParentNode: member names are unique
-PASS DocumentFragment includes ParentNode: member names are unique
-PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS HTMLAllCollection interface: existence and properties of interface object
 PASS HTMLFormControlsCollection interface: existence and properties of interface object
 PASS RadioNodeList interface: existence and properties of interface object
@@ -203,7 +206,6 @@ PASS HTMLImageElement interface: existence and properties of interface object
 PASS HTMLIFrameElement interface: existence and properties of interface object
 PASS HTMLEmbedElement interface: existence and properties of interface object
 PASS HTMLObjectElement interface: existence and properties of interface object
-PASS HTMLParamElement interface: existence and properties of interface object
 PASS HTMLVideoElement interface: existence and properties of interface object
 PASS HTMLAudioElement interface: existence and properties of interface object
 PASS HTMLTrackElement interface: existence and properties of interface object
@@ -292,6 +294,7 @@ PASS ImageData interface: existence and properties of interface prototype object
 PASS ImageData interface: attribute width
 PASS ImageData interface: attribute height
 PASS ImageData interface: attribute data
+PASS ImageData interface: attribute colorSpace
 PASS Path2D interface: existence and properties of interface object
 PASS Path2D interface object length
 PASS Path2D interface object name
@@ -306,6 +309,7 @@ PASS Path2D interface: operation quadraticCurveTo(unrestricted double, unrestric
 PASS Path2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS Path2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS Path2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS Path2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS Path2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS ImageBitmapRenderingContext interface: existence and properties of interface object
@@ -327,6 +331,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
+PASS OffscreenCanvas interface: attribute oncontextlost
+PASS OffscreenCanvas interface: attribute oncontextrestored
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name
@@ -337,6 +343,8 @@ PASS OffscreenCanvasRenderingContext2D interface: operation commit()
 PASS OffscreenCanvasRenderingContext2D interface: attribute canvas
 PASS OffscreenCanvasRenderingContext2D interface: operation save()
 PASS OffscreenCanvasRenderingContext2D interface: operation restore()
+PASS OffscreenCanvasRenderingContext2D interface: operation reset()
+PASS OffscreenCanvasRenderingContext2D interface: operation isContextLost()
 PASS OffscreenCanvasRenderingContext2D interface: operation scale(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rotate(unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation translate(unrestricted double, unrestricted double)
@@ -353,6 +361,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute strokeStyle
 PASS OffscreenCanvasRenderingContext2D interface: attribute fillStyle
 PASS OffscreenCanvasRenderingContext2D interface: operation createLinearGradient(double, double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createRadialGradient(double, double, double, double, double, double)
+PASS OffscreenCanvasRenderingContext2D interface: operation createConicGradient(double, double, double)
 PASS OffscreenCanvasRenderingContext2D interface: operation createPattern(CanvasImageSource, DOMString)
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetX
 PASS OffscreenCanvasRenderingContext2D interface: attribute shadowOffsetY
@@ -379,9 +388,9 @@ PASS OffscreenCanvasRenderingContext2D interface: operation measureText(DOMStrin
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation drawImage(CanvasImageSource, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
-PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long)
+PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(long, long, optional ImageDataSettings)
 PASS OffscreenCanvasRenderingContext2D interface: operation createImageData(ImageData)
-PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long)
+PASS OffscreenCanvasRenderingContext2D interface: operation getImageData(long, long, long, long, optional ImageDataSettings)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: operation putImageData(ImageData, long, long, long, long, long, long)
 PASS OffscreenCanvasRenderingContext2D interface: attribute lineWidth
@@ -395,6 +404,12 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
+PASS OffscreenCanvasRenderingContext2D interface: attribute letterSpacing
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
+PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
+PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
+PASS OffscreenCanvasRenderingContext2D interface: attribute wordSpacing
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)
@@ -402,10 +417,12 @@ PASS OffscreenCanvasRenderingContext2D interface: operation quadraticCurveTo(unr
 PASS OffscreenCanvasRenderingContext2D interface: operation bezierCurveTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation arcTo(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation rect(unrestricted double, unrestricted double, unrestricted double, unrestricted double)
+PASS OffscreenCanvasRenderingContext2D interface: operation roundRect(unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>))
 PASS OffscreenCanvasRenderingContext2D interface: operation arc(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS OffscreenCanvasRenderingContext2D interface: operation ellipse(unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, unrestricted double, optional boolean)
 PASS CustomElementRegistry interface: existence and properties of interface object
 PASS ElementInternals interface: existence and properties of interface object
+FAIL UserActivation interface: existence and properties of interface object assert_false: expected false got true
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransferItemList interface: existence and properties of interface object
 PASS DataTransferItem interface: existence and properties of interface object
@@ -439,6 +456,10 @@ PASS PromiseRejectionEvent interface: attribute promise
 PASS PromiseRejectionEvent interface: attribute reason
 PASS DOMParser interface: existence and properties of interface object
 PASS Navigator interface: existence and properties of interface object
+PASS PluginArray interface: existence and properties of interface object
+PASS MimeTypeArray interface: existence and properties of interface object
+PASS Plugin interface: existence and properties of interface object
+PASS MimeType interface: existence and properties of interface object
 PASS ImageBitmap interface: existence and properties of interface object
 PASS ImageBitmap interface object length
 PASS ImageBitmap interface object name
@@ -500,75 +521,6 @@ PASS EventSource interface: new EventSource("http://invalid") must inherit prope
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onmessage" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "onerror" with the proper type
 PASS EventSource interface: new EventSource("http://invalid") must inherit property "close()" with the proper type
-PASS WebSocket interface: existence and properties of interface object
-PASS WebSocket interface object length
-PASS WebSocket interface object name
-PASS WebSocket interface: existence and properties of interface prototype object
-PASS WebSocket interface: existence and properties of interface prototype object's "constructor" property
-PASS WebSocket interface: existence and properties of interface prototype object's @@unscopables property
-PASS WebSocket interface: attribute url
-PASS WebSocket interface: constant CONNECTING on interface object
-PASS WebSocket interface: constant CONNECTING on interface prototype object
-PASS WebSocket interface: constant OPEN on interface object
-PASS WebSocket interface: constant OPEN on interface prototype object
-PASS WebSocket interface: constant CLOSING on interface object
-PASS WebSocket interface: constant CLOSING on interface prototype object
-PASS WebSocket interface: constant CLOSED on interface object
-PASS WebSocket interface: constant CLOSED on interface prototype object
-PASS WebSocket interface: attribute readyState
-PASS WebSocket interface: attribute bufferedAmount
-PASS WebSocket interface: attribute onopen
-PASS WebSocket interface: attribute onerror
-PASS WebSocket interface: attribute onclose
-PASS WebSocket interface: attribute extensions
-PASS WebSocket interface: attribute protocol
-PASS WebSocket interface: operation close(optional unsigned short, optional USVString)
-PASS WebSocket interface: attribute onmessage
-PASS WebSocket interface: attribute binaryType
-PASS WebSocket interface: operation send(USVString)
-PASS WebSocket interface: operation send(Blob)
-PASS WebSocket interface: operation send(ArrayBuffer)
-PASS WebSocket interface: operation send(ArrayBufferView)
-PASS WebSocket must be primary interface of new WebSocket("ws://invalid")
-PASS Stringification of new WebSocket("ws://invalid")
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "url" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CONNECTING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "OPEN" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSING" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "CLOSED" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "readyState" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "bufferedAmount" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onopen" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onerror" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onclose" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "extensions" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "protocol" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "close(optional unsigned short, optional USVString)" with the proper type
-PASS WebSocket interface: calling close(optional unsigned short, optional USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "onmessage" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "binaryType" with the proper type
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(USVString)" with the proper type
-PASS WebSocket interface: calling send(USVString) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(Blob)" with the proper type
-PASS WebSocket interface: calling send(Blob) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBuffer)" with the proper type
-PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("ws://invalid") must inherit property "send(ArrayBufferView)" with the proper type
-PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("ws://invalid") with too few arguments must throw TypeError
-PASS CloseEvent interface: existence and properties of interface object
-PASS CloseEvent interface object length
-PASS CloseEvent interface object name
-PASS CloseEvent interface: existence and properties of interface prototype object
-PASS CloseEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS CloseEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS CloseEvent interface: attribute wasClean
-PASS CloseEvent interface: attribute code
-PASS CloseEvent interface: attribute reason
-PASS CloseEvent must be primary interface of new CloseEvent("close")
-PASS Stringification of new CloseEvent("close")
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "wasClean" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "code" with the proper type
-PASS CloseEvent interface: new CloseEvent("close") must inherit property "reason" with the proper type
 PASS MessageChannel interface: existence and properties of interface object
 PASS MessageChannel interface object length
 PASS MessageChannel interface object name
@@ -584,7 +536,7 @@ PASS MessagePort interface: existence and properties of interface prototype obje
 PASS MessagePort interface: existence and properties of interface prototype object's "constructor" property
 PASS MessagePort interface: existence and properties of interface prototype object's @@unscopables property
 PASS MessagePort interface: operation postMessage(any, sequence<object>)
-PASS MessagePort interface: operation postMessage(any, optional PostMessageOptions)
+PASS MessagePort interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS MessagePort interface: operation start()
 PASS MessagePort interface: operation close()
 PASS MessagePort interface: attribute onmessage
@@ -619,6 +571,7 @@ PASS WorkerGlobalScope interface: attribute onunhandledrejection
 PASS WorkerGlobalScope interface: attribute origin
 PASS WorkerGlobalScope interface: attribute isSecureContext
 PASS WorkerGlobalScope interface: attribute crossOriginIsolated
+PASS WorkerGlobalScope interface: operation reportError(any)
 PASS WorkerGlobalScope interface: operation btoa(DOMString)
 PASS WorkerGlobalScope interface: operation atob(DOMString)
 PASS WorkerGlobalScope interface: operation setTimeout(TimerHandler, optional long, any...)
@@ -628,6 +581,7 @@ PASS WorkerGlobalScope interface: operation clearInterval(optional long)
 PASS WorkerGlobalScope interface: operation queueMicrotask(VoidFunction)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)
+PASS WorkerGlobalScope interface: operation structuredClone(any, optional StructuredSerializeOptions)
 PASS DedicatedWorkerGlobalScope interface: existence and properties of interface object
 PASS DedicatedWorkerGlobalScope interface object length
 PASS DedicatedWorkerGlobalScope interface object name
@@ -642,7 +596,7 @@ PASS DedicatedWorkerGlobalScope interface: existence and properties of interface
 PASS DedicatedWorkerGlobalScope interface: existence and properties of interface prototype object's @@unscopables property
 PASS DedicatedWorkerGlobalScope interface: attribute name
 PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, sequence<object>)
-PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, optional PostMessageOptions)
+PASS DedicatedWorkerGlobalScope interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS DedicatedWorkerGlobalScope interface: operation close()
 PASS DedicatedWorkerGlobalScope interface: attribute onmessage
 PASS DedicatedWorkerGlobalScope interface: attribute onmessageerror
@@ -659,8 +613,8 @@ PASS Stringification of self
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "name" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, sequence<object>)" with the proper type
 PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, sequence<object>) on self with too few arguments must throw TypeError
-PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, optional PostMessageOptions)" with the proper type
-PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, optional PostMessageOptions) on self with too few arguments must throw TypeError
+PASS DedicatedWorkerGlobalScope interface: self must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type
+PASS DedicatedWorkerGlobalScope interface: calling postMessage(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "close()" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "onmessage" with the proper type
 PASS DedicatedWorkerGlobalScope interface: self must inherit property "onmessageerror" with the proper type
@@ -682,6 +636,8 @@ PASS WorkerGlobalScope interface: self must inherit property "onunhandledrejecti
 PASS WorkerGlobalScope interface: self must inherit property "origin" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "isSecureContext" with the proper type
 PASS WorkerGlobalScope interface: self must inherit property "crossOriginIsolated" with the proper type
+PASS WorkerGlobalScope interface: self must inherit property "reportError(any)" with the proper type
+PASS WorkerGlobalScope interface: calling reportError(any) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "btoa(DOMString)" with the proper type
 PASS WorkerGlobalScope interface: calling btoa(DOMString) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "atob(DOMString)" with the proper type
@@ -700,6 +656,8 @@ PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)" with the proper type
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
+PASS WorkerGlobalScope interface: self must inherit property "structuredClone(any, optional StructuredSerializeOptions)" with the proper type
+PASS WorkerGlobalScope interface: calling structuredClone(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError
 PASS SharedWorkerGlobalScope interface: existence and properties of interface object
 PASS Worker interface: existence and properties of interface object
 PASS Worker interface object length
@@ -709,7 +667,7 @@ PASS Worker interface: existence and properties of interface prototype object's 
 PASS Worker interface: existence and properties of interface prototype object's @@unscopables property
 PASS Worker interface: operation terminate()
 PASS Worker interface: operation postMessage(any, sequence<object>)
-PASS Worker interface: operation postMessage(any, optional PostMessageOptions)
+PASS Worker interface: operation postMessage(any, optional StructuredSerializeOptions)
 PASS Worker interface: attribute onmessage
 FAIL Worker interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
 PASS Worker interface: attribute onerror
@@ -788,20 +746,7 @@ PASS HTMLFrameSetElement interface: existence and properties of interface object
 PASS HTMLFrameElement interface: existence and properties of interface object
 PASS HTMLDirectoryElement interface: existence and properties of interface object
 PASS HTMLFontElement interface: existence and properties of interface object
+PASS HTMLParamElement interface: existence and properties of interface object
 PASS External interface: existence and properties of interface object
-PASS PluginArray interface: existence and properties of interface object
-PASS MimeTypeArray interface: existence and properties of interface object
-PASS Plugin interface: existence and properties of interface object
-PASS MimeType interface: existence and properties of interface object
-PASS NodeList interface: existence and properties of interface object
-PASS HTMLCollection interface: existence and properties of interface object
-PASS Node interface: existence and properties of interface object
-PASS Document interface: existence and properties of interface object
-PASS DocumentFragment interface: existence and properties of interface object
-PASS ShadowRoot interface: existence and properties of interface object
-PASS Element interface: existence and properties of interface object
-PASS DOMTokenList interface: existence and properties of interface object
-PASS UIEvent interface: existence and properties of interface object
-PASS MouseEvent interface: existence and properties of interface object
 Harness: the test ran to completion.
 

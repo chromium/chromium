@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -36,7 +36,7 @@ class ClientTagBasedRemoteUpdateHandler {
                                     ProcessorEntityTracker* entities);
 
   // Processes incremental updates from the sync server.
-  base::Optional<ModelError> ProcessIncrementalUpdate(
+  absl::optional<ModelError> ProcessIncrementalUpdate(
       const sync_pb::ModelTypeState& model_type_state,
       UpdateResponseDataList updates);
 
@@ -65,23 +65,20 @@ class ClientTagBasedRemoteUpdateHandler {
   // Gets the entity for the given tag hash, or null if there isn't one.
   ProcessorEntity* GetEntityForTagHash(const ClientTagHash& tag_hash);
 
-  // Create an entity in the entity tracker for |storage_key|.
-  // |storage_key| must not exist in the entity tracker.
-  ProcessorEntity* CreateEntity(const std::string& storage_key,
-                                const EntityData& data);
-
-  // Version of the above that generates a tag for |data|.
-  ProcessorEntity* CreateEntity(const EntityData& data);
+  // Creates an entity in the entity tracker for |storage_key| queried from the
+  // bridge for the given |update|. Provided |storage_key| (if any, i.e. if
+  // non-empty) must not exist in the entity tracker.
+  ProcessorEntity* CreateEntity(const UpdateResponseData& update);
 
   // The model type this object syncs.
   const ModelType type_;
 
   // ModelTypeSyncBridge linked to associated processor.
-  ModelTypeSyncBridge* const bridge_;
+  const raw_ptr<ModelTypeSyncBridge> bridge_;
 
   // A map of client tag hash to sync entities known to the processor.
   // Should be replaced with new interface.
-  ProcessorEntityTracker* const entity_tracker_;
+  const raw_ptr<ProcessorEntityTracker> entity_tracker_;
 };
 
 }  // namespace syncer

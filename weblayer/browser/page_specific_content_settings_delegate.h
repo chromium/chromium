@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 #define WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 namespace weblayer {
@@ -21,19 +22,16 @@ class PageSpecificContentSettingsDelegate
   PageSpecificContentSettingsDelegate& operator=(
       const PageSpecificContentSettingsDelegate&) = delete;
 
-  static void UpdateRendererContentSettingRules(
-      content::RenderProcessHost* process);
+  static void InitializeRenderer(content::RenderProcessHost* process);
 
  private:
   // PageSpecificContentSettings::Delegate:
   void UpdateLocationBar() override;
-  void SetContentSettingRules(
-      content::RenderProcessHost* process,
-      const RendererContentSettingRules& rules) override;
   PrefService* GetPrefs() override;
   HostContentSettingsMap* GetSettingsMap() override;
-  ContentSetting GetEmbargoSetting(const GURL& request_origin,
-                                   ContentSettingsType permission) override;
+  void SetDefaultRendererContentSettingRules(
+      content::RenderFrameHost* rfh,
+      RendererContentSettingRules* rules) override;
   std::vector<storage::FileSystemType> GetAdditionalFileSystemTypes() override;
   browsing_data::CookieHelper::IsDeletionDisabledCallback
   GetIsDeletionDisabledCallback() override;
@@ -44,17 +42,20 @@ class PageSpecificContentSettingsDelegate
       const std::string& media_stream_selected_video_device) override;
   content_settings::PageSpecificContentSettings::MicrophoneCameraState
   GetMicrophoneCameraState() override;
+  content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
+      content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
-  void OnCacheStorageAccessAllowed(const url::Origin& origin) override;
-  void OnCookieAccessAllowed(const net::CookieList& accessed_cookies) override;
-  void OnDomStorageAccessAllowed(const url::Origin& origin) override;
-  void OnFileSystemAccessAllowed(const url::Origin& origin) override;
-  void OnIndexedDBAccessAllowed(const url::Origin& origin) override;
-  void OnServiceWorkerAccessAllowed(const url::Origin& origin) override;
-  void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
+  void OnStorageAccessAllowed(
+      content_settings::mojom::ContentSettingsManager::StorageType storage_type,
+      const url::Origin& origin,
+      content::Page& page) override;
+  void OnCookieAccessAllowed(const net::CookieList& accessed_cookies,
+                             content::Page& page) override;
+  void OnServiceWorkerAccessAllowed(const url::Origin& origin,
+                                    content::Page& page) override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace weblayer

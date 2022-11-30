@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,6 +42,8 @@ cast_source_set("loopback") {
     "//chromecast/media/audio:libcast_external_audio_pipeline_1.0",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:proto",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/net:io_buffer_pool",
     "//chromecast/public/media",
   ]
@@ -83,16 +85,20 @@ cast_source_set("mixer") {
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/base:thread_health_checker",
+    "//chromecast/media/api",
     "//chromecast/media/audio:audio_io_thread",
     "//chromecast/media/audio:audio_log",
     "//chromecast/media/audio:interleaved_channel_mixer",
     "//chromecast/media/audio:libcast_external_audio_pipeline_1.0",
     "//chromecast/media/audio:playback_rate_shifter",
     "//chromecast/media/audio:processing",
+    "//chromecast/media/audio:rate_adjuster",
     "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/mixer_service:proto",
     "//chromecast/media/audio/mixer_service:redirected_audio_connection",
     "//chromecast/media/audio/mixer_service/receiver",
+    "//chromecast/media/audio/net:common",
+    "//chromecast/media/audio/net:proto",
     "//chromecast/media/base",
     "//chromecast/media/base:slew_volume",
     "//chromecast/media/cma/backend:cast_audio_json",
@@ -108,18 +114,27 @@ cast_source_set("mixer") {
 
   if (use_alsa) {
     deps += [ "//chromecast/media/cma/backend/alsa:mixer_output" ]
-  } else if (is_fuchsia) {
-    deps += [ "//chromecast/media/cma/backend/fuchsia:mixer_output" ]
   } else {
     # If enable_video_with_mixed_audio && !use_alsa, the platform needs to
     # provide its own mixer output.
     if (!enable_video_with_mixed_audio) {
-      sources += [ "mixer_output_stream_dummy.cc" ]
+      deps += [ ":mixer_output_stream_dummy" ]
     } else {
       assert("$mixer_output" != "")
       deps += [ "$mixer_output" ]
     }
   }
+}
+
+cast_source_set("mixer_output_stream_dummy") {
+  sources = [
+    "mixer_output_stream_dummy.cc",
+    "mixer_output_stream_dummy.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
 }
 
 cast_source_set("loopback_test_support") {

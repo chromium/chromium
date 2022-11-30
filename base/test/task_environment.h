@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/observer_list_types.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -106,6 +105,8 @@ class TaskEnvironment {
     // according to the semantics of the current Run*() or FastForward*() call.
     //
     // This also mocks Time/TimeTicks::Now() with the same mock clock.
+    // Time::Now() and TimeTicks::Now() (with respect to its origin) start
+    // without submillisecond components.
     //
     // Warning some platform APIs are still real-time, e.g.:
     //   * PlatformThread::Sleep
@@ -213,6 +214,9 @@ class TaskEnvironment {
                                     TaskEnvironmentTraits...>(),
             trait_helpers::NotATraitTag()) {}
 
+  TaskEnvironment(const TaskEnvironment&) = delete;
+  TaskEnvironment& operator=(const TaskEnvironment&) = delete;
+
   // Waits until no undelayed ThreadPool tasks remain. Then, unregisters the
   // ThreadPoolInstance and the (Thread|Sequenced)TaskRunnerHandle.
   virtual ~TaskEnvironment();
@@ -311,6 +315,11 @@ class TaskEnvironment {
   // thread, and currently running tasks on the thread pool.
   void DescribeCurrentTasks() const;
 
+  // Detach ThreadCheckers (will rebind on next usage), useful for the odd test
+  // suite which doesn't run on the main thread but still has exclusive access
+  // to driving this TaskEnvironment (e.g. WaylandClientTestSuiteServer).
+  void DetachFromThread();
+
   class TestTaskTracker;
   // Callers outside of TaskEnvironment may not use the returned pointer. They
   // should just use base::ThreadPoolInstance::Get().
@@ -333,6 +342,26 @@ class TaskEnvironment {
   static void AddDestructionObserver(DestructionObserver* observer);
   static void RemoveDestructionObserver(DestructionObserver* observer);
 
+  // Instantiating a ParallelExecutionFence waits for all currently running
+  // ThreadPool tasks before the constructor returns and from then on prevents
+  // additional tasks from running during its lifetime.
+  //
+  // Must be instantiated from the test main thread.
+  class ParallelExecutionFence {
+   public:
+    // Instantiates a ParallelExecutionFence, crashes with an optional
+    // |error_message| if not invoked from test main thread.
+    explicit ParallelExecutionFence(const char* error_message = "");
+    ~ParallelExecutionFence();
+
+    ParallelExecutionFence(const ParallelExecutionFence&) = delete;
+    ParallelExecutionFence& operator=(const ParallelExecutionFence& other) =
+        delete;
+
+   private:
+    bool previously_allowed_to_run_ = false;
+  };
+
   // The number of foreground workers in the ThreadPool managed by a
   // TaskEnvironment instance. This can be used to determine the maximum
   // parallelism in tests that require each parallel task it spawns to be
@@ -352,16 +381,19 @@ class TaskEnvironment {
     return thread_pool_execution_mode_;
   }
 
-  // Returns the TimeDomain driving this TaskEnvironment.
-  sequence_manager::TimeDomain* GetTimeDomain() const;
+  // Returns the MockTimeDomain driving this TaskEnvironment if this instance is
+  // using TimeSource::MOCK_TIME, nullptr otherwise.
+  sequence_manager::TimeDomain* GetMockTimeDomain() const;
 
   sequence_manager::SequenceManager* sequence_manager() const;
 
   void DeferredInitFromSubclass(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // Derived classes may need to control when the sequence manager goes away.
-  void NotifyDestructionObserversAndReleaseSequenceManager();
+  // Derived classes may need to control when the task environment goes away
+  // (e.g. ~FooTaskEnvironment() may want to effectively trigger
+  // ~TaskEnvironment() before its members are destroyed).
+  void DestroyTaskEnvironment();
 
  private:
   class MockTimeDomain;
@@ -393,7 +425,7 @@ class TaskEnvironment {
   // TimeSource::SYSTEM_TIME mode.
   std::unique_ptr<MockTimeDomain> mock_time_domain_;
 
-  // Overrides Time/TimeTicks::Now() under TimeSource::MOCK_TIME_AND_NOW mode.
+  // Overrides Time/TimeTicks::Now() under TimeSource::MOCK_TIME mode.
   // Null in other modes.
   std::unique_ptr<subtle::ScopedTimeClockOverrides> time_overrides_;
 
@@ -403,7 +435,7 @@ class TaskEnvironment {
   // Only set for instances using TimeSource::MOCK_TIME.
   std::unique_ptr<Clock> mock_clock_;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Enables the FileDescriptorWatcher API iff running a MainThreadType::IO.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher_;
 #endif
@@ -412,7 +444,7 @@ class TaskEnvironment {
   TestTaskTracker* task_tracker_ = nullptr;
 
   // Ensures destruction of lazy TaskRunners when this is destroyed.
-  std::unique_ptr<internal::ScopedLazyTaskRunnerListForTesting>
+  std::unique_ptr<base::internal::ScopedLazyTaskRunnerListForTesting>
       scoped_lazy_task_runner_list_for_testing_;
 
   // Sets RunLoop::Run() to LOG(FATAL) if not Quit() in a timely manner.
@@ -427,8 +459,6 @@ class TaskEnvironment {
   // thread. This is the case for anything that modifies or drives the
   // |sequence_manager_|.
   THREAD_CHECKER(main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TaskEnvironment);
 };
 
 // SingleThreadTaskEnvironment takes the same traits as TaskEnvironment and is

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,18 +37,22 @@ class FirstRunFieldTrialGroup {
 // at first run must be pre-defined in client code.
 class FirstRunFieldTrialConfig {
  public:
-  // Initializes with |trial_name| as the name of the FieldTrial.
+  // Initializes with `trial_name` as the name of the FieldTrial.
   FirstRunFieldTrialConfig(const std::string& trial_name);
+
+  FirstRunFieldTrialConfig(const FirstRunFieldTrialConfig&) = delete;
+  FirstRunFieldTrialConfig& operator=(const FirstRunFieldTrialConfig&) = delete;
+
   ~FirstRunFieldTrialConfig();
 
   // Creates and returns a one-time randomized FieldTrial with
-  // |disabled_group_name| with groups configured with Google Variation IDs.
+  // `default_group_name` with groups configured with Google Variation IDs.
   scoped_refptr<base::FieldTrial> CreateOneTimeRandomizedTrial(
-      const std::string& disabled_group_name,
+      const std::string& default_group_name,
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
 
-  // Adds a new FieldTrial group of |name| with a probability of |percentage|.
-  // |variation| defines a server-side variation configuration.
+  // Adds a new FieldTrial group of `name` with a probability of `percentage`.
+  // `variation` defines a server-side variation configuration (non-trigger).
   void AddGroup(const std::string& name,
                 variations::VariationID variation,
                 base::FieldTrial::Probability percentage);
@@ -64,8 +68,6 @@ class FirstRunFieldTrialConfig {
  private:
   std::string trial_name_;
   std::vector<FirstRunFieldTrialGroup> groups_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunFieldTrialConfig);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_IOS_FIRST_RUN_FIELD_TRIALS_H_

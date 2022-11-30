@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -25,7 +27,12 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
     virtual ~PreferenceManager() = default;
   };
 
-  static BackgroundStartupTracingObserver* GetInstance();
+  static BackgroundStartupTracingObserver& GetInstance();
+
+  BackgroundStartupTracingObserver(const BackgroundStartupTracingObserver&) =
+      delete;
+  BackgroundStartupTracingObserver& operator=(
+      const BackgroundStartupTracingObserver&) = delete;
 
   // Returns startup tracing rule from the given config, null if doesn't exist.
   static const BackgroundTracingRule* FindStartupRuleInConfig(
@@ -61,7 +68,8 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
 
   std::unique_ptr<PreferenceManager> preferences_;
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundStartupTracingObserver);
+  // For `BackgroundStartupTracingObserver::GetInstance`.
+  friend class base::NoDestructor<BackgroundStartupTracingObserver>;
 };
 
 }  // namespace content

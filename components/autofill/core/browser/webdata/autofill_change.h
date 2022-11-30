@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 
 namespace autofill {
 
 class CreditCard;
+class IBAN;
 
 // For classic Autofill form fields, the KeyType is AutofillKey.
 // Autofill++ types such as AutofillProfile and CreditCard simply use a string.
@@ -74,11 +76,12 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
 
  private:
   // Weak reference, can be NULL.
-  const DataType* data_model_;
+  raw_ptr<const DataType> data_model_;
 };
 
 typedef AutofillDataModelChange<AutofillProfile> AutofillProfileChange;
 typedef AutofillDataModelChange<CreditCard> CreditCardChange;
+typedef AutofillDataModelChange<IBAN> IBANChange;
 
 class AutofillProfileDeepChange : public AutofillProfileChange {
  public:
@@ -94,9 +97,6 @@ class AutofillProfileDeepChange : public AutofillProfileChange {
     is_ongoing_on_background_ = true;
   }
 
-  void validation_effort_made() const { validation_effort_made_ = true; }
-  bool has_validation_effort_made() const { return validation_effort_made_; }
-
   void set_enforced() { enforced_ = true; }
   bool enforced() const { return enforced_; }
 
@@ -105,12 +105,6 @@ class AutofillProfileDeepChange : public AutofillProfileChange {
   // Is true when the change is taking place on the database side on the
   // background.
   mutable bool is_ongoing_on_background_ = false;
-  // Is true when the |profile_| has gone through the validation process.
-  // Note: This could be different from the
-  // profile_.is_client_validity_states_updated. |validation_effort_made_| shows
-  // that the effort has been made, but not necessarily successful, and profile
-  // validity may or may not be updated.
-  mutable bool validation_effort_made_ = false;
 
   // Is true when the change should happen regardless of an existing or equal
   // profile.

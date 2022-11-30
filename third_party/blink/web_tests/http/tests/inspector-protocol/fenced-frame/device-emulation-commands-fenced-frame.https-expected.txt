@@ -1,0 +1,8 @@
+Tests that device emulation commands from fenced frames.
+Trying to call Emulation.setDeviceMetricsOverride
+PASS: Command can only be executed on top-level targets
+PASS: screen.width isn't changed.
+Trying to call Emulation.clearDeviceMetricsOverride
+PASS: Command can only be executed on top-level targets
+PASS: screen.width isn't changed.
+

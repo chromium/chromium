@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -56,15 +56,17 @@ TEST_F(BrowsingDataCounterUtilsTest, CacheCounterResult) {
       {42, false, true,
        "Frees up less than 1 MB. Some sites may load more slowly on your next "
        "visit."},
-      {2.312 * kBytesInAMegabyte, false, false, "2.3 MB"},
-      {2.312 * kBytesInAMegabyte, false, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, false, "2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), false, true,
        "Frees up 2.3 MB. Some sites may load more slowly on your next visit."},
-      {2.312 * kBytesInAMegabyte, true, false, "Less than 2.3 MB"},
-      {2.312 * kBytesInAMegabyte, true, true,
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, false,
+       "Less than 2.3 MB"},
+      {static_cast<int>(2.312 * kBytesInAMegabyte), true, true,
        "Frees up less than 2.3 MB. Some sites may load more slowly on your "
        "next visit."},
-      {500.2 * kBytesInAMegabyte, false, false, "500 MB"},
-      {500.2 * kBytesInAMegabyte, true, false, "Less than 500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), false, false, "500 MB"},
+      {static_cast<int>(500.2 * kBytesInAMegabyte), true, false,
+       "Less than 500 MB"},
   };
 
   for (const TestCase& test_case : kTestCases) {
@@ -136,12 +138,14 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
 
   auto password_store =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
+  password_store->Init(GetProfile()->GetPrefs(),
+                       /*affiliated_match_helper=*/nullptr);
 
   // This counter does not really count anything; we just need a reference to
   // pass to the SigninDataResult ctor.
   browsing_data::SigninDataCounter counter(
-      password_store, nullptr,
-      ProfileSyncServiceFactory::GetForProfile(GetProfile()), nullptr);
+      password_store, nullptr, SyncServiceFactory::GetForProfile(GetProfile()),
+      nullptr);
 
   // Use a separate struct for input to make test cases easier to read after
   // auto formatting.

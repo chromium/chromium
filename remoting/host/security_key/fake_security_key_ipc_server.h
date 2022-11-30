@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 
 namespace IPC {
 class Channel;
@@ -32,7 +33,8 @@ namespace remoting {
 // WeakPtr reference to itself which allows tests to verify its lifetime is
 // managed properly without interfering with it.
 class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
-                                 public IPC::Listener {
+                                 public IPC::Listener,
+                                 public mojom::SecurityKeyForwarder {
  public:
   FakeSecurityKeyIpcServer(
       int connection_id,
@@ -41,6 +43,10 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
       const SecurityKeyAuthHandler::SendMessageCallback& send_message_callback,
       base::OnceClosure connect_callback,
       base::OnceClosure channel_closed_callback);
+
+  FakeSecurityKeyIpcServer(const FakeSecurityKeyIpcServer&) = delete;
+  FakeSecurityKeyIpcServer& operator=(const FakeSecurityKeyIpcServer&) = delete;
+
   ~FakeSecurityKeyIpcServer() override;
 
   // SecurityKeyIpcServer interface.
@@ -54,18 +60,16 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
   // Simulates the IPC channel being closed.
   void CloseChannel();
 
-  // Sends a ConnectionReady message to the client.
-  void SendConnectionReadyMessage();
-
-  // Sends an InvalidSession message to the client.
-  void SendInvalidSessionMessage();
-
   // Returns a WeakPtr reference to this instance.
   base::WeakPtr<FakeSecurityKeyIpcServer> AsWeakPtr();
 
   // Returns the payload for the last message received.
   const std::string& last_message_received() const {
     return last_message_received_;
+  }
+
+  void set_simulate_invalid_session(bool simulate_invalid_session) {
+    simulate_invalid_session_ = simulate_invalid_session;
   }
 
   // Signaled when a security key response message is received.
@@ -81,8 +85,16 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
 
+  // mojom::SecurityKeyForwarder implementation.
+  void OnSecurityKeyRequest(const std::string& request_data,
+                            OnSecurityKeyRequestCallback callback) override;
+
+  void BindAssociatedInterface(mojo::ScopedInterfaceEndpointHandle handle);
+
   // The id assigned to this IPC connection.
   int connection_id_;
+
+  bool simulate_invalid_session_ = false;
 
   // The payload for the last message received.
   std::string last_message_received_;
@@ -99,14 +111,19 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
   // Signaled when a security key response message is received.
   base::RepeatingClosure send_response_callback_;
 
+  // Stores the Mojo request callback to be run when the test is ready to
+  // simulate the remote client returning a security key response.
+  OnSecurityKeyRequestCallback request_callback_;
+
   // Used for sending/receiving security key messages between processes.
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
   std::unique_ptr<IPC::Channel> ipc_channel_;
 
+  mojo::AssociatedReceiver<mojom::SecurityKeyForwarder> security_key_forwarder_{
+      this};
+
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeSecurityKeyIpcServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcServer);
 };
 
 // Used to create FakeSecurityKeyIpcServer instances for testing.
@@ -116,6 +133,12 @@ class FakeSecurityKeyIpcServer : public SecurityKeyIpcServer,
 class FakeSecurityKeyIpcServerFactory : public SecurityKeyIpcServerFactory {
  public:
   FakeSecurityKeyIpcServerFactory();
+
+  FakeSecurityKeyIpcServerFactory(const FakeSecurityKeyIpcServerFactory&) =
+      delete;
+  FakeSecurityKeyIpcServerFactory& operator=(
+      const FakeSecurityKeyIpcServerFactory&) = delete;
+
   ~FakeSecurityKeyIpcServerFactory() override;
 
   // SecurityKeyIpcServerFactory implementation.
@@ -135,8 +158,6 @@ class FakeSecurityKeyIpcServerFactory : public SecurityKeyIpcServerFactory {
   // Tracks each FakeSecurityKeyIpcServer instance created by this
   // factory which allows them to be retrieved and queried for tests.
   std::map<int, base::WeakPtr<FakeSecurityKeyIpcServer>> ipc_server_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcServerFactory);
 };
 
 }  // namespace remoting

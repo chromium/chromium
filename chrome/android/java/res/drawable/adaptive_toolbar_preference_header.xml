@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="120dp"
+    android:viewportWidth="360"
+    android:viewportHeight="120">
+    <group android:name="wrapper_1">
+        <clip-path
+            android:name="clip0"
+            android:pathData="M 0 0 L 360 0 L 360 120 L 0 120 Z"/>
+        <group android:name="group_4">
+            <path
+                android:name="background"
+                android:pathData="M 22 35.422 L 22 84.577 L 338 84.577 L 338 35.422 L 22 35.422 Z"
+                android:fillColor="@color/adaptive_toolbar_preference_header_background"
+                android:strokeWidth="1"
+                android:fillType="evenOdd"/>
+            <group android:name="mask0">
+                <path
+                    android:name="home_icon"
+                    android:pathData="M 43.834 52.574 C 43.652 52.392 43.359 52.1 43.067 52.1 C 42.774 52.1 42.481 52.392 42.3 52.574 L 35.374 59.454 C 35.251 59.605 35.167 59.79 35.167 60 C 35.167 60.484 35.56 60.878 36.044 60.878 C 36.254 60.878 36.439 60.794 36.59 60.671 L 36.922 60.363 L 36.922 66.144 C 36.922 67.114 37.709 67.9 38.678 67.9 L 47.456 67.9 C 48.425 67.9 49.211 67.114 49.211 66.144 L 49.211 60.363 L 49.543 60.671 C 49.694 60.794 49.879 60.878 50.089 60.878 C 50.573 60.878 50.967 60.484 50.967 60 C 50.967 59.79 50.883 59.605 50.76 59.454 C 50.76 59.454 45.568 54.291 43.834 52.574 Z M 38.678 66.144 L 38.678 58.683 L 43.067 54.382 L 47.456 58.683 L 47.456 66.144 L 38.678 66.144 Z"
+                    android:fillColor="@color/adaptive_toolbar_preference_header_line"
+                    android:strokeWidth="1"
+                    android:fillType="evenOdd"/>
+            </group>
+            <group android:name="wrapper">
+                <clip-path
+                    android:name="clip1"
+                    android:pathData="M 64.133 60 C 64.133 50.304 71.993 42.444 81.689 42.444 L 201.067 42.444 C 210.762 42.444 218.622 50.304 218.622 60 C 218.622 69.696 210.762 77.556 201.067 77.556 L 81.689 77.556 C 71.993 77.556 64.133 69.696 64.133 60 Z"/>
+                <group android:name="group_1">
+                    <path
+                        android:name="omnibox"
+                        android:pathData="M 81.689 42.889 C 71.993 42.889 64.133 50.749 64.133 60.444 C 64.133 70.14 71.993 78 81.689 78 L 200.578 78 C 210.273 78 218.133 70.14 218.133 60.444 C 218.133 50.749 210.273 42.889 200.578 42.889 L 81.689 42.889 Z"
+                        android:fillColor="@color/adaptive_toolbar_preference_header_omnibox"
+                        android:strokeWidth="1"
+                        android:fillType="evenOdd"/>
+                </group>
+            </group>
+            <group android:name="mask1">
+                <path
+                    android:name="menu_icon"
+                    android:pathData="M 313.422 56.489 C 314.388 56.489 315.178 55.699 315.178 54.733 C 315.178 53.768 314.388 52.978 313.422 52.978 C 312.457 52.978 311.667 53.768 311.667 54.733 C 311.667 55.699 312.457 56.489 313.422 56.489 Z M 313.422 58.245 C 312.457 58.245 311.667 59.035 311.667 60 C 311.667 60.966 312.457 61.756 313.422 61.756 C 314.388 61.756 315.178 60.966 315.178 60 C 315.178 59.035 314.388 58.245 313.422 58.245 Z M 311.667 65.267 C 311.667 64.301 312.457 63.511 313.422 63.511 C 314.388 63.511 315.178 64.301 315.178 65.267 C 315.178 66.232 314.388 67.022 313.422 67.022 C 312.457 67.022 311.667 66.232 311.667 65.267 Z"
+                    android:fillColor="@color/adaptive_toolbar_preference_header_line"
+                    android:strokeWidth="1"
+                    android:fillType="evenOdd"/>
+            </group>
+            <group android:name="mask2">
+                <path
+                    android:name="tab_switcher_icon"
+                    android:pathData="M 281.822 52.1 L 274.8 52.1 C 272.376 52.1 270.411 54.065 270.411 56.489 L 270.411 63.511 C 270.411 65.935 272.376 67.9 274.8 67.9 L 281.822 67.9 C 284.246 67.9 286.211 65.935 286.211 63.511 L 286.211 56.489 C 286.211 54.065 284.246 52.1 281.822 52.1 Z M 272.167 56.489 C 272.167 55.035 273.346 53.856 274.8 53.856 L 281.822 53.856 C 283.277 53.856 284.456 55.035 284.456 56.489 L 284.456 63.511 C 284.456 64.966 283.277 66.144 281.822 66.144 L 274.8 66.144 C 273.346 66.144 272.167 64.966 272.167 63.511 L 272.167 56.489 Z"
+                    android:fillColor="@color/adaptive_toolbar_preference_header_line"
+                    android:strokeWidth="1"
+                    android:fillType="evenOdd"/>
+            </group>
+            <path
+                android:name="tab_switcher_digit_1"
+                android:pathData="M 279.329 56.352 L 279.329 63.856 L 277.889 63.856 L 277.889 58.121 L 276.46 58.671 L 276.46 57.468 L 279.175 56.352 L 279.329 56.352 Z"
+                android:fillColor="@color/adaptive_toolbar_preference_header_line"
+                android:strokeWidth="1"/>
+            <path
+                android:name="stars"
+                android:pathData="M 248.833 57.5 L 249.875 55.208 L 252.167 54.167 L 249.875 53.125 L 248.833 50.833 L 247.792 53.125 L 245.5 54.167 L 247.792 55.208 L 248.833 57.5 Z M 242.583 57.917 L 240.5 53.333 L 238.417 57.917 L 233.833 60 L 238.417 62.083 L 240.5 66.667 L 242.583 62.083 L 247.167 60 L 242.583 57.917 Z M 247.792 64.792 L 248.833 62.5 L 249.875 64.792 L 252.167 65.833 L 249.875 66.875 L 248.833 69.167 L 247.792 66.875 L 245.5 65.833 L 247.792 64.792 Z"
+                android:fillColor="@color/adaptive_toolbar_preference_header_blue"
+                android:strokeWidth="1"
+                android:fillType="evenOdd"/>
+            <path
+                android:name="stars_holo"
+                android:pathData="M 243.5 26 C 234.619 26 226.092 29.532 219.812 35.812 C 213.532 42.092 210 50.619 210 59.5 C 210 68.381 213.532 76.908 219.812 83.188 C 226.092 89.468 234.619 93 243.5 93 C 252.381 93 260.908 89.468 267.188 83.188 C 273.468 76.908 277 68.381 277 59.5 C 277 50.619 273.468 42.092 267.188 35.812 C 260.908 29.532 252.381 26 243.5 26 Z"
+                android:fillColor="@color/adaptive_toolbar_preference_header_blue"
+                android:fillAlpha="0.1"
+                android:strokeWidth="1"/>
+        </group>
+    </group>
+</vector>

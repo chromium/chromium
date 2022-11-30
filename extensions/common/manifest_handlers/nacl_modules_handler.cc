@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,21 +46,21 @@ NaClModulesHandler::~NaClModulesHandler() {
 bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* list_value = nullptr;
   if (!extension->manifest()->GetList(keys::kNaClModules, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidNaClModules);
+    *error = errors::kInvalidNaClModules;
     return false;
   }
 
   std::unique_ptr<NaClModuleData> nacl_module_data(new NaClModuleData);
 
-  base::Value::ConstListView list_view = list_value->GetList();
-  for (size_t i = 0; i < list_view.size(); ++i) {
-    if (!list_view[i].is_dict()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidNaClModules);
+  const base::Value::List& list = list_value->GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!list[i].is_dict()) {
+      *error = errors::kInvalidNaClModules;
       return false;
     }
 
     // Get nacl_modules[i].path.
-    const base::Value* path_str = list_view[i].FindKeyOfType(
+    const base::Value* path_str = list[i].FindKeyOfType(
         keys::kNaClModulesPath, base::Value::Type::STRING);
     if (path_str == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -69,7 +69,7 @@ bool NaClModulesHandler::Parse(Extension* extension, std::u16string* error) {
     }
 
     // Get nacl_modules[i].mime_type.
-    const base::Value* mime_type = list_view[i].FindKeyOfType(
+    const base::Value* mime_type = list[i].FindKeyOfType(
         keys::kNaClModulesMIMEType, base::Value::Type::STRING);
     if (mime_type == nullptr) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

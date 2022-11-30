@@ -18,7 +18,7 @@
     <cr-input id="input" value="{{value}}" error-message="$i18n{notValid}"
         placeholder="$i18n{enterCustomWebAddress}" maxlength="102400"
         on-change="onChange_" on-keydown="onKeydown_" on-input="validate_"
-        invalid="{{invalid}}" tabindex="[[getTabindex_(canTab)]]"
+        invalid="{{invalid}}" input-tabindex="[[getTabindex_(canTab)]]"
         disabled="[[isDisabled_(disabled, pref.*)]]" spellcheck="false"
         on-keyup="stopKeyEventPropagation_"
         on-keypress="stopKeyEventPropagation_">

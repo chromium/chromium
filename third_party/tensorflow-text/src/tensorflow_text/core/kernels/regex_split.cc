@@ -34,8 +34,8 @@ void RegexSplitImpl(absl::string_view input,
   // Keep looking for split points until we have reached the end of the input.
   re2::StringPiece extracted_delim_token;
   while (RE2::FindAndConsume(&leftover, re2, &extracted_delim_token)) {
-    absl::string_view token(last_end.data(),
-                            extracted_delim_token.data() - last_end.data());
+    re2::StringPiece token(last_end.data(),
+                           extracted_delim_token.data() - last_end.data());
     bool has_non_empty_token = token.length() > 0;
     bool should_include_delim =
         include_delimiter && include_delim_regex.FullMatch(
@@ -44,7 +44,7 @@ void RegexSplitImpl(absl::string_view input,
 
     // Mark the end of the previous token, only if there was something.
     if (has_non_empty_token) {
-      tokens->push_back(token);
+      tokens->push_back(absl::string_view(token.data(), token.size()));
       // Mark the end of the last token
       begin_offsets->push_back(token.data() - input.data());
       end_offsets->push_back(token.data() + token.length() - input.begin());

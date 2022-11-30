@@ -194,7 +194,7 @@ Builds on | Variant | Chrome | Library | Webview
    * For non-renderer processes, the above Android N+ logic applies.
    * For renderer processes, the OS starts all Monochrome renderer processes by `fork()`ing the WebView zygote rather than the normal application zygote.
      * In this case, RELRO sharing would be redundant since the entire process' memory is shared with the zygote with copy-on-write semantics.
- * For Android Q (Trichrome):
+ * For Android Q+ (Trichrome):
    * TrichromeWebView works the same way as on Android N-P.
    * TrichromeChrome uses `android_dlopen_ext()` and `ASharedMemory_create()` to
      perform RELRO sharing, and then relies on a subsequent call to
@@ -204,8 +204,6 @@ Builds on | Variant | Chrome | Library | Webview
      app zygote. `libmonochrome.so` is loaded in the zygote before `fork()`.
      * Similar to O-P, app zygote provides copy-on-write memory semantics so
        RELRO sharing is redundant.
- * For Android R+:
-   * One difference from Q: the shared memory region is created using `memfd_create(2)`. This allows the region to survive forking from the app zygote, which will allow the zygote to share RELRO with all types of processes in the future.
 
 ## Partitioned libraries
 Some Chrome code is placed in feature-specific libraries and delivered via

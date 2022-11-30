@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,10 @@ import java.util.concurrent.TimeoutException;
  * mode.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.FORCE_FIRST_RUN_FLOW_COMPLETE_FOR_TESTING})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityIncognitoMetricTest {
     private static final String UMA_KEY = "CustomTabs.IncognitoCCTCallerId";
+    private static final String FIRST_PARTY_UMA_KEY = "CustomTabs.ClientAppId.Incognito";
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
 
     private String mTestPage;
@@ -59,7 +60,7 @@ public class CustomTabActivityIncognitoMetricTest {
     }
 
     private Intent createMinimalIncognitoCustomTabIntent() {
-        return CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        return CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), mTestPage);
     }
 
@@ -84,7 +85,7 @@ public class CustomTabActivityIncognitoMetricTest {
         assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
-        IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                 intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -110,5 +111,21 @@ public class CustomTabActivityIncognitoMetricTest {
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         UMA_KEY, IntentHandler.IncognitoCCTCallerId.OTHER_APPS));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO,
+            ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY})
+    public void
+    doesNotRecordThirdPartySpecificHistogram() {
+        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(FIRST_PARTY_UMA_KEY));
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+
+        // Remove the first party override to emulate third party
+        mCustomTabActivityTestRule.setRemoveFirstPartyOverride();
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting(FIRST_PARTY_UMA_KEY));
     }
 }

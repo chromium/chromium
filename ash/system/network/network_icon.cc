@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,29 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/color_util.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/network/network_icon_animation.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
 using chromeos::network_config::mojom::ActivationStateType;
@@ -50,6 +50,9 @@ class NetworkIconImpl {
   NetworkIconImpl(const std::string& guid,
                   IconType icon_type,
                   NetworkType network_type);
+
+  NetworkIconImpl(const NetworkIconImpl&) = delete;
+  NetworkIconImpl& operator=(const NetworkIconImpl&) = delete;
 
   // Determines whether or not the associated network might be dirty and if so
   // updates and generates the icon. Does nothing if network no longer exists.
@@ -83,8 +86,6 @@ class NetworkIconImpl {
 
   // Generated icon image.
   gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconImpl);
 };
 
 //------------------------------------------------------------------------------
@@ -177,7 +178,7 @@ gfx::ImageSkia GetImageForIndex(ImageType image_type,
       kUnifiedTrayNetworkIconPadding);
 }
 
-gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
+gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
                                         IconType icon_type,
                                         double animation) {
   // Connecting icons animate by adjusting their signal strength up and down,
@@ -186,9 +187,10 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
 
   // Cache of images used to avoid redrawing the icon during every animation;
   // the key is a tuple including a bool representing whether the icon displays
-  // bars (as oppose to arcs), the IconType, and an int representing the index
-  // of the image (with respect to GetImageForIndex()).
-  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia*>
+  // bars (as oppose to arcs), a bool representing whether the icon is to be
+  // displayed in dark mode, the IconType, and an int representing the index of
+  // the image (with respect to GetImageForIndex()).
+  static base::flat_map<std::tuple<bool, bool, IconType, int>, gfx::ImageSkia>
       s_image_cache;
 
   // Note that if |image_type| is NONE, arcs are displayed by default.
@@ -196,16 +198,18 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
 
   int index =
       animation * nextafter(static_cast<float>(kNumConnectingImages), 0);
-  index = base::ClampToRange(index, 0, kNumConnectingImages - 1);
+  index = base::clamp(index, 0, kNumConnectingImages - 1);
 
-  auto map_key = std::make_tuple(is_bars_image, icon_type, index);
+  auto map_key = std::make_tuple(
+      is_bars_image, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
+      icon_type, index);
 
   if (!s_image_cache.contains(map_key)) {
     // Lazily cache images.
     // TODO(estade): should the alpha be applied in SignalStrengthImageSource?
     gfx::ImageSkia source = GetImageForIndex(image_type, icon_type, index + 1);
     s_image_cache[map_key] =
-        new gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
+        gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
             source, kConnectingImageAlpha));
   }
 
@@ -262,6 +266,8 @@ Badge BadgeForNetworkTechnology(const NetworkStateProperties* network,
     badge.icon = &kNetworkBadgeTechnologyLteIcon;
   } else if (technology == onc::cellular::kTechnologyLteAdvanced) {
     badge.icon = &kNetworkBadgeTechnologyLteAdvancedIcon;
+  } else if (technology == onc::cellular::kTechnology5gNr) {
+    badge.icon = &kNetworkBadgeTechnology5gIcon;
   } else {
     return {};
   }
@@ -302,7 +308,7 @@ NetworkIconImpl::NetworkIconImpl(const std::string& guid,
                                  IconType icon_type,
                                  NetworkType network_type)
     : icon_type_(icon_type),
-      is_dark_themed_(AshColorProvider::Get()->IsDarkModeEnabled()) {
+      is_dark_themed_(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()) {
   // Default image is null.
 }
 
@@ -334,8 +340,10 @@ void NetworkIconImpl::Update(const NetworkStateProperties* network,
     dirty = true;
   }
 
-  if (is_dark_themed_ != AshColorProvider::Get()->IsDarkModeEnabled()) {
-    is_dark_themed_ = AshColorProvider::Get()->IsDarkModeEnabled();
+  const bool is_dark_themed =
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  if (is_dark_themed_ != is_dark_themed) {
+    is_dark_themed_ = is_dark_themed;
     dirty = true;
   }
 
@@ -393,12 +401,13 @@ void NetworkIconImpl::GetBadges(const NetworkStateProperties* network,
   } else if (type == NetworkType::kCellular) {
     // technology_badge_ is set in UpdateCellularState.
     if (is_connected && network->type_state->get_cellular()->roaming) {
-      badges->bottom_right = {&kNetworkBadgeRoamingIcon, icon_color};
+      badges->top_left = {&kNetworkBadgeRoamingIcon, icon_color};
+    } else if (is_connected && !features::IsSeparateNetworkIconsEnabled()) {
+      // Only show technology badge when connected and roaming is not active.
+      badges->top_left = technology_badge_;
     }
   }
-  // Only show technology badge when connected.
-  if (is_connected && !features::IsSeparateNetworkIconsEnabled())
-    badges->top_left = technology_badge_;
+
   if (show_vpn_badge_)
     badges->bottom_left = {&kUnifiedNetworkBadgeVpnIcon, icon_color};
   if (connection_state_ == ConnectionStateType::kPortal)
@@ -453,7 +462,7 @@ SkColor GetDefaultColorForIconType(IconType icon_type) {
           AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
       return color_utils::GetResultingPaintColor(
-          AshColorProvider::GetDisabledColor(
+          ColorUtil::GetDisabledColor(
               GetDefaultColorForIconType(ICON_TYPE_FEATURE_POD)),
           ash_color_provider->GetBackgroundColor());
     default:
@@ -536,7 +545,7 @@ gfx::ImageSkia GetConnectingImageForNetworkType(NetworkType network_type,
   double animation = NetworkIconAnimation::GetInstance()->GetAnimation();
 
   return CreateNetworkIconImage(
-      *ConnectingWirelessImage(image_type, icon_type, animation), Badges());
+      ConnectingWirelessImage(image_type, icon_type, animation), Badges());
 }
 
 gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
@@ -567,12 +576,7 @@ std::u16string GetLabelForNetworkList(const NetworkStateProperties* network) {
     }
     if (activation_state == ActivationStateType::kNotActivated ||
         activation_state == ActivationStateType::kPartiallyActivated) {
-      if (chromeos::features::IsCellularActivationUiEnabled())
-        return base::UTF8ToUTF16(network->name);
-
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE,
-          base::UTF8ToUTF16(network->name));
+      return base::UTF8ToUTF16(network->name);
     }
   }
   // Otherwise just show the network name or 'Ethernet'.

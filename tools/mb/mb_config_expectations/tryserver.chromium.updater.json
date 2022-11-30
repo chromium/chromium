@@ -1,9 +1,9 @@
 {
   "mac-updater-try-builder-dbg": {
     "gn_args": {
-      "is_component_build": true,
+      "enable_chromium_updater": true,
+      "is_component_build": false,
       "is_debug": true,
-      "is_google_branded": true,
       "symbol_level": 1,
       "use_goma": true
     }
@@ -11,18 +11,18 @@
   "mac-updater-try-builder-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_chromium_updater": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_google_branded": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   },
   "win-updater-try-builder-dbg": {
     "gn_args": {
-      "is_component_build": true,
+      "enable_chromium_updater": true,
+      "is_component_build": false,
       "is_debug": true,
-      "is_google_branded": true,
       "symbol_level": 1,
       "use_goma": true
     }
@@ -30,10 +30,10 @@
   "win-updater-try-builder-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "enable_chromium_updater": true,
       "is_component_build": false,
       "is_debug": false,
-      "is_google_branded": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "use_goma": true
     }
   }

@@ -1,16 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
-
-// clang-format off
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {NavigationModelItemType, NavigationListModel, NavigationModelFakeItem, NavigationModelVolumeItem} from './navigation_list_model.m.js';
-// clang-format on
+import {DirectoryModel} from './directory_model.js';
+import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType, NavigationModelVolumeItem} from './navigation_list_model.js';
 
 /**
  * Namespace for crossover search utility functions.
@@ -68,5 +61,4 @@ crossoverSearchUtils.findQueryMatchedDirectoryEntry =
   return null;
 };
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {crossoverSearchUtils};
+export {crossoverSearchUtils};

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,7 @@ component("shared_typemap_traits") {
     "bitmap_skbitmap_mojom_traits.h",
     "image_info_mojom_traits.cc",
     "image_info_mojom_traits.h",
+    "surface_origin_mojom_traits.h",
   ]
 
   defines = [ "IS_SKIA_SHARED_TRAITS_IMPL" ]
@@ -34,6 +35,9 @@ mojom("mojom") {
     "bitmap.mojom",
     "image_info.mojom",
     "skcolor.mojom",
+    "skcolor4f.mojom",
+    "skcolorspace_primaries.mojom",
+    "surface_origin.mojom",
     "tile_mode.mojom",
   ]
 
@@ -98,6 +102,26 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "skia.mojom.SkColor4f"
+          cpp = "::SkColor4f"
+        },
+      ]
+      traits_headers = [ "skcolor4f_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkColorSpacePrimaries"
+          cpp = "::SkColorSpacePrimaries"
+        },
+      ]
+      traits_headers = [ "skcolorspace_primaries_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
           mojom = "skia.mojom.AlphaType"
           cpp = "::SkAlphaType"
         },
@@ -119,6 +143,16 @@ mojom("mojom") {
         ":shared_typemap_traits",
         "//skia",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SurfaceOrigin"
+          cpp = "::GrSurfaceOrigin"
+        },
+      ]
+      traits_headers = [ "surface_origin_mojom_traits.h" ]
+      traits_public_deps = [ ":shared_typemap_traits" ]
     },
   ]
 

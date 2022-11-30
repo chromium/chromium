@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 class Browser;
 
 namespace login_ui_test_utils {
+
+constexpr base::TimeDelta kSyncConfirmationDialogTimeout = base::Seconds(30);
 
 // Blocks until the login UI is available and ready for authorization.
 void WaitUntilUIReady(Browser* browser);
@@ -45,12 +47,16 @@ bool SignInWithUI(Browser* browser,
 // Waits for sync confirmation dialog to get displayed, then executes javascript
 // to click on confirm button. Returns false if dialog wasn't dismissed before
 // |timeout|.
-bool ConfirmSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout);
+bool ConfirmSyncConfirmationDialog(
+    Browser* browser,
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
 
 // Waits for sync confirmation dialog to get displayed, then executes javascript
 // to click on cancel button. Returns false if dialog wasn't dismissed before
 // |timeout|.
-bool CancelSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout);
+bool CancelSyncConfirmationDialog(
+    Browser* browser,
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
 
 // Waits for the signin email confirmation dialog to get displayed, then
 // executes javascript to perform |action|. Returns false if failed to dismiss
@@ -69,6 +75,13 @@ bool ConfirmReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
 // javascript to click on cancel button. Returns false if dialog wasn't
 // dismissed before |timeout|.
 bool CancelReauthConfirmationDialog(Browser* browser, base::TimeDelta timeout);
+
+// Waits for profile customization dialog to get displayed, then executes
+// javascript to click on done button. Returns false if dialog wasn't
+// dismissed before |timeout|.
+bool CompleteProfileCustomizationDialog(
+    Browser* browser,
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
 
 }  // namespace login_ui_test_utils
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,52 +14,53 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementChecked;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getElementValue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addClickSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addJsClickSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addKeyboardSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addKeyboardWithFocusSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addKeyboardWithSelectSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addSetValueSteps;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CheckElementIsOnTopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStrategy;
-import org.chromium.chrome.browser.autofill_assistant.proto.OptionalStep;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
 import org.chromium.chrome.browser.autofill_assistant.proto.ReleaseElementsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionElementProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto.Filter;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SendKeystrokeEventsProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SetElementAttributeProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SetFormFieldValueProto.KeyPress;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextFilter;
-import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDocumentToBecomeInteractiveProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.WaitForElementToBecomeStableProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -75,45 +76,26 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantInputActionIntegrationTest {
-    @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
-
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "autofill_assistant_target_website.html";
-
+    private static final String TEST_PAGE = "autofill_assistant_target_website.html";
     private static final SupportedScriptProto TEST_SCRIPT =
             SupportedScriptProto.newBuilder()
                     .setPath(TEST_PAGE)
-                    .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                            ChipProto.newBuilder().setText("Done")))
+                    .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                     .build();
 
-    @Before
-    public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(
-                AutofillAssistantUiTestUtil.createMinimalCustomTabIntentForAutobot(
-                        mTestRule.getTestServer().getURL(TEST_PAGE),
-                        /* startImmediately = */ true));
-    }
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, TEST_PAGE));
 
     @Test
     @MediumTest
     public void fillFormFieldWithValue() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText("Value"))
-                                         .setFillStrategy(KeyboardValueFillStrategy.SET_VALUE))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addSetValueSteps(toCssSelector("#input1"), "Value", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -134,19 +116,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText("Value"))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addKeyboardSteps(toCssSelector("#input1"), "Value", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -167,19 +138,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokesAndFocus() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText("Value"))
-                                         .setFillStrategy(KeyboardValueFillStrategy
-                                                                  .SIMULATE_KEY_PRESSES_FOCUS))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addKeyboardWithFocusSteps(toCssSelector("#input1"), "Value", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -200,20 +160,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void fillFormFieldWithKeystrokesAndSelect() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText("Value"))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy
-                                                         .SIMULATE_KEY_PRESSES_SELECT_VALUE))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addKeyboardWithSelectSteps(toCssSelector("#input1"), "Value", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Set value")
                                             .addChoices(Choice.newBuilder()))
@@ -234,18 +182,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clearFormFieldWithValue() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText(""))
-                                         .setFillStrategy(KeyboardValueFillStrategy.SET_VALUE))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addSetValueSteps(toCssSelector("#input1"), "", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Clear value")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -253,19 +191,8 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        SelectorProto element_keystrokes =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input2"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_keystrokes)
-                                         .addValue(KeyPress.newBuilder().setText(""))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addKeyboardSteps(toCssSelector("#input2"), "", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Clear value Keystrokes")
                                             .addChoices(Choice.newBuilder()))
@@ -292,60 +219,21 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clearFormFieldWithKeystrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_set_value =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_set_value)
-                                         .addValue(KeyPress.newBuilder().setText(""))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy
-                                                         .SIMULATE_KEY_PRESSES_SELECT_VALUE))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addKeyboardWithSelectSteps(toCssSelector("#input1"), "", list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Empty value")
-                                            .addChoices(Choice.newBuilder().setChip(
-                                                    ChipProto.newBuilder()
-                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
-                                                            .setText("Continue"))))
-                         .build());
-        SelectorProto element_keystrokes =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#input2"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetFormValue(
-                                 SetFormFieldValueProto.newBuilder()
-                                         .setElement(element_keystrokes)
-                                         .addValue(KeyPress.newBuilder().setText("\b"))
-                                         .setFillStrategy(
-                                                 KeyboardValueFillStrategy
-                                                         .SIMULATE_KEY_PRESSES_SELECT_VALUE))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder()
-                                            .setMessage("Backspace")
                                             .addChoices(Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
 
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Empty value"), isCompletelyDisplayed());
-        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is(""));
-        onView(withText("Continue")).perform(click());
-
-        waitUntilViewMatchesCondition(withText("Backspace"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is(""));
     }
 
     @Test
@@ -353,10 +241,8 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void selectOptionFromDropdown() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = (SelectorProto) SelectorProto.newBuilder()
-                                        .addFilters(Filter.newBuilder().setCssSelector("#select"))
-                                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        SelectorProto element = toCssSelector("#select");
+        list.add(ActionProto.newBuilder()
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
                                          .setElement(element)
@@ -364,7 +250,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setOptionComparisonAttribute(
                                                  SelectOptionProto.OptionComparisonAttribute.VALUE))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Value Match")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -373,7 +259,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setText("Continue"))))
                          .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
+                ActionProto.newBuilder()
                         .setSelectOption(
                                 SelectOptionProto.newBuilder()
                                         .setElement(element)
@@ -381,7 +267,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                         .setOptionComparisonAttribute(
                                                 SelectOptionProto.OptionComparisonAttribute.LABEL))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Label Match")
                                             .addChoices(Choice.newBuilder().setChip(
@@ -389,7 +275,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                                             .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Continue"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setSelectOption(
                                  SelectOptionProto.newBuilder()
                                          .setElement(element)
@@ -398,7 +284,7 @@ public class AutofillAssistantInputActionIntegrationTest {
                                          .setOptionComparisonAttribute(
                                                  SelectOptionProto.OptionComparisonAttribute.LABEL))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder()
                                             .setMessage("Label Starts With")
                                             .addChoices(Choice.newBuilder()))
@@ -427,57 +313,33 @@ public class AutofillAssistantInputActionIntegrationTest {
     public void clickingOnElementToHide() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element_click =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_one"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_click)
-                                           .setClickType(ClickType.CLICK))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addClickSteps(toCssSelector("#touch_area_one"), list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Click").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder()
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        SelectorProto element_tap =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_five"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_tap)
-                                           .setClickType(ClickType.TAP))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addTapSteps(toCssSelector("#touch_area_five"), list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Tap").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder()
                                                  .setType(ChipType.HIGHLIGHTED_ACTION)
                                                  .setText("Continue"))))
                          .build());
-        SelectorProto element_js =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(Filter.newBuilder().setCssSelector("#touch_area_six"))
-                        .build();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder()
-                                           .setElementToClick(element_js)
-                                           .setClickType(ClickType.JAVASCRIPT))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addJsClickSteps(toCssSelector("#touch_area_six"), list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("JS").addChoices(
                                  Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
-        checkElementExists(mTestRule.getWebContents(), "touch_area_one");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_five");
-        checkElementExists(mTestRule.getWebContents(), "touch_area_six");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_one"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_five"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_six"), is(true));
 
         runScript(script);
 
@@ -497,27 +359,44 @@ public class AutofillAssistantInputActionIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1172648")
     public void clickOnButtonCoveredByOverlay() throws Exception {
-        checkElementExists(mTestRule.getWebContents(), "button");
-        checkElementExists(mTestRule.getWebContents(), "overlay");
+        assertThat(checkElementExists(mTestRule.getWebContents(), "button"), is(true));
+        assertThat(checkElementExists(mTestRule.getWebContents(), "overlay"), is(true));
         showOverlay();
 
-        // This script attempts to click 3 times on #button:
-        // 1. the first click action clicks without checking for overlays
-        // 2. the second click action checks, finds an overlay, but clicks anyway
-        // 3. the third click action finds an overlay and fails
-        SelectorProto.Builder button = SelectorProto.newBuilder().addFilters(
-                Filter.newBuilder().setCssSelector("#button"));
-        ClickProto.Builder click = ClickProto.newBuilder().setElementToClick(button);
+        // This script attempts to click 2 times on #button:
+        // 1. the first click chain clicks without checking for overlays
+        // 2. the second click chain finds an overlay and fails
+        SelectorProto button = toCssSelector("#button");
+        ClientIdProto clientId = toClientId("e");
         ArrayList<ActionProto> actions = new ArrayList<>();
         actions.add(
-                ActionProto.newBuilder().setClick(click.setOnTop(OptionalStep.SKIP_STEP)).build());
+                ActionProto.newBuilder()
+                        .setWaitForDom(
+                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                        ElementConditionProto.newBuilder()
+                                                .setMatch(button)
+                                                .setClientId(clientId)))
+                        .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
+                        .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
         actions.add(ActionProto.newBuilder()
-                            .setClick(click.setOnTop(OptionalStep.REPORT_STEP_RESULT))
+                            .setCheckElementIsOnTop(
+                                    CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
                             .build());
+        actions.add(
+                ActionProto.newBuilder()
+                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+                        .build());
         actions.add(ActionProto.newBuilder()
-                            .setClick(click.setOnTop(OptionalStep.REQUIRE_STEP_SUCCESS))
+                            .setReleaseElements(
+                                    ReleaseElementsProto.newBuilder().addClientIds(clientId))
                             .build());
 
         AutofillAssistantTestService testService = new AutofillAssistantTestService(
@@ -526,88 +405,227 @@ public class AutofillAssistantInputActionIntegrationTest {
         testService.waitUntilGetNextActions(1);
 
         List<ProcessedActionProto> processed = testService.getProcessedActions();
-        assertThat(processed, hasSize(3));
-        assertThat(processed.get(0).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        assertThat(processed.get(1).getStatus(), is(ProcessedActionStatusProto.ACTION_APPLIED));
-        assertThat(processed.get(1).getStatusDetails().getOriginalStatus(),
+        assertThat(processed, hasSize(4));
+        assertThat(processed.get(/* WaitForDom */ 0).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* ScrollIntoView */ 1).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* SendClickEvent */ 2).getStatus(),
+                is(ProcessedActionStatusProto.ACTION_APPLIED));
+        assertThat(processed.get(/* CheckOnTop */ 3).getStatus(),
                 is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
-        assertThat(processed.get(2).getStatus(), is(ProcessedActionStatusProto.ELEMENT_NOT_ON_TOP));
+        // No SendClickEvent
     }
 
     @Test
     @MediumTest
-    public void setTextWithMiniActions() throws Exception {
+    public void selectOptionWithMiniActions() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
-        SelectorProto element = SelectorProto.newBuilder()
-                                        .addFilters(Filter.newBuilder().setCssSelector("#input1"))
-                                        .build();
-        ClientIdProto clientId = ClientIdProto.newBuilder().setIdentifier("e").build();
-        list.add((ActionProto) ActionProto.newBuilder()
+        SelectorProto select = toCssSelector("#select");
+        ClientIdProto selectId = toClientId("s");
+        SelectorProto option = toCssSelector("#select option:nth-child(3)");
+        ClientIdProto optionId = toClientId("o");
+        list.add(ActionProto.newBuilder()
                          .setWaitForDom(
                                  WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
                                          ElementConditionProto.newBuilder()
-                                                 .setMatch(element)
-                                                 .setClientId(clientId)))
+                                                 .setMatch(select)
+                                                 .setClientId(selectId)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(option)
+                                                 .setClientId(optionId)))
+                         .build());
+        list.add(ActionProto.newBuilder()
                          .setWaitForDocumentToBecomeInteractive(
                                  WaitForDocumentToBecomeInteractiveProto.newBuilder()
-                                         .setClientId(clientId)
+                                         .setClientId(selectId)
                                          .setTimeoutInMs(1000))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setWaitForElementToBecomeStable(
-                                 WaitForElementToBecomeStableProto.newBuilder()
-                                         .setClientId(clientId)
-                                         .setStableCheckMaxRounds(10)
-                                         .setStableCheckIntervalMs(200))
+        list.add(ActionProto.newBuilder()
+                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(selectId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setCheckElementIsOnTop(
-                                 CheckElementIsOnTopProto.newBuilder().setClientId(clientId))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSetElementAttribute(
-                                 SetElementAttributeProto.newBuilder()
-                                         .setClientId(clientId)
-                                         .addAttribute("value")
-                                         .setValue(TextValue.newBuilder().setText("")))
+        list.add(ActionProto.newBuilder()
+                         .setSelectOptionElement(SelectOptionElementProto.newBuilder()
+                                                         .setSelectId(selectId)
+                                                         .setOptionId(optionId))
                          .build());
         list.add(
-                (ActionProto) ActionProto.newBuilder()
-                        .setSendChangeEvent(SendChangeEventProto.newBuilder().setClientId(clientId))
+                ActionProto.newBuilder()
+                        .setSendChangeEvent(SendChangeEventProto.newBuilder().setClientId(selectId))
                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
+        list.add(ActionProto.newBuilder()
+                         .setReleaseElements(ReleaseElementsProto.newBuilder()
+                                                     .addClientIds(selectId)
+                                                     .addClientIds(optionId))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setSendKeystrokeEvents(
-                                 SendKeystrokeEventsProto.newBuilder()
-                                         .setClientId(clientId)
-                                         .setDelayInMs(0)
-                                         .setValue(TextValue.newBuilder().setText("Value")))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setReleaseElements(
-                                 ReleaseElementsProto.newBuilder().addClientIds(clientId))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Done").addChoices(
                                  Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
 
-        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("helloworld1"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
 
         runScript(script);
 
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
-        assertThat(getElementValue(mTestRule.getWebContents(), "input1"), is("Value"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillTextFieldWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto input = toCssSelector("#input2");
+        SelectorProto inputInIFrame = toIFrameCssSelector("#iframe", "#input");
+
+        MiniActionTestUtil.addSetNativeValueSteps(input, "Value 1", list);
+        MiniActionTestUtil.addSetNativeValueSteps(inputInIFrame, "Value 2", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is(""));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("Value 1"));
+        assertThat(getElementValue(mTestRule.getWebContents(), "iframe", "input"), is("Value 2"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillTextareaWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        SelectorProto selector = toCssSelector("#textarea1");
+
+        MiniActionTestUtil.addSetNativeValueSteps(selector, "New Value", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"),
+                is("Initial textarea value."));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "textarea1"), is("New Value"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillDropdownWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selector = toCssSelector("#select");
+
+        MiniActionTestUtil.addSetNativeValueSteps(selector, "three", list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("one"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillCheckboxWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorOption2 = toCssSelector("#option2");
+        SelectorProto selectorOption3 = toCssSelector("#option3");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption2, true, list);
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorOption3, false, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(true));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option2"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "option3"), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void fillRadioButtonWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto selectorRed = toCssSelector("#radio_red");
+        SelectorProto selectorBlue = toCssSelector("#radio_blue");
+
+        MiniActionTestUtil.addSetNativeCheckedSteps(selectorRed, true, list);
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(false));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_red"), is(true));
+        assertThat(getElementChecked(mTestRule.getWebContents(), "radio_blue"), is(false));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

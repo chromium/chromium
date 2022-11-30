@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "net/ssl/client_cert_identity.h"
 
@@ -35,6 +35,18 @@ base::OnceClosure ShowSSLClientCertificateSelector(
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate);
+
+using ShowSSLClientCertificateSelectorTestingHook =
+    base::RepeatingCallback<base::OnceClosure(
+        content::WebContents* contents,
+        net::SSLCertRequestInfo* cert_request_info,
+        net::ClientCertIdentityList client_certs,
+        std::unique_ptr<content::ClientCertificateDelegate> delegate)>;
+// Sets a test-only hook to substitute the default implementation of
+// `ShowSSLClientCertificateSelector()`. Pass null as `hook` in order to unset
+// the hook and switch back to the default implementation.
+void SetShowSSLClientCertificateSelectorHookForTest(
+    ShowSSLClientCertificateSelectorTestingHook hook);
 
 }  // namespace chrome
 

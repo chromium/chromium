@@ -1,0 +1,9 @@
+Test interceptResponse parameter in redirected request interceptor
+Intercepted request http://127.0.0.1:8000/inspector-protocol/resources/redirect1.php
+Will skip next response
+Intercepted request http://127.0.0.1:8000/inspector-protocol/resources/redirect2.php
+Intercepted response 307
+Intercepted request http://127.0.0.1:8000/inspector-protocol/resources/final.html
+Will skip next response
+Finished navigation
+

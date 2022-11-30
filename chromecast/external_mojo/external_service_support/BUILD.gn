@@ -1,26 +1,32 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
 
+assert(!is_fuchsia)
+
 source_set("external_service") {
-  sources = [
+  public = [
     "external_connector.h",
-    "external_connector_impl.cc",
     "external_connector_impl.h",
-    "external_service.cc",
     "external_service.h",
   ]
-  deps = [
+  sources = [
+    "external_connector_impl.cc",
+    "external_service.cc",
+  ]
+  public_deps = [
     "//base",
-    "//chromecast/external_mojo/broker_service",
     "//chromecast/external_mojo/public/mojom",
     "//chromecast/mojo",
-    "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+  ]
+  deps = [
+    "//chromecast/external_mojo/broker_service",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/platform",
     "//services/service_manager/public/cpp",
   ]
 }
@@ -36,6 +42,7 @@ source_set("test_support") {
   deps = [
     ":external_service",
     "//base",
+    "//chromecast/external_mojo/public/mojom:test_support",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -49,6 +56,7 @@ source_set("process_setup") {
     "//base",
     "//base:base_static",
     "//chromecast:chromecast_buildflags",
+    "//chromecast/base:chromecast_switches",
   ]
 
   if (!is_fuchsia) {
@@ -79,11 +87,9 @@ source_set("tracing_client_dummy") {
   deps = [ ":tracing_client_hdr" ]
 }
 
-source_set("tracing_client_impl") {
-  sources = [
-    "tracing_client_impl.cc",
-    "tracing_client_impl.h",
-  ]
+source_set("perfetto_tracing_client") {
+  sources = [ "perfetto_tracing_client.cc" ]
+  public = [ "perfetto_tracing_client.h" ]
   deps = [
     ":external_service",
     ":tracing_client_hdr",
@@ -94,13 +100,14 @@ source_set("tracing_client_impl") {
     "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:traced_process",
     "//services/tracing/public/mojom",
+    "//third_party/perfetto:libperfetto",
   ]
 }
 
 group("tracing_client") {
   public_deps = [ ":tracing_client_hdr" ]
-  if (enable_external_mojo_tracing) {
-    public_deps += [ ":tracing_client_impl" ]
+  if (enable_perfetto_tracing) {
+    public_deps += [ ":perfetto_tracing_client" ]
   } else {
     public_deps += [ ":tracing_client_dummy" ]
   }
@@ -117,7 +124,9 @@ source_set("standalone_service_main") {
     ":process_setup",
     ":tracing_client",
     "//base",
+    "//chromecast/base:chromecast_switches",
     "//chromecast/external_mojo/public/cpp:common",
+    "//chromecast/external_mojo/public/cpp:external_mojo_broker",
     "//mojo/core/embedder",
   ]
   public_deps = [ ":service_process" ]
@@ -135,6 +144,15 @@ source_set("chromium_service") {
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
+  ]
+}
+
+source_set("util") {
+  public = [ "reconnecting_remote.h" ]
+  public_deps = [
+    ":external_service",
+    "//base",
+    "//mojo/public/cpp/bindings",
   ]
 }
 

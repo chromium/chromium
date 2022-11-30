@@ -10,12 +10,13 @@ Tests that a request for a stationary reference space is rejected.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
-      setup({single_test: true});
-
       let session_ = null;
+      console.log('Requesting inline session');
       navigator.xr.requestSession('inline')
       .then((xrSession) => {
         session_ = xrSession;
+        console.log(
+            'Got inline session, requesting local-floor reference space');
         return xrSession.requestReferenceSpace('local-floor');
       })
       .then((refSpace) => {

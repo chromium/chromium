@@ -1,11 +1,11 @@
 #!/bin/bash -e
 
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # Script to install everything needed to build chromium (well, ideally, anyway)
-# See https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md
+# See https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md
 
 usage() {
   echo "Usage: $0 [--options]"
@@ -33,15 +33,13 @@ usage() {
 build_apt_package_list() {
   echo "Building apt package list." >&2
   apt-cache dumpavail | \
-    python -c '\
-      from __future__ import print_function; \
-      import re,sys; \
-      o = sys.stdin.read(); \
-      p = {"i386": ":i386"}; \
-      f = re.M | re.S; \
-      r = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$", f); \
-      m = ["%s%s" % (x, p.get(y, "")) for x, y in re.findall(r, o)]; \
-      print("\n".join(m))'
+    python3 -c 'import re,sys; \
+o = sys.stdin.read(); \
+p = {"i386": ":i386"}; \
+f = re.M | re.S; \
+r = re.compile(r"^Package: (.+?)$.+?^Architecture: (.+?)$", f); \
+m = ["%s%s" % (x, p.get(y, "")) for x, y in re.findall(r, o)]; \
+print("\n".join(m))'
 }
 
 # Checks whether a particular package is available in the repos.
@@ -58,12 +56,8 @@ package_exists() {
   [ ! -z "$(grep "^${escaped}$" <<< "${apt_package_list}")" ]
 }
 
-# These default to on because (some) bots need them and it keeps things
-# simple for the bot setup if all bots just run the script in its default
-# mode.  Developers who don't want stuff they don't need installed on their
-# own workstations can pass --no-arm --no-nacl when running the script.
-do_inst_arm=1
-do_inst_nacl=1
+do_inst_arm=0
+do_inst_nacl=0
 
 while [ "$1" != "" ]
 do
@@ -103,6 +97,7 @@ fi
 
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
+# TODO(crbug.com/1199405): Remove 14.04 (trusty) and 16.04 (xenial).
 supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
@@ -114,7 +109,7 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with Eol April 2030)\n" \
       "\tUbuntu 20.10 (groovy)\n" \
-      "\tDebian 8 (jessie) or later" >&2
+      "\tDebian 10 (buster) or later" >&2
     exit 1
   fi
 
@@ -141,7 +136,7 @@ fi
 apt_package_list=$(build_apt_package_list)
 
 # Packages needed for chromeos only
-chromeos_dev_list="libbluetooth-dev libxkbcommon-dev"
+chromeos_dev_list="libbluetooth-dev libxkbcommon-dev mesa-common-dev zstd"
 
 if package_exists realpath; then
   chromeos_dev_list="${chromeos_dev_list} realpath"
@@ -162,7 +157,6 @@ dev_list="\
   flex
   git-core
   gperf
-  libappindicator3-dev
   libasound2-dev
   libatspi2.0-dev
   libbrlapi-dev
@@ -191,7 +185,9 @@ dev_list="\
   libsqlite3-dev
   libssl-dev
   libudev-dev
+  libva-dev
   libwww-perl
+  libxshmfence-dev
   libxslt1-dev
   libxss-dev
   libxt-dev
@@ -202,9 +198,6 @@ dev_list="\
   patch
   perl
   pkg-config
-  python
-  python-dev
-  python-setuptools
   rpm
   ruby
   subversion
@@ -235,7 +228,6 @@ chromeos_lib_list="libpulse0 libbz2-1.0"
 
 # List of required run-time libraries
 common_lib_list="\
-  libappindicator3-1
   libasound2
   libatk1.0-0
   libatspi2.0-0
@@ -291,11 +283,52 @@ lib_list="\
   $chromeos_lib_list
 "
 
+# this can be moved into the lib list without a guard when xenial is deprecated
+if package_exists libgl1; then
+  lib_list="${lib_list} libgl1"
+fi
+if package_exists libegl1; then
+  lib_list="${lib_list} libegl1"
+fi
+if package_exists libwayland-egl1; then
+  lib_list="${lib_list} libwayland-egl1"
+fi
+if package_exists libpangocairo-1.0-0; then
+  lib_list="${lib_list} libpangocairo-1.0-0"
+fi
+if package_exists libgl1:i386; then
+  lib_list="${lib_list} libgl1:i386"
+fi
+if package_exists libegl1:i386; then
+  lib_list="${lib_list} libegl1:i386"
+fi
+if package_exists libwayland-egl1:i386; then
+  lib_list="${lib_list} libwayland-egl1:i386"
+fi
+if package_exists libpangocairo-1.0-0:i386; then
+  lib_list="${lib_list} libpangocairo-1.0-0:i386"
+fi
+
 # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
 lib32_list="linux-libc-dev:i386 libpci3:i386"
 
 # 32-bit libraries needed for a 32-bit build
-lib32_list="$lib32_list libx11-xcb1:i386"
+lib32_list="$lib32_list
+  libasound2:i386
+  libatk-bridge2.0-0:i386
+  libatk1.0-0:i386
+  libatspi2.0-0:i386
+  libdbus-1-3:i386
+  libglib2.0-0:i386
+  libnss3:i386
+  libpango-1.0-0:i386
+  libx11-xcb1:i386
+  libxcomposite1:i386
+  libxdamage1:i386
+  libxkbcommon0:i386
+  libxrandr2:i386
+  libxtst6:i386
+"
 
 # Packages that have been removed from this script.  Regardless of configuration
 # or options passed to this script, whenever a package is removed, it should be
@@ -315,6 +348,8 @@ backwards_compatible_list="\
   language-pack-zh-hant
   libappindicator-dev
   libappindicator1
+  libappindicator3-1
+  libappindicator3-dev
   libdconf-dev
   libdconf1
   libdconf1:i386
@@ -333,6 +368,8 @@ backwards_compatible_list="\
   libgtk2.0-dev
   mesa-common-dev
   msttcorefonts
+  python-dev
+  python-setuptools
   ttf-dejavu-core
   ttf-indic-fonts
   ttf-kochi-gothic
@@ -340,6 +377,53 @@ backwards_compatible_list="\
   ttf-mscorefonts-installer
   xfonts-mathml
 "
+
+if package_exists python-is-python2; then
+  backwards_compatible_list="${backwards_compatible_list} python-is-python2 python2-dev"
+else
+  backwards_compatible_list="${backwards_compatible_list} python"
+fi
+
+if package_exists python-crypto; then
+  backwards_compatible_list="${backwards_compatible_list} python-crypto"
+fi
+
+if package_exists python-numpy; then
+  backwards_compatible_list="${backwards_compatible_list} python-numpy"
+fi
+
+if package_exists python-openssl; then
+  backwards_compatible_list="${backwards_compatible_list} python-openssl"
+fi
+
+if package_exists python-psutil; then
+  backwards_compatible_list="${backwards_compatible_list} python-psutil"
+fi
+
+if package_exists python-yaml; then
+  backwards_compatible_list="${backwards_compatible_list} python-yaml"
+fi
+if package_exists apache2.2-bin; then
+  backwards_compatible_list="${backwards_compatible_list} apache2.2-bin"
+else
+  backwards_compatible_list="${backwards_compatible_list} apache2-bin"
+fi
+if package_exists php7.4-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.4-cgi libapache2-mod-php7.4"
+elif package_exists php7.3-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.3-cgi libapache2-mod-php7.3"
+elif package_exists php7.2-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.2-cgi libapache2-mod-php7.2"
+elif package_exists php7.1-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.1-cgi libapache2-mod-php7.1"
+elif package_exists php7.0-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php7.0-cgi libapache2-mod-php7.0"
+elif package_exists php8.0-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php8.0-cgi libapache2-mod-php8.0"
+else
+  backwards_compatible_list="${backwards_compatible_list} php5-cgi libapache2-mod-php5"
+fi
+
 case $distro_codename in
   trusty)
     backwards_compatible_list+=" \
@@ -360,48 +444,9 @@ case $distro_codename in
 esac
 
 # arm cross toolchain packages needed to build chrome on armhf
-EM_REPO="deb http://emdebian.org/tools/debian/ jessie main"
-EM_SOURCE=$(cat <<EOF
-# Repo added by Chromium $0
-${EM_REPO}
-# deb-src http://emdebian.org/tools/debian/ jessie main
-EOF
-)
-EM_ARCHIVE_KEY_FINGER="084C6C6F39159EDB67969AA87DE089671804772E"
-GPP_ARM_PACKAGE="g++-arm-linux-gnueabihf"
-case $distro_codename in
-  jessie)
-    eval $(apt-config shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
-    CROSSTOOLS_LIST="${APT_SOURCESDIR}/crosstools.list"
-    arm_list="libc6-dev:armhf
-              linux-libc-dev:armhf"
-    if [ "$do_inst_arm" = "1" ]; then
-      if $(dpkg-query -W ${GPP_ARM_PACKAGE} &>/dev/null); then
-        arm_list+=" ${GPP_ARM_PACKAGE}"
-      else
-        if [ "${add_cross_tool_repo}" = "1" ]; then
-          gpg --keyserver pgp.mit.edu --recv-keys ${EM_ARCHIVE_KEY_FINGER}
-          gpg -a --export ${EM_ARCHIVE_KEY_FINGER} | sudo apt-key add -
-          if ! grep "^${EM_REPO}" "${CROSSTOOLS_LIST}" &>/dev/null; then
-            echo "${EM_SOURCE}" | sudo tee -a "${CROSSTOOLS_LIST}" >/dev/null
-          fi
-          arm_list+=" ${GPP_ARM_PACKAGE}"
-        else
-          echo "The Debian Cross-toolchains repository is necessary to"
-          echo "cross-compile Chromium for arm."
-          echo "Rerun with --add-deb-cross-tool-repo to have it added for you."
-        fi
-      fi
-    fi
-    ;;
-  # All necessary ARM packages are available on the default repos on
-  # Debian 9 and later.
-  *)
-    arm_list="libc6-dev-armhf-cross
-              linux-libc-dev-armhf-cross
-              ${GPP_ARM_PACKAGE}"
-    ;;
-esac
+arm_list="libc6-dev-armhf-cross
+          linux-libc-dev-armhf-cross
+          g++-arm-linux-gnueabihf"
 
 # Work around for dependency issue Ubuntu/Trusty: http://crbug.com/435056
 case $distro_codename in
@@ -507,44 +552,8 @@ elif package_exists libbrlapi0.6; then
 else
   dev_list="${dev_list} libbrlapi0.5"
 fi
-if package_exists apache2.2-bin; then
-  dev_list="${dev_list} apache2.2-bin"
-else
-  dev_list="${dev_list} apache2-bin"
-fi
 if package_exists libav-tools; then
   dev_list="${dev_list} libav-tools"
-fi
-if package_exists php7.4-cgi; then
-  dev_list="${dev_list} php7.4-cgi libapache2-mod-php7.4"
-elif package_exists php7.3-cgi; then
-  dev_list="${dev_list} php7.3-cgi libapache2-mod-php7.3"
-elif package_exists php7.2-cgi; then
-  dev_list="${dev_list} php7.2-cgi libapache2-mod-php7.2"
-elif package_exists php7.1-cgi; then
-  dev_list="${dev_list} php7.1-cgi libapache2-mod-php7.1"
-elif package_exists php7.0-cgi; then
-  dev_list="${dev_list} php7.0-cgi libapache2-mod-php7.0"
-else
-  dev_list="${dev_list} php5-cgi libapache2-mod-php5"
-fi
-
-# Most python 2 packages are removed in Ubuntu 20.10, but the build doesn't seem
-# to need them, so only install them if they're available.
-if package_exists python-crypto; then
-  dev_list="${dev_list} python-crypto"
-fi
-if package_exists python-numpy; then
-  dev_list="${dev_list} python-numpy"
-fi
-if package_exists python-openssl; then
-  dev_list="${dev_list} python-openssl"
-fi
-if package_exists python-psutil; then
-  dev_list="${dev_list} python-psutil"
-fi
-if package_exists python-yaml; then
-  dev_list="${dev_list} python-yaml"
 fi
 
 # Some packages are only needed if the distribution actually supports
@@ -767,7 +776,7 @@ if [ "$do_inst_chromeos_fonts" != "0" ]; then
       echo "This is expected if your repo is installed on a remote file system."
     fi
     echo "It is recommended to install your repo on a local file system."
-    echo "You can skip the installation of the Chrome OS default founts with"
+    echo "You can skip the installation of the Chrome OS default fonts with"
     echo "the command line option: --no-chromeos-fonts."
     exit 1
   fi

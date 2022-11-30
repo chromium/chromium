@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "chrome/installer/test/alternate_version_generator.h"
 
 namespace {
@@ -50,7 +49,7 @@ const wchar_t* const Messages[] = {
 
 const wchar_t* GetErrorMessage(ErrorCode error_code) {
   DCHECK_LE(0, error_code);
-  DCHECK_GT(base::size(Messages), static_cast<size_t>(error_code));
+  DCHECK_GT(std::size(Messages), static_cast<size_t>(error_code));
   return Messages[error_code];
 }
 

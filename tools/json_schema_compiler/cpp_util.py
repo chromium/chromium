@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,20 +13,23 @@ import posixpath
 import re
 
 CHROMIUM_LICENSE = (
-"""// Copyright %d The Chromium Authors. All rights reserved.
+"""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.""" % datetime.now().year
 )
 GENERATED_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITION IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 GENERATED_BUNDLE_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITIONS IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 GENERATED_FEATURE_MESSAGE = """// GENERATED FROM THE FEATURE DEFINITIONS IN
 //   %s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 """
 
@@ -40,32 +43,39 @@ def Classname(s):
   """
   if s == '':
     return 'EMPTY_STRING'
+
   if IsUnixName(s):
-    return CamelCase(s)
-  return '_'.join([x[0].upper() + x[1:] for x in re.split(r'\W', s)])
+    result = CamelCase(s)
+  else:
+    result = '_'.join([x[0].upper() + x[1:] for x in re.split(r'\W', s)])
 
+  # Ensure the class name follows c++ identifier rules by prepending an
+  # underscore if needed.
+  assert result
+  if result[0].isdigit():
+    result = '_' + result
+  return result
 
-def GetAsFundamentalValue(type_, src, dst):
+def GetAsFundamentalValue(type_, src):
   """Returns the C++ code for retrieving a fundamental type from a
   Value into a variable.
 
-  src: Value*
-  dst: Property*
+  src: Value
   """
   if type_.property_type == PropertyType.BOOLEAN:
-    s = '%s->GetAsBoolean(%s)'
+    s = '%s.GetIfBool()'
   elif type_.property_type == PropertyType.DOUBLE:
-    s = '%s->GetAsDouble(%s)'
+    s = '%s.GetIfDouble()'
   elif type_.property_type == PropertyType.INTEGER:
-    s = '%s->GetAsInteger(%s)'
+    s = '%s.GetIfInt()'
   elif (type_.property_type == PropertyType.STRING or
       (type_.property_type == PropertyType.FUNCTION and
            type_.is_serializable_function)):
-    s = '%s->GetAsString(%s)'
+    s = '%s.GetIfString()'
   else:
     raise ValueError('Type %s is not a fundamental value' % type_.name)
 
-  return s % (src, dst)
+  return s % src
 
 
 def GetValueType(type_):
@@ -94,6 +104,25 @@ def GetValueType(type_):
 
   raise ValueError('Invalid type: %s' % type_.name)
 
+def ShouldUseAbslOptional(type_):
+  """Called to validate whether or not an optional value should be represented
+  with absl::optional. This function is a temporary utility, while optional
+  fields are gradually migrated away from using std::unique_ptr.
+  """
+
+  if type_.property_type in (PropertyType.ANY,
+                             PropertyType.ARRAY,
+                             PropertyType.BINARY,
+                             PropertyType.BOOLEAN,
+                             PropertyType.CHOICES,
+                             PropertyType.DOUBLE,
+                             PropertyType.FUNCTION,
+                             PropertyType.INTEGER,
+                             PropertyType.OBJECT,
+                             PropertyType.STRING):
+    return True
+
+  return False
 
 def GetParameterDeclaration(param, type_):
   """Gets a parameter declaration of a given model.Property and its C++
@@ -124,6 +153,7 @@ def GenerateIfndefName(file_path):
   return (('%s__' % file_path).upper()
       .replace('\\', '_')
       .replace('/', '_')
+      .replace('-', '_')
       .replace('.', '_'))
 
 

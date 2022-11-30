@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 class TranslationResponseParserTest : public testing::Test {
@@ -121,4 +120,3 @@ TEST_F(TranslationResponseParserTest, ProcessResponseInvalidResponse) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

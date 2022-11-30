@@ -1,0 +1,31 @@
+caption: Default images setting
+desc: |-
+  Setting the policy to 1 lets all websites display images. Setting the policy to 2 denies image display.
+
+        Leaving it unset allows images, but users can change this setting.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Allow all sites to show all images
+  name: AllowImages
+  value: 1
+- caption: Do not allow any site to show images
+  name: BlockImages
+  value: 2
+owners:
+- engedy@chromium.org
+- file://components/content_settings/OWNERS
+schema:
+  enum:
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:10-
+- chrome_os:11-
+tags: []
+type: int-enum

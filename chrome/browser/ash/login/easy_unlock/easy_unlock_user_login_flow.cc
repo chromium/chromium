@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
 
-namespace chromeos {
+namespace ash {
 
 EasyUnlockUserLoginFlow::EasyUnlockUserLoginFlow(const AccountId& account_id)
     : ExtendedUserFlow(account_id) {}
@@ -43,4 +44,4 @@ void EasyUnlockUserLoginFlow::HandleLoginSuccess(const UserContext& context) {
   SmartLockMetricsRecorder::RecordAuthResultSignInSuccess();
 }
 
-}  // namespace chromeos
+}  // namespace ash

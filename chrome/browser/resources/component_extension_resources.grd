@@ -11,15 +11,10 @@
     <output filename="component_extension_resources.pak" type="data_package" />
   </outputs>
   <release seq="1">
-    <structures>
-      <if expr="chromeos">
-        <structure name="IDR_WALLPAPER_MANAGER_MAIN" file="chromeos/wallpaper_manager/main.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-      </if>
-    </structures>
     <includes>
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_JS" file="network_speech_synthesis/tts_extension.js" type="BINDATA" />
 
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <include name="IDR_BRAILLE_IME_JS" file="chromeos/accessibility/braille_ime/braille_ime.js" type="BINDATA" />
         <include name="IDR_BRAILLE_IME_MAIN_JS" file="chromeos/accessibility/braille_ime/main.js" type="BINDATA" />
       </if>
@@ -29,48 +24,28 @@
         <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />
         <include name="IDR_HANGOUT_SERVICES_THUNK_JS" file="hangout_services/thunk.js" type="BINDATA" />
       </if>
-      <if expr="not is_android">
-        <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="feedback/html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" preprocess="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_SYSINFO_HTML" file="feedback/html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" type="BINDATA" />
-        <include name="IDR_FEEDBACK_EVENT_HANDLER_JS" file="feedback/js/event_handler.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_JS" file="feedback/js/feedback.js" preprocess="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_SYSINFO_JS" file="feedback/js/sys_info.js" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="feedback/js/take_screenshot.js" type="BINDATA" />
-        <include name="IDR_FEEDBACK_TOPBAR_HANDLER_JS" file="feedback/js/topbar_handlers.js" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_CSS" file="feedback/css/assistant_logs_info.css" type="BINDATA" />
-        <include name="IDR_FEEDBACK_FEEDBACK_CSS" file="feedback/css/feedback.css" type="BINDATA" />
-        <include name="IDR_FEEDBACK_SYSINFO_CSS" file="feedback/css/sys_info.css" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ICON_48" file="feedback/images/icon48.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_ICON_192" file="feedback/images/icon192.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PNG"
-                 file="feedback/images/button_butter_bar_close.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"
-                 file="feedback/images/button_butter_bar_close_hover.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_PNG"
-                 file="feedback/images/button_butter_bar_close_pressed.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_2X_PNG"
-                 file="feedback/images/2x/button_butter_bar_close.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_2X_PNG"
-                 file="feedback/images/2x/button_butter_bar_close_hover.png" type="BINDATA" />
-        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
-                 file="feedback/images/2x/button_butter_bar_close_pressed.png" type="BINDATA" />
+
+      <!-- Contact Center Insights extension, enabled on managed ChromeOS devices -->
+      <if expr="is_chromeos">
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_JS" file="chromeos/contact_center_insights/background.js" type="BINDATA" />
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_BACKGROUND_WRAPPER_JS" file="chromeos/contact_center_insights/background_wrapper.js" type="BINDATA" />
+        <!-- Generated dependency bundle used by the extension for reporting purposes -->
+        <include name="IDR_CONTACT_CENTER_INSIGHTS_CCAAS_DEPS_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/contact_center_insights/ccaas_deps.js" use_base_dir="false" resource_path="chromeos/contact_center_insights/ccaas_deps.js" type="BINDATA" />
       </if>
+
+      <!-- Desk API extension, enabled on managed ChromeOS devices -->
+      <if expr="chromeos_ash or chromeos_lacros">
+        <include name="IDR_DESK_API_TEMPLATES_ICON" file="chromeos/desk_api/templates_icon.png" type="BINDATA" />
+        <!-- Compiled TS -->
+        <include name="IDR_DESK_API_DESK_API_BUNDLE_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/desk_api/desk_api_bundle.js" use_base_dir="false" resource_path="chromeos/desk_api/desk_api_bundle.js" type="BINDATA" />
+      </if>
+
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_BACKGROUND_JS" file="identity_scope_approval_dialog/background.js" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_CSS" file="identity_scope_approval_dialog/scope_approval_dialog.css" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG" file="identity_scope_approval_dialog/scope_approval_dialog.html" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_JS" file="identity_scope_approval_dialog/scope_approval_dialog.js" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_INJECT_JS" file="identity_scope_approval_dialog/inject.js" type="BINDATA" />
-      <if expr="chromeos">
-        <include name="IDR_WALLPAPER_MANAGER_CONSTANTS_JS" file="chromeos/wallpaper_manager/js/constants.js" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_EVENT_JS" file="chromeos/wallpaper_manager/js/event_page.js" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_ICON_48" file="chromeos/wallpaper_manager/images/icon48.png" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_ICON_192" file="chromeos/wallpaper_manager/images/icon192.png" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_MAIN_JS" file="chromeos/wallpaper_manager/js/main_scripts.js" flattenhtml="true" type="BINDATA" />
-        <include name="IDR_WALLPAPER_MANAGER_UTIL_JS" file="chromeos/wallpaper_manager/js/util.js" type="BINDATA" />
+      <if expr="chromeos_ash">
         <include name="IDR_ARC_SUPPORT_BACKGROUND_JS" file="chromeos/arc_support/background.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BUBBLE_CSS" file="chromeos/arc_support/bubble.css" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_BUBBLE_JS" file="chromeos/arc_support/bubble.js" type="BINDATA" />
@@ -78,8 +53,10 @@
         <include name="IDR_ARC_SUPPORT_BUBBLE_BUTTON_CSS" file="chromeos/arc_support/bubble_button.css" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_JS" file="chromeos/arc_support/controlled_indicator.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_CONTROLLED_INDICATOR_CSS" file="chromeos/arc_support/controlled_indicator.css" flattenhtml="true" type="chrome_html" />
+        <include name="IDR_ARC_SUPPORT_EVENT_TRACKER_JS" file="chromeos/arc_support/event_tracker.js" type="chrome_html" />
         <include name="IDR_ARC_SUPPORT_MAIN_CSS" file="chromeos/arc_support/main.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN_JS" file="chromeos/arc_support/main.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_I18N_TEMPLATE_NO_PROCESS_JS" file="chromeos/arc_support/i18n_template_no_process.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_OVERLAY_CSS" file="chromeos/arc_support/overlay.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_OVERLAY_JS" file="chromeos/arc_support/overlay.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_CSS" file="chromeos/arc_support/playstore.css" type="BINDATA" />
@@ -87,17 +64,26 @@
         <include name="IDR_ARC_SUPPORT_PLAYSTORE_LOGO" file="chromeos/arc_support/icon/playstore.svg" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_CSS" file="chromeos/arc_support/progressbar.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_JS" file="chromeos/arc_support/progressbar.js" type="BINDATA" />
-        <include name="IDR_ARC_SUPPORT_FOCUS_MANAGER_JS" file="chromeos/arc_support/arc_optin_focus_manager.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_ARC_OPTIN_FOCUS_MANAGER_JS" file="chromeos/arc_support/arc_optin_focus_manager.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_FOCUS_MANAGER_JS" file="chromeos/arc_support/focus_manager.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_LAYOUT_STYLE" file="chromeos/arc_support/layout_style.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN" file="chromeos/arc_support/main.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_32" file="chromeos/arc_support/icon/32.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_192" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_ERROER_IMAGE" file="chromeos/arc_support/images/error_image.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_HEADER" file="chromeos/arc_support/images/header.png" type="BINDATA" />
+        <!-- TODO(crbug.com/1261902): Remove. -->
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_JS" file="chromeos/arc_support/recommend_app_list_view.js" type="BINDATA" />
+        <!-- TODO(crbug.com/1261902): Remove. -->
         <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML" file="chromeos/arc_support/recommend_app_list_view.html" type="chrome_html" flattenhtml="true" />
-        <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_NEW_CSS" file="chromeos/arc_support/recommend_app_list_view_new.css" type="chrome_html" />
-        <include name="IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_NEW_HTML" file="chromeos/arc_support/recommend_app_list_view_new.html" type="chrome_html" />
+        <include name="IDR_ARC_SUPPORT_UI_JS" file="chromeos/arc_support/ui.js" type="chrome_html" />
+        <include name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION" file="chromeos/arc_input_overlay/onboarding_illustration.png" type="BINDATA" />
+        <include name="IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK" file="chromeos/arc_input_overlay/onboarding_illustration_dark.png" type="BINDATA" />
       </if>
+      <include name="IDS_READ_ANYTHING_DEFAULT_PNG" file="side_panel/images/read_anything_default.png" type="BINDATA" />
+      <include name="IDS_READ_ANYTHING_LIGHT_PNG" file="side_panel/images/read_anything_light.png" type="BINDATA" />
+      <include name="IDS_READ_ANYTHING_DARK_PNG" file="side_panel/images/read_anything_dark.png" type="BINDATA" />
+      <include name="IDS_READ_ANYTHING_YELLOW_PNG" file="side_panel/images/read_anything_yellow.png" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_UTIL_JS" file="cryptotoken/util.js" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_B64_JS" file="cryptotoken/b64.js" type="BINDATA" />
       <include name="IDR_CRYPTOTOKEN_COUNTDOWN_JS" file="cryptotoken/countdown.js" type="BINDATA" />

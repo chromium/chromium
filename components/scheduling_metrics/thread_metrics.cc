@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@ namespace {
 // Threshold for discarding ultra-long tasks. It is assumed that ultra-long
 // tasks are reporting glitches (e.g. system falling asleep on the middle of the
 // task).
-constexpr base::TimeDelta kLongTaskDiscardingThreshold =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kLongTaskDiscardingThreshold = base::Seconds(30);
 
 }  // namespace
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,12 +108,30 @@ class ExpandedValueBase {
   }
 
   // Comparison operators.
-  bool operator==(Subclass rhs) const { return value_ == rhs.value_; }
-  bool operator!=(Subclass rhs) const { return value_ != rhs.value_; }
-  bool operator<(Subclass rhs) const { return value_ < rhs.value_; }
-  bool operator>(Subclass rhs) const { return value_ > rhs.value_; }
-  bool operator<=(Subclass rhs) const { return value_ <= rhs.value_; }
-  bool operator>=(Subclass rhs) const { return value_ >= rhs.value_; }
+  bool operator==(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ == rhs.value_;
+  }
+  bool operator!=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ != rhs.value_;
+  }
+  bool operator<(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ < rhs.value_;
+  }
+  bool operator>(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ > rhs.value_;
+  }
+  bool operator<=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ <= rhs.value_;
+  }
+  bool operator>=(
+      const ExpandedValueBase<FullWidthInteger, Subclass>& rhs) const {
+    return value_ >= rhs.value_;
+  }
 
   // (De)Serialize for transmission over IPC.  Do not use these to subvert the
   // valid set of operators allowed by this class or its Subclass.

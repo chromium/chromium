@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 
-#include "base/macros.h"
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -31,6 +32,10 @@ bool operator==(const FieldInfo& lhs, const FieldInfo& rhs);
 class FieldInfoTable {
  public:
   FieldInfoTable() = default;
+
+  FieldInfoTable(const FieldInfoTable&) = delete;
+  FieldInfoTable& operator=(const FieldInfoTable&) = delete;
+
   ~FieldInfoTable() = default;
 
   // Initializes |db_|.
@@ -58,8 +63,6 @@ class FieldInfoTable {
 
  private:
   sql::Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldInfoTable);
 };
 
 }  // namespace password_manager

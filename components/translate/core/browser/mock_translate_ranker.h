@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,11 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_MOCK_TRANSLATE_RANKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/translate/core/browser/translate_ranker.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 
 namespace metrics {
 class TranslateEventProto;
@@ -25,6 +23,10 @@ namespace testing {
 class MockTranslateRanker : public TranslateRanker {
  public:
   MockTranslateRanker();
+
+  MockTranslateRanker(const MockTranslateRanker&) = delete;
+  MockTranslateRanker& operator=(const MockTranslateRanker&) = delete;
+
   ~MockTranslateRanker() override;
 
   void set_is_logging_enabled(bool val) { is_logging_enabled_ = val; }
@@ -52,9 +54,8 @@ class MockTranslateRanker : public TranslateRanker {
                void(int event_type,
                     ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
-  MOCK_METHOD3(ShouldOverrideDecision,
-               bool(int event_type,
-                    ukm::SourceId ukm_source_id,
+  MOCK_METHOD2(ShouldOverrideMatchesPreviousLanguageDecision,
+               bool(ukm::SourceId ukm_source_id,
                     metrics::TranslateEventProto* translate_event));
 
  private:
@@ -64,10 +65,8 @@ class MockTranslateRanker : public TranslateRanker {
   bool is_query_enabled_ = false;
   bool is_enforcement_enabled_ = false;
   bool is_decision_override_enabled_ = false;
-  bool model_version_ = 0;
+  bool model_version_ = false;
   bool should_offer_translation_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTranslateRanker);
 };
 
 }  // namespace testing

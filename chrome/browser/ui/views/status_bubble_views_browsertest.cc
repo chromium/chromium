@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   bubble->SetURL(GURL("http://www.foo.com"));
   EXPECT_TRUE(widget->IsVisible());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Clearing the URL and status closes the widget on platforms other than Mac.
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
   bubble->SetStatus(std::u16string());
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
 
 // Mac does not delete the widget after a delay, so this test only runs on
 // non-mac platforms.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(GetShowHideAnimationForTesting());
   // Advance well past the time for the animation to ensure it completes.
   static_cast<gfx::AnimationContainerElement*>(GetShowHideAnimationForTesting())
-      ->Step(base::TimeTicks::Now() + base::TimeDelta::FromMinutes(1));
+      ->Step(base::TimeTicks::Now() + base::Minutes(1));
   // Widget should still exist.
   ASSERT_TRUE(GetWidget());
   EXPECT_FALSE(widget->IsVisible());

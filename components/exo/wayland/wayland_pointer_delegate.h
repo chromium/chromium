@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,9 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
  public:
   explicit WaylandPointerDelegate(wl_resource* pointer_resource,
                                   SerialTracker* serial_tracker);
+
+  WaylandPointerDelegate(const WaylandPointerDelegate&) = delete;
+  WaylandPointerDelegate& operator=(const WaylandPointerDelegate&) = delete;
 
   // Overridden from PointerDelegate:
   void OnPointerDestroying(Pointer* pointer) override;
@@ -50,8 +53,6 @@ class WaylandPointerDelegate : public WaylandInputDelegate,
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandPointerDelegate);
 };
 
 }  // namespace wayland

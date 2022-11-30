@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Unfocusable div'
+++++++++++UNKNOWN label='Unfocusable div'
+++++++UNKNOWN focusable label='Focusable div'
+++++++++STATIC_TEXT label='Focusable div'
+++++++++++UNKNOWN label='Focusable div'

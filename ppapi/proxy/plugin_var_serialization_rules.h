@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_PROXY_PLUGIN_VAR_SERIALIZATION_RULES_H_
 #define PPAPI_PROXY_PLUGIN_VAR_SERIALIZATION_RULES_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ppapi/proxy/var_serialization_rules.h"
 
@@ -22,6 +21,11 @@ class PluginVarSerializationRules : public VarSerializationRules {
   // handle object refcounting and string conversion.
   explicit PluginVarSerializationRules(
       const base::WeakPtr<PluginDispatcher>& dispatcher);
+
+  PluginVarSerializationRules(const PluginVarSerializationRules&) = delete;
+  PluginVarSerializationRules& operator=(const PluginVarSerializationRules&) =
+      delete;
+
   ~PluginVarSerializationRules();
 
   // VarSerialization implementation.
@@ -44,8 +48,6 @@ class PluginVarSerializationRules : public VarSerializationRules {
   // If that happens, we may leak references to object vars. Considering that
   // scripting has been deprecated, this may not be a big issue.
   base::WeakPtr<PluginDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVarSerializationRules);
 };
 
 }  // namespace proxy

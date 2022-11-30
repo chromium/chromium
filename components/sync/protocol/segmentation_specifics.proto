@@ -1,0 +1,111 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for segmentations.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// Sync data proto for storing segmentation data. Keyed by the combination of
+// cache_guid (a Sync client id) and segmentation key.
+//
+// The segmentation platform is a platform that uses intelligence and machine
+// learning to guide developers for building purpose-built user experience for
+// specific segments of users. See go/chrome-segmentation for more details.
+message SegmentationSpecifics {
+  // The selected segment by the segmentation scheme.
+  message SegmentSelectionResult {
+    // The string ID that refers to the segment the user was assigned to, e.g.,
+    // 'highly_engaged_user'.
+    optional string selected_segment = 1;
+
+    // Expiry time of selection result. Represents time from windows epoch in
+    // seconds. Expired results are ignored by clients.
+    optional int64 expiry_time_windows_epoch_seconds = 2;
+
+    // Time when the segmentation data is updated. Used to weigh results by
+    // recency. Represents time from windows epoch in seconds.
+    optional int64 last_updated_time_windows_epoch_seconds = 3;
+  }
+
+  // Metadata about the client device as used by the segmentation platform.
+  message DeviceMetadata {
+    // The cache_guid created to identify a sync client on this device.
+    // Reuses the same Sync guid.
+    optional string cache_guid = 1;
+
+    enum PlatformType {
+      PLATFORM_TYPE_UNSPECIFIED = 0;
+      PLATFORM_WINDOWS = 1;
+      PLATFORM_MAC = 2;
+      PLATFORM_LINUX = 3;
+      PLATFORM_CHROMEOS_ASH = 4;
+      PLATFORM_ANDROID = 5;
+      PLATFORM_IOS = 6;
+      PLATFORM_CHROMEOS_LACROS = 7;
+    }
+
+    // The OS platform of the device.
+    optional PlatformType platform_type = 2;
+  }
+
+  // Model execution data including segment scores and related metadata, e.g.,
+  // model version.
+  message ModelExecutionData {
+    // Output of model.
+    message ModelOutput {
+      // When outputting multiple scores from a single model, this is the
+      // segment label for each output.
+      optional string label = 1;
+
+      // Raw segment scores provided by the ML model or the heuristic model.
+      // The score is derived based on a combination of UMA histograms,
+      // user actions or UKM and URLs visited. The score can be treated as a
+      // probability of the user liking a feature, like feed, or NTP.
+      optional float score = 2;
+
+      // A rank defined by the segmentation scheme.
+      optional int32 rank = 3;
+    }
+
+    // A string ID that identifies a model.
+    optional string model_id = 1;
+
+    // A model may output one or multiple scores, one score for each segment
+    // label.
+    repeated ModelOutput model_outputs = 2;
+
+    // Timestamp when the ML model was executed.
+    // Represents time from windows epoch in seconds.
+    optional int64 execution_time_windows_epoch_seconds = 3;
+
+    // Expiry timestamp for the model scores.
+    // Represents time from windows epoch in seconds.
+    optional int64 score_expiry_time_windows_epoch_seconds = 4;
+
+    // The version of the ML model that was run.
+    optional int32 model_version = 5;
+  }
+
+  // The key used to identify the type of segmentation associated with a
+  // feature, e.g. 'user_engagement'.
+  optional string segmentation_key = 1;
+
+  optional SegmentSelectionResult segment_selection_result = 2;
+
+  optional DeviceMetadata device_metadata = 3;
+
+  // One or more model execution data associated with each segment for the
+  // segmentation key.
+  repeated ModelExecutionData model_execution_data = 4;
+}

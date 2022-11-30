@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ namespace nix {
 //
 // Note that this function might need to read from disk the mime-types data
 // provided by the OS.  Therefore this function should not be called from
-// threads that disallow IO via base::ThreadRestrictions::SetIOAllowed(false).
+// threads that disallow blocking.
 //
 // If the mime type is unknown, this will return application/octet-stream.
 BASE_EXPORT std::string GetFileMimeType(const FilePath& filepath);

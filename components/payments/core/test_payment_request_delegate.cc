@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,20 +45,6 @@ bool TestPaymentRequestDelegate::IsOffTheRecord() const {
 
 const GURL& TestPaymentRequestDelegate::GetLastCommittedURL() const {
   return last_committed_url_;
-}
-
-void TestPaymentRequestDelegate::DoFullCardRequest(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate) {
-  if (instantaneous_full_card_request_result_) {
-    result_delegate->OnFullCardRequestSucceeded(full_card_request_, credit_card,
-                                                u"123");
-    return;
-  }
-
-  full_card_request_card_ = credit_card;
-  full_card_result_delegate_ = result_delegate;
 }
 
 autofill::AddressNormalizer*

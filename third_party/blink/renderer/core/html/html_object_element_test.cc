@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace blink {
 class HTMLObjectElementTest : public testing::Test {
  protected:
   void SetUp() final {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   }
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
@@ -37,7 +37,7 @@ TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  object->RenderFallbackContent(nullptr);
+  object->RenderFallbackContent(HTMLObjectElement::ErrorEventPolicy::kDispatch);
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   GetDocument().GetStyleEngine().RecalcStyle();
   EXPECT_TRUE(IsA<HTMLSlotElement>(slot));

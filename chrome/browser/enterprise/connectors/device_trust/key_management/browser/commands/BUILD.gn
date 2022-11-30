@@ -1,0 +1,126 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("commands") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "key_rotation_command.h",
+    "key_rotation_command_factory.h",
+  ]
+
+  sources = [ "key_rotation_command_factory.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//components/prefs",
+    "//services/network/public/cpp",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  if (is_win) {
+    sources += [
+      "win_key_rotation_command.cc",
+      "win_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+      "//google_update",
+    ]
+  }
+  if (is_linux) {
+    sources += [
+      "linux_key_rotation_command.cc",
+      "linux_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//services/device/public/mojom",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "mac_key_rotation_command.cc",
+      "mac_key_rotation_command.h",
+    ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust:prefs",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//chrome/common:channel_info",
+      "//components/version_info",
+      "//services/network/public/cpp",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "mock_key_rotation_command.h",
+    "scoped_key_rotation_command_factory.h",
+  ]
+
+  sources = [
+    "mock_key_rotation_command.cc",
+    "scoped_key_rotation_command_factory.cc",
+  ]
+
+  public_deps = [
+    ":commands",
+    "//components/prefs",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":commands",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_win) {
+    sources = [ "win_key_rotation_command_unittest.cc" ]
+
+    deps += [ "//chrome/installer/util:constants" ]
+  }
+
+  if (is_linux) {
+    sources = [ "linux_key_rotation_command_unittest.cc" ]
+
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+      "//services/network:test_support",
+    ]
+  }
+
+  if (is_mac) {
+    sources = [ "mac_key_rotation_command_unittest.cc" ]
+
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser/enterprise/connectors/device_trust:prefs",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
+      "//components/prefs:test_support",
+      "//services/network:test_support",
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_MANAGER_H_
 
 #include "base/callback.h"
-#include "ios/web/public/deprecated/navigation_item_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
@@ -24,7 +23,6 @@ class FakeNavigationManager : public NavigationManager {
   NavigationItem* GetVisibleItem() const override;
   NavigationItem* GetLastCommittedItem() const override;
   NavigationItem* GetPendingItem() const override;
-  NavigationItem* GetTransientItem() const override;
   void DiscardNonCommittedItems() override;
   void LoadURLWithParams(const NavigationManager::WebLoadParams&) override;
   void LoadIfNecessary() override;
@@ -43,8 +41,8 @@ class FakeNavigationManager : public NavigationManager {
   void GoToIndex(int index) override;
   void Reload(ReloadType reload_type, bool check_for_reposts) override;
   void ReloadWithUserAgentType(UserAgentType user_agent_type) override;
-  NavigationItemList GetBackwardItems() const override;
-  NavigationItemList GetForwardItems() const override;
+  std::vector<NavigationItem*> GetBackwardItems() const override;
+  std::vector<NavigationItem*> GetForwardItems() const override;
   void Restore(int last_committed_item_index,
                std::vector<std::unique_ptr<NavigationItem>> items) override;
   bool IsRestoreSessionInProgress() const override;
@@ -68,7 +66,7 @@ class FakeNavigationManager : public NavigationManager {
   // GetItemAtIndex(), and GetCurrentItemIndex().
   void AddItem(const GURL& url, ui::PageTransition transition);
 
-  // Sets the index to be returned by GetLastCommittedItemIndex(). |index| must
+  // Sets the index to be returned by GetLastCommittedItemIndex(). `index` must
   // be either -1 or between 0 and GetItemCount()-1, inclusively.
   void SetLastCommittedItemIndex(const int index);
 
@@ -81,12 +79,18 @@ class FakeNavigationManager : public NavigationManager {
   // Returns whether LoadIfNecessary has been called.
   bool LoadIfNecessaryWasCalled();
 
-  // Returns whether Reload has been called;
+  // Returns whether Reload has been called.
   bool ReloadWasCalled();
+
+  // Returns whether RequestDesktopSite has been called.
+  bool RequestDesktopSiteWasCalled();
+
+  // Returns whether RequestMobileSite has been called.
+  bool RequestMobileSiteWasCalled();
 
  private:
   // A list of items constructed by calling AddItem().
-  web::ScopedNavigationItemList items_;
+  std::vector<std::unique_ptr<NavigationItem>> items_;
   int items_index_;
   // Individual backing instance variables for Set* test set up methods.
   NavigationItem* pending_item_;
@@ -97,6 +101,8 @@ class FakeNavigationManager : public NavigationManager {
   bool load_url_with_params_was_called_;
   bool load_if_necessary_was_called_;
   bool reload_was_called_;
+  bool request_desktop_site_was_called_;
+  bool request_mobile_site_was_called_;
 };
 
 }  // namespace web

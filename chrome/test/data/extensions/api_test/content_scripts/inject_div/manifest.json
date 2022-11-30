@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Script injects div",
+  "version": "0.1",
+  "description": "Injects a div using its content script",
+  "content_scripts": [{
+    "matches": ["*://*/*"],
+    "js": ["script.js"],
+    "all_frames": true,
+    "run_at": "document_end"
+  }]
+}

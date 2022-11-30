@@ -10,7 +10,7 @@ VM:1 eval in function: Function parameter
 
 Running: testConsoleEvalPrimitiveValue
 foo
-"bar"
+'bar'
 
 Running: testConsoleEvalObject
 {
@@ -51,19 +51,6 @@ Running: testConsoleEvalObject
     value : {
         type : "string"
         value : "baz"
-    }
-    writable : true
-}
-{
-    configurable : true
-    enumerable : false
-    isOwn : true
-    name : "__proto__"
-    value : {
-        className : "Object"
-        description : "Object"
-        objectId : <string>
-        type : "object"
     }
     writable : true
 }

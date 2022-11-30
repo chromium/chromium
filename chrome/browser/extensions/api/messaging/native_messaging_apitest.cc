@@ -1,15 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
@@ -25,6 +25,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 
 namespace extensions {
@@ -33,20 +34,47 @@ namespace {
 using ContextType = ExtensionApiTest::ContextType;
 
 class NativeMessagingApiTestBase : public ExtensionApiTest {
+ public:
+  explicit NativeMessagingApiTestBase(
+      ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~NativeMessagingApiTestBase() override = default;
+  NativeMessagingApiTestBase(const NativeMessagingApiTestBase&) = delete;
+  NativeMessagingApiTestBase& operator=(const NativeMessagingApiTestBase&) =
+      delete;
+
  protected:
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
+// Tests basic functionality of chrome.runtime.sendNativeMessage in an MV3
+// extension.
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, SendNativeMessage) {
+  constexpr bool kUserLevel = false;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, UserLevelSendNativeMessage) {
+  constexpr bool kUserLevel = true;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
+ public:
+  NativeMessagingApiTest() : NativeMessagingApiTestBase(GetParam()) {}
+  ~NativeMessagingApiTest() override = default;
+  NativeMessagingApiTest(const NativeMessagingApiTest&) = delete;
+  NativeMessagingApiTest& operator=(const NativeMessagingApiTest&) = delete;
+
  protected:
   bool RunTest(const char* extension_name) {
     if (GetParam() == ContextType::kPersistentBackground)
-      return RunExtensionTest({.name = extension_name});
-    std::string lazy_exension_name = base::StrCat({extension_name, "/lazy"});
-    return RunExtensionTest(
-        {.name = lazy_exension_name.c_str()},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
+      return RunExtensionTest(extension_name);
+    std::string lazy_extension_name = base::StrCat({extension_name, "/lazy"});
+    return RunExtensionTest(lazy_extension_name.c_str());
   }
 };
 
@@ -83,41 +111,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
   ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class TestProcessManagerObserver : public ProcessManagerObserver {
- public:
-  TestProcessManagerObserver() = default;
-  ~TestProcessManagerObserver() override = default;
-
-  void WaitForProcessShutdown(ProcessManager* process_manager,
-                              const std::string& extension_id) {
-    DCHECK(!quit_);
-    extension_id_ = extension_id;
-    base::RunLoop run_loop;
-    quit_ = run_loop.QuitClosure();
-
-    observation_.Observe(process_manager);
-    run_loop.Run();
-  }
-
- private:
-  void OnBackgroundHostClose(const std::string& extension_id) override {
-    if (extension_id != extension_id_) {
-      return;
-    }
-    observation_.Reset();
-    extension_id_.clear();
-    std::move(quit_).Run();
-  }
-
-  std::string extension_id_;
-  base::ScopedObservation<ProcessManager, ProcessManagerObserver> observation_{
-      this};
-  base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProcessManagerObserver);
-};
+#if !BUILDFLAG(IS_CHROMEOS)
 
 base::CommandLine CreateNativeMessagingConnectCommandLine(
     const std::string& connect_id,
@@ -147,7 +141,7 @@ class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
 };
 
 // Disabled on Windows due to timeouts; see https://crbug.com/984897.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success
@@ -159,9 +153,8 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
 
   auto* extension =
       LoadExtension(test_data_dir_.AppendASCII("native_messaging_launch"));
-  TestProcessManagerObserver observer;
-  observer.WaitForProcessShutdown(ProcessManager::Get(profile()),
-                                  extension->id());
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
 
   ResultCatcher catcher;
 
@@ -170,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   EXPECT_TRUE(
       g_browser_process->background_mode_manager()->IsBackgroundModeActive());
@@ -196,9 +189,8 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
 
   auto* extension = LoadExtension(
       test_data_dir_.AppendASCII("native_messaging_launch_unsupported"));
-  TestProcessManagerObserver observer;
-  observer.WaitForProcessShutdown(ProcessManager::Get(profile()),
-                                  extension->id());
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
 
   ResultCatcher catcher;
 
@@ -209,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
                                  ScopedTestNativeMessagingHost::kHostName);
   command_line.AppendSwitch(switches::kNoStartupWindow);
 
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(command_line, {},
-                                                          profile()->GetPath());
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   if (!catcher.GetNextResult()) {
     FAIL() << catcher.message();
@@ -226,6 +219,10 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
  public:
   TestKeepAliveStateObserver() = default;
 
+  TestKeepAliveStateObserver(const TestKeepAliveStateObserver&) = delete;
+  TestKeepAliveStateObserver& operator=(const TestKeepAliveStateObserver&) =
+      delete;
+
   void WaitForNoKeepAlive() {
     ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
     base::ScopedObservation<KeepAliveRegistry, KeepAliveStateObserver> observer(
@@ -235,9 +232,9 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
     // On Mac, the browser remains alive when no windows are open, so observing
     // the KeepAliveRegistry cannot detect when the native messaging keep-alive
     // has been released; poll for changes instead.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     polling_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+        FROM_HERE, base::Milliseconds(100),
         base::BindRepeating(&TestKeepAliveStateObserver::PollKeepAlive,
                             base::Unretained(this)));
 #endif
@@ -256,7 +253,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 
   void OnKeepAliveRestartStateChanged(bool can_restart) override {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PollKeepAlive() {
     OnKeepAliveStateChanged(
         KeepAliveRegistry::GetInstance()->IsOriginRegistered(
@@ -267,17 +264,15 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 #endif
 
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestKeepAliveStateObserver);
 };
 
 IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
   ScopedNativeMessagingErrorTimeoutOverrideForTest error_timeout_override(
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -299,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("\"connect id!\""), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -321,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, TooLongConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine(std::string(21, 'a')), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -343,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidExtensionId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id", "abcd"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -417,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
 }
 
 // Flaky on a Windows bot. See crbug.com/1030332.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success
@@ -439,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace extensions

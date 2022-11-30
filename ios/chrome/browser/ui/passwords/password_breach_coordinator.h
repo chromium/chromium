@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
-
-class GURL;
 
 // Presents and stops the Password Breach feature, which consists in alerting
 // the user that Chrome detected a leaked credential. In some scenarios it
@@ -19,7 +17,7 @@ class GURL;
     initWithBaseViewController:(UIViewController*)baseViewController
                        browser:(Browser*)browser
                       leakType:(password_manager::CredentialLeakType)leakType
-                           URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,15 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
-class Configuration;
 class ConditionValidator;
+class Configuration;
 class DisplayLockController;
 class DisplayLockHandle;
 class EventModel;
@@ -32,20 +33,34 @@ class TrackerImpl : public Tracker {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider);
+
+  TrackerImpl(const TrackerImpl&) = delete;
+  TrackerImpl& operator=(const TrackerImpl&) = delete;
+
   ~TrackerImpl() override;
 
   // Tracker implementation.
   void NotifyEvent(const std::string& event) override;
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
+  TriggerDetails ShouldTriggerHelpUIWithSnooze(
+      const base::Feature& feature) override;
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   Tracker::TriggerState GetTriggerState(
       const base::Feature& feature) const override;
   bool HasEverTriggered(const base::Feature& feature,
                         bool from_window) const override;
   void Dismissed(const base::Feature& feature) override;
+  void DismissedWithSnooze(const base::Feature& feature,
+                           absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
+  void SetPriorityNotification(const base::Feature& feature) override;
+  absl::optional<std::string> GetPendingPriorityNotification() override;
+  void RegisterPriorityNotificationHandler(const base::Feature& feature,
+                                           base::OnceClosure callback) override;
+  void UnregisterPriorityNotificationHandler(
+      const base::Feature& feature) override;
 
  private:
   // Invoked by the EventModel when it has been initialized.
@@ -62,6 +77,14 @@ class TrackerImpl : public Tracker {
   // Posts the results to the OnInitializedCallbacks if
   // IsInitializationFinished() returns true.
   void MaybePostInitializedCallbacks();
+
+  // Computes and records the duration since one of the `ShouldTriggerHelpUI`
+  // methods were called and returned true. This logs a time histogram based on
+  // the feature name.
+  void RecordShownTime(const base::Feature& feature);
+
+  // The currently recorded start times (one per feature currently presented).
+  std::map<std::string, base::Time> start_times_;
 
   // The current model for all events.
   std::unique_ptr<EventModel> event_model_;
@@ -95,9 +118,10 @@ class TrackerImpl : public Tracker {
   // is cleared after the initialization has happened.
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
 
-  base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
+  // Registered priority notification handlers for various features.
+  std::map<std::string, base::OnceClosure> priority_notification_handlers_;
 
-  DISALLOW_COPY_AND_ASSIGN(TrackerImpl);
+  base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace feature_engagement

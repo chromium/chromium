@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module echo.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Echos its input.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface EchoService {
   // Echos the passed-in string.
   EchoString(string input) => (string echoed_input);
@@ -20,4 +22,8 @@ interface EchoService {
 
   // Forcibly crashes the service.
   Crash();
+
+  // Delay Load a DLL.
+  [EnableIf=is_win]
+  DelayLoad();
 };

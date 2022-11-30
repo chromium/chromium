@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -51,6 +51,10 @@ class GalleryWatchManager
   static const char kCouldNotWatchGalleryError[];
 
   GalleryWatchManager();
+
+  GalleryWatchManager(const GalleryWatchManager&) = delete;
+  GalleryWatchManager& operator=(const GalleryWatchManager&) = delete;
+
   ~GalleryWatchManager() override;
 
   // Add or remove observer of change events - this is the only way to
@@ -92,7 +96,7 @@ class GalleryWatchManager
                const std::string& extension_id,
                MediaGalleryPrefId gallery_id);
 
-    content::BrowserContext* browser_context;
+    raw_ptr<content::BrowserContext> browser_context;
     const std::string extension_id;
     MediaGalleryPrefId gallery_id;
 
@@ -173,8 +177,6 @@ class GalleryWatchManager
   BrowserContextSubscriptionMap browser_context_subscription_map_;
 
   base::WeakPtrFactory<GalleryWatchManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GalleryWatchManager);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_GALLERY_WATCH_MANAGER_H_

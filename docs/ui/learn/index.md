@@ -1,5 +1,12 @@
 # Learning about Chromium UI
 
+# Getting Started
+
+* As always, feel free to [reach out](/docs/ui/ask/index.md). We're happy to
+  assist!
+* [Prepare your code for review](bestpractices/prepare_for_code_review.md):
+  Common feedback during code review and how to address it.
+
 # Best Practices
 
 * [Colors](bestpractices/colors.md): How to work with Chromium colors.
@@ -13,7 +20,9 @@
 * [UI Debugging](/docs/ui/learn/ui_debugging.md)
 * [UI Devtools](/docs/ui/ui_devtools/index.md)
 * [Input Event Routing](/docs/ui/input_event/index.md)
+* [Activation and Focus](/docs/ui/learn/activation_and_focus.md)
 * [Metadata and Properties](/docs/ui/views/metadata_properties.md)
+* [Layer Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 
 # Archival Documentation on Chrome UI.
 

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class BrowserView;
@@ -37,7 +35,7 @@ class ImmersiveRevealedLock {
 // the top-of-window views are hidden until the mouse hits the top of the
 // screen. The tab strip is optionally painted with miniature "tab indicator"
 // rectangles.
-// Currently, immersive mode is only available for Chrome OS.
+// Currently, immersive mode is only available for Chrome OS and macOS.
 class ImmersiveModeController {
  public:
   enum AnimateReveal {
@@ -64,6 +62,10 @@ class ImmersiveModeController {
   };
 
   ImmersiveModeController();
+
+  ImmersiveModeController(const ImmersiveModeController&) = delete;
+  ImmersiveModeController& operator=(const ImmersiveModeController&) = delete;
+
   virtual ~ImmersiveModeController();
 
   // Must initialize after browser view has a Widget and native window.
@@ -96,14 +98,13 @@ class ImmersiveModeController {
   // mode is enabled. The lock's lifetime can span immersive mode being
   // enabled / disabled.
   // If acquiring the lock causes a reveal, the top-of-window views will animate
-  // according to |animate_reveal|.
-  // The caller takes ownership of the returned lock.
+  // according to `animate_reveal`.
   // This is currently only supported on Ash.
-  virtual ImmersiveRevealedLock* GetRevealedLock(
-      AnimateReveal animate_reveal) WARN_UNUSED_RESULT = 0;
+  virtual std::unique_ptr<ImmersiveRevealedLock> GetRevealedLock(
+      AnimateReveal animate_reveal) = 0;
 
   // Called by the find bar to indicate that its visible bounds have changed.
-  // |new_visible_bounds_in_screen| should be empty if the find bar is not
+  // `new_visible_bounds_in_screen` should be empty if the find bar is not
   // visible.
   virtual void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) = 0;
@@ -125,15 +126,15 @@ class ImmersiveModeController {
 
  protected:
   base::ObserverList<Observer>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeController);
 };
+
+class BrowserView;
 
 namespace chrome {
 
 // Implemented in immersive_mode_controller_factory.cc.
-std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController();
+std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
+    const BrowserView* browser_view);
 
 }  // namespace chrome
 

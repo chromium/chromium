@@ -1,0 +1,8 @@
+include_rules = [
+  "+content/public/browser/web_ui_data_source.h",
+  "+third_party/cros_system_api/dbus/service_constants.h",
+  "+components/login",
+  "+components/strings",
+  "+ui/strings",
+  "+ui/chromeos",
+]

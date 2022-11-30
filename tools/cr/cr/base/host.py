@@ -1,4 +1,4 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -117,6 +117,8 @@ class Host(cr.Plugin, cr.Plugin.Type):
       if p.returncode != 0:
         print('Error {0} executing command {1}'.format(p.returncode, command))
         exit(p.returncode)
+      if output is not None:
+        output = output.decode('utf-8')
       return output or ''
     return ''
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                              public DestructionObservable {
  public:
   MockMediaCodecBridge();
+
+  MockMediaCodecBridge(const MockMediaCodecBridge&) = delete;
+  MockMediaCodecBridge& operator=(const MockMediaCodecBridge&) = delete;
+
   ~MockMediaCodecBridge() override;
 
   // Helpers for conveniently setting expectations.
@@ -30,6 +34,10 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD1(GetOutputSize, MediaCodecStatus(gfx::Size* size));
   MOCK_METHOD1(GetOutputSamplingRate, MediaCodecStatus(int* sampling_rate));
   MOCK_METHOD1(GetOutputChannelCount, MediaCodecStatus(int* channel_count));
+  MOCK_METHOD1(GetOutputColorSpace,
+               MediaCodecStatus(gfx::ColorSpace* color_space));
+  MOCK_METHOD1(GetInputFormatStride, MediaCodecStatus(int* stride));
+  MOCK_METHOD1(GetInputFormatYPlaneHeight, MediaCodecStatus(int* height));
   MOCK_METHOD4(QueueInputBuffer,
                MediaCodecStatus(int index,
                                 const uint8_t* data,
@@ -44,7 +52,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                        const std::string& iv,
                        const std::vector<SubsampleEntry>& subsamples,
                        EncryptionScheme encryption_scheme,
-                       base::Optional<EncryptionPattern> encryption_pattern,
+                       absl::optional<EncryptionPattern> encryption_pattern,
                        base::TimeDelta presentation_time));
   MOCK_METHOD1(QueueEOS, void(int input_buffer_index));
   MOCK_METHOD2(DequeueInputBuffer,
@@ -73,6 +81,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD0(IsAdaptivePlaybackSupported, bool());
   MOCK_METHOD2(OnBuffersAvailable,
                void(JNIEnv*, const base::android::JavaParamRef<jobject>&));
+  MOCK_METHOD0(GetMaxInputSize, size_t());
   CodecType GetCodecType() const override;
 
   // Return true if the codec is already drained.
@@ -86,8 +95,6 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   bool is_drained_ = true;
 
   CodecType codec_type_ = CodecType::kAny;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaCodecBridge);
 };
 
 }  // namespace media

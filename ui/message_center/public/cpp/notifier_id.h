@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/notifier_catalogs.h"
+#endif
 
 namespace message_center {
 
@@ -35,13 +39,27 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // Default constructor needed for generated mojom files and tests.
   NotifierId();
 
-  // Constructor for non WEB_PAGE type.
+// Constructor for non WEB_PAGE type. `catalog_name` is required for CrOS system
+// notifications.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NotifierId(NotifierType type,
+             const std::string& id,
+             ash::NotificationCatalogName catalog_name =
+                 ash::NotificationCatalogName::kNone);
+#else
   NotifierId(NotifierType type, const std::string& id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Constructor for WEB_PAGE type.
   explicit NotifierId(const GURL& url);
 
+  // Constructor for WEB_PAGE type. The |title| must only be populated when a
+  // trust relationship has been established, and it is appropriate to display
+  // this instead of the |url|'s origin for attribution.
+  NotifierId(const GURL& url, absl::optional<std::u16string> title);
+
   NotifierId(const NotifierId& other);
+  ~NotifierId();
 
   bool operator==(const NotifierId& other) const;
   // Allows NotifierId to be used as a key in std::map.
@@ -52,8 +70,17 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // The identifier of the app notifier. Empty if it's WEB_PAGE.
   std::string id;
 
-  // The URL pattern of the notifer.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Identifier for CrOS system notifications.
+  ash::NotificationCatalogName catalog_name;
+#endif
+
+  // The URL pattern of the notifier.
   GURL url;
+
+  // The title provided by the app identifier. This is used by desktop web
+  // applications.
+  absl::optional<std::u16string> title;
 
   // The identifier of the profile where the notification is created. This is
   // used for ChromeOS multi-profile support and can be empty.

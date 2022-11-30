@@ -1,17 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_POSIX_GLOBAL_DESCRIPTORS_H_
 #define BASE_POSIX_GLOBAL_DESCRIPTORS_H_
 
-#include "build/build_config.h"
+#include <stdint.h>
 
 #include <vector>
 #include <utility>
 
-#include <stdint.h>
-
+#include "base/base_export.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/singleton.h"

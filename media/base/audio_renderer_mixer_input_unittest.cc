@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_latency.h"
@@ -27,7 +26,7 @@ static const int kSampleRate = 48000;
 static const int kBufferSize = 8192;
 static const base::UnguessableToken kFrameToken =
     base::UnguessableToken::Create();
-static const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
 static const char kDefaultDeviceId[] = "default";
 static const char kAnotherDeviceId[] = "another";
 static const char kUnauthorizedDeviceId[] = "unauthorized";
@@ -38,13 +37,18 @@ class AudioRendererMixerInputTest : public testing::Test,
  public:
   AudioRendererMixerInputTest() {
     audio_parameters_ =
-        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, kChannelLayout,
+        AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
+                        ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                         kSampleRate, kBufferSize);
 
     CreateMixerInput(kDefaultDeviceId);
-    fake_callback_.reset(new FakeAudioRenderCallback(0, kSampleRate));
+    fake_callback_ = std::make_unique<FakeAudioRenderCallback>(0, kSampleRate);
     audio_bus_ = AudioBus::Create(audio_parameters_);
   }
+
+  AudioRendererMixerInputTest(const AudioRendererMixerInputTest&) = delete;
+  AudioRendererMixerInputTest& operator=(const AudioRendererMixerInputTest&) =
+      delete;
 
   void CreateMixerInput(const std::string& device_id) {
     mixer_input_ = new AudioRendererMixerInput(this, kFrameToken, device_id,
@@ -112,9 +116,6 @@ class AudioRendererMixerInputTest : public testing::Test,
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
   std::unique_ptr<FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<AudioBus> audio_bus_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerInputTest);
 };
 
 // Test that getting and setting the volume work as expected.  The volume is

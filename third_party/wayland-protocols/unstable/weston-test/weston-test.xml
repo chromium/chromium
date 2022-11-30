@@ -34,11 +34,14 @@
 
       These requests may allow clients to do very bad things.
     </description>
-      Note from Chromium developers: Moves the surface to a specified location
-      on screen. The move_surface API must not be used as it may result in
-      unexpected results as it violates layering and positioning of surface
-      inside the Wayland compositor.
     <request name="move_surface">
+      <description summary="do not use">
+        Moves the surface to a specified location on screen.
+
+        Note from Chromium developers: the move_surface API must not be used as
+        it may result in unexpected results as it violates layering and
+        positioning of surface inside the Wayland compositor.
+      </description>
       <arg name="surface" type="object" interface="wl_surface"/>
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
@@ -159,6 +162,14 @@
       <arg name="y" type="fixed"/>
       <arg name="touch_type" type="uint"/>
     </request>
+    <event name="touch_received">
+      <description summary="a callback event that is called upon send_touch request">
+        Signals that the event has been sent. The x and y are the same values
+        sent via the send_touch request.
+      </description>
+      <arg name="x" type="fixed"/>
+      <arg name="y" type="fixed"/>
+    </event>
   </interface>
 
   <interface name="weston_test_runner" version="1">

@@ -1,0 +1,84 @@
+caption: Explicitly allowed network ports
+desc: |-
+  There is a list of restricted ports built into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Connections to these ports will fail. This setting permits bypassing that list. The value is a comma-separated list of zero or more ports that outgoing connections will be permitted on.
+
+        Ports are restricted to prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> being used as a vector to exploit various network vulnerabilities. Setting this policy may expose your network to attacks. This policy is intended as a temporary workaround for errors with code "ERR_UNSAFE_PORT" while migrating a service running on a blocked port to a standard port (ie. port 80 or 443).
+
+        Malicious websites can easily detect that this policy is set, and for what ports, and use that information to target attacks.
+
+        Each port here is labelled with a date that it can be unblocked until. After that date the port will be restricted regardless of this setting.
+
+        Leaving the value empty or unset means that all restricted ports will be blocked. If there is a mixture of valid and invalid values, the valid ones will be applied.
+
+        This policy overrides the "--explicitly-allowed-ports" command-line option.
+example_value:
+- '10080'
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: port 554 (can be unblocked until 2021/10/15)
+  name: '554'
+  supported_on:
+  - chrome.*:91-95
+  - android:91-95
+  - chrome_os:91-95
+  - webview_android:91-95
+  value: '554'
+- caption: port 10080 (can be unblocked until 2022/04/01)
+  name: '10080'
+  supported_on:
+  - chrome.*:91-99
+  - android:91-99
+  - chrome_os:91-99
+  - webview_android:91-99
+  value: '10080'
+- caption: port 6566 (can be unblocked until 2021/10/15)
+  name: '6566'
+  supported_on:
+  - chrome.*:91-94
+  - android:91-94
+  - chrome_os:91-94
+  - webview_android:91-94
+  value: '6566'
+- caption: port 989 (can be unblocked until 2022/02/01)
+  name: '989'
+  supported_on:
+  - chrome.*:93-100
+  - android:93-100
+  - chrome_os:93-100
+  - webview_android:93-100
+  value: '989'
+- caption: port 990 (can be unblocked until 2022/02/01)
+  name: '990'
+  supported_on:
+  - chrome.*:93-100
+  - android:93-100
+  - chrome_os:93-100
+  - webview_android:93-100
+  value: '990'
+owners:
+- ricea@chromium.org
+- yhirano@chromium.org
+schema:
+  items:
+    enum:
+    - '554'
+    - '10080'
+    - '6566'
+    - '989'
+    - '990'
+    type: string
+  type: array
+supported_on:
+- chrome.*:91-
+- android:91-
+- chrome_os:91-
+- webview_android:91-
+tags:
+- system-security
+- website-sharing
+- local-data-access
+type: string-enum-list

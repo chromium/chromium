@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/var.h"
 
@@ -24,6 +23,9 @@ class PluginDispatcher;
 class PPAPI_PROXY_EXPORT ProxyObjectVar : public Var {
  public:
   ProxyObjectVar(proxy::PluginDispatcher* dispatcher, int32_t host_var_id);
+
+  ProxyObjectVar(const ProxyObjectVar&) = delete;
+  ProxyObjectVar& operator=(const ProxyObjectVar&) = delete;
 
   ~ProxyObjectVar() override;
 
@@ -51,8 +53,6 @@ class PPAPI_PROXY_EXPORT ProxyObjectVar : public Var {
   // plugin, this stores the user data so that we can look it up later. See
   // PluginVarTracker.
   void* user_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyObjectVar);
 };
 
 }  // namespace ppapi

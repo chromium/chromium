@@ -1,4 +1,4 @@
-# Copyright (c) 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 # without these options will be part of the same program.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/nacl/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -15,6 +16,9 @@ import("//third_party/abseil-cpp/absl.gni")
 config("absl_component_build") {
   defines = [ "ABSL_CONSUME_DLL" ]
 }
+
+assert(!is_nacl || is_nacl_saigo,
+       "base must not be built in most nacl toolchains")
 
 component("absl") {
   public_deps = [ ":absl_component_deps" ]
@@ -57,6 +61,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/cleanup",
     "//third_party/abseil-cpp/absl/container:btree",
     "//third_party/abseil-cpp/absl/container:fixed_array",
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
@@ -67,32 +72,33 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/debugging:symbolize",
+    "//third_party/abseil-cpp/absl/functional:any_invocable",
     "//third_party/abseil-cpp/absl/functional:bind_front",
+    "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
+    "//third_party/abseil-cpp/absl/random",
     "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/status:statusor",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/time",
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
     "//third_party/abseil-cpp/absl/types:variant",
+    "//third_party/abseil-cpp/absl/utility",
   ]
 
   # The following dependencies currently don't build with NaCl.
   # TODO(https://crbug.com/1114625): Fix build errors and remove this section.
   if (is_nacl) {
-    public_deps -= [
-      "//third_party/abseil-cpp/absl/container:flat_hash_map",
-      "//third_party/abseil-cpp/absl/container:flat_hash_set",
-      "//third_party/abseil-cpp/absl/container:node_hash_map",
-      "//third_party/abseil-cpp/absl/container:node_hash_set",
-      "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
-    ]
+    public_deps -=
+        [ "//third_party/abseil-cpp/absl/debugging:failure_signal_handler" ]
   }
 
   visibility = [ ":absl" ]
@@ -140,17 +146,9 @@ config("absl_default_cflags_cc") {
       "-Wno-sign-conversion",
       "-Wstring-conversion",
     ]
-    if (!is_nacl && !use_xcode_clang) {
+    if (!is_nacl) {
       cflags_cc += [ "-Wbitfield-enum-conversion" ]
     }
-  }
-  if (is_win) {
-    cflags_cc += [
-      "/wd4005",  # macro-redefinition
-      "/wd4018",  # sign-compare
-      "/wd4068",  # unknown pragma
-      "/wd4702",  # unreachable code
-    ]
   }
 }
 
@@ -184,11 +182,47 @@ if (build_with_chromium) {
         "absl/algorithm:algorithm_test",
         "absl/algorithm:container_test",
         "absl/base:config_test",
+        "absl/base:prefetch_test",
         "absl/cleanup:cleanup_test",
+        "absl/container:common_policy_traits_test",
         "absl/container:inlined_vector_test",
+        "absl/container:node_slot_policy_test",
+        "absl/container:sample_element_size_test",
+        "absl/functional:any_invocable_test",
+        "absl/hash:hash_test",
+        "absl/hash:low_level_hash_test",
+        "absl/log:basic_log_test",
+        "absl/log:check_test",
+        "absl/log:die_if_null_test",
+        "absl/log:flags_test",
+        "absl/log:globals_test",
+        "absl/log:log_entry_test",
+        "absl/log:log_format_test",
+        "absl/log:log_macro_hygiene_test",
+        "absl/log:log_modifier_methods_test",
+        "absl/log:log_sink_test",
+        "absl/log:log_streamer_test",
+        "absl/log:scoped_mock_log_test",
+        "absl/log:stripping_test",
+        "absl/log/internal:stderr_log_sink_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
+        "absl/profiling:exponential_biased_test",
+        "absl/profiling:periodic_sampler_test",
+        "absl/status:statusor_test",
         "absl/strings:ascii_test",
+        "absl/strings:cord_buffer_test",
+        "absl/strings:cord_data_edge_test",
+        "absl/strings:cord_rep_btree_navigator_test",
+        "absl/strings:cord_rep_btree_reader_test",
+        "absl/strings:cord_rep_btree_test",
+        "absl/strings:cord_rep_crc_test",
+        "absl/strings:cordz_functions_test",
+        "absl/strings:cordz_info_statistics_test",
+        "absl/strings:cordz_info_test",
+        "absl/strings:cordz_test",
+        "absl/strings:cordz_update_scope_test",
+        "absl/strings:cordz_update_tracker_test",
         "absl/strings:match_test",
         "absl/strings:str_replace_test",
         "absl/strings:string_view_test",

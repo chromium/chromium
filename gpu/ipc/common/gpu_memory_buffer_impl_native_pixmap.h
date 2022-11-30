@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 
@@ -24,6 +23,11 @@ namespace gpu {
 // Implementation of GPU memory buffer based on Ozone native pixmap.
 class GPU_EXPORT GpuMemoryBufferImplNativePixmap : public GpuMemoryBufferImpl {
  public:
+  GpuMemoryBufferImplNativePixmap(const GpuMemoryBufferImplNativePixmap&) =
+      delete;
+  GpuMemoryBufferImplNativePixmap& operator=(
+      const GpuMemoryBufferImplNativePixmap&) = delete;
+
   ~GpuMemoryBufferImplNativePixmap() override;
 
   static constexpr gfx::GpuMemoryBufferType kBufferType = gfx::NATIVE_PIXMAP;
@@ -56,13 +60,9 @@ class GPU_EXPORT GpuMemoryBufferImplNativePixmap : public GpuMemoryBufferImpl {
       const gfx::Size& size,
       gfx::BufferFormat format,
       DestructionCallback callback,
-      std::unique_ptr<gfx::ClientNativePixmap> native_pixmap,
-      gfx::NativePixmapHandle handle);
+      std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
   const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;
-  gfx::NativePixmapHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplNativePixmap);
 };
 
 }  // namespace gpu

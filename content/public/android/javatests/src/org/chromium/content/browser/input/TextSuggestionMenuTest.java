@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,6 +145,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1348267")
     public void testApplySuggestion() throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
 
@@ -264,6 +265,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void suggestionMenuDismissal() throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ class MediaPowerExperimentManagerTest : public testing::Test {
  public:
   MediaPowerExperimentManagerTest()
       : manager_(std::make_unique<MediaPowerExperimentManager>()),
-        player_id_1_(GlobalFrameRoutingId(), 1),
-        player_id_2_(GlobalFrameRoutingId(), 2),
+        player_id_1_(GlobalRenderFrameHostId(), 1),
+        player_id_2_(GlobalRenderFrameHostId(), 2),
         cb_1_(base::BindRepeating([](bool* out, bool state) { *out = state; },
                                   &experiment_state_1_)),
         cb_2_(base::BindRepeating([](bool* out, bool state) { *out = state; },

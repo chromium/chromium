@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,6 @@ enum State {
   // Chrome needs to ask the user to confirm password updating.
   PENDING_PASSWORD_UPDATE_STATE,
 
-  // The user was prompted to sign in to Chrome after saving a password.
-  CHROME_SIGN_IN_PROMO_STATE,
-
   // A user opted in to account storage is about to lose some unsynced
   // passwords.
   WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE,
@@ -52,6 +49,14 @@ enum State {
 
   // A compromised password was updated and the user has more to fix.
   PASSWORD_UPDATED_MORE_TO_FIX,
+
+  // A password was successfully autofilled and user should see a biometric
+  // authentication before filling promo.
+  BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE,
+
+  // The user enabled biometric authentication before filling feature from the
+  // promo dialog and successfully authenticated.
+  BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
 };
 
 }  // namespace ui

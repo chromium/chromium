@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_ELEMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_ELEMENT_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_element.h"
 
@@ -61,9 +62,8 @@ class BLINK_EXPORT WebFormElement final : public WebElement {
 
   // Returns the identifier which is unique among all form elements in the
   // current renderer process. In the current implementation ids are
-  // consecutive numbers so their uniqueness might be broken in case of
-  // overflow.
-  unsigned UniqueRendererFormId() const;
+  // consecutive numbers.
+  uint64_t UniqueRendererFormId() const;
 
   WebVector<WebFormControlElement> GetFormControlElements() const;
 
@@ -78,4 +78,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebFormElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_ELEMENT_H_

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/renderer_host/media/audio_output_stream_observer_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/audio_stream_broker.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -39,6 +39,9 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
       DeleterCallback deleter,
       mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>
           client);
+
+  AudioOutputStreamBroker(const AudioOutputStreamBroker&) = delete;
+  AudioOutputStreamBroker& operator=(const AudioOutputStreamBroker&) = delete;
 
   ~AudioOutputStreamBroker() final;
 
@@ -76,8 +79,6 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   DisconnectReason disconnect_reason_ = DisconnectReason::kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioOutputStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputStreamBroker);
 };
 
 }  // namespace content

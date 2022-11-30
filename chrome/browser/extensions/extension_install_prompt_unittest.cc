@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,7 +44,7 @@ namespace {
 void VerifyPromptIconCallback(
     base::OnceClosure quit_closure,
     const SkBitmap& expected_bitmap,
-    ExtensionInstallPromptShowParams* params,
+    std::unique_ptr<ExtensionInstallPromptShowParams> params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(prompt->icon().AsBitmap(), expected_bitmap));
@@ -54,7 +54,7 @@ void VerifyPromptIconCallback(
 void VerifyPromptPermissionsCallback(
     base::OnceClosure quit_closure,
     size_t regular_permissions_count,
-    ExtensionInstallPromptShowParams* params,
+    std::unique_ptr<ExtensionInstallPromptShowParams> params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> install_prompt) {
   ASSERT_TRUE(install_prompt.get());
@@ -65,7 +65,7 @@ void VerifyPromptPermissionsCallback(
 void VerifyPromptWithholdingUICallback(
     base::OnceClosure quit_closure,
     const bool should_display,
-    ExtensionInstallPromptShowParams* params,
+    std::unique_ptr<ExtensionInstallPromptShowParams> params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
   EXPECT_EQ(should_display, prompt->ShouldDisplayWithholdingUI());
@@ -82,12 +82,16 @@ void SetImage(gfx::Image* image_out,
 class ExtensionInstallPromptUnitTest : public testing::Test {
  public:
   ExtensionInstallPromptUnitTest() {}
+
+  ExtensionInstallPromptUnitTest(const ExtensionInstallPromptUnitTest&) =
+      delete;
+  ExtensionInstallPromptUnitTest& operator=(
+      const ExtensionInstallPromptUnitTest&) = delete;
+
   ~ExtensionInstallPromptUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override {
-    profile_.reset(new TestingProfile());
-  }
+  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
   void TearDown() override {
     profile_.reset();
   }
@@ -97,8 +101,6 @@ class ExtensionInstallPromptUnitTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallPromptUnitTest);
 };
 
 }  // namespace
@@ -180,7 +182,7 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
                                         extension_misc::EXTENSION_ICON_LARGE,
                                         ExtensionIconSet::MATCH_BIGGER),
              ImageLoader::ImageRepresentation::NEVER_RESIZE, gfx::Size(),
-             ui::SCALE_FACTOR_100P));
+             ui::k100Percent));
   base::RunLoop image_loop;
   gfx::Image image;
   ImageLoader::Get(browser_context())

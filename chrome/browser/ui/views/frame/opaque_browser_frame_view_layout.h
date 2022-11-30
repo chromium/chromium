@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/window/frame_buttons.h"
 
+class CaptionButtonPlaceholderContainer;
 class WebAppFrameToolbarView;
 class OpaqueBrowserFrameViewLayoutDelegate;
 
@@ -40,6 +41,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   static const int kCaptionButtonBottomPadding;
 
   OpaqueBrowserFrameViewLayout();
+
+  OpaqueBrowserFrameViewLayout(const OpaqueBrowserFrameViewLayout&) = delete;
+  OpaqueBrowserFrameViewLayout& operator=(const OpaqueBrowserFrameViewLayout&) =
+      delete;
+
   ~OpaqueBrowserFrameViewLayout() override;
 
   void set_delegate(OpaqueBrowserFrameViewLayoutDelegate* delegate) {
@@ -59,10 +65,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const;
 
-  // Returns the thickness of the border that makes up the window frame edges.
+  // Returns the insets from the native window edge to the client view.
   // This does not include any client edge.  If |restored| is true, acts as if
   // the window is restored regardless of the real mode.
-  int FrameBorderThickness(bool restored) const;
+  gfx::Insets FrameBorderInsets(bool restored) const;
 
   // Returns the thickness of the border that makes up the window frame edge
   // along the top of the frame. If |restored| is true, this acts as if the
@@ -85,15 +91,11 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // acts as if the window is restored regardless of the real mode.
   virtual int CaptionButtonY(views::FrameButton button_id, bool restored) const;
 
-  // Returns the thickness of the top 3D edge of the window frame.  If
-  // |restored| is true, acts as if the window is restored regardless of the
-  // real mode.
-  int FrameTopThickness(bool restored) const;
-
-  // Returns the thickness of the left and right 3D edges of the window frame.
-  // If |restored| is true, acts as if the window is restored regardless of the
-  // real mode.
-  int FrameSideThickness(bool restored) const;
+  // Returns the insets from the native window edge to the flat portion of the
+  // window border.  That is, this function returns the "3D portion" of the
+  // border.  If |restored| is true, acts as if the window is restored
+  // regardless of the real mode.
+  gfx::Insets FrameEdgeInsets(bool restored) const;
 
   // Returns the bounds of the titlebar icon (or where the icon would be if
   // there was one).
@@ -119,10 +121,17 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Returns the extra thickness of the area above the tabs.
   int GetNonClientRestoredExtraThickness() const;
 
+  // Enables or disables WCO and updates child views accordingly.
+  void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
+
+  // Enables or disables borderless.
+  void SetBorderlessModeEnabled(bool enabled, views::View* host);
+
   // views::LayoutManager:
   // Called explicitly from OpaqueBrowserFrameView so we can't group it with
   // the other overrides.
   gfx::Size GetMinimumSize(const views::View* host) const override;
+
 
  protected:
   // Whether a specific button should be inserted on the leading or trailing
@@ -145,7 +154,22 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   virtual TopAreaPadding GetTopAreaPadding(bool has_leading_buttons,
                                            bool has_trailing_buttons) const;
 
-  OpaqueBrowserFrameViewLayoutDelegate* delegate_;
+  // The insets from the native window edge to the client view when the window
+  // is restored.  This goes all the way to the web contents on the left, right,
+  // and bottom edges.
+  virtual gfx::Insets RestoredFrameBorderInsets() const;
+
+  // The insets from the native window edge to the flat portion of the
+  // window border.  That is, this function returns the "3D portion" of the
+  // border when the window is restored.  The returned insets will not be larger
+  // than RestoredFrameBorderInsets().
+  virtual gfx::Insets RestoredFrameEdgeInsets() const;
+
+  // Additional vertical padding between tabs and the top edge of the window
+  // when the window is restored.
+  virtual int NonClientExtraTopThickness() const;
+
+  raw_ptr<OpaqueBrowserFrameViewLayoutDelegate> delegate_;
 
   // The leading and trailing x positions of the empty space available for
   // laying out titlebar elements.
@@ -178,6 +202,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // frame buttons.
   TopAreaPadding GetTopAreaPadding() const;
 
+  void LayoutTitleBarForWindowControlsOverlay(const views::View* host);
+
   // Returns true if a 3D edge should be drawn around the window frame.  If
   // |restored| is true, acts as if the window is restored regardless of the
   // real mode.
@@ -209,15 +235,20 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   views::Button* restore_button_;
   views::Button* close_button_;
 
-  views::View* window_icon_;
-  views::Label* window_title_;
+  raw_ptr<views::View> window_icon_;
+  raw_ptr<views::Label> window_title_;
 
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
-  DISALLOW_COPY_AND_ASSIGN(OpaqueBrowserFrameViewLayout);
+  raw_ptr<views::ClientView> client_view_ = nullptr;
+
+  bool is_window_controls_overlay_enabled_ = false;
+  bool is_borderless_mode_enabled_ = false;
+  raw_ptr<CaptionButtonPlaceholderContainer>
+      caption_button_placeholder_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_OPAQUE_BROWSER_FRAME_VIEW_LAYOUT_H_

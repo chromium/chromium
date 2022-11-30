@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@ namespace base {
 namespace android {
 
 // Defines the state of bindgings with child process. See ChildProcessConnection
-// to see what the bindings are. Note these values are used as array indices.
+// to see what the bindings are.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
 enum class ChildBindingState {
   UNBOUND,
   WAIVED,
-  MODERATE,
+  NOT_PERCEPTIBLE,
+  VISIBLE,
   STRONG,
   MAX_VALUE = STRONG
 };

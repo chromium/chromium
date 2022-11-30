@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,13 @@
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/extension_messages.h"
-#endif
 
 namespace sessions {
 
 SessionTabHelper::SessionTabHelper(content::WebContents* contents,
                                    DelegateLookup lookup)
     : content::WebContentsObserver(contents),
+      content::WebContentsUserData<SessionTabHelper>(*contents),
       delegate_lookup_(std::move(lookup)),
       session_id_(SessionID::NewUnique()),
       window_id_(SessionID::InvalidValue()) {}
@@ -30,13 +26,7 @@ SessionTabHelper::~SessionTabHelper() = default;
 
 void SessionTabHelper::SetWindowID(const SessionID& id) {
   window_id_ = id;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Extension code in the renderer holds the ID of the window that hosts it.
-  // Notify it that the window ID changed.
-  web_contents()->SendToAllFrames(
-      new ExtensionMsg_UpdateBrowserWindowId(MSG_ROUTING_NONE, id.id()));
-#endif
+  window_id_changed_callbacks_.Notify(id);
 }
 
 // static
@@ -54,6 +44,11 @@ SessionID SessionTabHelper::IdForWindowContainingTab(
       tab ? SessionTabHelper::FromWebContents(tab) : nullptr;
   return session_tab_helper ? session_tab_helper->window_id()
                             : SessionID::InvalidValue();
+}
+
+base::CallbackListSubscription SessionTabHelper::RegisterForWindowIdChanged(
+    WindowIdChangedCallbackList::CallbackType callback) {
+  return window_id_changed_callbacks_.Add(std::move(callback));
 }
 
 void SessionTabHelper::UserAgentOverrideSet(
@@ -120,6 +115,6 @@ SessionTabHelperDelegate* SessionTabHelper::GetDelegate() {
   return delegate_lookup_ ? delegate_lookup_.Run(web_contents()) : nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SessionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SessionTabHelper);
 
 }  // namespace sessions

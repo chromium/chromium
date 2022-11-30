@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,15 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck crbug.com/1125897
 #else
 #include "content/public/browser/service_process_host.h"
@@ -32,7 +31,7 @@ proxy_resolver::mojom::ProxyResolverFactory* GetProxyResolverFactory() {
       mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory>>
       remote;
   if (!remote->is_bound()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // For Android we just lazily initialize a single factory instance and keep
     // it around forever.
     static base::NoDestructor<proxy_resolver::ProxyResolverFactoryImpl> factory(

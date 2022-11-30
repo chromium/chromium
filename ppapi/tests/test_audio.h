@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_AUDIO_H_
-#define PAPPI_TESTS_TEST_AUDIO_H_
+#ifndef PPAPI_TESTS_TEST_AUDIO_H_
+#define PPAPI_TESTS_TEST_AUDIO_H_
 
 #include <stdint.h>
 
@@ -80,4 +80,4 @@ class TestAudio : public TestCase {
   const PPB_Core* core_interface_;
 };
 
-#endif  // PAPPI_TESTS_TEST_AUDIO_H_
+#endif  // PPAPI_TESTS_TEST_AUDIO_H_

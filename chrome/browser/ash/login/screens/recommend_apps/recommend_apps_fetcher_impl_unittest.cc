@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,49 +8,88 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
+#include "ash/components/arc/arc_features_parser.h"
+#include "ash/constants/ash_features.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/fake_recommend_apps_fetcher_delegate.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/arc/arc_features_parser.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Values set in ArcFeatures created by CreateArcFeaturesForTest.
 constexpr char kTestArcSdkVersion[] = "25";
 constexpr char kTestArcPlayStoreVersion[] = "81010860";
+constexpr char kTestDeviceFingerprint[] =
+    "google/product/device:1/R105-14925.0/1234567:user/release-keys";
 const char* const kTestArcAbiList[] = {"x86", "x86_64"};
 const char* const kTestArcFeatures[] = {"android.hardware.faketouch",
                                         "android.software.home_screen"};
+
+const std::string kOneAppResponse =
+    R"([{
+           "title_": {"name_": "Test app 1"},
+           "id_": {"id_": "test.app1"},
+           "icon_": {
+             "url_": {
+               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
+              }
+            }
+         }])";
+
+const std::string kOneAppResponseNew = R"({"recommendedApp": [{
+    "androidApp": {
+      "packageName": "com.game.name",
+      "title": "NameOfFunGame",
+      "icon": {
+        "imageUri": "https://play-lh.googleusercontent.com/1234IDECLAREATHUMBWAR",
+        "dimensions": {
+          "width": 512,
+          "height": 512
+        }
+      }
+    }
+  }]})";
+
+bool IsNewRecommendedAppsEnabled() {
+  return features::IsOobeNewRecommendAppsEnabled() &&
+         base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe);
+}
 
 // Creates a fake ARC features to be used for these tests.
 arc::ArcFeatures CreateArcFeaturesForTest() {
   arc::ArcFeatures arc_features;
   arc_features.build_props["ro.build.version.sdk"] = kTestArcSdkVersion;
+  arc_features.build_props["ro.build.fingerprint"] = kTestDeviceFingerprint;
   arc_features.play_store_version = kTestArcPlayStoreVersion;
 
   std::vector<std::string> abi_list(std::begin(kTestArcAbiList),
@@ -64,11 +103,17 @@ arc::ArcFeatures CreateArcFeaturesForTest() {
   return arc_features;
 }
 
-class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
+class TestCrosDisplayConfig
+    : public crosapi::mojom::CrosDisplayConfigController {
  public:
   explicit TestCrosDisplayConfig(
-      mojo::PendingReceiver<ash::mojom::CrosDisplayConfigController> receiver)
+      mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
+          receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestCrosDisplayConfig(const TestCrosDisplayConfig&) = delete;
+  TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
+
   ~TestCrosDisplayConfig() override = default;
 
   void Flush() {
@@ -76,7 +121,7 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
   }
 
   bool RunGetDisplayUnitInfoListCallback(
-      std::vector<ash::mojom::DisplayUnitInfoPtr> unit_info_list) {
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> unit_info_list) {
     if (!get_display_unit_info_list_callback_)
       return false;
     std::move(get_display_unit_info_list_callback_)
@@ -84,30 +129,31 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
     return true;
   }
 
-  // ash::mojom::CrosDisplayConfigController:
+  // crosapi::mojom::CrosDisplayConfigController:
   void AddObserver(
-      mojo::PendingAssociatedRemote<ash::mojom::CrosDisplayConfigObserver>
+      mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
           observer) override {}
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
-  void SetDisplayLayoutInfo(ash::mojom::DisplayLayoutInfoPtr info,
+  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}
   void GetDisplayUnitInfoList(
       bool single_unified,
       GetDisplayUnitInfoListCallback callback) override {
     get_display_unit_info_list_callback_ = std::move(callback);
   }
-  void SetDisplayProperties(const std::string& id,
-                            ash::mojom::DisplayConfigPropertiesPtr properties,
-                            ash::mojom::DisplayConfigSource source,
-                            SetDisplayPropertiesCallback callback) override {}
+  void SetDisplayProperties(
+      const std::string& id,
+      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      crosapi::mojom::DisplayConfigSource source,
+      SetDisplayPropertiesCallback callback) override {}
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,
-                           ash::mojom::DisplayConfigOperation op,
-                           const base::Optional<gfx::Insets>& delta,
+                           crosapi::mojom::DisplayConfigOperation op,
+                           const absl::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override {}
   void TouchCalibration(const std::string& display_id,
-                        ash::mojom::DisplayConfigOperation op,
-                        ash::mojom::TouchCalibrationPtr calibration,
+                        crosapi::mojom::DisplayConfigOperation op,
+                        crosapi::mojom::TouchCalibrationPtr calibration,
                         TouchCalibrationCallback callback) override {}
   void HighlightDisplay(int64_t id) override {}
   void DragDisplayDelta(int64_t display_id,
@@ -115,11 +161,9 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
                         int32_t delta_y) override {}
 
  private:
-  mojo::Receiver<ash::mojom::CrosDisplayConfigController> receiver_;
+  mojo::Receiver<crosapi::mojom::CrosDisplayConfigController> receiver_;
 
   GetDisplayUnitInfoListCallback get_display_unit_info_list_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCrosDisplayConfig);
 };
 
 // Helper class to extract relevant information from the app list request
@@ -128,6 +172,8 @@ class AppListRequestHeaderReader {
  public:
   explicit AppListRequestHeaderReader(network::ResourceRequest* request) {
     request->headers.GetHeader("X-DFE-Sdk-Version", &sdk_version_);
+    request->headers.GetHeader("X-DFE-Device-Fingerprint",
+                               &device_fingerprint_);
     request->headers.GetHeader("X-DFE-Chromesky-Client-Version",
                                &play_store_version_);
     DecodeDeviceConfigHeader(request);
@@ -139,6 +185,8 @@ class AppListRequestHeaderReader {
       const AppListRequestHeaderReader& other) = delete;
 
   const std::string& sdk_version() const { return sdk_version_; }
+
+  const std::string& device_fingerprint() const { return device_fingerprint_; }
 
   const std::string& play_store_version() const { return play_store_version_; }
 
@@ -199,6 +247,7 @@ class AppListRequestHeaderReader {
   }
 
   std::string sdk_version_;
+  std::string device_fingerprint_;
   std::string play_store_version_;
   device_configuration::DeviceConfigurationProto device_config_;
 };
@@ -212,10 +261,9 @@ class RecommendAppsFetcherImplTest : public testing::Test {
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
-    display::Display::SetInternalDisplayId(
-        test_screen_.GetPrimaryDisplay().id());
+    display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
         remote_display_config;
     cros_display_config_ = std::make_unique<TestCrosDisplayConfig>(
         remote_display_config.InitWithNewPipeAndPassReceiver());
@@ -251,13 +299,13 @@ class RecommendAppsFetcherImplTest : public testing::Test {
     const float y;
   };
 
-  std::vector<ash::mojom::DisplayUnitInfoPtr> CreateDisplayUnitInfo(
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> CreateDisplayUnitInfo(
       const Dpi& internal_dpi,
-      base::Optional<Dpi> external_dpi) {
-    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list;
+      absl::optional<Dpi> external_dpi) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
 
     if (external_dpi.has_value()) {
-      auto external_info = ash::mojom::DisplayUnitInfo::New();
+      auto external_info = crosapi::mojom::DisplayUnitInfo::New();
       external_info->id =
           base::NumberToString(test_screen_.GetPrimaryDisplay().id() + 1);
       external_info->is_internal = false;
@@ -266,7 +314,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
       info_list.emplace_back(std::move(external_info));
     }
 
-    auto info = ash::mojom::DisplayUnitInfo::New();
+    auto info = crosapi::mojom::DisplayUnitInfo::New();
     info->id = base::NumberToString(test_screen_.GetPrimaryDisplay().id());
     info->is_internal = true;
     info->dpi_x = internal_dpi.x;
@@ -296,6 +344,9 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   void VerifyArcRequestHeaders(
       const AppListRequestHeaderReader& header_reader) {
     EXPECT_EQ(kTestArcSdkVersion, header_reader.sdk_version());
+    // TODO(crbug.com/1345149): Verify that fingerprint is only set when
+    // kAppDiscoveryForOobe is enabled.
+    EXPECT_EQ(kTestDeviceFingerprint, header_reader.device_fingerprint());
     EXPECT_EQ(kTestArcPlayStoreVersion, header_reader.play_store_version());
     EXPECT_EQ(std::vector<std::string>(std::begin(kTestArcAbiList),
                                        std::end(kTestArcAbiList)),
@@ -305,6 +356,30 @@ class RecommendAppsFetcherImplTest : public testing::Test {
               header_reader.GetSystemAvailableFeatures());
   }
 
+  void CheckOneAppResponseResult(network::ResourceRequest* request) {
+    // In the new version we have RecommendedArcAppFetcherTest unit tests which
+    // cover testing of response processing.
+    if (IsNewRecommendedAppsEnabled())
+      return;
+
+    test_url_loader_factory_.AddResponse(request->url.spec(), kOneAppResponse);
+    EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
+              delegate_.WaitForResult());
+    base::Value::List expected_apps;
+    base::Value::Dict app;
+    app.Set("name", base::Value("Test app 1"));
+    app.Set("icon", base::Value("http://test.app"));
+    app.Set("package_name", base::Value("test.app1"));
+    expected_apps.Append(std::move(app));
+
+    EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+    EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
+  }
+
+  void EnableAppDiscoveryFlag() {
+    scoped_feature_list_.InitAndEnableFeature(::features::kAppDiscoveryForOobe);
+  }
+
   FakeRecommendAppsFetcherDelegate delegate_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
@@ -312,25 +387,34 @@ class RecommendAppsFetcherImplTest : public testing::Test {
 
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
   display::test::TestScreen test_screen_;
-  base::OnceCallback<void(base::Optional<arc::ArcFeatures>)>
+  base::OnceCallback<void(absl::optional<arc::ArcFeatures>)>
       arc_features_callback_;
 
  private:
   void InterceptRequest(const network::ResourceRequest& request) {
-    ASSERT_EQ(
-        "https://android.clients.google.com/fdfe/chrome/"
-        "getfastreinstallappslist",
-        request.url.spec());
+    if (base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
+      ASSERT_EQ(
+          "https://android.clients.google.com/fdfe/chrome/"
+          "getSetupAppRecommendations",
+          request.url.spec());
+    } else {
+      ASSERT_EQ(
+          "https://android.clients.google.com/fdfe/chrome/"
+          "getfastreinstallappslist",
+          request.url.spec());
+    }
     if (request_waiter_)
       request_waiter_->Quit();
   }
 
   void HandleArcFeaturesRequest(
-      base::OnceCallback<void(base::Optional<arc::ArcFeatures>)> callback) {
+      base::OnceCallback<void(absl::optional<arc::ArcFeatures>)> callback) {
     arc_features_callback_ = std::move(callback);
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   std::unique_ptr<base::RunLoop> request_waiter_;
 };
@@ -373,30 +457,7 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithTouch) {
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
@@ -416,7 +477,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
       CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23))));
 
   ASSERT_TRUE(arc_features_callback_);
-  std::move(arc_features_callback_).Run(base::nullopt);
+  std::move(arc_features_callback_).Run(absl::nullopt);
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -424,6 +485,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
   AppListRequestHeaderReader header_reader(request);
 
   EXPECT_EQ("", header_reader.sdk_version());
+  EXPECT_EQ("", header_reader.device_fingerprint());
   EXPECT_EQ("", header_reader.play_store_version());
   EXPECT_EQ(std::vector<std::string>(), header_reader.GetNativePlatforms());
   EXPECT_EQ(std::vector<std::string>(),
@@ -441,30 +503,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
@@ -506,30 +545,7 @@ TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
@@ -565,30 +581,7 @@ TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
@@ -607,7 +600,7 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117.23, 117.23), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117.23, 117.23), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -631,29 +624,7 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
       device_configuration::DeviceConfigurationProto_ScreenLayout_EXTRA_LARGE,
       header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
@@ -668,7 +639,7 @@ TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -691,29 +662,7 @@ TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_LARGE,
             header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
@@ -728,7 +677,7 @@ TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -751,29 +700,7 @@ TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_NORMAL,
             header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
@@ -789,7 +716,7 @@ TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -812,29 +739,7 @@ TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_SMALL,
             header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
@@ -853,7 +758,7 @@ TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -873,29 +778,7 @@ TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
   EXPECT_EQ(device_configuration::DeviceConfigurationProto_ScreenLayout_SMALL,
             header_reader.screen_layout());
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
@@ -911,7 +794,7 @@ TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   recommend_apps_fetcher_->Retry();
   EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
@@ -922,31 +805,7 @@ TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
 
-  const std::string response =
-      R"([{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
-
-  EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
@@ -961,7 +820,7 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -983,12 +842,16 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyAppList) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
   test_url_loader_factory_.AddResponse(request->url.spec(), "[]");
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1000,7 +863,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1008,29 +871,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadeingBrackets) {
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
 
-  const std::string response =
-      R"()]}'[{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
@@ -1040,7 +881,7 @@ TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1061,7 +902,7 @@ TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1071,6 +912,10 @@ TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(), "\"abcd\"");
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1082,7 +927,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1105,6 +950,10 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(), response);
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
   base::Value expected_apps(base::Value::Type::LIST);
@@ -1128,7 +977,7 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1149,6 +998,10 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(), response);
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
             delegate_.WaitForResult());
   base::Value expected_apps(base::Value::Type::LIST);
@@ -1172,7 +1025,7 @@ TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1182,6 +1035,10 @@ TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(), "{}");
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1193,7 +1050,7 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1203,7 +1060,10 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": ""})");
-
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1215,7 +1075,7 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1225,7 +1085,10 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "6"})");
-
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1237,7 +1100,7 @@ TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1247,7 +1110,10 @@ TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
 
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
-
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
 }
@@ -1259,7 +1125,7 @@ TEST_F(RecommendAppsFetcherImplTest, AppListRequestFailure) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1281,7 +1147,7 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1292,6 +1158,10 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
 
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
   delegate_.Reset();
@@ -1302,30 +1172,7 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
   request = WaitForAppListRequest();
   ASSERT_TRUE(request);
 
-  const std::string response =
-      R"()]}'[{
-           "title_": {"name_": "Test app 1"},
-           "id_": {"id_": "test.app1"},
-           "icon_": {
-             "url_": {
-               "privateDoNotAccessOrElseSafeUrlWrappedValue_": "http://test.app"
-              }
-            }
-         }])";
-
-  test_url_loader_factory_.AddResponse(request->url.spec(), response);
-
-  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
-            delegate_.WaitForResult());
-
-  base::Value expected_apps(base::Value::Type::LIST);
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey("name", base::Value("Test app 1"));
-  app.SetKey("icon", base::Value("http://test.app"));
-  app.SetKey("package_name", base::Value("test.app1"));
-  expected_apps.Append(std::move(app));
-
-  EXPECT_EQ(expected_apps, delegate_.loaded_apps());
+  CheckOneAppResponseResult(request);
 }
 
 TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
@@ -1335,7 +1182,7 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
 
   cros_display_config_->Flush();
   ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), base::nullopt)));
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1344,7 +1191,10 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
   ASSERT_TRUE(request);
   test_url_loader_factory_.AddResponse(request->url.spec(),
                                        R"({"Error code": "5"})");
-
+  // In the new version we have RecommendedArcAppFetcherTest unit tests which
+  // cover testing of response processing.
+  if (IsNewRecommendedAppsEnabled())
+    return;
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
   delegate_.Reset();
@@ -1362,4 +1212,65 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
             delegate_.WaitForResult());
 }
 
-}  // namespace chromeos
+TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
+  ASSERT_TRUE(recommend_apps_fetcher_);
+
+  gpu::GPUInfo gpu_info;
+  gpu_info.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
+  gpu_info.gl_renderer = "Mesa DRI";
+  gpu_info.gl_extensions =
+      "GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra";
+
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info);
+
+  // `gpu_info` should be parsed without causing use-after-free.
+  recommend_apps_fetcher_->Start();
+}
+
+TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
+  EnableAppDiscoveryFlag();
+
+  ASSERT_TRUE(recommend_apps_fetcher_);
+
+  recommend_apps_fetcher_->Start();
+
+  cros_display_config_->Flush();
+  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
+
+  ASSERT_TRUE(arc_features_callback_);
+  std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
+
+  network::ResourceRequest* request = WaitForAppListRequest();
+  ASSERT_TRUE(request);
+
+  test_url_loader_factory_.AddResponse(request->url.spec(), kOneAppResponseNew);
+
+  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::SUCCESS,
+            delegate_.WaitForResult());
+}
+
+TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryParseErrorResponse) {
+  EnableAppDiscoveryFlag();
+
+  ASSERT_TRUE(recommend_apps_fetcher_);
+
+  recommend_apps_fetcher_->Start();
+
+  cros_display_config_->Flush();
+  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
+      CreateDisplayUnitInfo(Dpi(117, 117), absl::nullopt)));
+
+  ASSERT_TRUE(arc_features_callback_);
+  std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
+
+  network::ResourceRequest* request = WaitForAppListRequest();
+  ASSERT_TRUE(request);
+
+  test_url_loader_factory_.AddResponse(request->url.spec(), ")}]'!2%^$");
+
+  EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
+            delegate_.WaitForResult());
+}
+
+}  // namespace ash

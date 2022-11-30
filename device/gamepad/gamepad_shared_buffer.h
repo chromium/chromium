@@ -1,10 +1,11 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_SHARED_BUFFER_H_
-#define DEVICE_GAMEPAD_SHARED_BUFFER_H_
+#ifndef DEVICE_GAMEPAD_GAMEPAD_SHARED_BUFFER_H_
+#define DEVICE_GAMEPAD_GAMEPAD_SHARED_BUFFER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -40,9 +41,9 @@ class DEVICE_GAMEPAD_EXPORT GamepadSharedBuffer {
  private:
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
-  GamepadHardwareBuffer* hardware_buffer_;
+  raw_ptr<GamepadHardwareBuffer> hardware_buffer_;
 };
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_SHARED_BUFFER_H_
+#endif  // DEVICE_GAMEPAD_GAMEPAD_SHARED_BUFFER_H_

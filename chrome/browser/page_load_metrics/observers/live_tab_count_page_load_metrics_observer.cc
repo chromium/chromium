@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,9 @@
 
 // These are the same histogram parameters used for the core page load paint
 // timing metrics (see PAGE_LOAD_HISTOGRAM).
-#define LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(prefix, bucket, sample) \
-  LIVE_TAB_COUNT_HISTOGRAM(prefix, bucket, sample,                       \
-                           base::TimeDelta::FromMilliseconds(10),        \
-                           base::TimeDelta::FromMinutes(10), 100)
+#define LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(prefix, bucket, sample)   \
+  LIVE_TAB_COUNT_HISTOGRAM(prefix, bucket, sample, base::Milliseconds(10), \
+                           base::Minutes(10), 100)
 
 namespace internal {
 
@@ -47,24 +46,49 @@ LiveTabCountPageLoadMetricsObserver::LiveTabCountPageLoadMetricsObserver() {}
 
 LiveTabCountPageLoadMetricsObserver::~LiveTabCountPageLoadMetricsObserver() {}
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LiveTabCountPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class doesn't use information on subframes and inner pages. No need to
+  // forward.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LiveTabCountPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return CONTINUE_OBSERVING;
+}
+
 void LiveTabCountPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, GetDelegate())) {
+  const base::TimeDelta event =
+      timing.paint_timing->first_contentful_paint.value();
+
+  if (!page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing, event)) {
     return;
   }
 
+  base::TimeDelta corrected =
+      page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
+          GetDelegate(), timing, event);
   const size_t bucket = tab_count_metrics::BucketForTabCount(GetLiveTabCount());
   LIVE_TAB_COUNT_PAINT_PAGE_LOAD_HISTOGRAM(
       std::string(internal::kHistogramPrefixLiveTabCount)
           .append(internal::kHistogramFirstContentfulPaintSuffix),
-      bucket, timing.paint_timing->first_contentful_paint.value());
+      bucket, corrected);
 }
 
 void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
+  const base::TimeDelta event =
+      timing.interactive_timing->first_input_delay.value();
+
+  if (!page_load_metrics::EventOccurredBeforeNonPrerenderingBackgroundStart(
+          GetDelegate(), timing, event)) {
     return;
   }
 
@@ -75,9 +99,7 @@ void LiveTabCountPageLoadMetricsObserver::OnFirstInputInPage(
   LIVE_TAB_COUNT_HISTOGRAM(
       std::string(internal::kHistogramPrefixLiveTabCount)
           .append(internal::kHistogramFirstInputDelaySuffix),
-      bucket, timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      bucket, event, base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 size_t LiveTabCountPageLoadMetricsObserver::GetLiveTabCount() const {

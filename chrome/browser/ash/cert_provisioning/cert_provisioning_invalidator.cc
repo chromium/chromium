@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,7 +89,7 @@ bool CertProvisioningInvalidationHandler::Register() {
 
   OnInvalidatorStateChange(invalidation_service_->GetInvalidatorState());
 
-  invalidation_service_observer_.Add(invalidation_service_);
+  invalidation_service_observation_.Observe(invalidation_service_);
 
   if (!invalidation_service_->UpdateInterestedTopics(this,
                                                      /*topics=*/{topic_})) {
@@ -112,7 +112,9 @@ void CertProvisioningInvalidationHandler::Unregister() {
   const bool topics_reset = invalidation_service_->UpdateInterestedTopics(
       this, invalidation::TopicSet());
   DCHECK(topics_reset);
-  invalidation_service_observer_.Remove(invalidation_service_);
+  DCHECK(invalidation_service_observation_.IsObservingSource(
+      invalidation_service_));
+  invalidation_service_observation_.Reset();
 
   state_.is_registered = false;
 }
@@ -133,7 +135,7 @@ void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
-  const invalidation::SingleObjectInvalidationSet& list =
+  const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED() << "Incoming invlaidation does not contain invalidation"

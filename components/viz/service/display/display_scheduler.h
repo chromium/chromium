@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,28 +8,40 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
+#include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/viz_service_export.h"
-#include "ui/gfx/rendering_pipeline.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
-class BeginFrameSource;
+class HintSession;
+class HintSessionFactory;
 
-class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
+class VIZ_SERVICE_EXPORT DisplayScheduler
+    : public DisplaySchedulerBase,
+      public DynamicBeginFrameDeadlineOffsetSource {
  public:
+  // `max_pending_swaps_120hz`, if positive, is used as the number of pending
+  // swaps while running at 120hz. Otherwise, this will fallback to
+  // `max_pending_swaps`.
   DisplayScheduler(BeginFrameSource* begin_frame_source,
                    base::SingleThreadTaskRunner* task_runner,
-                   int max_pending_swaps,
-                   bool wait_for_all_surfaces_before_draw = false,
-                   gfx::RenderingPipeline* gpu_pipeline = nullptr);
+                   PendingSwapParams pending_swap_params,
+                   HintSessionFactory* hint_session_factory = nullptr,
+                   bool wait_for_all_surfaces_before_draw = false);
+
+  DisplayScheduler(const DisplayScheduler&) = delete;
+  DisplayScheduler& operator=(const DisplayScheduler&) = delete;
+
   ~DisplayScheduler() override;
 
   // DisplaySchedulerBase implementation.
@@ -39,17 +51,24 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
-  void SetGpuLatency(base::TimeDelta gpu_latency) override;
+  void ReportFrameTime(
+      base::TimeDelta frame_time,
+      base::flat_set<base::PlatformThreadId> thread_ids) override;
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
   void OnRootFrameMissing(bool missing) override;
   void OnPendingSurfacesChanged() override;
 
+  // DynamicBeginFrameDeadlineOffsetSource:
+  base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const override;
+
  protected:
   class BeginFrameObserver;
+  class BeginFrameRequestObserverImpl;
 
   bool OnBeginFrame(const BeginFrameArgs& args);
+  int MaxPendingSwaps() const;
 
   base::TimeTicks current_frame_display_time() const {
     return current_begin_frame_args_.frame_time +
@@ -80,7 +99,11 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
     // BeginFrame yet so we need to wait longer.
     kNone
   };
-  base::TimeTicks DesiredBeginFrameDeadlineTime() const;
+
+  static base::TimeTicks DesiredBeginFrameDeadlineTime(
+      BeginFrameDeadlineMode deadline_mode,
+      BeginFrameArgs begin_frame_args);
+
   BeginFrameDeadlineMode AdjustedBeginFrameDeadlineMode() const;
   BeginFrameDeadlineMode DesiredBeginFrameDeadlineMode() const;
   virtual void ScheduleBeginFrameDeadline();
@@ -94,17 +117,16 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
   void DidFinishFrame(bool did_draw);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
+  void MaybeCreateHintSession(
+      base::flat_set<base::PlatformThreadId> thread_ids);
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
-  BeginFrameSource* begin_frame_source_;
-  base::SingleThreadTaskRunner* task_runner_;
-  gfx::RenderingPipeline* gpu_pipeline_;
-  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
-      gpu_pipeline_active_;
+  raw_ptr<BeginFrameSource> begin_frame_source_;
+  raw_ptr<base::SingleThreadTaskRunner> task_runner_;
 
   BeginFrameArgs current_begin_frame_args_;
   base::RepeatingClosure begin_frame_deadline_closure_;
-  base::CancelableOnceClosure begin_frame_deadline_task_;
+  base::DeadlineTimer begin_frame_deadline_timer_;
   base::TimeTicks begin_frame_deadline_task_time_;
 
   base::CancelableOnceClosure missed_begin_frame_task_;
@@ -119,15 +141,22 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public DisplaySchedulerBase {
 
   int next_swap_id_;
   int pending_swaps_;
-  int max_pending_swaps_;
+  const PendingSwapParams pending_swap_params_;
   bool wait_for_all_surfaces_before_draw_;
 
   bool observing_begin_frame_source_;
 
-  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
+  const raw_ptr<HintSessionFactory> hint_session_factory_;
+  base::flat_set<base::PlatformThreadId> current_thread_ids_;
+  std::unique_ptr<HintSession> hint_session_;
+  bool create_session_for_current_thread_ids_failed_ = false;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayScheduler);
+  // If set, we are dynamically adjusting our frame deadline, by the percentile
+  // of historic draw times to base the adjustment on.
+  const absl::optional<double> dynamic_cc_deadlines_percentile_;
+  const absl::optional<double> dynamic_scheduler_deadlines_percentile_;
+
+  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
 
 }  // namespace viz

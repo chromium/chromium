@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VARIABLE_DATA_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
@@ -28,32 +29,24 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   static scoped_refptr<CSSVariableData> Create(
       const CSSTokenizedValue& tokenized_value,
       bool is_animation_tainted,
-      bool needs_variable_resolution,
-      const KURL& base_url,
-      const WTF::TextEncoding& charset) {
-    return base::AdoptRef(
-        new CSSVariableData(tokenized_value, is_animation_tainted,
-                            needs_variable_resolution, base_url, charset));
+      bool needs_variable_resolution) {
+    void* buf =
+        AllocateSpaceIncludingCSSParserTokens(tokenized_value.range.size());
+    return base::AdoptRef(new (buf) CSSVariableData(
+        tokenized_value, is_animation_tainted, needs_variable_resolution));
   }
 
-  static scoped_refptr<CSSVariableData> CreateResolved(
-      Vector<CSSParserToken> resolved_tokens,
-      Vector<String> backing_strings,
-      bool is_animation_tainted,
-      bool has_font_units,
-      bool has_root_font_units,
-      const String& base_url,
-      const WTF::TextEncoding& charset) {
-    return base::AdoptRef(new CSSVariableData(
-        std::move(resolved_tokens), std::move(backing_strings),
-        is_animation_tainted, has_font_units, has_root_font_units, base_url,
-        charset));
+  CSSParserTokenRange TokenRange() const {
+    return CSSParserTokenRange{
+        base::span<CSSParserToken>(TokenInternalPtr(), num_tokens_)};
   }
 
-  CSSParserTokenRange TokenRange() const { return tokens_; }
+  base::span<CSSParserToken> Tokens() const {
+    return {TokenInternalPtr(), num_tokens_};
+  }
 
-  const Vector<CSSParserToken>& Tokens() const { return tokens_; }
-  const Vector<String>& BackingStrings() const { return backing_strings_; }
+  const AtomicString& BackingString() const { return backing_string_; }
+
   String Serialize() const;
 
   bool operator==(const CSSVariableData& other) const;
@@ -70,53 +63,55 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // font-size of the root element, e.g. 'rem'.
   bool HasRootFontUnits() const { return has_root_font_units_; }
 
-  const String& BaseURL() const { return base_url_; }
-
-  const WTF::TextEncoding& Charset() const { return charset_; }
+  // True if the CSSVariableData has tokens with 'lh' units which are relative
+  // to line-height property.
+  bool HasLineHeightUnits() const { return has_line_height_units_; }
 
   const CSSValue* ParseForSyntax(const CSSSyntaxDefinition&,
                                  SecureContextMode) const;
 
+  CSSVariableData(const CSSVariableData&) = delete;
+  CSSVariableData& operator=(const CSSVariableData&) = delete;
+  CSSVariableData(CSSVariableData&&) = delete;
+  CSSVariableData& operator=(const CSSVariableData&&) = delete;
+
  private:
-  CSSVariableData() = default;
+  CSSVariableData() {}
 
   CSSVariableData(const CSSTokenizedValue&,
                   bool is_animation_tainted,
-                  bool needs_variable_resolution,
-                  const KURL& base_url,
-                  const WTF::TextEncoding& charset);
-
-  CSSVariableData(Vector<CSSParserToken> resolved_tokens,
-                  Vector<String> backing_strings,
-                  bool is_animation_tainted,
-                  bool has_font_units,
-                  bool has_root_font_units,
-                  const String& base_url,
-                  const WTF::TextEncoding& charset)
-      : backing_strings_(std::move(backing_strings)),
-        tokens_(std::move(resolved_tokens)),
-        is_animation_tainted_(is_animation_tainted),
-        has_font_units_(has_font_units),
-        has_root_font_units_(has_root_font_units),
-        base_url_(base_url),
-        charset_(charset) {}
-  CSSVariableData(const CSSVariableData&) = delete;
-  CSSVariableData& operator=(const CSSVariableData&) = delete;
+                  bool needs_variable_resolution);
 
   void ConsumeAndUpdateTokens(const CSSParserTokenRange&);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void VerifyStringBacking() const;
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  // tokens_ may have raw pointers to string data, we store the String objects
-  // owning that data in backing_strings_ to keep it alive alongside the
-  // tokens_.
-  Vector<String> backing_strings_;
-  Vector<CSSParserToken> tokens_;
+  static void* AllocateSpaceIncludingCSSParserTokens(size_t num_tokens) {
+    const size_t bytes_needed =
+        sizeof(CSSVariableData) + num_tokens * sizeof(CSSParserToken);
+    return WTF::Partitions::FastMalloc(
+        bytes_needed, WTF::GetStringWithTypeName<CSSVariableData>());
+  }
+
+  CSSParserToken* TokenInternalPtr() const {
+    return const_cast<CSSParserToken*>(
+        reinterpret_cast<const CSSParserToken*>(this + 1));
+  }
+
+  // tokens_ may have raw pointers to string data, we store the String object
+  // owning that data in backing_string_ to keep it alive alongside the
+  // tokens_. (AtomicString makes sure it is deduplicated.)
+  AtomicString backing_string_;
   String original_text_;
+  wtf_size_t num_tokens_ = 0;
   const bool is_animation_tainted_ = false;
   const bool needs_variable_resolution_ = false;
   bool has_font_units_ = false;
   bool has_root_font_units_ = false;
-  String base_url_;
-  WTF::TextEncoding charset_;
+  bool has_line_height_units_ = false;
+
+  // The CSSParserTokens are stored after this.
 };
 
 }  // namespace blink

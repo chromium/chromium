@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 typedef base::RepeatingCallback<void(const std::string& secret)>
     SecretFetchedCallback;
@@ -21,11 +21,12 @@ typedef base::RepeatingCallback<void(
 
 // Callback passed to |FetchTokenCallback|, and called once the client
 // authentication finishes. |token| is an opaque string that should be sent
-// directly to the host. |shared_secret| should be used by the client to
-// create a V2Authenticator. In case of failure, the callback is called with
-// an empty |token| and |shared_secret|.
-typedef base::RepeatingCallback<void(const std::string& token,
-                                     const std::string& shared_secret)>
+// directly to the host. |validation_result.success()| should be used by the
+// client to create a V2Authenticator. In case of failure, the callback is
+// called with an empty |token| and |validation_result.is_error()| is true.
+typedef base::RepeatingCallback<void(
+    const std::string& token,
+    const TokenValidator::ValidationResult& validation_result)>
     ThirdPartyTokenFetchedCallback;
 
 // Fetches a third party token from |token_url|. |host_public_key| is sent to
@@ -59,7 +60,6 @@ struct ClientAuthenticationConfig {
   FetchThirdPartyTokenCallback fetch_third_party_token_callback;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_AUTHENTICATION_CONFIG_H_

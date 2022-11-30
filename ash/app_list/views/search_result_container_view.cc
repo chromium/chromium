@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ash {
@@ -33,6 +33,25 @@ void SearchResultContainerView::SetResults(
 
   Update();
 }
+
+absl::optional<SearchResultContainerView::ResultsAnimationInfo>
+SearchResultContainerView::ScheduleResultAnimations(
+    const ResultsAnimationInfo& aggregate_animation_info) {
+  NOTREACHED();
+  return absl::nullopt;
+}
+
+void SearchResultContainerView::AppendShownResultMetadata(
+    std::vector<SearchResultAimationMetadata>* result_metadata_) {
+  NOTREACHED();
+}
+
+bool SearchResultContainerView::HasAnimatingChildView() {
+  NOTREACHED();
+  return false;
+}
+
+void SearchResultContainerView::OnSelectedResultChanged() {}
 
 void SearchResultContainerView::Update() {
   update_factory_.InvalidateWeakPtrs();

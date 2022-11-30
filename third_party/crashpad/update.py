@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding: utf-8
 
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -76,7 +76,7 @@ def main(args):
         dest='readme_path')
     parser.add_argument(
         '--exclude',
-        default=['codereview.settings'],
+        default=['codereview.settings', 'infra'],
         action='append',
         help='Files to exclude from the imported copy',
         metavar='PATH')
@@ -85,6 +85,7 @@ def main(args):
     original_head = (
         subprocess.check_output(['git', 'rev-parse', 'HEAD'],
                                 shell=IS_WINDOWS).rstrip())
+    original_head = original_head.decode('utf-8')
 
     # Read the README, because that’s what it’s for. Extract some things from
     # it, and save it to be able to update it later.
@@ -137,7 +138,7 @@ def main(args):
          'filter-branch',
          '--force',
          '--index-filter',
-         'git rm --cached --ignore-unmatch ' +
+         'git rm -r --cached --ignore-unmatch ' +
              ' '.join(pipes.quote(path) for path in parsed.exclude),
          revision_old + '..UPDATE_TO'],
         cwd=toplevel,

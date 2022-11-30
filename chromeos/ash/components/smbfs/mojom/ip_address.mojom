@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module smbfs.mojom;
+
+// This file is shared between Chrome and Chrome OS.
+// In Chrome, this file is located at:
+// //chromeos/ash/components/smbfs/mojom/ip_address.mojom
+// In Chrome OS, this file is located at:
+// //platform2/smbfs/mojom/ip_address.mojom
+
+// This file is a copy of //services/network/public/mojom/ip_address.mojom
+// Mirror of net::IPAddress.
+struct IPAddress {
+   // IP address as a numeric value from most to least significant byte.
+   // Will be of length 4 for IPv4 addresses and 16 for IPv6.
+   array<uint8> address_bytes;
+};

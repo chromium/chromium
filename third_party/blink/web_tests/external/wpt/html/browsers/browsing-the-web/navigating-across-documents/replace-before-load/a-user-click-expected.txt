@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL User click on <a> before the load event must NOT replace assert_equals: expected "http://web-platform.test:8001/common/blank.html?thereplacement" but got "http://web-platform.test:8001/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/resources/slow-code-injector.html?pipe=sub(none)&code=%0A%20%20%20%20const%20a%20%3D%20document.createElement(%22a%22)%3B%0A%20%20%20%20a.href%20%3D%20%22%2Fcommon%2Fblank.html%3Fthereplacement%22%3B%0A%20%20%20%20a.id%20%3D%20%22the-anchor%22%3B%0A%20%20%20%20a.textContent%20%3D%20%22needs%20to%20have%20content%20to%20be%20clickable%22%3B%0A%20%20%20%20document.currentScript.before(a)%3B%0A%20%20%20%20parent.test_driver.click(a)%3B%0A%20%20"
+Harness: the test ran to completion.
+

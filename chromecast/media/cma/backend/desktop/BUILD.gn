@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,16 +24,14 @@ cast_source_set("desktop") {
     "//chromecast/public/media",
     "//media",
   ]
-  if (enable_video_with_mixed_audio || is_cast_audio_only) {
+  if (enable_video_with_mixed_audio) {
     sources += [ "desktop_system_volume_control.cc" ]
     deps += [
       "//chromecast/media/cma/backend:for_mixer_audio",
       "//chromecast/media/cma/backend:null_video",
       "//chromecast/media/cma/backend:public",
+      "//chromecast/media/cma/backend/video:av_sync_video",
     ]
-    if (enable_video_with_mixed_audio) {
-      deps += [ "//chromecast/media/cma/backend/video:av_sync_video" ]
-    }
   } else {
     sources += [ "volume_control_desktop.cc" ]
   }
@@ -41,8 +39,8 @@ cast_source_set("desktop") {
 
 cast_source_set("mixer_output") {
   sources = [
-    "mixer_output_stream_desktop.cc",
     "mixer_output_stream_desktop.h",
+    "mixer_output_stream_desktop.cc"
   ]
   deps = [
     "//base",
@@ -50,3 +48,4 @@ cast_source_set("mixer_output") {
     "//media",
   ]
 }
+

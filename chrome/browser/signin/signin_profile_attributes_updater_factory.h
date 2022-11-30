@@ -1,19 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class SigninProfileAttributesUpdater;
 
 class SigninProfileAttributesUpdaterFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   // Returns nullptr if this profile cannot have a
   // SigninProfileAttributesUpdater (for example, if |profile| is incognito).
@@ -21,6 +20,11 @@ class SigninProfileAttributesUpdaterFactory
 
   // Returns an instance of the factory singleton.
   static SigninProfileAttributesUpdaterFactory* GetInstance();
+
+  SigninProfileAttributesUpdaterFactory(
+      const SigninProfileAttributesUpdaterFactory&) = delete;
+  SigninProfileAttributesUpdaterFactory& operator=(
+      const SigninProfileAttributesUpdaterFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<
@@ -33,8 +37,6 @@ class SigninProfileAttributesUpdaterFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninProfileAttributesUpdaterFactory);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_PROFILE_ATTRIBUTES_UPDATER_FACTORY_H_

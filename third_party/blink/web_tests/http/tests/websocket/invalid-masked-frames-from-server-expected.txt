@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 15: WebSocket connection to 'ws://localhost:8880/invalid-masked-frames-from-server' failed: A server must not mask any frames that it sends to the client.
 Test whether WebSocket aborts the connection when it receives an masked frames from server.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

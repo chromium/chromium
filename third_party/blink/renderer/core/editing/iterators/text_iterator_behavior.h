@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_ITERATOR_BEHAVIOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_ITERATOR_BEHAVIOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -68,6 +67,11 @@ class CORE_EXPORT TextIteratorBehavior final {
   }
 
   bool IgnoresDisplayLock() const { return values_.bits.ignores_display_lock; }
+
+  bool EmitsPunctuationForReplacedElements() const {
+    return values_.bits.emits_punctuation_for_replaced_elements;
+  }
+
   static TextIteratorBehavior EmitsObjectReplacementCharacterBehavior();
   static TextIteratorBehavior IgnoresStyleVisibilityBehavior();
   static TextIteratorBehavior DefaultRangeLengthBehavior();
@@ -96,6 +100,7 @@ class CORE_EXPORT TextIteratorBehavior final {
       bool skips_unselectable_content : 1;
       bool suppresses_newline_emission : 1;
       bool ignores_display_lock : 1;
+      bool emits_punctuation_for_replaced_elements : 1;
     } bits;
   } values_;
 };
@@ -106,6 +111,8 @@ class CORE_EXPORT TextIteratorBehavior::Builder final {
  public:
   explicit Builder(const TextIteratorBehavior&);
   Builder();
+  Builder(const Builder&) = delete;
+  Builder& operator=(const Builder&) = delete;
   ~Builder();
 
   TextIteratorBehavior Build();
@@ -128,11 +135,10 @@ class CORE_EXPORT TextIteratorBehavior::Builder final {
   Builder& SetSkipsUnselectableContent(bool);
   Builder& SetSuppressesExtraNewlineEmission(bool);
   Builder& SetIgnoresDisplayLock(bool);
+  Builder& SetEmitsPunctuationForReplacedElements(bool);
 
  private:
   TextIteratorBehavior behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(Builder);
 };
 
 }  // namespace blink

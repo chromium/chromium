@@ -1,73 +1,55 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/journey_logger.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
 namespace payments {
-// The transaction amount from defaultDetails in can_make_payment_metrics.js is
-// 5$ which falls in regular transaction category.
-constexpr uint32_t kRegularTransaction = 2;
 
 using PaymentRequestCompletionStatusMetricsTest = PaymentRequestBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
-  NavigateTo("/payment_request_can_make_payment_metrics_test.html");
+  NavigateTo("a.com", "/payment_handler_installer.html");
   base::HistogramTester histogram_tester;
 
-  // Setup a credit card with an associated billing address so CanMakePayment
-  // returns true.
-  autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
-  AddAutofillProfile(billing_address);
-  autofill::CreditCard card = autofill::test::GetCreditCard();
-  card.set_billing_address_id(billing_address.guid());
-  AddCreditCard(card);
+  std::string method_name = https_server()->GetURL("a.com", "/").spec();
+  method_name = method_name.substr(0, method_name.length() - 1);
+  ASSERT_NE('/', method_name[method_name.length() - 1]);
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "install('payment_request_success_responder.js', [$1], false)",
+              method_name)));
 
-  // Start the Payment Request and expect CanMakePayment to be called before the
-  // Payment Request is shown.
-  ResetEventWaiterForSequence({DialogEvent::CAN_MAKE_PAYMENT_CALLED,
-                               DialogEvent::CAN_MAKE_PAYMENT_RETURNED,
-                               DialogEvent::HAS_ENROLLED_INSTRUMENT_CALLED,
-                               DialogEvent::HAS_ENROLLED_INSTRUMENT_RETURNED,
-                               DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED});
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "queryShow();"));
-  WaitForObservedEvent();
+  NavigateTo("b.com", "/payment_request_can_make_payment_metrics_test.html");
 
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
+  // Try to start the Payment Request and call show().
+  ASSERT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "queryShowWithMethodsBlocking([{supportedMethods:$1}]);",
+                    method_name)));
 
-  // Complete the Payment Request.
-  PayWithCreditCardAndWait(u"123");
-  histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.Completed",
-                                    1);
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TimeToCheckout.Completed.Shown", 1);
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TimeToCheckout.Completed.Shown.BasicCard", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Completed", kRegularTransaction, 1);
+  // Navigate away to trigger the log.
+  NavigateTo("a.com", "/payment_request_email_test.html");
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
   EXPECT_TRUE(buckets[0].min &
               JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
@@ -77,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
@@ -93,16 +75,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest, Completed) {
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Reload) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // The merchant reloads the page.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
@@ -114,13 +106,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_MERCHANT_NAVIGATION, 1);
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TimeToCheckout.OtherAborted", 1);
-
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -134,10 +119,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -152,16 +137,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Navigation) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // The merchant navigates away.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
@@ -176,11 +171,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_MERCHANT_NAVIGATION, 1);
 
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -193,10 +183,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -211,16 +201,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        MerchantAborted_Abort) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // The merchant aborts the Payment Request.
   ResetEventWaiterForSequence(
@@ -236,11 +236,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_ABORTED_BY_MERCHANT, 1);
 
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -253,10 +248,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -271,16 +266,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        UserAborted_Navigation) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // Navigate away.
   NavigateTo("/payment_request_email_test.html");
@@ -290,16 +295,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_USER_NAVIGATION, 1);
 
-  histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.UserAborted",
-                                    1);
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TimeToCheckout.UserAborted.Shown", 1);
-
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -312,10 +307,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -328,18 +323,29 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
+// TODO(crbug.com/1365631): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
-                       UserAborted_CancelButton) {
+                       DISABLED_UserAborted_CancelButton) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // Click on the cancel button.
   ClickOnCancel();
@@ -349,11 +355,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_ABORTED_BY_USER, 1);
 
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -366,10 +367,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -382,18 +383,29 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
+// TODO(crbug.com/1365631): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
-                       UserAborted_TabClosed) {
+                       DISABLED_UserAborted_TabClosed) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // Close the tab containing the Payment Request.
   ResetEventWaiterForSequence({DialogEvent::DIALOG_CLOSED});
@@ -405,11 +417,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_ABORTED_BY_USER, 1);
 
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -422,10 +429,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -440,16 +447,26 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                        UserAborted_Reload) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "payment_request_success_responder.js",
+                    &b_method_name);
+
   NavigateTo("/payment_request_can_make_payment_metrics_test.html");
   base::HistogramTester histogram_tester;
 
   // Start the Payment Request.
   ResetEventWaiterForDialogOpened();
-  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "noQueryShow();"));
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "noQueryShowWithMethods([{supportedMethods:$1}"
+                                ", {supportedMethods:$2}])",
+                                a_method_name, b_method_name)));
   WaitForObservedEvent();
-
-  histogram_tester.ExpectUniqueSample(
-      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
 
   // Reload the page containing the Payment Request.
   ResetEventWaiterForSequence({DialogEvent::DIALOG_CLOSED});
@@ -460,11 +477,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_USER_NAVIGATION, 1);
-
-  // Make sure PaymentRequest.TransactionAmount.Completed is not logged
-  // since the request got aborted.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
 
   // Make sure the correct events were logged.
   std::vector<base::Bucket> buckets =
@@ -478,10 +490,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
                JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
@@ -497,11 +509,17 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCompletionStatusMetricsTest,
 using PaymentRequestInitiatedCompletionStatusMetricsTest =
     PaymentRequestBrowserTestBase;
 
-// Disabled due to flakiness: https://crbug.com/1003253.
 IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
-                       DISABLED_Aborted_NotShown) {
+                       Aborted_NotShown) {
   base::HistogramTester histogram_tester;
   NavigateTo("/initiated_test.html");
+
+  // Ensure that the browser side PaymentRequest service has initialized.
+  EXPECT_EQ(false, content::EvalJs(
+                       GetActiveWebContents(),
+                       content::JsReplace(
+                           "canMakePayment($1)",
+                           https_server()->GetURL("example.test", "/webpay"))));
 
   // Navigate away.
   NavigateTo("/payment_request_email_test.html");
@@ -511,19 +529,12 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
       "PaymentRequest.CheckoutFunnel.Aborted",
       JourneyLogger::ABORT_REASON_USER_NAVIGATION, 1);
 
-  // Make sure no PaymentRequest.TransactionAmount.[Triggered|Completed] is
-  // logged since transaction got aborted before .show() call.
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Triggered", 0);
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.TransactionAmount.Completed", 0);
-
   // There is one sample, because the request was initiated.
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(JourneyLogger::EVENT_INITIATED | JourneyLogger::EVENT_USER_ABORTED |
-                JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
+                JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE |
                 JourneyLogger::EVENT_REQUEST_METHOD_OTHER |
                 JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT,
             buckets[0].min);

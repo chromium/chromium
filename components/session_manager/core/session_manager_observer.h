@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 #define COMPONENTS_SESSION_MANAGER_CORE_SESSION_MANAGER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -28,6 +27,30 @@ class SessionManagerObserver : public base::CheckedObserver {
   // UserSessionStateObserver::OnActiveUserChanged() is invoked immediately
   // after the user has logged in.
   virtual void OnUserSessionStarted(bool is_primary_user) {}
+
+  // Invoked when a network error message is displayed on the WebUI login
+  // screen.
+  virtual void OnNetworkErrorScreenShown() {}
+
+  // Invoked when the specific part of login/lock WebUI is considered to be
+  // visible. That moment is tracked as the first paint event after
+  // `OnNetworkErrorScreenShown()`.
+  //
+  // Possible series of notifications:
+  // 1. Boot into fresh OOBE. `OnLoginOrLockScreenVisible()`.
+  // 2. Boot into user pods list (normal boot). Same for lock screen.
+  //    `OnLoginOrLockScreenVisible()`.
+  // 3. Boot into GAIA sign in UI (user pods display disabled or no users):
+  //    if no network is connected or flaky network
+  //    (`OnLoginOrLockScreenVisible()` + `OnNetworkErrorScreenShown()`).
+  // 4. Boot into retail mode. `OnLoginOrLockScreenVisible()`.
+  virtual void OnLoginOrLockScreenVisible() {}
+
+  // Invoked when the user attempts to unlock the lock screen, it reports the
+  // type of authentication method used and whether it was a successful or
+  // failed unlock attempt.
+  virtual void OnUnlockScreenAttempt(const bool success,
+                                     const UnlockType unlock_type) {}
 };
 
 }  // namespace session_manager

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@ namespace blink {
 // provide a camera image textures until it's decided how to best expose
 // the texture to the WebXR API.
 // TODO(https://bugs.chromium.org/p/chromium/issues/detail?id=1104340).
+// The texture does not own its texture name - it relies on being notified that
+// the texture name has been deleted by whoever owns it.
 class WebGLUnownedTexture final : public WebGLTexture {
  public:
   // The provided GLuint must have been created in the same
@@ -23,6 +25,12 @@ class WebGLUnownedTexture final : public WebGLTexture {
                                GLuint texture,
                                GLenum target);
   ~WebGLUnownedTexture() override;
+
+  // Used to notify the unowned texture that the owner has removed the texture
+  // name and so that it should not be used anymore.
+  void OnGLDeleteTextures();
+
+  bool IsOpaqueTexture() const override { return true; }
 
  private:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;

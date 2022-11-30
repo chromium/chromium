@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,18 +26,12 @@ public class PageInfoContainer extends FrameLayout {
 
     /**  Parameters to configure the view of page info subpage. */
     public static class Params {
-        // Whether the URL title should be shown.
-        public boolean urlTitleShown;
         // The URL to be shown at the top of the page.
         public CharSequence url;
         // The length of the URL's origin in number of characters.
         public int urlOriginLength;
         // The URL to show in truncated state.
         public String truncatedUrl;
-        // If the page has preview UI shown.
-        public boolean previewUIShown;
-        // The icon used for preview UI.
-        public Drawable previewUIIcon;
         // Whether the close button is displayed.
         public boolean showCloseButton;
 
@@ -46,9 +40,8 @@ public class PageInfoContainer extends FrameLayout {
         public Runnable backButtonClickCallback;
         public Runnable closeButtonClickCallback;
     }
-    private PageInfoView.ElidedUrlTextView mExpandedUrlTitle;
+    private ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
-    private TextView mPreviewMessage;
 
     private final ViewGroup mWrapper;
     private final ViewGroup mContent;
@@ -67,27 +60,18 @@ public class PageInfoContainer extends FrameLayout {
     }
 
     public void setParams(Params params) {
+        View urlWrapper = findViewById(R.id.page_info_url_wrapper);
+        initializeUrlView(urlWrapper, params);
+
         mExpandedUrlTitle = findViewById(R.id.page_info_url);
-        initializeUrlView(mExpandedUrlTitle, params);
         mExpandedUrlTitle.setUrl(params.url, params.urlOriginLength);
-        // Adjust the mUrlTitle for displaying the non-truncated URL.
+        // Adjust mExpandedUrlTitle for displaying the non-truncated URL.
         mExpandedUrlTitle.toggleTruncation();
 
-        mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         // Use a separate view for truncated URL display.
-        initializeUrlView(mTruncatedUrlTitle, params);
+        mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
         mTruncatedUrlTitle.setText(params.truncatedUrl);
-
-        View urlWrapper = findViewById(R.id.page_info_url_wrapper);
-        urlWrapper.setVisibility(params.urlTitleShown ? VISIBLE : GONE);
-
-        mPreviewMessage = findViewById(R.id.page_info_preview_message);
-        mPreviewMessage.setText(R.string.page_info_preview_message);
-        mPreviewMessage.setCompoundDrawablesRelative(params.previewUIIcon, null, null, null);
-
-        View previewWrapper = findViewById(R.id.page_info_preview_message_wrapper);
-        previewWrapper.setVisibility(params.previewUIShown ? VISIBLE : GONE);
 
         ChromeImageButton closeButton = findViewById(R.id.page_info_close);
         closeButton.setVisibility(params.showCloseButton ? VISIBLE : GONE);
@@ -99,7 +83,7 @@ public class PageInfoContainer extends FrameLayout {
 
     private void initializeUrlView(View view, Params params) {
         if (params.urlTitleClickCallback != null) {
-            view.setOnClickListener(v -> { params.urlTitleClickCallback.run(); });
+            view.setOnClickListener(v -> params.urlTitleClickCallback.run());
         }
         if (params.urlTitleLongClickCallback != null) {
             view.setOnLongClickListener(v -> {

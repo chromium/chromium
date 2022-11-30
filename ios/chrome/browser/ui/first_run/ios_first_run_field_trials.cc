@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h"
+
+#import "ios/chrome/app/tests_hook.h"
 
 // FirstRunFieldTrialGroup
 FirstRunFieldTrialGroup::FirstRunFieldTrialGroup(
@@ -22,13 +24,14 @@ FirstRunFieldTrialConfig::~FirstRunFieldTrialConfig() {}
 
 scoped_refptr<base::FieldTrial>
 FirstRunFieldTrialConfig::CreateOneTimeRandomizedTrial(
-    const std::string& disabled_group_name,
+    const std::string& default_group_name,
     const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+  DCHECK(!tests_hook::DisableClientSideFieldTrials());
+  DCHECK_LE(GetTotalProbability(), 100);
   scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          trial_name_, GetTotalProbability(), disabled_group_name,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
-          /*default_group_number=*/nullptr, &low_entropy_provider);
+      base::FieldTrialList::FactoryGetFieldTrial(
+          trial_name_, /*total_probability=*/100, default_group_name,
+          low_entropy_provider);
   for (const auto& group : groups_) {
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY, trial_name_,

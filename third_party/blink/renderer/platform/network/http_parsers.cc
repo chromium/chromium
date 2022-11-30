@@ -33,12 +33,20 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+
+#include "base/containers/flat_map.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
+#include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -57,180 +65,214 @@
 // We would like finding a way to convert from/to blink type automatically.
 // The following attempt has been withdrawn:
 // https://chromium-review.googlesource.com/c/chromium/src/+/2126933/7
+//
+// Note: nesting these helpers inside network::mojom bypasses warnings from
+// audit_non_blink_style.py, as well as saving a bunch of typing to qualify the
+// types below.
 namespace network {
 namespace mojom {
 
-blink::CSPSourcePtr ConvertToBlink(CSPSourcePtr source) {
+// When adding a new conversion, define a new `ConvertToBlink` overload to map
+// the non-Blink type (passing by value for primitive types or passing by const
+// reference otherwise). The generic converters for container types relies on
+// the presence of `ConvertToBlink` overloads to determine the correct return
+// type.
+
+// ===== Identity converters =====
+// Converts where the input type and output type are identical(-ish).
+uint8_t ConvertToBlink(uint8_t in) {
+  return in;
+}
+
+// Note: for identity enum conversions, there should be `static_assert`s that
+// the input enumerator and the output enumerator define matching values.
+blink::CSPDirectiveName ConvertToBlink(CSPDirectiveName name) {
+  return static_cast<blink::CSPDirectiveName>(name);
+}
+
+// `in` is a Mojo enum type, which is type aliased to the same underlying type
+// by both the non-Blink Mojo variant and the Blink Mojo variant.
+blink::WebClientHintsType ConvertToBlink(WebClientHintsType in) {
+  return in;
+}
+
+blink::LoadingMode ConvertToBlink(LoadingMode in) {
+  return static_cast<blink::LoadingMode>(in);
+}
+
+// ===== Converters for other basic Blink types =====
+String ConvertToBlink(const std::string& in) {
+  return String::FromUTF8(in);
+}
+
+String ConvertToBlink(const absl::optional<std::string>& in) {
+  return in ? String::FromUTF8(*in) : String();
+}
+
+::blink::KURL ConvertToBlink(const GURL& in) {
+  return ::blink::KURL(in);
+}
+
+scoped_refptr<const ::blink::SecurityOrigin> ConvertToBlink(
+    const url::Origin& in) {
+  return ::blink::SecurityOrigin::CreateFromUrlOrigin(in);
+}
+
+// ====== Generic container converters =====
+template <
+    typename InElement,
+    typename OutElement = decltype(ConvertToBlink(std::declval<InElement>()))>
+Vector<OutElement> ConvertToBlink(const std::vector<InElement>& in) {
+  Vector<OutElement> out;
+  out.reserve(base::checked_cast<wtf_size_t>(in.size()));
+  for (const auto& element : in) {
+    out.push_back(ConvertToBlink(element));
+  }
+  return out;
+}
+
+template <typename InKey,
+          typename InValue,
+          typename OutKey = decltype(ConvertToBlink(std::declval<InKey>())),
+          typename OutValue = decltype(ConvertToBlink(std::declval<InValue>()))>
+HashMap<OutKey, OutValue> ConvertToBlink(
+    const base::flat_map<InKey, InValue>& in) {
+  HashMap<OutKey, OutValue> out;
+  for (const auto& element : in) {
+    out.insert(ConvertToBlink(element.first), ConvertToBlink(element.second));
+  }
+  return out;
+}
+
+// ===== Converters from non-Blink to Blink variant of Mojo structs =====
+blink::CSPSourcePtr ConvertToBlink(const CSPSourcePtr& in) {
+  DCHECK(in);
   return blink::CSPSource::New(
-      String::FromUTF8(source->scheme), String::FromUTF8(source->host),
-      source->port, String::FromUTF8(source->path), source->is_host_wildcard,
-      source->is_port_wildcard);
+      ConvertToBlink(in->scheme), ConvertToBlink(in->host), in->port,
+      ConvertToBlink(in->path), in->is_host_wildcard, in->is_port_wildcard);
 }
 
-blink::CSPHashSourcePtr ConvertToBlink(CSPHashSourcePtr hash) {
-  WTF::Vector<uint8_t> hash_value;
-  for (uint8_t el : hash->value)
-    hash_value.push_back(el);
+blink::CSPHashSourcePtr ConvertToBlink(const CSPHashSourcePtr& in) {
+  DCHECK(in);
+  Vector<uint8_t> hash_value = ConvertToBlink(in->value);
 
-  return blink::CSPHashSource::New(hash->algorithm, hash_value);
+  return blink::CSPHashSource::New(in->algorithm, std::move(hash_value));
 }
 
-blink::CSPSourceListPtr ConvertToBlink(CSPSourceListPtr source_list) {
-  WTF::Vector<blink::CSPSourcePtr> sources;
-  for (auto& it : source_list->sources)
-    sources.push_back(ConvertToBlink(std::move(it)));
+blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
+  DCHECK(source_list);
 
-  WTF::Vector<String> nonces;
-  for (const auto& nonce : source_list->nonces)
-    nonces.push_back(String::FromUTF8(std::move(nonce)));
-
-  WTF::Vector<blink::CSPHashSourcePtr> hashes;
-  for (auto& it : source_list->hashes)
-    hashes.push_back(ConvertToBlink(std::move(it)));
+  Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
+  Vector<String> nonces = ConvertToBlink(source_list->nonces);
+  Vector<blink::CSPHashSourcePtr> hashes = ConvertToBlink(source_list->hashes);
 
   return blink::CSPSourceList::New(
       std::move(sources), std::move(nonces), std::move(hashes),
       source_list->allow_self, source_list->allow_star,
       source_list->allow_response_redirects, source_list->allow_inline,
       source_list->allow_eval, source_list->allow_wasm_eval,
-      source_list->allow_dynamic, source_list->allow_unsafe_hashes,
-      source_list->report_sample);
-}
-
-blink::CSPDirectiveName ConvertToBlink(CSPDirectiveName name) {
-  return static_cast<blink::CSPDirectiveName>(name);
+      source_list->allow_wasm_unsafe_eval, source_list->allow_dynamic,
+      source_list->allow_unsafe_hashes, source_list->report_sample);
 }
 
 blink::ContentSecurityPolicyHeaderPtr ConvertToBlink(
-    ContentSecurityPolicyHeaderPtr header) {
+    const ContentSecurityPolicyHeaderPtr& in) {
+  DCHECK(in);
   return blink::ContentSecurityPolicyHeader::New(
-      String::FromUTF8(header->header_value), header->type, header->source);
+      ConvertToBlink(in->header_value), in->type, in->source);
 }
 
-WTF::HashMap<blink::CSPDirectiveName, blink::CSPSourceListPtr> ConvertToBlink(
-    base::flat_map<CSPDirectiveName, CSPSourceListPtr> directives) {
-  WTF::HashMap<blink::CSPDirectiveName, blink::CSPSourceListPtr> out;
-
-  for (auto& list : directives) {
-    out.insert(ConvertToBlink(list.first),
-               ConvertToBlink(std::move(list.second)));
-  }
-
-  return out;
-}
-
-WTF::HashMap<blink::CSPDirectiveName, String> ConvertToBlink(
-    base::flat_map<CSPDirectiveName, std::string> directives) {
-  WTF::HashMap<blink::CSPDirectiveName, String> out;
-
-  for (auto& list : directives) {
-    out.insert(ConvertToBlink(list.first),
-               String::FromUTF8(std::move(list.second)));
-  }
-
-  return out;
-}
-
-WTF::Vector<WTF::String> ConvertToBlink(std::vector<std::string> in) {
-  WTF::Vector<WTF::String> out;
-  for (auto& el : in)
-    out.push_back(String::FromUTF8(el));
-  return out;
-}
-
-blink::CSPTrustedTypesPtr ConvertToBlink(CSPTrustedTypesPtr trusted_types) {
-  if (!trusted_types)
+blink::CSPTrustedTypesPtr ConvertToBlink(const CSPTrustedTypesPtr& in) {
+  if (!in)
     return nullptr;
-  return blink::CSPTrustedTypes::New(ConvertToBlink(trusted_types->list),
-                                     trusted_types->allow_any,
-                                     trusted_types->allow_duplicates);
+  return blink::CSPTrustedTypes::New(ConvertToBlink(in->list), in->allow_any,
+                                     in->allow_duplicates);
 }
 
 blink::ContentSecurityPolicyPtr ConvertToBlink(
-    ContentSecurityPolicyPtr policy_in) {
+    const ContentSecurityPolicyPtr& in) {
+  DCHECK(in);
   return blink::ContentSecurityPolicy::New(
-      ConvertToBlink(std::move(policy_in->self_origin)),
-      ConvertToBlink(std::move(policy_in->raw_directives)),
-      ConvertToBlink(std::move(policy_in->directives)),
-      policy_in->upgrade_insecure_requests, policy_in->treat_as_public_address,
-      policy_in->block_all_mixed_content, policy_in->sandbox,
-      ConvertToBlink(std::move(policy_in->header)),
-      policy_in->use_reporting_api,
-      ConvertToBlink(std::move(policy_in->report_endpoints)),
-      policy_in->require_trusted_types_for,
-      ConvertToBlink(std::move(policy_in->trusted_types)),
-      ConvertToBlink(std::move(policy_in->parsing_errors)));
-}
-
-WTF::Vector<blink::ContentSecurityPolicyPtr> ConvertToBlink(
-    std::vector<ContentSecurityPolicyPtr> policies) {
-  WTF::Vector<blink::ContentSecurityPolicyPtr> blink_policies;
-  for (auto& policy : policies)
-    blink_policies.push_back(ConvertToBlink(std::move(policy)));
-
-  return blink_policies;
+      ConvertToBlink(in->self_origin), ConvertToBlink(in->raw_directives),
+      ConvertToBlink(in->directives), in->upgrade_insecure_requests,
+      in->treat_as_public_address, in->block_all_mixed_content, in->sandbox,
+      ConvertToBlink(in->header), in->use_reporting_api,
+      ConvertToBlink(in->report_endpoints), in->require_trusted_types_for,
+      ConvertToBlink(in->trusted_types), ConvertToBlink(in->parsing_errors));
 }
 
 blink::AllowCSPFromHeaderValuePtr ConvertToBlink(
-    AllowCSPFromHeaderValuePtr allow_csp_from) {
+    const AllowCSPFromHeaderValuePtr& allow_csp_from) {
   if (!allow_csp_from)
     return nullptr;
   switch (allow_csp_from->which()) {
-    case AllowCSPFromHeaderValue::Tag::ALLOW_STAR:
+    case AllowCSPFromHeaderValue::Tag::kAllowStar:
       return blink::AllowCSPFromHeaderValue::NewAllowStar(
           allow_csp_from->get_allow_star());
-    case AllowCSPFromHeaderValue::Tag::ORIGIN:
+    case AllowCSPFromHeaderValue::Tag::kOrigin:
       return blink::AllowCSPFromHeaderValue::NewOrigin(
-          ::blink::SecurityOrigin::CreateFromUrlOrigin(
-              allow_csp_from->get_origin()));
-    case AllowCSPFromHeaderValue::Tag::ERROR_MESSAGE:
+          ConvertToBlink(allow_csp_from->get_origin()));
+    case AllowCSPFromHeaderValue::Tag::kErrorMessage:
       return blink::AllowCSPFromHeaderValue::NewErrorMessage(
-          String::FromUTF8(allow_csp_from->get_error_message()));
+          ConvertToBlink(allow_csp_from->get_error_message()));
   }
 }
 
-WTF::Vector<network::mojom::blink::WebClientHintsType> ConvertToBlink(
-    const std::vector<network::mojom::WebClientHintsType>& accept_ch) {
-  WTF::Vector<network::mojom::blink::WebClientHintsType> blink_accept_ch;
-  blink_accept_ch.AppendRange(accept_ch.begin(), accept_ch.end());
-  return blink_accept_ch;
+blink::LinkHeaderPtr ConvertToBlink(const LinkHeaderPtr& in) {
+  DCHECK(in);
+  return blink::LinkHeader::New(
+      ConvertToBlink(in->href),
+      // TODO(dcheng): Make these use ConvertToBlink
+      static_cast<blink::LinkRelAttribute>(in->rel),
+      static_cast<blink::LinkAsAttribute>(in->as),
+      static_cast<blink::CrossOriginAttribute>(in->cross_origin),
+      ConvertToBlink(in->mime_type));
 }
 
-WTF::Vector<blink::LinkHeaderPtr> ConvertToBlink(
-    const std::vector<LinkHeaderPtr>& link_headers) {
-  WTF::Vector<blink::LinkHeaderPtr> converted_headers;
-
-  for (auto& header : link_headers) {
-    converted_headers.push_back(blink::LinkHeader::New(
-        ::blink::KURL(header->href),
-        static_cast<blink::LinkRelAttribute>(header->rel),
-        static_cast<blink::LinkAsAttribute>(header->as),
-        static_cast<blink::CrossOriginAttribute>(header->cross_origin),
-        header->mime_type.has_value()
-            ? String::FromUTF8(header->mime_type.value())
-            : String()));
+blink::TimingAllowOriginPtr ConvertToBlink(const TimingAllowOriginPtr& in) {
+  if (!in) {
+    return nullptr;
   }
 
-  return converted_headers;
+  switch (in->which()) {
+    case TimingAllowOrigin::Tag::kSerializedOrigins:
+      return blink::TimingAllowOrigin::NewSerializedOrigins(
+          ConvertToBlink(in->get_serialized_origins()));
+    case TimingAllowOrigin::Tag::kAll:
+      return blink::TimingAllowOrigin::NewAll(/*ignored=*/0);
+  }
 }
 
-blink::ParsedHeadersPtr ConvertToBlink(ParsedHeadersPtr parsed_headers) {
+blink::VariantsHeaderPtr ConvertToBlink(const VariantsHeaderPtr& in) {
+  DCHECK(in);
+  return blink::VariantsHeader::New(ConvertToBlink(in->name),
+                                    ConvertToBlink(in->available_values));
+}
+
+blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
+  DCHECK(in);
   return blink::ParsedHeaders::New(
-      ConvertToBlink(std::move(parsed_headers->content_security_policy)),
-      ConvertToBlink(std::move(parsed_headers->allow_csp_from)),
-      std::move(parsed_headers->cross_origin_embedder_policy),
-      std::move(parsed_headers->cross_origin_opener_policy),
-      parsed_headers->origin_agent_cluster,
-      parsed_headers->accept_ch.has_value()
-          ? base::make_optional(
-                ConvertToBlink(parsed_headers->accept_ch.value()))
-          : base::nullopt,
-      parsed_headers->accept_ch_lifetime,
-      parsed_headers->critical_ch.has_value()
-          ? base::make_optional(
-                ConvertToBlink(parsed_headers->critical_ch.value()))
-          : base::nullopt,
-      parsed_headers->xfo, ConvertToBlink(parsed_headers->link_headers));
+      ConvertToBlink(in->content_security_policy),
+      ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
+      in->cross_origin_opener_policy, in->origin_agent_cluster,
+      in->accept_ch.has_value()
+          ? absl::make_optional(ConvertToBlink(in->accept_ch.value()))
+          : absl::nullopt,
+      in->critical_ch.has_value()
+          ? absl::make_optional(ConvertToBlink(in->critical_ch.value()))
+          : absl::nullopt,
+      in->xfo, ConvertToBlink(in->link_headers),
+      ConvertToBlink(in->timing_allow_origin),
+      ConvertToBlink(in->supports_loading_mode),
+      in->reporting_endpoints.has_value()
+          ? absl::make_optional(ConvertToBlink(in->reporting_endpoints.value()))
+          : absl::nullopt,
+      in->variants_headers.has_value()
+          ? absl::make_optional(ConvertToBlink(in->variants_headers.value()))
+          : absl::nullopt,
+      in->content_language.has_value()
+          ? absl::make_optional(ConvertToBlink(in->content_language.value()))
+          : absl::nullopt);
 }
 
 }  // namespace mojom
@@ -303,7 +345,7 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   double time = source.Left(number_end).ToDouble(&ok);
   if (!ok)
     return false;
-  delay = base::TimeDelta::FromSecondsD(time);
+  delay = base::Seconds(time);
   return true;
 }
 
@@ -319,7 +361,7 @@ bool IsValidHTTPHeaderValue(const String& name) {
 
 // See RFC 7230, Section 3.2.6.
 bool IsValidHTTPToken(const String& characters) {
-  if (characters.IsEmpty())
+  if (characters.empty())
     return false;
   for (unsigned i = 0; i < characters.length(); ++i) {
     UChar c = characters[i];
@@ -399,7 +441,7 @@ bool ParseHTTPRefresh(const String& refresh,
   }
 }
 
-base::Optional<base::Time> ParseDate(const String& value) {
+absl::optional<base::Time> ParseDate(const String& value) {
   return ParseDateFromNullTerminatedCharacters(value.Utf8().c_str());
 }
 
@@ -447,7 +489,7 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
     const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return kContentTypeOptionsNone;
 
   Vector<String> results;
@@ -578,8 +620,8 @@ CacheControlHeader ParseCacheControlDirectives(
     const AtomicString& pragma_value) {
   CacheControlHeader cache_control_header;
   cache_control_header.parsed = true;
-  cache_control_header.max_age = base::nullopt;
-  cache_control_header.stale_while_revalidate = base::nullopt;
+  cache_control_header.max_age = absl::nullopt;
+  cache_control_header.stale_while_revalidate = absl::nullopt;
 
   static const char kNoCacheDirective[] = "no-cache";
   static const char kNoStoreDirective[] = "no-store";
@@ -587,7 +629,7 @@ CacheControlHeader ParseCacheControlDirectives(
   static const char kMaxAgeDirective[] = "max-age";
   static const char kStaleWhileRevalidateDirective[] = "stale-while-revalidate";
 
-  if (!cache_control_value.IsEmpty()) {
+  if (!cache_control_value.empty()) {
     Vector<std::pair<String, String>> directives;
     ParseCacheHeader(cache_control_value, directives);
 
@@ -596,7 +638,7 @@ CacheControlHeader ParseCacheControlDirectives(
       // RFC2616 14.9.1: A no-cache directive with a value is only meaningful
       // for proxy caches.  It should be ignored by a browser level cache.
       if (EqualIgnoringASCIICase(directives[i].first, kNoCacheDirective) &&
-          directives[i].second.IsEmpty()) {
+          directives[i].second.empty()) {
         cache_control_header.contains_no_cache = true;
       } else if (EqualIgnoringASCIICase(directives[i].first,
                                         kNoStoreDirective)) {
@@ -613,7 +655,7 @@ CacheControlHeader ParseCacheControlDirectives(
         bool ok;
         double max_age = directives[i].second.ToDouble(&ok);
         if (ok)
-          cache_control_header.max_age = base::TimeDelta::FromSecondsD(max_age);
+          cache_control_header.max_age = base::Seconds(max_age);
       } else if (EqualIgnoringASCIICase(directives[i].first,
                                         kStaleWhileRevalidateDirective)) {
         if (cache_control_header.stale_while_revalidate) {
@@ -625,7 +667,7 @@ CacheControlHeader ParseCacheControlDirectives(
         double stale_while_revalidate = directives[i].second.ToDouble(&ok);
         if (ok) {
           cache_control_header.stale_while_revalidate =
-              base::TimeDelta::FromSecondsD(stale_while_revalidate);
+              base::Seconds(stale_while_revalidate);
         }
       }
     }
@@ -760,6 +802,8 @@ std::unique_ptr<ServerTimingHeaderVector> ParseServerTimingHeader(
 
       ServerTimingHeader header(name.ToString());
 
+      tokenizer.ConsumeBeforeAnyCharMatch({',', ';'});
+
       while (tokenizer.Consume(';')) {
         StringView parameter_name;
         if (!tokenizer.ConsumeToken(ParsedContentType::Mode::kNormal,
@@ -794,7 +838,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers.get(), url));
+      network::PopulateParsedHeaders(headers.get(), GURL(url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
@@ -806,7 +850,7 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicySource source,
     const KURL& base_url) {
   return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
-      raw_policies.Utf8(), type, source, base_url));
+      raw_policies.Utf8(), type, source, GURL(base_url)));
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
@@ -817,11 +861,39 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicyType type,
     network::mojom::blink::ContentSecurityPolicySource source,
     const SecurityOrigin& self_origin) {
+  const SecurityOrigin* precursor_origin =
+      self_origin.GetOriginOrPrecursorOriginIfOpaque();
   KURL base_url;
-  base_url.SetProtocol(self_origin.Protocol());
-  base_url.SetHost(self_origin.Host());
-  base_url.SetPort(self_origin.Port());
+  base_url.SetProtocol(precursor_origin->Protocol());
+  base_url.SetHost(precursor_origin->Host());
+  base_url.SetPort(precursor_origin->Port());
   return ParseContentSecurityPolicies(raw_policies, type, source, base_url);
+}
+
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicyHeaders(
+    const ContentSecurityPolicyResponseHeaders& headers) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_csps =
+      ParseContentSecurityPolicies(
+          headers.ContentSecurityPolicy(),
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          headers.ResponseUrl());
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> report_only_csps =
+      ParseContentSecurityPolicies(
+          headers.ContentSecurityPolicyReportOnly(),
+          network::mojom::blink::ContentSecurityPolicyType::kReport,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          headers.ResponseUrl());
+  parsed_csps.AppendRange(std::make_move_iterator(report_only_csps.begin()),
+                          std::make_move_iterator(report_only_csps.end()));
+  return parsed_csps;
+}
+
+network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
+    const String& header_value) {
+  return network::mojom::ConvertToBlink(
+      network::ParseTimingAllowOrigin(header_value.Latin1()));
 }
 
 }  // namespace blink

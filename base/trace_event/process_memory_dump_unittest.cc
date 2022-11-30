@@ -1,10 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/trace_event/process_memory_dump.h"
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -17,11 +19,12 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "winbase.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/mman.h>
 #endif
 
@@ -31,24 +34,24 @@ namespace trace_event {
 namespace {
 
 const MemoryDumpArgs kDetailedDumpArgs = {MemoryDumpLevelOfDetail::DETAILED};
-const char* const kTestDumpNameWhitelist[] = {
-    "Whitelisted/TestName", "Whitelisted/TestName_0x?",
-    "Whitelisted/0x?/TestName", "Whitelisted/0x?", nullptr};
+const char* const kTestDumpNameAllowlist[] = {
+    "Allowlisted/TestName", "Allowlisted/TestName_0x?",
+    "Allowlisted/0x?/TestName", "Allowlisted/0x?", nullptr};
 
 void* Map(size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ::VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT,
                         PAGE_READWRITE);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON,
                 0, 0);
 #endif
 }
 
 void Unmap(void* addr, size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ::VirtualFree(addr, 0, MEM_DECOMMIT);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ::munmap(addr, size);
 #else
 #error This architecture is not (yet) supported.
@@ -142,7 +145,7 @@ TEST(ProcessMemoryDumpTest, Clear) {
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
   ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad2->flags());
 
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();
@@ -206,7 +209,7 @@ TEST(ProcessMemoryDumpTest, TakeAllDumpsFrom) {
   ASSERT_TRUE(MemoryAllocatorDump::Flags::WEAK & shared_mad2->flags());
 
   // Check that calling serialization routines doesn't cause a crash.
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();
@@ -380,26 +383,26 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   std::unique_ptr<ProcessMemoryDump> pmd(
       new ProcessMemoryDump(background_args));
   ProcessMemoryDump::is_black_hole_non_fatal_for_testing_ = true;
-  SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameWhitelist);
-  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad();
+  SetAllocatorDumpNameAllowlistForTesting(kTestDumpNameAllowlist);
+  MemoryAllocatorDump* black_hole_mad = pmd->GetBlackHoleMad(std::string());
 
   // GetAllocatorDump works for uncreated dumps.
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("Whitelisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotAllowlisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("Allowlisted/TestName"));
 
   // Invalid dump names.
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("NotWhitelisted/TestName"));
+            pmd->CreateAllocatorDump("NotAllowlisted/TestName"));
   EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("TestName"));
-  EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("Whitelisted/Test"));
+  EXPECT_EQ(black_hole_mad, pmd->CreateAllocatorDump("Allowlisted/Test"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Not/Whitelisted/TestName"));
+            pmd->CreateAllocatorDump("Not/Allowlisted/TestName"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/Google"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/0x1a2Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/0x1a2Google"));
   EXPECT_EQ(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName/__12/Google"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName/__12/Google"));
 
   // Suballocations.
   MemoryAllocatorDumpGuid guid(1);
@@ -413,30 +416,30 @@ TEST(ProcessMemoryDumpTest, BackgroundModeTest) {
   EXPECT_NE(black_hole_mad, pmd->GetSharedGlobalAllocatorDump(guid));
 
   // Valid dump names.
-  EXPECT_NE(black_hole_mad, pmd->CreateAllocatorDump("Whitelisted/TestName"));
+  EXPECT_NE(black_hole_mad, pmd->CreateAllocatorDump("Allowlisted/TestName"));
   EXPECT_NE(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/TestName_0xA1b2"));
+            pmd->CreateAllocatorDump("Allowlisted/TestName_0xA1b2"));
   EXPECT_NE(black_hole_mad,
-            pmd->CreateAllocatorDump("Whitelisted/0xaB/TestName"));
+            pmd->CreateAllocatorDump("Allowlisted/0xaB/TestName"));
 
   // GetAllocatorDump is consistent.
-  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotWhitelisted/TestName"));
-  EXPECT_NE(black_hole_mad, pmd->GetAllocatorDump("Whitelisted/TestName"));
+  EXPECT_EQ(nullptr, pmd->GetAllocatorDump("NotAllowlisted/TestName"));
+  EXPECT_NE(black_hole_mad, pmd->GetAllocatorDump("Allowlisted/TestName"));
 
-  // Test whitelisted entries.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/TestName"));
+  // Test allowed entries.
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Allowlisted/TestName"));
 
-  // Global dumps should be whitelisted.
+  // Global dumps should be allowed.
   ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("global/13456"));
 
   // Global dumps with non-guids should not be.
   ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("global/random"));
 
   // Random names should not.
-  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("NotWhitelisted/TestName"));
+  ASSERT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("NotAllowlisted/TestName"));
 
   // Check hex processing.
-  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Whitelisted/0xA1b2"));
+  ASSERT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("Allowlisted/0xA1b2"));
 }
 
 TEST(ProcessMemoryDumpTest, GuidsTest) {
@@ -473,7 +476,7 @@ TEST(ProcessMemoryDumpTest, GuidsTest) {
 }
 
 #if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/851760): Counting resident bytes is not supported on Fuchsia.
 #define MAYBE_CountResidentBytes DISABLED_CountResidentBytes
 #else
@@ -486,7 +489,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   const size_t size1 = 5 * page_size;
   void* memory1 = Map(size1);
   memset(memory1, 0, size1);
-  base::Optional<size_t> res1 =
+  absl::optional<size_t> res1 =
       ProcessMemoryDump::CountResidentBytes(memory1, size1);
   ASSERT_TRUE(res1.has_value());
   ASSERT_EQ(res1.value(), size1);
@@ -496,14 +499,14 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytes) {
   const size_t kVeryLargeMemorySize = 15 * 1024 * 1024;
   void* memory2 = Map(kVeryLargeMemorySize);
   memset(memory2, 0, kVeryLargeMemorySize);
-  base::Optional<size_t> res2 =
+  absl::optional<size_t> res2 =
       ProcessMemoryDump::CountResidentBytes(memory2, kVeryLargeMemorySize);
   ASSERT_TRUE(res2.has_value());
   ASSERT_EQ(res2.value(), kVeryLargeMemorySize);
   Unmap(memory2, kVeryLargeMemorySize);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/851760): Counting resident bytes is not supported on Fuchsia.
 #define MAYBE_CountResidentBytesInSharedMemory \
   DISABLED_CountResidentBytesInSharedMemory
@@ -519,11 +522,26 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kDirtyMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kDirtyMemorySize);
-    base::Optional<size_t> res1 =
+    absl::optional<size_t> res1 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res1.has_value());
     ASSERT_EQ(res1.value(), kDirtyMemorySize);
+  }
+
+  // Allocate a shared memory segment but map at a non-page-aligned offset.
+  {
+    const size_t kDirtyMemorySize = 5 * page_size;
+    auto region =
+        base::WritableSharedMemoryRegion::Create(kDirtyMemorySize + page_size);
+    base::WritableSharedMemoryMapping mapping =
+        region.MapAt(page_size / 2, kDirtyMemorySize);
+    memset(mapping.memory(), 0, kDirtyMemorySize);
+    absl::optional<size_t> res1 =
+        ProcessMemoryDump::CountResidentBytesInSharedMemory(
+            mapping.memory(), mapping.mapped_size());
+    ASSERT_TRUE(res1.has_value());
+    ASSERT_EQ(res1.value(), kDirtyMemorySize + page_size);
   }
 
   // Allocate a large memory segment (> 8Mib).
@@ -533,7 +551,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
         base::WritableSharedMemoryRegion::Create(kVeryLargeMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kVeryLargeMemorySize);
-    base::Optional<size_t> res2 =
+    absl::optional<size_t> res2 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res2.has_value());
@@ -546,7 +564,7 @@ TEST(ProcessMemoryDumpTest, MAYBE_CountResidentBytesInSharedMemory) {
     auto region = base::WritableSharedMemoryRegion::Create(kTouchedMemorySize);
     base::WritableSharedMemoryMapping mapping = region.Map();
     memset(mapping.memory(), 0, kTouchedMemorySize);
-    base::Optional<size_t> res3 =
+    absl::optional<size_t> res3 =
         ProcessMemoryDump::CountResidentBytesInSharedMemory(
             mapping.memory(), mapping.mapped_size());
     ASSERT_TRUE(res3.has_value());

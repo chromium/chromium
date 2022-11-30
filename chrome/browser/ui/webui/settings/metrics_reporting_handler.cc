@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,13 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace settings {
@@ -49,53 +49,38 @@ void MetricsReportingHandler::OnJavascriptAllowed() {
       g_browser_process->local_state(),
       base::BindRepeating(&MetricsReportingHandler::OnPrefChanged,
                           base::Unretained(this)));
-
-  policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
-      g_browser_process->policy_service(),
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-  policy_registrar_->Observe(
-      policy::key::kMetricsReportingEnabled,
-      base::BindRepeating(&MetricsReportingHandler::OnPolicyChanged,
-                          base::Unretained(this)));
 }
 
 void MetricsReportingHandler::OnJavascriptDisallowed() {
   pref_member_.reset();
-  policy_registrar_.reset();
 }
 
 void MetricsReportingHandler::HandleGetMetricsReporting(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *CreateMetricsReportingDict());
+  CHECK_GT(args.size(), 0u);
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, CreateMetricsReportingDict());
 }
 
-std::unique_ptr<base::DictionaryValue>
-    MetricsReportingHandler::CreateMetricsReportingDict() {
-  std::unique_ptr<base::DictionaryValue> dict(
-      std::make_unique<base::DictionaryValue>());
-  dict->SetBoolean(
-      "enabled",
-      ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
+base::Value::Dict MetricsReportingHandler::CreateMetricsReportingDict() {
+  base::Value::Dict dict;
+  dict.Set("enabled",
+           ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To match the pre-Lacros settings UX, we show the managed icon if the ash
   // device-level metrics reporting pref is managed. https://crbug.com/1148604
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  // Service may be null in tests.
-  bool managed = lacros_chrome_service &&
-                 lacros_chrome_service->init_params()->ash_metrics_managed ==
-                     crosapi::mojom::MetricsReportingManaged::kManaged;
-  dict->SetBoolean("managed", managed);
+  bool managed = chromeos::BrowserParamsProxy::Get()->AshMetricsManaged() ==
+                 crosapi::mojom::MetricsReportingManaged::kManaged;
+  dict.Set("managed", managed);
 #else
-  dict->SetBoolean("managed", IsMetricsReportingPolicyManaged());
+  dict.Set("managed", IsMetricsReportingPolicyManaged());
 #endif
   return dict;
 }
 
 void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   if (IsMetricsReportingPolicyManaged()) {
     NOTREACHED();
     // NOTE: ChangeMetricsReportingState() already checks whether metrics
@@ -106,15 +91,15 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
     return;
   }
 
-  bool enabled;
-  CHECK(args->GetBoolean(0, &enabled));
-  ChangeMetricsReportingState(enabled);
+  bool enabled = args[0].GetBool();
+  ChangeMetricsReportingState(
+      enabled, ChangeMetricsReportingStateCalledFrom::kUiSettings);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To match the pre-Lacros settings UX, the metrics reporting toggle in Lacros
   // browser settings controls both browser metrics reporting and OS metrics
   // reporting. See https://crbug.com/1148604.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_chrome_service = chromeos::LacrosService::Get();
   // Service may be null in tests.
   if (!lacros_chrome_service)
     return;
@@ -135,18 +120,13 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void MetricsReportingHandler::OnPolicyChanged(const base::Value* previous,
-                                              const base::Value* current) {
-  SendMetricsReportingChange();
-}
-
 void MetricsReportingHandler::OnPrefChanged(const std::string& pref_name) {
   DCHECK_EQ(metrics::prefs::kMetricsReportingEnabled, pref_name);
   SendMetricsReportingChange();
 }
 
 void MetricsReportingHandler::SendMetricsReportingChange() {
-  FireWebUIListener("metrics-reporting-change", *CreateMetricsReportingDict());
+  FireWebUIListener("metrics-reporting-change", CreateMetricsReportingDict());
 }
 
 }  // namespace settings

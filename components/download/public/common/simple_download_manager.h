@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,14 +24,15 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   class Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() = default;
 
     virtual void OnDownloadsInitialized() {}
     virtual void OnManagerGoingDown() {}
     virtual void OnDownloadCreated(DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   SimpleDownloadManager();

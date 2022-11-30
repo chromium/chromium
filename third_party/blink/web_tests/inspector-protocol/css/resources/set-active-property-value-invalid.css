@@ -1,0 +1,32 @@
+#inspected {
+    margin-left: 10px !important;
+}
+
+@media (min-width: 50px) and (max-width: 100px) {
+    #inspected {
+        padding-left: 10px;
+    }
+}
+
+#inspected {
+    padding: 10px 20px 30px 40px;
+    padding-top: 50px;
+}
+
+/* Invalid @container prelude: */
+@container 42px {
+    #inspected {
+        padding-right: 10px;
+    }
+    #parent-div {
+        width: 100px;
+        container-type: size;
+    }
+}
+
+#inspected {
+    padding-left: 5px;
+    margin-left: 20px;
+    padding-left: 10px;
+    margin-top: 15px !important;
+}

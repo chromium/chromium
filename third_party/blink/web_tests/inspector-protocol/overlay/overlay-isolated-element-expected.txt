@@ -1,0 +1,65 @@
+Verifies that Overlay.setShowIsolatedElements works.
+Overlay not rendered:
+
+Overlay rendered:
+{
+  "name": "drawIsolatedElementHighlight",
+  "data": {
+    "currentX": 8,
+    "currentY": 8,
+    "widthResizerBorder": [
+      "M",
+      408,
+      8,
+      "L",
+      428,
+      8,
+      "L",
+      428,
+      508,
+      "L",
+      408,
+      508,
+      "Z"
+    ],
+    "heightResizerBorder": [
+      "M",
+      8,
+      508,
+      "L",
+      408,
+      508,
+      "L",
+      408,
+      528,
+      "L",
+      8,
+      528,
+      "Z"
+    ],
+    "bidirectionResizerBorder": [
+      "M",
+      408,
+      508,
+      "L",
+      428,
+      508,
+      "L",
+      428,
+      528,
+      "L",
+      408,
+      528,
+      "Z"
+    ],
+    "currentWidth": 400,
+    "currentHeight": 500,
+    "isolationModeHighlightConfig": {
+      "resizerColor": "rgb(0, 0, 0)",
+      "resizerHandleColor": "rgb(0, 0, 0)",
+      "maskColor": "rgb(0, 0, 0)"
+    },
+    "highlightIndex": 0
+  }
+}
+

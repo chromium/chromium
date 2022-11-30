@@ -8,6 +8,24 @@
 <script>
 'use strict';
 
+async function getDetachedUsbDevice() {
+  let iframe = document.createElement('iframe');
+  iframe.src = '/webusb/resources/open-in-iframe.html';
+  document.body.appendChild(iframe);
+
+  await navigator.usb.test.attachToContext(iframe);
+
+  navigator.usb.test.addFakeDevice(fakeDeviceInit);
+  const devices = await iframe.contentWindow.navigator.usb.getDevices();
+
+  assert_equals(devices.length, 1);
+  document.body.removeChild(iframe);
+  // Set iframe to null to ensure that the GC cleans up as much as possible.
+  iframe = null;
+  GCController.collect();
+  return devices[0];
+}
+
 usb_test(() => {
   return navigator.usb.test.initialize().then(() => {
     return new Promise(async (resolve, reject) => {
@@ -31,5 +49,18 @@ usb_test(() => {
     });
   });
 }, 'events are not delivered to detached frames');
+
+usb_test(async (t) => {
+  const device = await getDetachedUsbDevice();
+  let error = new Error();
+  try {
+    await device.forget();
+  } catch (e) {
+    // Cannot use promise_rejects_dom() because |e| is thrown from a different
+    // global.
+    error = e;
+  }
+  assert_equals(error.name, 'NotSupportedError');
+}, 'forget() rejects in a detached context');
 </script>
 </body>

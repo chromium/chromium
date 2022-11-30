@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ void DomainReliabilityContextManager::RouteBeacon(
 }
 
 void DomainReliabilityContextManager::ClearBeacons(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   for (auto& context_entry : contexts_) {
     if (origin_filter.is_null() ||
         origin_filter.Run(context_entry.second->config().origin)) {
@@ -85,7 +85,7 @@ DomainReliabilityContext* DomainReliabilityContextManager::AddContextForConfig(
 }
 
 void DomainReliabilityContextManager::RemoveContexts(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+    const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
   if (origin_filter.is_null()) {
     contexts_.clear();
     return;
@@ -98,14 +98,6 @@ void DomainReliabilityContextManager::RemoveContexts(
     }
     ++it;
   }
-}
-
-std::unique_ptr<base::Value> DomainReliabilityContextManager::GetWebUIData()
-    const {
-  std::unique_ptr<base::ListValue> contexts_value(new base::ListValue());
-  for (const auto& context_entry : contexts_)
-    contexts_value->Append(context_entry.second->GetWebUIData());
-  return std::move(contexts_value);
 }
 
 DomainReliabilityContext* DomainReliabilityContextManager::GetContext(

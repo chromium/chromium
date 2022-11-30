@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_LARGEST_CONTENTFUL_PAINT_CALCULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_LARGEST_CONTENTFUL_PAINT_CALCULATOR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -23,8 +24,8 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateLargestContentPaintIfNeeded(base::WeakPtr<TextRecord> largest_text,
-                                         const ImageRecord* largest_image);
+  void UpdateLargestContentfulPaintIfNeeded(const TextRecord* largest_text,
+                                            const ImageRecord* largest_image);
 
   void Trace(Visitor* visitor) const;
 
@@ -32,17 +33,17 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   friend class LargestContentfulPaintCalculatorTest;
 
   void UpdateLargestContentfulImage(const ImageRecord* largest_image);
-  void UpdateLargestContentfulText(base::WeakPtr<TextRecord> largest_text);
+  void UpdateLargestContentfulText(const TextRecord& largest_text);
 
   std::unique_ptr<TracedValue> TextCandidateTraceData(
-      base::WeakPtr<TextRecord> largest_text);
+      const TextRecord& largest_text);
   std::unique_ptr<TracedValue> ImageCandidateTraceData(
       const ImageRecord* largest_image);
 
   Member<WindowPerformance> window_performance_;
 
   uint64_t largest_reported_size_ = 0u;
-
+  double largest_image_bpp_ = 0.0;
   unsigned count_candidates_ = 0;
 };
 

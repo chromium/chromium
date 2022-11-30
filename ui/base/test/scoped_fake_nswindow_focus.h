@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define UI_BASE_TEST_SCOPED_FAKE_NSWINDOW_FOCUS_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace base {
 namespace mac {
@@ -24,6 +22,10 @@ namespace test {
 class ScopedFakeNSWindowFocus {
  public:
   ScopedFakeNSWindowFocus();
+
+  ScopedFakeNSWindowFocus(const ScopedFakeNSWindowFocus&) = delete;
+  ScopedFakeNSWindowFocus& operator=(const ScopedFakeNSWindowFocus&) = delete;
+
   ~ScopedFakeNSWindowFocus();
 
  private:
@@ -34,8 +36,6 @@ class ScopedFakeNSWindowFocus {
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> make_key_swizzler_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> resign_key_swizzler_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> order_out_swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeNSWindowFocus);
 };
 
 }  // namespace test

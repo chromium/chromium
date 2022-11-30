@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,24 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/web_data_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "rlz/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
@@ -60,9 +64,16 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
 }
 
 TemplateURLServiceFactory::TemplateURLServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "TemplateURLServiceFactory",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "TemplateURLServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Needed for Guest sessions because they have an omnibox and
+              // thus need template URLs (search providers).
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // It's not possible for the user to search in a system profile.
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 }
@@ -70,19 +81,30 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
 TemplateURLServiceFactory::~TemplateURLServiceFactory() {}
 
 KeyedService* TemplateURLServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return BuildInstanceFor(static_cast<Profile*>(profile)).release();
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various unusual profiles (login, lock screen...) that do
+  // not need a template URL service and cannot search.  The only non-regular
+  // profile that needs a template URL is the signin profile.  The
+  // signin profile sometimes can detect a "captive portal" (i.e., a network
+  // connection that requires a login before it is usable).  The captive portal
+  // sign-in flow creates a window with a URL bar.  The URL bar code currently
+  // assumes a template URL service exists.  (This is true even though the user
+  // cannot search from the captive portal sign-in window.)
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile) &&
+      !chromeos::ProfileHelper::IsSigninProfile(profile)) {
+    return nullptr;
+  }
+#endif
+
+  return BuildInstanceFor(profile).release();
 }
 
 void TemplateURLServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   DefaultSearchManager::RegisterProfilePrefs(registry);
   TemplateURLService::RegisterProfilePrefs(registry);
-}
-
-content::BrowserContext* TemplateURLServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool TemplateURLServiceFactory::ServiceIsNULLWhileTesting() const {

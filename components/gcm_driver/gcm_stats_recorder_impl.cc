@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/gcm_driver/gcm_stats_recorder_impl.h"
 
-#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
@@ -117,9 +116,6 @@ std::string GetRegistrationStatusString(
       return "QUOTA_EXCEEDED";
     case gcm::RegistrationRequest::TOO_MANY_REGISTRATIONS:
       return "TOO_MANY_REGISTRATIONS";
-    case gcm::RegistrationRequest::STATUS_COUNT:
-      NOTREACHED();
-      break;
   }
   return "UNKNOWN_STATUS";
 }

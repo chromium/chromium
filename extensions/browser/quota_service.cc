@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,7 @@ namespace extensions {
 
 QuotaService::QuotaService() {
   if (!g_purge_disabled_for_testing && base::ThreadTaskRunnerHandle::IsSet()) {
-    purge_timer_.Start(FROM_HERE,
-                       base::TimeDelta::FromDays(kPurgeIntervalInDays),
-                       this,
+    purge_timer_.Start(FROM_HERE, base::Days(kPurgeIntervalInDays), this,
                        &QuotaService::Purge);
   }
 }
@@ -40,7 +38,7 @@ QuotaService::~QuotaService() {
 
 std::string QuotaService::Assess(const std::string& extension_id,
                                  ExtensionFunction* function,
-                                 const base::ListValue* args,
+                                 const base::Value::List& args,
                                  const base::TimeTicks& event_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -58,7 +56,7 @@ std::string QuotaService::Assess(const std::string& extension_id,
   if (heuristics.empty())
     return std::string();  // No heuristic implies no limit.
 
-  QuotaLimitHeuristic* failed_heuristic = NULL;
+  QuotaLimitHeuristic* failed_heuristic = nullptr;
   for (const auto& heuristic : heuristics) {
     // Apply heuristic to each item (bucket).
     if (!heuristic->ApplyToArgs(args, event_time)) {
@@ -100,7 +98,7 @@ void QuotaLimitHeuristic::Bucket::Reset(const Config& config,
 }
 
 void QuotaLimitHeuristic::SingletonBucketMapper::GetBucketsForArgs(
-    const base::ListValue* args,
+    const base::Value::List& args,
     BucketList* buckets) {
   buckets->push_back(&bucket_);
 }
@@ -112,7 +110,7 @@ QuotaLimitHeuristic::QuotaLimitHeuristic(const Config& config,
 
 QuotaLimitHeuristic::~QuotaLimitHeuristic() {}
 
-bool QuotaLimitHeuristic::ApplyToArgs(const base::ListValue* args,
+bool QuotaLimitHeuristic::ApplyToArgs(const base::Value::List& args,
                                       const base::TimeTicks& event_time) {
   BucketList buckets;
   bucket_mapper_->GetBucketsForArgs(args, &buckets);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/host/ppapi_host_export.h"
@@ -31,6 +30,10 @@ class ResourceMessageFilter;
 class PPAPI_HOST_EXPORT ResourceHost : public ResourceMessageHandler {
  public:
   ResourceHost(PpapiHost* host, PP_Instance instance, PP_Resource resource);
+
+  ResourceHost(const ResourceHost&) = delete;
+  ResourceHost& operator=(const ResourceHost&) = delete;
+
   ~ResourceHost() override;
 
   PpapiHost* host() { return host_; }
@@ -85,8 +88,6 @@ class PPAPI_HOST_EXPORT ResourceHost : public ResourceMessageHandler {
   // A vector of message filters which the host will forward incoming resource
   // messages to.
   std::vector<scoped_refptr<ResourceMessageFilter> > message_filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceHost);
 };
 
 }  // namespace host

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -69,6 +69,10 @@ class PortableDeviceWatcherWin {
   // TODO(gbillock): Change to take the device notifications object as
   // an argument.
   PortableDeviceWatcherWin();
+
+  PortableDeviceWatcherWin(const PortableDeviceWatcherWin&) = delete;
+  PortableDeviceWatcherWin& operator=(const PortableDeviceWatcherWin&) = delete;
+
   virtual ~PortableDeviceWatcherWin();
 
   // Must be called after the browser blocking pool is ready for use.
@@ -138,12 +142,10 @@ class PortableDeviceWatcherWin {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   // The notifications object to use to signal newly attached devices.
-  StorageMonitor::Receiver* storage_notifications_;
+  raw_ptr<StorageMonitor::Receiver> storage_notifications_;
 
   // Used by |media_task_runner_| to create cancelable callbacks.
   base::WeakPtrFactory<PortableDeviceWatcherWin> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PortableDeviceWatcherWin);
 };
 
 }  // namespace storage_monitor

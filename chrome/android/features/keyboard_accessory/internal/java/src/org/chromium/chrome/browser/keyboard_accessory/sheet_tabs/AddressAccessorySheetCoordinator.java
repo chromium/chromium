@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
     public AddressAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
         super(context.getString(R.string.address_accessory_sheet_title),
-                IconProvider.getIcon(context, R.drawable.ic_permission_location_filled),
+                IconProvider.getIcon(context, R.drawable.gm_filled_location_on_24),
                 context.getString(R.string.address_accessory_sheet_toggle),
                 context.getString(R.string.address_accessory_sheet_opened),
                 R.layout.address_accessory_sheet, AccessoryTabType.ADDRESSES, scrollListener);

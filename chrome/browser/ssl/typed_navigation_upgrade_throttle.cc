@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -22,6 +22,9 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
+
+using security_interstitials::omnibox_https_upgrades::Event;
+using security_interstitials::omnibox_https_upgrades::kEventHistogram;
 
 namespace {
 
@@ -32,79 +35,16 @@ namespace {
 // - Otherwise, a new navigation to the the fallback HTTP URL is started.
 constexpr base::FeatureParam<base::TimeDelta> kFallbackDelay{
     &omnibox::kDefaultTypedNavigationsToHttps,
-    omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam,
-    base::TimeDelta::FromSeconds(3)};
+    omnibox::kDefaultTypedNavigationsToHttpsTimeoutParam, base::Seconds(3)};
 
 int g_https_port_for_testing = 0;
 
 // Used to compute the fallback URL from the https URL.
 int g_http_port_for_testing = 0;
 
-bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
-  content::NavigationUIData* ui_data = handle->GetNavigationUIData();
-  // UI data can be null in the case of navigations to interstitials.
-  if (!ui_data) {
-    return false;
-  }
-  // Only handle HTTPS navigations typed in the omnibox. If a navigation has
-  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
-  // previously upgraded and we fell back to HTTP so there is no need to
-  // observe again.
-  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
-  // even though we probably should. Make a decision for the ones listed in the
-  // bug and potentially identify more.
-  bool is_using_https_as_default_scheme =
-      static_cast<ChromeNavigationUIData*>(ui_data)
-          ->is_using_https_as_default_scheme();
-  return is_using_https_as_default_scheme && handle->IsInMainFrame() &&
-         !handle->IsSameDocument() &&
-         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
-         !handle->GetWebContents()->IsPortal() &&
-         ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
-                                      ui::PAGE_TRANSITION_TYPED) &&
-         ui::PageTransitionIsNewNavigation(handle->GetPageTransition());
+void RecordUMA(Event event) {
+  base::UmaHistogramEnumeration(kEventHistogram, event);
 }
-
-void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
-  base::UmaHistogramEnumeration(TypedNavigationUpgradeThrottle::kHistogramName,
-                                event);
-}
-
-// Used to scope the posted navigation task to the lifetime of |web_contents|.
-// We can start a new navigation from inside the throttle using this class.
-class TypedNavigationUpgradeLifetimeHelper
-    : public content::WebContentsUserData<
-          TypedNavigationUpgradeLifetimeHelper> {
- public:
-  explicit TypedNavigationUpgradeLifetimeHelper(
-      content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  base::WeakPtr<TypedNavigationUpgradeLifetimeHelper> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void Navigate(const content::OpenURLParams& url_params,
-                bool stop_navigation) {
-    if (stop_navigation) {
-      // This deletes the NavigationThrottle and NavigationHandle.
-      web_contents_->Stop();
-    }
-    web_contents_->OpenURL(url_params);
-  }
-
- private:
-  friend class content::WebContentsUserData<
-      TypedNavigationUpgradeLifetimeHelper>;
-
-  content::WebContents* const web_contents_;
-  base::WeakPtrFactory<TypedNavigationUpgradeLifetimeHelper> weak_factory_{
-      this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TypedNavigationUpgradeLifetimeHelper)
 
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   DCHECK_EQ(url::kHttpsScheme, url.scheme());
@@ -126,10 +66,6 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
 }  // namespace
 
 // static
-const char TypedNavigationUpgradeThrottle::kHistogramName[] =
-    "TypedNavigationUpgradeThrottle.Event";
-
-// static
 std::unique_ptr<content::NavigationThrottle>
 TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
@@ -144,6 +80,30 @@ TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(
   DCHECK(!handle->IsPost());
 
   return base::WrapUnique(new TypedNavigationUpgradeThrottle(handle));
+}
+
+// static
+bool TypedNavigationUpgradeThrottle::IsNavigationUsingHttpsAsDefaultScheme(
+    content::NavigationHandle* handle) {
+  content::NavigationUIData* ui_data = handle->GetNavigationUIData();
+  // UI data can be null in the case of navigations to interstitials.
+  if (!ui_data) {
+    return false;
+  }
+  // Only handle HTTPS navigations typed in the omnibox. If a navigation has
+  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
+  // previously upgraded and we fell back to HTTP so there is no need to
+  // observe again.
+  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
+  // even though we probably should. Make a decision for the ones listed in the
+  // bug and potentially identify more.
+  bool is_using_https_as_default_scheme =
+      static_cast<ChromeNavigationUIData*>(ui_data)
+          ->is_using_https_as_default_scheme();
+  return is_using_https_as_default_scheme && handle->IsInPrimaryMainFrame() &&
+         !handle->IsSameDocument() &&
+         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
+         !handle->GetWebContents()->IsPortal();
 }
 
 TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;
@@ -199,8 +159,9 @@ TypedNavigationUpgradeThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillProcessResponse() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
-  // If we got here, HTTPS load succeeded. Stop the timer.
+  // If we got here, the HTTPS load succeeded. The final URL may be HTTPS or
+  // HTTP (if the upgrade attempt redirected to HTTP). In any case, we are done,
+  // so stop the timer.
   RecordUMA(Event::kHttpsLoadSucceeded);
   timer_.Stop();
   UmaHistogramTimes("TypedNavigationUpgradeThrottle.UpgradeSuccessTime",
@@ -210,16 +171,6 @@ TypedNavigationUpgradeThrottle::WillProcessResponse() {
 
 const char* TypedNavigationUpgradeThrottle::GetNameForLogging() {
   return "TypedNavigationUpgradeThrottle";
-}
-
-// static
-bool TypedNavigationUpgradeThrottle::
-    ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps(
-        content::NavigationHandle* handle) {
-  DCHECK_EQ(url::kHttpsScheme, handle->GetURL().scheme());
-  return base::FeatureList::IsEnabled(
-             omnibox::kDefaultTypedNavigationsToHttps) &&
-         IsNavigationUsingHttpsAsDefaultScheme(handle);
 }
 
 // static
@@ -268,19 +219,21 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
 
   // Post a task to navigate to the fallback URL. We don't navigate
   // synchronously here, as starting a navigation within a navigation is
-  // an antipattern. Use a helper object scoped to the WebContents lifetime to
-  // scope the navigation task to the WebContents lifetime.
-  // See PDFIFrameNavigationThrottle::LoadPlaceholderHTML() for another use of
-  // this pattern.
-  // CreateForWebContents is a no-op if there is already a helper.
-  TypedNavigationUpgradeLifetimeHelper::CreateForWebContents(web_contents);
-  TypedNavigationUpgradeLifetimeHelper* helper =
-      TypedNavigationUpgradeLifetimeHelper::FromWebContents(web_contents);
-
+  // an antipattern.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&TypedNavigationUpgradeLifetimeHelper::Navigate,
-                     helper->GetWeakPtr(), std::move(params), stop_navigation));
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> web_contents,
+             const content::OpenURLParams& url_params, bool stop_navigation) {
+            if (!web_contents)
+              return;
+            if (stop_navigation) {
+              // This deletes the NavigationThrottle and NavigationHandle.
+              web_contents->Stop();
+            }
+            web_contents->OpenURL(url_params);
+          },
+          web_contents->GetWeakPtr(), std::move(params), stop_navigation));
 
   // Once the fallback navigation starts, |this| will be deleted. Be careful
   // adding code here -- any async task posted hereafter may never run.

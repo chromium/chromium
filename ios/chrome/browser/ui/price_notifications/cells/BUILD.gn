@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_table_view_item.h",
+    "price_notifications_table_view_item.mm",
+    "price_notifications_track_button.h",
+    "price_notifications_track_button.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/price_notifications:constants",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

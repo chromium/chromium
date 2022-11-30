@@ -1,11 +1,10 @@
-Pane
-++Document Name='PDF document containing 1 page'
-++++Group Name='Page 1'
-++++++Group IsControlElement=false
-++++++++Text Name='Case 1<newline>'
-++++++Group IsControlElement=false
-++++++++Text Name='Case 2<newline>'
-++++++Group IsControlElement=false
-++++++++Text Name='Case 3<newline>'
-++++++Group IsControlElement=false
-++++++++Text Name='Case 4'
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Text Name='Case 1<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 2<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 3<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 4'

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,54 +17,76 @@
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/file_utils.h"
+#endif
+
 namespace chrome {
 
 // Test the behavior of chrome::GetUserCacheDirectory.
 // See that function's comments for discussion of the subtleties.
 TEST(ChromePaths, UserCacheDir) {
-  base::FilePath test_profile_dir, cache_dir;
-#if defined(OS_MAC)
+  base::FilePath test_profile_dir;  // Platform-specific profile directory path.
+  base::FilePath expected_cache_dir;
+
+#if BUILDFLAG(IS_WIN)
+  test_profile_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
+  expected_cache_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
+#elif BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia uses the Component's cache directory as the base.
+  expected_cache_dir = base::FilePath(base::kPersistedCacheDirectoryPath);
+  test_profile_dir =
+      base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
+  expected_cache_dir = expected_cache_dir.Append("foobar");
+#elif BUILDFLAG(IS_MAC)
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));
   test_profile_dir = test_profile_dir.Append("foobar");
-  base::FilePath expected_cache_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
   expected_cache_dir = expected_cache_dir.Append("foobar");
-#elif(OS_ANDROID)
-  // No matter what the test_profile_dir is, Android always use the
-  // application's cache directory since multiple profiles are not
-  // supported.
-  base::FilePath expected_cache_dir;
+#elif BUILDFLAG(IS_ANDROID)
+  // No matter what the test_profile_dir is, Android always uses the
+  // application's cache directory since multiple profiles are not supported.
+  test_profile_dir = base::FilePath("\\Not a valid path");
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
-#elif(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath homedir;
   base::PathService::Get(base::DIR_HOME, &homedir);
   // Note: we assume XDG_CACHE_HOME/XDG_CONFIG_HOME are at their
   // default settings.
   test_profile_dir = homedir.Append(".config/foobar");
-  base::FilePath expected_cache_dir = homedir.Append(".cache/foobar");
-#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Chrome OS doesn't allow special cache overrides like desktop Linux.
+  expected_cache_dir = homedir.Append(".config/foobar");
+#else
+  expected_cache_dir = homedir.Append(".cache/foobar");
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
+#error Unsupported platform
+#endif  // BUILDFLAG(IS_WIN)
 
-  // Verify that a profile in the special platform-specific source
-  // location ends up in the special target location. Ignore this assertion on
-  // platforms that don't use a special cache directory.
-#if !defined(OS_WIN) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Verify the expectations above for the platform-specific profile directory.
+  // On Linux and Mac the platform-specific profile directory is in a special
+  // platform-specific location, and the cache directory also ends up in in a
+  // special target location.
+  base::FilePath cache_dir;
   GetUserCacheDirectory(test_profile_dir, &cache_dir);
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
-#endif
 
   // Verify that a profile in some other random directory doesn't use
-  // the special cache dir.
-  test_profile_dir = base::FilePath(FILE_PATH_LITERAL("/some/other/path"));
-  GetUserCacheDirectory(test_profile_dir, &cache_dir);
-#if defined(OS_ANDROID)
+  // the special cache directory.
+  base::FilePath non_special_profile_dir =
+      base::FilePath(FILE_PATH_LITERAL("/some/other/path"));
+  GetUserCacheDirectory(non_special_profile_dir, &cache_dir);
+#if BUILDFLAG(IS_ANDROID)
+  // Android always uses the same application cache directory.
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
 #else
-  EXPECT_EQ(test_profile_dir.value(), cache_dir.value());
+  EXPECT_EQ(non_special_profile_dir.value(), cache_dir.value());
 #endif
 }
 
 // Chrome OS doesn't use any of the desktop linux configuration.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
     !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());

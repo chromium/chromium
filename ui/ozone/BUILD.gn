@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,14 +22,17 @@ ozone_platform_deps = ozone_external_platform_deps
 # Extra dependencies to pull into ozone_unittests for built platforms.
 ozone_platform_test_deps = ozone_external_platform_test_deps
 
+# Extra dependencies to pull into ozone_integration_tests
+ozone_platform_integration_test_deps =
+    ozone_external_platform_integration_test_deps
+
 # Extra dependencies to pull into ui_test_support for built platforms.
 ozone_platform_ui_test_support_deps =
     ozone_external_platform_ui_test_support_deps
 
-if (ozone_platform_windows) {
-  ozone_platforms += [ "windows" ]
-  ozone_platform_deps += [ "platform/windows" ]
-}
+# Extra dependencies to pull into interactive_ui_tests for built platforms.
+ozone_platform_interactive_ui_tests_sources =
+    ozone_external_interactive_ui_tests_deps
 
 if (ozone_platform_headless) {
   ozone_platforms += [ "headless" ]
@@ -40,6 +43,8 @@ if (ozone_platform_drm) {
   ozone_platforms += [ "drm" ]
   ozone_platform_deps += [ "platform/drm:gbm" ]
   ozone_platform_test_deps += [ "platform/drm:gbm_unittests" ]
+  ozone_platform_integration_test_deps +=
+      [ "platform/drm:drm_integration_tests" ]
 }
 
 if (ozone_platform_cast) {
@@ -65,6 +70,12 @@ if (ozone_platform_scenic) {
   ozone_platform_deps += [ "platform/scenic" ]
 }
 
+if (ozone_platform_flatland) {
+  ozone_platforms += [ "flatland" ]
+  ozone_platform_deps += [ "platform/flatland" ]
+  ozone_platform_test_deps += [ "platform/flatland:flatland_unittests" ]
+}
+
 platform_list_cc_file = "$target_gen_dir/platform_list.cc"
 platform_list_h_file = "$target_gen_dir/platform_list.h"
 platform_list_txt_file = "$target_gen_dir/platform_list.txt"
@@ -77,8 +88,11 @@ component("ozone_base") {
     "public/gl_ozone.h",
     "public/gpu_platform_support_host.cc",
     "public/gpu_platform_support_host.h",
+    "public/hardware_capabilities.h",
     "public/input_controller.cc",
     "public/input_controller.h",
+    "public/native_pixmap_gl_binding.cc",
+    "public/native_pixmap_gl_binding.h",
     "public/overlay_candidates_ozone.cc",
     "public/overlay_candidates_ozone.h",
     "public/overlay_manager_ozone.h",
@@ -88,17 +102,20 @@ component("ozone_base") {
     "public/overlay_surface.h",
     "public/overlay_surface_candidate.cc",
     "public/overlay_surface_candidate.h",
-    "public/ozone_switches.cc",
-    "public/ozone_switches.h",
     "public/platform_clipboard.h",
     "public/platform_gl_egl_utility.cc",
     "public/platform_gl_egl_utility.h",
+    "public/platform_global_shortcut_listener.cc",
+    "public/platform_global_shortcut_listener.h",
+    "public/platform_keyboard_hook.cc",
+    "public/platform_keyboard_hook.h",
     "public/platform_menu_utils.cc",
     "public/platform_menu_utils.h",
     "public/platform_screen.cc",
     "public/platform_screen.h",
     "public/platform_user_input_monitor.cc",
     "public/platform_user_input_monitor.h",
+    "public/platform_utils.h",
     "public/platform_window_surface.h",
     "public/surface_factory_ozone.cc",
     "public/surface_factory_ozone.h",
@@ -111,6 +128,7 @@ component("ozone_base") {
   defines = [ "IS_OZONE_BASE_IMPL" ]
 
   public_deps = [
+    ":ozone_switches",
     "//base",
     "//gpu/vulkan:buildflags",
     "//ipc",
@@ -121,6 +139,7 @@ component("ozone_base") {
     "//ui/display/util",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/devices:devices",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
@@ -143,11 +162,10 @@ component("ozone_base") {
     # Everyone should depend on //ui/ozone instead except a handful of
     # things that would otherwise create a cycle.
     "//chromeos/system:system",
-    "//ui/base/ime/chromeos/*",
+    "//ui/base/ime/ash/*",
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
     "//ui/ozone/platform/*",
-    "//ui/ozone/public/mojom",
   ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
@@ -158,6 +176,8 @@ component("ozone_base") {
 
 source_set("platform") {
   sources = [
+    "common/base_keyboard_hook.cc",
+    "common/base_keyboard_hook.h",
     "common/stub_client_native_pixmap_factory.cc",
     "common/stub_client_native_pixmap_factory.h",
     "platform_constructor_list.h",
@@ -165,7 +185,6 @@ source_set("platform") {
     "platform_selection.cc",
     "platform_selection.h",
     "public/client_native_pixmap_factory_ozone.cc",
-    "public/ozone_gpu_test_helper.cc",
     "public/ozone_platform.cc",
     constructor_list_cc_file,
     platform_list_cc_file,
@@ -175,7 +194,6 @@ source_set("platform") {
   public = [
     "platform_object.h",
     "public/client_native_pixmap_factory_ozone.h",
-    "public/ozone_gpu_test_helper.h",
     "public/ozone_platform.h",
   ]
 
@@ -213,13 +231,29 @@ source_set("platform") {
   visibility += ozone_external_platform_visibility
 }
 
+source_set("ozone_switches") {
+  sources = [
+    "public/ozone_switches.cc",
+    "public/ozone_switches.h",
+  ]
+
+  defines = [ "IS_OZONE_SWITCHES_IMPL" ]
+
+  deps = [ "//base" ]
+
+  visibility += [
+    "//chrome/test:browser_tests_runner",
+    "//content/public/browser:browser_sources",
+    "//media/mojo/services",
+  ]
+}
+
 component("ozone") {
   visibility = []
   visibility = [ "*" ]
   public_deps = [
     ":buildflags",
     ":platform",
-    "//ui/ozone/public/mojom",
   ]
 }
 
@@ -234,10 +268,10 @@ source_set("test_support_internal") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
-    "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/platform_window:platform_window",
@@ -273,10 +307,21 @@ static_library("ui_test_support") {
   allow_circular_includes_from = ozone_platform_ui_test_support_deps
 }
 
+source_set("ozone_interactive_ui_tests") {
+  visibility = []
+  visibility = [ "//chrome/test:interactive_ui_tests${exec_target_suffix}" ]
+
+  testonly = true
+
+  deps = ozone_platform_interactive_ui_tests_sources
+}
+
 static_library("test_support") {
   visibility = []
   visibility = [
     ":*",
+    "platform/flatland:flatland_unittests",
+    "platform/wayland:test_support",
     "platform/wayland:wayland_unittests",
     "platform/x11:x11_unittests",
   ]
@@ -302,6 +347,20 @@ action("generate_ozone_platform_list") {
       ] + ozone_platforms
 
   visibility += [ "//media:*" ]
+}
+
+source_set("ozone_gpu_test_support") {
+  visibility = []
+  visibility = [ "//components/viz/demo:viz_demo" ]
+
+  sources = [ "public/ozone_gpu_test_helper.cc" ]
+
+  public = [ "public/ozone_gpu_test_helper.h" ]
+
+  public_deps = [
+    ":platform",
+    "//base",
+  ]
 }
 
 action("generate_constructor_list") {
@@ -343,7 +402,15 @@ action("generate_test_support_constructor_list") {
 }
 
 test("ozone_unittests") {
-  deps = [ ":test_support" ]
+  if (is_chromeos_lacros && is_chromeos_device) {
+    configs += [ "//build/lacros:optional_shared_libgcc" ]
+  }
+
+  deps = [
+    ":test_support",
+    "//mojo/core/test:run_all_unittests",
+    "//ui/ozone/common:unittests",
+  ]
 
   # Add tests of platform internals.
   deps += ozone_platform_test_deps
@@ -361,7 +428,10 @@ if (ozone_platform_x11) {
   test("ozone_x11_unittests") {
     use_xvfb = true
 
-    deps = [ ":test_support" ]
+    deps = [
+      ":test_support",
+      "//mojo/core/test:run_all_unittests",
+    ]
 
     deps += [ "platform/x11:x11_unittests" ]
 
@@ -371,9 +441,27 @@ if (ozone_platform_x11) {
   }
 }
 
+test("ozone_integration_tests") {
+  testonly = true
+
+  visibility += [ "*" ]
+
+  sources = [ "test/ozone_integration_tests_main.cc" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+  ]
+
+  deps += ozone_platform_integration_test_deps
+}
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "OZONE_PLATFORM_X11=$ozone_platform_x11" ]
+  flags = [
+    "OZONE_PLATFORM_WAYLAND=$ozone_platform_wayland",
+    "OZONE_PLATFORM_X11=$ozone_platform_x11",
+  ]
   visibility += [ "*" ]
 }
 
@@ -388,9 +476,6 @@ group("unittests") {
   ]
 
   if (ozone_platform_x11) {
-    deps += [
-      "//ui/ozone:ozone_x11_unittests",
-      "//ui/platform_window/x11:x11_unittests",
-    ]
+    deps += [ "//ui/ozone:ozone_x11_unittests" ]
   }
 }

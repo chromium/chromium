@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,20 @@
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <lib/fdio/fdio.h>
+#endif
+
 namespace IPC {
 namespace {
 
 // Get a safe file descriptor for test purposes.
 int GetSafeFd() {
+#if BUILDFLAG(IS_FUCHSIA)
+  return fdio_fd_create_null();
+#else
   return open("/dev/null", O_RDONLY);
+#endif
 }
 
 // Returns true if fd was already closed.  Closes fd if not closed.
@@ -122,7 +130,7 @@ TEST(MessageAttachmentSet, WalkWrongOrder) {
   set->CommitAllDescriptors();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DontClose DISABLED_DontClose
 #else
 #define MAYBE_DontClose DontClose

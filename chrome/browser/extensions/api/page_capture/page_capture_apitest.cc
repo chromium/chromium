@@ -1,38 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <atomic>
 
-#include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/page_capture/page_capture_api.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_dialog_auto_confirm.h"
-#include "extensions/common/permissions/permission_set.h"
-#include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/url_pattern_set.h"
-#include "extensions/test/extension_test_message_listener.h"
-#include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "third_party/blink/public/common/switches.h"
 
 namespace extensions {
 
@@ -46,7 +25,7 @@ class PageCaptureSaveAsMHTMLDelegate
   }
 
   virtual ~PageCaptureSaveAsMHTMLDelegate() {
-    PageCaptureSaveAsMHTMLFunction::SetTestDelegate(NULL);
+    PageCaptureSaveAsMHTMLFunction::SetTestDelegate(nullptr);
   }
 
   void OnTemporaryFileCreated(
@@ -81,7 +60,8 @@ class ExtensionPageCaptureApiTest
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kJavaScriptFlags, "--expose-gc");
+    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                    "--expose-gc");
   }
 
   void SetUpOnMainThread() override {
@@ -92,7 +72,7 @@ class ExtensionPageCaptureApiTest
   bool RunTest(const char* extension_name,
                const char* custom_arg = nullptr,
                bool allow_file_access = false) {
-    return RunExtensionTest({.name = extension_name, .custom_arg = custom_arg},
+    return RunExtensionTest(extension_name, {.custom_arg = custom_arg},
                             {.allow_file_access = allow_file_access});
   }
   void WaitForFileCleanup(PageCaptureSaveAsMHTMLDelegate* delegate) {
@@ -127,29 +107,5 @@ IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
       << message_;
   WaitForFileCleanup(&delegate);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       PublicSessionRequestAllowed) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  PageCaptureSaveAsMHTMLDelegate delegate;
-  chromeos::ScopedTestPublicSessionLoginState login_state;
-  // Resolve Permission dialog with Allow.
-  ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
-  ASSERT_TRUE(RunTest("page_capture")) << message_;
-  WaitForFileCleanup(&delegate);
-}
-
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       PublicSessionRequestDenied) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  PageCaptureSaveAsMHTMLDelegate delegate;
-  chromeos::ScopedTestPublicSessionLoginState login_state;
-  // Resolve Permission dialog with Deny.
-  ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::CANCEL);
-  ASSERT_TRUE(RunTest("page_capture", "REQUEST_DENIED")) << message_;
-  EXPECT_EQ(0, delegate.temp_file_count());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

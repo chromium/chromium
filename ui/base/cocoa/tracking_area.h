@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 
 @class CrTrackingAreaOwnerProxy;
 
@@ -43,6 +42,10 @@ class COMPONENT_EXPORT(UI_BASE) ScopedCrTrackingArea {
  public:
   // Takes ownership of |tracking_area| without retaining it.
   explicit ScopedCrTrackingArea(CrTrackingArea* tracking_area = nil);
+
+  ScopedCrTrackingArea(const ScopedCrTrackingArea&) = delete;
+  ScopedCrTrackingArea& operator=(const ScopedCrTrackingArea&) = delete;
+
   ~ScopedCrTrackingArea();
 
   // This will call |scoped_nsobject<>::reset()| to take ownership of the new
@@ -54,7 +57,6 @@ class COMPONENT_EXPORT(UI_BASE) ScopedCrTrackingArea {
 
  private:
   base::scoped_nsobject<CrTrackingArea> tracking_area_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedCrTrackingArea);
 };
 
 }  // namespace ui

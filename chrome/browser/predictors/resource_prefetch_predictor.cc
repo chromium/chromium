@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -70,21 +69,23 @@ GURL CreateRedirectURL(const std::string& scheme,
 PreconnectRequest::PreconnectRequest(
     const url::Origin& origin,
     int num_sockets,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : origin(origin),
       num_sockets(num_sockets),
-      network_isolation_key(network_isolation_key) {
+      network_anonymization_key(network_anonymization_key) {
   DCHECK_GE(num_sockets, 0);
+  DCHECK(!network_anonymization_key.IsEmpty());
 }
 
 PrefetchRequest::PrefetchRequest(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::RequestDestination destination)
     : url(url),
-      network_isolation_key(network_isolation_key),
+      network_anonymization_key(network_anonymization_key),
       destination(destination) {
   DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  DCHECK(!network_anonymization_key.IsEmpty());
 }
 
 PreconnectPrediction::PreconnectPrediction() = default;
@@ -217,11 +218,12 @@ bool ResourcePrefetchPredictor::GetRedirectEndpointsForPreconnect(
     }
 
     // Add the endpoint to which the predictor has seen redirects to.
-    // Set network isolation key same as the origin of the redirect target.
+    // Set network anonymization key same as the origin of the redirect target.
     if (prediction) {
       prediction->requests.emplace_back(
           redirect_origin, 1 /* num_scokets */,
-          net::NetworkIsolationKey(redirect_origin, redirect_origin));
+          net::NetworkAnonymizationKey(net::SchemefulSite(redirect_origin),
+                                       net::SchemefulSite(redirect_origin)));
     }
     at_least_one_redirect_endpoint_added = true;
   }
@@ -261,10 +263,10 @@ void ResourcePrefetchPredictor::StartInitialization() {
   // Create local caches using the database as loaded.
   auto host_redirect_data = std::make_unique<RedirectDataMap>(
       tables_, tables_->host_redirect_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
   auto origin_data = std::make_unique<OriginDataMap>(
       tables_, tables_->origin_table(), config_.max_hosts_to_track,
-      base::TimeDelta::FromSeconds(config_.flush_data_to_disk_delay_seconds));
+      base::Seconds(config_.flush_data_to_disk_delay_seconds));
 
   // Get raw pointers to pass to the first task. Ownership of the unique_ptrs
   // will be passed to the reply task.
@@ -288,7 +290,7 @@ void ResourcePrefetchPredictor::SetObserverForTesting(TestObserver* observer) {
 }
 
 void ResourcePrefetchPredictor::Shutdown() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void ResourcePrefetchPredictor::RecordPageRequestSummary(
@@ -309,7 +311,8 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
   LearnRedirect(summary->initial_url.host(), summary->main_frame_url,
                 host_redirect_data_.get());
   LearnOrigins(summary->main_frame_url.host(),
-               summary->main_frame_url.GetOrigin(), summary->origins);
+               summary->main_frame_url.DeprecatedGetOriginAsURL(),
+               summary->origins);
 
   if (observer_)
     observer_->OnNavigationLearned(*summary);
@@ -344,9 +347,9 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
     prediction->host = redirect_origin.host();
     prediction->is_redirected = (redirect_origin != url_origin);
   }
-
-  net::NetworkIsolationKey network_isolation_key(redirect_origin,
-                                                 redirect_origin);
+  net::SchemefulSite redirect_site = net::SchemefulSite(redirect_origin);
+  net::NetworkAnonymizationKey network_anonymization_key(redirect_site,
+                                                         redirect_site);
 
   for (const OriginStat& origin : data.origins()) {
     float confidence = static_cast<float>(origin.number_of_hits()) /
@@ -359,11 +362,11 @@ bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
       if (confidence > kMinOriginConfidenceToTriggerPreconnect) {
         prediction->requests.emplace_back(
             url::Origin::Create(GURL(origin.origin())), 1,
-            network_isolation_key);
+            network_anonymization_key);
       } else {
         prediction->requests.emplace_back(
             url::Origin::Create(GURL(origin.origin())), 0,
-            network_isolation_key);
+            network_anonymization_key);
       }
     }
   }
@@ -623,8 +626,8 @@ void ResourcePrefetchPredictor::ConnectToHistoryService() {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (!history_service)
     return;
-  DCHECK(!history_service_observer_.IsObserving(history_service));
-  history_service_observer_.Add(history_service);
+  DCHECK(!history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.Observe(history_service);
   if (history_service->BackendLoaded()) {
     // HistoryService is already loaded. Continue with Initialization.
     OnHistoryAndCacheLoaded();

@@ -1,0 +1,122 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:defs.bzl", "cc_proto_library")
+load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
+load("@com_github_grpc_grpc//bazel:grpc_build_system.bzl", "grpc_proto_library")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+licenses(["notice"])
+
+proto_library(
+    name = "processing_config_proto",
+    srcs = ["processing_config.proto"],
+    deps = [
+        "//maldoca/ole/proto:extract_vba_settings_proto",
+        "//maldoca/ole/proto:ole_to_proto_settings_proto",
+        "//maldoca/ole/proto:ooxml_to_proto_settings_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "processing_config_cc_proto",
+    deps = [":processing_config_proto"],
+)
+
+proto_library(
+    name = "doc_type_proto",
+    srcs = ["doc_type.proto"],
+)
+
+cc_proto_library(
+    name = "doc_type_cc_proto",
+    deps = [":doc_type_proto"],
+)
+
+proto_library(
+    name = "parsed_document_proto",
+    srcs = ["parsed_document.proto"],
+    deps = [
+        ":doc_type_proto",
+        "//maldoca/ole/proto:office_proto",
+        "//maldoca/ole/proto:ole_proto",
+        "//maldoca/pdf_parser/proto:pdfium_result_proto",
+        "//maldoca/vba/antivirus:vba_feature_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "parsed_document_cc_proto",
+    deps = [":parsed_document_proto"],
+)
+
+proto_library(
+    name = "document_features_proto",
+    srcs = ["document_features.proto"],
+    deps = [
+        ":doc_type_proto",
+        "//maldoca/pdf_parser/proto:pdf_feature_proto",
+        "//maldoca/vba/antivirus:vba_feature_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "document_features_cc_proto",
+    deps = [":document_features_proto"],
+)
+
+proto_library(
+    name = "maldoca_service_proto",
+    srcs = ["maldoca_service.proto"],
+    deps = [
+        ":doc_type_proto",
+        ":document_features_proto",
+        ":exported_features_proto",
+        ":parsed_document_proto",
+        "//maldoca/base:status_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "maldoca_service_cc_proto",
+    deps = [":maldoca_service_proto"],
+)
+
+cc_grpc_library(
+    name = "maldoca_service_cc_grpc_proto",
+    srcs = [":maldoca_service_proto"],
+    grpc_only = [
+        "=",
+        "True",
+    ],
+    deps = [":maldoca_service_cc_proto"],
+)
+
+proto_library(
+    name = "exported_features_proto",
+    srcs = ["exported_features.proto"],
+    deps = [
+        ":doc_type_proto",
+        "@com_google_protobuf//:wrappers_proto",
+        "@tensorflow_protos//:tf_example",
+    ],
+)
+
+cc_proto_library(
+    name = "exported_features_cc_proto",
+    deps = [":exported_features_proto"],
+)

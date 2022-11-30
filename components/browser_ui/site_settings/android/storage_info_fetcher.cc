@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,7 @@ using content::BrowserThread;
 namespace browser_ui {
 
 StorageInfoFetcher::StorageInfoFetcher(content::BrowserContext* context) {
-  quota_manager_ = content::BrowserContext::GetDefaultStoragePartition(context)
-                       ->GetQuotaManager();
+  quota_manager_ = context->GetDefaultStoragePartition()->GetQuotaManager();
 }
 
 StorageInfoFetcher::~StorageInfoFetcher() = default;
@@ -52,7 +51,6 @@ void StorageInfoFetcher::ClearStorage(const std::string& host,
       FROM_HERE,
       base::BindOnce(
           &storage::QuotaManager::DeleteHostData, quota_manager_, host, type,
-          storage::AllQuotaClientTypes(),
           base::BindOnce(&StorageInfoFetcher::OnUsageClearedInternal, this)));
 }
 

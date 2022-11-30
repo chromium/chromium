@@ -1,54 +1,26 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_
 
-#include "components/security_state/core/security_state.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 
-namespace ui {
-class ThemeProvider;
-}
-
-// A part of the omnibox (location bar, location bar decoration, or dropdown).
-enum class OmniboxPart {
-  LOCATION_BAR_BACKGROUND,
-  LOCATION_BAR_CLEAR_ALL,
-  LOCATION_BAR_SELECTED_KEYWORD,
-  LOCATION_BAR_TEXT_DEFAULT,
-  LOCATION_BAR_TEXT_DIMMED,
-  LOCATION_BAR_BUBBLE_OUTLINE,
-
-  RESULTS_BACKGROUND,  // Background of the results dropdown.
-  RESULTS_ICON,
-  RESULTS_TEXT_DEFAULT,
-  RESULTS_TEXT_DIMMED,
-  RESULTS_TEXT_URL,
-  RESULTS_FOCUS_BAR,  // Vertical bar indicating focus, only used when
-                      // #omnibox-refined-focus-ui is enabled
-  RESULTS_BUTTON_BORDER,
-};
-
-// An optional state for a given |OmniboxPart|.
 enum class OmniboxPartState {
   NORMAL,
   HOVERED,
   SELECTED,
 };
 
-// Returns the color for the given |part| and |tint|. An optional |state| can be
-// provided for OmniboxParts that support stateful colors.
-SkColor GetOmniboxColor(const ui::ThemeProvider* theme_provider,
-                        OmniboxPart part,
-                        OmniboxPartState state = OmniboxPartState::NORMAL);
+constexpr float kOmniboxOpacityHovered = 0.10f;
+constexpr float kOmniboxOpacitySelected = 0.16f;
 
-// Returns the color of the security chip given |tint| and |security_level|.
-SkColor GetOmniboxSecurityChipColor(
-    const ui::ThemeProvider* theme_provider,
-    security_state::SecurityLevel security_level);
-
-float GetOmniboxStateOpacity(OmniboxPartState state);
+inline ui::ColorId GetOmniboxBackgroundColorId(OmniboxPartState state) {
+  constexpr ui::ColorId kIds[] = {kColorOmniboxResultsBackground,
+                                  kColorOmniboxResultsBackgroundHovered,
+                                  kColorOmniboxResultsBackgroundSelected};
+  return kIds[static_cast<size_t>(state)];
+}
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_THEME_H_

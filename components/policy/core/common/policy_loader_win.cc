@@ -1,23 +1,27 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_loader_win.h"
+
+// Must be included before lm.h
+#include <windows.h>
 
 #include <lm.h>       // For NetGetJoinInformation
 // <security.h> needs this.
 #define SECURITY_WIN32 1
 #include <security.h>  // For GetUserNameEx()
 #include <stddef.h>
+#include <userenv.h>
 
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -29,15 +33,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/values.h"
 #include "base/win/shlwapi.h"  // For PathIsUNC()
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/policy_loader_common.h"
@@ -69,13 +72,6 @@ enum DomainCheckErrors {
   DOMAIN_CHECK_ERROR_SIZE,  // Not a DomainCheckError.  Must be last.
 };
 
-// Encapsulates logic to determine if enterprise policies should be honored.
-bool ShouldHonorPolicies() {
-  auto& platform_management_service = PlatformManagementService::GetInstance();
-  return platform_management_service.GetManagementAuthorityTrustworthiness() >=
-         ManagementAuthorityTrustworthiness::TRUSTED;
-}
-
 // Parses |gpo_dict| according to |schema| and writes the resulting policy
 // settings to |policy| for the given |scope| and |level|.
 void ParsePolicy(const RegistryDict* gpo_dict,
@@ -87,13 +83,13 @@ void ParsePolicy(const RegistryDict* gpo_dict,
     return;
 
   std::unique_ptr<base::Value> policy_value(gpo_dict->ConvertToJSON(schema));
-  const base::DictionaryValue* policy_dict = nullptr;
-  if (!policy_value->GetAsDictionary(&policy_dict) || !policy_dict) {
-    LOG(WARNING) << "Root policy object is not a dictionary!";
+  const base::Value::Dict* policy_dict = policy_value->GetIfDict();
+  if (!policy_dict) {
+    SYSLOG(WARNING) << "Root policy object is not a dictionary!";
     return;
   }
 
-  policy->LoadFrom(policy_dict, level, scope, POLICY_SOURCE_PLATFORM);
+  policy->LoadFrom(*policy_dict, level, scope, POLICY_SOURCE_PLATFORM);
 }
 
 // Returns a name, using the |get_name| callback, which may refuse the call if
@@ -174,18 +170,17 @@ bool IsDomainJoined() {
 // Collects stats about the enterprise environment that can be used to decide
 // how to parse the existing policy information.
 void CollectEnterpriseUMAs() {
-  // Collect statistics about the windows suite.
-  UMA_HISTOGRAM_ENUMERATION("EnterpriseCheck.OSType",
-                            base::win::OSInfo::GetInstance()->version_type(),
-                            base::win::SUITE_LAST);
-
+  base::UmaHistogramBoolean("EnterpriseCheck.IsManagedOrEnterpriseDevice",
+                            base::IsManagedOrEnterpriseDevice());
   base::UmaHistogramBoolean("EnterpriseCheck.IsDomainJoined", IsDomainJoined());
   base::UmaHistogramBoolean("EnterpriseCheck.InDomain",
                             base::win::IsEnrolledToDomain());
   base::UmaHistogramBoolean("EnterpriseCheck.IsManaged2",
                             base::win::IsDeviceRegisteredWithManagement());
   base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
-                            base::IsMachineExternallyManaged());
+                            base::IsEnterpriseDevice());
+  base::UmaHistogramBoolean("EnterpriseCheck.IsJoinedToAzureAD",
+                            base::win::IsJoinedToAzureAD());
 
   std::wstring machine_name;
   if (GetName(
@@ -222,8 +217,11 @@ void CollectEnterpriseUMAs() {
 
 PolicyLoaderWin::PolicyLoaderWin(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const std::wstring& chrome_policy_key)
-    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+    : AsyncPolicyLoader(task_runner,
+                        management_service,
+                        /*periodic_updates=*/true),
       is_initialized_(false),
       chrome_policy_key_(chrome_policy_key),
       user_policy_changed_event_(
@@ -245,6 +243,13 @@ PolicyLoaderWin::PolicyLoaderWin(
 }
 
 PolicyLoaderWin::~PolicyLoaderWin() {
+  // Mitigate the issues caused by loading DLLs or lazily resolving symbols on a
+  // background thread (http://crbug/973868) which can hold the process wide
+  // LoaderLock and cause contention on Foreground threads. This issue is solved
+  // on Windows version after Win7. This code can be removed when Win7 is no
+  // longer supported.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   if (!user_policy_watcher_failed_) {
     ::UnregisterGPNotification(user_policy_changed_event_.handle());
     user_policy_watcher_.StopWatching();
@@ -258,8 +263,10 @@ PolicyLoaderWin::~PolicyLoaderWin() {
 // static
 std::unique_ptr<PolicyLoaderWin> PolicyLoaderWin::Create(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ManagementService* management_service,
     const std::wstring& chrome_policy_key) {
-  return std::make_unique<PolicyLoaderWin>(task_runner, chrome_policy_key);
+  return std::make_unique<PolicyLoaderWin>(task_runner, management_service,
+                                           chrome_policy_key);
 }
 
 void PolicyLoaderWin::InitOnBackgroundThread() {
@@ -287,7 +294,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderWin::Load() {
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
   PolicyMap* chrome_policy =
       &bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  for (size_t i = 0; i < base::size(kScopes); ++i) {
+  for (size_t i = 0; i < std::size(kScopes); ++i) {
     PolicyScope scope = kScopes[i].scope;
     PolicyLoadStatusUmaReporter status;
     RegistryDict gpo_dict;
@@ -321,7 +328,7 @@ void PolicyLoaderWin::LoadChromePolicy(const RegistryDict* gpo_dict,
   const Schema* chrome_schema =
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   ParsePolicy(gpo_dict, level, scope, *chrome_schema, &policy);
-  if (!ShouldHonorPolicies())
+  if (ShouldFilterSensitivePolicies())
     FilterSensitivePolicies(&policy);
   chrome_policy_map->MergeFrom(policy);
 }
@@ -346,7 +353,7 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       {POLICY_LEVEL_RECOMMENDED, kKeyRecommended},
   };
 
-  for (size_t i = 0; i < base::size(k3rdPartyDomains); i++) {
+  for (size_t i = 0; i < std::size(k3rdPartyDomains); i++) {
     const char* name = k3rdPartyDomains[i].name;
     const PolicyDomain domain = k3rdPartyDomains[i].domain;
     const RegistryDict* domain_dict = gpo_dict->GetKey(name);
@@ -366,7 +373,7 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       Schema schema = *schema_from_map;
 
       // Parse policy.
-      for (size_t j = 0; j < base::size(kLevels); j++) {
+      for (size_t j = 0; j < std::size(kLevels); j++) {
         const RegistryDict* policy_dict =
             component->second->GetKey(kLevels[j].path);
         if (!policy_dict)

@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/payments/payment_app_context_impl.h"
-#include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
+#include "content/browser/payments/payment_event_dispatcher.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -14,6 +15,7 @@
 
 namespace content {
 
+// Lives on the UI thread.
 class CONTENT_EXPORT PaymentAppProviderImpl
     : public PaymentAppProvider,
       public WebContentsUserData<PaymentAppProviderImpl> {
@@ -28,7 +30,6 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       delete;
 
   // PaymentAppProvider implementation:
-  // Should be accessed only on the UI thread.
   void InvokePaymentApp(int64_t registration_id,
                         const url::Origin& sw_origin,
                         payments::mojom::PaymentRequestEventDataPtr event_data,
@@ -74,8 +75,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       const url::Origin& sw_origin);
   void StartServiceWorkerForDispatch(
       int64_t registration_id,
-      ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
-          callback);
+      PaymentEventDispatcher::ServiceWorkerStartCallback callback);
   void OnInstallPaymentApp(
       const url::Origin& sw_origin,
       payments::mojom::PaymentRequestEventDataPtr event_data,
@@ -83,21 +83,13 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       InvokePaymentAppCallback callback,
       int64_t registration_id);
 
-  // Note that constructor of WebContentsObserver is protected.
-  class PaymentHandlerWindowObserver : public WebContentsObserver {
-   public:
-    explicit PaymentHandlerWindowObserver(
-        WebContents* payment_handler_web_contents);
-    ~PaymentHandlerWindowObserver() override;
-  };
-
-  std::unique_ptr<PaymentHandlerWindowObserver> payment_handler_window_;
+  // The opened window's web contents.
+  base::WeakPtr<WebContents> payment_handler_window_;
 
   // Owns this object.
-  WebContents* payment_request_web_contents_;
+  raw_ptr<WebContents> payment_request_web_contents_;
 
-  // It should be accessed only on the service worker core thread.
-  std::unique_ptr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;
+  std::unique_ptr<PaymentEventDispatcher> event_dispatcher_;
 
   base::WeakPtrFactory<PaymentAppProviderImpl> weak_ptr_factory_{this};
 };

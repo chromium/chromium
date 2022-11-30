@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "base/containers/contains.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -371,6 +370,7 @@ TYPED_TEST_P(AbstractOriginTest, TupleOrigins) {
       {"file:///etc/passwd", {"file", "", 0}},
       {"file://example.com/etc/passwd", {"file", "example.com", 0}},
       {"file:///", {"file", "", 0}},
+      {"file://hostname/C:/dir/file.txt", {"file", "hostname", 0}},
 
       // HTTP URLs
       {"http://example.com/", {"http", "example.com", 80}},

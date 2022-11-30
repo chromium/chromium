@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,22 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-
-#if defined(OS_ANDROID)
-class TabAndroid;
-class TabModel;
-#endif  // defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/autocomplete/tab_matcher_android.h"
+#else
+#include "chrome/browser/autocomplete/tab_matcher_desktop.h"
+#endif
 
 class Profile;
+class TabMatcher;
 
 namespace content {
 class StoragePartition;
-class WebContents;
 }
 
 namespace unified_consent {
@@ -33,15 +34,24 @@ class UrlKeyedDataCollectionConsentHelper;
 class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
  public:
   explicit ChromeAutocompleteProviderClient(Profile* profile);
+
+  ChromeAutocompleteProviderClient(const ChromeAutocompleteProviderClient&) =
+      delete;
+  ChromeAutocompleteProviderClient& operator=(
+      const ChromeAutocompleteProviderClient&) = delete;
+
   ~ChromeAutocompleteProviderClient() override;
 
   // AutocompleteProviderClient:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  PrefService* GetPrefs() override;
+  PrefService* GetPrefs() const override;
   PrefService* GetLocalState() override;
+  std::string GetApplicationLocale() const override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   history::HistoryService* GetHistoryService() override;
+  history_clusters::HistoryClustersService* GetHistoryClustersService()
+      override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   history::URLDatabase* GetInMemoryDatabase() override;
@@ -52,6 +62,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       bool create_if_necessary) const override;
   DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const override;
+  ZeroSuggestCacheService* GetZeroSuggestCacheService() override;
+  const ZeroSuggestCacheService* GetZeroSuggestCacheService() const override;
   OmniboxPedalProvider* GetPedalProvider() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
@@ -69,6 +81,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   signin::IdentityManager* GetIdentityManager() const override;
   bool IsOffTheRecord() const override;
   bool SearchSuggestEnabled() const override;
+  bool AllowDeletingBrowserHistory() const override;
   bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
@@ -85,11 +98,18 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
   void StartServiceWorker(const GURL& destination_url) override;
-  bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) override;
+  const TabMatcher& GetTabMatcher() const override;
   bool IsIncognitoModeAvailable() const override;
-  void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) override;
+  bool IsSharingHubAvailable() const override;
+  base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
+
+  // OmniboxAction::Client:
+  void OpenSharingHub() override;
+  void NewIncognitoWindow() override;
+  void OpenIncognitoClearBrowsingDataDialog() override;
+  void CloseIncognitoWindows() override;
+  void PromptPageTranslation() override;
+  bool OpenJourneys(const std::string& query) override;
 
   // For testing.
   void set_storage_partition(content::StoragePartition* storage_partition) {
@@ -100,36 +120,26 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
                             const GURL& url2,
                             const AutocompleteInput* input) const;
 
-  // Performs a comparison of |stripped_url| to the stripped last committed
-  // URL of |web_contents|, using the internal cache to avoid repeatedly
-  // re-stripping the URL.
-  bool IsStrippedURLEqualToWebContentsURL(const GURL& stripped_url,
-                                          content::WebContents* web_contents);
-
-#if defined(OS_ANDROID)
-  // Returns a TabAndroid has opened same URL as |url|.
-  TabAndroid* GetTabOpenWithURL(const GURL& url,
-                                const AutocompleteInput* input);
-  // Make a JNI call to get all the hidden tabs and non Custom tabs in
-  // |tab_model|.
-  std::vector<TabAndroid*> GetAllHiddenAndNonCCTTabs(
-      const std::vector<TabModel*>& tab_models);
-#endif  // defined(OS_ANDROID)
-
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
+#if BUILDFLAG(IS_ANDROID)
+  TabMatcherAndroid tab_matcher_;
+#else
+  TabMatcherDesktop tab_matcher_;
+#endif
 
   // Injectable storage partitiion, used for testing.
-  content::StoragePartition* storage_partition_;
+  raw_ptr<content::StoragePartition> storage_partition_;
 
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeAutocompleteProviderClient);
+  base::WeakPtrFactory<ChromeAutocompleteProviderClient> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_PROVIDER_CLIENT_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 
 // NOTE(koz): Linux doesn't use the thick shadowed border, so we add padding
 // here.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const int ExclusiveAccessBubble::kPaddingPx = 8;
 #else
 const int ExclusiveAccessBubble::kPaddingPx = 15;
@@ -33,19 +33,37 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
     ExclusiveAccessManager* manager,
     const GURL& url,
     ExclusiveAccessBubbleType bubble_type)
-    : manager_(manager), url_(url), bubble_type_(bubble_type) {
+    : manager_(manager),
+      url_(url),
+      bubble_type_(bubble_type),
+      hide_timeout_(
+          FROM_HERE,
+          base::Milliseconds(kInitialDelayMs),
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+                              base::Unretained(this))),
+      idle_timeout_(
+          FROM_HERE,
+          base::Milliseconds(kIdleTimeMs),
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+                              base::Unretained(this))),
+      suppress_notify_timeout_(
+          FROM_HERE,
+          base::Milliseconds(kSnoozeNotificationsTimeMs),
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+                              base::Unretained(this))),
+      mouse_position_checker_(
+          FROM_HERE,
+          base::Milliseconds(1000 / kPositionCheckHz),
+          base::BindRepeating(&ExclusiveAccessBubble::CheckMousePosition,
+                              base::Unretained(this))) {
   DCHECK_NE(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, bubble_type_);
 }
 
-ExclusiveAccessBubble::~ExclusiveAccessBubble() {
-}
+ExclusiveAccessBubble::~ExclusiveAccessBubble() = default;
 
 void ExclusiveAccessBubble::OnUserInput() {
   // We got some user input; reset the idle timer.
-  idle_timeout_.Stop();  // If the timer isn't running, this is a no-op.
-  idle_timeout_.Start(FROM_HERE,
-                      base::TimeDelta::FromMilliseconds(kIdleTimeMs), this,
-                      &ExclusiveAccessBubble::CheckMousePosition);
+  idle_timeout_.Reset();
 
   // If the notification suppression timer has elapsed, re-show it.
   if (!suppress_notify_timeout_.IsRunning()) {
@@ -63,9 +81,7 @@ void ExclusiveAccessBubble::OnUserInput() {
 void ExclusiveAccessBubble::StartWatchingMouse() {
   // Start the initial delay timer and begin watching the mouse.
   ShowAndStartTimers();
-  mouse_position_checker_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(1000 / kPositionCheckHz),
-      this, &ExclusiveAccessBubble::CheckMousePosition);
+  mouse_position_checker_.Reset();
 }
 
 void ExclusiveAccessBubble::StopWatchingMouse() {
@@ -103,8 +119,8 @@ std::u16string ExclusiveAccessBubble::GetCurrentAllowButtonText() const {
 
 std::u16string ExclusiveAccessBubble::GetInstructionText(
     const std::u16string& accelerator) const {
-  return exclusive_access_bubble::GetInstructionTextForType(bubble_type_,
-                                                            accelerator);
+  return exclusive_access_bubble::GetInstructionTextForType(
+      bubble_type_, accelerator, notify_download_, notify_overridden_);
 }
 
 bool ExclusiveAccessBubble::IsHideTimeoutRunning() const {
@@ -115,12 +131,8 @@ void ExclusiveAccessBubble::ShowAndStartTimers() {
   Show();
 
   // Do not allow the notification to hide for a few seconds.
-  hide_timeout_.Start(FROM_HERE,
-                      base::TimeDelta::FromMilliseconds(kInitialDelayMs), this,
-                      &ExclusiveAccessBubble::CheckMousePosition);
+  hide_timeout_.Reset();
 
   // Do not show the notification again until a long time has elapsed.
-  suppress_notify_timeout_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kSnoozeNotificationsTimeMs),
-      this, &ExclusiveAccessBubble::CheckMousePosition);
+  suppress_notify_timeout_.Reset();
 }

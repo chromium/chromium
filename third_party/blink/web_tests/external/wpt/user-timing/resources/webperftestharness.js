@@ -1,18 +1,5 @@
-/*
-Distributed under both the W3C Test Suite License [1] and the W3C
-3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
-policies and contribution forms [3].
-
-[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
-[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
-[3] http://www.w3.org/2004/10/27-testcases
-
-author: W3C http://www.w3.org/
-help: http://www.w3.org/TR/navigation-timing/#sec-window.performance-attribute
- */
-
 //
-// Helper Functions for NavigationTiming W3C tests
+// Helper functions for User Timing tests
 //
 
 var timingAttributes = [
@@ -123,12 +110,12 @@ function sleep_milliseconds(n)
 
 function test_greater_than(value, greater_than, msg, properties)
 {
-    wp_test(function () { assert_true(value > greater_than, msg); }, msg, properties);
+    wp_test(function () { assert_greater_than(value, greater_than, msg); }, msg, properties);
 }
 
 function test_greater_or_equals(value, greater_than, msg, properties)
 {
-    wp_test(function () { assert_true(value >= greater_than, msg); }, msg, properties);
+    wp_test(function () { assert_greater_than_equal(value, greater_than, msg); }, msg, properties);
 }
 
 function test_not_equals(value, notequals, msg, properties)

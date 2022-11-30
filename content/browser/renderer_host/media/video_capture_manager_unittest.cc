@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,15 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -53,9 +53,9 @@ const auto kIgnoreLogMessageCB = base::DoNothing();
 // Wraps FakeVideoCaptureDeviceFactory to allow mocking of the
 // VideoCaptureDevice MaybeSuspend() and Resume() methods. This is used to check
 // that devices are asked to suspend or resume at the correct times.
-class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
+class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
  public:
-  class WrappedDevice : public media::VideoCaptureDevice {
+  class WrappedDevice final : public media::VideoCaptureDevice {
    public:
     WrappedDevice(std::unique_ptr<media::VideoCaptureDevice> device,
                   WrappedDeviceFactory* factory)
@@ -63,58 +63,60 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
       factory_->OnDeviceCreated(this);
     }
 
-    ~WrappedDevice() final {
-      factory_->OnDeviceDestroyed(this);
-    }
+    WrappedDevice(const WrappedDevice&) = delete;
+    WrappedDevice& operator=(const WrappedDevice&) = delete;
+
+    ~WrappedDevice() override { factory_->OnDeviceDestroyed(this); }
 
     void AllocateAndStart(const media::VideoCaptureParams& params,
-                          std::unique_ptr<Client> client) final {
+                          std::unique_ptr<Client> client) override {
       device_->AllocateAndStart(params, std::move(client));
     }
 
-    void RequestRefreshFrame() final {
-      device_->RequestRefreshFrame();
-    }
+    void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
 
-    void MaybeSuspend() final {
+    void MaybeSuspend() override {
       factory_->WillSuspendDevice();
       device_->MaybeSuspend();
     }
 
-    void Resume() final {
+    void Resume() override {
       factory_->WillResumeDevice();
       device_->Resume();
     }
 
-    void StopAndDeAllocate() final {
-      device_->StopAndDeAllocate();
-    }
+    void StopAndDeAllocate() override { device_->StopAndDeAllocate(); }
 
-    void GetPhotoState(GetPhotoStateCallback callback) final {
+    void GetPhotoState(GetPhotoStateCallback callback) override {
       device_->GetPhotoState(std::move(callback));
     }
 
-    void TakePhoto(TakePhotoCallback callback) final {
+    void TakePhoto(TakePhotoCallback callback) override {
       device_->TakePhoto(std::move(callback));
     }
 
    private:
     const std::unique_ptr<media::VideoCaptureDevice> device_;
-    WrappedDeviceFactory* const factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(WrappedDevice);
+    const raw_ptr<WrappedDeviceFactory> factory_;
   };
 
   static const media::VideoFacingMode DEFAULT_FACING =
       media::VideoFacingMode::MEDIA_VIDEO_FACING_USER;
 
-  WrappedDeviceFactory() : FakeVideoCaptureDeviceFactory() {}
-  ~WrappedDeviceFactory() final {}
+  WrappedDeviceFactory() = default;
 
-  std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
-      const media::VideoCaptureDeviceDescriptor& device_descriptor) final {
-    return std::make_unique<WrappedDevice>(
-        FakeVideoCaptureDeviceFactory::CreateDevice(device_descriptor), this);
+  WrappedDeviceFactory(const WrappedDeviceFactory&) = delete;
+  WrappedDeviceFactory& operator=(const WrappedDeviceFactory&) = delete;
+
+  ~WrappedDeviceFactory() override = default;
+
+  media::VideoCaptureErrorOrDevice CreateDevice(
+      const media::VideoCaptureDeviceDescriptor& device_descriptor) override {
+    auto device = std::make_unique<WrappedDevice>(
+        FakeVideoCaptureDeviceFactory::CreateDevice(device_descriptor)
+            .ReleaseDevice(),
+        this);
+    return media::VideoCaptureErrorOrDevice(std::move(device));
   }
 
   void GetDevicesInfo(GetDevicesInfoCallback callback) override {
@@ -133,23 +135,21 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
             }));
   }
 
+  bool has_active_devices() const { return !devices_.empty(); }
+
   MOCK_METHOD0(WillSuspendDevice, void());
   MOCK_METHOD0(WillResumeDevice, void());
 
  private:
-  void OnDeviceCreated(WrappedDevice* device) {
-    devices_.push_back(device);
-  }
+  void OnDeviceCreated(WrappedDevice* device) { devices_.push_back(device); }
 
   void OnDeviceDestroyed(WrappedDevice* device) {
-    const auto it = std::find(devices_.begin(), devices_.end(), device);
+    const auto it = base::ranges::find(devices_, device);
     CHECK(it != devices_.end());
     devices_.erase(it);
   }
 
   std::vector<WrappedDevice*> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedDeviceFactory);
 };
 
 // Listener class used to track progress of VideoCaptureManager test.
@@ -187,6 +187,10 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
   void OnBufferReady(const VideoCaptureControllerID& id,
                      const ReadyBuffer& buffer,
                      const std::vector<ReadyBuffer>& scaled_buffers) override {}
+  void OnNewCropVersion(const VideoCaptureControllerID& id,
+                        uint32_t crop_version) override {}
+  void OnFrameWithEmptyRegionCapture(const VideoCaptureControllerID&) override {
+  }
   void OnEnded(const VideoCaptureControllerID& id) override {}
 
   void OnGotControllerCallback(const VideoCaptureControllerID&) {}
@@ -209,6 +213,11 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
     ProcessScreenlockEvent(SCREEN_LOCK_EVENT);
     base::RunLoop().RunUntilIdle();
   }
+
+  void GenerateScreenUnlockedEvent() {
+    ProcessScreenlockEvent(SCREEN_UNLOCK_EVENT);
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 }  // namespace
@@ -217,6 +226,10 @@ class ScreenlockMonitorTestSource : public ScreenlockMonitorSource {
 class VideoCaptureManagerTest : public testing::Test {
  public:
   VideoCaptureManagerTest() {}
+
+  VideoCaptureManagerTest(const VideoCaptureManagerTest&) = delete;
+  VideoCaptureManagerTest& operator=(const VideoCaptureManagerTest&) = delete;
+
   ~VideoCaptureManagerTest() override {}
 
   void HandleEnumerationResult(
@@ -248,7 +261,7 @@ class VideoCaptureManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    listener_.reset(new MockMediaStreamProviderListener());
+    listener_ = std::make_unique<MockMediaStreamProviderListener>();
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
@@ -263,12 +276,12 @@ class VideoCaptureManagerTest : public testing::Test {
         std::unique_ptr<ScreenlockMonitorSource>(screenlock_monitor_source_));
 
     vcm_ = new VideoCaptureManager(std::move(video_capture_provider),
-                                   base::DoNothing(), ScreenlockMonitor::Get());
+                                   base::DoNothing());
     const int32_t kNumberOfFakeDevices = 2;
     video_capture_device_factory_->SetToDefaultDevicesConfig(
         kNumberOfFakeDevices);
     vcm_->RegisterListener(listener_.get());
-    frame_observer_.reset(new MockFrameObserver());
+    frame_observer_ = std::make_unique<MockFrameObserver>();
 
     base::RunLoop run_loop;
     vcm_->EnumerateDevices(
@@ -322,12 +335,8 @@ class VideoCaptureManagerTest : public testing::Test {
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
         gfx::Size(320, 240), 30, media::PIXEL_FORMAT_I420);
-    vcm_->ResumeCaptureForClient(
-        session_id,
-        params,
-        controllers_[client_id],
-        client_id,
-        frame_observer_.get());
+    vcm_->ResumeCaptureForClient(session_id, params, controllers_[client_id],
+                                 client_id, frame_observer_.get());
     // Allow possible VideoCaptureDevice::Resume() task to run.
     base::RunLoop().RunUntilIdle();
   }
@@ -340,24 +349,21 @@ class VideoCaptureManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ApplicationStateChange(base::android::ApplicationState state) {
     vcm_->OnApplicationStateChange(state);
   }
 #endif
 
   BrowserTaskEnvironment task_environment_;
-  ScreenlockMonitorTestSource* screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;
   std::unique_ptr<MockFrameObserver> frame_observer_;
-  WrappedDeviceFactory* video_capture_device_factory_;
+  raw_ptr<WrappedDeviceFactory> video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManagerTest);
 };
 
 // Test cases
@@ -384,7 +390,7 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 
 TEST_F(VideoCaptureManagerTest, CreateAndCloseMultipleTimes) {
   InSequence s;
-  for (int i = 1 ; i < 3 ; ++i) {
+  for (int i = 1; i < 3; ++i) {
     EXPECT_CALL(*listener_,
                 Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
     EXPECT_CALL(*frame_observer_, OnStarted(_));
@@ -475,7 +481,7 @@ TEST_F(VideoCaptureManagerTest, OpenTwice) {
 // Connect and disconnect devices.
 TEST_F(VideoCaptureManagerTest, ConnectAndDisconnectDevices) {
   int number_of_devices_keep =
-    video_capture_device_factory_->number_of_devices();
+      video_capture_device_factory_->number_of_devices();
 
   // Simulate we remove 1 fake device.
   video_capture_device_factory_->SetToDefaultDevicesConfig(1);
@@ -691,7 +697,7 @@ TEST_F(VideoCaptureManagerTest,
 
   // Right after opening the device, we should see no format in use.
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id));
 
@@ -699,7 +705,7 @@ TEST_F(VideoCaptureManagerTest,
   VideoCaptureControllerID client_id = StartClient(video_session_id, true);
   base::RunLoop().RunUntilIdle();
   // After StartClient(), device's format in use should be valid.
-  base::Optional<media::VideoCaptureFormat> format_in_use =
+  absl::optional<media::VideoCaptureFormat> format_in_use =
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id);
   EXPECT_TRUE(format_in_use.has_value());
@@ -714,7 +720,7 @@ TEST_F(VideoCaptureManagerTest,
   base::RunLoop().RunUntilIdle();
   // After StopClient(), the device's format in use should be empty again.
   EXPECT_EQ(
-      base::nullopt,
+      absl::nullopt,
       vcm_->GetDeviceFormatInUse(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id));
 
@@ -849,7 +855,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Try to open, start, pause and resume a device.
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   InSequence s;
@@ -874,6 +880,87 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
   ApplicationStateChange(
       base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  StopClient(client_id);
+  vcm_->Close(video_session_id);
+
+  // Wait to check callbacks before removing the listener.
+  base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+#else
+TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
+  vcm_->set_idle_close_timeout_for_testing(base::TimeDelta());
+
+  InSequence s;
+
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  auto video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  // Pretend screen is locked, which should close the device.
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
+
+  // Starting another client while the screen is locked should defer the actual
+  // start of the device, but appear open. Since the device is already started,
+  // the OnStarted() will appear before Opened().
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  auto video_session_id2 = vcm_->Open(devices_.front());
+  auto client_id2 = StartClient(video_session_id2, true);
+  ASSERT_FALSE(video_capture_device_factory_->has_active_devices());
+
+  // Unlock the screen now.
+  EXPECT_CALL(*frame_observer_, OnStarted(_)).Times(2);
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id));
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id2));
+
+  StopClient(client_id);
+  vcm_->Close(video_session_id);
+
+  StopClient(client_id2);
+  vcm_->Close(video_session_id2);
+
+  // Wait to check callbacks before removing the listener.
+  base::RunLoop().RunUntilIdle();
+  vcm_->UnregisterListener(listener_.get());
+}
+
+TEST_F(VideoCaptureManagerTest, ScreenLockDoesNothingBeforeTimeout) {
+  vcm_->set_idle_close_timeout_for_testing(base::TimeDelta::Max());
+  InSequence s;
+  EXPECT_CALL(*listener_,
+              Opened(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, _));
+  EXPECT_CALL(*frame_observer_, OnStarted(_));
+  auto video_session_id = vcm_->Open(devices_.front());
+  auto client_id = StartClient(video_session_id, true);
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+
+  // Pretend screen is locked, which should do nothing since timeout hasn't
+  // elapsed.
+  screenlock_monitor_source_->GenerateScreenLockedEvent();
+  EXPECT_TRUE(video_capture_device_factory_->has_active_devices());
+  EXPECT_TRUE(vcm_->is_idle_close_timer_running_for_testing());
+
+  screenlock_monitor_source_->GenerateScreenUnlockedEvent();
+  ASSERT_TRUE(video_capture_device_factory_->has_active_devices());
+  EXPECT_FALSE(vcm_->is_idle_close_timer_running_for_testing());
+
+  EXPECT_CALL(*listener_,
+              Closed(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                     video_session_id));
 
   StopClient(client_id);
   vcm_->Close(video_session_id);
@@ -913,7 +1000,7 @@ TEST_F(VideoCaptureManagerTest, DeviceCaptureDeviceNotClosedOnScreenlock) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
 // Try to open, start a desktop capture device, and confirm it's closed on
 // ScreenLocked event on desktop platforms.
 TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
@@ -947,7 +1034,7 @@ TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-#endif  // ENABLE_SCREEN_CAPTURE && !defined(OS_ANDROID)
+#endif  // ENABLE_SCREEN_CAPTURE && !BUILDFLAG(IS_ANDROID)
 
 // TODO(mcasas): Add a test to check consolidation of the supported formats
 // provided by the device when http://crbug.com/323913 is closed.

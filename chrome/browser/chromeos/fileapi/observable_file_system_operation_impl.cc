@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 
 namespace chromeos {
 
@@ -122,9 +123,11 @@ ObservableFileSystemOperationImpl::ObservableFileSystemOperationImpl(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* file_system_context,
     std::unique_ptr<storage::FileSystemOperationContext> operation_context)
-    : storage::FileSystemOperationImpl(url,
-                                       file_system_context,
-                                       std::move(operation_context)),
+    : storage::FileSystemOperationImpl(
+          url,
+          file_system_context,
+          std::move(operation_context),
+          storage::FileSystemOperation::CreatePassKey()),
       account_id_(account_id) {}
 
 ObservableFileSystemOperationImpl::~ObservableFileSystemOperationImpl() =
@@ -133,12 +136,12 @@ ObservableFileSystemOperationImpl::~ObservableFileSystemOperationImpl() =
 void ObservableFileSystemOperationImpl::Copy(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
-    const CopyProgressCallback& progress_callback,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Copy(
-      src, dst, option, error_behavior, progress_callback,
+      src, dst, options, error_behavior, std::move(copy_or_move_hook_delegate),
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileCopiedOnUiThread, account_id_, src, dst)),
@@ -148,23 +151,26 @@ void ObservableFileSystemOperationImpl::Copy(
 void ObservableFileSystemOperationImpl::CopyFileLocal(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::CopyFileLocal(
-      src, dst, option, progress_callback,
+      src, dst, options, progress_callback,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileCopiedOnUiThread, account_id_, src, dst)),
           std::move(callback)));
 }
 
-void ObservableFileSystemOperationImpl::Move(const storage::FileSystemURL& src,
-                                             const storage::FileSystemURL& dst,
-                                             CopyOrMoveOption option,
-                                             StatusCallback callback) {
+void ObservableFileSystemOperationImpl::Move(
+    const storage::FileSystemURL& src,
+    const storage::FileSystemURL& dst,
+    CopyOrMoveOptionSet options,
+    ErrorBehavior error_behavior,
+    std::unique_ptr<storage::CopyOrMoveHookDelegate> copy_or_move_hook_delegate,
+    StatusCallback callback) {
   storage::FileSystemOperationImpl::Move(
-      src, dst, option,
+      src, dst, options, error_behavior, std::move(copy_or_move_hook_delegate),
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileMovedOnUiThread, account_id_, src, dst)),
@@ -174,10 +180,10 @@ void ObservableFileSystemOperationImpl::Move(const storage::FileSystemURL& src,
 void ObservableFileSystemOperationImpl::MoveFileLocal(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::MoveFileLocal(
-      src, dst, option,
+      src, dst, options,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileMovedOnUiThread, account_id_, src, dst)),

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
-#include "base/stl_util.h"
 #include "components/variations/active_field_trials.h"
 
 namespace metrics {
@@ -42,8 +43,8 @@ static_assert(sizeof(RecordHeader) == sizeof(base::subtle::Atomic32),
 // for the record header and rounds up to the next multiple of the record-header
 // size.
 size_t CalculateRecordSize(size_t data_amount) {
-  return base::bits::Align(data_amount + sizeof(RecordHeader),
-                           sizeof(RecordHeader));
+  return base::bits::AlignUp(data_amount + sizeof(RecordHeader),
+                             sizeof(RecordHeader));
 }
 
 }  // namespace
@@ -298,10 +299,8 @@ void PersistentSystemProfile::SetSystemProfile(
     // Don't overwrite a complete profile with an incomplete one.
     if (!complete && allocator.has_complete_profile())
       continue;
-    // A full system profile always starts fresh. Incomplete keeps existing
-    // records for merging.
-    if (complete)
-      allocator.Reset();
+    // System profile always starts fresh.
+    allocator.Reset();
     // Write out the serialized profile.
     allocator.Write(kSystemProfileProto, serialized_profile);
     // Indicate if this is a complete profile.

@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_CACHED_METRICS_PROFILE_H_
 #define CHROME_BROWSER_METRICS_CACHED_METRICS_PROFILE_H_
+
+#include "base/memory/raw_ptr.h"
 
 class Profile;
 
@@ -27,7 +29,7 @@ class CachedMetricsProfile {
   // The profile for which metrics can be gathered. Once a profile is found,
   // its value is cached here so that GetMetricsProfile() can return a
   // consistent value.
-  Profile* cached_profile_ = nullptr;
+  raw_ptr<Profile> cached_profile_ = nullptr;
 };
 
 }  // namespace metrics

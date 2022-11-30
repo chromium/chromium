@@ -24,11 +24,14 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 
+namespace gfx {
+class RectF;
+class SizeF;
+}  // namespace gfx
+
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
-class FloatSize;
 class SVGPreserveAspectRatioTearOff;
 
 class SVGPreserveAspectRatio final
@@ -73,10 +76,10 @@ class SVGPreserveAspectRatio final
   }
   SVGMeetOrSliceType MeetOrSlice() const { return meet_or_slice_; }
 
-  void TransformRect(FloatRect& dest_rect, FloatRect& src_rect) const;
+  void TransformRect(gfx::RectF& dest_rect, gfx::RectF& src_rect) const;
 
-  AffineTransform ComputeTransform(const FloatRect& view_box,
-                                   const FloatSize& viewport_size) const;
+  AffineTransform ComputeTransform(const gfx::RectF& view_box,
+                                   const gfx::SizeF& viewport_size) const;
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);

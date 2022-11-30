@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,12 @@ ArcNotificationDelegate::~ArcNotificationDelegate() = default;
 
 std::unique_ptr<message_center::MessageView>
 ArcNotificationDelegate::CreateCustomMessageView(
-    const message_center::Notification& notification) {
+    const message_center::Notification& notification,
+    bool shown_in_popup) {
   CHECK(item_);
   DCHECK_EQ(item_->GetNotificationId(), notification.id());
-  return std::make_unique<ArcNotificationView>(item_.get(), notification);
+  return std::make_unique<ArcNotificationView>(item_.get(), notification,
+                                               shown_in_popup);
 }
 
 void ArcNotificationDelegate::Close(bool by_user) {
@@ -34,8 +36,8 @@ void ArcNotificationDelegate::Close(bool by_user) {
 }
 
 void ArcNotificationDelegate::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   DCHECK(item_);
   item_->Click();
 }

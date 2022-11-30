@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+PASS CSS Fonts Module Level 4: parsing @font-palette-values
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 1
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 2
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 3
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 4
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 5
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 6
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 7
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 8
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 9
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 10
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 11
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 12
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 13
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 14
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 15
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 16
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 17
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 18
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 19
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 20
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 21
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 22
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 23
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 24
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 25
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 26
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 27
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 28
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 29
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 30
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 31
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 32 assert_equals: expected "foo, bar, baz" but got ""
+Harness: the test ran to completion.
+

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.incognito;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -32,7 +33,8 @@ public class IncognitoProfileDestroyer implements IncognitoTabModelObserver {
 
     @Override
     public void didBecomeEmpty() {
-        if (!IncognitoUtils.doIncognitoTabsExist() && !IncognitoUtils.isIncognitoTabModelActive()) {
+        if (!IncognitoTabHostUtils.doIncognitoTabsExist()
+                && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
             // Only delete the incognito profile if there are no incognito tabs open in any tab
             // model selector as the profile is shared between them.
             Profile profile = mTabModelSelector.getModel(true).getProfile();

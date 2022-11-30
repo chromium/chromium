@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -51,6 +50,19 @@ EVENTS_X_EXPORT int GetChangedMouseButtonFlagsFromXEvent(const x11::Event& xev);
 // Gets the mouse wheel offsets from a x11::Event.
 EVENTS_X_EXPORT gfx::Vector2d GetMouseWheelOffsetFromXEvent(
     const x11::Event& xev);
+
+// Gets the force from a native_event. Normalized to be [0, 1]. Default is 0.0.
+EVENTS_X_EXPORT float GetStylusForceFromXEvent(const x11::Event& xev);
+
+// Gets the tilt x from a native_event. Value in degree. Default is 0.0.
+EVENTS_X_EXPORT float GetStylusTiltXFromXEvent(const x11::Event& xev);
+
+// Gets the tilt y from a native_event. Value in degree. Default is 0.0.
+EVENTS_X_EXPORT float GetStylusTiltYFromXEvent(const x11::Event& xev);
+
+// Gets the pointer details from an x11::Event.
+EVENTS_X_EXPORT PointerDetails
+GetStylusPointerDetailsFromXEvent(const x11::Event& xev);
 
 // Gets the touch id from a x11::Event.
 EVENTS_X_EXPORT int GetTouchIdFromXEvent(const x11::Event& xev);

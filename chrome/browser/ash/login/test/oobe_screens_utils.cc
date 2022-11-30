@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,11 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
@@ -24,12 +26,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 void WaitFor(OobeScreenId screen_id) {
@@ -49,11 +51,7 @@ void WaitForWelcomeScreen() {
 }
 
 void TapWelcomeNext() {
-  if (features::IsNewOobeLayoutEnabled()) {
-    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
-  } else {
-    test::OobeJS().TapOnPath({"connect", "welcomeScreen", "welcomeNextButton"});
-  }
+  OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
 }
 
 void WaitForNetworkSelectionScreen() {
@@ -61,16 +59,16 @@ void WaitForNetworkSelectionScreen() {
 }
 
 void TapNetworkSelectionNext() {
-  test::OobeJS()
+  OobeJS()
       .CreateEnabledWaiter(true /* enabled */,
                            {"network-selection", "nextButton"})
       ->Wait();
-  test::OobeJS().TapOnPath({"network-selection", "nextButton"});
+  OobeJS().TapOnPath({"network-selection", "nextButton"});
 }
 
 void WaitForUpdateScreen() {
   WaitFor(UpdateView::kScreenId);
-  test::OobeJS().CreateVisibilityWaiter(true, {"oobe-update"})->Wait();
+  OobeJS().CreateVisibilityWaiter(true, {"oobe-update"})->Wait();
 }
 
 void ExitUpdateScreenNoUpdate() {
@@ -87,20 +85,20 @@ void WaitForFingerprintScreen() {
   OobeScreenWaiter(FingerprintSetupScreenView::kScreenId).Wait();
   LOG(INFO) << "Waiting for fingerprint setup screen "
                "to show.";
-  test::OobeJS().CreateVisibilityWaiter(true, {"fingerprint-setup"})->Wait();
+  OobeJS().CreateVisibilityWaiter(true, {"fingerprint-setup"})->Wait();
   LOG(INFO) << "Waiting for fingerprint setup screen "
                "to show setupFingerprint.";
-  test::OobeJS()
+  OobeJS()
       .CreateVisibilityWaiter(true, {"fingerprint-setup", "setupFingerprint"})
       ->Wait();
 }
 
 void ExitFingerprintPinSetupScreen() {
-  test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
+  OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync("$('fingerprint-setup').$.skipStart.click()");
+  OobeJS().ExecuteAsync("$('fingerprint-setup').$.skipStart.click()");
   LOG(INFO) << "OobeInteractiveUITest: Waiting for fingerprint setup screen "
                "to close.";
   WaitForExit(FingerprintSetupScreenView::kScreenId);
@@ -114,22 +112,24 @@ void ExitPinSetupScreen() {
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync("$('pin-setup').$.setupSkipButton.click()");
+  OobeJS().ExecuteAsync("$('pin-setup').$.setupSkipButton.click()");
   WaitForExit(PinSetupScreenView::kScreenId);
 }
 
 void SkipToEnrollmentOnRecovery() {
-  test::WaitForWelcomeScreen();
-  test::TapWelcomeNext();
+  WaitForWelcomeScreen();
+  TapWelcomeNext();
 
-  test::WaitForNetworkSelectionScreen();
-  test::TapNetworkSelectionNext();
+  WaitForNetworkSelectionScreen();
+  TapNetworkSelectionNext();
 
-  WaitForEulaScreen();
-  TapEulaAccept();
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    WaitForEulaScreen();
+    TapEulaAccept();
+  }
 
-  test::WaitForUpdateScreen();
-  test::ExitUpdateScreenNoUpdate();
+  WaitForUpdateScreen();
+  ExitUpdateScreenNoUpdate();
 
   WaitFor(EnrollmentScreenView::kScreenId);
 }
@@ -143,29 +143,44 @@ void WaitForUserCreationScreen() {
 }
 
 void TapUserCreationNext() {
-  test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+  OobeJS().TapOnPath({"user-creation", "nextButton"});
+}
+
+void WaitForOobeJSReady() {
+  if (!LoginDisplayHost::default_host()->GetOobeUI()) {
+    base::RunLoop run_loop;
+    LoginDisplayHost::default_host()->AddWizardCreatedObserverForTests(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  base::RunLoop run_loop;
+  if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
 }
 
 void WaitForEulaScreen() {
-  if (!WizardController::IsBrandedBuild())
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
     return;
   WaitFor(EulaView::kScreenId);
 }
 
 void TapEulaAccept() {
-  if (!WizardController::IsBrandedBuild())
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
     return;
-  test::OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
+  OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
 }
 
 void WaitForSyncConsentScreen() {
-  if (!WizardController::IsBrandedBuild())
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
     return;
   WaitFor(SyncConsentScreenView::kScreenId);
 }
 
 void ExitScreenSyncConsent() {
-  if (!WizardController::IsBrandedBuild())
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
     return;
   SyncConsentScreen* screen = static_cast<SyncConsentScreen*>(
       WizardController::default_controller()->GetScreen(
@@ -176,14 +191,38 @@ void ExitScreenSyncConsent() {
   WaitForExit(SyncConsentScreenView::kScreenId);
 }
 
+void WaitForConsolidatedConsentScreen() {
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
+    return;
+  WaitFor(ConsolidatedConsentScreenView::kScreenId);
+}
+
+void TapConsolidatedConsentAccept() {
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
+    return;
+  OobeJS().TapOnPath({"consolidated-consent", "acceptButton"});
+}
+
+void WaitForGuestTosScreen() {
+  WaitFor(GuestTosScreenView::kScreenId);
+}
+
+void TapGuestTosAccept() {
+  OobeJS().TapOnPath({"guest-tos", "acceptButton"});
+}
+
+void ClickSignInFatalScreenActionButton() {
+  OobeJS().ClickOnPath({"signin-fatal-error", "actionButton"});
+}
+
 bool IsScanningRequestedOnNetworkScreen() {
-  return test::OobeJS().GetAttributeBool(
+  return OobeJS().GetAttributeBool(
       "enableWifiScans",
       {"network-selection", "networkSelectLogin", "networkSelect"});
 }
 
 bool IsScanningRequestedOnErrorScreen() {
-  return test::OobeJS().GetAttributeBool(
+  return OobeJS().GetAttributeBool(
       "enableWifiScans",
       {"error-message", "offline-network-control", "networkSelect"});
 }
@@ -205,5 +244,45 @@ LanguageReloadObserver::~LanguageReloadObserver() {
   welcome_screen_->RemoveObserver(this);
 }
 
+OobeUiDestroyedWaiter::OobeUiDestroyedWaiter(OobeUI* oobe_ui) {
+  oobe_ui_observation_.Observe(oobe_ui);
+}
+
+OobeUiDestroyedWaiter::~OobeUiDestroyedWaiter() {}
+
+void OobeUiDestroyedWaiter::Wait() {
+  if (was_destroyed_)
+    return;
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+
+  ASSERT_TRUE(was_destroyed_)
+      << "Timed out while waiting for OobeUI to be destroyed!";
+}
+
+void OobeUiDestroyedWaiter::OnDestroyingOobeUI() {
+  oobe_ui_observation_.Reset();
+  was_destroyed_ = true;
+  run_loop_->Quit();
+}
+
+// Start observing, tap/click and wait.
+void TapOnPathAndWaitForOobeToBeDestroyed(
+    std::initializer_list<base::StringPiece> element_ids) {
+  // Get the OOBE WebUI Controller (OobeUI) and start observing.
+  content::WebContents* web_contents =
+      LoginDisplayHost::default_host()->GetOobeWebContents();
+  CHECK(web_contents);
+  OobeUI* oobe_ui =
+      static_cast<OobeUI*>(web_contents->GetWebUI()->GetController());
+  OobeUiDestroyedWaiter observer{oobe_ui};
+
+  test::OobeJS().TapOnPathAsync(element_ids);
+
+  observer.Wait();
+}
+
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

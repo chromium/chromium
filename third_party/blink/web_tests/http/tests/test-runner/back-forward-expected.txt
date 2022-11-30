@@ -1,0 +1,2 @@
+URL : http://127.0.0.1:8000/test-runner/resources/go-forwards-then-back.html
+sessionStorage.name : 3

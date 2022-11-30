@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/update_client/component.h"
 
-#include <algorithm>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -16,8 +17,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -111,7 +112,7 @@ void InstallOnBlockingTaskRunner(
 
   // Acquire the ownership of the |unpack_path|.
   base::ScopedTempDir unpack_path_owner;
-  ignore_result(unpack_path_owner.Set(unpack_path));
+  std::ignore = unpack_path_owner.Set(unpack_path);
 
   if (static_cast<int>(fingerprint.size()) !=
       base::WriteFile(
@@ -341,41 +342,46 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   hashdiff_sha256_ = package.hashdiff_sha256;
 
   if (!result.manifest.run.empty()) {
-    install_params_ = base::make_optional(CrxInstaller::InstallParams(
-        result.manifest.run, result.manifest.arguments));
+    install_params_ = absl::make_optional(CrxInstaller::InstallParams(
+        result.manifest.run, result.manifest.arguments,
+        [&result](const std::string& expected) -> std::string {
+          if (expected.empty() || result.data.empty()) {
+            return "";
+          }
+
+          const auto it = base::ranges::find(
+              result.data, expected,
+              &ProtocolParser::Result::Data::install_data_index);
+
+          const bool matched = it != std::end(result.data);
+          DVLOG(2) << "Expected install_data_index: " << expected
+                   << ", matched: " << matched;
+
+          return matched ? it->text : "";
+        }(crx_component_ ? crx_component_->install_data_index : "")));
   }
 }
 
-void Component::Uninstall(const base::Version& version, int reason) {
+void Component::Uninstall(const CrxComponent& crx_component, int reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-
-  previous_version_ = version;
+  crx_component_ = crx_component;
+  previous_version_ = crx_component_->version;
   next_version_ = base::Version("0");
   extra_code1_ = reason;
-
   state_ = std::make_unique<StateUninstalled>(this);
 }
 
-void Component::Registration(const base::Version& version) {
+void Component::Registration(const CrxComponent& crx_component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-
-  next_version_ = version;
-
+  crx_component_ = crx_component;
+  next_version_ = crx_component_->version;
   state_ = std::make_unique<StateRegistration>(this);
 }
 
 void Component::SetUpdateCheckResult(
-    const base::Optional<ProtocolParser::Result>& result,
+    const absl::optional<ProtocolParser::Result>& result,
     ErrorCategory error_category,
     int error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -427,13 +433,13 @@ base::TimeDelta Component::GetUpdateDuration() const {
   const base::TimeDelta update_cost(base::TimeTicks::Now() - update_begin_);
   DCHECK_GE(update_cost, base::TimeDelta());
   const base::TimeDelta max_update_delay =
-      base::TimeDelta::FromSeconds(update_context_.config->UpdateDelay());
+      base::Seconds(update_context_.config->UpdateDelay());
   return std::min(update_cost, max_update_delay);
 }
 
 base::Value Component::MakeEventUpdateComplete() const {
   base::Value event(base::Value::Type::DICTIONARY);
-  event.SetKey("eventtype", base::Value(3));
+  event.SetKey("eventtype", base::Value(update_context_.is_install ? 2 : 3));
   event.SetKey(
       "eventresult",
       base::Value(static_cast<int>(state() == ComponentState::kUpdated)));
@@ -634,6 +640,13 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
+
   if (component.status_ == "ok") {
     TransitionState(std::make_unique<StateCanUpdate>(&component));
     return;
@@ -690,13 +703,18 @@ void Component::StateCanUpdate::DoHandle() {
   component.is_update_available_ = true;
   component.NotifyObservers(Events::COMPONENT_UPDATE_FOUND);
 
-  if (component.crx_component()
-          ->supports_group_policy_enable_component_updates &&
-      !component.update_context_.enabled_component_updates) {
+  if (!component.crx_component()->updates_enabled) {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;
     TransitionState(std::make_unique<StateUpdateError>(&component));
+    return;
+  }
+
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
     return;
   }
 
@@ -730,7 +748,7 @@ void Component::StateUpToDate::DoHandle() {
   auto& component = State::component();
   DCHECK(component.crx_component());
 
-  component.NotifyObservers(Events::COMPONENT_NOT_UPDATED);
+  component.NotifyObservers(Events::COMPONENT_ALREADY_UP_TO_DATE);
   EndState();
 }
 
@@ -789,6 +807,13 @@ void Component::StateDownloadingDiff::DownloadComplete(
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
   crx_downloader_ = nullptr;
+
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
 
   if (download_result.error) {
     DCHECK(download_result.response.empty());
@@ -859,6 +884,13 @@ void Component::StateDownloading::DownloadComplete(
     component.AppendEvent(component.MakeEventDownloadMetrics(download_metrics));
 
   crx_downloader_ = nullptr;
+
+  if (component.update_context_.is_cancelled) {
+    TransitionState(std::make_unique<StateUpdateError>(&component));
+    component.error_category_ = ErrorCategory::kService;
+    component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
+    return;
+  }
 
   if (download_result.error) {
     DCHECK(download_result.response.empty());

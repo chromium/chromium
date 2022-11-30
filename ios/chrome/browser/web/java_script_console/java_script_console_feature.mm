@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_delegate.h"
-#include "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
+#import "ios/chrome/browser/web/java_script_console/java_script_console_message.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -18,7 +18,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "console_js";
+const char kScriptName[] = "console";
 
 const char kConsoleScriptHandlerName[] = "ConsoleMessageHandler";
 
@@ -47,7 +47,7 @@ void JavaScriptConsoleFeature::SetDelegate(
   delegate_ = delegate;
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 JavaScriptConsoleFeature::GetScriptMessageHandlerName() const {
   return kConsoleScriptHandlerName;
 }

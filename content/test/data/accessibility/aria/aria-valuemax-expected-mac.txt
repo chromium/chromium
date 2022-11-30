@@ -3,4 +3,3 @@ AXWebArea
 ++AXScrollBar AXMaxValue=102 AXValue=52
 ++AXSlider AXMaxValue=103 AXValue=53
 ++AXIncrementor AXMaxValue=104 AXValue=54
-++++AXStaticText AXValue='Spin'

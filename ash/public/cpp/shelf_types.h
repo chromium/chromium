@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_SHELF_TYPES_H_
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -59,6 +60,9 @@ enum ShelfAutoHideState {
   SHELF_AUTO_HIDE_HIDDEN,
 };
 
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           ShelfAutoHideState state);
+
 enum ShelfVisibilityState {
   // Always visible.
   SHELF_VISIBLE,
@@ -78,16 +82,8 @@ enum class ShelfBackgroundType {
   // for a split view.
   kMaximized,
 
-  // The background when the app list is visible in clamshell mode.
-  kAppList,
-
   // The background when the app list is visible in tablet mode.
   kHomeLauncher,
-
-  // The background when a maximized window exists or two windows are maximized
-  // for a split view, and the app list is visible. If the app list were not
-  // visible, the shelf would be in ShelfBackgroundType::kMaximized state.
-  kMaximizedWithAppList,
 
   // The background when OOBE is active.
   kOobe,
@@ -106,6 +102,9 @@ enum class ShelfBackgroundType {
   kInApp,
 };
 
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           ShelfBackgroundType type);
+
 // Source of the launch or activation request, for tracking.
 enum ShelfLaunchSource {
   // The item was launched from an unknown source.
@@ -117,8 +116,14 @@ enum ShelfLaunchSource {
   // The item was launched from an app list search view.
   LAUNCH_FROM_APP_LIST_SEARCH,
 
+  // The item was launched from an app list search Recommendation.
+  LAUNCH_FROM_APP_LIST_RECOMMENDATION,
+
   // The item was launched from the shelf itself.
   LAUNCH_FROM_SHELF,
+
+  // The item was launched internally, for example from test.
+  LAUNCH_FROM_INTERNAL,
 };
 
 // The actions that may be performed when a shelf item is selected.

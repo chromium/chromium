@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class PrefService;
@@ -19,6 +20,10 @@ class PrefService;
 namespace base {
 class Version;
 }  // namespace base
+
+namespace crx_file {
+enum class VerifierFormat;
+}
 
 namespace update_client {
 class ActivityDataService;
@@ -30,16 +35,20 @@ class ProtocolHandlerFactory;
 namespace updater {
 
 class ActivityDataService;
-class UpdaterPrefs;
 class ExternalConstants;
+class PolicyService;
+class UpdaterPrefs;
 
+// This class is free-threaded. Its instance is shared by multiple sequences and
+// it can't be mutated.
 class Configurator : public update_client::Configurator {
  public:
-  explicit Configurator(std::unique_ptr<UpdaterPrefs> prefs);
+  Configurator(scoped_refptr<UpdaterPrefs> prefs,
+               scoped_refptr<ExternalConstants> external_constants);
   Configurator(const Configurator&) = delete;
   Configurator& operator=(const Configurator&) = delete;
 
-  // Configurator for update_client::Configurator.
+  // Overrides for update_client::Configurator.
   double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
@@ -49,7 +58,6 @@ class Configurator : public update_client::Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -61,7 +69,6 @@ class Configurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -69,14 +76,20 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
+
   int ServerKeepAliveSeconds() const;
+  scoped_refptr<PolicyService> GetPolicyService() const;
+  crx_file::VerifierFormat GetCrxVerifierFormat() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;
   ~Configurator() override;
 
-  std::unique_ptr<UpdaterPrefs> prefs_;
-  std::unique_ptr<ExternalConstants> external_constants_;
+  scoped_refptr<UpdaterPrefs> prefs_;
+  scoped_refptr<PolicyService> policy_service_;
+  scoped_refptr<ExternalConstants> external_constants_;
   std::unique_ptr<ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;

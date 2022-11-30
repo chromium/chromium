@@ -20,9 +20,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_QUERY_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace gfx {
+class PointF;
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 
@@ -38,11 +41,11 @@ class SVGTextQuery {
   unsigned NumberOfCharacters() const;
   float TextLength() const;
   float SubStringLength(unsigned start_position, unsigned length) const;
-  FloatPoint StartPositionOfCharacter(unsigned position) const;
-  FloatPoint EndPositionOfCharacter(unsigned position) const;
+  gfx::PointF StartPositionOfCharacter(unsigned position) const;
+  gfx::PointF EndPositionOfCharacter(unsigned position) const;
   float RotationOfCharacter(unsigned position) const;
-  FloatRect ExtentOfCharacter(unsigned position) const;
-  int CharacterNumberAtPosition(const FloatPoint&) const;
+  gfx::RectF ExtentOfCharacter(unsigned position) const;
+  int CharacterNumberAtPosition(const gfx::PointF&) const;
 
  private:
   LayoutObject* query_root_layout_object_;
@@ -50,4 +53,4 @@ class SVGTextQuery {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_QUERY_H_

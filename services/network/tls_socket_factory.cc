@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,24 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "net/http/http_network_session.h"
+#include "net/http/transport_security_state.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/ssl_config_type_converter.h"
 #include "services/network/tls_client_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 namespace {
@@ -43,9 +47,7 @@ class FakeCertVerifier : public net::CertVerifier {
 };
 }  // namespace
 
-TLSSocketFactory::TLSSocketFactory(
-    net::URLRequestContext* url_request_context,
-    const net::HttpNetworkSession::Context* http_context)
+TLSSocketFactory::TLSSocketFactory(net::URLRequestContext* url_request_context)
     : ssl_client_context_(url_request_context->ssl_config_service(),
                           url_request_context->cert_verifier(),
                           url_request_context->transport_security_state(),
@@ -54,12 +56,7 @@ TLSSocketFactory::TLSSocketFactory(
                           url_request_context->sct_auditing_delegate()),
       client_socket_factory_(nullptr),
       ssl_config_service_(url_request_context->ssl_config_service()) {
-  if (http_context) {
-    client_socket_factory_ = http_context->client_socket_factory;
-  }
-
-  if (!client_socket_factory_ &&
-      url_request_context->GetNetworkSessionContext()) {
+  if (url_request_context->GetNetworkSessionContext()) {
     client_socket_factory_ =
         url_request_context->GetNetworkSessionContext()->client_socket_factory;
   }
@@ -81,7 +78,7 @@ void TLSSocketFactory::UpgradeToTLS(
   if (!socket || !socket->IsConnected()) {
     std::move(callback).Run(
         net::ERR_SOCKET_NOT_CONNECTED, mojo::ScopedDataPipeConsumerHandle(),
-        mojo::ScopedDataPipeProducerHandle(), base::nullopt);
+        mojo::ScopedDataPipeProducerHandle(), absl::nullopt);
     return;
   }
   CreateTLSClientSocket(

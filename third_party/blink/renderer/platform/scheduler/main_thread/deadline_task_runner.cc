@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ DeadlineTaskRunner::~DeadlineTaskRunner() = default;
 void DeadlineTaskRunner::SetDeadline(const base::Location& from_here,
                                      base::TimeDelta delay,
                                      base::TimeTicks now) {
-  DCHECK(delay > base::TimeDelta());
+  DCHECK(delay.is_positive());
   base::TimeTicks deadline = now + delay;
   if (deadline_.is_null() || deadline < deadline_) {
     deadline_ = deadline;

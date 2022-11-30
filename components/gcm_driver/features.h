@@ -1,17 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_FEATURES_H
-#define COMPONENTS_GCM_DRIVER_FEATURES_H
+#ifndef COMPONENTS_GCM_DRIVER_FEATURES_H_
+#define COMPONENTS_GCM_DRIVER_FEATURES_H_
 
 #include "base/feature_list.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace gcm {
 
 namespace features {
 
-extern const base::Feature kInvalidateTokenFeature;
+BASE_DECLARE_FEATURE(kInvalidateTokenFeature);
+BASE_DECLARE_FEATURE(kGCMIncludeAccountTokensInCheckinRequest);
+BASE_DECLARE_FEATURE(kGCMReportAccountTokenChanges);
 extern const char kParamNameTokenInvalidationPeriodDays[];
 
 // The period after which the GCM token becomes stale.
@@ -21,4 +27,4 @@ base::TimeDelta GetTokenInvalidationInterval();
 
 }  // namespace gcm
 
-#endif  // COMPONENTS_GCM_DRIVER_FEATURES_H
+#endif  // COMPONENTS_GCM_DRIVER_FEATURES_H_

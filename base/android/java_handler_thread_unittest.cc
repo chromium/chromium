@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class JavaHandlerThreadForTest : public android::JavaHandlerThread {
  public:
   explicit JavaHandlerThreadForTest(
       const char* name,
-      base::ThreadPriority priority = base::ThreadPriority::NORMAL)
-      : android::JavaHandlerThread(name, priority) {}
+      base::ThreadType thread_type = base::ThreadType::kDefault)
+      : android::JavaHandlerThread(name, thread_type) {}
 
   using android::JavaHandlerThread::state;
   using android::JavaHandlerThread::State;
@@ -34,6 +34,9 @@ class DummyTaskObserver : public TaskObserver {
       : num_tasks_started_(num_tasks_started),
         num_tasks_processed_(0),
         num_tasks_(num_tasks) {}
+
+  DummyTaskObserver(const DummyTaskObserver&) = delete;
+  DummyTaskObserver& operator=(const DummyTaskObserver&) = delete;
 
   ~DummyTaskObserver() override = default;
 
@@ -57,8 +60,6 @@ class DummyTaskObserver : public TaskObserver {
   int num_tasks_started_;
   int num_tasks_processed_;
   const int num_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskObserver);
 };
 
 void PostNTasks(int posts_remaining) {
@@ -88,8 +89,8 @@ void RunTest_AbortDontRunMoreTasks(bool delayed, bool init_java_first) {
       BindOnce(&android::JavaHandlerThreadHelpers::ThrowExceptionAndAbort,
                &test_done_event);
   if (delayed) {
-    java_thread->task_runner()->PostDelayedTask(
-        FROM_HERE, std::move(target), TimeDelta::FromMilliseconds(10));
+    java_thread->task_runner()->PostDelayedTask(FROM_HERE, std::move(target),
+                                                Milliseconds(10));
   } else {
     java_thread->task_runner()->PostTask(FROM_HERE, std::move(target));
     java_thread->task_runner()->PostTask(FROM_HERE,
@@ -136,8 +137,7 @@ TEST_F(JavaHandlerThreadTest, RunTasksWhileShuttingDownJavaThread) {
       FROM_HERE, BindLambdaForTesting([&]() {
         sequence_manager->AddTaskObserver(&observer);
         ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-            FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE),
-            TimeDelta::FromDays(1));
+            FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
         java_thread->StopSequenceManagerForTesting();
         PostNTasks(kNumPosts);
       }));

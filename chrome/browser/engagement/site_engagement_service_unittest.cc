@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/history_aware_site_engagement_service.h"
-#include "chrome/browser/engagement/site_engagement_helper.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -34,6 +34,7 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/engagement_type.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/site_engagement/content/site_engagement_score.h"
@@ -62,16 +63,22 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
   explicit SiteEngagementChangeWaiter(Profile* profile) : profile_(profile) {
     HostContentSettingsMapFactory::GetForProfile(profile)->AddObserver(this);
   }
+
+  SiteEngagementChangeWaiter(const SiteEngagementChangeWaiter&) = delete;
+  SiteEngagementChangeWaiter& operator=(const SiteEngagementChangeWaiter&) =
+      delete;
+
   ~SiteEngagementChangeWaiter() override {
     HostContentSettingsMapFactory::GetForProfile(profile_)->RemoveObserver(
         this);
   }
 
   // Overridden from content_settings::Observer:
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type == ContentSettingsType::SITE_ENGAGEMENT)
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override {
+    if (content_type_set.Contains(ContentSettingsType::SITE_ENGAGEMENT))
       Proceed();
   }
 
@@ -80,10 +87,8 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementChangeWaiter);
 };
 
 base::Time GetReferenceTime() {
@@ -132,6 +137,9 @@ class ObserverTester : public SiteEngagementObserver {
         callback_called_(false),
         run_loop_() {}
 
+  ObserverTester(const ObserverTester&) = delete;
+  ObserverTester& operator=(const ObserverTester&) = delete;
+
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
@@ -152,14 +160,12 @@ class ObserverTester : public SiteEngagementObserver {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL url_;
   double score_;
   EngagementType type_;
   bool callback_called_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverTester);
 };
 
 class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
@@ -188,6 +194,12 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     service_->Shutdown();
     ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  bool IsEngagementAtLeast(const GURL& url,
+                           blink::mojom::EngagementLevel level) {
+    double score = service_->GetScore(url);
+    return SiteEngagementService::IsEngagementAtLeast(score, level);
   }
 
   void NavigateWithTransitionAndExpectHigherScore(
@@ -268,7 +280,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   base::ScopedTempDir temp_dir_;
-  SiteEngagementService* service_;
+  raw_ptr<SiteEngagementService> service_;
   base::SimpleTestClock clock_;
 };
 
@@ -472,7 +484,7 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   base::HistogramTester histograms;
 
   base::Time current_day = GetReferenceTime();
-  clock_.SetNow(current_day - base::TimeDelta::FromDays(5));
+  clock_.SetNow(current_day - base::Days(5));
 
   // The https and http versions of www.google.com should be separate. But
   // different paths on the same origin should be treated the same.
@@ -507,26 +519,26 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(1));
+  clock_.SetNow(GetReferenceTime() + base::Days(1));
   EXPECT_DOUBLE_EQ(2.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(7.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(7));
+  clock_.SetNow(GetReferenceTime() + base::Days(7));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
   service_->AddPointsForTesting(url1, 1.0);
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(10));
+  clock_.SetNow(GetReferenceTime() + base::Days(10));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(5.0, service_->GetScore(url2));
 
-  clock_.SetNow(GetReferenceTime() + base::TimeDelta::FromDays(11));
+  clock_.SetNow(GetReferenceTime() + base::Days(11));
   EXPECT_DOUBLE_EQ(1.0, service_->GetScore(url1));
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
 
 // Disabled due to flakiness on Builder Linux Tests. crbug.com/1137759
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CheckHistograms DISABLED_CheckHistograms
 #else
 #define MAYBE_CheckHistograms CheckHistograms
@@ -551,8 +563,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               0);
   histograms.ExpectTotalCount(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0);
-  histograms.ExpectTotalCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               0);
 
@@ -580,7 +590,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
   for (const std::string& histogram_name : engagement_bucket_histogram_names)
     histograms.ExpectTotalCount(histogram_name, 0);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
 
   // The https and http versions of www.google.com should be separate.
   GURL url1("https://www.google.com/");
@@ -613,8 +623,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               1);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 2);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 2);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               6);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -629,7 +637,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                                EngagementType::kFirstDailyEngagement, 2);
 
   // Navigations are still logged within the 1 hour refresh period
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(59));
+  clock_.SetNow(clock_.Now() + base::Minutes(59));
 
   NavigateAndCommit(url2);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_GENERATED);
@@ -649,7 +657,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                                EngagementType::kFirstDailyEngagement, 2);
 
   // Update the hourly histograms again.
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(1));
+  clock_.SetNow(clock_.Now() + base::Minutes(1));
 
   NavigateAndCommit(url3);
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
@@ -677,8 +685,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               4);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 3);
-  histograms.ExpectUniqueSample(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               12);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -727,7 +733,7 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
   for (int i = 0; i < 6; ++i)
     service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
-  clock_.SetNow(clock_.Now() + base::TimeDelta::FromMinutes(60));
+  clock_.SetNow(clock_.Now() + base::Minutes(60));
   service_->HandleNavigation(web_contents(), ui::PAGE_TRANSITION_TYPED);
 
   // Wait until the background metrics recording happens.
@@ -749,10 +755,6 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
                               7);
   histograms.ExpectUniqueSample(
       SiteEngagementMetrics::kOriginsWithMaxEngagementHistogram, 0, 4);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 0, 3);
-  histograms.ExpectBucketCount(
-      SiteEngagementMetrics::kOriginsWithMaxDailyEngagementHistogram, 1, 1);
   histograms.ExpectTotalCount(SiteEngagementMetrics::kEngagementTypeHistogram,
                               24);
   histograms.ExpectBucketCount(SiteEngagementMetrics::kEngagementTypeHistogram,
@@ -776,10 +778,10 @@ TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
 TEST_F(SiteEngagementServiceTest, CleanupEngagementScores) {
   // Set the base time to be 3 weeks past the stale period in the past.
   // Use a 1 second offset to make sure scores don't yet decay.
-  base::TimeDelta one_second = base::TimeDelta::FromSeconds(1);
-  base::TimeDelta one_day = base::TimeDelta::FromDays(1);
+  base::TimeDelta one_second = base::Seconds(1);
+  base::TimeDelta one_day = base::Days(1);
   base::TimeDelta decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours());
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours());
   base::TimeDelta shorter_than_decay_period = decay_period - one_second;
 
   base::Time max_decay_time =
@@ -1000,7 +1002,7 @@ TEST_F(SiteEngagementServiceTest, CleanupEngagementScoresProportional) {
   service_->AddPointsForTesting(url1, 1.0);
   service_->AddPointsForTesting(url2, 1.2);
 
-  current_day += base::TimeDelta::FromDays(7);
+  current_day += base::Days(7);
   clock_.SetNow(current_day);
   std::map<GURL, double> score_map = GetScoreMap(service_);
   EXPECT_EQ(2u, score_map.size());
@@ -1056,7 +1058,7 @@ TEST_F(SiteEngagementServiceTest, IsBootstrapped) {
   service_->AddPointsForTesting(url2, 5.0);
   EXPECT_TRUE(service_->IsBootstrapped());
 
-  clock_.SetNow(current_day + base::TimeDelta::FromDays(8));
+  clock_.SetNow(current_day + base::Days(8));
   EXPECT_FALSE(service_->IsBootstrapped());
 }
 
@@ -1087,11 +1089,10 @@ TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
   GURL origin4a("http://decayed.com/index.html");
 
   base::Time today = GetReferenceTime();
-  base::Time yesterday = GetReferenceTime() - base::TimeDelta::FromDays(1);
-  base::Time yesterday_afternoon = GetReferenceTime() -
-                                   base::TimeDelta::FromDays(1) +
-                                   base::TimeDelta::FromHours(4);
-  base::Time yesterday_week = GetReferenceTime() - base::TimeDelta::FromDays(8);
+  base::Time yesterday = GetReferenceTime() - base::Days(1);
+  base::Time yesterday_afternoon =
+      GetReferenceTime() - base::Days(1) + base::Hours(4);
+  base::Time yesterday_week = GetReferenceTime() - base::Days(8);
   clock_.SetNow(today);
 
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
@@ -1214,18 +1215,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::NONE,
             service_->GetEngagementLevel(url2));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MEDIUM));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MINIMAL engagement.
   service_->AddPointsForTesting(url2, 0.5);
@@ -1233,18 +1230,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url1 to LOW engagement.
   service_->AddPointsForTesting(url1, 1.0);
@@ -1252,18 +1245,14 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
-  EXPECT_FALSE(service_->IsEngagementAtLeast(
-      url1, blink::mojom::EngagementLevel::MEDIUM));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::LOW));
   EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url1, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MEDIUM engagement.
   service_->AddPointsForTesting(url2, 4.5);
@@ -1271,61 +1260,46 @@ TEST_F(SiteEngagementServiceTest, EngagementLevel) {
             service_->GetEngagementLevel(url1));
   EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to HIGH engagement.
   for (int i = 0; i < 9; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
     service_->AddPointsForTesting(url2, 5.0);
   }
   EXPECT_EQ(blink::mojom::EngagementLevel::HIGH,
             service_->GetEngagementLevel(url2));
 
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_FALSE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_FALSE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 
   // Bring url2 to MAX engagement.
   for (int i = 0; i < 10; ++i) {
-    current_day += base::TimeDelta::FromDays(1);
+    current_day += base::Days(1);
     clock_.SetNow(current_day);
     service_->AddPointsForTesting(url2, 5.0);
   }
   EXPECT_EQ(blink::mojom::EngagementLevel::MAX,
             service_->GetEngagementLevel(url2));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
   EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::NONE));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MINIMAL));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
-  EXPECT_TRUE(service_->IsEngagementAtLeast(
-      url2, blink::mojom::EngagementLevel::MEDIUM));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
-  EXPECT_TRUE(
-      service_->IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
+      IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MINIMAL));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::LOW));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MEDIUM));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::HIGH));
+  EXPECT_TRUE(IsEngagementAtLeast(url2, blink::mojom::EngagementLevel::MAX));
 }
 
 TEST_F(SiteEngagementServiceTest, Observers) {
@@ -1459,7 +1433,7 @@ TEST_F(SiteEngagementServiceTest, LastEngagementTime) {
   EXPECT_EQ(rebased_time, service_->GetLastEngagementTime());
 
   // Adding 0 points shouldn't update the last engagement time.
-  base::Time later_in_day = current_day + base::TimeDelta::FromSeconds(30);
+  base::Time later_in_day = current_day + base::Seconds(30);
   clock_.SetNow(later_in_day);
   service_->AddPointsForTesting(origin, 0);
 
@@ -1505,8 +1479,8 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
 
   // Advance within a decay period and add points.
   base::TimeDelta less_than_decay_period =
-      base::TimeDelta::FromHours(SiteEngagementScore::GetDecayPeriodInHours()) -
-      base::TimeDelta::FromSeconds(30);
+      base::Hours(SiteEngagementScore::GetDecayPeriodInHours()) -
+      base::Seconds(30);
   base::Time origin1_last_updated = clock_.Now() + less_than_decay_period;
   clock_.SetNow(origin1_last_updated);
   service_->AddPointsForTesting(origin, 1);
@@ -1533,7 +1507,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToNow) {
   // triggers a cleanup. Ensure that |last_engagement_time| is moved back
   // appropriately, while origin1 is decayed correctly (once).
   clock_.SetNow(origin1_last_updated + less_than_decay_period +
-                base::TimeDelta::FromSeconds(30));
+                base::Seconds(30));
   service_->AddPointsForTesting(origin1, 1);
 
   EXPECT_EQ(clock_.Now(),
@@ -1567,8 +1541,7 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToRebase) {
   // Set the clock such that |origin|'s last engagement time is between
   // last_engagement_time and rebase_time.
   clock_.SetNow(current_day + service_->GetStalePeriod() +
-                service_->GetMaxDecayPeriod() -
-                base::TimeDelta::FromSeconds((30)));
+                service_->GetMaxDecayPeriod() - base::Seconds((30)));
   base::Time rebased_time = clock_.Now() - service_->GetMaxDecayPeriod();
   service_->CleanupEngagementScores(true);
 
@@ -1594,7 +1567,7 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   service_->AddPointsForTesting(url2, 2);
 
   auto incognito_service = std::make_unique<SiteEngagementService>(
-      profile()->GetPrimaryOTRProfile());
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   incognito_service->SetClockForTesting(&clock_);
   EXPECT_EQ(1, incognito_service->GetScore(url1));
   EXPECT_EQ(2, incognito_service->GetScore(url2));
@@ -1637,7 +1610,7 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
       HostContentSettingsMapFactory::GetForProfile(profile());
   HostContentSettingsMap* incognito_settings_map =
       HostContentSettingsMapFactory::GetForProfile(
-          profile()->GetPrimaryOTRProfile());
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
   // All scores are 0 to start.
   EXPECT_EQ(0, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
@@ -1661,8 +1634,8 @@ TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {
   EXPECT_EQ(2, CheckScoreFromSettingsOnThread(content::BrowserThread::IO,
                                               incognito_settings_map, url2));
 
-  SiteEngagementService* incognito_service =
-      SiteEngagementService::Get(profile()->GetPrimaryOTRProfile());
+  SiteEngagementService* incognito_service = SiteEngagementService::Get(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ASSERT_TRUE(incognito_service);
   incognito_service->AddPointsForTesting(url1, 3);
   incognito_service->AddPointsForTesting(url2, 1);

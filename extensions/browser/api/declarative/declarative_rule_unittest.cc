@@ -1,10 +1,12 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -13,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::ParseJson;
-using base::test::ParseJsonDeprecated;
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionFactory;
 using url_matcher::URLMatcherConditionSet;
@@ -35,7 +36,7 @@ std::unique_ptr<base::DictionaryValue> SimpleManifest() {
 struct RecordingCondition {
   typedef int MatchData;
 
-  URLMatcherConditionFactory* factory;
+  raw_ptr<URLMatcherConditionFactory> factory;
   std::unique_ptr<base::Value> value;
 
   void GetURLMatcherConditionSets(
@@ -49,14 +50,14 @@ struct RecordingCondition {
       const base::Value& condition,
       std::string* error) {
     const base::DictionaryValue* dict = nullptr;
-    if (condition.GetAsDictionary(&dict) && dict->HasKey("bad_key")) {
+    if (condition.GetAsDictionary(&dict) && dict->FindKey("bad_key")) {
       *error = "Found error key";
-      return std::unique_ptr<RecordingCondition>();
+      return nullptr;
     }
 
     std::unique_ptr<RecordingCondition> result(new RecordingCondition());
     result->factory = url_matcher_condition_factory;
-    result->value.reset(condition.DeepCopy());
+    result->value = base::Value::ToUniquePtrValue(condition.Clone());
     return result;
   }
 };
@@ -65,8 +66,8 @@ typedef DeclarativeConditionSet<RecordingCondition> RecordingConditionSet;
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
   RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"key\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("{\"bad_key\": 2}"));
+  conditions.push_back(ParseJson("{\"key\": 1}"));
+  conditions.push_back(ParseJson("{\"bad_key\": 2}"));
 
   std::string error;
   std::unique_ptr<RecordingConditionSet> result = RecordingConditionSet::Create(
@@ -78,8 +79,8 @@ TEST(DeclarativeConditionTest, ErrorConditionSet) {
 TEST(DeclarativeConditionTest, CreateConditionSet) {
   URLMatcher matcher;
   RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"key\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("[\"val1\", 2]"));
+  conditions.push_back(ParseJson("{\"key\": 1}"));
+  conditions.push_back(ParseJson("[\"val1\", 2]"));
 
   // Test insertion
   std::string error;
@@ -90,21 +91,20 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   EXPECT_EQ(2u, result->conditions().size());
 
   EXPECT_EQ(matcher.condition_factory(), result->conditions()[0]->factory);
-  EXPECT_TRUE(ParseJsonDeprecated("{\"key\": 1}")
-                  ->Equals(result->conditions()[0]->value.get()));
+  EXPECT_EQ(ParseJson("{\"key\": 1}"), *result->conditions()[0]->value);
 }
 
 struct FulfillableCondition {
   struct MatchData {
     int value;
-    const std::set<URLMatcherConditionSet::ID>& url_matches;
+    const std::set<base::MatcherStringPattern::ID>& url_matches;
   };
 
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  int condition_set_id;
+  base::MatcherStringPattern::ID condition_set_id;
   int max_value;
 
-  URLMatcherConditionSet::ID url_matcher_condition_set_id() const {
+  base::MatcherStringPattern::ID url_matcher_condition_set_id() const {
     return condition_set_id;
   }
 
@@ -119,7 +119,7 @@ struct FulfillableCondition {
   }
 
   bool IsFulfilled(const MatchData& match_data) const {
-    if (condition_set_id != -1 &&
+    if (condition_set_id != base::MatcherStringPattern::kInvalidId &&
         !base::Contains(match_data.url_matches, condition_set_id))
       return false;
     return match_data.value <= max_value;
@@ -136,11 +136,16 @@ struct FulfillableCondition {
       *error = "Expected dict";
       return result;
     }
-    if (!dict->GetInteger("url_id", &result->condition_set_id))
-      result->condition_set_id = -1;
-    if (!dict->GetInteger("max", &result->max_value))
+    const auto id = dict->FindIntKey("url_id");
+    result->condition_set_id =
+        id.has_value() ? static_cast<base::MatcherStringPattern::ID>(id.value())
+                       : base::MatcherStringPattern::kInvalidId;
+    if (absl::optional<int> max_value_int = dict->FindIntKey("max")) {
+      result->max_value = *max_value_int;
+    } else {
       *error = "Expected integer at ['max']";
-    if (result->condition_set_id != -1) {
+    }
+    if (result->condition_set_id != base::MatcherStringPattern::kInvalidId) {
       result->condition_set = new URLMatcherConditionSet(
           result->condition_set_id,
           URLMatcherConditionSet::Conditions());
@@ -152,10 +157,10 @@ struct FulfillableCondition {
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
   typedef DeclarativeConditionSet<FulfillableCondition> FulfillableConditionSet;
   FulfillableConditionSet::Values conditions;
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 1, \"max\": 3}"));
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 2, \"max\": 5}"));
-  conditions.push_back(ParseJsonDeprecated("{\"url_id\": 3, \"max\": 1}"));
-  conditions.push_back(ParseJsonDeprecated("{\"max\": -5}"));  // No url.
+  conditions.push_back(ParseJson("{\"url_id\": 1, \"max\": 3}"));
+  conditions.push_back(ParseJson("{\"url_id\": 2, \"max\": 5}"));
+  conditions.push_back(ParseJson("{\"url_id\": 3, \"max\": 1}"));
+  conditions.push_back(ParseJson("{\"max\": -5}"));  // No url.
 
   // Test insertion
   std::string error;
@@ -165,7 +170,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   ASSERT_TRUE(result);
   EXPECT_EQ(4u, result->conditions().size());
 
-  std::set<URLMatcherConditionSet::ID> url_matches;
+  std::set<base::MatcherStringPattern::ID> url_matches;
   FulfillableCondition::MatchData match_data = { 0, url_matches };
   EXPECT_FALSE(result->IsFulfilled(1, match_data))
       << "Testing an ID that's not in url_matches forwards to the Condition, "
@@ -194,9 +199,9 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   URLMatcherConditionSet::Vector condition_sets;
   result->GetURLMatcherConditionSets(&condition_sets);
   ASSERT_EQ(3U, condition_sets.size());
-  EXPECT_EQ(1, condition_sets[0]->id());
-  EXPECT_EQ(2, condition_sets[1]->id());
-  EXPECT_EQ(3, condition_sets[2]->id());
+  EXPECT_EQ(1U, condition_sets[0]->id());
+  EXPECT_EQ(2U, condition_sets[1]->id());
+  EXPECT_EQ(3U, condition_sets[2]->id());
 }
 
 // DeclarativeAction
@@ -214,23 +219,22 @@ class SummingAction : public base::RefCounted<SummingAction> {
       const base::Value& action,
       std::string* error,
       bool* bad_message) {
-    int increment = 0;
-    int min_priority = 0;
     const base::DictionaryValue* dict = nullptr;
     EXPECT_TRUE(action.GetAsDictionary(&dict));
-    if (dict->HasKey("error")) {
+    if (dict->FindKey("error")) {
       EXPECT_TRUE(dict->GetString("error", error));
       return nullptr;
     }
-    if (dict->HasKey("bad")) {
+    if (dict->FindKey("bad")) {
       *bad_message = true;
       return nullptr;
     }
 
-    EXPECT_TRUE(dict->GetInteger("value", &increment));
-    dict->GetInteger("priority", &min_priority);
+    absl::optional<int> increment = dict->FindIntKey("value");
+    EXPECT_TRUE(increment);
+    int min_priority = dict->FindIntKey("priority").value_or(0);
     return scoped_refptr<const SummingAction>(
-        new SummingAction(increment, min_priority));
+        new SummingAction(*increment, min_priority));
   }
 
   void Apply(const std::string& extension_id,
@@ -255,8 +259,8 @@ typedef DeclarativeActionSet<SummingAction> SummingActionSet;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
   SummingActionSet::Values actions;
-  actions.push_back(ParseJsonDeprecated("{\"value\": 1}"));
-  actions.push_back(ParseJsonDeprecated("{\"error\": \"the error\"}"));
+  actions.push_back(ParseJson("{\"value\": 1}"));
+  actions.push_back(ParseJson("{\"error\": \"the error\"}"));
 
   std::string error;
   bool bad = false;
@@ -267,8 +271,8 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
   EXPECT_FALSE(result);
 
   actions.clear();
-  actions.push_back(ParseJsonDeprecated("{\"value\": 1}"));
-  actions.push_back(ParseJsonDeprecated("{\"bad\": 3}"));
+  actions.push_back(ParseJson("{\"value\": 1}"));
+  actions.push_back(ParseJson("{\"bad\": 3}"));
   result = SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("", error);
   EXPECT_TRUE(bad);
@@ -277,10 +281,8 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
 
 TEST(DeclarativeActionTest, ApplyActionSet) {
   SummingActionSet::Values actions;
-  actions.push_back(
-      ParseJsonDeprecated("{\"value\": 1,"
-                          " \"priority\": 5}"));
-  actions.push_back(ParseJsonDeprecated("{\"value\": 2}"));
+  actions.push_back(ParseJson("{\"value\": 1, \"priority\": 5}"));
+  actions.push_back(ParseJson("{\"value\": 2}"));
 
   // Test insertion
   std::string error;

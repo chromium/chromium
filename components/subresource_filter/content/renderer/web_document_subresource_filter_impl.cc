@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,6 @@ proto::ElementType ToElementType(
 
     case blink::mojom::RequestContextType::CSP_REPORT:
     case blink::mojom::RequestContextType::DOWNLOAD:
-    case blink::mojom::RequestContextType::IMPORT:
     case blink::mojom::RequestContextType::MANIFEST:
     case blink::mojom::RequestContextType::UNSPECIFIED:
     default:
@@ -82,7 +81,7 @@ proto::ElementType ToElementType(
 WebLoadPolicy ToWebLoadPolicy(LoadPolicy load_policy) {
   switch (load_policy) {
     case LoadPolicy::EXPLICITLY_ALLOW:
-      FALLTHROUGH;
+      [[fallthrough]];
     case LoadPolicy::ALLOW:
       return WebLoadPolicy::kAllow;
     case LoadPolicy::DISALLOW:
@@ -125,6 +124,12 @@ WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebSocketConnect(
     const blink::WebURL& url) {
   DCHECK(url.ProtocolIs("ws") || url.ProtocolIs("wss"));
   return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBSOCKET);
+}
+
+WebLoadPolicy
+WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebTransportConnect(
+    const blink::WebURL& url) {
+  return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBTRANSPORT);
 }
 
 void WebDocumentSubresourceFilterImpl::ReportDisallowedLoad() {

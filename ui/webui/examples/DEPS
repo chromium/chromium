@@ -1,0 +1,23 @@
+include_rules = [
+  # The WebUI examples currently depends on HTML in the chrome directory.
+  # Production code outside of //chrome should not depend on //chrome.
+  # This is a one-time exception as the WebUI examples is a non-production app.
+  "+chrome/grit/webui_gallery_resources.h",
+  "+chrome/grit/webui_gallery_resources_map.h",
+
+  # The WebUI examples is a simple embedder, so it only uses content's public API.
+  "+content/public",
+
+  # Sandbox is part of the main initialization.
+  "+sandbox",
+
+  # The WebUI examples uses Chromium's UI libraries.
+  "+ui/aura",
+  "+ui/display",
+  "+ui/platform_window",
+  "+ui/wm",
+
+  # The WebUI examples is an embedder so it must work with resource bundles.
+  "+ui/base/l10n",
+  "+ui/base/resource",
+]

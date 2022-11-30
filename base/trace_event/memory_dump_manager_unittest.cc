@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,14 @@
 #include <vector>
 
 #include "base/allocator/buildflags.h"
+#include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
@@ -66,8 +65,8 @@ MATCHER(IsNotDeterministicDump, "") {
 namespace {
 
 const char* kMDPName = "TestDumpProvider";
-const char* kWhitelistedMDPName = "WhitelistedTestDumpProvider";
-const char* const kTestMDPWhitelist[] = {kWhitelistedMDPName, nullptr};
+const char* kAllowlistedMDPName = "AllowlistedTestDumpProvider";
+const char* const kTestMDPAllowlist[] = {kAllowlistedMDPName, nullptr};
 
 void RegisterDumpProvider(
     MemoryDumpProvider* mdp,
@@ -176,6 +175,9 @@ class MemoryDumpManagerTest : public testing::Test {
   MemoryDumpManagerTest(bool is_coordinator = false)
       : is_coordinator_(is_coordinator) {}
 
+  MemoryDumpManagerTest(const MemoryDumpManagerTest&) = delete;
+  MemoryDumpManagerTest& operator=(const MemoryDumpManagerTest&) = delete;
+
   void SetUp() override {
     // Bring up and initialize MemoryDumpManager while single-threaded (before
     // instantiating TaskEnvironment) to avoid data races if worker
@@ -263,16 +265,16 @@ class MemoryDumpManagerTest : public testing::Test {
   // Whether the test MemoryDumpManager should be initialized as the
   // coordinator.
   const bool is_coordinator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTest);
 };
 
 class MemoryDumpManagerTestAsCoordinator : public MemoryDumpManagerTest {
  public:
   MemoryDumpManagerTestAsCoordinator() : MemoryDumpManagerTest(true) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MemoryDumpManagerTestAsCoordinator);
+  MemoryDumpManagerTestAsCoordinator(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
+  MemoryDumpManagerTestAsCoordinator& operator=(
+      const MemoryDumpManagerTestAsCoordinator&) = delete;
 };
 
 // Basic sanity checks. Registers a memory dump provider and checks that it is
@@ -398,7 +400,7 @@ TEST_F(MemoryDumpManagerTest, MultipleDumpers) {
 // Checks that the dump provider invocations depend only on the current
 // registration state and not on previous registrations and dumps.
 // Flaky on iOS, see crbug.com/706874
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_RegistrationConsistency DISABLED_RegistrationConsistency
 #else
 #define MAYBE_RegistrationConsistency RegistrationConsistency
@@ -752,13 +754,13 @@ TEST_F(MemoryDumpManagerTest, TriggerDumpWithoutTracing) {
                                         MemoryDumpDeterminism::NONE));
 }
 
-TEST_F(MemoryDumpManagerTest, BackgroundWhitelisting) {
-  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
+TEST_F(MemoryDumpManagerTest, BackgroundAllowlisting) {
+  SetDumpProviderAllowlistForTesting(kTestMDPAllowlist);
 
   // Standard provider with default options (create dump for current process).
   MockMemoryDumpProvider backgroundMdp;
   RegisterDumpProvider(&backgroundMdp, nullptr, kDefaultOptions,
-                       kWhitelistedMDPName);
+                       kAllowlistedMDPName);
 
   EnableForTracing();
 
@@ -858,7 +860,7 @@ class SimpleMockMemoryDumpProvider : public MemoryDumpProvider {
 };
 
 TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
-  SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
+  SetDumpProviderAllowlistForTesting(kTestMDPAllowlist);
 
   int kMDPCount = 1000;
   std::vector<std::unique_ptr<SimpleMockMemoryDumpProvider>> mdps;
@@ -869,14 +871,14 @@ TEST_F(MemoryDumpManagerTest, NoStackOverflowWithTooManyMDPs) {
   for (int i = 0; i < kMDPCount; ++i) {
     mdps.push_back(std::make_unique<SimpleMockMemoryDumpProvider>(3));
     RegisterDumpProvider(mdps.back().get(), nullptr, kDefaultOptions,
-                         kWhitelistedMDPName);
+                         kAllowlistedMDPName);
   }
   std::unique_ptr<Thread> stopped_thread(new Thread("test thread"));
   stopped_thread->Start();
   for (int i = 0; i < kMDPCount; ++i) {
     mdps.push_back(std::make_unique<SimpleMockMemoryDumpProvider>(0));
     RegisterDumpProvider(mdps.back().get(), stopped_thread->task_runner(),
-                         kDefaultOptions, kWhitelistedMDPName);
+                         kDefaultOptions, kAllowlistedMDPName);
   }
   stopped_thread->Stop();
 

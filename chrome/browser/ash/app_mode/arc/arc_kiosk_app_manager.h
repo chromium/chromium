@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
@@ -31,6 +29,8 @@ class ArcKioskAppManager : public KioskAppManagerBase {
 
   static ArcKioskAppManager* Get();
   ArcKioskAppManager();
+  ArcKioskAppManager(const ArcKioskAppManager&) = delete;
+  ArcKioskAppManager& operator=(const ArcKioskAppManager&) = delete;
   ~ArcKioskAppManager() override;
 
   // Registers kiosk app entries in local state.
@@ -68,8 +68,6 @@ class ArcKioskAppManager : public KioskAppManagerBase {
 
   std::vector<std::unique_ptr<ArcKioskAppData>> apps_;
   AccountId auto_launch_account_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppManager);
 };
 
 }  // namespace ash

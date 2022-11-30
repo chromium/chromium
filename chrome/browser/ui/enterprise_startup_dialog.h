@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -29,6 +29,9 @@ class EnterpriseStartupDialog {
   using DialogResultCallback =
       base::OnceCallback<void(bool was_accepted, bool can_show_browser_window)>;
 
+  EnterpriseStartupDialog(const EnterpriseStartupDialog&) = delete;
+  EnterpriseStartupDialog& operator=(const EnterpriseStartupDialog&) = delete;
+
   virtual ~EnterpriseStartupDialog() = default;
 
   // Show the dialog. Please note that the dialog won't contain any
@@ -45,15 +48,12 @@ class EnterpriseStartupDialog {
   // re-opening it.
   virtual void DisplayErrorMessage(
       const std::u16string& error_message,
-      const base::Optional<std::u16string>& accept_button) = 0;
+      const absl::optional<std::u16string>& accept_button) = 0;
   // Return true if dialog is being displayed.
   virtual bool IsShowing() = 0;
 
  protected:
   EnterpriseStartupDialog() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialog);
 };
 
 }  // namespace policy

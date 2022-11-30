@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,16 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -26,11 +25,12 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/core/db/fake_database_manager.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -42,12 +42,17 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content::WebContents;
 
@@ -75,7 +80,7 @@ class PortalBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   WebContents* contents = tab_strip_model->GetActiveWebContents();
   EXPECT_EQ(1, tab_strip_model->count());
@@ -92,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
 }
 
 // Flaky on Linux ASAN. crbug.com/1182702
-#if defined(ADDRESS_SANITIZER) && defined(OS_LINUX)
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_LINUX)
 #define MAYBE_DevToolsWindowStaysOpenAfterActivation \
   DISABLED_DevToolsWindowStaysOpenAfterActivation
 #else
@@ -103,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
                        MAYBE_DevToolsWindowStaysOpenAfterActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(true, content::EvalJs(contents, "loadPromise"));
@@ -125,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(
     DevToolsWindowIsAttachedToOriginalWebContentsWhenActivationFails) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/portal-no-src.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
   DevToolsWindow* dev_tools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), true);
@@ -143,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(true,
@@ -179,21 +184,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, HttpBasicAuthenticationInPortal) {
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
 
-namespace {
-
-std::vector<std::u16string> GetRendererTaskTitles(
-    task_manager::TaskManagerTester* tester) {
-  std::vector<std::u16string> renderer_titles;
-  renderer_titles.reserve(tester->GetRowCount());
-  for (int row = 0; row < tester->GetRowCount(); row++) {
-    if (tester->GetTabId(row) != SessionID::InvalidValue())
-      renderer_titles.push_back(tester->GetRowTitle(row));
-  }
-  return renderer_titles;
-}
-
-}  // namespace
-
 // The task manager should show the portal tasks, and update the tasks after
 // activation as tab contents become portals and vice versa.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
@@ -207,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
   const std::u16string expected_portal_title = l10n_util::GetStringFUTF16(
       IDS_TASK_MANAGER_PORTAL_PREFIX, u"http://127.0.0.1/");
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/portal/activate.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/portal/activate.html")));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(tab, "loadPromise"));
 
@@ -220,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
       1, expected_tab_title_before_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
                                                          expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_tab_title_before_activation,
                                      expected_portal_title));
 
@@ -230,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerUpdatesAfterActivation) {
       1, expected_tab_title_after_activation);
   task_manager::browsertest_util::WaitForTaskManagerRows(1,
                                                          expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()),
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(),
               ::testing::ElementsAre(expected_tab_title_after_activation,
                                      expected_portal_title));
 }
@@ -268,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
 
   // There's an initial tab that's implicitly created.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(static_cast<int>(kNumTabs), browser()->tab_strip_model()->count());
 
   // Create portals in each tab.
@@ -294,13 +284,14 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TaskManagerOrderingOfDependentRows) {
                                                          expected_tab_title);
   task_manager::browsertest_util::WaitForTaskManagerRows(
       kNumTabs * kPortalsPerTab, expected_portal_title);
-  EXPECT_THAT(GetRendererTaskTitles(tester.get()), expected_titles);
+  EXPECT_THAT(tester->GetWebContentsTaskTitles(), expected_titles);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_EQ(true,
@@ -319,6 +310,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PdfViewerLoadsInPortal) {
 
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(portal_contents));
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Test that we do not show main frame interstitials in portal contents. We
 // should treat portals like subframes in terms of how to display the error to
@@ -331,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ShowSubFrameErrorPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL bad_cert_url(bad_https_server.GetURL("/title1.html"));
@@ -372,7 +364,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ShowSubFrameErrorPage) {
                       "document.documentElement.hasAttribute('subframe');"));
 }
 
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, BrowserHistoryUpdatesOnActivation) {
+// TODO(crbug.com/1372129): This test is flaking on all platforms. The renderer
+// seems to be terinated occasionally preventing the ASSERT_EQ from succeeding.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_BrowserHistoryUpdatesOnActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   Profile* profile = browser()->profile();
@@ -381,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, BrowserHistoryUpdatesOnActivation) {
       profile, ServiceAccessType::EXPLICIT_ACCESS));
 
   GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   WaitForHistoryBackendToRun(profile);
   EXPECT_TRUE(
       base::Contains(ui_test_utils::HistoryEnumerator(profile).urls(), url1));
@@ -426,7 +421,9 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
-        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>();
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({}),
+            content::GetIOThreadTaskRunner({}));
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -454,8 +451,16 @@ class PortalSafeBrowsingBrowserTest : public PortalBrowserTest {
 // Tests that if a page embeds a portal whose contents are considered dangerous
 // by Safe Browsing, the embedder is also treated as dangerous in terms of how
 // we display the Safe Browsing interstitial.
+// Flaky on ChromeOS & under Ozone (crbug.com/1220319)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || defined(USE_OZONE)
+#define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
+  DISABLED_EmbedderOfDangerousPortalConsideredDangerous
+#else
+#define MAYBE_EmbedderOfDangerousPortalConsideredDangerous \
+  EmbedderOfDangerousPortalConsideredDangerous
+#endif
 IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
-                       EmbedderOfDangerousPortalConsideredDangerous) {
+                       MAYBE_EmbedderOfDangerousPortalConsideredDangerous) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -463,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
       embedded_test_server()->GetURL("evil.com", "/title2.html"));
   AddDangerousUrl(dangerous_url);
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   content::TestNavigationObserver error_observer(contents,
@@ -491,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest,
       embedded_test_server()->GetURL("evil.com", "/title3.html"));
   AddDangerousUrl(dangerous_url);
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_EQ(true,
@@ -530,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(PortalSafeBrowsingBrowserTest, DangerousOrphanedPortal) {
       embedded_test_server()->GetURL("evil.com", "/title3.html"));
   AddDangerousUrl(dangerous_url);
 
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_EQ(true,

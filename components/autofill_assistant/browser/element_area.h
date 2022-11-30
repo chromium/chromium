@@ -1,31 +1,35 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ELEMENT_AREA_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/client_settings.h"
-#include "components/autofill_assistant/browser/rectf.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/selector.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
-class ScriptExecutorDelegate;
 
 // A helper that keeps track of the area on the screen that correspond to an
 // changeable set of elements.
 class ElementArea {
  public:
-  // |delegate| and |settings| must remain valid for the lifetime of this
+  // |settings| and |web_controller| must remain valid for the lifetime of this
   // instance.
-  explicit ElementArea(ScriptExecutorDelegate* delegate);
+  explicit ElementArea(const ClientSettings* settings,
+                       WebController* web_controller);
+
+  ElementArea(const ElementArea&) = delete;
+  ElementArea& operator=(const ElementArea&) = delete;
+
   ~ElementArea();
 
   // Clears the area. Stops scheduled updates.
@@ -104,7 +108,7 @@ class ElementArea {
     bool IsPending() const;
 
     // Fills the given rectangle from the current state, if possible.
-    void FillRect(RectF* rect, const RectF& visual_viewport) const;
+    void FillRect(RectF* rect) const;
 
     bool operator==(const Rectangle& another) const;
   };
@@ -127,13 +131,14 @@ class ElementArea {
   void OnGetVisualViewport(const ClientStatus& status, const RectF& rect);
   void ReportUpdate();
 
-  ScriptExecutorDelegate* const delegate_;
+  const raw_ptr<const ClientSettings> settings_;
+  const raw_ptr<WebController> web_controller_;
   std::vector<Rectangle> rectangles_;
 
-  // If true, update for the visual viewport position is currently scheduled.
+  // If true, u pdate for the visual viewport position is currently scheduled.
   bool visual_viewport_pending_update_ = false;
 
-  // Visual viewport coordinates, in CSS pixels, relative to the layout
+  // Visual viewport coordinates, in CSS pixels. Relative to the layout
   // viewport.
   RectF visual_viewport_;
 
@@ -151,8 +156,6 @@ class ElementArea {
       on_update_;
 
   base::WeakPtrFactory<ElementArea> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ElementArea);
 };
 
 }  // namespace autofill_assistant

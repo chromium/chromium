@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,27 +10,32 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_origin_state_handle.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
 class IndexedDBDatabaseCallbacks;
 class IndexedDBDatabaseError;
 class IndexedDBTransaction;
-class IndexedDBOriginStateHandle;
+class IndexedDBBucketStateHandle;
 
 class CONTENT_EXPORT IndexedDBConnection {
  public:
-  IndexedDBConnection(IndexedDBOriginStateHandle origin_state_handle,
+  IndexedDBConnection(IndexedDBBucketStateHandle bucket_state_handle,
                       IndexedDBClassFactory* indexed_db_class_factory,
                       base::WeakPtr<IndexedDBDatabase> database,
                       base::RepeatingClosure on_version_change_ignored,
                       base::OnceCallback<void(IndexedDBConnection*)> on_close,
                       scoped_refptr<IndexedDBDatabaseCallbacks> callbacks);
+
+  IndexedDBConnection(const IndexedDBConnection&) = delete;
+  IndexedDBConnection& operator=(const IndexedDBConnection&) = delete;
+
   virtual ~IndexedDBConnection();
 
   enum class CloseErrorHandling {
@@ -91,16 +96,16 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   const int32_t id_;
 
-  // Keeps the factory for this origin alive.
-  IndexedDBOriginStateHandle origin_state_handle_;
-  IndexedDBClassFactory* const indexed_db_class_factory_;
+  // Keeps the factory for this bucket alive.
+  IndexedDBBucketStateHandle bucket_state_handle_;
+  const raw_ptr<IndexedDBClassFactory> indexed_db_class_factory_;
 
   base::WeakPtr<IndexedDBDatabase> database_;
   base::RepeatingClosure on_version_change_ignored_;
   base::OnceCallback<void(IndexedDBConnection*)> on_close_;
 
   // The connection owns transactions created on this connection.
-  // This is |flat_map| to preserve ordering, and because the vast majority of
+  // This is `flat_map` to preserve ordering, and because the vast majority of
   // users have less than 200 transactions.
   base::flat_map<int64_t, std::unique_ptr<IndexedDBTransaction>> transactions_;
 
@@ -111,8 +116,6 @@ class CONTENT_EXPORT IndexedDBConnection {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<IndexedDBConnection> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBConnection);
 };
 
 }  // namespace content

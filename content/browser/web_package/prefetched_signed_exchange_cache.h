@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include "base/observer_list.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/common/content_export.h"
-#include "content/common/prefetched_signed_exchange_info.mojom.h"
 #include "net/base/hash_value.h"
+#include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "url/gurl.h"
 
 namespace net {
-class NetworkIsolationKey;
+class IsolationInfo;
 }
 
 namespace content {
@@ -60,7 +60,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   std::unique_ptr<NavigationLoaderInterceptor> MaybeCreateInterceptor(
       const GURL& outer_url,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::IsolationInfo& isolation_info);
 
   const EntryMap& GetExchanges();
 
@@ -80,11 +80,12 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   // |main_exchange|'s inner response and which outer URL's origin is same as
   // the origin of |main_exchange|'s outer URL. Note that this method erases
   // expired entries in |exchanges_|.
-  std::vector<mojom::PrefetchedSignedExchangeInfoPtr> GetInfoListForNavigation(
+  std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr>
+  GetInfoListForNavigation(
       const PrefetchedSignedExchangeCacheEntry& main_exchange,
       const base::Time& now,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   EntryMap exchanges_;
 

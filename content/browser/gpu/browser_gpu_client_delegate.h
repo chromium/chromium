@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,15 @@ namespace content {
 class BrowserGpuClientDelegate : public viz::GpuClientDelegate {
  public:
   BrowserGpuClientDelegate();
+
+  BrowserGpuClientDelegate(const BrowserGpuClientDelegate&) = delete;
+  BrowserGpuClientDelegate& operator=(const BrowserGpuClientDelegate&) = delete;
+
   ~BrowserGpuClientDelegate() override;
 
   // GpuClientDelegate:
   viz::GpuHostImpl* EnsureGpuHost() override;
   viz::HostGpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserGpuClientDelegate);
 };
 
 }  // namespace content

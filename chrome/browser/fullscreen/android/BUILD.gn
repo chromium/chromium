@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,9 +6,14 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/fullscreen/FullscreenBackPressHandler.java",
     "java/src/org/chromium/chrome/browser/fullscreen/FullscreenManager.java",
     "java/src/org/chromium/chrome/browser/fullscreen/FullscreenOptions.java",
   ]
 
-  deps = [ "//chrome/browser/tab:java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/widget/android:java",
+  ]
 }

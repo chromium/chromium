@@ -1,11 +1,22 @@
 include_rules = [
+  "+chromeos/ash/services",
+  "+chromeos/strings/grit/chromeos_strings.h",
   "+chromeos/services",
+  "+chromeos/crosapi/mojom",
   "+chromeos/ui/base/chromeos_ui_constants.h",
   "+cc/metrics",
   "+components/prefs",
+  "+components/language/core/browser",
   "+services/data_decoder/public",
   "+services/device/public",
   "+skia/public/mojom",
-  "+ui/base/ime/chromeos/ime_keyset.h",
-  "+ui/display",
 ]
+
+specific_include_rules = {
+  "desks_templates_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
+  ],
+  "test_desks_templates_delegate.h": [
+    "+components/favicon_base/favicon_callback.h"
+  ],
+}

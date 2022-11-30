@@ -1,31 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_advertising_event.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_manufacturer_data_map.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_service_data_map.h"
 
 namespace blink {
-
-BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
-    const AtomicString& event_type,
-    const BluetoothAdvertisingEventInit* initializer)
-    : Event(event_type, initializer),
-      device_(initializer->device()),
-      name_(initializer->name()),
-      uuids_(initializer->uuids()),
-      appearance_(initializer->hasAppearance() ? initializer->appearance() : 0),
-      txPower_(initializer->hasTxPower() ? initializer->txPower() : 0),
-      rssi_(initializer->hasRssi() ? initializer->rssi() : 0),
-      manufacturer_data_map_(initializer->manufacturerData()),
-      service_data_map_(initializer->serviceData()) {}
 
 BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
     const AtomicString& event_type,
@@ -42,9 +26,7 @@ BluetoothAdvertisingEvent::BluetoothAdvertisingEvent(
       service_data_map_(MakeGarbageCollected<BluetoothServiceDataMap>(
           advertising_event->service_data)) {
   for (const String& uuid : advertising_event->uuids) {
-    StringOrUnsignedLong value;
-    value.SetString(uuid);
-    uuids_.push_back(value);
+    uuids_.push_back(uuid);
   }
 }  // namespace blink
 
@@ -52,7 +34,6 @@ BluetoothAdvertisingEvent::~BluetoothAdvertisingEvent() {}
 
 void BluetoothAdvertisingEvent::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
-  visitor->Trace(uuids_);
   visitor->Trace(manufacturer_data_map_);
   visitor->Trace(service_data_map_);
   Event::Trace(visitor);
@@ -70,8 +51,7 @@ const String& BluetoothAdvertisingEvent::name() const {
   return name_;
 }
 
-const HeapVector<StringOrUnsignedLong>& BluetoothAdvertisingEvent::uuids()
-    const {
+const Vector<String>& BluetoothAdvertisingEvent::uuids() const {
   return uuids_;
 }
 

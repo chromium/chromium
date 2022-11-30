@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,22 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "build/build_config.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/webapps/browser/uninstall_result_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
 namespace base {
 class Time;
 }
+
 namespace syncer {
 class MetadataBatch;
 class MetadataChangeList;
@@ -33,33 +35,44 @@ namespace sync_pb {
 class WebAppSpecifics;
 }  // namespace sync_pb
 
+namespace syncer {
+struct EntityData;
+}
+
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class SyncInstallDelegate;
+class WebAppCommandManager;
 class WebAppDatabase;
 class WebAppRegistryUpdate;
 struct RegistryUpdateData;
 
-// The sync bridge exclusively owns ModelTypeChangeProcessor and WebAppDatabase
-// (the storage).
-class WebAppSyncBridge : public AppRegistryController,
-                         public syncer::ModelTypeSyncBridge {
+// A unified sync and storage controller.
+//
+// While WebAppRegistrar is a read-only model, WebAppSyncBridge is a
+// controller for that model. WebAppSyncBridge is responsible for:
+// - Registry initialization (reading model from a persistent storage like
+// LevelDb or prefs).
+// - Writing all the registry updates to a persistent store and sync.
+//
+// WebAppSyncBridge is the key class to support integration with Unified Sync
+// and Storage (USS) system. The sync bridge exclusively owns
+// ModelTypeChangeProcessor and WebAppDatabase (the storage).
+class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
-  WebAppSyncBridge(Profile* profile,
-                   AbstractWebAppDatabaseFactory* database_factory,
-                   WebAppRegistrarMutable* registrar,
-                   SyncInstallDelegate* install_delegate);
+  explicit WebAppSyncBridge(WebAppRegistrarMutable* registrar);
   // Tests may inject mocks using this ctor.
   WebAppSyncBridge(
-      Profile* profile,
-      AbstractWebAppDatabaseFactory* database_factory,
       WebAppRegistrarMutable* registrar,
-      SyncInstallDelegate* install_delegate,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
   WebAppSyncBridge(const WebAppSyncBridge&) = delete;
   WebAppSyncBridge& operator=(const WebAppSyncBridge&) = delete;
   ~WebAppSyncBridge() override;
+
+  void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
+                     SyncInstallDelegate* install_delegate,
+                     WebAppCommandManager* command_manager);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   // This is the writable API for the registry. Any updates will be written to
@@ -68,23 +81,27 @@ class WebAppSyncBridge : public AppRegistryController,
   void CommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update,
                     CommitCallback callback);
 
-  // AppRegistryController:
-  void Init(base::OnceClosure callback) override;
+  void Init(base::OnceClosure callback);
+
   void SetAppUserDisplayMode(const AppId& app_id,
-                             DisplayMode user_display_mode,
-                             bool is_user_action) override;
-  void SetAppIsDisabled(const AppId& app_id, bool is_disabled) override;
-  void UpdateAppsDisableMode() override;
-  void SetAppIsLocallyInstalled(const AppId& app_id,
-                                bool is_locally_installed) override;
-  void SetAppLastBadgingTime(const AppId& app_id,
-                             const base::Time& time) override;
-  void SetAppLastLaunchTime(const AppId& app_id,
-                            const base::Time& time) override;
-  void SetAppInstallTime(const AppId& app_id, const base::Time& time) override;
-  void SetAppRunOnOsLoginMode(const AppId& app_id,
-                              RunOnOsLoginMode mode) override;
-  WebAppSyncBridge* AsWebAppSyncBridge() override;
+                             UserDisplayMode user_display_mode,
+                             bool is_user_action);
+
+  void SetAppIsDisabled(const AppId& app_id, bool is_disabled);
+
+  void UpdateAppsDisableMode();
+
+  void SetAppIsLocallyInstalled(const AppId& app_id, bool is_locally_installed);
+
+  void SetAppLastBadgingTime(const AppId& app_id, const base::Time& time);
+
+  void SetAppLastLaunchTime(const AppId& app_id, const base::Time& time);
+
+  void SetAppInstallTime(const AppId& app_id, const base::Time& time);
+
+  void SetAppManifestUpdateTime(const AppId& app_id, const base::Time& time);
+
+  void SetAppWindowControlsOverlayEnabled(const AppId& app_id, bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
@@ -93,16 +110,42 @@ class WebAppSyncBridge : public AppRegistryController,
   void SetUserLaunchOrdinal(const AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
+  // These methods are used by web apps to add or remove allowed
+  // protocol schemes based on user approval or withdrawal of that approval.
+  // Allowed protocol schemes will allow web apps to handle launches from
+  // urls that start with that scheme without asking the user.
+  void AddAllowedLaunchProtocol(const AppId& app_id,
+                                const std::string& protocol_scheme);
+  void RemoveAllowedLaunchProtocol(const AppId& app_id,
+                                   const std::string& protocol_scheme);
+
+  // Stores the user's preference for the app's use of the File Handling API.
+  void SetAppFileHandlerApprovalState(const AppId& app_id,
+                                      ApiApprovalState state);
+
+  // These methods are used by web apps to add or remove disallowed
+  // protocol schemes based on user preference or withdrawal of that preference.
+  // Disallowed protocol schemes will never allow web apps to handle launches
+  // from urls that start with that scheme.
+  void AddDisallowedLaunchProtocol(const AppId& app_id,
+                                   const std::string& protocol_scheme);
+  void RemoveDisallowedLaunchProtocol(const AppId& app_id,
+                                      const std::string& protocol_scheme);
+
+#if BUILDFLAG(IS_MAC)
+  void SetAlwaysShowToolbarInFullscreen(const AppId& app_id, bool show);
+#endif
+
   // An access to read-only registry. Does an upcast to read-only type.
   const WebAppRegistrar& registrar() const { return *registrar_; }
 
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -110,18 +153,17 @@ class WebAppSyncBridge : public AppRegistryController,
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
-  const std::set<AppId>& GetAppsInSyncUninstallForTest();
+  void set_disable_checks_for_testing(bool disable_checks_for_testing) {
+    disable_checks_for_testing_ = disable_checks_for_testing;
+  }
+
+  WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
  private:
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
 
-  // Update the in-memory model. Returns unregistered apps which may be
-  // disposed.
-  std::vector<std::unique_ptr<WebApp>> UpdateRegistrar(
-      std::unique_ptr<RegistryUpdateData> update_data);
-
-  // Useful for identifying apps that have not yet been fully uninstalled.
-  std::set<AppId> apps_in_sync_uninstall_;
+  // Update the in-memory model.
+  void UpdateRegistrar(std::unique_ptr<RegistryUpdateData> update_data);
 
   // Update the remote sync server.
   void UpdateSync(const RegistryUpdateData& update_data,
@@ -131,7 +173,8 @@ class WebAppSyncBridge : public AppRegistryController,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnDataWritten(CommitCallback callback, bool success);
-  void WebAppUninstalled(const AppId& app, bool uninstalled);
+  void OnWebAppUninstallComplete(const AppId& app,
+                                 webapps::UninstallResultCode code);
 
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
 
@@ -139,26 +182,26 @@ class WebAppSyncBridge : public AppRegistryController,
   void MergeLocalAppsToSync(const syncer::EntityChangeList& entity_data,
                             syncer::MetadataChangeList* metadata_change_list);
 
-  void ApplySyncDataChange(const syncer::EntityChange& change,
-                           RegistryUpdateData* update_local_data);
+  void PrepareLocalUpdateFromSyncChange(const syncer::EntityChange& change,
+                                        RegistryUpdateData* update_local_data);
 
   // Update registrar and Install/Uninstall missing/excessive local apps.
   void ApplySyncChangesToRegistrar(
       std::unique_ptr<RegistryUpdateData> update_local_data);
 
-  void MaybeInstallAppsInSyncInstall();
+  void MaybeUninstallAppsPendingUninstall();
+  void MaybeInstallAppsFromSyncAndPendingInstallation();
 
   std::unique_ptr<WebAppDatabase> database_;
-  WebAppRegistrarMutable* const registrar_;
-  SyncInstallDelegate* const install_delegate_;
+  const raw_ptr<WebAppRegistrarMutable> registrar_;
+  raw_ptr<SyncInstallDelegate> install_delegate_;
+  raw_ptr<WebAppCommandManager> command_manager_;
 
   bool is_in_update_ = false;
+  bool disable_checks_for_testing_ = false;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
-
 };
-
-bool AreAppsLocallyInstalledByDefault();
 
 std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app);
 

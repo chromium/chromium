@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -33,6 +32,10 @@ class TranslateURLFetcher {
   };
 
   TranslateURLFetcher();
+
+  TranslateURLFetcher(const TranslateURLFetcher&) = delete;
+  TranslateURLFetcher& operator=(const TranslateURLFetcher&) = delete;
+
   ~TranslateURLFetcher();
 
   int max_retry_on_5xx() {
@@ -83,8 +86,6 @@ class TranslateURLFetcher {
 
   // An extra HTTP request header
   std::string extra_request_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateURLFetcher);
 };
 
 }  // namespace translate

@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_CURSORS_WEBCURSOR_H_
 #define CONTENT_COMMON_CURSORS_WEBCURSOR_H_
-
-#include <vector>
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -16,9 +14,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(USE_AURA)
-#include "base/optional.h"
-
-#include "ui/base/cursor/cursor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace content {
@@ -32,7 +28,6 @@ class CONTENT_EXPORT WebCursor {
   WebCursor();
   explicit WebCursor(const ui::Cursor& info);
   explicit WebCursor(const WebCursor& other);
-  WebCursor& operator=(const WebCursor& other);
   ~WebCursor();
 
   const ui::Cursor& cursor() const { return cursor_; }
@@ -59,12 +54,6 @@ class CONTENT_EXPORT WebCursor {
 #endif
 
  private:
-  // Copies all data from |other| to this object.
-  void CopyAllData(const WebCursor& other);
-
-  // Copies platform specific data from the WebCursor instance passed in.
-  void CopyPlatformData(const WebCursor& other);
-
   // Platform specific cleanup.
   void CleanupPlatformData();
 
@@ -75,7 +64,6 @@ class CONTENT_EXPORT WebCursor {
 
 #if defined(USE_AURA) || defined(USE_OZONE)
   // Only used for custom cursors.
-  ui::PlatformCursor platform_cursor_ = nullptr;
   float device_scale_factor_ = 1.f;
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
 #endif
@@ -87,7 +75,7 @@ class CONTENT_EXPORT WebCursor {
 #endif
 
 #if defined(USE_AURA)
-  base::Optional<ui::Cursor> custom_cursor_;
+  absl::optional<ui::Cursor> custom_cursor_;
 #endif
 };
 

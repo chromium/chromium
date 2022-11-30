@@ -1,15 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 
-#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -68,8 +68,7 @@ void OAuthMultiloginTokenFetcher::OnGetTokenSuccess(
     const OAuth2AccessTokenManager::Request* request,
     const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
   CoreAccountId account_id = request->GetAccountId();
-  DCHECK(account_ids_.cend() !=
-         std::find(account_ids_.cbegin(), account_ids_.cend(), account_id));
+  DCHECK(base::Contains(account_ids_, account_id));
 
   const std::string token = token_response.access_token;
   DCHECK(!token.empty());
@@ -103,8 +102,6 @@ void OAuthMultiloginTokenFetcher::OnGetTokenFailure(
   if (error.IsTransientError() &&
       retried_requests_.find(account_id) == retried_requests_.end()) {
     retried_requests_.insert(account_id);
-    UMA_HISTOGRAM_ENUMERATION("Signin.GetAccessTokenRetry", error.state(),
-                              GoogleServiceAuthError::NUM_STATES);
     EraseRequest(request);
     // Fetching fresh access tokens requires network.
     signin_client_->DelayNetworkCall(

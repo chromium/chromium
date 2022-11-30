@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,6 @@ source_set("browser") {
     "//components/google/core/common",
     "//components/prefs",
     "//components/signin/core/browser",
-    "//components/signin/public/base",
     "//google_apis",
     "//ios/net",
     "//ios/web/common:web_view_creation_util",
@@ -43,6 +42,8 @@ source_set("features") {
   ]
 
   public_deps = [ "//base" ]
+
+  deps = [ "//components/signin/public/base" ]
 }
 
 source_set("active_state_manager") {
@@ -81,6 +82,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/web",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//testing/gmock",

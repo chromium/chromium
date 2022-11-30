@@ -1,13 +1,13 @@
 See [Ozone
-Overview](https://source.chromium.org/chromium/chromium/src/+/master:docs/ozone_overview.md)
+Overview](https://source.chromium.org/chromium/chromium/src/+/main:docs/ozone_overview.md)
 for high-level summary.
 
 Wayland is a window server protocol primarily being developed for Linux desktop.
 See [home page](https://wayland.freedesktop.org/) and [core protocol
 API](https://wayland.freedesktop.org/docs/html/). The API lives
-[here](https://source.chromium.org/chromium/chromium/src/+/master:third_party/wayland/)
+[here](https://source.chromium.org/chromium/chromium/src/+/main:third_party/wayland/)
 and the default Weston implementation can be found
-[here](https://source.chromium.org/chromium/chromium/src/+/master:third_party/weston/).
+[here](https://source.chromium.org/chromium/chromium/src/+/main:third_party/weston/).
 
 For those less familiar, the primary purpose of a window server protocol is to
 provide a mechanism by which clients [e.g. web browser] can submit pixel
@@ -20,7 +20,7 @@ extensions, which allow for extensive customization of the protocol.
 
 The canonical reference implementation of a Wayland server is Weston. Chrome has
 a custom implementation used on chromeOS called
-[exo](https://source.chromium.org/chromium/chromium/src/+/master:components/exo/).
+[exo](https://source.chromium.org/chromium/chromium/src/+/main:components/exo/).
 
 This directory contains Chrome's implementation of the Wayland client. The gpu/
 subdirectory contains code typically run in the GPU process, and the host/

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,18 @@
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/widget/root_view.h"
 
-namespace views {
-namespace test {
+#if BUILDFLAG(IS_MAC)
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
+#endif
+
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#include "ui/views/test/test_desktop_screen_ozone.h"
+#endif
+
+namespace views::test {
 
 namespace {
 
@@ -130,8 +140,20 @@ DesktopWidgetTestInteractive::~DesktopWidgetTestInteractive() = default;
 
 void DesktopWidgetTestInteractive::SetUp() {
   SetUpForInteractiveTests();
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+  screen_ = views::test::TestDesktopScreenOzone::Create();
+#endif
   DesktopWidgetTest::SetUp();
 }
+
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+void DesktopWidgetTestInteractive::TearDown() {
+  DesktopWidgetTest::TearDown();
+  screen_.reset();
+}
+#endif
 
 TestDesktopWidgetDelegate::TestDesktopWidgetDelegate()
     : TestDesktopWidgetDelegate(nullptr) {}
@@ -167,7 +189,8 @@ const Widget* TestDesktopWidgetDelegate::GetWidget() const {
 }
 
 View* TestDesktopWidgetDelegate::GetContentsView() {
-  return contents_view_ ? contents_view_ : WidgetDelegate::GetContentsView();
+  return contents_view_ ? contents_view_.get()
+                        : WidgetDelegate::GetContentsView();
 }
 
 bool TestDesktopWidgetDelegate::OnCloseRequested(
@@ -185,7 +208,7 @@ TestInitialFocusWidgetDelegate::TestInitialFocusWidgetDelegate(
   params.context = context;
   params.delegate = this;
   GetWidget()->Init(std::move(params));
-  GetWidget()->GetContentsView()->AddChildView(view_);
+  GetWidget()->GetContentsView()->AddChildView(view_.get());
 }
 
 TestInitialFocusWidgetDelegate::~TestInitialFocusWidgetDelegate() = default;
@@ -200,14 +223,21 @@ WidgetActivationWaiter::WidgetActivationWaiter(Widget* widget, bool active)
     observed_ = true;
     return;
   }
-  widget->AddObserver(this);
+  widget_observation_.Observe(widget);
 }
 
 WidgetActivationWaiter::~WidgetActivationWaiter() = default;
 
 void WidgetActivationWaiter::Wait() {
-  if (!observed_)
+  if (!observed_) {
+#if BUILDFLAG(IS_MAC)
+    // Some tests waiting on widget creation + activation are flaky due to
+    // timeout. crbug.com/1327590.
+    const base::test::ScopedRunLoopTimeout increased_run_timeout(
+        FROM_HERE, TestTimeouts::action_max_timeout());
+#endif
     run_loop_.Run();
+  }
 }
 
 void WidgetActivationWaiter::OnWidgetActivationChanged(Widget* widget,
@@ -216,49 +246,23 @@ void WidgetActivationWaiter::OnWidgetActivationChanged(Widget* widget,
     return;
 
   observed_ = true;
-  widget->RemoveObserver(this);
+  widget_observation_.Reset();
   if (run_loop_.running())
     run_loop_.Quit();
 }
 
-WidgetClosingObserver::WidgetClosingObserver(Widget* widget) : widget_(widget) {
-  widget_->AddObserver(this);
+WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) {
+  widget_observation_.Observe(widget);
 }
 
-WidgetClosingObserver::~WidgetClosingObserver() {
-  if (widget_)
-    widget_->RemoveObserver(this);
-}
-
-void WidgetClosingObserver::Wait() {
-  if (widget_)
-    run_loop_.Run();
-}
-
-void WidgetClosingObserver::OnWidgetClosing(Widget* widget) {
-  DCHECK_EQ(widget_, widget);
-  widget_->RemoveObserver(this);
-  widget_ = nullptr;
-  if (run_loop_.running())
-    run_loop_.Quit();
-}
-
-WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) : widget_(widget) {
-  widget->AddObserver(this);
-}
-
-WidgetDestroyedWaiter::~WidgetDestroyedWaiter() {
-  if (widget_)
-    widget_->RemoveObserver(this);
-}
+WidgetDestroyedWaiter::~WidgetDestroyedWaiter() = default;
 
 void WidgetDestroyedWaiter::Wait() {
   run_loop_.Run();
 }
 
 void WidgetDestroyedWaiter::OnWidgetDestroyed(Widget* widget) {
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
+  widget_observation_.Reset();
   run_loop_.Quit();
 }
 
@@ -267,7 +271,7 @@ WidgetVisibleWaiter::~WidgetVisibleWaiter() = default;
 
 void WidgetVisibleWaiter::Wait() {
   if (!widget_->IsVisible()) {
-    widget_observation_.Observe(widget_);
+    widget_observation_.Observe(widget_.get());
     run_loop_.Run();
   }
 }
@@ -291,5 +295,4 @@ void WidgetVisibleWaiter::OnWidgetDestroying(Widget* widget) {
   widget_observation_.Reset();
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test

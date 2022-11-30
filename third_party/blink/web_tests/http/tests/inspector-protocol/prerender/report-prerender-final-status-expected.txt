@@ -1,0 +1,11 @@
+Test that prerender navigations report the final status
+{
+    method : Page.prerenderAttemptCompleted
+    params : {
+        finalStatus : Activated
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+    }
+    sessionId : <string>
+}
+

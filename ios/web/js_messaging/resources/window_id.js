@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,4 +13,8 @@ __gCrWeb['windowId'] = '$(WINDOW_ID)';
 
 // Send messages queued since message.js injection.
 __gCrWeb.message.invokeQueues();
+
+const event = new Event('__gCrWebWindowIdInjected');
+window.dispatchEvent(event);
+
 }());

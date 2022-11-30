@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -103,6 +103,11 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
     tab_strip_model->AddObserver(this);
   }
 
+  PopupPageLoadMetricsWaiterInitializer(
+      const PopupPageLoadMetricsWaiterInitializer&) = delete;
+  PopupPageLoadMetricsWaiterInitializer& operator=(
+      const PopupPageLoadMetricsWaiterInitializer&) = delete;
+
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
@@ -116,19 +121,9 @@ class PopupPageLoadMetricsWaiterInitializer : public TabStripModelObserver {
   }
 
  private:
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>* waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PopupPageLoadMetricsWaiterInitializer);
+  raw_ptr<std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>>
+      waiter_;
 };
-
-void SetRuntimeFeatureCommand(bool enable_blink_features,
-                              const std::string& feature,
-                              base::CommandLine* command_line) {
-  std::string cmd = enable_blink_features ? switches::kEnableBlinkFeatures
-                                          : switches::kDisableBlinkFeatures;
-
-  command_line->AppendSwitchASCII(cmd, feature);
-}
 
 }  // namespace
 
@@ -182,7 +177,7 @@ class DownloadFramePolicyBrowserTest
     std::string host_name = "foo.com";
     GURL top_frame_url =
         embedded_test_server()->GetURL(host_name, "/frame_factory.html");
-    ui_test_utils::NavigateToURL(browser(), top_frame_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
 
     const char* method = is_ad_frame ? "createAdFrame" : "createFrame";
     GURL subframe_url = embedded_test_server()->GetURL(
@@ -202,13 +197,13 @@ class DownloadFramePolicyBrowserTest
     }
 
     content::TestNavigationObserver navigation_observer(web_contents());
-    EXPECT_TRUE(content::ExecJs(web_contents()->GetMainFrame(), script,
+    EXPECT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(), script,
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
     navigation_observer.Wait();
 
     subframe_rfh_ = content::FrameMatchingPredicate(
-        web_contents(),
+        web_contents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, GetSubframeId()));
     DCHECK(subframe_rfh_);
   }
@@ -240,7 +235,7 @@ class DownloadFramePolicyBrowserTest
     if (num_downloads > 0) {
       download_observer_ =
           std::make_unique<content::DownloadTestObserverTerminal>(
-              content::BrowserContext::GetDownloadManager(browser()->profile()),
+              browser()->profile()->GetDownloadManager(),
               num_downloads /* wait_count */,
               content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     }
@@ -252,7 +247,7 @@ class DownloadFramePolicyBrowserTest
       download_observer_->WaitForFinished();
     std::vector<download::DownloadItem*> download_items;
     content::DownloadManager* manager =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+        browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
     EXPECT_EQ(expected_num_downloads_, download_items.size());
   }
@@ -281,7 +276,7 @@ class DownloadFramePolicyBrowserTest
   std::unique_ptr<content::DownloadTestObserver> download_observer_;
   std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
       web_feature_waiter_;
-  content::RenderFrameHost* subframe_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> subframe_rfh_ = nullptr;
   size_t expected_num_downloads_ = 0;
 };
 
@@ -289,36 +284,19 @@ class SubframeSameFrameDownloadBrowserTest_Sandbox
     : public DownloadFramePolicyBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<DownloadSource,
-                     bool /* enable_blocking_downloads_in_sandbox */,
                      SandboxOption,
-                     bool /* is_cross_origin */>> {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    bool enable_blocking_downloads_in_sandbox;
-    std::tie(std::ignore, enable_blocking_downloads_in_sandbox, std::ignore,
-             std::ignore) = GetParam();
-    SetRuntimeFeatureCommand(enable_blocking_downloads_in_sandbox,
-                             "BlockingDownloadsInSandbox", command_line);
-  }
-};
+                     bool /* is_cross_origin */>> {};
 
 // Download that's initiated from / occurs in the same subframe are handled
 // correctly. This test specifically tests sandbox related behaviors.
 IN_PROC_BROWSER_TEST_P(SubframeSameFrameDownloadBrowserTest_Sandbox, Download) {
-  DownloadSource source;
-  bool enable_blocking_downloads_in_sandbox;
-  SandboxOption sandbox_option;
-  bool is_cross_origin;
-  std::tie(source, enable_blocking_downloads_in_sandbox, sandbox_option,
-           is_cross_origin) = GetParam();
+  auto [source, sandbox_option, is_cross_origin] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
-               << "enable_blocking_downloads_in_sandbox = "
-               << enable_blocking_downloads_in_sandbox << ", "
                << "sandbox_option = " << sandbox_option << ", "
                << "is_cross_origin = " << is_cross_origin);
 
-  bool expect_download = !enable_blocking_downloads_in_sandbox ||
-                         sandbox_option != SandboxOption::kDisallowDownloads;
+  bool expect_download = sandbox_option != SandboxOption::kDisallowDownloads;
   bool sandboxed = sandbox_option == SandboxOption::kDisallowDownloads;
 
   InitializeHistogramTesterAndWebFeatureWaiter();
@@ -350,7 +328,6 @@ INSTANTIATE_TEST_SUITE_P(
     SubframeSameFrameDownloadBrowserTest_Sandbox,
     ::testing::Combine(::testing::Values(DownloadSource::kNavigation,
                                          DownloadSource::kAnchorAttribute),
-                       ::testing::Bool(),
                        ::testing::Values(SandboxOption::kNotSandboxed,
                                          SandboxOption::kDisallowDownloads,
                                          SandboxOption::kAllowDownloads),
@@ -381,13 +358,8 @@ class SubframeSameFrameDownloadBrowserTest_AdFrame
 // Download that's initiated from / occurs in the same subframe are handled
 // correctly. This test specifically tests ad related behaviors.
 IN_PROC_BROWSER_TEST_P(SubframeSameFrameDownloadBrowserTest_AdFrame, Download) {
-  DownloadSource source;
-  bool block_downloads_in_ad_frame_without_user_activation;
-  bool is_ad_frame;
-  bool is_cross_origin;
-  bool initiate_with_gesture;
-  std::tie(source, block_downloads_in_ad_frame_without_user_activation,
-           is_ad_frame, is_cross_origin, initiate_with_gesture) = GetParam();
+  auto [source, block_downloads_in_ad_frame_without_user_activation,
+        is_ad_frame, is_cross_origin, initiate_with_gesture] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
                << "is_ad_frame = " << is_ad_frame << ", "
@@ -441,38 +413,20 @@ INSTANTIATE_TEST_SUITE_P(
 class OtherFrameNavigationDownloadBrowserTest_Sandbox
     : public DownloadFramePolicyBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool /* enable_blocking_downloads_in_sandbox */,
-                     bool /* is_cross_origin */,
-                     OtherFrameNavigationType>> {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    bool enable_blocking_downloads_in_sandbox;
-    std::tie(enable_blocking_downloads_in_sandbox, std::ignore, std::ignore) =
-        GetParam();
-    SetRuntimeFeatureCommand(enable_blocking_downloads_in_sandbox,
-                             "BlockingDownloadsInSandbox", command_line);
-  }
-};
+          std::tuple<bool /* is_cross_origin */, OtherFrameNavigationType>> {};
 
 // Tests navigation download that's initiated from a different frame with
 // only one frame being sandboxed. Also covers the remote frame navigation path.
 IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_Sandbox,
                        Download) {
-  bool enable_blocking_downloads_in_sandbox;
-  bool is_cross_origin;
-  OtherFrameNavigationType other_frame_navigation_type;
-  std::tie(enable_blocking_downloads_in_sandbox, is_cross_origin,
-           other_frame_navigation_type) = GetParam();
+  auto [is_cross_origin, other_frame_navigation_type] = GetParam();
   SCOPED_TRACE(::testing::Message()
-               << "enable_blocking_downloads_in_sandbox = "
-               << enable_blocking_downloads_in_sandbox << ", "
                << "is_cross_origin = " << is_cross_origin << ", "
                << "other_frame_navigation_type = "
                << other_frame_navigation_type);
 
-  bool expect_download = !enable_blocking_downloads_in_sandbox;
-
   InitializeHistogramTesterAndWebFeatureWaiter();
-  SetNumDownloadsExpectation(expect_download);
+  SetNumDownloadsExpectation(0);
   InitializeOneSubframeSetup(SandboxOption::kDisallowDownloads,
                              false /* is_ad_frame */,
                              is_cross_origin /* is_cross_origin */);
@@ -481,10 +435,6 @@ IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_Sandbox,
       blink::mojom::WebFeature::kDownloadPrePolicyCheck);
   GetWebFeatureWaiter()->AddWebFeatureExpectation(
       blink::mojom::WebFeature::kDownloadInSandbox);
-  if (expect_download) {
-    GetWebFeatureWaiter()->AddWebFeatureExpectation(
-        blink::mojom::WebFeature::kDownloadPostPolicyCheck);
-  }
 
   if (other_frame_navigation_type ==
       OtherFrameNavigationType::
@@ -506,7 +456,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     OtherFrameNavigationDownloadBrowserTest_Sandbox,
     ::testing::Combine(
-        ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Values(
             OtherFrameNavigationType::
@@ -539,12 +488,8 @@ class OtherFrameNavigationDownloadBrowserTest_AdFrame
 // only one frame being ad. Also covers the remote frame navigation path.
 IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_AdFrame,
                        Download) {
-  bool block_downloads_in_ad_frame_without_user_activation;
-  bool is_cross_origin;
-  bool initiate_with_gesture;
-  OtherFrameNavigationType other_frame_navigation_type;
-  std::tie(block_downloads_in_ad_frame_without_user_activation, is_cross_origin,
-           initiate_with_gesture, other_frame_navigation_type) = GetParam();
+  auto [block_downloads_in_ad_frame_without_user_activation, is_cross_origin,
+        initiate_with_gesture, other_frame_navigation_type] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "block_downloads_in_ad_frame_without_user_activation = "
                << block_downloads_in_ad_frame_without_user_activation << ", "
@@ -631,34 +576,17 @@ INSTANTIATE_TEST_SUITE_P(
 class TopFrameSameFrameDownloadBrowserTest
     : public DownloadFramePolicyBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<DownloadSource,
-                     bool /* enable_blocking_downloads_in_sandbox */,
-                     SandboxOption>> {
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    bool enable_blocking_downloads_in_sandbox;
-    std::tie(std::ignore, enable_blocking_downloads_in_sandbox, std::ignore) =
-        GetParam();
-    SetRuntimeFeatureCommand(enable_blocking_downloads_in_sandbox,
-                             "BlockingDownloadsInSandbox", command_line);
-  }
-};
+          std::tuple<DownloadSource, SandboxOption>> {};
 
 // Download that's initiated from / occurs in the same top frame are handled
 // correctly.
 IN_PROC_BROWSER_TEST_P(TopFrameSameFrameDownloadBrowserTest, Download) {
-  DownloadSource source;
-  bool enable_blocking_downloads_in_sandbox;
-  SandboxOption sandbox_option;
-  std::tie(source, enable_blocking_downloads_in_sandbox, sandbox_option) =
-      GetParam();
+  auto [source, sandbox_option] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
-               << "enable_blocking_downloads_in_sandbox = "
-               << enable_blocking_downloads_in_sandbox << ", "
                << "sandbox_option = " << sandbox_option);
 
-  bool expect_download = !enable_blocking_downloads_in_sandbox ||
-                         sandbox_option != SandboxOption::kDisallowDownloads;
+  bool expect_download = sandbox_option != SandboxOption::kDisallowDownloads;
   bool sandboxed = sandbox_option == SandboxOption::kDisallowDownloads;
 
   InitializeHistogramTesterAndWebFeatureWaiter();
@@ -689,7 +617,6 @@ INSTANTIATE_TEST_SUITE_P(
     TopFrameSameFrameDownloadBrowserTest,
     ::testing::Combine(::testing::Values(DownloadSource::kNavigation,
                                          DownloadSource::kAnchorAttribute),
-                       ::testing::Bool(),
                        ::testing::Values(SandboxOption::kNotSandboxed,
                                          SandboxOption::kDisallowDownloads,
                                          SandboxOption::kAllowDownloads)));
@@ -706,9 +633,7 @@ class DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags
 IN_PROC_BROWSER_TEST_P(
     DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
     PendingSandboxPolicyUsedForNavigationInstantiatingFrame) {
-  bool is_cross_origin;
-  bool from_allow_to_disallow;
-  std::tie(is_cross_origin, from_allow_to_disallow) = GetParam();
+  auto [is_cross_origin, from_allow_to_disallow] = GetParam();
 
   size_t number_of_downloads = from_allow_to_disallow ? 0u : 1u;
   SandboxOption initial_sandbox_option =
@@ -725,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(
                              is_cross_origin);
 
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 
@@ -733,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(
   content::TestNavigationManager navigation_observer(web_contents(),
                                                      download_url);
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').src = $1",
                                 download_url)));
   navigation_observer.WaitForNavigationFinished();
@@ -751,9 +676,7 @@ IN_PROC_BROWSER_TEST_P(
 // policy for the download intervention.
 IN_PROC_BROWSER_TEST_P(DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
                        EffectiveSandboxPolicyUsedForNavigationInitiatorFrame) {
-  bool is_cross_origin;
-  bool from_allow_to_disallow;
-  std::tie(is_cross_origin, from_allow_to_disallow) = GetParam();
+  auto [is_cross_origin, from_allow_to_disallow] = GetParam();
 
   size_t number_of_downloads = from_allow_to_disallow ? 1u : 0u;
   SandboxOption initial_sandbox_option =
@@ -770,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
                              is_cross_origin);
 
   EXPECT_TRUE(
-      ExecJs(web_contents()->GetMainFrame(),
+      ExecJs(web_contents()->GetPrimaryMainFrame(),
              content::JsReplace("document.querySelector('iframe').sandbox = $1",
                                 update_to_token)));
 

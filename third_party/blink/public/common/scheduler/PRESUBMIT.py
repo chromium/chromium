@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Blink feature-policy presubmit script.
@@ -6,6 +6,9 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into gcl.
 """
+
+
+USE_PYTHON3 = True
 
 
 def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103

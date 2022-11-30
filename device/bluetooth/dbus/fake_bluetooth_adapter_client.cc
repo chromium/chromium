@@ -1,17 +1,18 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "dbus/bus.h"
@@ -144,7 +145,7 @@ void FakeBluetoothAdapterClient::StartDiscovery(
   ++discovering_count_;
   DVLOG(1) << "StartDiscovery: " << object_path.value() << ", "
            << "count is now " << discovering_count_;
-  PostDelayedTask(base::BindOnce(std::move(callback), base::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), absl::nullopt));
 
   if (discovering_count_ == 1) {
     PostDelayedTask(
@@ -178,7 +179,7 @@ void FakeBluetoothAdapterClient::StopDiscovery(
   --discovering_count_;
   DVLOG(1) << "StopDiscovery: " << object_path.value() << ", "
            << "count is now " << discovering_count_;
-  PostDelayedTask(base::BindOnce(std::move(callback), base::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), absl::nullopt));
 
   if (discovering_count_ == 0) {
     FakeBluetoothDeviceClient* device_client =
@@ -253,7 +254,7 @@ void FakeBluetoothAdapterClient::SetDiscoveryFilter(
     return;
   }
 
-  discovery_filter_.reset(new DiscoveryFilter());
+  discovery_filter_ = std::make_unique<DiscoveryFilter>();
   discovery_filter_->CopyFrom(discovery_filter);
   PostDelayedTask(std::move(callback));
 }
@@ -288,7 +289,7 @@ void FakeBluetoothAdapterClient::RemoveServiceRecord(
 void FakeBluetoothAdapterClient::ConnectDevice(
     const dbus::ObjectPath& object_path,
     const std::string& address,
-    const base::Optional<AddressType>& address_type,
+    const absl::optional<AddressType>& address_type,
     ConnectDeviceCallback callback,
     ErrorCallback error_callback) {
   NOTIMPLEMENTED();
@@ -372,7 +373,7 @@ void FakeBluetoothAdapterClient::OnPropertyChanged(
 void FakeBluetoothAdapterClient::PostDelayedTask(base::OnceClosure callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(callback),
-      base::TimeDelta::FromMilliseconds(simulation_interval_ms_));
+      base::Milliseconds(simulation_interval_ms_));
 }
 
 }  // namespace bluez

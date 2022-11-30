@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -33,11 +34,11 @@ bool IsDestTypeEligible(int dest_type) {
   dest->options = options;
 
   PrinterBasicInfo printer_info;
-  const bool eligible =
+  const mojom::ResultCode result_code =
       PrintBackendCUPS::PrinterBasicInfoFromCUPS(*dest, &printer_info);
 
   cupsFreeDests(num_dests, dest);
-  return eligible;
+  return result_code == mojom::ResultCode::kSuccess;
 }
 
 }  // namespace
@@ -51,7 +52,7 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
 
   int num_options = 0;
   cups_option_t* options = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr char kInfo[] = "info";
   num_options =
       cupsAddOption(kCUPSOptPrinterInfo, kInfo, num_options, &options);
@@ -69,17 +70,28 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   printer->options = options;
 
   PrinterBasicInfo printer_info;
-  EXPECT_TRUE(
-      PrintBackendCUPS::PrinterBasicInfoFromCUPS(*printer, &printer_info));
+  EXPECT_EQ(PrintBackendCUPS::PrinterBasicInfoFromCUPS(*printer, &printer_info),
+            mojom::ResultCode::kSuccess);
   cupsFreeDests(/*num_dests=*/1, printer);
 
   EXPECT_EQ(kName, printer_info.printer_name);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(kInfo, printer_info.display_name);
 #else
   EXPECT_EQ(kName, printer_info.display_name);
 #endif
   EXPECT_EQ(kDescription, printer_info.printer_description);
+
+  // The option value of `kCUPSOptPrinterMakeAndModel` is used to set the value
+  // for `kDriverInfoTagName`.
+  auto driver = printer_info.options.find(kDriverInfoTagName);
+#if BUILDFLAG(IS_MAC)
+  ASSERT_NE(driver, printer_info.options.end());
+  EXPECT_EQ(kDescription, driver->second);
+#else
+  // Didn't set option for `kCUPSOptPrinterMakeAndModel`.
+  EXPECT_EQ(driver, printer_info.options.end());
+#endif
 }
 
 TEST(PrintBackendCupsTest, PrinterDriverInfoFromCUPS) {
@@ -110,7 +122,7 @@ TEST(PrintBackendCupsTest, EligibleDestTypes) {
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_DISCOVERED));
   EXPECT_TRUE(IsDestTypeEligible(CUPS_PRINTER_LOCAL));
 
-  // Try combos. |CUPS_PRINTER_LOCAL| has a value of 0, but keep these test
+  // Try combos. `CUPS_PRINTER_LOCAL` has a value of 0, but keep these test
   // cases in the event that the constant values change in CUPS.
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_LOCAL | CUPS_PRINTER_FAX));
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_LOCAL | CUPS_PRINTER_SCANNER));

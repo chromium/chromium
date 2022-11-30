@@ -29,8 +29,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
         'core/css/templates/css_property_names.h.tmpl')
     def generate_header(self):
         return {
-            'alias_mask':
-            hex(0xffffffff - self._css_properties.alias_offset + 1),
+            'alias_offset':
+            self._css_properties.alias_offset,
             'class_name':
             self.class_name,
             'property_enums':
@@ -39,6 +39,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
                     self._css_properties.properties_including_aliases)),
             'property_aliases':
             "\n".join(map(self._array_item, self._css_properties.aliases)),
+            'computable_properties':
+            "\n".join(map(self._array_item, self._css_properties.computable)),
             'first_property_id':
             self._css_properties.first_property_id,
             'properties_count':
@@ -86,6 +88,10 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
         ]
 
         return {
+            'aliases':
+            self._css_properties.aliases,
+            'alias_offset':
+            self._css_properties.alias_offset,
             'class_name':
             'CSSPropertyNames',
             'file_basename':
@@ -97,8 +103,8 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             'property_offsets':
             property_offsets,
             'property_to_enum_map':
-            '\n'.join(
-                '%s, %s' % property_ for property_ in css_name_and_enum_pairs),
+            '\n'.join('%s, %s' % property_
+                      for property_ in css_name_and_enum_pairs),
             'gperf_path':
             self.gperf_path,
         }

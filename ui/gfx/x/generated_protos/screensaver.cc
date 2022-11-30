@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@
 
 #include "screensaver.h"
 
+#include <unistd.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -532,21 +533,21 @@ Future<void> ScreenSaver::SetAttributes(
     const WindowClass& c_class,
     const uint8_t& depth,
     const VisualId& visual,
-    const base::Optional<Pixmap>& background_pixmap,
-    const base::Optional<uint32_t>& background_pixel,
-    const base::Optional<Pixmap>& border_pixmap,
-    const base::Optional<uint32_t>& border_pixel,
-    const base::Optional<Gravity>& bit_gravity,
-    const base::Optional<Gravity>& win_gravity,
-    const base::Optional<BackingStore>& backing_store,
-    const base::Optional<uint32_t>& backing_planes,
-    const base::Optional<uint32_t>& backing_pixel,
-    const base::Optional<Bool32>& override_redirect,
-    const base::Optional<Bool32>& save_under,
-    const base::Optional<EventMask>& event_mask,
-    const base::Optional<EventMask>& do_not_propogate_mask,
-    const base::Optional<ColorMap>& colormap,
-    const base::Optional<Cursor>& cursor) {
+    const absl::optional<Pixmap>& background_pixmap,
+    const absl::optional<uint32_t>& background_pixel,
+    const absl::optional<Pixmap>& border_pixmap,
+    const absl::optional<uint32_t>& border_pixel,
+    const absl::optional<Gravity>& bit_gravity,
+    const absl::optional<Gravity>& win_gravity,
+    const absl::optional<BackingStore>& backing_store,
+    const absl::optional<uint32_t>& backing_planes,
+    const absl::optional<uint32_t>& backing_pixel,
+    const absl::optional<Bool32>& override_redirect,
+    const absl::optional<Bool32>& save_under,
+    const absl::optional<EventMask>& event_mask,
+    const absl::optional<EventMask>& do_not_propogate_mask,
+    const absl::optional<ColorMap>& colormap,
+    const absl::optional<Cursor>& cursor) {
   return ScreenSaver::SetAttributes(
       ScreenSaver::SetAttributesRequest{drawable,
                                         x,

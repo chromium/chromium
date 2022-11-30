@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 #include <iosfwd>
-
-#include "base/compiler_specific.h"
 
 namespace history {
 
@@ -56,7 +54,7 @@ using DownloadId = uint32_t;
 
 // Utility functions to convert between int and DownloadId for
 // serialization to the download database.
-bool ConvertIntToDownloadId(int64_t id, DownloadId* out) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ConvertIntToDownloadId(int64_t id, DownloadId* out);
 int64_t DownloadIdToInt(DownloadId id);
 
 }  // namespace history

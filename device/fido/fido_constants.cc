@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ const char kPlatformDeviceMapKey[] = "plat";
 const char kEntityIdMapKey[] = "id";
 const char kEntityNameMapKey[] = "name";
 const char kDisplayNameMapKey[] = "displayName";
-const char kIconUrlMapKey[] = "icon";
 const char kCredentialTypeMapKey[] = "type";
 const char kCredentialAlgorithmMapKey[] = "alg";
 const char kCredentialManagementMapKey[] = "credMgmt";
@@ -38,9 +37,10 @@ const char kDefaultCredProtectKey[] = "defaultCredProtect";
 const char kEnterpriseAttestationKey[] = "ep";
 const char kLargeBlobsKey[] = "largeBlobs";
 const char kAlwaysUvKey[] = "alwaysUv";
+const char kMakeCredUvNotRqdKey[] = "makeCredUvNotRqd";
 
-const base::TimeDelta kDeviceTimeout = base::TimeDelta::FromSeconds(20);
-const base::TimeDelta kU2fRetryDelay = base::TimeDelta::FromMilliseconds(200);
+const base::TimeDelta kDeviceTimeout = base::Seconds(20);
+const base::TimeDelta kU2fRetryDelay = base::Milliseconds(200);
 
 const char kFormatKey[] = "fmt";
 const char kAttestationStatementKey[] = "attStmt";
@@ -73,8 +73,18 @@ const char kCtap2_1Version[] = "FIDO_2_1";
 const char kExtensionHmacSecret[] = "hmac-secret";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
+const char kExtensionCredBlob[] = "credBlob";
+const char kExtensionMinPINLength[] = "minPinLength";
+const char kExtensionDevicePublicKey[] = "devicePubKey";
 
-const base::TimeDelta kBleDevicePairingModeWaitingInterval =
-    base::TimeDelta::FromSeconds(2);
+const char kDevicePublicKeyAttestationKey[] = "attestation";
+const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";
+const char kDevicePublicKeyAAGUIDKey[] = "aaguid";
+const char kDevicePublicKeyDPKKey[] = "dpk";
+const char kDevicePublicKeyScopeKey[] = "scope";
+const char kDevicePublicKeyNonceKey[] = "nonce";
+const char kDevicePublicKeyEPKey[] = "epAtt";
+
+const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 
 }  // namespace device

@@ -46,8 +46,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -60,7 +60,7 @@ namespace WTF {
 // header values. net::HTTPResponseHeaders::GetTimeValuedHeader() uses
 // base::Time::FromUTCString() for the same purpose.  We should consider
 // switching to base::Time::FromUTCString() for consistency.
-WTF_EXPORT base::Optional<base::Time> ParseDateFromNullTerminatedCharacters(
+WTF_EXPORT absl::optional<base::Time> ParseDateFromNullTerminatedCharacters(
     const char* date_string);
 
 // utcOffset: [-720,720].

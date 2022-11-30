@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@
 
 namespace blink {
 
+const RasterInvalidationTracking* GetRasterInvalidationTracking(
+    const LocalFrameView& root_frame_view,
+    wtf_size_t index = 0);
+
 class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
  public:
   PaintAndRasterInvalidationTest()
@@ -19,36 +23,17 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
             MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
-  ContentLayerClientImpl* GetContentLayerClient(size_t index = 0) const {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    const auto& clients = GetDocument()
-                              .View()
-                              ->GetPaintArtifactCompositor()
-                              ->ContentLayerClientsForTesting();
-    return index < clients.size() ? clients[index].get() : nullptr;
-  }
-
   const RasterInvalidationTracking* GetRasterInvalidationTracking(
-      size_t index = 0) const {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (auto* client = GetContentLayerClient(index))
-        return client->GetRasterInvalidator().GetTracking();
-      return nullptr;
-    }
-    return GetLayoutView()
-        .Layer()
-        ->GraphicsLayerBacking()
-        ->GetRasterInvalidationTracking();
+      wtf_size_t index = 0) const {
+    return blink::GetRasterInvalidationTracking(*GetDocument().View(), index);
   }
 
   void SetUp() override {
     PaintControllerPaintTest::SetUp();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
-      layer_tree_->layer_tree_host()->SetRootLayer(
-          GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
-    }
+    layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
+    layer_tree_->layer_tree_host()->SetRootLayer(
+        GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
   }
 
   void SetPreferCompositingToLCDText(bool enable) {

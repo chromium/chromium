@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,23 @@
 #define CONTENT_BROWSER_SANDBOX_HOST_LINUX_H_
 
 #include <memory>
-#include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "content/browser/sandbox_ipc_linux.h"
-#include "content/common/content_export.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}
 
 namespace content {
 
 // This is a singleton object which handles sandbox requests from the
 // sandboxed processes.
-class CONTENT_EXPORT SandboxHostLinux {
+class SandboxHostLinux {
  public:
   // Returns the singleton instance.
   static SandboxHostLinux* GetInstance();
+
+  SandboxHostLinux(const SandboxHostLinux&) = delete;
+  SandboxHostLinux& operator=(const SandboxHostLinux&) = delete;
 
   // Get the file descriptor which sandboxed processes should be given in order
   // to communicate with the browser. This is used for things like communicating
@@ -56,10 +52,8 @@ class CONTENT_EXPORT SandboxHostLinux {
 
   std::unique_ptr<SandboxIPCHandler> ipc_handler_;
   std::unique_ptr<base::DelegateSimpleThread> ipc_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxHostLinux);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_RENDER_SANDBOX_HOST_LINUX_H_
+#endif  // CONTENT_BROWSER_SANDBOX_HOST_LINUX_H_

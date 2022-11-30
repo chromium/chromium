@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,18 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/gpu/accelerated_video_decoder.h"
+#include "media/gpu/av1_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 
 // For libgav1::RefCountedBufferPtr.
 #include "third_party/libgav1/src/src/buffer_pool.h"
-// For libgav1::ObuSequenceHeader. base::Optional demands ObuSequenceHeader to
+// For libgav1::ObuSequenceHeader. absl::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
 #include "third_party/libgav1/src/src/obu_parser.h"
@@ -32,7 +33,6 @@ class Vector;
 }  // namespace libgav1
 
 namespace media {
-class AV1Picture;
 using AV1ReferenceFrameVector =
     std::array<scoped_refptr<AV1Picture>, libgav1::kNumReferenceFrameTypes>;
 
@@ -46,6 +46,24 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
  public:
   class MEDIA_GPU_EXPORT AV1Accelerator {
    public:
+    // Methods may return kTryAgain if they need additional data (provided
+    // independently) in order to proceed. Examples are things like not having
+    // an appropriate key to decode encrypted content. This is not considered an
+    // unrecoverable error, but rather a pause to allow an application to
+    // independently provide the required data. When AV1Decoder::Decode()
+    // is called again, it will attempt to resume processing of the stream
+    // by calling the same method again.
+    enum class Status {
+      // Operation completed successfully.
+      kOk,
+
+      // Operation failed.
+      kFail,
+
+      // Operation failed because some external data is missing. Retry the same
+      // operation later, once the data has been provided.
+      kTryAgain,
+    };
     AV1Accelerator() = default;
     virtual ~AV1Accelerator() = default;
     AV1Accelerator(const AV1Accelerator&) = delete;
@@ -74,8 +92,7 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
     // process is finished, but the caller may drop its references to |pic|
     // and |ref_frames| immediately, and |data| does not need to remain valid
     // after this method returns.
-    // Returns true when successful, false otherwise.
-    virtual bool SubmitDecode(
+    virtual Status SubmitDecode(
         const AV1Picture& pic,
         const libgav1::ObuSequenceHeader& sequence_header,
         const AV1ReferenceFrameVector& ref_frames,
@@ -101,20 +118,21 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
 
   // AcceleratedVideoDecoder implementation.
   void SetStream(int32_t id, const DecoderBuffer& decoder_buffer) override;
-  bool Flush() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
   void Reset() override;
-  DecodeResult Decode() override WARN_UNUSED_RESULT;
+  [[nodiscard]] DecodeResult Decode() override;
   gfx::Size GetPicSize() const override;
   gfx::Rect GetVisibleRect() const override;
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
+  VideoChromaSampling GetChromaSampling() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
  private:
   friend class AV1DecoderTest;
 
-  bool DecodeAndOutputPicture(
+  AV1Accelerator::Status DecodeAndOutputPicture(
       scoped_refptr<AV1Picture> pic,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
   void UpdateReferenceFrames(scoped_refptr<AV1Picture> pic);
@@ -138,8 +156,8 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   const std::unique_ptr<AV1Accelerator> accelerator_;
   AV1ReferenceFrameVector ref_frames_;
 
-  base::Optional<libgav1::ObuSequenceHeader> current_sequence_header_;
-  base::Optional<libgav1::ObuFrameHeader> current_frame_header_;
+  absl::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
+  absl::optional<libgav1::ObuFrameHeader> current_frame_header_;
   libgav1::RefCountedBufferPtr current_frame_;
 
   gfx::Rect visible_rect_;
@@ -147,10 +165,15 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   VideoColorSpace container_color_space_;
   uint8_t bit_depth_ = 0;
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   int32_t stream_id_ = 0;
   const uint8_t* stream_ = nullptr;
   size_t stream_size_ = 0;
+  std::unique_ptr<DecryptConfig> decrypt_config_;
+
+  // Pending picture for decode when accelerator returns kTryAgain.
+  scoped_refptr<AV1Picture> pending_pic_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

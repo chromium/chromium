@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_NET_FAKE_CONNECTIVITY_CHECKER_H_
 #define CHROMECAST_NET_FAKE_CONNECTIVITY_CHECKER_H_
 
-#include "base/macros.h"
 #include "chromecast/net/connectivity_checker.h"
 
 namespace chromecast {
@@ -15,6 +14,9 @@ namespace chromecast {
 class FakeConnectivityChecker : public ConnectivityChecker {
  public:
   FakeConnectivityChecker();
+
+  FakeConnectivityChecker(const FakeConnectivityChecker&) = delete;
+  FakeConnectivityChecker& operator=(const FakeConnectivityChecker&) = delete;
 
   // ConnectivityChecker implementation:
   bool Connected() const override;
@@ -29,8 +31,6 @@ class FakeConnectivityChecker : public ConnectivityChecker {
  private:
   friend class base::RefCountedThreadSafe<FakeConnectivityChecker>;
   bool connected_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectivityChecker);
 };
 
 }  // namespace chromecast

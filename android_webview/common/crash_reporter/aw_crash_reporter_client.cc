@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "base/base_paths_android.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -38,6 +39,9 @@ namespace {
 class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   AwCrashReporterClient() = default;
+
+  AwCrashReporterClient(const AwCrashReporterClient&) = delete;
+  AwCrashReporterClient& operator=(const AwCrashReporterClient&) = delete;
 
   // crash_reporter::CrashReporterClient implementation.
   bool IsRunningUnattended() override { return false; }
@@ -104,9 +108,6 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
     static base::NoDestructor<AwCrashReporterClient> crash_reporter_client;
     return crash_reporter_client.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwCrashReporterClient);
 };
 
 #if defined(ARCH_CPU_X86_FAMILY)

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_callbacks.h"
@@ -33,6 +32,10 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
   static const char kSupplementName[];
 
   explicit PushMessagingClient(LocalDOMWindow&);
+
+  PushMessagingClient(const PushMessagingClient&) = delete;
+  PushMessagingClient& operator=(const PushMessagingClient&) = delete;
+
   ~PushMessagingClient() = default;
 
   static PushMessagingClient* From(LocalDOMWindow&);
@@ -66,8 +69,6 @@ class PushMessagingClient final : public GarbageCollected<PushMessagingClient>,
                     mojom::blink::PushSubscriptionPtr subscription);
 
   HeapMojoRemote<mojom::blink::PushMessaging> push_messaging_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingClient);
 };
 
 }  // namespace blink

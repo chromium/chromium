@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/x/connection.h"
 
@@ -26,20 +25,25 @@ class XWindowEventManager;
 class COMPONENT_EXPORT(X11) XScopedEventSelector {
  public:
   XScopedEventSelector(Window window, EventMask event_mask);
+
+  XScopedEventSelector(const XScopedEventSelector&) = delete;
+  XScopedEventSelector& operator=(const XScopedEventSelector&) = delete;
+
   ~XScopedEventSelector();
 
  private:
   Window window_;
   EventMask event_mask_;
   base::WeakPtr<XWindowEventManager> event_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(XScopedEventSelector);
 };
 
 // Allows multiple clients within Chrome to select events on the same X window.
 class XWindowEventManager {
  public:
   static XWindowEventManager* GetInstance();
+
+  XWindowEventManager(const XWindowEventManager&) = delete;
+  XWindowEventManager& operator=(const XWindowEventManager&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<XWindowEventManager>;
@@ -68,8 +72,6 @@ class XWindowEventManager {
   // destroyed before any XScopedEventSelector, the |event_manager_| will become
   // invalidated.
   base::WeakPtrFactory<XWindowEventManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(XWindowEventManager);
 };
 
 }  // namespace x11

@@ -1,10 +1,13 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/dbus/fake_bluetooth_battery_client.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -76,8 +79,7 @@ void FakeBluetoothBatteryClient::RemoveBattery(const dbus::ObjectPath& path) {
   DCHECK(base::Contains(battery_list_, path));
 
   properties_map_.erase(path);
-  battery_list_.erase(
-      std::find(battery_list_.begin(), battery_list_.end(), path));
+  battery_list_.erase(base::ranges::find(battery_list_, path));
 
   for (auto& observer : observers_)
     observer.BatteryRemoved(path);

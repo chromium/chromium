@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,17 @@
 #define CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_
 
 #include "ash/public/cpp/accessibility_controller_client.h"
-#include "base/macros.h"
 
 // Handles method calls from ash to do accessibility-related work in chrome.
 class AccessibilityControllerClient
     : public ash::AccessibilityControllerClient {
  public:
   AccessibilityControllerClient();
+
+  AccessibilityControllerClient(const AccessibilityControllerClient&) = delete;
+  AccessibilityControllerClient& operator=(
+      const AccessibilityControllerClient&) = delete;
+
   virtual ~AccessibilityControllerClient();
 
   // ash::AccessibilityControllerClient:
@@ -37,9 +41,6 @@ class AccessibilityControllerClient
   void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,
                                   double value) override;
   void SetA11yOverrideWindow(aura::Window* a11y_override_window) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityControllerClient);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_CLIENT_H_

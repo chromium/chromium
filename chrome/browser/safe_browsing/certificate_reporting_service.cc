@@ -1,7 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -31,12 +33,6 @@ const char kExtendedReportingUploadUrl[] =
 bool ReportCompareFunc(const CertificateReportingService::Report& item1,
                        const CertificateReportingService::Report& item2) {
   return item1.creation_time > item2.creation_time;
-}
-
-// Records an UMA histogram of the net errors when certificate reports
-// fail to send.
-void RecordUMAOnFailure(int net_error) {
-  base::UmaHistogramSparse("SSL.CertificateErrorReportFailure", -net_error);
 }
 
 void RecordUMAEvent(CertificateReportingService::ReportOutcome outcome) {
@@ -167,7 +163,6 @@ void CertificateReportingService::Reporter::ErrorCallback(
     int report_id,
     int net_error,
     int http_response_code) {
-  RecordUMAOnFailure(net_error);
   RecordUMAEvent(ReportOutcome::FAILED);
   if (retries_enabled_) {
     auto it = inflight_reports_.find(report_id);
@@ -261,18 +256,17 @@ void CertificateReportingService::Reset(bool enabled) {
   }
   std::unique_ptr<CertificateErrorReporter> error_reporter;
   if (server_public_key_) {
-    error_reporter.reset(new CertificateErrorReporter(
+    error_reporter = std::make_unique<CertificateErrorReporter>(
         url_loader_factory_, GURL(kExtendedReportingUploadUrl),
-        server_public_key_, server_public_key_version_));
+        server_public_key_, server_public_key_version_);
   } else {
-    error_reporter.reset(new CertificateErrorReporter(
-        url_loader_factory_, GURL(kExtendedReportingUploadUrl)));
+    error_reporter = std::make_unique<CertificateErrorReporter>(
+        url_loader_factory_, GURL(kExtendedReportingUploadUrl));
   }
-  reporter_.reset(
-      new Reporter(std::move(error_reporter),
-                   std::unique_ptr<BoundedReportList>(
-                       new BoundedReportList(max_queued_report_count_)),
-                   clock_, max_report_age_, true /* retries_enabled */));
+  reporter_ = std::make_unique<Reporter>(
+      std::move(error_reporter),
+      std::make_unique<BoundedReportList>(max_queued_report_count_), clock_,
+      max_report_age_, true /* retries_enabled */);
 }
 
 void CertificateReportingService::OnPreferenceChanged() {

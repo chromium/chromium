@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -49,8 +48,9 @@ void SplitTextNodeContainingElementCommand::DoApply(EditingState*) {
 
   Element* parent = text_->parentElement();
   if (!parent || !parent->parentElement() ||
-      !HasEditableStyle(*parent->parentElement()))
+      !IsEditable(*parent->parentElement())) {
     return;
+  }
 
   LayoutObject* parent_layout_object = parent->GetLayoutObject();
   if (!parent_layout_object || !parent_layout_object->IsInline()) {

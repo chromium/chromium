@@ -37,12 +37,20 @@ namespace blink {
 
 class TextInputType final : public BaseTextInputType {
  public:
-  TextInputType(HTMLInputElement& element) : BaseTextInputType(element) {}
+  TextInputType(HTMLInputElement& element)
+      : BaseTextInputType(Type::kText, element) {}
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
   bool SupportsInputModeAttribute() const override;
+};
+
+template <>
+struct DowncastTraits<TextInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsTextInputType();
+  }
 };
 
 }  // namespace blink

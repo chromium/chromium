@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_PIN_BASE_WIN_H_
+
+#include "base/memory/raw_ptr.h"
 
 // Avoid including strsafe.h via dshow as it will cause build warnings.
 #define NO_DSHOW_STRSAFE
@@ -19,7 +21,7 @@ namespace media {
 
 class PinBase : public IPin,
                 public IMemInputPin,
-                public base::RefCounted<PinBase> {
+                public base::RefCountedThreadSafe<PinBase> {
  public:
   explicit PinBase(IBaseFilter* owner);
 
@@ -96,7 +98,7 @@ class PinBase : public IPin,
   IFACEMETHODIMP_(ULONG) Release() override;
 
  protected:
-  friend class base::RefCounted<PinBase>;
+  friend class base::RefCountedThreadSafe<PinBase>;
   virtual ~PinBase();
 
  private:
@@ -104,7 +106,7 @@ class PinBase : public IPin,
   Microsoft::WRL::ComPtr<IPin> connected_pin_;
   // owner_ is the filter owning this pin. We don't reference count it since
   // that would create a circular reference count.
-  IBaseFilter* owner_;
+  raw_ptr<IBaseFilter> owner_;
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/policy/policy_export.h"
 
 class GoogleServiceAuthError;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -34,8 +31,7 @@ class POLICY_EXPORT UserInfoFetcher {
     // Invoked when the UserInfo request has succeeded, passing the parsed
     // response in |response|. Delegate may free the UserInfoFetcher in this
     // callback.
-    virtual void OnGetUserInfoSuccess(
-        const base::DictionaryValue* response) = 0;
+    virtual void OnGetUserInfoSuccess(const base::Value::Dict& response) = 0;
 
     // Invoked when the UserInfo request has failed, passing the associated
     // error in |error|. Delegate may free the UserInfoFetcher in this
@@ -48,6 +44,8 @@ class POLICY_EXPORT UserInfoFetcher {
   UserInfoFetcher(
       Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  UserInfoFetcher(const UserInfoFetcher&) = delete;
+  UserInfoFetcher& operator=(const UserInfoFetcher&) = delete;
   ~UserInfoFetcher();
 
   // Starts the UserInfo request, using the passed OAuth2 |access_token|.
@@ -57,11 +55,9 @@ class POLICY_EXPORT UserInfoFetcher {
   void OnFetchComplete(std::unique_ptr<std::string> body);
 
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInfoFetcher);
 };
 
 }  // namespace policy

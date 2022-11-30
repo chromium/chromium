@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,44 +7,82 @@
  * 'guest-os-shared-paths' is the settings shared paths subpage for guest OSes.
  */
 
-Polymer({
-  is: 'settings-guest-os-shared-paths',
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [I18nBehavior],
+import {assert} from 'chrome://resources/js/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
-     */
-    guestOsType: String,
+import {recordSettingChange} from '../metrics_recorder.js';
 
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl} from './guest_os_browser_proxy.js';
 
-    /**
-     * The shared path string suitable for display in the UI.
-     * @private {Array<!{path: string, pathDisplayText: string}>}
-     */
-    sharedPaths_: Array,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsGuestOsSharedPathsElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-    /**
-     * The shared path which failed to be removed in the most recent attempt
-     * to remove a path. Null indicates that removal succeeded. When non-null,
-     * the failure dialog is shown.
-     * @private {?string}
-     */
-    sharedPathWhichFailedRemoval_: {
-      type: String,
-      value: null,
-    },
-  },
+/** @polymer */
+class SettingsGuestOsSharedPathsElement extends
+    SettingsGuestOsSharedPathsElementBase {
+  static get is() {
+    return 'settings-guest-os-shared-paths';
+  }
 
-  observers: [
-    'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)'
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
+       */
+      guestOsType: String,
+
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
+      /**
+       * The shared path string suitable for display in the UI.
+       * @private {Array<!{path: string, pathDisplayText: string}>}
+       */
+      sharedPaths_: Array,
+
+      /**
+       * The shared path which failed to be removed in the most recent attempt
+       * to remove a path. Null indicates that removal succeeded. When non-null,
+       * the failure dialog is shown.
+       * @private {?string}
+       */
+      sharedPathWhichFailedRemoval_: {
+        type: String,
+        value: null,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onGuestOsSharedPathsChanged_(prefs.guest_os.paths_shared_to_vms.value)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!GuestOsBrowserProxy}  */
+    this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
+  }
+
 
   /**
    * @param {!Object<!Array<string>>} paths
@@ -58,13 +96,11 @@ Polymer({
         vmPaths.push(path);
       }
     }
-    settings.GuestOsBrowserProxyImpl.getInstance()
-        .getGuestOsSharedPathsDisplayText(vmPaths)
-        .then(text => {
-          this.sharedPaths_ = vmPaths.map(
-              (path, i) => ({path: path, pathDisplayText: text[i]}));
-        });
-  },
+    this.browserProxy_.getGuestOsSharedPathsDisplayText(vmPaths).then(text => {
+      this.sharedPaths_ =
+          vmPaths.map((path, i) => ({path: path, pathDisplayText: text[i]}));
+    });
+  }
 
   /**
    * @param {string} path
@@ -72,15 +108,14 @@ Polymer({
    */
   removeSharedPath_(path) {
     this.sharedPathWhichFailedRemoval_ = null;
-    settings.GuestOsBrowserProxyImpl.getInstance()
-        .removeGuestOsSharedPath(this.vmName_(), path)
+    this.browserProxy_.removeGuestOsSharedPath(this.vmName_(), path)
         .then(success => {
           if (!success) {
             this.sharedPathWhichFailedRemoval_ = path;
           }
         });
-    settings.recordSettingChange();
-  },
+    recordSettingChange();
+  }
 
   /**
    * @param {!Event} event
@@ -88,17 +123,17 @@ Polymer({
    */
   onRemoveSharedPathClick_(event) {
     this.removeSharedPath_(event.model.item.path);
-  },
+  }
 
   /** @private */
   onRemoveFailedRetryClick_() {
     this.removeSharedPath_(assert(this.sharedPathWhichFailedRemoval_));
-  },
+  }
 
   /** @private */
   onRemoveFailedDismissClick_() {
     this.sharedPathWhichFailedRemoval_ = null;
-  },
+  }
 
   /**
    * @return {string} The name of the VM to share devices with.
@@ -106,7 +141,7 @@ Polymer({
    */
   vmName_() {
     return {crostini: 'termina', pluginVm: 'PvmDefault'}[this.guestOsType];
-  },
+  }
 
   /**
    * @return {string} Description for the page.
@@ -115,7 +150,7 @@ Polymer({
   getDescriptionText_() {
     return this.i18n(this.guestOsType + 'SharedPathsInstructionsLocate') +
         '\n' + this.i18n(this.guestOsType + 'SharedPathsInstructionsAdd');
-  },
+  }
 
   /**
    * @return {string} Message to display when removing a shared path fails.
@@ -124,7 +159,7 @@ Polymer({
   getRemoveFailureMessage_() {
     return this.i18n(
         this.guestOsType + 'SharedPathsRemoveFailureDialogMessage');
-  },
+  }
 
   /**
    * @param {number} index
@@ -133,5 +168,8 @@ Polymer({
    */
   generatePathDisplayTextId_(index) {
     return 'path-display-text-' + index;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsGuestOsSharedPathsElement.is, SettingsGuestOsSharedPathsElement);

@@ -1,17 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller.h"
 
-#include "base/check_op.h"
-#include "base/mac/foundation_util.h"
-#include "base/notreached.h"
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_add_account_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
-#import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_item.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,10 +24,6 @@ namespace {
 
 const CGFloat kViewControllerWidth = 312.;
 const CGFloat kViewControllerHeight = 230.;
-// Header height for identity section.
-const CGFloat kHeaderHeight = 49.;
-// Row height.
-const CGFloat kRowHeight = 54.;
 // Footer height for "Add Account…" section.
 const CGFloat kFooterHeight = 17.;
 
@@ -45,15 +44,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.tableView.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+
   self.preferredContentSize =
       CGSizeMake(kViewControllerWidth, kViewControllerHeight);
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.tableView.contentInset = UIEdgeInsetsMake(0, 0, kFooterHeight, 0);
   self.tableView.sectionFooterHeight = 0;
-  // Setting -UITableView.rowHeight is required for iOS 10. On iOS 11, the row
-  // height is automatically set.
-  self.tableView.estimatedRowHeight = kRowHeight;
-  self.tableView.estimatedSectionHeaderHeight = kHeaderHeight;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -68,12 +67,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch ((ItemType)item.type) {
     case IdentityItemType: {
-      IdentityChooserItem* identityChooserItem =
-          base::mac::ObjCCastStrict<IdentityChooserItem>(item);
-      DCHECK(identityChooserItem);
+      TableViewIdentityItem* tableViewIdentityItem =
+          base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
+      DCHECK(tableViewIdentityItem);
       [self.presentationDelegate
           identityChooserViewController:self
-            didSelectIdentityWithGaiaID:identityChooserItem.gaiaID];
+            didSelectIdentityWithGaiaID:tableViewIdentityItem.gaiaID];
       break;
     }
     case AddAccountItemType:
@@ -122,13 +121,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ changedItem ]];
 }
 
-- (IdentityChooserItem*)identityChooserItemWithGaiaID:(NSString*)gaiaID {
-  for (IdentityChooserItem* item in [self.tableViewModel
+- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(NSString*)gaiaID {
+  for (TableViewIdentityItem* item in [self.tableViewModel
            itemsInSectionWithIdentifier:IdentitiesSectionIdentifier]) {
     if (item.type != IdentityItemType)
       continue;
-    IdentityChooserItem* identityItem =
-        base::mac::ObjCCastStrict<IdentityChooserItem>(item);
+    TableViewIdentityItem* identityItem =
+        base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
     if ([identityItem.gaiaID isEqualToString:gaiaID])
       return identityItem;
   }

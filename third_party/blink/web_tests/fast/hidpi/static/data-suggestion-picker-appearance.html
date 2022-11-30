@@ -1,23 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-  window.enablePixelTesting = true;
-  function startTest() {
-    openPicker(document.getElementById('date'),
-               finishJSTest,
-               function () {
-        testFailed('picker didn\'t open')
-        finishJSTest();
-    });
-  }
-</script>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
-<script src="../../forms/resources/suggestion-picker-common.js"></script>
-</head>
-<body onLoad="startTest()" style="background-color: #eeffff;">
-<input type=date id=date value="10000-12-31" list="suggestions" style="width: 200px;">
+
+<body style="background-color: #eeffff;">
+<input type=date value="10000-12-31" list="suggestions" style="width: 200px;">
 <datalist id=suggestions>
     <option>2012-01-00</option> <!--invalid-->
     <option>foo</option> <!--invalid-->
@@ -41,7 +28,7 @@
     <option>2012-01-18</option>
     <option>2012-01-19</option>
 </datalist>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-</body>
-</html>
+
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
+</script>

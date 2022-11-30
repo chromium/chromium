@@ -1,0 +1,43 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  sources = [
+    "whats_new_table_view_banner_item.h",
+    "whats_new_table_view_banner_item.mm",
+    "whats_new_table_view_item.h",
+    "whats_new_table_view_item.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/whats_new/resources:whats_new_icon_tile",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "whats_new_table_view_banner_item_unittest.mm",
+    "whats_new_table_view_item_unittest.mm",
+  ]
+
+  deps = [
+    ":cells",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

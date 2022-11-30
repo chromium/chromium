@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 // Called when the InfobarBanner button was pressed.
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender;
 
-// Asks the delegate to dismiss the banner UI.  |userInitiated| is YES if
+// Asks the delegate to dismiss the banner UI.  `userInitiated` is YES if
 // directly triggered by a user action (e.g. swiping up the banner), and NO for
 // all other cases, even if the banner is dismissed indirectly by a user action
 // (e.g. accepting the banner, presenting settings).

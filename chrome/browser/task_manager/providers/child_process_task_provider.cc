@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,32 +19,6 @@ using content::BrowserThread;
 using content::ChildProcessData;
 
 namespace task_manager {
-
-namespace {
-
-// Collects and returns the child processes data on the IO thread to get all the
-// pre-existing child process before we start observing
-// |BrowserChildProcessObserver|.
-std::unique_ptr<std::vector<ChildProcessData>> CollectChildProcessData() {
-  // The |BrowserChildProcessHostIterator| must only be used on the IO thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  std::unique_ptr<std::vector<ChildProcessData>> child_processes(
-      new std::vector<ChildProcessData>());
-  for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
-    const ChildProcessData& process_data = itr.GetData();
-
-    // Only add processes that have already started, i.e. with valid handles.
-    if (!process_data.GetProcess().IsValid())
-      continue;
-
-    child_processes->push_back(process_data.Duplicate());
-  }
-
-  return child_processes;
-}
-
-}  // namespace
 
 ChildProcessTaskProvider::ChildProcessTaskProvider() {}
 
@@ -82,18 +56,22 @@ void ChildProcessTaskProvider::StartUpdating() {
   DCHECK(tasks_by_child_id_.empty());
 
   // First, get the pre-existing child processes data.
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CollectChildProcessData),
-      base::BindOnce(&ChildProcessTaskProvider::ChildProcessDataCollected,
-                     weak_ptr_factory_.GetWeakPtr()));
+  for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
+    const ChildProcessData& process_data = itr.GetData();
+
+    // Only add processes that have already started, i.e. with valid handles.
+    if (!process_data.GetProcess().IsValid())
+      continue;
+
+    CreateTask(process_data);
+  }
+
+  // Now start observing.
+  BrowserChildProcessObserver::Add(this);
 }
 
 void ChildProcessTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // ChildProcessDataCollected() should never be called after this, and hence
-  // we must invalidate the weak pointers.
-  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // First, stop observing.
   BrowserChildProcessObserver::Remove(this);
@@ -104,18 +82,6 @@ void ChildProcessTaskProvider::StopUpdating() {
   // Then delete all tasks (if any).
   tasks_by_processid_.clear();
   tasks_by_child_id_.clear();
-}
-
-void ChildProcessTaskProvider::ChildProcessDataCollected(
-    std::unique_ptr<const std::vector<content::ChildProcessData>>
-        child_processes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& process_data : *child_processes)
-    CreateTask(process_data);
-
-  // Now start observing.
-  BrowserChildProcessObserver::Add(this);
 }
 
 void ChildProcessTaskProvider::CreateTask(

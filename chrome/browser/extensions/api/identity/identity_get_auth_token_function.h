@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
@@ -20,8 +20,16 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/device_oauth2_token_service_lacros.h"
+#endif
 
 namespace signin {
 class AccessTokenFetcher;
@@ -52,9 +60,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
                                      public GaiaRemoteConsentFlow::Delegate,
                                      public IdentityMintRequestQueue::Request,
                                      public signin::IdentityManager::Observer,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                                     public OAuth2AccessTokenManager::Consumer,
-#endif
                                      public OAuth2MintTokenFlow::Delegate {
  public:
   DECLARE_EXTENSION_FUNCTION("identity.getAuthToken",
@@ -80,15 +85,9 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Starts a login access token request.
   virtual void StartTokenKeyAccountAccessTokenRequest();
 
-// TODO(blundell): Investigate feasibility of moving the ChromeOS use case
-// to use the Identity Service instead of being an
-// OAuth2AccessTokenManager::Consumer.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnGetTokenSuccess(
-      const OAuth2AccessTokenManager::Request* request,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
-                         const GoogleServiceAuthError& error) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnAccessTokenForDeviceAccountFetchCompleted(
+      crosapi::mojom::AccessTokenResultPtr result);
 #endif
 
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
@@ -96,7 +95,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // Invoked on completion of the access token fetcher.
   // Exposed for testing.
-  void OnGetAccessTokenComplete(const base::Optional<std::string>& access_token,
+  void OnGetAccessTokenComplete(const absl::optional<std::string>& access_token,
                                 base::Time expiration_time,
                                 const GoogleServiceAuthError& error);
 
@@ -116,10 +115,16 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Exposed for testing.
   std::string GetSelectedUserId() const;
 
-  // Pending request for an access token from the device account (via
-  // DeviceOAuth2TokenService).
-  std::unique_ptr<OAuth2AccessTokenManager::Request>
-      device_access_token_request_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using DeviceOAuth2TokenFetcher = crosapi::DeviceOAuth2TokenServiceAsh;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  using DeviceOAuth2TokenFetcher = DeviceOAuth2TokenServiceLacros;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<DeviceOAuth2TokenFetcher> device_oauth2_token_fetcher_;
+#endif
 
   // Pending fetcher for an access token for |token_key_.account_id| (via
   // IdentityManager).
@@ -143,12 +148,12 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // instance, or empty if this was not in the parameters.
   void GetAuthTokenForPrimaryAccount(const std::string& extension_gaia_id);
 
-  // Wrapper to FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId() to
-  // avoid a synchronous call to IdentityManager in RunAsync().
+  // Wrapper to FindExtendedAccountInfoByGaiaId() to avoid a synchronous call to
+  // IdentityManager in RunAsync().
   void FetchExtensionAccountInfo(const std::string& gaia_id);
 
   // Called when the AccountInfo that this instance should use is available.
-  void OnReceivedExtensionAccountInfo(const CoreAccountInfo* account_info);
+  void OnReceivedExtensionAccountInfo(const CoreAccountInfo& account_info);
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
@@ -193,14 +198,12 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Starts a login access token request for device robot account. This method
   // will be called only in Chrome OS for:
   // 1. Enterprise kiosk mode.
   // 2. Allowlisted first party apps in public session.
   virtual void StartDeviceAccessTokenRequest();
-
-  bool IsOriginAllowlistedInPublicSession();
 #endif
 
   // Methods for invoking UI. Overridable for testing.

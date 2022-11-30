@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace net_log {
+class NetExportFileWriter;
+}
 
 namespace weblayer {
 
@@ -40,6 +45,10 @@ class SystemNetworkContextManager {
       network::mojom::NetworkContextParams* network_context_params,
       const std::string& user_agent);
 
+  SystemNetworkContextManager(const SystemNetworkContextManager&) = delete;
+  SystemNetworkContextManager& operator=(const SystemNetworkContextManager&) =
+      delete;
+
   ~SystemNetworkContextManager();
 
   // Returns the System NetworkContext. Does any initialization of the
@@ -58,6 +67,11 @@ class SystemNetworkContextManager {
   // network service crashes.
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory();
 
+  // Returns a shared global NetExportFileWriter instance, used by net-export.
+  // It lives here so it can outlive chrome://net-export/ if the tab is closed
+  // or destroyed, and so that it's destroyed before Mojo is shut down.
+  net_log::NetExportFileWriter* GetNetExportFileWriter();
+
  private:
   explicit SystemNetworkContextManager(const std::string& user_agent);
 
@@ -72,7 +86,8 @@ class SystemNetworkContextManager {
 
   mojo::Remote<network::mojom::NetworkContext> system_network_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(SystemNetworkContextManager);
+  // Initialized on first access.
+  std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
 };
 
 }  // namespace weblayer

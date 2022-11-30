@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_UI_RENDERER_H_
 #define CHROME_BROWSER_VR_UI_RENDERER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/ui_input_manager.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -41,8 +42,8 @@ class VR_UI_EXPORT UiRenderer {
                     const RenderInfo& render_info);
   void DrawElement(const CameraModel& camera_model, const UiElement& element);
 
-  UiScene* scene_ = nullptr;
-  UiElementRenderer* ui_element_renderer_ = nullptr;
+  raw_ptr<UiScene> scene_ = nullptr;
+  raw_ptr<UiElementRenderer> ui_element_renderer_ = nullptr;
 };
 
 }  // namespace vr

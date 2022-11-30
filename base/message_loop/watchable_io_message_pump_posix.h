@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define BASE_MESSAGE_LOOP_WATCHABLE_IO_MESSAGE_PUMP_POSIX_H_
 
 #include "base/location.h"
-#include "base/macros.h"
 
 namespace base {
 
@@ -26,6 +25,11 @@ class WatchableIOMessagePumpPosix {
   class FdWatchControllerInterface {
    public:
     explicit FdWatchControllerInterface(const Location& from_here);
+
+    FdWatchControllerInterface(const FdWatchControllerInterface&) = delete;
+    FdWatchControllerInterface& operator=(const FdWatchControllerInterface&) =
+        delete;
+
     // Subclasses must call StopWatchingFileDescriptor() in their destructor
     // (this parent class cannot generically do it for them as it must usually
     // be invoked before they destroy their state which happens before the
@@ -48,8 +52,6 @@ class WatchableIOMessagePumpPosix {
 
    private:
     const Location created_from_location_;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchControllerInterface);
   };
 
   enum Mode {

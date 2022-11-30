@@ -1,8 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.modaldialog;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -42,6 +48,17 @@ public class ModalDialogTestUtils {
      */
     public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
             String title, @Nullable TestDialogDismissedObserver observer) {
+        return createDialog(activity, manager, title, observer,
+                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE);
+    }
+
+    /**
+     * @return A {@link PropertyModel} of a modal dialog that is used for testing with
+     *         primary or negative button filled.
+     */
+    public static PropertyModel createDialog(Activity activity, ModalDialogManager manager,
+            String title, @Nullable TestDialogDismissedObserver observer,
+            @ModalDialogProperties.ButtonStyles int buttonStyles) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
                 @Override
@@ -68,16 +85,37 @@ public class ModalDialogTestUtils {
                     .with(ModalDialogProperties.TITLE, title)
                     .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                     .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
+                    .with(ModalDialogProperties.BUTTON_STYLES, buttonStyles)
                     .build();
         });
     }
 
     /**
-     * Shows a dialog on the specified {@link ModalDialogManager} on the UI thread.
+     * Shows a dialog on the specified {@link ModalDialogManager} on the UI thread and waits for it
+     * to be visible.
+     * @param manager The {@link ModalDialogManager} used to show the dialog.
+     * @param model The {@link PropertyModel} for the dialog to show.
+     * @param dialogType The {@link ModalDialogType} of the dialog to show.
      */
     public static void showDialog(
             ModalDialogManager manager, PropertyModel model, @ModalDialogType int dialogType) {
+        showDialog(manager, model, dialogType, true);
+    }
+
+    /**
+     * Shows a dialog on the specified {@link ModalDialogManager} on the UI thread.
+     * @param manager The {@link ModalDialogManager} used to show the dialog.
+     * @param model The {@link PropertyModel} for the dialog to show.
+     * @param dialogType The {@link ModalDialogType} of the dialog to show.
+     * @param waitForShow Whether to wait for the dialog to be shown. Use false if the enqueued
+     *                    dialog is not expected to show immediately.
+     */
+    public static void showDialog(ModalDialogManager manager, PropertyModel model,
+            @ModalDialogType int dialogType, boolean waitForShow) {
         TestThreadUtils.runOnUiThreadBlocking(() -> manager.showDialog(model, dialogType));
+        if (waitForShow) {
+            onView(isRoot()).check(waitForView(withId(R.id.modal_dialog_view)));
+        }
     }
 
     /**

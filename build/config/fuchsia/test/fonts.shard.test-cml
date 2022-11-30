@@ -1,0 +1,27 @@
+{
+  children: [
+    {
+      name: "isolated_font_provider",
+      url: "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm",
+    },
+  ],
+  offer: [
+    {
+      directory: "config-data",
+      subdir: "fonts",
+      from: "parent",
+      to: "#isolated_font_provider",
+    },
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent",
+      to: "#isolated_font_provider",
+    },
+  ],
+  use: [
+    {
+      protocol: "fuchsia.fonts.Provider",
+      from: "#isolated_font_provider",
+    },
+  ],
+}

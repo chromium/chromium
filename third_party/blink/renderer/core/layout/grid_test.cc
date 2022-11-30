@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class GridTest : public RenderingTest {
 };
 
 TEST_F(GridTest, EmptyGrid) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -46,6 +49,9 @@ TEST_F(GridTest, EmptyGrid) {
 }
 
 TEST_F(GridTest, SingleChild) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -76,6 +82,9 @@ TEST_F(GridTest, SingleChild) {
 }
 
 TEST_F(GridTest, OverlappingChildren) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template: repeat(3, 20px) / repeat(3, 20px); }
@@ -95,22 +104,25 @@ TEST_F(GridTest, OverlappingChildren) {
   auto* grid = layout_grid->InternalGrid();
   ASSERT_NE(grid, nullptr);
 
-  size_t num_rows = grid->NumTracks(kForRows);
-  size_t num_cols = grid->NumTracks(kForColumns);
+  wtf_size_t num_rows = grid->NumTracks(kForRows);
+  wtf_size_t num_cols = grid->NumTracks(kForColumns);
   EXPECT_EQ(3u, num_rows);
   EXPECT_EQ(3u, num_cols);
 
   EXPECT_TRUE(grid->HasGridItems());
 
-  size_t index = 0;
-  Vector<size_t> expected_items_per_cell = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-  for (size_t row = 0; row < num_rows; ++row) {
-    for (size_t col = 0; col < num_cols; ++col)
+  wtf_size_t index = 0;
+  Vector<wtf_size_t> expected_items_per_cell = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+  for (wtf_size_t row = 0; row < num_rows; ++row) {
+    for (wtf_size_t col = 0; col < num_cols; ++col)
       EXPECT_EQ(expected_items_per_cell[index++], grid->Cell(row, col).size());
   }
 }
 
 TEST_F(GridTest, PartiallyOverlappingChildren) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template: repeat(1, 20px) / repeat(3, 20px); }
@@ -128,20 +140,23 @@ TEST_F(GridTest, PartiallyOverlappingChildren) {
   auto* grid = layout_grid->InternalGrid();
   ASSERT_NE(grid, nullptr);
 
-  size_t num_rows = grid->NumTracks(kForRows);
-  size_t num_cols = grid->NumTracks(kForColumns);
+  wtf_size_t num_rows = grid->NumTracks(kForRows);
+  wtf_size_t num_cols = grid->NumTracks(kForColumns);
   EXPECT_EQ(1u, num_rows);
   EXPECT_EQ(3u, num_cols);
 
   EXPECT_TRUE(grid->HasGridItems());
 
-  size_t index = 0;
-  Vector<size_t> expected_items_per_cell = {2, 1, 1};
-  for (size_t col = 0; col < num_cols; ++col)
+  wtf_size_t index = 0;
+  Vector<wtf_size_t> expected_items_per_cell = {2, 1, 1};
+  for (wtf_size_t col = 0; col < num_cols; ++col)
     EXPECT_EQ(expected_items_per_cell[index++], grid->Cell(0, col).size());
 }
 
 TEST_F(GridTest, IntrinsicGrid) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template-rows: repeat(2, 10px); }
@@ -183,6 +198,9 @@ TEST_F(GridTest, IntrinsicGrid) {
 }
 
 TEST_F(GridTest, AutoFit) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; width: 100px; grid-template-columns: repeat(auto-fit, 10px); }
@@ -212,7 +230,7 @@ TEST_F(GridTest, AutoFit) {
   ASSERT_NE(empty_tracks, nullptr);
   ASSERT_EQ(empty_tracks->size(), 5u);
   Vector<size_t> expected_empty_tracks = {0, 5, 6, 7, 9};
-  size_t index = 0;
+  wtf_size_t index = 0;
   for (auto track : *empty_tracks) {
     EXPECT_EQ(expected_empty_tracks[index++], track);
     EXPECT_TRUE(grid->IsEmptyAutoRepeatTrack(kForColumns, track));
@@ -220,6 +238,9 @@ TEST_F(GridTest, AutoFit) {
 }
 
 TEST_F(GridTest, AutoFill) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; width: 100px; grid-template-columns: repeat(auto-fill, 10px); }
@@ -247,6 +268,9 @@ TEST_F(GridTest, AutoFill) {
 }
 
 TEST_F(GridTest, AutoPositionedItems) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; grid-template-rows: repeat(3, 10px); grid-auto-flow: column }
@@ -271,6 +295,9 @@ TEST_F(GridTest, AutoPositionedItems) {
 }
 
 TEST_F(GridTest, ExplicitlyPositionedChild) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       .grid { display: grid; }
@@ -309,14 +336,17 @@ TEST_F(GridTest, ExplicitlyPositionedChild) {
 }
 
 TEST_F(GridTest, CellInsert) {
-  auto track = base::WrapUnique(new ListGrid::GridTrack(0, kForColumns));
-  auto* cell = new ListGrid::GridCell(0, 0);
+  if (RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  auto* track = MakeGarbageCollected<ListGrid::GridTrack>(0, kForColumns);
+  auto* cell = MakeGarbageCollected<ListGrid::GridCell>(0, 0);
 
   auto result = track->Insert(cell);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell, result.node);
 
-  auto* cell2 = new ListGrid::GridCell(1, 0);
+  auto* cell2 = MakeGarbageCollected<ListGrid::GridCell>(1, 0);
   result = track->Insert(cell2);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell2, result.node);
@@ -325,7 +355,7 @@ TEST_F(GridTest, CellInsert) {
   EXPECT_FALSE(result.is_new_entry);
   EXPECT_EQ(cell2, result.node);
 
-  auto* cell3 = new ListGrid::GridCell(2, 0);
+  auto* cell3 = MakeGarbageCollected<ListGrid::GridCell>(2, 0);
   result = track->InsertAfter(cell3, cell2);
   EXPECT_TRUE(result.is_new_entry);
   EXPECT_EQ(cell3, result.node);

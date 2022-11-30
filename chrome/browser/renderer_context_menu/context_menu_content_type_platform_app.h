@@ -1,12 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
 
-#include "base/macros.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 class Extension;
@@ -14,6 +17,11 @@ class Extension;
 
 class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
  public:
+  ContextMenuContentTypePlatformApp(const ContextMenuContentTypePlatformApp&) =
+      delete;
+  ContextMenuContentTypePlatformApp& operator=(
+      const ContextMenuContentTypePlatformApp&) = delete;
+
   ~ContextMenuContentTypePlatformApp() override;
 
   // ContextMenuContentType overrides.
@@ -28,7 +36,7 @@ class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
 
   const extensions::Extension* GetExtension();
 
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuContentTypePlatformApp);
+  const raw_ptr<content::WebContents> source_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_

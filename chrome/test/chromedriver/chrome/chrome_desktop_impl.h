@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/process/process.h"
 #include "chrome/test/chromedriver/chrome/chrome_impl.h"
 #include "chrome/test/chromedriver/chrome/scoped_temp_dir_with_retry.h"
+#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 namespace base {
 class TimeDelta;
@@ -23,6 +23,7 @@ class DevToolsClient;
 class DevToolsHttpClient;
 class Status;
 class WebView;
+struct DeviceMetrics;
 
 class ChromeDesktopImpl : public ChromeImpl {
  public:
@@ -30,6 +31,8 @@ class ChromeDesktopImpl : public ChromeImpl {
                     std::unique_ptr<DevToolsClient> websocket_client,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
+                    std::unique_ptr<DeviceMetrics> device_metrics,
+                    SyncWebSocketFactory socket_factory,
                     std::string page_load_strategy,
                     base::Process process,
                     const base::CommandLine& command,

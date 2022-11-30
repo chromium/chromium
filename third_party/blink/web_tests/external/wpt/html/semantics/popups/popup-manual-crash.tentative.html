@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup=manual crash test</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+
+<style>
+[popup] {top: 100px; bottom: auto;}
+[popup=""] {left: -300px}
+[popup=auto] {left: -100px; }
+[popup=hint] {left: 100px; }
+[popup=manual] {left: 300px; }
+</style>
+
+<p>This test passes if it does not crash.</p>
+<div popup>Blank
+  <div popup=auto>Auto</div>
+</div>
+<div popup=hint>Hint</div>
+<div popup=manual>Manual</div>
+<script>
+  document.querySelectorAll('[popup]').forEach(p => p.showPopUp());
+  const manual = document.querySelector('[popup=manual]');
+  manual.dispatchEvent(new Event('mousedown'));
+</script>

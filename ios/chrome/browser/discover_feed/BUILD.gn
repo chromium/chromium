@@ -1,25 +1,62 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("discover_feed") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "discover_feed_configuration.h",
+    "discover_feed_configuration.mm",
+    "discover_feed_observer.h",
+    "discover_feed_observer_bridge.h",
+    "discover_feed_observer_bridge.mm",
     "discover_feed_service.h",
     "discover_feed_service.mm",
+    "discover_feed_view_controller_configuration.h",
+    "discover_feed_view_controller_configuration.mm",
+    "feed_model_configuration.h",
+    "feed_model_configuration.mm",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//ios/chrome/browser:utils",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
+  ]
+  public_deps = [
+    ":constants",
+    "//base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+# This is a separate target because the factory depends on the provider
+# and the provider depends on the declaration of the service (since it
+# provides an implementation). Using separate targets prevents circular
+# dependencies.
+source_set("discover_feed_factory") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "discover_feed_service_factory.h",
     "discover_feed_service_factory.mm",
   ]
   deps = [
+    ":discover_feed",
     "//base",
-    "//components/autofill/core/common",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_constants.h",
+    "feed_constants.mm",
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/persistence/site_data/non_recording_site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_impl.h"
@@ -104,7 +103,7 @@ void SiteDataCacheFactory::SetCacheInspectorForTesting(
 void SiteDataCacheFactory::OnBrowserContextCreated(
     const std::string& browser_context_id,
     const base::FilePath& context_path,
-    base::Optional<std::string> parent_context_id) {
+    absl::optional<std::string> parent_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(!base::Contains(data_cache_map_, browser_context_id));

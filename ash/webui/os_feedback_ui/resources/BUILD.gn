@@ -1,0 +1,203 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+preprocessed_dir = "preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_external_mojo_manifest = "preprocess_external_mojo_manifest.json"
+
+polymer_element_files = [
+  "confirmation_page.js",
+  "feedback_flow.js",
+  "file_attachment.js",
+  "help_content.js",
+  "help_resources_icons.js",
+  "os_feedback_shared_css.js",
+  "search_page.js",
+  "share_data_page.js",
+]
+
+preprocess_if_expr("preprocess_external_mojo") {
+  deps = [ "//mojo/public/mojom/base:base_js__generator" ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  in_files = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js",
+  ]
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "app_icon_48.png",
+    "app_icon_192.png",
+    "app_icon_256.png",
+    "fake_data.js",
+    "fake_help_content_provider.js",
+    "fake_feedback_service_provider.js",
+    "feedback_constants.js",
+    "feedback_types.js",
+    "index.html",
+    "mojo_interface_provider.js",
+    "questionnaire.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":preprocess_external_mojo",
+    ":preprocess_generated",
+    ":preprocess_mojo",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocessed_gen_manifest",
+    "$target_gen_dir/$preprocessed_mojo_manifest",
+    "$target_gen_dir/$preprocess_external_mojo_manifest",
+  ]
+  resource_path_rewrites = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js|file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js|safe_base_name.mojom-lite.js",
+  ]
+  grd_prefix = "ash_os_feedback"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":confirmation_page",
+    ":fake_data",
+    ":fake_feedback_service_provider",
+    ":fake_help_content_provider",
+    ":feedback_types",
+    ":help_content",
+    ":mojo_interface_provider",
+    ":search_page",
+    ":share_data_page",
+  ]
+}
+
+js_library("confirmation_page") {
+  deps = [
+    ":feedback_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("help_content") {
+  deps = [
+    ":feedback_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("fake_data") {
+  deps = [ "//ash/webui/os_feedback_ui/resources:feedback_types" ]
+}
+
+js_library("fake_help_content_provider") {
+  deps = [
+    ":feedback_types",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("fake_feedback_service_provider") {
+  deps = [
+    ":feedback_types",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("feedback_types") {
+  deps = [
+    "//ash/webui/common/resources:mojo_utils",
+    "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+js_library("feedback_flow") {
+  deps = [
+    ":feedback_types",
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("file_attachment") {
+  deps = [
+    ":feedback_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
+}
+
+js_library("help_resources_icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    ":fake_data",
+    ":fake_feedback_service_provider",
+    ":fake_help_content_provider",
+    ":feedback_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("search_page") {
+  deps = [
+    ":feedback_flow",
+    ":feedback_types",
+    ":help_content",
+    ":mojo_interface_provider",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("share_data_page") {
+  deps = [
+    ":feedback_flow",
+    ":feedback_types",
+    ":file_attachment",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  deps = [ "//ash/webui/os_feedback_ui/mojom:mojom_js" ]
+  in_folder = "$root_gen_dir/ash/webui/os_feedback_ui/"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_mojo_manifest"
+  in_files = [ "mojom/os_feedback_ui.mojom-lite.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

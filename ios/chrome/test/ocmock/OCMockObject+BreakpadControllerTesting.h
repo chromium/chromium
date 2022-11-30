@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 @interface OCMockObject (BreakpadControllerTesting)
 
 // Sets an expectation for invoking -[BreakpadController getCrashReportCount:]
-// with a non-nil result block. Arranges to pass |crashReportCount| to the
+// with a non-nil result block. Arranges to pass `crashReportCount` to the
 // result block when the expectation is met.
 - (void)cr_expectGetCrashReportCount:(int)crashReportCount;
 

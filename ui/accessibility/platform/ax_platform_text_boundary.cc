@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
@@ -48,7 +49,7 @@ ax::mojom::TextBoundary FromAtkTextGranularity(AtkTextGranularity granularity) {
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 ax::mojom::TextBoundary FromIA2TextBoundary(IA2TextBoundaryType boundary) {
   switch (boundary) {
     case IA2_TEXT_BOUNDARY_CHAR:
@@ -73,13 +74,18 @@ ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit) {
     case TextUnit_Character:
       return ax::mojom::TextBoundary::kCharacter;
     case TextUnit_Format:
-      return ax::mojom::TextBoundary::kFormat;
+      return ax::mojom::TextBoundary::kFormatStart;
     case TextUnit_Word:
       return ax::mojom::TextBoundary::kWordStart;
     case TextUnit_Line:
       return ax::mojom::TextBoundary::kLineStart;
     case TextUnit_Paragraph:
-      return ax::mojom::TextBoundary::kParagraphStart;
+      // According to MSDN, a paragraph in UI Automation should include any
+      // trailing whitespace after the paragraph. In essence this means that
+      // when finding the next or previous paragraph start position, we should
+      // skip any empty paragraphs, i.e. paragraphs with only whitespace in
+      // them.
+      return ax::mojom::TextBoundary::kParagraphStartSkippingEmptyParagraphs;
     case TextUnit_Page:
       // UI Automation's TextUnit_Page cannot be reliably supported in a Web
       // document. We return kWebPage which is the next best thing.
@@ -87,6 +93,6 @@ ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit) {
       return ax::mojom::TextBoundary::kWebPage;
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace ui

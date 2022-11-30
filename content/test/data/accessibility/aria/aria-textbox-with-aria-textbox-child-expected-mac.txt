@@ -1,0 +1,27 @@
+AXWebArea
+++AXTextField AXDescription='not editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++++AXGroup
+++++++AXStaticText AXValue='Foo'
+++++AXTextField AXDescription='nested, not editable, rich' AXValue='Bar'
+++++++AXGroup
+++++++++AXStaticText AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, plain' AXValue='Bar'
+++++++AXStaticText AXValue='Bar'
+++++AXTextArea AXDescription='nested, editable, rich' AXValue='Baz'
+++++++AXGroup
+++++++++AXStaticText AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, plain' AXValue='Baz'
+++++++AXStaticText AXValue='Baz'
+++AXTextArea AXDescription='editable' AXValue='Foo<newline>Bar<newline>Bar<newline>Baz<newline>Baz'
+++++AXGroup
+++++++AXStaticText AXValue='Foo'
+++++AXTextField AXDescription='nested, not editable, rich' AXValue='Bar'
+++++++AXGroup
+++++++++AXStaticText AXValue='Bar'
+++++AXTextField AXDescription='nested, not editable, plain' AXValue='Bar'
+++++++AXStaticText AXValue='Bar'
+++++AXTextArea AXDescription='nested, editable, rich' AXValue='Baz'
+++++++AXGroup
+++++++++AXStaticText AXValue='Baz'
+++++AXTextArea AXDescription='nested, editable, plain' AXValue='Baz'
+++++++AXStaticText AXValue='Baz'

@@ -1,0 +1,10 @@
+{
+  "name": "enabled/disabled action test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "tests.js",
+    "type": "module"
+  },
+  "action": {}
+}

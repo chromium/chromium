@@ -1,8 +1,7 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -20,6 +19,10 @@ class Target : public service_manager::Service {
   explicit Target(
       mojo::PendingReceiver<service_manager::mojom::Service> receiver)
       : service_receiver_(this, std::move(receiver)) {}
+
+  Target(const Target&) = delete;
+  Target& operator=(const Target&) = delete;
+
   ~Target() override = default;
 
  private:
@@ -33,8 +36,6 @@ class Target : public service_manager::Service {
   }
 
   service_manager::ServiceReceiver service_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(Target);
 };
 
 }  // namespace

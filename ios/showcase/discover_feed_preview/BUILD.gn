@@ -1,0 +1,34 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("discover_feed_preview") {
+  sources = [
+    "sc_discover_feed_preview_coordinator.h",
+    "sc_discover_feed_preview_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/context_menu/link_preview:link_preview_ui",
+    "//ios/chrome/common/ui/util",
+    "//ios/showcase/common",
+  ]
+  frameworks = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "sc_discover_feed_preview_coordinator_egtest.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/context_menu/link_preview:constants",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

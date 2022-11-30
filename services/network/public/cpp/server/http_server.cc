@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,9 +22,7 @@
 #include "services/network/public/cpp/server/http_server_response_info.h"
 #include "services/network/public/cpp/server/web_socket.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 namespace {
 
@@ -85,7 +83,9 @@ void HttpServer::SendOverWebSocket(
   if (connection == NULL)
     return;
   DCHECK(connection->web_socket());
-  connection->web_socket()->Send(data, traffic_annotation);
+  connection->web_socket()->Send(
+      data, net::WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+      traffic_annotation);
 }
 
 void HttpServer::SendRaw(int connection_id,
@@ -105,8 +105,8 @@ void HttpServer::SendRaw(int connection_id,
     connection->write_watcher().Watch(
         connection->send_handle(),
         MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-        base::BindRepeating(&HttpServer::OnWritable, base::Unretained(this),
-                            connection->id()));
+        base::BindRepeating(&HttpServer::OnWritable,
+                            weak_ptr_factory_.GetWeakPtr(), connection->id()));
   }
 }
 
@@ -180,14 +180,14 @@ bool HttpServer::SetSendBufferSize(int connection_id, int32_t size) {
 }
 
 void HttpServer::DoAcceptLoop() {
-  server_socket_->Accept(
-      mojo::NullRemote(), /* observer */
-      base::BindOnce(&HttpServer::OnAcceptCompleted, base::Unretained(this)));
+  server_socket_->Accept(mojo::NullRemote(), /* observer */
+                         base::BindOnce(&HttpServer::OnAcceptCompleted,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpServer::OnAcceptCompleted(
     int rv,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
     mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
@@ -210,8 +210,8 @@ void HttpServer::OnAcceptCompleted(
         connection->receive_handle(),
         MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
         MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-        base::BindRepeating(&HttpServer::OnReadable, base::Unretained(this),
-                            connection->id()));
+        base::BindRepeating(&HttpServer::OnReadable,
+                            weak_ptr_factory_.GetWeakPtr(), connection->id()));
   }
 
   DoAcceptLoop();
@@ -275,7 +275,8 @@ void HttpServer::HandleReadResult(HttpConnection* connection, MojoResult rv) {
         Close(connection->id());
         return;
       }
-      delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      if (result == WebSocket::FRAME_OK_FINAL)
+        delegate_->OnWebSocketMessage(connection->id(), std::move(message));
       if (HasClosedConnection(connection)) {
         return;
       }
@@ -529,6 +530,4 @@ bool HttpServer::HasClosedConnection(HttpConnection* connection) {
   return FindConnection(connection->id()) != connection;
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

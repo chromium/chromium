@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<script>
+// The prerendered page messages us with the headers used in its navigation
+// request. The main test page observes `gotMessage`.
+const bc = new BroadcastChannel('prerender');
+const gotMessage = new Promise(resolve => {
+  bc.addEventListener('message', e => {
+    resolve(e.data);
+  });
+});
+</script>
+
+<!-- Start a prerender. -->
+<script type="speculationrules">
+{
+  "prerender": [{
+    "source": "list",
+    "urls": ["echo-headers-and-broadcast.php"]
+  }]
+}
+</script>
+</html>

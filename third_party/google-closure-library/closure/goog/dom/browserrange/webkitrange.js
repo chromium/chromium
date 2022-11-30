@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of the WebKit specific range wrapper.  Inherits most
@@ -22,9 +14,7 @@
 
 goog.provide('goog.dom.browserrange.WebKitRange');
 
-goog.require('goog.dom.RangeEndpoint');
 goog.require('goog.dom.browserrange.W3cRange');
-goog.require('goog.userAgent');
 
 
 
@@ -36,6 +26,7 @@ goog.require('goog.userAgent');
  * @final
  */
 goog.dom.browserrange.WebKitRange = function(range) {
+  'use strict';
   goog.dom.browserrange.W3cRange.call(this, range);
 };
 goog.inherits(
@@ -48,6 +39,7 @@ goog.inherits(
  * @return {!goog.dom.browserrange.WebKitRange} A WebKit range wrapper object.
  */
 goog.dom.browserrange.WebKitRange.createFromNodeContents = function(node) {
+  'use strict';
   return new goog.dom.browserrange.WebKitRange(
       goog.dom.browserrange.W3cRange.getBrowserRangeForNode(node));
 };
@@ -63,6 +55,7 @@ goog.dom.browserrange.WebKitRange.createFromNodeContents = function(node) {
  */
 goog.dom.browserrange.WebKitRange.createFromNodes = function(
     startNode, startOffset, endNode, endOffset) {
+  'use strict';
   return new goog.dom.browserrange.WebKitRange(
       goog.dom.browserrange.W3cRange.getBrowserRangeForNodes(
           startNode, startOffset, endNode, endOffset));
@@ -72,31 +65,17 @@ goog.dom.browserrange.WebKitRange.createFromNodes = function(
 /** @override */
 goog.dom.browserrange.WebKitRange.prototype.compareBrowserRangeEndpoints =
     function(range, thisEndpoint, otherEndpoint) {
-  // Webkit pre-528 has some bugs where compareBoundaryPoints() doesn't work the
-  // way it is supposed to, but if we reverse the sense of two comparisons,
-  // it works fine.
-  // https://bugs.webkit.org/show_bug.cgi?id=20738
-  if (goog.userAgent.isVersionOrHigher('528')) {
-    return (
-        goog.dom.browserrange.WebKitRange.superClass_
-            .compareBrowserRangeEndpoints.call(
-                this, range, thisEndpoint, otherEndpoint));
-  }
-  return this.range_.compareBoundaryPoints(
-      otherEndpoint == goog.dom.RangeEndpoint.START ?
-          (thisEndpoint == goog.dom.RangeEndpoint.START ?
-               goog.global['Range'].START_TO_START :
-               goog.global['Range'].END_TO_START) :  // Sense reversed
-          (thisEndpoint == goog.dom.RangeEndpoint.START ?
-               goog.global['Range'].START_TO_END :  // Sense reversed
-               goog.global['Range'].END_TO_END),
-      /** @type {Range} */ (range));
+  'use strict';
+  return (
+      goog.dom.browserrange.WebKitRange.superClass_.compareBrowserRangeEndpoints
+          .call(this, range, thisEndpoint, otherEndpoint));
 };
 
 
 /** @override */
 goog.dom.browserrange.WebKitRange.prototype.selectInternal = function(
     selection, reversed) {
+  'use strict';
   if (reversed) {
     selection.setBaseAndExtent(
         this.getEndNode(), this.getEndOffset(), this.getStartNode(),

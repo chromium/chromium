@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,12 @@
 
 #ifndef __MAC_11_0
 #define __MAC_11_0 110000
+#endif
+
+// 12.0 SDK
+
+#ifndef __MAC_12_0
+#define __MAC_12_0 120000
 #endif
 
 #endif  // CRASHPAD_COMPAT_MAC_AVAILABILITYVERSIONS_H_

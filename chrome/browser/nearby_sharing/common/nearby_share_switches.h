@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@ namespace switches {
 
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
+extern const char kNearbyShareCertificateValidityPeriodHours[];
 extern const char kNearbyShareHTTPHost[];
+extern const char kNearbyShareNumPrivateCertificates[];
 extern const char kNearbyShareVerboseLogging[];
 
 }  // namespace switches

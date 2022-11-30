@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,13 +77,12 @@ bool CSVPasswordIterator::operator==(const CSVPasswordIterator& other) const {
 void CSVPasswordIterator::SeekToNextValidRow() {
   DCHECK(map_);
   do {
-    csv_row_ = ExtractFirstRow(&csv_rest_);
-    password_.emplace(*map_, csv_row_);
+    csv_row_ = base::TrimString(ExtractFirstRow(&csv_rest_), "\r \t",
+                                base::TRIM_LEADING);
   } while (
-      // Skip over empty lines, and
-      (csv_row_.empty() && !csv_rest_.empty()) ||
-      // lines which are not correctly encoded passwords.
-      (!csv_row_.empty() && password_->TryParse() != CSVPassword::Status::kOK));
+      // Skip over empty lines.
+      csv_row_.empty() && !csv_rest_.empty());
+  password_.emplace(*map_, csv_row_);
 }
 
 base::StringPiece ConsumeCSVLine(base::StringPiece* input) {

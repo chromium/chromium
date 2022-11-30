@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,11 @@
 namespace cc {
 
 TransformNode::TransformNode()
-    : id(TransformTree::kInvalidNodeId),
-      parent_id(TransformTree::kInvalidNodeId),
-      parent_frame_id(TransformTree::kInvalidNodeId),
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
+      parent_frame_id(kInvalidPropertyNodeId),
       sticky_position_constraint_id(-1),
+      anchor_scroll_containers_data_id(-1),
       sorting_context_id(0),
       needs_local_transform_update(true),
       node_and_ancestors_are_animated_or_invertible(true),
@@ -28,6 +29,7 @@ TransformNode::TransformNode()
       flattens_inherited_transform(true),
       node_and_ancestors_are_flat(true),
       scrolls(false),
+      should_undo_overscroll(false),
       should_be_snapped(false),
       moved_by_outer_viewport_bounds_delta_y(false),
       in_subtree_of_page_scale_layer(false),
@@ -38,6 +40,8 @@ TransformNode::TransformNode()
       maximum_animation_scale(kInvalidScale) {}
 
 TransformNode::TransformNode(const TransformNode&) = default;
+
+TransformNode& TransformNode::operator=(const TransformNode&) = default;
 
 #if DCHECK_IS_ON()
 bool TransformNode::operator==(const TransformNode& other) const {
@@ -59,6 +63,7 @@ bool TransformNode::operator==(const TransformNode& other) const {
          flattens_inherited_transform == other.flattens_inherited_transform &&
          node_and_ancestors_are_flat == other.node_and_ancestors_are_flat &&
          scrolls == other.scrolls &&
+         should_undo_overscroll == other.should_undo_overscroll &&
          should_be_snapped == other.should_be_snapped &&
          moved_by_outer_viewport_bounds_delta_y ==
              other.moved_by_outer_viewport_bounds_delta_y &&

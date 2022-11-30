@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,7 @@ source_set("tests") {
     "//base/test:test_support",
     "//components/viz/common:common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//ipc",
     "//media/capture/mojom:video_capture",
     "//mojo/public/cpp/test_support:test_utils",
@@ -35,7 +35,7 @@ source_set("perftests") {
     "//base/test:test_support",
     "//components/viz/common",
     "//components/viz/test:test_support",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//mojo/public/cpp/bindings",
     "//services/viz/public/mojom",
     "//skia",

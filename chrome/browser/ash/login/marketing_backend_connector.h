@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-namespace chromeos {
+namespace ash {
 
 class MarketingBackendConnector
     : public base::RefCountedThreadSafe<MarketingBackendConnector> {
@@ -95,7 +95,7 @@ class MarketingBackendConnector
 // Scoped callback setter for the MarketingBackendConnector
 class ScopedRequestCallbackSetter {
  public:
-  ScopedRequestCallbackSetter(
+  explicit ScopedRequestCallbackSetter(
       std::unique_ptr<base::RepeatingCallback<void(std::string)>> callback);
   ~ScopedRequestCallbackSetter();
 
@@ -103,6 +103,6 @@ class ScopedRequestCallbackSetter {
   std::unique_ptr<base::RepeatingCallback<void(std::string)>> callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_MARKETING_BACKEND_CONNECTOR_H_

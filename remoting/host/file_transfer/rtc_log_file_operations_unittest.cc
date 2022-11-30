@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/file_transfer/rtc_log_file_operations.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/session.h"
@@ -31,7 +32,7 @@ class FakeConnectionWithRtcLog : public protocol::FakeConnectionToClient {
   void set_event_log(protocol::WebrtcEventLogData* log) { event_log_ = log; }
 
  private:
-  protocol::WebrtcEventLogData* event_log_;
+  raw_ptr<protocol::WebrtcEventLogData> event_log_;
 };
 
 }  // namespace
@@ -51,8 +52,8 @@ class RtcLogFileOperationsTest : public testing::Test {
   std::unique_ptr<FileOperations::Reader> reader_;
 
   // These are the most-recent results from the callbacks.
-  base::Optional<FileOperations::Reader::OpenResult> open_result_;
-  base::Optional<FileOperations::Reader::ReadResult> read_result_;
+  absl::optional<FileOperations::Reader::OpenResult> open_result_;
+  absl::optional<FileOperations::Reader::ReadResult> read_result_;
 
   FileOperations::Reader::OpenCallback MakeOpenCallback() {
     return base::BindOnce(&RtcLogFileOperationsTest::OnOpenResult,

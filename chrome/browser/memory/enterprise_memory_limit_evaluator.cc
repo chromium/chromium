@@ -1,17 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/memory/enterprise_memory_limit_evaluator.h"
 
 #include "base/bind.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 
 namespace memory {
 
 EnterpriseMemoryLimitEvaluator::EnterpriseMemoryLimitEvaluator(
-    std::unique_ptr<util::MemoryPressureVoter> voter)
+    std::unique_ptr<memory_pressure::MemoryPressureVoter> voter)
     : voter_(std::move(voter)), weak_ptr_factory_(this) {}
 
 EnterpriseMemoryLimitEvaluator::~EnterpriseMemoryLimitEvaluator() {
@@ -101,11 +102,14 @@ EnterpriseMemoryLimitEvaluator::GraphObserver::~GraphObserver() = default;
 void EnterpriseMemoryLimitEvaluator::GraphObserver::OnPassedToGraph(
     performance_manager::Graph* graph) {
   graph->AddSystemNodeObserver(this);
+  metrics_interest_token_ = performance_manager::ProcessMetricsDecorator::
+      RegisterInterestForProcessMetrics(graph);
 }
 
 void EnterpriseMemoryLimitEvaluator::GraphObserver::OnTakenFromGraph(
     performance_manager::Graph* graph) {
   graph->RemoveSystemNodeObserver(this);
+  metrics_interest_token_.reset();
 }
 
 void EnterpriseMemoryLimitEvaluator::GraphObserver::

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,10 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
       DeleterCallback deleter_callback,
       std::unique_ptr<mojom::AudioOutputStreamObserver> observer);
 
+  MojoAudioOutputStreamProvider(const MojoAudioOutputStreamProvider&) = delete;
+  MojoAudioOutputStreamProvider& operator=(
+      const MojoAudioOutputStreamProvider&) = delete;
+
   ~MojoAudioOutputStreamProvider() override;
 
  private:
@@ -62,10 +66,8 @@ class MEDIA_MOJO_EXPORT MojoAudioOutputStreamProvider
   DeleterCallback deleter_callback_;
   std::unique_ptr<mojom::AudioOutputStreamObserver> observer_;
   mojo::Receiver<mojom::AudioOutputStreamObserver> observer_receiver_;
-  base::Optional<MojoAudioOutputStream> audio_output_;
+  absl::optional<MojoAudioOutputStream> audio_output_;
   mojo::Remote<mojom::AudioOutputStreamProviderClient> provider_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputStreamProvider);
 };
 
 }  // namespace media

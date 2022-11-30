@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/WebAudio.h"
+#include "third_party/blink/renderer/core/inspector/protocol/web_audio.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -24,6 +24,10 @@ class MODULES_EXPORT InspectorWebAudioAgent final
     : public InspectorBaseAgent<protocol::WebAudio::Metainfo> {
  public:
   explicit InspectorWebAudioAgent(Page*);
+
+  InspectorWebAudioAgent(const InspectorWebAudioAgent&) = delete;
+  InspectorWebAudioAgent& operator=(const InspectorWebAudioAgent&) = delete;
+
   ~InspectorWebAudioAgent() override;
 
   // Base Agent methods.
@@ -69,7 +73,6 @@ class MODULES_EXPORT InspectorWebAudioAgent final
 
   Member<Page> page_;
   InspectorAgentState::Boolean enabled_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorWebAudioAgent);
 };
 
 }  // namespace blink

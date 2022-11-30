@@ -26,12 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -54,6 +55,8 @@ class CORE_EXPORT FocusController final
   using OwnerMap = HeapHashMap<Member<ContainerNode>, Member<Element>>;
 
   explicit FocusController(Page*);
+  FocusController(const FocusController&) = delete;
+  FocusController& operator=(const FocusController&) = delete;
 
   void SetFocusedFrame(Frame*, bool notify_embedder = true);
   void FocusDocumentView(Frame*, bool notify_embedder = true);
@@ -84,7 +87,7 @@ class CORE_EXPORT FocusController final
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  Element* NextFocusableElementInForm(Element*, mojom::blink::FocusType);
+  Element* NextFocusableElementForIME(Element*, mojom::blink::FocusType);
   Element* FindFocusableElementAfter(Element& element, mojom::blink::FocusType);
 
   bool SetFocusedElement(Element*, Frame*, const FocusParams&);
@@ -129,7 +132,6 @@ class CORE_EXPORT FocusController final
   bool is_changing_focused_frame_;
   bool is_emulating_focus_;
   HeapHashSet<WeakMember<FocusChangedObserver>> focus_changed_observers_;
-  DISALLOW_COPY_AND_ASSIGN(FocusController);
 };
 
 }  // namespace blink

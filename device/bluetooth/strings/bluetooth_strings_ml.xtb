@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1412802024419177173">മോഡം (<ph name="ADDRESS" />)</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />, മൗസ്</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />, കീബോർഡ്, മൗസ് കോമ്പിനേഷൻ</translation>
 <translation id="2616803374438260326">കീബോർഡ്/മൗസ് (<ph name="ADDRESS" />)</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />, പെരിഫറൽ</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />, ടാബ്‌ലെറ്റ്</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />, ഫോൺ</translation>
 <translation id="3273951168350045122">കീബോർഡ് (<ph name="ADDRESS" />)</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />, കമ്പ്യൂട്ടർ</translation>
 <translation id="4287283380557401002">കാർ ഓഡിയോ (<ph name="ADDRESS" />)</translation>
 <translation id="430326050669417502">ജോയ്‌സ്റ്റിക്ക് (<ph name="ADDRESS" />)</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />, ഓഡിയോ ഉപകരണം</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />, വീഡിയോ ഉപകരണം</translation>
 <translation id="5271696982761495740">ടാബ്‌ലെറ്റ് (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">പരിചിതമല്ലാത്തതോ പിന്തുണയ്‌ക്കാത്തതോ ആയ ഉപകരണം (<ph name="ADDRESS" />)</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />, മോഡം</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />, കാർ ഓഡിയോ ഉപകരണം</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />, കീബോർഡ്</translation>
 <translation id="654594702871184195">ഓഡിയോ (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">കമ്പ്യൂട്ടർ (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, ജോയ്‌സ്‌റ്റിക്ക്</translation>
 <translation id="7501330106833014351">ഗെയിംപാഡ് (<ph name="ADDRESS" />)</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />, ഗെയിംപാഡ്</translation>
 <translation id="8866374292072238753">വീഡിയോ (<ph name="ADDRESS" />)</translation>
 <translation id="8952558712545617651">മൗസ് (<ph name="ADDRESS" />)</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />, അജ്ഞാത ഉപകരണ തരം</translation>
 <translation id="907431882454731668">പെരിഫറൽ (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">ഫോൺ (<ph name="ADDRESS" />)</translation>
 </translationbundle>

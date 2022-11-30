@@ -18,6 +18,8 @@ option optimize_for = LITE_RUNTIME;
 
 package private_membership.rlwe;
 
+option go_package = "github.com/google/private-membership";
+
 import "private_membership.proto";
 import "serialization.proto";
 
@@ -94,17 +96,29 @@ message RlwePlaintextId {
 }
 
 // Different use cases of the RLWE-based PSM protocol.
+//
+// NEXT ID: 18
 enum RlweUseCase {
   RLWE_USE_CASE_UNDEFINED = 0;
   TEST_USE_CASE = 1;
   TEST_USE_CASE2 = 2;
   TEST_USE_CASE3 = 3;
 
-  reserved 4;
-
-  // The device state of Chrome OS device, used for Zero Touch,
-  // License Packaging and Forced Reenrollment.
+  // The device state of Chrome OS device, used for Zero Touch, License
+  // Packaging.
   CROS_DEVICE_STATE = 5;
+
+  // The device state of Chrome OS device, used for Forced Re-enrollment.
+  CROS_DEVICE_SECONDARY_STATE = 12;
+
+  // Use-cases for ChromeOS Device Active Reporting to Fresnel.
+  CROS_FRESNEL_DAILY = 13;
+  CROS_FRESNEL_MONTHLY = 14;
+  CROS_FRESNEL_FIRST_ACTIVE = 15;
+  CROS_FRESNEL_7DAY_ACTIVE = 16;
+  CROS_FRESNEL_28DAY_ACTIVE = 17;
+
+  reserved 4, 6, 7, 8, 9, 10, 11;
 }
 
 // Parameters for the hashed buckets (first level).
@@ -254,5 +268,22 @@ message EncryptedBucket {
     // Value that is encrypted using AES where the key is a serialization
     // of the identifier encrypted using the Elliptic curve commutative cipher.
     bytes encrypted_value = 2;
+
+    // Proto containing the sensitive and non-sensitive portion of the
+    // identifier in plaintext.
+    RlwePlaintextId id = 3;
   }
+}
+
+// A collection of plaintext ids and associated membership responses.
+message RlweMembershipResponses {
+  // A pair of queried plaintext id and its associated membership response.
+  message MembershipResponseEntry {
+    // Plaintext id that was queried.
+    RlwePlaintextId plaintext_id = 1;
+
+    // Membership response of the queried plaintext id.
+    MembershipResponse membership_response = 2;
+  }
+  repeated MembershipResponseEntry membership_responses = 1;
 }

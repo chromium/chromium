@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -21,7 +21,7 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -44,7 +44,7 @@ namespace gfx {
 
 namespace {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The returned string will have at least one character besides the ellipsis
 // on either side of '@'; if that's impossible, a single ellipsis is returned.
 // If possible, only the username is elided. Otherwise, the domain is elided
@@ -122,7 +122,7 @@ StringSlicer::StringSlicer(const std::u16string& text,
                            const std::u16string& ellipsis,
                            bool elide_in_middle,
                            bool elide_at_beginning,
-                           base::Optional<bool> elide_whitespace)
+                           absl::optional<bool> elide_whitespace)
     : text_(text),
       ellipsis_(ellipsis),
       elide_in_middle_(elide_in_middle),
@@ -172,12 +172,12 @@ std::u16string StringSlicer::CutString(size_t length,
 std::u16string ElideFilename(const base::FilePath& filename,
                              const FontList& font_list,
                              float available_pixel_width) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string filename_utf16 = WideToUTF16(filename.value());
   std::u16string extension = WideToUTF16(filename.Extension());
   std::u16string rootname =
       WideToUTF16(filename.BaseName().RemoveExtension().value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::u16string filename_utf16 =
       WideToUTF16(base::SysNativeMBToWide(filename.value()));
   std::u16string extension =
@@ -222,7 +222,7 @@ std::u16string ElideText(const std::u16string& text,
                          const FontList& font_list,
                          float available_pixel_width,
                          ElideBehavior behavior) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   DCHECK_NE(behavior, FADE_TAIL);
   std::unique_ptr<RenderText> render_text = RenderText::CreateRenderText();
   render_text->SetCursorEnabled(false);
@@ -337,6 +337,9 @@ class RectangleString {
         suppressed_(false),
         output_(output) {}
 
+  RectangleString(const RectangleString&) = delete;
+  RectangleString& operator=(const RectangleString&) = delete;
+
   // Perform deferred initializations following creation.  Must be called
   // before any input can be added via AddString().
   void Init() { output_->clear(); }
@@ -394,9 +397,7 @@ class RectangleString {
   bool suppressed_;
 
   // String onto which the output is accumulated.
-  std::u16string* output_;
-
-  DISALLOW_COPY_AND_ASSIGN(RectangleString);
+  raw_ptr<std::u16string> output_;
 };
 
 void RectangleString::AddString(const std::u16string& input) {
@@ -498,6 +499,9 @@ class RectangleText {
         wrap_behavior_(wrap_behavior),
         lines_(lines) {}
 
+  RectangleText(const RectangleText&) = delete;
+  RectangleText& operator=(const RectangleText&) = delete;
+
   // Perform deferred initializations following creation.  Must be called
   // before any input can be added via AddString().
   void Init() { lines_->clear(); }
@@ -567,7 +571,7 @@ class RectangleText {
   bool last_line_ended_in_lf_ = false;
 
   // The output vector of lines.
-  std::vector<std::u16string>* lines_;
+  raw_ptr<std::vector<std::u16string>> lines_;
 
   // Indicates whether a word was so long that it had to be truncated or elided
   // to fit the available width.
@@ -578,8 +582,6 @@ class RectangleText {
 
   // Indicates whether the very first word was truncated.
   bool first_word_truncated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RectangleText);
 };
 
 void RectangleText::AddString(const std::u16string& input) {

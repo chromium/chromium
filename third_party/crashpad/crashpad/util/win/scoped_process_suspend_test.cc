@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,6 +75,10 @@ bool SuspendCountMatches(HANDLE process, DWORD desired_suspend_count) {
 class ScopedProcessSuspendTest final : public WinChildProcess {
  public:
   ScopedProcessSuspendTest() : WinChildProcess() {}
+
+  ScopedProcessSuspendTest(const ScopedProcessSuspendTest&) = delete;
+  ScopedProcessSuspendTest& operator=(const ScopedProcessSuspendTest&) = delete;
+
   ~ScopedProcessSuspendTest() {}
 
  private:
@@ -85,8 +89,6 @@ class ScopedProcessSuspendTest final : public WinChildProcess {
     EXPECT_EQ(c, ' ');
     return EXIT_SUCCESS;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedProcessSuspendTest);
 };
 
 TEST(ScopedProcessSuspend, ScopedProcessSuspend) {

@@ -1,0 +1,57 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/lacros/snap_controller_lacros.h"
+
+#include "base/notreached.h"
+#include "ui/aura/window.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
+
+namespace {
+
+ui::WaylandWindowSnapDirection ToWaylandWindowSnapDirection(
+    chromeos::SnapDirection snap) {
+  switch (snap) {
+    case chromeos::SnapDirection::kNone:
+      return ui::WaylandWindowSnapDirection::kNone;
+    case chromeos::SnapDirection::kPrimary:
+      return ui::WaylandWindowSnapDirection::kPrimary;
+    case chromeos::SnapDirection::kSecondary:
+      return ui::WaylandWindowSnapDirection::kSecondary;
+  }
+}
+
+ui::WaylandExtension* WaylandExtensionForAuraWindow(aura::Window* window) {
+  // Lacros is based on Ozone/Wayland, which uses ui::PlatformWindow and
+  // views::DesktopWindowTreeHostLacros.
+  return views::DesktopWindowTreeHostLacros::From(window->GetHost())
+      ->GetWaylandExtension();
+}
+
+}  // namespace
+
+SnapControllerLacros::SnapControllerLacros() = default;
+SnapControllerLacros::~SnapControllerLacros() = default;
+
+bool SnapControllerLacros::CanSnap(aura::Window* window) {
+  // TODO(https://crbug.com/1141701): Implement this method similarly to
+  // ash::WindowState::CanSnap().
+  return true;
+}
+void SnapControllerLacros::ShowSnapPreview(aura::Window* window,
+                                           chromeos::SnapDirection snap,
+                                           bool allow_haptic_feedback) {
+  auto* wayland_extension = WaylandExtensionForAuraWindow(window);
+  wayland_extension->ShowSnapPreview(ToWaylandWindowSnapDirection(snap),
+                                     allow_haptic_feedback);
+}
+
+void SnapControllerLacros::CommitSnap(aura::Window* window,
+                                      chromeos::SnapDirection snap,
+                                      chromeos::SnapRatio snap_ratio) {
+  auto* wayland_extension = WaylandExtensionForAuraWindow(window);
+  // TODO(crbug.com/1346780): Set `snap_ratio` for Lacros windows.
+  wayland_extension->CommitSnap(ToWaylandWindowSnapDirection(snap));
+}

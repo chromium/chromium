@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,22 @@
 
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/identity_internals_resources.h"
+#include "chrome/grit/identity_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -55,9 +57,8 @@ class IdentityInternalsUIMessageHandler : public content::WebUIMessageHandler {
       const extensions::IdentityTokenCache::AccessTokensKey& access_tokens_key);
 
   // Gets a list of scopes specified in |token_cache_value| and returns a
-  // pointer to a ListValue containing the scopes. The caller gets ownership of
-  // the returned object.
-  std::unique_ptr<base::ListValue> GetScopes(
+  // base::Value::List containing the scopes.
+  base::Value::List GetScopes(
       const extensions::IdentityTokenCacheValue& token_cache_value);
 
   // Gets a status of the access token in |token_cache_value|.
@@ -70,20 +71,20 @@ class IdentityInternalsUIMessageHandler : public content::WebUIMessageHandler {
       const extensions::IdentityTokenCacheValue& token_cache_value);
 
   // Converts a pair of |access_tokens_key| and |token_cache_value| to a
-  // DictionaryValue object with corresponding information.
-  std::unique_ptr<base::DictionaryValue> GetInfoForToken(
+  // base::Value::Dict object with corresponding information.
+  base::Value::Dict GetInfoForToken(
       const extensions::IdentityTokenCache::AccessTokensKey& access_tokens_key,
       const extensions::IdentityTokenCacheValue& token_cache_value);
 
   // Gets all of the tokens stored in IdentityAPI token cache and returns them
   // to the caller using Javascript callback function
   // |identity_internals.returnTokens()|.
-  void GetInfoForAllTokens(const base::ListValue* args);
+  void GetInfoForAllTokens(const base::Value::List& args);
 
   // Initiates revoking of the token, based on the extension ID and token
   // passed as entries in the |args| list. Updates the caller of completion
   // using Javascript callback function |identity_internals.tokenRevokeDone()|.
-  void RevokeToken(const base::ListValue* args);
+  void RevokeToken(const base::Value::List& args);
 
   // A vector of token revokers that are currently revoking tokens.
   std::vector<std::unique_ptr<IdentityInternalsTokenRevoker>> token_revokers_;
@@ -102,6 +103,11 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
                                 const std::string& callback_id,
                                 Profile* profile,
                                 IdentityInternalsUIMessageHandler* consumer);
+
+  IdentityInternalsTokenRevoker(const IdentityInternalsTokenRevoker&) = delete;
+  IdentityInternalsTokenRevoker& operator=(
+      const IdentityInternalsTokenRevoker&) = delete;
+
   ~IdentityInternalsTokenRevoker() override;
 
   // Returns the access token being revoked.
@@ -124,9 +130,7 @@ class IdentityInternalsTokenRevoker : public GaiaAuthConsumer {
   // The JS callback to resolve when revoking is done.
   const std::string callback_id_;
   // An object that needs to be notified once the access token is revoked.
-  IdentityInternalsUIMessageHandler* consumer_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityInternalsTokenRevoker);
+  raw_ptr<IdentityInternalsUIMessageHandler> consumer_;  // weak.
 };
 
 IdentityInternalsUIMessageHandler::IdentityInternalsUIMessageHandler() {}
@@ -174,11 +178,11 @@ const std::string IdentityInternalsUIMessageHandler::GetExtensionName(
   return extension->name();
 }
 
-std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
+base::Value::List IdentityInternalsUIMessageHandler::GetScopes(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
-  auto scopes_value = std::make_unique<base::ListValue>();
+  base::Value::List scopes_value;
   for (const auto& scope : token_cache_value.granted_scopes()) {
-    scopes_value->AppendString(scope);
+    scopes_value.Append(scope);
   }
   return scopes_value;
 }
@@ -206,29 +210,27 @@ std::u16string IdentityInternalsUIMessageHandler::GetExpirationTime(
       token_cache_value.expiration_time());
 }
 
-std::unique_ptr<base::DictionaryValue>
-IdentityInternalsUIMessageHandler::GetInfoForToken(
+base::Value::Dict IdentityInternalsUIMessageHandler::GetInfoForToken(
     const extensions::IdentityTokenCache::AccessTokensKey& access_tokens_key,
     const extensions::IdentityTokenCacheValue& token_cache_value) {
-  auto token_data = std::make_unique<base::DictionaryValue>();
-  token_data->SetString("extensionId", access_tokens_key.extension_id);
-  token_data->SetString("accountId", access_tokens_key.account_id.ToString());
-  token_data->SetString("extensionName", GetExtensionName(access_tokens_key));
-  token_data->Set("scopes", GetScopes(token_cache_value));
-  token_data->SetString("status", GetStatus(token_cache_value));
-  token_data->SetString("accessToken", token_cache_value.token());
-  token_data->SetString("expirationTime", GetExpirationTime(token_cache_value));
+  base::Value::Dict token_data;
+  token_data.Set("extensionId", access_tokens_key.extension_id);
+  token_data.Set("accountId", access_tokens_key.account_id.ToString());
+  token_data.Set("extensionName", GetExtensionName(access_tokens_key));
+  token_data.Set("scopes", GetScopes(token_cache_value));
+  token_data.Set("status", GetStatus(token_cache_value));
+  token_data.Set("accessToken", token_cache_value.token());
+  token_data.Set("expirationTime", GetExpirationTime(token_cache_value));
   return token_data;
 }
 
 void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
-    const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+    const base::Value::List& args) {
+  const std::string& callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
-  base::ListValue results;
+  base::Value::List results;
   extensions::IdentityTokenCache::AccessTokensCache tokens;
   // The API can be null in incognito.
   extensions::IdentityAPI* api =
@@ -257,15 +259,19 @@ void IdentityInternalsUIMessageHandler::RegisterMessages() {
 }
 
 void IdentityInternalsUIMessageHandler::RevokeToken(
-    const base::ListValue* args) {
+    const base::Value::List& list) {
+  const std::string& callback_id = list[0].GetString();
+  CHECK(!callback_id.empty());
   std::string extension_id;
   std::string access_token;
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(!callback_id.empty());
+  if (!list.empty() && list[kRevokeTokenExtensionOffset].is_string()) {
+    extension_id = list[kRevokeTokenExtensionOffset].GetString();
+  }
+  if (list.size() > kRevokeTokenTokenOffset &&
+      list[kRevokeTokenTokenOffset].is_string()) {
+    access_token = list[kRevokeTokenTokenOffset].GetString();
+  }
 
-  args->GetString(kRevokeTokenExtensionOffset, &extension_id);
-  args->GetString(kRevokeTokenTokenOffset, &access_token);
   token_revokers_.push_back(std::make_unique<IdentityInternalsTokenRevoker>(
       extension_id, access_token, callback_id, Profile::FromWebUI(web_ui()),
       this));
@@ -302,12 +308,14 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIIdentityInternalsHost);
 
   // Required resources
-  html_source->AddResourcePath("identity_internals.css",
-      IDR_IDENTITY_INTERNALS_CSS);
-  html_source->AddResourcePath("identity_internals.js",
-      IDR_IDENTITY_INTERNALS_JS);
-  html_source->SetDefaultResource(IDR_IDENTITY_INTERNALS_HTML);
+  html_source->AddResourcePaths(base::make_span(
+      kIdentityInternalsResources, kIdentityInternalsResourcesSize));
+  html_source->SetDefaultResource(
+      IDR_IDENTITY_INTERNALS_IDENTITY_INTERNALS_HTML);
 
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
 
   web_ui->AddMessageHandler(

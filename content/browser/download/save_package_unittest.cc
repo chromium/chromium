@@ -1,6 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "content/browser/download/save_package.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,37 +12,38 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/download/save_file_manager.h"
-#include "content/browser/download/save_package.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace content {
 
 #define FPL FILE_PATH_LITERAL
 #define HTML_EXTENSION ".html"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define FPL_HTML_EXTENSION L".html"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define FPL_HTML_EXTENSION ".html"
 #endif
 
 namespace {
 
 // This constant copied from save_package.cc.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
 const uint32_t kMaxFileNameLength = MAX_PATH - 1;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
 const uint32_t kMaxFileNameLength = NAME_MAX;
 #endif
@@ -81,7 +84,7 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   }
 
   GURL GetUrlToBeSaved() {
-    return SavePackage::GetUrlToBeSaved(save_package_success_->web_contents());
+    return SavePackage::GetUrlToBeSaved(contents()->GetPrimaryMainFrame());
   }
 
  protected:
@@ -93,13 +96,13 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     save_package_success_ = new SavePackage(
-        contents(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+        contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
         temp_dir_.GetPath().AppendASCII("testfile" HTML_EXTENSION),
         temp_dir_.GetPath().AppendASCII("testfile_files"));
 
     base::FilePath::StringType long_file_name = GetLongFileName();
     save_package_fail_ = new SavePackage(
-        contents(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+        contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
         temp_dir_.GetPath().Append(long_file_name + FPL_HTML_EXTENSION),
         temp_dir_.GetPath().Append(long_file_name + FPL("_files")));
   }
@@ -132,7 +135,6 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SavePackage> save_package_success_;
   // SavePackage for failed generating file name.
   scoped_refptr<SavePackage> save_package_fail_;
-
   base::ScopedTempDir temp_dir_;
 
   scoped_refptr<SaveFileManager> save_file_manager_;
@@ -187,7 +189,7 @@ static const struct {
 };
 
 TEST_F(SavePackageTest, TestSuccessfullyGenerateSavePackageFilename) {
-  for (size_t i = 0; i < base::size(kGeneratedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kGeneratedFiles); ++i) {
     base::FilePath::StringType file_name;
     bool ok = GetGeneratedFilename(true,
                                    kGeneratedFiles[i].disposition,
@@ -200,7 +202,7 @@ TEST_F(SavePackageTest, TestSuccessfullyGenerateSavePackageFilename) {
 }
 
 TEST_F(SavePackageTest, TestUnSuccessfullyGenerateSavePackageFilename) {
-  for (size_t i = 0; i < base::size(kGeneratedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kGeneratedFiles); ++i) {
     base::FilePath::StringType file_name;
     bool ok = GetGeneratedFilename(false,
                                    kGeneratedFiles[i].disposition,
@@ -212,7 +214,7 @@ TEST_F(SavePackageTest, TestUnSuccessfullyGenerateSavePackageFilename) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLongSavePackageFilename DISABLED_TestLongSavePackageFilename
 #else
 #define MAYBE_TestLongSavePackageFilename TestLongSavePackageFilename
@@ -247,7 +249,7 @@ TEST_F(SavePackageTest, MAYBE_TestLongSavePackageFilename) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLongSafePureFilename DISABLED_TestLongSafePureFilename
 #else
 #define MAYBE_TestLongSafePureFilename TestLongSafePureFilename
@@ -283,6 +285,86 @@ TEST_F(SavePackageTest, TestGetUrlToBeSavedViewSource) {
   NavigateAndCommit(view_source_url);
   EXPECT_EQ(actual_url, GetUrlToBeSaved());
   EXPECT_EQ(view_source_url, contents()->GetLastCommittedURL());
+}
+
+class SavePackageFencedFrameTest : public SavePackageTest {
+ public:
+  SavePackageFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~SavePackageFencedFrameTest() override = default;
+
+  RenderFrameHost* CreateFencedFrame(RenderFrameHost* parent) {
+    RenderFrameHost* fenced_frame =
+        RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// FakeLocalFrame implementation that records calls to
+// GetSavableResourceLinks().
+class FakeLocalFrameWithSavableResourceLinks : public FakeLocalFrame {
+ public:
+  explicit FakeLocalFrameWithSavableResourceLinks(RenderFrameHost* rfh) {
+    Init(static_cast<TestRenderFrameHost*>(rfh)
+             ->GetRemoteAssociatedInterfaces());
+  }
+
+  bool is_called() const { return is_called_; }
+
+  // FakeLocalFrame:
+  void GetSavableResourceLinks(
+      GetSavableResourceLinksCallback callback) override {
+    is_called_ = true;
+    std::move(callback).Run(nullptr);
+  }
+
+ private:
+  bool is_called_ = false;
+};
+
+// Tests that SavePackage does not create an unnecessary task that gets the
+// resources links from fenced frames.
+// If fenced frames become savable, this test will need to be updated.
+// See https://crbug.com/1321102
+TEST_F(SavePackageFencedFrameTest,
+       DontRequestSavableResourcesFromFencedFrames) {
+  NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Create a fenced frame.
+  RenderFrameHostTester::For(contents()->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+  RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrame(contents()->GetPrimaryMainFrame());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<SavePackage> save_package(new SavePackage(
+      contents()->GetPrimaryPage(), SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
+      temp_dir.GetPath().AppendASCII("testfile" HTML_EXTENSION),
+      temp_dir.GetPath().AppendASCII("testfile_files")));
+
+  FakeLocalFrameWithSavableResourceLinks local_frame_for_primary(
+      contents()->GetPrimaryMainFrame());
+  local_frame_for_primary.Init(
+      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
+
+  FakeLocalFrameWithSavableResourceLinks local_frame_for_fenced_frame(
+      fenced_frame_rfh);
+  local_frame_for_fenced_frame.Init(
+      fenced_frame_rfh->GetRemoteAssociatedInterfaces());
+
+  EXPECT_TRUE(save_package->Init(base::DoNothing()));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(local_frame_for_primary.is_called());
+  EXPECT_FALSE(local_frame_for_fenced_frame.is_called());
 }
 
 }  // namespace content

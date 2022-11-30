@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,6 @@ component("url_matcher") {
   sources = [
     "regex_set_matcher.cc",
     "regex_set_matcher.h",
-    "string_pattern.cc",
-    "string_pattern.h",
-    "substring_set_matcher.cc",
-    "substring_set_matcher.h",
     "url_matcher.cc",
     "url_matcher.h",
     "url_matcher_constants.cc",
@@ -17,8 +13,8 @@ component("url_matcher") {
     "url_matcher_export.h",
     "url_matcher_factory.cc",
     "url_matcher_factory.h",
-    "url_matcher_helpers.cc",
-    "url_matcher_helpers.h",
+    "url_util.cc",
+    "url_util.h",
   ]
 
   defines = [ "URL_MATCHER_IMPLEMENTATION" ]
@@ -26,21 +22,21 @@ component("url_matcher") {
   public_deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//components/google/core/common",
+    "//components/url_formatter",
+    "//net",
     "//third_party/re2",
     "//url",
   ]
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "regex_set_matcher_unittest.cc",
-    "string_pattern_unittest.cc",
-    "substring_set_matcher_unittest.cc",
     "url_matcher_factory_unittest.cc",
     "url_matcher_unittest.cc",
+    "url_util_unittest.cc",
   ]
   deps = [
     ":url_matcher",

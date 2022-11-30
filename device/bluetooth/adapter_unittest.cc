@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -199,6 +201,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_DisallowedUuid) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -218,6 +221,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Success) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -237,6 +241,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -245,7 +250,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(
     AdapterTest,
     TestConnectToServiceInsecurely_UnknownDevice_Success_ServicesAlreadyResolved) {
@@ -265,6 +270,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -305,6 +311,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_TRUE(connect_to_service_result);
@@ -330,6 +337,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -359,6 +367,7 @@ TEST_F(
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -368,7 +377,7 @@ TEST_F(
   // change where the device has no RSSI. This will result in a failed
   // connect-to-service result.
   EXPECT_CALL(*mock_unknown_bluetooth_device_, GetInquiryRSSI())
-      .WillRepeatedly(Return(base::nullopt));
+      .WillRepeatedly(Return(absl::nullopt));
   adapter_->DeviceChanged(mock_bluetooth_adapter_.get(),
                           mock_unknown_bluetooth_device_.get());
   run_loop.Run();
@@ -377,13 +386,14 @@ TEST_F(
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice_Error) {
   EXPECT_CALL(*mock_bluetooth_adapter_,
               ConnectDevice(kUnknownDeviceAddress, _, _, _))
-      .WillOnce(RunOnceCallback<3>());
+      .WillOnce(RunOnceCallback<3>(""));
 
   adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
 
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
@@ -398,12 +408,33 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice) {
   base::RunLoop run_loop;
   adapter_->ConnectToServiceInsecurely(
       kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false,
       base::BindLambdaForTesting(
           [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
             EXPECT_FALSE(connect_to_service_result);
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AdapterTest, TestConnectToServiceInsecurely_HalfPaired) {
+  EXPECT_CALL(*mock_known_bluetooth_device_, IsBonded).WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_known_bluetooth_device_,
+              ConnectToServiceInsecurely(_, _, _))
+      .WillOnce(RunOnceCallback<2>("br-connection-canceled"));
+
+  EXPECT_CALL(*mock_known_bluetooth_device_, Forget).Times(1);
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
+  adapter_->ConnectToServiceInsecurely(
+      kKnownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/true,
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {}));
 }
 #endif
 
@@ -457,4 +488,48 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Success) {
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(AdapterTest, TestMetricsOnShutdown_NoPendingConnects) {
+  base::HistogramTester histogram_tester;
+  adapter_.reset();
+
+  EXPECT_EQ(0u,
+            histogram_tester
+                .GetAllSamples(
+                    "Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting")
+                .size());
+  histogram_tester.ExpectUniqueSample(
+      "Bluetooth.Mojo.PendingConnectAtShutdown."
+      "NumberOfServiceDiscoveriesInProgress",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
+TEST_F(AdapterTest, TestMetricsOnShutdown_PendingConnects) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillRepeatedly(Return(false));
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      /*should_unbond_on_error=*/false, base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  adapter_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Bluetooth.Mojo.PendingConnectAtShutdown."
+      "NumberOfServiceDiscoveriesInProgress",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1u, histogram_tester
+                    .GetAllSamples("Bluetooth.Mojo.PendingConnectAtShutdown."
+                                   "NumberOfServiceDiscoveriesInProgress")
+                    .size());
+}
+#endif
 }  // namespace bluetooth

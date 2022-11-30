@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -29,12 +28,15 @@ class CastSystemGestureEventHandler;
 class CastSystemGestureDispatcher;
 class SideSwipeDetector;
 class CastWindowTreeHostAura;
-class RoundedWindowCorners;
 
 class CastWindowManagerAura : public CastWindowManager,
                               public aura::client::WindowParentingClient {
  public:
   explicit CastWindowManagerAura(bool enable_input);
+
+  CastWindowManagerAura(const CastWindowManagerAura&) = delete;
+  CastWindowManagerAura& operator=(const CastWindowManagerAura&) = delete;
+
   ~CastWindowManagerAura() override;
 
   void Setup();
@@ -55,8 +57,6 @@ class CastWindowManagerAura : public CastWindowManager,
   void AddTouchActivityObserver(CastTouchActivityObserver* observer) override;
   void RemoveTouchActivityObserver(
       CastTouchActivityObserver* observer) override;
-  void SetEnableRoundedCorners(bool enable) override;
-  void NotifyColorInversionEnabled(bool enabled) override;
 
   // aura::client::WindowParentingClient implementation:
   aura::Window* GetDefaultParent(aura::Window* window,
@@ -67,9 +67,6 @@ class CastWindowManagerAura : public CastWindowManager,
   aura::client::CaptureClient* capture_client() const {
     return capture_client_.get();
   }
-
-  // For testing.
-  bool HasRoundedWindowCorners() const;
 
  private:
   const bool enable_input_;
@@ -82,12 +79,9 @@ class CastWindowManagerAura : public CastWindowManager,
   std::unique_ptr<CastSystemGestureDispatcher> system_gesture_dispatcher_;
   std::unique_ptr<CastSystemGestureEventHandler> system_gesture_event_handler_;
   std::unique_ptr<SideSwipeDetector> side_swipe_detector_;
-  std::unique_ptr<RoundedWindowCorners> rounded_window_corners_;
 
   std::vector<WindowId> window_order_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastWindowManagerAura);
 };
 
 }  // namespace chromecast

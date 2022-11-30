@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_WEBUI_MOJO_WEB_UI_CONTROLLER_H_
 #define UI_WEBUI_MOJO_WEB_UI_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -30,10 +29,11 @@ class MojoWebUIController : public content::WebUIController {
   // |enable_chrome_send| as true if these are needed.
   explicit MojoWebUIController(content::WebUI* contents,
                                bool enable_chrome_send = false);
-  ~MojoWebUIController() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoWebUIController);
+  MojoWebUIController(const MojoWebUIController&) = delete;
+  MojoWebUIController& operator=(const MojoWebUIController&) = delete;
+
+  ~MojoWebUIController() override;
 };
 
 }  // namespace ui

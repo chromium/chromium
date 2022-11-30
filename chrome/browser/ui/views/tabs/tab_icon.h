@@ -1,24 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/animation/animation_delegate_views.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace base {
 class TickClock;
 }
 
-class GURL;
 struct TabRendererData;
 
 // View that displays the favicon, sad tab, throbber, and attention indicator
@@ -99,8 +99,8 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
                          const gfx::Rect& bounds);
   bool GetNonDefaultFavicon() const;
 
-  // Sets the icon. Depending on the URL the icon may be automatically themed.
-  void SetIcon(const GURL& url, const gfx::ImageSkia& favicon);
+  // Sets the icon.
+  void SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon);
 
   // For certain types of tabs the loading animation is not desired so the
   // caller can set inhibit_loading_animation to true. When false, the loading
@@ -115,9 +115,9 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // whether a layer can be used.
   void RefreshLayer();
 
-  gfx::ImageSkia ThemeImage(const gfx::ImageSkia& source);
+  gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   gfx::ImageSkia favicon_;
   TabNetworkState network_state_ = TabNetworkState::kNone;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"
@@ -17,10 +17,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/table/table_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -69,9 +69,9 @@ class HungPagesTableModel : public ui::TableModel,
   content::RenderWidgetHost* GetRenderWidgetHost();
 
   // Overridden from ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
+  ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
   // Overridden from RenderProcessHostObserver:
@@ -105,7 +105,7 @@ class HungPagesTableModel : public ui::TableModel,
     void WebContentsDestroyed() override;
 
    private:
-    HungPagesTableModel* model_;
+    raw_ptr<HungPagesTableModel> model_;
   };
 
   // Invoked when a WebContents is destroyed. Cleans up |tab_observers_| and
@@ -118,10 +118,10 @@ class HungPagesTableModel : public ui::TableModel,
 
   std::vector<std::unique_ptr<WebContentsObserverImpl>> tab_observers_;
 
-  ui::TableModelObserver* observer_ = nullptr;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
-  content::RenderWidgetHost* render_widget_host_ = nullptr;
+  raw_ptr<content::RenderWidgetHost> render_widget_host_ = nullptr;
 
   // Callback that restarts the hang timeout (e.g. if the user wants to wait
   // some more until the renderer process responds).
@@ -221,13 +221,13 @@ class HungRendererDialogView : public views::DialogDelegateView,
   static void BypassActiveBrowserRequirementForTests();
 
   // The WebContents that this dialog was created for and is associated with.
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   // The label describing the list.
-  views::Label* info_label_ = nullptr;
+  raw_ptr<views::Label> info_label_ = nullptr;
 
   // Controls within the dialog box.
-  views::TableView* hung_pages_table_ = nullptr;
+  raw_ptr<views::TableView> hung_pages_table_ = nullptr;
 
   // The model that provides the contents of the table that shows a list of
   // pages affected by the hang.

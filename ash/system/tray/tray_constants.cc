@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,6 @@ const int kTrayTextFontSizeIncrease = 2;
 const int kTrayItemSize = 32;
 
 const float kTrayItemCornerRadius = kTrayItemSize / 2.f;
-
-const int kTrayMenuWidth = 360;
 
 const int kTrayPopupAutoCloseDelayInSeconds = 2;
 const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;

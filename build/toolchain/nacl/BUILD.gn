@@ -18,12 +18,14 @@ revisions = exec_script("//native_client/build/get_toolchain_revision.py",
                           "nacl_x86_glibc",
                           "nacl_arm_glibc",
                           "pnacl_newlib",
+                          "saigo_newlib",
                         ],
                         "trim list lines")
 nacl_x86_glibc_rev = revisions[0]
 nacl_arm_glibc_rev = revisions[1]
 
 pnacl_newlib_rev = revisions[2]
+saigo_newlib_rev = revisions[3]
 
 if (host_os == "win") {
   toolsuffix = ".exe"
@@ -49,7 +51,7 @@ if (host_os == "win") {
 # When the compilers are run via goma, rbe or ccache rather than directly by
 # GN/Ninja, the rbe/goma/ccache wrapper handles .bat files but gets confused
 # by being given the scriptprefix.
-if (host_os == "win" && !use_goma && !use_rbe && cc_wrapper == "") {
+if (host_os == "win" && !use_goma && !use_remoteexec && cc_wrapper == "") {
   compiler_scriptprefix = scriptprefix
 } else {
   compiler_scriptprefix = ""
@@ -112,15 +114,6 @@ pnacl_toolchain("newlib_pnacl") {
   strip = "finalize"
 }
 
-pnacl_toolchain("newlib_pnacl_nonsfi") {
-  executable_extension = ""
-  strip = "strip"
-
-  # This macro is embedded on nonsfi toolchains but reclient can't figure
-  # that out itself, so we make it explicit.
-  extra_cppflags = "-D__native_client_nonsfi__"
-}
-
 template("nacl_glibc_toolchain") {
   toolchain_cpu = target_name
   assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")
@@ -155,7 +148,7 @@ template("nacl_glibc_toolchain") {
       current_cpu = toolchain_cpu
 
       # reclient does not support gcc.
-      use_rbe = false
+      use_remoteexec = false
       is_clang = false
       is_nacl_glibc = true
       use_lld = false
@@ -224,8 +217,8 @@ template("nacl_irt_toolchain") {
   toolchain_cpu = target_name
   assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")
 
-  toolchain_package = "pnacl_newlib"
-  toolchain_revision = pnacl_newlib_rev
+  toolchain_package = "saigo_newlib"
+  toolchain_revision = saigo_newlib_rev
   toolprefix = rebase_path("${nacl_toolchain_dir}/${toolchain_package}/bin/" +
                                invoker.toolchain_tuple + "-",
                            root_build_dir)
@@ -261,6 +254,7 @@ template("nacl_irt_toolchain") {
       current_cpu = toolchain_cpu
       is_clang = true
       use_lld = false
+      is_nacl_saigo = true
     }
 
     # TODO(ncbray): depend on link script

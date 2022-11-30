@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_creator.h"
 
 namespace extensions {
@@ -38,6 +38,10 @@ class PackExtensionJob {
                    const base::FilePath& root_directory,
                    const base::FilePath& key_file,
                    int run_flags);
+
+  PackExtensionJob(const PackExtensionJob&) = delete;
+  PackExtensionJob& operator=(const PackExtensionJob&) = delete;
+
   ~PackExtensionJob();
 
   // Starts the packing job.
@@ -60,7 +64,7 @@ class PackExtensionJob {
   void ReportFailureOnClientSequence(const std::string& error,
                                      ExtensionCreator::ErrorType error_type);
 
-  Client* const client_;  // Owns us.
+  const raw_ptr<Client> client_;  // Owns us.
   base::FilePath root_directory_;
   base::FilePath key_file_;
   RunMode run_mode_ = RunMode::ASYNCHRONOUS;
@@ -69,8 +73,6 @@ class PackExtensionJob {
 
   // Used to check methods that run on |client_|'s sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PackExtensionJob);
 };
 
 }  // namespace extensions

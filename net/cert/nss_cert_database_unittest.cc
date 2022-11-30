@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <cert.h>
 #include <certdb.h>
 #include <pk11pub.h>
+#include <seccomon.h>
 
 #include <algorithm>
 #include <memory>
@@ -60,17 +61,23 @@ std::string GetSubjectCN(CERTCertificate* cert) {
   return s;
 }
 
+bool GetCertIsPerm(const CERTCertificate* cert) {
+  PRBool is_perm;
+  CHECK_EQ(x509_util::GetCertIsPerm(cert, &is_perm), SECSuccess);
+  return is_perm != PR_FALSE;
+}
+
 }  // namespace
 
 class CertDatabaseNSSTest : public TestWithTaskEnvironment {
  public:
   void SetUp() override {
     ASSERT_TRUE(test_nssdb_.is_open());
-    cert_db_.reset(new NSSCertDatabase(
+    cert_db_ = std::make_unique<NSSCertDatabase>(
         crypto::ScopedPK11Slot(
             PK11_ReferenceSlot(test_nssdb_.slot())) /* public slot */,
         crypto::ScopedPK11Slot(
-            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */));
+            PK11_ReferenceSlot(test_nssdb_.slot())) /* private slot */);
     public_slot_ = cert_db_->GetPublicSlot();
     crl_set_ = CRLSet::BuiltinCRLSet();
 
@@ -287,7 +294,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_SSLTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -316,7 +323,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_EmailTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -345,7 +352,7 @@ TEST_F(CertDatabaseNSSTest, ImportCACert_ObjSignTrust) {
       GetTestCertsDirectory(), "root_ca_cert.pem",
       X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -373,7 +380,7 @@ TEST_F(CertDatabaseNSSTest, ImportCA_NotCACert) {
   ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
       GetTestCertsDirectory(), "ok_cert.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(1U, certs.size());
-  EXPECT_FALSE(certs[0]->isperm);
+  EXPECT_FALSE(GetCertIsPerm(certs[0].get()));
 
   // Import it.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -543,12 +550,20 @@ TEST_F(CertDatabaseNSSTest, ImportServerCert) {
   // All the certs in the imported list should now be found in the NSS DB.
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(3U, cert_list.size());
-  CERTCertificate* found_server_cert = cert_list[1].get();
-  CERTCertificate* found_intermediate_cert = cert_list[2].get();
-  CERTCertificate* found_root_cert = cert_list[0].get();
-  EXPECT_EQ("127.0.0.1", GetSubjectCN(found_server_cert));
-  EXPECT_EQ("Test Intermediate CA", GetSubjectCN(found_intermediate_cert));
-  EXPECT_EQ("Test Root CA", GetSubjectCN(found_root_cert));
+  CERTCertificate* found_server_cert = nullptr;
+  CERTCertificate* found_intermediate_cert = nullptr;
+  CERTCertificate* found_root_cert = nullptr;
+  for (const auto& cert : cert_list) {
+    if (GetSubjectCN(cert.get()) == "127.0.0.1")
+      found_server_cert = cert.get();
+    else if (GetSubjectCN(cert.get()) == "Test Intermediate CA")
+      found_intermediate_cert = cert.get();
+    else if (GetSubjectCN(cert.get()) == "Test Root CA")
+      found_root_cert = cert.get();
+  }
+  ASSERT_TRUE(found_server_cert);
+  ASSERT_TRUE(found_intermediate_cert);
+  ASSERT_TRUE(found_root_cert);
 
   EXPECT_EQ(NSSCertDatabase::TRUST_DEFAULT,
             cert_db_->GetCertTrust(found_server_cert, SERVER_CERT));

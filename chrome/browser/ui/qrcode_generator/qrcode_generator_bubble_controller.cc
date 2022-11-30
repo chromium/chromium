@@ -1,14 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
+#include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -20,14 +22,7 @@ QRCodeGeneratorBubbleController::~QRCodeGeneratorBubbleController() {
 }
 
 // static
-bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url,
-                                                           bool in_incognito) {
-  if (in_incognito)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(kSharingQRCodeGenerator))
-    return false;
-
+bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return false;
 
@@ -43,12 +38,21 @@ QRCodeGeneratorBubbleController* QRCodeGeneratorBubbleController::Get(
   return controller;
 }
 
-void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  qrcode_generator_bubble_ =
-      browser->window()->ShowQRCodeGeneratorBubble(web_contents_, this, url);
+void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
+                                                 bool show_back_button) {
+  // Ignore subsequent calls to open the dialog if it already is open.
+  if (bubble_shown_)
+    return;
 
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kQRCodeGenerator);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  if (!browser || !browser->window())
+    return;
+
+  bubble_shown_ = true;
+  qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(
+      &GetWebContents(), url, show_back_button);
+
+  UpdateIcon();
 }
 
 void QRCodeGeneratorBubbleController::HideBubble() {
@@ -63,16 +67,49 @@ QRCodeGeneratorBubbleController::qrcode_generator_bubble_view() const {
   return qrcode_generator_bubble_;
 }
 
+base::OnceClosure QRCodeGeneratorBubbleController::GetOnBubbleClosedCallback() {
+  return base::BindOnce(&QRCodeGeneratorBubbleController::OnBubbleClosed,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
+base::OnceClosure
+QRCodeGeneratorBubbleController::GetOnBackButtonPressedCallback() {
+  return base::BindOnce(&QRCodeGeneratorBubbleController::OnBackButtonPressed,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void QRCodeGeneratorBubbleController::OnBubbleClosed() {
+  bubble_shown_ = false;
   qrcode_generator_bubble_ = nullptr;
 }
 
-QRCodeGeneratorBubbleController::QRCodeGeneratorBubbleController() = default;
+void QRCodeGeneratorBubbleController::OnBackButtonPressed() {
+  sharing_hub::SharingHubBubbleController* controller =
+      sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
+          &GetWebContents());
+  controller->ShowBubble(share::ShareAttempt(&GetWebContents()));
+}
+
+void QRCodeGeneratorBubbleController::UpdateIcon() {
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
+  // UpdateIcon() can be called during browser teardown.
+  if (!browser)
+    return;
+
+  if (sharing_hub::SharingHubOmniboxEnabled(
+          GetWebContents().GetBrowserContext())) {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
+  } else {
+    browser->window()->UpdatePageActionIcon(
+        PageActionIconType::kQRCodeGenerator);
+  }
+}
 
 QRCodeGeneratorBubbleController::QRCodeGeneratorBubbleController(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<QRCodeGeneratorBubbleController>(
+          *web_contents) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(QRCodeGeneratorBubbleController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(QRCodeGeneratorBubbleController);
 
 }  // namespace qrcode_generator

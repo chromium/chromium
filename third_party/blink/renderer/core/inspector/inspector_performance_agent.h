@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Performance.h"
+#include "third_party/blink/renderer/core/inspector/protocol/performance.h"
 
 namespace blink {
 
@@ -34,6 +34,9 @@ class CORE_EXPORT InspectorPerformanceAgent final
   void Trace(Visitor*) const override;
 
   explicit InspectorPerformanceAgent(InspectedFrames*);
+  InspectorPerformanceAgent(const InspectorPerformanceAgent&) = delete;
+  InspectorPerformanceAgent& operator=(const InspectorPerformanceAgent&) =
+      delete;
   ~InspectorPerformanceAgent() override;
 
   void Restore() override;
@@ -95,7 +98,6 @@ class CORE_EXPORT InspectorPerformanceAgent final
   int layout_depth_ = 0;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean use_thread_ticks_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorPerformanceAgent);
 };
 
 }  // namespace blink

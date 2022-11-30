@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,17 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/http/http_byte_range.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace embedder_support {
 class InputStream;
@@ -88,7 +90,12 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       std::unique_ptr<ResponseDelegate> response_delegate,
-      base::Optional<SecurityOptions> security_options);
+      absl::optional<SecurityOptions> security_options);
+
+  AndroidStreamReaderURLLoader(const AndroidStreamReaderURLLoader&) = delete;
+  AndroidStreamReaderURLLoader& operator=(const AndroidStreamReaderURLLoader&) =
+      delete;
+
   ~AndroidStreamReaderURLLoader() override;
 
   void Start();
@@ -98,7 +105,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -152,11 +159,10 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
   mojo::SimpleWatcher writable_handle_watcher_;
+  base::Time start_time_;
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<AndroidStreamReaderURLLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidStreamReaderURLLoader);
 };
 
 }  // namespace embedder_support

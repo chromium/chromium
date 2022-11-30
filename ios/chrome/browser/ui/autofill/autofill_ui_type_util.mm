@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,6 +50,10 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::ServerFieldType type) {
       return AutofillUITypeProfileHomePhoneWholeNumber;
     case autofill::EMAIL_ADDRESS:
       return AutofillUITypeProfileEmailAddress;
+    case autofill::NAME_FULL_WITH_HONORIFIC_PREFIX:
+      return AutofillUITypeNameFullWithHonorificPrefix;
+    case autofill::ADDRESS_HOME_ADDRESS:
+      return AutofillUITypeAddressHomeAddress;
     default:
       NOTREACHED();
       return AutofillUITypeUnknown;
@@ -89,13 +93,17 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
     case AutofillUITypeProfileHomeAddressZip:
       return autofill::ADDRESS_HOME_ZIP;
     case AutofillUITypeProfileHomeAddressSortingCode:
-      return autofill::ADDRESS_BILLING_SORTING_CODE;
+      return autofill::ADDRESS_HOME_SORTING_CODE;
     case AutofillUITypeProfileHomeAddressCountry:
       return autofill::ADDRESS_HOME_COUNTRY;
     case AutofillUITypeProfileHomePhoneWholeNumber:
       return autofill::PHONE_HOME_WHOLE_NUMBER;
     case AutofillUITypeProfileEmailAddress:
       return autofill::EMAIL_ADDRESS;
+    case AutofillUITypeNameFullWithHonorificPrefix:
+      return autofill::NAME_FULL_WITH_HONORIFIC_PREFIX;
+    case AutofillUITypeAddressHomeAddress:
+      return autofill::ADDRESS_HOME_ADDRESS;
     case AutofillUITypeCreditCardExpDate:
     case AutofillUITypeCreditCardBillingAddress:
     case AutofillUITypeCreditCardSaveToChrome:
@@ -103,4 +111,12 @@ autofill::ServerFieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
       NOTREACHED();
       return autofill::UNKNOWN_TYPE;
   }
+}
+
+std::vector<autofill::ServerFieldType> GetAutofillTypeForProfileEdit() {
+  std::vector<autofill::ServerFieldType> all_visible_types;
+  for (const AutofillProfileFieldDisplayInfo& row : kProfileFieldsToDisplay)
+    all_visible_types.push_back(row.autofillType);
+
+  return all_visible_types;
 }

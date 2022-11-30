@@ -1,0 +1,63 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("css_to_wrapper") {
+  action(target_name) {
+    script = "//tools/polymer/css_to_wrapper.py"
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "visibility",
+                           ])
+
+    inputs = []
+    outputs = []
+
+    wrapper_extension = ".ts"
+
+    if (defined(invoker.use_js) && invoker.use_js) {
+      wrapper_extension = ".js"
+    }
+
+    in_folder = "."
+    if (defined(invoker.in_folder)) {
+      in_folder = invoker.in_folder
+    }
+
+    out_folder = target_gen_dir
+    if (defined(invoker.out_folder)) {
+      out_folder = invoker.out_folder
+    }
+
+    foreach(css_file, invoker.in_files) {
+      extension = get_path_info(css_file, "extension")
+      assert(extension == "css")
+
+      wrapper_file = get_path_info(css_file, "dir") + "/" +
+                     get_path_info(css_file, "file") + wrapper_extension
+      inputs += [ "$in_folder/" + css_file ]
+      outputs += [ "$out_folder/" + wrapper_file ]
+    }
+
+    args = [
+             "--in_folder",
+             rebase_path(in_folder, root_build_dir),
+             "--out_folder",
+             rebase_path(out_folder, root_build_dir),
+             "--in_files",
+           ] + invoker.in_files
+
+    if (defined(invoker.use_js) && invoker.use_js) {
+      args += [ "--use_js" ]
+    }
+
+    if (defined(invoker.minify) && invoker.minify) {
+      args += [ "--minify" ]
+
+      # Declare additional dependency.
+      inputs += [ "//tools/polymer/html_minifier.js" ]
+    }
+  }
+}

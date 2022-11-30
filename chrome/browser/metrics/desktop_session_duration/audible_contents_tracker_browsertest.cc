@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/desktop_session_duration/audible_contents_tracker.h"
+
+#include <memory>
 
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -22,6 +24,10 @@ class MockAudibleContentsObserver
  public:
   MockAudibleContentsObserver() {}
 
+  MockAudibleContentsObserver(const MockAudibleContentsObserver&) = delete;
+  MockAudibleContentsObserver& operator=(const MockAudibleContentsObserver&) =
+      delete;
+
   // AudibleContentsTracker::Observer:
   void OnAudioStart() override { is_audio_playing_ = true; }
   void OnAudioEnd() override { is_audio_playing_ = false; }
@@ -30,8 +36,6 @@ class MockAudibleContentsObserver
 
  private:
   bool is_audio_playing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudibleContentsObserver);
 };
 
 }  // namespace
@@ -40,9 +44,13 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
  public:
   AudibleContentsTrackerTest() {}
 
+  AudibleContentsTrackerTest(const AudibleContentsTrackerTest&) = delete;
+  AudibleContentsTrackerTest& operator=(const AudibleContentsTrackerTest&) =
+      delete;
+
   void SetUp() override {
-    observer_.reset(new MockAudibleContentsObserver());
-    tracker_.reset(new metrics::AudibleContentsTracker(observer()));
+    observer_ = std::make_unique<MockAudibleContentsObserver>();
+    tracker_ = std::make_unique<metrics::AudibleContentsTracker>(observer());
     InProcessBrowserTest::SetUp();
   }
 
@@ -50,7 +58,6 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDown() override {
@@ -62,14 +69,13 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
   MockAudibleContentsObserver* observer() const { return observer_.get(); }
 
  private:
-  std::unique_ptr<MockAudibleContentsObserver> observer_ = nullptr;
-  std::unique_ptr<metrics::AudibleContentsTracker> tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleContentsTrackerTest);
+  std::unique_ptr<MockAudibleContentsObserver> observer_;
+  std::unique_ptr<metrics::AudibleContentsTracker> tracker_;
 };
 
 // TODO(crbug.com/1124845): Flaky on Win7 32-bit.
-#if defined(OS_WIN) && defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_FAMILY) && \
+    defined(ARCH_CPU_32_BITS)
 #define MAYBE_TestAudioNotifications DISABLED_TestAudioNotifications
 #else
 #define MAYBE_TestAudioNotifications TestAudioNotifications
@@ -86,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(AudibleContentsTrackerTest,
       test_data_dir.AppendASCII("chrome/test/data/"));
   // Start the test server after adding the request handler for thread safety.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/autoplay_audio.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/autoplay_audio.html")));
 
   // Wait until the audio starts.
   while (!audio_observer->is_audio_playing()) {

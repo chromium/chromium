@@ -1,12 +1,12 @@
-CREDIT_CARD_NUMBER |  | Card number |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH |  | MM |  | credit-card-cc
-CREDIT_CARD_EXP_2_DIGIT_YEAR |  | YY |  | credit-card-cc
-CREDIT_CARD_VERIFICATION_CODE |  | CVC |  | credit-card-cc
-CREDIT_CARD_NAME_FULL |  | Cardholder name |  | credit-card-cc
-COMPANY_NAME | ORGANIZATION | Business name |  | _2-default
-NAME_FULL | RECIPIENT | Name |  | _2-default
-ADDRESS_HOME_LINE1 | ADDRESS_LINE_1 | Street address |  | _2-default
-ADDRESS_HOME_LINE2 | ADDRESS_LINE_2 | Apt./Suite |  | _2-default
-ADDRESS_HOME_CITY | LOCALITY | City |  | _2-default
-ADDRESS_HOME_ZIP | POSTAL_CODE | ZIP code |  | _2-default
-ADDRESS_HOME_COUNTRY | COUNTRY | Country | US | _2-default
+CREDIT_CARD_NUMBER |  | Card number |  | _1
+CREDIT_CARD_EXP_MONTH |  | MM |  | _1
+CREDIT_CARD_EXP_2_DIGIT_YEAR |  | YY |  | _1
+CREDIT_CARD_VERIFICATION_CODE |  | CVC |  | _1
+CREDIT_CARD_NAME_FULL |  | Cardholder name |  | _1
+COMPANY_NAME | ORGANIZATION | Business name |  | ORGANIZATION_2
+NAME_FULL | RECIPIENT | Name |  | ORGANIZATION_2
+ADDRESS_HOME_LINE1 | ADDRESS_LINE_1 | Street address |  | ORGANIZATION_2
+ADDRESS_HOME_LINE2 | ADDRESS_LINE_2 | Apt./Suite |  | ORGANIZATION_2
+ADDRESS_HOME_CITY | LOCALITY | City |  | ORGANIZATION_2
+ADDRESS_HOME_ZIP | POSTAL_CODE | ZIP code |  | ORGANIZATION_2
+ADDRESS_HOME_COUNTRY | COUNTRY | Country | US | ORGANIZATION_2

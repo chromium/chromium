@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ class Browser;
 // Fake browser observer.
 class FakeBrowserObserver : public BrowserObserver {
  public:
-  // Constructor for a fake observer that observes |browser| upon construction
+  // Constructor for a fake observer that observes `browser` upon construction
   // until the BrowserDestroyed() signal is received.
   explicit FakeBrowserObserver(Browser* browser);
   ~FakeBrowserObserver() override;

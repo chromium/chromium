@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ CompositorView::CompositorView(JNIEnv* env,
   compositor_.reset(content::Compositor::Create(this, window_android));
 
   root_layer_->SetIsDrawable(true);
-  root_layer_->SetBackgroundColor(SK_ColorWHITE);
+  root_layer_->SetBackgroundColor(SkColors::kWhite);
 
   // It is safe to not keep a ref on the feature checker because it adds one
   // internally in CheckGpuFeatureAvailability and unrefs after the callback is
@@ -234,7 +234,8 @@ void CompositorView::SetLayoutBounds(JNIEnv* env,
 
 void CompositorView::SetBackground(bool visible, SkColor color) {
   // TODO(crbug.com/770911): Set the background color on the compositor.
-  root_layer_->SetBackgroundColor(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  root_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   root_layer_->SetIsDrawable(visible);
 }
 
@@ -395,6 +396,11 @@ void CompositorView::PreserveChildSurfaceControls(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& object) {
   compositor_->PreserveChildSurfaceControls();
+}
+
+void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
+                                                      jboolean enable) {
+  compositor_->SetDidSwapBuffersCallbackEnabled(enable);
 }
 
 }  // namespace android

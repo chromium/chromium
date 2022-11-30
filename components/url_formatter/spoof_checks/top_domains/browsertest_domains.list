@@ -1,0 +1,17 @@
+#
+# List of top domains. Only used in browser tests.
+#
+google.com
+blogspot.com
+apple.com
+ask.com
+youtube.com
+# For character swap test, matched by google.sr:
+google.rs
+# For edit distance test, matched by google.com.tw:
+google.com.tr
+# For edit distance test:
+academia.edu
+academic.ru
+###END_TOP_500###
+google.sk

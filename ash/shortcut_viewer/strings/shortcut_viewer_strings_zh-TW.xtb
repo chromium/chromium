@@ -5,7 +5,6 @@
 <translation id="104962181688258143">開啟「檔案」應用程式</translation>
 <translation id="1122869341872663659">目前顯示 <ph name="N" /> 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="1195667586424773550">將連結拖曳至該分頁的網址列</translation>
-<translation id="1204450209689312104">以無痕模式開啟新視窗</translation>
 <translation id="1251638888133819822">開啟或關閉全螢幕放大鏡</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">移到行尾</translation>
 <translation id="1499072997694708844">關閉所有已開啟的尋找視窗，或停止載入目前的頁面</translation>
 <translation id="1510238584712386396">啟動器</translation>
+<translation id="1516966594427080024">以無痕模式開啟新視窗</translation>
 <translation id="152892567002884378">調高音量</translation>
 <translation id="1560480564179555003">按下 <ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按下 <ph name="ESC" /> 鍵</translation>
+<translation id="1586324912145647027">前往桌面 1 到 8</translation>
 <translation id="1652741121070700329">移至上一個字詞的開頭</translation>
 <translation id="1679841710523778799">調高亮度</translation>
 <translation id="168356808214100546">按住 <ph name="ALT" /> 鍵並輕觸 <ph name="TAB" /> 鍵，切換至你要開啟的視窗後放開按鍵。</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">向下捲動網頁</translation>
 <translation id="2530896289327917474">開啟或關閉鍵盤瀏覽功能</translation>
 <translation id="2574014812750545982">重設網頁的縮放比例</translation>
-<translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2685170433750953446">按下 <ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> 鍵，然後按下 <ph name="TAB" /> 或 <ph name="RIGHT" /> 鍵</translation>
 <translation id="2750942583782703988">重新載入目前網頁</translation>
 <translation id="2764005613199379871">將焦點放在搜尋網址列</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">快速鍵</translation>
 <translation id="3084301071537457911">醒目顯示檔案櫃中的下一個項目</translation>
 <translation id="309173601632226815">醒目顯示檔案櫃中的啟動器按鈕</translation>
-<translation id="3105917916468784889">擷取螢幕畫面</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">將焦點移至網址列</translation>
 <translation id="3256109297135787951">取消檔案櫃項目的醒目顯示狀態</translation>
 <translation id="3288816184963444640">關閉目前的視窗</translation>
+<translation id="3322797428033495633">聚焦在子母畫面視窗</translation>
+<translation id="3350805006883559974">讓使用中的視窗懸停在畫面上方</translation>
 <translation id="3407560819924487926">開啟工作管理員</translation>
+<translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3422679037938588196">前往上一個相符的搜尋結果</translation>
 <translation id="353037708190149633">將目前視窗中所有開啟的網頁儲存為書籤，並放在新資料夾中</translation>
 <translation id="355103131818127604">在新分頁中開啟連結，顯示在背景中</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">逗號</translation>
 <translation id="3976863468609830880">點選檔案櫃中的最後一個圖示</translation>
 <translation id="3994783594793697310">重設畫面縮放比例</translation>
+<translation id="4026837045671473537">開啟色彩反轉模式</translation>
 <translation id="4026843240379844265">在不同畫面間移動使用中的視窗</translation>
 <translation id="4035482366624727273">選取網頁上的所有項目</translation>
 <translation id="4060703249685950734">重新開啟最後關閉的分頁或視窗</translation>
@@ -109,7 +112,6 @@
 <translation id="4556221320735744018">查看鍵盤快速鍵說明</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" />或 <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">開啟狀態區 (顯示帳戶圖片的位置)</translation>
-<translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4698850295812410683">顯示觸控筆工具</translation>
 <translation id="4801989101741319327">移至下一個字詞的結尾</translation>
 <translation id="4866066940972151697">啟用右側的桌面</translation>
@@ -125,11 +127,13 @@
 <translation id="526651782186312376">選取文字至本行開頭</translation>
 <translation id="5316716239522500219">顯示器鏡像</translation>
 <translation id="539072479502328326">開啟或關閉停駐放大鏡</translation>
+<translation id="5466615362193675484">切換選單即可查看調整鎖定尺寸模式</translation>
 <translation id="5541719484267030947">在拖曳分頁時按下 <ph name="ESC" /> 鍵</translation>
 <translation id="5554139136362089836">搜尋目前網頁</translation>
 <translation id="5563050856984839829">按住 <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> 鍵，然後按一下連結</translation>
 <translation id="561814908794220892">在新分頁中開啟網頁</translation>
 <translation id="5620219513321115856">將使用中的視窗移至右側桌面</translation>
+<translation id="5699366815052349604">將使用中的視窗指派給所有桌面</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> 鍵或 <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /> 鍵</translation>
 <translation id="5757111373163288447">在該分頁開啟連結</translation>
 <translation id="5757474750054631686">鍵盤變暗 (僅適用於背光鍵盤)</translation>
@@ -139,7 +143,6 @@
 <translation id="5921745308587794300">旋轉視窗</translation>
 <translation id="5926306472221400972">擷取全螢幕畫面</translation>
 <translation id="6022924867608035986">清除搜尋框文字</translation>
-<translation id="6045998054441862242">開啟高對比模式</translation>
 <translation id="6052614013050385269">以滑鼠右鍵按一下連結</translation>
 <translation id="6129953537138746214">空格</translation>
 <translation id="6143669479988153888">放大網頁</translation>
@@ -148,6 +151,7 @@
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="6321940490215594447">開啟記錄頁面</translation>
 <translation id="6340769215862220182">放大畫面</translation>
+<translation id="634687982629734605">在以下位置之間切換焦點：狀態區 (你的帳戶相片顯示位置)、啟動器、網址列、書籤列 (如有顯示)、開啟的網頁和下載內容列 (如有顯示)。如果畫面上顯示可成為焦點目標的對話方塊，請將焦點移到該處。</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
 <translation id="6425378783626925378">點選檔案櫃中的第 1-8 個圖示</translation>
@@ -155,6 +159,7 @@
 <translation id="6445033640292336367">讓分頁回到原始位置</translation>
 <translation id="6474744297082284761">縮小 (固定時「或」全螢幕放大鏡已啟用時)</translation>
 <translation id="649811797655257835">選取檔案，然後按下 <ph name="SPACE" /> 鍵</translation>
+<translation id="6515089016094047210">開啟或關閉日曆小工具。</translation>
 <translation id="6551886416582667425">擷取/錄製部分螢幕畫面</translation>
 <translation id="6556040137485212400">開啟最久未使用的視窗</translation>
 <translation id="666343722268997814">針對醒目顯示的項目開啟滑鼠右鍵選單</translation>
@@ -191,7 +196,6 @@
 <translation id="8026334261755873520">清除瀏覽資料</translation>
 <translation id="8130528849632411619">前往文件開頭</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> 鍵或 <ph name="E" /> 鍵</translation>
-<translation id="8232835244134740473">在以下位置之間切換焦點：狀態區 (你的帳戶相片顯示位置)、啟動器網址列、書籤列 (如有顯示)、開啟的網頁和下載內容列 (如有顯示)。</translation>
 <translation id="8234414138295101081">將畫面旋轉 90 度</translation>
 <translation id="8241665785394195545">右方括號</translation>
 <translation id="8264941229485248811">顯示或隱藏開發人員工具檢查器</translation>
@@ -199,16 +203,17 @@
 <translation id="8388247778047144397">將連結拖曳至分頁列中的空白區域</translation>
 <translation id="8389638407792712197">開啟新視窗</translation>
 <translation id="8429696719963529183">使用 F 鍵 (F1 到 F12)</translation>
-<translation id="8537650670971624753">結束搜尋模式</translation>
 <translation id="85690795166292698">在新分頁中開啟連結</translation>
 <translation id="8609384513243082612">開啟新分頁</translation>
 <translation id="8644639153978066712">顯示「檔案」應用程式中隱藏的檔案</translation>
 <translation id="8717459106217102612">選取上一個字詞或字母</translation>
 <translation id="8727232706774971183">查看通知</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 到 8 鍵</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8881584919399569791">將使用中的視窗移至左側桌面</translation>
 <translation id="88986195241502842">Page Down 鍵</translation>
 <translation id="8924883688469390268">切換至上一個使用者</translation>
+<translation id="8941626538514548667">聚焦在瀏覽器中的網頁內容</translation>
 <translation id="8977648847395357314">選取網址列中的內容</translation>
 <translation id="8982190978301344584">顯示包含可用輸入法編輯器清單的選單</translation>
 <translation id="8990356943438003669"><ph name="ALT" /> <ph name="SEPARATOR" /> 1 到 8 鍵</translation>

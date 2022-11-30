@@ -1,0 +1,34 @@
+caption: Default legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> cookie behavior
+  setting
+deprecated: true
+desc: |-
+  This policy is deprecated, if you still require legacy cookie behavior please use <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME">LegacySameSiteCookieBehaviorEnabledForDomainList</ph>. Allows you to revert all cookies to legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> behavior. Reverting to legacy behavior causes cookies that don't specify a <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> attribute to be treated as if they were "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE">SameSite=None</ph>", removes the requirement for "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE">SameSite=None</ph>" cookies to carry the "<ph name="ATTRIBUTE_SECURE_NAME">Secure</ph>" attribute, and skips the scheme comparison when evaluating if two sites are same-site. See https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies for full description.
+
+            When this policy is not set, the default <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> behavior for cookies will depend on the user's personal configuration for the <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES">SameSite-by-default</ph> feature, the <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE">Cookies-without-SameSite-must-be-secure</ph> feature, and the <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE">Schemeful Same-Site</ph> feature which may be set by a field trial or by enabling or disabling the <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES">same-site-by-default-cookies</ph> flag, the <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE">cookies-without-same-site-must-be-secure</ph> flag, or the <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE">schemeful-same-site</ph> flag, respectively.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Revert to legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> behavior
+    for cookies on all sites
+  name: DefaultToLegacySameSiteCookieBehavior
+  value: 1
+- caption: Use <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES">SameSite-by-default</ph>
+    behavior for cookies on all sites
+  name: DefaultToSameSiteByDefaultCookieBehavior
+  value: 2
+owners:
+- bingler@chromium.org
+- file://net/cookies/OWNERS
+schema:
+  enum:
+  - 1
+  - 2
+  type: integer
+supported_on:
+- chrome.*:79-92
+- chrome_os:79-92
+- android:79-92
+tags: []
+type: int-enum

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,10 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 class AccountTrackerService;
-
-namespace ash {
-class AccountManager;
-}
+class SigninClient;
 
 namespace crosapi {
-class AccountManagerAsh;
+class AccountManagerMojoService;
 }
 
 namespace signin {
@@ -32,9 +29,9 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
       public ProfileOAuth2TokenServiceObserver {
  public:
   TestProfileOAuth2TokenServiceDelegateChromeOS(
+      SigninClient* client,
       AccountTrackerService* account_tracker_service,
-      ash::AccountManager* account_manager,
-      crosapi::AccountManagerAsh* account_manager_ash,
+      crosapi::AccountManagerMojoService* account_manager_mojo_service,
       bool is_regular_profile);
   ~TestProfileOAuth2TokenServiceDelegateChromeOS() override;
   TestProfileOAuth2TokenServiceDelegateChromeOS(
@@ -49,11 +46,13 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
       OAuth2AccessTokenConsumer* consumer) override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
   void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
+                       const GoogleServiceAuthError& error,
+                       bool fire_auth_error_changed) override;
   GoogleServiceAuthError GetAuthError(
       const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -61,6 +60,9 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   void RevokeCredentials(const CoreAccountId& account_id) override;
   void RevokeAllCredentials() override;
   const net::BackoffEntry* BackoffEntry() const override;
+  void ClearAuthError(const absl::optional<CoreAccountId>& account_id) override;
+  GoogleServiceAuthError BackOffError() const override;
+  void ResetBackOffEntry() override;
 
   // |ProfileOAuth2TokenServiceObserver| implementation.
   void OnRefreshTokenAvailable(const CoreAccountId& account_id) override;

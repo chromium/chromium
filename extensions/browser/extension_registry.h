@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/version.h"
@@ -49,6 +49,10 @@ class ExtensionRegistry : public KeyedService {
   };
 
   explicit ExtensionRegistry(content::BrowserContext* browser_context);
+
+  ExtensionRegistry(const ExtensionRegistry&) = delete;
+  ExtensionRegistry& operator=(const ExtensionRegistry&) = delete;
+
   ~ExtensionRegistry() override;
 
   // Returns the instance for the given |browser_context|.
@@ -212,9 +216,7 @@ class ExtensionRegistry : public KeyedService {
 
   base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
 
-  content::BrowserContext* const browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistry);
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

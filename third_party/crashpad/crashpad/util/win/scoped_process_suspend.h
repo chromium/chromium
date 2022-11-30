@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -33,6 +32,10 @@ class ScopedProcessSuspend {
  public:
   //! Does not take ownership of \a process.
   explicit ScopedProcessSuspend(HANDLE process);
+
+  ScopedProcessSuspend(const ScopedProcessSuspend&) = delete;
+  ScopedProcessSuspend& operator=(const ScopedProcessSuspend&) = delete;
+
   ~ScopedProcessSuspend();
 
   //! \brief Informs the object that the suspended process may be terminating,
@@ -47,8 +50,6 @@ class ScopedProcessSuspend {
  private:
   HANDLE process_;
   bool tolerate_termination_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedProcessSuspend);
 };
 
 }  // namespace crashpad

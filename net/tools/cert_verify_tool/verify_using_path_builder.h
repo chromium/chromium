@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_PATH_BUILDER_H_
 #define NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_PATH_BUILDER_H_
 
-#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
@@ -33,6 +32,6 @@ bool VerifyUsingPathBuilder(
     const base::Time at_time,
     const base::FilePath& dump_prefix_path,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    std::unique_ptr<net::SystemTrustStore> ssl_trust_store);
+    net::SystemTrustStore* system_trust_store);
 
 #endif  // NET_TOOLS_CERT_VERIFY_TOOL_VERIFY_USING_PATH_BUILDER_H_

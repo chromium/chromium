@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ MockWpPresentation::MockWpPresentation()
 MockWpPresentation::~MockWpPresentation() {}
 
 wl_resource* MockWpPresentation::ReleasePresentationCallback() {
-  auto* presentation_callback = presentation_callback_;
+  auto* presentation_callback = presentation_callback_.get();
   presentation_callback_ = nullptr;
   return presentation_callback;
 }

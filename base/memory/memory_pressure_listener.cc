@@ -1,9 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/memory_pressure_listener.h"
 
+#include <atomic>
+
+#include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/base_tracing.h"
@@ -67,7 +70,7 @@ MemoryPressureObserver* GetMemoryPressureObserver() {
   return observer;
 }
 
-subtle::Atomic32 g_notifications_suppressed = 0;
+std::atomic<bool> g_notifications_suppressed;
 
 }  // namespace
 
@@ -102,9 +105,8 @@ void MemoryPressureListener::Notify(MemoryPressureLevel memory_pressure_level) {
         data->set_level(
             trace_event::MemoryPressureLevelToTraceEnum(memory_pressure_level));
         data->set_creation_location_iid(
-            base::trace_event::InternedSourceLocation::Get(
-                &ctx,
-                base::trace_event::TraceSourceLocation(creation_location_)));
+            base::trace_event::InternedSourceLocation::Get(&ctx,
+                                                           creation_location_));
       });
   callback_.Run(memory_pressure_level);
 }
@@ -136,12 +138,12 @@ void MemoryPressureListener::NotifyMemoryPressure(
 
 // static
 bool MemoryPressureListener::AreNotificationsSuppressed() {
-  return subtle::Acquire_Load(&g_notifications_suppressed) == 1;
+  return g_notifications_suppressed.load(std::memory_order_acquire);
 }
 
 // static
 void MemoryPressureListener::SetNotificationsSuppressed(bool suppress) {
-  subtle::Release_Store(&g_notifications_suppressed, suppress ? 1 : 0);
+  g_notifications_suppressed.store(suppress, std::memory_order_release);
 }
 
 // static

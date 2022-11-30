@@ -1,20 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
+#include "components/sync/driver/sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
 
@@ -24,6 +25,11 @@ namespace password_manager {
 class StubPasswordManagerClient : public PasswordManagerClient {
  public:
   StubPasswordManagerClient();
+
+  StubPasswordManagerClient(const StubPasswordManagerClient&) = delete;
+  StubPasswordManagerClient& operator=(const StubPasswordManagerClient&) =
+      delete;
+
   ~StubPasswordManagerClient() override;
 
   // PasswordManagerClient:
@@ -55,15 +61,21 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   void AutomaticPasswordSave(
       std::unique_ptr<PasswordFormManagerForUI> saved_manager) override;
   PrefService* GetPrefs() const override;
-  PasswordStore* GetProfilePasswordStore() const override;
-  PasswordStore* GetAccountPasswordStore() const override;
+  PrefService* GetLocalStatePrefs() const override;
+  const syncer::SyncService* GetSyncService() const override;
+  PasswordStoreInterface* GetProfilePasswordStore() const override;
+  PasswordStoreInterface* GetAccountPasswordStore() const override;
+  PasswordReuseManager* GetPasswordReuseManager() const override;
+  PasswordScriptsFetcher* GetPasswordScriptsFetcher() override;
+  MockPasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
   const CredentialsFilter* GetStoreResultFilter() const override;
-  const autofill::LogManager* GetLogManager() const override;
+  autofill::LogManager* GetLogManager() override;
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
   bool IsAutofillAssistantUIVisible() const override;
+  version_info::Channel GetChannel() const override;
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
@@ -77,7 +89,9 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       metrics_util::PasswordType reused_password_type,
       const std::string& username,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
-      bool password_field_exists) override;
+      bool password_field_exists,
+      uint64_t reused_password_hash,
+      const std::string& domain) override;
 
   void LogPasswordReuseDetectedEvent() override;
 
@@ -95,9 +109,9 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   testing::NiceMock<MockPasswordFeatureManager> password_feature_manager_;
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
-  base::Optional<PasswordManagerMetricsRecorder> metrics_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubPasswordManagerClient);
+  absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
+  testing::NiceMock<MockPasswordChangeSuccessTracker>
+      password_change_success_tracker_;
 };
 
 }  // namespace password_manager

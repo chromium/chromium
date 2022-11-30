@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Implementation of {@link ContentFeatureList}.
@@ -28,8 +28,38 @@ public class ContentFeatureListImpl {
         return ContentFeatureListImplJni.get().isEnabled(featureName);
     }
 
+    /**
+     * Returns a field trial param as an int for the specified feature.
+     * {@see ContentFeatureList#getFieldTrialParamByFeatureAsInt}
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in content/browser/android/content_feature_list.cc
+     */
+    public static int getFieldTrialParamByFeatureAsInt(
+            String featureName, String paramName, int defaultValue) {
+        return ContentFeatureListImplJni.get().getFieldTrialParamByFeatureAsInt(
+                featureName, paramName, defaultValue);
+    }
+
+    /**
+     * Returns a field trial param as a boolean for the specified feature.
+     * {@see ContentFeatureList#getFieldTrialParamByFeatureAsBoolean}
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in content/browser/android/content_feature_list.cc
+     */
+    public static boolean getFieldTrialParamByFeatureAsBoolean(
+            String featureName, String paramName, boolean defaultValue) {
+        return ContentFeatureListImplJni.get().getFieldTrialParamByFeatureAsBoolean(
+                featureName, paramName, defaultValue);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabled(String featureName);
+        int getFieldTrialParamByFeatureAsInt(
+                String featureName, String paramName, int defaultValue);
+        boolean getFieldTrialParamByFeatureAsBoolean(
+                String featureName, String paramName, boolean defaultValue);
     }
 }

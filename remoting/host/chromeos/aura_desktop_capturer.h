@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,25 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/host/chromeos/ash_proxy.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-
-namespace viz {
-class CopyOutputResult;
-}  // namespace cc
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace remoting {
 
-// A webrtc::DesktopCapturer that captures pixels from the root window of the
-// Aura Shell.  This is implemented by requesting the layer and its substree to
-// be rendered to a given data structure.  Start() and Capture() must be called
-// on the Browser UI thread.
+// A webrtc::DesktopCapturer that captures pixels from the primary display.
+// The resulting screen capture will use the display's native resolution.
+// This is implemented through the abstractions provided by |AshProxy|,
+// allowing us to mock display interactions during unittests.
+// Start() and CaptureFrame() must be called on the Browser UI thread.
 class AuraDesktopCapturer : public webrtc::DesktopCapturer {
  public:
   AuraDesktopCapturer();
+  explicit AuraDesktopCapturer(AshProxy& ash_proxy);
+
+  AuraDesktopCapturer(const AuraDesktopCapturer&) = delete;
+  AuraDesktopCapturer& operator=(const AuraDesktopCapturer&) = delete;
+
   ~AuraDesktopCapturer() override;
 
   // webrtc::DesktopCapturer implementation.
@@ -37,20 +35,20 @@ class AuraDesktopCapturer : public webrtc::DesktopCapturer {
   bool SelectSource(SourceId id) override;
 
  private:
-  friend class AuraDesktopCapturerTest;
-
   // Called when a copy of the layer is captured.
-  void OnFrameCaptured(std::unique_ptr<viz::CopyOutputResult> result);
+  void OnFrameCaptured(std::unique_ptr<webrtc::DesktopFrame> frame);
+
+  const display::Display* GetSourceDisplay() const;
+
+  AshProxy& ash_;
 
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
-  webrtc::DesktopCapturer::Callback* callback_;
+  webrtc::DesktopCapturer::Callback* callback_ = nullptr;
 
-  // The root window of the Aura Shell.
-  aura::Window* desktop_window_;
+  // The id of the display we're currently capturing.
+  DisplayId source_display_id_;
 
   base::WeakPtrFactory<AuraDesktopCapturer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuraDesktopCapturer);
 };
 
 }  // namespace remoting

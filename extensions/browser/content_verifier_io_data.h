@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
@@ -52,6 +51,10 @@ class ContentVerifierIOData {
   };
 
   ContentVerifierIOData();
+
+  ContentVerifierIOData(const ContentVerifierIOData&) = delete;
+  ContentVerifierIOData& operator=(const ContentVerifierIOData&) = delete;
+
   ~ContentVerifierIOData();
 
   void AddData(const std::string& extension_id,
@@ -65,8 +68,6 @@ class ContentVerifierIOData {
 
  private:
   std::map<std::string, std::unique_ptr<ExtensionData>> data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifierIOData);
 };
 
 }  // namespace extensions

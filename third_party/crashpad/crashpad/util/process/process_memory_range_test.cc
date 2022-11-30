@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
 
 #include "util/process/process_memory_range.h"
 
+#include <iterator>
 #include <limits>
 
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/process_type.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
 
 namespace crashpad {
 namespace test {
@@ -39,8 +43,15 @@ TEST(ProcessMemoryRange, Basic) {
   constexpr bool is_64_bit = false;
 #endif  // ARCH_CPU_64_BITS
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(GetSelfProcess()));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(GetSelfProcess()));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, is_64_bit));
@@ -58,28 +69,28 @@ TEST(ProcessMemoryRange, Basic) {
   auto string1_addr = FromPointerCast<VMAddress>(kTestObject.string1);
   auto string2_addr = FromPointerCast<VMAddress>(kTestObject.string2);
   ASSERT_TRUE(range.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
   EXPECT_STREQ(string.c_str(), kTestObject.string1);
 
   ASSERT_TRUE(range.ReadCStringSizeLimited(
-      string2_addr, base::size(kTestObject.string2), &string));
+      string2_addr, std::size(kTestObject.string2), &string));
   EXPECT_STREQ(string.c_str(), kTestObject.string2);
 
   // Limit the range to remove access to string2.
   ProcessMemoryRange range2;
   ASSERT_TRUE(range2.Initialize(range));
   ASSERT_TRUE(
-      range2.RestrictRange(string1_addr, base::size(kTestObject.string1)));
+      range2.RestrictRange(string1_addr, std::size(kTestObject.string1)));
   EXPECT_TRUE(range2.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
   EXPECT_FALSE(range2.ReadCStringSizeLimited(
-      string2_addr, base::size(kTestObject.string2), &string));
+      string2_addr, std::size(kTestObject.string2), &string));
   EXPECT_FALSE(range2.Read(object_addr, sizeof(object), &object));
 
   // String reads fail if the NUL terminator is outside the range.
   ASSERT_TRUE(range2.RestrictRange(string1_addr, strlen(kTestObject.string1)));
   EXPECT_FALSE(range2.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
 
   // New range outside the old range.
   EXPECT_FALSE(range2.RestrictRange(string1_addr - 1, 1));

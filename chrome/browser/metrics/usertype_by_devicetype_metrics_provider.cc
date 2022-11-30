@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,49 +23,11 @@ namespace {
 
 namespace em = enterprise_management;
 
-using UserSegment = UserTypeByDeviceTypeMetricsProvider::UserSegment;
-
 constexpr char kHistogramName[] = "ChromeOS.UserTypeByDeviceType.LogSegment";
 const int kMgsOnUnmanagedDevice =
     UserTypeByDeviceTypeMetricsProvider::ConstructUmaValue(
-        UserSegment::kManagedGuestSession,
+        UserTypeByDeviceTypeMetricsProvider::UserSegment::kManagedGuestSession,
         policy::MarketSegment::UNKNOWN);
-
-// Returns user's segment for metrics logging.
-UserSegment GetUserSegment(Profile* profile) {
-  // Check for Managed Guest Session
-  if (profiles::IsPublicSession()) {
-    return UserSegment::kManagedGuestSession;
-  }
-
-  // Check for incognito profiles.
-  if (!profile->IsRegularProfile()) {
-    return UserSegment::kUnmanaged;
-  }
-
-  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
-  if (!user_cloud_policy_manager)
-    return UserSegment::kUnmanaged;
-  const em::PolicyData* policy =
-      user_cloud_policy_manager->core()->store()->policy();
-  if (!policy || !policy->has_metrics_log_segment())
-    return UserSegment::kUnmanaged;
-  switch (policy->metrics_log_segment()) {
-    case em::PolicyData::UNSPECIFIED:
-      return UserSegment::kUnmanaged;
-    case em::PolicyData::K12:
-      return UserSegment::kK12;
-    case em::PolicyData::UNIVERSITY:
-      return UserSegment::kUniversity;
-    case em::PolicyData::NONPROFIT:
-      return UserSegment::kNonProfit;
-    case em::PolicyData::ENTERPRISE:
-      return UserSegment::kEnterprise;
-  }
-  NOTREACHED();
-  return UserSegment::kUnmanaged;
-}
 
 }  // namespace
 
@@ -109,8 +71,8 @@ void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(
   if (!device_segment_) {
     // Calculate the device enrollment type. Should never change during this
     // session, so should only need to do it once.
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     device_segment_ = connector->GetEnterpriseMarketSegment();
   }
 
@@ -118,11 +80,50 @@ void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
   DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
 
   user_segment_ = GetUserSegment(profile);
+}
+
+UserTypeByDeviceTypeMetricsProvider::UserSegment
+UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
+  // Check for Managed Guest Session
+  if (profiles::IsPublicSession()) {
+    return UserSegment::kManagedGuestSession;
+  }
+
+  if (profiles::IsKioskSession()) {
+    return UserSegment::kKioskApp;
+  }
+
+  // Check for off-the-record profiles.
+  if (profile->IsOffTheRecord()) {
+    return UserSegment::kUnmanaged;
+  }
+
+  const policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
+  if (!user_cloud_policy_manager)
+    return UserSegment::kUnmanaged;
+  const em::PolicyData* policy =
+      user_cloud_policy_manager->core()->store()->policy();
+  if (!policy || !policy->has_metrics_log_segment())
+    return UserSegment::kUnmanaged;
+  switch (policy->metrics_log_segment()) {
+    case em::PolicyData::UNSPECIFIED:
+      return UserSegment::kUnmanaged;
+    case em::PolicyData::K12:
+      return UserSegment::kK12;
+    case em::PolicyData::UNIVERSITY:
+      return UserSegment::kUniversity;
+    case em::PolicyData::NONPROFIT:
+      return UserSegment::kNonProfit;
+    case em::PolicyData::ENTERPRISE:
+      return UserSegment::kEnterprise;
+  }
+  NOTREACHED();
+  return UserSegment::kUnmanaged;
 }
 
 // static

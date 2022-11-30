@@ -20,6 +20,11 @@ Web tests should be used to accomplish one of the following goals:
    These tests will use Blink-specific testing APIs that are only available in
    [content_shell](./web_tests_in_content_shell.md).
 
+Note: if you are looking for a guide for the Web Platform Test, you should read
+["Web platform tests"](./web_platform_tests.md) (WPT). This document does not
+cover WPT specific features/behaviors. **The WPT is recommended today rather than
+test types mentioned below!**
+
 *** promo
 If you know that Blink web tests are upstreamed to other projects, such as
 [test262](https://github.com/tc39/test262), please update this document. Most

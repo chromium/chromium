@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+function getCanvas2DContext(name) {
+  var title = document.createElement("b");
+  title.innerText = name;
+  document.body.appendChild(title);
+  var canvas = document.createElement("canvas");
+  canvas.setAttribute("width", 100);
+  canvas.setAttribute("style", "border: 1px solid black; display:block;");
+  canvas.setAttribute("height", 30);
+  document.body.appendChild(canvas);
+  var context = canvas.getContext("2d");
+  context.clearRect(0,0, 100, 60);
+  context.fillStyle = "#FFFFFF";
+  context.fillRect(0,0,100, 60);
+  context.fillStyle = "#000000";
+  context.clearRect(0,0,100, 30);
+  context.font = "10px Arial";
+  return context;
+}
+
+/*
+  This method checks to see if something was rendered on the canvas
+  at the passed in location. The purposed of these tests are not to
+  accuratley validate rendering results but to check that mutations
+  on the FormattedText succeed, hence the all sanity check
+  validates is that there are expected number of rendered pixels.
+
+  After checking, this method also draws a line over the pixels that
+  we tested for visual diagnostics.
+*/
+function sanity_check_rendering(context, x, y, expect_content=true)
+{
+   var pixels = context.getImageData(x, y, 1, 10);
+   context.fillStyle = "#008800";
+   context.fillRect(x, y, 1, 10);
+   context.fillStyle = "#000000";
+   var transparent_pixels = 0;
+   for (var i = 0; i < 10; i++)
+   {
+     if (pixels.data[i*4+3] == 0)
+      transparent_pixels++
+   }
+   // Atleast 20% of the pixels in the test patch should have content.
+   if (expect_content)
+   {
+      assert_less_than(transparent_pixels,
+       8,
+       "Missing content. ["+ pixels.data + "] #Unfilled pixels");
+   }
+   else
+   {
+      assert_equals(transparent_pixels,
+       10,
+       "Unexpected content.[" + pixels.data + "] #Unfilled pixels");
+   }
+}
+
+function assert_exception(f, exception_name, error_message)
+{
+  try {
+    assert_equals(f(), null, message);
+  }
+  catch (e) {
+    assert_equals(e.name, exception_name,
+    "Exception Type mismatch for " + error_message)
+  }
+}
+
+function garbageCollect() {
+  if (self.gc) {
+    // Use --expose_gc for V8 (and Node.js)
+    // Exposed in SpiderMonkey shell as well
+    self.gc();
+  } else if (self.GCController) {
+    // Present in some WebKit development environments
+    GCController.collect();
+  } else {
+    /* eslint-disable no-console */
+    console.warn('Tests are running without the ability to do manual garbage ' +
+                 'collection. They will still work, but coverage will be ' +
+                 'suboptimal.');
+    /* eslint-enable no-console */
+  }
+}
+
+test(function(t) {
+  var context = getCanvas2DContext(t.name);
+
+  var text = FormattedText.format("ERun1", null, 100);
+  context.drawFormattedText(text, 0, 0);
+  sanity_check_rendering(context, 2, 0);
+
+  var text = FormattedText.format({text: "ERun2"}, null, 100);
+  context.drawFormattedText(text, 0, 10);
+  sanity_check_rendering(context, 3, 10);
+
+  var text = FormattedText.format([{text: "ERun"}, "3"], null, 100);
+  context.drawFormattedText(text, 0, 20);
+  sanity_check_rendering(context, 3, 20);
+}, 'Factory method variants');
+
+test(function (t) {
+  // Create an iframe and CFT on that frame
+  var frame = document.body.appendChild(document.createElement("iframe"));
+  var cft = frame.contentWindow.FormattedText.format("1");
+
+  // Destroy the frame & call GC to make sure it gets cleaned up
+  frame.remove();
+  frame = null;
+  garbageCollect();
+
+  // Try to use the CFT objects on local canvas
+  var context = getCanvas2DContext(t.name);
+  assert_exception(() => { context.drawFormattedText(cft, 0, 0); },
+    "InvalidStateError",
+    "run owned by destroyed iframe");
+}, 'Use after iframe destroyed');
+
+</script>

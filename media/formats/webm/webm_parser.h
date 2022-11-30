@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -29,6 +29,9 @@ namespace media {
 // error is reported by the parser.
 class MEDIA_EXPORT WebMParserClient {
  public:
+  WebMParserClient(const WebMParserClient&) = delete;
+  WebMParserClient& operator=(const WebMParserClient&) = delete;
+
   virtual ~WebMParserClient();
 
   virtual WebMParserClient* OnListStart(int id);
@@ -45,8 +48,6 @@ class MEDIA_EXPORT WebMParserClient {
 
  protected:
   WebMParserClient();
-
-  DISALLOW_COPY_AND_ASSIGN(WebMParserClient);
 };
 
 struct ListElementInfo;
@@ -61,6 +62,10 @@ class MEDIA_EXPORT WebMListParser {
   // |id| - Element ID of the list we intend to parse.
   // |client| - Called as different elements in the list are parsed.
   WebMListParser(int id, WebMParserClient* client);
+
+  WebMListParser(const WebMListParser&) = delete;
+  WebMListParser& operator=(const WebMListParser&) = delete;
+
   ~WebMListParser();
 
   // Resets the state of the parser so it can start parsing a new list.
@@ -146,13 +151,11 @@ class MEDIA_EXPORT WebMListParser {
   const int root_level_;
 
   // WebMParserClient to handle the root list.
-  WebMParserClient* const root_client_;
+  const raw_ptr<WebMParserClient> root_client_;
 
   // Stack of state for all the lists currently being parsed. Lists are
   // added and removed from this stack as they are parsed.
   std::vector<ListState> list_state_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMListParser);
 };
 
 // Parses an element header & returns the ID and element size.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   test::api::callbacks::ReturnsObject::Results::SomeObject some_object;
   some_object.state = test::api::callbacks::ENUMERATION_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
+  base::Value results(
       test::api::callbacks::ReturnsObject::Results::Create(some_object));
 
-  auto expected_dict = std::make_unique<base::DictionaryValue>();
-  expected_dict->SetString("state", "foo");
-  base::ListValue expected;
+  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  expected_dict.SetStringPath("state", "foo");
+  base::Value expected(base::Value::Type::LIST);
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }
@@ -25,13 +25,13 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsMultipleResultCreate) {
   test::api::callbacks::ReturnsMultiple::Results::SomeObject some_object;
   some_object.state = test::api::callbacks::ENUMERATION_FOO;
-  base::Value results = base::Value::FromUniquePtrValue(
+  base::Value results(
       test::api::callbacks::ReturnsMultiple::Results::Create(5, some_object));
 
-  auto expected_dict = std::make_unique<base::DictionaryValue>();
-  expected_dict->SetString("state", "foo");
-  base::ListValue expected;
-  expected.AppendInteger(5);
+  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  expected_dict.SetStringPath("state", "foo");
+  base::Value expected(base::Value::Type::LIST);
+  expected.Append(5);
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }

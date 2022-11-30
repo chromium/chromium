@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,10 @@
 #include "chrome/chrome_cleaner/test/test_executables.h"
 #include "chrome/chrome_cleaner/test/test_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace chrome_cleaner {
 
@@ -94,6 +98,13 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
 }
 
 TEST_F(TaskSchedulerTests, RunAProgramNow) {
+#if BUILDFLAG(IS_WIN)
+    // TODO(crbug.com/1307401): Failing on Windows7.
+    if (base::win::GetVersion() <= base::win::Version::WIN7) {
+      return;
+    }
+#endif
+
   base::FilePath executable_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
   base::CommandLine command_line(
@@ -130,8 +141,8 @@ TEST_F(TaskSchedulerTests, Hourly) {
                                     TaskScheduler::TRIGGER_TYPE_HOURLY, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta one_hour(base::TimeDelta::FromHours(1));
-  base::TimeDelta one_minute(base::TimeDelta::FromMinutes(1));
+  base::TimeDelta one_hour(base::Hours(1));
+  base::TimeDelta one_minute(base::Minutes(1));
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
@@ -155,8 +166,8 @@ TEST_F(TaskSchedulerTests, EverySixHours) {
       TaskScheduler::TRIGGER_TYPE_EVERY_SIX_HOURS, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta six_hours(base::TimeDelta::FromHours(6));
-  base::TimeDelta one_minute(base::TimeDelta::FromMinutes(1));
+  base::TimeDelta six_hours(base::Hours(6));
+  base::TimeDelta one_minute(base::Minutes(1));
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));

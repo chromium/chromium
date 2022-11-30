@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,109 +20,85 @@ async function webGpuInit(canvasWidth, canvasHeight) {
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
-  const context = canvas.getContext('gpupresent');
+  const context = canvas.getContext('webgpu');
   if (!context) {
-    console.warn('Webgpu not supported. canvas.getContext(gpupresent) fails!');
+    console.warn('Webgpu not supported. canvas.getContext("webgpu") fails!');
     return null;
   }
 
-  return { device, context, canvas };
+  return {adapter, device, context, canvas};
 }
 
-  const wgslShaders = {
-    vertex: `
-[[location(0)]] var<in> position : vec2<f32>;
-[[location(1)]] var<in> uv : vec2<f32>;
-
-[[location(0)]] var<out> fragUV : vec2<f32>;
-[[builtin(position)]] var<out> Position : vec4<f32>;
-
-[[stage(vertex)]]
-fn main() -> void {
-  Position = vec4<f32>(position, 0.0, 1.0);
-  fragUV = uv;
-  return;
+const wgslShaders = {
+  vertex: `
+struct VertexOutput {
+  @builtin(position) Position : vec4<f32>,
+  @location(0) fragUV : vec2<f32>,
 }
-`,
 
-    fragment: `
-[[binding(0), group(0)]] var mySampler: sampler;
-[[binding(1), group(0)]] var myTexture: texture_2d<f32>;
-
-[[location(0)]] var<in> fragUV : vec2<f32>;
-[[location(0)]] var<out> outColor : vec4<f32>;
-
-[[stage(fragment)]]
-fn main() -> void {
-  outColor = textureSample(myTexture, mySampler, fragUV);
-  return;
-}
-`,
-    vertex_icons: `
-[[location(0)]] var<in> position : vec2<f32>;
-[[builtin(position)]] var<out> Position : vec4<f32>;
-
-[[stage(vertex)]]
-fn main() -> void {
-  Position = vec4<f32>(position, 0.0, 1.0);
-  return;
+@vertex fn main(
+  @location(0) position : vec2<f32>,
+  @location(1) uv : vec2<f32>
+) -> VertexOutput {
+  var output : VertexOutput;
+  output.Position = vec4<f32>(position, 0.0, 1.0);
+  output.fragUV = uv;
+  return output;
 }
 `,
 
-    fragment_output_red: `
-[[location(0)]] var<out> outColor : vec4<f32>;
+  fragment_external_texture: `
+@group(0) @binding(0) var mySampler: sampler;
+@group(0) @binding(1) var myTexture: texture_external;
 
-[[stage(fragment)]]
-fn main() -> void {
-  outColor = vec4<f32>(1.0, 0.0, 0.0, 1.0);
-  return;
+@fragment
+fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
+  return textureSampleLevel(myTexture, mySampler, fragUV);
 }
 `,
-  };
 
-function createVertexBuffer(device, videos, videoRows, videoColumns) {
-  // Each video takes 6 vertices (2 triangles). Each vertice has 4 floats.
-  // Therefore, each video needs 24 floats.
-  // The small video at the corner is included in the vertex buffer.
-  const rectVerts = new Float32Array(videos.length * 24);
+  fragment: `
+@group(0) @binding(0) var mySampler: sampler;
+@group(0) @binding(1) var myTexture: texture_2d<f32>;
 
-  const maxColRow = Math.max(videoColumns, videoRows);
-  let w = 2.0 / maxColRow;
-  let h = 2.0 / maxColRow;
-  for (let row = 0; row < videoRows; ++row) {
-    for (let column = 0; column < videoColumns; ++column) {
-      const array_index = (row * videoColumns + column) * 24;
-      const x = -1.0 + w * column;
-      const y = 1.0 - h * row;
+@fragment
+fn main(@location(0) fragUV : vec2<f32>) -> @location(0) vec4<f32> {
+  return textureSample(myTexture, mySampler, fragUV);
+}
+`,
 
-      rectVerts.set([
-        (x + w), y, 1.0, 0.0,
-        (x + w), (y - h), 1.0, 1.0,
-        x, (y - h), 0.0, 1.0,
-        (x + w), y, 1.0, 0.0,
-        x, (y - h), 0.0, 1.0,
-        x, y, 0.0, 0.0,
-      ], array_index);
-    }
-  }
+  vertex_icons: `
+@vertex
+fn main(@location(0) position : vec2<f32>)
+    -> @builtin(position) vec4<f32> {
+  return vec4<f32>(position, 0.0, 1.0);
+}
+`,
 
-  // For the small video at the corner, the last one in |videos|.
-  w = w / videos[0].width * videos[videos.length - 1].width;
-  h = h / videos[0].height * videos[videos.length - 1].height;
-  const x = 1.0 - w;
-  const y = 1.0;
-  const array_index = (videos.length - 1) * 24;
+  fragment_output_blue: `
+@fragment
+fn main() -> @location(0) vec4<f32> {
+  return vec4<f32>(0.11328125, 0.4296875, 0.84375, 1.0);
+}
+`,
+  fragment_output_light_blue: `
+@fragment
+fn main() -> @location(0) vec4<f32> {
+  return vec4<f32>(0.3515625, 0.50390625, 0.75390625, 1.0);
+}
+`,
 
-  rectVerts.set([
-    (x + w), y, 1.0, 0.0,
-    (x + w), (y - h), 1.0, 1.0,
-    x, (y - h), 0.0, 1.0,
-    (x + w), y, 1.0, 0.0,
-    x, (y - h), 0.0, 1.0,
-    x, y, 0.0, 0.0,
-  ], array_index);
+  fragment_output_white: `
+@fragment
+fn main() -> @location(0) vec4<f32> {
+  return vec4<f32>(1.0, 1.0, 1.0, 1.0);
+}
+`,
+};
 
-
+function createVertexBufferForVideos(device, videos, videoRows, videoColumns) {
+  const rectVerts = getArrayForVideoVertexBuffer(videos, videoRows,
+    videoColumns);
   const verticesBuffer = device.createBuffer({
     size: rectVerts.byteLength,
     usage: GPUBufferUsage.VERTEX,
@@ -136,56 +112,8 @@ function createVertexBuffer(device, videos, videoRows, videoColumns) {
 }
 
 function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
-  // Each video takes 6 vertices (2 triangles). Each vertice has 2 floats.
-  // Therefore, each video needs 12 floats.
-  const rectVerts = new Float32Array(videos.length * 12);
-
-  const maxColRow = Math.max(videoColumns, videoRows);
-  let w = 2.0 / maxColRow;
-  let h = 2.0 / maxColRow;
-  let wIcon = w / 10.0;
-  let hIcon = h / 10.0;
-
-  for (let row = 0; row < videoRows; ++row) {
-    for (let column = 0; column < videoColumns; ++column) {
-      const array_index = (row * videoColumns + column) * 12;
-      const x = -1.0 + w * column;
-      const y = 1.0 - h * row;
-      const xIcon = x + wIcon;
-      const yIcon = y - h + hIcon * 2;
-
-      rectVerts.set([
-        (xIcon + wIcon), yIcon,
-        (xIcon + wIcon), (yIcon - hIcon),
-        xIcon, (yIcon - hIcon),
-        (xIcon + wIcon), yIcon,
-        xIcon, (yIcon - hIcon),
-        xIcon, yIcon,
-      ], array_index);
-    }
-  }
-
-  // For the small video at the corner, the last one in |videos|.
-  w = w / videos[0].width * videos[videos.length - 1].width;
-  h = h / videos[0].height * videos[videos.length - 1].height;
-  wIcon = w / 10.0;
-  hIcon = h / 10.0;
-
-  const x = 1.0 - w;
-  const y = 1.0;
-  const xIcon = x + wIcon;
-  const yIcon = y - h + hIcon * 2;
-
-  array_index = (videos.length - 1) * 12;
-  rectVerts.set([
-    (xIcon + wIcon), yIcon,
-    (xIcon + wIcon), (yIcon - hIcon),
-    xIcon, (yIcon - hIcon),
-    (xIcon + wIcon), yIcon,
-    xIcon, (yIcon - hIcon),
-    xIcon, yIcon,
-  ], array_index);
-
+  const rectVerts = getArrayForIconVertexBuffer(videos, videoRows,
+    videoColumns);
   const verticesBuffer = device.createBuffer({
     size: rectVerts.byteLength,
     usage: GPUBufferUsage.VERTEX,
@@ -198,68 +126,111 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
   return verticesBuffer;
 }
 
-function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-                               addUI, useImportTextureApi) {
-  const { device, context, canvas } = gpuSetting;
-
-  const verticesBuffer = createVertexBuffer(device, videos, videoRows,
-                         videoColumns);
-
-  const swapChainFormat = 'bgra8unorm';
-  const swapChain = context.configureSwapChain({
-    device,
-    format: swapChainFormat,
-    usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+function createVertexBufferForAnimation(
+    device, videos, videoRows, videoColumns) {
+  const rectVerts = getArrayForAnimationVertexBuffer(videos, videoRows,
+    videoColumns);
+  const verticesBuffer = device.createBuffer({
+    size: rectVerts.byteLength,
+    usage: GPUBufferUsage.VERTEX,
+    mappedAtCreation: true,
   });
 
-  const pipeline = device.createRenderPipeline({
-    vertexStage: {
+  new Float32Array(verticesBuffer.getMappedRange()).set(rectVerts);
+  verticesBuffer.unmap();
+
+  return verticesBuffer;
+}
+
+function createVertexBufferForFPS(device) {
+  const rectVerts = getArrayForFPSVertexBuffer(fpsPanels.length);
+  const verticesBuffer = device.createBuffer({
+    size: rectVerts.byteLength,
+    usage: GPUBufferUsage.VERTEX,
+    mappedAtCreation: true,
+  });
+
+  new Float32Array(verticesBuffer.getMappedRange()).set(rectVerts);
+  verticesBuffer.unmap();
+
+  return verticesBuffer;
+}
+
+function webGpuDrawVideoFrames(
+    gpuSetting, videos, videoRows, videoColumns, addUI, addFPS,
+    useImportTextureApi, capUIFPS, enableBackPressureWorkaround) {
+  initializeFPSPanels();
+
+  const {adapter, device, context, canvas} = gpuSetting;
+
+  const vertexBufferForVideos = createVertexBufferForVideos(device, videos,
+    videoRows, videoColumns);
+
+  const swapChainFormat = navigator.gpu.getPreferredCanvasFormat();
+
+  const swapChain = context.configure({
+    device,
+    format: swapChainFormat,
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    alphaMode: "opaque"
+  });
+
+  let fragmentShaderModule;
+  if (useImportTextureApi) {
+    fragmentShaderModule = device.createShaderModule({
+      code: wgslShaders.fragment_external_texture,
+    });
+  } else {
+    fragmentShaderModule = device.createShaderModule({
+      code: wgslShaders.fragment,
+    });
+  }
+
+
+  const pipelineForVideos = device.createRenderPipeline({
+    layout: "auto",
+    vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
       }),
       entryPoint: 'main',
+      buffers: [{
+        arrayStride: 16,
+        attributes: [
+          {
+            // position
+            shaderLocation: 0,
+            offset: 0,
+            format: 'float32x2',
+          },
+          {
+            // uv
+            shaderLocation: 1,
+            offset: 8,
+            format: 'float32x2',
+          }
+        ],
+      }],
     },
-    fragmentStage: {
-      module: device.createShaderModule({
-        code: wgslShaders.fragment,
-      }),
+    fragment: {
+      module: fragmentShaderModule,
       entryPoint: 'main',
-    },
-    primitiveTopology: 'triangle-list',
-    vertexState: {
-      vertexBuffers: [
-        {
-          arrayStride: 16,
-          attributes: [
-            {
-              // position
-              shaderLocation: 0,
-              offset: 0,
-              format: 'float32x2',
-            },
-            {
-              // uv
-              shaderLocation: 1,
-              offset: 8,
-              format: 'float32x2',
-            },
-          ],
-        },
-      ],
-    },
-
-    colorStates: [
-      {
+      targets: [{
         format: swapChainFormat,
-      },
-    ],
+      }]
+    },
+    primitive: {
+      topology: 'triangle-list',
+    },
   });
 
-  const renderPassDescriptor = {
+  const renderPassDescriptorForVideo = {
     colorAttachments: [
       {
-        attachment: undefined, // Assigned later
-        loadValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+        view: undefined, // Assigned later
+        clearValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
+        loadOp: 'clear',
+        storeOp: 'store',
       },
     ],
   };
@@ -270,22 +241,153 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   });
 
   const videoTextures = [];
+  const videoBindGroups = [];
+
+  if (!useImportTextureApi) {
+    for (let i = 0; i < videos.length; ++i) {
+      videoTextures[i] = device.createTexture({
+        size: {
+          width: videos[i].videoWidth,
+          height: videos[i].videoHeight,
+          depthOrArrayLayers: 1,
+        },
+        format: 'rgba8unorm',
+        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING |
+            GPUTextureUsage.RENDER_ATTACHMENT,
+      });
+
+      videoBindGroups[i] = device.createBindGroup({
+        layout: pipelineForVideos.getBindGroupLayout(0),
+        entries: [
+          {
+            binding: 0,
+            resource: sampler,
+          },
+          {
+            binding: 1,
+            resource: videoTextures[i].createView(),
+          },
+        ],
+      });
+    }
+  }
+
+  const externalTextureDescriptor = [];
   for (let i = 0; i < videos.length; ++i) {
-    videoTextures[i] = device.createTexture({
+    externalTextureDescriptor[i] = {source: videos[i]};
+  }
+
+  // For rendering the icons
+  const verticesBufferForIcons =
+    createVertexBufferForIcons(device, videos, videoRows, videoColumns);
+
+  const renderPipelineDescriptorForIcon = {
+    layout: "auto",
+    vertex: {
+      module: device.createShaderModule({
+        code: wgslShaders.vertex_icons,
+      }),
+      entryPoint: 'main',
+      buffers: [{
+        arrayStride: 8,
+        attributes: [{
+          // position
+          shaderLocation: 0,
+          offset: 0,
+          format: 'float32x2',
+        }],
+      }],
+    },
+    fragment: {
+      entryPoint: 'main',
+      targets: [{
+        format: swapChainFormat,
+      }]
+    },
+    primitive: {
+      topology: 'triangle-list',
+    }
+  };
+
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_blue,
+  });
+  const pipelineForIcons =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+  // For rendering the voice bar animation
+  const vertexBufferForAnimation =
+      createVertexBufferForAnimation(device, videos, videoRows, videoColumns);
+
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_white,
+  });
+  const pipelineForAnimation =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+  // For rendering the borders of the last video
+  renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
+    code: wgslShaders.fragment_output_light_blue,
+  });
+  renderPipelineDescriptorForIcon.primitive.topology = 'line-list';
+  const pipelineForVideoBorders =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+  const vertexBufferForFPS = createVertexBufferForFPS(device);
+  const pipelineForFPS = device.createRenderPipeline({
+    layout: "auto",
+    vertex: {
+      module: device.createShaderModule({
+        code: wgslShaders.vertex,
+      }),
+      entryPoint: 'main',
+      buffers: [{
+        arrayStride: 16,
+        attributes: [
+          {
+            // position
+            shaderLocation: 0,
+            offset: 0,
+            format: 'float32x2',
+          },
+          {
+            // uv
+            shaderLocation: 1,
+            offset: 8,
+            format: 'float32x2',
+          }
+        ],
+      }],
+    },
+    fragment: {
+      module: device.createShaderModule({
+        code: wgslShaders.fragment,
+      }),
+      entryPoint: 'main',
+      targets: [{
+        format: swapChainFormat,
+      }]
+    },
+    primitive: {
+      topology: 'triangle-list',
+    },
+  });
+  const fpsTextures = [];
+  const fpsBindGroups = [];
+  for (let i = 0; i < fpsPanels.length; ++i) {
+    fpsTextures[i] = device.createTexture({
       size: {
-        width: videos[i].videoWidth,
-        height: videos[i].videoHeight,
+        width: fpsPanels[i].dom.width,
+        height: fpsPanels[i].dom.height,
         depthOrArrayLayers: 1,
       },
       format: 'rgba8unorm',
-      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
+      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING |
+        GPUTextureUsage.RENDER_ATTACHMENT,
     });
-  }
 
-  const bindGroups = [];
-  for (let i = 0; i < videos.length; ++i) {
-    bindGroups[i] = device.createBindGroup({
-      layout: pipeline.getBindGroupLayout(0),
+    fpsBindGroups[i] = device.createBindGroup({
+      layout: pipelineForFPS.getBindGroupLayout(0),
       entries: [
         {
           binding: 0,
@@ -293,51 +395,59 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         },
         {
           binding: 1,
-          resource: videoTextures[i].createView(),
+          resource: fpsTextures[i].createView(),
         },
       ],
     });
   }
 
-  // For rendering the icons
-  const verticesBufferForIcons =
-    createVertexBufferForIcons(device, videos, videoRows, videoColumns);
+  // For drawing icons and animated voice bar. Add UI to the command encoder.
+  let index_voice_bar = 0;
+  function addUICommands(passEncoder) {
+    // Icons
+    passEncoder.setPipeline(pipelineForIcons);
+    passEncoder.setVertexBuffer(0, verticesBufferForIcons);
+    passEncoder.draw(videos.length * 6);
 
-  const pipelineForIcons = device.createRenderPipeline({
-    vertexStage: {
-      module: device.createShaderModule({
-        code: wgslShaders.vertex_icons,
-      }),
-      entryPoint: 'main',
-    },
-    fragmentStage: {
-      module: device.createShaderModule({
-        code: wgslShaders.fragment_output_red,
-      }),
-      entryPoint: 'main',
-    },
-    primitiveTopology: 'triangle-list',
-    vertexState: {
-      vertexBuffers: [
-        {
-          arrayStride: 8,
-          attributes: [
-            {
-              // position
-              shaderLocation: 0,
-              offset: 0,
-              format: 'float32x2',
-            },
-          ],
-        },
-      ],
-    },
-    colorStates: [
-      {
-        format: swapChainFormat,
-      },
-    ],
-  });
+    // Animated voice bar on the last video.
+    index_voice_bar++;
+    if (index_voice_bar >= 10)
+      index_voice_bar = 0;
+
+    passEncoder.setPipeline(pipelineForAnimation);
+    passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+    passEncoder.draw(
+        /*vertexCount=*/ 6, 1, /*firstVertex=*/ index_voice_bar * 6);
+
+    // Borders of the last video
+    // Is there a way to set the line width?
+    passEncoder.setPipeline(pipelineForVideoBorders);
+    passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+    // vertexCount = 4 lines * 2 vertices = 8;
+    // firstVertex = the end of the voice bar vetices =
+    // 10 steps * 6 vertices = 60;
+    passEncoder.draw(/*vertexCount=*/ 8, 1, /*firstVertex=*/ 60);
+  }
+
+  function addFPSCommands(device, passEncoder) {
+    // FPS Panels
+    passEncoder.setPipeline(pipelineForFPS);
+    passEncoder.setVertexBuffer(0, vertexBufferForFPS);
+    for (let i = 0; i < fpsPanels.length; ++i) {
+      device.queue.copyExternalImageToTexture(
+          {source: fpsPanels[i].dom, origin: {x: 0, y: 0}},
+          {texture: fpsTextures[i]},
+          {
+            width: fpsPanels[i].dom.width,
+            height: fpsPanels[i].dom.height,
+            depthOrArrayLayers: 1
+          },
+      );
+      const firstVertex = i * 6;
+      passEncoder.setBindGroup(0, fpsBindGroups[i]);
+      passEncoder.draw(6, 1, firstVertex, 0);
+    }
+  }
 
   // videos #0-#3 : 30 fps.
   // videos #3-#15: 15 fps.
@@ -359,99 +469,116 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     });
   }
 
-  // If rAF is running at 60 fps, skip every other frame so the demo is
-  // running at 30 fps.
-  // 30 fps is 33 milliseconds/frame. To prevent skipping frames accidentally
-  // when rAF is running near 30fps with small delta, use 32 ms instead of 33 ms
-  // for comparison.
-  const frameTime30Fps = 32;
   let lastTimestamp = performance.now();
 
-  const oneFrame = (timestamp) => {
-    const elapsed = timestamp - lastTimestamp;
-    if (elapsed < frameTime30Fps) {
-      window.requestAnimationFrame(oneFrame);
-      return;
+  const oneFrame = () => {
+    if (capUIFPS) {
+      const timestamp = performance.now();
+      const elapsed = timestamp - lastTimestamp;
+      if (elapsed < kFrameTime30Fps) {
+        window.requestAnimationFrame(oneFrame);
+        return;
+      }
+      lastTimestamp = timestamp;
     }
-    lastTimestamp = timestamp;
 
-    const swapChainTexture = swapChain.getCurrentTexture();
-    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
+    uiFrames++;
+
+    const swapChainTexture = context.getCurrentTexture();
+    renderPassDescriptorForVideo.colorAttachments[0].view = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
 
     const passEncoder =
-      commandEncoder.beginRenderPass(renderPassDescriptor);
-    passEncoder.setPipeline(pipeline);
-    passEncoder.setVertexBuffer(0, verticesBuffer);
+      commandEncoder.beginRenderPass(renderPassDescriptorForVideo);
+    passEncoder.setPipeline(pipelineForVideos);
+    passEncoder.setVertexBuffer(0, vertexBufferForVideos);
 
     Promise.all(videos.map(video =>
       (videoIsReady[video.id] ? createImageBitmap(video) : null))).
       then((videoFrames) => {
         for (let i = 0; i < videos.length; ++i) {
           if (videoFrames[i] != undefined) {
-            device.queue.copyImageBitmapToTexture(
-              { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
-              { texture: videoTextures[i] },
-              {
-                width: videos[i].videoWidth, height: videos[i].videoHeight,
-                depthOrArrayLayers: 1
-              }
+            device.queue.copyExternalImageToTexture(
+                {source: videoFrames[i], origin: {x: 0, y: 0}},
+                {texture: videoTextures[i]},
+                {
+                  width: videos[i].videoWidth,
+                  height: videos[i].videoHeight,
+                  depthOrArrayLayers: 1
+                },
             );
             videoIsReady[i] = false;
+            totalVideoFrames++;
           }
         }
 
         for (let i = 0; i < videos.length; ++i) {
           const firstVertex = i * 6;
-          passEncoder.setBindGroup(0, bindGroups[i]);
+          passEncoder.setBindGroup(0, videoBindGroups[i]);
           passEncoder.draw(6, 1, firstVertex, 0);
         }
 
         // Add UI on Top of all videos.
         if (addUI) {
-          passEncoder.setPipeline(pipelineForIcons);
-          passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-          passEncoder.draw(videos.length * 6);
+          addUICommands(passEncoder);
         }
-        passEncoder.endPass();
+        // Add FPS panels on Top of all videos.
+        if (addFPS) {
+          updateFPS(timestamp, videos);
+          addFPSCommands(device, passEncoder);
+        }
+        passEncoder.end();
         device.queue.submit([commandEncoder.finish()]);
 
-        window.requestAnimationFrame(oneFrame);
+        // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+        // not working properly.
+        if (enableBackPressureWorkaround) {
+          device.queue.onSubmittedWorkDone().then(() => {
+            window.requestAnimationFrame(oneFrame);
+          });
+        } else {
+          window.requestAnimationFrame(oneFrame);
+        }
       });
-  }
+  };
 
-  const oneFrameWithImportTextureApi = (timestamp) => {
-    const elapsed = timestamp - lastTimestamp;
-    if (elapsed < frameTime30Fps) {
-      window.requestAnimationFrame(oneFrameWithImportTextureApi);
-      return;
+  const oneFrameWithImportTextureApi = () => {
+    // Target frame rate: 30 fps when capUIFPS is true. rAF might run at 60 fps.
+    const timestamp = performance.now();
+    if (capUIFPS) {
+      const elapsed = timestamp - lastTimestamp;
+      if (elapsed < kFrameTime30Fps) {
+        window.requestAnimationFrame(oneFrameWithImportTextureApi);
+        return;
+      }
+      lastTimestamp = timestamp;
     }
-    lastTimestamp = timestamp;
+
+    uiFrames++;
 
     for (let i = 0; i < videos.length; ++i) {
-      if (videoIsReady[i]) {
-        videoTextures[i].destroy();
-        videoTextures[i] = device.experimentalImportTexture(
-          videos[i], GPUTextureUsage.SAMPLED);
-        videoIsReady[i] = false;
+      if (!videoTextures[i] || videoTextures[i].expired) {
+        videoTextures[i] =
+          device.importExternalTexture(externalTextureDescriptor[i]);
+        totalVideoFrames++;
       }
     }
 
-    const swapChainTexture = swapChain.getCurrentTexture();
-    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
+    const swapChainTexture = context.getCurrentTexture();
+    renderPassDescriptorForVideo.colorAttachments[0].view = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
     const passEncoder =
-      commandEncoder.beginRenderPass(renderPassDescriptor);
-    passEncoder.setPipeline(pipeline);
-    passEncoder.setVertexBuffer(0, verticesBuffer);
+      commandEncoder.beginRenderPass(renderPassDescriptorForVideo);
+    passEncoder.setPipeline(pipelineForVideos);
+    passEncoder.setVertexBuffer(0, vertexBufferForVideos);
 
     for (let i = 0; i < videos.length; ++i) {
-      bindGroups[i] = device.createBindGroup({
-        layout: pipeline.getBindGroupLayout(0),
+      videoBindGroups[i] = device.createBindGroup({
+        layout: pipelineForVideos.getBindGroupLayout(0),
         entries: [
           {
             binding: 0,
@@ -459,26 +586,45 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           },
           {
             binding: 1,
-            resource: videoTextures[i].createView(),
+            resource: videoTextures[i],
           },
         ],
       });
       const firstVertex = i * 6;
-      passEncoder.setBindGroup(0, bindGroups[i]);
+      passEncoder.setBindGroup(0, videoBindGroups[i]);
       passEncoder.draw(6, 1, firstVertex, 0);
     }
 
     // Add UI on Top of all videos.
     if (addUI) {
-      passEncoder.setPipeline(pipelineForIcons);
-      passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-      passEncoder.draw(videos.length * 6);
+      addUICommands(passEncoder);
     }
-    passEncoder.endPass();
+    // Add FPS panels on Top of all videos.
+    if (addFPS) {
+      updateFPS(timestamp, videos);
+      addFPSCommands(device, passEncoder);
+    }
+    passEncoder.end();
     device.queue.submit([commandEncoder.finish()]);
 
-    window.requestAnimationFrame(oneFrameWithImportTextureApi);
-  }
+    const functionDuration = performance.now() - timestamp;
+    const interval30Fps = 1000.0 / 30;  // 33.3 ms.
+    if (functionDuration > interval30Fps) {
+      console.warn(
+          'rAF callback oneFrameWithImportTextureApi() takes ',
+          functionDuration, 'ms,  longer than 33.3 ms (1sec/30fps)');
+    }
+
+    // TODO(crbug.com/1289482): Workaround for backpressure mechanism
+    // not working properly.
+    if (enableBackPressureWorkaround) {
+      device.queue.onSubmittedWorkDone().then(() => {
+        window.requestAnimationFrame(oneFrameWithImportTextureApi);
+      });
+    } else {
+      window.requestAnimationFrame(oneFrameWithImportTextureApi);
+    }
+  };
 
   if (useImportTextureApi) {
     window.requestAnimationFrame(oneFrameWithImportTextureApi);

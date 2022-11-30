@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,10 +40,9 @@ void GamepadMonitor::OnGamepadDisconnected(uint32_t index,
     gamepad_observer_remote_->GamepadDisconnected(index, gamepad);
 }
 
-void GamepadMonitor::OnGamepadButtonOrAxisChanged(uint32_t index,
-                                                  const Gamepad& gamepad) {
+void GamepadMonitor::OnGamepadChanged(const mojom::GamepadChanges& changes) {
   if (gamepad_observer_remote_)
-    gamepad_observer_remote_->GamepadButtonOrAxisChanged(index, gamepad);
+    gamepad_observer_remote_->GamepadChanged(changes.Clone());
 }
 
 void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {
@@ -54,6 +53,10 @@ void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {
   GamepadService* service = GamepadService::GetInstance();
   if (!service->ConsumerBecameActive(this)) {
     mojo::ReportBadMessage("GamepadMonitor::GamepadStartPolling failed");
+    // On error, invoke `callback` with a default-initialized memory region
+    // instead of the real memory region.
+    std::move(callback).Run(base::ReadOnlySharedMemoryRegion());
+    return;
   }
   std::move(callback).Run(service->DuplicateSharedMemoryRegion());
 }
@@ -65,6 +68,7 @@ void GamepadMonitor::GamepadStopPolling(GamepadStopPollingCallback callback) {
   if (!GamepadService::GetInstance()->ConsumerBecameInactive(this)) {
     mojo::ReportBadMessage("GamepadMonitor::GamepadStopPolling failed");
   }
+  // Invoke `callback` regardless of whether an error was encountered.
   std::move(callback).Run();
 }
 

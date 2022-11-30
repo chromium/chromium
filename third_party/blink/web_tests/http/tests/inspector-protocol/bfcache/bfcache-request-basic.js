@@ -24,6 +24,7 @@
 
   // Navigate back - should use back-forward cache.
   session.evaluate('window.history.back()');
-  await dp.Page.onceFrameNavigated();
+  const frameNavigated = await dp.Page.onceFrameNavigated();
+  testRunner.log(frameNavigated.params.type);
   testRunner.completeTest();
 });

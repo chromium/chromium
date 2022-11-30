@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_layout_manager.h"
 
@@ -20,6 +19,10 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   TestDisplayLayoutManager(
       std::vector<std::unique_ptr<DisplaySnapshot>> displays,
       MultipleDisplayState display_state);
+
+  TestDisplayLayoutManager(const TestDisplayLayoutManager&) = delete;
+  TestDisplayLayoutManager& operator=(const TestDisplayLayoutManager&) = delete;
+
   ~TestDisplayLayoutManager() override;
 
   void set_displays(std::vector<std::unique_ptr<DisplaySnapshot>> displays) {
@@ -40,6 +43,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
       const std::vector<DisplaySnapshot*>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
+      RefreshRateThrottleState new_throttle_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   std::vector<DisplaySnapshot*> GetDisplayStates() const override;
   bool IsMirroring() const override;
@@ -47,8 +51,6 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
  private:
   std::vector<std::unique_ptr<DisplaySnapshot>> displays_;
   MultipleDisplayState display_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDisplayLayoutManager);
 };
 
 }  // namespace test

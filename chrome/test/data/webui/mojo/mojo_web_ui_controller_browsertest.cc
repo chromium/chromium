@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -43,11 +44,15 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
         content::WebUIDataSource::Create("foo");
     data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                   data_source);
   }
+
+  FooUI(const FooUI&) = delete;
+  FooUI& operator=(const FooUI&) = delete;
 
   void BindInterface(mojo::PendingReceiver<::test::mojom::Foo> receiver) {
     foo_receiver_.Bind(std::move(receiver));
@@ -62,8 +67,6 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
 
  private:
   mojo::Receiver<::test::mojom::Foo> foo_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FooUI);
 };
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FooUI)
@@ -81,11 +84,15 @@ class FooBarUI : public ui::MojoWebUIController,
         content::WebUIDataSource::Create("foobar");
     data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                   data_source);
   }
+
+  FooBarUI(const FooBarUI&) = delete;
+  FooBarUI& operator=(const FooBarUI&) = delete;
 
   void BindInterface(mojo::PendingReceiver<::test::mojom::Foo> receiver) {
     foo_receiver_.Bind(std::move(receiver));
@@ -110,8 +117,6 @@ class FooBarUI : public ui::MojoWebUIController,
  private:
   mojo::Receiver<::test::mojom::Foo> foo_receiver_;
   mojo::Receiver<::test::mojom::Bar> bar_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FooBarUI);
 };
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FooBarUI)
@@ -120,6 +125,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(FooBarUI)
 class TestWebUIControllerFactory : public content::WebUIControllerFactory {
  public:
   TestWebUIControllerFactory() = default;
+
+  TestWebUIControllerFactory(const TestWebUIControllerFactory&) = delete;
+  TestWebUIControllerFactory& operator=(const TestWebUIControllerFactory&) =
+      delete;
 
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
@@ -144,9 +153,6 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
                       const GURL& url) override {
     return url.SchemeIs(content::kChromeUIScheme);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWebUIControllerFactory);
 };
 
 }  // namespace
@@ -160,10 +166,10 @@ class MojoWebUIControllerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     base::FilePath pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
     pak_path = pak_path.AppendASCII("browser_tests.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path, ui::SCALE_FACTOR_NONE);
+        pak_path, ui::kScaleFactorNone);
 
     content::SetBrowserClientForTesting(&test_content_browser_client_);
   }
@@ -182,10 +188,10 @@ class MojoWebUIControllerBrowserTest : public InProcessBrowserTest {
         mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
       ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
           render_frame_host, map);
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
-          ::test::mojom::Bar, FooBarUI>(map);
-      chrome::internal::RegisterWebUIControllerInterfaceBinder<
-          ::test::mojom::Foo, FooUI, FooBarUI>(map);
+      content::RegisterWebUIControllerInterfaceBinder<::test::mojom::Bar,
+                                                      FooBarUI>(map);
+      content::RegisterWebUIControllerInterfaceBinder<::test::mojom::Foo, FooUI,
+                                                      FooBarUI>(map);
     }
   };
 
@@ -204,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, BindingsAccess) {
   EXPECT_EQ("foobarfoo",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let fooRemote = test.mojom.Foo.getRemote();"
+                            "  let fooRemote = window.Foo.getRemote();"
                             "  let resp = await fooRemote.getFoo();"
                             "  return resp.value;"
                             "})()"));
@@ -212,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, BindingsAccess) {
   EXPECT_EQ("foobarbar",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let barRemote = test.mojom.Bar.getRemote();"
+                            "  let barRemote = window.Bar.getRemote();"
                             "  let resp = await barRemote.getBar();"
                             "  return resp.value;"
                             "})()"));
@@ -229,19 +235,19 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest,
   EXPECT_EQ("foofoo",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let fooRemote = test.mojom.Foo.getRemote();"
+                            "  let fooRemote = window.Foo.getRemote();"
                             "  let resp = await fooRemote.getFoo();"
                             "  return resp.value;"
                             "})()"));
 
   content::ScopedAllowRendererCrashes allow;
-  content::RenderProcessHostWatcher watcher(web_contents,
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  content::RenderProcessHostWatcher watcher(
+      web_contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   // Attempt to get a remote for a disallowed interface.
   EXPECT_FALSE(content::EvalJs(web_contents,
                                "(async () => {"
-                               "  let barRemote = test.mojom.Bar.getRemote();"
+                               "  let barRemote = window.Bar.getRemote();"
                                "  let resp = await barRemote.getBar();"
                                "  return resp.value;"
                                "})()")
@@ -260,12 +266,12 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, CrashForNoBinder) {
 
   content::ScopedAllowRendererCrashes allow;
   content::RenderProcessHostBadMojoMessageWaiter watcher(
-      web_contents->GetMainFrame()->GetProcess());
+      web_contents->GetPrimaryMainFrame()->GetProcess());
 
   // Attempt to bind an interface with no browser binders registered.
   EXPECT_FALSE(content::EvalJs(web_contents,
                                "(async () => {"
-                               "  let bazRemote = test.mojom.Baz.getRemote();"
+                               "  let bazRemote = window.Baz.getRemote();"
                                "  let resp = await bazRemote.getBaz();"
                                "  return resp.value;"
                                "})()")

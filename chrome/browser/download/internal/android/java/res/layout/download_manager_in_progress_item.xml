@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <androidx.gridlayout.widget.GridLayout
@@ -12,7 +13,7 @@
     android:minHeight="64dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     app:columnCount="3"
     app:rowCount="2">
 
@@ -54,6 +55,6 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
-        app:tint="@color/default_icon_color" />
+        app:tint="@macro/default_icon_color" />
 
 </androidx.gridlayout.widget.GridLayout>

@@ -1,0 +1,159 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_target.gni")
+
+# Defines a Rust static library which can be used by downstream Rust or C++
+# targets. This is a single Rust compilation unit consisting of potentially
+# multiple .rs files.
+#
+# We term this 'rust_static_library' because it is used most analogously
+# to a C++ 'static_library' in Chromium. Like the C++ one, it can be compiled
+# independently into an intermediate linking target. The output contains the
+# object file(s) of the GN target's sources, and not its dependencies.
+#
+# Parameters
+#
+#   sources
+#     List of source files which this crate is allowed to compile, which is
+#     used to determine the impact of source code changes on other GN targets.
+#     This is not used by the Rust compiler, as it discovers source files by
+#     following `mod` declarations starting at the `crate_root`. The
+#     discovered source files must match this list. (This is not yet enforced,
+#     but will be.)
+#
+#   epoch (optional)
+#     The major version of the library, which is used to differentiate between
+#     multiple versions of the same library name. This includes all leading 0s
+#     and the first non-zero value in the crate's version. This should be left
+#     as the default, which is "0", for first-party code unless there are
+#     multiple versions of a crate present. For third-party code, the version
+#     epoch (matching the directory it is found in) should be specified.
+#
+#     Examples:
+#       1.0.2 => epoch = "1"
+#       4.2.0 => epoch = "4"
+#       0.2.7 => epoch = "0.2"
+#       0.0.3 => epoch = "0.0.3"
+#
+#   edition (optional)
+#     Edition of the Rust language to be used.
+#     Options are "2015", "2018" and "2021". Defaults to "2021".
+#
+#   configs (optional)
+#     A list of config labels (in the GN meaning) applying to this target.
+#
+#   rustflags (optional)
+#     Explicit flags for rustc command line. (Use 'edition' or 'features'
+#     where possible).
+#
+#   deps (optional)
+#     List of GN targets on which this crate depends. These may be Rust
+#     or non-Rust targets.
+#
+#   public_deps (optional)
+#     List of GN targets on which this crate depends, and which are exported
+#     into the dependency list of any crate that depends on it. Dependency
+#     crates that appear in the public API should be included here.
+#
+#   test_deps (optional)
+#     List of GN targets on which this crate's tests depend, in addition
+#     to deps.
+#
+#   mutually_dependent_target (optional)
+#   mutually_dependent_public_deps (optional)
+#     These is for use by the mixed_target() template.
+#
+#     If this Rust code is intrinsically paired with some C/C++ code,
+#     with bidirectional calls between the two, then this would
+#     be a circular dependency. GN does not allow circular dependencies,
+#     (other than for header files per allow_circular_includes_from).
+#     But this is common for a 'component' which has both Rust and C++
+#     code. You should structure things such that the C++ code depends
+#     on the Rust code in the normal way:
+#        static_library("cpp_stuff") {
+#          deps = [ "rust_stuff" ]
+#          # ..
+#        }
+#     but that the Rust target also notes the C++ target using this
+#     'mutually_dependent_target' parameter.
+#        rust_static_library("rust_stuff") {
+#          mutually_dependent_target = "cpp_stuff"
+#          mutually_dependent_public_deps = _cpp_stuff_public_deps
+#          # ..
+#        }
+#
+#     This causes the Rust unit tests, if generated, to depend on the mutually
+#     dependent target, since depending on the Rust code only would be
+#     insufficient. And it allows any C++ bindings generated from the Rust code
+#     to include headers from the mutually_dependent_target by depending on its
+#     public_deps.
+#
+#   build_native_rust_unit_tests (optional)
+#     Builds native unit tests (under #[cfg(test)]) written inside the Rust
+#     crate. This will create a `<name>_unittests` executable in the output
+#     directory when set to true.
+#
+#   unit_test_target (optional)
+#     Overrides the default name for the unit tests target
+#
+#   crate_root (optional)
+#     Location of the crate root.
+#     This defaults to `./src/lib.rs` and should only be changed when
+#     absolutely necessary (such as in the case of generated code).
+#
+#   features (optional)
+#     A list of conditional compilation flags to enable. This can be used
+#     to set features for crates built in-tree which are also published to
+#     crates.io. Each feature in the list will be passed to rustc as
+#     '--cfg feature=XXX'
+#
+#   cxx_bindings (optional)
+#     A list of Rust files which contain #[cxx::bridge] mods or
+#     autocxx::include_cpp! macros and should therefore have C++ bindings
+#     generated. See https://cxx.rs or https://google.github.io/autocxx/.
+#     This will automatically add appropriate dependencies: there's no
+#     need to depend on the cxx crate or any generated bindings.
+#
+#   visibility (optional)
+#   rustflags (optional)
+#   crate_name (optional)
+#     Per the usual gn meaning for Rust targets.
+#
+#   inputs (optional)
+#     Additional input files needed for compilation (such as `include!`ed files)
+#
+#   test_inputs (optional)
+#     Same as above but for the unit tests target
+#
+# Example of usage:
+#
+#   rust_static_library("foo_bar") {
+#     deps = [
+#       "//boo/public/rust/bar",
+#       "//third_party/rust/crates:argh",
+#       "//third_party/rust/crates:serde",
+#       "//third_party/rust/crates:slab",
+#     ]
+#     sources = [ "src/lib.rs" ]
+#   }
+#
+# This template is intended to serve the same purpose as 'rustc_library'
+# in Fuchsia.
+template("rust_static_library") {
+  exclude_forwards = TESTONLY_AND_VISIBILITY + [ "configs" ]
+  rust_target(target_name) {
+    forward_variables_from(invoker, "*", exclude_forwards)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (defined(invoker.configs)) {
+      library_configs = []
+      library_configs = invoker.configs
+    }
+    target_type = "rust_library"
+  }
+}
+
+set_defaults("rust_static_library") {
+  configs = default_compiler_configs
+}

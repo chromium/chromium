@@ -75,7 +75,7 @@ Memory map
  .text.startup._GLOBAL__sub_I_page_allocator.cc
                 0x0028d900       0x10 obj/base/base/page_allocator.o
  .text.startup._GLOBAL__sub_I_bbr_sender.cc
-                0x0028d910       0x38 obj/base/base/page_allocator.o
+                0x0028d910       0x38 /test/abs/path.a(foo.o)
  ** fill        0x0028d948        0xa
  .text.startup._GLOBAL__sub_I_pacing_sender.cc
                 0x0028d948       0x1c obj/base/base/page_allocator.o

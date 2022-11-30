@@ -1,23 +1,23 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/cert/x509_certificate.h"
+#import "net/cert/x509_util.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Checks for equality between |cert_storage1| and |cert_storage2|.
+// Checks for equality between `cert_storage1` and `cert_storage2`.
 bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
                           CRWSessionCertificateStorage* cert_storage2) {
   return net::x509_util::CryptoBufferEqual(
@@ -26,7 +26,7 @@ bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
          cert_storage1.host == cert_storage2.host &&
          cert_storage1.status == cert_storage2.status;
 }
-// Checks for equality between |cache_storage1| and |cache_storage2|.
+// Checks for equality between `cache_storage1` and `cache_storage2`.
 bool CacheStoragesAreEqual(
     CRWSessionCertificatePolicyCacheStorage* cache_storage1,
     CRWSessionCertificatePolicyCacheStorage* cache_storage2) {
@@ -46,7 +46,7 @@ class CRWSessionCertificatePolicyCacheStorageTest : public PlatformTest {
  protected:
   CRWSessionCertificatePolicyCacheStorageTest()
       : cache_storage_([[CRWSessionCertificatePolicyCacheStorage alloc] init]) {
-    // Set up |cache_storage_|.
+    // Set up `cache_storage_`.
     scoped_refptr<net::X509Certificate> cert =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
     NSMutableSet* certs = [[NSMutableSet alloc] init];

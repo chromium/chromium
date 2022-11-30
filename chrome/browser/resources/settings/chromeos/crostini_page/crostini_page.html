@@ -1,126 +1,129 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../guest_os/guest_os_shared_paths.html">
-<link rel="import" href="../guest_os/guest_os_shared_usb_devices.html">
-<link rel="import" href="../localized_link/localized_link.html">
-<link rel="import" href="crostini_arc_adb.html">
-<link rel="import" href="crostini_browser_proxy.html">
-<link rel="import" href="crostini_export_import.html">
-<link rel="import" href="crostini_port_forwarding.html">
-<link rel="import" href="crostini_subpage.html">
-
-<dom-module id="settings-crostini-page">
-  <template>
-    <style include="settings-shared"></style>
-
-    <settings-animated-pages id="pages" section="crostini"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <div id="crostini" class="settings-box two-line first"
-            actionable$="[[prefs.crostini.enabled.value]]"
-            on-click="onSubpageTap_">
-          <div class="start">
-            $i18n{crostiniPageLabel}
-            <div class="secondary" id="secondaryText">
-              <settings-localized-link
-                  localized-string="[[i18nAdvanced('crostiniSubtext')]]">
-              </settings-localized-link>
-            </div>
-          </div>
-          <template is="dom-if" if="[[!allowCrostini]]" restamp>
-            <cr-policy-indicator indicator-type="userPolicy">
-            </cr-policy-indicator>
+<settings-animated-pages id="pages" section="crostini"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <div id="crostini" class="settings-box two-line first"
+        actionable$="[[prefs.crostini.enabled.value]]"
+        on-click="onSubpageTap_">
+      <div class="start">
+        $i18n{crostiniPageLabel}
+        <div class="secondary" id="secondaryText">
+          <template is="dom-if" if="[[showCrostini]]" restamp>
+            <localized-link
+                localized-string="[[i18nAdvanced('crostiniSubtext')]]">
+            </localized-link>
           </template>
-          <template is="dom-if" if="[[prefs.crostini.enabled.value]]">
-            <cr-icon-button class="subpage-arrow"
-                aria-label="$i18n{crostiniPageTitle}"
-                aria-describedby="secondaryText"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
-            </cr-icon-button>
-          </template>
-          <template is="dom-if" if="[[!prefs.crostini.enabled.value]]">
-            <div class="separator"></div>
-            <cr-button id="enable"
-                disabled$="[[disableCrostiniInstall_]]"
-                on-click="onEnableTap_"
-                aria-label="$i18n{crostiniPageTitle}"
-                aria-describedby="secondaryText"
-                deep-link-focus-id$="[[Setting.kSetUpCrostini]]">
-              $i18n{crostiniEnable}
-            </cr-button>
+          <template is="dom-if" if="[[!showCrostini]]" restamp>
+            <localized-link localized-string="[[i18nAdvanced(
+                'crostiniSubtextNotSupported')]]">
+            </localized-link>
           </template>
         </div>
       </div>
-
-      <template is="dom-if" route-path="/crostini/details">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniPageLabel}">
-          <settings-crostini-subpage prefs="{{prefs}}">
-          </settings-crostini-subpage>
-        </settings-subpage>
+      <template is="dom-if" if="[[showCrostini]]" restamp>
+        <template is="dom-if" if="[[!allowCrostini]]" restamp>
+          <cr-policy-indicator indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </template>
       </template>
-
-      <template is="dom-if" route-path="/crostini/androidAdb">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniArcAdbTitle}">
-          <settings-crostini-arc-adb prefs="{{prefs}}">
-          </settings-crostini-arc-adb>
-        </settings-subpage>
+      <template is="dom-if" if="[[prefs.crostini.enabled.value]]">
+        <cr-icon-button class="subpage-arrow"
+            aria-label="$i18n{crostiniPageTitle}"
+            aria-describedby="secondaryText"
+            aria-roledescription="$i18n{subpageArrowRoleDescription}">
+        </cr-icon-button>
       </template>
-
-      <template is="dom-if" route-path="/crostini/portForwarding">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniPortForwarding}">
-          <settings-crostini-port-forwarding prefs="{{prefs}}">
-          </settings-crostini-port-forwarding>
-        </settings-subpage>
+      <template is="dom-if" if="[[!prefs.crostini.enabled.value]]">
+        <div class="separator"></div>
+        <cr-button id="enable"
+            disabled$="[[disableCrostiniInstall_]]"
+            on-click="onEnableTap_"
+            aria-describedby="secondaryText"
+            deep-link-focus-id$="[[Setting.kSetUpCrostini]]">
+          $i18n{crostiniEnable}
+        </cr-button>
       </template>
+    </div>
 
-      <template is="dom-if" route-path="/crostini/exportImport">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniExportImportTitle}">
-          <settings-crostini-export-import prefs="{{prefs}}">
-          </settings-crostini-export-import>
-        </settings-subpage>
-      </template>
+    <template is="dom-if" if="[[enableBruschetta_]]">
+      <div id="bruschetta" class="settings-box first"
+          actionable
+          on-click="onBruschettaSubpageTap_">
+        <div class="start">
+          $i18n{bruschettaPageLabel}
+        </div>
+        <cr-icon-button class="subpage-arrow"
+            aria-label="$i18n{crostiniPageTitle}"
+            aria-describedby="secondaryText"
+            aria-roledescription="$i18n{subpageArrowRoleDescription}">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
 
-      <template is="dom-if" route-path="/crostini/sharedPaths">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{guestOsSharedPaths}">
-          <settings-guest-os-shared-paths
-              guest-os-type="crostini" prefs="{{prefs}}">
-          </settings-guest-os-shared-paths>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" route-path="/crostini/sharedUsbDevices">
-        <settings-subpage
-            associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-          <settings-guest-os-shared-usb-devices guest-os-type="crostini">
-          </settings-guest-os-shared-usb-devices>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
-
+  <template is="dom-if" route-path="/crostini/details">
+    <settings-subpage page-title="$i18n{crostiniPageLabel}">
+      <settings-crostini-subpage prefs="{{prefs}}">
+      </settings-crostini-subpage>
+    </settings-subpage>
   </template>
-  <script src="crostini_page.js"></script>
-</dom-module>
+
+  <template is="dom-if" route-path="/crostini/androidAdb">
+    <settings-subpage page-title="$i18n{crostiniArcAdbTitle}">
+      <settings-crostini-arc-adb prefs="{{prefs}}">
+      </settings-crostini-arc-adb>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/crostini/portForwarding">
+    <settings-subpage page-title="$i18n{crostiniPortForwarding}">
+      <settings-crostini-port-forwarding prefs="{{prefs}}">
+      </settings-crostini-port-forwarding>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/crostini/exportImport">
+    <settings-subpage page-title="$i18n{crostiniExportImportTitle}">
+      <settings-crostini-export-import prefs="{{prefs}}">
+      </settings-crostini-export-import>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/crostini/sharedPaths">
+    <settings-subpage page-title="$i18n{guestOsSharedPaths}">
+      <settings-guest-os-shared-paths
+          guest-os-type="crostini" prefs="{{prefs}}">
+      </settings-guest-os-shared-paths>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/crostini/sharedUsbDevices">
+    <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+      <settings-crostini-shared-usb-devices>
+      </settings-crostini-shared-usb-devices>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/crostini/extraContainers">
+    <settings-subpage page-title="$i18n{crostiniExtraContainersLabel}">
+      <settings-crostini-extra-containers guest-os-type="crostini">
+      </settings-crostini-extra-containers>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/bruschetta/details">
+    <settings-subpage page-title="$i18n{bruschettaPageLabel}">
+      <settings-bruschetta-subpage>
+      </settings-bruschetta-subpage>
+    </settings-subpage>
+  </template>
+
+  <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
+    <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+      <settings-guest-os-shared-usb-devices guest-os-type="bruschetta">
+      </settings-guest-os-shared-usb-devices>
+    </settings-subpage>
+  </template>
+</settings-animated-pages>
+

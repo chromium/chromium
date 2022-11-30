@@ -1,10 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "CheckGCRootsVisitor.h"
+#include "BlinkGCPluginOptions.h"
 
-CheckGCRootsVisitor::CheckGCRootsVisitor() {
+CheckGCRootsVisitor::CheckGCRootsVisitor(const BlinkGCPluginOptions& options)
+    : should_check_unique_ptrs_(options.enable_persistent_in_unique_ptr_check) {
 }
 
 CheckGCRootsVisitor::Errors& CheckGCRootsVisitor::gc_roots() {
@@ -41,6 +43,12 @@ void CheckGCRootsVisitor::VisitValue(Value* edge) {
   }
   ContainsGCRoots(edge->value());
   visiting_set_.erase(edge->value());
+}
+
+void CheckGCRootsVisitor::VisitUniquePtr(UniquePtr* edge) {
+  if (!should_check_unique_ptrs_)
+    return;
+  edge->ptr()->Accept(this);
 }
 
 void CheckGCRootsVisitor::VisitPersistent(Persistent* edge) {

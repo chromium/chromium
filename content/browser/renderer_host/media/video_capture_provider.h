@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_BUILDABLE_VIDEO_CAPTURE_DEVICE_H_
-#define CONTENT_BROWSER_RENDERER_HOST_MEDIA_BUILDABLE_VIDEO_CAPTURE_DEVICE_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
+#define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_
 
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -19,7 +18,7 @@ class VideoCaptureDeviceLauncher;
 
 // Note: GetDeviceInfosAsync is only relevant for devices with
 // MediaStreamType == DEVICE_VIDEO_CAPTURE, i.e. camera devices.
-class CONTENT_EXPORT VideoCaptureProvider {
+class VideoCaptureProvider {
  public:
   using GetDeviceInfosCallback = base::OnceCallback<void(
       const std::vector<media::VideoCaptureDeviceInfo>&)>;
@@ -36,4 +35,4 @@ class CONTENT_EXPORT VideoCaptureProvider {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_MEDIA_BUILDABLE_VIDEO_CAPTURE_DEVICE_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_PROVIDER_H_

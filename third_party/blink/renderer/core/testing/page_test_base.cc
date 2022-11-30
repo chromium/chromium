@@ -1,15 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
+#include <sstream>
+
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -18,6 +20,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -35,6 +39,31 @@ Element* GetOrCreateElement(ContainerNode* parent,
     return elements->item(0);
   return parent->ownerDocument()->CreateRawElement(
       tag_name, CreateElementFlags::ByCreateElement());
+}
+
+void ToSimpleLayoutTree(std::ostream& ostream,
+                        const LayoutObject& layout_object,
+                        int depth) {
+  for (int i = 1; i < depth; ++i)
+    ostream << "|  ";
+  ostream << (depth ? "+--" : "") << layout_object.GetName() << " ";
+  if (auto* node = layout_object.GetNode())
+    ostream << *node;
+  else
+    ostream << "(anonymous)";
+  if (auto* layout_text_fragment =
+          DynamicTo<LayoutTextFragment>(layout_object)) {
+    ostream << " (" << layout_text_fragment->GetText() << ")";
+  } else if (auto* layout_text = DynamicTo<LayoutText>(layout_object)) {
+    if (!layout_object.GetNode())
+      ostream << " " << layout_text->GetText();
+  }
+  ostream << std::endl;
+  for (auto* child = layout_object.SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    ostream << "  ";
+    ToSimpleLayoutTree(ostream, *child, depth + 1);
+  }
 }
 
 }  // namespace
@@ -86,7 +115,7 @@ void PageTestBase::SetUp() {
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
+      gfx::Size(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
 
   // Mock out clipboard calls so that tests don't mess
   // with each other's copies/pastes when running in parallel.
@@ -99,7 +128,7 @@ void PageTestBase::SetUp() {
   GetPage().SetDefaultPageScaleLimits(1, 4);
 }
 
-void PageTestBase::SetUp(IntSize size) {
+void PageTestBase::SetUp(gfx::Size size) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
   auto setter = base::BindLambdaForTesting([&](Settings& settings) {
     if (enable_compositing_)
@@ -116,7 +145,7 @@ void PageTestBase::SetUp(IntSize size) {
 }
 
 void PageTestBase::SetupPageWithClients(
-    Page::PageClients* clients,
+    ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
     FrameSettingOverrideFunction setting_overrider) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
@@ -127,7 +156,7 @@ void PageTestBase::SetupPageWithClients(
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(800, 600), clients, local_frame_client, std::move(setter),
+      gfx::Size(800, 600), chrome_client, local_frame_client, std::move(setter),
       GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.
@@ -165,8 +194,8 @@ void PageTestBase::LoadAhem(LocalFrame& frame) {
   Document& document = *frame.DomWindow()->document();
   scoped_refptr<SharedBuffer> shared_buffer =
       test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
-  StringOrArrayBufferOrArrayBufferView buffer =
-      StringOrArrayBufferOrArrayBufferView::FromArrayBuffer(
+  auto* buffer =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           DOMArrayBuffer::Create(shared_buffer));
   FontFace* ahem = FontFace::Create(frame.DomWindow(), "Ahem", buffer,
                                     FontFaceDescriptors::Create());
@@ -174,6 +203,27 @@ void PageTestBase::LoadAhem(LocalFrame& frame) {
   ScriptState* script_state = ToScriptStateForMainWorld(&frame);
   DummyExceptionStateForTesting exception_state;
   FontFaceSetDocument::From(document)->addForBinding(script_state, ahem,
+                                                     exception_state);
+}
+
+void PageTestBase::LoadNoto() {
+  LoadNoto(GetFrame());
+}
+
+void PageTestBase::LoadNoto(LocalFrame& frame) {
+  Document& document = *frame.DomWindow()->document();
+  scoped_refptr<SharedBuffer> shared_buffer =
+      test::ReadFromFile(blink::test::PlatformTestDataPath(
+          "third_party/Noto/NotoNaskhArabic-regular.woff2"));
+  auto* buffer =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          DOMArrayBuffer::Create(shared_buffer));
+  FontFace* noto = FontFace::Create(frame.DomWindow(), "NotoArabic", buffer,
+                                    FontFaceDescriptors::Create());
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&frame);
+  DummyExceptionStateForTesting exception_state;
+  FontFaceSetDocument::From(document)->addForBinding(script_state, noto,
                                                      exception_state);
 }
 
@@ -265,6 +315,16 @@ void PageTestBase::EnablePlatform() {
 const base::TickClock* PageTestBase::GetTickClock() {
   return platform_ ? platform()->test_task_runner()->GetMockTickClock()
                    : base::DefaultTickClock::GetInstance();
+}
+
+// See also LayoutTreeAsText to dump with geometry and paint layers.
+// static
+std::string PageTestBase::ToSimpleLayoutTree(
+    const LayoutObject& layout_object) {
+  std::ostringstream ostream;
+  ostream << std::endl;
+  ::blink::ToSimpleLayoutTree(ostream, layout_object, 0);
+  return ostream.str();
 }
 
 }  // namespace blink

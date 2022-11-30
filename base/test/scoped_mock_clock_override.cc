@@ -1,8 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/test/scoped_mock_clock_override.h"
+
+#include <ostream>
+
+#include "base/check_op.h"
 
 namespace base {
 
@@ -10,7 +14,7 @@ ScopedMockClockOverride* ScopedMockClockOverride::scoped_mock_clock_ = nullptr;
 
 ScopedMockClockOverride::ScopedMockClockOverride()
     :  // Start the offset past zero so that it's not treated as a null value.
-      offset_(TimeDelta::FromDays(365)) {
+      offset_(Days(365)) {
   DCHECK(!scoped_mock_clock_)
       << "Nested ScopedMockClockOverrides are not supported.";
 

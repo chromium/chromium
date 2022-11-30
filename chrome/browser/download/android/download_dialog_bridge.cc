@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/jni_headers/DownloadDialogBridge_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/download/public/common/download_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/android/window_android.h"
 
@@ -40,12 +40,14 @@ DownloadDialogBridge::~DownloadDialogBridge() {
   Java_DownloadDialogBridge_destroy(env, java_obj_);
 }
 
-void DownloadDialogBridge::ShowDialog(gfx::NativeWindow native_window,
-                                      int64_t total_bytes,
-                                      DownloadLocationDialogType dialog_type,
-                                      const base::FilePath& suggested_path,
-                                      bool supports_later_dialog,
-                                      DialogCallback dialog_callback) {
+void DownloadDialogBridge::ShowDialog(
+    gfx::NativeWindow native_window,
+    int64_t total_bytes,
+    net::NetworkChangeNotifier::ConnectionType connection_type,
+    DownloadLocationDialogType dialog_type,
+    const base::FilePath& suggested_path,
+    bool is_incognito,
+    DialogCallback dialog_callback) {
   if (!native_window)
     return;
 
@@ -77,31 +79,21 @@ void DownloadDialogBridge::ShowDialog(gfx::NativeWindow native_window,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DownloadDialogBridge_showDialog(
       env, java_obj_, native_window->GetJavaObject(),
-      static_cast<long>(total_bytes), static_cast<int>(dialog_type),
+      static_cast<long>(total_bytes), static_cast<int>(connection_type),
+      static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      supports_later_dialog);
+      is_incognito);
 }
 
 void DownloadDialogBridge::OnComplete(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& returned_path,
-    jboolean on_wifi,
-    jlong start_time) {
+    const base::android::JavaParamRef<jstring>& returned_path) {
   DownloadDialogResult dialog_result;
   dialog_result.location_result = DownloadLocationDialogResult::USER_CONFIRMED;
   dialog_result.file_path = base::FilePath(
       base::android::ConvertJavaStringToUTF8(env, returned_path));
-
-  if (on_wifi) {
-    dialog_result.download_schedule =
-        download::DownloadSchedule(true /*only_on_wifi*/, base::nullopt);
-  }
-  if (start_time > 0) {
-    dialog_result.download_schedule = download::DownloadSchedule(
-        false /*only_on_wifi*/, base::Time::FromJavaTime(start_time));
-  }
 
   CompleteSelection(std::move(dialog_result));
   is_dialog_showing_ = false;
@@ -150,9 +142,9 @@ void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
 
-jboolean JNI_DownloadDialogBridge_IsDataReductionProxyEnabled(JNIEnv* env) {
-  auto* data_reduction_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
-  return data_reduction_settings->IsDataReductionProxyEnabled();
+jboolean JNI_DownloadDialogBridge_IsLocationDialogManaged(JNIEnv* env) {
+  PrefService* pref_service =
+      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+
+  return pref_service->IsManagedPreference(prefs::kPromptForDownload);
 }

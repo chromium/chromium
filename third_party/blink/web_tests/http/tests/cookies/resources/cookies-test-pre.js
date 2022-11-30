@@ -159,7 +159,7 @@ function setCookies(cookie)
     try {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "resources/setCookies.cgi", false);
-        xhr.setRequestHeader("SET-COOKIE", cookie);
+        xhr.setRequestHeader("X-SET-COOKIE", cookie);
         xhr.send(null);
         if (xhr.status == 200) {
             // This is to clear them later.

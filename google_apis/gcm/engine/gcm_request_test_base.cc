@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/strings/string_tokenizer.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
@@ -129,8 +130,7 @@ void GCMRequestTestBase::FastForwardToTriggerNextRetry() {
   int next_retry_delay_ms = kDefaultBackoffPolicy.initial_delay_ms;
   next_retry_delay_ms *=
       pow(kDefaultBackoffPolicy.multiply_factor, retry_count_);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromMilliseconds(next_retry_delay_ms));
+  task_environment_.FastForwardBy(base::Milliseconds(next_retry_delay_ms));
 }
 
 }  // namespace gcm

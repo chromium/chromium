@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 
 #include "base/callback.h"
 #include "base/containers/id_map.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -29,7 +29,8 @@
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
 class GURL;
 
@@ -40,13 +41,11 @@ class SpecialStoragePolicy;
 }  // namespace storage
 
 namespace content {
-
 class ServiceWorkerContextCoreObserver;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerJobCoordinator;
 class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
-class URLLoaderFactoryGetter;
 
 // This class manages data associated with service workers.
 // The class is single threaded and should only be used on the UI thread.
@@ -79,6 +78,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // instance always outlives the ContainerHostIterator one.
   class CONTENT_EXPORT ContainerHostIterator {
    public:
+    ContainerHostIterator(const ContainerHostIterator&) = delete;
+    ContainerHostIterator& operator=(const ContainerHostIterator&) = delete;
+
     ~ContainerHostIterator();
     ServiceWorkerContainerHost* GetContainerHost();
     void Advance();
@@ -92,11 +94,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                           ContainerHostPredicate predicate);
     void ForwardUntilMatchingContainerHost();
 
-    ContainerHostByClientUUIDMap* const map_;
+    const raw_ptr<ContainerHostByClientUUIDMap> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
-
-    DISALLOW_COPY_AND_ASSIGN(ContainerHostIterator);
   };
 
   // This is owned by ServiceWorkerContextWrapper. |observer_list| is created in
@@ -106,7 +106,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   ServiceWorkerContextCore(
       storage::QuotaManagerProxy* quota_manager_proxy,
       storage::SpecialStoragePolicy* special_storage_policy,
-      URLLoaderFactoryGetter* url_loader_factory_getter,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           non_network_pending_loader_factory_bundle_for_update_check,
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>*
@@ -115,6 +114,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // TODO(https://crbug.com/877356): Remove this copy mechanism.
   ServiceWorkerContextCore(ServiceWorkerContextCore* old_context,
                            ServiceWorkerContextWrapper* wrapper);
+
+  ServiceWorkerContextCore(const ServiceWorkerContextCore&) = delete;
+  ServiceWorkerContextCore& operator=(const ServiceWorkerContextCore&) = delete;
+
   ~ServiceWorkerContextCore() override;
 
   void OnStorageWiped();
@@ -142,7 +145,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void OnControlleeNavigationCommitted(
       ServiceWorkerVersion* version,
       const std::string& client_uuid,
-      GlobalFrameRoutingId render_frame_host_id);
+      GlobalRenderFrameHostId render_frame_host_id);
 
   // Called when all controllees are removed.
   // Note regarding BackForwardCache integration:
@@ -175,29 +178,30 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   }
 
   // Returns a ContainerHost iterator for all service worker clients for the
-  // |origin|. If |include_reserved_clients| is true, this includes clients that
+  // `key`. If `include_reserved_clients` is true, this includes clients that
   // are not execution ready (i.e., for windows, the document has not yet been
   // created and for workers, the final response after redirects has not yet
-  // been delivered). If |include_back_forward_cached_clients| is true, this
+  // been delivered). If `include_back_forward_cached_clients` is true, this
   // includes the clients whose documents are stored in BackForward Cache.
   std::unique_ptr<ContainerHostIterator> GetClientContainerHostIterator(
-      const GURL& origin,
+      const blink::StorageKey& key,
       bool include_reserved_clients,
       bool include_back_forward_cached_clients);
 
   // Returns a ContainerHost iterator for service worker window clients for the
-  // |origin|. If |include_reserved_clients| is false, this only returns clients
+  // `key`. If `include_reserved_clients` is false, this only returns clients
   // that are execution ready.
   std::unique_ptr<ContainerHostIterator> GetWindowClientContainerHostIterator(
-      const GURL& origin,
+      const blink::StorageKey& key,
       bool include_reserved_clients);
 
-  // Runs the callback with true if there is a ContainerHost for |origin| of
+  // Runs the callback with true if there is a ContainerHost for `key` of
   // type blink::mojom::ServiceWorkerContainerType::kForWindow which is a main
   // (top-level) frame. Reserved clients are ignored.
   // TODO(crbug.com/824858): Make this synchronously return bool when the core
   // thread is UI.
-  void HasMainFrameWindowClient(const GURL& origin, BoolCallback callback);
+  void HasMainFrameWindowClient(const blink::StorageKey& key,
+                                BoolCallback callback);
 
   // Used to create a ServiceWorkerContainerHost for a window during a
   // navigation. |are_ancestors_secure| should be true for main frames.
@@ -237,21 +241,31 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   void RegisterServiceWorker(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      RegistrationCallback callback);
+      RegistrationCallback callback,
+      const GlobalRenderFrameHostId& requesting_frame_id,
+      const PolicyContainerPolicies& policy_container_policies);
 
-  // If |is_immediate| is true, unregister clears the active worker from the
+  // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
   void UnregisterServiceWorker(const GURL& scope,
+                               const blink::StorageKey& key,
                                bool is_immediate,
                                UnregistrationCallback callback);
 
   // Callback is called after all deletions occurred. The status code is
   // blink::ServiceWorkerStatusCode::kOk if all succeed, or
   // SERVICE_WORKER_FAILED if any did not succeed.
-  void DeleteForOrigin(const url::Origin& origin, StatusCallback callback);
+  void DeleteForStorageKey(const blink::StorageKey& key,
+                           StatusCallback callback);
+  // TODO(crbug.com/1199077): Delete this overload when ServiceWorkerQuotaClient
+  // and storage::mojom::QuotaClient support StorageKey.
+  void DeleteForOrigin(const url::Origin& origin, StatusCallback callback) {
+    DeleteForStorageKey(blink::StorageKey(origin), std::move(callback));
+  }
 
   // Performs internal storage cleanup. Operations to the storage in the past
   // (e.g. deletion) are usually recorded in disk for a certain period until
@@ -283,8 +297,11 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   }
 
   // This class maintains collections of live instances, this class
-  // does not own these object or influence their lifetime.
-  ServiceWorkerRegistration* GetLiveRegistration(int64_t registration_id);
+  // does not own these object or influence their lifetime.  It returns
+  // a scoped_refptr<>, however, as the caller must keep the registration
+  // alive while operating on it.
+  scoped_refptr<ServiceWorkerRegistration> GetLiveRegistration(
+      int64_t registration_id);
   void AddLiveRegistration(ServiceWorkerRegistration* registration);
   // RemoveLiveRegistration removes registration from |live_registrations_|
   // and notifies all observers of the id of the registration removed.
@@ -317,17 +334,19 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void ClearAllServiceWorkersForTest(base::OnceClosure callback);
 
   // Determines if there is a ServiceWorker registration that matches
-  // |url|. See ServiceWorkerContext::CheckHasServiceWorker for more
+  // `url` and `key`. See ServiceWorkerContext::CheckHasServiceWorker for more
   // details.
   void CheckHasServiceWorker(
       const GURL& url,
+      const blink::StorageKey& key,
       const ServiceWorkerContext::CheckHasServiceWorkerCallback callback);
 
-  // Returns OfflineCapability of the service worker matching |url|.
+  // Returns OfflineCapability of the service worker matching `url` and `key`.
   // See ServiceWorkerContext::CheckOfflineCapability for more
   // details.
   void CheckOfflineCapability(
       const GURL& url,
+      const blink::StorageKey& key,
       const ServiceWorkerContext::CheckOfflineCapabilityCallback callback);
 
   void UpdateVersionFailureCount(int64_t version_id,
@@ -337,14 +356,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   int GetVersionFailureCount(int64_t version_id);
 
   // Called by ServiceWorkerStorage when StoreRegistration() succeeds.
-  void NotifyRegistrationStored(int64_t registration_id, const GURL& scope);
-  // Called on the core thread and notifies observers that all registrations
-  // have been deleted for a particular origin.
-  void NotifyAllRegistrationsDeletedForOrigin(const url::Origin& origin);
-
-  URLLoaderFactoryGetter* loader_factory_getter() {
-    return loader_factory_getter_.get();
-  }
+  void NotifyRegistrationStored(int64_t registration_id,
+                                const GURL& scope,
+                                const blink::StorageKey& key);
+  // Notifies observers that all registrations have been deleted for a
+  // particular `key`.
+  void NotifyAllRegistrationsDeletedForStorageKey(const blink::StorageKey& key);
 
   const scoped_refptr<blink::URLLoaderFactoryBundle>&
   loader_factory_bundle_for_update_check() {
@@ -360,6 +377,13 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   void NotifyClientIsExecutionReady(
       const ServiceWorkerContainerHost& container_host);
 
+  bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key);
+
+  // This method waits for service worker registrations to be initialized, and
+  // depends on |on_registrations_initialized_| and |registrations_initialized_|
+  // which are called in InitializeRegisteredOrigins().
+  void WaitForRegistrationsInitializedForTest();
+
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);
@@ -373,6 +397,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   };
 
   void RegistrationComplete(const GURL& scope,
+                            const blink::StorageKey& key,
                             RegistrationCallback callback,
                             blink::ServiceWorkerStatusCode status,
                             const std::string& status_message,
@@ -382,18 +407,18 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                       blink::ServiceWorkerStatusCode status,
                       const std::string& status_message,
                       ServiceWorkerRegistration* registration);
-
   void UnregistrationComplete(const GURL& scope,
+                              const blink::StorageKey& key,
                               UnregistrationCallback callback,
                               int64_t registration_id,
                               blink::ServiceWorkerStatusCode status);
-
   bool IsValidRegisterRequest(const GURL& script_url,
                               const GURL& scope_url,
+                              const blink::StorageKey& key,
                               std::string* out_error) const;
 
-  void DidGetRegistrationsForDeleteForOrigin(
-      const url::Origin& origin,
+  void DidGetRegistrationsForDeleteForStorageKey(
+      const blink::StorageKey& key,
       base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback,
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
@@ -407,10 +432,16 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       ServiceWorkerContext::CheckHasServiceWorkerCallback callback,
       scoped_refptr<ServiceWorkerRegistration> registration);
 
+  // This is used as a callback of GetRegisteredStorageKeys when initialising to
+  // store a list of storage keys that have registered service workers.
+  void DidGetRegisteredStorageKeys(
+      base::TimeTicks start_time,
+      const std::vector<blink::StorageKey>& storage_keys);
+
   // It's safe to store a raw pointer instead of a scoped_refptr to |wrapper_|
   // because the Wrapper::Shutdown call that hops threads to destroy |this| uses
   // Bind() to hold a reference to |wrapper_| until |this| is fully destroyed.
-  ServiceWorkerContextWrapper* wrapper_;
+  raw_ptr<ServiceWorkerContextWrapper> wrapper_;
 
   // |container_host_by_uuid_| owns container hosts for service worker clients.
   // Container hosts for service worker execution contexts are owned by
@@ -432,8 +463,6 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::map<int64_t, scoped_refptr<ServiceWorkerVersion>> protected_versions_;
 
   std::map<int64_t /* version_id */, FailureInfo> failure_counts_;
-
-  scoped_refptr<URLLoaderFactoryGetter> loader_factory_getter_;
 
   scoped_refptr<blink::URLLoaderFactoryBundle>
       loader_factory_bundle_for_update_check_;
@@ -469,9 +498,14 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::unique_ptr<mojo::Receiver<storage::mojom::QuotaClient>>
       quota_client_receiver_;
 
-  base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
+  // A set of StorageKeys that have at least one registration.
+  // TODO(http://crbug.com/824858): This can be removed when service workers are
+  // fully converted to running on the UI thread.
+  std::set<blink::StorageKey> registered_storage_keys_;
+  bool registrations_initialized_ = false;
+  base::OnceClosure on_registrations_initialized_for_test_;
 
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextCore);
+  base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };
 
 }  // namespace content

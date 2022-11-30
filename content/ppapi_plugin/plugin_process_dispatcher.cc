@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,7 @@ PluginProcessDispatcher::~PluginProcessDispatcher() {
   // plugin. This is the case for common plugins where they may be used on a
   // source and destination page of a navigation. We don't want to tear down
   // and re-start processes each time in these cases.
-  process_ref_.ReleaseWithDelay(
-      base::TimeDelta::FromSeconds(kPluginReleaseTimeSeconds));
+  process_ref_.ReleaseWithDelay(base::Seconds(kPluginReleaseTimeSeconds));
 }
 
 }  // namespace content

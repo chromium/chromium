@@ -1,13 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 #define HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/browser/configuration_policy_pref_store.h"
+#include "components/policy/core/browser/browser_policy_connector.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/configuration_policy_pref_store.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
@@ -37,7 +39,7 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       override;
 
-  bool IsEnterpriseManaged() const override;
+  bool IsDeviceEnterpriseManaged() const override;
 
   bool IsCommandLineSwitchSupported() const override;
 
@@ -48,7 +50,7 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 
   // Owned by the base class.
-  ConfigurationPolicyProvider* platform_provider_ = nullptr;
+  raw_ptr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
 };
 
 }  // namespace policy

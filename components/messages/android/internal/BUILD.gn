@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/messages/MessageAnimationCoordinator.java",
     "java/src/org/chromium/components/messages/MessageAutoDismissTimer.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinator.java",
     "java/src/org/chromium/components/messages/MessageBannerMediator.java",
@@ -29,23 +30,26 @@ android_library("java") {
     "..:java_resources",
     "..:manager_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/components/messages/MessageAnimationCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
+    "java/src/org/chromium/components/messages/MessageBannerCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
+    "java/src/org/chromium/components/messages/MessageDispatcherUnitTest.java",
     "java/src/org/chromium/components/messages/MessageQueueManagerTest.java",
+    "java/src/org/chromium/components/messages/ScopeChangeControllerTest.java",
   ]
   deps = [
     ":java",
@@ -57,15 +61,16 @@ java_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageBannerRenderTest.java",
@@ -78,6 +83,8 @@ android_library("javatests") {
     "..:java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//components/browser_ui/test/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -90,8 +97,10 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/message_bg_tinted.xml",
+    "java/res/drawable-v23/message_bg_tinted.xml",
+    "java/res/drawable-v31/message_bg_tinted.xml",
     "java/res/layout/message_banner_view.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

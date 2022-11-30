@@ -30,11 +30,12 @@
 
 #include "third_party/blink/renderer/core/xml/parser/shared_buffer_reader.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-
 #include <algorithm>
 #include <cstring>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -48,7 +49,7 @@ int SharedBufferReader::ReadData(char* output_buffer, int asked_to_read) {
     return 0;
 
   size_t bytes_copied = 0;
-  size_t len_to_copy = std::min(SafeCast<size_t>(asked_to_read),
+  size_t len_to_copy = std::min(base::checked_cast<size_t>(asked_to_read),
                                 buffer_->size() - current_offset_);
   for (auto it = buffer_->GetIteratorAt(current_offset_); it != buffer_->cend();
        ++it) {
@@ -61,7 +62,7 @@ int SharedBufferReader::ReadData(char* output_buffer, int asked_to_read) {
   }
 
   current_offset_ += bytes_copied;
-  return SafeCast<int>(bytes_copied);
+  return base::checked_cast<int>(bytes_copied);
 }
 
 }  // namespace blink

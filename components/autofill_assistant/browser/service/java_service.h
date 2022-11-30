@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -25,12 +26,17 @@ class JavaService : public Service {
  public:
   explicit JavaService(
       const base::android::JavaParamRef<jobject>& java_service);
+
+  JavaService(const JavaService&) = delete;
+  JavaService& operator=(const JavaService&) = delete;
+
   ~JavaService() override;
 
   // Get scripts for a given |url|, which should be a valid URL.
-  void GetScriptsForUrl(const GURL& url,
-                        const TriggerContext& trigger_context,
-                        ResponseCallback callback) override;
+  void GetScriptsForUrl(
+      const GURL& url,
+      const TriggerContext& trigger_context,
+      ServiceRequestSender::ResponseCallback callback) override;
 
   // Get actions.
   void GetActions(const std::string& script_path,
@@ -38,7 +44,7 @@ class JavaService : public Service {
                   const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
-                  ResponseCallback callback) override;
+                  ServiceRequestSender::ResponseCallback callback) override;
 
   // Get next sequence of actions according to server payloads in previous
   // response.
@@ -48,12 +54,21 @@ class JavaService : public Service {
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       const RoundtripTimingStats& timing_stats,
-      ResponseCallback callback) override;
+      const RoundtripNetworkStats& network_stats,
+      ServiceRequestSender::ResponseCallback callback) override;
+
+  // Get user data.
+  void GetUserData(const CollectUserDataOptions& options,
+                   uint64_t run_id,
+                   const UserData* user_data,
+                   ServiceRequestSender::ResponseCallback callback) override;
+
+  void ReportProgress(const std::string& token,
+                      const std::string& payload,
+                      ServiceRequestSender::ResponseCallback callback) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaService);
 };
 
 }  // namespace autofill_assistant

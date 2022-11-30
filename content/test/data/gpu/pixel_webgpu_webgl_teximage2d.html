@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGPU texImage2D test</title>
+  <style type="text/css">
+  .nomargin {
+    margin: 0px auto;
+  }
+  </style>
+  <script type="text/javascript" src="pixel_webgpu_util.js"></script>
+  <script type="text/javascript">
+    var g_swapsBeforeAck = 15;
+
+    async function main() {
+      const glCanvas = document.getElementById('canvas_gl');
+      const gl = glCanvas.getContext('webgl2', {antialias: false});
+      if (!gl) {
+        console.error('getContext(webgl) failed');
+        return null;
+      }
+
+      const gpuCanvas = document.getElementById('canvas_gpu');
+      const [device, swapChain] = await webGpuUtils.init(gpuCanvas);
+      if (!device || !swapChain) {
+        console.error("Failed to initialize WebGPU - skipping test");
+        domAutomationController.send("FAILURE");
+        return;
+      }
+
+      const renderCallback = function() {
+        webGpuUtils.fourColorsTest(device, swapChain, gpuCanvas.width,
+                                   gpuCanvas.height);
+
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(
+            gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, gpuCanvas);
+
+        const fbo = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo);
+        gl.framebufferTexture2D(
+            gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+
+        gl.blitFramebuffer(0, 0, gpuCanvas.width, gpuCanvas.height, 0, 0,
+                           glCanvas.width, glCanvas.height, gl.COLOR_BUFFER_BIT,
+                           gl.LINEAR);
+
+        gl.deleteFramebuffer(fbo);
+        gl.deleteTexture(tex);
+
+        waitForFinish();
+      };
+
+      window.requestAnimationFrame(renderCallback);
+    }
+
+    function waitForFinish() {
+      if (g_swapsBeforeAck == 0) {
+        domAutomationController.send("SUCCESS");
+      } else {
+        g_swapsBeforeAck--;
+        window.requestAnimationFrame(waitForFinish);
+      }
+    }
+  </script>
+</head>
+<body onload="main()">
+  <canvas id="canvas_gl" width="200" height="200" class="nomargin"></canvas>
+  <canvas id="canvas_gpu" width="200" height="200" class="nomargin"></canvas>
+</body>
+</html>

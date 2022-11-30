@@ -84,105 +84,109 @@
     <output filename="values-zh-rHK/permissions_android_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/permissions_android_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/permissions_android_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/permissions_android_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/permissions_android_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
-    <file lang="af" path="translations/permissions_android_strings_af.xtb" />
-    <file lang="am" path="translations/permissions_android_strings_am.xtb" />
-    <file lang="ar" path="translations/permissions_android_strings_ar.xtb" />
-    <file lang="as" path="translations/permissions_android_strings_as.xtb" />
-    <file lang="az" path="translations/permissions_android_strings_az.xtb" />
-    <file lang="be" path="translations/permissions_android_strings_be.xtb" />
-    <file lang="bg" path="translations/permissions_android_strings_bg.xtb" />
-    <file lang="bn" path="translations/permissions_android_strings_bn.xtb" />
-    <file lang="bs" path="translations/permissions_android_strings_bs.xtb" />
-    <file lang="ca" path="translations/permissions_android_strings_ca.xtb" />
-    <file lang="cs" path="translations/permissions_android_strings_cs.xtb" />
-    <file lang="da" path="translations/permissions_android_strings_da.xtb" />
-    <file lang="de" path="translations/permissions_android_strings_de.xtb" />
-    <file lang="el" path="translations/permissions_android_strings_el.xtb" />
-    <file lang="en-GB" path="translations/permissions_android_strings_en-GB.xtb" />
-    <file lang="es" path="translations/permissions_android_strings_es.xtb" />
-    <file lang="es-419" path="translations/permissions_android_strings_es-419.xtb" />
-    <file lang="et" path="translations/permissions_android_strings_et.xtb" />
-    <file lang="eu" path="translations/permissions_android_strings_eu.xtb" />
-    <file lang="fa" path="translations/permissions_android_strings_fa.xtb" />
-    <file lang="fi" path="translations/permissions_android_strings_fi.xtb" />
-    <file lang="fil" path="translations/permissions_android_strings_fil.xtb" />
-    <file lang="fr" path="translations/permissions_android_strings_fr.xtb" />
-    <file lang="fr-CA" path="translations/permissions_android_strings_fr-CA.xtb" />
-    <file lang="gl" path="translations/permissions_android_strings_gl.xtb" />
-    <file lang="gu" path="translations/permissions_android_strings_gu.xtb" />
-    <file lang="hi" path="translations/permissions_android_strings_hi.xtb" />
-    <file lang="hr" path="translations/permissions_android_strings_hr.xtb" />
-    <file lang="hu" path="translations/permissions_android_strings_hu.xtb" />
-    <file lang="hy" path="translations/permissions_android_strings_hy.xtb" />
-    <file lang="id" path="translations/permissions_android_strings_id.xtb" />
-    <file lang="is" path="translations/permissions_android_strings_is.xtb" />
-    <file lang="it" path="translations/permissions_android_strings_it.xtb" />
-    <file lang="iw" path="translations/permissions_android_strings_iw.xtb" />
-    <file lang="ja" path="translations/permissions_android_strings_ja.xtb" />
-    <file lang="ka" path="translations/permissions_android_strings_ka.xtb" />
-    <file lang="kk" path="translations/permissions_android_strings_kk.xtb" />
-    <file lang="km" path="translations/permissions_android_strings_km.xtb" />
-    <file lang="kn" path="translations/permissions_android_strings_kn.xtb" />
-    <file lang="ko" path="translations/permissions_android_strings_ko.xtb" />
-    <file lang="ky" path="translations/permissions_android_strings_ky.xtb" />
-    <file lang="lo" path="translations/permissions_android_strings_lo.xtb" />
-    <file lang="lt" path="translations/permissions_android_strings_lt.xtb" />
-    <file lang="lv" path="translations/permissions_android_strings_lv.xtb" />
-    <file lang="mk" path="translations/permissions_android_strings_mk.xtb" />
-    <file lang="ml" path="translations/permissions_android_strings_ml.xtb" />
-    <file lang="mn" path="translations/permissions_android_strings_mn.xtb" />
-    <file lang="mr" path="translations/permissions_android_strings_mr.xtb" />
-    <file lang="ms" path="translations/permissions_android_strings_ms.xtb" />
-    <file lang="my" path="translations/permissions_android_strings_my.xtb" />
-    <file lang="ne" path="translations/permissions_android_strings_ne.xtb" />
-    <file lang="nl" path="translations/permissions_android_strings_nl.xtb" />
-    <file lang="no" path="translations/permissions_android_strings_no.xtb" />
-    <file lang="or" path="translations/permissions_android_strings_or.xtb" />
-    <file lang="pa" path="translations/permissions_android_strings_pa.xtb" />
-    <file lang="pl" path="translations/permissions_android_strings_pl.xtb" />
-    <file lang="pt-BR" path="translations/permissions_android_strings_pt-BR.xtb" />
-    <file lang="pt-PT" path="translations/permissions_android_strings_pt-PT.xtb" />
-    <file lang="ro" path="translations/permissions_android_strings_ro.xtb" />
-    <file lang="ru" path="translations/permissions_android_strings_ru.xtb" />
-    <file lang="si" path="translations/permissions_android_strings_si.xtb" />
-    <file lang="sk" path="translations/permissions_android_strings_sk.xtb" />
-    <file lang="sl" path="translations/permissions_android_strings_sl.xtb" />
-    <file lang="sq" path="translations/permissions_android_strings_sq.xtb" />
-    <file lang="sr" path="translations/permissions_android_strings_sr.xtb" />
-    <file lang="sr-Latn" path="translations/permissions_android_strings_sr-Latn.xtb" />
-    <file lang="sv" path="translations/permissions_android_strings_sv.xtb" />
-    <file lang="sw" path="translations/permissions_android_strings_sw.xtb" />
-    <file lang="ta" path="translations/permissions_android_strings_ta.xtb" />
-    <file lang="te" path="translations/permissions_android_strings_te.xtb" />
-    <file lang="th" path="translations/permissions_android_strings_th.xtb" />
-    <file lang="tr" path="translations/permissions_android_strings_tr.xtb" />
-    <file lang="uk" path="translations/permissions_android_strings_uk.xtb" />
-    <file lang="ur" path="translations/permissions_android_strings_ur.xtb" />
-    <file lang="uz" path="translations/permissions_android_strings_uz.xtb" />
-    <file lang="vi" path="translations/permissions_android_strings_vi.xtb" />
-    <file lang="zh-CN" path="translations/permissions_android_strings_zh-CN.xtb" />
-    <file lang="zh-HK" path="translations/permissions_android_strings_zh-HK.xtb" />
-    <file lang="zh-TW" path="translations/permissions_android_strings_zh-TW.xtb" />
-    <file lang="zu" path="translations/permissions_android_strings_zu.xtb" />
+    <file path="translations/permissions_android_strings_af.xtb" lang="af" />
+    <file path="translations/permissions_android_strings_am.xtb" lang="am" />
+    <file path="translations/permissions_android_strings_ar.xtb" lang="ar" />
+    <file path="translations/permissions_android_strings_as.xtb" lang="as" />
+    <file path="translations/permissions_android_strings_az.xtb" lang="az" />
+    <file path="translations/permissions_android_strings_be.xtb" lang="be" />
+    <file path="translations/permissions_android_strings_bg.xtb" lang="bg" />
+    <file path="translations/permissions_android_strings_bn.xtb" lang="bn" />
+    <file path="translations/permissions_android_strings_bs.xtb" lang="bs" />
+    <file path="translations/permissions_android_strings_ca.xtb" lang="ca" />
+    <file path="translations/permissions_android_strings_cs.xtb" lang="cs" />
+    <file path="translations/permissions_android_strings_cy.xtb" lang="cy" />
+    <file path="translations/permissions_android_strings_da.xtb" lang="da" />
+    <file path="translations/permissions_android_strings_de.xtb" lang="de" />
+    <file path="translations/permissions_android_strings_el.xtb" lang="el" />
+    <file path="translations/permissions_android_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/permissions_android_strings_es.xtb" lang="es" />
+    <file path="translations/permissions_android_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/permissions_android_strings_et.xtb" lang="et" />
+    <file path="translations/permissions_android_strings_eu.xtb" lang="eu" />
+    <file path="translations/permissions_android_strings_fa.xtb" lang="fa" />
+    <file path="translations/permissions_android_strings_fi.xtb" lang="fi" />
+    <file path="translations/permissions_android_strings_fil.xtb" lang="fil" />
+    <file path="translations/permissions_android_strings_fr.xtb" lang="fr" />
+    <file path="translations/permissions_android_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/permissions_android_strings_gl.xtb" lang="gl" />
+    <file path="translations/permissions_android_strings_gu.xtb" lang="gu" />
+    <file path="translations/permissions_android_strings_hi.xtb" lang="hi" />
+    <file path="translations/permissions_android_strings_hr.xtb" lang="hr" />
+    <file path="translations/permissions_android_strings_hu.xtb" lang="hu" />
+    <file path="translations/permissions_android_strings_hy.xtb" lang="hy" />
+    <file path="translations/permissions_android_strings_id.xtb" lang="id" />
+    <file path="translations/permissions_android_strings_is.xtb" lang="is" />
+    <file path="translations/permissions_android_strings_it.xtb" lang="it" />
+    <file path="translations/permissions_android_strings_iw.xtb" lang="iw" />
+    <file path="translations/permissions_android_strings_ja.xtb" lang="ja" />
+    <file path="translations/permissions_android_strings_ka.xtb" lang="ka" />
+    <file path="translations/permissions_android_strings_kk.xtb" lang="kk" />
+    <file path="translations/permissions_android_strings_km.xtb" lang="km" />
+    <file path="translations/permissions_android_strings_kn.xtb" lang="kn" />
+    <file path="translations/permissions_android_strings_ko.xtb" lang="ko" />
+    <file path="translations/permissions_android_strings_ky.xtb" lang="ky" />
+    <file path="translations/permissions_android_strings_lo.xtb" lang="lo" />
+    <file path="translations/permissions_android_strings_lt.xtb" lang="lt" />
+    <file path="translations/permissions_android_strings_lv.xtb" lang="lv" />
+    <file path="translations/permissions_android_strings_mk.xtb" lang="mk" />
+    <file path="translations/permissions_android_strings_ml.xtb" lang="ml" />
+    <file path="translations/permissions_android_strings_mn.xtb" lang="mn" />
+    <file path="translations/permissions_android_strings_mr.xtb" lang="mr" />
+    <file path="translations/permissions_android_strings_ms.xtb" lang="ms" />
+    <file path="translations/permissions_android_strings_my.xtb" lang="my" />
+    <file path="translations/permissions_android_strings_ne.xtb" lang="ne" />
+    <file path="translations/permissions_android_strings_nl.xtb" lang="nl" />
+    <file path="translations/permissions_android_strings_no.xtb" lang="no" />
+    <file path="translations/permissions_android_strings_or.xtb" lang="or" />
+    <file path="translations/permissions_android_strings_pa.xtb" lang="pa" />
+    <file path="translations/permissions_android_strings_pl.xtb" lang="pl" />
+    <file path="translations/permissions_android_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/permissions_android_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/permissions_android_strings_ro.xtb" lang="ro" />
+    <file path="translations/permissions_android_strings_ru.xtb" lang="ru" />
+    <file path="translations/permissions_android_strings_si.xtb" lang="si" />
+    <file path="translations/permissions_android_strings_sk.xtb" lang="sk" />
+    <file path="translations/permissions_android_strings_sl.xtb" lang="sl" />
+    <file path="translations/permissions_android_strings_sq.xtb" lang="sq" />
+    <file path="translations/permissions_android_strings_sr.xtb" lang="sr" />
+    <file path="translations/permissions_android_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/permissions_android_strings_sv.xtb" lang="sv" />
+    <file path="translations/permissions_android_strings_sw.xtb" lang="sw" />
+    <file path="translations/permissions_android_strings_ta.xtb" lang="ta" />
+    <file path="translations/permissions_android_strings_te.xtb" lang="te" />
+    <file path="translations/permissions_android_strings_th.xtb" lang="th" />
+    <file path="translations/permissions_android_strings_tr.xtb" lang="tr" />
+    <file path="translations/permissions_android_strings_uk.xtb" lang="uk" />
+    <file path="translations/permissions_android_strings_ur.xtb" lang="ur" />
+    <file path="translations/permissions_android_strings_uz.xtb" lang="uz" />
+    <file path="translations/permissions_android_strings_vi.xtb" lang="vi" />
+    <file path="translations/permissions_android_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/permissions_android_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/permissions_android_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/permissions_android_strings_zu.xtb" lang="zu" />
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_INFOBAR_MISSING_AR_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to augmented reality capabilities, but Chrome is missing the Android camera permission.">
-        Chrome needs permission to access your camera to create a 3D map of your surroundings.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera to create a 3D map of your surroundings.
       </message>
       <message name="IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the camera capabilities, but Chrome is missing the Android camera permission.">
-        Chrome needs permission to access your camera for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone capabilities, but Chrome is missing the Android microphone permission.">
-        Chrome needs permission to access your microphone for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your microphone for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT" desc="Text shown in an infobar when a website has requested access to the microphone and camera capabilities, but Chrome is missing the Android microphone and camera permissions.">
-        Chrome needs permission to access your camera and microphone for this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs permission to access your camera and microphone for this site.
       </message>
       <message name="IDS_INFOBAR_MISSING_LOCATION_PERMISSION_TEXT" desc="Text shown in an infobar when a website has requested access to the location capabilities, but Chrome is missing the Android location permission.">
-        Chrome needs access to your location to share your location with this site.
+        <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> needs access to your location to share your location with this site.
       </message>
       <message name="IDS_INFOBAR_UPDATE_PERMISSIONS_BUTTON_TEXT" desc="Button text shown when Chrome does not have the necessary permission required to complete the requested tasks (e.g. a website has request location information, but Chrome is missing that Android permission).">
         Continue
@@ -202,6 +206,67 @@
       </message>
       <message name="IDS_OVERLAY_DETECTED_DIALOG_MESSAGE" desc="Dialog message that informs the user about detected overlay window that prevents interaction with permissions.">
         Close any bubbles or overlays from other apps. Then, try again.
+      </message>
+
+      <!-- Bluetooth Picker UI strings -->
+      <message name="IDS_BLUETOOTH_ADAPTER_OFF_HELP" desc="The status message to show along with the message when the bluetooth adapter is turned off (to get Help).">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_CONFIRM_BUTTON" desc="The button to confirm association of a website with a Bluetooth device. Use the same term as in 'Pair this Bluetooth headset with your phone.'">
+        Pair
+      </message>
+      <message name="IDS_SIGNAL_STRENGTH_LEVEL_N_BARS" desc="Text to be shown next to devices indicating their received signal strength. [ICU Syntax]">
+        {N_BARS, plural,
+          =1 {Signal Strength Level: # bar}
+          other {Signal Strength Level: # bars}}
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_CONNECTED" desc="Content description for the connected icon next to connected Bluetooth devices.">
+        Connected Device
+      </message>
+      <message name="IDS_BLUETOOTH_DIALOG_TITLE" desc="The header message shown on top of the dialog that lets the user pick a Bluetooth device for the site to pair with. Shown above a list of Bluetooth devices discovered. ">
+        <ph name="SITE">%1$s<ex>https://www.google.com</ex></ph> wants to pair</message>
+      <message name="IDS_BLUETOOTH_NOT_FOUND" desc="The label shown to the user to inform them that no Bluetooth devices were found matching the requirements that the application provided.">
+        No compatible devices found
+      </message>
+      <message name="IDS_BLUETOOTH_SEARCHING" desc="The message shown in the Bluetooth picker dialog while scanning for devices.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph> while scanning for devices…
+      </message>
+      <message name="IDS_BLUETOOTH_NOT_SEEING_IT_IDLE" desc="The message to show at the bottom of the dialog when Bluetooth scanning has uncovered some items but is no longer discovering devices. Allows the user to restart the scan, in case their device is not listed.">
+        <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>Get help<ph name="END_LINK1">&lt;/link1&gt;</ph> or <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>re-scan<ph name="END_LINK2">&lt;/link2&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_SERVICES_ON" desc="The message to show when scanning cannot start because Android location services are off, but they must be turned on for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. Location access is <ph name="BEGIN_LINK">&lt;services_link&gt;</ph>turned off for this device<ph name="END_LINK">&lt;/services_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION_AND_SERVICES_ON" desc="The message to show when scanning cannot start because Chrome doesn't have the Location permission and the device's location services are turned off, and both must be enabled in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. <ph name="BEGIN_LINK1">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK1">&lt;/permission_link&gt;</ph>. Location access is also <ph name="BEGIN_LINK2">&lt;services_link&gt;</ph>turned off for this device<ph name="END_LINK2">&lt;/services_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_NEARBY_DEVICES_PERMISSION" desc="The message to show when scanning cannot start because Chrome needs the Nearby devices permission in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs permission to scan for nearby devices. <ph name="BEGIN_LINK">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK">&lt;/permission_link&gt;</ph>.
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION" desc="The message to show when scanning cannot start because Chrome needs the Location permission in order for Android to return any Bluetooth devices from a scan.">
+        Chrome needs location access to scan for devices. <ph name="BEGIN_LINK">&lt;permission_link&gt;</ph>Update permissions<ph name="END_LINK">&lt;/permission_link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NEED_LOCATION_PERMISSION_HELP" desc="The status message to get more information about why Chrome needs the Location permission in order to scan for Bluetooth devices.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_BLUETOOTH_UNABLE_TO_TURN_ON_ADAPTER" desc="The message to show when Chrome is unable to turn on the Bluetooth adapter.">
+          Chrome is unable to turn on Bluetooth adapter
+      </message>
+      <message name="IDS_BLUETOOTH_ADAPTER_OFF" desc="The message to show when scanning cannot start because the bluetooth adapter is turned off.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Turn on Bluetooth<ph name="END_LINK">&lt;/link&gt;</ph> to allow pairing
+      </message>
+
+      <!-- Bluetooth Scanning Prompt strings -->
+      <message name="IDS_BLUETOOTH_SCANNING_PROMPT_ORIGIN" desc="The label that is used to introduce Bluetooth scanning prompt details to the user when it is from a website.">
+        <ph name="SITE">%1$s<ex>www.google.com</ex></ph> wants to scan for nearby Bluetooth devices. The following devices have been found:
+      </message>
+      <message name="IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN" desc="Text to identify Bluetooth devices of unknown or unsupported class.">
+        Unknown or unsupported device (<ph name="DEVICE_ID">%1$s<ex>A1:B2:C3:D4:E5:F6</ex></ph>)
+      </message>
+
+      <!-- Item Chooser UI strings -->
+      <message name="IDS_ITEM_CHOOSER_ITEM_NAME_WITH_ID" desc="To distinguish items with the same name, the item chooser shows the item name with id.">
+        <ph name="ITEM_NAME">%1$s<ex>item_name</ex></ph> (<ph name="ITEM_ID">%2$s<ex>item id</ex></ph>)
       </message>
     </messages>
   </release>

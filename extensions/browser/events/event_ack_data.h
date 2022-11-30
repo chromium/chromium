@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
 #define EXTENSIONS_BROWSER_EVENTS_EVENT_ACK_DATA_H_
-
-#include <map>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +18,10 @@ namespace extensions {
 class EventAckData {
  public:
   EventAckData();
+
+  EventAckData(const EventAckData&) = delete;
+  EventAckData& operator=(const EventAckData&) = delete;
+
   ~EventAckData();
 
   // Records the fact that an event with |event_id| was dispatched to an
@@ -59,12 +61,9 @@ class EventAckData {
       base::OnceClosure failure_callback);
 
   // Contains map of unacked event information keyed by event id.
-  // Created on UI thread, but accessed only on the core thread.
   scoped_refptr<CoreThreadEventInfo> unacked_events_;
 
   base::WeakPtrFactory<EventAckData> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventAckData);
 };
 
 }  // namespace extensions

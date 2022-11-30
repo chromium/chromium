@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,24 +41,25 @@ public class QueryTileUtilsTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
-            ChromeFeatureList.QUERY_TILES_IN_NTP})
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
     @DisableFeatures(ChromeFeatureList.QUERY_TILES_SEGMENTATION)
-    public void
-    testIsQueryTilesEnabledOnNTPWithoutSegmentation() {
+    public void testIsQueryTilesEnabledOnNTPWithoutSegmentation() {
         Assert.assertTrue(QueryTileUtils.isQueryTilesEnabledOnNTP());
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
-            ChromeFeatureList.QUERY_TILES_IN_NTP, ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
+            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:mv_tile_click_threshold/0"})
     public void
-    testShouldShowQueryTilesWithDefaultParams() {
+    testShouldShowQueryTilesWithLowerThreshold() {
         Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
 
         nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD);
@@ -104,13 +106,10 @@ public class QueryTileUtilsTest {
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
-            ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:mv_tile_click_threshold/1"})
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
+            ChromeFeatureList.QUERY_TILES_SEGMENTATION})
     public void
-    testShouldShowQueryTilesWithHigherThreshold() {
+    testShouldShowQueryTilesWithDefaultThreshold() {
         nextDecisionTimeReached();
         QueryTileUtils.onMostVisitedTileClicked();
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
@@ -119,12 +118,11 @@ public class QueryTileUtilsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
-            ChromeFeatureList.QUERY_TILES_IN_NTP,
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
             ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:num_days_keep_showing_query_tiles/10/"
-                    + "num_days_mv_clicks_below_threshold/2"})
+                    + "num_days_mv_clicks_below_threshold/2/mv_tile_click_threshold/0"})
     public void
     testShouldShowQueryTilesWithShorterDisplayDurations() {
         nextDecisionTimeReached();
@@ -135,6 +133,71 @@ public class QueryTileUtilsTest {
         nextDecisionTimeReached();
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
         nextDecisionTimeStampInDays(10);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
+            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:behavioural_targeting/model_comparison/"
+                    + "mv_tile_click_threshold/0"})
+    public void
+    testShowQueryTilesSegmentationResultComparison() {
+        QueryTileUtils.setSegmentationResultsForTesting(1 /*DONT_SHOW*/);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+
+        nextDecisionTimeReached();
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+        Assert.assertEquals(2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
+                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
+                                .SEGMENTATION_DISABLED_LOGIC_ENABLED));
+
+        nextDecisionTimeReached();
+        QueryTileUtils.onMostVisitedTileClicked();
+        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
+        Assert.assertEquals(3,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
+                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
+                                .SEGMENTATION_DISABLED_LOGIC_DISABLED));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:behavioural_targeting/model"})
+    public void
+    testShouldUseSegmentationModel() {
+        // Set segmentation model to show query tiles.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
+        QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
+
+        // Verify that query tiles is shown via segmentation model when no previous history.
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that query tiles is shown via segmentation model when previous decision time
+        // expired.
+        nextDecisionTimeReached();
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that segmentation is not used when previous decision time did not expire.
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
+        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
     }
 
     /**

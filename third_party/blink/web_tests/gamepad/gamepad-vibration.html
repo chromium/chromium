@@ -48,6 +48,8 @@ promise_test(async (t) => {
                   Function.prototype);
     assert_equals(gamepad.vibrationActuator.reset.__proto__,
                   Function.prototype);
+    assert_equals(gamepad.vibrationActuator.canPlay.__proto__,
+                  Function.prototype);
 }, "validate gamepad haptic actuator API");
 
 promise_test(async (t) => {
@@ -126,6 +128,45 @@ promise_test(async (t) => {
     gamepadController.disconnect(0);
     await disconnectPromise;
 }, "vibration actuator is null for disconnected gamepad");
+
+promise_test(async (t) => {
+    // Connect a gamepad with a dual-rumble vibration actuator.
+    let connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "Xbox 360");
+    gamepadController.setDualRumbleVibrationActuator(0, true);
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    // Connect a gamepad with trigger-rumble vibration actuator.
+    connectPromise = ongamepadconnected(t);
+    gamepadController.connect(1);
+    gamepadController.setId(1, "Xbox Elite");
+    gamepadController.setTriggerRumbleVibrationActuator(1, true);
+    gamepadController.dispatchConnected(1);
+    await connectPromise;
+
+    let dualRumbleGamepad = navigator.getGamepads()[0];
+    assert_true(dualRumbleGamepad.vibrationActuator.canPlay("dual-rumble"));
+    assert_false(dualRumbleGamepad.vibrationActuator.canPlay("trigger-rumble"));
+
+    let triggerRumbleGamepad = navigator.getGamepads()[1];
+    assert_true(triggerRumbleGamepad.vibrationActuator.canPlay("dual-rumble"));
+    assert_true(triggerRumbleGamepad.vibrationActuator.canPlay("trigger-rumble"));
+}, "canPlay should report correct the gamepad capabilites");
+
+promise_test(async (t) => {
+    // Connect a gamepad with trigger-rumble vibration actuator.
+    connectPromise = ongamepadconnected(t);
+    gamepadController.connect(0);
+    gamepadController.setId(0, "Xbox Elite");
+    gamepadController.setTriggerRumbleVibrationActuator(0, true);
+    gamepadController.dispatchConnected(0);
+    await connectPromise;
+
+    let triggerRumbleGamepad = navigator.getGamepads()[0];
+    assert_throws_js(TypeError, () => triggerRumbleGamepad.vibrationActuator.canPlay("unknown-rumble"));
+}, "canPlay should throw a TypeError for unknown effect types");
 
 </script>
 </body>

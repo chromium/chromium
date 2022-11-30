@@ -1,57 +1,38 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/diagnostics_app.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {DiagnosticsAppElement} from 'chrome://diagnostics/diagnostics_app.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, RoutineType, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
+import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeKeyboards, fakeMemoryUsage, fakeNetworkGuidInfoList, fakeSystemInfo, fakeTouchDevices, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
+import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {KeyboardInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {setInputDataProviderForTesting, setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.m.js';
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
-
-/**
- * @param {Array<?T>} cards
- * @template T
- * @throws {!Error}
- */
-function assertRunTestButtonsDisabled(cards) {
-  cards.forEach((card) => {
-    const routineSection = dx_utils.getRoutineSection(card);
-    const runTestsButton =
-        dx_utils.getRunTestsButtonFromSection(routineSection);
-    assertTrue(runTestsButton.disabled);
-  });
-}
-
-/**
- * @param {Array<?T>} cards
- * @template T
- * @throws {!Error}
- */
-function assertRunTestButtonsEnabled(cards) {
-  cards.forEach((card) => {
-    const routineSection = dx_utils.getRoutineSection(card);
-    const runTestsButton =
-        dx_utils.getRunTestsButtonFromSection(routineSection);
-    assertFalse(runTestsButton.disabled);
-  });
-}
 
 export function appTestSuite() {
   /** @type {?DiagnosticsAppElement} */
   let page = null;
 
   /** @type {?FakeSystemDataProvider} */
-  let provider = null;
+  let systemDataProvider = null;
+
+  /** @type {?FakeNetworkHealthProvider} */
+  let networkHealthProvider = null;
 
   /** @type {!FakeSystemRoutineController} */
   let routineController;
@@ -60,15 +41,14 @@ export function appTestSuite() {
   let DiagnosticsBrowserProxy = null;
 
   suiteSetup(() => {
-    provider = new FakeSystemDataProvider();
-    setSystemDataProviderForTesting(provider);
+    systemDataProvider = new FakeSystemDataProvider();
+    networkHealthProvider = new FakeNetworkHealthProvider();
+
+    setSystemDataProviderForTesting(systemDataProvider);
+    setNetworkHealthProviderForTesting(networkHealthProvider);
 
     DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
-    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
-  });
-
-  setup(() => {
-    document.body.innerHTML = '';
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
 
     // Setup a fake routine controller.
     routineController = new FakeSystemRoutineController();
@@ -76,21 +56,96 @@ export function appTestSuite() {
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+        routineController.getAllRoutines());
 
     setSystemRoutineControllerForTesting(routineController);
   });
 
-  teardown(() => {
-    if (page) {
-      page.remove();
-    }
-    page = null;
-    provider.reset();
+  setup(() => {
+    document.body.innerHTML = '';
   });
 
+  teardown(() => {
+    page.remove();
+    page = null;
+    systemDataProvider.reset();
+    networkHealthProvider.reset();
+  });
+
+  /** @return {!HTMLElement} */
+  function getCautionBanner() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('diagnostics-sticky-banner'));
+  }
+
+  /** @return {!HTMLElement} */
+  function getCautionBannerMessage() {
+    return /** @type {!HTMLElement} */ (
+        getCautionBanner().shadowRoot.querySelector('#bannerMsg'));
+  }
+
   /**
-   *
+   * @return {!CrButtonElement}
+   */
+  function getSessionLogButton() {
+    assertTrue(!!page);
+
+    return /** @type {!CrButtonElement} */ (
+        page.shadowRoot.querySelector('.session-log-button'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentDrawer() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-drawer]'));
+  }
+
+  /**
+   * @return {!HTMLElement}
+   */
+  function getBottomNavContentPanel() {
+    assertTrue(!!page);
+
+    return /** @type {!HTMLElement} */ (
+        page.shadowRoot.querySelector('[slot=bottom-nav-content-panel]'));
+  }
+
+  /**
+   * Triggers 'dismiss-caution-banner' custom event.
+   * @return {!Promise}
+   */
+  function triggerDismissBannerEvent() {
+    window.dispatchEvent(new CustomEvent('dismiss-caution-banner', {
+      bubbles: true,
+      composed: true,
+    }));
+
+    return flushTasks();
+  }
+
+  /**
+   * Triggers 'show-caution-banner' custom event with correctly configured event
+   * detail object based on provided message.
+   * @param {string} message
+   * @return {!Promise}
+   */
+  function triggerShowBannerEvent(message) {
+    window.dispatchEvent(new CustomEvent('show-caution-banner', {
+      bubbles: true,
+      composed: true,
+      detail: {message},
+    }));
+
+    return flushTasks();
+  }
+
+  /**
    * @param {!SystemInfo} systemInfo
    * @param {!Array<!BatteryChargeStatus>} batteryChargeStatus
    * @param {!Array<!BatteryHealth>} batteryHealth
@@ -104,12 +159,19 @@ export function appTestSuite() {
     assertFalse(!!page);
 
     // Initialize the fake data.
-    provider.setFakeSystemInfo(systemInfo);
-    provider.setFakeBatteryChargeStatus(batteryChargeStatus);
-    provider.setFakeBatteryHealth(batteryHealth);
-    provider.setFakeBatteryInfo(batteryInfo);
-    provider.setFakeCpuUsage(cpuUsage);
-    provider.setFakeMemoryUsage(memoryUsage);
+    systemDataProvider.setFakeSystemInfo(systemInfo);
+    systemDataProvider.setFakeBatteryChargeStatus(batteryChargeStatus);
+    systemDataProvider.setFakeBatteryHealth(batteryHealth);
+    systemDataProvider.setFakeBatteryInfo(batteryInfo);
+    systemDataProvider.setFakeCpuUsage(cpuUsage);
+    systemDataProvider.setFakeMemoryUsage(memoryUsage);
+
+    networkHealthProvider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
+    networkHealthProvider.setFakeNetworkState(
+        'ethernetGuid', [fakeEthernetNetwork]);
+    networkHealthProvider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    networkHealthProvider.setFakeNetworkState(
+        'cellularGuid', [fakeCellularNetwork]);
 
     page = /** @type {!DiagnosticsAppElement} */ (
         document.createElement('diagnostics-app'));
@@ -118,186 +180,149 @@ export function appTestSuite() {
     return flushTasks();
   }
 
-  /**
-   * Get the session log button.
-   * @return {!CrButtonElement}
-   */
-  function getSessionLogButton() {
-    return /** @type {!CrButtonElement} */ (page.$$('.session-log-button'));
-  }
+  if (window.isNetworkEnabled || window.isInputEnabled) {
+    test('SystemPagePopulated', () => {
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            const systemPage =
+                dx_utils.getNavigationViewPanelElement(page, 'system');
+            assertTrue(!!systemPage);
+            assertTrue(isVisible(systemPage));
+            assertFalse(isVisible(getCautionBanner()));
+            assertFalse(isVisible(getBottomNavContentDrawer()));
+            assertTrue(isVisible(getBottomNavContentPanel()));
+            assertTrue(isVisible(getSessionLogButton()));
+          });
+    });
 
-  /**
-   * Clicks the session log button.
-   * @return {!Promise}
-   */
-  function clickSessionLogButton() {
-    getSessionLogButton().click();
+    test('BannerVisibliblityTogglesWithEvents', () => {
+      const bannerMessage = 'Diagnostics Banner Message';
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            assertFalse(isVisible(getCautionBanner()));
+
+            return triggerShowBannerEvent(bannerMessage);
+          })
+          .then(() => {
+            assertTrue(isVisible(getCautionBanner()));
+            dx_utils.assertElementContainsText(
+                getCautionBannerMessage(), bannerMessage);
+
+            return triggerDismissBannerEvent();
+          })
+          .then(() => assertFalse(isVisible(getCautionBanner())));
+    });
+
+    test('SaveSessionLogDisabledUntilResolved', () => {
+      return initializeDiagnosticsApp(
+                 fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+                 fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+          .then(() => {
+            assertFalse(getSessionLogButton().disabled);
+
+            DiagnosticsBrowserProxy.setSuccess(true);
+            getSessionLogButton().click();
+            assertTrue(getSessionLogButton().disabled);
+
+            return flushTasks();
+          })
+          .then(() => {
+            assertFalse(getSessionLogButton().disabled);
+          });
+    });
+  }
+}
+
+export function appTestSuiteForInputHiding() {
+  /** @type {?DiagnosticsAppElement} */
+  let page = null;
+
+  /** @type {?FakeSystemDataProvider} */
+  let systemDataProvider = null;
+
+  /** @type {?FakeInputDataProvider} */
+  let inputDataProvider = null;
+
+  /** @type {?TestDiagnosticsBrowserProxy} */
+  let DiagnosticsBrowserProxy = null;
+
+  suiteSetup(() => {
+    systemDataProvider = new FakeSystemDataProvider();
+    systemDataProvider.setFakeSystemInfo(fakeSystemInfo);
+    systemDataProvider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
+    systemDataProvider.setFakeBatteryHealth(fakeBatteryHealth);
+    systemDataProvider.setFakeBatteryInfo(fakeBatteryInfo);
+    systemDataProvider.setFakeCpuUsage(fakeCpuUsage);
+    systemDataProvider.setFakeMemoryUsage(fakeMemoryUsage);
+    setSystemDataProviderForTesting(systemDataProvider);
+
+    inputDataProvider = new FakeInputDataProvider();
+    setInputDataProviderForTesting(inputDataProvider);
+
+    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
+    DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
+  });
+
+  setup(() => {
+    document.body.innerHTML = '';
+
+    loadTimeData.overrideValues(
+        {isTouchpadEnabled: false, isTouchscreenEnabled: false});
+  });
+
+  teardown(() => {
+    loadTimeData.overrideValues(
+        {isTouchpadEnabled: true, isTouchscreenEnabled: true});
+
+    page.remove();
+    page = null;
+    inputDataProvider.reset();
+  });
+
+  /** @param {!Array<!KeyboardInfo>} keyboards */
+  function initializeDiagnosticsApp(keyboards) {
+    assertFalse(!!page);
+
+    inputDataProvider.setFakeConnectedDevices(keyboards, fakeTouchDevices);
+
+    page = /** @type {!DiagnosticsAppElement} */ (
+        document.createElement('diagnostics-app'));
+    assertTrue(!!page);
+    document.body.appendChild(page);
     return flushTasks();
   }
 
-  /**
-   * Returns whether the toast is visible or not.
-   * @return {boolean}
-   */
-  function isToastVisible() {
-    return page.$$('cr-toast').open;
+  /** @param {!string} id */
+  function navigationSelectorHasId(id) {
+    const items = page.shadowRoot.querySelector('navigation-view-panel')
+                      .shadowRoot.querySelector('navigation-selector')
+                      .selectorItems;
+    return !!items.find((item) => item.id === id);
   }
 
-  /**
-   * @param {boolean} isLoggedIn
-   * @suppress {visibility} // access private member
-   * @return {!Promise}
-   */
-  function changeLoggedInState(isLoggedIn) {
-    page.isLoggedIn_ = isLoggedIn;
-    return flushTasks();
-  }
+  test('InputPageHiddenWhenNoKeyboardsConnected', async () => {
+    await initializeDiagnosticsApp([]);
+    assertFalse(navigationSelectorHasId('input'));
 
-  /**
-   * Get the caution banner.
-   * @return {!HTMLElement}
-   */
-  function getCautionBanner() {
-    return /** @type {!HTMLElement} */ (page.$$('#banner'));
-  }
+    inputDataProvider.addFakeConnectedKeyboard(fakeKeyboards[0]);
+    await flushTasks();
+    assertTrue(navigationSelectorHasId('input'));
 
-  test('LandingPageLoaded', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          // Verify the overview card is in the page.
-          const overview = page.$$('#overviewCard');
-          assertTrue(!!overview);
-
-          // Verify the memory card is in the page.
-          const memory = page.$$('#memoryCard');
-          assertTrue(!!memory);
-
-          // Verify the CPU card is in the page.
-          const cpu = page.$$('#cpuCard');
-          assertTrue(!!cpu);
-
-          // Verify the battery status card is in the page.
-          const batteryStatus = page.$$('#batteryStatusCard');
-          assertTrue(!!batteryStatus);
-
-          // Verify the session log button is in the page.
-          const sessionLog = page.$$('.session-log-button');
-          assertTrue(!!sessionLog);
-        });
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    assertFalse(navigationSelectorHasId('input'));
   });
 
-  test('BatteryStatusCardHiddenIfNotSupported', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfoWithoutBattery, fakeBatteryChargeStatus,
-               fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage,
-               fakeMemoryUsage)
-        .then(() => {
-          // Verify the battery status card is not in the page.
-          const batteryStatus = page.$$('#batteryStatusCard');
-          assertFalse(!!batteryStatus);
-        });
-  });
+  test('InputPageShownWhenKeyboardConnectedAtLaunch', async () => {
+    await initializeDiagnosticsApp([fakeKeyboards[0]]);
+    assertTrue(navigationSelectorHasId('input'));
 
-  test('AllRunTestsButtonsDisabledWhileRunning', () => {
-    let cards = null;
-    let memoryRoutinesSection = null;
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          const batteryStatusCard = page.$$('battery-status-card');
-          const cpuCard = page.$$('cpu-card');
-          const memoryCard = page.$$('memory-card');
-          cards = [batteryStatusCard, cpuCard, memoryCard];
-
-          memoryRoutinesSection = dx_utils.getRoutineSection(memoryCard);
-          memoryRoutinesSection.isTestRunning = true;
-          return flushTasks();
-        })
-        .then(() => {
-          assertRunTestButtonsDisabled(cards);
-          memoryRoutinesSection.isTestRunning = false;
-          return flushTasks();
-        })
-        .then(() => assertRunTestButtonsEnabled(cards));
-  });
-
-  test('SaveSessionLogSuccessShowsToast', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          DiagnosticsBrowserProxy.setSuccess(true);
-          clickSessionLogButton().then(() => {
-            assertTrue(isToastVisible());
-            dx_utils.assertElementContainsText(
-                page.$$('#toast'),
-                loadTimeData.getString('sessionLogToastTextSuccess'));
-          });
-        });
-  });
-
-  test('SaveSessionLogFailure', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          DiagnosticsBrowserProxy.setSuccess(false);
-          clickSessionLogButton().then(() => {
-            assertTrue(isToastVisible());
-            dx_utils.assertElementContainsText(
-                page.$$('#toast'),
-                loadTimeData.getString('sessionLogToastTextFailure'));
-          });
-        });
-  });
-
-  test('SessionLogHiddenWhenNotLoggedIn', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => changeLoggedInState(/* isLoggedIn */ (false)))
-        .then(() => assertFalse(isVisible(getSessionLogButton())));
-  });
-
-  test('SessionLogShownWhenLoggedIn', () => {
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
-        .then(() => assertTrue(isVisible(getSessionLogButton())));
-  });
-
-  test('RunningCpuTestsShowsBanner', () => {
-    /** @type {?RoutineSectionElement} */
-    let routineSection;
-    /** @type {!Array<!RoutineType>} */
-    const routines = [
-      chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-    ];
-    routineController.setFakeStandardRoutineResult(
-        chromeos.diagnostics.mojom.RoutineType.kCpuCache,
-        chromeos.diagnostics.mojom.StandardRoutineResult.kTestPassed);
-    return initializeDiagnosticsApp(
-               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
-               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
-        .then(() => {
-          routineSection = dx_utils.getRoutineSection(page.$$('cpu-card'));
-          routineSection.routines = routines;
-          assertFalse(isVisible(getCautionBanner()));
-          return flushTasks();
-        })
-        .then(() => {
-          dx_utils.getRunTestsButtonFromSection(routineSection).click();
-          return flushTasks();
-        })
-        .then(() => {
-          assertTrue(isVisible(getCautionBanner()));
-          return routineController.resolveRoutineForTesting();
-        })
-        .then(() => flushTasks())
-        .then(() => assertFalse(isVisible(getCautionBanner())));
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    await flushTasks();
+    assertFalse(navigationSelectorHasId('input'));
   });
 }

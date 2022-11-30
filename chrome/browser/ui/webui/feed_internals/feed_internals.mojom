@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,13 @@ module feed_internals.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
+
+// Feed sorting order options.
+enum FeedOrder {
+  kUnspecified = 0,
+  kGrouped,
+  kReverseChron
+};
 
 // General properties of Feed suggestions.
 struct Properties {
@@ -21,8 +28,11 @@ struct Properties {
   // Whether prefetching for offline availability is enabled.
   bool is_prefetching_enabled;
 
-  // Whether the WebFeed UI is enabled.
-  bool is_web_feed_ui_enabled;
+  // Whether debugging the WebFeed follow intro is enabled.
+  bool is_web_feed_follow_intro_debug_enabled;
+
+  // Whether the legacy feed endpoint should be used.
+  bool use_feed_query_requests;
 
   // Last load stream status, human readable.
   string load_stream_status;
@@ -32,19 +42,9 @@ struct Properties {
 
   // Feed upload actions URL.
   url.mojom.Url feed_actions_url;
-};
 
-struct UserClassifier {
-  // User class description.
-  string user_class_description;
-
-  // Estimated average length of time between two successive suggestion views of
-  // in hours.
-  float avg_hours_between_views;
-
-  // Estimated average length of time between two successive uses of suggestions
-  // in hours.
-  float avg_hours_between_uses;
+  // Following feed order.
+  FeedOrder following_feed_order;
 };
 
 struct LastFetchProperties {
@@ -71,48 +71,23 @@ struct LastFetchProperties {
   mojo_base.mojom.TimeDelta last_action_upload_time;
 };
 
-// Models a single suggestion in the Feed.
-struct Suggestion {
-  // Title of the suggestion.
-  string title;
-
-  // URL of the suggested page.
-  url.mojom.Url url;
-
-  // Name of the content's publisher.
-  string publisher_name;
-
-  // URL of the image associated with the suggestion.
-  url.mojom.Url image_url;
-
-  // URL of the suggested page's favicon.
-  url.mojom.Url favicon_url;
-};
-
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
   // Get general property values.
   GetGeneralProperties() => (Properties properties);
 
-  // Get user classifier property values.
-  GetUserClassifierProperties() => (UserClassifier properties);
-
-  // Clear stored properties for the user classifier.
-  ClearUserClassifierProperties();
-
   // Get last fetch data.
   GetLastFetchProperties() => (LastFetchProperties properties);
 
-  // Clear all data cached by the Feed library. Also triggers a refresh of the
-  // Feed.
-  ClearCachedDataAndRefreshFeed();
+  // Trigger a refresh of the For-you Feed.
+  RefreshForYouFeed();
 
-  // Trigger a refresh of the Feed.
-  RefreshFeed();
+  // Trigger a refresh of the Following Feed.
+  RefreshFollowingFeed();
 
-  // Get the last known content with metadata.
-  GetCurrentContent() => (array<Suggestion> suggestions);
+  // Trigger a refresh of the Web Feed suggestions.
+  RefreshWebFeedSuggestions();
 
   // Internal state dump of the Feed library's process scope. Human-readable.
   GetFeedProcessScopeDump() => (string dump);
@@ -136,6 +111,13 @@ interface PageHandler {
   // testing purpose. See go/feed-stream-data-testing for more details.
   OverrideFeedStreamData(array<uint8> data);
 
-  // Sets whether the WebFeed UI is enabled.
-  SetWebFeedUIEnabled(bool enabled);
+  // Sets whether debugging the WebFeed follow intro is enabled.
+  SetWebFeedFollowIntroDebugEnabled(bool enabled);
+
+  // Sets whether the legacy feed endpoint should be used for Web Feed content
+  // fetches.
+  SetUseFeedQueryRequests(bool use_legacy);
+
+  // Sets the Following feed order in local preferences.
+  SetFollowingFeedOrder(FeedOrder order);
 };

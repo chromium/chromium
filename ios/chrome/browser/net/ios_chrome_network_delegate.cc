@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 
 #include <stdlib.h>
+#include <iterator>
 
 #include "base/base_paths.h"
 #include "base/debug/alias.h"
@@ -13,15 +14,17 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_options.h"
+#include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request.h"
 
@@ -54,8 +57,7 @@ void IOSChromeNetworkDelegate::InitializePrefsOnUIThread(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   if (enable_do_not_track) {
     enable_do_not_track->Init(prefs::kEnableDoNotTrack, pref_service);
-    enable_do_not_track->MoveToSequence(
-        base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+    enable_do_not_track->MoveToSequence(web::GetIOThreadTaskRunner({}));
   }
 }
 
@@ -68,42 +70,55 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
   return net::OK;
 }
 
-bool IOSChromeNetworkDelegate::OnCanGetCookies(
+bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
-    bool allowed_from_caller) {
-  // Null during tests, or when we're running in the system context.
-  if (!cookie_settings_)
-    return allowed_from_caller;
+    const net::FirstPartySetMetadata& first_party_set_metadata,
+    net::CookieAccessResultList& maybe_included_cookies,
+    net::CookieAccessResultList& excluded_cookies) {
+  // `cookie_settings_` is null during tests, or when we're running in the
+  // system context.
+  bool allowed =
+      !cookie_settings_ ||
+      cookie_settings_->IsFullCookieAccessAllowed(
+          request.url(), request.site_for_cookies().RepresentativeUrl(),
+          QueryReason::kCookies);
 
-  return allowed_from_caller &&
-         cookie_settings_->IsCookieAccessAllowed(
-             request.url(), request.site_for_cookies().RepresentativeUrl());
+  if (!allowed) {
+    ExcludeAllCookies(
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
+  }
+
+  return allowed;
 }
 
 bool IOSChromeNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
-    net::CookieOptions* options,
-    bool allowed_from_caller) {
+    net::CookieOptions* options) {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_)
-    return allowed_from_caller;
+    return true;
 
-  return allowed_from_caller &&
-         cookie_settings_->IsCookieAccessAllowed(
-             request.url(), request.site_for_cookies().RepresentativeUrl());
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      request.url(), request.site_for_cookies().RepresentativeUrl(),
+      QueryReason::kCookies);
 }
 
-bool IOSChromeNetworkDelegate::OnForcePrivacyMode(
+net::NetworkDelegate::PrivacySetting
+IOSChromeNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const base::Optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    net::SamePartyContext::Type same_party_context_type) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get())
-    return false;
+    return net::NetworkDelegate::PrivacySetting::kStateAllowed;
 
-  return !cookie_settings_->IsCookieAccessAllowed(
-      url, site_for_cookies.RepresentativeUrl(), top_frame_origin);
+  return cookie_settings_->IsFullCookieAccessAllowed(
+             url, site_for_cookies, top_frame_origin, QueryReason::kCookies)
+             ? net::NetworkDelegate::PrivacySetting::kStateAllowed
+             : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
 }
 
 bool IOSChromeNetworkDelegate::

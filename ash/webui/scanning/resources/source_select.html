@@ -1,0 +1,22 @@
+<style include="scanning-shared"></style>
+<scan-settings-section>
+  <span id="sourceLabel" slot="label" aria-hidden="true">
+    [[i18n('sourceDropdownLabel')]]
+  </span>
+  <div slot="settings">
+    <select id="sourceSelect" class="md-select"
+        value="{{selectedOption::change}}" disabled="[[disabled]]"
+        aria-labelledby="sourceLabel">
+      <template is="dom-repeat" items="[[options]]" as="source">
+        <option value="[[source.name]]" selected$='[[isDefaultOption(source)]]'>
+          [[getSourceTypeString_(source.type)]]
+        </option>
+      </template>
+      <template is="dom-if" if="[[!options.length]]" restamp>
+        <option value="">
+          [[i18n('defaultSourceOptionText')]]
+        </option>
+      </template>
+    </select>
+  </div>
+</scan-settings-section>

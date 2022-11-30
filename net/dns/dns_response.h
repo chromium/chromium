@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_response_result_extractor.h"
 #include "net/dns/public/dns_protocol.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class BigEndianWriter;
@@ -36,7 +35,7 @@ struct Header;
 // 4.1.3.
 struct NET_EXPORT_PRIVATE DnsResourceRecord {
   DnsResourceRecord();
-  explicit DnsResourceRecord(const DnsResourceRecord& other);
+  DnsResourceRecord(const DnsResourceRecord& other);
   DnsResourceRecord(DnsResourceRecord&& other);
   ~DnsResourceRecord();
 
@@ -70,9 +69,15 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   // Construct an uninitialized iterator.
   DnsRecordParser();
 
-  // Construct an iterator to process the |packet| of given |length|.
-  // |offset| points to the beginning of the answer section.
-  DnsRecordParser(const void* packet, size_t length, size_t offset);
+  // Construct an iterator to process the `packet` of given `length`.
+  // `offset` points to the beginning of the answer section. `ReadRecord()` will
+  // fail if called more than `num_records` times, no matter whether or not
+  // there is additional data at the end of the buffer that may appear to be a
+  // valid record.
+  DnsRecordParser(const void* packet,
+                  size_t length,
+                  size_t offset,
+                  size_t num_records);
 
   // Returns |true| if initialized.
   bool IsValid() const { return packet_ != nullptr; }
@@ -95,14 +100,18 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   // Parses the next resource record into |record|. Returns true if succeeded.
   bool ReadRecord(DnsResourceRecord* record);
 
-  // Skip a question section, returns true if succeeded.
-  bool SkipQuestion();
+  // Read a question section, returns true if succeeded. In `DnsResponse`,
+  // expected to be called during parse, after which the current offset will be
+  // after all questions.
+  bool ReadQuestion(std::string& out_dotted_qname, uint16_t& out_qtype);
 
  private:
-  const char* packet_;
-  size_t length_;
+  const char* packet_ = nullptr;
+  size_t length_ = 0;
+  size_t num_records_ = 0;
+  size_t num_records_parsed_ = 0;
   // Current offset within the packet.
-  const char* cur_;
+  const char* cur_ = nullptr;
 };
 
 // Buffer-holder for the DNS response allowing easy access to the header fields
@@ -125,7 +134,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
               const std::vector<DnsResourceRecord>& answers,
               const std::vector<DnsResourceRecord>& authority_records,
               const std::vector<DnsResourceRecord>& additional_records,
-              const base::Optional<DnsQuery>& query,
+              const absl::optional<DnsQuery>& query,
               uint8_t rcode = dns_protocol::kRcodeNOERROR,
               bool validate_records = true);
 
@@ -137,6 +146,11 @@ class NET_EXPORT_PRIVATE DnsResponse {
 
   // Constructs a response from |data|. Used for testing purposes only!
   DnsResponse(const void* data, size_t length, size_t answer_offset);
+
+  static DnsResponse CreateEmptyNoDataResponse(uint16_t id,
+                                               bool is_authoritative,
+                                               base::StringPiece qname,
+                                               uint16_t qtype);
 
   // Move-only.
   DnsResponse(DnsResponse&& other);
@@ -166,7 +180,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // nullopt if the ID is unknown. The ID will only be known if the response is
   // successfully constructed from data or if InitParse...() has been able to
   // parse at least as far as the ID (not necessarily a fully successful parse).
-  base::Optional<uint16_t> id() const;
+  absl::optional<uint16_t> id() const;
 
   // Returns true if response is valid, that is, after successful InitParse, or
   // after successful construction of a new response from data.
@@ -178,16 +192,27 @@ class NET_EXPORT_PRIVATE DnsResponse {
   uint16_t flags() const;  // excluding rcode
   uint8_t rcode() const;
 
+  unsigned question_count() const;
   unsigned answer_count() const;
   unsigned authority_count() const;
   unsigned additional_answer_count() const;
 
-  // Accessors to the question. The qname is unparsed.
-  base::StringPiece qname() const;
-  uint16_t qtype() const;
+  const std::vector<uint16_t>& qtypes() const {
+    DCHECK(parser_.IsValid());
+    DCHECK_EQ(question_count(), qtypes_.size());
+    return qtypes_;
+  }
+  const std::vector<std::string>& dotted_qnames() const {
+    DCHECK(parser_.IsValid());
+    DCHECK_EQ(question_count(), dotted_qnames_.size());
+    return dotted_qnames_;
+  }
 
-  // Returns qname in dotted format.
-  std::string GetDottedName() const;
+  // Shortcuts to get qtype or qname for single-query responses. Should only be
+  // used in cases where there is known to be exactly one question (e.g. because
+  // that has been validated by `InitParse()`).
+  uint16_t GetSingleQType() const;
+  base::StringPiece GetSingleDottedName() const;
 
   // Returns an iterator to the resource records in the answer section.
   // The iterator is valid only in the scope of the DnsResponse.
@@ -203,7 +228,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
                    bool validate_record);
   bool WriteAnswer(base::BigEndianWriter* writer,
                    const DnsResourceRecord& answer,
-                   const base::Optional<DnsQuery>& query,
+                   const absl::optional<DnsQuery>& query,
                    bool validate_record);
 
   // Convenience for header access.
@@ -219,6 +244,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // It is never updated afterwards, so can be used in accessors.
   DnsRecordParser parser_;
   bool id_available_ = false;
+  std::vector<std::string> dotted_qnames_;
+  std::vector<uint16_t> qtypes_;
 };
 
 }  // namespace net

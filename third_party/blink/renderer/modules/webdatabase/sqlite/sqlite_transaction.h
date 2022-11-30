@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -38,6 +37,10 @@ class SQLiteTransaction {
 
  public:
   SQLiteTransaction(SQLiteDatabase& db, bool read_only = false);
+
+  SQLiteTransaction(const SQLiteTransaction&) = delete;
+  SQLiteTransaction& operator=(const SQLiteTransaction&) = delete;
+
   ~SQLiteTransaction();
 
   void begin();
@@ -52,10 +55,8 @@ class SQLiteTransaction {
   SQLiteDatabase& db_;
   bool in_progress_;
   bool read_only_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteTransaction);
 };
 
 }  // namespace blink
 
-#endif  // SQLiteTransation_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_TRANSACTION_H_

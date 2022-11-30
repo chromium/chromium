@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,26 +24,27 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces_posix.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <net/if_media.h>
 #include <netinet/in_var.h>
 #include <sys/ioctl.h>
-#endif  // !OS_IOS
+#endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "net/base/network_interfaces_getifaddrs_android.h"
 // Declare getifaddrs() and freeifaddrs() weakly as they're only available
 // on Android N+.
 extern "C" {
 int getifaddrs(struct ifaddrs** __list_ptr) __attribute__((weak_import));
 void freeifaddrs(struct ifaddrs* __ptr) __attribute__((weak_import));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 namespace internal {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // MacOSX implementation of IPAttributesGetter which calls ioctl() on socket to
 // retrieve IP attributes.
@@ -130,14 +131,14 @@ IPAttributesGetterMac::GetNetworkInterfaceType(const ifaddrs* if_addr) {
   return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 bool IfaddrsToNetworkInterfaceList(int policy,
                                    const ifaddrs* interfaces,
                                    IPAttributesGetter* ip_attributes_getter,
                                    NetworkInterfaceList* networks) {
   // Enumerate the addresses assigned to network interfaces which are up.
-  for (const ifaddrs* interface = interfaces; interface != NULL;
+  for (const ifaddrs* interface = interfaces; interface != nullptr;
        interface = interface->ifa_next) {
     // Skip loopback interfaces, and ones which are down.
     if (!(IFF_RUNNING & interface->ifa_flags))
@@ -221,17 +222,20 @@ bool IfaddrsToNetworkInterfaceList(int policy,
 
 // This version of GetNetworkList() can only be called on Android N+, so give it
 // a different and internal name so it isn't invoked mistakenly.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace internal {
-bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks, int policy) {
+bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
+                                   int policy,
+                                   bool use_alternative_getifaddrs) {
   DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
             base::android::SDK_VERSION_NOUGAT);
   DCHECK(getifaddrs);
   DCHECK(freeifaddrs);
 #else
 bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
+  constexpr bool use_alternative_getifaddrs = false;
 #endif
-  if (networks == NULL)
+  if (networks == nullptr)
     return false;
 
   // getifaddrs() may require IO operations.
@@ -239,24 +243,45 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
                                                 base::BlockingType::MAY_BLOCK);
 
   ifaddrs* interfaces;
-  if (getifaddrs(&interfaces) < 0) {
+  int getifaddrs_result;
+  if (use_alternative_getifaddrs) {
+#if BUILDFLAG(IS_ANDROID)
+    // Chromium ships its own implementation of getifaddrs()
+    // under the name Getifaddrs.
+    getifaddrs_result = Getifaddrs(&interfaces);
+#else
+    NOTREACHED();
+#endif
+  } else {
+    getifaddrs_result = getifaddrs(&interfaces);
+  }
+  if (getifaddrs_result < 0) {
     PLOG(ERROR) << "getifaddrs";
     return false;
   }
 
   std::unique_ptr<internal::IPAttributesGetter> ip_attributes_getter;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ip_attributes_getter = std::make_unique<internal::IPAttributesGetterMac>();
 #endif
 
   bool result = internal::IfaddrsToNetworkInterfaceList(
       policy, interfaces, ip_attributes_getter.get(), networks);
-  freeifaddrs(interfaces);
+
+  if (use_alternative_getifaddrs) {
+#if BUILDFLAG(IS_ANDROID)
+    Freeifaddrs(interfaces);
+#else
+    NOTREACHED();
+#endif
+  } else {
+    freeifaddrs(interfaces);
+  }
   return result;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 }  // namespace internal
 // For Android use GetWifiSSID() impl in network_interfaces_linux.cc.
 #else

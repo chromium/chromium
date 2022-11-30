@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ namespace test {
 class TestDeviceStatusListener : public DeviceStatusListener {
  public:
   TestDeviceStatusListener();
+
+  TestDeviceStatusListener(const TestDeviceStatusListener&) = delete;
+  TestDeviceStatusListener& operator=(const TestDeviceStatusListener&) = delete;
+
   ~TestDeviceStatusListener() override;
 
   // Notifies observer with current device status.
@@ -33,8 +37,6 @@ class TestDeviceStatusListener : public DeviceStatusListener {
   void StartAfterDelay();
 
   base::WeakPtrFactory<TestDeviceStatusListener> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestDeviceStatusListener);
 };
 
 }  // namespace test

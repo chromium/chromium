@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,6 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -33,16 +31,12 @@ class ScopedLayerAnimationSettings;
 
 namespace ash {
 
-class AppListConfig;
 class AppListPage;
 class AppListView;
 class ApplicationDragAndDropHost;
-class AppListFolderItem;
 class AppListMainView;
 class AppsContainerView;
-class AppsGridView;
 class AssistantPageView;
-class ExpandArrowView;
 class SearchBoxView;
 class SearchResultPageView;
 
@@ -61,22 +55,34 @@ class ASH_EXPORT ContentsView : public views::View,
         : contents_view_(contents_view) {
       contents_view_->set_active_state_without_animation_ = true;
     }
+
+    ScopedSetActiveStateAnimationDisabler(
+        const ScopedSetActiveStateAnimationDisabler&) = delete;
+    ScopedSetActiveStateAnimationDisabler& operator=(
+        const ScopedSetActiveStateAnimationDisabler&) = delete;
+
     ~ScopedSetActiveStateAnimationDisabler() {
       contents_view_->set_active_state_without_animation_ = false;
     }
 
    private:
     ContentsView* const contents_view_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSetActiveStateAnimationDisabler);
   };
 
   explicit ContentsView(AppListView* app_list_view);
+
+  ContentsView(const ContentsView&) = delete;
+  ContentsView& operator=(const ContentsView&) = delete;
+
   ~ContentsView() override;
+
+  // Returns the search box top margin when app list view is in peeking/half
+  // state, and showing the provided `page`.
+  static int GetPeekingSearchBoxTopMarginOnPage(AppListState page);
 
   // Initialize the pages of the launcher. Should be called after
   // set_contents_switcher_view().
-  void Init(AppListModel* model);
+  void Init();
 
   // Resets the state of the view so it is ready to be shown.
   void ResetForShow();
@@ -107,8 +113,6 @@ class ASH_EXPORT ContentsView : public views::View,
   void ShowEmbeddedAssistantUI(bool show);
   bool IsShowingEmbeddedAssistantUI() const;
 
-  void ShowFolderContent(AppListFolderItem* folder);
-
   // Sets the active launcher page and animates the pages into place.
   void SetActiveState(AppListState state);
   void SetActiveState(AppListState state, bool animate);
@@ -132,8 +136,8 @@ class ASH_EXPORT ContentsView : public views::View,
 
   int NumLauncherPages() const;
 
-  SearchResultPageView* search_results_page_view() const {
-    return search_results_page_view_;
+  SearchResultPageView* search_result_page_view() const {
+    return search_result_page_view_;
   }
   AppsContainerView* apps_container_view() const {
     return apps_container_view_;
@@ -145,8 +149,6 @@ class ASH_EXPORT ContentsView : public views::View,
   AppListMainView* GetAppListMainView() const;
 
   AppListView* app_list_view() const { return app_list_view_; }
-
-  ExpandArrowView* expand_arrow_view() const { return expand_arrow_view_; }
 
   AppListViewState target_view_state() const { return target_view_state_; }
 
@@ -165,11 +167,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // state and app list view state.
   gfx::Rect GetSearchBoxBoundsForViewState(AppListState state,
                                            AppListViewState view_state) const;
-
-  // Returns the expected search box bounds based on the app list transition
-  // progress.
-  gfx::Rect GetSearchBoxExpectedBoundsForProgress(AppListState state,
-                                                  float progress) const;
 
   // Performs the 'back' action for the active page. Returns whether the action
   // was handled.
@@ -202,9 +199,6 @@ class ASH_EXPORT ContentsView : public views::View,
   gfx::Size AdjustSearchBoxSizeToFitMargins(
       const gfx::Size& preferred_size) const;
 
-  // Gets the current app list configuration.
-  const AppListConfig& GetAppListConfig() const;
-
  private:
   // Sets the active launcher page.
   void SetActiveStateInternal(int page_index, bool animate);
@@ -217,19 +211,6 @@ class ASH_EXPORT ContentsView : public views::View,
   void UpdateSearchBoxAnimation(double progress,
                                 AppListState current_state,
                                 AppListState target_state);
-
-  // Updates the expand arrow's behavior based on AppListViewState.
-  void UpdateExpandArrowBehavior(AppListViewState target_state);
-
-  // Updates the expand arrow visibility depending on the selected app list page
-  // and the app list view state.
-  // `target_state` - the target selected app list page.
-  // `target_app_list_view_state` - the target app list view state.
-  // `transition_duration` - the opacity transition duration. Should be set to
-  //     zero if the opacity transition should not be animated.
-  void UpdateExpandArrowOpacity(AppListState target_state,
-                                AppListViewState target_app_list_state,
-                                base::TimeDelta transition_duration);
 
   // Updates search box visibility based on the current state.
   void UpdateSearchBoxVisibility(AppListState current_state);
@@ -248,11 +229,6 @@ class ASH_EXPORT ContentsView : public views::View,
   void AddLauncherPageInternal(std::unique_ptr<AppListPage> view,
                                AppListState state);
 
-  // Gets the PaginationModel owned by the AppsGridView.
-  // Note: This is different to |pagination_model_|, which manages top-level
-  // launcher-page pagination.
-  PaginationModel* GetAppsPaginationModel();
-
   // Returns true if the |page| requires layout when transitioning from
   // |current_state| to |target_state|.
   bool ShouldLayoutPage(AppListPage* page,
@@ -269,13 +245,10 @@ class ASH_EXPORT ContentsView : public views::View,
   int GetSearchBoxTopForViewState(AppListState state,
                                   AppListViewState view_state) const;
 
-  // Unowned pointer to application list model.
-  AppListModel* model_ = nullptr;
-
   // Sub-views of the ContentsView. All owned by the views hierarchy.
   AssistantPageView* assistant_page_view_ = nullptr;
   AppsContainerView* apps_container_view_ = nullptr;
-  SearchResultPageView* search_results_page_view_ = nullptr;
+  SearchResultPageView* search_result_page_view_ = nullptr;
 
   // The child page views. Owned by the views hierarchy.
   std::vector<AppListPage*> app_list_pages_;
@@ -283,10 +256,7 @@ class ASH_EXPORT ContentsView : public views::View,
   // Owned by the views hierarchy.
   AppListView* const app_list_view_;
 
-  AppListViewState target_view_state_ = AppListViewState::kPeeking;
-
-  // Owned by the views hierarchy.
-  ExpandArrowView* expand_arrow_view_ = nullptr;
+  AppListViewState target_view_state_ = AppListViewState::kFullscreenAllApps;
 
   // Maps State onto |view_model_| indices.
   std::map<AppListState, int> state_to_view_;
@@ -308,10 +278,8 @@ class ASH_EXPORT ContentsView : public views::View,
   // state (either using UpdateYPositionAndOpacity() or AnimateToViewState()).
   // Used primarily to determine the initial search box position when animating
   // to a new app list view state.
-  base::Optional<AppListState> target_page_for_last_view_state_update_;
-  base::Optional<AppListViewState> last_target_view_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsView);
+  absl::optional<AppListState> target_page_for_last_view_state_update_;
+  absl::optional<AppListViewState> last_target_view_state_;
 };
 
 }  // namespace ash

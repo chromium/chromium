@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -25,6 +23,7 @@
 #include "services/preferences/tracked/interceptable_pref_filter.h"
 #include "services/preferences/tracked/pref_hash_store.h"
 #include "services/preferences/tracked/tracked_preference.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -60,14 +59,20 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // than |tracked_preferences.size()|).
   // |external_validation_hash_store_pair_| will be used (if non-null) to
   // perform extra validations without triggering resets.
-  PrefHashFilter(std::unique_ptr<PrefHashStore> pref_hash_store,
-                 StoreContentsPair external_validation_hash_store_pair_,
-                 const std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>&
-                     tracked_preferences,
-                 mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
-                     reset_on_load_observer,
-                 prefs::mojom::TrackedPreferenceValidationDelegate* delegate,
-                 size_t reporting_ids_count);
+  PrefHashFilter(
+      std::unique_ptr<PrefHashStore> pref_hash_store,
+      StoreContentsPair external_validation_hash_store_pair_,
+      const std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>&
+          tracked_preferences,
+      mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
+          reset_on_load_observer,
+      scoped_refptr<base::RefCountedData<
+          mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+          delegate,
+      size_t reporting_ids_count);
+
+  PrefHashFilter(const PrefHashFilter&) = delete;
+  PrefHashFilter& operator=(const PrefHashFilter&) = delete;
 
   ~PrefHashFilter() override;
 
@@ -139,18 +144,19 @@ class PrefHashFilter : public InterceptablePrefFilter {
   // A store and contents on which to perform extra validations without
   // triggering resets.
   // Will be null if the platform does not support external validation.
-  base::Optional<StoreContentsPair> external_validation_hash_store_pair_;
+  absl::optional<StoreContentsPair> external_validation_hash_store_pair_;
 
   // Notified if a reset occurs in a call to FilterOnLoad.
   mojo::Remote<prefs::mojom::ResetOnLoadObserver> reset_on_load_observer_;
+  scoped_refptr<base::RefCountedData<
+      mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+      delegate_;
 
   TrackedPreferencesMap tracked_paths_;
 
   // The set of all paths whose value has changed since the last call to
   // FilterSerializeData.
   ChangedPathsMap changed_paths_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefHashFilter);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_PREF_HASH_FILTER_H_

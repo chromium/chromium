@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,13 @@
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -16,6 +21,9 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -48,8 +56,9 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
     account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
     primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
-    return {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
-            account, primary_account};
+    return DiceWebSigninInterceptor::Delegate::BubbleParameters(
+        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
+        primary_account);
   }
 
   // Waits until the bubble is displayed and focused, and returns the view that
@@ -76,7 +85,7 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   void Refocus(views::View* view) {
     EXPECT_FALSE(view->HasFocus());
     // Mac uses Cmd-Option-ArrowDown, other platforms use F6.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::KeyboardCode key = ui::VKEY_DOWN;
     bool alt = true;
     bool command = true;
@@ -113,9 +122,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
                        InterceptionBubbleFocus) {
   // Create the inteerception bubble, owned by the view hierarchy.
   DiceWebSigninInterceptionBubbleView* bubble =
-      new DiceWebSigninInterceptionBubbleView(
-          browser()->profile(), GetAvatarButton(), GetTestBubbleParameters(),
-          base::DoNothing());
+      new DiceWebSigninInterceptionBubbleView(browser(), GetAvatarButton(),
+                                              GetTestBubbleParameters(),
+                                              base::DoNothing());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
   widget->Show();
   // The bubble takes focus when it is displayed.
@@ -125,4 +134,61 @@ IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
   Refocus(focused_view);
   // Cleanup.
   widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
+class ProfileMenuInteractiveUiTest : public ProfileBubbleInteractiveUiTest {
+ public:
+  void SetUp() override {
+    // On linux, ui_test_utils::SendKeyPressSync() triggers the accelerator
+    // twice. Again only on linux, the second keypress would close the bubble.
+    // This flag avoids it for the test.
+    ProfileMenuView::close_on_deactivate_for_testing_ = false;
+    ProfileBubbleInteractiveUiTest::SetUp();
+  }
+
+  ProfileMenuViewBase* profile_menu_view() {
+    auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+    return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
+                       : nullptr;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuInteractiveUiTest, OtherProfileFocus) {
+  base::HistogramTester histogram_tester;
+  // Add an additional profiles.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+
+  // Open the menu using the keyboard.
+  bool control = false;
+  bool command = false;
+#if BUILDFLAG(IS_MAC)
+  command = true;
+#else
+  control = true;
+#endif
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_M, control, /*shift=*/true, /*alt=*/false, command));
+  ASSERT_TRUE(profile_menu_view());
+
+  // This test doesn't care about performing the actual menu actions, only
+  // about the histogram recorded.
+  profile_menu_view()->set_perform_menu_actions_for_testing(false);
+
+  // The first other profile menu should be focused when the menu is opened
+  // via a key event.
+  views::View* focused_view =
+      profile_menu_view()->GetFocusManager()->GetFocusedView();
+  ASSERT_TRUE(focused_view);
+  focused_view->OnKeyPressed(
+      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE));
+  focused_view->OnKeyReleased(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Profile.Menu.ClickedActionableItem",
+      ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+      /*expected_bucket_count=*/1);
 }

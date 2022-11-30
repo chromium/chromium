@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/compiled_action.gni")
+
+# Generate C++ include file for the Chrome root store.
+compiled_action("gen_root_store_inc") {
+  tool = "//net/tools/root_store_tool:root_store_tool"
+
+  inputs = [
+    "root_store.certs",
+    "root_store.textproto",
+  ]
+  outputs = [
+    "${target_gen_dir}/chrome-root-store-inc.cc",
+    "${target_gen_dir}/chrome-ev-roots-inc.cc",
+  ]
+  args = [
+    "--root-store=" + rebase_path("root_store.textproto", root_build_dir),
+    "--certs=" + rebase_path("root_store.certs", root_build_dir),
+    "--write-cpp-root-store=" +
+        rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
+                    root_build_dir),
+    "--write-cpp-ev-roots=" +
+        rebase_path("${target_gen_dir}/chrome-ev-roots-inc.cc", root_build_dir),
+  ]
+}
+
+compiled_action("gen_root_store_test_inc") {
+  tool = "//net/tools/root_store_tool:root_store_tool"
+
+  inputs = [
+    "test_store.certs",
+    "test_store.textproto",
+  ]
+  outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
+  args = [
+    "--root-store=" + rebase_path("test_store.textproto", root_build_dir),
+    "--certs=" + rebase_path("test_store.certs", root_build_dir),
+    "--write-cpp-root-store=" +
+        rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
+                    root_build_dir),
+  ]
+}

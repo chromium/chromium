@@ -1,0 +1,4 @@
+include_rules = [
+  # AccessCodeCast relies on views for showing the dialog in Chrome OS.
+  "+chrome/browser/ui/views",
+]

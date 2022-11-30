@@ -150,14 +150,27 @@ function waitForAnimationEndTimeBased(getValue) {
   })
 }
 
-function waitForScrollEvent(eventTarget) {
+function waitForEvent(eventTarget, eventName, timeoutMs = 2000) {
   return new Promise((resolve, reject) => {
-    const scrollListener = () => {
-      eventTarget.removeEventListener('scroll', scrollListener);
-      resolve();
+    const eventListener = (evt) => {
+      clearTimeout(timeout);
+      eventTarget.removeEventListener(eventName, eventListener);
+      resolve(evt);
     };
-    eventTarget.addEventListener('scroll', scrollListener);
+    let timeout = setTimeout(() => {
+      eventTarget.removeEventListener(eventName, eventListener);
+      reject(`Timeout waiting for ${eventName} event`);
+    }, timeoutMs);
+    eventTarget.addEventListener(eventName, eventListener);
   });
+}
+
+function waitForScrollEvent(eventTarget, timeoutMs = 2000) {
+  return waitForEvent(eventTarget, 'scroll', timeoutMs);
+}
+
+function waitForScrollendEvent(eventTarget, timeoutMs = 2000) {
+  return waitForEvent(eventTarget, 'scrollend', timeoutMs);
 }
 
 // Event driven scroll promise. This method has the advantage over timing
@@ -167,7 +180,7 @@ function waitForScrollEvent(eventTarget) {
 // The promise is resolved when the result of calling getValue matches the
 // target value. The timeout timer starts once the first event has been
 // received.
-function waitForScrollEnd(eventTarget, getValue, targetValue) {
+function waitForScrollEnd(eventTarget, getValue, targetValue, errorMessage) {
   // Give up if the animation still isn't done after this many milliseconds from
   // the time of the first scroll event.
   const TIMEOUT_MS = 1000;
@@ -176,7 +189,9 @@ function waitForScrollEnd(eventTarget, getValue, targetValue) {
     let timeout = undefined;
     const scrollListener = () => {
       if (!timeout)
-        timeout = setTimeout(reject, TIMEOUT_MS);
+        timeout = setTimeout(() => {
+          reject(errorMessage || 'Timeout waiting for scroll end');
+        }, TIMEOUT_MS);
 
       if (getValue() == targetValue) {
         clearTimeout(timeout);
@@ -248,6 +263,28 @@ const Buttons = (function() {
   }
 })();
 
+// Takes a value from the Buttons enum (above) and returns an integer suitable
+// for the "button" property in the gpuBenchmarking.pointerActionSequence API.
+// Keep in sync with ToSyntheticMouseButton in actions_parser.cc.
+function pointerActionButtonId(button_str) {
+  if (button_str === undefined)
+    return undefined;
+
+  switch (button_str) {
+    case Buttons.LEFT:
+      return 0;
+    case Buttons.MIDDLE:
+      return 1;
+    case Buttons.RIGHT:
+      return 2;
+    case Buttons.BACK:
+      return 3;
+    case Buttons.FORWARD:
+      return 4;
+  }
+  throw new Error("invalid button");
+}
+
 // Use this for speed to make gestures (effectively) instant. That is, finish
 // entirely within one Begin|Update|End triplet. This is in physical
 // pixels/second.
@@ -256,6 +293,12 @@ const Buttons = (function() {
 // the synthetic gesture code modified to guarantee the single update behavior.
 // https://crbug.com/893608
 const SPEED_INSTANT = 400000;
+
+// Constant wheel delta value when percent based scrolling is enabled
+const WHEEL_DELTA = 100;
+
+// kMinFractionToStepWhenPaging constant from cc/input/scroll_utils.h
+const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
 
 // This will be replaced by smoothScrollWithXY.
 function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
@@ -411,13 +454,14 @@ function pinchBy(scale, centerX, centerY, speed_in_pixels_s, gesture_source_type
 }
 
 
-function mouseMoveTo(xPosition, yPosition) {
+function mouseMoveTo(xPosition, yPosition, withButtonPressed) {
   return new Promise(function(resolve, reject) {
     if (window.chrome && chrome.gpuBenchmarking) {
       chrome.gpuBenchmarking.pointerActionSequence([
         {source: 'mouse',
          actions: [
-            { name: 'pointerMove', x: xPosition, y: yPosition },
+            { name: 'pointerMove', x: xPosition, y: yPosition,
+              button: pointerActionButtonId(withButtonPressed) },
       ]}], resolve);
     } else {
       reject('This test requires chrome.gpuBenchmarking');
@@ -586,6 +630,24 @@ function touchTapOn(xPosition, yPosition) {
   });
 }
 
+function touchPull(pull) {
+  const PREVENT_FLING_PAUSE = 40;
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: pull.start_x, y: pull.start_y },
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+            { name: 'pointerMove', x: pull.end_x, y: pull.end_y},
+            { name: 'pause', duration: PREVENT_FLING_PAUSE },
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
 function touchDragTo(drag) {
   const PREVENT_FLING_PAUSE = 40;
   return new Promise(function(resolve, reject) {
@@ -600,7 +662,24 @@ function touchDragTo(drag) {
             { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
         ]}], resolve);
     } else {
-      reject();
+      reject('This test requires chrome.gpuBenchmarking');
+    }
+  });
+}
+
+// Trigger fling by doing pointerUp right after pointerMoves.
+function touchFling(drag) {
+  return new Promise(function(resolve, reject) {
+    if (window.chrome && chrome.gpuBenchmarking) {
+      chrome.gpuBenchmarking.pointerActionSequence( [
+        {source: 'touch',
+         actions: [
+            { name: 'pointerDown', x: drag.start_x, y: drag.start_y },
+            { name: 'pointerMove', x: drag.end_x, y: drag.end_y},
+            { name: 'pointerUp', x: drag.end_x, y: drag.end_y }
+        ]}], resolve);
+    } else {
+      reject('This test requires chrome.gpuBenchmarking');
     }
   });
 }

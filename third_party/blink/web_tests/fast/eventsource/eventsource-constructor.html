@@ -28,13 +28,6 @@ try {
 }
 
 try {
-    new EventSource("");
-    log("FAIL: no exception when passing an empty string to the EventSource constructor");
-} catch (e) {
-    log("PASS: passing an empty string to the EventSource constructor resulted in an exception (" + e + ")");
-}
-
-try {
     new EventSource("http://webserver:eighty/");
     log("FAIL: no exception when passing an invalid URL to the EventSource constructor");
 } catch (e) {

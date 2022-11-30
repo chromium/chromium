@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+
+// This should be kept in sync with
+// |ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType|
+// in csd.proto.
+enum MaldocaErrorType {
+  kOk = 0,
+  kCancelled = 1,
+  kUnknown = 2,
+  kInvalidArgument= 3,
+  kDeadlineExceeded = 4,
+  kNotFound = 5,
+  kAlreadyExists = 6,
+  kPermissionDenied = 7,
+  kResourceExhausted = 8,
+  kFailedPrecondition = 9,
+  kAborted = 10,
+  kOutOfRange = 11,
+  kUnimplemented = 12,
+  kInternal = 13,
+  kUnavailable = 14,
+  kDataLoss = 15,
+  kUnauthenticated = 16,
+  kDocTypeInferenceFailed = 1000,
+  kUnsupportedDocType = 1001,
+  kSandboxError = 1002,
+  kArchiveCorrupted = 1003,
+  kOLEDirParsingFailed = 1004,
+  kOLEFatHeaderParsingFailed = 1005,
+  kPrefixedANSIStringHeaderTooShort = 1006,
+  kPrefixedANSIStringContentTooShort = 1007,
+  kClipboardFormatOrANSIStringTooShort = 1008,
+  kBOFHeaderTooShort = 1009,
+  kNotBIFFFromat = 1010,
+  kFailParseBIFFVersion = 1011,
+  kInvalidDDEOLELink = 1012,
+  kOLENativeEmbeddedParseSizeFail = 1013,
+  kOLENativeEmbeddedSizeMismatch = 1014,
+  kOLENativeEmbeddedParseTypeFail = 1015,
+  kOLENativeEmbeddedParseFilenameFail = 1016,
+  kOLENativeEmbeddedParseFilepathFail = 1017,
+  kOLENativeEmbeddedParseReservedFail = 1018,
+  kOLENativeEmbeddedParseTemppathFail = 1019,
+  kOLENativeEmbeddedParseFilesizeFail = 1020,
+  kOLENativeEmbeddedFilesizeMismatch = 1021,
+  kOLENativeEmbeddedParseContentFail = 1022,
+  kInvalidOLE2Header = 1023,
+  kInvalidFatHeader = 1024,
+  kEmptyFatHeader = 1025,
+  kInvalidRootDir = 1026,
+  kMissingFileInArchive = 1027,
+  kInvalidXMLDoc = 1028,
+  kMissingProperties = 1029,
+  kNotImplementedForChrome = 1030,
+  kNotImplemented = 1031,
+  kMissingEncoding = 1032
+};
+
+// This struct encapsulates the results from using maldoca to analyze
+// |office_file|.
+// |success| indicates whether or not maldoca returned any status code other
+// than kOK.
+// |error_code| is the maldoca specific error code from processing the file.
+// |has_macros| indicates whether or not maldoca was able to detect the
+// presence of macros.
+// |error_message| is the potential error message provided by maldoca.
+struct SafeDocumentAnalyzerResults {
+  bool success;
+  MaldocaErrorType error_code;
+  bool has_macros;
+  string error_message;
+};
+
+// SafeDocumentAnalyzer is provided by the service process and exposed
+// by mojo policy control to the chrome browser process when build flag
+// ENABLE_MALDOCA is enabled.
+// AnalyzeDocument calls the maldoca library which performs the inspection
+// of the provided office document.
+interface SafeDocumentAnalyzer {
+  // Build flag ENABLE_MALDOCA: Analyze the |office_file| for malicious
+  // macros as part of download protection.
+  AnalyzeDocument(mojo_base.mojom.ReadOnlyFile office_file,
+                  mojo_base.mojom.FilePath file_path)
+                  => (SafeDocumentAnalyzerResults results);
+};

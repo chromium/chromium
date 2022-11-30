@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@
 namespace autofill_assistant {
 namespace {
 
-using ::base::test::RunOnceCallback;
-using ::testing::_;
 using ::testing::Pointee;
 using ::testing::Property;
 
@@ -47,10 +45,10 @@ class ReleaseElementsActionTest : public testing::Test {
 };
 
 TEST_F(ReleaseElementsActionTest, ReleasesSingleElement) {
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  ElementFinderResult element;
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_TRUE(mock_action_delegate_.GetElementStore()->HasElement(kClientId));
 
@@ -68,12 +66,12 @@ TEST_F(ReleaseElementsActionTest, ReleasesMultipleElements) {
   client_id_2.set_identifier(kOtherClientId);
   *proto_.add_client_ids() = client_id_2;
 
-  ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  ElementFinderResult element;
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
   mock_action_delegate_.GetElementStore()->AddElement(kOtherClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_TRUE(mock_action_delegate_.GetElementStore()->HasElement(kClientId));
   EXPECT_TRUE(

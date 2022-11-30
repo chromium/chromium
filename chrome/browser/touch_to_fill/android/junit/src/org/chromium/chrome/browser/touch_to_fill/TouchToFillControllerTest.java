@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,22 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FORMATTED_ORIGIN;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.ON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.SHOW_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.Px;
@@ -42,16 +50,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
-import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FaviconOrFallback;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -61,6 +73,8 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,16 +84,18 @@ import java.util.Collections;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE)
 public class TouchToFillControllerTest {
-    private static final String TEST_URL = "https://www.example.xyz";
+    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
             new Credential("Ana", "S3cr3t", "Ana", "https://m.a.xyz/", true, false, 0);
     private static final Credential BOB =
             new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
     private static final Credential CARL =
-            new Credential("Carl", "G3h3!m", "Carl", TEST_URL, false, false, 0);
+            new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
+    private static final WebAuthnCredential DINO =
+            new WebAuthnCredential("dino@example.com", "12345");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
@@ -93,30 +109,31 @@ public class TouchToFillControllerTest {
     @Mock
     private LargeIconBridge mMockIconBridge;
 
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogram;
-
     // Can't be local, as it has to be initialized by initMocks.
     @Captor
     private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
 
+    private final Context mContext = ContextUtils.getApplicationContext();
     private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogram);
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitScheme(anyString()))
                 .then(inv -> format(inv.getArgument(0)));
+        when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
         when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
-                     anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
+                     any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(inv.getArgument(0)));
 
-        mMediator.initialize(mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE);
+        mMediator.initialize(
+                mContext, mMockDelegate, mModel, mMockIconBridge, DESIRED_FAVICON_SIZE);
     }
 
     @Test
@@ -127,29 +144,203 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testShowCredentialsCreatesHeader() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithMultipleEntries() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 2 credentials
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+
         assertThat(itemList.get(0).type, is(ItemType.HEADER));
-        assertThat(itemList.get(0).model.get(SINGLE_CREDENTIAL), is(false));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
         assertThat(
                 itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
         assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
-    }
-    @Test
-    public void testShowCredentialWithSingleEntryCreatesHeader() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA));
-        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        assertThat(itemList.get(0).type, is(ItemType.HEADER));
-        assertThat(itemList.get(0).model.get(SINGLE_CREDENTIAL), is(true));
-        assertThat(
-                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
-        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
+
+        assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
+        assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+
+        assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
+        assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(format(CARL.getOriginUrl())));
+        assertThat(itemList.get(0).model.get(IMAGE_DRAWABLE_ID),
+                is(R.drawable.touch_to_fill_header_image));
     }
 
     @Test
-    public void testShowCredentialsSetsCredentialListAndRequestsFavicons() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB));
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithMultipleEntriesWithUpmDisabled() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), true);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 2 credentials
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_title)));
+        assertThat(
+                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
+        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
+
+        assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
+        assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+
+        assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
+        assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(format(CARL.getOriginUrl())));
+        assertThat(itemList.get(0).model.get(IMAGE_DRAWABLE_ID),
+                is(R.drawable.touch_to_fill_header_image));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithSingleEntry() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_uniform_title)));
+        assertThat(
+                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
+        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
+
+        assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
+        assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+
+        assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
+        assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(false));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithSingleEntryWithUpmDisabled() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_title_single)));
+        assertThat(
+                itemList.get(0).model.get(FORMATTED_URL), is(formatForSecurityDisplay(TEST_URL)));
+        assertThat(itemList.get(0).model.get(ORIGIN_SECURE), is(true));
+
+        assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(1).model.get(CREDENTIAL), is(ANA));
+        assertNotNull(itemList.get(1).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(1).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+
+        assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
+        assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithSingleWebAuthnEntry() {
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.emptyList(), Arrays.asList(DINO), false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passkeys)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_title_passkey)));
+
+        assertThat(itemList.get(1).type, is(ItemType.WEBAUTHN_CREDENTIAL));
+        assertThat(itemList.get(1).model.get(WEBAUTHN_CREDENTIAL), is(DINO));
+        assertNotNull(itemList.get(1).model.get(ON_WEBAUTHN_CLICK_LISTENER));
+
+        assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
+        assertThat(itemList.get(2).model.get(SHOW_WEBAUTHN_SUBMIT_BUTTON), is(false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsWithWebAuthnAndPasswordEntries() {
+        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA), Arrays.asList(DINO), false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(
+                itemList.size(), is(3)); // Header + 1 webauthn credential + 1 password credential
+        assertThat(mModel.get(MANAGE_BUTTON_TEXT),
+                is(mContext.getString(R.string.manage_passwords_and_passkeys)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(TITLE),
+                is(mContext.getString(R.string.touch_to_fill_sheet_title_password_or_passkey)));
+
+        assertThat(itemList.get(1).type, is(ItemType.WEBAUTHN_CREDENTIAL));
+        assertThat(itemList.get(1).model.get(WEBAUTHN_CREDENTIAL), is(DINO));
+        assertNotNull(itemList.get(1).model.get(ON_WEBAUTHN_CLICK_LISTENER));
+
+        assertThat(itemList.get(2).type, is(ItemType.CREDENTIAL));
+        assertThat(itemList.get(2).model.get(CREDENTIAL), is(ANA));
+        assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
+        assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(format(ANA.getOriginUrl())));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsToSubmit() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), true);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+        assertThat(
+                mModel.get(MANAGE_BUTTON_TEXT), is(mContext.getString(R.string.manage_passwords)));
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(SHOW_SUBMIT_SUBTITLE), is(true));
+
+        assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
+        assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(true));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsSetsCredentialListAndRequestsFavicons() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + three Credentials
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -171,8 +362,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testFetchFaviconUpdatesModel() {
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(CARL));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testFetchFaviconUpdatesModel() {
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(CARL), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -181,15 +376,15 @@ public class TouchToFillControllerTest {
 
         // ANA and CARL both have TEST_URL as their origin URL
         verify(mMockIconBridge)
-                .getLargeIconForStringUrl(
-                        eq(TEST_URL), eq(DESIRED_FAVICON_SIZE), mCallbackArgumentCaptor.capture());
+                .getLargeIconForStringUrl(eq(TEST_URL.getSpec()), eq(DESIRED_FAVICON_SIZE),
+                        mCallbackArgumentCaptor.capture());
         LargeIconBridge.LargeIconCallback callback = mCallbackArgumentCaptor.getValue();
         Bitmap bitmap = Bitmap.createBitmap(
                 DESIRED_FAVICON_SIZE, DESIRED_FAVICON_SIZE, Bitmap.Config.ARGB_8888);
         callback.onLargeIconAvailable(bitmap, 333, true, IconType.FAVICON);
         FaviconOrFallback iconData = itemList.get(1).model.get(FAVICON_OR_FALLBACK);
         assertThat(iconData.mIcon, is(bitmap));
-        assertThat(iconData.mUrl, is(TEST_URL));
+        assertThat(iconData.mUrl, is(TEST_URL.getSpec()));
         assertThat(iconData.mIconSize, is(DESIRED_FAVICON_SIZE));
         assertThat(iconData.mFallbackColor, is(333));
         assertThat(iconData.mIsFallbackColorDefault, is(true));
@@ -197,8 +392,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testShowCredentialsFormatPslOrigins() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, BOB));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsFormatPslOrigins() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(SHEET_ITEMS).size(), is(3)); // Header + two Credentials
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
         assertThat(mModel.get(SHEET_ITEMS).get(1).model.get(FORMATTED_ORIGIN),
@@ -209,8 +408,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testClearsCredentialListWhenShowingAgain() {
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(ANA));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testClearsCredentialListWhenShowingAgain() {
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(ANA), Collections.emptyList(), false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -218,7 +421,8 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(1).model.get(FAVICON_OR_FALLBACK), is(nullValue()));
 
         // Showing the sheet a second time should replace all changed credentials.
-        mMediator.showCredentials(TEST_URL, true, Collections.singletonList(BOB));
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.singletonList(BOB), Collections.emptyList(), false);
         itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(3)); // Header + Credential + Continue Button
         assertThat(itemList.get(1).type, is(ItemType.CREDENTIAL));
@@ -227,14 +431,22 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testShowCredentialsSetsVisibile() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testShowCredentialsSetsVisibile() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
     }
 
     @Test
-    public void testCallsCallbackAndHidesOnSelectingItemDoesNotRecordIndexForSingleCredential() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testCallsCallbackAndHidesOnSelectingItemDoesNotRecordIndexForSingleCredential() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
 
@@ -251,8 +463,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testCallsCallbackAndHidesOnSelectingItem() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testCallsCallbackAndHidesOnSelectingItem() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
 
@@ -269,8 +485,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnDismiss() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testCallsDelegateAndHidesOnDismiss() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL), Collections.emptyList(), false);
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         verify(mMockDelegate).onDismissed();
         assertThat(mModel.get(VISIBLE), is(false));
@@ -284,8 +504,12 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testHidesWhenSelectingManagePasswords() {
-        mMediator.showCredentials(TEST_URL, true, Arrays.asList(ANA, CARL, BOB));
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
+            ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void
+    testHidesWhenSelectingManagePasswords() {
+        mMediator.showCredentials(
+                TEST_URL, true, Arrays.asList(ANA, CARL, BOB), Collections.emptyList(), false);
         assertThat(mModel.get(ON_CLICK_MANAGE), is(notNullValue()));
         mModel.get(ON_CLICK_MANAGE).run();
         verify(mMockDelegate).onManagePasswordsSelected();
@@ -313,7 +537,7 @@ public class TouchToFillControllerTest {
      * @param originUrl A URL {@link String} to "format".
      * @return A "formatted" URL {@link String}.
      */
-    private static String formatForSecurityDisplay(String originUrl) {
-        return "formatted_for_security_" + originUrl + "_formatted_for_security";
+    private static String formatForSecurityDisplay(GURL originUrl) {
+        return "formatted_for_security_" + originUrl.getSpec() + "_formatted_for_security";
     }
 }

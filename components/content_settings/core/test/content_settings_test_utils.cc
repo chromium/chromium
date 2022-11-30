@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,46 +6,59 @@
 
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace content_settings {
 
 // static
-base::Value* TestUtils::GetContentSettingValue(
-    const ProviderInterface* provider,
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool include_incognito) {
+base::Value TestUtils::GetContentSettingValue(const ProviderInterface* provider,
+                                              const GURL& primary_url,
+                                              const GURL& secondary_url,
+                                              ContentSettingsType content_type,
+                                              bool include_incognito,
+                                              RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
-             provider, primary_url, secondary_url, content_type,
-             include_incognito, nullptr, nullptr, nullptr)
-      .release();
+      provider, primary_url, secondary_url, content_type, include_incognito,
+      nullptr, nullptr, metadata);
 }
 
 // static
-ContentSetting TestUtils::GetContentSetting(
-    const ProviderInterface* provider,
+ContentSetting TestUtils::GetContentSetting(const ProviderInterface* provider,
+                                            const GURL& primary_url,
+                                            const GURL& secondary_url,
+                                            ContentSettingsType content_type,
+                                            bool include_incognito,
+                                            RuleMetaData* metadata) {
+  return ValueToContentSetting(
+      GetContentSettingValue(provider, primary_url, secondary_url, content_type,
+                             include_incognito, metadata));
+}
+
+// static
+base::Time TestUtils::GetLastModified(
+    const content_settings::ProviderInterface* provider,
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type,
-    bool include_incognito) {
-  std::unique_ptr<base::Value> value(GetContentSettingValue(
-      provider, primary_url, secondary_url, content_type, include_incognito));
-  return ValueToContentSetting(value.get());
+    ContentSettingsType type) {
+  content_settings::RuleMetaData metadata;
+  content_settings::TestUtils::GetContentSetting(
+      provider, primary_url, secondary_url, type, false, &metadata);
+  return metadata.last_modified;
 }
 
 // static
-std::unique_ptr<base::Value> TestUtils::GetContentSettingValueAndPatterns(
+base::Value TestUtils::GetContentSettingValueAndPatterns(
     content_settings::RuleIterator* rule_iterator,
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsPattern* primary_pattern,
-    ContentSettingsPattern* secondary_pattern) {
+    ContentSettingsPattern* secondary_pattern,
+    RuleMetaData* metadata) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
       rule_iterator, primary_url, secondary_url, primary_pattern,
-      secondary_pattern, nullptr);
+      secondary_pattern, metadata);
 }
 
 // static

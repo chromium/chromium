@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 
 namespace remoting {
 
@@ -22,6 +22,10 @@ class RunningSamples {
   // Constructs a running sample helper that stores |window_size| most
   // recent samples.
   explicit RunningSamples(int window_size);
+
+  RunningSamples(const RunningSamples&) = delete;
+  RunningSamples& operator=(const RunningSamples&) = delete;
+
   virtual ~RunningSamples();
 
   // Records a point sample.
@@ -44,14 +48,13 @@ class RunningSamples {
   const size_t window_size_;
 
   // Stores the |window_size| most recently recorded samples.
-  base::circular_deque<int64_t> data_points_;
+  base::circular_deque<int64_t> data_points_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Holds the sum of the samples in |data_points_|.
-  int64_t sum_ = 0;
+  int64_t sum_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
-  base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunningSamples);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,12 +19,13 @@ import json_parse
 
 # The template for the header file of the generated FeatureProvider.
 HEADER_FILE_TEMPLATE = """
-// Copyright %(year)s The Chromium Authors. All rights reserved.
+// Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #ifndef %(header_guard)s
@@ -42,12 +43,13 @@ void %(method_name)s(FeatureProvider* provider);
 
 # The beginning of the .cc file for the generated FeatureProvider.
 CC_FILE_BEGIN = """
-// Copyright %(year)s The Chromium Authors. All rights reserved.
+// Copyright %(year)s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // GENERATED FROM THE FEATURES FILE:
 //   %(source_files)s
+// by tools/json_schema_compiler.
 // DO NOT EDIT.
 
 #include "%(header_file_path)s"
@@ -172,6 +174,7 @@ FEATURE_GRAMMAR = ({
                 'content_script': 'Feature::CONTENT_SCRIPT_CONTEXT',
                 'lock_screen_extension':
                 'Feature::LOCK_SCREEN_EXTENSION_CONTEXT',
+                'offscreen_extension': 'Feature::OFFSCREEN_EXTENSION_CONTEXT',
                 'web_page': 'Feature::WEB_PAGE_CONTEXT',
                 'webui': 'Feature::WEBUI_CONTEXT',
                 'webui_untrusted': 'Feature::WEBUI_UNTRUSTED_CONTEXT',
@@ -194,6 +197,9 @@ FEATURE_GRAMMAR = ({
             'subtype': str
         }
     },
+    'developer_mode_only': {
+        bool: {}
+    },
     'disallow_for_service_workers': {
         bool: {}
     },
@@ -208,6 +214,8 @@ FEATURE_GRAMMAR = ({
                 'theme': 'Manifest::TYPE_THEME',
                 'login_screen_extension':
                 'Manifest::TYPE_LOGIN_SCREEN_EXTENSION',
+                'chromeos_system_extension':
+                'Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION',
             },
             'allow_all': True
         },
@@ -259,6 +267,7 @@ FEATURE_GRAMMAR = ({
                 'linux': 'Feature::LINUX_PLATFORM',
                 'mac': 'Feature::MACOSX_PLATFORM',
                 'win': 'Feature::WIN_PLATFORM',
+                'fuchsia': 'Feature::FUCHSIA_PLATFORM',
             }
         }
     },
@@ -377,8 +386,8 @@ def DoesNotHaveAllowlistForHostedApps(value):
   # what the allowlist looks like) to a python list of strings.
   def cpp_list_to_list(cpp_list):
     assert type(cpp_list) is str
-    assert cpp_list[0] is '{'
-    assert cpp_list[-1] is '}'
+    assert cpp_list[0] == '{'
+    assert cpp_list[-1] == '}'
     new_list = json.loads('[%s]' % cpp_list[1:-1])
     assert type(new_list) is list
     return new_list
@@ -387,7 +396,6 @@ def DoesNotHaveAllowlistForHostedApps(value):
   # DO NOT ADD MORE.
   HOSTED_APP_EXCEPTIONS = [
       'B44D08FD98F1523ED5837D78D0A606EA9D6206E5',
-      '2653F6F6C39BC6EEBD36A09AFB92A19782FF7EB4',
   ]
 
   allowlist = cpp_list_to_list(value['allowlist'])

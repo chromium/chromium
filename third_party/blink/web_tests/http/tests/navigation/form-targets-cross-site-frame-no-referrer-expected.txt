@@ -17,6 +17,7 @@ HTTP_HOST = localhost:8080
 HTTP_ORIGIN = null
 HTTP_SEC_CH_UA = "content_shell";v="999"
 HTTP_SEC_CH_UA_MOBILE = ?0
+HTTP_SEC_CH_UA_PLATFORM = "Unknown"
 HTTP_SEC_FETCH_DEST = iframe
 HTTP_SEC_FETCH_MODE = navigate
 HTTP_SEC_FETCH_SITE = cross-site

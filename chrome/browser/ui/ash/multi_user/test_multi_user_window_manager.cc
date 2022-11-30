@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,12 +88,6 @@ const AccountId& TestMultiUserWindowManager::GetUserPresentingWindow(
 const AccountId& TestMultiUserWindowManager::CurrentAccountId() const {
   return current_account_id_;
 }
-
-void TestMultiUserWindowManager::AddObserver(
-    ash::MultiUserWindowManagerObserver* observer) {}
-
-void TestMultiUserWindowManager::RemoveObserver(
-    ash::MultiUserWindowManagerObserver* observer) {}
 
 TestMultiUserWindowManager::TestMultiUserWindowManager(
     Browser* visiting_browser,

@@ -1,16 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/browsing_data/cache_counter.h"
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/completion_repeating_callback.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -32,8 +32,8 @@ class IOThreadCacheCounter {
         backend_(nullptr) {}
 
   void Count() {
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindRepeating(&IOThreadCacheCounter::CountInternal,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindRepeating(&IOThreadCacheCounter::CountInternal,
                                        base::Unretained(this), net::OK));
   }
 
@@ -83,8 +83,8 @@ class IOThreadCacheCounter {
         case STEP_CALLBACK: {
           result_ = rv;
 
-          base::PostTask(
-              FROM_HERE, {web::WebThread::UI},
+          web::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE,
               base::BindOnce(&IOThreadCacheCounter::OnCountingFinished,
                              base::Unretained(this)));
 

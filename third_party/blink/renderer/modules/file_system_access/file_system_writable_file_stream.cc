@@ -1,20 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_write_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
-
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 
 namespace blink {
 
@@ -41,9 +41,12 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
   auto* strategy = CountQueuingStrategy::Create(script_state, init);
   ScriptValue strategy_value = ScriptValue::From(script_state, strategy);
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
+  v8::Isolate* isolate = script_state->GetIsolate();
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "FileSystemWritableFileStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   stream->InitInternal(script_state, underlying_sink_value, strategy_value,
                        exception_state);
 
@@ -55,15 +58,26 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
 
 ScriptPromise FileSystemWritableFileStream::write(
     ScriptState* script_state,
-    const ArrayBufferOrArrayBufferViewOrBlobOrUSVStringOrWriteParams& data,
+    const V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams* data,
     ExceptionState& exception_state) {
   WritableStreamDefaultWriter* writer =
       WritableStream::AcquireDefaultWriter(script_state, this, exception_state);
   if (exception_state.HadException())
     return ScriptPromise();
 
+  v8::Local<v8::Value> v8_data;
+  {
+    v8::TryCatch v8_try_block(script_state->GetIsolate());
+    if (!ToV8Traits<V8UnionBlobOrBufferSourceOrUSVStringOrWriteParams>::ToV8(
+             script_state, data)
+             .ToLocal(&v8_data)) {
+      exception_state.RethrowV8Exception(v8_try_block.Exception());
+      return ScriptPromise();
+    }
+  }
   ScriptPromise promise = writer->write(
-      script_state, ScriptValue::From(script_state, data), exception_state);
+      script_state, ScriptValue(script_state->GetIsolate(), v8_data),
+      exception_state);
 
   WritableStreamDefaultWriter::Release(script_state, writer);
   return promise;

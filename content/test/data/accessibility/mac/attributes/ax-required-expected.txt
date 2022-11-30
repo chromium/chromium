@@ -1,0 +1,6 @@
+input.accessibilityAttributeNames.has(AXRequired)='yes'
+input.accessibilityAttributeValue(AXRequired)=0
+input_required.accessibilityAttributeNames.has(AXRequired)='yes'
+input_required.accessibilityAttributeValue(AXRequired)=1
+not_applicable.accessibilityAttributeNames.has(AXRequired)='no'
+not_applicable.accessibilityAttributeValue(AXRequired)=0

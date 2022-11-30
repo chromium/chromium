@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -72,7 +73,7 @@ class NetErrorAutoReloader
 
   // Returns the timer used internally to schedule the next auto-reload task,
   // or null if no auto-reload task is currently scheduled.
-  base::Optional<base::OneShotTimer>& next_reload_timer_for_testing() {
+  absl::optional<base::OneShotTimer>& next_reload_timer_for_testing() {
     return next_reload_timer_;
   }
 
@@ -100,11 +101,11 @@ class NetErrorAutoReloader
     net::Error error;
   };
 
-  network::NetworkConnectionTracker* connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> connection_tracker_;
   bool is_online_ = true;
   std::set<content::NavigationHandle*> pending_navigations_;
-  base::Optional<base::OneShotTimer> next_reload_timer_;
-  base::Optional<ErrorPageInfo> current_reloadable_error_page_info_;
+  absl::optional<base::OneShotTimer> next_reload_timer_;
+  absl::optional<ErrorPageInfo> current_reloadable_error_page_info_;
   size_t num_reloads_for_current_error_ = 0;
   bool is_auto_reload_in_progress_ = false;
   base::WeakPtrFactory<NetErrorAutoReloader> weak_ptr_factory_{this};

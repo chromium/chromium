@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,11 +78,12 @@ class TestExtensionEnvironment::ChromeOSEnv {
  public:
   ChromeOSEnv() {}
 
+  ChromeOSEnv(const ChromeOSEnv&) = delete;
+  ChromeOSEnv& operator=(const ChromeOSEnv&) = delete;
+
  private:
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSEnv);
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

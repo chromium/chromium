@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 namespace base {
 namespace win {
 
-#if DCHECK_IS_ON()
-
 namespace {
 
+#if DCHECK_IS_ON()
 const char kComNotInitialized[] = "COM is not initialized on this thread.";
+#endif  // DCHECK_IS_ON()
 
 // Derived from combase.dll.
 struct OleTlsData {
@@ -41,6 +41,8 @@ OleTlsData* GetOleTlsData() {
   return reinterpret_cast<OleTlsData*>(teb->ReservedForOle);
 }
 
+}  // namespace
+
 ComApartmentType GetComApartmentTypeForThread() {
   OleTlsData* ole_tls_data = GetOleTlsData();
   if (!ole_tls_data)
@@ -57,7 +59,7 @@ ComApartmentType GetComApartmentTypeForThread() {
   return ComApartmentType::NONE;
 }
 
-}  // namespace
+#if DCHECK_IS_ON()
 
 void AssertComInitialized(const char* message) {
   if (GetComApartmentTypeForThread() != ComApartmentType::NONE)

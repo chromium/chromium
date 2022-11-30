@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,74 +9,48 @@
 
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webtransport/incoming_stream.h"
-#include "third_party/blink/renderer/modules/webtransport/outgoing_stream.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class ScriptState;
-class QuicTransport;
+class WebTransport;
 
-class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
-                                                 public WebTransportStream,
-                                                 public OutgoingStream::Client {
+// https://w3c.github.io/webtransport/#bidirectional-stream
+class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   // BidirectionalStream doesn't have a JavaScript constructor. It is only
   // constructed from C++.
   explicit BidirectionalStream(ScriptState*,
-                               QuicTransport*,
+                               WebTransport*,
                                uint32_t stream_id,
                                mojo::ScopedDataPipeProducerHandle,
                                mojo::ScopedDataPipeConsumerHandle);
 
-  void Init();
+  void Init(ExceptionState&);
 
-  // Implementation of bidirectional_stream.idl. As noted in the IDL file, these
-  // properties are implemented on OutgoingStream and IncomingStream in the
-  // standard.
-  WritableStream* writable() const { return outgoing_stream_->Writable(); }
+  // Implementation of web_transport_bidirectional_stream.idl.
+  WritableStream* writable() const { return send_stream_; }
 
-  ScriptPromise writingAborted() const {
-    return outgoing_stream_->WritingAborted();
+  ReadableStream* readable() const { return receive_stream_; }
+
+  OutgoingStream* GetOutgoingStream() {
+    return send_stream_->GetOutgoingStream();
   }
-
-  void abortWriting(StreamAbortInfo* abort_info) {
-    outgoing_stream_->AbortWriting(abort_info);
+  IncomingStream* GetIncomingStream() {
+    return receive_stream_->GetIncomingStream();
   }
-
-  ReadableStream* readable() const { return incoming_stream_->Readable(); }
-
-  ScriptPromise readingAborted() const {
-    return incoming_stream_->ReadingAborted();
-  }
-
-  void abortReading(StreamAbortInfo* info) {
-    incoming_stream_->AbortReading(info);
-  }
-
-  // Implementation of WebTransportStream.
-  void OnIncomingStreamClosed(bool fin_received) override;
-  void Reset() override;
-  void ContextDestroyed() override;
-
-  // Implementation of OutgoingStream::Client.
-  void SendFin() override;
-  void OnOutgoingStreamAbort() override;
 
   void Trace(Visitor*) const override;
 
  private:
-  void OnIncomingStreamAbort();
-
-  const Member<OutgoingStream> outgoing_stream_;
-  const Member<IncomingStream> incoming_stream_;
-  const Member<QuicTransport> quic_transport_;
-  const uint32_t stream_id_;
+  const Member<SendStream> send_stream_;
+  const Member<ReceiveStream> receive_stream_;
 };
 
 }  // namespace blink

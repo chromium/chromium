@@ -1,37 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
 #include <utility>
-#include "base/i18n/case_conversion.h"
-#include "base/strings/strcat.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+#include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill {
-
-namespace structured_address {
+namespace autofill::structured_address {
 
 std::u16string AddressComponentWithRewriter::RewriteValue(
-    const std::u16string& value) const {
-  // Retrieve the country name from the structured tree the node resides in.
-  std::u16string country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
-  // If no country is available (this should not be the case for a valid
-  // importable profile), use the US as a fallback country for the rewriter.
-  return RewriterCache::Rewrite(!country.empty() ? country : u"US", value);
+    const std::u16string& value,
+    const std::u16string& country_code) const {
+  return RewriterCache::Rewrite(country_code.empty() ? u"US" : country_code,
+                                value);
 }
 
-std::u16string AddressComponentWithRewriter::ValueForComparison() const {
-  return RewriteValue(NormalizedValue());
+std::u16string AddressComponentWithRewriter::ValueForComparison(
+    const AddressComponent& other) const {
+  return RewriteValue(NormalizedValue(), GetCommonCountryForMerge(other));
 }
 
 StreetName::StreetName(AddressComponent* parent)
@@ -150,31 +147,27 @@ std::u16string StreetAddress::GetBestFormatString() const {
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 
   if (country_code == "BR") {
-    return base::UTF8ToUTF16(
-        "${ADDRESS_HOME_STREET_NAME}${ADDRESS_HOME_HOUSE_NUMBER;, }"
-        "${ADDRESS_HOME_FLOOR;, ;º andar}${ADDRESS_HOME_APT_NUM;, apto ;}");
+    return u"${ADDRESS_HOME_STREET_NAME}${ADDRESS_HOME_HOUSE_NUMBER;, }"
+           u"${ADDRESS_HOME_FLOOR;, ;º andar}${ADDRESS_HOME_APT_NUM;, apto ;}";
   }
 
   if (country_code == "DE") {
-    return base::ASCIIToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR;, ;. Stock}${ADDRESS_HOME_APT_NUM;, ;. Wohnung}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR;, ;. Stock}${ADDRESS_HOME_APT_NUM;, ;. "
+           u"Wohnung}";
   }
 
   if (country_code == "MX") {
-    return base::ASCIIToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR; - Piso ;}${ADDRESS_HOME_APT_NUM; - ;}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR; - Piso ;}${ADDRESS_HOME_APT_NUM; - ;}";
   }
   if (country_code == "ES") {
-    return base::UTF8ToUTF16(
-        "${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
-        "${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}");
+    return u"${ADDRESS_HOME_STREET_NAME} ${ADDRESS_HOME_HOUSE_NUMBER}"
+           u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}";
   }
   // Use the format for US/UK as the default.
-  return base::ASCIIToUTF16(
-      "${ADDRESS_HOME_HOUSE_NUMBER} ${ADDRESS_HOME_STREET_NAME} "
-      "${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }");
+  return u"${ADDRESS_HOME_HOUSE_NUMBER} ${ADDRESS_HOME_STREET_NAME} "
+         u"${ADDRESS_HOME_FLOOR;FL } ${ADDRESS_HOME_APT_NUM;APT }";
 }
 
 void StreetAddress::UnsetValue() {
@@ -320,9 +313,38 @@ State::State(AddressComponent* parent)
     : AddressComponentWithRewriter(
           ADDRESS_HOME_STATE,
           parent,
-          MergeMode::kPickShorterIfOneContainsTheOther | kReplaceEmpty) {}
+          kPickShorterIfOneContainsTheOther |
+              (base::FeatureList::IsEnabled(
+                   features::kAutofillUseAlternativeStateNameMap)
+                   ? MergeMode::kMergeBasedOnCanonicalizedValues
+                   : 0) |
+              kReplaceEmpty) {}
 
 State::~State() = default;
+
+absl::optional<std::u16string> State::GetCanonicalizedValue() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    return absl::nullopt;
+  }
+
+  std::string country_code =
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+
+  if (country_code.empty()) {
+    return absl::nullopt;
+  }
+
+  absl::optional<AlternativeStateNameMap::CanonicalStateName>
+      canonicalized_state_name = AlternativeStateNameMap::GetCanonicalStateName(
+          country_code, GetValue());
+
+  if (!canonicalized_state_name.has_value()) {
+    return absl::nullopt;
+  }
+
+  return canonicalized_state_name.value().value();
+}
 
 // Zips are mergeable when one is a substring of the other one.
 // For merging, the shorter substring is taken.
@@ -393,6 +415,4 @@ void Address::MigrateLegacyStructure(bool is_verified_profile) {
   }
 }
 
-}  // namespace structured_address
-
-}  // namespace autofill
+}  // namespace autofill::structured_address

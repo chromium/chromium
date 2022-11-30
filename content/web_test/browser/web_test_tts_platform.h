@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@
 class WebTestTtsPlatform : public content::TtsPlatform {
  public:
   static WebTestTtsPlatform* GetInstance();
+
+  WebTestTtsPlatform(const WebTestTtsPlatform&) = delete;
+  WebTestTtsPlatform& operator=(const WebTestTtsPlatform&) = delete;
 
   // content::TtsControllerDelegate overrides.
   bool PlatformImplSupported() override;
@@ -37,14 +40,15 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   void Shutdown() override;
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
+  void RefreshVoices() override;
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
  private:
   WebTestTtsPlatform();
   virtual ~WebTestTtsPlatform();
 
   friend struct base::DefaultSingletonTraits<WebTestTtsPlatform>;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestTtsPlatform);
 };
 
 #endif  // CONTENT_WEB_TEST_BROWSER_WEB_TEST_TTS_PLATFORM_H_

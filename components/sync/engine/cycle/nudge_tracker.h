@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,16 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -26,6 +25,10 @@ namespace syncer {
 class NudgeTracker {
  public:
   NudgeTracker();
+
+  NudgeTracker(const NudgeTracker&) = delete;
+  NudgeTracker& operator=(const NudgeTracker&) = delete;
+
   ~NudgeTracker();
 
   // Returns true if there is a good reason for performing a sync cycle.
@@ -45,27 +48,33 @@ class NudgeTracker {
   // information on how this flag is maintained.
   bool IsRetryRequired() const;
 
+  // Tells this class that a commit message has been sent (note that each sync
+  // cycle may include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage(ModelTypeSet types);
+
   // Tells this class that all required update fetching or committing has
   // completed successfully, as the result of a "normal" sync cycle.
-  void RecordSuccessfulSyncCycle(ModelTypeSet types);
+  // Any blocked model types will ignore this, but non-blocked types and the
+  // overall state will still get updated.
+  void RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types);
 
   // Tells this class that the initial sync has happened for the given |types|,
   // generally due to a "configuration" cycle.
   void RecordInitialSyncDone(ModelTypeSet types);
 
   // Takes note of a local change.
-  // Returns the shortest nudge delay from the tracker of each type in |types|.
-  base::TimeDelta RecordLocalChange(ModelTypeSet types);
+  // Returns the current nudge delay for local changes to |type|.
+  base::TimeDelta RecordLocalChange(ModelType type);
 
   // Takes note of a locally issued request to refresh a data type.
-  // Returns the current nudge delay for a local refresh.
+  // Returns the nudge delay for a local refresh.
   base::TimeDelta RecordLocalRefreshRequest(ModelTypeSet types);
 
   // Takes note of the receipt of an invalidation notice from the server.
-  // Returns the current nudge delay for a remote invalidation.
+  // Returns the nudge delay for a remote invalidation.
   base::TimeDelta RecordRemoteInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation);
+      std::unique_ptr<SyncInvalidation> invalidation);
 
   // Take note that an initial sync is pending for this type.
   void RecordInitialSyncRequired(ModelType type);
@@ -127,13 +136,6 @@ class NudgeTracker {
   // information into the GetUpdate request before sending it off to the server.
   void FillProtoMessage(ModelType type, sync_pb::GetUpdateTriggers* msg) const;
 
-  // Fills a ProgressMarker with single legacy notification hint expected by the
-  // sync server.  Newer servers will rely on the data set by FillProtoMessage()
-  // instead of this.
-  void SetLegacyNotificationHint(
-      ModelType type,
-      sync_pb::DataTypeProgressMarker* progress) const;
-
   // Flips the flag if we're due for a retry.
   void SetSyncCycleStartTime(base::TimeTicks now);
 
@@ -151,28 +153,32 @@ class NudgeTracker {
   // SetSyncCycleStartTime() is called at the start of the *next* sync cycle.
   void SetNextRetryTime(base::TimeTicks next_retry_time);
 
-  // Update the per-datatype local change nudge delays.
-  void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& delay_map);
+  // Update the per-datatype local change nudge delay. No update happens
+  // if |delay| is too small (less than the smallest default delay).
+  void UpdateLocalChangeDelay(ModelType type, const base::TimeDelta& delay);
 
-  // Update the default nudge delay.
-  void SetDefaultNudgeDelay(base::TimeDelta nudge_delay);
+  // UpdateLocalChangeDelay() usually rejects a delay update if the value
+  // is too small. This method ignores that check.
+  void SetLocalChangeDelayIgnoringMinForTest(ModelType type,
+                                             const base::TimeDelta& delay);
 
-  size_t GetDefaultMaxPayloadsPerTypeForTesting() {
-    return kDefaultMaxPayloadsPerType;
-  }
+  // Updates the parameters for commit quotas for the data types that can
+  // receive commits via extension APIs. Empty optional means using the
+  // defaults.
+  void SetQuotaParamsForExtensionTypes(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;
 
   friend class SyncSchedulerImplTest;
 
-  const size_t kDefaultMaxPayloadsPerType = 10;
-
   TypeTrackerMap type_trackers_;
 
   // Tracks whether or not invalidations are currently enabled.
-  bool invalidations_enabled_;
+  bool invalidations_enabled_ = false;
 
   // This flag is set if suspect that some technical malfunction or known bug
   // may have left us with some unserviced invalidations.
@@ -183,7 +189,7 @@ class NudgeTracker {
   // won't persist invalidations between restarts, so we may be out of sync when
   // we restart.  The only way to get back into sync is to have invalidations
   // enabled, then complete a sync cycle to make sure we're fully up to date.
-  bool invalidations_out_of_sync_;
+  bool invalidations_out_of_sync_ = true;
 
   base::TimeTicks last_successful_sync_time_;
 
@@ -203,13 +209,6 @@ class NudgeTracker {
   // SetSyncCycleStartTime().  This may contain a stale value if we're not
   // currently in a sync cycle.
   base::TimeTicks sync_cycle_start_time_;
-
-  // Nudge delays for various events.
-  base::TimeDelta minimum_local_nudge_delay_;
-  base::TimeDelta local_refresh_nudge_delay_;
-  base::TimeDelta remote_invalidation_nudge_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(NudgeTracker);
 };
 
 }  // namespace syncer

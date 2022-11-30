@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/media_engagement_score.h"
@@ -18,7 +18,7 @@
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/dev_ui_browser_resources.h"
+#include "chrome/grit/media_resources.h"
 #include "components/component_updater/component_updater_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -31,7 +31,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -61,6 +61,11 @@ class MediaEngagementScoreDetailsProviderImpl
     DCHECK(profile_);
     service_ = MediaEngagementService::Get(profile_);
   }
+
+  MediaEngagementScoreDetailsProviderImpl(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
+  MediaEngagementScoreDetailsProviderImpl& operator=(
+      const MediaEngagementScoreDetailsProviderImpl&) = delete;
 
   ~MediaEngagementScoreDetailsProviderImpl() override {}
 
@@ -119,22 +124,20 @@ class MediaEngagementScoreDetailsProviderImpl
 
   // Pref is not available on Android.
   bool GetBlockAutoplayPref() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return false;
 #else
     return profile_->GetPrefs()->GetBoolean(prefs::kBlockAutoplayEnabled);
 #endif
   }
 
-  content::WebUI* web_ui_;
+  raw_ptr<content::WebUI> web_ui_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  MediaEngagementService* service_;
+  raw_ptr<MediaEngagementService> service_;
 
   mojo::Receiver<media::mojom::MediaEngagementScoreDetailsProvider> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementScoreDetailsProviderImpl);
 };
 
 }  // namespace
@@ -144,10 +147,15 @@ MediaEngagementUI::MediaEngagementUI(content::WebUI* web_ui)
   // Setup the data source behind chrome://media-engagement.
   std::unique_ptr<content::WebUIDataSource> source(
       content::WebUIDataSource::Create(chrome::kChromeUIMediaEngagementHost));
-  source->AddResourcePath("media_engagement.js", IDR_MEDIA_ENGAGEMENT_JS);
-  source->AddResourcePath("media_engagement_score_details.mojom-lite.js",
-                          IDR_MEDIA_ENGAGEMENT_SCORE_DETAILS_MOJOM_LITE_JS);
-  source->SetDefaultResource(IDR_MEDIA_ENGAGEMENT_HTML);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
+
+  source->AddResourcePath("media_engagement.js", IDR_MEDIA_MEDIA_ENGAGEMENT_JS);
+  source->AddResourcePath(
+      "media_engagement_score_details.mojom-webui.js",
+      IDR_MEDIA_MEDIA_ENGAGEMENT_SCORE_DETAILS_MOJOM_WEBUI_JS);
+  source->SetDefaultResource(IDR_MEDIA_MEDIA_ENGAGEMENT_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());
 }
 

@@ -5,6 +5,14 @@
 <script src="../resources/testharnessreport.js"></script>
 <script>
 
+async function languageChange() {
+    return new Promise(resolve => window.onlanguagechange = resolve);
+}
+
+async function languageChangeEvent() {
+    return new Promise(resolve => window.addEventListener('languagechange', resolve));
+}
+
 test(function() {
     assert_true('language' in window.navigator);
     assert_true('languages' in window.navigator);
@@ -13,82 +21,56 @@ test(function() {
     assert_true('onlanguagechange' in window);
 }, "Test that NavigatorLanguage API is present in window");
 
-test(function() {
-    var received = false;
-    window.onlanguagechange = function() {
-      received = true;
-    }
-
+promise_test(async () => {
+    var languageChangePromise = languageChange();
     testRunner.setAcceptLanguages('klingon');
-    assert_true(received);
+    await languageChangePromise;
+    assert_equals('klingon', window.navigator.language);
 }, "Test that the languagechange event fires on window.onlanguagechange");
 
-test(function() {
-    var received = false;
-    window.addEventListener('languagechange', function() {
-        received = true;
-    });
-
+promise_test(async () => {
+    var languageChangePromise = languageChangeEvent();
     testRunner.setAcceptLanguages('klingon-FR');
-    assert_true(received);
+    await languageChangePromise;
+    assert_equals('klingon-FR', window.navigator.language);
 }, "Test that the languagechange event fires on window.addEventListener('languagechange')");
 
-test(function() {
-    window.received = false; // We need a global variable here.
-    document.body.setAttribute('onlanguagechange', 'window.received = true;');
-
+promise_test(async () => {
+    var promise =  new Promise(resolve => window.languageResolver = resolve);
+    document.body.setAttribute('onlanguagechange', 'window.languageResolver();');
     testRunner.setAcceptLanguages('klingon-US');
-    assert_true(window.received);
+    await promise;
+    assert_equals('klingon-US', window.navigator.language);
 }, "Test that the languagechange event fires on body onlanguagechange attribute");
 
-test(function() {
+promise_test(async () => {
     window.received = 0; // We need a global variable here.
-    var fromWindowHandler = false;
     document.body.setAttribute('onlanguagechange', 'window.received++;');
-    window.onlanguagechange = function() {
-        received++;
-        fromWindowHandler = true;
-    }
-
+    var languageChangePromise = languageChange();
     testRunner.setAcceptLanguages('klingon');
-    assert_equals(window.received, 1);
-    assert_true(fromWindowHandler);
+    await languageChangePromise;
+    assert_equals(window.received, 0);
+    assert_equals('klingon', window.navigator.language);
 
-    window.received = 0;
-    fromWindowHandler = false;
-    window.onlanguagechange = function() {
-        received++;
-        fromWindowHandler = true;
-    }
-    document.body.setAttribute('onlanguagechange', 'window.received++;');
-
+    languageChangePromise = languageChange();
     testRunner.setAcceptLanguages('klingon-FR');
-    assert_equals(window.received, 1);
-    assert_false(fromWindowHandler);
+    await languageChangePromise;
+    assert_equals(window.received, 0);
+    assert_equals('klingon-FR', window.navigator.language);
 }, "Test that the languagechange event fires on body onlanguagechange attribute XOR window.onlanguagechange");
 
-test(function() {
-    var eventsCount = 0;
-    window.onlanguagechange = function() {
-        eventsCount++;
-    }
-
-    testRunner.setAcceptLanguages('klingon-US');
-    testRunner.setAcceptLanguages('klingon-US');
-
-    assert_equals(eventsCount, 1);
-}, "Test that changing the language to the same value doesn't fire an event.")
-
-test(function() {
-    window.addEventListener('languagechange', function(e) {
+promise_test(async () => {
+    var promise = new Promise(resolve => window.addEventListener('languagechange', function(e) {
         assert_false(e.cancelable);
         assert_false(e.bubbles);
-    });
+        resolve();
+    }));
 
     testRunner.setAcceptLanguages('klingon');
+    await promise;
 }, "Test properties of the fired event.");
 
-test(function() {
+promise_test(async () => {
     var testValues = [
         { accept_languages: 'foo', languages: ['foo'] },
         { accept_languages: '', languages: ['en-US'] },
@@ -102,16 +84,12 @@ test(function() {
         { accept_languages: 'en_US_CA', languages: ['en-US_CA'] },
     ];
 
-    var eventsCount = 0;
-    window.onlanguagechange = function() {
-        eventsCount++;
-    }
-
     for (var i = 0; i < testValues.length; ++i) {
         var data = testValues[i];
 
+        var languageChangePromise = languageChange();
         testRunner.setAcceptLanguages(data.accept_languages);
-        assert_equals(eventsCount, i + 1);
+        await languageChangePromise;
 
         assert_equals(navigator.languages.length, data.languages.length);
         assert_equals(navigator.language, data.languages[0]);
@@ -121,12 +99,14 @@ test(function() {
     }
 }, "Test that navigator.languages reflects the accept languages value.");
 
-test(function() {
+promise_test(async () => {
     var previous = navigator.languages;
     assert_equals(navigator.languages, navigator.languages);
     assert_equals(navigator.languages, previous);
 
+    var languageChangePromise = languageChange();
     testRunner.setAcceptLanguages('fr-FR');
+    await languageChangePromise;
     assert_not_equals(navigator.languages, previous);
 }, "Test navigator.languages' caching behaviour.");
 

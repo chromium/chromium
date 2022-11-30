@@ -1,15 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/websocket_endpoint_lock_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 
@@ -46,8 +47,7 @@ WebSocketEndpointLockManager::LockReleaser::~LockReleaser() {
 }
 
 WebSocketEndpointLockManager::WebSocketEndpointLockManager()
-    : unlock_delay_(base::TimeDelta::FromMilliseconds(kUnlockDelayInMs)),
-      pending_unlock_count_(0) {}
+    : unlock_delay_(base::Milliseconds(kUnlockDelayInMs)) {}
 
 WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {
   DCHECK_EQ(lock_info_map_.size(), pending_unlock_count_);
@@ -61,7 +61,7 @@ int WebSocketEndpointLockManager::LockEndpoint(const IPEndPoint& endpoint,
   LockInfo& lock_info_in_map = rv.first->second;
   if (rv.second) {
     DVLOG(3) << "Locking endpoint " << endpoint.ToString();
-    lock_info_in_map.queue.reset(new LockInfo::WaiterQueue);
+    lock_info_in_map.queue = std::make_unique<LockInfo::WaiterQueue>();
     return OK;
   }
   DVLOG(3) << "Waiting for endpoint " << endpoint.ToString();

@@ -1,11 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_MEDIA_PLAYER_EVENT_ROUTER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_MEDIA_PLAYER_EVENT_ROUTER_H_
-
-#include "base/macros.h"
 
 namespace content {
 class BrowserContext;
@@ -17,6 +15,10 @@ namespace extensions {
 class MediaPlayerEventRouter {
  public:
   explicit MediaPlayerEventRouter(content::BrowserContext* context);
+
+  MediaPlayerEventRouter(const MediaPlayerEventRouter&) = delete;
+  MediaPlayerEventRouter& operator=(const MediaPlayerEventRouter&) = delete;
+
   virtual ~MediaPlayerEventRouter();
 
   // Send notification that next-track shortcut key was pressed.
@@ -30,8 +32,6 @@ class MediaPlayerEventRouter {
 
  private:
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPlayerEventRouter);
 };
 
 }  // namespace extensions

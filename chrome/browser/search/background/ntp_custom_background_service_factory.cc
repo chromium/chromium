@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+
+// static
+NtpCustomBackgroundService* NtpCustomBackgroundServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<NtpCustomBackgroundService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+NtpCustomBackgroundServiceFactory*
+NtpCustomBackgroundServiceFactory::GetInstance() {
+  return base::Singleton<NtpCustomBackgroundServiceFactory>::get();
+}
+
+NtpCustomBackgroundServiceFactory::NtpCustomBackgroundServiceFactory()
+    : ProfileKeyedServiceFactory("NtpCustomBackgroundService") {}
+
+NtpCustomBackgroundServiceFactory::~NtpCustomBackgroundServiceFactory() =
+    default;
+
+KeyedService* NtpCustomBackgroundServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return new NtpCustomBackgroundService(Profile::FromBrowserContext(context));
+}

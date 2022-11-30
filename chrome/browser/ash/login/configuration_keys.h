@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace configuration {
 // Configuration keys that are used to automate OOBE screens go here.
 // Please keep keys grouped by screens and ordered according to OOBE flow.
-
-extern const char kSkipHIDDetection[];
 
 extern const char kLanguage[];
 extern const char kInputMethod[];
@@ -24,6 +22,7 @@ extern const char kDemoModePreferencesNext[];
 extern const char kNetworkSelectGUID[];
 extern const char kNetworkOfflineDemo[];
 extern const char kNetworkUseConnected[];
+extern const char kNetworkConfig[];
 
 extern const char kDeviceRequisition[];
 
@@ -32,12 +31,7 @@ extern const char kEULAAutoAccept[];
 
 extern const char kArcTosAutoAccept[];
 
-extern const char kUpdateSkipUpdate[];
-
-extern const char kWizardAutoEnroll[];
-
 extern const char kRestoreAfterRollback[];
-extern const char kEnrollmentToken[];
 extern const char kEnrollmentAssetId[];
 extern const char kEnrollmentLocation[];
 extern const char kEnrollmentAutoAttributes[];
@@ -51,13 +45,21 @@ enum class ConfigurationHandlerSide : unsigned int {
 
 // Checks if configuration is valid (all fields have correct types, no extra
 // fields).
-bool ValidateConfiguration(const base::Value& configuration);
+bool ValidateConfiguration(const base::Value::Dict& configuration);
 
-// Copies only fields handled by particular `side` from `configuration` to
-// `filtered_result`.
-void FilterConfiguration(const base::Value& configuration,
-                         ConfigurationHandlerSide side,
-                         base::Value& filtered_result);
+// Returns a dictionary with only fields handled by particular `side` from
+// `configuration`.
+base::Value::Dict FilterConfiguration(const base::Value::Dict& configuration,
+                                      ConfigurationHandlerSide side);
+}  // namespace configuration
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace configuration {
+using ::ash::configuration::ConfigurationHandlerSide;
+using ::ash::configuration::FilterConfiguration;
 }  // namespace configuration
 }  // namespace chromeos
 

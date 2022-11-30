@@ -1,0 +1,42 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module emoji_picker.mojom;
+
+// Capture any relevant enabled features from the system.
+enum Feature {
+  // Extends the emoji picker to include symbols and emoticons alongside
+  // emojis as insertable options for the user.
+  EMOJI_PICKER_EXTENSION = 0,
+  // Extends the search functionality of emoji picker by implementing multi word
+  // prefix search across all categories.
+  EMOJI_PICKER_SEARCH_EXTENSION = 1,
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Request the UI to be shown.  Using this interface, dialog can be invisible
+  // while rendering to avoid UI showing in incomplete state.
+  ShowUI();
+
+  // Request backend to insert emoji (will close the picker).
+  // emoji: The emoji to insert in string form e.g. "😂".
+  // is_variant: If the emoji is a variant / base emoji, used for metrics.
+  // search_length: Length of search string, used for metrics
+  InsertEmoji(string emoji, bool is_variant, int16 search_length);
+
+  // Allows the emoji picker to identify if it was initialized in a incognito
+  // text field (so it will disable storing preference etc.)
+  IsIncognitoTextField() => (bool incognito);
+
+  // Returns a comma separated list of features activated within the emoji
+  // picker (ie. any feature flags or other related switches).
+  GetFeatureList() => (array<Feature> feature_list);
+};

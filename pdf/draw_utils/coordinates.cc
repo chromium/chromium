@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,7 @@ PageInsetSizes GetPageInsetsForTwoUpView(
     int horizontal_separator) {
   DCHECK_LT(page_index, num_of_pages);
 
-  // Don't change |two_up_insets| if the page is on the left side and is the
+  // Don't change `two_up_insets` if the page is on the left side and is the
   // last page. In this case, the shadows on both sides should be the same size.
   PageInsetSizes two_up_insets = single_view_insets;
   if (page_index % 2 == 1)

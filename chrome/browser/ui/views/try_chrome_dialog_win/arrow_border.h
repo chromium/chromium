@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_ARROW_BORDER_H_
 #define CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_ARROW_BORDER_H_
 
-#include "base/macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,10 +52,13 @@ class ArrowBorder : public views::Border {
   // |background_color| using |arrow_icon| to paint the arrow itself.
   // |properties| indicates details for positioning the arrow.
   ArrowBorder(int thickness,
-              SkColor color,
-              SkColor background_color,
+              ui::ColorId color,
+              ui::ColorId background_color,
               const gfx::VectorIcon& arrow_icon,
               const Properties* properties);
+
+  ArrowBorder(const ArrowBorder&) = delete;
+  ArrowBorder& operator=(const ArrowBorder&) = delete;
 
   // Sets the bounds of the arrow in pixels relative to the containing widget.
   void set_arrow_bounds(const gfx::Rect& arrow_bounds) {
@@ -70,19 +74,21 @@ class ArrowBorder : public views::Border {
   // The region occupied by the border.
   const gfx::Insets insets_;
 
+  const ui::ColorId color_;
+
   // The insets into the bounding rectangle of the arrow into which the popup's
   // border should extend.
   const gfx::Insets arrow_border_insets_;
 
+  const ArrowRotation arrow_rotation_;
+
   // The arrow image to be painted in the border.
-  gfx::ImageSkia arrow_;
+  ui::ImageModel arrow_;
 
   // The bounding rectangle of the arrow, in pixels, relative to the window's
   // client area. This rectangle may extend into the contents of the popup
   // (including its border).
   gfx::Rect arrow_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArrowBorder);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRY_CHROME_DIALOG_WIN_ARROW_BORDER_H_

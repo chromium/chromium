@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_ORIENTATION_LOCK_DELEGATE_H_
 
-#include "base/optional.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -123,7 +123,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
   // Emprically, 200ms is too short, but 250ms avoids glitches. 500ms gives us
   // a 2x margin in case the device is running slow, without being noticeable.
   MODULES_EXPORT static constexpr base::TimeDelta kLockToAnyDelay =
-      base::TimeDelta::FromMilliseconds(500);
+      base::Milliseconds(500);
 
   // Current state of the object. See comment at the top of the file for a
   // detailed description.
@@ -137,7 +137,7 @@ class MediaControlsOrientationLockDelegate final : public NativeEventListener {
 
   HeapMojoRemote<device::mojom::blink::ScreenOrientationListener> monitor_;
 
-  base::Optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
+  absl::optional<bool> is_auto_rotate_enabled_by_user_override_for_testing_;
 
   // `video_element_` owns MediaControlsImpl that owns |this|.
   Member<HTMLVideoElement> video_element_;

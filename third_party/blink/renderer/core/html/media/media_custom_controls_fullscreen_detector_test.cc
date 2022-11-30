@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -50,11 +50,11 @@ class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
     return false;
   }
 
-  static bool IsFullscreen(IntRect target, IntRect screen) {
-    IntRect intersection = Intersection(target, screen);
+  static bool IsFullscreen(gfx::Rect target, gfx::Rect screen) {
+    gfx::Rect intersection = IntersectRects(target, screen);
     return MediaCustomControlsFullscreenDetector::
         IsFullscreenVideoOfDifferentRatioForTesting(
-            target.Size(), screen.Size(), intersection.Size());
+            target.size(), screen.size(), intersection.size());
   }
 
  private:
@@ -64,7 +64,7 @@ class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
 };
 
 TEST_F(MediaCustomControlsFullscreenDetectorTest, heuristicForAspectRatios) {
-  IntRect screen(0, 0, 1920, 1080);
+  gfx::Rect screen(0, 0, 1920, 1080);
 
   EXPECT_TRUE(IsFullscreen({0, 130, 1920, 820}, screen))
       << "Ultrawide screen (21:9)";

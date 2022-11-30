@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ void PollLaunchctlListImpl(UpdaterScope scope,
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&PollLaunchctlListImpl, scope, service, expectation,
                      deadline, std::move(callback)),
-      base::TimeDelta::FromMilliseconds(500));
+      base::Milliseconds(500));
 }
 
 }  // namespace

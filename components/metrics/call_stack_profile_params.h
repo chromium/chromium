@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,66 +12,75 @@ namespace metrics {
 // Parameters to pass back to the metrics provider.
 struct CallStackProfileParams {
   // The process in which the collection occurred.
-  enum Process {
-    UNKNOWN_PROCESS,
-    BROWSER_PROCESS,
-    RENDERER_PROCESS,
-    GPU_PROCESS,
-    UTILITY_PROCESS,
-    ZYGOTE_PROCESS,
-    SANDBOX_HELPER_PROCESS,
-    PPAPI_PLUGIN_PROCESS,
-    NETWORK_SERVICE_PROCESS,
+  enum class Process {
+    kUnknown,
+    kBrowser,
+    kRenderer,
+    kGpu,
+    kUtility,
+    kZygote,
+    kSandboxHelper,
+    kPpapiPlugin,
+    kNetworkService,
 
-    MAX_PROCESS = NETWORK_SERVICE_PROCESS,
+    kMax = kNetworkService,
   };
 
   // The thread from which the collection occurred.
-  enum Thread {
-    UNKNOWN_THREAD,
+  enum class Thread {
+    kUnknown,
 
     // Each process has a 'main thread'. In the Browser process, the 'main
     // thread' is also often called the 'UI thread'.
-    MAIN_THREAD,
-    IO_THREAD,
+    kMain,
+    kIo,
 
     // Compositor thread (can be in both renderer and gpu processes).
-    COMPOSITOR_THREAD,
+    kCompositor,
 
     // Service worker thread.
-    SERVICE_WORKER_THREAD,
+    kServiceWorker,
 
-    MAX_THREAD = SERVICE_WORKER_THREAD,
+    kMax = kServiceWorker,
   };
 
   // The event that triggered the profile collection.
-  enum Trigger {
-    UNKNOWN,
-    PROCESS_STARTUP,
-    JANKY_TASK,
-    THREAD_HUNG,
-    PERIODIC_COLLECTION,
-    PERIODIC_HEAP_COLLECTION,
-    TRIGGER_LAST = PERIODIC_HEAP_COLLECTION
+  enum class Trigger {
+    kUnknown,
+    kProcessStartup,
+    kJankyTask,
+    kThreadHung,
+    kPeriodicCollection,
+    kPeriodicHeapCollection,
+    kLast = kPeriodicHeapCollection
   };
 
   // The default constructor is required for mojo and should not be used
   // otherwise. A valid trigger should always be specified.
-  constexpr CallStackProfileParams()
-      : CallStackProfileParams(UNKNOWN_PROCESS, UNKNOWN_THREAD, UNKNOWN) {}
-  constexpr CallStackProfileParams(Process process,
-                                   Thread thread,
-                                   Trigger trigger)
-      : process(process), thread(thread), trigger(trigger) {}
+  constexpr CallStackProfileParams() = default;
+
+  constexpr CallStackProfileParams(
+      Process process,
+      Thread thread,
+      Trigger trigger,
+      base::TimeDelta time_offset = base::TimeDelta())
+      : process(process),
+        thread(thread),
+        trigger(trigger),
+        time_offset(time_offset) {}
 
   // The collection process.
-  Process process;
+  Process process = Process::kUnknown;
 
   // The collection thread.
-  Thread thread;
+  Thread thread = Thread::kUnknown;
 
   // The triggering event.
-  Trigger trigger;
+  Trigger trigger = Trigger::kUnknown;
+
+  // The time of the profile, since roughly the start of the process being
+  // profiled. 0 indicates that the time is not reported.
+  base::TimeDelta time_offset;
 };
 
 }  // namespace metrics

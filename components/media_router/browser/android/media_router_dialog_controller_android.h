@@ -1,14 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_DIALOG_CONTROLLER_ANDROID_H_
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_DIALOG_CONTROLLER_ANDROID_H_
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -19,6 +16,11 @@ class MediaRouterDialogControllerAndroid
     : public content::WebContentsUserData<MediaRouterDialogControllerAndroid>,
       public MediaRouterDialogController {
  public:
+  MediaRouterDialogControllerAndroid(
+      const MediaRouterDialogControllerAndroid&) = delete;
+  MediaRouterDialogControllerAndroid& operator=(
+      const MediaRouterDialogControllerAndroid&) = delete;
+
   ~MediaRouterDialogControllerAndroid() override;
 
   // The methods called by the Java counterpart.
@@ -54,7 +56,7 @@ class MediaRouterDialogControllerAndroid
 
   // MediaRouterDialogController:
   void CreateMediaRouterDialog(
-      MediaRouterDialogOpenOrigin activation_location) override;
+      MediaRouterDialogActivationLocation activation_location) override;
   void CloseMediaRouterDialog() override;
   bool IsShowingMediaRouterDialog() const override;
 
@@ -63,8 +65,6 @@ class MediaRouterDialogControllerAndroid
   base::android::ScopedJavaGlobalRef<jobject> java_dialog_controller_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogControllerAndroid);
 };
 
 }  // namespace media_router

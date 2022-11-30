@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -16,10 +16,10 @@ namespace views {
 class Checkbox;
 class Combobox;
 class DialogDelegate;
-class GridLayout;
 class Label;
 class LabelButton;
 class Textfield;
+class View;
 
 namespace examples {
 
@@ -28,6 +28,10 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
                                             public TextfieldController {
  public:
   DialogExample();
+
+  DialogExample(const DialogExample&) = delete;
+  DialogExample& operator=(const DialogExample&) = delete;
+
   ~DialogExample() override;
 
   // ExampleBase:
@@ -40,12 +44,13 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   class Dialog;
 
   // Helper methods to setup the configuration Views.
-  void StartRowWithLabel(GridLayout* layout, const char* label);
-  void StartTextfieldRow(GridLayout* layout,
+  void StartTextfieldRow(View* parent,
                          Textfield** member,
-                         const char* label,
-                         const char* value);
-  void AddCheckbox(GridLayout* layout, Checkbox** member);
+                         std::u16string label,
+                         std::u16string value,
+                         Label** created_label = nullptr,
+                         bool pad_last_col = false);
+  void AddCheckbox(View* parent, Checkbox** member, Label* label);
 
   // Checkbox callback
   void OnPerformAction();
@@ -68,8 +73,8 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override;
 
-  DialogDelegate* last_dialog_ = nullptr;
-  Label* last_body_label_ = nullptr;
+  raw_ptr<DialogDelegate> last_dialog_ = nullptr;
+  raw_ptr<Label> last_body_label_ = nullptr;
 
   Textfield* title_;
   Textfield* body_;
@@ -79,13 +84,11 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   Checkbox* has_cancel_button_;
   Textfield* extra_button_label_;
   Checkbox* has_extra_button_;
-  Combobox* mode_;
+  raw_ptr<Combobox> mode_;
   Checkbox* bubble_;
   Checkbox* persistent_bubble_;
-  LabelButton* show_;
+  raw_ptr<LabelButton> show_;
   ui::SimpleComboboxModel mode_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogExample);
 };
 
 }  // namespace examples

@@ -1,0 +1,6 @@
+include_rules = [
+  # Do not add chrome here (use a delegate instead).
+  "+chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h",
+
+  "+chromeos/dbus",
+]

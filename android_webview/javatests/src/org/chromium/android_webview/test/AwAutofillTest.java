@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -22,16 +22,17 @@ import android.os.IBinder;
 import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.autofill.AutofillId;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -49,11 +50,9 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
@@ -85,7 +84,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@SuppressLint("NewApi")
+@RequiresApi(Build.VERSION_CODES.O)
 public class AwAutofillTest {
     public static final boolean DEBUG = false;
     public static final String TAG = "AutofillTest";
@@ -93,13 +92,17 @@ public class AwAutofillTest {
     public static final String FILE = "/login.html";
     public static final String FILE_URL = "file:///android_asset/autofill.html";
 
-    public static final int AUTOFILL_VIEW_ENTERED = 1;
-    public static final int AUTOFILL_VIEW_EXITED = 2;
-    public static final int AUTOFILL_VALUE_CHANGED = 3;
-    public static final int AUTOFILL_COMMIT = 4;
-    public static final int AUTOFILL_CANCEL = 5;
-    public static final int AUTOFILL_SESSION_STARTED = 6;
-    public static final int AUTOFILL_QUERY_DONE = 7;
+    public static final int AUTOFILL_VIEW_ENTERED = 0;
+    public static final int AUTOFILL_VIEW_EXITED = 1;
+    public static final int AUTOFILL_VALUE_CHANGED = 2;
+    public static final int AUTOFILL_COMMIT = 3;
+    public static final int AUTOFILL_CANCEL = 4;
+    public static final int AUTOFILL_SESSION_STARTED = 5;
+    public static final int AUTOFILL_QUERY_DONE = 6;
+    public static final int AUTOFILL_EVENT_MAX = 7;
+
+    public static final String[] EVENT = {"VIEW_ENTERED", "VIEW_EXITED", "VALUE_CHANGED", "COMMIT",
+            "CANCEL", "SESSION_STARTED", "QUERY_DONE"};
 
     /**
      * This class only implements the necessary methods of ViewStructure for testing.
@@ -884,23 +887,23 @@ public class AwAutofillTest {
     @Before
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
+        AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
+                new AutofillProvider.AutofillManagerWrapperFactoryForTesting() {
+                    @Override
+                    public AutofillManagerWrapper create(Context context) {
+                        mTestAutofillManagerWrapper = new TestAutofillManagerWrapper(context);
+                        return mTestAutofillManagerWrapper;
+                    }
+                });
         mUMATestHelper = new AwAutofillSessionUMATestHelper(this, mWebServer);
         mContentsClient = new AwAutofillTestClient();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AutofillProviderTestHelper.disableDownloadServerForTesting());
         mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                mContentsClient, false, new TestDependencyFactory() {
-                    @Override
-                    public AutofillProvider createAutofillProvider(
-                            Context context, ViewGroup containerView) {
-                        mTestAutofillManagerWrapper = new TestAutofillManagerWrapper(context);
-                        mAutofillProvider = new AutofillProvider(containerView,
-                                mTestAutofillManagerWrapper, context, "AwAutofillTest");
-                        return mAutofillProvider;
-                    }
-                });
+                mContentsClient, false, new TestDependencyFactory());
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        mAutofillProvider = mAwContents.getAutofillProviderForTesting();
     }
 
     public void setUpAwGNotCurrent() throws Exception {
@@ -917,7 +920,6 @@ public class AwAutofillTest {
     }
 
     @Test
-    @FlakyTest(message = "https://crbug.com/1074525")
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testTouchingFormWithAdjustResize() throws Throwable {
@@ -1002,7 +1004,7 @@ public class AwAutofillTest {
         // WebView shouldn't set class name.
         assertNull(viewStructure.getClassName());
         Bundle extras = viewStructure.getExtras();
-        assertEquals("AwAutofillTest", extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME"));
+        assertEquals("Android WebView", extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_NAME"));
         assertTrue(0 < extras.getCharSequence("VIRTUAL_STRUCTURE_PROVIDER_VERSION").length());
         TestViewStructure.AwHtmlInfo htmlInfoForm = viewStructure.getHtmlInfo();
         assertEquals("form", htmlInfoForm.getTag());
@@ -1117,7 +1119,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1153875")
     public void testAutofillTriggersAfterReload() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -1200,12 +1201,11 @@ public class AwAutofillTest {
         assertEquals(1, values.size());
         assertEquals("a", values.get(0).second.getTextValue());
         executeJavaScriptAndWaitForResult("document.getElementById('text1').value='c';");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // There is no AUTOFILL_CANCEL from Android P.
-            assertEquals(3, getCallbackCount());
-        } else {
-            assertEquals(4, getCallbackCount());
-        }
+        // Check no new event occurs, this is best effort checking, the event here could be leaked
+        // from previous dispatchDownAndUpKeyEvents().
+        assertEquals("Events in the queue "
+                        + buildEventList(mEventQueue.toArray(new Integer[mEventQueue.size()])),
+                cnt, getCallbackCount());
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         // Check if NotifyVirtualValueChanged() called one more time and value is 'cb', this
         // means javascript change didn't trigger the NotifyVirtualValueChanged().
@@ -1975,10 +1975,9 @@ public class AwAutofillTest {
     }
 
     @Test
-    @FlakyTest(message = "https://crbug.com/1161326")
+    @DisabledTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testUMANoServerPrediction() throws Throwable {
         mUMATestHelper.triggerAutofill();
         mUMATestHelper.startNewSession();
@@ -1987,10 +1986,9 @@ public class AwAutofillTest {
     }
 
     @Test
-    @FlakyTest(message = "https://crbug.com/1161326")
+    @DisabledTest(message = "https://crbug.com/1161326")
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testUMAServerPredictionArriveBeforeSessionStart() throws Throwable {
         mUMATestHelper.simulateServerPredictionBeforeTriggeringAutofill(/*USERNAME*/ 86);
         assertEquals(AutofillProviderUMA.SERVER_PREDICTION_AVAILABLE_ON_SESSION_STARTS,
@@ -2001,7 +1999,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testUMAServerPredictionArriveAfterSessionStart() throws Throwable {
         mUMATestHelper.triggerAutofill();
         mUMATestHelper.simulateServerPrediction(/*NO_SERVER_DATA*/ 0);
@@ -2058,7 +2055,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @FlakyTest(message = "crbug.com/1033179")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'"
@@ -2077,6 +2073,7 @@ public class AwAutofillTest {
         // Moved view, the position change trigger additional AUTOFILL_VIEW_EXITED and
         // AUTOFILL_VIEW_ENTERED.
         scrollToBottom();
+        pollJavascriptResultNotEqualTo("document.body.scrollTop;", "0");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         List<Integer> expectedValues = new ArrayList<>();
 
@@ -2261,7 +2258,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    @DisabledTest(message = "https://crbug.com/1372519")
     public void testServerPredictionArrivesBeforeAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2314,7 +2311,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerPredictionPrimaryTypeArrivesBeforeAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2366,7 +2362,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    @DisabledTest(message = "https://crbug.com/1372519")
     public void testServerPredictionArrivesAfterAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2436,7 +2432,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerPredictionPrimaryTypeArrivesAfterAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2504,7 +2499,7 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
+    @DisabledTest(message = "https://crbug.com/1372519")
     public void testServerPredictionArrivesBeforeCallbackRegistered() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2574,45 +2569,6 @@ public class AwAutofillTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=AndroidAutofillQueryServerFieldTypes"})
-    public void testServerPredictionQueryDisabled() throws Throwable {
-        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
-                + "<input type='text' id='text1' name='username'>"
-                + "<input type='text' name='email' id='text2'/>"
-                + "</form></body></html>";
-        final String url = mWebServer.setResponse(FILE, data, null);
-        loadUrlSync(url);
-
-        int cnt = 0;
-        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
-        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
-
-        cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
-                        AUTOFILL_VALUE_CHANGED});
-
-        invokeOnProvideAutoFillVirtualStructure();
-        TestViewStructure viewStructure = mTestValues.testViewStructure;
-        assertNotNull(viewStructure);
-        assertEquals(2, viewStructure.getChildCount());
-        assertNull(viewStructure.getChild(0).getHtmlInfo().getAttribute(
-                "crowdsourcing-autofill-hints"));
-        assertNull(viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(viewStructure.getChild(0).getHtmlInfo().getAttribute(
-                "crowdsourcing-predictions-autofill-hints"));
-        assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute(
-                "crowdsourcing-autofill-hints"));
-        assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertNull(viewStructure.getChild(1).getHtmlInfo().getAttribute(
-                "crowdsourcing-predictions-autofill-hints"));
-        IBinder binder = viewStructure.getExtras().getBinder("AUTOFILL_HINTS_SERVICE");
-        assertNull(binder);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=AndroidAutofillQueryServerFieldTypes"})
     public void testServerQueryFailedAfterAutofillStart() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<input type='text' id='text1' name='username'>"
@@ -2666,10 +2622,257 @@ public class AwAutofillTest {
         assertTrue(autofillHintsServiceTestHelper.isQueryFailed());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFieldAddedBeforeSuggestionSelected() throws Throwable {
+        // This test verifies that form filling works even in the case that the form has been
+        // modified (field was added) in the DOM between the decision to fill and executing the
+        // fill.
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<label>User Name:</label>"
+                + "<input type='text' id='text1' name='name'/>"
+                + "<label>Password:</label>"
+                + "<input type='password' id='pwdid' name='pwd'/>"
+                + "</form></body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+
+        // Append a field.
+        executeJavaScriptAndWaitForResult("document.getElementById('pwdid').insertAdjacentHTML("
+                + "'afterend', '<input type=\"password\" id=\"pwdid2\"/>');");
+
+        // Autofill the original form.
+        SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
+        values.append(
+                viewStructure.getChild(0).getId(), AutofillValue.forText("example@example.com"));
+        values.append(viewStructure.getChild(1).getId(), AutofillValue.forText("password"));
+        cnt = getCallbackCount();
+        clearChangedValues();
+        invokeAutofill(values);
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED});
+
+        String value0 =
+                executeJavaScriptAndWaitForResult("document.getElementById('text1').value;");
+        assertEquals("\"example@example.com\"", value0);
+        String value1 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid').value;");
+        assertEquals("\"password\"", value1);
+        String value2 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid2').value;");
+        assertEquals("\"\"", value2);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFirstFieldRemovedBeforeSuggestionSelected() throws Throwable {
+        // This test verifies that form filling works even if an element of the form that was
+        // supposed to be filled has been deleted between the time of decision to fill the form and
+        // executing the fill.
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<label>User Name:</label>"
+                + "<input type='text' id='text1' name='name'/>"
+                + "<label>Password:</label>"
+                + "<input type='password' id='pwdid' name='pwd'/>"
+                + "</form></body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        // Focus on the second element, since the first one is about to be removed. Removing the
+        // element on which the fill was triggered would cancel the filling operation.
+        executeJavaScriptAndWaitForResult("document.getElementById('pwdid').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        invokeOnProvideAutoFillVirtualStructure();
+        TestViewStructure viewStructure = mTestValues.testViewStructure;
+        assertNotNull(viewStructure);
+        assertEquals(2, viewStructure.getChildCount());
+
+        // Remove the first field.
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').remove()");
+
+        // Autofill the original form.
+        SparseArray<AutofillValue> values = new SparseArray<AutofillValue>();
+        values.append(
+                viewStructure.getChild(0).getId(), AutofillValue.forText("example@example.com"));
+        values.append(viewStructure.getChild(1).getId(), AutofillValue.forText("password"));
+        cnt = getCallbackCount();
+        clearChangedValues();
+        invokeAutofill(values);
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED});
+
+        String value1 =
+                executeJavaScriptAndWaitForResult("document.getElementById('pwdid').value;");
+        assertEquals("\"password\"", value1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFrameDetachedOnFormSubmission() throws Throwable {
+        final String mainFrame = "<html><body>"
+                + "<script>"
+                + "function receiveMessage(event) {"
+                + "  var address_iframe = document.getElementById('address_iframe');"
+                + "  address_iframe.parentNode.removeChild(address_iframe);"
+                + "  setTimeout(delayedUpload, 0);"
+                + "}"
+                + "window.addEventListener('message', receiveMessage, false);"
+                + "</script>"
+                + "<iframe src='inner_frame_address_form.html' id='address_iframe'"
+                + "    name='address_iframe'>"
+                + "</iframe>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(FILE, mainFrame, null);
+        final String subFrame = "<html><body>"
+                + "<script>"
+                + "function send_post() {"
+                + "  window.parent.postMessage('SubmitComplete', '*');"
+                + "}"
+                + "</script>"
+                + "<form action='inner_frame_address_form.html' id='deleting_form'"
+                + "    onsubmit='send_post(); return false;'>"
+                + "  <input type='text' id='address_field' name='address' autocomplete='on'>"
+                + "   <input type='submit' id='submit_button' name='submit_button'>"
+                + "</form>"
+                + "</body></html>";
+        final String subFrameURL =
+                mWebServer.setResponse("/inner_frame_address_form.html", subFrame, null);
+        assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_form.html"));
+        int cnt = 0;
+        loadUrlSync(url);
+        pollJavascriptResult("var iframe = document.getElementById('address_iframe');"
+                        + "var frame_doc = iframe.contentDocument;"
+                        + "frame_doc.getElementById('address_field').focus();"
+                        + "frame_doc.activeElement.id;",
+                "\"address_field\"");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        executeJavaScriptAndWaitForResult("var iframe = document.getElementById('address_iframe');"
+                + "var frame_doc = iframe.contentDocument;"
+                + "frame_doc.getElementById('submit_button').click();");
+        waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFrameDetachedOnFormlessSubmission() throws Throwable {
+        final String mainFrame = "<html><body>"
+                + "<script>"
+                + "function receiveMessage(event) {"
+                + "  var address_iframe = document.getElementById('address_iframe');"
+                + "  address_iframe.parentNode.removeChild(address_iframe);"
+                + "}"
+                + "window.addEventListener('message', receiveMessage, false);"
+                + "</script>"
+                + "<iframe src='inner_frame_address_formless.html' id='address_iframe'"
+                + "    name='address_iframe'>"
+                + "</iframe>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(FILE, mainFrame, null);
+        final String subFrame = "<html><body>"
+                + "<script>"
+                + "function send_post() {"
+                + "  window.parent.postMessage('SubmitComplete', '*');"
+                + "}"
+                + "</script>"
+                + "<input type='text' id='address_field' name='address' autocomplete='on'>"
+                + "<input type='button' id='submit_button' name='submit_button'"
+                + "    onclick='send_post()'>"
+                + "</body></html>";
+        final String subFrameURL =
+                mWebServer.setResponse("/inner_frame_address_formless.html", subFrame, null);
+        assertTrue(Uri.parse(subFrameURL).getPath().equals("/inner_frame_address_formless.html"));
+        int cnt = 0;
+        loadUrlSync(url);
+        pollJavascriptResult("var iframe = document.getElementById('address_iframe');"
+                        + "var frame_doc = iframe.contentDocument;"
+                        + "frame_doc.getElementById('address_field').focus();"
+                        + "frame_doc.activeElement.id;",
+                "\"address_field\"");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        executeJavaScriptAndWaitForResult("var iframe = document.getElementById('address_iframe');"
+                + "var frame_doc = iframe.contentDocument;"
+                + "frame_doc.getElementById('submit_button').click();");
+        // The additional AUTOFILL_VIEW_EXITED event caused by 'click' of the button.
+        waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        assertEquals(SubmissionSource.FRAME_DETACHED, mSubmissionSource);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testLabelChange() throws Throwable {
+        final String data = "<html><head></head><body>"
+                + "<form action='a.html'>"
+                + "<label id='label_id'> Address </label>"
+                + "<input type='text' id='address' name='address' autocomplete='on'/>"
+                + "<p id='p_id'>Address 1</p>"
+                + "<input type='text' name='address1' autocomplete='on'/>"
+                + "<input type='submit' id='submit_button' name='submit_button'/>"
+                + "</form>"
+                + "</body></html>";
+        int cnt = 0;
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        // Verify label change shall trigger new session.
+        executeJavaScriptAndWaitForResult(
+                "document.getElementById('label_id').innerHTML='address change';");
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
+                        AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED});
+        // Verify inferred label change won't trigger new session.
+        executeJavaScriptAndWaitForResult(
+                "document.getElementById('p_id').innerHTML='address change';");
+        executeJavaScriptAndWaitForResult("document.getElementById('address').focus();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
+    }
+
     private void pollJavascriptResult(String script, String expectedResult) throws Throwable {
         AwActivityTestRule.pollInstrumentationThread(() -> {
             try {
                 return expectedResult.equals(executeJavaScriptAndWaitForResult(script));
+            } catch (Throwable e) {
+                return false;
+            }
+        });
+    }
+
+    private void pollJavascriptResultNotEqualTo(String script, String result) throws Throwable {
+        AwActivityTestRule.pollInstrumentationThread(() -> {
+            try {
+                return !result.equals(executeJavaScriptAndWaitForResult(script));
             } catch (Throwable e) {
                 return false;
             }
@@ -2778,18 +2981,25 @@ public class AwAutofillTest {
             Object[] objectArray = mEventQueue.toArray();
             mEventQueue.clear();
             Integer[] resultArray = Arrays.copyOf(objectArray, objectArray.length, Integer[].class);
-            Assert.assertArrayEquals("Expect: " + Arrays.toString(adjustedEventArray)
-                            + " Result: " + Arrays.toString(resultArray),
+            Assert.assertArrayEquals("Expect: " + buildEventList(adjustedEventArray)
+                            + " Result: " + buildEventList(resultArray),
                     adjustedEventArray, resultArray);
             return adjustedEventArray.length;
         } catch (TimeoutException e) {
             Object[] objectArray = mEventQueue.toArray();
             Integer[] resultArray = Arrays.copyOf(objectArray, objectArray.length, Integer[].class);
-            Assert.assertArrayEquals("Expect:" + Arrays.toString(adjustedEventArray)
-                            + " Result:" + Arrays.toString(resultArray),
+            Assert.assertArrayEquals("Expect:" + buildEventList(adjustedEventArray)
+                            + " Result:" + buildEventList(resultArray),
                     adjustedEventArray, resultArray);
             throw e;
         }
+    }
+
+    private static String buildEventList(Integer[] eventArray) {
+        Assert.assertEquals(EVENT.length, AUTOFILL_EVENT_MAX);
+        List<String> result = new ArrayList<String>(eventArray.length);
+        for (Integer event : eventArray) result.add(EVENT[event]);
+        return TextUtils.join(",", result);
     }
 
     private void dispatchDownAndUpKeyEvents(final int code) throws Throwable {

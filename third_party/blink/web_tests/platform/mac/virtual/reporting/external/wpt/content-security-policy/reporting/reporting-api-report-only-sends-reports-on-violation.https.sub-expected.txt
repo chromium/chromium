@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Test that image does not load
-PASS Event is fired
-FAIL Violation report status OK. assert_equals: No such report. expected "" but got "false"
-Harness: the test ran to completion.
-

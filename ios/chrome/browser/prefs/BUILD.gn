@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,8 @@ source_set("prefs") {
   sources = [
     "ios_chrome_pref_model_associator_client.cc",
     "ios_chrome_pref_model_associator_client.h",
-    "ios_chrome_pref_service_factory.cc",
     "ios_chrome_pref_service_factory.h",
+    "ios_chrome_pref_service_factory.mm",
   ]
   deps = [
     "//base",
@@ -20,7 +20,14 @@ source_set("prefs") {
     "//components/search_engines",
     "//components/sync_preferences",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/policy:feature_flags",
+  ]
+}
+
+source_set("pref_names") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
   ]
 }
 
@@ -33,12 +40,13 @@ source_set("browser_prefs") {
   deps = [
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
-    "//components/component_updater/installer_policies:installer_policies",
+    "//components/commerce/core:pref_names",
+    "//components/component_updater",
+    "//components/component_updater/installer_policies",
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/enterprise",
-    "//components/feed/core/common:feed_core_common",
-    "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/flags_ui",
     "//components/gcm_driver",
     "//components/handoff",
@@ -51,6 +59,7 @@ source_set("browser_prefs") {
     "//components/ntp_snippets",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
+    "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
     "//components/payments/core",
     "//components/policy/core/browser",
@@ -60,6 +69,7 @@ source_set("browser_prefs") {
     "//components/proxy_config",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
+    "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -67,7 +77,6 @@ source_set("browser_prefs") {
     "//components/sync_sessions",
     "//components/translate/core/browser",
     "//components/translate/core/common",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//components/update_client",
     "//components/variations/service",
@@ -81,13 +90,17 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/voice:prefs",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web/font_size",

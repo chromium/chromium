@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <array>
 
-#include "ash/style/scoped_light_mode_as_default.h"
+#include "ash/clipboard/clipboard_history_util.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -16,10 +17,7 @@ namespace {
 constexpr gfx::Size kIconSize(20, 20);
 
 // The file icon's margin.
-constexpr gfx::Insets kIconMargin(/*top=*/0,
-                                  /*left=*/0,
-                                  /*bottom=*/0,
-                                  /*right=*/12);
+constexpr auto kIconMargin = gfx::Insets::TLBR(0, 0, 0, 12);
 }  // namespace
 
 namespace ash {
@@ -55,7 +53,7 @@ void ClipboardHistoryFileItemView::OnThemeChanged() {
   // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
   ScopedLightModeAsDefault scoped_light_mode_as_default;
 
-  file_icon_->SetImage(ClipboardHistoryUtil::GetIconForFileClipboardItem(
+  file_icon_->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
       *clipboard_history_item(), base::UTF16ToUTF8(text())));
 }
 

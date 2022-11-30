@@ -1,12 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BLOCKED_CONTENT_POPUP_TRACKER_H_
 #define COMPONENTS_BLOCKED_CONTENT_POPUP_TRACKER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -14,6 +12,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/scoped_visibility_tracker.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -43,9 +42,17 @@ class PopupTracker : public content::WebContentsObserver,
   static PopupTracker* CreateForWebContents(content::WebContents* contents,
                                             content::WebContents* opener,
                                             WindowOpenDisposition disposition);
+
+  PopupTracker(const PopupTracker&) = delete;
+  PopupTracker& operator=(const PopupTracker&) = delete;
+
   ~PopupTracker() override;
 
   void set_is_trusted(bool is_trusted) { is_trusted_ = is_trusted; }
+
+  bool has_first_load_visible_time_for_testing() const {
+    return first_load_visible_time_.has_value();
+  }
 
  private:
   friend class content::WebContentsUserData<PopupTracker>;
@@ -74,10 +81,10 @@ class PopupTracker : public content::WebContentsObserver,
 
   // Will be unset until the first navigation commits. Will be set to the total
   // time the contents was visible at commit time.
-  base::Optional<base::TimeDelta> first_load_visible_time_start_;
+  absl::optional<base::TimeDelta> first_load_visible_time_start_;
   // Will be unset until the second navigation commits. Is the total time the
   // contents is visible while the first document is loading (after commit).
-  base::Optional<base::TimeDelta> first_load_visible_time_;
+  absl::optional<base::TimeDelta> first_load_visible_time_;
 
   ui::ScopedVisibilityTracker visibility_tracker_;
 
@@ -108,8 +115,6 @@ class PopupTracker : public content::WebContentsObserver,
   const WindowOpenDisposition window_open_disposition_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PopupTracker);
 };
 
 }  // namespace blocked_content

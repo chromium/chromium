@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
-#include "chromeos/dbus/media_analytics/media_analytics_client.h"
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
-#include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "extensions/browser/api/media_perception_private/media_perception_private_api.h"
 #include "extensions/common/api/media_perception_private.h"
@@ -92,6 +92,11 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
 class MediaPerceptionPrivateApiTest : public ShellApiTest {
  public:
   MediaPerceptionPrivateApiTest() {}
+
+  MediaPerceptionPrivateApiTest(const MediaPerceptionPrivateApiTest&) = delete;
+  MediaPerceptionPrivateApiTest& operator=(
+      const MediaPerceptionPrivateApiTest&) = delete;
+
   ~MediaPerceptionPrivateApiTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -105,13 +110,13 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
   void SetUpInProcessBrowserTestFixture() override {
     // MediaAnalyticsClient and UpstartClient are required by
     // MediaPerceptionAPIManager.
-    chromeos::MediaAnalyticsClient::InitializeFake();
-    chromeos::UpstartClient::InitializeFake();
+    ash::MediaAnalyticsClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
   }
 
   void TearDownInProcessBrowserTestFixture() override {
-    chromeos::UpstartClient::Shutdown();
-    chromeos::MediaAnalyticsClient::Shutdown();
+    ash::UpstartClient::Shutdown();
+    ash::MediaAnalyticsClient::Shutdown();
   }
 
   void SetUpOnMainThread() override {
@@ -123,8 +128,6 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
  private:
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_feature_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPerceptionPrivateApiTest);
 };
 
 // Verify that we can execute the setAnalyticsComponent API and deal with
@@ -157,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, GetDiagnostics) {
   mri::Diagnostics diagnostics;
   diagnostics.add_perception_sample()->mutable_frame_perception()->set_frame_id(
       1);
-  chromeos::FakeMediaAnalyticsClient::Get()->SetDiagnostics(diagnostics);
+  ash::FakeMediaAnalyticsClient::Get()->SetDiagnostics(diagnostics);
 
   ASSERT_TRUE(RunAppTest("media_perception_private/diagnostics")) << message_;
 }
@@ -169,15 +172,14 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, MediaPerception) {
   catcher.RestrictToBrowserContext(browser_context());
 
   ExtensionTestMessageListener handler_registered_listener(
-      "mediaPerceptionListenerSet", false);
+      "mediaPerceptionListenerSet");
   ASSERT_TRUE(LoadApp("media_perception_private/media_perception")) << message_;
   ASSERT_TRUE(handler_registered_listener.WaitUntilSatisfied());
 
   mri::MediaPerception media_perception;
   media_perception.add_frame_perception()->set_frame_id(1);
-  ASSERT_TRUE(
-      chromeos::FakeMediaAnalyticsClient::Get()->FireMediaPerceptionEvent(
-          media_perception));
+  ASSERT_TRUE(ash::FakeMediaAnalyticsClient::Get()->FireMediaPerceptionEvent(
+      media_perception));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

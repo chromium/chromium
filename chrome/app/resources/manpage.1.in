@@ -30,12 +30,6 @@ repeated invocations of @@PACKAGE@@ will reuse an existing process for
 a given user data directory.
 
 .TP
-\fB\-\-app\fR=\fIURL\fR
-Runs
-.I URL
-in "app mode": with no browser toolbars.
-
-.TP
 \fB\-\-incognito\fR
 Open in incognito mode.
 
@@ -114,6 +108,7 @@ as
 See the GTK documentation for more:
 .IP
 <http://library.gnome.org/devel/gtk/stable/gtk-running.html>
+.IP
 <http://library.gnome.org/devel/gtk/stable/gtk-x11.html>
 
 .SH ENVIRONMENT

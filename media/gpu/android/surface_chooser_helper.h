@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -27,18 +28,22 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // |promotion_hint_aggregator| and |tick_clock| are for tests.  Normally, we
   // create the correct default implementations ourself.
   // |is_overlay_required| tells us to require overlays(!).
-  // |promote_aggressively| causes us to use overlays whenever they're power-
-  // efficient, which lets us catch fullscreen-div cases.
+  // |promote_secure_only| causes us to use overlays only if required for secure
+  // video playback.
   // |always_use_texture_owner| forces us to always use a texture owner,
   // completely ignoring all other conditions.
   SurfaceChooserHelper(
       std::unique_ptr<AndroidVideoSurfaceChooser> surface_chooser,
       bool is_overlay_required,
-      bool promote_aggressively,
+      bool promote_secure_only,
       bool always_use_texture_owner,
       std::unique_ptr<PromotionHintAggregator> promotion_hint_aggregator =
           nullptr,
       const base::TickClock* tick_clock = nullptr);
+
+  SurfaceChooserHelper(const SurfaceChooserHelper&) = delete;
+  SurfaceChooserHelper& operator=(const SurfaceChooserHelper&) = delete;
+
   ~SurfaceChooserHelper();
 
   enum class SecureSurfaceMode {
@@ -85,7 +90,7 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   void SetIsPersistentVideo(bool is_persistent_video);
 
   // Update the chooser state using the given factory.
-  void UpdateChooserState(base::Optional<AndroidOverlayFactoryCB> new_factory);
+  void UpdateChooserState(absl::optional<AndroidOverlayFactoryCB> new_factory);
 
   // Notify us about a promotion hint.  This will update the chooser state
   // if needed.
@@ -115,7 +120,7 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // Time since we last updated the chooser state.
   base::TimeTicks most_recent_chooser_retry_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Number of promotion hints that we need to receive before clearing the
   // "delay overlay promotion" flag in |surface_chooser_state_|.  We do this so
@@ -123,8 +128,6 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // Since overlay positioning isn't synchronous, it's good to make sure that
   // blink isn't moving the quad around too.
   int hints_until_clear_relayout_flag_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SurfaceChooserHelper);
 };
 
 }  // namespace media

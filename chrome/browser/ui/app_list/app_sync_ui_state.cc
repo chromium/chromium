@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_observer.h"
 #include "components/prefs/pref_service.h"
@@ -38,7 +38,7 @@ bool AppSyncUIState::ShouldObserveAppSyncForProfile(Profile* profile) {
   if (!profile || profile->IsOffTheRecord())
     return false;
 
-  if (!ProfileSyncServiceFactory::HasSyncService(profile))
+  if (!SyncServiceFactory::HasSyncService(profile))
     return false;
 
   return profile->IsNewProfile();
@@ -46,9 +46,9 @@ bool AppSyncUIState::ShouldObserveAppSyncForProfile(Profile* profile) {
 
 AppSyncUIState::AppSyncUIState(Profile* profile)
     : profile_(profile),
-      sync_service_(NULL),
+      sync_service_(nullptr),
       status_(STATUS_NORMAL),
-      extension_registry_(NULL) {
+      extension_registry_(nullptr) {
   StartObserving();
 }
 
@@ -77,7 +77,7 @@ void AppSyncUIState::StartObserving() {
   extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
   extension_registry_->AddObserver(this);
 
-  sync_service_ = ProfileSyncServiceFactory::GetForProfile(profile_);
+  sync_service_ = SyncServiceFactory::GetForProfile(profile_);
   CHECK(sync_service_);
   sync_service_->AddObserver(this);
 }
@@ -87,13 +87,13 @@ void AppSyncUIState::StopObserving() {
     return;
 
   sync_service_->RemoveObserver(this);
-  sync_service_ = NULL;
+  sync_service_ = nullptr;
 
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
-  extension_registry_ = NULL;
+  extension_registry_ = nullptr;
 
-  profile_ = NULL;
+  profile_ = nullptr;
 }
 
 void AppSyncUIState::SetStatus(Status status) {
@@ -103,9 +103,9 @@ void AppSyncUIState::SetStatus(Status status) {
   status_ = status;
   switch (status_) {
     case STATUS_SYNCING:
-      max_syncing_status_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromMilliseconds(kMaxSyncingTimeMs), this,
-          &AppSyncUIState::OnMaxSyncingTimer);
+      max_syncing_status_timer_.Start(FROM_HERE,
+                                      base::Milliseconds(kMaxSyncingTimeMs),
+                                      this, &AppSyncUIState::OnMaxSyncingTimer);
       break;
     case STATUS_NORMAL:
     case STATUS_TIMED_OUT:

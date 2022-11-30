@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/connection_params.h"
@@ -66,7 +66,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
                              const uint64_t remote_capabilities) = 0;
     virtual void OnBroadcast(const ports::NodeName& from_node,
                              Channel::MessagePtr message) = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     virtual void OnRelayEventMessage(const ports::NodeName& from_node,
                                      base::ProcessHandle from_process,
                                      const ports::NodeName& destination,
@@ -90,12 +90,17 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const ProcessErrorCallback& process_error_callback);
 
+  NodeChannel(const NodeChannel&) = delete;
+  NodeChannel& operator=(const NodeChannel&) = delete;
+
   static Channel::MessagePtr CreateEventMessage(size_t capacity,
                                                 size_t payload_size,
                                                 void** payload,
                                                 size_t num_handles);
 
-  static void GetEventMessageData(Channel::Message* message,
+  // Retrieves address and size of an Event message's underlying message data.
+  // Returns `false` if the message is not a valid Event message.
+  static bool GetEventMessageData(Channel::Message& message,
                                   void** data,
                                   size_t* num_data_bytes);
 
@@ -155,7 +160,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   bool HasLocalCapability(const uint64_t capability) const;
   void SetLocalCapabilities(const uint64_t capability);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Relay the message to the specified node via this channel.  This is used to
   // pass windows handles between two processes that do not have permission to
   // duplicate handles into the other's address space. The relay process is
@@ -203,7 +208,7 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
   // for this channel.
   void InitializeLocalCapabilities();
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;
@@ -217,8 +222,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 
   base::Lock remote_process_handle_lock_;
   base::Process remote_process_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NodeChannel);
 };
 
 }  // namespace core

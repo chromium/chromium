@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,9 @@ InternalsRTCPeerConnection::waitForPeerConnectionDispatchEventsTaskCreated(
   ScriptPromise promise = resolver->Promise();
   CHECK(!connection->dispatch_events_task_created_callback_for_testing_);
   connection->dispatch_events_task_created_callback_for_testing_ =
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver));
+      WTF::BindOnce(
+          [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+          WrapPersistent(resolver));
   return promise;
 }
 

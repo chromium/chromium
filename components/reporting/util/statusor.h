@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,10 +61,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/reporting/util/status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -81,7 +81,7 @@ class StatusOrHelper {
 }  // namespace internal
 
 template <typename T>
-class WARN_UNUSED_RESULT StatusOr {
+class [[nodiscard]] StatusOr {
   template <typename U>
   friend class StatusOr;
 
@@ -90,8 +90,8 @@ class WARN_UNUSED_RESULT StatusOr {
   // is statically set to true, otherwise it is statically set to false.
   template <class U, typename V>
   struct is_implicitly_constructible
-      : base::conjunction<std::is_constructible<U, V>,
-                          std::is_convertible<V, U>> {};
+      : std::conjunction<std::is_constructible<U, V>,
+                         std::is_convertible<V, U>> {};
 
  public:
   // Constructs a new StatusOr with UNINITIALIZED status and no value.
@@ -216,7 +216,7 @@ class WARN_UNUSED_RESULT StatusOr {
   //
   // This method should only be called if this StatusOr object's status is OK
   // (i.e. a call to ok() returns true), otherwise this call will abort.
-  const T& WARN_UNUSED_RESULT ValueOrDie() const& {
+  [[nodiscard]] const T& ValueOrDie() const& {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }
@@ -227,7 +227,7 @@ class WARN_UNUSED_RESULT StatusOr {
   //
   // This method should only be called if this StatusOr object's status is OK
   // (i.e. a call to ok() returns true), otherwise this call will abort.
-  T& WARN_UNUSED_RESULT ValueOrDie() & {
+  [[nodiscard]] T& ValueOrDie() & {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }
@@ -240,7 +240,7 @@ class WARN_UNUSED_RESULT StatusOr {
   // (i.e. a call to ok() returns true), otherwise this call will abort. The
   // StatusOr object is invalidated after this call and will be updated to
   // contain a non-OK status with a |error::UNKNOWN| error code.
-  T WARN_UNUSED_RESULT ValueOrDie() && {
+  [[nodiscard]] T ValueOrDie() && {
     if (!ok()) {
       internal::StatusOrHelper::Crash(status_);
     }
@@ -263,7 +263,7 @@ class WARN_UNUSED_RESULT StatusOr {
     }
 
    private:
-    StatusOr<T>* const status_or_;
+    const raw_ptr<StatusOr<T>> status_or_;
     const Status reset_to_status_;
   };
 
@@ -299,7 +299,7 @@ class WARN_UNUSED_RESULT StatusOr {
   }
 
   Status status_;
-  base::Optional<T> value_;
+  absl::optional<T> value_;
 };
 
 }  // namespace reporting

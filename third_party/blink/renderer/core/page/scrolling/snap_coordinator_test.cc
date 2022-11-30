@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -30,7 +31,7 @@ class SnapCoordinatorTest : public testing::Test,
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr, nullptr, base::BindOnce([](Settings& settings) {
+        gfx::Size(), nullptr, nullptr, base::BindOnce([](Settings& settings) {
           settings.SetAcceleratedCompositingEnabled(true);
         }));
 
@@ -397,7 +398,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculation) {
       GetSnapContainerData(*scroller_element->GetLayoutBox());
   EXPECT_TRUE(data);
   cc::SnapContainerData actual_container = *data;
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -405,8 +406,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(10, 10, width - 20, height - 20), max_position);
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(192, 192, 116, 116), false,
                                  cc::ElementId(10));
@@ -422,7 +422,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculation) {
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
   scroller_element->scrollBy(20, 20);
-  EXPECT_EQ(FloatPoint(20, 20), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(20, 20), scrollable_area->ScrollPosition());
   Element* area_element = GetDocument().getElementById("area");
   area_element->setAttribute(kStyleAttr, "scroll-snap-align: start;");
   UpdateAllLifecyclePhasesForTest();
@@ -431,7 +431,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculation) {
       GetSnapContainerData(*scroller_element->GetLayoutBox());
   EXPECT_TRUE(data);
   cc::SnapContainerData actual_container = *data;
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -439,8 +439,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(10, 10, width - 20, height - 20), max_position);
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(192, 192, 116, 116), false,
                                  cc::ElementId(10));
@@ -482,7 +481,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculationOnViewport) {
   EXPECT_EQ(body, GetDocument().ViewportDefiningElement());
   ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
   body->scrollBy(20, 20);
-  EXPECT_EQ(FloatPoint(20, 20), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(20, 20), scrollable_area->ScrollPosition());
   Element* area_element = GetDocument().getElementById("area");
   area_element->setAttribute(kStyleAttr, "scroll-snap-align: start;");
   UpdateAllLifecyclePhasesForTest();
@@ -491,7 +490,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculationOnViewport) {
   EXPECT_TRUE(data);
   cc::SnapContainerData actual_container = *data;
 
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = body->clientWidth();
@@ -499,8 +498,7 @@ TEST_F(SnapCoordinatorTest, ScrolledSnapDataCalculationOnViewport) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(0, 0, width, height),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(0, 0, width, height), max_position);
 
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(200, 200, 100, 100), false,
@@ -528,7 +526,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculationWithBoxModel) {
 
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -538,8 +536,7 @@ TEST_F(SnapCoordinatorTest, SnapDataCalculationWithBoxModel) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(20, 20, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(20, 20, width - 20, height - 20), max_position);
   // rect.x = scroller.border + scroller.padding + area.left + area.margin
   //          - area.scroll-margin
   // rect.y = scroller.border + scroller.padding + area.top + area.margin
@@ -571,7 +568,7 @@ TEST_F(SnapCoordinatorTest, NegativeMarginSnapDataCalculation) {
 
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -580,8 +577,7 @@ TEST_F(SnapCoordinatorTest, NegativeMarginSnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(10, 10, width - 20, height - 20), max_position);
   cc::SnapAreaData expected_area(cc::ScrollSnapAlign(cc::SnapAlignment::kStart),
                                  gfx::RectF(208, 208, 84, 84), false,
                                  cc::ElementId(10));
@@ -618,7 +614,7 @@ TEST_F(SnapCoordinatorTest, AsymmetricalSnapDataCalculation) {
 
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -627,8 +623,7 @@ TEST_F(SnapCoordinatorTest, AsymmetricalSnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(16, 10, width - 28, height - 24),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(16, 10, width - 28, height - 24), max_position);
   cc::SnapAreaData expected_area(
       cc::ScrollSnapAlign(cc::SnapAlignment::kCenter),
       gfx::RectF(192, 198, 112, 108), false, cc::ElementId(10));
@@ -652,7 +647,7 @@ TEST_F(SnapCoordinatorTest, ScaledSnapDataCalculation) {
 
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -660,8 +655,7 @@ TEST_F(SnapCoordinatorTest, ScaledSnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(10, 10, width - 20, height - 20), max_position);
 
   // The area is scaled from center, so it pushes the area's top-left corner to
   // (50, 50).
@@ -689,7 +683,7 @@ TEST_F(SnapCoordinatorTest, VerticalRlSnapDataCalculation) {
 
   ScrollableArea* scrollable_area =
       scroller_element->GetLayoutBox()->GetScrollableArea();
-  FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+  gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
       scrollable_area->MaximumScrollOffset());
 
   double width = scroller_element->clientWidth();
@@ -698,8 +692,7 @@ TEST_F(SnapCoordinatorTest, VerticalRlSnapDataCalculation) {
   cc::SnapContainerData expected_container(
       cc::ScrollSnapType(false, cc::SnapAxis::kBoth,
                          cc::SnapStrictness::kMandatory),
-      gfx::RectF(10, 10, width - 20, height - 20),
-      gfx::ScrollOffset(max_position.X(), max_position.Y()));
+      gfx::RectF(10, 10, width - 20, height - 20), max_position);
   // Under vertical-rl writing mode, 'start' should align to the right
   // and 'end' should align to the left.
   cc::SnapAreaData expected_area(
@@ -829,4 +822,41 @@ TEST_F(SnapCoordinatorTest, AddingSnapAreaDoesNotRemoveCurrentSnapTarget) {
   data = *data_ptr;
   EXPECT_EQ(expected_snap_targets, data.GetTargetSnapAreaElementIds());
 }
+
+TEST_F(SnapCoordinatorTest, NegativeOverflowWithExpandedViewport) {
+  SetHTML(R"HTML(
+    <style>
+      html { writing-mode: vertical-rl; scroll-snap-type: y mandatory; }
+      body { margin: 0; }
+      div { scroll-snap-align: end start; width: 2000px; }
+    </style>
+    <div>SNAP</div>
+  )HTML");
+
+  // There are multiple ways for layout size to differ from LocalFrameView size.
+  // The most common is on mobile with minimum page scale < 1 (see
+  // WebViewImpl::UpdateMainFrameLayoutSize). Another way, observed in
+  // crbug.com/1272302, is print mode, where the initial containing block
+  // is directly resized by LocalFrameView::ForceLayoutForPagination, but the
+  // LocalFrameView retains its non-printing size.
+
+  LocalFrameView* frame_view = GetDocument().View();
+  frame_view->SetLayoutSizeFixedToFrameSize(false);
+  frame_view->SetLayoutSize({800, 800});
+  frame_view->Resize(1200, 1200);
+  frame_view->GetPage()->GetVisualViewport().SetSize({1000, 1000});
+  UpdateAllLifecyclePhasesForTest();
+
+  // In this configuration, the layout viewport's maximum scroll _offset_ is
+  // negative (see crbug.com/1318976), but the maximum scroll _position_, which
+  // incorporates the scroll origin, should be non-negative.  SnapCoordinator
+  // relies on RootFrameViewport to translate offsets to positions correctly.
+
+  EXPECT_EQ(frame_view->LayoutViewport()->MaximumScrollOffsetInt(),
+            gfx::Vector2d(-400, 0));
+  EXPECT_EQ(
+      GetSnapContainerData(*GetDocument().GetLayoutView())->max_position(),
+      gfx::PointF(1000, 200));
+}
+
 }  // namespace blink

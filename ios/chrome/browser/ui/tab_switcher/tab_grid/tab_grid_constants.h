@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@ extern NSString* const kTabGridIncognitoTabsPageButtonIdentifier;
 extern NSString* const kTabGridRegularTabsPageButtonIdentifier;
 extern NSString* const kTabGridRemoteTabsPageButtonIdentifier;
 extern NSString* const kTabGridDoneButtonIdentifier;
+extern NSString* const kTabGridSearchButtonIdentifier;
+extern NSString* const kTabGridCancelButtonIdentifier;
 extern NSString* const kTabGridCloseAllButtonIdentifier;
 extern NSString* const kTabGridUndoCloseAllButtonIdentifier;
 extern NSString* const kTabGridIncognitoTabsEmptyStateIdentifier;
@@ -20,6 +22,15 @@ extern NSString* const kTabGridRegularTabsEmptyStateIdentifier;
 extern NSString* const kTabGridScrollViewIdentifier;
 extern NSString* const kRegularTabGridIdentifier;
 extern NSString* const kIncognitoTabGridIdentifier;
+
+extern NSString* const kTabGridEditButtonIdentifier;
+extern NSString* const kTabGridEditCloseTabsButtonIdentifier;
+extern NSString* const kTabGridEditSelectAllButtonIdentifier;
+extern NSString* const kTabGridEditAddToButtonIdentifier;
+extern NSString* const kTabGridEditShareButtonIdentifier;
+extern NSString* const kTabGridSearchBarIdentifier;
+extern NSString* const kTabGridSearchTextFieldIdentifierPrefix;
+extern NSString* const kTabGridScrimIdentifier;
 
 // All kxxxColor constants are RGB values stored in a Hex integer. These will be
 // converted into UIColors using the UIColorFromRGB() function, from
@@ -49,6 +60,13 @@ extern const CGFloat kTabGridFloatingButtonHorizontalInset;
 // Intrinsic heights of the tab grid toolbars.
 extern const CGFloat kTabGridTopToolbarHeight;
 extern const CGFloat kTabGridBottomToolbarHeight;
+
+// The Search bar original width ratio before any width modifiers.
+extern const CGFloat kTabGridSearchBarWidthRatio;
+// The tab grid Search bar height.
+extern const CGFloat kTabGridSearchBarHeight;
+// The Search bar width ratio modifier for non-compact orientation.
+extern const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier;
 
 // The distance travelled by the thumb strip thumbnails during the slide-in
 // animation of the thumb strip reveal transition.

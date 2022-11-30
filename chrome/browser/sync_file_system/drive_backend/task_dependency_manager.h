@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/subtree_set.h"
 
 namespace sync_file_system {
@@ -35,6 +34,10 @@ struct TaskBlocker {
 class TaskDependencyManager {
  public:
   TaskDependencyManager();
+
+  TaskDependencyManager(const TaskDependencyManager&) = delete;
+  TaskDependencyManager& operator=(const TaskDependencyManager&) = delete;
+
   ~TaskDependencyManager();
 
   // Inserts |task_blocker| to the collection and returns true if it
@@ -57,8 +60,6 @@ class TaskDependencyManager {
   std::map<std::string, SubtreeSet> paths_by_app_id_;
   std::set<std::string> file_ids_;
   std::set<int64_t> tracker_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskDependencyManager);
 };
 
 }  // namespace drive_backend

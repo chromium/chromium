@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <syscall.h>
 #include <unistd.h>
+#include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "link.h"
 
 #include <algorithm>
@@ -20,7 +22,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/profiler/stack_buffer.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/cfi_backtrace_android.h"
 
@@ -83,7 +84,7 @@ class ScopedEventSignaller {
   ~ScopedEventSignaller() { event_->Signal(); }
 
  private:
-  AsyncSafeWaitableEvent* event_;
+  raw_ptr<AsyncSafeWaitableEvent> event_;
 };
 
 // Helper class to unwind stack. See Unwind() method for details.
@@ -230,7 +231,7 @@ class UnwindHelper {
   }
 
   // If false then only chrome unwinder and stack scanning are used to unwind.
-  CFIBacktraceAndroid* cfi_unwinder_;  // not const because of cache
+  raw_ptr<CFIBacktraceAndroid> cfi_unwinder_;  // not const because of cache
 
   // Set to the stack pointer of the copied stack in case of unwinding other
   // thread. Otherwise stack pointer of the unwind method.
@@ -251,7 +252,7 @@ class UnwindHelper {
   std::vector<const tracing::StackUnwinderAndroid::JniMarker*> jni_markers_;
 
   // Output stack trace and depth:
-  const void** out_trace_;
+  raw_ptr<const void*> out_trace_;
   size_t depth_ = 0;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <cstdlib>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -33,6 +33,10 @@ class MseTrackBuffer {
   MseTrackBuffer(ChunkDemuxerStream* stream,
                  MediaLog* media_log,
                  SourceBufferParseWarningCB parse_warning_cb);
+
+  MseTrackBuffer(const MseTrackBuffer&) = delete;
+  MseTrackBuffer& operator=(const MseTrackBuffer&) = delete;
+
   ~MseTrackBuffer();
 
   // Get/set |last_decode_timestamp_|.
@@ -170,7 +174,7 @@ class MseTrackBuffer {
 
   // Pointer to the stream associated with this track. The stream is not owned
   // by |this|.
-  ChunkDemuxerStream* const stream_;
+  const raw_ptr<ChunkDemuxerStream> stream_;
 
   // Queue of processed frames that have not yet been appended to |stream_|.
   // EnqueueProcessedFrame() adds to this queue, and FlushProcessedFrames()
@@ -178,7 +182,7 @@ class MseTrackBuffer {
   StreamParser::BufferQueue processed_frames_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Callback for reporting problematic conditions that are not necessarily
   // errors.
@@ -186,15 +190,12 @@ class MseTrackBuffer {
 
   // Counter that limits spam to |media_log_| for MseTrackBuffer warnings.
   int num_keyframe_time_greater_than_dependant_warnings_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MseTrackBuffer);
 };
 
 MseTrackBuffer::MseTrackBuffer(ChunkDemuxerStream* stream,
                                MediaLog* media_log,
                                SourceBufferParseWarningCB parse_warning_cb)
-    : last_decode_timestamp_(kNoDecodeTimestamp()),
-      last_processed_decode_timestamp_(DecodeTimestamp()),
+    : last_decode_timestamp_(kNoDecodeTimestamp),
       pending_group_start_pts_(kNoTimestamp),
       last_keyframe_presentation_timestamp_(kNoTimestamp),
       last_signalled_group_start_pts_(kNoTimestamp),
@@ -216,7 +217,7 @@ MseTrackBuffer::~MseTrackBuffer() {
 void MseTrackBuffer::Reset() {
   DVLOG(2) << __func__ << "()";
 
-  last_decode_timestamp_ = kNoDecodeTimestamp();
+  last_decode_timestamp_ = kNoDecodeTimestamp;
   last_frame_duration_ = kNoTimestamp;
   highest_presentation_timestamp_ = kNoTimestamp;
   needs_random_access_point_ = true;
@@ -562,8 +563,8 @@ void FrameProcessor::OnPossibleAudioConfigUpdate(
     return;
 
   current_audio_config_ = config;
-  sample_duration_ = base::TimeDelta::FromSecondsD(
-      1.0 / current_audio_config_.samples_per_second());
+  sample_duration_ =
+      base::Seconds(1.0 / current_audio_config_.samples_per_second());
   has_dependent_audio_frames_ =
       current_audio_config_.profile() == AudioCodecProfile::kXHE_AAC;
   last_audio_pts_for_nonkeyframe_monotonicity_check_ = kNoTimestamp;
@@ -803,9 +804,25 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
                                    << " frame";
       return false;
     }
-    if (decode_timestamp == kNoDecodeTimestamp()) {
-      MEDIA_LOG(ERROR, media_log_) << "Unknown DTS for " << frame->GetTypeName()
-                                   << " frame";
+
+    // StreamParserBuffer's GetDecodeTimestamp() shouldn't return
+    // kNoDecodeTimestamp if we already found the frame's PTS was kNoTimestamp
+    // and failed processing.
+    DCHECK(decode_timestamp != kNoDecodeTimestamp);
+
+    if (presentation_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Before adjusting by timestampOffset, PTS for "
+          << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
+      return false;
+    }
+
+    if (decode_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Before adjusting by timestampOffset, DTS for "
+          << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
       return false;
     }
 
@@ -817,7 +834,7 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
         << presentation_timestamp.InMicroseconds()
         << "us), frame type=" << frame->GetTypeName();
 
-    // All stream parsers must emit valid (non-negative) frame durations.
+    // All stream parsers should emit valid (non-negative) frame durations.
     // Note that duration of 0 can occur for at least WebM alt-ref frames.
     if (frame_duration == kNoTimestamp) {
       MEDIA_LOG(ERROR, media_log_)
@@ -825,20 +842,35 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
           << presentation_timestamp.InMicroseconds() << "us";
       return false;
     }
-    if (frame_duration <  base::TimeDelta()) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Negative duration " << frame_duration.InMicroseconds()
-          << "us for " << frame->GetTypeName() << " frame at PTS "
-          << presentation_timestamp.InMicroseconds() << "us";
-      return false;
-    }
+
+    // See also partial protections in DecoderBuffer::set_duration().
+    // Using stronger CHECK here in case any of the parsers become fragile to
+    // fuzzer coverage gaps when calculating buffer durations.
+    CHECK(frame_duration >= base::TimeDelta() &&
+          frame_duration != kInfiniteDuration);
 
     // 3. If mode equals "sequence" and group start timestamp is set, then run
     //    the following steps:
     if (sequence_mode_ && group_start_timestamp_ != kNoTimestamp) {
       // 3.1. Set timestampOffset equal to group start timestamp -
       //      presentation timestamp.
+      if (group_start_timestamp_.is_inf()) {
+        // +Infinity may be set when app sets timestampOffset. We emit error in
+        // such case upon next potential use of that offset here.
+        DCHECK(group_start_timestamp_ == kInfiniteDuration);
+        MEDIA_LOG(ERROR, media_log_)
+            << "Sequence mode timestampOffset update prevented by a group "
+               "start timestamp that exceeds range allowed by implementation";
+        return false;
+      }
+
       *timestamp_offset = group_start_timestamp_ - presentation_timestamp;
+      if (timestamp_offset->is_inf()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "Sequence mode timestampOffset update resulted in an offset "
+               "that exceeds range allowed by implementation";
+        return false;
+      }
 
       DVLOG(3) << __func__ << ": updated timestampOffset is now "
                << timestamp_offset->InMicroseconds() << "us";
@@ -860,14 +892,37 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
 
     // 4. If timestampOffset is not 0, then run the following steps:
     if (!timestamp_offset->is_zero()) {
+      if (timestamp_offset->is_inf()) {
+        // This condition might occur if the app set timestampOffset while in
+        // 'segments' append mode, skipping the 'sequence' mode offset update
+        // checks, above.
+        MEDIA_LOG(ERROR, media_log_)
+            << "timestampOffset exceeds range allowed by implementation";
+        return false;
+      }
+
       // 4.1. Add timestampOffset to the presentation timestamp.
       // Note: |frame| PTS is only updated if it survives discontinuity
       // processing.
       presentation_timestamp += *timestamp_offset;
+      if (presentation_timestamp.is_inf()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "After adjusting by timestampOffset, PTS for "
+            << frame->GetTypeName()
+            << " frame exceeds range allowed by implementation";
+        return false;
+      }
 
       // 4.2. Add timestampOffset to the decode timestamp.
       // Frame DTS is only updated if it survives discontinuity processing.
       decode_timestamp += *timestamp_offset;
+      if (decode_timestamp.is_inf()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "After adjusting by timestampOffset, DTS for "
+            << frame->GetTypeName()
+            << " frame exceeds range allowed by implementation";
+        return false;
+      }
     }
 
     // 5. Let track buffer equal the track buffer that the coded frame will be
@@ -896,10 +951,10 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
     //    times last frame duration:
     DecodeTimestamp track_last_decode_timestamp =
         track_buffer->last_decode_timestamp();
-    if (track_last_decode_timestamp != kNoDecodeTimestamp()) {
+    if (track_last_decode_timestamp != kNoDecodeTimestamp) {
       base::TimeDelta track_dts_delta =
           decode_timestamp - track_last_decode_timestamp;
-      if (track_dts_delta < base::TimeDelta() ||
+      if (track_dts_delta.is_negative() ||
           track_dts_delta > 2 * track_buffer->last_frame_duration()) {
         // 6.1. If mode equals "segments": Set group end timestamp to
         //      presentation timestamp.
@@ -969,6 +1024,13 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
       decode_timestamp = frame->GetDecodeTimestamp();
       presentation_timestamp = frame->timestamp();
       frame_end_timestamp = frame->timestamp() + frame->duration();
+    }
+
+    if (frame_end_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Frame end timestamp for " << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
+      return false;
     }
 
     if (presentation_timestamp < append_window_start ||

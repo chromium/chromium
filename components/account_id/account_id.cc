@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,13 +35,13 @@ const char kKeyAdIdPrefix[] = "a-";
 
 }  // anonymous namespace
 
-AccountId::AccountId() {}
+AccountId::AccountId() = default;
 
 AccountId::AccountId(const std::string& id,
                      const std::string& user_email,
                      const AccountType& account_type)
     : id_(id), user_email_(user_email), account_type_(account_type) {
-  DCHECK(user_email == gaia::CanonicalizeEmail(user_email));
+  DCHECK_EQ(user_email, gaia::CanonicalizeEmail(user_email));
   DCHECK(account_type != AccountType::UNKNOWN || id.empty());
   DCHECK(account_type != AccountType::ACTIVE_DIRECTORY || !id.empty());
   // Fail if e-mail looks similar to GaiaIdKey.
@@ -54,10 +54,9 @@ AccountId::AccountId(const std::string& id,
   // TODO(alemate): check gaia_id is not empty once it is required.
 }
 
-AccountId::AccountId(const AccountId& other)
-    : id_(other.id_),
-      user_email_(other.user_email_),
-      account_type_(other.account_type_) {}
+AccountId::AccountId(const AccountId& other) = default;
+
+AccountId& AccountId::operator=(const AccountId& other) = default;
 
 bool AccountId::operator==(const AccountId& other) const {
   if (this == &other)
@@ -163,15 +162,18 @@ void AccountId::SetUserEmail(const std::string& email) {
 }
 
 // static
-AccountId AccountId::FromUserEmail(const std::string& email) {
-  // TODO(alemate): DCHECK(!email.empty());
-  return AccountId(std::string() /* id */, email, AccountType::UNKNOWN);
+AccountId AccountId::FromNonCanonicalEmail(const std::string& email,
+                                           const std::string& gaia_id,
+                                           const AccountType& account_type) {
+  DCHECK(!email.empty());
+  return AccountId(gaia_id, gaia::CanonicalizeEmail(gaia::SanitizeEmail(email)),
+                   account_type);
 }
 
 // static
-AccountId AccountId::FromGaiaId(const std::string& gaia_id) {
-  DCHECK(!gaia_id.empty());
-  return AccountId(gaia_id, std::string() /* email */, AccountType::GOOGLE);
+AccountId AccountId::FromUserEmail(const std::string& email) {
+  // TODO(alemate): DCHECK(!email.empty());
+  return AccountId(std::string() /* id */, email, AccountType::UNKNOWN);
 }
 
 // static
@@ -186,13 +188,6 @@ AccountId AccountId::AdFromUserEmailObjGuid(const std::string& email,
                                             const std::string& obj_guid) {
   DCHECK(!email.empty() && !obj_guid.empty());
   return AccountId(obj_guid, email, AccountType::ACTIVE_DIRECTORY);
-}
-
-// static
-AccountId AccountId::AdFromObjGuid(const std::string& obj_guid) {
-  DCHECK(!obj_guid.empty());
-  return AccountId(obj_guid, std::string() /* email */,
-                   AccountType::ACTIVE_DIRECTORY);
 }
 
 // static
@@ -222,19 +217,19 @@ std::string AccountId::AccountTypeToString(const AccountType& account_type) {
 }
 
 std::string AccountId::Serialize() const {
-  base::DictionaryValue value;
+  base::Value::Dict value;
   switch (GetAccountType()) {
     case AccountType::GOOGLE:
-      value.SetString(kGaiaIdKey, id_);
+      value.Set(kGaiaIdKey, id_);
       break;
     case AccountType::ACTIVE_DIRECTORY:
-      value.SetString(kObjGuid, id_);
+      value.Set(kObjGuid, id_);
       break;
     case AccountType::UNKNOWN:
       break;
   }
-  value.SetString(kAccountTypeKey, AccountTypeToString(GetAccountType()));
-  value.SetString(kEmailKey, user_email_);
+  value.Set(kAccountTypeKey, AccountTypeToString(GetAccountType()));
+  value.Set(kEmailKey, user_email_);
 
   std::string serialized;
   base::JSONWriter::Write(value, &serialized);
@@ -244,7 +239,7 @@ std::string AccountId::Serialize() const {
 // static
 bool AccountId::Deserialize(const std::string& serialized,
                             AccountId* account_id) {
-  base::Optional<base::Value> value(base::JSONReader::Read(serialized));
+  absl::optional<base::Value> value(base::JSONReader::Read(serialized));
   if (!value || !value->is_dict())
     return false;
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.sharing.SharingNotificationUtil;
@@ -25,12 +27,13 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
  * Handles Sms Fetcher messages and notifications for Android.
  */
 public class SmsFetcherMessageHandler {
-    private static final String NOTIFICATION_ACTION_TAP = "sms_fetcher_notification.tap";
-    private static final String NOTIFICATION_ACTION_DISMISS = "sms_fetcher_notification.dismiss";
+    private static final String NOTIFICATION_ACTION_CONFIRM = "sms_fetcher_notification.confirm";
+    private static final String NOTIFICATION_ACTION_CANCEL = "sms_fetcher_notification.cancel";
     private static final String TAG = "SmsMessageHandler";
     private static final boolean DEBUG = false;
     private static long sSmsFetcherMessageHandlerAndroid;
-    private static String sOrigin;
+    private static String sTopOrigin;
+    private static String sEmbeddedOrigin;
 
     /**
      * Handles the interaction of an incoming notification when an expected SMS arrives.
@@ -42,57 +45,115 @@ public class SmsFetcherMessageHandler {
             boolean nativeIsDestroyed = sSmsFetcherMessageHandlerAndroid == 0;
             RecordHistogram.recordBooleanHistogram(
                     "Sharing.SmsFetcherTapWithChromeDestroyed", nativeIsDestroyed);
+            SharingNotificationUtil.dismissNotification(NotificationConstants.GROUP_SMS_FETCHER,
+                    NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING);
             // This could happen if the user manually swipes away Chrome from the task switcher or
             // the OS decides to destroy Chrome due to lack of memory etc. In these cases we just
             // close the notification.
             if (nativeIsDestroyed) return;
             switch (action) {
-                case NOTIFICATION_ACTION_TAP:
-                    if (DEBUG) Log.d(TAG, "Notification tapped");
+                case NOTIFICATION_ACTION_CONFIRM:
+                    if (DEBUG) Log.d(TAG, "Notification confirmed");
                     SmsFetcherMessageHandlerJni.get().onConfirm(
-                            sSmsFetcherMessageHandlerAndroid, sOrigin);
+                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
-                case NOTIFICATION_ACTION_DISMISS:
-                    if (DEBUG) Log.d(TAG, "Notification dismissed");
+                case NOTIFICATION_ACTION_CANCEL:
+                    if (DEBUG) Log.d(TAG, "Notification canceled");
                     SmsFetcherMessageHandlerJni.get().onDismiss(
-                            sSmsFetcherMessageHandlerAndroid, sOrigin);
+                            sSmsFetcherMessageHandlerAndroid, sTopOrigin, sEmbeddedOrigin);
                     break;
             }
         }
     }
 
     /**
-     * Ask the user to tap the notification to verify the sms verification code.
+     * Returns the notification title string.
      *
      * @param oneTimeCode The one time code from SMS
-     * @param origin The origin from the SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
+     * @param clientName The client name where the remote request comes from
+     */
+    private static String getNotificationTitle(
+            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
+            if (embeddedOrigin == null) {
+                return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
+                        oneTimeCode, topOrigin);
+            }
+            return resources.getString(R.string.sms_fetcher_notification_title_simple_string,
+                    oneTimeCode, embeddedOrigin);
+        }
+        return resources.getString(
+                R.string.sms_fetcher_notification_title, oneTimeCode, clientName);
+    }
+
+    /**
+     * Returns the notification text string.
+     *
+     * @param oneTimeCode The one time code from SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
+     * @param clientName The client name where the remote request comes from
+     */
+    private static String getNotificationText(
+            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
+            if (embeddedOrigin == null) return clientName;
+            return topOrigin + " · " + clientName;
+        }
+        return embeddedOrigin == null
+                ? resources.getString(R.string.sms_fetcher_notification_text, topOrigin)
+                : resources.getString(R.string.sms_fetcher_notification_text_for_embedded_frame,
+                        topOrigin, embeddedOrigin);
+    }
+
+    /**
+     * Ask users to interact with the notification to allow Chrome to submit the code to the
+     * remote device.
+     *
+     * @param oneTimeCode The one time code from SMS
+     * @param topOrigin The top frame origin from the SMS
+     * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
+     *         contain an iframe origin.
+     * @param clientName The client name where the remote request comes from
      * @param smsFetcherMessageHandlerAndroid The native handler
      */
     @CalledByNative
-    private static void showNotification(
-            String oneTimeCode, String origin, long smsFetcherMessageHandlerAndroid) {
-        sOrigin = origin;
+    private static void showNotification(String oneTimeCode, String topOrigin,
+            String embeddedOrigin, String clientName, long smsFetcherMessageHandlerAndroid) {
+        sTopOrigin = topOrigin;
+        sEmbeddedOrigin = embeddedOrigin;
         sSmsFetcherMessageHandlerAndroid = smsFetcherMessageHandlerAndroid;
         Context context = ContextUtils.getApplicationContext();
-        PendingIntentProvider contentIntent = PendingIntentProvider.getBroadcast(context,
-                /*requestCode=*/0,
-                new Intent(context, NotificationReceiver.class).setAction(NOTIFICATION_ACTION_TAP),
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntentProvider deleteIntent = PendingIntentProvider.getBroadcast(context,
+        RecordHistogram.recordBooleanHistogram("Sharing.SmsFetcherScreenOnAndUnlocked",
+                DeviceConditions.isCurrentlyScreenOnAndUnlocked(context));
+        PendingIntentProvider confirmIntent = PendingIntentProvider.getBroadcast(context,
                 /*requestCode=*/0,
                 new Intent(context, NotificationReceiver.class)
-                        .setAction(NOTIFICATION_ACTION_DISMISS),
+                        .setAction(NOTIFICATION_ACTION_CONFIRM),
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider cancelIntent = PendingIntentProvider.getBroadcast(context,
+                /*requestCode=*/0,
+                new Intent(context, NotificationReceiver.class)
+                        .setAction(NOTIFICATION_ACTION_CANCEL),
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Resources resources = context.getResources();
-        String notificationText =
-                resources.getString(R.string.sms_fetcher_notification_text, oneTimeCode, origin);
         SharingNotificationUtil.showNotification(
                 NotificationUmaTracker.SystemNotificationType.SMS_FETCHER,
                 NotificationConstants.GROUP_SMS_FETCHER,
-                NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING, contentIntent,
-                deleteIntent, resources.getString(R.string.sms_fetcher_notification_title),
-                notificationText, R.drawable.ic_devices_48dp, R.drawable.infobar_chrome,
-                R.color.infobar_icon_drawable_color, /*startsActivity=*/false);
+                NotificationConstants.NOTIFICATION_ID_SMS_FETCHER_INCOMING,
+                /*contentIntent=*/null,
+                /*deleteIntent=*/cancelIntent, confirmIntent, cancelIntent,
+                getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
+                getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
+                R.drawable.ic_chrome, /*largeIconId=*/0,
+                R.color.default_icon_color_accent1_baseline,
+                /*startsActivity=*/false);
     }
 
     @CalledByNative
@@ -104,12 +165,13 @@ public class SmsFetcherMessageHandler {
     @CalledByNative
     private static void reset() {
         sSmsFetcherMessageHandlerAndroid = 0;
-        sOrigin = "";
+        sTopOrigin = null;
+        sEmbeddedOrigin = null;
     }
 
     @NativeMethods
     interface Natives {
-        void onConfirm(long nativeSmsFetchRequestHandler, String origin);
-        void onDismiss(long nativeSmsFetchRequestHandler, String origin);
+        void onConfirm(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
+        void onDismiss(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
     }
 }

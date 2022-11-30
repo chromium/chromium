@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_EXTENSION_FUNCTION_H_
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_EXTENSION_FUNCTION_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
@@ -26,6 +25,10 @@ class BluetoothExtensionFunction : public ExtensionFunction {
  public:
   BluetoothExtensionFunction();
 
+  BluetoothExtensionFunction(const BluetoothExtensionFunction&) = delete;
+  BluetoothExtensionFunction& operator=(const BluetoothExtensionFunction&) =
+      delete;
+
  protected:
   ~BluetoothExtensionFunction() override;
 
@@ -43,8 +46,6 @@ class BluetoothExtensionFunction : public ExtensionFunction {
   // Implemented by individual bluetooth extension functions, called
   // automatically on the UI thread once |adapter| has been initialized.
   virtual void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothExtensionFunction);
 };
 
 }  // namespace api

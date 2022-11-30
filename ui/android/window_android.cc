@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/observer_list.h"
-#include "base/stl_util.h"
 #include "ui/android/display_android_manager.h"
 #include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
 #include "ui/android/window_android_compositor.h"
@@ -47,6 +46,15 @@ WindowAndroid::ScopedSelectionHandles::~ScopedSelectionHandles() {
     Java_WindowAndroid_onSelectionHandlesStateChanged(
         env, window_->GetJavaObject(), false /* active */);
   }
+}
+
+WindowAndroid::ScopedWindowAndroidForTesting::ScopedWindowAndroidForTesting(
+    WindowAndroid* window)
+    : window_(window) {}
+
+WindowAndroid::ScopedWindowAndroidForTesting::~ScopedWindowAndroidForTesting() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WindowAndroid_destroy(env, window_->GetJavaObject());
 }
 
 // static
@@ -88,10 +96,12 @@ WindowAndroid::~WindowAndroid() {
   Java_WindowAndroid_clearNativePointer(AttachCurrentThread(), GetJavaObject());
 }
 
-WindowAndroid* WindowAndroid::CreateForTesting() {
+std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting>
+WindowAndroid::CreateForTesting() {
   JNIEnv* env = AttachCurrentThread();
   long native_pointer = Java_WindowAndroid_createForTesting(env);
-  return reinterpret_cast<WindowAndroid*>(native_pointer);
+  return std::make_unique<ScopedWindowAndroidForTesting>(
+      reinterpret_cast<WindowAndroid*>(native_pointer));
 }
 
 void WindowAndroid::OnCompositingDidCommit() {
@@ -129,6 +139,12 @@ void WindowAndroid::DetachCompositor() {
 float WindowAndroid::GetRefreshRate() {
   JNIEnv* env = AttachCurrentThread();
   return Java_WindowAndroid_getRefreshRate(env, GetJavaObject());
+}
+
+gfx::OverlayTransform WindowAndroid::GetOverlayTransform() {
+  JNIEnv* env = AttachCurrentThread();
+  return static_cast<gfx::OverlayTransform>(
+      Java_WindowAndroid_getOverlayTransform(env, GetJavaObject()));
 }
 
 std::vector<float> WindowAndroid::GetSupportedRefreshRates() {
@@ -216,6 +232,13 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
     compositor_->OnUpdateSupportedRefreshRates(supported_refresh_rates);
 }
 
+void WindowAndroid::OnOverlayTransformUpdated(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  if (compositor_)
+    compositor_->OnUpdateOverlayTransform();
+}
+
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);
@@ -238,11 +261,6 @@ bool WindowAndroid::CanRequestPermission(const std::string& permission) {
 WindowAndroid* WindowAndroid::GetWindowAndroid() const {
   DCHECK(parent_ == nullptr);
   return const_cast<WindowAndroid*>(this);
-}
-
-ScopedJavaLocalRef<jobject> WindowAndroid::GetWindowToken() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_getWindowToken(env, GetJavaObject());
 }
 
 display::Display WindowAndroid::GetDisplayWithWindowColorSpace() {

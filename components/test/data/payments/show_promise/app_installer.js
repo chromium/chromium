@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Copyright 2019 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -34,11 +34,11 @@ function install() { // eslint-disable-line no-unused-vars
               }
 
               registration.paymentManager.instruments
-                  .set('123456', {name: 'Echo Pay', method: 'basic-card'})
+                  .set(
+                      '123456',
+                      {name: 'Echo Pay', method: window.location.href})
                   .then(() => {
-                    output(
-                        'instruments.set()',
-                        'Payment handler installed.');
+                    output('instruments.set()', 'Payment handler installed.');
                   })
                   .catch((error) => {
                     output('instruments.set()', error);

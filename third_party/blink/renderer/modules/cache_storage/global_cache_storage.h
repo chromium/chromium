@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ namespace blink {
 
 class CacheStorage;
 class ExceptionState;
+class ExecutionContext;
 class LocalDOMWindow;
 class WorkerGlobalScope;
 
@@ -18,6 +19,8 @@ class GlobalCacheStorage {
   STATIC_ONLY(GlobalCacheStorage);
 
  public:
+  static bool CanCreateCacheStorage(ExecutionContext*, ExceptionState&);
+
   static CacheStorage* caches(LocalDOMWindow&, ExceptionState&);
   static CacheStorage* caches(WorkerGlobalScope&, ExceptionState&);
 };

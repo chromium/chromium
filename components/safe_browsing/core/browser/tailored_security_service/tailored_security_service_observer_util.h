@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TAILORED_SECURITY_SERVICE_TAILORED_SECURITY_SERVICE_OBSERVER_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TAILORED_SECURITY_SERVICE_TAILORED_SECURITY_SERVICE_OBSERVER_UTIL_H_
+
+class GURL;
+class PrefService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace safe_browsing {
+
+extern const int kThresholdForInFlowNotificationMinutes;
+
+// Checks if we can query TailoredSecurity for a url.
+bool CanQueryTailoredSecurityForUrl(GURL url);
+
+// Checks if we can show the unconsented tailored security dialog depending on
+// the user's identity and preferences.
+bool CanShowUnconsentedTailoredSecurityDialog(
+    signin::IdentityManager* identity_manager,
+    PrefService* prefs);
+
+}  // namespace safe_browsing
+
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TAILORED_SECURITY_SERVICE_TAILORED_SECURITY_SERVICE_OBSERVER_UTIL_H_

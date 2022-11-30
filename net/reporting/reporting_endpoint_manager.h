@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define NET_REPORTING_REPORTING_ENDPOINT_MANAGER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -21,7 +19,7 @@ class TickClock;
 
 namespace net {
 
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ReportingCache;
 class ReportingDelegate;
 struct ReportingEndpoint;
@@ -61,7 +59,7 @@ class NET_EXPORT ReportingEndpointManager {
   // Informs the EndpointManager of a successful or unsuccessful request made to
   // |endpoint| so it can manage exponential backoff of failing endpoints.
   virtual void InformOfEndpointRequest(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& endpoint,
       bool succeeded) = 0;
 };

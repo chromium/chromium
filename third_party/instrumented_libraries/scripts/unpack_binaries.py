@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,14 +12,7 @@ import sys
 
 
 def get_archive_name(archive_prefix):
-  supported_release = 'trusty'
-  release = subprocess.check_output(['lsb_release', '-cs']).strip()
-  if release != supported_release:
-    print('WARNING: unsupported distro. You need to run a Trusty Docker '
-          'image. Please see '
-          'https://www.chromium.org/developers/testing/memorysanitizer/')
-
-  return '%s-%s.tgz' % (archive_prefix, supported_release)
+  return archive_prefix + '.tgz'
 
 
 def main(archive_prefix, archive_dir, target_dir, stamp_dir=None):

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -21,11 +22,16 @@ namespace content {
 class TestWebUI : public WebUI {
  public:
   TestWebUI();
+
+  TestWebUI(const TestWebUI&) = delete;
+  TestWebUI& operator=(const TestWebUI&) = delete;
+
   ~TestWebUI() override;
 
   void ClearTrackedCalls();
   void HandleReceivedMessage(const std::string& handler_name,
-                             const base::ListValue* args);
+                             const base::Value::List& args);
+
   void set_web_contents(WebContents* web_contents) {
     web_contents_ = web_contents;
   }
@@ -43,54 +49,39 @@ class TestWebUI : public WebUI {
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               const MessageCallback& callback) override;
+                               MessageCallback callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
-                           const base::ListValue& args) override {}
+                           base::Value::List args) override {}
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2,
-                                    const base::Value& arg3) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2,
-                                    const base::Value& arg3,
-                                    const base::Value& arg4) override;
+  void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
   void CallJavascriptFunctionUnsafe(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& args) override;
+      base::StringPiece function_name,
+      base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 
   class CallData {
    public:
-    explicit CallData(const std::string& function_name);
+    explicit CallData(base::StringPiece function_name);
     ~CallData();
 
-    void TakeAsArg1(std::unique_ptr<base::Value> arg);
-    void TakeAsArg2(std::unique_ptr<base::Value> arg);
-    void TakeAsArg3(std::unique_ptr<base::Value> arg);
-    void TakeAsArg4(std::unique_ptr<base::Value> arg);
+    void AppendArgument(base::Value arg);
 
     const std::string& function_name() const { return function_name_; }
-    const base::Value* arg1() const { return arg1_.get(); }
-    const base::Value* arg2() const { return arg2_.get(); }
-    const base::Value* arg3() const { return arg3_.get(); }
-    const base::Value* arg4() const { return arg4_.get(); }
+    const base::Value* arg_nth(size_t index) const {
+      return args_.size() > index ? &args_[index] : nullptr;
+    }
+    const base::Value* arg1() const { return arg_nth(0); }
+    const base::Value* arg2() const { return arg_nth(1); }
+    const base::Value* arg3() const { return arg_nth(2); }
+    const base::Value* arg4() const { return arg_nth(3); }
+
+    const std::vector<base::Value>& args() const { return args_; }
 
    private:
     std::string function_name_;
-    std::unique_ptr<base::Value> arg1_;
-    std::unique_ptr<base::Value> arg2_;
-    std::unique_ptr<base::Value> arg3_;
-    std::unique_ptr<base::Value> arg4_;
+    std::vector<base::Value> args_;
   };
 
   const std::vector<std::unique_ptr<CallData>>& call_data() const {
@@ -119,13 +110,11 @@ class TestWebUI : public WebUI {
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
   std::u16string temp_string_;
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   std::unique_ptr<WebUIController> controller_;
 
   // Observers to be notified on all javascript calls.
   base::ObserverList<JavascriptCallObserver> javascript_call_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebUI);
 };
 
 }  // namespace content

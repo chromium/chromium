@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -67,11 +66,14 @@ bool HasDocType(const WebDocument& doc) {
 }
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
+#elif defined(THREAD_SANITIZER)
+// http://crbug.com/1350508
 #define MAYBE_DomSerializerTests DISABLED_DomSerializerTests
 #else
 #define MAYBE_DomSerializerTests DomSerializerTests
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 class MAYBE_DomSerializerTests : public ContentBrowserTest,
                                  public WebFrameSerializerClient {
  public:
@@ -79,7 +81,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kSingleProcess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Don't want to try to create a GPU process.
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif
@@ -87,7 +89,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
 
   void SetUpOnMainThread() override {
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   // DomSerializerDelegate.
@@ -97,7 +99,7 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
     ASSERT_FALSE(serialization_reported_end_of_data_);
 
     // Add data to corresponding frame's content.
-    serialized_contents_.append(data.Data(), data.size());
+    serialized_contents_.append(data.data(), data.size());
 
     // Current frame is completed saving, change the finish status.
     if (status == WebFrameSerializerClient::kCurrentFrameIsFinished)
@@ -125,13 +127,13 @@ class MAYBE_DomSerializerTests : public ContentBrowserTest,
   void LoadContents(const std::string& contents, const GURL& base_url) {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     shell()->LoadDataWithBaseURL(
-        shell()->web_contents()->GetMainFrame()->GetLastCommittedURL(),
+        shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
         contents, base_url);
     navigation_observer.Wait();
-    // After navigations, the RenderView for the new document might be a new
-    // one.
+    // After navigations, the `blink::WebView` for the new document might be a
+    // new one.
     main_frame_token_ =
-        shell()->web_contents()->GetMainFrame()->GetFrameToken();
+        shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
   }
 
   class SingleLinkRewritingDelegate
@@ -634,8 +636,17 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 
 // Test situation of non-standard HTML entities when serializing HTML DOM.
 // This test started to fail at WebKit r65351. See http://crbug.com/52279.
+
+// Disabled due to test failure. http://crbug.com/1349583
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SerializeHTMLDOMWithNonStandardEntities \
+  DISABLED_SerializeHTMLDOMWithNonStandardEntities
+#else
+#define MAYBE_SerializeHTMLDOMWithNonStandardEntities \
+  SerializeHTMLDOMWithNonStandardEntities
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
-                       SerializeHTMLDOMWithNonStandardEntities) {
+                       MAYBE_SerializeHTMLDOMWithNonStandardEntities) {
   // Make a test file URL and load it.
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "nonstandard_htmlentities.htm");
@@ -672,7 +683,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
 // When serializing, we should comment the BASE tag, append a new BASE tag.
 // rewrite all the savable URLs to relative local path, and change other URLs
 // to absolute URLs.
-IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests, SerializeHTMLDOMWithBaseTag) {
+
+// Disabled due to test failure. http://crbug.com/1349583
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SerializeHTMLDOMWithBaseTag DISABLED_SerializeHTMLDOMWithBaseTag
+#else
+#define MAYBE_SerializeHTMLDOMWithBaseTag SerializeHTMLDOMWithBaseTag
+#endif
+IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
+                       MAYBE_SerializeHTMLDOMWithBaseTag) {
   base::FilePath page_file_path =
       GetTestFilePath("dom_serializer", "html_doc_has_base_tag.htm");
 

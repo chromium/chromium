@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/driver/sync_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -35,12 +36,14 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
 
 // PasswordStoreFetcher ----------------------------------
 
-// Fetches passswords and observes a PasswordStore.
-class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
-                             public password_manager::PasswordStore::Observer {
+// Fetches passswords and observes a PasswordStoreInterface.
+class PasswordStoreFetcher
+    : public password_manager::PasswordStoreConsumer,
+      public password_manager::PasswordStoreInterface::Observer {
  public:
-  PasswordStoreFetcher(scoped_refptr<password_manager::PasswordStore> store,
-                       base::RepeatingClosure logins_changed_closure);
+  PasswordStoreFetcher(
+      scoped_refptr<password_manager::PasswordStoreInterface> store,
+      base::RepeatingClosure logins_changed_closure);
   ~PasswordStoreFetcher() override;
   void Fetch(base::Time start,
              base::Time end,
@@ -52,14 +55,21 @@ class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
 
   // Called when the contents of the password store change. Triggers new
   // counting.
+  // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
 
   int num_passwords() { return num_passwords_; }
   const std::vector<std::string>& domain_examples() { return domain_examples_; }
 
  private:
-  scoped_refptr<password_manager::PasswordStore> store_;
+  void CancelAllRequests();
+
+  scoped_refptr<password_manager::PasswordStoreInterface> store_;
   base::RepeatingClosure logins_changed_closure_;
   base::OnceClosure fetch_complete_;
   base::Time start_;
@@ -67,10 +77,12 @@ class PasswordStoreFetcher : public password_manager::PasswordStoreConsumer,
 
   int num_passwords_ = 0;
   std::vector<std::string> domain_examples_;
+
+  base::WeakPtrFactory<PasswordStoreFetcher> weak_ptr_factory_{this};
 };
 
 PasswordStoreFetcher::PasswordStoreFetcher(
-    scoped_refptr<password_manager::PasswordStore> store,
+    scoped_refptr<password_manager::PasswordStoreInterface> store,
     base::RepeatingClosure logins_changed_closure)
     : store_(store), logins_changed_closure_(logins_changed_closure) {
   if (store_)
@@ -83,7 +95,14 @@ PasswordStoreFetcher::~PasswordStoreFetcher() {
 }
 
 void PasswordStoreFetcher::OnLoginsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+    password_manager::PasswordStoreInterface* /*store*/,
+    const password_manager::PasswordStoreChangeList& /*changes*/) {
+  logins_changed_closure_.Run();
+}
+
+void PasswordStoreFetcher::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
   logins_changed_closure_.Run();
 }
 
@@ -96,7 +115,7 @@ void PasswordStoreFetcher::Fetch(base::Time start,
   fetch_complete_ = std::move(fetch_complete);
 
   if (store_) {
-    store_->GetAutofillableLogins(this);
+    store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
   } else {
     std::move(fetch_complete_).Run();
   }
@@ -144,6 +163,11 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
   std::move(fetch_complete_).Run();
 }
 
+void PasswordStoreFetcher::CancelAllRequests() {
+  cancelable_task_tracker()->TryCancelAll();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 }  // namespace
 
 // PasswordsCounter::PasswordsResult ----------------------------------
@@ -164,8 +188,8 @@ PasswordsCounter::PasswordsResult::~PasswordsResult() = default;
 // PasswordsCounter ----------------------------------
 
 PasswordsCounter::PasswordsCounter(
-    scoped_refptr<password_manager::PasswordStore> profile_store,
-    scoped_refptr<password_manager::PasswordStore> account_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+    scoped_refptr<password_manager::PasswordStoreInterface> account_store,
     syncer::SyncService* sync_service)
     : sync_tracker_(this, sync_service) {
   profile_store_fetcher_ = std::make_unique<PasswordStoreFetcher>(
@@ -213,6 +237,10 @@ void PasswordsCounter::Count() {
       base::BindOnce(&PasswordsCounter::OnFetchDone, base::Unretained(this)));
 }
 
+void PasswordsCounter::OnPasswordsFetchDone() {
+  ReportResult(MakeResult());
+}
+
 std::unique_ptr<PasswordsCounter::PasswordsResult>
 PasswordsCounter::MakeResult() {
   DCHECK(!(is_sync_active() && num_account_passwords() > 0));
@@ -223,7 +251,7 @@ PasswordsCounter::MakeResult() {
 
 void PasswordsCounter::OnFetchDone() {
   if (--remaining_tasks_ == 0)
-    ReportResult(MakeResult());
+    OnPasswordsFetchDone();
 }
 
 }  // namespace browsing_data

@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cert/sct_status_flags.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 bool IsValidSCTStatus(uint32_t status) {
   switch (status) {
@@ -22,6 +20,4 @@ bool IsValidSCTStatus(uint32_t status) {
   return false;
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

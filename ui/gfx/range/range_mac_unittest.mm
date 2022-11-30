@@ -1,9 +1,12 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/range/range.h"
+
+#include <limits>
+
+#include "testing/gtest/include/gtest/gtest.h"
 
 TEST(RangeTest, FromNSRange) {
   NSRange nsr = NSMakeRange(10, 3);
@@ -40,4 +43,19 @@ TEST(RangeTest, ToNSRangeInvalid) {
   NSRange nsr = r.ToNSRange();
   EXPECT_EQ(static_cast<NSUInteger>(NSNotFound), nsr.location);
   EXPECT_EQ(0U, nsr.length);
+}
+
+TEST(RangeTest, FromPossiblyInvalidNSRange) {
+  constexpr uint32_t range_max = std::numeric_limits<uint32_t>::max();
+  EXPECT_NE(
+      gfx::Range::FromPossiblyInvalidNSRange(NSMakeRange(range_max - 1, 1)),
+      gfx::Range::InvalidRange());
+  EXPECT_EQ(gfx::Range::FromPossiblyInvalidNSRange(NSMakeRange(range_max, 1)),
+            gfx::Range::InvalidRange());
+  EXPECT_EQ(gfx::Range::FromPossiblyInvalidNSRange(
+                NSMakeRange(static_cast<int64_t>(range_max) + 1, 0)),
+            gfx::Range::InvalidRange());
+  EXPECT_EQ(gfx::Range::FromPossiblyInvalidNSRange(
+                NSMakeRange(0, static_cast<int64_t>(range_max) + 1)),
+            gfx::Range::InvalidRange());
 }

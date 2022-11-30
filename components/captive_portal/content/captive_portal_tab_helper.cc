@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ CaptivePortalTabHelper::CaptivePortalTabHelper(
         open_login_tab_callback)
 
     : content::WebContentsObserver(web_contents),
-      navigation_handle_(nullptr),
+      content::WebContentsUserData<CaptivePortalTabHelper>(*web_contents),
       tab_reloader_(new CaptivePortalTabReloader(captive_portal_service,
                                                  web_contents,
                                                  open_login_tab_callback)),
@@ -45,7 +45,7 @@ CaptivePortalTabHelper::~CaptivePortalTabHelper() {
 void CaptivePortalTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -74,7 +74,7 @@ void CaptivePortalTabHelper::DidRedirectNavigation(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (navigation_handle != navigation_handle_)
     return;
-  DCHECK(navigation_handle->IsInMainFrame());
+  DCHECK(navigation_handle->IsInPrimaryMainFrame());
   tab_reloader_->OnRedirect(
       navigation_handle->GetURL().SchemeIsCryptographic());
 }
@@ -83,8 +83,8 @@ void CaptivePortalTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Exclude subframe navigations.
-  if (!navigation_handle->IsInMainFrame())
+  // Exclude non-primary frame and subframe navigations.
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   // Exclude same-document navigations and aborted navigations that were not
@@ -155,6 +155,6 @@ CaptivePortalTabReloader* CaptivePortalTabHelper::GetTabReloaderForTest() {
   return tab_reloader_.get();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CaptivePortalTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(CaptivePortalTabHelper);
 
 }  // namespace captive_portal

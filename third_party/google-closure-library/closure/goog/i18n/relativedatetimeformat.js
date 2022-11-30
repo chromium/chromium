@@ -1,16 +1,8 @@
-// Copyright 2018 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview RelativeDateTimeFormat provides methods to format simple
@@ -193,8 +185,8 @@ RelativeDateTimeFormat.prototype.formatPolyfill_ = function(
   // Formats using Closure Javascript. Check for forcing numeric and having
   // relative value with the given quantity.
   if (!useNumeric && rdtfUnitPattern && rdtfUnitPattern.R &&
-      rdtfUnitPattern.R[quantity]) {
-    return rdtfUnitPattern.R[quantity];
+      rdtfUnitPattern.R['' + quantity]) {
+    return rdtfUnitPattern.R['' + quantity];
   } else {
     // Direction data doesn't exist. Fallback to format numeric.
     return this.formatNumericInternal_(quantity, rdtfUnitPattern);
@@ -416,8 +408,8 @@ RelativeDateTimeFormat.prototype.isOffsetDefinedForUnit = function(
   if (typeof (offset) == 'string') {
     offset = Number(offset);
   }
-  if (rdtfUnitPattern && rdtfUnitPattern.R && rdtfUnitPattern.R[offset]) {
-    return rdtfUnitPattern.R[offset];
+  if (rdtfUnitPattern && rdtfUnitPattern.R && rdtfUnitPattern.R['' + offset]) {
+    return rdtfUnitPattern.R['' + offset];
   } else {
     return undefined;
   }

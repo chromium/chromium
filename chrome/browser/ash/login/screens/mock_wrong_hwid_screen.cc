@@ -1,17 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_wrong_hwid_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockWrongHWIDScreen::MockWrongHWIDScreen(
-    WrongHWIDScreenView* view,
+    base::WeakPtr<WrongHWIDScreenView> view,
     const base::RepeatingClosure& exit_callback)
-    : WrongHWIDScreen(view, exit_callback) {}
+    : WrongHWIDScreen(std::move(view), exit_callback) {}
 
-MockWrongHWIDScreen::~MockWrongHWIDScreen() {}
+MockWrongHWIDScreen::~MockWrongHWIDScreen() = default;
 
 void MockWrongHWIDScreen::ExitScreen() {
   WrongHWIDScreen::OnExit();
@@ -19,19 +19,6 @@ void MockWrongHWIDScreen::ExitScreen() {
 
 MockWrongHWIDScreenView::MockWrongHWIDScreenView() = default;
 
-MockWrongHWIDScreenView::~MockWrongHWIDScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+MockWrongHWIDScreenView::~MockWrongHWIDScreenView() = default;
 
-void MockWrongHWIDScreenView::Bind(WrongHWIDScreen* screen) {
-  screen_ = screen;
-  MockBind(screen_);
-}
-
-void MockWrongHWIDScreenView::Unbind() {
-  screen_ = nullptr;
-  MockUnbind();
-}
-
-}  // namespace chromeos
+}  // namespace ash

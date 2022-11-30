@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from core import perf_benchmark
@@ -12,7 +12,7 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 
-@benchmark.Info(emails=['mythria@chromium.org','ulan@chromium.org'],
+@benchmark.Info(emails=['cbruni@chromium.org', 'leszeks@chromium.org'],
                 component='Blink>JavaScript')
 class V8Top25RuntimeStats(perf_benchmark.PerfBenchmark):
   """Runtime Stats benchmark for a 25 top V8 web pages.

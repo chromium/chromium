@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_STATEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_SQLITE_SQLITE_STATEMENT_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_database.h"
 
 struct sqlite3_stmt;
@@ -40,6 +40,10 @@ class SQLiteStatement {
 
  public:
   SQLiteStatement(SQLiteDatabase&, const String&);
+
+  SQLiteStatement(const SQLiteStatement&) = delete;
+  SQLiteStatement& operator=(const SQLiteStatement&) = delete;
+
   ~SQLiteStatement();
 
   int Prepare();
@@ -80,8 +84,6 @@ class SQLiteStatement {
 #if DCHECK_IS_ON()
   bool is_prepared_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(SQLiteStatement);
 };
 
 }  // namespace blink

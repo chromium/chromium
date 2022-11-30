@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -18,7 +19,11 @@ class UnifiedBrightnessView : public UnifiedSliderView,
                               public UnifiedSystemTrayModel::Observer {
  public:
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
-                        UnifiedSystemTrayModel* model);
+                        scoped_refptr<UnifiedSystemTrayModel> model);
+
+  UnifiedBrightnessView(const UnifiedBrightnessView&) = delete;
+  UnifiedBrightnessView& operator=(const UnifiedBrightnessView&) = delete;
+
   ~UnifiedBrightnessView() override;
 
   // UnifiedSystemTrayModel::Observer:
@@ -29,9 +34,7 @@ class UnifiedBrightnessView : public UnifiedSliderView,
   void OnThemeChanged() override;
 
  private:
-  UnifiedSystemTrayModel* const model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedBrightnessView);
+  scoped_refptr<UnifiedSystemTrayModel> model_;
 };
 
 }  // namespace ash

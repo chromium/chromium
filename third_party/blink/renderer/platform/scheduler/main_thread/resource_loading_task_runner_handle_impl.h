@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,11 @@ class PLATFORM_EXPORT ResourceLoadingTaskRunnerHandleImpl
   static std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl> WrapTaskRunner(
       scoped_refptr<MainThreadTaskQueue> task_runner);
 
+  ResourceLoadingTaskRunnerHandleImpl(
+      const ResourceLoadingTaskRunnerHandleImpl&) = delete;
+  ResourceLoadingTaskRunnerHandleImpl& operator=(
+      const ResourceLoadingTaskRunnerHandleImpl&) = delete;
+
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override;
 
   void DidChangeRequestPriority(net::RequestPriority priority) override;
@@ -38,11 +43,9 @@ class PLATFORM_EXPORT ResourceLoadingTaskRunnerHandleImpl
  private:
   scoped_refptr<MainThreadTaskQueue> task_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoadingTaskRunnerHandleImpl);
 };
 
 }  // namespace scheduler
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_RESOURCE_LOADING_TASK_RUNNER_HANDLE_IMPL_H_

@@ -1,11 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_NSS_PROFILE_FILTER_CHROMEOS_H_
 #define NET_CERT_NSS_PROFILE_FILTER_CHROMEOS_H_
-
-#include <memory>
 
 #include "base/memory/ref_counted.h"
 #include "crypto/scoped_nss_types.h"

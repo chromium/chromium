@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 
 class TabAndroid;
@@ -18,6 +17,10 @@ class TabAndroid;
 class TabModelObserver {
  public:
   TabModelObserver();
+
+  TabModelObserver(const TabModelObserver&) = delete;
+  TabModelObserver& operator=(const TabModelObserver&) = delete;
+
   virtual ~TabModelObserver();
 
   // Called when a |tab| is selected.
@@ -26,8 +29,12 @@ class TabModelObserver {
   // Called when a |tab| starts closing.
   virtual void WillCloseTab(TabAndroid* tab, bool animate);
 
-  // Called right after a |tab| has been destroyed.
-  virtual void DidCloseTab(int tab_id, bool incognito);
+  // Called right before a |tab| has been destroyed.
+  virtual void OnFinishingTabClosure(int tab_id, bool incognito);
+
+  // Called right before all |tabs| are destroyed.
+  virtual void OnFinishingMultipleTabClosure(
+      const std::vector<TabAndroid*>& tabs);
 
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);
@@ -60,9 +67,6 @@ class TabModelObserver {
   // Called after a tab has been removed. At this point the tab is no longer in
   // the TabModel.
   virtual void TabRemoved(TabAndroid* tab);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabModelObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_H_

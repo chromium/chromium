@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,28 +11,26 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "components/services/storage/dom_storage/legacy_dom_storage_database.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/dom_storage/testing_legacy_session_storage_database.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace storage {
 
@@ -56,6 +54,9 @@ static const char kSessionStorageDirectory[] = "Session Storage";
 class SessionStorageImplTest : public testing::Test {
  public:
   SessionStorageImplTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+
+  SessionStorageImplTest(const SessionStorageImplTest&) = delete;
+  SessionStorageImplTest& operator=(const SessionStorageImplTest&) = delete;
 
   ~SessionStorageImplTest() override {
     EXPECT_TRUE(temp_dir_.Delete());
@@ -106,28 +107,28 @@ class SessionStorageImplTest : public testing::Test {
   }
 
   void DoTestPut(const std::string& namespace_id,
-                 const url::Origin& origin,
+                 const blink::StorageKey& storage_key,
                  base::StringPiece key,
                  base::StringPiece value,
                  const std::string& source) {
     session_storage()->CreateNamespace(namespace_id);
     mojo::Remote<blink::mojom::StorageArea> area;
-    session_storage()->BindStorageArea(origin, namespace_id,
+    session_storage()->BindStorageArea(storage_key, namespace_id,
                                        area.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
     EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector(key),
-                              StringPieceToUint8Vector(value), base::nullopt,
+                              StringPieceToUint8Vector(value), absl::nullopt,
                               source));
     session_storage()->DeleteNamespace(namespace_id, true);
   }
 
-  base::Optional<std::vector<uint8_t>> DoTestGet(
+  absl::optional<std::vector<uint8_t>> DoTestGet(
       const std::string& namespace_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       base::StringPiece key) {
     session_storage()->CreateNamespace(namespace_id);
     mojo::Remote<blink::mojom::StorageArea> area;
-    session_storage()->BindStorageArea(origin, namespace_id,
+    session_storage()->BindStorageArea(storage_key, namespace_id,
                                        area.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
 
@@ -142,7 +143,7 @@ class SessionStorageImplTest : public testing::Test {
         return key_value->value;
       }
     }
-    return base::nullopt;
+    return absl::nullopt;
   }
 
  protected:
@@ -162,15 +163,15 @@ class SessionStorageImplTest : public testing::Test {
           {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})};
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionStorageImplTest);
 };
 
 TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   std::u16string key = u"key";
   std::u16string value = u"value";
   std::u16string key2 = u"key2";
@@ -185,7 +186,8 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
     LegacyDomStorageValuesMap data;
     data[key] = value;
     data[key2] = value;
-    EXPECT_TRUE(db->CommitAreaChanges(namespace_id1, origin1, false, data));
+    EXPECT_TRUE(
+        db->CommitAreaChanges(namespace_id1, storage_key1, false, data));
     EXPECT_TRUE(db->CloneNamespace(namespace_id1, namespace_id2));
   }
   EXPECT_TRUE(base::PathExists(old_db_path));
@@ -200,10 +202,10 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
                                    base::DoNothing());
   mojo::Remote<blink::mojom::StorageArea> area_n2_o1;
   mojo::Remote<blink::mojom::StorageArea> area_n2_o2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2_o1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
-  session_storage()->BindStorageArea(origin2, namespace_id2,
+  session_storage()->BindStorageArea(storage_key2, namespace_id2,
                                      area_n2_o2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -224,11 +226,12 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
 
 TEST_F(SessionStorageImplTest, StartupShutdownSave) {
   std::string namespace_id1 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -239,7 +242,7 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
   // Verify data is there.
@@ -254,7 +257,7 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
 
   // This will re-initialize Session Storage and load the persisted namespace.
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -270,7 +273,7 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
 
   // This will re-initialize Session Storage and the namespace should be empty.
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -282,20 +285,21 @@ TEST_F(SessionStorageImplTest, StartupShutdownSave) {
 TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
   session_storage()->BindNamespace(namespace_id1,
                                    ss_namespace1.BindNewPipeAndPassReceiver(),
                                    base::DoNothing());
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
   ss_namespace1->Clone(namespace_id2);
@@ -308,7 +312,7 @@ TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -321,14 +325,15 @@ TEST_F(SessionStorageImplTest, CloneBeforeBrowserClone) {
 TEST_F(SessionStorageImplTest, Cloning) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
   session_storage()->BindNamespace(namespace_id1,
                                    ss_namespace1.BindNewPipeAndPassReceiver(),
                                    base::DoNothing());
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -340,7 +345,7 @@ TEST_F(SessionStorageImplTest, Cloning) {
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
   ss_namespace1->Clone(namespace_id2);
@@ -350,7 +355,7 @@ TEST_F(SessionStorageImplTest, Cloning) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -366,14 +371,14 @@ TEST_F(SessionStorageImplTest, Cloning) {
 
   // Put some data in namespace 2.
   EXPECT_TRUE(test::PutSync(area_n2.get(), StringPieceToUint8Vector("key2"),
-                            StringPieceToUint8Vector("value2"), base::nullopt,
+                            StringPieceToUint8Vector("value2"), absl::nullopt,
                             "source1"));
   EXPECT_TRUE(test::GetAllSync(area_n2.get(), &data));
   EXPECT_EQ(2ul, data.size());
 
   // Re-open namespace 1, check that we don't have the extra data.
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -386,14 +391,15 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
   std::string namespace_id3 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::SessionStorageNamespace> ss_namespace1;
   session_storage()->BindNamespace(namespace_id1,
                                    ss_namespace1.BindNewPipeAndPassReceiver(),
                                    base::DoNothing());
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -404,7 +410,7 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
   // Open the second namespace, ensure empty.
   {
     mojo::Remote<blink::mojom::StorageArea> area_n2;
-    session_storage()->BindStorageArea(origin1, namespace_id2,
+    session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                        area_n2.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
     std::vector<blink::mojom::KeyValuePtr> data;
@@ -418,7 +424,7 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value2"), base::nullopt,
+                            StringPieceToUint8Vector("value2"), absl::nullopt,
                             "source1"));
 
   session_storage()->CloneNamespace(namespace_id1, namespace_id2,
@@ -427,7 +433,7 @@ TEST_F(SessionStorageImplTest, ImmediateCloning) {
   // Open the second namespace, ensure populated
   {
     mojo::Remote<blink::mojom::StorageArea> area_n2;
-    session_storage()->BindStorageArea(origin1, namespace_id2,
+    session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                        area_n2.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
     std::vector<blink::mojom::KeyValuePtr> data;
@@ -456,7 +462,8 @@ TEST_F(SessionStorageImplTest, Scavenging) {
 
   // Create, verify we have no data.
   std::string namespace_id1 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   // This scavenge call should NOT delete the namespace, as we just created it.
@@ -472,11 +479,11 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   session_storage()->CreateNamespace(namespace_id1);
 
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
   area_n1.reset();
 
@@ -505,7 +512,7 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   // Re-initialize Session Storage, load the persisted namespace, and verify we
   // still have data.
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -526,7 +533,7 @@ TEST_F(SessionStorageImplTest, Scavenging) {
     loop.Run();
   }
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
@@ -535,12 +542,13 @@ TEST_F(SessionStorageImplTest, Scavenging) {
 
 TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
   std::string namespace_id = base::GenerateGUID();
-  url::Origin origin = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
   // Initialize Session Storage, add some data to it, and check that it's there.
-  DoTestPut(namespace_id, origin, "key", "value", "source");
-  base::Optional<std::vector<uint8_t>> opt_value =
-      DoTestGet(namespace_id, origin, "key");
+  DoTestPut(namespace_id, storage_key, "key", "value", "source");
+  absl::optional<std::vector<uint8_t>> opt_value =
+      DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
 
@@ -557,16 +565,16 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
     ASSERT_TRUE(db->Put(leveldb::WriteOptions(), "version", "argh").ok());
   }
 
-  opt_value = DoTestGet(namespace_id, origin, "key");
+  opt_value = DoTestGet(namespace_id, storage_key, "key");
   EXPECT_FALSE(opt_value);
 
   // Write data again.
-  DoTestPut(namespace_id, origin, "key", "value", "source");
+  DoTestPut(namespace_id, storage_key, "key", "value", "source");
 
   ShutDownSessionStorage();
 
   // Data should have been preserved now.
-  opt_value = DoTestGet(namespace_id, origin, "key");
+  opt_value = DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
@@ -574,12 +582,13 @@ TEST_F(SessionStorageImplTest, InvalidVersionOnDisk) {
 
 TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
   std::string namespace_id = base::GenerateGUID();
-  url::Origin origin = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
   // Initialize Session Storage, add some data to it, and check that it's there.
-  DoTestPut(namespace_id, origin, "key", "value", "source");
-  base::Optional<std::vector<uint8_t>> opt_value =
-      DoTestGet(namespace_id, origin, "key");
+  DoTestPut(namespace_id, storage_key, "key", "value", "source");
+  absl::optional<std::vector<uint8_t>> opt_value =
+      DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
 
@@ -596,16 +605,16 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
        name = file_enum.Next()) {
     base::DeleteFile(name);
   }
-  opt_value = DoTestGet(namespace_id, origin, "key");
+  opt_value = DoTestGet(namespace_id, storage_key, "key");
   EXPECT_FALSE(opt_value);
 
   // Write data again.
-  DoTestPut(namespace_id, origin, "key", "value", "source");
+  DoTestPut(namespace_id, storage_key, "key", "value", "source");
 
   ShutDownSessionStorage();
 
   // Data should have been preserved now.
-  opt_value = DoTestGet(namespace_id, origin, "key");
+  opt_value = DoTestGet(namespace_id, storage_key, "key");
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
@@ -613,11 +622,14 @@ TEST_F(SessionStorageImplTest, CorruptionOnDisk) {
 
 TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   std::string namespace_id = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://asf.com"));
-  url::Origin origin3 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://asf.com");
+  blink::StorageKey storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
 
-  base::Optional<base::RunLoop> open_loop;
+  absl::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
   size_t num_databases_destroyed = 0;
   session_storage_impl()->SetDatabaseOpenCallbackForTesting(
@@ -637,20 +649,20 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   session_storage()->BindNamespace(namespace_id,
                                    ss_namespace.BindNewPipeAndPassReceiver(),
                                    base::DoNothing());
-  session_storage()->BindStorageArea(origin1, namespace_id,
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
                                      area_o1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
-  session_storage()->BindStorageArea(origin2, namespace_id,
+  session_storage()->BindStorageArea(storage_key2, namespace_id,
                                      area_o2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
-  session_storage()->BindStorageArea(origin3, namespace_id,
+  session_storage()->BindStorageArea(storage_key3, namespace_id,
                                      area_o3.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   open_loop->Run();
 
   // Ensure that the first opened database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
@@ -673,23 +685,21 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
       }));
 
   // Start a put operation on the third connection before starting to commit
-  // a lot of data on the first origin. This put operation should result in a
-  // pending commit that will get cancelled when the database connection is
+  // a lot of data on the first storage_key. This put operation should result in
+  // a pending commit that will get cancelled when the database connection is
   // closed.
   auto value = StringPieceToUint8Vector("avalue");
-  area_o3->Put(StringPieceToUint8Vector("w3key"), value, base::nullopt,
+  area_o3->Put(StringPieceToUint8Vector("w3key"), value, absl::nullopt,
                "source",
                base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
-  int i = 0;
   while (area_o1.is_connected()) {
-    ++i;
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     std::vector<uint8_t> old_value = value;
     value[0]++;
-    area_o1->Put(StringPieceToUint8Vector("key"), value, base::nullopt,
+    area_o1->Put(StringPieceToUint8Vector("key"), value, absl::nullopt,
                  "source", base::BindLambdaForTesting([&](bool success) {
                    EXPECT_TRUE(success);
                  }));
@@ -697,7 +707,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
   }
   area_o1.reset();
 
@@ -715,7 +725,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
   // Reconnect area_o1 to the new database, and try to read a value.
   ss_namespace.reset();
-  session_storage()->BindStorageArea(origin1, namespace_id,
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
                                      area_o1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -723,7 +733,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
   bool success = true;
   test::MockLevelDBObserver observer4;
   area_o1->AddObserver(observer4.Bind());
-  area_o1->Delete(StringPieceToUint8Vector("key"), base::nullopt, "source",
+  area_o1->Delete(StringPieceToUint8Vector("key"), absl::nullopt, "source",
                   base::BindLambdaForTesting([&](bool success_in) {
                     success = success_in;
                     delete_loop.Quit();
@@ -737,9 +747,9 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
   {
     // Committing data should now work.
-    DoTestPut(namespace_id, origin1, "key", "value", "source");
-    base::Optional<std::vector<uint8_t>> opt_value =
-        DoTestGet(namespace_id, origin1, "key");
+    DoTestPut(namespace_id, storage_key1, "key", "value", "source");
+    absl::optional<std::vector<uint8_t>> opt_value =
+        DoTestGet(namespace_id, storage_key1, "key");
     ASSERT_TRUE(opt_value);
     EXPECT_EQ(StringPieceToUint8Vector("value"), opt_value.value());
   }
@@ -747,9 +757,10 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
 TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   std::string namespace_id = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
-  base::Optional<base::RunLoop> open_loop;
+  absl::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
   size_t num_databases_destroyed = 0;
   session_storage_impl()->SetDatabaseOpenCallbackForTesting(
@@ -762,14 +773,14 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Open three connections to the database.
   mojo::Remote<blink::mojom::StorageArea> area;
   session_storage()->CreateNamespace(namespace_id);
-  session_storage()->BindStorageArea(origin1, namespace_id,
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   open_loop->Run();
 
   // Ensure that this database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
@@ -794,7 +805,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
   // Repeatedly write data to the database, to trigger enough commit errors.
   auto value = StringPieceToUint8Vector("avalue");
-  base::Optional<std::vector<uint8_t>> old_value = base::nullopt;
+  absl::optional<std::vector<uint8_t>> old_value = absl::nullopt;
   while (area.is_connected()) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
@@ -805,7 +816,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
 
     old_value = value;
     value[0]++;
@@ -823,11 +834,11 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Reconnect a area to the database, and repeatedly write data to it again.
   // This time all should just keep getting written, and commit errors are
   // getting ignored.
-  session_storage()->BindStorageArea(origin1, namespace_id,
+  session_storage()->BindStorageArea(storage_key1, namespace_id,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
-  old_value = base::nullopt;
+  old_value = absl::nullopt;
   for (int i = 0; i < 64; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
@@ -838,7 +849,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    session_storage_impl()->FlushAreaForTesting(namespace_id, origin1);
+    session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
 
     old_value = value;
     value[0]++;
@@ -854,15 +865,16 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
 TEST_F(SessionStorageImplTest, GetUsage) {
   std::string namespace_id1 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   // Put some data.
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
   base::RunLoop loop;
@@ -870,7 +882,7 @@ TEST_F(SessionStorageImplTest, GetUsage) {
       [&](std::vector<mojom::SessionStorageUsageInfoPtr> usage) {
         loop.Quit();
         ASSERT_EQ(1u, usage.size());
-        EXPECT_EQ(origin1, usage[0]->origin);
+        EXPECT_EQ(storage_key1, usage[0]->storage_key);
         EXPECT_EQ(namespace_id1, usage[0]->namespace_id);
       }));
   loop.Run();
@@ -878,21 +890,23 @@ TEST_F(SessionStorageImplTest, GetUsage) {
 
 TEST_F(SessionStorageImplTest, DeleteStorage) {
   std::string namespace_id1 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
   // First, test deleting data for a namespace that is open.
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
-  session_storage()->DeleteStorage(origin1, namespace_id1, base::DoNothing());
+  session_storage()->DeleteStorage(storage_key1, namespace_id1,
+                                   base::DoNothing());
 
   std::vector<blink::mojom::KeyValuePtr> data;
   ASSERT_TRUE(test::GetAllSync(area.get(), &data));
@@ -901,7 +915,7 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
   // Next, test that it deletes the data even if there isn't a namespace open.
   // Put some data.
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
   area.reset();
 
@@ -911,10 +925,11 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
   ShutDownSessionStorage();
 
   // This re-initializes Session Storage, then deletes the storage.
-  session_storage()->DeleteStorage(origin1, namespace_id1, base::DoNothing());
+  session_storage()->DeleteStorage(storage_key1, namespace_id1,
+                                   base::DoNothing());
 
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   data.clear();
@@ -925,19 +940,20 @@ TEST_F(SessionStorageImplTest, DeleteStorage) {
 TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data in both.
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
-  session_storage_impl()->FlushAreaForTesting(namespace_id1, origin1);
+  session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
 
   area.reset();
 
@@ -951,11 +967,13 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
       }));
   loop.Run();
 
-  // Now open many new wrappers (for different origins) to trigger clean up.
+  // Now open many new wrappers (for different storage_keys) to trigger clean
+  // up.
   for (int i = 1; i <= 100; ++i) {
-    const url::Origin origin = url::Origin::Create(
-        GURL(base::StringPrintf("http://example.com:%d", i)));
-    session_storage()->BindStorageArea(origin, namespace_id1,
+    blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting(
+            base::StringPrintf("http://example.com:%d", i));
+    session_storage()->BindStorageArea(storage_key, namespace_id1,
                                        area.BindNewPipeAndPassReceiver(),
                                        base::DoNothing());
     RunUntilIdle();
@@ -963,7 +981,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   }
 
   // And make sure caches were actually cleared.
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
   std::vector<blink::mojom::KeyValuePtr> data;
@@ -975,11 +993,12 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
 TEST_F(SessionStorageImplTest, ClearDiskState) {
   SetBackingMode(SessionStorageImpl::BackingMode::kClearDiskStateOnOpen);
   std::string namespace_id1 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -990,7 +1009,7 @@ TEST_F(SessionStorageImplTest, ClearDiskState) {
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
   area.reset();
 
@@ -1002,7 +1021,7 @@ TEST_F(SessionStorageImplTest, ClearDiskState) {
   // This will re-initialize Session Storage and load the persisted namespace,
   // but it should have been deleted due to our backing mode.
   session_storage()->CreateNamespace(namespace_id1);
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1016,7 +1035,8 @@ TEST_F(SessionStorageImplTest, InterruptedCloneWithDelete) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
   std::string namespace_id3 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   session_storage()->CloneNamespace(
@@ -1027,7 +1047,7 @@ TEST_F(SessionStorageImplTest, InterruptedCloneWithDelete) {
 
   // Open the second namespace which should be initialized and empty.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1040,7 +1060,8 @@ TEST_F(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
   std::string namespace_id3 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   session_storage()->CloneNamespace(
@@ -1055,7 +1076,7 @@ TEST_F(SessionStorageImplTest, InterruptedCloneChainWithDelete) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n3;
-  session_storage()->BindStorageArea(origin1, namespace_id3,
+  session_storage()->BindStorageArea(storage_key1, namespace_id3,
                                      area_n3.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1069,7 +1090,8 @@ TEST_F(SessionStorageImplTest, InterruptedTripleCloneChain) {
   std::string namespace_id2 = base::GenerateGUID();
   std::string namespace_id3 = base::GenerateGUID();
   std::string namespace_id4 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   session_storage()->CloneNamespace(
@@ -1088,7 +1110,7 @@ TEST_F(SessionStorageImplTest, InterruptedTripleCloneChain) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n4;
-  session_storage()->BindStorageArea(origin1, namespace_id4,
+  session_storage()->BindStorageArea(storage_key1, namespace_id4,
                                      area_n4.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1105,7 +1127,8 @@ TEST_F(SessionStorageImplTest, TotalCloneChainDeletion) {
   std::string namespace_id2 = base::GenerateGUID();
   std::string namespace_id3 = base::GenerateGUID();
   std::string namespace_id4 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
 
   session_storage()->CloneNamespace(
@@ -1131,29 +1154,30 @@ TEST_F(SessionStorageImplTest, TotalCloneChainDeletion) {
 TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
 
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   session_storage()->CreateNamespace(namespace_id2);
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data in both.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
   EXPECT_TRUE(test::PutSync(area_n2.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value2"), base::nullopt,
+                            StringPieceToUint8Vector("value2"), absl::nullopt,
                             "source1"));
 
-  session_storage_impl()->FlushAreaForTesting(namespace_id1, origin1);
+  session_storage_impl()->FlushAreaForTesting(namespace_id1, storage_key1);
 
   area_n2.reset();
 
@@ -1164,7 +1188,7 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
 
   size_t memory_used = session_storage_impl()
                            ->GetNamespaceForTesting(namespace_id1)
-                           ->origin_areas_[origin1]
+                           ->storage_key_areas_[storage_key1]
                            ->data_map()
                            ->storage_area()
                            ->memory_used();
@@ -1175,8 +1199,8 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
   EXPECT_TRUE(test::GetAllSync(area_n1.get(), &data));
   EXPECT_EQ(1ul, data.size());
 
-  base::Optional<std::vector<uint8_t>> opt_value2 =
-      DoTestGet(namespace_id2, origin1, "key1");
+  absl::optional<std::vector<uint8_t>> opt_value2 =
+      DoTestGet(namespace_id2, storage_key1, "key1");
   ASSERT_TRUE(opt_value2);
   EXPECT_EQ(StringPieceToUint8Vector("value2"), opt_value2.value());
 }
@@ -1184,19 +1208,20 @@ TEST_F(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
 TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
-  // Delete the origin namespace, but save it.
+  // Delete the storage_key namespace, but save it.
   session_storage()->DeleteNamespace(namespace_id1, true);
 
   // Do the browser-side clone.
@@ -1206,7 +1231,7 @@ TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1219,19 +1244,20 @@ TEST_F(SessionStorageImplTest, DeleteWithPersistBeforeBrowserClone) {
 TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
-  // Delete the origin namespace and don't save it.
+  // Delete the storage_key namespace and don't save it.
   session_storage()->DeleteNamespace(namespace_id1, false);
 
   // Do the browser-side clone.
@@ -1241,7 +1267,7 @@ TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1254,16 +1280,17 @@ TEST_F(SessionStorageImplTest, DeleteWithoutPersistBeforeBrowserClone) {
 TEST_F(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
   std::string namespace_id1 = base::GenerateGUID();
   std::string namespace_id2 = base::GenerateGUID();
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   session_storage()->CreateNamespace(namespace_id1);
   mojo::Remote<blink::mojom::StorageArea> area_n1;
-  session_storage()->BindStorageArea(origin1, namespace_id1,
+  session_storage()->BindStorageArea(storage_key1, namespace_id1,
                                      area_n1.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
   // Put some data.
   EXPECT_TRUE(test::PutSync(area_n1.get(), StringPieceToUint8Vector("key1"),
-                            StringPieceToUint8Vector("value1"), base::nullopt,
+                            StringPieceToUint8Vector("value1"), absl::nullopt,
                             "source1"));
 
   // Do the browser-side clone.
@@ -1271,12 +1298,12 @@ TEST_F(SessionStorageImplTest, DeleteAfterCloneWithoutMojoClone) {
       namespace_id1, namespace_id2,
       mojom::SessionStorageCloneType::kWaitForCloneOnNamespace);
 
-  // Delete the origin namespace and don't save it.
+  // Delete the storage_key namespace and don't save it.
   session_storage()->DeleteNamespace(namespace_id1, false);
 
   // Open the second namespace.
   mojo::Remote<blink::mojom::StorageArea> area_n2;
-  session_storage()->BindStorageArea(origin1, namespace_id2,
+  session_storage()->BindStorageArea(storage_key1, namespace_id2,
                                      area_n2.BindNewPipeAndPassReceiver(),
                                      base::DoNothing());
 
@@ -1318,9 +1345,10 @@ TEST_F(SessionStorageImplTest, Bug1128318) {
   // As such, the namespace_entry for the namespace should be null.
   auto* ns = session_storage_impl()->GetNamespaceForTesting(namespace_id3);
   EXPECT_TRUE(ns);
-  EXPECT_FALSE(base::Contains(
-      session_storage_impl()->GetMetadataForTesting().namespace_origin_map(),
-      namespace_id3));
+  EXPECT_FALSE(base::Contains(session_storage_impl()
+                                  ->GetMetadataForTesting()
+                                  .namespace_storage_key_map(),
+                              namespace_id3));
   EXPECT_EQ(ns->namespace_entry(), SessionStorageMetadata::NamespaceEntry());
 }
 

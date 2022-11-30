@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,71 +7,86 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 
 import java.lang.ref.WeakReference;
 
 /**
- * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of a
- * {@link ChromeActivity} which amend or replace the keyboard.
+ * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of an
+ * {@link Activity} which amend or replace the keyboard.
  */
-public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate {
+public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
+        implements ManualFillingComponent.SoftKeyboardDelegate {
+    private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
+
     /**
      * Creates a new visibility delegate.
-     * @param activity A {@link WeakReference} to a {@link ChromeActivity}.
+     * @param activity A {@link WeakReference} to an {@link Activity}.
      */
-    public ChromeKeyboardVisibilityDelegate(WeakReference<Activity> activity) {
+    public ChromeKeyboardVisibilityDelegate(WeakReference<Activity> activity,
+            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
         super(activity);
-        assert activity.get() instanceof ChromeActivity;
-    }
-
-    @Override
-    public @Nullable ChromeActivity getActivity() {
-        return (ChromeActivity) super.getActivity();
-    }
-
-    /**
-     * Hide only Android's soft keyboard. Keeps eventual keyboard replacements and extensions
-     * untouched. Usually, you will want to call {@link #hideKeyboard(View)}.
-     * @param view A focused {@link View}.
-     * @return True if the keyboard was visible before this call.
-     */
-    public boolean hideSoftKeyboardOnly(View view) {
-        return hideAndroidSoftKeyboard(view);
-    }
-
-    /**
-     * Returns whether Android soft keyboard is showing and ignores all extensions/replacements.
-     * Usually, you will want to call {@link #isKeyboardShowing(Context, View)}.
-     * @param context A {@link Context} instance.
-     * @param view    A {@link View}.
-     * @return Returns true if Android's soft keyboard is visible. Ignores extensions/replacements.
-     */
-    public boolean isSoftKeyboardShowing(Context context, View view) {
-        return isAndroidSoftKeyboardShowing(context, view);
+        mManualFillingComponentSupplier = manualFillingComponentSupplier;
     }
 
     @Override
     public boolean hideKeyboard(View view) {
-        ChromeActivity activity = getActivity();
         boolean wasManualFillingViewShowing = false;
-        if (activity != null) {
+        if (mManualFillingComponentSupplier.hasValue()) {
             wasManualFillingViewShowing =
-                    activity.getManualFillingComponent().isFillingViewShown(view);
-            activity.getManualFillingComponent().hide();
+                    mManualFillingComponentSupplier.get().isFillingViewShown(view);
+            mManualFillingComponentSupplier.get().hide();
         }
         return super.hideKeyboard(view) || wasManualFillingViewShowing;
     }
 
     @Override
     public boolean isKeyboardShowing(Context context, View view) {
-        ChromeActivity activity = getActivity();
         return super.isKeyboardShowing(context, view)
-                || (activity != null
-                        && activity.getManualFillingComponent().isFillingViewShown(view));
+                || (mManualFillingComponentSupplier.hasValue()
+                        && mManualFillingComponentSupplier.get().isFillingViewShown(view));
+    }
+
+    /**
+     * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     * @see ManualFillingComponent.SoftKeyboardDelegate#hideSoftKeyboardOnly(View)
+     */
+    @Override
+    public boolean hideSoftKeyboardOnly(View view) {
+        return hideAndroidSoftKeyboard(view);
+    }
+
+    /**
+     * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(Context, View)
+     */
+    @Override
+    public boolean isSoftKeyboardShowing(Context context, View view) {
+        return isAndroidSoftKeyboardShowing(context, view);
+    }
+
+    /**
+     * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     * @see ManualFillingComponent.SoftKeyboardDelegate#showSoftKeyboard(ViewGroup)
+     */
+    @Override
+    public void showSoftKeyboard(ViewGroup contentView) {
+        showKeyboard(contentView);
+    }
+
+    /**
+     * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     * @see ManualFillingComponent.SoftKeyboardDelegate#calculateSoftKeyboardHeight(View)
+     */
+    @Override
+    public @Px int calculateSoftKeyboardHeight(View rootView) {
+        return calculateKeyboardHeight(rootView);
     }
 }

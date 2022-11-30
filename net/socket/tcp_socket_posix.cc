@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/atomicops.h"
 #include "base/bind.h"
@@ -20,8 +21,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -30,6 +31,7 @@
 #include "net/base/network_activity_monitor.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sys_addrinfo.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -41,6 +43,12 @@
 #include "net/socket/socket_posix.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "net/android/network_library.h"
+#include "net/android/radio_activity_tracker.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // If we don't have a definition for TCPI_OPT_SYN_DATA, create one.
 #if !defined(TCPI_OPT_SYN_DATA)
@@ -50,7 +58,7 @@
 // Fuchsia defines TCP_INFO, but it's not implemented.
 // TODO(crbug.com/758294): Enable TCP_INFO on Fuchsia once it's implemented
 // there (see NET-160).
-#if defined(TCP_INFO) && !defined(OS_FUCHSIA)
+#if defined(TCP_INFO) && !BUILDFLAG(IS_FUCHSIA)
 #define HAVE_TCP_INFO
 #endif
 
@@ -71,25 +79,30 @@ bool SetTCPKeepAlive(int fd, bool enable, int delay) {
   if (!enable)
     return true;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  // Setting the keepalive interval varies by platform.
+  // A delay of 0 doesn't work, and is the default, so ignore that and rely on
+  // whatever the OS defaults are once we turned it on above.
+  if (delay) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    // Setting the keepalive interval varies by platform.
 
-  // Set seconds until first TCP keep alive.
-  if (setsockopt(fd, SOL_TCP, TCP_KEEPIDLE, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPIDLE on fd: " << fd;
-    return false;
-  }
-  // Set seconds between TCP keep alives.
-  if (setsockopt(fd, SOL_TCP, TCP_KEEPINTVL, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPINTVL on fd: " << fd;
-    return false;
-  }
-#elif defined(OS_APPLE)
-  if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &delay, sizeof(delay))) {
-    PLOG(ERROR) << "Failed to set TCP_KEEPALIVE on fd: " << fd;
-    return false;
-  }
+    // Set seconds until first TCP keep alive.
+    if (setsockopt(fd, SOL_TCP, TCP_KEEPIDLE, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPIDLE on fd: " << fd;
+      return false;
+    }
+    // Set seconds between TCP keep alives.
+    if (setsockopt(fd, SOL_TCP, TCP_KEEPINTVL, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPINTVL on fd: " << fd;
+      return false;
+    }
+#elif BUILDFLAG(IS_APPLE)
+    if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPALIVE, &delay, sizeof(delay))) {
+      PLOG(ERROR) << "Failed to set TCP_KEEPALIVE on fd: " << fd;
+      return false;
+    }
 #endif
+  }
+
   return true;
 }
 
@@ -123,11 +136,22 @@ base::TimeDelta GetTransportRtt(SocketDescriptor fd) {
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMicroseconds(
-      std::max(info.tcpi_rtt, kMinValidRttMicros));
+  return base::Microseconds(std::max(info.tcpi_rtt, kMinValidRttMicros));
 }
 
 #endif  // defined(TCP_INFO)
+
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+// Returns true if `socket` is connected to 0.0.0.0, false otherwise.
+// For detecting slow socket close due to a MacOS bug
+// (https://crbug.com/1194888).
+bool PeerIsZeroIPv4(const TCPSocketPosix& socket) {
+  IPEndPoint peer;
+  if (socket.GetPeerAddress(&peer) != OK)
+    return false;
+  return peer.address().IsIPv4() && peer.address().IsZero();
+}
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 }  // namespace
 
@@ -138,7 +162,6 @@ TCPSocketPosix::TCPSocketPosix(
     NetLog* net_log,
     const NetLogSource& source)
     : socket_performance_watcher_(std::move(socket_performance_watcher)),
-      logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
@@ -150,13 +173,24 @@ TCPSocketPosix::~TCPSocketPosix() {
 
 int TCPSocketPosix::Open(AddressFamily family) {
   DCHECK(!socket_);
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->Open(ConvertAddressFamily(family));
   if (rv != OK)
     socket_.reset();
   if (rv == OK && tag_ != SocketTag())
     tag_.Apply(socket_->socket_fd());
   return rv;
+}
+
+int TCPSocketPosix::BindToNetwork(handles::NetworkHandle network) {
+  DCHECK(IsValid());
+  DCHECK(!IsConnected());
+#if BUILDFLAG(IS_ANDROID)
+  return net::android::BindToNetwork(socket_->socket_fd(), network);
+#else
+  NOTIMPLEMENTED();
+  return ERR_NOT_IMPLEMENTED;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
@@ -170,7 +204,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
     return ERR_ADDRESS_INVALID;
   }
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptConnectedSocket(socket, storage);
   if (rv != OK)
     socket_.reset();
@@ -182,7 +216,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
 int TCPSocketPosix::AdoptUnconnectedSocket(SocketDescriptor socket) {
   DCHECK(!socket_);
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptUnconnectedSocket(socket);
   if (rv != OK)
     socket_.reset();
@@ -307,6 +341,10 @@ int TCPSocketPosix::Write(
   DCHECK(socket_);
   DCHECK(!callback.is_null());
 
+#if BUILDFLAG(IS_ANDROID)
+  android::MaybeRecordTCPWriteForWakeupTrigger(traffic_annotation);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   CompletionOnceCallback write_callback = base::BindOnce(
       &TCPSocketPosix::WriteCompleted,
       // Grab a reference to |buf| so that WriteCompleted() can still
@@ -381,7 +419,7 @@ void TCPSocketPosix::SetDefaultOptionsForClient() {
   // are very high (on the order of seconds). Given the number of
   // retransmissions required before killing the connection, this can lead to
   // tens of seconds or even minutes of delay, depending on OS.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const int kTCPKeepAliveSeconds = 45;
 
   SetTCPKeepAlive(socket_->socket_fd(), true, kTCPKeepAliveSeconds);
@@ -421,12 +459,21 @@ bool TCPSocketPosix::SetNoDelay(bool no_delay) {
 }
 
 void TCPSocketPosix::Close() {
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
+  // A MacOS bug can cause sockets to 0.0.0.0 to take 1 second to close. Log a
+  // trace event for this case so that it can be correlated with jank in traces.
+  // Use the "base" category since "net" isn't enabled by default. See
+  // https://crbug.com/1194888.
+  TRACE_EVENT("base", PeerIsZeroIPv4(*this)
+                          ? perfetto::StaticString{"CloseSocketTCP.PeerIsZero"}
+                          : perfetto::StaticString{"CloseSocketTCP"});
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   socket_.reset();
   tag_ = SocketTag();
 }
 
 bool TCPSocketPosix::IsValid() const {
-  return socket_ != NULL && socket_->socket_fd() != kInvalidSocket;
+  return socket_ != nullptr && socket_->socket_fd() != kInvalidSocket;
 }
 
 void TCPSocketPosix::DetachFromThread() {
@@ -507,8 +554,8 @@ int TCPSocketPosix::BuildTcpSocketPosix(
     return ERR_ADDRESS_INVALID;
   }
 
-  tcp_socket->reset(
-      new TCPSocketPosix(nullptr, net_log_.net_log(), net_log_.source()));
+  *tcp_socket = std::make_unique<TCPSocketPosix>(nullptr, net_log_.net_log(),
+                                                 net_log_.source());
   (*tcp_socket)->socket_ = std::move(accept_socket_);
   return OK;
 }
@@ -591,7 +638,7 @@ int TCPSocketPosix::HandleReadCompleted(IOBuffer* buf, int rv) {
 
   net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_RECEIVED, rv,
                                 buf->data());
-  NetworkActivityMonitor::GetInstance()->IncrementBytesReceived(rv);
+  activity_monitor::IncrementBytesReceived(rv);
 
   return rv;
 }

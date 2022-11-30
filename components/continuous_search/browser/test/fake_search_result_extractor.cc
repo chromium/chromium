@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ FakeSearchResultExtractor::FakeSearchResultExtractor() = default;
 FakeSearchResultExtractor::~FakeSearchResultExtractor() = default;
 
 void FakeSearchResultExtractor::ExtractCurrentSearchResults(
+    const std::vector<mojom::ResultType>& result_types,
     ExtractCurrentSearchResultsCallback callback) {
   CHECK(response_set_);
   std::move(callback).Run(status_, std::move(results_));

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,8 +20,8 @@ from telemetry import benchmark
 import page_sets
 from benchmarks import press
 
-@benchmark.Info(emails=['hablich@chromium.org'],
-                component='Blink')
+
+@benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')
 class Speedometer(press._PressBenchmark): # pylint: disable=protected-access
   @classmethod
   def Name(cls):
@@ -30,8 +30,8 @@ class Speedometer(press._PressBenchmark): # pylint: disable=protected-access
   def CreateStorySet(self, options):
     return page_sets.SpeedometerStorySet()
 
-@benchmark.Info(emails=['hablich@chromium.org'],
-                component='Blink')
+
+@benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')
 class V8SpeedometerFuture(Speedometer):
   """Speedometer benchmark with the V8 flag --future.
 

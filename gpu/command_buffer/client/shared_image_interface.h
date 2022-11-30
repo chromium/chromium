@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,14 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
 class ColorSpace;
@@ -97,22 +97,19 @@ class GPU_EXPORT SharedImageInterface {
   virtual Mailbox CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      gfx::BufferPlane plane,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage) = 0;
 
-  // The primary purpose of this is API to use an AHB from media/AImageReader in
-  // a thread-safe way. The source mailbox passed to this API must be backed by
-  // a SharedImageVideo. The current AHB associated with the video is wrapped in
-  // a new shared image, associated with the returned mailbox. This shared image
-  // can then be used on any thread in the GPU service. So this API is meant to
-  // pull a buffer for the compositor from ImageReader on the GPU thread, before
-  // sharing it with the compositor. Its also wrapped in a new backing to ensure
-  // there is no cross-thread ImageReader usage.
-  virtual Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
-                                           uint32_t usage,
-                                           const SyncToken& sync_token);
+  // Same as the above, but specifies gfx::BufferPlane::DEFAULT for |plane|.
+  Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                            GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                            const gfx::ColorSpace& color_space,
+                            GrSurfaceOrigin surface_origin,
+                            SkAlphaType alpha_type,
+                            uint32_t usage);
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
@@ -127,6 +124,13 @@ class GPU_EXPORT SharedImageInterface {
   virtual void UpdateSharedImage(const SyncToken& sync_token,
                                  std::unique_ptr<gfx::GpuFence> acquire_fence,
                                  const Mailbox& mailbox) = 0;
+
+  // Update the GpuMemoryBuffer associated with the shared image |mailbox| after
+  // |sync_token| is released. This needed when the GpuMemoryBuffer is backed by
+  // shared memory on platforms like Windows where the renderer cannot create
+  // native GMBs.
+  virtual void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                                     const Mailbox& mailbox);
 
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
@@ -161,7 +165,7 @@ class GPU_EXPORT SharedImageInterface {
   virtual void PresentSwapChain(const SyncToken& sync_token,
                                 const Mailbox& mailbox) = 0;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. While the collection exists (i.e.
   // between RegisterSysmemBufferCollection() and
   // ReleaseSysmemBufferCollection()) the caller can use CreateSharedImage() to
@@ -181,7 +185,7 @@ class GPU_EXPORT SharedImageInterface {
 
   virtual void ReleaseSysmemBufferCollection(
       gfx::SysmemBufferCollectionId id) = 0;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Generates an unverified SyncToken that is released after all previous
   // commands on this interface have executed on the service side.
@@ -199,7 +203,7 @@ class GPU_EXPORT SharedImageInterface {
   // Flush the SharedImageInterface, issuing any deferred IPCs.
   virtual void Flush() = 0;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Returns the NativePixmap backing |mailbox|. This is a privileged API. Only
   // the callers living inside the GPU process are able to retrieve the
   // NativePixmap; otherwise null is returned. Also returns null if the

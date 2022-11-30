@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 #
 # If needed, the user can set 'script_override=foo.py' to use a different
 # templating script to the default (wayland_templater.py).
+
 template("wayland_templater") {
   assert(defined(invoker.sources), "Need sources for wayland_templater")
   assert(defined(invoker.protocols), "Need protocols for wayland_templater")

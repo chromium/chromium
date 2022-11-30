@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -34,6 +33,10 @@ class WebDocumentSubresourceFilterImpl
                 mojom::ActivationState activation_state,
                 base::File ruleset_file,
                 base::OnceClosure first_disallowed_load_callback);
+
+    BuilderImpl(const BuilderImpl&) = delete;
+    BuilderImpl& operator=(const BuilderImpl&) = delete;
+
     ~BuilderImpl() override;
 
     std::unique_ptr<blink::WebDocumentSubresourceFilter> Build() override;
@@ -44,8 +47,6 @@ class WebDocumentSubresourceFilterImpl
     base::File ruleset_file_;
     base::OnceClosure first_disallowed_load_callback_;
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(BuilderImpl);
   };
 
   // See DocumentSubresourceFilter description.
@@ -58,6 +59,11 @@ class WebDocumentSubresourceFilterImpl
       scoped_refptr<const MemoryMappedRuleset> ruleset,
       base::OnceClosure first_disallowed_load_callback);
 
+  WebDocumentSubresourceFilterImpl(const WebDocumentSubresourceFilterImpl&) =
+      delete;
+  WebDocumentSubresourceFilterImpl& operator=(
+      const WebDocumentSubresourceFilterImpl&) = delete;
+
   ~WebDocumentSubresourceFilterImpl() override;
 
   const DocumentSubresourceFilter& filter() const { return filter_; }
@@ -66,6 +72,8 @@ class WebDocumentSubresourceFilterImpl
   LoadPolicy GetLoadPolicy(const blink::WebURL& resourceUrl,
                            blink::mojom::RequestContextType) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
+      const blink::WebURL& url) override;
+  LoadPolicy GetLoadPolicyForWebTransportConnect(
       const blink::WebURL& url) override;
   void ReportDisallowedLoad() override;
   bool ShouldLogToConsole() override;
@@ -92,8 +100,6 @@ class WebDocumentSubresourceFilterImpl
   // WebDocumentSubresourceFilter most recently created by the
   // SubresourceFilterAgent.
   AdResourceTracker* ad_resource_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDocumentSubresourceFilterImpl);
 };
 
 }  // namespace subresource_filter

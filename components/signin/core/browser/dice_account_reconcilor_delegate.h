@@ -1,50 +1,39 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_DICE_ACCOUNT_RECONCILOR_DELEGATE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_DICE_ACCOUNT_RECONCILOR_DELEGATE_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 
-class SigninClient;
-
 namespace signin {
+
+class IdentityManager;
 
 // AccountReconcilorDelegate specialized for Dice.
 class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
  public:
-  DiceAccountReconcilorDelegate(SigninClient* signin_client,
-                                bool migration_completed);
-  ~DiceAccountReconcilorDelegate() override {}
+  explicit DiceAccountReconcilorDelegate(IdentityManager* identity_manager);
+
+  DiceAccountReconcilorDelegate(const DiceAccountReconcilorDelegate&) = delete;
+  DiceAccountReconcilorDelegate& operator=(
+      const DiceAccountReconcilorDelegate&) = delete;
+
+  ~DiceAccountReconcilorDelegate() override;
 
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
-  CoreAccountId GetFirstGaiaAccountForReconcile(
-      const std::vector<CoreAccountId>& chrome_accounts,
-      const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const CoreAccountId& primary_account,
-      bool first_execution,
-      bool will_logout) const override;
-  RevokeTokenOption ShouldRevokeSecondaryTokensBeforeReconcile(
-      const std::vector<gaia::ListedAccount>& gaia_accounts) override;
-  // Returns true if in force migration to dice state.
-  bool ShouldRevokeTokensNotInCookies() const override;
-  // Disables force dice migration and sets dice migration as completed.
-  void OnRevokeTokensNotInCookiesCompleted() override;
+  void RevokeSecondaryTokensBeforeReconcileIfNeeded() override;
   void OnReconcileFinished(const CoreAccountId& first_account) override;
-  bool ShouldRevokeTokensOnCookieDeleted() override;
-  bool ShouldRevokeTokensBeforeMultilogin(
+  void OnAccountsCookieDeletedByUserAction(
+      bool synced_data_deletion_in_progress) override;
+  bool RevokeSecondaryTokensBeforeMultiloginIfNeeded(
       const std::vector<CoreAccountId>& chrome_accounts,
-      const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
-      bool first_execution,
-      bool primary_has_error) const override;
+      bool first_execution) override;
 
  private:
   // Possible inconsistency reasons between tokens and gaia cookies.
@@ -113,13 +102,17 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  SigninClient* signin_client_;
-  bool migration_completed_;
+  // Returns whether secondary accounts should be revoked for doing full logout.
+  // Used only for the Multilogin codepath.
+  bool ShouldRevokeTokensBeforeMultilogin(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const std::vector<gaia::ListedAccount>& gaia_accounts,
+      bool first_execution) const;
+
+  const raw_ptr<IdentityManager> identity_manager_;
 
   // Last known "first account". Used when cookies are lost as a best guess.
   CoreAccountId last_known_first_account_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiceAccountReconcilorDelegate);
 };
 
 }  // namespace signin

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <ostream>
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -31,8 +31,8 @@ TEST(Util, CheckedIntegralToEnum) {
   EXPECT_EQ(MyEnum::kVal1, *CheckedCastToEnum<MyEnum>(-1));
   EXPECT_EQ(MyEnum::kVal2, *CheckedCastToEnum<MyEnum>(0));
   EXPECT_EQ(MyEnum::kVal3, *CheckedCastToEnum<MyEnum>(1));
-  EXPECT_EQ(CheckedCastToEnum<MyEnum>(-2), base::nullopt);
-  EXPECT_EQ(CheckedCastToEnum<MyEnum>(2), base::nullopt);
+  EXPECT_EQ(CheckedCastToEnum<MyEnum>(-2), absl::nullopt);
+  EXPECT_EQ(CheckedCastToEnum<MyEnum>(2), absl::nullopt);
 }
 
 }  // namespace updater

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,10 @@ class StylusTool : public SurfaceObserver {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasStylusToolKey, true);
   }
+
+  StylusTool(const StylusTool&) = delete;
+  StylusTool& operator=(const StylusTool&) = delete;
+
   ~StylusTool() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
@@ -47,8 +51,6 @@ class StylusTool : public SurfaceObserver {
 
  private:
   Surface* surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(StylusTool);
 };
 
 void stylus_tool_destroy(wl_client* client, wl_resource* resource) {

@@ -1,24 +1,30 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/cursor_manager.h"
 
 using chromeos::kResizeInsideBoundsSize;
 using chromeos::kResizeOutsideBoundsSize;
@@ -35,6 +41,10 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanMinimize(true);
     SetCanResize(true);
   }
+
+  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
+  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+
   ~TestWidgetDelegate() override = default;
 
   // views::WidgetDelegateView overrides:
@@ -42,9 +52,6 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
       views::Widget* widget) override {
     return std::make_unique<NonClientFrameViewAsh>(widget);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestWidgetDelegate);
 };
 
 }  // namespace
@@ -54,6 +61,11 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
 class ResizeShadowAndCursorTest : public AshTestBase {
  public:
   ResizeShadowAndCursorTest() = default;
+
+  ResizeShadowAndCursorTest(const ResizeShadowAndCursorTest&) = delete;
+  ResizeShadowAndCursorTest& operator=(const ResizeShadowAndCursorTest&) =
+      delete;
+
   ~ResizeShadowAndCursorTest() override = default;
 
   // AshTestBase override:
@@ -88,7 +100,8 @@ class ResizeShadowAndCursorTest : public AshTestBase {
     return resize_shadow ? resize_shadow->GetLastHitTestForTest() : HTNOWHERE;
   }
 
-  // Returns true if there is a resize shadow.
+  // Returns true if there is a resize shadow with a given type. Default type is
+  // unlock for compatibility.
   void VerifyResizeShadow(bool visible) const {
     if (visible)
       EXPECT_TRUE(GetShadow());
@@ -98,17 +111,19 @@ class ResizeShadowAndCursorTest : public AshTestBase {
       ASSERT_TRUE(window_->layer());
       EXPECT_EQ(window_->layer()->parent(), shadow_layer->parent());
       const auto& layers = shadow_layer->parent()->children();
-      // Make sure the shadow layer is stacked directly beneath the window
-      // layer.
-      EXPECT_EQ(*(std::find(layers.begin(), layers.end(), shadow_layer) + 1),
-                window_->layer());
+      // We don't care about the layer order if it's invisible.
+      if (visible) {
+        // Make sure the shadow layer is stacked directly beneath the window
+        // layer.
+        EXPECT_EQ(*(base::ranges::find(layers, shadow_layer) + 1),
+                  window_->layer());
+      }
     }
   }
 
   // Returns the current cursor type.
   ui::mojom::CursorType GetCurrentCursorType() const {
-    CursorManagerTestApi test_api(Shell::Get()->cursor_manager());
-    return test_api.GetCurrentCursor().type();
+    return Shell::Get()->cursor_manager()->GetCursor().type();
   }
 
   // Called for each step of a scroll sequence initiated at the bottom right
@@ -128,8 +143,6 @@ class ResizeShadowAndCursorTest : public AshTestBase {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeShadowAndCursorTest);
 };
 
 // Test whether the resize shadows are visible and the cursor type based on the
@@ -178,6 +191,96 @@ TEST_F(ResizeShadowAndCursorTest, MouseHover) {
   generator.MoveMouseTo(50, 100 - kResizeInsideBoundsSize - 10);
   VerifyResizeShadow(false);
   EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+}
+
+// For windows that are not resizable, checks that there is no resize shadow,
+// and for the correct cursor type for the cursor position.
+TEST_F(ResizeShadowAndCursorTest, MouseHoverOverNonresizable) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(WindowState::Get(window())->IsNormalStateType());
+
+  // Make the window nonresizable.
+  auto* const widget = views::Widget::GetWidgetForNativeWindow(window());
+  auto* widget_delegate = widget->widget_delegate();
+  widget_delegate->SetCanResize(false);
+
+  generator.MoveMouseTo(gfx::Point(50, 50));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 0));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 50));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(199, 99));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthWestSouthEastNoResize,
+            GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 99));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 + kResizeOutsideBoundsSize - 1));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 + kResizeOutsideBoundsSize + 10));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 - kResizeInsideBoundsSize));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNorthSouthNoResize, GetCurrentCursorType());
+
+  generator.MoveMouseTo(gfx::Point(50, 100 - kResizeInsideBoundsSize - 10));
+  VerifyResizeShadow(false);
+  EXPECT_EQ(ui::mojom::CursorType::kNull, GetCurrentCursorType());
+}
+
+TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+
+  // Create a dummy view for the bubble, adding it to the window.
+  views::View* child_view = new views::View();
+  child_view->SetBounds(200, 200, 10, 10);
+  views::Widget::GetWidgetForNativeWindow(window())
+      ->GetRootView()
+      ->AddChildView(child_view);
+
+  // Create the bubble widget.
+  views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(
+      new views::BubbleDialogDelegateView(child_view,
+                                          views::BubbleBorder::NONE)));
+  bubble->Show();
+
+  // Get the screen rectangle for the bubble frame
+  const gfx::Rect bounds = bubble->GetNativeView()->GetBoundsInScreen();
+  EXPECT_THAT(
+      bounds,
+      ::testing::AllOf(::testing::Property(&gfx::Rect::x, ::testing::Gt(0)),
+                       ::testing::Property(&gfx::Rect::y, ::testing::Gt(0))));
+
+  // The cursor at the frame corners should be the default cursor.
+  generator.MoveMouseTo(bounds.origin());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.top_right());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.bottom_left());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
+
+  generator.MoveMouseTo(bounds.bottom_right());
+  EXPECT_THAT(GetCurrentCursorType(),
+              ::testing::Eq(ui::mojom::CursorType::kNull));
 }
 
 TEST_F(ResizeShadowAndCursorTest, NoResizeShadowOnNonToplevelWindow) {
@@ -247,7 +350,7 @@ TEST_F(ResizeShadowAndCursorTest, Touch) {
   int start_y = 100 + kResizeOutsideBoundsSize - 1;
   generator.GestureScrollSequenceWithCallback(
       gfx::Point(start_x, start_y), gfx::Point(start_x + 50, start_y + 50),
-      base::TimeDelta::FromMilliseconds(200), 3,
+      base::Milliseconds(200), 3,
       base::BindRepeating(
           &ResizeShadowAndCursorTest::ProcessBottomRightResizeGesture,
           base::Unretained(this)));
@@ -297,6 +400,139 @@ TEST_F(ResizeShadowAndCursorTest, Minimize) {
 
   WindowState::Get(window())->Restore();
   VerifyResizeShadow(false);
+}
+
+// Verifies that the lock style shadow gets updated when the window's bounds
+// changed.
+TEST_F(ResizeShadowAndCursorTest, LockShadowBounds) {
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  // Set window's bounds
+  const gfx::Rect kOldBounds(20, 30, 400, 300);
+  window()->SetBounds(kOldBounds);
+  auto* resize_shadow = GetShadow();
+  ASSERT_TRUE(resize_shadow);
+  VerifyResizeShadow(true);
+  auto* layer = resize_shadow->GetLayerForTest();
+  constexpr int kVisualThickness = 6;
+  EXPECT_EQ(gfx::Rect(kOldBounds.width() + kVisualThickness * 2,
+                      kOldBounds.height() + kVisualThickness * 2)
+                .ToString(),
+            gfx::Rect(layer->GetTargetBounds().size()).ToString());
+
+  // Change the window's bounds, the shadow's should be updated too.
+  gfx::Rect kNewBounds(50, 60, 500, 400);
+  window()->SetBounds(kNewBounds);
+  EXPECT_EQ(gfx::Rect(kNewBounds.width() + kVisualThickness * 2,
+                      kNewBounds.height() + kVisualThickness * 2)
+                .ToString(),
+            gfx::Rect(layer->GetTargetBounds().size()).ToString());
+}
+
+// Tests that shadow gets updated according to the window's visibility.
+TEST_F(ResizeShadowAndCursorTest, ShowHideLockShadow) {
+  ASSERT_FALSE(GetShadow());
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+
+  // Test shown window.
+  window()->Show();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+  VerifyResizeShadow(false);
+
+  // Test hidden window.
+  window()->Hide();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+  VerifyResizeShadow(false);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+  VerifyResizeShadow(false);
+}
+
+// Tests that shadow gets updated when the window's visibility changed.
+TEST_F(ResizeShadowAndCursorTest, WindowVisibilityChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  window()->Show();
+  VerifyResizeShadow(true);
+  window()->Hide();
+  VerifyResizeShadow(false);
+  window()->Show();
+  VerifyResizeShadow(true);
+}
+
+// Tests that shadow type gets updated according to the window's property.
+TEST_F(ResizeShadowAndCursorTest, ResizeShadowTypeChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(), ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kUnlock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(),
+            ResizeShadowType::kUnlock);
+  Shell::Get()->resize_shadow_controller()->HideShadow(window());
+}
+
+// Tests that shadow gets updated when the window's state changed.
+TEST_F(ResizeShadowAndCursorTest, WindowStateChange) {
+  ASSERT_FALSE(GetShadow());
+  auto* const window_state = WindowState::Get(window());
+  ASSERT_TRUE(window_state->IsNormalStateType());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(true);
+  window_state->Maximize();
+  VerifyResizeShadow(false);
+  window_state->Restore();
+  VerifyResizeShadow(true);
+  window_state->Minimize();
+  VerifyResizeShadow(false);
+  window_state->Unminimize();
+  VerifyResizeShadow(true);
+}
+
+// Tests that shadow gets hidden and restored according to the oveview mode
+// state.
+TEST_F(ResizeShadowAndCursorTest, OverviewModeChange) {
+  ASSERT_FALSE(GetShadow());
+
+  window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
+
+  // Requests ShowShadow() before entering overview.
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  ASSERT_TRUE(GetShadow());
+  window()->Show();
+  VerifyResizeShadow(true);
+  EnterOverview();
+  VerifyResizeShadow(false);
+  ExitOverview();
+  VerifyResizeShadow(true);
+  Shell::Get()->resize_shadow_controller()->HideAllShadows();
+
+  // Requests ShowShadow() after entering overview.
+  EnterOverview();
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  VerifyResizeShadow(false);
+  ExitOverview();
+  VerifyResizeShadow(true);
 }
 
 }  // namespace ash

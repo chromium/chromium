@@ -1,12 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -33,7 +33,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class UserAddingScreenTest : public LoginManagerTest,
                              public UserAddingScreen::Observer {
@@ -41,6 +41,9 @@ class UserAddingScreenTest : public LoginManagerTest,
   UserAddingScreenTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(3);
   }
+
+  UserAddingScreenTest(const UserAddingScreenTest&) = delete;
+  UserAddingScreenTest& operator=(const UserAddingScreenTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     LoginManagerTest::SetUpInProcessBrowserTestFixture();
@@ -50,7 +53,7 @@ class UserAddingScreenTest : public LoginManagerTest,
   void WaitUntilUserAddingFinishedOrCancelled() {
     if (finished_)
       return;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -86,8 +89,6 @@ class UserAddingScreenTest : public LoginManagerTest,
   std::unique_ptr<base::RunLoop> run_loop_;
   bool finished_ = false;  // True if OnUserAddingFinished() has been called
                            // before WaitUntilUserAddingFinishedOrCancelled().
-
-  DISALLOW_COPY_AND_ASSIGN(UserAddingScreenTest);
 };
 
 IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
@@ -102,19 +103,15 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, CancelAdding) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
 
-  base::HistogramTester histogram_tester;
   test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_SECONDARY);
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsCancelButtonShown());
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickCancelButton());
+  EXPECT_TRUE(LoginScreenTestApi::IsCancelButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::ClickCancelButton());
   WaitUntilUserAddingFinishedOrCancelled();
-
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.UserAddingScreen.LoadTimeViewsBased", 1);
 
   EXPECT_EQ(user_adding_finished(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -137,20 +134,19 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, UILogin) {
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
-  base::HistogramTester histogram_tester;
   test::ShowUserAddingScreen();
 
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_SECONDARY);
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsCancelButtonShown());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsCancelButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   SetExpectedCredentials(CreateUserContext(users.back().account_id, kPassword));
-  ash::LoginScreenTestApi::SubmitPassword(users.back().account_id, kPassword,
-                                          true /* check_if_submittable */);
+  LoginScreenTestApi::SubmitPassword(users.back().account_id, kPassword,
+                                     true /* check_if_submittable */);
 
   WaitUntilUserAddingFinishedOrCancelled();
   EXPECT_EQ(user_adding_finished(), 1);
@@ -158,9 +154,6 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, UILogin) {
             session_manager::SessionState::ACTIVE);
   EXPECT_TRUE(LoginDisplayHost::default_host() == nullptr);
   ASSERT_EQ(user_manager->GetLoggedInUsers().size(), 2u);
-
-  histogram_tester.ExpectTotalCount(
-      "ChromeOS.UserAddingScreen.LoadTimeViewsBased", 1);
 
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
@@ -217,30 +210,30 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   ASSERT_TRUE(prefs1 != nullptr);
   ASSERT_TRUE(prefs2 != nullptr);
   ASSERT_TRUE(prefs3 != nullptr);
-  prefs1->SetBoolean(ash::prefs::kEnableAutoScreenLock, false);
-  prefs2->SetBoolean(ash::prefs::kEnableAutoScreenLock, false);
-  prefs3->SetBoolean(ash::prefs::kEnableAutoScreenLock, false);
+  prefs1->SetBoolean(prefs::kEnableAutoScreenLock, false);
+  prefs2->SetBoolean(prefs::kEnableAutoScreenLock, false);
+  prefs3->SetBoolean(prefs::kEnableAutoScreenLock, false);
 
   // One of the users has the primary-only policy.
   // List of unlock users doesn't depend on kEnableLockScreen preference.
-  prefs1->SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
-  prefs1->SetString(prefs::kMultiProfileUserBehavior,
+  prefs1->SetBoolean(prefs::kEnableAutoScreenLock, true);
+  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorPrimaryOnly);
-  prefs2->SetString(prefs::kMultiProfileUserBehavior,
+  prefs2->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
-  prefs3->SetString(prefs::kMultiProfileUserBehavior,
+  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
   user_manager::UserList unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 1u);
   EXPECT_EQ(users[0].account_id, unlock_users[0]->GetAccountId());
 
-  prefs1->SetBoolean(ash::prefs::kEnableAutoScreenLock, false);
+  prefs1->SetBoolean(prefs::kEnableAutoScreenLock, false);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 1u);
   EXPECT_EQ(users[0].account_id, unlock_users[0]->GetAccountId());
 
   // If all users have unrestricted policy then anyone can perform unlock.
-  prefs1->SetString(prefs::kMultiProfileUserBehavior,
+  prefs1->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorUnrestricted);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 3u);
@@ -248,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
     EXPECT_EQ(users_in_session_order_[i], unlock_users[i]->GetAccountId());
 
   // This preference doesn't affect list of unlock users.
-  prefs2->SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
+  prefs2->SetBoolean(prefs::kEnableAutoScreenLock, true);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 3u);
   for (int i = 0; i < 3; ++i)
@@ -266,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
   // In this scenario this user is not allowed in multi-profile session but
   // if that user happened to still be part of multi-profile session it should
   // not be listed on screen lock.
-  prefs3->SetString(prefs::kMultiProfileUserBehavior,
+  prefs3->SetString(::prefs::kMultiProfileUserBehavior,
                     MultiProfileUserController::kBehaviorNotAllowed);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 2u);
@@ -274,33 +267,30 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
     EXPECT_EQ(users_in_session_order_[i], unlock_users[i]->GetAccountId());
 }
 
-IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, ScreenVisibilityAfterLock) {
+// TODO(crbug.com/1334963) Disabled
+// UserAddingScreenTest.ScreenVisibilityAfterLockbecause it is failing on "Linux
+// Chromium OS ASan LSan Tests" builder.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_ScreenVisibilityAfterLock DISABLED_ScreenVisibilityAfterLock
+#else
+#define MAYBE_ScreenVisibilityAfterLock ScreenVisibilityAfterLock
+#endif
+IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, MAYBE_ScreenVisibilityAfterLock) {
   const auto& users = login_mixin_.users();
   LoginUser(users[0].account_id);
 
-  {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-        content::NotificationService::AllSources());
-    ScreenLocker::Show();
-    observer.Wait();
-  }
-
-  {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-        content::NotificationService::AllSources());
-    ScreenLocker::Hide();
-    observer.Wait();
-  }
+  ScreenLockerTester screen_locker_tester;
+  screen_locker_tester.Lock();
+  ScreenLocker::Hide();
+  screen_locker_tester.WaitForUnlock();
 
   UserAddingScreen::Get()->Start();
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_SECONDARY);
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsCancelButtonShown());
-  EXPECT_TRUE(ash::LoginScreenTestApi::ClickCancelButton());
+  EXPECT_TRUE(LoginScreenTestApi::IsCancelButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::ClickCancelButton());
 
   WaitUntilUserAddingFinishedOrCancelled();
 }
@@ -312,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, InfoBubbleVisible) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
 
   LoginUser(users[0].account_id);
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
@@ -330,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, InfoBubbleVisible) {
     EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
               session_manager::SessionState::LOGIN_SECONDARY);
 
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
+    EXPECT_TRUE(LoginScreenTestApi::IsUserAddingScreenIndicatorShown());
 
     AddUser(users[i].account_id);
     users_in_session_order_.push_back(users[i].account_id);
@@ -373,4 +363,4 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, LockScreenWhileAddingUser) {
   ScreenLocker::HandleShowLockScreenRequest();
 }
 
-}  // namespace chromeos
+}  // namespace ash

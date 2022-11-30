@@ -1,18 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.permissions;
 
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -31,8 +28,6 @@ import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -55,8 +50,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  */
 public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     private InfoBarTestAnimationListener mListener;
-    private EmbeddedTestServer mTestServer;
-    private boolean mUseHttpsServer;
 
     /**
      * Waits till a JavaScript callback which updates the page title is called the specified number
@@ -103,32 +96,12 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
-    @Override
-    public Statement apply(final Statement base, Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                ruleSetUp();
-                base.evaluate();
-                ruleTearDown();
-            }
-        }, desc);
-    }
-
     public PermissionTestRule() {
         this(false);
     }
 
     public PermissionTestRule(boolean useHttpsServer) {
-        mUseHttpsServer = useHttpsServer;
-    }
-
-    private void ruleSetUp() {
-        // TODO(https://crbug.com/867446): Refactor to use EmbeddedTestServerRule.
-        mTestServer = mUseHttpsServer
-                ? EmbeddedTestServer.createAndStartHTTPSServer(
-                        InstrumentationRegistry.getContext(), ServerCertificate.CERT_OK)
-                : EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        getEmbeddedTestServerRule().setServerUsesHttps(useHttpsServer);
     }
 
     /**
@@ -137,11 +110,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
         mListener = new InfoBarTestAnimationListener();
-        getInfoBarContainer().addAnimationListener(mListener);
-    }
-
-    private void ruleTearDown() {
-        mTestServer.stopAndDestroyServer();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getInfoBarContainer().addAnimationListener(mListener));
     }
 
     public void setUpUrl(final String url) {
@@ -149,15 +119,15 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public String getURL(String url) {
-        return mTestServer.getURL(url);
+        return getTestServer().getURL(url);
     }
 
     public String getOrigin() {
-        return mTestServer.getURL("/");
+        return getTestServer().getURL("/");
     }
 
     public String getURLWithHostName(String hostName, String url) {
-        return mTestServer.getURLWithHostName(hostName, url);
+        return getTestServer().getURLWithHostName(hostName, url);
     }
 
     /**
@@ -255,7 +225,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
-    private void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
+    public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
         TouchCommon.singleClickView(getActivity().getActivityTab().getView());

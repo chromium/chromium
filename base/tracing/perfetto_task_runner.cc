@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,18 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/common/checked_lock_impl.h"
 #include "base/task/common/scoped_defer_task_posting.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/tracing/tracing_tls.h"
+#include "build/build_config.h"
+
+#include "base/debug/stack_trace.h"
 
 namespace base {
 namespace tracing {
@@ -29,9 +31,9 @@ PerfettoTaskRunner::PerfettoTaskRunner(
 
 PerfettoTaskRunner::~PerfettoTaskRunner() {
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   fd_controllers_.clear();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::PostTask(std::function<void()> task) {
@@ -59,7 +61,7 @@ void PerfettoTaskRunner::PostDelayedTask(std::function<void()> task,
             task();
           },
           task),
-      base::TimeDelta::FromMilliseconds(delay_ms));
+      base::Milliseconds(delay_ms));
 }
 
 bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
@@ -71,50 +73,49 @@ bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
 void PerfettoTaskRunner::AddFileDescriptorWatch(
     perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(!base::Contains(fd_controllers_, fd));
-  // Set it up as a nullptr to signal intent to add a watch. We need to PostTask
-  // the WatchReadable creation because if we do it in this task we'll race with
-  // perfetto setting up the connection on this task and the IO thread setting
-  // up epoll on the |fd|. By posting the task we ensure the Connection has
-  // either succeeded (we find the |fd| in the map) or the connection failed
-  // (the |fd| is not in the map), and we can gracefully handle either case.
-  fd_controllers_[fd];
-  task_runner_->PostTask(
-      FROM_HERE,
+  // Set up the |fd| in the map to signal intent to add a watch. We need to
+  // PostTask the WatchReadable creation because if we do it in this task we'll
+  // race with perfetto setting up the connection on this task and the IO thread
+  // setting up epoll on the |fd|. Using a CancelableOnceClosure ensures that
+  // the |fd| won't be added for watch if RemoveFileDescriptorWatch is called.
+  fd_controllers_[fd].callback.Reset(
       base::BindOnce(
           [](PerfettoTaskRunner* perfetto_runner, int fd,
              std::function<void()> callback) {
             DCHECK(perfetto_runner->GetOrCreateTaskRunner()
                        ->RunsTasksInCurrentSequence());
-            auto it = perfetto_runner->fd_controllers_.find(fd);
-            // If we can't find this fd, then RemoveFileDescriptor has already
-            // been called so just early out.
-            if (it == perfetto_runner->fd_controllers_.end()) {
-              return;
-            }
-            DCHECK(!it->second);
-            it->second = base::FileDescriptorWatcher::WatchReadable(
-                fd, base::BindRepeating(
-                        [](std::function<void()> callback) { callback(); },
-                        std::move(callback)));
+            // When this callback runs, we must not have removed |fd|'s watch.
+            CHECK(base::Contains(perfetto_runner->fd_controllers_, fd));
+            auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
+            // We should never overwrite an existing watch.
+            CHECK(!controller_and_cb.controller);
+            controller_and_cb.controller =
+                base::FileDescriptorWatcher::WatchReadable(
+                    fd, base::BindRepeating(
+                            [](std::function<void()> callback) { callback(); },
+                            std::move(callback)));
           },
           base::Unretained(this), fd, std::move(callback)));
-#else   // defined(OS_POSIX) && !defined(OS_NACL)
+  task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
+#else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(base::Contains(fd_controllers_, fd));
+  // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
+  // it's pending.
   fd_controllers_.erase(fd);
-#else   // defined(OS_POSIX) && !defined(OS_NACL)
+#else   // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
-#endif  // defined(OS_POSIX) && !defined(OS_NACL)
+#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void PerfettoTaskRunner::ResetTaskRunnerForTesting(
@@ -142,6 +143,14 @@ PerfettoTaskRunner::GetOrCreateTaskRunner() {
 
   return task_runner_;
 }
+
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+PerfettoTaskRunner::FDControllerAndCallback::FDControllerAndCallback() =
+    default;
+
+PerfettoTaskRunner::FDControllerAndCallback::~FDControllerAndCallback() =
+    default;
+#endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace tracing
 }  // namespace base

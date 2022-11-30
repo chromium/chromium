@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,6 +122,10 @@ void NearbyReceiveManager::Reject(const base::UnguessableToken& share_target_id,
                           std::move(reject_callback).Run(success);
                         },
                         std::move(callback)));
+}
+
+void NearbyReceiveManager::RecordFastInitiationNotificationUsage(bool success) {
+  nearby_sharing_service_->RecordFastInitiationNotificationUsage(success);
 }
 
 void NearbyReceiveManager::OnHighVisibilityChanged(bool in_high_visibility) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/browser/safe_browsing_network_context.h"
-#include "components/safe_browsing/core/db/v4_local_database_manager.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -42,65 +42,6 @@ ServicesDelegate::~ServicesDelegate() {
 }
 
 void ServicesDelegate::ShutdownServices() {
-  // Delete the NetworkContexts and associated ProxyConfigMonitors
-  network_context_map_.clear();
-  proxy_config_monitor_map_.clear();
-}
-
-void ServicesDelegate::CreateSafeBrowsingNetworkContext(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-    return;
-
-  auto it = network_context_map_.find(profile);
-  DCHECK(it == network_context_map_.end());
-  network_context_map_[profile] = std::make_unique<SafeBrowsingNetworkContext>(
-      profile->GetPath(),
-      base::BindRepeating(&ServicesDelegate::CreateNetworkContextParams,
-                          base::Unretained(this), profile));
-  proxy_config_monitor_map_[profile] =
-      std::make_unique<ProxyConfigMonitor>(profile);
-}
-
-void ServicesDelegate::RemoveSafeBrowsingNetworkContext(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts))
-    return;
-
-  auto it = network_context_map_.find(profile);
-  if (it != network_context_map_.end()) {
-    it->second->ServiceShuttingDown();
-    network_context_map_.erase(it);
-  }
-
-  auto proxy_it = proxy_config_monitor_map_.find(profile);
-  if (proxy_it != proxy_config_monitor_map_.end())
-    proxy_config_monitor_map_.erase(proxy_it);
-}
-
-SafeBrowsingNetworkContext* ServicesDelegate::GetSafeBrowsingNetworkContext(
-    Profile* profile) const {
-  DCHECK(profile);
-  DCHECK(base::FeatureList::IsEnabled(kSafeBrowsingSeparateNetworkContexts));
-  // In tests, we may not have been notified of Profile creation.
-  auto it = network_context_map_.find(profile);
-  if (it == network_context_map_.end())
-    return nullptr;
-  return it->second.get();
-}
-
-network::mojom::NetworkContextParamsPtr
-ServicesDelegate::CreateNetworkContextParams(Profile* profile) {
-  auto params = SystemNetworkContextManager::GetInstance()
-                    ->CreateDefaultNetworkContextParams();
-  auto it = proxy_config_monitor_map_.find(profile);
-  DCHECK(it != proxy_config_monitor_map_.end());
-  it->second->AddToNetworkContextParams(params.get());
-  return params;
 }
 
 }  // namespace safe_browsing

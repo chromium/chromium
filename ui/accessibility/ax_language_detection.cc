@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accessibility/ax_language_detection.h"
+
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/i18n/unicodestring.h"
@@ -15,6 +17,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace ui {
@@ -236,7 +239,8 @@ void AXLanguageDetectionManager::RegisterLanguageDetectionObserver() {
 
   // Construct our new Observer as requested.
   // If there is already an Observer on this Manager then this will destroy it.
-  language_detection_observer_.reset(new AXLanguageDetectionObserver(tree_));
+  language_detection_observer_ =
+      std::make_unique<AXLanguageDetectionObserver>(tree_);
 }
 
 // Detect languages for each node.
@@ -261,7 +265,7 @@ void AXLanguageDetectionManager::DetectLanguagesForSubtree(
   //
   // Since kInlineTextBox(es) contain text from their parent, any detection on
   // them is redundant. Instead they can inherit the detected language.
-  if (subtree_root->data().role == ax::mojom::Role::kStaticText) {
+  if (subtree_root->GetRole() == ax::mojom::Role::kStaticText) {
     DetectLanguagesForNode(subtree_root);
   } else {
     // Otherwise, recurse into children for detection.
@@ -420,7 +424,8 @@ AXLanguageDetectionManager::GetLanguageAnnotationForStringAttribute(
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
     // Use author-provided language if present.
     language_annotation.push_back(AXLanguageSpan{
-        0 /* start_index */, attr_value.length() /* end_index */,
+        0 /* start_index */,
+        static_cast<int>(attr_value.length()) /* end_index */,
         node.GetStringAttribute(
             ax::mojom::StringAttribute::kLanguage) /* language */,
         1 /* probability */});
@@ -504,13 +509,13 @@ void AXLanguageDetectionObserver::OnAtomicUpdateFinished(
   // are later used by Label in order to make more accurate decisions.
 
   for (auto& change : changes) {
-    if (change.node->data().role == ax::mojom::Role::kStaticText) {
+    if (change.node->GetRole() == ax::mojom::Role::kStaticText) {
       tree->language_detection_manager->DetectLanguagesForNode(change.node);
     }
   }
 
   for (auto& change : changes) {
-    if (change.node->data().role == ax::mojom::Role::kStaticText) {
+    if (change.node->GetRole() == ax::mojom::Role::kStaticText) {
       tree->language_detection_manager->LabelLanguagesForNode(change.node);
     }
   }

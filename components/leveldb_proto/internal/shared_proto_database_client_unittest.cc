@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,14 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
 #include "components/leveldb_proto/internal/shared_proto_database.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/leveldb_proto/testing/proto/test_db.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +89,8 @@ class SharedProtoDatabaseClientTest : public testing::Test {
       auto full_key =
           db_type == ProtoDbType::LAST
               ? key
-              : SharedProtoDatabaseClient::PrefixForDatabase(db_type) + key;
+              : SharedProtoDatabaseClient::PrefixForDatabase(db_type).value() +
+                    key;
       if (key_set.find(full_key) == key_set.end())
         return false;
     }
@@ -101,7 +105,8 @@ class SharedProtoDatabaseClientTest : public testing::Test {
       entry_id_set.insert(entry);
 
     // Entry IDs don't include the full prefix, so we don't look for that here.
-    auto prefix = SharedProtoDatabaseClient::PrefixForDatabase(db_type);
+    std::string prefix =
+        SharedProtoDatabaseClient::PrefixForDatabase(db_type).value();
     for (auto& key : db_keys) {
       if (entry_id_set.find(prefix + key) == entry_id_set.end())
         return false;
@@ -117,7 +122,7 @@ class SharedProtoDatabaseClientTest : public testing::Test {
         std::make_unique<ProtoDatabase<std::string>::KeyEntryVector>();
     for (auto& key : keys) {
       std::string value;
-      value = client->prefix_ + key;
+      value = client->prefix_.value() + key;
       entries->emplace_back(std::make_pair(key, std::move(value)));
     }
 
@@ -145,7 +150,7 @@ class SharedProtoDatabaseClientTest : public testing::Test {
         std::make_unique<ProtoDatabase<std::string>::KeyEntryVector>();
     for (auto& key : keys) {
       std::string value;
-      value = client->prefix_ + key;
+      value = client->prefix_.value() + key;
       entries->emplace_back(std::make_pair(key, std::move(value)));
     }
 
@@ -192,6 +197,26 @@ class SharedProtoDatabaseClientTest : public testing::Test {
     base::RunLoop load_entries_in_range_loop;
     client->LoadKeysAndEntriesInRange(
         start, end,
+        base::BindOnce(
+            [](std::unique_ptr<KeyValueMap>* entries_ptr,
+               base::OnceClosure signal, bool expect_success, bool success,
+               std::unique_ptr<KeyValueMap> entries) {
+              ASSERT_EQ(success, expect_success);
+              *entries_ptr = std::move(entries);
+              std::move(signal).Run();
+            },
+            entries, load_entries_in_range_loop.QuitClosure(), expect_success));
+    load_entries_in_range_loop.Run();
+  }
+
+  void LoadKeysAndEntriesWhile(SharedProtoDatabaseClient* client,
+                               const std::string& start,
+                               const KeyIteratorController controller,
+                               bool expect_success,
+                               std::unique_ptr<KeyValueMap>* entries) {
+    base::RunLoop load_entries_in_range_loop;
+    client->LoadKeysAndEntriesWhile(
+        start, controller,
         base::BindOnce(
             [](std::unique_ptr<KeyValueMap>* entries_ptr,
                base::OnceClosure signal, bool expect_success, bool success,
@@ -281,7 +306,7 @@ class SharedProtoDatabaseClientTest : public testing::Test {
         wait_loop.QuitClosure());
     client->set_migration_status(migration_status);
     SharedProtoDatabaseClient::UpdateClientMetadataAsync(
-        client->parent_db_, client->prefix_, migration_status,
+        client->parent_db_, client->client_db_id(), migration_status,
         std::move(wait_callback));
     wait_loop.Run();
   }
@@ -297,10 +322,6 @@ TEST_F(SharedProtoDatabaseClientTest, InitSuccess) {
   auto client = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
                                  true /* create_if_missing */, &status);
   ASSERT_EQ(status, Enums::InitStatus::kOK);
-
-  client->Init("client", base::BindOnce([](Enums::InitStatus status) {
-                 ASSERT_EQ(status, Enums::InitStatus::kOK);
-               }));
 }
 
 TEST_F(SharedProtoDatabaseClientTest, InitFail) {
@@ -308,10 +329,6 @@ TEST_F(SharedProtoDatabaseClientTest, InitFail) {
   auto client = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
                                  false /* create_if_missing */, &status);
   ASSERT_EQ(status, Enums::InitStatus::kInvalidOperation);
-
-  client->Init("client", base::BindOnce([](Enums::InitStatus status) {
-                 ASSERT_EQ(status, Enums::InitStatus::kError);
-               }));
 }
 
 // Ensure that our LevelDB contains the properly prefixed entries and also
@@ -478,6 +495,75 @@ TEST_F(SharedProtoDatabaseClientTest, LoadKeysAndEntriesInRange) {
                               ProtoDbType::TEST_DATABASE0));
 }
 
+TEST_F(SharedProtoDatabaseClientTest, LoadKeysAndEntriesWhile) {
+  auto status = Enums::InitStatus::kError;
+  auto client_a = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
+                                   true /* create_if_missing */, &status);
+  ASSERT_EQ(status, Enums::InitStatus::kOK);
+  auto client_b = GetClientAndWait(ProtoDbType::TEST_DATABASE2,
+                                   true /* create_if_missing */, &status);
+  ASSERT_EQ(status, Enums::InitStatus::kOK);
+
+  KeyVector key_list_a = {"entry0",           "entry1", "entry2", "entry3",
+                          "entry3notinrange", "entry4", "entry5"};
+  UpdateEntries(client_a.get(), key_list_a, leveldb_proto::KeyVector(), true);
+  KeyVector key_list_b = {"entry2", "entry3", "entry4"};
+  UpdateEntries(client_b.get(), key_list_b, leveldb_proto::KeyVector(), true);
+
+  {
+    KeyIteratorController controller_a =
+        base::BindRepeating([](const std::string& key) {
+          if (key >= std::string("entry3"))
+            return Enums::kLoadAndStop;
+          return Enums::kLoadAndContinue;
+        });
+    std::unique_ptr<KeyValueMap> keys_and_entries_a;
+    LoadKeysAndEntriesWhile(client_a.get(), "entry1", controller_a, true,
+                            &keys_and_entries_a);
+
+    ValueVector entries;
+
+    for (auto& pair : *keys_and_entries_a) {
+      entries.push_back(pair.second);
+    }
+
+    ASSERT_EQ(keys_and_entries_a->size(), 3U);
+    ASSERT_TRUE(ContainsEntries({"entry1", "entry2", "entry3"}, entries,
+                                ProtoDbType::TEST_DATABASE0));
+  }
+
+  {
+    KeyIteratorController controller_b =
+        base::BindRepeating([](const std::string& key) {
+          if (key > std::string("entry1"))
+            return Enums::kSkipAndStop;
+          return Enums::kLoadAndContinue;
+        });
+    std::unique_ptr<KeyValueMap> keys_and_entries_b;
+    LoadKeysAndEntriesWhile(client_b.get(), "entry0", controller_b, true,
+                            &keys_and_entries_b);
+    ASSERT_EQ(keys_and_entries_b->size(), 0U);
+  }
+
+  {
+    KeyIteratorController controller_c = base::BindRepeating(
+        [](const std::string& key) { return Enums::kLoadAndContinue; });
+    std::unique_ptr<KeyValueMap> keys_and_entries_c;
+    LoadKeysAndEntriesWhile(client_a.get(), "", controller_c, true,
+                            &keys_and_entries_c);
+
+    ValueVector entries;
+
+    for (auto& pair : *keys_and_entries_c) {
+      entries.push_back(pair.second);
+    }
+
+    ASSERT_EQ(keys_and_entries_c->size(), key_list_a.size());
+    ASSERT_TRUE(
+        ContainsEntries(key_list_a, entries, ProtoDbType::TEST_DATABASE0));
+  }
+}
+
 TEST_F(SharedProtoDatabaseClientTest, LoadKeys) {
   auto status = Enums::InitStatus::kError;
   auto client_a = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
@@ -516,10 +602,12 @@ TEST_F(SharedProtoDatabaseClientTest, GetEntry) {
   UpdateEntries(client_a.get(), key_list, leveldb_proto::KeyVector(), true);
   UpdateEntries(client_b.get(), key_list, leveldb_proto::KeyVector(), true);
 
-  auto a_prefix =
-      SharedProtoDatabaseClient::PrefixForDatabase(ProtoDbType::TEST_DATABASE0);
-  auto b_prefix =
-      SharedProtoDatabaseClient::PrefixForDatabase(ProtoDbType::TEST_DATABASE2);
+  std::string a_prefix =
+      SharedProtoDatabaseClient::PrefixForDatabase(ProtoDbType::TEST_DATABASE0)
+          .value();
+  std::string b_prefix =
+      SharedProtoDatabaseClient::PrefixForDatabase(ProtoDbType::TEST_DATABASE2)
+          .value();
 
   for (auto& key : key_list) {
     auto entry = GetEntry(client_a.get(), key, true);

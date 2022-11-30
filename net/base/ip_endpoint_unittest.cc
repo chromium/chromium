@@ -1,24 +1,35 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/ip_endpoint.h"
 
-#include "build/build_config.h"
+#include <string.h>
 
-#if defined(OS_WIN)
-#include <winsock2.h>
-#elif defined(OS_POSIX)
-#include <netinet/in.h>
-#endif
+#include <string>
+#include <tuple>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
+#include "build/build_config.h"
+#include "net/base/ip_address.h"
 #include "net/base/sockaddr_storage.h"
+#include "net/base/sys_addrinfo.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <winsock2.h>
+#include <ws2bth.h>
+
+#include "base/test/gtest_util.h"   // For EXPECT_DCHECK_DEATH
+#include "net/base/winsock_util.h"  // For kBluetoothAddressSize
+#elif BUILDFLAG(IS_POSIX)
+#include <netinet/in.h>
+#endif
 
 namespace net {
 
@@ -74,8 +85,10 @@ class IPEndPointTest : public PlatformTest {
 };
 
 TEST_F(IPEndPointTest, Constructor) {
-  IPEndPoint endpoint;
-  EXPECT_EQ(0, endpoint.port());
+  {
+    IPEndPoint endpoint;
+    EXPECT_EQ(0, endpoint.port());
+  }
 
   for (const auto& test : tests) {
     IPEndPoint endpoint(test.ip_address, 80);
@@ -121,7 +134,6 @@ TEST_F(IPEndPointTest, ToFromSockAddr) {
     EXPECT_EQ(expected_size, storage.addr_len);
     EXPECT_EQ(ip_endpoint.port(), GetPortFromSockaddr(storage.addr,
                                                       storage.addr_len));
-
     // And convert back to an IPEndPoint.
     IPEndPoint ip_endpoint2;
     EXPECT_TRUE(ip_endpoint2.FromSockAddr(storage.addr, storage.addr_len));
@@ -149,6 +161,158 @@ TEST_F(IPEndPointTest, FromSockAddrBufTooSmall) {
   struct sockaddr* sockaddr = reinterpret_cast<struct sockaddr*>(&addr);
   EXPECT_FALSE(ip_endpoint.FromSockAddr(sockaddr, sizeof(addr) - 1));
 }
+
+#if BUILDFLAG(IS_WIN)
+
+namespace {
+constexpr uint8_t kBluetoothAddrBytes[kBluetoothAddressSize] = {1, 2, 3,
+                                                                4, 5, 6};
+constexpr uint8_t kBluetoothAddrBytes2[kBluetoothAddressSize] = {1, 2, 3,
+                                                                 4, 5, 7};
+const IPAddress kBluetoothAddress(kBluetoothAddrBytes);
+const IPAddress kBluetoothAddress2(kBluetoothAddrBytes2);
+
+// Select a Bluetooth port that does not fit in a uint16_t.
+constexpr uint32_t kBluetoothPort = std::numeric_limits<uint16_t>::max() + 1;
+
+SOCKADDR_BTH BuildBluetoothSockAddr(const IPAddress& ip_address,
+                                    uint32_t port) {
+  SOCKADDR_BTH addr = {};
+  addr.addressFamily = AF_BTH;
+  DCHECK_LE(ip_address.bytes().size(), sizeof(addr.btAddr));
+  memcpy(&addr.btAddr, ip_address.bytes().data(), ip_address.bytes().size());
+  addr.port = port;
+  return addr;
+}
+}  // namespace
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithSelf) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+  EXPECT_EQ(bt_endpoint.address(), kBluetoothAddress);
+  EXPECT_EQ(bt_endpoint.GetFamily(), AddressFamily::ADDRESS_FAMILY_UNSPECIFIED);
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(), AF_BTH);
+  // Comparison functions should agree that `bt_endpoint` equals itself.
+  EXPECT_FALSE(bt_endpoint < bt_endpoint);
+  EXPECT_FALSE(bt_endpoint != bt_endpoint);
+  EXPECT_TRUE(bt_endpoint == bt_endpoint);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(
+      std::ignore = bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+  EXPECT_DCHECK_DEATH(bt_endpoint.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithNonBluetooth) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Compare `bt_endpoint` with non-Bluetooth endpoints.
+  for (const auto& test : tests) {
+    IPEndPoint endpoint(test.ip_address, 80);
+    if (test.ip_address.IsIPv4()) {
+      EXPECT_FALSE(bt_endpoint < endpoint);
+    } else {
+      EXPECT_TRUE(test.ip_address.IsIPv6());
+      EXPECT_TRUE(bt_endpoint < endpoint);
+    }
+    EXPECT_TRUE(bt_endpoint != endpoint);
+    EXPECT_FALSE(bt_endpoint == endpoint);
+  }
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithCopy) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Verify that a copy's accessors return the same values as the original's.
+  IPEndPoint bt_endpoint_other(bt_endpoint);
+  EXPECT_EQ(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that the endpoints are equal.
+  EXPECT_FALSE(bt_endpoint < bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint != bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentPort) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Compare with another IPEndPoint that has a different port.
+  IPEndPoint bt_endpoint_other;
+  SOCKADDR_BTH addr2 =
+      BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort + 1);
+  EXPECT_TRUE(bt_endpoint_other.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
+  EXPECT_EQ(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that `bt_endpoint == bt_endpoint_other`
+  // because they have the same address and Bluetooth ports are not considered
+  // by comparison functions.
+  EXPECT_FALSE(bt_endpoint < bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint != bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
+}
+
+TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
+  IPEndPoint bt_endpoint;
+  SOCKADDR_BTH addr = BuildBluetoothSockAddr(kBluetoothAddress, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr), sizeof(addr)));
+
+  // Compare with another IPEndPoint that has a different address.
+  IPEndPoint bt_endpoint_other;
+  SOCKADDR_BTH addr2 =
+      BuildBluetoothSockAddr(kBluetoothAddress2, kBluetoothPort);
+  EXPECT_TRUE(bt_endpoint_other.FromSockAddr(
+      reinterpret_cast<const struct sockaddr*>(&addr2), sizeof(addr2)));
+  EXPECT_LT(bt_endpoint.address(), bt_endpoint_other.address());
+  EXPECT_EQ(bt_endpoint.GetFamily(), bt_endpoint_other.GetFamily());
+  EXPECT_EQ(bt_endpoint.GetSockAddrFamily(),
+            bt_endpoint_other.GetSockAddrFamily());
+  // Comparison functions should agree that `bt_endpoint < bt_endpoint_other`
+  // due to lexicographic comparison of the address bytes.
+  EXPECT_TRUE(bt_endpoint < bt_endpoint_other);
+  EXPECT_TRUE(bt_endpoint != bt_endpoint_other);
+  EXPECT_FALSE(bt_endpoint == bt_endpoint_other);
+  // Test that IPv4/IPv6-only methods crash.
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
+  SockaddrStorage storage;
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
+  EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
+}
+#endif
 
 TEST_F(IPEndPointTest, Equality) {
   uint16_t port = 0;
@@ -192,8 +356,10 @@ TEST_F(IPEndPointTest, LessThan) {
 }
 
 TEST_F(IPEndPointTest, ToString) {
-  IPEndPoint endpoint;
-  EXPECT_EQ(0, endpoint.port());
+  {
+    IPEndPoint endpoint;
+    EXPECT_EQ(0, endpoint.port());
+  }
 
   uint16_t port = 100;
   for (const auto& test : tests) {

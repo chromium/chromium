@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_perf.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -49,7 +49,7 @@ std::string MakeLabel(const char* test_name, const std::string& video_codec) {
 }  // namespace
 
 static const base::FilePath::CharType kFrameAnalyzerExecutable[] =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FILE_PATH_LITERAL("frame_analyzer.exe");
 #else
     FILE_PATH_LITERAL("frame_analyzer");
@@ -184,7 +184,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
       const base::FilePath& captured_video_filename,
       const base::FilePath& reference_video_filename) {
     base::FilePath path_to_analyzer = base::MakeAbsoluteFilePath(
-        GetBrowserDir().Append(kFrameAnalyzerExecutable));
+        GetTestBinaryDir().Append(kFrameAnalyzerExecutable));
     base::FilePath path_to_compare_script = GetSourceDir().Append(
         FILE_PATH_LITERAL("third_party/webrtc/rtc_tools/compare_videos.py"));
 
@@ -203,7 +203,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     // Note: don't append switches to this command since it will mess up the
     // -u in the python invocation!
     base::CommandLine compare_command(base::CommandLine::NO_PROGRAM);
-    EXPECT_TRUE(GetPythonCommand(&compare_command));
+    EXPECT_TRUE(GetPython3Command(&compare_command));
 
     compare_command.AppendArgPath(path_to_compare_script);
     compare_command.AppendArg("--label=" + test_label);
@@ -315,9 +315,10 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     return source_dir;
   }
 
-  base::FilePath GetBrowserDir() {
+  base::FilePath GetTestBinaryDir() {
     base::FilePath browser_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &browser_dir));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &browser_dir));
     return browser_dir;
   }
 
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 // component build.
 // TODO(crbug.com/1008766): re-enable when flakiness is investigated, diagnosed
 // and resolved.
-#if defined(OS_WIN) || defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityVp9 DISABLED_MANUAL_TestVideoQualityVp9
 #else
 #define MAYBE_MANUAL_TestVideoQualityVp9 MANUAL_TestVideoQualityVp9
@@ -361,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
 
 // Flaky on mac (crbug.com/754684) and WebRTC's frame_analyzer doesn't build
 // from a Chromium's component build.
-#if defined(OS_MAC) || defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_MAC) || defined(COMPONENT_BUILD)
 #define MAYBE_MANUAL_TestVideoQualityH264 DISABLED_MANUAL_TestVideoQualityH264
 #else
 #define MAYBE_MANUAL_TestVideoQualityH264 MANUAL_TestVideoQualityH264

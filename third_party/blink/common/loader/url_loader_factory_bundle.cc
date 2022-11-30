@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "url/gurl.h"
@@ -50,11 +52,15 @@ PendingURLLoaderFactoryBundle::PendingURLLoaderFactoryBundle(
 
 PendingURLLoaderFactoryBundle::~PendingURLLoaderFactoryBundle() = default;
 
+bool PendingURLLoaderFactoryBundle::
+    IsTrackedChildPendingURLLoaderFactoryBundle() const {
+  return false;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 PendingURLLoaderFactoryBundle::CreateFactory() {
   auto other = std::make_unique<PendingURLLoaderFactoryBundle>();
   other->pending_default_factory_ = std::move(pending_default_factory_);
-  other->pending_appcache_factory_ = std::move(pending_appcache_factory_);
   other->pending_scheme_specific_factories_ =
       std::move(pending_scheme_specific_factories_);
   other->pending_isolated_world_factories_ =
@@ -88,11 +94,23 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryBundle::GetFactory(
       return it2->second.get();
   }
 
-  // AppCache factory must be used if it's given.
-  if (appcache_factory_)
-    return appcache_factory_.get();
+  if (!default_factory_.is_bound()) {
+    // Hitting the NOTREACHED below means that a subresource load has
+    // unexpectedly happened in a speculative frame (or in a test frame created
+    // via RenderViewTest).  This most likely indicates a bug somewhere else.
+    NOTREACHED();
 
-  return default_factory_.is_bound() ? default_factory_.get() : nullptr;
+    // TODO(https://crbug.com/1300973): Once known issues are fixed, remove the
+    // NotImplementedURLLoaderFactory (i.e. trust the NOTREACHED above, replace
+    // it with an equivalent DCHECK, and accept crashing if a nullptr is
+    // returned from this method).
+    static const base::NoDestructor<
+        mojo::Remote<network::mojom::URLLoaderFactory>>
+        s_fallback_factory(network::NotImplementedURLLoaderFactory::Create());
+    return s_fallback_factory->get();
+  }
+
+  return default_factory_.get();
 }
 
 void URLLoaderFactoryBundle::CreateLoaderAndStart(
@@ -128,11 +146,6 @@ URLLoaderFactoryBundle::Clone() {
           CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
           bypass_redirect_checks_);
 
-  if (appcache_factory_) {
-    appcache_factory_->Clone(pending_factories->pending_appcache_factory()
-                                 .InitWithNewPipeAndPassReceiver());
-  }
-
   return pending_factories;
 }
 
@@ -146,11 +159,6 @@ void URLLoaderFactoryBundle::Update(
     default_factory_.reset();
     default_factory_.Bind(
         std::move(pending_factories->pending_default_factory()));
-  }
-  if (pending_factories->pending_appcache_factory()) {
-    appcache_factory_.reset();
-    appcache_factory_.Bind(
-        std::move(pending_factories->pending_appcache_factory()));
   }
   BindPendingRemoteMapToRemoteMap(
       &scheme_specific_factories_,

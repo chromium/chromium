@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,34 +10,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId PackagedLicenseView::kScreenId;
+PackagedLicenseScreenHandler::PackagedLicenseScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
-PackagedLicenseScreenHandler::PackagedLicenseScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_user_acted_method_path("login.PackagedLicenseScreen.userActed");
-}
-
-PackagedLicenseScreenHandler::~PackagedLicenseScreenHandler() {}
+PackagedLicenseScreenHandler::~PackagedLicenseScreenHandler() = default;
 
 void PackagedLicenseScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void PackagedLicenseScreenHandler::Hide() {}
-
-void PackagedLicenseScreenHandler::Bind(PackagedLicenseScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void PackagedLicenseScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
+  ShowInWebUI();
 }
 
 void PackagedLicenseScreenHandler::DeclareLocalizedValues(
@@ -51,13 +30,6 @@ void PackagedLicenseScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_PACKAGED_LICENSE_ENROLL_BUTTON_LABEL);
   builder->Add("oobePackagedLicenseDontEnroll",
                IDS_OOBE_PACKAGED_LICENSE_DONT_ENROLL_BUTTON_LABEL);
-}
-
-void PackagedLicenseScreenHandler::Initialize() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 }  // namespace chromeos

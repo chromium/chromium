@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,27 +6,25 @@
 #define ASH_SYSTEM_PHONEHUB_CONTINUE_BROWSING_CHIP_H_
 
 #include "ash/ash_export.h"
-#include "chromeos/components/phonehub/browser_tabs_model.h"
+#include "ash/components/phonehub/browser_tabs_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace phonehub {
 class UserActionRecorder;
-}  // namespace phonehub
-}  // namespace chromeos
-
-namespace ash {
+}
 
 // A chip containing a web page info (title, web URL, etc.) that users left off
 // from their phone.
 class ASH_EXPORT ContinueBrowsingChip : public views::Button {
  public:
   ContinueBrowsingChip(
-      const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+      const phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
       int index,
       size_t total_count,
-      chromeos::phonehub::UserActionRecorder* user_action_recorder);
+      phonehub::UserActionRecorder* user_action_recorder);
 
   ~ContinueBrowsingChip() override;
   ContinueBrowsingChip(ContinueBrowsingChip&) = delete;
@@ -48,7 +46,7 @@ class ASH_EXPORT ContinueBrowsingChip : public views::Button {
   // The total number of chips in the parent view.
   size_t total_count_;
 
-  chromeos::phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
+  phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
 };
 
 }  // namespace ash

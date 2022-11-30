@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,18 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 
 /** Test fixture for the desktop node. */
 SwitchAccessDesktopNodeTest = class extends SwitchAccessE2ETest {
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule('DesktopNode', '/switch_access/nodes/desktop_node.js');
-      await importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-      await importModule(
-          'SwitchAccessMenuAction',
-          '/switch_access/switch_access_constants.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('DesktopNode', '/switch_access/nodes/desktop_node.js');
+    await importModule(
+        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await importModule(
+        'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
   }
 };
 
 TEST_F('SwitchAccessDesktopNodeTest', 'Build', function() {
-  this.runWithLoadedDesktop((desktop) => {
+  this.runWithLoadedDesktop(desktop => {
     const desktopNode = DesktopNode.build(desktop);
 
     const children = desktopNode.children;

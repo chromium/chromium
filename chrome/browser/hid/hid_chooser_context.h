@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
-#include "components/permissions/chooser_context_base.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,7 +32,7 @@ class Value;
 
 // Manages the internal state and connection to the device service for the
 // Human Interface Device (HID) chooser UI.
-class HidChooserContext : public permissions::ChooserContextBase,
+class HidChooserContext : public permissions::ObjectPermissionContextBase,
                           public device::mojom::HidManagerClient {
  public:
   // This observer can be used to be notified when HID devices are connected or
@@ -39,6 +41,7 @@ class HidChooserContext : public permissions::ChooserContextBase,
    public:
     virtual void OnDeviceAdded(const device::mojom::HidDeviceInfo&);
     virtual void OnDeviceRemoved(const device::mojom::HidDeviceInfo&);
+    virtual void OnDeviceChanged(const device::mojom::HidDeviceInfo&);
     virtual void OnHidManagerConnectionError();
 
     // Called when the HidChooserContext is shutting down. Observers must remove
@@ -59,10 +62,11 @@ class HidChooserContext : public permissions::ChooserContextBase,
   static bool CanStorePersistentEntry(
       const device::mojom::HidDeviceInfo& device);
 
-  // permissions::ChooserContextBase implementation:
+  // permissions::ObjectPermissionContextBase implementation:
+  std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
-  // In addition these methods from ChooserContextBase are overridden in order
-  // to expose ephemeral devices through the public interface.
+  // In addition these methods from ObjectPermissionContextBase are overridden
+  // in order to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
@@ -70,11 +74,16 @@ class HidChooserContext : public permissions::ChooserContextBase,
                               const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
-  // HID-specific interface for granting and checking permissions.
+  // HID-specific interface for granting, revoking and checking permissions.
   void GrantDevicePermission(const url::Origin& origin,
                              const device::mojom::HidDeviceInfo& device);
+  void RevokeDevicePermission(const url::Origin& origin,
+                              const device::mojom::HidDeviceInfo& device);
   bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::HidDeviceInfo& device);
+
+  // Returns true if `origin` is allowed to access FIDO reports.
+  bool IsFidoAllowedForOrigin(const url::Origin& origin);
 
   // For ScopedObserver.
   void AddDeviceObserver(DeviceObserver* observer);
@@ -103,14 +112,31 @@ class HidChooserContext : public permissions::ChooserContextBase,
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
 
   void EnsureHidManagerConnection();
   void SetUpHidManagerConnection(
       mojo::PendingRemote<device::mojom::HidManager> manager);
   void InitDeviceList(std::vector<device::mojom::HidDeviceInfoPtr> devices);
+  void OnHidManagerInitializedForTesting(
+      device::mojom::HidManager::GetDevicesCallback callback,
+      std::vector<device::mojom::HidDeviceInfoPtr> devices);
   void OnHidManagerConnectionError();
+  bool CanApplyPolicy();
 
-  const bool is_incognito_;
+  // HID-specific interface for revoking device permissions.
+  void RevokePersistentDevicePermission(
+      const url::Origin& origin,
+      const device::mojom::HidDeviceInfo& device);
+  void RevokeEphemeralDevicePermission(
+      const url::Origin& origin,
+      const device::mojom::HidDeviceInfo& device);
+
+  // This raw pointer is safe because instances of this class are created by
+  // HidChooserContextFactory as KeyedServices that will be destroyed when the
+  // Profile object is destroyed.
+  const raw_ptr<Profile> profile_;
+
   bool is_initialized_ = false;
   base::queue<device::mojom::HidManager::GetDevicesCallback>
       pending_get_devices_requests_;

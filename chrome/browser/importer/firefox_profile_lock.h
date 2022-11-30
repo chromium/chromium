@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 // Firefox is designed to allow only one application to access its
 // profile at the same time.
@@ -68,6 +67,10 @@
 class FirefoxProfileLock {
  public:
   explicit FirefoxProfileLock(const base::FilePath& path);
+
+  FirefoxProfileLock(const FirefoxProfileLock&) = delete;
+  FirefoxProfileLock& operator=(const FirefoxProfileLock&) = delete;
+
   ~FirefoxProfileLock();
 
   // Locks and releases the profile.
@@ -90,9 +93,9 @@ class FirefoxProfileLock {
   base::FilePath lock_file_;
 
   // The handle of the lock file.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE lock_handle_;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   int lock_fd_;
 
   // On Posix systems Firefox apparently first tries to put a fcntl lock
@@ -105,8 +108,6 @@ class FirefoxProfileLock {
   // other cases.
   bool LockWithFcntl();
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FirefoxProfileLock);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_FIREFOX_PROFILE_LOCK_H__

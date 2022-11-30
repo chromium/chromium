@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("attestation_ca_proto") {
+  proto_in_dir = "//"
+  sources = [ "device_trust_attestation_ca.proto" ]
+  generate_python = false
+}
+
+proto_library("interface_proto") {
+  proto_in_dir = "//"
+  sources = [ "device_trust_interface.proto" ]
+  generate_python = false
+}
+
+proto_library("google_key_proto") {
+  proto_in_dir = "//"
+  sources = [ "device_trust_google_key.proto" ]
+  generate_python = false
+}

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,8 +80,8 @@ void Laser::Render(UiElementRenderer* renderer,
   gfx::Transform mat;
 
   // Move the beam half its height so that its end sits on the origin.
-  mat.matrix().postTranslate(0.0f, 0.5f, 0.0f);
-  mat.matrix().postScale(kLaserWidth, laser_length, 1);
+  mat.PostTranslate3d(0.0f, 0.5f, 0.0f);
+  mat.PostScale3d(kLaserWidth, laser_length, 1);
 
   // Tip back 90 degrees to flat, pointing at the scene.
   const gfx::Quaternion quat(gfx::Vector3dF(1.0f, 0.0f, 0.0f),
@@ -106,10 +106,8 @@ void Laser::Render(UiElementRenderer* renderer,
     face_transform = beam_direction_mat * gfx::Transform(rot) * mat;
 
     // Move the beam origin to the hand.
-    face_transform.matrix().postTranslate(
-        model_->primary_controller().laser_origin.x(),
-        model_->primary_controller().laser_origin.y(),
-        model_->primary_controller().laser_origin.z());
+    face_transform.PostTranslate3d(
+        model_->primary_controller().laser_origin.OffsetFromOrigin());
     transform =
         model.view_proj_matrix * world_space_transform() * face_transform;
     renderer->DrawLaser(computed_opacity(), transform);

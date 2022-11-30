@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,6 +34,10 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
  public:
   NetworkTasks(Cronet_UploadDataSinkImpl* upload_data_sink,
                Cronet_Executor* upload_data_provider_executor);
+
+  NetworkTasks(const NetworkTasks&) = delete;
+  NetworkTasks& operator=(const NetworkTasks&) = delete;
+
   ~NetworkTasks() override;
 
  private:
@@ -49,14 +53,13 @@ class Cronet_UploadDataSinkImpl::NetworkTasks
 
   // The upload data sink that is owned by url request and always accessed on
   // the client thread. It always outlives |this| callback.
-  Cronet_UploadDataSinkImpl* const upload_data_sink_ = nullptr;
+  const raw_ptr<Cronet_UploadDataSinkImpl> upload_data_sink_ = nullptr;
 
   // Executor for provider callback, used, but not owned, by |this|. Always
   // outlives |this| callback.
   Cronet_ExecutorPtr const upload_data_provider_executor_ = nullptr;
 
   THREAD_CHECKER(network_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
 };
 
 Cronet_UploadDataSinkImpl::NetworkTasks::NetworkTasks(

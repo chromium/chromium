@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"
@@ -30,6 +30,10 @@ class ChromotingClientRuntime;
 class JniGlDisplayHandler {
  public:
   JniGlDisplayHandler(const base::android::JavaRef<jobject>& java_client);
+
+  JniGlDisplayHandler(const JniGlDisplayHandler&) = delete;
+  JniGlDisplayHandler& operator=(const JniGlDisplayHandler&) = delete;
+
   ~JniGlDisplayHandler();
 
   std::unique_ptr<protocol::CursorShapeStub> CreateCursorShapeStub();
@@ -80,7 +84,7 @@ class JniGlDisplayHandler {
   void OnRenderDone();
   void OnCanvasSizeChanged(int width, int height);
 
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
 
   QueuedTaskPoster ui_task_poster_;
 
@@ -90,7 +94,6 @@ class JniGlDisplayHandler {
 
   // Used on UI thread.
   base::WeakPtrFactory<JniGlDisplayHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(JniGlDisplayHandler);
 };
 
 }  // namespace remoting

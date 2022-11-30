@@ -1,16 +1,16 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 
-#include "base/bind.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/run_loop.h"
-#include "base/test/task_environment.h"
-#include "base/threading/thread.h"
+#import "base/bind.h"
+#import "base/memory/memory_pressure_listener.h"
+#import "base/run_loop.h"
+#import "base/test/task_environment.h"
+#import "base/threading/thread.h"
 #import "components/previous_session_info/previous_session_info.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,11 +20,15 @@ using previous_session_info_constants::
     kDidSeeMemoryWarningShortlyBeforeTerminating;
 
 class MemoryWarningHelperTest : public PlatformTest {
+ public:
+  MemoryWarningHelperTest(const MemoryWarningHelperTest&) = delete;
+  MemoryWarningHelperTest& operator=(const MemoryWarningHelperTest&) = delete;
+
  protected:
   MemoryWarningHelperTest() {
-    // Set up |memory_pressure_listener_| to invoke |OnMemoryPressure| which
+    // Set up `memory_pressure_listener_` to invoke `OnMemoryPressure` which
     // will store the memory pressure level sent to the callback in
-    // |memory_pressure_level_| so that tests can verify the level is correct.
+    // `memory_pressure_level_` so that tests can verify the level is correct.
     memory_pressure_listener_.reset(new base::MemoryPressureListener(
         FROM_HERE,
         base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
@@ -44,7 +48,7 @@ class MemoryWarningHelperTest : public PlatformTest {
     return memory_helper_;
   }
 
-  // Callback for |memory_pressure_listener_|.
+  // Callback for `memory_pressure_listener_`.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
     memory_pressure_level_ = memory_pressure_level;
@@ -59,8 +63,6 @@ class MemoryWarningHelperTest : public PlatformTest {
   base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   MemoryWarningHelper* memory_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryWarningHelperTest);
 };
 
 // Invokes resetForegroundMemoryWarningCount and verifies the

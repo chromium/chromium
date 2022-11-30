@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/input_monitor/local_hotkey_input_monitor.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <AppKit/AppKit.h>
 
@@ -15,12 +17,11 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #import "third_party/google_toolbox_for_mac/src/AppKit/GTMCarbonEvent.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -45,6 +46,11 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::OnceClosure disconnect_callback);
+
+  LocalHotkeyInputMonitorMac(const LocalHotkeyInputMonitorMac&) = delete;
+  LocalHotkeyInputMonitorMac& operator=(const LocalHotkeyInputMonitorMac&) =
+      delete;
+
   ~LocalHotkeyInputMonitorMac() override;
 
  private:
@@ -53,8 +59,6 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalHotkeyInputMonitorMac);
 };
 
 }  // namespace
@@ -63,10 +67,10 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 @interface LocalHotkeyInputMonitorManager : NSObject {
  @private
   GTMCarbonHotKey* _hotKey;
-  remoting::LocalHotkeyInputMonitorMac::EventHandler* _monitor;
+  raw_ptr<remoting::LocalHotkeyInputMonitorMac::EventHandler> _monitor;
 }
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalHotkeyInputMonitorMac::EventHandler*)monitor;
 
 // Called when the hotKey is hit.
@@ -80,19 +84,20 @@ class LocalHotkeyInputMonitorMac : public LocalHotkeyInputMonitor {
 
 @implementation LocalHotkeyInputMonitorManager
 
-- (id)initWithMonitor:
+- (instancetype)initWithMonitor:
     (remoting::LocalHotkeyInputMonitorMac::EventHandler*)monitor {
   if ((self = [super init])) {
     _monitor = monitor;
 
     GTMCarbonEventDispatcherHandler* handler =
         [GTMCarbonEventDispatcherHandler sharedEventDispatcherHandler];
-    _hotKey = [handler registerHotKey:kEscKeyCode
-                            modifiers:(NSAlternateKeyMask | NSControlKeyMask)
-                               target:self
-                               action:@selector(hotKeyHit:)
-                             userInfo:nil
-                          whenPressed:YES];
+    _hotKey = [handler
+        registerHotKey:kEscKeyCode
+             modifiers:(NSEventModifierFlagOption | NSEventModifierFlagControl)
+                target:self
+                action:@selector(hotKeyHit:)
+              userInfo:nil
+           whenPressed:YES];
     if (!_hotKey) {
       LOG(ERROR) << "registerHotKey failed.";
       [self release];
@@ -128,6 +133,9 @@ class LocalHotkeyInputMonitorMac::Core
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        base::OnceClosure disconnect_callback);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void Start();
   void Stop();
 
@@ -152,8 +160,6 @@ class LocalHotkeyInputMonitorMac::Core
   // Invoked in the |caller_task_runner_| thread to report session disconnect
   // requests.
   base::OnceClosure disconnect_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 LocalHotkeyInputMonitorMac::LocalHotkeyInputMonitorMac(

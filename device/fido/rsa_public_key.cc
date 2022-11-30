@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/cbor/writer.h"
 #include "device/fido/cbor_extract.h"
 #include "device/fido/fido_constants.h"
@@ -30,9 +31,12 @@ std::unique_ptr<PublicKey> RSAPublicKey::ExtractFromCOSEKey(
     const cbor::Value::MapValue& map) {
   // See https://tools.ietf.org/html/rfc8230#section-4
   struct COSEKey {
-    const int64_t* kty;
-    const std::vector<uint8_t>* n;
-    const std::vector<uint8_t>* e;
+    // All the fields below are not a raw_ptr<,,,>, because ELEMENT() treats the
+    // raw_ptr<T> as a void*, skipping AddRef() call and causing a ref-counting
+    // mismatch.
+    RAW_PTR_EXCLUSION const int64_t* kty;
+    RAW_PTR_EXCLUSION const std::vector<uint8_t>* n;
+    RAW_PTR_EXCLUSION const std::vector<uint8_t>* e;
   } cose_key;
 
   static constexpr cbor_extract::StepOrByte<COSEKey> kSteps[] = {

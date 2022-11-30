@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -22,6 +22,10 @@ namespace extensions {
 class AppLaunchInfo : public Extension::ManifestData {
  public:
   AppLaunchInfo();
+
+  AppLaunchInfo(const AppLaunchInfo&) = delete;
+  AppLaunchInfo& operator=(const AppLaunchInfo&) = delete;
+
   ~AppLaunchInfo() override;
 
   // Get the local path inside the extension to use with the launcher.
@@ -35,8 +39,7 @@ class AppLaunchInfo : public Extension::ManifestData {
   // users can override the way each app launches.  See
   // ExtensionPrefs::GetLaunchContainer(), which looks at a per-app pref
   // to decide what container an app will launch in.
-  static LaunchContainer GetLaunchContainer(
-      const Extension* extension);
+  static apps::LaunchContainer GetLaunchContainer(const Extension* extension);
 
   // The default size of the container when launching. Only respected for
   // containers like panels and windows.
@@ -57,18 +60,21 @@ class AppLaunchInfo : public Extension::ManifestData {
 
   GURL launch_web_url_;
 
-  LaunchContainer launch_container_;
+  apps::LaunchContainer launch_container_ =
+      apps::LaunchContainer::kLaunchContainerTab;
 
-  int launch_width_;
-  int launch_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchInfo);
+  int launch_width_ = 0;
+  int launch_height_ = 0;
 };
 
 // Parses all app launch related keys in the manifest.
 class AppLaunchManifestHandler : public ManifestHandler {
  public:
   AppLaunchManifestHandler();
+
+  AppLaunchManifestHandler(const AppLaunchManifestHandler&) = delete;
+  AppLaunchManifestHandler& operator=(const AppLaunchManifestHandler&) = delete;
+
   ~AppLaunchManifestHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -76,8 +82,6 @@ class AppLaunchManifestHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchManifestHandler);
 };
 
 }  // namespace extensions

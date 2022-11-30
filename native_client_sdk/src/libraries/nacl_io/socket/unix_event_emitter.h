@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,15 +33,15 @@ class UnixEventEmitter : public StreamEventEmitter {
 
   static ScopedUnixEventEmitter MakeUnixEventEmitter(size_t size, int type);
 
+  UnixEventEmitter(const UnixEventEmitter&) = delete;
+  UnixEventEmitter& operator=(const UnixEventEmitter&) = delete;
+
  protected:
   UnixEventEmitter() {}
 
   virtual FIFOInterface* in_fifo() = 0;
   virtual FIFOInterface* out_fifo() = 0;
   void UpdateStatus_Locked();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UnixEventEmitter);
 };
 
 }  // namespace nacl_io

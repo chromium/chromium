@@ -1,0 +1,6 @@
+include_rules = [
+    # To only allow a subset of base/ in Blink, we explicitly list all
+    # directories and files instead of writing 'base/'.
+    "+base/allocator/partition_alloc_features.h",
+    "+base/allocator/partition_alloc_support.h",
+]

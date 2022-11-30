@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 
 namespace base {
@@ -41,6 +41,9 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
       : optional_header_(reinterpret_cast<const OPTIONAL_HEADER_TYPE*>(
             optional_header_start)) {}
 
+  OptionalHeaderImpl(const OptionalHeaderImpl&) = delete;
+  OptionalHeaderImpl& operator=(const OptionalHeaderImpl&) = delete;
+
   WordSize GetWordSize() override { return TraitsType::word_size; }
 
   size_t GetDataDirectoryOffset() override {
@@ -58,8 +61,7 @@ class PeImageReader::OptionalHeaderImpl : public PeImageReader::OptionalHeader {
   DWORD GetSizeOfImage() override { return optional_header_->SizeOfImage; }
 
  private:
-  const OPTIONAL_HEADER_TYPE* optional_header_;
-  DISALLOW_COPY_AND_ASSIGN(OptionalHeaderImpl);
+  raw_ptr<const OPTIONAL_HEADER_TYPE> optional_header_;
 };
 
 PeImageReader::PeImageReader() {}
@@ -178,7 +180,7 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
             win_certificate->dwLength - kWinCertificateSize, context)) {
       return false;
     }
-    size_t padded_length = (win_certificate->dwLength + 7) & ~0x7;
+    size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;
     // Don't overflow when recalculating data_size, since padded_length can be
     // attacker controlled.
     if (!CheckSub(data_size, padded_length).AssignIfValid(&data_size))
@@ -212,7 +214,8 @@ bool PeImageReader::ValidateDosHeader() {
 
 bool PeImageReader::ValidatePeSignature() {
   const DWORD* signature = nullptr;
-  if (!GetStructureAt(GetDosHeader()->e_lfanew, &signature) ||
+  if (!GetStructureAt(static_cast<size_t>(GetDosHeader()->e_lfanew),
+                      &signature) ||
       *signature != IMAGE_NT_SIGNATURE) {
     return false;
   }
@@ -224,9 +227,9 @@ bool PeImageReader::ValidatePeSignature() {
 bool PeImageReader::ValidateCoffFileHeader() {
   DCHECK_NE((validation_state_ & VALID_PE_SIGNATURE), 0U);
   const IMAGE_FILE_HEADER* file_header = nullptr;
-  if (!GetStructureAt(
-          GetDosHeader()->e_lfanew + offsetof(IMAGE_NT_HEADERS32, FileHeader),
-          &file_header)) {
+  if (!GetStructureAt(static_cast<size_t>(GetDosHeader()->e_lfanew) +
+                          offsetof(IMAGE_NT_HEADERS32, FileHeader),
+                      &file_header)) {
     return false;
   }
 
@@ -237,7 +240,8 @@ bool PeImageReader::ValidateCoffFileHeader() {
 bool PeImageReader::ValidateOptionalHeader() {
   const IMAGE_FILE_HEADER* file_header = GetCoffFileHeader();
   const size_t optional_header_offset =
-      GetDosHeader()->e_lfanew + offsetof(IMAGE_NT_HEADERS32, OptionalHeader);
+      static_cast<size_t>(GetDosHeader()->e_lfanew) +
+      offsetof(IMAGE_NT_HEADERS32, OptionalHeader);
   const size_t optional_header_size = file_header->SizeOfOptionalHeader;
   const WORD* optional_header_magic = nullptr;
 
@@ -285,7 +289,7 @@ bool PeImageReader::ValidateSectionHeaders() {
   const size_t number_of_sections = GetNumberOfSections();
 
   // Do all section headers fit in the image?
-  if (!GetStructureAt(first_section_header - image_data_,
+  if (!GetStructureAt(static_cast<size_t>(first_section_header - image_data_),
                       number_of_sections * sizeof(IMAGE_SECTION_HEADER),
                       &first_section_header)) {
     return false;

@@ -6,7 +6,6 @@
 <div id='testDiv'>abc</div>
 <script>
   'use strict';
-  let highlightName = "example";
   let range1 = new Range();
   let container = document.getElementById('testDiv');
   let range2 = new StaticRange({startContainer: container, startOffset: 0, endContainer: container, endOffset: 0});
@@ -32,7 +31,7 @@
 
   for(let iterationInitialization of iterationInitializationCollection){
     test(() => {
-      let customHighlight = new Highlight("example");
+      let customHighlight = new Highlight();
       let iterator = getIterator(customHighlight, iterationInitialization);
       let element = iterator.next();
       assert_true(element.done, 'Highlight is iterable and .next() returns an element with .done===true when there are no more ranges to iterate');
@@ -45,10 +44,10 @@
       test(() => {
         var customHighlight;
         if(rangeAdditionMode === "constructor"){
-          customHighlight = new Highlight("example", range1);
+          customHighlight = new Highlight(range1);
         }
         else if(rangeAdditionMode === "add function"){
-          customHighlight = new Highlight("example");
+          customHighlight = new Highlight();
           customHighlight.add(range1);
         }
 
@@ -64,10 +63,10 @@
       test(() => {
         var customHighlight;
         if(rangeAdditionMode === "constructor"){
-          customHighlight = new Highlight("example", range1, range2);
+          customHighlight = new Highlight(range1, range2);
         }
         else if(rangeAdditionMode === "add function"){
-          customHighlight = new Highlight("example");
+          customHighlight = new Highlight();
           customHighlight.add(range1);
           customHighlight.add(range2);
         }
@@ -89,7 +88,7 @@
   // Test .entries()
 
   test(() => {
-    let customHighlight = new Highlight("example");
+    let customHighlight = new Highlight();
     let iterator = customHighlight.entries();
     let element = iterator.next();
     assert_true(element.done, 'Highlight is iterable and .next() returns an element with .done===true when there are no more ranges to iterate');
@@ -100,10 +99,10 @@
     test(() => {
       var customHighlight;
       if(rangeAdditionMode === "constructor"){
-        customHighlight = new Highlight("example", range1);
+        customHighlight = new Highlight(range1);
       }
       else if(rangeAdditionMode === "add function"){
-        customHighlight = new Highlight("example");
+        customHighlight = new Highlight();
         customHighlight.add(range1);
       }
 
@@ -120,10 +119,10 @@
     test(() => {
       var customHighlight;
       if(rangeAdditionMode === "constructor"){
-        customHighlight = new Highlight("example", range1, range2);
+        customHighlight = new Highlight(range1, range2);
       }
       else if(rangeAdditionMode === "add function"){
-        customHighlight = new Highlight("example");
+        customHighlight = new Highlight();
         customHighlight.add(range1);
         customHighlight.add(range2);
       }
@@ -157,7 +156,7 @@
   }
 
   test(() => {
-    let customHighlight = new Highlight("example");
+    let customHighlight = new Highlight();
     let expectedResult = [];
     let actualResult = [];
     customHighlight.forEach((range) => {actualResult.push(range);});
@@ -168,10 +167,10 @@
     test(() => {
       var customHighlight;
       if(rangeAdditionMode === "constructor"){
-        customHighlight = new Highlight("example", range1);
+        customHighlight = new Highlight(range1);
       }
       else if(rangeAdditionMode === "add function"){
-        customHighlight = new Highlight("example");
+        customHighlight = new Highlight();
         customHighlight.add(range1);
       }
 
@@ -184,10 +183,10 @@
     test(() => {
       var customHighlight;
       if(rangeAdditionMode === "constructor"){
-        customHighlight = new Highlight("example", range1, range2);
+        customHighlight = new Highlight(range1, range2);
       }
       else if(rangeAdditionMode === "add function"){
-        customHighlight = new Highlight("example");
+        customHighlight = new Highlight();
         customHighlight.add(range1);
         customHighlight.add(range2);
       }

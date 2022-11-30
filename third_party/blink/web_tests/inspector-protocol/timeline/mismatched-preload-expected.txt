@@ -1,0 +1,6 @@
+Tests reporting of mismatched preloads in traces.
+Recording started
+Tracing complete
+Matching ID
+empty.js: 7
+

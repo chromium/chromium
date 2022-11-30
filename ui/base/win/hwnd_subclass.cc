@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "ui/base/win/touch_input.h"
@@ -49,6 +48,9 @@ class HWNDSubclass::HWNDSubclassFactory {
         base::LeakySingletonTraits<HWNDSubclassFactory>>::get();
   }
 
+  HWNDSubclassFactory(const HWNDSubclassFactory&) = delete;
+  HWNDSubclassFactory& operator=(const HWNDSubclassFactory&) = delete;
+
   // Returns a non-null HWNDSubclass corresponding to the HWND |target|. Creates
   // one if none exists. Retains ownership of the returned pointer.
   HWNDSubclass* GetHwndSubclassForTarget(HWND target) {
@@ -72,8 +74,6 @@ class HWNDSubclass::HWNDSubclassFactory {
   HWNDSubclassFactory() {}
 
   std::vector<std::unique_ptr<HWNDSubclass>> hwnd_subclasses_;
-
-  DISALLOW_COPY_AND_ASSIGN(HWNDSubclassFactory);
 };
 
 // static

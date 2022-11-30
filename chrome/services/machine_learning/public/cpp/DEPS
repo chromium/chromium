@@ -1,4 +1,0 @@
-include_rules = [
-    "+content/public/browser/service_process_host.h",
-    "+content/public/browser/service_process_info.h",
-]

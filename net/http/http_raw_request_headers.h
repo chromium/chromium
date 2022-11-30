@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
@@ -32,6 +31,10 @@ class NET_EXPORT HttpRawRequestHeaders {
   HttpRawRequestHeaders();
   HttpRawRequestHeaders(HttpRawRequestHeaders&&);
   HttpRawRequestHeaders& operator=(HttpRawRequestHeaders&&);
+
+  HttpRawRequestHeaders(const HttpRawRequestHeaders&) = delete;
+  HttpRawRequestHeaders& operator=(const HttpRawRequestHeaders&) = delete;
+
   ~HttpRawRequestHeaders();
 
   void Assign(HttpRawRequestHeaders other) { *this = std::move(other); }
@@ -48,8 +51,6 @@ class NET_EXPORT HttpRawRequestHeaders {
  private:
   HeaderVector headers_;
   std::string request_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpRawRequestHeaders);
 };
 
 // A callback of this type can be passed to

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -17,12 +15,15 @@
 #include "content/public/common/url_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kRefreshTokenTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kRefreshTokenTimeout = base::Seconds(10);
 
 }  // namespace
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -32,6 +32,10 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
   WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                       const GURL& referrer_url,
                       const std::string webstore_item_id);
+
+  WebstoreDataFetcher(const WebstoreDataFetcher&) = delete;
+  WebstoreDataFetcher& operator=(const WebstoreDataFetcher&) = delete;
+
   ~WebstoreDataFetcher();
 
   static void SetLogResponseCodeForTesting(bool enabled);
@@ -48,7 +52,7 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
                          const network::mojom::URLResponseHead& response_head);
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  WebstoreDataFetcherDelegate* delegate_;
+  raw_ptr<WebstoreDataFetcherDelegate> delegate_;
   GURL referrer_url_;
   std::string id_;
   std::string post_data_;
@@ -59,8 +63,6 @@ class WebstoreDataFetcher : public base::SupportsWeakPtr<WebstoreDataFetcher> {
   // Maximum auto retry times on server 5xx error or ERR_NETWORK_CHANGED.
   // Default is 0 which means to use the URLFetcher default behavior.
   int max_auto_retries_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebstoreDataFetcher);
 };
 
 }  // namespace extensions

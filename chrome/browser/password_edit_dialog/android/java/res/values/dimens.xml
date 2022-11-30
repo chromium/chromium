@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      password_edit_field_horizontal_margin is introduced to make
+      TextView fields align with TextInputLayout internal padding.
+    -->
+    <dimen name="password_edit_field_horizontal_margin">4dp</dimen>
+    <dimen name="password_edit_field_vertical_margin">8dp</dimen>
+    <dimen name="password_edit_field_padding_top">12dp</dimen>
+    <dimen name="password_edit_large_bottom_margin">16dp</dimen>
+</resources>

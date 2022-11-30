@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ std::vector<url::Origin> NonRecordingSiteDataCache::GetAllInMemoryOrigins() {
 void NonRecordingSiteDataCache::GetDataStoreSize(
     DataStoreSizeCallback on_have_data) {
   if (!data_cache_inspector_) {
-    std::move(on_have_data).Run(base::nullopt, base::nullopt);
+    std::move(on_have_data).Run(absl::nullopt, absl::nullopt);
     return;
   }
 

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="match" href="filtered-color-expected.html">
+<style>
+  div {
+    background-color: white;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<body>
+  <!-- Filters should not affect the darkening behavior. -->
+  <div></div>
+  <div style="filter: blur(0.1px)"></div>
+</body>

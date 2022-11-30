@@ -1,19 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_RESOURCES_UI_RESOURCE_MANAGER_H_
 #define CC_RESOURCES_UI_RESOURCE_MANAGER_H_
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_request.h"
 
 namespace cc {
 class ScopedUIResource;
 
+// UIResourceManager creates and manages UIResourceBitmaps and UIResourceIDs
+// for given bitmaps for a LayerTreeHost. There are two ways to use the
+// interface:
+//  1. `CreateUIResource`/`DeleteUIResource` to explicitly manage the lifetime
+//     of UIResources.
+//  2. `GetOrCreateUIResource` to create shared UIResources backed by the same
+//     SkBitmap (SkPixelRef to be exact). The created UIResources are owned by
+//     the manager and are released when all references outside the manager's
+//     map are dropped.
 class CC_EXPORT UIResourceManager {
  public:
   UIResourceManager();
@@ -33,7 +44,7 @@ class CC_EXPORT UIResourceManager {
   // Deletes a UI resource.  May safely be called more than once.
   virtual void DeleteUIResource(UIResourceId id);
 
-  virtual gfx::Size GetUIResourceSize(UIResourceId id) const;
+  base::flat_map<UIResourceId, gfx::Size> GetUIResourceSizes() const;
 
   // Methods meant to be used only internally in cc ------------
 
@@ -44,9 +55,15 @@ class CC_EXPORT UIResourceManager {
   // were evicted on the impl thread.
   void RecreateUIResources();
 
-  // Creates a resource given an SkBitmap. Multiple calls with bitmaps that
-  // share the same SkPixelRef will share a single resource ID.
+  // Creates a resource given a SkBitmap. Multiple calls with bitmaps that
+  // share the same SkPixelRef will share a single resource ID. The returned
+  // `UIResourceId` will only be valid as long as something else holds a
+  // reference to the SkBitmap
   UIResourceId GetOrCreateUIResource(const SkBitmap& bitmap);
+
+  size_t owned_shared_resources_size_for_test() const {
+    return owned_shared_resources_.size();
+  }
 
  private:
   struct UIResourceClientData {
@@ -62,9 +79,8 @@ class CC_EXPORT UIResourceManager {
   UIResourceRequestQueue ui_resource_request_queue_;
 
   // A map from bitmaps to the ScopedUIResource we've created for them. The
-  // resources are never released over the duration of the lifetime of |this|.
-  // If you want to release a resource added here, add a function (or extend
-  // DeleteUIResource).
+  // resources are released when all references of SkPixelRefs outside the map
+  // are dropped.
   std::unordered_map<SkPixelRef*, std::unique_ptr<ScopedUIResource>>
       owned_shared_resources_;
 };

@@ -1,22 +1,25 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/web_ui_extension_data.h"
 
-#include "content/common/frame_messages.h"
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
 
+// static
 void WebUIExtensionData::Create(
     RenderFrame* render_frame,
     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) {
   mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<WebUIExtensionData>(render_frame, std::move(remote)),
+      base::WrapUnique(new WebUIExtensionData(render_frame, std::move(remote))),
       std::move(receiver));
 }
 
@@ -37,13 +40,15 @@ std::string WebUIExtensionData::GetValue(const std::string& key) const {
 }
 
 void WebUIExtensionData::SendMessage(const std::string& message,
-                                     std::unique_ptr<base::ListValue> args) {
-  remote_->Send(message, std::move(*args));
+                                     base::Value::List args) {
+  remote_->Send(message, std::move(args));
 }
 
 void WebUIExtensionData::SetProperty(const std::string& name,
                                      const std::string& value) {
   variable_map_[name] = value;
 }
+
+void WebUIExtensionData::OnDestruct() {}
 
 }  // namespace content

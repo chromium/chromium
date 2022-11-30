@@ -1,18 +1,16 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 #define GPU_VULKAN_VULKAN_IMPLEMENTATION_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <memory>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "ui/gfx/buffer_types.h"
@@ -20,9 +18,8 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "ui/gfx/geometry/size.h"
 #endif
 
 namespace gfx {
@@ -38,21 +35,23 @@ class VulkanInstance;
 struct GPUInfo;
 struct VulkanYCbCrInfo;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 class SysmemBufferCollection {
  public:
   virtual ~SysmemBufferCollection() {}
 };
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Base class which provides functions for creating vulkan objects for different
 // platforms that use platform-specific extensions (e.g. for creation of
 // VkSurfaceKHR objects). It also provides helper/utility functions.
 class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
  public:
-  VulkanImplementation(bool use_swiftshader = false,
-                       bool allow_protected_memory = false,
-                       bool enforce_protected_memory = false);
+  explicit VulkanImplementation(bool use_swiftshader = false,
+                                bool allow_protected_memory = false);
+
+  VulkanImplementation(const VulkanImplementation&) = delete;
+  VulkanImplementation& operator=(const VulkanImplementation&) = delete;
 
   virtual ~VulkanImplementation();
 
@@ -105,19 +104,20 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
   // Returns true if the GpuMemoryBuffer of the specified type can be imported
   // into VkImage using CreateImageFromGpuMemoryHandle().
   virtual bool CanImportGpuMemoryBuffer(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferType memory_buffer_type) = 0;
 
-  // Creates a VkImage from a GpuMemoryBuffer. If successful it initializes
-  // |vk_image|, |vk_image_info|, |vk_device_memory| and |mem_allocation_size|.
-  // Implementation must verify that the specified |size| fits in the size
-  // specified when |gmb_handle| was allocated.
+  // Creates a VkImage from a GpuMemoryBuffer. Implementation must verify that
+  // the specified |size| fits in the size specified when |gmb_handle| was
+  // allocated.
   virtual std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_formae) = 0;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Get the sampler ycbcr conversion information from the AHB.
   virtual bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       VulkanYCbCrInfo* ycbcr_info) = 0;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Registers as sysmem buffer collection. The collection can be released by
   // destroying the returned SysmemBufferCollection object. Once a collection is
   // registered the individual buffers in the collection can be referenced by
@@ -140,17 +140,14 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
                                  gfx::Size size,
                                  size_t min_buffer_count,
                                  bool register_with_image_pipe) = 0;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool use_swiftshader() const { return use_swiftshader_; }
   bool allow_protected_memory() const { return allow_protected_memory_; }
-  bool enforce_protected_memory() const { return enforce_protected_memory_; }
 
  private:
   const bool use_swiftshader_;
   const bool allow_protected_memory_;
-  const bool enforce_protected_memory_;
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementation);
 };
 
 COMPONENT_EXPORT(VULKAN)
@@ -158,7 +155,8 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     VulkanImplementation* vulkan_implementation,
     uint32_t option,
     const GPUInfo* gpu_info = nullptr,
-    uint32_t heap_memory_limit = 0);
+    uint32_t heap_memory_limit = 0,
+    const bool is_thread_safe = false);
 
 }  // namespace gpu
 

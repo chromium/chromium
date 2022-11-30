@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,30 +8,32 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // Representation independent class that controls screen showing enable
 // debugging screen to users.
 class EnableDebuggingScreen : public BaseScreen {
  public:
-  EnableDebuggingScreen(EnableDebuggingScreenView* view,
+  EnableDebuggingScreen(base::WeakPtr<EnableDebuggingScreenView> view,
                         const base::RepeatingClosure& exit_callback);
+
+  EnableDebuggingScreen(const EnableDebuggingScreen&) = delete;
+  EnableDebuggingScreen& operator=(const EnableDebuggingScreen&) = delete;
+
   ~EnableDebuggingScreen() override;
 
   // Called by EnableDebuggingScreenHandler.
-  void OnViewDestroyed(EnableDebuggingScreenView* view);
   void HandleSetup(const std::string& password);
 
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 
@@ -43,7 +45,7 @@ class EnableDebuggingScreen : public BaseScreen {
   // Wait for cryptohomed before checking debugd. See http://crbug.com/440506
   void WaitForCryptohome();
 
-  // Callback for CryptohomeClient::WaitForServiceToBeAvailable
+  // Callback for UserDataAuthClient::WaitForServiceToBeAvailable
   void OnCryptohomeDaemonAvailabilityChecked(bool service_is_available);
 
   // Callback for DebugDaemonClient::WaitForServiceToBeAvailable
@@ -60,14 +62,18 @@ class EnableDebuggingScreen : public BaseScreen {
 
   void UpdateUIState(EnableDebuggingScreenView::UIState state);
 
-  EnableDebuggingScreenView* view_;
+  base::WeakPtr<EnableDebuggingScreenView> view_;
   base::RepeatingClosure exit_callback_;
 
   base::WeakPtrFactory<EnableDebuggingScreen> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EnableDebuggingScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ENABLE_DEBUGGING_SCREEN_H_

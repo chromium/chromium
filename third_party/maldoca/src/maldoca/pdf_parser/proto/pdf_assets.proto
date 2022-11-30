@@ -1,0 +1,403 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca.pdf;
+
+option optimize_for = LITE_RUNTIME;
+
+// The request used by the engine interface to instruct which signals should be
+// extracted.
+message PdfAssetsRequest {
+  // Types of `encapsulated` signals that are available via the PdfiumEngine.
+  // Note, PdfMetadata is always extracted.
+  enum Signal {
+    UNKNOWN = 0;
+    TEXT = 1;
+    IMAGE_SET = 2;
+    URL_SET = 3;
+    EMBEDDED_FILE_SET = 4;
+    JAVASCRIPT_INFO = 5;
+    PDF_AST = 6;
+  }
+
+  // List of signals (aka IOCs) requested for extraction. If empty, all signals
+  // are extracted (for backwards compatibility).
+  repeated Signal signals = 1;
+}
+
+// Represents all the text content inside a PDF file.
+message PdfText {
+  // Text of a PDF file.
+  optional string text = 1;
+}
+
+// Represents a URL found inside a PDF file which was either hyperlinked or
+// mentioned in plain text.
+message PdfUrl {
+  // URL in the PDF document.
+  optional string url = 1;
+  // Number of times this Url is seen in the document.
+  optional uint32 frequency = 2;
+  // If any occurrence is added as a hypertext link i.e. redirects to a webpage
+  // on clicking.
+  optional bool is_hyperlinked = 3;
+}
+
+// Represents a set of PdfUrl (de-duped on the url string) i.e. it includes all
+// the URLs found in a PDF file.
+message PdfUrlSet {
+  // Set of urls in a PDF
+  repeated PdfUrl urls = 1;
+}
+
+// Represents a image found inside a PDF file.
+message PdfImage {
+  reserved 8;
+  // Bytes of a image inside PDF.
+  optional bytes image = 1;
+  // The image width in pixels.
+  optional int32 width = 2;
+  // The image height in pixels.
+  optional int32 height = 3;
+  // The image's horizontal pixel-per-inch.
+  optional float horizontal_dpi = 4;
+  // The image's vertical pixel-per-inch.
+  optional float vertical_dpi = 5;
+  // The number of bits used to represent each pixel.
+  optional int32 bits_per_pixel = 6;
+  // If there is a image object added to the PDF page but there are no
+  // image bytes in it.
+  optional bool is_empty_image_object = 7;
+  // Size of the image in bytes.
+  optional int64 size = 9;
+  // Image format of the raw image. Please see imageencdeccommon.h/FormatEnum.
+  optional int32 image_format = 10;
+}
+
+message PdfImageSet {
+  // List of unique Ids under which each extracted pdf:IMAGE is stored.
+  repeated string extracted_image_id = 1;
+}
+
+// Represents a file embedded inside a PDF.
+message PdfEmbeddedFile {
+  // Name of the file. This may be empty.
+  optional string file_name = 1;
+  // Raw bytes of the file.
+  optional bytes file_content = 2;
+  // The file type detected by magician library.
+  optional string content_type = 3;
+  // The SHA256 hash of the file content in hex format.
+  optional string sha256 = 4;
+}
+
+message PdfEmbeddedFileSet {
+  // List of unique Ids under which each pdf:EMBEDDED_FILE is stored.
+  repeated string extracted_file_id = 2;
+}
+
+// Represents the metadata of a PDF document.
+message PdfMetadata {
+  reserved 8;
+  // If PDF is encrypted.
+  optional bool is_encrypted = 1;
+  // If PDF file is of valid format i.e. PDFium is able to load it.
+  optional bool is_valid_pdf = 2;
+  // Number of pages in the PDF.
+  optional int32 page_count = 3;
+  // The document's title.
+  optional string title = 4;
+  // The name of the person who created this PDF.
+  optional string author = 5;
+  // The date and time the PDF was created.
+  optional string create_time = 6;
+  // The date and time the PDF was most recently modified.
+  optional string modification_time = 7;
+}
+// Represents properties of a Text object on PDF page.
+message PdfTextObject {
+  // The font size.
+  optional double font_size = 1;
+  // The font name.
+  optional string font_name = 2;
+}
+
+// Represents properties of a Path object on PDF page.
+message PdfPathObject {}
+
+// Represents properties of a Image object on PDF page.
+message PdfImageObject {}
+
+// Represents properties of a Shading object on PDF page.
+message PdfShadingObject {}
+
+// Represents properties of a Form object on PDF page.
+message PdfFormObject {}
+
+// Represents one object on a page in PDF, as represented by Pdfium.
+// Note, this is not the raw PDF object, but is a higher-level
+// representation of a unit of graphical element (Text, Form, Path, etc.) as
+// rendered on the PDF.
+message PdfObject {
+  // Represents properties for one of the FPDF_PAGEOBJ_* object values.
+  oneof object_oneof {
+    // True, if the object type is FPDF_PAGEOBJ_UNKNOWN which means an error
+    // occurred while getting the type.
+    bool unknown = 1;
+    // Properties of FPDF_PAGEOBJ_TEXT type object.
+    PdfTextObject text = 2;
+    // Properties of FPDF_PAGEOBJ_PATH type object.
+    PdfPathObject path = 3;
+    // Properties of FPDF_PAGEOBJ_IMAGE type object.
+    PdfImageObject image = 4;
+    // Properties of FPDF_PAGEOBJ_SHADING type object.
+    PdfShadingObject shading = 5;
+    // Properties of FPDF_PAGEOBJ_FORM type object.
+    PdfFormObject form = 6;
+  }
+
+  // The left bounding value of the object as should rendered in the PDF.
+  optional float left_bound = 7;
+  // The right bounding value of the object as should rendered in the PDF.
+  optional float right_bound = 8;
+  // The top bounding value of the object as should rendered in the PDF.
+  optional float top_bound = 9;
+  // The bottom bounding value of the object as should rendered in the PDF.
+  optional float bottom_bound = 10;
+
+  // The R value (of RGBA) for the stroke color of this object. Range is 0-255.
+  optional int32 stroke_color_r = 11;
+  // The G value (of RGBA) for the stroke color of this object. Range is 0-255.
+  optional int32 stroke_color_g = 12;
+  // The B value (of RGBA) for the stroke color of this object. Range is 0-255.
+  optional int32 stroke_color_b = 13;
+  // The A value (of RBGA) for the stroke color of this object. Range is 0-255.
+  optional int32 stroke_color_a = 14;
+
+  // True, if the object has transparency property. Note that, this being true
+  // does not necessarily mean that the object is completely transparent.
+  optional bool has_transparency = 15;
+
+  // The R value (of RGBA) for the fill color of this object. Range is 0-255.
+  optional int32 fill_color_r = 16;
+  // The G value (of RGBA) for the fill color of this object. Range is 0-255.
+  optional int32 fill_color_g = 17;
+  // The B value (of RGBA) for the fill color of this object. Range is 0-255.
+  optional int32 fill_color_b = 18;
+  // The A value (of RBGA) for the fill color of this object. Range is 0-255.
+  optional int32 fill_color_a = 19;
+
+  // True, if there was a failure in parsing the object.
+  optional bool failed_to_parse_object = 20;
+}
+
+// Represents one annotation on a page in the PDF.
+message PdfAnnotation {
+  // Represents one of FPDF_ANNOT_* values.
+  optional int32 sub_type = 1;
+
+  // True, if there was a failure in parsing the annotation.
+  optional bool failed_to_parse_annotation = 2;
+}
+
+// Represents one Structure element of a struct tree.
+message PdfStructElement {
+  // Represents the children of this element. The list size is limited to
+  // ProcessingLimit_MAX_ELEMENTS_PARSED in pdfium_engine.proto.
+  repeated PdfStructElement children = 1;
+
+  // The type of the struct element.
+  optional string type = 2;
+
+  // Number of all children of this struct element. -1, if this element can't
+  // have a struct tree in it.
+  optional int32 original_num_of_children = 3;
+
+  // True, if maximum depth of the struct tree is reached, as defined by
+  // ProcessingLimit_MAX_RECURSION_DEPTH in pdfium_engine.proto. If true, no
+  // other fields will be set.
+  optional bool max_depth_reached = 4;
+}
+
+// Represents the structural properties of a page in the PDF.
+message PdfPageStructure {
+  // Represents the structure tree (aka logical structure) of this page. This
+  // structure can be independent of how graphical objects are rendered on PDF.
+  repeated PdfStructElement children = 1;
+
+  // Number of struct tree roots on this page. -1, if no struct tree or if an
+  // error occurred.
+  optional int32 original_num_of_children = 2;
+
+  // The index of the page as in rendered PDF, but starting from 0.
+  optional int32 page_index = 3;
+
+  // True, if there is no structure tree on this page. There can still be valid
+  // objects on this page.
+  optional bool no_struct_tree = 4;
+
+  // Represents the list of objects found on the page. The size is limited by
+  // ProcessingLimit_MAX_ELEMENTS in pdfium_engine.proto.
+  repeated PdfObject pdf_objects = 5;
+
+  // Number of all objects on this page.
+  optional int64 original_num_of_objects = 6;
+
+  // Represents the list of annotations found on the page. The size is limited
+  // by ProcessingLimit_MAX_ELEMENTS in pdfium_engine.proto.
+  repeated PdfAnnotation pdf_annotations = 7;
+
+  // Number of all annotations on this page.
+  optional int64 original_num_of_annotations = 8;
+
+  // If the page is (i.e. Alpha = 0) transparent.
+  optional int64 is_transparent = 9;
+
+  // if the page has additional action(s).
+  repeated PdfPageAAction pdf_page_aactions = 10;
+}
+
+// Represents the structural properties of a PDF.
+message PdfStructure {
+  // Represents structural properties for each page of the PDF.
+  // The list size is restricted by ProcessingLimit_MAX_PAGES_PARSED in
+  // pdfium_engine.proto.
+  repeated PdfPageStructure page_structures = 1;
+}
+
+message ExtractedJavaScript {
+  enum ExtractionType {
+    UNKNOWN_TYPE = 0;
+    // JS content can be extracted using the PDFium API, as opposed to applying
+    // lexer rules on raw PDF content.
+    PDFIUM = 1;
+    LEXER_STRING_LITERAL = 2;
+    LEXER_HEX_STRING = 3;
+    LEXER_INDIRECT_OBJECT = 4;
+    LEXER_INLINE_STREAM = 5;
+  }
+  // String with extracted javascript content.
+  optional string content = 1;
+  // Frequency of JS string
+  optional uint32 frequency = 2;
+  // Extraction method used for JS string.
+  optional ExtractionType extraction_type = 3;
+}
+
+message PdfJavaScriptInfo {
+  reserved 3 to 9;
+  // If the PDF has any JavaScript actions in it.
+  optional bool javascript_action = 1;
+  // If one (or more) dictionary key/value (`S` : `JavaScript`) were
+  // obfuscated (i.e. using Hex codes instead of any/all ASCII characters).
+  optional bool obfuscated_obj_name = 2;
+  // Javascript extracted from the PDF document.
+  repeated ExtractedJavaScript extracted_javascript = 10;
+  // Extracted output truncated due to byte limit.
+  optional bool output_truncated_byte_limit = 11;
+  // Extracted output truncated iteration limit on number of objects with JS to
+  // inspect.
+  optional bool output_truncated_iteration_limit = 12;
+  // Features extracted for use by Vaxen. Note this should be in 1-1
+  // correspondence with extracted_javascript. I.e. extracted_javascript(i) <->
+  // js_vaxen_features(i)
+  repeated PdfJavaScriptMLFeatures js_vaxen_features = 13;
+}
+
+message ExtractedXfa {
+  // Name of extracted xfa.
+  optional string name = 1;
+  // Content of extracted xfa.
+  optional bytes xfa_content = 2;
+}
+
+message PdfXfaInfo {
+  // If the PDF has any Xfa contents in it.
+  optional bool xfa_action = 1;
+  // Xfa extracted from the PDF document.
+  repeated ExtractedXfa extracted_xfa = 2;
+  // Extracted output truncated due to byte limit.
+  optional bool output_truncated_byte_limit = 3;
+  // Extracted output truncated due to iteration limit on number of xfa packet
+  // to inspect.
+  optional bool output_truncated_iteration_limit = 4;
+}
+
+message PdfPageAAction {
+  enum AactionType {
+    AACTION_OPEN = 0;
+    AACTION_CLOSE = 1;
+  }
+  // type of page object's additional action.
+  optional AactionType aaction_type = 1;
+
+  // The index of the page as in rendered PDF, but starting from 0.
+  optional int32 page_index = 2;
+
+  // the sub action type under the additional action.
+  optional int32 subaction_type = 3;
+
+  // Extracted filename truncated to 0 length due to byte limit.
+  optional bool output_truncated_byte_limit = 4;
+
+  // extra information about the filename associated to
+  // the subaction. this field is only available if the
+  // subaction is of type /GoToE (go to embedded) or
+  // /GoToR (go to remote).
+  optional string filename = 5;
+}
+
+message PdfJavaScriptMLFeatures {
+  // Normalized and stripped (no string literals, numbers, variable names) JS
+  // used for ML.
+  optional string cleaned_js_code = 1;
+  // If parsing error, store the error message
+  optional string parsing_error = 2;
+  // String literal size in bytes
+  optional int32 string_literal_size = 3;
+  // Num of spaces in string literals
+  optional int32 num_literal_space = 4;
+  // Num of digits [0-9] in string literals
+  optional int32 num_literal_digit = 5;
+  // Num of non-alpahnumeric in string literals
+  optional int32 num_literal_non_alphanumeric = 6;
+  // Num of numerical literals
+  optional int32 num_numerical_literal = 7;
+  // Total length of the numerical literals as strings.
+  optional int32 num_numerical_literal_digit = 8;
+}
+
+// Represents a container of the signals (i.e. text, images, embedded files,
+// URLs and other metadata) extracted from a PDF file.
+message PdfAssets {
+  // Deprecated tag numbers.
+  reserved 5 to 11;
+
+  // List of unique Ids under which each extracted image is stored.
+  repeated string extracted_image_id = 1;
+  // List of unique Ids under which each Embedded file is stored.
+  repeated string extracted_file_id = 2;
+  // The parsed text of the PDF file (like PDF).
+  optional PdfText pdf_text = 3;
+  // Set of URLs in the PDF.
+  optional PdfUrlSet url_set = 4;
+  // Metadata about the file.
+  optional PdfMetadata metadata = 12;
+  // JavaScript embedded in PDF.
+  optional PdfJavaScriptInfo javascript = 13;
+  // Xfa embedded in PDF.
+  optional PdfXfaInfo xfa = 14;
+}

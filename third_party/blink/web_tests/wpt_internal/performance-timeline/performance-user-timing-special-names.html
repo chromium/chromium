@@ -1,0 +1,18 @@
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  const kPerformanceMeasureFindExistingName = 4236;
+  const kSpecialNameInUserTimingAPI = 'connectStart';
+  function clearUseCounter() {
+    internals.clearUseCounter(document, kPerformanceMeasureFindExistingName);
+  }
+
+  test(t => {
+    t.add_cleanup(clearUseCounter);
+    assert_false(internals.isUseCounted(document, kPerformanceMeasureFindExistingName), "Performance measure processing special names in User Timing API should not happen");
+    performance.mark('curr');
+    performance.measure('test-special-names', kSpecialNameInUserTimingAPI, 'curr');
+    assert_true(internals.isUseCounted(document, kPerformanceMeasureFindExistingName), "Performance measure processing special names in User Timing API should happen");
+  }, 'Performance measure processes special names that are defined in User Timing API');
+</script>

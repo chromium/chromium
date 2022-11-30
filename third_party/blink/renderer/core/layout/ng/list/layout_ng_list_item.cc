@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
+#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 
 namespace blink {
 
@@ -53,10 +54,8 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
   list_marker->UpdateMarkerContentIfNeeded(*marker);
 
   if (old_style) {
-    const ListStyleTypeData* old_list_style_type =
-        old_style->GetListStyleType();
-    const ListStyleTypeData* new_list_style_type =
-        StyleRef().GetListStyleType();
+    const ListStyleTypeData* old_list_style_type = old_style->ListStyleType();
+    const ListStyleTypeData* new_list_style_type = StyleRef().ListStyleType();
     if (old_list_style_type != new_list_style_type &&
         (!old_list_style_type || !new_list_style_type ||
          *old_list_style_type != *new_list_style_type))
@@ -65,12 +64,8 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
 }
 
 void LayoutNGListItem::UpdateCounterStyle() {
-  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled())
-    return;
-
-  if (!StyleRef().GetListStyleType() ||
-      StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
-          GetDocument())) {
+  if (!StyleRef().ListStyleType() ||
+      StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
   }
 
@@ -133,6 +128,9 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
     return FindSymbolMarkerLayoutText(To<LayoutNGListItem>(object)->Marker());
 
   if (object->IsAnonymousBlock())
+    return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
+
+  if (object->IsLayoutNGTextCombine())
     return FindSymbolMarkerLayoutText(object->Parent());
 
   return nullptr;

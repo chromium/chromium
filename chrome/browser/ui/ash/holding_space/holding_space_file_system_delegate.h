@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,19 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/session/connection_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 
 namespace base {
 class FilePath;
@@ -29,17 +30,19 @@ namespace ash {
 
 // A delegate of `HoldingSpaceKeyedService` tasked with verifying validity of
 // files backing holding space items. The delegate:
-// *  Finalizes partially initialized items loaded from persistent storage once
-//    the validity of the backing file path was verified.
+// *  Fully initializes partially initialized items loaded from persistent
+//    storage once the validity of the backing file path was verified.
 // *  Monitors the file system for removal, rename, and move of files backing
 //    holding space items.
 class HoldingSpaceFileSystemDelegate
     : public HoldingSpaceKeyedServiceDelegate,
       public chromeos::FileChangeServiceObserver,
       public arc::ConnectionObserver<arc::mojom::FileSystemInstance>,
+      public drivefs::DriveFsHostObserver,
       public file_manager::VolumeManagerObserver {
  public:
-  HoldingSpaceFileSystemDelegate(Profile* profile, HoldingSpaceModel* model);
+  HoldingSpaceFileSystemDelegate(HoldingSpaceKeyedService* service,
+                                 HoldingSpaceModel* model);
   HoldingSpaceFileSystemDelegate(const HoldingSpaceFileSystemDelegate&) =
       delete;
   HoldingSpaceFileSystemDelegate& operator=(
@@ -55,13 +58,14 @@ class HoldingSpaceFileSystemDelegate
       const std::vector<const HoldingSpaceItem*>& items) override;
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override;
-  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) override;
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override;
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // file_manager::VolumeManagerObserver:
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(MountError error_code,
                        const file_manager::Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(MountError error_code,
                          const file_manager::Volume& volume) override;
 
   // chromeos::FileChangeServiceObserver:
@@ -72,8 +76,18 @@ class HoldingSpaceFileSystemDelegate
   // arc::ConnectionObserver<arc::mojom::FileSystemInstance>:
   void OnConnectionReady() override;
 
+  // drivefs::DriveFsHostObserver:
+  void OnFilesChanged(
+      const std::vector<drivefs::mojom::FileChange>& changes) override;
+
   // Invoked when the specified `file_path` has changed.
   void OnFilePathChanged(const base::FilePath& file_path, bool error);
+
+  // Invoked when the specified `file_path` has been modified.
+  void OnFilePathModified(const base::FilePath& file_path);
+
+  // Invoked when the specified file path has moved from `src` to `dst`.
+  void OnFilePathMoved(const base::FilePath& src, const base::FilePath& dst);
 
   // Adds file path validity requirement to `pending_file_path_validity_checks_`
   // and schedules a path validity check task (if another task is not already
@@ -104,10 +118,10 @@ class HoldingSpaceFileSystemDelegate
   // holding space model.
   void RemoveItemsParentedByPath(const base::FilePath& parent_path);
 
-  // Clears all non-finalized items from holding space model - runs with a delay
-  // after profile initialization to clean up items from volumes that have not
-  // been mounted during startup.
-  void ClearNonFinalizedItems();
+  // Clears all non-initialized items from holding space model - runs with a
+  // delay after profile initialization to clean up items from volumes that have
+  // not been mounted during startup.
+  void ClearNonInitializedItems();
 
   // The `file_system_watcher_` is tasked with watching the file system for
   // changes on behalf of the delegate. It does so on a non-UI sequence. As
@@ -125,10 +139,19 @@ class HoldingSpaceFileSystemDelegate
   // `pending_file_path_validity_checks_` is scheduled.
   bool file_path_validity_checks_scheduled_ = false;
 
-  // A timer to run clean-up task for items that have not been finalized within
-  // a reasonable amount of time from start-up. (E.g. if the volume they belong
-  // to has not been yet mounted).
-  base::OneShotTimer clear_non_finalized_items_timer_;
+  // A timer to run clean-up task for items that have not been initialized
+  // within a reasonable amount of time from start-up. (E.g. if the volume they
+  // belong to has not been yet mounted).
+  base::OneShotTimer clear_non_initialized_items_timer_;
+
+  base::ScopedObservation<
+      arc::ConnectionHolder<arc::mojom::FileSystemInstance,
+                            arc::mojom::FileSystemHost>,
+      arc::ConnectionObserver<arc::mojom::FileSystemInstance>>
+      arc_file_system_observer_{this};
+
+  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHostObserver>
+      drivefs_host_observer_{this};
 
   base::ScopedObservation<chromeos::FileChangeService,
                           chromeos::FileChangeServiceObserver>
@@ -137,12 +160,6 @@ class HoldingSpaceFileSystemDelegate
   base::ScopedObservation<file_manager::VolumeManager,
                           file_manager::VolumeManagerObserver>
       volume_manager_observer_{this};
-
-  base::ScopedObservation<
-      arc::ConnectionHolder<arc::mojom::FileSystemInstance,
-                            arc::mojom::FileSystemHost>,
-      arc::ConnectionObserver<arc::mojom::FileSystemInstance>>
-      arc_file_system_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceFileSystemDelegate> weak_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,10 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metal_util/device.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata_mac.h"
 
 namespace {
 
@@ -125,27 +128,50 @@ const char* tonemapping_shader_source =
 // unsupported.
 uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
   switch (color_space.GetTransferID()) {
-    case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
       return 1;
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
+    case gfx::ColorSpace::TransferID::PQ:
       return 2;
-    case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+    case gfx::ColorSpace::TransferID::HLG:
       return 3;
     default:
       return 0;
   }
 }
 
+bool MapsUnitIntervalToUnitInterval(const gfx::ColorSpace& color_space) {
+  switch (color_space.GetTransferID()) {
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
+      return true;
+    case gfx::ColorSpace::TransferID::PQ:
+    case gfx::ColorSpace::TransferID::HLG:
+      return false;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return false;
+}
+
 // Convert from an IOSurface's pixel format to a MTLPixelFormat. Crash on any
-// unsupported formats.
-MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer)
-    API_AVAILABLE(macos(10.13)) {
+// unsupported formats. Return true in `is_unorm` if the format, when sampled,
+// can produce values outside of [0, 1].
+MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer,
+                                          bool* is_unorm = nullptr) {
   uint32_t format = IOSurfaceGetPixelFormat(buffer);
+  if (is_unorm)
+    *is_unorm = true;
   switch (format) {
     case kCVPixelFormatType_64RGBAHalf:
+      if (is_unorm)
+        *is_unorm = false;
       return MTLPixelFormatRGBA16Float;
     case kCVPixelFormatType_ARGB2101010LEPacked:
       return MTLPixelFormatBGR10A2Unorm;
+    case kCVPixelFormatType_32BGRA:
+      return MTLPixelFormatBGRA8Unorm;
+    case kCVPixelFormatType_32RGBA:
+      return MTLPixelFormatRGBA8Unorm;
     default:
       break;
   }
@@ -153,7 +179,7 @@ MTLPixelFormat IOSurfaceGetMTLPixelFormat(IOSurfaceRef buffer)
 }
 
 base::scoped_nsprotocol<id<MTLRenderPipelineState>> CreateRenderPipelineState(
-    id<MTLDevice> device) API_AVAILABLE(macos(10.13)) {
+    id<MTLDevice> device) {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> render_pipeline_state;
 
   base::scoped_nsprotocol<id<MTLLibrary>> library;
@@ -207,10 +233,14 @@ API_AVAILABLE(macos(10.15))
 API_AVAILABLE(macos(10.15))
 @interface HDRCopierLayer : CAMetalLayer {
   base::scoped_nsprotocol<id<MTLRenderPipelineState>> _render_pipeline_state;
+  gfx::ColorSpace _color_space;
+  absl::optional<gfx::HDRMetadata> _hdr_metadata;
 }
 - (id)init;
 - (void)setHDRContents:(IOSurfaceRef)buffer
-        withColorSpace:(gfx::ColorSpace)color_space;
+            withDevice:(id<MTLDevice>)device
+        withColorSpace:(gfx::ColorSpace)color_space
+          withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata;
 @end
 
 @implementation HDRCopierLayer
@@ -229,7 +259,9 @@ API_AVAILABLE(macos(10.15))
 }
 
 - (void)setHDRContents:(IOSurfaceRef)buffer
-        withColorSpace:(gfx::ColorSpace)color_space {
+            withDevice:(id<MTLDevice>)device
+        withColorSpace:(gfx::ColorSpace)color_space
+          withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata {
   // Retrieve information about the IOSurface.
   size_t width = IOSurfaceGetWidth(buffer);
   size_t height = IOSurfaceGetHeight(buffer);
@@ -239,14 +271,47 @@ API_AVAILABLE(macos(10.15))
     return;
   }
 
+  // Set metadata for tone mapping.
+  if (_color_space != color_space || _hdr_metadata != hdr_metadata) {
+    CAEDRMetadata* edr_metadata = nil;
+    switch (color_space.GetTransferID()) {
+      case gfx::ColorSpace::TransferID::PQ: {
+        base::ScopedCFTypeRef<CFDataRef> display_info;
+        base::ScopedCFTypeRef<CFDataRef> content_info;
+        if (hdr_metadata) {
+          display_info =
+              gfx::GenerateMasteringDisplayColorVolume(*hdr_metadata);
+          content_info = gfx::GenerateContentLightLevelInfo(*hdr_metadata);
+        }
+        edr_metadata = [CAEDRMetadata
+            HDR10MetadataWithDisplayInfo:base::mac::CFToNSCast(display_info)
+                             contentInfo:base::mac::CFToNSCast(content_info)
+                      opticalOutputScale:100];
+        break;
+      }
+      case gfx::ColorSpace::TransferID::HLG:
+        edr_metadata = [CAEDRMetadata HLGMetadata];
+        break;
+      default:
+        [self setEDRMetadata:nil];
+        break;
+    }
+    [self setEDRMetadata:edr_metadata];
+    _color_space = color_space;
+  }
+
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if
   // known.
-  if ([self respondsToSelector:@selector(preferredDevice)]) {
-    id<MTLDevice> preferred_device = nil;
-    if (preferred_device)
-      [self setDevice:preferred_device];
+  if (device) {
+    [self setDevice:device];
+  } else {
+    if ([self respondsToSelector:@selector(preferredDevice)]) {
+      id<MTLDevice> preferred_device = [self preferredDevice];
+      if (preferred_device)
+        [self setDevice:preferred_device];
+    }
+    device = [self device];
   }
-  id<MTLDevice> device = [self device];
 
   // When the device changes, rebuild the RenderPipelineState.
   if (device != [_render_pipeline_state device])
@@ -362,12 +427,20 @@ CALayer* CreateHDRCopierLayer() {
   return nil;
 }
 
-void UpdateHDRCopierLayer(CALayer* layer,
-                          IOSurfaceRef buffer,
-                          const gfx::ColorSpace& color_space) {
+void UpdateHDRCopierLayer(
+    CALayer* layer,
+    IOSurfaceRef buffer,
+    intptr_t metal_device,
+    const gfx::ColorSpace& color_space,
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   if (@available(macos 10.15, *)) {
+    id<MTLDevice> device =
+        (__bridge id<MTLDevice>)reinterpret_cast<void*>(metal_device);
     if (auto* hdr_copier_layer = base::mac::ObjCCast<HDRCopierLayer>(layer)) {
-      [hdr_copier_layer setHDRContents:buffer withColorSpace:color_space];
+      [hdr_copier_layer setHDRContents:buffer
+                            withDevice:device
+                        withColorSpace:color_space
+                          withMetadata:hdr_metadata];
       return;
     }
   }
@@ -377,8 +450,21 @@ void UpdateHDRCopierLayer(CALayer* layer,
 bool ShouldUseHDRCopier(IOSurfaceRef buffer,
                         const gfx::ColorSpace& color_space) {
   if (@available(macos 10.15, *)) {
-    return GetTransferFunctionIndex(color_space) &&
-           IOSurfaceGetMTLPixelFormat(buffer) != MTLPixelFormatInvalid;
+    // Only some transfer functions are supported.
+    if (!GetTransferFunctionIndex(color_space))
+      return false;
+
+    // Only some pixel formats are supported.
+    bool is_unorm = false;
+    if (IOSurfaceGetMTLPixelFormat(buffer, &is_unorm) == MTLPixelFormatInvalid)
+      return false;
+
+    // Unorm formats will only be in the [0, 1] range, so only copy them if
+    // their transfer function will actually go outside of [0, 1].
+    if (is_unorm && MapsUnitIntervalToUnitInterval(color_space))
+      return false;
+
+    return true;
   }
   return false;
 }

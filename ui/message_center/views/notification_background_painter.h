@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,14 @@ namespace message_center {
 class MESSAGE_CENTER_EXPORT NotificationBackgroundPainter
     : public views::Painter {
  public:
-  NotificationBackgroundPainter(int top_radius,
-                                int bottom_radius,
+  NotificationBackgroundPainter(float top_radius,
+                                float bottom_radius,
                                 SkColor color);
+
+  NotificationBackgroundPainter(const NotificationBackgroundPainter&) = delete;
+  NotificationBackgroundPainter& operator=(
+      const NotificationBackgroundPainter&) = delete;
+
   ~NotificationBackgroundPainter() override;
 
   // views::Painter
@@ -33,8 +38,6 @@ class MESSAGE_CENTER_EXPORT NotificationBackgroundPainter
   const SkColor color_;
 
   gfx::Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationBackgroundPainter);
 };
 
 }  // namespace message_center

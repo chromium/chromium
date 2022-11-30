@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -62,9 +63,9 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
 
   if (position > last_parsed_index) {
     bool ok = false;
-    unsigned integer_value = CharactersToUInt(
-        characters + last_parsed_index, position - last_parsed_index,
-        WTF::NumberParsingOptions::kNone, &ok);
+    unsigned integer_value = CharactersToUInt(characters + last_parsed_index,
+                                              position - last_parsed_index,
+                                              WTF::NumberParsingOptions(), &ok);
     if (!ok)
       return HTMLDimension(0., HTMLDimension::kRelative);
     value += integer_value;
@@ -83,7 +84,7 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
       if (fraction_numbers.size()) {
         double fraction_value =
             CharactersToUInt(fraction_numbers.data(), fraction_numbers.size(),
-                             WTF::NumberParsingOptions::kNone, &ok);
+                             WTF::NumberParsingOptions(), &ok);
         if (!ok)
           return HTMLDimension(0., HTMLDimension::kRelative);
 
@@ -128,7 +129,7 @@ Vector<HTMLDimension> ParseListOfDimensions(const String& input) {
 
   // HTML5's split doesn't return a token for an empty string so
   // we need to match them here.
-  if (trimmed_string.IsEmpty())
+  if (trimmed_string.empty())
     return Vector<HTMLDimension>();
 
   // Step 3. To avoid String copies, we just look for commas instead of
@@ -167,7 +168,8 @@ static bool ParseDimensionValue(const CharacterType* current,
     SkipWhile<CharacterType, IsASCIIDigit>(current, end);
   }
   bool ok;
-  double value = CharactersToDouble(number_start, current - number_start, &ok);
+  double value = CSSValueClampingUtils::ClampDouble(
+      CharactersToDouble(number_start, current - number_start, &ok));
   if (!ok)
     return false;
   HTMLDimension::HTMLDimensionType type = HTMLDimension::kAbsolute;
@@ -189,7 +191,7 @@ static bool ParseDimensionValue(const CharacterType* current,
 
 // https://html.spec.whatwg.org/C/#rules-for-parsing-dimension-values
 bool ParseDimensionValue(const String& input, HTMLDimension& dimension) {
-  if (input.IsEmpty())
+  if (input.empty())
     return false;
   if (input.Is8Bit()) {
     return ParseDimensionValue(input.Characters8(),

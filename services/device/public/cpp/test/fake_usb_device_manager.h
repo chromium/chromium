@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,6 +32,10 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       std::unordered_map<std::string, scoped_refptr<FakeUsbDeviceInfo>>;
 
   FakeUsbDeviceManager();
+
+  FakeUsbDeviceManager(const FakeUsbDeviceManager&) = delete;
+  FakeUsbDeviceManager& operator=(const FakeUsbDeviceManager&) = delete;
+
   ~FakeUsbDeviceManager() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::UsbDeviceManager> receiver);
@@ -61,10 +63,8 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
 
   void RemoveAllDevices();
 
- protected:
-  DeviceMap& devices() { return devices_; }
+  const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
 
- private:
   // mojom::UsbDeviceManager implementation:
   void EnumerateDevicesAndSetClient(
       mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient> client,
@@ -81,12 +81,12 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RefreshDeviceInfo(const std::string& guid,
                          RefreshDeviceInfoCallback callback) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckAccess(const std::string& guid,
                    CheckAccessCallback callback) override;
 
@@ -94,10 +94,13 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
                           uint32_t drop_privileges_mask,
                           mojo::PlatformHandle lifeline_fd,
                           OpenFileDescriptorCallback callback) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetClient(mojo::PendingAssociatedRemote<mojom::UsbDeviceManagerClient>
                      client) override;
+
+ protected:
+  DeviceMap& devices() { return devices_; }
 
   mojo::ReceiverSet<mojom::UsbDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::UsbDeviceManagerClient> clients_;
@@ -105,8 +108,6 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
   DeviceMap devices_;
 
   base::WeakPtrFactory<FakeUsbDeviceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUsbDeviceManager);
 };
 
 }  // namespace device

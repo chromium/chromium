@@ -1,11 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_WORKER_H_
-
-#include "base/macros.h"
 
 namespace autofill_assistant {
 
@@ -16,10 +14,11 @@ namespace autofill_assistant {
 class WebControllerWorker {
  public:
   WebControllerWorker() = default;
-  virtual ~WebControllerWorker() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebControllerWorker);
+  WebControllerWorker(const WebControllerWorker&) = delete;
+  WebControllerWorker& operator=(const WebControllerWorker&) = delete;
+
+  virtual ~WebControllerWorker() = default;
 };
 
 }  //  namespace autofill_assistant

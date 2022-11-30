@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/function_template.h"
 #include "v8/include/v8.h"
@@ -55,6 +54,9 @@ v8::Local<v8::Function> InstallBinding(v8::Isolate* isolate,
 // destroyed.
 class CastBinding : public content::RenderFrameObserver {
  public:
+  CastBinding(const CastBinding&) = delete;
+  CastBinding& operator=(const CastBinding&) = delete;
+
   void TryInstall();
 
  protected:
@@ -70,9 +72,6 @@ class CastBinding : public content::RenderFrameObserver {
   // the binding is updated in every call.
   virtual void Install(v8::Local<v8::Object> cast_platform,
                        v8::Isolate* isolate) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastBinding);
 };
 
 }  // namespace chromecast

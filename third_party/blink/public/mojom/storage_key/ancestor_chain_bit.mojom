@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// An enumerated value representing whether any frame in the StorageKey's
+// ancestor chain (including the `top_level_site`) is cross-site with the
+// current frame (`origin`). kSameSite (index 0) indicates the ancestor chain
+// is all same-site, while kCrossSite (index 1) indicates at least one frame
+// in the ancestor chain is cross-site with the current frame.
+// These values are persisted to disk. Entries should not be renumbered and
+// numeric values should never be reused.
+enum AncestorChainBit {
+  kSameSite = 0,
+  kCrossSite = 1
+};
+

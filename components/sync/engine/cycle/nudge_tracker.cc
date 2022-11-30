@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,103 +7,25 @@
 #include <algorithm>
 #include <utility>
 
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/engine/polling_constants.h"
+#include "base/containers/contains.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {
 
 namespace {
 
-// Delays for syncer nudges.
-constexpr base::TimeDelta kDefaultNudgeDelay =
-    base::TimeDelta::FromMilliseconds(200);
-constexpr base::TimeDelta kSlowNudgeDelay =
-    base::TimeDelta::FromMilliseconds(2000);
-constexpr base::TimeDelta kSyncRefreshDelay =
-    base::TimeDelta::FromMilliseconds(500);
-constexpr base::TimeDelta kSyncSchedulerDelay =
-    base::TimeDelta::FromMilliseconds(250);
-
-base::TimeDelta GetSharingMessageDelay(base::TimeDelta default_delay) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncCustomSharingMessageNudgeDelay)) {
-    return default_delay;
-  }
-
-  return base::TimeDelta::FromMilliseconds(
-      switches::kSyncSharingMessageNudgeDelayMilliseconds.Get());
-}
-
-base::TimeDelta GetDefaultDelayForType(ModelType model_type,
-                                       base::TimeDelta minimum_delay) {
-  switch (model_type) {
-    case AUTOFILL:
-    case USER_EVENTS:
-      // Accompany types rely on nudges from other types, and hence have long
-      // nudge delays.
-      return kDefaultPollInterval;
-    case BOOKMARKS:
-    case PREFERENCES:
-    case SESSIONS:
-      // Types with sometimes automatic changes get longer delays to allow more
-      // coalescing.
-      return kSlowNudgeDelay;
-    case SHARING_MESSAGE:
-      return GetSharingMessageDelay(minimum_delay);
-    case PASSWORDS:
-    case AUTOFILL_PROFILE:
-    case AUTOFILL_WALLET_DATA:
-    case AUTOFILL_WALLET_METADATA:
-    case AUTOFILL_WALLET_OFFER:
-    case THEMES:
-    case TYPED_URLS:
-    case EXTENSIONS:
-    case SEARCH_ENGINES:
-    case APPS:
-    case APP_SETTINGS:
-    case EXTENSION_SETTINGS:
-    case HISTORY_DELETE_DIRECTIVES:
-    case DICTIONARY:
-    case DEVICE_INFO:
-    case PRIORITY_PREFERENCES:
-    case SUPERVISED_USER_SETTINGS:
-    case APP_LIST:
-    case DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
-    case ARC_PACKAGE:
-    case PRINTERS:
-    case READING_LIST:
-    case USER_CONSENTS:
-    case SEND_TAB_TO_SELF:
-    case SECURITY_EVENTS:
-    case WIFI_CONFIGURATIONS:
-    case WEB_APPS:
-    case OS_PREFERENCES:
-    case OS_PRIORITY_PREFERENCES:
-    case PROXY_TABS:
-    case NIGORI:
-      return minimum_delay;
-    case UNSPECIFIED:
-      NOTREACHED();
-      return minimum_delay;
-  }
-}
+// Nudge delay for local refresh. Common to all data types.
+constexpr base::TimeDelta kLocalRefreshDelay = base::Milliseconds(500);
 
 }  // namespace
 
-NudgeTracker::NudgeTracker()
-    : invalidations_enabled_(false),
-      invalidations_out_of_sync_(true),
-      minimum_local_nudge_delay_(kDefaultNudgeDelay),
-      local_refresh_nudge_delay_(kSyncRefreshDelay),
-      remote_invalidation_nudge_delay_(kSyncSchedulerDelay) {
-  // Default initialize all the type trackers.
-  for (ModelType type : ProtocolTypes()) {
-    type_trackers_.emplace(
-        type, std::make_unique<DataTypeTracker>(kDefaultMaxPayloadsPerType));
+NudgeTracker::NudgeTracker() {
+  for (ModelType type : ModelTypeSet::All()) {
+    type_trackers_[type] = std::make_unique<DataTypeTracker>(type);
   }
 }
 
-NudgeTracker::~NudgeTracker() {}
+NudgeTracker::~NudgeTracker() = default;
 
 bool NudgeTracker::IsSyncRequired(ModelTypeSet types) const {
   if (IsRetryRequired()) {
@@ -112,7 +34,7 @@ bool NudgeTracker::IsSyncRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     if (tracker_it->second->IsSyncRequired()) {
       return true;
     }
@@ -132,7 +54,7 @@ bool NudgeTracker::IsGetUpdatesRequired(ModelTypeSet types) const {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     if (tracker_it->second->IsGetUpdatesRequired()) {
       return true;
     }
@@ -152,7 +74,15 @@ bool NudgeTracker::IsRetryRequired() const {
   return current_retry_time_ <= sync_cycle_start_time_;
 }
 
-void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
+void NudgeTracker::RecordSuccessfulCommitMessage(ModelTypeSet types) {
+  for (ModelType type : types) {
+    TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    tracker_it->second->RecordSuccessfulCommitMessage();
+  }
+}
+
+void NudgeTracker::RecordSuccessfulSyncCycleIfNotBlocked(ModelTypeSet types) {
   // If a retry was required, we've just serviced it.  Unset the flag.
   if (IsRetryRequired()) {
     current_retry_time_ = base::TimeTicks();
@@ -163,56 +93,42 @@ void NudgeTracker::RecordSuccessfulSyncCycle(ModelTypeSet types) {
 
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
-    tracker_it->second->RecordSuccessfulSyncCycle();
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
+    tracker_it->second->RecordSuccessfulSyncCycleIfNotBlocked();
   }
 }
 
 void NudgeTracker::RecordInitialSyncDone(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordInitialSyncDone();
   }
 }
 
-base::TimeDelta NudgeTracker::RecordLocalChange(ModelTypeSet types) {
-  // Start with the longest delay.
-  base::TimeDelta delay = kDefaultPollInterval;
-  for (ModelType type : types) {
-    TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end());
-
-    // Only if the type tracker has a valid delay (non-zero) that is shorter
-    // than the calculated delay do we update the calculated delay.
-    base::TimeDelta type_delay = tracker_it->second->RecordLocalChange();
-    if (type_delay.is_zero()) {
-      type_delay = GetDefaultDelayForType(type, minimum_local_nudge_delay_);
-    }
-    if (type_delay < delay) {
-      delay = type_delay;
-    }
-  }
-  return delay;
+base::TimeDelta NudgeTracker::RecordLocalChange(ModelType type) {
+  DCHECK(base::Contains(type_trackers_, type));
+  type_trackers_[type]->RecordLocalChange();
+  return type_trackers_[type]->GetLocalChangeNudgeDelay();
 }
 
 base::TimeDelta NudgeTracker::RecordLocalRefreshRequest(ModelTypeSet types) {
   for (ModelType type : types) {
     TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
-    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToString(type);
+    DCHECK(tracker_it != type_trackers_.end()) << ModelTypeToDebugString(type);
     tracker_it->second->RecordLocalRefreshRequest();
   }
-  return local_refresh_nudge_delay_;
+  return kLocalRefreshDelay;
 }
 
 base::TimeDelta NudgeTracker::RecordRemoteInvalidation(
     ModelType type,
-    std::unique_ptr<InvalidationInterface> invalidation) {
+    std::unique_ptr<SyncInvalidation> invalidation) {
   // Forward the invalidations to the proper recipient.
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
   DCHECK(tracker_it != type_trackers_.end());
   tracker_it->second->RecordRemoteInvalidation(std::move(invalidation));
-  return remote_invalidation_nudge_delay_;
+  return tracker_it->second->GetRemoteInvalidationDelay();
 }
 
 void NudgeTracker::RecordInitialSyncRequired(ModelType type) {
@@ -254,14 +170,14 @@ void NudgeTracker::SetTypeBackedOff(ModelType type,
 }
 
 void NudgeTracker::UpdateTypeThrottlingAndBackoffState() {
-  for (const auto& type_and_tracker : type_trackers_) {
-    type_and_tracker.second->UpdateThrottleOrBackoffState();
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->UpdateThrottleOrBackoffState();
   }
 }
 
 bool NudgeTracker::IsAnyTypeBlocked() const {
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
       return true;
     }
   }
@@ -270,7 +186,7 @@ bool NudgeTracker::IsAnyTypeBlocked() const {
 
 bool NudgeTracker::IsTypeBlocked(ModelType type) const {
   DCHECK(type_trackers_.find(type) != type_trackers_.end())
-      << ModelTypeToString(type);
+      << ModelTypeToDebugString(type);
   return type_trackers_.find(type)->second->IsBlocked();
 }
 
@@ -285,11 +201,10 @@ base::TimeDelta NudgeTracker::GetTimeUntilNextUnblock() const {
 
   // Return min of GetTimeUntilUnblock() values for all IsBlocked() types.
   base::TimeDelta time_until_next_unblock = base::TimeDelta::Max();
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
       time_until_next_unblock =
-          std::min(time_until_next_unblock,
-                   type_and_tracker.second->GetTimeUntilUnblock());
+          std::min(time_until_next_unblock, tracker->GetTimeUntilUnblock());
     }
   }
   DCHECK(!time_until_next_unblock.is_max());
@@ -306,9 +221,9 @@ base::TimeDelta NudgeTracker::GetTypeLastBackoffInterval(ModelType type) const {
 
 ModelTypeSet NudgeTracker::GetBlockedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->IsBlocked()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->IsBlocked()) {
+      result.Put(type);
     }
   }
   return result;
@@ -316,9 +231,9 @@ ModelTypeSet NudgeTracker::GetBlockedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNudgedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasLocalChangePending()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasLocalChangePending()) {
+      result.Put(type);
     }
   }
   return result;
@@ -326,9 +241,9 @@ ModelTypeSet NudgeTracker::GetNudgedTypes() const {
 
 ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasPendingInvalidation()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasPendingInvalidation()) {
+      result.Put(type);
     }
   }
   return result;
@@ -336,28 +251,20 @@ ModelTypeSet NudgeTracker::GetNotifiedTypes() const {
 
 ModelTypeSet NudgeTracker::GetRefreshRequestedTypes() const {
   ModelTypeSet result;
-  for (const auto& type_and_tracker : type_trackers_) {
-    if (type_and_tracker.second->HasRefreshRequestPending()) {
-      result.Put(type_and_tracker.first);
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (tracker->HasRefreshRequestPending()) {
+      result.Put(type);
     }
   }
   return result;
 }
 
-void NudgeTracker::SetLegacyNotificationHint(
-    ModelType type,
-    sync_pb::DataTypeProgressMarker* progress) const {
-  DCHECK(type_trackers_.find(type) != type_trackers_.end());
-  type_trackers_.find(type)->second->SetLegacyNotificationHint(progress);
-}
-
 sync_pb::SyncEnums::GetUpdatesOrigin NudgeTracker::GetOrigin() const {
-  for (const auto& type_and_tracker : type_trackers_) {
-    const DataTypeTracker& tracker = *type_and_tracker.second;
-    if (!tracker.IsBlocked() &&
-        (tracker.HasPendingInvalidation() ||
-         tracker.HasRefreshRequestPending() ||
-         tracker.HasLocalChangePending() || tracker.IsInitialSyncRequired())) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    if (!tracker->IsBlocked() && (tracker->HasPendingInvalidation() ||
+                                  tracker->HasRefreshRequestPending() ||
+                                  tracker->HasLocalChangePending() ||
+                                  tracker->IsInitialSyncRequired())) {
       return sync_pb::SyncEnums::GU_TRIGGER;
     }
   }
@@ -404,8 +311,8 @@ void NudgeTracker::SetSyncCycleStartTime(base::TimeTicks now) {
 }
 
 void NudgeTracker::SetHintBufferSize(size_t size) {
-  for (const auto& type_and_tracker : type_trackers_) {
-    type_and_tracker.second->UpdatePayloadBufferSize(size);
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->UpdatePayloadBufferSize(size);
   }
 }
 
@@ -413,29 +320,28 @@ void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
   next_retry_time_ = retry_time;
 }
 
-void NudgeTracker::OnReceivedCustomNudgeDelays(
-    const std::map<ModelType, base::TimeDelta>& delay_map) {
-  for (const auto& type_and_delay : delay_map) {
-    ModelType type = type_and_delay.first;
-    base::TimeDelta delay = type_and_delay.second;
-    DCHECK(ProtocolTypes().Has(type));
-    TypeTrackerMap::const_iterator type_iter = type_trackers_.find(type);
-    if (type_iter == type_trackers_.end()) {
-      continue;
-    }
-    DataTypeTracker* type_tracker = type_iter->second.get();
-
-    if (delay > minimum_local_nudge_delay_) {
-      type_tracker->UpdateLocalNudgeDelay(delay);
-    } else {
-      type_tracker->UpdateLocalNudgeDelay(
-          GetDefaultDelayForType(type, minimum_local_nudge_delay_));
-    }
+void NudgeTracker::UpdateLocalChangeDelay(ModelType type,
+                                          const base::TimeDelta& delay) {
+  if (base::Contains(type_trackers_, type)) {
+    type_trackers_[type]->UpdateLocalChangeNudgeDelay(delay);
   }
 }
 
-void NudgeTracker::SetDefaultNudgeDelay(base::TimeDelta nudge_delay) {
-  minimum_local_nudge_delay_ = nudge_delay;
+void NudgeTracker::SetLocalChangeDelayIgnoringMinForTest(
+    ModelType type,
+    const base::TimeDelta& delay) {
+  DCHECK(base::Contains(type_trackers_, type));
+  type_trackers_[type]->SetLocalChangeNudgeDelayIgnoringMinForTest(delay);
+}
+
+void NudgeTracker::SetQuotaParamsForExtensionTypes(
+    absl::optional<int> max_tokens,
+    absl::optional<base::TimeDelta> refill_interval,
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->SetQuotaParamsIfExtensionType(max_tokens, refill_interval,
+                                           depleted_quota_nudge_delay);
+  }
 }
 
 }  // namespace syncer

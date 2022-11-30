@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
@@ -12,7 +13,7 @@ namespace gpu {
 namespace webgpu {
 
 class DawnClientMemoryTransferService::ReadHandleImpl
-    : public dawn_wire::client::MemoryTransferService::ReadHandle {
+    : public dawn::wire::client::MemoryTransferService::ReadHandle {
  public:
   ReadHandleImpl(void* ptr,
                  MemoryTransferHandle handle,
@@ -34,37 +35,25 @@ class DawnClientMemoryTransferService::ReadHandleImpl
     *reinterpret_cast<MemoryTransferHandle*>(serialize_pointer) = handle_;
   }
 
-  // Load initial data and open the handle for reading.
-  // This function takes in the serialized result of
-  // ReadHandle::SerializeInitialData.
-  // It writes to |data| and |data_length| the pointer and size
-  // of the mapped data for reading.
-  // The allocation must live at least until the ReadHandle is destructed.
-  bool DeserializeInitialData(const void* deserialize_pointer,
-                              size_t deserialize_size,
-                              const void** data,
-                              size_t* data_length) override {
+  const void* GetData() override { return ptr_; }
+
+  bool DeserializeDataUpdate(const void* deserialize_pointer,
+                             size_t deserialize_size,
+                             size_t offset,
+                             size_t size) override {
     // No data is deserialized because we're using shared memory.
     DCHECK_EQ(deserialize_size, 0u);
-    DCHECK(data);
-    DCHECK(data_length);
-
-    // Write the pointer and size of the shared memory allocation.
-    // |data| and |data_length| are provided by the dawn_wire client.
-    *data = ptr_;
-    *data_length = handle_.size;
-
     return true;
   }
 
  private:
-  void* ptr_;  // Pointer to client-side shared memory.
+  raw_ptr<void> ptr_;  // Pointer to client-side shared memory.
   MemoryTransferHandle handle_;
-  DawnClientMemoryTransferService* service_;
+  raw_ptr<DawnClientMemoryTransferService> service_;
 };
 
 class DawnClientMemoryTransferService::WriteHandleImpl
-    : public dawn_wire::client::MemoryTransferService::WriteHandle {
+    : public dawn::wire::client::MemoryTransferService::WriteHandle {
  public:
   WriteHandleImpl(void* ptr,
                   MemoryTransferHandle handle,
@@ -86,35 +75,33 @@ class DawnClientMemoryTransferService::WriteHandleImpl
     *reinterpret_cast<MemoryTransferHandle*>(serialize_pointer) = handle_;
   }
 
-  // Open the handle for writing.
-  // The data returned must live at least until the WriteHandle is destructed.
-  std::pair<void*, size_t> Open() override {
-    return std::make_pair(ptr_, handle_.size);
-  }
+  void* GetData() override { return ptr_; }
 
-  size_t SerializeFlushSize() override {
+  size_t SizeOfSerializeDataUpdate(size_t offset, size_t size) override {
     // No data is serialized because we're using shared memory.
     return 0;
   }
 
-  void SerializeFlush(void* serialize_pointer) override {
+  void SerializeDataUpdate(void* serialize_pointer,
+                           size_t offset,
+                           size_t size) override {
     // No data is serialized because we're using shared memory.
   }
 
  private:
-  void* ptr_;
+  raw_ptr<void> ptr_;
   MemoryTransferHandle handle_;
-  DawnClientMemoryTransferService* service_;
+  raw_ptr<DawnClientMemoryTransferService> service_;
 };
 
 DawnClientMemoryTransferService::DawnClientMemoryTransferService(
     MappedMemoryManager* mapped_memory)
-    : dawn_wire::client::MemoryTransferService(),
+    : dawn::wire::client::MemoryTransferService(),
       mapped_memory_(mapped_memory) {}
 
 DawnClientMemoryTransferService::~DawnClientMemoryTransferService() = default;
 
-dawn_wire::client::MemoryTransferService::ReadHandle*
+dawn::wire::client::MemoryTransferService::ReadHandle*
 DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);
@@ -124,7 +111,7 @@ DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   return new ReadHandleImpl(ptr, handle, this);
 }
 
-dawn_wire::client::MemoryTransferService::WriteHandle*
+dawn::wire::client::MemoryTransferService::WriteHandle*
 DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);
@@ -139,7 +126,7 @@ DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
 void* DawnClientMemoryTransferService::AllocateHandle(
     size_t size,
     MemoryTransferHandle* handle) {
-  if (size > std::numeric_limits<uint32_t>::max()) {
+  if (size > std::numeric_limits<uint32_t>::max() || disconnected_) {
     return nullptr;
   }
 
@@ -167,6 +154,10 @@ void DawnClientMemoryTransferService::FreeHandles(CommandBufferHelper* helper) {
       mapped_memory_->FreePendingToken(ptr, token);
     }
   }
+}
+
+void DawnClientMemoryTransferService::Disconnect() {
+  disconnected_ = true;
 }
 
 }  // namespace webgpu

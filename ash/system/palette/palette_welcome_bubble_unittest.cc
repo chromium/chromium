@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/palette/palette_welcome_bubble.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -32,6 +32,10 @@ constexpr char kPublicAccountEmail[] = "public@palettewelcome.com";
 class PaletteWelcomeBubbleTest : public AshTestBase {
  public:
   PaletteWelcomeBubbleTest() = default;
+
+  PaletteWelcomeBubbleTest(const PaletteWelcomeBubbleTest&) = delete;
+  PaletteWelcomeBubbleTest& operator=(const PaletteWelcomeBubbleTest&) = delete;
+
   ~PaletteWelcomeBubbleTest() override = default;
 
   PrefService* user1_pref_service() {
@@ -66,9 +70,6 @@ class PaletteWelcomeBubbleTest : public AshTestBase {
 
  protected:
   std::unique_ptr<PaletteWelcomeBubble> welcome_bubble_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaletteWelcomeBubbleTest);
 };
 
 // Test the basic Show/Hide functions work.
@@ -111,7 +112,12 @@ TEST_F(PaletteWelcomeBubbleTest, TapOutsideOfBubble) {
   ASSERT_FALSE(bounds.Contains(gfx::Point()));
   GetEventGenerator()->set_current_screen_location(gfx::Point());
   GetEventGenerator()->ClickLeftButton();
-  EXPECT_FALSE(welcome_bubble_->GetBubbleViewForTesting());
+  // The Widget (and thus the contained views) is closed asynchronously. This
+  // check ensures either the BubbleView doesn't exist or that the Widget has
+  // been closed.
+  EXPECT_TRUE(
+      !welcome_bubble_->GetBubbleViewForTesting() ||
+      welcome_bubble_->GetBubbleViewForTesting()->GetWidget()->IsClosed());
 }
 
 // Verify that a second user sees the bubble even after a first user has seen it

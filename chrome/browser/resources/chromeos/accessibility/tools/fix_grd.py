@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''Enforces message text style.
@@ -58,8 +58,9 @@ def MaybeRemoveUnusedMessage(root, message, removed_so_far):
 
   # Get the unprefixed message id. This is used by various extensions like
   # ChromeVox and STS.
-  message_id = re.sub('^(chromevox_|select_to_speak_|switch_access_)',
-                      '', base_message_id)
+  message_id = re.sub(
+    '^(chromevox_|select_to_speak_|switch_access_|enhanced_network_tts_)',
+    '', base_message_id)
 
   # This message is needed by the extension system.
   if message_id == 'locale':

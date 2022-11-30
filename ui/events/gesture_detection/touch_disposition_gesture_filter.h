@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/gesture_detection/bitset_32.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
@@ -29,6 +29,11 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
  public:
   explicit TouchDispositionGestureFilter(
       TouchDispositionGestureFilterClient* client);
+
+  TouchDispositionGestureFilter(const TouchDispositionGestureFilter&) = delete;
+  TouchDispositionGestureFilter& operator=(
+      const TouchDispositionGestureFilter&) = delete;
+
   ~TouchDispositionGestureFilter();
 
   // To be called upon production of touch-derived gestures by the platform,
@@ -97,7 +102,7 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   GestureSequence& Head();
   GestureSequence& Tail();
 
-  TouchDispositionGestureFilterClient* client_;
+  raw_ptr<TouchDispositionGestureFilterClient> client_;
   base::queue<GestureSequence> sequences_;
 
   GestureHandlingState state_;
@@ -111,8 +116,6 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   bool needs_show_press_event_;
   bool needs_fling_ending_event_;
   bool needs_scroll_ending_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchDispositionGestureFilter);
 };
 
 }  // namespace ui

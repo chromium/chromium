@@ -1,11 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_OVERLAY_VALIDATOR_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_OVERLAY_VALIDATOR_H_
 
-#include "base/containers/mru_cache.h"
+#include <vector>
+
+#include "base/containers/lru_cache.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -16,18 +18,29 @@ class DrmWindow;
 class DrmOverlayValidator {
  public:
   DrmOverlayValidator(DrmWindow* window);
+
+  DrmOverlayValidator(const DrmOverlayValidator&) = delete;
+  DrmOverlayValidator& operator=(const DrmOverlayValidator&) = delete;
+
   ~DrmOverlayValidator();
 
-  // Tests if configurations |params| are compatible with |window_| and finds
+  // Tests if configurations of |params| are compatible with |window_| and finds
   // which of these configurations can be promoted to Overlay composition
-  // without failing the page flip. It expects |params| to be sorted by z_order.
+  // without failing the page flip.
+  // If the complete list of planes fails we will remove planes from the end of
+  // the test list one at a time. This means that |params| should always have
+  // the primary plane at the beginning of the list, and the rest should be
+  // sorted based on expected power gain, so less impactful planes are dropped
+  // first.
   OverlayStatusList TestPageFlip(const OverlaySurfaceCandidateList& params,
                                  const DrmOverlayPlaneList& last_used_planes);
 
  private:
-  DrmWindow* const window_;  // Not owned.
+  DrmOverlayPlane MakeOverlayPlane(
+      const OverlaySurfaceCandidate& param,
+      std::vector<scoped_refptr<DrmFramebuffer>>& reusable_buffers);
 
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayValidator);
+  DrmWindow* const window_;  // Not owned.
 };
 
 }  // namespace ui

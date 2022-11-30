@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,8 @@ int OpenApkAsset(const std::string& file_path,
   CHECK_EQ(3U, results.size());
   int fd = static_cast<int>(results[0]);
   region->offset = results[1];
-  region->size = results[2];
+  // Not a checked_cast because open() may return -1.
+  region->size = static_cast<size_t>(results[2]);
   return fd;
 }
 

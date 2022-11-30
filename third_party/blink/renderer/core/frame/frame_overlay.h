@@ -30,19 +30,21 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OVERLAY_H_
 
 #include <memory>
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class GraphicsContext;
 class LocalFrame;
+class PropertyTreeState;
 
 // Manages a layer that is overlaid on a WebLocalFrame's content.
-class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
+class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
                                  public DisplayItemClient {
  public:
   class Delegate {
@@ -52,9 +54,8 @@ class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
     // Paints frame overlay contents.
     virtual void PaintFrameOverlay(const FrameOverlay&,
                                    GraphicsContext&,
-                                   const IntSize& view_size) const = 0;
-    // For CompositeAfterPaint. Invalidates composited layers managed by the
-    // delegate if any.
+                                   const gfx::Size& view_size) const = 0;
+    // Invalidates composited layers managed by the delegate, if any.
     virtual void Invalidate() {}
 
     // Service any animations managed by the delegate.
@@ -62,20 +63,17 @@ class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
         base::TimeTicks monotonic_frame_begin_time) {}
   };
 
+  // |Destroy()| should be called when it is no longer used.
   FrameOverlay(LocalFrame*, std::unique_ptr<FrameOverlay::Delegate>);
+  ~FrameOverlay() override;
+  void Destroy();
 
   void UpdatePrePaint();
 
-  // For CompositeAfterPaint.
   void Paint(GraphicsContext&) const;
 
-  GraphicsLayer* GetGraphicsLayer() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return layer_.get();
-  }
-
   // FrameOverlay is always the same size as the viewport.
-  IntSize Size() const;
+  gfx::Size Size() const;
 
   const Delegate* GetDelegate() const { return delegate_.get(); }
   const LocalFrame& Frame() const { return *frame_; }
@@ -86,27 +84,19 @@ class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
   // DisplayItemClient.
   String DebugName() const final { return "FrameOverlay"; }
 
-  // GraphicsLayerClient implementation. Not needed for CompositeAfterPaint.
-  bool NeedsRepaint(const GraphicsLayer&) const override { return true; }
-  IntRect ComputeInterestRect(const GraphicsLayer*,
-                              const IntRect&) const override;
-  IntRect PaintableRegion(const GraphicsLayer*) const override;
-  void PaintContents(const GraphicsLayer*,
-                     GraphicsContext&,
-                     GraphicsLayerPaintingPhase,
-                     const IntRect& interest_rect) const override;
-  void GraphicsLayersDidChange() override;
-  PaintArtifactCompositor* GetPaintArtifactCompositor() override;
-  String DebugName(const GraphicsLayer*) const override;
+  void Trace(Visitor*) const override;
 
   PropertyTreeState DefaultPropertyTreeState() const;
 
  private:
-  Persistent<LocalFrame> frame_;
+  Member<LocalFrame> frame_;
   std::unique_ptr<FrameOverlay::Delegate> delegate_;
-  std::unique_ptr<GraphicsLayer> layer_;
+
+#if DCHECK_IS_ON()
+  bool is_destroyed_ = false;
+#endif
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_OVERLAY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OVERLAY_H_

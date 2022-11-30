@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_
 
 #include <memory>
+#include <set>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 
@@ -38,32 +41,51 @@ class TabStripModelChange {
  public:
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
 
+  // Used to specify what will happen with the WebContents after it is removed.
+  enum class RemoveReason {
+    // WebContents will be deleted.
+    kDeleted,
+
+    // WebContents will be stored in ClosedTabCache. After some amount of time,
+    // the WebContents will either be deleted, or inserted back into another
+    // TabStripModel.
+    kCached,
+
+    // WebContents got detached from a TabStrip and inserted into another
+    // TabStrip.
+    kInsertedIntoOtherTabStrip
+  };
+
   // Base class for all changes.
   // TODO(dfried): would love to change this whole thing into a std::variant,
   // but C++17 features are not yet approved for use in chromium.
   struct Delta {
     virtual ~Delta() = default;
 
-    virtual void WriteIntoTracedValue(perfetto::TracedValue context) const = 0;
+    virtual void WriteIntoTrace(perfetto::TracedValue context) const = 0;
   };
 
-  struct ContentsWithIndexAndWillBeDeleted {
+  struct RemovedTab {
+    RemovedTab(content::WebContents* contents,
+               int index,
+               RemoveReason remove_reason,
+               absl::optional<SessionID> session_id);
+    virtual ~RemovedTab();
+    RemovedTab(RemovedTab&& other);
+
+    void WriteIntoTrace(perfetto::TracedValue context) const;
+
     content::WebContents* contents;
     int index;
-
-    // The specified WebContents are being closed (and eventually destroyed).
-    // TODO(https://crbug.com/1149549): Make will_be_deleted into enum to
-    // consider the case for ClosedTabCache feature separtely.
-    bool will_be_deleted;
-
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    RemoveReason remove_reason;
+    absl::optional<SessionID> session_id;
   };
 
   struct ContentsWithIndex {
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
     int index;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
   // WebContents were inserted. This implicitly changes the existing selection
@@ -98,7 +120,7 @@ class TabStripModelChange {
     // until after processing all of |contents|.
     std::vector<ContentsWithIndex> contents;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
   // WebContents were removed at |indices_before_removal|. This implicitly
@@ -110,7 +132,7 @@ class TabStripModelChange {
     Remove& operator=(Remove&& other);
 
     // Contains the list of web contents removed with their indexes at
-    // the time of removal along with flag |will_be_deleted| that indicates if
+    // the time of removal along with flag |remove_reason| that indicates if
     // the web contents will be deleted or not after removing. For example, if
     // we removed elements:
     //
@@ -133,30 +155,30 @@ class TabStripModelChange {
     // them in the order the web contents appear in |contents|. Observers should
     // not do index-based queries based on their own internally-stored indices
     // until after processing all of |contents|.
-    std::vector<ContentsWithIndexAndWillBeDeleted> contents;
+    std::vector<RemovedTab> contents;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
   // A WebContents was moved from |from_index| to |to_index|. This implicitly
   // changes the existing selection model by calling
   // Move(from_index, to_index, 1).
   struct Move : public Delta {
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
     int from_index;
     int to_index;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
   // The WebContents was replaced at the specified index. This is invoked when
   // prerendering swaps in a prerendered WebContents.
   struct Replace : public Delta {
-    content::WebContents* old_contents;
-    content::WebContents* new_contents;
+    raw_ptr<content::WebContents> old_contents;
+    raw_ptr<content::WebContents> new_contents;
     int index;
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
+    void WriteIntoTrace(perfetto::TracedValue context) const override;
   };
 
   TabStripModelChange();
@@ -174,7 +196,7 @@ class TabStripModelChange {
   const Move* GetMove() const;
   const Replace* GetReplace() const;
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   TabStripModelChange(Type type, std::unique_ptr<Delta> delta);
@@ -205,8 +227,8 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  content::WebContents* old_contents = nullptr;
-  content::WebContents* new_contents = nullptr;
+  raw_ptr<content::WebContents> old_contents = nullptr;
+  raw_ptr<content::WebContents> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;
@@ -243,19 +265,23 @@ struct TabGroupChange {
   struct VisualsChange : public Delta {
     VisualsChange();
     ~VisualsChange() override;
-    const tab_groups::TabGroupVisualData* old_visuals;
-    const tab_groups::TabGroupVisualData* new_visuals;
+    raw_ptr<const tab_groups::TabGroupVisualData> old_visuals = nullptr;
+    raw_ptr<const tab_groups::TabGroupVisualData> new_visuals = nullptr;
   };
 
-  TabGroupChange(tab_groups::TabGroupId group,
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
                  Type type,
                  std::unique_ptr<Delta> deltap = nullptr);
-  explicit TabGroupChange(tab_groups::TabGroupId group, VisualsChange deltap);
+  TabGroupChange(TabStripModel* model,
+                 tab_groups::TabGroupId group,
+                 VisualsChange deltap);
   ~TabGroupChange();
 
   const VisualsChange* GetVisualsChange() const;
 
   tab_groups::TabGroupId group;
+  raw_ptr<TabStripModel> model;
   Type type;
 
  private:
@@ -309,6 +335,20 @@ class TabStripModelObserver {
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
 
+  // Notification that a tab will be added to the TabStripModel, which allows
+  // an observer to react to an impending change to the TabStripModel. The only
+  // use case of this signal that is currently supported is the drag controller
+  // cancelling/completing a the drag before a tab is added during header drag.
+  virtual void OnTabWillBeAdded();
+
+  // Notification that the tab at |index| will be removed from the
+  // TabStripModel, which allows an observer to react to an impending change to
+  // the TabStripModel. The only use case of this signal that is currently
+  // supported is the drag controller completing a drag before a tab is removed.
+  // TODO(1322943): Unify and generalize this and OnTabWillBeAdded, e.g. via
+  // OnTabStripModelWillChange().
+  virtual void OnTabWillBeRemoved(content::WebContents* contents, int index);
+
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are
   // independent of the tabstrip model and do not affect any tab state.
@@ -336,7 +376,7 @@ class TabStripModelObserver {
 
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
-      base::Optional<tab_groups::TabGroupId> group,
+      absl::optional<tab_groups::TabGroupId> group,
       content::WebContents* contents,
       int index);
 
@@ -352,7 +392,8 @@ class TabStripModelObserver {
   // CloseAllTabsStopped() is sent with reason 'CANCELED'. On the other hand if
   // the close does finish then CloseAllTabsStopped() is sent with reason
   // 'COMPLETED'. Also note that if the last tab is detached
-  // (DetachWebContentsAt()) then this is not sent.
+  // (DetachAndDeleteWebContentsAt()/DetachWebContentsAtForInsertion()) then
+  // this is not sent.
   virtual void WillCloseAllTabs(TabStripModel* tab_strip_model);
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                    CloseAllStoppedReason reason);

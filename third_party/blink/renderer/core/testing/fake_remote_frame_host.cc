@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/fake_remote_frame_host.h"
 
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
+
 namespace blink {
 
-void FakeRemoteFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
-  provider->OverrideBinderForTesting(
-      mojom::blink::RemoteFrameHost::Name_,
-      base::BindRepeating(&FakeRemoteFrameHost::BindFrameHostReceiver,
-                          base::Unretained(this)));
+mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+FakeRemoteFrameHost::BindNewAssociatedRemote() {
+  return receiver_.BindNewEndpointAndPassDedicatedRemote();
 }
 
 void FakeRemoteFrameHost::SetInheritedEffectiveTouchAction(
@@ -34,14 +34,14 @@ void FakeRemoteFrameHost::CapturePaintPreviewOfCrossProcessSubframe(
 void FakeRemoteFrameHost::SetIsInert(bool inert) {}
 
 void FakeRemoteFrameHost::DidChangeOpener(
-    const base::Optional<LocalFrameToken>& opener_frame_token) {}
+    const absl::optional<LocalFrameToken>& opener_frame_token) {}
 
 void FakeRemoteFrameHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
     const LocalFrameToken& source_frame_token) {}
 
 void FakeRemoteFrameHost::RouteMessageEvent(
-    const base::Optional<LocalFrameToken>& source_frame_token,
+    const absl::optional<LocalFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {}
@@ -53,17 +53,11 @@ void FakeRemoteFrameHost::Detach() {}
 
 void FakeRemoteFrameHost::UpdateViewportIntersection(
     blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
-    const base::Optional<FrameVisualProperties>& visual_properties) {}
+    const absl::optional<FrameVisualProperties>& visual_properties) {}
 
 void FakeRemoteFrameHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& properties) {}
 
 void FakeRemoteFrameHost::OpenURL(mojom::blink::OpenURLParamsPtr params) {}
-
-void FakeRemoteFrameHost::BindFrameHostReceiver(
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(
-      std::move(handle)));
-}
 
 }  // namespace blink

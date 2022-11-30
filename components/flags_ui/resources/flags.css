@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -35,7 +35,7 @@ html {
   --google-red-300: rgb(242, 139, 130);
   --google-red-700: rgb(197, 34, 31);
 
-  --interactive-color: var(--google-blue-500);
+  --interactive-color: var(--google-blue-600);
   --primary-color: var(--google-grey-900);
   --secondary-color: var(--google-grey-700);
   --warning-color: var(--google-red-700);
@@ -172,7 +172,7 @@ button {
 }
 
 #search {
-  background: var(--input-background) url(../../../ui/webui/resources/images/icon_search.svg) no-repeat 8px 50%;
+  background: var(--input-background) url(chrome://resources/images/icon_search.svg) no-repeat 8px 50%;
   border: 1px solid transparent;
   border-radius: 3px;
   box-sizing: border-box;
@@ -188,7 +188,7 @@ button {
 
 @media (prefers-color-scheme: dark) {
   #search {
-    background-image: url(../../../ui/webui/resources/images/dark/icon_search.svg);
+    background-image: url(chrome://resources/images/dark/icon_search.svg);
   }
 
   #search::placeholder {
@@ -202,7 +202,7 @@ button {
 }
 
 .clear-search {
-  -webkit-mask-image: url(../../../ui/webui/resources/images/icon_cancel.svg);
+  -webkit-mask-image: url(chrome://resources/images/icon_cancel.svg);
   -webkit-mask-size: 20px;
   background: var(--secondary-color);
   border: 0;
@@ -463,18 +463,10 @@ html:not(.focus-outline-visible) .tab:focus {
   /* Bottom padding should be greater than evaluated height of needs-restart */
   padding-bottom: 200px;
   position: relative;
-  /* iOS does not show unsupported experiments. */
-<if expr="not is_ios">
-  width: 200%;
-</if>
 }
 
-.tabs li:nth-child(2) .tab-content {
-  margin-inline-start: -100%;
-}
-
-.selected .tab-content,
-.selected .tab-content .template {
+.tab-content.selected,
+.tab-content.selected .template {
   display: block;
 }
 
@@ -513,7 +505,7 @@ html:not(.focus-outline-visible) .tab:focus {
 }
 
 button.primary {
-  background: var(--interactive-color);
+  background: var(--link-color);
   border: 0;
   border-radius: 3px;
   color: white;
@@ -527,9 +519,8 @@ button.primary {
   }
 }
 
-button.primary:-webkit-any(:active, :focus, :hover) {
-  background: var(--google-blue-400);
-  outline: 0;
+button.primary:-webkit-any(:active, :hover) {
+  background: var(--google-blue-600);
 }
 
 html.focus-outline-visible button.primary:focus {
@@ -539,6 +530,10 @@ html.focus-outline-visible button.primary:focus {
 #version {
   color: var(--secondary-color);
   text-align: right; /* csschecker-disable-line left-right */
+}
+
+#os-flags-link-container {
+  background-image: url(chrome://resources/images/os_flags_app_icon.svg);
 }
 
 @media (max-width: 360px) {

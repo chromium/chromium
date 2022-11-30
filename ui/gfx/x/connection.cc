@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/switches.h"
 #include "ui/gfx/x/bigreq.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/keyboard_state.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_switches.h"
 #include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_internal.h"
@@ -30,27 +31,6 @@
 namespace x11 {
 
 namespace {
-
-// On the wire, sequence IDs are 16 bits.  In xcb, they're usually extended to
-// 32 and sometimes 64 bits.  In Xlib, they're extended to unsigned long, which
-// may be 32 or 64 bits depending on the platform.  This function is intended to
-// prevent bugs caused by comparing two differently sized sequences.  Also
-// handles rollover.  To use, compare the result of this function with 0.  For
-// example, to compare seq1 <= seq2, use CompareSequenceIds(seq1, seq2) <= 0.
-template <typename T, typename U>
-auto CompareSequenceIds(T t, U u) {
-  static_assert(std::is_unsigned<T>::value, "");
-  static_assert(std::is_unsigned<U>::value, "");
-  // Cast to the smaller of the two types so that comparisons will always work.
-  // If we casted to the larger type, then the smaller type will be zero-padded
-  // and may incorrectly compare less than the other value.
-  using SmallerType =
-      typename std::conditional<sizeof(T) <= sizeof(U), T, U>::type;
-  SmallerType t0 = static_cast<SmallerType>(t);
-  SmallerType u0 = static_cast<SmallerType>(u);
-  using SignedType = typename std::make_signed<SmallerType>::type;
-  return static_cast<SignedType>(t0 - u0);
-}
 
 base::ThreadLocalOwnedPointer<Connection>& GetConnectionTLS() {
   static base::NoDestructor<base::ThreadLocalOwnedPointer<Connection>> tls;
@@ -120,11 +100,12 @@ Connection::Connection(const std::string& address)
               ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                     switches::kX11Display)
               : address),
+      connection_(xcb_connect(display_string_.empty() ? nullptr
+                                                      : display_string_.c_str(),
+                              &default_screen_id_),
+                  xcb_disconnect),
       error_handler_(base::BindRepeating(DefaultErrorHandler)),
       io_error_handler_(base::BindOnce(DefaultIOErrorHandler)) {
-  connection_ =
-      xcb_connect(display_string_.empty() ? nullptr : display_string_.c_str(),
-                  &default_screen_id_);
   DCHECK(connection_);
   if (Ready()) {
     auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
@@ -182,7 +163,6 @@ Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   platform_event_source.reset();
-  xcb_disconnect(connection_);
 }
 
 size_t Connection::MaxRequestSizeInBytes() const {
@@ -208,12 +188,20 @@ Connection::FutureImpl::FutureImpl(Connection* connection,
 
 void Connection::FutureImpl::Wait() {
   connection->WaitForResponse(this);
+}
+
+void Connection::FutureImpl::DispatchNow() {
+  Wait();
   ProcessResponse();
+}
+
+bool Connection::FutureImpl::AfterEvent(const Event& event) const {
+  return CompareSequenceIds(event.sequence(), sequence) > 0;
 }
 
 void Connection::FutureImpl::Sync(RawReply* raw_reply,
                                   std::unique_ptr<Error>* error) {
-  connection->WaitForResponse(this);
+  Wait();
   TakeResponse(raw_reply, error);
 }
 
@@ -335,12 +323,12 @@ int Connection::DefaultScreenId() const {
 
 bool Connection::Ready() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !xcb_connection_has_error(connection_);
+  return !xcb_connection_has_error(connection_.get());
 }
 
 void Connection::Flush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  xcb_flush(connection_);
+  xcb_flush(connection_.get());
 }
 
 void Connection::Sync() {
@@ -362,10 +350,19 @@ void Connection::SynchronizeForTest(bool synchronous) {
 
 void Connection::ReadResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (auto* event = xcb_poll_for_event(XcbConnection())) {
+  while (ReadResponse(false)) {
+  }
+}
+
+bool Connection::ReadResponse(bool queued) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* event = queued ? xcb_poll_for_queued_event(XcbConnection())
+                       : xcb_poll_for_event(XcbConnection());
+  if (event) {
     events_.emplace_back(base::MakeRefCounted<MallocedRefCountedMemory>(event),
                          this);
   }
+  return event;
 }
 
 Event Connection::WaitForNextEvent() {
@@ -483,9 +480,9 @@ void Connection::RemoveEventObserver(EventObserver* observer) {
 
 xcb_connection_t* Connection::XcbConnection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (io_error_handler_ && xcb_connection_has_error(connection_))
+  if (io_error_handler_ && xcb_connection_has_error(connection_.get()))
     std::move(io_error_handler_).Run();
-  return connection_;
+  return connection_.get();
 }
 
 void Connection::InitRootDepthAndVisual() {
@@ -520,7 +517,7 @@ void Connection::ProcessNextResponse() {
   requests_.pop_front();
   if (last_non_void_request_id_.has_value() &&
       last_non_void_request_id_.value() == first_request_id_) {
-    last_non_void_request_id_ = base::nullopt;
+    last_non_void_request_id_ = absl::nullopt;
   }
   first_request_id_++;
   if (request.callback) {
@@ -758,7 +755,7 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
 }
 
 uint32_t Connection::GenerateIdImpl() {
-  return xcb_generate_id(connection_);
+  return xcb_generate_id(connection_.get());
 }
 
 }  // namespace x11

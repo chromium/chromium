@@ -1,38 +1,33 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FilesToast} from '../elements/files_toast.m.js';
-// #import {DirectoryTree} from './ui/directory_tree.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {FilesMessage} from '../elements/files_message.m.js';
-// #import {Crostini} from '../../externs/background/crostini.m.js';
-// #import {CommandHandler} from './file_manager_commands.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
-// #import {str, strf} from '../../common/js/util.m.js';
-// #import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.m.js';
-// #import {constants} from './constants.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {str, strf} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Crostini} from '../../externs/background/crostini.js';
+import {FilesToast} from '../elements/files_toast.js';
+
+import {constants} from './constants.js';
+import {DirectoryModel} from './directory_model.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
+import {DirectoryTree} from './ui/directory_tree.js';
 
 /**
  * CrostiniController handles the foreground UI relating to crostini.
  */
-/* #export */ class CrostiniController {
+export class CrostiniController {
   /**
    * @param {!Crostini} crostini Crostini background object.
-   * @param {!FilesMessage} filesMessage FilesMessage.
    * @param {!DirectoryModel} directoryModel DirectoryModel.
    * @param {!DirectoryTree} directoryTree DirectoryTree.
    */
-  constructor(crostini, filesMessage, directoryModel, directoryTree) {
+  constructor(crostini, directoryModel, directoryTree) {
     /** @private @const */
     this.crostini_ = crostini;
-
-    /** @private @const */
-    this.filesMessage_ = filesMessage;
 
     /** @private @const */
     this.directoryModel_ = directoryModel;
@@ -45,9 +40,6 @@
 
     /** @private */
     this.entrySharedWithPluginVm_ = false;
-
-    directoryModel.addEventListener(
-        'directory-changed', () => this.maybeShowSharedMessage());
   }
 
   /**
@@ -103,13 +95,13 @@
         callback: () => {
           chrome.fileManagerPrivate.openSettingsSubpage(subPage);
           CommandHandler.recordMenuItemSelected(umaItem);
-        }
+        },
       });
     };
 
     const [crostiniShareCount, pluginVmShareCount] = await Promise.all([
       getSharedPaths(constants.DEFAULT_CROSTINI_VM),
-      getSharedPaths(constants.PLUGIN_VM)
+      getSharedPaths(constants.PLUGIN_VM),
     ]);
 
     toast(
@@ -125,48 +117,5 @@
         'app-management/pluginVm/sharedPaths',
         CommandHandler.MenuCommandsForUMA
             .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
-  }
-
-  maybeShowSharedMessage() {
-    const entry =
-        /** @type {Entry} */ (this.directoryModel_.getCurrentDirEntry());
-    if (!entry) {
-      return;
-    }
-    const sharedWithCrostini = this.crostini_.isPathShared('termina', entry);
-    const sharedWithPluginVm = this.crostini_.isPathShared('PvmDefault', entry);
-    if (sharedWithCrostini == this.entrySharedWithCrostini_ &&
-        sharedWithPluginVm == this.entrySharedWithPluginVm_) {
-      return;
-    }
-    this.entrySharedWithCrostini_ = sharedWithCrostini;
-    this.entrySharedWithPluginVm_ = sharedWithPluginVm;
-
-    let msg = '';
-    let subpage = '';
-    if (sharedWithCrostini && sharedWithPluginVm) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM';
-      subpage = 'app-management/pluginVm/sharedPaths';
-    } else if (sharedWithCrostini) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_CROSTINI';
-      subpage = 'crostini/sharedPaths';
-    } else if (sharedWithPluginVm) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM';
-      subpage = 'app-management/pluginVm/sharedPaths';
-    } else {
-      this.filesMessage_.hidden = true;
-      return;
-    }
-
-    this.filesMessage_.setContent({
-      message: str(msg),
-      action: str('MANAGE_TOAST_BUTTON_LABEL'),
-      hidden: false,
-    });
-    this.filesMessage_.setSignalCallback((signal) => {
-      if (signal === 'action') {
-        chrome.fileManagerPrivate.openSettingsSubpage(subpage);
-      }
-    });
   }
 }

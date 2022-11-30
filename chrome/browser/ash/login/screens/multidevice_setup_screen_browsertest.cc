@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/multidevice_setup_screen.h"
 
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -17,13 +18,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/multidevice_setup_screen_handler.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr test::UIPath kMultideviceSetupPath = {"multidevice-setup-screen",
-                                                "impl", "multideviceSetup"};
+                                                "multideviceSetup"};
 
 class MultiDeviceSetupScreenTest : public OobeBaseTest {
  public:
@@ -102,7 +102,7 @@ class MultiDeviceSetupScreenTest : public OobeBaseTest {
         !Accepted);
   }
 
-  base::Optional<MultiDeviceSetupScreen::Result> screen_result_;
+  absl::optional<MultiDeviceSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:
@@ -166,4 +166,4 @@ IN_PROC_BROWSER_TEST_F(MultiDeviceSetupScreenTest, Skipped) {
       "OOBE.StepCompletionTime.Multidevice-setup-screen", 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

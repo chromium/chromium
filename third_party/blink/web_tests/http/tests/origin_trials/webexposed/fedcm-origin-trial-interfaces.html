@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 FedCM --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial"
+  content="A+HpfnpkW4XI4PiU2WZ8uegm47AUP0SjrLLcjGNbg7Vl6EexswWCM1vOSpoLdPEapiUkB9V+/UOm4yIRD59ybgoAAABNeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRmVkQ00iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>FedCM API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+    test(t => {
+      OriginTrialsHelper.check_properties_exist(this,
+        {
+          'IdentityCredential': ['token'],
+        });
+  }, 'FedCM API interfaces and properties in Origin-Trial enabled document.');
+</script>

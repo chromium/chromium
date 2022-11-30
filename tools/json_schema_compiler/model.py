@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -376,9 +376,15 @@ class Function(object):
 
     returns_async = json.get('returns_async', None)
     if returns_async:
-      if len(returns_async.get('parameters')) > 1:
+      returns_async_params = returns_async.get('parameters')
+      if (returns_async_params is None):
+        raise ValueError(
+            'parameters key not specified on returns_async: %s.%s in %s' %
+            (namespace.name, name, namespace.source_file))
+      if len(returns_async_params) > 1:
         raise ValueError('Only a single parameter can be specific on '
-                         'returns_async: %s.%s' % (namespace.name, name))
+                         'returns_async: %s.%s in %s' %
+                         (namespace.name, name, namespace.source_file))
       self.returns_async = ReturnsAsync(self, returns_async, namespace,
                                         Origin(from_client=True), True)
       # TODO(https://crbug.com/1143032): Returning a synchronous value is
@@ -468,7 +474,7 @@ class Property(object):
   """A property of a type OR a parameter to a function.
   Properties:
   - |name| name of the property as in the json. This shouldn't change since
-    it is the key used to access DictionaryValues
+    it is the key used to access Value::Dict
   - |unix_name| the unix_style_name of the property. Used as variable name
   - |optional| a boolean representing whether the property is optional
   - |description| a description of the property (if provided)
@@ -732,6 +738,13 @@ def UnixName(name):
   if IsCPlusPlusKeyword(name):
     name = name + '_'
 
+  # Prepend an extra underscore to the |name|'s start if it doesn't start with a
+  # letter or underscore to ensure the generated unix name follows C++
+  # identifier rules.
+  assert(name)
+  if name[0].isdigit():
+    name = '_' + name
+
   unix_name = []
   for i, c in enumerate(name):
     if c.isupper() and i > 0 and name[i - 1] != '_':
@@ -864,6 +877,7 @@ class Platforms(object):
   """Enum of the possible platforms.
   """
   CHROMEOS = _PlatformInfo("chromeos")
+  FUCHSIA = _PlatformInfo("fuchsia")
   LACROS = _PlatformInfo("lacros")
   LINUX = _PlatformInfo("linux")
   MAC = _PlatformInfo("mac")
@@ -878,8 +892,12 @@ def _GetPlatforms(json):
     raise ValueError('"platforms" cannot be an empty list')
   platforms = []
   for platform_name in json['platforms']:
-    for platform_enum in _Enum.GetAll(Platforms):
-      if platform_name == platform_enum.name:
-        platforms.append(platform_enum)
+    platform_enum = None
+    for platform in _Enum.GetAll(Platforms):
+      if platform_name == platform.name:
+        platform_enum = platform
         break
+    if not platform_enum:
+      raise ValueError('Invalid platform specified: ' + platform_name)
+    platforms.append(platform_enum)
   return platforms

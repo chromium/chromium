@@ -23,19 +23,15 @@
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-SVGRect::SVGRect() : is_valid_(true) {}
-
-SVGRect::SVGRect(const FloatRect& rect) : is_valid_(true), value_(rect) {}
-
 SVGRect* SVGRect::Clone() const {
-  return MakeGarbageCollected<SVGRect>(value_);
+  return MakeGarbageCollected<SVGRect>(x_, y_, width_, height_);
 }
 
 template <typename CharType>
@@ -55,18 +51,21 @@ SVGParsingError SVGRect::Parse(const CharType*& ptr, const CharType* end) {
     return SVGParsingError(SVGParseStatus::kTrailingGarbage, ptr - start);
   }
 
-  value_ = FloatRect(x, y, width, height);
+  Set(x, y, width, height);
   is_valid_ = true;
   return SVGParseStatus::kNoError;
 }
 
 SVGParsingError SVGRect::SetValueAsString(const String& string) {
-  SetInvalid();
+  // In case the string is invalid, the rect will be treated as invalid.
+  is_valid_ = false;
+  // Also clear the existing values.
+  Set(0, 0, 0, 0);
 
   if (string.IsNull())
     return SVGParseStatus::kNoError;
 
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
 
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -87,7 +86,22 @@ String SVGRect::ValueAsString() const {
 }
 
 void SVGRect::Add(const SVGPropertyBase* other, const SVGElement*) {
-  value_ += To<SVGRect>(other)->Value();
+  auto* other_rect = To<SVGRect>(other);
+  Add(other_rect->x_, other_rect->y_, other_rect->width_, other_rect->height_);
+}
+
+void SVGRect::Set(float x, float y, float width, float height) {
+  x_ = x;
+  y_ = y;
+  width_ = width;
+  height_ = height;
+}
+
+void SVGRect::Add(float x, float y, float width, float height) {
+  x_ += x;
+  y_ += y;
+  width_ += width;
+  height_ += height;
 }
 
 void SVGRect::CalculateAnimatedValue(
@@ -102,22 +116,22 @@ void SVGRect::CalculateAnimatedValue(
   auto* to_rect = To<SVGRect>(to_value);
   auto* to_at_end_of_duration_rect = To<SVGRect>(to_at_end_of_duration_value);
 
-  FloatRect result(ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->X(), to_rect->X(),
-                                         to_at_end_of_duration_rect->X()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Y(), to_rect->Y(),
-                                         to_at_end_of_duration_rect->Y()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Width(), to_rect->Width(),
-                                         to_at_end_of_duration_rect->Width()),
-                   ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                                         from_rect->Height(), to_rect->Height(),
-                                         to_at_end_of_duration_rect->Height()));
+  float x = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                  from_rect->X(), to_rect->X(),
+                                  to_at_end_of_duration_rect->X());
+  float y = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                  from_rect->Y(), to_rect->Y(),
+                                  to_at_end_of_duration_rect->Y());
+  float width = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                      from_rect->Width(), to_rect->Width(),
+                                      to_at_end_of_duration_rect->Width());
+  float height = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                       from_rect->Height(), to_rect->Height(),
+                                       to_at_end_of_duration_rect->Height());
   if (parameters.is_additive)
-    result += value_;
-
-  value_ = result;
+    Add(x, y, width, height);
+  else
+    Set(x, y, width, height);
 }
 
 float SVGRect::CalculateDistance(const SVGPropertyBase* to,
@@ -125,11 +139,6 @@ float SVGRect::CalculateDistance(const SVGPropertyBase* to,
   // FIXME: Distance calculation is not possible for SVGRect right now. We need
   // the distance for every single value.
   return -1;
-}
-
-void SVGRect::SetInvalid() {
-  value_ = FloatRect(0.0f, 0.0f, 0.0f, 0.0f);
-  is_valid_ = false;
 }
 
 }  // namespace blink

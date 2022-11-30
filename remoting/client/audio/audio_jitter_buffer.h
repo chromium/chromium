@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -31,6 +30,10 @@ class AudioJitterBuffer : public AsyncAudioDataSupplier {
   // Pending get-data requests will be dropped when the stream format is
   // changed.
   explicit AudioJitterBuffer(OnFormatChangedCallback on_format_changed);
+
+  AudioJitterBuffer(const AudioJitterBuffer&) = delete;
+  AudioJitterBuffer& operator=(const AudioJitterBuffer&) = delete;
+
   ~AudioJitterBuffer() override;
 
   void AddAudioPacket(std::unique_ptr<AudioPacket> packet);
@@ -85,8 +88,6 @@ class AudioJitterBuffer : public AsyncAudioDataSupplier {
   bool underrun_protection_mode_ = true;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioJitterBuffer);
 };
 
 }  // namespace remoting

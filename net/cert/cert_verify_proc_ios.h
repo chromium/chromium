@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "net/cert/cert_verify_proc.h"
 
 #include <Security/Security.h>
+
+#include "net/cert/cert_status_flags.h"
 
 namespace net {
 

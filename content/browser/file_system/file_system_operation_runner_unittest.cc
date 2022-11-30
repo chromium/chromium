@@ -1,16 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -23,10 +22,13 @@
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -58,14 +60,18 @@ void GetCancelStatus(bool* operation_done,
   *status_out = status;
 }
 
-void DidOpenFile(base::File file, base::OnceClosure on_close_callback) {}
+void DidOpenFile(base::File file, base::ScopedClosureRunner on_close_callback) {
+}
 
 }  // namespace
 
 class FileSystemOperationRunnerTest : public testing::Test {
- protected:
-  FileSystemOperationRunnerTest() {}
-  ~FileSystemOperationRunnerTest() override {}
+ public:
+  FileSystemOperationRunnerTest() = default;
+  FileSystemOperationRunnerTest(const FileSystemOperationRunnerTest&) = delete;
+  FileSystemOperationRunnerTest& operator=(
+      const FileSystemOperationRunnerTest&) = delete;
+  ~FileSystemOperationRunnerTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
@@ -81,7 +87,7 @@ class FileSystemOperationRunnerTest : public testing::Test {
 
   FileSystemURL URL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://example.com")),
+        blink::StorageKey::CreateFromStringForTesting("http://example.com"),
         storage::kFileSystemTypeTemporary,
         base::FilePath::FromUTF8Unsafe(path));
   }
@@ -94,8 +100,6 @@ class FileSystemOperationRunnerTest : public testing::Test {
   base::ScopedTempDir base_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationRunnerTest);
 };
 
 TEST_F(FileSystemOperationRunnerTest, NotFoundError) {
@@ -190,31 +194,36 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
   MultiThreadFileSystemOperationRunnerTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  MultiThreadFileSystemOperationRunnerTest(
+      const MultiThreadFileSystemOperationRunnerTest&) = delete;
+  MultiThreadFileSystemOperationRunnerTest& operator=(
+      const MultiThreadFileSystemOperationRunnerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(base_.CreateUniqueTempDir());
 
     base::FilePath base_dir = base_.GetPath();
-    file_system_context_ = base::MakeRefCounted<FileSystemContext>(
-        base::ThreadTaskRunnerHandle::Get().get(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}).get(),
-        storage::ExternalMountPoints::CreateRefCounted().get(),
-        base::MakeRefCounted<storage::MockSpecialStoragePolicy>().get(),
-        nullptr, std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
+    file_system_context_ = FileSystemContext::Create(
+        base::ThreadTaskRunnerHandle::Get(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+        storage::ExternalMountPoints::CreateRefCounted(),
+        base::MakeRefCounted<storage::MockSpecialStoragePolicy>(),
+        /*quota_manager_proxy=*/nullptr,
+        std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
         std::vector<storage::URLRequestAutoMountHandler>(), base_dir,
         storage::CreateAllowFileAccessOptions());
 
     // Disallow IO on the main loop.
-    base::ThreadRestrictions::SetIOAllowed(false);
+    disallow_blocking_.emplace();
   }
 
   void TearDown() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
     file_system_context_ = nullptr;
   }
 
   FileSystemURL URL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL("http://example.com")),
+        blink::StorageKey::CreateFromStringForTesting("http://example.com"),
         storage::kFileSystemTypeTemporary,
         base::FilePath::FromUTF8Unsafe(path));
   }
@@ -226,9 +235,8 @@ class MultiThreadFileSystemOperationRunnerTest : public testing::Test {
  private:
   base::ScopedTempDir base_;
   content::BrowserTaskEnvironment task_environment_;
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiThreadFileSystemOperationRunnerTest);
 };
 
 TEST_F(MultiThreadFileSystemOperationRunnerTest, OpenAndShutdown) {

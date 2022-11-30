@@ -55,7 +55,7 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
 
-  void focus(const FocusParams&) override;
+  void Focus(const FocusParams&) override;
 
   bool processing_click_;
 };

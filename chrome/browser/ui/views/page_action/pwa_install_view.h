@@ -1,12 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PWA_INSTALL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+
+class Browser;
 
 namespace webapps {
 class AppBannerManager;
@@ -14,16 +18,23 @@ class AppBannerManager;
 
 // A plus icon to surface whether a site has passed PWA (progressive web app)
 // installability checks and can be installed.
-class PwaInstallView : public PageActionIconView {
+class PwaInstallView : public PageActionIconView, public TabStripModelObserver {
  public:
   METADATA_HEADER(PwaInstallView);
   explicit PwaInstallView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
-      PageActionIconView::Delegate* page_action_icon_delegate);
+      PageActionIconView::Delegate* page_action_icon_delegate,
+      Browser* browser);
   PwaInstallView(const PwaInstallView&) = delete;
   PwaInstallView& operator=(const PwaInstallView&) = delete;
   ~PwaInstallView() override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  protected:
   // PageActionIconView:
@@ -34,6 +45,8 @@ class PwaInstallView : public PageActionIconView {
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
+  raw_ptr<Browser> browser_ = nullptr;
+
   // Called when IPH is closed.
   void OnIphClosed();
 

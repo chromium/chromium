@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 #include <windows.h>
 #include <winternl.h>
+
+// Must be after windows.h.
+#include <versionhelpers.h>
 
 #include "gtest/gtest.h"
 
@@ -57,9 +60,8 @@ TEST(GetFunction, GetFunction) {
   // GetNamedPipeClientProcessId() is only available on Vista and later.
   const auto get_named_pipe_client_process_id =
       GET_FUNCTION(L"kernel32.dll", GetNamedPipeClientProcessId);
-  const DWORD version = GetVersion();
-  const DWORD major_version = LOBYTE(LOWORD(version));
-  EXPECT_EQ(get_named_pipe_client_process_id != nullptr, major_version >= 6);
+  EXPECT_EQ(get_named_pipe_client_process_id != nullptr,
+            IsWindowsVistaOrGreater());
 
   // Test that GET_FUNCTION() can fail by trying a nonexistent library and a
   // symbol that doesn’t exist in the specified library.

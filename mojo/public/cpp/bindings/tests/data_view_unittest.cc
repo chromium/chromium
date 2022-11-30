@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -275,8 +275,7 @@ TEST_F(DataViewTest, Map) {
 }
 
 TEST_F(DataViewTest, UnionArray) {
-  TestUnionPtr union_ptr(TestUnion::New());
-  union_ptr->set_f_int32(1024);
+  TestUnionPtr union_ptr = TestUnion::NewFInt32(1024);
 
   TestStructPtr obj(TestStruct::New());
   obj->f_union_array.push_back(std::move(union_ptr));

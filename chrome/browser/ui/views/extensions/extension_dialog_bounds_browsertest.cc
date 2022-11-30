@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -26,6 +25,11 @@ class ExtensionDialogBoundsTest
     : public SupportsTestDialog<extensions::ExtensionBrowserTest> {
  public:
   ExtensionDialogBoundsTest() = default;
+
+  ExtensionDialogBoundsTest(const ExtensionDialogBoundsTest&) = delete;
+  ExtensionDialogBoundsTest& operator=(const ExtensionDialogBoundsTest&) =
+      delete;
+
   ~ExtensionDialogBoundsTest() override = default;
 
   void SetUp() override {
@@ -54,7 +58,7 @@ class ExtensionDialogBoundsTest
   void ShowOpenFileDialog() { browser()->OpenFile(); }
 
   void ShowBigExtensionDialog() {
-    ExtensionTestMessageListener init_listener("ready", false /* will_reply */);
+    ExtensionTestMessageListener init_listener("ready");
 
     scoped_refptr<const extensions::Extension> extension =
         LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));
@@ -72,8 +76,6 @@ class ExtensionDialogBoundsTest
     ASSERT_TRUE(dialog);
     ASSERT_TRUE(init_listener.WaitUntilSatisfied());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialogBoundsTest);
 };
 
 // Note that the underscores in the test names below are important as whatever

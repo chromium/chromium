@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,8 +39,8 @@ void CopyConvertFromInterleaved(
 
 static base::TimeDelta CalculateDuration(int frames, double sample_rate) {
   DCHECK_GT(sample_rate, 0);
-  return base::TimeDelta::FromMicroseconds(
-      frames * base::Time::kMicrosecondsPerSecond / sample_rate);
+  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                            sample_rate);
 }
 
 AudioBufferMemoryPool::AudioBufferMemoryPool() = default;
@@ -100,6 +100,7 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
   CHECK_GE(channel_count_, 0);
   CHECK_LE(channel_count_, limits::kMaxChannels);
   CHECK_GE(frame_count, 0);
+
   DCHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
          ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
@@ -112,6 +113,25 @@ AudioBuffer::AudioBuffer(SampleFormat sample_format,
 
   CHECK_NE(sample_format, kUnknownSampleFormat);
 
+  if (sample_format == kSampleFormatIECDts) {
+    // Allocate a contiguous buffer for IEC61937 encapsulated Bitstream.
+    data_size_ = frame_count * bytes_per_channel * channel_count_;
+    if (pool_) {
+      data_ = pool_->CreateBuffer(data_size_);
+    } else {
+      // Aligned buffer ensures compatibility with AudioBus
+      // and audio sink which have been optimized for SSE
+      data_.reset(static_cast<uint8_t*>(
+          base::AlignedAlloc(data_size, kChannelAlignment)));
+    }
+    channel_data_.reserve(1);
+    channel_data_.push_back(data_.get());
+
+    // Copy data
+    if (data)
+      memcpy(channel_data_[0], data[0], data_size);
+    return;
+  }
   int data_size_per_channel = frame_count * bytes_per_channel;
   if (IsPlanar(sample_format)) {
     DCHECK(!IsBitstreamFormat()) << sample_format_;
@@ -187,6 +207,26 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
 }
 
 // static
+scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
+    int sample_rate,
+    const base::TimeDelta timestamp,
+    const AudioBus* audio_bus,
+    scoped_refptr<AudioBufferMemoryPool> pool) {
+  DCHECK(audio_bus->frames());
+
+  const int channel_count = audio_bus->channels();
+  DCHECK(channel_count);
+
+  std::vector<const uint8_t*> data(channel_count);
+  for (int ch = 0; ch < channel_count; ch++)
+    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch));
+
+  return CopyFrom(kSampleFormatPlanarF32, GuessChannelLayout(channel_count),
+                  channel_count, sample_rate, audio_bus->frames(), data.data(),
+                  timestamp, std::move(pool));
+}
+
+// static
 scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
     SampleFormat sample_format,
     ChannelLayout channel_layout,
@@ -255,6 +295,43 @@ scoped_refptr<AudioBuffer> AudioBuffer::CreateEOSBuffer() {
                       nullptr, 0, kNoTimestamp, nullptr));
 }
 
+// static
+std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
+    scoped_refptr<AudioBuffer> buffer) {
+  DCHECK(buffer);
+
+  const int channels = buffer->channel_count();
+  const int frames = buffer->frame_count();
+
+  DCHECK(channels);
+  DCHECK(frames);
+
+  // |buffer| might already have the right memory layout. Prevent a data copy
+  // by wrapping it instead.
+  if (buffer->sample_format() == SampleFormat::kSampleFormatPlanarF32) {
+    auto audio_bus = AudioBus::CreateWrapper(channels);
+
+    for (int ch = 0; ch < channels; ++ch) {
+      audio_bus->SetChannelData(
+          ch, reinterpret_cast<float*>(buffer->channel_data()[ch]));
+    }
+
+    audio_bus->set_frames(frames);
+
+    // Keep |buffer| alive as long as |audio_bus|.
+    audio_bus->SetWrappedDataDeleter(
+        base::BindOnce([](scoped_refptr<AudioBuffer>) {}, std::move(buffer)));
+
+    return audio_bus;
+  }
+
+  // |buffer|'s memory can't be wrapped directly. Convert and copy it instead.
+  auto audio_bus = AudioBus::Create(channels, frames);
+  buffer->ReadFrames(frames, 0, 0, audio_bus.get());
+
+  return audio_bus;
+}
+
 void AudioBuffer::AdjustSampleRate(int sample_rate) {
   DCHECK(!end_of_stream_);
   sample_rate_ = sample_rate;
@@ -315,6 +392,17 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     }
     return;
   }
+  if (sample_format_ == kSampleFormatPlanarU8) {
+    // Format is planar unsigned 8. Convert each value into float and insert
+    // into output channel data.
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      const uint8_t* source_data = channel_data_[ch] + source_frame_offset;
+      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      for (int i = 0; i < frames_to_copy; ++i)
+        dest_data[i] = UnsignedInt8SampleTypeTraits::ToFloat(source_data[i]);
+    }
+    return;
+  }
 
   if (sample_format_ == kSampleFormatPlanarS16) {
     // Format is planar signed16. Convert each value into float and insert into
@@ -326,6 +414,20 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
       float* dest_data = dest->channel(ch) + dest_frame_offset;
       for (int i = 0; i < frames_to_copy; ++i)
         dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
+    }
+    return;
+  }
+
+  if (sample_format_ == kSampleFormatPlanarS32) {
+    // Format is planar signed32. Convert each value into float and insert into
+    // output channel data.
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      const int32_t* source_data =
+          reinterpret_cast<const int32_t*>(channel_data_[ch]) +
+          source_frame_offset;
+      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      for (int i = 0; i < frames_to_copy; ++i)
+        dest_data[i] = SignedInt32SampleTypeTraits::ToFloat(source_data[i]);
     }
     return;
   }
@@ -350,72 +452,6 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     dest->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
         reinterpret_cast<const int32_t*>(source_data), dest_frame_offset,
         frames_to_copy);
-  } else {
-    NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
-  }
-}
-
-void AudioBuffer::ReadAllFrames(const std::vector<float*>& dest) const {
-  // Deinterleave each channel (if necessary) and convert to 32bit
-  // floating-point with nominal range -1.0 -> +1.0 (if necessary).
-
-  // |dest| must have the same number of channels, and the number of frames
-  // specified must be in range.
-  DCHECK(!end_of_stream());
-  CHECK_EQ(dest.size(), static_cast<size_t>(channel_count_));
-  DCHECK(!IsBitstreamFormat());
-
-  if (!data_) {
-    // Special case for an empty buffer.
-    for (int i = 0; i < channel_count_; ++i)
-      memset(dest[i], 0, adjusted_frame_count_ * sizeof(float));
-    return;
-  }
-
-  // Note: The conversion steps below will clip values to [1.0, -1.0f].
-
-  if (sample_format_ == kSampleFormatPlanarF32) {
-    for (int ch = 0; ch < channel_count_; ++ch) {
-      float* dest_data = dest[ch];
-      const float* source_data =
-          reinterpret_cast<const float*>(channel_data_[ch]);
-      for (int i = 0; i < adjusted_frame_count_; ++i)
-        dest_data[i] = Float32SampleTypeTraits::FromFloat(source_data[i]);
-    }
-    return;
-  }
-
-  if (sample_format_ == kSampleFormatPlanarS16) {
-    // Format is planar signed16. Convert each value into float and insert into
-    // output channel data.
-    for (int ch = 0; ch < channel_count_; ++ch) {
-      const int16_t* source_data =
-          reinterpret_cast<const int16_t*>(channel_data_[ch]);
-      float* dest_data = dest[ch];
-      for (int i = 0; i < adjusted_frame_count_; ++i)
-        dest_data[i] = SignedInt16SampleTypeTraits::ToFloat(source_data[i]);
-    }
-    return;
-  }
-
-  const uint8_t* source_data = data_.get();
-
-  if (sample_format_ == kSampleFormatF32) {
-    CopyConvertFromInterleaved<Float32SampleTypeTraits>(
-        reinterpret_cast<const float*>(source_data), adjusted_frame_count_,
-        dest);
-  } else if (sample_format_ == kSampleFormatU8) {
-    CopyConvertFromInterleaved<UnsignedInt8SampleTypeTraits>(
-        source_data, adjusted_frame_count_, dest);
-  } else if (sample_format_ == kSampleFormatS16) {
-    CopyConvertFromInterleaved<SignedInt16SampleTypeTraits>(
-        reinterpret_cast<const int16_t*>(source_data), adjusted_frame_count_,
-        dest);
-  } else if (sample_format_ == kSampleFormatS24 ||
-             sample_format_ == kSampleFormatS32) {
-    CopyConvertFromInterleaved<SignedInt32SampleTypeTraits>(
-        reinterpret_cast<const int32_t*>(source_data), adjusted_frame_count_,
-        dest);
   } else {
     NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }
@@ -465,6 +501,7 @@ void AudioBuffer::TrimRange(int start, int end) {
   const int frames_to_copy = data_ ? adjusted_frame_count_ - end : 0;
   if (frames_to_copy > 0) {
     switch (sample_format_) {
+      case kSampleFormatPlanarU8:
       case kSampleFormatPlanarS16:
       case kSampleFormatPlanarF32:
       case kSampleFormatPlanarS32:
@@ -491,6 +528,9 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatAc3:
       case kSampleFormatEac3:
       case kSampleFormatMpegHAudio:
+      case kSampleFormatDts:
+      case kSampleFormatDtsxP2:
+      case kSampleFormatIECDts:
         NOTREACHED() << "Invalid sample format!";
     }
   } else {

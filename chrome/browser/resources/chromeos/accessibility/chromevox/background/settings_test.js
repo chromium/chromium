@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   testGenCppIncludes() {
     super.testGenCppIncludes();
     GEN(`
-      #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+      #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
       #include "chrome/browser/web_applications/web_app_provider.h"
     `);
   }
@@ -23,65 +23,70 @@ ChromeVoxSettingsPagesTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   testGenPreamble() {
     GEN(`
-    web_app::WebAppProvider::Get(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   `);
     super.testGenPreamble();
   }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('AbstractTts', '/chromevox/common/abstract_tts.js');
+  }
 };
 
-TEST_F(
-    'ChromeVoxSettingsPagesTest', 'TtsRateCommandOnSettingsPage', function() {
+AX_TEST_F(
+    'ChromeVoxSettingsPagesTest', 'TtsRateCommandOnSettingsPage',
+    async function() {
       const realTts = ChromeVox.tts;
       const mockFeedback = this.createMockFeedback();
-      this.runWithLoadedTree(`unused`, function() {
-        const increaseRate = realTts.increaseOrDecreaseProperty.bind(
-            realTts, AbstractTts.RATE, true);
-        const decreaseRate = realTts.increaseOrDecreaseProperty.bind(
-            realTts, AbstractTts.RATE, false);
+      await this.runWithLoadedTree(`unused`);
+      const increaseRate = realTts.increaseOrDecreaseProperty.bind(
+          realTts, AbstractTts.RATE, true);
+      const decreaseRate = realTts.increaseOrDecreaseProperty.bind(
+          realTts, AbstractTts.RATE, false);
 
-        mockFeedback.call(doCmd('showTtsSettings'))
-            .expectSpeech(
-                /(Settings)|(Text-to-Speech voice settings subpage back button)/)
+      mockFeedback.call(doCmd('showTtsSettings'))
+          .expectSpeech(
+              /(Settings)|(Text-to-Speech voice settings subpage back button)/)
 
-            // ChromeVox presents a 0% to 100% scale.
-            // Ensure we have the default rate.
-            .call(
-                () => chrome.settingsPrivate.setPref(
-                    'settings.tts.speech_rate', 1.0))
+          // ChromeVox presents a 0% to 100% scale.
+          // Ensure we have the default rate.
+          .call(
+              () => chrome.settingsPrivate.setPref(
+                  'settings.tts.speech_rate', 1.0))
 
-            .call(increaseRate)
-            .expectSpeech('Rate 19 percent')
-            .call(increaseRate)
-            .expectSpeech('Rate 21 percent')
+          .call(increaseRate)
+          .expectSpeech('Rate 19 percent')
+          .call(increaseRate)
+          .expectSpeech('Rate 21 percent')
 
-            // Speed things up...
-            .call(
-                () => chrome.settingsPrivate.setPref(
-                    'settings.tts.speech_rate', 4.9))
-            .expectSpeech('Rate 98 percent')
-            .call(increaseRate)
-            .expectSpeech('Rate 100 percent')
+          // Speed things up...
+          .call(
+              () => chrome.settingsPrivate.setPref(
+                  'settings.tts.speech_rate', 4.9))
+          .expectSpeech('Rate 98 percent')
+          .call(increaseRate)
+          .expectSpeech('Rate 100 percent')
 
-            .call(decreaseRate)
-            .expectSpeech('Rate 98 percent')
-            .call(decreaseRate)
-            .expectSpeech('Rate 96 percent')
+          .call(decreaseRate)
+          .expectSpeech('Rate 98 percent')
+          .call(decreaseRate)
+          .expectSpeech('Rate 96 percent')
 
-            // Slow things down...
-            .call(
-                () => chrome.settingsPrivate.setPref(
-                    'settings.tts.speech_rate', 0.3))
-            .expectSpeech('Rate 2 percent')
-            .call(decreaseRate)
-            .expectSpeech('Rate 0 percent')
+          // Slow things down...
+          .call(
+              () => chrome.settingsPrivate.setPref(
+                  'settings.tts.speech_rate', 0.3))
+          .expectSpeech('Rate 2 percent')
+          .call(decreaseRate)
+          .expectSpeech('Rate 0 percent')
 
-            .call(increaseRate)
-            .expectSpeech('Rate 2 percent')
-            .call(increaseRate)
-            .expectSpeech('Rate 4 percent')
+          .call(increaseRate)
+          .expectSpeech('Rate 2 percent')
+          .call(increaseRate)
+          .expectSpeech('Rate 4 percent');
 
-            .replay();
-      });
+      await mockFeedback.replay();
     });

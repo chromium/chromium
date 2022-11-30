@@ -1,8 +1,9 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from blinkpy.common.net.git_cl import CLStatus, GitCL
+from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.executive import ScriptError
 
 # pylint: disable=unused-argument
@@ -26,6 +27,7 @@ class MockGitCL(object):
             time_out: Whether to simulate timing out while waiting.
             git_error_output: A dict of git-cl args to exception output.
         """
+        self.bb_client = BuildbucketClient.from_host(host)
         self._builders = host.builders.all_try_builder_names()
         self._status = status
         self._try_job_results = try_job_results
@@ -66,7 +68,15 @@ class MockGitCL(object):
         return 'closed'
 
     def latest_try_jobs(self, builder_names=None, **_):
-        return self.filter_latest(self._try_job_results)
+        if builder_names:
+            jobs = {
+                build: status
+                for build, status in self._try_job_results.items()
+                if build.builder_name in builder_names
+            }
+        else:
+            jobs = self._try_job_results
+        return self.filter_latest(jobs)
 
     @staticmethod
     def filter_latest(try_results):

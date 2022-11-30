@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,12 +30,13 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/session_storage_namespace.h"
+#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
@@ -56,52 +57,6 @@ AppSessionService::~AppSessionService() {
   command_storage_manager()->Save();
 
   DestroyCommandStorageManager();
-}
-
-bool AppSessionService::ShouldRestoreWindowOfType(
-    sessions::SessionWindow::WindowType window_type) const {
-  if (window_type == sessions::SessionWindow::TYPE_APP ||
-      window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
-    return true;
-  }
-
-  return false;
-}
-
-bool AppSessionService::ShouldTrackChangesToWindow(
-    const SessionID& window_id) const {
-  // AppSessionService does not validate windows passed to it.
-  // Callers should use SessionServiceFactory::RelevantToAppSessionService
-  // to validate windows before calling AppSessionService.
-  return true;
-}
-
-void AppSessionService::RebuildCommandsIfRequired() {
-  if (rebuild_on_next_save())
-    ScheduleResetCommands();
-}
-
-void AppSessionService::MaybeDeleteSessionOnlyData() {
-  // Don't try anything if we're testing.  The browser_process is not fully
-  // created and DeleteSession will crash if we actually attempt it.
-  if (profile()->AsTestingProfile())
-    return;
-
-  // Clear session data if the last window for a profile has been closed and
-  // closing the last window would normally close Chrome, unless background mode
-  // is active.  Tests don't have a background_mode_manager.
-  if (browser_defaults::kBrowserAliveWithNoWindows ||
-      g_browser_process->background_mode_manager()->IsBackgroundModeActive()) {
-    return;
-  }
-
-  // Check for any open windows for the current profile that we aren't tracking.
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile() &&
-        browser->type() == Browser::Type::TYPE_APP)
-      return;
-  }
-  DeleteSessionOnlyData(profile());
 }
 
 void AppSessionService::TabClosed(const SessionID& window_id,
@@ -146,35 +101,14 @@ void AppSessionService::WindowClosing(const SessionID& window_id) {
 
 void AppSessionService::WindowClosed(const SessionID& window_id) {
   if (!ShouldTrackChangesToWindow(window_id)) {
-    // The last window may be one that is not tracked.
-    MaybeDeleteSessionOnlyData();
     return;
   }
+
+  windows_tracking()->erase(window_id);
 
   tab_to_available_range()->erase(window_id);
 
   ScheduleCommand(sessions::CreateWindowClosedCommand(window_id));
-
-  MaybeDeleteSessionOnlyData();
-}
-
-void AppSessionService::BuildCommandsForBrowser(
-    Browser* browser,
-    IdToRange* tab_to_available_range,
-    std::set<SessionID>* windows_to_track) {
-  SessionServiceBase::BuildCommandsForBrowser(browser, tab_to_available_range,
-                                              windows_to_track);
-
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  // PWAs only have 1 tab.
-  DCHECK_EQ(tab_strip->count(), 1);
-
-  WebContents* tab = tab_strip->GetWebContentsAt(0);
-  DCHECK(tab);
-  const base::Optional<tab_groups::TabGroupId> empty_group_id;
-  SessionServiceBase::BuildCommandsForTab(
-      browser->session_id(), tab, 0, empty_group_id,
-      /*is_pinned*/ false, tab_to_available_range);
 }
 
 void AppSessionService::SetWindowType(const SessionID& window_id,
@@ -184,14 +118,36 @@ void AppSessionService::SetWindowType(const SessionID& window_id,
   if (!ShouldRestoreWindowOfType(window_type))
     return;
 
+  windows_tracking()->insert(window_id);
+
   ScheduleCommand(CreateSetWindowTypeCommand(window_id, window_type));
+}
+
+Browser::Type AppSessionService::GetDesiredBrowserTypeForWebContents() {
+  return Browser::Type::TYPE_APP;
+}
+
+bool AppSessionService::ShouldRestoreWindowOfType(
+    sessions::SessionWindow::WindowType window_type) const {
+  if (window_type == sessions::SessionWindow::TYPE_APP ||
+      window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
+    return true;
+  }
+
+  return false;
 }
 
 void AppSessionService::ScheduleResetCommands() {
   command_storage_manager()->set_pending_reset(true);
   command_storage_manager()->ClearPendingCommands();
   tab_to_available_range()->clear();
+  windows_tracking()->clear();
   set_rebuild_on_next_save(false);
-  BuildCommandsFromBrowsers(tab_to_available_range(), {});
+  BuildCommandsFromBrowsers(tab_to_available_range(), windows_tracking());
   command_storage_manager()->StartSaveTimer();
+}
+
+void AppSessionService::RebuildCommandsIfRequired() {
+  if (rebuild_on_next_save())
+    ScheduleResetCommands();
 }

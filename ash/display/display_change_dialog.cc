@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
-          views::TEXT, views::TEXT)));
+          views::DialogContentType::kText, views::DialogContentType::kText)));
   label_ =
       AddChildView(std::make_unique<views::Label>(GetRevertTimeoutString()));
   label_->SetMultiLine(true);
@@ -65,7 +65,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   // TODO(baileyberro): Verify behavior in kiosk mode.
   widget->Show();
 
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+  timer_.Start(FROM_HERE, base::Seconds(1), this,
                &DisplayChangeDialog::OnTimerTick);
 }
 
@@ -99,7 +99,7 @@ void DisplayChangeDialog::OnTimerTick() {
 std::u16string DisplayChangeDialog::GetRevertTimeoutString() const {
   const std::u16string timer = ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-      base::TimeDelta::FromSeconds(timeout_count_));
+      base::Seconds(timeout_count_));
   return base::ReplaceStringPlaceholders(timeout_message_with_placeholder_,
                                          timer, /*offset=*/nullptr);
 }

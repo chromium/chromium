@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_TOGGLE_FULLSCREEN_EVENT_HANDLER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 
@@ -49,7 +50,7 @@ class TabletModeToggleFullscreenEventHandler : public ui::EventHandler,
 
   // Valid if a processable drag is in progress. Contains the event initial
   // location and the window that was active when the drag started.
-  base::Optional<DragData> drag_data_;
+  absl::optional<DragData> drag_data_;
 };
 
 }  // namespace ash

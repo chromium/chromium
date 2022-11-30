@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 379 tests; 304 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 406 tests; 331 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -15,32 +15,24 @@ PASS Partial interface HTMLImageElement: member names are unique
 PASS Partial interface Range: original interface defined
 PASS Partial interface Range: member names are unique
 PASS Partial interface MouseEvent: original interface defined
-FAIL Partial interface MouseEvent: member names are unique assert_true: member screenX is unique expected true got false
-PASS Partial dictionary MouseEventInit: original dictionary defined
-FAIL Partial dictionary MouseEventInit: member names are unique assert_true: member screenX is unique expected true got false
+PASS Partial interface MouseEvent: member names are unique
 PASS Partial interface Element[2]: member names are unique
 PASS Partial interface Window[2]: member names are unique
 PASS Partial interface UIEvent: member names are unique
+PASS Partial interface MouseEvent[2]: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface HTMLImageElement[2]: member names are unique
 PASS Partial interface Document[4]: member names are unique
 PASS Partial interface Window[3]: member names are unique
 PASS Text includes GeometryUtils: member names are unique
-PASS Text includes Slottable: member names are unique
 PASS Element includes GeometryUtils: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
 PASS CSSPseudoElement includes GeometryUtils: member names are unique
 PASS Document includes GeometryUtils: member names are unique
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
 PASS Document includes DocumentAndElementEventHandlers: member names are unique
-PASS Document includes NonElementParentNode: member names are unique
-PASS Document includes ParentNode: member names are unique
-PASS Document includes XPathEvaluatorBase: member names are unique
-PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
 PASS HTMLElement includes GlobalEventHandlers: member names are unique
 PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
 PASS HTMLElement includes ElementContentEditable: member names are unique
@@ -51,8 +43,16 @@ PASS Window includes WindowOrWorkerGlobalScope: member names are unique
 PASS Window includes AnimationFrameProvider: member names are unique
 PASS Window includes WindowSessionStorage: member names are unique
 PASS Window includes WindowLocalStorage: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS CharacterData includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
 PASS CharacterData includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Text includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
 PASS MediaQueryList interface: existence and properties of interface object
 PASS MediaQueryList interface object length
 PASS MediaQueryList interface object name
@@ -85,10 +85,10 @@ PASS MediaQueryListEvent must be primary interface of new MediaQueryListEvent("c
 PASS Stringification of new MediaQueryListEvent("change")
 PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "media" with the proper type
 PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "matches" with the proper type
-PASS Screen interface: existence and properties of interface object
+FAIL Screen interface: existence and properties of interface object assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 PASS Screen interface object length
 PASS Screen interface object name
-PASS Screen interface: existence and properties of interface prototype object
+FAIL Screen interface: existence and properties of interface prototype object assert_equals: prototype of Screen.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
 PASS Screen interface: existence and properties of interface prototype object's "constructor" property
 PASS Screen interface: existence and properties of interface prototype object's @@unscopables property
 PASS Screen interface: attribute availWidth
@@ -119,26 +119,44 @@ FAIL Stringification of document.caretPositionFromPoint(5, 5) assert_equals: Une
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offsetNode" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offset" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
 FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "getClientRect()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+PASS VisualViewport interface: existence and properties of interface object
+PASS VisualViewport interface object length
+PASS VisualViewport interface object name
+PASS VisualViewport interface: existence and properties of interface prototype object
+PASS VisualViewport interface: existence and properties of interface prototype object's "constructor" property
+PASS VisualViewport interface: existence and properties of interface prototype object's @@unscopables property
+PASS VisualViewport interface: attribute offsetLeft
+PASS VisualViewport interface: attribute offsetTop
+PASS VisualViewport interface: attribute pageLeft
+PASS VisualViewport interface: attribute pageTop
+PASS VisualViewport interface: attribute width
+PASS VisualViewport interface: attribute height
+PASS VisualViewport interface: attribute scale
+PASS VisualViewport interface: attribute onresize
+PASS VisualViewport interface: attribute onscroll
+PASS VisualViewport must be primary interface of self.visualViewport
+PASS Stringification of self.visualViewport
+PASS VisualViewport interface: self.visualViewport must inherit property "offsetLeft" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "offsetTop" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "pageLeft" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "pageTop" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "width" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "height" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "scale" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "onresize" with the proper type
+PASS VisualViewport interface: self.visualViewport must inherit property "onscroll" with the proper type
 FAIL CSSPseudoElement interface: operation getBoxQuads(optional BoxQuadOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
 FAIL CSSPseudoElement interface: operation convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
-PASS MouseEvent interface: attribute screenX
-PASS MouseEvent interface: attribute screenY
 PASS MouseEvent interface: attribute pageX
 PASS MouseEvent interface: attribute pageY
-PASS MouseEvent interface: attribute clientX
-PASS MouseEvent interface: attribute clientY
 PASS MouseEvent interface: attribute x
 PASS MouseEvent interface: attribute y
 PASS MouseEvent interface: attribute offsetX
 PASS MouseEvent interface: attribute offsetY
-PASS MouseEvent interface: new MouseEvent("foo") must inherit property "screenX" with the proper type
-PASS MouseEvent interface: new MouseEvent("foo") must inherit property "screenY" with the proper type
 PASS MouseEvent interface: new MouseEvent("foo") must inherit property "pageX" with the proper type
 PASS MouseEvent interface: new MouseEvent("foo") must inherit property "pageY" with the proper type
-PASS MouseEvent interface: new MouseEvent("foo") must inherit property "clientX" with the proper type
-PASS MouseEvent interface: new MouseEvent("foo") must inherit property "clientY" with the proper type
 PASS MouseEvent interface: new MouseEvent("foo") must inherit property "x" with the proper type
 PASS MouseEvent interface: new MouseEvent("foo") must inherit property "y" with the proper type
 PASS MouseEvent interface: new MouseEvent("foo") must inherit property "offsetX" with the proper type
@@ -155,6 +173,8 @@ PASS HTMLElement interface: document.createElement("div") must inherit property 
 PASS HTMLElement interface: document.createElement("div") must inherit property "offsetHeight" with the proper type
 PASS Element interface: document.createElement("div") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElement("div") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElement("div") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("div") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElement("div") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("div") must inherit property "scroll(optional ScrollToOptions)" with the proper type
@@ -196,6 +216,8 @@ PASS HTMLElement interface: document.createElement("img") must inherit property 
 PASS HTMLElement interface: document.createElement("img") must inherit property "offsetHeight" with the proper type
 PASS Element interface: document.createElement("img") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElement("img") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElement("img") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("img") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElement("img") with too few arguments must throw TypeError
 PASS Element interface: document.createElement("img") must inherit property "scroll(optional ScrollToOptions)" with the proper type
@@ -228,6 +250,7 @@ FAIL Element interface: document.createElement("img") must inherit property "con
 FAIL Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
 PASS Window interface: operation matchMedia(CSSOMString)
 PASS Window interface: attribute screen
+PASS Window interface: attribute visualViewport
 PASS Window interface: operation moveTo(long, long)
 PASS Window interface: operation moveBy(long, long)
 PASS Window interface: operation resizeTo(long, long)
@@ -254,6 +277,7 @@ PASS Window interface: attribute devicePixelRatio
 PASS Window interface: window must inherit property "matchMedia(CSSOMString)" with the proper type
 PASS Window interface: calling matchMedia(CSSOMString) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "screen" with the proper type
+PASS Window interface: window must inherit property "visualViewport" with the proper type
 PASS Window interface: window must inherit property "moveTo(long, long)" with the proper type
 PASS Window interface: calling moveTo(long, long) on window with too few arguments must throw TypeError
 PASS Window interface: window must inherit property "moveBy(long, long)" with the proper type
@@ -312,6 +336,7 @@ FAIL Document interface: document must inherit property "convertPointFromNode(DO
 FAIL Document interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
 PASS Element interface: operation getClientRects()
 PASS Element interface: operation getBoundingClientRect()
+PASS Element interface: operation checkVisibility(optional CheckVisibilityOptions)
 PASS Element interface: operation scrollIntoView(optional (boolean or ScrollIntoViewOptions))
 PASS Element interface: operation scroll(optional ScrollToOptions)
 PASS Element interface: operation scroll(unrestricted double, unrestricted double)
@@ -333,6 +358,8 @@ FAIL Element interface: operation convertRectFromNode(DOMRectReadOnly, GeometryN
 FAIL Element interface: operation convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
 PASS Element interface: document.createElementNS("x", "y") must inherit property "getClientRects()" with the proper type
 PASS Element interface: document.createElementNS("x", "y") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "checkVisibility(optional CheckVisibilityOptions)" with the proper type
+PASS Element interface: calling checkVisibility(optional CheckVisibilityOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError
 PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollIntoView(optional (boolean or ScrollIntoViewOptions))" with the proper type
 PASS Element interface: calling scrollIntoView(optional (boolean or ScrollIntoViewOptions)) on document.createElementNS("x", "y") with too few arguments must throw TypeError
 PASS Element interface: document.createElementNS("x", "y") must inherit property "scroll(optional ScrollToOptions)" with the proper type

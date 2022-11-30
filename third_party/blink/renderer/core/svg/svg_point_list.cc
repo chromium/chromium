@@ -22,10 +22,10 @@
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
         !ParseNumber(ptr, end, y, kDisallowWhitespace))
       return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - list_start);
 
-    Append(MakeGarbageCollected<SVGPoint>(FloatPoint(x, y)));
+    Append(MakeGarbageCollected<SVGPoint>(gfx::PointF(x, y)));
 
     if (!SkipOptionalSVGSpaces(ptr, end))
       break;
@@ -65,7 +65,7 @@ SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
 SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   return WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
@@ -80,8 +80,10 @@ void SVGPointList::Add(const SVGPropertyBase* other,
   if (length() != other_list->length())
     return;
 
-  for (uint32_t i = 0; i < length(); ++i)
-    at(i)->SetValue(at(i)->Value() + other_list->at(i)->Value());
+  for (uint32_t i = 0; i < length(); ++i) {
+    at(i)->SetValue(at(i)->Value() +
+                    other_list->at(i)->Value().OffsetFromOrigin());
+  }
 }
 
 void SVGPointList::CalculateAnimatedValue(
@@ -107,23 +109,23 @@ void SVGPointList::CalculateAnimatedValue(
       to_at_end_of_duration_list->length();
 
   for (uint32_t i = 0; i < to_point_list_size; ++i) {
-    FloatPoint effective_from;
+    gfx::PointF effective_from;
     if (from_point_list_size)
       effective_from = from_list->at(i)->Value();
-    FloatPoint effective_to = to_list->at(i)->Value();
-    FloatPoint effective_to_at_end;
+    gfx::PointF effective_to = to_list->at(i)->Value();
+    gfx::PointF effective_to_at_end;
     if (i < to_at_end_of_duration_list_size)
       effective_to_at_end = to_at_end_of_duration_list->at(i)->Value();
 
-    FloatPoint result(
+    gfx::PointF result(
         ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                              effective_from.X(), effective_to.X(),
-                              effective_to_at_end.X()),
+                              effective_from.x(), effective_to.x(),
+                              effective_to_at_end.x()),
         ComputeAnimatedNumber(parameters, percentage, repeat_count,
-                              effective_from.Y(), effective_to.Y(),
-                              effective_to_at_end.Y()));
+                              effective_from.y(), effective_to.y(),
+                              effective_to_at_end.y()));
     if (parameters.is_additive)
-      result += at(i)->Value();
+      result += at(i)->Value().OffsetFromOrigin();
 
     at(i)->SetValue(result);
   }

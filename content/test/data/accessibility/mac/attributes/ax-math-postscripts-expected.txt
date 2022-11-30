@@ -1,0 +1,16 @@
+multiscripts1.AXMathPostscripts.count=3
+multiscripts1.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue='post1'
+multiscripts1.AXMathPostscripts[0].AXMathSuperscript.AXChildren[0].AXValue='post2'
+multiscripts1.AXMathPostscripts[1].AXMathSubscript.AXChildren[0].AXValue='post3'
+multiscripts1.AXMathPostscripts[1].AXMathSuperscript.AXChildren[0].AXValue='post4'
+multiscripts1.AXMathPostscripts[2].AXMathSubscript.AXChildren[0].AXValue='post5'
+multiscripts1.AXMathPostscripts[2].AXMathSuperscript.AXChildren[0].AXValue='post6'
+multiscripts2.AXMathPostscripts.count=2
+multiscripts2.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue='post1'
+multiscripts2.AXMathPostscripts[0].AXMathSuperscript.AXChildren.count=0
+multiscripts2.AXMathPostscripts[1].AXMathSubscript.AXChildren.count=0
+multiscripts2.AXMathPostscripts[1].AXMathSuperscript.AXChildren[0].AXValue='post4'
+multiscripts3.AXMathPostscripts.count=1
+multiscripts3.AXMathPostscripts[0].AXMathSubscript.AXChildren[0].AXValue='1'
+multiscripts3.AXMathPostscripts[0].AXMathSuperscript.AXChildren[0].AXValue='2'
+multiscripts4.AXMathPostscripts=NULL

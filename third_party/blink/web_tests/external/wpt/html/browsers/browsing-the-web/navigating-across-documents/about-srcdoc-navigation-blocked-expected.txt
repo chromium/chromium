@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Navigations to about:srcdoc via window.location are blocked. assert_equals: expected "blocked" but got "allowed"
+FAIL Navigations to about:srcdoc via window.open() are blocked. assert_equals: expected "blocked" but got "allowed"
+Harness: the test ran to completion.
+

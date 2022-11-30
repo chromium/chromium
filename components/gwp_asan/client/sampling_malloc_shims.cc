@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/allocator/allocator_shim.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
@@ -21,7 +20,7 @@
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
@@ -30,7 +29,7 @@ namespace internal {
 
 namespace {
 
-using base::allocator::AllocatorDispatch;
+using allocator_shim::AllocatorDispatch;
 
 // By being implemented as a global with inline method definitions, method calls
 // and member acceses are inlined and as efficient as possible in the
@@ -271,7 +270,7 @@ void InstallMallocHooks(size_t max_allocated_pages,
             false);
   malloc_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(sampling_frequency);
-  base::allocator::InsertAllocatorDispatch(&g_allocator_dispatch);
+  allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);
 }
 
 }  // namespace internal

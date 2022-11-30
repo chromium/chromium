@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -39,8 +39,7 @@ ScopedVABufferMapping::ScopedVABufferMapping(
     VABufferID buffer_id,
     base::OnceCallback<void(VABufferID)> release_callback)
     : lock_(lock), va_display_(va_display), buffer_id_(buffer_id) {
-  DCHECK(lock_);
-  lock_->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock_);
   DCHECK_NE(buffer_id, VA_INVALID_ID);
 
   const VAStatus result =
@@ -55,14 +54,16 @@ ScopedVABufferMapping::ScopedVABufferMapping(
 }
 
 ScopedVABufferMapping::~ScopedVABufferMapping() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (va_buffer_data_) {
-    lock_->AssertAcquired();
+    MAYBE_ASSERT_ACQUIRED(lock_);
     Unmap();
   }
 }
 
 VAStatus ScopedVABufferMapping::Unmap() {
-  lock_->AssertAcquired();
+  CHECK(sequence_checker_.CalledOnValidSequence());
+  MAYBE_ASSERT_ACQUIRED(lock_);
   const VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
   if (result == VA_STATUS_SUCCESS)
     va_buffer_data_ = nullptr;
@@ -78,12 +79,11 @@ std::unique_ptr<ScopedVABuffer> ScopedVABuffer::Create(
     VAContextID va_context_id,
     VABufferType va_buffer_type,
     size_t size) {
-  DCHECK(lock);
   DCHECK(va_display);
   DCHECK_NE(va_context_id, VA_INVALID_ID);
   DCHECK(IsValidVABufferType(va_buffer_type));
   DCHECK_NE(size, 0u);
-  lock->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock);
   unsigned int va_buffer_size;
   if (!base::CheckedNumeric<size_t>(size).AssignIfValid(&va_buffer_size)) {
     LOG(ERROR) << "Invalid size, " << size;
@@ -124,10 +124,10 @@ ScopedVABuffer::ScopedVABuffer(base::Lock* lock,
 
 ScopedVABuffer::~ScopedVABuffer() {
   DCHECK_NE(va_buffer_id_, VA_INVALID_ID);
-  if (!lock_)
+  if (!va_display_)
     return;  // Don't call VA-API function in test.
 
-  base::AutoLock auto_lock(*lock_);
+  base::AutoLockMaybe auto_lock(lock_.get());
   VAStatus va_res = vaDestroyBuffer(va_display_, va_buffer_id_);
   LOG_IF(ERROR, va_res != VA_STATUS_SUCCESS)
       << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
@@ -139,8 +139,7 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
                              VAImageFormat* format,
                              const gfx::Size& size)
     : lock_(lock), va_display_(va_display), image_(new VAImage{}) {
-  DCHECK(lock_);
-  lock_->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock_);
   VAStatus result = vaCreateImage(va_display_, format, size.width(),
                                   size.height(), image_.get());
   if (result != VA_STATUS_SUCCESS) {
@@ -162,8 +161,9 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
 }
 
 ScopedVAImage::~ScopedVAImage() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (image_->image_id != VA_INVALID_ID) {
-    base::AutoLock auto_lock(*lock_);
+    base::AutoLockMaybe auto_lock(lock_.get());
 
     // |va_buffer_| has to be deleted before vaDestroyImage().
     va_buffer_.reset();
@@ -200,11 +200,11 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                            VASliceParameterBufferVP8* slice_param) {
   const Vp8SegmentationHeader& sgmnt_hdr = frame_header.segmentation_hdr;
   const Vp8QuantizationHeader& quant_hdr = frame_header.quantization_hdr;
-  static_assert(base::size(decltype(iq_matrix_buf->quantization_index){}) ==
+  static_assert(std::size(decltype(iq_matrix_buf->quantization_index){}) ==
                     kMaxMBSegments,
                 "incorrect quantization matrix segment size");
   static_assert(
-      base::size(decltype(iq_matrix_buf->quantization_index){}[0]) == 6,
+      std::size(decltype(iq_matrix_buf->quantization_index){}[0]) == 6,
       "incorrect quantization matrix Q index size");
   for (size_t i = 0; i < kMaxMBSegments; ++i) {
     int q = quant_hdr.y_ac_qi;
@@ -218,7 +218,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       }
     }
 
-#define CLAMP_Q(q) base::ClampToRange(q, 0, 127)
+#define CLAMP_Q(q) base::clamp(q, 0, 127)
     iq_matrix_buf->quantization_index[i][0] = CLAMP_Q(q);
     iq_matrix_buf->quantization_index[i][1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
     iq_matrix_buf->quantization_index[i][2] =
@@ -289,7 +289,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   static_assert(std::extent<decltype(sgmnt_hdr.lf_update_value)>() ==
                     std::extent<decltype(pic_param->loop_filter_level)>(),
                 "loop filter level arrays mismatch");
-  for (size_t i = 0; i < base::size(sgmnt_hdr.lf_update_value); ++i) {
+  for (size_t i = 0; i < std::size(sgmnt_hdr.lf_update_value); ++i) {
     int lf_level = lf_hdr.level;
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
@@ -300,7 +300,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       }
     }
 
-    pic_param->loop_filter_level[i] = base::ClampToRange(lf_level, 0, 63);
+    pic_param->loop_filter_level[i] = base::clamp(lf_level, 0, 63);
   }
 
   static_assert(
@@ -313,7 +313,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   static_assert(std::extent<decltype(lf_hdr.ref_frame_delta)>() ==
                     std::extent<decltype(lf_hdr.mb_mode_delta)>(),
                 "loop filter deltas arrays size mismatch");
-  for (size_t i = 0; i < base::size(lf_hdr.ref_frame_delta); ++i) {
+  for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
     pic_param->loop_filter_deltas_ref_frame[i] = lf_hdr.ref_frame_delta[i];
     pic_param->loop_filter_deltas_mode[i] = lf_hdr.mb_mode_delta[i];
   }

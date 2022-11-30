@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -106,7 +107,7 @@ class BackGestureBrowserTest : public InProcessBrowserTest {
   // Navigate to |url| and wait until browser thread is synchronized with render
   // thread. It's needed so that the touch action is correctly initialized.
   void NavigateToURLAndWaitForMainFrame(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
     frame_observer.Wait();
   }

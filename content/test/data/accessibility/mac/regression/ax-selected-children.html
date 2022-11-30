@@ -1,0 +1,15 @@
+<!--
+@SCRIPT:
+  button.accessibilityAttributeValue(AXSelected)
+  div.accessibilityAttributeNames.has(AXSelectedChildren)
+  div.accessibilityAttributeValue(AXSelectedChildren)
+-->
+<!--
+  This is a regression test for bug: 1276763
+  before the fix (3359801), when focus is on the button, the result was:
+  div.accessibilityAttributeValue(AXSelectedChildren)=[:3]
+-->
+<!DOCTYPE html>
+<div id="div">
+  <button autofocus id="button"></button>
+</div>

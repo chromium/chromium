@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,11 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
     }
 
     @Override
+    public NativePageHost getNativePageHost() {
+        return mHost;
+    }
+
+    @Override
     public SnackbarManager getSnackbarManager() {
         return mSnackbarManager;
     }
@@ -67,6 +72,7 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
         mImageFetcher.onDestroy();
 
         for (DestructionObserver observer : mDestructionObservers) observer.onDestroy();
+        mDestructionObservers.clear();
 
         mIsDestroyed = true;
     }

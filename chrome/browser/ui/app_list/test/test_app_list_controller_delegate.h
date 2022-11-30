@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
 
   int64_t GetAppListDisplayId() override;
   void DismissView() override;
-  gfx::NativeWindow GetAppListWindow() override;
+  aura::Window* GetAppListWindow() override;
   bool IsAppPinned(const std::string& app_id) override;
   void PinApp(const std::string& app_id) override;
   void UnpinApp(const std::string& app_id) override;
@@ -26,7 +26,8 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
   bool IsAppOpen(const std::string& app_id) const override;
   void DoShowAppInfoFlow(Profile* profile,
                          const std::string& extension_id) override;
-  void CreateNewWindow(bool incognito) override;
+  void CreateNewWindow(bool incognito,
+                       bool should_trigger_session_restore) override;
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,

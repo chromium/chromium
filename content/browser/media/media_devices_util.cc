@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,21 @@
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -73,9 +76,9 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
   option_tokenizer.set_quote_chars("\"");
 
   while (option_tokenizer.GetNext()) {
-    std::vector<std::string> param =
-        base::SplitString(option_tokenizer.token(), "=", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> param = base::SplitStringPiece(
+        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
     if (param.size() != 2u) {
       DLOG(WARNING) << "Forgot a value '" << option << "'? Use name=value for "
                     << switches::kUseFakeDeviceForMediaStream << ".";
@@ -84,10 +87,10 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
 
     if (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT &&
         param.front() == "audio-input-default-id") {
-      return param.back();
+      return std::string(param.back());
     } else if (device_type == MediaDeviceType::MEDIA_VIDEO_INPUT &&
                param.front() == "video-input-default-id") {
-      return param.back();
+      return std::string(param.back());
     }
   }
 
@@ -100,10 +103,17 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin() = default;
 
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(std::string device_id_salt,
                                                    std::string group_id_salt,
-                                                   url::Origin origin)
+                                                   url::Origin origin,
+                                                   bool has_focus,
+                                                   bool is_background)
     : device_id_salt(std::move(device_id_salt)),
       group_id_salt(std::move(group_id_salt)),
-      origin(std::move(origin)) {}
+      origin(std::move(origin)),
+      has_focus(has_focus),
+      is_background(is_background) {}
+
+MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
+    const MediaDeviceSaltAndOrigin& other) = default;
 
 void GetDefaultMediaDeviceID(
     MediaDeviceType device_type,
@@ -137,19 +147,27 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
 
   url::Origin origin;
   GURL url;
-  GURL site_for_cookies;
+  net::SiteForCookies site_for_cookies;
   url::Origin top_level_origin;
   std::string frame_salt;
+  bool has_focus = true;
+  bool is_background = false;
 
   if (frame_host) {
     origin = frame_host->GetLastCommittedOrigin();
     url = frame_host->GetLastCommittedURL();
-    site_for_cookies = frame_host->ComputeSiteForCookies().RepresentativeUrl();
+    site_for_cookies = frame_host->ComputeSiteForCookies();
     top_level_origin = frame_host->frame_tree_node()
                            ->frame_tree()
                            ->GetMainFrame()
                            ->GetLastCommittedOrigin();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
+    has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+    is_background =
+        web_contents && web_contents->GetDelegate() &&
+        web_contents->GetDelegate()->IsNeverComposited(web_contents);
   }
 
   bool are_persistent_ids_allowed = false;
@@ -175,7 +193,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   group_id_salt += frame_salt + "groupid";
 
   return {std::move(device_id_salt), std::move(group_id_salt),
-          std::move(origin)};
+          std::move(origin), has_focus, is_background};
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(

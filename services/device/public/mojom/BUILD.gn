@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,7 +11,7 @@ mojom("mojom") {
   sources = [
     "battery_monitor.mojom",
     "battery_status.mojom",
-    "bluetooth_system.mojom",
+    "device_posture_provider.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
     "geolocation_config.mojom",
@@ -23,6 +23,8 @@ mojom("mojom") {
     "nfc.mojom",
     "nfc_provider.mojom",
     "power_monitor.mojom",
+    "pressure_manager.mojom",
+    "pressure_update.mojom",
     "public_ip_address_geolocation_provider.mojom",
     "screen_orientation.mojom",
     "screen_orientation_lock_types.mojom",
@@ -37,6 +39,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_proxy_config",
     "//services/network/public/mojom:url_loader_base",
     "//url/mojom:url_mojom_gurl",
   ]
@@ -57,8 +60,6 @@ mojom("mojom") {
           cpp = "::std::array<::uint8_t, 6>"
         },
       ]
-      traits_headers = [ "//services/device/public/cpp/bluetooth/bluetooth_system_mojom_traits.h" ]
-      traits_sources = [ "//services/device/public/cpp/bluetooth/bluetooth_system_mojom_traits.cc" ]
       traits_public_deps = [ "//base" ]
     },
   ]
@@ -72,8 +73,8 @@ mojom("mojom") {
   export_header_blink = "third_party/blink/public/platform/web_common.h"
 
   visibility_blink = [
-    "//third_party/blink/renderer/bindings/modules/v8:generate_mojo_bindings",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
+    "//third_party/blink/renderer/platform/media:*",
     "//third_party/blink/public/mojom:mojom_platform_blink",
   ]
 }
@@ -93,6 +94,13 @@ mojom("device_service") {
 
   if (!is_android) {
     enabled_features += [ "enable_hid" ]
+  }
+
+  # While the device posture API applies to all platforms, only Android and
+  # Windows can fetch posture information so we only build mojo bindings on
+  # these platforms
+  if (is_android || is_win) {
+    enabled_features += [ "enable_device_posture" ]
   }
 
   public_deps = [
@@ -142,6 +150,8 @@ mojom("generic_sensor") {
           [ "//services/device/public/cpp/generic_sensor:sensor_configuration" ]
     },
   ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 mojom("usb") {
@@ -173,7 +183,7 @@ mojom("usb") {
 
   visibility_blink = [
     ":*",
-    "//components/arc/mojom:mojom_blink",
+    "//ash/components/arc/mojom:mojom_blink",
     "//third_party/blink/public/mojom/usb:usb_blink",
     "//third_party/blink/renderer/modules/webusb",
     "//chrome/browser/ui/webui/usb_internals:mojo_bindings_blink",

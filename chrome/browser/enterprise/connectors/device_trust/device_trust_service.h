@@ -1,73 +1,90 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
-#include "build/build_config.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-
 #include <memory>
+#include <string>
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
-class KeyedService;
-class Profile;
-class PrefService;
-namespace enterprise_connectors {
-class DeviceTrustSignalReporter;
-}
+class GURL;
 
 namespace enterprise_connectors {
 
+struct AttestationResponse;
+class AttestationService;
+class DeviceTrustConnectorService;
+struct DeviceTrustResponse;
+class SignalsService;
+
+// Main service used to drive device trust connector scenarios. It is currently
+// used to generate a response for a crypto challenge received from Verified
+// Access during an attestation flow.
 class DeviceTrustService : public KeyedService {
  public:
+  using DeviceTrustCallback =
+      base::OnceCallback<void(const DeviceTrustResponse&)>;
+
+  // Callback used by the data_decoder to get the parsed json result.
+  using ParseJsonChallengeCallback =
+      base::OnceCallback<void(const std::string&)>;
+
+  DeviceTrustService(std::unique_ptr<AttestationService> attestation_service,
+                     std::unique_ptr<SignalsService> signals_service,
+                     DeviceTrustConnectorService* connector);
+
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
 
-  // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
-  bool IsEnabled() const;
-
-  // These methods are added to facilitate testing, because this class is
-  // usually created by its factory.
-  void SetSignalReporterForTesting(
-      std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter>
-          reporter);
-  void SetSignalReportCallbackForTesting(base::OnceCallback<void(bool)> cb);
-
- private:
-  friend class DeviceTrustFactory;
-
-  DeviceTrustService();
-  explicit DeviceTrustService(Profile* profile);
   ~DeviceTrustService() override;
 
-  void Shutdown() override;
+  // Check if DeviceTrustService is enabled.  This method may be called from
+  // any task sequence.
+  virtual bool IsEnabled() const;
 
-  void OnPolicyUpdated();
-  void OnReporterInitialized(bool success);
-  void OnSignalReported(bool success);
+  // Uses the challenge stored in `serialized_challenge` to generate a
+  // challenge-response containing device signals and a device identity
+  // signature to be used in an attestation flow. Returns the challenge response
+  // asynchronously via `callback`.
+  virtual void BuildChallengeResponse(const std::string& serialized_challenge,
+                                      DeviceTrustCallback callback);
 
-  PrefService* prefs_;
+  // Returns whether the Device Trust connector watches navigations to the given
+  // `url` or not.
+  virtual bool Watches(const GURL& url) const;
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  std::unique_ptr<DeviceTrustKeyPair> key_pair_;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  // Collects device trust signals and returns them via `callback`.
+  void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
 
-  PrefChangeRegistrar pref_observer_;
-  bool first_report_sent_;
+  // Parses the `serialized_challenge` and returns its value via `callback`.
+  void ParseJsonChallenge(const std::string& serialized_challenge,
+                          ParseJsonChallengeCallback callback);
 
-  std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
-  base::OnceCallback<void(bool)> signal_report_callback_;
+ protected:
+  // Default constructor that can be used by mocks to bypass initialization.
+  DeviceTrustService();
+
+ private:
+  void OnChallengeParsed(DeviceTrustCallback callback,
+                         const std::string& challenge);
+  void OnSignalsCollected(const std::string& challenge,
+                          DeviceTrustCallback callback,
+                          base::Value::Dict signals);
+  void OnAttestationResponseReceived(
+      DeviceTrustCallback callback,
+      const AttestationResponse& attestation_response);
+
+  std::unique_ptr<AttestationService> attestation_service_;
+  std::unique_ptr<SignalsService> signals_service_;
+  const raw_ptr<DeviceTrustConnectorService> connector_{nullptr};
+  data_decoder::DataDecoder data_decoder_;
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };
 

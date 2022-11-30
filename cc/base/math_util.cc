@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,39 +11,43 @@
 #include <xmmintrin.h>
 #endif
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 
 static HomogeneousCoordinate ProjectHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
-  SkScalar z =
-      -(transform.matrix().get(2, 0) * p.x() +
-        transform.matrix().get(2, 1) * p.y() + transform.matrix().get(2, 3)) /
-      transform.matrix().get(2, 2);
-
+  SkScalar m22 = transform.rc(2, 2);
   // In this case, the layer we are trying to project onto is perpendicular to
   // ray (point p and z-axis direction) that we are trying to project. This
   // happens when the layer is rotated so that it is infinitesimally thin, or
   // when it is co-planar with the camera origin -- i.e. when the layer is
   // invisible anyway.
+  if (!std::isnormal(m22))
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  SkScalar z = -(transform.rc(2, 0) * p.x() + transform.rc(2, 1) * p.y() +
+                 transform.rc(2, 3)) /
+               m22;
+  // Same underlying condition as the previous early return.
   if (!std::isfinite(z))
     return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
-  transform.matrix().mapScalars(result.vec, result.vec);
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -58,23 +62,27 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
 
 static HomogeneousCoordinate MapHomogeneousPoint(
     const gfx::Transform& transform,
-    const gfx::Point3F& p) {
-  HomogeneousCoordinate result(p.x(), p.y(), p.z(), 1.0);
-  transform.matrix().mapScalars(result.vec, result.vec);
+    const gfx::PointF& p) {
+  HomogeneousCoordinate result(p.x(), p.y(), 0.0, 1.0);
+  transform.TransformVector4(result.vec);
   return result;
 }
 
-static void homogenousLimitAtZero(SkScalar a1,
-                                  SkScalar w1,
-                                  SkScalar a2,
-                                  SkScalar w2,
-                                  float t,
-                                  float* limit) {
-  // This is the tolerance for detecting an eyepoint-aligned edge.
-  static const float kStationaryPointEplison = 0.00001f;
+namespace {
 
-  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEplison) {
-    // We are going to explode towards an infity, but we choose the one that
+// This is the tolerance for detecting an eyepoint-aligned edge.
+const float kStationaryPointEpsilon = 0.00001f;
+
+}  // namespace
+
+static void homogeneousLimitAtZero(SkScalar a1,
+                                   SkScalar w1,
+                                   SkScalar a2,
+                                   SkScalar w2,
+                                   float t,
+                                   float* limit) {
+  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
+    // We are going to explode towards an infinity, but we choose the one that
     // corresponds to the one on the positive side of w.
     if (((1.0f - t) * a1 + t * a2) > 0) {
       *limit = HomogeneousCoordinate::kInfiniteCoordinate;
@@ -102,14 +110,41 @@ static gfx::PointF ComputeClippedCartesianPoint2dForEdge(
   // i.e., either the coordinate is not moving, or is trending to one
   // infinity or the other.
 
+  // This assertion isn't really as strong as it looks because
+  // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
+  // (and they could be NaN).
+  // TODO(crbug.com/1219622): We should be able to assert something
+  // stronger here, and avoid dependencies on undefined floating point
+  // behavior.
+  DCHECK_NE(h1.w() <= 0, h2.w() <= 0);
+
   float t = h1.w() / (h1.w() - h2.w());
   float x;
   float y;
 
-  homogenousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
-  homogenousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
+  homogeneousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
+  homogeneousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
 
   return gfx::PointF(x, y);
+}
+
+static void homogeneousLimitNearZero(SkScalar a1,
+                                     SkScalar w1,
+                                     SkScalar a2,
+                                     SkScalar w2,
+                                     float t,
+                                     float* limit) {
+  if (std::abs(a1 * w2 / w1 / a2 - 1.0f) > kStationaryPointEpsilon) {
+    // t has been computed so that w is near but not at zero.
+    *limit = ((1.0f - t) * a1 + t * a2) / ((1.0f - t) * w1 + t * w2);
+    // std::abs(*limit) should now be somewhere near
+    // HomogeneousCoordinate::kInfiniteCoordinate, preferably smaller than it,
+    // but there are edge cases where it will be larger (for example, if the
+    // point where a crosses 0 is very close to the point where w crosses 0),
+    // so it's hard to DCHECK() that this is the case.
+  } else {
+    *limit = a1 / w1;  // (== a2 / w2) && == (1.0f - t) * a1 / w1 + t * a2 / w2
+  }
 }
 
 static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
@@ -129,14 +164,47 @@ static gfx::Point3F ComputeClippedCartesianPoint3dForEdge(
   // i.e., either the coordinate is not moving, or is trending to one
   // infinity or the other.
 
-  float t = h1.w() / (h1.w() - h2.w());
+  // When we clamp to HomogeneousCoordinate::kInfiniteCoordinate we want
+  // to keep the result in the correct plane, which we do by computing
+  // a t that will result in the largest (in absolute value) of x, y, or
+  // z being HomogeneousCoordinate::kInfiniteCoordinate
+
+  // This assertion isn't really as strong as it looks because
+  // std::isfinite(h1.w()) or std::isfinite(h2.w()) might not be true
+  // (and they could be NaN).
+  // TODO(crbug.com/1219622): We should be able to assert something
+  // stronger here, and avoid dependencies on undefined floating point
+  // behavior.
+  DCHECK_NE(h1.w() <= 0, h2.w() <= 0);
+
+  float w_diff = h1.w() - h2.w();
+  float t = h1.w() / w_diff;
+  float max_numerator = std::max({std::abs((1.0f - t) * h1.x() + t * h2.x()),
+                                  std::abs((1.0f - t) * h1.y() + t * h2.y()),
+                                  std::abs((1.0f - t) * h1.z() + t * h2.z())});
+
+  // Shift t away from the point where w is zero, far enough so that the
+  // largest of the resulting x, y, and z will be about
+  // kInfiniteCoordinate.  Add an extra epsilon() / 2.0 so that there's
+  // always enough movement (in case t_shift is very small, which it
+  // often is).
+  const float t_shift =
+      max_numerator / w_diff / HomogeneousCoordinate::kInfiniteCoordinate;
+  constexpr float half_epsilon = std::numeric_limits<float>::epsilon() / 2.0f;
+  DCHECK_EQ(w_diff > 0, t_shift > 0);
+  if (w_diff > 0) {
+    t = std::max(0.0f, t - (t_shift + half_epsilon));
+  } else {
+    t = std::min(1.0f, t - (t_shift - half_epsilon));
+  }
+
   float x;
   float y;
   float z;
 
-  homogenousLimitAtZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
-  homogenousLimitAtZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
-  homogenousLimitAtZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
+  homogeneousLimitNearZero(h1.x(), h1.w(), h2.x(), h2.w(), t, &x);
+  homogeneousLimitNearZero(h1.y(), h1.w(), h2.y(), h2.w(), t, &y);
+  homogeneousLimitNearZero(h1.z(), h1.w(), h2.z(), h2.w(), t, &z);
 
   return gfx::Point3F(x, y, z);
 }
@@ -175,14 +243,24 @@ static inline bool IsNearlyTheSame(const gfx::Point3F& lhs,
 
 static inline void AddVertexToClippedQuad3d(const gfx::Point3F& new_vertex,
                                             gfx::Point3F clipped_quad[6],
-                                            int* num_vertices_in_clipped_quad) {
+                                            int* num_vertices_in_clipped_quad,
+                                            bool* need_to_clamp) {
   if (*num_vertices_in_clipped_quad > 0 &&
       IsNearlyTheSame(clipped_quad[*num_vertices_in_clipped_quad - 1],
                       new_vertex))
     return;
 
+  DCHECK_LT(*num_vertices_in_clipped_quad, 6);
   clipped_quad[*num_vertices_in_clipped_quad] = new_vertex;
   (*num_vertices_in_clipped_quad)++;
+  if (new_vertex.x() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.x() > HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.y() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.y() > HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.z() < -HomogeneousCoordinate::kInfiniteCoordinate ||
+      new_vertex.z() > HomogeneousCoordinate::kInfiniteCoordinate) {
+    *need_to_clamp = true;
+  }
 }
 
 gfx::Rect MathUtil::MapEnclosingClippedRect(const gfx::Transform& transform,
@@ -194,58 +272,35 @@ gfx::Rect MathUtil::MapEnclosingClippedRectIgnoringError(
     const gfx::Transform& transform,
     const gfx::Rect& src_rect,
     float ignore_error) {
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().getFloat(0, 3)),
-                         static_cast<int>(transform.matrix().getFloat(1, 3)));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return src_rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
+
   gfx::RectF mapped_rect = MapClippedRect(transform, gfx::RectF(src_rect));
-
-  // gfx::ToEnclosingRect crashes if called on a RectF with any NaN coordinate.
-  if (std::isnan(mapped_rect.x()) || std::isnan(mapped_rect.y()) ||
-      std::isnan(mapped_rect.right()) || std::isnan(mapped_rect.bottom()))
-    return gfx::Rect();
-
   return gfx::ToEnclosingRectIgnoringError(mapped_rect, ignore_error);
 }
 
 gfx::RectF MathUtil::MapClippedRect(const gfx::Transform& transform,
                                     const gfx::RectF& src_rect) {
-  if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().getFloat(0, 3),
-                          transform.matrix().getFloat(1, 3));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrTranslation())
+    return src_rect + transform.To2dTranslation();
 
   // Apply the transform, but retain the result in homogeneous coordinates.
+  HomogeneousCoordinate hc0 = MapHomogeneousPoint(transform, src_rect.origin());
+  HomogeneousCoordinate hc1 =
+      MapHomogeneousPoint(transform, src_rect.top_right());
+  HomogeneousCoordinate hc2 =
+      MapHomogeneousPoint(transform, src_rect.bottom_right());
+  HomogeneousCoordinate hc3 =
+      MapHomogeneousPoint(transform, src_rect.bottom_left());
 
-  SkScalar quad[4 * 2];  // input: 4 x 2D points
-  quad[0] = src_rect.x();
-  quad[1] = src_rect.y();
-  quad[2] = src_rect.right();
-  quad[3] = src_rect.y();
-  quad[4] = src_rect.right();
-  quad[5] = src_rect.bottom();
-  quad[6] = src_rect.x();
-  quad[7] = src_rect.bottom();
-
-  SkScalar result[4 * 4];  // output: 4 x 4D homogeneous points
-  transform.matrix().map2(quad, 4, result);
-
-  HomogeneousCoordinate hc0(result[0], result[1], result[2], result[3]);
-  HomogeneousCoordinate hc1(result[4], result[5], result[6], result[7]);
-  HomogeneousCoordinate hc2(result[8], result[9], result[10], result[11]);
-  HomogeneousCoordinate hc3(result[12], result[13], result[14], result[15]);
   return ComputeEnclosingClippedRect(hc0, hc1, hc2, hc3);
 }
 
 gfx::Rect MathUtil::ProjectEnclosingClippedRect(const gfx::Transform& transform,
                                                 const gfx::Rect& src_rect) {
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().getFloat(0, 3)),
-                         static_cast<int>(transform.matrix().getFloat(1, 3)));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return src_rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
+
   gfx::RectF projected_rect =
       ProjectClippedRect(transform, gfx::RectF(src_rect));
 
@@ -259,11 +314,8 @@ gfx::Rect MathUtil::ProjectEnclosingClippedRect(const gfx::Transform& transform,
 
 gfx::RectF MathUtil::ProjectClippedRect(const gfx::Transform& transform,
                                         const gfx::RectF& src_rect) {
-  if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().getFloat(0, 3),
-                          transform.matrix().getFloat(1, 3));
-    return src_rect + offset;
-  }
+  if (transform.IsIdentityOrTranslation())
+    return src_rect + transform.To2dTranslation();
 
   // Perform the projection, but retain the result in homogeneous coordinates.
   gfx::QuadF q = gfx::QuadF(src_rect);
@@ -280,6 +332,7 @@ gfx::QuadF MathUtil::InverseMapQuadToLocalSpace(
     const gfx::QuadF& device_quad) {
   gfx::Transform inverse_device_transform(gfx::Transform::kSkipInitialization);
   DCHECK(device_transform.IsInvertible());
+  DCHECK(device_transform.IsFlat());
   bool did_invert = device_transform.GetInverse(&inverse_device_transform);
   DCHECK(did_invert);
   bool clipped = false;
@@ -295,29 +348,20 @@ gfx::Rect MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
     const gfx::Transform& transform,
     const gfx::Rect& rect) {
   DCHECK(transform.Preserves2dAxisAlignment());
+  DCHECK_GT(transform.rc(3, 3), 0);
+  DCHECK(std::isnormal(transform.rc(3, 3)));
 
-  if (transform.IsIdentityOrIntegerTranslation()) {
-    gfx::Vector2d offset(static_cast<int>(transform.matrix().getFloat(0, 3)),
-                         static_cast<int>(transform.matrix().getFloat(1, 3)));
-    return rect + offset;
-  }
+  if (transform.IsIdentityOrIntegerTranslation())
+    return rect + gfx::ToFlooredVector2d(transform.To2dTranslation());
   if (transform.IsIdentityOrTranslation()) {
-    gfx::Vector2dF offset(transform.matrix().getFloat(0, 3),
-                          transform.matrix().getFloat(1, 3));
+    gfx::Vector2dF offset = transform.To2dTranslation();
     return gfx::ToEnclosedRect(gfx::RectF(rect) + offset);
   }
 
-  SkScalar quad[2 * 2];  // input: 2 x 2D points
-  quad[0] = rect.x();
-  quad[1] = rect.y();
-  quad[2] = rect.right();
-  quad[3] = rect.bottom();
-
-  SkScalar result[4 * 2];  // output: 2 x 4D homogeneous points
-  transform.matrix().map2(quad, 2, result);
-
-  HomogeneousCoordinate hc0(result[0], result[1], result[2], result[3]);
-  HomogeneousCoordinate hc1(result[4], result[5], result[6], result[7]);
+  HomogeneousCoordinate hc0 =
+      MapHomogeneousPoint(transform, gfx::PointF(rect.origin()));
+  HomogeneousCoordinate hc1 =
+      MapHomogeneousPoint(transform, gfx::PointF(rect.bottom_right()));
   DCHECK(!hc0.ShouldBeClipped());
   DCHECK(!hc1.ShouldBeClipped());
 
@@ -330,64 +374,211 @@ bool MathUtil::MapClippedQuad3d(const gfx::Transform& transform,
                                 const gfx::QuadF& src_quad,
                                 gfx::Point3F clipped_quad[6],
                                 int* num_vertices_in_clipped_quad) {
-  HomogeneousCoordinate h1 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p1()));
-  HomogeneousCoordinate h2 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p2()));
-  HomogeneousCoordinate h3 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p3()));
-  HomogeneousCoordinate h4 =
-      MapHomogeneousPoint(transform, gfx::Point3F(src_quad.p4()));
+  // This is different from the 2D version because, when we clamp
+  // coordinates to [-HomogeneousCoordinate::kInfiniteCoordinate,
+  // HomogeneousCoordinate::kInfiniteCoordinate], we need to do the
+  // clamping while keeping the points coplanar.
+
+  HomogeneousCoordinate h1 = MapHomogeneousPoint(transform, src_quad.p1());
+  HomogeneousCoordinate h2 = MapHomogeneousPoint(transform, src_quad.p2());
+  HomogeneousCoordinate h3 = MapHomogeneousPoint(transform, src_quad.p3());
+  HomogeneousCoordinate h4 = MapHomogeneousPoint(transform, src_quad.p4());
 
   // The order of adding the vertices to the array is chosen so that
   // clockwise / counter-clockwise orientation is retained.
 
   *num_vertices_in_clipped_quad = 0;
+  bool need_to_clamp = false;
 
   if (!h1.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h1.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h1.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h1.ShouldBeClipped() ^ h2.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h1, h2),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h2.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h2.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h2.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h2.ShouldBeClipped() ^ h3.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h2, h3),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h3.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h3.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h3.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h3.ShouldBeClipped() ^ h4.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h3, h4),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (!h4.ShouldBeClipped()) {
-    AddVertexToClippedQuad3d(
-        h4.CartesianPoint3d(), clipped_quad, num_vertices_in_clipped_quad);
+    AddVertexToClippedQuad3d(h4.CartesianPoint3dUnclamped(), clipped_quad,
+                             num_vertices_in_clipped_quad, &need_to_clamp);
   }
 
   if (h4.ShouldBeClipped() ^ h1.ShouldBeClipped()) {
     AddVertexToClippedQuad3d(ComputeClippedCartesianPoint3dForEdge(h4, h1),
-                             clipped_quad, num_vertices_in_clipped_quad);
+                             clipped_quad, num_vertices_in_clipped_quad,
+                             &need_to_clamp);
   }
 
   if (*num_vertices_in_clipped_quad > 2 &&
       IsNearlyTheSame(clipped_quad[0],
                       clipped_quad[*num_vertices_in_clipped_quad - 1]))
     *num_vertices_in_clipped_quad -= 1;
+
+  if (need_to_clamp) {
+    // Some of the values need to be clamped, but we need to keep them
+    // coplanar while doing so.
+
+    // First, build a normal vector to the plane by averaging the
+    // cross products of adjacent edges.
+    gfx::Vector3dF normal(0.0f, 0.0f, 0.0f);
+    if (*num_vertices_in_clipped_quad > 2) {
+      gfx::Vector3dF loop_vector =
+          clipped_quad[0] - clipped_quad[*num_vertices_in_clipped_quad - 1];
+      gfx::Vector3dF prev_vector(loop_vector);
+      for (int i = 1; i < *num_vertices_in_clipped_quad; ++i) {
+        gfx::Vector3dF cur_vector = clipped_quad[i] - clipped_quad[i - 1];
+        normal += CrossProduct(prev_vector, cur_vector);
+        prev_vector = cur_vector;
+      }
+      normal += CrossProduct(prev_vector, loop_vector);
+    }
+
+    bool clamp_by_points = false;
+    float length = normal.Length();
+    if (std::isnormal(length)) {  // exclude 0, denormals, +/- inf, NaN
+      normal.InvScale(length);
+
+      // Find the vector to the point in the plane closest to (0,0,0).
+      gfx::Vector3dF shortest_from_zero(normal);
+      shortest_from_zero.Scale(
+          DotProduct(normal, clipped_quad[0] - gfx::Point3F(0.0f, 0.0f, 0.0f)));
+
+      // Find the the point in the plane that is at x=0 and y=0
+      float z_at_xy_zero = 0.0f;
+      if (shortest_from_zero.x() == 0.0f && shortest_from_zero.y() == 0.0f) {
+        z_at_xy_zero = shortest_from_zero.z();
+      } else if (shortest_from_zero.z() != 0) {
+        // Compute the vector v pointing from the shortest_from_zero
+        // point to the point with x=0 and y=0.  If both v and normal
+        // are projected into the x/y plane, they should point in
+        // opposite directions.
+        gfx::Vector3dF v = CrossProduct(
+            normal, CrossProduct(gfx::Vector3dF(0.0f, 0.0f, 1.0f), normal));
+        DCHECK(std::abs(normal.x() * v.y() - normal.y() * v.x()) < 0.00001f);
+        // It doesn't matter whether we use x or y, unless one of them
+        // is zero or very close to it.
+        float r = std::abs(v.x()) > std::abs(v.y())
+                      ? shortest_from_zero.x() / v.x()
+                      : shortest_from_zero.y() / v.y();
+        z_at_xy_zero = shortest_from_zero.z() - v.z() * r;
+      } else {
+        // Plane is parallel to the z axis.  This means it's not
+        // visible, so just fall back to clamping by points.
+        clamp_by_points = true;
+      }
+
+      if (!clamp_by_points) {
+        // If z_at_xy_zero is more than 3/4 of kInfiniteCoordinate
+        // distance from zero, move everything in the z axis so
+        // z_at_xy_zero is that distance from zero, so that we don't end
+        // up clamping away the parts that fit within what's likely to
+        // be the visible area.
+        constexpr float max_distance =
+            0.75 * HomogeneousCoordinate::kInfiniteCoordinate;
+        if (std::abs(z_at_xy_zero) > max_distance) {
+          float z_delta;
+          if (z_at_xy_zero > 0) {
+            z_delta = max_distance - z_at_xy_zero;
+          } else {
+            z_delta = -max_distance - z_at_xy_zero;
+          }
+          for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+            clipped_quad[i].set_z(clipped_quad[i].z() + z_delta);
+          }
+          z_at_xy_zero += z_delta;
+        }
+
+        // Move all the points towards (0, 0, z_at_xy_zero) until all
+        // their coordinates are less than kInfiniteCoordinate.
+        for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+          gfx::Point3F& point = clipped_quad[i];
+          float t = 1.0f;
+
+          float x_abs = std::abs(point.x());
+          if (x_abs > HomogeneousCoordinate::kInfiniteCoordinate) {
+            t = std::min(t, HomogeneousCoordinate::kInfiniteCoordinate / x_abs);
+          }
+
+          float y_abs = std::abs(point.y());
+          if (y_abs > HomogeneousCoordinate::kInfiniteCoordinate) {
+            t = std::min(t, HomogeneousCoordinate::kInfiniteCoordinate / y_abs);
+          }
+
+          float z = point.z();
+          if (std::abs(z) > HomogeneousCoordinate::kInfiniteCoordinate) {
+            // From the clamping to max_distance above, we should have
+            // made std::abs(z_at_xy_zero) < kInfiniteCoordinate.
+            // However, if it started off very large we might not have.
+            float z_at_xy_zero_clamped =
+                std::min(float{HomogeneousCoordinate::kInfiniteCoordinate},
+                         std::max(-HomogeneousCoordinate::kInfiniteCoordinate,
+                                  z_at_xy_zero));
+            float z_offset = z - z_at_xy_zero_clamped;
+            float z_space =
+                (z > 0 ? HomogeneousCoordinate::kInfiniteCoordinate
+                       : -HomogeneousCoordinate::kInfiniteCoordinate) -
+                z_at_xy_zero_clamped;
+            DCHECK_NE(z_offset, 0.0f);
+            DCHECK_NE(z_space, 0.0f);
+            DCHECK_EQ(z_offset > 0, z_space > 0);
+            t = std::min(t, z_space / z_offset);
+          }
+
+          if (t != 1.0f) {
+            DCHECK(0.0f <= t && t < 1.0f);
+            point.set_x(t * point.x());
+            point.set_y(t * point.y());
+            point.set_z((1.0f - t) * z_at_xy_zero + t * point.z());
+          }
+        }
+      }
+    } else {
+      // Our points were colinear, so there's no plane to maintain.
+      clamp_by_points = true;
+    }
+
+    if (clamp_by_points) {
+      // Just clamp each point separately in each axis, just like we do
+      // for 2D.
+      for (int i = 0; i < *num_vertices_in_clipped_quad; ++i) {
+        gfx::Point3F& point = clipped_quad[i];
+        point.set_x(
+            base::clamp(point.x(), -HomogeneousCoordinate::kInfiniteCoordinate,
+                        float{HomogeneousCoordinate::kInfiniteCoordinate}));
+        point.set_y(
+            base::clamp(point.y(), -HomogeneousCoordinate::kInfiniteCoordinate,
+                        float{HomogeneousCoordinate::kInfiniteCoordinate}));
+        point.set_z(
+            base::clamp(point.z(), -HomogeneousCoordinate::kInfiniteCoordinate,
+                        float{HomogeneousCoordinate::kInfiniteCoordinate}));
+      }
+    }
+  }
 
   DCHECK_LE(*num_vertices_in_clipped_quad, 6);
   return (*num_vertices_in_clipped_quad >= 4);
@@ -483,20 +674,15 @@ gfx::QuadF MathUtil::MapQuad(const gfx::Transform& transform,
                              bool* clipped) {
   if (transform.IsIdentityOrTranslation()) {
     gfx::QuadF mapped_quad(q);
-    mapped_quad += gfx::Vector2dF(transform.matrix().getFloat(0, 3),
-                                  transform.matrix().getFloat(1, 3));
+    mapped_quad += transform.To2dTranslation();
     *clipped = false;
     return mapped_quad;
   }
 
-  HomogeneousCoordinate h1 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p1()));
-  HomogeneousCoordinate h2 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p2()));
-  HomogeneousCoordinate h3 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p3()));
-  HomogeneousCoordinate h4 =
-      MapHomogeneousPoint(transform, gfx::Point3F(q.p4()));
+  HomogeneousCoordinate h1 = MapHomogeneousPoint(transform, q.p1());
+  HomogeneousCoordinate h2 = MapHomogeneousPoint(transform, q.p2());
+  HomogeneousCoordinate h3 = MapHomogeneousPoint(transform, q.p3());
+  HomogeneousCoordinate h4 = MapHomogeneousPoint(transform, q.p4());
 
   *clipped = h1.ShouldBeClipped() || h2.ShouldBeClipped() ||
             h3.ShouldBeClipped() || h4.ShouldBeClipped();
@@ -512,7 +698,7 @@ gfx::QuadF MathUtil::MapQuad(const gfx::Transform& transform,
 gfx::PointF MathUtil::MapPoint(const gfx::Transform& transform,
                                const gfx::PointF& p,
                                bool* clipped) {
-  HomogeneousCoordinate h = MapHomogeneousPoint(transform, gfx::Point3F(p));
+  HomogeneousCoordinate h = MapHomogeneousPoint(transform, p);
 
   if (h.w() > 0) {
     *clipped = false;
@@ -570,10 +756,11 @@ gfx::RectF MathUtil::ScaleRectProportional(const gfx::RectF& input_outer_rect,
       scale_inner_rect.origin() - scale_outer_rect.origin();
   gfx::Vector2dF bottom_right_diff =
       scale_inner_rect.bottom_right() - scale_outer_rect.bottom_right();
-  output_inner_rect.Inset(top_left_diff.x() / scale_rect_to_input_scale_x,
-                          top_left_diff.y() / scale_rect_to_input_scale_y,
-                          -bottom_right_diff.x() / scale_rect_to_input_scale_x,
-                          -bottom_right_diff.y() / scale_rect_to_input_scale_y);
+  output_inner_rect.Inset(
+      gfx::InsetsF::TLBR(top_left_diff.y() / scale_rect_to_input_scale_y,
+                         top_left_diff.x() / scale_rect_to_input_scale_x,
+                         -bottom_right_diff.y() / scale_rect_to_input_scale_y,
+                         -bottom_right_diff.x() / scale_rect_to_input_scale_x));
   return output_inner_rect;
 }
 
@@ -581,7 +768,7 @@ float MathUtil::SmallestAngleBetweenVectors(const gfx::Vector2dF& v1,
                                             const gfx::Vector2dF& v2) {
   double dot_product = gfx::DotProduct(v1, v2) / v1.Length() / v2.Length();
   // Clamp to compensate for rounding errors.
-  dot_product = base::ClampToRange(dot_product, -1.0, 1.0);
+  dot_product = base::clamp(dot_product, -1.0, 1.0);
   return static_cast<float>(gfx::RadToDeg(std::acos(dot_product)));
 }
 
@@ -594,21 +781,24 @@ gfx::Vector2dF MathUtil::ProjectVector(const gfx::Vector2dF& source,
 }
 
 bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {
-  const base::ListValue* value = nullptr;
-  if (!raw_value->GetAsList(&value))
+  if (!raw_value->is_list())
     return false;
 
-  if (value->GetSize() != 4)
+  base::Value::ConstListView list_view = raw_value->GetListDeprecated();
+
+  if (list_view.size() != 4)
     return false;
 
-  int x, y, w, h;
-  bool ok = true;
-  ok &= value->GetInteger(0, &x);
-  ok &= value->GetInteger(1, &y);
-  ok &= value->GetInteger(2, &w);
-  ok &= value->GetInteger(3, &h);
-  if (!ok)
-    return false;
+  for (const auto& val : list_view) {
+    if (!val.is_int()) {
+      return false;
+    }
+  }
+
+  int x = list_view[0].GetInt();
+  int y = list_view[1].GetInt();
+  int w = list_view[2].GetInt();
+  int h = list_view[3].GetInt();
 
   *out_rect = gfx::Rect(x, y, w, h);
   return true;
@@ -690,15 +880,6 @@ void MathUtil::AddToTracedValue(const char* name,
 }
 
 void MathUtil::AddToTracedValue(const char* name,
-                                const gfx::ScrollOffset& v,
-                                base::trace_event::TracedValue* res) {
-  res->BeginArray(name);
-  res->AppendDouble(v.x());
-  res->AppendDouble(v.y());
-  res->EndArray();
-}
-
-void MathUtil::AddToTracedValue(const char* name,
                                 const gfx::QuadF& q,
                                 base::trace_event::TracedValue* res) {
   res->BeginArray(name);
@@ -728,10 +909,9 @@ void MathUtil::AddToTracedValue(const char* name,
                                 const gfx::Transform& transform,
                                 base::trace_event::TracedValue* res) {
   res->BeginArray(name);
-  const SkMatrix44& m = transform.matrix();
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col)
-      res->AppendDouble(m.getDouble(row, col));
+      res->AppendDouble(transform.rc(row, col));
   }
   res->EndArray();
 }
@@ -784,6 +964,19 @@ void MathUtil::AddCornerRadiiToTracedValue(
   res->EndArray();
 }
 
+void MathUtil::AddToTracedValue(const char* name,
+                                const gfx::LinearGradient& gradient,
+                                base::trace_event::TracedValue* res) {
+  res->BeginArray(name);
+  res->AppendInteger(gradient.angle());
+  res->AppendInteger(gradient.step_count());
+  for (size_t i = 0; i < gradient.step_count(); i++) {
+    res->AppendDouble(gradient.steps()[i].fraction);
+    res->AppendInteger(gradient.steps()[i].alpha);
+  }
+  res->EndArray();
+}
+
 double MathUtil::AsDoubleSafely(double value) {
   return std::min(value, std::numeric_limits<double>::max());
 }
@@ -793,15 +986,13 @@ float MathUtil::AsFloatSafely(float value) {
 }
 
 gfx::Vector3dF MathUtil::GetXAxis(const gfx::Transform& transform) {
-  return gfx::Vector3dF(transform.matrix().getFloat(0, 0),
-                        transform.matrix().getFloat(1, 0),
-                        transform.matrix().getFloat(2, 0));
+  return gfx::Vector3dF(transform.rc(0, 0), transform.rc(1, 0),
+                        transform.rc(2, 0));
 }
 
 gfx::Vector3dF MathUtil::GetYAxis(const gfx::Transform& transform) {
-  return gfx::Vector3dF(transform.matrix().getFloat(0, 1),
-                        transform.matrix().getFloat(1, 1),
-                        transform.matrix().getFloat(2, 1));
+  return gfx::Vector3dF(transform.rc(0, 1), transform.rc(1, 1),
+                        transform.rc(2, 1));
 }
 
 ScopedSubnormalFloatDisabler::ScopedSubnormalFloatDisabler() {

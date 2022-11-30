@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 namespace ui {
@@ -27,7 +28,26 @@ AXTreeFormatterBase::~AXTreeFormatterBase() = default;
 
 // static
 const char AXTreeFormatterBase::kChildrenDictAttr[] = "children";
-const char AXTreeFormatterBase::kScriptsDictAttr[] = "scripts";
+
+bool AXTreeFormatterBase::ShouldDumpNode(
+    const AXPlatformNodeDelegate& node) const {
+  for (const std::pair<ax::mojom::StringAttribute, std::string>&
+           string_attribute : node.GetStringAttributes()) {
+    if (string_attribute.second.find(kSkipString) != std::string::npos)
+      return false;
+  }
+  return true;
+}
+
+bool AXTreeFormatterBase::ShouldDumpChildren(
+    const AXPlatformNodeDelegate& node) const {
+  for (const std::pair<ax::mojom::StringAttribute, std::string>&
+           string_attribute : node.GetStringAttributes()) {
+    if (string_attribute.second.find(kSkipChildren) != std::string::npos)
+      return false;
+  }
+  return true;
+}
 
 std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   DCHECK(root);
@@ -39,36 +59,42 @@ std::string AXTreeFormatterBase::FormatNode(
   return FormatTree(BuildNode(node));
 }
 
-base::Value AXTreeFormatterBase::BuildNode(AXPlatformNodeDelegate* node) const {
-  return base::Value(base::Value::Type::DICTIONARY);
+base::Value::Dict AXTreeFormatterBase::BuildNode(
+    AXPlatformNodeDelegate* node) const {
+  return base::Value::Dict();
 }
 
-std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
+std::string AXTreeFormatterBase::FormatTree(
+    const base::Value::Dict& dict) const {
   std::string contents;
-
-  // Format the tree.
   RecursiveFormatTree(dict, &contents);
-
-  // Format scripts.
-  const base::Value* scripts = dict.FindListKey(kScriptsDictAttr);
-  if (!scripts)
-    return contents;
-
-  for (const base::Value& script : scripts->GetList()) {
-    WriteAttribute(false, script.GetString(), &contents);
-    contents += "\n";
-  }
-
   return contents;
 }
 
-base::Value AXTreeFormatterBase::BuildTreeForNode(ui::AXNode* root) const {
+base::Value::Dict AXTreeFormatterBase::BuildTreeForNode(
+    ui::AXNode* root) const {
   NOTREACHED()
       << "Only supported when called on AccessibilityTreeFormatterBlink.";
-  return base::Value();
+  return base::Value::Dict();
 }
 
-void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
+std::string AXTreeFormatterBase::EvaluateScript(
+    const AXTreeSelector& selector,
+    const ui::AXInspectScenario& scenario) const {
+  NOTIMPLEMENTED();
+  return {};
+}
+
+std::string AXTreeFormatterBase::EvaluateScript(
+    AXPlatformNodeDelegate* root,
+    const std::vector<AXScriptInstruction>& instructions,
+    size_t start_index,
+    size_t end_index) const {
+  NOTREACHED() << "Not implemented";
+  return {};
+}
+
+void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
                                               std::string* contents,
                                               int depth) const {
   // Check dictionary against node filters, may require us to skip this node
@@ -76,9 +102,14 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   if (MatchesNodeFilters(dict))
     return;
 
+  if (dict.empty())
+    return;
+
   std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
-  std::string line =
-      indent + ProcessTreeForOutput(base::Value::AsDictionaryValue(dict));
+  std::string line = indent + ProcessTreeForOutput(dict);
+
+  // TODO(accessibility): This can be removed once the UIA tree formatter
+  // can call ShouldDumpNode().
   if (line.find(kSkipString) != std::string::npos)
     return;
 
@@ -89,13 +120,17 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value& dict,
   base::ReplaceChars(line, "\n", "<newline>", &line);
 
   *contents += line + "\n";
+
+  // TODO(accessibility): This can be removed once the UIA tree formatter
+  // can call ShouldDumpChildren().
   if (line.find(kSkipChildren) != std::string::npos)
     return;
 
-  const base::Value* children = dict.FindListPath(kChildrenDictAttr);
-  if (children && !children->GetList().empty()) {
-    for (const auto& child_dict : children->GetList()) {
-      RecursiveFormatTree(child_dict, contents, depth + 1);
+  const base::Value::List* children = dict.FindList(kChildrenDictAttr);
+  if (children) {
+    for (const auto& child : *children) {
+      DCHECK(child.is_dict());
+      RecursiveFormatTree(child.GetDict(), contents, depth + 1);
     }
   }
 }
@@ -182,31 +217,32 @@ bool AXTreeFormatterBase::MatchesPropertyFilters(const std::string& text,
                                                      default_result);
 }
 
-bool AXTreeFormatterBase::MatchesNodeFilters(const base::Value& dict) const {
+bool AXTreeFormatterBase::MatchesNodeFilters(
+    const base::Value::Dict& dict) const {
   return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AXTreeFormatterBase::FormatCoordinates(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::string& name,
     const std::string& x_name,
     const std::string& y_name) const {
-  int x = dict.FindIntPath(x_name).value_or(0);
-  int y = dict.FindIntPath(y_name).value_or(0);
+  int x = dict.FindInt(x_name).value_or(0);
+  int y = dict.FindInt(y_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y);
 }
 
 std::string AXTreeFormatterBase::FormatRectangle(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::string& name,
     const std::string& left_name,
     const std::string& top_name,
     const std::string& width_name,
     const std::string& height_name) const {
-  int left = dict.FindIntPath(left_name).value_or(0);
-  int top = dict.FindIntPath(top_name).value_or(0);
-  int width = dict.FindIntPath(width_name).value_or(0);
-  int height = dict.FindIntPath(height_name).value_or(0);
+  int left = dict.FindInt(left_name).value_or(0);
+  int top = dict.FindInt(top_name).value_or(0);
+  int width = dict.FindInt(width_name).value_or(0);
+  int height = dict.FindInt(height_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d, %d, %d)", name.c_str(), left, top,
                             width, height);
 }

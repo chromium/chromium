@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_service_service_provider.h"
@@ -25,6 +24,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattServiceServiceProvider
       const dbus::ObjectPath& object_path,
       const std::string& uuid,
       const std::vector<dbus::ObjectPath>& includes);
+
+  FakeBluetoothGattServiceServiceProvider(
+      const FakeBluetoothGattServiceServiceProvider&) = delete;
+  FakeBluetoothGattServiceServiceProvider& operator=(
+      const FakeBluetoothGattServiceServiceProvider&) = delete;
+
   ~FakeBluetoothGattServiceServiceProvider() override;
 
   const dbus::ObjectPath& object_path() const override;
@@ -39,8 +44,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattServiceServiceProvider
 
   // List of included GATT services.
   std::vector<dbus::ObjectPath> includes_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattServiceServiceProvider);
 };
 
 }  // namespace bluez

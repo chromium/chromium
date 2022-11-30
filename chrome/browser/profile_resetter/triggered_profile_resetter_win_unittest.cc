@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#include <windows.h>
 
 using base::win::RegKey;
 
@@ -73,7 +75,7 @@ TEST_F(TriggeredProfileResetterTest, HasDuplicateResetTrigger) {
   FILETIME ft = {};
   SetRegTimestampAndToolName(std::wstring(), &ft);
   profile_->GetPrefs()->SetInt64(prefs::kLastProfileResetTimestamp,
-                                 bit_cast<int64_t, FILETIME>(ft));
+                                 base::bit_cast<int64_t, FILETIME>(ft));
 
   TriggeredProfileResetter triggered_profile_resetter(profile_.get());
   triggered_profile_resetter.Activate();

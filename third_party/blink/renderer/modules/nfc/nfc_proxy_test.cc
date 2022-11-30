@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ndef_scan_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_reader.h"
 #include "third_party/blink/renderer/modules/nfc/nfc_proxy.h"
@@ -66,8 +67,8 @@ class FakeNfcService : public device::mojom::blink::NFC {
     DCHECK(!receiver_.is_bound());
     receiver_.Bind(
         mojo::PendingReceiver<device::mojom::blink::NFC>(std::move(handle)));
-    receiver_.set_disconnect_handler(
-        WTF::Bind(&FakeNfcService::OnConnectionError, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(WTF::BindOnce(
+        &FakeNfcService::OnConnectionError, WTF::Unretained(this)));
   }
 
   void OnConnectionError() {
@@ -106,6 +107,8 @@ class FakeNfcService : public device::mojom::blink::NFC {
     std::move(callback).Run(nullptr);
   }
   void CancelPush() override {}
+  void MakeReadOnly(MakeReadOnlyCallback callback) override {}
+  void CancelMakeReadOnly() override {}
   void Watch(uint32_t id, WatchCallback callback) override {
     if (watch_error_) {
       std::move(callback).Run(watch_error_.Clone());
@@ -116,7 +119,7 @@ class FakeNfcService : public device::mojom::blink::NFC {
     std::move(callback).Run(nullptr);
   }
   void CancelWatch(uint32_t id) override {
-    size_t index = watchIDs_.Find(id);
+    wtf_size_t index = watchIDs_.Find(id);
     if (index != kNotFound)
       watchIDs_.EraseAt(index);
   }
@@ -134,7 +137,7 @@ class NFCProxyTest : public PageTestBase {
   NFCProxyTest() { nfc_service_ = std::make_unique<FakeNfcService>(); }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         device::mojom::blink::NFC::Name_,
         WTF::BindRepeating(&FakeNfcService::BindRequest,

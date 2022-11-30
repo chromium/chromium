@@ -1,26 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class AppsIconCoalescerTest : public testing::Test {
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
-
-  // Increment is a LoadIconCallback that increments a counter (and ignores the
-  // IconValuePtr).
-  static void Increment(int* counter,
-                        int delta,
-                        apps::mojom::IconValuePtr icon_value) {
-    *counter += delta;
-  }
 
   class FakeIconLoader : public apps::IconLoader {
    public:
@@ -49,18 +42,14 @@ class AppsIconCoalescerTest : public testing::Test {
     }
 
    private:
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override {
-      return apps::mojom::IconKey::New(0, 0, 0);
-    }
-
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
+        apps::AppType app_type,
         const std::string& app_id,
-        apps::mojom::IconKeyPtr icon_key,
-        apps::mojom::IconType icon_type,
+        const apps::IconKey& icon_key,
+        apps::IconType icon_type,
         int32_t size_hint_in_dip,
         bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override {
+        apps::LoadIconCallback callback) override {
       num_load_calls_++;
       if (call_back_immediately_) {
         num_load_calls_complete_++;
@@ -74,9 +63,9 @@ class AppsIconCoalescerTest : public testing::Test {
                                   weak_ptr_factory_.GetWeakPtr()));
     }
 
-    apps::mojom::IconValuePtr NewIconValuePtr() {
-      auto iv = apps::mojom::IconValue::New();
-      iv->icon_type = apps::mojom::IconType::kUncompressed;
+    apps::IconValuePtr NewIconValuePtr() {
+      auto iv = std::make_unique<apps::IconValue>();
+      iv->icon_type = apps::IconType::kUncompressed;
       iv->uncompressed =
           gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
       iv->is_placeholder_icon = false;
@@ -89,8 +78,7 @@ class AppsIconCoalescerTest : public testing::Test {
     int num_load_calls_ = 0;
     int num_load_calls_complete_ = 0;
     int num_pending_releases_ = 0;
-    std::multimap<std::string, apps::mojom::Publisher::LoadIconCallback>
-        pending_callbacks_;
+    std::multimap<std::string, apps::LoadIconCallback> pending_callbacks_;
 
     base::WeakPtrFactory<FakeIconLoader> weak_ptr_factory_{this};
   };
@@ -99,14 +87,12 @@ class AppsIconCoalescerTest : public testing::Test {
                           const std::string& app_id,
                           int* counter,
                           int delta) {
-    static constexpr auto app_type = apps::mojom::AppType::kWeb;
-    static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
-    static constexpr int32_t size_hint_in_dip = 1;
-    static constexpr bool allow_placeholder_icon = false;
-
     return loader->LoadIcon(
-        app_type, app_id, icon_type, size_hint_in_dip, allow_placeholder_icon,
-        base::BindOnce(&AppsIconCoalescerTest::Increment, counter, delta));
+        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
+        /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
+        base::BindOnce([](int* counter, int delta,
+                          apps::IconValuePtr icon) { *counter += delta; },
+                       counter, delta));
   }
 };
 

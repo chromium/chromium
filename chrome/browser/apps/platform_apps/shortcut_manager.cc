@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -30,7 +31,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/mac/app_mode_common.h"
 #endif
 
@@ -38,7 +39,7 @@ using extensions::Extension;
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This version number is stored in local prefs to check whether app shortcuts
 // need to be recreated. This might happen when we change various aspects of app
 // shortcuts like command-line flags or associated icons, binaries, etc.
@@ -97,7 +98,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
              content::BrowserThread::UI) ||
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
   // Wait for extensions to be ready before running
   // UpdateShortcutsForAllAppsIfNeeded.
@@ -109,7 +110,7 @@ AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // profile_manager might be NULL in testing environments.
   if (profile_manager) {
-    profile_storage_observer_.Add(
+    profile_storage_observation_.Observe(
         &profile_manager->GetProfileAttributesStorage());
   }
 }
@@ -121,11 +122,7 @@ void AppShortcutManager::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
-  // Bookmark apps are handled in
-  // web_app::AppShortcutManager::OnWebAppInstalled() and
-  // web_app::AppShortcutManager::OnWebAppManifestUpdated().
-  if (!extension->is_app() || extension->from_bookmark() ||
-      g_suppress_shortcuts_for_testing) {
+  if (!extension->is_app() || g_suppress_shortcuts_for_testing) {
     return;
   }
 
@@ -144,9 +141,7 @@ void AppShortcutManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  // Bookmark apps are handled in
-  // web_app::AppShortcutManager::OnWebAppWillBeUninstalled()
-  if (!extension->from_bookmark() && !g_suppress_shortcuts_for_testing)
+  if (!g_suppress_shortcuts_for_testing)
     web_app::DeleteAllShortcuts(profile_, extension);
 }
 
@@ -198,5 +193,5 @@ void AppShortcutManager::UpdateShortcutsForAllAppsIfNeeded() {
       FROM_HERE,
       base::BindOnce(&AppShortcutManager::UpdateShortcutsForAllAppsNow,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kUpdateShortcutsForAllAppsDelay));
+      base::Seconds(kUpdateShortcutsForAllAppsDelay));
 }

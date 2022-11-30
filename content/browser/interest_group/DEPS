@@ -1,0 +1,10 @@
+include_rules = [
+  "+content/services/auction_worklet/public/mojom",
+]
+
+specific_include_rules = {
+  # Some unit tests directly instantiate an in-process auction_worklet service.
+  ".*_unittest\.cc": [
+    "+content/services/auction_worklet",
+  ],
+}

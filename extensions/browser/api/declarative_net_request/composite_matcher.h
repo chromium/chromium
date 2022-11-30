@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class NavigationHandle;
@@ -30,29 +30,43 @@ struct RequestAction;
 class CompositeMatcher {
  public:
   struct ActionInfo {
-    ActionInfo(base::Optional<RequestAction> action, bool notify);
+    // Constructs a no-op ActionInfo object.
+    ActionInfo();
+
+    ActionInfo(absl::optional<RequestAction> action,
+               bool notify_request_withheld);
+
+    ActionInfo(const ActionInfo&) = delete;
+    ActionInfo& operator=(const ActionInfo&) = delete;
+
     ~ActionInfo();
     ActionInfo(ActionInfo&& other);
     ActionInfo& operator=(ActionInfo&& other);
 
     // The action to be taken for this request.
-    base::Optional<RequestAction> action;
+    absl::optional<RequestAction> action;
 
     // Whether the extension should be notified that the request was unable to
     // be redirected as the extension lacks the appropriate host permission for
     // the request. Can only be true for redirect actions.
     bool notify_request_withheld = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ActionInfo);
   };
 
   using MatcherList = std::vector<std::unique_ptr<RulesetMatcher>>;
 
   // Each RulesetMatcher should have a distinct RulesetID.
-  explicit CompositeMatcher(MatcherList matchers);
+  CompositeMatcher(MatcherList matchers, HostPermissionsAlwaysRequired mode);
+
+  CompositeMatcher(const CompositeMatcher&) = delete;
+  CompositeMatcher& operator=(const CompositeMatcher&) = delete;
+
   ~CompositeMatcher();
 
   const MatcherList& matchers() const { return matchers_; }
+
+  HostPermissionsAlwaysRequired host_permissions_always_required() const {
+    return host_permissions_always_required_;
+  }
 
   // Returns a pointer to RulesetMatcher with the given |id| if one is present.
   const RulesetMatcher* GetMatcherWithID(RulesetID id) const;
@@ -72,7 +86,7 @@ class CompositeMatcher {
   std::set<RulesetID> ComputeStaticRulesetIDs() const;
 
   // Returns a RequestAction for the network request specified by |params|, or
-  // base::nullopt if there is no matching rule.
+  // absl::nullopt if there is no matching rule.
   ActionInfo GetBeforeRequestAction(
       const RequestParams& params,
       PermissionsData::PageAccess page_access) const;
@@ -101,9 +115,9 @@ class CompositeMatcher {
 
   // Denotes the cached return value for |HasAnyExtraHeadersMatcher|. Care must
   // be taken to reset this as this object is modified.
-  mutable base::Optional<bool> has_any_extra_headers_matcher_;
+  mutable absl::optional<bool> has_any_extra_headers_matcher_;
 
-  DISALLOW_COPY_AND_ASSIGN(CompositeMatcher);
+  const HostPermissionsAlwaysRequired host_permissions_always_required_;
 };
 
 }  // namespace declarative_net_request

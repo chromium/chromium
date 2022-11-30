@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
-#include "base/time/time.h"
-#include "components/metrics/demographics/demographic_metrics_provider.h"
-#include "components/ukm/ukm_service.h"
+#import "base/time/time.h"
+#import "components/metrics/demographics/demographic_metrics_provider.h"
+#import "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "third_party/metrics_proto/user_demographics.pb.h"
+#import "third_party/metrics_proto/user_demographics.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +27,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 }  // namespace
 
 @interface DemographicsTestCase : ChromeTestCase {
-  int testBirthYear_;
+  int birthYear_;
 }
 @end
 
@@ -45,8 +45,8 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   [MetricsAppInterface updateNetworkTime:now];
 
   // Get the maximum eligible birth year for reporting demographics.
-  testBirthYear_ = [MetricsAppInterface maximumEligibleBirthYearForTime:now];
-  [self addUserDemographicsToSyncServerWithBirthYear:testBirthYear_
+  birthYear_ = [MetricsAppInterface maximumEligibleBirthYearForTime:now];
+  [self addUserDemographicsToSyncServerWithBirthYear:birthYear_
                                               gender:kTestGender];
   [self signInAndSync];
   [self grantMetricsConsent];
@@ -73,24 +73,20 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // method exists somewhere--but not necessarily in this class.
   if ([self isRunningTest:@selector
             (testUKMDemographicsReportingWithFeatureEnabled)]) {
+    config.features_enabled.push_back(metrics::kDemographicMetricsReporting);
     config.features_enabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
-    config.features_enabled.push_back(
-        ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+        ukm::kReportUserNoisedUserBirthYearAndGender);
   } else if ([self isRunningTest:@selector
                    (testUKMDemographicsReportingWithFeatureDisabled)]) {
+    config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
     config.features_disabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
-    config.features_disabled.push_back(
-        ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+        ukm::kReportUserNoisedUserBirthYearAndGender);
   } else if ([self isRunningTest:@selector
                    (testUMADemographicsReportingWithFeatureEnabled)]) {
-    config.features_enabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+    config.features_enabled.push_back(metrics::kDemographicMetricsReporting);
   } else if ([self isRunningTest:@selector
                    (testUMADemographicsReportingWithFeatureDisabled)]) {
-    config.features_disabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+    config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
   }
   return config;
 }
@@ -98,7 +94,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 #pragma mark - Helpers
 
 // Adds user demographics, which are ModelType::PRIORITY_PREFERENCES, to the
-// fake sync server. |rawBirthYear| is the true birth year, pre-noise, and the
+// fake sync server. `rawBirthYear` is the true birth year, pre-noise, and the
 // gender corresponds to the options in UserDemographicsProto::Gender.
 //
 // Also, verifies (A) that before adding the demographics, the server has no
@@ -130,7 +126,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // anonymized data collection is turned on as part of the flow to Sign in to
   // Chrome and Turn on sync. This matches the main user flow that enables
   // UKM.
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncInitialized:YES
                              syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
@@ -181,7 +177,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features enabled.
 - (void)testUKMDemographicsReportingWithFeatureEnabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled] &&
                      [MetricsAppInterface
@@ -191,7 +187,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
   [self buildAndStoreUKMLog];
 
-  GREYAssertTrue([MetricsAppInterface UKMReportHasBirthYear:testBirthYear_
+  GREYAssertTrue([MetricsAppInterface UKMReportHasBirthYear:birthYear_
                                                      gender:kTestGender],
                  @"The report should contain the specified user demographics");
 
@@ -210,7 +206,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
 - (void)testUKMDemographicsReportingWithFeatureDisabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                   @"Failed to disable kDemographicMetricsReporting.");
@@ -236,7 +232,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features enabled.
 - (void)testUMADemographicsReportingWithFeatureEnabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                  @"Failed to enable kDemographicMetricsReporting.");
@@ -245,7 +241,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   GREYAssertTrue([MetricsAppInterface hasUnsentUMALogs],
                  @"The UKM service should have unsent logs.");
 
-  GREYAssertTrue([MetricsAppInterface UMALogHasBirthYear:testBirthYear_
+  GREYAssertTrue([MetricsAppInterface UMALogHasBirthYear:birthYear_
                                                   gender:kTestGender],
                  @"The report should contain the specified user demographics");
 
@@ -265,7 +261,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features disabled.
 - (void)testUMADemographicsReportingWithFeatureDisabled {
-  // See |appConfigurationForTestCase| for feature set-up.
+  // See `appConfigurationForTestCase` for feature set-up.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                   @"Failed to disable kDemographicMetricsReporting.");
 

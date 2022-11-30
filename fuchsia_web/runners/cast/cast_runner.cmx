@@ -1,0 +1,10 @@
+{
+  "program": {
+    "binary": "cast_runner_exe"
+  },
+  "sandbox": {
+    "services": [
+      "fuchsia.sys.Runner-cast"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,6 +110,12 @@ TEST(MainMenuBuilderTest, Disabled) {
 
   item = MenuItemBuilder(IDS_NEW_TAB_MAC).remove_if(false).Build();
   EXPECT_NSEQ(l10n_util::GetNSStringWithFixup(IDS_NEW_TAB_MAC), [item title]);
+}
+
+TEST(MainMenuBuilderTest, Hidden) {
+  base::scoped_nsobject<NSMenuItem> item =
+      MenuItemBuilder(IDS_NEW_TAB_MAC).set_hidden(true).Build();
+  EXPECT_EQ(true, [item isHidden]);
 }
 
 }  // namespace

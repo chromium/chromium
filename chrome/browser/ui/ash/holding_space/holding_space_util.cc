@@ -1,16 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
-#include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
+#include "ash/public/cpp/image_util.h"
 #include "base/barrier_closure.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "components/account_id/account_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -19,40 +24,57 @@
 namespace ash {
 namespace holding_space_util {
 
-namespace {
-
-base::Optional<base::Time> now_for_testing;
-
-}  // namespace
-
 ValidityRequirement::ValidityRequirement() = default;
 ValidityRequirement::ValidityRequirement(const ValidityRequirement&) = default;
 ValidityRequirement::ValidityRequirement(ValidityRequirement&& other) = default;
 
 // Utilities -------------------------------------------------------------------
 
+bool ShouldSkipPathCheck(Profile* profile, const base::FilePath& path) {
+  // Drive FS may be in the middle of restarting, so if it is enabled but not
+  // mounted, assume any files in drive are valid.
+  const auto* drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  return drive_integration_service && drive_integration_service->is_enabled() &&
+         !drive_integration_service->IsMounted() &&
+         drive_integration_service->GetMountPointPath().IsParent(path);
+}
+
 void FilePathValid(Profile* profile,
                    FilePathWithValidityRequirement file_path_with_requirement,
                    FilePathValidCallback callback) {
+  auto* user = ProfileHelper::Get()->GetUserByProfile(profile);
   file_manager::util::GetMetadataForPath(
-      file_manager::util::GetFileSystemContextForExtensionId(
-          profile, file_manager::kFileManagerAppId),
+      file_manager::util::GetFileManagerFileSystemContext(profile),
       file_path_with_requirement.first,
       storage::FileSystemOperation::GET_METADATA_FIELD_NONE,
       base::BindOnce(
-          [](FilePathValidCallback callback, ValidityRequirement requirement,
-             base::File::Error result, const base::File::Info& file_info) {
+          [](FilePathValidCallback callback,
+             FilePathWithValidityRequirement file_path_with_requirement,
+             AccountId account_id, base::File::Error result,
+             const base::File::Info& file_info) {
+            Profile* profile =
+                ProfileHelper::Get()->GetProfileByAccountId(account_id);
+            if (profile && ShouldSkipPathCheck(
+                               profile, file_path_with_requirement.first)) {
+              std::move(callback).Run(true);
+              return;
+            }
+
             bool valid = true;
+            const ValidityRequirement& requirement =
+                file_path_with_requirement.second;
             if (requirement.must_exist)
               valid = result == base::File::Error::FILE_OK;
             if (valid && requirement.must_be_newer_than) {
-              valid = file_info.creation_time >
-                      now_for_testing.value_or(base::Time::Now()) -
-                          requirement.must_be_newer_than.value();
+              valid =
+                  file_info.creation_time >
+                  base::Time::Now() - requirement.must_be_newer_than.value();
             }
             std::move(callback).Run(valid);
           },
-          std::move(callback), file_path_with_requirement.second));
+          std::move(callback), file_path_with_requirement,
+          user ? user->GetAccountId() : EmptyAccountId()));
 }
 
 void PartitionFilePathsByExistence(
@@ -144,7 +166,7 @@ void PartitionFilePathsByValidity(
 GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
   GURL file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, file_path, file_manager::kFileManagerAppId,
+          profile, file_path, file_manager::util::GetFileManagerURL(),
           &file_system_url)) {
     VLOG(2) << "Unable to convert file path to File System URL.";
   }
@@ -152,23 +174,58 @@ GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
 }
 
 std::unique_ptr<HoldingSpaceImage> ResolveImage(
-    HoldingSpaceThumbnailLoader* thumbnail_loader,
+    ThumbnailLoader* thumbnail_loader,
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  return ResolveImageWithPlaceholderImageSkiaResolver(
+      thumbnail_loader,
+      /*placeholder_image_skia_resolver=*/base::NullCallback(), type,
+      file_path);
+}
+
+std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
+    ThumbnailLoader* thumbnail_loader,
+    HoldingSpaceImage::PlaceholderImageSkiaResolver
+        placeholder_image_skia_resolver,
     HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
   return std::make_unique<HoldingSpaceImage>(
-      HoldingSpaceImage::GetMaxSizeForType(type), file_path,
+      GetMaxImageSizeForType(type), file_path,
+      /*async_bitmap_resolver=*/
       base::BindRepeating(
-          [](const base::WeakPtr<HoldingSpaceThumbnailLoader>& thumbnail_loader,
+          [](const base::WeakPtr<ThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
              HoldingSpaceImage::BitmapCallback callback) {
             if (thumbnail_loader)
               thumbnail_loader->Load({file_path, size}, std::move(callback));
           },
-          thumbnail_loader->GetWeakPtr()));
-}
-
-void SetNowForTesting(base::Optional<base::Time> now) {
-  now_for_testing = now;
+          thumbnail_loader->GetWeakPtr()),
+      /*placeholder_image_skia_resolver=*/
+      base::BindRepeating(
+          [](HoldingSpaceImage::PlaceholderImageSkiaResolver
+                 placeholder_image_skia_resolver,
+             const base::FilePath& file_path, const gfx::Size& size,
+             const absl::optional<bool>& dark_background,
+             const absl::optional<bool>& is_folder) {
+            // When the initial placeholder is being created during
+            // construction, `dark_background` and `is_folder` will be absent.
+            // In that case, don't show a placeholder to minimize jank.
+            if (!dark_background.has_value() && !is_folder.has_value())
+              return image_util::CreateEmptyImage(size);
+            // If an explicit `placeholder_image_skia_resolver` has been
+            // specified, use it to create the appropriate placeholder image.
+            if (!placeholder_image_skia_resolver.is_null()) {
+              return placeholder_image_skia_resolver.Run(
+                  file_path, size, dark_background, is_folder);
+            }
+            // Otherwise, fallback to default behavior which is to create an
+            // image corresponding to the file type of the associated backing
+            // file.
+            return HoldingSpaceImage::
+                CreateDefaultPlaceholderImageSkiaResolver()
+                    .Run(file_path, size, dark_background, is_folder);
+          },
+          placeholder_image_skia_resolver));
 }
 
 }  // namespace holding_space_util

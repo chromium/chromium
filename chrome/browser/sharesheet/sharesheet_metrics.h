@@ -1,11 +1,31 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_METRICS_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_METRICS_H_
 
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "chromeos/components/sharesheet/constants.h"
+#include "components/services/app_service/public/cpp/intent.h"
+
 namespace sharesheet {
+
+extern const char kSharesheetUserActionResultHistogram[];
+extern const char kSharesheetAppCountAllResultHistogram[];
+extern const char kSharesheetAppCountArcResultHistogram[];
+extern const char kSharesheetAppCountWebResultHistogram[];
+extern const char kSharesheetShareActionResultHistogram[];
+extern const char kSharesheetFormFactorResultHistogram[];
+extern const char kSharesheetLaunchSourceResultHistogram[];
+extern const char kSharesheetFileCountResultHistogram[];
+extern const char kSharesheetIsDriveFolderResultHistogram[];
+extern const char kSharesheetIsImagePressedResultHistogram[];
+extern const char kSharesheetMimeTypeResultHistogram[];
+extern const char kSharesheetCopyToClipboardMimeTypeResultHistogram[];
+extern const char kSharesheetCopyToClipboardFormFactorResultHistogram[];
 
 class SharesheetMetrics {
  public:
@@ -20,7 +40,8 @@ class SharesheetMetrics {
                                 // keyboard.
     kWeb,                       // Opened a web app.
     kDriveAction,               // User selected the drive share action.
-    kMaxValue = kDriveAction,
+    kCopyAction,                // User selected the copy share action.
+    kMaxValue = kCopyAction,
   };
 
   // Device form factor when sharesheet is invoked.
@@ -31,15 +52,18 @@ class SharesheetMetrics {
     kMaxValue = kClamshell,
   };
 
-  // The source from which the sharesheet was launched from.
+  // The mime type that is being shared.
   // This enum is for recording histograms and must be treated as append-only.
-  enum class LaunchSource {
+  enum class MimeType {
     kUnknown = 0,
-    kFilesAppShareButton = 1,
-    kFilesAppContextMenu = 2,
-    kWebShare = 3,
-    kArcNearbyShare = 4,
-    kMaxValue = kArcNearbyShare,
+    kText = 1,
+    kUrl = 2,
+    kTextFile = 3,
+    kImageFile = 4,
+    kVideoFile = 5,
+    kAudioFile = 6,
+    kPdfFile = 7,
+    kMaxValue = kPdfFile
   };
 
   SharesheetMetrics();
@@ -56,6 +80,24 @@ class SharesheetMetrics {
   static void RecordSharesheetFormFactor(const FormFactor form_factor);
 
   static void RecordSharesheetLaunchSource(const LaunchSource source);
+
+  static void RecordSharesheetFilesSharedCount(const int file_count);
+  // Records true if the data being shared is a drive folder. False otherwise.
+  static void RecordSharesheetIsDriveFolder(const bool is_drive_folder);
+  // Records true if the image preview was pressed in the current invocation.
+  // False otherwise.
+  static void RecordSharesheetImagePreviewPressed(const bool is_pressed);
+  static void RecordSharesheetMimeType(const MimeType mime_type);
+  static void RecordCopyToClipboardShareActionMimeType(
+      const MimeType mime_type);
+  static void RecordCopyToClipboardShareActionFormFactor(
+      const FormFactor form_factor);
+
+  // Utility Functions
+  static MimeType ConvertMimeTypeForMetrics(std::string mime_type);
+  static base::flat_set<MimeType> GetMimeTypesFromIntentForMetrics(
+      const apps::IntentPtr& intent);
+  static FormFactor GetFormFactorForMetrics();
 };
 
 }  // namespace sharesheet

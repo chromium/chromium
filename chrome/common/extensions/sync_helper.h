@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ bool IsSyncable(const Extension* extension);
 
 // Component extensions usually aren't synced, but some are so that they'll
 // retain their position in the app list. Returns true for component extensions
-// on that whitelist.
+// that are allowed.
 bool IsSyncableComponentExtension(const Extension* extension);
 
 }  // namespace sync_helper

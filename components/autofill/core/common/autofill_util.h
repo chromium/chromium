@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-
-namespace base {
-struct Feature;
-}
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -32,9 +30,6 @@ bool IsShowAutofillSignaturesEnabled();
 
 // Returns true when keyboard accessory is enabled.
 bool IsKeyboardAccessoryEnabled();
-
-// Returns whether the Touch To Fill feature is enabled.
-bool IsTouchToFillEnabled();
 
 // A token is a sequences of contiguous characters separated by any of the
 // characters that are part of delimiter set {' ', '.', ',', '-', '_', '@'}.
@@ -62,10 +57,6 @@ size_t GetTextSelectionStart(const std::u16string& suggestion,
                              const std::u16string& field_contents,
                              bool case_sensitive);
 
-// Returns true if running on a desktop platform. Any platform that is not
-// Android or iOS is considered desktop.
-bool IsDesktopPlatform();
-
 bool IsCheckable(const FormFieldData::CheckStatus& check_status);
 bool IsChecked(const FormFieldData::CheckStatus& check_status);
 void SetCheckStatus(FormFieldData* form_field_data,
@@ -76,7 +67,7 @@ void SetCheckStatus(FormFieldData* form_field_data,
 // Considers any ASCII whitespace character as a possible separator.
 // Also ignores empty tokens, resulting in a collapsing of whitespace.
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
-    const std::string& attribute);
+    base::StringPiece attribute);
 
 // Returns true if and only if the field value has no character except the
 // formatting characters. This means that the field value is a formatting string
@@ -92,6 +83,9 @@ bool IsFillable(mojom::FocusedFieldType focused_field_type);
 
 mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
     mojom::SubmissionSource source);
+
+// Strips any authentication data, as well as query and ref portions of URL.
+GURL StripAuthAndParams(const GURL& gurl);
 
 }  // namespace autofill
 

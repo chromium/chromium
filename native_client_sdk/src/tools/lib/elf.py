@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,7 +37,7 @@ def ParseElfHeader(path):
     raise Error("error parsing elf header: %s" % path)
   e_ident, _, e_machine = header[:3]
 
-  elf_magic = '\x7fELF'
+  elf_magic = b'\x7fELF'
   if e_ident[:4] != elf_magic:
     raise Error('Not a valid NaCl executable: %s' % path)
 

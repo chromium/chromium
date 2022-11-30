@@ -1,5 +1,6 @@
 # CPU Profiling Chrome
 
+
 [TOC]
 
 ## Introduction
@@ -15,82 +16,37 @@ This doc is intended to be an authoritative one-stop resource for profiling chro
 * https://www.chromium.org/developers/profiling-chromium-and-webkit
 * https://www.chromium.org/developers/telemetry/profiling
 
-***promo 
+***promo
 CPU profiling is not to be confused with tracing or task profiling:
 
 * https://www.chromium.org/developers/how-tos/trace-event-profiling-tool
 * https://www.chromium.org/developers/threaded-task-tracking
 ***
 
-## Profiling on Linux
+# Profiling on Linux
 
-Profiling support is built into tcmalloc and exposed in chromium, so any platform that uses tcmalloc should be able to generate profiling data without using external tools.
-
-### Preparing your checkout
-
-Profiling should always be done on a Release build, which has very similiar performance characteristics to an official build. Make sure the following appears in your `args.gn` file:
+## General checkout setup
+Profiling should always be done on a Release build, which has very similar performance characteristics to an official build. Make sure the following appears in your `args.gn` file:
 
     is_debug = false
-    enable_profiling = true
-    enable_callgrind = true
     blink_symbol_level = 2
     symbol_level = 2
-    
-### Preparing your environment
+    dcheck_always_on = false
 
-By default, the profiler will take a sample 100 times per second. You can adjust this rate by setting the `CPUPROFILE_FREQUENCY` environment variable before launching chromium:
-
-    $ export CPUPROFILE_FREQUENCY=1000
-    
-The maximum supported rate is 4000 samples per second.
-
-### Profiling a process over its entire lifetime
-
-To profile the main browser process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start
-
-To profile, e.g., every renderer process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=renderer --no-sandbox
-
-To profile the gpu process, add the following argument to your chrome invocation:
-
-    --enable-profiling --profiling-at-start=gpu-process --no-sandbox --profiling-flush
-
-The gpu process does not shut down cleanly and so requires periodic flushing to
-write the profile to disk.
-
-*** promo
-The --no-sandbox argument is required to allow the renderer process to write the profiling output to the file system.
-***
-
-When the process being profiled ends, you should see one or more `chrome-profile-{process type}-{process ID}` files in your `$PWD`. Run `pprof` to view the results, e.g.:
-
-    $ pprof -web chrome-profile-renderer-12345
-    
-*** promo
-`pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
-***
-
-*** promo
-Tip for Googlers: running `prodaccess` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
-***
-
-### Profiling a process or thread for a defined period of time using perf
+## Profiling a process or thread for a defined period of time using perf
 
 First, make sure you have the `linux-perf` package installed:
 
     $ sudo apt-get install linux-perf
-    
+
 After starting up the browser and loading the page you want to profile, press 'Shift-Escape' to bring up the task manager, and get the Process ID of the process you want to profile.
 
 Run the perf tool like this:
 
     $ perf record -g -p <Process ID> -o <output file>
-    
+
 *** promo
-`perf` does not honor the `CPUPROFILE_FREQUENCY` env var. To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
+To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
 ***
 
 To stop profiling, press `Control-c` in the terminal window where `perf` is running. Run `pprof` to view the results, providing the path to the browser executable; e.g.:
@@ -101,17 +57,25 @@ To stop profiling, press `Control-c` in the terminal window where `perf` is runn
 `pprof` is packed with useful features for visualizing profiling data. Try `pprof --help` for more info.
 ***
 
+*** promo
+Tip for Googlers: running `gcert` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
+***
+
+If you want to profile all renderer processes use the custom `--renderer-cmd-prefix` profiling script:
+
+  $ src/out/Release/chrome --renderer-cmd-prefix="tools/profiling/linux-perf-renderer-cmd.sh"
+
 If you want to limit the profile to a single thread, run:
 
-    $ ps -T -p <Process ID> 
-    
+    $ ps -T -p <Process ID>
+
 From the output, find the Thread ID (column header "SPID") of the thread you want. Now run perf:
 
     $ perf record -g -t <Thread ID> -o <output file>
-    
+
 Use the same `pprof` command as above to view the single-thread results.
 
-### Profiling the renderer process for a period defined in javascript
+## Profiling the renderer process for a period defined in javascript
 
 You can generate a highly-focused profile for any period that can be defined in javascript using the `chrome.gpuBenchmarking` javascript interface. First, adding the following command-line flags when you start chrome:
 
@@ -125,17 +89,9 @@ Open devtools, and in the console, use `chrome.gpuBenchmarking.startProfiling` a
 
     > chrome.gpuBenchmarking.startProfiling('perf.data'); chrome.gpuBenchmarking.smoothScrollByXY(0, 1000, () => { chrome.gpuBenchmarking.stopProfiling() });
 
-### Profiling content_shell with callgrind
+## Profiling content_shell with callgrind
 
 This section contains instructions on how to do profiling using the callgrind/cachegrind tools provided by valgrind. This is not a sampling profiler, but a profiler based on running on a simulated CPU. The instructions are Linux-centered, but might work on other platforms too.
-
-#### GN configuration
-
-As with the other options you typically profile a release build with symbols. In order to do so, add enable_profiling to `args.gn`:
-
-```
-enable_profiling = true
-```
 
 #### Install valgrind
 
@@ -173,7 +129,7 @@ sudo apt-get install kcachegrind
 kcachegrind callgrind.<pid>
 ```
 
-## Profiling on Android
+# Profiling on Android
 
 Android (Nougat and later) supports profiling using the [simpleperf](https://developer.android.com/ndk/guides/simpleperf) tool.
 
@@ -181,13 +137,13 @@ Follow the [instructions](./android_build_instructions.md) for building and inst
 
     $ src/out/Release/bin/chrome_public_apk profile
     Profiler is running; press Enter to stop...
-    
+
 Once you stop the profiler, the profiling data will be copied off the device to the host machine and post-processed so it can be viewed in `pprof`, as described above.
 
 To profile the renderer process, you must have just one tab open in chromium, and use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer
-    
+
 To limit the profile to a single thread, use a command like this:
 
     $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer --profile-thread=main
@@ -196,7 +152,7 @@ The `--profile-process` and `--profile-thread` arguments support most of the com
 
     $ src/out/Release/bin/chrome_public_apk help profile
 
-## Profiling on ChromeOS
+# Profiling on ChromeOS
 
 Follow the [simple chrome instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md), to build
 and deploy chrome to your chromeos device.  These instructions will set up a
@@ -229,21 +185,117 @@ PPROF\_BINARY\_PATH at the expanded `debug-board.tgz` file that came along with
 the chromeos image does not seem to work.  If you can make this work, please
 update this doc!
 
-## Profiling during a perf benchmark run
+# Profiling during a perf benchmark run
 
 The perf benchmark runner can generate a CPU profile over the course of running a perf test. Currently, this is supported only on Linux and Android. To get info about the relevant options, run:
 
     $ src/tools/perf/run_benchmark help run
-    
+
 ... and look for the `--interval-profiling-*` options. For example, to generate a profile of the main thread of the renderer process during the "page interactions" phase of a perf benchmark, you might run:
 
     $ src/tools/perf/run_benchmark run <benchmark name> --interval-profiling-target=renderer:main --interval-profiling-period=interactions --interval-profiling-frequency=2000
 
 The profiling data will be written into the `artifacts/` sub-directory of your perf benchmark output directory (default is `src/tools/perf`), to files with the naming pattern `*.profile.pb`. You can use `pprof` to view the results, as described above.
 
-## Googlers Only
+# Googlers Only
 
 If you use `pprof -proto chrome-profile-renderer-12345` to turn your perf data
 into a proto file, you can then use that resulting file with internal tools.
 See [http://go/cprof/user#fs-profiles](http://go/cprof/user#fs-profiles])
 for instructions on how to go about this.
+
+# macOS
+
+## General tricks
+
+### Using PIDs in commands
+
+Many of the profiling tools expect you to provide the PID of the process to profile. If the tool used does not support finding the application by name or you would like to run the command for many processes it can be useful to use `pgrep` to find the PIDs.
+
+Find the PID for Chromium (browser process):
+
+    $ pgrep -X Chromium
+Find the PID for all child processes of Chromium:
+
+    $ pgrep -P $CHROMIUM_PID
+Combine commands to run tool for Chromium and all its children:
+
+    $ cat <(pgrep -x Chromium) <(pgrep -P $(pgrep -x Chromium)) | xargs $MY_TOOL --pid
+
+## Checkout setup
+Profiling should always be done on a build that represents the performance of official builds as much as possible. `is_official_build` enables some additional optimizations like PGO.
+
+    is_debug = false
+    is_component_build = false
+    is_official_build = true
+
+    # Most profiling techniques on macOS will work with minimal symbols for local builds.
+    # You should try and use minimal symbols when starting out because most tools will take
+    # an incredibly long time to process the symbols and in some cases will freeze the application
+    # while doing so. symbol_level sets the level for all parts of Chromium. The
+    # blink and v8 settings allow overriding this to set higher or lower levels
+    # for those components.
+    blink_symbol_level = 0
+    v8_symbol_level = 0
+    symbol_level = 0
+
+## Viewing traces.
+Once collected the traces produced by any tool in this section can be converted to pprof using [InstrumentsToPprof](https://github.com/google/instrumentsToPprof#instrumentstopprof).
+
+## Tools
+
+### Sample
+#### Pros
+* Ships with macOS.
+* Traces can be symbolized after capturing.
+#### Cons
+* Has substantial observer impact and can interfere with the application, especially while loading symbols.
+* Does not differentiate between idle and active stacks so filtering is needed. Also obscures CPU impact of functions that sleep.
+
+#### Usage
+Sample stacks of $pid for 10 seconds grabbing a stack every 1ms. [-maydie] to still have stacks if process exits.
+
+    $ sample $pid 10 1 -mayDie -f ./output.txt
+
+### Instruments
+#### Pros
+* Ships with macOS.
+* Can produce much more than sampling profiles via different modes.
+* Is low overhead.
+* Only captures cpu-active stacks (In Time Profiler mode) so no idle stack filtering is needed.
+#### Cons
+* Cannot produce human-readable reports fully automatically. (Requires use of GUI)
+* Built-in trace viewer is quite underpowered.
+
+#### Usage
+To get a trace use either the GUI in the "Time Profiler" mode or this command:
+
+    $ xcrun -r xctrace record --template 'Time Profiler' --all-processes --time-limit 30s --output 'profile.trace'
+
+### DTrace
+#### Pros
+* Ships with macOS.
+* Can produce much more than sampling profiles via different probes.
+* Supports scripting.
+* Is low overhead.
+* Only captures cpu-active stacks so no idle stack filtering is needed.
+* Can be used fully from the command-line / script.
+#### Cons
+* Requires partially disabling SIP
+
+#### SIP
+By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for DTrace using these steps:
+
+* Reboot in recovery mode
+* Start a shell
+* Execute `csrutil enable --without dtrace --without debug`
+* Reboot
+
+#### Usage
+To get sampled cpu stacks
+
+    $ dtrace -p $PID -o $OUTPUT_FILE -n "profile-1001/pid == $PID/ {{ @[ustack()] = count(); }}"
+
+To get stacks that caused wake-ups
+
+    $ dtrace -p $PID -o $OUTPUT_FILE -n "mach_kernel::wakeup/pid == $PID/ {{ @[ustack()] = count(); }}"

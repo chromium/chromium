@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -41,6 +41,10 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
   // |browser_context| may be NULL for testing. In this case, be sure to not
   // insert any warnings.
   explicit WarningService(content::BrowserContext* browser_context);
+
+  WarningService(const WarningService&) = delete;
+  WarningService& operator=(const WarningService&) = delete;
+
   ~WarningService() override;
 
   // Get the instance of the WarningService for |browser_context|.
@@ -82,15 +86,13 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
   // Currently existing warnings.
   WarningSet warnings_;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Listen to extension unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningService);
 };
 
 }  // namespace extensions

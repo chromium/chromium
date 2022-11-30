@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * user preference. Knowing that a crash is available can be used as a signal to schedule upload
  * work for a later point in time (or favourable power/network conditions).
  */
-public class CrashReporterController {
+class CrashReporterController {
     private ICrashReporterController mImpl;
     private final ObserverList<CrashReporterCallback> mCallbacks;
 

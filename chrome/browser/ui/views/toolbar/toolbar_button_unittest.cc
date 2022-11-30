@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -37,7 +38,7 @@ class ToolbarButtonTestApi {
   const gfx::Insets layout_inset_delta() const {
     return button_->layout_inset_delta_;
   }
-  const base::Optional<SkColor> last_border_color() const {
+  const absl::optional<SkColor> last_border_color() const {
     return button_->last_border_color_;
   }
   void SetAnimationTimingForTesting() {
@@ -46,7 +47,7 @@ class ToolbarButtonTestApi {
   }
 
  private:
-  ToolbarButton* button_;
+  raw_ptr<ToolbarButton> button_;
 };
 
 }  // namespace test
@@ -66,13 +67,13 @@ class CheckActiveWebContentsMenuModel : public ui::SimpleMenuModel {
   ~CheckActiveWebContentsMenuModel() override = default;
 
   // ui::SimpleMenuModel:
-  int GetItemCount() const override {
+  size_t GetItemCount() const override {
     EXPECT_TRUE(tab_strip_model_->GetActiveWebContents());
     return 0;
   }
 
  private:
-  TabStripModel* const tab_strip_model_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 class TestToolbarButton : public ToolbarButton {
@@ -99,13 +100,15 @@ using ToolbarButtonViewsTest = ChromeViewsTestBase;
 TEST_F(ToolbarButtonViewsTest, NoDefaultLayoutInsets) {
   ToolbarButton button;
   gfx::Insets default_insets = ::GetLayoutInsets(TOOLBAR_BUTTON);
+  // Colors and insets are not ready until OnThemeChanged()
+  button.OnThemeChanged();
   EXPECT_FALSE(button.GetLayoutInsets().has_value());
   EXPECT_EQ(default_insets, button.GetInsets());
 }
 
 TEST_F(ToolbarButtonViewsTest, SetLayoutInsets) {
   ToolbarButton button;
-  gfx::Insets new_insets(2, 3, 4, 5);
+  auto new_insets = gfx::Insets::TLBR(2, 3, 4, 5);
   button.SetLayoutInsets(new_insets);
   EXPECT_EQ(new_insets, button.GetLayoutInsets());
   EXPECT_EQ(new_insets, button.GetInsets());
@@ -161,7 +164,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  protected:
-  TestToolbarButton* button_ = nullptr;
+  raw_ptr<TestToolbarButton> button_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> widget_;
@@ -211,7 +214,7 @@ TEST_F(ToolbarButtonUITest, TestBorderUpdateColorChange) {
   for (SkColor border_color : {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE}) {
     EXPECT_FALSE(button_->did_border_update());
     button_->SetHighlight(std::u16string(), border_color);
-    EXPECT_EQ(button_->border()->color(), border_color);
+    EXPECT_EQ(button_->GetBorder()->color(), border_color);
     EXPECT_TRUE(button_->did_border_update());
     button_->ResetBorderUpdateFlag();
   }

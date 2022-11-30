@@ -107,7 +107,7 @@ Colors used in styles can be either adaptive or independent of night mode. When 
 
 ### Themes
 
-If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the AppCompat DayNight themes (prefixed with `Theme.AppCompat.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
+If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the MaterialComponents DayNight themes (prefixed with `Theme.MaterialComponents.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
 
 ### Troubleshooting
 
@@ -122,13 +122,13 @@ If adding a new theme, make sure the parent (or any indirect ancestor) theme of 
 
 Render tests are the recommended way to verify the appearance of night mode UI. If you are not familiar with render tests, please take a look at [render test instructions](/ui/android/javatests/src/org/chromium/ui/test/util/RENDER_TESTS.md) to learn about how to write a new render test and upload golden images.
 
-**For tests using DummyUiActivity:**
+**For tests using BlankUiTestActivity:**
 
 * Put all the render tests into a separate test suite
 * Use class parameter [`NightModeTestUtils.NightModeParams.class`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=NightModeTestUtils.NightModeParams)
 * Pass in a boolean parameter that indicates night mode state in constructor
-* Set up night mode in constructor by calling [`NightModeTestUtils#setUpNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=setUpNightModeForDummyUiActivity&sq=package:chromium) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
-* During [`tearDownTest()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/DummyUiActivityTestCase.java?type=cs&q=tearDownTest), reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=tearDownNightModeForDummyUiActivity)
+* Set up night mode in constructor by calling [`NightModeTestUtils#setUpNightModeForBlankUiTestActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=setUpNightModeForBlankUiTestActivity&sq=package:chromium) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
+* During [`tearDownTest()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java?type=cs&q=tearDownTest), reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForBlankUiTestActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=tearDownNightModeForBlankUiTestActivity)
 
 See [this CL](https://chromium-review.googlesource.com/c/chromium/src/+/1613883) as an example
 

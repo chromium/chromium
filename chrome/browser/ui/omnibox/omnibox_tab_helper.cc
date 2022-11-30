@@ -1,18 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "components/omnibox/browser/omnibox_view.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper);
 
 OmniboxTabHelper::~OmniboxTabHelper() = default;
-OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents) {}
+OmniboxTabHelper::OmniboxTabHelper(content::WebContents* contents)
+    : content::WebContentsUserData<OmniboxTabHelper>(*contents) {}
 
 void OmniboxTabHelper::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,12 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace device {
 
@@ -40,12 +39,12 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
     // If the depth sensing API was requested, the depth_configuration will
     // contain the device-selected depth API usage and data format.
 
-    base::Optional<device::mojom::XRDepthConfig> depth_configuration;
+    absl::optional<device::mojom::XRDepthConfig> depth_configuration;
 
     InitializeResult(
         const std::unordered_set<device::mojom::XRSessionFeature>&
             enabled_features,
-        base::Optional<device::mojom::XRDepthConfig> depth_configuration);
+        absl::optional<device::mojom::XRDepthConfig> depth_configuration);
     InitializeResult(const InitializeResult& other);
     ~InitializeResult();
   };
@@ -70,14 +69,14 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
 
   // Initializes the runtime and returns whether it was successful.
   // If successful, the runtime must be paused when this method returns.
-  virtual base::Optional<InitializeResult> Initialize(
+  virtual absl::optional<InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-      base::Optional<DepthSensingConfiguration> depth_sensing_config) = 0;
+      absl::optional<DepthSensingConfiguration> depth_sensing_config) = 0;
 
   // Returns the target framerate range in Hz. Actual capture frame rate will
   // vary within this range, i.e. lower in low light to increase exposure time.
@@ -87,6 +86,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       const gfx::Size& frame_size,
       display::Display::Rotation display_rotation) = 0;
   virtual void SetCameraTexture(uint32_t camera_texture_id) = 0;
+
+  virtual gfx::Size GetUncroppedCameraImageSize() const = 0;
 
   gfx::Transform GetCameraUvFromScreenUvTransform() const;
   gfx::Transform GetDepthUvFromScreenUvTransform() const;
@@ -124,24 +125,24 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
       const mojom::XRRayPtr& ray,
       std::vector<mojom::XRHitResultPtr>* hit_results) = 0;
 
-  // Subscribes to hit test. Returns base::nullopt if subscription failed.
+  // Subscribes to hit test. Returns absl::nullopt if subscription failed.
   // This variant will subscribe for a hit test to a specific native origin
   // specified in |native_origin_information|. The native origin will be used
   // along with passed in ray to compute the hit test results as of latest
   // frame. The passed in |entity_types| will be used to filter out the results
   // that do not match anything in the vector.
-  virtual base::Optional<uint64_t> SubscribeToHitTest(
+  virtual absl::optional<uint64_t> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) = 0;
-  // Subscribes to hit test for transient input sources. Returns base::nullopt
+  // Subscribes to hit test for transient input sources. Returns absl::nullopt
   // if subscription failed. This variant will subscribe for a hit test to
   // transient input sources that match the |profile_name|. The passed in ray
   // will be used to compute the hit test results as of latest frame (relative
   // to the location of transient input source). The passed in |entity_types|
   // will be used to filter out the results that do not match anything in the
   // vector.
-  virtual base::Optional<uint64_t> SubscribeToHitTestForTransientInput(
+  virtual absl::optional<uint64_t> SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) = 0;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/i18n/base_i18n_export.h"
 
 namespace base {
 
 // Detect encoding of |text| and put the name of encoding in |encoding|.
 // Returns true on success.
-BASE_I18N_EXPORT bool DetectEncoding(const std::string& text,
-                                     std::string* encoding) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_I18N_EXPORT bool DetectEncoding(const std::string& text,
+                                                   std::string* encoding);
 }  // namespace base
 
 #endif  // BASE_I18N_ENCODING_DETECTION_H_

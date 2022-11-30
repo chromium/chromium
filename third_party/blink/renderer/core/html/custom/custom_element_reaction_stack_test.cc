@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <initializer_list>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_test_helpers.h"
@@ -187,6 +186,8 @@ class EnqueueToStack : public Command {
                  Element& element,
                  CustomElementReaction* reaction)
       : stack_(stack), element_(element), reaction_(reaction) {}
+  EnqueueToStack(const EnqueueToStack&) = delete;
+  EnqueueToStack& operator=(const EnqueueToStack&) = delete;
   ~EnqueueToStack() override = default;
   void Trace(Visitor* visitor) const override {
     Command::Trace(visitor);
@@ -202,8 +203,6 @@ class EnqueueToStack : public Command {
   Member<CustomElementReactionStack> stack_;
   Member<Element> element_;
   Member<CustomElementReaction> reaction_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnqueueToStack);
 };
 
 TEST(CustomElementReactionStackTest, enqueueFromReaction) {

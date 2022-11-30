@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -119,7 +118,9 @@ TEST(SigninErrorControllerTest, UnconsentedPrimaryAccount) {
   signin::IdentityTestEnvironment identity_test_env;
 
   CoreAccountId test_account_id =
-      identity_test_env.MakeUnconsentedPrimaryAccountAvailable(kTestEmail)
+      identity_test_env
+          .MakePrimaryAccountAvailable(kTestEmail,
+                                       signin::ConsentLevel::kSignin)
           .account_id;
   SigninErrorController error_controller(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
@@ -156,17 +157,19 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       GoogleServiceAuthError::SERVICE_UNAVAILABLE,
       GoogleServiceAuthError::REQUEST_CANCELED,
       GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
-      GoogleServiceAuthError::SERVICE_ERROR};
+      GoogleServiceAuthError::SERVICE_ERROR,
+      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+  };
   static_assert(
-      base::size(table) == GoogleServiceAuthError::NUM_STATES -
-                               GoogleServiceAuthError::kDeprecatedStateCount,
+      std::size(table) == GoogleServiceAuthError::NUM_STATES -
+                              GoogleServiceAuthError::kDeprecatedStateCount,
       "table array does not match the number of auth error types");
 
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
 
-    if (error.IsTransientError())
-      continue;  // Only persistent errors or non-errors are reported.
+    if (error.IsTransientError() || error.IsScopePersistentError())
+      continue;  // Only non scope persistent errors or non-errors are reported.
 
     identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
         test_account_id, error);
@@ -246,7 +249,8 @@ TEST(SigninErrorControllerTest,
   signin::IdentityTestEnvironment identity_test_env;
 
   AccountInfo primary_account_info =
-      identity_test_env.MakePrimaryAccountAvailable(kPrimaryAccountEmail);
+      identity_test_env.MakePrimaryAccountAvailable(
+          kPrimaryAccountEmail, signin::ConsentLevel::kSync);
   CoreAccountId secondary_account_id =
       identity_test_env.MakeAccountAvailable(kTestEmail).account_id;
   SigninErrorController error_controller(
@@ -293,7 +297,8 @@ TEST(SigninErrorControllerTest, PrimaryAccountErrorsAreSticky) {
   signin::IdentityTestEnvironment identity_test_env;
 
   AccountInfo primary_account_info =
-      identity_test_env.MakePrimaryAccountAvailable(kPrimaryAccountEmail);
+      identity_test_env.MakePrimaryAccountAvailable(
+          kPrimaryAccountEmail, signin::ConsentLevel::kSync);
   CoreAccountId secondary_account_id =
       identity_test_env.MakeAccountAvailable(kTestEmail).account_id;
   SigninErrorController error_controller(

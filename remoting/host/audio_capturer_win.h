@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"
 #include "remoting/host/audio_capturer.h"
@@ -30,6 +30,10 @@ class DefaultAudioDeviceChangeDetector;
 class AudioCapturerWin : public AudioCapturer {
  public:
   AudioCapturerWin();
+
+  AudioCapturerWin(const AudioCapturerWin&) = delete;
+  AudioCapturerWin& operator=(const AudioCapturerWin&) = delete;
+
   ~AudioCapturerWin() override;
 
   // AudioCapturer interface.
@@ -78,8 +82,6 @@ class AudioCapturerWin : public AudioCapturer {
   HRESULT last_capture_error_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioCapturerWin);
 };
 
 }  // namespace remoting

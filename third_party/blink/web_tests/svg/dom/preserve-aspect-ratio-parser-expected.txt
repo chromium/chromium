@@ -1,39 +1,39 @@
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax m…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "meet".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "xminymin".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "refer xMinYMin s…".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Trailing garbage, "xMinYMin defer".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice xMinYMin".
-CONSOLE ERROR: line 16: Error: <image> attribute preserveAspectRatio: Trailing garbage, "xMinYMin\u00A0".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax m…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMin s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMin s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMin s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMid s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMid s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMid s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMinYMax s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMidYMax s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer xMaxYMax s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "defer".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "meet".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "xminymin".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "refer xMinYMin s…".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Trailing garbage, "xMinYMin defer".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Unrecognized enumerated value, "slice xMinYMin".
+CONSOLE ERROR: Error: <image> attribute preserveAspectRatio: Trailing garbage, "xMinYMin\u00A0".
 This tests the parser for preserve aspect ratio attribute values.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

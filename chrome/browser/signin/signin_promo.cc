@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/signin_promo.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
@@ -23,7 +24,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -45,7 +46,7 @@ GURL GetEmbeddedPromoURL(signin_metrics::AccessPoint access_point,
   CHECK_LE(static_cast<int>(reason),
            static_cast<int>(signin_metrics::Reason::kMaxValue));
   CHECK_NE(static_cast<int>(reason),
-           static_cast<int>(signin_metrics::Reason::REASON_UNKNOWN_REASON));
+           static_cast<int>(signin_metrics::Reason::kUnknownReason));
 
   GURL url(chrome::kChromeUIChromeSigninURL);
   url = net::AppendQueryParameter(
@@ -96,8 +97,7 @@ content::StoragePartition* GetSigninPartition(
   const auto signin_partition_config = content::StoragePartitionConfig::Create(
       browser_context, "chrome-signin", /* partition_name= */ "",
       /* in_memory= */ true);
-  return content::BrowserContext::GetStoragePartition(browser_context,
-                                                      signin_partition_config);
+  return browser_context->GetStoragePartition(signin_partition_config);
 }
 
 signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {
@@ -123,14 +123,14 @@ signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {
 signin_metrics::Reason GetSigninReasonForEmbeddedPromoURL(const GURL& url) {
   std::string value;
   if (!net::GetValueForKeyInQuery(url, kSignInPromoQueryKeyReason, &value))
-    return signin_metrics::Reason::REASON_UNKNOWN_REASON;
+    return signin_metrics::Reason::kUnknownReason;
 
   int reason = -1;
   base::StringToInt(value, &reason);
-  if (reason < static_cast<int>(
-                   signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT) ||
+  if (reason <
+          static_cast<int>(signin_metrics::Reason::kSigninPrimaryAccount) ||
       reason > static_cast<int>(signin_metrics::Reason::kMaxValue)) {
-    return signin_metrics::Reason::REASON_UNKNOWN_REASON;
+    return signin_metrics::Reason::kUnknownReason;
   }
 
   return static_cast<signin_metrics::Reason>(reason);

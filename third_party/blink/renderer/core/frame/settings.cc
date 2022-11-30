@@ -51,7 +51,7 @@ struct FromString<String> {
 
 template <>
 struct FromString<bool> {
-  bool operator()(const String& s) { return s.IsEmpty() || s == "true"; }
+  bool operator()(const String& s) { return s.empty() || s == "true"; }
 };
 
 template <>
@@ -65,12 +65,12 @@ struct FromString<double> {
 };
 
 template <>
-struct FromString<IntSize> {
-  IntSize operator()(const String& s) {
+struct FromString<gfx::Size> {
+  gfx::Size operator()(const String& s) {
     Vector<String> fields;
     s.Split(',', fields);
-    return IntSize(fields.size() > 0 ? fields[0].ToInt() : 0,
-                   fields.size() > 1 ? fields[1].ToInt() : 0);
+    return gfx::Size(fields.size() > 0 ? fields[0].ToInt() : 0,
+                     fields.size() > 1 ? fields[1].ToInt() : 0);
   }
 };
 
@@ -85,23 +85,21 @@ struct FromString<IntSize> {
 // 99) MacEditingBehavior is used a fallback.
 static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
   return
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       mojom::blink::EditingBehavior::kEditingMacBehavior
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       mojom::blink::EditingBehavior::kEditingWindowsBehavior
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
       mojom::blink::EditingBehavior::kEditingAndroidBehavior
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FeatureList::IsEnabled(features::kCrOSAutoSelect)
-          ? mojom::blink::EditingBehavior::kEditingChromeOSBehavior
-          : mojom::blink::EditingBehavior::kEditingUnixBehavior
+#elif BUILDFLAG(IS_CHROMEOS)
+      mojom::blink::EditingBehavior::kEditingChromeOSBehavior
 #else  // Rest of the UNIX-like systems
       mojom::blink::EditingBehavior::kEditingUnixBehavior
 #endif
       ;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 static const bool kDefaultSelectTrailingWhitespaceEnabled = true;
 #else
 static const bool kDefaultSelectTrailingWhitespaceEnabled = false;

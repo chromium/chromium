@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ void TestLayerTreeHostBase::SetupPendingTree(
     pending_layer_->SetDrawsContent(true);
     // LCD-text tests require the layer to be initially opaque.
     pending_layer_->SetContentsOpaque(true);
-    pending_layer_->SetSafeOpaqueBackgroundColor(SK_ColorWHITE);
+    pending_layer_->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
 
     pending_tree->SetElementIdsForTesting();
     SetupRootProperties(pending_root);

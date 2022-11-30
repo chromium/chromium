@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,20 +17,30 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-
-using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
 namespace enterprise_signals {
 
 namespace {
 
+std::string ReadFile(std::string path_str) {
+  base::FilePath path(path_str);
+  std::string output;
+  if (base::PathExists(path) && base::ReadFileToString(path, &output))
+    base::TrimWhitespaceASCII(output, base::TrimPositions::TRIM_ALL, &output);
+
+  return output;
+}
+
 std::string GetDeviceModel() {
-  return base::SysInfo::HardwareModelName();
+  return ReadFile("/sys/class/dmi/id/product_name");
 }
 
 std::string GetOsVersion() {
@@ -40,15 +50,20 @@ std::string GetOsVersion() {
   if (base::PathExists(os_release_file) &&
       base::ReadFileToStringWithMaxSize(os_release_file, &release_info, 8192) &&
       base::SplitStringIntoKeyValuePairs(release_info, '=', '\n', &values)) {
-    auto version_id = std::find_if(values.begin(), values.end(), [](auto v) {
-      return v.first == "VERSION_ID";
-    });
+    auto version_id = base::ranges::find(
+        values, "VERSION_ID", &std::pair<std::string, std::string>::first);
     if (version_id != values.end()) {
-      return base::TrimString(version_id->second, "\"", base::TRIM_ALL)
-          .as_string();
+      return std::string(
+          base::TrimString(version_id->second, "\"", base::TRIM_ALL));
     }
   }
   return base::SysInfo::OperatingSystemVersion();
+}
+
+std::string GetSecurityPatchLevel() {
+  int32_t major, minor, bugfix;
+  base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);
+  return base::StringPrintf("%d.%d.%d", major, minor, bugfix);
 }
 
 std::string GetDeviceHostName() {
@@ -56,7 +71,7 @@ std::string GetDeviceHostName() {
 }
 
 std::string GetSerialNumber() {
-  return std::string();
+  return ReadFile("/sys/class/dmi/id/product_serial");
 }
 
 // Implements the logic from the native client setup script. It reads the
@@ -164,6 +179,7 @@ DeviceInfo DeviceInfoFetcherLinux::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "linux";
   device_info.os_version = GetOsVersion();
+  device_info.security_patch_level = GetSecurityPatchLevel();
   device_info.device_host_name = GetDeviceHostName();
   device_info.device_model = GetDeviceModel();
   device_info.serial_number = GetSerialNumber();

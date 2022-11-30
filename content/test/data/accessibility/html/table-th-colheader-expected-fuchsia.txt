@@ -1,0 +1,19 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE number_of_rows=2 number_of_columns=2
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++COLUMN_HEADER label='Firstname' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Firstname'
+++++++++++++++++UNKNOWN label='Firstname'
+++++++++++++COLUMN_HEADER label='Lastname' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Lastname'
+++++++++++++++++UNKNOWN label='Lastname'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='Jill' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Jill'
+++++++++++++++++UNKNOWN label='Jill'
+++++++++++++CELL label='Smith' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Smith'
+++++++++++++++++UNKNOWN label='Smith'

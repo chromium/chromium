@@ -7,9 +7,9 @@
 
 /**
  * Styles used by goog.ui.TabRenderer.
- *
- * @provide {goog.css.tab}
  */
+
+@provide 'goog.css.tab';
 
 .goog-tab {
   position: relative;

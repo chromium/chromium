@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ namespace blink {
 
 ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
     v8::Isolate* isolate,
-    SingleCachedMetadataHandler* cache_handler,
+    CachedMetadataHandler* cache_handler,
     V8CodeCache::ProduceCacheOptions produce_cache_options,
     v8::Local<v8::Module> module)
     : cache_handler_(cache_handler),
@@ -38,23 +38,24 @@ ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
     v8::Local<v8::UnboundModuleScript> unbound_script =
         module->GetUnboundModuleScript();
     if (!unbound_script.IsEmpty())
-      unbound_script_.Set(isolate, unbound_script);
+      unbound_script_.Reset(isolate, unbound_script);
   }
 }
 
 void ModuleRecordProduceCacheData::Trace(Visitor* visitor) const {
   visitor->Trace(cache_handler_);
-  visitor->Trace(unbound_script_.UnsafeCast<v8::Value>());
+  visitor->Trace(unbound_script_);
 }
 
 v8::Local<v8::Module> ModuleRecord::Compile(
-    v8::Isolate* isolate,
+    ScriptState* script_state,
     const ModuleScriptCreationParams& params,
     const ScriptFetchOptions& options,
     const TextPosition& text_position,
     ExceptionState& exception_state,
     mojom::blink::V8CacheOptions v8_cache_options,
     ModuleRecordProduceCacheData** out_produce_cache_data) {
+  v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Module> module;
 
@@ -69,6 +70,12 @@ v8::Local<v8::Module> ModuleRecord::Compile(
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (params.CacheHandler()) {
+    params.CacheHandler()->Check(
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        params.GetSourceText());
+  }
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(v8_cache_options, params.CacheHandler(),
                                      params.GetSourceText().length(),
@@ -76,8 +83,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
 
   if (!V8ScriptRunner::CompileModule(
            isolate, params, text_position, compile_options, no_cache_reason,
-           ReferrerScriptInfo(params.BaseURL(), options,
-                              ReferrerScriptInfo::BaseUrlSource::kOther))
+           ReferrerScriptInfo(params.BaseURL(), options))
            .ToLocal(&module)) {
     DCHECK(try_catch.HasCaught());
     exception_state.RethrowV8Exception(try_catch.Exception());
@@ -103,10 +109,14 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
 
   DCHECK(!record.IsEmpty());
   v8::Local<v8::Context> context = script_state->GetContext();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Script IDs are not available on errored modules or on non-source text
   // modules, so we give them a default value.
-  probe::ExecuteScript probe(ExecutionContext::From(script_state), source_url,
+  probe::ExecuteScript probe(ExecutionContext::From(script_state), context,
+                             source_url,
                              record->GetStatus() != v8::Module::kErrored &&
                                      record->IsSourceTextModule()
                                  ? record->ScriptId()

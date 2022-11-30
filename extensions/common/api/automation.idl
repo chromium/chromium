@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,12 +23,15 @@
     autocorrectionOccured,
     blur,
     busyChanged,
+    caretBoundsChanged,
     checkedStateChanged,
+    checkedStateDescriptionChanged,
     childrenChanged,
     classNameChanged,
     clicked,
     collapsed,
     controlsChanged,
+    detailsChanged,
     describedByChanged,
     descriptionChanged,
     documentSelectionChanged,
@@ -72,7 +75,6 @@
     mediaStoppedPlaying,
     menuEnd,
     menuItemSelected,
-    menuListItemSelected,
     menuListValueChanged,
     menuPopupEnd,
     menuPopupStart,
@@ -111,7 +113,6 @@
     selectedValueChanged,
     selection,
     selectionAdd,
-    selectionInTextFieldChanged,
     selectionRemove,
     setSizeChanged,
     show,
@@ -119,7 +120,7 @@
     stateChanged,
     subtreeCreated,
     textAttributeChanged,
-    textSelectionChanged,  // Deprecated.
+    textSelectionChanged,
     textChanged,
     tooltipClosed,
     tooltipOpened,
@@ -136,7 +137,6 @@
     abbr,
     alert,
     alertDialog,
-    anchor,
     application,
     article,
     audio,
@@ -155,6 +155,7 @@
     columnHeader,
     comboBoxGrouping,
     comboBoxMenuButton,
+    comboBoxSelect,
     comment,
     complementary,
     contentDeletion,
@@ -242,7 +243,6 @@
     heading,
     iframe,
     iframePresentational,
-    ignored,
     image,
     imeCandidate,
     inlineTextBox,
@@ -266,6 +266,28 @@
     mark,
     marquee,
     math,
+    mathMLFraction,
+    mathMLIdentifier,
+    mathMLMath,
+    mathMLMultiscripts,
+    mathMLNoneScript,
+    mathMLNumber,
+    mathMLOperator,
+    mathMLOver,
+    mathMLPrescriptDelimiter,
+    mathMLRoot,
+    mathMLRow,
+    mathMLSquareRoot,
+    mathMLStringLiteral,
+    mathMLSub,
+    mathMLSubSup,
+    mathMLSup,
+    mathMLTable,
+    mathMLTableCell,
+    mathMLTableRow,
+    mathMLText,
+    mathMLUnder,
+    mathMLUnderOver,
     menu,
     menuBar,
     menuItem,
@@ -284,7 +306,6 @@
     popUpButton,
     portal,
     pre,
-    presentational,
     progressIndicator,
     radioButton,
     radioGroup,
@@ -306,7 +327,9 @@
     staticText,
     status,
     strong,
+    subscript,
     suggestion,
+    superscript,
     svgRoot,
     switch,
     tab,
@@ -374,7 +397,9 @@
     increment,
     internalInvalidateTree,
     loadInlineTextBoxes,
+    longClick,
     replaceSelectedText,
+    resumeMedia,
     scrollBackward,
     scrollDown,
     scrollForward,
@@ -390,7 +415,10 @@
     setValue,
     showContextMenu,
     signalEndOfTest,
-    showTooltip
+    showTooltip,
+    startDuckingMedia,
+    stopDuckingMedia,
+    suspendMedia
   };
 
   // Possible changes to the automation tree. For any given atomic change
@@ -435,7 +463,6 @@
 
   // Where the node's name is from.
   enum NameFromType {
-    uninitialized,
     attribute,
     attributeExplicitlyEmpty,
     caption,
@@ -447,10 +474,15 @@
   };
 
   enum DescriptionFromType {
-    uninitialized,
-    attribute,
-    contents,
+    ariaDescription,
+    attributeExplicitlyEmpty,
+    buttonLabel,
+    popupElement,
     relatedElement,
+    rubyAnnotation,
+    summary,
+    svgDescElement,
+    tableCaption,
     title
   };
 
@@ -482,6 +514,12 @@
     time
   };
 
+  // Lists the values that `invalidState` can take on.
+  enum InvalidState {
+    false,
+    true
+  };
+
   // Describes possible actions when performing a do default action.
   enum DefaultActionVerb {
     activate,
@@ -501,7 +539,8 @@ enum MarkerType {
   grammar,
   textMatch,
   activeSuggestion,
-  suggestion
+  suggestion,
+  highlight
 };
 
 // The following three enums are associated with an $(ref:automation.AutomationIntent).
@@ -570,7 +609,9 @@ enum IntentInputEventType {
 // A text boundary associated with an $(ref:automation.AutomationIntent).
 enum IntentTextBoundaryType {
   character,
-  format,
+  formatEnd,
+  formatStart,
+  formatStartOrEnd,
   lineEnd,
   lineStart,
   lineStartOrEnd,
@@ -580,6 +621,7 @@ enum IntentTextBoundaryType {
   pageStartOrEnd,
   paragraphEnd,
   paragraphStart,
+  paragraphStartSkippingEmptyParagraphs,
   paragraphStartOrEnd,
   sentenceEnd,
   sentenceStart,
@@ -805,8 +847,10 @@ enum SortDirectionType {
     static void moveToPreviousLineStartPosition();
     static void moveToNextLineEndPosition();
     static void moveToPreviousLineEndPosition();
+    static void moveToNextFormatStartPosition();
     static void moveToPreviousFormatStartPosition();
     static void moveToNextFormatEndPosition();
+    static void moveToPreviousFormatEndPosition();
     static void moveToNextParagraphStartPosition();
     static void moveToPreviousParagraphStartPosition();
     static void moveToNextParagraphEndPosition();
@@ -843,7 +887,7 @@ enum SortDirectionType {
 
     // The rendered location (as a bounding box) of this node in global
     // screen coordinates.
-    Rect? location;
+    Rect location;
 
     // Determines the location of the text within the node specified by
     // |startIndex| and |endIndex|, inclusively. Invokes |callback| with the
@@ -883,6 +927,12 @@ enum SortDirectionType {
     // Accessible Name Calculation</a> process.
     DOMString? name;
 
+    // Explains what will happen when the doDefault action is performed.
+    DOMString? doDefaultLabel;
+
+    // Explains what will happen when the long click action is performed.
+    DOMString? longClickLabel;
+
     // The tooltip of the node, if any.
     DOMString? tooltip;
 
@@ -903,6 +953,9 @@ enum SortDirectionType {
 
     // The level of a heading or tree item.
     long? hierarchicalLevel;
+
+    // The current caret bounds in screen coordinates.
+    Rect? caretBounds;
 
     // The start and end index of each word in an inline text box.
     long[]? wordStarts;
@@ -1048,9 +1101,6 @@ enum SortDirectionType {
     // The character index of the end of the selection within this editable
     // text element; -1 if no selection.
     long? textSelEnd;
-
-    // The input type, like email or number.
-    DOMString? textInputType;
 
     // An array of Marker objects for this node.
     Marker[]? markers;
@@ -1199,6 +1249,18 @@ enum SortDirectionType {
     // Miscellaneous attributes.
     //
 
+    // Whether or not this node is a button.
+    boolean isButton;
+
+  // Whether or not this node is a checkbox.
+    boolean isCheckBox;
+
+    // Whether or not this node is a combobox.
+    boolean isComboBox;
+
+    // Whether or not this node is an image.
+    boolean isImage;
+
     // Aria auto complete.
     DOMString? autoComplete;
 
@@ -1285,11 +1347,20 @@ enum SortDirectionType {
     // Indicates the font family.
     DOMString fontFamily;
 
-    // Indicates whether this is a root of an editable subtree.
-    boolean editableRoot;
+    // Indicates whether the object functions as a text field which exposes its
+    // descendants. Use cases include the root of a content-editable region, an
+    // ARIA textbox which isn't currently editable and which has interactive
+    // descendants, and a <body> element that has "design-mode" set to "on".
+    boolean nonAtomicTextFieldRoot;
 
     // Indicates aria-current state.
     AriaCurrentState? ariaCurrentState;
+
+    // Indicates invalid-state.
+    InvalidState? invalidState;
+
+    // The application id for a tree rooted at this node.
+    DOMString? appId;
 
     //
     // Walking the tree.
@@ -1312,6 +1383,9 @@ enum SortDirectionType {
 
     // The sort direction of this node.
     SortDirectionType sortDirection;
+
+    // Explicitly set to true when this node is clickable.
+    boolean clickable;
 
     //
     // Actions.

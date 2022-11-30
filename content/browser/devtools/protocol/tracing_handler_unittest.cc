@@ -1,6 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "base/json/json_reader.h"
 #include "base/trace_event/trace_config.h"
@@ -16,6 +18,7 @@ namespace {
 const char kCustomTraceConfigString[] =
     "{"
     "\"enable_argument_filter\":true,"
+    "\"enable_package_name_filter\":false,"
     "\"enable_systrace\":true,"
     "\"excluded_categories\":[\"excluded\",\"exc_pattern*\"],"
     "\"included_categories\":[\"included\","
@@ -37,7 +40,8 @@ const char kCustomTraceConfigString[] =
     "}"
     "]"
     "},"
-    "\"record_mode\":\"record-continuously\""
+    "\"record_mode\":\"record-continuously\","
+    "\"trace_buffer_size_in_kb\":262144"
     "}";
 
 const char kCustomTraceConfigStringDevToolsStyle[] =
@@ -64,7 +68,8 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
     "}"
     "]"
     "},"
-    "\"recordMode\":\"recordContinuously\""
+    "\"recordMode\":\"recordContinuously\","
+    "\"traceBufferSizeInKb\":262144"
     "}";
 
 }  // namespace
@@ -72,7 +77,7 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
 class TracingHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    tracing_handler_.reset(new TracingHandler(nullptr, nullptr));
+    tracing_handler_ = std::make_unique<TracingHandler>(nullptr);
   }
 
   void TearDown() override { tracing_handler_.reset(); }
@@ -89,13 +94,11 @@ class TracingHandlerTest : public testing::Test {
 };
 
 TEST_F(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(kCustomTraceConfigStringDevToolsStyle);
-  std::unique_ptr<base::DictionaryValue> devtools_style_dict(
-      static_cast<base::DictionaryValue*>(value.release()));
+  base::Value devtools_config =
+      base::JSONReader::Read(kCustomTraceConfigStringDevToolsStyle).value();
 
   base::trace_event::TraceConfig trace_config =
-      TracingHandler::GetTraceConfigFromDevToolsConfig(*devtools_style_dict);
+      TracingHandler::GetTraceConfigFromDevToolsConfig(devtools_config);
 
   EXPECT_STREQ(kCustomTraceConfigString, trace_config.ToString().c_str());
 }

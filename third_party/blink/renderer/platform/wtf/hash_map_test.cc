@@ -32,7 +32,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_test_helper.h"
 
@@ -177,7 +180,7 @@ TEST(HashMapTest, RefPtrAsKey) {
   map.erase(raw_ptr);
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
   EXPECT_TRUE(is_deleted);
-  EXPECT_TRUE(map.IsEmpty());
+  EXPECT_TRUE(map.empty());
 }
 
 TEST(HashMaptest, RemoveAdd) {
@@ -202,7 +205,7 @@ TEST(HashMaptest, RemoveAdd) {
   map.erase(1);
   EXPECT_EQ(1, DummyRefCounted::ref_invokes_count_);
   EXPECT_TRUE(is_deleted);
-  EXPECT_TRUE(map.IsEmpty());
+  EXPECT_TRUE(map.empty());
 
   // Add and remove until the deleted slot is reused.
   for (int i = 1; i < 100; i++) {
@@ -435,7 +438,7 @@ TEST(HashMapTest, UniquePtrAsKey) {
 
   // Insert more to cause a rehash.
   for (int i = 2; i < 32; ++i) {
-    Map::AddResult add_result = map.insert(Pointer(new int(i)), i);
+    Map::AddResult add_result = map.insert(std::make_unique<int>(i), i);
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(i, *add_result.stored_value->key);
     EXPECT_EQ(i, add_result.stored_value->value);
@@ -458,7 +461,7 @@ TEST(HashMapTest, UniquePtrAsValue) {
   using Map = HashMap<int, Pointer>;
   Map map;
   {
-    Map::AddResult add_result = map.insert(1, Pointer(new int(1)));
+    Map::AddResult add_result = map.insert(1, std::make_unique<int>(1));
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(1, add_result.stored_value->key);
     EXPECT_EQ(1, *add_result.stored_value->value);
@@ -476,7 +479,7 @@ TEST(HashMapTest, UniquePtrAsValue) {
   EXPECT_TRUE(iter == map.end());
 
   for (int i = 2; i < 32; ++i) {
-    Map::AddResult add_result = map.insert(i, Pointer(new int(i)));
+    Map::AddResult add_result = map.insert(i, std::make_unique<int>(i));
     EXPECT_TRUE(add_result.is_new_entry);
     EXPECT_EQ(i, add_result.stored_value->key);
     EXPECT_EQ(i, *add_result.stored_value->value);
@@ -579,7 +582,7 @@ HashMap<int, int> ReturnOneTwoThreeMap() {
 
 TEST(HashMapTest, InitializerList) {
   HashMap<int, int> empty({});
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   HashMap<int, int> one({{1, 11}});
   EXPECT_EQ(one.size(), 1u);
@@ -601,7 +604,7 @@ TEST(HashMapTest, InitializerList) {
   one_two_three.insert(9999, 99999);
 
   empty = {};
-  EXPECT_TRUE(empty.IsEmpty());
+  EXPECT_TRUE(empty.empty());
 
   one = {{1, 11}};
   EXPECT_EQ(one.size(), 1u);
@@ -624,7 +627,17 @@ TEST(HashMapTest, InitializerList) {
 }
 
 TEST(HashMapTest, IsValidKey) {
-  bool is_deleted;
+  static_assert(DefaultHash<int>::Hash::safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(DefaultHash<int*>::Hash::safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(DefaultHash<scoped_refptr<DummyRefCounted>>::Hash::
+                    safe_to_compare_to_empty_or_deleted,
+                "type should be comparable to empty or deleted");
+  static_assert(
+      !DefaultHash<AtomicString>::Hash::safe_to_compare_to_empty_or_deleted,
+      "type should not be comparable to empty or deleted");
+
   EXPECT_FALSE((HashMap<int, int>::IsValidKey(0)));
   EXPECT_FALSE((HashMap<int, int>::IsValidKey(-1)));
   EXPECT_TRUE((HashMap<int, int>::IsValidKey(-2)));
@@ -632,10 +645,15 @@ TEST(HashMapTest, IsValidKey) {
   EXPECT_FALSE((HashMap<int*, int>::IsValidKey(nullptr)));
   EXPECT_TRUE((HashMap<int*, int>::IsValidKey(std::make_unique<int>().get())));
 
+  bool is_deleted;
   auto p = base::MakeRefCounted<DummyRefCounted>(is_deleted);
   EXPECT_TRUE((HashMap<scoped_refptr<DummyRefCounted>, int>::IsValidKey(p)));
   EXPECT_FALSE(
       (HashMap<scoped_refptr<DummyRefCounted>, int>::IsValidKey(nullptr)));
+
+  // Test IsValidKey() on a type that is NOT comparable to empty or deleted.
+  EXPECT_TRUE((HashMap<AtomicString, int>::IsValidKey(AtomicString("foo"))));
+  EXPECT_FALSE((HashMap<AtomicString, int>::IsValidKey(AtomicString())));
 }
 
 static_assert(!IsTraceable<HashMap<int, int>>::value,

@@ -1,24 +1,29 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_types.h"
 
-#include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 
 namespace ash {
 
-EasyUnlockIconOptions::EasyUnlockIconOptions() = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions::EasyUnlockIconOptions(EasyUnlockIconOptions&& other) =
+EasyUnlockIconInfo::EasyUnlockIconInfo() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(const EasyUnlockIconInfo& other) =
     default;
-EasyUnlockIconOptions::~EasyUnlockIconOptions() = default;
+EasyUnlockIconInfo::EasyUnlockIconInfo(EasyUnlockIconInfo&& other) = default;
+EasyUnlockIconInfo::~EasyUnlockIconInfo() = default;
 
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    const EasyUnlockIconOptions& other) = default;
-EasyUnlockIconOptions& EasyUnlockIconOptions::operator=(
-    EasyUnlockIconOptions&& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(
+    const EasyUnlockIconInfo& other) = default;
+EasyUnlockIconInfo& EasyUnlockIconInfo::operator=(EasyUnlockIconInfo&& other) =
+    default;
+
+bool DeviceEnterpriseInfo::operator==(const DeviceEnterpriseInfo& other) const {
+  return other.enterprise_domain_manager == enterprise_domain_manager &&
+         other.active_directory_managed == active_directory_managed &&
+         other.management_device_mode == management_device_mode;
+}
 
 InputMethodItem::InputMethodItem() = default;
 InputMethodItem::InputMethodItem(const InputMethodItem& other) = default;

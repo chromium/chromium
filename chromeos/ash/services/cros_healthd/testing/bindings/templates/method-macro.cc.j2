@@ -1,0 +1,162 @@
+{#  Declare the parameters of a method. Map the kinds to cpp types. #}
+{%- macro declare_params(prefix, parameters) %}
+{%-   for param in parameters -%}
+{{param.kind|cpp_wrapper_param_type}} {{prefix}}{{param.mojom_name}}
+{%- if not loop.last %}, {% endif %}
+{%-   endfor %}
+{%- endmacro %}
+
+{#  Declare the request parameters of a method. Add callback parameter if
+    needed. #}
+{%- macro declare_request_params(prefix, method) -%}
+{{declare_params(prefix, method.parameters)}}
+{%-   if method.response_parameters != None -%}
+{%-     if method.parameters %}, {% endif -%}
+{{method.mojom_name}}Callback callback
+{%-   endif -%}
+{%- endmacro -%}
+
+{#  Add nullable if needed. #}
+{%- macro _cpp_nullable_generator_type(kind) -%}
+{%-   if kind.is_nullable -%}
+::ash::cros_healthd::connectivity::NullableGenerator<{{ caller() }}>
+{%-   else -%}
+{{ caller() }}
+{%-   endif -%}
+{%- endmacro -%}
+
+{#  Add optional if needed. #}
+{%- macro _cpp_optional_generator_type(kind) -%}
+{%-   if kind.is_nullable -%}
+::ash::cros_healthd::connectivity::OptionalGenerator<{{ caller() }}>
+{%-   else -%}
+{{ caller() }}
+{%-   endif -%}
+{%- endmacro -%}
+
+{#  Map kind to DataGenerator type. #}
+{%- macro cpp_generator_type(kind) -%}
+{%-   if kind is GeneratorOverrideKind -%}
+{{kind | generator_override_type}}
+{%-   elif kind is EnumKind -%}
+{{kind | get_name_for_kind(flatten_nested_kind=True)}}DataGenerator
+{%-   elif kind is StructKind or kind is UnionKind -%}
+{%-     call _cpp_nullable_generator_type(kind) -%}
+{{kind | get_name_for_kind}}DataGenerator
+{%-     endcall -%}
+{%-   elif kind is GenericHandleKind -%}
+{%-     call _cpp_nullable_generator_type(kind) -%}
+::ash::cros_healthd::connectivity::HandleDataGenerator
+{%-     endcall -%}
+{%-   elif kind is PendingRemoteKind -%}
+{{kind.kind | get_name_for_kind}}TestProvider
+{%-   elif kind is PendingReceiverKind -%}
+{{kind.kind | get_name_for_kind}}TestConsumer
+{%-   elif kind is ArrayKind -%}
+{%-     call _cpp_optional_generator_type(kind) -%}
+::ash::cros_healthd::connectivity::ArrayGenerator<{{
+    cpp_generator_type(kind.kind)}}>
+{%-     endcall -%}
+{%-   elif kind is MapKind -%}
+{%-     call _cpp_optional_generator_type(kind) -%}
+::ash::cros_healthd::connectivity::MapGenerator<{{
+    cpp_generator_type(kind.key_kind)}}, {{
+    cpp_generator_type(kind.value_kind)}}>
+{%-     endcall -%}
+{%-   else -%}
+{%-     call _cpp_optional_generator_type(kind) -%}
+::ash::cros_healthd::connectivity::DataGenerator<{{
+  kind | cpp_wrapper_type(ignore_nullable=True)}}>
+{%-     endcall -%}
+{%-   endif -%}
+{%- endmacro -%}
+
+{#  Map kind to Checker type. #}
+{%- macro cpp_checker_type(kind) -%}
+{%-   if kind is PendingRemoteKind -%}
+{{kind.kind | get_name_for_kind}}TestConsumer
+{%-   elif kind is PendingReceiverKind -%}
+{{kind.kind | get_name_for_kind}}TestProvider
+{%-   else -%}
+UnsupportedCheckerType/*Should not reach.*/
+{%-   endif -%}
+{%- endmacro -%}
+
+{#  Declare data generator of parameters. #}
+{%- macro declare_data_generator(prefix, parameters) %}
+{%-   if parameters != None %}
+{%-     for param in parameters %}
+std::unique_ptr<{{cpp_generator_type(param.kind)}}> {{prefix}}{{
+  param.mojom_name}}__generator__;
+{%-     endfor %}
+{%-   endif %}
+{%- endmacro %}
+
+{#  Define data generator of parameters. #}
+{%- macro define_data_generator(prefix, context, parameters) -%}
+{%-   if parameters != None %}
+{%-     for param in parameters -%}
+{{prefix}}{{param.mojom_name}}__generator__ = {{
+  cpp_generator_type(param.kind)}}::Create({{context}});
+{%      endfor %}
+{%-   endif %}
+{%- endmacro %}
+
+{#  Declare data checker of parameters. #}
+{%- macro declare_data_checker(prefix, parameters) -%}
+{%-   if parameters != None %}
+{%-     for param in parameters -%}
+{%-       if param.kind is PendingRemoteKind or
+             param.kind is PendingReceiverKind %}
+std::unique_ptr<{{cpp_checker_type(param.kind)}}> {{prefix}}{{
+  param.mojom_name}}__checker__;
+{%-       endif %}
+{%-     endfor %}
+{%-   endif %}
+{%- endmacro %}
+
+{#  Define data checker of parameters. #}
+{%- macro define_data_checker(prefix, context, parameters) %}
+{%-   if parameters != None %}
+{%-     for param in parameters -%}
+{%-       if param.kind is PendingRemoteKind or
+             param.kind is PendingReceiverKind %}
+{{prefix}}{{param.mojom_name}}__checker__ = {{
+  cpp_checker_type(param.kind)}}::Create({{context}});
+{%-       endif %}
+{%-     endfor %}
+{%-   endif %}
+{%- endmacro %}
+
+{#  Statement of generating the parameters to pass to function. #}
+{%- macro generate_params(prefix, parameters) %}
+{%-   if parameters != None %}
+{%-     for param in parameters -%}
+{{prefix}}{{param.mojom_name}}__generator__->Generate()
+{%-       if not loop.last %}, {% endif -%}
+{%      endfor %}
+{%    endif %}
+{%- endmacro %}
+
+{#  Statement of checking if the generator of parameters has next. #}
+{%- macro params_has_next(prefix, parameters) %}
+{%-   if parameters != None -%}
+(
+{%-     for param in parameters -%}
+{{prefix}}{{param.mojom_name}}__generator__->HasNext() ||
+{%-     endfor -%}
+false)
+{%-   endif %}
+{%- endmacro %}
+
+{#  Used to forward arguments of a method to another function. #}
+{%- macro forward_params(prefix, method) %}
+{%-   for param in method.parameters -%}
+std::move({{prefix}}{{param.mojom_name}})
+{%-   if not loop.last %}, {% endif -%}
+{%    endfor %}
+{%-   if method.response_parameters != None -%}
+{%-     if method.parameters %}, {% endif -%}
+std::move(callback)
+{%-   endif -%}
+{%- endmacro %}

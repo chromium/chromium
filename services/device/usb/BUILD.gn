@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,18 @@ assert(!is_ios)
 
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
+}
+
+if (is_win) {
+  config("usb_linker_flags") {
+    ldflags = [
+      "/DELAYLOAD:advapi32.dll",
+      "/DELAYLOAD:cfgmgr32.dll",
+      "/DELAYLOAD:ole32.dll",
+      "/DELAYLOAD:setupapi.dll",
+      "/DELAYLOAD:winusb.dll",
+    ]
+  }
 }
 
 static_library("usb") {
@@ -38,6 +50,7 @@ static_library("usb") {
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
+    "//services/device:utility",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]
@@ -62,10 +75,14 @@ static_library("usb") {
       "usb_service_android.cc",
       "usb_service_android.h",
     ]
+
+    deps += [ ":jni_headers" ]
   }
 
   if (is_win) {
     sources += [
+      "scoped_winusb_handle.cc",
+      "scoped_winusb_handle.h",
       "usb_device_handle_win.cc",
       "usb_device_handle_win.h",
       "usb_device_win.cc",
@@ -73,6 +90,17 @@ static_library("usb") {
       "usb_service_win.cc",
       "usb_service_win.h",
     ]
+
+    libs = [
+      "advapi32.lib",
+      "ole32.lib",
+      "setupapi.lib",
+      "winusb.lib",
+    ]
+
+    all_dependent_configs = [ ":usb_linker_flags" ]
+
+    deps += [ "//third_party/re2" ]
   }
 
   if (is_mac) {
@@ -84,30 +112,9 @@ static_library("usb") {
       "usb_service_mac.cc",
       "usb_service_mac.h",
     ]
-  }
 
-  if (is_linux || is_chromeos) {
-    sources += [
-      "usb_device_linux.cc",
-      "usb_device_linux.h",
-    ]
-  }
-
-  if (use_udev) {
-    if (is_linux || is_chromeos) {
-      sources += [
-        "usb_service_linux.cc",
-        "usb_service_linux.h",
-      ]
-    }
-    deps += [ "//device/udev_linux" ]
-  }
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-  }
-
-  if (is_win || is_mac) {
+    # These sources and deps are required for libusb.
+    # TODO(https://crbug.com/1096743) Remove these sources.
     sources += [
       "scoped_libusb_device_handle.cc",
       "scoped_libusb_device_handle.h",
@@ -128,18 +135,21 @@ static_library("usb") {
     deps += [ "//third_party/libusb" ]
   }
 
-  if (is_win) {
+  if (is_linux || is_chromeos) {
     sources += [
-      "scoped_winusb_handle.cc",
-      "scoped_winusb_handle.h",
+      "usb_device_linux.cc",
+      "usb_device_linux.h",
     ]
+  }
 
-    libs = [
-      "setupapi.lib",
-      "winusb.lib",
-    ]
-
-    deps += [ "//third_party/re2" ]
+  if (use_udev) {
+    if (is_linux || is_chromeos) {
+      sources += [
+        "usb_service_linux.cc",
+        "usb_service_linux.h",
+      ]
+    }
+    deps += [ "//device/udev_linux" ]
   }
 
   if (is_android || is_chromeos || is_linux) {
@@ -149,7 +159,7 @@ static_library("usb") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/permission_broker",
       "//dbus",
@@ -231,7 +241,12 @@ if (is_android) {
 
   android_library("java") {
     sources = java_sources_needing_jni
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

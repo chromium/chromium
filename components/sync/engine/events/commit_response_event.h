@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/syncer_error.h"
@@ -24,7 +23,12 @@ class CommitResponseEvent : public ProtocolEvent {
   CommitResponseEvent(base::Time timestamp,
                       SyncerError result,
                       const sync_pb::ClientToServerResponse& response);
+
+  CommitResponseEvent(const CommitResponseEvent&) = delete;
+  CommitResponseEvent& operator=(const CommitResponseEvent&) = delete;
+
   ~CommitResponseEvent() override;
+
   std::unique_ptr<ProtocolEvent> Clone() const override;
 
  private:
@@ -40,8 +44,6 @@ class CommitResponseEvent : public ProtocolEvent {
   const base::Time timestamp_;
   const SyncerError result_;
   const sync_pb::ClientToServerResponse response_;
-
-  DISALLOW_COPY_AND_ASSIGN(CommitResponseEvent);
 };
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
 #include "ash/tray_action/test_tray_action_client.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "ui/events/test/event_generator.h"
@@ -38,9 +37,15 @@ constexpr float kSqrt2 = 1.4142;
 class NoteActionLaunchButtonTest : public LoginTestBase {
  public:
   NoteActionLaunchButtonTest() = default;
+
+  NoteActionLaunchButtonTest(const NoteActionLaunchButtonTest&) = delete;
+  NoteActionLaunchButtonTest& operator=(const NoteActionLaunchButtonTest&) =
+      delete;
+
   ~NoteActionLaunchButtonTest() override = default;
 
   void SetUp() override {
+    set_start_session(true);
     LoginTestBase::SetUp();
 
     Shell::Get()->tray_action()->SetClient(
@@ -61,16 +66,13 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
 
   void GestureFling(const gfx::Point& start, const gfx::Point& end) {
     ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->GestureScrollSequence(start, end,
-                                     base::TimeDelta::FromMilliseconds(10), 2);
+    generator->GestureScrollSequence(start, end, base::Milliseconds(10), 2);
 
     Shell::Get()->tray_action()->FlushMojoForTesting();
   }
 
  private:
   TestTrayActionClient tray_action_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoteActionLaunchButtonTest);
 };
 
 // Verifies that note action button is not visible if lock screen note taking

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,6 +74,7 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS:
     case DownloadDangerType::PROMPT_FOR_SCANNING:
     case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
@@ -134,6 +135,9 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
     case DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE:
       return stream
              << "history::DownloadDangerType::BLOCKED_UNSUPPORTED_FILETYPE";
+    case DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE:
+      return stream
+             << "history::DownloadDangerType::DANGEROUS_ACCOUNT_COMRPOMISE";
   }
   NOTREACHED();
   return stream;

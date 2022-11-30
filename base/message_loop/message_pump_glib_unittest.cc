@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,17 +15,17 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,6 +45,9 @@ class EventInjector {
     g_source_attach(source_, nullptr);
     g_source_set_can_recurse(source_, TRUE);
   }
+
+  EventInjector(const EventInjector&) = delete;
+  EventInjector& operator=(const EventInjector&) = delete;
 
   ~EventInjector() {
     g_source_destroy(source_);
@@ -106,7 +109,7 @@ class EventInjector {
   };
 
   struct Source : public GSource {
-    EventInjector* injector;
+    raw_ptr<EventInjector> injector;
   };
 
   void AddEventHelper(int delay_ms, OnceClosure callback, OnceClosure task) {
@@ -116,7 +119,7 @@ class EventInjector {
     else
       last_time = Time::NowFromSystemTime();
 
-    Time future = last_time + TimeDelta::FromMilliseconds(delay_ms);
+    Time future = last_time + Milliseconds(delay_ms);
     EventInjector::Event event = {future, std::move(callback), std::move(task)};
     events_.push_back(std::move(event));
   }
@@ -137,11 +140,10 @@ class EventInjector {
     return TRUE;
   }
 
-  Source* source_;
+  raw_ptr<Source> source_;
   std::vector<Event> events_;
   int processed_events_;
   static GSourceFuncs SourceFuncs;
-  DISALLOW_COPY_AND_ASSIGN(EventInjector);
 };
 
 GSourceFuncs EventInjector::SourceFuncs = {EventInjector::Prepare,
@@ -166,14 +168,16 @@ void PostMessageLoopTask(const Location& from_here, OnceClosure task) {
 class MessagePumpGLibTest : public testing::Test {
  public:
   MessagePumpGLibTest() = default;
+
+  MessagePumpGLibTest(const MessagePumpGLibTest&) = delete;
+  MessagePumpGLibTest& operator=(const MessagePumpGLibTest&) = delete;
+
   EventInjector* injector() { return &injector_; }
 
  private:
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::UI};
   EventInjector injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpGLibTest);
 };
 
 }  // namespace
@@ -255,8 +259,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
   task_count = 0;
   for (int i = 0; i < 10; ++i) {
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, BindOnce(&IncrementInt, &task_count),
-        TimeDelta::FromMilliseconds(10 * i));
+        FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(10 * i));
   }
   // After all the previous tasks have executed, enqueue an event that will
   // quit.
@@ -268,7 +271,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
         FROM_HERE,
         BindOnce(&EventInjector::AddEvent, Unretained(injector()), 0,
                  run_loop.QuitClosure()),
-        TimeDelta::FromMilliseconds(150));
+        Milliseconds(150));
     run_loop.Run();
   }
   ASSERT_EQ(10, task_count);
@@ -346,7 +349,7 @@ class ConcurrentHelper : public RefCounted<ConcurrentHelper>  {
   static const int kStartingEventCount = 20;
   static const int kStartingTaskCount = 20;
 
-  EventInjector* injector_;
+  raw_ptr<EventInjector> injector_;
   OnceClosure done_closure_;
   int event_count_;
   int task_count_;
@@ -464,11 +467,9 @@ void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight GLib message loop.
   {
@@ -498,11 +499,9 @@ void TestGtkLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight Gtk message loop.
   {
@@ -550,12 +549,15 @@ class MessagePumpGLibFdWatchTest : public testing::Test {
 
   void SetUp() override {
     Thread::Options options(MessagePumpType::IO, 0);
-    ASSERT_TRUE(io_thread_.StartWithOptions(options));
+    ASSERT_TRUE(io_thread_.StartWithOptions(std::move(options)));
     int ret = pipe(pipefds_);
     ASSERT_EQ(0, ret);
   }
 
   void TearDown() override {
+    // Wait for the IO thread to exit before closing FDs which may have been
+    // passed to it.
+    io_thread_.Stop();
     if (IGNORE_EINTR(close(pipefds_[0])) < 0)
       PLOG(ERROR) << "close";
     if (IGNORE_EINTR(close(pipefds_[1])) < 0)
@@ -597,7 +599,7 @@ class BaseWatcher : public MessagePumpGlib::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
-  MessagePumpGlib::FdWatchController* controller_;
+  raw_ptr<MessagePumpGlib::FdWatchController> controller_;
 };
 
 class DeleteWatcher : public BaseWatcher {
@@ -673,7 +675,7 @@ void WriteFDWrapper(const int fd,
                     const char* buf,
                     int size,
                     WaitableEvent* event) {
-  ASSERT_TRUE(WriteFileDescriptor(fd, buf, size));
+  ASSERT_TRUE(WriteFileDescriptor(fd, StringPiece(buf, size)));
 }
 
 }  // namespace

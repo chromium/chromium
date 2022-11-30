@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 
-#include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -51,13 +50,28 @@ class CORE_EXPORT CascadeResolver {
   // https://drafts.csswg.org/css-variables/#animation-tainted
   bool AllowSubstitution(CSSVariableData*) const;
 
-  // If the incoming origin is kAuthor, collect flags from 'property'.
-  // AuthorFlags() can then later be used to see which flags have been observed.
-  void CollectAuthorFlags(const CSSProperty& property, CascadeOrigin origin) {
-    author_flags_ |=
-        (origin == CascadeOrigin::kAuthor ? property.GetFlags() : 0);
+  bool Rejects(const CSSProperty& property) {
+    if (!filter_.Rejects(property))
+      return false;
+    rejected_flags_ |= property.GetFlags();
+    return true;
   }
+
+  // Collects CSSProperty::Flags from the given property. The Flags() function
+  // can then be used to see which flags have been observed..
+  void CollectFlags(const CSSProperty& property, CascadeOrigin origin) {
+    CSSProperty::Flags flags = property.GetFlags();
+    author_flags_ |= (origin == CascadeOrigin::kAuthor ? flags : 0);
+    flags_ |= flags;
+  }
+
+  CSSProperty::Flags Flags() const { return flags_; }
+
+  // Like Flags, but for the author origin only.
   CSSProperty::Flags AuthorFlags() const { return author_flags_; }
+
+  // The CSSProperty::Flags of all properties rejected by the CascadeFilter.
+  CSSProperty::Flags RejectedFlags() const { return rejected_flags_; }
 
   // Automatically locks and unlocks the given property. (See
   // CascadeResolver::IsLocked).
@@ -108,6 +122,8 @@ class CORE_EXPORT CascadeResolver {
   CascadeFilter filter_;
   const uint8_t generation_ = 0;
   CSSProperty::Flags author_flags_ = 0;
+  CSSProperty::Flags flags_ = 0;
+  CSSProperty::Flags rejected_flags_ = 0;
 
   // A very simple cache for CSSPendingSubstitutionValues. We cache only the
   // most recently parsed CSSPendingSubstitutionValue, such that consecutive
@@ -118,7 +134,7 @@ class CORE_EXPORT CascadeResolver {
 
    public:
     const cssvalue::CSSPendingSubstitutionValue* value = nullptr;
-    HeapVector<CSSPropertyValue, 256> parsed_properties;
+    HeapVector<CSSPropertyValue, 64> parsed_properties;
   } shorthand_cache_;
 };
 

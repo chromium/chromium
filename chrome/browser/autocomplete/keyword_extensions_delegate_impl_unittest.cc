@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -31,15 +30,18 @@ namespace {
 class KeywordExtensionsDelegateImplTest : public ExtensionServiceTestBase {
  public:
   KeywordExtensionsDelegateImplTest() {}
+
+  KeywordExtensionsDelegateImplTest(const KeywordExtensionsDelegateImplTest&) =
+      delete;
+  KeywordExtensionsDelegateImplTest& operator=(
+      const KeywordExtensionsDelegateImplTest&) = delete;
+
   ~KeywordExtensionsDelegateImplTest() override {}
 
  protected:
   void SetUp() override;
 
   void RunTest(bool incognito);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeywordExtensionsDelegateImplTest);
 };
 
 void KeywordExtensionsDelegateImplTest::SetUp() {
@@ -49,7 +51,7 @@ void KeywordExtensionsDelegateImplTest::SetUp() {
 
 void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
   std::unique_ptr<TemplateURLService> empty_model(
-      new TemplateURLService(NULL, 0));
+      new TemplateURLService(nullptr, 0));
   MockAutocompleteProviderClient client;
   client.set_template_url_service(std::move(empty_model));
   scoped_refptr<KeywordProvider> keyword_provider =
@@ -74,7 +76,8 @@ void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
   ASSERT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 
   Profile* profile_to_use =
-      incognito ? profile()->GetPrimaryOTRProfile() : profile();
+      incognito ? profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                : profile();
   KeywordExtensionsDelegateImpl delegate_impl(profile_to_use,
                                               keyword_provider.get());
   KeywordExtensionsDelegate* delegate = &delegate_impl;

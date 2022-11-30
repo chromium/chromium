@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_hit_test_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-
-namespace {
-const char kCannotCancelHitTestSource[] =
-    "Hit test source could not be canceled! Ensure that it was not already "
-    "canceled.";
-}
 
 namespace blink {
 
@@ -29,7 +23,7 @@ void XRHitTestSource::cancel(ExceptionState& exception_state) {
 
   if (!xr_session_->RemoveHitTestSource(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kCannotCancelHitTestSource);
+                                      XRSession::kCannotCancelHitTestSource);
   }
 }
 

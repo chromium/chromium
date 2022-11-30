@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,14 +43,14 @@ UsbPolicyAllowedDevices::~UsbPolicyAllowedDevices() {}
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     const url::Origin& origin,
-    const device::mojom::UsbDeviceInfo& device_info) {
+    const device::mojom::UsbDeviceInfo& device_info) const {
   return IsDeviceAllowed(
       origin, std::make_pair(device_info.vendor_id, device_info.product_id));
 }
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     const url::Origin& origin,
-    const std::pair<int, int>& device_ids) {
+    const std::pair<int, int>& device_ids) const {
   // Search through each set of URL pair that match the given device. The
   // keys correspond to the following URL pair sets:
   //  * (vendor_id, product_id): A set corresponding to the exact device.
@@ -72,25 +72,20 @@ bool UsbPolicyAllowedDevices::IsDeviceAllowed(
 }
 
 void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
-  const base::Value* pref_value = pref_change_registrar_.prefs()->Get(
+  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedWebUsbAllowDevicesForUrls);
   usb_device_ids_to_urls_.clear();
 
-  // A policy has not been assigned.
-  if (!pref_value) {
-    return;
-  }
-
   // The pref value has already been validated by the policy handler, so it is
-  // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetList()) {
+  // safe to assume that |pref_list| follows the policy template.
+  for (const auto& item : pref_list) {
     const base::Value* urls_list = item.FindKey(kPrefUrlsKey);
     std::set<url::Origin> parsed_set;
 
     // A urls item can contain a pair of URLs that are delimited by a comma. If
     // it does not contain a second URL, set the embedding URL to an empty GURL
     // to signify a wildcard embedded URL.
-    for (const auto& urls_value : urls_list->GetList()) {
+    for (const auto& urls_value : urls_list->GetListDeprecated()) {
       std::vector<std::string> urls =
           base::SplitString(urls_value.GetString(), ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL);
@@ -100,7 +95,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
         continue;
 
       auto requesting_origin = url::Origin::Create(GURL(urls[0]));
-      base::Optional<url::Origin> embedding_origin;
+      absl::optional<url::Origin> embedding_origin;
       if (urls.size() == 2 && !urls[1].empty())
         embedding_origin = url::Origin::Create(GURL(urls[1]));
 
@@ -122,7 +117,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
     // For each device entry in the map, create or update its respective URL
     // set.
     const base::Value* devices = item.FindKey(kPrefDevicesKey);
-    for (const auto& device : devices->GetList()) {
+    for (const auto& device : devices->GetListDeprecated()) {
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
       const base::Value* vendor_id_value = device.FindKey(kPrefVendorIdKey);

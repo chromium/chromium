@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementBytes final {
                              bytes_.size());
   }
 
+  DataElementBytes Clone() const;
+
  private:
   std::vector<uint8_t> bytes_;
 };
@@ -68,6 +70,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElementDataPipe final {
 
   mojo::PendingRemote<mojom::DataPipeGetter> ReleaseDataPipeGetter();
   mojo::PendingRemote<mojom::DataPipeGetter> CloneDataPipeGetter() const;
+
+  DataElementDataPipe Clone() const;
 
  private:
   mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter_;
@@ -154,6 +158,10 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) DataElement {
   DataElement(DataElement&& other);
   DataElement& operator=(DataElement&& other);
   ~DataElement();
+
+  // Returns a cloned element. This is callable only when the type is not
+  // `kChunkedDataPipe`.
+  DataElement Clone() const;
 
   Tag type() const {
     switch (variant_.index()) {

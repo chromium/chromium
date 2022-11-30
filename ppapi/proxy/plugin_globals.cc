@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/proxy/plugin_globals.h"
 
-#include "base/macros.h"
+#include <memory>
+
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_message.h"
@@ -19,7 +20,6 @@
 #include "ppapi/proxy/ppb_message_loop_proxy.h"
 #include "ppapi/proxy/resource_reply_thread_registrar.h"
 #include "ppapi/proxy/udp_socket_filter.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/thunk/enter.h"
 
@@ -34,6 +34,9 @@ class PluginGlobals::BrowserSender : public IPC::Sender {
   explicit BrowserSender(IPC::Sender* underlying_sender)
       : underlying_sender_(underlying_sender) {
   }
+
+  BrowserSender(const BrowserSender&) = delete;
+  BrowserSender& operator=(const BrowserSender&) = delete;
 
   ~BrowserSender() override {}
 
@@ -51,8 +54,6 @@ class PluginGlobals::BrowserSender : public IPC::Sender {
  private:
   // Non-owning pointer.
   IPC::Sender* underlying_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSender);
 };
 
 PluginGlobals* PluginGlobals::plugin_globals_ = NULL;
@@ -162,10 +163,10 @@ MessageLoopShared* PluginGlobals::GetCurrentMessageLoop() {
 
 base::TaskRunner* PluginGlobals::GetFileTaskRunner() {
   if (!file_thread_.get()) {
-    file_thread_.reset(new base::Thread("Plugin::File"));
+    file_thread_ = std::make_unique<base::Thread>("Plugin::File");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    file_thread_->StartWithOptions(options);
+    file_thread_->StartWithOptions(std::move(options));
   }
   return file_thread_->task_runner().get();
 }
@@ -201,8 +202,8 @@ PP_Resource PluginGlobals::CreateBrowserFont(
 void PluginGlobals::SetPluginProxyDelegate(PluginProxyDelegate* delegate) {
   DCHECK(delegate && !plugin_proxy_delegate_);
   plugin_proxy_delegate_ = delegate;
-  browser_sender_.reset(
-      new BrowserSender(plugin_proxy_delegate_->GetBrowserSender()));
+  browser_sender_ = std::make_unique<BrowserSender>(
+      plugin_proxy_delegate_->GetBrowserSender());
 }
 
 void PluginGlobals::ResetPluginProxyDelegate() {

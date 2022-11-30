@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
 
 namespace base {
@@ -48,6 +47,10 @@ class ArgumentSpec {
   // populating them at runtime.
   explicit ArgumentSpec(const base::Value& value);
   explicit ArgumentSpec(ArgumentType type);
+
+  ArgumentSpec(const ArgumentSpec&) = delete;
+  ArgumentSpec& operator=(const ArgumentSpec&) = delete;
+
   ~ArgumentSpec();
 
   // Returns true if the given |value| is of the correct type to match this
@@ -83,9 +86,9 @@ class ArgumentSpec {
   ArgumentType type() const { return type_; }
   const std::set<std::string>& enum_values() const { return enum_values_; }
 
-  void set_name(base::StringPiece name) { name_ = name.as_string(); }
+  void set_name(base::StringPiece name) { name_ = std::string(name); }
   void set_optional(bool optional) { optional_ = optional; }
-  void set_ref(base::StringPiece ref) { ref_ = ref.as_string(); }
+  void set_ref(base::StringPiece ref) { ref_ = std::string(ref); }
   void set_minimum(int minimum) { minimum_ = minimum; }
   void set_properties(PropertiesMap properties) {
     properties_ = std::move(properties);
@@ -170,22 +173,22 @@ class ArgumentSpec {
 
   // The reference the argument points to, if any. Note that if this is set,
   // none of the following fields describing the argument will be.
-  base::Optional<std::string> ref_;
+  absl::optional<std::string> ref_;
 
   // The type of instance an object should be, if any. Only applicable for
   // ArgumentType::OBJECT. If specified, the argument must contain the instance
   // type in its prototype chain.
-  base::Optional<std::string> instance_of_;
+  absl::optional<std::string> instance_of_;
 
   // A minimum and maximum for integer and double values, if any.
-  base::Optional<int> minimum_;
-  base::Optional<int> maximum_;
+  absl::optional<int> minimum_;
+  absl::optional<int> maximum_;
 
   // A minimium length for strings or arrays.
-  base::Optional<size_t> min_length_;
+  absl::optional<size_t> min_length_;
 
   // A maximum length for strings or arrays.
-  base::Optional<size_t> max_length_;
+  absl::optional<size_t> max_length_;
 
   // A map of required properties; present only for objects. Note that any
   // properties *not* defined in this map will be dropped during conversion.
@@ -205,8 +208,6 @@ class ArgumentSpec {
   // to allow the API to pass an object with arbitrary properties. Only
   // applicable for ArgumentType::OBJECT.
   std::unique_ptr<ArgumentSpec> additional_properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArgumentSpec);
 };
 
 }  // namespace extensions

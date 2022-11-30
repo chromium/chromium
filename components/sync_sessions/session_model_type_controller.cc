@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,42 +6,21 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
-
 namespace sync_sessions {
 
 SessionModelTypeController::SessionModelTypeController(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate,
-    const std::string& history_disabled_pref_name)
+    std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate)
     : ModelTypeController(syncer::SESSIONS, std::move(delegate)),
-      sync_service_(sync_service),
-      pref_service_(pref_service),
-      history_disabled_pref_name_(history_disabled_pref_name) {
-  pref_registrar_.Init(pref_service);
-  pref_registrar_.Add(
-      history_disabled_pref_name_,
-      base::BindRepeating(
-          &SessionModelTypeController::OnSavingBrowserHistoryPrefChanged,
-          base::AsWeakPtr(this)));
-}
+      helper_(syncer::SESSIONS, sync_service, pref_service) {}
 
 SessionModelTypeController::~SessionModelTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
 SessionModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return pref_service_->GetBoolean(history_disabled_pref_name_)
-             ? PreconditionState::kMustStopAndKeepData
-             : PreconditionState::kPreconditionsMet;
-}
-
-void SessionModelTypeController::OnSavingBrowserHistoryPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
+  return helper_.GetPreconditionState();
 }
 
 }  // namespace sync_sessions

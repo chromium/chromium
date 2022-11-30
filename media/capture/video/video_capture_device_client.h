@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 
@@ -56,6 +54,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                            std::unique_ptr<VideoFrameReceiver> receiver,
                            scoped_refptr<VideoCaptureBufferPool> buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;
+  VideoCaptureDeviceClient& operator=(const VideoCaptureDeviceClient&) = delete;
+
   ~VideoCaptureDeviceClient() override;
 
   static Buffer MakeBufferStruct(
@@ -145,8 +147,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   // concurrently. Producers are allowed to call from multiple threads, but not
   // concurrently.
   DFAKE_MUTEX(call_from_producer_);
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceClient);
 };
 
 }  // namespace media

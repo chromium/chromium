@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 
-namespace chromeos {
-
-class PackagedLicenseView;
+namespace ash {
 
 // Screen which is shown before login and enterprise screens.
 // It advertises the packaged license which allows user enroll device.
@@ -25,13 +25,17 @@ class PackagedLicenseScreen : public BaseScreen {
     // Show enterprise enrollment screen
     ENROLL,
     // No information about license in the `enrollment_config_`
-    NOT_APPLICABLE
+    NOT_APPLICABLE,
+    // Enterprise license should start from GAIA enrollment screen. This result
+    // is different from Enroll since in this case the screen is skipped and
+    // should not be recorded in metrics.
+    NOT_APPLICABLE_SKIP_TO_ENROLL
   };
 
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  PackagedLicenseScreen(PackagedLicenseView* view,
+  PackagedLicenseScreen(base::WeakPtr<PackagedLicenseView> view,
                         const ScreenExitCallback& exit_callback);
   PackagedLicenseScreen(const PackagedLicenseScreen&) = delete;
   PackagedLicenseScreen& operator=(const PackagedLicenseScreen&) = delete;
@@ -48,21 +52,27 @@ class PackagedLicenseScreen : public BaseScreen {
   }
 
   // BaseScreen
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
  protected:
   // BaseScreen
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  void OnUserAction(const base::Value::List& args) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
  private:
-  PackagedLicenseView* view_ = nullptr;
+  base::WeakPtr<PackagedLicenseView> view_;
 
   ScreenExitCallback exit_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::PackagedLicenseScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_PACKAGED_LICENSE_SCREEN_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,16 +20,17 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/web_ui/constants.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/urls.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -78,10 +79,11 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     bool has_user_gesture) {
-  AwWebResourceRequest request(resource.url.spec(), method, is_main_frame,
-                               has_user_gesture, headers);
+  AwWebResourceRequest request(resource.url.spec(), method,
+                               is_outermost_main_frame, has_user_gesture,
+                               headers);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -112,15 +114,16 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  std::unique_ptr<AwContentsIoThreadClient> client;
+  const content::GlobalRenderFrameHostId rfh_id(render_process_id,
+                                                render_frame_id);
 
+  std::unique_ptr<AwContentsIoThreadClient> client;
   if (originated_from_service_worker) {
     client = AwContentsIoThreadClient::GetServiceWorkerIoThreadClient();
-  } else if (render_process_id == -1 || render_frame_id == -1) {
+  } else if (!rfh_id) {
     client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
   } else {
-    client =
-        AwContentsIoThreadClient::FromID(render_process_id, render_frame_id);
+    client = AwContentsIoThreadClient::FromID(rfh_id);
   }
 
   // If Safe Browsing is disabled by the app, skip the check. Default to
@@ -172,7 +175,8 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource,
     const AwWebResourceRequest& request) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
@@ -181,7 +185,7 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
-    resource.callback_thread->PostTask(
+    resource.callback_sequence->PostTask(
         FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
                                   false /* showed_interstitial */));
     return;
@@ -207,7 +211,11 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     const AwWebResourceRequest& request,
     SafeBrowsingAction action,
     bool reporting) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  // |web_contents| can be null after RenderFrameHost is destroyed.
+  if (!web_contents)
+    return;
 
   if (!reporting) {
     AwBrowserContext* browser_context =
@@ -277,7 +285,8 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
 void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   if (web_contents) {
     ui_manager->DisplayBlockingPage(resource);
     return;

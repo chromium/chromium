@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_JAVASCRIPT_DIALOG_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_JAVASCRIPT_DIALOG_MANAGER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace android_webview {
@@ -13,6 +12,11 @@ namespace android_webview {
 class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
  public:
   AwJavaScriptDialogManager();
+
+  AwJavaScriptDialogManager(const AwJavaScriptDialogManager&) = delete;
+  AwJavaScriptDialogManager& operator=(const AwJavaScriptDialogManager&) =
+      delete;
+
   ~AwJavaScriptDialogManager() override;
 
   // Overridden from content::JavaScriptDialogManager:
@@ -29,9 +33,6 @@ class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
                              DialogClosedCallback callback) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwJavaScriptDialogManager);
 };
 
 }  // namespace android_webview

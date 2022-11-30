@@ -20,12 +20,12 @@ function runTest() {
 
         // Fill the textarea with 1000 lines of random numbers.
         var testElement = document.getElementById('testElement');
-        testElement.textContent = new Array(1000).fill(0).map(
+        testElement.textContent = new Array(333).fill(0).map(
             (_, i) => Math.floor(100*Math.random())).join('\n');
 
         // Wait to allow the asynchronous accessibility code that's
         // covered by traceEventsToMeasure to have a chance to run.
-        setTimeout(runTest, 1500);
+        setTimeout(runTest, 2500);
     }
 }
 

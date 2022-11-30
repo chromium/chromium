@@ -1,0 +1,30 @@
+caption: Block WebUSB on these sites
+desc: |-
+  Setting the policy lets you list the URL patterns that specify which sites can't ask users to grant them access to a USB device.
+
+        Leaving the policy unset means <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME">DefaultWebUsbGuardSetting</ph> applies for all sites, if it's set. If not, the user's personal setting applies.
+
+        URL patterns can't conflict with <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- reillyg@chromium.org
+- odejesush@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:68-
+- android:68-
+- chrome.*:68-
+tags: []
+type: list

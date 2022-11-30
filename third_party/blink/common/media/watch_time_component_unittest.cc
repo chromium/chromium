@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
   MOCK_METHOD2(RecordWatchTime, void(media::WatchTimeKey, base::TimeDelta));
   MOCK_METHOD1(FinalizeWatchTime,
                void(const std::vector<media::WatchTimeKey>&));
-  MOCK_METHOD1(OnError, void(media::PipelineStatus));
+  MOCK_METHOD1(OnError, void(const media::PipelineStatus&));
   MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   MOCK_METHOD1(OnDurationChanged, void(base::TimeDelta));
   MOCK_METHOD2(UpdateVideoDecodeStats, void(uint32_t, uint32_t));
@@ -35,6 +35,8 @@ class WatchTimeInterceptor : public media::mojom::WatchTimeRecorder {
 class WatchTimeComponentTest : public testing::Test {
  public:
   WatchTimeComponentTest() = default;
+  WatchTimeComponentTest(const WatchTimeComponentTest&) = delete;
+  WatchTimeComponentTest& operator=(const WatchTimeComponentTest&) = delete;
   ~WatchTimeComponentTest() override = default;
 
  protected:
@@ -55,9 +57,6 @@ class WatchTimeComponentTest : public testing::Test {
   // Usage of StrictMock is intentional here. This ensures all mock method calls
   // are accounted for in tests.
   testing::StrictMock<WatchTimeInterceptor> recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeComponentTest);
 };
 
 // Components should be key agnostic so just choose an arbitrary key for running
@@ -82,14 +81,14 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Notify the start of reporting to set the starting timestamp.
-  const base::TimeDelta kStartTime = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kStartTime = base::Seconds(1);
   test_component->OnReportingStarted(kStartTime);
   EXPECT_TRUE(test_component->current_value_for_testing());
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Simulate a single recording tick.
-  const base::TimeDelta kWatchTime = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kWatchTime = base::Seconds(2);
   EXPECT_CALL(recorder_, RecordWatchTime(kTestKey, kWatchTime - kStartTime));
   test_component->RecordWatchTime(kWatchTime);
   EXPECT_TRUE(test_component->current_value_for_testing());
@@ -98,7 +97,7 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
 
   // Simulate the flag being flipped to false while the timer is running; which
   // should trigger a finalize, but not yet set the current value.
-  const base::TimeDelta kFinalWatchTime = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kFinalWatchTime = base::Seconds(3);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kFinalWatchTime));
   test_component->SetPendingValue(false);
   EXPECT_TRUE(test_component->current_value_for_testing());
@@ -109,7 +108,7 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
   // whatever timestamp we provide.
   EXPECT_CALL(recorder_,
               RecordWatchTime(kTestKey, kFinalWatchTime - kStartTime));
-  test_component->RecordWatchTime(base::TimeDelta::FromSeconds(1234));
+  test_component->RecordWatchTime(base::Seconds(1234));
   EXPECT_TRUE(test_component->current_value_for_testing());
   EXPECT_TRUE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), kFinalWatchTime);
@@ -117,7 +116,7 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
   // Calling it twice or more should not change anything; nor even generate a
   // report since that time has already been recorded.
   for (int i = 0; i < 2; ++i) {
-    test_component->RecordWatchTime(base::TimeDelta::FromSeconds(1234 + i));
+    test_component->RecordWatchTime(base::Seconds(1234 + i));
     EXPECT_TRUE(test_component->current_value_for_testing());
     EXPECT_TRUE(test_component->NeedsFinalize());
     EXPECT_EQ(test_component->end_timestamp(), kFinalWatchTime);
@@ -135,7 +134,7 @@ TEST_F(WatchTimeComponentTest, BasicFlow) {
 
   // The start timestamps should be equal to the previous end timestamp now, so
   // if we call RecordWatchTime again, the value should be relative.
-  const base::TimeDelta kNewWatchTime = base::TimeDelta::FromSeconds(4);
+  const base::TimeDelta kNewWatchTime = base::Seconds(4);
   EXPECT_CALL(recorder_,
               RecordWatchTime(kTestKey, kNewWatchTime - kFinalWatchTime));
   test_component->RecordWatchTime(kNewWatchTime);
@@ -172,7 +171,7 @@ TEST_F(WatchTimeComponentTest, RecordDuringFinalizeRespectsCurrentTime) {
 
   // Simulate the flag being flipped to false while the timer is running; which
   // should trigger a finalize, but not yet set the current value.
-  const base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kWatchTime1 = base::Seconds(3);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kWatchTime1));
   test_component->SetPendingValue(false);
   EXPECT_TRUE(test_component->current_value_for_testing());
@@ -182,7 +181,7 @@ TEST_F(WatchTimeComponentTest, RecordDuringFinalizeRespectsCurrentTime) {
   // Now issue a RecordWatchTime() call with a media time before the finalize
   // time. This can happen when the TimeDelta provided to RecordWatchTime has
   // been clamped for some reason (e.g., a superseding finalize).
-  const base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kWatchTime2 = base::Seconds(2);
   EXPECT_CALL(recorder_, RecordWatchTime(kTestKey, kWatchTime2));
   test_component->RecordWatchTime(kWatchTime2);
 }
@@ -195,7 +194,7 @@ TEST_F(WatchTimeComponentTest, SetPendingValue) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // A change when running should trigger a finalize.
-  const base::TimeDelta kFinalWatchTime = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kFinalWatchTime = base::Seconds(1);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kFinalWatchTime));
   test_component->SetPendingValue(false);
   EXPECT_TRUE(test_component->current_value_for_testing());
@@ -240,7 +239,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Notify the start of reporting to set the starting timestamp.
-  const base::TimeDelta kStartTime = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kStartTime = base::Seconds(1);
   test_component->OnReportingStarted(kStartTime);
   EXPECT_EQ(test_component->current_value_for_testing(),
             DisplayType::kFullscreen);
@@ -248,7 +247,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Record and verify the key recorded too matches the callback provided.
-  const base::TimeDelta kWatchTime1 = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kWatchTime1 = base::Seconds(2);
   EXPECT_CALL(recorder_,
               RecordWatchTime(media::WatchTimeKey::kAudioVideoDisplayFullscreen,
                               kWatchTime1 - kStartTime));
@@ -259,7 +258,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Change property while saying the timer isn't running to avoid finalize.
-  const base::TimeDelta kWatchTime2 = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kWatchTime2 = base::Seconds(3);
   test_component->SetCurrentValue(DisplayType::kInline);
   EXPECT_CALL(recorder_,
               RecordWatchTime(media::WatchTimeKey::kAudioVideoDisplayInline,
@@ -270,7 +269,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Cycle through all three properties...
-  const base::TimeDelta kWatchTime3 = base::TimeDelta::FromSeconds(4);
+  const base::TimeDelta kWatchTime3 = base::Seconds(4);
   test_component->SetCurrentValue(DisplayType::kPictureInPicture);
   EXPECT_CALL(
       recorder_,
@@ -284,7 +283,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
 
   // Verify finalize sends all three keys.
   std::vector<media::WatchTimeKey> actual_finalize_keys;
-  const base::TimeDelta kFinalWatchTime = base::TimeDelta::FromSeconds(5);
+  const base::TimeDelta kFinalWatchTime = base::Seconds(5);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kFinalWatchTime));
   test_component->SetPendingValue(DisplayType::kFullscreen);
   test_component->Finalize(&actual_finalize_keys);

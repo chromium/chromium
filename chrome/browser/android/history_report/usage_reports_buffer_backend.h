@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
 
 namespace base {
@@ -31,6 +30,10 @@ class UsageReport;
 class UsageReportsBufferBackend : public base::trace_event::MemoryDumpProvider {
  public:
   explicit UsageReportsBufferBackend(const base::FilePath& dir);
+
+  UsageReportsBufferBackend(const UsageReportsBufferBackend&) = delete;
+  UsageReportsBufferBackend& operator=(const UsageReportsBufferBackend&) =
+      delete;
 
   ~UsageReportsBufferBackend() override;
 
@@ -58,8 +61,6 @@ class UsageReportsBufferBackend : public base::trace_event::MemoryDumpProvider {
   // NULL until Init method is called.
   std::unique_ptr<leveldb::DB> db_;
   base::FilePath db_file_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageReportsBufferBackend);
 };
 
 }  // namespace history_report

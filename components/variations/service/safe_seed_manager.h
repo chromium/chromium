@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefRegistrySimple;
@@ -19,16 +19,37 @@ namespace variations {
 struct ClientFilterableState;
 class VariationsSeedStore;
 
+// As of January 2018, users at the 99.5th percentile, across all platforms,
+// tend to experience fewer than 3 consecutive crashes: [1], [2], [3], [4].
+// Note, however, that this is less true for the less-stable channels on some
+// platforms.
+// [1] All platforms, stable channel (consistently stable):
+//     https://uma.googleplex.com/timeline_v2?sid=90ac80f4573249fb341a8e49501bfcfd
+// [2] Most platforms, all channels (consistently stable other than occasional
+//     spikes on Canary):
+//     https://uma.googleplex.com/timeline_v2?sid=7af5ba1969db76689a401f982a1db539
+// [3] A less stable platform, all channels:
+//     https://uma.googleplex.com/timeline_v2?sid=07dbc8e4fa9f08e332fb609309a21882
+// [4] Another less stable platform, all channels:
+//     https://uma.googleplex.com/timeline_v2?sid=a7b529ef5d52863fae2d216e963c4cbc
+// Overall, the only {platform, channel} combinations that spike above 3
+// consecutive crashes are ones with very few users, plus Canary. It's probably
+// not realistic to avoid false positives for these less-stable configurations.
+constexpr int kCrashStreakThreshold = 3;
+
 // The primary class that encapsulates state for managing the safe seed.
 class SafeSeedManager {
  public:
-  // Creates a SafeSeedManager instance, and updates safe mode prefs for
-  // bookkeeping.
-  SafeSeedManager(bool did_previous_session_exit_cleanly,
-                  PrefService* local_state);
+  // Creates a SafeSeedManager instance and updates a safe mode pref,
+  // kVariationsFailedToFetchSeedStreak, for bookkeeping.
+  explicit SafeSeedManager(PrefService* local_state);
+
+  SafeSeedManager(const SafeSeedManager&) = delete;
+  SafeSeedManager& operator=(const SafeSeedManager&) = delete;
+
   virtual ~SafeSeedManager();
 
-  // Register safe mode prefs in Local State.
+  // Registers safe mode prefs in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Returns true iff the client should use the safe seed for variations state.
@@ -36,12 +57,13 @@ class SafeSeedManager {
   virtual bool ShouldRunInSafeMode() const;
 
   // Stores the combined server and client state that control the active
-  // variations state. Must be called at most once per launch of the Chrome app.
-  // As an optimization, should not be called when running in safe mode.
+  // variations state. May be called at most once per Chrome app launch. As an
+  // optimization, should not be called when running in safe mode.
   // Virtual for testing.
   virtual void SetActiveSeedState(
       const std::string& seed_data,
       const std::string& base64_seed_signature,
+      int seed_milestone,
       std::unique_ptr<ClientFilterableState> client_filterable_state,
       base::Time seed_fetch_time);
 
@@ -61,6 +83,7 @@ class SafeSeedManager {
     ActiveSeedState(
         const std::string& seed_data,
         const std::string& base64_seed_signature,
+        int seed_milestone,
         std::unique_ptr<ClientFilterableState> client_filterable_state,
         base::Time seed_fetch_time);
     ~ActiveSeedState();
@@ -70,6 +93,9 @@ class SafeSeedManager {
 
     // The base64-encoded signature for the seed data.
     const std::string base64_seed_signature;
+
+    // The milestone with which the active seed was fetched.
+    const int seed_milestone;
 
     // The client state which is used for filtering studies.
     const std::unique_ptr<ClientFilterableState> client_filterable_state;
@@ -83,11 +109,9 @@ class SafeSeedManager {
   // The active seed state must never be set more than once.
   bool has_set_active_seed_state_ = false;
 
-  // The pref service used to store persist the variations seed. Weak reference;
-  // must outlive |this| instance.
-  PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeSeedManager);
+  // The pref service used to persist the variations seed. Weak reference; must
+  // outlive |this| instance.
+  raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace variations

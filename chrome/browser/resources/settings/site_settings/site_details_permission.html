@@ -1,16 +1,18 @@
     <style include="settings-shared md-select"></style>
-    <div id="details" hidden$="[[shouldHideCategory_(category)]]">
+    <div id="details" hidden$="[[shouldHideCategory_(site)]]">
       <div id="permissionItem"
-          class$="list-item [[permissionInfoStringClass_(site.source, category,
+          class$="list-item [[permissionInfoStringClass_(site.source,
+                                                         category,
                                                          site.setting)]]">
         <div>
-          <iron-icon icon="[[icon]]">
+          <iron-icon icon="[[icon]]" aria-hidden="true" role="presentation">
           </iron-icon>
         </div>
-        <div class="middle" id="permissionHeader" aria-hidden="true">
+        <div class="middle" id="permissionHeader">
           [[label]]
           <div class="secondary" id="permissionSecondary"
-              hidden$="[[!hasPermissionInfoString_(site.source, category,
+              hidden$="[[!hasPermissionInfoString_(site.source,
+                                                   category,
                                                    site.setting)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
@@ -22,13 +24,15 @@
                 '$i18nPolymer{siteSettingsSourceEmbargo}',
                 '$i18nPolymer{siteSettingsSourceInsecureOrigin}',
                 '$i18nPolymer{siteSettingsSourceKillSwitch}',
+<if expr="is_win and _google_chrome">
+                '$i18nPolymer{siteSettingsProtectedContentIdentifiersAllowedSubLabel}',
+</if>
                 '$i18nPolymer{siteSettingsSourceExtensionAllow}',
                 '$i18nPolymer{siteSettingsSourceExtensionBlock}',
                 '$i18nPolymer{siteSettingsSourceExtensionAsk}',
                 '$i18nPolymer{siteSettingsSourcePolicyAllow}',
                 '$i18nPolymer{siteSettingsSourcePolicyBlock}',
-                '$i18nPolymer{siteSettingsSourcePolicyAsk}',
-                '$i18nPolymer{siteSettingsSourceDrmDisabled}')]]">
+                '$i18nPolymer{siteSettingsSourcePolicyAsk}')]]">
           </div>
         </div>
         <select id="permission" class="md-select"
@@ -37,23 +41,23 @@
             on-change="onPermissionSelectionChange_"
             disabled$="[[!isPermissionUserControlled_(site.source, category,
                                                       site.setting)]]">
-          <option id="default" value$="[[ContentSetting.DEFAULT]]">
+          <option id="default" value$="[[contentSettingEnum_.DEFAULT]]">
             [[defaultSettingString_(
                 defaultSetting_,
                 category,
                 useAutomaticLabel)]]
           </option>
-          <option id="allow" value$="[[ContentSetting.ALLOW]]"
+          <option id="allow" value$="[[contentSettingEnum_.ALLOW]]"
               hidden$="[[!showAllowedSetting_(category)]]">
             $i18n{siteSettingsActionAllow}
           </option>
-          <option id="block" value$="[[ContentSetting.BLOCK]]">
+          <option id="block" value$="[[contentSettingEnum_.BLOCK]]">
             [[blockSettingString_(
                 category,
                 '$i18n{siteSettingsActionBlock}',
                 '$i18n{siteSettingsActionMute}')]]
           </option>
-          <option id="ask" value$="[[ContentSetting.ASK]]"
+          <option id="ask" value$="[[contentSettingEnum_.ASK]]"
               hidden$="[[!showAskSetting_(category, site.setting,
                                           site.source)]]">
             $i18n{siteSettingsActionAsk}

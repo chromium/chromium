@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -21,8 +20,7 @@ namespace chrome {
 
 namespace {
 
-constexpr base::TimeDelta kDefaultDelayTimeDelta =
-    base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kDefaultDelayTimeDelta = base::Minutes(10);
 
 }  // namespace
 

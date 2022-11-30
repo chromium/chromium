@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module network.mojom;
 
-import "url/mojom/origin.mojom";
+import "url/mojom/scheme_host_port.mojom";
 
 // Information related to an authentication challenge in an HTTP response.
 // Typemapped to net::AuthChallengeInfo.
@@ -12,7 +12,7 @@ struct AuthChallengeInfo {
   // True if the challenge was for proxy authentication.
   bool is_proxy;
   // The service issuing the challenge.
-  url.mojom.Origin challenger;
+  url.mojom.SchemeHostPort challenger;
   // The authentication scheme used, such as "basic" or "digest".
   string scheme;
   // The realm of the authentication challenge. May be empty.
@@ -41,10 +41,25 @@ struct HttpVersion {
 struct HostPortPair;
 
 [Native]
-struct X509Certificate;
+struct ProxyServer;
+
+// Host resolution error info.
+struct ResolveErrorInfo {
+  // Underlying network error code. See net/base/net_error_list.h for error
+  // descriptions.
+  int32 error;
+
+  // Whether |error| came from a DNS-over-HTTPS lookup. This will be false if
+  // the answer was obtained from the cache or if |error| is net::OK since this
+  // field is intended to identify secure DNS *network* failures.
+  bool is_secure_network_error = false;
+};
 
 [Native]
 struct SSLCertRequestInfo;
 
 [Native]
 struct SSLInfo;
+
+[Native]
+struct X509Certificate;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,20 @@
 #define ASH_SHELL_DELEGATE_H_
 
 #include <memory>
-#include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
+#include "base/files/file_path.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/video_capture/public/mojom/multi_capture_service.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace aura {
 class Window;
@@ -28,10 +32,12 @@ class OSExchangeData;
 namespace ash {
 
 class AccessibilityDelegate;
-class CaptureModeDelegate;
-class ScreenshotDelegate;
-class BackGestureContextualNudgeDelegate;
 class BackGestureContextualNudgeController;
+class BackGestureContextualNudgeDelegate;
+class CaptureModeDelegate;
+class DesksTemplatesDelegate;
+class GlanceablesController;
+class GlanceablesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
 
@@ -49,8 +55,9 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
       const = 0;
 
-  // Creates the screenshot delegate, which has dependencies on //chrome.
-  virtual std::unique_ptr<ScreenshotDelegate> CreateScreenshotDelegate() = 0;
+  // Creates the delegate for the Glanceables feature.
+  virtual std::unique_ptr<GlanceablesDelegate> CreateGlanceablesDelegate(
+      GlanceablesController* controller) const = 0;
 
   // Creates a accessibility delegate. Shell takes ownership of the delegate.
   virtual AccessibilityDelegate* CreateAccessibilityDelegate() = 0;
@@ -63,15 +70,19 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const = 0;
 
-  // Notifies the browser that there was a change in the state for desks and now
-  // there are |num_desks| desks.
-  virtual void DesksStateChanged(int num_desks) const;
+  virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+      const = 0;
+
+  // Returns the geolocation loader factory used to initialize geolocation
+  // provider.
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetGeolocationUrlLoaderFactory() const = 0;
 
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
   // Sets the tab scrubber |enabled_| field to |enabled|.
-  virtual void SetTabScrubberEnabled(bool enabled) = 0;
+  virtual void SetTabScrubberChromeOSEnabled(bool enabled) = 0;
 
   // Returns true if |window| allows default touch behaviors. If false, it means
   // no default touch behavior is allowed (i.e., the touch action of window is
@@ -86,15 +97,9 @@ class ASH_EXPORT ShellDelegate {
   // Checks whether a drag-drop operation is a tab drag.
   virtual bool IsTabDrag(const ui::OSExchangeData& drop_data);
 
-  // Drops tab in a new browser window. |drop_data| must be from a tab
-  // drag as determined by IsTabDrag() above.
-  virtual aura::Window* CreateBrowserForTabDrop(
-      aura::Window* source_window,
-      const ui::OSExchangeData& drop_data);
-
-  // Binds a BluetoothSystemFactory receiver if possible.
-  virtual void BindBluetoothSystemFactory(
-      mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver) {}
+  // Return the height of WebUI tab strip used to determine if a tab has
+  // dragged out of it.
+  virtual int GetBrowserWebUITabStripHeight() = 0;
 
   // Binds a fingerprint receiver in the Device Service if possible.
   virtual void BindFingerprint(
@@ -102,8 +107,14 @@ class ASH_EXPORT ShellDelegate {
 
   // Binds a MultiDeviceSetup receiver for the primary profile.
   virtual void BindMultiDeviceSetup(
-      mojo::PendingReceiver<
-          chromeos::multidevice_setup::mojom::MultiDeviceSetup> receiver) = 0;
+      mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
+          receiver) = 0;
+
+  // Binds a MultiCaptureService receiver to start observing
+  // MultiCaptureStarted() and MultiCaptureStopped() events.
+  virtual void BindMultiCaptureService(
+      mojo::PendingReceiver<video_capture::mojom::MultiCaptureService>
+          receiver) = 0;
 
   // Returns an interface to the Media Session service, or null if not
   // available.
@@ -114,11 +125,47 @@ class ASH_EXPORT ShellDelegate {
   // Returns if window browser sessions are restoring.
   virtual bool IsSessionRestoreInProgress() const = 0;
 
+  // Adjust system configuration for a Locked Fullscreen window.
+  virtual void SetUpEnvironmentForLockedFullscreen(bool locked) = 0;
+
   // Ui Dev Tools control.
   virtual bool IsUiDevToolsStarted() const;
   virtual void StartUiDevTools() {}
   virtual void StopUiDevTools() {}
   virtual int GetUiDevToolsPort() const;
+
+  // Returns true if Chrome was started with --disable-logging-redirect option.
+  virtual bool IsLoggingRedirectDisabled() const = 0;
+
+  // Returns empty path if user session has not started yet, or path to the
+  // primary user Downloads folder if user has already logged in.
+  virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
+
+  // Opens the feedback page with pre-populated description #BentoBar for
+  // persistent desks bar. Note, this will be removed once the feature is fully
+  // launched or removed.
+  virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
+
+  // Returns the last committed URL from the web contents if the given |window|
+  // contains a browser frame, otherwise returns GURL::EmptyURL().
+  virtual const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window);
+
+  // Retrieves the release track on which the device resides.
+  virtual version_info::Channel GetChannel() = 0;
+
+  // Tells browsers not to ask the user to confirm that they want to close a
+  // window when that window is closed.
+  virtual void ForceSkipWarningUserOnClose(
+      const std::vector<aura::Window*>& windows) = 0;
+
+  // Retrieves the official Chrome version string e.g. 105.0.5178.0.
+  virtual std::string GetVersionString() = 0;
+
+  // Forwards the ShouldExitFullscreenBeforeLock() call to the crosapi browser
+  // manager.
+  using ShouldExitFullscreenCallback = base::OnceCallback<void(bool)>;
+  virtual void ShouldExitFullscreenBeforeLock(
+      ShouldExitFullscreenCallback callback);
 };
 
 }  // namespace ash

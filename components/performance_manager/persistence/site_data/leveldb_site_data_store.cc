@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -19,8 +18,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -102,8 +101,8 @@ bool ShouldAttemptDbRepair(const leveldb::Status& status) {
 }
 
 struct DatabaseSizeResult {
-  base::Optional<int64_t> num_rows;
-  base::Optional<int64_t> on_disk_size_kb;
+  absl::optional<int64_t> num_rows;
+  absl::optional<int64_t> on_disk_size_kb;
 };
 
 std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin) {
@@ -144,6 +143,10 @@ class LevelDBSiteDataStore::AsyncHelper {
     // the process crashes).
     write_options_.sync = false;
   }
+
+  AsyncHelper(const AsyncHelper&) = delete;
+  AsyncHelper& operator=(const AsyncHelper&) = delete;
+
   ~AsyncHelper() = default;
 
   // Open the database from |db_path_| after creating it if it didn't exist,
@@ -152,7 +155,7 @@ class LevelDBSiteDataStore::AsyncHelper {
 
   // Implementations of the DB manipulation functions of
   // LevelDBSiteDataStore that run on a blocking sequence.
-  base::Optional<SiteDataProto> ReadSiteDataFromDB(const url::Origin& origin);
+  absl::optional<SiteDataProto> ReadSiteDataFromDB(const url::Origin& origin);
   void WriteSiteDataIntoDB(const url::Origin& origin,
                            const SiteDataProto& site_characteristic_proto);
   void RemoveSiteDataFromDB(const std::vector<url::Origin>& site_origin);
@@ -207,7 +210,6 @@ class LevelDBSiteDataStore::AsyncHelper {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AsyncHelper);
 };
 
 void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {
@@ -253,13 +255,13 @@ void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {
   }
 }
 
-base::Optional<SiteDataProto>
+absl::optional<SiteDataProto>
 LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!db_)
-    return base::nullopt;
+    return absl::nullopt;
 
   leveldb::Status s;
   std::string protobuf_value;
@@ -269,11 +271,11 @@ LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB(
     s = db_->Get(read_options_, SerializeOriginIntoDatabaseKey(origin),
                  &protobuf_value);
   }
-  base::Optional<SiteDataProto> site_characteristic_proto;
+  absl::optional<SiteDataProto> site_characteristic_proto;
   if (s.ok()) {
     site_characteristic_proto = SiteDataProto();
     if (!site_characteristic_proto->ParseFromString(protobuf_value)) {
-      site_characteristic_proto = base::nullopt;
+      site_characteristic_proto = absl::nullopt;
       DLOG(ERROR) << "Error while trying to parse a SiteDataProto "
                   << "protobuf.";
     }
@@ -349,7 +351,7 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   DatabaseSizeResult ret;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has an annoying mis-feature that the size of an open file is not
   // written to the parent directory until the file is closed. Since this is a
   // diagnostic interface that should be rarely called, go to the trouble of
@@ -358,7 +360,7 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   db_.reset();
 #endif
   ret.on_disk_size_kb = base::ComputeDirectorySize(db_path_) / 1024;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OpenOrCreateDatabase();
   if (!db_)
     return DatabaseSizeResult();
@@ -457,7 +459,7 @@ void LevelDBSiteDataStore::ReadSiteDataFromStore(
       blocking_task_runner_.get(), FROM_HERE,
       base::BindOnce(&LevelDBSiteDataStore::AsyncHelper::ReadSiteDataFromDB,
                      base::Unretained(async_helper_.get()), origin),
-      base::BindOnce(std::move(callback)));
+      std::move(callback));
 }
 
 void LevelDBSiteDataStore::WriteSiteDataIntoStore(

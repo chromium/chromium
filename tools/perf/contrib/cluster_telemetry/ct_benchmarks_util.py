@@ -1,12 +1,14 @@
-#!/usr/bin/env vpython
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 def AddBenchmarkCommandLineArgs(parser):
   parser.add_option('--user-agent',  action='store', type='string',
                     default=None, help='Options are mobile and desktop.')
-  parser.add_option('--archive-data-file',  action='store', type='string',
+  parser.add_option('--archive-data-file',
+                    action='store',
+                    type='string',
                     default=None,
                     help='The location of the WPR JSON archive file.')
   parser.add_option('--urls-list',  action='store', type='string',

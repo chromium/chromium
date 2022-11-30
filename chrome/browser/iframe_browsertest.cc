@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class IFrameTest : public InProcessBrowserTest {
     GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(), base::FilePath().AppendASCII(file));
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(base::ASCIIToUTF16(page_title),
               browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
   }
@@ -54,20 +54,21 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, DISABLED_FileChooserInDestroyedSubframe) {
   // Note: For the bug to occur, the parent and child frame need to be in
   // the same site, otherwise they would each get a RenderWidgetHost and
   // existing code will properly clear the internal state.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
   NavigateIframeToURL(tab, "test", file_input_url);
 
   // Invoke the file chooser and remove the iframe from the main document.
-  content::RenderFrameHost* frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* frame = ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame);
-  EXPECT_EQ(frame->GetSiteInstance(), tab->GetMainFrame()->GetSiteInstance());
+  EXPECT_EQ(frame->GetSiteInstance(),
+            tab->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_TRUE(
       ExecuteScript(frame, "document.getElementById('fileinput').click();"));
-  EXPECT_TRUE(ExecuteScript(tab->GetMainFrame(),
+  EXPECT_TRUE(ExecuteScript(tab->GetPrimaryMainFrame(),
                             "document.body.removeChild("
                             "document.querySelectorAll('iframe')[0])"));
-  ASSERT_EQ(nullptr, ChildFrameAt(tab->GetMainFrame(), 0));
+  ASSERT_EQ(nullptr, ChildFrameAt(tab->GetPrimaryMainFrame(), 0));
 
   // On ASan bots, this test should succeed without reporting use-after-free
   // condition.

@@ -25,7 +25,7 @@ layers.
 The backing store implementation is built on top of two storage systems:
 
 * [Blobs](https://developer.mozilla.org/en-US/docs/Web/API/Blob), managed by
-  [the Blob system](https://chromium.googlesource.com/chromium/src/+/master/storage/browser/blob/README.md),
+  [the Blob system](https://chromium.googlesource.com/chromium/src/+/main/storage/browser/blob/README.md),
   are stored as individual files in a per-origin directory. Blobs are
   specifically designed for storing large amounts of data.
 * [LevelDB](https://github.com/google/leveldb) is a key-value store optimized
@@ -105,13 +105,13 @@ currently (Q4 2017) routed through an `IDBObjectStore::put` overload.
 
 All IndexedDB requests, including read/write operations, are translated by the
 Blink side into lower-level requests, then sent via
-[Mojo](https://chromium.googlesource.com/chromium/src/+/master/mojo/README.md)
+[Mojo](https://chromium.googlesource.com/chromium/src/+/main/mojo/README.md)
 IPC to the browser process, where they are executed by the backing store. Most
 of the data associated with an IndexedDB write operation is transferred from the
 renderer to the browser using one Mojo call, and is therefore subject to the
 Mojo message limit. Blobs are an exception, as they are transferred to the
 browser process by the [Blob
-subsystem](https://chromium.googlesource.com/chromium/src/+/master/storage/browser/blob/README.md).
+subsystem](https://chromium.googlesource.com/chromium/src/+/main/storage/browser/blob/README.md).
 
 ![IDB Write Path](./idb_data_flow_write.svg)
 
@@ -276,7 +276,7 @@ that case.
    [readAsArrayBuffer](https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsArrayBuffer).
    Blink's `FileReader` implementation uses a `FileReaderLoader` to retrieve the
    Blob's content from
-   [the Blob system](https://chromium.googlesource.com/chromium/src/+/master/storage/browser/blob/README.md)
+   [the Blob system](https://chromium.googlesource.com/chromium/src/+/main/storage/browser/blob/README.md)
    in the browser process.
 3. When the Blob's contents is completely transferred to the renderer process,
    FileReaderLoader's `DidFinishLoading` is called, which eventually causes the

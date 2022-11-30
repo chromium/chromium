@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 #define COMPONENTS_SYNC_MODEL_MODEL_TYPE_STORE_IMPL_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/model_type_store.h"
 
@@ -31,6 +30,10 @@ class ModelTypeStoreImpl : public ModelTypeStore {
       std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>
           backend_store,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+
+  ModelTypeStoreImpl(const ModelTypeStoreImpl&) = delete;
+  ModelTypeStoreImpl& operator=(const ModelTypeStoreImpl&) = delete;
+
   ~ModelTypeStoreImpl() override;
 
   // ModelTypeStore implementation.
@@ -50,17 +53,17 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void ReadDataDone(ReadDataCallback callback,
                     std::unique_ptr<RecordList> record_list,
                     std::unique_ptr<IdList> missing_id_list,
-                    const base::Optional<ModelError>& error);
+                    const absl::optional<ModelError>& error);
   void ReadAllDataDone(ReadAllDataCallback callback,
                        std::unique_ptr<RecordList> record_list,
-                       const base::Optional<ModelError>& error);
+                       const absl::optional<ModelError>& error);
   void ReadAllMetadataDone(ReadMetadataCallback callback,
                            std::unique_ptr<MetadataBatch> metadata_batch,
-                           const base::Optional<ModelError>& error);
+                           const absl::optional<ModelError>& error);
   void ReadAllDataAndPreprocessDone(CallbackWithResult callback,
-                                    const base::Optional<ModelError>& error);
+                                    const absl::optional<ModelError>& error);
   void WriteModificationsDone(CallbackWithResult callback,
-                              const base::Optional<ModelError>& error);
+                              const absl::optional<ModelError>& error);
 
   const ModelType type_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -71,8 +74,6 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ModelTypeStoreImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreImpl);
 };
 
 }  // namespace syncer

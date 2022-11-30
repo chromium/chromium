@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,34 +7,22 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 
-#include <string>
-
-#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 
 namespace password_manager {
-class PasswordStore;
-struct PasswordForm;
+class PasswordStoreInterface;
 }
 
 class Profile;
 
-// Changes a credential record in password store. If new_password is null it
-// isn't changed, but if it is non-null it can't be empty.
-// |forms_to_change| are the forms in which the usernames and passwords are
-// changed. This function assumes that all conflicts checks have already
-// been performed, prior to calling it.
-void EditSavedPasswords(
-    Profile* profile,
-    base::span<const std::unique_ptr<password_manager::PasswordForm>>
-        forms_to_change,
-    const std::u16string& new_username,
-    const base::Optional<std::u16string>& new_password);
-
 // Returns the password store associated with the currently active profile.
-scoped_refptr<password_manager::PasswordStore> GetPasswordStore(
+password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store);
+
+// Query the password stores and reports multiple metrics. The actual reporting
+// is delayed by 30 seconds, to ensure it doesn't happen during the "hot phase"
+// of Chrome startup.
+void DelayReportingPasswordStoreMetrics(Profile* profile);
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_

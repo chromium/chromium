@@ -1,0 +1,5 @@
+// AXDescription is a generic attribute.
+input.accessibilityAttributeNames.has(AXDescription)='yes'
+// AXDescription is mapped to accessibilityLabel
+input.accessibilityAttributeValue(AXDescription)='This is input'
+empty.accessibilityAttributeValue(AXDescription)=''

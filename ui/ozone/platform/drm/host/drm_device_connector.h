@@ -1,17 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_DRM_HOST_DRM_DEVICE_CONNECTOR_H_
 #define UI_OZONE_PLATFORM_DRM_HOST_DRM_DEVICE_CONNECTOR_H_
 
-#include <string>
-
-#include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/device_cursor.mojom.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 
 namespace ui {
 class HostDrmDevice;
@@ -21,14 +18,16 @@ class HostDrmDevice;
 class DrmDeviceConnector : public GpuPlatformSupportHost {
  public:
   explicit DrmDeviceConnector(scoped_refptr<HostDrmDevice> host_drm_device);
+
+  DrmDeviceConnector(const DrmDeviceConnector&) = delete;
+  DrmDeviceConnector& operator=(const DrmDeviceConnector&) = delete;
+
   ~DrmDeviceConnector() override;
 
   // GpuPlatformSupportHost:
   void OnChannelDestroyed(int host_id) override;
   void OnGpuServiceLaunched(
       int host_id,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_runner,
       GpuHostBindInterfaceCallback binder,
       GpuHostTerminateCallback terminate_callback) override;
 
@@ -50,8 +49,6 @@ class DrmDeviceConnector : public GpuPlatformSupportHost {
   int host_id_ = 0;
 
   const scoped_refptr<HostDrmDevice> host_drm_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDeviceConnector);
 };
 
 }  // namespace ui

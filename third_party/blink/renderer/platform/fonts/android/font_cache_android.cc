@@ -67,7 +67,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
 }
 
 static AtomicString DefaultFontFamily() {
-  if (sk_sp<SkFontMgr> font_manager = FontCache::GetFontCache()->FontManager())
+  if (sk_sp<SkFontMgr> font_manager = FontCache::Get().FontManager())
     return DefaultFontFamily(font_manager);
   return DefaultFontFamily(SkFontMgr::RefDefault());
 }
@@ -82,6 +82,50 @@ const AtomicString& FontCache::SystemFontFamily() {
 // static
 void FontCache::SetSystemFontFamily(const AtomicString&) {}
 
+sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
+    const FontDescription& font_description,
+    const char* locale_family_name) {
+  // TODO(crbug.com/1252383, crbug.com/1237860, crbug.com/1233315): Skia handles
+  // "und-" by simple string matches, and falls back to the first
+  // `fallbackFor="serif"` in the `fonts.xml`. Because all non-CJK languages use
+  // "und-" in the AOSP `fonts.xml`, apply locale-specific typeface only to CJK
+  // to work around this problem.
+  const LayoutLocale& locale = font_description.LocaleOrDefault();
+  if (!locale.HasScriptForHan())
+    return nullptr;
+
+  const char* bcp47 = locale.LocaleForSkFontMgr();
+  DCHECK(bcp47);
+  SkFontMgr* font_manager =
+      font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
+  sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
+      locale_family_name, font_description.SkiaFontStyle(), &bcp47,
+      /* bcp47Count */ 1,
+      // |matchFamilyStyleCharacter| is the only API that accepts |bcp47|, but
+      // it also checks if a character has a glyph. To look up the first
+      // match, use the space character, because all fonts are likely to have
+      // a glyph for it.
+      kSpaceCharacter));
+  if (!typeface)
+    return nullptr;
+
+  // When the specified family of the specified language does not exist, we want
+  // to fall back to the specified family of the default language, but
+  // |matchFamilyStyleCharacter| falls back to the default family of the
+  // specified language. Get the default family of the language and compare
+  // with what we get.
+  SkString skia_family_name;
+  typeface->getFamilyName(&skia_family_name);
+  sk_sp<SkTypeface> fallback(font_manager->matchFamilyStyleCharacter(
+      nullptr, font_description.SkiaFontStyle(), &bcp47,
+      /* bcp47Count */ 1, kSpaceCharacter));
+  SkString skia_fallback_name;
+  fallback->getFamilyName(&skia_fallback_name);
+  if (typeface != fallback)
+    return typeface;
+  return nullptr;
+}
+
 scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
@@ -89,8 +133,16 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
 
+  // Pass "serif" to |matchFamilyStyleCharacter| if the `font-family` list
+  // contains `serif`, so that it fallbacks to i18n serif fonts that has the
+  // specified character. Do this only for `serif` because other generic
+  // families do not have the lang-specific fallback list.
+  const char* generic_family_name = nullptr;
+  if (font_description.GenericFamily() == FontDescription::kSerifFamily)
+    generic_family_name = "serif";
+
   AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, fallback_priority);
+      fm.get(), c, font_description, generic_family_name, fallback_priority);
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji and
   // a) no system fallback was found or b) the system fallback font's PostScript
@@ -121,7 +173,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       return fallback_postscript_name.equals(kNotoColorEmoji);
     };
 
-    if (family_name.IsEmpty() || skia_fallback_is_noto_color_emoji()) {
+    if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
       FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
@@ -139,7 +191,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // Remaining case, if fallback priority is not emoij or the GMS core emoji
   // font was not found or an OEM emoji font was not to be overridden.
 
-  if (family_name.IsEmpty())
+  if (family_name.empty())
     return GetLastResortFallbackFont(font_description, kDoNotRetain);
 
   return FontDataFromFontPlatformData(
@@ -151,12 +203,18 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
 // static
 AtomicString FontCache::GetGenericFamilyNameForScript(
     const AtomicString& family_name,
+    const AtomicString& generic_family_name_fallback,
     const FontDescription& font_description) {
+  // If this is a locale-specifc family name, |FontCache| can handle different
+  // typefaces per locale. Let it handle.
+  if (GetLocaleSpecificFamilyName(family_name))
+    return family_name;
+
   // If monospace, do not apply CJK hack to find i18n fonts, because
   // i18n fonts are likely not monospace. Monospace is mostly used
   // for code, but when i18n characters appear in monospace, system
   // fallback can still render the characters.
-  if (family_name == font_family_names::kWebkitMonospace)
+  if (family_name == font_family_names::kMonospace)
     return family_name;
 
   // The CJK hack below should be removed, at latest when we have
@@ -164,7 +222,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   // to only when the content locale is available. crbug.com/652146
   const LayoutLocale* content_locale = font_description.Locale();
   if (!content_locale)
-    return family_name;
+    return generic_family_name_fallback;
 
   // This is a hack to use the preferred font for CJK scripts.
   // TODO(kojii): This logic disregards either generic family name
@@ -182,11 +240,12 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       break;
     default:
       // For other scripts, use the default generic family mapping logic.
-      return family_name;
+      return generic_family_name_fallback;
   }
 
-  sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
-  return GetFamilyNameForCharacter(fm.get(), exampler_char, font_description,
+  sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  return GetFamilyNameForCharacter(font_manager.get(), exampler_char,
+                                   font_description, nullptr,
                                    FontFallbackPriority::kText);
 }
 

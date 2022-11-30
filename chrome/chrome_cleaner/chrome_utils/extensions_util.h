@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/parsers/json_parser/json_parser_api.h"
@@ -39,11 +37,15 @@ struct ExtensionPolicyRegistryEntry {
                                const std::wstring& name,
                                ContentType content_type,
                                scoped_refptr<RefValue>);
+
+  ExtensionPolicyRegistryEntry(const ExtensionPolicyRegistryEntry&) = delete;
+  ExtensionPolicyRegistryEntry& operator=(const ExtensionPolicyRegistryEntry&) =
+      delete;
+
   ExtensionPolicyRegistryEntry(ExtensionPolicyRegistryEntry&&);
-  ~ExtensionPolicyRegistryEntry();
   ExtensionPolicyRegistryEntry& operator=(ExtensionPolicyRegistryEntry&&);
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPolicyRegistryEntry);
+  ~ExtensionPolicyRegistryEntry();
 };
 
 // A file that holds some form of policy for |extension_id|.
@@ -56,10 +58,13 @@ struct ExtensionPolicyFile {
                       const base::FilePath& path,
                       scoped_refptr<RefValue> json);
   ExtensionPolicyFile(ExtensionPolicyFile&&);
-  ~ExtensionPolicyFile();
+
+  ExtensionPolicyFile(const ExtensionPolicyFile&) = delete;
+  ExtensionPolicyFile& operator=(const ExtensionPolicyFile&) = delete;
+
   ExtensionPolicyFile& operator=(ExtensionPolicyFile&&);
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPolicyFile);
+  ~ExtensionPolicyFile();
 };
 
 // Find all extension forcelist registry policies and append to |policies|.

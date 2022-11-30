@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/cryptuiapi_shim.h"
+#include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_win.h"
 #include "ui/aura/window.h"
@@ -25,12 +25,16 @@ namespace {
 
 // Shows a Windows certificate viewer dialog on a background thread to avoid
 // nested run loops.
-class CertificateViewerDialog : public ui::BaseShellDialogImpl {
+class CertificateViewerDialogWin : public ui::BaseShellDialogImpl {
  public:
-  CertificateViewerDialog() {}
+  CertificateViewerDialogWin() {}
+
+  CertificateViewerDialogWin(const CertificateViewerDialogWin&) = delete;
+  CertificateViewerDialogWin& operator=(const CertificateViewerDialogWin&) =
+      delete;
 
   // Shows the dialog and calls |callback| when the dialog closes. The caller
-  // must ensure the CertificateViewerDialog remains valid until then.
+  // must ensure the CertificateViewerDialogWin remains valid until then.
   void Show(HWND parent,
             net::X509Certificate* cert,
             base::RepeatingClosure callback) {
@@ -45,19 +49,21 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
         run_state->dialog_task_runner;
     task_runner->PostTaskAndReply(
         FROM_HERE,
-        base::BindOnce(&CertificateViewerDialog::ShowOnDialogThread,
+        base::BindOnce(&CertificateViewerDialogWin::ShowOnDialogThread,
                        base::Unretained(this), parent,
                        base::WrapRefCounted(cert)),
-        base::BindOnce(&CertificateViewerDialog::OnDialogClosed,
+        base::BindOnce(&CertificateViewerDialogWin::OnDialogClosed,
                        base::Unretained(this), std::move(run_state), callback));
   }
+
+  static bool mock_certificate_viewer_for_testing;
 
  private:
   void ShowOnDialogThread(HWND owner,
                           const scoped_refptr<net::X509Certificate>& cert) {
     // Create a new cert context and store containing just the certificate
     // and its intermediate certificates.
-    net::ScopedPCCERT_CONTEXT cert_list(
+    crypto::ScopedPCCERT_CONTEXT cert_list(
         net::x509_util::CreateCertContextWithChain(cert.get()));
     // Perhaps this should show an error instead of silently failing, but it's
     // probably not even possible to get here with a cert that can't be
@@ -75,6 +81,9 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     view_info.cStores = 1;
     view_info.rghStores = &cert_store;
 
+    if (mock_certificate_viewer_for_testing)
+      return;
+
     BOOL properties_changed;
     ::CryptUIDlgViewCertificate(&view_info, &properties_changed);
   }
@@ -85,17 +94,22 @@ class CertificateViewerDialog : public ui::BaseShellDialogImpl {
     // May delete |this|.
     std::move(callback).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CertificateViewerDialog);
 };
+
+// static
+bool CertificateViewerDialogWin::mock_certificate_viewer_for_testing = false;
 
 }  // namespace
 
-void ShowCertificateViewer(content::WebContents* web_contents,
-                           gfx::NativeWindow parent,
-                           net::X509Certificate* cert) {
-  CertificateViewerDialog* dialog = new CertificateViewerDialog;
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
+  CertificateViewerDialogWin* dialog = new CertificateViewerDialogWin;
   dialog->Show(parent->GetHost()->GetAcceleratedWidget(), cert,
                base::BindRepeating(
-                   &base::DeletePointer<CertificateViewerDialog>, dialog));
+                   &base::DeletePointer<CertificateViewerDialogWin>, dialog));
+}
+
+void MockCertificateViewerForTesting() {
+  CertificateViewerDialogWin::mock_certificate_viewer_for_testing = true;
 }

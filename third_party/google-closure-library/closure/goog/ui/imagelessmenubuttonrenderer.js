@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview An alternative custom button renderer that uses even more CSS
@@ -33,6 +25,8 @@ goog.require('goog.ui.INLINE_BLOCK_CLASSNAME');
 goog.require('goog.ui.MenuButton');
 goog.require('goog.ui.MenuButtonRenderer');
 goog.require('goog.ui.registry');
+goog.requireType('goog.ui.Button');
+goog.requireType('goog.ui.ControlContent');
 
 
 
@@ -48,6 +42,7 @@ goog.require('goog.ui.registry');
  * @final
  */
 goog.ui.ImagelessMenuButtonRenderer = function() {
+  'use strict';
   goog.ui.MenuButtonRenderer.call(this);
 };
 goog.inherits(goog.ui.ImagelessMenuButtonRenderer, goog.ui.MenuButtonRenderer);
@@ -66,6 +61,7 @@ goog.ui.ImagelessMenuButtonRenderer.CSS_CLASS =
 /** @override */
 goog.ui.ImagelessMenuButtonRenderer.prototype.getContentElement = function(
     element) {
+  'use strict';
   if (element) {
     var captionElem = goog.dom.getElementsByTagNameAndClass(
         '*', goog.getCssName(this.getCssClass(), 'caption'), element)[0];
@@ -84,6 +80,7 @@ goog.ui.ImagelessMenuButtonRenderer.prototype.getContentElement = function(
  * @override
  */
 goog.ui.ImagelessMenuButtonRenderer.prototype.canDecorate = function(element) {
+  'use strict';
   return element.tagName == goog.dom.TagName.DIV;
 };
 
@@ -116,6 +113,7 @@ goog.ui.ImagelessMenuButtonRenderer.prototype.canDecorate = function(element) {
  */
 goog.ui.ImagelessMenuButtonRenderer.prototype.createButton = function(
     content, dom) {
+  'use strict';
   var baseClass = this.getCssClass();
   var inlineBlock = goog.ui.INLINE_BLOCK_CLASSNAME + ' ';
   return dom.createDom(
@@ -155,6 +153,7 @@ goog.ui.ImagelessMenuButtonRenderer.prototype.createButton = function(
  */
 goog.ui.ImagelessMenuButtonRenderer.prototype.hasBoxStructure = function(
     button, element) {
+  'use strict';
   var outer = button.getDomHelper().getFirstElementChild(element);
   var outerClassName = goog.getCssName(this.getCssClass(), 'outer-box');
   if (outer && goog.dom.classlist.contains(outer, outerClassName)) {
@@ -189,6 +188,7 @@ goog.ui.ImagelessMenuButtonRenderer.prototype.hasBoxStructure = function(
  * @override
  */
 goog.ui.ImagelessMenuButtonRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.ImagelessMenuButtonRenderer.CSS_CLASS;
 };
 
@@ -200,6 +200,7 @@ goog.ui.ImagelessMenuButtonRenderer.prototype.getCssClass = function() {
 // goog-imageless-menu-button here.
 goog.ui.registry.setDecoratorByClassName(
     goog.getCssName('goog-imageless-menu-button'), function() {
+      'use strict';
       return new goog.ui.MenuButton(
           null, null, goog.ui.ImagelessMenuButtonRenderer.getInstance());
     });

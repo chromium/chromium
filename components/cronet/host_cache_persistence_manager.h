@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -47,6 +47,11 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
                               std::string pref_name,
                               base::TimeDelta delay,
                               net::NetLog* net_log);
+
+  HostCachePersistenceManager(const HostCachePersistenceManager&) = delete;
+  HostCachePersistenceManager& operator=(const HostCachePersistenceManager&) =
+      delete;
+
   virtual ~HostCachePersistenceManager();
 
   // net::HostCache::PersistenceDelegate implementation
@@ -58,10 +63,10 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
   // On initial prefs read, passes the serialized entries to the HostCache.
   void ReadFromDisk();
 
-  net::HostCache* const cache_;
+  const raw_ptr<net::HostCache> cache_;
 
   PrefChangeRegistrar registrar_;
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   const std::string pref_name_;
   bool writing_pref_;
 
@@ -72,8 +77,6 @@ class HostCachePersistenceManager : public net::HostCache::PersistenceDelegate {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<HostCachePersistenceManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostCachePersistenceManager);
 };
 
 }  // namespace cronet

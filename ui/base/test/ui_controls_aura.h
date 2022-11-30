@@ -1,11 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TEST_BASE_UI_CONTROLS_AURA_H_
-#define UI_TEST_BASE_UI_CONTROLS_AURA_H_
+#ifndef UI_BASE_TEST_UI_CONTROLS_AURA_H_
+#define UI_BASE_TEST_UI_CONTROLS_AURA_H_
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -52,9 +53,9 @@ class UIControlsAura {
   // Same as SendMouseEvents with BUTTON_UP | BUTTON_DOWN.
   virtual bool SendMouseClick(MouseButton type) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual bool SendTouchEvents(int action, int num, int x, int y) = 0;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   virtual bool SendTouchEvents(int action, int id, int x, int y) = 0;
   virtual bool SendTouchEventsNotifyWhenDone(int action,
                                              int id,
@@ -66,4 +67,4 @@ class UIControlsAura {
 
 }  // namespace ui_controls
 
-#endif  // UI_TEST_BASE_UI_CONTROLS_AURA_H_
+#endif  // UI_BASE_TEST_UI_CONTROLS_AURA_H_

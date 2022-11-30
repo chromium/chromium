@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 
 namespace blink {
@@ -109,6 +108,8 @@ class ShapeCache {
     // TODO(cavalcantii): Investigate tradeoffs of reserving space
     // in short_string_map.
   }
+  ShapeCache(const ShapeCache&) = delete;
+  ShapeCache& operator=(const ShapeCache&) = delete;
 
   ShapeCacheEntry* Add(const TextRun& run, ShapeCacheEntry entry) {
     if (run.length() > SmallStringKey::Capacity())
@@ -231,8 +232,6 @@ class ShapeCache {
   SmallStringMap short_string_map_;
   unsigned version_ = 0;
   base::WeakPtrFactory<ShapeCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShapeCache);
 };
 
 inline bool operator==(const ShapeCache::SmallStringKey& a,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -193,7 +193,7 @@ LuciTestResult LuciTestResult::CreateForGTest() {
     result.set_start_time(base::Time::FromTimeT(
         static_cast<time_t>(test_info->result()->start_timestamp() / 1000)));
     result.set_duration(
-        base::TimeDelta::FromMilliseconds(test_info->result()->elapsed_time()));
+        base::Milliseconds(test_info->result()->elapsed_time()));
   }
 
   return result;

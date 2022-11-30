@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,11 @@ class Profile;
 class ProfileBasedBrowsingHistoryDriver
     : public history::BrowsingHistoryDriver {
  public:
+  ProfileBasedBrowsingHistoryDriver(const ProfileBasedBrowsingHistoryDriver&) =
+      delete;
+  ProfileBasedBrowsingHistoryDriver& operator=(
+      const ProfileBasedBrowsingHistoryDriver&) = delete;
+
   // BrowsingHistoryDriver implementation.
   void OnRemoveVisits(
       const std::vector<history::ExpireHistoryArgs>& expire_list) override;
@@ -31,9 +36,6 @@ class ProfileBasedBrowsingHistoryDriver
 
  protected:
   ProfileBasedBrowsingHistoryDriver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileBasedBrowsingHistoryDriver);
 };
 
 #endif  // CHROME_BROWSER_HISTORY_PROFILE_BASED_BROWSING_HISTORY_DRIVER_H_

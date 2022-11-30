@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_address.h"
@@ -199,16 +201,16 @@ ServiceDiscoveryClientMac::CreateLocalDomainResolver(
     LocalDomainResolver::IPAddressCallback callback) {
   NOTIMPLEMENTED();  // TODO(noamsml): Implement.
   VLOG(1) << "CreateLocalDomainResolver: " << domain;
-  return std::unique_ptr<LocalDomainResolver>();
+  return nullptr;
 }
 
 void ServiceDiscoveryClientMac::StartThreadIfNotStarted() {
   if (!service_discovery_thread_) {
-    service_discovery_thread_.reset(
-        new base::Thread(kServiceDiscoveryThreadName));
+    service_discovery_thread_ =
+        std::make_unique<base::Thread>(kServiceDiscoveryThreadName);
     // Only TYPE_UI uses an NSRunLoop.
     base::Thread::Options options(base::MessagePumpType::UI, 0);
-    service_discovery_thread_->StartWithOptions(options);
+    service_discovery_thread_->StartWithOptions(std::move(options));
   }
 }
 
@@ -440,7 +442,7 @@ void ParseNetService(NSNetService* service, ServiceDescription& description) {
     [netService stopMonitoring];
     [netService setDelegate:nil];
 
-    netService = [_services objectAtIndex:index];
+    netService = _services[index];
     [netService stopMonitoring];
     [netService setDelegate:nil];
 

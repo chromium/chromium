@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
     <declare-styleable name="HyperlinkPreference">
@@ -13,7 +15,7 @@
         <attr name="emptyErrorMessage" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="TileGridLayout">
+    <declare-styleable name="MostVisitedTilesGridLayout">
         <attr name="minHorizontalSpacing" format="dimension"/>
     </declare-styleable>
 
@@ -21,7 +23,7 @@
         <attr name="iconCornerRadius" format="dimension"/>
     </declare-styleable>
 
-    <declare-styleable name="SectionHeaderView">
-        <attr name="animatePaddingWhenDisabled" format="boolean"/>
+    <declare-styleable name="ManageAccountDevicesLinkView">
+        <attr name="showLink" format="boolean" />
     </declare-styleable>
 </resources>

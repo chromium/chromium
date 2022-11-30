@@ -1,20 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
@@ -55,13 +57,17 @@ class TaskManagerClient
         task_scheduled_count_(0),
         idle_task_scheduled_count_(0),
         last_operation_status_(SYNC_STATUS_OK) {
-    task_manager_.reset(
-        new SyncTaskManager(AsWeakPtr(), maximum_background_task,
-                            base::ThreadTaskRunnerHandle::Get()));
+    task_manager_ =
+        std::make_unique<SyncTaskManager>(AsWeakPtr(), maximum_background_task,
+                                          base::ThreadTaskRunnerHandle::Get());
     task_manager_->Initialize(SYNC_STATUS_OK);
     base::RunLoop().RunUntilIdle();
     maybe_schedule_next_task_count_ = 0;
   }
+
+  TaskManagerClient(const TaskManagerClient&) = delete;
+  TaskManagerClient& operator=(const TaskManagerClient&) = delete;
+
   ~TaskManagerClient() override {}
 
   // DriveFileSyncManager::Client overrides.
@@ -117,8 +123,6 @@ class TaskManagerClient
   int idle_task_scheduled_count_;
 
   SyncStatusCode last_operation_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerClient);
 };
 
 class MultihopSyncTask : public ExclusiveTask {
@@ -128,6 +132,9 @@ class MultihopSyncTask : public ExclusiveTask {
     DCHECK(task_started_);
     DCHECK(task_completed_);
   }
+
+  MultihopSyncTask(const MultihopSyncTask&) = delete;
+  MultihopSyncTask& operator=(const MultihopSyncTask&) = delete;
 
   ~MultihopSyncTask() override {}
 
@@ -148,11 +155,9 @@ class MultihopSyncTask : public ExclusiveTask {
     std::move(callback).Run(SYNC_STATUS_OK);
   }
 
-  bool* task_started_;
-  bool* task_completed_;
+  raw_ptr<bool> task_started_;
+  raw_ptr<bool> task_completed_;
   base::WeakPtrFactory<MultihopSyncTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MultihopSyncTask);
 };
 
 class BackgroundTask : public SyncTask {
@@ -172,6 +177,9 @@ class BackgroundTask : public SyncTask {
                  const base::FilePath& path,
                  Stats* stats)
       : app_id_(app_id), path_(path), stats_(stats) {}
+
+  BackgroundTask(const BackgroundTask&) = delete;
+  BackgroundTask& operator=(const BackgroundTask&) = delete;
 
   ~BackgroundTask() override {}
 
@@ -206,11 +214,9 @@ class BackgroundTask : public SyncTask {
 
   std::string app_id_;
   base::FilePath path_;
-  Stats* stats_;
+  raw_ptr<Stats> stats_;
 
   base::WeakPtrFactory<BackgroundTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTask);
 };
 
 class BlockerUpdateTestHelper : public SyncTask {
@@ -225,6 +231,9 @@ class BlockerUpdateTestHelper : public SyncTask {
         app_id_(app_id),
         paths_(paths.begin(), paths.end()),
         log_(log) {}
+
+  BlockerUpdateTestHelper(const BlockerUpdateTestHelper&) = delete;
+  BlockerUpdateTestHelper& operator=(const BlockerUpdateTestHelper&) = delete;
 
   ~BlockerUpdateTestHelper() override {}
 
@@ -269,11 +278,9 @@ class BlockerUpdateTestHelper : public SyncTask {
   std::string name_;
   std::string app_id_;
   base::circular_deque<std::string> paths_;
-  Log* log_;
+  raw_ptr<Log> log_;
 
   base::WeakPtrFactory<BlockerUpdateTestHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlockerUpdateTestHelper);
 };
 
 // Arbitrary non-default status values for testing.

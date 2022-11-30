@@ -1,0 +1,64 @@
+# There is a different behavior on Android and ChromeOS for the first test case
+# with respect to the next_active_policy field, so they are split across two test
+# suites currently, and it is considered permissible for this split to exist
+# long term due to the triviality of how the difference affects each client's
+# actual behavior. No other tests should be split this way.
+
+supported_platforms: [ANDROID]
+
+# Override created while usage limit is active
+cases {
+  input {
+    usage_limits {
+      effective_day: THURSDAY
+      usage_quota_mins: 120
+    }
+    overrides {
+      action: UNLOCK_USAGE_LIMIT
+      # Thursday, Feb 21th 2019 at 14:50pm
+      created_at_millis: 1550760600000
+    }
+  }
+  current_state {
+    # Thursday, Feb 21th 2019 at 15:00pm
+    time_millis: 1550761200000
+    timezone: "GMT"
+    # 2 hours
+    usage_millis: 7200000
+  }
+  output {
+    is_locked: false
+    active_policy: OVERRIDE
+    next_active_policy: USAGE_LIMIT
+  }
+}
+
+# Usage limit reached while other override is in place
+cases {
+  input {
+    usage_limits {
+      effective_day: THURSDAY
+      usage_quota_mins: 120
+    }
+    overrides {
+      action: UNLOCK_WINDOW_LIMIT
+      # Thursday, Feb 21th 2019 at 14:50pm
+      created_at_millis: 1550760600000
+    }
+  }
+  current_state {
+    # Thursday, Feb 21th 2019 at 15:00pm
+    time_millis: 1550761200000
+    timezone: "GMT"
+    # 2 hours
+    usage_millis: 7200000
+  }
+  output {
+    is_locked: true
+    active_policy: USAGE_LIMIT
+    next_active_policy: NO_ACTIVE_POLICY
+    remaining_quota_millis: 0
+    # Friday, Feb 22nd 2019 at 6:00am
+    next_unlocking_time_millis: 1550815200000
+  }
+}

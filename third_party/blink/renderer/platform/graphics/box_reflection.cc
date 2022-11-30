@@ -1,24 +1,25 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/box_reflection.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 #include <utility>
 
 namespace blink {
 
 BoxReflection::BoxReflection(ReflectionDirection direction, float offset)
-    : BoxReflection(direction, offset, nullptr, FloatRect()) {}
+    : BoxReflection(direction, offset, nullptr, gfx::RectF()) {}
 
 BoxReflection::BoxReflection(ReflectionDirection direction,
                              float offset,
                              sk_sp<PaintRecord> mask,
-                             const FloatRect& mask_bounds)
+                             const gfx::RectF& mask_bounds)
     : direction_(direction),
       offset_(offset),
       mask_(std::move(mask)),
@@ -48,12 +49,10 @@ SkMatrix BoxReflection::ReflectionMatrix() const {
   return flip_matrix;
 }
 
-FloatRect BoxReflection::MapRect(const FloatRect& rect) const {
-  SkRect reflection(rect);
+gfx::RectF BoxReflection::MapRect(const gfx::RectF& rect) const {
+  SkRect reflection = gfx::RectFToSkRect(rect);
   ReflectionMatrix().mapRect(&reflection);
-  FloatRect result = rect;
-  result.Unite(reflection);
-  return result;
+  return gfx::UnionRects(rect, gfx::SkRectToRectF(reflection));
 }
 
 }  // namespace blink

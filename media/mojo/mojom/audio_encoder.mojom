@@ -1,0 +1,77 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// This defines a mojo transport format for media::AudioEncoderConfig.
+// See media/base/audio_encoder.h for descriptions.
+struct AudioEncoderConfig {
+  // Audio codec to be used for encoding.
+  AudioCodec codec;
+
+  // Number of channels.
+  uint8 channel_count;
+
+  // Sample rate of the buffer, number of audio samples per second.
+  uint32 sample_rate;
+
+  // Target encoded bitrate - bits per second of playback
+  // 0 - if client has no bitrate preference.
+  uint32 bitrate;
+};
+
+// This defines a mojo transport format for media::EncodedAudioBuffer.
+// See media/base/audio_encoder.h for descriptions.
+struct EncodedAudioBuffer {
+  // Parameters of the encoded audio (channel count, sample rate etc)
+  // It might be different from parameters provided in AudioEncoderConfig.
+  AudioParameters params;
+
+  // Presentation time of the encoded audio
+  mojo_base.mojom.TimeDelta timestamp;
+
+  // Duration of the encoded audio stretch
+  mojo_base.mojom.TimeDelta duration;
+
+  // Compressed audio data blob (e.g. opus, AAC etc)
+  array<uint8> data;
+};
+
+// An interface for a platform dependent audio encoder that needs to run in
+// GPU process. It's called from renderers.
+interface AudioEncoder {
+  // Initializes encoded with a given |config|, prepares underlying resources
+  // etc.
+  // |client| will be use to return encoded data.
+  // This must be called only once before any other Encode() and Flush().
+  // Returns errors as |status|.
+  Initialize(pending_associated_remote<AudioEncoderClient> client,
+             AudioEncoderConfig config) => (EncoderStatus status);
+
+  // Requests contents of audio |buffer| to be encoded, encoded results
+  // produced via AudioEncoderClient.EncodedBufferReady().
+  // Returns errors as |status|.
+  Encode(AudioBuffer buffer) => (EncoderStatus status);
+
+  // Requests all outputs for already encoded frames to be
+  // produced via AudioEncoderClient.EncodedBufferReady().
+  // Returns errors as |status|.
+  Flush() => (EncoderStatus status);
+};
+
+// A complimentary interface for AudioEncoder, bound
+// in AudioEncoder.Initialize()
+// It is used for sending encoded audio back to renderer.
+interface AudioEncoderClient {
+  // Sends the encoded audio buffer back to the mojo client.
+  // |buffer| - encoded audio binary with timestamp and duration.
+  // |description| - codec specific extra data that is sometimes used to
+  //                 configure decoders.
+  //                 Empty, if no extra data comes with this buffer.
+  OnEncodedBufferReady(EncodedAudioBuffer buffer, array<uint8> description);
+};

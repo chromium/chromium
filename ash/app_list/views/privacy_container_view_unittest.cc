@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/app_list/test/app_list_test_view_delegate.h"
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/views/suggested_content_info_view.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ui/views/test/views_test_base.h"

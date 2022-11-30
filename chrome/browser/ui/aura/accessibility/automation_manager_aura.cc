@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
@@ -20,21 +21,26 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/screen.h"
 #include "ui/views/accessibility/accessibility_alert_window.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/public/activation_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shell.h"
-#include "ash/wm/window_util.h"
-#endif
+#include "chrome/browser/ash/crosapi/automation_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 AutomationManagerAura* AutomationManagerAura::GetInstance() {
@@ -46,33 +52,46 @@ void AutomationManagerAura::Enable() {
   enabled_ = true;
   Reset(false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Seed the views::AXAuraObjCache with per-display root windows so
   // GetTopLevelWindows() returns the correct values when automation is enabled
   // with multiple displays connected.
-  for (aura::Window* root : ash::Shell::GetAllRootWindows())
-    cache_->OnRootWindowObjCreated(root);
-#endif
+  if (send_window_state_on_enable_) {
+    for (auto* host : aura::Env::GetInstance()->window_tree_hosts())
+      cache_->OnRootWindowObjCreated(host->window());
+  }
 
   // Send this event immediately to push the initial desktop tree state.
   pending_events_.push_back({tree_->GetRoot()->GetUniqueId(),
                              ax::mojom::Event::kLoadComplete, -1,
-                             is_performing_action_});
+                             currently_performing_action_});
   SendPendingEvents();
   // Intentionally not reset at shutdown since we cannot rely on the shutdown
   // ordering of two base::Singletons.
   cache_->SetDelegate(this);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  aura::Window* active_window = ash::window_util::GetActiveWindow();
+  const display::Display& display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  aura::Window* root_window = nullptr;
+  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+    if (display.id() == host->GetDisplayId()) {
+      root_window = host->window();
+      break;
+    }
+  }
+
+  aura::Window* active_window = nullptr;
+  if (root_window) {
+    active_window = ::wm::GetActivationClient(root_window)->GetActiveWindow();
+  }
+
   if (active_window) {
     views::AXAuraObjWrapper* focus = cache_->GetOrCreate(active_window);
     if (focus)
       PostEvent(focus->GetUniqueId(), ax::mojom::Event::kChildrenChanged);
   }
-#endif
 
-  if (!automation_event_router_observer_.IsObserving()) {
+  if (!automation_event_router_observer_.IsObserving() &&
+      !automation_event_router_interface_) {
     automation_event_router_observer_.Observe(
         extensions::AutomationEventRouter::GetInstance());
   }
@@ -92,6 +111,13 @@ void AutomationManagerAura::Disable() {
 
   if (automation_event_router_observer_.IsObserving())
     automation_event_router_observer_.Reset();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // CrosapiManager may not be initialized on unit testing.
+  // Propagate the Disable signal to crosapi clients.
+  if (crosapi::CrosapiManager::IsInitialized())
+    crosapi::CrosapiManager::Get()->crosapi_ash()->automation_ash()->Disable();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void AutomationManagerAura::OnViewEvent(views::View* view,
@@ -108,8 +134,27 @@ void AutomationManagerAura::OnViewEvent(views::View* view,
   PostEvent(obj->GetUniqueId(), event_type);
 }
 
+void AutomationManagerAura::OnVirtualViewEvent(
+    views::AXVirtualView* virtual_view,
+    ax::mojom::Event event_type) {
+  CHECK(virtual_view);
+
+  if (!enabled_)
+    return;
+
+  views::AXAuraObjWrapper* obj = virtual_view->GetOrCreateWrapper(cache_.get());
+  if (!obj)
+    return;
+
+  PostEvent(obj->GetUniqueId(), event_type);
+}
+
 void AutomationManagerAura::AllAutomationExtensionsGone() {
   Disable();
+}
+
+void AutomationManagerAura::ExtensionListenerAdded() {
+  Reset(true /* reset serializer */);
 }
 
 void AutomationManagerAura::HandleEvent(ax::mojom::Event event_type) {
@@ -128,13 +173,13 @@ void AutomationManagerAura::HandleAlert(const std::string& text) {
 void AutomationManagerAura::PerformAction(const ui::AXActionData& data) {
   CHECK(enabled_);
 
-  base::AutoReset<bool> reset_is_performing_action(&is_performing_action_,
-                                                   true);
+  base::AutoReset<ax::mojom::Action> reset_currently_performing_action(
+      &currently_performing_action_, data.action);
 
   // Exclude the do default action, which can trigger too many important events
   // that should not be ignored by clients like focus.
   if (data.action == ax::mojom::Action::kDoDefault)
-    is_performing_action_ = false;
+    currently_performing_action_ = ax::mojom::Action::kNone;
 
   // Unlike all of the other actions, a hit test requires determining the
   // node to perform the action on first.
@@ -187,15 +232,12 @@ void AutomationManagerAura::Reset(bool reset_serializer) {
     alert_window_.reset();
   } else {
     tree_serializer_ = std::make_unique<AuraAXTreeSerializer>(tree_.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ash::Shell* shell = ash::Shell::Get();
-    // Windows within the overlay container get moved to the new monitor when
-    // the primary display gets swapped.
-    alert_window_ = std::make_unique<views::AccessibilityAlertWindow>(
-        shell->GetContainer(shell->GetPrimaryRootWindow(),
-                            ash::kShellWindowId_OverlayContainer),
-        cache_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    const auto& hosts = aura::Env::GetInstance()->window_tree_hosts();
+    if (!hosts.empty()) {
+      alert_window_ = std::make_unique<views::AccessibilityAlertWindow>(
+          hosts[0]->window(), cache_.get());
+    }
   }
 }
 
@@ -203,7 +245,7 @@ void AutomationManagerAura::PostEvent(int id,
                                       ax::mojom::Event event_type,
                                       int action_request_id) {
   pending_events_.push_back(
-      {id, event_type, action_request_id, is_performing_action_});
+      {id, event_type, action_request_id, currently_performing_action_});
 
   if (processing_posted_)
     return;
@@ -255,8 +297,10 @@ void AutomationManagerAura::SendPendingEvents() {
       ui::AXEvent event;
       event.id = aura_obj->GetUniqueId();
       event.event_type = event_type;
-      if (event_copy.is_performing_action)
+      if (event_copy.currently_performing_action != ax::mojom::Action::kNone) {
         event.event_from = ax::mojom::EventFrom::kAction;
+        event.event_from_action = event_copy.currently_performing_action;
+      }
       event.action_request_id = event_copy.action_request_id;
       events.push_back(event);
     }
@@ -279,20 +323,37 @@ void AutomationManagerAura::SendPendingEvents() {
 
 void AutomationManagerAura::PerformHitTest(
     const ui::AXActionData& original_action) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ui::AXActionData action = original_action;
-  aura::Window* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  // Get the display nearest the point.
+  const display::Display& display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(action.target_point);
+
+  // Require a window in |display|; prefer it also be focused.
+  aura::Window* root_window = nullptr;
+  for (auto* host : aura::Env::GetInstance()->window_tree_hosts()) {
+    if (display.id() == host->GetDisplayId()) {
+      root_window = host->window();
+      if (aura::client::GetFocusClient(root_window)->GetFocusedWindow())
+        break;
+    }
+  }
+
   if (!root_window)
     return;
 
+  // Convert to the root window's coordinates.
+  gfx::Point point_in_window(action.target_point);
+  ::wm::ConvertPointFromScreen(root_window, &point_in_window);
+
   // Determine which aura Window is associated with the target point.
-  aura::Window* window =
-      root_window->GetEventHandlerForPoint(action.target_point);
+  aura::Window* window = root_window->GetEventHandlerForPoint(point_in_window);
   if (!window)
     return;
 
-  // Convert point to local coordinates of the hit window.
-  aura::Window::ConvertPointToTarget(root_window, window, &action.target_point);
+  // Convert point to local coordinates of the hit window within the root
+  // window.
+  aura::Window::ConvertPointToTarget(root_window, window, &point_in_window);
+  action.target_point = point_in_window;
 
   // Check for a AX node tree in a remote process (e.g. renderer, mojo app).
   ui::AXTreeID child_ax_tree_id;
@@ -327,9 +388,8 @@ void AutomationManagerAura::PerformHitTest(
     views::View* root_view = widget->GetRootView();
     views::View* hit_view =
         root_view->GetEventHandlerForPoint(action.target_point);
-    if (hit_view) {
+    if (hit_view)
       obj_to_send_event = cache_->GetOrCreate(hit_view);
-    }
   }
 
   // Otherwise, fire the event directly on the Window.
@@ -339,7 +399,6 @@ void AutomationManagerAura::PerformHitTest(
     PostEvent(obj_to_send_event->GetUniqueId(), action.hit_test_event_to_fire,
               action.request_id);
   }
-#endif
 }
 
 void AutomationManagerAura::OnSerializeFailure(ax::mojom::Event event_type,
@@ -355,6 +414,5 @@ void AutomationManagerAura::OnSerializeFailure(ax::mojom::Event event_type,
 
   LOG(ERROR) << "Unable to serialize accessibility event!\n"
              << "Event type: " << event_type << "\n"
-             << "Error: " << error_string << "\n"
-             << "Update: " << update.ToString();
+             << "Error: " << error_string;
 }

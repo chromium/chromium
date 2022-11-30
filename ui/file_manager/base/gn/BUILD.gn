@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/json_data_generator/json_data_generator.gni")
+
+json_data_generator("file_types_data_gen_cpp") {
+  sources = [ "file_types.json5" ]
+  templates = [
+    "file_types_data.cc.jinja",
+    "file_types_data.h.jinja",
+  ]
+  template_helper = "custom_jinja_helper.py"
+  output_dir = "$root_gen_dir/ui/file_manager"
+}
+
+source_set("file_types_data_cpp") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_types_data.cc",
+    "$root_gen_dir/ui/file_manager/file_types_data.h",
+  ]
+  deps = [
+    ":file_types_data_gen_cpp",
+    "//base",
+  ]
+}
+
+json_data_generator("file_types_data_gen_js") {
+  sources = [ "file_types.json5" ]
+  templates = [ "file_types_data.js.jinja" ]
+  template_helper = "custom_jinja_helper.py"
+  output_dir = "$root_gen_dir/ui/file_manager/file_manager/common/js"
+}

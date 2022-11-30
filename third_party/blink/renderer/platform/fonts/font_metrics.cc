@@ -38,8 +38,8 @@
 
 namespace blink {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
 // This is the largest VDMX table which we'll try to load and parse.
 static const size_t kMaxVDMXTableSize = 1024 * 1024;  // 1 MB
 #endif
@@ -52,8 +52,8 @@ void FontMetrics::AscentDescentWithHacks(
     const FontPlatformData& platform_data,
     const SkFont& font,
     bool subpixel_ascent_descent,
-    base::Optional<float> ascent_override,
-    base::Optional<float> descent_override) {
+    absl::optional<float> ascent_override,
+    absl::optional<float> descent_override) {
   SkTypeface* face = font.getTypeface();
   DCHECK(face);
 
@@ -68,8 +68,8 @@ void FontMetrics::AscentDescentWithHacks(
   int vdmx_ascent = 0, vdmx_descent = 0;
   bool is_vdmx_valid = false;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   // Manually digging up VDMX metrics is only applicable when bytecode hinting
   // using FreeType.  With DirectWrite or CoreText, no bytecode hinting is ever
   // done.  This code should be pushed into FreeType (hinted font metrics).
@@ -116,8 +116,8 @@ void FontMetrics::AscentDescentWithHacks(
       visual_overflow_inflation_for_ascent = 1;
     if (descent < metrics.fDescent) {
       visual_overflow_inflation_for_descent = 1;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
       // When subpixel positioning is enabled, if the descent is rounded down,
       // the descent part of the glyph may be truncated when displayed in a
       // 'overflow: hidden' container.  To avoid that, borrow 1 unit from the
@@ -134,7 +134,7 @@ void FontMetrics::AscentDescentWithHacks(
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We are preserving this ascent hack to match Safari's ascent adjustment
   // in their SimpleFontDataMac.mm, for details see crbug.com/445830.
   // We need to adjust Times, Helvetica, and Courier to closely match the
@@ -148,5 +148,71 @@ void FontMetrics::AscentDescentWithHacks(
       family_name == font_family_names::kCourier)
     ascent += floorf(((ascent + descent) * 0.15f) + 0.5f);
 #endif
+}
+
+float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
+  switch (baseline_type) {
+    case kAlphabeticBaseline:
+      NOTREACHED();
+      return float_ascent_;
+    case kCentralBaseline:
+      return FloatHeight() / 2;
+
+      // The following computations are based on 'dominant-baseline' support in
+      // the legacy SVG <text>.
+
+    case kTextUnderBaseline:
+      return FloatHeight();
+    case kIdeographicUnderBaseline:
+      // TODO(layout-dev): Should refer to 'ideo' in OpenType.
+      return FloatHeight();
+    case kXMiddleBaseline:
+      return float_ascent_ - XHeight() / 2;
+    case kMathBaseline:
+      // TODO(layout-dev): Should refer to 'math' in OpenType or 'bsln' value 4
+      // in TrueType AAT.
+      return float_ascent_ * 0.5f;
+    case kHangingBaseline:
+      // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3
+      // in TrueType AAT.
+      return float_ascent_ * 0.2f;
+    case kTextOverBaseline:
+      return 0;
+  }
+  NOTREACHED();
+  return float_ascent_;
+}
+
+int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
+  switch (baseline_type) {
+    case kAlphabeticBaseline:
+      NOTREACHED();
+      return int_ascent_;
+    case kCentralBaseline:
+      return Height() - Height() / 2;
+
+      // The following computations are based on 'dominant-baseline' support in
+      // the legacy SVG <text>.
+
+    case kTextUnderBaseline:
+      return Height();
+    case kIdeographicUnderBaseline:
+      // TODO(layout-dev): Should refer to 'ideo' in OpenType.
+      return Height();
+    case kXMiddleBaseline:
+      return int_ascent_ - static_cast<int>(XHeight() / 2);
+    case kMathBaseline:
+      // TODO(layout-dev): Should refer to 'math' in OpenType or 'bsln' value 4
+      // in TrueType AAT.
+      return int_ascent_ / 2;
+    case kHangingBaseline:
+      // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3
+      // in TrueType AAT.
+      return int_ascent_ * 2 / 10;
+    case kTextOverBaseline:
+      return 0;
+  }
+  NOTREACHED();
+  return int_ascent_;
 }
 }

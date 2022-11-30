@@ -1,0 +1,84 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module segmentation_internals.mojom;
+
+// Status information about the segmentation service.
+struct ServiceStatus {
+  // Whether the service is initialized.
+  bool is_initialized;
+
+  // Initialization status.
+  int32 intialization_status;
+};
+
+// Information about a segment.
+struct SegmentInfo {
+  // String representation of the segment ID.
+  string segment_name;
+
+  // Int value of the segment ID.
+  int32 segment_id;
+
+  // Detailed segmentation information.
+  string segment_data;
+
+  // Whether the segment can be executed.
+  bool can_execute_segment;
+
+  // Latest result for executing the segment.
+  string prediction_result;
+};
+
+// Information about a segmentation client.
+struct ClientInfo {
+  // Key uniquely identifies a segmentation client.
+  string segmentation_key;
+
+  // Which segment is currently selected.
+  string selected_segment;
+
+  // A list of segments needed by this client.
+  array<SegmentInfo> segment_info;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page, pending_receiver<PageHandler>
+    handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Gets the segmentation service status.
+  GetServiceStatus();
+
+  // Executes a segment using available metrics data in the DB.
+  ExecuteModel(int32 segment_id);
+
+  // Overwrites the result for the given segment identified by |segment_id|.
+  // This will trigger a new round of segment selection and update the existing
+  // result in Prefs.
+  OverwriteResult(int32 segment_id, float result);
+
+  // Sets the selected segment for the client identified by |segmentation_key|.
+  SetSelected(string segmentation_key, int32 optimization_target);
+};
+
+// Renderer-side handler for internal page to process the updates from
+// the segmentation service.
+interface Page {
+  // Notifies the page of a status change on the segmentation service.
+  // |is_page_controller| indicates whether the service is initialized,
+  // |status_flag| indicates the status of various components, see
+  // SegmentationPlatformServiceImpl for description of each bit in the flag.
+  OnServiceStatusChanged(bool is_initialized,
+                         int32 status_flag);
+
+  // Notifies the page when all client info becomes available from the service.
+  // |client_info| is an array of all client information stored in the
+  // database.
+  OnClientInfoAvailable(array<ClientInfo> client_info);
+};

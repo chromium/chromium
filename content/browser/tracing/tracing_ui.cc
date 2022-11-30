@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "content/browser/tracing/grit/tracing_resources.h"
@@ -41,6 +40,7 @@
 #include "content/public/common/url_constants.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
 
@@ -55,7 +55,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
                      const std::set<std::string>& categorySet) {
   base::ListValue category_list;
   for (auto it = categorySet.begin(); it != categorySet.end(); it++) {
-    category_list.AppendString(*it);
+    category_list.Append(*it);
   }
 
   scoped_refptr<base::RefCountedString> res(new base::RefCountedString());
@@ -215,11 +215,10 @@ void OnTracingRequest(const std::string& path,
   // to take ownership of |callback| even though it won't call |callback|
   // sometimes, as it binds |callback| into other callbacks before it makes that
   // decision. So we must give it one copy and keep one ourselves.
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
-  if (!OnBeginJSONRequest(path, repeating_callback)) {
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  if (!OnBeginJSONRequest(path, std::move(split_callback.first))) {
     std::string error("##ERROR##");
-    std::move(repeating_callback)
+    std::move(split_callback.second)
         .Run(base::RefCountedString::TakeString(&error));
   }
 }
@@ -237,10 +236,8 @@ TracingUI::TracingUI(WebUI* web_ui)
     : WebUIController(web_ui),
       delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
   // Set up the chrome://tracing/ source.
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-
-  WebUIDataSource* source = WebUIDataSource::Create(kChromeUITracingHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUITracingHost);
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->SetDefaultResource(IDR_TRACING_ABOUT_TRACING_HTML);
@@ -248,7 +245,6 @@ TracingUI::TracingUI(WebUI* web_ui)
 
   source->SetRequestFilter(base::BindRepeating(OnShouldHandleRequest),
                            base::BindRepeating(OnTracingRequest));
-  WebUIDataSource::Add(browser_context, source);
 }
 
 TracingUI::~TracingUI() = default;
@@ -263,20 +259,19 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  std::unique_ptr<base::Value> optionsRaw =
-      base::JSONReader::ReadDeprecated(data);
-  if (!optionsRaw) {
+  absl::optional<base::Value> options = base::JSONReader::Read(data);
+  if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;
   }
-  base::DictionaryValue* options;
-  if (!optionsRaw->GetAsDictionary(&options)) {
+  if (!options->is_dict()) {
     LOG(ERROR) << "Options must be dict";
     return false;
   }
 
-  if (options->HasKey(kStreamFormat)) {
-    options->GetString(kStreamFormat, &out_stream_format);
+  if (const std::string* stream_format =
+          options->FindStringKey(kStreamFormat)) {
+    out_stream_format = *stream_format;
   } else {
     out_stream_format = kStreamFormatJSON;
   }

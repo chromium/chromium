@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ ProcessReaderMac::Thread::Thread()
     : thread_context(),
       float_context(),
       debug_context(),
+      name(),
       id(0),
       stack_region_address(0),
       stack_region_size(0),
@@ -363,6 +364,20 @@ void ProcessReaderMac::InitializeThreads() {
       // This address is the internal pthread’s _pthread::tsd[], an array of
       // void* values that can be indexed by pthread_key_t values.
       thread.thread_specific_data_address = identifier_info.thread_handle;
+    }
+
+    thread_extended_info extended_info;
+    count = THREAD_EXTENDED_INFO_COUNT;
+    kr = thread_info(thread.port,
+                     THREAD_EXTENDED_INFO,
+                     reinterpret_cast<thread_info_t>(&extended_info),
+                     &count);
+    if (kr != KERN_SUCCESS) {
+      MACH_LOG(WARNING, kr) << "thread_info(THREAD_EXTENDED_INFO)";
+    } else {
+      thread.name.assign(
+          extended_info.pth_name,
+          strnlen(extended_info.pth_name, sizeof(extended_info.pth_name)));
     }
 
     thread_precedence_policy precedence;
@@ -701,7 +716,7 @@ void ProcessReaderMac::LocateRedZone(mach_vm_address_t* const start_address,
 #if defined(ARCH_CPU_X86_FAMILY)
   if (Is64Bit()) {
     // x86_64 has a red zone. See AMD64 ABI 0.99.8,
-    // https://raw.githubusercontent.com/wiki/hjl-tools/x86-psABI/x86-64-psABI-r252.pdf#page=19,
+    // https://gitlab.com/x86-psABIs/x86-64-ABI/-/wikis/uploads/01de35b2c8adc7545de52604cc45d942/x86-64-psABI-2021-05-20.pdf#page=23.
     // section 3.2.2, “The Stack Frame”.
     constexpr mach_vm_size_t kRedZoneSize = 128;
     mach_vm_address_t red_zone_base =

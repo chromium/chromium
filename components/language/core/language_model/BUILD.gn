@@ -1,0 +1,46 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("language_model") {
+  sources = [
+    "fluent_language_model.cc",
+    "fluent_language_model.h",
+    "ulp_language_model.cc",
+    "ulp_language_model.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/strings",
+    "//components/translate/core/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fluent_language_model_unittest.cc" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/language/core/browser",
+    "//components/language/core/browser:test_support",
+    "//components/language/core/common",
+    "//components/language/core/language_model",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,8 @@ source_set("public") {
   sources = [
     "dns_config_overrides.cc",
     "dns_config_overrides.h",
+    "dns_over_https_config.cc",
+    "dns_over_https_config.h",
     "dns_over_https_server_config.cc",
     "dns_over_https_server_config.h",
     "dns_protocol.h",
@@ -27,12 +29,33 @@ source_set("public") {
     "dns_query_type.h",
     "doh_provider_entry.cc",
     "doh_provider_entry.h",
+    "host_resolver_results.cc",
+    "host_resolver_results.h",
+    "host_resolver_source.h",
+    "mdns_listener_update_type.h",
     "resolve_error_info.cc",
     "resolve_error_info.h",
     "secure_dns_mode.h",
+    "secure_dns_policy.h",
     "util.cc",
     "util.h",
   ]
+
+  if (is_posix && !is_android) {
+    sources += [
+      "resolv_reader.cc",
+      "resolv_reader.h",
+      "scoped_res_state.cc",
+      "scoped_res_state.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "win_dns_system_settings.cc",
+      "win_dns_system_settings.h",
+    ]
+  }
 
   deps = [ "//net:net_deps" ]
 
@@ -48,12 +71,22 @@ if (is_android) {
 source_set("tests") {
   testonly = true
   sources = [
+    "dns_over_https_config_unittest.cc",
+    "dns_over_https_server_config_unittest.cc",
     "doh_provider_entry_unittest.cc",
-    "util_unittest.cc",
   ]
+
+  if (is_posix && !is_android) {
+    sources += [ "resolv_reader_unittest.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "win_dns_system_settings_unittest.cc" ]
+  }
 
   deps = [
     "//net",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

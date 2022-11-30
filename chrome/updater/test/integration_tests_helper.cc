@@ -1,216 +1,424 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iostream>
+#include <map>
 #include <string>
+#include <utility>
 
 #include "base/at_exit.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_executor.h"
-#include "base/task/thread_pool.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
+#include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_suite.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/win/win_util.h"
+#endif
 
 namespace updater {
 namespace test {
 namespace {
 
-constexpr char kAppId[] = "app_id";
+using ::testing::EmptyTestEventListener;
+using ::testing::Test;
+using ::testing::TestCase;
+using ::testing::TestEventListeners;
+using ::testing::TestInfo;
+using ::testing::TestPartResult;
+using ::testing::UnitTest;
+
 constexpr int kSuccess = 0;
 constexpr int kUnknownSwitch = 101;
-constexpr int kMissingAppIdSwitch = 102;
-constexpr int kMissingUrlSwitch = 103;
-constexpr int kMissingExitCodeSwitch = 104;
-constexpr int kBadExitCodeSwitch = 105;
-constexpr int kMissingPathSwitch = 106;
-constexpr int kMissingVersionParameter = 107;
+constexpr int kBadCommand = 102;
+
+base::Value ValueFromString(const std::string& values) {
+  absl::optional<base::Value> results_value = base::JSONReader::Read(values);
+  EXPECT_TRUE(results_value);
+  return results_value->Clone();
+}
+
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const std::string&, Args...)> callback) {
+  return base::BindLambdaForTesting([=](Args... args) {
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(flag)) {
+      return callback.Run(command_line->GetSwitchValueASCII(flag),
+                          std::move(args)...);
+    }
+    LOG(ERROR) << "Missing switch: " << flag;
+    return false;
+  });
+}
+
+// Overload for bool switches, represented by literals "false" and "true".
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(bool, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        if (flag == "false" || flag == "true") {
+          return callback.Run(flag == "true", std::move(args)...);
+        }
+        return false;
+      }));
+}
+
+// Overload for int switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(int, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        int flag_int = -1;
+        if (base::StringToInt(flag, &flag_int)) {
+          return callback.Run(flag_int, std::move(args)...);
+        }
+        return false;
+      }));
+}
+
+// Overload for GURL switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const GURL&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(GURL(flag), std::move(args)...);
+      }));
+}
+
+// Overload for FilePath switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::FilePath&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(base::FilePath::FromUTF8Unsafe(flag),
+                            std::move(args)...);
+      }));
+}
+
+// Overload for Version switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Version&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(base::Version(flag), std::move(args)...);
+      }));
+}
+
+// Overload for base::Value::Dict switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Value::Dict&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(std::move(ValueFromString(flag).GetDict()),
+                            std::move(args)...);
+      }));
+}
+
+// Overload for base::Value::List switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Value::List&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(std::move(ValueFromString(flag).GetList()),
+                            std::move(args)...);
+      }));
+}
+
+template <typename Arg, typename... RemainingArgs>
+base::RepeatingCallback<bool(RemainingArgs...)> WithArg(
+    Arg arg,
+    base::RepeatingCallback<bool(Arg, RemainingArgs...)> callback) {
+  return base::BindRepeating(callback, arg);
+}
+
+// Adapts the input callback to take a shutdown callback as the final parameter.
+template <typename... Args>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)>
+WithShutdown(base::RepeatingCallback<int(Args...)> callback) {
+  return base::BindLambdaForTesting(
+      [=](Args... args, base::OnceCallback<void(int)> shutdown) {
+        std::move(shutdown).Run(callback.Run(args...));
+        return true;
+      });
+}
+
+// Short-named wrapper around BindOnce.
+template <typename... Args, typename... ProvidedArgs>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)> Wrap(
+    int (*func)(Args...),
+    ProvidedArgs... provided_args) {
+  return WithShutdown(base::BindRepeating(func, provided_args...));
+}
+
+// Overload of Wrap for functions that return void. (Returns kSuccess.)
+template <typename... Args>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)> Wrap(
+    void (*func)(Args...)) {
+  return WithShutdown(base::BindLambdaForTesting([=](Args... args) {
+    func(args...);
+    return kSuccess;
+  }));
+}
+
+// Helper to shorten lines below.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSystemScope(
+    base::RepeatingCallback<bool(UpdaterScope, Args...)> callback) {
+  return WithArg(UpdaterScope::kSystem, callback);
+}
 
 class AppTestHelper : public App {
  private:
   ~AppTestHelper() override = default;
   void FirstTaskRun() override;
-  void InitializeThreadPool() override;
 };
 
 void AppTestHelper::FirstTaskRun() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::map<std::string,
+           base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>>
+      commands =
+  {
+    // To add additional commands, first Wrap a pointer to the target
+    // function (which should be declared in integration_tests_impl.h), and
+    // then use the With* helper functions to provide its arguments.
+    {"clean", WithSystemScope(Wrap(&Clean))},
+    {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
+    {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
+    {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
+    {"expect_registered",
+     WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},
+    {"expect_not_registered",
+     WithSwitch("app_id", WithSystemScope(Wrap(&ExpectNotRegistered)))},
+    {"expect_app_version",
+     WithSwitch("version", WithSwitch("app_id", WithSystemScope(
+                                                    Wrap(&ExpectAppVersion))))},
+    {"expect_candidate_uninstalled",
+     WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
+    {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
+    {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+#if BUILDFLAG(IS_WIN)
+    {"expect_interfaces_registered",
+     WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+    {"expect_marshal_interface_succeeds",
+     WithSystemScope(Wrap(&ExpectMarshalInterfaceSucceeds))},
+    {"expect_legacy_update3web_succeeds",
+     WithSwitch("expected_error_code",
+                WithSwitch("expected_final_state",
+                           WithSwitch("app_id",
+                                      WithSystemScope(Wrap(
+                                          &ExpectLegacyUpdate3WebSucceeds)))))},
+    {"expect_legacy_process_launcher_succeeds",
+     WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+    {"expect_legacy_app_command_web_succeeds",
+     WithSwitch(
+         "expected_exit_code",
+         WithSwitch(
+             "parameters",
+             WithSwitch(
+                 "command_id",
+                 WithSwitch("app_id",
+                            WithSystemScope(
+                                Wrap(&ExpectLegacyAppCommandWebSucceeds))))))},
+    {"expect_legacy_policy_status_succeeds",
+     WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds))},
+    {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
+#endif  // BUILDFLAG(IS_WIN)
+    {"expect_version_active",
+     WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
+    {"expect_version_not_active",
+     WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionNotActive)))},
+    {"install", WithSystemScope(Wrap(&Install))},
+    {"print_log", WithSystemScope(Wrap(&PrintLog))},
+    {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+    {"run_wake_active",
+     WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
+    {"update",
+     WithSwitch("install_data_index",
+                (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},
+    {"update_all", WithSystemScope(Wrap(&UpdateAll))},
+    {"delete_updater_directory",
+     WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
+    {"install_app", WithSwitch("app_id", WithSystemScope(Wrap(&InstallApp)))},
+    {"uninstall_app",
+     WithSwitch("app_id", WithSystemScope(Wrap(&UninstallApp)))},
+    {"set_existence_checker_path",
+     WithSwitch("path",
+                (WithSwitch("app_id",
+                            WithSystemScope(Wrap(&SetExistenceCheckerPath)))))},
+    {"setup_fake_updater_higher_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
+    {"setup_fake_updater_lower_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+    {"setup_real_updater_lower_version",
+     WithSystemScope(Wrap(&SetupRealUpdaterLowerVersion))},
+    {"set_first_registration_counter",
+     WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
+    {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
+    {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+    {"call_service_update",
+     WithSwitch("same_version_update_allowed",
+                WithSwitch("install_data_index",
+                           WithSwitch("app_id", WithSystemScope(Wrap(
+                                                    &CallServiceUpdate)))))},
+    {"setup_fake_legacy_updater_data",
+     WithSystemScope(Wrap(&SetupFakeLegacyUpdaterData))},
+    {"expect_legacy_updater_data_migrated",
+     WithSystemScope(Wrap(&ExpectLegacyUpdaterDataMigrated))},
+    {"run_recovery_component",
+     WithSwitch("version", WithSwitch("app_id", WithSystemScope(Wrap(
+                                                    &RunRecoveryComponent))))},
+    {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
+    {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
+    {"run_offline_install",
+     WithSwitch("silent",
+                WithSwitch("legacy_install",
+                           WithSystemScope(Wrap(&RunOfflineInstall))))},
+  };
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-
-  if (command_line->HasSwitch("clean")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Clean, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_clean")) {
-    ExpectClean(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("install")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Install, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_installed")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&ExpectInstalled, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("uninstall")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Uninstall, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_candidate_uninstalled")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&ExpectCandidateUninstalled, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("enter_test_mode")) {
-    if (command_line->HasSwitch("url")) {
-      GURL url(command_line->GetSwitchValueASCII("url"));
-      EnterTestMode(url);
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingUrlSwitch);
-    }
-  } else if (command_line->HasSwitch("expect_active_updater")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&ExpectActiveUpdater, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_version_active")) {
-    if (command_line->HasSwitch("version")) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&ExpectVersionActive,
-                         command_line->GetSwitchValueASCII("version")),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingVersionParameter);
-    }
-  } else if (command_line->HasSwitch("expect_version_not_active")) {
-    if (command_line->HasSwitch("version")) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&ExpectVersionNotActive,
-                         command_line->GetSwitchValueASCII("version")),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingVersionParameter);
-    }
-  } else if (command_line->HasSwitch("run_wake")) {
-    if (command_line->HasSwitch("exit_code")) {
-      int exit_code = -1;
-      if (base::StringToInt(command_line->GetSwitchValueASCII("exit_code"),
-                            &exit_code)) {
-        task_runner->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&RunWake, UpdaterScope::kSystem, exit_code),
-            base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-      } else {
-        Shutdown(kBadExitCodeSwitch);
+  for (const auto& entry : commands) {
+    if (command_line->HasSwitch(entry.first)) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      if (!entry.second.Run(base::BindOnce(&AppTestHelper::Shutdown, this))) {
+        Shutdown(kBadCommand);
       }
-    } else {
-      Shutdown(kMissingExitCodeSwitch);
-    }
-  } else if (command_line->HasSwitch("setup_fake_updater_higher_version")) {
-    SetupFakeUpdaterHigherVersion(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("setup_fake_updater_lower_version")) {
-    SetupFakeUpdaterLowerVersion(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("set_fake_existence_checker_path")) {
-    if (command_line->HasSwitch(kAppId)) {
-      SetFakeExistenceCheckerPath(command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch(
-                 "expect_app_unregistered_existence_checker_path")) {
-    if (command_line->HasSwitch(kAppId)) {
-      ExpectAppUnregisteredExistenceCheckerPath(
-          command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("print_log")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&PrintLog, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("copy_log")) {
-    if (command_line->HasSwitch("path")) {
-      const std::string path_string = command_line->GetSwitchValueASCII("path");
-      base::FilePath path;
-#if defined(OS_WIN)
-      base::FilePath::StringType str;
-      path = base::UTF8ToWide(path_string.c_str(), path_string.size(), &str)
-                 ? base::FilePath(str)
-                 : base::FilePath();
-#else
-      path = base::FilePath(path_string);
-#endif  // OS_WIN
-      CopyLog(path);
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingPathSwitch);
+      return;
     }
   }
-#if defined(OS_MAC)
-  else if (command_line->HasSwitch("register_app")) {
-    if (command_line->HasSwitch(kAppId)) {
-      RegisterApp(command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("register_test_app")) {
-    RegisterTestApp(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  }
-#endif
-  else {
-    VLOG(0) << "No supported switch provided. Command: "
-            << command_line->GetCommandLineString();
-    Shutdown(kUnknownSwitch);
-  }
-}
 
-void AppTestHelper::InitializeThreadPool() {
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("test_helper");
+  LOG(ERROR) << "No supported switch provided. Command: "
+             << command_line->GetCommandLineString();
+  Shutdown(kUnknownSwitch);
 }
 
 scoped_refptr<App> MakeAppTestHelper() {
   return base::MakeRefCounted<AppTestHelper>();
 }
 
+// Provides custom formatting for the unit test output.
+class TersePrinter : public EmptyTestEventListener {
+ private:
+  // Called before any test activity starts.
+  void OnTestProgramStart(const UnitTest& /*unit_test*/) override {}
+
+  // Called after all test activities have ended.
+  void OnTestProgramEnd(const UnitTest& unit_test) override {
+    std::cout << "Command " << (unit_test.Passed() ? "SUCCEEDED" : "FAILED")
+              << "." << std::endl
+              << std::flush;
+  }
+
+  // Called before a test starts.
+  void OnTestStart(const TestInfo& /*test_info*/) override {}
+
+  // Called after a failed assertion or a SUCCEED() invocation. Prints a
+  // backtrace showing the failure.
+  void OnTestPartResult(const TestPartResult& test_part_result) override {
+    std::cout << (test_part_result.failed() ? "*** Failure" : "Success")
+              << " in : " << test_part_result.file_name() << ":"
+              << test_part_result.line_number() << std::endl
+              << test_part_result.message() << std::endl
+              << std::flush;
+  }
+
+  // Called after a test ends.
+  void OnTestEnd(const TestInfo& /*test_info*/) override {}
+};
+
 int IntegrationTestsHelperMain(int argc, char** argv) {
   base::PlatformThread::SetName("IntegrationTestsHelperMain");
-  base::AtExitManager exit_manager;
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-
   base::CommandLine::Init(argc, argv);
 
+  // `test_suite` must be defined before setting log items.
+  base::TestSuite test_suite(argc, argv);
   logging::SetLogItems(/*enable_process_id=*/true,
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
+#if BUILDFLAG(IS_WIN)
+  auto scoped_com_initializer =
+      std::make_unique<base::win::ScopedCOMInitializer>(
+          base::win::ScopedCOMInitializer::kMTA);
+  if (FAILED(DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
+#endif
+  chrome::RegisterPathProvider();
+  TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
+  delete listeners.Release(listeners.default_result_printer());
+  listeners.Append(new TersePrinter);
+  return base::LaunchUnitTestsSerially(
+      argc, argv,
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
+}
 
-  return MakeAppTestHelper()->Run();
+// Do not disable this test when encountering integration tests failures.
+// This is not a unit test. It just wraps the execution of an integration test
+// command, which is typical a step of an integration test.
+TEST(TestHelperCommandRunner, Run) {
+  base::test::TaskEnvironment environment;
+  EXPECT_EQ(MakeAppTestHelper()->Run(), 0);
 }
 
 }  // namespace
 }  // namespace test
 }  // namespace updater
 
+// Wraps the execution of one integration test command in a unit test. The test
+// commands contain gtest assertions, therefore the invocation of test commands
+// must occur within the scope of a unit test of a gtest program. The test
+// helper defines a unit test "TestHelperCommandRunner.Run", which runs the
+// actual test command. Returns 0 if the test command succeeded.
 int main(int argc, char** argv) {
   return updater::test::IntegrationTestsHelperMain(argc, argv);
 }

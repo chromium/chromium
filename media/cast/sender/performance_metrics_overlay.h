@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
     int target_bitrate,
     int frames_ago,
     double encoder_utilization,
-    double lossy_utilization,
+    double lossiness,
     scoped_refptr<VideoFrame> source);
 
 }  // namespace cast

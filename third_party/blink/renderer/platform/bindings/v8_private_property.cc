@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,6 @@ static_assert(
 static_assert(
     std::is_trivially_destructible<V8PrivateProperty::SymbolKey>::value,
     "SymbolKey is not trivially destructible");
-
-v8::MaybeLocal<v8::Value> V8PrivateProperty::Symbol::GetFromMainWorld(
-    ScriptWrappable* script_wrappable) {
-  v8::Local<v8::Object> wrapper = script_wrappable->MainWorldWrapper(isolate_);
-  return wrapper.IsEmpty() ? v8::MaybeLocal<v8::Value>()
-                           : GetOrUndefined(wrapper);
-}
 
 V8PrivateProperty::Symbol V8PrivateProperty::GetWindowDocumentCachedAccessor(
     v8::Isolate* isolate) {

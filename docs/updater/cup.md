@@ -38,12 +38,10 @@ each client at compile time.
 
 For each request, the client assembles three components:
  1. The message body (the request body to be sent to the server).
- 2. A small random number to be used as a client nonce for freshness (at least
-    32 bits).
+ 2. A random value to be used as a nonce for freshness (at least 256 bits).
  3. A code to identify the public key the client will use to verify this
     request. The client converts the public key id and nonce to a string: the
-    public key is converted to decimal, and the nonce to hexadecimal (lowercase
-    a-f).
+    public key is converted to decimal, and the nonce to any url-safe encoding.
 
 The client stores the request body in a buffer, in UTF-8 format; it
 appends the keyid/nonce string to this buffer. It calculates a SHA-256 hash of
@@ -130,5 +128,5 @@ Previous documents describing CUP can be found at:
   * [ECDSA Extension](https://github.com/google/omaha/blob/master/doc/ClientUpdateProtocolEcdsa.md)
 
 Chromium's implementation of CUP can be found in
-[components/client\_update\_protocol](https://source.chromium.org/chromium/chromium/src/+/master:components/client_update_protocol/).
+[components/client\_update\_protocol](https://source.chromium.org/chromium/chromium/src/+/main:components/client_update_protocol/).
 

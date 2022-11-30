@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ class SessionEndWatcherTest final : public SessionEndWatcher {
  public:
   SessionEndWatcherTest() : SessionEndWatcher(), called_(false) {}
 
+  SessionEndWatcherTest(const SessionEndWatcherTest&) = delete;
+  SessionEndWatcherTest& operator=(const SessionEndWatcherTest&) = delete;
+
   ~SessionEndWatcherTest() override {}
 
   void Run() {
@@ -44,8 +47,6 @@ class SessionEndWatcherTest final : public SessionEndWatcher {
   void SessionEnding() override { called_ = true; }
 
   bool called_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionEndWatcherTest);
 };
 
 TEST(SessionEndWatcher, SessionEndWatcher) {

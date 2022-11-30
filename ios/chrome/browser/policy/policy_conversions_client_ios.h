@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class BrowserState;
 class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
  public:
   // Creates a PolicyConversionsClientIOS which retrieves BrowserState-specific
-  // policy information from the given |browser_state|.
+  // policy information from the given `browser_state`.
   explicit PolicyConversionsClientIOS(web::BrowserState* browser_state);
 
   PolicyConversionsClientIOS(const PolicyConversionsClientIOS&) = delete;
@@ -32,7 +32,8 @@ class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
   policy::SchemaRegistry* GetPolicySchemaRegistry() const override;
   const policy::ConfigurationPolicyHandlerList* GetHandlerList() const override;
   bool HasUserPolicies() const override;
-  base::Value GetExtensionPolicies(policy::PolicyDomain policy_domain) override;
+  base::Value::List GetExtensionPolicies(
+      policy::PolicyDomain policy_domain) override;
 
  private:
   ChromeBrowserState* browser_state_;

@@ -1,0 +1,72 @@
+<style>
+  ::part(dialog) {
+    height: 250px;
+    min-width: 560px;
+  }
+
+  ::part(wrapper) {
+    height: 100%;
+    justify-content: space-between;
+  }
+
+  div[slot=body] {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  div[slot=button-container] {
+    justify-content: flex-start;
+  }
+
+  #content-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #content-title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-family: 'Google Sans';
+    font-size: 22px;
+    line-height: 28px;
+    margin-inline-end: auto;
+    white-space: normal;
+  }
+
+  #content {
+    color: var(--color-new-tab-page-secondary-foreground);
+    font-size: 13px;
+    line-height: 20px;
+    margin-inline-end: auto;
+    margin-top: 4px;
+    white-space: normal;
+  }
+
+  #icon-container {
+    margin-inline-end: 20px;
+  }
+</style>
+
+<cr-dialog id="dialog" show-close-button on-cancel="onDismissClick_"
+    show-on-attach close-text="$i18n{close}">
+  <div slot="title">$i18n{modulesCartSentence}</div>
+  <div slot="body">
+    <div id="content-container" tabindex="0">
+      <div id="content-title">$i18n{modulesCartDiscountConentTitle}</div>
+      <div id="content">$i18n{modulesCartDiscountConsentContentV3}</div>
+    </div>
+    <div id="icon-container">
+      <img id="icon" src="modules/cart/icons/consent_icon.svg" alt="">
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" id="cancelButton"
+        on-click="onRejectClick_">
+      $i18n{modulesCartDiscountConsentReject}
+    </cr-button>
+    <cr-button class="action-button" id="confirmButton"
+        on-click="onAcceptClick_">
+      $i18n{modulesCartDiscountConsentAccept}
+    </cr-button>
+  </div>
+</cr-dialog>

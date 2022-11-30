@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_GENERIC_UI_REPLACE_PLACEHOLDERS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_GENERIC_UI_REPLACE_PLACEHOLDERS_H_
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 
 namespace autofill_assistant {
@@ -16,12 +16,12 @@ namespace autofill_assistant {
 // occurring in |in_out_proto|. Ignores other placeholders.
 void ReplacePlaceholdersInGenericUi(
     GenericUserInterfaceProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders);
+    const base::flat_map<std::string, std::string>& placeholders);
 
 // Same as |ReplacePlaceholdersInGenericUi|, for a single callback.
 void ReplacePlaceholdersInCallback(
     CallbackProto* in_out_proto,
-    const std::map<std::string, std::string>& placeholders);
+    const base::flat_map<std::string, std::string>& placeholders);
 
 }  // namespace autofill_assistant
 

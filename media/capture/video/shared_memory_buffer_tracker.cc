@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -28,7 +29,7 @@ class SharedMemoryBufferTrackerHandle : public media::VideoCaptureBufferHandle {
 
  private:
   const size_t mapped_size_;
-  uint8_t* data_;
+  raw_ptr<uint8_t> data_;
 };
 
 size_t CalculateRequiredBufferSize(
@@ -56,7 +57,8 @@ size_t CalculateRequiredBufferSize(
 
 namespace media {
 
-SharedMemoryBufferTracker::SharedMemoryBufferTracker() = default;
+SharedMemoryBufferTracker::SharedMemoryBufferTracker(bool strict_pixel_format)
+    : strict_pixel_format_(strict_pixel_format) {}
 
 SharedMemoryBufferTracker::~SharedMemoryBufferTracker() = default;
 
@@ -68,6 +70,7 @@ bool SharedMemoryBufferTracker::Init(const gfx::Size& dimensions,
       CalculateRequiredBufferSize(dimensions, format, strides);
   region_ = base::UnsafeSharedMemoryRegion::Create(buffer_size);
   mapping_ = {};
+  format_ = format;
   return region_.IsValid();
 }
 
@@ -75,8 +78,9 @@ bool SharedMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  return GetMemorySizeInBytes() >=
-         CalculateRequiredBufferSize(dimensions, format, strides);
+  return (!strict_pixel_format_ || format == format_) &&
+         GetMemorySizeInBytes() >=
+             CalculateRequiredBufferSize(dimensions, format, strides);
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>

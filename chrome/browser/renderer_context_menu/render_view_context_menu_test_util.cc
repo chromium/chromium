@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,14 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#endif
+
 using ui::MenuModel;
 
 TestRenderViewContextMenu::TestRenderViewContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host, params) {}
 
@@ -25,23 +29,34 @@ std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
     const GURL& page_url,
     const GURL& link_url,
     const GURL& frame_url) {
+  return Create(web_contents->GetPrimaryMainFrame(), page_url, link_url,
+                frame_url);
+}
+
+// static
+std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& page_url,
+    const GURL& link_url,
+    const GURL& frame_url) {
   content::ContextMenuParams params;
   params.page_url = page_url;
   params.link_url = link_url;
   params.frame_url = frame_url;
-  auto menu = std::make_unique<TestRenderViewContextMenu>(
-      web_contents->GetMainFrame(), params);
+  auto menu =
+      std::make_unique<TestRenderViewContextMenu>(*render_frame_host, params);
   menu->Init();
   return menu;
 }
 
 bool TestRenderViewContextMenu::IsItemPresent(int command_id) const {
-  return menu_model_.GetIndexOfCommandId(command_id) != -1;
+  return menu_model_.GetIndexOfCommandId(command_id).has_value();
 }
 
 bool TestRenderViewContextMenu::IsItemChecked(int command_id) const {
-  return menu_model_.IsItemCheckedAt(
-      menu_model_.GetIndexOfCommandId(command_id));
+  const absl::optional<size_t> index =
+      menu_model_.GetIndexOfCommandId(command_id);
+  return index.has_value() && menu_model_.IsItemCheckedAt(index.value());
 }
 
 bool TestRenderViewContextMenu::IsItemInRangePresent(
@@ -59,14 +74,14 @@ bool TestRenderViewContextMenu::IsItemInRangePresent(
 bool TestRenderViewContextMenu::GetMenuModelAndItemIndex(
     int command_id,
     MenuModel** found_model,
-    int* found_index) {
+    size_t* found_index) {
   std::vector<MenuModel*> models_to_search;
   models_to_search.push_back(&menu_model_);
 
   while (!models_to_search.empty()) {
     MenuModel* model = models_to_search.back();
     models_to_search.pop_back();
-    for (int i = 0; i < model->GetItemCount(); i++) {
+    for (size_t i = 0; i < model->GetItemCount(); i++) {
       if (model->GetCommandIdAt(i) == command_id) {
         *found_model = model;
         *found_index = i;
@@ -91,5 +106,27 @@ int TestRenderViewContextMenu::GetCommandIDByProfilePath(
   return -1;
 }
 
+void TestRenderViewContextMenu::SetBrowser(Browser* browser) {
+  browser_ = browser;
+}
+
+Browser* TestRenderViewContextMenu::GetBrowser() const {
+  if (browser_)
+    return browser_;
+  return RenderViewContextMenu::GetBrowser();
+}
+
 void TestRenderViewContextMenu::Show() {
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+const policy::DlpRulesManager* TestRenderViewContextMenu::GetDlpRulesManager()
+    const {
+  return dlp_rules_manager_;
+}
+
+void TestRenderViewContextMenu::set_dlp_rules_manager(
+    policy::DlpRulesManager* dlp_rules_manager) {
+  dlp_rules_manager_ = dlp_rules_manager;
+}
+#endif

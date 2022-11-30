@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 namespace chromecast {
 namespace media {
 
-constexpr base::TimeDelta kTargetWritePeriod =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kTargetWritePeriod = base::Milliseconds(20);
 
 bool MixerOutputStreamDesktop::Start(int requested_sample_rate, int channels) {
   sample_rate_ = requested_sample_rate;

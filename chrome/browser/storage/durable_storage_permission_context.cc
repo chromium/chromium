@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -34,7 +35,6 @@ DurableStoragePermissionContext::DurableStoragePermissionContext(
 }
 
 void DurableStoragePermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -65,9 +65,12 @@ void DurableStoragePermissionContext::DecidePermission(
 
   // Don't grant durable for session-only storage, since it won't be persisted
   // anyway. Don't grant durable if we can't write cookies.
-  if (cookie_settings->IsCookieSessionOnly(requesting_origin) ||
-      !cookie_settings->IsCookieAccessAllowed(requesting_origin,
-                                              requesting_origin)) {
+  if (cookie_settings->IsCookieSessionOnly(
+          requesting_origin,
+          content_settings::CookieSettings::QueryReason::kSiteStorage) ||
+      !cookie_settings->IsFullCookieAccessAllowed(
+          requesting_origin, requesting_origin,
+          content_settings::CookieSettings::QueryReason::kSiteStorage)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
                         CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
@@ -118,8 +121,9 @@ void DurableStoragePermissionContext::UpdateContentSetting(
     ContentSetting content_setting,
     bool is_one_time) {
   DCHECK(!is_one_time);
-  DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
-  DCHECK_EQ(embedding_origin_ignored, embedding_origin_ignored.GetOrigin());
+  DCHECK_EQ(requesting_origin, requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(embedding_origin_ignored,
+            embedding_origin_ignored.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 
@@ -127,8 +131,4 @@ void DurableStoragePermissionContext::UpdateContentSetting(
       ->SetContentSettingDefaultScope(requesting_origin, GURL(),
                                       ContentSettingsType::DURABLE_STORAGE,
                                       content_setting);
-}
-
-bool DurableStoragePermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }

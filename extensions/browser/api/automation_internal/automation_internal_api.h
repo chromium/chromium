@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 struct AXActionData;
@@ -41,23 +41,17 @@ class AutomationInternalPerformActionFunction : public ExtensionFunction {
     ~Result();
     // If there is a validation error then |automation_error| should be ignored.
     bool validation_success = false;
-    // Assuming validation was successful, then a value of base::nullopt
+    // Assuming validation was successful, then a value of absl::nullopt
     // implies success. Otherwise, the failure is described in the contained
     // string.
-    base::Optional<std::string> automation_error;
+    absl::optional<std::string> automation_error;
   };
 
   // Exposed to allow crosapi to reuse the implementation. |extension_id| can be
   // the empty string. |extension| and |automation_info| can be nullptr.
-  static Result PerformAction(
-      const ui::AXTreeID& tree_id,
-      int32_t automation_node_id,
-      const std::string& action_type,
-      int request_id,
-      const base::DictionaryValue& additional_properties,
-      const std::string& extension_id,
-      const Extension* extension,
-      const AutomationInfo* automation_info);
+  static Result PerformAction(const ui::AXActionData& data,
+                              const Extension* extension,
+                              const AutomationInfo* automation_info);
 
  protected:
   ~AutomationInternalPerformActionFunction() override = default;
@@ -83,10 +77,10 @@ class AutomationInternalEnableTreeFunction : public ExtensionFunction {
                              AUTOMATIONINTERNAL_ENABLETREE)
 
  public:
-  // Returns an error message or base::nullopt on success. Exposed to allow
+  // Returns an error message or absl::nullopt on success. Exposed to allow
   // crosapi to reuse the implementation. |extension_id| can be the empty
   // string.
-  static base::Optional<std::string> EnableTree(
+  static absl::optional<std::string> EnableTree(
       const ui::AXTreeID& ax_tree_id,
       const ExtensionId& extension_id);
 
@@ -101,6 +95,15 @@ class AutomationInternalEnableDesktopFunction : public ExtensionFunction {
                              AUTOMATIONINTERNAL_ENABLEDESKTOP)
  protected:
   ~AutomationInternalEnableDesktopFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
+class AutomationInternalDisableDesktopFunction : public ExtensionFunction {
+  DECLARE_EXTENSION_FUNCTION("automationInternal.disableDesktop",
+                             AUTOMATIONINTERNAL_DISABLEDESKTOP)
+ protected:
+  ~AutomationInternalDisableDesktopFunction() override = default;
 
   ResponseAction Run() override;
 };

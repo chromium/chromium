@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/android/build_info.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -31,9 +31,10 @@ SandboxStatusExtension::SandboxStatusExtension(content::RenderFrame* frame)
   // Don't do anything else for subframes.
   if (!frame->IsMainFrame())
     return;
-  frame->GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
-      &SandboxStatusExtension::OnSandboxStatusExtensionRequest,
-      base::RetainedRef(this)));
+  frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<chrome::mojom::SandboxStatusExtension>(base::BindRepeating(
+          &SandboxStatusExtension::OnSandboxStatusExtensionRequest,
+          base::RetainedRef(this)));
 }
 
 SandboxStatusExtension::~SandboxStatusExtension() {}
@@ -123,7 +124,7 @@ void SandboxStatusExtension::GetSandboxStatus(gin::Arguments* args) {
                      std::move(global_callback)));
 }
 
-std::unique_ptr<base::Value> SandboxStatusExtension::ReadSandboxStatus() {
+base::Value::Dict SandboxStatusExtension::ReadSandboxStatus() {
   std::string secontext;
   base::FilePath path(FILE_PATH_LITERAL("/proc/self/attr/current"));
   base::ReadFileToString(path, &secontext);
@@ -132,23 +133,21 @@ std::unique_ptr<base::Value> SandboxStatusExtension::ReadSandboxStatus() {
   path = base::FilePath(FILE_PATH_LITERAL("/proc/self/status"));
   base::ReadFileToString(path, &proc_status);
 
-  auto status = std::make_unique<base::DictionaryValue>();
-  status->SetInteger("uid", getuid());
-  status->SetInteger("pid", getpid());
-  status->SetString("secontext", secontext);
-  status->SetInteger("seccompStatus",
-                     static_cast<int>(content::GetSeccompSandboxStatus()));
-  status->SetString("procStatus", proc_status);
-  status->SetString(
-      "androidBuildId",
-      base::android::BuildInfo::GetInstance()->android_build_id());
-
-  return std::move(status);
+  base::Value::Dict status;
+  status.Set("uid", static_cast<int>(getuid()));
+  status.Set("pid", getpid());
+  status.Set("secontext", secontext);
+  status.Set("seccompStatus",
+             static_cast<int>(content::GetSeccompSandboxStatus()));
+  status.Set("procStatus", proc_status);
+  status.Set("androidBuildId",
+             base::android::BuildInfo::GetInstance()->android_build_id());
+  return status;
 }
 
 void SandboxStatusExtension::RunCallback(
     std::unique_ptr<v8::Global<v8::Function>> callback,
-    std::unique_ptr<base::Value> status) {
+    base::Value::Dict status) {
   if (!render_frame())
     return;
 
@@ -161,7 +160,7 @@ void SandboxStatusExtension::RunCallback(
       v8::Local<v8::Function>::New(isolate, *callback);
 
   v8::Local<v8::Value> argv[] = {
-      content::V8ValueConverter::Create()->ToV8Value(status.get(), context)};
+      content::V8ValueConverter::Create()->ToV8Value(status, context)};
   render_frame()->GetWebFrame()->CallFunctionEvenIfScriptDisabled(
       callback_local, v8::Object::New(isolate), 1, argv);
 }

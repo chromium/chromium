@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
 namespace network {
@@ -19,6 +19,7 @@ class SharedURLLoaderFactory;
 
 namespace payments {
 
+class CSPChecker;
 class ErrorLogger;
 
 // Android wrapper for the payment manifest downloader.
@@ -26,7 +27,14 @@ class PaymentManifestDownloaderAndroid {
  public:
   PaymentManifestDownloaderAndroid(
       std::unique_ptr<ErrorLogger> log,
+      base::WeakPtr<CSPChecker> csp_checker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
+      delete;
+  PaymentManifestDownloaderAndroid& operator=(
+      const PaymentManifestDownloaderAndroid&) = delete;
+
   ~PaymentManifestDownloaderAndroid();
 
   void DownloadPaymentMethodManifest(
@@ -50,8 +58,6 @@ class PaymentManifestDownloaderAndroid {
 
  private:
   PaymentManifestDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestDownloaderAndroid);
 };
 
 }  // namespace payments

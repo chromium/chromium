@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
@@ -41,8 +41,8 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
   std::u16string GetWindowTitle() const override;
 
  private:
-  Browser* const browser_;
-  safe_browsing::SettingsResetPromptController* controller_;
+  const raw_ptr<Browser> browser_;
+  raw_ptr<safe_browsing::SettingsResetPromptController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_

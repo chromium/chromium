@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define NET_PROXY_RESOLUTION_WIN_PROXY_RESOLVER_WINHTTP_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/proxy_resolution/proxy_resolver_factory.h"
@@ -21,13 +20,14 @@ class NET_EXPORT_PRIVATE ProxyResolverFactoryWinHttp
  public:
   ProxyResolverFactoryWinHttp();
 
+  ProxyResolverFactoryWinHttp(const ProxyResolverFactoryWinHttp&) = delete;
+  ProxyResolverFactoryWinHttp& operator=(const ProxyResolverFactoryWinHttp&) =
+      delete;
+
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
                           std::unique_ptr<ProxyResolver>* resolver,
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryWinHttp);
 };
 
 }  // namespace net

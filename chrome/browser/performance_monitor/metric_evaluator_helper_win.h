@@ -1,23 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 #define CHROME_BROWSER_PERFORMANCE_MONITOR_METRIC_EVALUATOR_HELPER_WIN_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "chrome/browser/performance_monitor/system_monitor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
 class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
  public:
+  MetricEvaluatorsHelperWin(const MetricEvaluatorsHelperWin&) = delete;
+  MetricEvaluatorsHelperWin& operator=(const MetricEvaluatorsHelperWin&) =
+      delete;
+
   ~MetricEvaluatorsHelperWin() override;
 
   // MetricEvaluatorsHelper:
-  base::Optional<int> GetFreePhysicalMemoryMb() override;
+  absl::optional<int> GetFreePhysicalMemoryMb() override;
 
  private:
   friend class MetricEvaluatorsHelperWinTest;
@@ -29,8 +32,6 @@ class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
   MetricEvaluatorsHelperWin();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelperWin);
 };
 
 }  // namespace performance_monitor

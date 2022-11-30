@@ -1,6 +1,6 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Version: 3.0.28
+Version: unknown
 License: BSD 3-Clause
 License File: NOT_SHIPPED
 Security Critical: no
@@ -22,42 +22,66 @@ R8 is a proguard-like optimizer that also has the ability to dex.
 Local Modifications:
 * Refer to commit descriptions within "3pp/patches" directory.
 * Added "playground" directory for quick "how does this optimize" tests.
-* Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
+* Added "dump_inputs.py" script.
+* desugar_jdk_libs.json:
+  * Removed references to ConcurrentHashMap to avoid bloat
+  * Removed references to TimeZone#getTimeZone to avoid desugaring of
+    an overload that does not require desugaring
+  * Removed references to synchronizedMap and synchronizedSortedMap because the
+    desugared version accesses the "dark greylisted"
+    SynchronizedCollection.mutex field, which caused modal dialogs to appear on
+    Android P instrumentation tests. https://crbug.com/1256614
+  * Removed references to ThreadLocalRandom to avoid streams APIs being pulled
+    in unnecessarily.  https://crbug.com/1280841
+  * Removed references to java.time and associated classes.
+    https://crbug.com/1301349
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
 Update Instructions:
 * For the custom d8 jar:
   * This is required only when CustomD8.java changes.
+  * Uncomment the flag --skip-custom-d8 in internal_rules.gni to avoid depending
+    on the previously built custom_d8.jar.
 autoninja -C out/Debug third_party/r8:custom_d8_java
 cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d8.jar
 
-* For a new version of r8:
-  * Find the latest successful run of the build bot:
-    * https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
-    * The bot autoruns every 6 hours. Ping a trooper to trigger it if you need it sooner.
-      * https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * Go to its log page and look under:
-    * Expand "building chromium/third_party/r8" to see the CIPD instance ID.
-  * Copy this instance ID to the r8 entry in //DEPS.
-  * Update this file with the new version string and submit.
+* For r8:
+  * R8 is built daily and uploaded to CIPD.
+  * To lookup the latest version being used currently:
+    * Look up the cipd instance id from //DEPS, or run
+      `gclient getdep -r src/third_party/r8:chromium/third_party/r8`.
+    * Find the version tag at this url
+      https://chrome-infra-packages.appspot.com/p/chromium/third_party/r8/+/<instance id>
+    * Or, run `cipd describe chromium/third_party/r8 -version <instance id>` and look at the version tag.
+    * The commit hash that R8 was built at appears after the "@" symbol in the version tag and
+      before the "-". Eg. version:2@33ae86d80351efc4d632452331d06cb97e42f2a7-72dd46fd5c gives the
+      commit hash of 33ae86d80351efc4d632452331d06cb97e42f2a7.
+  * New instances are uploaded by the packager bot:
+    https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+  * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
+    trigger it if you need it sooner:
+    https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+  * The autoroller runs automatically when a new cipd instance is uploaded.
+    * Since r8 rolls affect downstream, the roller is only accessible to Googlers.
+    * See its status here: https://skia-autoroll.corp.goog/r/r8-chromium
+  * Rolls are not automatically merged in - they require a manual +2.
 
 * If patching fails:
 git clone https://r8.googlesource.com/r8
 cd r8
-  * Find latest tag:
-git fetch origin --tags
-git tag -l  # Often unnecessary as output from the fetch includes recent tags.
-git checkout $TAG  # e.g. 3.0.25-dev, whichever tag failed patching.
+  * Pull the latest code:
+git pull
   * Apply patches:
 git checkout -b my_branch
-git am $CHROMIUM_SRC/third_party/r8/patches/*.patch
+git am $CHROMIUM_SRC/third_party/r8/3pp/patches/*.patch
   * Fix patch conflicts.
   * Save new patches. Change number if expecting more or fewer patches:
-git format-patch -3 -o $CHROMIUM_SRC/third_party/r8/3pp/patches
+rm $CHROMIUM_SRC/third_party/r8/3pp/patches/*
+git format-patch origin/main..HEAD -o $CHROMIUM_SRC/third_party/r8/3pp/patches
   * Submit these fixed patches and the bot will automatically retry.
 
-* Local development (see above for setting up the r8 repo):
+* Local development (see above for setting up the r8 repo and applying patches):
   * Build
 tools/gradle.py r8
   * Shrink (improves r8/d8 launch time):
@@ -73,7 +97,13 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 
 * Update instructions for desugar_jdk_libs.json:
 unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
-  * Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
+  * Remove all mentions of:
+    * ConcurrentHashMap
+    * TimeZone#getTimeZone
+    * Collections#synchronizedMap
+    * Collections#synchronizedSortedMap
+    * ThreadLocalRandom
+  * Don't forget to remove trailing commas where applicable.
   * Update //build/config/android/internal_rules.gni to point at the new .jar files:
     * desugar_jdk_libs-1.1.1.jar
     * desugar_jdk_libs_configuration-1.1.1.jar
@@ -81,6 +111,7 @@ unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_config
 How to file bugs against R8:
 * Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
   * This also works for dex.py, it produces d8inputs.zip
+  * As a shortcut: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
 * File bug at go/r8bug
 * Things to include (use discretion if some are not relevant):
   * src revision bug reproduces at
@@ -88,6 +119,29 @@ How to file bugs against R8:
     * Prefer enable_chrome_android_internal=false
   * The r8inputs.zip from --dump-inputs
   * Any relevant dexdump analysis
+
+Example R8 git-bisect script:
+```
+set -x
+CHROMIUM_SRC=/media/mheikal/code/clankium/src
+tools/gradle.py r8 || exit -1
+chmod +r $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+
+cd $CHROMIUM_SRC
+exec tools/autotest.py --out-dir out/Release <Test Here>
+```
+
+You can run this script like so:
+```
+cd $R8_REPO
+git bisect start <known_good_rev> <known_bad_rev>
+git bisect run <path_to_script.sh>
+```
+Tip: When you are done, you can delete the r8 jar and gclient sync to get back
+     to ToT R8.
+     `rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar && gclient sync`
 
 How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.

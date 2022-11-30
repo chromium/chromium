@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,9 @@ namespace blink {
 
 class Document;
 class Element;
-class HTMLElement;
 class HTMLVideoElement;
-class PictureInPictureOptions;
 class ScriptPromiseResolver;
+class TreeScope;
 
 // PictureInPictureController allows to know if Picture-in-Picture is allowed
 // for a video element in Blink outside of modules/ module. It
@@ -26,6 +25,9 @@ class CORE_EXPORT PictureInPictureController
  public:
   static const char kSupplementName[];
 
+  PictureInPictureController(const PictureInPictureController&) = delete;
+  PictureInPictureController& operator=(const PictureInPictureController&) =
+      delete;
   virtual ~PictureInPictureController() = default;
 
   // Should be called before any other call to make sure a document is attached.
@@ -46,22 +48,21 @@ class CORE_EXPORT PictureInPictureController
     kDisabledBySystem,
     kDisabledByPermissionsPolicy,
     kDisabledByAttribute,
-    kInvalidWidthOrHeightOption,
+    kAutoPipAndroid,
   };
 
-  // Enter Picture-in-Picture for an element with options if any and resolve
-  // promise if any.
-  virtual void EnterPictureInPicture(HTMLElement*,
-                                     PictureInPictureOptions*,
+  // Enter Picture-in-Picture for a video element and resolve promise if any.
+  virtual void EnterPictureInPicture(HTMLVideoElement*,
                                      ScriptPromiseResolver*) = 0;
 
   // Exit Picture-in-Picture for a video element and resolve promise if any.
   virtual void ExitPictureInPicture(HTMLVideoElement*,
                                     ScriptPromiseResolver*) = 0;
 
-  // Returns whether a given element in a document associated with the
+  // Returns whether a given video element in a document associated with the
   // controller is allowed to request Picture-in-Picture.
-  virtual Status IsElementAllowed(const HTMLElement&) const = 0;
+  virtual Status IsElementAllowed(const HTMLVideoElement&,
+                                  bool report_failure = false) const = 0;
 
   // Should be called when an element has exited Picture-in-Picture.
   virtual void OnExitedPictureInPicture(ScriptPromiseResolver*) = 0;
@@ -78,6 +79,14 @@ class CORE_EXPORT PictureInPictureController
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;
 
+  // Returns element currently in Picture-in-Picture if any. Null otherwise.
+  virtual Element* PictureInPictureElement() const = 0;
+  virtual Element* PictureInPictureElement(TreeScope&) const = 0;
+
+  // Returns whether system allows Picture-in-Picture feature or not for
+  // the associated document.
+  virtual bool PictureInPictureEnabled() const = 0;
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -87,8 +96,6 @@ class CORE_EXPORT PictureInPictureController
   // It is protected so that clients use the static method
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureController);
 };
 
 }  // namespace blink

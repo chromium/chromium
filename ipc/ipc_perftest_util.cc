@@ -1,11 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ipc/ipc_perftest_util.h"
 
+#include <tuple>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_perftest_messages.h"
 #include "mojo/core/embedder/embedder.h"
@@ -70,11 +73,11 @@ void ChannelReflectorListener::Send(IPC::Message* message) {
 
 LockThreadAffinity::LockThreadAffinity(int cpu_number)
     : affinity_set_ok_(false) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const DWORD_PTR thread_mask = static_cast<DWORD_PTR>(1) << cpu_number;
   old_affinity_ = SetThreadAffinityMask(GetCurrentThread(), thread_mask);
   affinity_set_ok_ = old_affinity_ != 0;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET(cpu_number, &cpuset);
@@ -91,10 +94,10 @@ LockThreadAffinity::LockThreadAffinity(int cpu_number)
 LockThreadAffinity::~LockThreadAffinity() {
   if (!affinity_set_ok_)
     return;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto set_result = SetThreadAffinityMask(GetCurrentThread(), old_affinity_);
   DCHECK_NE(0u, set_result);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   auto set_result = sched_setaffinity(0, sizeof(old_cpuset_), &old_cpuset_);
   DCHECK_EQ(0, set_result);
 #endif
@@ -128,7 +131,7 @@ ReflectorImpl::ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
           mojo::PendingReceiver<IPC::mojom::Reflector>(std::move(handle))) {}
 
 ReflectorImpl::~ReflectorImpl() {
-  ignore_result(receiver_.Unbind().PassPipe().release());
+  std::ignore = receiver_.Unbind().PassPipe().release();
 }
 
 void ReflectorImpl::Ping(const std::string& value, PingCallback callback) {

@@ -1,13 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-/* #export */ class MockActionModel extends cr.EventTarget {
+export class MockActionModel extends EventTarget {
   /**
    * @param {string} title
    * @param {Array<!Entry>} entries
@@ -27,11 +25,11 @@
   onCanExecute() {}
 
   onExecute() {
-    cr.dispatchSimpleEvent(this, 'invalidated', true);
+    dispatchSimpleEvent(this, 'invalidated', true);
   }
 }
 
-/* #export */ class MockActionsModel extends cr.EventTarget {
+export class MockActionsModel extends EventTarget {
   constructor(actions) {
     super();
 

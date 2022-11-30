@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -36,7 +38,7 @@ void AddPointerDevicesFromString(
     if (base::StringToInt(dev, &devid))
       devices->push_back({devid, type});
     else
-      DLOG(WARNING) << "Invalid device id: " << dev.as_string();
+      DLOG(WARNING) << "Invalid device id: " << dev;
   }
 }
 
@@ -334,11 +336,8 @@ void TouchFactory::CacheTouchscreenIds(x11::Input::DeviceId device_id) {
     return;
   std::vector<TouchscreenDevice> touchscreens =
       DeviceDataManager::GetInstance()->GetTouchscreenDevices();
-  const auto it =
-      std::find_if(touchscreens.begin(), touchscreens.end(),
-                   [device_id](const TouchscreenDevice& touchscreen) {
-                     return touchscreen.id == static_cast<int>(device_id);
-                   });
+  const auto it = base::ranges::find(touchscreens, static_cast<int>(device_id),
+                                     &TouchscreenDevice::id);
   // Internal displays will have a vid and pid of 0. Ignore them.
   if (it != touchscreens.end() && it->vendor_id && it->product_id)
     touchscreen_ids_.emplace(it->vendor_id, it->product_id);

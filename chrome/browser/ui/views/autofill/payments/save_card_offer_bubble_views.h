@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_OFFER_BUBBLE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_CARD_OFFER_BUBBLE_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
@@ -32,10 +33,14 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                            content::WebContents* web_contents,
                            SaveCardBubbleController* controller);
 
-  // BubbleDialogDelegateView:
+  SaveCardOfferBubbleViews(const SaveCardOfferBubbleViews&) = delete;
+  SaveCardOfferBubbleViews& operator=(const SaveCardOfferBubbleViews&) = delete;
+
+  // SaveCardBubbleViews:
   void Init() override;
   bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  void AddedToWidget() override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -49,19 +54,21 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
 
+  // Method to check if the save card ui experiment is enabled where one of the
+  // 3 experimental save card bubble UI treatments are shown.
+  bool IsSaveCardUiExperimentEnabled();
+
   void LinkClicked(const GURL& url);
 
-  views::Textfield* cardholder_name_textfield_ = nullptr;
+  raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;
 
-  LegalMessageView* legal_message_view_ = nullptr;
+  raw_ptr<LegalMessageView> legal_message_view_ = nullptr;
 
   // Holds expiration inputs:
-  views::Combobox* month_input_dropdown_ = nullptr;
-  views::Combobox* year_input_dropdown_ = nullptr;
+  raw_ptr<views::Combobox> month_input_dropdown_ = nullptr;
+  raw_ptr<views::Combobox> year_input_dropdown_ = nullptr;
   MonthComboboxModel month_combobox_model_;
   YearComboboxModel year_combobox_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardOfferBubbleViews);
 };
 
 }  // namespace autofill

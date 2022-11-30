@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,10 +71,9 @@ bool EncodeBarcode(const std::vector<bool>& bits,
 
   // Now replicate this one row into all rows in kYPlane.
   for (int row = 0; row < output_frame->rows(VideoFrame::kYPlane); row++) {
-    memcpy(output_frame->data(VideoFrame::kYPlane) +
-           output_frame->stride(VideoFrame::kYPlane) * row,
-           &bytes.front(),
-           row_bytes);
+    memcpy(output_frame->writable_data(VideoFrame::kYPlane) +
+               output_frame->stride(VideoFrame::kYPlane) * row,
+           &bytes.front(), row_bytes);
   }
   return true;
 }

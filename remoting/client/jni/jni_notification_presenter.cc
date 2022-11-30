@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ void JniNotificationPresenter::Destroy(JNIEnv* env) {
 }
 
 void JniNotificationPresenter::OnNotificationFetched(
-    base::Optional<NotificationMessage> notification) {
+    absl::optional<NotificationMessage> notification) {
   DCHECK(sequence_->RunsTasksInCurrentSequence());
   JNIEnv* env = base::android::AttachCurrentThread();
   auto java_presenter = java_presenter_.get(env);

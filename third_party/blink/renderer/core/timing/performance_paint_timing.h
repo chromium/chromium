@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class CORE_EXPORT PerformancePaintTiming final : public PerformanceEntry {
  public:
   enum class PaintType { kFirstPaint, kFirstContentfulPaint };
 
-  PerformancePaintTiming(PaintType, double start_time);
+  PerformancePaintTiming(PaintType, double start_time, uint32_t navigation_id);
   ~PerformancePaintTiming() override;
 
   AtomicString entryType() const override;

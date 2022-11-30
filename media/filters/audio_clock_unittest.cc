@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,6 +15,9 @@ namespace media {
 class AudioClockTest : public testing::Test {
  public:
   AudioClockTest() { SetupClock(base::TimeDelta(), 10); }
+
+  AudioClockTest(const AudioClockTest&) = delete;
+  AudioClockTest& operator=(const AudioClockTest&) = delete;
 
   ~AudioClockTest() override = default;
 
@@ -28,7 +31,7 @@ class AudioClockTest : public testing::Test {
 
   void SetupClock(base::TimeDelta start_time, int sample_rate) {
     sample_rate_ = sample_rate;
-    clock_.reset(new AudioClock(start_time, sample_rate_));
+    clock_ = std::make_unique<AudioClock>(start_time, sample_rate_);
   }
 
   int FrontTimestampInDays() { return clock_->front_timestamp().InDays(); }
@@ -42,8 +45,7 @@ class AudioClockTest : public testing::Test {
   }
 
   int TimeUntilPlaybackInMilliseconds(int timestamp_ms) {
-    return clock_
-        ->TimeUntilPlayback(base::TimeDelta::FromMilliseconds(timestamp_ms))
+    return clock_->TimeUntilPlayback(base::Milliseconds(timestamp_ms))
         .InMilliseconds();
   }
 
@@ -67,20 +69,17 @@ class AudioClockTest : public testing::Test {
 
   int sample_rate_;
   std::unique_ptr<AudioClock> clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioClockTest);
 };
 
 TEST_F(AudioClockTest, FrontTimestampStartsAtStartTimestamp) {
-  base::TimeDelta expected = base::TimeDelta::FromSeconds(123);
+  base::TimeDelta expected = base::Seconds(123);
   AudioClock clock(expected, sample_rate_);
 
   EXPECT_EQ(expected, clock.front_timestamp());
 }
 
 TEST_F(AudioClockTest, BackTimestampStartsAtStartTimestamp) {
-  base::TimeDelta expected = base::TimeDelta::FromSeconds(123);
+  base::TimeDelta expected = base::Seconds(123);
   AudioClock clock(expected, sample_rate_);
 
   EXPECT_EQ(expected, clock.back_timestamp());
@@ -307,7 +306,7 @@ TEST_F(AudioClockTest, SupportsYearsWorthOfAudioData) {
   // Use number of frames that would be likely to overflow 32-bit integer math.
   const int huge_amount_of_frames = std::numeric_limits<int>::max();
   const base::TimeDelta huge =
-      base::TimeDelta::FromSeconds(huge_amount_of_frames / sample_rate_);
+      base::Seconds(huge_amount_of_frames / sample_rate_);
   EXPECT_EQ(2485, huge.InDays());  // Just to give some context on how big...
 
   // Use zero delay to test calculation of current timestamp.
@@ -345,8 +344,7 @@ TEST_F(AudioClockTest, CompensateForSuspendedWrites) {
   // Elapsing frames less than we have buffered should do nothing.
   const int kDelayFrames = 2;
   for (int i = 1000; i <= kBaseTimeMs; i += 1000) {
-    clock_->CompensateForSuspendedWrites(base::TimeDelta::FromMilliseconds(i),
-                                         kDelayFrames);
+    clock_->CompensateForSuspendedWrites(base::Milliseconds(i), kDelayFrames);
     EXPECT_EQ(kBaseTimeMs - (i - 1000), TimeUntilPlaybackInMilliseconds(0));
 
     // Write silence to simulate maintaining a 7s output buffer.
@@ -355,8 +353,7 @@ TEST_F(AudioClockTest, CompensateForSuspendedWrites) {
 
   // Exhausting all frames should advance timestamps and prime the buffer with
   // our delay frames value.
-  clock_->CompensateForSuspendedWrites(base::TimeDelta::FromMilliseconds(7000),
-                                       kDelayFrames);
+  clock_->CompensateForSuspendedWrites(base::Milliseconds(7000), kDelayFrames);
   EXPECT_EQ(kDelayFrames * 100, TimeUntilPlaybackInMilliseconds(1000));
 }
 
@@ -367,7 +364,7 @@ TEST_F(AudioClockTest, FramesToTimePrecision) {
 
   // Write ~2 hours of data to clock to give any error a significant chance to
   // accumulate.
-  while (clock_->back_timestamp() <= base::TimeDelta::FromHours(2)) {
+  while (clock_->back_timestamp() <= base::Hours(2)) {
     frames_written += 1024;
     WroteAudio(1024, 1024, 0, 1);
   }

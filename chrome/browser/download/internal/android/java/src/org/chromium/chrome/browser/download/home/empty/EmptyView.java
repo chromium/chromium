@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.download.home.empty.EmptyProperties.State;
 import org.chromium.chrome.browser.download.internal.R;
-import org.chromium.components.browser_ui.widget.LoadingView;
+import org.chromium.ui.widget.LoadingView;
 
 /** A view that represents the visuals required for the empty state of the download home list. */
 class EmptyView {

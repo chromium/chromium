@@ -1,28 +1,28 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
-namespace chromeos {
-
-class DeviceDisabledScreenView;
+namespace ash {
 
 // Screen informing the user that the device has been disabled by its owner.
 class DeviceDisabledScreen : public BaseScreen,
                              public system::DeviceDisablingManager::Observer {
  public:
-  explicit DeviceDisabledScreen(DeviceDisabledScreenView* view);
-  ~DeviceDisabledScreen() override;
+  explicit DeviceDisabledScreen(base::WeakPtr<DeviceDisabledScreenView> view);
 
-  // Called when the view is being destroyed. Note that if the Delegate is
-  // destroyed first, it must call SetDelegate(nullptr).
-  void OnViewDestroyed(DeviceDisabledScreenView* view);
+  DeviceDisabledScreen(const DeviceDisabledScreen&) = delete;
+  DeviceDisabledScreen& operator=(const DeviceDisabledScreen&) = delete;
+
+  ~DeviceDisabledScreen() override;
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
@@ -32,11 +32,15 @@ class DeviceDisabledScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
 
-  DeviceDisabledScreenView* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceDisabledScreen);
+  base::WeakPtr<DeviceDisabledScreenView> view_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DeviceDisabledScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_

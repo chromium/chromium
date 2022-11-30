@@ -1,15 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.device;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -85,12 +85,14 @@ public class DeviceClassManager {
 
     /**
      * @return Whether or not should use the accessibility tab switcher.
+     * @param context The activity context.
      */
-    public static boolean enableAccessibilityLayout() {
+    public static boolean enableAccessibilityLayout(Context context) {
         // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        if (isPhone()
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-                && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)) {
+        boolean gridTabSwitcherEnabled =
+                isPhone(context) || ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled();
+        if (gridTabSwitcherEnabled && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
+                && ChromeFeatureList.sTabGroupsAndroid.isEnabled()) {
             return false;
         }
 
@@ -131,9 +133,8 @@ public class DeviceClassManager {
         return getInstance().mEnableToolbarSwipe;
     }
 
-    private static boolean isPhone() {
-        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                ContextUtils.getApplicationContext());
+    private static boolean isPhone(Context context) {
+        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**

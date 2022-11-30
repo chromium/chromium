@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include <cmath>
 #include <memory>
 
-#include "base/macros.h"
+#include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace {
 
@@ -43,16 +44,16 @@ scoped_refptr<media::VideoFrame> CreateFrameWithPatternFilled(
   scoped_refptr<media::VideoFrame> frame(media::VideoFrame::CreateFrame(
       format, coded_size, visible_rect, natural_size, timestamp));
 
-  FillPlaneWithPattern(frame->data(media::VideoFrame::kYPlane),
+  FillPlaneWithPattern(frame->writable_data(media::VideoFrame::kYPlane),
                        frame->stride(media::VideoFrame::kYPlane),
                        frame->visible_rect().size());
   FillPlaneWithPattern(
-      frame->data(media::VideoFrame::kUPlane),
+      frame->writable_data(media::VideoFrame::kUPlane),
       frame->stride(media::VideoFrame::kUPlane),
       media::VideoFrame::PlaneSize(format, media::VideoFrame::kUPlane,
                                    frame->visible_rect().size()));
   FillPlaneWithPattern(
-      frame->data(media::VideoFrame::kVPlane),
+      frame->writable_data(media::VideoFrame::kVPlane),
       frame->stride(media::VideoFrame::kVPlane),
       media::VideoFrame::PlaneSize(format, media::VideoFrame::kVPlane,
                                    frame->visible_rect().size()));
@@ -151,7 +152,8 @@ class VideoUtilTest : public testing::Test {
         u_stride_(0),
         v_stride_(0) {
   }
-
+  VideoUtilTest(const VideoUtilTest&) = delete;
+  VideoUtilTest& operator=(const VideoUtilTest&) = delete;
   ~VideoUtilTest() override = default;
 
   void CreateSourceFrame(int width, int height,
@@ -165,9 +167,9 @@ class VideoUtilTest : public testing::Test {
     u_stride_ = u_stride;
     v_stride_ = v_stride;
 
-    y_plane_.reset(new uint8_t[y_stride * height]);
-    u_plane_.reset(new uint8_t[u_stride * height / 2]);
-    v_plane_.reset(new uint8_t[v_stride * height / 2]);
+    y_plane_ = std::make_unique<uint8_t[]>(y_stride * height);
+    u_plane_ = std::make_unique<uint8_t[]>(u_stride * height / 2);
+    v_plane_ = std::make_unique<uint8_t[]>(v_stride * height / 2);
   }
 
   void CreateDestinationFrame(int width, int height) {
@@ -187,87 +189,7 @@ class VideoUtilTest : public testing::Test {
   int v_stride_;
 
   scoped_refptr<VideoFrame> destination_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoUtilTest);
 };
-
-TEST_F(VideoUtilTest, GetPixelAspectRatio) {
-  gfx::Rect visible_rect(320, 240);
-
-  // Test empty or invalid combinations.
-  EXPECT_TRUE(std::isnan(GetPixelAspectRatio(gfx::Rect(), gfx::Size())));
-  EXPECT_TRUE(std::isnan(GetPixelAspectRatio(gfx::Rect(1, 1), gfx::Size())));
-  EXPECT_TRUE(std::isnan(GetPixelAspectRatio(gfx::Rect(), gfx::Size(1, 1))));
-  EXPECT_TRUE(
-      std::isinf(GetPixelAspectRatio(gfx::Rect(1, 1), gfx::Size(1, 0))));
-  EXPECT_EQ(0.0, GetPixelAspectRatio(gfx::Rect(1, 1), gfx::Size(0, 1)));
-  EXPECT_EQ(0.0, GetPixelAspectRatio(gfx::Rect(1, 0), gfx::Size(1, 1)));
-  EXPECT_TRUE(
-      std::isinf(GetPixelAspectRatio(gfx::Rect(0, 1), gfx::Size(1, 1))));
-
-  // Some normal ratios.
-  EXPECT_DOUBLE_EQ(1.0, GetPixelAspectRatio(visible_rect, gfx::Size(320, 240)));
-  EXPECT_DOUBLE_EQ(2.0, GetPixelAspectRatio(visible_rect, gfx::Size(640, 240)));
-  EXPECT_DOUBLE_EQ(0.5, GetPixelAspectRatio(visible_rect, gfx::Size(320, 480)));
-}
-
-TEST_F(VideoUtilTest, GetNaturalSize_Double) {
-  gfx::Rect visible_rect(320, 240);
-
-  // Test 0 sizes.
-  EXPECT_EQ(gfx::Size(0, 0), GetNaturalSize(gfx::Rect(0, 0), 1.0));
-  EXPECT_EQ(gfx::Size(0, 1), GetNaturalSize(gfx::Rect(0, 1), 1.0));
-  EXPECT_EQ(gfx::Size(1, 0), GetNaturalSize(gfx::Rect(1, 0), 1.0));
-
-  // Test abnormal ratios.
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_rect, NAN));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_rect, 0.0));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_rect, INFINITY));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_rect, -INFINITY));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_rect, -1.0));
-
-  // Test normal sizes and ratios.
-  EXPECT_EQ(gfx::Size(320, 240), GetNaturalSize(visible_rect, 1.0 / 1.0));
-  EXPECT_EQ(gfx::Size(640, 240), GetNaturalSize(visible_rect, 2.0 / 1.0));
-  EXPECT_EQ(gfx::Size(320, 480), GetNaturalSize(visible_rect, 1.0 / 2.0));
-  EXPECT_EQ(gfx::Size(427, 240), GetNaturalSize(visible_rect, 4.0 / 3.0));
-  EXPECT_EQ(gfx::Size(320, 320), GetNaturalSize(visible_rect, 3.0 / 4.0));
-  EXPECT_EQ(gfx::Size(569, 240), GetNaturalSize(visible_rect, 16.0 / 9.0));
-  EXPECT_EQ(gfx::Size(320, 427), GetNaturalSize(visible_rect, 9.0 / 16.0));
-
-  // Test some random ratios.
-  EXPECT_EQ(gfx::Size(495, 240), GetNaturalSize(visible_rect, 17.0 / 11.0));
-  EXPECT_EQ(gfx::Size(320, 371), GetNaturalSize(visible_rect, 11.0 / 17.0));
-}
-
-TEST_F(VideoUtilTest, GetNaturalSize_Fraction) {
-  gfx::Size visible_size(320, 240);
-
-  // Test 0 sizes.
-  EXPECT_EQ(gfx::Size(0, 0), GetNaturalSize(gfx::Size(0, 0), 1, 1));
-  EXPECT_EQ(gfx::Size(0, 1), GetNaturalSize(gfx::Size(0, 1), 1, 1));
-  EXPECT_EQ(gfx::Size(1, 0), GetNaturalSize(gfx::Size(1, 0), 1, 1));
-
-  // Test abnormal ratios.
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_size, 0, 0));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_size, 0, 1));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_size, 1, 0));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_size, 1, -1));
-  EXPECT_EQ(gfx::Size(), GetNaturalSize(visible_size, -1, 1));
-
-  // Test normal sizes and ratios.
-  EXPECT_EQ(gfx::Size(320, 240), GetNaturalSize(visible_size, 1, 1));
-  EXPECT_EQ(gfx::Size(640, 240), GetNaturalSize(visible_size, 2, 1));
-  EXPECT_EQ(gfx::Size(320, 480), GetNaturalSize(visible_size, 1, 2));
-  EXPECT_EQ(gfx::Size(427, 240), GetNaturalSize(visible_size, 4, 3));
-  EXPECT_EQ(gfx::Size(320, 320), GetNaturalSize(visible_size, 3, 4));
-  EXPECT_EQ(gfx::Size(569, 240), GetNaturalSize(visible_size, 16, 9));
-  EXPECT_EQ(gfx::Size(320, 427), GetNaturalSize(visible_size, 9, 16));
-
-  // Test some random ratios.
-  EXPECT_EQ(gfx::Size(495, 240), GetNaturalSize(visible_size, 17, 11));
-  EXPECT_EQ(gfx::Size(320, 371), GetNaturalSize(visible_size, 11, 17));
-}
 
 namespace {
 
@@ -406,17 +328,16 @@ class VideoUtilRotationTest
     : public testing::TestWithParam<VideoRotationTestData> {
  public:
   VideoUtilRotationTest() {
-    dest_.reset(new uint8_t[GetParam().width * GetParam().height]);
+    dest_ = std::make_unique<uint8_t[]>(GetParam().width * GetParam().height);
   }
-
-  virtual ~VideoUtilRotationTest() = default;
+  VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
+  VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;
+  ~VideoUtilRotationTest() override = default;
 
   uint8_t* dest_plane() { return dest_.get(); }
 
  private:
   std::unique_ptr<uint8_t[]> dest_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoUtilRotationTest);
 };
 
 TEST_P(VideoUtilRotationTest, Rotate) {
@@ -491,6 +412,58 @@ TEST_F(VideoUtilTest, ComputeLetterboxRegionForI420) {
                   .IsEmpty());
 }
 
+// Tests the MinimallyShrinkRectForI420 function.
+TEST_F(VideoUtilTest, MinimallyShrinkRectForI420) {
+  // A few no-ops:
+  EXPECT_EQ(gfx::Rect(2, 2, 100, 100),
+            MinimallyShrinkRectForI420(gfx::Rect(2, 2, 100, 100)));
+  EXPECT_EQ(gfx::Rect(2, -2, 100, 100),
+            MinimallyShrinkRectForI420(gfx::Rect(2, -2, 100, 100)));
+  EXPECT_EQ(gfx::Rect(-2, 2, 100, 100),
+            MinimallyShrinkRectForI420(gfx::Rect(-2, 2, 100, 100)));
+
+  // Origin has odd coordinates:
+  EXPECT_EQ(gfx::Rect(2, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(1, 1, 100, 100)));
+  EXPECT_EQ(gfx::Rect(0, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(-1, 1, 100, 100)));
+  EXPECT_EQ(gfx::Rect(2, 0, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(1, -1, 100, 100)));
+
+  // Size is odd:
+  EXPECT_EQ(gfx::Rect(2, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(2, 2, 99, 99)));
+  EXPECT_EQ(gfx::Rect(-2, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(-2, 2, 99, 99)));
+  EXPECT_EQ(gfx::Rect(2, -2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(2, -2, 99, 99)));
+
+  // Both are odd:
+  EXPECT_EQ(gfx::Rect(2, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(1, 1, 99, 99)));
+  EXPECT_EQ(gfx::Rect(0, 2, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(-1, 1, 99, 99)));
+  EXPECT_EQ(gfx::Rect(2, 0, 98, 98),
+            MinimallyShrinkRectForI420(gfx::Rect(1, -1, 99, 99)));
+
+  // Check the biggest rectangle that the function will accept:
+  constexpr int kMinDimension = -1 * limits::kMaxDimension;
+  if (limits::kMaxDimension % 2 == 0) {
+    EXPECT_EQ(gfx::Rect(kMinDimension, kMinDimension, 2 * limits::kMaxDimension,
+                        2 * limits::kMaxDimension),
+              MinimallyShrinkRectForI420(gfx::Rect(kMinDimension, kMinDimension,
+                                                   2 * limits::kMaxDimension,
+                                                   2 * limits::kMaxDimension)));
+  } else {
+    EXPECT_EQ(
+        gfx::Rect(kMinDimension + 1, kMinDimension + 1,
+                  2 * limits::kMaxDimension - 2, 2 * limits::kMaxDimension - 2),
+        MinimallyShrinkRectForI420(gfx::Rect(kMinDimension, kMinDimension,
+                                             2 * limits::kMaxDimension,
+                                             2 * limits::kMaxDimension)));
+  }
+}
+
 TEST_F(VideoUtilTest, ScaleSizeToEncompassTarget) {
   EXPECT_EQ(gfx::Size(1000, 750),
             ScaleSizeToEncompassTarget(gfx::Size(640, 480),
@@ -509,6 +482,44 @@ TEST_F(VideoUtilTest, ScaleSizeToEncompassTarget) {
                                        gfx::Size(200000000, 200000000)));
   EXPECT_TRUE(ScaleSizeToEncompassTarget(
       gfx::Size(0, 0), gfx::Size(2000000000, 2000000000)).IsEmpty());
+}
+
+TEST_F(VideoUtilTest, CropSizeForScalingToTarget) {
+  // Test same aspect ratios.
+  EXPECT_EQ(gfx::Rect(0, 0, 640, 360),
+            CropSizeForScalingToTarget(gfx::Size(640, 360), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 0, 320, 240),
+            CropSizeForScalingToTarget(gfx::Size(320, 240), gfx::Size(4, 3)));
+  EXPECT_EQ(
+      gfx::Rect(0, 0, 320, 240),
+      CropSizeForScalingToTarget(gfx::Size(321, 241), gfx::Size(4, 3), 2));
+
+  // Test cropping 4:3 from 16:9.
+  EXPECT_EQ(gfx::Rect(80, 0, 480, 360),
+            CropSizeForScalingToTarget(gfx::Size(640, 360), gfx::Size(4, 3)));
+  EXPECT_EQ(gfx::Rect(53, 0, 320, 240),
+            CropSizeForScalingToTarget(gfx::Size(426, 240), gfx::Size(4, 3)));
+  EXPECT_EQ(
+      gfx::Rect(52, 0, 320, 240),
+      CropSizeForScalingToTarget(gfx::Size(426, 240), gfx::Size(4, 3), 2));
+
+  // Test cropping 16:9 from 4:3.
+  EXPECT_EQ(gfx::Rect(0, 30, 320, 180),
+            CropSizeForScalingToTarget(gfx::Size(320, 240), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 9, 96, 54),
+            CropSizeForScalingToTarget(gfx::Size(96, 72), gfx::Size(16, 9)));
+  EXPECT_EQ(gfx::Rect(0, 8, 96, 54),
+            CropSizeForScalingToTarget(gfx::Size(96, 72), gfx::Size(16, 9), 2));
+
+  // Test abnormal inputs.
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(0, 1), gfx::Size(1, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 0), gfx::Size(1, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 1), gfx::Size(0, 1)));
+  EXPECT_EQ(gfx::Rect(),
+            CropSizeForScalingToTarget(gfx::Size(1, 1), gfx::Size(1, 0)));
 }
 
 TEST_F(VideoUtilTest, PadToMatchAspectRatio) {
@@ -606,9 +617,8 @@ TEST_F(VideoUtilTest, I420CopyWithPadding) {
 
 TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   gfx::Size size(640, 480);
-  scoped_refptr<VideoFrame> src_frame =
-      VideoFrame::CreateFrame(PIXEL_FORMAT_I420A, size, gfx::Rect(size), size,
-                              base::TimeDelta::FromDays(1));
+  scoped_refptr<VideoFrame> src_frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_I420A, size, gfx::Rect(size), size, base::Days(1));
 
   scoped_refptr<VideoFrame> dst_frame = WrapAsI420VideoFrame(src_frame);
   EXPECT_EQ(dst_frame->format(), PIXEL_FORMAT_I420);
@@ -627,7 +637,7 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   // ASAN.
   src_frame.reset();
   for (auto plane : planes)
-    memset(dst_frame->data(plane), 1, dst_frame->stride(plane));
+    memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane));
 }
 
 }  // namespace media

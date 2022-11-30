@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ class ParserSandboxSetupHooks : public MojoSandboxSetupHooks {
  public:
   ParserSandboxSetupHooks(scoped_refptr<MojoTaskRunner> mojo_task_runner,
                           base::OnceClosure connection_error_handler);
+
+  ParserSandboxSetupHooks(const ParserSandboxSetupHooks&) = delete;
+  ParserSandboxSetupHooks& operator=(const ParserSandboxSetupHooks&) = delete;
+
   ~ParserSandboxSetupHooks() override;
 
   // Transfers ownership of |parser_| to the caller.
@@ -44,8 +48,6 @@ class ParserSandboxSetupHooks : public MojoSandboxSetupHooks {
   base::OnceClosure connection_error_handler_;
 
   RemoteParserPtr parser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParserSandboxSetupHooks);
 };
 
 // Spawn a sandboxed process with type kParser, and return the bound

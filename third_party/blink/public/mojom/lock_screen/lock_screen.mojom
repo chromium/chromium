@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+enum LockScreenServiceStatus {
+    kSuccess,
+    kNotAllowedFromContext,
+    kWriteError,
+  };
+
+// A per-frame service implemented in the browser process which allows a
+// renderer to implement the Lock Screen API:
+// https://github.com/WICG/lock-screen. This cannot be used from opaque origins
+// and can only be used from the profile associated with the lock screen.
+interface LockScreenService {
+  // Return the keys with data associated with them for the current context.
+  GetKeys() => (array<string> keys);
+
+  // Associate arbitrary data with a given key for retrieval later.
+  SetData(string key, string data) => (LockScreenServiceStatus status);
+};

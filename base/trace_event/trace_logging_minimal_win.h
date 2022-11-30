@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,6 +107,8 @@
  *     my_provider.Unregister();
  */
 
+#include "base/memory/raw_ptr.h"
+
 class TlmProvider {
  public:
   // Initialize a provider in the unregistered state.
@@ -143,10 +145,10 @@ class TlmProvider {
   // Calling Register on an already-registered provider is a fatal error.
   // Not thread safe - caller must ensure serialization between calls to
   // Register() and calls to Unregister().
-  int32_t Register(const char* provider_name,
-                   const GUID& provider_guid,
-                   PENABLECALLBACK enable_callback = nullptr,
-                   void* enable_callback_context = nullptr) noexcept;
+  ULONG Register(const char* provider_name,
+                 const GUID& provider_guid,
+                 PENABLECALLBACK enable_callback = nullptr,
+                 void* enable_callback_context = nullptr) noexcept;
 
   // Returns true if any active trace listeners are interested in any events
   // from this provider.
@@ -171,9 +173,9 @@ class TlmProvider {
   // with the specified level and keyword, packs the data into an event and
   // sends it to ETW. Returns Win32 error code or 0 for success.
   template <class... FieldTys>
-  int32_t WriteEvent(const char* event_name,
-                     const EVENT_DESCRIPTOR& event_descriptor,
-                     const FieldTys&... event_fields) const noexcept {
+  ULONG WriteEvent(const char* event_name,
+                   const EVENT_DESCRIPTOR& event_descriptor,
+                   const FieldTys&... event_fields) const noexcept {
     if (!IsEnabled(event_descriptor)) {
       // If nobody is listening, report success.
       return 0;
@@ -183,7 +185,7 @@ class TlmProvider {
     uint16_t metadata_index;
     metadata_index = EventBegin(metadata, event_name);
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
-      bool dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
+      char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
           EventAddField(metadata, &metadata_index, event_fields.in_type_,
                         event_fields.out_type_, event_fields.Name())...};
       DCHECK(dummy);
@@ -195,7 +197,7 @@ class TlmProvider {
     EVENT_DATA_DESCRIPTOR descriptors[kDescriptorsCount];
     uint8_t descriptors_index = 2;
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
-      bool dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
+      char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
           EventDescriptorFill(descriptors, &descriptors_index,
                               event_fields)...};
       DCHECK(dummy);
@@ -262,11 +264,11 @@ class TlmProvider {
                      const char* field_name) const noexcept;
 
   // Returns Win32 error code, or 0 for success.
-  int32_t EventEnd(char* metadata,
-                   uint16_t metadata_index,
-                   EVENT_DATA_DESCRIPTOR* descriptors,
-                   uint32_t descriptors_index,
-                   const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
+  ULONG EventEnd(char* metadata,
+                 uint16_t metadata_index,
+                 EVENT_DATA_DESCRIPTOR* descriptors,
+                 uint32_t descriptors_index,
+                 const EVENT_DESCRIPTOR& event_descriptor) const noexcept;
 
   bool KeywordEnabled(uint64_t keyword) const noexcept;
 
@@ -276,12 +278,12 @@ class TlmProvider {
                                 const char* name) const noexcept;
 
   uint32_t level_plus1_ = 0;
-  uint32_t provider_metadata_size_ = 0;
+  uint16_t provider_metadata_size_ = 0;
   uint64_t keyword_any_ = 0;
   uint64_t keyword_all_ = 0;
   uint64_t reg_handle_ = 0;
   PENABLECALLBACK enable_callback_ = nullptr;
-  void* enable_callback_context_ = nullptr;
+  raw_ptr<void> enable_callback_context_ = nullptr;
   char provider_metadata_[kMaxProviderMetadataSize] = {};
 };
 
@@ -345,7 +347,6 @@ class TlmUtf8StringField
 constexpr EVENT_DESCRIPTOR TlmEventDescriptor(uint8_t level,
                                               uint64_t keyword) noexcept {
   return {
-
       // Id
       // TraceLogging generally uses the event's Name instead of Id+Version,
       // so Id is normally set to 0 for TraceLogging events.

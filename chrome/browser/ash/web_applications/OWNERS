@@ -1,14 +1,13 @@
+file://ash/webui/PLATFORM_OWNERS
+
 tapted@chromium.org
 dstockwell@google.com
 bugsnash@chromium.org
-ortuno@chromium.org
 
-per-file chrome_camera_app*=file://chromeos/components/camera_app_ui/OWNERS
-per-file chrome_help_app*=carpenterr@chromium.org
-per-file chrome_file_manager*=file://chromeos/components/file_manager/OWNERS
-per-file crosh*=joelhockey@chromium.org
-per-file file_manager*=file://chromeos/components/file_manager/OWNERS
-per-file *media_app*=file://chromeos/components/media_app_ui/OWNERS
-per-file terminal*=calamity@chromium.org
-per-file terminal*=joelhockey@chromium.org
-per-file eche*=dhnishi@chromium.org
+per-file chrome_camera_app*=file://ash/webui/camera_app_ui/OWNERS
+per-file chrome_file_manager*=file://ash/webui/file_manager/OWNERS
+per-file crosh*=file://chromeos/TERMINAL_OWNERS
+per-file diagnostics*=file://ash/webui/diagnostics_ui/OWNERS
+per-file file_manager*=file://ash/webui/file_manager/OWNERS
+per-file terminal*=file://chromeos/TERMINAL_OWNERS
+per-file eche*=file://ash/webui/eche_app_ui/OWNERS

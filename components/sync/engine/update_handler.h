@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,22 +46,14 @@ class UpdateHandler {
   //
   // In this context, "applicable_updates" means the set of updates belonging to
   // this type.
-  //
-  // Returns SYNCER_OK if the all data was processed successfully, a syncer
-  // error otherwise.
-  virtual SyncerError ProcessGetUpdatesResponse(
+  virtual void ProcessGetUpdatesResponse(
       const sync_pb::DataTypeProgressMarker& progress_marker,
       const sync_pb::DataTypeContext& mutated_context,
       const SyncEntityList& applicable_updates,
       StatusController* status) = 0;
 
-  // Called at the end of a non-configure GetUpdates loop to apply any unapplied
-  // updates.
+  // Called at the end of a GetUpdates loop to apply any unapplied updates.
   virtual void ApplyUpdates(StatusController* status) = 0;
-
-  // Called at the end of a configure GetUpdates loop to perform any required
-  // post-initial-download update application.
-  virtual void PassiveApplyUpdates(StatusController* status) = 0;
 };
 
 }  // namespace syncer

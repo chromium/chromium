@@ -67,8 +67,8 @@ The gradients w.r.t. the other outputs; ignored.
 <td colspan="2">
 1. None, since the op is not differentiable w.r.t. its |num_nodes| input.
 2. [B,M,M] tensor where entry b,t,s is a subgradient of the network loss
-w.r.t. entry b,t,s of the |scores| input, with the same dtype as
-|d_loss_d_max_scores|.
+   w.r.t. entry b,t,s of the |scores| input, with the same dtype as
+   |d_loss_d_max_scores|.
 </td>
 </tr>
 

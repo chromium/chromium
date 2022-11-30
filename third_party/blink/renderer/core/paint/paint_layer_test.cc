@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,56 +45,13 @@ TEST_P(PaintLayerTest, ChildWithoutPaintLayer) {
   EXPECT_NE(nullptr, root_layer);
 }
 
-TEST_P(PaintLayerTest, CompositedBoundsAbsPosGrandchild) {
-  // BoundingBoxForCompositing is not used in CAP mode.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetBodyInnerHTML(
-      " <div id='parent'><div id='absposparent'><div id='absposchild'>"
-      " </div></div></div>"
-      "<style>"
-      "  #parent { position: absolute; z-index: 0; overflow: hidden;"
-      "  background: lightgray; width: 150px; height: 150px;"
-      "  will-change: transform; }"
-      "  #absposparent { position: absolute; z-index: 0; }"
-      "  #absposchild { position: absolute; top: 0px; left: 0px; height: 200px;"
-      "  width: 200px; background: lightblue; }</style>");
-
-  PaintLayer* parent_layer = GetPaintLayerByElementId("parent");
-  // Since "absposchild" is clipped by "parent", it should not expand the
-  // composited bounds for "parent" beyond its intrinsic size of 150x150.
-  EXPECT_EQ(PhysicalRect(0, 0, 150, 150),
-            parent_layer->BoundingBoxForCompositing());
-}
-
-TEST_P(PaintLayerTest, CompositedBoundsTransformedChild) {
-  // TODO(chrishtr): fix this test for CAP
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  SetBodyInnerHTML(R"HTML(
-    <div id=parent style='overflow: scroll; will-change: transform'>
-      <div class='target'
-           style='position: relative; transform: skew(-15deg);'>
-      </div>
-      <div style='width: 1000px; height: 500px; background: lightgray'>
-      </div>
-    </div>
-  )HTML");
-
-  PaintLayer* parent_layer = GetPaintLayerByElementId("parent");
-  EXPECT_EQ(PhysicalRect(0, 0, 784, 500),
-            parent_layer->BoundingBoxForCompositing());
-}
-
-TEST_P(PaintLayerTest, RootLayerCompositedBounds) {
-  SetBodyInnerHTML(
-      "<style> body { width: 1000px; height: 1000px; margin: 0 } </style>");
-  EXPECT_EQ(PhysicalRect(0, 0, 800, 600),
-            GetLayoutView().Layer()->BoundingBoxForCompositing());
-}
-
-TEST_P(PaintLayerTest, RootLayerScrollBounds) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
+#define MAYBE_RootLayerScrollBounds DISABLED_RootLayerScrollBounds
+#else
+#define MAYBE_RootLayerScrollBounds RootLayerScrollBounds
+#endif
+TEST_P(PaintLayerTest, MAYBE_RootLayerScrollBounds) {
   USE_NON_OVERLAY_SCROLLBARS();
 
   SetBodyInnerHTML(
@@ -108,89 +65,13 @@ TEST_P(PaintLayerTest, RootLayerScrollBounds) {
   EXPECT_EQ(ScrollOffset(200 + scrollbarThickness, 400 + scrollbarThickness),
             plsa->MaximumScrollOffset());
 
-  EXPECT_EQ(IntRect(0, 0, 800 - scrollbarThickness, 600 - scrollbarThickness),
+  EXPECT_EQ(gfx::Rect(0, 0, 800 - scrollbarThickness, 600 - scrollbarThickness),
             plsa->VisibleContentRect());
-  EXPECT_EQ(IntRect(0, 0, 800, 600),
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             plsa->VisibleContentRect(kIncludeScrollbars));
 }
 
-
-TEST_P(PaintLayerTest, ScrollsWithViewportRelativePosition) {
-  SetBodyInnerHTML("<div id='target' style='position: relative'></div>");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(layer->FixedToViewport());
-}
-
-TEST_P(PaintLayerTest, ScrollsWithViewportFixedPosition) {
-  SetBodyInnerHTML("<div id='target' style='position: fixed'></div>");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(layer->FixedToViewport());
-}
-
-TEST_P(PaintLayerTest, ScrollsWithViewportFixedPositionInsideTransform) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform: translateZ(0)'>
-      <div id='target' style='position: fixed'></div>
-    </div>
-    <div style='width: 10px; height: 1000px'></div>
-  )HTML");
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(layer->FixedToViewport());
-}
-
-TEST_P(PaintLayerTest, SticksToScrollerStickyPosition) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform: translateZ(0)'>
-      <div id='target' style='position: sticky; top: 0;'></div>
-    </div>
-    <div style='width: 10px; height: 1000px'></div>
-  )HTML");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(layer->SticksToScroller());
-}
-
-TEST_P(PaintLayerTest, SticksToScrollerNoAnchor) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform: translateZ(0)'>
-      <div id='target' style='position: sticky'></div>
-    </div>
-    <div style='width: 10px; height: 1000px'></div>
-  )HTML");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(layer->SticksToScroller());
-}
-
-TEST_P(PaintLayerTest, SticksToScrollerStickyPositionNoScroll) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='transform: translateZ(0)'>
-      <div id='target' style='position: sticky; top: 0;'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(layer->SticksToScroller());
-}
-
-TEST_P(PaintLayerTest, SticksToScrollerStickyPositionInsideScroller) {
-  SetBodyInnerHTML(R"HTML(
-    <div style='overflow:scroll; width: 100px; height: 100px;'>
-      <div id='target' style='position: sticky; top: 0;'></div>
-      <div style='width: 50px; height: 1000px;'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(layer->SticksToScroller());
-}
-
 TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div id='scroll' style='width: 100px; height: 100px; overflow: scroll;
         will-change: transform'>
@@ -200,10 +81,8 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   )HTML");
 
   PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
-  EXPECT_EQ(kPaintsIntoOwnBacking, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  EXPECT_EQ(kNotComposited, content_layer->GetCompositingState());
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
@@ -212,7 +91,7 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      LayoutSize(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_FALSE(content_layer->SelfNeedsRepaint());
   EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
@@ -237,10 +116,8 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->HasDirectCompositingReasons());
-  EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
@@ -249,19 +126,13 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      LayoutSize(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
-    // The content layer needs repaint because its cull rect changed.
-    EXPECT_TRUE(content_layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_TRUE(scroll_layer->SelfNeedsRepaint());
-    // We don't set the layer needing repaint, but will repaint the layer when
-    // we find that the cull rect changes during paint.
-    EXPECT_FALSE(content_layer->SelfNeedsRepaint());
-  }
+  EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
+  // The content layer needs repaint because its cull rect changed.
+  EXPECT_TRUE(content_layer->SelfNeedsRepaint());
+
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -284,27 +155,7 @@ TEST_P(PaintLayerTest, HasNonIsolatedDescendantWithBlendMode) {
   EXPECT_TRUE(parent->HasNonIsolatedDescendantWithBlendMode());
   EXPECT_TRUE(stacking_parent->HasNonIsolatedDescendantWithBlendMode());
   EXPECT_FALSE(stacking_grandparent->HasNonIsolatedDescendantWithBlendMode());
-  EXPECT_TRUE(parent->HasVisibleDescendant());
-}
-
-TEST_P(PaintLayerTest, HasStickyPositionDescendant) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='parent' style='isolation: isolate'>
-      <div id='child' style='position: sticky'>
-      </div>
-    </div>
-  )HTML");
-  PaintLayer* parent = GetPaintLayerByElementId("parent");
-  PaintLayer* child = GetPaintLayerByElementId("child");
-  EXPECT_TRUE(parent->HasStickyPositionDescendant());
-  EXPECT_FALSE(child->HasStickyPositionDescendant());
-
-  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
-                                                      "position: relative");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_FALSE(parent->HasStickyPositionDescendant());
-  EXPECT_FALSE(child->HasStickyPositionDescendant());
+  EXPECT_TRUE(parent->HasVisibleSelfPaintingDescendant());
 }
 
 TEST_P(PaintLayerTest, HasFixedPositionDescendant) {
@@ -325,48 +176,6 @@ TEST_P(PaintLayerTest, HasFixedPositionDescendant) {
 
   EXPECT_FALSE(parent->HasFixedPositionDescendant());
   EXPECT_FALSE(child->HasFixedPositionDescendant());
-}
-
-TEST_P(PaintLayerTest, HasFixedAndStickyPositionDescendant) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='parent' style='isolation: isolate'>
-      <div id='child1' style='position: sticky'>
-      </div>
-      <div id='child2' style='position: fixed'>
-      </div>
-    </div>
-  )HTML");
-  PaintLayer* parent = GetPaintLayerByElementId("parent");
-  PaintLayer* child1 = GetPaintLayerByElementId("child1");
-  PaintLayer* child2 = GetPaintLayerByElementId("child2");
-  EXPECT_TRUE(parent->HasFixedPositionDescendant());
-  EXPECT_FALSE(child1->HasFixedPositionDescendant());
-  EXPECT_FALSE(child2->HasFixedPositionDescendant());
-  EXPECT_TRUE(parent->HasStickyPositionDescendant());
-  EXPECT_FALSE(child1->HasStickyPositionDescendant());
-  EXPECT_FALSE(child2->HasStickyPositionDescendant());
-
-  GetDocument().getElementById("child1")->setAttribute(html_names::kStyleAttr,
-                                                       "position: relative");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(parent->HasFixedPositionDescendant());
-  EXPECT_FALSE(child1->HasFixedPositionDescendant());
-  EXPECT_FALSE(child2->HasFixedPositionDescendant());
-  EXPECT_FALSE(parent->HasStickyPositionDescendant());
-  EXPECT_FALSE(child1->HasStickyPositionDescendant());
-  EXPECT_FALSE(child2->HasStickyPositionDescendant());
-
-  GetDocument().getElementById("child2")->setAttribute(html_names::kStyleAttr,
-                                                       "position: relative");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_FALSE(parent->HasFixedPositionDescendant());
-  EXPECT_FALSE(child1->HasFixedPositionDescendant());
-  EXPECT_FALSE(child2->HasFixedPositionDescendant());
-  EXPECT_FALSE(parent->HasStickyPositionDescendant());
-  EXPECT_FALSE(child1->HasStickyPositionDescendant());
-  EXPECT_FALSE(child2->HasStickyPositionDescendant());
 }
 
 TEST_P(PaintLayerTest, HasNonContainedAbsolutePositionDescendant) {
@@ -440,9 +249,9 @@ TEST_P(PaintLayerTest, HasSelfPaintingParentNotSelfPainting) {
   EXPECT_FALSE(child->HasSelfPaintingLayerDescendant());
 }
 
-static const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
-    const PaintLayer* layer) {
-  return PaintLayerPaintOrderIterator(*layer->AncestorStackingContext(),
+static const HeapVector<Member<PaintLayer>>*
+LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) {
+  return PaintLayerPaintOrderIterator(layer->AncestorStackingContext(),
                                       kPositiveZOrderChildren)
       .LayersPaintingOverlayOverflowControlsAfter(layer);
 }
@@ -454,20 +263,18 @@ static const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
 enum OverlayType { kOverlayResizer, kOverlayScrollbars };
 
 class ReorderOverlayOverflowControlsTest
-    : public testing::WithParamInterface<std::tuple<unsigned, OverlayType>>,
-      private ScopedCompositeAfterPaintForTest,
-      public RenderingTest {
+    : public testing::WithParamInterface<OverlayType>,
+      public PaintControllerPaintTestBase {
  public:
   ReorderOverlayOverflowControlsTest()
-      : ScopedCompositeAfterPaintForTest(std::get<0>(GetParam()) &
-                                         kCompositeAfterPaint),
-        RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
-  ~ReorderOverlayOverflowControlsTest() {
+      : PaintControllerPaintTestBase(
+            MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+  ~ReorderOverlayOverflowControlsTest() override {
     // Must destruct all objects before toggling back feature flags.
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  OverlayType GetOverlayType() const { return std::get<1>(GetParam()); }
+  OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
     GetDocument().getElementById(id)->setAttribute(
@@ -482,18 +289,12 @@ class ReorderOverlayOverflowControlsTest
                                                    "overflow: visible");
     UpdateAllLifecyclePhasesForTest();
   }
-
-  void SetUp() override {
-    EnableCompositing();
-    RenderingTest::SetUp();
-  }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReorderOverlayOverflowControlsTest,
-    ::testing::Combine(::testing::Values(0, kCompositeAfterPaint),
-                       ::testing::Values(kOverlayScrollbars, kOverlayResizer)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReorderOverlayOverflowControlsTest,
+                         ::testing::Values(kOverlayScrollbars,
+                                           kOverlayResizer));
 
 TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
   SetBodyInnerHTML(R"HTML(
@@ -1057,6 +858,49 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveScrollableArea) {
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
 }
 
+TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #parent {
+        position: relative;
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        display: none;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  InitOverflowStyle("parent");
+  auto* parent = GetPaintLayerByElementId("parent");
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+
+  auto* child_element = GetDocument().getElementById("child");
+  child_element->setAttribute(html_names::kStyleAttr, "display: block");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(
+                  GetPaintLayerByElementId("child")),
+              Pointee(ElementsAre(parent)));
+  EXPECT_TRUE(parent->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(parent->SelfNeedsRepaint());
+
+  child_element->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_TRUE(parent->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(parent->SelfNeedsRepaint());
+}
+
 TEST_P(PaintLayerTest, SubsequenceCachingStackedLayers) {
   SetBodyInnerHTML(R"HTML(
     <div id='parent' style='position:relative'>
@@ -1074,44 +918,35 @@ TEST_P(PaintLayerTest, SubsequenceCachingStackedLayers) {
   PaintLayer* grandchild1 = GetPaintLayerByElementId("grandchild1");
   PaintLayer* grandchild2 = GetPaintLayerByElementId("grandchild2");
 
-  EXPECT_FALSE(parent->SupportsSubsequenceCaching());
-  EXPECT_FALSE(child1->SupportsSubsequenceCaching());
-  EXPECT_TRUE(child2->SupportsSubsequenceCaching());
-  EXPECT_FALSE(grandchild1->SupportsSubsequenceCaching());
-  EXPECT_FALSE(grandchild2->SupportsSubsequenceCaching());
-
-  GetDocument()
-      .getElementById("grandchild1")
-      ->setAttribute(html_names::kStyleAttr, "isolation: isolate");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_FALSE(parent->SupportsSubsequenceCaching());
-  EXPECT_FALSE(child1->SupportsSubsequenceCaching());
+  EXPECT_TRUE(parent->SupportsSubsequenceCaching());
+  EXPECT_TRUE(child1->SupportsSubsequenceCaching());
   EXPECT_TRUE(child2->SupportsSubsequenceCaching());
   EXPECT_TRUE(grandchild1->SupportsSubsequenceCaching());
-  EXPECT_FALSE(grandchild2->SupportsSubsequenceCaching());
+  EXPECT_TRUE(grandchild2->SupportsSubsequenceCaching());
 }
 
-TEST_P(PaintLayerTest, SubsequenceCachingSVGRoot) {
+TEST_P(PaintLayerTest, SubsequenceCachingSVG) {
   SetBodyInnerHTML(R"HTML(
-    <div id='parent' style='position: relative'>
-      <svg id='svgroot' style='position: relative'></svg>
-    </div>
+    <svg id='svgroot'>
+      <foreignObject id='foreignObject'/>
+    </svg>
   )HTML");
 
   PaintLayer* svgroot = GetPaintLayerByElementId("svgroot");
+  PaintLayer* foreign_object = GetPaintLayerByElementId("foreignObject");
   EXPECT_TRUE(svgroot->SupportsSubsequenceCaching());
+  EXPECT_TRUE(foreign_object->SupportsSubsequenceCaching());
 }
 
 TEST_P(PaintLayerTest, SubsequenceCachingMuticol) {
   SetBodyInnerHTML(R"HTML(
     <div style='columns: 2'>
-      <svg id='svgroot' style='position: relative'></svg>
+      <div id='target' style='position: relative; height: 20px;'></div>
     </div>
   )HTML");
 
-  PaintLayer* svgroot = GetPaintLayerByElementId("svgroot");
-  EXPECT_FALSE(svgroot->SupportsSubsequenceCaching());
+  PaintLayer* target = GetPaintLayerByElementId("target");
+  EXPECT_FALSE(target->SupportsSubsequenceCaching());
 }
 
 TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
@@ -1127,21 +962,21 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
   PaintLayer* target = GetPaintLayerByElementId("target");
 
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 
   GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
                                                       "z-index: 1");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 }
 
-TEST_P(PaintLayerTest, HasVisibleDescendant) {
+TEST_P(PaintLayerTest, HasVisibleSelfPaintingDescendant) {
   SetBodyInnerHTML(R"HTML(
     <div id='invisible' style='position:relative'>
       <div id='visible' style='visibility: visible; position: relative'>
@@ -1151,8 +986,8 @@ TEST_P(PaintLayerTest, HasVisibleDescendant) {
   PaintLayer* invisible = GetPaintLayerByElementId("invisible");
   PaintLayer* visible = GetPaintLayerByElementId("visible");
 
-  EXPECT_TRUE(invisible->HasVisibleDescendant());
-  EXPECT_FALSE(visible->HasVisibleDescendant());
+  EXPECT_TRUE(invisible->HasVisibleSelfPaintingDescendant());
+  EXPECT_FALSE(visible->HasVisibleSelfPaintingDescendant());
   EXPECT_FALSE(invisible->HasNonIsolatedDescendantWithBlendMode());
 }
 
@@ -1270,7 +1105,7 @@ TEST_P(PaintLayerTest, DescendantDependentFlagsStopsAtThrottledFrames) {
                   ->needs_descendant_dependent_flags_update_);
 
   // Do an unthrottled compositing update, this should clear flags;
-  GetDocument().View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(ChildDocument()
                    .View()
@@ -1293,28 +1128,24 @@ TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
     <div>
-      <div id='compositedContainer' style='columns: 1'>
-        <div id='columnSpan' style='-webkit-column-span: all; overflow: hidden'>
+      <div id='multicol' style='columns: 1; position: relative'>
+        <div id='paintContainer' style='position: relative'>
+          <div id='columnSpan' style='column-span: all; overflow: hidden'></div>
         </div>
       </div>
     </div>
   )HTML");
 
-  PaintLayer* target = GetPaintLayerByElementId("columnSpan");
-  EXPECT_EQ(target->Parent(), target->CompositingContainer());
-  EXPECT_EQ(target->Parent()->Parent(), target->ContainingLayer());
+  PaintLayer* columnSpan = GetPaintLayerByElementId("columnSpan");
+  EXPECT_EQ(GetPaintLayerByElementId("paintContainer"),
+            columnSpan->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("multicol"),
+            columnSpan->ContainingLayer());
 }
 
 TEST_P(PaintLayerTest,
@@ -1333,13 +1164,6 @@ TEST_P(PaintLayerTest,
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
   EXPECT_EQ(span, target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(span,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
@@ -1360,13 +1184,6 @@ TEST_P(PaintLayerTest, CompositingContainerNonStackedFloatUnderStackingInline) {
   } else {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
-  }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
   }
 }
 
@@ -1390,18 +1207,6 @@ TEST_P(PaintLayerTest,
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
   }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      EXPECT_EQ(GetPaintLayerByElementId("span"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    } else {
-      EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    }
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1421,13 +1226,6 @@ TEST_P(PaintLayerTest,
 
   PaintLayer* target = GetPaintLayerByElementId("target");
   EXPECT_EQ(GetPaintLayerByElementId("span"), target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1448,13 +1246,6 @@ TEST_P(PaintLayerTest,
   PaintLayer* target = GetPaintLayerByElementId("target");
   PaintLayer* span = GetPaintLayerByElementId("span");
   EXPECT_EQ(span, target->CompositingContainer());
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(span,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1479,13 +1270,6 @@ TEST_P(PaintLayerTest,
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
   }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest,
@@ -1509,18 +1293,6 @@ TEST_P(PaintLayerTest,
   } else {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
-  }
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      EXPECT_EQ(GetPaintLayerByElementId("span"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    } else {
-      EXPECT_EQ(GetPaintLayerByElementId("compositedContainer"),
-                target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-    }
   }
 }
 
@@ -1635,7 +1407,7 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(0, 0),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(LayoutSize(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(150, 150),
               floating->LocationWithoutPositionOffset());
@@ -1649,12 +1421,12 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(100, 100),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(LayoutSize(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(0, 0), floating->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(50, 50),
               floating->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(LayoutSize(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               floating->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(-50, -50),
               floating->VisualOffsetFromAncestor(span));
@@ -1899,18 +1671,14 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
     EXPECT_EQ(GetPaintLayerByElementId("containingBlock"),
               target->CompositingContainer());
   }
-  PaintLayer* composited_container =
-      GetPaintLayerByElementId("compositedContainer");
-
-  // enclosingLayerWithCompositedLayerMapping is not needed or applicable to
-  // CAP.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(composited_container,
-              target->EnclosingLayerWithCompositedLayerMapping(kExcludeSelf));
-  }
 }
 
 TEST_P(PaintLayerTest, CompositingContainerSelfPaintingNonStackedFloat) {
+  // Self-painting non-stacked layers don't exist in
+  // LayoutNGBlockFragmentation.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='position: relative'>
       <span id='span' style='opacity: 0.9'>
@@ -1956,22 +1724,36 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
 
   EXPECT_EQ(extra_layer, spanner->Parent());
   EXPECT_EQ(columns, spanner->ContainingLayer());
-  EXPECT_EQ(columns, extra_layer->Parent()->Parent());
-  EXPECT_EQ(columns, extra_layer->ContainingLayer()->Parent());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(columns, extra_layer->Parent());
+    EXPECT_EQ(columns, extra_layer->ContainingLayer());
+    EXPECT_EQ(PhysicalOffset(50, 50), spanner->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              spanner->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(100, 100),
+              extra_layer->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(-100, 100),
+              extra_layer->VisualOffsetFromAncestor(columns));
+  } else {
+    EXPECT_EQ(columns, extra_layer->Parent()->Parent());
+    EXPECT_EQ(columns, extra_layer->ContainingLayer()->Parent());
+    EXPECT_EQ(PhysicalOffset(0, 0), spanner->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(50, 50),
+              spanner->GetLayoutObject().OffsetForInFlowPosition());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              extra_layer->LocationWithoutPositionOffset());
+    EXPECT_EQ(PhysicalOffset(100, 100),
+              extra_layer->GetLayoutObject().OffsetForInFlowPosition());
+    // -60 = 2nd-column-x(40) - scroll-offset-x(200) + x-location(100)
+    // 20 = y-location(100) - column-height(80)
+    EXPECT_EQ(PhysicalOffset(-60, 20),
+              extra_layer->VisualOffsetFromAncestor(columns));
+  }
 
-  EXPECT_EQ(PhysicalOffset(0, 0), spanner->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(50, 50),
-            spanner->GetLayoutObject().OffsetForInFlowPosition());
-
-  EXPECT_EQ(LayoutSize(200, 0),
+  EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
-  EXPECT_EQ(PhysicalOffset(0, 0), extra_layer->LocationWithoutPositionOffset());
-  EXPECT_EQ(PhysicalOffset(100, 100),
-            extra_layer->GetLayoutObject().OffsetForInFlowPosition());
-  // -60 = 2nd-column-x(40) - scroll-offset-x(200) + x-location(100)
-  // 20 = y-location(100) - column-height(80)
-  EXPECT_EQ(PhysicalOffset(-60, 20),
-            extra_layer->VisualOffsetFromAncestor(columns));
   EXPECT_EQ(PhysicalOffset(-150, 50),
             spanner->VisualOffsetFromAncestor(columns));
 }
@@ -1988,7 +1770,7 @@ TEST_P(PaintLayerTest, PaintLayerTransformUpdatedOnStyleTransformAnimation) {
   const ComputedStyle* old_style = target_object->Style();
   scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*old_style);
   new_style->SetHasCurrentTransformAnimation(true);
-  target_paint_layer->UpdateTransform(old_style, *new_style);
+  target_object->SetStyle(std::move(new_style));
 
   EXPECT_NE(nullptr, target_paint_layer->Transform());
 }
@@ -1997,7 +1779,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   SetBodyInnerHTML(R"HTML(
     <span id='span' style='opacity: 0.1'>
       <div id='target' style='overflow: hidden; float: left;
-          column-width: 10px'>
+          position: relative;'>
       </div>
     </span>
   )HTML");
@@ -2007,24 +1789,19 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
-  // Target layer is self painting because it is a multicol container.
+  // Target layer is self painting because it is relatively positioned.
   EXPECT_TRUE(target_layer->IsSelfPaintingLayer());
   EXPECT_EQ(span_layer, target_layer->CompositingContainer());
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
 
-  // Removing column-width: 10px makes target layer no longer self-painting,
+  // Removing position:relative makes target layer no longer self-painting,
   // and change its compositing container. The original compositing container
   // span_layer should be marked SelfNeedsRepaint.
   target_element->setAttribute(html_names::kStyleAttr,
                                "overflow: hidden; float: left");
 
   UpdateAllLifecyclePhasesExceptPaint();
-  // TODO(yosin): Once multicol in LayoutNG, we should remove following
-  // assignments. This is because the layout tree maybe reattached. In LayoutNG
-  // phase 1, layout tree is reattached because multicol forces legacy layout.
-  target_object = target_element->GetLayoutObject();
-  target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(span_layer, target_layer->CompositingContainer());
@@ -2068,7 +1845,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnRemovingStackedLayer) {
 TEST_P(PaintLayerTest, FrameViewContentSize) {
   SetBodyInnerHTML(
       "<style> body { width: 1200px; height: 900px; margin: 0 } </style>");
-  EXPECT_EQ(IntSize(800, 600), GetDocument().View()->Size());
+  EXPECT_EQ(gfx::Size(800, 600), GetDocument().View()->Size());
 }
 
 TEST_P(PaintLayerTest, ReferenceClipPathWithPageZoom) {
@@ -2129,48 +1906,12 @@ TEST_P(PaintLayerTest, FragmentedHitTest) {
   EXPECT_EQ(target, GetDocument().ElementFromPoint(280, 30));
 }
 
-TEST_P(PaintLayerTest, SquashingOffsets) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetHtmlInnerHTML(R"HTML(
-    <style>
-      * { margin: 0 }
-    </style>
-    <div id=target
-        style='width: 200px; height: 200px; position: relative; will-change: transform'></div>
-    <div id=squashed
-        style='width: 200px; height: 200px; top: -200px; position: relative;'></div>
-    <div style='width: 10px; height: 3000px'></div>
-  )HTML");
-
-  auto* squashed = GetPaintLayerByElementId("squashed");
-  EXPECT_EQ(kPaintsIntoGroupedBacking, squashed->GetCompositingState());
-  PhysicalOffset point;
-  PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-      squashed->GetLayoutObject(), point);
-  EXPECT_EQ(PhysicalOffset(), point);
-
-  EXPECT_EQ(PhysicalOffset(), squashed->ComputeOffsetFromAncestor(
-                                  squashed->TransformAncestorOrRoot()));
-
-  GetDocument().View()->LayoutViewport()->ScrollBy(
-      ScrollOffset(0, 25), mojom::blink::ScrollType::kUser);
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-      squashed->GetLayoutObject(), point);
-  EXPECT_EQ(PhysicalOffset(), point);
-
-  EXPECT_EQ(PhysicalOffset(), squashed->ComputeOffsetFromAncestor(
-                                  squashed->TransformAncestorOrRoot()));
-}
-
 TEST_P(PaintLayerTest, HitTestWithIgnoreClipping) {
   SetBodyInnerHTML("<div id='hit' style='width: 90px; height: 9000px;'></div>");
 
   HitTestRequest request(HitTestRequest::kIgnoreClipping);
   // (10, 900) is outside the viewport clip of 800x600.
-  HitTestLocation location((IntPoint(10, 900)));
+  HitTestLocation location((gfx::Point(10, 900)));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
   EXPECT_EQ(GetDocument().getElementById("hit"), result.InnerNode());
@@ -2297,19 +2038,31 @@ TEST_P(PaintLayerTest, SetNeedsRepaintSelfPaintingUnderNonSelfPainting) {
   auto* span_layer = GetPaintLayerByElementId("span");
   auto* floating_layer = GetPaintLayerByElementId("floating");
   auto* multicol_layer = GetPaintLayerByElementId("multicol");
+
+  // Multicol doesn't trigger creation of a (non-self-painting) PaintLayer when
+  // LayoutNGBlockFragmentation is enabled.
+  if (!multicol_layer)
+    ASSERT_TRUE(RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
+
   EXPECT_FALSE(html_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
   EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
-
-  multicol_layer->SetNeedsRepaint();
+  if (multicol_layer) {
+    EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
+    multicol_layer->SetNeedsRepaint();
+  } else {
+    EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
+    floating_layer->SetNeedsRepaint();
+  }
   EXPECT_TRUE(html_layer->DescendantNeedsRepaint());
   if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_TRUE(span_layer->DescendantNeedsRepaint());
   else
     EXPECT_TRUE(span_layer->SelfNeedsRepaint());
-  EXPECT_TRUE(floating_layer->DescendantNeedsRepaint());
-  EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  if (multicol_layer)
+    EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(floating_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
@@ -2505,7 +2258,7 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
     UpdateAllLifecyclePhasesForTest();
 
     HitTestRequest request(HitTestRequest::kIgnoreClipping);
-    HitTestLocation location((IntPoint(198, 198)));
+    HitTestLocation location((gfx::Point(198, 198)));
     HitTestResult result(request, location);
     GetDocument().GetLayoutView()->HitTest(location, result);
     if (i == 0)
@@ -2517,120 +2270,34 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
   }
 }
 
-TEST_P(PaintLayerTest, BackgroundIsKnownToBeOpaqueInRectChildren) {
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1313268): Fix this test on Fuchsia and re-enable.
+#define MAYBE_HitTestScrollbarUnderClip DISABLED_HitTestScrollbarUnderClip
+#else
+#define MAYBE_HitTestScrollbarUnderClip HitTestScrollbarUnderClip
+#endif
+
+TEST_P(PaintLayerTest, MAYBE_HitTestScrollbarUnderClip) {
+  USE_NON_OVERLAY_SCROLLBARS();
+
   SetBodyInnerHTML(R"HTML(
-    <style>
-      div {
-        width: 100px;
-        height: 100px;
-        position: relative;
-        isolation: isolate;
-      }
-    </style>
-    <div id='target'>
-      <div style='background: blue'></div>
-    </div>
-  )HTML");
-
-  PaintLayer* target_layer = GetPaintLayerByElementId("target");
-  EXPECT_TRUE(target_layer->BackgroundIsKnownToBeOpaqueInRect(
-      PhysicalRect(0, 0, 100, 100), true));
-  EXPECT_FALSE(target_layer->BackgroundIsKnownToBeOpaqueInRect(
-      PhysicalRect(0, 0, 100, 100), false));
-}
-
-TEST_P(PaintLayerTest,
-       ChangeAlphaNeedsCompositingInputsAndPaintPropertyUpdate) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #target {
-        background: white;
-        width: 100px;
-        height: 100px;
-        position: relative;
-      }
-    </style>
-    <div id='target'>
-    </div>
-  )HTML");
-  PaintLayer* target = GetPaintLayerByElementId("target");
-  EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
-  EXPECT_FALSE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());
-
-  StyleDifference diff;
-  diff.SetHasAlphaChanged();
-  target->StyleDidChange(diff, target->GetLayoutObject().Style());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
-  else
-    EXPECT_TRUE(target->NeedsCompositingInputsUpdate());
-  EXPECT_TRUE(target->GetLayoutObject().NeedsPaintPropertyUpdate());
-  // See the TODO in PaintLayer::SetNeedsCompositingInputsUpdate().
-  EXPECT_TRUE(target->Parent()->GetLayoutObject().NeedsPaintPropertyUpdate());
-}
-
-TEST_P(PaintLayerTest, PaintLayerCommonAncestor) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      div {
-        position: relative;
-      }
-    </style>
-    <div id='wrapper'>
-      <div id='target1'>
-        <div id='target1x1'></div>
-      </div>
-      <div id='target2'></div>
-      <div>
-        <div id='target3'></div>
+    <style>body { margin: 50px; }</style>
+    <div style="overflow: hidden; width: 200px; height: 100px">
+      <div id="target" style="width: 200px; height: 200px; overflow: scroll">
+        <!-- This relative div triggers crbug.com/1360860. -->
+        <div style="position: relative"></div>
       </div>
     </div>
+    <div id="below" style="height: 200px"></div>
   )HTML");
 
-  PaintLayer* wrapper = GetPaintLayerByElementId("wrapper");
-  PaintLayer* target1 = GetPaintLayerByElementId("target1");
-  PaintLayer* target1x1 = GetPaintLayerByElementId("target1x1");
-  PaintLayer* target2 = GetPaintLayerByElementId("target2");
-  PaintLayer* target3 = GetPaintLayerByElementId("target3");
-
-  EXPECT_EQ(target1->CommonAncestor(target1), target1);
-  EXPECT_EQ(target1->CommonAncestor(target1x1), target1);
-  EXPECT_EQ(target1->CommonAncestor(target2), wrapper);
-  EXPECT_EQ(target1->CommonAncestor(target3), wrapper);
-
-  EXPECT_EQ(target1x1->CommonAncestor(target1), target1);
-  EXPECT_EQ(target1x1->CommonAncestor(target1x1), target1x1);
-  EXPECT_EQ(target1x1->CommonAncestor(target2), wrapper);
-  EXPECT_EQ(target1x1->CommonAncestor(target3), wrapper);
-
-  EXPECT_EQ(target2->CommonAncestor(target1), wrapper);
-  EXPECT_EQ(target2->CommonAncestor(target1x1), wrapper);
-  EXPECT_EQ(target2->CommonAncestor(target2), target2);
-  EXPECT_EQ(target2->CommonAncestor(target3), wrapper);
-
-  EXPECT_EQ(target3->CommonAncestor(target1), wrapper);
-  EXPECT_EQ(target3->CommonAncestor(target1x1), wrapper);
-  EXPECT_EQ(target3->CommonAncestor(target2), wrapper);
-  EXPECT_EQ(target3->CommonAncestor(target3), target3);
-}
-
-TEST_P(PaintLayerTest, PaintLayerCommonAncestorBody) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      body, div {
-        position: relative;
-      }
-    </style>
-    <div id='target1'></div>
-    <div id='target2'></div>
-  )HTML");
-
-  PaintLayer* target1 = GetPaintLayerByElementId("target1");
-  PaintLayer* target2 = GetPaintLayerByElementId("target2");
-
-  EXPECT_EQ(target1->CommonAncestor(target2)->GetLayoutObject(),
-            GetDocument().body()->GetLayoutObject());
+  // Hit the visible part of the vertical scrollbar.
+  EXPECT_EQ(GetDocument().getElementById("target"), HitTest(245, 100));
+  // Should not hit the hidden part of the vertical scrollbar, the hidden
+  // horizontal scrollbar, or the hidden scroll corner.
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 200));
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(150, 245));
+  EXPECT_EQ(GetDocument().getElementById("below"), HitTest(245, 245));
 }
 
 TEST_P(PaintLayerTest, InlineWithBackdropFilterHasPaintLayer) {
@@ -2641,83 +2308,6 @@ TEST_P(PaintLayerTest, InlineWithBackdropFilterHasPaintLayer) {
 
   EXPECT_NE(nullptr, root_layer);
   EXPECT_NE(nullptr, paint_layer);
-}
-
-TEST_P(PaintLayerTest, DirectCompositingReasonsCrossingFrameBoundaries) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <iframe></iframe>
-  )HTML");
-  SetChildFrameHTML(R"HTML(
-    <div id=target style="position: relative"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer* target =
-      To<LayoutBoxModelObject>(
-          ChildDocument().getElementById("target")->GetLayoutObject())
-          ->Layer();
-
-  EXPECT_EQ(
-      GetDocument().View()->GetLayoutView()->Layer(),
-      target->EnclosingDirectlyCompositableLayerCrossingFrameBoundaries());
-}
-
-TEST_P(PaintLayerTest,
-       DirectCompositingReasonsCrossingFrameBoundariesCompositedIframe) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <iframe id="iframe" style="will-change: transform";></iframe>
-  )HTML");
-  SetChildFrameHTML(R"HTML(
-    <div id=target style="position: relative"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer* target =
-      To<LayoutBoxModelObject>(
-          ChildDocument().getElementById("target")->GetLayoutObject())
-          ->Layer();
-
-  PaintLayer* iframe =
-      To<LayoutBoxModelObject>(
-          GetDocument().getElementById("iframe")->GetLayoutObject())
-          ->Layer();
-
-  EXPECT_EQ(
-      iframe,
-      target->EnclosingDirectlyCompositableLayerCrossingFrameBoundaries());
-}
-
-TEST_P(PaintLayerTest,
-       DirectCompositingReasonsCrossingFrameBoundariesCompositedParent) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <iframe></iframe>
-  )HTML");
-  SetChildFrameHTML(R"HTML(
-    <div id="parent" style="will-change: transform">
-      <div id=target style="position: relative"></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer* target =
-      To<LayoutBoxModelObject>(
-          ChildDocument().getElementById("target")->GetLayoutObject())
-          ->Layer();
-
-  PaintLayer* parent =
-      To<LayoutBoxModelObject>(
-          ChildDocument().getElementById("parent")->GetLayoutObject())
-          ->Layer();
-
-  EXPECT_EQ(
-      parent,
-      target->EnclosingDirectlyCompositableLayerCrossingFrameBoundaries());
 }
 
 TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
@@ -2745,723 +2335,396 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   UpdateAllLifecyclePhasesForTest();
 
   const HitTestRequest hit_request(HitTestRequest::kActive);
-  const HitTestLocation location(IntPoint(400, 300));
+  const HitTestLocation location(gfx::Point(400, 300));
   HitTestResult result;
   GetLayoutView().HitTestNoLifecycleUpdate(location, result);
   EXPECT_EQ(result.InnerNode(), GetDocument().documentElement());
   EXPECT_EQ(result.GetScrollbar(), nullptr);
 
   if (GetDocument().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
-    const HitTestLocation location_scrollbar(IntPoint(790, 300));
+    const HitTestLocation location_scrollbar(gfx::Point(790, 300));
     HitTestResult result_scrollbar;
     EXPECT_EQ(result_scrollbar.InnerNode(), &GetDocument());
     EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);
   }
 }
 
-TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
+TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
   SetBodyInnerHTML(R"HTML(
-    <div id="layer" style="position: relative">
-      <div style="overflow: visible; height: 0; width: 0">text</div>
+    <div id="parent" style="opacity: 0.9">
+      <div id="child"></div>
+  )HTML");
+
+  auto* parent_layer = GetPaintLayerByElementId("parent");
+  EXPECT_FALSE(parent_layer->DescendantNeedsRepaint());
+  EXPECT_FALSE(parent_layer->DescendantNeedsCullRectUpdate());
+  auto* child = GetLayoutBoxByElementId("child");
+  EXPECT_FALSE(child->HasLayer());
+
+  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
+                                                      "position: relative");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(parent_layer->DescendantNeedsRepaint());
+  EXPECT_TRUE(parent_layer->DescendantNeedsCullRectUpdate());
+
+  auto* child_layer = child->Layer();
+  ASSERT_TRUE(child_layer);
+  EXPECT_TRUE(child_layer->SelfNeedsRepaint());
+  EXPECT_TRUE(child_layer->NeedsCullRectUpdate());
+}
+
+TEST_P(PaintLayerTest, HitTestLayerWith3DDescendantCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="transform: translate(0)">
+      <div style="transform-style: preserve-3d; transform: rotateY(1deg)"></div>
     </div>
   )HTML");
 
-  auto* layer = GetPaintLayerByElementId("layer");
-  EXPECT_TRUE(layer->HasVisibleContent());
-  EXPECT_FALSE(layer->HasVisibleDescendant());
-  EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());
+  auto* target = GetPaintLayerByElementId("target");
+  EXPECT_TRUE(target->Has3DTransformedDescendant());
+  HitTestRequest request(0);
+  HitTestLocation location;
+  HitTestResult result(request, location);
+  // This should not crash.
+  target->HitTest(location, result, PhysicalRect(0, 0, 800, 600));
 }
 
-enum { kCompositingOptimizations = 1 << 0 };
+#define TEST_SCROLL_CONTAINER(name, expected_scroll_container,           \
+                              expected_is_fixed_to_view)                 \
+  do {                                                                   \
+    auto* layer = GetPaintLayerByElementId(name);                        \
+    bool is_fixed_to_view = false;                                       \
+    EXPECT_EQ(expected_scroll_container,                                 \
+              layer->ContainingScrollContainerLayer(&is_fixed_to_view)); \
+    EXPECT_EQ(expected_is_fixed_to_view, is_fixed_to_view);              \
+  } while (false)
 
-class PaintLayerOverlapTest : public RenderingTest {
- public:
-  PaintLayerOverlapTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+TEST_P(PaintLayerTest, ScrollContainerLayerRootScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="sticky" style="position: sticky"></div>
+    <div id="absolute" style="position: absolute"></div>
+    <div id="fixed" style="position: fixed">
+      <div id="sticky-under-fixed" style="position: sticky"></div>
+      <div id="absolute-under-fixed" style="position: absolute"></div>
+      <div id="fixed-under-fixed" style="position: fixed">
+        <div id="sticky-under-nested-fixed" style="position: sticky"></div>
+        <div id="absolute-under-nested-fixed" style="position: absolute"></div>
+        <div id="fixed-under-nested-fixed" style="position: fixed"></div>
+        <div id="transform-under-nested-fixed" style="transform: rotate(1deg)">
+        </div>
+      </div>
+      <div id="transform-under-fixed" style="transform: rotate(1deg)"></div>
+    </div>
+    <div id="transform" style="transform: rotate(1deg)">
+      <div id="sticky-under-transform" style="position: sticky"></div>
+      <div id="absolute-under-transform" style="position: absolute"></div>
+      <div id="fixed-under-transform" style="position: fixed"></div>
+      <div id="transform-under-transform" style="transform: rotate(1deg)"></div>
+    </div>
+  )HTML");
 
-  void SetUp() override {
-    EnableCompositing();
-    RenderingTest::SetUp();
+  auto* view_layer = GetLayoutView().Layer();
+  {
+    bool is_fixed_to_view = false;
+    EXPECT_EQ(nullptr,
+              view_layer->ContainingScrollContainerLayer(&is_fixed_to_view));
+    EXPECT_TRUE(is_fixed_to_view);
   }
-};
 
-TEST_F(PaintLayerOverlapTest, FixedUsesExpandedBoundingBoxForOverlap) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 610px;
-        width: 820px;
-      }
-      #fixed {
-        height: 10px;
-        left: 50px;
-        position: fixed;
-        top: 50px;
-        width: 10px;
-      }
-    </style>
-    <div id=fixed></div>
-  )HTML");
+  TEST_SCROLL_CONTAINER("sticky", view_layer, false);
+  TEST_SCROLL_CONTAINER("absolute", view_layer, false);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform", view_layer, false);
 
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 30, 20));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
+  TEST_SCROLL_CONTAINER("sticky-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("absolute-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("fixed-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform-under-fixed", view_layer, true);
 
-  // Modify the viewport scroll offset and ensure that the bounding box is still
-  // adjusted by the new amount the viewport can scroll in any direction.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 10), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
+  TEST_SCROLL_CONTAINER("sticky-under-nested-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("absolute-under-nested-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("fixed-under-nested-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform-under-nested-fixed", view_layer, true);
 
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 30, 20));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
+  TEST_SCROLL_CONTAINER("sticky-under-transform", view_layer, false);
+  TEST_SCROLL_CONTAINER("absolute-under-transform", view_layer, false);
+  TEST_SCROLL_CONTAINER("fixed-under-transform", view_layer, false);
+  TEST_SCROLL_CONTAINER("transform-under-transform", view_layer, false);
 }
 
-TEST_F(PaintLayerOverlapTest, IncludeIntermediateScrollerOffset) {
+TEST_P(PaintLayerTest, ScrollContainerLayerRelativeScroller) {
   SetBodyInnerHTML(R"HTML(
-    <style>body { margin:0; }</style>
-    <div id=intermediate style="overflow:scroll; width: 100px; height: 100px">
-      <div style="height: 2000px"></div>
-      <div id="target" style="position: relative; width: 100px; height: 100px"></div>
-    </div>
-    <div style="height: 2000px"></div>
-    )HTML");
-  PaintLayer* position = GetPaintLayerByElementId("target");
-  LayoutBoxModelObject* intermediate =
-      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
-
-  intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 1950),
-                                              mojom::blink::ScrollType::kUser);
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(100, 100), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(position->UnclippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 100));
-  EXPECT_EQ(position->ClippedAbsoluteBoundingBox(), IntRect(0, 50, 100, 50));
-}
-
-TEST_F(PaintLayerOverlapTest,
-       FixedInScrollerUsesExpandedBoundingBoxForOverlap) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 610px;
-        width: 820px;
-      }
-      #scroller {
-        height: 100px;
-        left: 100px;
-        overflow: scroll;
-        position: absolute;
-        top: 100px;
-        width: 100px;
-      }
-      #spacer {
-        height: 500px;
-      }
-      #fixed {
-        height: 10px;
-        left: 50px;
-        position: fixed;
-        top: 50px;
-        width: 10px;
-      }
-    </style>
-    <div id=scroller>
-      <div id=fixed></div>
-      <div id=spacer></div>
-    </div>
+    <div id="scroller" style="width: 100px; height: 100px; overflow: scroll;
+                              position: relative">
+      <div id="sticky" style="position: sticky">
+        <div id="sticky-under-sticky" style="position: sticky"></div>
+        <div id="absolute-under-sticky" style="position: absolute"></div>
+        <div id="fixed-under-sticky" style="position: fixed"></div>
+        <div id="transform-under-sticky" style="transform: rotate(1deg)"></div>
+      </div>
+      <div id="absolute" style="position: absolute">
+        <div id="sticky-under-absolute" style="position: sticky"></div>
+        <div id="absolute-under-absolute" style="position: absolute"></div>
+        <div id="fixed-under-absolute" style="position: fixed"></div>
+        <div id="transform-under-absolute" style="transform: rotate(1deg)">
+        </div>
+      </div>
+      <div id="fixed" style="position: fixed">
+        <div id="sticky-under-fixed" style="position: sticky"></div>
+        <div id="absolute-under-fixed" style="position: absolute"></div>
+        <div id="fixed-under-fixed" style="position: fixed"></div>
+        <div id="transform-under-fixed" style="transform: rotate(1deg)"></div>
+      </div>
+      <div id="transform" style="transform: rotate(1deg)">
+        <div id="sticky-under-transform" style="position: sticky"></div>
+        <div id="absolute-under-transform" style="position: absolute"></div>
+        <div id="fixed-under-transform" style="position: fixed"></div>
+        <div id="transform-under-transform" style="transform: rotate(1deg)">
+        </div>
+      </div>
   )HTML");
 
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 30, 20));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
+  auto* view_layer = GetLayoutView().Layer();
+  // scroller has relative position so contains absolute but not fixed.
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  ASSERT_TRUE(scroller->GetLayoutObject().CanContainAbsolutePositionObjects());
+  ASSERT_FALSE(scroller->GetLayoutObject().CanContainFixedPositionObjects());
+  TEST_SCROLL_CONTAINER("scroller", view_layer, false);
 
-  // Modify the inner scroll offset and ensure that the bounding box is still
-  // the same.
-  PaintLayerScrollableArea* scrollable_area =
-      GetPaintLayerByElementId("scroller")->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(FloatPoint(10, 10));
-  UpdateAllLifecyclePhasesForTest();
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("sticky-under-sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute-under-sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("fixed-under-sticky", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform-under-sticky", scroller, false);
 
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 30, 20));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
+  TEST_SCROLL_CONTAINER("absolute", scroller, false);
+  TEST_SCROLL_CONTAINER("sticky-under-absolute", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute-under-absolute", scroller, false);
+  TEST_SCROLL_CONTAINER("fixed-under-absolute", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform-under-absolute", scroller, false);
 
-  // Modify the viewport scroll offset and ensure that the bounding box is still
-  // adjusted by the newamount the viewport can scroll in any direction.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 10), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("sticky-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("absolute-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("fixed-under-fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform-under-fixed", view_layer, true);
 
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 30, 20));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+  TEST_SCROLL_CONTAINER("sticky-under-transform", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute-under-transform", scroller, false);
+  TEST_SCROLL_CONTAINER("fixed-under-transform", scroller, false);
+  TEST_SCROLL_CONTAINER("transform-under-transform", scroller, false);
 }
 
-TEST_F(PaintLayerOverlapTest,
-       FixedUnderTransformDoesNotExpandBoundingBoxForOverlap) {
+TEST_P(PaintLayerTest, ScrollContainerLayerNestedScroller) {
   SetBodyInnerHTML(R"HTML(
-    <style>
-      .anim {
-        animation: pulse 5s infinite;
-      }
-      @keyframes pulse {
-        0% { opacity: 0.1; }
-        100% { opacity: 0.9; }
-      }
-      .xform {
-        height: 100px;
-        left: 100px;
-        position: absolute;
-        top: 100px;
-        transform: rotate(20deg);
-        width: 100px;
-      }
-      .fixed {
-        height: 50px;
-        left: 25px;
-        position: fixed;
-        top: 25px;
-        width: 50px;
-      }
-      .spacer {
-        height: 2000px;
-      }
-    </style>
-    <div id=fixed-cb class=xform>
-      <div id=fixed class='fixed anim'></div>
-    </div>
-    <div class=spacer></div>
-  )HTML");
-
-  // The animation is to cause the fixed to be composited. However, even with
-  // fixed composited, it shouldn't have expanded bounds because its containing
-  // block isn't the viewport.
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(117, 117, 66, 66));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(117, 117, 66, 66));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(118, 118, 64, 64));
-}
-
-TEST_F(PaintLayerOverlapTest, NestedFixedUsesExpandedBoundingBoxForOverlap) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 610px;
-        width: 820px;
-      }
-      #iframe1 {
-        height: 100px;
-        left: 50px;
-        position: fixed;
-        top: 50px;
-        width: 100px;
-      }
-    </style>
-    <iframe id=iframe1></iframe>
-  )HTML");
-  SetChildFrameHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 500px;
-        width: 500px;
-      }
-      #fixed {
-        height: 10px;
-        left: 50px;
-        position: fixed;
-        top: 50px;
-        width: 10px;
-      }
-    </style>
-    <div id=fixed></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  PaintLayer* fixed =
-      To<LayoutBoxModelObject>(
-          ChildDocument().getElementById("fixed")->GetLayoutObject())
-          ->Layer();
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 410, 410));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-
-  // Modify the top-most viewport's scroll offset and ensure that the bounding
-  // box is still the same. This shows that we're not considering the wrong
-  // viewport's scroll offset when computing the bounding box.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 10), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 410, 410));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(50, 50, 10, 10));
-
-  // Now modify the iframe's scroll offset. This one should affect the fixed's
-  // bounding box.
-  ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 10), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 50, 410, 410));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 10, 10));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(60, 60, 10, 10));
-}
-
-TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForChild) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 1000px;
-      }
-      #fixed {
-        height: 50px;
-        left: 25px;
-        position: fixed;
-        top: 25px;
-        width: 50px;
-      }
-      #abs {
-        height: 25px;
-        left: 50px;
-        position: absolute;
-        top: 200px;
-        width: 25px;
-        will-change: transform;
-      }
-    </style>
-    <div id=fixed>
-      <div id=abs></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  // The fixed-pos layer should use bounds that have been expanded to include
-  // the absolutely positioned child. Without this expansion, overlap testing
-  // can miss overlap from that child leading to incorrect composition order.
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 75, 625));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-
-  // Verify that the abs bounds is not expanded even though it is a child of a
-  // fixed-pos layer. Expanding the abs bounds would mean that it could
-  // unnecessarily detect overlap with siblings that it doesn't ever actually
-  // overlap with.
-  PaintLayer* abs = GetPaintLayerByElementId("abs");
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-
-  // Modify the scroll offset and ensure that the bounding box is still the
-  // same. Note that if we get different expanded bounding boxes for overlap
-  // testing with different scroll offsets then it implies that scroll offset is
-  // a part of that calculation and we may get incorrect results as scroll
-  // offsets changes and partial updates happen.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 75, 625));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-}
-
-TEST_F(PaintLayerOverlapTest, FixedWithClippedExpandedBoundsForChild) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 1000px;
-      }
-      #fixed {
-        height: 50px;
-        left: 25px;
-        position: fixed;
-        top: 25px;
-        width: 50px;
-        overflow: hidden;
-      }
-      #abs {
-        height: 25px;
-        left: 50px;
-        position: absolute;
-        top: 200px;
-        width: 25px;
-        will-change: transform;
-      }
-    </style>
-    <div id=fixed>
-      <div id=abs></div>
-    </div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  // The fixed-pos layer should use bounds that have been expanded to include
-  // the absolutely positioned child. However, the fixed-pos ancestor also has
-  // clipping which will limit the expansion.
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 50, 450));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-
-  // Verify that the abs bounds is not expanded even though it is a child of a
-  // fixed-pos layer. Expanding the abs bounds would mean that it could
-  // unnecessarily detect overlap with siblings that it doesn't ever actually
-  // overlap with. Note that the clipped bounds is an empty rect because of the
-  // clipping from the ancestor.
-  PaintLayer* abs = GetPaintLayerByElementId("abs");
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(0, 0, 0, 0));
-
-  // Modify the scroll offset and ensure that the bounding box is still the
-  // same. Note that if we get different expanded bounding boxes for overlap
-  // testing with different scroll offsets then it implies that scroll offset is
-  // a part of that calculation and we may get incorrect results as scroll
-  // offsets changes and partial updates happen.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 50, 450));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(0, 0, 0, 0));
-}
-
-TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForGrandChild) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 1000px;
-      }
-      #fixed {
-        height: 50px;
-        left: 25px;
-        position: fixed;
-        top: 25px;
-        width: 50px;
-      }
-      #abs {
-        height: 25px;
-        left: 50px;
-        position: absolute;
-        top: 200px;
-        width: 25px;
-      }
-      #abs2 {
-        height: 25px;
-        left: 50px;
-        position: absolute;
-        top: 100px;
-        width: 25px;
-      }
-    </style>
-    <div id=fixed>
-      <div id=abs>
-        <div id=abs2></div>
+    <div id="scroller1" style="width: 100px; height: 100px; overflow: scroll;
+                               position: relative">
+      <div id="scroller2" style="width: 100px; height: 100px; overflow: scroll">
+        <div id="sticky" style="position: sticky"></div>
+        <div id="absolute" style="position: absolute"></div>
+        <div id="fixed" style="position: fixed"></div>
+        <div id="transform" style="transform: rotate(1deg"></div>
       </div>
     </div>
   )HTML");
-  UpdateAllLifecyclePhasesForTest();
 
-  // The fixed-pos layer should use bounds that have been expanded to include
-  // the absolutely positioned grandchild.
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 125, 725));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
+  auto* view_layer = GetLayoutView().Layer();
+  // scroller1 has relative position so contains absolute but not fixed.
+  // scroller2 is static position so contains neither absolute or fixed.
+  auto* scroller1 = GetPaintLayerByElementId("scroller1");
+  auto* scroller2 = GetPaintLayerByElementId("scroller2");
+  ASSERT_FALSE(
+      scroller2->GetLayoutObject().CanContainAbsolutePositionObjects());
+  ASSERT_FALSE(scroller2->GetLayoutObject().CanContainFixedPositionObjects());
+  TEST_SCROLL_CONTAINER("scroller2", scroller1, false);
 
-  // Verify that the abs bounds is not expanded even though it is a child of a
-  // fixed-pos layer. Additionally, it shouldn't include its child as only
-  // fixed-pos expands to include descendants.
-  PaintLayer* abs = GetPaintLayerByElementId("abs");
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 225, 25, 25));
-
-  PaintLayer* abs2 = GetPaintLayerByElementId("abs2");
-  EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(125, 325, 25, 25));
-  EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 325, 25, 25));
-
-  // Modify the scroll offset and ensure that the bounding box is still the
-  // same. Note that if we get different expanded bounding boxes for overlap
-  // testing with different scroll offsets then it implies that scroll offset is
-  // a part of that calculation and we may get incorrect results as scroll
-  // offsets changes and partial updates happen.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 125, 725));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-
-  EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-
-  // Add will-change to the middle child to ensure the bounds are still the
-  // same. This helps confirm that the computation of the bounds is agnostic to
-  // if descendants are composited or not.
-  GetDocument().getElementById("abs")->setAttribute(html_names::kStyleAttr,
-                                                    "will-change: transform");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 125, 725));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-
-  EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-
-  // Add will-change to the grandchild and ensure the bounds are still the same.
-  GetDocument().getElementById("abs2")->setAttribute(html_names::kStyleAttr,
-                                                     "will-change: transform");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 125, 725));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-
-  EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-
-  // Remove will-change from the middle child and ensure the bounds are still
-  // the same.
-  GetDocument().getElementById("abs")->setAttribute(html_names::kStyleAttr, "");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 125, 725));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(abs->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs->UnclippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-  EXPECT_EQ(abs->ClippedAbsoluteBoundingBox(), IntRect(75, 625, 25, 25));
-
-  EXPECT_EQ(abs2->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(abs2->UnclippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
-  EXPECT_EQ(abs2->ClippedAbsoluteBoundingBox(), IntRect(125, 725, 25, 25));
+  TEST_SCROLL_CONTAINER("sticky", scroller2, false);
+  TEST_SCROLL_CONTAINER("absolute", scroller1, false);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform", scroller2, false);
 }
 
-TEST_F(PaintLayerOverlapTest, FixedWithExpandedBoundsForFixedChild) {
+TEST_P(PaintLayerTest, ScrollContainerLayerScrollerUnderRealFixed) {
   SetBodyInnerHTML(R"HTML(
-    <style>
-      * {
-        margin: 0;
-      }
-      body {
-        height: 1000px;
-      }
-      #fixed {
-        height: 50px;
-        left: 25px;
-        position: fixed;
-        top: 25px;
-        width: 50px;
-      }
-      #nestedFixed {
-        height: 25px;
-        left: 50px;
-        position: fixed;
-        top: 100px;
-        width: 25px;
-      }
-    </style>
-    <div id=fixed>
-      <div id=nestedFixed></div>
+    <div style="position: fixed">
+      <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
+        <div id="sticky" style="position: sticky"></div>
+        <div id="absolute" style="position: absolute"></div>
+        <div id="fixed" style="position: fixed"></div>
+        <div id="transform" style="transform: rotate(1deg"></div>
+      </div>
     </div>
   )HTML");
+
+  auto* view_layer = GetLayoutView().Layer();
+  // scroller is static_position, under real position:fixed.
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  TEST_SCROLL_CONTAINER("scroller", view_layer, true);
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute", view_layer, true);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, ScrollContainerLayerScrollerUnderFakeFixed) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="transform: rotate(1deg)">
+      <div style="position: fixed">
+        <div id="scroller"
+             style="width: 100px; height: 100px; overflow: scroll">
+          <div id="sticky" style="position: sticky"></div>
+          <div id="absolute" style="position: absolute"></div>
+          <div id="fixed" style="position: fixed"></div>
+          <div id="transform" style="transform: rotate(1deg"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* view_layer = GetLayoutView().Layer();
+  // scroller is static position, under fake position:fixed.
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  TEST_SCROLL_CONTAINER("scroller", view_layer, false);
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute", view_layer, false);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, false);
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, ScrollContainerLayerFixedScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller"
+         style="position: fixed; width: 100px; height: 100px; overflow: scroll">
+      <div id="sticky" style="position: sticky"></div>
+      <div id="absolute" style="position: absolute"></div>
+      <div id="fixed" style="position: fixed"></div>
+      <div id="transform" style="transform: rotate(1deg"></div>
+    </div>
+  )HTML");
+
+  auto* view_layer = GetLayoutView().Layer();
+  // scroller itself has real fixed position.
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  TEST_SCROLL_CONTAINER("scroller", view_layer, true);
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute", scroller, false);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, ScrollContainerLayerScrollerUnderTransformAndFixed) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="transform: rotate(1deg); position: fixed">
+      <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
+        <div id="sticky" style="position: sticky"></div>
+        <div id="absolute" style="position: absolute"></div>
+        <div id="fixed" style="position: fixed"></div>
+        <div id="transform" style="transform: rotate(1deg"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* view_layer = GetLayoutView().Layer();
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  TEST_SCROLL_CONTAINER("scroller", view_layer, true);
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute", view_layer, true);
+  TEST_SCROLL_CONTAINER("fixed", view_layer, true);
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, ScrollContainerLayerTransformScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="transform: rotate(1deg);
+                              width: 100px; height: 100px; overflow: scroll">
+      <div id="sticky" style="position: sticky"></div>
+      <div id="absolute" style="position: absolute"></div>
+      <div id="fixed" style="position: fixed"></div>
+      <div id="transform" style="transform: rotate(1deg"></div>
+    </div>
+  )HTML");
+
+  auto* view_layer = GetLayoutView().Layer();
+  auto* scroller = GetPaintLayerByElementId("scroller");
+  TEST_SCROLL_CONTAINER("scroller", view_layer, false);
+  TEST_SCROLL_CONTAINER("sticky", scroller, false);
+  TEST_SCROLL_CONTAINER("absolute", scroller, false);
+  TEST_SCROLL_CONTAINER("fixed", scroller, false);
+  TEST_SCROLL_CONTAINER("transform", scroller, false);
+}
+
+TEST_P(PaintLayerTest, AnchorScrollConvertToLayerCoords) {
+  // CSS anchor positioning doesn't work with legacy layout
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+
+  ScopedCSSAnchorPositioningForTest enabled_scope(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+
+      #cb {
+        position: relative;
+        overflow: hidden;
+        width: min-content;
+        height: min-content;
+      }
+
+      #scroller {
+        overflow: scroll;
+        width: 300px;
+        height: 300px;
+      }
+
+      #anchor {
+        anchor-name: --anchor;
+        margin-top: 100px;
+        margin-left: 500px;
+        margin-right: 500px;
+        width: 50px;
+        height: 50px;
+      }
+
+      #anchored {
+        position: absolute;
+        left: anchor(--anchor left);
+        bottom: anchor(--anchor top);
+        width: 50px;
+        height: 50px;
+        anchor-scroll: --anchor;
+      }
+    </style>
+    <div id=cb>
+      <div id=scroller>
+        <div id=anchor></div>
+      </div>
+      <div id=anchored></div>
+   </div>
+  )HTML");
+
+  PaintLayer* anchored_layer = GetPaintLayerByElementId("anchored");
+
+  {
+    PhysicalOffset offset;
+    anchored_layer->ConvertToLayerCoords(nullptr, offset);
+    EXPECT_EQ(PhysicalOffset(500, 50), offset);
+  }
+
+  auto* scrollable_area =
+      GetPaintLayerByElementId("scroller")->GetScrollableArea();
+  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(400, 0));
   UpdateAllLifecyclePhasesForTest();
 
-  // The fixed-pos layer should use bounds that have been expanded to include
-  // the absolutely positioned child. Without this expansion, overlap testing
-  // can miss overlap from that child leading to incorrect composition order.
-  PaintLayer* fixed = GetPaintLayerByElementId("fixed");
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 50, 500));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 25, 50, 50));
-
-  // Note that the nested fixed should not expand its bounds as it doesn't move
-  // relative to its siblings, fixed-pos or not.
-  PaintLayer* nestedFixed = GetPaintLayerByElementId("nestedFixed");
-  EXPECT_EQ(nestedFixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 100, 25, 25));
-  EXPECT_EQ(nestedFixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(nestedFixed->UnclippedAbsoluteBoundingBox(),
-            IntRect(50, 100, 25, 25));
-  EXPECT_EQ(nestedFixed->ClippedAbsoluteBoundingBox(),
-            IntRect(50, 100, 25, 25));
-
-  // Modify the scroll offset and ensure that the bounding box is still the
-  // same.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(25, 25, 50, 500));
-  EXPECT_EQ(fixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 50, 50));
-  EXPECT_EQ(fixed->UnclippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-  EXPECT_EQ(fixed->ClippedAbsoluteBoundingBox(), IntRect(25, 425, 50, 50));
-
-  EXPECT_EQ(nestedFixed->ExpandedBoundingBoxForCompositingOverlapTest(false),
-            IntRect(50, 500, 25, 25));
-  EXPECT_EQ(nestedFixed->LocalBoundingBoxForCompositingOverlapTest(),
-            PhysicalRect(0, 0, 25, 25));
-  EXPECT_EQ(nestedFixed->UnclippedAbsoluteBoundingBox(),
-            IntRect(50, 500, 25, 25));
-  EXPECT_EQ(nestedFixed->ClippedAbsoluteBoundingBox(),
-            IntRect(50, 500, 25, 25));
+  {
+    PhysicalOffset offset;
+    anchored_layer->ConvertToLayerCoords(nullptr, offset);
+    EXPECT_EQ(PhysicalOffset(100, 50), offset);
+  }
 }
 
 }  // namespace blink

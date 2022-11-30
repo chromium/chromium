@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,11 @@
 class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
  public:
   DesktopMediaPickerFactoryImpl();
+
+  DesktopMediaPickerFactoryImpl(const DesktopMediaPickerFactoryImpl&) = delete;
+  DesktopMediaPickerFactoryImpl& operator=(
+      const DesktopMediaPickerFactoryImpl&) = delete;
+
   ~DesktopMediaPickerFactoryImpl() override;
 
   // Get the lazy initialized instance of the factory.
@@ -25,15 +30,13 @@ class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
 
   // DesktopMediaPickerFactory implementation
   // Can return |nullptr| if platform doesn't support DesktopMediaPicker.
-  std::unique_ptr<DesktopMediaPicker> CreatePicker(
-      const content::MediaStreamRequest* request) override;
+  std::unique_ptr<DesktopMediaPicker> CreatePicker() override;
 
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<DesktopMediaList::Type>& types,
-      content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerFactoryImpl);
+      content::WebContents* web_contents,
+      DesktopMediaList::WebContentsFilter includable_web_contents_filter)
+      override;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_PICKER_FACTORY_IMPL_H_

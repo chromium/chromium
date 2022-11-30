@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -55,55 +55,12 @@ WEBVIEW_SPECIFIC = BuildFileMatchRegex(
 CHROME_CHANGES = BuildFileMatchRegex(
     r'AndroidManifest\.xml',
     r'resources\.arsc',
-    r'classes\d?\.dex',
+    r'classes\d*\.dex',
     r'res/.*\.xml', # Resource id isn't same
     r'assets/unwind_cfi_32', # Generated from apk's shared library
      # All pak files except chrome_100_percent.pak are different
     r'assets/resources\.pak',
-    r'assets/locales/am\.pak',
-    r'assets/locales/ar\.pak',
-    r'assets/locales/bg\.pak',
-    r'assets/locales/ca\.pak',
-    r'assets/locales/cs\.pak',
-    r'assets/locales/da\.pak',
-    r'assets/locales/de\.pak',
-    r'assets/locales/el\.pak',
-    r'assets/locales/en-GB\.pak',
-    r'assets/locales/en-US\.pak',
-    r'assets/locales/es-419\.pak',
-    r'assets/locales/es\.pak',
-    r'assets/locales/fa\.pak',
-    r'assets/locales/fi\.pak',
-    r'assets/locales/fil\.pak',
-    r'assets/locales/fr\.pak',
-    r'assets/locales/he\.pak',
-    r'assets/locales/hi\.pak',
-    r'assets/locales/hr\.pak',
-    r'assets/locales/hu\.pak',
-    r'assets/locales/id\.pak',
-    r'assets/locales/it\.pak',
-    r'assets/locales/ja\.pak',
-    r'assets/locales/ko\.pak',
-    r'assets/locales/lt\.pak',
-    r'assets/locales/lv\.pak',
-    r'assets/locales/nb\.pak',
-    r'assets/locales/nl\.pak',
-    r'assets/locales/pl\.pak',
-    r'assets/locales/pt-BR\.pak',
-    r'assets/locales/pt-PT\.pak',
-    r'assets/locales/ro\.pak',
-    r'assets/locales/ru\.pak',
-    r'assets/locales/sk\.pak',
-    r'assets/locales/sl\.pak',
-    r'assets/locales/sr\.pak',
-    r'assets/locales/sv\.pak',
-    r'assets/locales/sw\.pak',
-    r'assets/locales/th\.pak',
-    r'assets/locales/tr\.pak',
-    r'assets/locales/uk\.pak',
-    r'assets/locales/vi\.pak',
-    r'assets/locales/zh-CN\.pak',
-    r'assets/locales/zh-TW\.pak')
+    r'assets/locales/.*\.pak')
 
 # The files in WebView are not same as those in Monochrome
 WEBVIEW_CHANGES = BuildFileMatchRegex(
@@ -129,9 +86,9 @@ class APKEntry:
 def DumpAPK(apk):
   args = ['unzip', '-lv']
   args.append(apk)
-  content = subprocess.check_output(args)
+  content = subprocess.check_output(args, universal_newlines=True)
   apk_entries = []
-  with contextlib.closing(io.BytesIO(content)) as f:
+  with contextlib.closing(io.StringIO(content)) as f:
     for line in f:
       match = ZIP_ENTRY.match(line)
       if match:

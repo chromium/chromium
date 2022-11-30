@@ -1,15 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_STYLE_INVALIDATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_STYLE_INVALIDATOR_H_
 
-#include <memory>
-
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_flags.h"
 #include "third_party/blink/renderer/core/css/invalidation/pending_invalidations.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -103,7 +102,7 @@ class CORE_EXPORT StyleInvalidator {
     void PushInvalidationSet(const SiblingInvalidationSet&);
     bool MatchCurrentInvalidationSets(Element&, StyleInvalidator&);
 
-    bool IsEmpty() const { return invalidation_entries_.IsEmpty(); }
+    bool IsEmpty() const { return invalidation_entries_.empty(); }
     void Advance() { element_index_++; }
 
    private:

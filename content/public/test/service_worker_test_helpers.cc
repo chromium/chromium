@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/service_worker_test_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -24,6 +26,9 @@ namespace {
 
 class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
  public:
+  StoppedObserver(const StoppedObserver&) = delete;
+  StoppedObserver& operator=(const StoppedObserver&) = delete;
+
   static void StartObserving(ServiceWorkerContextWrapper* context,
                              int64_t service_worker_version_id,
                              base::OnceClosure completion_callback_ui) {
@@ -56,7 +61,7 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
 
     // ServiceWorkerContextCoreObserver:
     void OnStopped(int64_t version_id) override {
-      DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+      DCHECK_CURRENTLY_ON(BrowserThread::UI);
       if (version_id != version_id_)
         return;
       std::move(stopped_callback_).Run();
@@ -64,7 +69,7 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
     ~Observer() override { context_->RemoveObserver(this); }
 
    private:
-    ServiceWorkerContextWrapper* const context_;
+    const raw_ptr<ServiceWorkerContextWrapper> context_;
     int64_t version_id_;
     base::OnceClosure stopped_callback_;
   };
@@ -80,8 +85,6 @@ class StoppedObserver : public base::RefCountedThreadSafe<StoppedObserver> {
 
   std::unique_ptr<Observer> inner_observer_;
   base::OnceClosure completion_callback_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoppedObserver);
 };
 
 void StopServiceWorkerForRegistration(
@@ -89,7 +92,7 @@ void StopServiceWorkerForRegistration(
     base::OnceClosure completion_callback_ui,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK(BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(blink::ServiceWorkerStatusCode::kOk, service_worker_status);
   int64_t version_id =
       service_worker_registration->active_version()->version_id();
@@ -102,7 +105,7 @@ void DispatchNotificationClickForRegistration(
     const blink::PlatformNotificationData& notification_data,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK(BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId()));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(blink::ServiceWorkerStatusCode::kOk, service_worker_status);
   scoped_refptr<ServiceWorkerVersion> version =
       service_worker_registration->active_version();
@@ -110,28 +113,11 @@ void DispatchNotificationClickForRegistration(
                         base::DoNothing());
   version->endpoint()->DispatchNotificationClickEvent(
       "notification_id", notification_data, -1 /* action_index */,
-      base::nullopt /* reply */,
+      absl::nullopt /* reply */,
       base::BindOnce([](blink::mojom::ServiceWorkerEventStatus event_status) {
         DCHECK_EQ(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
                   event_status);
       }));
-}
-
-void FindReadyRegistrationForScope(
-    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-    const GURL& scope,
-    base::OnceCallback<void(blink::ServiceWorkerStatusCode,
-                            scoped_refptr<ServiceWorkerRegistration>)>
-        callback) {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE, base::BindOnce(&FindReadyRegistrationForScope,
-                                             std::move(context_wrapper), scope,
-                                             std::move(callback)));
-    return;
-  }
-  context_wrapper->FindReadyRegistrationForScope(scope, std::move(callback));
 }
 
 }  // namespace
@@ -143,8 +129,8 @@ void StopServiceWorkerForScope(ServiceWorkerContext* context,
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
       static_cast<ServiceWorkerContextWrapper*>(context));
 
-  FindReadyRegistrationForScope(
-      context_wrapper, scope,
+  context_wrapper->FindReadyRegistrationForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&StopServiceWorkerForRegistration, context_wrapper,
                      std::move(completion_callback_ui)));
 }
@@ -157,8 +143,8 @@ void DispatchServiceWorkerNotificationClick(
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper(
       static_cast<ServiceWorkerContextWrapper*>(context));
 
-  FindReadyRegistrationForScope(
-      std::move(context_wrapper), scope,
+  context_wrapper->FindReadyRegistrationForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&DispatchNotificationClickForRegistration,
                      notification_data));
 }

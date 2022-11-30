@@ -7,9 +7,9 @@ PASS a should not be focusable.
 PASS a[href] should be focusable.
 FAIL a[focusable=false] should not be focusable. assert_not_equals: got disallowed value Element node <a href="" focusable="false"></a>
 FAIL iframe should be focusable. assert_equals: expected Element node <iframe src="resources/blank.htm"></iframe> but got Element node <a href="" focusable="false"></a>
-FAIL audio[controls] should be focusable. assert_equals: expected Element node <audio controls="controls"></audio> but got Element node <a href="" focusable="false"></a>
-FAIL video[controls] should be focusable. assert_equals: expected Element node <video controls="controls"></video> but got Element node <a href="" focusable="false"></a>
-FAIL canvas[tabindex] should be focusable. assert_equals: expected Element node <canvas tabindex="0"></canvas> but got Element node <a href="" focusable="false"></a>
+PASS audio[controls] should be focusable.
+PASS video[controls] should be focusable.
+FAIL canvas[tabindex] should be focusable. assert_equals: expected Element node <canvas tabindex="0"></canvas> but got Element node <video controls="controls"></video>
 PASS circle[tabindex] should be focusable.
 PASS ellipse[tabindex] should be focusable.
 PASS foreignObject[tabindex] should be focusable.

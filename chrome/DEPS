@@ -3,8 +3,8 @@ include_rules = [
   "+gpu",
   "+net",
   "+pdf/buildflags.h",
-  "+pdf/pdf_features.h",
   "+printing",
+  "+sandbox",
   "+sandbox/policy",
   "+sql",
   # Browser, renderer, common and tests access V8 for various purposes.
@@ -20,7 +20,6 @@ include_rules = [
 
   "+chrome/common",
   "+chrome/test",
-  "+components/back_forward_cache",
   "+components/content_settings/common",
   "+components/content_settings/core/common",
   "+components/embedder_support/switches.h",

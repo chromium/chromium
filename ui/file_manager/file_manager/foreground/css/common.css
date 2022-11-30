@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -16,10 +16,10 @@ cr-button {
    menus in FileBrowser look like native ChromeOS menus. */
 
 cr-menu.chrome-menu {
-  background-color: white;
-  border-radius: 2px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .5);
-  color: rgb(51, 51, 51);
+  background-color: var(--cros-bg-color-elevation-2);
+  border-radius: 4px;
+  box-shadow: var(--cros-elevation-2-shadow);
+  color: var(--cros-menu-label-color);
   outline: none;
   overflow: hidden;
   padding: 8px 0;
@@ -51,42 +51,8 @@ html[dir='rtl'] cr-menu.chrome-menu > :not(hr) {
   background-position: left 10px center;
 }
 
-cr-menu.chrome-menu > .menuitem-button {
-  background-position: center;
-  background-repeat: no-repeat;
-  border: 1px solid rgb(235, 235, 235);
-  height: 42px;
-  margin: -36px -1px -1px 0;
-  min-width: 60px;
-  padding: 0;
-  position: absolute;
-  width: 60px;
-}
-
-cr-menu.chrome-menu > .menuitem-button[checked] {
-  background-color: rgb(235, 235, 235);
-}
-
-cr-menu.chrome-menu > .menuitem-button.left {
-  right: 59px;
-}
-
-html[dir='rtl'] cr-menu.chrome-menu > .menuitem-button.left {
-  left: 59px;
-  right: auto;
-}
-
-cr-menu.chrome-menu > .menuitem-button.right {
-  right: 0;
-}
-
-html[dir='rtl'] cr-menu.chrome-menu > .menuitem-button.right {
-  left: 0;
-  right: auto;
-}
-
 cr-menu.chrome-menu > cr-menu-item[disabled] {
-  color: rgba(51, 51, 51, 0.20);
+  color: var(--cros-text-color-disabled);
   pointer-events: none;
 }
 
@@ -99,13 +65,8 @@ cr-menu.chrome-menu > cr-menu-item[disabled] > .icon.start {
   opacity: 0.20;
 }
 
-cr-menu.chrome-menu > cr-menu-item:not([disabled])[selected],
-cr-menu.chrome-menu > cr-menu-item:not([disabled]):active {
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
 cr-menu.chrome-menu > hr {
-  background: rgb(219, 219, 219);
+  background: var(--cros-separator-color);
   height: 1px;
   margin: 4px 0;
 }
@@ -114,10 +75,19 @@ cr-menu.chrome-menu > hr:first-child {
   display: none;
 }
 
-cr-menu.chrome-menu > cr-menu-item[checked] {
-  background-image: -webkit-image-set(
-    url(../images/common/check_no_box.png) 1x,
-    url(../images/common/2x/check_no_box.png) 2x);
+cr-menu.chrome-menu > cr-menu-item[checked]::after {
+  -webkit-mask-image: url(../images/common/ic_selected.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-prominent);
+  content: '';
+  float: right;
+  height: 32px;
+  width: 20px;
+}
+
+html[dir='rtl'] cr-menu.chrome-menu > cr-menu-item[checked]::after {
+  float: left;
 }
 
 cr-menu.chrome-menu > [checked]::before {
@@ -125,8 +95,7 @@ cr-menu.chrome-menu > [checked]::before {
 }
 
 /* Style for <button>s to have similar style with Polymer's <paper-button>. */
-.imitate-paper-button,
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button {
+.imitate-paper-button {
   background: transparent;
   border: 0;
   border-image: none;
@@ -149,18 +118,7 @@ cr-menu.chrome-menu > [checked]::before {
   z-index: 0;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button {
-  border-radius: 4px;
-  font-weight: 500;
-  margin-inline-end: 0;
-  margin-inline-start: 5px;
-  min-height: 32px;
-  min-width: 70px;
-  padding: auto;
-  text-transform: none;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-buttons > button {
+.cr-dialog-container .cr-dialog-buttons > button {
   background-color: var(--cros-button-background-color-secondary);
   border: 0;
   border-radius: 4px;
@@ -182,114 +140,86 @@ cr-menu.chrome-menu > [checked]::before {
   z-index: 0;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok,
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok:hover {
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok,
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok:hover {
   background-color: var(--cros-button-background-color-primary);
   color: var(--cros-button-label-color-primary);
   order: 1;
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok,
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background-color: var(--cros-button-background-color-primary);
-  color: var(--cros-button-label-color-primary);
-  order: 1;
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok:hover {
+  background: var(--cros-button-background-color-primary-hover-preblended);
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background:
-      linear-gradient(var(--cros-button-background-color-primary-hover-overlay),
-                      var(--cros-button-background-color-primary-hover-overlay));
-              var(--cros-button-background-color-primary),
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background:
-      linear-gradient(var(--cros-button-background-color-primary-hover-overlay),
-                      var(--cros-button-background-color-primary-hover-overlay)),
-              var(--cros-button-background-color-primary);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok[disabled],
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-ok[disabled]:hover {
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok[disabled],
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-ok[disabled]:hover {
   background-color:
       var(--cros-button-background-color-primary-disabled);
   color: var(--cros-button-label-color-primary-disabled);
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok[disabled],
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok[disabled]:hover {
-  background-color:
-      var(--cros-button-background-color-primary-disabled);
-  color: var(--cros-button-label-color-primary-disabled);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel {
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel {
   border: 1px solid var(--cros-button-stroke-color-secondary);
   color: var(--cros-button-label-color-secondary);
   order: 0;
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel {
-  border: 1px solid var(--cros-button-stroke-color-secondary);
-  color: var(--cros-button-label-color-secondary);
-  order: 0;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel:hover {
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel:hover {
   background: var(--cros-button-background-color-secondary-hover);
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel:hover {
-  background: var(--cros-button-background-color-secondary-hover);
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
+.cr-dialog-container .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
   border: 1px solid var(--cros-button-stroke-color-secondary-disabled);
   color: var(--cros-button-label-color-secondary-disabled);
 }
 
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
-.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
-  border: 1px solid var(--cros-button-stroke-color-secondary-disabled);
-  color: var(--cros-button-label-color-secondary-disabled);
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px rgba(51, 103, 214, 0.5);
-}
-
-:root.focus-outline-visible .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus,
-:host-context(:root.focus-outline-visible) .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--google-blue-500-rgb);
-  outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
+:root.focus-outline-visible .cr-dialog-container .cr-dialog-buttons > button:not(:active):focus,
+:host-context(:root.focus-outline-visible) .cr-dialog-container .cr-dialog-buttons > button:not(:active):focus {
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 /* Some files confirm dialogs need to focus their 'Cancel' button by default,
    rather than the 'OK' button. The dialog buttons should have focus rings in
    this case (regardless of mouse, pointer, keyboard interaction). */
-.cr-dialog-container.files-ng .cr-dialog-frame.files-confirm-dialog-cancel-default .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--google-blue-500-rgb);
-  outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
+.cr-dialog-container .cr-dialog-frame.files-confirm-dialog-cancel-default .cr-dialog-buttons > button:not(:active):focus {
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 .buttonbar button {
   margin-inline-start: 12px;
 }
 
-/* Gray progress bar. Background color google grey 700 with 30% opacity */
 .progress-bar {
-  background-color: rgba(95, 104, 106, .3);
+  background-color: var(--cros-slider-track-color-inactive);
   border-radius: 3px;
   height: 6px;
 }
 
 .progress-track {
-  background-color: var(--google-grey-600);
+  background-color: var(--cros-icon-color-primary);
   border-radius: 3px;
   height: 6px;
   min-width: 6px;
+}
+
+.menu-warning {
+  color: var(--cros-textfield-label-color-error);
+  font-size: 11px;
+  line-height: 16px;
+  margin-top: 6px;
 }
 
 /* Entry names (File names, Folder names, Volume names, ...). */
@@ -301,28 +231,11 @@ html[dir='rtl'] .entry-name {
 }
 
 /* Pop-up dialogs. */
-.cr-dialog-container:not(.files-ng).shown {
-  background-color: rgba(0, 0, 0, 0.6);
+.cr-dialog-container.shown {
+  background-color: var(--cros-app-shield-60);
 }
 
-.cr-dialog-container.files-ng.shown {
-  background-color: rgba(var(--google-grey-900-rgb), 60%);
-}
-
-.cr-dialog-container:not(.files-ng) {
-  display: flex;
-  height: 100%;
-  left: 0;
-  overflow: auto;
-  position: absolute;
-  top: 0;
-  transition: opacity 250ms linear;
-  user-select: none;
-  width: 100%;
-  z-index: 9999;
-}
-
-.cr-dialog-container.files-ng {
+.cr-dialog-container {
   display: flex;
   height: 100%;
   left: 0;
@@ -334,26 +247,10 @@ html[dir='rtl'] .entry-name {
   z-index: 9999;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame {
-  background-color: var(--cros-bg-color);
-  border-radius: 2px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2),
-              0 2px 6px 0 rgba(0, 0, 0, 0.1);
-  color: var(--cros-text-color-primary);
-  cursor: default;
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-  padding: 12px;
-  position: relative;
-  width: 386px;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-frame {
-  background-color: var(--cros-bg-color);
+.cr-dialog-container .cr-dialog-frame {
+  background-color: var(--cros-bg-color-elevation-3);
   border-radius: 12px;
-  box-shadow: 0 4px 8px 3px rgba(var(--google-grey-800-rgb), 15%),
-              0 1px 3px 0 rgba(var(--google-grey-800-rgb), 30%);
+  box-shadow: var(--cros-elevation-3-shadow);
   color: var(--cros-text-color-primary);
   cursor: default;
   display: flex;
@@ -367,11 +264,7 @@ html[dir='rtl'] .entry-name {
   position: relative;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame:focus {
-  outline: none;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-frame:focus {
+.cr-dialog-container .cr-dialog-frame:focus {
   outline: none;
 }
 
@@ -397,37 +290,16 @@ html[dir='rtl'] .entry-name {
   animation-timing-function: ease-in-out;
 }
 
-.cr-dialog-container:not(.files-ng).shown > .cr-dialog-frame {
+.cr-dialog-container.shown > .cr-dialog-frame {
   opacity: 1;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame {
-  opacity: 0;
-  transition: opacity 250ms;
-}
-
-.cr-dialog-container.files-ng.shown > .cr-dialog-frame {
-  opacity: 1;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-frame {
+.cr-dialog-container .cr-dialog-frame {
   opacity: 0;
   transition: opacity 100ms;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-title {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 10px;
-  margin-inline-end: 20px;
-  margin-inline-start: 4px;
-  margin-top: 4px;
-  white-space: nowrap;
-  word-wrap: normal;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-title {
+.cr-dialog-container .cr-dialog-title {
   color: var(--cros-text-color-primary);
   display: block;
   font-size: 16px;
@@ -435,63 +307,40 @@ html[dir='rtl'] .entry-name {
   margin-bottom: 16px;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-text {
-  font-size: 12px;
-  margin: 4px 4px 10px 4px;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-text {
+.cr-dialog-container .cr-dialog-text {
   font-size: 14px;
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-text,
-.cr-dialog-container:not(.files-ng) .cr-dialog-title {
-  color: var(--cros-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-text,
-.cr-dialog-container.files-ng .cr-dialog-title {
+.cr-dialog-container .cr-dialog-text,
+.cr-dialog-container .cr-dialog-title {
   overflow-wrap: break-word;
 }
 
-.cr-dialog-container.files-ng .cr-dialog-text {
+.cr-dialog-container .cr-dialog-text {
   color: var(--cros-text-color-secondary);
 }
 
-.cr-dialog-container.files-ng .no-title .cr-dialog-text {
+.cr-dialog-container .no-title .cr-dialog-text {
   color: var(--cros-text-color-primary);
 }
 
-.cr-dialog-container:not(.files-ng) .cr-dialog-frame input {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  padding-top: 24px;
-}
-
-.cr-dialog-container.files-ng .cr-dialog-buttons {
+.cr-dialog-container .cr-dialog-buttons {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   padding-top: 32px;
 }
 
-.cr-dialog-container.files-ng .cr-dialog-close {
+.cr-dialog-container .cr-dialog-close {
   display: none;
 }
 
-.cr-dialog-container.files-ng #suggest-app-dialog .cr-dialog-close,
-.cr-dialog-container.files-ng #default-task-dialog .cr-dialog-close {
-  background: url(../images/common/ic_close.svg);
-  background-position: center;
-  background-repeat: no-repeat;
+.cr-dialog-container #suggest-app-dialog .cr-dialog-close,
+.cr-dialog-container #default-task-dialog .cr-dialog-close {
+  -webkit-mask-image: url(../images/common/ic_close.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
   cursor: pointer;
   display: inline-block;
   height: 32px;
@@ -501,33 +350,10 @@ html[dir='rtl'] .entry-name {
   width: 32px;
 }
 
-:root[dir='rtl'] .cr-dialog-container.files-ng .cr-dialog-close,
-:host-context(:root[dir='rtl']) .cr-dialog-container.files-ng .cr-dialog-close {
+:root[dir='rtl'] .cr-dialog-container .cr-dialog-close,
+:host-context(:root[dir='rtl']) .cr-dialog-container .cr-dialog-close {
   left: 6px;
   right: unset !important;
-}
-
-html[dir='rtl'] .cr-dialog-container:not(.files-ng) .cr-dialog-close {
-  left: 0;
-  right: auto;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-close:hover {
-  opacity: 0.9;
-}
-
-.cr-dialog-container:not(.files-ng) .cr-dialog-close:active {
-  opacity: 1;
-}
-
-.cr-dialog-container:not(.files-ng) .files-alert-dialog .cr-dialog-close,
-.cr-dialog-container:not(.files-ng) .files-confirm-dialog .cr-dialog-close {
-  display: none;
-}
-
-.cr-dialog-container:not(.files-ng) .files-alert-dialog .cr-dialog-text,
-.cr-dialog-container:not(.files-ng) .files-confirm-dialog .cr-dialog-text {
-  font-size: 14px;
 }
 
 /* Modal <dialog> container for Pop-up dialogs. */
@@ -571,7 +397,7 @@ html[dir='rtl'] .cr-dialog-container:not(.files-ng) .cr-dialog-close {
 }
 
 /* Common typography styles for ChromeOS. */
-body.files-ng .headline2 {
+.headline2 {
   color: var(--cros-text-color-primary);
   font-family: Roboto;
   font-size: 15px;
@@ -579,7 +405,7 @@ body.files-ng .headline2 {
   line-height: 22px;
 }
 
-body.files-ng .button2 {
+.button2 {
   color: var(--cros-text-color-primary);
   font-family: Roboto;
   font-size: 13px;
@@ -587,31 +413,16 @@ body.files-ng .button2 {
   line-height: 20px;
 }
 
-body.files-ng .body2-primary {
+.body2-primary {
   color: var(--cros-text-color-primary);
   font-family: Roboto;
   font-size: 13px;
   line-height: 20px;
 }
 
-body.files-ng .annotation1-primary {
+.annotation1-primary {
   color: var(--cros-text-color-primary);
   font-family: Roboto;
   font-size: 12px;
   line-height: 18px;
-}
-
- /* Modification to cr-button to comply with ChromeOS GM2 rules. */
-body.files-ng cr-button.text-button {
-  color: var(--google-blue-600);
-  cursor: pointer;
-  font-family: Roboto;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 20px;
-}
-
-body.files-ng cr-button.text-button:focus {
-  outline-color: rgba(var(--google-blue-600-rgb), 40%);
-  outline-width: 2px;
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -36,15 +38,21 @@ class HTTPHeaderNameListParser {
 
     while (true) {
       ConsumeSpaces();
+      // In RFC 7230, the parser must ignore a reasonable number of empty list
+      // elements for compatibility with legacy list rules.
+      // See: https://datatracker.ietf.org/doc/html/rfc7230#section-7
+      if (value_[pos_] == ',') {
+        ConsumeComma();
+        continue;
+      }
 
-      if (pos_ == value_.length() && !output.empty()) {
-        output.insert(std::string());
+      if (pos_ == value_.length()) {
         return;
       }
 
-      size_t token_start = pos_;
+      wtf_size_t token_start = pos_;
       ConsumeTokenChars();
-      size_t token_size = pos_ - token_start;
+      wtf_size_t token_size = pos_ - token_start;
       if (token_size == 0) {
         output.clear();
         return;
@@ -57,7 +65,8 @@ class HTTPHeaderNameListParser {
         return;
 
       if (value_[pos_] == ',') {
-        ++pos_;
+        if (pos_ < value_.length())
+          ++pos_;
       } else {
         output.clear();
         return;
@@ -66,34 +75,37 @@ class HTTPHeaderNameListParser {
   }
 
  private:
-  // Consumes zero or more spaces (SP and HTAB) from value_.
-  void ConsumeSpaces() {
+  void ConsumePermittedCharacters(
+      base::RepeatingCallback<bool(UChar)> is_permitted) {
     while (true) {
       if (pos_ == value_.length())
         return;
 
-      UChar c = value_[pos_];
-      if (c != ' ' && c != '\t')
+      if (!is_permitted.Run(value_[pos_]))
         return;
       ++pos_;
     }
+  }
+  // Consumes zero or more spaces (SP and HTAB) from value_.
+  void ConsumeSpaces() {
+    ConsumePermittedCharacters(
+        base::BindRepeating([](UChar c) { return c == ' ' || c == '\t'; }));
+  }
+
+  // Consumes zero or more comma from value_.
+  void ConsumeComma() {
+    ConsumePermittedCharacters(
+        base::BindRepeating([](UChar c) { return c == ','; }));
   }
 
   // Consumes zero or more tchars from value_.
   void ConsumeTokenChars() {
-    while (true) {
-      if (pos_ == value_.length())
-        return;
-
-      UChar c = value_[pos_];
-      if (c > 0x7F || !net::HttpUtil::IsTokenChar(c))
-        return;
-      ++pos_;
-    }
+    ConsumePermittedCharacters(base::BindRepeating(
+        [](UChar c) { return c <= 0x7F && net::HttpUtil::IsTokenChar(c); }));
   }
 
   const String value_;
-  size_t pos_;
+  wtf_size_t pos_;
 };
 
 }  // namespace
@@ -148,26 +160,6 @@ bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {
   }
 
   return network::cors::CorsUnsafeRequestHeaderNames(in).empty();
-}
-
-bool ContainsOnlyCorsSafelistedOrForbiddenHeaders(
-    const HTTPHeaderMap& headers) {
-  Vector<String> header_names;
-
-  net::HttpRequestHeaders::HeaderVector in;
-  for (const auto& entry : headers) {
-    in.push_back(net::HttpRequestHeaders::HeaderKeyValuePair(
-        entry.key.Latin1(), entry.value.Latin1()));
-  }
-  // |is_revalidating| is not needed for blink-side CORS.
-  constexpr bool is_revalidating = false;
-  return network::cors::CorsUnsafeNotForbiddenRequestHeaderNames(
-             in, is_revalidating)
-      .empty();
-}
-
-bool IsOkStatus(int status) {
-  return network::cors::IsOkStatus(status);
 }
 
 bool CalculateCorsFlag(const KURL& url,

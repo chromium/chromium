@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace gfx {
 class ImageSkia;
@@ -33,6 +31,9 @@ class StatusTray {
   // produce the appropriate platform-specific instance. Returns NULL if this
   // platform does not support status icons.
   static std::unique_ptr<StatusTray> Create();
+
+  StatusTray(const StatusTray&) = delete;
+  StatusTray& operator=(const StatusTray&) = delete;
 
   virtual ~StatusTray();
 
@@ -63,8 +64,6 @@ class StatusTray {
   // List containing all active StatusIcons. The icons are owned by this
   // StatusTray.
   StatusIcons status_icons_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTray);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_TRAY_H_

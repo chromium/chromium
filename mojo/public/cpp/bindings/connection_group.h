@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace mojo {
 
@@ -85,6 +84,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ConnectionGroup
   static Ref Create(base::RepeatingClosure callback,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  ConnectionGroup(const ConnectionGroup&) = delete;
+  ConnectionGroup& operator=(const ConnectionGroup&) = delete;
+
   unsigned int GetNumRefsForTesting() const { return num_refs_; }
 
  private:
@@ -93,6 +95,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ConnectionGroup
 
   ConnectionGroup(base::RepeatingClosure callback,
                   scoped_refptr<base::SequencedTaskRunner> task_runner);
+
   virtual ~ConnectionGroup();
 
   void AddGroupRef();
@@ -109,8 +112,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ConnectionGroup
   // release, and doing that in conjunction with the RefCountedThreadSafe's own
   // lifetime-controlling ref count is not safely possible.
   std::atomic<unsigned int> num_refs_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionGroup);
 };
 
 }  // namespace mojo

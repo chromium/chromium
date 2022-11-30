@@ -1,25 +1,25 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/compiler_specific.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/test_sync_service.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "base/bind.h"
+#import "base/compiler_specific.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,27 +27,18 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<syncer::TestSyncService>();
-}
-
 class SyncEncryptionTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        ProfileSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
-    browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
 
-    ChromeBrowserState* browserState = browser_.get()->GetBrowserState();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     syncer::TestSyncService* test_sync_service =
         static_cast<syncer::TestSyncService*>(
-            ProfileSyncServiceFactory::GetForBrowserState(browserState));
-    test_sync_service->SetIsUsingSecondaryPassphrase(true);
+            SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+    test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();
   }
@@ -58,7 +49,8 @@ class SyncEncryptionTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 TEST_F(SyncEncryptionTableViewControllerTest, TestModel) {

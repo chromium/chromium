@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,15 @@
 #include <stdio.h>
 
 #include <cmath>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -72,22 +73,14 @@ class GLHelperBenchmark : public testing::Test {
 
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
-        nullptr,            /* surface */
-        true,               /* offscreen */
-        kNullSurfaceHandle, /* window */
-        attributes, SharedMemoryLimits(),
-        nullptr, /* gpu_memory_buffer_manager */
-        nullptr, /* image_factory */
-        nullptr, /* gpu_task_helper */
-        nullptr, /* display_compositor_memory_and_task_controller */
-        base::ThreadTaskRunnerHandle::Get());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
+        SharedMemoryLimits(), /*image_factory=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();
 
-    helper_.reset(new GLHelper(gl_, support));
-    helper_scaling_.reset(new GLHelperScaling(gl_, helper_.get()));
+    helper_ = std::make_unique<GLHelper>(gl_, support);
+    helper_scaling_ = std::make_unique<GLHelperScaling>(gl_, helper_.get());
   }
 
   void TearDown() override {
@@ -124,7 +117,7 @@ class GLHelperBenchmark : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<GLInProcessContext> context_;
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;
@@ -136,9 +129,9 @@ TEST_F(GLHelperBenchmark, ScaleBenchmark) {
   int input_sizes[] = {3200, 2040, 2560, 1476,  // Pixel tab size
                        1920, 1080, 1280, 720,  800, 480, 256, 144};
 
-  for (size_t q = 0; q < base::size(kQualities); q++) {
-    for (size_t outsize = 0; outsize < base::size(output_sizes); outsize += 2) {
-      for (size_t insize = 0; insize < base::size(input_sizes); insize += 2) {
+  for (size_t q = 0; q < std::size(kQualities); q++) {
+    for (size_t outsize = 0; outsize < std::size(output_sizes); outsize += 2) {
+      for (size_t insize = 0; insize < std::size(input_sizes); insize += 2) {
         uint32_t src_texture;
         gl_->GenTextures(1, &src_texture);
         uint32_t dst_texture;
@@ -191,7 +184,7 @@ TEST_F(GLHelperBenchmark, ScaleBenchmark) {
           if (iterations > 2000) {
             break;
           }
-          if ((end_time - start_time) > base::TimeDelta::FromSeconds(1)) {
+          if ((end_time - start_time) > base::Seconds(1)) {
             break;
           }
         }

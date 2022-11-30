@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,7 +119,7 @@ public class BindingsVersioningTest {
         }
 
         {
-            int expectedHandle = 42;
+            long expectedHandle = 42;
             MultiVersionStructV7 v7 = new MultiVersionStructV7();
             v7.fInt32 = 123;
             v7.fRect = newRect(5);
@@ -198,7 +198,7 @@ public class BindingsVersioningTest {
         }
 
         {
-            int expectedHandle = 42;
+            long expectedHandle = 42;
             MultiVersionStructV7 expected = new MultiVersionStructV7();
             expected.fInt32 = 123;
             expected.fRect = newRect(5);

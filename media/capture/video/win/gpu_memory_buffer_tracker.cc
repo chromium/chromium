@@ -1,11 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/win/gpu_memory_buffer_tracker.h"
 
 #include "base/check.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/ipc/common/dxgi_helpers.h"
 #include "media/base/win/mf_helpers.h"
@@ -22,8 +25,8 @@ base::win::ScopedHandle CreateNV12Texture(ID3D11Device* d3d11_device,
                                           const gfx::Size& size) {
   const DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
   D3D11_TEXTURE2D_DESC desc = {
-      .Width = size.width(),
-      .Height = size.height(),
+      .Width = static_cast<UINT>(size.width()),
+      .Height = static_cast<UINT>(size.height()),
       .MipLevels = 1,
       .ArraySize = 1,
       .Format = dxgi_format,
@@ -92,6 +95,12 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
   gfx::GpuMemoryBufferHandle buffer_handle;
   buffer_handle.dxgi_handle =
       CreateNV12Texture(d3d_device_.Get(), buffer_size_);
+  buffer_handle.dxgi_token = gfx::DXGIHandleToken();
+
+  if (!buffer_handle.dxgi_handle.IsValid()) {
+    LOG(ERROR) << "Failed to create NV12 texture";
+    return false;
+  }
 
   buffer_ = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
       std::move(buffer_handle), buffer_size_,
@@ -101,29 +110,33 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
     NOTREACHED() << "Failed to create GPU memory buffer";
     return false;
   }
+
+  region_ = base::UnsafeSharedMemoryRegion::Create(GetMemorySizeInBytes());
+  mapping_ = region_.Map();
+
   return true;
 }
 
-bool GpuMemoryBufferTracker::EnsureD3DDevice() {
+bool GpuMemoryBufferTracker::IsD3DDeviceChanged() {
   // Check for and handle device loss by recreating the texture
-  if (FAILED(d3d_device_->GetDeviceRemovedReason())) {
-    DVLOG(1) << "Detected device loss.";
-    dxgi_device_manager_->ResetDevice();
-    d3d_device_ = dxgi_device_manager_->GetDevice();
-    if (!d3d_device_) {
-      return false;
-    }
-
-    return CreateBufferInternal();
+  Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
+  HRESULT hr = dxgi_device_manager_->CheckDeviceRemovedAndGetDevice(
+      &recreated_d3d_device);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Detected device loss: "
+               << logging::SystemErrorCodeToString(hr);
+    base::UmaHistogramSparse("Media.VideoCapture.Win.D3DDeviceRemovedReason",
+                             hr);
   }
-  return true;
+  return recreated_d3d_device != d3d_device_;
 }
 
 bool GpuMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  return (format == PIXEL_FORMAT_NV12) && (dimensions == buffer_->GetSize());
+  return !IsD3DDeviceChanged() && (format == PIXEL_FORMAT_NV12) &&
+         (dimensions == buffer_->GetSize());
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
@@ -137,12 +150,12 @@ GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
   if (!buffer_) {
     return base::UnsafeSharedMemoryRegion();
   }
-  const auto data_size = GetMemorySizeInBytes();
-  if (!region_.IsValid() || region_.GetSize() < data_size) {
-    region_ = base::UnsafeSharedMemoryRegion::Create(data_size);
-  }
 
-  if (!gpu::CopyDXGIBufferToShMem(buffer_->GetHandle(), region_.Duplicate(),
+  CHECK(region_.IsValid());
+  CHECK(mapping_.IsValid());
+
+  if (!gpu::CopyDXGIBufferToShMem(buffer_->GetHandle(),
+                                  mapping_.GetMemoryAsSpan<uint8_t>(),
                                   d3d_device_.Get(), &staging_texture_)) {
     DLOG(ERROR) << "Couldn't copy DXGI buffer to shmem";
     return base::UnsafeSharedMemoryRegion();
@@ -157,10 +170,12 @@ mojo::ScopedSharedBufferHandle GpuMemoryBufferTracker::DuplicateAsMojoBuffer() {
 }
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
-  if (!EnsureD3DDevice()) {
+  if (IsD3DDeviceChanged()) {
     return gfx::GpuMemoryBufferHandle();
   }
-  return buffer_->CloneHandle();
+  auto handle = buffer_->CloneHandle();
+  handle.region = region_.Duplicate();
+  return handle;
 }
 
 uint32_t GpuMemoryBufferTracker::GetMemorySizeInBytes() {

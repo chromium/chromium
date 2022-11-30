@@ -1,0 +1,25 @@
+caption: Enable URL-keyed anonymized data collection
+desc: |-
+  Setting the policy to Enabled means URL-keyed anonymized data collection, which sends URLs of pages the user visits to Google to make searches and browsing better, is always active.
+
+        Setting the policy to Disabled results in no URL-keyed anonymized data collection.
+
+        If this policy is left unset, the user will be able to change this setting manually.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- file://base/metrics/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:69-
+- chrome_os:69-
+- android:70-
+- ios:90-
+tags:
+- google-sharing
+type: main

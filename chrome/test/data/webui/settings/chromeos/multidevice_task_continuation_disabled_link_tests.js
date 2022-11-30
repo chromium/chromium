@@ -1,15 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('Multidevice', function() {
   let localizedLink = null;
@@ -19,19 +16,21 @@ suite('Multidevice', function() {
     localizedLink = document.createElement(
         'settings-multidevice-task-continuation-disabled-link');
     document.body.appendChild(localizedLink);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
     localizedLink.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Contains 2 links with aria-labels', async () => {
-    const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
+    const chromeSyncLink =
+        localizedLink.shadowRoot.querySelector('#chromeSyncLink');
     assertTrue(!!chromeSyncLink);
     assertTrue(chromeSyncLink.hasAttribute('aria-label'));
-    const learnMoreLink = localizedLink.$$('#learnMoreLink');
+    const learnMoreLink =
+        localizedLink.shadowRoot.querySelector('#learnMoreLink');
     assertTrue(!!learnMoreLink);
     assertTrue(learnMoreLink.hasAttribute('aria-label'));
   });
@@ -44,23 +43,16 @@ suite('Multidevice', function() {
   });
 
   test('ChromeSyncLink navigates to appropriate route', async () => {
-    const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
+    const chromeSyncLink =
+        localizedLink.shadowRoot.querySelector('#chromeSyncLink');
+    const advancedSyncOpenedPromise =
+        eventToPromise('opened-browser-advanced-sync-settings', localizedLink);
+
     chromeSyncLink.click();
 
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
-      await test_util.eventToPromise(
-          'opened-browser-advanced-sync-setting', localizedLink);
-      assertNotEquals(
-          settings.Router.getInstance().getCurrentRoute(),
-          settings.routes.OS_SYNC);
-      assertNotEquals(
-          settings.Router.getInstance().getCurrentRoute(),
-          settings.routes.SYNC_ADVANCED);
-    } else {
-      Polymer.dom.flush();
-      assertEquals(
-          settings.Router.getInstance().getCurrentRoute(),
-          settings.routes.SYNC_ADVANCED);
-    }
+    await advancedSyncOpenedPromise;
+    assertNotEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
+    assertNotEquals(
+        Router.getInstance().getCurrentRoute(), routes.SYNC_ADVANCED);
   });
 });

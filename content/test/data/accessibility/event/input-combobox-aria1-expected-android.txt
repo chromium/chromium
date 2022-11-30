@@ -1,0 +1,2 @@
+TYPE_VIEW_TEXT_SELECTION_CHANGED - [0, 0]
+TYPE_ANNOUNCEMENT - [expanded, 3 autocomplete options available.]

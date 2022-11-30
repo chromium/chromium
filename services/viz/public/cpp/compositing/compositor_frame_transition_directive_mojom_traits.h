@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
@@ -25,14 +26,22 @@ struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
 };
 
 template <>
-struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
-                  viz::CompositorFrameTransitionDirective::Effect> {
-  static viz::mojom::CompositorFrameTransitionDirectiveEffect ToMojom(
-      viz::CompositorFrameTransitionDirective::Effect type);
+struct StructTraits<
+    viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView,
+    viz::CompositorFrameTransitionDirective::SharedElement> {
+  static viz::CompositorRenderPassId render_pass_id(
+      const viz::CompositorFrameTransitionDirective::SharedElement& element) {
+    return element.render_pass_id;
+  }
 
-  static bool FromMojom(
-      viz::mojom::CompositorFrameTransitionDirectiveEffect input,
-      viz::CompositorFrameTransitionDirective::Effect* out);
+  static viz::SharedElementResourceId shared_element_resource_id(
+      const viz::CompositorFrameTransitionDirective::SharedElement& element) {
+    return element.shared_element_resource_id;
+  }
+
+  static bool Read(
+      viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView data,
+      viz::CompositorFrameTransitionDirective::SharedElement* out);
 };
 
 template <>
@@ -48,14 +57,9 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return directive.type();
   }
 
-  static viz::CompositorFrameTransitionDirective::Effect effect(
-      const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.effect();
-  }
-
-  static std::vector<viz::CompositorRenderPassId> shared_render_pass_ids(
-      const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.shared_render_pass_ids();
+  static std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
+  shared_elements(const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.shared_elements();
   }
 
   static bool Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,

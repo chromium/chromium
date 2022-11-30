@@ -1,3 +1,1 @@
-monorail: {
-  component: "Services>Invalidation"
-}
+mixins: "//components/invalidation/COMMON_METADATA"

@@ -49,17 +49,23 @@ Running test: testBasicSetStyle
 
 Dumping matched rules: 
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[1:4-1:22]
+    content: "EDITED"; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -94,23 +100,30 @@ Running test: testSetStyleTwice
 
 Dumping matched rules: 
 *#test* {    regular
-    color: green;
-    padding: 0 4px;
-    cursor: pointer;
-    padding-top: 0px;
-    padding-right: 4px;
-    padding-bottom: 0px;
-    padding-left: 4px;
+    color: green; @[1:4-1:17]
+    padding: 0 4px; @[2:4-2:19]
+    cursor: pointer; @[3:4-4:0]
+    color: green; @[undefined-undefined]
+    padding-top: 0px; @[undefined-undefined]
+    padding-right: 4px; @[undefined-undefined]
+    padding-bottom: 0px; @[undefined-undefined]
+    padding-left: 4px; @[undefined-undefined]
+    cursor: pointer; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[8:4-8:19]
+    font-family: "Arial"; @[9:4-9:25]
+    color: blue; @[10:4-10:16]
+    display: flex; @[11:4-11:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[16:8-16:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -143,23 +156,30 @@ Dumping inherited rules:
 
 Dumping matched rules: 
 *#test* {    regular
-    color: green;
-    padding: 0 6px;
-    cursor: pointer;
-    padding-top: 0px;
-    padding-right: 6px;
-    padding-bottom: 0px;
-    padding-left: 6px;
+    color: green; @[1:4-1:17]
+    padding: 0 6px; @[2:4-2:19]
+    cursor: pointer; @[3:4-4:0]
+    color: green; @[undefined-undefined]
+    padding-top: 0px; @[undefined-undefined]
+    padding-right: 6px; @[undefined-undefined]
+    padding-bottom: 0px; @[undefined-undefined]
+    padding-left: 6px; @[undefined-undefined]
+    cursor: pointer; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[8:4-8:19]
+    font-family: "Arial"; @[9:4-9:25]
+    color: blue; @[10:4-10:16]
+    display: flex; @[11:4-11:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[16:8-16:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -192,23 +212,30 @@ Dumping inherited rules:
 
 Dumping matched rules: 
 *#test* {    regular
-    color: green;
-    padding: 0 8px;
-    cursor: pointer;
-    padding-top: 0px;
-    padding-right: 8px;
-    padding-bottom: 0px;
-    padding-left: 8px;
+    color: green; @[1:4-1:17]
+    padding: 0 8px; @[2:4-2:19]
+    cursor: pointer; @[3:4-4:0]
+    color: green; @[undefined-undefined]
+    padding-top: 0px; @[undefined-undefined]
+    padding-right: 8px; @[undefined-undefined]
+    padding-bottom: 0px; @[undefined-undefined]
+    padding-left: 8px; @[undefined-undefined]
+    cursor: pointer; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[8:4-8:19]
+    font-family: "Arial"; @[9:4-9:25]
+    color: blue; @[10:4-10:16]
+    display: flex; @[11:4-11:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[16:8-16:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -219,17 +246,23 @@ Running test: testSetStylePoorContent
 Expected protocol error: Failed applying edit #0: SyntaxError Style text is not valid.
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -240,17 +273,23 @@ Running test: testSetStyleOpenBrace
 Expected protocol error: Failed applying edit #0: SyntaxError Style text is not valid.
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -261,17 +300,23 @@ Running test: testSetStyleComment
 Expected protocol error: Failed applying edit #0: SyntaxError Style text is not valid.
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -306,18 +351,25 @@ Running test: testSetStyleInMedia
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        content: 'EDITED';
-        color: red;
+        content: 'EDITED'; @[14:8-14:26]
+        color: red; @[15:8-15:19]
+        content: "EDITED"; @[undefined-undefined]
+        color: red; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -348,13 +400,18 @@ Running test: testDeleteStyleBody
 
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
@@ -368,17 +425,23 @@ Running test: testSetStylePoorRange
 Expected protocol error: Specified range is out of bounds
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular
@@ -389,17 +452,23 @@ Running test: testSetStyleOpenComment
 Expected protocol error: Failed applying edit #0: SyntaxError Style text is not valid.
 Dumping matched rules: 
 *#test* {    regular
-    box-sizing: border-box;
+    box-sizing: border-box; @[1:4-1:27]
+    box-sizing: border-box; @[undefined-undefined]
 }
 *#test* {    regular
-    line-height: 1;
-    font-family: "Arial";
-    color: blue;
-    display: flex;
+    line-height: 1; @[6:4-6:19]
+    font-family: "Arial"; @[7:4-7:25]
+    color: blue; @[8:4-8:16]
+    display: flex; @[9:4-9:18]
+    line-height: 1; @[undefined-undefined]
+    font-family: Arial; @[undefined-undefined]
+    color: blue; @[undefined-undefined]
+    display: flex; @[undefined-undefined]
 }
 @media (min-width: 1px)
     *#test* {    regular
-        font-size: 200%;
+        font-size: 200%; @[14:8-14:24]
+        font-size: 200%; @[undefined-undefined]
     }
 @media (min-width: 1px)
     *#test* {    regular

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
-#include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {
@@ -19,6 +18,11 @@ namespace arc {
 class TestInputMethodManagerBridge : public ArcInputMethodManagerBridge {
  public:
   TestInputMethodManagerBridge();
+
+  TestInputMethodManagerBridge(const TestInputMethodManagerBridge&) = delete;
+  TestInputMethodManagerBridge& operator=(const TestInputMethodManagerBridge&) =
+      delete;
+
   ~TestInputMethodManagerBridge() override;
 
   // ArcInputMethodManagerBridge overrides:
@@ -39,9 +43,6 @@ class TestInputMethodManagerBridge : public ArcInputMethodManagerBridge {
   int update_text_input_state_calls_count_ = 0;
   mojom::TextInputStatePtr last_text_input_state_ = nullptr;
   int show_virtual_keyboard_calls_count_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInputMethodManagerBridge);
 };
 
 }  // namespace arc

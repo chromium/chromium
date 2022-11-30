@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [ ":service_worker" ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=../../chrome/test/data/extensions/",
+                    "browser_resolver_prefix_replacements=/_test_resources/=./",
+                  ]
+}
+
+# Group for type checking.
+js_library("service_worker") {
+  sources = [
+    "big_file/sw.js",
+    "big_file/test.js",
+    "configure/sw.js",
+    "configure/test.js",
+    "copy_entry/sw.js",
+    "copy_entry/test.js",
+    "create_file/sw.js",
+    "create_file/test.js",
+    "delete_entry/sw.js",
+    "delete_entry/test.js",
+    "evil/sw.js",
+    "evil/test.js",
+    "get_all/sw.js",
+    "get_all/test.js",
+    "helpers.js",
+    "move_entry/sw.js",
+    "move_entry/test.js",
+    "provider.js",
+    "read_directory/sw.js",
+    "read_directory/test.js",
+    "read_file/sw.js",
+    "read_file/test.js",
+    "write_file/sw.js",
+    "write_file/test.js",
+  ]
+  externs_list = [
+    "$externs_path/chrome.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/test.js",
+    "$externs_path/file_manager_private.js",
+    "$externs_path/file_system_provider.js",
+  ]
+}

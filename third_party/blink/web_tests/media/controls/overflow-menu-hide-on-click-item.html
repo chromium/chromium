@@ -38,8 +38,16 @@ async_test(t => {
         singleTapOnControl(overflowButton(video), t.step_func(() => {
           assert_not_equals(getComputedStyle(menu).display, 'none');
 
-          singleTapOnControl(captionsOverflowItem(video), t.step_func_done(() => {
+          singleTapOnControl(captionsOverflowItem(video), t.step_func(() => {
             assert_equals(getComputedStyle(menu).display, 'none');
+
+            singleTapOnControl(overflowButton(video), t.step_func(() => {
+              assert_not_equals(getComputedStyle(menu).display, 'none');
+
+              singleTapOnControl(playbackSpeedOverflowItem(video), t.step_func_done(() => {
+                assert_equals(getComputedStyle(menu).display, 'none');
+              }));
+            }));
           }));
         }));
       }));

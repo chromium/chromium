@@ -1,463 +1,290 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = os_settings_closure_flags
   deps = [
-    ":actions.m",
-    ":api_listener.m",
-    ":app_detail_view.m",
-    ":app_item.m",
-    ":app_management_page.m",
-    ":arc_detail_view.m",
-    ":browser_proxy.m",
-    ":chrome_app_detail_view.m",
-    ":constants.m",
-    ":dom_switch.m",
-    ":fake_page_handler.m",
-    ":icons.m",
-    ":main_view.m",
-    ":permission_item.m",
-    ":pin_to_shelf_item.m",
-    ":pwa_detail_view.m",
-    ":reducers.m",
-    ":shared_style.m",
-    ":shared_vars.m",
-    ":store.m",
-    ":store_client.m",
-    ":toggle_row.m",
-    ":types.m",
-    ":uninstall_button.m",
-    ":util.m",
+    ":actions",
+    ":api_listener",
+    ":app_detail_view",
+    ":app_details_item",
+    ":app_item",
+    ":app_management_page",
+    ":arc_detail_view",
+    ":browser_proxy",
+    ":chrome_app_detail_view",
+    ":dom_switch",
+    ":fake_page_handler",
+    ":main_view",
+    ":pin_to_shelf_item",
+    ":pwa_detail_view",
+    ":reducers",
+    ":resize_lock_item",
+    ":shared_style",
+    ":shared_vars",
+    ":store",
+    ":store_client",
+    ":supported_links_dialog",
+    ":supported_links_item",
+    ":supported_links_overlapping_apps_dialog",
+    ":util",
   ]
 }
 
-js_library("actions.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/actions.m.js" ]
+js_library("types") {
+}
+
+js_library("actions") {
   deps = [
-    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    "//ash/webui/common/resources/store:store",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("api_listener.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/api_listener.m.js" ]
+js_library("api_listener") {
   deps = [
-    ":actions.m",
-    ":store.m",
-    ":util.m",
+    ":actions",
+    ":store",
+    ":util",
+    "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("app_detail_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_detail_view.m.js" ]
+js_library("app_detail_view") {
   deps = [
-    ":actions.m",
-    ":dom_switch.m",
-    ":store_client.m",
-    "../..:os_route.m",
+    ":actions",
+    ":dom_switch",
+    ":store_client",
+    "../..:os_route",
+    "../..:route_observer_behavior",
     "../../..:router",
-    "./plugin_vm_page:plugin_vm_detail_view.m",
-    "//ui/webui/resources/js:assert.m",
+    "./borealis_page:borealis_detail_view",
+    "./plugin_vm_page:plugin_vm_detail_view",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":app_detail_view_module" ]
 }
 
-js_library("app_item.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_item.m.js" ]
+js_library("app_details_item") {
   deps = [
-    ":actions.m",
-    ":store_client.m",
-    ":util.m",
+    ":actions",
+    ":store_client",
+    ":util",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":app_item_module" ]
+  externs_list = [ "./types.js" ]
 }
 
-js_library("app_management_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/app_management_page.m.js" ]
+js_library("app_item") {
   deps = [
-    ":actions.m",
-    ":browser_proxy.m",
-    ":main_view.m",
-    ":store.m",
-    ":store_client.m",
+    ":actions",
+    ":store_client",
+    ":util",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "./types.js" ]
+}
+
+js_library("app_management_page") {
+  deps = [
+    ":actions",
+    ":browser_proxy",
+    ":main_view",
+    ":store",
+    ":store_client",
     "../../..:router",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
+    "//ash/webui/common/resources:focus_without_ink_js",
   ]
-  extra_deps = [ ":app_management_page_module" ]
 }
 
-js_library("arc_detail_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/arc_detail_view.m.js" ]
+js_library("arc_detail_view") {
   deps = [
-    ":constants.m",
-    ":fake_page_handler.m",
-    ":permission_item.m",
-    ":pin_to_shelf_item.m",
-    ":store_client.m",
-    ":util.m",
+    ":app_details_item",
+    ":fake_page_handler",
+    ":pin_to_shelf_item",
+    ":store_client",
+    ":supported_links_item",
+    ":util",
   ]
-  extra_deps = [ ":arc_detail_view_module" ]
 }
 
-js_library("browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/browser_proxy.m.js" ]
+js_library("browser_proxy") {
   deps = [
-    ":fake_page_handler.m",
-    "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+    ":fake_page_handler",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("chrome_app_detail_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/chrome_app_detail_view.m.js" ]
+js_library("chrome_app_detail_view") {
   deps = [
-    ":browser_proxy.m",
-    ":fake_page_handler.m",
-    ":pin_to_shelf_item.m",
-    ":store_client.m",
-    ":util.m",
+    ":app_details_item",
+    ":browser_proxy",
+    ":fake_page_handler",
+    ":pin_to_shelf_item",
+    ":store_client",
+    ":util",
   ]
-  extra_deps = [ ":chrome_app_detail_view_module" ]
 }
 
-js_library("constants.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/constants.m.js" ]
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("dom_switch.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/dom_switch.m.js" ]
+js_library("dom_switch") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:promise_resolver",
   ]
-  extra_deps = [ ":dom_switch_module" ]
 }
 
-js_library("fake_page_handler.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/fake_page_handler.m.js" ]
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("icons.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/icons.m.js" ]
-  deps = []
-  extra_deps = [ ":icons_module" ]
-}
-
-js_library("main_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/main_view.m.js" ]
+js_library("fake_page_handler") {
   deps = [
-    ":app_item.m",
-    ":browser_proxy.m",
-    ":constants.m",
-    ":store_client.m",
-    ":util.m",
-    "../..:os_route.m",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:promise_resolver",
+  ]
+  externs_list = [ "./types.js" ]
+}
+
+js_library("main_view") {
+  deps = [
+    ":app_item",
+    ":browser_proxy",
+    ":store_client",
+    ":util",
+    "../..:os_route",
+    "../..:route_observer_behavior",
     "../../..:router",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":main_view_module" ]
 }
 
-js_library("permission_item.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/permission_item.m.js" ]
+js_library("pin_to_shelf_item") {
   deps = [
-    ":browser_proxy.m",
-    ":fake_page_handler.m",
-    ":store_client.m",
-    ":toggle_row.m",
-    ":util.m",
-    "../..:metrics_recorder.m",
+    ":browser_proxy",
+    ":util",
+    "../..:metrics_recorder",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":permission_item_module" ]
 }
 
-js_library("pin_to_shelf_item.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/pin_to_shelf_item.m.js" ]
+js_library("pwa_detail_view") {
   deps = [
-    ":browser_proxy.m",
-    ":constants.m",
-    ":toggle_row.m",
-    ":types.m",
-    ":util.m",
-    "../..:metrics_recorder.m",
-    "//ui/webui/resources/js:assert.m",
+    ":app_details_item",
+    ":fake_page_handler",
+    ":pin_to_shelf_item",
+    ":store_client",
+    ":supported_links_item",
+    ":util",
   ]
-  extra_deps = [ ":pin_to_shelf_item_module" ]
 }
 
-js_library("pwa_detail_view.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/pwa_detail_view.m.js" ]
+js_library("reducers") {
   deps = [
-    ":constants.m",
-    ":fake_page_handler.m",
-    ":permission_item.m",
-    ":pin_to_shelf_item.m",
-    ":store_client.m",
-    ":util.m",
-  ]
-  extra_deps = [ ":pwa_detail_view_module" ]
-}
-
-js_library("reducers.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/reducers.m.js" ]
-  deps = [
-    ":types.m",
-    ":util.m",
+    ":util",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("store.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store.m.js" ]
+js_library("resize_lock_item") {
   deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store.m",
+    ":browser_proxy",
+    ":util",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("shared_style.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/shared_style.m.js" ]
+js_library("shared_style") {
   deps = []
-  extra_deps = [ ":shared_style_module" ]
 }
 
-js_library("shared_vars.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/shared_vars.m.js" ]
+js_library("shared_vars") {
   deps = []
-  extra_deps = [ ":shared_vars_module" ]
 }
 
-js_library("store_client.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/store_client.m.js" ]
+js_library("store") {
   deps = [
-    ":store.m",
-    ":types.m",
+    "//ash/webui/common/resources/store:store",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr/ui:store.m",
-    "//ui/webui/resources/js/cr/ui:store_client.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("toggle_row.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/toggle_row.m.js" ]
+js_library("store_client") {
   deps = [
-    ":browser_proxy.m",
-    ":store_client.m",
-    ":types.m",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    ":store",
+    "//ash/webui/common/resources/store:store",
+    "//ash/webui/common/resources/store:store_client",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":toggle_row_module" ]
+  externs_list = [ "./types.js" ]
 }
 
-js_library("types.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/types.m.js" ]
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("uninstall_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/uninstall_button.m.js" ]
+js_library("supported_links_overlapping_apps_dialog") {
   deps = [
-    ":store_client.m",
-    ":util.m",
-    "../..:metrics_recorder.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    ":store_client",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":uninstall_button_module" ]
+  externs_list = [
+    "./types.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
-js_library("util.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/util.m.js" ]
+js_library("supported_links_dialog") {
   deps = [
-    "../..:os_route.m",
+    ":browser_proxy",
+    ":store_client",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+}
+
+js_library("supported_links_item") {
+  deps = [
+    ":browser_proxy",
+    ":store_client",
+    ":supported_links_dialog",
+    ":supported_links_overlapping_apps_dialog",
+    ":util",
+    "../..:metrics_recorder",
+    "//ash/webui/common/resources:focus_without_ink_js",
+  ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
+}
+
+js_library("util") {
+  deps = [
+    "../..:os_route",
     "../../..:router",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":app_detail_view_module",
-    ":app_item_module",
-    ":app_management_page_module",
-    ":arc_detail_view_module",
-    ":chrome_app_detail_view_module",
-    ":dom_switch_module",
-    ":icons_module",
-    ":main_view_module",
-    ":modulize",
-    ":permission_item_module",
-    ":pin_to_shelf_item_module",
-    ":pwa_detail_view_module",
-    ":shared_style_module",
-    ":shared_vars_module",
-    ":toggle_row_module",
-    ":uninstall_button_module",
+html_to_js("web_components") {
+  js_files = [
+    "app_detail_view.js",
+    "app_details_item.js",
+    "app_item.js",
+    "app_management_page.js",
+    "arc_detail_view.js",
+    "chrome_app_detail_view.js",
+    "dom_switch.js",
+    "main_view.js",
+    "pin_to_shelf_item.js",
+    "pwa_detail_view.js",
+    "resize_lock_item.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "supported_links_overlapping_apps_dialog.js",
+    "supported_links_dialog.js",
+    "supported_links_item.js",
   ]
-}
-
-polymer_modulizer("app_detail_view") {
-  js_file = "app_detail_view.js"
-  html_file = "app_detail_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("app_item") {
-  js_file = "app_item.js"
-  html_file = "app_item.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("app_management_page") {
-  js_file = "app_management_page.js"
-  html_file = "app_management_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("arc_detail_view") {
-  js_file = "arc_detail_view.js"
-  html_file = "arc_detail_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("chrome_app_detail_view") {
-  js_file = "chrome_app_detail_view.js"
-  html_file = "chrome_app_detail_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("dom_switch") {
-  js_file = "dom_switch.js"
-  html_file = "dom_switch.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
-}
-
-polymer_modulizer("main_view") {
-  js_file = "main_view.js"
-  html_file = "main_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("permission_item") {
-  js_file = "permission_item.js"
-  html_file = "permission_item.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("pin_to_shelf_item") {
-  js_file = "pin_to_shelf_item.js"
-  html_file = "pin_to_shelf_item.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("pwa_detail_view") {
-  js_file = "pwa_detail_view.js"
-  html_file = "pwa_detail_view.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("shared_style") {
-  js_file = "shared_style.m.js"
-  html_file = "shared_style.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("shared_vars") {
-  js_file = "shared_vars.m.js"
-  html_file = "shared_vars.html"
-  html_type = "custom-style"
-}
-
-polymer_modulizer("toggle_row") {
-  js_file = "toggle_row.js"
-  html_file = "toggle_row.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("uninstall_button") {
-  js_file = "uninstall_button.js"
-  html_file = "uninstall_button.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "actions.js",
-    "api_listener.js",
-    "browser_proxy.js",
-    "constants.js",
-    "fake_page_handler.js",
-    "reducers.js",
-    "store.js",
-    "store_client.js",
-    "types.js",
-    "util.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

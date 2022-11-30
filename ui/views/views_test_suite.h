@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_VIEWS_TEST_SUITE_H_
 #define UI_VIEWS_VIEWS_TEST_SUITE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_suite.h"
 
 #include "build/build_config.h"
@@ -17,16 +18,15 @@ class Env;
 }
 #endif
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace views {
 
 class ViewsTestSuite : public base::TestSuite {
  public:
   ViewsTestSuite(int argc, char** argv);
+
+  ViewsTestSuite(const ViewsTestSuite&) = delete;
+  ViewsTestSuite& operator=(const ViewsTestSuite&) = delete;
+
   ~ViewsTestSuite() override;
 
   int RunTests();
@@ -49,21 +49,8 @@ class ViewsTestSuite : public base::TestSuite {
 #endif
 
   int argc_;
-  char** argv_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestSuite);
+  raw_ptr<char*> argv_;
 };
-
-#if defined(USE_OZONE)
-// Skips the X11-specific test on Ozone if the current platform is not X11.
-#define SKIP_TEST_IF_NOT_OZONE_X11()                          \
-  if (features::IsUsingOzonePlatform() &&                     \
-      ui::OzonePlatform::GetPlatformNameForTest() != "x11") { \
-    GTEST_SKIP() << "This test is X11-only";                  \
-  }
-#else
-#define SKIP_TEST_IF_NOT_OZONE_X11()
-#endif
 
 }  // namespace views
 

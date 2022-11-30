@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/hid/fido_hid_discovery.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -182,6 +183,8 @@ void FakeFidoHidManager::AddFidoHidDevice(std::string guid) {
       HidBlocklist::Get().GetProtectedReportIds(
           HidBlocklist::kReportTypeFeature, device->vendor_id,
           device->product_id, device->collections);
+  device->is_excluded_by_blocklist = HidBlocklist::Get().IsVendorProductBlocked(
+      device->vendor_id, device->product_id);
   AddDevice(std::move(device));
 }
 
@@ -206,6 +209,7 @@ void FakeFidoHidManager::Connect(
     mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
     mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
     bool allow_protected_reports,
+    bool allow_fido_reports,
     ConnectCallback callback) {
   auto device_it = devices_.find(device_guid);
   auto connection_it = connections_.find(device_guid);
@@ -218,6 +222,7 @@ void FakeFidoHidManager::Connect(
 }
 
 void FakeFidoHidManager::AddDevice(device::mojom::HidDeviceInfoPtr device) {
+  DCHECK(!base::Contains(devices_, device->guid));
   device::mojom::HidDeviceInfo* device_info = device.get();
   for (auto& client : clients_)
     client->DeviceAdded(device_info->Clone());
@@ -241,6 +246,15 @@ void FakeFidoHidManager::RemoveDevice(const std::string device_guid) {
   for (auto& client : clients_)
     client->DeviceRemoved(device_info->Clone());
   devices_.erase(it);
+}
+
+void FakeFidoHidManager::ChangeDevice(device::mojom::HidDeviceInfoPtr device) {
+  DCHECK(base::Contains(devices_, device->guid));
+  device::mojom::HidDeviceInfo* device_info = device.get();
+  for (auto& client : clients_)
+    client->DeviceChanged(device_info->Clone());
+
+  devices_[device->guid] = std::move(device);
 }
 
 ScopedFakeFidoHidManager::ScopedFakeFidoHidManager() {

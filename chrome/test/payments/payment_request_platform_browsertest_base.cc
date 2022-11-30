@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,24 @@ void PaymentRequestPlatformBrowserTestBase::NavigateTo(
       GetActiveWebContents(), https_server_->GetURL(hostname, file_path)));
 }
 
+void PaymentRequestPlatformBrowserTestBase::InstallPaymentApp(
+    const std::string& hostname,
+    const std::string& service_worker_filename,
+    std::string* url_method_output) {
+  NavigateTo(hostname, "/payment_handler_installer.html");
+  *url_method_output = https_server()->GetURL(hostname, "/").spec();
+  *url_method_output =
+      url_method_output->substr(0, url_method_output->length() - 1);
+  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("install($1, [$2], false)",
+                                               service_worker_filename,
+                                               *url_method_output)));
+  // Can't output `url_method_output` by return because the ASSERTs require the
+  // method to return void.
+}
+
 void PaymentRequestPlatformBrowserTestBase::ExpectBodyContains(
     const std::string& expected_string) {
   EXPECT_THAT(content::EvalJs(GetActiveWebContents(),
@@ -86,8 +104,8 @@ void PaymentRequestPlatformBrowserTestBase::
   content::BrowserContext* context =
       GetActiveWebContents()->GetBrowserContext();
   auto downloader = std::make_unique<TestDownloader>(
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess());
+      GetCSPCheckerForTests(), context->GetDefaultStoragePartition()
+                                   ->GetURLLoaderFactoryForBrowserProcess());
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",
                                  method.second->GetURL(method.first, "/"));
@@ -103,7 +121,7 @@ void PaymentRequestPlatformBrowserTestBase::
             std::pair<const std::string&, net::EmbeddedTestServer*>>&
             payment_methods) {
   SetDownloaderAndIgnorePortInOriginComparisonForTestingInFrame(
-      payment_methods, GetActiveWebContents()->GetMainFrame());
+      payment_methods, GetActiveWebContents()->GetPrimaryMainFrame());
 }
 
 void PaymentRequestPlatformBrowserTestBase::OnCanMakePaymentCalled() {
@@ -138,14 +156,13 @@ void PaymentRequestPlatformBrowserTestBase::OnAppListReady() {
   if (event_waiter_)
     event_waiter_->OnEvent(TestEvent::kAppListReady);
 }
+void PaymentRequestPlatformBrowserTestBase::OnErrorDisplayed() {
+  if (event_waiter_)
+    event_waiter_->OnEvent(TestEvent::kErrorDisplayed);
+}
 void PaymentRequestPlatformBrowserTestBase::OnCompleteCalled() {
   if (event_waiter_)
     event_waiter_->OnEvent(TestEvent::kPaymentCompleted);
-}
-
-void PaymentRequestPlatformBrowserTestBase::OnMinimalUIReady() {
-  if (event_waiter_)
-    event_waiter_->OnEvent(TestEvent::kMinimalUIReady);
 }
 
 void PaymentRequestPlatformBrowserTestBase::OnUIDisplayed() {
@@ -163,6 +180,11 @@ void PaymentRequestPlatformBrowserTestBase::ResetEventWaiterForEventSequence(
     std::list<TestEvent> event_sequence) {
   event_waiter_ = std::make_unique<EventWaiter>(
       std::move(event_sequence), false /* wait_for_single_event*/);
+}
+
+base::WeakPtr<CSPChecker>
+PaymentRequestPlatformBrowserTestBase::GetCSPCheckerForTests() {
+  return const_csp_checker_.GetWeakPtr();
 }
 
 void PaymentRequestPlatformBrowserTestBase::WaitForObservedEvent() {

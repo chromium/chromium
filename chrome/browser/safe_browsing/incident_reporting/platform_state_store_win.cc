@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ std::wstring GetStateStoreKeyName() {
 
 // Returns the name of the registry value for |profile|'s state.
 std::wstring GetValueNameForProfile(Profile* profile) {
-  return profile->GetPath().BaseName().value();
+  return profile->GetBaseName().value();
 }
 
 // Clears |profile|'s state.

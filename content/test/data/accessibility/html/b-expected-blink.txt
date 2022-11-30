@@ -4,7 +4,7 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Some '
 ++++++++++inlineTextBox name='Some '
-++++++++staticText name='bold' textStyle=1
+++++++++staticText name='bold' textStyle=2
 ++++++++++inlineTextBox name='bold'
 ++++++++staticText name=' text'
 ++++++++++inlineTextBox name=' text'

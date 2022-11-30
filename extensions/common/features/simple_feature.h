@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,15 +16,13 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/values.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -33,36 +31,57 @@ class ExtensionAPITest;
 
 class SimpleFeature : public Feature {
  public:
-  // Used by tests to override the cached --whitelisted-extension-id.
+  // Used by tests to override the cached --allowlisted-extension-id.
   // NOTE: Not thread-safe! This is because it sets extension id on global
   // singleton during its construction and destruction.
   class ScopedThreadUnsafeAllowlistForTest {
    public:
     explicit ScopedThreadUnsafeAllowlistForTest(const std::string& id);
+
+    ScopedThreadUnsafeAllowlistForTest(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+    ScopedThreadUnsafeAllowlistForTest& operator=(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+
     ~ScopedThreadUnsafeAllowlistForTest();
 
    private:
     std::string previous_id_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedThreadUnsafeAllowlistForTest);
   };
 
   SimpleFeature();
+
+  SimpleFeature(const SimpleFeature&) = delete;
+  SimpleFeature& operator=(const SimpleFeature&) = delete;
+
   ~SimpleFeature() override;
 
   Availability IsAvailableToContext(const Extension* extension,
-                                    Context context) const {
-    return IsAvailableToContext(extension, context, GURL());
+                                    Context context,
+                                    int context_id) const {
+    return IsAvailableToContext(extension, context, GURL(), context_id);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
-                                    Platform platform) const {
-    return IsAvailableToContext(extension, context, GURL(), platform);
+                                    Platform platform,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, GURL(), platform,
+                                    context_id, true);
   }
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
-                                    const GURL& url) const {
-    return IsAvailableToContext(extension, context, url, GetCurrentPlatform());
+                                    const GURL& url,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, url,
+                                    GetCurrentPlatform(), context_id, true);
+  }
+  Availability IsAvailableToContext(const Extension* extension,
+                                    Context context,
+                                    const GURL& url,
+                                    Platform platform,
+                                    int context_id) const {
+    return IsAvailableToContextImpl(extension, context, url, platform,
+                                    context_id, true);
   }
 
   // extension::Feature:
@@ -70,12 +89,9 @@ class SimpleFeature : public Feature {
                                      Manifest::Type type,
                                      mojom::ManifestLocation location,
                                      int manifest_version,
-                                     Platform platform) const override;
-  Availability IsAvailableToContext(const Extension* extension,
-                                    Context context,
-                                    const GURL& url,
-                                    Platform platform) const override;
-  Availability IsAvailableToEnvironment() const override;
+                                     Platform platform,
+                                     int context_id) const override;
+  Availability IsAvailableToEnvironment(int context_id) const override;
   bool IsInternal() const override;
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
@@ -112,9 +128,10 @@ class SimpleFeature : public Feature {
   void set_session_types(
       std::initializer_list<mojom::FeatureSessionType> types);
   void set_internal(bool is_internal) { is_internal_ = is_internal; }
-  void set_disallow_for_service_workers(bool disallow) {
-    disallow_for_service_workers_ = disallow;
+  void set_developer_mode_only(bool is_developer_mode_only) {
+    developer_mode_only_ = is_developer_mode_only;
   }
+  void set_disallow_for_service_workers(bool disallow);
   void set_location(Location location) { location_ = location; }
   // set_matches() is an exception to pass-by-value since we construct an
   // URLPatternSet from the vector of strings.
@@ -138,21 +155,21 @@ class SimpleFeature : public Feature {
     return extension_types_;
   }
   const std::vector<Platform>& platforms() const { return platforms_; }
-  const base::Optional<std::vector<Context>>& contexts() const {
+  const absl::optional<std::vector<Context>>& contexts() const {
     return contexts_;
   }
   const std::vector<std::string>& dependencies() const { return dependencies_; }
-  const base::Optional<version_info::Channel> channel() const {
+  const absl::optional<version_info::Channel> channel() const {
     return channel_;
   }
-  const base::Optional<Location> location() const { return location_; }
-  const base::Optional<int> min_manifest_version() const {
+  const absl::optional<Location> location() const { return location_; }
+  const absl::optional<int> min_manifest_version() const {
     return min_manifest_version_;
   }
-  const base::Optional<int> max_manifest_version() const {
+  const absl::optional<int> max_manifest_version() const {
     return max_manifest_version_;
   }
-  const base::Optional<std::string>& command_line_switch() const {
+  const absl::optional<std::string>& command_line_switch() const {
     return command_line_switch_;
   }
   bool component_extensions_auto_granted() const {
@@ -181,6 +198,14 @@ class SimpleFeature : public Feature {
   Availability CreateAvailability(AvailabilityResult result,
                                   mojom::FeatureSessionType session_type) const;
 
+  Availability IsAvailableToContextImpl(
+      const Extension* extension,
+      Context context,
+      const GURL& url,
+      Platform platform,
+      int context_id,
+      bool check_developer_mode) const override;
+
  private:
   friend struct FeatureComparator;
   FRIEND_TEST_ALL_PREFIXES(FeatureProviderTest, ManifestFeatureTypes);
@@ -190,6 +215,14 @@ class SimpleFeature : public Feature {
 
   // Holds String to Enum value mappings.
   struct Mappings;
+
+  static Feature::Availability IsAvailableToContextForBind(
+      const Extension* extension,
+      Feature::Context context,
+      const GURL& url,
+      Feature::Platform platform,
+      int context_id,
+      const Feature* feature);
 
   static bool IsIdInList(const HashedExtensionId& hashed_id,
                          const std::vector<std::string>& list);
@@ -212,7 +245,9 @@ class SimpleFeature : public Feature {
   Availability GetEnvironmentAvailability(
       Platform platform,
       version_info::Channel channel,
-      mojom::FeatureSessionType session_type) const;
+      mojom::FeatureSessionType session_type,
+      int context_id,
+      bool check_developer_mode) const;
 
   // Returns the availability of the feature with respect to a given extension's
   // properties.
@@ -235,26 +270,25 @@ class SimpleFeature : public Feature {
   std::vector<std::string> dependencies_;
   std::vector<Manifest::Type> extension_types_;
   std::vector<mojom::FeatureSessionType> session_types_;
-  base::Optional<std::vector<Context>> contexts_;
+  absl::optional<std::vector<Context>> contexts_;
   std::vector<Platform> platforms_;
   URLPatternSet matches_;
 
-  base::Optional<Location> location_;
-  base::Optional<int> min_manifest_version_;
-  base::Optional<int> max_manifest_version_;
-  base::Optional<std::string> command_line_switch_;
-  base::Optional<std::string> feature_flag_;
-  base::Optional<version_info::Channel> channel_;
+  absl::optional<Location> location_;
+  absl::optional<int> min_manifest_version_;
+  absl::optional<int> max_manifest_version_;
+  absl::optional<std::string> command_line_switch_;
+  absl::optional<std::string> feature_flag_;
+  absl::optional<version_info::Channel> channel_;
   // Whether to ignore channel-based restrictions (such as because the user has
   // enabled experimental extension APIs). Note: this is lazily calculated, and
   // then cached.
-  mutable base::Optional<bool> ignore_channel_;
+  mutable absl::optional<bool> ignore_channel_;
 
   bool component_extensions_auto_granted_;
   bool is_internal_;
+  bool developer_mode_only_{false};
   bool disallow_for_service_workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleFeature);
 };
 
 }  // namespace extensions

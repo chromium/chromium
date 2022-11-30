@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,6 +94,11 @@ public class PermissionDialogDelegate {
         mDialogController = controller;
     }
 
+    /** Return the size of the RequestType enum used for permission requests. */
+    public static int getRequestTypeEnumSize() {
+        return PermissionDialogDelegateJni.get().getRequestTypeEnumSize();
+    }
+
     /**
      * Called from C++ by |nativeDelegatePtr| to destroy the dialog.
      */
@@ -142,5 +147,6 @@ public class PermissionDialogDelegate {
         void cancel(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
         void dismissed(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
         void destroy(long nativePermissionDialogDelegate, PermissionDialogDelegate caller);
+        int getRequestTypeEnumSize();
     }
 }

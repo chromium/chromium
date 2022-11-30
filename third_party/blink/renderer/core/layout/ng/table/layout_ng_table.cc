@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -12,7 +11,9 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_helpers.h"
@@ -38,9 +39,11 @@ inline bool NeedsTableSection(const LayoutObject& object) {
 LayoutNGTable::LayoutNGTable(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
+LayoutNGTable::~LayoutNGTable() = default;
+
 wtf_size_t LayoutNGTable::ColumnCount() const {
   NOT_DESTROYED();
-  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult();
+  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
   if (!cached_layout_result)
     return 0;
   return cached_layout_result->TableColumnCount();
@@ -95,6 +98,8 @@ void LayoutNGTable::TableGridStructureChanged() {
   NOT_DESTROYED();
   // Callers must ensure table layout gets invalidated.
   InvalidateCachedTableBorders();
+  if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse)
+    SetShouldDoFullPaintInvalidation(PaintInvalidationReason::kStyle);
 }
 
 bool LayoutNGTable::HasBackgroundForPaint() const {
@@ -115,13 +120,13 @@ bool LayoutNGTable::HasBackgroundForPaint() const {
 
 void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  LayoutAnalyzer::BlockScope analyzer(*this);
 
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;
   }
   UpdateInFlowBlockLayout();
+  UpdateMargins();
 }
 
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
@@ -195,9 +200,7 @@ void LayoutNGTable::StyleDidChange(StyleDifference diff,
         !old_style->BorderVisuallyEqual(StyleRef()) ||
         old_style->GetWritingDirection() != StyleRef().GetWritingDirection() ||
         old_style->IsFixedTableLayout() != StyleRef().IsFixedTableLayout() ||
-        old_style->EmptyCells() != StyleRef().EmptyCells() ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor());
+        old_style->EmptyCells() != StyleRef().EmptyCells();
     bool collapse_changed =
         StyleRef().BorderCollapse() != old_style->BorderCollapse();
     if (borders_changed || collapse_changed)
@@ -220,14 +223,14 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
     clip_rect = PhysicalRect(location, Size());
     const auto overflow_clip = GetOverflowClipAxes();
-    IntRect infinite_rect = PhysicalRect::InfiniteIntRect();
+    gfx::Rect infinite_rect = PhysicalRect::InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
-      clip_rect.offset.left = LayoutUnit(infinite_rect.X());
-      clip_rect.size.width = LayoutUnit(infinite_rect.Width());
+      clip_rect.offset.left = LayoutUnit(infinite_rect.x());
+      clip_rect.size.width = LayoutUnit(infinite_rect.width());
     }
     if ((overflow_clip & kOverflowClipY) == kNoOverflowClip) {
-      clip_rect.offset.top = LayoutUnit(infinite_rect.Y());
-      clip_rect.size.height = LayoutUnit(infinite_rect.Height());
+      clip_rect.offset.top = LayoutUnit(infinite_rect.y());
+      clip_rect.size.height = LayoutUnit(infinite_rect.height());
     }
   } else {
     clip_rect = LayoutNGMixin<LayoutBlock>::OverflowClipRect(
@@ -253,46 +256,14 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   return clip_rect;
 }
 
+#if DCHECK_IS_ON()
 void LayoutNGTable::AddVisualEffectOverflow() {
   NOT_DESTROYED();
-  // TODO(1061423) Fragment painting: need a correct fragment.
-  if (PhysicalFragmentCount() != 1u) {
-    NOTREACHED();
-    return;
-  }
-  if (const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0)) {
-    // Table's collapsed borders contribute to visual overflow.
-    // In the inline direction, table's border box does not include
-    // visual border width (largest border), but does include
-    // layout border width (border of first cell).
-    // Expands border box to include visual border width.
-    if (const NGTableBorders* collapsed_borders =
-            fragment->TableCollapsedBorders()) {
-      PhysicalRect borders_overflow = PhysicalBorderBoxRect();
-      NGBoxStrut table_borders = collapsed_borders->TableBorder();
-      auto visual_inline_strut =
-          collapsed_borders->GetCollapsedBorderVisualInlineStrut();
-      // Expand by difference between visual and layout border width.
-      table_borders.inline_start =
-          visual_inline_strut.first - table_borders.inline_start;
-      table_borders.inline_end =
-          visual_inline_strut.second - table_borders.inline_end;
-      table_borders.block_start = LayoutUnit();
-      table_borders.block_end = LayoutUnit();
-      borders_overflow.Expand(
-          table_borders.ConvertToPhysical(StyleRef().GetWritingDirection()));
-      AddSelfVisualOverflow(borders_overflow);
-    }
-  }
-  LayoutNGMixin<LayoutBlock>::AddVisualEffectOverflow();
+  // This is computed in |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and
+  // that we should not reach here.
+  NOTREACHED();
 }
-
-void LayoutNGTable::Paint(const PaintInfo& paint_info) const {
-  NOT_DESTROYED();
-  DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  NGBoxFragmentPainter(*LayoutNGMixin<LayoutBlock>::GetPhysicalFragment(0))
-      .Paint(paint_info);
-}
+#endif
 
 LayoutUnit LayoutNGTable::BorderLeft() const {
   NOT_DESTROYED();
@@ -431,7 +402,7 @@ LayoutNGTableSectionInterface* LayoutNGTable::FirstBodyInterface() const {
 }
 
 // Called from many AXLayoutObject methods.
-LayoutNGTableSectionInterface* LayoutNGTable::TopSectionInterface() const {
+LayoutNGTableSectionInterface* LayoutNGTable::FirstSectionInterface() const {
   NOT_DESTROYED();
   NGTableGroupedChildren grouped_children(
       NGBlockNode(const_cast<LayoutNGTable*>(this)));
@@ -443,8 +414,55 @@ LayoutNGTableSectionInterface* LayoutNGTable::TopSectionInterface() const {
   return nullptr;
 }
 
-// Called from many AXLayoutObject methods.
-LayoutNGTableSectionInterface* LayoutNGTable::SectionBelowInterface(
+LayoutNGTableSectionInterface* LayoutNGTable::FirstNonEmptySectionInterface()
+    const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto first_section = grouped_children.begin();
+  if (first_section == grouped_children.end())
+    return nullptr;
+
+  auto* first_section_interface = ToInterface<LayoutNGTableSectionInterface>(
+      (*first_section).GetLayoutBox());
+  if ((*first_section).IsEmptyTableSection()) {
+    return NextSectionInterface(first_section_interface, kSkipEmptySections);
+  }
+
+  return first_section_interface;
+}
+
+LayoutNGTableSectionInterface* LayoutNGTable::LastSectionInterface() const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto last_section = --grouped_children.end();
+  if (last_section != grouped_children.end()) {
+    return ToInterface<LayoutNGTableSectionInterface>(
+        (*last_section).GetLayoutBox());
+  }
+  return nullptr;
+}
+
+LayoutNGTableSectionInterface* LayoutNGTable::LastNonEmptySectionInterface()
+    const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto last_section = --grouped_children.end();
+  if (last_section == grouped_children.end())
+    return nullptr;
+
+  auto* last_section_interface = ToInterface<LayoutNGTableSectionInterface>(
+      (*last_section).GetLayoutBox());
+  if ((*last_section).IsEmptyTableSection()) {
+    return PreviousSectionInterface(last_section_interface, kSkipEmptySections);
+  }
+
+  return last_section_interface;
+}
+
+LayoutNGTableSectionInterface* LayoutNGTable::NextSectionInterface(
     const LayoutNGTableSectionInterface* target,
     SkipEmptySectionsValue skip) const {
   NOT_DESTROYED();
@@ -452,6 +470,26 @@ LayoutNGTableSectionInterface* LayoutNGTable::SectionBelowInterface(
       NGBlockNode(const_cast<LayoutNGTable*>(this)));
   bool found = false;
   for (NGBlockNode section : grouped_children) {
+    if (found &&
+        ((skip == kDoNotSkipEmptySections) || (!section.IsEmptyTableSection())))
+      return To<LayoutNGTableSection>(section.GetLayoutBox());
+    if (target == To<LayoutNGTableSection>(section.GetLayoutBox())
+                      ->ToLayoutNGTableSectionInterface())
+      found = true;
+  }
+  return nullptr;
+}
+
+LayoutNGTableSectionInterface* LayoutNGTable::PreviousSectionInterface(
+    const LayoutNGTableSectionInterface* target,
+    SkipEmptySectionsValue skip) const {
+  NOT_DESTROYED();
+  NGTableGroupedChildren grouped_children(
+      NGBlockNode(const_cast<LayoutNGTable*>(this)));
+  auto stop = --grouped_children.begin();
+  bool found = false;
+  for (auto it = --grouped_children.end(); it != stop; --it) {
+    NGBlockNode section = *it;
     if (found &&
         ((skip == kDoNotSkipEmptySections) || (!section.IsEmptyTableSection())))
       return To<LayoutNGTableSection>(section.GetLayoutBox());

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 
 #include <algorithm>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(MemoryAllocatorTest, NoThrowBuffer) {
   const size_t size_list[] = {0U, 1U, 2U, 11U, 15U, 16U};
 
   // Repeat test for different sizes.
-  for (size_t idx = 0; idx < base::size(size_list); ++idx) {
+  for (size_t idx = 0; idx < std::size(size_list); ++idx) {
     size_t size = size_list[idx];
 
     courgette::NoThrowBuffer<size_t> buf1;

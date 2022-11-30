@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
-import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -82,6 +82,9 @@ public class ContextualSearchBarControl {
      */
     private float mSearchBarTermOpacity;
 
+    /** Whether we're showing the Context vs the Search Term. */
+    private boolean mIsShowingContext;
+
     // Dimensions used for laying out the search bar.
     private final float mTextLayerMinHeight;
     private final float mTermCaptionSpacing;
@@ -111,6 +114,18 @@ public class ContextualSearchBarControl {
 
     /** The animator that controls touch highlighting. */
     private CompositorAnimator mTouchHighlightAnimation;
+
+    /** The animator that gradually exposes the Related Searches in the Bar. */
+    private CompositorAnimator mInBarRelatedSearchesAnimation;
+
+    /** The height of the Related Searches section of the Bar, as adjusted during animation. */
+    private float mInBarRelatedSearchesAnimatedHeightDps;
+
+    /** The max height of the Related Searches section of the Bar, used for shrink animation. */
+    private float mInBarRelatedSearchesMaxHeightForShrinkAnimation;
+
+    /** A way to notify tests when the in-bar animation changes. */
+    private Runnable mInBarAnimationTestNotifier;
 
     /**
      * Constructs a new bottom bar control container by inflating views from XML.
@@ -172,6 +187,11 @@ public class ContextualSearchBarControl {
      * Removes the bottom bar views from the parent container.
      */
     public void destroy() {
+        // Make sure animations are canceled otherwise setting the height can put it into an
+        // inconsistent state.
+        if (mInBarRelatedSearchesAnimation != null) {
+            mInBarRelatedSearchesAnimation.cancel();
+        }
         mContextControl.destroy();
         mSearchTermControl.destroy();
         mCaptionControl.destroy();
@@ -189,9 +209,10 @@ public class ContextualSearchBarControl {
         if (percentage == FULL_OPACITY) onUpdateFromPeekToExpand(TRANSPARENT_OPACITY);
 
         // When the panel is completely closed the caption and custom image should be hidden.
+        // TODO(donnd): Do we really need to do any of this?
+        // The space will be freed when the panel closes.
         if (percentage == TRANSPARENT_OPACITY) {
             mQuickActionControl.reset();
-            mCaptionControl.hide();
             getImageControl().hideCustomImage(false);
         }
     }
@@ -210,42 +231,50 @@ public class ContextualSearchBarControl {
     }
 
     /**
+     * Updates this bar when in transition between expanded and maximized states.
+     * @param percentage The percentage to the more opened state.
+     */
+    public void onUpdateFromExpandToMaximize(float percentage) {
+        getImageControl().onUpdateFromExpandToMaximize(percentage);
+        mCaptionControl.onUpdateFromExpandToMaximize(percentage);
+    }
+
+    /**
      * Sets the details of the context to display in the control.
      * @param selection The portion of the context that represents the user's selection.
      * @param end The portion of the context after the selection.
      */
     public void setContextDetails(String selection, String end) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
         mContextControl.setContextDetails(selection, end);
         resetSearchBarContextOpacity();
     }
 
     /**
-     * Updates the Bar to display a dictionary definition card.
-     * @param searchTerm The string that represents the search term to display.
-     * @param cardTagEnum Which kind of card is being shown in this update.
+     * Updates the Bar to display a dictionary definition icon.
      */
-    void updateForDictionaryDefinition(String searchTerm, @CardTag int cardTagEnum) {
-        if (!mCardIconControl.didUpdateControlsForDefinition(
-                    mContextControl, mImageControl, searchTerm, cardTagEnum)) {
-            // Can't style, just update with the text to display.
-            setSearchTerm(searchTerm);
-            animateSearchTermResolution();
-        }
+    void setVectorDrawableDefinitionIcon() {
+        mCardIconControl.setVectorDrawableDefinitionIcon();
+        mImageControl.setCardIconResourceId(mCardIconControl.getViewId());
     }
 
     /**
      * Sets the search term to display in the control.
      * @param searchTerm The string that represents the search term.
+     * @param pronunciation A string for the pronunciation when a Definition is shown.
      */
-    public void setSearchTerm(String searchTerm) {
+    public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
-        mSearchTermControl.setSearchTerm(searchTerm);
-        resetSearchBarTermOpacity();
+        // Multi-part search terms use the Context Control since it's able to display multiple.
+        if (pronunciation == null) {
+            mSearchTermControl.setSearchTerm(searchTerm);
+            resetSearchBarTermOpacity();
+        } else {
+            mContextControl.setContextDetails(searchTerm, pronunciation);
+            resetSearchBarContextOpacity();
+        }
     }
 
     /**
@@ -254,6 +283,20 @@ public class ContextualSearchBarControl {
      */
     public void setCaption(String caption) {
         mCaptionControl.setCaption(caption);
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    void hideCaption() {
+        mCaptionControl.hide();
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    boolean hasCaption() {
+        return mCaptionControl.hasCaption();
     }
 
     /**
@@ -285,6 +328,11 @@ public class ContextualSearchBarControl {
      */
     public int getSearchTermViewId() {
         return mSearchTermControl.getViewId();
+    }
+
+    @VisibleForTesting
+    public CharSequence getSearchTerm() {
+        return mSearchTermControl.getTextView().getText();
     }
 
     /**
@@ -347,6 +395,7 @@ public class ContextualSearchBarControl {
      * context is made visible and the search term invisible.
      */
     private void resetSearchBarContextOpacity() {
+        mIsShowingContext = true;
         mSearchBarContextOpacity = FULL_OPACITY;
         mSearchBarTermOpacity = TRANSPARENT_OPACITY;
     }
@@ -356,15 +405,9 @@ public class ContextualSearchBarControl {
      * term is made visible and the search context invisible.
      */
     private void resetSearchBarTermOpacity() {
+        mIsShowingContext = false;
         mSearchBarContextOpacity = TRANSPARENT_OPACITY;
         mSearchBarTermOpacity = FULL_OPACITY;
-    }
-
-    /**
-     * Hides the caption so it will not be displayed in the control.
-     */
-    private void hideCaption() {
-        mCaptionControl.hide();
     }
 
     // ============================================================================================
@@ -501,8 +544,7 @@ public class ContextualSearchBarControl {
         if (mTextOpacityAnimation == null) {
             mTextOpacityAnimation = CompositorAnimator.ofFloat(
                     mContextualSearchPanel.getAnimationHandler(), TRANSPARENT_OPACITY, FULL_OPACITY,
-                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, null);
-            mTextOpacityAnimation.addUpdateListener(
+                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
                     animator -> updateSearchBarTextOpacity(animator.getAnimatedValue()));
         }
         mTextOpacityAnimation.cancel();
@@ -532,7 +574,92 @@ public class ContextualSearchBarControl {
                 Math.max(percentage - (1 - overlapPercentage), TRANSPARENT_OPACITY)
                 / overlapPercentage;
 
-        mSearchBarContextOpacity = fadingOutPercentage;
-        mSearchBarTermOpacity = fadingInPercentage;
+        // Reverse fading in/out if we're showing the multi-part search term in the context layout.
+        mSearchBarContextOpacity = mIsShowingContext ? fadingInPercentage : fadingOutPercentage;
+        mSearchBarTermOpacity = mIsShowingContext ? fadingOutPercentage : fadingInPercentage;
+    }
+
+    /**
+     * @return Whether the animation for the in bar related searches animation is running.
+     */
+    boolean inBarRelatedSearchesAnimationIsRunning() {
+        return mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning();
+    }
+
+    /** Animates showing Related Searches in the bottom part of the Bar. */
+    void animateInBarRelatedSearches(boolean shouldGrowNotShrink) {
+        if (mInBarRelatedSearchesAnimation != null && mInBarRelatedSearchesAnimation.isRunning()) {
+            mInBarRelatedSearchesAnimation.cancel();
+            clearCacheMaxHeightForShrinkAnimation();
+        }
+        if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
+            float startValue = shouldGrowNotShrink ? 0.f : 1.f;
+            float endValue = shouldGrowNotShrink ? 1.f : 0.f;
+            mInBarRelatedSearchesAnimation = CompositorAnimator.ofFloat(
+                    mContextualSearchPanel.getAnimationHandler(), startValue, endValue,
+                    OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS,
+                    animator -> updateInBarRelatedSearchesSize(animator.getAnimatedValue()));
+            mInBarRelatedSearchesAnimation.start();
+            if (shouldGrowNotShrink) cacheMaxHeightForShrinkAnimation();
+        }
+    }
+
+    /**
+     * Updates the portion of the Related Searches UI that is shown.
+     * @param percentage The percentage (from 0 to 1) of the UI to expose.
+     */
+    private void updateInBarRelatedSearchesSize(float percentage) {
+        mInBarRelatedSearchesAnimatedHeightDps =
+                getInBarRelatedSearchesMaximumHeight() * percentage;
+        if (mContextualSearchPanel.isDelayedIntelligenceActive()) {
+            mContextualSearchPanel.setClampedPanelHeight(
+                    mContextualSearchPanel.getPanelHeightFromState(
+                            mContextualSearchPanel.getPanelState()));
+        } else {
+            mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
+        }
+        if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
+            clearCacheMaxHeightForShrinkAnimation();
+        }
+        if (mInBarAnimationTestNotifier != null) mInBarAnimationTestNotifier.run();
+    }
+
+    /** Returns the maximum height of the Related Searches UI that we show right in the Bar. */
+    private float getInBarRelatedSearchesMaximumHeight() {
+        float currentRelatedSearchesMaxHeight =
+                mContextualSearchPanel.getInBarRelatedSearchesMaximumHeightDps();
+        return currentRelatedSearchesMaxHeight > 0f
+                ? currentRelatedSearchesMaxHeight
+                : mInBarRelatedSearchesMaxHeightForShrinkAnimation;
+    }
+
+    /**
+     * Caches the current Related Searches max height so we can use it when shrinking the Bar to
+     * animate the carousel away.
+     * The caller needs to call this when an expanding animation has reached its maximum height, but
+     * may call it repeatedly as long as the Bar keeps growing.
+     */
+    private void cacheMaxHeightForShrinkAnimation() {
+        mInBarRelatedSearchesMaxHeightForShrinkAnimation =
+                mContextualSearchPanel.getInBarRelatedSearchesMaximumHeightDps();
+    }
+
+    /** Clears the Related Searches max height used for animating them away. */
+    void clearCacheMaxHeightForShrinkAnimation() {
+        mInBarRelatedSearchesMaxHeightForShrinkAnimation = 0.f;
+    }
+
+    /**
+     * Returns the current height of the portion of the Related Searches UI that is visible
+     * due to animation.
+     */
+    float getInBarRelatedSearchesAnimatedHeightDps() {
+        return mInBarRelatedSearchesAnimatedHeightDps;
+    }
+
+    @VisibleForTesting
+    public void setInBarAnimationTestNotifier(Runnable runnable) {
+        assert mInBarAnimationTestNotifier == null;
+        mInBarAnimationTestNotifier = runnable;
     }
 }

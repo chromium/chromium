@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
 #include "third_party/blink/renderer/core/paint/paint_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class CullRect;
 class ComputedStyle;
+class FragmentData;
 class GraphicsContext;
-struct PhysicalOffset;
+class NGPhysicalBoxFragment;
 
 // This class is responsible for painting self-painting PaintLayer.
 //
@@ -29,77 +29,32 @@ class CORE_EXPORT PaintLayerPainter {
  public:
   PaintLayerPainter(PaintLayer& paint_layer) : paint_layer_(paint_layer) {}
 
-  // The Paint() method paints the layers that intersect the cull rect from
-  // back to front.  paint() assumes that the caller will clip to the bounds of
-  // damageRect if necessary.
-  void Paint(GraphicsContext&,
-             const CullRect&,
-             const GlobalPaintFlags = kGlobalPaintNormalPhase,
-             PaintLayerFlags = 0);
-  // Paint() assumes that the caller will clip to the bounds of the painting
-  // dirty if necessary.
-  PaintResult Paint(GraphicsContext&,
-                    const PaintLayerPaintingInfo&,
-                    PaintLayerFlags);
-  // PaintLayerContents() assumes that the caller will clip to the bounds of the
-  // painting dirty rect if necessary.
-  PaintResult PaintLayerContents(GraphicsContext&,
-                                 const PaintLayerPaintingInfo&,
-                                 PaintLayerFlags);
-
-  void PaintOverlayOverflowControls(GraphicsContext&,
-                                    const CullRect&,
-                                    const GlobalPaintFlags);
+  // Paints the layers from back to front. It assumes that the caller will
+  // clip to the bounds of damage rect if necessary.
+  PaintResult Paint(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag);
 
   // Returns true if the painted output of this PaintLayer and its children is
   // invisible and therefore can't impact painted output.
   static bool PaintedOutputInvisible(const ComputedStyle&);
 
-  // For CullRectUpdate.
-  bool ShouldUseInfiniteCullRect();
+  // Returns the contents visual overflow rect in the coordinate space of the
+  // contents.
+  static PhysicalRect ContentsVisualRect(const FragmentData&, const LayoutBox&);
 
  private:
   friend class PaintLayerPainterTest;
 
   PaintResult PaintChildren(PaintLayerIteration children_to_visit,
                             GraphicsContext&,
-                            const PaintLayerPaintingInfo&,
-                            PaintLayerFlags);
-  bool AtLeastOneFragmentIntersectsDamageRect(
-      PaintLayerFragments&,
-      const PaintLayerPaintingInfo&,
-      PaintLayerFlags,
-      const PhysicalOffset& offset_from_root);
+                            PaintFlags);
   void PaintFragmentWithPhase(PaintPhase,
-                              const PaintLayerFragment&,
+                              const FragmentData&,
+                              const NGPhysicalBoxFragment*,
                               GraphicsContext&,
-                              const CullRect&,
-                              const PaintLayerPaintingInfo&,
-                              PaintLayerFlags);
-  void PaintBackgroundForFragmentsWithPhase(PaintPhase,
-                                            const PaintLayerFragments&,
-                                            GraphicsContext&,
-                                            const PaintLayerPaintingInfo&,
-                                            PaintLayerFlags);
-  void PaintForegroundForFragments(const PaintLayerFragments&,
-                                   GraphicsContext&,
-                                   const PaintLayerPaintingInfo&,
-                                   PaintLayerFlags);
-  void PaintForegroundForFragmentsWithPhase(PaintPhase,
-                                            const PaintLayerFragments&,
-                                            GraphicsContext&,
-                                            const PaintLayerPaintingInfo&,
-                                            PaintLayerFlags);
-  void PaintOverlayOverflowControlsForFragments(const PaintLayerFragments&,
-                                                GraphicsContext&,
-                                                const PaintLayerPaintingInfo&,
-                                                PaintLayerFlags);
-
-  bool ShouldUseInfiniteCullRectInternal(GlobalPaintFlags,
-                                         bool for_cull_rect_update);
-  void AdjustForPaintProperties(const GraphicsContext&,
-                                PaintLayerPaintingInfo&,
-                                PaintLayerFlags&);
+                              PaintFlags);
+  void PaintWithPhase(PaintPhase, GraphicsContext&, PaintFlags);
+  void PaintForegroundPhases(GraphicsContext&, PaintFlags);
+  void PaintOverlayOverflowControls(GraphicsContext&, PaintFlags);
 
   PaintLayer& paint_layer_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/media_session.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 namespace screentime {
@@ -31,28 +32,36 @@ void TabHelper::UseFakeWebpageControllerForTesting() {
 bool TabHelper::IsScreentimeEnabledForProfile(Profile* profile) {
   if (profile->IsOffTheRecord())
     return false;
+  if (!profile->GetPrefs()
+           ->FindPreference(policy::policy_prefs::kScreenTimeEnabled)
+           ->GetValue()
+           ->GetBool()) {
+    return false;
+  }
+
   return IsScreenTimeEnabled();
 }
 
 TabHelper::TabHelper(content::WebContents* contents)
-    : WebContentsObserver(contents), page_controller_(MakeWebpageController()) {
+    : WebContentsObserver(contents),
+      content::WebContentsUserData<TabHelper>(*contents),
+      page_controller_(MakeWebpageController()) {
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  // Absolutely ensure that we never record a navigation for an OTR profile.
+  CHECK(!profile->IsOffTheRecord());
+
   NSView* contents_view = contents->GetNativeView().GetNativeNSView();
   [contents_view addSubview:page_controller_->GetView()];
 }
 
 TabHelper::~TabHelper() = default;
 
-void TabHelper::DidFinishNavigation(content::NavigationHandle* handle) {
-  Profile* profile = Profile::FromBrowserContext(
-      handle->GetWebContents()->GetBrowserContext());
-  // Absolutely ensure that we never record a navigation for an OTR profile.
-  CHECK(!profile->IsOffTheRecord());
-
-  // TODO(ellyjones): Some defensive programming around chrome:// URLs would
-  // probably be a good idea here. It's not unimaginable that ScreenTime would
-  // misbehave and end up occluding those URLs, which would be very bad.
-  if (handle->IsInMainFrame() && handle->HasCommitted())
-    page_controller_->PageURLChangedTo(URLForReporting(handle->GetURL()));
+void TabHelper::PrimaryPageChanged(content::Page& page) {
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  const GURL& url = rfh.GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
+  page_controller_->PageURLChangedTo(URLForReporting(url));
 }
 
 std::unique_ptr<WebpageController> TabHelper::MakeWebpageController() {
@@ -82,6 +91,6 @@ void TabHelper::OnBlockedChanged(bool blocked) {
     media_session->Resume(content::MediaSession::SuspendType::kSystem);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabHelper);
 
 }  // namespace screentime

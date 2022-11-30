@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_ASH_LOGIN_TEST_NETWORK_PORTAL_DETECTOR_MIXIN_H_
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkPortalDetectorTestImpl;
+
+// DEPRECATED, DO NOT USE IN NEW TESTS. NetworkStateHandler should be used
+// to track portal state. This mixin is maintained for compatibility with
+// existing tests. See NetworkStateTestHelper for testing with NetworkState.
 
 // An InBrowserProcessTestMixin that provides utility methods for faking
 // network captive portal detector state.
@@ -27,6 +31,7 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   // state and notifies NetworkPortalDetector observers of the portal detection
   // completion.
   void SetDefaultNetwork(const std::string& network_guid,
+                         const std::string& network_type,
                          NetworkPortalDetector::CaptivePortalStatus status);
 
   // Simulates no network state. It notifies NetworkPortalDetector observers of
@@ -38,24 +43,26 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
   void SimulateDefaultNetworkState(
       NetworkPortalDetector::CaptivePortalStatus status);
 
-  // Runs loop until the NetworkPortalDetector is requested to start portal
-  // detection. It will return immediately if a detection is already in
-  // progress.
-  void WaitForPortalDetectionRequest();
-
   // InProcessBrowserTestMixin:
-  void SetUpInProcessBrowserTestFixture() override;
-  void TearDownInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  private:
+  void SetShillDefaultNetwork(
+      const std::string& network_guid,
+      const std::string& network_type,
+      NetworkPortalDetector::CaptivePortalStatus status);
+
   NetworkPortalDetectorTestImpl* network_portal_detector_ = nullptr;
+  std::string default_network_guid_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkPortalDetectorMixin;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::NetworkPortalDetectorMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_NETWORK_PORTAL_DETECTOR_MIXIN_H_

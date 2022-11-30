@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "remoting/base/name_value_map.h"
 
@@ -125,7 +126,8 @@ const char ChromotingEvent::kTypeKey[] = "type";
 const char ChromotingEvent::kVideoBandwidthKey[] = "video_bandwidth";
 const char ChromotingEvent::kWebAppVersionKey[] = "webapp_version";
 
-ChromotingEvent::ChromotingEvent() : values_map_(new base::DictionaryValue()) {}
+ChromotingEvent::ChromotingEvent()
+    : values_map_(std::make_unique<base::Value::Dict>()) {}
 
 ChromotingEvent::ChromotingEvent(Type type) : ChromotingEvent() {
   SetEnum(kTypeKey, type);
@@ -133,7 +135,7 @@ ChromotingEvent::ChromotingEvent(Type type) : ChromotingEvent() {
 
 ChromotingEvent::ChromotingEvent(const ChromotingEvent& other) {
   send_attempts_ = other.send_attempts_;
-  values_map_ = other.values_map_->CreateDeepCopy();
+  values_map_ = std::make_unique<base::Value::Dict>(other.values_map_->Clone());
 }
 
 ChromotingEvent::ChromotingEvent(ChromotingEvent&& other) {
@@ -146,7 +148,8 @@ ChromotingEvent::~ChromotingEvent() = default;
 ChromotingEvent& ChromotingEvent::operator=(const ChromotingEvent& other) {
   if (this != &other) {
     send_attempts_ = other.send_attempts_;
-    values_map_ = other.values_map_->CreateDeepCopy();
+    values_map_ =
+        std::make_unique<base::Value::Dict>(other.values_map_->Clone());
   }
   return *this;
 }
@@ -159,25 +162,25 @@ ChromotingEvent& ChromotingEvent::operator=(ChromotingEvent&& other) {
 
 void ChromotingEvent::SetString(const std::string& key,
                                 const std::string& value) {
-  values_map_->SetString(key, value);
+  values_map_->Set(key, value);
 }
 
 void ChromotingEvent::SetInteger(const std::string& key, int value) {
-  values_map_->SetInteger(key, value);
+  values_map_->Set(key, value);
 }
 
 void ChromotingEvent::SetBoolean(const std::string& key, bool value) {
-  values_map_->SetBoolean(key, value);
+  values_map_->Set(key, value);
 }
 
 void ChromotingEvent::SetDouble(const std::string& key, double value) {
-  values_map_->SetDouble(key, value);
+  values_map_->Set(key, value);
 }
 
 bool ChromotingEvent::IsDataValid() {
-  const base::Value* auth_method = values_map_->FindKey(kAuthMethodKey);
+  absl::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey);
   if (auth_method &&
-      auth_method->GetInt() == static_cast<int>(AuthMethod::NOT_SET)) {
+      auth_method.value() == static_cast<int>(AuthMethod::NOT_SET)) {
     return false;
   }
   // TODO(yuweih): We may add other checks.
@@ -189,17 +192,17 @@ void ChromotingEvent::AddSystemInfo() {
   SetString(kCpuKey, base::SysInfo::OperatingSystemArchitecture());
   SetString(kOsVersionKey, base::SysInfo::OperatingSystemVersion());
   SetString(kWebAppVersionKey, STRINGIZE(VERSION));
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   Os os = Os::CHROMOTING_LINUX;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   Os os = Os::CHROMOTING_CHROMEOS;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   Os os = Os::CHROMOTING_IOS;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   Os os = Os::CHROMOTING_MAC;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   Os os = Os::CHROMOTING_WINDOWS;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   Os os = Os::CHROMOTING_ANDROID;
 #else
   Os os = Os::OTHER;
@@ -212,143 +215,146 @@ void ChromotingEvent::IncrementSendAttempts() {
 }
 
 const base::Value* ChromotingEvent::GetValue(const std::string& key) const {
-  return values_map_->FindKey(key);
+  return values_map_->Find(key);
 }
 
-std::unique_ptr<base::DictionaryValue> ChromotingEvent::CopyDictionaryValue()
+std::unique_ptr<base::Value::Dict> ChromotingEvent::CopyDictionaryValue()
     const {
-  return values_map_->CreateDeepCopy();
+  return std::make_unique<base::Value::Dict>(values_map_->Clone());
 }
 
 // TODO(rkjnsn): Ideally we'd use the protobuf directly instead of storing
 // everything in a DictionaryValue that needs to be converted.
 apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
   apis::v1::ChromotingEvent event_proto;
-  if (values_map_->HasKey(kAuthMethodKey)) {
+
+  if (absl::optional<int> auth_method = values_map_->FindInt(kAuthMethodKey)) {
     event_proto.set_auth_method(
-        static_cast<apis::v1::ChromotingEvent_AuthMethod>(
-            values_map_->FindKey(kAuthMethodKey)->GetInt()));
+        static_cast<apis::v1::ChromotingEvent_AuthMethod>(auth_method.value()));
   }
-  if (values_map_->HasKey(kCaptureLatencyKey)) {
-    event_proto.set_capture_latency(
-        values_map_->FindKey(kCaptureLatencyKey)->GetDouble());
+  if (absl::optional<double> capture_latency =
+          values_map_->FindDouble(kCaptureLatencyKey)) {
+    event_proto.set_capture_latency(capture_latency.value());
   }
-  if (values_map_->HasKey(kConnectionErrorKey)) {
+  if (absl::optional<int> connection_error =
+          values_map_->FindInt(kConnectionErrorKey)) {
     event_proto.set_connection_error(
         static_cast<apis::v1::ChromotingEvent_ConnectionError>(
-            values_map_->FindKey(kConnectionErrorKey)->GetInt()));
+            connection_error.value()));
   }
-  if (values_map_->HasKey(kConnectionTypeKey)) {
+  if (absl::optional<int> connection_type =
+          values_map_->FindInt(kConnectionTypeKey)) {
     event_proto.set_connection_type(
         static_cast<apis::v1::ChromotingEvent_ConnectionType>(
-            values_map_->FindKey(kConnectionTypeKey)->GetInt()));
+            connection_type.value()));
   }
-  if (values_map_->HasKey(kCpuKey)) {
-    event_proto.set_cpu(values_map_->FindKey(kCpuKey)->GetString());
+  if (const std::string* cpu = values_map_->FindString(kCpuKey)) {
+    event_proto.set_cpu(*cpu);
   }
-  if (values_map_->HasKey(kDecodeLatencyKey)) {
-    event_proto.set_decode_latency(
-        values_map_->FindKey(kDecodeLatencyKey)->GetDouble());
+  if (absl::optional<double> decode_latency =
+          values_map_->FindDouble(kDecodeLatencyKey)) {
+    event_proto.set_decode_latency(decode_latency.value());
   }
-  if (values_map_->HasKey(kEncodeLatencyKey)) {
-    event_proto.set_encode_latency(
-        values_map_->FindKey(kEncodeLatencyKey)->GetDouble());
+  if (absl::optional<double> encode_latency =
+          values_map_->FindDouble(kEncodeLatencyKey)) {
+    event_proto.set_encode_latency(encode_latency.value());
   }
-  if (values_map_->HasKey(kHostOsKey)) {
-    event_proto.set_host_os(static_cast<apis::v1::ChromotingEvent_Os>(
-        values_map_->FindKey(kHostOsKey)->GetInt()));
+  if (absl::optional<int> host_os = values_map_->FindInt(kHostOsKey)) {
+    event_proto.set_host_os(
+        static_cast<apis::v1::ChromotingEvent_Os>(host_os.value()));
   }
-  if (values_map_->HasKey(kHostOsVersionKey)) {
-    event_proto.set_host_os_version(
-        values_map_->FindKey(kHostOsVersionKey)->GetString());
+  if (const std::string* host_os_version =
+          values_map_->FindString(kHostOsVersionKey)) {
+    event_proto.set_host_os_version(*host_os_version);
   }
-  if (values_map_->HasKey(kHostVersionKey)) {
-    event_proto.set_host_version(
-        values_map_->FindKey(kHostVersionKey)->GetString());
+  if (const std::string* host_version =
+          values_map_->FindString(kHostVersionKey)) {
+    event_proto.set_host_version(*host_version);
   }
-  if (values_map_->HasKey(kMaxCaptureLatencyKey)) {
-    event_proto.set_max_capture_latency(
-        values_map_->FindKey(kMaxCaptureLatencyKey)->GetDouble());
+  if (absl::optional<double> max_capture_latency =
+          values_map_->FindDouble(kMaxCaptureLatencyKey)) {
+    event_proto.set_max_capture_latency(max_capture_latency.value());
   }
-  if (values_map_->HasKey(kMaxDecodeLatencyKey)) {
-    event_proto.set_max_decode_latency(
-        values_map_->FindKey(kMaxDecodeLatencyKey)->GetDouble());
+  if (absl::optional<double> max_decode_latency =
+          values_map_->FindDouble(kMaxDecodeLatencyKey)) {
+    event_proto.set_max_decode_latency(max_decode_latency.value());
   }
-  if (values_map_->HasKey(kMaxEncodeLatencyKey)) {
-    event_proto.set_max_encode_latency(
-        values_map_->FindKey(kMaxEncodeLatencyKey)->GetDouble());
+  if (absl::optional<double> max_encode_latency =
+          values_map_->FindDouble(kMaxEncodeLatencyKey)) {
+    event_proto.set_max_encode_latency(max_encode_latency.value());
   }
-  if (values_map_->HasKey(kMaxRenderLatencyKey)) {
-    event_proto.set_max_render_latency(
-        values_map_->FindKey(kMaxRenderLatencyKey)->GetDouble());
+  if (absl::optional<double> max_render_latency =
+          values_map_->FindDouble(kMaxRenderLatencyKey)) {
+    event_proto.set_max_render_latency(max_render_latency.value());
   }
-  if (values_map_->HasKey(kMaxRoundtripLatencyKey)) {
-    event_proto.set_max_roundtrip_latency(
-        values_map_->FindKey(kMaxRoundtripLatencyKey)->GetDouble());
+  if (absl::optional<double> max_roundtrip_latency =
+          values_map_->FindDouble(kMaxRoundtripLatencyKey)) {
+    event_proto.set_max_roundtrip_latency(max_roundtrip_latency.value());
   }
-  if (values_map_->HasKey(kModeKey)) {
-    event_proto.set_mode(static_cast<apis::v1::ChromotingEvent_Mode>(
-        values_map_->FindKey(kModeKey)->GetInt()));
+  if (absl::optional<int> mode = values_map_->FindInt(kModeKey)) {
+    event_proto.set_mode(
+        static_cast<apis::v1::ChromotingEvent_Mode>(mode.value()));
   }
-  if (values_map_->HasKey(kOsKey)) {
-    event_proto.set_os(static_cast<apis::v1::ChromotingEvent_Os>(
-        values_map_->FindKey(kOsKey)->GetInt()));
+  if (absl::optional<int> os = values_map_->FindInt(kOsKey)) {
+    event_proto.set_os(static_cast<apis::v1::ChromotingEvent_Os>(os.value()));
   }
-  if (values_map_->HasKey(kOsVersionKey)) {
-    event_proto.set_os_version(
-        values_map_->FindKey(kOsVersionKey)->GetString());
+  if (const std::string* os_version = values_map_->FindString(kOsVersionKey)) {
+    event_proto.set_os_version(*os_version);
   }
-  if (values_map_->HasKey(kPreviousSessionStateKey)) {
+  if (absl::optional<int> previous_session_state =
+          values_map_->FindInt(kPreviousSessionStateKey)) {
     event_proto.set_previous_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
-            values_map_->FindKey(kPreviousSessionStateKey)->GetInt()));
+            previous_session_state.value()));
   }
-  if (values_map_->HasKey(kRenderLatencyKey)) {
-    event_proto.set_render_latency(
-        values_map_->FindKey(kRenderLatencyKey)->GetDouble());
+  if (absl::optional<double> render_latency =
+          values_map_->FindDouble(kRenderLatencyKey)) {
+    event_proto.set_render_latency(render_latency.value());
   }
-  if (values_map_->HasKey(kRoleKey)) {
-    event_proto.set_role(static_cast<apis::v1::ChromotingEvent_Role>(
-        values_map_->FindKey(kRoleKey)->GetInt()));
+  if (absl::optional<int> role = values_map_->FindInt(kRoleKey)) {
+    event_proto.set_role(
+        static_cast<apis::v1::ChromotingEvent_Role>(role.value()));
   }
-  if (values_map_->HasKey(kRoundtripLatencyKey)) {
-    event_proto.set_roundtrip_latency(
-        values_map_->FindKey(kRoundtripLatencyKey)->GetDouble());
+  if (absl::optional<double> roundtrip_latency =
+          values_map_->FindDouble(kRoundtripLatencyKey)) {
+    event_proto.set_roundtrip_latency(roundtrip_latency.value());
   }
-  if (values_map_->HasKey(kSessionDurationKey)) {
-    event_proto.set_session_duration(
-        values_map_->FindKey(kSessionDurationKey)->GetDouble());
+  if (absl::optional<double> session_duration =
+          values_map_->FindDouble(kSessionDurationKey)) {
+    event_proto.set_session_duration(session_duration.value());
   }
-  if (values_map_->HasKey(kSessionEntryPointKey)) {
+  if (absl::optional<int> session_entry_point =
+          values_map_->FindInt(kSessionEntryPointKey)) {
     event_proto.set_session_entry_point(
         static_cast<apis::v1::ChromotingEvent_SessionEntryPoint>(
-            values_map_->FindKey(kSessionEntryPointKey)->GetInt()));
+            session_entry_point.value()));
   }
-  if (values_map_->HasKey(kSessionIdKey)) {
-    event_proto.set_session_id(
-        values_map_->FindKey(kSessionIdKey)->GetString());
+  if (const std::string* session_id = values_map_->FindString(kSessionIdKey)) {
+    event_proto.set_session_id(*session_id);
   }
-  if (values_map_->HasKey(kSessionStateKey)) {
+  if (absl::optional<int> session_state =
+          values_map_->FindInt(kSessionStateKey)) {
     event_proto.set_session_state(
         static_cast<apis::v1::ChromotingEvent_SessionState>(
-            values_map_->FindKey(kSessionStateKey)->GetInt()));
+            session_state.value()));
   }
-  if (values_map_->HasKey(kSignalStrategyTypeKey)) {
+  if (absl::optional<int> signal_strategy_type =
+          values_map_->FindInt(kSignalStrategyTypeKey)) {
     event_proto.set_signal_strategy_type(
         static_cast<apis::v1::ChromotingEvent_SignalStrategyType>(
-            values_map_->FindKey(kSignalStrategyTypeKey)->GetInt()));
+            signal_strategy_type.value()));
   }
-  if (values_map_->HasKey(kTypeKey)) {
-    event_proto.set_type(static_cast<apis::v1::ChromotingEvent_Type>(
-        values_map_->FindKey(kTypeKey)->GetInt()));
+  if (absl::optional<int> type = values_map_->FindInt(kTypeKey)) {
+    event_proto.set_type(
+        static_cast<apis::v1::ChromotingEvent_Type>(type.value()));
   }
-  if (values_map_->HasKey(kVideoBandwidthKey)) {
-    event_proto.set_video_bandwidth(
-        values_map_->FindKey(kVideoBandwidthKey)->GetDouble());
+  if (absl::optional<double> video_bandwidth =
+          values_map_->FindDouble(kVideoBandwidthKey)) {
+    event_proto.set_video_bandwidth(video_bandwidth.value());
   }
-  if (values_map_->HasKey(kWebAppVersionKey)) {
-    event_proto.set_webapp_version(
-        values_map_->FindKey(kWebAppVersionKey)->GetString());
+  if (const std::string* webapp_version =
+          values_map_->FindString(kWebAppVersionKey)) {
+    event_proto.set_webapp_version(*webapp_version);
   }
   return event_proto;
 }

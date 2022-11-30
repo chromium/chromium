@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,14 @@
 #include "base/files/file_util.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_constants.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/version.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "components/cast/common/constants.h"
 #include "content/public/common/cdm_info.h"
-#include "content/public/common/user_agent.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -29,15 +28,11 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "extensions/common/constants.h"  // nogncheck
-#endif
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chromecast/common/media/cast_media_drm_bridge_client.h"
 #endif
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 #include "base/no_destructor.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,9 +42,10 @@
 #include "media/cdm/cdm_paths.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
 #include "base/no_destructor.h"
 #include "components/cdm/common/cdm_manifest.h"
+#include "media/cdm/cdm_capability.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 // component updated CDM on all desktop platforms and remove this.
 // This file is In SHARED_INTERMEDIATE_DIR.
@@ -61,47 +57,16 @@ namespace shell {
 
 namespace {
 
-#if defined(OS_ANDROID)
-std::string BuildAndroidOsInfo() {
-  int32_t os_major_version = 0;
-  int32_t os_minor_version = 0;
-  int32_t os_bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(&os_major_version,
-                                               &os_minor_version,
-                                               &os_bugfix_version);
-
-  std::string android_version_str;
-  base::StringAppendF(
-      &android_version_str, "%d.%d", os_major_version, os_minor_version);
-  if (os_bugfix_version != 0)
-    base::StringAppendF(&android_version_str, ".%d", os_bugfix_version);
-
-  std::string android_info_str;
-  // Append the build ID.
-  std::string android_build_id = base::SysInfo::GetAndroidBuildID();
-  if (android_build_id.size() > 0)
-    android_info_str += "; Build/" + android_build_id;
-
-  std::string os_info;
-  base::StringAppendF(
-      &os_info,
-      "Android %s%s",
-      android_version_str.c_str(),
-      android_info_str.c_str());
-  return os_info;
-}
-#endif
-
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
 // Copied from chrome_content_client.cc
 std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
     const base::Version& version,
     const base::FilePath& cdm_library_path,
-    content::CdmCapability capability) {
+    media::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
-      kWidevineCdmDisplayName, kWidevineCdmGuid, version, cdm_library_path,
-      kWidevineCdmFileSystemId, std::move(capability), kWidevineKeySystem,
-      false);
+      kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
+      std::move(capability), /*supports_sub_key_systems=*/false,
+      kWidevineCdmDisplayName, kWidevineCdmType, version, cdm_library_path);
 }
 
 // On desktop Linux, given |cdm_base_path| that points to a folder containing
@@ -124,7 +89,7 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
-  content::CdmCapability capability;
+  media::CdmCapability capability;
   if (!ParseCdmManifestFromPath(manifest_path, &version, &capability))
     return nullptr;
 
@@ -150,30 +115,9 @@ content::CdmInfo* GetBundledWidevine() {
       }());
   return s_cdm_info->get();
 }
-#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
-}  // namespace
+#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
 
-std::string GetUserAgent() {
-  std::string product = "Chrome/" PRODUCT_VERSION;
-  std::string os_info;
-  base::StringAppendF(
-      &os_info,
-      "%s%s",
-#if defined(OS_ANDROID)
-      "Linux; ",
-      BuildAndroidOsInfo().c_str()
-#elif BUILDFLAG(USE_ANDROID_USER_AGENT)
-                      "Linux; ", "Android"
-#else
-      "X11; ",
-      content::BuildOSCpuInfo(content::IncludeAndroidBuildNumber::Exclude,
-                              content::IncludeAndroidModel::Include)
-          .c_str()
-#endif
-      );
-  return content::BuildUserAgentFromOSAndProduct(os_info, product) +
-      " CrKey/" CAST_BUILD_REVISION;
-}
+}  // namespace
 
 CastContentClient::~CastContentClient() {
 }
@@ -188,13 +132,6 @@ void CastContentClient::SetActiveURL(const GURL& url, std::string top_origin) {
 
 void CastContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->standard_schemes.push_back(kChromeResourceScheme);
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  schemes->standard_schemes.push_back(extensions::kExtensionScheme);
-  // Treat as secure because we only load extension code written by us.
-  schemes->secure_schemes.push_back(extensions::kExtensionScheme);
-  schemes->service_worker_schemes.push_back(extensions::kExtensionScheme);
-  schemes->csp_bypassing_schemes.push_back(extensions::kExtensionScheme);
-#endif
 }
 
 std::u16string CastContentClient::GetLocalizedString(int message_id) {
@@ -203,7 +140,7 @@ std::u16string CastContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece CastContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -216,22 +153,27 @@ base::RefCountedMemory* CastContentClient::GetDataResourceBytes(
       resource_id);
 }
 
+std::string CastContentClient::GetDataResourceString(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+      resource_id);
+}
+
 gfx::Image& CastContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ::media::MediaDrmBridgeClient* CastContentClient::GetMediaDrmBridgeClient() {
   return new media::CastMediaDrmBridgeClient();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void CastContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {
-#if !defined(OS_FUCHSIA)
-  binders->Add(
+#if !BUILDFLAG(IS_FUCHSIA)
+  binders->Add<heap_profiling::mojom::ProfilingClient>(
       base::BindRepeating(
           [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
                  receiver) {
@@ -240,14 +182,14 @@ void CastContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 }
 
 void CastContentClient::AddContentDecryptionModules(
     std::vector<content::CdmInfo>* cdms,
     std::vector<::media::CdmHostFilePath>* cdm_host_file_paths) {
   if (cdms) {
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
     // The Widevine CDM on Linux needs to be registered (and loaded) before the
     // zygote is locked down. The CDM can be found from the version bundled with
     // Chrome (if BUNDLE_WIDEVINE_CDM = true).
@@ -260,7 +202,7 @@ void CastContentClient::AddContentDecryptionModules(
       DVLOG(1) << "Widevine enabled but no library found";
     }
 
-#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
+#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(IS_LINUX)
   }
 }
 

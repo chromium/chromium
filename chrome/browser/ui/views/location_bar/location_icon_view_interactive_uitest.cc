@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,11 @@ namespace {
 class LocationIconViewTest : public InProcessBrowserTest {
  public:
   LocationIconViewTest() = default;
-  ~LocationIconViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationIconViewTest);
+  LocationIconViewTest(const LocationIconViewTest&) = delete;
+  LocationIconViewTest& operator=(const LocationIconViewTest&) = delete;
+
+  ~LocationIconViewTest() override = default;
 };
 
 // Verify that clicking the location icon a second time hides the bubble.
@@ -56,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
             PageInfoBubbleView::GetShownBubbleType());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(jongkwon.lee): https://crbug.com/825834 NativeWidgetMac::Deactivate is
 // not implemented on Mac.
 #define MAYBE_ActivateFirstInactiveBubbleForAccessibility \

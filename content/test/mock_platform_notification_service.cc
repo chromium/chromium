@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,7 @@ MockPlatformNotificationService::~MockPlatformNotificationService() = default;
 void MockPlatformNotificationService::DisplayNotification(
     const std::string& notification_id,
     const GURL& origin,
+    const GURL& document_url,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -100,8 +101,8 @@ void MockPlatformNotificationService::ScheduleTrigger(base::Time timestamp) {
   if (timestamp > base::Time::Now())
     return;
 
-  BrowserContext::ForEachStoragePartition(
-      context_, base::BindRepeating([](content::StoragePartition* partition) {
+  context_->ForEachStoragePartition(
+      base::BindRepeating([](content::StoragePartition* partition) {
         partition->GetPlatformNotificationContext()->TriggerNotifications();
       }));
 }
@@ -119,8 +120,8 @@ void MockPlatformNotificationService::RecordNotificationUkmEvent(
 
 void MockPlatformNotificationService::SimulateClick(
     const std::string& title,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto notification_id_iter = notification_id_map_.find(title);
   if (notification_id_iter == notification_id_map_.end())

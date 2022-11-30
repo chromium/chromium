@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // https://w3c.github.io/payment-request/#dom-paymentitem
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -33,13 +33,12 @@ class PaymentItem {
   bool operator!=(const PaymentItem& other) const;
   PaymentItem& operator=(const PaymentItem& other);
 
-  // Populates the properties of this PaymentItem from |value|. Returns true if
+  // Populates the properties of this PaymentItem from |dict|. Returns true if
   // the required values are present.
-  bool FromDictionaryValue(const base::DictionaryValue& value);
+  bool FromValueDict(const base::Value::Dict& dict);
 
-  // Creates a base::DictionaryValue with the properties of this
-  // PaymentItem.
-  std::unique_ptr<base::DictionaryValue> ToDictionaryValue() const;
+  // Creates a base::Value::Dict with the properties of this PaymentItem.
+  base::Value::Dict ToValueDict() const;
 
   // A human-readable description of the item.
   std::string label;

@@ -1,0 +1,60 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="support-tool-shared">
+  :host {
+    block-size: fit-content;
+    display: block;
+    margin-inline-start: 40px;
+    margin-top: 72px;
+    width: fit-content;
+  }
+
+  cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+
+<div id="support-tool-pages">
+  <iron-pages selected="[[selectedPage_]]" attr-for-selected="page-index">
+    <issue-details id="issueDetails"
+        page-index="[[supportToolPageIndex_.ISSUE_DETAILS]]">
+    </issue-details>
+    <data-collectors id="dataCollectors"
+        page-index="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
+    </data-collectors>
+    <spinner-page id="spinnerPage"  page-title="Collecting diagnostic data"
+        page-index="[[supportToolPageIndex_.SPINNER]]">
+    </spinner-page>
+    <pii-selection id="piiSelection"
+        page-index="[[supportToolPageIndex_.PII_SELECTION]]">
+    </pii-selection>
+    <spinner-page id="exportSpinner" page-title="Exporting diagnostic data"
+        page-index="[[supportToolPageIndex_.EXPORT_SPINNER]]">
+    </spinner-page>
+    <data-export-done id="dataExportDone"
+        page-index="[[supportToolPageIndex_.DATA_EXPORT_DONE]]">
+    </data-export-done>
+  </iron-pages>
+</div>
+<div class="navigation-buttons" id="continueButtonContainer"
+    hidden$="[[shouldHideContinueButtonContainer_(selectedPage_)]]">
+  <cr-button id="backButton" hidden$="[[shouldHideBackButton_(selectedPage_)]]"
+      on-click="onBackClick_">
+    Back
+  </cr-button>
+  <cr-button id="continueButton" class="action-button"
+      on-click="onContinueClick_">
+    Continue
+  </cr-button>
+</div>
+<cr-toast id="errorMessageToast" duration="0" tabindex="0"
+    aria-labelledby="error-message">
+  <span id="error-message">[[errorMessage_]]</span>
+  <cr-button on-click="onErrorMessageToastCloseClicked_">
+    Dismiss
+  </cr-button>
+</cr-toast>

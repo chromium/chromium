@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ ProtoMapToArray(
 std::unique_ptr<protocol::BackgroundService::BackgroundServiceEvent>
 ToBackgroundServiceEvent(const devtools::proto::BackgroundServiceEvent& event) {
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(event.timestamp()));
+      base::Microseconds(event.timestamp()));
   return protocol::BackgroundService::BackgroundServiceEvent::Create()
       .SetTimestamp(timestamp.ToJsTime() / 1'000)  // milliseconds -> seconds
       .SetOrigin(event.origin())
@@ -128,7 +128,8 @@ void BackgroundServiceHandler::SetRenderer(int process_host_id,
     return;
   }
 
-  devtools_context_ = storage_partition->GetDevToolsBackgroundServicesContext();
+  devtools_context_ = static_cast<DevToolsBackgroundServicesContextImpl*>(
+      storage_partition->GetDevToolsBackgroundServicesContext());
   DCHECK(devtools_context_);
 }
 

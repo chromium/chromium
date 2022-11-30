@@ -1,0 +1,37 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash)
+
+source_set("in_session_auth") {
+  sources = [
+    "auth_dialog_contents_view.cc",
+    "auth_dialog_contents_view.h",
+    "authentication_dialog.cc",
+    "authentication_dialog.h",
+    "in_session_auth_dialog.cc",
+    "in_session_auth_dialog.h",
+    "in_session_auth_dialog_controller_impl.cc",
+    "in_session_auth_dialog_controller_impl.h",
+    "webauthn_dialog_controller_impl.cc",
+    "webauthn_dialog_controller_impl.h",
+    "webauthn_request_registrar_impl.cc",
+    "webauthn_request_registrar_impl.h",
+  ]
+
+  deps = [
+    "//ash/login/resources",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings",
+    "//base",
+    "//chromeos/ash/components/cryptohome/",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/components/webauthn",
+    "//ui/views",
+  ]
+}

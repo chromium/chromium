@@ -1,0 +1,29 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Interface for the mojo service to acquire and release wake locks on behalf of
+// the instance. On a connection error, all wake locks are released.
+//
+// Next method ID: 2
+interface WakeLockHost {
+  // Increases the reference count for the CPU wake lock on the host. Acquires
+  // the CPU wake lock when reference count is incremented to one. Returns true
+  // in all cases.
+  AcquirePartialWakeLock@0() => (bool result);
+
+  // Decreases the reference count for the CPU wake lock on the host. Releases
+  // the wake lock when reference count is decremented to zero. Does nothing
+  // if reference count is zero at the time of call. Returns true in all cases.
+  ReleasePartialWakeLock@1() => (bool result);
+};
+
+// Next method ID: 1
+interface WakeLockInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<WakeLockHost> host_remote) => ();
+};

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,8 +29,7 @@ const CFAbsoluteTime kEventLatencySeconds = 0.3;
 FilePath ResolvePath(const FilePath& path) {
   const unsigned kMaxLinksToResolve = 255;
 
-  std::vector<FilePath::StringType> component_vector;
-  path.GetComponents(&component_vector);
+  std::vector<FilePath::StringType> component_vector = path.GetComponents();
   std::list<FilePath::StringType>
       components(component_vector.begin(), component_vector.end());
 
@@ -52,8 +50,8 @@ FilePath ResolvePath(const FilePath& path) {
     if (ReadSymbolicLink(current, &target)) {
       if (target.IsAbsolute())
         result.clear();
-      std::vector<FilePath::StringType> target_components;
-      target.GetComponents(&target_components);
+      std::vector<FilePath::StringType> target_components =
+          target.GetComponents();
       components.insert(components.begin(), target_components.begin(),
                         target_components.end());
       resolve_count++;
@@ -223,7 +221,7 @@ void FilePathWatcherFSEvents::UpdateEventStream(
   CFStringRef paths_array[] = { cf_path.get(), cf_dir_path.get() };
   ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
-                    base::size(paths_array), &kCFTypeArrayCallBacks));
+                    std::size(paths_array), &kCFTypeArrayCallBacks));
 
   FSEventStreamContext context;
   context.version = 0;

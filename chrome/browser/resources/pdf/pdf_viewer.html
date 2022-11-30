@@ -8,18 +8,18 @@
   }
 
   viewer-pdf-sidenav,
-  viewer-pdf-toolbar-new {
+  viewer-toolbar {
     --pdf-toolbar-text-color: rgb(241, 241, 241);
   }
 
-  viewer-pdf-toolbar-new {
+  viewer-toolbar {
     --active-button-bg: rgba(255, 255, 255, 0.24);
     z-index: 1;
   }
 
   @media(max-width: 200px),
   (max-height: 250px) {
-    viewer-pdf-toolbar-new {
+    viewer-toolbar {
       display: none;
     }
   }
@@ -58,15 +58,14 @@
   }
 
   #content-focus-rectangle {
-    border: 2px solid var(--google-grey-600);
+    border: 2px solid var(--google-grey-500);
     border-radius: 2px;
     box-sizing: border-box;
     height: 100%;
     pointer-events: none;
-    position: fixed;
+    position: absolute;
+    top: 0;
     width: 100%;
-    /* z-index for this should be higher than toolbar. */
-    z-index: 5;
   }
 
   viewer-ink-host {
@@ -107,6 +106,7 @@
   #main {
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 
   #scroller {
@@ -128,20 +128,17 @@
   }
 </style>
 
-<viewer-pdf-toolbar-new id="toolbar"
-    annotation-mode="[[annotationMode_]]"
+<viewer-toolbar id="toolbar" annotation-mode="[[annotationMode_]]"
     doc-title="[[title_]]" doc-length="[[docLength_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
     has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
-    document-properties-enabled="[[documentPropertiesEnabled_]]"
-    presentation-mode-enabled="[[presentationModeEnabled_]]"
     printing-enabled="[[printingEnabled_]]"
     rotated="[[isRotated_(clockwiseRotations_)]]"
     is-form-field-focused="[[isFormFieldFocused_]]"
     sidenav-collapsed="[[sidenavCollapsed_]]"
     two-up-view-enabled="[[twoUpViewEnabled_]]"
     viewport-zoom="[[viewportZoom_]]" zoom-bounds="[[zoomBounds_]]"
-<if expr="chromeos">
+<if expr="enable_ink">
     annotation-available="[[annotationAvailable_]]"
     pdf-annotations-enabled="[[pdfAnnotationsEnabled_]]"
 </if>
@@ -155,11 +152,11 @@
     on-two-up-view-changed="onTwoUpViewChanged_"
     on-zoom-changed="onZoomChanged" on-zoom-in="onZoomIn"
     on-zoom-out="onZoomOut" on-rotate-left="rotateCounterclockwise"
-<if expr="chromeos">
+<if expr="enable_ink">
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>
-</viewer-pdf-toolbar-new>
+</viewer-toolbar>
 
 <div id="container">
   <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
@@ -172,12 +169,17 @@
     </viewer-pdf-sidenav>
   </div>
   <div id="main">
-    <div id="scroller" on-scroll="onScroll_">
+    <div id="scroller">
       <div id="sizer"></div>
       <div id="content"></div>
     </div>
-  <div>
+    <div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>
+  </div>
 </div>
+
+<template is="dom-if" if="[[showErrorDialog]]" on-dom-change="onErrorDialog_">
+  <viewer-error-dialog id="error-dialog"></viewer-error-dialog>
+</template>
 
 <template is="dom-if" if="[[showPasswordDialog_]]" restamp>
   <viewer-password-dialog id="password-dialog" on-close="onPasswordDialogClose_"
@@ -191,11 +193,3 @@
       page-count="[[docLength_]]" on-close="onPropertiesDialogClose_">
   </viewer-properties-dialog>
 </template>
-
-<viewer-error-screen id="error-screen"></viewer-error-screen>
-
-<if expr="chromeos">
-<viewer-form-warning id="form-warning"></viewer-form-warning>
-</if>
-
-<div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>

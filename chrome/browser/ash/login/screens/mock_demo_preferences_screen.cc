@@ -1,15 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_demo_preferences_screen.h"
+#include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 MockDemoPreferencesScreen::MockDemoPreferencesScreen(
-    DemoPreferencesScreenView* view,
+    base::WeakPtr<DemoPreferencesScreenView> view,
     const ScreenExitCallback& exit_callback)
-    : DemoPreferencesScreen(view, exit_callback) {}
+    : DemoPreferencesScreen(std::move(view), exit_callback) {}
 
 MockDemoPreferencesScreen::~MockDemoPreferencesScreen() = default;
 
@@ -19,14 +20,6 @@ void MockDemoPreferencesScreen::ExitScreen(Result result) {
 
 MockDemoPreferencesScreenView::MockDemoPreferencesScreenView() = default;
 
-MockDemoPreferencesScreenView::~MockDemoPreferencesScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+MockDemoPreferencesScreenView::~MockDemoPreferencesScreenView() = default;
 
-void MockDemoPreferencesScreenView::Bind(DemoPreferencesScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-}  // namespace chromeos
+}  // namespace ash

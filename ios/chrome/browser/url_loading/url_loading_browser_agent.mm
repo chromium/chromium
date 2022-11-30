@@ -1,15 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 
-#include "base/compiler_specific.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
+#import "base/compiler_specific.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/task/thread_pool.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -17,7 +16,8 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "net/base/url_util.h"
+#import "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -97,7 +97,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {
     // Induce an intentional crash in the browser process.
-    CHECK(false);
+    CHECK(false) << "User triggered inducebrowsercrashforrealz.";
     // Call another function, so that the above CHECK can't be tail call
     // optimized. This ensures that this method's name will show up in the stack
     // for easier identification.
@@ -310,8 +310,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   DCHECK(delegate_);
   DCHECK(browser_);
 
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication) &&
-      params.in_incognito) {
+  if (params.in_incognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(browser_)
                            ->GetSceneState()];
@@ -333,7 +332,7 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
        params.in_incognito != active_browser_state->IsOffTheRecord())) {
     // When sending a load request that switches modes, ensure the tab
     // ends up appended to the end of the model, not just next to what is
-    // currently selected in the other mode. This is done with the |append_to|
+    // currently selected in the other mode. This is done with the `append_to`
     // parameter.
     UrlLoadParams scene_params = params;
     scene_params.append_to = kLastTab;
@@ -346,37 +345,60 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // lead to be calling it twice, and calling 'did' below once.
   notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
 
+  if (!params.in_background()) {
+    LoadUrlInNewTabImpl(params, absl::nullopt);
+  } else {
+    __block void* hint = nullptr;
+    __block UrlLoadParams saved_params = params;
+    __block base::WeakPtr<UrlLoadingBrowserAgent> weak_ptr =
+        weak_ptr_factory_.GetWeakPtr();
+
+    if (params.append_to == kCurrentTab) {
+      hint = browser_->GetWebStateList()->GetActiveWebState();
+    }
+
+    [delegate_ animateOpenBackgroundTabFromParams:params
+                                       completion:^{
+                                         if (weak_ptr) {
+                                           weak_ptr->LoadUrlInNewTabImpl(
+                                               saved_params, hint);
+                                         }
+                                       }];
+  }
+}
+
+void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
+                                                 absl::optional<void*> hint) {
   web::WebState* parent_web_state = nullptr;
-  if (params.append_to == kCurrentTab)
+  if (params.append_to == kCurrentTab) {
     parent_web_state = browser_->GetWebStateList()->GetActiveWebState();
+
+    // Detect whether the active tab changed during the animation of opening
+    // a tab in the background. This is only needed when opening in background
+    // (thus the use of optional).
+    //
+    // This compare the value read before vs after the animation (as `void*`
+    // to prevent trying to dereference a potentially dangling pointer). This
+    // is not 100% fool proof as the WebState could have been destroyed, then
+    // a new one allocated at the same address and inserted as the active tab.
+    // However, this is highly likely to happen. Even if it were to happen, it
+    // would be benign as the only drawback is that the wrong tab would be
+    // selected upon closing the newly opened tab.
+    if (hint && hint.value() != parent_web_state)
+      parent_web_state = nullptr;
+  }
 
   int insertion_index = TabInsertion::kPositionAutomatically;
   if (params.append_to == kSpecifiedIndex)
     insertion_index = params.insertion_index;
 
-  UrlLoadParams saved_params = params;
-  auto openTab = ^{
-    TabInsertionBrowserAgent* insertionAgent =
-        TabInsertionBrowserAgent::FromBrowser(browser_);
+  TabInsertionBrowserAgent* insertion_agent =
+      TabInsertionBrowserAgent::FromBrowser(browser_);
 
-    web::WebState* adjacent_web_state = parent_web_state;
-    if (adjacent_web_state &&
-        adjacent_web_state !=
-            browser_->GetWebStateList()->GetActiveWebState()) {
-      // The active tab could have changed or be destroyed.
-      adjacent_web_state = nullptr;
-    }
-
-    insertionAgent->InsertWebState(
-        saved_params.web_params, adjacent_web_state, false, insertion_index,
-        saved_params.in_background(), saved_params.inherit_opener);
-    notifier_->NewTabDidLoadUrl(saved_params.web_params.url,
-                                saved_params.user_initiated);
-  };
-
-  if (!params.in_background()) {
-    openTab();
-  } else {
-    [delegate_ animateOpenBackgroundTabFromParams:params completion:openTab];
-  }
+  web::WebState* web_state = insertion_agent->InsertWebState(
+      params.web_params, parent_web_state, /*opened_by_dom=*/false,
+      insertion_index, params.in_background(), params.inherit_opener,
+      /*should_show_start_surface=*/false, params.filtering_result);
+  web_state->GetNavigationManager()->LoadIfNecessary();
+  notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }

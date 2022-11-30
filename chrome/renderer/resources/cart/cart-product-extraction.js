@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,24 @@ var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
     '(\\d+\\s*/\\s*)?(US(D)?\\s*)?' +
     '\\$[\\d.,]+(\\s+(to|-|–)\\s+(\\$)?[\\d.,]+)?' + priceCleanupPostfix + '?';
-var priceRegexFull = new RegExp('^' + priceRegexTemplate + '$', 'i');
+var priceRegexFull = new RegExp('^' + priceRegexTemplate + '( ea)?$', 'i');
 var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
     '^((' + priceCleanupPrefix + ')\\s+)|' + priceCleanupPostfix + '$', 'i');
-var cartItemHTMLRegex = new RegExp('(cart|basket|bundle)[-_]?item', 'i')
-var cartItemTextContentRegex = new RegExp(
+var cartItemHTMLRegex = new RegExp(
+    '(cart|basket|bundle)[-_]?((\\w+)[-_])?(item|product)', 'i');
+var cartItemTextRegex = new RegExp(
     'remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?',
-    'i')
-var notCartItemTextContentRegex = new RegExp('move to cart', 'i')
+    'i');
+var cartItemQtyRegex = new RegExp('qty', 'i');
+var moveToCartTextRegex = new RegExp('move to (cart|bag)', 'i');
+var addToCartTextRegex = new RegExp('add to cart', 'i');
+var cartPriceTextRegex = new RegExp('((estimated (sales )?)|(sales ))tax', 'i');
+var minicartHTMLRegex = new RegExp('mini-cart-product', 'i');
+var productIdHTMLRegex = new RegExp('<a href="#modal-(\\w+)', 'i');
+var productIdURLRegex = new RegExp(
+    '((\\w+)-\\d+-medium)|(images.cymax.com/Images/\\d+/(\\w+)-)', 'i');
+var saveForLaterRegex = new RegExp('save for later', 'i');
 
 function getLazyLoadingURL(image) {
   // FIXME: some lazy images in Nordstrom and Staples don't have URLs in the
@@ -45,6 +54,10 @@ function getLargeImages(root, atLeast, relaxed = false) {
   if (candidates.length == 0) {
     // Aliexpress
     candidates = root.querySelectorAll('amp-img');
+  }
+  if (candidates.length == 0) {
+    // Google store
+    candidates = root.querySelectorAll('.bg-img');
   }
   images = [];
   function shouldStillKeep(image) {
@@ -91,7 +104,10 @@ function multipleImagesSupported() {
   // When saving target.com to mhtml, the color selecting images become very
   // large and are picked up. Adding in hostname.endsWith('target.com') is a
   // workaround for this problem. In target we only get one image per product.
-  return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com');
+  return hostname.endsWith('craigslist.org') || hostname.endsWith('target.com')
+      || hostname.endsWith('zazzle.com')
+      || hostname.endsWith("ashleyfurniture.com")
+      || hostname.endsWith("chewy.com");
 }
 
 function extractImage(item) {
@@ -113,11 +129,33 @@ function extractImage(item) {
       return null;
     }
   }
-  const image = images[0];
+  if (!document.URL.includes("chewy.com")) {
+    images = images.slice(0, 1);
+  }
+  for (const image of images) {
+    const currentUrl = extractImageUrl(image);
+    if (currentUrl !== null) return currentUrl;
+  }
+  return null;
+}
+
+function extractImageUrl(image) {
   const lazyUrl = getLazyLoadingURL(image);
   if (lazyUrl != null)
     return lazyUrl;
 
+  // Special handling for Google store.
+  if (image.className === "bg-img") {
+    if (image.style.backgroundImage == undefined) {
+      return null;
+    }
+    const matches = image.style.backgroundImage.match('\"(.*)\"');
+    if (matches === null) {
+      return null;
+    } else {
+      return matches[1];
+    }
+  }
   // If |image| is <amp-img>, image.src won't work.
   const src = image.src || image.getAttribute('src');
   if (verbose > 1)
@@ -160,6 +198,14 @@ function getAbsoluteUrlOfSrcSet(image) {
 }
 
 function extractUrl(item) {
+  // Some sites doesn't use <a> tag or explicitly state href. E.g. samsclub.com
+  // triggers JS to initiate navigation instead of <a>, and ae.com shows side
+  // panel after clicking on each item instead of directing to product page.
+  if (document.URL.includes("samsclub.com")
+      || document.URL.includes("ae.com")
+      || document.URL.includes("kiehls.com")) {
+    return "";
+  }
   let anchors;
   if (item.tagName == 'A') {
     anchors = [item];
@@ -443,6 +489,11 @@ function choosePrice(priceArray) {
 }
 
 function extractPrice(item) {
+  // shein.com shows price by one element per digit and it's challenging
+  // to decide based on textContent.
+  if (document.URL.includes("shein.com")) {
+    return "";
+  }
   // Etsy mobile
   const prices = item.querySelectorAll(`
       .currency-value
@@ -456,8 +507,12 @@ function extractPrice(item) {
   }
   // Generic heuristic to search for price elements.
   let captured_prices = [];
-  for (const price of item.querySelectorAll('span, b, p, div, h3')) {
-    const candidate = price.innerText.trim();
+  for (const price of item.querySelectorAll(
+    'span, b, p, div, h3, td, li, em, strong')) {
+    let candidate = price.innerText.trim();
+    if (document.URL.includes("thecompanystore.com")) {
+      candidate = candidate.split("\n")[0];
+    }
     if (!candidate.match(priceRegexFull))
       continue;
     if (verbose > 1)
@@ -493,6 +548,66 @@ function extractPrice(item) {
   return choosePrice(captured_prices);
 }
 
+function getProductIdFromMatches(productIdMatches, matchIndex = undefined) {
+  if (productIdMatches === null) {
+    return null;
+  }
+  if (matchIndex !== undefined) {
+    return productIdMatches[matchIndex];
+  }
+  for (var i = productIdMatches.length - 1; i >= 0; i--) {
+    if (productIdMatches[i] !== undefined) {
+      return productIdMatches[i];
+    }
+  }
+  return null;
+}
+
+function getProductIdWithPattern(sourceMap, patternMap) {
+  const hostname = window.location.hostname;
+  for (const sourceName of Object.keys(sourceMap)) {
+    if (patternMap[sourceName] === undefined ||
+      !(hostname in patternMap[sourceName])) {
+      continue;
+    }
+    const source = sourceMap[sourceName];
+    const heuristic = patternMap[sourceName][hostname];
+    if (Array.isArray(heuristic)) {
+      return getProductIdFromMatches(source.match(
+        new RegExp(heuristic[0], 'i')), heuristic[1]);
+    } else {
+      return getProductIdFromMatches(source.match(
+        new RegExp(heuristic, 'i')));
+    }
+  }
+  return null;
+}
+
+function extractProductId(url, imageUrl, item) {
+  const idExtractionMapNotExist =
+    typeof idExtractionMap === 'undefined' ||
+    idExtractionMap === undefined;
+  const couponIdExtractionMapNotExist =
+    typeof couponIdExtractionMap === 'undefined' ||
+    couponIdExtractionMap === undefined;
+  if (idExtractionMapNotExist && couponIdExtractionMapNotExist) {
+    return null;
+  }
+  let productId = null;
+  const sourceMap = {"product_url": url,
+    "product_image_url": imageUrl,
+    "product_element": item.outerHTML};
+  if (!idExtractionMapNotExist) {
+    productId = getProductIdWithPattern(sourceMap, idExtractionMap);
+    if (productId !== null) return productId;
+  }
+  if (!couponIdExtractionMapNotExist) {
+    productId = getProductIdWithPattern(sourceMap, couponIdExtractionMap);
+    if (productId !== null) return productId;
+  }
+  return null;
+}
+
 function extractItem(item) {
   imageUrl = extractImage(item);
   if (imageUrl == null) {
@@ -514,7 +629,7 @@ function extractItem(item) {
       console.warn('no title found', item);
     return null;
   }
-  price = extractPrice(item);
+  let price = extractPrice(item);
   // eBay "You may also like" and "Guides" are not product items.
   // Not having price is one hint.
   // FIXME: "Also viewed" items in Gap doesn't have prices.
@@ -523,7 +638,14 @@ function extractItem(item) {
       console.warn('no price found', item);
     return null;
   }
-  return {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
+  let extractionResult =
+      {'url': url, 'imageUrl': imageUrl, 'title': title, 'price': price};
+  // productId is an optional field for extraction.
+  const productId = extractProductId(url, imageUrl, item);
+  if (productId !== null) {
+    extractionResult['productId'] = productId;
+  }
+  return extractionResult;
 }
 
 function commonAncestor(a, b) {
@@ -548,50 +670,74 @@ function hasOverlap(target, list) {
   return false;
 }
 
-function isCartItem(item) {
-  // TODO: Improve the heuristic here to accommodate more formats of cart item.
-  if (item.parentElement) {
-    // Walmart has 'move to cart' outside of the div.cart-item.
-    if (item.parentElement.textContent.toLowerCase().match(
-            notCartItemTextContentRegex))
-      return false;
-  } else {
-    if (item.textContent.toLowerCase().match(notCartItemTextContentRegex))
-      return false;
-  }
-  return item.textContent.toLowerCase().match(cartItemTextContentRegex) ||
-      item.innerHTML.toLowerCase().match(cartItemHTMLRegex);
+function matchPattern(item, pattern, matchText) {
+  if (item === null) return false;
+  const textToMatch = matchText ? item.textContent : item.outerHTML;
+  return textToMatch.toLowerCase().match(pattern);
 }
 
-function extractOneItem(item, extracted_items, processed, output) {
-  if (!isCartItem(item))
-    return;
-  if (verbose > 1)
+function isCartItem(item) {
+  // TODO: Improve the heuristic here to accommodate more formats of cart item.
+  if (matchPattern(item, moveToCartTextRegex, true)) return false;
+  // Walmart has 'move to cart' outside of the div.cart-item.
+  if (matchPattern(item.parentElement, moveToCartTextRegex, true)) return false;
+  if (matchPattern(item, cartPriceTextRegex, true)) return false;
+  // Item element in bestbuy.com contains "add to cart" for things
+  // like protection plans.
+  if (!document.URL.includes("bestbuy.com")
+      && !document.URL.includes("orientaltrading.com")
+      && matchPattern(item, addToCartTextRegex, true)) return false;
+  if ((document.URL.includes("ashleyfurniture.com")
+      || document.URL.includes("gnc.com"))
+      && matchPattern(item, minicartHTMLRegex, false)) return false;
+  if (document.URL.includes("ashleyfurniture.com")
+      && matchPattern(item, cartItemQtyRegex, true) === null)
+    return false;
+  return matchPattern(item, cartItemTextRegex, true) ||
+    matchPattern(item, cartItemQtyRegex, true) ||
+    matchPattern(item, cartItemHTMLRegex, false);
+}
+
+function extractOneItem(item, extracted_items, processed, output,
+  savedForLaterSection) {
+  if (verbose > 1) {
     console.log('trying', item);
+  }
   if (item.childElementCount == 0 && item.parentElement.tagName != 'BODY') {
     // Amazone store page uses overlay <a>.
     item = item.parentElement;
     if (item == null)
       return;
   }
-  // scrollHeight could be 0 while getBoundingClientRect().height > 0.
-  if (item.getBoundingClientRect().height < 50) {
+  if (processed.has(item)) {
     if (verbose > 0)
-      console.log('too short', item);
+      console.log('processed', item);
     return;
   }
+  processed.add(item);
   if (item.scrollHeight > 1000) {
     if (verbose > 0)
       console.log('too tall', item);
     return;
   }
-  if (item.getBoundingClientRect().height * item.getBoundingClientRect().width >
-      800 * window.innerWidth) {
+  if (hasOverlap(item, extracted_items)) {
+    if (verbose > 0)
+      console.log('overlap', item);
+    return;
+  }
+  // scrollHeight could be 0 while getBoundingClientRect().height > 0.
+  const bounding_rect = item.getBoundingClientRect();
+  if (bounding_rect.height < 50) {
+    if (verbose > 0)
+      console.log('too short', item);
+    return;
+  }
+  if (bounding_rect.height * bounding_rect.width > 800 * window.innerWidth) {
     if (verbose > 0)
       console.log('too tall', item);
     return;
   }
-  if (item.querySelectorAll('img, amp-img').length == 0) {
+  if (item.querySelectorAll('img, amp-img, .bg-img').length == 0) {
     if (verbose > 0)
       console.log('no image', item);
     return;
@@ -601,21 +747,78 @@ function extractOneItem(item, extracted_items, processed, output) {
       console.log('no price', item);
     return;
   }
-  if (hasOverlap(item, extracted_items)) {
+  if (bounding_rect.top <= 10 &&
+      (document.URL.includes('partycity.com') ||
+       document.URL.includes('chewy.com'))) {
     if (verbose > 0)
-      console.log('overlap', item);
+      console.log('likely cart page header', item);
     return;
   }
-  if (processed.has(item))
+  if (isInSavedForLater(item, savedForLaterSection)) {
+    if (verbose > 0)
+      console.log('in save for later', item);
     return;
-  processed.add(item);
+  }
+  if (!isCartItem(item)) {
+    if (verbose > 0)
+      console.log('not cart item', item);
+    return;
+  }
   if (verbose > 0)
-    console.log('trying', item);
+    console.log('try extracting', item);
   const extraction = extractItem(item);
   if (extraction != null) {
     output.set(item, extraction);
     extracted_items.push(item);
   }
+}
+
+function isInSavedForLater(item, savedForLaterSection) {
+  return savedForLaterSection !== null
+    && savedForLaterSection.getBoundingClientRect().top
+    < item.getBoundingClientRect().top
+    && !item.textContent.toLowerCase().match(saveForLaterRegex);
+}
+
+function getSavedForLaterSection() {
+  // This regex should match the XPath pattern below.
+  const shortCutRegex = new RegExp(
+      '(your saved items)|(saved for later)|(my saved items)|(wishlist items)',
+      'i');
+  if (!document.body.innerText.match(shortCutRegex))
+    return null;
+
+  const nodes = document.evaluate(
+    "//*[contains(translate(" +
+    "text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), " +
+    "'your saved items')" +
+    "or contains(translate(" +
+    "text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), " +
+    "'saved for later')" +
+    "or contains(translate(" +
+    "text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), " +
+    "'my saved items')" +
+    "or contains(translate(" +
+    "text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), " +
+    "'wishlist items')]", document,
+  null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  let node = nodes.iterateNext();
+  let section = null;
+  while (node) {
+    if (node!= null && node.offsetHeight >= 1 && node.offsetWidth >= 1) {
+      section = node;
+    }
+    node = nodes.iterateNext();
+  }
+  return section
+}
+
+function isHeuristicsImprovementEnabled() {
+  if (typeof isImprovementEnabled === 'undefined'
+    || typeof isImprovementEnabled !== 'boolean') {
+    return false;
+  }
+  return isImprovementEnabled;
 }
 
 function documentPositionComparator(a, b) {
@@ -635,8 +838,89 @@ function documentPositionComparator(a, b) {
   }
 }
 
-function extractAllItems(root) {
+// Remove duplicate products with identical product URLs.
+function deduplicateResults(output) {
+  if (!document.URL.includes("sourcebmx.com")) return output;
+  const productUrls = new Set();
+  let filteredOutput = [];
+  for (let i = 0; i < output.length; i++) {
+    const productUrl = output[i]["url"];
+    if (!productUrls.has(productUrl)) {
+      filteredOutput.push(output[i]);
+      productUrls.add(productUrl)
+    }
+  }
+  return filteredOutput;
+}
+
+if (typeof Sleeper === 'undefined') {
+  var Sleeper = class {
+    constructor() {
+      // 99.9th percentile of the individual task execution times should be
+      // < 50ms.
+      // The task time is defined as exclusive CPU usage, from last time
+      // sleeping is done to the beginning of the next sleep.
+      let min_task_time = 10;
+      if (typeof kSleeperMinTaskTimeMs !== 'undefined') {
+        min_task_time = kSleeperMinTaskTimeMs;
+      }
+      this.min_task_time = min_task_time;
+
+      // Avoid monopolizing JavaScript main thread execution time.
+      let duty_cycle = 0.05;
+      if (typeof kSleeperDutyCycle !== 'undefined') {
+        duty_cycle = kSleeperDutyCycle;
+      }
+      this.duty_cycle = Math.max(0.01, Math.min(duty_cycle, 1));
+
+      this.last_sleep = performance.now();
+      this.start = performance.now();
+      this.longest_task = 0;
+      this.total_tasks_time = 0;
+    }
+
+    async maybeSleep() {
+      const elapsed = performance.now() - this.last_sleep;
+      if (elapsed <= this.min_task_time)
+        return;
+      this.longest_task = Math.max(this.longest_task, elapsed);
+      this.total_tasks_time += elapsed;
+      if (verbose > 1) {
+        console.log('longest task', this.longest_task);
+      }
+
+      // Calculate the delay aiming for the target duty cycle.
+      // duty_cycle = (working time) / (working time + sleeping time)
+      //            = elapsed / (elapsed + delay)
+      const delay = elapsed * (1 - this.duty_cycle) / this.duty_cycle;
+      await new Promise(r => setTimeout(r, delay));
+      this.last_sleep = performance.now();
+    }
+
+    get longestTask() {
+      const elapsed = performance.now() - this.last_sleep;
+      return Math.max(this.longest_task, elapsed);
+    }
+
+    get totalTasksTime() {
+      const elapsed = performance.now() - this.last_sleep;
+      return this.total_tasks_time + elapsed;
+    }
+
+    get elapsed() {
+      return performance.now() - this.start;
+    }
+  }
+}
+
+async function extractAllItems(root) {
+  let timeout = 250;
+  if (typeof kTimeoutMs !== 'undefined') {
+    timeout = kTimeoutMs;
+  }
+
   let items = [];
+  const sleeper = new Sleeper();
   // Root element being null could be due to the
   // fact that the cart is emptied, or the cart
   // element has not been loaded yet.
@@ -648,56 +932,94 @@ function extractAllItems(root) {
     }
   }
 
-  // Generic pattern
-  const candidates = new Set();
-  items = root.querySelectorAll('a');
+  if (document.URL.includes("samsclub.com")) {
+    items = root.querySelectorAll(".sc-cart-item-shipping");
+  } else if (document.URL.includes("kiehls.com")
+    || document.URL.includes("laroche-posay.us")) {
+    items = root.querySelectorAll(".c-product-table__row");
+  } else {
+    // Generic pattern
+    const candidates = new Set();
+    items = root.querySelectorAll('a');
 
-  const urlMap = new Map();
-  for (const item of items) {
-    if (!urlMap.has(item.href)) {
-      urlMap.set(item.href, new Set());
-    }
-    urlMap.get(item.href).add(item);
-  }
-
-  for (const [key, value] of urlMap) {
-    const ancestor = commonAncestorList(Array.from(value));
-    if (!candidates.has(ancestor))
-      candidates.add(ancestor);
-  }
-  for (const item of items) {
-    candidates.add(item);
-  }
-  const ancestors = new Set();
-  // TODO: optimize this part.
-  for (let depth = 0; depth < 8; depth++) {
-    for (let item of candidates) {
-      for (let i = 0; i < depth; i++) {
-        item = item.parentElement;
-        if (!item)
-          break;
+    const urlMap = new Map();
+    for (const item of items) {
+      if (!urlMap.has(item.href)) {
+        urlMap.set(item.href, new Set());
       }
-      if (item)
-        ancestors.add(item);
+      urlMap.get(item.href).add(item);
     }
+
+    for (const [key, value] of urlMap) {
+      const ancestor = commonAncestorList(Array.from(value));
+      if (!candidates.has(ancestor))
+        candidates.add(ancestor);
+    }
+    for (const item of items) {
+      candidates.add(item);
+    }
+    const ancestors = new Set();
+    // TODO: optimize this part.
+    for (let depth = 0; depth < 8; depth++) {
+      for (let item of candidates) {
+        for (let i = 0; i < depth; i++) {
+          item = item.parentElement;
+          if (!item)
+            break;
+        }
+        if (item)
+          ancestors.add(item);
+      }
+    }
+    items = Array.from(ancestors);
   }
-  items = Array.from(ancestors);
+  await sleeper.maybeSleep();
 
   if (verbose > 0)
     console.log(items);
   const outputMap = new Map();
   const processed = new Set();
   const extracted_items = [];
-  for (const item of items) {
-    extractOneItem(item, extracted_items, processed, outputMap);
+  let savedForLaterSection = null;
+  if (isHeuristicsImprovementEnabled()) {
+    savedForLaterSection = getSavedForLaterSection();
+    if (verbose > 0)
+      console.log(savedForLaterSection);
+    await sleeper.maybeSleep();
   }
+
+  let i = 0;
+  let early_abort = false;
+  for (const item of items) {
+    extractOneItem(item, extracted_items, processed, outputMap,
+      savedForLaterSection);
+    // Checking for every item is too slow.
+    if (i++ % 10 == 0) {
+      await sleeper.maybeSleep();
+      if (sleeper.totalTasksTime > timeout) {
+        if (verbose > 0) {
+          console.log('aborted due to timeout');
+        }
+        early_abort = true;
+        break;
+      }
+    }
+  }
+
   const keysInDocOrder =
       Array.from(outputMap.keys()).sort(documentPositionComparator);
   const output = [];
   for (const key of keysInDocOrder) {
     output.push(outputMap.get(key));
   }
-  return output;
+  await sleeper.maybeSleep();
+  return {
+    'products': deduplicateResults(output),
+    'longest_task_ms': sleeper.longestTask,
+    'total_tasks_ms': sleeper.totalTasksTime,
+    'elapsed_ms': sleeper.elapsed,
+    'timedout': early_abort,
+  };
 }
 
-extracted_results = extractAllItems(document);
+extracted_results_promise = extractAllItems(document);

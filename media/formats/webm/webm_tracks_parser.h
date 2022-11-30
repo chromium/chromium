@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_log.h"
@@ -32,6 +33,10 @@ namespace media {
 class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
  public:
   WebMTracksParser(MediaLog* media_log, bool ignore_text_tracks);
+
+  WebMTracksParser(const WebMTracksParser&) = delete;
+  WebMTracksParser& operator=(const WebMTracksParser&) = delete;
+
   ~WebMTracksParser() override;
 
   // Parses a WebM Tracks element in |buf|.
@@ -138,7 +143,7 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
   std::set<int64_t> ignored_tracks_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   WebMAudioClient audio_client_;
   AudioDecoderConfig audio_decoder_config_;
@@ -150,8 +155,6 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
   int detected_video_track_count_;
   int detected_text_track_count_;
   std::unique_ptr<MediaTracks> media_tracks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMTracksParser);
 };
 
 }  // namespace media

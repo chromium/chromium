@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -32,11 +33,24 @@ namespace leveldb_proto {
 // same thread (not necessarily the same as the constructor).
 class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
  public:
+  // Decides the next action based on the key.
+  //
+  // Returns `kSkipAndStop` when |while_callback| is false. Skips entries when
+  // |filter| is false.  Doesn't ever return `kLoadAndStop`.
+  static Enums::KeyIteratorAction ComputeIteratorAction(
+      const KeyFilter& while_callback,
+      const KeyFilter& filter,
+      const std::string& key);
+
   // Constructor. Does *not* open a leveldb - only initialize this class.
   // |client_name| is the name of the "client" that owns this instance. Used
   // for UMA statics as so: LevelDB.<value>.<client name>. It is best to not
   // change once shipped.
   explicit LevelDB(const char* client_name);
+
+  LevelDB(const LevelDB&) = delete;
+  LevelDB& operator=(const LevelDB&) = delete;
+
   virtual ~LevelDB();
 
   // Initializes a leveldb with the given options. If |database_dir| is
@@ -78,8 +92,22 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
       const leveldb::ReadOptions& options,
       const std::string& target_prefix);
 
-  // Retrieves keys and values, starting at key |start_key|, includes keys when
-  // |filter| return true and stops when |while_callback| returns false.
+  // Retrieves consecutive keys and values.
+  //
+  // Starts at or after |start_key|. Loads entries when |controller| returns
+  // `kLoadAndContinue` or `kLoadAndStop`. Finishes when |controller| returns
+  // `kLoadAndStop` or `kSkipAndStop`.
+  virtual bool LoadKeysAndEntriesWhile(
+      std::map<std::string, std::string>* keys_entries,
+      const leveldb::ReadOptions& options,
+      const std::string& start_key,
+      const KeyIteratorController& controller);
+
+  // Retrieves consecutive keys and values.
+  //
+  // Starts at or after |start_key|. Skips entries when |filter| returns
+  // `false`. Stops scanning and skips the entry when |while_callback| returns
+  // `false`.
   virtual bool LoadKeysAndEntriesWhile(
       const KeyFilter& filter,
       std::map<std::string, std::string>* keys_entries,
@@ -112,9 +140,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
   std::unique_ptr<leveldb::DB> db_;
   base::FilePath database_dir_;
   leveldb_env::Options open_options_;
-  base::HistogramBase* approx_memtable_mem_histogram_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDB);
+  raw_ptr<base::HistogramBase> approx_memtable_mem_histogram_;
 };
 
 }  // namespace leveldb_proto

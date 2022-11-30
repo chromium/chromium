@@ -28,6 +28,23 @@ Base class for detokenizer implementations.
 
 <!-- Placeholder for "Used in" -->
 
+A Detokenizer is a module that combines tokens to form strings. Generally,
+subclasses of `Detokenizer` will also be subclasses of `Tokenizer`; and the
+`detokenize` method will be the inverse of the `tokenize` method. I.e.,
+`tokenizer.detokenize(tokenizer.tokenize(s)) == s`.
+
+Each Detokenizer subclass must implement a `detokenize` method, which combines
+tokens together to form strings. E.g.:
+
+```
+>>> class SimpleDetokenizer(tf_text.Detokenizer):
+...   def detokenize(self, input):
+...     return tf.strings.reduce_join(input, axis=-1, separator=" ")
+>>> text = tf.ragged.constant([["hello", "world"], ["a", "b", "c"]])
+>>> print(SimpleDetokenizer().detokenize(text))
+tf.Tensor([b'hello world' b'a b c'], shape=(2,), dtype=string)
+```
+
 ## Methods
 
 <h3 id="detokenize"><code>detokenize</code></h3>
@@ -42,7 +59,14 @@ source</a>
 )
 </code></pre>
 
-Assembles the tokens in the input tensor into a human-consumable string.
+Assembles the tokens in the input tensor into a string.
+
+Generally, `detokenize` is the inverse of the `tokenize` method, and can be used
+to reconstrct a string from a set of tokens. This is especially helpful in cases
+where the tokens are integer ids, such as indexes into a vocabulary table -- in
+that case, the tokenized encoding is not very human-readable (since it's just a
+list of integers), so the `detokenize` method can be used to turn it back into
+something that's more readable.
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -54,7 +78,7 @@ Assembles the tokens in the input tensor into a human-consumable string.
 `input`
 </td>
 <td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
+An N-dimensional UTF-8 string or integer `Tensor` or
 `RaggedTensor`.
 </td>
 </tr>

@@ -1,9 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -12,7 +15,6 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -81,14 +83,17 @@ void ImageElementTiming::NotifyBackgroundImageFinished(
 
 base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
     const StyleFetchedImage* style_image) {
-  return background_image_timestamps_.at(style_image);
+  const auto it = background_image_timestamps_.find(style_image);
+  if (it == background_image_timestamps_.end())
+    return base::TimeTicks();
+  return it->value;
 }
 
 void ImageElementTiming::NotifyImagePainted(
     const LayoutObject& layout_object,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   if (!internal::IsExplicitlyRegisteredForTiming(layout_object))
     return;
 
@@ -111,7 +116,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     base::TimeTicks load_time,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   LocalFrame* frame = GetSupplementable()->GetFrame();
   DCHECK(frame == layout_object.GetDocument().GetFrame());
   // Background images could cause |node| to not be an element. For example,
@@ -137,7 +142,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   RespectImageOrientationEnum respect_orientation =
       LayoutObject::ShouldRespectImageOrientation(&layout_object);
 
-  FloatRect intersection_rect = ElementTimingUtils::ComputeIntersectionRect(
+  gfx::RectF intersection_rect = ElementTimingUtils::ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);
   const AtomicString attr =
       element->FastGetAttribute(html_names::kElementtimingAttr);
@@ -190,7 +195,7 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
     Node& node,
     const StyleFetchedImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   const LayoutObject* layout_object = node.GetLayoutObject();
   if (!layout_object)
     return;
@@ -203,7 +208,13 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
     return;
 
   auto it = background_image_timestamps_.find(&background_image);
-  DCHECK(it != background_image_timestamps_.end());
+  if (it == background_image_timestamps_.end()) {
+    // TODO(npm): investigate how this could happen. For now, we set the load
+    // time as the current time.
+    background_image_timestamps_.insert(&background_image,
+                                        base::TimeTicks::Now());
+    it = background_image_timestamps_.find(&background_image);
+  }
 
   ImageInfo& info =
       images_notified_
@@ -218,7 +229,6 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
 }
 
 void ImageElementTiming::ReportImagePaintPresentationTime(
-    WebSwapResult,
     base::TimeTicks timestamp) {
   WindowPerformance* performance =
       DOMWindowPerformance::performance(*GetSupplementable());

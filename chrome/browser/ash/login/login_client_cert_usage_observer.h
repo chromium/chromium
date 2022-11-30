@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,24 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
-#include "chromeos/login/auth/challenge_response_key.h"
+#include "chrome/browser/certificate_provider/certificate_provider_service.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
+namespace ash {
 
 // Observes and remembers the extension-provided client certificates that were
 // used to successfully sign data on the login screen.
 class LoginClientCertUsageObserver final
-    : public CertificateProviderService::Observer {
+    : public chromeos::CertificateProviderService::Observer {
  public:
   LoginClientCertUsageObserver();
+
+  LoginClientCertUsageObserver(const LoginClientCertUsageObserver&) = delete;
+  LoginClientCertUsageObserver& operator=(const LoginClientCertUsageObserver&) =
+      delete;
+
   ~LoginClientCertUsageObserver() override;
 
   // Returns whether at least one certificate was used.
@@ -48,10 +52,14 @@ class LoginClientCertUsageObserver final
   scoped_refptr<net::X509Certificate> used_cert_;
   // The extension that signed `used_cert_`.
   std::string used_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginClientCertUsageObserver);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::LoginClientCertUsageObserver;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_CLIENT_CERT_USAGE_OBSERVER_H_

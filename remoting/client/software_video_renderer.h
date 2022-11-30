@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -48,6 +48,9 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   explicit SoftwareVideoRenderer(
       std::unique_ptr<protocol::FrameConsumer> consumer);
 
+  SoftwareVideoRenderer(const SoftwareVideoRenderer&) = delete;
+  SoftwareVideoRenderer& operator=(const SoftwareVideoRenderer&) = delete;
+
   ~SoftwareVideoRenderer() override;
 
   // VideoRenderer interface.
@@ -74,9 +77,9 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   // |owned_consumer_| and |consumer_| should refer to the same object if
   // |owned_consumer_| is not null.
   std::unique_ptr<protocol::FrameConsumer> owned_consumer_;
-  protocol::FrameConsumer* const consumer_;
+  const raw_ptr<protocol::FrameConsumer> consumer_;
 
-  protocol::FrameStatsConsumer* stats_consumer_ = nullptr;
+  raw_ptr<protocol::FrameStatsConsumer> stats_consumer_ = nullptr;
 
   std::unique_ptr<VideoDecoder> decoder_;
 
@@ -86,8 +89,6 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SoftwareVideoRenderer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareVideoRenderer);
 };
 
 }  // namespace remoting

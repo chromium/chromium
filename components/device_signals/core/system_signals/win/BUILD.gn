@@ -1,0 +1,81 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("win") {
+  public = [
+    "win_platform_delegate.h",
+    "wmi_client.h",
+    "wmi_client_impl.h",
+    "wsc_client.h",
+    "wsc_client_impl.h",
+  ]
+
+  sources = [
+    "win_platform_delegate.cc",
+    "wmi_client.cc",
+    "wmi_client_impl.cc",
+    "wsc_client.cc",
+    "wsc_client_impl.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/common/win",
+    "//components/device_signals/core/system_signals",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//crypto",
+    "//net",
+  ]
+
+  libs = [
+    "Crypt32.lib",
+    "wintrust.lib",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "com_fakes.cc",
+    "com_fakes.h",
+    "mock_wmi_client.cc",
+    "mock_wmi_client.h",
+    "mock_wsc_client.cc",
+    "mock_wsc_client.h",
+  ]
+
+  deps = [
+    ":win",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "win_platform_delegate_unittest.cc",
+    "wmi_client_impl_unittest.cc",
+    "wsc_client_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":win",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals:test_support",
+    "//components/device_signals/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

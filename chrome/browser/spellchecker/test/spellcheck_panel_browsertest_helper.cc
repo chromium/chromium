@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -54,6 +53,12 @@ void SpellCheckPanelBrowserTestHelper::BindSpellCheckPanelHost(
     spell_check_panel_host = hosts_.back().get();
   }
   spell_check_panel_host->BindReceiver(std::move(receiver));
-  std::move(quit_on_bind_closure_).Run();
+
+  // BindSpellCheckPanelHost() is sometimes invoked as a side-effect of
+  // calling spellcheck::SpellCheckMockPanelHost::SpellingPanelVisible(),
+  // which does not call RunUntilBind(). See crbug.com/1032617 .
+  if (quit_on_bind_closure_) {
+    std::move(quit_on_bind_closure_).Run();
+  }
 }
 }  // namespace spellcheck

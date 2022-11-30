@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,17 +25,21 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   ~HoldingSpaceClientImpl() override;
 
   // HoldingSpaceClient:
+  void AddDiagnosticsLog(const base::FilePath& file_path) override;
   void AddScreenRecording(const base::FilePath& file_path) override;
   void AddScreenshot(const base::FilePath& file_path) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
   base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
+  bool IsDriveDisabled() const override;
   void OpenDownloads(SuccessCallback callback) override;
   void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                  SuccessCallback callback) override;
   void OpenMyFiles(SuccessCallback callback) override;
-  void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
   void PinFiles(const std::vector<base::FilePath>& file_paths) override;
   void PinItems(const std::vector<const HoldingSpaceItem*>& items) override;
+  void RemoveFileSuggestions(
+      const std::vector<base::FilePath>& absolute_file_paths) override;
+  void ShowItemInFolder(const HoldingSpaceItem&, SuccessCallback) override;
   void UnpinItems(const std::vector<const HoldingSpaceItem*>& items) override;
 
  private:

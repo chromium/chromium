@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 
 #include <algorithm>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -16,7 +17,9 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 namespace {
@@ -30,7 +33,7 @@ void WorkerThreadFunc(
   // Worlds on the main thread should not be visible from the worker thread.
   Vector<scoped_refptr<DOMWrapperWorld>> initial_worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(initial_worlds);
-  EXPECT_TRUE(initial_worlds.IsEmpty());
+  EXPECT_TRUE(initial_worlds.empty());
 
   // Create worlds on the worker thread and verify them.
   v8::Isolate* isolate = thread->GetIsolate();
@@ -126,7 +129,7 @@ TEST(DOMWrapperWorldTest, Basic) {
           ThreadCreationParams(ThreadType::kTestThread)
               .SetThreadNameForTest("DOMWrapperWorld test thread"));
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
-      Thread::Current()->GetTaskRunner();
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting();
   PostCrossThreadTask(*thread->BackingThread().GetTaskRunner(), FROM_HERE,
                       CrossThreadBindOnce(&WorkerThreadFunc,
                                           CrossThreadUnretained(thread.get()),

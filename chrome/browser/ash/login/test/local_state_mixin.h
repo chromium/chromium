@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,22 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 // Mixin browser tests can use for setting up local state environment.
 class LocalStateMixin : public InProcessBrowserTestMixin {
  public:
   class Delegate {
    public:
+    void SetUpLocalStateBase();
+
+    ~Delegate();
+
+   private:
     // Implement this function to setup g_browser_process->local_state()
     virtual void SetUpLocalState() = 0;
+
+    bool setup_called_ = false;
   };
   LocalStateMixin(InProcessBrowserTestMixinHost* host, Delegate* delegate);
 
@@ -27,6 +34,12 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
   Delegate* const delegate_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::LocalStateMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_STATE_MIXIN_H_

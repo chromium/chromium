@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
@@ -32,6 +34,12 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
                                        public NotificationMenuView::Delegate {
  public:
   MockNotificationMenuController() = default;
+
+  MockNotificationMenuController(const MockNotificationMenuController&) =
+      delete;
+  MockNotificationMenuController& operator=(
+      const MockNotificationMenuController&) = delete;
+
   ~MockNotificationMenuController() override = default;
 
   void ActivateNotificationAndClose(
@@ -62,8 +70,6 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 
   // Owned by NotificationMenuViewTest.
   NotificationMenuView* notification_menu_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationMenuController);
 };
 
 }  // namespace
@@ -71,6 +77,10 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 class NotificationMenuViewTest : public views::ViewsTestBase {
  public:
   NotificationMenuViewTest() {}
+
+  NotificationMenuViewTest(const NotificationMenuViewTest&) = delete;
+  NotificationMenuViewTest& operator=(const NotificationMenuViewTest&) = delete;
+
   ~NotificationMenuViewTest() override = default;
 
   // views::ViewsTestBase:
@@ -103,7 +113,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         CreateParams(views::Widget::InitParams::TYPE_POPUP));
     init_params.ownership =
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    init_params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+    init_params.activatable = views::Widget::InitParams::Activatable::kYes;
     widget_->Init(std::move(init_params));
     notification_menu_view_ =
         widget_->SetContentsView(std::move(notification_menu_view));
@@ -125,10 +135,10 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->AddNotificationItemView(notification);
-    notification_menu_view_->Layout();
+    views::test::RunScheduledLayout(notification_menu_view_);
     return notification;
   }
 
@@ -140,7 +150,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message, ui::ImageModel(), u"www.test.org", GURL(), notifier_id,
         message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->UpdateNotificationItemView(notification);
     return notification;
@@ -205,8 +215,6 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuViewTest);
 };
 
 // Tests that the correct NotificationItemView is shown when notifications come

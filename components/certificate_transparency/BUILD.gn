@@ -1,20 +1,35 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("certificate_transparency") {
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "certificate_transparency.proto",
+    "certificate_transparency_config.proto",
+    "ct_timestamp.proto",
+  ]
+}
+
+component("certificate_transparency") {
   sources = [
     "chrome_ct_policy_enforcer.cc",
     "chrome_ct_policy_enforcer.h",
     "chrome_require_ct_delegate.cc",
     "chrome_require_ct_delegate.h",
+    "ct_features.cc",
+    "ct_features.h",
     "ct_known_logs.cc",
     "ct_known_logs.h",
     "pref_names.cc",
     "pref_names.h",
   ]
 
+  defines = [ "IS_CERTIFICATE_TRANSPARENCY_IMPL" ]
+
   deps = [
+    ":proto",
     "//base",
     "//components/base32",
     "//components/certificate_transparency/data:ct_log_list",

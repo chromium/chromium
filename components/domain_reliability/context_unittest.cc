@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/domain_reliability/beacon.h"
 #include "components/domain_reliability/dispatcher.h"
 #include "components/domain_reliability/scheduler.h"
@@ -28,8 +29,6 @@
 namespace domain_reliability {
 namespace {
 
-using base::DictionaryValue;
-using base::ListValue;
 using base::Value;
 
 typedef std::vector<const DomainReliabilityBeacon*> BeaconVector;
@@ -53,11 +52,11 @@ std::unique_ptr<DomainReliabilityBeacon> MakeCustomizedBeacon(
   beacon->details.quic_broken = true;
   beacon->details.quic_port_migration_detected = quic_port_migration_detected;
   beacon->http_response_code = -1;
-  beacon->elapsed = base::TimeDelta::FromMilliseconds(250);
+  beacon->elapsed = base::Milliseconds(250);
   beacon->start_time = time->NowTicks() - beacon->elapsed;
   beacon->upload_depth = 0;
   beacon->sample_rate = 1.0;
-  beacon->network_isolation_key = net::NetworkIsolationKey();
+  beacon->network_anonymization_key = net::NetworkAnonymizationKey();
   return beacon;
 }
 
@@ -67,14 +66,14 @@ std::unique_ptr<DomainReliabilityBeacon> MakeBeacon(MockableTime* time) {
                               false /* quic_port_migration_detected */);
 }
 
-std::unique_ptr<DomainReliabilityBeacon> MakeBeaconWithNetworkIsolationKey(
+std::unique_ptr<DomainReliabilityBeacon> MakeBeaconWithNetworkAnonymizationKey(
     MockableTime* time,
     const std::string& status,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   std::unique_ptr<DomainReliabilityBeacon> beacon =
       MakeCustomizedBeacon(time, status, "" /* quic_error */,
                            false /* quic_port_migration_detected */);
-  beacon->network_isolation_key = network_isolation_key;
+  beacon->network_anonymization_key = network_anonymization_key;
   return beacon;
 }
 
@@ -85,36 +84,39 @@ std::string StatusFromInt(int i) {
   return base::StringPrintf("status%i.test", i);
 }
 
-template <typename ValueType,
-          bool (DictionaryValue::*GetValueType)(base::StringPiece, ValueType*)
-              const>
+template <typename ValueTypeFindResult,
+          typename ValueType,
+          ValueTypeFindResult (Value::*FindValueType)(base::StringPiece) const>
 struct HasValue {
-  bool operator()(const DictionaryValue& dict,
+  bool operator()(const Value& dict,
                   const std::string& key,
                   ValueType expected_value) {
-    ValueType actual_value;
-    bool got_value = (dict.*GetValueType)(key, &actual_value);
-    if (got_value)
-      EXPECT_EQ(expected_value, actual_value);
-    return got_value && (expected_value == actual_value);
+    ValueTypeFindResult actual_value = (dict.*FindValueType)(key);
+    if (actual_value)
+      EXPECT_EQ(expected_value, *actual_value);
+    return actual_value && (expected_value == *actual_value);
   }
 };
 
-HasValue<bool, &DictionaryValue::GetBoolean> HasBooleanValue;
-HasValue<double, &DictionaryValue::GetDouble> HasDoubleValue;
-HasValue<int, &DictionaryValue::GetInteger> HasIntegerValue;
-HasValue<std::string, &DictionaryValue::GetString> HasStringValue;
+HasValue<absl::optional<bool>, bool, &Value::FindBoolPath> HasBooleanValue;
+HasValue<absl::optional<double>, double, &Value::FindDoublePath> HasDoubleValue;
+HasValue<absl::optional<int>, int, &Value::FindIntPath> HasIntegerValue;
+HasValue<const std::string*, std::string, &Value::FindStringPath>
+    HasStringValue;
 
 bool GetEntryFromReport(const Value* report,
                         size_t index,
-                        const DictionaryValue** entry_out) {
-  const DictionaryValue* report_dict;
-  const ListValue* entries;
-
-  return report &&
-         report->GetAsDictionary(&report_dict) &&
-         report_dict->GetList("entries", &entries) &&
-         entries->GetDictionary(index, entry_out);
+                        const Value** entry_out) {
+  if (!report || !report->is_dict())
+    return false;
+  const Value* entries = report->FindListKey("entries");
+  if (!entries || index >= entries->GetList().size())
+    return false;
+  const Value& entry = entries->GetList()[index];
+  if (!entry.is_dict())
+    return false;
+  *entry_out = &entry;
+  return true;
 }
 
 class DomainReliabilityContextTest : public testing::Test {
@@ -134,13 +136,13 @@ class DomainReliabilityContextTest : public testing::Test {
     // Make sure that the last network change does not overlap requests
     // made in test cases, which start 250ms in the past (see |MakeBeacon|).
     last_network_change_time_ = time_.NowTicks();
-    time_.Advance(base::TimeDelta::FromSeconds(1));
+    time_.Advance(base::Seconds(1));
   }
 
   void InitContext(std::unique_ptr<const DomainReliabilityConfig> config) {
-    context_.reset(new DomainReliabilityContext(
+    context_ = std::make_unique<DomainReliabilityContext>(
         &time_, params_, upload_reporter_string_, &last_network_change_time_,
-        upload_allowed_callback_, &dispatcher_, &uploader_, std::move(config)));
+        upload_allowed_callback_, &dispatcher_, &uploader_, std::move(config));
   }
 
   void ShutDownContext() { context_.reset(); }
@@ -150,9 +152,7 @@ class DomainReliabilityContextTest : public testing::Test {
   base::TimeDelta retry_interval() const {
     return params_.upload_retry_interval;
   }
-  base::TimeDelta zero_delta() const {
-    return base::TimeDelta::FromMicroseconds(0);
-  }
+  base::TimeDelta zero_delta() const { return base::Microseconds(0); }
 
   bool upload_allowed_callback_pending() const {
     return !upload_allowed_result_callback_.is_null();
@@ -175,9 +175,9 @@ class DomainReliabilityContextTest : public testing::Test {
     return upload_url_;
   }
 
-  const net::NetworkIsolationKey& upload_network_isolation_key() const {
+  const net::NetworkAnonymizationKey& upload_network_anonymization_key() const {
     EXPECT_TRUE(upload_pending_);
-    return upload_network_isolation_key_;
+    return upload_network_anonymization_key_;
   }
 
   void CallUploadCallback(DomainReliabilityUploader::UploadResult result) {
@@ -194,7 +194,7 @@ class DomainReliabilityContextTest : public testing::Test {
     return beacons.empty();
   }
 
-  const GURL& upload_allowed_origin() { return upload_allowed_origin_; }
+  const url::Origin& upload_allowed_origin() { return upload_allowed_origin_; }
 
   void CallUploadAllowedResultCallback(bool allowed) {
     DCHECK(!upload_allowed_result_callback_.is_null());
@@ -211,23 +211,24 @@ class DomainReliabilityContextTest : public testing::Test {
   std::unique_ptr<DomainReliabilityContext> context_;
 
  private:
-  void OnUploadRequest(const std::string& report_json,
-                       int max_upload_depth,
-                       const GURL& upload_url,
-                       const net::NetworkIsolationKey& network_isolation_key,
-                       DomainReliabilityUploader::UploadCallback callback) {
+  void OnUploadRequest(
+      const std::string& report_json,
+      int max_upload_depth,
+      const GURL& upload_url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      DomainReliabilityUploader::UploadCallback callback) {
     EXPECT_EQ(num_uploads_completed_, num_uploads_);
     ASSERT_FALSE(upload_pending_);
     upload_report_ = report_json;
     upload_max_depth_ = max_upload_depth;
     upload_url_ = upload_url;
-    upload_network_isolation_key_ = network_isolation_key;
+    upload_network_anonymization_key_ = network_anonymization_key;
     upload_callback_ = std::move(callback);
     upload_pending_ = true;
     ++num_uploads_;
   }
 
-  void UploadAllowedCallback(const GURL& origin,
+  void UploadAllowedCallback(const url::Origin& origin,
                              base::OnceCallback<void(bool)> callback) {
     upload_allowed_origin_ = origin;
     upload_allowed_result_callback_ = std::move(callback);
@@ -240,10 +241,10 @@ class DomainReliabilityContextTest : public testing::Test {
   std::string upload_report_;
   int upload_max_depth_;
   GURL upload_url_;
-  net::NetworkIsolationKey upload_network_isolation_key_;
+  net::NetworkAnonymizationKey upload_network_anonymization_key_;
   DomainReliabilityUploader::UploadCallback upload_callback_;
 
-  GURL upload_allowed_origin_;
+  url::Origin upload_allowed_origin_;
   base::OnceCallback<void(bool)> upload_allowed_result_callback_;
 };
 
@@ -363,7 +364,7 @@ TEST_F(DomainReliabilityContextTest, ReportUpload) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasStringValue(*entry, "failure_data.custom_error",
                              "net::ERR_CONNECTION_RESET"));
@@ -424,57 +425,57 @@ TEST_F(DomainReliabilityContextTest, ReportUploadFails) {
   EXPECT_TRUE(upload_allowed_callback_pending());
 }
 
-// Make sure that requests with only one NetworkIsolationKey are uploaded at a
-// time, in FIFO order.
-TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
-  const net::NetworkIsolationKey kNetworkIsolationKey1 =
-      net::NetworkIsolationKey::CreateTransient();
-  const net::NetworkIsolationKey kNetworkIsolationKey2 =
-      net::NetworkIsolationKey::CreateTransient();
-  const net::NetworkIsolationKey kNetworkIsolationKey3 =
-      net::NetworkIsolationKey::CreateTransient();
+// Make sure that requests with only one NetworkAnonymizationKey are uploaded at
+// a time, in FIFO order.
+TEST_F(DomainReliabilityContextTest, ReportUploadNetworkAnonymizationKey) {
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateTransient();
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateTransient();
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey3 =
+      net::NetworkAnonymizationKey::CreateTransient();
 
   InitContext(MakeTestConfig());
 
-  // Three beacons with kNetworkIsolationKey1, two with kNetworkIsolationKey2,
-  // and one with kNetworkIsolationKey3. Have beacons with the same key both
-  // adjacent to each other, and separated by beacons with other keys. Give
-  // each a unique status, so it's easy to check which beacons are included in
-  // each report.
+  // Three beacons with kNetworkAnonymizationKey1, two with
+  // kNetworkAnonymizationKey2, and one with kNetworkAnonymizationKey3. Have
+  // beacons with the same key both adjacent to each other, and separated by
+  // beacons with other keys. Give each a unique status, so it's easy to check
+  // which beacons are included in each report.
   const char kStatusNik11[] = "nik1.status1";
   const char kStatusNik12[] = "nik1.status2";
   const char kStatusNik13[] = "nik1.status3";
   const char kStatusNik21[] = "nik2.status1";
   const char kStatusNik22[] = "nik2.status2";
   const char kStatusNik31[] = "nik3.status1";
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik11,
-                                                       kNetworkIsolationKey1));
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik12,
-                                                       kNetworkIsolationKey1));
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik21,
-                                                       kNetworkIsolationKey2));
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik31,
-                                                       kNetworkIsolationKey3));
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik13,
-                                                       kNetworkIsolationKey1));
-  context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik22,
-                                                       kNetworkIsolationKey2));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik11, kNetworkAnonymizationKey1));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik12, kNetworkAnonymizationKey1));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik21, kNetworkAnonymizationKey2));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik31, kNetworkAnonymizationKey3));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik13, kNetworkAnonymizationKey1));
+  context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik22, kNetworkAnonymizationKey2));
 
   // All the beacons should be queued, in FIFO order.
   BeaconVector beacons;
   context_->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(6u, beacons.size());
-  EXPECT_EQ(kNetworkIsolationKey1, beacons[0]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey1, beacons[0]->network_anonymization_key);
   EXPECT_EQ(kStatusNik11, beacons[0]->status);
-  EXPECT_EQ(kNetworkIsolationKey1, beacons[1]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey1, beacons[1]->network_anonymization_key);
   EXPECT_EQ(kStatusNik12, beacons[1]->status);
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[2]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[2]->network_anonymization_key);
   EXPECT_EQ(kStatusNik21, beacons[2]->status);
-  EXPECT_EQ(kNetworkIsolationKey3, beacons[3]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey3, beacons[3]->network_anonymization_key);
   EXPECT_EQ(kStatusNik31, beacons[3]->status);
-  EXPECT_EQ(kNetworkIsolationKey1, beacons[4]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey1, beacons[4]->network_anonymization_key);
   EXPECT_EQ(kStatusNik13, beacons[4]->status);
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[5]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[5]->network_anonymization_key);
   EXPECT_EQ(kStatusNik22, beacons[5]->status);
 
   // Wait for the report to start being uploaded.
@@ -484,7 +485,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   EXPECT_TRUE(upload_pending());
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
-  EXPECT_EQ(kNetworkIsolationKey1, upload_network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey1, upload_network_anonymization_key());
 
   // Check that only the strings associated with the first NIK are present in
   // the report.
@@ -503,11 +504,11 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   // There should still be 3 beacons queued, in the same order as before.
   context_->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(3u, beacons.size());
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[0]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[0]->network_anonymization_key);
   EXPECT_EQ(kStatusNik21, beacons[0]->status);
-  EXPECT_EQ(kNetworkIsolationKey3, beacons[1]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey3, beacons[1]->network_anonymization_key);
   EXPECT_EQ(kStatusNik31, beacons[1]->status);
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[2]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[2]->network_anonymization_key);
   EXPECT_EQ(kStatusNik22, beacons[2]->status);
 
   // The next upload should automatically trigger.
@@ -517,7 +518,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   EXPECT_TRUE(upload_pending());
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
-  EXPECT_EQ(kNetworkIsolationKey2, upload_network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey2, upload_network_anonymization_key());
 
   // Check that only the strings associated with the second NIK are present in
   // the report.
@@ -533,7 +534,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   // There should still be 1 beacon queued.
   context_->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(1u, beacons.size());
-  EXPECT_EQ(kNetworkIsolationKey3, beacons[0]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey3, beacons[0]->network_anonymization_key);
   EXPECT_EQ(kStatusNik31, beacons[0]->status);
 
   // The next upload should automatically trigger.
@@ -543,7 +544,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
   EXPECT_TRUE(upload_pending());
   EXPECT_EQ(0, upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
-  EXPECT_EQ(kNetworkIsolationKey3, upload_network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey3, upload_network_anonymization_key());
 
   // Check that only the strings associated with the third NIK are present in
   // the report.
@@ -560,12 +561,12 @@ TEST_F(DomainReliabilityContextTest, ReportUploadNetworkIsolationKey) {
 }
 
 // Make sure that kMaxUploadDepthToSchedule is respected when requests have
-// different NetworkIsolationKeys.
-TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKey) {
-  const net::NetworkIsolationKey kNetworkIsolationKey1 =
-      net::NetworkIsolationKey::CreateTransient();
-  const net::NetworkIsolationKey kNetworkIsolationKey2 =
-      net::NetworkIsolationKey::CreateTransient();
+// different NetworkAnonymizationKeys.
+TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkAnonymizationKey) {
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateTransient();
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateTransient();
 
   InitContext(MakeTestConfig());
 
@@ -573,31 +574,31 @@ TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKey) {
   const char kStatusNik2ExceedsMaxDepth[] = "nik2.exceeds_max_depth";
   const char kStatusNik2MaxDepth[] = "nik2.max_depth";
 
-  // Add a beacon with kNetworkIsolationKey1 and a depth that exceeds the max
-  // depth to trigger an upload. No upload should be queued.
+  // Add a beacon with kNetworkAnonymizationKey1 and a depth that exceeds the
+  // max depth to trigger an upload. No upload should be queued.
   std::unique_ptr<DomainReliabilityBeacon> beacon =
-      MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik1ExceedsMaxDepth,
-                                        kNetworkIsolationKey1);
+      MakeBeaconWithNetworkAnonymizationKey(&time_, kStatusNik1ExceedsMaxDepth,
+                                            kNetworkAnonymizationKey1);
   beacon->upload_depth =
       DomainReliabilityContext::kMaxUploadDepthToSchedule + 1;
   context_->OnBeacon(std::move(beacon));
   time_.Advance(max_delay());
   EXPECT_FALSE(upload_allowed_callback_pending());
 
-  // Add a beacon with kNetworkIsolationKey2 and a depth that exceeds the max
-  // depth to trigger an upload. No upload should be queued.
-  beacon = MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik2ExceedsMaxDepth,
-                                             kNetworkIsolationKey2);
+  // Add a beacon with kNetworkAnonymizationKey2 and a depth that exceeds the
+  // max depth to trigger an upload. No upload should be queued.
+  beacon = MakeBeaconWithNetworkAnonymizationKey(
+      &time_, kStatusNik2ExceedsMaxDepth, kNetworkAnonymizationKey2);
   beacon->upload_depth =
       DomainReliabilityContext::kMaxUploadDepthToSchedule + 1;
   context_->OnBeacon(std::move(beacon));
   time_.Advance(max_delay());
   EXPECT_FALSE(upload_allowed_callback_pending());
 
-  // Add a beacon with kNetworkIsolationKey2 and a depth that equals the max
+  // Add a beacon with kNetworkAnonymizationKey2 and a depth that equals the max
   // depth to trigger an upload. An upload should be queued.
-  beacon = MakeBeaconWithNetworkIsolationKey(&time_, kStatusNik2MaxDepth,
-                                             kNetworkIsolationKey2);
+  beacon = MakeBeaconWithNetworkAnonymizationKey(&time_, kStatusNik2MaxDepth,
+                                                 kNetworkAnonymizationKey2);
   beacon->upload_depth = DomainReliabilityContext::kMaxUploadDepthToSchedule;
   context_->OnBeacon(std::move(beacon));
   time_.Advance(max_delay());
@@ -607,15 +608,15 @@ TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKey) {
   BeaconVector beacons;
   context_->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(3u, beacons.size());
-  EXPECT_EQ(kNetworkIsolationKey1, beacons[0]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey1, beacons[0]->network_anonymization_key);
   EXPECT_EQ(kStatusNik1ExceedsMaxDepth, beacons[0]->status);
   EXPECT_EQ(DomainReliabilityContext::kMaxUploadDepthToSchedule + 1,
             beacons[0]->upload_depth);
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[1]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[1]->network_anonymization_key);
   EXPECT_EQ(kStatusNik2ExceedsMaxDepth, beacons[1]->status);
   EXPECT_EQ(DomainReliabilityContext::kMaxUploadDepthToSchedule + 1,
             beacons[1]->upload_depth);
-  EXPECT_EQ(kNetworkIsolationKey2, beacons[2]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey2, beacons[2]->network_anonymization_key);
   EXPECT_EQ(kStatusNik2MaxDepth, beacons[2]->status);
   EXPECT_EQ(DomainReliabilityContext::kMaxUploadDepthToSchedule,
             beacons[2]->upload_depth);
@@ -626,7 +627,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKey) {
   EXPECT_EQ(DomainReliabilityContext::kMaxUploadDepthToSchedule + 1,
             upload_max_depth());
   EXPECT_EQ(GURL("https://exampleuploader/upload"), upload_url());
-  EXPECT_EQ(kNetworkIsolationKey2, upload_network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey2, upload_network_anonymization_key());
 
   // Check that only the strings associated with the second NIK are present in
   // the report.
@@ -644,7 +645,7 @@ TEST_F(DomainReliabilityContextTest, ReportUploadDepthNetworkIsolationKey) {
   // There should still be 1 beacon queued.
   context_->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(1u, beacons.size());
-  EXPECT_EQ(kNetworkIsolationKey1, beacons[0]->network_isolation_key);
+  EXPECT_EQ(kNetworkAnonymizationKey1, beacons[0]->network_anonymization_key);
   EXPECT_EQ(kStatusNik1ExceedsMaxDepth, beacons[0]->status);
   EXPECT_EQ(DomainReliabilityContext::kMaxUploadDepthToSchedule + 1,
             beacons[0]->upload_depth);
@@ -688,7 +689,7 @@ TEST_F(DomainReliabilityContextTest, NetworkChanged) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasBooleanValue(*entry, "network_changed", true));
 
@@ -719,7 +720,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
 
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
@@ -753,7 +754,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
 
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -788,7 +789,7 @@ TEST_F(DomainReliabilityContextTest,
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasBooleanValue(*entry, "quic_broken", true));
   EXPECT_TRUE(HasStringValue(*entry, "status", "tcp.connection_reset"));
@@ -834,7 +835,7 @@ TEST_F(DomainReliabilityContextTest, FractionalSampleRate) {
 
   std::unique_ptr<Value> value =
       base::JSONReader::ReadDeprecated(upload_report());
-  const DictionaryValue* entry;
+  const Value* entry;
   ASSERT_TRUE(GetEntryFromReport(value.get(), 0, &entry));
   EXPECT_TRUE(HasDoubleValue(*entry, "sample_rate", 0.5));
 
@@ -929,7 +930,7 @@ TEST_F(DomainReliabilityContextTest, ExpiredBeaconDoesNotUpload) {
   base::HistogramTester histograms;
   InitContext(MakeTestConfig());
   std::unique_ptr<DomainReliabilityBeacon> beacon = MakeBeacon(&time_);
-  time_.Advance(base::TimeDelta::FromHours(2));
+  time_.Advance(base::Hours(2));
   context_->OnBeacon(std::move(beacon));
 
   time_.Advance(max_delay());
@@ -952,12 +953,12 @@ TEST_F(DomainReliabilityContextTest, EvictOldestBeacon) {
 
   std::unique_ptr<DomainReliabilityBeacon> oldest_beacon = MakeBeacon(&time_);
   const DomainReliabilityBeacon* oldest_beacon_ptr = oldest_beacon.get();
-  time_.Advance(base::TimeDelta::FromSeconds(1));
+  time_.Advance(base::Seconds(1));
   context_->OnBeacon(std::move(oldest_beacon));
 
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
     std::unique_ptr<DomainReliabilityBeacon> beacon = MakeBeacon(&time_);
-    time_.Advance(base::TimeDelta::FromSeconds(1));
+    time_.Advance(base::Seconds(1));
     context_->OnBeacon(std::move(beacon));
   }
 
@@ -1259,24 +1260,24 @@ TEST_F(DomainReliabilityContextTest, EvictAllDuringSuccessfulUpload) {
 }
 
 // Make sure that evictions account for when there are different
-// NetworkIsolationKeys in use.
+// NetworkAnonymizationKeys in use.
 TEST_F(DomainReliabilityContextTest,
-       EvictionDuringSuccessfulUploadNetworkIsolationKey) {
+       EvictionDuringSuccessfulUploadNetworkAnonymizationKey) {
   ASSERT_EQ(0u, DomainReliabilityContext::kMaxQueuedBeacons % 2)
       << "DomainReliabilityContext::kMaxQueuedBeacons must be even.";
 
   InitContext(MakeTestConfig());
 
-  net::NetworkIsolationKey network_isolation_keys[] = {
-      net::NetworkIsolationKey::CreateTransient(),
-      net::NetworkIsolationKey::CreateTransient(),
+  net::NetworkAnonymizationKey network_anonymization_keys[] = {
+      net::NetworkAnonymizationKey::CreateTransient(),
+      net::NetworkAnonymizationKey::CreateTransient(),
   };
 
   // Add |DomainReliabilityContext::kMaxQueuedBeacons| beacons, using a
-  // different NetworkIsolationKey for every other beacon.
+  // different NetworkAnonymizationKey for every other beacon.
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
-    context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(
-        &time_, StatusFromInt(i), network_isolation_keys[i % 2]));
+    context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
+        &time_, StatusFromInt(i), network_anonymization_keys[i % 2]));
   }
 
   // No beacons should have been evicted.
@@ -1285,7 +1286,8 @@ TEST_F(DomainReliabilityContextTest,
   ASSERT_EQ(DomainReliabilityContext::kMaxQueuedBeacons, beacons.size());
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
     EXPECT_EQ(beacons[i]->status, StatusFromInt(i));
-    EXPECT_EQ(beacons[i]->network_isolation_key, network_isolation_keys[i % 2]);
+    EXPECT_EQ(beacons[i]->network_anonymization_key,
+              network_anonymization_keys[i % 2]);
   }
 
   // Wait for the report to start being uploaded.
@@ -1293,7 +1295,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_TRUE(upload_allowed_callback_pending());
   CallUploadAllowedResultCallback(true);
   EXPECT_TRUE(upload_pending());
-  EXPECT_EQ(network_isolation_keys[0], upload_network_isolation_key());
+  EXPECT_EQ(network_anonymization_keys[0], upload_network_anonymization_key());
   // All even-numbered beacons should be in the report.
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
     if (i % 2 == 0) {
@@ -1305,9 +1307,9 @@ TEST_F(DomainReliabilityContextTest,
 
   // Add two more beacons, using the same pattern as before
   for (size_t i = 0; i < 2; ++i) {
-    context_->OnBeacon(MakeBeaconWithNetworkIsolationKey(
+    context_->OnBeacon(MakeBeaconWithNetworkAnonymizationKey(
         &time_, StatusFromInt(i + DomainReliabilityContext::kMaxQueuedBeacons),
-        network_isolation_keys[i % 2]));
+        network_anonymization_keys[i % 2]));
   }
 
   // Only the first two beacons should have been evicted.
@@ -1315,10 +1317,11 @@ TEST_F(DomainReliabilityContextTest,
   ASSERT_EQ(DomainReliabilityContext::kMaxQueuedBeacons, beacons.size());
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons; ++i) {
     EXPECT_EQ(beacons[i]->status, StatusFromInt(i + 2));
-    EXPECT_EQ(beacons[i]->network_isolation_key, network_isolation_keys[i % 2]);
+    EXPECT_EQ(beacons[i]->network_anonymization_key,
+              network_anonymization_keys[i % 2]);
   }
 
-  // The upload succeeds.  Every beacon using the first NetworkIsolationKey,
+  // The upload succeeds.  Every beacon using the first NetworkAnonymizationKey,
   // except the second to last, should have been evicted.
   DomainReliabilityUploader::UploadResult successful_result;
   successful_result.status = DomainReliabilityUploader::UploadResult::SUCCESS;
@@ -1333,8 +1336,8 @@ TEST_F(DomainReliabilityContextTest,
     if (i % 2 == 0 && i < DomainReliabilityContext::kMaxQueuedBeacons - 2)
       continue;
     EXPECT_EQ(beacons[beacon_index]->status, StatusFromInt(i + 2));
-    EXPECT_EQ(beacons[beacon_index]->network_isolation_key,
-              network_isolation_keys[i % 2]);
+    EXPECT_EQ(beacons[beacon_index]->network_anonymization_key,
+              network_anonymization_keys[i % 2]);
     beacon_index++;
   }
 
@@ -1343,7 +1346,7 @@ TEST_F(DomainReliabilityContextTest,
   EXPECT_TRUE(upload_allowed_callback_pending());
   CallUploadAllowedResultCallback(true);
   EXPECT_TRUE(upload_pending());
-  EXPECT_EQ(network_isolation_keys[1], upload_network_isolation_key());
+  EXPECT_EQ(network_anonymization_keys[1], upload_network_anonymization_key());
   // Check the expected beacons are in the report.
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons + 2; ++i) {
     if (i % 2 == 0 || i < 2) {
@@ -1361,14 +1364,15 @@ TEST_F(DomainReliabilityContextTest,
   ASSERT_EQ(1u, beacons.size());
   EXPECT_EQ(beacons[0]->status,
             StatusFromInt(DomainReliabilityContext::kMaxQueuedBeacons));
-  EXPECT_EQ(beacons[0]->network_isolation_key, network_isolation_keys[0]);
+  EXPECT_EQ(beacons[0]->network_anonymization_key,
+            network_anonymization_keys[0]);
 
   // Another report should be queued.  Wait for it to start being uploaded.
   time_.Advance(max_delay());
   EXPECT_TRUE(upload_allowed_callback_pending());
   CallUploadAllowedResultCallback(true);
   EXPECT_TRUE(upload_pending());
-  EXPECT_EQ(network_isolation_keys[0], upload_network_isolation_key());
+  EXPECT_EQ(network_anonymization_keys[0], upload_network_anonymization_key());
   // Check the expected beacons are in the report.
   for (size_t i = 0; i < DomainReliabilityContext::kMaxQueuedBeacons + 2; ++i) {
     if (i == DomainReliabilityContext::kMaxQueuedBeacons) {

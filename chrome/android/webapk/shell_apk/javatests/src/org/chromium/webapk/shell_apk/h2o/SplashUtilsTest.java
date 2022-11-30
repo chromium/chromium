@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,8 @@ public class SplashUtilsTest {
         final int requestedSplashWidth = 1000;
         final int requestedSplashHeight = 1000;
         Bitmap screenshot = SplashUtils.createAndImmediatelyScreenshotSplashView(
-                InstrumentationRegistry.getTargetContext(), requestedSplashWidth,
-                requestedSplashHeight, 1024 * 1024 * 4 /* maxSizeBytes */);
+                InstrumentationRegistry.getContext(), requestedSplashWidth, requestedSplashHeight,
+                1024 * 1024 * 4 /* maxSizeBytes */);
         Assert.assertNotNull(screenshot);
         Assert.assertEquals(requestedSplashWidth, screenshot.getWidth());
         Assert.assertEquals(requestedSplashHeight, screenshot.getHeight());

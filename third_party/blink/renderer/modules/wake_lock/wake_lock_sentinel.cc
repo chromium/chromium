@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 namespace blink {
 
 WakeLockSentinel::WakeLockSentinel(ScriptState* script_state,
-                                   WakeLockType type,
+                                   V8WakeLockType::Enum type,
                                    WakeLockManager* manager)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       manager_(manager),
@@ -24,13 +24,10 @@ WakeLockSentinel::~WakeLockSentinel() = default;
 
 ScriptPromise WakeLockSentinel::release(ScriptState* script_state) {
   // https://w3c.github.io/screen-wake-lock/#the-release-method
-  // 1. Let promise be a new promise.
-  // 2. Run the following steps in parallel:
-  // 2.1. Run release wake lock with lock set to this object and type set to the
-  //      value of this object's type attribute.
-  // 2.2. Resolve promise.
-  // 3. Return promise.
+  // 1. If this's [[Released]] is false, then run release a wake lock with lock
+  //    set to this and type set to the value of this's type attribute.
   DoRelease();
+  // 2. Return a promise resolved with undefined.
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -38,15 +35,10 @@ bool WakeLockSentinel::released() const {
   return released_;
 }
 
-String WakeLockSentinel::type() const {
+V8WakeLockType WakeLockSentinel::type() const {
   // https://w3c.github.io/screen-wake-lock/#dom-wakelocksentinel-type
   // The type attribute corresponds to the WakeLockSentinel's wake lock type.
-  switch (type_) {
-    case WakeLockType::kScreen:
-      return "screen";
-    case WakeLockType::kSystem:
-      return "system";
-  }
+  return V8WakeLockType(type_);
 }
 
 ExecutionContext* WakeLockSentinel::GetExecutionContext() const {
@@ -79,10 +71,6 @@ void WakeLockSentinel::ContextDestroyed() {
 
 void WakeLockSentinel::DoRelease() {
   // https://w3c.github.io/screen-wake-lock/#release-wake-lock-algorithm
-  // 1. Let document be the responsible document of the current settings object.
-  // 2. Let record be the platform wake lock's state record associated with
-  // document and type.
-  // 3. If record.[[ActiveLocks]] does not contain lock, abort these steps.
   if (!manager_)
     return;
 
@@ -94,8 +82,8 @@ void WakeLockSentinel::DoRelease() {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  // 6. Set lock's [[Released]] to true.
-  // 7. Fire an event named "release" at lock.
+  // 4. Set lock's [[Released]] to true.
+  // 5. Fire an event named "release" at lock.
   DCHECK(!released_);
   released_ = true;
   DispatchEvent(*Event::Create(event_type_names::kRelease), "WakeLockSentinel::DoRelease");

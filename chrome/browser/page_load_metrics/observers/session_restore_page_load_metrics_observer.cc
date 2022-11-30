@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,26 @@ SessionRestorePageLoadMetricsObserver::OnStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-SessionRestorePageLoadMetricsObserver::OnCommit(
+SessionRestorePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // This class is interested only in preprocessed lifecycle events that are
+  // already dispatched also to the outermost page observer.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SessionRestorePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class is interested in performance on session restore. Prerendering
+  // doesn't occur in such a case.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SessionRestorePageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   // Session restores use transition reload, so we only observe loads with a
   // reload transition type.
   DCHECK(ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),

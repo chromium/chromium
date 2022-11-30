@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,16 @@
 #define BASE_TASK_THREAD_POOL_THREAD_POOL_INSTANCE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -37,14 +35,14 @@ class WorkerThreadObserver;
 class ThreadPoolTestHelpers;
 
 // Interface for a thread pool and static methods to manage the instance used
-// by the post_task.h API.
+// by the thread_pool.h API.
 //
 // The thread pool doesn't create threads until Start() is called. Tasks can
 // be posted at any time but will not run until after Start() is called.
 //
-// The instance methods of this class are thread-safe.
+// The instance methods of this class are thread-safe unless otherwise noted.
 //
-// Note: All thread pool users should go through base/task/post_task.h instead
+// Note: All thread pool users should go through base/task/thread_pool.h instead
 // of this interface except for the one callsite per process which manages the
 // process's instance.
 class BASE_EXPORT ThreadPoolInstance {
@@ -53,24 +51,18 @@ class BASE_EXPORT ThreadPoolInstance {
     enum class CommonThreadPoolEnvironment {
       // Use the default environment (no environment).
       DEFAULT,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Place the pool's workers in a COM MTA.
       COM_MTA,
-      // Place the pool's *foreground* workers in a COM STA. This exists to
-      // mimic the behavior of SequencedWorkerPool and BrowserThreadImpl that
-      // ThreadPool has replaced. Tasks that need a COM STA should use
-      // CreateCOMSTATaskRunner() instead of Create(Sequenced)TaskRunner() +
-      // this init param.
-      DEPRECATED_COM_STA_IN_FOREGROUND_GROUP,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     };
 
-    InitParams(int max_num_foreground_threads_in);
+    InitParams(size_t max_num_foreground_threads_in);
     ~InitParams();
 
     // Maximum number of unblocked tasks that can run concurrently in the
     // foreground thread group.
-    int max_num_foreground_threads;
+    size_t max_num_foreground_threads;
 
     // Whether COM is initialized when running sequenced and parallel tasks.
     CommonThreadPoolEnvironment common_thread_pool_environment =
@@ -92,10 +84,10 @@ class BASE_EXPORT ThreadPoolInstance {
     // renderers. Note that the regression is not present in
     // *TaskLatencyMicroseconds.Renderer* histograms.
     TimeDelta suggested_reclaim_time =
-#if defined(OS_ANDROID)
-        TimeDelta::FromMinutes(5);
+#if BUILDFLAG(IS_ANDROID)
+        Minutes(5);
 #else
-        TimeDelta::FromSeconds(30);
+        Seconds(30);
 #endif
   };
 
@@ -142,6 +134,15 @@ class BASE_EXPORT ThreadPoolInstance {
       const InitParams& init_params,
       WorkerThreadObserver* worker_thread_observer = nullptr) = 0;
 
+  // Returns true if Start() was called. This will continue returning true even
+  // after Shutdown() is called. Must be called on the same sequence as Start().
+  virtual bool WasStarted() const = 0;
+
+  // Same as WasStarted(), but can be called from any sequence. The caller must
+  // make sure this call is properly synchronized with Start(), to avoid
+  // undefined behavior.
+  virtual bool WasStartedUnsafe() const = 0;
+
   // Synchronously shuts down the thread pool. Once this is called, only tasks
   // posted with the BLOCK_SHUTDOWN behavior will be run. When this returns:
   // - All SKIP_ON_SHUTDOWN tasks that were already running have completed their
@@ -150,7 +151,7 @@ class BASE_EXPORT ThreadPoolInstance {
   // - CONTINUE_ON_SHUTDOWN tasks might still be running.
   // Note that an implementation can keep threads and other resources alive to
   // support running CONTINUE_ON_SHUTDOWN after this returns. This can only be
-  // called once.
+  // called once. Must be called on the same sequence as Start().
   virtual void Shutdown() = 0;
 
   // Waits until there are no pending undelayed tasks. May be called in tests
@@ -174,7 +175,7 @@ class BASE_EXPORT ThreadPoolInstance {
   virtual void JoinForTesting() = 0;
 
   // CreateAndStartWithDefaultParams(), Create(), and SetInstance() register a
-  // ThreadPoolInstance to handle tasks posted through the post_task.h API for
+  // ThreadPoolInstance to handle tasks posted through the thread_pool.h API for
   // this process.
   //
   // Processes that need to initialize ThreadPoolInstance with custom params or
@@ -186,10 +187,10 @@ class BASE_EXPORT ThreadPoolInstance {
   // ThreadPoolInstance is registered. The last registered ThreadPoolInstance is
   // leaked on shutdown. The methods below must not be called when TaskRunners
   // created by a previous ThreadPoolInstance are still alive. The methods are
-  // not thread-safe; proper synchronization is required to use the post_task.h
-  // API after registering a new ThreadPoolInstance.
+  // not thread-safe; proper synchronization is required to use the
+  // thread_pool.h API after registering a new ThreadPoolInstance.
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Creates and starts a thread pool using default params. |name| is used to
   // label histograms, it must not be empty. It should identify the component
   // that calls this. Start() is called by this method; it is invalid to call it
@@ -198,9 +199,10 @@ class BASE_EXPORT ThreadPoolInstance {
   static void CreateAndStartWithDefaultParams(StringPiece name);
 
   // Same as CreateAndStartWithDefaultParams() but allows callers to split the
-  // Create() and StartWithDefaultParams() calls.
+  // Create() and StartWithDefaultParams() calls. Start() is called by this
+  // method; it is invalid to call it again afterwards.
   void StartWithDefaultParams();
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   // Creates a ready to start thread pool. |name| is used to label histograms,
   // it must not be empty. It should identify the component that creates the
@@ -210,17 +212,17 @@ class BASE_EXPORT ThreadPoolInstance {
   // (ensures isolation).
   static void Create(StringPiece name);
 
-  // Registers |thread_pool| to handle tasks posted through the post_task.h
+  // Registers |thread_pool| to handle tasks posted through the thread_pool.h
   // API for this process. For tests, prefer base::test::TaskEnvironment
   // (ensures isolation).
   static void Set(std::unique_ptr<ThreadPoolInstance> thread_pool);
 
   // Retrieve the ThreadPoolInstance set via SetInstance() or Create(). This
   // should be used very rarely; most users of the thread pool should use the
-  // post_task.h API. In particular, refrain from doing
+  // thread_pool.h API. In particular, refrain from doing
   //   if (!ThreadPoolInstance::Get()) {
   //     ThreadPoolInstance::Set(...);
-  //     base::PostTask(...);
+  //     base::ThreadPool::PostTask(...);
   //   }
   // instead make sure to SetInstance() early in one determinstic place in the
   // process' initialization phase.
@@ -242,11 +244,20 @@ class BASE_EXPORT ThreadPoolInstance {
   // n/GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated() items.
   //
   // TODO(fdoray): Remove this method. https://crbug.com/687264
-  virtual int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
+  virtual size_t GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const = 0;
 
-  // Starts/stops a fence that prevents execution of tasks of any / BEST_EFFORT
-  // priority.
+  // Starts/stops a fence that prevents scheduling of tasks of any / BEST_EFFORT
+  // priority. Ongoing tasks will still be allowed to complete and not be
+  // waited upon. This is useful for use cases where a second component
+  // (e.g. content) needs a "single-threaded" startup phase where tasks it
+  // posts do not run before it "enables the ThreadPool"
+  // (via ThreadPoolInstance::EndFence instead of the typical
+  // ThreadPoolInstance::Start). For example, because a lightweight service
+  // manager was already running prior to launching full chrome. BeginFence
+  // does not wait for ongoing tasks as those pertain to the previous phase and
+  // cannot interfere with the upcoming "single-threaded" initialization
+  // phase. These methods must be called from the same sequence as Start().
   virtual void BeginFence() = 0;
   virtual void EndFence() = 0;
   virtual void BeginBestEffortFence() = 0;

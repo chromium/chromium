@@ -26,13 +26,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 
 namespace blink {
+
+typedef uintptr_t DisplayItemClientId;
+static const DisplayItemClientId kInvalidDisplayItemClientId = 0u;
 
 enum AlphaDisposition {
   kPremultiplyAlpha,
@@ -40,15 +43,24 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
-enum DataU8ColorType {
-  kRGBAColorType,
-  kN32ColorType,
+enum class PredefinedColorSpace {
+  kSRGB,
+  kRec2020,
+  kP3,
+  kRec2100HLG,
+  kRec2100PQ,
+  kSRGBLinear,
 };
 
-enum ImageDataStorageFormat {
-  kUint8ClampedArrayStorageFormat,
-  kUint16ArrayStorageFormat,
-  kFloat32ArrayStorageFormat,
+enum class CanvasPixelFormat {
+  kUint8,
+  kF16,
+};
+
+enum class ImageDataStorageFormat {
+  kUint8,
+  kUint16,
+  kFloat32,
 };
 
 enum ImageEncodingMimeType {
@@ -67,9 +79,10 @@ enum StrokeStyle {
 };
 
 enum InterpolationQuality {
-  kInterpolationNone = kNone_SkFilterQuality,
-  kInterpolationLow = kLow_SkFilterQuality,
-  kInterpolationMedium = kMedium_SkFilterQuality,
+  kInterpolationNone = static_cast<int>(cc::PaintFlags::FilterQuality::kNone),
+  kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
+  kInterpolationMedium =
+      static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
 #if defined(WTF_USE_LOW_QUALITY_IMAGE_INTERPOLATION)
   kInterpolationDefault = kInterpolationLow,
 #else
@@ -109,11 +122,21 @@ enum class BlendMode {
   kSaturation,
   kColor,
   kLuminosity,
+  // The following is only used in CSS mix-blend-mode, and maps to a composite
+  // operator. Canvas uses the same enum but the kPlusLighter is not a valid
+  // canvas value. We should consider splitting the enums.
+  kPlusLighter,
 };
 
 enum OpacityMode {
   kNonOpaque,
   kOpaque,
+};
+
+enum class RasterEffectOutset : uint8_t {
+  kNone,
+  kHalfPixel,
+  kWholePixel,
 };
 
 // Specifies whether the provider should rasterize paint commands on the CPU
@@ -189,10 +212,16 @@ enum WindRule {
   RULE_EVENODD = static_cast<int>(SkPathFillType::kEvenOdd)
 };
 
-PLATFORM_EXPORT String CompositeOperatorName(CompositeOperator, BlendMode);
-PLATFORM_EXPORT bool ParseCompositeAndBlendMode(const String&,
-                                                CompositeOperator&,
-                                                BlendMode&);
+// Note that this is only appropriate to use in canvas globalCompositeOperator
+// cases.
+// TODO(vmpstr): Move these functions to near where they are used.
+PLATFORM_EXPORT String CanvasCompositeOperatorName(CompositeOperator,
+                                                   BlendMode);
+PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const String&,
+                                                      CompositeOperator&,
+                                                      BlendMode&);
+
+PLATFORM_EXPORT String BlendModeToString(BlendMode);
 
 PLATFORM_EXPORT String ImageEncodingMimeTypeName(ImageEncodingMimeType);
 PLATFORM_EXPORT bool ParseImageEncodingMimeType(const String&,
@@ -210,6 +239,12 @@ PLATFORM_EXPORT bool ParseTextAlign(const String&, TextAlign&);
 PLATFORM_EXPORT String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
 
+PLATFORM_EXPORT String PredefinedColorSpaceName(PredefinedColorSpace);
+
+PLATFORM_EXPORT String CanvasPixelFormatName(CanvasPixelFormat);
+
+PLATFORM_EXPORT String ImageDataStorageFormatName(ImageDataStorageFormat);
+
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_TYPES_H_

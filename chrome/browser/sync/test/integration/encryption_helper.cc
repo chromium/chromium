@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,20 @@
 
 #include "base/bind.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_client.h"
-#include "components/sync/engine/sync_engine_switches.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-ServerNigoriChecker::ServerNigoriChecker(
-    syncer::ProfileSyncService* service,
-    fake_server::FakeServer* fake_server,
+ServerPassphraseTypeChecker::ServerPassphraseTypeChecker(
     syncer::PassphraseType expected_passphrase_type)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      expected_passphrase_type_(expected_passphrase_type) {}
+    : expected_passphrase_type_(expected_passphrase_type) {}
 
-bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
+bool ServerPassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for a Nigori node with the proper passphrase type to become "
          "available on the server.";
 
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
          syncer::ProtoPassphraseInt32ToEnum(
@@ -37,16 +31,12 @@ bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
-    const std::string& expected_key_name,
-    syncer::ProfileSyncService* service,
-    fake_server::FakeServer* fake_server)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      expected_key_name_(expected_key_name) {}
+    const std::string& expected_key_name)
+    : expected_key_name_(expected_key_name) {}
 
 bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> nigori_entities =
-      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+      fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   DCHECK_EQ(nigori_entities.size(), 1U);
 
   const std::string given_key_name =
@@ -58,22 +48,37 @@ bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   return given_key_name == expected_key_name_;
 }
 
-PassphraseRequiredStateChecker::PassphraseRequiredStateChecker(
-    syncer::ProfileSyncService* service,
-    bool desired_state)
-    : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
+PassphraseRequiredChecker::PassphraseRequiredChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
 
-bool PassphraseRequiredStateChecker::IsExitConditionSatisfied(
-    std::ostream* os) {
-  *os << "Waiting until decryption passphrase is " +
-             std::string(desired_state_ ? "required" : "not required");
-  return service()
-             ->GetUserSettings()
-             ->IsPassphraseRequiredForPreferredDataTypes() == desired_state_;
+bool PassphraseRequiredChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking whether passhrase is required";
+  return service()->GetUserSettings()->IsPassphraseRequired();
+}
+
+PassphraseAcceptedChecker::PassphraseAcceptedChecker(
+    syncer::SyncServiceImpl* service)
+    : SingleClientStatusChangeChecker(service) {}
+
+bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking whether passhrase is accepted";
+  switch (service()->GetUserSettings()->GetPassphraseType()) {
+    case syncer::PassphraseType::kKeystorePassphrase:
+    case syncer::PassphraseType::kTrustedVaultPassphrase:
+      return false;
+    // With kImplicitPassphrase user needs to enter the passphrase even despite
+    // it's not treat as explicit passphrase.
+    case syncer::PassphraseType::kImplicitPassphrase:
+    case syncer::PassphraseType::kFrozenImplicitPassphrase:
+    case syncer::PassphraseType::kCustomPassphrase:
+      break;
+  }
+  return !service()->GetUserSettings()->IsPassphraseRequired();
 }
 
 TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     bool desired_state)
     : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
 
@@ -88,7 +93,7 @@ bool TrustedVaultKeyRequiredStateChecker::IsExitConditionSatisfied(
 }
 
 TrustedVaultKeysChangedStateChecker::TrustedVaultKeysChangedStateChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : service_(service), keys_changed_(false) {
   service->GetSyncClientForTest()->GetTrustedVaultClient()->AddObserver(this);
 }
@@ -111,24 +116,3 @@ void TrustedVaultKeysChangedStateChecker::OnTrustedVaultKeysChanged() {
 
 void TrustedVaultKeysChangedStateChecker::
     OnTrustedVaultRecoverabilityChanged() {}
-
-ScopedScryptFeatureToggler::ScopedScryptFeatureToggler(
-    bool force_disabled,
-    bool use_for_new_passphrases) {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
-  if (force_disabled) {
-    enabled_features.push_back(
-        switches::kSyncForceDisableScryptForCustomPassphrase);
-  } else {
-    disabled_features.push_back(
-        switches::kSyncForceDisableScryptForCustomPassphrase);
-  }
-  if (use_for_new_passphrases) {
-    enabled_features.push_back(switches::kSyncUseScryptForNewCustomPassphrases);
-  } else {
-    disabled_features.push_back(
-        switches::kSyncUseScryptForNewCustomPassphrases);
-  }
-  feature_list_.InitWithFeatures(enabled_features, disabled_features);
-}

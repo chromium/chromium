@@ -1,26 +1,26 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CPU_X86_VECTOR_MATH_X86_H_
 
+#include "base/check_op.h"
 #include "base/cpu.h"
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_avx.h"
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_sse.h"
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace vector_math {
 namespace x86 {
 
 struct FrameCounts {
-  size_t scalar_for_alignment;
-  size_t sse_for_alignment;
-  size_t avx;
-  size_t sse;
-  size_t scalar;
+  uint32_t scalar_for_alignment;
+  uint32_t sse_for_alignment;
+  uint32_t avx;
+  uint32_t sse;
+  uint32_t scalar;
 };
 
 static bool CPUSupportsAVX() {
@@ -28,29 +28,30 @@ static bool CPUSupportsAVX() {
   return supports;
 }
 
-static size_t GetAVXAlignmentOffsetInNumberOfFloats(const float* source_p) {
-  constexpr size_t kBytesPerRegister = avx::kBitsPerRegister / 8u;
-  constexpr size_t kAlignmentOffsetMask = kBytesPerRegister - 1u;
-  size_t offset = reinterpret_cast<size_t>(source_p) & kAlignmentOffsetMask;
+static uint32_t GetAVXAlignmentOffsetInNumberOfFloats(const float* source_p) {
+  constexpr uint32_t kBytesPerRegister = avx::kBitsPerRegister / 8u;
+  constexpr uint32_t kAlignmentOffsetMask = kBytesPerRegister - 1u;
+  uintptr_t offset =
+      reinterpret_cast<uintptr_t>(source_p) & kAlignmentOffsetMask;
   DCHECK_EQ(0u, offset % sizeof(*source_p));
-  return offset / sizeof(*source_p);
+  return static_cast<uint32_t>(offset / sizeof(*source_p));
 }
 
 static ALWAYS_INLINE FrameCounts
 SplitFramesToProcess(const float* source_p, uint32_t frames_to_process) {
   FrameCounts counts = {0u, 0u, 0u, 0u, 0u};
 
-  const size_t avx_alignment_offset =
+  const uint32_t avx_alignment_offset =
       GetAVXAlignmentOffsetInNumberOfFloats(source_p);
 
   // If the first frame is not AVX aligned, the first several frames (at most
   // seven) must be processed separately for proper alignment.
-  const size_t total_for_alignment =
+  const uint32_t total_for_alignment =
       (avx::kPackedFloatsPerRegister - avx_alignment_offset) &
       ~avx::kFramesToProcessMask;
-  const size_t scalar_for_alignment =
+  const uint32_t scalar_for_alignment =
       total_for_alignment & ~sse::kFramesToProcessMask;
-  const size_t sse_for_alignment =
+  const uint32_t sse_for_alignment =
       total_for_alignment & sse::kFramesToProcessMask;
 
   // Check which CPU features can be used based on the number of frames to

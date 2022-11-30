@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ TransferMetadataBuilder& TransferMetadataBuilder::set_status(
 }
 
 TransferMetadataBuilder& TransferMetadataBuilder::set_token(
-    base::Optional<std::string> token) {
+    absl::optional<std::string> token) {
   token_ = std::move(token);
   return *this;
 }

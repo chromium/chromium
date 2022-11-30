@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -16,7 +17,6 @@
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -164,7 +164,7 @@ AwRenderFrameExt::AwRenderFrameExt(content::RenderFrame* render_frame)
 
   // If we are the main frame register an additional mojo interface.
   if (render_frame->IsMainFrame()) {
-    registry_.AddInterface(base::BindRepeating(
+    registry_.AddInterface<mojom::LocalMainFrame>(base::BindRepeating(
         &AwRenderFrameExt::BindLocalMainFrame, base::Unretained(this)));
   }
 
@@ -216,6 +216,16 @@ bool AwRenderFrameExt::OnAssociatedInterfaceRequestForFrame(
   return registry_.TryBindInterface(interface_name, handle);
 }
 
+void AwRenderFrameExt::DidCreateDocumentElement() {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewHitTestInBlinkOnTouchStart)) {
+    return;
+  }
+  render_frame()->GetWebFrame()->AddHitTestOnTouchStartCallback(
+      base::BindRepeating(&AwRenderFrameExt::HandleHitTestResult,
+                          base::Unretained(this)));
+}
+
 void AwRenderFrameExt::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   // Clear the cache when we cross site boundaries in the main frame.
@@ -236,7 +246,7 @@ void AwRenderFrameExt::DidCommitProvisionalLoad(
 }
 
 void AwRenderFrameExt::FocusedElementChanged(const blink::WebElement& element) {
-  if (element.IsNull() || !render_frame() || !render_frame()->GetRenderView())
+  if (element.IsNull() || !render_frame())
     return;
 
   auto data = mojom::HitTestData::New();
@@ -268,6 +278,11 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
   const blink::WebHitTestResult result = webview->HitTestResultForTap(
       gfx::Point(touch_center.x(), touch_center.y()),
       gfx::Size(touch_area.width(), touch_area.height()));
+  HandleHitTestResult(result);
+}
+
+void AwRenderFrameExt::HandleHitTestResult(
+    const blink::WebHitTestResult& result) {
   auto data = mojom::HitTestData::New();
 
   GURL absolute_image_url = result.AbsoluteImageURL();
@@ -284,14 +299,6 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
                       result.IsContentEditable(), data.get());
 
   GetFrameHost()->UpdateHitTestData(std::move(data));
-}
-
-void AwRenderFrameExt::SetBackgroundColor(SkColor c) {
-  blink::WebView* webview = GetWebView();
-  if (!webview)
-    return;
-
-  webview->SetBaseBackgroundColor(c);
 }
 
 void AwRenderFrameExt::SetInitialPageScale(double page_scale_factor) {
@@ -320,9 +327,10 @@ void AwRenderFrameExt::SetTextZoomFactor(float zoom_factor) {
 void AwRenderFrameExt::DocumentHasImage(DocumentHasImageCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
 
-  // DocumentHasImages Mojo message should only be sent to the main frame.
+  // DocumentHasImages Mojo message should only be sent to the outermost main
+  // frame.
   DCHECK(frame);
-  DCHECK(!frame->Parent());
+  DCHECK(frame->IsOutermostMainFrame());
 
   const blink::WebElement child_img = GetImgChild(frame->GetDocument());
   bool has_images = !child_img.IsNull();
@@ -349,11 +357,10 @@ void AwRenderFrameExt::ResetScrollAndScaleState() {
 }
 
 blink::WebView* AwRenderFrameExt::GetWebView() {
-  if (!render_frame() || !render_frame()->GetRenderView() ||
-      !render_frame()->GetRenderView()->GetWebView())
+  if (!render_frame())
     return nullptr;
 
-  return render_frame()->GetRenderView()->GetWebView();
+  return render_frame()->GetWebView();
 }
 
 blink::WebFrameWidget* AwRenderFrameExt::GetWebFrameWidget() {
@@ -368,6 +375,9 @@ void AwRenderFrameExt::OnDestruct() {
 
 void AwRenderFrameExt::BindLocalMainFrame(
     mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver) {
+  // When bfcache is enabled, this bind can occur multiple times.
+  // receiver should be reset before.
+  local_main_frame_receiver_.reset();
   local_main_frame_receiver_.Bind(std::move(pending_receiver));
 }
 

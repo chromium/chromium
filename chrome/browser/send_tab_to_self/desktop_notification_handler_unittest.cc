@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -19,7 +20,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_model.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -36,11 +37,12 @@ const char kDesktopNotificationOrigin[] = "https://www.google.com";
 const char kDesktopNotificationId[] = "notification_id";
 const char kDesktopNotificationGuid[] = "guid";
 const char kDesktopNotificationTitle[] = "title";
+const char16_t kDesktopNotificationTitle16[] = u"title";
 const char kDesktopNotificationDeviceInfo[] = "device_info";
 const char kDesktopNotificationTargetDeviceSyncCacheGuid[] =
     "target_device_sync_cache_guid";
-const char kDesktopNotificationDeviceInfoWithPrefix[] =
-    "Shared from device_info";
+const char16_t kDesktopNotificationDeviceInfoWithPrefix[] =
+    u"Shared from device_info";
 
 class SendTabToSelfModelMock : public TestSendTabToSelfModel {
  public:
@@ -134,8 +136,8 @@ class DesktopNotificationHandlerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  SendTabToSelfModelMock* model_mock_;
-  NotificationDisplayServiceMock* display_service_mock_;
+  raw_ptr<SendTabToSelfModelMock> model_mock_;
+  raw_ptr<NotificationDisplayServiceMock> display_service_mock_;
 };
 
 TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
@@ -144,14 +146,13 @@ TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
   optional_fields.never_timeout = true;
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDesktopNotificationGuid,
-      base::ASCIIToUTF16(kDesktopNotificationTitle),
-      base::ASCIIToUTF16(kDesktopNotificationDeviceInfoWithPrefix),
-      gfx::Image(), base::UTF8ToUTF16(url.host()), url,
+      kDesktopNotificationTitle16, kDesktopNotificationDeviceInfoWithPrefix,
+      ui::ImageModel(), base::UTF8ToUTF16(url.host()), url,
       message_center::NotifierId(url), optional_fields, /*delegate=*/nullptr);
 
   SendTabToSelfEntry entry(kDesktopNotificationGuid, url,
                            kDesktopNotificationTitle, base::Time::Now(),
-                           base::Time::Now(), kDesktopNotificationDeviceInfo,
+                           kDesktopNotificationDeviceInfo,
                            kDesktopNotificationTargetDeviceSyncCacheGuid);
   std::vector<const SendTabToSelfEntry*> entries;
   entries.push_back(&entry);
@@ -184,13 +185,13 @@ TEST_F(DesktopNotificationHandlerTest, CloseHandler) {
       .WillOnce(::testing::Return());
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
-                  kDesktopNotificationId, /*by_user=*/0, base::DoNothing());
+                  kDesktopNotificationId, /*by_user=*/false, base::DoNothing());
 
   EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId))
       .WillOnce(::testing::Return());
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
-                  kDesktopNotificationId, /*by_user=*/1, base::DoNothing());
+                  kDesktopNotificationId, /*by_user=*/true, base::DoNothing());
 }
 
 TEST_F(DesktopNotificationHandlerTest, ClickHandler) {
@@ -205,7 +206,7 @@ TEST_F(DesktopNotificationHandlerTest, ClickHandler) {
 
   handler.OnClick(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*action_index=*/1,
-                  /*reply=*/base::nullopt, base::DoNothing());
+                  /*reply=*/absl::nullopt, base::DoNothing());
 }
 
 }  // namespace

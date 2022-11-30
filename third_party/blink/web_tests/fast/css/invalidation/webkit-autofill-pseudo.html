@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../../resources/js-test.js"></script>
+<style>
+:-webkit-autofill { text-decoration: underline }
+input + div { color: pink }
+</style>
+<input id="text" type="text"></input>
+<div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+<script>
+description("Use descendant invalidation set for :-webkit-autofill pseudo class.")
+
+shouldBeDefined(window.internals);
+shouldBe("getComputedStyle(text, '').textDecorationLine", "'none'");
+
+text.offsetTop; // Force recalc.
+
+internals.setAutofilled(text, true);
+
+shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+shouldBe("getComputedStyle(text, '').textDecorationLine", "'underline'");
+
+</script>

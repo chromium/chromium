@@ -1,0 +1,2 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View viewIdResName:"testAriaApplication" actions:[AX_FOCUS] bundle:[chromeRole="application", roleDescription="application"]

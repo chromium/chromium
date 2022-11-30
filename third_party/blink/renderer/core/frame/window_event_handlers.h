@@ -64,4 +64,4 @@ class WindowEventHandlers {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_EVENT_HANDLERS_H_

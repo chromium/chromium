@@ -1,30 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.permissions;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.StringRes;
-
+import org.chromium.base.BuildInfo;
+import org.chromium.base.CollectionUtil;
+import org.chromium.base.Consumer;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionCallback;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,40 +41,58 @@ public class AndroidPermissionRequester {
         void onAndroidPermissionCanceled();
     }
 
-    private static SparseArray<String[]> generatePermissionsMapping(
-            WindowAndroid windowAndroid, int[] contentSettingsTypes) {
-        SparseArray<String[]> permissionsToRequest = new SparseArray<>();
-        for (int i = 0; i < contentSettingsTypes.length; i++) {
-            String[] permissions =
-                    PermissionUtil.getAndroidPermissionsForContentSetting(contentSettingsTypes[i]);
-            if (permissions == null) continue;
-            List<String> missingPermissions = new ArrayList<>();
-            for (int j = 0; j < permissions.length; j++) {
-                String permission = permissions[j];
-                if (!windowAndroid.hasPermission(permission)) missingPermissions.add(permission);
-            }
-            if (!missingPermissions.isEmpty()) {
-                permissionsToRequest.append(contentSettingsTypes[i],
-                        missingPermissions.toArray(new String[missingPermissions.size()]));
+    private static Set<String> filterPermissionsKeepMissing(
+            AndroidPermissionDelegate permissionDelegate, String[] androidPermissions) {
+        Set<String> missingAndroidPermissions = new HashSet<String>();
+        for (String permission : androidPermissions) {
+            if (!permissionDelegate.hasPermission(permission)) {
+                missingAndroidPermissions.add(permission);
             }
         }
-        return permissionsToRequest;
+        return missingAndroidPermissions;
     }
 
     private static int getContentSettingType(
-            SparseArray<String[]> contentSettingsTypesToPermissionsMap, String permission) {
+            SparseArray<Set<String>> contentSettingsTypesToPermissionsMap, String permission) {
         // SparseArray#indexOfValue uses == instead of .equals, so we need to manually iterate
         // over the list.
         for (int i = 0; i < contentSettingsTypesToPermissionsMap.size(); i++) {
-            String[] contentSettingPermissions = contentSettingsTypesToPermissionsMap.valueAt(i);
-            for (int j = 0; j < contentSettingPermissions.length; j++) {
-                if (permission.equals(contentSettingPermissions[j])) {
-                    return contentSettingsTypesToPermissionsMap.keyAt(i);
-                }
+            final Set<String> contentSettingPermissions =
+                    contentSettingsTypesToPermissionsMap.valueAt(i);
+            if (contentSettingPermissions.contains(permission)) {
+                return contentSettingsTypesToPermissionsMap.keyAt(i);
             }
         }
 
         return -1;
+    }
+
+    /**
+     * Determines whether the minimum required Android permissions are granted for the specified
+     * content setting.
+     *
+     * @param permissionDelegate The AndroidPermissionDelegate used to determine permission status.
+     * @param contentSettingsType The content setting whose permissions are being checked.
+     * @return Whether the necessary permissions are granted for the given content setting.
+     */
+    @CalledByNative
+    public static boolean hasRequiredAndroidPermissionsForContentSetting(
+            AndroidPermissionDelegate permissionDelegate,
+            @ContentSettingsType int contentSettingsType) {
+        Set<String> missingPermissions = filterPermissionsKeepMissing(permissionDelegate,
+                PermissionUtil.getRequiredAndroidPermissionsForContentSetting(contentSettingsType));
+
+        // TODO(crbug.com/1206673): AndroidPermissionDelegate.hasPermission has side effects that
+        // allows users to recover from states where they had previously denied the permission, by
+        // virtue of clearing a Chrome-side shared preference instructing Chrome not to prompt again
+        // again. Ensure here that these prefs get cleared for optional permissions as well.
+        String[] optionalPermissions =
+                PermissionUtil.getOptionalAndroidPermissionsForContentSetting(contentSettingsType);
+        for (String permission : optionalPermissions) {
+            boolean unused_result = permissionDelegate.hasPermission(permission);
+        }
+
+        return missingPermissions.isEmpty();
     }
 
     /**
@@ -88,10 +106,29 @@ public class AndroidPermissionRequester {
             final int[] contentSettingsTypes, final RequestDelegate delegate) {
         if (windowAndroid == null) return false;
 
-        final SparseArray<String[]> contentSettingsTypesToPermissionsMap =
-                generatePermissionsMapping(windowAndroid, contentSettingsTypes);
+        SparseArray<Set<String>> contentSettingsTypesToRequiredPermissionsMap = new SparseArray<>();
+        Set<String> allPermissionsToRequest = new HashSet<>();
+        for (int contentSettingType : contentSettingsTypes) {
+            if (hasRequiredAndroidPermissionsForContentSetting(windowAndroid, contentSettingType)) {
+                continue;
+            }
 
-        if (contentSettingsTypesToPermissionsMap.size() == 0) return false;
+            final Set<String> requiredPermissions = CollectionUtil.newHashSet(
+                    PermissionUtil.getRequiredAndroidPermissionsForContentSetting(
+                            contentSettingType));
+            final Set<String> optionalPermissions = CollectionUtil.newHashSet(
+                    PermissionUtil.getOptionalAndroidPermissionsForContentSetting(
+                            contentSettingType));
+
+            contentSettingsTypesToRequiredPermissionsMap.append(
+                    contentSettingType, requiredPermissions);
+            allPermissionsToRequest.addAll(requiredPermissions);
+            allPermissionsToRequest.addAll(optionalPermissions);
+        }
+
+        if (allPermissionsToRequest.isEmpty()) {
+            return false;
+        }
 
         PermissionCallback callback = new PermissionCallback() {
             @Override
@@ -101,18 +138,22 @@ public class AndroidPermissionRequester {
 
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                        deniedContentSettings.add(getContentSettingType(
-                                contentSettingsTypesToPermissionsMap, permissions[i]));
-
+                        final int deniedContentSetting = getContentSettingType(
+                                contentSettingsTypesToRequiredPermissionsMap, permissions[i]);
+                        // Never mind if an optional Android permission was denied.
+                        if (deniedContentSetting == -1) {
+                            continue;
+                        }
+                        deniedContentSettings.add(deniedContentSetting);
                         if (!windowAndroid.canRequestPermission(permissions[i])) {
                             allRequestable = false;
                         }
                     }
                 }
 
-                Activity activity = windowAndroid.getActivity().get();
+                Context context = windowAndroid.getContext().get();
 
-                if (allRequestable && !deniedContentSettings.isEmpty() && activity != null) {
+                if (allRequestable && !deniedContentSettings.isEmpty() && context != null) {
                     int deniedStringId = -1;
                     if (deniedContentSettings.size() == 2
                             && deniedContentSettings.contains(ContentSettingsType.MEDIASTREAM_MIC)
@@ -131,6 +172,12 @@ public class AndroidPermissionRequester {
                             deniedStringId = R.string.infobar_missing_camera_permission_text;
                         } else if (deniedContentSettings.contains(ContentSettingsType.AR)) {
                             deniedStringId = R.string.infobar_missing_ar_camera_permission_text;
+                        } else if (deniedContentSettings.contains(
+                                           ContentSettingsType.NOTIFICATIONS)) {
+                            // We don't want to request the notification prompt again, since user
+                            // declined it already.
+                            delegate.onAndroidPermissionCanceled();
+                            return;
                         }
                     }
 
@@ -138,11 +185,16 @@ public class AndroidPermissionRequester {
                             != -1 : "Invalid combination of missing content settings: "
                                     + deniedContentSettings;
 
-                    showMissingPermissionDialog(activity, deniedStringId,
-                            ()
-                                    -> requestAndroidPermissions(
-                                            windowAndroid, contentSettingsTypes, delegate),
-                            delegate::onAndroidPermissionCanceled);
+                    String appName = BuildInfo.getInstance().hostPackageLabel;
+                    showMissingPermissionDialog(
+                            windowAndroid, context.getString(deniedStringId, appName), (model) -> {
+                                final ModalDialogManager modalDialogManager =
+                                        windowAndroid.getModalDialogManager();
+                                modalDialogManager.dismissDialog(
+                                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                requestAndroidPermissions(
+                                        windowAndroid, contentSettingsTypes, delegate);
+                            }, delegate::onAndroidPermissionCanceled);
                 } else if (deniedContentSettings.isEmpty()) {
                     delegate.onAndroidPermissionAccepted();
                 } else {
@@ -151,40 +203,32 @@ public class AndroidPermissionRequester {
             }
         };
 
-        Set<String> permissionsToRequest = new HashSet<>();
-        for (int i = 0; i < contentSettingsTypesToPermissionsMap.size(); i++) {
-            Collections.addAll(
-                    permissionsToRequest, contentSettingsTypesToPermissionsMap.valueAt(i));
-        }
-        String[] permissions =
-                permissionsToRequest.toArray(new String[permissionsToRequest.size()]);
-        windowAndroid.requestPermissions(permissions, callback);
+        windowAndroid.requestPermissions(
+                allPermissionsToRequest.toArray(new String[allPermissionsToRequest.size()]),
+                callback);
         return true;
     }
 
     /**
-     * Shows a dialog that informs the user about a missing Android permission.
-     * @param activity Current Activity. It should implement {@link ModalDialogManagerHolder}.
+     * Shows a dialog that informs the user about a missing Android permission. Note that
+     * the dialog is not dismissed when the positive button is clicked, rather it will be
+     * dismissed after the Android permissions dialog is dismissed.
+     * @param windowAndroid Current WindowAndroid.
      * @param messageId The message that is shown on the dialog.
-     * @param onPositiveButtonClicked Runnable that is executed on positive button click.
+     * @param onPositiveButtonClicked Consumer that is executed on positive button click.
+     *         It takes a PropertyModel.
      * @param onCancelled Runnable that is executed on cancellation.
      */
-    public static void showMissingPermissionDialog(Activity activity, @StringRes int messageId,
-            Runnable onPositiveButtonClicked, Runnable onCancelled) {
-        assert activity
-                instanceof ModalDialogManagerHolder
-            : "Activity should implement ModalDialogManagerHolder";
-        final ModalDialogManager modalDialogManager =
-                ((ModalDialogManagerHolder) activity).getModalDialogManager();
+    public static void showMissingPermissionDialog(WindowAndroid windowAndroid, String message,
+            Consumer<PropertyModel> onPositiveButtonClicked, Runnable onCancelled) {
+        final ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         assert modalDialogManager != null : "ModalDialogManager is null";
 
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    onPositiveButtonClicked.run();
-                    modalDialogManager.dismissDialog(
-                            model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                    onPositiveButtonClicked.accept(model);
                 }
             }
 
@@ -195,15 +239,16 @@ public class AndroidPermissionRequester {
                 }
             }
         };
-        View view = activity.getLayoutInflater().inflate(R.layout.update_permissions_dialog, null);
+        Context context = windowAndroid.getContext().get();
+        View view = LayoutInflater.from(context).inflate(R.layout.update_permissions_dialog, null);
         TextView dialogText = view.findViewById(R.id.text);
-        dialogText.setText(messageId);
+        dialogText.setText(message);
         PropertyModel dialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                activity.getString(R.string.infobar_update_permissions_button_text))
+                                context.getString(R.string.infobar_update_permissions_button_text))
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .build();
         modalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);

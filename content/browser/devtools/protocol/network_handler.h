@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,28 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/filter/source_stream.h"
+#include "net/net_buildflags.h"
+#include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+
+#if BUILDFLAG(ENABLE_REPORTING)
+#include "services/network/public/mojom/reporting_service.mojom.h"
+#endif  // BUILDFLAG(ENABLE_REPORTING)
 
 namespace net {
 class HttpRequestHeaders;
@@ -31,6 +38,7 @@ class X509Certificate;
 }  // namespace net
 
 namespace network {
+struct CorsErrorStatus;
 struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 namespace mojom {
@@ -44,7 +52,6 @@ class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;
 class RenderFrameHostImpl;
-class RenderProcessHost;
 class NavigationRequest;
 class SignedExchangeEnvelope;
 class StoragePartition;
@@ -56,12 +63,20 @@ class BackgroundSyncRestorer;
 class DevToolsNetworkResourceLoader;
 
 class NetworkHandler : public DevToolsDomainHandler,
+#if BUILDFLAG(ENABLE_REPORTING)
+                       public network::mojom::ReportingApiObserver,
+#endif  // BUILDFLAG(ENABLE_REPORTING)
                        public Network::Backend {
  public:
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
-                 base::RepeatingClosure update_loader_factories_callback);
+                 base::RepeatingClosure update_loader_factories_callback,
+                 bool allow_file_access);
+
+  NetworkHandler(const NetworkHandler&) = delete;
+  NetworkHandler& operator=(const NetworkHandler&) = delete;
+
   ~NetworkHandler() override;
 
   static std::vector<NetworkHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -90,6 +105,19 @@ class NetworkHandler : public DevToolsDomainHandler,
                   Maybe<int> max_resource_size,
                   Maybe<int> max_post_data_size) override;
   Response Disable() override;
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  void OnReportAdded(const net::ReportingReport& report) override;
+  void OnReportUpdated(const net::ReportingReport& report) override;
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
+  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+
+  Response EnableReportingApi(bool enable) override;
 
   Response SetCacheDisabled(bool cache_disabled) override;
 
@@ -125,6 +153,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  Maybe<bool> same_party,
                  Maybe<std::string> source_scheme,
                  Maybe<int> source_port,
+                 Maybe<std::string> partition_key,
                  std::unique_ptr<SetCookieCallback> callback) override;
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
@@ -159,6 +188,9 @@ class NetworkHandler : public DevToolsDomainHandler,
       const String& interception_id,
       std::unique_ptr<GetResponseBodyForInterceptionCallback> callback)
       override;
+  void GetResponseBody(
+      const String& request_id,
+      std::unique_ptr<GetResponseBodyCallback> callback) override;
   void TakeResponseBodyForInterceptionAsStream(
       const String& interception_id,
       std::unique_ptr<TakeResponseBodyForInterceptionAsStreamCallback> callback)
@@ -169,7 +201,8 @@ class NetworkHandler : public DevToolsDomainHandler,
   // associated with the NetworkHandler itself (which is the token of the local
   // root frame).
   bool MaybeCreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
@@ -179,22 +212,28 @@ class NetworkHandler : public DevToolsDomainHandler,
       net::HttpRequestHeaders* headers,
       bool* skip_service_worker,
       bool* disable_cache,
-      base::Optional<std::vector<net::SourceStream::SourceType>>*
+      absl::optional<std::vector<net::SourceStream::SourceType>>*
           accepted_stream_types);
+  void PrefetchRequestWillBeSent(const std::string& request_id,
+                                 const network::ResourceRequest& request,
+                                 const GURL& initiator_url,
+                                 Maybe<std::string> frame_token,
+                                 base::TimeTicks timestamp);
   void NavigationRequestWillBeSent(const NavigationRequest& nav_request,
                                    base::TimeTicks timestamp);
   void RequestSent(const std::string& request_id,
                    const std::string& loader_id,
-                   const network::ResourceRequest& request,
+                   const net::HttpRequestHeaders& request_headers,
+                   const network::mojom::URLRequestDevToolsInfo& request_info,
                    const char* initiator_type,
-                   const base::Optional<GURL>& initiator_url,
+                   const absl::optional<GURL>& initiator_url,
                    const std::string& initiator_devtools_request_id,
                    base::TimeTicks timestamp);
   void ResponseReceived(const std::string& request_id,
                         const std::string& loader_id,
                         const GURL& url,
                         const char* resource_type,
-                        const network::mojom::URLResponseHead& head,
+                        const network::mojom::URLResponseHeadDevToolsInfo& head,
                         Maybe<std::string> frame_id);
   void LoadingComplete(
       const std::string& request_id,
@@ -202,12 +241,12 @@ class NetworkHandler : public DevToolsDomainHandler,
       const network::URLLoaderCompletionStatus& completion_status);
 
   void OnSignedExchangeReceived(
-      base::Optional<const base::UnguessableToken> devtools_navigation_token,
+      absl::optional<const base::UnguessableToken> devtools_navigation_token,
       const GURL& outer_request_url,
       const network::mojom::URLResponseHead& outer_response,
-      const base::Optional<SignedExchangeEnvelope>& header,
+      const absl::optional<SignedExchangeEnvelope>& header,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const base::Optional<net::SSLInfo>& ssl_info,
+      const absl::optional<net::SSLInfo>& ssl_info,
       const std::vector<SignedExchangeError>& errors);
 
   DispatchResponse GetSecurityIsolationStatus(
@@ -219,16 +258,32 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& devtools_request_id,
       const net::CookieAccessResultList& request_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& request_headers,
+      const base::TimeTicks timestamp,
       const network::mojom::ClientSecurityStatePtr& security_state);
   void OnResponseReceivedExtraInfo(
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& response_cookie_list,
       const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-      const base::Optional<std::string>& response_headers_text,
-      network::mojom::IPAddressSpace resource_address_space);
+      const absl::optional<std::string>& response_headers_text,
+      network::mojom::IPAddressSpace resource_address_space,
+      int32_t http_status_code);
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       const network::mojom::TrustTokenOperationResult& result);
+  void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
+                                      const std::vector<GURL>& urls);
+  void OnSubresourceWebBundleMetadataError(
+      const std::string& devtools_request_id,
+      const std::string& error_message);
+  void OnSubresourceWebBundleInnerResponse(
+      const std::string& inner_request_devtools_id,
+      const GURL& url,
+      const absl::optional<std::string>& bundle_request_devtools_id);
+  void OnSubresourceWebBundleInnerResponseError(
+      const std::string& inner_request_devtools_id,
+      const GURL& url,
+      const std::string& error_message,
+      const absl::optional<std::string>& bundle_request_devtools_id);
 
   bool enabled() const { return enabled_; }
 
@@ -240,7 +295,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& cookie_line);
 
   void LoadNetworkResource(
-      const String& frameId,
+      Maybe<content::protocol::String> frameId,
       const String& url,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
@@ -255,6 +310,10 @@ class NetworkHandler : public DevToolsDomainHandler,
       const network::mojom::ClientSecurityStatePtr& state);
   static std::unique_ptr<protocol::Network::CorsErrorStatus>
   BuildCorsErrorStatus(const network::CorsErrorStatus& status);
+
+  void BodyDataReceived(const String& request_id,
+                        const String& body,
+                        bool is_base64_encoded);
 
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
@@ -282,6 +341,9 @@ class NetworkHandler : public DevToolsDomainHandler,
   StoragePartition* storage_partition_;
   RenderFrameHostImpl* host_;
   bool enabled_;
+#if BUILDFLAG(ENABLE_REPORTING)
+  mojo::Receiver<network::mojom::ReportingApiObserver> reporting_receiver_;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
   std::vector<std::pair<std::string, std::string>> extra_headers_;
   std::unique_ptr<DevToolsURLLoaderInterceptor> url_loader_interceptor_;
   bool bypass_service_worker_;
@@ -292,11 +354,11 @@ class NetworkHandler : public DevToolsDomainHandler,
            std::unique_ptr<LoadNetworkResourceCallback>,
            base::UniquePtrComparator>
       loaders_;
-  base::Optional<std::set<net::SourceStream::SourceType>>
+  absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
+  const bool allow_file_access_;
+  std::unordered_map<String, std::pair<String, bool>> received_body_data_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkHandler);
 };
 
 }  // namespace protocol

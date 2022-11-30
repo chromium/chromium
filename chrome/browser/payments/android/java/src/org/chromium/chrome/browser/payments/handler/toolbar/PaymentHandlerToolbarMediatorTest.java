@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,10 +72,9 @@ public class PaymentHandlerToolbarMediatorTest {
                 .getSecurityIconContentDescription(Mockito.anyInt());
 
         NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
-        Mockito.when(navigation.isInMainFrame()).thenReturn(true);
         Mockito.when(navigation.isSameDocument()).thenReturn(false);
 
-        mMediator.didStartNavigation(navigation);
+        mMediator.didStartNavigationInPrimaryMainFrame(navigation);
 
         Assert.assertEquals(123, mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON));
         Assert.assertEquals("this is content description.",

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ NSArray<id<Credential>>* allPasswords = @[
 }
 
 @interface SCCredentialListCoordinator () <CredentialDetailsConsumerDelegate,
-                                           CredentialListConsumerDelegate>
+                                           CredentialListHandler>
 @property(nonatomic, strong) CredentialListViewController* viewController;
 @end
 
@@ -96,10 +96,12 @@ NSArray<id<Credential>>* allPasswords = @[
   [self.baseViewController pushViewController:self.viewController animated:YES];
 
   [self.viewController presentSuggestedPasswords:suggestedPasswords
-                                    allPasswords:allPasswords];
+                                    allPasswords:allPasswords
+                                   showSearchBar:YES
+                           showNewPasswordOption:NO];
 }
 
-#pragma mark - CredentialListConsumerDelegate
+#pragma mark - CredentialListHandler
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
 }
@@ -121,7 +123,10 @@ NSArray<id<Credential>>* allPasswords = @[
       [all addObject:credential];
     }
   }
-  [self.viewController presentSuggestedPasswords:suggested allPasswords:all];
+  [self.viewController presentSuggestedPasswords:suggested
+                                    allPasswords:all
+                                   showSearchBar:YES
+                           showNewPasswordOption:NO];
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
@@ -134,6 +139,9 @@ NSArray<id<Credential>>* allPasswords = @[
   [detailsViewController presentCredential:credential];
   [self.baseViewController pushViewController:detailsViewController
                                      animated:YES];
+}
+
+- (void)newPasswordWasSelected {
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

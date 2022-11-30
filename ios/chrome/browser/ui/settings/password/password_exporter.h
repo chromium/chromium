@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 enum class WriteToURLStatus {
@@ -30,8 +31,8 @@ enum class ExportState {
 
 @protocol FileWriterProtocol <NSObject>
 
-// Posts a task to write the data in |data| to the file at |fileURL| and
-// executes |handler| when the writing is finished.
+// Posts a task to write the data in `data` to the file at `fileURL` and
+// executes `handler` when the writing is finished.
 - (void)writeData:(NSData*)data
             toURL:(NSURL*)fileURL
           handler:(void (^)(WriteToURLStatus))handler;
@@ -40,11 +41,10 @@ enum class ExportState {
 
 @protocol PasswordSerializerBridge <NSObject>
 
-// Posts task to serialize passwords and calls |serializedPasswordsHandler|
+// Posts task to serialize passwords and calls `serializedPasswordsHandler`
 // when serialization is finished.
 - (void)serializePasswords:
-            (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
-                passwords
+            (const std::vector<password_manager::CredentialUIEntry>&)passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler;
 
 @end
@@ -82,7 +82,7 @@ enum class ExportState {
  * a temporary file in tmp/passwords/<UUID>/, in the sandbox.
  *
  * The temporary file is removed from:
- * - the UIActivityViewController's |completionWithItemsHandler| when the
+ * - the UIActivityViewController's `completionWithItemsHandler` when the
  *   selected app/extension signals completion
  * - at browser startup
  * - whenever a password is deleted from local storage.
@@ -94,7 +94,7 @@ enum class ExportState {
  */
 @interface PasswordExporter : NSObject
 
-// The designated initializer. |reauthenticationModule| and |delegate| must
+// The designated initializer. `reauthenticationModule` and `delegate` must
 // not be nil.
 - (instancetype)initWithReauthenticationModule:
                     (id<ReauthenticationProtocol>)reuthenticationModule
@@ -107,7 +107,7 @@ enum class ExportState {
 // Method to be called in order to start the export flow. This initiates
 // the reauthentication procedure and asks for password serialization.
 - (void)startExportFlow:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)passwords;
+    (const std::vector<password_manager::CredentialUIEntry>&)passwords;
 
 // Called when the user cancels the export operation.
 - (void)cancelExport;

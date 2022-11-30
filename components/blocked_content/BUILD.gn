@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,8 +31,7 @@ source_set("blocked_content") {
     "//components/embedder_support",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/safe_browsing/content/triggers:ad_popup_trigger",
-    "//components/safe_browsing/core/db:util",
+    "//components/safe_browsing/core/browser/db:util",
     "//components/subresource_filter/content/browser",
     "//components/ukm/content",
     "//components/user_prefs",
@@ -50,6 +49,7 @@ source_set("blocked_content") {
       "android/popup_blocked_message_delegate.h",
     ]
     deps += [
+      "//components/infobars/android",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/messages/android",
@@ -94,6 +94,7 @@ source_set("unit_tests") {
     "//components/subresource_filter/core/browser:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_prefs",
+    "//components/variations:test_support",
     "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",

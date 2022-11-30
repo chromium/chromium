@@ -1,0 +1,45 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/win/embedded_i18n/generate_embedded_i18n.gni")
+
+source_set("resources") {
+  inputs = [
+    "chrome.bmp",
+    "error.bmp",
+    "google_update_ico",
+    "resources.grh",
+    "resources_en.rc",
+  ]
+
+  deps = [ ":strings" ]
+}
+
+generate_embedded_i18n("generate_strings") {
+  visibility = [ ":strings" ]
+  extractor_datafile =
+      "//chrome/updater/win/ui/resources/create_metainstaller_string_rc.py"
+  grdfile_folder = "//chrome/app/"
+
+  if (is_chrome_branded) {
+    grdfile_name = "google_chrome_strings"
+  } else {
+    grdfile_name = "chromium_strings"
+  }
+
+  xtb_relative_path = "resources"
+  grd_files_info = [ [
+        grdfile_folder,
+        grdfile_name,
+        xtb_relative_path,
+        default_embedded_i18_locales,
+      ] ]
+
+  output_file_name_base = "updater_installer_strings"
+}
+
+source_set("strings") {
+  sources = get_target_outputs(":generate_strings")
+  public_deps = [ ":generate_strings" ]
+}

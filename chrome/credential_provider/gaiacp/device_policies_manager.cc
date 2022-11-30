@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,12 +171,16 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
   base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, kGcpUsersRootKeyName);
   for (; iter.Valid(); ++iter) {
     std::wstring sid(iter.Name());
+    wchar_t found_username[kWindowsUsernameBufferLength];
+    wchar_t found_domain[kWindowsDomainBufferLength];
+
     // Check if this account with this sid exists on device.
-    HRESULT hr = OSUserManager::Get()->FindUserBySID(sid.c_str(), nullptr, 0,
-                                                     nullptr, 0);
+    HRESULT hr = OSUserManager::Get()->FindUserBySidWithFallback(
+        sid.c_str(), found_username, std::size(found_username), found_domain,
+        std::size(found_domain));
     if (hr != S_OK) {
       if (hr != HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)) {
-        LOGFN(ERROR) << "FindUserBySID hr=" << putHR(hr);
+        LOGFN(ERROR) << "FindUserBySidWithRegistryFallback hr=" << putHR(hr);
       } else {
         LOGFN(WARNING) << sid << " is not a valid sid";
       }
@@ -204,7 +208,12 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
   // Read allowed domains cloud policy.
   std::vector<std::wstring> domains_from_policy;
   if (GetAllowedDomainsToLoginFromCloudPolicy(&domains_from_policy)) {
-    device_policies->domains_allowed_to_login = domains_from_policy;
+    if (!domains_from_policy.empty()) {
+      device_policies->domains_allowed_to_login = domains_from_policy;
+    } else {
+      LOGFN(VERBOSE) << "Allowed domains cloud policy is empty. Falling back "
+                        "to device registry settings.";
+    }
   } else {
     LOGFN(VERBOSE) << "Allowed domains cloud policy not found";
   }
@@ -275,7 +284,7 @@ void DevicePoliciesManager::EnforceGcpwUpdatePolicy() {
       gcpw_version = base::UTF8ToWide(version.ToString());
     }
 
-    std::wstring ap_value = gcpw_version;
+    ap_value = gcpw_version;
     if (!update_channel.empty())
       ap_value = update_channel + kChannelAndVersionSeparator + gcpw_version;
 

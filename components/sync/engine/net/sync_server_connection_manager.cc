@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/cancelation_signal.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -26,33 +27,33 @@ class Connection : public CancelationSignal::Observer {
   // All pointers must not be null and must outlive this object.
   Connection(HttpPostProviderFactory* factory,
              CancelationSignal* cancelation_signal);
+
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
+
   ~Connection() override;
 
   HttpResponse Init(const GURL& connection_url,
                     const std::string& access_token,
-                    const std::string& payload);
+                    const std::string& payload,
+                    bool allow_batching);
   bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
-  bool ReadDownloadResponse(HttpResponse* response, std::string* buffer_out);
 
   // CancelationSignal::Observer overrides.
   void OnCancelationSignalReceived() override;
 
  private:
-  int ReadResponse(std::string* out_buffer, int length) const;
-
   // Pointer to the factory we use for creating HttpPostProviders. We do not
   // own |factory_|.
-  HttpPostProviderFactory* const factory_;
+  const raw_ptr<HttpPostProviderFactory> factory_;
 
   // Cancelation signal is signalled when engine shuts down. Current blocking
   // operation should be aborted.
-  CancelationSignal* const cancelation_signal_;
+  const raw_ptr<CancelationSignal> cancelation_signal_;
 
-  scoped_refptr<HttpPostProviderInterface> const post_provider_;
+  scoped_refptr<HttpPostProvider> const post_provider_;
 
   std::string buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Connection);
 };
 
 Connection::Connection(HttpPostProviderFactory* factory,
@@ -69,7 +70,8 @@ Connection::~Connection() = default;
 
 HttpResponse Connection::Init(const GURL& sync_request_url,
                               const std::string& access_token,
-                              const std::string& payload) {
+                              const std::string& payload,
+                              bool allow_batching) {
   post_provider_->SetURL(sync_request_url);
 
   if (!access_token.empty()) {
@@ -81,6 +83,8 @@ HttpResponse Connection::Init(const GURL& sync_request_url,
   // Must be octet-stream, or the payload may be parsed for a cookie.
   post_provider_->SetPostPayload("application/octet-stream", payload.length(),
                                  payload.data());
+
+  post_provider_->SetAllowBatching(allow_batching);
 
   // Issue the POST, blocking until it finishes.
   if (!cancelation_signal_->TryRegisterHandler(this)) {
@@ -123,34 +127,15 @@ bool Connection::ReadBufferResponse(std::string* buffer_out,
   if (response->content_length <= 0)
     return false;
 
-  const int64_t bytes_read =
-      ReadResponse(buffer_out, static_cast<int>(response->content_length));
+  const int64_t bytes_read = buffer_.length();
+  CHECK_LE(response->content_length, bytes_read);
+  buffer_out->assign(buffer_);
+
   if (bytes_read != response->content_length) {
     response->server_status = HttpResponse::IO_ERROR;
     return false;
   }
   return true;
-}
-
-bool Connection::ReadDownloadResponse(HttpResponse* response,
-                                      std::string* buffer_out) {
-  const int64_t bytes_read =
-      ReadResponse(buffer_out, static_cast<int>(response->content_length));
-
-  if (bytes_read != response->content_length) {
-    LOG(ERROR) << "Mismatched content lengths, server claimed "
-               << response->content_length << ", but sent " << bytes_read;
-    response->server_status = HttpResponse::IO_ERROR;
-    return false;
-  }
-  return true;
-}
-
-int Connection::ReadResponse(std::string* out_buffer, int length) const {
-  int bytes_read = buffer_.length();
-  CHECK_LE(length, bytes_read);
-  out_buffer->assign(buffer_);
-  return bytes_read;
 }
 
 void Connection::OnCancelationSignalReceived() {
@@ -176,6 +161,7 @@ SyncServerConnectionManager::~SyncServerConnectionManager() = default;
 HttpResponse SyncServerConnectionManager::PostBuffer(
     const std::string& buffer_in,
     const std::string& access_token,
+    bool allow_batching,
     std::string* buffer_out) {
   if (access_token.empty()) {
     // Print a log to distinguish this "known failure" from others.
@@ -193,8 +179,8 @@ HttpResponse SyncServerConnectionManager::PostBuffer(
 
   // Note that the post may be aborted by now, which will just cause Init to
   // fail with CONNECTION_UNAVAILABLE.
-  HttpResponse http_response =
-      connection->Init(sync_request_url_, access_token, buffer_in);
+  HttpResponse http_response = connection->Init(sync_request_url_, access_token,
+                                                buffer_in, allow_batching);
 
   if (http_response.server_status == HttpResponse::SYNC_AUTH_ERROR) {
     ClearAccessToken();

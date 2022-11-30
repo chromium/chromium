@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
@@ -181,10 +182,15 @@ void TilingSetRasterQueueAll::OnePriorityRectIterator::AdvanceToNextTile(
       break;
     }
     Tile* tile = tiling_->TileAt(iterator->index_x(), iterator->index_y());
-    if (IsTileValid(tile)) {
-      current_tile_ = tiling_->MakePrioritizedTile(tile, priority_rect_type_);
-      break;
-    }
+    auto result = IsTileValid(tile);
+    if (result == kTileNotValid)
+      continue;
+
+    bool is_tile_occluded =
+        result != kTileNeedsRaster && tiling_->IsTileOccluded(tile);
+    current_tile_ = tiling_->MakePrioritizedTile(tile, priority_rect_type_,
+                                                 is_tile_occluded);
+    break;
   }
 }
 
@@ -192,18 +198,24 @@ template <typename TilingIteratorType>
 bool TilingSetRasterQueueAll::OnePriorityRectIterator::
     GetFirstTileAndCheckIfValid(TilingIteratorType* iterator) {
   Tile* tile = tiling_->TileAt(iterator->index_x(), iterator->index_y());
-  if (!IsTileValid(tile)) {
+  auto result = IsTileValid(tile);
+  if (result == kTileNotValid) {
     current_tile_ = PrioritizedTile();
     return false;
   }
-  current_tile_ = tiling_->MakePrioritizedTile(tile, priority_rect_type_);
+  // Note that if tile needs raster then by definition it is not occluded.
+  bool is_tile_occluded =
+      result != kTileNeedsRaster && tiling_->IsTileOccluded(tile);
+  current_tile_ =
+      tiling_->MakePrioritizedTile(tile, priority_rect_type_, is_tile_occluded);
   return true;
 }
 
-bool TilingSetRasterQueueAll::OnePriorityRectIterator::IsTileValid(
+TilingSetRasterQueueAll::OnePriorityRectIterator::IsTileValidResult
+TilingSetRasterQueueAll::OnePriorityRectIterator::IsTileValid(
     const Tile* tile) const {
   if (!tile)
-    return false;
+    return kTileNotValid;
 
   // A tile is valid for raster if it needs raster and is unoccluded.
   bool tile_is_valid_for_raster =
@@ -211,12 +223,15 @@ bool TilingSetRasterQueueAll::OnePriorityRectIterator::IsTileValid(
 
   // A tile is not valid for the raster queue if it is not valid for raster or
   // processing for checker-images.
+  IsTileValidResult result = kTileNeedsRaster;
   if (!tile_is_valid_for_raster) {
+    // Note that we might need to re-raster the tile if it was checker imaged.
     bool tile_is_valid_for_checker_images =
         tile->draw_info().is_checker_imaged() &&
         tiling_->ShouldDecodeCheckeredImagesForTile(tile);
     if (!tile_is_valid_for_checker_images)
-      return false;
+      return kTileNotValid;
+    result = kTileNeedsCheckerImageReraster;
   }
 
   // After the pending visible rect has been processed, we must return false
@@ -226,9 +241,9 @@ bool TilingSetRasterQueueAll::OnePriorityRectIterator::IsTileValid(
     gfx::Rect tile_bounds = tiling_data_->TileBounds(tile->tiling_i_index(),
                                                      tile->tiling_j_index());
     if (pending_visible_rect_.Intersects(tile_bounds))
-      return false;
+      return kTileNotValid;
   }
-  return true;
+  return result;
 }
 
 // VisibleTilingIterator.

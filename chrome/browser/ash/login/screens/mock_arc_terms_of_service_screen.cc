@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_arc_terms_of_service_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 MockArcTermsOfServiceScreen::MockArcTermsOfServiceScreen(
     ArcTermsOfServiceScreenView* view,
@@ -37,4 +37,4 @@ void MockArcTermsOfServiceScreenView::RemoveObserver(
   MockRemoveObserver(observer);
 }
 
-}  // namespace chromeos
+}  // namespace ash

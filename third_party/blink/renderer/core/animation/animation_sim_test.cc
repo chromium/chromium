@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -65,7 +65,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   StringKeyframeVector keyframes;
   keyframes.push_back(keyframe);
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       target, MakeGarbageCollected<StringKeyframeEffectModel>(keyframes),
@@ -88,7 +88,7 @@ TEST_F(AnimationSimTest, CustomPropertyBaseComputedStyle) {
   keyframes.clear();
   keyframes.push_back(std::move(keyframe));
   timing = Timing();
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
   keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       target, MakeGarbageCollected<StringKeyframeEffectModel>(keyframes),

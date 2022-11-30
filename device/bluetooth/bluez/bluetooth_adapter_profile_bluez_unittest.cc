@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -158,14 +159,14 @@ class BluetoothAdapterProfileBlueZTest : public testing::Test {
 
   // unowned pointer as expected to be used by clients of
   // BluetoothAdapterBlueZ::UseProfile like BluetoothSocketBlueZ
-  BluetoothAdapterProfileBlueZ* profile_user_ptr_;
+  raw_ptr<BluetoothAdapterProfileBlueZ> profile_user_ptr_;
 };
 
 TEST_F(BluetoothAdapterProfileBlueZTest, DelegateCount) {
   BluetoothUUID uuid(bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
   bluez::BluetoothProfileManagerClient::Options options;
 
-  options.require_authentication.reset(new bool(false));
+  options.require_authentication = std::make_unique<bool>(false);
 
   BluetoothAdapterProfileBlueZ::Register(
       uuid, options,
@@ -202,7 +203,7 @@ TEST_F(BluetoothAdapterProfileBlueZTest, BlackHole) {
   BluetoothUUID uuid(bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
   bluez::BluetoothProfileManagerClient::Options options;
 
-  options.require_authentication.reset(new bool(false));
+  options.require_authentication = std::make_unique<bool>(false);
 
   BluetoothAdapterProfileBlueZ::Register(
       uuid, options,
@@ -238,7 +239,7 @@ TEST_F(BluetoothAdapterProfileBlueZTest, Routing) {
   BluetoothUUID uuid(bluez::FakeBluetoothProfileManagerClient::kRfcommUuid);
   bluez::BluetoothProfileManagerClient::Options options;
 
-  options.require_authentication.reset(new bool(false));
+  options.require_authentication = std::make_unique<bool>(false);
 
   BluetoothAdapterProfileBlueZ::Register(
       uuid, options,
@@ -316,7 +317,7 @@ TEST_F(BluetoothAdapterProfileBlueZTest, SimultaneousRegister) {
   BluetoothAdapterBlueZ* adapter =
       static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
 
-  options.require_authentication.reset(new bool(false));
+  options.require_authentication = std::make_unique<bool>(false);
 
   success_callback_count_ = 0;
   error_callback_count_ = 0;
@@ -358,7 +359,7 @@ TEST_F(BluetoothAdapterProfileBlueZTest, SimultaneousRegisterFail) {
   BluetoothAdapterBlueZ* adapter =
       static_cast<BluetoothAdapterBlueZ*>(adapter_.get());
 
-  options.require_authentication.reset(new bool(false));
+  options.require_authentication = std::make_unique<bool>(false);
 
   success_callback_count_ = 0;
   error_callback_count_ = 0;

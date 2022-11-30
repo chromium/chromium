@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "base/observer_list.h"
 
 namespace autofill_assistant {
 
@@ -14,9 +15,8 @@ RuntimeManagerImpl* RuntimeManagerImpl::GetForWebContents(
   return RuntimeManagerImpl::FromWebContents(contents);
 }
 
-RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents) {}
-
-RuntimeManagerImpl::RuntimeManagerImpl() = default;
+RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents)
+    : content::WebContentsUserData<RuntimeManagerImpl>(*web_contents) {}
 
 RuntimeManagerImpl::~RuntimeManagerImpl() = default;
 
@@ -41,9 +41,9 @@ void RuntimeManagerImpl::SetUIState(UIState state) {
   }
 }
 
-base::WeakPtr<RuntimeManagerImpl> RuntimeManagerImpl::GetWeakPtr() {
+base::WeakPtr<RuntimeManager> RuntimeManagerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RuntimeManagerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(RuntimeManagerImpl);
 }  // namespace autofill_assistant

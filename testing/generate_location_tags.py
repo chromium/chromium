@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generates the directory->tags mapping used by ResultDB."""
@@ -7,7 +7,7 @@
 # pylint: disable=line-too-long
 #
 # For more on the tags, see
-# https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/location_tag.proto
+# https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/sink/proto/v1/location_tag.proto
 #
 # pylint: enable=line-too-long
 

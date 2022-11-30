@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,10 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extensions_test.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -46,9 +48,9 @@ void OnMimeTypesCollected(
 storage::FileSystemURL CreateNativeLocalFileSystemURL(
     storage::FileSystemContext* context,
     const base::FilePath local_path) {
-  return context->CreateCrackedFileSystemURL(url::Origin::Create(GURL(kOrigin)),
-                                             storage::kFileSystemTypeLocal,
-                                             local_path);
+  return context->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin),
+      storage::kFileSystemTypeLocal, local_path);
 }
 
 }  // namespace
@@ -61,7 +63,7 @@ class FileHandlersMimeUtilTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, browser_context()->GetPath());
+        /*quota_manager_proxy=*/nullptr, browser_context()->GetPath());
 
     const std::string kSampleContent = "<html><body></body></html>";
     base::FilePath temp_filename = CreateTemporaryFile(kSampleContent);

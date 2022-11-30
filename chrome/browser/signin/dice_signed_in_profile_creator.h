@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,35 +8,17 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class TokensLoadedCallbackRunner;
 
 // Extracts an account from an existing profile and moves it to a new profile.
 class DiceSignedInProfileCreator {
  public:
-  // Empty user data, attached to the profile if this is a guest profile and a
-  // signin token was transferred.
-  class GuestSigninTokenTransferredUserData
-      : public base::SupportsUserData::Data {
-   public:
-    GuestSigninTokenTransferredUserData() = default;
-    static void Set(Profile* profile) {
-      profile->SetUserData(
-          kGuestSigninTokenTransferredUserDataKey,
-          std::make_unique<GuestSigninTokenTransferredUserData>());
-    }
-    static bool Get(Profile* profile) {
-      return profile->GetUserData(kGuestSigninTokenTransferredUserDataKey);
-    }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(GuestSigninTokenTransferredUserData);
-  };
-
   // Creates a new profile or uses Guest profile if |use_guest_profile|, and
   // moves the account from source_profile to it.
   // The callback is called with the new profile or nullptr in case of failure.
@@ -47,7 +29,7 @@ class DiceSignedInProfileCreator {
   DiceSignedInProfileCreator(Profile* source_profile,
                              CoreAccountId account_id,
                              const std::u16string& local_profile_name,
-                             base::Optional<size_t> icon_index,
+                             absl::optional<size_t> icon_index,
                              bool use_guest_profile,
                              base::OnceCallback<void(Profile*)> callback);
 
@@ -65,21 +47,14 @@ class DiceSignedInProfileCreator {
   DiceSignedInProfileCreator& operator=(const DiceSignedInProfileCreator&) =
       delete;
 
-  // Key for GuestSigninTokenTransferredUserDataKey.
-  static const void* const kGuestSigninTokenTransferredUserDataKey;
-
  private:
-  // Callback invoked once a profile is created, so we can transfer the
-  // credentials.
-  void OnNewProfileCreated(Profile* new_profile, Profile::CreateStatus status);
-
   // Called when the profile is initialized.
-  void OnNewProfileInitialized(Profile* new_profile);
+  void OnNewProfileInitialized(Profile* profile);
 
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
-  Profile* const source_profile_;
+  const raw_ptr<Profile> source_profile_;
   const CoreAccountId account_id_;
 
   base::OnceCallback<void(Profile*)> callback_;

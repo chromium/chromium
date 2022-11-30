@@ -1,0 +1,201 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/swift_source_set.gni")
+
+source_set("overflow_menu_constants") {
+  sources = [
+    "overflow_menu_constants.cc",
+    "overflow_menu_constants.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("overflow_menu") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "overflow_menu_mediator.h",
+    "overflow_menu_mediator.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    ":overflow_menu_constants",
+    ":overflow_menu_swift",
+    "resources:destination_highlight_color",
+    "resources:overflow_menu_action_bookmark",
+    "resources:overflow_menu_action_clear_browsing_data",
+    "resources:overflow_menu_action_edit_bookmark",
+    "resources:overflow_menu_action_find_in_page",
+    "resources:overflow_menu_action_follow",
+    "resources:overflow_menu_action_help",
+    "resources:overflow_menu_action_incognito",
+    "resources:overflow_menu_action_new_tab",
+    "resources:overflow_menu_action_new_window",
+    "resources:overflow_menu_action_price_notifications",
+    "resources:overflow_menu_action_read_later",
+    "resources:overflow_menu_action_reload",
+    "resources:overflow_menu_action_report_issue",
+    "resources:overflow_menu_action_request_desktop",
+    "resources:overflow_menu_action_request_mobile",
+    "resources:overflow_menu_action_settings",
+    "resources:overflow_menu_action_share_chrome",
+    "resources:overflow_menu_action_stop",
+    "resources:overflow_menu_action_text_zoom",
+    "resources:overflow_menu_action_translate",
+    "resources:overflow_menu_action_unfollow",
+    "resources:overflow_menu_destination_bookmarks",
+    "resources:overflow_menu_destination_downloads",
+    "resources:overflow_menu_destination_history",
+    "resources:overflow_menu_destination_passwords",
+    "resources:overflow_menu_destination_reading_list",
+    "resources:overflow_menu_destination_recent_tabs",
+    "resources:overflow_menu_destination_settings",
+    "resources:overflow_menu_destination_site_info",
+    "resources:overflow_menu_destination_whats_new",
+    "resources:overflow_menu_footer_managed",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/feature_engagement/public",
+    "//components/language/ios/browser",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/profile_metrics",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce",
+    "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/follow:browser_agent",
+    "//ios/chrome/browser/follow:enums",
+    "//ios/chrome/browser/follow:tab_helper",
+    "//ios/chrome/browser/follow:utils",
+    "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/reading_list",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/browser_container:ui",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/ui/icons:action_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/window_activities",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+swift_source_set("overflow_menu_swift") {
+  bridge_header = "overflow_menu_swift_bridge.h"
+  sources = [
+    "Color+overflow_menu.swift",
+    "overflow_menu_action.swift",
+    "overflow_menu_action_group.swift",
+    "overflow_menu_action_list.swift",
+    "overflow_menu_action_row.swift",
+    "overflow_menu_action_section.swift",
+    "overflow_menu_destination.swift",
+    "overflow_menu_destination_list.swift",
+    "overflow_menu_destination_view.swift",
+    "overflow_menu_footer.swift",
+    "overflow_menu_footer_row.swift",
+    "overflow_menu_hosting_controller.swift",
+    "overflow_menu_item.swift",
+    "overflow_menu_model.swift",
+    "overflow_menu_ui_configuration.swift",
+    "overflow_menu_view.swift",
+    "overflow_menu_view_provider.swift",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
+source_set("feature_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feature_flags.h",
+    "feature_flags.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/browser/ui:feature_flags",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "overflow_menu_mediator_unittest.mm" ]
+  deps = [
+    ":overflow_menu",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/test",
+    "//components/feature_engagement/test:test_support",
+    "//components/language/ios/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/translate/core/browser",
+    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
+    "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new:feature_flags",
+    "//ios/chrome/browser/web/font_size",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

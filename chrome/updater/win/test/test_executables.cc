@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/test/test_inheritable_event.h"
 #include "chrome/updater/win/test/test_strings.h"
 
@@ -53,13 +54,28 @@ base::Process LongRunningProcess(base::CommandLine* cmd) {
   launch_options.handles_to_inherit.push_back(init_done_event->handle());
   base::Process result = base::LaunchProcess(command_line, launch_options);
 
-  if (!init_done_event->TimedWait(base::TimeDelta::FromSeconds(10))) {
+  if (!init_done_event->TimedWait(base::Seconds(10))) {
     LOG(ERROR) << "Process did not signal";
     result.Terminate(/*exit_code=*/1, /*wait=*/false);
     return base::Process();
   }
 
   return result;
+}
+
+base::CommandLine GetTestProcessCommandLine(UpdaterScope scope) {
+  base::FilePath executable_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &executable_path));
+
+  base::CommandLine command_line(
+      executable_path.Append(kTestProcessExecutableName));
+  if (scope == UpdaterScope::kSystem)
+    command_line.AppendSwitch(kSystemSwitch);
+
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
+  return command_line;
 }
 
 }  // namespace updater

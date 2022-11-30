@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,8 +48,12 @@ class DeviceEventLogTest : public testing::Test {
  public:
   DeviceEventLogTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
 
+  DeviceEventLogTest(const DeviceEventLogTest&) = delete;
+  DeviceEventLogTest& operator=(const DeviceEventLogTest&) = delete;
+
   void SetUp() override {
-    impl_.reset(new DeviceEventLogImpl(task_runner_, kDefaultMaxEvents));
+    impl_ =
+        std::make_unique<DeviceEventLogImpl>(task_runner_, kDefaultMaxEvents);
   }
 
   void TearDown() override { impl_.reset(); }
@@ -128,9 +132,6 @@ class DeviceEventLogTest : public testing::Test {
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<DeviceEventLogImpl> impl_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceEventLogTest);
 };
 
 TEST_F(DeviceEventLogTest, TestNetworkEvents) {
@@ -223,7 +224,7 @@ TEST_F(DeviceEventLogTest, TestTimeFormat) {
   EXPECT_EQ(base::StringPrintf("[%s] event0\n", extected_time_str.c_str()),
             GetLogString(OLDEST_FIRST, "time", kDefaultLevel, 1));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   char sign = hour_delta > 0 ? '+' : '-';
   std::string expected_time =
       base::StringPrintf("2020-01-01T%02d:34:56.000000%c%02d:00",
@@ -294,7 +295,7 @@ TEST_F(DeviceEventLogTest, TestMaxEvents) {
 
 TEST_F(DeviceEventLogTest, TestMaxErrors) {
   const int kMaxTestEntries = 4;
-  impl_.reset(new DeviceEventLogImpl(task_runner_, kMaxTestEntries));
+  impl_ = std::make_unique<DeviceEventLogImpl>(task_runner_, kMaxTestEntries);
   AddTestEvent(LOG_LEVEL_EVENT, "event1");
   AddTestEvent(LOG_LEVEL_ERROR, "error2");
   AddTestEvent(LOG_LEVEL_EVENT, "event3");
@@ -346,19 +347,19 @@ TEST_F(DeviceEventLogTest, TestClear) {
 
 TEST_F(DeviceEventLogTest, TestClearRange) {
   AddTestEventWithTimestamp(LOG_LEVEL_EVENT, "event1",
-                            base::Time() + base::TimeDelta::FromSeconds(1));
+                            base::Time() + base::Seconds(1));
   AddTestEventWithTimestamp(LOG_LEVEL_EVENT, "event2",
-                            base::Time() + base::TimeDelta::FromSeconds(2));
+                            base::Time() + base::Seconds(2));
   AddTestEventWithTimestamp(LOG_LEVEL_EVENT, "event3",
-                            base::Time() + base::TimeDelta::FromSeconds(3));
+                            base::Time() + base::Seconds(3));
   AddTestEventWithTimestamp(LOG_LEVEL_EVENT, "event4",
-                            base::Time() + base::TimeDelta::FromSeconds(4));
+                            base::Time() + base::Seconds(4));
 
   EXPECT_EQ("event1\nevent2\nevent3\nevent4\n",
             GetLogString(OLDEST_FIRST, "", LOG_LEVEL_EVENT, 0));
 
-  impl_->Clear(base::Time() + base::TimeDelta::FromSeconds(2),
-               base::Time() + base::TimeDelta::FromSeconds(3));
+  impl_->Clear(base::Time() + base::Seconds(2),
+               base::Time() + base::Seconds(3));
 
   EXPECT_EQ("event1\nevent4\n",
             GetLogString(OLDEST_FIRST, "", LOG_LEVEL_EVENT, 0));

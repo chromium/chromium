@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ void PassthroughDiscardableManager::InitializeTexture(
   entry.handle = std::move(handle);
   entry.size = texture_size;
 
-  cache_.Put({client_id, context_group}, std::move(entry));
+  cache_.Put(DiscardableCacheKey{client_id, context_group}, std::move(entry));
   EnforceCacheSizeLimit(cache_size_limit_);
 }
 bool PassthroughDiscardableManager::UnlockTexture(

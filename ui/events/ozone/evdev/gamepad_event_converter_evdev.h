@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
-#define UI_EVENTS_OZONE_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
+#ifndef UI_EVENTS_OZONE_EVDEV_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
+#define UI_EVENTS_OZONE_EVDEV_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
                              const EventDeviceInfo& info,
                              DeviceEventDispatcherEvdev* dispatcher);
 
+  GamepadEventConverterEvdev(const GamepadEventConverterEvdev&) = delete;
+  GamepadEventConverterEvdev& operator=(const GamepadEventConverterEvdev&) =
+      delete;
+
   ~GamepadEventConverterEvdev() override;
 
   // EventConverterEvdev:
@@ -40,6 +44,7 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   void OnDisabled() override;
   std::vector<ui::GamepadDevice::Axis> GetGamepadAxes() const override;
   bool GetGamepadRumbleCapability() const override;
+  std::vector<uint64_t> GetGamepadKeyBits() const override;
 
   // This function processes one input_event from evdev.
   void ProcessEvent(const struct input_event& input);
@@ -116,15 +121,15 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   const base::ScopedFD input_device_fd_;
 
   // Callbacks for dispatching events.
-  DeviceEventDispatcherEvdev* const dispatcher_;
+  const raw_ptr<DeviceEventDispatcherEvdev> dispatcher_;
 
   // The effect id is needed to keep track of effects that are uploaded and
   // stored in the gamepad device.
   int effect_id_;
 
-  DISALLOW_COPY_AND_ASSIGN(GamepadEventConverterEvdev);
+  std::vector<uint64_t> key_bits_;
 };
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_GAMEPAD_EVENT_CONVERTER_EVDEV_H_
+#endif  // UI_EVENTS_OZONE_EVDEV_GAMEPAD_EVENT_CONVERTER_EVDEV_H_

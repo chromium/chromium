@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,9 +8,10 @@ android_library("java") {
   sources = [ "java/src/org/chromium/components/favicon/LargeIconBridge.java" ]
 
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/util/android:java",
-    "//components/embedder_support/android:browser_context_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
@@ -33,10 +34,10 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/embedder_support/android:browser_context",
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//content/public/browser",
     "//skia",
     "//ui/gfx",
     "//url",

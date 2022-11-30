@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@ namespace blink {
 class ScriptPromiseResolver;
 namespace file_system_access_error {
 
-// Rejects |resolver| with an appropriate exception if |status| represents an
-// error. Resolves |resolver| with undefined otherwise.
+// Rejects `resolver` with an appropriate exception if `status` represents an
+// error. Resolves `resolver` with undefined otherwise.
 void ResolveOrReject(ScriptPromiseResolver* resolver,
                      const mojom::blink::FileSystemAccessError& status);
 
-// Rejects |resolver| with an appropriate exception if |status| represents an
+// Rejects `resolver` with an appropriate exception if `status` represents an
 // error. DCHECKs otherwise.
 void Reject(ScriptPromiseResolver* resolver,
             const mojom::blink::FileSystemAccessError& error);

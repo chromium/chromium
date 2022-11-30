@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10">
-  <g fill="none" fill-rule="evenodd">
-    <rect width="12" height="12"/>
-    <polygon points="0 0 10 0 10 10 0 10"/>
-    <path fill="#FFF" fill-rule="nonzero" d="M1,3 L3,3 L3,1 L1,1 L1,3 Z M4,9 L6,9 L6,7 L4,7 L4,9 Z M1,9 L3,9 L3,7 L1,7 L1,9 Z M1,6 L3,6 L3,4 L1,4 L1,6 Z M4,6 L6,6 L6,4 L4,4 L4,6 Z M7,1 L7,3 L9,3 L9,1 L7,1 Z M4,3 L6,3 L6,1 L4,1 L4,3 Z M7,6 L9,6 L9,4 L7,4 L7,6 Z M7,9 L9,9 L9,7 L7,7 L7,9 Z"/>
-  </g>
-</svg>

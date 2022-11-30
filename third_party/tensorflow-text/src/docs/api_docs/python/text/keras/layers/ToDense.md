@@ -23,7 +23,7 @@ Layer that makes padding and masking a Composite Tensors effortless.
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.keras.layers.ToDense(
-    pad_value=0, mask=False, **kwargs
+    pad_value=0, mask=False, shape=None, **kwargs
 )
 </code></pre>
 
@@ -70,6 +70,16 @@ meaningless value for the input data. Default is '0'.
 A Boolean value representing whether to mask the padded values. If
 true, no any downstream Masking layer or Embedding layer with
 mask_zero=True should be added. Default is 'False'.
+</td>
+</tr><tr>
+<td>
+`shape`
+</td>
+<td>
+If not `None`, the resulting dense tensor will be guaranteed to have
+this shape. For RaggedTensor inputs, this is passed to `tf.RaggedTensor`'s
+`to_tensor` method. For other tensor types, a `tf.ensure_shape` call is
+added to assert that the output has this shape.
 </td>
 </tr><tr>
 <td>

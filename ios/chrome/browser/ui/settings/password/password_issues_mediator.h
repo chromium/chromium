@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,27 +7,34 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
+class FaviconLoader;
 class IOSChromePasswordCheckManager;
 @protocol PasswordIssuesConsumer;
 
 // This mediator fetches and organises the credentials for its consumer.
-@interface PasswordIssuesMediator : NSObject <SuccessfulReauthTimeAccessor>
+@interface PasswordIssuesMediator
+    : NSObject <SuccessfulReauthTimeAccessor, TableViewFaviconDataSource>
 
 - (instancetype)initWithPasswordCheckManager:
-    (IOSChromePasswordCheckManager*)manager NS_DESIGNATED_INITIALIZER;
+                    (IOSChromePasswordCheckManager*)manager
+                               faviconLoader:(FaviconLoader*)faviconLoader
+                                 syncService:(syncer::SyncService*)syncService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
 // Deletes password from the password store.
-- (void)deletePassword:(const password_manager::PasswordForm&)password;
+- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
 
 @end
 

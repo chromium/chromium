@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
@@ -34,7 +36,7 @@ namespace {
 // TODO(crbug.com/83907): Find a good compromise between performance and
 // data granularity (mainly relevant to running with small buffer sizes
 // when we use background tracing) on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 #else
 constexpr size_t kDefaultSMBPageSizeBytes = 32 * 1024;
@@ -56,36 +58,52 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
                    const std::string& producer_name,
                    perfetto::Producer* producer,
                    perfetto::base::TaskRunner* producer_task_runner,
-                   size_t shmem_size_hint_bytes,
-                   size_t shmem_page_size_hint_bytes)
-      : producer_(producer) {
+                   size_t shmem_page_size_bytes,
+                   size_t shmem_size_bytes,
+                   std::unique_ptr<ChromeBaseSharedMemory> shm,
+                   std::unique_ptr<perfetto::SharedMemoryArbiter> shm_arbiter)
+      : producer_(producer),
+        shared_buffer_page_size_kb_(shmem_page_size_bytes / 1024),
+        shared_memory_(std::move(shm)),
+        shared_memory_arbiter_(std::move(shm_arbiter)) {
     // The producers's task runner must match where the endpoint is
     // constructed; otherwise we can't safely use a weak pointer to send
     // events back to the producer. |producer_task_runner| is also assumed to
     // outlive this endpoint.
     DCHECK(producer_task_runner->RunsTasksOnCurrentThread());
-    delegate.CreateProducerConnection(
-        base::BindOnce(&ProducerEndpoint::OnConnected,
-                       weak_factory_.GetWeakPtr(), producer_task_runner,
-                       shmem_size_hint_bytes, shmem_page_size_hint_bytes));
+
+    delegate.CreateProducerConnection(base::BindOnce(
+        &ProducerEndpoint::OnConnected, weak_factory_.GetWeakPtr(),
+        producer_task_runner, shmem_page_size_bytes, shmem_size_bytes));
   }
 
   ~ProducerEndpoint() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    producer_->OnDisconnect();
   }
 
   // perfetto::ProducerEndpoint implementation:
+  void Disconnect() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    producer_->OnDisconnect();  // Will delete |this|.
+  }
+
   void RegisterDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     producer_host_->RegisterDataSource(descriptor);
   }
 
+  void UpdateDataSource(
+      const perfetto::DataSourceDescriptor& descriptor) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    NOTREACHED();
+  }
+
   void UnregisterDataSource(const std::string& name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // TODO(skyostil): Implement data source unregistering.
-    NOTREACHED();
+    // TODO(skyostil): Implement data source unregistering. Data sources are
+    // currently only unregistered in tests, and because the tracing service is
+    // also torn down at the same time, we can ignore unregistrations here.
   }
 
   void RegisterTraceWriter(uint32_t writer_id,
@@ -237,90 +255,78 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
 
  private:
   struct EndpointBindings {
-    mojo::PendingReceiver<mojom::ProducerClient> client_receiver;
+    mojo::PendingRemote<mojom::ProducerClient> client_remote;
     mojo::PendingRemote<mojom::ProducerHost> host_remote;
-    std::unique_ptr<MojoSharedMemory> shared_memory;
+    mojo::PendingRemote<mojom::PerfettoService> perfetto_service;
   };
 
   static void OnConnected(
       base::WeakPtr<ProducerEndpoint> weak_endpoint,
       perfetto::base::TaskRunner* producer_task_runner,
-      size_t shmem_size_bytes,
       size_t shmem_page_size_bytes,
+      size_t shmem_size_bytes,
       mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
     // Called on the connection's sequence -- |this| may have been deleted.
     auto bindings = std::make_unique<EndpointBindings>();
-
-    // TODO(skyostil): Make it possible to pass the shared memory allocation
-    // from the client library to here (for startup tracing).
-    if (!shmem_size_bytes)
-      shmem_size_bytes = kDefaultSMBSizeBytes;
-    if (!shmem_page_size_bytes)
-      shmem_page_size_bytes = kDefaultSMBPageSizeBytes;
-    bindings->shared_memory =
-        std::make_unique<MojoSharedMemory>(shmem_size_bytes);
-
-    if (!bindings->shared_memory->shared_buffer().is_valid()) {
-      // There's no way to do tracing after an SMB allocation failure, so let's
-      // disconnect Perfetto.
-      // TODO(skyostil): Record failure in UMA.
-      producer_task_runner->PostTask([weak_endpoint] {
-        if (!weak_endpoint)
-          return;
-        DCHECK_CALLED_ON_VALID_SEQUENCE(weak_endpoint->sequence_checker_);
-        weak_endpoint->producer_->OnDisconnect();
-      });
-      return;
-    }
-
-    mojo::PendingRemote<mojom::ProducerClient> client;
-    bindings->client_receiver = client.InitWithNewPipeAndPassReceiver();
-    mojo::Remote<mojom::PerfettoService>(std::move(perfetto_service))
-        ->ConnectToProducerHost(
-            std::move(client),
-            bindings->host_remote.InitWithNewPipeAndPassReceiver(),
-            bindings->shared_memory->Clone(), shmem_page_size_bytes);
+    bindings->perfetto_service = std::move(perfetto_service);
 
     // Bind the interfaces on Perfetto's sequence so we can avoid extra thread
     // hops.
     producer_task_runner->PostTask([weak_endpoint, producer_task_runner,
                                     raw_bindings = bindings.release(),
-                                    shmem_size_bytes, shmem_page_size_bytes]() {
+                                    shmem_page_size_bytes, shmem_size_bytes]() {
       auto bindings = base::WrapUnique(raw_bindings);
       // Called on the endpoint's sequence -- |endpoint| may be deleted.
       if (!weak_endpoint)
         return;
+
       weak_endpoint->BindConnectionOnSequence(
-          producer_task_runner, std::move(bindings), shmem_size_bytes,
-          shmem_page_size_bytes);
+          producer_task_runner, std::move(bindings), shmem_page_size_bytes,
+          shmem_size_bytes);
     });
   }
 
   void BindConnectionOnSequence(
       perfetto::base::TaskRunner* producer_task_runner,
       std::unique_ptr<EndpointBindings> bindings,
-      size_t shmem_size_bytes,
-      size_t shmem_page_size_bytes) {
+      size_t shmem_page_size_bytes,
+      size_t shmem_size_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto client_receiver =
+        bindings->client_remote.InitWithNewPipeAndPassReceiver();
+
+    if (!shared_memory_) {
+      shared_memory_ =
+          std::make_unique<ChromeBaseSharedMemory>(shmem_size_bytes);
+    }
+    mojo::Remote<mojom::PerfettoService>(std::move(bindings->perfetto_service))
+        ->ConnectToProducerHost(
+            std::move(bindings->client_remote),
+            bindings->host_remote.InitWithNewPipeAndPassReceiver(),
+            shared_memory_->CloneRegion(), shmem_page_size_bytes);
+
     producer_host_.Bind(std::move(bindings->host_remote));
-    producer_host_.reset_on_disconnect();
+    if (shared_memory_arbiter_) {
+      shared_memory_arbiter_->BindToProducerEndpoint(this,
+                                                     producer_task_runner);
+    } else {
+      shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
+          shared_memory_.get(), shmem_page_size_bytes, this,
+          producer_task_runner);
+    }
+
     receiver_ = std::make_unique<mojo::Receiver<mojom::ProducerClient>>(
-        this, std::move(bindings->client_receiver));
+        this, std::move(client_receiver));
     receiver_->set_disconnect_handler(base::BindOnce(
         [](ProducerEndpoint* endpoint) { endpoint->receiver_->reset(); },
         base::Unretained(this)));
 
-    shared_memory_ = std::move(bindings->shared_memory);
-    shared_buffer_page_size_kb_ = shmem_size_bytes / 1024;
-    shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
-        shared_memory_.get(), shmem_page_size_bytes, this,
-        producer_task_runner);
     producer_->OnConnect();
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  perfetto::Producer* const producer_;
+  const raw_ptr<perfetto::Producer> producer_;
 
   base::flat_map<perfetto::DataSourceInstanceID, StartDataSourceCallback>
       ds_start_callbacks_;
@@ -334,7 +340,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   size_t shared_buffer_page_size_kb_ = 0;
 
   // Accessed on arbitrary threads after setup.
-  std::unique_ptr<MojoSharedMemory> shared_memory_;
+  std::unique_ptr<ChromeBaseSharedMemory> shared_memory_;
   std::unique_ptr<perfetto::SharedMemoryArbiter> shared_memory_arbiter_;
 
   base::WeakPtrFactory<ProducerEndpoint> weak_factory_{this};
@@ -360,7 +366,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   ~ConsumerEndpoint() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    consumer_->OnDisconnect();
+    consumer_.ExtractAsDangling()->OnDisconnect();  // May delete |consumer_|.
   }
 
   // perfetto::ConsumerEndpoint implementation.
@@ -368,7 +374,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
                      perfetto::base::ScopedFile file) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     trace_config_ = trace_config;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(crbug.com/1158482): Add support on Windows.
     DCHECK(!file)
         << "Tracing directly to a file isn't supported on Windows yet";
@@ -638,7 +644,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
-  perfetto::Consumer* const consumer_;
+  raw_ptr<perfetto::Consumer> consumer_;
   mojo::Remote<tracing::mojom::ConsumerHost> consumer_host_;
   mojo::Remote<tracing::mojom::TracingSessionHost> tracing_session_host_;
   mojo::Receiver<tracing::mojom::TracingSessionClient> tracing_session_client_{
@@ -670,9 +676,27 @@ PerfettoTracingBackend::ConnectConsumer(const ConnectConsumerArgs& args) {
 
 std::unique_ptr<perfetto::ProducerEndpoint>
 PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
+  std::unique_ptr<ChromeBaseSharedMemory> shm;
+  std::unique_ptr<perfetto::SharedMemoryArbiter> arbiter;
+  uint32_t shmem_size_hint = args.shmem_size_hint_bytes;
+  uint32_t shmem_page_size_hint = args.shmem_page_size_hint_bytes;
+  if (shmem_size_hint == 0)
+    shmem_size_hint = kDefaultSMBSizeBytes;
+  if (shmem_page_size_hint == 0)
+    shmem_page_size_hint = kDefaultSMBPageSizeBytes;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (args.use_producer_provided_smb) {
+    shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
+    arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
+        shm.get(), shmem_page_size_hint);
+  }
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
   return std::make_unique<ProducerEndpoint>(
       delegate_, args.producer_name, args.producer, args.task_runner,
-      args.shmem_size_hint_bytes, args.shmem_page_size_hint_bytes);
+      shmem_page_size_hint, shmem_size_hint, std::move(shm),
+      std::move(arbiter));
 }
 
 }  // namespace tracing

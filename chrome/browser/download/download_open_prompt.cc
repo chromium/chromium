@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +26,12 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
       const std::string& extension_name,
       const base::FilePath& file_path,
       DownloadOpenPrompt::OpenCallback open_callback);
+
+  DownloadOpenConfirmationDialog(const DownloadOpenConfirmationDialog&) =
+      delete;
+  DownloadOpenConfirmationDialog& operator=(
+      const DownloadOpenConfirmationDialog&) = delete;
+
   ~DownloadOpenConfirmationDialog() override;
 
   std::u16string GetTitle() override;
@@ -44,8 +49,6 @@ class DownloadOpenConfirmationDialog : public DownloadOpenPrompt,
   std::string extension_name_;
 
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadOpenConfirmationDialog);
 };
 
 DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
@@ -56,10 +59,7 @@ DownloadOpenConfirmationDialog::DownloadOpenConfirmationDialog(
     : TabModalConfirmDialogDelegate(web_contents),
       open_callback_(std::move(open_callback)),
       extension_name_(extension_name),
-      file_path_(file_path) {
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::DOWNLOAD_OPEN_CONFIRMATION);
-}
+      file_path_(file_path) {}
 
 DownloadOpenConfirmationDialog::~DownloadOpenConfirmationDialog() = default;
 

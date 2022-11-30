@@ -1,0 +1,7 @@
+{
+  "name": "Service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test reporting console error to UI for service worker-based extensions.",
+  "background": {"service_worker": "service_worker_background.js"}
+}

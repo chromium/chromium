@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,9 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 namespace {
 
@@ -67,18 +63,9 @@ TEST(ParseValuesTest, ParseTimes) {
   // Check that the length is validated.
   EXPECT_FALSE(ParseUTCTime(FromStringLiteral("140218161200"), &out));
   EXPECT_FALSE(ParseUTCTime(FromStringLiteral("140218161200Z0"), &out));
-  EXPECT_FALSE(ParseUTCTimeRelaxed(FromStringLiteral("140218161200"), &out));
-  EXPECT_FALSE(ParseUTCTimeRelaxed(FromStringLiteral("140218161200Z0"), &out));
 
   // Check strictness of UTCTime parsers.
   EXPECT_FALSE(ParseUTCTime(FromStringLiteral("1402181612Z"), &out));
-  EXPECT_TRUE(ParseUTCTimeRelaxed(FromStringLiteral("1402181612Z"), &out));
-
-  // Check that the time ends in Z.
-  EXPECT_FALSE(ParseUTCTimeRelaxed(FromStringLiteral("1402181612Z0"), &out));
-
-  // Check that ParseUTCTimeRelaxed calls ValidateGeneralizedTime.
-  EXPECT_FALSE(ParseUTCTimeRelaxed(FromStringLiteral("1402181662Z"), &out));
 
   // Check format of GeneralizedTime.
 
@@ -163,22 +150,19 @@ TEST(ParseValuesTest, TimesCompare) {
   GeneralizedTime time1;
   GeneralizedTime time2;
   GeneralizedTime time3;
-  GeneralizedTime time4;
 
   ASSERT_TRUE(
       ParseGeneralizedTime(FromStringLiteral("20140218161200Z"), &time1));
   // Test that ParseUTCTime correctly normalizes the year.
   ASSERT_TRUE(ParseUTCTime(FromStringLiteral("150218161200Z"), &time2));
-  ASSERT_TRUE(ParseUTCTimeRelaxed(FromStringLiteral("1503070000Z"), &time3));
   ASSERT_TRUE(
-      ParseGeneralizedTime(FromStringLiteral("20160218161200Z"), &time4));
+      ParseGeneralizedTime(FromStringLiteral("20160218161200Z"), &time3));
   EXPECT_TRUE(time1 < time2);
   EXPECT_TRUE(time2 < time3);
-  EXPECT_TRUE(time3 < time4);
 
   EXPECT_TRUE(time2 > time1);
   EXPECT_TRUE(time2 >= time1);
-  EXPECT_TRUE(time3 <= time4);
+  EXPECT_TRUE(time2 <= time3);
   EXPECT_TRUE(time1 <= time1);
   EXPECT_TRUE(time1 >= time1);
 }
@@ -229,7 +213,7 @@ const Uint64TestData kUint64TestData[] = {
 };
 
 TEST(ParseValuesTest, ParseUint64) {
-  for (size_t i = 0; i < base::size(kUint64TestData); i++) {
+  for (size_t i = 0; i < std::size(kUint64TestData); i++) {
     const Uint64TestData& test_case = kUint64TestData[i];
     SCOPED_TRACE(i);
 
@@ -265,7 +249,7 @@ const Uint8TestData kUint8TestData[] = {
 };
 
 TEST(ParseValuesTest, ParseUint8) {
-  for (size_t i = 0; i < base::size(kUint8TestData); i++) {
+  for (size_t i = 0; i < std::size(kUint8TestData); i++) {
     const Uint8TestData& test_case = kUint8TestData[i];
     SCOPED_TRACE(i);
 
@@ -310,7 +294,7 @@ const IsValidIntegerTestData kIsValidIntegerTestData[] = {
 };
 
 TEST(ParseValuesTest, IsValidInteger) {
-  for (size_t i = 0; i < base::size(kIsValidIntegerTestData); i++) {
+  for (size_t i = 0; i < std::size(kIsValidIntegerTestData); i++) {
     const auto& test_case = kIsValidIntegerTestData[i];
     SCOPED_TRACE(i);
 
@@ -327,23 +311,23 @@ TEST(ParseValuesTest, IsValidInteger) {
 TEST(ParseValuesTest, ParseBitStringEmptyNoUnusedBits) {
   const uint8_t kData[] = {0x00};
 
-  BitString bit_string;
-  ASSERT_TRUE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  ASSERT_TRUE(bit_string.has_value());
 
-  EXPECT_EQ(0u, bit_string.unused_bits());
-  EXPECT_EQ(0u, bit_string.bytes().Length());
+  EXPECT_EQ(0u, bit_string->unused_bits());
+  EXPECT_EQ(0u, bit_string->bytes().Length());
 
-  EXPECT_FALSE(bit_string.AssertsBit(0));
-  EXPECT_FALSE(bit_string.AssertsBit(1));
-  EXPECT_FALSE(bit_string.AssertsBit(3));
+  EXPECT_FALSE(bit_string->AssertsBit(0));
+  EXPECT_FALSE(bit_string->AssertsBit(1));
+  EXPECT_FALSE(bit_string->AssertsBit(3));
 }
 
 // Tests parsing an empty BIT STRING that incorrectly claims one unused bit.
 TEST(ParseValuesTest, ParseBitStringEmptyOneUnusedBit) {
   const uint8_t kData[] = {0x01};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
 // Tests parsing an empty BIT STRING that is not minmally encoded (the entire
@@ -351,30 +335,30 @@ TEST(ParseValuesTest, ParseBitStringEmptyOneUnusedBit) {
 TEST(ParseValuesTest, ParseBitStringNonEmptyTooManyUnusedBits) {
   const uint8_t kData[] = {0x08, 0x00};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
 // Tests parsing a BIT STRING of 7 bits each of which are 1.
 TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
   const uint8_t kData[] = {0x01, 0xFE};
 
-  BitString bit_string;
-  ASSERT_TRUE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  ASSERT_TRUE(bit_string.has_value());
 
-  EXPECT_EQ(1u, bit_string.unused_bits());
-  EXPECT_EQ(1u, bit_string.bytes().Length());
-  EXPECT_EQ(0xFE, bit_string.bytes().UnsafeData()[0]);
+  EXPECT_EQ(1u, bit_string->unused_bits());
+  EXPECT_EQ(1u, bit_string->bytes().Length());
+  EXPECT_EQ(0xFE, bit_string->bytes().UnsafeData()[0]);
 
-  EXPECT_TRUE(bit_string.AssertsBit(0));
-  EXPECT_TRUE(bit_string.AssertsBit(1));
-  EXPECT_TRUE(bit_string.AssertsBit(2));
-  EXPECT_TRUE(bit_string.AssertsBit(3));
-  EXPECT_TRUE(bit_string.AssertsBit(4));
-  EXPECT_TRUE(bit_string.AssertsBit(5));
-  EXPECT_TRUE(bit_string.AssertsBit(6));
-  EXPECT_FALSE(bit_string.AssertsBit(7));
-  EXPECT_FALSE(bit_string.AssertsBit(8));
+  EXPECT_TRUE(bit_string->AssertsBit(0));
+  EXPECT_TRUE(bit_string->AssertsBit(1));
+  EXPECT_TRUE(bit_string->AssertsBit(2));
+  EXPECT_TRUE(bit_string->AssertsBit(3));
+  EXPECT_TRUE(bit_string->AssertsBit(4));
+  EXPECT_TRUE(bit_string->AssertsBit(5));
+  EXPECT_TRUE(bit_string->AssertsBit(6));
+  EXPECT_FALSE(bit_string->AssertsBit(7));
+  EXPECT_FALSE(bit_string->AssertsBit(8));
 }
 
 // Tests parsing a BIT STRING of 7 bits each of which are 1. The unused bit
@@ -382,10 +366,92 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBits) {
 TEST(ParseValuesTest, ParseBitStringSevenOneBitsUnusedBitIsOne) {
   const uint8_t kData[] = {0x01, 0xFF};
 
-  BitString bit_string;
-  EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
+  absl::optional<BitString> bit_string = ParseBitString(Input(kData));
+  EXPECT_FALSE(bit_string.has_value());
 }
 
-}  // namespace test
-}  // namespace der
-}  // namespace net
+TEST(ParseValuesTest, ParseIA5String) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x01, 0x7f});
+  std::string s;
+  EXPECT_TRUE(ParseIA5String(valid_der, &s));
+  EXPECT_EQ("Foo bar\x01\x7f", s);
+
+  // 0x80 is not a valid character in IA5String.
+  const Input invalid_der({0x46, 0x6f, 0x80, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseIA5String(invalid_der, &s));
+}
+
+TEST(ParseValuesTest, ParseVisibleString) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x7e});
+  std::string s;
+  EXPECT_TRUE(ParseVisibleString(valid_der, &s));
+  EXPECT_EQ("Foo bar\x7e", s);
+
+  // 0x7f is not a valid character in VisibleString
+  const Input invalid_der({0x46, 0x6f, 0x7f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseVisibleString(invalid_der, &s));
+
+  // 0x1f is not a valid character in VisibleString
+  const Input invalid_der2({0x46, 0x6f, 0x1f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseVisibleString(invalid_der2, &s));
+}
+
+TEST(ParseValuesTest, ParsePrintableString) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParsePrintableString(valid_der, &s));
+  EXPECT_EQ("Foo bar", s);
+
+  // 0x5f '_' is not a valid character in PrintableString.
+  const Input invalid_der({0x46, 0x6f, 0x5f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParsePrintableString(invalid_der, &s));
+}
+
+TEST(ParseValuesTest, ParseTeletexStringAsLatin1) {
+  const Input valid_der({0x46, 0x6f, 0xd6, 0x20, 0x62, 0x61, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseTeletexStringAsLatin1(valid_der, &s));
+  EXPECT_EQ("FoÖ bar", s);
+}
+
+TEST(ParseValuesTest, ParseBmpString) {
+  const Input valid_der(
+      {0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x61, 0x00, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseBmpString(valid_der, &s));
+  EXPECT_EQ("foobar", s);
+
+  const Input valid_nonascii_der({0x27, 0x28, 0x26, 0xa1, 0x2b, 0x50});
+  EXPECT_TRUE(ParseBmpString(valid_nonascii_der, &s));
+  EXPECT_EQ("✨⚡⭐", s);
+
+  // BmpString must encode characters in pairs of 2 bytes.
+  const Input invalid_odd_der({0x00, 0x66, 0x00, 0x6f, 0x00});
+  EXPECT_FALSE(ParseBmpString(invalid_odd_der, &s));
+
+  // UTF-16BE encoding of U+1D11E, MUSICAL SYMBOL G CLEF, which is not valid in
+  // UCS-2.
+  const Input invalid_bmp_valid_utf16_with_surrogate({0xd8, 0x34, 0xdd, 0x1e});
+  EXPECT_FALSE(ParseBmpString(invalid_bmp_valid_utf16_with_surrogate, &s));
+}
+
+TEST(ParseValuesTest, ParseUniversalString) {
+  const Input valid_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x6f,
+                         0x00, 0x00, 0x00, 0x6f, 0x00, 0x00, 0x00, 0x62,
+                         0x00, 0x00, 0x00, 0x61, 0x00, 0x00, 0x00, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseUniversalString(valid_der, &s));
+  EXPECT_EQ("foobar", s);
+
+  const Input valid_non_ascii_der({0x0,  0x1,  0xf4, 0xe,  0x0,  0x0, 0x0,
+                                   0x20, 0x0,  0x1,  0xd1, 0x1e, 0x0, 0x0,
+                                   0x26, 0x69, 0x0,  0x0,  0x26, 0x6b});
+  EXPECT_TRUE(ParseUniversalString(valid_non_ascii_der, &s));
+  EXPECT_EQ("🐎 𝄞♩♫", s);
+
+  // UniversalString must encode characters in groups of 4 bytes.
+  const Input invalid_non_4_multiple_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00});
+  EXPECT_FALSE(ParseUniversalString(invalid_non_4_multiple_der, &s));
+}
+
+}  // namespace net::der::test

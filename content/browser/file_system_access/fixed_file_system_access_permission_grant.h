@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "content/public/browser/file_system_access_permission_grant.h"
 
+#include "base/files/file_path.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -26,7 +27,7 @@ class CONTENT_EXPORT FixedFileSystemAccessPermissionGrant
   PermissionStatus GetStatus() override;
   base::FilePath GetPath() override;
   void RequestPermission(
-      GlobalFrameRoutingId frame_id,
+      GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override;
 

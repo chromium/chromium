@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,16 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/vulkan/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_manager.h"
 #include "ui/ozone/public/gl_ozone.h"
-#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace ui {
@@ -31,6 +30,10 @@ class ScenicSurface;
 class ScenicSurfaceFactory : public SurfaceFactoryOzone {
  public:
   ScenicSurfaceFactory();
+
+  ScenicSurfaceFactory(const ScenicSurfaceFactory&) = delete;
+  ScenicSurfaceFactory& operator=(const ScenicSurfaceFactory&) = delete;
+
   ~ScenicSurfaceFactory() override;
 
   // Initializes the surface factory. Binds the surface factory to the
@@ -42,7 +45,7 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   void Shutdown();
 
   // SurfaceFactoryOzone implementation.
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<PlatformWindowSurface> CreatePlatformWindowSurface(
       gfx::AcceleratedWidget widget) override;
@@ -54,18 +57,22 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      base::Optional<gfx::Size> framebuffer_size = base::nullopt) override;
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                VkDevice vk_device,
                                gfx::Size size,
                                gfx::BufferFormat format,
                                gfx::BufferUsage usage,
                                NativePixmapCallback callback) override;
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
+      gfx::AcceleratedWidget widget,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,
-      bool allow_protected_memory,
-      bool enforce_protected_memory) override;
+      bool allow_protected_memory) override;
 #endif
 
   // Registers a surface for a |widget|.
@@ -112,8 +119,6 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ScenicSurfaceFactory> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicSurfaceFactory);
 };
 
 }  // namespace ui

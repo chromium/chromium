@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
   function checkSubdomains(domain) {
     TestRunner.addResult('');
     TestRunner.addResult('Domain: ' + domain);
-    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView._subdomains(domain)));
+    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView.subdomains(domain)));
   }
 
   function checkFilter(value, domains) {
-    var filter = Network.NetworkLogView._createRequestDomainFilter(value);
+    var filter = Network.NetworkLogView.createRequestDomainFilter(value);
     TestRunner.addResult('');
     TestRunner.addResult('Filter: ' + value);
     for (var i = 0; i < domains.length; ++i)

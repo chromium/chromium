@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,10 +64,7 @@ void BluetoothPairingDialogTest::ShowDialog() {
       .WillRepeatedly(testing::Return(mock_device_.get()));
 
   chromeos::SystemWebDialogDelegate* dialog =
-      chromeos::BluetoothPairingDialog::ShowDialog(
-          mock_device_->GetAddress(), mock_device_->GetNameForDisplay(),
-          mock_device_->IsPaired(), mock_device_->IsConnected());
-
+      chromeos::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
   content::WebUI* webui = dialog->GetWebUIForTest();
   content::WebContents* webui_webcontents = webui->GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));

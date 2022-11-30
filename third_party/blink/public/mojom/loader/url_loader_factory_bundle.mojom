@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,6 @@ struct URLLoaderFactoryBundle {
   // A mapping from isolated world's origin to factory interface.
   map<url.mojom.Origin, pending_remote<network.mojom.URLLoaderFactory>>
       isolated_world_factories;
-
-  // A special factory that is used for AppCache.
-  // TODO(https://crbug.com/582750): Drop this when AppCache is deprecated.
-  pending_remote<network.mojom.URLLoaderFactory>? appcache_factory;
 
   // Whether redirect checks should be bypassed, since they are happening in the
   // browser.

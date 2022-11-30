@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -144,7 +145,7 @@ views::Widget::InitParams CreateInitParams(int64_t display_id,
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.ownership =
       views::Widget::InitParams::Ownership::WIDGET_OWNS_NATIVE_WIDGET;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.name = target_name;
 
@@ -202,7 +203,7 @@ class IndicatorHighlightView : public views::View {
  private:
   // Radius for the rounded rectangle highlight. Determined by display
   // resolution.
-  int corner_radius_;
+  float corner_radius_;
 };
 
 // -----------------------------------------------------------------------------

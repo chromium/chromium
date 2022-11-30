@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -151,7 +151,7 @@ bool IDBValueWrapper::WrapIfBiggerThan(unsigned max_bytes) {
   wire_data_buffer_.push_back(kVersionTag);
   wire_data_buffer_.push_back(kRequiresProcessingSSVPseudoVersion);
   wire_data_buffer_.push_back(kReplaceWithBlob);
-  IDBValueWrapper::WriteVarInt(SafeCast<unsigned>(wire_data_size),
+  IDBValueWrapper::WriteVarInt(base::checked_cast<unsigned>(wire_data_size),
                                wire_data_buffer_);
   IDBValueWrapper::WriteVarInt(serialized_value_->BlobDataHandles().size(),
                                wire_data_buffer_);
@@ -159,7 +159,7 @@ bool IDBValueWrapper::WrapIfBiggerThan(unsigned max_bytes) {
   wire_data_ = base::make_span(
       reinterpret_cast<const uint8_t*>(wire_data_buffer_.data()),
       wire_data_buffer_.size());
-  DCHECK(!wire_data_buffer_.IsEmpty());
+  DCHECK(!wire_data_buffer_.empty());
   return true;
 }
 
@@ -170,7 +170,7 @@ scoped_refptr<SharedBuffer> IDBValueWrapper::TakeWireBytes() {
   owns_wire_bytes_ = false;
 #endif  // DCHECK_IS_ON()
 
-  if (wire_data_buffer_.IsEmpty()) {
+  if (wire_data_buffer_.empty()) {
     // The wire bytes are coming directly from the SSV's GetWireData() call.
     DCHECK_EQ(wire_data_.data(), serialized_value_->GetWireData().data());
     DCHECK_EQ(wire_data_.size(), serialized_value_->GetWireData().size());
@@ -207,6 +207,17 @@ bool IDBValueUnwrapper::IsWrapped(
   for (const auto& value : values) {
     if (IsWrapped(value.get()))
       return true;
+  }
+  return false;
+}
+
+// static
+bool IDBValueUnwrapper::IsWrapped(
+    const Vector<Vector<std::unique_ptr<IDBValue>>>& all_values) {
+  for (const auto& values : all_values) {
+    if (IsWrapped(values)) {
+      return true;
+    }
   }
   return false;
 }

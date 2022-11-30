@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -34,12 +33,12 @@ void PrecompilePhoneNumberRegexes() {
 }  // namespace
 
 const re2::RE2& GetPhoneNumberRegex() {
-  static const re2::LazyRE2 kRegexSimple = {kPhoneNumberRegexPatternSimple};
-  return *kRegexSimple;
+  static const re2::LazyRE2 regex_simple = {kPhoneNumberRegexPatternSimple};
+  return *regex_simple;
 }
 
 void PrecompilePhoneNumberRegexesAsync() {
-  constexpr auto kParseDelay = base::TimeDelta::FromSeconds(15);
+  constexpr auto kParseDelay = base::Seconds(15);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::BEST_EFFORT,

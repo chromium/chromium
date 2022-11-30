@@ -1,11 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_REMOVE_OPERATION_DELEGATE_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_REMOVE_OPERATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 
 namespace storage {
@@ -15,6 +14,10 @@ class RemoveOperationDelegate : public RecursiveOperationDelegate {
   RemoveOperationDelegate(FileSystemContext* file_system_context,
                           const FileSystemURL& url,
                           StatusCallback callback);
+
+  RemoveOperationDelegate(const RemoveOperationDelegate&) = delete;
+  RemoveOperationDelegate& operator=(const RemoveOperationDelegate&) = delete;
+
   ~RemoveOperationDelegate() override;
 
   // RecursiveOperationDelegate overrides:
@@ -38,7 +41,6 @@ class RemoveOperationDelegate : public RecursiveOperationDelegate {
   FileSystemURL url_;
   StatusCallback callback_;
   base::WeakPtrFactory<RemoveOperationDelegate> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RemoveOperationDelegate);
 };
 
 }  // namespace storage

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #include <windows.h>
 
-#include "base/optional.h"
-#include "base/task_runner_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
@@ -29,11 +28,11 @@ MetricEvaluatorsHelperWin::~MetricEvaluatorsHelperWin() {
   g_metric_evaluator_instance = nullptr;
 }
 
-base::Optional<int> MetricEvaluatorsHelperWin::GetFreePhysicalMemoryMb() {
+absl::optional<int> MetricEvaluatorsHelperWin::GetFreePhysicalMemoryMb() {
   MEMORYSTATUSEX mem_status;
   mem_status.dwLength = sizeof(mem_status);
   if (!::GlobalMemoryStatusEx(&mem_status))
-    return base::nullopt;
+    return absl::nullopt;
 
   return (mem_status.ullAvailPhys / kMBBytes);
 }

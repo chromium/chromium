@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/common_palette_tool.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
@@ -18,6 +17,10 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
                                     public ui::EventHandler {
  public:
   explicit CreateNoteAction(Delegate* delegate);
+
+  CreateNoteAction(const CreateNoteAction&) = delete;
+  CreateNoteAction& operator=(const CreateNoteAction&) = delete;
+
   ~CreateNoteAction() override;
 
  private:
@@ -33,7 +36,7 @@ class ASH_EXPORT CreateNoteAction : public CommonPaletteTool,
   // ui::EventHandler overrides.
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  DISALLOW_COPY_AND_ASSIGN(CreateNoteAction);
+  bool ShouldShowOnDisplay();
 };
 
 }  // namespace ash

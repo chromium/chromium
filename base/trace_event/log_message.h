@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,13 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
-#include <vector>
 
+#include "base/base_export.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 
 namespace base {
-
-class Value;
 
 namespace trace_event {
 

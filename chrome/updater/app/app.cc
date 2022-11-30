@@ -1,31 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/app/app.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
-constexpr base::StringPiece App::kThreadPoolName;
-
-App::App() : updater_scope_(GetProcessScope()) {}
+App::App() = default;
 App::~App() = default;
 
-void App::InitializeThreadPool() {
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(kThreadPoolName);
-}
-
 int App::Run() {
-  InitializeThreadPool();
   Initialize();
   int exit_code = 0;
   {
@@ -41,13 +34,11 @@ int App::Run() {
     runloop.Run();
   }
   Uninitialize();
-
-  // Shutting down the thread pool involves joining threads.
-  base::ThreadPoolInstance::Get()->Shutdown();
   return exit_code;
 }
 
 void App::Shutdown(int exit_code) {
+  CHECK(!quit_.is_null()) << "App was shutdown previously.";
   std::move(quit_).Run(exit_code);
 }
 

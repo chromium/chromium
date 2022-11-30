@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,61 +13,27 @@
 namespace password_manager {
 
 MockAffiliatedMatchHelper::MockAffiliatedMatchHelper()
-    : AffiliatedMatchHelper(nullptr, nullptr) {}
+    : AffiliatedMatchHelper(nullptr) {}
+
+MockAffiliatedMatchHelper::MockAffiliatedMatchHelper(
+    AffiliationService* affiliation_service)
+    : AffiliatedMatchHelper(affiliation_service) {}
 
 MockAffiliatedMatchHelper::~MockAffiliatedMatchHelper() = default;
 
 void MockAffiliatedMatchHelper::ExpectCallToGetAffiliatedAndroidRealms(
-    const PasswordStore::FormDigest& expected_observed_form,
+    const PasswordFormDigest& expected_observed_form,
     const std::vector<std::string>& results_to_return) {
   EXPECT_CALL(*this, OnGetAffiliatedAndroidRealmsCalled(expected_observed_form))
       .WillOnce(testing::Return(results_to_return));
 }
 
-void MockAffiliatedMatchHelper::ExpectCallToGetAffiliatedWebRealms(
-    const PasswordStore::FormDigest& expected_android_form,
-    const std::vector<std::string>& results_to_return) {
-  EXPECT_CALL(*this, OnGetAffiliatedWebRealmsCalled(expected_android_form))
-      .WillOnce(testing::Return(results_to_return));
-}
-
-void MockAffiliatedMatchHelper::
-    ExpectCallToInjectAffiliationAndBrandingInformation(
-        const std::vector<AffiliationAndBrandingInformation>&
-            results_to_inject) {
-  EXPECT_CALL(*this, OnInjectAffiliationAndBrandingInformationCalled())
-      .WillOnce(testing::Return(results_to_inject));
-}
-
 void MockAffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
-    const PasswordStore::FormDigest& observed_form,
+    const PasswordFormDigest& observed_form,
     AffiliatedRealmsCallback result_callback) {
   std::vector<std::string> affiliated_android_realms =
       OnGetAffiliatedAndroidRealmsCalled(observed_form);
   std::move(result_callback).Run(affiliated_android_realms);
-}
-
-void MockAffiliatedMatchHelper::GetAffiliatedWebRealms(
-    const PasswordStore::FormDigest& android_form,
-    AffiliatedRealmsCallback result_callback) {
-  std::vector<std::string> affiliated_web_realms =
-      OnGetAffiliatedWebRealmsCalled(android_form);
-  std::move(result_callback).Run(affiliated_web_realms);
-}
-
-void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    std::vector<std::unique_ptr<PasswordForm>> forms,
-    AndroidAffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
-    PasswordFormsCallback result_callback) {
-  const std::vector<AffiliationAndBrandingInformation>& information =
-      OnInjectAffiliationAndBrandingInformationCalled();
-  ASSERT_EQ(information.size(), forms.size());
-  for (size_t i = 0; i < forms.size(); ++i) {
-    forms[i]->affiliated_web_realm = information[i].affiliated_web_realm;
-    forms[i]->app_display_name = information[i].app_display_name;
-    forms[i]->app_icon_url = information[i].app_icon_url;
-  }
-  std::move(result_callback).Run(std::move(forms));
 }
 
 }  // namespace password_manager

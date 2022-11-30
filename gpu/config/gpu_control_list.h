@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -138,7 +139,7 @@ class GPU_EXPORT GpuControlList {
     const char* driver_vendor;
     Version driver_version;
 
-    bool Contains(const GPUInfo& gpu_info) const;
+    bool Contains(const std::vector<GPUInfo::GPUDevice>& gpus) const;
   };
 
   struct GPU_EXPORT GLStrings {
@@ -240,8 +241,7 @@ class GPU_EXPORT GpuControlList {
     // decision.  It should only be checked if Contains() returns true.
     bool NeedsMoreInfo(const GPUInfo& gpu_info, bool consider_exceptions) const;
 
-    void GetFeatureNames(base::ListValue* feature_names,
-                         const FeatureMap& feature_map) const;
+    base::Value::List GetFeatureNames(const FeatureMap& feature_map) const;
 
     // Logs a control list match for this rule in the list identified by
     // |control_list_logging_name|.
@@ -287,7 +287,7 @@ class GPU_EXPORT GpuControlList {
   // }
   // The use case is we compute the entries from GPU process and send them to
   // browser process, and call GetReasons() in browser process.
-  void GetReasons(base::ListValue* problem_list,
+  void GetReasons(base::Value::List& problem_list,
                   const std::string& tag,
                   const std::vector<uint32_t>& entries) const;
 
@@ -324,7 +324,7 @@ class GPU_EXPORT GpuControlList {
   static OsType GetOsType();
 
   size_t entry_count_;
-  const Entry* entries_;
+  raw_ptr<const Entry> entries_;
   // This records all the entries that are appliable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used
   // later by GetDecisionEntries().
@@ -343,7 +343,7 @@ class GPU_EXPORT GpuControlList {
 
 struct GPU_EXPORT GpuControlListData {
   size_t entry_count;
-  const GpuControlList::Entry* entries;
+  raw_ptr<const GpuControlList::Entry> entries;
 
   GpuControlListData() : entry_count(0u), entries(nullptr) {}
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -241,7 +241,7 @@ class MetricsPreferenceCheckbox extends PreferenceCheckbox {
     // The translation text has tags for following links, although those
     // tags are not the target of the translation (but those content text is
     // the translation target).
-    // So, meanwhile, we set the link everytime we update the text.
+    // So, meanwhile, we set the link every time we update the text.
     // TODO: fix the translation text, and main html.
     var learnMoreLink = label.querySelector(this.learnMoreLinkId_);
     if (learnMoreLink) {
@@ -335,15 +335,15 @@ class TermsOfServicePage {
         name: 'preProcess',
         matches: ['https://play.google.com/*'],
         js: {code: scriptInitTermsView},
-        run_at: 'document_start'
+        run_at: 'document_start',
       },
       {
         name: 'postProcess',
         matches: ['https://play.google.com/*'],
         css: {files: ['playstore.css']},
         js: {files: ['playstore.js']},
-        run_at: 'document_end'
-      }
+        run_at: 'document_end',
+      },
     ]);
 
     // webview is not allowed to open links in the new window. Hook these
@@ -357,14 +357,14 @@ class TermsOfServicePage {
     this.serviceContainer_ = container.querySelector('#service-container');
     this.locationService_ =
         container.querySelector('#location-service-preference');
-    this.paiService_ = container.querySelector('#pai-service-descirption');
+    this.paiService_ = container.querySelector('#pai-service-description');
     this.googleServiceConfirmation_ =
         container.querySelector('#google-service-confirmation');
     this.agreeButton_ = container.querySelector('#button-agree');
     this.nextButton_ = container.querySelector('#button-next');
 
     // On managed case, do not show TermsOfService section. Note that the
-    // checkbox for the prefereces are still visible.
+    // checkbox for the preferences are still visible.
     var visibility = isManaged ? 'hidden' : 'visible';
     container.querySelector('#terms-container').style.visibility = visibility;
 
@@ -422,8 +422,7 @@ class TermsOfServicePage {
   }
 
   /**
-   * Updates terms view height manually because webview is not automati
-   * cally
+   * Updates terms view height manually because webview is not automatically
    * resized in case parent div element gets resized.
    */
   updateTermsHeight_() {
@@ -502,7 +501,7 @@ class TermsOfServicePage {
       isBackupRestoreEnabled: this.backupRestoreCheckbox_.isChecked(),
       isBackupRestoreManaged: this.backupRestoreCheckbox_.isManaged(),
       isLocationServiceEnabled: this.locationServiceCheckbox_.isChecked(),
-      isLocationServiceManaged: this.locationServiceCheckbox_.isManaged()
+      isLocationServiceManaged: this.locationServiceCheckbox_.isManaged(),
     };
   }
 
@@ -561,7 +560,9 @@ class TermsOfServicePage {
     this.fastLocation_ = undefined;
     this.state_ = LoadState.ABORTED;
     showErrorPage(
-        appWindow.contentWindow.loadTimeData.getString('serverError'));
+        appWindow.contentWindow.loadTimeData.getString('serverError'),
+        true /*opt_shouldShowSendFeedback*/,
+        true /*opt_shouldShowNetworkTests*/);
   }
 
   /** Called when the terms-view's load request is completed. */
@@ -682,8 +683,8 @@ class ActiveDirectoryAuthPage {
         sendNativeMessage('onAuthSucceeded');
       } else {
         sendNativeMessage('onAuthFailed', {
-          errorMessage:
-              'Status code ' + details.statusCode + ' in DM server response.'
+          errorMessage: 'Status code ' + details.statusCode +
+              ' in SAML auth response from the AD FS server.',
         });
       }
     }
@@ -700,8 +701,9 @@ class ActiveDirectoryAuthPage {
       return;
     }
     // Retry triggers net::ERR_ABORTED, so ignore it.
-    if (details.error == 'net::ERR_ABORTED')
+    if (details.error == 'net::ERR_ABORTED') {
       return;
+    }
     // Stop processing further events on first error.
     this.process_events_ = false;
     sendNativeMessage(
@@ -756,10 +758,11 @@ function initialize(data, deviceId) {
 }
 
 // With UI request to change inner window size to outer window size and reduce
-// top spacing, adjust top margin to negtive window top bar height.
+// top spacing, adjust top margin to negative window top bar height.
 function adjustTopMargin() {
-  if (!appWindow)
+  if (!appWindow) {
     return;
+  }
 
   var decorationHeight =
       appWindow.outerBounds.height - appWindow.innerBounds.height;
@@ -803,7 +806,9 @@ function onNativeMessage(message) {
   } else if (message.action == 'showPage') {
     showPage(message.page, message.options);
   } else if (message.action == 'showErrorPage') {
-    showErrorPage(message.errorMessage, message.shouldShowSendFeedback);
+    showErrorPage(
+        message.errorMessage, message.shouldShowSendFeedback,
+        message.shouldShowNetworkTests);
   } else if (message.action == 'closeWindow') {
     closeWindow();
   } else if (message.action == 'setWindowBounds') {
@@ -824,7 +829,7 @@ function connectPort() {
  * Shows requested page and hide others. Show appWindow if it was hidden before.
  * 'none' hides all views.
  * @param {string} pageDivId id of divider of the page to show.
- * @param {dictionary=} options Addional options depending on pageDivId. For
+ * @param {dictionary=} options Additional options depending on pageDivId. For
  *     'active-directory-auth', this has to contain keys 'federationUrl' and
  *     'deviceManagementUrlPrefix' with corresponding values. See
  *     ActiveDirectoryAuthPage::setUrls for a description of those parameters.
@@ -869,8 +874,13 @@ function showPage(pageDivId, options) {
  * @param {string} errorMessage Localized error message text.
  * @param {?boolean} opt_shouldShowSendFeedback If set to true, show "Send
  *     feedback" button.
+ * @param {?boolean} opt_shouldShowNetworkTests If set to true, show "Check
+ *     network" button. If set to false, position the "Send feedback" button
+ *     after the flex div that separates the left and right side of the error
+ *     dialog.
  */
-function showErrorPage(errorMessage, opt_shouldShowSendFeedback) {
+function showErrorPage(
+    errorMessage, opt_shouldShowSendFeedback, opt_shouldShowNetworkTests) {
   if (!appWindow) {
     return;
   }
@@ -882,7 +892,14 @@ function showErrorPage(errorMessage, opt_shouldShowSendFeedback) {
   var sendFeedbackElement = doc.getElementById('button-send-feedback');
   sendFeedbackElement.hidden = !opt_shouldShowSendFeedback;
 
+  var networkTestsElement = doc.getElementById('button-run-network-tests');
+  networkTestsElement.hidden = !opt_shouldShowNetworkTests;
   showPage('error');
+
+  // If the error is not network-related, position send feedback after the flex
+  // div.
+  var feedbackSeparator = doc.getElementById('div-error-separating-buttons');
+  feedbackSeparator.style.order = opt_shouldShowNetworkTests ? 'initial' : -1;
 }
 
 /**
@@ -995,10 +1012,16 @@ chrome.app.runtime.onLaunched.addListener(function() {
       sendNativeMessage('onSendFeedbackClicked');
     };
 
+    var onRunNetworkTests = function() {
+      sendNativeMessage('onRunNetworkTestsClicked');
+    };
+
     var doc = appWindow.contentWindow.document;
     doc.getElementById('button-retry').addEventListener('click', onRetry);
     doc.getElementById('button-send-feedback')
         .addEventListener('click', onSendFeedback);
+    doc.getElementById('button-run-network-tests')
+        .addEventListener('click', onRunNetworkTests);
     doc.getElementById('overlay-close').addEventListener('click', hideOverlay);
     doc.getElementById('privacy-policy-link')
         .addEventListener('click', showPrivacyPolicyOverlay);
@@ -1016,7 +1039,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
       css: {files: ['overlay.css']},
-      run_at: 'document_end'
+      run_at: 'document_end',
     }]);
 
     focusManager = new appWindow.contentWindow.ArcOptInFocusManager();
@@ -1053,7 +1076,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     'resizable': false,
     'hidden': true,
     'frame': {type: 'chrome', color: '#ffffff'},
-    'outerBounds': {'width': OUTER_WIDTH, 'height': OUTER_HEIGHT}
+    'outerBounds': {'width': OUTER_WIDTH, 'height': OUTER_HEIGHT},
   };
   chrome.app.window.create('main.html', options, onWindowCreated);
 });

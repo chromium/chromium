@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,19 @@
 
 #include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/engine/mock_connection_manager.h"
+#include "components/sync/test/mock_connection_manager.h"
+#include "components/sync/test/model_type_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 
 using sync_pb::ClientToServerMessage;
 using sync_pb::CommitResponse_EntryResponse;
-using sync_pb::SyncEntity;
 
 namespace syncer {
 
@@ -70,7 +68,7 @@ class SyncerProtoUtilTest : public testing::Test {
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
-        /*poll_internal=*/base::TimeDelta::FromSeconds(1));
+        /*poll_internal=*/base::Seconds(1));
   }
 
   SyncCycleContext* context() { return context_.get(); }
@@ -84,7 +82,6 @@ class SyncerProtoUtilTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<SyncCycleContext> context_;
 };
 
@@ -151,6 +148,21 @@ TEST_F(SyncerProtoUtilTest, VerifyDisabledByAdmin) {
   EXPECT_EQ(STOP_SYNC_FOR_DISABLED_ACCOUNT, sync_protocol_error.action);
 }
 
+TEST_F(SyncerProtoUtilTest, VerifyUpgradeClient) {
+  ASSERT_TRUE(context()->birthday().empty());
+  sync_pb::ClientToServerResponse response;
+  response.set_error_code(sync_pb::SyncEnums::SUCCESS);
+  response.mutable_error()->set_error_type(sync_pb::SyncEnums::THROTTLED);
+  response.mutable_error()->set_action(sync_pb::SyncEnums::UPGRADE_CLIENT);
+  response.mutable_error()->set_error_description(
+      "Legacy client needs to be upgraded.");
+
+  SyncProtocolError sync_protocol_error =
+      CallGetProtocolErrorFromResponse(response, context());
+  EXPECT_EQ(THROTTLED, sync_protocol_error.error_type);
+  EXPECT_EQ(UPGRADE_CLIENT, sync_protocol_error.action);
+}
+
 TEST_F(SyncerProtoUtilTest, VerifyEncryptionObsolete) {
   sync_pb::ClientToServerResponse response;
   response.set_error_code(sync_pb::SyncEnums::ENCRYPTION_OBSOLETE);
@@ -168,6 +180,7 @@ class DummyConnectionManager : public ServerConnectionManager {
 
   HttpResponse PostBuffer(const std::string& buffer_in,
                           const std::string& access_token,
+                          bool allow_batching,
                           std::string* buffer_out) override {
     if (send_error_) {
       return HttpResponse::ForIoError();
@@ -195,18 +208,16 @@ TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
 
   base::HistogramTester histogram_tester;
   dcm.set_send_error(true);
-  EXPECT_FALSE(
-      SyncerProtoUtil::PostAndProcessHeaders(&dcm, nullptr, msg, &response));
-  EXPECT_EQ(1,
-            histogram_tester.GetBucketCount("Sync.PostedClientToServerMessage",
-                                            /*GET_UPDATES=*/2));
+  EXPECT_FALSE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
+  EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                   "Sync.PostedClientToServerMessage",
+                   /*sample=*/ClientToServerMessage::GET_UPDATES));
 
   dcm.set_send_error(false);
-  EXPECT_TRUE(
-      SyncerProtoUtil::PostAndProcessHeaders(&dcm, nullptr, msg, &response));
-  EXPECT_EQ(2,
-            histogram_tester.GetBucketCount("Sync.PostedClientToServerMessage",
-                                            /*GET_UPDATES=*/2));
+  EXPECT_TRUE(SyncerProtoUtil::PostAndProcessHeaders(&dcm, msg, &response));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Sync.PostedClientToServerMessage",
+                   /*sample=*/ClientToServerMessage::GET_UPDATES));
 }
 
 }  // namespace syncer

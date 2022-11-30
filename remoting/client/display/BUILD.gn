@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -85,10 +85,7 @@ if (is_win) {
       "gl_renderer_unittest.cc",
     ]
 
-    configs += [
-      "//remoting/build/config:version",
-      "//remoting/build/config:enable_webrtc_remoting_client",
-    ]
+    configs += [ "//remoting/build/config:version" ]
 
     deps = [
       ":display",

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
@@ -47,9 +44,6 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
-      custom_clock_for_testing_(nullptr),
-      max_size_(0),
-      current_size_(0),
       net_log_(net_log),
       memory_pressure_listener_(
           FROM_HERE,
@@ -82,9 +76,9 @@ bool MemBackendImpl::Init() {
   if (max_size_)
     return true;
 
-  int64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
+  uint64_t total_memory = base::SysInfo::AmountOfPhysicalMemory();
 
-  if (total_memory <= 0) {
+  if (total_memory == 0) {
     max_size_ = kDefaultInMemoryCacheSize;
     return true;
   }
@@ -92,7 +86,7 @@ bool MemBackendImpl::Init() {
   // We want to use up to 2% of the computer's memory, with a limit of 50 MB,
   // reached on system with more than 2.5 GB of RAM.
   total_memory = total_memory * 2 / 100;
-  if (total_memory > kDefaultInMemoryCacheSize * 5)
+  if (total_memory > static_cast<uint64_t>(kDefaultInMemoryCacheSize) * 5)
     max_size_ = kDefaultInMemoryCacheSize * 5;
   else
     max_size_ = static_cast<int32_t>(total_memory);
@@ -127,7 +121,7 @@ void MemBackendImpl::OnEntryUpdated(MemEntryImpl* entry) {
 }
 
 void MemBackendImpl::OnEntryDoomed(MemEntryImpl* entry) {
-  if (entry->type() == MemEntryImpl::PARENT_ENTRY)
+  if (entry->type() == MemEntryImpl::EntryType::kParent)
     entries_.erase(entry->key());
   // LinkedList<>::RemoveFromList() removes |entry| from |lru_list_|.
   entry->RemoveFromList();
@@ -314,35 +308,13 @@ class MemBackendImpl::MemIterator final : public Backend::Iterator {
 };
 
 std::unique_ptr<Backend::Iterator> MemBackendImpl::CreateIterator() {
-  return std::unique_ptr<Backend::Iterator>(
-      new MemIterator(weak_factory_.GetWeakPtr()));
+  return std::make_unique<MemIterator>(weak_factory_.GetWeakPtr());
 }
 
 void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
   auto it = entries_.find(key);
   if (it != entries_.end())
     it->second->UpdateStateOnUse(MemEntryImpl::ENTRY_WAS_NOT_MODIFIED);
-}
-
-size_t MemBackendImpl::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(parent_absolute_name + "/memory_backend");
-
-  // Entries in lru_list_ will be counted by EMU but not in entries_ since
-  // they're pointers.
-  size_t size = base::trace_event::EstimateMemoryUsage(lru_list_) +
-                base::trace_event::EstimateMemoryUsage(entries_);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes, size);
-  dump->AddScalar("mem_backend_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  current_size_);
-  dump->AddScalar("mem_backend_max_size",
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  max_size_);
-  return size;
 }
 
 void MemBackendImpl::EvictIfNeeded() {

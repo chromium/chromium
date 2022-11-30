@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Use the <code>chrome.loginState</code> API to read and monitor the login
 // state.
-[platforms=("chromeos"),
+[platforms=("chromeos", "lacros"),
  implemented_in="chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"]
 namespace loginState {
   enum ProfileType {
@@ -29,7 +29,10 @@ namespace loginState {
     IN_SESSION,
 
     // The user is in the lock screen.
-    IN_LOCK_SCREEN
+    IN_LOCK_SCREEN,
+
+    // The device is in RMA mode, finalizing repairs.
+    IN_RMA_SCREEN
   };
 
   callback ProfileTypeCallback = void (ProfileType result);
@@ -37,10 +40,11 @@ namespace loginState {
 
   interface Functions {
     // Gets the type of the profile the extension is in.
-    static void getProfileType(ProfileTypeCallback callback);
+    [supportsPromises] static void getProfileType(ProfileTypeCallback callback);
 
     // Gets the current session state.
-    static void getSessionState(SessionStateCallback callback);
+    [supportsPromises] static void getSessionState(
+        SessionStateCallback callback);
   };
 
   interface Events {

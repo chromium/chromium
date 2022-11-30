@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -68,9 +68,27 @@ class FormattingTest(unittest.TestCase):
         "dns": "dns.ct.example.com"
     }
     expected_loginfo = (
-        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description"}')
+        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n     "",'
+        '\n     nullptr, 0}')
     self.assertEqual(
-        make_ct_known_logs_list._to_loginfo_struct(log), expected_loginfo)
+        make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
+
+  def testToLogInfoStructWithCurrentOperator(self):
+    log = {
+        "key": "YWJj",
+        "description": "Test Description",
+        "url": "ct.example.com",
+        "dns": "dns.ct.example.com"
+    }
+    # This is added separately instead of included in the json since it is done
+    # separately in the generation flow too.
+    log["current_operator"] = "Test Operator"
+    expected_loginfo = (
+        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n'
+        '     "Test Operator",\n     nullptr, 0}')
+    self.assertEqual(
+        make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
+
 
   def testToLogInfoStructNoDNS(self):
     log = {
@@ -79,9 +97,10 @@ class FormattingTest(unittest.TestCase):
         "url": "ct.example.com",
     }
     expected_loginfo = (
-        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description"}')
+        '    {"\\x61\\x62\\x63",\n     3,\n     "Test Description",\n'
+        '     "",\n     nullptr, 0}')
     self.assertEqual(
-        make_ct_known_logs_list._to_loginfo_struct(log), expected_loginfo)
+        make_ct_known_logs_list._to_loginfo_struct(log, 1), expected_loginfo)
 
 
 class OperatorHandlingTest(unittest.TestCase):
@@ -187,11 +206,11 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
         '\\xde\\x5d\\xae\\x22\\x23\\xb0"\n     "\\x03\\x61\\xa3\\x96\\x17'
         '\\x7a\\x9c\\xb4\\x10\\xff\\x61\\xf2\\x00\\x15\\xad",\n    {"\\x61'
         '\\x62\\x63",\n     3,\n     "Test Description"'
-        '},\n     '
-        "base::TimeDelta::FromSeconds(1551083574)}")
+        ',\n     "",\n     nullptr, 0},\n     '
+        "base::Time::FromTimeT(1551083574)}")
 
     self.assertEqual(
-        make_ct_known_logs_list._to_disqualified_loginfo_struct(log),
+        make_ct_known_logs_list._to_disqualified_loginfo_struct(log, 1),
         expected_disqualified_log_info)
 
   def testSortingAndFilteringDisqualifiedLogs(self):
@@ -240,6 +259,44 @@ class DisqualifiedLogsHandlingTest(unittest.TestCase):
     self.assertEqual(b64e("a"), disqualified_logs[0]["log_id"])
     self.assertEqual(b64e("c"), disqualified_logs[1]["log_id"])
     self.assertEqual(b64e("d"), disqualified_logs[2]["log_id"])
+
+class LogListTimestampGenerationTest(unittest.TestCase):
+
+  def testGenerateLogListTimestamp(self):
+    iso_timestamp = "2021-08-09T00:00:00Z"
+    expected_generated_timestamp = (
+        '// The time at which this log list was last updated.\n'
+        'const base::Time kLogListTimestamp = '
+        'base::Time::FromTimeT(1628467200);\n\n')
+
+    self.assertEqual(
+        make_ct_known_logs_list._generate_log_list_timestamp(iso_timestamp),
+        expected_generated_timestamp)
+
+
+class LogListPreviousOperatorsTest(unittest.TestCase):
+  def testPreviousOperatorsStruct(self):
+    log = {
+        "log_id": "ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0=",
+        "key": "YWJj",
+        "description": "Test Description",
+        "url": "ct.example.com",
+        "previous_operators": [
+          {"name": "test123",
+           "end_time": "2021-01-01T00:00:00Z"
+          },
+          {"name": "test123456",
+           "end_time": "2018-01-01T00:00:00Z"
+          }
+         ]
+    }
+    expected_previous_operator_info = (
+        'const PreviousOperatorEntry kPreviousOperators1[] = {\n'
+        '        {"test123456", base::Time::FromTimeT(1514764800)},\n'
+        '        {"test123", base::Time::FromTimeT(1609459200)},};\n')
+    self.assertEqual(
+        make_ct_known_logs_list._to_previous_operators_struct(log, 1),
+        expected_previous_operator_info)
 
 
 if __name__ == "__main__":

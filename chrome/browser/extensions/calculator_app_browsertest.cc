@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ IN_PROC_BROWSER_TEST_F(CalculatorBrowserTest, Model) {
   test_file =
       test_file.AppendASCII("extensions/calculator_app/tests/automatic.html");
 
-  ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           net::FilePathToFileURL(test_file)));
 
   bool success;
   bool executed = content::ExecuteScriptAndExtractBool(

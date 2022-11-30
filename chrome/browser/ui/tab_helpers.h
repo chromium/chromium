@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 namespace android {
 class TabWebContentsDelegateAndroid;
@@ -25,7 +25,7 @@ namespace chrome {
 class BrowserTabStripModelDelegate;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -39,7 +39,7 @@ class ChromeNoStatePrefetchContentsDelegate;
 // (or the equivalent on Android). The TabHelpers class allows specific classes
 // to attach the set of tab helpers that is used for tab contents.
 //
-// https://chromium.googlesource.com/chromium/src/+/master/docs/tab_helpers.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 //
 // TODO(avi): This list is rather large, and for most callers it's due to the
 // fact that they need tab helpers attached early to deal with arbitrary
@@ -48,7 +48,7 @@ class ChromeNoStatePrefetchContentsDelegate;
 // only Browser and BrowserTabStripModelDelegate.)
 class TabHelpers {
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // ThinWebView is used to host WebContents on non-tab UIs in Android. Most
   // clients of ThinWebView will need a major subset of the tab helpers.
   friend class thin_webview::android::ChromeThinWebViewInitializer;
@@ -58,7 +58,7 @@ class TabHelpers {
 #else
   friend class Browser;
   friend class chrome::BrowserTabStripModelDelegate;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // chrome::Navigate creates WebContents that are destined for the tab strip,
   // and that might have WebUI that immediately calls back into random tab

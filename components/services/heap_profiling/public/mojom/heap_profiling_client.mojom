@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,6 @@ enum StackMode {
 
   // Instruction addresses from unwinding the stack.
   NATIVE_WITHOUT_THREAD_NAMES,
-
-  // Uses trace events as identifiers.
-  PSEUDO,
-
-  // Uses a combination of trace events and selective native addresses.
-  MIXED
 };
 
 // Type of the allocator responsible for the allocation sample.
@@ -83,5 +77,10 @@ interface ProfilingClient {
   // There is currently no mechanism to stop recording allocations.
   StartProfiling(ProfilingParams params) => ();
 
+  // Captures and returns a snapshot of the heap profile of the current process.
   RetrieveHeapProfile() => (HeapProfile profile);
+
+  // Captures a snapshot of the heap profile and adds to Perfetto traces in
+  // proto format.
+  AddHeapProfileToTrace() => (bool success);
 };

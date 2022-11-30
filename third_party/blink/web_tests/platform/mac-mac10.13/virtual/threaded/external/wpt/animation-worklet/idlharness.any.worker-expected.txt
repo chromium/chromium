@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: valid exposure set
+PASS Partial namespace CSS: member names are unique
+PASS AnimationWorkletGlobalScope interface: existence and properties of interface object
+PASS WorkletAnimationEffect interface: existence and properties of interface object
+PASS WorkletAnimation interface: existence and properties of interface object
+FAIL WorkletAnimation must be primary interface of new WorkletAnimation("name") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+FAIL Stringification of new WorkletAnimation("name") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+FAIL WorkletAnimation interface: new WorkletAnimation("name") must not have property "undefined" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+FAIL WorkletAnimation interface: new WorkletAnimation("name") must not have property "animatorName" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: WorkletAnimation is not defined"
+PASS WorkletGroupEffect interface: existence and properties of interface object
+FAIL CSS namespace: operation escape(CSSOMString) Cannot read property 'hasOwnProperty' of undefined
+FAIL CSS namespace: attribute animationWorklet Cannot read property 'hasOwnProperty' of undefined
+Harness: the test ran to completion.
+

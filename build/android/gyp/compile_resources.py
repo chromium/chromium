@@ -1,6 +1,6 @@
-#!/usr/bin/env python
-# encoding: utf-8
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+#
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,13 +19,12 @@ import filecmp
 import hashlib
 import logging
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import textwrap
-import zipfile
 from xml.etree import ElementTree
 
 from util import build_utils
@@ -53,7 +52,26 @@ def _ParseArgs(args):
   Returns:
     An options object as from argparse.ArgumentParser.parse_args()
   """
-  parser, input_opts, output_opts = resource_utils.ResourceArgsParser()
+  parser = argparse.ArgumentParser(description=__doc__)
+
+  input_opts = parser.add_argument_group('Input options')
+  output_opts = parser.add_argument_group('Output options')
+
+  input_opts.add_argument('--include-resources',
+                          action='append',
+                          required=True,
+                          help='Paths to arsc resource files used to link '
+                          'against. Can be specified multiple times.')
+
+  input_opts.add_argument(
+      '--dependencies-res-zips',
+      default=[],
+      help='Resources zip archives from dependents. Required to '
+      'resolve @type/foo references into dependent libraries.')
+
+  input_opts.add_argument(
+      '--extra-res-packages',
+      help='Additional package names to generate R.java files for.')
 
   input_opts.add_argument(
       '--aapt2-path', required=True, help='Path to the Android aapt2 tool.')
@@ -121,11 +139,6 @@ def _ParseArgs(args):
       'must be identical.')
 
   input_opts.add_argument(
-      '--support-zh-hk',
-      action='store_true',
-      help='Use zh-rTW resources for zh-rHK.')
-
-  input_opts.add_argument(
       '--debuggable',
       action='store_true',
       help='Whether to add android:debuggable="true".')
@@ -182,55 +195,6 @@ def _ParseArgs(args):
       '--no-xml-namespaces',
       action='store_true',
       help='Whether to strip xml namespaces from processed xml resources.')
-  input_opts.add_argument(
-      '--short-resource-paths',
-      action='store_true',
-      help='Whether to shorten resource paths inside the apk or module.')
-  input_opts.add_argument(
-      '--strip-resource-names',
-      action='store_true',
-      help='Whether to strip resource names from the resource table of the apk '
-      'or module.')
-
-  output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
-  output_opts.add_argument('--proto-path', help='Apk output for proto format.')
-  group = input_opts.add_mutually_exclusive_group()
-  group.add_argument(
-      '--optimized-arsc-path',
-      help='Output for `aapt2 optimize` for arsc format (enables the step).')
-  group.add_argument(
-      '--optimized-proto-path',
-      help='Output for `aapt2 optimize` for proto format (enables the step).')
-  input_opts.add_argument(
-      '--resources-config-paths',
-      default='[]',
-      help='GN list of paths to aapt2 resources config files.')
-
-  output_opts.add_argument(
-      '--info-path', help='Path to output info file for the partial apk.')
-
-  output_opts.add_argument(
-      '--srcjar-out',
-      required=True,
-      help='Path to srcjar to contain generated R.java.')
-
-  output_opts.add_argument('--r-text-out',
-                           help='Path to store the generated R.txt file.')
-
-  output_opts.add_argument(
-      '--proguard-file', help='Path to proguard.txt generated file.')
-
-  output_opts.add_argument(
-      '--proguard-file-main-dex',
-      help='Path to proguard.txt generated file for main dex.')
-
-  output_opts.add_argument(
-      '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.')
-
-  output_opts.add_argument(
-      '--resources-path-map-out-path',
-      help='Path to file produced by aapt2 that maps original resource paths '
-      'to shortened resource paths inside the apk or module.')
 
   input_opts.add_argument(
       '--is-bundle-module',
@@ -246,11 +210,38 @@ def _ParseArgs(args):
       help='Path to AndroidManifest.xml which should be merged into base '
       'manifest when performing verification.')
 
+  build_utils.AddDepfileOption(output_opts)
+  output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
+  output_opts.add_argument('--proto-path', help='Apk output for proto format.')
+
+  output_opts.add_argument(
+      '--info-path', help='Path to output info file for the partial apk.')
+
+  output_opts.add_argument(
+      '--srcjar-out',
+      help='Path to srcjar to contain generated R.java.')
+
+  output_opts.add_argument('--r-text-out',
+                           help='Path to store the generated R.txt file.')
+
+  output_opts.add_argument(
+      '--proguard-file', help='Path to proguard.txt generated file.')
+
+  output_opts.add_argument(
+      '--proguard-file-main-dex',
+      help='Path to proguard.txt generated file for main dex.')
+
+  output_opts.add_argument(
+      '--emit-ids-out', help='Path to file produced by aapt2 --emit-ids.')
+
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
-  resource_utils.HandleCommonOptions(options)
-
+  options.include_resources = build_utils.ParseGnList(options.include_resources)
+  options.dependencies_res_zips = build_utils.ParseGnList(
+      options.dependencies_res_zips)
+  options.extra_res_packages = build_utils.ParseGnList(
+      options.extra_res_packages)
   options.locale_allowlist = build_utils.ParseGnList(options.locale_allowlist)
   options.shared_resources_allowlist_locales = build_utils.ParseGnList(
       options.shared_resources_allowlist_locales)
@@ -262,19 +253,9 @@ def _ParseArgs(args):
       options.values_filter_rules)
   options.extra_main_r_text_files = build_utils.ParseGnList(
       options.extra_main_r_text_files)
-  options.resources_config_paths = build_utils.ParseGnList(
-      options.resources_config_paths)
-
-  if options.optimized_proto_path and not options.proto_path:
-    # We could write to a temp file, but it's simpler to require it.
-    parser.error('--optimized-proto-path requires --proto-path')
 
   if not options.arsc_path and not options.proto_path:
     parser.error('One of --arsc-path or --proto-path is required.')
-
-  if options.resources_path_map_out_path and not options.short_resource_paths:
-    parser.error(
-        '--resources-path-map-out-path requires --short-resource-paths')
 
   if options.package_id and options.shared_resources:
     parser.error('--package-id and --shared-resources are mutually exclusive')
@@ -286,20 +267,6 @@ def _IterFiles(root_dir):
   for root, _, files in os.walk(root_dir):
     for f in files:
       yield os.path.join(root, f)
-
-
-def _DuplicateZhResources(resource_dirs, path_info):
-  """Duplicate Taiwanese resources into Hong-Kong specific directory."""
-  for resource_dir in resource_dirs:
-    # We use zh-TW resources for zh-HK (if we have zh-TW resources).
-    for path in _IterFiles(resource_dir):
-      if 'zh-rTW' in path:
-        hk_path = path.replace('zh-rTW', 'zh-rHK')
-        build_utils.MakeDirectory(os.path.dirname(hk_path))
-        shutil.copyfile(path, hk_path)
-        path_info.RegisterRename(
-            os.path.relpath(path, resource_dir),
-            os.path.relpath(hk_path, resource_dir))
 
 
 def _RenameLocaleResourceDirs(resource_dirs, path_info):
@@ -317,22 +284,19 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
     * Modern ISO 639-1 codes will be renamed to their obsolete variant
       for Indonesian, Hebrew and Yiddish (e.g. 'values-in/ -> values-id/).
 
-    * Norwegian macrolanguage strings will be renamed to Bokmål (main
+    * Norwegian macrolanguage strings will be renamed to Bokmal (main
       Norway language). See http://crbug.com/920960. In practice this
       means that 'values-no/ -> values-nb/' unless 'values-nb/' already
       exists.
 
     * BCP 47 langauge tags will be renamed to an equivalent ISO 639-1
       locale qualifier if possible (e.g. 'values-b+en+US/ -> values-en-rUS').
-      Though this is not necessary at the moment, because no third-party
-      package that Chromium links against uses these for the current list of
-      supported locales, this may change when the list is extended in the
-      future).
 
   Args:
     resource_dirs: list of top-level resource directories.
   """
   for resource_dir in resource_dirs:
+    ignore_dirs = {}
     for path in _IterFiles(resource_dir):
       locale = resource_utils.FindLocaleInStringResourceFilePath(path)
       if not locale:
@@ -346,10 +310,24 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
         if path == path2:
           raise Exception('Could not substitute locale %s for %s in %s' %
                           (locale, locale2, path))
-        if os.path.exists(path2):
-          # This happens sometimes, e.g. some libraries provide both
-          # values-nb/ and values-no/ with the same content.
+
+        # Ignore rather than rename when the destination resources config
+        # already exists.
+        # e.g. some libraries provide both values-nb/ and values-no/.
+        # e.g. material design provides:
+        # * res/values-rUS/values-rUS.xml
+        # * res/values-b+es+419/values-b+es+419.xml
+        config_dir = os.path.dirname(path2)
+        already_has_renamed_config = ignore_dirs.get(config_dir)
+        if already_has_renamed_config is None:
+          # Cache the result of the first time the directory is encountered
+          # since subsequent encounters will find the directory already exists
+          # (due to the rename).
+          already_has_renamed_config = os.path.exists(config_dir)
+          ignore_dirs[config_dir] = already_has_renamed_config
+        if already_has_renamed_config:
           continue
+
         build_utils.MakeDirectory(os.path.dirname(path2))
         shutil.move(path, path2)
         path_info.RegisterRename(
@@ -357,13 +335,11 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
             os.path.relpath(path2, resource_dir))
 
 
-def _ToAndroidLocales(locale_allowlist, support_zh_hk):
+def _ToAndroidLocales(locale_allowlist):
   """Converts the list of Chrome locales to Android config locale qualifiers.
 
   Args:
     locale_allowlist: A list of Chromium locale names.
-    support_zh_hk: True if we need to support zh-HK by duplicating
-      the zh-TW strings.
   Returns:
     A set of matching Android config locale qualifier names.
   """
@@ -377,14 +353,7 @@ def _ToAndroidLocales(locale_allowlist, support_zh_hk):
     language = locale.split('-')[0]
     ret.add(language)
 
-  # We don't actually support zh-HK in Chrome on Android, but we mimic the
-  # native side behavior where we use zh-TW resources when the locale is set to
-  # zh-HK. See https://crbug.com/780847.
-  if support_zh_hk:
-    assert not any('HK' in l for l in locale_allowlist), (
-        'Remove special logic if zh-HK is now supported (crbug.com/780847).')
-    ret.add('zh-rHK')
-  return set(ret)
+  return ret
 
 
 def _MoveImagesToNonMdpiFolders(res_root, path_info):
@@ -432,6 +401,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     Tuple of:
      * Manifest path within |temp_dir|.
      * Original package_name.
+     * Manifest package name.
   """
   def maybe_extract_version(j):
     try:
@@ -439,16 +409,22 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     except build_utils.CalledProcessError:
       return None
 
-  android_sdk_jars = [j for j in options.include_resources
-                      if os.path.basename(j) in ('android.jar',
-                                                 'android_system.jar')]
+  def is_sdk_jar(jar_name):
+    if jar_name in ('android.jar', 'android_system.jar'):
+      return True
+    # Robolectric jar looks a bit different.
+    return 'android-all' in jar_name and 'robolectric' in jar_name
+
+  android_sdk_jars = [
+      j for j in options.include_resources if is_sdk_jar(os.path.basename(j))
+  ]
   extract_all = [maybe_extract_version(j) for j in android_sdk_jars]
   successful_extractions = [x for x in extract_all if x]
   if len(successful_extractions) == 0:
     raise Exception(
         'Unable to find android SDK jar among candidates: %s'
             % ', '.join(android_sdk_jars))
-  elif len(successful_extractions) > 1:
+  if len(successful_extractions) > 1:
     raise Exception(
         'Found multiple android SDK jars among candidates: %s'
             % ', '.join(android_sdk_jars))
@@ -483,8 +459,10 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
   manifest_node.set('platformBuildVersionName', version_name)
 
   orig_package = manifest_node.get('package')
+  fixed_package = orig_package
   if options.arsc_package_name:
     manifest_node.set('package', options.arsc_package_name)
+    fixed_package = options.arsc_package_name
 
   if options.debuggable:
     app_node.set('{%s}%s' % (manifest_utils.ANDROID_NAMESPACE, 'debuggable'),
@@ -503,7 +481,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
       min_sdk_node.set(dist_value, options.min_sdk_version)
 
   manifest_utils.SaveManifest(doc, debug_manifest_path)
-  return debug_manifest_path, orig_package
+  return debug_manifest_path, orig_package, fixed_package
 
 
 def _CreateKeepPredicate(resource_exclusion_regex,
@@ -710,8 +688,7 @@ def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
   # list provided by --locale-allowlist.
   wanted_locales = all_locales
   if options.locale_allowlist:
-    wanted_locales = _ToAndroidLocales(options.locale_allowlist,
-                                       options.support_zh_hk)
+    wanted_locales = _ToAndroidLocales(options.locale_allowlist)
 
   # Set B: shared resources locales, which is either set A
   # or the list provided by --shared-resources-allowlist-locales
@@ -723,7 +700,7 @@ def _RemoveUnwantedLocalizedStrings(dep_subdirs, options):
             options.shared_resources_allowlist))
 
     shared_resources_locales = _ToAndroidLocales(
-        options.shared_resources_allowlist_locales, options.support_zh_hk)
+        options.shared_resources_allowlist_locales)
 
   # Remove any file that belongs to a locale not covered by
   # either A or B.
@@ -783,8 +760,6 @@ def _PackageApk(options, build):
 
   logging.debug('Applying locale transformations')
   path_info = resource_utils.ResourceInfoFile()
-  if options.support_zh_hk:
-    _DuplicateZhResources(dep_subdirs, path_info)
   _RenameLocaleResourceDirs(dep_subdirs, path_info)
 
   logging.debug('Applying file-based exclusions')
@@ -821,6 +796,8 @@ def _PackageApk(options, build):
       options.min_sdk_version,
       '--target-sdk-version',
       options.target_sdk_version,
+      '--output-text-symbols',
+      build.r_txt_path,
   ]
 
   for j in options.include_resources:
@@ -836,10 +813,6 @@ def _PackageApk(options, build):
     link_command += ['--proguard-main-dex', build.proguard_main_dex_path]
   if options.emit_ids_out:
     link_command += ['--emit-ids', build.emit_ids_path]
-  if options.r_text_in:
-    shutil.copyfile(options.r_text_in, build.r_txt_path)
-  else:
-    link_command += ['--output-text-symbols', build.r_txt_path]
 
   # Note: only one of --proto-format, --shared-lib or --app-as-shared-lib
   #       can be used with recent versions of aapt2.
@@ -852,12 +825,12 @@ def _PackageApk(options, build):
   if options.package_id:
     link_command += [
         '--package-id',
-        hex(options.package_id),
+        '0x%02x' % options.package_id,
         '--allow-reserved-package-id',
     ]
 
-  fixed_manifest, desired_manifest_package_name = _FixManifest(
-      options, build.temp_dir)
+  fixed_manifest, desired_manifest_package_name, fixed_manifest_package = (
+      _FixManifest(options, build.temp_dir))
   if options.rename_manifest_package:
     desired_manifest_package_name = options.rename_manifest_package
 
@@ -866,32 +839,41 @@ def _PackageApk(options, build):
       desired_manifest_package_name
   ]
 
-  # Creates a .zip with AndroidManifest.xml, resources.arsc, res/*
-  # Also creates R.txt
-  if options.use_resource_ids_path:
-    _CreateStableIdsFile(options.use_resource_ids_path, build.stable_ids_path,
-                         desired_manifest_package_name)
-    link_command += ['--stable-ids', build.stable_ids_path]
+  if options.package_id is not None:
+    package_id = options.package_id
+  elif options.shared_resources:
+    package_id = 0
+  else:
+    package_id = 0x7f
+  _CreateStableIdsFile(options.use_resource_ids_path, build.stable_ids_path,
+                       fixed_manifest_package, package_id)
+  link_command += ['--stable-ids', build.stable_ids_path]
 
   link_command += partials
 
   # We always create a binary arsc file first, then convert to proto, so flags
   # such as --shared-lib can be supported.
-  arsc_path = build.arsc_path
-  if arsc_path is None:
-    _, arsc_path = tempfile.mkstmp()
   link_command += ['-o', build.arsc_path]
 
   logging.debug('Starting: aapt2 link')
   link_proc = subprocess.Popen(link_command)
 
   # Create .res.info file in parallel.
-  _CreateResourceInfoFile(path_info, build.info_path,
-                          options.dependencies_res_zips)
-  logging.debug('Created .res.info file')
+  if options.info_path:
+    logging.debug('Creating .res.info file')
+    _CreateResourceInfoFile(path_info, build.info_path,
+                            options.dependencies_res_zips)
 
   exit_code = link_proc.wait()
+  assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
   logging.debug('Finished: aapt2 link')
+
+  if options.shared_resources:
+    logging.debug('Resolving styleables in R.txt')
+    # Need to resolve references because unused resource removal tool does not
+    # support references in R.txt files.
+    resource_utils.ResolveStyleableReferences(build.r_txt_path)
+
   if exit_code:
     raise subprocess.CalledProcessError(exit_code, link_command)
 
@@ -902,7 +884,7 @@ def _PackageApk(options, build):
     # can call it in the case where the APK is being loaded as a library.
     with open(build.proguard_path, 'a') as proguard_file:
       keep_rule = '''
-                  -keep class {package}.R {{
+                  -keep,allowoptimization class {package}.R {{
                     public static void onResourcesLoaded(int);
                   }}
                   '''.format(package=desired_manifest_package_name)
@@ -927,120 +909,38 @@ def _PackageApk(options, build):
         build.arsc_path, build.proto_path
     ])
 
-  if build.arsc_path is None:
-    os.remove(arsc_path)
-
-  if options.optimized_proto_path:
-    _OptimizeApk(build.optimized_proto_path, options, build.temp_dir,
-                 build.proto_path, build.r_txt_path)
-  elif options.optimized_arsc_path:
-    _OptimizeApk(build.optimized_arsc_path, options, build.temp_dir,
-                 build.arsc_path, build.r_txt_path)
+  # Sanity check that the created resources have the expected package ID.
+  logging.debug('Performing sanity check')
+  _, actual_package_id = resource_utils.ExtractArscPackage(
+      options.aapt2_path,
+      build.arsc_path if options.arsc_path else build.proto_path)
+  # When there are no resources, ExtractArscPackage returns (None, None), in
+  # this case there is no need to check for matching package ID.
+  if actual_package_id is not None and actual_package_id != package_id:
+    raise Exception('Invalid package ID 0x%x (expected 0x%x)' %
+                    (actual_package_id, package_id))
 
   return desired_manifest_package_name
 
 
-def _CombineResourceConfigs(resources_config_paths, out_config_path):
-  with open(out_config_path, 'w') as out_config:
-    for config_path in resources_config_paths:
-      with open(config_path) as config:
-        out_config.write(config.read())
-        out_config.write('\n')
-
-
-def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
-  """Optimize intermediate .ap_ file with aapt2.
-
-  Args:
-    output: Path to write to.
-    options: The command-line options.
-    temp_dir: A temporary directory.
-    unoptimized_path: path of the apk to optimize.
-    r_txt_path: path to the R.txt file of the unoptimized apk.
-  """
-  optimize_command = [
-      options.aapt2_path,
-      'optimize',
-      unoptimized_path,
-      '-o',
-      output,
-  ]
-
-  # Optimize the resources.arsc file by obfuscating resource names and only
-  # allow usage via R.java constant.
-  if options.strip_resource_names:
-    no_collapse_resources = _ExtractNonCollapsableResources(r_txt_path)
-    gen_config_path = os.path.join(temp_dir, 'aapt2.config')
-    if options.resources_config_paths:
-      _CombineResourceConfigs(options.resources_config_paths, gen_config_path)
-    with open(gen_config_path, 'a') as config:
-      for resource in no_collapse_resources:
-        config.write('{}#no_collapse\n'.format(resource))
-
-    optimize_command += [
-        '--collapse-resource-names',
-        '--resources-config-path',
-        gen_config_path,
-    ]
-
-  if options.short_resource_paths:
-    optimize_command += ['--shorten-resource-paths']
-  if options.resources_path_map_out_path:
-    optimize_command += [
-        '--resource-path-shortening-map', options.resources_path_map_out_path
-    ]
-
-  logging.debug('Running aapt2 optimize')
-  build_utils.CheckOutput(
-      optimize_command, print_stdout=False, print_stderr=False)
-
-
-def _ExtractNonCollapsableResources(rtxt_path):
-  """Extract resources that should not be collapsed from the R.txt file
-
-  Resources of type ID are references to UI elements/views. They are used by
-  UI automation testing frameworks. They are kept in so that they don't break
-  tests, even though they may not actually be used during runtime. See
-  https://crbug.com/900993
-  App icons (aka mipmaps) are sometimes referenced by other apps by name so must
-  be keps as well. See https://b/161564466
-
-  Args:
-    rtxt_path: Path to R.txt file with all the resources
-  Returns:
-    List of resources in the form of <resource_type>/<resource_name>
-  """
-  resources = []
-  _NO_COLLAPSE_TYPES = ['id', 'mipmap']
-  with open(rtxt_path) as rtxt:
-    for line in rtxt:
-      for resource_type in _NO_COLLAPSE_TYPES:
-        if ' {} '.format(resource_type) in line:
-          resource_name = line.split()[2]
-          resources.append('{}/{}'.format(resource_type, resource_name))
-  return resources
-
-
-@contextlib.contextmanager
-def _CreateStableIdsFile(in_path, out_path, package_name):
+def _CreateStableIdsFile(in_path, out_path, package_name, package_id):
   """Transforms a file generated by --emit-ids from another package.
 
   --stable-ids is generally meant to be used by different versions of the same
   package. To make it work for other packages, we need to transform the package
   name references to match the package that resources are being generated for.
-
-  Note: This will fail if the package ID of the resources in
-  |options.use_resource_ids_path| does not match the package ID of the
-  resources being linked.
   """
-  with open(in_path) as stable_ids_file:
-    with open(out_path, 'w') as output_ids_file:
-      output_stable_ids = re.sub(
-          r'^.*?:',
-          package_name + ':',
-          stable_ids_file.read(),
-          flags=re.MULTILINE)
-      output_ids_file.write(output_stable_ids)
+  if in_path:
+    data = pathlib.Path(in_path).read_text()
+  else:
+    # Force IDs to use 0x01 for the type byte in order to ensure they are
+    # different from IDs generated by other apps. https://crbug.com/1293336
+    data = 'pkg:id/fake_resource_id = 0x7f010000\n'
+  # Replace "pkg:" with correct package name.
+  data = re.sub(r'^.*?:', package_name + ':', data, flags=re.MULTILINE)
+  # Replace "0x7f" with correct package id.
+  data = re.sub(r'0x..', '0x%02x' % package_id, data)
+  pathlib.Path(out_path).write_text(data)
 
 
 def _WriteOutputs(options, build):
@@ -1049,8 +949,6 @@ def _WriteOutputs(options, build):
       (options.r_text_out, build.r_txt_path),
       (options.arsc_path, build.arsc_path),
       (options.proto_path, build.proto_path),
-      (options.optimized_arsc_path, build.optimized_arsc_path),
-      (options.optimized_proto_path, build.optimized_proto_path),
       (options.proguard_file, build.proguard_path),
       (options.proguard_file_main_dex, build.proguard_main_dex_path),
       (options.emit_ids_out, build.emit_ids_path),
@@ -1065,7 +963,7 @@ def _WriteOutputs(options, build):
 
 def _CreateNormalizedManifestForVerification(options):
   with build_utils.TempDir() as tempdir:
-    fixed_manifest, _ = _FixManifest(
+    fixed_manifest, _, _ = _FixManifest(
         options, tempdir, extra_manifest=options.extra_verification_manifest)
     with open(fixed_manifest) as f:
       return manifest_utils.NormalizeManifest(f.read())
@@ -1142,33 +1040,20 @@ def main(args):
       # will be created in the base module.
       apk_package_name = None
 
-    logging.debug('Creating R.srcjar')
-    resource_utils.CreateRJavaFiles(
-        build.srcjar_dir, apk_package_name, build.r_txt_path,
-        options.extra_res_packages, rjava_build_options, options.srcjar_out,
-        custom_root_package_name, grandparent_custom_package_name,
-        options.extra_main_r_text_files)
-    build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
-
-    # Sanity check that the created resources have the expected package ID.
-    logging.debug('Performing sanity check')
-    if options.package_id:
-      expected_id = options.package_id
-    elif options.shared_resources:
-      expected_id = 0
-    else:
-      expected_id = 127  # == '0x7f'.
-    _, package_id = resource_utils.ExtractArscPackage(
-        options.aapt2_path,
-        build.arsc_path if options.arsc_path else build.proto_path)
-    if package_id != expected_id:
-      raise Exception(
-          'Invalid package ID 0x%x (expected 0x%x)' % (package_id, expected_id))
+    if options.srcjar_out:
+      logging.debug('Creating R.srcjar')
+      resource_utils.CreateRJavaFiles(
+          build.srcjar_dir, apk_package_name, build.r_txt_path,
+          options.extra_res_packages, rjava_build_options, options.srcjar_out,
+          custom_root_package_name, grandparent_custom_package_name,
+          options.extra_main_r_text_files)
+      build_utils.ZipDir(build.srcjar_path, build.srcjar_dir)
 
     logging.debug('Copying outputs')
     _WriteOutputs(options, build)
 
   if options.depfile:
+    assert options.srcjar_out, 'Update first output below and remove assert.'
     depfile_deps = (options.dependencies_res_zips +
                     options.dependencies_res_zip_overlays +
                     options.extra_main_r_text_files + options.include_resources)

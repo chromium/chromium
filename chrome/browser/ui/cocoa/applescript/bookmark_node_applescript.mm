@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_metrics.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -27,7 +28,7 @@ using bookmarks::BookmarkNode;
 
 @synthesize tempTitle = _tempTitle;
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     BookmarkModel* model = [self bookmarkModel];
     if (!model) {
@@ -48,8 +49,7 @@ using bookmarks::BookmarkNode;
   [super dealloc];
 }
 
-
-- (id)initWithBookmarkNode:(const BookmarkNode*)aBookmarkNode {
+- (instancetype)initWithBookmarkNode:(const BookmarkNode*)aBookmarkNode {
   if (!aBookmarkNode) {
     [self release];
     return nil;
@@ -104,14 +104,15 @@ using bookmarks::BookmarkNode;
   if (!model)
     return;
 
-  model->SetTitle(_bookmarkNode, base::SysNSStringToUTF16(aTitle));
+  model->SetTitle(_bookmarkNode, base::SysNSStringToUTF16(aTitle),
+                  bookmarks::metrics::BookmarkEditSource::kOther);
 }
 
 - (NSNumber*)index {
   const BookmarkNode* parent = _bookmarkNode->parent();
-  int index = parent->GetIndexOf(_bookmarkNode);
+  size_t index = parent->GetIndexOf(_bookmarkNode).value();
   // NOTE: AppleScript is 1-Based.
-  return [NSNumber numberWithInt:index+1];
+  return @(index + 1);
 }
 
 - (BookmarkModel*)bookmarkModel {

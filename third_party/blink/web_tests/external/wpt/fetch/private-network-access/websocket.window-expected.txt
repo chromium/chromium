@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS local to local: websocket success.
+FAIL private to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
+FAIL public to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
+FAIL treat-as-public to local: websocket failure. assert_equals: expected "close: code 1006" but got "open"
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,6 +23,7 @@
 #include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
 #include "media/base/android/media_jni_headers/MediaCodecBridge_jni.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 
@@ -49,6 +51,8 @@ enum {
   kBufferFlagSyncFrame = 1,    // BUFFER_FLAG_SYNC_FRAME
   kBufferFlagEndOfStream = 4,  // BUFFER_FLAG_END_OF_STREAM
   kConfigureFlagEncode = 1,    // CONFIGURE_FLAG_ENCODE
+  kBitrateModeCBR = 2,         // BITRATE_MODE_CBR
+  kBitrateModeVBR = 1,         // BITRATE_MODE_VBR
 };
 
 using CodecSpecificData = std::vector<uint8_t>;
@@ -71,11 +75,11 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
   const size_t extra_data_size = config.extra_data().size();
 
   *output_frame_has_adts_header = false;
-  if (extra_data_size == 0 && config.codec() != kCodecOpus)
+  if (extra_data_size == 0 && config.codec() != AudioCodec::kOpus)
     return true;
 
   switch (config.codec()) {
-    case kCodecVorbis: {
+    case AudioCodec::kVorbis: {
       if (extra_data[0] != 2) {
         LOG(ERROR) << "Invalid number of vorbis headers before the codec "
                    << "header: " << extra_data[0];
@@ -116,13 +120,26 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
                           extra_data + extra_data_size);
       break;
     }
-    case kCodecAAC: {
+    case AudioCodec::kFLAC: {
+      // According to MediaCodec spec, CSB buffer #0 for FLAC should be:
+      // "fLaC", the FLAC stream marker in ASCII, followed by the STREAMINFO
+      // block (the mandatory metadata block), optionally followed by any number
+      // of other metadata blocks.
+      output_csd0->emplace_back('f');
+      output_csd0->emplace_back('L');
+      output_csd0->emplace_back('a');
+      output_csd0->emplace_back('C');
+      output_csd0->insert(output_csd0->end(), extra_data,
+                          extra_data + extra_data_size);
+      break;
+    }
+    case AudioCodec::kAAC: {
       output_csd0->assign(extra_data, extra_data + extra_data_size);
       *output_frame_has_adts_header =
           config.profile() != AudioCodecProfile::kXHE_AAC;
       break;
     }
-    case kCodecOpus: {
+    case AudioCodec::kOpus: {
       if (!extra_data || extra_data_size == 0 || codec_delay_ns < 0 ||
           seek_preroll_ns < 0) {
         LOG(ERROR) << "Invalid Opus Header";
@@ -166,11 +183,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   DVLOG(2) << __func__ << ": " << config.AsHumanReadableString()
            << " media_crypto:" << media_crypto.obj();
 
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
+  const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(
+      config.codec(), config.target_output_sample_format());
 
-  const std::string mime =
-      MediaCodecUtil::CodecToAndroidMimeType(config.codec());
   if (mime.empty())
     return nullptr;
 
@@ -208,9 +223,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
 // static
 std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
     const VideoCodecConfig& config) {
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
-
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(config.codec);
   if (mime.empty())
     return nullptr;
@@ -249,9 +261,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
     int frame_rate,
     int i_frame_interval,
     int color_format) {
-  if (!MediaCodecUtil::IsMediaCodecAvailable())
-    return nullptr;
-
   const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
   if (mime.empty())
     return nullptr;
@@ -260,8 +269,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
   ScopedJavaGlobalRef<jobject> j_bridge(
       Java_MediaCodecBridgeBuilder_createVideoEncoder(
-          env, j_mime, size.width(), size.height(), bit_rate, frame_rate,
-          i_frame_interval, color_format));
+          env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
+          frame_rate, i_frame_interval, color_format));
 
   if (j_bridge.is_null())
     return nullptr;
@@ -272,12 +281,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
 
 // static
 void MediaCodecBridgeImpl::SetupCallbackHandlerForTesting() {
-  // Callback APIs are only available on M+, so do nothing if below that.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    return;
-  }
-
   JNIEnv* env = AttachCurrentThread();
   Java_MediaCodecBridge_createCallbackHandlerForTesting(env);
 }
@@ -288,14 +291,13 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     base::RepeatingClosure on_buffers_available_cb)
     : codec_type_(codec_type),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
-      j_bridge_(std::move(j_bridge)) {
+      j_bridge_(std::move(j_bridge)),
+      use_real_color_space_(base::FeatureList::IsEnabled(
+          media::kUseRealColorSpaceForAndroidVideo)) {
   DCHECK(!j_bridge_.is_null());
 
   if (!on_buffers_available_cb_)
     return;
-
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
 
   // Note this should be done last since setBuffersAvailableListener() may
   // immediately invoke the callback if buffers came in during construction.
@@ -324,11 +326,10 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputSize(gfx::Size* size) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK) {
-    size->SetSize(Java_GetOutputFormatResult_width(env, result),
-                  Java_GetOutputFormatResult_height(env, result));
+    size->SetSize(Java_MediaFormatWrapper_width(env, result),
+                  Java_MediaFormatWrapper_height(env, result));
   }
   return status;
 }
@@ -338,10 +339,9 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputSamplingRate(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK)
-    *sampling_rate = Java_GetOutputFormatResult_sampleRate(env, result);
+    *sampling_rate = Java_MediaFormatWrapper_sampleRate(env, result);
   return status;
 }
 
@@ -350,10 +350,112 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> result =
       Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
-  MediaCodecStatus status = static_cast<MediaCodecStatus>(
-      Java_GetOutputFormatResult_status(env, result));
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
   if (status == MEDIA_CODEC_OK)
-    *channel_count = Java_GetOutputFormatResult_channelCount(env, result);
+    *channel_count = Java_MediaFormatWrapper_channelCount(env, result);
+  return status;
+}
+
+MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
+    gfx::ColorSpace* color_space) {
+  if (!use_real_color_space_) {
+    *color_space = gfx::ColorSpace::CreateSRGB();
+    return MEDIA_CODEC_OK;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
+  if (status != MEDIA_CODEC_OK)
+    return status;
+
+  // TODO(liberato): Consider consolidating these to save JNI hops.  However,
+  // since this is called only rarely, it's clearer this way.
+  int standard = Java_MediaFormatWrapper_colorStandard(env, result);
+  int range = Java_MediaFormatWrapper_colorRange(env, result);
+  int transfer = Java_MediaFormatWrapper_colorTransfer(env, result);
+  gfx::ColorSpace::PrimaryID primary_id;
+  gfx::ColorSpace::TransferID transfer_id;
+  gfx::ColorSpace::MatrixID matrix_id = gfx::ColorSpace::MatrixID::RGB;
+  gfx::ColorSpace::RangeID range_id;
+
+  switch (standard) {
+    case 1:  // MediaFormat.COLOR_STANDARD_BT709:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    case 2:  // MediaFormat.COLOR_STANDARD_BT601_PAL:
+      primary_id = gfx::ColorSpace::PrimaryID::BT470BG;
+      break;
+    case 4:  // MediaFormat.COLOR_STANDARD_BT601_NTSC:
+      primary_id = gfx::ColorSpace::PrimaryID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_STANDARD_BT2020
+      primary_id = gfx::ColorSpace::PrimaryID::BT2020;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported primary in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (transfer) {
+    case 1:  // MediaFormat.COLOR_TRANSFER_LINEAR
+      // TODO(liberato): LINEAR or LINEAR_HDR?
+      // Based on https://android.googlesource.com/platform/frameworks/native/
+      //            +/master/libs/nativewindow/include/android/data_space.h#57
+      // we pick LINEAR_HDR.
+      transfer_id = gfx::ColorSpace::TransferID::LINEAR_HDR;
+      break;
+    case 3:  // MediaFormat.COLOR_TRANSFER_SDR_VIDEO
+      transfer_id = gfx::ColorSpace::TransferID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_TRANSFER_ST2084
+      transfer_id = gfx::ColorSpace::TransferID::PQ;
+      break;
+    case 7:  // MediaFormat.COLOR_TRANSFER_HLG
+      transfer_id = gfx::ColorSpace::TransferID::HLG;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported transfer in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (range) {
+    case 1:  // MediaFormat.COLOR_RANGE_FULL
+      range_id = gfx::ColorSpace::RangeID::FULL;
+      break;
+    case 2:  // MediaFormat.COLOR_RANGE_LIMITED
+      range_id = gfx::ColorSpace::RangeID::LIMITED;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported range in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  *color_space = gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
+
+  return MEDIA_CODEC_OK;
+}
+
+MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatStride(int* stride) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
+  if (status == MEDIA_CODEC_OK)
+    *stride = Java_MediaFormatWrapper_stride(env, result);
+  return status;
+}
+MediaCodecStatus MediaCodecBridgeImpl::GetInputFormatYPlaneHeight(int* height) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
+  MediaCodecStatus status = result ? MEDIA_CODEC_OK : MEDIA_CODEC_ERROR;
+  if (status == MEDIA_CODEC_OK)
+    *height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
   return status;
 }
 
@@ -383,7 +485,7 @@ MediaCodecStatus MediaCodecBridgeImpl::QueueSecureInputBuffer(
     const std::string& iv,
     const std::vector<SubsampleEntry>& subsamples,
     EncryptionScheme encryption_scheme,
-    base::Optional<EncryptionPattern> encryption_pattern,
+    absl::optional<EncryptionPattern> encryption_pattern,
     base::TimeDelta presentation_time) {
   DVLOG(3) << __func__ << " " << index << ": " << data_size;
   if (data_size >
@@ -478,7 +580,7 @@ MediaCodecStatus MediaCodecBridgeImpl::DequeueOutputBuffer(
   *size = base::checked_cast<size_t>(
       Java_DequeueOutputResult_numBytes(env, result));
   if (presentation_time) {
-    *presentation_time = base::TimeDelta::FromMicroseconds(
+    *presentation_time = base::Microseconds(
         Java_DequeueOutputResult_presentationTimeMicroseconds(env, result));
   }
   int flags = Java_DequeueOutputResult_flags(env, result);
@@ -563,8 +665,6 @@ std::string MediaCodecBridgeImpl::GetName() {
 }
 
 bool MediaCodecBridgeImpl::SetSurface(const JavaRef<jobject>& surface) {
-  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_MARSHMALLOW);
   JNIEnv* env = AttachCurrentThread();
   return Java_MediaCodecBridge_setSurface(env, j_bridge_, surface);
 }
@@ -581,6 +681,11 @@ void MediaCodecBridgeImpl::RequestKeyFrameSoon() {
 
 CodecType MediaCodecBridgeImpl::GetCodecType() const {
   return codec_type_;
+}
+
+size_t MediaCodecBridgeImpl::GetMaxInputSize() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_MediaCodecBridge_getMaxInputSize(env, j_bridge_);
 }
 
 bool MediaCodecBridgeImpl::FillInputBuffer(int index,

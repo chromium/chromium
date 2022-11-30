@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/image/image.h"
@@ -20,14 +19,16 @@
 namespace ash {
 
 class PointScanControllerTest : public AshTestBase {
+ public:
+  PointScanControllerTest(const PointScanControllerTest&) = delete;
+  PointScanControllerTest& operator=(const PointScanControllerTest&) = delete;
+
  protected:
   PointScanControllerTest() = default;
   ~PointScanControllerTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableSwitchAccessPointScanning);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kEnablePixelOutputInTests);
     AshTestBase::SetUp();
@@ -119,8 +120,6 @@ class PointScanControllerTest : public AshTestBase {
   int diff_count_ = 0;
   int row_diff_count_ = 0;
   int col_diff_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PointScanControllerTest);
 };
 
 TEST_F(PointScanControllerTest, StartScanning) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/common/url_constants.h"
@@ -30,15 +30,14 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/permissions/permission_manager_factory.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #endif
 
 namespace resource_coordinator {
@@ -49,14 +48,14 @@ bool IsApp(content::WebContents* contents) {
   static constexpr char kInternalUrlPrefix[] = "chrome-extension://";
   const GURL& url = contents->GetLastCommittedURL();
   return strncmp(url.spec().c_str(), kInternalUrlPrefix,
-                 base::size(kInternalUrlPrefix));
+                 std::size(kInternalUrlPrefix));
 }
 
 bool IsInternalPage(content::WebContents* contents) {
   static constexpr char kInternalUrlPrefix[] = "chrome://";
   const GURL& url = contents->GetLastCommittedURL();
   return strncmp(url.spec().c_str(), kInternalUrlPrefix,
-                 base::size(kInternalUrlPrefix));
+                 std::size(kInternalUrlPrefix));
 }
 
 class SysInfoDelegate : public SessionRestorePolicy::Delegate {
@@ -69,11 +68,8 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
   }
 
   size_t GetFreeMemoryMiB() const override {
-    constexpr int64_t kMibibytesInBytes = 1 << 20;
-    int64_t free_mem =
-        base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
-    DCHECK(free_mem >= 0);
-    return free_mem;
+    constexpr uint64_t kMibibytesInBytes = 1 << 20;
+    return base::SysInfo::AmountOfAvailablePhysicalMemory() / kMibibytesInBytes;
   }
 
   base::TimeTicks NowTicks() const override { return base::TimeTicks::Now(); }
@@ -102,7 +98,7 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class TabDataAccess {
  public:
   using TabData = SessionRestorePolicy::TabData;
@@ -183,7 +179,7 @@ void TabDataAccess::SetUsedInBgFromSiteDataDB(
             },
             base::Unretained(reader), std::move(reply_cb), reply_task_runner));
       },
-      performance_manager::PerformanceManager::GetPageNodeForWebContents(
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
           contents),
       tab_data->used_in_bg_setter_cancel_callback.callback(),
       base::SequencedTaskRunnerHandle::Get());
@@ -206,14 +202,15 @@ void TabDataAccess::SetUsedInBgFromSiteData(
   if (!tab_data->is_pinned && reader_data.updates_title_in_bg)
     used_in_bg = true;
 
-  auto notif_permission =
-      PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))
-          ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                contents->GetLastCommittedURL(),
-                                contents->GetLastCommittedURL());
-  if (notif_permission.content_setting == CONTENT_SETTING_ALLOW)
+  content::PermissionController* permission_controller =
+      contents->GetBrowserContext()->GetPermissionController();
+
+  if (permission_controller->GetPermissionStatusForCurrentDocument(
+          blink::PermissionType::NOTIFICATIONS,
+          contents->GetPrimaryMainFrame()) ==
+      blink::mojom::PermissionStatus::GRANTED) {
     used_in_bg = true;
+  }
 
   tab_data->used_in_bg = used_in_bg;
 }
@@ -273,7 +270,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   TabData* tab_data = iter.first->second.get();
 
   // Determine if the tab is pinned. This is only defined on desktop platforms.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   tab_data->is_pinned = false;
 #else
   // TODO(chrisha): This is O(n^2) in the number of tabs being restored. Fix
@@ -290,7 +287,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
     tab_data->is_pinned = tab_strip->IsTabPinned(tab_index);
     break;
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Cache a handful of other properties.
   tab_data->is_app = IsApp(contents);
@@ -299,10 +296,10 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   tab_data->last_active = now_ - contents->GetLastActiveTime();
 
   // The local database doesn't exist on Android at all.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TabDataAccess::SetUsedInBgFromSiteDataDB(weak_factory_.GetWeakPtr(), tab_data,
                                            contents);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Another tab has been added, so an existing all tabs scored notification may
   // be required.

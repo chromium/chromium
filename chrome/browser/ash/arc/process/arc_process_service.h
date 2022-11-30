@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,18 @@
 #include <queue>
 #include <vector>
 
+#include "ash/components/arc/mojom/process.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/process/process_iterator.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
-#include "chrome/browser/chromeos/process_snapshot_server.h"
-#include "components/arc/mojom/process.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
+#include "chrome/browser/ash/process_snapshot_server.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -37,10 +35,10 @@ class ArcBridgeService;
 //
 // Call RequestAppProcessList() / RequestSystemProcessList() on the main UI
 // thread to get a list of all ARC app / system processes. It returns
-// base::Optional<vector<arc::ArcProcess>>, which includes pid <-> nspid
+// absl::optional<vector<arc::ArcProcess>>, which includes pid <-> nspid
 // mapping. Example:
 //   void OnUpdateProcessList(
-//       base::Optional<vector<arc::ArcProcess>> processes) {
+//       absl::optional<vector<arc::ArcProcess>> processes) {
 //     if (!processes) {
 //         // Arc process service is not ready.
 //        return;
@@ -65,14 +63,14 @@ class ArcBridgeService;
 // while RequestSystemProcessList() is responsible for System Processes.
 class ArcProcessService : public KeyedService,
                           public ConnectionObserver<mojom::ProcessInstance>,
-                          public ProcessSnapshotServer::Observer {
+                          public ash::ProcessSnapshotServer::Observer {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcProcessService* GetForBrowserContext(
       content::BrowserContext* context);
 
-  using OptionalArcProcessList = base::Optional<std::vector<ArcProcess>>;
+  using OptionalArcProcessList = absl::optional<std::vector<ArcProcess>>;
   using RequestProcessListCallback =
       base::OnceCallback<void(OptionalArcProcessList)>;
   using RequestMemoryInfoCallback =
@@ -80,6 +78,10 @@ class ArcProcessService : public KeyedService,
 
   ArcProcessService(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
+
+  ArcProcessService(const ArcProcessService&) = delete;
+  ArcProcessService& operator=(const ArcProcessService&) = delete;
+
   ~ArcProcessService() override;
 
   // TODO(afakhry): The value of this delay was chosen to match the refresh time
@@ -88,14 +90,14 @@ class ArcProcessService : public KeyedService,
   // Also consider making ArcProcessService a push service rather than a pull
   // service.
   static constexpr base::TimeDelta kProcessSnapshotRefreshTime =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
 
   // Returns nullptr before the global instance is ready.
   static ArcProcessService* Get();
 
   // If ARC IPC is ready for the process list request, the result is returned
   // as the argument of |callback|. Otherwise, |callback| is called with
-  // base::nullopt.
+  // absl::nullopt.
   // The process list maybe stale of up to |kProcessSnapshotRefreshTime|.
   void RequestAppProcessList(RequestProcessListCallback callback);
   void RequestSystemProcessList(RequestProcessListCallback callback);
@@ -114,6 +116,10 @@ class ArcProcessService : public KeyedService,
   class NSPidToPidMap : public base::RefCountedThreadSafe<NSPidToPidMap> {
    public:
     NSPidToPidMap();
+
+    NSPidToPidMap(const NSPidToPidMap&) = delete;
+    NSPidToPidMap& operator=(const NSPidToPidMap&) = delete;
+
     base::ProcessId& operator[](const base::ProcessId& key) {
       return pidmap_[key];
     }
@@ -135,7 +141,6 @@ class ArcProcessService : public KeyedService,
     ~NSPidToPidMap();
 
     PidMap pidmap_;
-    DISALLOW_COPY_AND_ASSIGN(NSPidToPidMap);
   };
 
  private:
@@ -202,8 +207,6 @@ class ArcProcessService : public KeyedService,
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
   base::WeakPtrFactory<ArcProcessService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcessService);
 };
 
 }  // namespace arc

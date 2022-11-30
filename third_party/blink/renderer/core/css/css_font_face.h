@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/core/css/font_face_source.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -56,7 +58,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
 
   // Front source is the first successfully loaded source.
   const CSSFontFaceSource* FrontSource() const {
-    return sources_.IsEmpty() ? nullptr : sources_.front();
+    return sources_.empty() ? nullptr : sources_.front();
   }
   FontFace* GetFontFace() const { return font_face_; }
 
@@ -65,7 +67,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   void AddSegmentedFontFace(CSSSegmentedFontFace*);
   void RemoveSegmentedFontFace(CSSSegmentedFontFace*);
 
-  bool IsValid() const { return !sources_.IsEmpty(); }
+  bool IsValid() const { return !sources_.empty(); }
   size_t ApproximateBlankCharacterCount() const;
 
   void AddSource(CSSFontFaceSource*);
@@ -105,4 +107,4 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_H_

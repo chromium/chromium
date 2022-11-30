@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "content/common/content_export.h"
@@ -16,7 +17,6 @@
 namespace base {
 namespace sequence_manager {
 class SequenceManager;
-class TimeDomain;
 }  // namespace sequence_manager
 }  // namespace base
 
@@ -31,7 +31,7 @@ namespace content {
 // underlying SequenceManager and instances are not allowed to outlive this
 // SequenceManager. All methods of this class must be called from the
 // associated thread unless noted otherwise. If you need to perform operations
-// from a different thread use the a Handle instance instead.
+// from a different thread use a Handle instance instead.
 //
 // Attention: All queues are initially disabled, that is, tasks will not be run
 // for them.
@@ -51,9 +51,6 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // For tasks on the critical path up to issuing the initial navigation.
     kBootstrap,
 
-    // For preconnection-related tasks.
-    kPreconnection,
-
     // base::TaskPriority::kUserBlocking maps to this task queue. It's for tasks
     // that affect the UI immediately after a user interaction. Has the same
     // priority as kDefault.
@@ -64,7 +61,21 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // system) but they are not an immediate response to a user interaction.
     kUserVisible,
 
-    kMaxValue = kUserVisible
+    // For tasks directly related to handling input events. This also changes
+    // the priority of yielding to native (to get the user input events faster).
+    // This is higher priority than kUserBlocking.
+    kUserInput,
+
+    // For tasks processing navigation network request's response from the
+    // network service.
+    kNavigationNetworkResponse,
+
+    // For tasks processing ServiceWorker's storage control's response. This has
+    // the highest priority during startup, and is updated to normal priority
+    // after startup.
+    kServiceWorkerStorageControlResponse,
+
+    kMaxValue = kServiceWorkerStorageControlResponse
   };
 
   static constexpr size_t kNumQueueTypes =
@@ -96,8 +107,8 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // queues are set up).
     void PostFeatureListInitializationSetup();
 
-    // Enables all tasks queues. Can be called multiple times.
-    void EnableAllQueues();
+    // Informs that startup is complete. Can be called multiple times.
+    void OnStartupComplete();
 
     // Enables all task queues except the effort ones. Can be called multiple
     // times.
@@ -132,18 +143,19 @@ class CONTENT_EXPORT BrowserTaskQueues {
 
     // |outer_| can only be safely used from a task posted to one of the
     // runners.
-    BrowserTaskQueues* outer_ = nullptr;
+    //
+    // TODO(crbug.com/1298696): Breaks events_unittests.
+    raw_ptr<BrowserTaskQueues, DegradeToNoOpWhenMTE> outer_ = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
     std::array<scoped_refptr<base::SingleThreadTaskRunner>, kNumQueueTypes>
         browser_task_runners_;
   };
 
-  // |sequence_manager| and |time_domain| must outlive this instance.
+  // |sequence_manager| must outlive this instance.
   explicit BrowserTaskQueues(
       BrowserThread::ID thread_id,
-      base::sequence_manager::SequenceManager* sequence_manager,
-      base::sequence_manager::TimeDomain* time_domain);
+      base::sequence_manager::SequenceManager* sequence_manager);
 
   // Destroys all queues.
   ~BrowserTaskQueues();
@@ -158,7 +170,7 @@ class CONTENT_EXPORT BrowserTaskQueues {
       base::ScopedClosureRunner on_pending_task_ran);
   void EndRunAllPendingTasksForTesting(
       base::ScopedClosureRunner on_pending_task_ran);
-  void EnableAllQueues();
+  void OnStartupComplete();
   void EnableAllExceptBestEffortQueues();
   void PostFeatureListInitializationSetup();
 

@@ -26,12 +26,13 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -40,9 +41,7 @@
 namespace blink {
 
 HTMLButtonElement::HTMLButtonElement(Document& document)
-    : HTMLFormControlElement(html_names::kButtonTag, document),
-      type_(SUBMIT),
-      is_activated_submit_(false) {}
+    : HTMLFormControlElement(html_names::kButtonTag, document) {}
 
 void HTMLButtonElement::setType(const AtomicString& type) {
   setAttribute(html_names::kTypeAttr, type);
@@ -62,15 +61,15 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(const ComputedStyle& style,
 
 const AtomicString& HTMLButtonElement::FormControlType() const {
   switch (type_) {
-    case SUBMIT: {
+    case kSubmit: {
       DEFINE_STATIC_LOCAL(const AtomicString, submit, ("submit"));
       return submit;
     }
-    case BUTTON: {
+    case kButton: {
       DEFINE_STATIC_LOCAL(const AtomicString, button, ("button"));
       return button;
     }
-    case RESET: {
+    case kReset: {
       DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
       return reset;
     }
@@ -95,11 +94,11 @@ void HTMLButtonElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
     if (EqualIgnoringASCIICase(params.new_value, "reset"))
-      type_ = RESET;
+      type_ = kReset;
     else if (EqualIgnoringASCIICase(params.new_value, "button"))
-      type_ = BUTTON;
+      type_ = kButton;
     else
-      type_ = SUBMIT;
+      type_ = kSubmit;
     UpdateWillValidateCache();
     if (formOwner() && isConnected())
       formOwner()->InvalidateDefaultButtonStyle();
@@ -112,17 +111,12 @@ void HTMLButtonElement::ParseAttribute(
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    Element* popupElement =
-        GetDocument().getElementById(getAttribute(html_names::kPopupAttr));
-    if (popupElement && IsA<HTMLPopupElement>(popupElement)) {
-      To<HTMLPopupElement>(popupElement)->show();
-    }
     if (!IsDisabledFormControl()) {
-      if (Form() && type_ == SUBMIT) {
+      if (Form() && type_ == kSubmit) {
         Form()->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
       }
-      if (Form() && type_ == RESET) {
+      if (Form() && type_ == kReset) {
         Form()->reset();
         event.SetDefaultHandled();
       }
@@ -140,13 +134,14 @@ bool HTMLButtonElement::HasActivationBehavior() const {
 }
 
 bool HTMLButtonElement::WillRespondToMouseClickEvents() {
-  if (!IsDisabledFormControl() && Form() && (type_ == SUBMIT || type_ == RESET))
+  if (!IsDisabledFormControl() && Form() &&
+      (type_ == kSubmit || type_ == kReset))
     return true;
   return HTMLFormControlElement::WillRespondToMouseClickEvents();
 }
 
 bool HTMLButtonElement::CanBeSuccessfulSubmitButton() const {
-  return type_ == SUBMIT;
+  return type_ == kSubmit;
 }
 
 bool HTMLButtonElement::IsActivatedSubmit() const {
@@ -158,13 +153,13 @@ void HTMLButtonElement::SetActivatedSubmit(bool flag) {
 }
 
 void HTMLButtonElement::AppendToFormData(FormData& form_data) {
-  if (type_ == SUBMIT && !GetName().IsEmpty() && is_activated_submit_)
+  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_)
     form_data.AppendFromElement(GetName(), Value());
 }
 
 void HTMLButtonElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
-  focus();
+  Focus();
   DispatchSimulatedClick(nullptr, creation_scope);
 }
 
@@ -178,7 +173,7 @@ const AtomicString& HTMLButtonElement::Value() const {
 }
 
 bool HTMLButtonElement::RecalcWillValidate() const {
-  return type_ == SUBMIT && HTMLFormControlElement::RecalcWillValidate();
+  return type_ == kSubmit && HTMLFormControlElement::RecalcWillValidate();
 }
 
 int HTMLButtonElement::DefaultTabIndex() const {
@@ -204,6 +199,15 @@ Node::InsertionNotificationRequest HTMLButtonElement::InsertedInto(
                                             html_names::kFormmethodAttr,
                                             html_names::kFormactionAttr);
   return request;
+}
+
+void HTMLButtonElement::DispatchBlurEvent(
+    Element* new_focused_element,
+    mojom::blink::FocusType type,
+    InputDeviceCapabilities* source_capabilities) {
+  SetActive(false);
+  HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
+                                            source_capabilities);
 }
 
 }  // namespace blink

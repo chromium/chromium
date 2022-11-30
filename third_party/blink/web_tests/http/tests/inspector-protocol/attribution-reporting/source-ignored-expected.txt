@@ -1,0 +1,12 @@
+Test that an attributionsrc request that is only eligible for triggers triggers an issue when it tries to register a source.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : {"source_event_id":"0","destination":"https://a.example"}
+            request : <object>
+            violationType : SourceIgnored
+        }
+    }
+}
+

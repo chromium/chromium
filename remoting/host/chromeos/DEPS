@@ -1,0 +1,30 @@
+include_rules = [
+  "+ui/display",
+  "+ui/wm",
+  "+components/viz/common",
+  "+components/viz/host"
+]
+
+specific_include_rules = {
+  "remoting_service.cc": [
+    "+chrome/browser/browser_process.h",
+    "+content/public/browser/browser_task_traits.h",
+    "+content/public/browser/browser_thread.h",
+    "+content/public/browser/storage_partition.h",
+  ],
+  "host_event_reporter_impl*": [
+    "+chrome/browser/policy/messaging_layer/proto",  # For ERP events prototypes
+    "+components/reporting",  # For ERP
+    "+remoting/protocol",
+  ],
+  "ash_mojom_video_consumer.*": [
+    "+media/capture/mojom/video_capture_buffer.mojom.h",
+  ],
+  "frame_sink_desktop_capturer*": [
+    "+media/base/video_frame.h",
+    "+media/base/video_types.h",
+  ],
+  "frame_sink_desktop_capturer_unittest.cc": [
+    "+components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
+  ]
+}

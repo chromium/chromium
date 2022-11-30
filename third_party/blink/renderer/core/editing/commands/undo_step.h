@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/events/input_event.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -43,14 +43,12 @@ class UndoStep final : public GarbageCollected<UndoStep> {
  public:
   UndoStep(Document*,
            const SelectionForUndoStep& starting_selection,
-           const SelectionForUndoStep& ending_selection,
-           InputEvent::InputType);
+           const SelectionForUndoStep& ending_selection);
 
-  // Returns true if associated root editable elements are connected.
-  bool IsConnected() const;
+  // Returns true if is owned by |element|
+  bool IsOwnedBy(const Element& element) const;
   void Unapply();
   void Reapply();
-  InputEvent::InputType GetInputType() const;
   void Append(SimpleEditCommand*);
   void Append(UndoStep*);
 
@@ -83,11 +81,10 @@ class UndoStep final : public GarbageCollected<UndoStep> {
   SelectionForUndoStep starting_selection_;
   SelectionForUndoStep ending_selection_;
   HeapVector<Member<SimpleEditCommand>> commands_;
-  InputEvent::InputType input_type_;
   const uint64_t sequence_number_;
   bool selection_is_directional_ = false;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_UNDO_STEP_H_

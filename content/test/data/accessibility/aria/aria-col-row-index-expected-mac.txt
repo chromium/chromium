@@ -1,0 +1,102 @@
+AXWebArea
+++AXTable AXARIAColumnCount=5 AXARIARowCount=6
+++++AXGroup
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 colheader2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 colheader3'
+++++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 colheader4'
+++++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=2
+++++++++++AXStaticText AXValue='row2 colheader5'
+++++AXGroup
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col3'
+++++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col4'
+++++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=3
+++++++++++AXStaticText AXValue='row3 col5'
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=4
+++++++++++AXStaticText AXValue='row4 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=4
+++++++++++AXStaticText AXValue='row4 col3'
+++++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=4
+++++++++++AXStaticText AXValue='row4 col4'
+++++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=4
+++++++++++AXStaticText AXValue='row4 col5'
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=5
+++++++++++AXStaticText AXValue='row5 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=5
+++++++++++AXStaticText AXValue='row5 col3'
+++++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=5
+++++++++++AXStaticText AXValue='row5 col4'
+++++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=5
+++++++++++AXStaticText AXValue='row5 col5'
+++++++AXRow
+++++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=6
+++++++++++AXStaticText AXValue='row6 col2'
+++++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=6
+++++++++++AXStaticText AXValue='row6 col3'
+++++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=6
+++++++++++AXStaticText AXValue='row6 col4'
+++++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=6
+++++++++++AXStaticText AXValue='row6 col5'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=4
+++++++++AXStaticText AXValue='row4 col2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=5
+++++++++AXStaticText AXValue='row5 col2'
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=6
+++++++++AXStaticText AXValue='row6 col2'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=4
+++++++++AXStaticText AXValue='row4 col3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=5
+++++++++AXStaticText AXValue='row5 col3'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=6
+++++++++AXStaticText AXValue='row6 col3'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader4'
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col4'
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=4
+++++++++AXStaticText AXValue='row4 col4'
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=5
+++++++++AXStaticText AXValue='row5 col4'
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=6
+++++++++AXStaticText AXValue='row6 col4'
+++++AXColumn
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader5'
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=3
+++++++++AXStaticText AXValue='row3 col5'
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=4
+++++++++AXStaticText AXValue='row4 col5'
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=5
+++++++++AXStaticText AXValue='row5 col5'
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=6
+++++++++AXStaticText AXValue='row6 col5'
+++++AXGroup
+++++++AXCell AXARIAColumnIndex=2 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader2'
+++++++AXCell AXARIAColumnIndex=3 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader3'
+++++++AXCell AXARIAColumnIndex=4 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader4'
+++++++AXCell AXARIAColumnIndex=5 AXARIARowIndex=2
+++++++++AXStaticText AXValue='row2 colheader5'

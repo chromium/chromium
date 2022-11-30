@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,9 @@ using base::android::JavaParamRef;
 
 SavePasswordInfoBar::SavePasswordInfoBar(
     std::unique_ptr<SavePasswordInfoBarDelegate> delegate,
-    base::Optional<AccountInfo> account_info)
-    : ChromeConfirmInfoBar(std::move(delegate)) {
-  account_info_ = account_info;
-}
+    const AccountInfo& account_info)
+    : infobars::ConfirmInfoBar(std::move(delegate)),
+      account_info_(account_info) {}
 
 SavePasswordInfoBar::~SavePasswordInfoBar() = default;
 
@@ -43,9 +42,8 @@ SavePasswordInfoBar::CreateRenderInfoBar(
   ScopedJavaLocalRef<jstring> details_message_text = ConvertUTF16ToJavaString(
       env, save_password_delegate->GetDetailsMessageText());
   ScopedJavaLocalRef<jobject> account_info =
-      account_info_.has_value()
-          ? ConvertToJavaAccountInfo(env, account_info_.value())
-          : nullptr;
+      !account_info_.IsEmpty() ? ConvertToJavaAccountInfo(env, account_info_)
+                               : nullptr;
 
   base::android::ScopedJavaLocalRef<jobject> infobar;
   infobar.Reset(Java_SavePasswordInfoBar_show(

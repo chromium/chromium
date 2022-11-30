@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
@@ -36,7 +37,7 @@ class TouchEmulatorTest : public testing::Test,
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         last_event_time_(base::TimeTicks::Now()),
-        event_time_delta_(base::TimeDelta::FromMilliseconds(100)),
+        event_time_delta_(base::Milliseconds(100)),
         shift_pressed_(false),
         mouse_pressed_(false),
         ack_touches_synchronously_(true),
@@ -47,7 +48,7 @@ class TouchEmulatorTest : public testing::Test,
 
   // testing::Test
   void SetUp() override {
-    emulator_.reset(new TouchEmulator(this, 1.0f));
+    emulator_ = std::make_unique<TouchEmulator>(this, 1.0f);
     emulator_->SetDoubleTapSupportForPageEnabled(false);
     emulator_->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                       ui::GestureProviderConfigType::GENERIC_MOBILE);
@@ -447,7 +448,7 @@ TEST_F(TouchEmulatorTest, MouseMovesDropped) {
   EXPECT_EQ("TouchStart GestureTapDown", ExpectedEvents());
 
   // Mouse move after mouse down is never dropped.
-  set_event_time_delta(base::TimeDelta::FromMilliseconds(1));
+  set_event_time_delta(base::Milliseconds(1));
   MouseDrag(200, 200);
   EXPECT_EQ(
       "TouchMove GestureTapCancel GestureScrollBegin GestureScrollUpdate",
@@ -460,7 +461,7 @@ TEST_F(TouchEmulatorTest, MouseMovesDropped) {
   EXPECT_EQ("", ExpectedEvents());
 
   // Dispatching again.
-  set_event_time_delta(base::TimeDelta::FromMilliseconds(100));
+  set_event_time_delta(base::Milliseconds(100));
   MouseDrag(400, 200);
   EXPECT_EQ(
       "TouchMove GestureScrollUpdate",

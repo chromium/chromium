@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_predictor_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/protobuf/src/google/protobuf/stubs/mathutil.h"
 
 using testing::_;
 using testing::Contains;
@@ -51,7 +50,8 @@ FrecencyStoreProto MakeTestingProto() {
 }
 
 MATCHER_P(ScoreEq, score, "") {
-  return google::protobuf::MathUtil::AlmostEquals(arg.last_score, score);
+  static float kTolerance = 1e-5;
+  return abs(arg.last_score - score) < kTolerance;
 }
 
 MATCHER_P(IdNe, id, "") {
@@ -235,7 +235,7 @@ TEST(FrecencyStoreTest, GetIdGetsCorrectId) {
 
 TEST(FrecencyStoreTest, InvalidGetIdReturnsNullopt) {
   FrecencyStore store(100, 0.5f);
-  EXPECT_EQ(store.GetId("not found"), base::nullopt);
+  EXPECT_EQ(store.GetId("not found"), absl::nullopt);
 }
 
 TEST(FrecencyStoreTest, GetAllGetsAll) {

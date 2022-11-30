@@ -1,6 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * Files ripple.
@@ -8,6 +11,8 @@
  * Circle ripple effect with burst animation.
  */
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-ripple',
 
   properties: {
@@ -15,8 +20,8 @@ Polymer({
       type: Boolean,
       readOnly: true,
       value: false,
-      reflectToAttribute: true
-    }
+      reflectToAttribute: true,
+    },
   },
 
   /**
@@ -57,21 +62,23 @@ Polymer({
    */
   performPressAnimation: function() {
     /** @type {EventTarget} */
-    const animationPlayer = this.ripple_.animate([
-      {
-        width: '2%',
-        height: '2%',
-        opacity: 0,
-        offset: 0,
-        easing: 'linear'
-      },
-      {
-        width: '50%',
-        height: '50%',
-        opacity: 0.2,
-        offset: 1
-      }
-    ], 150);
+    const animationPlayer = this.ripple_.animate(
+        [
+          {
+            width: '2%',
+            height: '2%',
+            opacity: 0,
+            offset: 0,
+            easing: 'linear',
+          },
+          {
+            width: '50%',
+            height: '50%',
+            opacity: 0.2,
+            offset: 1,
+          },
+        ],
+        150);
 
     this._setPressed(true);
 
@@ -93,32 +100,36 @@ Polymer({
     pressAnimationPromise.then(() => {
       this._setPressed(false);
 
-      this.ripple_.animate([
-        {
-          opacity: 0.2,
-          offset: 0,
-          easing: 'linear'
-        },
-        {
-          opacity: 0,
-          offset: 1
-        }
-      ], 150);
-      this.ripple_.animate([
-        {
-          width: '50%',
-          height: '50%',
-          offset: 0,
-          easing: 'cubic-bezier(0, 0, 0.6, 1)'
-        },
-        {
-          width: '83.0%',
-          height: '83.0%',
-          offset: 1
-        }
-      ], 150);
+      this.ripple_.animate(
+          [
+            {
+              opacity: 0.2,
+              offset: 0,
+              easing: 'linear',
+            },
+            {
+              opacity: 0,
+              offset: 1,
+            },
+          ],
+          150);
+      this.ripple_.animate(
+          [
+            {
+              width: '50%',
+              height: '50%',
+              offset: 0,
+              easing: 'cubic-bezier(0, 0, 0.6, 1)',
+            },
+            {
+              width: '83.0%',
+              height: '83.0%',
+              offset: 1,
+            },
+          ],
+          150);
     });
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_ripple.js

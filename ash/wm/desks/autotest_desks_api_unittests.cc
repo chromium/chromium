@@ -1,16 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/autotest_desks_api.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
@@ -40,6 +38,8 @@ class TestDesksActivationObserver : public DesksController::Observer {
   }
   void OnDeskSwitchAnimationLaunching() override {}
   void OnDeskSwitchAnimationFinished() override {}
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override {}
 
  private:
   int activation_changes_ = 0;
@@ -107,28 +107,11 @@ TEST_F(AutotestDesksApiTest, RemoveActiveDesk) {
   EXPECT_FALSE(test_api.RemoveActiveDesk(base::DoNothing()));
 }
 
-class EnhancedDeskAnimationsAutotestDesksApiTest : public AutotestDesksApiTest {
- public:
-  EnhancedDeskAnimationsAutotestDesksApiTest() = default;
-  EnhancedDeskAnimationsAutotestDesksApiTest(
-      const EnhancedDeskAnimationsAutotestDesksApiTest&) = delete;
-  EnhancedDeskAnimationsAutotestDesksApiTest& operator=(
-      const EnhancedDeskAnimationsAutotestDesksApiTest&) = delete;
-  ~EnhancedDeskAnimationsAutotestDesksApiTest() override = default;
+using EnhancedDeskAnimationsAutotestDesksApiTest = AutotestDesksApiTest;
 
-  // AutotestDesksApiTest:
-  void SetUp() override {
-    features_.InitAndEnableFeature(features::kEnhancedDeskAnimations);
-
-    AutotestDesksApiTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
+// TODO(b/219068687): Re-enable chained desk animation tests.
 TEST_F(EnhancedDeskAnimationsAutotestDesksApiTest,
-       ActivateAdjacentDesksToTargetIndex) {
+       DISABLED_ActivateAdjacentDesksToTargetIndex) {
   // Create all desks possible.
   AutotestDesksApi test_api;
   const int max_number_of_desks = desks_util::GetMaxNumberOfDesks();

@@ -1,13 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_UKM_DEBUG_UKM_DEBUG_DATA_EXTRACTOR_H_
 #define COMPONENTS_UKM_DEBUG_UKM_DEBUG_DATA_EXTRACTOR_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/ukm/ukm_service.h"
 
@@ -21,9 +18,13 @@ namespace debug {
 class UkmDebugDataExtractor {
  public:
   UkmDebugDataExtractor();
+
+  UkmDebugDataExtractor(const UkmDebugDataExtractor&) = delete;
+  UkmDebugDataExtractor& operator=(const UkmDebugDataExtractor&) = delete;
+
   ~UkmDebugDataExtractor();
 
-  // Returns UKM data structured in a DictionaryValue.
+  // Returns UKM data structured in a dictionary.
   static base::Value GetStructuredData(const UkmService* ukm_service);
 
   // Convert uint64 to pair of int32 to match the spec of Value. JS doesn't
@@ -32,9 +33,6 @@ class UkmDebugDataExtractor {
   // 32 bit representation of the high 32 bit and the second item is the lower
   // 32 bit of the 64 bit number.
   static base::Value UInt64AsPairOfInt(uint64_t v);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmDebugDataExtractor);
 };
 
 }  // namespace debug

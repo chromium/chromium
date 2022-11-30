@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ void UnverifiedRulesetDealer::RegisterMojoInterfaces(
   // base::Unretained can be used here because the associated_interfaces
   // is owned by the RenderThread and will live for the duration of the
   // RenderThread.
-  associated_interfaces->AddInterface(
+  associated_interfaces->AddInterface<mojom::SubresourceFilterRulesetObserver>(
       base::BindRepeating(&UnverifiedRulesetDealer::OnRendererAssociatedRequest,
                           base::Unretained(this)));
 }

@@ -1,0 +1,84 @@
+<style include="shortcut-customization-shared">
+  :host(:not([is-add-view_])) #container {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    padding-top: 8px;
+  }
+
+  #acceleratorInfoText {
+    padding-top: 10px
+  }
+
+  :host([has-error]) #acceleratorInfoText {
+    color: var(--cros-color-alert);
+  }
+
+  #cancelButtonContainer {
+    margin-top: 5px;
+  }
+
+  #editButton {
+    --cr-icon-button-icon-start-offset: 3px;
+    padding-top: 3px;
+  }
+
+  .clickable-button {
+    --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
+  }
+
+  :host([is-edit-view]) #acceleratorView {
+    border-color: var(--cros-color-prominent);
+    border-radius: 5px;
+    border-style: solid;
+    border-width: thin;
+    padding: 5px;
+  }
+</style>
+
+<div id="container">
+  <div id="acceleratorContainer">
+    <div id="acceleratorView">
+      <accelerator-view id="acceleratorItem"
+          accelerator-info=[[acceleratorInfo]] view-state={{viewState}}
+          status-message={{statusMessage}} has-error={{hasError}}
+          action=[[action]] source=[[source]]>
+      </accelerator-view>
+    </div>
+  </div>
+  <template id="buttonContainer" is="dom-if" if="[[!acceleratorInfo.locked]]">
+    <div id="editButtonsContainer" hidden="[[showEditView_(viewState)]]">
+      <cr-icon-button id="editButton"
+          class="clickable-button"
+          iron-icon="shortcut-customization:edit"
+          aria-hidden="true"
+          on-click="onEditButtonClicked_">
+      </cr-icon-button>
+      <cr-icon-button id="deleteButton"
+          class="clickable-button"
+          iron-icon="shortcut-customization:delete"
+          aria-hidden="true"
+          on-click="onDeleteButtonClicked_">
+      </cr-icon-button>
+    </div>
+    <div id="cancelButtonContainer" hidden="[[!showEditView_(viewState)]]">
+      <cr-button id="cancelButton" on-click="onCancelButtonClicked_">
+        <!-- TODO(jimmyxgong): Localize string -->
+        cancel
+      </cr-button>
+    </div>
+  </template>
+  <div id="lockContainer" hidden="[[!acceleratorInfo.locked]]">
+    <iron-icon id="lockedIcon" icon="shortcut-customization:lock">
+    </iron-icon>
+  </div>
+</div>
+
+<div id="acceleratorInfoText" hidden="[[!showEditView_(viewState)]]">
+  [[statusMessage]]
+</div>

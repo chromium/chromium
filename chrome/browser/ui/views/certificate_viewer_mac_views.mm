@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include "components/remote_cocoa/browser/window.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 
-void ShowCertificateViewer(content::WebContents* web_contents,
-                           gfx::NativeWindow parent,
-                           net::X509Certificate* cert) {
+void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
+                                        gfx::NativeWindow parent,
+                                        net::X509Certificate* cert) {
   // The certificate viewer on macOS uses the OS viewer rather than the Views
   // implementation (see https://crbug.com/953425), so go through a Mojo
   // interface. This calls the platform APIs from the right process in PWAs.

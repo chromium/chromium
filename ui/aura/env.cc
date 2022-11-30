@@ -1,41 +1,38 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/aura/env.h"
 
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/input_state_lookup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/platform/platform_event_source.h"
 
-#if defined(OS_WIN)
-#include "ui/base/cursor/win/win_cursor_factory.h"
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/win/win_cursor_factory.h"
 #endif
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_cursor_factory.h"
-#endif
-
-#if defined(OS_WIN) || defined(USE_X11)
-#include "ui/gfx/switches.h"
 #endif
 
 namespace aura {
@@ -60,6 +57,9 @@ class EventObserverAdapter : public ui::EventHandler,
     target_->AddPreTargetHandler(this);
   }
 
+  EventObserverAdapter(const EventObserverAdapter&) = delete;
+  EventObserverAdapter& operator=(const EventObserverAdapter&) = delete;
+
   ~EventObserverAdapter() override { target_->RemovePreTargetHandler(this); }
 
   ui::EventObserver* observer() { return observer_; }
@@ -69,7 +69,7 @@ class EventObserverAdapter : public ui::EventHandler,
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override {
     if (types_.count(event->type()) > 0) {
-      std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(*event);
+      std::unique_ptr<ui::Event> cloned_event = event->Clone();
       ui::Event::DispatcherApi(cloned_event.get()).set_target(event->target());
       // The root location of located events should be in screen coordinates.
       if (cloned_event->IsLocatedEvent() && cloned_event->target()) {
@@ -82,11 +82,9 @@ class EventObserverAdapter : public ui::EventHandler,
   }
 
  private:
-  ui::EventObserver* observer_;
-  ui::EventTarget* target_;
+  raw_ptr<ui::EventObserver> observer_;
+  raw_ptr<ui::EventTarget> target_;
   const std::set<ui::EventType> types_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventObserverAdapter);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,8 +103,9 @@ std::unique_ptr<Env> Env::CreateInstance() {
   DCHECK(!g_primary_instance);
   // No make_unique as constructor is private.
   std::unique_ptr<Env> env(new Env());
+  if (!env->Init())
+    return {};
   g_primary_instance = env.get();
-  env->Init();
   return env;
 }
 
@@ -153,6 +152,33 @@ void Env::SetLastMouseLocation(const gfx::Point& last_mouse_location) {
 void Env::SetGestureRecognizer(
     std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
   gesture_recognizer_ = std::move(gesture_recognizer);
+}
+
+gfx::Point Env::GetLastPointerPoint(ui::mojom::DragEventSource event_source,
+                                    Window* window,
+                                    absl::optional<gfx::Point> fallback) {
+  if (event_source == ui::mojom::DragEventSource::kTouch && is_touch_down()) {
+    DCHECK(window);
+    DCHECK(window->GetRootWindow());
+    gfx::PointF touch_point_f;
+    bool got_touch_point = gesture_recognizer()->GetLastTouchPointForTarget(
+        window, &touch_point_f);
+    if (got_touch_point) {
+      Window* root = window->GetRootWindow();
+      DCHECK(root);
+      DCHECK(root->GetRootWindow());
+      DCHECK(aura::client::GetScreenPositionClient(root->GetRootWindow()));
+      client::GetScreenPositionClient(root->GetRootWindow())
+          ->ConvertPointToScreen(root, &touch_point_f);
+      return gfx::ToFlooredPoint(touch_point_f);
+    }
+    // Fallback when touch state is lost. See http://crbug.com/1162541.
+    if (fallback)
+      return *fallback;
+  }
+
+  // TODO(https://crbug.com/1338746): Use last_mouse_location_.
+  return display::Screen::GetScreen()->GetCursorScreenPoint();
 }
 
 WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {
@@ -210,37 +236,29 @@ Env::Env()
     : env_controller_(std::make_unique<EnvInputStateController>(this)),
       gesture_recognizer_(std::make_unique<ui::GestureRecognizerImpl>()),
       input_state_lookup_(InputStateLookup::Create()) {
-#if defined(OS_WIN) || defined(USE_X11)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
-#if defined(USE_X11)
-    // In Ozone/X11, the cursor factory is initialized by the platform
-    // initialization code.
-    if (!features::IsUsingOzonePlatform())
-      cursor_factory_ = std::make_unique<ui::X11CursorFactory>();
-#else
-    cursor_factory_ = std::make_unique<ui::WinCursorFactory>();
-#endif
-  }
+#if BUILDFLAG(IS_WIN)
+  cursor_factory_ = std::make_unique<ui::WinCursorFactory>();
 #endif
 }
 
-void Env::Init() {
+bool Env::Init() {
 #if defined(USE_OZONE)
   // The ozone platform can provide its own event source. So initialize the
-  // platform before creating the default event source. If running inside mus
-  // let the mus process initialize ozone instead.
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    // TODO(kylechar): Pass in single process information to
-    // Env::CreateInstance() instead of checking flags here.
-    params.single_process = command_line->HasSwitch("single-process") ||
-                            command_line->HasSwitch("in-process-gpu");
-    ui::OzonePlatform::InitializeForUI(params);
+  // platform before creating the default event source
+  ui::OzonePlatform::InitParams params;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  // TODO(kylechar): Pass in single process information to
+  // Env::CreateInstance() instead of checking flags here.
+  params.single_process = command_line->HasSwitch("single-process") ||
+                          command_line->HasSwitch("in-process-gpu");
+  if (!ui::OzonePlatform::InitializeForUI(params)) {
+    LOG(ERROR) << "The platform failed to initialize.  Exiting.";
+    return false;
   }
 #endif
   if (!ui::PlatformEventSource::GetInstance())
     event_source_ = ui::PlatformEventSource::CreateDefault();
+  return true;
 }
 
 void Env::NotifyWindowInitialized(Window* window) {

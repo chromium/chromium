@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,6 +43,10 @@ class RendererStartupHelper : public KeyedService,
  public:
   // This class sends messages to all renderers started for |browser_context|.
   explicit RendererStartupHelper(content::BrowserContext* browser_context);
+
+  RendererStartupHelper(const RendererStartupHelper&) = delete;
+  RendererStartupHelper& operator=(const RendererStartupHelper&) = delete;
+
   ~RendererStartupHelper() override;
 
   // content::RenderProcessHostCreationObserver:
@@ -68,6 +72,12 @@ class RendererStartupHelper : public KeyedService,
   void OnExtensionUnloaded(const Extension& extension);
   void OnExtensionLoaded(const Extension& extension);
 
+  // Sends a message to all renderers to update the developer mode.
+  void OnDeveloperModeChanged(bool in_developer_mode);
+
+  // Unload all extensions. Does not send notifications.
+  void UnloadAllExtensionsForTest();
+
   // Returns mojom::Renderer* corresponding to |process|. This would return
   // nullptr when it's called before |process| is inserted to
   // |process_mojo_map_| or after it's deleted. Note that the callers should
@@ -81,6 +91,7 @@ class RendererStartupHelper : public KeyedService,
 
  private:
   friend class RendererStartupHelperTest;
+  friend class RendererStartupHelperInterceptor;
 
   // Initializes the specified process, informing it of system state and loaded
   // extensions.
@@ -89,7 +100,7 @@ class RendererStartupHelper : public KeyedService,
   // Untracks the given process.
   void UntrackProcess(content::RenderProcessHost* process);
 
-  content::BrowserContext* browser_context_;  // Not owned.
+  raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Tracks the set of loaded extensions and the processes they are loaded in.
   std::map<ExtensionId, std::set<content::RenderProcessHost*>>
@@ -108,8 +119,6 @@ class RendererStartupHelper : public KeyedService,
   // happens.
   std::map<content::RenderProcessHost*, mojo::AssociatedRemote<mojom::Renderer>>
       process_mojo_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererStartupHelper);
 };
 
 // Factory for RendererStartupHelpers. Declared here because this header is
@@ -117,6 +126,10 @@ class RendererStartupHelper : public KeyedService,
 // compiler generate another object file.
 class RendererStartupHelperFactory : public BrowserContextKeyedServiceFactory {
  public:
+  RendererStartupHelperFactory(const RendererStartupHelperFactory&) = delete;
+  RendererStartupHelperFactory& operator=(const RendererStartupHelperFactory&) =
+      delete;
+
   static RendererStartupHelper* GetForBrowserContext(
       content::BrowserContext* context);
   static RendererStartupHelperFactory* GetInstance();
@@ -133,8 +146,6 @@ class RendererStartupHelperFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererStartupHelperFactory);
 };
 
 }  // namespace extensions

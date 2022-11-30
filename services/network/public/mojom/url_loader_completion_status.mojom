@@ -1,0 +1,85 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/blocked_by_response_reason.mojom";
+import "services/network/public/mojom/cors.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+
+// Unlike structs, enums are not nullable, so we wrap this enum in a struct.
+struct BlockedByResponseReasonWrapper {
+  // More detailed reason for failing the response with
+  // net::ERR_BLOCKED_BY_RESPONSE |error_code|.
+  BlockedByResponseReason reason;
+};
+
+struct URLLoaderCompletionStatus {
+  // The error code. ERR_FAILED is set for CORS errors.
+  int32 error_code = 0;
+
+  // Extra detail on the error.
+  int32 extended_error_code = 0;
+
+  // A copy of the data requested exists in the disk cache and/or the in-memory
+  // cache.
+  // TODO(https://crbug.com/1339708): Rename this field to `exists_in_any_cache`
+  // to represent what this field actually means.
+  bool exists_in_cache = false;
+
+  // A copy of the data requested exists in the in-memory cache.
+  bool exists_in_memory_cache = false;
+
+  // Time the request completed.
+  mojo_base.mojom.TimeTicks completion_time;
+
+  // Total amount of data received from the network.
+  int64 encoded_data_length = 0;
+
+  // The length of the response body before removing any content encodings.
+  int64 encoded_body_length = 0;
+
+  // The length of the response body after decoding.
+  int64 decoded_body_length = 0;
+
+  // Optional CORS error details.
+  CorsErrorStatus? cors_error_status;
+
+  // Optional Trust Tokens (https://github.com/wicg/trust-token-api) error
+  // details.
+  //
+  // A non-kOk value denotes that the request failed because a Trust Tokens
+  // operation was attempted and failed for the given reason.
+  //
+  // The status is set to kOk in all other cases. In particular, a value of kOk
+  // does not imply that a Trust Tokens operation was executed successfully
+  // alongside this request, or even that a Trust Tokens operation was
+  // attempted.
+  TrustTokenOperationStatus trust_token_operation_status =
+      TrustTokenOperationStatus.kOk;
+
+  // Optional SSL certificate info.
+  SSLInfo? ssl_info;
+
+  // Only set when |error_code| is |ERR_BLOCKED_BY_RESPONSE|.
+  BlockedByResponseReasonWrapper? blocked_by_response_reason;
+
+  // Set when response blocked by CORB needs to be reported to the DevTools
+  // console.
+  bool should_report_corb_blocking = false;
+
+  // The proxy server used for this request, if any.
+  ProxyServer proxy_server;
+
+  // Host resolution error info for this request.
+  ResolveErrorInfo resolve_error_info;
+
+  // Whether the initiator of this request should be collapsed.
+  bool should_collapse_initiator = false;
+
+  // Whether a pervasive payload is requested.
+  bool pervasive_payload_requested = false;
+};

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
+
+class GURL;
 
 namespace ui {
 
@@ -61,21 +62,21 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     // SelectFile. |index| specifies the index of the filter passed to the
     // the initial call to SelectFile.
     virtual void FileSelected(const base::FilePath& path,
-                              int index, void* params) = 0;
+                              int index,
+                              void* params) = 0;
 
     // Similar to FileSelected() but takes SelectedFileInfo instead of
     // base::FilePath. Used for passing extra information (ex. display name).
     //
     // If not overridden, calls FileSelected() with path from |file|.
-    virtual void FileSelectedWithExtraInfo(
-        const SelectedFileInfo& file,
-        int index,
-        void* params);
+    virtual void FileSelectedWithExtraInfo(const SelectedFileInfo& file,
+                                           int index,
+                                           void* params);
 
     // Notifies the Listener that many files have been selected. The
     // files are in |files|. |params| is contextual passed to SelectFile.
-    virtual void MultiFilesSelected(
-        const std::vector<base::FilePath>& files, void* params) {}
+    virtual void MultiFilesSelected(const std::vector<base::FilePath>& files,
+                                    void* params) {}
 
     // Similar to MultiFilesSelected() but takes SelectedFileInfo instead of
     // base::FilePath. Used for passing extra information (ex. display name).
@@ -91,7 +92,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
     virtual void FileSelectionCanceled(void* params) {}
 
    protected:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
   };
 
   // Sets the factory that creates SelectFileDialog objects, overriding default
@@ -113,6 +114,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   static scoped_refptr<SelectFileDialog> Create(
       Listener* listener,
       std::unique_ptr<SelectFilePolicy> policy);
+
+  SelectFileDialog(const SelectFileDialog&) = delete;
+  SelectFileDialog& operator=(const SelectFileDialog&) = delete;
 
   // Holds information about allowed extensions on a file save dialog.
   struct SHELL_DIALOGS_EXPORT FileTypeInfo {
@@ -191,8 +195,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //   modeless dialog.
   // |params| is data from the calling context which will be passed through to
   //   the listener. Can be NULL.
+  // |caller| is the URL of the dialog caller which can be used to check further
+  // Policy restrictions, when applicable. Can be NULL.
   // NOTE: only one instance of any shell dialog can be shown per owning_window
-  //       at a time (for obvious reasons).
+  // at a time (for obvious reasons).
   void SelectFile(Type type,
                   const std::u16string& title,
                   const base::FilePath& default_path,
@@ -200,7 +206,8 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
                   int file_type_index,
                   const base::FilePath::StringType& default_extension,
                   gfx::NativeWindow owning_window,
-                  void* params);
+                  void* params,
+                  const GURL* caller = nullptr);
   bool HasMultipleFileTypeChoices();
 
  protected:
@@ -222,10 +229,11 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       int file_type_index,
       const base::FilePath::StringType& default_extension,
       gfx::NativeWindow owning_window,
-      void* params) = 0;
+      void* params,
+      const GURL* caller) = 0;
 
   // The listener to be notified of selection completion.
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
 
  private:
   // Tests if the file selection dialog can be displayed by
@@ -241,8 +249,6 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   virtual bool HasMultipleFileTypeChoicesImpl() = 0;
 
   std::unique_ptr<SelectFilePolicy> select_file_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectFileDialog);
 };
 
 SelectFileDialog* CreateSelectFileDialog(

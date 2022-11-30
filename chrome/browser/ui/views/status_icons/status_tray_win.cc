@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,12 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_state_changer_win.h"
 #include "chrome/common/chrome_constants.h"
@@ -47,6 +46,11 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
       : pending_requests_(0), worker_thread_("StatusIconCOMWorkerThread") {
     worker_thread_.init_com_with_mta(false);
   }
+
+  StatusTrayStateChangerProxyImpl(const StatusTrayStateChangerProxyImpl&) =
+      delete;
+  StatusTrayStateChangerProxyImpl& operator=(
+      const StatusTrayStateChangerProxyImpl&) = delete;
 
   ~StatusTrayStateChangerProxyImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -93,8 +97,6 @@ class StatusTrayStateChangerProxyImpl : public StatusTrayStateChangerProxy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<StatusTrayStateChangerProxyImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerProxyImpl);
 };
 
 StatusTrayWin::StatusTrayWin()

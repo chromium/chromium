@@ -45,6 +45,16 @@ Leaving alpha unset implies alpha=.5, which is the default in the official
 ROUGE-1.5.5.pl script. Setting alpha to a negative number triggers a
 compatibility mode with the tensor2tensor implementation of ROUGE-L.
 
+```
+>>> hypotheses = tf.ragged.constant([["a","b"]])
+>>> references = tf.ragged.constant([["b"]])
+>>> f, p, r = rouge_l(hypotheses, references, alpha=1)
+>>> print("f: %s, p: %s, r: %s" % (f, p, r))
+f: tf.Tensor([0.5], shape=(1,), dtype=float32),
+p: tf.Tensor([0.5], shape=(1,), dtype=float32),
+r: tf.Tensor([1.], shape=(1,), dtype=float32)
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>

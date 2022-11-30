@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,25 +18,26 @@ namespace {
 class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionDialogUiTest() = default;
-  ~ExtensionDialogUiTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialogUiTest);
+  ExtensionDialogUiTest(const ExtensionDialogUiTest&) = delete;
+  ExtensionDialogUiTest& operator=(const ExtensionDialogUiTest&) = delete;
+
+  ~ExtensionDialogUiTest() override = default;
 };
 
 }  // namespace
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Focusing or input is not completely working on Mac: http://crbug.com/824418
 #define MAYBE_TabFocusLoop DISABLED_TabFocusLoop
 #else
 #define MAYBE_TabFocusLoop TabFocusLoop
 #endif
 IN_PROC_BROWSER_TEST_F(ExtensionDialogUiTest, MAYBE_TabFocusLoop) {
-  ExtensionTestMessageListener init_listener("ready", false /* will_reply */);
-  ExtensionTestMessageListener button1_focus_listener("button1-focused", false);
-  ExtensionTestMessageListener button2_focus_listener("button2-focused", false);
-  ExtensionTestMessageListener button3_focus_listener("button3-focused", false);
+  ExtensionTestMessageListener init_listener("ready");
+  ExtensionTestMessageListener button1_focus_listener("button1-focused");
+  ExtensionTestMessageListener button2_focus_listener("button2-focused");
+  ExtensionTestMessageListener button3_focus_listener("button3-focused");
 
   // Load an extension for the test.
   scoped_refptr<const extensions::Extension> extension =

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -202,7 +202,7 @@ int GetFontCapHeightCenterOffset(const gfx::FontList& original_font,
 
   const int cap_height_diff = original_cap_height - to_center_cap_height;
   const int new_cap_top =
-      original_cap_leading + std::lround(cap_height_diff / 2.0f);
+      original_cap_leading + base::ClampRound(cap_height_diff / 2.0f);
   const int new_top = new_cap_top - to_center_leading;
 
   // Since we assume the old font starts at zero, the new top is the adjustment.

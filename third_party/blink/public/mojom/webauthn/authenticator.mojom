@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
+import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/payments/payment_credential.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // This file describes the communication between the WebAuthentication renderer
@@ -12,18 +15,18 @@ import "url/mojom/url.mojom";
 // credentials and use already-created credentials to get assertions.
 // See https://w3c.github.io/webauthn/.
 
+// The maximum allowable list size for vectors of
+// `PublicKeyCredentialDescriptor` (i.e.
+// `PublicKeyCredentialCreationOptions.exclude_credentials` and
+// `PublicKeyCredentialRequestOptions.allow_credentials`).
+const uint32 kPublicKeyCredentialDescriptorListMaxSize = 64;
+
 enum AuthenticatorStatus {
   SUCCESS,
   PENDING_REQUEST,
   NOT_ALLOWED_ERROR,
   INVALID_DOMAIN,
-  INVALID_ICON_URL,
   CREDENTIAL_EXCLUDED,
-
-  // TODO(crbug/964439): Unused in Desktop, but kept around for Android. Delete
-  // once it's fully obsolete.
-  CREDENTIAL_NOT_RECOGNIZED,
-
   NOT_IMPLEMENTED,
   NOT_FOCUSED,
   RESIDENT_CREDENTIALS_UNSUPPORTED,
@@ -38,6 +41,14 @@ enum AuthenticatorStatus {
   BAD_RELYING_PARTY_ID,
   CANNOT_READ_AND_WRITE_LARGE_BLOB,
   INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB,
+  FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION,
+  REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED,
+  DEVICE_PUBLIC_KEY_ATTESTATION_REJECTED,
+
+  // ERROR_WITH_DOM_EXCEPTION_DETAILS indicates that the error will be
+  // described in a `WebAuthnDOMExceptionDetails` structure.
+  ERROR_WITH_DOM_EXCEPTION_DETAILS,
+
   UNKNOWN_ERROR,
 };
 
@@ -46,7 +57,7 @@ enum AuthenticatorTransport {
   USB,
   NFC,
   BLE,
-  CABLE,
+  HYBRID,
   INTERNAL,
 };
 
@@ -79,9 +90,18 @@ struct UvmEntry {
   uint16 matcher_protection_type;
 };
 
+// The output for the `devicePubKey` extension.
+struct DevicePublicKeyResponse {
+  array<uint8> authenticator_output;
+  array<uint8> signature;
+};
+
 // The public key and attestation returned by Authenticator::MakeCredential.
 struct MakeCredentialAuthenticatorResponse {
   CommonCredentialInfo info;
+
+  // The attachment of the authenticator that created the credential.
+  AuthenticatorAttachment authenticator_attachment;
 
   // A blob of data returned by the authenticator after creating a credential.
   array<uint8> attestation_object;
@@ -102,6 +122,12 @@ struct MakeCredentialAuthenticatorResponse {
   bool echo_prf;
   bool prf;
 
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `credBlob` extension output.
+  // If so, |cred_blob| contains the value of the output.
+  bool echo_cred_blob;
+  bool cred_blob;
+
   // The DER-encoded, ASN.1 public key of the newly created credential. May be
   // missing if the browser does not understand the public-key type.
   array<uint8>? public_key_der;
@@ -109,16 +135,6 @@ struct MakeCredentialAuthenticatorResponse {
   // The COSE algorithm of the newly created credential.
   // See https://www.iana.org/assignments/cose/cose.xhtml#algorithms
   int32 public_key_algo;
-
-  // Only supported by fido2 devices on android, will eventually supported by
-  // other platform.
-  // True if getClientExtensionResults() called on the returned
-  // PublicKeyCredential instance should contain an 'uvm' extension output.
-  // If so, |user_verification_methods| contains the actual value.
-  [EnableIf=is_android]
-  bool echo_user_verification_methods;
-  [EnableIf=is_android]
-  array<UvmEntry>? user_verification_methods;
 
   // True if getClientExtensionResults() called on the returned
   // PublicKeyCredential instance should contain a `credProps` extension
@@ -134,10 +150,15 @@ struct MakeCredentialAuthenticatorResponse {
   // extension output should be.
   bool echo_large_blob;
   bool supports_large_blob;
+
+  DevicePublicKeyResponse? device_public_key;
 };
 
 struct GetAssertionAuthenticatorResponse {
   CommonCredentialInfo info;
+
+  // The attachment of the authenticator that created the credential.
+  AuthenticatorAttachment authenticator_attachment;
 
   // Cryptographic signature proving possession of the credential private key.
   array<uint8> signature;
@@ -184,6 +205,12 @@ struct GetAssertionAuthenticatorResponse {
   // with a `written` parameter. The value is indicated by |large_blob_written|.
   bool echo_large_blob_written;
   bool large_blob_written;
+
+  // The value of the `getCredBlob` extension output, which maybe empty, or
+  // null if none.
+  array<uint8>? get_cred_blob;
+
+  DevicePublicKeyResponse? device_public_key;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -194,9 +221,6 @@ struct PublicKeyCredentialRpEntity {
   // Friendly name associated with the relying party intended for display.
   // e.g. "Acme Corporation".
   string name;
-
-  // Image associated with the entity. e.g. a relying party's logo.
-  url.mojom.Url? icon;
 };
 
 // Informatiom about the account held by the user. These fields take
@@ -209,9 +233,6 @@ struct PublicKeyCredentialUserEntity {
   // Friendly name associated with the entity intended for display.
   // e.g."john.p.smith@example.com" or "+14255551234" for a user.
   string name;
-
-  // Image associated with the entity. For example, a user’s avatar.
-  url.mojom.Url? icon;
 
   // Contains a friendly name for the user account (e.g., "John P. Smith").
   string display_name;
@@ -253,6 +274,10 @@ struct CableAuthentication {
   // device.
   // (Present iff version == 2.)
   array<uint8>? server_link_data;
+
+  // caBLEv2 experiment numbers.
+  // (Present iff version == 2.)
+  array<uint8>? experiments;
 };
 
 // Cloud-assisted BLE extension data for makeCredential.
@@ -273,6 +298,42 @@ struct PRFValues {
   array<uint8>? id;
   array<uint8, 32> first;
   array<uint8, 32>? second;
+};
+
+// Payment parameters passed into calls to GetAssertion for Secure Payment
+// Confirmation.
+// TODO(https://crbug.com/1239249): Convert to a non-mojo struct, because this
+// is not used in any mojo interfaces.
+struct PaymentOptions {
+  payments.mojom.PaymentCurrencyAmount total;
+  PaymentCredentialInstrument instrument;
+  string? payee_name;
+  url.mojom.Origin? payee_origin;
+};
+
+// TODO(https://crbug.com/1239249): Move to payment_request.mojom after this
+// struct is no longer used in here.
+struct PaymentCredentialInstrument {
+  // Friendly name for displaying this instrument to the user.
+  string display_name;
+
+  // URL for an icon to display alongside the display_name. The URL is secure,
+  // not required to share the same origin with the current page.
+  url.mojom.Url icon;
+
+  // Whether the icon is required to be shown in the UI.
+  bool iconMustBeShown;
+};
+
+// https://github.com/w3c/webauthn/wiki/Explainer:-WebAuthn-Remote-Desktop-Support
+struct RemoteDesktopClientOverride {
+  url.mojom.Origin origin;
+  bool same_origin_with_ancestors;
+};
+
+struct DevicePublicKeyRequest {
+  AttestationConveyancePreference attestation;
+  array<string> attestation_formats;
 };
 
 // Parameters passed into calls to GetAssertion.
@@ -335,16 +396,18 @@ struct PublicKeyCredentialRequestOptions {
   // If present, large blob to be written on the credential.
   // https://w3c.github.io/webauthn/#dom-authenticationextensionslargeblobinputs-write
   array<uint8>? large_blob_write;
-};
 
-// See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
-enum AttestationConveyancePreference {
-  NONE,
-  INDIRECT,
-  DIRECT,
-  // A non-standard addition that we hope will become standard. This indicates
-  // that the RP desires individual attestaion from the device.
-  ENTERPRISE,
+  // If true, attempt to read a credblob.
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  bool get_cred_blob;
+
+  // Indicates that a remote desktop client is making a forwarded request on
+  // behalf of another origin.
+  RemoteDesktopClientOverride? remote_desktop_client_override;
+
+  // If present, reflects the contents of the "devicePubKey" extension.
+  // https://github.com/w3c/webauthn/pull/1663
+  DevicePublicKeyRequest? device_public_key;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -436,13 +499,6 @@ struct PublicKeyCredentialCreationOptions {
   // https://w3c.github.io/webauthn/#prf-extension
   bool prf_enable;
 
-  // Only supported by fido2 devices on android, will eventually supported by
-  // other platform.
-  // Whether the user verification method extension is requested by
-  // the RP. See https://w3c.github.io/webauthn/#sctn-uvm-extension
-  [EnableIf=is_android]
-  bool user_verification_methods;
-
   // The value of the `credentialProtectionPolicy` extension, or UNSPECIFIED if
   // none was provided.
   ProtectionPolicy protection_policy;
@@ -464,6 +520,37 @@ struct PublicKeyCredentialCreationOptions {
 
   // Whether this request is for making a PaymentCredential.
   bool is_payment_credential_creation;
+
+  // If present, attempt the store the given value as a credblob.
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  array<uint8>? cred_blob;
+
+  // Whether a U2F-API-compatible should be made to support a U2F API
+  // migration.
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A
+  bool google_legacy_app_id_support = false;
+
+  // Whether the minPinLength extension was set to true.
+  // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+  bool min_pin_length_requested = false;
+
+  // Indicates that a remote desktop client is making a forwarded request on
+  // behalf of another origin.
+  RemoteDesktopClientOverride? remote_desktop_client_override;
+
+  // If present, reflects the contents of the "devicePubKey" extension.
+  // https://github.com/w3c/webauthn/pull/1663
+  DevicePublicKeyRequest? device_public_key;
+};
+
+// See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
+enum AttestationConveyancePreference {
+  NONE,
+  INDIRECT,
+  DIRECT,
+  // A non-standard addition that we hope will become standard. This indicates
+  // that the RP desires individual attestation from the device.
+  ENTERPRISE,
 };
 
 enum PublicKeyCredentialType {
@@ -483,24 +570,45 @@ struct PublicKeyCredentialDescriptor {
   array<AuthenticatorTransport> transports;
 };
 
+// Describes the DOMException to be returned to the caller if MakeCredential or
+// GetAssertion returns ERROR_WITH_DOM_EXCEPTION_DETAILS.
+struct WebAuthnDOMExceptionDetails {
+  string name;
+  string message;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
-  // authenticator for the given |PublicKeyCredentialCreationOptions|
-  // [MakeCredentialAuthenticatorResponse] will be set if and only if status == SUCCESS.
+  // authenticator for the given |PublicKeyCredentialCreationOptions|.
+  // [MakeCredentialAuthenticatorResponse] will be set if and only if status ==
+  // SUCCESS. [WebAuthnDOMExceptionDetails] will be set if and only if
+  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
   MakeCredential(PublicKeyCredentialCreationOptions options)
-      => (AuthenticatorStatus status, MakeCredentialAuthenticatorResponse? credential);
+      => (AuthenticatorStatus status,
+          MakeCredentialAuthenticatorResponse? credential,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Uses an existing credential to produce an assertion for the given
   // |PublicKeyCredentialRequestOptions|.
   // |GetAssertionResponse| will be set if and only if status == SUCCESS.
+  // [WebAuthnDOMExceptionDetails] will be set if and only if
+  // status == ERROR_WITH_DOM_EXCEPTION_DETAILS.
   GetAssertion(PublicKeyCredentialRequestOptions options)
-      => (AuthenticatorStatus status, GetAssertionAuthenticatorResponse? credential);
+      => (AuthenticatorStatus status,
+          GetAssertionAuthenticatorResponse? credential,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Returns true if the user platform provides an authenticator. Relying
   // Parties use this method to determine whether they can create a new
   // credential using a user-verifying platform authenticator.
   IsUserVerifyingPlatformAuthenticatorAvailable() => (bool available);
+
+  // Returns true if Conditional Mediation is available. Relying Parties can use
+  // this method to determine whether they can pass "conditional" to the
+  // "mediation" parameter of a webauthn get call and have the browser autofill
+  // webauthn credentials on form inputs.
+  IsConditionalMediationAvailable() => (bool available);
 
   // Cancel an ongoing MakeCredential or GetAssertion request
   // Only one MakeCredential or GetAssertion call at a time is allowed,

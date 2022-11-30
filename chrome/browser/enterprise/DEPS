@@ -1,5 +1,10 @@
 include_rules = [
-  "+chrome/browser/ui/views",
+  "+components/device_signals",
   "+components/enterprise",
 ]
 
+specific_include_rules = {
+  "box_captured_sites_interactive_uitest.cc": [
+    "+chrome/browser/ui/views",
+  ]
+}

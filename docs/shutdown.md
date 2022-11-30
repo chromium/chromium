@@ -7,13 +7,59 @@ This documents shutdown steps on Windows, Mac and Linux.
 On Android, the system can terminate the Chrome app at any point without running
 any shutdown step.
 
-TODO: Document ChromeOS shutdown.
+See below for how the process differs on ChromeOS.
+
+## Step 0: Profile destruction
+
+Since M98, Chrome can destroy `Profile` objects separately from shutdown; on
+Windows and Linux, this happens in multi-profile scenarios. On macOS, it can
+also happen in single-profile scenarios, because Chrome lifetime is separate
+from browser windows.
+
+Typically, this logic triggers when all browser windows are closed, but other
+things can [keep a `Profile`
+alive](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/profiles/keep_alive/profile_keep_alive_types.h).
+
+`~ScopedProfileKeepAlive` posts a task to run `RemoveKeepAliveOnUIThread`. This
+decrements the refcount in `ProfileManager`, and if it hits zero then
+`DestroyProfileWhenAppropriate` is called.
+
+```
+ProfileDestroyer::DestroyProfileWhenAppropriate
+...
+ProfileManager::RemoveProfile
+ProfileManager::RemoveKeepAlive
+ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread
+```
+
+Unlike regular profiles, OTR profiles are **not** refcounted. Instead,
+`~Browser` checks the profile's browser count after removing itself. If it's
+zero, it calls `DestroyProfileWhenAppropriate` directly.
+
+```
+ProfileDestroyer::DestroyProfileWhenAppropriate
+Browser::~Browser
+```
+
+You can use `ProfileManager` logging to inspect a profile's keepalive state:
+
+```
+$ ./out/Default/chrome --enable-logging=stderr --v=0 --vmodule=profile_manager=1
+[71002:259:0328/133310.430142:VERBOSE1:profile_manager.cc(1489)] AddKeepAlive(Default, kBrowserWindow). keep_alives=[kWaitingForFirstBrowserWindow (1), kBrowserWindow (1)]
+[71002:259:0328/133310.430177:VERBOSE1:profile_manager.cc(1543)] ClearFirstBrowserWindowKeepAlive(Default). keep_alives=[kBrowserWindow (1)]
+[71002:259:0328/133314.468135:VERBOSE1:profile_manager.cc(1489)] AddKeepAlive(Default, kExtensionUpdater). keep_alives=[kBrowserWindow (1), kExtensionUpdater (1)]
+[71002:259:0328/133314.469444:VERBOSE1:profile_manager.cc(1522)] RemoveKeepAlive(Default, kExtensionUpdater). keep_alives=[kBrowserWindow (1)]
+[71002:259:0328/133315.396614:VERBOSE1:profile_manager.cc(1489)] AddKeepAlive(Default, kOffTheRecordProfile). keep_alives=[kBrowserWindow (1), kOffTheRecordProfile (1)]
+[71002:259:0328/133417.078148:VERBOSE1:profile_manager.cc(1522)] RemoveKeepAlive(Default, kBrowserWindow). keep_alives=[kOffTheRecordProfile (1)]
+[71002:259:0328/133442.705250:VERBOSE1:profile_manager.cc(1522)] RemoveKeepAlive(Default, kOffTheRecordProfile). keep_alives=[]
+[71002:259:0328/133442.705296:VERBOSE1:profile_manager.cc(1567)] Deleting profile Default
+```
 
 ## Step 1: Exiting the main loop
 
 Shutdown starts when nothing keeps Chrome alive. Typically, this happens when
 all browser windows are closed, but other things can [keep Chrome
-alive](https://source.chromium.org/chromium/chromium/src/+/master:components/keep_alive_registry/keep_alive_types.h).
+alive](https://source.chromium.org/chromium/chromium/src/+/main:components/keep_alive_registry/keep_alive_types.h).
 
 When nothing keeps Chrome alive, `BrowserProcessImpl::Unpin` asks the main
 thread's message loop to quit as soon as it no longer has tasks ready to run
@@ -94,3 +140,17 @@ content::BrowserMainLoop::ShutdownThreadsAndCleanUp
 content::BrowserMainLoop::ShutdownThreadsAndCleanUp
 content::BrowserMainRunnerImpl::Shutdown
 ```
+
+## ChromeOS differences
+On ChromeOS, the ash browser is only supposed to exit when the user logs out.
+
+When the user logs out, the browser sends a `StopSession` message to the
+[session_manager](https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/login_manager/README.md).
+The session_manager then sends a SIGTERM to the main browser process to cause an
+exit. Once SIGTERM is received, it starts shutting down the main loop and
+cleaning up in the sequence described above.
+
+Unlike other desktop platforms, the shutdown is time limited. If the browser
+process has not exited within a certain time frame (normally, 3 seconds), the
+session_manager will SIGKILL the browser process since the user is looking at
+a blank screen and unable to use their Chromebook until the browser exits.

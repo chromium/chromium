@@ -30,6 +30,7 @@
 #include "absl/base/call_once.h"
 #include "absl/base/casts.h"
 #include "absl/base/config.h"
+#include "absl/base/dynamic_annotations.h"
 #include "absl/base/optimization.h"
 #include "absl/flags/config.h"
 #include "absl/flags/internal/commandlineflag.h"
@@ -145,12 +146,7 @@ void FlagImpl::Init() {
   auto def_kind = static_cast<FlagDefaultKind>(def_kind_);
 
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer:
-      // For this storage kind the default_value_ always points to gen_func
-      // during initialization.
-      assert(def_kind == FlagDefaultKind::kGenFunc);
-      (*default_value_.gen_func)(AlignedBufferValue());
-      break;
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
       alignas(int64_t) std::array<char, sizeof(int64_t)> buf{};
       if (def_kind == FlagDefaultKind::kGenFunc) {
@@ -159,6 +155,14 @@ void FlagImpl::Init() {
         assert(def_kind != FlagDefaultKind::kDynamicValue);
         std::memcpy(buf.data(), &default_value_, Sizeof(op_));
       }
+      if (ValueStorageKind() == FlagValueStorageKind::kValueAndInitBit) {
+        // We presume here the memory layout of FlagValueAndInitBit struct.
+        uint8_t initialized = 1;
+        std::memcpy(buf.data() + Sizeof(op_), &initialized,
+                    sizeof(initialized));
+      }
+      // Type can contain valid uninitialized bits, e.g. padding.
+      ABSL_ANNOTATE_MEMORY_IS_INITIALIZED(buf.data(), buf.size());
       OneWordValue().store(absl::bit_cast<int64_t>(buf),
                            std::memory_order_release);
       break;
@@ -170,6 +174,12 @@ void FlagImpl::Init() {
       (*default_value_.gen_func)(AtomicBufferValue());
       break;
     }
+    case FlagValueStorageKind::kAlignedBuffer:
+      // For this storage kind the default_value_ always points to gen_func
+      // during initialization.
+      assert(def_kind == FlagDefaultKind::kGenFunc);
+      (*default_value_.gen_func)(AlignedBufferValue());
+      break;
   }
   seq_lock_.MarkInitialized();
 }
@@ -198,7 +208,7 @@ void FlagImpl::AssertValidType(FlagFastTypeId rhs_type_id,
 
   if (lhs_runtime_type_id == rhs_runtime_type_id) return;
 
-#if defined(ABSL_FLAGS_INTERNAL_HAS_RTTI)
+#ifdef ABSL_INTERNAL_HAS_RTTI
   if (*lhs_runtime_type_id == *rhs_runtime_type_id) return;
 #endif
 
@@ -226,12 +236,10 @@ std::unique_ptr<void, DynValueDeleter> FlagImpl::MakeInitValue() const {
 
 void FlagImpl::StoreValue(const void* src) {
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer:
-      Copy(op_, src, AlignedBufferValue());
-      seq_lock_.IncrementModificationCount();
-      break;
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
-      int64_t one_word_val = 0;
+      // Load the current value to avoid setting 'init' bit manualy.
+      int64_t one_word_val = OneWordValue().load(std::memory_order_acquire);
       std::memcpy(&one_word_val, src, Sizeof(op_));
       OneWordValue().store(one_word_val, std::memory_order_release);
       seq_lock_.IncrementModificationCount();
@@ -241,6 +249,10 @@ void FlagImpl::StoreValue(const void* src) {
       seq_lock_.Write(AtomicBufferValue(), src, Sizeof(op_));
       break;
     }
+    case FlagValueStorageKind::kAlignedBuffer:
+      Copy(op_, src, AlignedBufferValue());
+      seq_lock_.IncrementModificationCount();
+      break;
   }
   modified_ = true;
   InvokeCallback();
@@ -280,10 +292,7 @@ std::string FlagImpl::DefaultValue() const {
 std::string FlagImpl::CurrentValue() const {
   auto* guard = DataGuard();  // Make sure flag initialized
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer: {
-      absl::MutexLock l(guard);
-      return flags_internal::Unparse(op_, AlignedBufferValue());
-    }
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
       const auto one_word_val =
           absl::bit_cast<std::array<char, sizeof(int64_t)>>(
@@ -295,6 +304,10 @@ std::string FlagImpl::CurrentValue() const {
                                                     DynValueDeleter{op_});
       ReadSequenceLockedData(cloned.get());
       return flags_internal::Unparse(op_, cloned.get());
+    }
+    case FlagValueStorageKind::kAlignedBuffer: {
+      absl::MutexLock l(guard);
+      return flags_internal::Unparse(op_, AlignedBufferValue());
     }
   }
 
@@ -341,11 +354,7 @@ std::unique_ptr<FlagStateInterface> FlagImpl::SaveState() {
   bool modified = modified_;
   bool on_command_line = on_command_line_;
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer: {
-      return absl::make_unique<FlagState>(
-          *this, flags_internal::Clone(op_, AlignedBufferValue()), modified,
-          on_command_line, ModificationCount());
-    }
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
       return absl::make_unique<FlagState>(
           *this, OneWordValue().load(std::memory_order_acquire), modified,
@@ -361,6 +370,11 @@ std::unique_ptr<FlagStateInterface> FlagImpl::SaveState() {
       return absl::make_unique<FlagState>(*this, cloned, modified,
                                           on_command_line, ModificationCount());
     }
+    case FlagValueStorageKind::kAlignedBuffer: {
+      return absl::make_unique<FlagState>(
+          *this, flags_internal::Clone(op_, AlignedBufferValue()), modified,
+          on_command_line, ModificationCount());
+    }
   }
   return nullptr;
 }
@@ -372,12 +386,13 @@ bool FlagImpl::RestoreState(const FlagState& flag_state) {
   }
 
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer:
-    case FlagValueStorageKind::kSequenceLocked:
-      StoreValue(flag_state.value_.heap_allocated);
-      break;
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic:
       StoreValue(&flag_state.value_.one_word);
+      break;
+    case FlagValueStorageKind::kSequenceLocked:
+    case FlagValueStorageKind::kAlignedBuffer:
+      StoreValue(flag_state.value_.heap_allocated);
       break;
   }
 
@@ -391,7 +406,7 @@ template <typename StorageT>
 StorageT* FlagImpl::OffsetValue() const {
   char* p = reinterpret_cast<char*>(const_cast<FlagImpl*>(this));
   // The offset is deduced via Flag value type specific op_.
-  size_t offset = flags_internal::ValueOffset(op_);
+  ptrdiff_t offset = flags_internal::ValueOffset(op_);
 
   return reinterpret_cast<StorageT*>(p + offset);
 }
@@ -407,7 +422,8 @@ std::atomic<uint64_t>* FlagImpl::AtomicBufferValue() const {
 }
 
 std::atomic<int64_t>& FlagImpl::OneWordValue() const {
-  assert(ValueStorageKind() == FlagValueStorageKind::kOneWordAtomic);
+  assert(ValueStorageKind() == FlagValueStorageKind::kOneWordAtomic ||
+         ValueStorageKind() == FlagValueStorageKind::kValueAndInitBit);
   return OffsetValue<FlagOneWordValue>()->value;
 }
 
@@ -433,11 +449,7 @@ std::unique_ptr<void, DynValueDeleter> FlagImpl::TryParse(
 void FlagImpl::Read(void* dst) const {
   auto* guard = DataGuard();  // Make sure flag initialized
   switch (ValueStorageKind()) {
-    case FlagValueStorageKind::kAlignedBuffer: {
-      absl::MutexLock l(guard);
-      flags_internal::CopyConstruct(op_, AlignedBufferValue(), dst);
-      break;
-    }
+    case FlagValueStorageKind::kValueAndInitBit:
     case FlagValueStorageKind::kOneWordAtomic: {
       const int64_t one_word_val =
           OneWordValue().load(std::memory_order_acquire);
@@ -448,11 +460,33 @@ void FlagImpl::Read(void* dst) const {
       ReadSequenceLockedData(dst);
       break;
     }
+    case FlagValueStorageKind::kAlignedBuffer: {
+      absl::MutexLock l(guard);
+      flags_internal::CopyConstruct(op_, AlignedBufferValue(), dst);
+      break;
+    }
   }
 }
 
+int64_t FlagImpl::ReadOneWord() const {
+  assert(ValueStorageKind() == FlagValueStorageKind::kOneWordAtomic ||
+         ValueStorageKind() == FlagValueStorageKind::kValueAndInitBit);
+  auto* guard = DataGuard();  // Make sure flag initialized
+  (void)guard;
+  return OneWordValue().load(std::memory_order_acquire);
+}
+
+bool FlagImpl::ReadOneBool() const {
+  assert(ValueStorageKind() == FlagValueStorageKind::kValueAndInitBit);
+  auto* guard = DataGuard();  // Make sure flag initialized
+  (void)guard;
+  return absl::bit_cast<FlagValueAndInitBit<bool>>(
+             OneWordValue().load(std::memory_order_acquire))
+      .value;
+}
+
 void FlagImpl::ReadSequenceLockedData(void* dst) const {
-  int size = Sizeof(op_);
+  size_t size = Sizeof(op_);
   // Attempt to read using the sequence lock.
   if (ABSL_PREDICT_TRUE(seq_lock_.TryRead(dst, AtomicBufferValue(), size))) {
     return;

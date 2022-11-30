@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/predictors/navigation_id.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -30,8 +28,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/sqlite_proto/key_value_data.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -59,13 +58,14 @@ class ResourcePrefetcherManager;
 // Stores all values needed to trigger a preconnect/preresolve job to a single
 // origin.
 struct PreconnectRequest {
-  // |network_isolation_key| specifies the key that network requests for the
+  // |network_anonymization_key| specifies the key that network requests for the
   // preconnected URL are expected to use. If a request is issued with a
   // different key, it may not use the preconnected socket. It has no effect
   // when |num_sockets| == 0.
-  PreconnectRequest(const url::Origin& origin,
-                    int num_sockets,
-                    const net::NetworkIsolationKey& network_isolation_key);
+  PreconnectRequest(
+      const url::Origin& origin,
+      int num_sockets,
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   PreconnectRequest(const PreconnectRequest&) = default;
   PreconnectRequest(PreconnectRequest&&) = default;
   PreconnectRequest& operator=(const PreconnectRequest&) = default;
@@ -75,12 +75,12 @@ struct PreconnectRequest {
   // A zero-value means that we need to preresolve a host only.
   int num_sockets = 0;
   bool allow_credentials = true;
-  net::NetworkIsolationKey network_isolation_key;
+  net::NetworkAnonymizationKey network_anonymization_key;
 };
 
 struct PrefetchRequest {
   PrefetchRequest(const GURL& url,
-                  const net::NetworkIsolationKey& network_isolation_key,
+                  const net::NetworkAnonymizationKey& network_anonymization_key,
                   network::mojom::RequestDestination destination);
 
   PrefetchRequest(const PrefetchRequest&) = default;
@@ -89,7 +89,7 @@ struct PrefetchRequest {
   PrefetchRequest& operator=(PrefetchRequest&&) = default;
 
   GURL url;
-  net::NetworkIsolationKey network_isolation_key;
+  net::NetworkAnonymizationKey network_anonymization_key;
   network::mojom::RequestDestination destination;
 };
 
@@ -120,7 +120,7 @@ struct OptimizationGuidePrediction {
   optimization_guide::OptimizationGuideDecision decision;
   PreconnectPrediction preconnect_prediction;
   std::vector<GURL> predicted_subresources;
-  base::Optional<base::TimeTicks> optimization_guide_prediction_arrived;
+  absl::optional<base::TimeTicks> optimization_guide_prediction_arrived;
 };
 
 // Contains logic for learning what can be prefetched and for kicking off
@@ -162,11 +162,14 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
       sqlite_proto::KeyValueData<RedirectData, internal::LastVisitTimeCompare>;
   using OriginDataMap =
       sqlite_proto::KeyValueData<OriginData, internal::LastVisitTimeCompare>;
-  using NavigationMap =
-      std::map<NavigationID, std::unique_ptr<PageRequestSummary>>;
 
   ResourcePrefetchPredictor(const LoadingPredictorConfig& config,
                             Profile* profile);
+
+  ResourcePrefetchPredictor(const ResourcePrefetchPredictor&) = delete;
+  ResourcePrefetchPredictor& operator=(const ResourcePrefetchPredictor&) =
+      delete;
+
   ~ResourcePrefetchPredictor() override;
 
   // Starts initialization by posting a task to the DB sequence of the
@@ -305,8 +308,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
     tables_ = tables;
   }
 
-  Profile* const profile_;
-  TestObserver* observer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<TestObserver> observer_;
   const LoadingPredictorConfig config_;
   InitializationState initialization_state_;
   scoped_refptr<ResourcePrefetchPredictorTables> tables_;
@@ -315,22 +318,24 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
   std::unique_ptr<RedirectDataMap> host_redirect_data_;
   std::unique_ptr<OriginDataMap> origin_data_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Indicates if all predictors data should be deleted after the
   // initialization is completed.
   bool delete_all_data_requested_ = false;
 
   base::WeakPtrFactory<ResourcePrefetchPredictor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourcePrefetchPredictor);
 };
 
 // An interface used to notify that data in the ResourcePrefetchPredictor
 // has changed. All methods are invoked on the UI thread.
 class TestObserver {
  public:
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   // De-registers itself from |predictor_| on destruction.
   virtual ~TestObserver();
 
@@ -344,9 +349,7 @@ class TestObserver {
   explicit TestObserver(ResourcePrefetchPredictor* predictor);
 
  private:
-  ResourcePrefetchPredictor* predictor_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
 };
 
 }  // namespace predictors

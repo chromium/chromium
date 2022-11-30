@@ -1,9 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -11,30 +16,14 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ime/chromeos/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserActionContinue[] = "continue-setup";
 constexpr char kUserActionClose[] = "close-setup";
-
-WelcomeScreen* GetWelcomeScreen() {
-  const WizardController* wizard_controller =
-      WizardController::default_controller();
-  DCHECK(wizard_controller);
-  return wizard_controller->GetScreen<WelcomeScreen>();
-}
-
-// Sets locale and input method. If `locale` or `input_method` is empty then
-// they will not be changed.
-void SetApplicationLocaleAndInputMethod(const std::string& locale,
-                                        const std::string& input_method) {
-  WelcomeScreen* welcome_screen = GetWelcomeScreen();
-  DCHECK(welcome_screen);
-  welcome_screen->SetApplicationLocaleAndInputMethod(locale, input_method);
-}
+constexpr char kUserActionSetDemoModeCountry[] = "set-demo-mode-country";
 
 }  // namespace
 
@@ -42,6 +31,7 @@ void SetApplicationLocaleAndInputMethod(const std::string& locale,
 std::string DemoPreferencesScreen::GetResultString(Result result) {
   switch (result) {
     case Result::COMPLETED:
+    case Result::COMPLETED_CONSOLIDATED_CONSENT:
       return "Completed";
     case Result::CANCELED:
       return "Canceled";
@@ -49,76 +39,62 @@ std::string DemoPreferencesScreen::GetResultString(Result result) {
 }
 
 DemoPreferencesScreen::DemoPreferencesScreen(
-    DemoPreferencesScreenView* view,
+    base::WeakPtr<DemoPreferencesScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(DemoPreferencesScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
-  view_->Bind(this);
-
   // TODO(agawronska): Add tests for locale and input changes.
   input_method::InputMethodManager* input_manager =
       input_method::InputMethodManager::Get();
   UpdateInputMethod(input_manager);
-  input_manager_observer_.Add(input_manager);
+  input_manager_observation_.Observe(input_manager);
 }
 
 DemoPreferencesScreen::~DemoPreferencesScreen() {
   input_method::InputMethodManager::Get()->RemoveObserver(this);
-
-  if (view_)
-    view_->Bind(nullptr);
 }
 
-void DemoPreferencesScreen::SetLocale(const std::string& locale) {
-  SetApplicationLocaleAndInputMethod(locale, std::string());
-}
-
-void DemoPreferencesScreen::SetInputMethod(const std::string& input_method) {
-  SetApplicationLocaleAndInputMethod(std::string(), input_method);
-}
-
-void DemoPreferencesScreen::SetDemoModeCountry(const std::string& country_id) {
-  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
-                                              country_id);
+void DemoPreferencesScreen::SetDemoModeRetailerAndStoreIdInput(
+    const std::string& retailer_store_id_input) {
+  WizardController::default_controller()
+      ->demo_setup_controller()
+      ->set_retailer_store_id_input(retailer_store_id_input);
 }
 
 void DemoPreferencesScreen::ShowImpl() {
-  WelcomeScreen* welcome_screen = GetWelcomeScreen();
-  if (welcome_screen) {
-    initial_locale_ = welcome_screen->GetApplicationLocale();
-    initial_input_method_ = welcome_screen->GetInputMethod();
-  }
-
   if (view_)
     view_->Show();
 }
 
-void DemoPreferencesScreen::HideImpl() {
-  initial_locale_.clear();
-  initial_input_method_.clear();
+void DemoPreferencesScreen::HideImpl() {}
 
-  if (view_)
-    view_->Hide();
-}
-
-void DemoPreferencesScreen::OnUserAction(const std::string& action_id) {
+void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
-    exit_callback_.Run(Result::COMPLETED);
+    CHECK_EQ(args.size(), 2u);
+    std::string country(
+        g_browser_process->local_state()->GetString(prefs::kDemoModeCountry));
+    if (country == DemoSession::kCountryNotSelectedId) {
+      return;
+    }
+    // Set retailer store input string regardless of pattern, let server decide
+    // what action take when it is invalid.
+    const std::string& retailer_store_id_input = args[1].GetString();
+    SetDemoModeRetailerAndStoreIdInput(retailer_store_id_input);
+    exit_callback_.Run(chromeos::features::IsOobeConsolidatedConsentEnabled()
+                           ? Result::COMPLETED_CONSOLIDATED_CONSENT
+                           : Result::COMPLETED);
   } else if (action_id == kUserActionClose) {
-    // Restore initial locale and input method if the user pressed back button.
-    SetApplicationLocaleAndInputMethod(initial_locale_, initial_input_method_);
     exit_callback_.Run(Result::CANCELED);
+  } else if (action_id == kUserActionSetDemoModeCountry) {
+    CHECK_EQ(args.size(), 2u);
+    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                args[1].GetString());
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
-}
-
-void DemoPreferencesScreen::OnViewDestroyed(DemoPreferencesScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void DemoPreferencesScreen::InputMethodChanged(
@@ -137,4 +113,4 @@ void DemoPreferencesScreen::UpdateInputMethod(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

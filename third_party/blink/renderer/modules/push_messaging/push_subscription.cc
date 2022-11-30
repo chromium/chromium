@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 
 #include <memory>
+
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -13,10 +15,8 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_provider.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -49,17 +49,17 @@ String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
   return value;
 }
 
-// Converts a {base::Optional<base::Time>} into a
-// {base::Optional<base::DOMTimeStamp>} object.
+// Converts a {absl::optional<base::Time>} into a
+// {absl::optional<base::DOMTimeStamp>} object.
 // base::Time is in milliseconds from Windows epoch (1601-01-01 00:00:00 UTC)
 // while blink::DOMTimeStamp is in milliseconds from UNIX epoch (1970-01-01
 // 00:00:00 UTC)
-base::Optional<blink::DOMTimeStamp> ToDOMTimeStamp(
-    const base::Optional<base::Time>& time) {
+absl::optional<blink::DOMTimeStamp> ToDOMTimeStamp(
+    const absl::optional<base::Time>& time) {
   if (time)
     return ConvertSecondsToDOMTimeStamp(time->ToDoubleT());
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -81,22 +81,23 @@ PushSubscription::PushSubscription(
     const WTF::Vector<uint8_t>& application_server_key,
     const WTF::Vector<unsigned char>& p256dh,
     const WTF::Vector<unsigned char>& auth,
-    const base::Optional<DOMTimeStamp>& expiration_time,
+    const absl::optional<DOMTimeStamp>& expiration_time,
     ServiceWorkerRegistration* service_worker_registration)
     : endpoint_(endpoint),
       options_(MakeGarbageCollected<PushSubscriptionOptions>(
           user_visible_only,
           application_server_key)),
-      p256dh_(DOMArrayBuffer::Create(p256dh.data(),
-                                     SafeCast<unsigned>(p256dh.size()))),
-      auth_(
-          DOMArrayBuffer::Create(auth.data(), SafeCast<unsigned>(auth.size()))),
+      p256dh_(
+          DOMArrayBuffer::Create(p256dh.data(),
+                                 base::checked_cast<unsigned>(p256dh.size()))),
+      auth_(DOMArrayBuffer::Create(auth.data(),
+                                   base::checked_cast<unsigned>(auth.size()))),
       expiration_time_(expiration_time),
       service_worker_registration_(service_worker_registration) {}
 
 PushSubscription::~PushSubscription() = default;
 
-base::Optional<DOMTimeStamp> PushSubscription::expirationTime() const {
+absl::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
   // This attribute reflects the time at which the subscription will expire,
   // which is not relevant to this implementation yet as subscription refreshes
   // are not supported.

@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DOMSnapshot.h"
+#include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -26,6 +27,8 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
  public:
   using OriginUrlMap = WTF::HashMap<DOMNodeId, String>;
   LegacyDOMSnapshotAgent(InspectorDOMDebuggerAgent*, OriginUrlMap*);
+  LegacyDOMSnapshotAgent(const LegacyDOMSnapshotAgent&) = delete;
+  LegacyDOMSnapshotAgent& operator=(const LegacyDOMSnapshotAgent&) = delete;
   ~LegacyDOMSnapshotAgent();
 
   void Restore();
@@ -79,7 +82,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
                                          VectorStringHashTraits,
                                          VectorStringHashTraits>;
   using CSSPropertyFilter = Vector<std::pair<String, CSSPropertyID>>;
-  using PaintOrderMap = WTF::HashMap<PaintLayer*, int>;
+  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
 
   // State of current snapshot.
   std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>> dom_nodes_;
@@ -93,13 +96,12 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   std::unique_ptr<ComputedStylesMap> computed_styles_map_;
   std::unique_ptr<CSSPropertyFilter> css_property_filter_;
   // Maps a PaintLayer to its paint order index.
-  std::unique_ptr<PaintOrderMap> paint_order_map_;
+  PaintOrderMap* paint_order_map_ = nullptr;
   // Maps a backend node id to the url of the script (if any) that generates
   // the corresponding node.
   OriginUrlMap* origin_url_map_;
   using DocumentOrderMap = HeapHashMap<Member<Document>, int>;
   InspectorDOMDebuggerAgent* dom_debugger_agent_;
-  DISALLOW_COPY_AND_ASSIGN(LegacyDOMSnapshotAgent);
 };
 
 }  // namespace blink

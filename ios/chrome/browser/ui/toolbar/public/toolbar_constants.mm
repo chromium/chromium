@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,7 @@ const CGFloat kDimmedToolbarSpotlightAlpha = 0.14;
 
 const CGFloat kExpandedLocationBarHorizontalMargin = 10;
 const CGFloat kContractedLocationBarHorizontalMargin = 15;
+const CGFloat kExpandedLocationBarLeadingMarginRefreshedPopup = 16;
 
 const CGFloat kAdaptiveLocationBarBackgroundAlpha = 0.09;
 const CGFloat kAdaptiveLocationBarBackgroundAlphaIncognito = 0.12;

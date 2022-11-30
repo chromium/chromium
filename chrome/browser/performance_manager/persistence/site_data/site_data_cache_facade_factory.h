@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -47,8 +47,12 @@ class SiteDataCacheFacadeTest;
 //   - At shutdown, when the last SiteDataCacheFacade is destroyed, a task is
 //     posted to ensure that the SiteDataCacheFactory is destroyed on its
 //     sequence.
-class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
+class SiteDataCacheFacadeFactory : public ProfileKeyedServiceFactory {
  public:
+  SiteDataCacheFacadeFactory(const SiteDataCacheFacadeFactory&) = delete;
+  SiteDataCacheFacadeFactory& operator=(const SiteDataCacheFacadeFactory&) =
+      delete;
+
   ~SiteDataCacheFacadeFactory() override;
 
   static SiteDataCacheFacadeFactory* GetInstance();
@@ -79,8 +83,6 @@ class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
 
@@ -89,8 +91,6 @@ class SiteDataCacheFacadeFactory : public BrowserContextKeyedServiceFactory {
 
   // The number of SiteDataCacheFacade currently in existence.
   size_t service_instance_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteDataCacheFacadeFactory);
 };
 
 }  // namespace performance_manager

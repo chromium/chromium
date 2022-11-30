@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,32 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "components/download/public/background_service/download_metadata.h"
+#include "components/optimization_guide/core/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace optimization_guide {
+
+namespace {
+
+// Parses the optimization target from |custom_data|.
+absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+    const download::DownloadParams::CustomData& custom_data) {
+  const auto target_it =
+      custom_data.find(kPredictionModelOptimizationTargetCustomDataKey);
+  if (target_it == custom_data.end()) {
+    return absl::nullopt;
+  }
+  proto::OptimizationTarget optimization_target;
+  if (!proto::OptimizationTarget_Parse(target_it->second,
+                                       &optimization_target)) {
+    return absl::nullopt;
+  }
+  return optimization_target;
+}
+
+}  // namespace
 
 PredictionModelDownloadClient::PredictionModelDownloadClient(Profile* profile)
     : profile_(profile) {}
@@ -80,8 +100,10 @@ void PredictionModelDownloadClient::OnDownloadFailed(
     download::Client::FailureReason reason) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
-    download_manager->OnDownloadFailed(guid);
+  if (download_manager) {
+    download_manager->OnDownloadFailed(
+        ParseOptimizationTarget(completion_info.custom_data), guid);
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadSucceeded(
@@ -89,8 +111,11 @@ void PredictionModelDownloadClient::OnDownloadSucceeded(
     const download::CompletionInfo& completion_info) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
-    download_manager->OnDownloadSucceeded(guid, completion_info.path);
+  if (download_manager) {
+    download_manager->OnDownloadSucceeded(
+        ParseOptimizationTarget(completion_info.custom_data), guid,
+        completion_info.path);
+  }
 }
 
 bool PredictionModelDownloadClient::CanServiceRemoveDownloadedFile(

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@ namespace TargetProperty {
 // Must be zero-based as this will be stored in a bitset.
 enum Type {
   TRANSFORM = 0,
+  SCALE,
+  ROTATE,
+  TRANSLATE,
   OPACITY,
   FILTER,
   SCROLL_OFFSET,

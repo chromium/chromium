@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 // state.
 @protocol ManualFillContentInjector <NSObject>
 
-// Must be called before |userDidPickContent| to validate if a value type can be
+// Must be called before `userDidPickContent` to validate if a value type can be
 // injected, if either flag is true. If not, an alert is given to the user and
 // NO is returned.
 // @param passwordField YES if the user selected content that requires a

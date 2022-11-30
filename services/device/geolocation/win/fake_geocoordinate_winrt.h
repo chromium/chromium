@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -21,10 +20,10 @@ struct FakeGeocoordinateData {
   DOUBLE latitude = 0;
   DOUBLE longitude = 0;
   DOUBLE accuracy = 0;
-  base::Optional<DOUBLE> altitude;
-  base::Optional<DOUBLE> altitude_accuracy;
-  base::Optional<DOUBLE> heading;
-  base::Optional<DOUBLE> speed;
+  absl::optional<DOUBLE> altitude;
+  absl::optional<DOUBLE> altitude_accuracy;
+  absl::optional<DOUBLE> heading;
+  absl::optional<DOUBLE> speed;
 };
 
 class FakeGeocoordinate
@@ -35,6 +34,10 @@ class FakeGeocoordinate
  public:
   explicit FakeGeocoordinate(
       std::unique_ptr<FakeGeocoordinateData> position_data);
+
+  FakeGeocoordinate(const FakeGeocoordinate&) = delete;
+  FakeGeocoordinate& operator=(const FakeGeocoordinate&) = delete;
+
   ~FakeGeocoordinate() override;
   IFACEMETHODIMP get_Latitude(DOUBLE* value) override;
   IFACEMETHODIMP get_Longitude(DOUBLE* value) override;
@@ -52,8 +55,6 @@ class FakeGeocoordinate
 
  private:
   std::unique_ptr<FakeGeocoordinateData> position_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGeocoordinate);
 };
 
 }  // namespace device

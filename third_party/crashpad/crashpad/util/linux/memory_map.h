@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,6 +77,16 @@ class MemoryMap {
   //!     it was obtained from.
   const Mapping* FindMappingWithName(const std::string& name) const;
 
+  //! \brief Given a range to be read from the target process, returns a vector
+  //!     of ranges, representing the readable portions of the original range.
+  //!
+  //! \param[in] range The range being identified.
+  //!
+  //! \return A vector of ranges corresponding to the portion of \a range that
+  //!     is readable based on the memory map.
+  std::vector<CheckedRange<uint64_t>> GetReadableRanges(
+      const CheckedRange<LinuxVMAddress, LinuxVMSize>& range) const;
+
   //! \brief An abstract base class for iterating over ordered sets of mappings
   //!   in a MemoryMap.
   class Iterator {
@@ -129,6 +139,7 @@ class MemoryMap {
 
  private:
   std::vector<Mapping> mappings_;
+  PtraceConnection* connection_;
   InitializationStateDcheck initialized_;
 };
 

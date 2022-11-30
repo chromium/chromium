@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/text_track_config.h"
@@ -25,6 +24,7 @@
 #include "media/formats/mp2t/ts_section_pat.h"
 #include "media/formats/mp2t/ts_section_pes.h"
 #include "media/formats/mp2t/ts_section_pmt.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 #include "media/formats/mp2t/ts_section_cat.h"
@@ -192,9 +192,8 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(
-    const std::vector<std::string>& allowed_codecs,
-    bool sbr_in_mimetype)
+Mp2tStreamParser::Mp2tStreamParser(base::span<const std::string> allowed_codecs,
+                                   bool sbr_in_mimetype)
     : sbr_in_mimetype_(sbr_in_mimetype),
       selected_audio_pid_(-1),
       selected_video_pid_(-1),
@@ -202,13 +201,13 @@ Mp2tStreamParser::Mp2tStreamParser(
       segment_started_(false) {
   for (const std::string& codec_name : allowed_codecs) {
     switch (StringToVideoCodec(codec_name)) {
-      case VideoCodec::kCodecH264:
+      case VideoCodec::kH264:
         allowed_stream_types_.insert(kStreamTypeAVC);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
         allowed_stream_types_.insert(kStreamTypeAVCWithSampleAES);
 #endif
         continue;
-      case VideoCodec::kUnknownVideoCodec:
+      case VideoCodec::kUnknown:
         // Probably audio.
         break;
       default:
@@ -217,17 +216,17 @@ Mp2tStreamParser::Mp2tStreamParser(
     }
 
     switch (StringToAudioCodec(codec_name)) {
-      case AudioCodec::kCodecAAC:
+      case AudioCodec::kAAC:
         allowed_stream_types_.insert(kStreamTypeAAC);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
         allowed_stream_types_.insert(kStreamTypeAACWithSampleAES);
 #endif
         continue;
-      case AudioCodec::kCodecMP3:
+      case AudioCodec::kMP3:
         allowed_stream_types_.insert(kStreamTypeMpeg1Audio);
         allowed_stream_types_.insert(kStreamTypeMpeg2Audio);
         continue;
-      case AudioCodec::kUnknownAudioCodec:
+      case AudioCodec::kUnknown:
         // Neither audio, nor video.
         break;
       default:
@@ -240,16 +239,16 @@ Mp2tStreamParser::Mp2tStreamParser(
   }
 }
 
-Mp2tStreamParser::~Mp2tStreamParser() {}
+Mp2tStreamParser::~Mp2tStreamParser() = default;
 
 void Mp2tStreamParser::Init(
     InitCB init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
+    NewConfigCB config_cb,
+    NewBuffersCB new_buffers_cb,
     bool /* ignore_text_tracks */,
-    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const EndMediaSegmentCB& end_of_segment_cb,
+    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+    NewMediaSegmentCB new_segment_cb,
+    EndMediaSegmentCB end_of_segment_cb,
     MediaLog* media_log) {
   DCHECK(!is_initialized_);
   DCHECK(!init_cb_);
@@ -261,11 +260,11 @@ void Mp2tStreamParser::Init(
   DCHECK(end_of_segment_cb);
 
   init_cb_ = std::move(init_cb);
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
-  encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  config_cb_ = std::move(config_cb);
+  new_buffers_cb_ = std::move(new_buffers_cb);
+  encrypted_media_init_data_cb_ = std::move(encrypted_media_init_data_cb);
+  new_segment_cb_ = std::move(new_segment_cb);
+  end_of_segment_cb_ = std::move(end_of_segment_cb);
   media_log_ = media_log;
 }
 
@@ -968,7 +967,7 @@ void Mp2tStreamParser::RegisterNewKeyIdAndIv(const std::string& key_id,
         break;
       case EncryptionScheme::kCbcs:
         decrypt_config_ =
-            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, base::nullopt);
+            DecryptConfig::CreateCbcsConfig(key_id, iv, {}, absl::nullopt);
         break;
     }
   }

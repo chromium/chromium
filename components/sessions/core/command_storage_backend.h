@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,17 @@
 #include <stddef.h>
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/sessions_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class File;
@@ -33,8 +35,6 @@ namespace sessions {
 // CommandStorageBackend (mostly) does not interpret the commands in any way, it
 // simply reads/writes them.
 //
-// The following comment applies when `use_marker` is true, which will
-// eventually be the default (and there will not be an option to disable it).
 // CommandStorageBackend writes to a file with a suffix that indicates the
 // time the file was opened. The time stamp allows this code to determine the
 // most recently written file. When AppendCommands() is supplied a value of true
@@ -88,7 +88,6 @@ class SESSIONS_EXPORT CommandStorageBackend
       scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
       const base::FilePath& path,
       CommandStorageManager::SessionType type,
-      bool use_marker,
       const std::vector<uint8_t>& decryption_key = {});
   CommandStorageBackend(const CommandStorageBackend&) = delete;
   CommandStorageBackend& operator=(const CommandStorageBackend&) = delete;
@@ -206,7 +205,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   bool IsEncrypted() const { return !crypto_key_.empty(); }
 
   // Gets data for the last session file.
-  base::Optional<SessionInfo> FindLastSessionFile() const;
+  absl::optional<SessionInfo> FindLastSessionFile() const;
 
   // Attempt to delete all sessions besides the current and last. This is a
   // best effort operation.
@@ -233,8 +232,6 @@ class SESSIONS_EXPORT CommandStorageBackend
   // This is the path supplied to the constructor. See CommandStorageManager
   // constructor for details.
   const base::FilePath supplied_path_;
-
-  const bool use_marker_;
 
   // Used to decode the initial last session file.
   // TODO(sky): this is currently required because InitIfNecessary() determines
@@ -268,9 +265,9 @@ class SESSIONS_EXPORT CommandStorageBackend
   base::Time timestamp_;
 
   // Data for the last session. If unset, fallback to legacy session data.
-  base::Optional<SessionInfo> last_session_info_;
+  absl::optional<SessionInfo> last_session_info_;
 
-  base::Optional<base::FilePath> last_file_with_valid_marker_;
+  absl::optional<base::FilePath> last_file_with_valid_marker_;
 
   bool force_append_commands_to_fail_for_testing_ = false;
 };

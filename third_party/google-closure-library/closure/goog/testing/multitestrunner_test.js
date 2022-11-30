@@ -1,23 +1,18 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the 'License');
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS-IS' BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.MultiTestRunnerTest');
 goog.setTestOnly('goog.testing.MultiTestRunnerTest');
 
+const jsunit = goog.require('goog.testing.jsunit');
+
 // Delay running the tests after page load. This test has some asynchronous
 // behavior that interacts with page load detection.
-goog.testing.jsunit.AUTO_RUN_DELAY_IN_MS = 500;
+/** @suppress {constantProperty} suppression added to enable type checking */
+jsunit.AUTO_RUN_DELAY_IN_MS = 500;
 
 const MockControl = goog.require('goog.testing.MockControl');
 const MultiTestRunner = goog.require('goog.testing.MultiTestRunner');
@@ -118,21 +113,25 @@ testSuite({
     stubs.reset();
   },
 
-  testStartButtonStartsTests: function() {
-    testRunner.createDom();
-    testRunner.render(document.getElementById('runner'));
-    const el = testRunner.getElement();
-    const startButton = el.querySelectorAll('button')[0];
-    assertEquals('Start', startButton.innerHTML);
-    const mockStart =
-        mocks.createMethodMock(MultiTestRunner.prototype, 'start');
+  testStartButtonStartsTests: /**
+                                 @suppress {checkTypes} suppression added to
+                                 enable type checking
+                               */
+      function() {
+        testRunner.createDom();
+        testRunner.render(document.getElementById('runner'));
+        const el = testRunner.getElement();
+        const startButton = el.querySelectorAll('button')[0];
+        assertEquals('Start', startButton.innerHTML);
+        const mockStart =
+            mocks.createMethodMock(MultiTestRunner.prototype, 'start');
 
-    mockStart();
+        mockStart();
 
-    mocks.$replayAll();
-    testingEvents.fireClickSequence(startButton);
-    mocks.$verifyAll();
-  },
+        mocks.$replayAll();
+        testingEvents.fireClickSequence(startButton);
+        mocks.$verifyAll();
+      },
 
   testStopButtonStopsTests: function() {
     const promise = createEventPromise(testRunner, 'testsFinished');
@@ -158,21 +157,25 @@ testSuite({
     });
   },
 
-  testDisposeInternal: function() {
-    testRunner.dispose();
+  testDisposeInternal: /**
+                          @suppress {visibility} suppression added to enable
+                          type checking
+                        */
+      function() {
+        testRunner.dispose();
 
-    assertTrue(testRunner.tableSorter_.isDisposed());
-    assertTrue(testRunner.eh_.isDisposed());
-    assertNull(testRunner.startButtonEl_);
-    assertNull(testRunner.stopButtonEl_);
-    assertNull(testRunner.logEl_);
-    assertNull(testRunner.reportEl_);
-    assertNull(testRunner.progressEl_);
-    assertNull(testRunner.logTabEl_);
-    assertNull(testRunner.reportTabEl_);
-    assertNull(testRunner.statsTabEl_);
-    assertNull(testRunner.statsEl_);
-  },
+        assertTrue(testRunner.tableSorter_.isDisposed());
+        assertTrue(testRunner.eh_.isDisposed());
+        assertNull(testRunner.startButtonEl_);
+        assertNull(testRunner.stopButtonEl_);
+        assertNull(testRunner.logEl_);
+        assertNull(testRunner.reportEl_);
+        assertNull(testRunner.progressEl_);
+        assertNull(testRunner.logTabEl_);
+        assertNull(testRunner.reportTabEl_);
+        assertNull(testRunner.statsTabEl_);
+        assertNull(testRunner.statsEl_);
+      },
 
   testRunsTestsAndReportsResults: function() {
     const promise = createEventPromise(testRunner, 'testsFinished');
@@ -343,10 +346,15 @@ testSuite({
 
   testFrameGetStats: function() {
     const frame = new MultiTestRunner.TestFrame('/', 2000, false);
+    /** @suppress {visibility} suppression added to enable type checking */
     frame.testFile_ = 'foo';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame.isSuccess_ = true;
+    /** @suppress {visibility} suppression added to enable type checking */
     frame.runTime_ = 42;
+    /** @suppress {visibility} suppression added to enable type checking */
     frame.totalTime_ = 9000;
+    /** @suppress {visibility} suppression added to enable type checking */
     frame.numFilesLoaded_ = 4;
 
     assertObjectEquals(
@@ -360,18 +368,26 @@ testSuite({
         frame.getStats());
   },
 
-  testFrameDisposeInternal: function() {
-    const frame = new MultiTestRunner.TestFrame('', 2000, false);
-    frame.createDom();
-    frame.render();
-    stubs.replace(frame, 'checkForCompletion_', function() { return; });
-    frame.runTest(ALL_TESTS[0]);
-    assertEquals(
-        1, frame.getDomHelper().getElementsByTagNameAndClass('iframe').length);
-    frame.dispose();
-    assertTrue(frame.eh_.isDisposed());
-    assertEquals(
-        0, frame.getDomHelper().getElementsByTagNameAndClass('iframe').length);
-    assertNull(frame.iframeEl_);
-  }
+  testFrameDisposeInternal: /**
+                               @suppress {visibility} suppression added to
+                               enable type checking
+                             */
+      function() {
+        const frame = new MultiTestRunner.TestFrame('', 2000, false);
+        frame.createDom();
+        frame.render();
+        stubs.replace(frame, 'checkForCompletion_', function() {
+          return;
+        });
+        frame.runTest(ALL_TESTS[0]);
+        assertEquals(
+            1,
+            frame.getDomHelper().getElementsByTagNameAndClass('iframe').length);
+        frame.dispose();
+        assertTrue(frame.eh_.isDisposed());
+        assertEquals(
+            0,
+            frame.getDomHelper().getElementsByTagNameAndClass('iframe').length);
+        assertNull(frame.iframeEl_);
+      }
 });

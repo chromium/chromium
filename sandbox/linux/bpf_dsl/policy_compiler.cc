@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <limits>
 #include <ostream>
 
+#include "base/bits.h"
 #include "base/check_op.h"
-#include "base/stl_util.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
@@ -50,11 +50,6 @@ const int kSyscallsRequiredForUnsafeTraps[] = {
     __NR_sigreturn,
 #endif
 };
-
-bool HasExactlyOneBit(uint64_t x) {
-  // Common trick; e.g., see http://stackoverflow.com/a/108329.
-  return x != 0 && (x & (x - 1)) == 0;
-}
 
 ResultExpr DefaultPanic(const char* error) {
   return Kill();
@@ -404,7 +399,7 @@ CodeGen::Node PolicyCompiler::MaskedEqualHalf(int argno,
   // For (arg & x) == x where x is a single-bit value, emit:
   //   LDW  [idx]
   //   JSET mask, passed, failed
-  if (mask == value && HasExactlyOneBit(mask)) {
+  if (mask == value && base::bits::IsPowerOfTwo(mask)) {
     return gen_.MakeInstruction(
         BPF_LD + BPF_W + BPF_ABS,
         idx,
@@ -455,7 +450,7 @@ CodeGen::Node PolicyCompiler::Trap(TrapRegistry::TrapFnc fnc,
 }
 
 bool PolicyCompiler::IsRequiredForUnsafeTrap(int sysno) {
-  for (size_t i = 0; i < base::size(kSyscallsRequiredForUnsafeTraps); ++i) {
+  for (size_t i = 0; i < std::size(kSyscallsRequiredForUnsafeTraps); ++i) {
     if (sysno == kSyscallsRequiredForUnsafeTraps[i]) {
       return true;
     }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,18 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/debug/stack_trace.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/views/debug/debugger_utils.h"
-#include "ui/views/metadata/metadata_types.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+VIEWS_EXPORT extern const ui::ClassProperty<base::debug::StackTrace*>* const
+    kViewStackTraceKey;
 
 class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
  public:
@@ -35,23 +41,32 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   void ForAllProperties(PropCallback callback) override;
 
  private:
-  const View* const view_;
+  const raw_ptr<const View> view_;
   std::vector<std::unique_ptr<ViewDebugWrapperImpl>> children_;
 };
 
 template <typename V>
 bool IsViewClass(View* view) {
   static_assert(std::is_base_of<View, V>::value, "Only View classes supported");
-  metadata::ClassMetaData* parent = V::MetaData();
-  metadata::ClassMetaData* child = view->GetClassMetaData();
+  ui::metadata::ClassMetaData* parent = V::MetaData();
+  ui::metadata::ClassMetaData* child = view->GetClassMetaData();
   while (child && child != parent)
     child = child->parent_class_meta_data();
   return !!child;
 }
 
+template <typename V>
+V* AsViewClass(View* view) {
+  if (!IsViewClass<V>(view))
+    return nullptr;
+  return static_cast<V*>(view);
+}
+
 VIEWS_EXPORT void PrintViewHierarchy(View* view,
                                      bool verbose = false,
                                      int depth = -1);
+
+VIEWS_EXPORT std::string GetViewDebugInfo(View* view);
 
 }  // namespace views
 

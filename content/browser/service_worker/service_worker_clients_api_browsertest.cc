@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -35,6 +31,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "url/gurl.h"
 
@@ -45,6 +42,11 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
  public:
   ServiceWorkerClientsApiBrowserTest() = default;
 
+  ServiceWorkerClientsApiBrowserTest(
+      const ServiceWorkerClientsApiBrowserTest&) = delete;
+  ServiceWorkerClientsApiBrowserTest& operator=(
+      const ServiceWorkerClientsApiBrowserTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     ContentBrowserTest::SetUp();
@@ -53,8 +55,10 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->StartAcceptingConnections();
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }
@@ -63,8 +67,6 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
 
  private:
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerClientsApiBrowserTest);
 };
 
 // Tests a successful WindowClient.navigate() call.

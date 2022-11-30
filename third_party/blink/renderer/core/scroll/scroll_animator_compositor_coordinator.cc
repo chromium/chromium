@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,12 @@
 #include <memory>
 
 #include "cc/animation/animation_host.h"
+#include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
-#include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -30,12 +27,21 @@ ScrollAnimatorCompositorCoordinator::ScrollAnimatorCompositorCoordinator()
   compositor_animation_->SetAnimationDelegate(this);
 }
 
+// TODO(dbaron): This should probably DCHECK(element_detached_), but too
+// many unittests would fail such a DCHECK().
 ScrollAnimatorCompositorCoordinator::~ScrollAnimatorCompositorCoordinator() =
     default;
 
 void ScrollAnimatorCompositorCoordinator::Dispose() {
   compositor_animation_->SetAnimationDelegate(nullptr);
   compositor_animation_.reset();
+}
+
+void ScrollAnimatorCompositorCoordinator::DetachElement() {
+  DCHECK(!element_detached_);
+  element_detached_ = true;
+  ReattachCompositorAnimationIfNeeded(
+      GetScrollableArea()->GetCompositorAnimationTimeline());
 }
 
 void ScrollAnimatorCompositorCoordinator::ResetAnimationState() {
@@ -67,11 +73,11 @@ bool ScrollAnimatorCompositorCoordinator::HasAnimationThatRequiresService()
 }
 
 bool ScrollAnimatorCompositorCoordinator::AddAnimation(
-    std::unique_ptr<CompositorKeyframeModel> keyframe_model) {
+    std::unique_ptr<cc::KeyframeModel> keyframe_model) {
   RemoveAnimation();
   if (compositor_animation_->IsElementAttached()) {
-    compositor_animation_id_ = keyframe_model->Id();
-    compositor_animation_group_id_ = keyframe_model->Group();
+    compositor_animation_id_ = keyframe_model->id();
+    compositor_animation_group_id_ = keyframe_model->group();
     compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
     return true;
   }
@@ -184,24 +190,26 @@ void ScrollAnimatorCompositorCoordinator::CompositorAnimationFinished(
 }
 
 bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
-    CompositorAnimationTimeline* timeline) {
+    cc::AnimationTimeline* timeline) {
   bool reattached = false;
-  CompositorElementId element_id = GetScrollElementId();
-  DCHECK(element_id || (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-                        !GetScrollableArea()->LayerForScrolling()));
-
+  CompositorElementId element_id;
+  if (!element_detached_) {
+    element_id = GetScrollElementId();
+  }
   if (element_id != element_id_) {
     if (compositor_animation_ && timeline) {
       // Detach from old layer (if any).
       if (element_id_) {
         if (compositor_animation_->IsElementAttached())
           compositor_animation_->DetachElement();
-        timeline->AnimationDestroyed(*this);
+        if (GetCompositorAnimation())
+          timeline->DetachAnimation(GetCompositorAnimation()->CcAnimation());
       }
       // Attach to new layer (if any).
       if (element_id) {
         DCHECK(!compositor_animation_->IsElementAttached());
-        timeline->AnimationAttached(*this);
+        if (GetCompositorAnimation())
+          timeline->AttachAnimation(GetCompositorAnimation()->CcAnimation());
         compositor_animation_->AttachElement(element_id);
         reattached = true;
       }
@@ -213,17 +221,17 @@ bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationStarted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {}
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationFinished(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   NotifyCompositorAnimationFinished(group);
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationAborted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   // An animation aborted by the compositor is treated as a finished
   // animation.
@@ -235,14 +243,15 @@ ScrollAnimatorCompositorCoordinator::GetCompositorAnimation() const {
   return compositor_animation_.get();
 }
 
-FloatPoint ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
+gfx::PointF
+ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
     ScrollOffset offset) {
   return GetScrollableArea()->ScrollOffsetToPosition(offset);
 }
 
 ScrollOffset
 ScrollAnimatorCompositorCoordinator::BlinkOffsetFromCompositorOffset(
-    FloatPoint position) {
+    gfx::PointF position) {
   return GetScrollableArea()->ScrollPositionToOffset(position);
 }
 
@@ -253,11 +262,7 @@ bool ScrollAnimatorCompositorCoordinator::HasImplOnlyAnimationUpdate() const {
 
 CompositorElementId ScrollAnimatorCompositorCoordinator::GetScrollElementId()
     const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return GetScrollableArea()->GetScrollElementId();
-
-  cc::Layer* layer = GetScrollableArea()->LayerForScrolling();
-  return layer ? layer->element_id() : CompositorElementId();
+  return GetScrollableArea()->GetScrollElementId();
 }
 
 void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
@@ -269,13 +274,12 @@ void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
   if (host && element_id) {
     if (!impl_only_animation_adjustment_.IsZero()) {
       host->scroll_offset_animations().AddAdjustmentUpdate(
-          element_id, gfx::Vector2dF(impl_only_animation_adjustment_.Width(),
-                                     impl_only_animation_adjustment_.Height()));
+          element_id, gfx::Vector2dF(impl_only_animation_adjustment_));
     }
     if (impl_only_animation_takeover_)
       host->scroll_offset_animations().AddTakeoverUpdate(element_id);
   }
-  impl_only_animation_adjustment_ = IntSize();
+  impl_only_animation_adjustment_ = gfx::Vector2d();
   impl_only_animation_takeover_ = false;
 }
 
@@ -293,21 +297,12 @@ void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
   GetScrollableArea()->ScrollOffsetChanged(clamped_offset, scroll_type);
 }
 
-void ScrollAnimatorCompositorCoordinator::AdjustAnimationAndSetScrollOffset(
-    const ScrollOffset& offset,
-    mojom::blink::ScrollType scroll_type) {
-  // Subclasses should override this and adjust the animation as necessary.
-  ScrollOffsetChanged(offset, scroll_type);
-}
-
 void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
-    const IntSize& adjustment) {
+    const gfx::Vector2d& adjustment) {
   if (!GetScrollableArea()->ScrollAnimatorEnabled())
     return;
 
-  impl_only_animation_adjustment_.Expand(adjustment.Width(),
-                                         adjustment.Height());
-
+  impl_only_animation_adjustment_ += adjustment;
   GetScrollableArea()->RegisterForAnimation();
 }
 

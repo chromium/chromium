@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/composite_mach_message_server.h"
@@ -230,6 +230,9 @@ class ExcServer : public MachMessageServer::Interface {
   explicit ExcServer(Interface* interface)
       : MachMessageServer::Interface(), interface_(interface) {}
 
+  ExcServer(const ExcServer&) = delete;
+  ExcServer& operator=(const ExcServer&) = delete;
+
   // MachMessageServer::Interface:
 
   bool MachMessageServerFunction(const mach_msg_header_t* in_header,
@@ -243,7 +246,7 @@ class ExcServer : public MachMessageServer::Interface {
         Traits::kMachMessageIDExceptionRaiseStateIdentity,
     };
     return std::set<mach_msg_id_t>(&request_ids[0],
-                                   &request_ids[base::size(request_ids)]);
+                                   &request_ids[std::size(request_ids)]);
   }
 
   mach_msg_size_t MachMessageServerRequestSize() override {
@@ -256,8 +259,6 @@ class ExcServer : public MachMessageServer::Interface {
 
  private:
   Interface* interface_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(ExcServer);
 };
 
 template <typename Traits>
@@ -320,7 +321,7 @@ bool ExcServer<Traits>::MachMessageServerFunction(
       using Reply = typename Traits::ExceptionRaiseStateReply;
       Reply* out_reply = reinterpret_cast<Reply*>(out_header);
       out_reply->flavor = in_request_1->flavor;
-      out_reply->new_stateCnt = base::size(out_reply->new_state);
+      out_reply->new_stateCnt = std::size(out_reply->new_state);
       out_reply->RetCode =
           interface_->CatchExceptionRaiseState(in_header->msgh_local_port,
                                                in_request->exception,
@@ -363,7 +364,7 @@ bool ExcServer<Traits>::MachMessageServerFunction(
       using Reply = typename Traits::ExceptionRaiseStateIdentityReply;
       Reply* out_reply = reinterpret_cast<Reply*>(out_header);
       out_reply->flavor = in_request_1->flavor;
-      out_reply->new_stateCnt = base::size(out_reply->new_state);
+      out_reply->new_stateCnt = std::size(out_reply->new_state);
       out_reply->RetCode = interface_->CatchExceptionRaiseStateIdentity(
           in_header->msgh_local_port,
           in_request->thread.name,
@@ -452,6 +453,9 @@ class SimplifiedExcServer final : public ExcServer<Traits>,
       : ExcServer<Traits>(this),
         ExcServer<Traits>::Interface(),
         interface_(interface) {}
+
+  SimplifiedExcServer(const SimplifiedExcServer&) = delete;
+  SimplifiedExcServer& operator=(const SimplifiedExcServer&) = delete;
 
   // ExcServer::Interface:
 
@@ -544,8 +548,6 @@ class SimplifiedExcServer final : public ExcServer<Traits>,
 
  private:
   Interface* interface_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(SimplifiedExcServer);
 };
 
 }  // namespace
@@ -568,6 +570,10 @@ class UniversalMachExcServerImpl final
     AddHandler(&exc_server_);
     AddHandler(&mach_exc_server_);
   }
+
+  UniversalMachExcServerImpl(const UniversalMachExcServerImpl&) = delete;
+  UniversalMachExcServerImpl& operator=(const UniversalMachExcServerImpl&) =
+      delete;
 
   ~UniversalMachExcServerImpl() {}
 
@@ -643,8 +649,6 @@ class UniversalMachExcServerImpl final
   SimplifiedExcServer<ExcTraits> exc_server_;
   SimplifiedExcServer<MachExcTraits> mach_exc_server_;
   UniversalMachExcServer::Interface* interface_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(UniversalMachExcServerImpl);
 };
 
 }  // namespace internal
@@ -682,10 +686,10 @@ kern_return_t ExcServerSuccessfulReturnValue(exception_type_t exception,
                                              exception_behavior_t behavior,
                                              bool set_thread_state) {
   if (exception == EXC_CRASH
-#if defined(OS_MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_11
+#if BUILDFLAG(IS_MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_11
       && MacOSVersionNumber() >= 10'11'00
 #endif
-     ) {
+  ) {
     return KERN_SUCCESS;
   }
 

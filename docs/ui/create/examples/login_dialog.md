@@ -19,7 +19,7 @@ To create this simple dialog, you would need to add the following files:
 `login_bubble_dialog_example.h`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 `login_bubble_dialog_example.cc`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ window close button. These UI elements are provided by default by the
 
 ## Creating the layout
 
-To populate the login dialog, we first create a [`LayoutManager`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/layout_manager.h) in the
+To populate the login dialog, we first create a [`LayoutManager`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/layout_manager.h) in the
 dialog’s constructor.
 
 
@@ -94,32 +94,37 @@ LoginBubbleDialogView::LoginBubbleDialogView(
     views::BubbleBorder::Arrow anchor_position)
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
   ...
- const LayoutProvider* provider = LayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  const LayoutProvider* provider = LayoutProvider::Get();
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl));
   const int related_control_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL,
-                        GridLayout::kFixedSize, GridLayout::USE_PREF, 0, 0);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                        GridLayout::USE_PREF, 0, 0);
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, views::TableLayout::kFixedSize);
 }
 ```
 
 
-This creates a 2x2 [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/grid_layout.h)
+This creates a 2x2 [`TableLayout`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/layout/table_layout.h)
 with horizontal padding specified by the layout constant
 `DISTANCE_RELATED_LABEL_HORIZONTAL`. The first column will hold the form’s
-[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h)s and the second will hold the
-[`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)s for user input.
+[`Label`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/label.h)s and the second will hold the
+[`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)s for user input.
 
-To help with adding rows to the `GridLayout`, add the following scoped helper
+To help with adding rows to the `TableLayout`, add the following scoped helper
 and relevant headers.
 
 
@@ -129,19 +134,18 @@ and relevant headers.
 #include <string>
 
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 ...
 namespace {
 
 // Adds a label textfield pair to the login dialog's layout.
-views::Textfield* AddFormRow(views::GridLayout* layout,
+views::Textfield* AddFormRow(views::View* parent,
                              const std::u16string& label_text) {
-  layout->StartRow(0, 0);
   views::Label* label =
-      layout->AddView(std::make_unique<views::Label>(label_text));
+      parent->AddChildView(std::make_unique<views::Label>(label_text));
   views::Textfield* textfield =
-      layout->AddView(std::make_unique<views::Textfield>());
+      parent->AddChildView(std::make_unique<views::Textfield>());
   textfield->SetAssociatedLabel(label);
   constexpr int kDefaultTextfieldWidth = 30;
   constexpr int kMinimumTextfieldWidth = 5;
@@ -154,11 +158,12 @@ views::Textfield* AddFormRow(views::GridLayout* layout,
 ...
 ```
 
-This creates a new [`GridLayout`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/layout/grid_layout.h)
-row for a given field in our form. The call to
-[`SetAssociatedLabel()`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h;l=250;drc=291180454e079aa5c3677dc3f3eaf619a1cf1d42)
+The call to
+[`SetAssociatedLabel()`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h;l=250;drc=291180454e079aa5c3677dc3f3eaf619a1cf1d42)
 sets the accessible label relationship between the
-[`Label`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/label.h) and the [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)
+[`Label`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/label.h)
+and the
+[`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
 and copies the `Label`’s accessible name to the `Textfield`.
 
 
@@ -210,12 +215,10 @@ LoginBubbleDialogView::LoginBubbleDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(
       IDS_STARTER_DIALOG_OK_BUTTON_LABEL));
   ...
-  username_ = AddFormRow(layout, l10n_util::GetStringUTF16(
+  username_ = AddFormRow(this, l10n_util::GetStringUTF16(
       IDS_LOGIN_DIALOG_USERNAME_ACCESSIBLE_NAME));
 
-  layout->AddPaddingRow(0, related_control_padding);
-
-  password_ = AddFormRow(layout, l10n_util::GetStringUTF16(
+  password_ = AddFormRow(this, l10n_util::GetStringUTF16(
       IDS_LOGIN_DIALOG_PASSWORD_ACCESSIBLE_NAME));
   password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
@@ -250,8 +253,8 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 
  private:
  LoginBubbleDialogView(View* anchor_view,
-                        BubbleBorder::Arrow anchor_position,
-                        OnSubmitCallback accept_callback);
+                       BubbleBorder::Arrow anchor_position,
+                       OnSubmitCallback accept_callback);
 ...
 }
 ```
@@ -262,15 +265,14 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 
 ``` cpp
 #include "base/bind.h"
-#include "base/callback_forward.h"
 ...
 // static
 void LoginBubbleDialogView::Show(View* anchor_view,
                                  BubbleBorder::Arrow anchor_position,
                                  OnSubmitCallback accept_callback) {
   BubbleDialogDelegateView::CreateBubble(
-      new LoginBubbleDialogView(anchor_view, anchor_position,
-                                std::move(accept_callback)))
+      std::make_unique<LoginBubbleDialogView>(anchor_view, anchor_position,
+                                              std::move(accept_callback)))
       ->Show();
 }
 ...
@@ -303,8 +305,8 @@ Next we want to disable the bubble dialog’s login button until both the
 username and password fields have been populated.
 
 We achieve this by having the `LoginBubbleDialogView` inherit from
-[`TextfieldController`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield_controller.h),
-and on each [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/textfield/textfield.h)
+[`TextfieldController`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield_controller.h),
+and on each [`Textfield`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/textfield/textfield.h)
 update it checks to make sure that both fields are populated before enabling
 the login button.
 
@@ -334,7 +336,6 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView,
 
 ``` cpp
 views::Textfield* AddFormRow(LoginBubbleDialogView* bubble,
-                             views::GridLayout* layout,
                              const std::u16string& label_text) {
   ...
   textfield->set_controller(bubble);
@@ -359,13 +360,10 @@ LoginBubbleDialogView::LoginBubbleDialogView(
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   ...
   username_ = AddFormRow(
-      this, layout,
+      this,
       l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_USERNAME_ACCESSIBLE_NAME));
-
-  layout->AddPaddingRow(0, related_control_padding);
-
   password_ = AddFormRow(
-      this, layout,
+      this,
       l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_PASSWORD_ACCESSIBLE_NAME));
   password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
@@ -381,7 +379,7 @@ The final code should resemble the following:
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -394,6 +392,8 @@ The final code should resemble the following:
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+
+namespace views::examples {
 
 class LoginBubbleDialogView : public BubbleDialogDelegateView,
                               public TextfieldController {
@@ -420,6 +420,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
   Textfield* password_ = nullptr;
 };
 
+}  // namespace views::examples
+
 #endif  // LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 ```
 
@@ -428,31 +430,31 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "login_bubble_dialog_example.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace views::examples {
 
 namespace {
 
 // Adds a label textfield pair to the login dialog's layout.
 Textfield* AddFormRow(LoginBubbleDialogView* bubble,
-                      GridLayout* layout,
                       const std::u16string& label_text) {
-  layout->StartRow(0, 0);
-  Label* label = layout->AddView(std::make_unique<Label>(label_text));
-  Textfield* textfield = layout->AddView(std::make_unique<Textfield>());
+  Label* label = bubble->AddChildView(std::make_unique<Label>(label_text));
+  Textfield* textfield = bubble->AddChildView(std::make_unique<Textfield>());
   textfield->SetAssociatedLabel(label);
   textfield->set_controller(bubble);
   constexpr int kDefaultTextfieldWidth = 30;
@@ -469,8 +471,8 @@ void LoginBubbleDialogView::Show(View* anchor_view,
                                  BubbleBorder::Arrow anchor_position,
                                  OnSubmitCallback accept_callback) {
   BubbleDialogDelegateView::CreateBubble(
-      new LoginBubbleDialogView(anchor_view, anchor_position,
-                                std::move(accept_callback)))
+      std::make_unique<LoginBubbleDialogView>(anchor_view, anchor_position,
+                                              std::move(accept_callback)))
       ->Show();
 }
 
@@ -506,36 +508,38 @@ LoginBubbleDialogView::LoginBubbleDialogView(
       l10n_util::GetStringUTF16(IDS_EXAMPLE_LOGIN_DIALOG_OK_BUTTON_LABEL));
 
   const LayoutProvider* provider = LayoutProvider::Get();
-  set_margins(
-      provider->GetDialogInsetsForContentType(views::CONTROL, views::CONTROL));
+  set_margins(provider->GetDialogInsetsForContentType(
+      DialogContentType::kControl, DialogContentType::kControl));
   const int related_control_padding =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+      provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL);
   const int label_padding =
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::FILL,
-                        GridLayout::kFixedSize, GridLayout::USE_PREF, 0, 0);
-  column_set->AddPaddingColumn(0, label_padding);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1.0,
-                        GridLayout::USE_PREF, 0, 0);
+      provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  SetLayoutManager(std::make_unique<TableLayout>())
+      ->AddColumn(LayoutAlignment::kStart,
+                  LayoutAlignment::kStretch,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(TableLayout::kFixedSize, label_padding)
+      .AddColumn(LayoutAlignment::kStretch,
+                 LayoutAlignment::kStretch, 1.0f,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, related_control_padding)
+      .AddRows(1, TableLayout::kFixedSize);
 
   username_ =
-      AddFormRow(this, layout,
+      AddFormRow(this,
                  l10n_util::GetStringUTF16(
                      IDS_EXAMPLE_LOGIN_DIALOG_USERNAME_ACCESSIBLE_NAME));
-
-  layout->AddPaddingRow(0, related_control_padding);
-
   password_ =
-      AddFormRow(this, layout,
+      AddFormRow(this,
                  l10n_util::GetStringUTF16(
                      IDS_EXAMPLE_LOGIN_DIALOG_PASSWORD_ACCESSIBLE_NAME));
   password_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-}  // namespace examples
-}  // namespace views
+}  // namespace views::examples
 ```
 
 The generated UI would be:
@@ -547,7 +551,7 @@ The generated UI would be:
 
 The example code can be run inside Views example app. You can find the code
 inside the Views example at
-[`ui/views/examples/login_bubble_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/master:ui/views/examples/login_bubble_dialog_example.cc).
+[`ui/views/examples/login_bubble_dialog_example.cc`](https://source.chromium.org/chromium/chromium/src/+/main:ui/views/examples/login_bubble_dialog_example.cc).
 You can try out this example by running the following command:
 
 ``` shell

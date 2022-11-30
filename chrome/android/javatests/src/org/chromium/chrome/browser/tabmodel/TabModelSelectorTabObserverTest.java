@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -109,16 +110,27 @@ public class TabModelSelectorTabObserverTest {
     @Test
     @SmallTest
     public void testObserverAddedBeforeInitialize() {
-        TabModelSelectorBase selector = new TabModelSelectorBase(
-                null, EmptyTabModelFilter::new, false) {
-            @Override
-            public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
-                    boolean incognito) {
-                return null;
-            }
-        };
+        TabModelSelectorBase selector = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
+                @Override
+                public void requestToShowTab(Tab tab, int type) {}
+
+                @Override
+                public boolean isSessionRestoreInProgress() {
+                    return false;
+                }
+
+                @Override
+                public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type,
+                        Tab parent, boolean incognito) {
+                    return null;
+                }
+            };
+        });
         TestTabModelSelectorTabObserver observer = createTabModelSelectorTabObserver();
-        selector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            selector.initialize(sTestRule.getNormalTabModel(), sTestRule.getIncognitoTabModel());
+        });
 
         Tab normalTab1 = createTestTab(false);
         addTab(sTestRule.getNormalTabModel(), normalTab1);

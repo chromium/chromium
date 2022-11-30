@@ -1,13 +1,13 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++popUpButton collapsed value='Onscreen 1'
+++++++comboBoxSelect collapsed value='Onscreen 1'
 ++++++++menuListPopup invisible
 ++++++++++menuListOption name='Onscreen 1' selected=true
 ++++++++++menuListOption invisible name='Onscreen 2' selected=false
 ++++++++++menuListOption invisible name='Onscreen 3' selected=false
 ++++++genericContainer ignored
-++++++popUpButton collapsed offscreen value='Offscreen 1'
+++++++comboBoxSelect collapsed offscreen value='Offscreen 1'
 ++++++++menuListPopup invisible
 ++++++++++menuListOption offscreen name='Offscreen 1' selected=true
 ++++++++++menuListOption invisible offscreen name='Offscreen 2' selected=false

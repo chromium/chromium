@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,18 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/pref_names.h"
-#endif
 
 namespace {
 
@@ -26,13 +26,7 @@ namespace {
 constexpr int kForceMaximizeWidthLimit = 1366;
 
 bool ShouldForceMaximizeOnFirstRun(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1110548): Support the ForceMaximizeOnFirstRun policy
-  // in lacros-chrome.
-  return false;
-#else
   return profile->GetPrefs()->GetBoolean(prefs::kForceMaximizeOnFirstRun);
-#endif
 }
 
 }  // namespace
@@ -108,6 +102,9 @@ bool WindowSizerChromeOS::GetBrowserBounds(
       // Finally, prioritize the last saved |show_state|. If you have questions
       // or comments about this behavior please contact oshima@chromium.org.
       gfx::Rect ignored_bounds, ignored_work_area;
+      // TODO(ellyjones): This code shouldn't ignore the return value of
+      // GetPersistentState()... we could end up using an undefined
+      // |show_state|?
       state_provider()->GetPersistentState(&ignored_bounds, &ignored_work_area,
                                            show_state);
       // |determined| is not set here, so we fall back to cross-platform window
@@ -147,6 +144,7 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
   display::Display display = GetDisplayForNewWindow(*bounds_in_screen);
   if (!is_saved_bounds)
     *bounds_in_screen = GetDefaultWindowBounds(display);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (browser()->is_session_restore()) {
     // Respect display for saved bounds during session restore.
@@ -154,7 +152,9 @@ void WindowSizerChromeOS::GetTabbedBrowserBounds(
         display::Screen::GetScreen()->GetDisplayMatching(*bounds_in_screen);
   } else if (BrowserList::GetInstance()->empty() && !is_saved_bounds &&
              (ShouldForceMaximizeOnFirstRun(browser()->profile()) ||
-              display.work_area().width() <= kForceMaximizeWidthLimit)) {
+              (display.work_area().width() <= kForceMaximizeWidthLimit &&
+               !command_line->HasSwitch(
+                   switches::kDisableAutoMaximizeForTests)))) {
     // No browsers, no saved bounds: assume first run. Maximize if set by policy
     // or if the screen is narrower than a predetermined size.
     *show_state = ui::SHOW_STATE_MAXIMIZED;

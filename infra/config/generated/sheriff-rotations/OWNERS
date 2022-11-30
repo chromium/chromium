@@ -1,0 +1,9 @@
+set noparent
+file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
+
+per-file android.txt=file://infra/config/groups/sheriff-rotations/ANDROID_OWNERS
+per-file angle.txt=file://infra/config/groups/sheriff-rotations/ANGLE_OWNERS
+per-file chromium.clang.txt=file://infra/config/groups/sheriff-rotations/CHROMIUM_CLANG_OWNERS
+per-file chromium.gpu.txt=file://infra/config/groups/sheriff-rotations/CHROMIUM_GPU_OWNERS
+per-file chromium.txt=file://infra/config/groups/sheriff-rotations/CHROMIUM_OWNERS
+per-file fuchsia.txt=file://infra/config/groups/sheriff-rotations/FUCHSIA_OWNERS

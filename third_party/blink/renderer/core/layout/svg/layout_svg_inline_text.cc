@@ -26,9 +26,13 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
@@ -66,7 +70,7 @@ void LayoutSVGInlineText::TextDidChange() {
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
 
-  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+  if (StyleRef().UsedUserModify() != EUserModify::kReadOnly)
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
@@ -99,24 +103,23 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   }
 }
 
+bool LayoutSVGInlineText::IsFontFallbackValid() const {
+  return LayoutText::IsFontFallbackValid() && ScaledFont().IsFallbackValid();
+}
+
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
-    if (LayoutSVGBlock* text_or_ng_text =
-            LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
-      if (auto* text_layout_object = DynamicTo<LayoutSVGText>(text_or_ng_text))
-        text_layout_object->SetNeedsTextMetricsUpdate();
-      else
-        To<LayoutNGSVGText>(text_or_ng_text)->SetNeedsTextMetricsUpdate();
-    }
+    LayoutSVGText::NotifySubtreeStructureChanged(
+        this, layout_invalidation_reason::kFontsChanged);
   }
   LayoutText::InvalidateSubtreeLayoutForFontUpdates();
 }
 
 InlineTextBox* LayoutSVGInlineText::CreateTextBox(int start, uint16_t length) {
   NOT_DESTROYED();
-  InlineTextBox* box =
-      new SVGInlineTextBox(LineLayoutItem(this), start, length);
+  InlineTextBox* box = MakeGarbageCollected<SVGInlineTextBox>(
+      LineLayoutItem(this), start, length);
   box->SetHasVirtualLogicalHeight();
   return box;
 }
@@ -148,11 +151,11 @@ LayoutRect LayoutSVGInlineText::LocalCaretRect(const InlineBox* box,
   return LayoutRect(x, rect.Y(), GetFrameView()->CaretWidth(), rect.Height());
 }
 
-FloatRect LayoutSVGInlineText::FloatLinesBoundingBox() const {
+gfx::RectF LayoutSVGInlineText::FloatLinesBoundingBox() const {
   NOT_DESTROYED();
-  FloatRect bounding_box;
+  gfx::RectF bounding_box;
   for (InlineTextBox* box : TextBoxes())
-    bounding_box.Unite(FloatRect(box->FrameRect()));
+    bounding_box.Union(gfx::RectF(box->FrameRect()));
   return bounding_box;
 }
 
@@ -179,11 +182,60 @@ bool LayoutSVGInlineText::CharacterStartsNewTextChunk(int position) const {
   return it->value.HasX() || it->value.HasY();
 }
 
+gfx::RectF LayoutSVGInlineText::ObjectBoundingBox() const {
+  NOT_DESTROYED();
+  if (!IsInLayoutNGInlineFormattingContext())
+    return FloatLinesBoundingBox();
+
+  gfx::RectF bounds;
+  NGInlineCursor cursor;
+  cursor.MoveTo(*this);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+    const NGFragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == NGFragmentItem::kSvgText)
+      bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
+  }
+  return bounds;
+}
+
 PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
+
+  if (IsInLayoutNGInlineFormattingContext()) {
+    NGInlineCursor cursor;
+    cursor.MoveTo(*this);
+    NGInlineCursor last_hit_cursor;
+    PhysicalOffset last_hit_transformed_point;
+    LayoutUnit closest_distance = LayoutUnit::Max();
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      PhysicalOffset transformed_point =
+          cursor.CurrentItem()->MapPointInContainer(point);
+      PhysicalRect item_rect = cursor.Current().RectInContainerFragment();
+      LayoutUnit distance;
+      if (!item_rect.Contains(transformed_point) ||
+          !cursor.PositionForPointInChild(transformed_point))
+        distance = item_rect.SquaredDistanceTo(transformed_point);
+      // Intentionally apply '<=', not '<', because we'd like to choose a later
+      // item.
+      if (distance <= closest_distance) {
+        closest_distance = distance;
+        last_hit_cursor = cursor;
+        last_hit_transformed_point = transformed_point;
+      }
+    }
+    if (last_hit_cursor) {
+      auto position_with_affinity =
+          last_hit_cursor.PositionForPointInChild(last_hit_transformed_point);
+      // Note: Due by Bidi adjustment, |position_with_affinity| isn't relative
+      // to this.
+      return AdjustForEditingBoundary(position_with_affinity);
+    }
+    return CreatePositionWithAffinity(0);
+  }
+
   if (!HasInlineFragments() || !TextLength())
     return CreatePositionWithAffinity(0);
 
@@ -200,10 +252,11 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
 
   // Map local point to absolute point, as the character origins stored in the
   // text fragments use absolute coordinates.
-  FloatPoint absolute_point(point);
-  absolute_point.MoveBy(FloatPoint(containing_block->Location()));
+  gfx::PointF absolute_point(point);
+  absolute_point +=
+      gfx::PointF(containing_block->Location()).OffsetFromOrigin();
 
-  float closest_distance = std::numeric_limits<float>::max();
+  double closest_distance = std::numeric_limits<double>::max();
   float position_in_fragment = 0;
   const SVGTextFragment* closest_distance_fragment = nullptr;
   SVGInlineTextBox* closest_distance_box = nullptr;
@@ -214,12 +267,11 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
       continue;
 
     for (const SVGTextFragment& fragment : text_box->TextFragments()) {
-      FloatRect fragment_rect = fragment.BoundingBox(baseline);
+      gfx::RectF fragment_rect = fragment.BoundingBox(baseline);
 
-      float distance = 0;
-      if (!fragment_rect.Contains(absolute_point))
-        distance = fragment_rect.SquaredDistanceTo(absolute_point);
-
+      double distance =
+          (fragment_rect.ClosestPoint(absolute_point) - absolute_point)
+              .LengthSquared();
       if (distance <= closest_distance) {
         closest_distance = distance;
         closest_distance_box = text_box;
@@ -229,8 +281,8 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
         // to apply the inverse transformation for the fragment and then map
         // against the (untransformed) fragment rect.
         position_in_fragment = fragment.is_vertical
-                                   ? absolute_point.Y() - fragment_rect.Y()
-                                   : absolute_point.X() - fragment_rect.X();
+                                   ? absolute_point.y() - fragment_rect.y()
+                                   : absolute_point.x() - fragment_rect.x();
       }
     }
   }
@@ -461,6 +513,11 @@ void LayoutSVGInlineText::ComputeNewScaledFontForStyle(
 
   FontDescription font_description = unscaled_font_description;
   font_description.SetComputedSize(scaled_font_size);
+  const float zoom = style.EffectiveZoom();
+  font_description.SetLetterSpacing(font_description.LetterSpacing() *
+                                    scaling_factor / zoom);
+  font_description.SetWordSpacing(font_description.WordSpacing() *
+                                  scaling_factor / zoom);
 
   scaled_font =
       Font(font_description, document.GetStyleEngine().GetFontSelector());
@@ -472,7 +529,7 @@ PhysicalRect LayoutSVGInlineText::VisualRectInDocument(
   return Parent()->VisualRectInDocument(flags);
 }
 
-FloatRect LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutSVGInlineText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   return Parent()->VisualRectInLocalSVGCoordinates();
 }

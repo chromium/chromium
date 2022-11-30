@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -20,11 +19,6 @@ namespace display {
 namespace mojom {
 class DisplayDataView;
 }
-
-// Returns true if one of following conditions is met.
-// 1) id1 is internal.
-// 2) output index of id1 < output index of id2 and id2 isn't internal.
-DISPLAY_EXPORT bool CompareDisplayIds(int64_t id1, int64_t id2);
 
 // This class typically, but does not always, correspond to a physical display
 // connected to the system. A fake Display may exist on a headless system, or a
@@ -92,14 +86,6 @@ class DISPLAY_EXPORT Display final {
   // Indicates if a device scale factor is being explicitly enforced from the
   // command line via "--force-device-scale-factor".
   static bool HasForceDeviceScaleFactor();
-
-  // Returns the forced display color profile, which is given by
-  // "--force-color-profile".
-  static gfx::ColorSpace GetForcedDisplayColorProfile();
-
-  // Indicates if a display color profile is being explicitly enforced from the
-  // command line via "--force-color-profile".
-  static bool HasForceDisplayColorProfile();
 
   // Returns the forced raster color profile, which is given by
   // "--force-raster-color-profile".
@@ -186,10 +172,15 @@ class DISPLAY_EXPORT Display final {
   gfx::Insets GetWorkAreaInsets() const;
 
   // Sets the device scale factor and display bounds in pixel. This
-  // updates the work are using the same insets between old bounds and
+  // updates the work area using the same insets between old bounds and
   // work area.
   void SetScaleAndBounds(float device_scale_factor,
                          const gfx::Rect& bounds_in_pixel);
+
+  // Sets the device scale factor while respecting forced scale factor and other
+  // constraints. Use this over set_device_scale_factor() unless you need to
+  // forcefully overwrite the scale.
+  void SetScale(float device_scale_factor);
 
   // Sets the display's size. This updates the work area using the same insets
   // between old bounds and work area.
@@ -212,15 +203,9 @@ class DISPLAY_EXPORT Display final {
   // True if the display corresponds to internal panel.
   bool IsInternal() const;
 
-  // Gets/Sets an id of display corresponding to internal panel.
+  // [Deprecated] Use `display::GetInternalDisplayIds()`.
+  // Gets an id of display corresponding to internal panel.
   static int64_t InternalDisplayId();
-  static void SetInternalDisplayId(int64_t internal_display_id);
-
-  // Test if the |id| is for the internal display if any.
-  static bool IsInternalDisplayId(int64_t id);
-
-  // True if there is an internal display.
-  static bool HasInternalDisplay();
 
   // Maximum cursor size in native pixels.
   const gfx::Size& maximum_cursor_size() const { return maximum_cursor_size_; }
@@ -229,10 +214,12 @@ class DISPLAY_EXPORT Display final {
   }
 
   // The color spaces used by the display.
+  // TODO(b/226163383): Rename to SetColorSpaces
   const gfx::DisplayColorSpaces& color_spaces() const { return color_spaces_; }
-  void set_color_spaces(const gfx::DisplayColorSpaces& color_spaces) {
-    color_spaces_ = color_spaces;
-  }
+  void set_color_spaces(const gfx::DisplayColorSpaces& color_spaces);
+
+  // Return true if the display orientation is landscape.
+  bool is_landscape() const { return bounds_.width() >= bounds_.height(); }
 
   // Default values for color_depth and depth_per_component.
   static constexpr int kDefaultBitsPerPixel = 24;
@@ -267,6 +254,10 @@ class DISPLAY_EXPORT Display final {
     display_frequency_ = display_frequency;
   }
 
+  // A user-friendly label, determined by the platform.
+  const std::string& label() const { return label_; }
+  void set_label(const std::string& label) { label_ = label; }
+
   bool operator==(const Display& rhs) const;
   bool operator!=(const Display& rhs) const { return !(*this == rhs); }
 
@@ -281,7 +272,7 @@ class DISPLAY_EXPORT Display final {
   gfx::Rect work_area_;
   float device_scale_factor_;
   Rotation rotation_ = ROTATE_0;
-  base::Optional<Rotation> panel_rotation_;
+  absl::optional<Rotation> panel_rotation_;
   TouchSupport touch_support_ = TouchSupport::UNKNOWN;
   AccelerometerSupport accelerometer_support_ = AccelerometerSupport::UNKNOWN;
   gfx::Size maximum_cursor_size_;
@@ -290,6 +281,7 @@ class DISPLAY_EXPORT Display final {
   int depth_per_component_;
   bool is_monochrome_ = false;
   int display_frequency_ = 0;
+  std::string label_;
 };
 
 }  // namespace display

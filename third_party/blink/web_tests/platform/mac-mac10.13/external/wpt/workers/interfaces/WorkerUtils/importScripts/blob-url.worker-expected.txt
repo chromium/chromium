@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Blob URLs work on importScripts
+PASS A revoked blob URL will fail
+FAIL Revoking a blob URL in an earlier script will not fail Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'blob:http://web-platform.test:8001/106b8ff6-01a0-4bb3-8fbe-6c6235e7d970' failed to load.
+Harness: the test ran to completion.
+

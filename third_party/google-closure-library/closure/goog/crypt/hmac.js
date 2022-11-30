@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Implementation of HMAC in JavaScript.
@@ -41,6 +33,7 @@ goog.require('goog.crypt.Hash');
  * @struct
  */
 goog.crypt.Hmac = function(hasher, key, opt_blockSize) {
+  'use strict';
   goog.crypt.Hmac.base(this, 'constructor');
 
   /**
@@ -101,6 +94,7 @@ goog.crypt.Hmac.IPAD_ = 0x36;
  * @private
  */
 goog.crypt.Hmac.prototype.initialize_ = function(key) {
+  'use strict';
   if (key.length > this.blockSize) {
     this.hasher_.update(key);
     key = this.hasher_.digest();
@@ -124,6 +118,7 @@ goog.crypt.Hmac.prototype.initialize_ = function(key) {
 
 /** @override */
 goog.crypt.Hmac.prototype.reset = function() {
+  'use strict';
   this.hasher_.reset();
   this.hasher_.update(this.keyI_);
 };
@@ -131,12 +126,14 @@ goog.crypt.Hmac.prototype.reset = function() {
 
 /** @override */
 goog.crypt.Hmac.prototype.update = function(bytes, opt_length) {
+  'use strict';
   this.hasher_.update(bytes, opt_length);
 };
 
 
 /** @override */
 goog.crypt.Hmac.prototype.digest = function() {
+  'use strict';
   var temp = this.hasher_.digest();
   this.hasher_.reset();
   this.hasher_.update(this.keyO_);
@@ -152,6 +149,7 @@ goog.crypt.Hmac.prototype.digest = function() {
  * @return {!Array<number>} the digest of the given message.
  */
 goog.crypt.Hmac.prototype.getHmac = function(message) {
+  'use strict';
   this.reset();
   this.update(message);
   return this.digest();

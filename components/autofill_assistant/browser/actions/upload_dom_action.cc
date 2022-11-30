@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -39,11 +39,13 @@ void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&UploadDomAction::OnWaitForElement,
                          weak_ptr_factory_.GetWeakPtr(), selector,
-                         proto_.upload_dom().can_match_multiple_elements())));
+                         proto_.upload_dom().can_match_multiple_elements(),
+                         proto_.upload_dom().include_all_inner_text())));
 }
 
 void UploadDomAction::OnWaitForElement(const Selector& selector,
                                        bool can_match_multiple_elements,
+                                       bool include_all_inner_text,
                                        const ClientStatus& element_status) {
   if (!element_status.ok()) {
     EndAction(element_status);
@@ -54,10 +56,12 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
     delegate_->FindAllElements(
         selector,
         base::BindOnce(
-            &action_delegate_util::TakeElementAndGetProperty<
-                std::vector<std::string>>,
+            &element_action_util::TakeElementAndGetProperty<
+                const std::vector<std::string>&>,
             base::BindOnce(&WebController::GetOuterHtmls,
-                           delegate_->GetWebController()->GetWeakPtr()),
+                           delegate_->GetWebController()->GetWeakPtr(),
+                           include_all_inner_text),
+            std::vector<std::string>(),
             base::BindOnce(&UploadDomAction::OnGetOuterHtmls,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -66,9 +70,11 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
   delegate_->FindElement(
       selector,
       base::BindOnce(
-          &action_delegate_util::TakeElementAndGetProperty<std::string>,
+          &element_action_util::TakeElementAndGetProperty<const std::string&>,
           base::BindOnce(&WebController::GetOuterHtml,
-                         delegate_->GetWebController()->GetWeakPtr()),
+                         delegate_->GetWebController()->GetWeakPtr(),
+                         include_all_inner_text),
+          std::string(),
           base::BindOnce(&UploadDomAction::OnGetOuterHtml,
                          weak_ptr_factory_.GetWeakPtr())));
 }

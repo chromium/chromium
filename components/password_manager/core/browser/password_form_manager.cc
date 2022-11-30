@@ -1,16 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_form_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,7 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -27,6 +25,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
@@ -35,11 +34,16 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 using autofill::FieldDataManager;
@@ -53,7 +57,6 @@ using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
 using autofill::password_generation::PasswordGenerationType;
-using base::TimeDelta;
 using base::TimeTicks;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -63,9 +66,6 @@ namespace password_manager {
 bool PasswordFormManager::wait_for_server_predictions_for_filling_ = true;
 
 namespace {
-
-constexpr TimeDelta kMaxFillingDelayForServerPredictions =
-    TimeDelta::FromMilliseconds(500);
 
 // Returns bit masks with differences in forms attributes which are important
 // for parsing. Bits are set according to enum FormDataDifferences.
@@ -83,9 +83,13 @@ uint32_t FindFormsDifferences(const FormData& lhs, const FormData& rhs) {
     if (lhs_field.form_control_type != rhs_field.form_control_type)
       differences_bitmask |= PasswordFormMetricsRecorder::kFormControlTypes;
 
-    if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute)
+    if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute) {
       differences_bitmask |=
           PasswordFormMetricsRecorder::kAutocompleteAttributes;
+    }
+
+    if (lhs_field.name != rhs_field.name)
+      differences_bitmask |= PasswordFormMetricsRecorder::kFormFieldNames;
   }
   return differences_bitmask;
 }
@@ -101,28 +105,9 @@ bool FormContainsFieldWithName(const FormData& form,
   return false;
 }
 
-// Returns whether reparsing server predictions following a form change is
-// enabled.
-bool IsReparsingServerPredictionsEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kReparseServerPredictionsFollowingFormChange);
-}
-
-bool IsUsernameFirstFlowFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kUsernameFirstFlow);
-}
-
-// Find a field in |predictions| with given renderer id.
-const PasswordFieldPrediction* FindFieldPrediction(
-    const base::Optional<FormPredictions>& predictions,
-    autofill::FieldRendererId field_renderer_id) {
-  if (!predictions)
-    return nullptr;
-  for (const auto& field : predictions->fields) {
-    if (field.renderer_id == field_renderer_id)
-      return &field;
-  }
-  return nullptr;
+bool IsPhished(const PasswordForm& credentials) {
+  return credentials.password_issues.find(InsecureType::kPhished) !=
+         credentials.password_issues.end();
 }
 
 void LogUsingPossibleUsername(PasswordManagerClient* client,
@@ -135,6 +120,35 @@ void LogUsingPossibleUsername(PasswordManagerClient* client,
                            : Logger::STRING_POSSIBLE_USERNAME_NOT_USED,
                    message);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsCurrentUserEvicted(PasswordManagerClient* client) {
+  return client->GetPrefs()->GetBoolean(
+      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
+bool ShouldShowErrorMessage(
+    absl::optional<PasswordStoreBackendError> backend_error,
+    PasswordManagerClient* client) {
+  if (!backend_error.has_value())
+    return false;
+  PasswordStoreBackendError error = backend_error.value();
+  bool is_auth_error =
+      (error.type == PasswordStoreBackendErrorType::kAuthErrorResolvable) ||
+      (error.type == PasswordStoreBackendErrorType::kAuthErrorUnresolvable);
+  if (!is_auth_error)
+    return false;
+  if (IsCurrentUserEvicted(client))
+    return false;
+  DCHECK(error.recovery_type !=
+         PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+    return false;
+  }
+  return true;
+}
+#endif
 
 }  // namespace
 
@@ -161,13 +175,20 @@ PasswordFormManager::PasswordFormManager(
   if (owned_form_fetcher_ &&
       !observed_form()->is_gaia_with_skip_save_password_form) {
     owned_form_fetcher_->Fetch();
+
+    WebAuthnCredentialsDelegate* delegate =
+        client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+    if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+      delegate->RetrieveWebAuthnSuggestions(
+          async_predictions_waiter_.CreateClosure());
+    }
   }
   votes_uploader_.StoreInitialFieldValues(*observed_form());
 }
 
 PasswordFormManager::PasswordFormManager(
     PasswordManagerClient* client,
-    PasswordStore::FormDigest observed_http_auth_digest,
+    PasswordFormDigest observed_http_auth_digest,
     FormFetcher* form_fetcher,
     std::unique_ptr<PasswordSaveManager> password_save_manager)
     : PasswordFormManager(client,
@@ -255,8 +276,8 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::make_span(form_fetcher_->GetInteractionsStats());
 }
 
-base::span<const InsecureCredential>
-PasswordFormManager::GetInsecureCredentials() const {
+std::vector<const PasswordForm*> PasswordFormManager::GetInsecureCredentials()
+    const {
   return form_fetcher_->GetInsecureCredentials();
 }
 
@@ -300,12 +321,36 @@ void PasswordFormManager::Save() {
     newly_blocklisted_ = false;
   }
 
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  PasswordChangeSuccessTracker::EndEvent end_event =
+      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowGeneratedPasswordChosen
+                             : PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowOwnPasswordChosen;
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
+      IsPhished(GetPendingCredentials()));
+
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
 
   client_->UpdateFormManagers();
 }
 
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  PasswordChangeSuccessTracker::EndEvent end_event =
+      HasGeneratedPassword() ? PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowGeneratedPasswordChosen
+                             : PasswordChangeSuccessTracker::EndEvent::
+                                   kManualFlowOwnPasswordChosen;
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
+      IsPhished(credentials_to_update));
+
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);
 
@@ -318,6 +363,7 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
   parsed_submitted_form_->username_value = new_username;
   parsed_submitted_form_->username_element.clear();
 
+  password_save_manager_->UsernameUpdatedInBubble();
   metrics_recorder_->set_username_updated_in_bubble(true);
 
   if (!new_username.empty()) {
@@ -369,6 +415,7 @@ void PasswordFormManager::UpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   parsed_submitted_form_->form_data.submission_event = event;
   parsed_submitted_form_->submission_event = event;
+  password_save_manager_->UpdateSubmissionIndicatorEvent(event);
 }
 
 void PasswordFormManager::OnNopeUpdateClicked() {
@@ -383,8 +430,6 @@ void PasswordFormManager::OnNeverClicked() {
   votes_uploader_.UploadPasswordVote(*parsed_submitted_form_,
                                      *parsed_submitted_form_,
                                      autofill::UNKNOWN_TYPE, std::string());
-
-  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
   Blocklist();
 }
 
@@ -395,8 +440,6 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
       *parsed_submitted_form_, *parsed_submitted_form_,
       is_update ? autofill::PROBABLY_NEW_PASSWORD : autofill::UNKNOWN_TYPE,
       std::string());
-
-  votes_uploader_.MaybeSendSingleUsernameVote(false /* credentials_saved */);
 }
 
 void PasswordFormManager::Blocklist() {
@@ -405,8 +448,7 @@ void PasswordFormManager::Blocklist() {
   newly_blocklisted_ = true;
 }
 
-PasswordStore::FormDigest PasswordFormManager::ConstructObservedFormDigest()
-    const {
+PasswordFormDigest PasswordFormManager::ConstructObservedFormDigest() const {
   std::string signon_realm;
   GURL url;
   if (observed_digest()) {
@@ -418,7 +460,7 @@ PasswordStore::FormDigest PasswordFormManager::ConstructObservedFormDigest()
     url = observed_form()->url;
     signon_realm = GetSignonRealm(observed_form()->url);
   }
-  return PasswordStore::FormDigest(GetScheme(), signon_realm, url);
+  return PasswordFormDigest(GetScheme(), signon_realm, url);
 }
 
 void PasswordFormManager::OnPasswordsRevealed() {
@@ -494,13 +536,17 @@ void PasswordFormManager::SetGenerationElement(
   votes_uploader_.set_generation_element(generation_element);
 }
 
-bool PasswordFormManager::IsPossibleChangePasswordFormWithoutUsername() const {
+bool PasswordFormManager::HasLikelyChangePasswordFormSubmitted() const {
   return parsed_submitted_form_ &&
-         parsed_submitted_form_->IsPossibleChangePasswordFormWithoutUsername();
+         parsed_submitted_form_->IsLikelyChangePasswordForm();
 }
 
 bool PasswordFormManager::IsPasswordUpdate() const {
   return password_save_manager_->IsPasswordUpdate();
+}
+
+bool PasswordFormManager::IsSamePassword() const {
+  return password_save_manager_->IsSamePassword();
 }
 
 base::WeakPtr<PasswordManagerDriver> PasswordFormManager::GetDriver() const {
@@ -511,7 +557,7 @@ const PasswordForm* PasswordFormManager::GetSubmittedForm() const {
   return parsed_submitted_form_.get();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void PasswordFormManager::PresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form,
@@ -526,15 +572,9 @@ bool PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
     FieldRendererId field_id,
     const std::u16string& field_value) {
-  if (form_id) {
-    if (!observed_form()->is_form_tag ||
-        (observed_form()->is_form_tag &&
-         observed_form()->unique_renderer_id != form_id)) {
-      return false;
-    }
-  } else if (observed_form()->is_form_tag) {
-    return false;
-  }
+  DCHECK((form_id && observed_form()->is_form_tag &&
+          observed_form()->unique_renderer_id == form_id) ||
+         (!form_id && !observed_form()->is_form_tag));
 
   bool form_data_changed = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {
@@ -582,7 +622,12 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
   if (data_found)
     ProvisionallySave(*observed_form(), driver, nullptr);
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
+
+void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {
+  votes_uploader_.set_suggested_username(
+      GetPendingCredentials().username_value);
+}
 
 std::unique_ptr<PasswordFormManager> PasswordFormManager::Clone() {
   // Fetcher is cloned to avoid re-fetching data from PasswordStore.
@@ -629,7 +674,7 @@ PasswordFormManager::PasswordFormManager(
     std::unique_ptr<FormFetcher> form_fetcher,
     std::unique_ptr<PasswordSaveManager> password_save_manager)
     : PasswordFormManager(client,
-                          PasswordStore::FormDigest(*saved_form),
+                          PasswordFormDigest(*saved_form),
                           form_fetcher.get(),
                           std::move(password_save_manager),
                           nullptr /* metrics_recorder */) {
@@ -639,11 +684,37 @@ PasswordFormManager::PasswordFormManager(
   owned_form_fetcher_->Fetch();
 }
 
+void PasswordFormManager::DelayFillForServerSidePredictions() {
+  waiting_for_server_predictions_ = true;
+  async_predictions_waiter_.StartTimer();
+  server_predictions_closure_ = async_predictions_waiter_.CreateClosure();
+}
+
 void PasswordFormManager::OnFetchCompleted() {
   received_stored_credentials_time_ = TimeTicks::Now();
 
   newly_blocklisted_ = false;
   autofills_left_ = kMaxTimesAutofill;
+
+#if BUILDFLAG(IS_ANDROID)
+  absl::optional<PasswordStoreBackendError> backend_error =
+      form_fetcher_->GetProfileStoreBackendError();
+  if (ShouldShowErrorMessage(backend_error, client_)) {
+    // If there is no FormData, this is an http authentication form. We don't
+    // show the message for it because it would be hidden behind a sign in
+    // dialog and the user could miss it.
+    if (observed_form() != nullptr) {
+      std::unique_ptr<PasswordForm> password_form =
+          parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling);
+      client_->ShowPasswordManagerErrorMessage(
+          password_form && (password_form->IsLikelySignupForm() ||
+                  password_form->IsLikelyChangePasswordForm())
+              ? password_manager::ErrorMessageFlowType::kSaveFlow
+              : password_manager::ErrorMessageFlowType::kFillFlow,
+          backend_error->type);
+    }
+  }
+#endif
 
   if (IsCredentialAPISave()) {
     // This is saving with credential API, there is no form to fill, so no
@@ -666,13 +737,25 @@ void PasswordFormManager::OnFetchCompleted() {
     ReportTimeBetweenStoreAndServerUMA();
     Fill();
   } else if (!waiting_for_server_predictions_) {
-    waiting_for_server_predictions_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordFormManager::Fill,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kMaxFillingDelayForServerPredictions);
+    DelayFillForServerSidePredictions();
   }
+}
+
+void PasswordFormManager::OnWaitCompleted() {
+  Fill();
+}
+
+void PasswordFormManager::OnTimeout() {
+  Fill();
+}
+
+bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
+  WebAuthnCredentialsDelegate* delegate =
+      client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+  if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+    return delegate->GetWebAuthnSuggestions().has_value();
+  }
+  return false;
 }
 
 void PasswordFormManager::CreatePendingCredentials() {
@@ -697,6 +780,7 @@ bool PasswordFormManager::ProvisionallySave(
     const PasswordManagerDriver* driver,
     const PossibleUsernameData* possible_username) {
   DCHECK(DoesManage(submitted_form.unique_renderer_id, driver));
+  DCHECK(client_->IsSavingAndFillingEnabled(submitted_form.url));
   std::unique_ptr<PasswordForm> parsed_submitted_form =
       ParseFormAndMakeLogging(submitted_form, FormDataParser::Mode::kSaving);
   RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_submitted_form,
@@ -716,17 +800,38 @@ bool PasswordFormManager::ProvisionallySave(
   submitted_form_ = submitted_form;
   is_submitted_ = true;
   CalculateFillingAssistanceMetric(submitted_form);
+  CalculateSubmittedFormFrameMetric();
   metrics_recorder_->set_possible_username_used(false);
   votes_uploader_.clear_single_username_vote_data();
 
-  if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty() &&
-      UsePossibleUsername(possible_username)) {
-    parsed_submitted_form_->username_value = possible_username->value;
-    metrics_recorder_->set_possible_username_used(true);
-    if (possible_username->form_predictions) {
+  // TODO(crbug.com/959776): Reset possible username after it's used.
+  if (parsed_submitted_form_->username_value.empty() &&
+      !parsed_submitted_form_->password_value.empty()) {
+    if (IsPossibleSingleUsernameAvailable(possible_username)) {
+      // Suggest the possible username value in a prompt if the server confirmed
+      // it is a single username field. Otherwise, |possible_username| is used
+      // only for voting.
+      if (possible_username->HasSingleUsernameServerPrediction()) {
+        parsed_submitted_form_->username_value = possible_username->value;
+        metrics_recorder_->set_possible_username_used(true);
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, populated in prompt");
+      } else {
+        LogUsingPossibleUsername(
+            client_, /*is_used*/ true,
+            "Valid possible username, not populated in prompt");
+      }
       votes_uploader_.set_single_username_vote_data(
-          possible_username->renderer_id, *possible_username->form_predictions);
+          possible_username->renderer_id, possible_username->value,
+          possible_username->form_predictions.value_or(FormPredictions()),
+          form_fetcher_->GetBestMatches());
+    } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
+      // If no single username typing preceded single password typing, set
+      // empty single username vote data for the fallback classifier.
+      votes_uploader_.set_single_username_vote_data(
+          FieldRendererId(), std::u16string(), FormPredictions(),
+          form_fetcher_->GetBestMatches());
     }
   }
   CreatePendingCredentials();
@@ -737,7 +842,7 @@ bool PasswordFormManager::ProvisionallySaveHttpAuthForm(
     const PasswordForm& submitted_form) {
   if (!IsHttpAuth())
     return false;
-  if (*observed_digest() != PasswordStore::FormDigest(submitted_form))
+  if (*observed_digest() != PasswordFormDigest(submitted_form))
     return false;
 
   parsed_submitted_form_ = std::make_unique<PasswordForm>(submitted_form);
@@ -767,8 +872,15 @@ void PasswordFormManager::ProcessServerPredictions(
     return;
   }
   UpdatePredictionsForObservedForm(predictions);
-  if (parser_.predictions())
-    Fill();
+  if (parser_.predictions()) {
+    if (!server_predictions_closure_.is_null()) {
+      // Signals the availability of server predictions, but there might be
+      // other callbacks still outstanding.
+      std::move(server_predictions_closure_).Run();
+    } else {
+      Fill();
+    }
+  }
 }
 
 void PasswordFormManager::Fill() {
@@ -796,7 +908,7 @@ void PasswordFormManager::Fill() {
 
   if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
 #endif
       .new_password_renderer_id =
@@ -806,7 +918,7 @@ void PasswordFormManager::Fill() {
     });
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Filling on username first flow is not supported on iOS.
   if (observed_password_form->IsSingleUsername())
     return;
@@ -816,7 +928,7 @@ void PasswordFormManager::Fill() {
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlocklisted(),
-      metrics_recorder_.get());
+      metrics_recorder_.get(), WebAuthnCredentialsAvailable());
 }
 
 void PasswordFormManager::FillForm(
@@ -829,8 +941,7 @@ void PasswordFormManager::FillForm(
   bool new_predictions_available = false;
   if (differences_bitmask) {
     UpdateFormManagerWithFormChanges(observed_form_data, predictions);
-    new_predictions_available =
-        parser_.predictions() && IsReparsingServerPredictionsEnabled();
+    new_predictions_available = parser_.predictions().has_value();
   }
   // Fill the form if relevant form predictions were found or if the
   // manager is not waiting for new server predictions.
@@ -844,11 +955,8 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
     const std::u16string& password) {
   // Find the generating element to update its value. The parser needs a non
   // empty value.
-  auto it = std::find_if(form_data.fields.begin(), form_data.fields.end(),
-                         [generation_element_id](const auto& field_data) {
-                           return generation_element_id ==
-                                  field_data.unique_renderer_id;
-                         });
+  auto it = base::ranges::find(form_data.fields, generation_element_id,
+                               &FormFieldData::unique_renderer_id);
   // The parameters are coming from the renderer and can't be trusted.
   if (it == form_data.fields.end())
     return;
@@ -878,19 +986,20 @@ PasswordFormManager::PasswordFormManager(
     : client_(client),
       observed_form_or_digest_(std::move(observed_form_or_digest)),
       metrics_recorder_(metrics_recorder),
-      owned_form_fetcher_(
-          form_fetcher ? nullptr
-                       : FormFetcherImpl::CreateFormFetcherImpl(
-                             observed_digest()
-                                 ? *observed_digest()
-                                 : PasswordStore::FormDigest(*observed_form()),
-                             client_,
-                             true /* should_migrate_http_passwords */)),
+      owned_form_fetcher_(form_fetcher
+                              ? nullptr
+                              : std::make_unique<FormFetcherImpl>(
+                                    observed_digest()
+                                        ? *observed_digest()
+                                        : PasswordFormDigest(*observed_form()),
+                                    client_,
+                                    true /* should_migrate_http_passwords */)),
       form_fetcher_(form_fetcher ? form_fetcher : owned_form_fetcher_.get()),
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
-      votes_uploader_(client, false /* is_possible_change_password_form */) {
+      votes_uploader_(client, false /* is_possible_change_password_form */),
+      async_predictions_waiter_(this) {
   form_fetcher_->AddConsumer(this);
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
@@ -944,9 +1053,10 @@ std::unique_ptr<PasswordForm> PasswordFormManager::ParseFormAndMakeLogging(
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
     logger.LogFormData(Logger::STRING_FORM_PARSING_INPUT, form);
-    if (password_form)
+    if (password_form) {
       logger.LogPasswordForm(Logger::STRING_FORM_PARSING_OUTPUT,
                              *password_form);
+    }
   }
   return password_form;
 }
@@ -990,16 +1100,65 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
           ->ComputePasswordAccountStorageUsageLevel());
 }
 
-bool PasswordFormManager::UsePossibleUsername(
-    const PossibleUsernameData* possible_username) {
+void PasswordFormManager::CalculateSubmittedFormFrameMetric() {
+  if (!driver_)
+    return;
+
+  const PasswordForm& form = *GetSubmittedForm();
+  metrics_util::SubmittedFormFrame frame;
+  if (driver_->IsInPrimaryMainFrame()) {
+    frame = metrics_util::SubmittedFormFrame::MAIN_FRAME;
+  } else if (form.url == client_->GetLastCommittedURL()) {
+    frame =
+        metrics_util::SubmittedFormFrame::IFRAME_WITH_SAME_URL_AS_MAIN_FRAME;
+  } else {
+    std::string main_frame_signon_realm =
+        GetSignonRealm(client_->GetLastCommittedURL());
+    if (main_frame_signon_realm == form.signon_realm) {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_URL_SAME_SIGNON_REALM_AS_MAIN_FRAME;
+    } else if (IsPublicSuffixDomainMatch(form.signon_realm,
+                                         main_frame_signon_realm)) {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_PSL_MATCHED_SIGNON_REALM;
+    } else {
+      frame = metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_AND_NOT_PSL_MATCHED_SIGNON_REALM;
+    }
+  }
+  metrics_recorder_->set_submitted_form_frame(frame);
+}
+
+bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
+    const PossibleUsernameData* possible_username) const {
   if (!possible_username) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Null");
     return false;
   }
 
   // The username form and password forms signon realms must be the same.
-  if (GetSignonRealm(observed_form()->url) != possible_username->signon_realm) {
+  if (parsed_submitted_form_->signon_realm != possible_username->signon_realm) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Different domains");
+    return false;
+  }
+
+  if (possible_username->value.empty()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "Empty possible username value");
+    return false;
+  }
+
+  // PasswordManager does not upload votes for fields that have no names or
+  // ids to avoid aggregation of multiple unrelated fields during single
+  // username detection. (crbug.com/1209143)
+  if (possible_username->field_name.empty()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false, "Empty field name");
+    return false;
+  }
+
+  if (possible_username->IsStale()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "Possible username data expired");
     return false;
   }
 
@@ -1014,59 +1173,7 @@ bool PasswordFormManager::UsePossibleUsername(
     }
   }
 
-  // Check whether server predictions have a definite answer.
-  const PasswordFieldPrediction* field_prediction = FindFieldPrediction(
-      possible_username->form_predictions, possible_username->renderer_id);
-  if (field_prediction) {
-    if (field_prediction->type == SINGLE_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ true, "Server predictions");
-      return true;
-    }
-    if (field_prediction->type == NOT_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ false,
-                               "Server predictions");
-      return false;
-    }
-  }
-
-#if defined(OS_ANDROID)
-  // Do not trust local heuristics on Android.
-  // TODO(https://crbug.com/1051914): Make local heuristics more reliable.
-  return false;
-#else
-  // Check whether it is already learned from previous user actions whether
-  // |possible_username| corresponds to the valid username form.
-  const FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
-  if (field_info_manager && field_prediction) {
-    auto form_signature = possible_username->form_predictions->form_signature;
-    auto field_signature = field_prediction->signature;
-    autofill::ServerFieldType type =
-        field_info_manager->GetFieldType(form_signature, field_signature);
-    if (type == SINGLE_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ true, "Local prediction");
-      return true;
-    }
-    if (type == NOT_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ false, "Local prediction");
-      return false;
-    }
-  }
-
-  // TODO(crbug.com/959776): This currently only considers a possible username
-  // valid if a credential with the same username already exists for the same
-  // site. This is too conservative, and we should allow any possible username
-  // that matches a credential on any site in the user's password store.
-  std::vector<std::u16string> usernames;
-  usernames.reserve(GetBestMatches().size());
-  base::ranges::transform(GetBestMatches(), std::back_inserter(usernames),
-                          &PasswordForm::username_value);
-
-  bool is_possible_username_valid = IsPossibleUsernameValid(
-      *possible_username, parsed_submitted_form_->signon_realm, usernames);
-  LogUsingPossibleUsername(client_, /*is_used*/ is_possible_username_valid,
-                           "Local heuristics");
-  return is_possible_username_valid;
-#endif  // defined(OS_ANDROID)
+  return true;
 }
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(
@@ -1085,13 +1192,13 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
     const FormData& observed_form_data,
     const std::map<FormSignature, FormPredictions>& predictions) {
   *mutable_observed_form() = observed_form_data;
-  if (!IsReparsingServerPredictionsEnabled())
-    return;
 
   // If the observed form has changed, it might be autofilled again.
   autofills_left_ = kMaxTimesAutofill;
   parser_.reset_predictions();
   UpdatePredictionsForObservedForm(predictions);
+
+  DelayFillForServerSidePredictions();
 }
 
 }  // namespace password_manager

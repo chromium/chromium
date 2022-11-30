@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_VALIDATING_ABSTRACT_TEXTURE_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/gpu_gles2_export.h"
@@ -36,9 +37,10 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   void SetParameteri(GLenum pname, GLint param) override;
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
   void BindImage(gl::GLImage* image, bool client_managed) override;
-  gl::GLImage* GetImage() const override;
+  gl::GLImage* GetImageForTesting() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
+  void NotifyOnContextLost() override;
 
   // Called when our decoder is going away, so that we can try to clean up.
   void OnDecoderWillDestroy(bool have_context);
@@ -57,7 +59,7 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   scoped_refptr<TextureRef> texture_ref_;
   bool decoder_managed_image_ = false;
 
-  DecoderContext* decoder_context_ = nullptr;
+  raw_ptr<DecoderContext> decoder_context_ = nullptr;
   DestructionCB destruction_cb_;
   CleanupCallback cleanup_cb_;
 };

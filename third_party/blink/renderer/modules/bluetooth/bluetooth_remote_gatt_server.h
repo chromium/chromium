@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_REMOTE_GATT_SERVER_H_
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_unsigned_long.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -66,14 +67,14 @@ class BluetoothRemoteGATTServer
   // IDL exposed interface:
   BluetoothDevice* device() { return device_; }
   bool connected() { return connected_; }
-  ScriptPromise connect(ScriptState*);
-  void disconnect(ScriptState*);
-  ScriptPromise getPrimaryService(ScriptState*,
-                                  const StringOrUnsignedLong& service,
-                                  ExceptionState&);
-  ScriptPromise getPrimaryServices(ScriptState*,
-                                   const StringOrUnsignedLong& service,
-                                   ExceptionState&);
+  ScriptPromise connect(ScriptState*, ExceptionState&);
+  void disconnect(ScriptState*, ExceptionState&);
+  ScriptPromise getPrimaryService(ScriptState* script_state,
+                                  const V8BluetoothServiceUUID* service,
+                                  ExceptionState& exception_state);
+  ScriptPromise getPrimaryServices(ScriptState* script_state,
+                                   const V8BluetoothServiceUUID* service,
+                                   ExceptionState& exception_state);
   ScriptPromise getPrimaryServices(ScriptState*, ExceptionState&);
 
  private:
@@ -90,7 +91,7 @@ class BluetoothRemoteGATTServer
       mojom::blink::WebBluetoothGATTQueryQuantity,
       ScriptPromiseResolver*,
       mojom::blink::WebBluetoothResult,
-      base::Optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
+      absl::optional<Vector<mojom::blink::WebBluetoothRemoteGATTServicePtr>>
           services);
 
   // Contains a ScriptPromiseResolver corresponding to each active algorithm

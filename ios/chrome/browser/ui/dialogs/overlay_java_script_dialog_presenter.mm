@@ -1,19 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
-#include "ios/chrome/browser/ui/dialogs/java_script_dialog_metrics.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,10 +25,10 @@ using java_script_dialog_overlays::JavaScriptDialogResponse;
 namespace {
 // Completion callback for JavaScript dialog overlays.
 void HandleJavaScriptDialogResponse(web::DialogClosedCallback callback,
-                                    web::WebState::Getter web_state_getter,
+                                    base::WeakPtr<web::WebState> weak_web_state,
                                     OverlayResponse* response) {
   // Notify the blocking state that the dialog was shown.
-  web::WebState* web_state = web_state_getter.Run();
+  web::WebState* web_state = weak_web_state.get();
   JavaScriptDialogBlockingState* blocking_state =
       web_state ? JavaScriptDialogBlockingState::FromWebState(web_state)
                 : nullptr;
@@ -41,10 +40,6 @@ void HandleJavaScriptDialogResponse(web::DialogClosedCallback callback,
   if (!dialog_response) {
     // A null response is used if the dialog was not closed by user interaction.
     // This occurs either for navigation or because of WebState closures.
-    IOSJavaScriptDialogDismissalCause cause =
-        web_state ? IOSJavaScriptDialogDismissalCause::kNavigation
-                  : IOSJavaScriptDialogDismissalCause::kClosure;
-    RecordDialogDismissalCause(cause);
     std::move(callback).Run(/*success=*/false, /*user_input=*/nil);
     return;
   }
@@ -56,7 +51,6 @@ void HandleJavaScriptDialogResponse(web::DialogClosedCallback callback,
     blocking_state->JavaScriptDialogBlockingOptionSelected();
   }
 
-  RecordDialogDismissalCause(IOSJavaScriptDialogDismissalCause::kUser);
   bool confirmed = action == JavaScriptDialogResponse::Action::kConfirm;
   NSString* user_input = confirmed ? dialog_response->user_input() : nil;
   std::move(callback).Run(confirmed, user_input);
@@ -83,20 +77,20 @@ void OverlayJavaScriptDialogPresenter::RunJavaScriptDialog(
   JavaScriptDialogBlockingState::CreateForWebState(web_state);
   if (JavaScriptDialogBlockingState::FromWebState(web_state)->blocked()) {
     // Block the dialog if needed.
-    RecordDialogDismissalCause(IOSJavaScriptDialogDismissalCause::kBlocked);
     std::move(callback).Run(NO, nil);
     return;
   }
 
   bool from_main_frame_origin =
-      origin_url.GetOrigin() == web_state->GetLastCommittedURL().GetOrigin();
+      origin_url.DeprecatedGetOriginAsURL() ==
+      web_state->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<JavaScriptDialogRequest>(
           dialog_type, web_state, origin_url, from_main_frame_origin,
           message_text, default_prompt_text);
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&HandleJavaScriptDialogResponse, std::move(callback),
-                     web_state->CreateDefaultGetter()));
+                     web_state->GetWeakPtr()));
   OverlayRequestQueue::FromWebState(web_state, OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));
 }

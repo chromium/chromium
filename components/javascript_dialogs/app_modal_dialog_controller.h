@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace javascript_dialogs {
@@ -45,6 +45,10 @@ class AppModalDialogController {
       bool is_before_unload_dialog,
       bool is_reload,
       content::JavaScriptDialogManager::DialogClosedCallback callback);
+
+  AppModalDialogController(const AppModalDialogController&) = delete;
+  AppModalDialogController& operator=(const AppModalDialogController&) = delete;
+
   ~AppModalDialogController();
 
   // Called by the AppModalDialogQueue to show this dialog.
@@ -113,14 +117,14 @@ class AppModalDialogController {
 
   // The toolkit-specific implementation of the app modal dialog box. When
   // non-null, |view_| owns |this|.
-  AppModalDialogView* view_;
+  raw_ptr<AppModalDialogView> view_;
 
   // The WebContents that opened this dialog.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // A map of extra Chrome-only data associated with the delegate_. Can be
   // inspected via |extra_data_map_[web_contents_]|.
-  ExtraDataMap* extra_data_map_;
+  raw_ptr<ExtraDataMap> extra_data_map_;
 
   // Information about the message box is held in the following variables.
   const content::JavaScriptDialogType javascript_dialog_type_;
@@ -136,21 +140,20 @@ class AppModalDialogController {
   // used when notifying the delegate, if |use_override_prompt_text_| is true.
   std::u16string override_prompt_text_;
   bool use_override_prompt_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogController);
 };
 
 // An interface to observe that a modal dialog is shown.
 class AppModalDialogObserver {
  public:
   AppModalDialogObserver();
+
+  AppModalDialogObserver(const AppModalDialogObserver&) = delete;
+  AppModalDialogObserver& operator=(const AppModalDialogObserver&) = delete;
+
   virtual ~AppModalDialogObserver();
 
   // Called when the modal dialog is shown.
   virtual void Notify(AppModalDialogController* dialog) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppModalDialogObserver);
 };
 
 }  // namespace javascript_dialogs

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,99 +8,84 @@ import("//tools/grit/grit_rule.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
-    "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
 }
 
 android_resources("java_resources") {
   sources = [
+    "res/color/item_chooser_row_background.xml",
+    "res/color/item_chooser_row_icon_color.xml",
+    "res/color/item_chooser_row_text_color.xml",
     "res/drawable-hdpi/exclamation_triangle.png",
     "res/drawable-hdpi/infobar_accessibility_events.png",
-    "res/drawable-hdpi/infobar_camera.png",
-    "res/drawable-hdpi/infobar_clipboard.png",
-    "res/drawable-hdpi/infobar_desktop_notifications.png",
     "res/drawable-hdpi/infobar_downloading.png",
-    "res/drawable-hdpi/infobar_geolocation.png",
-    "res/drawable-hdpi/infobar_microphone.png",
-    "res/drawable-hdpi/infobar_midi.png",
-    "res/drawable-hdpi/infobar_nfc.png",
     "res/drawable-hdpi/infobar_protected_media_identifier.png",
     "res/drawable-hdpi/infobar_warning.png",
     "res/drawable-hdpi/permission_cookie.png",
-    "res/drawable-hdpi/settings_nfc.png",
-    "res/drawable-hdpi/vr_headset.png",
     "res/drawable-mdpi/exclamation_triangle.png",
     "res/drawable-mdpi/infobar_accessibility_events.png",
-    "res/drawable-mdpi/infobar_camera.png",
-    "res/drawable-mdpi/infobar_clipboard.png",
-    "res/drawable-mdpi/infobar_desktop_notifications.png",
     "res/drawable-mdpi/infobar_downloading.png",
-    "res/drawable-mdpi/infobar_geolocation.png",
-    "res/drawable-mdpi/infobar_microphone.png",
-    "res/drawable-mdpi/infobar_midi.png",
-    "res/drawable-mdpi/infobar_nfc.png",
     "res/drawable-mdpi/infobar_protected_media_identifier.png",
     "res/drawable-mdpi/infobar_warning.png",
     "res/drawable-mdpi/permission_cookie.png",
-    "res/drawable-mdpi/settings_nfc.png",
-    "res/drawable-mdpi/vr_headset.png",
     "res/drawable-xhdpi/exclamation_triangle.png",
     "res/drawable-xhdpi/infobar_accessibility_events.png",
-    "res/drawable-xhdpi/infobar_camera.png",
-    "res/drawable-xhdpi/infobar_clipboard.png",
-    "res/drawable-xhdpi/infobar_desktop_notifications.png",
     "res/drawable-xhdpi/infobar_downloading.png",
-    "res/drawable-xhdpi/infobar_geolocation.png",
-    "res/drawable-xhdpi/infobar_microphone.png",
-    "res/drawable-xhdpi/infobar_midi.png",
-    "res/drawable-xhdpi/infobar_nfc.png",
     "res/drawable-xhdpi/infobar_protected_media_identifier.png",
     "res/drawable-xhdpi/infobar_warning.png",
     "res/drawable-xhdpi/permission_cookie.png",
-    "res/drawable-xhdpi/settings_nfc.png",
-    "res/drawable-xhdpi/vr_headset.png",
     "res/drawable-xxhdpi/exclamation_triangle.png",
     "res/drawable-xxhdpi/infobar_accessibility_events.png",
-    "res/drawable-xxhdpi/infobar_camera.png",
-    "res/drawable-xxhdpi/infobar_clipboard.png",
-    "res/drawable-xxhdpi/infobar_desktop_notifications.png",
     "res/drawable-xxhdpi/infobar_downloading.png",
-    "res/drawable-xxhdpi/infobar_geolocation.png",
-    "res/drawable-xxhdpi/infobar_microphone.png",
-    "res/drawable-xxhdpi/infobar_midi.png",
-    "res/drawable-xxhdpi/infobar_nfc.png",
     "res/drawable-xxhdpi/infobar_protected_media_identifier.png",
     "res/drawable-xxhdpi/infobar_warning.png",
     "res/drawable-xxhdpi/permission_cookie.png",
-    "res/drawable-xxhdpi/settings_nfc.png",
-    "res/drawable-xxhdpi/vr_headset.png",
     "res/drawable-xxxhdpi/exclamation_triangle.png",
     "res/drawable-xxxhdpi/infobar_accessibility_events.png",
-    "res/drawable-xxxhdpi/infobar_camera.png",
-    "res/drawable-xxxhdpi/infobar_clipboard.png",
-    "res/drawable-xxxhdpi/infobar_desktop_notifications.png",
     "res/drawable-xxxhdpi/infobar_downloading.png",
-    "res/drawable-xxxhdpi/infobar_geolocation.png",
-    "res/drawable-xxxhdpi/infobar_microphone.png",
-    "res/drawable-xxxhdpi/infobar_midi.png",
-    "res/drawable-xxxhdpi/infobar_nfc.png",
     "res/drawable-xxxhdpi/infobar_protected_media_identifier.png",
     "res/drawable-xxxhdpi/infobar_warning.png",
     "res/drawable-xxxhdpi/permission_cookie.png",
-    "res/drawable-xxxhdpi/settings_nfc.png",
-    "res/drawable-xxxhdpi/vr_headset.png",
-    "res/drawable/permission_idle_detection.xml",
+    "res/drawable/gm_filled_bluetooth_searching_24.xml",
+    "res/drawable/gm_filled_cardboard_24.xml",
+    "res/drawable/gm_filled_content_paste_24.xml",
+    "res/drawable/gm_filled_devices_24.xml",
+    "res/drawable/gm_filled_location_on_24.xml",
+    "res/drawable/gm_filled_mic_24.xml",
+    "res/drawable/gm_filled_nfc_24.xml",
+    "res/drawable/gm_filled_notifications_24.xml",
+    "res/drawable/gm_filled_piano_24.xml",
+    "res/drawable/gm_filled_usb_24.xml",
+    "res/drawable/gm_filled_videocam_24.xml",
+    "res/drawable/ic_bluetooth_connected.xml",
+    "res/drawable/ic_signal_cellular_0_bar.xml",
+    "res/drawable/ic_signal_cellular_1_bar.xml",
+    "res/drawable/ic_signal_cellular_2_bar.xml",
+    "res/drawable/ic_signal_cellular_3_bar.xml",
+    "res/drawable/ic_signal_cellular_4_bar.xml",
+    "res/drawable/tenancy.xml",
+    "res/layout/bluetooth_scanning_permission_dialog.xml",
+    "res/layout/bluetooth_scanning_permission_dialog_row.xml",
+    "res/layout/device_item_list.xml",
+    "res/layout/item_chooser_dialog.xml",
+    "res/layout/item_chooser_dialog_row.xml",
     "res/layout/update_permissions_dialog.xml",
+    "res/values/styles.xml",
   ]
   deps = [
     ":permissions_strings_grd",
     "//components/browser_ui/modaldialog/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/strings:components_strings_grd",
   ]
 }
 
@@ -116,42 +101,70 @@ java_strings_grd("permissions_strings_grd") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserAndroidDelegate.java",
+    "java/src/org/chromium/components/permissions/BluetoothChooserDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
+    "java/src/org/chromium/components/permissions/BluetoothScanningPromptAndroidDelegate.java",
+    "java/src/org/chromium/components/permissions/DeviceItemAdapter.java",
+    "java/src/org/chromium/components/permissions/DeviceItemRow.java",
+    "java/src/org/chromium/components/permissions/ItemChooserDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModel.java",
-    "java/src/org/chromium/components/permissions/PermissionUmaUtil.java",
-    "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
   deps = [
+    ":core_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/location/android:location_java",
+    "//components/omnibox/browser:browser_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.components.permissions"
 }
 
-java_library("components_permissions_junit_tests") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+# Contains sources that do no depend on //content.
+android_library("core_java") {
+  sources = [
+    "java/src/org/chromium/components/permissions/PermissionUtil.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+robolectric_library("components_permissions_junit_tests") {
   sources = [ "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java" ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//components/browser_ui/theme/android:java_resources",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
   ]
+  resources_package = "org.chromium.components.permissions.test"
 }
 
 source_set("native") {

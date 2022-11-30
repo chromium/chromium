@@ -27,14 +27,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
 #include "cc/paint/paint_recorder.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT MemoryManagedPaintRecorder : public cc::PaintRecorder {
  public:
-  MemoryManagedPaintRecorder(base::RepeatingClosure set_needs_flush_callback);
+  MemoryManagedPaintRecorder(MemoryManagedPaintCanvas::Client* client);
 
  protected:
   std::unique_ptr<cc::RecordPaintCanvas> CreateCanvas(
@@ -42,7 +42,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder : public cc::PaintRecorder {
       const SkRect& bounds) override;
 
  private:
-  base::RepeatingClosure set_needs_flush_callback_;
+  MemoryManagedPaintCanvas::Client* client_;
 };
 
 }  // namespace blink

@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -156,7 +156,7 @@ void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGMaskElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return new LayoutSVGResourceMasker(this);
+  return MakeGarbageCollected<LayoutSVGResourceMasker>(this);
 }
 
 bool SVGMaskElement::SelfHasRelativeLengths() const {

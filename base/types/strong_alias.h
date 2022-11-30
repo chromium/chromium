@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/template_util.h"
+#include "base/trace_event/base_tracing_forward.h"
 
 namespace base {
 
@@ -58,7 +59,7 @@ namespace base {
 // used) if UnderlyingType doesn't support them.
 //
 // StrongAlias only directly exposes comparison operators (for convenient use in
-// ordered containers) and a hash function (for unordered_map/set). It's
+// ordered containers) and a Hasher struct (for unordered_map/set). It's
 // impossible, without reflection, to expose all methods of the UnderlyingType
 // in StrongAlias's interface. It's also potentially unwanted (ex. you don't
 // want to be able to add two StrongAliases that represent socket handles).
@@ -68,13 +69,15 @@ namespace base {
 // See also
 // - //styleguide/c++/blink-c++.md which provides recommendation and examples of
 //   using StrongAlias<Tag, bool> instead of a bare bool.
-// - util::IdType<...> which provides helpers for specializing
-//   StrongAlias to be used as an id.
-// - util::TokenType<...> which provides helpers for specializing StrongAlias
-//   to be used as a wrapper of base::UnguessableToken.
+// - IdType<...> which provides helpers for specializing StrongAlias to be
+//   used as an id.
+// - TokenType<...> which provides helpers for specializing StrongAlias to be
+//   used as a wrapper of base::UnguessableToken.
 template <typename TagType, typename UnderlyingType>
 class StrongAlias {
  public:
+  using underlying_type = UnderlyingType;
+
   constexpr StrongAlias() = default;
   constexpr explicit StrongAlias(const UnderlyingType& v) : value_(v) {}
   constexpr explicit StrongAlias(UnderlyingType&& v) noexcept
@@ -117,6 +120,16 @@ class StrongAlias {
   }
 
   // Hasher to use in std::unordered_map, std::unordered_set, etc.
+  //
+  // Example usage:
+  //     using MyType = base::StrongAlias<...>;
+  //     using MySet = std::unordered_set<MyType, typename MyType::Hasher>;
+  //
+  // https://google.github.io/styleguide/cppguide.html#std_hash asks to avoid
+  // defining specializations of `std::hash` - this is why the hasher needs to
+  // be explicitly specified and why the following code will *not* work:
+  //     using MyType = base::StrongAlias<...>;
+  //     using MySet = std::unordered_set<MyType>;  // This won't work.
   struct Hasher {
     using argument_type = StrongAlias;
     using result_type = std::size_t;
@@ -124,6 +137,14 @@ class StrongAlias {
       return std::hash<UnderlyingType>()(id.value());
     }
   };
+
+  // If UnderlyingType can be serialised into trace, its alias is also
+  // serialisable.
+  template <class U = UnderlyingType>
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), value_);
+  }
 
  protected:
   UnderlyingType value_;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ interface InfoCollectionGpuService {
   [EnableIf=is_win]
   GetGpuSupportedDx12VersionAndDevicePerfInfo()
       => (uint32 d3d12_feature_level,
+          uint32 highest_shader_model_version,
           gpu.mojom.DevicePerfInfo device_perf_info);
 
   // Requests Vulkan version

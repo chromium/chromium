@@ -25,11 +25,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATION_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -46,7 +45,7 @@ class PLATFORM_EXPORT TransformOperation
     kTranslateY,
     kTranslate,
     kRotate,
-    kRotateZ = kRotate,
+    kRotateZ,
     kSkewX,
     kSkewY,
     kSkew,
@@ -65,13 +64,17 @@ class PLATFORM_EXPORT TransformOperation
   };
 
   TransformOperation() = default;
+  TransformOperation(const TransformOperation&) = delete;
+  TransformOperation& operator=(const TransformOperation&) = delete;
   virtual ~TransformOperation() = default;
 
-  virtual bool operator==(const TransformOperation&) const = 0;
+  bool operator==(const TransformOperation& o) const {
+    return IsSameType(o) && IsEqualAssumingSameType(o);
+  }
   bool operator!=(const TransformOperation& o) const { return !(*this == o); }
 
   virtual void Apply(TransformationMatrix&,
-                     const FloatSize& border_box_size) const = 0;
+                     const gfx::SizeF& border_box_size) const = 0;
 
   // Implements the accumulative behavior described in
   // https://drafts.csswg.org/css-transforms-2/#combining-transform-lists
@@ -123,8 +126,8 @@ class PLATFORM_EXPORT TransformOperation
     return static_cast<BoxSizeDependency>(a | b);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransformOperation);
+ protected:
+  virtual bool IsEqualAssumingSameType(const TransformOperation&) const = 0;
 };
 
 }  // namespace blink

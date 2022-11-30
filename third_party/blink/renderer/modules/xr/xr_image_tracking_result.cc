@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,13 @@ XRImageTrackingResult::XRImageTrackingResult(
   }
 }
 
-base::Optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
+absl::optional<TransformationMatrix> XRImageTrackingResult::MojoFromObject()
     const {
   if (!mojo_from_this_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  return TransformationMatrix(mojo_from_this_->ToTransform().matrix());
+  return TransformationMatrix(mojo_from_this_->ToTransform());
 }
 
 XRSpace* XRImageTrackingResult::imageSpace() const {
@@ -44,6 +44,11 @@ XRSpace* XRImageTrackingResult::imageSpace() const {
   }
 
   return image_space_;
+}
+
+device::mojom::blink::XRNativeOriginInformationPtr
+XRImageTrackingResult::NativeOrigin() const {
+  return device::mojom::blink::XRNativeOriginInformation::NewImageIndex(index_);
 }
 
 void XRImageTrackingResult::Trace(Visitor* visitor) const {

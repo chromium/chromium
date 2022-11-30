@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <queue>
 
+#include "base/time/time.h"
 #include "media/base/video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/low_latency_video_renderer_algorithm.h"
@@ -14,13 +15,17 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
  public:
   LowLatencyVideoRendererAlgorithmTest()
       : algorithm_(nullptr),
-        current_render_time_(base::TimeTicks() + base::TimeDelta::FromDays(1)) {
-  }
+        current_render_time_(base::TimeTicks() + base::Days(1)) {}
+
+  LowLatencyVideoRendererAlgorithmTest(
+      const LowLatencyVideoRendererAlgorithmTest&) = delete;
+  LowLatencyVideoRendererAlgorithmTest& operator=(
+      const LowLatencyVideoRendererAlgorithmTest&) = delete;
 
   ~LowLatencyVideoRendererAlgorithmTest() override = default;
 
   scoped_refptr<media::VideoFrame> CreateFrame(
-      size_t maximum_composition_delay_in_frames) {
+      int maximum_composition_delay_in_frames) {
     const gfx::Size natural_size(8, 8);
     scoped_refptr<media::VideoFrame> frame = frame_pool_.CreateFrame(
         media::PIXEL_FORMAT_I420, natural_size, gfx::Rect(natural_size),
@@ -42,7 +47,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   scoped_refptr<media::VideoFrame> RenderAndStep(size_t* frames_dropped) {
     constexpr base::TimeDelta kRenderInterval =
-        base::TimeDelta::FromMillisecondsD(1000.0 / 60.0);  // 60fps.
+        base::Milliseconds(1000.0 / 60.0);  // 60fps.
     return RenderAndStep(frames_dropped, kRenderInterval);
   }
 
@@ -55,9 +60,31 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
     return algorithm_.Render(start, end, frames_dropped);
   }
 
+  scoped_refptr<media::VideoFrame> RenderWithGlitchAndStep(
+      size_t* frames_dropped,
+      double deadline_begin_error,
+      double deadline_end_error) {
+    constexpr base::TimeDelta kRenderInterval =
+        base::Milliseconds(1000.0 / 60.0);  // 60fps.
+    return RenderAndStep(frames_dropped, kRenderInterval);
+  }
+
+  scoped_refptr<media::VideoFrame> RenderWithGlitchAndStep(
+      size_t* frames_dropped,
+      base::TimeDelta render_interval,
+      double deadline_begin_error,
+      double deadline_end_error) {
+    const base::TimeTicks start =
+        current_render_time_ + deadline_begin_error * render_interval;
+    current_render_time_ += render_interval;
+    const base::TimeTicks end =
+        current_render_time_ + deadline_end_error * render_interval;
+    return algorithm_.Render(start, end, frames_dropped);
+  }
+
   void StepUntilJustBeforeNextFrameIsRendered(
       base::TimeDelta render_interval,
-      base::Optional<int> expected_id = base::nullopt) {
+      absl::optional<int> expected_id = absl::nullopt) {
     // No frame will be rendered until the total render time that has passed is
     // greater than the frame duration of a frame.
     base::TimeTicks start_time = current_render_time_;
@@ -76,16 +103,13 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   base::TimeDelta FrameDuration() const {
     // Assume 60 Hz video content.
-    return base::TimeDelta::FromMillisecondsD(1000.0 / 60.0);
+    return base::Milliseconds(1000.0 / 60.0);
   }
 
  protected:
   media::VideoFramePool frame_pool_;
   LowLatencyVideoRendererAlgorithm algorithm_;
   base::TimeTicks current_render_time_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LowLatencyVideoRendererAlgorithmTest);
 };
 
 TEST_F(LowLatencyVideoRendererAlgorithmTest, Empty) {
@@ -114,7 +138,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode60Hz) {
 // Half frame rate (30Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode30Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 30.0);  // 30Hz.
+      base::Milliseconds(1000.0 / 30.0);  // 30Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   constexpr size_t kNumberOfFrames = 120;
@@ -143,7 +167,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode30Hz) {
 // Fractional frame rate (90Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode90Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 90.0);  // 90Hz.
+      base::Milliseconds(1000.0 / 90.0);  // 90Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
@@ -174,7 +198,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode90Hz) {
 // Double frame rate (120Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 120.0);  // 120Hz.
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
@@ -203,7 +227,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
 // Super high display rate (600Hz playing back 60Hz video)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode600Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
+      base::Milliseconds(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
@@ -244,6 +268,13 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
       RenderAndStep(&frames_dropped);
   ASSERT_TRUE(rendered_frame);
   EXPECT_EQ(frames_dropped, kInitialQueueSize - 1);
+  EXPECT_EQ(rendered_frame->unique_id(), last_id);
+
+  // The following frame should be rendered as normal.
+  last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+  rendered_frame = RenderAndStep(&frames_dropped);
+  ASSERT_TRUE(rendered_frame);
+  EXPECT_EQ(frames_dropped, 0u);
   EXPECT_EQ(rendered_frame->unique_id(), last_id);
 }
 
@@ -327,7 +358,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, ExitDrainMode60Hz) {
 // Double Rate Drain (120Hz playing back 60Hz video in DRAIN mode)
 TEST_F(LowLatencyVideoRendererAlgorithmTest, EnterDrainMode120Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 120.0);  // 120Hz.
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
   // Enter drain mode when more than 6 frames are in the queue.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
@@ -412,7 +443,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateQueueReduction60Hz) {
 // Fractional rate, steady state queue reduction.
 TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateReduction90Hz) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 90.0);  // 90Hz.
+      base::Milliseconds(1000.0 / 90.0);  // 90Hz.
 
   // Create an initial queue of 5 frames.
   constexpr int kMaxCompositionDelayInFrames = 6;
@@ -470,7 +501,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateReduction90Hz) {
 TEST_F(LowLatencyVideoRendererAlgorithmTest,
        RenderFrameImmediatelyAfterOutage) {
   constexpr base::TimeDelta kRenderInterval =
-      base::TimeDelta::FromMillisecondsD(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
+      base::Milliseconds(1000.0 / 600.0 + 1.0e-3);  // 600Hz.
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   for (int outage_length = 0; outage_length < 100; ++outage_length) {
@@ -508,6 +539,56 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
     rendered_frame = RenderAndStep(nullptr, kRenderInterval);
     ASSERT_TRUE(rendered_frame);
     EXPECT_EQ(rendered_frame->unique_id(), frame_id_2);
+  }
+}
+
+// Render at 60Hz with irregular vsync boundaries.
+TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch60Hz) {
+  constexpr int kNumberOfFrames = 5;
+  constexpr int kMaxCompositionDelayInFrames = 6;
+  constexpr double kDeadlineBeginErrorRate[] = {0.01, 0.03, -0.01, -0.02, 0.02};
+  constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
+  for (int i = 0; i < kNumberOfFrames; ++i) {
+    int frame_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    size_t frames_dropped = 0u;
+    scoped_refptr<media::VideoFrame> rendered_frame = RenderWithGlitchAndStep(
+        &frames_dropped, kDeadlineBeginErrorRate[i], kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    EXPECT_EQ(rendered_frame->unique_id(), frame_id);
+    EXPECT_EQ(frames_dropped, 0u);
+  }
+}
+
+// Double frame rate (120Hz playing back 60Hz video) and render with irregular
+// vsync boundaries.
+TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch120Hz) {
+  constexpr size_t kNumberOfFrames = 5;
+  constexpr base::TimeDelta kRenderInterval =
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
+  constexpr int kMaxCompositionDelayInFrames = 6;
+  constexpr double kDeadlineBeginErrorRate[] = {0.01, 0.03, -0.01, -0.02, 0.02};
+  constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
+
+  // Add one initial frame.
+  int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+
+  for (size_t i = 0; i < kNumberOfFrames; ++i) {
+    size_t frames_dropped = 0;
+    scoped_refptr<media::VideoFrame> rendered_frame = RenderWithGlitchAndStep(
+        &frames_dropped, kRenderInterval, kDeadlineBeginErrorRate[i],
+        kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    int rendered_frame_id = last_id;
+    EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
+
+    last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+
+    // The same frame should be rendered.
+    rendered_frame = RenderWithGlitchAndStep(&frames_dropped, kRenderInterval,
+                                             kDeadlineBeginErrorRate[i],
+                                             kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
   }
 }
 

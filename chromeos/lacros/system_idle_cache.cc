@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/lacros/system_idle_cache.h"
 
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace chromeos {
 
@@ -17,10 +17,10 @@ SystemIdleCache::~SystemIdleCache() = default;
 
 void SystemIdleCache::Start() {
   DCHECK(!is_fallback_);
-  auto* lacros_service = chromeos::LacrosChromeServiceImpl::Get();
-  CHECK(lacros_service->IsIdleServiceAvailable());
-  lacros_service->idle_service_remote()->AddIdleInfoObserver(
-      receiver_.BindNewPipeAndPassRemote());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  CHECK(lacros_service->IsAvailable<crosapi::mojom::IdleService>());
+  lacros_service->GetRemote<crosapi::mojom::IdleService>()->AddIdleInfoObserver(
+      receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 base::TimeDelta SystemIdleCache::auto_lock_delay() const {

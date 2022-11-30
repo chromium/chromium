@@ -1,13 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 
-#include "base/macros.h"
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -22,6 +22,8 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
       const base::TickClock* time_source,
       int sample_count,
       double estimation_percentile);
+  IdleTimeEstimator(const IdleTimeEstimator&) = delete;
+  IdleTimeEstimator& operator=(const IdleTimeEstimator&) = delete;
 
   ~IdleTimeEstimator() override;
 
@@ -54,8 +56,6 @@ class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
   base::TimeDelta cumulative_compositor_runtime_;
   int nesting_level_;
   bool did_commit_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleTimeEstimator);
 };
 
 }  // namespace scheduler

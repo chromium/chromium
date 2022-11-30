@@ -18,11 +18,11 @@ jophba@chromium.org for details.
 
 * net/ - Wire-level packetization and pacing.
 
-* receiver/ - A minimal receiver implementation, used only for end-to-end
-  testing.
-
 * sender/ - Encoder front-ends and frame-level sender implementation for
   audio/video.
 
 * test/ - A collection of end-to-end tests, experiments, benchmarks, and related
   utility code.
+
+* test/receiver/ - A minimal receiver implementation, used only for end-to-end
+  testing.

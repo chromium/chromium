@@ -1,0 +1,14 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This shard routes the protocols needed by tests that use parts of //media
+// such as //media/fuchsia/camera:test_support, //media/capture:test_support,
+// //media/fuchsia/cdm, //media/fuchsia/video, etc.
+{
+  use: [
+    {
+      protocol: "fuchsia.sysmem.Allocator",
+    },
+  ],
+}

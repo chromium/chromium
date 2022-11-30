@@ -48,7 +48,7 @@ been implemented as such ever since.
 This change is being incorporated into the Chrome-specific UI code and will not
 affect embedders that are based solely on the underlying content layer.
 Embedders that incorporate the Chrome-specific code will either take up these
-changes or maintain a diff from the master Chromium branch.
+changes or maintain a diff from the `main` Chromium branch.
 
 
 ## Further Reading

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,10 @@ int SuspendCount(task_t task) {
 class ScopedTaskSuspendTest final : public MachMultiprocess {
  public:
   ScopedTaskSuspendTest() : MachMultiprocess() {}
+
+  ScopedTaskSuspendTest(const ScopedTaskSuspendTest&) = delete;
+  ScopedTaskSuspendTest& operator=(const ScopedTaskSuspendTest&) = delete;
+
   ~ScopedTaskSuspendTest() {}
 
  private:
@@ -71,8 +75,6 @@ class ScopedTaskSuspendTest final : public MachMultiprocess {
 
   void MachMultiprocessChild() override {
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTaskSuspendTest);
 };
 
 TEST(ScopedTaskSuspend, ScopedTaskSuspend) {

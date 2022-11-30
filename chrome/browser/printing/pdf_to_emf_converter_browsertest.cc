@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@
 #include "printing/emf_win.h"
 #include "printing/metafile.h"
 #include "printing/pdf_render_settings.h"
+
+#ifndef NTDDI_WIN10_VB  // Windows 10.0.19041
+#error "Older Windows SDK unsupported"
+#endif
 
 namespace printing {
 
@@ -55,7 +59,7 @@ void GetPageCallbackImpl(base::OnceClosure quit_closure,
   std::move(quit_closure).Run();
 }
 
-// |page_number| is 0-based. Returned result has 1-based page number.
+// `page_number` is 0-based. Returned result has 1-based page number.
 std::string GetFileNameForPageNumber(const std::string& name, int page_number) {
   std::string ret = name;
   ret += std::to_string(page_number + 1);
@@ -102,6 +106,11 @@ std::string HashData(const char* data, size_t len) {
 }
 
 class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
+ public:
+  PdfToEmfConverterBrowserTest(const PdfToEmfConverterBrowserTest&) = delete;
+  PdfToEmfConverterBrowserTest& operator=(const PdfToEmfConverterBrowserTest&) =
+      delete;
+
  protected:
   PdfToEmfConverterBrowserTest() : test_data_dir_(GetTestDataDir()) {}
   ~PdfToEmfConverterBrowserTest() override = default;
@@ -222,8 +231,6 @@ class PdfToEmfConverterBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<MetafilePlayer> current_emf_file_;
   std::string expected_current_emf_data_;
   std::string actual_current_emf_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfToEmfConverterBrowserTest);
 };
 
 }  // namespace
@@ -303,13 +310,8 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel2Basic) {
   for (int i = 0; i < kNumberOfPages; ++i) {
     ASSERT_TRUE(GetPage(i));
     // The output is PS encapsulated in EMF.
-#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
-    ASSERT_TRUE(GetPageExpectedEmfData(
-        GetFileNameForPageNumber("pdf_converter_basic_ps_new_page_", i)));
-#else
     ASSERT_TRUE(GetPageExpectedEmfData(
         GetFileNameForPageNumber("pdf_converter_basic_ps_page_", i)));
-#endif
     ComparePageEmfHeader();
     ComparePageEmfPayload();
   }
@@ -327,13 +329,28 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Basic) {
   for (int i = 0; i < kNumberOfPages; ++i) {
     ASSERT_TRUE(GetPage(i));
     // The output is PS encapsulated in EMF.
-#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
-    ASSERT_TRUE(GetPageExpectedEmfData(
-        GetFileNameForPageNumber("pdf_converter_basic_ps_new_page_", i)));
-#else
     ASSERT_TRUE(GetPageExpectedEmfData(
         GetFileNameForPageNumber("pdf_converter_basic_ps_page_", i)));
-#endif
+    ComparePageEmfHeader();
+    ComparePageEmfPayload();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
+                       PostScriptLevel3WithType42FontsBasic) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS);
+  constexpr int kNumberOfPages = 3;
+
+  ASSERT_TRUE(GetTestInput("pdf_converter_basic.pdf"));
+  ASSERT_TRUE(StartPdfConverter(pdf_settings, kNumberOfPages));
+  for (int i = 0; i < kNumberOfPages; ++i) {
+    ASSERT_TRUE(GetPage(i));
+    // The output is PS encapsulated in EMF.
+    ASSERT_TRUE(GetPageExpectedEmfData(
+        GetFileNameForPageNumber("pdf_converter_basic_ps_type42_page_", i)));
     ComparePageEmfHeader();
     ComparePageEmfPayload();
   }
@@ -383,13 +400,8 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
       kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
       /*autorotate=*/false, /*use_color=*/true,
       PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2);
-#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
-  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bug_806746.pdf",
-                                            "bug_806746_new.emf");
-#else
   RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bug_806746.pdf",
                                             "bug_806746.emf");
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
@@ -398,13 +410,8 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
       kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
       /*autorotate=*/false, /*use_color=*/true,
       PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
-#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
-  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bug_806746.pdf",
-                                            "bug_806746_new.emf");
-#else
   RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bug_806746.pdf",
                                             "bug_806746.emf");
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
@@ -425,6 +432,42 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
       PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
   RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bug_1030689.pdf",
                                             "bug_1030689.emf");
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel2Bezier) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bezier.pdf",
+                                            "bezier.emf");
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Bezier) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "bezier.pdf",
+                                            "bezier.emf");
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel2Image) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "embedded_images.pdf",
+                                            "embedded_images_ps_level2.emf");
+}
+
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Image) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3);
+  RunSinglePagePdfToPostScriptConverterTest(pdf_settings, "embedded_images.pdf",
+                                            "embedded_images_ps_level3.emf");
 }
 
 }  // namespace printing

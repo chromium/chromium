@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dbus/menu/menu_property_list.h"
 #include "components/dbus/properties/types.h"
@@ -31,11 +31,15 @@ class DbusProperties;
 class COMPONENT_EXPORT(DBUS) DbusMenu {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
-  using MenuItemReference = std::pair<ui::MenuModel*, int>;
+  using MenuItemReference = std::pair<ui::MenuModel*, size_t>;
 
   // The exported DBus object will not be unregistered upon deletion.  It is the
   // responsibility of the caller to remove it after |this| is deleted.
   DbusMenu(dbus::ExportedObject* exported_object, InitializedCallback callback);
+
+  DbusMenu(const DbusMenu&) = delete;
+  DbusMenu& operator=(const DbusMenu&) = delete;
+
   ~DbusMenu();
 
   // Should be called when there's a new root menu.
@@ -58,7 +62,11 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
              std::vector<int32_t>&& children,
              ui::MenuModel* menu,
              ui::MenuModel* containing_menu,
-             int containing_menu_index);
+             size_t containing_menu_index);
+
+    MenuItem(const MenuItem&) = delete;
+    MenuItem& operator=(const MenuItem&) = delete;
+
     ~MenuItem();
 
     const int32_t id;
@@ -67,13 +75,11 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
     // The MenuModel corresponding to this MenuItem, or null if this MenuItem is
     // not a submenu.  This can happen for leaf items or an empty root item.
-    ui::MenuModel* const menu;
+    const raw_ptr<ui::MenuModel> menu;
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
-    ui::MenuModel* const containing_menu;
-    const int containing_menu_index;
-
-    DISALLOW_COPY_AND_ASSIGN(MenuItem);
+    const raw_ptr<ui::MenuModel> containing_menu;
+    const size_t containing_menu_index;
   };
 
   class ScopedMethodResponse {
@@ -90,7 +96,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
     dbus::MessageReader& reader() { return reader_; }
 
    private:
-    dbus::MethodCall* method_call_;
+    raw_ptr<dbus::MethodCall> method_call_;
     dbus::ExportedObject::ResponseSender response_sender_;
 
     // |reader_| is always needed for all methods on this interface, so it's not
@@ -148,7 +154,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
   void SendLayoutChangedSignal(int32_t id);
 
-  dbus::ExportedObject* menu_ = nullptr;
+  raw_ptr<dbus::ExportedObject> menu_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 
@@ -159,8 +165,6 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
   std::map<int32_t, std::unique_ptr<MenuItem>> items_;
 
   base::WeakPtrFactory<DbusMenu> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DbusMenu);
 };
 
 #endif  // COMPONENTS_DBUS_MENU_MENU_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -44,6 +44,10 @@ class ProcessMemoryMetricsEmitter
   ProcessMemoryMetricsEmitter();
   // Use this constructor to emit UKM from only a specified renderer's.
   explicit ProcessMemoryMetricsEmitter(base::ProcessId pid_scope);
+
+  ProcessMemoryMetricsEmitter(const ProcessMemoryMetricsEmitter&) = delete;
+  ProcessMemoryMetricsEmitter& operator=(const ProcessMemoryMetricsEmitter&) =
+      delete;
 
   // This must be called on the main thread of the browser process.
   void FetchAndEmitProcessMemoryMetrics();
@@ -73,9 +77,8 @@ class ProcessMemoryMetricsEmitter
 
   // Virtual for testing. Returns the process uptime of the given process. Does
   // not return a value when the process startup time is not set.
-  virtual base::Optional<base::TimeDelta> GetProcessUptime(
-      const base::Time& now,
-      base::ProcessId pid);
+  virtual absl::optional<base::TimeDelta> GetProcessUptime(base::TimeTicks now,
+                                                           base::ProcessId pid);
 
  private:
   friend class base::RefCountedThreadSafe<ProcessMemoryMetricsEmitter>;
@@ -103,8 +106,6 @@ class ProcessMemoryMetricsEmitter
   base::ProcessId pid_scope_ = base::kNullProcessId;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryMetricsEmitter);
 };
 
 // A |PageInfo| describes some metrics about a particular page with respect to
@@ -129,7 +130,7 @@ struct ProcessMemoryMetricsEmitter::ProcessInfo {
 
   base::ProcessId pid;
   std::vector<PageInfo> page_infos;
-  base::Time launch_time;
+  base::TimeTicks launch_time;
 };
 
 #endif  // CHROME_BROWSER_METRICS_PROCESS_MEMORY_METRICS_EMITTER_H_

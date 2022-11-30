@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,26 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/uninstall_reason.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
 AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
@@ -98,7 +99,7 @@ void AppInfoFooterPanel::CreateButtons() {
 void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
   if (pin_to_shelf_button_ && unpin_from_shelf_button_) {
     const bool was_pinned =
-        ChromeLauncherController::instance()->shelf_model()->IsAppPinned(
+        ChromeShelfController::instance()->shelf_model()->IsAppPinned(
             app_->id());
     pin_to_shelf_button_->SetVisible(!was_pinned);
     unpin_from_shelf_button_->SetVisible(was_pinned);
@@ -136,7 +137,7 @@ bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
   return false;
 #else
   // Extensions and the Chrome component app can't have shortcuts.
-  return app->id() != extension_misc::kChromeAppId && !app->is_extension();
+  return app->id() != app_constants::kChromeAppId && !app->is_extension();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -144,13 +145,14 @@ bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
 void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
   DCHECK(CanSetPinnedToShelf(profile_, app_));
   ash::ShelfModel* shelf_model =
-      ChromeLauncherController::instance()->shelf_model();
+      ChromeShelfController::instance()->shelf_model();
   DCHECK(shelf_model);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(shelf_model);
-  if (value)
-    shelf_model->PinAppWithID(app_->id());
-  else
-    shelf_model->UnpinAppWithID(app_->id());
+  if (value) {
+    PinAppWithIDToShelf(app_->id());
+  } else {
+    UnpinAppWithIDFromShelf(app_->id());
+  }
 
   UpdatePinButtons(true);
   Layout();
@@ -160,7 +162,7 @@ void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
 bool AppInfoFooterPanel::CanSetPinnedToShelf(Profile* profile,
                                              const extensions::Extension* app) {
   // The Chrome app can't be unpinned, and extensions can't be pinned.
-  return app->id() != extension_misc::kChromeAppId && !app->is_extension() &&
+  return app->id() != app_constants::kChromeAppId && !app->is_extension() &&
          (GetPinnableForAppID(app->id(), profile) ==
           AppListControllerDelegate::PIN_EDITABLE);
 }
@@ -171,7 +173,7 @@ void AppInfoFooterPanel::UninstallApp() {
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
       profile_, GetWidget()->GetNativeWindow(), this);
   extension_uninstall_dialog_->ConfirmUninstall(
-      app_, extensions::UNINSTALL_REASON_USER_INITIATED,
+      app_.get(), extensions::UNINSTALL_REASON_USER_INITIATED,
       extensions::UNINSTALL_SOURCE_APP_INFO_DIALOG);
 }
 

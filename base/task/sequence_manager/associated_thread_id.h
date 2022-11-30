@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <atomic>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/base_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -59,10 +59,10 @@ class BASE_EXPORT AssociatedThreadId
   // current thread.
   //
   // Attention: The result might be stale by the time this method returns.
-  Optional<PlatformThreadId> GetBoundThreadId() const {
+  absl::optional<PlatformThreadId> GetBoundThreadId() const {
     auto thread_id = thread_id_.load(std::memory_order_acquire);
     if (thread_id == kInvalidThreadId) {
-      return nullopt;
+      return absl::nullopt;
     } else {
       return thread_id;
     }

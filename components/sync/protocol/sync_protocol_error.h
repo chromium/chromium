@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef COMPONENTS_SYNC_PROTOCOL_SYNC_PROTOCOL_ERROR_H_
@@ -62,7 +62,7 @@ enum ClientAction {
   // settings page that account is disabled.
   STOP_SYNC_FOR_DISABLED_ACCOUNT,
 
-  // Generated in response to CLIENT_DATA_OBSOLETE error. ProfileSyncService
+  // Generated in response to CLIENT_DATA_OBSOLETE error. SyncServiceImpl
   // should stop sync engine, delete the data and restart sync engine.
   RESET_LOCAL_SYNC_DATA,
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,8 +75,8 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     const WebLocalFrame* frame = GetMainFrame();
     const WebElement& element = frame->GetDocument().GetElementById(id);
     EXPECT_FALSE(element.IsNull());
-    return FieldRendererId(element.ToConst<blink::WebInputElement>()
-                               .UniqueRendererFormControlId());
+    return FieldRendererId(
+        element.To<blink::WebInputElement>().UniqueRendererFormControlId());
   }
 
   WebFormElement GetFormElement() {
@@ -110,7 +110,7 @@ class HtmlBasedUsernameDetectorTest : public content::RenderViewTest {
     UsernameDetectorCache cache;
     const std::vector<FieldRendererId>& renderer_ids =
         GetPredictionsFieldBasedOnHtmlAttributes(control_elements, form_data,
-                                                 &cache);
+                                                 &cache, GetFormElement());
 
     ASSERT_EQ(1u, cache.size());
     ASSERT_FALSE(cache.begin()->second.empty());
@@ -181,7 +181,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, DeveloperGroupAttributes) {
       // Occurrence doesn't count.
       {{"identity_name", "idn", "johnsmith"}, {"id", "xid", "123"}, "xid"}};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
 
     const std::string& form_html =
@@ -253,7 +253,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, UserGroupAttributes) {
           "noword",
       }};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
 
     const std::string& form_html =
@@ -294,7 +294,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   UsernameDetectorCache cache;
   std::vector<FieldRendererId> field_ids =
       GetPredictionsFieldBasedOnHtmlAttributes(control_elements, form_data,
-                                               &cache);
+                                               &cache, GetFormElement());
 
   // No signals from HTML attributes. The classifier found nothing and cached
   // it.
@@ -308,8 +308,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // will be the same because it was cached in |username_detector_cache|.
   control_elements[0].SetAttribute("name", "id");
   form_data = GetFormDataFromForm(GetFormElement());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(control_elements,
-                                                       form_data, &cache);
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
+      control_elements, form_data, &cache, GetFormElement());
   ASSERT_EQ(1u, cache.size());
   EXPECT_TRUE(field_ids.empty());
   EXPECT_EQ(FormRendererId(form.UniqueRendererFormId()), cache.begin()->first);
@@ -318,8 +318,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // Clear the cache. The classifier will find username field and cache it.
   cache.clear();
   ASSERT_EQ(4u, control_elements.size());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(control_elements,
-                                                       form_data, &cache);
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
+      control_elements, form_data, &cache, GetFormElement());
   ASSERT_EQ(1u, cache.size());
   EXPECT_EQ(1u, field_ids.size());
   EXPECT_EQ(FormRendererId(form.UniqueRendererFormId()), cache.begin()->first);
@@ -331,8 +331,8 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
   // but keep the cache. The classifier's output should be the same.
   control_elements[1].SetAttribute("name", "username");
   form_data = GetFormDataFromForm(GetFormElement());
-  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(control_elements,
-                                                       form_data, &cache);
+  field_ids = GetPredictionsFieldBasedOnHtmlAttributes(
+      control_elements, form_data, &cache, GetFormElement());
 
   ASSERT_EQ(1u, cache.size());
   EXPECT_EQ(1u, field_ids.size());

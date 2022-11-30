@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ bool IsHistoryStateChangeValid(const GURL& current_url, const GURL& to_url) {
   CHECK(current_url.is_valid());
   CHECK(to_url.is_valid());
 
-  return to_url.GetOrigin() == current_url.GetOrigin();
+  return to_url.DeprecatedGetOriginAsURL() ==
+         current_url.DeprecatedGetOriginAsURL();
 }
 
 GURL GetHistoryStateChangeUrl(const GURL& current_url,

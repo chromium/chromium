@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -61,6 +61,10 @@ class ErrorConsole : public KeyedService,
   };
 
   explicit ErrorConsole(Profile* profile);
+
+  ErrorConsole(const ErrorConsole&) = delete;
+  ErrorConsole& operator=(const ErrorConsole&) = delete;
+
   ~ErrorConsole() override;
 
   // Convenience method to return the ErrorConsole for a given |context|.
@@ -185,12 +189,12 @@ class ErrorConsole : public KeyedService,
   // The profile with which the ErrorConsole is associated. Only collect errors
   // from extensions and RenderViews associated with this Profile (and it's
   // incognito fellow).
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The ExtensionPrefs with which the ErrorConsole is associated. This weak
   // pointer is safe because ErrorConsole is owned by ExtensionSystem, which
   // is dependent on ExtensionPrefs.
-  ExtensionPrefs* prefs_;
+  raw_ptr<ExtensionPrefs> prefs_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};
@@ -198,8 +202,6 @@ class ErrorConsole : public KeyedService,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorConsole);
 };
 
 }  // namespace extensions

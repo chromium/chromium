@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,16 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,7 +44,8 @@ MATCHER(IsFailureResult, "") {
 
 class MockTask : public BorealisTask {
  public:
-  explicit MockTask(bool success) : success_(success) {}
+  explicit MockTask(bool success)
+      : BorealisTask("MockTask"), success_(success) {}
   void RunInternal(BorealisContext* context) override {
     if (success_) {
       context->set_vm_name("test_vm_name");
@@ -65,7 +69,7 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
  private:
   base::queue<std::unique_ptr<BorealisTask>> GetTasks() override {
     base::queue<std::unique_ptr<BorealisTask>> task_queue;
-    for (int i = 0; i < tasks_; i++) {
+    for (size_t i = 0; i < tasks_; i++) {
       if (!success_ && tasks_ > 1 && i == 0) {
         // If we are testing the case for multiple tasks, and at least one of
         // them fails, we want the first task to succeed.
@@ -81,16 +85,11 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
   bool success_ = true;
 };
 
-class ResultCallbackHandler {
- public:
-  BorealisContextManager::ResultCallback GetCallback() {
-    return base::BindOnce(&ResultCallbackHandler::Callback,
-                          base::Unretained(this));
-  }
-  MOCK_METHOD(void, Callback, (BorealisContextManager::ContextOrFailure), ());
-};
+using StartupCallbackFactory =
+    StrictCallbackFactory<void(BorealisContextManager::ContextOrFailure)>;
 
-class BorealisContextManagerTest : public testing::Test {
+class BorealisContextManagerTest : public testing::Test,
+                                   protected guest_os::FakeVmServicesHelper {
  public:
   BorealisContextManagerTest() = default;
   BorealisContextManagerTest(const BorealisContextManagerTest&) = delete;
@@ -101,19 +100,26 @@ class BorealisContextManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     CreateProfile();
-    chromeos::DBusThreadManager::Initialize();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
-    chromeos::DBusThreadManager::Shutdown();
     profile_.reset();
     histogram_tester_.reset();
   }
 
+  void SendVmStartedSignal() {
+    auto* concierge_client = ash::FakeConciergeClient::Get();
+
+    vm_tools::concierge::VmStartedSignal signal;
+    signal.set_name("test_vm_name");
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+    concierge_client->NotifyVmStarted(signal);
+  }
+
   void SendVmStoppedSignal() {
-    auto* concierge_client = static_cast<chromeos::FakeConciergeClient*>(
-        chromeos::DBusThreadManager::Get()->GetConciergeClient());
+    auto* concierge_client = ash::FakeConciergeClient::Get();
 
     vm_tools::concierge::VmStoppedSignal signal;
     signal.set_name("test_vm_name");
@@ -141,84 +147,84 @@ TEST_F(BorealisContextManagerTest, GetTasksReturnsCorrectTaskList) {
 }
 
 TEST_F(BorealisContextManagerTest, NoTasksImpliesSuccess) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/0, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(testing::_))
+  EXPECT_CALL(callback_expectation, Call(testing::_))
       .WillOnce(
           testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
             EXPECT_TRUE(result);
             // Even with no tasks, the context will give the VM a name.
             EXPECT_EQ(result.Value()->vm_name(), "borealis");
           }));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupSucceedsForSuccessfulTask) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupSucceedsForSuccessfulGroupOfTasks) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/3, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupFailsForUnsuccessfulTask) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/false);
-  EXPECT_CALL(callback_expectation, Callback(IsFailureResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, StartupFailsForUnsuccessfulGroupOfTasks) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/3, /*success=*/false);
-  EXPECT_CALL(callback_expectation, Callback(IsFailureResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest, MultipleSuccessfulStartupsAllCallbacksRan) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation_1;
-  testing::StrictMock<ResultCallbackHandler> callback_expectation_2;
+  StartupCallbackFactory callback_expectation_1;
+  StartupCallbackFactory callback_expectation_2;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation_1, Callback(IsSuccessResult()));
-  EXPECT_CALL(callback_expectation_2, Callback(IsSuccessResult()));
-  context_manager.StartBorealis(callback_expectation_1.GetCallback());
-  context_manager.StartBorealis(callback_expectation_2.GetCallback());
+  EXPECT_CALL(callback_expectation_1, Call(IsSuccessResult()));
+  EXPECT_CALL(callback_expectation_2, Call(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation_1.BindOnce());
+  context_manager.StartBorealis(callback_expectation_2.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisContextManagerTest,
        MultipleUnsuccessfulStartupsAllCallbacksRan) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation_1;
-  testing::StrictMock<ResultCallbackHandler> callback_expectation_2;
+  StartupCallbackFactory callback_expectation_1;
+  StartupCallbackFactory callback_expectation_2;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/false);
-  EXPECT_CALL(callback_expectation_1, Callback(IsFailureResult()));
-  EXPECT_CALL(callback_expectation_2, Callback(IsFailureResult()));
-  context_manager.StartBorealis(callback_expectation_1.GetCallback());
-  context_manager.StartBorealis(callback_expectation_2.GetCallback());
+  EXPECT_CALL(callback_expectation_1, Call(IsFailureResult()));
+  EXPECT_CALL(callback_expectation_2, Call(IsFailureResult()));
+  context_manager.StartBorealis(callback_expectation_1.BindOnce());
+  context_manager.StartBorealis(callback_expectation_2.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
@@ -255,6 +261,7 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
  private:
   class NeverCompletingTask : public BorealisTask {
    public:
+    NeverCompletingTask() : BorealisTask("NeverCompletingTask") {}
     void RunInternal(BorealisContext* context) override {}
   };
 
@@ -265,18 +272,12 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
   }
 };
 
-class ShutdownCallbackHandler {
- public:
-  base::OnceCallback<void(BorealisShutdownResult)> GetCallback() {
-    return base::BindOnce(&ShutdownCallbackHandler::Callback,
-                          base::Unretained(this));
-  }
-  MOCK_METHOD(void, Callback, (BorealisShutdownResult), ());
-};
+using ShutdownCallbackFactory =
+    StrictCallbackFactory<void(BorealisShutdownResult)>;
 
 TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
-  EXPECT_CALL(callback_expectation, Callback(testing::_))
+  StartupCallbackFactory callback_expectation;
+  EXPECT_CALL(callback_expectation, Call(testing::_))
       .WillOnce(
           testing::Invoke([](BorealisContextManager::ContextOrFailure result) {
             EXPECT_FALSE(result);
@@ -284,31 +285,30 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
                       BorealisStartupResult::kCancelled);
           }));
 
-  ShutdownCallbackHandler shutdown_callback_handler;
+  ShutdownCallbackFactory shutdown_callback_handler;
   EXPECT_CALL(shutdown_callback_handler,
-              Callback(BorealisShutdownResult::kSuccess));
+              Call(BorealisShutdownResult::kSuccess));
 
   NeverCompletingContextManager context_manager(profile_.get());
-  context_manager.StartBorealis(callback_expectation.GetCallback());
-  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
+  context_manager.StartBorealis(callback_expectation.BindOnce());
+  context_manager.ShutDownBorealis(shutdown_callback_handler.BindOnce());
   task_environment_.RunUntilIdle();
 
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      static_cast<chromeos::FakeConciergeClient*>(
-          chromeos::DBusThreadManager::Get()->GetConciergeClient());
-  EXPECT_TRUE(fake_concierge_client->stop_vm_called());
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
+  EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
   histogram_tester_->ExpectUniqueSample(kBorealisShutdownResultHistogram,
                                         BorealisShutdownResult::kSuccess, 1);
 }
 
 TEST_F(BorealisContextManagerTest, ShutdownWhenNotRunningCompletesImmediately) {
-  ShutdownCallbackHandler shutdown_callback_handler;
+  ShutdownCallbackFactory shutdown_callback_handler;
   EXPECT_CALL(shutdown_callback_handler,
-              Callback(BorealisShutdownResult::kSuccess));
+              Call(BorealisShutdownResult::kSuccess));
 
   NeverCompletingContextManager context_manager(profile_.get());
-  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
+  context_manager.ShutDownBorealis(shutdown_callback_handler.BindOnce());
 }
 
 TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
@@ -321,15 +321,13 @@ TEST_F(BorealisContextManagerTest, FailureToShutdownReportsError) {
   vm_tools::concierge::StopVmResponse response;
   response.set_success(false);
   response.set_failure_reason("expected failure");
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      static_cast<chromeos::FakeConciergeClient*>(
-          chromeos::DBusThreadManager::Get()->GetConciergeClient());
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
   fake_concierge_client->set_stop_vm_response(std::move(response));
 
-  ShutdownCallbackHandler shutdown_callback_handler;
-  EXPECT_CALL(shutdown_callback_handler,
-              Callback(BorealisShutdownResult::kFailed));
-  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
+  ShutdownCallbackFactory shutdown_callback_handler;
+  EXPECT_CALL(shutdown_callback_handler, Call(BorealisShutdownResult::kFailed));
+  context_manager.ShutDownBorealis(shutdown_callback_handler.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
@@ -346,7 +344,8 @@ class MockContextManager : public BorealisContextManagerImpl {
 class TaskThatDoesSomethingAfterCompletion : public BorealisTask {
  public:
   explicit TaskThatDoesSomethingAfterCompletion(base::OnceClosure something)
-      : something_(std::move(something)) {}
+      : BorealisTask("TaskThatDoesSomethingAfterCompletion"),
+        something_(std::move(something)) {}
 
   void RunInternal(BorealisContext* context) override {
     Complete(BorealisStartupResult::kSuccess, "");
@@ -358,7 +357,7 @@ class TaskThatDoesSomethingAfterCompletion : public BorealisTask {
 
 TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
   testing::StrictMock<MockContextManager> context_manager(profile_.get());
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
   testing::StrictMock<testing::MockFunction<void()>> something_expectation;
 
   EXPECT_CALL(context_manager, GetTasks).WillOnce(testing::Invoke([&]() {
@@ -369,8 +368,8 @@ TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
     return tasks;
   }));
   EXPECT_CALL(something_expectation, Call());
-  EXPECT_CALL(callback_expectation, Callback(testing::_));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(testing::_));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 }
 
@@ -381,11 +380,11 @@ TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedWhenNotRunning) {
 }
 
 TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedDuringStartup) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  context_manager.StartBorealis(callback_expectation.BindOnce());
 
   SendVmStoppedSignal();
 
@@ -394,17 +393,15 @@ TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedDuringStartup) {
 }
 
 TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedWhenExpected) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
-  // No need to verify the shutdown callback for this test case.
-  ShutdownCallbackHandler shutdown_callback;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 
-  context_manager.ShutDownBorealis(shutdown_callback.GetCallback());
+  context_manager.ShutDownBorealis(base::DoNothing());
   SendVmStoppedSignal();
 
   histogram_tester_->ExpectUniqueSample(kBorealisStabilityHistogram,
@@ -415,12 +412,12 @@ TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedWhenExpected) {
 }
 
 TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
-  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  StartupCallbackFactory callback_expectation;
 
   BorealisContextManagerImplForTesting context_manager(
       profile_.get(), /*tasks=*/1, /*success=*/true);
-  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
-  context_manager.StartBorealis(callback_expectation.GetCallback());
+  EXPECT_CALL(callback_expectation, Call(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.BindOnce());
   task_environment_.RunUntilIdle();
 
   SendVmStoppedSignal();
@@ -429,13 +426,17 @@ TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
 }
 
 TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
-  chromeos::FakeConciergeClient* fake_concierge_client =
-      static_cast<chromeos::FakeConciergeClient*>(
-          chromeos::DBusThreadManager::Get()->GetConciergeClient());
-  profile_->set_last_session_exited_cleanly(false);
+  ash::FakeConciergeClient* fake_concierge_client =
+      ash::FakeConciergeClient::Get();
+
+  // Ensure that GetVmInfo returns success - a VM "still running".
+  SendVmStartedSignal();
+
+  ExitTypeService::GetInstanceForProfile(profile_.get())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   BorealisContextManagerImpl context_manager(profile_.get());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(fake_concierge_client->stop_vm_called());
+  EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);
 }
 
 }  // namespace

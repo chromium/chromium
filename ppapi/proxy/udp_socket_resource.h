@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/proxy/udp_socket_resource_base.h"
 #include "ppapi/thunk/ppb_udp_socket_api.h"
@@ -20,6 +19,10 @@ class PPAPI_PROXY_EXPORT UDPSocketResource : public UDPSocketResourceBase,
                                              public thunk::PPB_UDPSocket_API {
  public:
   UDPSocketResource(Connection connection, PP_Instance instance);
+
+  UDPSocketResource(const UDPSocketResource&) = delete;
+  UDPSocketResource& operator=(const UDPSocketResource&) = delete;
+
   ~UDPSocketResource() override;
 
   // PluginResource implementation.
@@ -53,9 +56,6 @@ class PPAPI_PROXY_EXPORT UDPSocketResource : public UDPSocketResourceBase,
                     scoped_refptr<TrackedCallback> callback) override;
   int32_t LeaveGroup(PP_Resource group,
                      scoped_refptr<TrackedCallback> callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResource);
 };
 
 }  // namespace proxy

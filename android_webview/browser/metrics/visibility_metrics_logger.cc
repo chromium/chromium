@@ -1,76 +1,156 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/rand_util.h"
+#include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/url_constants.h"
 
-using base::NoDestructor;
 using content::BrowserThread;
 
 namespace android_webview {
 
+namespace {
+
+const char* SchemeEnumToString(VisibilityMetricsLogger::Scheme scheme) {
+  switch (scheme) {
+    case VisibilityMetricsLogger::Scheme::kEmpty:
+      return "empty";
+    case VisibilityMetricsLogger::Scheme::kUnknown:
+      return "unknown";
+    case VisibilityMetricsLogger::Scheme::kHttp:
+      return url::kHttpScheme;
+    case VisibilityMetricsLogger::Scheme::kHttps:
+      return url::kHttpsScheme;
+    case VisibilityMetricsLogger::Scheme::kFile:
+      return url::kFileScheme;
+    case VisibilityMetricsLogger::Scheme::kFtp:
+      return url::kFtpScheme;
+    case VisibilityMetricsLogger::Scheme::kData:
+      return url::kDataScheme;
+    case VisibilityMetricsLogger::Scheme::kJavaScript:
+      return url::kJavaScriptScheme;
+    case VisibilityMetricsLogger::Scheme::kAbout:
+      return url::kAboutScheme;
+    case VisibilityMetricsLogger::Scheme::kChrome:
+      return content::kChromeUIScheme;
+    case VisibilityMetricsLogger::Scheme::kBlob:
+      return url::kBlobScheme;
+    case VisibilityMetricsLogger::Scheme::kContent:
+      return url::kContentScheme;
+    case VisibilityMetricsLogger::Scheme::kIntent:
+      return "intent";
+    default:
+      NOTREACHED();
+  }
+  return "";
+}
+
 // Have bypassed the usual macros here because they do not support a
 // means to increment counters by more than 1 per call.
-base::HistogramBase*
-VisibilityMetricsLogger::CreateHistogramForDurationTracking(const char* name,
-                                                            int max_value) {
+base::HistogramBase* GetOrCreateHistogramForDurationTracking(
+    const std::string& name,
+    int max_value) {
   return base::Histogram::FactoryGet(
       name, 1, max_value + 1, max_value + 2,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-base::HistogramBase* VisibilityMetricsLogger::GetGlobalVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.Visibility.Global",
-          static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
-  return *histogram;
+// base::Histogram::FactoryGet would internally convert to std::string anyway,
+// this overload is for convenience.
+base::HistogramBase* GetOrCreateHistogramForDurationTracking(const char* name,
+                                                             int max_value) {
+  return GetOrCreateHistogramForDurationTracking(std::string(name), max_value);
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetPerWebViewVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.Visibility.PerWebView",
-          static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
-  return *histogram;
+base::HistogramBase* GetGlobalVisibilityHistogram() {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.Visibility.Global",
+      static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
+  return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetGlobalOpenWebVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.Global",
-          static_cast<int>(
-              VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
-  return *histogram;
+base::HistogramBase* GetPerWebViewVisibilityHistogram() {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.Visibility.PerWebView",
+      static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
+  return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetPerWebViewOpenWebVisibilityHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.PerWebView",
-          static_cast<int>(
-              VisibilityMetricsLogger::WebViewOpenWebVisibility::kMaxValue)));
-  return *histogram;
+void LogGlobalVisibleScheme(VisibilityMetricsLogger::Scheme scheme,
+                            int32_t seconds) {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.VisibleScheme.Global",
+      static_cast<int>(VisibilityMetricsLogger::Scheme::kMaxValue)));
+  histogram->AddCount(static_cast<int32_t>(scheme), seconds);
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetOpenWebVisibileScreenPortionHistogram() {
-  static NoDestructor<base::HistogramBase*> histogram(
-      CreateHistogramForDurationTracking(
-          "Android.WebView.WebViewOpenWebVisible.ScreenPortion",
-          static_cast<int>(VisibilityMetricsLogger::
-                               WebViewOpenWebScreenPortion::kMaxValue)));
-  return *histogram;
+void LogPerWebViewVisibleScheme(VisibilityMetricsLogger::Scheme scheme,
+                                int32_t seconds) {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.VisibleScheme.PerWebView",
+      static_cast<int>(VisibilityMetricsLogger::Scheme::kMaxValue)));
+  histogram->AddCount(static_cast<int32_t>(scheme), seconds);
+}
+
+void LogGlobalVisibleScreenCoverage(int percentage, int32_t seconds) {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.VisibleScreenCoverage.Global", 100));
+  histogram->AddCount(percentage, seconds);
+}
+
+void LogPerWebViewVisibleScreenCoverage(int percentage, int32_t seconds) {
+  static base::HistogramBase* histogram(GetOrCreateHistogramForDurationTracking(
+      "Android.WebView.VisibleScreenCoverage.PerWebView", 100));
+  histogram->AddCount(percentage, seconds);
+}
+
+void LogPerSchemeVisibleScreenCoverage(VisibilityMetricsLogger::Scheme scheme,
+                                       int percentage,
+                                       int32_t seconds) {
+  GetOrCreateHistogramForDurationTracking(
+      std::string("Android.WebView.VisibleScreenCoverage.PerWebView.") +
+          SchemeEnumToString(scheme),
+      100)
+      ->AddCount(percentage, seconds);
+}
+
+}  // anonymous namespace
+
+// static
+VisibilityMetricsLogger::Scheme VisibilityMetricsLogger::SchemeStringToEnum(
+    const std::string& scheme) {
+  if (scheme.empty())
+    return Scheme::kEmpty;
+  if (scheme == url::kHttpScheme)
+    return Scheme::kHttp;
+  if (scheme == url::kHttpsScheme)
+    return Scheme::kHttps;
+  if (scheme == url::kFileScheme)
+    return Scheme::kFile;
+  if (scheme == url::kFtpScheme)
+    return Scheme::kFtp;
+  if (scheme == url::kDataScheme)
+    return Scheme::kData;
+  if (scheme == url::kJavaScriptScheme)
+    return Scheme::kJavaScript;
+  if (scheme == url::kAboutScheme)
+    return Scheme::kAbout;
+  if (scheme == content::kChromeUIScheme)
+    return Scheme::kChrome;
+  if (scheme == url::kBlobScheme)
+    return Scheme::kBlob;
+  if (scheme == url::kContentScheme)
+    return Scheme::kContent;
+  if (scheme == "intent")
+    return Scheme::kIntent;
+  return Scheme::kUnknown;
 }
 
 VisibilityMetricsLogger::VisibilityMetricsLogger() {
@@ -84,7 +164,7 @@ void VisibilityMetricsLogger::AddClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) == client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   client_visibility_[client] = VisibilityInfo();
   ProcessClientUpdate(client, client->GetVisibilityInfo());
@@ -94,7 +174,7 @@ void VisibilityMetricsLogger::RemoveClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) != client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   ProcessClientUpdate(client, VisibilityInfo());
   client_visibility_.erase(client);
@@ -104,53 +184,62 @@ void VisibilityMetricsLogger::ClientVisibilityChanged(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) != client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   ProcessClientUpdate(client, client->GetVisibilityInfo());
 }
 
-void VisibilityMetricsLogger::UpdateOpenWebScreenArea(int pixels,
-                                                      int percentage) {
+void VisibilityMetricsLogger::UpdateScreenCoverage(
+    int global_percentage,
+    const std::vector<Scheme>& schemes,
+    const std::vector<int>& scheme_percentages) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(schemes.size() == scheme_percentages.size());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
-  open_web_screen_area_pixels_ = pixels;
-  open_web_screen_area_percentage_ = percentage;
+  DCHECK(global_percentage >= 0);
+  DCHECK(global_percentage <= 100);
+  global_coverage_percentage_ = global_percentage;
 
-  DCHECK(percentage >= 0);
-  DCHECK(percentage <= 100);
-  current_open_web_screen_portion_ =
-      static_cast<VisibilityMetricsLogger::WebViewOpenWebScreenPortion>(
-          percentage / 10);
+  schemes_to_coverage_percentages_.clear();
+  for (size_t i = 0; i < schemes.size(); i++) {
+    DCHECK(scheme_percentages[i] >= 0);
+    DCHECK(scheme_percentages[i] <= 100);
+    schemes_to_coverage_percentages_.emplace(schemes[i], scheme_percentages[i]);
+  }
 }
 
-void VisibilityMetricsLogger::UpdateDurations(base::TimeTicks update_time) {
+void VisibilityMetricsLogger::UpdateDurations() {
+  base::TimeTicks update_time = base::TimeTicks::Now();
   base::TimeDelta delta = update_time - last_update_time_;
-  if (visible_client_count_ > 0) {
-    visible_duration_tracker_.any_webview_tracked_duration_ += delta;
+  if (all_clients_visible_count_ > 0) {
+    all_clients_tracker_.any_webview_tracked_duration_ += delta;
   } else {
-    visible_duration_tracker_.no_webview_tracked_duration_ += delta;
+    all_clients_tracker_.no_webview_tracked_duration_ += delta;
+  }
+  all_clients_tracker_.per_webview_duration_ +=
+      delta * all_clients_visible_count_;
+  all_clients_tracker_.per_webview_untracked_duration_ +=
+      delta * (client_visibility_.size() - all_clients_visible_count_);
+
+  for (size_t i = 0; i < std::size(per_scheme_visible_counts_); i++) {
+    if (!per_scheme_visible_counts_[i])
+      continue;
+    per_scheme_trackers_[i].any_webview_tracked_duration_ += delta;
+    per_scheme_trackers_[i].per_webview_duration_ +=
+        delta * per_scheme_visible_counts_[i];
   }
 
-  if (visible_webcontent_client_count_ > 0) {
-    webcontent_visible_tracker_.any_webview_tracked_duration_ += delta;
-  } else {
-    webcontent_visible_tracker_.no_webview_tracked_duration_ += delta;
+  if (all_clients_visible_count_ > 0) {
+    global_coverage_percentage_durations_[global_coverage_percentage_] += delta;
+
+    for (auto& scheme_and_percentage : schemes_to_coverage_percentages_) {
+      schemes_to_percentages_to_durations_[scheme_and_percentage.first]
+                                          [scheme_and_percentage.second] +=
+          delta;
+    }
   }
-
-  visible_duration_tracker_.per_webview_duration_ +=
-      delta * visible_client_count_;
-  visible_duration_tracker_.per_webview_untracked_duration_ +=
-      delta * (client_visibility_.size() - visible_client_count_);
-
-  webcontent_visible_tracker_.per_webview_duration_ +=
-      delta * visible_webcontent_client_count_;
-  webcontent_visible_tracker_.per_webview_untracked_duration_ +=
-      delta * (client_visibility_.size() - visible_webcontent_client_count_);
-
-  open_web_screen_portion_tracked_duration_[static_cast<int>(
-      current_open_web_screen_portion_)] += delta;
 
   last_update_time_ = update_time;
 }
@@ -159,40 +248,30 @@ bool VisibilityMetricsLogger::VisibilityInfo::IsVisible() const {
   return view_attached && view_visible && window_visible;
 }
 
-bool VisibilityMetricsLogger::VisibilityInfo::ContainsOpenWebContent() const {
-  return scheme_http_or_https;
-}
-
-bool VisibilityMetricsLogger::VisibilityInfo::IsDisplayingOpenWebContent()
-    const {
-  return IsVisible() && ContainsOpenWebContent();
-}
-
 void VisibilityMetricsLogger::ProcessClientUpdate(Client* client,
                                                   const VisibilityInfo& info) {
   VisibilityInfo curr_info = client_visibility_[client];
   bool was_visible = curr_info.IsVisible();
   bool is_visible = info.IsVisible();
-  bool was_visible_web = curr_info.IsDisplayingOpenWebContent();
-  bool is_visible_web = info.IsDisplayingOpenWebContent();
+  Scheme old_scheme = curr_info.scheme;
+  Scheme new_scheme = info.scheme;
   client_visibility_[client] = info;
-  DCHECK(!was_visible || visible_client_count_ > 0);
+  DCHECK(!was_visible || all_clients_visible_count_ > 0);
 
-  bool any_client_was_visible = visible_client_count_ > 0;
+  bool any_client_was_visible = all_clients_visible_count_ > 0;
 
   if (!was_visible && is_visible) {
-    ++visible_client_count_;
+    ++all_clients_visible_count_;
   } else if (was_visible && !is_visible) {
-    --visible_client_count_;
+    --all_clients_visible_count_;
   }
 
-  if (!was_visible_web && is_visible_web) {
-    ++visible_webcontent_client_count_;
-  } else if (was_visible_web && !is_visible_web) {
-    --visible_webcontent_client_count_;
-  }
+  if (was_visible)
+    per_scheme_visible_counts_[static_cast<size_t>(old_scheme)]--;
+  if (is_visible)
+    per_scheme_visible_counts_[static_cast<size_t>(new_scheme)]++;
 
-  bool any_client_is_visible = visible_client_count_ > 0;
+  bool any_client_is_visible = all_clients_visible_count_ > 0;
   if (on_visibility_changed_callback_ &&
       any_client_was_visible != any_client_is_visible) {
     on_visibility_changed_callback_.Run(any_client_is_visible);
@@ -207,10 +286,10 @@ void VisibilityMetricsLogger::SetOnVisibilityChangedCallback(
 
 void VisibilityMetricsLogger::RecordMetrics() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
   RecordVisibilityMetrics();
-  RecordOpenWebDisplayMetrics();
-  RecordScreenPortionMetrics();
+  RecordVisibleSchemeMetrics();
+  RecordScreenCoverageMetrics();
 }
 
 void VisibilityMetricsLogger::RecordVisibilityMetrics() {
@@ -220,22 +299,22 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
   int32_t total_no_webview_visible_seconds;
 
   any_webview_visible_seconds =
-      visible_duration_tracker_.any_webview_tracked_duration_.InSeconds();
-  visible_duration_tracker_.any_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(any_webview_visible_seconds);
+      all_clients_tracker_.any_webview_tracked_duration_.InSeconds();
+  all_clients_tracker_.any_webview_tracked_duration_ -=
+      base::Seconds(any_webview_visible_seconds);
   no_webview_visible_seconds =
-      visible_duration_tracker_.no_webview_tracked_duration_.InSeconds();
-  visible_duration_tracker_.no_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(no_webview_visible_seconds);
+      all_clients_tracker_.no_webview_tracked_duration_.InSeconds();
+  all_clients_tracker_.no_webview_tracked_duration_ -=
+      base::Seconds(no_webview_visible_seconds);
 
   total_webview_visible_seconds =
-      visible_duration_tracker_.per_webview_duration_.InSeconds();
-  visible_duration_tracker_.per_webview_duration_ -=
-      base::TimeDelta::FromSeconds(total_webview_visible_seconds);
+      all_clients_tracker_.per_webview_duration_.InSeconds();
+  all_clients_tracker_.per_webview_duration_ -=
+      base::Seconds(total_webview_visible_seconds);
   total_no_webview_visible_seconds =
-      visible_duration_tracker_.per_webview_untracked_duration_.InSeconds();
-  visible_duration_tracker_.per_webview_untracked_duration_ -=
-      base::TimeDelta::FromSeconds(total_no_webview_visible_seconds);
+      all_clients_tracker_.per_webview_untracked_duration_.InSeconds();
+  all_clients_tracker_.per_webview_untracked_duration_ -=
+      base::Seconds(total_no_webview_visible_seconds);
 
   if (any_webview_visible_seconds) {
     GetGlobalVisibilityHistogram()->AddCount(
@@ -257,64 +336,52 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
   }
 }
 
-void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
-  int32_t any_webcontent_visible_seconds;
-  int32_t no_webcontent_visible_seconds;
-  int32_t total_webcontent_isible_seconds;
-  int32_t total_not_webcontent_or_not_visible_seconds;
+void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
+  for (size_t i = 0; i < std::size(per_scheme_trackers_); i++) {
+    Scheme scheme = static_cast<Scheme>(i);
+    auto& tracker = per_scheme_trackers_[i];
 
-  any_webcontent_visible_seconds =
-      webcontent_visible_tracker_.any_webview_tracked_duration_.InSeconds();
-  webcontent_visible_tracker_.any_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(any_webcontent_visible_seconds);
-  no_webcontent_visible_seconds =
-      webcontent_visible_tracker_.no_webview_tracked_duration_.InSeconds();
-  webcontent_visible_tracker_.no_webview_tracked_duration_ -=
-      base::TimeDelta::FromSeconds(no_webcontent_visible_seconds);
+    int32_t any_webview_seconds =
+        tracker.any_webview_tracked_duration_.InSeconds();
+    if (any_webview_seconds) {
+      tracker.any_webview_tracked_duration_ -=
+          base::Seconds(any_webview_seconds);
+      LogGlobalVisibleScheme(scheme, any_webview_seconds);
+    }
 
-  total_webcontent_isible_seconds =
-      webcontent_visible_tracker_.per_webview_duration_.InSeconds();
-  webcontent_visible_tracker_.per_webview_duration_ -=
-      base::TimeDelta::FromSeconds(total_webcontent_isible_seconds);
-  total_not_webcontent_or_not_visible_seconds =
-      webcontent_visible_tracker_.per_webview_untracked_duration_.InSeconds();
-  webcontent_visible_tracker_.per_webview_untracked_duration_ -=
-      base::TimeDelta::FromSeconds(total_not_webcontent_or_not_visible_seconds);
-
-  if (any_webcontent_visible_seconds) {
-    GetGlobalOpenWebVisibilityHistogram()->AddCount(
-        static_cast<int>(WebViewOpenWebVisibility::kDisplayOpenWebContent),
-        any_webcontent_visible_seconds);
-  }
-  if (no_webcontent_visible_seconds) {
-    GetGlobalOpenWebVisibilityHistogram()->AddCount(
-        static_cast<int>(WebViewOpenWebVisibility::kNotDisplayOpenWebContent),
-        no_webcontent_visible_seconds);
-  }
-
-  if (total_webcontent_isible_seconds) {
-    GetPerWebViewOpenWebVisibilityHistogram()->AddCount(
-        static_cast<int>(WebViewOpenWebVisibility::kDisplayOpenWebContent),
-        total_webcontent_isible_seconds);
-  }
-  if (total_not_webcontent_or_not_visible_seconds) {
-    GetPerWebViewOpenWebVisibilityHistogram()->AddCount(
-        static_cast<int>(WebViewOpenWebVisibility::kNotDisplayOpenWebContent),
-        total_not_webcontent_or_not_visible_seconds);
+    int32_t per_webview_seconds = tracker.per_webview_duration_.InSeconds();
+    if (per_webview_seconds) {
+      tracker.per_webview_duration_ -= base::Seconds(per_webview_seconds);
+      LogPerWebViewVisibleScheme(scheme, per_webview_seconds);
+    }
   }
 }
 
-void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
-  for (int i = 0; i < static_cast<int>(WebViewOpenWebScreenPortion::kMaxValue);
+void VisibilityMetricsLogger::RecordScreenCoverageMetrics() {
+  if (!base::FeatureList::IsEnabled(features::kWebViewMeasureScreenCoverage))
+    return;
+  for (size_t i = 0; i < std::size(global_coverage_percentage_durations_);
        i++) {
-    int32_t elapsed_seconds =
-        open_web_screen_portion_tracked_duration_[i].InSeconds();
-    if (elapsed_seconds == 0)
+    int32_t seconds = global_coverage_percentage_durations_[i].InSeconds();
+    if (seconds == 0)
       continue;
 
-    open_web_screen_portion_tracked_duration_[i] -=
-        base::TimeDelta::FromSeconds(elapsed_seconds);
-    GetOpenWebVisibileScreenPortionHistogram()->AddCount(i, elapsed_seconds);
+    global_coverage_percentage_durations_[i] -= base::Seconds(seconds);
+    LogGlobalVisibleScreenCoverage(i, seconds);
+  }
+
+  for (auto& scheme_and_map : schemes_to_percentages_to_durations_) {
+    for (auto& percentage_and_duration : scheme_and_map.second) {
+      int32_t seconds = percentage_and_duration.second.InSeconds();
+      if (seconds == 0)
+        continue;
+
+      percentage_and_duration.second -= base::Seconds(seconds);
+      LogPerWebViewVisibleScreenCoverage(percentage_and_duration.first,
+                                         seconds);
+      LogPerSchemeVisibleScreenCoverage(scheme_and_map.first,
+                                        percentage_and_duration.first, seconds);
+    }
   }
 }
 

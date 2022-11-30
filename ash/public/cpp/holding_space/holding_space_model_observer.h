@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,11 +25,27 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
   virtual void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) {}
 
-  // Called when an `item` gets updated within the holding space model.
-  virtual void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) {}
+  // Called when a partially initialized holding space `item` gets fully
+  // initialized.
+  virtual void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) {}
 
-  // Called when a partially initialized holding space `item` gets finalized.
-  virtual void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item) {}
+  // Indicates which field of a holding space item was updated during a batch
+  // update operation, as notified through `OnHoldingSpaceItemUpdated()`. Note
+  // that these values are used in a bitfield.
+  enum UpdatedField : uint32_t {
+    kAccessibleName = 1u,
+    kBackingFile = kAccessibleName << 1u,
+    kInProgressCommands = kBackingFile << 1u,
+    kProgress = kInProgressCommands << 1u,
+    kSecondaryText = kProgress << 1u,
+    kSecondaryTextColor = kSecondaryText << 1u,
+    kText = kSecondaryTextColor << 1u,
+  };
+
+  // Called when an `item` gets updated within the holding space model. The
+  // specific fields which were updated are provided in `updated_fields`.
+  virtual void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                         uint32_t updated_fields) {}
 };
 
 }  // namespace ash

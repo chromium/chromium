@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ namespace ash {
 class ASH_EXPORT TrayInfoLabel : public views::View {
  public:
   explicit TrayInfoLabel(int message_id);
+
+  TrayInfoLabel(const TrayInfoLabel&) = delete;
+  TrayInfoLabel& operator=(const TrayInfoLabel&) = delete;
+
   ~TrayInfoLabel() override;
 
   // Updates the TrayInfoLabel to display the message associated with
@@ -26,10 +30,10 @@ class ASH_EXPORT TrayInfoLabel : public views::View {
   // views::View:
   const char* GetClassName() const override;
 
+  const views::Label* label() { return label_; }
+
  private:
   views::Label* const label_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayInfoLabel);
 };
 
 }  // namespace ash

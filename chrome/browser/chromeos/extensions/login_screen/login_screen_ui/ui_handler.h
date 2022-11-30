@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
+// TODO(https://crbug.com/1164001): use forward declaration.
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -22,11 +24,7 @@ class Extension;
 }  // namespace extensions
 
 namespace chromeos {
-
 namespace login_screen_extension_ui {
-
-class Window;
-class WindowFactory;
 
 struct ExtensionIdToWindowMapping {
   ExtensionIdToWindowMapping(const std::string& extension_id,
@@ -48,12 +46,16 @@ class UiHandler : public session_manager::SessionManagerObserver,
  public:
   using WindowClosedCallback =
       base::OnceCallback<void(bool success,
-                              const base::Optional<std::string>& error)>;
+                              const absl::optional<std::string>& error)>;
 
   static UiHandler* Get(bool can_create);
   static void Shutdown();
 
   explicit UiHandler(std::unique_ptr<WindowFactory> window_factory);
+
+  UiHandler(const UiHandler&) = delete;
+  UiHandler& operator=(const UiHandler&) = delete;
+
   ~UiHandler() override;
 
   // Endpoint for calls to the chrome.loginScreenUi.show() API. If an error
@@ -108,16 +110,14 @@ class UiHandler : public session_manager::SessionManagerObserver,
 
   WindowClosedCallback close_callback_;
 
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_manager_observer_{this};
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<UiHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UiHandler);
 };
 
 }  // namespace login_screen_extension_ui

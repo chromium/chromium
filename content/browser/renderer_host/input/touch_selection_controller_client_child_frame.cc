@@ -1,16 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/input/touch_selection_controller_client_child_frame.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/pointer/touch_editing_controller.h"
@@ -151,7 +152,7 @@ void TouchSelectionControllerClientChildFrame::OnDragUpdate(
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientChildFrame::CreateDrawable() {
   NOTREACHED();
-  return std::unique_ptr<ui::TouchHandleDrawable>();
+  return nullptr;
 }
 
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
@@ -173,6 +174,11 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case ui::TouchEditable::kSelectAll:
+      return readable && base::FeatureList::IsEnabled(
+                             chromeos::features::kTouchTextEditingRedesign);
+#endif
     default:
       return false;
   }
@@ -195,6 +201,9 @@ void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
       break;
     case ui::TouchEditable::kPaste:
       host_delegate->Paste();
+      break;
+    case ui::TouchEditable::kSelectAll:
+      host_delegate->SelectAll();
       break;
     default:
       NOTREACHED();

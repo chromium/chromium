@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/register_support_host_request.h"
@@ -41,6 +41,12 @@ class XmppRegisterSupportHostRequest : public RegisterSupportHostRequest,
   // received from the server. Callback is never called if the bot
   // malfunctions and doesn't respond to the request.
   explicit XmppRegisterSupportHostRequest(const std::string& directory_bot_jid);
+
+  XmppRegisterSupportHostRequest(const XmppRegisterSupportHostRequest&) =
+      delete;
+  XmppRegisterSupportHostRequest& operator=(
+      const XmppRegisterSupportHostRequest&) = delete;
+
   ~XmppRegisterSupportHostRequest() override;
 
   // RegisterSupportHostRequest implementation.
@@ -72,15 +78,13 @@ class XmppRegisterSupportHostRequest : public RegisterSupportHostRequest,
                     base::TimeDelta lifetime,
                     protocol::ErrorCode error_code);
 
-  SignalStrategy* signal_strategy_ = nullptr;
+  raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string directory_bot_jid_;
   RegisterCallback callback_;
 
   std::unique_ptr<IqSender> iq_sender_;
   std::unique_ptr<IqRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmppRegisterSupportHostRequest);
 };
 
 }  // namespace remoting

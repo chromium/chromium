@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include "base/observer_list.h"
 #include "components/sync/driver/sync_token_status.h"
-#include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -23,33 +23,31 @@ class MockSyncService : public syncer::TestSyncService {
     SetTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
   }
+
+  MockSyncService(const MockSyncService&) = delete;
+  MockSyncService& operator=(const MockSyncService&) = delete;
+
   ~MockSyncService() override { Shutdown(); }
 
   void SetStatus(bool has_passphrase, bool history_enabled, bool active) {
     SetTransportState(active ? TransportState::ACTIVE
                              : TransportState::INITIALIZING);
-    SetIsUsingSecondaryPassphrase(has_passphrase);
-    SetPreferredDataTypes(
-        history_enabled
-            ? syncer::ModelTypeSet(syncer::HISTORY_DELETE_DIRECTIVES)
-            : syncer::ModelTypeSet());
+    SetIsUsingExplicitPassphrase(has_passphrase);
+
+    GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/history_enabled ? syncer::UserSelectableTypeSet(
+                                        syncer::UserSelectableType::kHistory)
+                                  : syncer::UserSelectableTypeSet());
 
     // It doesn't matter what exactly we set here, it's only relevant that the
     // SyncCycleSnapshot is initialized at all.
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot(
         /*birthday=*/std::string(), /*bag_of_chips=*/std::string(),
-        syncer::ModelNeutralState(), syncer::ProgressMarkerMap(), false, 0, 0,
-        0, true, 0, base::Time::Now(), base::Time::Now(),
-        std::vector<int>(syncer::GetNumModelTypes(), 0),
-        std::vector<int>(syncer::GetNumModelTypes(), 0),
-        sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::TimeDelta::FromMinutes(1),
-        false));
+        syncer::ModelNeutralState(), syncer::ProgressMarkerMap(), false, 0,
+        true, base::Time::Now(), base::Time::Now(),
+        sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::Minutes(1), false));
 
-    NotifyObserversOfStateChanged();
-  }
-
-  void SetAuthError(GoogleServiceAuthError::State error_state) {
-    syncer::TestSyncService::SetAuthError(GoogleServiceAuthError(error_state));
     NotifyObserversOfStateChanged();
   }
 
@@ -76,13 +74,16 @@ class MockSyncService : public syncer::TestSyncService {
 
   // The list of observers of the SyncService state.
   base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSyncService);
 };
 
 class TestUkmConsentStateObserver : public UkmConsentStateObserver {
  public:
   TestUkmConsentStateObserver() : purged_(false), notified_(false) {}
+
+  TestUkmConsentStateObserver(const TestUkmConsentStateObserver&) = delete;
+  TestUkmConsentStateObserver& operator=(const TestUkmConsentStateObserver&) =
+      delete;
+
   ~TestUkmConsentStateObserver() override {}
 
   bool ResetPurged() {
@@ -105,12 +106,16 @@ class TestUkmConsentStateObserver : public UkmConsentStateObserver {
   }
   bool purged_;
   bool notified_;
-  DISALLOW_COPY_AND_ASSIGN(TestUkmConsentStateObserver);
 };
 
 class UkmConsentStateObserverTest : public testing::Test {
  public:
   UkmConsentStateObserverTest() {}
+
+  UkmConsentStateObserverTest(const UkmConsentStateObserverTest&) = delete;
+  UkmConsentStateObserverTest& operator=(const UkmConsentStateObserverTest&) =
+      delete;
+
   void RegisterUrlKeyedAnonymizedDataCollectionPref(
       sync_preferences::TestingPrefServiceSyncable& prefs) {
     unified_consent::UnifiedConsentService::RegisterPrefs(prefs.registry());
@@ -122,9 +127,6 @@ class UkmConsentStateObserverTest : public testing::Test {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmConsentStateObserverTest);
 };
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_writer.h"
 
@@ -18,6 +17,11 @@ namespace remoting {
 class SecurityKeyMessageWriterImpl : public SecurityKeyMessageWriter {
  public:
   explicit SecurityKeyMessageWriterImpl(base::File output_file);
+
+  SecurityKeyMessageWriterImpl(const SecurityKeyMessageWriterImpl&) = delete;
+  SecurityKeyMessageWriterImpl& operator=(const SecurityKeyMessageWriterImpl&) =
+      delete;
+
   ~SecurityKeyMessageWriterImpl() override;
 
  private:
@@ -31,8 +35,6 @@ class SecurityKeyMessageWriterImpl : public SecurityKeyMessageWriter {
 
   base::File output_stream_;
   bool write_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageWriterImpl);
 };
 
 }  // namespace remoting

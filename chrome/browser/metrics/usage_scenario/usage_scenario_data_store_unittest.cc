@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "url/origin.h"
 
 namespace {
-constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 }  // namespace
 
 class UsageScenarioDataStoreTest : public testing::Test {
@@ -519,4 +519,28 @@ TEST_F(UsageScenarioDataStoreTest, PlayingAudio) {
   task_environment_.FastForwardBy(kShortDelay);
   data = ResetIntervalData();
   EXPECT_EQ(base::TimeDelta(), data.time_playing_audio);
+}
+
+TEST_F(UsageScenarioDataStoreTest, SleepEvents) {
+  data_store()->OnTabAdded();
+
+  task_environment_.FastForwardBy(kShortDelay);
+
+  data_store()->OnSleepEvent();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  auto data = ResetIntervalData();
+  EXPECT_EQ(1, data.sleep_events);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnSleepEvent();
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnSleepEvent();
+
+  data = ResetIntervalData();
+  EXPECT_EQ(2, data.sleep_events);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(0, data.sleep_events);
 }

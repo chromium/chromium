@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/win/scoped_handle.h"
 
 namespace installer {
@@ -49,6 +51,9 @@ class ExperimentStorage {
   // are expected to not hold an instance across any blocking operations.
   class Lock {
    public:
+    Lock(const Lock&) = delete;
+    Lock& operator=(const Lock&) = delete;
+
     ~Lock();
 
     // Reads the participation state for the install. Returns false in case of
@@ -82,12 +87,14 @@ class ExperimentStorage {
 
     explicit Lock(ExperimentStorage* storage);
 
-    ExperimentStorage* storage_;
-
-    DISALLOW_COPY_AND_ASSIGN(Lock);
+    raw_ptr<ExperimentStorage> storage_;
   };
 
   ExperimentStorage();
+
+  ExperimentStorage(const ExperimentStorage&) = delete;
+  ExperimentStorage& operator=(const ExperimentStorage&) = delete;
+
   ~ExperimentStorage();
 
   // Returns exclusive access to the experiment storage. The underlying
@@ -140,8 +147,6 @@ class ExperimentStorage {
 
   // A global mutex with a distinct name for the current installation.
   base::win::ScopedHandle mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExperimentStorage);
 };
 
 }  // namespace installer

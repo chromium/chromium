@@ -1,16 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_RENDERERS_RENDERER_IMPL_H_
 #define MEDIA_RENDERERS_RENDERER_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -51,6 +50,9 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                std::unique_ptr<AudioRenderer> audio_renderer,
                std::unique_ptr<VideoRenderer> video_renderer);
 
+  RendererImpl(const RendererImpl&) = delete;
+  RendererImpl& operator=(const RendererImpl&) = delete;
+
   ~RendererImpl() final;
 
   // Renderer implementation.
@@ -58,9 +60,10 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
   void SetPreservesPitch(bool preserves_pitch) final;
-  void SetAutoplayInitiated(bool autoplay_initiated) final;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
@@ -194,12 +197,16 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // Callback executed when a runtime error happens.
   void OnError(PipelineStatus error);
 
+  // Callback executed when there is a fallback somewhere in the pipeline which
+  // should be recorded for metrics analysis.
+  void OnFallback(PipelineStatus fallback);
+
   void OnWaiting(WaitingReason reason);
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnAudioConfigChange(const AudioDecoderConfig& config);
   void OnVideoConfigChange(const VideoDecoderConfig& config);
   void OnVideoOpacityChange(bool opaque);
-  void OnVideoFrameRateChange(base::Optional<int> fps);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   void OnStreamRestartCompleted();
 
@@ -208,8 +215,8 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // Task runner used to execute pipeline tasks.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  MediaResource* media_resource_;
-  RendererClient* client_;
+  raw_ptr<MediaResource> media_resource_;
+  raw_ptr<RendererClient> client_;
 
   // Temporary callback used for Initialize() and Flush().
   PipelineStatusCallback init_cb_;
@@ -220,11 +227,11 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   std::unique_ptr<AudioRenderer> audio_renderer_;
   std::unique_ptr<VideoRenderer> video_renderer_;
 
-  DemuxerStream* current_audio_stream_;
-  DemuxerStream* current_video_stream_;
+  raw_ptr<DemuxerStream> current_audio_stream_;
+  raw_ptr<DemuxerStream> current_video_stream_;
 
   // Renderer-provided time source used to control playback.
-  TimeSource* time_source_;
+  raw_ptr<TimeSource> time_source_;
   std::unique_ptr<WallClockTimeSource> wall_clock_time_source_;
   bool time_ticking_;
   double playback_rate_;
@@ -241,7 +248,7 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   bool audio_playing_;
   bool video_playing_;
 
-  CdmContext* cdm_context_;
+  raw_ptr<CdmContext> cdm_context_;
 
   bool underflow_disabled_for_testing_;
   bool clockless_video_playback_enabled_for_testing_;
@@ -256,9 +263,8 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
   // The amount of time to wait before declaring underflow if the video renderer
   // runs out of data but the audio renderer still has enough.
   Tuneable<base::TimeDelta> video_underflow_threshold_ = {
-      "MediaVideoUnderflowThreshold", base::TimeDelta::FromMilliseconds(1000),
-      base::TimeDelta::FromMilliseconds(3000),
-      base::TimeDelta::FromMilliseconds(8000)};
+      "MediaVideoUnderflowThreshold", base::Milliseconds(1000),
+      base::Milliseconds(3000), base::Milliseconds(8000)};
 
   // Lock used to protect access to the |restarting_audio_| flag and
   // |restarting_audio_time_|.
@@ -272,8 +278,6 @@ class MEDIA_EXPORT RendererImpl final : public Renderer {
 
   base::WeakPtr<RendererImpl> weak_this_;
   base::WeakPtrFactory<RendererImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererImpl);
 };
 
 }  // namespace media

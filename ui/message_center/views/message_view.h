@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -19,13 +20,17 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/views/animation/ink_drop_host_view.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/time/time.h"
+#endif
 
 namespace views {
 class ScrollView;
@@ -42,12 +47,8 @@ class NotificationControlButtonsView;
 
 // An base class for a notification entry. Contains background and other
 // elements shared by derived notification views.
-// TODO(pkasting): This class only subclasses InkDropHostView because the
-// NotificationViewMD subclass needs ink drop functionality.  Rework ink drops
-// to not need to be the base class of views which use them, and move the
-// functionality to the subclass that uses these.
 class MESSAGE_CENTER_EXPORT MessageView
-    : public views::InkDropHostView,
+    : public views::View,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
  public:
@@ -57,6 +58,7 @@ class MESSAGE_CENTER_EXPORT MessageView
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}
     virtual void OnSlideChanged(const std::string& notification_id) {}
+    virtual void OnSlideEnded(const std::string& notification_id) {}
     virtual void OnPreSlideOut(const std::string& notification_id) {}
     virtual void OnSlideOut(const std::string& notification_id) {}
     virtual void OnCloseButtonPressed(const std::string& notification_id) {}
@@ -83,7 +85,29 @@ class MESSAGE_CENTER_EXPORT MessageView
   };
 
   explicit MessageView(const Notification& notification);
+
+  MessageView(const MessageView&) = delete;
+  MessageView& operator=(const MessageView&) = delete;
+
   ~MessageView() override;
+
+  // Updates this view with an additional grouped notification. If the view
+  // wasn't previously grouped it also takes care of converting the view to
+  // the grouped notification state.
+  virtual void AddGroupNotification(const Notification& notification) {}
+
+  // Find the message view associated with a grouped notification id if it
+  // exists.
+  virtual views::View* FindGroupNotificationView(
+      const std::string& notification_id);
+
+  // Populates this view with a list of grouped notifications, this is intended
+  // to be used for initializing of grouped notifications so it does not
+  // explicitly update the size of the view unlike `AddGroupNotification`.
+  virtual void PopulateGroupNotifications(
+      const std::vector<const Notification*>& notifications) {}
+
+  virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
   // Updates this view with the new data contained in the notification.
   virtual void UpdateWithNotification(const Notification& notification);
@@ -117,11 +141,18 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-  // views::InkDropHostView:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Gets the animation duration for a recent bounds change.
+  virtual base::TimeDelta GetBoundsAnimationDuration(
+      const Notification& notification) const;
+#endif
+
+  // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -129,7 +160,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   void OnGestureEvent(ui::GestureEvent* event) override;
   void RemovedFromWidget() override;
   void AddedToWidget() override;
-  const char* GetClassName() const final;
+  const char* GetClassName() const override;
   void OnThemeChanged() override;
 
   // views::SlideOutControllerDelegate:
@@ -148,7 +179,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   Mode GetMode() const;
 
   // Gets the current horizontal scroll offset of the view by slide gesture.
-  float GetSlideAmount() const;
+  virtual float GetSlideAmount() const;
 
   // Set "setting" mode. This overrides "pinned" mode. See the comment of
   // MessageView::Mode enum for detail.
@@ -161,8 +192,27 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Updates the width of the buttons which are hidden and avail by swipe.
   void SetSlideButtonWidth(int coutrol_button_width);
 
-  void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
+  void set_notification_id(const std::string& notification_id) {
+    notification_id_ = notification_id;
+  }
+
   std::string notification_id() const { return notification_id_; }
+
+  NotifierId notifier_id() const { return notifier_id_; }
+
+  base::Time timestamp() const { return timestamp_; }
+
+  bool pinned() const { return pinned_; }
+
+  bool is_active() const { return is_active_; }
+
+  void set_parent_message_view(MessageView* parent_message_view) {
+    parent_message_view_ = parent_message_view;
+  }
+
+  MessageView* parent_message_view() { return parent_message_view_; }
+
+  void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
 
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
@@ -180,6 +230,12 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Changes the background color and schedules a paint.
   virtual void SetDrawBackgroundAsActive(bool active);
 
+  // Updates the background painter using the themed background color and radii.
+  virtual void UpdateBackgroundPainter();
+
+  void UpdateControlButtonsVisibilityWithNotification(
+      const Notification& notification);
+
   void SetCornerRadius(int top_radius, int bottom_radius);
 
   views::ScrollView* scroller() { return scroller_; }
@@ -187,8 +243,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   base::ObserverList<Observer>* observers() { return &observers_; }
 
   bool is_nested() const { return is_nested_; }
-
-  views::FocusRing* focus_ring() { return focus_ring_; }
 
   int bottom_radius() const { return bottom_radius_; }
 
@@ -205,13 +259,12 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Returns if the control buttons should be shown.
   bool ShouldShowControlButtons() const;
 
-  // Updates the background painter using the themed background color and radii.
-  void UpdateBackgroundPainter();
+  void UpdateNestedBorder();
 
   std::string notification_id_;
-  views::ScrollView* scroller_ = nullptr;
-
   std::u16string accessible_name_;
+  const NotifierId notifier_id_;
+  base::Time timestamp_;
 
   // Tracks whether background should be drawn as active based on gesture
   // events.
@@ -224,9 +277,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // "fixed" mode flag. See the comment in MessageView::Mode for detail.
   bool setting_mode_ = false;
 
-  views::SlideOutController slide_out_controller_;
-  base::ObserverList<Observer> observers_;
-
   // True if |this| is embedded in another view. Equivalent to |!top_level| in
   // MessageViewFactory parlance.
   bool is_nested_ = false;
@@ -234,15 +284,20 @@ class MESSAGE_CENTER_EXPORT MessageView
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 
-  views::FocusManager* focus_manager_ = nullptr;
-  views::FocusRing* focus_ring_ = nullptr;
+  // True if the view is in a slide.
+  bool is_sliding_ = false;
+
+  raw_ptr<MessageView> parent_message_view_ = nullptr;
+  raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+  raw_ptr<views::ScrollView> scroller_ = nullptr;
+
+  views::SlideOutController slide_out_controller_;
+  base::ObserverList<Observer> observers_;
 
   // Radius values used to determine the rounding for the rounded rectangular
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageView);
 };
 
 }  // namespace message_center

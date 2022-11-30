@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.xsurface;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 
 import androidx.annotation.Nullable;
 
@@ -14,9 +16,9 @@ import androidx.annotation.Nullable;
  * Should only be called on the UI thread.
  */
 public interface SurfaceScopeDependencyProvider {
-    /** Returns the application context. */
+    /** Returns the activity. */
     @Nullable
-    default Context getApplicationContext() {
+    default Activity getActivity() {
         return null;
     }
 
@@ -29,31 +31,6 @@ public interface SurfaceScopeDependencyProvider {
     /** Returns whether the activity is in darkmode or not */
     default boolean isDarkModeEnabled() {
         return false;
-    }
-
-    /** Returns whether or not activity logging is enabled for this surface */
-    default boolean isActivityLoggingEnabled() {
-        return false;
-    }
-
-    /** Returns the account name of the signed-in user, or the empty string. */
-    default String getAccountName() {
-        return "";
-    }
-
-    /** Returns the client instance id for this chrome. */
-    default String getClientInstanceId() {
-        return "";
-    }
-
-    /** Returns the collection of currently active experiment ids. */
-    default int[] getExperimentIds() {
-        return new int[0];
-    }
-
-    /** Returns the signed-out session id */
-    default String getSignedOutSessionId() {
-        return "";
     }
 
     /** User-set preference for when videos are eligible to autoplay. */
@@ -71,9 +48,108 @@ public interface SurfaceScopeDependencyProvider {
         return AutoplayPreference.AUTOPLAY_DISABLED;
     }
 
-    /** Returns the video player to play a specific video. */
-    @Nullable
-    default WebVideoPlayer createWebVideoPlayer(String videoId, String webPlayerUrl) {
-        return null;
+    /** Events that are triggered during the video playing. */
+    public @interface VideoPlayEvent {
+        // Events applying muted autoplay only.
+
+        /**
+         * Auto-play stops before reaching the end. This occurs when the video card becomes
+         * partially visible or invisible.
+         */
+        int AUTOPLAY_STOPPED = 0;
+        /** Auto-play reaches the end. */
+        int AUTOPLAY_ENDED = 1;
+        /** User clicks on the auto-play video. */
+        int AUTOPLAY_CLICKED = 2;
+
+        // Events applying to both muted autoplay and regular play.
+
+        /** The player starts to play the video. */
+        int PLAY_REQUESTED = 3;
+        int PLAY_STARTED = 4;
+        int PLAY_ERROR = 5;
+        int NUM_ENTRIES = 6;
+    }
+
+    /** Errors occurred during the video player initialization. */
+    public @interface VideoInitializationError {
+        int CLIENT_LIBRARY_UPDATE_REQUIRED = 0;
+        int DEVELOPER_KEY_INVALID = 1;
+        int ERROR_CONNECTING_TO_SERVICE = 2;
+        int INTERNAL_ERROR = 3;
+        int INVALID_APPLICATION_SIGNATURE = 4;
+        int NETWORK_ERROR = 5;
+        int SERVICE_DISABLED = 6;
+        int SERVICE_INVALID = 7;
+        int SERVICE_MISSING = 8;
+        int SERVICE_VERSION_UPDATE_REQUIRED = 9;
+        int UNKNOWN_ERROR = 10;
+        int NUM_ENTRIES = 11;
+    }
+
+    /** Errors occurred during the video playing. */
+    public @interface VideoPlayError {
+        int NOT_PLAYABLE = 0;
+        int UNAUTHORIZED_OVERLAY = 1;
+        int INTERNAL_ERROR = 2;
+        int UNKNOWN_ERROR = 3;
+        int AUTOPLAY_DISABLED = 4;
+        int UNEXPECTED_SERVICE_DISCONNECTION = 5;
+        int NOT_PLAYABLE_MUTED = 6;
+        int NETWORK_ERROR = 7;
+        int NUM_ENTRIES = 8;
+    }
+
+    /**
+     * Reports the event related to video playing.
+     *
+     * @param isMutedAutoplay Whether the video is currently autoplaying muted.
+     * @param event The event to report.
+     */
+    default void reportVideoPlayEvent(boolean isMutedAutoplay, @VideoPlayEvent int event) {}
+
+    /**
+     * Reports the error related to video player initialization.
+     *
+     * @param isMutedAutoplay Whether the video is currently autoplaying muted.
+     * @param error The error to report.
+     */
+    default void reportVideoInitializationError(
+            boolean isMutedAutoplay, @VideoInitializationError int error) {}
+
+    /**
+     * Reports the error related to video playing.
+     *
+     * @param isMutedAutoplay Whether the video is currently autoplaying muted.
+     * @param error The error to report.
+     */
+    default void reportVideoPlayError(boolean isMutedAutoplay, @VideoPlayError int error) {}
+
+    /**
+     * Returns the bounds of the toolbar in global (root) coordinates.
+     */
+    default Rect getToolbarGlobalVisibleRect() {
+        return new Rect();
+    }
+
+    /**
+     * Adds a header offset observer to the surface this scope is associated with.
+     *
+     * @param observer The observer to add.
+     * @Return a reference to be used when removing the observer, or null if not successful.
+     */
+    default void addHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /**
+     * Removes a header offset observer.
+     *
+     * @param observer An Object returned by |addHeaderOffsetObserver|.
+     */
+    default void removeHeaderOffsetObserver(SurfaceHeaderOffsetObserver observer) {}
+
+    /** Returns whether or not activity logging should be enabled. */
+    @Deprecated
+    default boolean isActivityLoggingEnabled() {
+        return false;
     }
 }

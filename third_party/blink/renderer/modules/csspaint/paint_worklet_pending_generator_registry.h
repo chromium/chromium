@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PENDING_GENERATOR_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_WORKLET_PENDING_GENERATOR_REGISTRY_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -22,6 +22,11 @@ class PaintWorkletPendingGeneratorRegistry
  public:
   PaintWorkletPendingGeneratorRegistry() = default;
 
+  PaintWorkletPendingGeneratorRegistry(
+      const PaintWorkletPendingGeneratorRegistry&) = delete;
+  PaintWorkletPendingGeneratorRegistry& operator=(
+      const PaintWorkletPendingGeneratorRegistry&) = delete;
+
   void NotifyGeneratorReady(const String& name);
   void AddPendingGenerator(const String& name, CSSPaintImageGeneratorImpl*);
 
@@ -34,8 +39,6 @@ class PaintWorkletPendingGeneratorRegistry
   using GeneratorHashSet = HeapHashSet<WeakMember<CSSPaintImageGeneratorImpl>>;
   using PendingGeneratorMap = HeapHashMap<String, Member<GeneratorHashSet>>;
   PendingGeneratorMap pending_generators_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletPendingGeneratorRegistry);
 };
 
 }  // namespace blink

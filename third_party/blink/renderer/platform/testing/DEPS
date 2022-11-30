@@ -15,6 +15,7 @@ include_rules = [
     "+base/metrics/statistics_recorder.h",
     "+base/strings/string_number_conversions.h",
     "+base/task/single_thread_task_executor.h",
+    "+base/task/thread_pool/thread_pool_instance.h",
     "+base/test/test_io_thread.h",
     "+cc",
     "+mojo/core/embedder",
@@ -44,6 +45,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/scroll",
     "+third_party/blink/renderer/platform/text",
     "+third_party/blink/renderer/platform/timer.h",
+    "+third_party/blink/renderer/platform/transforms",
     "+third_party/blink/renderer/platform/waitable_event.h",
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
@@ -56,6 +58,23 @@ specific_include_rules = {
     ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
+    ],
+    "run_all_tests\.cc": [
+        "+gin/array_buffer.h",
+        "+gin/public/isolate_holder.h",
+    ],
+    "run_all_perf_tests\.cc": [
+        "+gin/array_buffer.h",
+        "+gin/public/isolate_holder.h",
+    ],
+    "scoped_fake_ukm_recorder\.cc": [
+        "+services/metrics/public/mojom/ukm_interface.mojom-blink.h",
+    ],
+    "scoped_fake_ukm_recorder\.h": [
+        "+components/ukm/test_ukm_recorder.h",
+    ],
+    "testing_platform_support\.cc": [
+        "+gin/public/v8_platform.h",
     ],
     "testing_platform_support_with_mock_scheduler\.cc": [
         "+base/task/sequence_manager/test/sequence_manager_for_test.h",

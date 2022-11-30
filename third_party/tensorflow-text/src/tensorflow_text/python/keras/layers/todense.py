@@ -22,16 +22,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from tensorflow.python.framework import ops
-from tensorflow.python.framework import sparse_tensor
-from tensorflow.python.keras import layers
-from tensorflow.python.keras.engine.base_layer import Layer
-from tensorflow.python.ops import check_ops
-from tensorflow.python.ops import sparse_ops
-from tensorflow.python.ops.ragged import ragged_tensor
+import tensorflow as tf
 
 
-class ToDense(Layer):   # pylint: disable=g-classes-have-attributes
+class ToDense(tf.keras.layers.Layer):  # pylint: disable=g-classes-have-attributes
   """Layer that makes padding and masking a Composite Tensors effortless.
 
   The layer takes a RaggedTensor or a SparseTensor and converts it to a uniform
@@ -80,23 +74,22 @@ class ToDense(Layer):   # pylint: disable=g-classes-have-attributes
     self._compute_output_and_mask_jointly = True
     self._supports_ragged_inputs = True
     self.trainable = False
-    self.masking_layer = layers.Masking(mask_value=self._pad_value)
+    self.masking_layer = tf.keras.layers.Masking(mask_value=self._pad_value)
 
   def call(self, inputs):
-    if isinstance(inputs, ragged_tensor.RaggedTensor):
+    if isinstance(inputs, tf.RaggedTensor):
       # Convert the ragged tensor to a padded uniform tensor
       outputs = inputs.to_tensor(
           default_value=self._pad_value, shape=self._shape)
-    elif isinstance(inputs, sparse_tensor.SparseTensor):
+    elif isinstance(inputs, tf.sparse.SparseTensor):
       # Fill in the missing value in the sparse_tensor
-      outputs = sparse_ops.sparse_tensor_to_dense(
-          inputs, default_value=self._pad_value)
+      outputs = tf.sparse.to_dense(inputs, default_value=self._pad_value)
       if self._shape is not None:
-        outputs = check_ops.ensure_shape(outputs, shape=self._shape)
-    elif isinstance(inputs, ops.Tensor):
+        outputs = tf.ensure_shape(outputs, shape=self._shape)
+    elif isinstance(inputs, tf.Tensor):
       outputs = inputs
       if self._shape is not None:
-        outputs = check_ops.ensure_shape(outputs, shape=self._shape)
+        outputs = tf.ensure_shape(outputs, shape=self._shape)
     else:
       raise TypeError('Unexpected tensor type %s' % type(inputs).__name__)
 

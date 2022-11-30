@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,12 @@ public final class InvalidPaymentRequest implements PaymentRequest {
 
     @Override
     public void init(PaymentRequestClient client, PaymentMethodData[] unusedMethodData,
-            PaymentDetails unusedDetails, PaymentOptions unusedOptions,
-            boolean unusedGooglePayBridgeEligible) {
+            PaymentDetails unusedDetails, PaymentOptions unusedOptions) {
         mClient = client;
     }
 
     @Override
-    public void show(boolean unusedIsUserGesture, boolean unusedWaitForUpdatedDetails) {
+    public void show(boolean unusedWaitForUpdatedDetails) {
         if (mClient != null) {
             mClient.onError(PaymentErrorReason.USER_CANCEL, ErrorStrings.WEB_PAYMENT_API_DISABLED);
             mClient.close();

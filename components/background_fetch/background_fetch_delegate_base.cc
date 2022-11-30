@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "components/background_fetch/job_details.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/download_params.h"
-#include "components/download/public/background_service/download_service.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
 #include "content/public/browser/browser_context.h"
@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace background_fetch {
@@ -46,44 +47,10 @@ void BackgroundFetchDelegateBase::GetIconDisplaySize(
   // icon at all, which is returned for all non-Android platforms as the
   // icons can't be displayed on the UI yet.
   gfx::Size display_size;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   display_size = gfx::Size(192, 192);
 #endif
   std::move(callback).Run(display_size);
-}
-
-void BackgroundFetchDelegateBase::GetPermissionForOrigin(
-    const url::Origin& origin,
-    const content::WebContents::Getter& wc_getter,
-    GetPermissionForOriginCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (wc_getter) {
-    // The fetch should be thought of as one download. So the origin will be
-    // used as the URL, and the |request_method| is set to GET.
-    content::BrowserContext::GetDownloadManager(context_)
-        ->GetDelegate()
-        ->CheckDownloadAllowed(
-            wc_getter, origin.GetURL(), "GET", base::nullopt,
-            false /* from_download_cross_origin_redirect */,
-            true /* content_initiated */,
-            base::BindOnce(&BackgroundFetchDelegateBase::
-                               DidGetPermissionFromDownloadRequestLimiter,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
-    return;
-  }
-
-  GetPermissionForOriginWithoutWebContents(origin, std::move(callback));
-}
-
-void BackgroundFetchDelegateBase::DidGetPermissionFromDownloadRequestLimiter(
-    GetPermissionForOriginCallback callback,
-    bool has_permission) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::move(callback).Run(has_permission
-                              ? content::BackgroundFetchPermission::ALLOWED
-                              : content::BackgroundFetchPermission::BLOCKED);
 }
 
 void BackgroundFetchDelegateBase::CreateDownloadJob(
@@ -114,6 +81,7 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     const std::string& download_guid,
     const std::string& method,
     const GURL& url,
+    ::network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const net::HttpRequestHeaders& headers,
     bool has_request_body) {
@@ -128,11 +96,13 @@ void BackgroundFetchDelegateBase::DownloadUrl(
   params.request_params.method = method;
   params.request_params.url = url;
   params.request_params.request_headers = headers;
+  params.request_params.credentials_mode = credentials_mode;
   params.callback =
       base::BindRepeating(&BackgroundFetchDelegateBase::OnDownloadReceived,
                           weak_ptr_factory_.GetWeakPtr());
   params.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation);
+  params.request_params.update_first_party_url_on_redirect = false;
 
   JobDetails* job_details = GetJobDetails(job_id);
   if (job_details->job_state == JobDetails::State::kPendingWillStartPaused ||
@@ -142,12 +112,15 @@ void BackgroundFetchDelegateBase::DownloadUrl(
     job_details->MarkJobAsStarted();
   }
 
+  params.request_params.isolation_info =
+      job_details->fetch_description->isolation_info;
+
   if (job_details->job_state == JobDetails::State::kStartedButPaused) {
-    job_details->on_resume =
-        base::BindOnce(&BackgroundFetchDelegateBase::StartDownload,
-                       GetWeakPtr(), job_id, params, has_request_body);
+    job_details->on_resume = base::BindOnce(
+        &BackgroundFetchDelegateBase::StartDownload, GetWeakPtr(), job_id,
+        std::move(params), has_request_body);
   } else {
-    StartDownload(job_id, params, has_request_body);
+    StartDownload(job_id, std::move(params), has_request_body);
   }
 
   DoUpdateUi(job_id);
@@ -184,11 +157,12 @@ void BackgroundFetchDelegateBase::ResumeDownload(const std::string& job_id) {
     std::move(job_details->on_resume).Run();
 }
 
-void BackgroundFetchDelegateBase::CancelDownload(const std::string& job_id) {
+void BackgroundFetchDelegateBase::CancelDownload(std::string job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JobDetails* job_details = GetJobDetails(job_id);
 
-  if (job_details->job_state == JobDetails::State::kDownloadsComplete ||
+  if (!job_details ||
+      job_details->job_state == JobDetails::State::kDownloadsComplete ||
       job_details->job_state == JobDetails::State::kJobComplete) {
     // The cancel event arrived after the fetch was complete; ignore it.
     return;
@@ -198,21 +172,25 @@ void BackgroundFetchDelegateBase::CancelDownload(const std::string& job_id) {
   Abort(job_id);
 
   if (auto client = GetClient(job_id)) {
+    // The |download_guid| is not releavnt here as the job has already
+    // been aborted and is assumed to have been removed.
     client->OnJobCancelled(
-        job_id, blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
+        job_id, "" /* download_guid */,
+        blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
   }
 }
 
-void BackgroundFetchDelegateBase::OnUiFinished(const std::string& job_id,
-                                               bool activated) {
+void BackgroundFetchDelegateBase::OnUiFinished(const std::string& job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (activated) {
-    if (auto client = GetClient(job_id))
-      client->OnUIActivated(job_id);
-  }
 
   job_details_map_.erase(job_id);
   DoCleanUpUi(job_id);
+}
+
+void BackgroundFetchDelegateBase::OnUiActivated(const std::string& job_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (auto client = GetClient(job_id))
+    client->OnUIActivated(job_id);
 }
 
 JobDetails* BackgroundFetchDelegateBase::GetJobDetails(
@@ -229,15 +207,14 @@ JobDetails* BackgroundFetchDelegateBase::GetJobDetails(
   return &job_details_iter->second;
 }
 
-void BackgroundFetchDelegateBase::StartDownload(
-    const std::string& job_id,
-    const download::DownloadParams& params,
-    bool has_request_body) {
+void BackgroundFetchDelegateBase::StartDownload(const std::string& job_id,
+                                                download::DownloadParams params,
+                                                bool has_request_body) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   GetJobDetails(job_id)->current_fetch_guids.emplace(params.guid,
                                                      has_request_body);
-  GetDownloadService()->StartDownload(params);
+  GetDownloadService()->StartDownload(std::move(params));
 }
 
 void BackgroundFetchDelegateBase::Abort(const std::string& job_id) {
@@ -260,7 +237,7 @@ void BackgroundFetchDelegateBase::MarkJobComplete(const std::string& job_id) {
   JobDetails* job_details = GetJobDetails(job_id);
 
   if (job_details->job_state == JobDetails::State::kCancelled) {
-    OnUiFinished(job_id, /*activated=*/false);
+    OnUiFinished(job_id);
     return;
   }
 
@@ -270,14 +247,15 @@ void BackgroundFetchDelegateBase::MarkJobComplete(const std::string& job_id) {
   job_details->current_fetch_guids.clear();
 }
 
-void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id) {
+void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id,
+                                            const std::string& download_guid) {
   // Save a copy before Abort() deletes the reference.
   const std::string unique_id = job_id;
   Abort(job_id);
 
   if (auto client = GetClient(unique_id)) {
     client->OnJobCancelled(
-        unique_id,
+        download_guid, unique_id,
         blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
   }
 }
@@ -329,7 +307,7 @@ void BackgroundFetchDelegateBase::OnDownloadUpdated(
     // We only do this if total download size is specified. If not specified,
     // this check is skipped. This is to allow for situations when the
     // total download size cannot be known when invoking fetch.
-    FailFetch(job_id);
+    FailFetch(job_id, download_guid);
     return;
   }
   DoUpdateUi(job_id);
@@ -446,10 +424,8 @@ bool BackgroundFetchDelegateBase::IsGuidOutstanding(
   if (job_details_iter == job_details_map_.end())
     return false;
 
-  const std::vector<std::string>& outstanding_guids =
-      job_details_iter->second.fetch_description->outstanding_guids;
-  return std::find(outstanding_guids.begin(), outstanding_guids.end(), guid) !=
-         outstanding_guids.end();
+  return base::Contains(
+      job_details_iter->second.fetch_description->outstanding_guids, guid);
 }
 
 void BackgroundFetchDelegateBase::RestartPausedDownload(

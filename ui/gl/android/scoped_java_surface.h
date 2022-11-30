@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -39,6 +38,9 @@ class GL_EXPORT ScopedJavaSurface {
   static ScopedJavaSurface AcquireExternalSurface(
       const base::android::JavaRef<jobject>& surface);
 
+  ScopedJavaSurface(const ScopedJavaSurface&) = delete;
+  ScopedJavaSurface& operator=(const ScopedJavaSurface&) = delete;
+
   ~ScopedJavaSurface();
 
   // Checks whether the surface is an empty one.
@@ -64,8 +66,6 @@ class GL_EXPORT ScopedJavaSurface {
   bool is_protected_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> j_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedJavaSurface);
 };
 
 }  // namespace gl

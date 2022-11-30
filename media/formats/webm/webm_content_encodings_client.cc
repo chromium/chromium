@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/formats/webm/webm_content_encodings_client.h"
+
+#include <memory>
 
 #include "base/logging.h"
 #include "media/formats/webm/webm_constants.h"
@@ -33,7 +35,7 @@ WebMParserClient* WebMContentEncodingsClient::OnListStart(int id) {
   if (id == kWebMIdContentEncoding) {
     DCHECK(!cur_content_encoding_.get());
     DCHECK(!content_encryption_encountered_);
-    cur_content_encoding_.reset(new ContentEncoding());
+    cur_content_encoding_ = std::make_unique<ContentEncoding>();
     return this;
   }
 

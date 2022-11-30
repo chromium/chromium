@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,6 +12,9 @@
 
 module MSTSCAX.DLL:
 category rdp:
+
+#ifndef REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_
+#define REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_
 
 //
 // GUIDs
@@ -846,3 +849,5 @@ interface IMsRdpSessionManager : IUnknown {
 };
 
 HRESULT DllGetClassObject(REFCLSID rclsid, [iid] REFIID riid, [out] COM_INTERFACE_PTR* ppv);
+
+#endif  // REMOTING_TOOLS_WINEXT_MANIFEST_RDP_H_

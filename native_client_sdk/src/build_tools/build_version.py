@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -30,7 +30,7 @@ def ChromeVersion():
   '''
   info = FetchCommitPosition()
   _, ref, revision = ParseCommitPosition(info.revision)
-  if ref == 'refs/heads/master':
+  if ref in ['refs/heads/master', 'refs/heads/main']:
     return 'trunk.%s' % revision
   return ChromeVersionNoTrunk()
 
@@ -75,7 +75,7 @@ def ChromeCommitPosition():
 
   Returns:
     A value like:
-    0178d4831bd36b5fb9ff477f03dc43b11626a6dc-refs/heads/master@{#292238}
+    0178d4831bd36b5fb9ff477f03dc43b11626a6dc-refs/heads/main@{#292238}
   '''
   return FetchCommitPosition().revision
 
@@ -125,9 +125,9 @@ def ParseCommitPosition(commit_position):
   '''Parse a Chrome commit position into its components.
 
   Given a commit position like:
-    0178d4831bd36b5fb9ff477f03dc43b11626a6dc-refs/heads/master@{#292238}
+    0178d4831bd36b5fb9ff477f03dc43b11626a6dc-refs/heads/main@{#292238}
   Returns:
-    ("0178d4831bd36b5fb9ff477f03dc43b11626a6dc", "refs/heads/master", "292238")
+    ("0178d4831bd36b5fb9ff477f03dc43b11626a6dc", "refs/heads/main", "292238")
   '''
   m = re.match(r'([0-9a-fA-F]+)(?:-([^@]+)@{#(\d+)})?', commit_position)
   if m:

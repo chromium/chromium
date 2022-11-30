@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/filters/audio_timestamp_validator.h"
+
+#include <memory>
 
 namespace media {
 
@@ -136,8 +138,8 @@ void AudioTimestampValidator::RecordOutputDuration(
     DCHECK_NE(audio_base_ts_, kNoTimestamp);
     // SUBTLE: deliberately creating this with output buffer sample rate because
     // demuxer stream config is potentially stale for implicit AAC.
-    audio_output_ts_helper_.reset(
-        new AudioTimestampHelper(audio_buffer.sample_rate()));
+    audio_output_ts_helper_ =
+        std::make_unique<AudioTimestampHelper>(audio_buffer.sample_rate());
     audio_output_ts_helper_->SetBaseTimestamp(audio_base_ts_);
   }
 

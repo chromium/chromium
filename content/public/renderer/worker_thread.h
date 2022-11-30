@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_RENDERER_WORKER_THREAD_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -32,6 +31,9 @@ class CONTENT_EXPORT WorkerThread {
     virtual void WillStopCurrentWorkerThread() {}
   };
 
+  WorkerThread(const WorkerThread&) = delete;
+  WorkerThread& operator=(const WorkerThread&) = delete;
+
   // Adds/removes an Observer. Observers are stored per-thread, so it is only
   // valid to call these from a worker thread, and events will be dispatched on
   // that worker's thread.
@@ -48,7 +50,6 @@ class CONTENT_EXPORT WorkerThread {
 
  private:
   WorkerThread() {}
-  DISALLOW_COPY_AND_ASSIGN(WorkerThread);
 };
 
 }  // namespace content

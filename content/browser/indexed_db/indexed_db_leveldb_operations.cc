@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,22 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 using base::StringPiece;
@@ -48,40 +51,65 @@ class LDBComparator : public leveldb::Comparator {
 const base::FilePath::CharType kBlobExtension[] = FILE_PATH_LITERAL(".blob");
 const base::FilePath::CharType kIndexedDBExtension[] =
     FILE_PATH_LITERAL(".indexeddb");
+const base::FilePath::CharType kIndexedDBFile[] =
+    FILE_PATH_LITERAL("indexeddb");
 const base::FilePath::CharType kLevelDBExtension[] =
     FILE_PATH_LITERAL(".leveldb");
 
-// static
-base::FilePath GetBlobStoreFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
-  return base::FilePath()
-      .AppendASCII(origin_id)
-      .AddExtension(kIndexedDBExtension)
-      .AddExtension(kBlobExtension);
+bool ShouldUseLegacyFilePath(const storage::BucketLocator& bucket_locator) {
+  return bucket_locator.storage_key.IsFirstPartyContext() &&
+         bucket_locator.is_default;
 }
 
-// static
-base::FilePath GetLevelDBFileName(const url::Origin& origin) {
-  std::string origin_id = storage::GetIdentifierFromOrigin(origin);
-  return base::FilePath()
-      .AppendASCII(origin_id)
-      .AddExtension(kIndexedDBExtension)
-      .AddExtension(kLevelDBExtension);
+base::FilePath GetBlobStoreFileName(
+    const storage::BucketLocator& bucket_locator) {
+  if (ShouldUseLegacyFilePath(bucket_locator)) {
+    // First-party blob files, for legacy reasons, are stored at:
+    // {{first_party_data_path}}/{{serialized_origin}}.indexeddb.blob
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(
+            bucket_locator.storage_key.origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kBlobExtension);
+  }
+
+  // Third-party blob files are stored at:
+  // {{third_party_data_path}}/{{bucket_id}}/IndexedDB/indexeddb.blob
+  return base::FilePath(kIndexedDBFile).AddExtension(kBlobExtension);
 }
 
-base::FilePath ComputeCorruptionFileName(const url::Origin& origin) {
-  return GetLevelDBFileName(origin).Append(
-      FILE_PATH_LITERAL("corruption_info.json"));
+base::FilePath GetLevelDBFileName(
+    const storage::BucketLocator& bucket_locator) {
+  if (ShouldUseLegacyFilePath(bucket_locator)) {
+    // First-party leveldb files, for legacy reasons, are stored at:
+    // {{first_party_data_path}}/{{serialized_origin}}.indexeddb.leveldb
+    // TODO(crbug.com/1315371): Migrate all first party buckets to the new path.
+    return base::FilePath()
+        .AppendASCII(storage::GetIdentifierFromOrigin(
+            bucket_locator.storage_key.origin()))
+        .AddExtension(kIndexedDBExtension)
+        .AddExtension(kLevelDBExtension);
+  }
+
+  // Third-party leveldb files are stored at:
+  // {{third_party_data_path}}/{{bucket_id}}/IndexedDB/indexeddb.leveldb
+  return base::FilePath(kIndexedDBFile).AddExtension(kLevelDBExtension);
+}
+
+base::FilePath ComputeCorruptionFileName(
+    const storage::BucketLocator& bucket_locator) {
+  return GetLevelDBFileName(bucket_locator)
+      .Append(FILE_PATH_LITERAL("corruption_info.json"));
 }
 
 bool IsPathTooLong(storage::FilesystemProxy* filesystem,
                    const base::FilePath& leveldb_dir) {
-  base::Optional<int> limit =
+  absl::optional<int> limit =
       filesystem->GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     limit = 143;
 #else
     limit = 255;
@@ -105,16 +133,16 @@ bool IsPathTooLong(storage::FilesystemProxy* filesystem,
 
 std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
                                const base::FilePath& path_base,
-                               const url::Origin& origin) {
+                               const storage::BucketLocator& bucket_locator) {
   const base::FilePath info_path =
-      path_base.Append(indexed_db::ComputeCorruptionFileName(origin));
+      path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
   std::string message;
   if (IsPathTooLong(filesystem_proxy, info_path))
     return message;
 
   const int64_t kMaxJsonLength = 4096;
 
-  base::Optional<base::File::Info> file_info =
+  absl::optional<base::File::Info> file_info =
       filesystem_proxy->GetFileInfo(info_path);
   if (!file_info.has_value())
     return message;
@@ -123,17 +151,17 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
     return message;
   }
 
-  storage::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
+  base::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
       info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file_or_error.is_error()) {
+  if (file_or_error.has_value()) {
     auto& file = file_or_error.value();
     if (file.IsValid()) {
       std::string input_js(file_info->size, '\0');
       if (file_info->size ==
-          file.Read(0, base::data(input_js), file_info->size)) {
-        base::Optional<base::Value> val = base::JSONReader::Read(input_js);
+          file.Read(0, std::data(input_js), file_info->size)) {
+        absl::optional<base::Value> val = base::JSONReader::Read(input_js);
         if (val && val->is_dict()) {
-          std::string* s = val->FindStringKey("message");
+          std::string* s = val->GetDict().FindString("message");
           if (s)
             message = *s;
         }
@@ -500,7 +528,7 @@ bool FindGreatestKeyLessThanOrEqual(
   }
 
   do {
-    *found_key = it->Key().as_string();
+    *found_key = std::string(it->Key());
 
     // There can be several index keys that compare equal. We want the last one.
     *s = it->Next();
@@ -573,7 +601,7 @@ Status GetEarliestSweepTime(TransactionalLevelDBDatabase* db,
     time_micros = 0;
 
   DCHECK_GE(time_micros, 0);
-  *earliest_sweep += base::TimeDelta::FromMicroseconds(time_micros);
+  *earliest_sweep += base::Microseconds(time_micros);
 
   return s;
 }
@@ -608,7 +636,7 @@ Status GetEarliestCompactionTime(TransactionalLevelDBDatabase* db,
     time_micros = 0;
 
   DCHECK_GE(time_micros, 0);
-  *earliest_compaction += base::TimeDelta::FromMicroseconds(time_micros);
+  *earliest_compaction += base::Microseconds(time_micros);
 
   return s;
 }

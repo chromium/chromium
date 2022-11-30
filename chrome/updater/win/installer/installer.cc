@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,71 +13,42 @@
 
 #include "chrome/updater/win/installer/installer.h"
 
-// #define needed to link in RtlGenRandom(), a.k.a. SystemFunction036.  See the
-// "Community Additions" comment on MSDN here:
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa387694.aspx
-#define SystemFunction036 NTAPI SystemFunction036
-#include <NTSecAPI.h>
-#undef SystemFunction036
-
-#include <sddl.h>
 #include <shellapi.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+#include <shlobj.h>
 
-#include <initializer_list>
 #include <string>
 
 // TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
 // code size.
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
+#include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
-#include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/util_constants.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
-#include "chrome/updater/win/installer/regkey.h"
 #include "chrome/updater/win/tag_extractor.h"
+#include "chrome/updater/win/win_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
 using PathString = StackString<MAX_PATH>;
 
 namespace {
-
-// Initializes |temp_path| to "Temp" within the target directory, and
-// |unpack_path| to a random directory beginning with "source" within
-// |temp_path|. Returns false on error.
-bool CreateTemporaryAndUnpackDirectories(
-    installer::SelfCleaningTempDir* temp_path,
-    base::FilePath* unpack_path) {
-  DCHECK(temp_path && unpack_path);
-
-  base::FilePath temp_dir;
-  if (!base::PathService::Get(base::DIR_TEMP, &temp_dir))
-    return false;
-
-  if (!temp_path->Initialize(temp_dir, kTempPrefix)) {
-    PLOG(ERROR) << "Could not create temporary path.";
-    return false;
-  }
-  VLOG(1) << "Created path " << temp_path->path().value();
-
-  if (!base::CreateTemporaryDirInDir(temp_path->path(), L"source",
-                                     unpack_path)) {
-    PLOG(ERROR) << "Could not create temporary path for unpacked archive.";
-    return false;
-  }
-
-  return true;
-}
 
 // Returns the tag if the tag can be extracted. The tag is read from the
 // program file image used to create this process. Google is using UTF8 tags but
@@ -101,7 +72,7 @@ struct Context {
   const wchar_t* base_path = nullptr;
 
   // First output from call back method. Specifies the path of resource archive.
-  PathString* updater_resource_path = nullptr;
+  raw_ptr<PathString> updater_resource_path = nullptr;
 };
 
 // Calls CreateProcess with good default parameters and waits for the process to
@@ -209,30 +180,21 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   return exit_code;
 }
 
-// Executes updater.exe, waits for it to finish and returns the exit code.
-ProcessExitResult RunSetup(const Configuration& configuration,
-                           const wchar_t* setup_path) {
-  PathString setup_exe;
+ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
+                                            wchar_t* cmd_line_args,
+                                            size_t cmd_line_args_capacity) {
+  DCHECK(cmd_line);
+  DCHECK(cmd_line_args);
+  DCHECK(cmd_line_args_capacity);
 
-  if (*setup_path != L'\0') {
-    if (!setup_exe.assign(setup_path))
-      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-  }
+  *cmd_line_args = '\0';
+  CommandString args;
 
-  CommandString cmd_line;
-
-  // Put the quoted path to setup.exe in cmd_line first.
-  if (!cmd_line.assign(L"\"") || !cmd_line.append(setup_exe.get()) ||
-      !cmd_line.append(L"\"")) {
-    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-  }
-
-  // Append the command line arguments this program has been invoked with.
+  // Append the command line arguments in `cmd_line` first.
   int num_args = 0;
-  wchar_t** const arg_list =
-      ::CommandLineToArgvW(::GetCommandLineW(), &num_args);
+  wchar_t** const arg_list = ::CommandLineToArgvW(cmd_line, &num_args);
   for (int i = 1; i != num_args; ++i) {
-    if (!cmd_line.append(L" ") || !cmd_line.append(arg_list[i])) {
+    if (!args.append(L" ") || !args.append(arg_list[i])) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }
@@ -253,196 +215,146 @@ ProcessExitResult RunSetup(const Configuration& configuration,
       }()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      if (!cmd_line.append(L" --tag=") ||
-          !cmd_line.append(base::SysUTF8ToWide(tag).c_str())) {
+      if (!args.append(L" --tag=") ||
+          !args.append(base::SysUTF8ToWide(tag).c_str())) {
         return ProcessExitResult(COMMAND_STRING_OVERFLOW);
       }
     }
   }
 
+  // If there is nothing, return an error.
+  if (!args.length()) {
+    return ProcessExitResult(INVALID_OPTION);
+  }
+
   // Append logging-related arguments for debugging purposes, at least for
   // now.
-  if (!cmd_line.append(L" --enable-logging --vmodule=*/chrome/updater/*=2")) {
+  if (!args.append(
+          L" --enable-logging "
+          L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2")) {
+    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+  }
+
+  SafeStrCopy(cmd_line_args, cmd_line_args_capacity, args.get());
+  return ProcessExitResult(SUCCESS_EXIT_CODE);
+}
+
+// Executes updater.exe, waits for it to finish and returns the exit code.
+ProcessExitResult RunSetup(const wchar_t* setup_path,
+                           const wchar_t* cmd_line_args) {
+  DCHECK(setup_path && *setup_path);
+  DCHECK(cmd_line_args && *cmd_line_args);
+
+  PathString setup_exe;
+
+  if (!setup_exe.assign(setup_path))
+    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+
+  CommandString cmd_line;
+
+  // Put the quoted path to setup.exe in cmd_line first, then the args.
+  if (!cmd_line.assign(L"\"") || !cmd_line.append(setup_exe.get()) ||
+      !cmd_line.append(L"\"") || !cmd_line.append(cmd_line_args)) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
   return RunProcessAndWait(setup_exe.get(), cmd_line.get());
 }
 
-// Returns true if the supplied path supports ACLs.
-bool IsAclSupportedForPath(const wchar_t* path) {
-  PathString volume;
-  DWORD flags = 0;
-  return ::GetVolumePathName(path, volume.get(), DWORD{volume.capacity()}) &&
-         ::GetVolumeInformation(volume.get(), nullptr, 0, nullptr, nullptr,
-                                &flags, nullptr, 0) &&
-         (flags & FILE_PERSISTENT_ACLS);
-}
+ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
+  DCHECK(!::IsUserAnAdmin());
+  DCHECK(!command_line.HasSwitch(kCmdLinePrefersUser));
 
-// Retrieves the SID of the default owner for objects created by this user
-// token (accounting for different behavior under UAC elevation, etc.).
-// NOTE: On success the |sid| parameter must be freed with LocalFree().
-bool GetCurrentOwnerSid(wchar_t** sid) {
-  HANDLE token;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
-    return false;
-
-  DWORD size = 0;
-  bool result = false;
-  // We get the TokenOwner rather than the TokenUser because e.g. under UAC
-  // elevation we want the admin to own the directory rather than the user.
-  ::GetTokenInformation(token, TokenOwner, nullptr, 0, &size);
-  if (size && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-    if (TOKEN_OWNER* owner =
-            reinterpret_cast<TOKEN_OWNER*>(::LocalAlloc(LPTR, size))) {
-      if (::GetTokenInformation(token, TokenOwner, owner, size, &size))
-        result = !!::ConvertSidToStringSid(owner->Owner, sid);
-      ::LocalFree(owner);
-    }
-  }
-  ::CloseHandle(token);
-  return result;
-}
-
-// Populates |sd| suitable for use when creating directories within |path| with
-// ACLs allowing access to only the current owner, admin, and system.
-// NOTE: On success the |sd| parameter must be freed with LocalFree().
-bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
-  *sd = nullptr;
-  // We succeed without doing anything if ACLs aren't supported.
-  if (!IsAclSupportedForPath(path))
-    return true;
-
-  wchar_t* sid = nullptr;
-  if (!GetCurrentOwnerSid(&sid))
-    return false;
-
-  // The largest SID is under 200 characters, so 300 should give enough slack.
-  StackString<300> sddl;
-  bool result = sddl.append(
-                    L"D:PAI"         // Protected, auto-inherited DACL.
-                    L"(A;;FA;;;BA)"  // Admin: Full control.
-                    L"(A;OIIOCI;GA;;;BA)"
-                    L"(A;;FA;;;SY)"  // System: Full control.
-                    L"(A;OIIOCI;GA;;;SY)"
-                    L"(A;OIIOCI;GA;;;CO)"  // Owner: Full control.
-                    L"(A;;FA;;;") &&
-                sddl.append(sid) && sddl.append(L")");
-  if (result) {
-    result = !!::ConvertStringSecurityDescriptorToSecurityDescriptor(
-        sddl.get(), SDDL_REVISION_1, sd, nullptr);
+  if (command_line.HasSwitch(kCmdLineExpectElevated)) {
+    VLOG(1) << __func__ << "Unexpected elevation loop! "
+            << command_line.GetCommandLineString();
+    return ProcessExitResult(UNABLE_TO_ELEVATE_METAINSTALLER);
   }
 
-  ::LocalFree(sid);
-  return result;
+  // The metainstaller is elevated because unpacking its files and running
+  // updater.exe must happen from a secure directory.
+  HResultOr<DWORD> result =
+      RunElevated(command_line.GetProgram(), [&command_line]() {
+        base::CommandLine elevate_command_line = command_line;
+        elevate_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
+        return elevate_command_line.GetArgumentsString();
+      }());
+
+  return result.has_value()
+             ? ProcessExitResult(result.value())
+             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS,
+                                 result.error());
 }
 
-// Creates a temporary directory under |base_path| and returns the full path
-// of created directory in |work_dir|. If successful return true, otherwise
-// false.  When successful, the returned |work_dir| will always have a trailing
-// backslash and this function requires that |base_path| always includes a
-// trailing backslash as well.
-// We do not use GetTempFileName here to avoid running into AV software that
-// might hold on to the temp file as soon as we create it and then we can't
-// delete it and create a directory in its place.  So, we use our own mechanism
-// for creating a directory with a hopefully-unique name.  In the case of a
-// collision, we retry a few times with a new name before failing.
-bool CreateWorkDir(const wchar_t* base_path,
-                   PathString* work_dir,
-                   ProcessExitResult* exit_code) {
-  *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
-  if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix))
-    return false;
+ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
+  DCHECK(::IsUserAnAdmin());
 
-  // Store the location where we'll append the id.
-  size_t end = work_dir->length();
-
-  // Check if we'll have enough buffer space to continue.
-  // The name of the directory will use up 11 chars and then we need to append
-  // the trailing backslash and a terminator.  We've already added the prefix
-  // to the buffer, so let's just make sure we've got enough space for the rest.
-  if ((work_dir->capacity() - end) < (_countof("fffff.tmp") + 1))
-    return false;
-
-  // Add an ACL if supported by the filesystem. Otherwise system-level installs
-  // are potentially vulnerable to file squatting attacks.
-  SECURITY_ATTRIBUTES sa = {};
-  sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-  if (!SetSecurityDescriptor(base_path, &sa.lpSecurityDescriptor)) {
-    *exit_code =
-        ProcessExitResult(UNABLE_TO_SET_DIRECTORY_ACL, ::GetLastError());
-    return false;
+  if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
+    VLOG(1) << __func__ << "Unexpected de-elevation loop! "
+            << command_line.GetCommandLineString();
+    return ProcessExitResult(UNABLE_TO_DE_ELEVATE_METAINSTALLER);
   }
 
-  unsigned int id;
-  *exit_code = ProcessExitResult(UNABLE_TO_GET_WORK_DIRECTORY);
-  for (int max_attempts = 10; max_attempts; --max_attempts) {
-    ::RtlGenRandom(&id, sizeof(id));  // Try a different name.
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  DCHECK(com_initializer.Succeeded());
 
-    // This converts 'id' to a string in the format "78563412" on windows
-    // because of little endianness, but we don't care since it's just
-    // a name. Since we checked capaity at the front end, we don't need to
-    // duplicate it here.
-    HexEncode(&id, sizeof(id), work_dir->get() + end,
-              work_dir->capacity() - end);
-
-    // We only want the first 5 digits to remain within the 8.3 file name
-    // format (compliant with previous implementation).
-    work_dir->truncate_at(end + 5);
-
-    // for consistency with the previous implementation which relied on
-    // GetTempFileName, we append the .tmp extension.
-    work_dir->append(L".tmp");
-
-    if (::CreateDirectory(work_dir->get(),
-                          sa.lpSecurityDescriptor ? &sa : nullptr)) {
-      // Yay!  Now let's just append the backslash and we're done.
-      work_dir->append(L"\\");
-      *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-      break;
-    }
-  }
-
-  if (sa.lpSecurityDescriptor)
-    LocalFree(sa.lpSecurityDescriptor);
-  return exit_code->IsSuccess();
-}
-
-// Creates and returns a temporary directory in |work_dir| that can be used to
-// extract updater payload. |work_dir| ends with a path separator.
-bool GetWorkDir(HMODULE module,
-                PathString* work_dir,
-                ProcessExitResult* exit_code) {
-  PathString base_path;
-  DWORD len = ::GetTempPath(DWORD{base_path.capacity()}, base_path.get());
-  if (!len || len >= base_path.capacity() ||
-      !CreateWorkDir(base_path.get(), work_dir, exit_code)) {
-    // Problem creating the work dir under TEMP path, so try using the
-    // current directory as the base path.
-    len = ::GetModuleFileName(module, base_path.get(),
-                              DWORD{base_path.capacity()});
-    if (len >= base_path.capacity() || !len)
-      return false;  // Can't even get current directory? Return an error.
-
-    wchar_t* name = GetNameFromPathExt(base_path.get(), len);
-    if (name == base_path.get())
-      return false;  // There was no directory in the string!  Bail out.
-
-    *name = L'\0';
-
-    *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-    return CreateWorkDir(base_path.get(), work_dir, exit_code);
-  }
-  return true;
-}
-
-// Returns true for ".." and "." directories.
-bool IsCurrentOrParentDirectory(const wchar_t* dir) {
-  return dir && dir[0] == L'.' &&
-         (dir[1] == L'\0' || (dir[1] == L'.' && dir[2] == L'\0'));
+  // Deelevate the metainstaller.
+  HRESULT hr =
+      RunDeElevated(command_line.GetProgram().value(), [&command_line]() {
+        base::CommandLine de_elevate_command_line = command_line;
+        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+        return de_elevate_command_line.GetArgumentsString();
+      }());
+  return SUCCEEDED(hr)
+             ? ProcessExitResult(SUCCESS_EXIT_CODE)
+             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
 }
 
 ProcessExitResult WMain(HMODULE module) {
+  CHECK(EnableSecureDllLoading());
+  EnableProcessHeapMetadataProtection();
+
+  if (base::win::GetVersion() < base::win::Version::WIN7) {
+    return ProcessExitResult(UNSUPPORTED_WINDOWS_VERSION);
+  }
+
+  CommandString cmd_line_args;
+  ProcessExitResult args_result = BuildCommandLineArguments(
+      ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());
+  if (args_result.exit_code != SUCCESS_EXIT_CODE)
+    return args_result;
+
+  // Both `RunElevated` and `RunDeElevated` use shell APIs to run the process,
+  // which can have issues with relative paths. So we use the full exe path for
+  // the program in the command line.
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+    return ProcessExitResult(UNABLE_TO_GET_EXE_PATH);
+  const base::CommandLine command_line = base::CommandLine::FromString(
+      base::StrCat({L"\"", exe_path.value(), L"\" ", cmd_line_args.get()}));
+
+  const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
+
+  if (!::IsUserAnAdmin() && scope == UpdaterScope::kSystem) {
+    ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
+    if (run_elevated_result.exit_code !=
+            RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
+        !IsPrefersForCommandLine(command_line)) {
+      return run_elevated_result;
+    }
+
+    // "needsadmin=prefers" case: Could not elevate. So fall through to
+    // install as a per-user app.
+    if (!cmd_line_args.append(L" --") ||
+        !cmd_line_args.append(
+            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
+  } else if (::IsUserAnAdmin() && scope == UpdaterScope::kUser && IsUACOn()) {
+    return HandleRunDeElevated(command_line);
+  }
+
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
   // Parse configuration from the command line and resources.
@@ -456,13 +368,14 @@ ProcessExitResult WMain(HMODULE module) {
 
   // First get a path where we can extract the resource payload, which is
   // a compressed LZMA archive of a single file.
-  base::ScopedTempDir base_path_owner;
-  PathString base_path;
-  if (!GetWorkDir(module, &base_path, &exit_code))
-    return exit_code;
-  if (!base_path_owner.Set(base::FilePath(base_path.get()))) {
-    ::DeleteFile(base_path.get());
+  absl::optional<base::ScopedTempDir> base_path_owner = CreateSecureTempDir();
+  if (!base_path_owner)
     return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+
+  PathString base_path;
+  if (!base_path.assign(
+          base_path_owner->GetPath().AsEndingWithSeparator().value().c_str())) {
+    return ProcessExitResult(PATH_STRING_OVERFLOW);
   }
 
   PathString compressed_archive;
@@ -470,10 +383,11 @@ ProcessExitResult WMain(HMODULE module) {
                                     &compressed_archive);
 
   // Create a temp folder where the archives are unpacked.
-  base::FilePath unpack_path;
-  installer::SelfCleaningTempDir temp_path;
-  if (!CreateTemporaryAndUnpackDirectories(&temp_path, &unpack_path))
+  absl::optional<base::ScopedTempDir> temp_path = CreateSecureTempDir();
+  if (!temp_path)
     return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+
+  const base::FilePath unpack_path = temp_path->GetPath();
 
   // Unpack the compressed archive to extract the uncompressed archive file.
   UnPackStatus unpack_status =
@@ -493,7 +407,8 @@ ProcessExitResult WMain(HMODULE module) {
   // While unpacking the binaries, we paged in a whole bunch of memory that
   // we don't need anymore.  Let's give it back to the pool before running
   // setup.
-  ::SetProcessWorkingSetSize(::GetCurrentProcess(), SIZE_T{-1}, SIZE_T{-1});
+  ::SetProcessWorkingSetSize(::GetCurrentProcess(), static_cast<SIZE_T>(-1),
+                             static_cast<SIZE_T>(-1));
 
   PathString setup_path;
   if (!setup_path.assign(unpack_path.value().c_str()) ||
@@ -501,8 +416,23 @@ ProcessExitResult WMain(HMODULE module) {
     exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
   }
 
-  if (exit_code.IsSuccess())
-    exit_code = RunSetup(configuration, setup_path.get());
+  if (exit_code.IsSuccess()) {
+    exit_code = RunSetup(setup_path.get(), cmd_line_args.get());
+
+    // Because there is a race condition between the exit of the setup process
+    // and deleting its program file, the scoped temporary directory may fail
+    // to clean up the directory because the directory is not empty. To avoid
+    // this race condition, delete the program file before returning from the
+    // function.
+    base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(5);
+    while (base::TimeTicks::Now() < deadline) {
+      if (base::DeleteFile(base::FilePath(setup_path.get()))) {
+        return exit_code;
+      }
+      base::PlatformThread::Sleep(base::Milliseconds(100));
+    }
+    VLOG(1) << "Setup file can leak on file system: " << setup_path.get();
+  }
 
   return exit_code;
 }

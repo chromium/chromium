@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,12 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_BEGIN_FRAME_SOURCE_WEBVIEW_H_
 
 #include <memory>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
@@ -28,15 +31,18 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
 
   // Sets parent of this BeginFrameSource
   void SetParentSource(BeginFrameSourceWebView* parent);
+  bool inside_begin_frame() { return inside_begin_frame_; }
 
   // Schedules BeginFrame completion callback on root begin frame source.
   virtual void AddBeginFrameCompletionCallback(base::OnceClosure callback);
+
+  // Returns last dispatched begin frame args.
+  const viz::BeginFrameArgs& LastDispatchedBeginFrameArgs();
 
  protected:
   void ObserveBeginFrameSource(viz::BeginFrameSource* begin_frame_source);
 
   virtual void AfterBeginFrame() {}
-  bool inside_begin_frame() { return inside_begin_frame_; }
 
  private:
   class BeginFrameObserver;
@@ -49,15 +55,15 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
     void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
    private:
-    BeginFrameSourceWebView* const owner_;
+    const raw_ptr<BeginFrameSourceWebView> owner_;
   };
 
   void SendBeginFrame(const viz::BeginFrameArgs& args);
   void OnNeedsBeginFrames(bool needs_begin_frames);
 
   BeginFrameSourceClient bfs_client_;
-  viz::BeginFrameSource* observed_begin_frame_source_ = nullptr;
-  BeginFrameSourceWebView* parent_ = nullptr;
+  raw_ptr<viz::BeginFrameSource> observed_begin_frame_source_ = nullptr;
+  raw_ptr<BeginFrameSourceWebView> parent_ = nullptr;
   std::unique_ptr<BeginFrameObserver> parent_observer_;
   bool inside_begin_frame_ = false;
 

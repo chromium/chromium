@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -35,7 +34,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -52,6 +51,11 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
                             bool require_native_initiated_connections,
                             const std::string& connect_id,
                             const std::string& error_arg);
+
+  NativeProcessLauncherImpl(const NativeProcessLauncherImpl&) = delete;
+  NativeProcessLauncherImpl& operator=(const NativeProcessLauncherImpl&) =
+      delete;
+
   ~NativeProcessLauncherImpl() override;
 
   void Launch(const GURL& origin,
@@ -67,6 +71,10 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
          bool require_native_initiated_connections,
          const std::string& connect_id,
          const std::string& error_arg);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Launch(const GURL& origin,
                 const std::string& native_host_name,
                 LaunchedCallback callback);
@@ -101,17 +109,13 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
     const std::string connect_id_;
     const std::string error_arg_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Handle of the native window corresponding to the extension.
     intptr_t window_handle_;
-#endif // OS_WIN
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
+#endif  // BUILDFLAG(IS_WIN)
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeProcessLauncherImpl);
 };
 
 NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,
@@ -127,11 +131,12 @@ NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,
           require_native_initiated_connections),
       connect_id_(connect_id),
       error_arg_(error_arg)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       ,
       window_handle_(window_handle)
-#endif // OS_WIN
-{}
+#endif  // BUILDFLAG(IS_WIN)
+{
+}
 
 NativeProcessLauncherImpl::Core::~Core() {
   DCHECK(detached_);
@@ -206,14 +211,14 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
   if (!host_path.IsAbsolute()) {
     // On Windows host path is allowed to be relative to the location of the
     // manifest file. On all other platforms the path must be absolute.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     host_path = manifest_path.DirName().Append(host_path);
-#else  // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
     LOG(WARNING) << "Native messaging host path must be absolute for "
                  << native_host_name;
     PostErrorResult(std::move(callback), RESULT_NOT_FOUND);
     return;
-#endif  // !defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   // In case when the manifest file is there, but the host binary doesn't exist
@@ -235,10 +240,10 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
 
   // Pass handle of the native view window to the native messaging host. This
   // way the host will be able to create properly focused UI windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   command_line.AppendArg(
       base::StringPrintf("--parent-window=%" PRIdPTR, window_handle_));
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   bool send_connect_id = false;
   if (!error_arg_.empty()) {
@@ -262,13 +267,13 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
                                             profile_directory_.BaseName());
     reconnect_command_line.AppendSwitchPath(::switches::kUserDataDir,
                                             profile_directory_.DirName());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     reconnect_command_line.AppendArg(
         ::switches::kPrefetchArgumentBrowserBackground);
 #endif
     base::Value args(base::Value::Type::LIST);
     for (const auto& arg : reconnect_command_line.argv()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       args.Append(base::WideToUTF8(arg));
 #else
       args.Append(arg);
@@ -370,7 +375,7 @@ std::unique_ptr<NativeProcessLauncher> NativeProcessLauncher::CreateDefault(
     const std::string& connect_id,
     const std::string& error_arg) {
   intptr_t window_handle = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   window_handle = reinterpret_cast<intptr_t>(
       views::HWNDForNativeView(native_view));
 #endif

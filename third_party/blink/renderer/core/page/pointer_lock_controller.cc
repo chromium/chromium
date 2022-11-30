@@ -29,18 +29,20 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 namespace blink {
@@ -58,9 +60,9 @@ bool PointerLockController::RequestPointerLock(Element* target,
   window->GetFrame()->GetWidgetForLocalRoot()->RequestMouseLock(
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
       /*unadjusted_movement_requested=*/false,
-      WTF::Bind(&PointerLockController::LockRequestCallback,
-                WrapWeakPersistent(this), std::move(callback),
-                /*unadjusted_movement_requested=*/false));
+      WTF::BindOnce(&PointerLockController::LockRequestCallback,
+                    WrapWeakPersistent(this), std::move(callback),
+                    /*unadjusted_movement_requested=*/false));
   lock_pending_ = true;
   element_ = target;
   return true;
@@ -95,15 +97,22 @@ ScriptPromise PointerLockController::RequestPointerLock(
           network::mojom::blink::WebSandboxFlags::kPointerLock)) {
     // FIXME: This message should be moved off the console once a solution to
     // https://bugs.webkit.org/show_bug.cgi?id=103274 exists.
-    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "Blocked pointer lock on an element because the element's frame is "
-        "sandboxed and the 'allow-pointer-lock' permission is not set."));
+    if (!window->GetFrame()->IsInFencedFrameTree()) {
+      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kSecurity,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "Blocked pointer lock on an element because the element's frame is "
+          "sandboxed and the 'allow-pointer-lock' permission is not set."));
+    }
     EnqueueEvent(event_type_names::kPointerlockerror, target);
     exception_state.ThrowSecurityError(
-        "Blocked pointer lock on an element because the element's frame is "
-        "sandboxed and the 'allow-pointer-lock' permission is not set.",
+        window->GetFrame()->IsInFencedFrameTree()
+            ? "Blocked pointer lock on an element because the element is "
+              "contained "
+              "in a fence frame tree."
+            : "Blocked pointer lock on an element because the element's frame "
+              "is "
+              "sandboxed and the 'allow-pointer-lock' permission is not set.",
         "");
     return promise;
   }
@@ -130,11 +139,11 @@ ScriptPromise PointerLockController::RequestPointerLock(
 
       mouse_lock_context_->RequestMouseLockChange(
           unadjusted_movement_requested,
-          WTF::Bind(
+          WTF::BindOnce(
               &PointerLockController::ChangeLockRequestCallback,
               WrapWeakPersistent(this), WrapWeakPersistent(target),
-              WTF::Bind(&PointerLockController::ProcessResultScriptPromise,
-                        WrapPersistent(resolver)),
+              WTF::BindOnce(&PointerLockController::ProcessResultScriptPromise,
+                            WrapPersistent(resolver)),
               unadjusted_movement_requested));
       return promise;
     }
@@ -148,11 +157,12 @@ ScriptPromise PointerLockController::RequestPointerLock(
     window->GetFrame()->GetWidgetForLocalRoot()->RequestMouseLock(
         LocalFrame::HasTransientUserActivation(window->GetFrame()),
         unadjusted_movement_requested,
-        WTF::Bind(&PointerLockController::LockRequestCallback,
-                  WrapWeakPersistent(this),
-                  WTF::Bind(&PointerLockController::ProcessResultScriptPromise,
-                            WrapPersistent(resolver)),
-                  unadjusted_movement_requested));
+        WTF::BindOnce(
+            &PointerLockController::LockRequestCallback,
+            WrapWeakPersistent(this),
+            WTF::BindOnce(&PointerLockController::ProcessResultScriptPromise,
+                          WrapPersistent(resolver)),
+            unadjusted_movement_requested));
     lock_pending_ = true;
     element_ = target;
   }
@@ -182,7 +192,7 @@ void PointerLockController::LockRequestCallback(
                                  TaskType::kUserInteraction));
     // The browser might unlock the mouse for many reasons including closing
     // the tab, the user hitting esc, the page losing focus, and more.
-    mouse_lock_context_.set_disconnect_handler(WTF::Bind(
+    mouse_lock_context_.set_disconnect_handler(WTF::BindOnce(
         &PointerLockController::ExitPointerLock, WrapWeakPersistent(this)));
   }
   ProcessResult(std::move(callback), unadjusted_movement_requested, result);
@@ -368,8 +378,8 @@ void PointerLockController::DispatchLockedMouseEvent(
 }
 
 void PointerLockController::GetPointerLockPosition(
-    FloatPoint* lock_position,
-    FloatPoint* lock_screen_position) {
+    gfx::PointF* lock_position,
+    gfx::PointF* lock_screen_position) {
   if (element_ && !lock_pending_) {
     DCHECK(lock_position);
     DCHECK(lock_screen_position);

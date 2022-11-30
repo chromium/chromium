@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,21 @@
 @protocol GREYMatcher;
 
 namespace ntp_home {
-// Returns the view corresponding to the ContentSuggestionsViewController.
-// Returns nil if it is not in the view hierarchy.
+// Returns the primary collection view of the new tab page. Returns nil if it is
+// not in the view hierarchy.
 UICollectionView* CollectionView();
+
+// Returns the collection view of the content suggestions. Returns nil if it is
+// not in the view hierarchy.
+UICollectionView* ContentSuggestionsCollectionView();
 
 // Returns the view corresponding to the fake omnibox. Returns nil if it is not
 // in the view hierarchy.
 UIView* FakeOmnibox();
+
+// Returns the label corresponding to the Discover header label. Returns nil if
+// it is not in the view hierarchy.
+UILabel* DiscoverHeaderLabel();
 }  // namespace ntp_home
 
 namespace ntp_snippets {
@@ -30,7 +38,7 @@ class AdditionalSuggestionsHelper {
  public:
   AdditionalSuggestionsHelper(const GURL& suggestions_url);
 
-  // Calls the |callback| with 10 suggestions, with their url set to |url_|.
+  // Calls the `callback` with 10 suggestions, with their url set to `url_`.
   void SendAdditionalSuggestions(FetchDoneCallback* callback);
 
  private:

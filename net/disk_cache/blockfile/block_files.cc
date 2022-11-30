@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -156,10 +158,6 @@ bool BlockHeader::UsedMapBlock(int index, int size) {
 
   int byte_index = index / 8;
   uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);
-  uint8_t map_block = byte_map[byte_index];
-
-  if (index % 8 >= 4)
-    map_block >>= 4;
 
   STRESS_DCHECK((((1 << size) - 1) << (index % 8)) < 0x100);
   uint8_t to_clear = ((1 << size) - 1) << (index % 8);
@@ -259,12 +257,9 @@ BlockFileHeader* BlockHeader::Header() {
 
 // ------------------------------------------------------------------------
 
-BlockFiles::BlockFiles(const base::FilePath& path)
-    : init_(false), zero_buffer_(nullptr), path_(path) {}
+BlockFiles::BlockFiles(const base::FilePath& path) : path_(path) {}
 
 BlockFiles::~BlockFiles() {
-  if (zero_buffer_)
-    delete[] zero_buffer_;
   CloseFiles();
 }
 
@@ -273,7 +268,7 @@ bool BlockFiles::Init(bool create_files) {
   if (init_)
     return false;
 
-  thread_checker_.reset(new base::ThreadChecker);
+  thread_checker_ = std::make_unique<base::ThreadChecker>();
 
   block_files_.resize(kFirstAdditionalBlockFile);
   for (int16_t i = 0; i < kFirstAdditionalBlockFile; i++) {
@@ -346,19 +341,18 @@ void BlockFiles::DeleteBlock(Addr address, bool deep) {
   if (!address.is_initialized() || address.is_separate_file())
     return;
 
-  if (!zero_buffer_) {
-    zero_buffer_ = new char[Addr::BlockSizeForFileType(BLOCK_4K) * 4];
-    memset(zero_buffer_, 0, Addr::BlockSizeForFileType(BLOCK_4K) * 4);
-  }
   MappedFile* file = GetFile(address);
   if (!file)
     return;
+
+  if (zero_buffer_.empty())
+    zero_buffer_.resize(Addr::BlockSizeForFileType(BLOCK_4K) * 4, 0);
 
   size_t size = address.BlockSize() * address.num_blocks();
   size_t offset = address.start_block() * address.BlockSize() +
                   kBlockHeaderSize;
   if (deep)
-    file->Write(zero_buffer_, size, offset);
+    file->Write(zero_buffer_.data(), size, offset);
 
   BlockHeader file_header(file);
   file_header.DeleteMapBlock(address.start_block(), address.num_blocks());
@@ -383,24 +377,6 @@ void BlockFiles::CloseFiles() {
   block_files_.clear();
 }
 
-void BlockFiles::ReportStats() {
-  DCHECK(thread_checker_->CalledOnValidThread());
-  int used_blocks[kFirstAdditionalBlockFile];
-  int load[kFirstAdditionalBlockFile];
-  for (int i = 0; i < kFirstAdditionalBlockFile; i++) {
-    GetFileStats(i, &used_blocks[i], &load[i]);
-  }
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_0", used_blocks[0]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_1", used_blocks[1]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_2", used_blocks[2]);
-  UMA_HISTOGRAM_COUNTS_1M("DiskCache.Blocks_3", used_blocks[3]);
-
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_0", load[0], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_1", load[1], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_2", load[2], 101);
-  UMA_HISTOGRAM_ENUMERATION("DiskCache.BlockLoad_3", load[3], 101);
-}
-
 bool BlockFiles::IsValid(Addr address) {
 #ifdef NDEBUG
   return true;
@@ -418,8 +394,8 @@ bool BlockFiles::IsValid(Addr address) {
 
   static bool read_contents = false;
   if (read_contents) {
-    std::unique_ptr<char[]> buffer;
-    buffer.reset(new char[Addr::BlockSizeForFileType(BLOCK_4K) * 4]);
+    auto buffer =
+        std::make_unique<char[]>(Addr::BlockSizeForFileType(BLOCK_4K) * 4);
     size_t size = address.BlockSize() * address.num_blocks();
     size_t offset = address.start_block() * address.BlockSize() +
                     kBlockHeaderSize;
@@ -434,9 +410,9 @@ bool BlockFiles::IsValid(Addr address) {
 bool BlockFiles::CreateBlockFile(int index, FileType file_type, bool force) {
   base::FilePath name = Name(index);
   int flags = force ? base::File::FLAG_CREATE_ALWAYS : base::File::FLAG_CREATE;
-  flags |= base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_WRITE;
+  flags |= base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_WRITE;
 
-  scoped_refptr<File> file(new File(base::File(name, flags)));
+  auto file = base::MakeRefCounted<File>(base::File(name, flags));
   if (!file->IsValid())
     return false;
 
@@ -459,7 +435,7 @@ bool BlockFiles::OpenBlockFile(int index) {
   }
 
   base::FilePath name = Name(index);
-  scoped_refptr<MappedFile> file(new MappedFile());
+  auto file = base::MakeRefCounted<MappedFile>();
 
   if (!file->Init(name, kBlockHeaderSize)) {
     LOG(ERROR) << "Failed to open " << name.value();
@@ -617,11 +593,11 @@ bool BlockFiles::RemoveEmptyFile(FileType block_type) {
       // We get a new handle to the file and release the old one so that the
       // file gets unmmaped... so we can delete it.
       base::FilePath name = Name(file_index);
-      scoped_refptr<File> this_file(new File(false));
+      auto this_file = base::MakeRefCounted<File>(false);
       this_file->Init(name);
       block_files_[file_index] = nullptr;
 
-      int failure = DeleteCacheFile(name) ? 0 : 1;
+      int failure = base::DeleteFile(name) ? 0 : 1;
       UMA_HISTOGRAM_COUNTS_1M("DiskCache.DeleteFailed2", failure);
       if (failure)
         LOG(ERROR) << "Failed to delete " << name.value() << " from the cache.";
@@ -675,37 +651,6 @@ bool BlockFiles::FixBlockFileHeader(MappedFile* file) {
 
   header->updating = 0;
   return true;
-}
-
-// We are interested in the total number of blocks used by this file type, and
-// the max number of blocks that we can store (reported as the percentage of
-// used blocks). In order to find out the number of used blocks, we have to
-// substract the empty blocks from the total blocks for each file in the chain.
-void BlockFiles::GetFileStats(int index, int* used_count, int* load) {
-  int max_blocks = 0;
-  *used_count = 0;
-  *load = 0;
-  for (;;) {
-    if (!block_files_[index] && !OpenBlockFile(index))
-      return;
-
-    BlockFileHeader* header =
-        reinterpret_cast<BlockFileHeader*>(block_files_[index]->buffer());
-
-    max_blocks += header->max_entries;
-    int used = header->max_entries;
-    for (int i = 0; i < kMaxNumBlocks; i++) {
-      used -= header->empty[i] * (i + 1);
-      DCHECK_GE(used, 0);
-    }
-    *used_count += used;
-
-    if (!header->next_file)
-      break;
-    index = header->next_file;
-  }
-  if (max_blocks)
-    *load = *used_count * 100 / max_blocks;
 }
 
 base::FilePath BlockFiles::Name(int index) {

@@ -1,11 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//gpu/vulkan/features.gni")
-if (is_fuchsia) {
-  import("//build/config/fuchsia/generate_runner_scripts.gni")
-}
 
 group("demo") {
   deps = [
@@ -99,19 +96,4 @@ executable("skia_demo") {
     "//ui/gl/init",
     "//ui/ozone",
   ]
-}
-
-if (is_fuchsia) {
-  cr_fuchsia_package("ozone_demo_pkg") {
-    testonly = true
-    binary = ":ozone_demo"
-    package_name_override = "ozone_demo"
-    manifest = "//build/config/fuchsia/gfx_tests.cmx"
-  }
-
-  fuchsia_package_runner("ozone_demo_fuchsia") {
-    testonly = true
-    package = ":ozone_demo_pkg"
-    package_name_override = "ozone_demo"
-  }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -35,50 +36,83 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
       orientation);
 }
 
-IntSize StaticBitmapImage::PreferredDisplaySize() const {
-  if (orientation_.UsesWidthAsHeight())
-    return Size().TransposedSize();
-  else
-    return Size();
+gfx::Size StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
+  auto info = GetSkImageInfoInternal();
+  gfx::Size size(info.width(), info.height());
+  if (config.apply_orientation && orientation_.UsesWidthAsHeight())
+    size.Transpose();
+  return size;
 }
 
-void StaticBitmapImage::DrawHelper(
-    cc::PaintCanvas* canvas,
-    const PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    ImageClampingMode clamp_mode,
-    RespectImageOrientationEnum respect_orientation,
-    const PaintImage& image) {
-  FloatRect adjusted_src_rect = src_rect;
-  adjusted_src_rect.Intersect(SkRect::MakeWH(image.width(), image.height()));
+Vector<uint8_t> StaticBitmapImage::CopyImageData(const SkImageInfo& info,
+                                                 bool apply_orientation) {
+  if (info.isEmpty())
+    return {};
+  PaintImage paint_image = PaintImageForCurrentFrame();
+  if (paint_image.GetSkImageInfo().isEmpty())
+    return {};
+
+  wtf_size_t byte_length =
+      base::checked_cast<wtf_size_t>(info.computeMinByteSize());
+  if (byte_length > partition_alloc::MaxDirectMapped())
+    return {};
+  Vector<uint8_t> dst_buffer(byte_length);
+
+  bool read_pixels_successful =
+      paint_image.readPixels(info, dst_buffer.data(), info.minRowBytes(), 0, 0);
+  DCHECK(read_pixels_successful);
+  if (!read_pixels_successful)
+    return {};
+
+  // Orient the data, and re-read the pixels.
+  if (apply_orientation && !HasDefaultOrientation()) {
+    paint_image = Image::ResizeAndOrientImage(
+        paint_image, CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
+        kInterpolationNone);
+    read_pixels_successful = paint_image.readPixels(info, dst_buffer.data(),
+                                                    info.minRowBytes(), 0, 0);
+    DCHECK(read_pixels_successful);
+    if (!read_pixels_successful)
+      return {};
+  }
+
+  return dst_buffer;
+}
+
+void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
+                                   const cc::PaintFlags& flags,
+                                   const gfx::RectF& dst_rect,
+                                   const gfx::RectF& src_rect,
+                                   const ImageDrawOptions& draw_options,
+                                   const PaintImage& image) {
+  gfx::RectF adjusted_src_rect = src_rect;
+  adjusted_src_rect.Intersect(gfx::RectF(image.width(), image.height()));
 
   if (dst_rect.IsEmpty() || adjusted_src_rect.IsEmpty())
     return;  // Nothing to draw.
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, false);
-  FloatRect adjusted_dst_rect = dst_rect;
-  if (respect_orientation && orientation_ != ImageOrientationEnum::kDefault) {
+  gfx::RectF adjusted_dst_rect = dst_rect;
+  if (draw_options.respect_orientation &&
+      orientation_ != ImageOrientationEnum::kDefault) {
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
-    canvas->translate(adjusted_dst_rect.X(), adjusted_dst_rect.Y());
-    adjusted_dst_rect.SetLocation(FloatPoint());
+    canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
+    adjusted_dst_rect.set_origin(gfx::PointF());
 
     canvas->concat(AffineTransformToSkMatrix(
-        orientation_.TransformFromDefault(adjusted_dst_rect.Size())));
+        orientation_.TransformFromDefault(adjusted_dst_rect.size())));
 
-    if (orientation_.UsesWidthAsHeight()) {
-      adjusted_dst_rect =
-          FloatRect(adjusted_dst_rect.X(), adjusted_dst_rect.Y(),
-                    adjusted_dst_rect.Height(), adjusted_dst_rect.Width());
-    }
+    if (orientation_.UsesWidthAsHeight())
+      adjusted_dst_rect.set_size(gfx::TransposeSize(adjusted_dst_rect.size()));
   }
 
-  canvas->drawImageRect(image, adjusted_src_rect, adjusted_dst_rect, sampling,
-                        &flags,
-                        WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
+  canvas->drawImageRect(
+      image, gfx::RectFToSkRect(adjusted_src_rect),
+      gfx::RectFToSkRect(adjusted_dst_rect), draw_options.sampling_options,
+      &flags,
+      WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 }
 
 }  // namespace blink

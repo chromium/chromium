@@ -1,0 +1,119 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.device_activity;
+
+import "private_membership_rlwe.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// This proto represents the data transmitted over network
+// requests while reporting Device Actives to Fresnel server.
+
+// The possible channels for ChromeOS installations.
+// See details in //components/version_info/channel.h
+enum Channel {
+  CHANNEL_UNKNOWN = 0;
+  CHANNEL_CANARY = 1;
+  CHANNEL_DEV = 2;
+  CHANNEL_BETA = 3;
+  CHANNEL_STABLE = 4;
+}
+
+enum MarketSegment {
+  // Default segment, should not be in this state.
+  MARKET_SEGMENT_UNSPECIFIED = 0;
+  // Device is not yet enrolled, owned or have market segment available.
+  MARKET_SEGMENT_UNKNOWN = 1;
+  // Device is locally owned as a consumer device.
+  MARKET_SEGMENT_CONSUMER = 2;
+  // Device is enterprise enrolled but does not have enterprise market segment.
+  MARKET_SEGMENT_ENTERPRISE_ENROLLED_BUT_UNKNOWN = 3;
+  // Device is enterprise enrolled and has enterprise market segment.
+  MARKET_SEGMENT_ENTERPRISE = 4;
+  // Device is enterprise enrolled and has education market segment.
+  MARKET_SEGMENT_EDUCATION = 5;
+};
+
+// The Chrome OS device metadata which is sent in PSM import requests.
+// Each new field to this message requires privacy approval.
+// Next ID: 6
+message DeviceMetadata {
+  // Chrome OS Hardware IDs (HWIDs) are strings that uniquely identify the
+  // hardware configuration of a Chrome OS device.
+  // See: go/gvc-g3/logs/chromeos-metrics.md
+  optional string hardware_id = 1;
+
+  // Represent the current release milestone of the ChromeOS device.
+  // See chrome://version -> Google Chrome:
+  // i.e. 96.0.4664.55 (Official Build) (x86_64) would set field as "96".
+  optional string chromeos_version = 2;
+
+  // Country code is represented by a 2-letter string (aka ISO 3166-1).
+  // i.e. US for United States of America, CA for Canada.
+  optional string country_code = 3;
+
+  // Device market segment is one of the northstar breakout dimensions for
+  // active device counting.
+  optional MarketSegment market_segment = 4;
+
+  // ChromeOS channel is used to determine the breakdown of devices that are
+  // coming from canary, dev, beta, stable, or unknown channels.
+  // This can be used with the ChromeOS version in order to determine
+  // questions like, what percentage of devices are in the M100 stable channel.
+  optional Channel chromeos_channel = 5;
+}
+
+// This proto will represent the data sent to Fresnel used to generate a PSM
+// import request on the server side.
+// Next ID: 5
+message ImportDataRequest {
+  // The Device active ping window timestamp depending on the RlweUseCase.
+  // This is the timestamp window of the unencrypted plaintext identifier.
+  optional string window_identifier = 1;
+
+  // Device active metadata sent along with active pings for counting purposes.
+  optional DeviceMetadata device_metadata = 2;
+
+  // The name of the use case associated with the plaintext_id.
+  optional private_membership.rlwe.RlweUseCase use_case = 3;
+
+  // The plaintext identifier.
+  optional string plaintext_identifier = 4;
+
+  // The plaintext identifiers - value pair to be imported.
+  optional bytes value = 5;
+}
+
+// The request of PsmRlweOprf sent by the client for checking PSM membership.
+// Next ID: 2
+message FresnelPsmRlweOprfRequest {
+  optional private_membership.rlwe.PrivateMembershipRlweOprfRequest
+      rlwe_oprf_request = 1;
+}
+
+// The response of PsmRlweOprf sent by the Fresnel Service for checking
+// PSM membership.
+// Next ID: 2
+message FresnelPsmRlweOprfResponse {
+  optional private_membership.rlwe.PrivateMembershipRlweOprfResponse
+      rlwe_oprf_response = 1;
+}
+
+// The request of PsmRlweQuery sent by the client for checking PSM membership.
+// Next ID: 2
+message FresnelPsmRlweQueryRequest {
+  optional private_membership.rlwe.PrivateMembershipRlweQueryRequest
+      rlwe_query_request = 1;
+}
+
+// The response of PsmRlweQuery sent by the Fresnel Service for checking
+// PSM membership.
+// Next ID: 2
+message FresnelPsmRlweQueryResponse {
+  optional private_membership.rlwe.PrivateMembershipRlweQueryResponse
+      rlwe_query_response = 1;
+}

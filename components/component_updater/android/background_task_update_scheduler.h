@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/component_updater/update_scheduler.h"
 
@@ -23,6 +22,11 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   static bool IsAvailable();
 
   BackgroundTaskUpdateScheduler();
+
+  BackgroundTaskUpdateScheduler(const BackgroundTaskUpdateScheduler&) = delete;
+  BackgroundTaskUpdateScheduler& operator=(
+      const BackgroundTaskUpdateScheduler&) = delete;
+
   ~BackgroundTaskUpdateScheduler() override;
 
   // UpdateScheduler:
@@ -45,8 +49,6 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   OnStopTaskCallback on_stop_;
 
   base::WeakPtrFactory<BackgroundTaskUpdateScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskUpdateScheduler);
 };
 
 }  // namespace component_updater

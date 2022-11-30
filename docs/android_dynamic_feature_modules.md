@@ -1,21 +1,88 @@
-# Dynamic Feature Modules (DFMs)
-
-[Android App bundles and Dynamic Feature Modules (DFMs)](https://developer.android.com/guide/app-bundle)
-is a Play Store feature that allows delivering pieces of an app when they are
-needed rather than at install time. We use DFMs to modularize Chrome and make
-Chrome's install size smaller.
+# App Bundles and Dynamic Feature Modules (DFMs)
 
 [TOC]
 
+## About Bundles
+[Android App bundles] is a Play Store feature that allows packaging an app as
+multiple `.apk` files, known as "splits". Bundles are zip files with an `.aab`
+extension. See [android_build_instructions.md#multiple-chrome-targets] for a
+list of buildable bundle targets.
 
-## Limitations
+Bundles provide three main advantages over monolithic `.apk` files:
+1. Language resources are split into language-specific `.apk` files, known as
+   "resource splits". Delivering only the active languages reduces the overhead
+   of UI strings.
+   * Resource splits can also be made on a per-screen-density basis (for drawables),
+     but Chrome has not taken advantage of this (yet).
+2. Features can be packaged into lazily loaded `.apk` files, known as
+   "feature splits". Chrome enables [isolated splits], which means feature
+   splits have no performance overhead until used (on Android O+ at least).
+3. Feature splits can be downloaded on-demand, saving disk space for users that
+   do not need the functionality they provide. These are known as
+   "Dynamic feature modules", or "DFMs".
+   * E.g. Chrome's VR support is packaged in this way, via the `vr` module.
 
-DFMs have the following limitations:
+You can inspect which `.apk` files are produced by a bundle target via:
+```
+out/Default/bin/${target_name} build-bundle-apks --output-apks foo.apks
+unzip -l foo.apks
+```
 
-* **WebView:** We don't support DFMs for WebView. If your feature is used by
-  WebView you cannot put it into a DFM.
+*** note
+Adding new features vis feature splits is highly encouraged when it makes sense
+to do so:
+ * Has a non-trivial amount of Dex (>50kb)
+ * Not needed on startup
+ * Has a small integration surface (calls into it must be done with reflection)
+ * Not used by WebView (WebView does not support DFMs)
+***
 
-## Getting started
+[android_build_instructions.md#multiple-chrome-targets]: android_build_instructions.md#multiple-chrome-targets
+[Android App Bundles]: https://developer.android.com/guide/app-bundle
+[isolated splits]: android_isolated_splits.md
+
+### Declaring App Bundles with GN Templates
+
+Here's an example that shows how to declare a simple bundle that contains a
+single base module, which enables language-based splits:
+
+```gn
+  android_app_bundle_module("foo_base_module") {
+    # Declaration are similar to android_apk here.
+    ...
+  }
+
+  android_app_bundle("foo_bundle") {
+    base_module_target = ":foo_base_module"
+
+    # The name of our bundle file (without any suffix).
+    bundle_name = "FooBundle"
+
+    # Enable language-based splits for this bundle. Which means that
+    # resources and assets specific to a given language will be placed
+    # into their own split APK in the final .apks archive.
+    enable_language_splits = true
+
+    # Proguard settings must be passed at the bundle, not module, target.
+    proguard_enabled = !is_java_debug
+  }
+```
+
+When generating the `foo_bundle` target with Ninja, you will end up with
+the following:
+
+  * The bundle file under `out/Release/apks/FooBundle.aab`
+
+  * A helper script called `out/Release/bin/foo_bundle`, which can be used
+    to install / launch / uninstall the bundle on local devices.
+
+    This works like an APK wrapper script (e.g. `foo_apk`). Use `--help`
+    to see all possible commands supported by the script.
+
+
+The remainder of this doc focuses on DFMs.
+
+## Declaring Dynamic Feature Modules (DFMs)
 
 This guide walks you through the steps to create a DFM called _Foo_ and add it
 to the Chrome bundles.
@@ -24,13 +91,6 @@ to the Chrome bundles.
 **Note:** To make your own module you'll essentially have to replace every
 instance of `foo`/`Foo`/`FOO` with `your_feature_name`/`YourFeatureName`/
 `YOUR_FEATURE_NAME`.
-***
-
-*** note
-**Note:** Chrome's bundles use the [android:isolatedSplits](https://developer.android.com/reference/android/R.attr#isolatedSplits)
-attribute. For more details and advice on when to create a DFM, see
-[go/isolated-splits-dev-guide](http://go/isolated-splits-dev-guide)
-**(Googlers only)**.
 ***
 
 ### Reference DFM
@@ -145,12 +205,14 @@ To build and install the Monochrome bundle to your connected device, run:
 
 ```shell
 $ autoninja -C $OUTDIR monochrome_public_bundle
-$ $OUTDIR/bin/monochrome_public_bundle install -m base -m foo
+$ $OUTDIR/bin/monochrome_public_bundle install -m foo
 ```
 
-This will install Foo alongside the rest of Chrome. The rest of Chrome is called
-_base_ module in the bundle world. The base module will always be put on the
-device when initially installing Chrome.
+This will install the `Foo` module, the `base` module, and all modules with an
+`AndroidManifest.xml` that:
+ * Sets `<module dist:onDemand="false">`, or
+ * Has `<dist:delivery>` conditions that are satisfied by the device being
+   installed to.
 
 *** note
 **Note:** The install script may install more modules than you specify, e.g.
@@ -169,11 +231,20 @@ Then try installing the Monochrome bundle without your module and print the
 installed modules:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install -m base
+$ $OUTDIR/bin/monochrome_public_bundle install
 $ adb shell dumpsys package org.chromium.chrome | grep splits
 >   splits=[base, config.en]
 ```
 
+*** note
+The wrapper script's `install` command does approximately:
+```sh
+java -jar third_party/android_build_tools/bundletool/bundletool.jar build-apks --output tmp.apks ...
+java -jar third_party/android_build_tools/bundletool/bundletool.jar install-apks --apks tmp.apks
+```
+
+The `install-apks` command uses `adb install-multiple` under-the-hood.
+***
 
 ### Adding Java code
 
@@ -206,9 +277,7 @@ Next, define an implementation that goes into the module in the new file
 package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {
@@ -239,6 +308,12 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/foo/Foo.java",
   ]
+  deps = [
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+  ]
+  annotation_processor_deps =
+    [ "//components/module_installer/android:module_interface_processor" ]
 }
 ```
 
@@ -636,10 +711,8 @@ package org.chromium.chrome.browser.foo;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.foo.R;
 
-@UsedByReflection("FooModule")
 public class FooImpl implements Foo {
     @Override
     public void bar() {
@@ -725,7 +798,6 @@ install script). In production, however, we have to explicitly install the Foo
 DFM for users to get it. There are three install options: _on-demand_,
 _deferred_ and _conditional_.
 
-
 #### On-demand install
 
 On-demand requesting a module will try to download and install the
@@ -784,12 +856,13 @@ public static void installModuleWithUi(
 ```
 
 To test on-demand install, "fake-install" the DFM. It's fake because
-the DFM is not installed as a true split. Instead it will be emulated by Chrome.
+the DFM is not installed as a true split. Instead it will be emulated by play
+core's `--local-testing` [mode][play-core-local-testing].
 Fake-install and launch Chrome with the following command:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install -m base -f foo
-$ $OUTDIR/bin/monochrome_public_bundle launch --args="--fake-feature-module-install"
+$ $OUTDIR/bin/monochrome_public_bundle install -f foo
+$ $OUTDIR/bin/monochrome_public_bundle launch
 ```
 
 When running the install code, the Foo DFM module will be emulated.
@@ -861,6 +934,13 @@ like this:
 </manifest>
 ```
 
+You can also specify no conditions to have your module always installed.
+You might want to do this in order to delay the performance implications
+of loading your module until its first use (true only on Android O+ where
+[android:isolatedSplits](https://developer.android.com/reference/android/R.attr#isolatedSplits)
+is supported. See [go/isolated-splits-dev-guide](http://go/isolated-splits-dev-guide)
+(googlers only).
+
 ### Metrics
 
 After adding your module to `AndroidFeatureModuleName` (see
@@ -878,12 +958,11 @@ metrics:
   install your module successfully after on-demand requesting it.
 
 
-### Integration test APK and Android K support
+### chrome_public_apk and Integration Tests
 
-On Android K we still ship an APK. To make the Foo feature available on Android
-K add its code to the APK build. For this, add the `java` target to
-the `chrome_public_common_apk_or_module_tmpl` in
-`//chrome/android/chrome_public_apk_tmpl.gni` like so:
+To make the Foo feature available in the non-bundle `chrome_public_apk`
+target, add the `java` target to the `chrome_public_common_apk_or_module_tmpl`
+in `//chrome/android/chrome_public_apk_tmpl.gni` like so:
 
 ```gn
 template("chrome_public_common_apk_or_module_tmpl") {
@@ -899,6 +978,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
 }
 ```
 
-This will also add Foo's Java to the integration test APK. You may also have to
-add `java` as a dependency of `chrome_test_java` if you want to call into Foo
-from test code.
+You may also have to add `java` as a dependency of `chrome_test_java` if you want
+to call into Foo from test code.
+
+[play-core-local-testing]: https://developer.android.com/guide/playcore/feature-delivery/on-demand#local-testing

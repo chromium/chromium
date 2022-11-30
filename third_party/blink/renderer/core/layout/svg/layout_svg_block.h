@@ -36,7 +36,7 @@ class SVGElement;
 //   flipped blocks direction in the "containing block".
 class LayoutSVGBlock : public LayoutBlockFlow {
  public:
-  explicit LayoutSVGBlock(Element*);
+  explicit LayoutSVGBlock(ContainerNode*);
 
   // These mapping functions map coordinates in HTML spaces.
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
@@ -84,6 +84,7 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   bool CheckForImplicitTransformChange(bool bbox_changed) const;
   bool UpdateTransformAfterLayout(bool bounds_changed);
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void UpdateFromStyle() override;
 
  private:
   // LayoutSVGBlock subclasses should use GetElement() instead.
@@ -91,12 +92,10 @@ class LayoutSVGBlock : public LayoutBlockFlow {
 
   PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
 
-  void UpdateFromStyle() final;
-
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 };
 
 }  // namespace blink

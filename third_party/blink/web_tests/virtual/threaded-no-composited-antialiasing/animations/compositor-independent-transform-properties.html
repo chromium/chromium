@@ -37,8 +37,9 @@ function assertComposited(properties, isComposited) {
   });
 }
 
-var assertIsComposited = function(properties) { return assertComposited(properties, true); }
-var assertIsNotComposited = function(properties) { return assertComposited(properties, false); }
+var assertIsComposited = function(properties) {
+  return assertComposited(properties, true);
+}
 
 assertIsComposited('transform');
 assertIsComposited('opacity');
@@ -52,14 +53,14 @@ assertIsComposited(['translate', 'opacity']);
 assertIsComposited(['rotate', 'opacity']);
 assertIsComposited(['scale', 'opacity']);
 
-assertIsNotComposited(['transform', 'translate']);
-assertIsNotComposited(['transform', 'scale']);
-assertIsNotComposited(['transform', 'rotate']);
+assertIsComposited(['transform', 'translate']);
+assertIsComposited(['transform', 'scale']);
+assertIsComposited(['transform', 'rotate']);
 
-assertIsNotComposited(['translate', 'scale']);
-assertIsNotComposited(['translate', 'rotate']);
-assertIsNotComposited(['rotate', 'scale']);
+assertIsComposited(['translate', 'scale']);
+assertIsComposited(['translate', 'rotate']);
+assertIsComposited(['rotate', 'scale']);
 
-assertIsNotComposited(['translate', 'rotate', 'scale']);
-assertIsNotComposited(['transform', 'translate', 'rotate', 'scale']);
+assertIsComposited(['translate', 'rotate', 'scale']);
+assertIsComposited(['transform', 'translate', 'rotate', 'scale']);
 </script>

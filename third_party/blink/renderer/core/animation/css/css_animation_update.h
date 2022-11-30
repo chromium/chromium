@@ -1,20 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_view_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -29,7 +32,7 @@ class NewCSSAnimation {
  public:
   NewCSSAnimation(AtomicString name,
                   size_t name_index,
-                  size_t position_index,
+                  wtf_size_t position_index,
                   const InertEffect& effect,
                   Timing timing,
                   StyleRuleKeyframes* style_rule,
@@ -53,7 +56,7 @@ class NewCSSAnimation {
 
   AtomicString name;
   size_t name_index;
-  size_t position_index;
+  wtf_size_t position_index;
   Member<const InertEffect> effect;
   Timing timing;
   Member<StyleRuleKeyframes> style_rule;
@@ -73,10 +76,10 @@ class UpdatedCSSAnimation {
                       StyleRuleKeyframes* style_rule,
                       AnimationTimeline* timeline,
                       const Vector<EAnimPlayState>& play_state_list)
-      : index(index),
+      : specified_timing(specified_timing),
+        index(index),
         animation(animation),
         effect(&effect),
-        specified_timing(specified_timing),
         style_rule(style_rule),
         style_rule_version(this->style_rule->Version()),
         timeline(timeline),
@@ -89,10 +92,10 @@ class UpdatedCSSAnimation {
     visitor->Trace(timeline);
   }
 
+  Timing specified_timing;
   wtf_size_t index;
   Member<Animation> animation;
   Member<const InertEffect> effect;
-  Timing specified_timing;
   Member<StyleRuleKeyframes> style_rule;
   unsigned style_rule_version;
   Member<AnimationTimeline> timeline;
@@ -114,6 +117,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
  public:
   CSSAnimationUpdate();
+  CSSAnimationUpdate(const CSSAnimationUpdate&) = delete;
+  CSSAnimationUpdate& operator=(const CSSAnimationUpdate&) = delete;
   ~CSSAnimationUpdate();
 
   void Copy(const CSSAnimationUpdate&);
@@ -169,6 +174,15 @@ class CORE_EXPORT CSSAnimationUpdate final {
     finished_transitions_.insert(property);
   }
 
+  void SetChangedScrollTimeline(CSSScrollTimeline* timeline) {
+    changed_scroll_timeline_ = timeline;
+    scroll_timeline_changed_ = true;
+  }
+
+  void SetChangedViewTimelines(CSSViewTimelineMap timelines) {
+    changed_view_timelines_ = std::move(timelines);
+  }
+
   const HeapVector<NewCSSAnimation>& NewAnimations() const {
     return new_animations_;
   }
@@ -210,58 +224,52 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return finished_transitions_;
   }
 
-  void AdoptActiveInterpolationsForCustomAnimations(
+  // A non-nullptr value means that the scroll-timeline was replaced with a
+  // a new one, a nullptr value means the scroll-timeline was removed,
+  // and absl::nullopt means there was no change.
+  absl::optional<CSSScrollTimeline*> ChangedScrollTimeline() const {
+    if (!scroll_timeline_changed_)
+      return absl::nullopt;
+    return changed_scroll_timeline_.Get();
+  }
+  absl::optional<CSSViewTimeline*> ChangedViewTimeline(
+      const AtomicString& name) const {
+    auto i = changed_view_timelines_.find(name);
+    if (i == changed_view_timelines_.end())
+      return absl::nullopt;
+    return i->value.Get();
+  }
+  const CSSViewTimelineMap& ChangedViewTimelines() const {
+    return changed_view_timelines_;
+  }
+  void AdoptActiveInterpolationsForAnimations(
       ActiveInterpolationsMap& new_map) {
-    new_map.swap(active_interpolations_for_custom_animations_);
+    new_map.swap(active_interpolations_for_animations_);
   }
-  void AdoptActiveInterpolationsForStandardAnimations(
+  void AdoptActiveInterpolationsForTransitions(
       ActiveInterpolationsMap& new_map) {
-    new_map.swap(active_interpolations_for_standard_animations_);
+    new_map.swap(active_interpolations_for_transitions_);
   }
-  void AdoptActiveInterpolationsForCustomTransitions(
-      ActiveInterpolationsMap& new_map) {
-    new_map.swap(active_interpolations_for_custom_transitions_);
+  const ActiveInterpolationsMap& ActiveInterpolationsForAnimations() const {
+    return active_interpolations_for_animations_;
   }
-  void AdoptActiveInterpolationsForStandardTransitions(
-      ActiveInterpolationsMap& new_map) {
-    new_map.swap(active_interpolations_for_standard_transitions_);
+  ActiveInterpolationsMap& ActiveInterpolationsForAnimations() {
+    return active_interpolations_for_animations_;
   }
-  const ActiveInterpolationsMap& ActiveInterpolationsForCustomAnimations()
-      const {
-    return active_interpolations_for_custom_animations_;
-  }
-  ActiveInterpolationsMap& ActiveInterpolationsForCustomAnimations() {
-    return active_interpolations_for_custom_animations_;
-  }
-  const ActiveInterpolationsMap& ActiveInterpolationsForStandardAnimations()
-      const {
-    return active_interpolations_for_standard_animations_;
-  }
-  ActiveInterpolationsMap& ActiveInterpolationsForStandardAnimations() {
-    return active_interpolations_for_standard_animations_;
-  }
-  const ActiveInterpolationsMap& ActiveInterpolationsForCustomTransitions()
-      const {
-    return active_interpolations_for_custom_transitions_;
-  }
-  const ActiveInterpolationsMap& ActiveInterpolationsForStandardTransitions()
-      const {
-    return active_interpolations_for_standard_transitions_;
+  const ActiveInterpolationsMap& ActiveInterpolationsForTransitions() const {
+    return active_interpolations_for_transitions_;
   }
 
-  bool IsEmpty() const {
-    return new_animations_.IsEmpty() &&
-           cancelled_animation_indices_.IsEmpty() &&
-           suppressed_animations_.IsEmpty() &&
-           animation_indices_with_pause_toggled_.IsEmpty() &&
-           animations_with_updates_.IsEmpty() && new_transitions_.IsEmpty() &&
-           cancelled_transitions_.IsEmpty() &&
-           finished_transitions_.IsEmpty() &&
-           active_interpolations_for_custom_animations_.IsEmpty() &&
-           active_interpolations_for_standard_animations_.IsEmpty() &&
-           active_interpolations_for_custom_transitions_.IsEmpty() &&
-           active_interpolations_for_standard_transitions_.IsEmpty() &&
-           updated_compositor_keyframes_.IsEmpty();
+  bool IsEmpty() const { return !HasUpdates() && !HasActiveInterpolations(); }
+
+  bool HasUpdates() const {
+    return !new_animations_.empty() || !cancelled_animation_indices_.empty() ||
+           !suppressed_animations_.empty() ||
+           !animation_indices_with_pause_toggled_.empty() ||
+           !animations_with_updates_.empty() || !new_transitions_.empty() ||
+           !cancelled_transitions_.empty() || !finished_transitions_.empty() ||
+           !updated_compositor_keyframes_.empty() || scroll_timeline_changed_ ||
+           !changed_view_timelines_.empty();
   }
 
   void Trace(Visitor* visitor) const {
@@ -270,13 +278,18 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(suppressed_animations_);
     visitor->Trace(animations_with_updates_);
     visitor->Trace(updated_compositor_keyframes_);
-    visitor->Trace(active_interpolations_for_custom_animations_);
-    visitor->Trace(active_interpolations_for_standard_animations_);
-    visitor->Trace(active_interpolations_for_custom_transitions_);
-    visitor->Trace(active_interpolations_for_standard_transitions_);
+    visitor->Trace(active_interpolations_for_animations_);
+    visitor->Trace(active_interpolations_for_transitions_);
+    visitor->Trace(changed_scroll_timeline_);
+    visitor->Trace(changed_view_timelines_);
   }
 
  private:
+  bool HasActiveInterpolations() const {
+    return !active_interpolations_for_animations_.empty() ||
+           !active_interpolations_for_transitions_.empty();
+  }
+
   // Order is significant since it defines the order in which new animations
   // will be started. Note that there may be multiple animations present
   // with the same name, due to the way in which we split up animations with
@@ -292,15 +305,16 @@ class CORE_EXPORT CSSAnimationUpdate final {
   HashSet<PropertyHandle> cancelled_transitions_;
   HashSet<PropertyHandle> finished_transitions_;
 
-  ActiveInterpolationsMap active_interpolations_for_custom_animations_;
-  ActiveInterpolationsMap active_interpolations_for_standard_animations_;
-  ActiveInterpolationsMap active_interpolations_for_custom_transitions_;
-  ActiveInterpolationsMap active_interpolations_for_standard_transitions_;
+  Member<CSSScrollTimeline> changed_scroll_timeline_ = nullptr;
+  bool scroll_timeline_changed_ = false;
+  CSSViewTimelineMap changed_view_timelines_;
+
+  ActiveInterpolationsMap active_interpolations_for_animations_;
+  ActiveInterpolationsMap active_interpolations_for_transitions_;
 
   friend class PendingAnimationUpdate;
-  DISALLOW_COPY_AND_ASSIGN(CSSAnimationUpdate);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_

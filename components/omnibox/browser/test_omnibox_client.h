@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -25,17 +26,9 @@ class TestOmniboxClient : public OmniboxClient {
   TestOmniboxClient(const TestOmniboxClient&) = delete;
   TestOmniboxClient& operator=(const TestOmniboxClient&) = delete;
 
-  const AutocompleteMatch& alternate_nav_match() const {
-    return alternate_nav_match_;
-  }
-
   // OmniboxClient:
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
-  std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternate_nav_match) override;
   bool IsPasteAndGoEnabled() const override;
   const SessionID& GetSessionID() const override;
   void SetBookmarkModel(bookmarks::BookmarkModel* bookmark_model);
@@ -45,6 +38,7 @@ class TestOmniboxClient : public OmniboxClient {
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   bool ShouldDefaultTypedNavigationsToHttps() const override;
   int GetHttpsPortForTesting() const override;
+  bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetFaviconForPageUrl(
@@ -54,10 +48,9 @@ class TestOmniboxClient : public OmniboxClient {
   GURL GetPageUrlForLastFaviconRequest() const;
 
  private:
-  AutocompleteMatch alternate_nav_match_;
   SessionID session_id_;
-  bookmarks::BookmarkModel* bookmark_model_;
-  TemplateURLService* template_url_service_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<TemplateURLService> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;
   GURL page_url_for_last_favicon_request_;

@@ -1,11 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/net/net_export_helper.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/values.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "build/build_config.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "extensions/buildflags/buildflags.h"
@@ -18,7 +22,7 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/service_providers_win.h"
@@ -33,7 +37,7 @@ std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile) {
   if (no_state_prefetch_manager) {
     value = no_state_prefetch_manager->CopyAsValue();
   } else {
-    value.reset(new base::DictionaryValue());
+    value = std::make_unique<base::DictionaryValue>();
     value->SetBoolean("enabled", false);
     value->SetBoolean("omnibox_enabled", false);
   }
@@ -53,12 +57,11 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
           extensions::ExtensionRegistry::Get(profile)
               ->GenerateInstalledExtensionsSet());
       for (const auto& extension : *extensions) {
-        std::unique_ptr<base::DictionaryValue> extension_info(
-            new base::DictionaryValue());
+        base::Value::Dict extension_info;
         bool enabled = extension_service->IsExtensionEnabled(extension->id());
         extensions::GetExtensionBasicInfo(extension.get(), enabled,
-                                          extension_info.get());
-        extension_list->Append(std::move(extension_info));
+                                          &extension_info);
+        extension_list->Append(base::Value(std::move(extension_info)));
       }
     }
   }
@@ -66,43 +69,41 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
   return extension_list;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
   auto service_providers = std::make_unique<base::DictionaryValue>();
 
   WinsockLayeredServiceProviderList layered_providers;
   GetWinsockLayeredServiceProviders(&layered_providers);
-  auto layered_provider_list = std::make_unique<base::ListValue>();
+  base::Value::List layered_provider_list;
   for (size_t i = 0; i < layered_providers.size(); ++i) {
-    auto service_dict = std::make_unique<base::DictionaryValue>();
-    service_dict->SetString("name",
-                            base::AsString16(layered_providers[i].name));
-    service_dict->SetInteger("version", layered_providers[i].version);
-    service_dict->SetInteger("chain_length", layered_providers[i].chain_length);
-    service_dict->SetInteger("socket_type", layered_providers[i].socket_type);
-    service_dict->SetInteger("socket_protocol",
-                             layered_providers[i].socket_protocol);
-    service_dict->SetString("path",
-                            base::WideToUTF8(layered_providers[i].path));
+    base::Value::Dict service_dict;
+    service_dict.Set("name", base::AsString16(layered_providers[i].name));
+    service_dict.Set("version", layered_providers[i].version);
+    service_dict.Set("chain_length", layered_providers[i].chain_length);
+    service_dict.Set("socket_type", layered_providers[i].socket_type);
+    service_dict.Set("socket_protocol", layered_providers[i].socket_protocol);
+    service_dict.Set("path", base::WideToUTF8(layered_providers[i].path));
 
-    layered_provider_list->Append(std::move(service_dict));
+    layered_provider_list.Append(std::move(service_dict));
   }
-  service_providers->Set("service_providers", std::move(layered_provider_list));
+  service_providers->GetDict().Set("service_providers",
+                                   std::move(layered_provider_list));
 
   WinsockNamespaceProviderList namespace_providers;
   GetWinsockNamespaceProviders(&namespace_providers);
-  auto namespace_list = std::make_unique<base::ListValue>();
+  base::Value::List namespace_list;
   for (size_t i = 0; i < namespace_providers.size(); ++i) {
-    auto namespace_dict = std::make_unique<base::DictionaryValue>();
-    namespace_dict->SetString("name",
-                              base::AsString16(namespace_providers[i].name));
-    namespace_dict->SetBoolean("active", namespace_providers[i].active);
-    namespace_dict->SetInteger("version", namespace_providers[i].version);
-    namespace_dict->SetInteger("type", namespace_providers[i].type);
+    base::Value::Dict namespace_dict;
+    namespace_dict.Set("name", base::AsString16(namespace_providers[i].name));
+    namespace_dict.Set("active", namespace_providers[i].active);
+    namespace_dict.Set("version", namespace_providers[i].version);
+    namespace_dict.Set("type", namespace_providers[i].type);
 
-    namespace_list->Append(std::move(namespace_dict));
+    namespace_list.Append(std::move(namespace_dict));
   }
-  service_providers->Set("namespace_providers", std::move(namespace_list));
+  service_providers->GetDict().Set("namespace_providers",
+                                   std::move(namespace_list));
 
   return service_providers;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@ import android.os.HandlerThread;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Consumer;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.content_public.browser.trusttokens.TrustTokenFulfillerManager;
 
 /**
@@ -30,14 +28,7 @@ public abstract class PlatformServiceBridge {
     private static Handler sHandler;
     private static final Object sHandlerLock = new Object();
 
-    protected PlatformServiceBridge() {
-        AndroidMetricsLogUploader.setUploader(new Consumer<byte[]>() {
-            @Override
-            public void accept(byte[] data) {
-                logMetrics(data);
-            }
-        });
-    }
+    protected PlatformServiceBridge() {}
 
     @SuppressWarnings("unused")
     public static PlatformServiceBridge getInstance() {
@@ -104,8 +95,28 @@ public abstract class PlatformServiceBridge {
     // Takes an uncompressed, serialized UMA proto and logs it via a platform-specific mechanism.
     public void logMetrics(byte[] data) {}
 
+    /**
+     * Similar to {@link logMetrics}, logs a serialized UMA proto via a platform-specific mechanism
+     * but blocks until the operation finishes.
+     *
+     * @param data uncompressed, serialized UMA proto.
+     * @return Status code of the logging operation.
+     */
+    public int logMetricsBlocking(byte[] data) {
+        // TODO(crbug.com/1248039): remove this once downstream implementation lands.
+        logMetrics(data);
+        return 0;
+    }
+
     // Returns a TrustTokenFulfillerManager.Factory if appropriate, else returns null.
     public TrustTokenFulfillerManager.Factory getLocalTrustTokenFulfillerFactory() {
         return null;
     }
+
+    /**
+     * Checks if app recovery mitigations are currently required and initializes SafeMode if needed.
+     * This should only be called from the ":webview_service" process. All other processes should
+     * query SafeModeController to receive mitigation steps.
+     */
+    public void checkForAppRecovery() {}
 }

@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_DRAW_QUAD_H_
 
 #include <stddef.h>
-
-#include <memory>
 
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -30,7 +28,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              CompositorRenderPassId render_pass_id,
+              CompositorRenderPassId render_pass,
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,
@@ -44,7 +42,7 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              CompositorRenderPassId render_pass_id,
+              CompositorRenderPassId render_pass,
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,

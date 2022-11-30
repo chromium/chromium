@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ public class LocationSettings {
 
     @CalledByNative
     private static boolean canPromptForAndroidLocationPermission(WindowAndroid windowAndroid) {
+        // TODO(crbug.com/1206673): Investigate if this should be ACCESS_COARSE_LOCATION.
         return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 

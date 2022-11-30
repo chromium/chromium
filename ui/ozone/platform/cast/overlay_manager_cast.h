@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 
 namespace ui {
@@ -15,14 +14,15 @@ namespace ui {
 class OverlayManagerCast : public OverlayManagerOzone {
  public:
   OverlayManagerCast();
+
+  OverlayManagerCast(const OverlayManagerCast&) = delete;
+  OverlayManagerCast& operator=(const OverlayManagerCast&) = delete;
+
   ~OverlayManagerCast() override;
 
   // OverlayManagerOzone:
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayManagerCast);
 };
 
 }  // namespace ui

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,8 +74,8 @@ public class WebApkShareTargetUtil {
             try (Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                          uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    String result =
-                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    String result = cursor.getString(
+                            cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
                     if (result != null) {
                         return result;
                     }

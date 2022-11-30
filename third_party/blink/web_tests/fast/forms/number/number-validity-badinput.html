@@ -19,6 +19,7 @@ else
 <input type=number id=number>
 <input id=another>
 <input type="number" lang="ar-eg" id="number_ar">
+<input type="number" lang="hr" id="number_hr" step="0.01" value="-0.03">
 </div>
 <script>
 description('A number input fields with a bad input string should make validity.badInput true and have :invalid style.');
@@ -120,6 +121,10 @@ debug("Arabic number with two decimal separators is a badInput.");
 document.execCommand('InsertText', false, arabicNum[1]);
 shouldBeTrue('number_ar.validity.badInput');
 shouldBeEqualToString('number_ar.value', '');
+
+let croatianInput = document.querySelector("#number_hr");
+debug("Croatian number with negative decimal value is valid.");
+shouldBeTrue('croatianInput.checkValidity()');
 
 document.getElementById('parent').innerHTML = '';
 </script>

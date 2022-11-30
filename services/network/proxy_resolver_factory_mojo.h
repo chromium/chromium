@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,6 +38,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolverFactoryMojo
           std::unique_ptr<net::ProxyResolverErrorObserver>()>&
           error_observer_factory,
       net::NetLog* net_log);
+
+  ProxyResolverFactoryMojo(const ProxyResolverFactoryMojo&) = delete;
+  ProxyResolverFactoryMojo& operator=(const ProxyResolverFactoryMojo&) = delete;
+
   ~ProxyResolverFactoryMojo() override;
 
   // ProxyResolverFactory override.
@@ -51,15 +54,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolverFactoryMojo
   class Job;
 
   mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory> mojo_proxy_factory_;
-  net::HostResolver* const host_resolver_;
+  const raw_ptr<net::HostResolver> host_resolver_;
   const base::RepeatingCallback<
       std::unique_ptr<net::ProxyResolverErrorObserver>()>
       error_observer_factory_;
-  net::NetLog* const net_log_;
+  const raw_ptr<net::NetLog> net_log_;
 
   base::WeakPtrFactory<ProxyResolverFactoryMojo> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryMojo);
 };
 
 }  // namespace network

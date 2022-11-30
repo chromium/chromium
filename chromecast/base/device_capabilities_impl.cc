@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,10 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromecast/base/serializers.h"
 
 namespace chromecast {
 
@@ -281,7 +280,7 @@ void DeviceCapabilitiesImpl::SetCapability(const std::string& path,
 
 void DeviceCapabilitiesImpl::MergeDictionary(const base::Value& dict_value) {
   DCHECK(dict_value.is_dict());
-  for (const auto& kv : dict_value.DictItems()) {
+  for (const auto kv : dict_value.DictItems()) {
     SetCapability(kv.first, kv.second.Clone());
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/values.h"
 #include "components/cronet/url_request_context_config.h"
 #include "components/cronet/version.h"
 #include "net/cert/cert_verifier.h"
@@ -29,6 +29,7 @@ class WaitableEvent;
 
 namespace net {
 class CookieStore;
+class HttpNetworkSession;
 class NetLog;
 class FileNetLogObserver;
 }  // namespace net
@@ -50,6 +51,10 @@ class CronetEnvironment {
   // |user_agent_partial| is true, or will be used as the complete user-agent
   // otherwise.
   CronetEnvironment(const std::string& user_agent, bool user_agent_partial);
+
+  CronetEnvironment(const CronetEnvironment&) = delete;
+  CronetEnvironment& operator=(const CronetEnvironment&) = delete;
+
   ~CronetEnvironment();
 
   // Starts this instance of Cronet environment.
@@ -132,14 +137,15 @@ class CronetEnvironment {
     CronetNetworkThread(const std::string& name,
                         cronet::CronetEnvironment* cronet_environment);
 
+    CronetNetworkThread(const CronetNetworkThread&) = delete;
+    CronetNetworkThread& operator=(const CronetNetworkThread&) = delete;
+
    protected:
     ~CronetNetworkThread() override;
     void CleanUp() override;
 
    private:
     cronet::CronetEnvironment* const cronet_environment_;
-
-    DISALLOW_COPY_AND_ASSIGN(CronetNetworkThread);
   };
 
   // Performs initialization tasks that must happen on the network thread.
@@ -184,7 +190,7 @@ class CronetEnvironment {
   std::string accept_language_;
   std::string experimental_options_;
   // Effective experimental options. Kept for NetLog.
-  std::unique_ptr<base::DictionaryValue> effective_experimental_options_;
+  base::Value::Dict effective_experimental_options_;
   std::string ssl_key_log_file_name_;
   URLRequestContextConfig::HttpCacheType http_cache_;
   PkpVector pkp_list_;
@@ -205,8 +211,6 @@ class CronetEnvironment {
   bool enable_pkp_bypass_for_local_trust_anchors_;
   double network_thread_priority_;
   std::unique_ptr<CronetPrefsManager> cronet_prefs_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetEnvironment);
 };
 
 }  // namespace cronet

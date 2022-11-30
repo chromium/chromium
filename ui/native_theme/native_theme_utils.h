@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,6 @@ namespace ui {
 // The following functions convert various values to strings intended for
 // logging. Do not retain the results for longer than the scope in which these
 // functions are called.
-
-// Converts NativeTheme::ColorId.
-base::StringPiece NATIVE_THEME_EXPORT
-NativeThemeColorIdName(NativeTheme::ColorId color_id);
 
 // Converts NativeTheme::ColorScheme.
 base::StringPiece NATIVE_THEME_EXPORT

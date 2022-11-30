@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,6 +31,8 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
+
   if (!is_ios) {
     deps += [
       "//services/audio:tests",
@@ -49,6 +51,14 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
     ]
+  }
+
+  if (is_chromeos_ash || is_linux) {
+    deps += [ "//services/accessibility:tests" ]
+  }
+
+  if (is_win) {
+    deps += [ "//services/proxy_resolver_win:tests" ]
   }
 
   if (is_android) {
@@ -79,8 +89,12 @@ test("services_unittests") {
   }
 
   if (is_fuchsia) {
-    # Enable the test HTTP server for use by NetworkServiceTestWithService.*
-    use_test_server = true
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//build/config/fuchsia/test/network.shard.test-cml",
+    ]
   }
 }
 
@@ -95,7 +109,7 @@ if (!is_ios) {
 }
 
 if (is_android) {
-  junit_binary("services_junit_tests") {
+  robolectric_binary("services_junit_tests") {
     sources = [
       "device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java",
       "device/geolocation/android/junit/src/org/chromium/device/geolocation/LocationProviderTest.java",
@@ -124,7 +138,6 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -153,6 +166,7 @@ if (is_android) {
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]

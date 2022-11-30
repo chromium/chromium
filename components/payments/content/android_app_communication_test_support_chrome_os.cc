@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/payment_app.mojom.h"
+#include "ash/components/arc/pay/arc_payment_app_bridge.h"
+#include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
-#include "components/arc/mojom/payment_app.mojom.h"
-#include "components/arc/pay/arc_payment_app_bridge.h"
-#include "components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "components/payments/core/method_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -116,6 +116,33 @@ class AndroidAppCommunicationTestSupportChromeOS
             }));
   }
 
+  void ExpectInvokeAndAbortPaymentApp() override {
+    EXPECT_CALL(*support_.instance(), InvokePaymentApp(testing::_, testing::_))
+        .WillOnce(testing::Invoke(
+            [this](
+                arc::mojom::PaymentParametersPtr parameters,
+                arc::ArcPaymentAppBridge::InvokePaymentAppCallback callback) {
+              pending_invoke_callback_ = std::move(callback);
+            }));
+
+    EXPECT_CALL(*support_.instance(), AbortPaymentApp(testing::_, testing::_))
+        .WillOnce(testing::Invoke(
+            [this](const std::string& request_token,
+                   arc::ArcPaymentAppBridge::AbortPaymentAppCallback callback) {
+              if (!pending_invoke_callback_.is_null()) {
+                std::move(pending_invoke_callback_)
+                    .Run(arc::mojom::InvokePaymentAppResult::NewError(
+                        "Payment was aborted."));
+              }
+              std::move(callback).Run(true);
+            }));
+  }
+
+  void ExpectNoAbortPaymentApp() override {
+    EXPECT_CALL(*support_.instance(), AbortPaymentApp(testing::_, testing::_))
+        .Times(0);
+  }
+
   content::BrowserContext* context() override { return support_.context(); }
 
  private:
@@ -147,6 +174,8 @@ class AndroidAppCommunicationTestSupportChromeOS
   arc::ArcPaymentAppBridgeTestSupport support_;
   std::vector<std::unique_ptr<AndroidAppDescription>> apps_;
   ash::TestArcOverlayManager overlay_manager_;
+
+  arc::ArcPaymentAppBridge::InvokePaymentAppCallback pending_invoke_callback_;
 };
 
 }  // namespace

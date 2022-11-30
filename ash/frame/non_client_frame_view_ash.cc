@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame/header_view.h"
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -28,12 +28,16 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
@@ -46,6 +50,7 @@ using ::chromeos::ImmersiveFullscreenController;
 using ::chromeos::kFrameActiveColorKey;
 using ::chromeos::kFrameInactiveColorKey;
 using ::chromeos::kImmersiveImpliedByFullscreen;
+using ::chromeos::kTrackDefaultFrameColors;
 using ::chromeos::WindowStateType;
 
 DEFINE_UI_CLASS_PROPERTY_KEY(NonClientFrameViewAsh*,
@@ -93,7 +98,8 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
     if (window_state_->IsFullscreen())
       return;
     if (Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
-            widget_)) {
+            widget_) &&
+        !window_state_->IsFloated()) {
       ImmersiveFullscreenController::EnableForWidget(widget_, true);
     }
   }
@@ -122,7 +128,7 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
         Shell::Get()->tablet_mode_controller() &&
         Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
             widget)) {
-      if (window_state->IsMinimized())
+      if (window_state->IsMinimized() || window_state->IsFloated())
         ImmersiveFullscreenController::EnableForWidget(widget_, false);
       else if (window_state->IsMaximized())
         ImmersiveFullscreenController::EnableForWidget(widget_, true);
@@ -136,13 +142,6 @@ class NonClientFrameViewAshImmersiveHelper : public WindowStateObserver,
         window_state->window()->GetProperty(kImmersiveImpliedByFullscreen)) {
       ImmersiveFullscreenController::EnableForWidget(widget_, true);
     }
-  }
-
-  NonClientFrameViewAsh* GetFrameView() {
-    views::Widget* widget =
-        views::Widget::GetWidgetForNativeWindow(window_state_->window());
-    return static_cast<NonClientFrameViewAsh*>(
-        widget->non_client_view()->frame_view());
   }
 
   views::Widget* widget_;
@@ -215,9 +214,12 @@ END_METADATA
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
     : frame_(frame),
       header_view_(new HeaderView(frame, this)),
-      overlay_view_(new OverlayView(header_view_)) {
+      overlay_view_(new OverlayView(header_view_)),
+      frame_context_menu_controller_(
+          std::make_unique<FrameContextMenuController>(frame, this)) {
   DCHECK(frame_);
 
+  header_view_->Init();
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
       &NonClientFrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr()));
 
@@ -244,6 +246,11 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
   }
 
   frame_window->SetProperty(kNonClientFrameViewAshKey, this);
+
+  header_view_->set_context_menu_controller(
+      frame_context_menu_controller_.get());
+
+  UpdateDefaultFrameColors();
 }
 
 NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
@@ -261,6 +268,7 @@ void NonClientFrameViewAsh::InitImmersiveFullscreenControllerForView(
 void NonClientFrameViewAsh::SetFrameColors(SkColor active_frame_color,
                                            SkColor inactive_frame_color) {
   aura::Window* frame_window = frame_->GetNativeWindow();
+  frame_window->SetProperty(kTrackDefaultFrameColors, false);
   frame_window->SetProperty(kFrameActiveColorKey, active_frame_color);
   frame_window->SetProperty(kFrameInactiveColorKey, inactive_frame_color);
 }
@@ -278,20 +286,20 @@ HeaderView* NonClientFrameViewAsh::GetHeaderView() {
 gfx::Rect NonClientFrameViewAsh::GetClientBoundsForWindowBounds(
     const gfx::Rect& window_bounds) const {
   gfx::Rect client_bounds(window_bounds);
-  client_bounds.Inset(0, NonClientTopBorderHeight(), 0, 0);
+  client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
 gfx::Rect NonClientFrameViewAsh::GetBoundsForClientView() const {
   gfx::Rect client_bounds = bounds();
-  client_bounds.Inset(0, NonClientTopBorderHeight(), 0, 0);
+  client_bounds.Inset(gfx::Insets::TLBR(NonClientTopBorderHeight(), 0, 0, 0));
   return client_bounds;
 }
 
 gfx::Rect NonClientFrameViewAsh::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
   gfx::Rect window_bounds = client_bounds;
-  window_bounds.Inset(0, -NonClientTopBorderHeight(), 0, 0);
+  window_bounds.Inset(gfx::Insets::TLBR(-NonClientTopBorderHeight(), 0, 0, 0));
   return window_bounds;
 }
 
@@ -318,6 +326,10 @@ void NonClientFrameViewAsh::SizeConstraintsChanged() {
   header_view_->UpdateCaptionButtons();
 }
 
+views::View::Views NonClientFrameViewAsh::GetChildrenInZOrder() {
+  return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
+}
+
 gfx::Size NonClientFrameViewAsh::CalculatePreferredSize() const {
   gfx::Size pref = frame_->client_view()->GetPreferredSize();
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
@@ -327,16 +339,16 @@ gfx::Size NonClientFrameViewAsh::CalculatePreferredSize() const {
 }
 
 void NonClientFrameViewAsh::Layout() {
-  if (!GetEnabled())
-    return;
   views::NonClientFrameView::Layout();
+  if (!GetFrameEnabled())
+    return;
   aura::Window* frame_window = frame_->GetNativeWindow();
   frame_window->SetProperty(aura::client::kTopViewInset,
                             NonClientTopBorderHeight());
 }
 
 gfx::Size NonClientFrameViewAsh::GetMinimumSize() const {
-  if (!GetEnabled())
+  if (!GetFrameEnabled())
     return gfx::Size();
 
   gfx::Size min_client_view_size(frame_->client_view()->GetMinimumSize());
@@ -358,11 +370,29 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
   return gfx::Size(width, height);
 }
 
-void NonClientFrameViewAsh::SetVisible(bool visible) {
-  overlay_view_->SetVisible(visible);
-  views::View::SetVisible(visible);
-  // We need to re-layout so that client view will occupy entire window.
-  InvalidateLayout();
+void NonClientFrameViewAsh::OnThemeChanged() {
+  NonClientFrameView::OnThemeChanged();
+  UpdateDefaultFrameColors();
+}
+
+bool NonClientFrameViewAsh::ShouldShowContextMenu(
+    views::View* source,
+    const gfx::Point& screen_coords_point) {
+  if (header_view_->in_immersive_mode()) {
+    // If the `header_view_` is in immersive mode, then a `NonClientHitTest`
+    // will return HTCLIENT so manually check whether `point` lies inside
+    // `header_view_`.
+    gfx::Point point_in_header_coords(screen_coords_point);
+    views::View::ConvertPointToTarget(this, header_view_,
+                                      &point_in_header_coords);
+    return header_view_->HitTestRect(
+        gfx::Rect(point_in_header_coords, gfx::Size(1, 1)));
+  }
+
+  // Only show the context menu if `screen_coords_point` is in the caption area.
+  gfx::Point point_in_view_coords(screen_coords_point);
+  views::View::ConvertPointFromScreen(this, &point_in_view_coords);
+  return NonClientHitTest(point_in_view_coords) == HTCAPTION;
 }
 
 void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
@@ -372,7 +402,7 @@ void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
 int NonClientFrameViewAsh::NonClientTopBorderHeight() const {
   // The frame should not occupy the window area when it's in fullscreen,
   // not visible or disabled.
-  if (frame_->IsFullscreen() || !GetVisible() || !GetEnabled() ||
+  if (frame_->IsFullscreen() || !GetFrameEnabled() ||
       header_view_->in_immersive_mode()) {
     return 0;
   }
@@ -395,6 +425,29 @@ SkColor NonClientFrameViewAsh::GetInactiveFrameColorForTest() const {
   return frame_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
 }
 
+void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
+  if (enabled == frame_enabled_)
+    return;
+
+  frame_enabled_ = enabled;
+  overlay_view_->SetVisible(frame_enabled_);
+  InvalidateLayout();
+}
+
+void NonClientFrameViewAsh::SetToggleResizeLockMenuCallback(
+    base::RepeatingCallback<void()> callback) {
+  toggle_resize_lock_menu_callback_ = std::move(callback);
+}
+
+void NonClientFrameViewAsh::ClearToggleResizeLockMenuCallback() {
+  toggle_resize_lock_menu_callback_.Reset();
+}
+
+base::RepeatingCallback<void()>
+NonClientFrameViewAsh::GetToggleResizeLockMenuCallback() const {
+  return toggle_resize_lock_menu_callback_;
+}
+
 void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   // We may end up here before |header_view_| has been added to the Widget.
   if (header_view_->GetWidget()) {
@@ -406,13 +459,36 @@ void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   }
 }
 
+void NonClientFrameViewAsh::AddedToWidget() {
+  if (!chromeos::features::IsDarkLightModeEnabled())
+    return;
+
+  if (highlight_border_overlay_ ||
+      !GetWidget()->GetNativeWindow()->GetProperty(
+          chromeos::kShouldHaveHighlightBorderOverlay)) {
+    return;
+  }
+
+  highlight_border_overlay_ =
+      std::make_unique<HighlightBorderOverlay>(GetWidget());
+}
+
 // views::NonClientFrameView:
 bool NonClientFrameViewAsh::DoesIntersectRect(const views::View* target,
                                               const gfx::Rect& rect) const {
   CHECK_EQ(target, this);
-  // NonClientView hit tests the NonClientFrameView first instead of going in
-  // z-order. Return false so that events get to the OverlayView.
-  return false;
+
+  // Give the OverlayView the first chance to handle events.
+  if (frame_enabled_ && overlay_view_->HitTestRect(rect))
+    return false;
+
+  // Handle the event if it's within the bounds of the ClientView.
+  gfx::RectF rect_in_client_view_coords_f(rect);
+  View::ConvertRectToTarget(this, frame_->client_view(),
+                            &rect_in_client_view_coords_f);
+  gfx::Rect rect_in_client_view_coords =
+      gfx::ToEnclosingRect(rect_in_client_view_coords_f);
+  return frame_->client_view()->HitTestRect(rect_in_client_view_coords);
 }
 
 chromeos::FrameCaptionButtonContainerView*
@@ -423,6 +499,25 @@ NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
 void NonClientFrameViewAsh::PaintAsActiveChanged() {
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->Layout();
+}
+
+void NonClientFrameViewAsh::UpdateDefaultFrameColors() {
+  aura::Window* frame_window = frame_->GetNativeWindow();
+  if (!frame_window->GetProperty(kTrackDefaultFrameColors))
+    return;
+
+  // Use the light mode colors when the DarkLightMode feature is disabled. Do
+  // this because we use dark mode colors by default when the feature is
+  // disabled currently (see crbug.com/1291354).
+  const bool is_dark_light_enabled = features::IsDarkLightModeEnabled();
+  auto* color_provider = frame_->GetColorProvider();
+  const SkColor dialog_title_bar_color =
+      is_dark_light_enabled
+          ? color_provider->GetColor(cros_tokens::kDialogTitleBarColor)
+          : color_provider->GetColor(cros_tokens::kDialogTitleBarColorLight);
+
+  frame_window->SetProperty(kFrameActiveColorKey, dialog_title_bar_color);
+  frame_window->SetProperty(kFrameInactiveColorKey, dialog_title_bar_color);
 }
 
 BEGIN_METADATA(NonClientFrameViewAsh, views::NonClientFrameView)

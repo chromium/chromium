@@ -196,7 +196,7 @@ This software may use portions of the following libraries subject to the accompa
 ****************************
 chromium_audio
 ****************************
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are

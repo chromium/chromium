@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,34 +16,34 @@
 
 namespace net_log {
 
-std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
+base::Value::Dict GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string) {
-  auto constants_dict = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict constants_dict;
 
   // Add a dictionary with the version of the client and its command line
   // arguments.
-  auto dict = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict dict;
 
   // We have everything we need to send the right values.
-  dict->SetString("name", version_info::GetProductName());
-  dict->SetString("version", version_info::GetVersionNumber());
-  dict->SetString("cl", version_info::GetLastChange());
-  dict->SetString("version_mod", channel_string);
-  dict->SetString("official",
-                  version_info::IsOfficialBuild() ? "official" : "unofficial");
+  dict.Set("name", version_info::GetProductName());
+  dict.Set("version", version_info::GetVersionNumber());
+  dict.Set("cl", version_info::GetLastChange());
+  dict.Set("version_mod", channel_string);
+  dict.Set("official",
+           version_info::IsOfficialBuild() ? "official" : "unofficial");
   std::string os_type = base::StringPrintf(
       "%s: %s (%s)", base::SysInfo::OperatingSystemName().c_str(),
       base::SysInfo::OperatingSystemVersion().c_str(),
       base::SysInfo::OperatingSystemArchitecture().c_str());
-  dict->SetString("os_type", os_type);
-#if defined(OS_WIN)
-  dict->SetString("command_line", base::WideToUTF8(command_line_string));
+  dict.Set("os_type", os_type);
+#if BUILDFLAG(IS_WIN)
+  dict.Set("command_line", base::WideToUTF8(command_line_string));
 #else
-  dict->SetString("command_line", command_line_string);
+  dict.Set("command_line", command_line_string);
 #endif
 
-  constants_dict->Set("clientInfo", std::move(dict));
+  constants_dict.Set("clientInfo", std::move(dict));
 
   return constants_dict;
 }

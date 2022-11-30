@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,8 +6,12 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+# Most consumers of sandbox::policy should depend on this target.
 component("policy") {
   sources = [
     "export.h",
@@ -23,12 +27,14 @@ component("policy") {
   ]
   defines = [ "SANDBOX_POLICY_IMPL" ]
   deps = [
-    ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
-    "//sandbox:common",
+    "//components/services/screen_ai/buildflags",
+    "//ppapi/buildflags",
+    "//printing/buildflags",
+    "//sandbox/policy/mojom",
   ]
-  public_deps = []
+  public_deps = [ "//sandbox:common" ]
   if (is_linux || is_chromeos) {
     sources += [
       "linux/bpf_audio_policy_linux.cc",
@@ -49,14 +55,12 @@ component("policy") {
       "linux/bpf_network_policy_linux.h",
       "linux/bpf_ppapi_policy_linux.cc",
       "linux/bpf_ppapi_policy_linux.h",
-      "linux/bpf_print_backend_policy_linux.cc",
-      "linux/bpf_print_backend_policy_linux.h",
       "linux/bpf_print_compositor_policy_linux.cc",
       "linux/bpf_print_compositor_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
-      "linux/bpf_sharing_service_policy_linux.cc",
-      "linux/bpf_sharing_service_policy_linux.h",
+      "linux/bpf_service_policy_linux.cc",
+      "linux/bpf_service_policy_linux.h",
       "linux/bpf_speech_recognition_policy_linux.cc",
       "linux/bpf_speech_recognition_policy_linux.h",
       "linux/bpf_utility_policy_linux.cc",
@@ -68,6 +72,18 @@ component("policy") {
       "linux/sandbox_seccomp_bpf_linux.cc",
       "linux/sandbox_seccomp_bpf_linux.h",
     ]
+    if (enable_oop_printing) {
+      sources += [
+        "linux/bpf_print_backend_policy_linux.cc",
+        "linux/bpf_print_backend_policy_linux.h",
+      ]
+    }
+    if (enable_screen_ai_service) {
+      sources += [
+        "linux/bpf_screen_ai_policy_linux.cc",
+        "linux/bpf_screen_ai_policy_linux.h",
+      ]
+    }
     configs += [
       "//media:media_config",
       "//media/audio:platform_config",
@@ -87,6 +103,14 @@ component("policy") {
       "linux/bpf_tts_policy_linux.cc",
       "linux/bpf_tts_policy_linux.h",
     ]
+    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
+
+    if (enable_cros_libassistant) {
+      sources += [
+        "linux/bpf_libassistant_policy_linux.cc",
+        "linux/bpf_libassistant_policy_linux.h",
+      ]
+    }
   }
   if (is_mac) {
     sources += [
@@ -105,6 +129,8 @@ component("policy") {
   }
   if (is_win) {
     sources += [
+      "win/lpac_capability.cc",
+      "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
       "win/sandbox_win.cc",
@@ -125,28 +151,29 @@ component("policy") {
     ]
 
     deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+
+      # TODO(crbug.com/1224707): Remove after switching to fuchsia.scheduler API.
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.perfetto",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.tracing.provider",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     ]
   }
 }
 
-buildflag_header("sanitizer_buildflags") {
-  header = "sanitizer_buildflags.h"
-  flags = [ "USING_SANITIZER=$using_sanitizer" ]
-}
-
 buildflag_header("chromecast_sandbox_allowlist_buildflags") {
   header = "chromecast_sandbox_allowlist_buildflags.h"
-  flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_chromecast" ]
+  flags = [ "ENABLE_CHROMECAST_GPU_SANDBOX_ALLOWLIST=$is_castos" ]
 }
 
 # TODO(crbug.com/1097376): Figure out a better organization for //sandbox
@@ -160,6 +187,9 @@ source_set("tests") {
     ":policy",
     "//base",
     "//base/test:test_support",
+    "//ppapi/buildflags:buildflags",
+    "//printing/buildflags",
+    "//sandbox/policy/mojom",
     "//testing/gtest",
   ]
 
@@ -168,11 +198,34 @@ source_set("tests") {
       "win/mf_cdm_sandbox_type_unittest.cc",
       "win/sandbox_win_unittest.cc",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":sandbox_test_utils",
+      "//sandbox/win:sandbox",
+    ]
     data = [
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("sandbox_test_utils") {
+  testonly = true
+
+  if (is_win) {
+    sources = [
+      "win/sandbox_policy_feature_test.cc",
+      "win/sandbox_policy_feature_test.h",
+      "win/sandbox_test_utils.cc",
+      "win/sandbox_test_utils.h",
+    ]
+
+    deps = [
+      ":policy",
+      "//base/test:test_support",
+      "//sandbox/win:sandbox",
+      "//testing/gtest",
     ]
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,8 @@ Determine the name of the platform used and other system properties such as
 the location of Chrome.  This is used, for example, to determine the correct
 Toolchain to invoke.
 """
+
+from __future__ import print_function
 
 import argparse
 import os
@@ -263,7 +265,7 @@ def main(args):
     out = platform
 
   if out:
-    print out
+    print(out)
   return 0
 
 

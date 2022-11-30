@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
+#include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #endif
 
 BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
@@ -27,7 +27,7 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothInternalsHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   html_source->DisableTrustedTypesCSP();
   html_source->AddResourcePath("test_loader_util.js",
                                IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
@@ -52,7 +52,7 @@ void BluetoothInternalsUI::BindInterface(
       std::make_unique<BluetoothInternalsHandler>(std::move(receiver));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   page_handler_->set_debug_logs_manager(
-      chromeos::bluetooth::DebugLogsManagerFactory::GetForProfile(
+      ash::bluetooth::DebugLogsManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui())));
 #endif
 }

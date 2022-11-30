@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_mouse_tracker.h"
+
+#include <memory>
 
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 #include "chrome/browser/ui/cocoa/scoped_menu_bar_lock.h"
@@ -100,7 +102,11 @@ const CGFloat kTrackingAreaAdditionalThreshold = 50;
   if (!_trackingArea)
     return;
 
-  DCHECK(_contentView);
+  // TODO(https://crbug.com/1063417, https://crbug.com/1064911): This DCHECK
+  // is hit when closing a fullscreen window using the traffic lights. This is
+  // because removeTrackingArea should be removed in response to the window
+  // closing, but isn't.
+  // DCHECK(_contentView);
   [_contentView removeTrackingArea:_trackingArea];
   _trackingArea.reset();
   _contentView.reset();

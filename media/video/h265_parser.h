@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,101 +13,18 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/video/h264_bit_reader.h"
 #include "media/video/h264_parser.h"
+#include "media/video/h265_nalu_parser.h"
 
 namespace media {
 
-struct SubsampleEntry;
-
 // For explanations of each struct and its members, see H.265 specification
 // at http://www.itu.int/rec/T-REC-H.265.
-struct MEDIA_EXPORT H265NALU {
-  H265NALU();
-
-  // NAL Unit types are taken from Table 7-1 of HEVC/H265 standard
-  // http://www.itu.int/rec/T-REC-H.265-201410-I/en
-  enum Type {
-    TRAIL_N = 0,
-    TRAIL_R = 1,
-    TSA_N = 2,
-    TSA_R = 3,
-    STSA_N = 4,
-    STSA_R = 5,
-    RADL_N = 6,
-    RADL_R = 7,
-    RASL_N = 8,
-    RASL_R = 9,
-    RSV_VCL_N10 = 10,
-    RSV_VCL_R11 = 11,
-    RSV_VCL_N12 = 12,
-    RSV_VCL_R13 = 13,
-    RSV_VCL_N14 = 14,
-    RSV_VCL_R15 = 15,
-    BLA_W_LP = 16,
-    BLA_W_RADL = 17,
-    BLA_N_LP = 18,
-    IDR_W_RADL = 19,
-    IDR_N_LP = 20,
-    CRA_NUT = 21,
-    RSV_IRAP_VCL22 = 22,
-    RSV_IRAP_VCL23 = 23,
-    RSV_VCL24 = 24,
-    RSV_VCL25 = 25,
-    RSV_VCL26 = 26,
-    RSV_VCL27 = 27,
-    RSV_VCL28 = 28,
-    RSV_VCL29 = 29,
-    RSV_VCL30 = 30,
-    RSV_VCL31 = 31,
-    VPS_NUT = 32,
-    SPS_NUT = 33,
-    PPS_NUT = 34,
-    AUD_NUT = 35,
-    EOS_NUT = 36,
-    EOB_NUT = 37,
-    FD_NUT = 38,
-    PREFIX_SEI_NUT = 39,
-    SUFFIX_SEI_NUT = 40,
-    RSV_NVCL41 = 41,
-    RSV_NVCL42 = 42,
-    RSV_NVCL43 = 43,
-    RSV_NVCL44 = 44,
-    RSV_NVCL45 = 45,
-    RSV_NVCL46 = 46,
-    RSV_NVCL47 = 47,
-    UNSPEC48 = 48,
-    UNSPEC49 = 49,
-    UNSPEC50 = 50,
-    UNSPEC51 = 51,
-    UNSPEC52 = 52,
-    UNSPEC53 = 53,
-    UNSPEC54 = 54,
-    UNSPEC55 = 55,
-    UNSPEC56 = 56,
-    UNSPEC57 = 57,
-    UNSPEC58 = 58,
-    UNSPEC59 = 59,
-    UNSPEC60 = 60,
-    UNSPEC61 = 61,
-    UNSPEC62 = 62,
-    UNSPEC63 = 63,
-  };
-
-  // After (without) start code; we don't own the underlying memory
-  // and a shallow copy should be made when copying this struct.
-  const uint8_t* data;
-  off_t size;  // From after start code to start code of next NALU (or EOS).
-
-  int nal_unit_type;
-  int nuh_layer_id;
-  int nuh_temporal_id_plus1;
-};
-
 enum {
   kMaxLongTermRefPicSets = 32,   // 7.4.3.2.1
   kMaxShortTermRefPicSets = 64,  // 7.4.3.2.1
@@ -119,14 +36,17 @@ enum {
 struct MEDIA_EXPORT H265ProfileTierLevel {
   H265ProfileTierLevel();
 
-  // From Annex A.3.
-  enum H264ProfileIdc {
+  enum H265ProfileIdc {
     kProfileIdcMain = 1,
     kProfileIdcMain10 = 2,
     kProfileIdcMainStill = 3,
     kProfileIdcRangeExtensions = 4,
     kProfileIdcHighThroughput = 5,
+    kProfileIdcMultiviewMain = 6,
+    kProfileIdcScalableMain = 7,
+    kProfileIdc3dMain = 8,
     kProfileIdcScreenContentCoding = 9,
+    kProfileIdcScalableRangeExtensions = 10,
     kProfileIdcHighThroughputScreenContentCoding = 11,
   };
 
@@ -175,6 +95,7 @@ struct MEDIA_EXPORT H265StRefPicSet {
 
   // Calculated fields.
   int num_delta_pocs;
+  int rps_idx_num_delta_pocs;
 };
 
 struct MEDIA_EXPORT H265VUIParameters {
@@ -194,10 +115,31 @@ struct MEDIA_EXPORT H265VUIParameters {
   int def_disp_win_bottom_offset;
 };
 
+struct MEDIA_EXPORT H265VPS {
+  H265VPS();
+
+  int vps_video_parameter_set_id;
+  bool vps_base_layer_internal_flag;
+  bool vps_base_layer_available_flag;
+  int vps_max_layers_minus1;
+  int vps_max_sub_layers_minus1;
+  bool vps_temporal_id_nesting_flag;
+  H265ProfileTierLevel profile_tier_level;
+  int vps_max_dec_pic_buffering_minus1[kMaxSubLayers];
+  int vps_max_num_reorder_pics[kMaxSubLayers];
+  int vps_max_latency_increase_plus1[kMaxSubLayers];
+  int vps_max_layer_id;
+  int vps_num_layer_sets_minus1;
+  bool vps_timing_info_present_flag;
+
+  // skipped the rest
+};
+
 struct MEDIA_EXPORT H265SPS {
   H265SPS();
 
   // Syntax elements.
+  int sps_video_parameter_set_id;
   int sps_max_sub_layers_minus1;
   H265ProfileTierLevel profile_tier_level;
   int sps_seq_parameter_set_id;
@@ -242,6 +184,22 @@ struct MEDIA_EXPORT H265SPS {
   bool strong_intra_smoothing_enabled_flag;
   H265VUIParameters vui_parameters;
 
+  // Extension extra elements.
+  bool sps_extension_present_flag;
+  bool sps_range_extension_flag;
+  bool sps_multilayer_extension_flag;
+  bool sps_3d_extension_flag;
+  bool sps_scc_extension_flag;
+  bool transform_skip_rotation_enabled_flag;
+  bool transform_skip_context_enabled_flag;
+  bool implicit_rdpcm_enabled_flag;
+  bool explicit_rdpcm_enabled_flag;
+  bool extended_precision_processing_flag;
+  bool intra_smoothing_disabled_flag;
+  bool high_precision_offsets_enabled_flag;
+  bool persistent_rice_adaptation_enabled_flag;
+  bool cabac_bypass_alignment_enabled_flag;
+
   // Calculated fields.
   int chroma_array_type;
   int sub_width_c;
@@ -262,6 +220,7 @@ struct MEDIA_EXPORT H265SPS {
   gfx::Size GetCodedSize() const;
   gfx::Rect GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
+  VideoChromaSampling GetChromaSampling() const;
 };
 
 struct MEDIA_EXPORT H265PPS {
@@ -314,6 +273,22 @@ struct MEDIA_EXPORT H265PPS {
   int log2_parallel_merge_level_minus2;
   bool slice_segment_header_extension_present_flag;
 
+  // Extension extra elements.
+  bool pps_extension_present_flag;
+  bool pps_range_extension_flag;
+  bool pps_multilayer_extension_flag;
+  bool pps_3d_extension_flag;
+  bool pps_scc_extension_flag;
+  int log2_max_transform_skip_block_size_minus2;
+  bool cross_component_prediction_enabled_flag;
+  bool chroma_qp_offset_list_enabled_flag;
+  int diff_cu_chroma_qp_offset_depth;
+  int chroma_qp_offset_list_len_minus1;
+  int cb_qp_offset_list[6];
+  int cr_qp_offset_list[6];
+  int log2_sao_offset_scale_luma;
+  int log2_sao_offset_scale_chroma;
+
   // Calculated fields.
   int qp_bd_offset_y;
 };
@@ -360,18 +335,26 @@ struct MEDIA_EXPORT H265SliceHeader {
   size_t header_size;  // calculated, not including emulation prevention bytes
   size_t header_emulation_prevention_bytes;
 
+  // Calculated, but needs to be preserved when we copy slice dependent data
+  // so put it at the front.
+  bool irap_pic;
+
   // Syntax elements.
   bool first_slice_segment_in_pic_flag;
   bool no_output_of_prior_pics_flag;
   int slice_pic_parameter_set_id;
   bool dependent_slice_segment_flag;
   int slice_segment_address;
+  // Do not move any of the above fields below or vice-versa, everything after
+  // this is copied as a block.
   int slice_type;
   bool pic_output_flag;
   int colour_plane_id;
   int slice_pic_order_cnt_lsb;
   bool short_term_ref_pic_set_sps_flag;
   H265StRefPicSet st_ref_pic_set;
+  // Do not change the order of the following fields up through
+  // slice_sao_luma_flag. They are compared as a block.
   int short_term_ref_pic_set_idx;
   int num_long_term_sps;
   int num_long_term_pics;
@@ -403,7 +386,6 @@ struct MEDIA_EXPORT H265SliceHeader {
   // Calculated.
   int curr_rps_idx;
   int num_pic_total_curr;
-  bool irap_pic;
   // Number of bits st_ref_pic_set takes after removing emulation prevention
   // bytes.
   int st_rps_bits;
@@ -420,60 +402,88 @@ struct MEDIA_EXPORT H265SliceHeader {
   }
 };
 
-// Class to parse an Annex-B H.265 stream.
-class MEDIA_EXPORT H265Parser {
- public:
-  enum Result {
-    kOk,
-    kInvalidStream,        // error in stream
-    kUnsupportedStream,    // stream not supported by the parser
-    kMissingParameterSet,  // missing PPS/SPS from what was parsed
-    kEOStream,             // end of stream
+struct MEDIA_EXPORT H265SEIAlphaChannelInfo {
+  bool alpha_channel_cancel_flag;
+  int alpha_channel_use_idc;
+  int alpha_channel_bit_depth_minus8;
+  int alpha_transparent_value;
+  int alpha_opaque_value;
+  bool alpha_channel_incr_flag;
+  bool alpha_channel_clip_flag;
+  bool alpha_channel_clip_type_flag;
+};
+
+struct MEDIA_EXPORT H265SEIContentLightLevelInfo {
+  uint16_t max_content_light_level;
+  uint16_t max_picture_average_light_level;
+};
+
+struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
+  enum {
+    kNumDisplayPrimaries = 3,
+    kDisplayPrimaryComponents = 2,
   };
 
+  uint16_t display_primaries[kNumDisplayPrimaries][kDisplayPrimaryComponents];
+  uint16_t white_points[2];
+  uint32_t max_luminance;
+  uint32_t min_luminance;
+};
+
+struct MEDIA_EXPORT H265SEIMessage {
+  H265SEIMessage();
+
+  enum Type {
+    kSEIMasteringDisplayInfo = 137,
+    kSEIContentLightLevelInfo = 144,
+    kSEIAlphaChannelInfo = 165,
+  };
+
+  int type;
+  int payload_size;
+  union {
+    // Placeholder; in future more supported types will contribute to more
+    // union members here.
+    H265SEIAlphaChannelInfo alpha_channel_info;
+    H265SEIContentLightLevelInfo content_light_level_info;
+    H265SEIMasteringDisplayInfo mastering_display_info;
+  };
+};
+
+// Class to parse an Annex-B H.265 stream.
+class MEDIA_EXPORT H265Parser : public H265NaluParser {
+ public:
   H265Parser();
-  ~H265Parser();
 
-  void Reset();
-  // Set current stream pointer to |stream| of |stream_size| in bytes,
-  // |stream| owned by caller.
-  // |subsamples| contains information about what parts of |stream| are
-  // encrypted.
-  void SetStream(const uint8_t* stream, off_t stream_size);
-  void SetEncryptedStream(const uint8_t* stream,
-                          off_t stream_size,
-                          const std::vector<SubsampleEntry>& subsamples);
+  H265Parser(const H265Parser&) = delete;
+  H265Parser& operator=(const H265Parser&) = delete;
 
-  // Read the stream to find the next NALU, identify it and return
-  // that information in |*nalu|. This advances the stream to the beginning
-  // of this NALU, but not past it, so subsequent calls to NALU-specific
-  // parsing functions (ParseSPS, etc.)  will parse this NALU.
-  // If the caller wishes to skip the current NALU, it can call this function
-  // again, instead of any NALU-type specific parse functions below.
-  Result AdvanceToNextNALU(H265NALU* nalu);
+  ~H265Parser() override;
 
   // NALU-specific parsing functions.
   // These should be called after AdvanceToNextNALU().
 
-  // SPSes and PPSes are owned by the parser class and the memory for their
-  // structures is managed here, not by the caller, as they are reused across
-  // NALUs.
+  // VPSes, SPSes and PPSes are owned by the parser class and the memory for
+  // their structures is managed here, not by the caller, as they are
+  // reused across NALUs.
   //
-  // Parse an SPS/PPS NALU and save their data in the parser, returning id
-  // of the parsed structure in |*pps_id|/|*sps_id|. To get a pointer to a given
-  // SPS/PPS structure, use GetSPS()/GetPPS(), passing the returned
-  // |*sps_id|/|*pps_id| as parameter.
+  // Parse an VPS/SPS/PPS NALU and save their data in the parser, returning id
+  // of the parsed structure in |*pps_id|/|*sps_id|/|*vps_id|. To get a pointer
+  // to a given VPS/SPS/PPS structure, use GetVPS()/GetSPS()/GetPPS(), passing
+  // the returned |*vps_id|/|*sps_id|/|*pps_id| as parameter.
+  Result ParseVPS(int* vps_id);
   Result ParseSPS(int* sps_id);
   Result ParsePPS(const H265NALU& nalu, int* pps_id);
 
-  // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or null if not
-  // present.
+  // Return a pointer to VPS/SPS/PPS with given |*vps_id|/|sps_id|/|pps_id| or
+  // null if not present.
+  const H265VPS* GetVPS(int vps_id) const;
   const H265SPS* GetSPS(int sps_id) const;
   const H265PPS* GetPPS(int pps_id) const;
 
-  // Slice headers and are not used across NALUs by the parser and can be
-  // discarded after current NALU, so the parser does not store them, nor does
-  // it manage their memory. The caller has to provide and manage it instead.
+  // Slice headers are not used across NALUs by the parser and can be discarded
+  // after current NALU, so the parser does not store them, nor does it manage
+  // their memory. The caller has to provide and manage it instead.
 
   // Parse a slice header, returning it in |*shdr|. |*nalu| must be set to
   // the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.
@@ -484,24 +494,13 @@ class MEDIA_EXPORT H265Parser {
                           H265SliceHeader* shdr,
                           H265SliceHeader* prior_shdr);
 
+  // Parse a SEI message, returning it in |*sei_msg|, provided and managed
+  // by the caller.
+  Result ParseSEI(H265SEIMessage* sei_msg);
+
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
-  // The return value of this method changes for every successful call to
-  // AdvanceToNextNALU().
-  // This returns the subsample information for the last NALU that was output
-  // from AdvanceToNextNALU().
-  std::vector<SubsampleEntry> GetCurrentSubsamples();
-
  private:
-  // Move the stream pointer to the beginning of the next NALU,
-  // i.e. pointing at the next start code.
-  // Return true if a NALU has been found.
-  // If a NALU is found:
-  // - its size in bytes is returned in |*nalu_size| and includes
-  //   the start code as well as the trailing zero bits.
-  // - the size in bytes of the start code is returned in |*start_code_size|.
-  bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
-
   // Exp-Golomb code parsing as specified in chapter 9.2 of the spec.
   // Read one unsigned exp-Golomb code from the stream and return in |*val|.
   Result ReadUE(int* val);
@@ -515,7 +514,8 @@ class MEDIA_EXPORT H265Parser {
   Result ParseScalingListData(H265ScalingListData* scaling_list_data);
   Result ParseStRefPicSet(int st_rps_idx,
                           const H265SPS& sps,
-                          H265StRefPicSet* st_ref_pic_set);
+                          H265StRefPicSet* st_ref_pic_set,
+                          bool is_slice_hdr = false);
   Result ParseVuiParameters(const H265SPS& sps, H265VUIParameters* vui);
   Result ParseAndIgnoreHrdParameters(bool common_inf_present_flag,
                                      int max_num_sub_layers_minus1);
@@ -528,26 +528,10 @@ class MEDIA_EXPORT H265Parser {
                               const H265SliceHeader& shdr,
                               H265PredWeightTable* pred_weight_table);
 
-  // Pointer to the current NALU in the stream.
-  const uint8_t* stream_;
-
-  // Bytes left in the stream after the current NALU.
-  off_t bytes_left_;
-
-  H264BitReader br_;
-
-  // PPSes and SPSes stored for future reference.
+  // VPSes, PPSes and SPSes stored for future reference.
+  base::flat_map<int, std::unique_ptr<H265VPS>> active_vps_;
   base::flat_map<int, std::unique_ptr<H265SPS>> active_sps_;
   base::flat_map<int, std::unique_ptr<H265PPS>> active_pps_;
-
-  // Ranges of encrypted bytes in the buffer passed to SetEncryptedStream().
-  Ranges<const uint8_t*> encrypted_ranges_;
-
-  // This contains the range of the previous NALU found in
-  // AdvanceToNextNalu(). Holds exactly one range.
-  Ranges<const uint8_t*> previous_nalu_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(H265Parser);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,8 @@ enum class AshPipEvents {
   CHROME_PIP_START = 4,
   CHROME_PIP_END = 5,
   FREE_RESIZE = 6,
-  kMaxValue = FREE_RESIZE
+  CHROME_RESIZE_HANDLE_RESIZE = 7,
+  kMaxValue = CHROME_RESIZE_HANDLE_RESIZE
 };
 
 // This enum should be kept in sync with the AshPipPosition enum in

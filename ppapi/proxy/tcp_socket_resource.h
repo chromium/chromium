@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/tcp_socket_resource_base.h"
 #include "ppapi/thunk/ppb_tcp_socket_api.h"
 
@@ -23,6 +22,9 @@ class PPAPI_PROXY_EXPORT TCPSocketResource : public thunk::PPB_TCPSocket_API,
   TCPSocketResource(Connection connection,
                     PP_Instance instance,
                     TCPSocketVersion version);
+
+  TCPSocketResource(const TCPSocketResource&) = delete;
+  TCPSocketResource& operator=(const TCPSocketResource&) = delete;
 
   ~TCPSocketResource() override;
 
@@ -68,8 +70,6 @@ class PPAPI_PROXY_EXPORT TCPSocketResource : public thunk::PPB_TCPSocket_API,
                     int pending_host_id,
                     const PP_NetAddress_Private& local_addr,
                     const PP_NetAddress_Private& remote_addr);
-
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResource);
 };
 
 }  // namespace proxy

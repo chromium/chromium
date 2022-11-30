@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/background_task_scheduler/task_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace background_task {
 
@@ -53,6 +52,10 @@ struct TaskInfo {
   // Warning: This functionality might get removed, check with OWNERS before
   // using this in new code: //components/background_task_scheduler/OWNERS.
   TaskInfo(int task_id, const ExactInfo& timing_info);
+
+  TaskInfo(const TaskInfo&) = delete;
+  TaskInfo& operator=(const TaskInfo&) = delete;
+
   ~TaskInfo();
 
   // A Java counterpart will be generated for this enum.
@@ -74,11 +77,9 @@ struct TaskInfo {
   bool update_current;
   std::string extras;
 
-  base::Optional<PeriodicInfo> periodic_info;
-  base::Optional<OneOffInfo> one_off_info;
-  base::Optional<ExactInfo> exact_info;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskInfo);
+  absl::optional<PeriodicInfo> periodic_info;
+  absl::optional<OneOffInfo> one_off_info;
+  absl::optional<ExactInfo> exact_info;
 };
 
 }  // namespace background_task

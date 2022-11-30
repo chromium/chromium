@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,13 @@
 #include <queue>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
 // Class to connect native calls to
-// org.chromium.chrome.browser.policy.EnterpriseInfo. This class is only usable
-// for Android and is only built for Android.
+// org.chromium.chrome.browser.enterprise.util.EnterpriseInfo. This class is
+// only usable for Android and is only built for Android.
 
 // Only use from the UI Thread.
 
@@ -35,10 +34,10 @@ class AndroidEnterpriseInfo {
   }
 
   // Request the owned state from
-  // org.chromium.chrome.browser.policy.EnterpriseInfo and notify |callback|
-  // when the request is complete. |callback| is added to a list of callbacks
-  // and they are notified in the order they were received.
-  // Use from the UI thread.
+  // org.chromium.chrome.browser.enterprise.util.EnterpriseInfo and notify
+  // |callback| when the request is complete. |callback| is added to a list of
+  // callbacks and they are notified in the order they were received. Use from
+  // the UI thread.
   void GetAndroidEnterpriseInfoState(EnterpriseInfoCallback callback);
 
   void set_skip_jni_call_for_testing(bool value) {
@@ -54,6 +53,11 @@ class AndroidEnterpriseInfo {
 
   AndroidEnterpriseInfo();
 
+  AndroidEnterpriseInfo(const AndroidEnterpriseInfo&) = delete;
+  AndroidEnterpriseInfo& operator=(const AndroidEnterpriseInfo&) = delete;
+  AndroidEnterpriseInfo(AndroidEnterpriseInfo&&) = delete;
+  AndroidEnterpriseInfo& operator=(AndroidEnterpriseInfo&&) = delete;
+
   // This function is for the Java side code to return its result.
   // Calls are made on the UI thread.
   void ServiceCallbacks(bool profile_owned, bool device_owned);
@@ -63,7 +67,6 @@ class AndroidEnterpriseInfo {
   bool skip_jni_call_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(AndroidEnterpriseInfo);
 };
 
 }  // namespace enterprise_util

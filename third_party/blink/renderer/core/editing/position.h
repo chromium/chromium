@@ -26,10 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_strategy.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -71,6 +71,7 @@ class PositionTemplate {
   PositionTemplate(const Node* anchor_node, int offset);
 
   PositionTemplate(const PositionTemplate&);
+  PositionTemplate& operator=(const PositionTemplate&);
 
   // Returns a newly created |Position| with |kOffsetInAnchor|. |offset| can be
   // out of bound. Out of bound position is used for computing undo/redo
@@ -297,8 +298,8 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const PositionInFlatTree&);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::Position&);
-void showTree(const blink::Position*);
+void ShowTree(const blink::Position&);
+void ShowTree(const blink::Position*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_POSITION_H_

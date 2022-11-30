@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
@@ -103,9 +102,11 @@ class Client {
   // Called when a download has been successfully completed.
   // The file and the database record will be automatically removed if it is not
   // renamed or deleted after a window of time (12 hours, but finch
-  // configurable).
-  // The timeout is meant to be a failsafe to ensure that we clean up properly.
+  // configurable). The timeout is meant to be a failsafe to ensure that we
+  // clean up properly.
   // TODO(dtrainor): Point to finch configurable timeout when it is added.
+  // On iOS, the client needs to move the file immediately, and
+  // the file is supposed to be deleted on next Chrome launch.
   virtual void OnDownloadSucceeded(const std::string& guid,
                                    const CompletionInfo& completion_info) = 0;
 
@@ -120,7 +121,8 @@ class Client {
 
   // Called by the service to ask the client to provide the upload data.
   // The client is responsible for posting the callback with an appropriate
-  // ResourceRequestBody or nullptr, if it is a regular download.
+  // ResourceRequestBody or nullptr, if it is a regular download. Not supported
+  // on iOS.
   virtual void GetUploadData(const std::string& guid,
                              GetUploadDataCallback callback) = 0;
 };

@@ -32,7 +32,7 @@
 #
 
 ActiveScriptWrappable
-Affects=Nothing
+Affects=Everything|Nothing
 AllowShared
 CEReactions
 CSSProperty
@@ -42,11 +42,9 @@ CallWith=ExecutionContext|Isolate|ScriptState|ThisValue
 CheckSecurity=Receiver|ReturnValue
 Clamp
 Constructor
-# FIXME: remove [ConstructorCallWith=Document], as can instead use
-# [ConstructorCallWith=ExecutionContext] + toDocument(executionContext)
-ConstructorCallWith=ExecutionContext|ScriptState|Document
 ContextEnabled=*
 CrossOrigin=|Getter|Setter
+CrossOriginIsolated
 Custom=|Getter|Setter|LegacyCallAsFunction|PropertyGetter|PropertyEnumerator|PropertyQuery
 CustomConstructor
 DefaultValue=Undefined
@@ -64,6 +62,7 @@ HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
 IsCodeLike
+IsolatedApplication
 LegacyLenientSetter
 LegacyLenientThis
 LegacyNoInterfaceObject

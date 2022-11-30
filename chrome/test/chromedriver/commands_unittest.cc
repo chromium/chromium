@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,16 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
@@ -43,27 +43,26 @@ void OnGetStatus(const Status& status,
   ASSERT_EQ(kOk, status.code());
   base::DictionaryValue* dict;
   ASSERT_TRUE(value->GetAsDictionary(&dict));
-  bool ready;
-  ASSERT_TRUE(dict->GetBoolean("ready", &ready) && ready);
-  base::Value* unused;
-  ASSERT_TRUE(dict->Get("message", &unused));
-  ASSERT_TRUE(dict->Get("os.name", &unused));
-  ASSERT_TRUE(dict->Get("os.version", &unused));
-  ASSERT_TRUE(dict->Get("os.arch", &unused));
-  ASSERT_TRUE(dict->Get("build.version", &unused));
+  absl::optional<bool> ready = dict->FindBoolKey("ready");
+  ASSERT_TRUE(ready.has_value() && ready.value());
+  ASSERT_TRUE(dict->FindKey("message"));
+  ASSERT_TRUE(dict->FindPath("os.name"));
+  ASSERT_TRUE(dict->FindPath("os.version"));
+  ASSERT_TRUE(dict->FindPath("os.arch"));
+  ASSERT_TRUE(dict->FindPath("build.version"));
 }
 
 }  // namespace
 
 TEST(CommandsTest, GetStatus) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ExecuteGetStatus(params, std::string(), base::BindRepeating(&OnGetStatus));
 }
 
 namespace {
 
 void ExecuteStubGetSession(int* count,
-                           const base::DictionaryValue& params,
+                           const base::Value::Dict& params,
                            const std::string& session_id,
                            const CommandCallback& callback) {
   if (*count == 0) {
@@ -73,11 +72,11 @@ void ExecuteStubGetSession(int* count,
   }
   (*count)++;
 
-  std::unique_ptr<base::DictionaryValue> capabilities(
-      new base::DictionaryValue());
+  std::unique_ptr<base::Value> capabilities(
+      new base::Value(base::Value::Type::DICTIONARY));
 
-  capabilities->SetString("capability1", "test1");
-  capabilities->SetString("capability2", "test2");
+  capabilities->SetStringKey("capability1", "test1");
+  capabilities->SetStringKey("capability2", "test2");
 
   callback.Run(Status(kOk), std::move(capabilities), session_id, false);
 }
@@ -88,51 +87,52 @@ void OnGetSessions(const Status& status,
                    bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
   ASSERT_TRUE(value.get());
-  base::ListValue* sessions;
-  ASSERT_TRUE(value->GetAsList(&sessions));
-  ASSERT_EQ(static_cast<size_t>(2), sessions->GetSize());
+  const base::Value::List& sessions_list = value->GetList();
+  ASSERT_EQ(static_cast<size_t>(2), sessions_list.size());
 
-  base::DictionaryValue* session1;
-  base::DictionaryValue* session2;
-  ASSERT_TRUE(sessions->GetDictionary(0, &session1));
-  ASSERT_TRUE(sessions->GetDictionary(1, &session2));
+  const base::Value& session1 = sessions_list[0];
+  const base::Value& session2 = sessions_list[1];
+  ASSERT_TRUE(session1.is_dict());
+  ASSERT_TRUE(session2.is_dict());
 
-  ASSERT_EQ(static_cast<size_t>(2), session1->size());
-  ASSERT_EQ(static_cast<size_t>(2), session2->size());
+  ASSERT_EQ(static_cast<size_t>(2), session1.DictSize());
+  ASSERT_EQ(static_cast<size_t>(2), session2.DictSize());
 
-  std::string session1_id;
-  std::string session2_id;
-  base::DictionaryValue* session1_capabilities;
-  base::DictionaryValue* session2_capabilities;
+  const std::string* session1_id = session1.FindStringKey("id");
+  const std::string* session2_id = session2.FindStringKey("id");
+  const base::Value* session1_capabilities =
+      session1.FindDictKey("capabilities");
+  const base::Value* session2_capabilities =
+      session2.FindDictKey("capabilities");
 
-  ASSERT_TRUE(session1->GetString("id", &session1_id));
-  ASSERT_TRUE(session2->GetString("id", &session2_id));
-  ASSERT_TRUE(session1->GetDictionary("capabilities", &session1_capabilities));
-  ASSERT_TRUE(session2->GetDictionary("capabilities", &session2_capabilities));
+  ASSERT_TRUE(session1_id);
+  ASSERT_TRUE(session2_id);
+  ASSERT_TRUE(session1_capabilities);
+  ASSERT_TRUE(session2_capabilities);
 
-  ASSERT_EQ((size_t) 2, session1_capabilities->size());
-  ASSERT_EQ((size_t) 2, session2_capabilities->size());
-  ASSERT_EQ("id", session1_id);
-  ASSERT_EQ("id2", session2_id);
+  ASSERT_EQ((size_t)2, session1_capabilities->DictSize());
+  ASSERT_EQ((size_t)2, session2_capabilities->DictSize());
+  ASSERT_EQ("id", *session1_id);
+  ASSERT_EQ("id2", *session2_id);
 
-  std::string session1_capability1;
-  std::string session1_capability2;
-  std::string session2_capability1;
-  std::string session2_capability2;
+  const std::string* session1_capability1 =
+      session1_capabilities->FindStringKey("capability1");
+  const std::string* session1_capability2 =
+      session1_capabilities->FindStringKey("capability2");
+  const std::string* session2_capability1 =
+      session2_capabilities->FindStringKey("capability1");
+  const std::string* session2_capability2 =
+      session2_capabilities->FindStringKey("capability2");
 
-  ASSERT_TRUE(session1_capabilities->GetString("capability1",
-    &session1_capability1));
-  ASSERT_TRUE(session1_capabilities->GetString("capability2",
-    &session1_capability2));
-  ASSERT_TRUE(session2_capabilities->GetString("capability1",
-    &session2_capability1));
-  ASSERT_TRUE(session2_capabilities->GetString("capability2",
-    &session2_capability2));
+  ASSERT_TRUE(session1_capability1);
+  ASSERT_TRUE(session1_capability2);
+  ASSERT_TRUE(session2_capability1);
+  ASSERT_TRUE(session2_capability2);
 
-  ASSERT_EQ("test1", session1_capability1);
-  ASSERT_EQ("test2", session1_capability2);
-  ASSERT_EQ("test1", session2_capability1);
-  ASSERT_EQ("test2", session2_capability2);
+  ASSERT_EQ("test1", *session1_capability1);
+  ASSERT_EQ("test2", *session1_capability2);
+  ASSERT_EQ("test1", *session2_capability1);
+  ASSERT_EQ("test2", *session2_capability2);
 }
 
 }  // namespace
@@ -148,7 +148,7 @@ TEST(CommandsTest, GetSessions) {
 
   Command cmd = base::BindRepeating(&ExecuteStubGetSession, &count);
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   base::test::SingleThreadTaskEnvironment task_environment;
 
   ExecuteGetSessions(cmd, &map, params, std::string(),
@@ -158,11 +158,10 @@ TEST(CommandsTest, GetSessions) {
 
 namespace {
 
-void ExecuteStubQuit(
-    int* count,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback) {
+void ExecuteStubQuit(int* count,
+                     const base::Value::Dict& params,
+                     const std::string& session_id,
+                     const CommandCallback& callback) {
   if (*count == 0) {
     EXPECT_STREQ("id", session_id.c_str());
   } else {
@@ -191,7 +190,7 @@ TEST(CommandsTest, QuitAll) {
 
   int count = 0;
   Command cmd = base::BindRepeating(&ExecuteStubQuit, &count);
-  base::DictionaryValue params;
+  base::Value::Dict params;
   base::test::SingleThreadTaskEnvironment task_environment;
   ExecuteQuitAll(cmd, &map, params, std::string(),
                  base::BindRepeating(&OnQuitAll));
@@ -201,14 +200,14 @@ TEST(CommandsTest, QuitAll) {
 namespace {
 
 Status ExecuteSimpleCommand(const std::string& expected_id,
-                            base::DictionaryValue* expected_params,
+                            base::Value::Dict* expected_params,
                             base::Value* value,
                             Session* session,
-                            const base::DictionaryValue& params,
+                            const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* return_value) {
   EXPECT_EQ(expected_id, session->id);
-  EXPECT_TRUE(expected_params->Equals(&params));
-  return_value->reset(value->DeepCopy());
+  EXPECT_EQ(*expected_params, params);
+  *return_value = base::Value::ToUniquePtrValue(value->Clone());
   session->quit = true;
   return Status(kOk);
 }
@@ -221,7 +220,7 @@ void OnSimpleCommand(base::RunLoop* run_loop,
                      const std::string& session_id,
                      bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
-  ASSERT_TRUE(expected_value->Equals(value.get()));
+  ASSERT_EQ(*expected_value, *value);
   ASSERT_EQ(expected_session_id, session_id);
   run_loop->Quit();
 }
@@ -239,8 +238,8 @@ TEST(CommandsTest, ExecuteSessionCommand) {
       base::BindOnce(&internal::CreateSessionOnSessionThreadForTesting, id));
   map[id] = std::move(threadInfo);
 
-  base::DictionaryValue params;
-  params.SetInteger("param", 5);
+  base::Value::Dict params;
+  params.Set("param", 5);
   base::Value expected_value(6);
   SessionCommand cmd =
       base::BindRepeating(&ExecuteSimpleCommand, id, &params, &expected_value);
@@ -256,7 +255,7 @@ TEST(CommandsTest, ExecuteSessionCommand) {
 namespace {
 
 Status ShouldNotBeCalled(Session* session,
-                         const base::DictionaryValue& params,
+                         const base::Value::Dict& params,
                          std::unique_ptr<base::Value>* value) {
   EXPECT_TRUE(false);
   return Status(kOk);
@@ -282,7 +281,7 @@ void OnNoSuchSessionIsOk(const Status& status,
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, false, params, "session",
                         base::BindRepeating(&OnNoSuchSession));
@@ -290,7 +289,7 @@ TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSessionWhenItExpectsOk) {
   SessionThreadMap map;
-  base::DictionaryValue params;
+  base::Value::Dict params;
   ExecuteSessionCommand(&map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
                         true /*w3c_standard_command*/, true, params, "session",
                         base::BindRepeating(&OnNoSuchSessionIsOk));
@@ -318,10 +317,11 @@ TEST(CommandsTest, ExecuteSessionCommandOnJustDeletedSession) {
   map[id] = std::move(threadInfo);
 
   base::test::SingleThreadTaskEnvironment task_environment;
+  base::Value::Dict params;
   base::RunLoop run_loop;
   ExecuteSessionCommand(
       &map, "cmd", base::BindRepeating(&ShouldNotBeCalled),
-      true /*w3c_standard_command*/, false, base::DictionaryValue(), "session",
+      true /*w3c_standard_command*/, false, params, "session",
       base::BindRepeating(&OnNoSuchSessionAndQuit, &run_loop));
   run_loop.Run();
 }
@@ -345,18 +345,18 @@ class FindElementWebView : public StubWebView {
       case kElementExistsQueryTwice:
       case kElementExistsTimeout: {
         if (only_one_) {
-          base::DictionaryValue element;
-          element.SetString("ELEMENT", "1");
-          result_.reset(element.DeepCopy());
+          base::Value element(base::Value::Type::DICTIONARY);
+          element.SetStringKey("ELEMENT", "1");
+          result_ = base::Value::ToUniquePtrValue(element.Clone());
         } else {
-          base::DictionaryValue element1;
-          element1.SetString("ELEMENT", "1");
-          base::DictionaryValue element2;
-          element2.SetString("ELEMENT", "2");
-          base::ListValue list;
-          list.Append(element1.CreateDeepCopy());
-          list.Append(element2.CreateDeepCopy());
-          result_ = list.CreateDeepCopy();
+          base::Value element1(base::Value::Type::DICTIONARY);
+          element1.SetStringKey("ELEMENT", "1");
+          base::Value element2(base::Value::Type::DICTIONARY);
+          element2.SetStringKey("ELEMENT", "2");
+          base::Value list(base::Value::Type::LIST);
+          list.Append(element1.Clone());
+          list.Append(element2.Clone());
+          result_ = base::Value::ToUniquePtrValue(list.Clone());
         }
         break;
       }
@@ -364,7 +364,8 @@ class FindElementWebView : public StubWebView {
         if (only_one_)
           result_ = std::make_unique<base::Value>();
         else
-          result_.reset(new base::ListValue());
+          result_ = base::Value::ToUniquePtrValue(
+              base::Value(base::Value::Type::LIST));
         break;
       }
     }
@@ -372,8 +373,9 @@ class FindElementWebView : public StubWebView {
   ~FindElementWebView() override {}
 
   void Verify(const std::string& expected_frame,
-              const base::ListValue* expected_args,
-              const base::Value* actrual_result) {
+              const base::Value* expected_args,
+              const base::Value* actual_result) {
+    ASSERT_TRUE(expected_args->is_list());
     EXPECT_EQ(expected_frame, frame_);
     std::string function;
     if (only_one_)
@@ -382,15 +384,15 @@ class FindElementWebView : public StubWebView {
       function = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENTS);
     EXPECT_EQ(function, function_);
     ASSERT_TRUE(args_.get());
-    EXPECT_TRUE(expected_args->Equals(args_.get()));
-    ASSERT_TRUE(actrual_result);
-    EXPECT_TRUE(result_->Equals(actrual_result));
+    EXPECT_EQ(*expected_args, *args_);
+    ASSERT_TRUE(actual_result);
+    EXPECT_EQ(*result_, *actual_result);
   }
 
   // Overridden from WebView:
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     ++current_count_;
     if (scenario_ == kElementExistsTimeout ||
@@ -399,7 +401,7 @@ class FindElementWebView : public StubWebView {
         if (only_one_)
           *result = std::make_unique<base::Value>();
         else
-          result->reset(new base::ListValue());
+          *result = base::Value::ToUniquePtrValue(base::Value());
     } else {
       switch (scenario_) {
         case kElementExistsQueryOnce:
@@ -416,10 +418,10 @@ class FindElementWebView : public StubWebView {
         }
       }
 
-      *result = result_->CreateDeepCopy();
+      *result = base::Value::ToUniquePtrValue(result_->Clone());
       frame_ = frame;
       function_ = function;
-      args_ = args.CreateDeepCopy();
+      args_ = std::make_unique<base::Value>(args.Clone());
     }
     return Status(kOk);
   }
@@ -430,7 +432,7 @@ class FindElementWebView : public StubWebView {
   int current_count_;
   std::string frame_;
   std::string function_;
-  std::unique_ptr<base::ListValue> args_;
+  std::unique_ptr<base::Value> args_;
   std::unique_ptr<base::Value> result_;
 };
 
@@ -439,159 +441,153 @@ class FindElementWebView : public StubWebView {
 TEST(CommandsTest, SuccessfulFindElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id1", std::string());
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kOk,
-            ExecuteFindElement(1, &session, &web_view, params, &result,
-                               nullptr).code());
-  base::DictionaryValue param;
-  param.SetString("css selector", "#a");
-  base::ListValue expected_args;
-  expected_args.Append(param.CreateDeepCopy());
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
+                .code());
+  base::Value param(base::Value::Type::DICTIONARY);
+  param.SetStringKey("css selector", "#a");
+  base::Value expected_args(base::Value::Type::LIST);
+  expected_args.Append(param.Clone());
   web_view.Verify("frame_id1", &expected_args, result.get());
 }
 
 TEST(CommandsTest, FailedFindElement) {
   FindElementWebView web_view(true, kElementNotExistsQueryOnce);
   Session session("id");
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kNoSuchElement,
-            ExecuteFindElement(1, &session, &web_view, params, &result,
-                               nullptr).code());
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
+                .code());
 }
 
 TEST(CommandsTest, SuccessfulFindElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id2", std::string());
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "*[name='b']");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "*[name='b']");
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk,
-            ExecuteFindElements(1, &session, &web_view, params, &result,
-                                nullptr).code());
-  base::DictionaryValue param;
-  param.SetString("css selector", "*[name='b']");
-  base::ListValue expected_args;
-  expected_args.Append(param.CreateDeepCopy());
+  ASSERT_EQ(
+      kOk, ExecuteFindElements(1, &session, &web_view, params, &result, nullptr)
+               .code());
+  base::Value param(base::Value::Type::DICTIONARY);
+  param.SetStringKey("css selector", "*[name='b']");
+  base::Value expected_args(base::Value::Type::LIST);
+  expected_args.Append(param.Clone());
   web_view.Verify("frame_id2", &expected_args, result.get());
 }
 
 TEST(CommandsTest, FailedFindElements) {
   Session session("id");
   FindElementWebView web_view(false, kElementNotExistsQueryOnce);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(kOk,
-            ExecuteFindElements(1, &session, &web_view, params, &result,
-                                nullptr).code());
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  ASSERT_EQ(0U, list->GetSize());
+  ASSERT_EQ(
+      kOk, ExecuteFindElements(1, &session, &web_view, params, &result, nullptr)
+               .code());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, SuccessfulFindChildElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id3", std::string());
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "div");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "div");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kOk,
-      ExecuteFindChildElement(
-          1, &session, &web_view, element_id, params, &result).code());
-  base::DictionaryValue locator_param;
-  locator_param.SetString("css selector", "div");
-  base::DictionaryValue root_element_param;
-  root_element_param.SetString("ELEMENT", element_id);
-  base::ListValue expected_args;
-  expected_args.Append(locator_param.CreateDeepCopy());
-  expected_args.Append(root_element_param.CreateDeepCopy());
+  ASSERT_EQ(kOk, ExecuteFindChildElement(1, &session, &web_view, element_id,
+                                         params, &result)
+                     .code());
+  base::Value locator_param(base::Value::Type::DICTIONARY);
+  locator_param.SetStringKey("css selector", "div");
+  base::Value root_element_param(base::Value::Type::DICTIONARY);
+  root_element_param.SetStringKey("ELEMENT", element_id);
+  base::Value expected_args(base::Value::Type::LIST);
+  expected_args.Append(locator_param.Clone());
+  expected_args.Append(root_element_param.Clone());
   web_view.Verify("frame_id3", &expected_args, result.get());
 }
 
 TEST(CommandsTest, FailedFindChildElement) {
   Session session("id");
   FindElementWebView web_view(true, kElementNotExistsQueryOnce);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kNoSuchElement,
-      ExecuteFindChildElement(
-          1, &session, &web_view, element_id, params, &result).code());
+  ASSERT_EQ(kNoSuchElement, ExecuteFindChildElement(1, &session, &web_view,
+                                                    element_id, params, &result)
+                                .code());
 }
 
 TEST(CommandsTest, SuccessfulFindChildElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
-  session.implicit_wait = base::TimeDelta::FromSeconds(1);
+  session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id4", std::string());
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", ".c");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", ".c");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kOk,
-      ExecuteFindChildElements(
-          1, &session, &web_view, element_id, params, &result).code());
-  base::DictionaryValue locator_param;
-  locator_param.SetString("css selector", ".c");
-  base::DictionaryValue root_element_param;
-  root_element_param.SetString("ELEMENT", element_id);
-  base::ListValue expected_args;
-  expected_args.Append(locator_param.CreateDeepCopy());
-  expected_args.Append(root_element_param.CreateDeepCopy());
+  ASSERT_EQ(kOk, ExecuteFindChildElements(1, &session, &web_view, element_id,
+                                          params, &result)
+                     .code());
+  base::Value locator_param(base::Value::Type::DICTIONARY);
+  locator_param.SetStringKey("css selector", ".c");
+  base::Value root_element_param(base::Value::Type::DICTIONARY);
+  root_element_param.SetStringKey("ELEMENT", element_id);
+  base::Value expected_args(base::Value::Type::LIST);
+  expected_args.Append(locator_param.Clone());
+  expected_args.Append(root_element_param.Clone());
   web_view.Verify("frame_id4", &expected_args, result.get());
 }
 
 TEST(CommandsTest, FailedFindChildElements) {
   Session session("id");
   FindElementWebView web_view(false, kElementNotExistsQueryOnce);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kOk,
-      ExecuteFindChildElements(
-          1, &session, &web_view, element_id, params, &result).code());
-  base::ListValue* list;
-  ASSERT_TRUE(result->GetAsList(&list));
-  ASSERT_EQ(0U, list->GetSize());
+  ASSERT_EQ(kOk, ExecuteFindChildElements(1, &session, &web_view, element_id,
+                                          params, &result)
+                     .code());
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(0U, result->GetList().size());
 }
 
 TEST(CommandsTest, TimeoutInFindElement) {
   Session session("id");
   FindElementWebView web_view(true, kElementExistsTimeout);
-  session.implicit_wait = base::TimeDelta::FromMilliseconds(2);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
-  params.SetString("id", "1");
+  session.implicit_wait = base::Milliseconds(2);
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
+  params.Set("id", "1");
   std::unique_ptr<base::Value> result;
   ASSERT_EQ(kNoSuchElement,
-            ExecuteFindElement(1, &session, &web_view, params, &result,
-                               nullptr).code());
+            ExecuteFindElement(1, &session, &web_view, params, &result, nullptr)
+                .code());
 }
 
 namespace {
@@ -605,7 +601,7 @@ class ErrorCallFunctionWebView : public StubWebView {
   // Overridden from WebView:
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     return Status(code_);
   }
@@ -619,34 +615,34 @@ class ErrorCallFunctionWebView : public StubWebView {
 TEST(CommandsTest, ErrorFindElement) {
   Session session("id");
   ErrorCallFunctionWebView web_view(kUnknownError);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::unique_ptr<base::Value> value;
   ASSERT_EQ(kUnknownError,
-            ExecuteFindElement(1, &session, &web_view, params, &value,
-                               nullptr).code());
+            ExecuteFindElement(1, &session, &web_view, params, &value, nullptr)
+                .code());
   ASSERT_EQ(kUnknownError,
-            ExecuteFindElements(1, &session, &web_view, params, &value,
-                                nullptr).code());
+            ExecuteFindElements(1, &session, &web_view, params, &value, nullptr)
+                .code());
 }
 
 TEST(CommandsTest, ErrorFindChildElement) {
   Session session("id");
   ErrorCallFunctionWebView web_view(kStaleElementReference);
-  base::DictionaryValue params;
-  params.SetString("using", "css selector");
-  params.SetString("value", "#a");
+  base::Value::Dict params;
+  params.Set("using", "css selector");
+  params.Set("value", "#a");
   std::string element_id = "1";
   std::unique_ptr<base::Value> result;
-  ASSERT_EQ(
-      kStaleElementReference,
-      ExecuteFindChildElement(
-          1, &session, &web_view, element_id, params, &result).code());
-  ASSERT_EQ(
-      kStaleElementReference,
-      ExecuteFindChildElements(
-          1, &session, &web_view, element_id, params, &result).code());
+  ASSERT_EQ(kStaleElementReference,
+            ExecuteFindChildElement(1, &session, &web_view, element_id, params,
+                                    &result)
+                .code());
+  ASSERT_EQ(kStaleElementReference,
+            ExecuteFindChildElements(1, &session, &web_view, element_id, params,
+                                     &result)
+                .code());
 }
 
 namespace {
@@ -677,14 +673,14 @@ class MockCommandListener : public CommandListener {
 Status ExecuteAddListenerToSessionCommand(
     std::unique_ptr<CommandListener> listener,
     Session* session,
-    const base::DictionaryValue& params,
+    const base::Value::Dict& params,
     std::unique_ptr<base::Value>* return_value) {
   session->command_listeners.push_back(std::move(listener));
   return Status(kOk);
 }
 
 Status ExecuteQuitSessionCommand(Session* session,
-                                 const base::DictionaryValue& params,
+                                 const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* return_value) {
   session->quit = true;
   return Status(kOk);
@@ -713,7 +709,7 @@ TEST(CommandsTest, SuccessNotifyingCommandListeners) {
 
   map[id] = std::move(threadInfo);
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   auto listener = std::make_unique<MockCommandListener>();
   auto proxy = std::make_unique<CommandListenerProxy>(listener.get());
   // We add |proxy| to the session instead of adding |listener| directly so that
@@ -802,7 +798,7 @@ TEST(CommandsTest, ErrorNotifyingCommandListeners) {
       FROM_HERE, base::BindOnce(&AddListenerToSessionIfSessionExists,
                                 std::move(listener)));
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   // The command should never be executed if BeforeCommand fails for a listener.
   SessionCommand cmd = base::BindRepeating(&ShouldNotBeCalled);
   base::test::SingleThreadTaskEnvironment task_environment;

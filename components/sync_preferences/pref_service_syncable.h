@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -42,11 +41,16 @@ class PrefServiceSyncable : public PrefService {
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<PersistentPrefStore> user_prefs,
+      scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       const PrefModelAssociatorClient* pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
           read_error_callback,
       bool async);
+
+  PrefServiceSyncable(const PrefServiceSyncable&) = delete;
+  PrefServiceSyncable& operator=(const PrefServiceSyncable&) = delete;
+
   ~PrefServiceSyncable() override;
 
   // Creates an incognito copy of the pref service that shares most pref stores
@@ -121,8 +125,6 @@ class PrefServiceSyncable : public PrefService {
   const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
 
   base::ObserverList<PrefServiceSyncableObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceSyncable);
 };
 
 }  // namespace sync_preferences

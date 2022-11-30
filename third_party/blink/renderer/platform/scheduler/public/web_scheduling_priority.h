@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 
 namespace blink {
 
-// Priorities for the experimental scheduling API (see
-// https://github.com/WICG/main-thread-scheduling).
+// https://wicg.github.io/scheduling-apis/#sec-task-priorities
 enum class WebSchedulingPriority {
   kUserBlockingPriority = 0,
   kUserVisiblePriority = 1,

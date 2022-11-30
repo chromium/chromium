@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <sys/types.h>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -45,6 +44,10 @@ bool PtraceDetach(pid_t pid, bool can_log = true);
 class ScopedPtraceAttach {
  public:
   ScopedPtraceAttach();
+
+  ScopedPtraceAttach(const ScopedPtraceAttach&) = delete;
+  ScopedPtraceAttach& operator=(const ScopedPtraceAttach&) = delete;
+
   ~ScopedPtraceAttach();
 
   //! \brief Detaches from the process by calling `ptrace()`.
@@ -61,8 +64,6 @@ class ScopedPtraceAttach {
 
  private:
   pid_t pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPtraceAttach);
 };
 
 }  // namespace crashpad

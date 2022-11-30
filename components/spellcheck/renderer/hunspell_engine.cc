@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/files/memory_mapped_file.h"
@@ -60,10 +61,11 @@ void HunspellEngine::InitializeHunspell() {
   if (hunspell_)
     return;
 
-  bdict_file_.reset(new base::MemoryMappedFile);
+  bdict_file_ = std::make_unique<base::MemoryMappedFile>();
 
   if (bdict_file_->Initialize(std::move(file_))) {
-    hunspell_.reset(new Hunspell(bdict_file_->data(), bdict_file_->length()));
+    hunspell_ =
+        std::make_unique<Hunspell>(bdict_file_->data(), bdict_file_->length());
   } else {
     NOTREACHED() << "Could not mmap spellchecker dictionary.";
   }

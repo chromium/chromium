@@ -1,0 +1,395 @@
+<style include="os-feedback-shared">
+  ::-webkit-scrollbar {
+    background-color: transparent;
+    border-radius: 4px;
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--cros-app-scrollbar-color);
+    border-radius: 4px;
+  }
+
+  #privacyNote {
+    color: var(--cros-color-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+    margin-bottom: 20px;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  #attachFilesLabelContainer {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  #attachFilesIcon {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    display: inline-block;
+    height: 20px;
+    margin-bottom: 8px;
+    margin-inline-start: 6px;
+    width: 20px;
+  }
+
+  #attachFiles {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  #attachFilesContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .card-frame {
+    align-items: center;
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 4px;
+    display: flex;
+  }
+
+  #screenshotContainer {
+    align-items: center;
+    box-sizing: border-box;
+    height: 48px;
+    margin-inline-end: 12px;
+    width: 50%;
+  }
+
+  #screenshotContainer > button {
+    cursor: pointer;
+  }
+
+  #screenshotImage {
+    border-radius: 0 4px 4px 0;
+    display: block;
+    height: 46px;
+    transition: all 250ms ease;
+    width: 68px;
+  }
+
+  #screenshotImage:hover {
+    opacity: 0.7;
+  }
+
+  #addFileContainer {
+    align-items: center;
+    box-sizing: border-box;
+    height: 48px;
+    margin-inline-start: 12px;
+    width: 50%;
+  }
+
+  #userEmail {
+    height: 70px;
+  }
+
+  .md-select {
+    --md-select-side-padding: 16px;
+    height: 32px;
+    width: 248px;
+  }
+
+  #shareDiagnosticData {
+    margin-bottom: 20px;
+  }
+
+  .checkbox-field-container {
+    align-items: start;
+    display: flex;
+    margin-bottom: 8px;
+  }
+
+  #pageUrl {
+    display: flex;
+    margin-bottom: 8px;
+    white-space: nowrap;
+  }
+
+  #pageUrlLabel {
+    display: flex;
+    max-width: 488px;
+  }
+
+  #tooltipContent {
+    white-space: normal;
+    word-wrap: break-word
+  }
+
+  .disabled-input-text {
+    color: var(--cros-text-color-disabled);
+  }
+
+  #screenshotCheckbox {
+    margin-inline-end: 10px;
+    margin-inline-start: 12px;
+  }
+
+  #screenshotCheckLabel {
+    flex: 1;
+    font-weight: 400;
+    line-height: 20px;
+    margin-inline-end: 12px;
+  }
+
+  #imageButton {
+    background: none;
+    border: none;
+    height: 48px;
+    padding: 0;
+    width: 68px;
+  }
+
+  #userConsent {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin: 0 0 8px 0;
+  }
+
+  label {
+    color: var(--cros-text-color-primary);
+    line-height: 20px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 400px;
+  }
+
+  cr-dialog [slot=body] {
+    color: var(--cros-text-color-primary);
+    font-family: var(--feedback-roboto-font-family);
+    font-size: 15px;
+    font-weight: var(--feedback-regular-font-weight);
+    line-height: 22px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+  }
+
+  .scrolling-before {
+    padding: 24px 40px 0 40px;
+    top: 68px;
+  }
+
+  .scrolling {
+    padding: 0 40px;
+    top: 92px;
+  }
+
+  #scrollContainer {
+    height: 424px;
+    left: 0;
+    margin-bottom: 20px;
+    margin-inline-end: 4px;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+  }
+
+  #shadowElevation {
+    height: 2px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 90px;
+  }
+
+  .scrolling-elevation {
+    background-color: var(--cros-bg-color-elevation-1);
+    box-shadow: var(--cros-elevation-2-shadow);
+  }
+
+  .scrolling-shield {
+    background: linear-gradient(to bottom,
+        rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1))
+  }
+
+  .separator-visible {
+    border-top: 1px solid var(--cros-separator-color);
+    bottom: 92px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  #shadowShield {
+    bottom: 92px;
+    height: 48px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  #content {
+    width: 520px;
+  }
+</style>
+<div id="container">
+  <div id="header">
+    <h1 class="page-title">[[i18n('pageTitle')]]</h1>
+  </div>
+  <div id="shadowElevation"></div>
+  <div id="content">
+    <div id="scrollContainer" class='scrolling-before' on-scroll="onContainerScroll_">
+      <!-- Attach files -->
+      <div id="attachFiles">
+        <div id="attachFilesLabelContainer">
+          <h2 id="attachFilesLabel">[[i18n('attachFilesLabel')]]</h2>
+          <iron-icon icon="os-feedback:info" id="attachFilesIcon"
+              class="focusable" tabindex="0"
+              aria-labelledby="attachFilesTooltipContent">
+          </iron-icon>
+          <paper-tooltip for="attachFilesIcon" position="top" offset="0" fit-to-visible-bounds>
+            <div id="attachFilesTooltipContent">
+              [[i18n('attachFileLabelTooltip')]]
+            </div>
+          </paper-tooltip>
+        </div>
+        <div id="attachFilesContainer">
+          <!-- Attach a screenshot -->
+          <div id="screenshotContainer" class="card-frame">
+            <cr-checkbox id="screenshotCheckbox"
+                disabled="[[!hasScreenshot_(screenshotUrl)]]">
+            </cr-checkbox>
+            <label id="screenshotCheckLabel">[[i18n('attachScreenshotLabel')]]</label>
+            <button id="imageButton" class="focusable" on-click="handleScreenshotClick_">
+              <img id="screenshotImage" src="[[screenshotUrl]]">
+             </button>
+          </div>
+          <!-- Attach a file -->
+          <div id="addFileContainer" class="card-frame">
+            <file-attachment></file-attachment>
+          </div>
+        </div>
+      </div>
+      <!-- User e-mail -->
+      <div id="userEmail" class="text-field-container"
+          hidden$="[[!hasEmail_(feedbackContext)]]">
+        <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
+        <select id="userEmailDropDown" class="md-select"
+            aria-label="[[i18n('userEmailAriaLabel')]]">
+          <option value$="[[feedbackContext.email]]"
+              aria-label="user email"
+              class="email-dropdown">
+            [[feedbackContext.email]]
+          </option>
+          <option value="" aria-label="anonymous user"
+            id="anonymousUser" class="email-dropdown">
+            [[i18n('anonymousUser')]]
+          </option>
+        </select>
+      </div>
+      <!-- User consent -->
+      <div id="userConsent" class="checkbox-field-container">
+        <cr-checkbox id="userConsentCheckbox" aria-labelledby="userConsentLabel"></cr-checkbox>
+        <label id="userConsentLabel">[[i18n('userConsentLabel')]]</label>
+      </div>
+      <!-- Diagnostic data -->
+      <div id="shareDiagnosticData">
+        <h2 id="shareDiagnosticDataLabel">[[i18n('shareDiagnosticDataLabel')]]</h2>
+        <!-- URL -->
+        <div id="pageUrl" class="checkbox-field-container" hidden="[[!feedbackContext.pageUrl.url]]">
+          <cr-checkbox id="pageUrlCheckbox" aria-labelledby="pageUrlLabel" checked></cr-checkbox>
+          <label id="pageUrlLabel">[[i18n('sharePageUrlLabel')]]&nbsp;
+            <a href="[[feedbackContext.pageUrl.url]]" class="overflow-text" id="pageUrlText" target="_blank">
+              [[feedbackContext.pageUrl.url]]
+            </a>
+            <paper-tooltip for="pageUrlText" fitToVisibleBounds>
+              <div id="tooltipContent">[[feedbackContext.pageUrl.url]]</div>
+            </paper-tooltip>
+          </label>
+        </div>
+        <!-- System Information -->
+        <div id="sysInfoContainer" class="checkbox-field-container">
+          <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+          </cr-checkbox>
+          <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
+        </div>
+        <!-- Assistant Logs (Googler Internal Only) -->
+        <div id="assistantLogsContainer" class="checkbox-field-container"
+            hidden="[[!shouldShowAssistantCheckbox]]">
+          <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
+          </cr-checkbox>
+          <label id="assistantLogsLabel" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></label>
+        </div>
+        <!-- Bluetooth Logs (Googler Internal Only) -->
+        <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
+            hidden="[[!shouldShowBluetoothCheckbox]]">
+          <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
+          </cr-checkbox>
+          <label id="bluetoothInfoLabel" inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></label>
+        </div>
+        <!-- Performance trace -->
+        <div id="performanceTraceContainer" class="checkbox-field-container"
+            hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
+          <cr-checkbox id="performanceTraceCheckbox"
+              aria-labelledby="performanceTraceCheckboxLabel" checked>
+          </cr-checkbox>
+          <label id="performanceTraceCheckboxLabel"
+              inner-h-t-m-l="[[performanceTraceCheckboxLabel_]]">
+          </label>
+        </div>
+      </div>
+      <!-- Privacy note -->
+      <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
+    </div>
+    <!-- Separator -->
+    <div id="separator"></div>
+    <div id="shadowShield"></div>
+  </div>
+  <div id="navButtons">
+    <cr-button id="buttonBack" class="cancel-button"
+        on-click="handleBackButtonClicked_">
+      [[i18n('backButtonLabel')]]
+    </cr-button>
+    <cr-button id="buttonSend" class="action-button"
+        on-click="handleSendButtonClicked_">
+        [[i18n('sendButtonLabel')]]
+    </cr-button>
+  </div>
+</div>
+<dialog id="screenshotDialog">
+  <div id="toolbar" class="dialog-toolbar">
+    <cr-button id="closeDialogButton"
+        class="close-dialog-button"
+        title="[[i18n('attachScreenshotLabel')]]"
+        on-click="handleScreenshotDialogCloseClick_">
+      <iron-icon id="backArrow" class="dialog-back-arrow"
+          icon="cr:arrow-back"></iron-icon>
+    </cr-button>
+    <div id="dialogTitle">[[i18n('attachScreenshotLabel')]]</div>
+  </div>
+  <div id="mainPanel" class="dialog-main-panel">
+    <div id="innerContentPanel" class="dialog-content-panel">
+      <img src="[[screenshotUrl]]" class="image-preview">
+    </div>
+  </div>
+</dialog>
+<cr-dialog id="bluetoothDialog">
+  <div slot="body">
+    [[i18n('bluetoothLogsMessage')]]
+  </div>
+  <div slot="button-container">
+    <cr-button id="bluetoothDialogDoneButton" class="action-button"
+        on-click="handleCloseBluetoothDialogClicked_">
+      [[i18n('buttonDone')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="assistantDialog">
+  <div slot="body">
+    [[i18n('assistantLogsMessage')]]
+  </div>
+  <div slot="button-container">
+    <cr-button id="assistantDialogDoneButton" class="action-button"
+        on-click="handleCloseAssistantDialogClicked_">
+      [[i18n('buttonDone')]]
+    </cr-button>
+  </div>
+</cr-dialog>

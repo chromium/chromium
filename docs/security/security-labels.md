@@ -30,11 +30,16 @@ that.)
   * **Security_Severity-Critical**: **Pri-0**.
   * **High** and **Medium**: **Pri-1**.
   * **Low**: **Pri-2**.
-* **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Designates
-which branch(es) were impacted by the bug. Only apply the label corresponding
-with the earliest affected branch. **None** means that a security bug is in a
-disabled feature, or otherwise doesn't impact Chrome: see the section below
-for more detail.
+* **FoundIn-#**: Designates which milestones of Chrome are
+impacted by the bug. Multiple labels may be set, but the most important one
+is the earliest affected milestone. See
+[ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for
+current releases.
+* **Security_Impact-**{**Head**, **Beta**, **Stable**, **Extended**, **None**}:
+Derived from **FoundIn**, this label specifies the earliest affected release
+channel. Should not normally be set by humans, except in the case of **None**
+which means that the bug is in a disabled feature, or otherwise doesn't impact
+Chrome: see the section below for more details.
     * Note that **Security_Severity** should still be set on
       **Security_Impact-None** issues, as if the feature were enabled or the
       code reachable.
@@ -50,6 +55,9 @@ guidelines are as follows:
     *security@chromium.org* is a member of that group so the former is a
     superset of the latter. **Restrict-View-SecurityNotify** is not suitable for
     sensitive bugs.
+  * **Restrict-View-SecurityNotifyWebRTC**: As above, but additionally
+    gives access to *security-notify@webrtc.org*, a community of downstream
+    WebRTC embedders.
   * **Restrict-View-Google**: Restricts access to users that are Google
     employees (but also via their *chromium.org* accounts). This should be used
     for bugs that aren't OK for external contributors to see (even if we trust
@@ -137,6 +145,11 @@ Cases where it's *not* OK to set **Security_Impact-None**:
   attacker could overwrite memory for any feature checks performed within
   that lower-privileged process; the bug only qualifies as impact **None**
   if checks are performed in the higher-privileged process.
+* If a bug involves a patch to a renderer or use of a flag to turn on
+  [MojoJS](../../mojo/public/js/README.md)
+  this may mean it's a simulation of a compromised renderer and the
+  bug may still be a valid [sandbox escape
+  bug](severity-guidelines.md#TOC-High-severity).
 
 It's important to get this right, because this label influences how rapidly
 we merge and release the fix. Ask for help if you're not sure.
@@ -204,19 +217,20 @@ release labels that are set on bugs not affecting stable.
 ### Remove Invalid **Security_Impact-X** Labels
 
 There should be exactly one **Security_Impact-X** label and it should be one of
-the 4 valid impact labels (None, Stable, Beta, Head). This rule removes any
-invalid and excess impact labels.
+the 5 valid impact labels (None, Extended, Stable, Beta, Head). This rule
+removes any invalid and excess impact labels.
 
-### Adjust **Security_Impact-X** To Match Milestone Labels
+### Adjust **Security_Impact-X** To Match FoundIn Labels
 
-Based on **M-#** milestone labels this rule assigns corresponding
+Based on **FoundIn-#** milestone labels this rule assigns corresponding
 **Security_Impact-X** labels if they are incorrect or absent.
+**Security_Impact-None** is never changed.
 
 ### Update **M-#** Labels
 
 Bugs that are labelled with milestones earlier than the current milestone will
 be relabeled to set the label for the current milestone and
-**Security_Impact-Stable**.
+**Security_Impact-Extended**.
 
 Bugs that carry a **Security_Impact-X** label but are missing a milestone label
 will be assigned the **M-#** label corresponding to the respective milestone.
@@ -236,7 +250,8 @@ be used.
 
 ### Drop **Restrict-View-{SecurityTeam,SecurityNotify}** From Old And Fixed Bugs
 
-Remove **Restrict-View-SecurityTeam** and **Restrict-View-SecurityNotify** from
+Remove **Restrict-View-SecurityTeam**, **Restrict-View-SecurityNotify** and
+**Restrict-View-SecurityNotifyWebRTC** from
 security bugs that have been closed (Fixed, Verified, Duplicate, WontFix,
 Invalid) more than 14 weeks ago and add the **allpublic** label to make the bugs
 accessible publicly. The idea here is that security bug fixes will generally
@@ -250,6 +265,7 @@ Replace **Restrict-View-SecurityTeam** with **Restrict-View-SecurityNotify** for
 fixed security bugs. Rationale is that while fixed bugs are generally not
 intended to become public immediately, we'd like to give access to external
 parties depending on Chromium via *security-notify@chromium.org*.
+(WebRTC bugs instead get set to **Restrict-View-SecurityNotifyWebRTC**).
 
 ### Set **Merge-Request-X** For Fixed Bugs
 
@@ -279,13 +295,15 @@ memory corruption against the latest (e.g.) M29 dev channel. The labels
 a novel and nasty-looking buffer overflow in the renderer process. ClusterFuzz
 also confirms that all current releases are affected. Since M27 is the current
 Stable release, and M28 is in Beta, we add the labels of the earliest affected
-release: **M-27**, **Security_Impact-Stable**. The severity of a buffer overflow
+release: **FoundIn-27**. The severity of a buffer overflow
 in a renderer implies **Security_Severity-High** and **Pri-1**. Any external
 report for a confirmed vulnerability needs **reward-topanel**. Sheriffbot will
 usually add it automatically. The stack trace provided by ClusterFuzz suggests
 that the bug is in the component **Blink>DOM**, and such bugs should be labeled
 as applying to all OSs except iOS (where Blink is not used): **OS-**{**Linux**,
-**Windows**, **Android**, **Chrome**, **Fuchsia**}.
+**Windows**, **Android**, **Chrome**, **Fuchsia**}. Sheriffbot will check
+whether 27 is the current extended stable, stable, beta or head milestone; let's
+assume **Security_Impact-Stable** is applied by Sheriffbot this time.
 1. Within a day or two, the sheriff was able to get the bug assigned and — oh
 joy! — fixed very quickly. When the bug's status changes to **Fixed**,
 Sheriffbot will add the **Merge-Requested** label, and will change

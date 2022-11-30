@@ -1,21 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/policy/policy_ui.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
-#include "components/grit/dev_ui_components_resources.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/public/webui/web_ui_ios_message_handler.h"
-#include "ui/base/webui/web_ui_util.h"
+#import "components/grit/dev_ui_components_resources.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui_handler.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "ui/base/webui/web_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,8 +39,6 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"labelAssetId", IDS_POLICY_LABEL_ASSET_ID},
       {"labelClientId", IDS_POLICY_LABEL_CLIENT_ID},
       {"labelDirectoryApiId", IDS_POLICY_LABEL_DIRECTORY_API_ID},
-      {"labelEnterpriseEnrollmentDomain",
-       IDS_POLICY_LABEL_ENTERPRISE_ENROLLMENT_DOMAIN},
       {"labelGaiaId", IDS_POLICY_LABEL_GAIA_ID},
       {"labelIsAffiliated", IDS_POLICY_LABEL_IS_AFFILIATED},
       {"labelLocation", IDS_POLICY_LABEL_LOCATION},
@@ -54,8 +52,11 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
        IDS_POLICY_LABEL_MACHINE_ENROLLMENT_DEVICE_ID},
       {"labelIsOffHoursActive", IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE},
       {"labelPoliciesPush", IDS_POLICY_LABEL_PUSH_POLICIES},
+      {"labelPrecedence", IDS_POLICY_LABEL_PRECEDENCE},
       {"labelRefreshInterval", IDS_POLICY_LABEL_REFRESH_INTERVAL},
       {"labelStatus", IDS_POLICY_LABEL_STATUS},
+      {"labelTimeSinceLastFetchAttempt",
+       IDS_POLICY_LABEL_TIME_SINCE_LAST_FETCH_ATTEMPT},
       {"labelTimeSinceLastRefresh", IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH},
       {"labelUsername", IDS_POLICY_LABEL_USERNAME},
       {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
@@ -65,6 +66,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
       {"policiesPushOff", IDS_POLICY_PUSH_POLICIES_OFF},
       {"policiesPushOn", IDS_POLICY_PUSH_POLICIES_ON},
+      {"policyCopyValue", IDS_POLICY_COPY_VALUE},
       {"policyLearnMore", IDS_POLICY_LEARN_MORE},
       {"reloadPolicies", IDS_POLICY_RELOAD_POLICIES},
       {"showExpandedStatus", IDS_POLICY_SHOW_EXPANDED_STATUS},
@@ -76,14 +78,34 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"statusDevice", IDS_POLICY_STATUS_DEVICE},
       {"statusMachine", IDS_POLICY_STATUS_MACHINE},
       {"statusUser", IDS_POLICY_STATUS_USER},
+      {"labelLastCloudReportSentTimestamp",
+       IDS_POLICY_LABEL_LAST_CLOUD_REPORT_SENT_TIMESTAMP},
+
   };
   source->AddLocalizedStrings(kStrings);
   source->UseStringsJs();
 
+  source->AddBoolean("hideExportButton", true);
+
   source->AddResourcePath("policy.css", IDR_POLICY_CSS);
   source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);
   source->AddResourcePath("policy.js", IDR_POLICY_JS);
+  source->AddResourcePath("policy_conflict.html.js",
+                          IDR_POLICY_POLICY_CONFLICT_HTML_JS);
+  source->AddResourcePath("policy_conflict.js", IDR_POLICY_POLICY_CONFLICT_JS);
+  source->AddResourcePath("policy_row.html.js", IDR_POLICY_POLICY_ROW_HTML_JS);
+  source->AddResourcePath("policy_row.js", IDR_POLICY_POLICY_ROW_JS);
+  source->AddResourcePath("policy_precedence_row.html.js",
+                          IDR_POLICY_POLICY_PRECEDENCE_ROW_HTML_JS);
+  source->AddResourcePath("policy_precedence_row.js",
+                          IDR_POLICY_POLICY_PRECEDENCE_ROW_JS);
+  source->AddResourcePath("policy_table.html.js",
+                          IDR_POLICY_POLICY_TABLE_HTML_JS);
+  source->AddResourcePath("policy_table.js", IDR_POLICY_POLICY_TABLE_JS);
+  source->AddResourcePath("status_box.html.js", IDR_POLICY_STATUS_BOX_HTML_JS);
+  source->AddResourcePath("status_box.js", IDR_POLICY_STATUS_BOX_JS);
   source->SetDefaultResource(IDR_POLICY_HTML);
+  source->EnableReplaceI18nInJS();
   return source;
 }
 

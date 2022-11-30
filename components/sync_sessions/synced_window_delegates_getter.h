@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 
 namespace sync_sessions {
@@ -22,6 +21,11 @@ class SyncedWindowDelegatesGetter {
       std::map<SessionID, const SyncedWindowDelegate*>;
 
   SyncedWindowDelegatesGetter();
+
+  SyncedWindowDelegatesGetter(const SyncedWindowDelegatesGetter&) = delete;
+  SyncedWindowDelegatesGetter& operator=(const SyncedWindowDelegatesGetter&) =
+      delete;
+
   virtual ~SyncedWindowDelegatesGetter();
 
   // Returns all SyncedWindowDelegate instances.
@@ -29,9 +33,6 @@ class SyncedWindowDelegatesGetter {
 
   // Find a SyncedWindowDelegate given its window's id.
   virtual const SyncedWindowDelegate* FindById(SessionID id) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncedWindowDelegatesGetter);
 };
 
 }  // namespace sync_sessions

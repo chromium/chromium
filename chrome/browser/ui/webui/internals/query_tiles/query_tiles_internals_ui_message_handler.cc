@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,42 +56,38 @@ void QueryTilesInternalsUIMessageHandler::RegisterMessages() {
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleGetTileData(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  auto result = args->Get(0, &callback_id);
-  DCHECK(result);
-  ResolveJavascriptCallback(*callback_id,
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetTileData());
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleGetServiceStatus(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  auto result = args->Get(0, &callback_id);
-  DCHECK(result);
-  ResolveJavascriptCallback(*callback_id,
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id,
                             tile_service_->GetLogger()->GetServiceStatus());
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleStartFetch(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   tile_service_->StartFetchForTiles(false /*is_from_reduce_mode*/,
                                     base::BindOnce([](bool reschedule) {}));
 }
 
 void QueryTilesInternalsUIMessageHandler::HandlePurgeDb(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   tile_service_->PurgeDb();
 }
 
 void QueryTilesInternalsUIMessageHandler::HandleSetServerUrl(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  DCHECK_EQ(args->GetList().size(), 1u) << "Missing argument server URL.";
-  tile_service_->SetServerUrl(args->GetList()[0].GetString());
+  DCHECK_EQ(args.size(), 1u) << "Missing argument server URL.";
+  tile_service_->SetServerUrl(args[0].GetString());
 }
 
 void QueryTilesInternalsUIMessageHandler::OnServiceStatusChanged(

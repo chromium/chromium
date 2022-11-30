@@ -1,15 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_NSWINDOW_DELEGATE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_VIEWS_NSWINDOW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/optional.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
@@ -20,9 +22,10 @@ class NativeWidgetNSWindowBridge;
 REMOTE_COCOA_APP_SHIM_EXPORT
 @interface ViewsNSWindowDelegate : NSObject <NSWindowDelegate> {
  @private
-  remote_cocoa::NativeWidgetNSWindowBridge* _parent;  // Weak. Owns this.
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge>
+      _parent;  // Weak. Owns this.
   base::scoped_nsobject<NSCursor> _cursor;
-  base::Optional<float> _aspectRatio;
+  absl::optional<float> _aspectRatio;
 
   // Only valid during a live resize.
   // Used to keep track of whether a resize is happening horizontally or
@@ -34,7 +37,7 @@ REMOTE_COCOA_APP_SHIM_EXPORT
   // stick to it. This is necessary to achieve stable results, because in order
   // to keep the aspect ratio fixed we override one window dimension with a
   // value computed from the other dimension.
-  base::Optional<bool> _resizingHorizontally;
+  absl::optional<bool> _resizingHorizontally;
 }
 
 // If set, the cursor set in -[NSResponder updateCursor:] when the window is

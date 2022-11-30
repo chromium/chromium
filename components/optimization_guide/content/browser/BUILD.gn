@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,20 +12,20 @@ static_library("browser") {
     "optimization_guide_decider.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
-    "page_content_annotations_web_contents_helper.cc",
-    "page_content_annotations_web_contents_helper.h",
+    "page_content_annotations_validator.cc",
+    "page_content_annotations_validator.h",
+    "page_content_annotations_web_contents_observer.cc",
+    "page_content_annotations_web_contents_observer.h",
+    "page_content_annotator.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
     "page_text_observer.h",
+    "salient_image_retriever.cc",
+    "salient_image_retriever.h",
   ]
   if (build_with_tflite_lib) {
     sources += [
-      "base_model_executor.h",
-      "base_model_executor_helpers.h",
-      "bert_model_executor.cc",
-      "bert_model_executor.h",
-      "optimization_target_model_executor.h",
       "page_content_annotations_model_manager.cc",
       "page_content_annotations_model_manager.h",
     ]
@@ -33,21 +33,31 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common/public/mojom",
+    "//components/google/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/no_state_prefetch/browser",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:entities",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/search_engines",
     "//content/public/browser",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
   ]
   if (build_with_tflite_lib) {
     public_deps += [
       "//components/optimization_guide/core:machine_learning",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
-      "//third_party/tflite-support:tflite-support-proto",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
   }
 }
@@ -57,6 +67,8 @@ static_library("test_support") {
   sources = [
     "test_optimization_guide_decider.cc",
     "test_optimization_guide_decider.h",
+    "test_page_content_annotator.cc",
+    "test_page_content_annotator.h",
   ]
   deps = [
     ":browser",
@@ -68,20 +80,21 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "page_content_annotations_web_contents_helper_unittest.cc",
+    "page_content_annotations_validator_unittest.cc",
+    "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "bert_model_executor_unittest.cc",
-      "optimization_target_model_executor_unittest.cc",
-      "page_content_annotations_model_manager_unittest.cc",
-    ]
+
+  # crbug.com/1279884 Flaky on CrOS
+  if (!is_chromeos && build_with_tflite_lib) {
+    sources += [ "page_content_annotations_model_manager_unittest.cc" ]
   }
   deps = [
     ":browser",
     ":test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/search_engines",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -90,15 +103,8 @@ source_set("unit_tests") {
     deps += [
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
-      "//third_party/tflite-support:tflite-support-proto",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
-  }
-}
-
-if (is_android) {
-  java_cpp_enum("optimization_guide_generated_enums") {
-    sources = [ "optimization_guide_decider.h" ]
-    visibility = [ "//chrome/browser/optimization_guide/android:*" ]
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "components/update_client/component_patcher.h"
 #include "components/update_client/component_unpacker.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
+// TODO(crbug.com/1349158): Remove this file once Puffin patches are fully
+// implemented.
 
 namespace update_client {
 
@@ -34,9 +33,12 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
  public:
   DeltaUpdateOp();
 
+  DeltaUpdateOp(const DeltaUpdateOp&) = delete;
+  DeltaUpdateOp& operator=(const DeltaUpdateOp&) = delete;
+
   // Parses, runs, and verifies the operation. Calls |callback| with the
   // result of the operation. The callback is called using |task_runner|.
-  void Run(const base::DictionaryValue* command_args,
+  void Run(const base::Value::Dict& command_args,
            const base::FilePath& input_dir,
            const base::FilePath& unpack_dir,
            scoped_refptr<CrxInstaller> installer,
@@ -57,7 +59,7 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
   // arguments. DoParseArguments returns DELTA_OK on success; any other code
   // represents failure.
   virtual UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) = 0;
 
@@ -72,8 +74,6 @@ class DeltaUpdateOp : public base::RefCountedThreadSafe<DeltaUpdateOp> {
   void DoneRunning(UnpackerError error, int extended_error);
 
   ComponentPatcher::Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOp);
 };
 
 // A 'copy' operation takes a file currently residing on the disk and moves it
@@ -83,20 +83,21 @@ class DeltaUpdateOpCopy : public DeltaUpdateOp {
  public:
   DeltaUpdateOpCopy();
 
+  DeltaUpdateOpCopy(const DeltaUpdateOpCopy&) = delete;
+  DeltaUpdateOpCopy& operator=(const DeltaUpdateOpCopy&) = delete;
+
  private:
   ~DeltaUpdateOpCopy() override;
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 
   void DoRun(ComponentPatcher::Callback callback) override;
 
   base::FilePath input_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpCopy);
 };
 
 // A 'create' operation takes a full file that was sent in the delta update
@@ -107,20 +108,21 @@ class DeltaUpdateOpCreate : public DeltaUpdateOp {
  public:
   DeltaUpdateOpCreate();
 
+  DeltaUpdateOpCreate(const DeltaUpdateOpCreate&) = delete;
+  DeltaUpdateOpCreate& operator=(const DeltaUpdateOpCreate&) = delete;
+
  private:
   ~DeltaUpdateOpCreate() override;
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 
   void DoRun(ComponentPatcher::Callback callback) override;
 
   base::FilePath patch_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpCreate);
 };
 
 // Both 'bsdiff' and 'courgette' operations take an existing file on disk,
@@ -132,12 +134,15 @@ class DeltaUpdateOpPatch : public DeltaUpdateOp {
   DeltaUpdateOpPatch(const std::string& operation,
                      scoped_refptr<Patcher> patcher);
 
+  DeltaUpdateOpPatch(const DeltaUpdateOpPatch&) = delete;
+  DeltaUpdateOpPatch& operator=(const DeltaUpdateOpPatch&) = delete;
+
  private:
   ~DeltaUpdateOpPatch() override;
 
   // Overrides of DeltaUpdateOp.
   UnpackerError DoParseArguments(
-      const base::DictionaryValue* command_args,
+      const base::Value::Dict& command_args,
       const base::FilePath& input_dir,
       scoped_refptr<CrxInstaller> installer) override;
 
@@ -151,8 +156,6 @@ class DeltaUpdateOpPatch : public DeltaUpdateOp {
   scoped_refptr<Patcher> patcher_;
   base::FilePath patch_abs_path_;
   base::FilePath input_abs_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeltaUpdateOpPatch);
 };
 
 DeltaUpdateOp* CreateDeltaUpdateOp(const std::string& operation,

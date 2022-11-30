@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -33,6 +33,16 @@ if (use_evdev_gestures) {
   }
 }
 
+if (use_libinput) {
+  pkg_config("libinput") {
+    packages = [ "libinput" ]
+  }
+
+  config("libinput_config") {
+    defines = [ "USE_LIBINPUT" ]
+  }
+}
+
 component("evdev") {
   output_name = "events_ozone_evdev"
 
@@ -43,8 +53,6 @@ component("evdev") {
     "event_converter_evdev.h",
     "event_converter_evdev_impl.cc",
     "event_converter_evdev_impl.h",
-    "event_device_info.cc",
-    "event_device_info.h",
     "event_factory_evdev.cc",
     "event_factory_evdev.h",
     "event_thread_evdev.cc",
@@ -57,12 +65,19 @@ component("evdev") {
     "input_device_factory_evdev.h",
     "input_device_factory_evdev_proxy.cc",
     "input_device_factory_evdev_proxy.h",
+    "input_device_opener.h",
+    "input_device_opener_evdev.cc",
+    "input_device_opener_evdev.h",
     "input_device_settings_evdev.cc",
     "input_device_settings_evdev.h",
     "input_injector_evdev.cc",
     "input_injector_evdev.h",
     "keyboard_evdev.cc",
     "keyboard_evdev.h",
+    "keyboard_imposter_checker_evdev.cc",
+    "keyboard_imposter_checker_evdev.h",
+    "microphone_mute_switch_event_converter_evdev.cc",
+    "microphone_mute_switch_event_converter_evdev.h",
     "mouse_button_map_evdev.cc",
     "mouse_button_map_evdev.h",
     "stylus_button_event_converter_evdev.cc",
@@ -97,6 +112,8 @@ component("evdev") {
     "touch_filter/palm_detection_filter_factory.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_beta.cc",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_beta.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.h",
     "touch_filter/shared_palm_detection_filter_state.h",
@@ -106,6 +123,7 @@ component("evdev") {
   defines = [ "IS_EVDEV_IMPL" ]
 
   deps = [
+    ":event_device_info",
     "//base",
     "//build:chromeos_buildflags",
     "//ui/display",
@@ -119,6 +137,16 @@ component("evdev") {
     "//ui/gfx",
     "//ui/ozone:ozone_base",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "fake_keyboard_heuristic_metrics.cc",
+      "fake_keyboard_heuristic_metrics.h",
+      "numberpad_metrics.cc",
+      "numberpad_metrics.h",
+    ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
+  }
 
   public_configs = [ ":evdev_config" ]
 
@@ -138,6 +166,8 @@ component("evdev") {
       "libgestures_glue/gesture_property_provider.h",
       "libgestures_glue/gesture_timer_provider.cc",
       "libgestures_glue/gesture_timer_provider.h",
+      "libgestures_glue/haptic_touchpad_handler.cc",
+      "libgestures_glue/haptic_touchpad_handler.h",
     ]
 
     deps += [ "//ui/ozone/public/mojom:gesture_properties_service" ]
@@ -150,10 +180,57 @@ component("evdev") {
     public_configs += [ ":evdev_gestures_config" ]
   }
 
+  if (use_libinput) {
+    configs += [ ":libinput" ]
+    public_configs += [ ":libinput_config" ]
+
+    sources += [
+      "libinput_event_converter.cc",
+      "libinput_event_converter.h",
+    ]
+  }
+
   visibility += [
+    "//ash/webui/diagnostics_ui/*",
     "//ui/chromeos/*",
     "//ui/ozone/*",
   ]
+}
+
+source_set("event_device_info") {
+  sources = [
+    "event_device_info.cc",
+    "event_device_info.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/events/devices",
+    "//ui/events/ozone",
+  ]
+
+  visibility += [
+    "//ash/webui/diagnostics_ui/backend:*",
+    "//chromeos/ash/services/cros_healthd/*",
+    "//ui/chromeos/*",
+  ]
+}
+
+source_set("event_device_info_test_utils") {
+  testonly = true
+
+  sources = [
+    "event_device_test_util.cc",
+    "event_device_test_util.h",
+  ]
+
+  deps = [
+    ":evdev",
+    ":event_device_info",
+    "//base",
+  ]
+
+  visibility += [ "//ash/webui/diagnostics_ui/backend:unit_tests" ]
 }
 
 source_set("unittests") {
@@ -164,12 +241,15 @@ source_set("unittests") {
     "event_converter_test_util.cc",
     "event_converter_test_util.h",
     "event_device_info_unittest.cc",
-    "event_device_test_util.cc",
-    "event_device_test_util.h",
     "event_factory_evdev_unittest.cc",
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
+    "input_device_factory_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "libgestures_glue/haptic_touchpad_handler.cc",
+    "libgestures_glue/haptic_touchpad_handler.h",
+    "libgestures_glue/haptic_touchpad_handler_unittest.cc",
+    "microphone_mute_switch_event_converter_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",
     "testing/fake_cursor_delegate_evdev.h",
@@ -185,6 +265,8 @@ source_set("unittests") {
 
   deps = [
     ":evdev",
+    ":event_device_info",
+    ":event_device_info_test_utils",
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
@@ -197,6 +279,11 @@ source_set("unittests") {
     "//ui/events/ozone/layout",
     "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "numberpad_metrics_unittest.cc" ]
+    deps += [ "//chromeos/ash/components/feature_usage" ]
+  }
 
   visibility += [ "//ui/events/ozone:unittests" ]
 }

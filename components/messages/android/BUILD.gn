@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,18 +7,24 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/messages/MessageAutodismissDurationProvider.java",
     "java/src/org/chromium/components/messages/MessageBannerProperties.java",
     "java/src/org/chromium/components/messages/MessageContainer.java",
     "java/src/org/chromium/components/messages/MessageDispatcher.java",
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
     "java/src/org/chromium/components/messages/MessageDispatcherProvider.java",
+    "java/src/org/chromium/components/messages/MessageFeatureList.java",
+    "java/src/org/chromium/components/messages/MessageSecondaryMenuItems.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
+    "java/src/org/chromium/components/messages/MessagesMetrics.java",
   ]
   resources_package = "org.chromium.components.messages"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
@@ -43,6 +49,7 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/messages/MessageDispatcherBridge.java",
+    "java/src/org/chromium/components/messages/MessageFeatureList.java",
     "java/src/org/chromium/components/messages/MessageWrapper.java",
   ]
 }
@@ -54,12 +61,17 @@ static_library("android") {
     "message_enums.h",
     "message_wrapper.cc",
     "message_wrapper.h",
+    "throttler/domain_session_throttler.cc",
+    "throttler/domain_session_throttler.h",
   ]
   deps = [
     ":jni_headers",
     "//base",
     "//content/public/browser",
+    "//ui/android:android",
   ]
+
+  public_deps = [ "//skia" ]
 }
 
 static_library("test_support") {
@@ -72,6 +84,17 @@ static_library("test_support") {
   deps = [
     ":android",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "message_dispatcher_bridge_unittest.cc" ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//testing/gtest",
   ]
 }
 
@@ -106,13 +129,13 @@ static_library("feature_flags") {
     "messages_feature.cc",
     "messages_feature.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/messages/android:jni_headers",
+  ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources =
       [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
   deps = [
@@ -121,7 +144,6 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/widget/android:java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",

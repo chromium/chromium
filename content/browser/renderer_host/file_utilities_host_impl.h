@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_FILE_UTILITIES_HOST_IMPL_H_
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 
@@ -23,6 +24,12 @@ class FileUtilitiesHostImpl : public blink::mojom::FileUtilitiesHost {
   // blink::mojom::FileUtilitiesHost implementation.
   void GetFileInfo(const base::FilePath& path,
                    GetFileInfoCallback callback) override;
+
+#if BUILDFLAG(IS_MAC)
+  void SetLength(base::File file,
+                 const int64_t length,
+                 SetLengthCallback callback) override;
+#endif  // BUILDFLAG(IS_MAC)
 
   const int process_id_;
 };

@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_TEST_HTTP_SERVER_DATA_RESPONSE_PROVIDER_H_
 #define IOS_WEB_PUBLIC_TEST_HTTP_SERVER_DATA_RESPONSE_PROVIDER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -16,7 +17,7 @@ namespace web {
 
 // An abstract ResponseProvider that returns a test_server::HttpResponse for a
 // request. This class encapsulates the logic to convert the response headers
-// and body received from |GetResponseHeadersAndBody| into a
+// and body received from `GetResponseHeadersAndBody` into a
 // net::test_server::HttpResponse.
 class DataResponseProvider : public ResponseProvider {
  public:

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 @protocol FaviconRetriever;
 @protocol ImageRetriever;
 
-// This class is used to display |OmniboxIcon|s. It handles the multiple image
+// This class is used to display `OmniboxIcon`s. It handles the multiple image
 // views neceesary to get the correct compositing behavior.
 @interface OmniboxIconView : UIView
 
@@ -21,6 +21,8 @@
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 // Used for testing to check whether this view is displaying anything.
 @property(nonatomic, readonly) UIImage* mainImage;
+// Same as UIImageView.
+@property(nonatomic, getter=isHighlighted) BOOL highlighted;
 
 - (void)prepareForReuse;
 

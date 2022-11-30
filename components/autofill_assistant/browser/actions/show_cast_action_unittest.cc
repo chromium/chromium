@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,8 +64,8 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
   Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(ClientStatus(TIMED_OUT), base::Seconds(0)));
+  EXPECT_CALL(mock_action_delegate_, StoreScrolledToElement(_)).Times(0);
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_)).Times(0);
 
   EXPECT_CALL(callback_,
@@ -81,19 +81,19 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(2)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(2)));
   EXPECT_CALL(mock_action_delegate_,
-              ScrollToElementPosition(expected_selector, _, Eq(nullptr),
+              StoreScrolledToElement(EqualsElement(expected_element)));
+  EXPECT_CALL(mock_web_controller_,
+              ScrollToElementPosition(Eq(nullptr), _,
                                       EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -114,8 +114,7 @@ TEST_F(ShowCastActionTest, ScrollContainerIfSpecified) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(1)));
 
   auto expected_container = test_util::MockFindElement(
       mock_action_delegate_, expected_container_selector);
@@ -124,14 +123,14 @@ TEST_F(ShowCastActionTest, ScrollContainerIfSpecified) {
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(2)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(2)));
+  EXPECT_CALL(mock_action_delegate_,
+              StoreScrolledToElement(EqualsElement(expected_element)));
   EXPECT_CALL(
-      mock_action_delegate_,
-      ScrollToElementPosition(expected_selector, _,
-                              Pointee(EqualsElement(expected_container)),
+      mock_web_controller_,
+      ScrollToElementPosition(Pointee(EqualsElement(expected_container)), _,
                               EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -151,27 +150,25 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
 
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), base::Seconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
   EXPECT_CALL(mock_action_delegate_,
               WaitUntilDocumentIsInReadyState(
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(0)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(0)));
   EXPECT_CALL(mock_web_controller_,
-              ScrollIntoView(false, EqualsElement(expected_element), _))
+              ScrollIntoViewIfNeeded(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
       mock_web_controller_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<3>(OkClientStatus(),
-                                   base::TimeDelta::FromSeconds(1)));
+      .WillOnce(RunOnceCallback<3>(OkClientStatus(), base::Seconds(1)));
   EXPECT_CALL(mock_action_delegate_,
-              ScrollToElementPosition(expected_selector, _, _,
-                                      EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<4>(OkClientStatus()));
+              StoreScrolledToElement(EqualsElement(expected_element)));
+  EXPECT_CALL(mock_web_controller_,
+              ScrollToElementPosition(_, _, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
 
   ProcessedActionProto capture;
@@ -180,29 +177,6 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
 
   EXPECT_EQ(capture.status(), ACTION_APPLIED);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 1000);
-}
-
-TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
-  ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
-  test_util::MockFindAnyElement(mock_action_delegate_);
-  ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
-      .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
-                                        base::TimeDelta::FromSeconds(0)));
-  ON_CALL(mock_action_delegate_, ScrollToElementPosition(_, _, _, _, _))
-      .WillByDefault(RunOnceCallback<4>(OkClientStatus()));
-
-  Selector selector({"#focus"});
-  *proto_.mutable_element_to_present() = selector.proto;
-  proto_.set_title("Title");
-
-  EXPECT_CALL(mock_action_delegate_, SetStatusMessage("Title"));
-
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
-  Run();
 }
 
 }  // namespace

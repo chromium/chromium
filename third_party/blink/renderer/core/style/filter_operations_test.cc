@@ -26,14 +26,15 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
 TEST(FilterOperationsTest, mapRectNoFilter) {
   FilterOperations ops;
   EXPECT_FALSE(ops.HasFilterThatMovesPixels());
-  EXPECT_EQ(FloatRect(0, 0, 10, 10), ops.MapRect(FloatRect(0, 0, 10, 10)));
+  EXPECT_EQ(gfx::RectF(0, 0, 10, 10), ops.MapRect(gfx::RectF(0, 0, 10, 10)));
 }
 
 TEST(FilterOperationsTest, mapRectBlur) {
@@ -41,18 +42,18 @@ TEST(FilterOperationsTest, mapRectBlur) {
   ops.Operations().push_back(
       MakeGarbageCollected<BlurFilterOperation>(Length::Fixed(20.0)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
-  EXPECT_EQ(IntRect(-57, -57, 124, 124),
-            EnclosingIntRect(ops.MapRect(FloatRect(0, 0, 10, 10))));
+  EXPECT_EQ(gfx::Rect(-57, -57, 124, 124),
+            gfx::ToEnclosingRect(ops.MapRect(gfx::RectF(0, 0, 10, 10))));
 }
 
 TEST(FilterOperationsTest, mapRectDropShadow) {
   FilterOperations ops;
   ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
-      ShadowData(FloatPoint(3, 8), 20, 0, ShadowStyle::kNormal,
+      ShadowData(gfx::PointF(3, 8), 20, 0, ShadowStyle::kNormal,
                  StyleColor(Color(1, 2, 3)))));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
-  EXPECT_EQ(IntRect(-54, -49, 124, 124),
-            EnclosingIntRect(ops.MapRect(FloatRect(0, 0, 10, 10))));
+  EXPECT_EQ(gfx::Rect(-54, -49, 124, 124),
+            gfx::ToEnclosingRect(ops.MapRect(gfx::RectF(0, 0, 10, 10))));
 }
 
 TEST(FilterOperationsTest, mapRectBoxReflect) {
@@ -61,8 +62,8 @@ TEST(FilterOperationsTest, mapRectBoxReflect) {
       BoxReflection(BoxReflection::kVerticalReflection, 100)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
 
-  // original IntRect(0, 0, 10, 10) + reflection IntRect(90, 90, 10, 10)
-  EXPECT_EQ(FloatRect(0, 0, 10, 100), ops.MapRect(FloatRect(0, 0, 10, 10)));
+  // original gfx::Rect(0, 0, 10, 10) + reflection gfx::Rect(90, 90, 10, 10)
+  EXPECT_EQ(gfx::RectF(0, 0, 10, 100), ops.MapRect(gfx::RectF(0, 0, 10, 10)));
 }
 
 TEST(FilterOperationsTest, mapRectDropShadowAndBoxReflect) {
@@ -70,12 +71,13 @@ TEST(FilterOperationsTest, mapRectDropShadowAndBoxReflect) {
   // important that the bounds be filtered in the correct order.
   FilterOperations ops;
   ops.Operations().push_back(MakeGarbageCollected<DropShadowFilterOperation>(
-      ShadowData(FloatPoint(100, 200), 0, 0, ShadowStyle::kNormal,
+      ShadowData(gfx::PointF(100, 200), 0, 0, ShadowStyle::kNormal,
                  StyleColor(Color::kBlack))));
   ops.Operations().push_back(MakeGarbageCollected<BoxReflectFilterOperation>(
       BoxReflection(BoxReflection::kVerticalReflection, 50)));
   EXPECT_TRUE(ops.HasFilterThatMovesPixels());
-  EXPECT_EQ(FloatRect(0, -160, 110, 370), ops.MapRect(FloatRect(0, 0, 10, 10)));
+  EXPECT_EQ(gfx::RectF(0, -160, 110, 370),
+            ops.MapRect(gfx::RectF(0, 0, 10, 10)));
 }
 
 }  // namespace blink

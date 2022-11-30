@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,8 +56,7 @@ bool ResizeObserverController::SkippedObservations() {
 void ResizeObserverController::DeliverObservations() {
   // Copy is needed because m_observers might get modified during
   // deliverObservations.
-  HeapVector<Member<ResizeObserver>> observers;
-  CopyToVector(observers_, observers);
+  HeapVector<Member<ResizeObserver>> observers(observers_);
 
   for (auto& observer : observers) {
     if (observer) {

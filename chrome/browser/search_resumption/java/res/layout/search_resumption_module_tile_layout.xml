@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.search_resumption.SearchResumptionTileView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:id="@+id/suggestion_tile"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/search_resumption_module_suggestion_margin_bottom"
+    android:paddingTop="@dimen/search_resumption_module_header_padding_top"
+    android:paddingBottom="@dimen/search_resumption_module_header_padding_top"
+    android:paddingStart="@dimen/search_resumption_module_suggestion_padding_start"
+    android:paddingEnd="@dimen/search_resumption_module_suggestion_padding_start"
+    android:background="@drawable/search_resumption_module_background_middle"
+    android:orientation="vertical">
+
+    <!-- The magnifier icon on left of the search suggestion text. -->
+    <ImageView
+        android:id="@+id/tile_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/search_resumption_module_suggestion_padding_start"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/DefaultSearchProviderSuggestURLDesc"
+        android:src="@drawable/ic_suggestion_magnifier"
+        app:tint="@macro/default_icon_color_secondary"/>
+
+    <TextView
+        android:id="@+id/tile_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/tile_icon"
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+</org.chromium.chrome.browser.search_resumption.SearchResumptionTileView>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    // Finish the ref test when the visibility event has been received
+    // by the fenced frame.
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+  </script>
+  <fencedframe
+      style="width: 100%; height: 300px; border: 0"
+      src="resources/visibility-changed-inner.php"></fencedframe>
+</body>
+</html>

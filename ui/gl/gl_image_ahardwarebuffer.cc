@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,17 +122,6 @@ bool GLImageAHardwareBuffer::CopyTexImage(unsigned target) {
 bool GLImageAHardwareBuffer::CopyTexSubImage(unsigned target,
                                              const gfx::Point& offset,
                                              const gfx::Rect& rect) {
-  return false;
-}
-
-bool GLImageAHardwareBuffer::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
   return false;
 }
 

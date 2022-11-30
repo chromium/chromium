@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/color_parser.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_client.h"
@@ -95,15 +96,15 @@ namespace {
 
 // If the same property is specified for the inner and outer bounds, raise an
 // error.
-bool CheckBoundsConflict(const std::unique_ptr<int>& inner_property,
-                         const std::unique_ptr<int>& outer_property,
+bool CheckBoundsConflict(const absl::optional<int>& inner_property,
+                         const absl::optional<int>& outer_property,
                          const std::string& property_name,
                          std::string* error) {
-  if (inner_property.get() && outer_property.get()) {
+  if (inner_property && outer_property) {
     std::vector<std::string> subst;
     subst.push_back(property_name);
     *error = base::ReplaceStringPlaceholders(
-        app_window_constants::kConflictingBoundsOptions, subst, NULL);
+        app_window_constants::kConflictingBoundsOptions, subst, nullptr);
     return false;
   }
 
@@ -117,21 +118,21 @@ void CopyBoundsSpec(const app_window::BoundsSpecification* input_spec,
   if (!input_spec)
     return;
 
-  if (input_spec->left.get())
+  if (input_spec->left)
     create_spec->bounds.set_x(*input_spec->left);
-  if (input_spec->top.get())
+  if (input_spec->top)
     create_spec->bounds.set_y(*input_spec->top);
-  if (input_spec->width.get())
+  if (input_spec->width)
     create_spec->bounds.set_width(*input_spec->width);
-  if (input_spec->height.get())
+  if (input_spec->height)
     create_spec->bounds.set_height(*input_spec->height);
-  if (input_spec->min_width.get())
+  if (input_spec->min_width)
     create_spec->minimum_size.set_width(*input_spec->min_width);
-  if (input_spec->min_height.get())
+  if (input_spec->min_height)
     create_spec->minimum_size.set_height(*input_spec->min_height);
-  if (input_spec->max_width.get())
+  if (input_spec->max_width)
     create_spec->maximum_size.set_width(*input_spec->max_width);
-  if (input_spec->max_height.get())
+  if (input_spec->max_height)
     create_spec->maximum_size.set_height(*input_spec->max_height);
 }
 
@@ -144,19 +145,20 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown())
     return RespondNow(Error(kUnknownErrorDoNotUse));
 
-  std::unique_ptr<Create::Params> params(Create::Params::Create(*args_));
+  std::unique_ptr<Create::Params> params(Create::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   GURL url = extension()->GetResourceURL(params->url);
-  // Allow absolute URLs for component apps, otherwise prepend the extension
-  // path.
-  // TODO(devlin): Investigate if this is still used. If not, kill it dead!
+  // URLs normally must be relative to the extension. We make an exception
+  // to allow component apps to open chrome URLs (e.g. for the settings page
+  // on ChromeOS).
   GURL absolute = GURL(params->url);
   if (absolute.has_scheme()) {
-    if (extension()->location() == mojom::ManifestLocation::kComponent) {
+    if (extension()->location() == mojom::ManifestLocation::kComponent &&
+        absolute.SchemeIs(content::kChromeUIScheme)) {
       url = absolute;
     } else {
-      // Show error when url passed isn't local.
+      // Show error when url passed isn't valid.
       return RespondNow(Error(app_window_constants::kInvalidUrlParameter));
     }
   }
@@ -165,9 +167,9 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   // AppWindow::Create so we can set the opener at create time rather than
   // with a hack in AppWindowCustomBindings::GetView().
   AppWindow::CreateParams create_params;
-  app_window::CreateWindowOptions* options = params->options.get();
+  absl::optional<app_window::CreateWindowOptions>& options = params->options;
   if (options) {
-    if (options->id.get()) {
+    if (options->id) {
       // TODO(mek): use URL if no id specified?
       // Limit length of id to 256 characters.
       if (options->id->length() > 256)
@@ -189,36 +191,33 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
                                            create_params.window_key);
         if (existing_window) {
           content::RenderFrameHost* existing_frame =
-              existing_window->web_contents()->GetMainFrame();
+              existing_window->web_contents()->GetPrimaryMainFrame();
           int frame_id = MSG_ROUTING_NONE;
           if (source_process_id() == existing_frame->GetProcess()->GetID()) {
             frame_id = existing_frame->GetRoutingID();
           }
 
-          if (!options->hidden.get() || !*options->hidden) {
-            if (options->focused.get() && !*options->focused)
+          if (!options->hidden || !*options->hidden) {
+            if (options->focused && !*options->focused)
               existing_window->Show(AppWindow::SHOW_INACTIVE);
             else
               existing_window->Show(AppWindow::SHOW_ACTIVE);
           }
 
-          std::unique_ptr<base::DictionaryValue> result(
-              new base::DictionaryValue);
-          result->SetInteger("frameId", frame_id);
-          existing_window->GetSerializedState(result.get());
-          result->SetBoolean("existingWindow", true);
+          base::Value result(base::Value::Type::DICTIONARY);
+          result.SetIntKey("frameId", frame_id);
+          existing_window->GetSerializedState(&result);
+          result.SetBoolKey("existingWindow", true);
           // We should not return the window until that window is properly
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation())
-            return RespondNow(OneArgument(
-                base::Value::FromUniquePtrValue(std::move(result))));
+            return RespondNow(OneArgument(std::move(result)));
 
-          existing_window->AddOnDidFinishFirstNavigationCallback(base::BindOnce(
-              &AppWindowCreateFunction::
-                  OnAppWindowFinishedFirstNavigationOrClosed,
-              this,
-              OneArgument(base::Value::FromUniquePtrValue(std::move(result)))));
+          existing_window->AddOnDidFinishFirstNavigationCallback(
+              base::BindOnce(&AppWindowCreateFunction::
+                                 OnAppWindowFinishedFirstNavigationOrClosed,
+                             this, OneArgument(std::move(result))));
           return RespondLater();
         }
       }
@@ -237,10 +236,10 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       return RespondNow(Error(std::move(error)));
 
     if (extension()->GetType() == Manifest::TYPE_EXTENSION) {
-      // Whitelisted IME extensions are allowed to use this API to create IME
+      // Allowlisted IME extensions are allowed to use this API to create IME
       // specific windows to show accented characters or suggestions.
       if (!extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kImeWindowEnabled)) {
+              mojom::APIPermissionID::kImeWindowEnabled)) {
         return RespondNow(
             Error(app_window_constants::kImeWindowMissingPermission));
       }
@@ -252,7 +251,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 #else
       // IME extensions must create ime window (with "ime: true" and
       // "frame: none").
-      if (options->ime.get() && *options->ime.get() &&
+      if (options->ime.value_or(false) &&
           create_params.frame == AppWindow::FRAME_NONE) {
         create_params.is_ime_window = true;
       } else {
@@ -261,14 +260,14 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       }
 #endif  // IS_CHROMEOS_ASH
     } else {
-      if (options->ime.get()) {
+      if (options->ime) {
         return RespondNow(
             Error(app_window_constants::kImeOptionIsNotSupported));
       }
     }
 
-    if (options->alpha_enabled.get()) {
-      const char* const kWhitelist[] = {
+    if (options->alpha_enabled) {
+      const char* const kAllowlist[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
         "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
@@ -286,13 +285,13 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
         "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"
       };
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !SimpleFeature::IsIdInArray(extension_id(), kWhitelist,
-                                      base::size(kWhitelist))) {
+          !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
+                                      std::size(kAllowlist))) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }
       if (!extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kAlphaEnabled)) {
+              mojom::APIPermissionID::kAlphaEnabled)) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledMissingPermission));
       }
@@ -308,32 +307,32 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 #endif
     }
 
-    if (options->hidden.get())
+    if (options->hidden)
       create_params.hidden = *options->hidden;
 
-    if (options->resizable.get())
+    if (options->resizable)
       create_params.resizable = *options->resizable;
 
-    if (options->always_on_top.get()) {
+    if (options->always_on_top) {
       create_params.always_on_top = *options->always_on_top;
 
       if (create_params.always_on_top &&
           !extension()->permissions_data()->HasAPIPermission(
-              APIPermission::kAlwaysOnTopWindows)) {
+              mojom::APIPermissionID::kAlwaysOnTopWindows)) {
         return RespondNow(Error(app_window_constants::kAlwaysOnTopPermission));
       }
     }
 
-    if (options->focused.get())
+    if (options->focused)
       create_params.focused = *options->focused;
 
-    if (options->visible_on_all_workspaces.get()) {
+    if (options->visible_on_all_workspaces) {
       create_params.visible_on_all_workspaces =
           *options->visible_on_all_workspaces;
     }
 
-    if (options->show_in_shelf.get()) {
-      create_params.show_in_shelf = *options->show_in_shelf.get();
+    if (options->show_in_shelf) {
+      create_params.show_in_shelf = *options->show_in_shelf;
 
       if (create_params.show_in_shelf && create_params.window_key.empty()) {
         return RespondNow(
@@ -341,14 +340,14 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       }
     }
 
-    if (options->icon.get()) {
+    if (options->icon) {
       // First, check if the window icon URL is a valid global URL.
-      create_params.window_icon_url = GURL(*options->icon.get());
+      create_params.window_icon_url = GURL(*options->icon);
 
       // If the URL is not global, check for a valid extension local URL.
       if (!create_params.window_icon_url.is_valid()) {
         create_params.window_icon_url =
-            extension()->GetResourceURL(*options->icon.get());
+            extension()->GetResourceURL(*options->icon);
       }
     }
 
@@ -377,7 +376,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
     }
 
     if (!extension()->permissions_data()->HasAPIPermission(
-            APIPermission::kLockScreen)) {
+            mojom::APIPermissionID::kLockScreen)) {
       return RespondNow(Error(
           app_window_constants::kLockScreenActionRequiresLockScreenPermission));
     }
@@ -403,7 +402,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (!app_window)
     return RespondNow(Error(app_window_constants::kAppWindowCreationFailed));
 
-  app_window->Init(url, new AppWindowContentsImpl(app_window),
+  app_window->Init(url, std::make_unique<AppWindowContentsImpl>(app_window),
                    render_frame_host(), create_params);
 
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode() &&
@@ -412,17 +411,16 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   }
 
   content::RenderFrameHost* created_frame =
-      app_window->web_contents()->GetMainFrame();
+      app_window->web_contents()->GetPrimaryMainFrame();
   int frame_id = MSG_ROUTING_NONE;
   if (create_params.creator_process_id == created_frame->GetProcess()->GetID())
     frame_id = created_frame->GetRoutingID();
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
-  result->SetInteger("frameId", frame_id);
-  result->SetString("id", app_window->window_key());
-  app_window->GetSerializedState(result.get());
-  ResponseValue result_arg =
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result)));
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetIntKey("frameId", frame_id);
+  result.SetStringKey("id", app_window->window_key());
+  app_window->GetSerializedState(&result);
+  ResponseValue result_arg = OneArgument(std::move(result));
 
   if (AppWindowRegistry::Get(browser_context())
           ->HadDevToolsAttached(app_window->web_contents())) {
@@ -463,105 +461,97 @@ bool AppWindowCreateFunction::GetBoundsSpec(
   DCHECK(params);
   DCHECK(error);
 
-  if (options.inner_bounds.get() || options.outer_bounds.get()) {
+  if (options.inner_bounds || options.outer_bounds) {
     // Parse the inner and outer bounds specifications. If developers use the
     // new API, the deprecated fields will be ignored - do not attempt to merge
     // them.
 
-    const app_window::BoundsSpecification* inner_bounds =
-        options.inner_bounds.get();
-    const app_window::BoundsSpecification* outer_bounds =
-        options.outer_bounds.get();
+    const absl::optional<app_window::BoundsSpecification>& inner_bounds =
+        options.inner_bounds;
+    const absl::optional<app_window::BoundsSpecification>& outer_bounds =
+        options.outer_bounds;
     if (inner_bounds && outer_bounds) {
-      if (!CheckBoundsConflict(
-               inner_bounds->left, outer_bounds->left, "left", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->top, outer_bounds->top, "top", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->width, outer_bounds->width, "width", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->height, outer_bounds->height, "height", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(inner_bounds->min_width,
-                               outer_bounds->min_width,
-                               "minWidth",
+      if (!CheckBoundsConflict(inner_bounds->left, outer_bounds->left, "left",
                                error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->top, outer_bounds->top, "top",
+                               error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->width, outer_bounds->width,
+                               "width", error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->height, outer_bounds->height,
+                               "height", error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->min_width, outer_bounds->min_width,
+                               "minWidth", error)) {
         return false;
       }
       if (!CheckBoundsConflict(inner_bounds->min_height,
-                               outer_bounds->min_height,
-                               "minHeight",
-                               error)) {
+                               outer_bounds->min_height, "minHeight", error)) {
         return false;
       }
-      if (!CheckBoundsConflict(inner_bounds->max_width,
-                               outer_bounds->max_width,
-                               "maxWidth",
-                               error)) {
+      if (!CheckBoundsConflict(inner_bounds->max_width, outer_bounds->max_width,
+                               "maxWidth", error)) {
         return false;
       }
       if (!CheckBoundsConflict(inner_bounds->max_height,
-                               outer_bounds->max_height,
-                               "maxHeight",
-                               error)) {
+                               outer_bounds->max_height, "maxHeight", error)) {
         return false;
       }
     }
 
-    CopyBoundsSpec(inner_bounds, &(params->content_spec));
-    CopyBoundsSpec(outer_bounds, &(params->window_spec));
+    CopyBoundsSpec(base::OptionalToPtr(inner_bounds), &(params->content_spec));
+    CopyBoundsSpec(base::OptionalToPtr(outer_bounds), &(params->window_spec));
   } else {
     // Parse deprecated fields.
     // Due to a bug in NativeAppWindow::GetFrameInsets() on Windows and ChromeOS
     // the bounds set the position of the window and the size of the content.
     // This will be preserved as apps may be relying on this behavior.
 
-    if (options.default_width.get())
+    if (options.default_width)
       params->content_spec.bounds.set_width(*options.default_width);
-    if (options.default_height.get())
+    if (options.default_height)
       params->content_spec.bounds.set_height(*options.default_height);
-    if (options.default_left.get())
+    if (options.default_left)
       params->window_spec.bounds.set_x(*options.default_left);
-    if (options.default_top.get())
+    if (options.default_top)
       params->window_spec.bounds.set_y(*options.default_top);
 
-    if (options.width.get())
+    if (options.width)
       params->content_spec.bounds.set_width(*options.width);
-    if (options.height.get())
+    if (options.height)
       params->content_spec.bounds.set_height(*options.height);
-    if (options.left.get())
+    if (options.left)
       params->window_spec.bounds.set_x(*options.left);
-    if (options.top.get())
+    if (options.top)
       params->window_spec.bounds.set_y(*options.top);
 
-    if (options.bounds.get()) {
-      app_window::ContentBounds* bounds = options.bounds.get();
-      if (bounds->width.get())
-        params->content_spec.bounds.set_width(*bounds->width);
-      if (bounds->height.get())
-        params->content_spec.bounds.set_height(*bounds->height);
-      if (bounds->left.get())
-        params->window_spec.bounds.set_x(*bounds->left);
-      if (bounds->top.get())
-        params->window_spec.bounds.set_y(*bounds->top);
+    if (options.bounds) {
+      const app_window::ContentBounds& bounds = *options.bounds;
+      if (bounds.width)
+        params->content_spec.bounds.set_width(*bounds.width);
+      if (bounds.height)
+        params->content_spec.bounds.set_height(*bounds.height);
+      if (bounds.left)
+        params->window_spec.bounds.set_x(*bounds.left);
+      if (bounds.top)
+        params->window_spec.bounds.set_y(*bounds.top);
     }
 
     gfx::Size& minimum_size = params->content_spec.minimum_size;
-    if (options.min_width.get())
+    if (options.min_width)
       minimum_size.set_width(*options.min_width);
-    if (options.min_height.get())
+    if (options.min_height)
       minimum_size.set_height(*options.min_height);
     gfx::Size& maximum_size = params->content_spec.maximum_size;
-    if (options.max_width.get())
+    if (options.max_width)
       maximum_size.set_width(*options.max_width);
-    if (options.max_height.get())
+    if (options.max_height)
       maximum_size.set_height(*options.max_height);
   }
 
@@ -593,15 +583,14 @@ bool AppWindowCreateFunction::GetFrameOptions(
     create_params->frame =
         GetFrameFromString(*options.frame->as_frame_options->type);
 
-  if (options.frame->as_frame_options->color.get()) {
+  if (options.frame->as_frame_options->color) {
     if (create_params->frame != AppWindow::FRAME_CHROME) {
       *error = app_window_constants::kColorWithFrameNone;
       return false;
     }
 
-    if (!image_util::ParseHexColorString(
-            *options.frame->as_frame_options->color,
-            &create_params->active_frame_color)) {
+    if (!content::ParseHexColorString(*options.frame->as_frame_options->color,
+                                      &create_params->active_frame_color)) {
       *error = app_window_constants::kInvalidColorSpecification;
       return false;
     }
@@ -609,8 +598,8 @@ bool AppWindowCreateFunction::GetFrameOptions(
     create_params->has_frame_color = true;
     create_params->inactive_frame_color = create_params->active_frame_color;
 
-    if (options.frame->as_frame_options->inactive_color.get()) {
-      if (!image_util::ParseHexColorString(
+    if (options.frame->as_frame_options->inactive_color) {
+      if (!content::ParseHexColorString(
               *options.frame->as_frame_options->inactive_color,
               &create_params->inactive_frame_color)) {
         *error = app_window_constants::kInvalidColorSpecification;
@@ -621,7 +610,7 @@ bool AppWindowCreateFunction::GetFrameOptions(
     return true;
   }
 
-  if (options.frame->as_frame_options->inactive_color.get()) {
+  if (options.frame->as_frame_options->inactive_color) {
     *error = app_window_constants::kInactiveColorWithoutColor;
     return false;
   }

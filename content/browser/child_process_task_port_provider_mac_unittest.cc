@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -42,8 +41,6 @@ class MockChildProcess : public mojom::ChildProcess {
                void(mojo::PendingReceiver<
                     tracing::mojom::BackgroundTracingAgentProvider>));
   MOCK_METHOD0(CrashHungProcess, void());
-  MOCK_METHOD1(BootstrapLegacyIpc,
-               void(mojo::PendingReceiver<IPC::mojom::ChannelBootstrap>));
   MOCK_METHOD2(RunServiceDeprecated,
                void(const std::string&, mojo::ScopedMessagePipeHandle));
   MOCK_METHOD1(BindServiceInterface,
@@ -51,6 +48,7 @@ class MockChildProcess : public mojom::ChildProcess {
   MOCK_METHOD1(BindReceiver, void(mojo::GenericPendingReceiver receiver));
   MOCK_METHOD1(EnableSystemTracingService,
                void(mojo::PendingRemote<tracing::mojom::SystemTracingService>));
+  MOCK_METHOD1(SetPseudonymizationSalt, void(uint32_t salt));
 };
 
 class ChildProcessTaskPortProviderTest : public testing::Test,

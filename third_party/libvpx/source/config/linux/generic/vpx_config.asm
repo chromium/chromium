@@ -1,6 +1,6 @@
 @ This file was created from a .asm file
 @  using the ads2gas.pl script.
-	.syntax unified
+.syntax unified
 .equ VPX_ARCH_ARM ,  0
 .equ ARCH_ARM ,  0
 .equ VPX_ARCH_MIPS ,  0
@@ -11,6 +11,8 @@
 .equ ARCH_X86_64 ,  0
 .equ VPX_ARCH_PPC ,  0
 .equ ARCH_PPC ,  0
+.equ VPX_ARCH_LOONGARCH ,  0
+.equ ARCH_LOONGARCH ,  0
 .equ HAVE_NEON ,  0
 .equ HAVE_NEON_ASM ,  0
 .equ HAVE_MIPS32 ,  0
@@ -28,6 +30,8 @@
 .equ HAVE_AVX512 ,  0
 .equ HAVE_VSX ,  0
 .equ HAVE_MMI ,  0
+.equ HAVE_LSX ,  0
+.equ HAVE_LASX ,  0
 .equ HAVE_VPX_PORTS ,  1
 .equ HAVE_PTHREAD_H ,  1
 .equ HAVE_UNISTD_H ,  0
@@ -95,4 +99,4 @@
 .equ CONFIG_RATE_CTRL ,  0
 .equ DECODE_WIDTH_LIMIT ,  16384
 .equ DECODE_HEIGHT_LIMIT ,  16384
-	.section	.note.GNU-stack,"",%progbits
+    .section .note.GNU-stack,"",%progbits

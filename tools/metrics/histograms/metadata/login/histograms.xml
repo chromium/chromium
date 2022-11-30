@@ -1,0 +1,443 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Login histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Login.AllowlistCOILFallback" enum="Boolean"
+    expires_after="2023-03-19">
+  <owner>emaamari@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Chrome OS histogram that keeps track of cases where the user_allowlist
+    policy is not present, forcing us to use the user_whitelist policy instead.
+    We emit false to this histogram when user_allowlist is present. We emit true
+    when user_allowlist is not present and user_whitelist is present and used as
+    fallback. These checks happen during login policies decoding, which occurs
+    every time device settings are loaded or stored.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcBugReportBackupTime" units="ms"
+    expires_after="2022-12-25">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to back up ARC bug reports when starting ARC fails. This is
+    emitted when we upgrade the ARC container from mini to full.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseStatus"
+    enum="ArcContinueBootImpulseStatus" expires_after="2023-02-12">
+  <owner>vsomani@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the status of Arc continue boot impulse. This is emitted every time
+    we upgrade from a mini to full container.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime" units="ms"
+    expires_after="2022-03-30">
+  <obsolete>
+    Removed 2022/02, replaced with ArcContinueBootImpulseTime2.
+  </obsolete>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we successfully upgrade the ARC container from mini to full.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime2" units="ms"
+    expires_after="2023-02-12">
+  <obsolete>
+    Removed 2022/09, replaced with ArcContinueBootImpulseTime3.
+  </obsolete>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we successfully upgrade the ARC container from mini to full. This metrics
+    increases the number of buckets to 50 and a maximum duration of 60 seconds.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime3" units="ms"
+    expires_after="2023-09-12">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we successfully upgrade the ARC container from mini to full. This metrics
+    increases the number of buckets to 50 and a maximum duration of 40 seconds.
+  </summary>
+</histogram>
+
+<histogram name="Login.BrowserShutdownTime" units="ms"
+    expires_after="2023-02-22">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks the browser process shutdown time from when SIGTERM is sent to the
+    browser process to when the browser process group exits (or gets killed by
+    SIGABRT).
+  </summary>
+</histogram>
+
+<histogram name="Login.ConsumerNewUsersAllowed" enum="LoginConsumerWhitelist"
+    expires_after="M77">
+  <owner>cmasone@chromium.org</owner>
+  <owner>sumit@chromium.org</owner>
+  <summary>
+    Chrome OS histogram tracking, per consumer sign-in, whether the device owner
+    is allowing arbitrary accounts to be used on the device, or only those on a
+    specific whitelist.
+  </summary>
+</histogram>
+
+<histogram name="Login.CustomFlags" enum="LoginCustomFlags"
+    expires_after="never">
+<!-- expires-never: monitors 'black screen on login' user experience. -->
+
+  <owner>alemate@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <summary>
+    A set of chrome flags that triggered browser restart on Chrome OS after user
+    sign in. Chrome needs to be restarted if the device owner set of flags is
+    different from the user flags. Which means that there is a flag difference
+    which led to this restart. This difference is reported by this metric.
+  </summary>
+</histogram>
+
+<histogram name="Login.FailureReason" enum="LoginFailureReason"
+    expires_after="2023-04-05">
+  <owner>achuith@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>Chrome OS login failure reason.</summary>
+</histogram>
+
+<histogram name="Login.Flow.{UserVisibility}.{UserCount}"
+    enum="LoginFlowUserLoginType" expires_after="2022-12-15">
+  <owner>sherrilin@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Report the type of user login and the number of it on a device. It is
+    triggered when a login is successful
+  </summary>
+  <token key="UserVisibility">
+    <variant name="HideUsers" summary="ShowUserOnSignin policy is set false"/>
+    <variant name="ShowUsers" summary="ShowUserOnSignin policy is set true"/>
+  </token>
+  <token key="UserCount">
+    <variant name="0" summary="0 users"/>
+    <variant name="1" summary="1 users"/>
+    <variant name="2" summary="2 users"/>
+    <variant name="Few" summary="3 to 5 users"/>
+    <variant name="Many" summary="More than 5 users"/>
+  </token>
+</histogram>
+
+<histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
+    enum="AllowedUsersPoliciesInvalidState" expires_after="2023-04-17">
+  <owner>emaamari@google.com</owner>
+  <owner>src/chromeos/ash/components/policy/OWNERS</owner>
+  <summary>
+    Chrome OS histogram that keeps track of cases where devices have an invalid
+    combination of allow_new_users and user_allowlist policies. This is emitted
+    during the decoding of login policies.
+  </summary>
+</histogram>
+
+<histogram name="Login.LeastUsedAccountDays" units="days" expires_after="M77">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
+  <owner>achuith@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of the days since the least frequently
+    used account signed in. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.NewUserPriorityPrefsSyncResult"
+    enum="NewUserPriorityPrefsSyncResult" expires_after="M85">
+  <owner>alemate@chromium.org</owner>
+  <summary>Records whether a new user's priority prefs sync timed out.</summary>
+</histogram>
+
+<histogram name="Login.NewUserPriorityPrefsSyncTime" units="ms"
+    expires_after="M85">
+  <owner>alemate@chromium.org</owner>
+  <summary>
+    Time spent waiting for priority preferences to sync after new user sign in.
+    The operation will time out after 10s.
+  </summary>
+</histogram>
+
+<histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
+    expires_after="2023-02-12">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Records the number of users the login screen was initialized with. It is
+    emitted on processing the user list before displaying the screen. The count
+    includes all Regular, Child and Active Directory users.
+  </summary>
+</histogram>
+
+<histogram name="Login.OfflineLoginWithHiddenUserPods"
+    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="2023-02-19">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Records offline login attempts with user pods hidden on the login screen.
+  </summary>
+</histogram>
+
+<histogram name="Login.OfflineSuccess.Attempts" units="units"
+    expires_after="2023-04-05">
+  <obsolete>
+    Removed 03/2022
+  </obsolete>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    On offline login success, records number of attempts, including success.
+  </summary>
+</histogram>
+
+<histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
+    expires_after="2022-11-30">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Type of login detected for a page load based on different heuristics.
+    Recorded once per page load.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
+    expires_after="2023-04-05">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Tracks the reason why a user was sent through the GAIA re-auth flow which
+    caused the local password change.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordNotChanged.ReauthReason"
+    enum="LoginReauthReasons" expires_after="2023-04-05">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Tracks the reason why a user was sent through the GAIA re-auth flow which
+    did not cause the local password change.
+  </summary>
+</histogram>
+
+<histogram name="Login.PasswordStoreSites.InitializedBeforeQuery"
+    enum="Boolean" expires_after="2022-11-30">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the passworded sites list is initialized when the query for
+    sites happens. This is used to measure how many queries happened before the
+    list got populated the first time. Recorded on every query to the password
+    store.
+  </summary>
+</histogram>
+
+<histogram name="Login.PolicyFilesStatePerBoot" enum="LoginPolicyFilesState"
+    expires_after="M100">
+  <owner>mpolzer@google.com</owner>
+  <summary>The state of Chrome OS owner key and device policy files.</summary>
+</histogram>
+
+<histogram name="Login.PromptToCompleteLoginTime" units="ms"
+    expires_after="2023-04-05">
+  <owner>antrim@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Time from first display of the login prompt until the user completes signing
+    in.
+  </summary>
+</histogram>
+
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2023-04-05">
+  <owner>elijahtaylor@google.com</owner>
+  <owner>yusukes@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Time from first display of the login prompt until the existing user
+    completes signing in.
+  </summary>
+</histogram>
+
+<histogram name="Login.ReauthToken.FetchDuration.{Result}" units="ms"
+    expires_after="2023-08-18">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the fetch duration of the reauth request token from the recovery
+    service when it {Result}. This is recorded on the GAIA reauth screen when
+    Cryptohome recovery is deemed to be needed in high probablity.
+
+    Warning: this histogram was expired from 2022-06-02 to 2022-08-18; data may
+    be missing.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fails to fetch"/>
+    <variant name="Success" summary="successfully fetches"/>
+  </token>
+</histogram>
+
+<histogram name="Login.SessionExitType" enum="LoginSessionExitType"
+    expires_after="2023-03-19">
+  <owner>iby@chromium.org</owner>
+  <summary>
+    Tracks whether a ChromeOS user was logged out because Chrome repeatedly
+    crashed.
+  </summary>
+</histogram>
+
+<histogram name="Login.StateKeyGenerationStatus"
+    enum="LoginStateKeyGenerationStatus" expires_after="M77">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Result of a state key generation operation.</summary>
+</histogram>
+
+<histogram name="Login.SuccessReason" enum="LoginSuccessReason"
+    expires_after="2023-04-05">
+  <owner>achuith@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>Chrome OS login success reason.</summary>
+</histogram>
+
+<histogram name="Login.SwitchToFeatureFlagMappingStatus"
+    enum="LoginFeatureFlagMappingStatus" expires_after="2022-04-10">
+  <owner>mnissler@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <summary>
+    Tracks whether switches were mapped to feature flags in session_manager for
+    compatibility. session_manager does this and emits UMA samples when
+    encountering old device settings files that still contain feature
+    configuration in command line switch representation. This data will inform
+    the decision when to remove this compatibility code.
+  </summary>
+</histogram>
+
+<histogram name="Login.TokenCheckResponseTime" units="ms"
+    expires_after="2023-04-05">
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Time between sending a request to, and receiving a reply from, GAIA token
+    endpoint to validate TokenInfo.
+  </summary>
+</histogram>
+
+<histogram name="Login.TokenObtainResponseTime" units="ms"
+    expires_after="2021-04-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time between sending a request to, and receiving a reply from, GAIA token
+    endpoint to obtain TokenInfo.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActive28Days" units="users"
+    expires_after="2022-04-10">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last 28 days. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveDaily" units="users"
+    expires_after="2022-04-03">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last day. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveWeekly" units="users"
+    expires_after="2022-04-24">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of number of users who have logged in
+    in the last 7 days. Reported on every boot and once a day after that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UsersActiveWeekly.Percent" units="%"
+    expires_after="2020-12-01">
+  <obsolete>
+    Removed in M103.
+  </obsolete>
+  <owner>alemate@chromium.org</owner>
+  <owner>achuith@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of percentage of local users who have
+    logged in in the last 7 days. Reported on every boot and once a day after
+    that.
+  </summary>
+</histogram>
+
+<histogram name="Login.UserType" enum="LoginUserType"
+    expires_after="2022-04-17">
+  <owner>cmasone@chromium.org</owner>
+  <summary>
+    Chrome OS histogram that keeps track of the way a user logs in and whether
+    Chrome OS is running normal or developer mode.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

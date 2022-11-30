@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Manages a pool of XhrIo's. This handles all the details of
@@ -62,6 +54,7 @@ goog.require('goog.structs.Map');
 goog.net.XhrManager = function(
     opt_maxRetries, opt_headers, opt_minCount, opt_maxCount,
     opt_timeoutInterval, opt_withCredentials) {
+  'use strict';
   goog.net.XhrManager.base(this, 'constructor');
 
   /**
@@ -141,6 +134,7 @@ goog.net.XhrManager.XHR_EVENT_TYPES_ = [
  * @param {number} ms Timeout interval in milliseconds; 0 means none.
  */
 goog.net.XhrManager.prototype.setTimeoutInterval = function(ms) {
+  'use strict';
   this.timeoutInterval_ = Math.max(0, ms);
 };
 
@@ -152,6 +146,7 @@ goog.net.XhrManager.prototype.setTimeoutInterval = function(ms) {
  * @return {number} The number of requests in flight or pending send.
  */
 goog.net.XhrManager.prototype.getOutstandingCount = function() {
+  'use strict';
   return this.requests_.getCount();
 };
 
@@ -163,6 +158,7 @@ goog.net.XhrManager.prototype.getOutstandingCount = function() {
  * @return {!Array<string>} Request ids in flight or pending send.
  */
 goog.net.XhrManager.prototype.getOutstandingRequestIds = function() {
+  'use strict';
   return this.requests_.getKeys();
 };
 
@@ -197,14 +193,15 @@ goog.net.XhrManager.prototype.getOutstandingRequestIds = function() {
 goog.net.XhrManager.prototype.send = function(
     id, url, opt_method, opt_content, opt_headers, opt_priority, opt_callback,
     opt_maxRetries, opt_responseType, opt_withCredentials) {
-  var requests = this.requests_;
+  'use strict';
+  const requests = this.requests_;
   // Check if there is already a request with the given id.
   if (requests.get(id)) {
     throw new Error(goog.net.XhrManager.ERROR_ID_IN_USE_);
   }
 
   // Make the Request object.
-  var request = new goog.net.XhrManager.Request(
+  const request = new goog.net.XhrManager.Request(
       url, goog.bind(this.handleEvent_, this, id), opt_method, opt_content,
       opt_headers, opt_callback,
       opt_maxRetries !== undefined ? opt_maxRetries : this.maxRetries_,
@@ -214,7 +211,7 @@ goog.net.XhrManager.prototype.send = function(
   this.requests_.set(id, request);
 
   // Setup the callback for the pool.
-  var callback = goog.bind(this.handleAvailableXhr_, this, id);
+  const callback = goog.bind(this.handleAvailableXhr_, this, id);
   this.xhrPool_.getObject(callback, opt_priority);
 
   return request;
@@ -228,9 +225,10 @@ goog.net.XhrManager.prototype.send = function(
  *     No events are fired and the callback is not called when forced.
  */
 goog.net.XhrManager.prototype.abort = function(id, opt_force) {
-  var request = this.requests_.get(id);
+  'use strict';
+  const request = this.requests_.get(id);
   if (request) {
-    var xhrIo = request.xhrIo;
+    const xhrIo = request.xhrIo;
     request.setAborted(true);
     if (opt_force) {
       if (xhrIo) {
@@ -238,6 +236,7 @@ goog.net.XhrManager.prototype.abort = function(id, opt_force) {
         // with the same id is made.
         this.removeXhrListener_(xhrIo, request.getXhrEventCallback());
         goog.events.listenOnce(xhrIo, goog.net.EventType.READY, function() {
+          'use strict';
           this.xhrPool_.releaseObject(xhrIo);
         }, false, this);
       }
@@ -258,7 +257,8 @@ goog.net.XhrManager.prototype.abort = function(id, opt_force) {
  * @private
  */
 goog.net.XhrManager.prototype.handleAvailableXhr_ = function(id, xhrIo) {
-  var request = this.requests_.get(id);
+  'use strict';
+  const request = this.requests_.get(id);
   // Make sure the request doesn't already have an XhrIo attached. This can
   // happen if a forced abort occurs before an XhrIo is available, and a new
   // request with the same id is made.
@@ -301,7 +301,8 @@ goog.net.XhrManager.prototype.handleAvailableXhr_ = function(id, xhrIo) {
  * @private
  */
 goog.net.XhrManager.prototype.handleEvent_ = function(id, e) {
-  var xhrIo = /** @type {goog.net.XhrIo} */ (e.target);
+  'use strict';
+  const xhrIo = /** @type {goog.net.XhrIo} */ (e.target);
   switch (e.type) {
     case goog.net.EventType.READY:
       this.retry_(id, xhrIo);
@@ -337,7 +338,8 @@ goog.net.XhrManager.prototype.handleEvent_ = function(id, e) {
  * @private
  */
 goog.net.XhrManager.prototype.retry_ = function(id, xhrIo) {
-  var request = this.requests_.get(id);
+  'use strict';
+  const request = this.requests_.get(id);
 
   // If the request has not completed and it is below its max. retries.
   if (request && !request.getCompleted() && !request.hasReachedMaxRetries()) {
@@ -369,8 +371,9 @@ goog.net.XhrManager.prototype.retry_ = function(id, xhrIo) {
  * @private
  */
 goog.net.XhrManager.prototype.handleComplete_ = function(id, xhrIo, e) {
+  'use strict';
   // Only if the request is done processing should a COMPLETE event be fired.
-  var request = this.requests_.get(id);
+  const request = this.requests_.get(id);
   if (xhrIo.getLastErrorCode() == goog.net.ErrorCode.ABORT ||
       xhrIo.isSuccess() || request.hasReachedMaxRetries()) {
     this.dispatchEvent(
@@ -398,6 +401,7 @@ goog.net.XhrManager.prototype.handleComplete_ = function(id, xhrIo, e) {
  * @private
  */
 goog.net.XhrManager.prototype.handleAbort_ = function(id, xhrIo) {
+  'use strict';
   // Fire event.
   // NOTE: The complete event should always be fired before the abort event, so
   // the bulk of the work is done in handleComplete.
@@ -414,6 +418,7 @@ goog.net.XhrManager.prototype.handleAbort_ = function(id, xhrIo) {
  * @private
  */
 goog.net.XhrManager.prototype.handleSuccess_ = function(id, xhrIo) {
+  'use strict';
   // Fire event.
   // NOTE: We don't release the XhrIo object from the pool here.
   // It is released in the retry method, when we know it is back in the
@@ -433,7 +438,8 @@ goog.net.XhrManager.prototype.handleSuccess_ = function(id, xhrIo) {
  * @private
  */
 goog.net.XhrManager.prototype.handleError_ = function(id, xhrIo) {
-  var request = this.requests_.get(id);
+  'use strict';
+  const request = this.requests_.get(id);
 
   // If the maximum number of retries has been reached.
   if (request.hasReachedMaxRetries()) {
@@ -458,7 +464,8 @@ goog.net.XhrManager.prototype.handleError_ = function(id, xhrIo) {
  */
 goog.net.XhrManager.prototype.removeXhrListener_ = function(
     xhrIo, func, opt_types) {
-  var types = opt_types || goog.net.XhrManager.XHR_EVENT_TYPES_;
+  'use strict';
+  const types = opt_types || goog.net.XhrManager.XHR_EVENT_TYPES_;
   this.eventHandler_.unlisten(xhrIo, types, func);
 };
 
@@ -473,13 +480,15 @@ goog.net.XhrManager.prototype.removeXhrListener_ = function(
  */
 goog.net.XhrManager.prototype.addXhrListener_ = function(
     xhrIo, func, opt_types) {
-  var types = opt_types || goog.net.XhrManager.XHR_EVENT_TYPES_;
+  'use strict';
+  const types = opt_types || goog.net.XhrManager.XHR_EVENT_TYPES_;
   this.eventHandler_.listen(xhrIo, types, func);
 };
 
 
 /** @override */
 goog.net.XhrManager.prototype.disposeInternal = function() {
+  'use strict';
   goog.net.XhrManager.superClass_.disposeInternal.call(this);
 
   this.xhrPool_.dispose();
@@ -507,6 +516,7 @@ goog.net.XhrManager.prototype.disposeInternal = function() {
  * @final
  */
 goog.net.XhrManager.Event = function(type, target, id, xhrIo) {
+  'use strict';
   goog.events.Event.call(this, type, target);
 
   /**
@@ -552,6 +562,7 @@ goog.inherits(goog.net.XhrManager.Event, goog.events.Event);
 goog.net.XhrManager.Request = function(
     url, xhrEventCallback, opt_method, opt_content, opt_headers, opt_callback,
     opt_maxRetries, opt_responseType, opt_withCredentials) {
+  'use strict';
   /**
    * Uri to make the request too.
    * @type {string}
@@ -640,7 +651,6 @@ goog.net.XhrManager.Request = function(
    * @type {?goog.net.XhrIo}
    */
   this.xhrIo = null;
-
 };
 
 
@@ -649,6 +659,7 @@ goog.net.XhrManager.Request = function(
  * @return {string} The uri to make the request to.
  */
 goog.net.XhrManager.Request.prototype.getUrl = function() {
+  'use strict';
   return this.url_;
 };
 
@@ -658,6 +669,7 @@ goog.net.XhrManager.Request.prototype.getUrl = function() {
  * @return {string} The send method.
  */
 goog.net.XhrManager.Request.prototype.getMethod = function() {
+  'use strict';
   return this.method_;
 };
 
@@ -668,6 +680,7 @@ goog.net.XhrManager.Request.prototype.getMethod = function() {
  *     The post data.
  */
 goog.net.XhrManager.Request.prototype.getContent = function() {
+  'use strict';
   return this.content_;
 };
 
@@ -677,6 +690,7 @@ goog.net.XhrManager.Request.prototype.getContent = function() {
  * @return {Object|goog.structs.Map} The map of headers.
  */
 goog.net.XhrManager.Request.prototype.getHeaders = function() {
+  'use strict';
   return this.headers_;
 };
 
@@ -686,6 +700,7 @@ goog.net.XhrManager.Request.prototype.getHeaders = function() {
  * @return {boolean} Add credentials, or not.
  */
 goog.net.XhrManager.Request.prototype.getWithCredentials = function() {
+  'use strict';
   return this.withCredentials_;
 };
 
@@ -695,6 +710,7 @@ goog.net.XhrManager.Request.prototype.getWithCredentials = function() {
  * @return {number} The maximum number of times the request should be retried.
  */
 goog.net.XhrManager.Request.prototype.getMaxRetries = function() {
+  'use strict';
   return this.maxRetries_;
 };
 
@@ -704,6 +720,7 @@ goog.net.XhrManager.Request.prototype.getMaxRetries = function() {
  * @return {number} The number of attempts so far.
  */
 goog.net.XhrManager.Request.prototype.getAttemptCount = function() {
+  'use strict';
   return this.attemptCount_;
 };
 
@@ -712,6 +729,7 @@ goog.net.XhrManager.Request.prototype.getAttemptCount = function() {
  * Increases the number of attempts so far.
  */
 goog.net.XhrManager.Request.prototype.increaseAttemptCount = function() {
+  'use strict';
   this.attemptCount_++;
 };
 
@@ -722,6 +740,7 @@ goog.net.XhrManager.Request.prototype.increaseAttemptCount = function() {
  *     retries.
  */
 goog.net.XhrManager.Request.prototype.hasReachedMaxRetries = function() {
+  'use strict';
   return this.attemptCount_ > this.maxRetries_;
 };
 
@@ -731,6 +750,7 @@ goog.net.XhrManager.Request.prototype.hasReachedMaxRetries = function() {
  * @param {boolean} complete The completed status.
  */
 goog.net.XhrManager.Request.prototype.setCompleted = function(complete) {
+  'use strict';
   this.completed_ = complete;
 };
 
@@ -740,6 +760,7 @@ goog.net.XhrManager.Request.prototype.setCompleted = function(complete) {
  * @return {boolean} The completed status.
  */
 goog.net.XhrManager.Request.prototype.getCompleted = function() {
+  'use strict';
   return this.completed_;
 };
 
@@ -749,6 +770,7 @@ goog.net.XhrManager.Request.prototype.getCompleted = function() {
  * @param {boolean} aborted True if the request was aborted, otherwise False.
  */
 goog.net.XhrManager.Request.prototype.setAborted = function(aborted) {
+  'use strict';
   this.aborted_ = aborted;
 };
 
@@ -758,6 +780,7 @@ goog.net.XhrManager.Request.prototype.setAborted = function(aborted) {
  * @return {boolean} True if request was aborted, otherwise False.
  */
 goog.net.XhrManager.Request.prototype.getAborted = function() {
+  'use strict';
   return this.aborted_;
 };
 
@@ -768,6 +791,7 @@ goog.net.XhrManager.Request.prototype.getAborted = function() {
  *     XhrIo object.
  */
 goog.net.XhrManager.Request.prototype.getXhrEventCallback = function() {
+  'use strict';
   return this.xhrEventCallback_;
 };
 
@@ -777,6 +801,7 @@ goog.net.XhrManager.Request.prototype.getXhrEventCallback = function() {
  * @return {Function|undefined} The callback for when the request is complete.
  */
 goog.net.XhrManager.Request.prototype.getCompleteCallback = function() {
+  'use strict';
   return this.completeCallback_;
 };
 
@@ -788,5 +813,6 @@ goog.net.XhrManager.Request.prototype.getCompleteCallback = function() {
  *     when an XhrIo becomes available to this request.
  */
 goog.net.XhrManager.Request.prototype.getResponseType = function() {
+  'use strict';
   return this.responseType_;
 };

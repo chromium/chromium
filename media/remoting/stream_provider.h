@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,29 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/remoting.mojom.h"
-#include "media/remoting/media_remoting_rpc.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
+
+namespace openscreen {
+namespace cast {
+class RpcMessenger;
+}
+}  // namespace openscreen
 
 namespace media {
 
@@ -31,7 +38,6 @@ class MojoDecoderBufferReader;
 namespace remoting {
 
 class ReceiverController;
-class RpcBroker;
 
 // The media stream provider for Media Remoting receiver.
 class StreamProvider final : public Demuxer {
@@ -52,7 +58,7 @@ class StreamProvider final : public Demuxer {
   base::TimeDelta GetStartTime() const override;
   base::Time GetTimelineOffset() const override;
   int64_t GetMemoryUsage() const override;
-  base::Optional<container_names::MediaContainerName> GetContainerForMetrics()
+  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
   void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
                                    base::TimeDelta curr_time,
@@ -76,9 +82,9 @@ class StreamProvider final : public Demuxer {
         std::unique_ptr<MediaStream, std::function<void(MediaStream*)>>;
 
     // MediaStream should be created on the main thread to be able to get unique
-    // handle ID from |rpc_broker_|.
+    // handle ID from |rpc_messenger_|.
     static void CreateOnMainThread(
-        RpcBroker* rpc_broker,
+        openscreen::cast::RpcMessenger* rpc_messenger,
         Type type,
         int32_t handle,
         const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
@@ -89,7 +95,7 @@ class StreamProvider final : public Demuxer {
     static void DestructionHelper(MediaStream* stream);
 
     MediaStream(
-        RpcBroker* rpc_broker,
+        openscreen::cast::RpcMessenger* rpc_messenger,
         Type type,
         int32_t remote_handle,
         const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
@@ -99,7 +105,7 @@ class StreamProvider final : public Demuxer {
     AudioDecoderConfig audio_decoder_config() override;
     VideoDecoderConfig video_decoder_config() override;
     DemuxerStream::Type type() const override;
-    Liveness liveness() const override;
+    StreamLiveness liveness() const override;
     bool SupportsConfigChanges() override;
 
     void Initialize(base::OnceClosure init_done_cb);
@@ -122,7 +128,8 @@ class StreamProvider final : public Demuxer {
     void Destroy();
 
     // Send RPC message on |main_task_runner_|.
-    void SendRpcMessageOnMainThread(std::unique_ptr<pb::RpcMessage> message);
+    void SendRpcMessageOnMainThread(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
 
     // mojom::RemotingDataStreamReceiver implementation.
     void InitializeDataPipe(
@@ -131,9 +138,11 @@ class StreamProvider final : public Demuxer {
     void FlushUntil(uint32_t count) override;
 
     // RPC messages handlers.
-    void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
-    void OnInitializeCallback(std::unique_ptr<pb::RpcMessage> message);
-    void OnReadUntilCallback(std::unique_ptr<pb::RpcMessage> message);
+    void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+    void OnInitializeCallback(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
+    void OnReadUntilCallback(
+        std::unique_ptr<openscreen::cast::RpcMessage> message);
 
     // Issues the ReadUntil RPC message when read is pending and buffer is
     // empty.
@@ -152,8 +161,10 @@ class StreamProvider final : public Demuxer {
     // Update the audio/video decoder config. When config changes in the mid
     // stream, the new config will be stored in |next_audio_decoder_config_|.
     // Old config will be dropped when all associated frames are consumed.
-    void UpdateAudioConfig(const pb::AudioDecoderConfig& audio_message);
-    void UpdateVideoConfig(const pb::VideoDecoderConfig& video_message);
+    void UpdateAudioConfig(
+        const openscreen::cast::AudioDecoderConfig& audio_message);
+    void UpdateVideoConfig(
+        const openscreen::cast::VideoDecoderConfig& video_message);
 
     // Called when any error occurs.
     void OnError(const std::string& error);
@@ -161,7 +172,7 @@ class StreamProvider final : public Demuxer {
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
-    RpcBroker* const rpc_broker_;  // Outlives this class.
+    const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
     const Type type_;
     const int remote_handle_;
     const int rpc_handle_;
@@ -224,8 +235,8 @@ class StreamProvider final : public Demuxer {
   void Destroy();
 
   // RPC messages handlers.
-  void OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message);
-  void OnAcquireDemuxer(std::unique_ptr<pb::RpcMessage> message);
+  void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
+  void OnAcquireDemuxer(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Called when audio/video stream is created and initialized.
   void InitializeDataPipe();
@@ -237,8 +248,8 @@ class StreamProvider final : public Demuxer {
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-  ReceiverController* const receiver_controller_;  // Outlives this class
-  RpcBroker* const rpc_broker_;                    // Outlives this class
+  const raw_ptr<ReceiverController> receiver_controller_;
+  const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
   MediaStream::UniquePtr audio_stream_;
   MediaStream::UniquePtr video_stream_;
   bool has_audio_{false};

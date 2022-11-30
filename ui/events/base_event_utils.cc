@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,12 +20,12 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kSystemKeyModifierMask = EF_ALT_DOWN | EF_COMMAND_DOWN;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // Alt modifier is used to input extended characters on Mac.
 const int kSystemKeyModifierMask = EF_COMMAND_DOWN;
 #else
 const int kSystemKeyModifierMask = EF_ALT_DOWN;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_APPLE)
+#endif
 
 }  // namespace
 
@@ -65,7 +65,7 @@ double EventTimeStampToSeconds(base::TimeTicks time_stamp) {
 }
 
 base::TimeTicks EventTimeStampFromSeconds(double time_stamp_seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSecondsD(time_stamp_seconds);
+  return base::TimeTicks() + base::Seconds(time_stamp_seconds);
 }
 
 bool IsValidTimebase(base::TimeTicks now, base::TimeTicks timestamp) {

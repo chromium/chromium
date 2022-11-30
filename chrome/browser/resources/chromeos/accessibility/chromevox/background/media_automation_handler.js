@@ -1,20 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Handles media automation events.
  */
+import {TtsCapturingEventListener} from '../common/tts_interface.js';
+
+import {BaseAutomationHandler} from './base_automation_handler.js';
+import {ChromeVox} from './chromevox.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 
-/**
- * @implements {TtsCapturingEventListener}
- */
+/** @implements {TtsCapturingEventListener} */
 export class MediaAutomationHandler extends BaseAutomationHandler {
+  /** @private */
   constructor() {
     super(null);
     /** @type {!Set<AutomationNode>} @private */
@@ -25,7 +28,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
 
     ChromeVox.tts.addCapturingEventListener(this);
 
-    chrome.automation.getDesktop((node) => {
+    chrome.automation.getDesktop(node => {
       this.node_ = node;
 
       this.addListener_(
@@ -33,6 +36,13 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
       this.addListener_(
           EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
     });
+  }
+
+  static init() {
+    if (MediaAutomationHandler.instance) {
+      throw 'Error: trying to create two instances of singleton MediaAutomationHandler';
+    }
+    MediaAutomationHandler.instance = new MediaAutomationHandler();
   }
 
   /** @override */
@@ -107,5 +117,8 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
   }
 }
 
-/** @type {number} */
+/** @const {number} */
 MediaAutomationHandler.MIN_WAITTIME_MS = 1000;
+
+/** @type {MediaAutomationHandler} */
+MediaAutomationHandler.instance;

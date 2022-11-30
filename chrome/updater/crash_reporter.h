@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,30 +7,17 @@
 
 #include <string>
 
-#include "build/build_config.h"
-
 namespace updater {
+
+enum class UpdaterScope;
 
 // Starts a new instance of this executable running as the crash reporter
 // process.
-void StartCrashReporter(const std::string& version);
+void StartCrashReporter(UpdaterScope updater_scope, const std::string& version);
 
 // Runs the crash reporter message loop within the current process. On return,
 // the current process should exit.
 int CrashReporterMain();
-
-#if defined(OS_WIN)
-
-// Returns the name of the IPC pipe that is used to communicate with the
-// crash reporter process, or an empty string if the current process is
-// not connected to a crash reporter process.
-std::wstring GetCrashReporterIPCPipeName();
-
-// Uses the crash reporter with the specified |ipc_pipe_name|, instead of
-// starting a new crash reporter process.
-void UseCrashReporter(const std::wstring& ipc_pipe_name);
-
-#endif  // OS_WIN
 
 }  // namespace updater
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,17 @@
 
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
 
@@ -33,12 +36,13 @@ WebFrameWidget* FrameWidgetTestHelper::CreateTestWebFrameWidget(
     bool never_composited,
     bool is_for_child_local_root,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     content::TestRunner* test_runner) {
   return MakeGarbageCollected<WebTestWebFrameWidgetImpl>(
       pass_key, std::move(frame_widget_host), std::move(frame_widget),
       std::move(widget_host), std::move(widget), std::move(task_runner),
       frame_sink_id, hidden, never_composited, is_for_child_local_root,
-      is_for_nested_main_frame, test_runner);
+      is_for_nested_main_frame, is_for_scalable_page, test_runner);
 }
 
 WebTestWebFrameWidgetImpl::WebTestWebFrameWidgetImpl(
@@ -57,6 +61,7 @@ WebTestWebFrameWidgetImpl::WebTestWebFrameWidgetImpl(
     bool never_composited,
     bool is_for_child_local_root,
     bool is_for_nested_main_frame,
+    bool is_for_scalable_page,
     content::TestRunner* test_runner)
     : WebFrameWidgetImpl(pass_key,
                          std::move(frame_widget_host),
@@ -68,7 +73,8 @@ WebTestWebFrameWidgetImpl::WebTestWebFrameWidgetImpl(
                          hidden,
                          never_composited,
                          is_for_child_local_root,
-                         is_for_nested_main_frame),
+                         is_for_nested_main_frame,
+                         is_for_scalable_page),
       test_runner_(test_runner) {}
 
 WebTestWebFrameWidgetImpl::~WebTestWebFrameWidgetImpl() = default;
@@ -108,7 +114,7 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
 
 void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
     base::OnceClosure callback) {
-  LayerTreeHost()->RequestPresentationTimeForNextFrame(WTF::Bind(
+  LayerTreeHost()->RequestPresentationTimeForNextFrame(WTF::BindOnce(
       [](base::OnceClosure callback, const gfx::PresentationFeedback&) {
         std::move(callback).Run();
       },
@@ -117,10 +123,16 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
   ScheduleAnimationForWebTests();
 }
 
+void WebTestWebFrameWidgetImpl::DisableEndDocumentTransition() {
+  DocumentTransitionSupplement::EnsureDocumentTransition(
+      *LocalRootImpl()->GetFrame()->GetDocument())
+      ->DisableEndTransition();
+}
+
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
-  if (scheduler::WebThreadScheduler::CompositorThreadScheduler()) {
+  if (Thread::CompositorThread()) {
     WebFrameWidgetImpl::ScheduleAnimation();
     return;
   }
@@ -136,16 +148,18 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
 
     frame->GetTaskRunner(TaskType::kInternalTest)
         ->PostDelayedTask(FROM_HERE,
-                          WTF::Bind(&WebTestWebFrameWidgetImpl::AnimateNow,
-                                    WrapWeakPersistent(this)),
-                          base::TimeDelta::FromMilliseconds(1));
+                          WTF::BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
+                                        WrapWeakPersistent(this)),
+                          base::Milliseconds(1));
   }
 }
 
-void WebTestWebFrameWidgetImpl::StartDragging(const WebDragData& data,
-                                              DragOperationsMask mask,
-                                              const SkBitmap& drag_image,
-                                              const gfx::Point& image_offset) {
+void WebTestWebFrameWidgetImpl::StartDragging(
+    const WebDragData& data,
+    DragOperationsMask mask,
+    const SkBitmap& drag_image,
+    const gfx::Vector2d& cursor_offset,
+    const gfx::Rect& drag_obj_rect) {
   doing_drag_and_drop_ = true;
   GetTestRunner()->SetDragImage(drag_image);
 
@@ -217,6 +231,12 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
   if (!LayerTreeHost()->IsVisible())
     return;
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoForcedFrameUpdatesForWebTests) &&
+      LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
+    return;
+  }
+
   if (in_synchronous_composite_) {
     // Web tests can use a nested message loop to pump frames while inside a
     // frame, but the compositor does not support this. In this case, we only
@@ -269,6 +289,20 @@ void WebTestWebFrameWidgetImpl::RequestDecode(
   // compositor is scheduled by the test runner to avoid flakiness. So for this
   // case we must request a main frame.
   ScheduleAnimationForWebTests();
+}
+
+void WebTestWebFrameWidgetImpl::DidAutoResize(const gfx::Size& size) {
+  WebFrameWidgetImpl::DidAutoResize(size);
+
+  // Window rect resize for threaded compositing is delivered via requesting a
+  // new surface. The browser then reacts to the bounds of the surface changing
+  // and adjusts the WindowRect. For single threaded compositing the
+  // surface size is never processed so we force the WindowRect to be the
+  // same size as the WidgetSize when AutoResize is applied.
+  if (LayerTreeHost()->IsSingleThreaded()) {
+    gfx::Rect new_pos(Size());
+    SetWindowRect(new_pos, new_pos);
+  }
 }
 
 }  // namespace blink

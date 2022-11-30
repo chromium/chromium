@@ -1,6 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {InstanceChecker} from '../common/instance_checker.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
 import {Dictation} from './dictation/dictation.js';
@@ -42,24 +44,33 @@ export class AccessibilityCommon {
    */
   init_() {
     chrome.accessibilityFeatures.autoclick.get(
-        {}, this.onAutoclickUpdated_.bind(this));
+        {}, details => this.onAutoclickUpdated_(details));
     chrome.accessibilityFeatures.autoclick.onChange.addListener(
-        this.onAutoclickUpdated_.bind(this));
+        details => this.onAutoclickUpdated_(details));
 
     chrome.accessibilityFeatures.screenMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
+        {},
+        details =>
+            this.onMagnifierUpdated_(Magnifier.Type.FULL_SCREEN, details));
     chrome.accessibilityFeatures.screenMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this, Magnifier.Type.FULL_SCREEN));
+        details =>
+            this.onMagnifierUpdated_(Magnifier.Type.FULL_SCREEN, details));
 
     chrome.accessibilityFeatures.dockedMagnifier.get(
-        {}, this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
+        {},
+        details => this.onMagnifierUpdated_(Magnifier.Type.DOCKED, details));
     chrome.accessibilityFeatures.dockedMagnifier.onChange.addListener(
-        this.onMagnifierUpdated_.bind(this, Magnifier.Type.DOCKED));
+        details => this.onMagnifierUpdated_(Magnifier.Type.DOCKED, details));
 
     chrome.accessibilityFeatures.dictation.get(
-        {}, this.onDictationUpdated_.bind(this));
+        {}, details => this.onDictationUpdated_(details));
     chrome.accessibilityFeatures.dictation.onChange.addListener(
-        this.onDictationUpdated_.bind(this));
+        details => this.onDictationUpdated_(details));
+
+    // AccessibilityCommon is an IME so it shows in the input methods list
+    // when it starts up. Remove from this list, Dictation will add it back
+    // whenever needed.
+    Dictation.removeAsInputMethod();
   }
 
   /**
@@ -103,6 +114,7 @@ export class AccessibilityCommon {
     if (details.value && !this.dictation_) {
       this.dictation_ = new Dictation();
     } else if (!details.value && this.dictation_) {
+      this.dictation_.onDictationDisabled();
       this.dictation_ = null;
     }
   }
@@ -110,4 +122,4 @@ export class AccessibilityCommon {
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
-window.accessibilityCommon = new AccessibilityCommon();
+globalThis.accessibilityCommon = new AccessibilityCommon();

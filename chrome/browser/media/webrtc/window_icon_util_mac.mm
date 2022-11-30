@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
@@ -17,7 +17,7 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   CGWindowID ids[1];
   ids[0] = id.id;
   base::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
-      nullptr, reinterpret_cast<const void**>(&ids), base::size(ids), nullptr));
+      nullptr, reinterpret_cast<const void**>(&ids), std::size(ids), nullptr));
   base::ScopedCFTypeRef<CFArrayRef> window_array(
       CGWindowListCreateDescriptionFromArray(window_id_array));
   if (!window_array || 0 == CFArrayGetCount(window_array)) {

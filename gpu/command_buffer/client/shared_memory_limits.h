@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,12 @@ namespace gpu {
 struct SharedMemoryLimits {
   SharedMemoryLimits() {
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     // Max mapped memory to use for a texture upload depends on device ram.
     // Do not use more than 5% of extra shared memory, and do not use any extra
     // for memory contrained devices (<=1GB).
     max_mapped_memory_for_texture_upload =
-        base::SysInfo::AmountOfPhysicalMemory() > 1024 * 1024 * 1024
+        base::SysInfo::AmountOfPhysicalMemory() > 1024ULL * 1024 * 1024
             ? base::saturated_cast<uint32_t>(
                   base::SysInfo::AmountOfPhysicalMemory() / 20)
             : 0;
@@ -75,7 +75,7 @@ struct SharedMemoryLimits {
     return limits;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static SharedMemoryLimits ForDisplayCompositor(const gfx::Size& screen_size) {
     DCHECK(!screen_size.IsEmpty());
 

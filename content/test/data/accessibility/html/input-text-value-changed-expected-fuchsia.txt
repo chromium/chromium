@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='aaYYYYbb'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='aaYYYYbb'
+++++++++++++UNKNOWN label='aaYYYYbb'
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='aa'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='aa'
+++++++++++++UNKNOWN label='aa'
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='After'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='After'
+++++++++++++UNKNOWN label='After'

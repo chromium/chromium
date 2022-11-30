@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include "base/bind.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
@@ -27,6 +27,10 @@ class FakeGCMProfileService::CustomFakeGCMDriver
     : public instance_id::FakeGCMDriverForInstanceID {
  public:
   explicit CustomFakeGCMDriver(FakeGCMProfileService* service);
+
+  CustomFakeGCMDriver(const CustomFakeGCMDriver&) = delete;
+  CustomFakeGCMDriver& operator=(const CustomFakeGCMDriver&) = delete;
+
   ~CustomFakeGCMDriver() override;
 
   void OnRegisterFinished(const std::string& app_id,
@@ -77,7 +81,7 @@ class FakeGCMProfileService::CustomFakeGCMDriver
               const std::string& receiver_id,
               const OutgoingMessage& message);
 
-  FakeGCMProfileService* service_;
+  raw_ptr<FakeGCMProfileService> service_;
 
   // Used to give each registration a unique registration id. Does not decrease
   // when unregister is called.
@@ -85,15 +89,11 @@ class FakeGCMProfileService::CustomFakeGCMDriver
 
   base::WeakPtrFactory<CustomFakeGCMDriver> weak_factory_{
       this};  // Must be last.
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFakeGCMDriver);
 };
 
 FakeGCMProfileService::CustomFakeGCMDriver::CustomFakeGCMDriver(
     FakeGCMProfileService* service)
-    : instance_id::FakeGCMDriverForInstanceID(
-          base::ThreadTaskRunnerHandle::Get()),
-      service_(service) {}
+    : service_(service) {}
 
 FakeGCMProfileService::CustomFakeGCMDriver::~CustomFakeGCMDriver() {}
 

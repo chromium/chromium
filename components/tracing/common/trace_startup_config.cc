@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,13 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_log.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/early_trace_event_binding.h"
 #endif
 
@@ -34,7 +35,7 @@ const size_t kTraceConfigFileSizeLimit = 64 * 1024;
 // Trace config file path:
 // - Android: /data/local/chrome-trace-config.json
 // - Others: specified by --trace-config-file flag.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kAndroidTraceConfigFile[] =
     FILE_PATH_LITERAL("/data/local/chrome-trace-config.json");
 #endif
@@ -49,9 +50,9 @@ const char kResultDirectoryParam[] = "result_directory";
 
 // static
 const char TraceStartupConfig::kDefaultStartupCategories[] =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "startup,browser,toplevel,toplevel.flow,ipc,EarlyJava,cc,Java,navigation,"
-    "loading,gpu,disabled-by-default-cpu_profiler,download_service,"
+    "loading,gpu,ui,disabled-by-default-cpu_profiler,download_service,"
     "disabled-by-default-histogram_samples,"
     "disabled-by-default-user_action_samples,-*";
 #else
@@ -134,7 +135,7 @@ base::FilePath TraceStartupConfig::GetResultFile() const {
 }
 
 void TraceStartupConfig::SetBackgroundStartupTracingEnabled(bool enabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::SetBackgroundStartupTracingFlag(enabled);
 #endif
 }
@@ -156,6 +157,10 @@ bool TraceStartupConfig::AttemptAdoptBySessionOwner(SessionOwner owner) {
 bool TraceStartupConfig::EnableFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
+  bool tracing_enabled_from_command_line =
+      command_line->HasSwitch(switches::kTraceStartup) ||
+      command_line->HasSwitch(switches::kEnableTracing);
+
   if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
     std::string startup_duration_str =
         command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
@@ -172,19 +177,23 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 
   if (command_line->HasSwitch(switches::kTraceStartupFormat)) {
     if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
-        "proto") {
-      // Default is "json".
-      output_format_ = OutputFormat::kProto;
+        "json") {
+      // Default is "proto", so switch to json only if the "json" string is
+      // provided.
+      output_format_ = OutputFormat::kLegacyJSON;
     }
-  } else if (command_line->GetSwitchValueASCII(
-                 switches::kEnableTracingFormat) == "proto") {
-    output_format_ = OutputFormat::kProto;
+  } else if (command_line->HasSwitch(switches::kEnableTracingFormat)) {
+    if (command_line->GetSwitchValueASCII(switches::kEnableTracingFormat) ==
+        "json") {
+      output_format_ = OutputFormat::kLegacyJSON;
+    }
   }
 
-  if (!command_line->HasSwitch(switches::kTraceStartup) &&
-      !command_line->HasSwitch(switches::kEnableTracing)) {
+  // This check is intentionally performed after setting duration and output
+  // format to ensure that setting them from the command-line takes effect for
+  // config file-based tracing as well.
+  if (!tracing_enabled_from_command_line)
     return false;
-  }
 
   std::string categories;
   if (command_line->HasSwitch(switches::kTraceStartup)) {
@@ -197,6 +206,15 @@ bool TraceStartupConfig::EnableFromCommandLine() {
       categories,
       command_line->GetSwitchValueASCII(switches::kTraceStartupRecordMode));
 
+  if (trace_config_.IsCategoryGroupEnabled(
+          base::trace_event::MemoryDumpManager::kTraceCategory)) {
+    base::trace_event::TraceConfig::MemoryDumpConfig memory_config;
+    memory_config.triggers.push_back(
+        {10000, base::trace_event::MemoryDumpLevelOfDetail::DETAILED,
+         base::trace_event::MemoryDumpType::PERIODIC_INTERVAL});
+    trace_config_.ResetMemoryDumpConfig(memory_config);
+  }
+
   result_file_ = command_line->GetSwitchValuePath(switches::kTraceStartupFile);
 
   is_enabled_ = true;
@@ -204,7 +222,7 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 }
 
 bool TraceStartupConfig::EnableFromATrace() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto atrace_config =
       base::trace_event::TraceLog::GetInstance()->TakeATraceStartupConfig();
   if (!atrace_config)
@@ -216,13 +234,13 @@ bool TraceStartupConfig::EnableFromATrace() {
   // command line flags to control startup tracing instead of ATrace.
   session_owner_ = SessionOwner::kSystemTracing;
   return true;
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool TraceStartupConfig::EnableFromConfigFile() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath trace_config_file(kAndroidTraceConfigFile);
 #else
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -258,7 +276,7 @@ bool TraceStartupConfig::EnableFromConfigFile() {
 
 bool TraceStartupConfig::EnableFromBackgroundTracing() {
   bool enabled = enable_background_tracing_for_testing_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Tests can enable this value.
   enabled |= base::android::GetBackgroundStartupTracingFlag();
 #else
@@ -282,30 +300,29 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 
 bool TraceStartupConfig::ParseTraceConfigFileContent(
     const std::string& content) {
-  std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(content));
+  absl::optional<base::Value> value(base::JSONReader::Read(content));
   if (!value || !value->is_dict())
     return false;
 
-  std::unique_ptr<base::DictionaryValue> dict(
-      static_cast<base::DictionaryValue*>(value.release()));
+  auto& dict = value->GetDict();
 
-  base::DictionaryValue* trace_config_dict = nullptr;
-  if (!dict->GetDictionary(kTraceConfigParam, &trace_config_dict))
+  auto* trace_config_dict = dict.FindDict(kTraceConfigParam);
+  if (!trace_config_dict)
     return false;
 
-  trace_config_ = base::trace_event::TraceConfig(*trace_config_dict);
+  trace_config_ = base::trace_event::TraceConfig(
+      base::Value(std::move(*trace_config_dict)));
 
-  if (!dict->GetInteger(kStartupDurationParam, &startup_duration_in_seconds_))
-    startup_duration_in_seconds_ = 0;
+  startup_duration_in_seconds_ =
+      dict.FindInt(kStartupDurationParam).value_or(0);
 
   if (startup_duration_in_seconds_ < 0)
     startup_duration_in_seconds_ = 0;
 
-  std::string result_file_or_dir_str;
-  if (dict->GetString(kResultFileParam, &result_file_or_dir_str)) {
-    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
-  } else if (dict->GetString(kResultDirectoryParam, &result_file_or_dir_str)) {
-    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
+  if (auto* result_file = dict.FindString(kResultFileParam)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(*result_file);
+  } else if (auto* result_dir = dict.FindString(kResultDirectoryParam)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(*result_dir);
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(
         base::NumberToString(base::Time::Now().ToJavaTime()) +

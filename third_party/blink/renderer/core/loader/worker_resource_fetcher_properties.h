@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WORKER_RESOURCE_FETCHER_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WORKER_RESOURCE_FETCHER_PROPERTIES_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "base/check_op.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
       const override {
     return *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override { return false; }
+  bool IsOutermostMainFrame() const override { return false; }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override;
   int64_t ServiceWorkerId() const override {
     DCHECK_NE(GetControllerServiceWorkerMode(),
@@ -42,9 +43,8 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
     return -1;
   }
   bool IsPaused() const override;
-  WebURLLoader::DeferType DeferType() const override;
+  LoaderFreezeMode FreezeMode() const override;
   bool IsDetached() const override { return false; }
-  bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override { return false; }
   bool ShouldBlockLoadingSubResource() const override { return false; }
   bool IsSubframeDeprioritizationEnabled() const override { return false; }

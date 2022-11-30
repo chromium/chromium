@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "automation_manager_aura\.cc": [
-    "+ash/shell.h",
-    "+ash/wm/window_util.h",
-  ],
-}

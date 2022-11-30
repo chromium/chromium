@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/test_login_screen_model.h"
 
 namespace ash {
@@ -21,6 +20,10 @@ enum class SupervisedAction;
 class TestLoginScreen : public ash::LoginScreen {
  public:
   TestLoginScreen();
+
+  TestLoginScreen(const TestLoginScreen&) = delete;
+  TestLoginScreen& operator=(const TestLoginScreen&) = delete;
+
   ~TestLoginScreen() override;
 
   // ash::LoginScreen:
@@ -41,15 +44,10 @@ class TestLoginScreen : public ash::LoginScreen {
       override;
   void RequestSecurityTokenPin(ash::SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
-  bool SetLoginShelfGestureHandler(const std::u16string& nudge_text,
-                                   const base::RepeatingClosure& fling_callback,
-                                   base::OnceClosure exit_callback) override;
-  void ClearLoginShelfGestureHandler() override;
+  views::Widget* GetLoginWindowWidget() override;
 
  private:
   TestLoginScreenModel test_screen_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLoginScreen);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_

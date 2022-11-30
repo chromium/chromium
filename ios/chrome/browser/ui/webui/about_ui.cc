@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,17 @@
 
 #include "base/format_macros.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
-#include "net/base/escape.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -29,12 +29,16 @@
 namespace {
 
 const char kCreditsJsPath[] = "credits.js";
+const char kCreditsCssPath[] = "credits.css";
 const char kStringsJsPath[] = "strings.js";
 
 class AboutUIHTMLSource : public web::URLDataSourceIOS {
  public:
-  // Construct a data source for the specified |source_name|.
+  // Construct a data source for the specified `source_name`.
   explicit AboutUIHTMLSource(const std::string& source_name);
+
+  AboutUIHTMLSource(const AboutUIHTMLSource&) = delete;
+  AboutUIHTMLSource& operator=(const AboutUIHTMLSource&) = delete;
 
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
@@ -52,8 +56,6 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   ~AboutUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutUIHTMLSource);
 };
 
 void AppendHeader(std::string* output,
@@ -62,7 +64,7 @@ void AppendHeader(std::string* output,
   output->append("<!DOCTYPE HTML>\n<html>\n<head>\n");
   if (!unescaped_title.empty()) {
     output->append("<title>");
-    output->append(net::EscapeForHTML(unescaped_title));
+    output->append(base::EscapeForHTML(unescaped_title));
     output->append("</title>\n");
   }
   output->append("<meta charset='utf-8'>\n");
@@ -122,24 +124,30 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
+    else if (path == kCreditsCssPath)
+      idr = IDR_ABOUT_UI_CREDITS_CSS;
     ui::ResourceBundle& resource_instance =
         ui::ResourceBundle::GetSharedInstance();
     response = resource_instance.LoadDataResourceString(idr);
   } else if (source_name_ == kChromeUIHistogramHost) {
     // Note: On other platforms, this is implemented in //content. If there is
     // ever a need for embedders other than //ios/chrome to use
-    // chrome://histograms, this code could likely be moved to //io/web.
+    // chrome://histograms, this code could likely be moved to //ios/web.
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
-      base::DictionaryValue histogram_dict = histogram->ToGraphDict();
-      std::string* header = histogram_dict.FindStringKey("header");
-      std::string* body = histogram_dict.FindStringKey("body");
+      std::string histogram_name = histogram->histogram_name();
+      if (histogram_name.find(path) == std::string::npos) {
+        continue;
+      }
+      base::Value::Dict histogram_dict = histogram->ToGraphDict();
+      std::string* header = histogram_dict.FindString("header");
+      std::string* body = histogram_dict.FindString("body");
 
       response.append("<PRE>");
       response.append("<h4>");
-      response.append(net::EscapeForHTML(*header));
+      response.append(base::EscapeForHTML(*header));
       response.append("</h4>");
-      response.append(net::EscapeForHTML(*body));
+      response.append(base::EscapeForHTML(*body));
       response.append("</PRE>");
       response.append("<br><hr><br>");
     }
@@ -159,6 +167,11 @@ std::string AboutUIHTMLSource::GetMimeType(const std::string& path) const {
   if (path == kCreditsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
+
+  if (path == kCreditsCssPath) {
+    return "text/css";
+  }
+
   return "text/html";
 }
 

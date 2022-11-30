@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.editor.plugins.UndoRedoTest');
 goog.setTestOnly();
@@ -44,6 +36,7 @@ const stubs = new PropertyReplacer();
 /**
  * Returns the CursorPosition for the selection currently in the Field.
  * @return {UndoRedo.CursorPosition_}
+ * @suppress {visibility} suppression added to enable type checking
  */
 function getCurrentCursorPosition() {
   return undoPlugin.getCursorPosition_(editableField);
@@ -67,6 +60,7 @@ function cursorPositionsEqual(a, b) {
 // Undo state tests
 
 testSuite({
+  /** @suppress {checkTypes} suppression added to enable type checking */
   setUp() {
     mockEditableField = new StrictMock(Field);
 
@@ -78,22 +72,39 @@ testSuite({
           assertObjectEquals(a, b);
           return true;
         }));
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     mockEditableField.getHashCode = () => 'fieldId';
 
     undoPlugin = new UndoRedo();
     undoPlugin.registerFieldObject(mockEditableField);
     mockState = new StrictMock(UndoRedo.UndoState_);
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     mockState.fieldHashCode = 'fieldId';
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     mockState.isAsynchronous = () => false;
     // Don't bother mocking the inherited event target pieces of the state.
     // If we don't do this, then mocked asynchronous undos are a lot harder and
     // that behavior is tested as part of the UndoRedoManager tests.
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     mockState.addEventListener = goog.nullFunction;
 
     commands = [
       UndoRedo.COMMAND.REDO,
       UndoRedo.COMMAND.UNDO,
     ];
+    /** @suppress {visibility} suppression added to enable type checking */
     state = new UndoRedo.UndoState_('1', '', null, goog.nullFunction);
 
     clock = new MockClock(true);
@@ -102,6 +113,7 @@ testSuite({
     fieldHashCode = editableField.getHashCode();
   },
 
+  /** @suppress {uselessCode} suppression added to enable type checking */
   tearDown() {
     // Reset field so any attempted access during disposes don't cause errors.
     mockEditableField.$reset();
@@ -123,6 +135,7 @@ testSuite({
     stubs.reset();
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testQueryCommandValue() {
     assertFalse(
         'Must return false for empty undo stack.',
@@ -139,6 +152,10 @@ testSuite({
         undoPlugin.queryCommandValue(UndoRedo.COMMAND.UNDO));
   },
 
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testExecCommand() {
     undoPlugin.undoManager_.addState(mockState);
 
@@ -159,6 +176,10 @@ testSuite({
     mockState.$verify();
   },
 
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testHandleKeyboardShortcut_TrogStates() {
     undoPlugin.undoManager_.addState(mockState);
     undoPlugin.undoManager_.addState(state);
@@ -208,11 +229,16 @@ testSuite({
     mockEditableField.$verify();
   },
 
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testHandleKeyboardShortcut_NotTrogStates() {
     const stubUndoEvent = {ctrlKey: true, altKey: false, shiftKey: false};
 
     // Trogedit undo states all have a fieldHashCode, nulling that out makes
     // this state be treated as a non-Trogedit undo-redo state.
+    /** @suppress {checkTypes} suppression added to enable type checking */
     state.fieldHashCode = null;
     undoPlugin.undoManager_.addState(state);
     mockEditableField.$reset();
@@ -263,6 +289,7 @@ testSuite({
         currentState.redoCursorPosition_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testDisable() {
     editableField.makeEditable();
     undoPlugin.enable(editableField);
@@ -292,6 +319,7 @@ testSuite({
         undoPlugin.eventHandlers_[fieldHashCode]);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testUpdateCurrentState_() {
     editableField.registerPlugin(new LoremIpsum('LOREM'));
     editableField.makeEditable();
@@ -367,6 +395,7 @@ testSuite({
     assertUndefined(currentState.redoContent_);
     assertUndefined(currentState.redoCursorPosition_);
 
+    /** @suppress {visibility} suppression added to enable type checking */
     const undoState = googArray.peek(undoPlugin.undoManager_.undoStack_);
     assertNotNull(
         'Must create state for field not using lorem ipsum', currentState);
@@ -382,6 +411,7 @@ testSuite({
   /**
    * Tests that change events get restarted properly after an undo call despite
    * an exception being thrown in the process (see bug/1991234).
+   * @suppress {visibility} suppression added to enable type checking
    */
   testUndoRestartsChangeEvents() {
     undoPlugin.registerFieldObject(editableField);
@@ -411,6 +441,7 @@ testSuite({
         editableField.stoppedEvents_[Field.EventType.DELAYEDCHANGE]);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testRefreshCurrentState() {
     editableField.makeEditable();
     editableField.setSafeHtml(false, SafeHtml.create('div', {}, 'a'));
@@ -460,6 +491,7 @@ testSuite({
         undoPlugin.currentStates_[fieldHashCode]);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSetUndoState() {
     state.setUndoState('content', 'position');
     assertEquals('Undo content incorrectly set', 'content', state.undoContent_);
@@ -468,6 +500,7 @@ testSuite({
         state.undoCursorPosition_);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testSetRedoState() {
     state.setRedoState('content', 'position');
     assertEquals('Redo content incorrectly set', 'content', state.redoContent_);
@@ -479,11 +512,19 @@ testSuite({
   testEquals() {
     assertTrue('A state must equal itself', state.equals(state));
 
+    /**
+     * @suppress {checkTypes,visibility} suppression added to enable type
+     * checking
+     */
     let state2 = new UndoRedo.UndoState_('1', '', null);
     assertTrue(
         'A state must equal a state with the same hash code and content.',
         state.equals(state2));
 
+    /**
+     * @suppress {checkTypes,visibility} suppression added to enable type
+     * checking
+     */
     state2 = new UndoRedo.UndoState_('1', '', 'foo');
     assertTrue(
         'States with different cursor positions must be equal',
@@ -494,18 +535,30 @@ testSuite({
         'States with different redo content must not be equal',
         state.equals(state2));
 
+    /**
+     * @suppress {checkTypes,visibility} suppression added to enable type
+     * checking
+     */
     state2 = new UndoRedo.UndoState_('3', '', null);
     assertFalse(
         'States with different field hash codes must not be equal',
         state.equals(state2));
 
+    /**
+     * @suppress {checkTypes,visibility} suppression added to enable type
+     * checking
+     */
     state2 = new UndoRedo.UndoState_('1', 'baz', null);
     assertFalse(
         'States with different undoContent must not be equal',
         state.equals(state2));
   },
 
-  /** @bug 1359214 */
+  /**
+   * @bug 1359214
+   * @suppress {visibility} suppression added to enable type
+   *      checking
+   */
   testClearUndoHistory() {
     const undoRedoPlugin = new UndoRedo();
     editableField.registerPlugin(undoRedoPlugin);

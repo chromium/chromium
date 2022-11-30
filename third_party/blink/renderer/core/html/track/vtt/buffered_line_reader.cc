@@ -86,7 +86,7 @@ bool BufferedLineReader::GetLine(String& line) {
     // We've reached the end of the stream proper. Emit a line if the
     // current line buffer is non-empty. (Note that if shouldReturnLine is
     // set already, we want to return a line nonetheless.)
-    should_return_line |= !line_buffer_.IsEmpty();
+    should_return_line |= !line_buffer_.empty();
   }
 
   if (should_return_line) {

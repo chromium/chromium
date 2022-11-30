@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -26,6 +27,9 @@ class SharingDialogView : public SharingDialog,
   SharingDialogView(views::View* anchor_view,
                     content::WebContents* web_contents,
                     SharingDialogData data);
+
+  SharingDialogView(const SharingDialogView&) = delete;
+  SharingDialogView& operator=(const SharingDialogView&) = delete;
 
   ~SharingDialogView() override;
 
@@ -66,9 +70,7 @@ class SharingDialogView : public SharingDialog,
   SharingDialogData data_;
 
   // References to device and app buttons views.
-  View* button_list_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingDialogView);
+  raw_ptr<View> button_list_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHARING_SHARING_DIALOG_VIEW_H_

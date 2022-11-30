@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui_message_handler.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/download_internals_resources.h"
-#include "chrome/grit/download_internals_resources_map.h"
+#include "components/grit/download_internals_resources.h"
+#include "components/grit/download_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"

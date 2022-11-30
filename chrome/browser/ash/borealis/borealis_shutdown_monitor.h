@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,9 @@ class BorealisShutdownMonitor {
   void SetShutdownDelayForTesting(base::TimeDelta delay);
 
  private:
+  // Called when the shutdown timer finishes.
+  void OnShutdownTimerElapsed();
+
   // The profile which we will shutdown borealis for.
   Profile* profile_;
 

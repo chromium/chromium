@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/nacl/renderer/plugin/nacl_subprocess.h"
 #include "components/nacl/renderer/plugin/plugin_error.h"
@@ -49,6 +48,9 @@ class PnaclTranslateThread;
 // (2) ld links the object code in obj_file_ and produces a nexe in nexe_file_.
 class PnaclCoordinator {
  public:
+  PnaclCoordinator(const PnaclCoordinator&) = delete;
+  PnaclCoordinator& operator=(const PnaclCoordinator&) = delete;
+
   virtual ~PnaclCoordinator();
 
   // The factory method for translations.
@@ -180,8 +182,6 @@ class PnaclCoordinator {
   // It accesses fields of PnaclCoordinator so it must have a
   // shorter lifetime.
   std::unique_ptr<PnaclTranslateThread> translate_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(PnaclCoordinator);
 };
 
 //----------------------------------------------------------------------

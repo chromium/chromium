@@ -1,20 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/graph/graph_impl.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -40,8 +40,7 @@ void AddObserverImpl(std::vector<NodeObserverType*>* observers,
                      NodeObserverType* observer) {
   DCHECK(observers);
   DCHECK(observer);
-  auto it = std::find(observers->begin(), observers->end(), observer);
-  DCHECK(it == observers->end());
+  DCHECK(!base::Contains(*observers, observer));
   observers->push_back(observer);
 }
 
@@ -51,12 +50,11 @@ void RemoveObserverImpl(std::vector<NodeObserverType*>* observers,
   DCHECK(observers);
   DCHECK(observer);
   // We expect to find the observer in the array.
-  auto it = std::find(observers->begin(), observers->end(), observer);
+  auto it = base::ranges::find(*observers, observer);
   DCHECK(it != observers->end());
   observers->erase(it);
   // There should only have been one copy of the observer.
-  it = std::find(observers->begin(), observers->end(), observer);
-  DCHECK(it == observers->end());
+  DCHECK(!base::Contains(*observers, observer));
 }
 
 class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
@@ -117,7 +115,7 @@ void NodeDataDescriberRegistryImpl::RegisterDescriber(
   }
 #endif
   bool inserted =
-      describers_.insert(std::make_pair(describer, name.as_string())).second;
+      describers_.insert(std::make_pair(describer, std::string(name))).second;
   DCHECK(inserted);
 }
 
@@ -180,6 +178,11 @@ GraphImpl::~GraphImpl() {
 
   // All nodes should have been removed.
   DCHECK(nodes_.empty());
+}
+
+void GraphImpl::SetUp() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CreateSystemNode();
 }
 
 void GraphImpl::TearDown() {
@@ -286,9 +289,10 @@ void GraphImpl::UnregisterObject(GraphRegistered* object) {
   registered_objects_.UnregisterObject(object);
 }
 
-const SystemNode* GraphImpl::FindOrCreateSystemNode() {
+const SystemNode* GraphImpl::GetSystemNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return FindOrCreateSystemNodeImpl();
+  DCHECK(system_node_.get());
+  return system_node_.get();
 }
 
 std::vector<const ProcessNode*> GraphImpl::GetAllProcessNodes() const {
@@ -307,9 +311,9 @@ std::vector<const WorkerNode*> GraphImpl::GetAllWorkerNodes() const {
   return GetAllNodesOfType<WorkerNodeImpl, const WorkerNode*>();
 }
 
-bool GraphImpl::IsEmpty() const {
+bool GraphImpl::HasOnlySystemNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return nodes_.empty();
+  return nodes_.size() == 1 && *nodes_.begin() == GetSystemNodeImpl();
 }
 
 ukm::UkmRecorder* GraphImpl::GetUkmRecorder() const {
@@ -348,18 +352,6 @@ GraphRegistered* GraphImpl::GetRegisteredObject(uintptr_t type_id) {
 GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
   CHECK_EQ(kGraphImplType, graph->GetImplType());
   return reinterpret_cast<GraphImpl*>(const_cast<void*>(graph->GetImpl()));
-}
-
-SystemNodeImpl* GraphImpl::FindOrCreateSystemNodeImpl() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!system_node_) {
-    // Create the singleton system node instance. Ownership is taken by the
-    // graph.
-    system_node_ = std::make_unique<SystemNodeImpl>();
-    AddNewNode(system_node_.get());
-  }
-
-  return system_node_.get();
 }
 
 bool GraphImpl::NodeInGraph(const NodeBase* node) {
@@ -456,12 +448,13 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
   DispatchNodeRemovedNotifications(node);
+  RemoveNodeAttachedData(node);    // Data added via the public interface.
+  node->RemoveNodeAttachedData();  // Data added via the private interface.
   node->LeaveGraph();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
 
-  // Clean-up related resources and remove the node itself.
-  RemoveNodeAttachedData(node);
+  // Remove the node itself.
   size_t erased = nodes_.erase(node);
   DCHECK_EQ(1u, erased);
 }
@@ -549,11 +542,8 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
       for (auto* observer : process_node_observers_)
         observer->OnProcessNodeAdded(process_node);
     } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnSystemNodeAdded(system_node);
-    } break;
+    case NodeTypeEnum::kSystem:
+      break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto* observer : worker_node_observers_)
@@ -584,11 +574,8 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       for (auto* observer : process_node_observers_)
         observer->OnBeforeProcessNodeRemoved(process_node);
     } break;
-    case NodeTypeEnum::kSystem: {
-      auto* system_node = SystemNodeImpl::FromNodeBase(node);
-      for (auto* observer : system_node_observers_)
-        observer->OnBeforeSystemNodeRemoved(system_node);
-    } break;
+    case NodeTypeEnum::kSystem:
+      break;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto* observer : worker_node_observers_)
@@ -661,6 +648,14 @@ std::vector<ReturnNodeType> GraphImpl::GetAllNodesOfType() const {
       ret.push_back(NodeType::FromNodeBase(node));
   }
   return ret;
+}
+
+void GraphImpl::CreateSystemNode() {
+  DCHECK(!system_node_);
+  // Create the singleton system node instance. Ownership is taken by the
+  // graph.
+  system_node_ = std::make_unique<SystemNodeImpl>();
+  AddNewNode(system_node_.get());
 }
 
 void GraphImpl::ReleaseSystemNode() {

@@ -1,0 +1,14 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(https://crbug.com/1271537): add assert(is_chromeos_ash) when fixed.
+assert(is_chromeos, "Projector App is Chrome OS only")
+
+source_set("cpp") {
+  sources = [
+    "projector_app_constants.cc",
+    "projector_app_constants.h",
+  ]
+  deps = [ "//base:base" ]
+}

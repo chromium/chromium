@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/keyboard_clickable_input_type_view.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -54,12 +54,15 @@ class CORE_EXPORT FileInputType final : public InputType,
   void Trace(Visitor*) const override;
   using InputType::GetElement;
   static Vector<String> FilesFromFormControlState(const FormControlState&);
-  static FileList* CreateFileList(const FileChooserFileInfoList& files,
+  static FileList* CreateFileList(ExecutionContext& context,
+                                  const FileChooserFileInfoList& files,
                                   const base::FilePath& base_dir);
 
   void CountUsage() override;
 
   void SetFilesFromPaths(const Vector<String>&) override;
+  bool CanSetStringValue() const;
+  bool ValueMissing(const String&) const;
 
  private:
   InputTypeView* CreateView() override;
@@ -67,13 +70,12 @@ class CORE_EXPORT FileInputType final : public InputType,
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
   void AppendToFormData(FormData&) const override;
-  bool ValueMissing(const String&) const override;
   String ValueMissingText() const override;
   void HandleDOMActivateEvent(Event&) override;
+  void OpenPopupView() override;
   void CustomStyleForLayoutObject(ComputedStyle& style) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) const override;
-  bool CanSetStringValue() const override;
   FileList* Files() override;
   bool SetFiles(FileList*) override;
   void SetFilesAndDispatchEvents(FileList*) override;
@@ -112,6 +114,13 @@ class CORE_EXPORT FileInputType final : public InputType,
 
   Member<FileList> file_list_;
   String dropped_file_system_id_;
+};
+
+template <>
+struct DowncastTraits<FileInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsFileInputType();
+  }
 };
 
 }  // namespace blink

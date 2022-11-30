@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-class Document;
+
+class ExecutionContext;
 
 // The PictureInPictureWindow is meant to be used only by
 // PictureInPictureController and is fundamentally just a simple proxy to get
@@ -24,11 +25,16 @@ class PictureInPictureWindow
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  PictureInPictureWindow() = delete;
+
+  // Create a Picture-in-Picture window for an HTMLVideoElement.
   PictureInPictureWindow(ExecutionContext*, const gfx::Size& size);
+
+  PictureInPictureWindow(const PictureInPictureWindow&) = delete;
+  PictureInPictureWindow& operator=(const PictureInPictureWindow&) = delete;
 
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
-  Document* document() const { return nullptr; }
 
   // Called when Picture-in-Picture window state is closed.
   void OnClose();
@@ -57,8 +63,6 @@ class PictureInPictureWindow
  private:
   // The Picture-in-Picture window size in pixels.
   gfx::Size size_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PictureInPictureWindow);
 };
 
 }  // namespace blink

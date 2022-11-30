@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/protocol/user_consent_specifics.pb.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 
 using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
@@ -23,10 +25,10 @@ namespace consent_auditor {
 
 namespace {
 
-const char kLocalConsentDescriptionKey[] = "description";
-const char kLocalConsentConfirmationKey[] = "confirmation";
-const char kLocalConsentVersionKey[] = "version";
-const char kLocalConsentLocaleKey[] = "locale";
+constexpr char kLocalConsentDescriptionKey[] = "description";
+constexpr char kLocalConsentConfirmationKey[] = "confirmation";
+constexpr char kLocalConsentVersionKey[] = "version";
+constexpr char kLocalConsentLocaleKey[] = "locale";
 
 std::unique_ptr<sync_pb::UserConsentSpecifics> CreateUserConsentSpecifics(
     const CoreAccountId& account_id,
@@ -141,20 +143,30 @@ void ConsentAuditorImpl::RecordAccountPasswordsConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
+void ConsentAuditorImpl::RecordAutofillAssistantConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::AutofillAssistantConsent& consent) {
+  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
+      CreateUserConsentSpecifics(account_id, app_locale_, clock_);
+  *specifics->mutable_autofill_assistant_consent() = consent;
+
+  consent_sync_bridge_->RecordConsent(std::move(specifics));
+}
+
 void ConsentAuditorImpl::RecordLocalConsent(
     const std::string& feature,
     const std::string& description_text,
     const std::string& confirmation_text) {
   DictionaryPrefUpdate consents_update(pref_service_,
                                        prefs::kLocalConsentsDictionary);
-  base::DictionaryValue* consents = consents_update.Get();
+  base::Value* consents = consents_update.Get();
   DCHECK(consents);
 
-  base::DictionaryValue record;
-  record.SetKey(kLocalConsentDescriptionKey, base::Value(description_text));
-  record.SetKey(kLocalConsentConfirmationKey, base::Value(confirmation_text));
-  record.SetKey(kLocalConsentVersionKey, base::Value(app_version_));
-  record.SetKey(kLocalConsentLocaleKey, base::Value(app_locale_));
+  base::Value record(base::Value::Type::DICTIONARY);
+  record.SetStringKey(kLocalConsentDescriptionKey, description_text);
+  record.SetStringKey(kLocalConsentConfirmationKey, confirmation_text);
+  record.SetStringKey(kLocalConsentVersionKey, app_version_);
+  record.SetStringKey(kLocalConsentLocaleKey, app_locale_);
 
   consents->SetKey(feature, std::move(record));
 }

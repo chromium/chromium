@@ -1,0 +1,30 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca.pdf;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/pdf_parser/proto/pdfium_result.proto";
+
+message ParserPacket {
+  // Reseved for plugins. Latest used extension is none.
+  extensions 100000 to 200000;
+  // Main Part of the pdfium scan
+  optional maldoca.pdf.PdfiumScanResult scan_result = 1;
+  // Hash used as the ID of the PdfFeaturesBuilder
+  optional string pdf_hash = 2;
+}

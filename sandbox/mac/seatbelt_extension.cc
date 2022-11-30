@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 // libsandbox private API.
 extern "C" {
 extern const char* APP_SANDBOX_READ;
+extern const char* APP_SANDBOX_READ_WRITE;
 
 int64_t sandbox_extension_consume(const char* token);
 int sandbox_extension_release(int64_t handle);
@@ -82,6 +83,9 @@ char* SeatbeltExtension::IssueToken(SeatbeltExtension::Type type,
     case FILE_READ:
       return sandbox_extension_issue_file(APP_SANDBOX_READ, resource.c_str(),
                                           0);
+    case FILE_READ_WRITE:
+      return sandbox_extension_issue_file(APP_SANDBOX_READ_WRITE,
+                                          resource.c_str(), 0);
     default:
       NOTREACHED();
       return nullptr;

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<p>The test passes if when you click on the number 12 below it gets highlighted.</p>
+<input type="time" id="time" value="12:00">
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+
+    eventSender.mouseMoveTo(time.offsetLeft + 10, time.offsetTop + 10);
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+
+    testRunner.notifyDone();
+  }
+</script>

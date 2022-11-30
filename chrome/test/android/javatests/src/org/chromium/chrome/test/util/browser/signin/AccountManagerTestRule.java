@@ -1,14 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import android.accounts.Account;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -17,40 +17,48 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.components.signin.test.util.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.HashMap;
+
 /**
- * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
+ * This test rule mocks AccountManagerFacade.
  *
- * When the user does not invoke any sign-in functions with this rule, the rule will not
- * invoke any native code, therefore it is safe to use it in Robolectric tests just as
- * a simple AccountManagerFacade mock.
+ * TODO(crbug.com/1334286): Migrate usages that need native to {@link SigninTestRule} and remove
+ * the methods that call native from this rule.
+ *
+ * The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
     public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
 
-    private final FakeAccountManagerFacade mFakeAccountManagerFacade;
-    private boolean mIsSignedIn;
+    private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
+    // TODO(https://crbug.com/1352119): Revise this test rule and make this non-nullable.
+    private final @Nullable FakeAccountInfoService mFakeAccountInfoService;
 
     public AccountManagerTestRule() {
-        this(new FakeAccountManagerFacade(null));
+        this(new FakeAccountManagerFacade(), new FakeAccountInfoService());
     }
 
-    public AccountManagerTestRule(FakeProfileDataSource fakeProfileDataSource) {
-        this(new FakeAccountManagerFacade(fakeProfileDataSource));
+    public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
+        this(fakeAccountManagerFacade, new FakeAccountInfoService());
     }
 
-    public AccountManagerTestRule(FakeAccountManagerFacade fakeAccountManagerFacade) {
+    public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
+            @Nullable FakeAccountInfoService fakeAccountInfoService) {
         mFakeAccountManagerFacade = fakeAccountManagerFacade;
+        mFakeAccountInfoService = fakeAccountInfoService;
     }
 
     @Override
@@ -72,6 +80,11 @@ public class AccountManagerTestRule implements TestRule {
      * Sets up the AccountManagerFacade mock.
      */
     public void setUpRule() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mFakeAccountInfoService != null) {
+                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            }
+        });
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
@@ -79,43 +92,68 @@ public class AccountManagerTestRule implements TestRule {
      * Tears down the AccountManagerFacade mock and signs out if user is signed in.
      */
     public void tearDownRule() {
-        if (mIsSignedIn && getCurrentSignedInAccount() != null) {
-            // For android_browsertests that sign out during the test body, like
-            // UkmBrowserTest.SingleSyncSignoutCheck, we should sign out during tear-down test stage
-            // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
-            // in SignoutManager::signOut(). This is because sign out is attempted when a sign-out
-            // operation is already in progress. See crbug/1102746 for more details.
-            signOut();
-        }
         AccountManagerFacadeProvider.resetInstanceForTests();
+        if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }
 
     /**
-     * Add an account to the fake AccountManagerFacade.
+     * Adds an observer that detects changes in the account state propagated by the
+     * IdentityManager object.
+     */
+    public void observeIdentityManager(IdentityManager identityManager) {
+        identityManager.addObserver(mFakeAccountInfoService);
+    }
+
+    /**
+     * Adds an account of the given accountName to the fake AccountManagerFacade.
      * @return The CoreAccountInfo for the account added.
      */
-    public CoreAccountInfo addAccount(Account account) {
-        mFakeAccountManagerFacade.addAccount(account);
-        return toCoreAccountInfo(account.name);
+    public AccountInfo addAccount(String accountName) {
+        return addAccount(accountName, new AccountCapabilities(new HashMap<>()));
     }
 
     /**
-     * Add an account of the given accountName to the fake AccountManagerFacade.
+     * Adds an account of the given accountName and capabilities to the fake AccountManagerFacade.
      * @return The CoreAccountInfo for the account added.
      */
-    public CoreAccountInfo addAccount(String accountName) {
-        return addAccount(AccountUtils.createAccountFromName(accountName));
+    public AccountInfo addAccount(String accountName, @NonNull AccountCapabilities capabilities) {
+        final String baseName = accountName.split("@", 2)[0];
+        return addAccount(
+                accountName, baseName + ".full", baseName + ".given", createAvatar(), capabilities);
     }
 
     /**
-     * Add an account to the fake AccountManagerFacade and its profileData to the
-     * ProfileDataSource of the fake AccountManagerFacade.
-     * @return The account added.
+     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to
+     * {@link FakeAccountInfoService}.
      */
-    public CoreAccountInfo addAccount(ProfileDataSource.ProfileData profileData) {
-        CoreAccountInfo coreAccountInfo = addAccount(profileData.getAccountEmail());
-        mFakeAccountManagerFacade.addProfileData(profileData);
-        return coreAccountInfo;
+    public AccountInfo addAccount(
+            String email, String fullName, String givenName, @Nullable Bitmap avatar) {
+        return addAccount(
+                email, fullName, givenName, avatar, new AccountCapabilities(new HashMap<>()));
+    }
+
+    /**
+     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to
+     * {@link FakeAccountInfoService}.
+     */
+    public AccountInfo addAccount(String email, String fullName, String givenName,
+            @Nullable Bitmap avatar, @NonNull AccountCapabilities capabilities) {
+        String gaiaId = FakeAccountManagerFacade.toGaiaId(email);
+        AccountInfo accountInfo = new AccountInfo(new CoreAccountId(gaiaId), email, gaiaId,
+                fullName, givenName, avatar, capabilities);
+        mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(email));
+        // TODO(https://crbug.com/1352119): Revise this test rule and remove the condition here.
+        if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
+        return accountInfo;
+    }
+
+    /**
+     * Sets the result for the next add account flow.
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
+     */
+    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
+        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(result, newAccountName);
     }
 
     /**
@@ -126,118 +164,27 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Waits for the AccountTrackerService to seed system accounts.
-     */
-    public void waitForSeeding() {
-        SigninTestUtil.seedAccounts();
-    }
-
-    /**
-     * Adds an account and seed it in native code. Will create a ProfileData entry for the account
-     * if ProfileDataSource is not null.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     */
-    public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
-        CoreAccountInfo coreAccountInfo = mFakeAccountManagerFacade.getProfileDataSource() == null
-                ? addAccount(accountName)
-                : addAccount(createProfileDataFromName(accountName));
-        waitForSeeding();
-        return coreAccountInfo;
-    }
-
-    /**
-     * Removes an account and seed it in native code.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     */
-    public void removeAccountAndWaitForSeeding(String accountEmail) {
-        removeAccount(accountEmail);
-        waitForSeeding();
-    }
-
-    /**
-     * Adds and signs in an account with the default name without sync consent.
-     *
-     * This method does not enable sync.
-     */
-    public CoreAccountInfo addTestAccountThenSignin() {
-        assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        mIsSignedIn = true;
-        return coreAccountInfo;
-    }
-
-    /**
-     * Adds and signs in an account with the default name and enables sync.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
-        return addTestAccountThenSigninAndEnableSync(
-                TestThreadUtils.runOnUiThreadBlockingNoException(ProfileSyncService::get));
-    }
-
-    /**
-     * Adds and signs in an account with the default name and enables sync.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     *
-     * @param profileSyncService ProfileSyncService object to set up sync, if null, sync won't
-     *         start.
-     */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
-            @Nullable ProfileSyncService profileSyncService) {
-        assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signinAndEnableSync(coreAccountInfo, profileSyncService);
-        mIsSignedIn = true;
-        return coreAccountInfo;
-    }
-
-    /**
-     * Creates ProfileData object from accountName.
-     */
-    public ProfileDataSource.ProfileData createProfileDataFromName(String accountName) {
-        String email = accountName.split("@", 2)[0];
-        String givenName = email + ".given";
-        String fullName = email + ".full";
-        return new ProfileDataSource.ProfileData(
-                accountName, createProfileImage(), fullName, givenName);
-    }
-
-    /**
-     * Returns the currently signed in account.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     */
-    public CoreAccountInfo getCurrentSignedInAccount() {
-        return SigninTestUtil.getCurrentAccount();
-    }
-
-    /**
      * Converts an account email to its corresponding CoreAccountInfo object.
      */
     public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
         String accountGaiaId = mFakeAccountManagerFacade.getAccountGaiaId(accountEmail);
-        return new CoreAccountInfo(new CoreAccountId(accountGaiaId), accountEmail, accountGaiaId);
+        return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
     }
 
     /**
-     * Sign out from the current account.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
+     * Creates an email used to identify child accounts in tests.
+     * A child-specific prefix will be appended to the base name so that the created account
+     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
+     * {@link FakeAccountManagerFacade}.
      */
-    public void signOut() {
-        SigninTestUtil.signOut();
-        mIsSignedIn = false;
+    public static String generateChildEmail(String baseName) {
+        return FakeAccountManagerFacade.generateChildEmail(baseName);
     }
 
     /**
-     * Returns a profile image created from test resource.
+     * Returns an avatar image created from test resource.
      */
-    public Bitmap createProfileImage() {
+    private static Bitmap createAvatar() {
         Drawable drawable = AppCompatResources.getDrawable(
                 ContextUtils.getApplicationContext(), R.drawable.test_profile_picture);
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),

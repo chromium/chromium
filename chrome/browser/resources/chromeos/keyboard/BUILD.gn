@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+# Copies the modulized file into chromeos/login to be used
+# by the GRD generated there.
+preprocess_if_expr("preprocess") {
+  deps = [ ":modulize" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/../login"
+  in_files = [ "keyboard_utils.m.js" ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":keyboard_utils" ]
+}
+
+js_type_check("closure_compile_module") {
+  deps = [ ":keyboard_utils.m" ]
+}
+
+js_library("keyboard_utils") {
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("keyboard_utils.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/keyboard/keyboard_utils.m.js" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "keyboard_utils.js" ]
+}

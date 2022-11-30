@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
+#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
 
-#include "components/omnibox/browser/location_bar_model.h"
+#import "components/omnibox/browser/location_bar_model.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,14 +42,20 @@ void WebOmniboxEditControllerImpl::OnAutocompleteAccept(
     ui::PageTransition transition,
     AutocompleteMatchType::Type match_type,
     base::TimeTicks match_selection_timestamp,
-    bool destination_url_entered_without_scheme) {
+    bool destination_url_entered_without_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match,
+    IDNA2008DeviationCharacter deviation_char_in_hostname) {
   if (destination_url.is_valid()) {
     transition = ui::PageTransitionFromInt(
         transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
     [URLLoader_ loadGURLFromLocationBar:destination_url
-                            postContent:post_content
-                             transition:transition
-                            disposition:disposition];
+                                   postContent:post_content
+                                    transition:transition
+                                   disposition:disposition
+        destination_url_entered_without_scheme:
+            destination_url_entered_without_scheme];
   }
 }
 

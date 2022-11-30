@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -35,7 +35,7 @@ base::FilePath GetKerberosDir() {
 
 // Writes |blob| into file <UserPath>/kerberos/|file_name|. First writes into
 // temporary file and then replaces existing one. Prints an error or failure.
-void WriteFile(const base::FilePath& path, base::Optional<std::string> blob) {
+void WriteFile(const base::FilePath& path, absl::optional<std::string> blob) {
   if (!blob.has_value())
     return;
   if (!base::ImportantFileWriter::WriteFileAtomically(path, blob.value()))
@@ -50,8 +50,8 @@ void RemoveFile(const base::FilePath& path) {
 
 // Writes |krb5cc| to <DIR_HOME>/kerberos/krb5cc and |krb5config| to
 // <DIR_HOME>/kerberos/krb5.conf if set. Creates directories if necessary.
-void WriteFiles(base::Optional<std::string> krb5cc,
-                base::Optional<std::string> krb5config) {
+void WriteFiles(absl::optional<std::string> krb5cc,
+                absl::optional<std::string> krb5config) {
   base::FilePath dir = GetKerberosDir();
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(dir, &error)) {
@@ -74,11 +74,11 @@ void RemoveFiles() {
 // If |config| has a value, puts canonicalization settings first depending on
 // user policy. Whatever setting comes first wins, so even if krb5.conf sets
 // rdns or dns_canonicalize_hostname below, it would get overridden.
-base::Optional<std::string> MaybeAdjustConfig(
-    base::Optional<std::string> config,
+absl::optional<std::string> MaybeAdjustConfig(
+    absl::optional<std::string> config,
     bool is_dns_cname_enabled) {
   if (!config.has_value())
-    return base::nullopt;
+    return absl::nullopt;
   std::string adjusted_config = base::StringPrintf(
       kKrb5CnameSettings, is_dns_cname_enabled ? "true" : "false");
   adjusted_config.append(config.value());
@@ -102,25 +102,28 @@ KerberosFilesHandler::KerberosFilesHandler(
     base::RepeatingClosure get_kerberos_files)
     : get_kerberos_files_(std::move(get_kerberos_files)) {
   // Set environment variables for GSSAPI library.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  // TODO(https://crbug.com/1259918): Calling base::Environment::SetVar here is
+  // unsafe and should be avoided.
   base::FilePath path;
   CHECK(base::PathService::Get(base::DIR_HOME, &path));
   path = path.Append(kKrb5Directory);
   std::string krb5cc_env_value =
       kKrb5CCFilePrefix + path.Append(kKrb5CCFile).value();
   std::string krb5conf_env_value = path.Append(kKrb5ConfFile).value();
-  env->SetVar(kKrb5CCEnvName, krb5cc_env_value);
-  env->SetVar(kKrb5ConfEnvName, krb5conf_env_value);
 
-  // Send the environment variables to the network service if it's running
-  // out of process.
   if (content::IsOutOfProcessNetworkService()) {
+    // Send the environment variables to the network service if it's running
+    // out of process.
     std::vector<network::mojom::EnvironmentVariablePtr> environment;
     environment.push_back(network::mojom::EnvironmentVariable::New(
         kKrb5CCEnvName, krb5cc_env_value));
     environment.push_back(network::mojom::EnvironmentVariable::New(
         kKrb5ConfEnvName, krb5conf_env_value));
     content::GetNetworkService()->SetEnvironment(std::move(environment));
+  } else {
+    std::unique_ptr<base::Environment> env(base::Environment::Create());
+    env->SetVar(kKrb5CCEnvName, krb5cc_env_value);
+    env->SetVar(kKrb5ConfEnvName, krb5conf_env_value);
   }
 
   // Listen to kDisableAuthNegotiateCnameLookup pref. It might change the
@@ -134,8 +137,8 @@ KerberosFilesHandler::KerberosFilesHandler(
 
 KerberosFilesHandler::~KerberosFilesHandler() = default;
 
-void KerberosFilesHandler::SetFiles(base::Optional<std::string> krb5cc,
-                                    base::Optional<std::string> krb5conf) {
+void KerberosFilesHandler::SetFiles(absl::optional<std::string> krb5cc,
+                                    absl::optional<std::string> krb5conf) {
   krb5conf =
       MaybeAdjustConfig(krb5conf, !negotiate_disable_cname_lookup_.GetValue());
   base::ThreadPool::PostTaskAndReply(

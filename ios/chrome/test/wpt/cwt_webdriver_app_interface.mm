@@ -1,20 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 
-#include "base/files/file.h"
-#include "base/files/file_path.h"
-#include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import <signal.h>
+
+#import "base/files/file.h"
+#import "base/files/file_path.h"
+#import "base/json/json_writer.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/settings_test_util.h"
@@ -23,8 +24,9 @@
 #import "ios/testing/nserror_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/image/image.h"
+#import "ios/web/public/web_state.h"
+#import "ui/gfx/geometry/rect_f.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,8 +37,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 NSString* GetIdForWebState(web::WebState* web_state) {
-  TabIdTabHelper::CreateForWebState(web_state);
-  return TabIdTabHelper::FromWebState(web_state)->tab_id();
+  return web_state->GetStableIdentifier();
 }
 
 WebStateList* GetCurrentWebStateList() {
@@ -205,21 +206,21 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                          "'%s.result', %s: value}); }",
                          command.c_str(), kMessageResultKey.c_str());
 
-  // Construct a script that calls the given |function| with
-  // |scriptCompletionHandler| as an argument.
+  // Construct a script that calls the given `function` with
+  // `scriptCompletionHandler` as an argument.
   std::string scriptFunctionWithCompletionHandler = base::StringPrintf(
       "(%s).call(null, %s)", base::SysNSStringToUTF8(function).c_str(),
       scriptCompletionHandler.c_str());
 
-  __block base::Optional<base::Value> messageValue;
+  __block absl::optional<base::Value> messageValue;
   const web::WebState::ScriptCommandCallback callback =
-      base::BindRepeating(^(const base::DictionaryValue& value, const GURL&,
+      base::BindRepeating(^(const base::Value& value, const GURL&,
                             /*interacted*/ bool,
                             /*sender_frame*/ web::WebFrame*) {
         const base::Value* result = value.FindKey(kMessageResultKey);
 
-        // |result| will be null when the computed result in JavaScript is
-        // |undefined|. This happens, for example, when injecting a script that
+        // `result` will be null when the computed result in JavaScript is
+        // `undefined`. This happens, for example, when injecting a script that
         // performs some action (like setting the document's title) but doesn't
         // return any value.
         if (result)
@@ -310,6 +311,12 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
 
 + (void)stopLoggingStderr {
   CWTStderrLogger::GetInstance()->StopRedirectingToFile();
+}
+
++ (void)installCleanExitHandlerForAbortSignal {
+  struct sigaction sa {};
+  sa.sa_handler = [](int) { exit(0); };
+  sigaction(SIGABRT, &sa, nullptr);
 }
 
 @end

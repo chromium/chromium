@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/favicon/core/favicon_driver_impl.h"
+#include "content/public/browser/document_user_data.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace favicon {
@@ -28,18 +29,17 @@ class ContentFaviconDriver
       public content::WebContentsUserData<ContentFaviconDriver>,
       public FaviconDriverImpl {
  public:
-  ~ContentFaviconDriver() override;
+  ContentFaviconDriver(const ContentFaviconDriver&) = delete;
+  ContentFaviconDriver& operator=(const ContentFaviconDriver&) = delete;
 
-  // Returns the current tab's favicon URLs. If this is empty,
-  // DidUpdateFaviconURL has not yet been called for the current navigation.
-  std::vector<blink::mojom::FaviconURL> favicon_urls() const {
-    return favicon_urls_.value_or(std::vector<blink::mojom::FaviconURL>());
-  }
+  ~ContentFaviconDriver() override;
 
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;
   GURL GetActiveURL() override;
+
+  GURL GetManifestURL(content::RenderFrameHost* rfh);
 
  protected:
   ContentFaviconDriver(content::WebContents* web_contents,
@@ -48,10 +48,29 @@ class ContentFaviconDriver
  private:
   friend class content::WebContentsUserData<ContentFaviconDriver>;
 
+  // TODO(crbug.com/1205018): these two classes are current used to ensure that
+  // we disregard manifest URL updates that arrive prior to onload firing.
+  struct DocumentManifestData
+      : public content::DocumentUserData<DocumentManifestData> {
+    explicit DocumentManifestData(content::RenderFrameHost* rfh);
+    ~DocumentManifestData() override;
+    DOCUMENT_USER_DATA_KEY_DECL();
+    bool has_manifest_url = false;
+  };
+
+  struct NavigationManifestData
+      : public content::NavigationHandleUserData<NavigationManifestData> {
+    explicit NavigationManifestData(
+        content::NavigationHandle& navigation_handle);
+    ~NavigationManifestData() override;
+    NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+    bool has_manifest_url = false;
+  };
+
   // Callback when a manifest is downloaded.
   void OnDidDownloadManifest(ManifestDownloadCallback callback,
                              const GURL& manifest_url,
-                             const blink::Manifest& manifest);
+                             blink::mojom::ManifestPtr manifest);
 
   // FaviconHandler::Delegate implementation.
   int DownloadImage(const GURL& url,
@@ -73,26 +92,18 @@ class ContentFaviconDriver
   void DidUpdateFaviconURL(
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
-  void DidUpdateWebManifestURL(
-      content::RenderFrameHost* rfh,
-      const base::Optional<GURL>& manifest_url) override;
+  void DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
+                               const GURL& manifest_url) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
 
-  bool document_on_load_completed_;
   GURL bypass_cache_page_url_;
-  // nullopt until the actual list is reported via DidUpdateFaviconURL().
-  base::Optional<std::vector<blink::mojom::FaviconURL>> favicon_urls_;
-  // Web Manifest URL or empty URL if none.
-  GURL manifest_url_;
+
+  base::WeakPtrFactory<ContentFaviconDriver> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ContentFaviconDriver);
 };
 
 }  // namespace favicon

@@ -28,7 +28,6 @@
 
 #import <Foundation/NSException.h>
 #import "third_party/blink/renderer/platform/platform_export.h"
-#import "third_party/blink/renderer/platform/wtf/assertions.h"
 
 PLATFORM_EXPORT void ReportBlockedObjCException(NSException*);
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   // asynchronous completion, with script being the asynchronous completion
   // value."
   worker_global_scope->WorkerScriptFetchFinished(
-      *module_script, base::nullopt /* v8_inspector::V8StackTraceId */);
+      *module_script, absl::nullopt /* v8_inspector::V8StackTraceId */);
 }
 
 void WorkerModuleTreeClient::Trace(Visitor* visitor) const {

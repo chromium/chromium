@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace message_center {
 
-NotificationBackgroundPainter::NotificationBackgroundPainter(int top_radius,
-                                                             int bottom_radius,
-                                                             SkColor color)
-    : top_radius_(SkIntToScalar(top_radius)),
-      bottom_radius_(SkIntToScalar(bottom_radius)),
-      color_(color) {}
+NotificationBackgroundPainter::NotificationBackgroundPainter(
+    float top_radius,
+    float bottom_radius,
+    SkColor color)
+    : top_radius_(top_radius), bottom_radius_(bottom_radius), color_(color) {}
 
 NotificationBackgroundPainter::~NotificationBackgroundPainter() = default;
 

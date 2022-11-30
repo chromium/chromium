@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
@@ -23,7 +24,7 @@ void UserActionsUIHandler::RegisterMessages() {
                                         base::Unretained(this)));
 }
 
-void UserActionsUIHandler::HandlePageLoaded(const base::ListValue* args) {
+void UserActionsUIHandler::HandlePageLoaded(const base::Value::List& args) {
   AllowJavascript();
 }
 

@@ -1,7 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -23,12 +24,13 @@ using ContextType = ExtensionBrowserTest::ContextType;
 class ManagementApiNonPersistentApiTest
     : public ExtensionApiTest,
       public testing::WithParamInterface<ContextType> {
- protected:
-  const Extension* LoadNonPersistentExtension(const char* relative_path) {
-    return LoadExtension(
-        test_data_dir_.AppendASCII(relative_path),
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
+ public:
+  ManagementApiNonPersistentApiTest() : ExtensionApiTest(GetParam()) {}
+  ~ManagementApiNonPersistentApiTest() override = default;
+  ManagementApiNonPersistentApiTest(const ManagementApiNonPersistentApiTest&) =
+      delete;
+  ManagementApiNonPersistentApiTest& operator=(
+      const ManagementApiNonPersistentApiTest&) = delete;
 };
 
 // Tests chrome.management.uninstallSelf API.
@@ -72,7 +74,8 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
   // uninstalls itself, so the ExtensionHost never fully finishes loading. Since
   // we wait for the uninstall explicitly, this isn't racy.
   scoped_refptr<const Extension> extension =
-      LoadExtension(path, {.wait_for_renderers = false});
+      LoadExtension(path, {.wait_for_renderers = false,
+                           .context_type = ContextType::kFromManifest});
 
   EXPECT_EQ(extension, observer.WaitForExtensionUninstalled());
 }
@@ -81,8 +84,8 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest, UninstallSelf) {
 // (i.e. browserAction.onClicked event).
 IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
                        UninstallViaBrowserAction) {
-  const Extension* extension_b = LoadNonPersistentExtension(
-      "management/uninstall_via_browser_action/extension_b");
+  const Extension* extension_b = LoadExtension(test_data_dir_.AppendASCII(
+      "management/uninstall_via_browser_action/extension_b"));
   ASSERT_TRUE(extension_b);
   const ExtensionId extension_b_id = extension_b->id();
 
@@ -97,9 +100,9 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
 
   // Load extension_a and wait for browserAction.onClicked listener
   // registration.
-  ExtensionTestMessageListener listener_added("ready", false);
-  const Extension* extension_a = LoadNonPersistentExtension(
-      "management/uninstall_via_browser_action/extension_a");
+  ExtensionTestMessageListener listener_added("ready");
+  const Extension* extension_a = LoadExtension(test_data_dir_.AppendASCII(
+      "management/uninstall_via_browser_action/extension_a"));
   ASSERT_TRUE(extension_a);
   EXPECT_TRUE(listener_added.WaitUntilSatisfied());
 

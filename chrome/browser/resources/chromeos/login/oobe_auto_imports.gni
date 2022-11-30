@@ -1,0 +1,146 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# OOBE - Polymer 3 - Auto Imports File
+#
+# This file is used when generating Polymer3 code from Polymer2 elements.
+# Polymer2 relies on HTML Imports to import the resources a file may need,
+# whereas Polymer3 relies on JS Modules.
+#
+# Suppose that the files `/components/my_elements.html/js` define a Polymer
+# element `MyElement`. Another element that depends on this element would do
+# the following to include it:
+#
+#   <link rel="import" href="/components/my_element.html"> (Polymer2)
+#
+#   import {MyElement} from '/components/my_element.m.js'  (Polymer3)
+#
+# The entries in this file instructs the polymer_modulizer() to replace the '.html' import
+# with the proper JS Module counterpart when generating Polymer3 from Polymer2.
+#
+# For example, adding the rule
+#
+#         `/components/my_element.html|MyElement`
+#
+# instructs polymer_modulizer() to replace  the import
+#
+#         <link rel="import" href="/components/my_element.html">
+#
+# with the following:
+#
+#         import {MyElement} from '/components/my_element.m.js'
+#
+
+oobe_auto_imports = [
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_i18n_behavior.html|OobeI18nBehavior,OobeI18nBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_dialog_host_behavior.html|OobeDialogHostBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_focus_behavior.html|OobeFocusBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/oobe_scrollable_behavior.html|OobeScrollableBehavior",
+  "chrome/browser/resources/chromeos/login/components/behaviors/login_screen_behavior.html|LoginScreenBehavior,LoginScreenBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
+  "chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.html|OobeBackButton",
+  "chrome/browser/resources/chromeos/login/components/buttons/oobe_base_button.html|OobeBaseButton",
+  "chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.html|OobeIconButton",
+  "chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.html|OobeNextButton",
+  "chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.html|OobeTextButton",
+  "chrome/browser/resources/chromeos/login/components/display_manager_types.html|OOBE_UI_STATE,SCREEN_GAIA_SIGNIN",
+  "chrome/browser/resources/chromeos/login/components/keyboard_utils_for_injection.html|KEYBOARD_UTILS_FOR_INJECTION",
+  "chrome/browser/resources/chromeos/login/components/long_touch_detector.html|LongTouchDetector",
+  "chrome/browser/resources/chromeos/login/components/network_select_login.html|NetworkSelectLogin",
+  "chrome/browser/resources/chromeos/login/components/oobe_select.html|getSelectedValue,getSelectedTitle,SelectListType,setupSelect",
+  "chrome/browser/resources/chromeos/login/components/oobe_apps_list.html|OobeAppsList",
+  "chrome/browser/resources/chromeos/login/components/oobe_types.html|OobeTypes",
+  "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html|OobeA11yOption",
+  "chrome/browser/resources/chromeos/login/components/web_view_helper.html|WebViewHelper",
+  "chrome/browser/resources/chromeos/login/components/web_view_loader.html|WebViewLoader,CLEAR_ANCHORS_CONTENT_SCRIPT",
+  "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html|ActiveDirectoryErrorState,ADLoginStep,JoinConfigType",
+  "chrome/browser/resources/chromeos/login/screens/login/checking_downloading_update.html|CheckingDownloadingUpdate",
+  "chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.html|OobeWelcomeDialog",
+  "chrome/browser/resources/chromeos/login/cr_ui.html|Oobe",
+  "chrome/browser/resources/chromeos/login/display_manager.html|DisplayManager,invokePolymerMethod",
+  "chrome/browser/resources/chromeos/login/keyboard_utils.html|keyboard",
+  "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
+  "chrome/browser/resources/gaia_auth_host/authenticator.html|Authenticator,AuthFlow,AuthMode,AuthParams,SUPPORTED_PARAMS",
+  "ash/webui/common/resources/multidevice_setup/multidevice_setup_delegate.html|MultiDeviceSetupDelegate",
+  "ash/webui/common/resources/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
+  "ash/webui/common/resources/network/network_list_types.html|NetworkList",
+  "ash/webui/common/resources/network/onc_mojo.html|OncMojo",
+  "ash/webui/common/resources/quick_unlock/lock_screen_constants.html|recordLockScreenProgress",
+  "ui/webui/resources/html/assert.html|assert,assertNotReached",
+  "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
+  "ui/webui/resources/html/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
+  "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
+  "ui/webui/resources/html/util.html|announceAccessibleMessage,ensureTransitionEndEvent",
+]
+
+oobe_namespace_rewrites = [
+  "action_link.m.js|action_link.js",
+  "Polymer.mixinBehaviors|mixinBehaviors",
+  "Polymer.dedupingMixin|dedupingMixin",
+  "Polymer.Element|PolymerElement",
+  "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+  "settings.recordLockScreenProgress|recordLockScreenProgress",
+  "cr.ui.LoginUITools.addSubmitListener|addSubmitListener",
+  "cr.ui.login.invokePolymerMethod|invokePolymerMethod",
+  "cr.login.Authenticator.AuthFlow|AuthFlow",
+  "cr.login.Authenticator.AuthMode|AuthMode",
+  "cr.login.Authenticator.SUPPORTED_PARAMS|SUPPORTED_PARAMS",
+  "cr.login.Authenticator|Authenticator",
+]
+
+oobe_migrated_imports = [
+  "chrome/browser/resources/gaia_auth_host/authenticator.html",
+  "ash/webui/common/resources/cr_scrollable_behavior.html",
+  "ash/webui/common/resources/i18n_behavior.html",
+  "ash/webui/common/resources/web_ui_listener_behavior.html",
+  "ash/webui/common/resources/bluetooth/bluetooth_pairing_enter_code_page.html",
+  "ash/webui/common/resources/multidevice_setup/button_bar.html",
+  "ash/webui/common/resources/multidevice_setup/fake_mojo_service.html",
+  "ash/webui/common/resources/multidevice_setup/mojo_api.html",
+  "ash/webui/common/resources/multidevice_setup/multidevice_setup.html",
+  "ash/webui/common/resources/multidevice_setup/multidevice_setup_browser_proxy.html",
+  "ash/webui/common/resources/multidevice_setup/multidevice_setup_delegate.html",
+  "ash/webui/common/resources/multidevice_setup/multidevice_setup_shared.css.html",
+  "ash/webui/common/resources/multidevice_setup/password_page.html",
+  "ash/webui/common/resources/multidevice_setup/setup_succeeded_page.html",
+  "ash/webui/common/resources/multidevice_setup/start_setup_page.html",
+  "ash/webui/common/resources/multidevice_setup/ui_page.html",
+  "ash/webui/common/resources/multidevice_setup/ui_page_container_behavior.html",
+  "ash/webui/common/resources/network/mojo_interface_provider.html",
+  "ash/webui/common/resources/network/network_list.html",
+  "ash/webui/common/resources/network/network_list_types.html",
+  "ash/webui/common/resources/network/network_select.html",
+  "ash/webui/common/resources/network/onc_mojo.html",
+  "chrome/browser/resources/chromeos/login/components/gaia_button.html",
+  "chrome/browser/resources/chromeos/login/components/hd_iron_icon.html",
+  "chrome/browser/resources/chromeos/login/components/notification_card.html",
+  "chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.html",
+  "chrome/browser/resources/chromeos/login/components/progress_list_item.html",
+  "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
+  "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html",
+  "ash/webui/common/resources/quick_unlock/lock_screen_constants.html",
+  "ash/webui/common/resources/quick_unlock/pin_keyboard.html",
+  "ash/webui/common/resources/quick_unlock/setup_pin_keyboard.html",
+  "ui/webui/resources/cr_elements/action_link.css.html",
+  "ui/webui/resources/cr_elements/chromeos/cros_color_overrides.css.html",
+  "ui/webui/resources/cr_elements/cr_button/cr_button.html",
+  "ui/webui/resources/cr_elements/cr_checkbox/cr_checkbox.html",
+  "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html",
+  "ui/webui/resources/cr_elements/cr_expand_button/cr_expand_button.html",
+  "ui/webui/resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html",
+  "ui/webui/resources/cr_elements/cr_icon_button/cr_icon_button.html",
+  "ui/webui/resources/cr_elements/cr_icons.css.html",
+  "ui/webui/resources/cr_elements/cr_input/cr_input.html",
+  "ui/webui/resources/cr_elements/cr_lazy_render/cr_lazy_render.html",
+  "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html",
+  "ui/webui/resources/cr_elements/cr_radio_button/cr_card_radio_button.html",
+  "ui/webui/resources/cr_elements/cr_radio_group/cr_radio_group.html",
+  "ui/webui/resources/cr_elements/cr_shared_style.css.html",
+  "ui/webui/resources/cr_elements/cr_shared_vars.css.html",
+  "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
+  "ui/webui/resources/cr_elements/md_select.css.html",
+  "ui/webui/resources/html/assert.html",
+  "ui/webui/resources/html/parse_html_subset.html",
+  "ui/webui/resources/html/util.html",
+]

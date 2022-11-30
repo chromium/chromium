@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,29 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/ios/ios_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
-#include "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "net/cookies/cookie_access_result.h"
-#include "net/cookies/cookie_store.h"
-#include "net/cookies/cookie_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
+#import "ios/net/cookies/system_cookie_util.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "net/base/mac/url_conversions.h"
+#import "net/base/net_errors.h"
+#import "net/cookies/cookie_access_result.h"
+#import "net/cookies/cookie_store.h"
+#import "net/cookies/cookie_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -80,28 +81,28 @@ class FakeGaiaAuthFetcherIOSBridgeDelegate
   // Returns true if has been called().
   bool GetFetchCompleteCalled() const { return fetch_complete_called_; }
 
-  // Returns |url| from FetchComplete().
+  // Returns `url` from FetchComplete().
   const GURL& GetURL() const { return url_; }
 
-  // Returns |data| from FetchComplete().
+  // Returns `data` from FetchComplete().
   const std::string& GetData() const { return data_; }
 
-  // Returns |net_error| from FetchComplete().
+  // Returns `net_error` from FetchComplete().
   net::Error GetNetError() const { return net_error_; }
 
-  // Returns |response_code| from FetchComplete().
+  // Returns `response_code` from FetchComplete().
   int GetResponseCode() const { return response_code_; }
 
  private:
   // true if has been called().
   bool fetch_complete_called_;
-  // |url| from FetchComplete().
+  // `url` from FetchComplete().
   GURL url_;
-  // |data| from FetchComplete().
+  // `data` from FetchComplete().
   std::string data_;
-  // |net_error| from FetchComplete().
+  // `net_error` from FetchComplete().
   net::Error net_error_;
-  // |response_code| from FetchComplete().
+  // `response_code` from FetchComplete().
   int response_code_;
 };
 
@@ -123,9 +124,8 @@ class TestGaiaAuthFetcherIOSNSURLSessionBridge
 
 }  // namespace
 
-class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public ChromeWebTest {
+class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
  protected:
-  // ChromeWebTest.
   void SetUp() override;
   void TearDown() override;
 
@@ -159,14 +159,17 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public ChromeWebTest {
 
   friend TestGaiaAuthFetcherIOSNSURLSessionBridge;
 
-  // Browser state for the tests.
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
-  // Fake delegate for |ns_url_session_bridge_|.
+  // Fake delegate for `ns_url_session_bridge_`.
   std::unique_ptr<FakeGaiaAuthFetcherIOSBridgeDelegate> delegate_;
-  // Delegate for |url_session_mock_|, provided by |ns_url_session_bridge_|.
+  // Delegate for `url_session_mock_`, provided by `ns_url_session_bridge_`.
   id<NSURLSessionTaskDelegate> url_session_delegate_;
 
   NSURLSession* url_session_mock_;
@@ -196,8 +199,16 @@ NSURLSession* TestGaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
 #pragma mark - GaiaAuthFetcherIOSNSURLSessionBridgeTest
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
-  delegate_.reset(new FakeGaiaAuthFetcherIOSBridgeDelegate());
+  PlatformTest::SetUp();
+
   browser_state_ = TestChromeBrowserState::Builder().Build();
+
+  web::WebState::CreateParams params(browser_state_.get());
+  web_state_ = web::WebState::Create(params);
+  web_state_->GetView();
+  web_state_->SetKeepRenderProcessAlive(true);
+
+  delegate_.reset(new FakeGaiaAuthFetcherIOSBridgeDelegate());
   ns_url_session_bridge_.reset(new TestGaiaAuthFetcherIOSNSURLSessionBridge(
       delegate_.get(), browser_state_.get(), this));
   url_session_configuration_ =
@@ -220,6 +231,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::TearDown() {
   ASSERT_OCMOCK_VERIFY((id)url_session_mock_);
+  web_state_.reset();
 }
 
 NSURLSession* GaiaAuthFetcherIOSNSURLSessionBridgeTest::CreateNSURLSession(
@@ -243,12 +255,12 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetCookiesInCookieJar() {
   base::RunLoop run_loop;
   network::mojom::CookieManager* cookie_manager =
       browser_state_->GetCookieManager();
-  cookie_manager->GetAllCookies(base::BindOnce(base::BindLambdaForTesting(
+  cookie_manager->GetAllCookies(base::BindLambdaForTesting(
       [&run_loop,
        &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
         cookies_out = cookies;
         run_loop.Quit();
-      })));
+      }));
   run_loop.Run();
 
   return cookies_out;
@@ -376,11 +388,6 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::FetchURL(const GURL& url) {
 // Tests to send a request with no cookies set in the cookie store and receive
 // multiples cookies from the request.
 TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
-  // TODO(crbug.com/1106030): expected_cookies_set is failing on iOS12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    return;
-  }
-
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_TRUE(completion_handler_);
@@ -400,11 +407,6 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithEmptyCookieStore) {
 // Tests to send a request with one cookie set in the cookie store and receive
 // another cookies from the request.
 TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
-  // TODO(crbug.com/1106030): expected_cookies_set is failing on iOS12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    return;
-  }
-
   NSArray* cookies_to_send = @[ GetCookie1() ];
   ASSERT_TRUE(SetCookiesInCookieManager(cookies_to_send));
 
@@ -427,11 +429,6 @@ TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithCookieStore) {
 // Tests to a request with a redirect. One cookie is received by the first
 // request, and a second one by the redirected request.
 TEST_F(GaiaAuthFetcherIOSNSURLSessionBridgeTest, FetchWithRedirect) {
-  // TODO(crbug.com/1106030): expected_cookies_set is failing on iOS12.
-  if (!base::ios::IsRunningOnIOS13OrLater()) {
-    return;
-  }
-
   ASSERT_TRUE(FetchURL(GetFetchGURL()));
   ASSERT_FALSE(url_session_configuration_.HTTPCookieStorage.cookies.count);
   ASSERT_TRUE(completion_handler_);

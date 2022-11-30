@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Top-level API of the Federated Service: report an example.
+
+// NOTE: This mojom should exist in two places and must be kept in sync:
+//       Chromium: //chromeos/ash/services/federated/public/mojom
+//       Chrome OS: src/platform2/federated/mojom/
+
+module chromeos.federated.mojom;
+
+// NOTE: The base directory for 'import' statements is expected to differ
+//       between Chromium and Chrome OS versions of this file.
+import "chromeos/ash/services/federated/public/mojom/example.mojom";
+
+// Top-level interface between Chromium and the Federated Service daemon.
+// Next ordinal: 2
+interface FederatedService {
+  // Binds another pipe to this instance.
+  Clone@0(pending_receiver<FederatedService> receiver);
+
+  // Stores `example` in cryptohome-backed storage for use during future
+  // scheduled federated analytics or ML model training, identified by
+  // `client_name`.
+  // Examples are deleted when they are used for federated analytics/training.
+  ReportExample@1(string client_name, Example example);
+
+  // Starts scheduling federated training tasks if they are not scheduled yet,
+  // otherwise does nothing.
+  StartScheduling@2();
+};

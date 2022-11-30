@@ -5,39 +5,45 @@
 <script>
 const priority_tests = [
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.js', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js', location), document),
     expected_priority: kHigh,
-    description: 'high importance on module <script> has no effect'
+    description: 'high fetchpriority on module <script> has no effect'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.js?1', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?1', location), document),
     expected_priority: kLow,
-    description: 'low importance on module <script> lowers the priority to kLow'
+    description: 'low fetchpriority on module <script> lowers the priority to kLow'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.js?2', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?2', location), document),
     expected_priority: kHigh,
-    description: 'auto importance on module <script> has no effect'
+    description: 'auto fetchpriority on module <script> has no effect'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.js?3', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?3', location), document),
     expected_priority: kHigh,
-    description: 'invalid importance on module <script> has no effect'
+    description: 'invalid fetchpriority on module <script> has no effect'
   },
   {
-    promise: internals.getResourcePriority(new URL('../resources/dummy.js?3', location), document),
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?4', location), document),
     expected_priority: kHigh,
-    description: 'missing importance on module <script> has no effect'
-  }
+    description: 'missing fetchpriority on module <script> has no effect'
+  },
+  {
+    promise: internals.getInitialResourcePriority(new URL('../resources/dummy.js?5', location), document),
+    expected_priority: kHigh,
+    description: 'blocking=render on module <script> raises the priority to kHigh'
+  },
 ];
 
 </script>
 
-<script id=script1 type=module importance=high src=../resources/dummy.js></script>
-<script id=script2 type=module importance=low src=../resources/dummy.js?1></script>
-<script id=script3 type=module importance=auto src=../resources/dummy.js?2></script>
-<script id=script4 type=module importance=xyz src=../resources/dummy.js?3></script>
+<script id=script1 type=module fetchpriority=high src=../resources/dummy.js></script>
+<script id=script2 type=module fetchpriority=low src=../resources/dummy.js?1></script>
+<script id=script3 type=module fetchpriority=auto src=../resources/dummy.js?2></script>
+<script id=script4 type=module fetchpriority=xyz src=../resources/dummy.js?3></script>
 <script id=script5 type=module src=../resources/dummy.js?4></script>
+<script id=script6 type=module fetchpriority=low blocking=render src=../resources/dummy.js?5></script>
 
 <script>
   promise_test(async (t) => {
@@ -51,13 +57,14 @@ const priority_tests = [
     assert_true(internals.isPreloaded(script3.src), script3.src + base_msg);
     assert_true(internals.isPreloaded(script4.src), script4.src + base_msg);
     assert_true(internals.isPreloaded(script5.src), script5.src + base_msg);
+    assert_true(internals.isPreloaded(script6.src), script6.src + base_msg);
   }, 'all scripts were fetched by the preload scanner');
 
   // Setup the tests described by |priority_tests|.
-  for (test of priority_tests) {
+  for (const test of priority_tests) {
     promise_test(async () => {
-      const priority = await test.promise;
-      assert_equals(priority, test.expected_priority);
+      const load_priority = await test.promise;
+      assert_equals(load_priority, test.expected_priority);
     }, test.description);
   }
 </script>

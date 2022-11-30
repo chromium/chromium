@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -31,8 +32,7 @@
 
 using testing::_;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -59,6 +59,11 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
   typedef base::RepeatingCallback<void(ErrorCode error)> ErrorCallback;
 
   TestTransportEventHandler() = default;
+
+  TestTransportEventHandler(const TestTransportEventHandler&) = delete;
+  TestTransportEventHandler& operator=(const TestTransportEventHandler&) =
+      delete;
+
   ~TestTransportEventHandler() = default;
 
   void set_error_callback(const ErrorCallback& callback) {
@@ -74,8 +79,6 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 
  private:
   ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTransportEventHandler);
 };
 
 }  // namespace
@@ -83,7 +86,7 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 class IceTransportTest : public testing::Test {
  public:
   IceTransportTest() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
   }
@@ -114,24 +117,28 @@ class IceTransportTest : public testing::Test {
   }
 
   void InitializeConnection() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
-    host_transport_.reset(new IceTransport(
+    rtc::SocketFactory* socket_factory =
+        webrtc::ThreadWrapper::current()->SocketServer();
+    host_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, network_settings_, TransportRole::SERVER),
-        &host_event_handler_));
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::SERVER),
+        &host_event_handler_);
     if (!host_authenticator_) {
-      host_authenticator_.reset(
-          new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+      host_authenticator_ =
+          std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
     }
 
-    client_transport_.reset(new IceTransport(
+    client_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             nullptr, network_settings_, TransportRole::CLIENT),
-        &client_event_handler_));
+                             socket_factory, nullptr, nullptr,
+                             network_settings_, TransportRole::CLIENT),
+        &client_event_handler_);
     if (!client_authenticator_) {
-      client_authenticator_.reset(
-          new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+      client_authenticator_ =
+          std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
     }
 
     host_event_handler_.set_error_callback(base::BindRepeating(
@@ -151,7 +158,7 @@ class IceTransportTest : public testing::Test {
   }
 
   void WaitUntilConnected() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
 
     int counter = 2;
     EXPECT_CALL(client_channel_callback_, OnDone(_))
@@ -207,7 +214,13 @@ class IceTransportTest : public testing::Test {
   ErrorCode error_ = OK;
 };
 
-TEST_F(IceTransportTest, DataStream) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DataStream DISABLED_DataStream
+#else
+#define MAYBE_DataStream DataStream
+#endif
+TEST_F(IceTransportTest, MAYBE_DataStream) {
   InitializeConnection();
 
   client_transport_->GetChannelFactory()->CreateChannel(
@@ -225,7 +238,13 @@ TEST_F(IceTransportTest, DataStream) {
   tester.RunAndCheckResults();
 }
 
-TEST_F(IceTransportTest, MuxDataStream) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MuxDataStream DISABLED_MuxDataStream
+#else
+#define MAYBE_MuxDataStream MuxDataStream
+#endif
+TEST_F(IceTransportTest, MAYBE_MuxDataStream) {
   InitializeConnection();
 
   client_transport_->GetMultiplexedChannelFactory()->CreateChannel(
@@ -243,10 +262,16 @@ TEST_F(IceTransportTest, MuxDataStream) {
   tester.RunAndCheckResults();
 }
 
-TEST_F(IceTransportTest, FailedChannelAuth) {
+// crbug.com/1224862: Tests are flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FailedChannelAuth DISABLED_FailedChannelAuth
+#else
+#define MAYBE_FailedChannelAuth FailedChannelAuth
+#endif
+TEST_F(IceTransportTest, MAYBE_FailedChannelAuth) {
   // Use host authenticator with one that rejects channel authentication.
-  host_authenticator_.reset(
-      new FakeAuthenticator(FakeAuthenticator::REJECT_CHANNEL));
+  host_authenticator_ =
+      std::make_unique<FakeAuthenticator>(FakeAuthenticator::REJECT_CHANNEL);
 
   InitializeConnection();
 
@@ -257,7 +282,7 @@ TEST_F(IceTransportTest, FailedChannelAuth) {
       kChannelName, base::BindOnce(&IceTransportTest::OnHostChannelCreated,
                                    base::Unretained(this)));
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 
   // The callback should never be called.
   EXPECT_CALL(host_channel_callback_, OnDone(_)).Times(0);
@@ -278,7 +303,7 @@ TEST_F(IceTransportTest, TestBrokenTransport) {
   // transport unusable. Also reduce connection timeout so the test finishes
   // quickly.
   network_settings_ = NetworkSettings(NetworkSettings::NAT_TRAVERSAL_DISABLED);
-  network_settings_.ice_timeout = base::TimeDelta::FromSeconds(1);
+  network_settings_.ice_timeout = base::Seconds(1);
   network_settings_.ice_reconnect_attempts = 1;
 
   InitializeConnection();
@@ -291,7 +316,7 @@ TEST_F(IceTransportTest, TestBrokenTransport) {
                                    base::Unretained(this)));
 
   // The RunLoop should quit in OnTransportError().
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // Verify that neither of the two ends of the channel is connected.
@@ -317,10 +342,16 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
   EXPECT_TRUE(!client_message_pipe_.get());
 }
 
+// crbug.com/1224862: Tests are flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestDelayedSignaling DISABLED_TestDelayedSignaling
+#else
+#define MAYBE_TestDelayedSignaling TestDelayedSignaling
+#endif
 // Verify that we can still connect even when there is a delay in signaling
 // messages delivery.
-TEST_F(IceTransportTest, TestDelayedSignaling) {
-  transport_info_delay_ = base::TimeDelta::FromMilliseconds(100);
+TEST_F(IceTransportTest, MAYBE_TestDelayedSignaling) {
+  transport_info_delay_ = base::Milliseconds(100);
 
   InitializeConnection();
 
@@ -339,6 +370,4 @@ TEST_F(IceTransportTest, TestDelayedSignaling) {
   tester.RunAndCheckResults();
 }
 
-
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

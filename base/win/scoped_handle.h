@@ -1,19 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_WIN_SCOPED_HANDLE_H_
 #define BASE_WIN_SCOPED_HANDLE_H_
 
-#include "base/win/windows_types.h"
+#include <ostream>
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/win/windows_types.h"
 #include "build/build_config.h"
 
 // TODO(rvargas): remove this with the rest of the verifier.
@@ -27,6 +26,16 @@
 
 namespace base {
 namespace win {
+
+enum class HandleOperation {
+  kHandleAlreadyTracked,
+  kCloseHandleNotTracked,
+  kCloseHandleNotOwner,
+  kCloseHandleHook,
+  kDuplicateHandleHook
+};
+
+std::ostream& operator<<(std::ostream& os, HandleOperation operation);
 
 // Generic wrapper for raw handles that takes care of closing handles
 // automatically. The class interface follows the style of
@@ -53,9 +62,15 @@ class GenericScopedHandle {
     Set(other.Take());
   }
 
+  GenericScopedHandle(const GenericScopedHandle&) = delete;
+  GenericScopedHandle& operator=(const GenericScopedHandle&) = delete;
+
   ~GenericScopedHandle() { Close(); }
 
-  bool IsValid() const { return Traits::IsHandleValid(handle_); }
+  bool is_valid() const { return Traits::IsHandleValid(handle_); }
+
+  // TODO(crbug.com/1291793): Migrate callers to is_valid().
+  bool IsValid() const { return is_valid(); }
 
   GenericScopedHandle& operator=(GenericScopedHandle&& other) {
     DCHECK_NE(this, &other);
@@ -78,10 +93,13 @@ class GenericScopedHandle {
     }
   }
 
-  Handle Get() const { return handle_; }
+  Handle get() const { return handle_; }
+
+  // TODO(crbug.com/1291793): Migrate callers to get().
+  Handle Get() const { return get(); }
 
   // Transfers ownership away from this object.
-  Handle Take() WARN_UNUSED_RESULT {
+  [[nodiscard]] Handle release() {
     Handle temp = handle_;
     handle_ = Traits::NullHandle();
     if (Traits::IsHandleValid(temp)) {
@@ -90,6 +108,9 @@ class GenericScopedHandle {
     }
     return temp;
   }
+
+  // TODO(crbug.com/1291793): Migrate callers to release().
+  [[nodiscard]] Handle Take() { return release(); }
 
   // Explicitly closes the owned handle.
   void Close() {
@@ -103,11 +124,10 @@ class GenericScopedHandle {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierWrongOwner);
-  FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierUntrackedHandle);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleDeathTest, HandleVerifierWrongOwner);
+  FRIEND_TEST_ALL_PREFIXES(ScopedHandleDeathTest,
+                           HandleVerifierUntrackedHandle);
   Handle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericScopedHandle);
 };
 
 #undef BASE_WIN_GET_CALLER
@@ -116,6 +136,10 @@ class GenericScopedHandle {
 class HandleTraits {
  public:
   using Handle = HANDLE;
+
+  HandleTraits() = delete;
+  HandleTraits(const HandleTraits&) = delete;
+  HandleTraits& operator=(const HandleTraits&) = delete;
 
   // Closes the handle.
   static bool BASE_EXPORT CloseHandle(HANDLE handle);
@@ -127,15 +151,16 @@ class HandleTraits {
 
   // Returns NULL handle value.
   static HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(HandleTraits);
 };
 
 // Do-nothing verifier.
 class DummyVerifierTraits {
  public:
   using Handle = HANDLE;
+
+  DummyVerifierTraits() = delete;
+  DummyVerifierTraits(const DummyVerifierTraits&) = delete;
+  DummyVerifierTraits& operator=(const DummyVerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -145,15 +170,16 @@ class DummyVerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2) {}
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DummyVerifierTraits);
 };
 
 // Performs actual run-time tracking.
 class BASE_EXPORT VerifierTraits {
  public:
   using Handle = HANDLE;
+
+  VerifierTraits() = delete;
+  VerifierTraits(const VerifierTraits&) = delete;
+  VerifierTraits& operator=(const VerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -163,16 +189,13 @@ class BASE_EXPORT VerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VerifierTraits);
 };
 
 using UncheckedScopedHandle =
     GenericScopedHandle<HandleTraits, DummyVerifierTraits>;
 using CheckedScopedHandle = GenericScopedHandle<HandleTraits, VerifierTraits>;
 
-#if DCHECK_IS_ON() && !defined(ARCH_CPU_64_BITS)
+#if DCHECK_IS_ON()
 using ScopedHandle = CheckedScopedHandle;
 #else
 using ScopedHandle = UncheckedScopedHandle;
@@ -187,7 +210,8 @@ BASE_EXPORT void DisableHandleVerifier();
 // verification of improper handle closing is desired. If |handle| is being
 // tracked by the handle verifier and ScopedHandle is not the one closing it,
 // a CHECK is generated.
-BASE_EXPORT void OnHandleBeingClosed(HANDLE handle);
+BASE_EXPORT void OnHandleBeingClosed(HANDLE handle, HandleOperation operation);
+
 }  // namespace win
 }  // namespace base
 

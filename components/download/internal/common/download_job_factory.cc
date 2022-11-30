@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,13 +84,22 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
 
   bool range_support_allowed =
       create_info.accept_range == RangeRequestSupportType::kSupport ||
-      (base::FeatureList::IsEnabled(
-           features::kUseParallelRequestsForUnknwonRangeSupport) &&
-       create_info.accept_range == RangeRequestSupportType::kUnknown);
+      create_info.accept_range == RangeRequestSupportType::kUnknown;
+
   bool is_parallelizable = has_strong_validator && range_support_allowed &&
                            has_content_length && satisfy_min_file_size &&
                            satisfy_connection_type && http_get_method &&
                            can_support_parallel_requests;
+
+  if (base::FeatureList::IsEnabled(features::kDownloadRange)) {
+    // Don't use parallel download if the caller wants to fetch with range
+    // request explicitly.
+    bool arbitrary_range_request =
+        create_info.save_info &&
+        create_info.save_info->IsArbitraryRangeRequest();
+    is_parallelizable = is_parallelizable && !arbitrary_range_request;
+  }
+
   return is_parallelizable;
 }
 

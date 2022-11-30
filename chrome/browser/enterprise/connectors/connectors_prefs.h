@@ -1,9 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_CONNECTORS_PREFS_H_
+
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class PrefRegistrySimple;
 
@@ -21,34 +24,33 @@ extern const char kOnFileDownloadedPref[];
 // Pref that maps to the "OnBulkDataEntryEnterpriseConnector" policy.
 extern const char kOnBulkDataEntryPref[];
 
+// Pref that maps to the "OnPrintEnterpriseConnector" policy.
+extern const char kOnPrintPref[];
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Pref that maps to the "OnFileTransferEnterpriseConnector" policy.
+extern const char kOnFileTransferPref[];
+#endif
+
 // Pref that maps to the "OnSecurityEventEnterpriseConnector" policy.
 extern const char kOnSecurityEventPref[];
-
-// Pref that maps to the "ContextAwareAccessSignalsAllowlistPref" policy.
-extern const char kContextAwareAccessSignalsAllowlistPref[];
 
 // Prefs that map to the scope of each policy using a
 // EnterpriseConnectorsPolicyHandler.
 extern const char kOnFileAttachedScopePref[];
 extern const char kOnFileDownloadedScopePref[];
 extern const char kOnBulkDataEntryScopePref[];
+extern const char kOnPrintScopePref[];
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kOnFileTransferScopePref[];
+#endif
 extern const char kOnSecurityEventScopePref[];
-
-// The pref name where this class stores the encrypted private key.
-// If the machine supports storage in TPM, the private key will be
-// stored there; otherwise, it will be stored in the local state.
-extern const char kDeviceTrustPrivateKeyPref[];
-// The pref name where this class stores the public key;
-// If the machine supports storage in TPM, the public key will be
-// stored there; owtherwise, it will be stored in the local state.
-extern const char kDeviceTrustPublicKeyPref[];
-
-// Template to store the service provider's "folder_id" for caching purposes.
-extern const char kFileSystemUploadFolderIdPref[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(IS_MAC)
 void RegisterLocalPrefs(PrefRegistrySimple* registry);
+#endif
 
 }  // namespace enterprise_connectors
 

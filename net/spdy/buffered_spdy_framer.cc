@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,6 @@ BufferedSpdyFramer::BufferedSpdyFramer(uint32_t max_header_list_size,
                                        const NetLogWithSource& net_log,
                                        TimeFunc time_func)
     : spdy_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
-      visitor_(nullptr),
-      frames_received_(0),
       max_header_list_size_(max_header_list_size),
       net_log_(net_log),
       time_func_(time_func) {
@@ -56,6 +54,7 @@ void BufferedSpdyFramer::OnError(
 }
 
 void BufferedSpdyFramer::OnHeaders(spdy::SpdyStreamId stream_id,
+                                   size_t payload_length,
                                    bool has_priority,
                                    int weight,
                                    spdy::SpdyStreamId parent_stream_id,
@@ -217,6 +216,7 @@ void BufferedSpdyFramer::OnAltSvc(
 }
 
 void BufferedSpdyFramer::OnContinuation(spdy::SpdyStreamId stream_id,
+                                        size_t payload_length,
                                         bool end) {}
 
 bool BufferedSpdyFramer::OnUnknownFrame(spdy::SpdyStreamId stream_id,
@@ -230,10 +230,6 @@ size_t BufferedSpdyFramer::ProcessInput(const char* data, size_t len) {
 
 void BufferedSpdyFramer::UpdateHeaderDecoderTableSize(uint32_t value) {
   deframer_.GetHpackDecoder()->ApplyHeaderTableSizeSetting(value);
-}
-
-void BufferedSpdyFramer::Reset() {
-  deframer_.Reset();
 }
 
 http2::Http2DecoderAdapter::SpdyFramerError
@@ -268,8 +264,8 @@ std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateRstStream(
 std::unique_ptr<spdy::SpdySerializedFrame> BufferedSpdyFramer::CreateSettings(
     const spdy::SettingsMap& values) const {
   spdy::SpdySettingsIR settings_ir;
-  for (auto it = values.begin(); it != values.end(); ++it) {
-    settings_ir.AddSetting(it->first, it->second);
+  for (const auto& it : values) {
+    settings_ir.AddSetting(it.first, it.second);
   }
   return std::make_unique<spdy::SpdySerializedFrame>(
       spdy_framer_.SerializeSettings(settings_ir));
@@ -327,18 +323,6 @@ uint32_t BufferedSpdyFramer::header_encoder_table_size() const {
   return spdy_framer_.header_encoder_table_size();
 }
 
-size_t BufferedSpdyFramer::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(spdy_framer_) +
-         base::trace_event::EstimateMemoryUsage(deframer_) +
-         base::trace_event::EstimateMemoryUsage(coalescer_) +
-         base::trace_event::EstimateMemoryUsage(control_frame_fields_) +
-         base::trace_event::EstimateMemoryUsage(goaway_fields_);
-}
-
 BufferedSpdyFramer::ControlFrameFields::ControlFrameFields() = default;
-
-size_t BufferedSpdyFramer::GoAwayFields::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(debug_data);
-}
 
 }  // namespace net

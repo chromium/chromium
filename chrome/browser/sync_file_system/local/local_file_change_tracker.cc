@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
 
 #include <stddef.h>
+#include <memory>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
@@ -12,9 +13,8 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -46,6 +46,9 @@ class LocalFileChangeTracker::TrackerDB {
   TrackerDB(const base::FilePath& base_path,
             leveldb::Env* env_override);
 
+  TrackerDB(const TrackerDB&) = delete;
+  TrackerDB& operator=(const TrackerDB&) = delete;
+
   SyncStatusCode MarkDirty(const std::string& url);
   SyncStatusCode ClearDirty(const std::string& url);
   SyncStatusCode GetDirtyEntries(base::queue<FileSystemURL>* dirty_files);
@@ -63,11 +66,9 @@ class LocalFileChangeTracker::TrackerDB {
                    const leveldb::Status& status);
 
   const base::FilePath base_path_;
-  leveldb::Env* env_override_;
+  raw_ptr<leveldb::Env> env_override_;
   std::unique_ptr<leveldb::DB> db_;
   SyncStatusCode db_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerDB);
 };
 
 LocalFileChangeTracker::ChangeInfo::ChangeInfo() : change_seq(-1) {}
@@ -81,10 +82,9 @@ LocalFileChangeTracker::LocalFileChangeTracker(
     base::SequencedTaskRunner* file_task_runner)
     : initialized_(false),
       file_task_runner_(file_task_runner),
-      tracker_db_(new TrackerDB(base_path, env_override)),
+      tracker_db_(std::make_unique<TrackerDB>(base_path, env_override)),
       current_change_seq_number_(0),
-      num_changes_(0) {
-}
+      num_changes_(0) {}
 
 LocalFileChangeTracker::~LocalFileChangeTracker() {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
@@ -279,7 +279,7 @@ SyncStatusCode LocalFileChangeTracker::Initialize(
 void LocalFileChangeTracker::ResetForFileSystem(const GURL& origin,
                                                 storage::FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  std::unique_ptr<leveldb::WriteBatch> batch(new leveldb::WriteBatch);
+  auto batch = std::make_unique<leveldb::WriteBatch>();
   for (auto iter = changes_.begin(); iter != changes_.end();) {
     storage::FileSystemURL url = iter->first;
     int change_seq = iter->second.change_seq;
@@ -487,9 +487,6 @@ SyncStatusCode LocalFileChangeTracker::TrackerDB::Init(
   if (env_override_)
     options.env = env_override_;
   leveldb::Status status = leveldb_env::OpenDB(options, path, &db_);
-  UMA_HISTOGRAM_ENUMERATION("SyncFileSystem.TrackerDB.Open",
-                            leveldb_env::GetLevelDBStatusUMAValue(status),
-                            leveldb_env::LEVELDB_STATUS_MAX);
   if (status.ok()) {
     return SYNC_STATUS_OK;
   }

@@ -15,6 +15,7 @@ include_rules = [
   "+net/traffic_annotation",
   "+net/url_request",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+ui/base/l10n",
   "+ui/base/resource",

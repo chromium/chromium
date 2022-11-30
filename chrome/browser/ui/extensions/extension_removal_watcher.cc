@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ ExtensionRemovalWatcher::ExtensionRemovalWatcher(
     scoped_refptr<const extensions::Extension> extension,
     base::OnceClosure callback)
     : browser_(browser), extension_(extension), callback_(std::move(callback)) {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser->profile()));
   BrowserList::AddObserver(this);
 }

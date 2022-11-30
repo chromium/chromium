@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''Unit tests for writers.template_writer'''
@@ -154,7 +154,6 @@ class TemplateWriterUnittests(unittest.TestCase):
 
   def testPoliciesIsNotSupported(self):
     tw = template_writer.TemplateWriter(None, None)
-    self.assertFalse(tw.IsPolicySupported({'future': True}))
     self.assertFalse(tw.IsPolicySupported({'deprecated': True}))
     self.assertFalse(tw.IsPolicySupported({'features': {'cloud_only': True}}))
     self.assertFalse(tw.IsPolicySupported({'features': {

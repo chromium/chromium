@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <cstdint>
 
 #include "base/check_op.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 
 namespace blink {
@@ -17,10 +17,9 @@ using base::sequence_manager::TaskQueue;
 
 CPUTimeBudgetPool::CPUTimeBudgetPool(
     const char* name,
-    BudgetPoolController* budget_pool_controller,
     TraceableVariableController* tracing_controller,
     base::TimeTicks now)
-    : BudgetPool(name, budget_pool_controller),
+    : BudgetPool(name),
       current_budget_level_(base::TimeDelta(),
                             "RendererScheduler.BackgroundBudgetMs",
                             tracing_controller,
@@ -36,7 +35,7 @@ QueueBlockType CPUTimeBudgetPool::GetBlockType() const {
 
 void CPUTimeBudgetPool::SetMaxBudgetLevel(
     base::TimeTicks now,
-    base::Optional<base::TimeDelta> max_budget_level) {
+    absl::optional<base::TimeDelta> max_budget_level) {
   Advance(now);
   max_budget_level_ = max_budget_level;
   EnforceBudgetLevelRestrictions();
@@ -44,17 +43,10 @@ void CPUTimeBudgetPool::SetMaxBudgetLevel(
 
 void CPUTimeBudgetPool::SetMaxThrottlingDelay(
     base::TimeTicks now,
-    base::Optional<base::TimeDelta> max_throttling_delay) {
+    absl::optional<base::TimeDelta> max_throttling_delay) {
   Advance(now);
   max_throttling_delay_ = max_throttling_delay;
   EnforceBudgetLevelRestrictions();
-}
-
-void CPUTimeBudgetPool::SetMinBudgetLevelToRun(
-    base::TimeTicks now,
-    base::TimeDelta min_budget_level_to_run) {
-  Advance(now);
-  min_budget_level_to_run_ = min_budget_level_to_run;
 }
 
 void CPUTimeBudgetPool::SetTimeBudgetRecoveryRate(base::TimeTicks now,
@@ -76,30 +68,38 @@ void CPUTimeBudgetPool::SetReportingCallback(
   reporting_callback_ = reporting_callback;
 }
 
-bool CPUTimeBudgetPool::CanRunTasksAt(base::TimeTicks moment,
-                                      bool is_wake_up) const {
-  return moment >= GetNextAllowedRunTime(moment);
+bool CPUTimeBudgetPool::CanRunTasksAt(base::TimeTicks moment) const {
+  if (!is_enabled_)
+    return true;
+  if (current_budget_level_->InMicroseconds() >= 0)
+    return true;
+  base::TimeDelta time_to_recover_budget =
+      -current_budget_level_ / cpu_percentage_;
+  if (moment - last_checkpoint_ >= time_to_recover_budget) {
+    return true;
+  }
+
+  return false;
 }
 
 base::TimeTicks CPUTimeBudgetPool::GetTimeTasksCanRunUntil(
-    base::TimeTicks now,
-    bool is_wake_up) const {
-  if (CanRunTasksAt(now, is_wake_up))
+    base::TimeTicks now) const {
+  if (CanRunTasksAt(now))
     return base::TimeTicks::Max();
   return base::TimeTicks();
 }
 
 base::TimeTicks CPUTimeBudgetPool::GetNextAllowedRunTime(
     base::TimeTicks desired_run_time) const {
-  if (!is_enabled_ || current_budget_level_->InMicroseconds() >= 0)
+  if (!is_enabled_ || current_budget_level_->InMicroseconds() >= 0) {
     return last_checkpoint_;
+  }
   // Subtract because current_budget is negative.
-  return last_checkpoint_ +
-         (-current_budget_level_ + min_budget_level_to_run_) / cpu_percentage_;
+  return std::max(desired_run_time, last_checkpoint_ + (-current_budget_level_ /
+                                                        cpu_percentage_));
 }
 
-void CPUTimeBudgetPool::RecordTaskRunTime(TaskQueue* queue,
-                                          base::TimeTicks start_time,
+void CPUTimeBudgetPool::RecordTaskRunTime(base::TimeTicks start_time,
                                           base::TimeTicks end_time) {
   DCHECK_LE(start_time, end_time);
   Advance(end_time);
@@ -115,20 +115,13 @@ void CPUTimeBudgetPool::RecordTaskRunTime(TaskQueue* queue,
   }
 
   if (current_budget_level_->InSecondsF() < 0)
-    UpdateThrottlingStateForAllQueues(end_time);
-}
-
-void CPUTimeBudgetPool::OnQueueNextWakeUpChanged(
-    TaskQueue* queue,
-    base::TimeTicks now,
-    base::TimeTicks desired_run_time) {
-  budget_pool_controller_->UpdateQueueSchedulingLifecycleState(now, queue);
+    UpdateStateForAllThrottlers(end_time);
 }
 
 void CPUTimeBudgetPool::OnWakeUp(base::TimeTicks now) {}
 
-void CPUTimeBudgetPool::WriteIntoTracedValue(perfetto::TracedValue context,
-                                             base::TimeTicks now) const {
+void CPUTimeBudgetPool::WriteIntoTrace(perfetto::TracedValue context,
+                                       base::TimeTicks now) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("name", name_);
@@ -137,8 +130,6 @@ void CPUTimeBudgetPool::WriteIntoTracedValue(perfetto::TracedValue context,
   dict.Add("last_checkpoint_seconds_ago",
            (now - last_checkpoint_).InSecondsF());
   dict.Add("is_enabled", is_enabled_);
-  dict.Add("min_budget_level_to_run_in_seconds",
-           min_budget_level_to_run_.InSecondsF());
 
   if (max_throttling_delay_) {
     dict.Add("max_throttling_delay_in_seconds",

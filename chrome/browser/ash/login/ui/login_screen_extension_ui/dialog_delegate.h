@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,8 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
-
 struct CreateOptions;
 
 // This class is used to provide data from a chrome.loginScreenUi API call to
@@ -34,6 +32,10 @@ struct CreateOptions;
 class DialogDelegate : public ui::WebDialogDelegate {
  public:
   explicit DialogDelegate(CreateOptions* create_options);
+
+  DialogDelegate(const DialogDelegate&) = delete;
+  DialogDelegate& operator=(const DialogDelegate&) = delete;
+
   ~DialogDelegate() override;
 
   void set_can_close(bool can_close) { can_close_ = can_close; }
@@ -67,12 +69,9 @@ class DialogDelegate : public ui::WebDialogDelegate {
   base::OnceClosure close_callback_;
 
   gfx::NativeWindow native_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogDelegate);
 };
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_DIALOG_DELEGATE_H_

@@ -1,12 +1,13 @@
 agrieve@chromium.org
 bsazonov@chromium.org
 dtrainor@chromium.org
+fgorski@chromium.org
 mthiesse@chromium.org
 nyquist@chromium.org
+peconn@chromium.org
 tedchoc@chromium.org
 twellington@chromium.org
 yfriedman@chromium.org
-yusufo@chromium.org
 
 per-file static_initializers.gni=file://build/OWNERS
 per-file java_sources.gni=*
@@ -22,4 +23,4 @@ per-file BUILD.gn=bsheedy@chromium.org
 per-file *.gn*=file://build/android/OWNERS
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

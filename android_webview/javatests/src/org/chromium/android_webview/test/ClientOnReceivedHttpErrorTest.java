@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,7 +115,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isMainFrame);
+        Assert.assertTrue(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
@@ -159,7 +159,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isMainFrame);
+        Assert.assertTrue(request.isOutermostMainFrame);
         Assert.assertTrue(request.hasUserGesture);
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
@@ -193,7 +193,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertFalse(request.isMainFrame);
+        Assert.assertFalse(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());
@@ -251,7 +251,7 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertEquals("GET", request.method);
         Assert.assertNotNull(request.requestHeaders);
         Assert.assertFalse(request.requestHeaders.isEmpty());
-        Assert.assertTrue(request.isMainFrame);
+        Assert.assertTrue(request.isOutermostMainFrame);
         Assert.assertFalse(request.hasUserGesture);
         WebResourceResponseInfo response = onReceivedHttpErrorHelper.getResponse();
         Assert.assertEquals(404, response.getStatusCode());

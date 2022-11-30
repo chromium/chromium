@@ -190,12 +190,14 @@ void silk_quant_LTP_gains_FLP(
     opus_int32 XX_Q17[ MAX_NB_SUBFR * LTP_ORDER * LTP_ORDER ];
     opus_int32 xX_Q17[ MAX_NB_SUBFR * LTP_ORDER ];
 
-    for( i = 0; i < nb_subfr * LTP_ORDER * LTP_ORDER; i++ ) {
+    i = 0;
+    do {
         XX_Q17[ i ] = (opus_int32)silk_float2int( XX[ i ] * 131072.0f );
-    }
-    for( i = 0; i < nb_subfr * LTP_ORDER; i++ ) {
+    } while ( ++i < nb_subfr * LTP_ORDER * LTP_ORDER );
+    i = 0;
+    do {
         xX_Q17[ i ] = (opus_int32)silk_float2int( xX[ i ] * 131072.0f );
-    }
+    } while ( ++i < nb_subfr * LTP_ORDER );
 
     silk_quant_LTP_gains( B_Q14, cbk_index, periodicity_index, sum_log_gain_Q7, &pred_gain_dB_Q7, XX_Q17, xX_Q17, subfr_len, nb_subfr, arch );
 

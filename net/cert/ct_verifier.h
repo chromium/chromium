@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class X509Certificate;
 // Interface for verifying Signed Certificate Timestamps over a certificate.
 class NET_EXPORT CTVerifier {
  public:
-  virtual ~CTVerifier() {}
+  virtual ~CTVerifier() = default;
 
   // Verifies SCTs embedded in the certificate itself, SCTs embedded in a
   // stapled OCSP response, and SCTs obtained via the

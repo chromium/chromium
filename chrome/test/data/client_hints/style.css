@@ -1,0 +1,10 @@
+/**
+ * Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+@import url(https://my-site-c.com:44444/nested_style.css);
+
+body {
+  font-size: 20px;
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "crypto/secure_hash.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 
 namespace drive {
@@ -66,9 +66,9 @@ class PluginVmDriveImageDownloadService {
  private:
   void DispatchDownloadFile();
 
-  void DownloadActionCallback(google_apis::DriveApiErrorCode error_code,
+  void DownloadActionCallback(google_apis::ApiErrorCode error_code,
                               const base::FilePath& file_path);
-  void GetContentCallback(google_apis::DriveApiErrorCode error_code,
+  void GetContentCallback(google_apis::ApiErrorCode error_code,
                           std::unique_ptr<std::string> content,
                           bool first_chunk);
   void ProgressCallback(int64_t progress, int64_t total);

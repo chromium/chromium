@@ -1,0 +1,162 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.power.ml;
+
+option optimize_for = LITE_RUNTIME;
+
+// ScreenBrightnessEvent contains features, labels and related information for
+// the Adaptive Screen Brightness project. These will be used for logging and
+// model inference.
+message ScreenBrightnessEvent {
+  message Features {
+    // DeviceSpec is fixed per device. It's really important to have these info
+    // as perceived brightness varies a lot across different devices.
+    message DeviceSpec {
+      // Does the device have an ambient light sensor?
+      optional bool has_ambient_light_sensor = 1;
+    }
+
+    // ActivityData contains all user-related activity features.
+    message ActivityData {
+      // Local time of the day when logging/prediction happened.
+      optional int32 time_of_day_sec = 1;
+      enum DayOfWeek {
+        SUN = 0;
+        MON = 1;
+        TUE = 2;
+        WED = 3;
+        THU = 4;
+        FRI = 5;
+        SAT = 6;
+      }
+      // Logging event's day of the week.
+      optional DayOfWeek day_of_week = 2;
+
+      // Number of input events of various types in the past hour.
+      optional int32 num_recent_mouse_events = 3;
+      optional int32 num_recent_key_events = 4;
+      optional int32 num_recent_stylus_events = 5;
+      optional int32 num_recent_touch_events = 6;
+
+      // Last activity in sec from the time when data was logged.
+      optional int32 last_activity_time_sec = 7;
+
+      // Time spent on the most recent activity. An activity ends after 20
+      // seconds of inactivity. If there is a current unfinished activity, it
+      // will be the activity counted here.
+      optional int32 recent_time_active_sec = 8;
+
+      // Whether video/audio is playing.
+      optional bool is_video_playing = 9;
+      optional bool is_audio_playing = 10;
+    }
+    // Related to accessibility settings.
+    message AccessibilityData {
+      optional bool is_magnifier_enabled = 1;
+      optional bool is_high_contrast_enabled = 2;
+      optional bool is_large_cursor_enabled = 3;
+      optional bool is_virtual_keyboard_enabled = 4;
+      optional bool is_spoken_feedback_enabled = 5;
+      optional bool is_select_to_speak_enabled = 6;
+      optional bool is_mono_audio_enabled = 7;
+      optional bool is_caret_highlight_enabled = 8;
+      optional bool is_cursor_highlight_enabled = 9;
+      optional bool is_focus_highlight_enabled = 10;
+      optional bool is_braille_display_connected = 11;
+      optional bool is_autoclick_enabled = 12;
+      optional bool is_switch_access_enabled = 13;
+    }
+
+    // EnvData contains all non-user-specific environmental features.
+    message EnvData {
+      optional bool on_battery = 1;
+      optional float battery_percent = 2;
+
+      enum DeviceMode {
+        // Lid state was not available (e.g. powerd not running).
+        UNKNOWN_MODE = 0;
+        // Lid is closed.
+        CLOSED_LID = 1;
+        // Lid is open, tablet mode is off or unsupported.
+        LAPTOP = 2;
+        // Lid is open, tablet mode is on or no lid at all.
+        TABLET = 3;
+      }
+
+      optional DeviceMode device_mode = 3;
+
+      // Night light temperature percentage if night light mode is enabled. On
+      // a scale from 0 to 100.
+      optional int32 night_light_temperature_percent = 4;
+
+      // The brightness of the screen prior to the time at which the current
+      // event was logged. If an event is logged periodically, it will be the
+      // same as |Event.brightness|. It is only unset if event is logged due to
+      // brightness change but there is no initial brightness recorded.
+      optional int32 previous_brightness = 5;
+    }
+
+    optional DeviceSpec device_spec = 1;
+    optional ActivityData activity_data = 2;
+    optional AccessibilityData accessibility_data = 3;
+    optional EnvData env_data = 4;
+  }
+
+  message Event {
+    enum Reason {
+      // User increases brightness
+      USER_UP = 1;
+      // User reduces brightness
+      USER_DOWN = 2;
+      // Model prediction and adjustment
+      MODEL = 3;
+      // Model exploration
+      EXPLORE = 4;
+      // Automated change in response to user activity (input event, video
+      // activity, etc.).
+      USER_ACTIVITY = 5;
+      // Powerd has dimmed the screen.
+      DIMMED_FOR_INACTIVITY = 6;
+      // Powerd has turned the screen off.
+      OFF_FOR_INACTIVITY = 7;
+      // Current adaptive system changed the brightness
+      AMBIENT_LIGHT_CHANGED = 8;
+      // An external power source was connected.
+      EXTERNAL_POWER_CONNECTED = 9;
+      // An external power source was disconnected.
+      EXTERNAL_POWER_DISCONNECTED = 10;
+      // Backlights were forced off by Chrome (typically due to the user tapping
+      // the power button on a convertible device).
+      FORCED_OFF = 11;
+      // Backlights are no longer being forced off by Chrome.
+      NO_LONGER_FORCED_OFF = 12;
+      // Logging at a regular time interval.
+      PERIODIC = 13;
+      // Some other automated change.
+      OTHER = 14;
+    }
+
+    // If event reason is MODEL, we also log what happened after model
+    // changed the brightness level. This will be used to eval our models.
+    message ModelOutcome {
+      // Model's predicted brightness.
+      optional int32 model_brightness = 1;
+      // If user intervened and changed the brightness, it is recorded below.
+      optional int32 user_brightness = 2;
+    }
+
+    // Final selected brightness.
+    optional int32 brightness = 1;
+    optional Reason reason = 2;
+    optional ModelOutcome model_outcome = 3;
+    // Time in seconds since the last event was logged. Unset if there wasn't an
+    // earlier event.
+    optional int32 time_since_last_event_sec = 4;
+  }
+  optional Features features = 1;
+  optional Event event = 2;
+}

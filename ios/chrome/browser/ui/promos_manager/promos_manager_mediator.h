@@ -1,0 +1,42 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_
+
+#import <Foundation/Foundation.h>
+#import <map>
+
+#import "base/containers/small_map.h"
+#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
+
+// A mediator that (1) communicates with the PromosManager to find the next
+// promo (promos_manager::Promo), if any, to display, and (2) records the
+// display impression of said promo.
+@interface PromosManagerMediator : NSObject
+
+// Designated initializer.
+- (instancetype)
+    initWithPromosManager:(PromosManager*)promosManager
+    promoImpressionLimits:
+        (base::small_map<
+            std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
+            promoImpressionLimits NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Records the display impression of `promo`.
+- (void)recordImpression:(promos_manager::Promo)promo;
+
+// Queries the PromosManager for the next promo (promos_manager::Promo) to
+// display, if any.
+- (absl::optional<promos_manager::Promo>)nextPromoForDisplay;
+
+// The Promos Manager used for deciding which promo should be displayed, if any.
+@property(nonatomic, assign) PromosManager* promosManager;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMOS_MANAGER_MEDIATOR_H_

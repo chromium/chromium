@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   content::WebContents* web_contents = capture_params.web_contents;
   content::RenderFrameHost* render_frame_host =
       capture_params.render_frame_host ? capture_params.render_frame_host
-                                       : web_contents->GetMainFrame();
+                                       : web_contents->GetPrimaryMainFrame();
   if (policy_ && !policy_->SupportedForContents(web_contents)) {
     std::move(callback).Run(CaptureStatus::kContentUnsupported, {});
     return;
@@ -57,35 +57,37 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
   }
   params.inner.clip_rect = capture_params.clip_rect;
   params.inner.is_main_frame =
-      (render_frame_host == web_contents->GetMainFrame());
+      (render_frame_host == web_contents->GetPrimaryMainFrame());
   params.inner.capture_links = capture_params.capture_links;
   params.inner.max_capture_size = capture_params.max_per_capture_size;
+  params.inner.max_decoded_image_size_bytes =
+      capture_params.max_decoded_image_size_bytes;
+  params.inner.skip_accelerated_content =
+      capture_params.skip_accelerated_content;
 
   // TODO(crbug/1064253): Consider moving to client so that this always happens.
   // Although, it is harder to get this right in the client due to its
   // lifecycle.
-  web_contents->IncrementCapturerCount(gfx::Size(), true);
+  auto capture_handle =
+      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                           /*stay_awake=*/true);
 
   auto start_time = base::TimeTicks::Now();
   client->CapturePaintPreview(
       params, render_frame_host,
       base::BindOnce(&PaintPreviewBaseService::OnCaptured,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetMainFrame()->GetFrameTreeNodeId(),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(capture_handle),
                      start_time, std::move(callback)));
 }
 
 void PaintPreviewBaseService::OnCaptured(
-    int frame_tree_node_id,
+    base::ScopedClosureRunner capture_handle,
     base::TimeTicks start_time,
     OnCapturedCallback callback,
     base::UnguessableToken guid,
     mojom::PaintPreviewStatus status,
     std::unique_ptr<CaptureResult> result) {
-  auto* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents)
-    web_contents->DecrementCapturerCount(true);
+  capture_handle.RunAndReset();
 
   if (!(status == mojom::PaintPreviewStatus::kOk ||
         status == mojom::PaintPreviewStatus::kPartialSuccess) ||

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ NearbyShareOnDemandScheduler::NearbyShareOnDemandScheduler(
 
 NearbyShareOnDemandScheduler::~NearbyShareOnDemandScheduler() = default;
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 NearbyShareOnDemandScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  return base::nullopt;
+  return absl::nullopt;
 }

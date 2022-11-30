@@ -53,6 +53,8 @@ class HTMLSourceElement final : public HTMLElement {
   void RemoveMediaQueryListListener();
   void AddMediaQueryListListener();
 
+  bool IsRichlyEditableForAccessibility() const override { return false; }
+
   void Trace(Visitor*) const override;
 
  private:

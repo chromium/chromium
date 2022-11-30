@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
-import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
@@ -132,7 +132,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     @DrawableRes
     public int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel) {
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, mIsSmallDevice,
-                /*skipIconForNeutralState=*/false);
+                /*skipIconForNeutralState=*/false,
+                /*useUpdatedConnectionSecurityIndicators=*/false);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
@@ -144,13 +145,19 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
     }
 
     private void showPageInfoDialog() {
+        // When creating the {@link ChromePageInfoControllerDelegate} here, we don't need
+        // storeInfoActionHandlerSupplier or ephemeralTabCoordinatorSupplier and don't show
+        // "store info" row because this UI is already in a bottom sheet and clicking "store info"
+        // row would trigger another bottom sheet.
         PageInfoController.show(mActivity, mWebContents, null,
                 PageInfoController.OpenedFromSource.TOOLBAR,
                 new ChromePageInfoControllerDelegate(mActivity, mWebContents,
                         mModalDialogManagerSupplier,
                         /*offlinePageLoadUrlDelegate=*/
-                        new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents)),
-                new ChromePermissionParamsListBuilderDelegate(),
-                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                        new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
+                        /*storeInfoActionHandlerSupplier=*/null,
+                        /*ephemeralTabCoordinatorSupplier=*/null,
+                        ChromePageInfoHighlight.noHighlight()),
+                ChromePageInfoHighlight.noHighlight());
     }
 }

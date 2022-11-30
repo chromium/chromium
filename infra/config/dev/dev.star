@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 luci.project(
     name = "chromium",
+    config_dir = "luci",
     dev = True,
     buildbucket = "cr-buildbucket-dev.appspot.com",
     logdog = "luci-logdog-dev.appspot.com",
@@ -29,6 +30,36 @@ luci.project(
         acl.entry(
             roles = acl.SCHEDULER_OWNER,
             groups = "project-chromium-admins",
+        ),
+    ],
+    bindings = [
+        # Roles for LUCI Analysis.
+        luci.binding(
+            roles = "role/analysis.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/analysis.queryUser",
+            groups = "authenticated-users",
+        ),
+        luci.binding(
+            roles = "role/analysis.editor",
+            groups = ["project-chromium-committers", "googlers"],
+        ),
+        # Roles for Weetbix.
+        # TODO(b/243488110): Delete when renaming to
+        # LUCI Analysis complete.
+        luci.binding(
+            roles = "role/weetbix.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/weetbix.queryUser",
+            groups = "authenticated-users",
+        ),
+        luci.binding(
+            roles = "role/weetbix.editor",
+            groups = ["project-chromium-committers", "googlers"],
         ),
     ],
 )
@@ -57,13 +88,10 @@ luci.realm(
     ],
 )
 
-luci.builder.defaults.experiments.set({
-    # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
-    "luci.use_realms": 100,
-    # Enable resultsink for dev swarming tasks.
-    "chromium.resultdb.result_sink": 100,
-})
+luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
 
 exec("//dev/swarming.star")
+
+exec("//recipes.star")
 
 exec("//dev/subprojects/chromium/subproject.star")

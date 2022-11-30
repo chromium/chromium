@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,10 @@ class SequenceLocalStorageSlot {
  public:
   SequenceLocalStorageSlot()
       : slot_id_(internal::GetNextSequenceLocalStorageSlotNumber()) {}
+
+  SequenceLocalStorageSlot(const SequenceLocalStorageSlot&) = delete;
+  SequenceLocalStorageSlot& operator=(const SequenceLocalStorageSlot&) = delete;
+
   ~SequenceLocalStorageSlot() = default;
 
   operator bool() const { return GetValuePointer() != nullptr; }
@@ -118,7 +122,6 @@ class SequenceLocalStorageSlot {
 
   // |slot_id_| is used as a key in SequenceLocalStorageMap
   const int slot_id_;
-  DISALLOW_COPY_AND_ASSIGN(SequenceLocalStorageSlot);
 };
 
 }  // namespace base

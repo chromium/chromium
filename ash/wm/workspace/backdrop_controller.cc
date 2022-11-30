@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/animation/animation_change_type.h"
-#include "ash/components/audio/sounds.h"
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -27,7 +26,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
+#include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
+#include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -46,6 +49,10 @@ namespace {
 class BackdropEventHandler : public ui::EventHandler {
  public:
   BackdropEventHandler() = default;
+
+  BackdropEventHandler(const BackdropEventHandler&) = delete;
+  BackdropEventHandler& operator=(const BackdropEventHandler&) = delete;
+
   ~BackdropEventHandler() override = default;
 
   // ui::EventHandler:
@@ -71,9 +78,6 @@ class BackdropEventHandler : public ui::EventHandler {
       event->SetHandled();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackdropEventHandler);
 };
 
 // -----------------------------------------------------------------------------
@@ -133,8 +137,8 @@ aura::Window* GetBottomMostSnappedWindowForDeskContainer(
       SplitViewController::Get(desk_container);
   if (desks_util::IsActiveDeskContainer(desk_container) &&
       split_view_controller->InSplitViewMode()) {
-    aura::Window* left_window = split_view_controller->left_window();
-    aura::Window* right_window = split_view_controller->right_window();
+    aura::Window* left_window = split_view_controller->primary_window();
+    aura::Window* right_window = split_view_controller->secondary_window();
     for (auto* child : desk_container->children()) {
       if (child == left_window || child == right_window)
         return child;
@@ -290,13 +294,11 @@ void BackdropController::UpdateBackdrop() {
 
 aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
   const aura::Window::Windows windows = container_->children();
-  for (auto window_iter = windows.rbegin(); window_iter != windows.rend();
-       ++window_iter) {
-    aura::Window* window = *window_iter;
+  for (aura::Window* window : base::Reversed(windows)) {
     if (window == backdrop_window_)
       continue;
 
-    if (window->type() != aura::client::WINDOW_TYPE_NORMAL)
+    if (window->GetType() != aura::client::WINDOW_TYPE_NORMAL)
       continue;
 
     auto* window_state = WindowState::Get(window);
@@ -441,8 +443,8 @@ void BackdropController::EnsureBackdropWidget() {
   params.name = "Backdrop";
   // To disallow the MRU list from picking this window up it should not be
   // activateable.
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  DCHECK_NE(kShellWindowId_Invalid, container_->id());
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
+  DCHECK_NE(kShellWindowId_Invalid, container_->GetId());
   params.parent = container_;
   params.init_properties_container.SetProperty(kHideInOverviewKey, true);
   params.init_properties_container.SetProperty(kForceVisibleInMiniViewKey,
@@ -548,9 +550,10 @@ void BackdropController::Show() {
     return;
 
   ScopedWindowVisibilityAnimationTypeResetter resetter{
-      backdrop_window_, WindowState::Get(window_having_backdrop_)->CanMaximize()
-                            ? WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END
-                            : ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE};
+      backdrop_window_,
+      WindowState::Get(window_having_backdrop_)->CanMaximize()
+          ? static_cast<int>(WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END)
+          : static_cast<int>(::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE)};
   backdrop_->Show();
 }
 
@@ -560,8 +563,7 @@ void BackdropController::Hide(bool destroy, bool animate) {
 
   DCHECK(backdrop_window_);
   const aura::Window::Windows windows = container_->children();
-  auto window_iter =
-      std::find(windows.begin(), windows.end(), backdrop_window_);
+  auto window_iter = base::ranges::find(windows, backdrop_window_);
   ++window_iter;
   if (window_iter != windows.end()) {
     aura::Window* window_above_backdrop = *window_iter;
@@ -592,10 +594,10 @@ bool BackdropController::BackdropShouldFullscreen() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   SplitViewController::State state = split_view_controller->state();
-  if ((state == SplitViewController::State::kLeftSnapped &&
-       window_having_backdrop_ == split_view_controller->left_window()) ||
-      (state == SplitViewController::State::kRightSnapped &&
-       window_having_backdrop_ == split_view_controller->right_window())) {
+  if ((state == SplitViewController::State::kPrimarySnapped &&
+       window_having_backdrop_ == split_view_controller->primary_window()) ||
+      (state == SplitViewController::State::kSecondarySnapped &&
+       window_having_backdrop_ == split_view_controller->secondary_window())) {
     return false;
   }
 
@@ -608,12 +610,12 @@ gfx::Rect BackdropController::GetBackdropBounds() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
   SplitViewController::State state = split_view_controller->state();
-  DCHECK(state == SplitViewController::State::kLeftSnapped ||
-         state == SplitViewController::State::kRightSnapped);
+  DCHECK(state == SplitViewController::State::kPrimarySnapped ||
+         state == SplitViewController::State::kSecondarySnapped);
   SplitViewController::SnapPosition snap_position =
-      (state == SplitViewController::State::kLeftSnapped)
-          ? SplitViewController::LEFT
-          : SplitViewController::RIGHT;
+      (state == SplitViewController::State::kPrimarySnapped)
+          ? SplitViewController::SnapPosition::kPrimary
+          : SplitViewController::SnapPosition::kSecondary;
   return split_view_controller->GetSnappedWindowBoundsInScreen(
       snap_position, /*window_for_minimum_size=*/nullptr);
 }
@@ -674,7 +676,7 @@ bool BackdropController::DoesWindowCauseBackdropUpdates(
   // recursive calls to UpdateBackdrop() from the WorkspaceLayoutManager caused
   // by the backdrop itself, even though we avoid recursion here via
   // |pause_update_|.
-  return window->type() != aura::client::WINDOW_TYPE_POPUP &&
+  return window->GetType() != aura::client::WINDOW_TYPE_POPUP &&
          (!backdrop_ || window != backdrop_->GetNativeWindow());
 }
 

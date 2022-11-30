@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -79,6 +80,7 @@ public abstract class LanguageItemListFragment
                 if (textId == R.string.remove) {
                     onLanguageRemoved(currentLanguageItem.getCode());
                     onDataUpdated();
+                    recordRemoveAction();
                 }
             };
             ((LanguageRowViewHolder) holder)
@@ -100,6 +102,7 @@ public abstract class LanguageItemListFragment
         super.onCreate(savedInstanceState);
         mListDelegate = makeFragmentListDelegate();
         getActivity().setTitle(getLanguageListTitle(getContext()));
+        recordFragmentImpression();
     }
 
     @Override
@@ -125,16 +128,18 @@ public abstract class LanguageItemListFragment
                         scrollView, inflatedView.findViewById(R.id.shadow)));
 
         TextView addLanguageButton = (TextView) inflatedView.findViewById(R.id.add_language);
+        final TintedDrawable tintedDrawable =
+                TintedDrawable.constructTintedDrawable(getContext(), R.drawable.plus);
+        tintedDrawable.setTint(SemanticColorUtils.getDefaultControlColorActive(getContext()));
         addLanguageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.plus, R.color.default_control_color_active),
-                null, null, null);
+                tintedDrawable, null, null, null);
 
         addLanguageButton.setOnClickListener(view -> { // Lambda for View.OnClickListener
+            recordAddLanguageImpression();
             Intent intent = mSettingsLauncher.createSettingsActivityIntent(
-                    getActivity(), AddLanguageFragment.class.getName());
-            intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS,
-                    AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES);
+                    getActivity(), SelectLanguageFragment.class.getName());
+            intent.putExtra(
+                    SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, getPotentialLanguageType());
             startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
         });
 
@@ -145,9 +150,10 @@ public abstract class LanguageItemListFragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, requestCode, data);
         if (requestCode == REQUEST_CODE_SELECT_LANGUAGE && resultCode == Activity.RESULT_OK) {
-            String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
+            String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
             onLanguageAdded(code);
             mAdapter.onDataUpdated();
+            recordAddAction();
         }
     }
 
@@ -157,7 +163,7 @@ public abstract class LanguageItemListFragment
     }
 
     /**
-     * Return the ListDelegate that will be used to populate the LangaugeItemList for a subclass.
+     * Return the ListDelegate that will be used to populate the LanguageItemList for a subclass.
      */
     protected abstract LanguageItemListFragment.ListDelegate makeFragmentListDelegate();
 
@@ -165,6 +171,35 @@ public abstract class LanguageItemListFragment
      * Return title for LanguageItemListFragment.
      */
     protected abstract String getLanguageListTitle(Context context);
+
+    /**
+     * Return the type of potential languages to populate the add language fragment with.
+     */
+    protected abstract @LanguagesManager.LanguageListType int getPotentialLanguageType();
+
+    /**
+     * Records the {@link LanguagesManager.LanguageSettingsPageType} impression for viewing this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordFragmentImpression();
+
+    /**
+     * Records the {@link LanguagesManager.LanguageSettingsPageType} impression for viewing the
+     * Add Language page from this LanguageItemListFragment.
+     */
+    protected abstract void recordAddLanguageImpression();
+
+    /**
+     * Records the {@link LanguagesManager.LanguageSettingsActionType} for adding to this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordAddAction();
+
+    /**
+     * Records the {@link LanguagesManager.LanguageSettingsActionType} for removing from this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordRemoveAction();
 
     /**
      * Callback for when a language is added to the LanguageItemList.

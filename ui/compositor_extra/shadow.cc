@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ void Shadow::SetElevation(int elevation) {
     ui::ScopedLayerAnimationSettings settings(fading_layer()->GetAnimator());
     settings.AddObserver(this);
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
+        base::Milliseconds(kShadowAnimationDurationMs));
     fading_layer()->SetOpacity(0.f);
   }
 
@@ -70,7 +70,7 @@ void Shadow::SetElevation(int elevation) {
     // We don't care to observe this one.
     ui::ScopedLayerAnimationSettings settings(shadow_layer()->GetAnimator());
     settings.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
+        base::Milliseconds(kShadowAnimationDurationMs));
     shadow_layer()->SetOpacity(1.f);
   }
 }
@@ -82,6 +82,14 @@ void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
 
   rounded_corner_radius_ = rounded_corner_radius;
   UpdateLayerBounds();
+}
+
+void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
+  if (style_ == style)
+    return;
+
+  style_ = style;
+  RecreateShadowLayer();
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {
@@ -134,8 +142,8 @@ void Shadow::UpdateLayerBounds() {
   const int size_adjusted_elevation =
       std::min((smaller_dimension - 2 * rounded_corner_radius_) / 4,
                static_cast<int>(desired_elevation_));
-  const auto& details =
-      gfx::ShadowDetails::Get(size_adjusted_elevation, rounded_corner_radius_);
+  const auto& details = gfx::ShadowDetails::Get(size_adjusted_elevation,
+                                                rounded_corner_radius_, style_);
   gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(details.values) +
                             gfx::Insets(rounded_corner_radius_);
   // Update |shadow_layer()| if details changed and it has been updated in

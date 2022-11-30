@@ -1,16 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdio.h>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -38,10 +37,12 @@ constexpr char kLatestDescription[] = "YAY!  More recent changes win!";
 class TwoClientPrintersSyncTest : public SyncTest {
  public:
   TwoClientPrintersSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientPrintersSyncTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientPrintersSyncTest);
+  TwoClientPrintersSyncTest(const TwoClientPrintersSyncTest&) = delete;
+  TwoClientPrintersSyncTest& operator=(const TwoClientPrintersSyncTest&) =
+      delete;
+
+  ~TwoClientPrintersSyncTest() override = default;
 };
 
 }  // namespace
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
       EditPrinterDescription(GetPrinterStore(1), 0, kOverwrittenDescription));
 
   // Wait for a non-zero period (200ms) for modification timestamps to differ.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
 
   // Client 0 goes offline, to make this test deterministic (client 1 commits
   // first).
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, ConflictResolution) {
   // We must wait until the sync cycle is completed before client 0 goes online
   // in order to make the outcome of conflict resolution deterministic (needed
   // due to lack of a strong consistency model on the server).
-  ProfileSyncServiceHarness::AwaitQuiescence({GetClient(1)});
+  SyncServiceImplHarness::AwaitQuiescence({GetClient(1)});
 
   ASSERT_EQ(GetPrinterStore(0)->GetSavedPrinters()[0].description(),
             kLatestDescription);
@@ -183,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
       EditPrinterDescription(GetPrinterStore(1), 0, kOverwrittenDescription));
 
   // Wait for a non-zero period (200ms) for modification timestamps to differ.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
 
   // Client 0 makes a change to the same printer.
   ASSERT_TRUE(
@@ -230,15 +231,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   const char kModel[] = "model";
 
   // Initialize sync bridge with test printer.
-  auto printer = CreateTestPrinterSpecifics(0);
+  std::unique_ptr<sync_pb::PrinterSpecifics> printer =
+      CreateTestPrinterSpecifics(0);
   const std::string spec_printer_id = printer->id();
   printer->set_manufacturer(kMake);
   printer->set_model(kModel);
-  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  ash::PrintersSyncBridge* bridge = GetPrinterStore(0)->GetSyncBridge();
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+      bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_THAT(spec_printer->make_and_model(), IsEmpty());
 
@@ -259,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   ASSERT_TRUE(SetupClients());
 
   // Initialize sync bridge with test printer.
-  auto printer = CreateTestPrinterSpecifics(0);
+  std::unique_ptr<sync_pb::PrinterSpecifics> printer =
+      CreateTestPrinterSpecifics(0);
   const std::string spec_printer_id = printer->id();
 
   auto ppd_ref = std::make_unique<sync_pb::PrinterPPDReference>();
@@ -267,14 +271,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   ppd_ref->set_user_supplied_ppd_url("file://fake_ppd_url");
   printer->set_allocated_ppd_reference(ppd_ref.release());
 
-  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  ash::PrintersSyncBridge* bridge = GetPrinterStore(0)->GetSyncBridge();
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+      bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_TRUE(spec_printer->has_ppd_reference());
-  auto spec_ppd_ref = spec_printer->ppd_reference();
+  sync_pb::PrinterPPDReference spec_ppd_ref = spec_printer->ppd_reference();
   ASSERT_TRUE(spec_ppd_ref.autoconf());
   ASSERT_TRUE(spec_ppd_ref.has_user_supplied_ppd_url());
 

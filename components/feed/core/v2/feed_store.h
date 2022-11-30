@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/types.h"
@@ -42,9 +42,24 @@ class FeedStore {
     // These are sorted by increasing ID.
     std::vector<feedstore::StoredAction> pending_actions;
   };
+  struct StartupData {
+    StartupData();
+    StartupData(StartupData&&);
+    ~StartupData();
+    StartupData& operator=(StartupData&&);
+
+    std::unique_ptr<feedstore::Metadata> metadata;
+    std::vector<feedstore::StreamData> stream_data;
+  };
   struct WebFeedStartupData {
+    WebFeedStartupData();
+    WebFeedStartupData(WebFeedStartupData&&);
+    ~WebFeedStartupData();
+    WebFeedStartupData& operator=(WebFeedStartupData&&);
+
     feedstore::SubscribedWebFeeds subscribed_web_feeds;
     feedstore::RecommendedWebFeedIndex recommended_feed_index;
+    std::vector<feedstore::PendingWebFeedOperation> pending_operations;
   };
 
   explicit FeedStore(
@@ -117,6 +132,7 @@ class FeedStore {
       base::OnceCallback<void(feedstore::Metadata)> callback);
   void ReadWebFeedStartupData(
       base::OnceCallback<void(WebFeedStartupData)> callback);
+  void ReadStartupData(base::OnceCallback<void(StartupData)> callback);
   void WriteRecommendedFeeds(feedstore::RecommendedWebFeedIndex index,
                              std::vector<feedstore::WebFeedInfo> web_feed_info,
                              base::OnceClosure callback);
@@ -126,6 +142,12 @@ class FeedStore {
       const std::string& web_feed_id,
       base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
           callback);
+  void ReadAllPendingWebFeedOperations(
+      base::OnceCallback<
+          void(std::vector<feedstore::PendingWebFeedOperation>)>);
+  void RemovePendingWebFeedOperation(int64_t operation_id);
+  void WritePendingWebFeedOperation(
+      feedstore::PendingWebFeedOperation operation);
 
   bool IsInitializedForTesting() const;
 
@@ -182,6 +204,10 @@ class FeedStore {
       std::unique_ptr<feedstore::Record> record);
   void OnReadWebFeedStartupDataFinished(
       base::OnceCallback<void(WebFeedStartupData)> callback,
+      bool read_ok,
+      std::unique_ptr<std::vector<feedstore::Record>> records);
+  void OnReadStartupDataFinished(
+      base::OnceCallback<void(StartupData)> callback,
       bool read_ok,
       std::unique_ptr<std::vector<feedstore::Record>> records);
   void ReadRecommendedWebFeedInfoFinished(

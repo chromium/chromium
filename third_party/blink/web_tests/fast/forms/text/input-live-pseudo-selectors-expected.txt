@@ -8,7 +8,7 @@ Change name:
 PASS backgroundOf(el) is invalidColor
 PASS backgroundOf(el) is invalidColor
 Change disabled:
-PASS backgroundOf(el) is disabledColor
+PASS backgroundOf(el) is readOnlyColor
 PASS backgroundOf(el) is invalidColor
 Change readOnly:
 PASS backgroundOf(el) is readOnlyColor

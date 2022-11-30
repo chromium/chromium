@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/receiver_controller.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -85,7 +87,7 @@ class MockReceiverController : public ReceiverController {
   MockReceiverController();
   ~MockReceiverController() override;
 
-  void OnSendRpc(std::unique_ptr<std::vector<uint8_t>> message);
+  void OnSendRpc(std::vector<uint8_t> message);
 
   std::unique_ptr<MockRemotee> mock_remotee_;
 };

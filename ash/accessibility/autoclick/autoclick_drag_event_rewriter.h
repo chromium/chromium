@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,11 @@ namespace ash {
 class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
  public:
   AutoclickDragEventRewriter() = default;
+
+  AutoclickDragEventRewriter(const AutoclickDragEventRewriter&) = delete;
+  AutoclickDragEventRewriter& operator=(const AutoclickDragEventRewriter&) =
+      delete;
+
   ~AutoclickDragEventRewriter() override = default;
 
   void SetEnabled(bool enabled);
@@ -27,8 +32,6 @@ class ASH_EXPORT AutoclickDragEventRewriter : public ui::EventRewriter {
 
  private:
   bool enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickDragEventRewriter);
 };
 
 }  // namespace ash

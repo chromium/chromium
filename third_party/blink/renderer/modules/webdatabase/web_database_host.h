@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -37,6 +36,9 @@ class WebDatabaseHost {
 
  public:
   static WebDatabaseHost& GetInstance();
+
+  WebDatabaseHost(const WebDatabaseHost&) = delete;
+  WebDatabaseHost& operator=(const WebDatabaseHost&) = delete;
 
   // Should be called once before trying to use this class, so that we make sure
   // the remote interface binding is done from the main thread before the first
@@ -78,8 +80,6 @@ class WebDatabaseHost {
   // Used to ensure that the database gets opened from the main thread, but that
   // other database-related event is reported from the database thread instead.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseHost);
 };
 
 }  // namespace blink

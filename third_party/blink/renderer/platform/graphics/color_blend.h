@@ -31,6 +31,8 @@
 
 namespace blink {
 
+// TODO(https://crbug.com/1351544): This function will need to operate on
+// all possible color parameterizations.
 inline Color Blend(const Color& from,
                    const Color& to,
                    double progress,
@@ -39,8 +41,10 @@ inline Color Blend(const Color& from,
     // Contrary to the name, RGBA32 actually stores ARGB, so we can initialize
     // Color directly from premultipliedARGBFromColor(). Also,
     // premultipliedARGBFromColor() bails on zero alpha, so special-case that.
-    Color premult_from = from.Alpha() ? PremultipliedARGBFromColor(from) : 0;
-    Color premult_to = to.Alpha() ? PremultipliedARGBFromColor(to) : 0;
+    Color premult_from =
+        Color::FromRGBA32(from.Alpha() ? PremultipliedARGBFromColor(from) : 0);
+    Color premult_to =
+        Color::FromRGBA32(to.Alpha() ? PremultipliedARGBFromColor(to) : 0);
 
     Color premult_blended(
         Blend(premult_from.Red(), premult_to.Red(), progress),

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ class HttpServer : public net::HttpServer::Delegate {
  public:
   explicit HttpServer(const std::string& url_base,
                       const std::vector<net::IPAddress>& whitelisted_ips,
+                      const std::vector<std::string>& allowed_origins,
                       const HttpRequestHandlerFunc& handle_request_func,
                       base::WeakPtr<HttpHandler> handler,
                       scoped_refptr<base::SingleThreadTaskRunner> cmd_runner);
@@ -43,8 +44,12 @@ class HttpServer : public net::HttpServer::Delegate {
 
   void OnClose(int connection_id) override;
 
+  void Close(int connection_id);
+
   void AcceptWebSocket(int connection_id,
                        const net::HttpServerRequestInfo& request);
+
+  void SendOverWebSocket(int connection_id, const std::string& data);
 
   void SendResponse(int connection_id,
                     const net::HttpServerResponseInfo& response,
@@ -60,6 +65,7 @@ class HttpServer : public net::HttpServer::Delegate {
   std::map<int, std::string> connection_to_session_map;
   bool allow_remote_;
   const std::vector<net::IPAddress> whitelisted_ips_;
+  const std::vector<std::string> allowed_origins_;
   base::WeakPtr<HttpHandler> handler_;
   scoped_refptr<base::SingleThreadTaskRunner> cmd_runner_;
   base::WeakPtrFactory<HttpServer> weak_factory_{this};  // Should be last.

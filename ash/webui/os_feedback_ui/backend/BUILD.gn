@@ -1,0 +1,58 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("backend") {
+  sources = [
+    "feedback_service_provider.cc",
+    "feedback_service_provider.h",
+    "help_content_provider.cc",
+    "help_content_provider.h",
+    "histogram_util.cc",
+    "histogram_util.h",
+    "os_feedback_delegate.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/os_feedback_ui/mojom",
+    "//base",
+    "//content/public/browser",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "feedback_service_provider_unittest.cc",
+    "help_content_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":backend",
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/os_feedback_ui/mojom",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

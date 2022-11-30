@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ namespace ash {
 namespace {
 
 // The amount of idle time after which recommended values are restored.
-constexpr base::TimeDelta kRestoreDelayInMinutes =
-    base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kRestoreDelayInMinutes = base::Minutes(1);
 
 }  // namespace
 

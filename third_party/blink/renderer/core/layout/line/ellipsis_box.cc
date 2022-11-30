@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -38,13 +39,13 @@ void EllipsisBox::Paint(const PaintInfo& paint_info,
                                   line_bottom);
 }
 
-IntRect EllipsisBox::SelectionRect() const {
+gfx::Rect EllipsisBox::SelectionRect() const {
   const ComputedStyle& style = GetLineLayoutItem().StyleRef(IsFirstLineStyle());
   const Font& font = style.GetFont();
-  return EnclosingIntRect(font.SelectionRectForText(
+  return gfx::ToEnclosingRect(font.SelectionRectForText(
       ConstructTextRun(font, str_, style, TextRun::kAllowTrailingExpansion),
-      FloatPoint(LogicalLeft().ToInt(),
-                 (LogicalTop() + Root().SelectionTop()).ToInt()),
+      gfx::PointF(LogicalLeft().ToInt(),
+                  (LogicalTop() + Root().SelectionTop()).ToInt()),
       Root().SelectionHeight().ToInt()));
 }
 

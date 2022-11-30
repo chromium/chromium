@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +29,12 @@ class ShelfApplicationMenuModelTestAPI {
   // Creates a test api to access the internals of the |menu|.
   explicit ShelfApplicationMenuModelTestAPI(ShelfApplicationMenuModel* menu)
       : menu_(menu) {}
+
+  ShelfApplicationMenuModelTestAPI(const ShelfApplicationMenuModelTestAPI&) =
+      delete;
+  ShelfApplicationMenuModelTestAPI& operator=(
+      const ShelfApplicationMenuModelTestAPI&) = delete;
+
   ~ShelfApplicationMenuModelTestAPI() = default;
 
   // Give public access to this metrics recording functions.
@@ -41,8 +46,6 @@ class ShelfApplicationMenuModelTestAPI {
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
   ShelfApplicationMenuModel* menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModelTestAPI);
 };
 
 // Verifies the menu contents given an empty item list.
@@ -50,7 +53,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
   std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, {}, nullptr);
   // Expect the title and a separator.
-  ASSERT_EQ(2, menu.GetItemCount());
+  ASSERT_EQ(2u, menu.GetItemCount());
   EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));
   EXPECT_EQ(title, menu.GetLabelAt(0));
   EXPECT_FALSE(menu.IsEnabledAt(0));
@@ -63,16 +66,16 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   std::u16string title1 = u"title1";
   std::u16string title2 = u"title2";
   std::u16string title3 = u"title3";
-  items.push_back({items.size(), title1, gfx::ImageSkia()});
-  items.push_back({items.size(), title2, gfx::ImageSkia()});
-  items.push_back({items.size(), title3, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title1, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title2, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title3, gfx::ImageSkia()});
 
   std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
 
   // Expect the title and the enabled items.
-  ASSERT_EQ(static_cast<int>(5), menu.GetItemCount());
+  ASSERT_EQ(5u, menu.GetItemCount());
 
   // The label title should not be enabled.
   EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));

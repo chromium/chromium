@@ -1,0 +1,26 @@
+# crbug.com/1189746
+-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
+-org.chromium.net.NetworkChangeNotifierTest.testVpnAccessibleDoesNotLeak
+
+# crbug.com/1189804
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
+
+# crbug.com/1220151
+-org.chromium.base.task.AsyncTaskTest.testChromeThreadPoolExecutorOsAsyncTask
+
+# crbug.com/1233309
+-org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
+
+# crbug.com/1233312
+-org.chromium.content.browser.font.AndroidFontLookupImplTest.testFetchAllFontFiles_Available
+-org.chromium.content.browser.font.AndroidFontLookupImplTest.testFetchAllFontFiles_OneNotAvailable
+-org.chromium.content.browser.font.AndroidFontLookupImplTest.testMatchLocalFontByUniqueName_Success
+
+# crbug.com/1294427
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Copy
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Cut
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectActionBar*Paste

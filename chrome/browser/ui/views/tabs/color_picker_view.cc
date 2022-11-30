@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/animation/tween.h"
@@ -23,14 +26,13 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -47,7 +49,7 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
   SkPath GetHighlightPath(const views::View* view) override {
     // Our highlight path should be slightly larger than the circle we paint.
     gfx::RectF bounds(view->GetContentsBounds());
-    bounds.Inset(gfx::Insets(-2.0f));
+    bounds.Inset(-2.0f);
     const gfx::PointF center = bounds.CenterPoint();
     return SkPath().addCircle(center.x(), center.y(), bounds.width() / 2.0f);
   }
@@ -91,7 +93,7 @@ class ColorPickerElementView : public views::Button {
                              : gfx::Insets(padding);
     SetBorder(views::CreateEmptyBorder(insets));
 
-    SetInkDropMode(InkDropMode::OFF);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetAnimateOnStateChange(true);
   }
 
@@ -148,7 +150,7 @@ class ColorPickerElementView : public views::Button {
     DCHECK_EQ(bounds.width(), bounds.height());
 
     const SkColor color =
-        GetThemeProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
+        GetColorProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -194,7 +196,7 @@ class ColorPickerElementView : public views::Button {
 
   const base::RepeatingCallback<void(ColorPickerElementView*)>
       selected_callback_;
-  const views::BubbleDialogDelegateView* bubble_view_;
+  raw_ptr<const views::BubbleDialogDelegateView> bubble_view_;
   const tab_groups::TabGroupColorId color_id_;
   const std::u16string color_name_;
   bool selected_ = false;
@@ -229,8 +231,9 @@ ColorPickerView::ColorPickerView(
   // picker element, since that is the amount by which the color picker's
   // margins should be adjusted to make it visually align with other controls.
   gfx::Insets child_insets = elements_[0]->GetInsets();
-  SetProperty(views::kInternalPaddingKey,
-              gfx::Insets(0, child_insets.left(), 0, child_insets.right()));
+  SetProperty(
+      views::kInternalPaddingKey,
+      gfx::Insets::TLBR(0, child_insets.left(), 0, child_insets.right()));
 
   // Our children should take keyboard focus, not us.
   SetFocusBehavior(views::View::FocusBehavior::NEVER);
@@ -252,15 +255,15 @@ ColorPickerView::ColorPickerView(
 ColorPickerView::~ColorPickerView() {
   // Remove child views early since they have references to us through a
   // callback.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
-base::Optional<int> ColorPickerView::GetSelectedElement() const {
+absl::optional<int> ColorPickerView::GetSelectedElement() const {
   for (size_t i = 0; i < elements_.size(); ++i) {
     if (elements_[i]->GetSelected())
       return static_cast<int>(i);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 views::View* ColorPickerView::GetSelectedViewForGroup(int group) {
@@ -289,5 +292,5 @@ void ColorPickerView::OnColorSelected(ColorPickerElementView* element) {
 }
 
 BEGIN_METADATA(ColorPickerView, views::View)
-ADD_READONLY_PROPERTY_METADATA(base::Optional<int>, SelectedElement)
+ADD_READONLY_PROPERTY_METADATA(absl::optional<int>, SelectedElement)
 END_METADATA

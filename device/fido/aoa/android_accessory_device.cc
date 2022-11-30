@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/device_event_log/device_event_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -37,7 +37,7 @@ FidoDevice::CancelToken AndroidAccessoryDevice::DeviceTransact(
   if (static_cast<uint64_t>(command.size()) >
       std::numeric_limits<uint32_t>::max()) {
     NOTREACHED();
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return 0;
   }
 
@@ -61,7 +61,7 @@ void AndroidAccessoryDevice::OnWriteComplete(DeviceCallback callback,
   if (result != mojom::UsbTransferStatus::COMPLETED) {
     FIDO_LOG(ERROR) << "Failed to write to USB device ("
                     << static_cast<int>(result) << ").";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -74,19 +74,19 @@ void AndroidAccessoryDevice::OnWriteComplete(DeviceCallback callback,
 void AndroidAccessoryDevice::OnReadLengthComplete(
     DeviceCallback callback,
     mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+    base::span<const uint8_t> payload) {
   if (result != mojom::UsbTransferStatus::COMPLETED ||
       payload.size() != 1 + sizeof(uint32_t)) {
     FIDO_LOG(ERROR) << "Failed to read reply from USB device ("
                     << static_cast<int>(result) << ")";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   if (payload[0] != kCoaoaMsg) {
     FIDO_LOG(ERROR) << "Reply from USB device with wrong type ("
                     << static_cast<int>(payload[0]) << ")";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -95,7 +95,7 @@ void AndroidAccessoryDevice::OnReadLengthComplete(
   if (length > (1 << 20)) {
     FIDO_LOG(ERROR) << "USB device sent excessive reply containing " << length
                     << " bytes";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -113,16 +113,15 @@ void AndroidAccessoryDevice::OnReadLengthComplete(
                      weak_factory_.GetWeakPtr(), std::move(callback), length));
 }
 
-void AndroidAccessoryDevice::OnReadComplete(
-    DeviceCallback callback,
-    const uint32_t length,
-    mojom::UsbTransferStatus result,
-    const std::vector<uint8_t>& payload) {
+void AndroidAccessoryDevice::OnReadComplete(DeviceCallback callback,
+                                            const uint32_t length,
+                                            mojom::UsbTransferStatus result,
+                                            base::span<const uint8_t> payload) {
   if (result != mojom::UsbTransferStatus::COMPLETED ||
       payload.size() + buffer_.size() > length) {
     FIDO_LOG(ERROR) << "Failed to read from USB device ("
                     << static_cast<int>(result) << ")";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 

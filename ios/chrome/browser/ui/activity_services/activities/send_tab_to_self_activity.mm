@@ -1,16 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activities/send_tab_to_self_activity.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
-#import "ios/chrome/browser/ui/commands/browser_commands.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,14 +29,14 @@ NSString* const kSendTabToSelfActivityType =
 // The data object targeted by this activity.
 @property(nonatomic, strong, readonly) ShareToData* data;
 // The handler to be invoked when the activity is performed.
-@property(nonatomic, weak, readonly) id<BrowserCommands> handler;
+@property(nonatomic, weak, readonly) id<BrowserCoordinatorCommands> handler;
 
 @end
 
 @implementation SendTabToSelfActivity
 
 - (instancetype)initWithData:(ShareToData*)data
-                     handler:(id<BrowserCommands>)handler {
+                     handler:(id<BrowserCoordinatorCommands>)handler {
   if (self = [super init]) {
     _data = data;
     _handler = handler;
@@ -53,6 +55,9 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_send_tab_to_self"];
 }
 
@@ -65,8 +70,8 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (void)performActivity {
-  [self.handler showSendTabToSelfUI];
   [self activityDidFinish:YES];
+  [self.handler showSendTabToSelfUI:self.data.shareURL title:self.data.title];
 }
 
 @end

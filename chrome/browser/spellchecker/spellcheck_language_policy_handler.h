@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 // ConfigurationPolicyHandler for the SpellcheckLanguage policy.
@@ -15,6 +14,12 @@ class SpellcheckLanguagePolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
   SpellcheckLanguagePolicyHandler();
+
+  SpellcheckLanguagePolicyHandler(const SpellcheckLanguagePolicyHandler&) =
+      delete;
+  SpellcheckLanguagePolicyHandler& operator=(
+      const SpellcheckLanguagePolicyHandler&) = delete;
+
   ~SpellcheckLanguagePolicyHandler() override;
 
   // ConfigurationPolicyHandler:
@@ -25,9 +30,8 @@ class SpellcheckLanguagePolicyHandler
 
  private:
   void SortForcedLanguages(const policy::PolicyMap& policies,
-                           std::vector<base::Value>* const forced,
+                           base::Value::List* const forced,
                            std::vector<std::string>* const unknown);
-  DISALLOW_COPY_AND_ASSIGN(SpellcheckLanguagePolicyHandler);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_LANGUAGE_POLICY_HANDLER_H_

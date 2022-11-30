@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,5 +16,7 @@ buildflag_header("buildflags") {
     "ENABLE_PRINTING=$enable_basic_printing",
     "ENABLE_PRINT_PREVIEW=$enable_print_preview",
     "ENABLE_TAGGED_PDF=$enable_tagged_pdf",
+    "ENABLE_OOP_PRINTING=$enable_oop_printing",
+    "ENABLE_PRINT_CONTENT_ANALYSIS=$enable_print_content_analysis",
   ]
 }

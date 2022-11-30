@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "ios/web/public/thread/web_thread_delegate.h"
 #include "ios/web/web_thread_impl.h"
-#include "net/url_request/url_fetcher.h"
 
 namespace web {
 
@@ -20,7 +19,7 @@ WebThreadDelegate* g_io_thread_delegate = nullptr;
 
 // static
 void WebThread::SetIOThreadDelegate(WebThreadDelegate* delegate) {
-  // |delegate| can only be set/unset while WebThread::IO isn't up.
+  // `delegate` can only be set/unset while WebThread::IO isn't up.
   DCHECK(!WebThread::IsThreadInitialized(WebThread::IO));
   // and it cannot be set twice.
   DCHECK(!g_io_thread_delegate || !delegate);
@@ -45,7 +44,7 @@ void WebSubThread::RegisterAsWebThread() {
   DCHECK(!web_thread_);
   web_thread_.reset(new WebThreadImpl(identifier_, task_runner()));
 
-  // Unretained(this) is safe as |this| outlives its underlying thread.
+  // Unretained(this) is safe as `this` outlives its underlying thread.
   task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebSubThread::CompleteInitializationOnWebThread,
@@ -86,10 +85,6 @@ void WebSubThread::Run(base::RunLoop* run_loop) {
 void WebSubThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(web_thread_checker_);
 
-  // Run extra cleanup if this thread represents WebThread::IO.
-  if (WebThread::CurrentlyOn(WebThread::IO))
-    IOThreadCleanUp();
-
   if (identifier_ == WebThread::IO && g_io_thread_delegate)
     g_io_thread_delegate->CleanUp();
 
@@ -118,16 +113,6 @@ void WebSubThread::IOThreadRun(base::RunLoop* run_loop) {
   // Inhibit tail calls of Run and inhibit code folding.
   const int line_number = __LINE__;
   base::debug::Alias(&line_number);
-}
-
-void WebSubThread::IOThreadCleanUp() {
-  DCHECK_CALLED_ON_VALID_THREAD(web_thread_checker_);
-
-  // Kill all things that might be holding onto
-  // net::URLRequest/net::URLRequestContexts.
-
-  // Destroy all URLRequests started by URLFetchers.
-  net::URLFetcher::CancelAll();
 }
 
 }  // namespace web

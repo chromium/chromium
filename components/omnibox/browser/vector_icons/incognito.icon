@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: incognito_24px.svg -> SVGOMG -> Skiafy
+// Appearance Description: Encircled hat and round glasses.
+// Note: NEW_PATH *then* color to override what gets painted by theme color.
+// Note: Skiafy added extra numbers, commented out to pass arg count checks.
+
+CANVAS_DIMENSIONS, 16,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 242, 246, 245,
+CIRCLE, 8, 8, 8,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 38, 40, 42,
+MOVE_TO, 13, 7.16f,
+H_LINE_TO, 3,
+R_V_LINE_TO, 0.54f,
+R_H_LINE_TO, 10,
+R_V_LINE_TO, -0.54f,
+CLOSE,
+MOVE_TO, /* 11.12f, 6.63f, */ 9.85f, 3.35f,
+R_ARC_TO, 0.56f, 0.56f, 0, 0, 0, -0.69f, -0.32f,
+LINE_TO, 8, 3.4f,
+R_LINE_TO, -1.16f, -0.38f,
+R_ARC_TO, 0.56f, 0.56f, 0, 0, 0, -0.69f, 0.32f,
+LINE_TO, 4.88f, 6.63f,
+R_H_LINE_TO, 6.24f,
+CLOSE,
+MOVE_TO, 10.5f, 8.24f,
+R_CUBIC_TO, -0.92f, 0, -1.69f, 0.62f, -1.89f, 1.46f,
+R_CUBIC_TO, -0.47f, -0.19f, -0.9f, -0.14f, -1.22f, 0,
+ARC_TO, 1.93f, 1.93f, 0, 0, 0, 5.5f, 8.24f,
+R_CUBIC_TO, -1.07f, 0, -1.94f, 0.84f, -1.94f, 1.88f,
+CUBIC_TO, 3.56f, 11.16f, 4.43f, 12, 5.5f, 12,
+R_CUBIC_TO, 1.02f, 0, 1.85f, -0.76f, 1.93f, -1.73f,
+R_CUBIC_TO, 0.17f, -0.11f, 0.61f, -0.32f, 1.14f, 0.01f,
+R_CUBIC_TO, 0.09f, 0.96f, 0.91f, 1.72f, 1.93f, 1.72f,
+R_CUBIC_TO, 1.07f, 0, 1.94f, -0.84f, 1.94f, -1.88f,
+R_CUBIC_TO, 0, -1.04f, -0.87f, -1.88f, -1.94f, -1.88f,
+CLOSE,
+R_MOVE_TO, -5, 3.22f,
+R_CUBIC_TO, -0.77f, 0, -1.39f, -0.6f, -1.39f, -1.34f,
+R_CUBIC_TO, 0, -0.74f, 0.62f, -1.34f, 1.39f, -1.34f,
+R_CUBIC_TO, 0.77f, 0, 1.39f, 0.6f, 1.39f, 1.34f,
+R_CUBIC_TO, 0, 0.74f, -0.62f, 1.34f, -1.39f, 1.34f,
+CLOSE,
+R_MOVE_TO, 5, 0,
+R_CUBIC_TO, -0.77f, 0, -1.39f, -0.6f, -1.39f, -1.34f,
+R_CUBIC_TO, 0, -0.74f, 0.62f, -1.34f, 1.39f, -1.34f,
+R_CUBIC_TO, 0.77f, 0, 1.39f, 0.6f, 1.39f, 1.34f,
+R_CUBIC_TO, 0, 0.74f, -0.62f, 1.34f, -1.39f, 1.34f,
+CLOSE

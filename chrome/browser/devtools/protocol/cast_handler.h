@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/cast.h"
+#include "chrome/browser/ui/media_router/media_sink_with_cast_modes_observer.h"
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 #include "components/media_router/browser/issues_observer.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -26,14 +27,21 @@ class StartPresentationContext;
 }  // namespace media_router
 
 class CastHandler : public protocol::Cast::Backend,
-                    public media_router::QueryResultManager::Observer {
+                    public media_router::MediaSinkWithCastModesObserver {
  public:
   CastHandler(content::WebContents* web_contents,
               protocol::UberDispatcher* dispatcher);
+
+  CastHandler(const CastHandler&) = delete;
+  CastHandler& operator=(const CastHandler&) = delete;
+
   ~CastHandler() override;
 
   // protocol::Cast::Backend:
   protocol::Response SetSinkToUse(const std::string& in_sink_name) override;
+  void StartDesktopMirroring(
+      const std::string& in_sink_name,
+      std::unique_ptr<StartDesktopMirroringCallback> callback) override;
   void StartTabMirroring(
       const std::string& in_sink_name,
       std::unique_ptr<StartTabMirroringCallback> callback) override;
@@ -42,8 +50,8 @@ class CastHandler : public protocol::Cast::Backend,
       protocol::Maybe<std::string> in_presentation_url) override;
   protocol::Response Disable() override;
 
-  // media_router::QueryResultsManager:
-  void OnResultsUpdated(
+  // media_router::MediaSinkWithCastModesObserver:
+  void OnSinksUpdated(
       const std::vector<media_router::MediaSinkWithCastModes>& sinks) override;
 
  private:
@@ -77,6 +85,10 @@ class CastHandler : public protocol::Cast::Backend,
   // updated.
   void SendSinkUpdate();
 
+  void OnDesktopMirroringStarted(
+      std::unique_ptr<StartDesktopMirroringCallback> callback,
+      media_router::mojom::RoutePresentationConnectionPtr connection,
+      const media_router::RouteRequestResult& result);
   void OnTabMirroringStarted(
       std::unique_ptr<StartTabMirroringCallback> callback,
       media_router::mojom::RoutePresentationConnectionPtr connection,
@@ -103,8 +115,6 @@ class CastHandler : public protocol::Cast::Backend,
   std::unique_ptr<protocol::Cast::Frontend> frontend_;
 
   base::WeakPtrFactory<CastHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastHandler);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_CAST_HANDLER_H_

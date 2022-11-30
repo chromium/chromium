@@ -1,5 +1,6 @@
-<style include="cr-actionable-row-style settings-shared iron-flex">
+<style include="cr-actionable-row-style settings-shared iron-flex action-link">
   :host {
+    --cr-icon-button-margin-end: 20px;
     padding: 0 var(--cr-section-padding);
   }
 
@@ -26,6 +27,12 @@
     min-height: var(--settings-row-min-height);
   }
 
+<if expr="chromeos_ash">
+  #icon {
+    margin-inline-end: var(--cr-icon-button-margin-end);
+  }
+</if>
+
   #labelWrapper {
     padding: var(--cr-section-vertical-padding) 0;
   }
@@ -40,18 +47,38 @@
   }
 </style>
 <div id="outerRow" noSubLabel$="[[!subLabel]]">
+  <if expr="chromeos_ash">
+    <template is="dom-if" if="[[icon]]">
+      <span id="icon" aria-hidden="true">
+        <iron-icon slot="icon" icon="[[icon]]">
+        </iron-icon>
+      </span>
+    </template>
+  </if>
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="secondary label" id="sub-label">
+      <template is="dom-if" if="[[subLabelIcon]]">
+        <span id="sub-label-icon" aria-hidden="true">
+          <iron-icon slot="icon" icon="[[subLabelIcon]]">
+          </iron-icon>
+        </span>
+      </template>
       <span id="sub-label-text" aria-hidden="true">
         [[subLabel]]
       </span>
       <template is="dom-if" if="[[learnMoreUrl]]">
         <a id="learn-more" href="[[learnMoreUrl]]" target="_blank"
-            aria-labeledby="sub-label-text learn-more"
-            on-click="onLearnMoreClicked_">
+            aria-labelledby="sub-label-text learn-more"
+            on-click="onLearnMoreClick_">
           $i18n{learnMore}
         </a>
+      </template>
+      <template is="dom-if" if="[[subLabelWithLink]]">
+        <div id="sub-label-text-with-link"
+            inner-h-t-m-l="[[getSubLabelWithLinkContent_(subLabelWithLink)]]"
+            on-click="onSubLabelTextWithLinkClick_">
+        </div>
       </template>
     </div>
   </div>

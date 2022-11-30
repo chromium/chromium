@@ -1,7 +1,8 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -9,27 +10,21 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 declare_args() {
-  # You can set the variable 'use_official_google_api_keys' to true
+  # Set the variable 'use_official_google_api_keys' to true
   # to use the Google-internal file containing official API keys
-  # for Google Chrome even in a developer build.  Setting this
-  # variable explicitly to true will cause your build to fail if the
-  # internal file is missing.
+  # even in a developer build.  Setting this variable explicitly to
+  # true will cause the build to fail if the internal file is missing.
   #
-  # The variable is documented here, but not handled in this file;
-  # see //google_apis/determine_use_official_keys.gypi for the
-  # implementation.
+  # Set the variable to false to not use the internal file, even for
+  # Chrome-branded builds or when it exists in your checkout.
   #
-  # Set the variable to false to not use the internal file, even when
-  # it exists in your checkout.
-  #
-  # Leave it unset or set to "" to have the variable
-  # implicitly set to true if you have
-  # src/google_apis/internal/google_chrome_api_keys.h in your
-  # checkout, and implicitly set to false if not.
-  #
-  # Note that official builds always behave as if the variable
-  # was explicitly set to true, i.e. they always use official keys,
-  # and will fail to build if the internal file is missing.
+  # Leave it set to "" to have the variable implicitly set to true for
+  # Chrome-branded builds or if
+  # //src/google_apis/internal/google_chrome_api_keys.h is present and false
+  # otherwise.
+  # This does not apply to iOS builds, which use different mechanisms and always
+  # evaluate to use_official_google_api_keys=false.
+  # See https://crbug.com/1183709.
   use_official_google_api_keys = ""
 
   # Set these to bake the specified API keys and OAuth client
@@ -41,9 +36,8 @@ declare_args() {
   # require server-side APIs may fail to work if no keys are
   # provided.
   #
-  # Note that if you are building an official build or if
-  # use_official_google_api_keys has been set to trie (explicitly or
-  # implicitly), these values will be ignored and the official
+  # Note that if `use_official_google_api_keys` has been set to true
+  # (explicitly or implicitly), these values will be ignored and the official
   # keys will be used instead.
   google_api_key = ""
 
@@ -55,21 +49,58 @@ declare_args() {
 }
 
 if (use_official_google_api_keys == "") {
-  # Default behavior, check if the key file exists.
-  check_internal_result =
-      exec_script("build/check_internal.py",
-                  [ rebase_path("internal/google_chrome_api_keys.h",
-                                root_build_dir) ],
-                  "value")
-  use_official_google_api_keys = check_internal_result == 1
+  # No override set. Determine the default behavior.
+  if (is_chrome_branded) {
+    # Chrome-branded builds default to behaving as if
+    #`use_official_google_api_keys` was explicitly set to true and will fail to
+    # build if the file is missing.
+    use_official_google_api_keys = true
+
+    # TODO(crbug.com/1294931): Remove this override when fixing the issue.
+    if (is_fuchsia) {
+      use_official_google_api_keys = false
+    }
+  } else {
+    # Check if the key file exists.
+    check_internal_result =
+        exec_script("build/check_internal.py",
+                    [ rebase_path("internal/google_chrome_api_keys.h",
+                                  root_build_dir) ],
+                    "value")
+    use_official_google_api_keys = check_internal_result == 1
+  }
+}
+
+# Official API keys should always be used for Chrome-branded builds except on
+# iOS (see https://crbug.com/1183709) and Fuchsia (see the description of
+# https://crbug.com/1171510 for background).
+assert(
+    use_official_google_api_keys || !is_chrome_branded || is_ios || is_fuchsia)
+
+declare_args() {
+  # Whether the SetAPIKey() method is defined.
+  # iOS and Fuchsia builds that do not use the built-in key use this.
+  support_external_google_api_key =
+      is_ios || (is_fuchsia && !use_official_google_api_keys)
+}
+
+# internal:generate_metrics_key_header must be a deps when
+# USE_OFFICIAL_GOOGLE_API_KEYS` is defined. Use this variable for both.
+# On iOS, Chrome branding had been overriding use_official_google_api_keys.
+# TODO(crbug.com/1362160): Fix this logic on iOS. Can this variable be replaced
+# with just use_official_google_api_keys?
+_use_official_google_keys_and_generate_metrics_key_header =
+    use_official_google_api_keys || (is_ios && is_chrome_branded)
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "SUPPORT_EXTERNAL_GOOGLE_API_KEY=$support_external_google_api_key" ]
 }
 
 config("key_defines") {
   defines = []
 
-  # TODO(crbug.com/1171510): Refactor so use_official_google_api_keys can be
-  # used for Fuchsia.
-  if (!is_fuchsia && (is_chrome_branded || use_official_google_api_keys)) {
+  if (_use_official_google_keys_and_generate_metrics_key_header) {
     defines += [ "USE_OFFICIAL_GOOGLE_API_KEYS=1" ]
   }
   if (google_api_key != "") {
@@ -135,10 +166,9 @@ template("google_apis_tmpl") {
       "google_api_keys.h",
     ]
 
-    configs += [
-      ":key_defines",
-      "//build/config/compiler:no_size_t_to_int_warning",
-    ]
+    configs += [ ":key_defines" ]
+
+    public_deps = [ ":buildflags" ]
 
     deps = [
       ":oauth2_mint_token_consent_result_proto",
@@ -151,7 +181,7 @@ template("google_apis_tmpl") {
       "//services/network/public/cpp",
     ]
 
-    if (is_chrome_branded || use_official_google_api_keys) {
+    if (_use_official_google_keys_and_generate_metrics_key_header) {
       deps += [ "internal:generate_metrics_key_header" ]
     }
 
@@ -174,6 +204,7 @@ google_apis_tmpl("google_apis") {
   deps = [
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -218,6 +249,7 @@ test("google_apis_unittests") {
   sources = [
     "gaia/gaia_auth_fetcher_unittest.cc",
     "gaia/gaia_auth_util_unittest.cc",
+    "gaia/gaia_config_unittest.cc",
     "gaia/gaia_oauth_client_unittest.cc",
     "gaia/gaia_urls_unittest.cc",
     "gaia/google_service_auth_error_unittest.cc",
@@ -243,6 +275,8 @@ test("google_apis_unittests") {
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//google_apis/calendar:calendar_unittests",
+    "//google_apis/common:common_unittests",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -251,6 +285,15 @@ test("google_apis_unittests") {
     deps += [ ":google_apis_unittest_bundle_data" ]
   } else {
     data = [ "test/" ]
+  }
+
+  if (is_android) {
+    deps += [ "//net/android:net_java" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/network.shard.test-cml" ]
   }
 
   if (enable_extensions) {
@@ -267,6 +310,10 @@ test("google_apis_unittests") {
 bundle_data("google_apis_unittest_bundle_data") {
   testonly = true
   sources = [
+    "test/data/calendar/event_self_response_statuses.json",
+    "test/data/calendar/event_statuses.json",
+    "test/data/calendar/events.json",
+    "test/data/calendar/invalid_events.json",
     "test/data/gaia/all_base_urls.json",
     "test/data/gaia/all_urls.json",
     "test/data/gaia/api_keys.json",

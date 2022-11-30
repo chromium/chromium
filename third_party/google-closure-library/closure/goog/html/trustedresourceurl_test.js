@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for TrustedResourceUrl and its builders. */
 
@@ -20,6 +12,7 @@ goog.setTestOnly();
 const Const = goog.require('goog.string.Const');
 const Dir = goog.require('goog.i18n.bidi.Dir');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const SafeScript = goog.require('goog.html.SafeScript');
 const TrustedResourceUrl = goog.require('goog.html.TrustedResourceUrl');
 const googObject = goog.require('goog.object');
 const testSuite = goog.require('goog.testing.testSuite');
@@ -61,9 +54,7 @@ testSuite({
     const extracted = TrustedResourceUrl.unwrap(trustedResourceUrl);
     assertEquals(url, extracted);
     assertEquals(url, trustedResourceUrl.getTypedStringValue());
-    assertEquals(
-        'TrustedResourceUrl{javascript:trusted();}',
-        String(trustedResourceUrl));
+    assertEquals('javascript:trusted();', String(trustedResourceUrl));
 
     // URLs are always LTR.
     assertEquals(Dir.LTR, trustedResourceUrl.getDirection());
@@ -175,6 +166,28 @@ testSuite({
           Const.from('foo'),
           Const.from('bar'),
         ])));
+  },
+
+  async testFromConstantJavaScript() {
+    const url = TrustedResourceUrl.unwrap(TrustedResourceUrl.fromSafeScript(
+        SafeScript.fromConstant(Const.from('(()=>{})()'))));
+    assertEquals('blob:', url.slice(0, 5));
+    // Verify the content of the URL is the blob we created.
+    // Skip this check on user agents that don't have the fetch API.
+    if (!globalThis.fetch) {
+      return;
+    }
+    const fetchedContent = await (await globalThis.fetch(url)).text();
+    assertEquals('(()=>{})()', fetchedContent);
+  },
+
+  testFromConstantJavaScriptForUserAgentsWithoutBlob() {
+    stubs.set(globalThis, 'BlobBuilder', undefined);
+    stubs.set(globalThis, 'Blob', undefined);
+    assertThrows(() => {
+      TrustedResourceUrl.fromSafeScript(
+          SafeScript.fromConstant(Const.from('(()=>{})()')));
+    });
   },
 
   testCloneWithParams() {
@@ -299,6 +312,18 @@ testSuite({
             .getTypedStringValue());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
+  testCloneWithParams_withMonkeypatchedObjectPrototype() {
+    stubs.set(Object.prototype, 'foo', 'bar');
+    const url =
+        TrustedResourceUrl.fromConstant(Const.from('https://example.com/'));
+    assertEquals(
+        'https://example.com/?a=%3F%23%26&b=1&e=x&e=y',
+        url.cloneWithParams(
+               {'a': '?#&', 'b': 1, 'c': null, 'd': undefined, 'e': ['x', 'y']})
+            .getTypedStringValue());
+  },
+
   testFormatWithParams() {
     let url = TrustedResourceUrl.formatWithParams(
         Const.from('https://example.com/'), {}, {'a': '&'});
@@ -335,15 +360,11 @@ testSuite({
   testUnwrap() {
     const privateFieldName =
         'privateDoNotAccessOrElseTrustedResourceUrlWrappedValue_';
-    const markerFieldName =
-        'TRUSTED_RESOURCE_URL_TYPE_MARKER_GOOG_HTML_SECURITY_PRIVATE_';
     const propNames =
         googObject.getKeys(TrustedResourceUrl.fromConstant(Const.from('')));
     assertContains(privateFieldName, propNames);
-    assertContains(markerFieldName, propNames);
     const evil = {};
     evil[privateFieldName] = 'http://example.com/evil.js';
-    evil[markerFieldName] = {};
 
     const exception = assertThrows(() => {
       TrustedResourceUrl.unwrap(evil);
@@ -352,19 +373,27 @@ testSuite({
         'expected object of type TrustedResourceUrl', exception.message);
   },
 
-  testUnwrapTrustedScriptURL() {
-    let safeValue =
+  testUnwrapTrustedScriptURL_policyIsNull() {
+    stubs.set(trustedtypes, 'getPolicyPrivateDoNotAccessOrElse', function() {
+      return null;
+    });
+    const safeValue =
         TrustedResourceUrl.fromConstant(Const.from('https://example.com/'));
-    let trustedValue = TrustedResourceUrl.unwrapTrustedScriptURL(safeValue);
+    const trustedValue = TrustedResourceUrl.unwrapTrustedScriptURL(safeValue);
+    assertEquals('string', typeof trustedValue);
     assertEquals(safeValue.getTypedStringValue(), trustedValue);
-    stubs.set(trustedtypes, 'PRIVATE_DO_NOT_ACCESS_OR_ELSE_POLICY', policy);
-    safeValue =
+  },
+
+  testUnwrapTrustedScriptURL_policyIsSet() {
+    stubs.set(trustedtypes, 'getPolicyPrivateDoNotAccessOrElse', function() {
+      return policy;
+    });
+    const safeValue =
         TrustedResourceUrl.fromConstant(Const.from('https://example.com/'));
-    trustedValue = TrustedResourceUrl.unwrapTrustedScriptURL(safeValue);
+    const trustedValue = TrustedResourceUrl.unwrapTrustedScriptURL(safeValue);
     assertEquals(safeValue.getTypedStringValue(), trustedValue.toString());
     assertTrue(
-        goog.global.TrustedScriptURL ?
-            trustedValue instanceof TrustedScriptURL :
-            typeof trustedValue === 'string');
+        globalThis.TrustedScriptURL ? trustedValue instanceof TrustedScriptURL :
+                                      typeof trustedValue === 'string');
   },
 });

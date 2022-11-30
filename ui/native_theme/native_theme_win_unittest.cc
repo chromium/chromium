@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,7 +70,7 @@ TEST(NativeThemeWinTest, CalculatePreferredContrast) {
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kMore);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorRED);
-  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kNoPreference);
+  EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kCustom);
 
   theme.SetSystemColor(SystemThemeColor::kWindowText, SK_ColorYELLOW);
   EXPECT_EQ(theme.CalculatePreferredContrast(), PrefContrast::kLess);
@@ -107,38 +107,6 @@ TEST(NativeThemeWinTest, GetDefaultSystemColorScheme) {
 
   theme.set_forced_colors(false);
   EXPECT_EQ(theme.GetDefaultSystemColorScheme(), ColorScheme::kLight);
-}
-
-TEST(NativeThemeWinTest, GetPlatformHighContrastColor) {
-  using ColorId = NativeTheme::ColorId;
-
-  // These specific colors don't matter, but should be unique.
-  constexpr SkColor kWindowTextColor = SK_ColorGREEN;
-  constexpr SkColor kHighlightColor = SK_ColorYELLOW;
-  constexpr SkColor kHighlightTextColor = SK_ColorBLUE;
-
-  TestNativeThemeWin theme;
-  theme.SetSystemColor(SystemThemeColor::kWindowText, kWindowTextColor);
-  theme.SetSystemColor(SystemThemeColor::kHighlight, kHighlightColor);
-  theme.SetSystemColor(SystemThemeColor::kHighlightText, kHighlightTextColor);
-
-  // Test that we get regular colors when HC is off.
-  theme.set_forced_colors(false);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_LabelEnabledColor),
-            kWindowTextColor);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_ProminentButtonColor),
-            kHighlightColor);
-  EXPECT_NE(theme.GetSystemColor(ColorId::kColorId_TextOnProminentButtonColor),
-            kHighlightTextColor);
-
-  // Test that we get HC colors when HC is on.
-  theme.set_forced_colors(true);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_LabelEnabledColor),
-            kWindowTextColor);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_ProminentButtonColor),
-            kHighlightColor);
-  EXPECT_EQ(theme.GetSystemColor(ColorId::kColorId_TextOnProminentButtonColor),
-            kHighlightTextColor);
 }
 
 TEST(NativeThemeWinTest, GetPlatformHighContrastColorScheme) {

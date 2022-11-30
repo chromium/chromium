@@ -1,1 +1,1 @@
-CONSOLE ERROR: line 3: Error: <feConvolveMatrix> attribute order: A value of zero is not valid. ("0.9")
+CONSOLE ERROR: Error: <feConvolveMatrix> attribute order: A value of zero is not valid. ("0.9")

@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_RENDER_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_RENDER_STATE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -18,14 +20,14 @@ class XRRenderState : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRRenderState(bool immersive);
+  explicit XRRenderState(bool immersive);
   ~XRRenderState() override = default;
 
   // Near and far depths are used when computing projection matrices for the
   // Session's views.
   double depthNear() const { return depth_near_; }
   double depthFar() const { return depth_far_; }
-  base::Optional<double> inlineVerticalFieldOfView() const;
+  absl::optional<double> inlineVerticalFieldOfView() const;
   XRWebGLLayer* baseLayer() const { return base_layer_; }
 
   HTMLCanvasElement* output_canvas() const;
@@ -43,7 +45,7 @@ class XRRenderState : public ScriptWrappable {
   double depth_near_ = 0.1;
   double depth_far_ = 1000.0;
   Member<XRWebGLLayer> base_layer_;
-  base::Optional<double> inline_vertical_fov_;
+  absl::optional<double> inline_vertical_fov_;
 };
 
 }  // namespace blink

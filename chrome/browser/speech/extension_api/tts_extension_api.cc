@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -156,20 +156,20 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
   }
 
   const char *event_type_string = TtsEventTypeToString(event_type);
-  std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue());
+  base::Value::Dict details;
   if (char_index >= 0)
-    details->SetInteger(constants::kCharIndexKey, char_index);
+    details.Set(constants::kCharIndexKey, char_index);
   if (length >= 0)
-    details->SetInteger(constants::kLengthKey, length);
-  details->SetString(constants::kEventTypeKey, event_type_string);
+    details.Set(constants::kLengthKey, length);
+  details.Set(constants::kEventTypeKey, event_type_string);
   if (event_type == content::TTS_EVENT_ERROR) {
-    details->SetString(constants::kErrorMessageKey, error_message);
+    details.Set(constants::kErrorMessageKey, error_message);
   }
-  details->SetInteger(constants::kSrcIdKey, utterance->GetSrcId());
-  details->SetBoolean(constants::kIsFinalEventKey, utterance->IsFinished());
+  details.Set(constants::kSrcIdKey, utterance->GetSrcId());
+  details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
 
-  std::unique_ptr<base::ListValue> arguments(new base::ListValue());
-  arguments->Append(std::move(details));
+  base::Value::List arguments;
+  arguments.Append(std::move(details));
 
   auto event = std::make_unique<extensions::Event>(
       ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
@@ -183,108 +183,102 @@ void TtsExtensionEventHandler::OnTtsEvent(content::TtsUtterance* utterance,
 }
 
 ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
-  std::string text;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &text));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& text = args()[0].GetString();
   if (text.size() > 32768) {
     return RespondNow(Error(constants::kErrorUtteranceTooLong));
   }
 
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  if (args_->GetSize() >= 2) {
-    base::DictionaryValue* temp_options = NULL;
-    if (args_->GetDictionary(1, &temp_options))
-      options.reset(temp_options->DeepCopy());
-  }
+  base::Value::Dict options;
+  if (args().size() >= 2 && args()[1].is_dict())
+    options = args()[1].GetDict().Clone();
 
   std::string voice_name;
-  if (options->HasKey(constants::kVoiceNameKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kVoiceNameKey, &voice_name));
+  if (base::Value* voice_name_value = options.Find(constants::kVoiceNameKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_name_value->is_string());
+    voice_name = voice_name_value->GetString();
   }
 
   std::string lang;
-  if (options->HasKey(constants::kLangKey))
-    EXTENSION_FUNCTION_VALIDATE(options->GetString(constants::kLangKey, &lang));
+  if (base::Value* lang_value = options.Find(constants::kLangKey)) {
+    EXTENSION_FUNCTION_VALIDATE(lang_value->is_string());
+    lang = lang_value->GetString();
+  }
   if (!lang.empty() && !l10n_util::IsValidLocaleSyntax(lang)) {
     return RespondNow(Error(constants::kErrorInvalidLang));
   }
 
-  // TODO(katie): Remove this after M73. This is just used to track how the
-  // gender deprecation is progressing.
-  std::string gender_str;
-  if (options->HasKey(constants::kGenderKey))
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kGenderKey, &gender_str));
-  UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.HasGender",
-                        !gender_str.empty());
-
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kRateKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kRateKey, &rate));
+  if (base::Value* rate_value = options.Find(constants::kRateKey)) {
+    EXTENSION_FUNCTION_VALIDATE(rate_value->GetIfDouble());
+    rate = rate_value->GetIfDouble().value_or(rate);
     if (rate < 0.1 || rate > 10.0) {
       return RespondNow(Error(constants::kErrorInvalidRate));
     }
   }
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kPitchKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kPitchKey, &pitch));
+  if (base::Value* pitch_value = options.Find(constants::kPitchKey)) {
+    EXTENSION_FUNCTION_VALIDATE(pitch_value->GetIfDouble());
+    pitch = pitch_value->GetIfDouble().value_or(pitch);
     if (pitch < 0.0 || pitch > 2.0) {
       return RespondNow(Error(constants::kErrorInvalidPitch));
     }
   }
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->HasKey(constants::kVolumeKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kVolumeKey, &volume));
+  if (base::Value* volume_value = options.Find(constants::kVolumeKey)) {
+    EXTENSION_FUNCTION_VALIDATE(volume_value->GetIfDouble());
+    volume = volume_value->GetIfDouble().value_or(volume);
     if (volume < 0.0 || volume > 1.0) {
       return RespondNow(Error(constants::kErrorInvalidVolume));
     }
   }
 
-  bool can_enqueue = false;
-  if (options->HasKey(constants::kEnqueueKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetBoolean(constants::kEnqueueKey, &can_enqueue));
+  bool can_enqueue = options.FindBool(constants::kEnqueueKey).value_or(false);
+  if (base::Value* value = options.Find(constants::kEnqueueKey)) {
+    EXTENSION_FUNCTION_VALIDATE(value->is_bool());
   }
 
   std::set<content::TtsEventType> required_event_types;
-  if (options->HasKey(constants::kRequiredEventTypesKey)) {
-    base::ListValue* list;
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetList(constants::kRequiredEventTypesKey, &list));
-    for (size_t i = 0; i < list->GetSize(); ++i) {
-      std::string event_type;
-      if (list->GetString(i, &event_type))
-        required_event_types.insert(TtsEventTypeFromString(event_type.c_str()));
+  if (options.contains(constants::kRequiredEventTypesKey)) {
+    base::Value::List* list =
+        options.FindList(constants::kRequiredEventTypesKey);
+    EXTENSION_FUNCTION_VALIDATE(list);
+    for (const base::Value& i : *list) {
+      const std::string* event_type = i.GetIfString();
+      if (event_type) {
+        required_event_types.insert(
+            TtsEventTypeFromString(event_type->c_str()));
+      }
     }
   }
 
   std::set<content::TtsEventType> desired_event_types;
-  if (options->HasKey(constants::kDesiredEventTypesKey)) {
-    base::ListValue* list;
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetList(constants::kDesiredEventTypesKey, &list));
-    for (size_t i = 0; i < list->GetSize(); ++i) {
-      std::string event_type;
-      if (list->GetString(i, &event_type))
-        desired_event_types.insert(TtsEventTypeFromString(event_type.c_str()));
+  if (options.contains(constants::kDesiredEventTypesKey)) {
+    base::Value::List* list =
+        options.FindList(constants::kDesiredEventTypesKey);
+    EXTENSION_FUNCTION_VALIDATE(list);
+    for (const base::Value& i : *list) {
+      const std::string* event_type = i.GetIfString();
+      if (event_type)
+        desired_event_types.insert(TtsEventTypeFromString(event_type->c_str()));
     }
   }
 
   std::string voice_extension_id;
-  if (options->HasKey(constants::kExtensionIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetString(constants::kExtensionIdKey, &voice_extension_id));
+  if (base::Value* voice_extension_id_value =
+          options.Find(constants::kExtensionIdKey)) {
+    EXTENSION_FUNCTION_VALIDATE(voice_extension_id_value);
+    voice_extension_id = voice_extension_id_value->GetString();
   }
 
   int src_id = -1;
-  if (options->HasKey(constants::kSrcIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetInteger(constants::kSrcIdKey, &src_id));
+  base::Value* src_id_value = options.Find(constants::kSrcIdKey);
+  if (src_id_value) {
+    EXTENSION_FUNCTION_VALIDATE(src_id_value->is_int());
+    src_id = src_id_value->GetInt();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -306,12 +300,14 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
   std::unique_ptr<content::TtsUtterance> utterance;
   if (extension()) {
-    extensions::ExtensionHost* host =
+    extensions::ExtensionHost* extension_host =
         extensions::ProcessManager::Get(browser_context())
             ->GetBackgroundHostForExtension(extension()->id());
 
-    if (host && host->host_contents())
-      utterance = content::TtsUtterance::Create(host->host_contents());
+    if (extension_host && extension_host->host_contents()) {
+      utterance =
+          content::TtsUtterance::Create(extension_host->host_contents());
+    }
   }
 
   if (!utterance)
@@ -327,7 +323,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   utterance->SetRequiredEventTypes(required_event_types);
   utterance->SetDesiredEventTypes(desired_event_types);
   utterance->SetEngineId(voice_extension_id);
-  utterance->SetOptions(options.get());
+  utterance->SetOptions(std::move(options));
   if (extension())
     utterance->SetEventDelegate(new TtsExtensionEventHandler(extension_id()));
 
@@ -358,32 +354,31 @@ ExtensionFunction::ResponseAction TtsIsSpeakingFunction::Run() {
 
 ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
   std::vector<content::VoiceData> voices;
-  content::TtsController::GetInstance()->GetVoices(browser_context(), &voices);
+  content::TtsController::GetInstance()->GetVoices(browser_context(),
+                                                   source_url(), &voices);
 
-  auto result_voices = std::make_unique<base::ListValue>();
+  base::Value::List result_voices;
   for (size_t i = 0; i < voices.size(); ++i) {
     const content::VoiceData& voice = voices[i];
-    std::unique_ptr<base::DictionaryValue> result_voice(
-        new base::DictionaryValue());
-    result_voice->SetString(constants::kVoiceNameKey, voice.name);
-    result_voice->SetBoolean(constants::kRemoteKey, voice.remote);
+    base::Value::Dict result_voice;
+    result_voice.Set(constants::kVoiceNameKey, voice.name);
+    result_voice.Set(constants::kRemoteKey, voice.remote);
     if (!voice.lang.empty())
-      result_voice->SetString(constants::kLangKey, voice.lang);
+      result_voice.Set(constants::kLangKey, voice.lang);
     if (!voice.engine_id.empty())
-      result_voice->SetString(constants::kExtensionIdKey, voice.engine_id);
+      result_voice.Set(constants::kExtensionIdKey, voice.engine_id);
 
-    auto event_types = std::make_unique<base::ListValue>();
-    for (auto iter = voice.events.begin(); iter != voice.events.end(); ++iter) {
-      const char* event_name_constant = TtsEventTypeToString(*iter);
-      event_types->AppendString(event_name_constant);
+    base::Value::List event_types;
+    for (auto& event : voice.events) {
+      const char* event_name_constant = TtsEventTypeToString(event);
+      event_types.Append(event_name_constant);
     }
-    result_voice->Set(constants::kEventTypesKey, std::move(event_types));
+    result_voice.Set(constants::kEventTypesKey, std::move(event_types));
 
-    result_voices->Append(std::move(result_voice));
+    result_voices.Append(std::move(result_voice));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result_voices))));
+  return RespondNow(OneArgument(base::Value(std::move(result_voices))));
 }
 
 TtsAPI::TtsAPI(content::BrowserContext* context) {
@@ -391,6 +386,7 @@ TtsAPI::TtsAPI(content::BrowserContext* context) {
       ExtensionFunctionRegistry::GetInstance();
   registry.RegisterFunction<ExtensionTtsEngineUpdateVoicesFunction>();
   registry.RegisterFunction<ExtensionTtsEngineSendTtsEventFunction>();
+  registry.RegisterFunction<ExtensionTtsEngineSendTtsAudioFunction>();
   registry.RegisterFunction<TtsGetVoicesFunction>();
   registry.RegisterFunction<TtsIsSpeakingFunction>();
   registry.RegisterFunction<TtsSpeakFunction>();

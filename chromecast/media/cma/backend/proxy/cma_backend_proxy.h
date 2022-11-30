@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy.h"
 
@@ -34,6 +33,10 @@ class CmaBackendProxy : public CmaBackend {
   // to |delegated_video_pipeline|.
   CmaBackendProxy(const MediaPipelineDeviceParams& params,
                   std::unique_ptr<CmaBackend> delegated_video_pipeline);
+
+  CmaBackendProxy(const CmaBackendProxy&) = delete;
+  CmaBackendProxy& operator=(const CmaBackendProxy&) = delete;
+
   ~CmaBackendProxy() override;
 
   // MediaPipelineBackend implementation:
@@ -79,8 +82,6 @@ class CmaBackendProxy : public CmaBackend {
 
   // The factory to use to populate the |audio_decoder_| object when needed.
   AudioDecoderFactoryCB audio_decoder_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CmaBackendProxy);
 };
 
 }  // namespace media

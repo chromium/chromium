@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   window->Init(layer_type_);
   window->AcquireAllPropertiesFrom(std::move(init_properties_));
   if (window_id_ != aura::Window::kInitialId)
-    window->set_id(window_id_);
+    window->SetId(window_id_);
   if (parent_) {
     if (!bounds_.IsEmpty())
       window->SetBounds(bounds_);

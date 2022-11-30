@@ -1,0 +1,27 @@
+caption: Enable firewall traversal from remote access host
+desc: |-
+  Setting the policy to Enabled or leaving it unset allows the usage of STUN servers, letting remote clients discover and connect to this machine, even if separated by a firewall.
+
+        Setting the policy to Disabled when outgoing UDP connections are filtered by the firewall means the machine only allows connections from client machines within the local network.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Enable firewall traversal from remote access host
+  value: true
+- caption: Disable firewall traversal from remote access host
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:14-
+- chrome_os:41-
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -52,8 +55,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   // Called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
-  // If the response is not a valid JSON, return base::nullopt.
-  // If the response contains no app, return base::nullopt;
+  // If the response is not a valid JSON, return absl::nullopt.
+  // If the response contains no app, return absl::nullopt;
   // The value, if exists, is a list containing:
   // 1. name: the title of the app.
   // 2. package_name: name of the package, for example: com.package.name
@@ -79,7 +82,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   //    }
   // ]
 
-  base::Optional<base::Value> ParseResponse(base::StringPiece response);
+  absl::optional<base::Value> ParseResponse(base::StringPiece response);
 
   RecommendAppsFetcherDelegate* delegate_;
 

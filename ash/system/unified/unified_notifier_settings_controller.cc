@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,10 @@ class UnifiedNotifierSettingsView
     message_center::MessageCenter::Get()->AddObserver(this);
   }
 
+  UnifiedNotifierSettingsView(const UnifiedNotifierSettingsView&) = delete;
+  UnifiedNotifierSettingsView& operator=(const UnifiedNotifierSettingsView&) =
+      delete;
+
   ~UnifiedNotifierSettingsView() override {
     message_center::MessageCenter::Get()->RemoveObserver(this);
   }
@@ -45,8 +49,6 @@ class UnifiedNotifierSettingsView
 
  private:
   NotifierSettingsView* const settings_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedNotifierSettingsView);
 };
 
 }  // namespace

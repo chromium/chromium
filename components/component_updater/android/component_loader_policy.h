@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
@@ -24,6 +25,22 @@ class DictionaryValue;
 }  // namespace base
 
 namespace component_updater {
+
+// Errors that cause failure when loading a component. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.component_updater
+enum class ComponentLoadResult {
+  kComponentLoaded = 0,
+  kFailedToConnectToComponentsProviderService = 1,
+  kRemoteException = 2,
+  kComponentsProviderServiceError = 3,
+  kMissingManifest = 4,
+  kMalformedManifest = 5,
+  kInvalidVersion = 6,
+  kMaxValue = kInvalidVersion,
+};
 
 // Components should use `AndroidComponentLoaderPolicy` by defining a class that
 // implements the members of `ComponentLoaderPolicy`, and then registering a
@@ -58,7 +75,7 @@ class ComponentLoaderPolicy {
   // `manifest` is the manifest for this version of the component.
   virtual void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
@@ -66,14 +83,18 @@ class ComponentLoaderPolicy {
   //
   // Will be called at most once. This is mutually exclusive with
   // ComponentLoaded; if this is called then ComponentLoaded won't be called.
-  //
-  // TODO(crbug.com/1180966) accept error code for different types of errors.
-  virtual void ComponentLoadFailed() = 0;
+  virtual void ComponentLoadFailed(ComponentLoadResult error) = 0;
 
   // Returns the component's SHA2 hash as raw bytes, the hash value is used as
   // the unique id of the component and will be used to request components files
   // from the ComponentsProviderService.
   virtual void GetHash(std::vector<uint8_t>* hash) const = 0;
+
+  // Returns a Human readable string that can be used as a suffix for recorded
+  // UMA metrics. New suffixes should be added to
+  // "ComponentUpdater.AndroidComponentLoader.ComponentName" in
+  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
+  virtual std::string GetMetricsSuffix() const = 0;
 };
 
 // Provides a bridge from Java to native to receive callbacks from the Java
@@ -105,7 +126,7 @@ class AndroidComponentLoaderPolicy {
   void ComponentLoaded(JNIEnv* env,
                        const base::android::JavaRef<jobjectArray>& jfile_names,
                        const base::android::JavaRef<jintArray>& jfds);
-  void ComponentLoadFailed(JNIEnv* env);
+  void ComponentLoadFailed(JNIEnv* env, jint error_code);
   base::android::ScopedJavaLocalRef<jstring> GetComponentId(JNIEnv* env);
 
  private:
@@ -113,9 +134,12 @@ class AndroidComponentLoaderPolicy {
   // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  void NotifyNewVersion(const base::flat_map<std::string, int>& fd_map,
+  std::string GetComponentId() const;
+
+  void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
                         std::unique_ptr<base::DictionaryValue> manifest);
-  void CloseFdsAndFail(const base::flat_map<std::string, int>& fd_map);
+
+  void ComponentLoadFailedInternal(ComponentLoadResult error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

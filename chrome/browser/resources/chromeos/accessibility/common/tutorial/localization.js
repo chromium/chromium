@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@
  * tutorial content.
  */
 
-/**
- * @polymerBehavior
- * @suppress {undefinedVars|missingProperties}
- */
+/** @polymerBehavior */
 export const Localization = {
   /**
    * Returns the message with the given message id from the ChromeVox namespace.
@@ -19,6 +16,11 @@ export const Localization = {
    * @return {string} The localized message.
    */
   getMsg(id, opt_subs) {
-    return Msgs.getMsg(id, opt_subs);
-  }
+    const message = chrome.i18n.getMessage('chromevox_' + id, opt_subs);
+    if (message === undefined || message === '') {
+      throw new Error('Invalid ChromeVox message id: ' + id);
+    }
+
+    return message;
+  },
 };

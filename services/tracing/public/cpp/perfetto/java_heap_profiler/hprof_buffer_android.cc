@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,22 @@ uint32_t HprofBuffer::GetFourBytes() {
 
 uint64_t HprofBuffer::GetId() {
   return GetUInt64FromBytes(object_id_size_in_bytes_);
+}
+
+uint32_t HprofBuffer::GetUInt32FromBytes(size_t num_bytes) {
+  uint32_t val = 0;
+  for (size_t i = 0; i < num_bytes; ++i) {
+    val = (val << 8) + GetByte();
+  }
+  return val;
+}
+
+uint64_t HprofBuffer::GetUInt64FromBytes(size_t num_bytes) {
+  uint64_t val = 0;
+  for (size_t i = 0; i < num_bytes; ++i) {
+    val = (val << 8) + GetByte();
+  }
+  return val;
 }
 
 bool HprofBuffer::HasRemaining() {
@@ -71,24 +87,6 @@ unsigned char HprofBuffer::GetByte() {
   unsigned char byte = data_[offset_];
   ++offset_;
   return byte;
-}
-
-// Read in the next |num_bytes| as an uint32_t.
-uint32_t HprofBuffer::GetUInt32FromBytes(size_t num_bytes) {
-  uint32_t val = 0;
-  for (size_t i = 0; i < num_bytes; ++i) {
-    val = (val << 8) + GetByte();
-  }
-  return val;
-}
-
-// Read in the next |num_bytes| as an uint64_t.
-uint64_t HprofBuffer::GetUInt64FromBytes(size_t num_bytes) {
-  uint64_t val = 0;
-  for (size_t i = 0; i < num_bytes; ++i) {
-    val = (val << 8) + GetByte();
-  }
-  return val;
 }
 
 }  // namespace tracing

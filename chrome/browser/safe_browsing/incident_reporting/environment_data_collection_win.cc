@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -25,7 +24,7 @@
 #include "chrome/browser/safe_browsing/download_protection/path_sanitizer.h"
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_verifier_win.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
 
 namespace safe_browsing {
@@ -285,19 +284,19 @@ void CollectRegistryData(
 
 void CollectDomainEnrollmentData(
     ClientIncidentReport_EnvironmentData_OS* os_data) {
-  os_data->set_is_enrolled_to_domain(base::IsMachineExternallyManaged());
+  os_data->set_is_enrolled_to_domain(base::IsEnterpriseDevice());
 }
 
 void CollectPlatformProcessData(
     ClientIncidentReport_EnvironmentData_Process* process) {
   CollectDlls(process);
   RecordLspFeature(process);
-  CollectModuleVerificationData(kModulesToVerify, base::size(kModulesToVerify),
+  CollectModuleVerificationData(kModulesToVerify, std::size(kModulesToVerify),
                                 process);
 }
 
 void CollectPlatformOSData(ClientIncidentReport_EnvironmentData_OS* os_data) {
-  CollectRegistryData(kRegKeysToCollect, base::size(kRegKeysToCollect),
+  CollectRegistryData(kRegKeysToCollect, std::size(kRegKeysToCollect),
                       os_data->mutable_registry_key());
   CollectDomainEnrollmentData(os_data);
 }

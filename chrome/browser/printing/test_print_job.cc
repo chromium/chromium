@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job_worker.h"
@@ -13,6 +12,10 @@
 #include "chrome/browser/printing/test_print_job.h"
 #include "printing/printed_document.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "printing/mojom/print.mojom.h"
+#endif
 
 namespace printing {
 
@@ -43,18 +46,22 @@ void TestPrintJob::Cancel() {
   set_job_pending(false);
 }
 
+void TestPrintJob::OnFailed() {}
+
+void TestPrintJob::OnDocDone(int job_id, PrintedDocument* document) {}
+
 bool TestPrintJob::FlushJob(base::TimeDelta timeout) {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TestPrintJob::StartPdfToEmfConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size,
     const gfx::Rect& content_area) {
   page_size_ = page_size;
   content_area_ = content_area;
-  type_ = PrintSettings::PrinterType::TYPE_NONE;
+  type_ = mojom::PrinterLanguageType::kNone;
 }
 
 void TestPrintJob::StartPdfToPostScriptConversion(
@@ -64,17 +71,17 @@ void TestPrintJob::StartPdfToPostScriptConversion(
     bool ps_level2) {
   content_area_ = content_area;
   physical_offsets_ = physical_offsets;
-  type_ = ps_level2 ? PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL2
-                    : PrintSettings::PrinterType::TYPE_POSTSCRIPT_LEVEL3;
+  type_ = ps_level2 ? mojom::PrinterLanguageType::kPostscriptLevel2
+                    : mojom::PrinterLanguageType::kPostscriptLevel3;
 }
 
 void TestPrintJob::StartPdfToTextConversion(
     scoped_refptr<base::RefCountedMemory> bytes,
     const gfx::Size& page_size) {
   page_size_ = page_size;
-  type_ = PrintSettings::PrinterType::TYPE_TEXTONLY;
+  type_ = mojom::PrinterLanguageType::kTextOnly;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TestPrintJob::~TestPrintJob() {
   set_job_pending(false);

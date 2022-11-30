@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -15,28 +16,29 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/glue/sync_engine_backend.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_bridge.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace syncer {
@@ -47,9 +49,6 @@ namespace {
 SyncEngineBackend::RestoredLocalTransportData
 RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   SyncEngineBackend::RestoredLocalTransportData result;
-  result.encryption_bootstrap_token = prefs.GetEncryptionBootstrapToken();
-  result.keystore_encryption_bootstrap_token =
-      prefs.GetKeystoreEncryptionBootstrapToken();
   result.cache_guid = prefs.GetCacheGuid();
   result.birthday = prefs.GetBirthday();
   result.bag_of_chips = prefs.GetBagOfChips();
@@ -129,7 +128,7 @@ SyncEngineImpl::SyncEngineImpl(
       sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       sessions_invalidation_enabled_(false),
 #else
       sessions_invalidation_enabled_(true),
@@ -159,9 +158,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
   const SyncTransportDataStartupState state =
       ValidateSyncTransportData(*prefs_, params.authenticated_account_info);
 
-  base::UmaHistogramEnumeration("Sync.LocalSyncTransportDataStartupState",
-                                state);
-
   if (state != SyncTransportDataStartupState::kValidData) {
     // The local data is either uninitialized or corrupt, so let's throw
     // everything away and start from scratch with a new cache GUID, which also
@@ -181,14 +177,14 @@ void SyncEngineImpl::Initialize(InitParams params) {
   // enabled, then the SyncService doesn't need to communicate with the old
   // InvalidationService anymore.
   if (invalidator_ &&
-      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
-      base::FeatureList::IsEnabled(
-          switches::kUseSyncInvalidationsForWalletAndOffer)) {
+      base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer)) {
     DCHECK(!invalidation_handler_registered_);
     invalidator_->RegisterInvalidationHandler(this);
     bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
     DCHECK(success);
+    invalidator_->UnsubscribeFromUnregisteredTopics(this);
     invalidator_->UnregisterInvalidationHandler(this);
     invalidator_ = nullptr;
   }
@@ -249,29 +245,34 @@ void SyncEngineImpl::StartSyncingWithServer() {
                                 last_poll_time));
 }
 
-void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
+void SyncEngineImpl::StartHandlingInvalidations() {
+  if (sync_invalidations_service_) {
+    // Sync invalidation service must be subscribed to data types by this time.
+    // Without that, incoming invalidations would be filtered out.
+    DCHECK(sync_invalidations_service_->GetInterestedDataTypes().has_value());
+
+    // Adding a listener several times is safe. Only first adding replays last
+    // incoming messages.
+    sync_invalidations_service_->AddListener(this);
+  }
+}
+
+void SyncEngineImpl::SetEncryptionPassphrase(
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetEncryptionPassphrase,
-                                backend_, passphrase));
+                                backend_, passphrase, key_derivation_params));
 }
 
-void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
+void SyncEngineImpl::SetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
-                                backend_, passphrase));
-}
-
-void SyncEngineImpl::SetEncryptionBootstrapToken(const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefs_->SetEncryptionBootstrapToken(token);
-}
-
-void SyncEngineImpl::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefs_->SetKeystoreEncryptionBootstrapToken(token);
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey,
+                     backend_, std::move(key)));
 }
 
 void SyncEngineImpl::AddTrustedVaultDecryptionKeys(
@@ -302,7 +303,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   DCHECK(!host_);
 
   if (invalidation_handler_registered_) {
-    if (reason != BROWSER_SHUTDOWN) {
+    if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
       DCHECK(success);
     }
@@ -332,12 +333,14 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
-  if (reason == DISABLE_SYNC) {
+  if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
     ClearLocalTransportDataAndNotify();
   }
 }
 
 void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
+  DCHECK(Difference(params.to_download, ProtocolTypes()).Empty());
+
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoPurgeDisabledTypes,
                                 backend_, params.to_purge));
@@ -346,22 +349,19 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
                                 std::move(params)));
 }
 
-void SyncEngineImpl::ActivateDataType(
+void SyncEngineImpl::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
+  DCHECK(ProtocolTypes().Has(type));
   model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 
-void SyncEngineImpl::DeactivateDataType(ModelType type) {
+void SyncEngineImpl::DisconnectDataType(ModelType type) {
   model_type_connector_->DisconnectDataType(type);
 }
 
-void SyncEngineImpl::ActivateProxyDataType(ModelType type) {
-  model_type_connector_->ConnectProxyType(type);
-}
-
-void SyncEngineImpl::DeactivateProxyDataType(ModelType type) {
-  model_type_connector_->DisconnectProxyType(type);
+void SyncEngineImpl::SetProxyTabsDatatypeEnabled(bool enabled) {
+  model_type_connector_->SetProxyTabsDatatypeEnabled(enabled);
 }
 
 const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {
@@ -392,7 +392,7 @@ void SyncEngineImpl::GetThrottledDataTypesForTest(
              base::OnceCallback<void(ModelTypeSet)> cb) {
             std::move(cb).Run(engine->cached_status_.throttled_types);
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
+          weak_ptr_factory_.GetMutableWeakPtr(), std::move(cb)));
 }
 
 void SyncEngineImpl::RequestBufferedProtocolEventsAndEnableForwarding() {
@@ -412,22 +412,14 @@ void SyncEngineImpl::DisableProtocolEventForwarding() {
 
 void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
     const ModelTypeSet enabled_types,
-    const ModelTypeSet succeeded_configuration_types,
-    const ModelTypeSet failed_configuration_types,
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
+    base::OnceClosure ready_task) {
   last_enabled_types_ = enabled_types;
   SendInterestedTopicsToInvalidator();
 
-  if (!ready_task.is_null()) {
-    std::move(ready_task)
-        .Run(succeeded_configuration_types, failed_configuration_types);
-  }
+  std::move(ready_task).Run();
 }
 
 void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
-    ModelTypeSet initial_types,
-    const WeakHandle<JsBackend> js_backend,
-    const WeakHandle<DataTypeDebugInfoListener> debug_info_listener,
     std::unique_ptr<ModelTypeConnector> model_type_connector,
     const std::string& birthday,
     const std::string& bag_of_chips) {
@@ -443,12 +435,14 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
 
     // Fake a state change to initialize the SyncManager's cached invalidator
     // state.
-    // TODO(crbug.com/1132868): Do this for the new invalidations as well.
     OnInvalidatorStateChange(invalidator_->GetInvalidatorState());
-  }
-
-  if (sync_invalidations_service_) {
-    sync_invalidations_service_->AddListener(this);
+  } else {
+    DCHECK(sync_invalidations_service_);
+    // TODO(crbug.com/1297919): clean up the state in OnInvalidatorStateChange
+    // once fully migrated to new invalidations. Also clean up the logic for
+    // disabled invalidations since it's not used in new invalidations anymore.
+    OnInvalidatorStateChange(
+        invalidation::InvalidatorState::INVALIDATIONS_ENABLED);
   }
 
   active_devices_provider_->SetActiveDevicesChangedCallback(base::BindRepeating(
@@ -471,16 +465,14 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     UpdateLastSyncedTime();
   }
 
-  host_->OnEngineInitialized(initial_types, js_backend, debug_info_listener,
-                             /*success=*/true, is_first_time_sync_configure);
+  host_->OnEngineInitialized(/*success=*/true, is_first_time_sync_configure);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
-                             WeakHandle<DataTypeDebugInfoListener>(),
-                             /*success=*/false,
-                             /*is_first_time_sync_configure=*/false);
+  host_->OnEngineInitialized(
+      /*success=*/false,
+      /*is_first_time_sync_configure=*/false);
 }
 
 void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(
@@ -594,10 +586,18 @@ void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
 
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1082122): check that sync engine is fully initialized.
+
+  absl::optional<ModelTypeSet> interested_data_types =
+      sync_invalidations_service_->GetInterestedDataTypes();
+
+  // Interested data types must be initialized before handling invalidations to
+  // prevent missing incoming invalidations which were received during
+  // configuration.
+  DCHECK(interested_data_types.has_value());
   sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoOnInvalidationReceived,
-                                backend_, payload));
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoOnStandaloneInvalidationReceived,
+                     backend_, payload, *interested_data_types));
 }
 
 // static
@@ -622,10 +622,15 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
   if (!sessions_invalidation_enabled_) {
     invalidation_enabled_types.Remove(syncer::SESSIONS);
   }
-  // switches::kUseSyncInvalidations means that the new invalidations system is
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, don't subscribe to HISTORY invalidations, to save network
+  // traffic.
+  invalidation_enabled_types.Remove(HISTORY);
+#endif
+  // kUseSyncInvalidations means that the new invalidations system is
   // used for all data types except Wallet and Offer, so only keep these types.
-  if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     invalidation_enabled_types.RetainAll(
         {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
@@ -637,19 +642,11 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
 
 void SyncEngineImpl::OnActiveDevicesChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string local_cache_guid;
-  if (!base::FeatureList::IsEnabled(switches::kSyncE2ELatencyMeasurement)) {
-    // End-to-end latency measurement relies on reflection, so if this is
-    // enabled, don't filter out the local device.
-    local_cache_guid = cached_status_.sync_id;
-  }
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnActiveDevicesChanged, backend_,
-                     active_devices_provider_->CountActiveDevicesIfAvailable(),
-                     active_devices_provider_
-                         ->CollectFCMRegistrationTokensForInvalidations(
-                             local_cache_guid)));
+                     active_devices_provider_->CalculateInvalidationInfo(
+                         cached_status_.cache_guid)));
 }
 
 void SyncEngineImpl::UpdateLastSyncedTime() {
@@ -657,7 +654,7 @@ void SyncEngineImpl::UpdateLastSyncedTime() {
 }
 
 void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
-  prefs_->ClearAllExceptEncryptionBootstrapToken();
+  prefs_->ClearAll();
   sync_transport_data_cleared_cb_.Run();
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,6 +22,8 @@ component("touch_selection") {
     "touch_selection_controller.cc",
     "touch_selection_controller.h",
     "touch_selection_draggable.h",
+    "touch_selection_menu_runner.cc",
+    "touch_selection_menu_runner.h",
     "ui_touch_selection_export.h",
   ]
 
@@ -49,8 +51,6 @@ component("touch_selection") {
     sources += [
       "touch_handle_drawable_aura.cc",
       "touch_handle_drawable_aura.h",
-      "touch_selection_menu_runner.cc",
-      "touch_selection_menu_runner.h",
     ]
   }
 }

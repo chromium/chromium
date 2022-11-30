@@ -27,7 +27,7 @@
 
 namespace blink {
 
-class TextMarkerBase;
+class DocumentMarker;
 
 class SVGInlineTextBox final : public InlineTextBox {
  public:
@@ -57,7 +57,7 @@ class SVGInlineTextBox final : public InlineTextBox {
                                                    int& end_position) const;
 
   // Calculate the bounding rect of all text fragments.
-  FloatRect CalculateBoundaries() const;
+  gfx::RectF CalculateBoundaries() const;
 
   void ClearTextFragments() { text_fragments_.clear(); }
   Vector<SVGTextFragment>& TextFragments() { return text_fragments_; }
@@ -73,10 +73,10 @@ class SVGInlineTextBox final : public InlineTextBox {
   }
 
   int OffsetForPositionInFragment(const SVGTextFragment&, float position) const;
-  FloatRect SelectionRectForTextFragment(const SVGTextFragment&,
-                                         int fragment_start_position,
-                                         int fragment_end_position,
-                                         const ComputedStyle&) const;
+  gfx::RectF SelectionRectForTextFragment(const SVGTextFragment&,
+                                          int fragment_start_position,
+                                          int fragment_end_position,
+                                          const ComputedStyle&) const;
   TextRun ConstructTextRun(const ComputedStyle&, const SVGTextFragment&) const;
 
  private:
@@ -88,12 +88,12 @@ class SVGInlineTextBox final : public InlineTextBox {
                            bool) const final;
   void PaintTextMarkerForeground(const PaintInfo&,
                                  const PhysicalOffset&,
-                                 const TextMarkerBase&,
+                                 const DocumentMarker&,
                                  const ComputedStyle&,
                                  const Font&) const final;
   void PaintTextMarkerBackground(const PaintInfo&,
                                  const PhysicalOffset&,
-                                 const TextMarkerBase&,
+                                 const DocumentMarker&,
                                  const ComputedStyle&,
                                  const Font&) const final;
 

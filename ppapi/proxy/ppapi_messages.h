@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/sync_socket.h"
+#include "build/build_config.h"
 
 #ifdef WIN32
 // base/sync_socket.h will define MemoryBarrier (a Win32 macro) that
@@ -30,6 +31,7 @@
 #include "gpu/ipc/common/gpu_command_buffer_traits.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_platform_file.h"
 #include "ppapi/c/dev/pp_video_capture_dev.h"
@@ -57,8 +59,6 @@
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
-#include "ppapi/c/private/ppb_pdf.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/network_list_resource.h"
 #include "ppapi/proxy/ppapi_param_traits.h"
@@ -73,7 +73,6 @@
 #include "ppapi/shared_impl/file_ref_create_info.h"
 #include "ppapi/shared_impl/media_stream_audio_track_shared.h"
 #include "ppapi/shared_impl/media_stream_video_track_shared.h"
-#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 #include "ppapi/shared_impl/ppapi_nacl_plugin_args.h"
 #include "ppapi/shared_impl/ppapi_preferences.h"
 #include "ppapi/shared_impl/ppb_device_ref_shared.h"
@@ -104,7 +103,7 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_InputEvent_Type,
                               PP_INPUTEVENT_TYPE_FIRST,
                               PP_INPUTEVENT_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_IsolatedFileSystemType_Private,
-                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE)
+                          PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetAddressFamily_Private,
                           PP_NETADDRESSFAMILY_PRIVATE_IPV6)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_NetworkList_State, PP_NETWORKLIST_STATE_UP)
@@ -113,7 +112,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(PP_PrintOrientation_Dev,
                           PP_PRINTORIENTATION_ROTATED_LAST)
 IPC_ENUM_TRAITS(PP_PrintOutputFormat_Dev)  // Bitmask.
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PrintScalingOption_Dev, PP_PRINTSCALINGOPTION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateDuplexMode_Dev, PP_PRIVATEDUPLEXMODE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFontCharset, PP_PRIVATEFONTCHARSET_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_TCPSocket_Option,
                           PP_TCPSOCKET_OPTION_RECV_BUFFER_SIZE)
@@ -129,21 +127,6 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_VideoDecoder_Profile,
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoFrame_Format, PP_VIDEOFRAME_FORMAT_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_HardwareAcceleration, PP_HARDWAREACCELERATION_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(PP_VideoProfile, PP_VIDEOPROFILE_MAX)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateDirection, PP_PRIVATEDIRECTION_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_TextRenderingMode,
-                              PP_TEXTRENDERINGMODE_FIRST,
-                              PP_TEXTRENDERINGMODE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAction,
-                          PP_PDF_ACCESSIBILITYACTION_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityScrollAlignment,
-                          PP_PDF_ACCESSIBILITYSCROLLALIGNMENT_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PdfAccessibilityAnnotationType,
-                          PP_PDF_ACCESSIBILITY_ANNOTATIONTYPE_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateChoiceFieldType, PP_PRIVATECHOICEFIELD_LAST)
-IPC_ENUM_TRAITS_MIN_MAX_VALUE(PP_PrivateButtonType,
-                              PP_PRIVATEBUTTON_FIRST,
-                              PP_PRIVATEBUTTON_LAST)
-IPC_ENUM_TRAITS_MAX_VALUE(PP_PrivateFocusObjectType, PP_PRIVATEFOCUSOBJECT_LAST)
 
 IPC_STRUCT_TRAITS_BEGIN(PP_Point)
   IPC_STRUCT_TRAITS_MEMBER(x)
@@ -217,169 +200,6 @@ IPC_STRUCT_TRAITS_BEGIN(PP_PrintSettings_Dev)
   IPC_STRUCT_TRAITS_MEMBER(print_scaling_option)
   IPC_STRUCT_TRAITS_MEMBER(grayscale)
   IPC_STRUCT_TRAITS_MEMBER(format)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfAccessibilityActionData)
-  IPC_STRUCT_TRAITS_MEMBER(action)
-  IPC_STRUCT_TRAITS_MEMBER(annotation_type)
-  IPC_STRUCT_TRAITS_MEMBER(target_point)
-  IPC_STRUCT_TRAITS_MEMBER(target_rect)
-  IPC_STRUCT_TRAITS_MEMBER(annotation_index)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(horizontal_scroll_alignment)
-  IPC_STRUCT_TRAITS_MEMBER(vertical_scroll_alignment)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_index)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfPageCharacterIndex)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(char_index)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintPresetOptions_Dev)
-  IPC_STRUCT_TRAITS_MEMBER(is_scaling_disabled)
-  IPC_STRUCT_TRAITS_MEMBER(copies)
-  IPC_STRUCT_TRAITS_MEMBER(duplex)
-  IPC_STRUCT_TRAITS_MEMBER(is_page_size_uniform)
-  IPC_STRUCT_TRAITS_MEMBER(uniform_page_size)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PdfPrintSettings_Dev)
-  IPC_STRUCT_TRAITS_MEMBER(pages_per_sheet)
-  IPC_STRUCT_TRAITS_MEMBER(scale_factor)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityFocusInfo)
-  IPC_STRUCT_TRAITS_MEMBER(focused_object_type)
-  IPC_STRUCT_TRAITS_MEMBER(focused_object_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(focused_annotation_index_in_page)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityViewportInfo)
-  IPC_STRUCT_TRAITS_MEMBER(zoom)
-  IPC_STRUCT_TRAITS_MEMBER(scale)
-  IPC_STRUCT_TRAITS_MEMBER(scroll)
-  IPC_STRUCT_TRAITS_MEMBER(offset)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_char_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_page_index)
-  IPC_STRUCT_TRAITS_MEMBER(selection_end_char_index)
-  IPC_STRUCT_TRAITS_MEMBER(focus_info)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityDocInfo)
-  IPC_STRUCT_TRAITS_MEMBER(page_count)
-  IPC_STRUCT_TRAITS_MEMBER(text_accessible)
-  IPC_STRUCT_TRAITS_MEMBER(text_copyable)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityCharInfo)
-  IPC_STRUCT_TRAITS_MEMBER(unicode_character)
-  IPC_STRUCT_TRAITS_MEMBER(char_width)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextStyleInfo)
-  IPC_STRUCT_TRAITS_MEMBER(font_name)
-  IPC_STRUCT_TRAITS_MEMBER(font_weight)
-  IPC_STRUCT_TRAITS_MEMBER(render_mode)
-  IPC_STRUCT_TRAITS_MEMBER(font_size)
-  IPC_STRUCT_TRAITS_MEMBER(fill_color)
-  IPC_STRUCT_TRAITS_MEMBER(stroke_color)
-  IPC_STRUCT_TRAITS_MEMBER(is_italic)
-  IPC_STRUCT_TRAITS_MEMBER(is_bold)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextRunInfo)
-  IPC_STRUCT_TRAITS_MEMBER(len)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(direction)
-  IPC_STRUCT_TRAITS_MEMBER(style)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(PP_PrivateAccessibilityPageInfo)
-  IPC_STRUCT_TRAITS_MEMBER(page_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(char_count)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityLinkInfo)
-  IPC_STRUCT_TRAITS_MEMBER(url)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityImageInfo)
-  IPC_STRUCT_TRAITS_MEMBER(alt_text)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityHighlightInfo)
-  IPC_STRUCT_TRAITS_MEMBER(note_text)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_count)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-  IPC_STRUCT_TRAITS_MEMBER(color)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityTextFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(value)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_required)
-  IPC_STRUCT_TRAITS_MEMBER(is_password)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldOptionInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(is_selected)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityChoiceFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(options)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_multi_select)
-  IPC_STRUCT_TRAITS_MEMBER(has_editable_text_box)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityButtonInfo)
-  IPC_STRUCT_TRAITS_MEMBER(name)
-  IPC_STRUCT_TRAITS_MEMBER(value)
-  IPC_STRUCT_TRAITS_MEMBER(type)
-  IPC_STRUCT_TRAITS_MEMBER(is_read_only)
-  IPC_STRUCT_TRAITS_MEMBER(is_checked)
-  IPC_STRUCT_TRAITS_MEMBER(control_count)
-  IPC_STRUCT_TRAITS_MEMBER(control_index)
-  IPC_STRUCT_TRAITS_MEMBER(index_in_page)
-  IPC_STRUCT_TRAITS_MEMBER(text_run_index)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityFormFieldInfo)
-  IPC_STRUCT_TRAITS_MEMBER(text_fields)
-  IPC_STRUCT_TRAITS_MEMBER(choice_fields)
-  IPC_STRUCT_TRAITS_MEMBER(buttons)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(ppapi::PdfAccessibilityPageObjects)
-  IPC_STRUCT_TRAITS_MEMBER(links)
-  IPC_STRUCT_TRAITS_MEMBER(images)
-  IPC_STRUCT_TRAITS_MEMBER(highlights)
-  IPC_STRUCT_TRAITS_MEMBER(form_fields)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(PP_URLComponent_Dev)
@@ -598,12 +418,6 @@ IPC_MESSAGE_CONTROL3(PpapiMsg_CreateChannel,
 IPC_MESSAGE_CONTROL1(PpapiMsg_InitializeNaClDispatcher,
                      ppapi::PpapiNaClPluginArgs /* args */)
 
-// Instructs the plugin process to crash.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Crash)
-
-// Instructs the plugin process to hang.
-IPC_MESSAGE_CONTROL0(PpapiMsg_Hang)
-
 // Each plugin may be referenced by multiple renderers. We need the instance
 // IDs to be unique within a plugin, despite coming from different renderers,
 // and unique within a renderer, despite going to different plugins. This means
@@ -632,16 +446,13 @@ IPC_SYNC_MESSAGE_CONTROL1_1(PpapiMsg_SupportsInterface,
                             std::string /* interface_name */,
                             bool /* result */)
 
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_LogInterfaceUsage,
-                     int /* interface_hash */)
-
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // Network state notification from the browser for implementing
 // PPP_NetworkState_Dev.
 IPC_MESSAGE_CONTROL1(PpapiMsg_SetNetworkState,
                      bool /* online */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Audio.
 
@@ -771,76 +582,6 @@ IPC_SYNC_MESSAGE_ROUTED2_2(PpapiMsg_PPPMessageHandler_HandleBlockingMessage,
 IPC_MESSAGE_ROUTED1(PpapiMsg_PPPMouseLock_MouseLockLost,
                     PP_Instance /* instance */)
 
-// PPP_Pdf
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_Rotate,
-                    PP_Instance /* instance */,
-                    bool /* clockwise */)
-IPC_SYNC_MESSAGE_ROUTED1_2(
-    PpapiMsg_PPPPdf_PrintPresetOptions,
-    PP_Instance /* instance */,
-    PP_PdfPrintPresetOptions_Dev /* print preset options */,
-    PP_Bool /* result */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_EnableAccessibility,
-                    PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_SetCaretPosition,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* position */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_MoveRangeSelectionExtent,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* extent */)
-IPC_MESSAGE_ROUTED3(PpapiMsg_PPPPdf_SetSelectionBounds,
-                    PP_Instance /* instance */,
-                    PP_FloatPoint /* base */,
-                    PP_FloatPoint /* extent */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanEditText,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_HasEditableText,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_ReplaceSelection,
-                    PP_Instance /* instance */,
-                    std::string /* text */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanUndo,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPdf_CanRedo,
-                           PP_Instance /* instance */,
-                           PP_Bool /* result */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Undo, PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED1(PpapiMsg_PPPPdf_Redo, PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED2(PpapiMsg_PPPPdf_HandleAccessibilityAction,
-                    PP_Instance /* instance */,
-                    PP_PdfAccessibilityActionData /* action_data */)
-IPC_SYNC_MESSAGE_ROUTED3_1(PpapiMsg_PPPPdf_PrintBegin,
-                           PP_Instance /* instance */,
-                           PP_PrintSettings_Dev /* print_settings */,
-                           PP_PdfPrintSettings_Dev /* pdf_print_settings */,
-                           int32_t /* result */)
-
-// Find
-IPC_MESSAGE_ROUTED2(PpapiPluginMsg_PPPFind_StartFind,
-                    PP_Instance /* instance */,
-                    std::string /* text */)
-IPC_MESSAGE_ROUTED2(PpapiPluginMsg_PPPFind_SelectFindResult,
-                    PP_Instance /* instance */,
-                    PP_Bool /* forward */)
-IPC_MESSAGE_ROUTED1(PpapiPluginMsg_PPPFind_StopFind,
-                    PP_Instance /* instance */)
-
-IPC_MESSAGE_ROUTED1(PpapiHostMsg_PPBInstance_SetPluginToHandleFindRequests,
-                    PP_Instance /* instance */)
-IPC_MESSAGE_ROUTED3(PpapiHostMsg_PPBInstance_NumberOfFindResultsChanged,
-                    PP_Instance /* instance */,
-                    int32_t /* total */,
-                    PP_Bool /* final_result */)
-IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBInstance_SelectFindResultChanged,
-                    PP_Instance /* instance */,
-                    int32_t /* index */)
-IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBInstance_SetTickmarks,
-                    PP_Instance /* instance */,
-                    std::vector<PP_Rect> /* tickmarks */)
-
 // PPP_Printing
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPPrinting_QuerySupportedFormats,
                            PP_Instance /* instance */,
@@ -864,13 +605,13 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPTextInput_RequestSurroundingText,
                    PP_Instance /* instance */,
                    uint32_t /* desired_number_of_characters */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // PPP_Instance_Private.
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPInstancePrivate_GetInstanceObject,
                            PP_Instance /* instance */,
                            ppapi::proxy::SerializedVar /* result */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // This message is sent from the renderer to the PNaCl compiler process
 // (NaCl untrusted code -- a nexe).  This implements the init_callback()
@@ -1195,7 +936,7 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBVar_CreateObjectDeprecated,
                            int64_t /* object_data */,
                            ppapi::proxy::SerializedVar /* result */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // PPB_Buffer.
 IPC_SYNC_MESSAGE_ROUTED2_2(
     PpapiHostMsg_PPBBuffer_Create,
@@ -1204,7 +945,7 @@ IPC_SYNC_MESSAGE_ROUTED2_2(
     ppapi::HostResource /* result_resource */,
     ppapi::proxy::SerializedHandle /* result_shm_handle */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Testing.
 IPC_SYNC_MESSAGE_ROUTED3_1(
@@ -1223,7 +964,7 @@ IPC_SYNC_MESSAGE_ROUTED1_0(
     PpapiHostMsg_PPBTesting_SetMinimumArrayBufferSizeForShmem,
     uint32_t /* threshold */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_VideoDecoder_Dev.
 // (Messages from plugin to renderer.)
@@ -1278,13 +1019,7 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPVideoDecoder_PictureReady,
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPVideoDecoder_NotifyError,
                     ppapi::HostResource /* video_decoder */,
                     PP_VideoDecodeError_Dev /* error */)
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
-
-// PPB_X509Certificate_Private
-IPC_SYNC_MESSAGE_CONTROL1_2(PpapiHostMsg_PPBX509Certificate_ParseDER,
-                            std::vector<char> /* der */,
-                            bool /* succeeded */,
-                            ppapi::PPB_X509Certificate_Fields /* result */)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 //-----------------------------------------------------------------------------
 // Resource call/reply messages.
@@ -2002,7 +1737,7 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoEncoder_NotifyError,
                      int32_t /* error */)
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_VideoEncoder_Close)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // Audio input.
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioInput_Create)
@@ -2054,107 +1789,6 @@ IPC_MESSAGE_CONTROL2(PpapiPluginMsg_DeviceEnumeration_NotifyDeviceChange,
                      uint32_t /* callback_id */,
                      std::vector<ppapi::DeviceRefData> /* devices */)
 
-// Flash font file.
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_FlashFontFile_Create,
-                     ppapi::proxy::SerializedFontDescription /* description */,
-                     PP_PrivateFontCharset /* charset */)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFontFile_GetFontTable,
-                     uint32_t /* table */)
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
-                     std::string /* output */)
-
-// Flash fullscreen.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFullscreen_Create)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFullscreen_SetFullscreen,
-                     bool /* fullscreen */)
-
-// PDF ------------------------------------------------------------------------
-
-// Creates the PDF resource.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_Create)
-
-// Notifies the renderer that the PDF started loading.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_DidStartLoading)
-
-// Notifies the renderer that the PDF stopped loading.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_DidStopLoading)
-
-// Sets any restrictions on the PDF content.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetContentRestriction,
-                     int /* restrictions */)
-
-// Requests that the specified action be recorded with UMA.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_UserMetricsRecordAction,
-                     std::string /* action */)
-
-// Notifies the renderer that the current PDF uses an unsupported feature.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_HasUnsupportedFeature)
-
-// Notifies the renderer to print the current PDF.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_Print)
-
-// Notifies the renderer to display an alert dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_ShowAlertDialog,
-                     std::string /* message */)
-// Reply from the renderer that the alert has been acknowledged.
-IPC_MESSAGE_CONTROL0(PpapiPluginMsg_PDF_ShowAlertDialogReply)
-
-// Notifies the renderer to display a confirmation dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_ShowConfirmDialog,
-                     std::string /* message */)
-// Reply from the renderer with the results of the confirm dialog.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_PDF_ShowConfirmDialogReply,
-                     bool /* bool result */)
-
-// Notifies the renderer to display a prompt dialog.
-IPC_MESSAGE_CONTROL2(PpapiHostMsg_PDF_ShowPromptDialog,
-                     std::string /* message */,
-                     std::string /* default answer */)
-// Reply from the renderer with the results of the prompt dialog.
-IPC_MESSAGE_CONTROL1(PpapiPluginMsg_PDF_ShowPromptDialogReply,
-                     std::string /* str_result */)
-
-// Notifies the renderer to save the current PDF.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_SaveAs)
-
-// Called by the plugin when its selection changes.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetSelectedText,
-                     std::u16string /* selected_text */)
-
-// Called by the plugin to set the link under the cursor.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetLinkUnderCursor,
-                     std::string /* url */)
-
-// Called by the plugin to describe the viewport for accessibility support.
-IPC_MESSAGE_CONTROL1(
-    PpapiHostMsg_PDF_SetAccessibilityViewportInfo,
-    PP_PrivateAccessibilityViewportInfo /* viewport_info */)
-
-// Send information about the whole document for accessibility support.
-IPC_MESSAGE_CONTROL1(
-    PpapiHostMsg_PDF_SetAccessibilityDocInfo,
-    PP_PrivateAccessibilityDocInfo /* doc_info */)
-
-// Send information about one page for accessibility support.
-IPC_MESSAGE_CONTROL4(
-    PpapiHostMsg_PDF_SetAccessibilityPageInfo,
-    PP_PrivateAccessibilityPageInfo /* page_info */,
-    std::vector<ppapi::PdfAccessibilityTextRunInfo> /* text_runs */,
-    std::vector<PP_PrivateAccessibilityCharInfo> /* chars */,
-    ppapi::PdfAccessibilityPageObjects /* page_objects */)
-
-// Send information about the selection coordinates.
-IPC_MESSAGE_CONTROL4(PpapiHostMsg_PDF_SelectionChanged,
-                     PP_FloatPoint /* left */,
-                     int32_t /* left_height */,
-                     PP_FloatPoint /* right */,
-                     int32_t /* right_height */)
-
-// Lets the renderer know that the PDF plugin can handle save commands
-// internally. i.e. It will provide the data to save and trigger the download
-// dialog.
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetPluginCanSave, bool /* can_save */)
-
 // VideoCapture ----------------------------------------------------------------
 
 // VideoCapture_Dev, plugin -> host
@@ -2184,6 +1818,6 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoCapture_OnError,
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoCapture_OnBufferReady,
                      uint32_t /* buffer */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 #endif  // PPAPI_PROXY_PPAPI_MESSAGES_H_

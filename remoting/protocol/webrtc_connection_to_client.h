@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,19 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
+class WebrtcVideoEncoderFactory;
 class HostControlDispatcher;
 class HostEventDispatcher;
 
@@ -33,8 +34,11 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   WebrtcConnectionToClient(
       std::unique_ptr<Session> session,
       scoped_refptr<protocol::TransportContext> transport_context,
-      scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+
+  WebrtcConnectionToClient(const WebrtcConnectionToClient&) = delete;
+  WebrtcConnectionToClient& operator=(const WebrtcConnectionToClient&) = delete;
+
   ~WebrtcConnectionToClient() override;
 
   // ConnectionToClient interface.
@@ -43,7 +47,8 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   Session* session() override;
   void Disconnect(ErrorCode error) override;
   std::unique_ptr<VideoStream> StartVideoStream(
-      std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) override;
+      const std::string& stream_name,
+      std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
   ClientStub* client_stub() override;
@@ -66,9 +71,9 @@ class WebrtcConnectionToClient : public ConnectionToClient,
       const std::string& name,
       std::unique_ptr<MessagePipe> pipe) override;
   void OnWebrtcTransportMediaStreamAdded(
-      scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportMediaStreamRemoved(
-      scoped_refptr<webrtc::MediaStreamInterface> stream) override;
+      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportRouteChanged(const TransportRoute& route) override;
 
   // ChannelDispatcherBase::EventHandler interface.
@@ -78,28 +83,29 @@ class WebrtcConnectionToClient : public ConnectionToClient,
  private:
   bool allChannelsConnected();
 
-  base::ThreadChecker thread_checker_;
-
   // Event handler for handling events sent from this object.
-  ConnectionToClient::EventHandler* event_handler_ = nullptr;
+  raw_ptr<ConnectionToClient::EventHandler> event_handler_ = nullptr;
 
   std::unique_ptr<WebrtcTransport> transport_;
 
   std::unique_ptr<Session> session_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;
+  raw_ptr<WebrtcVideoEncoderFactory> video_encoder_factory_;
+
+  HostVideoStatsDispatcher video_stats_dispatcher_;
+
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   SessionOptions session_options_;
 
   std::unique_ptr<HostControlDispatcher> control_dispatcher_;
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
-  base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(WebrtcConnectionToClient);
+  THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_CONNECTION_TO_CLIENT_H_

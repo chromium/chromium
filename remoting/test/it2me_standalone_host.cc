@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/host_extension.h"
@@ -49,7 +51,7 @@ It2MeStandaloneHost::It2MeStandaloneHost()
                context_->ui_task_runner()),
       connection_(base::WrapUnique(new testing::NiceMock<MockSession>())),
       session_jid_(kSessionJid),
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // We cannot support audio capturing for linux, since a pipe name is
       // needed to initialize AudioCapturerLinux.
       config_(protocol::SessionConfig::ForTest()),
@@ -78,7 +80,7 @@ void It2MeStandaloneHost::Run() {
 }
 
 void It2MeStandaloneHost::StartOutputTimer() {
-  timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
+  timer_.Start(FROM_HERE, base::Seconds(1),
                base::BindRepeating(&OutputFakeConnectionEventLogger,
                                    std::cref(event_logger_)));
 }
@@ -87,11 +89,11 @@ void It2MeStandaloneHost::Connect() {
   DesktopEnvironmentOptions options =
       DesktopEnvironmentOptions::CreateDefault();
   options.set_enable_user_interface(false);
-  session_.reset(new ClientSession(
+  session_ = std::make_unique<ClientSession>(
       &handler_, std::unique_ptr<protocol::ConnectionToClient>(&connection_),
       &factory_, options, base::TimeDelta(),
       scoped_refptr<protocol::PairingRegistry>(),
-      std::vector<HostExtension*>()));
+      std::vector<HostExtension*>());
   session_->OnConnectionAuthenticated();
   session_->OnConnectionChannelsConnected();
   session_->CreateMediaStreams();

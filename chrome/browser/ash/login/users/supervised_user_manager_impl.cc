@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,19 @@
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -112,12 +110,11 @@ std::string SupervisedUserManagerImpl::GetUserSyncId(
 std::u16string SupervisedUserManagerImpl::GetManagerDisplayName(
     const std::string& user_id) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* manager_names =
-      local_state->GetDictionary(kSupervisedUserManagerNames);
-  std::u16string result;
-  if (manager_names->GetStringWithoutPathExpansion(user_id, &result) &&
-      !result.empty())
-    return result;
+  const base::Value::Dict& manager_names =
+      local_state->GetDict(kSupervisedUserManagerNames);
+  const std::string* result = manager_names.FindString(user_id);
+  if (result && !result->empty())
+    return base::UTF8ToUTF16(*result);
   return base::UTF8ToUTF16(GetManagerDisplayEmail(user_id));
 }
 
@@ -140,44 +137,49 @@ std::string SupervisedUserManagerImpl::GetManagerDisplayEmail(
 
 void SupervisedUserManagerImpl::GetPasswordInformation(
     const std::string& user_id,
-    base::DictionaryValue* result) {
+    base::Value::Dict* result) {
   int value;
   if (GetUserIntegerValue(user_id, kSupervisedUserPasswordSchema, &value))
-    result->SetKey(kSchemaVersion, base::Value(value));
+    result->Set(kSchemaVersion, base::Value(value));
   if (GetUserIntegerValue(user_id, kSupervisedUserPasswordRevision, &value))
-    result->SetKey(kPasswordRevision, base::Value(value));
+    result->Set(kPasswordRevision, base::Value(value));
 
   bool flag;
   if (GetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate, &flag))
-    result->SetKey(kRequirePasswordUpdate, base::Value(flag));
+    result->Set(kRequirePasswordUpdate, base::Value(flag));
   if (GetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, &flag))
-    result->SetKey(kHasIncompleteKey, base::Value(flag));
+    result->Set(kHasIncompleteKey, base::Value(flag));
 
   std::string salt;
   if (GetUserStringValue(user_id, kSupervisedUserPasswordSalt, &salt))
-    result->SetKey(kSalt, base::Value(salt));
+    result->Set(kSalt, base::Value(salt));
 }
 
 void SupervisedUserManagerImpl::SetPasswordInformation(
     const std::string& user_id,
-    const base::DictionaryValue* password_info) {
-  int value;
-  if (password_info->GetIntegerWithoutPathExpansion(kSchemaVersion, &value))
-    SetUserIntegerValue(user_id, kSupervisedUserPasswordSchema, value);
-  if (password_info->GetIntegerWithoutPathExpansion(kPasswordRevision, &value))
-    SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision, value);
+    const base::Value::Dict* password_info) {
+  absl::optional<int> schema_version = password_info->FindInt(kSchemaVersion);
+  if (schema_version.has_value())
+    SetUserIntegerValue(user_id, kSupervisedUserPasswordSchema,
+                        schema_version.value());
+  absl::optional<int> password_revision =
+      password_info->FindInt(kPasswordRevision);
+  if (password_revision.has_value())
+    SetUserIntegerValue(user_id, kSupervisedUserPasswordRevision,
+                        password_revision.value());
 
-  bool flag;
-  if (password_info->GetBooleanWithoutPathExpansion(kRequirePasswordUpdate,
-                                                    &flag)) {
-    SetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate, flag);
+  absl::optional<bool> flag = password_info->FindBool(kRequirePasswordUpdate);
+  if (flag.has_value()) {
+    SetUserBooleanValue(user_id, kSupervisedUserNeedPasswordUpdate,
+                        flag.value());
   }
-  if (password_info->GetBooleanWithoutPathExpansion(kHasIncompleteKey, &flag))
-    SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag);
+  flag = password_info->FindBool(kHasIncompleteKey);
+  if (flag.has_value())
+    SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag.value());
 
-  std::string salt;
-  if (password_info->GetStringWithoutPathExpansion(kSalt, &salt))
-    SetUserStringValue(user_id, kSupervisedUserPasswordSalt, salt);
+  const std::string* salt = password_info->FindString(kSalt);
+  if (salt)
+    SetUserStringValue(user_id, kSupervisedUserPasswordSalt, *salt);
   g_browser_process->local_state()->CommitPendingWrite();
 }
 
@@ -186,55 +188,70 @@ bool SupervisedUserManagerImpl::GetUserStringValue(
     const char* key,
     std::string* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetStringWithoutPathExpansion(user_id, out_value);
+  const base::Value::Dict& dictionary = local_state->GetDict(key);
+  const std::string* value = dictionary.FindString(user_id);
+  if (!value)
+    return false;
+
+  *out_value = *value;
+  return true;
 }
 
 bool SupervisedUserManagerImpl::GetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     int* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetIntegerWithoutPathExpansion(user_id, out_value);
+  const base::Value::Dict& dictionary = local_state->GetDict(key);
+  absl::optional<int> value = dictionary.FindInt(user_id);
+  if (!value)
+    return false;
+
+  *out_value = value.value();
+  return true;
 }
 
 bool SupervisedUserManagerImpl::GetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     bool* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetBooleanWithoutPathExpansion(user_id, out_value);
+  const base::Value::Dict& dictionary = local_state->GetDict(key);
+  absl::optional<bool> flag = dictionary.FindBool(user_id);
+  if (!flag)
+    return false;
+
+  *out_value = flag.value();
+  return true;
 }
 
 void SupervisedUserManagerImpl::SetUserStringValue(const std::string& user_id,
                                                    const char* key,
                                                    const std::string& value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     const int value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     const bool value) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  ScopedDictPrefUpdate update(local_state, key);
+  update->Set(user_id, value);
 }
 
 void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
     const std::string& user_id) {
   PrefService* prefs = g_browser_process->local_state();
-  ListPrefUpdate prefs_new_users_update(prefs, kSupervisedUsersFirstRun);
-  prefs_new_users_update->Remove(base::Value(user_id), NULL);
+  ScopedListPrefUpdate prefs_new_users_update(prefs, kSupervisedUsersFirstRun);
+  prefs_new_users_update->EraseValue(base::Value(user_id));
 
   CleanPref(user_id, kSupervisedUserSyncId);
   CleanPref(user_id, kSupervisedUserManagers);
@@ -250,14 +267,14 @@ void SupervisedUserManagerImpl::RemoveNonCryptohomeData(
 void SupervisedUserManagerImpl::CleanPref(const std::string& user_id,
                                           const char* key) {
   PrefService* prefs = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(prefs, key);
-  dict_update->RemoveKey(user_id);
+  ScopedDictPrefUpdate dict_update(prefs, key);
+  dict_update->Remove(user_id);
 }
 
 bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
-  ListPrefUpdate prefs_new_users_update(g_browser_process->local_state(),
-                                        kSupervisedUsersFirstRun);
-  return prefs_new_users_update->Remove(base::Value(user_id), NULL);
+  ScopedListPrefUpdate prefs_new_users_update(g_browser_process->local_state(),
+                                              kSupervisedUsersFirstRun);
+  return prefs_new_users_update->EraseValue(base::Value(user_id));
 }
 
 }  // namespace ash

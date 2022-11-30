@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -232,7 +232,7 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   base::TimeDelta timestamp = kNoTimestamp;
   if (SUCCEEDED(sample->GetTime(&start_time, &end_time))) {
     DCHECK(start_time <= end_time);
-    timestamp = base::TimeDelta::FromMicroseconds(start_time / 10);
+    timestamp = base::Microseconds(start_time / 10);
   }
 
   observer_->FrameReceived(buffer, length, resulting_format_, timestamp,

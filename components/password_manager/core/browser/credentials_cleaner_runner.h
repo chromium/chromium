@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
@@ -30,6 +29,8 @@ class CredentialsCleanerRunner : public CredentialsCleaner::Observer,
                                  public KeyedService {
  public:
   CredentialsCleanerRunner();
+  CredentialsCleanerRunner(const CredentialsCleanerRunner&) = delete;
+  CredentialsCleanerRunner& operator=(const CredentialsCleanerRunner&) = delete;
   ~CredentialsCleanerRunner() override;
 
   // Adds |cleaning_task| to the |cleaning_task_queue_| if the corresponding
@@ -53,8 +54,6 @@ class CredentialsCleanerRunner : public CredentialsCleaner::Observer,
   base::queue<std::unique_ptr<CredentialsCleaner>> cleaning_tasks_queue_;
 
   base::WeakPtrFactory<CredentialsCleanerRunner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialsCleanerRunner);
 };
 
 }  // namespace password_manager

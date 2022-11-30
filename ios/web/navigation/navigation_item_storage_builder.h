@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,15 +16,16 @@ class NavigationItemImpl;
 // Class that can serialize and deserialize NavigationItems.
 class NavigationItemStorageBuilder {
  public:
-  // Returns approximate sizes of the given |navigation_item| without building
-  // storage. Only string sizes are added.
-  int ItemStoredSize(NavigationItemImpl* navigation_item) const;
-  // Creates a serialized NavigationItem from |navigation_Item|.
-  CRWNavigationItemStorage* BuildStorage(
-      NavigationItemImpl* navigation_item) const;
-  // Creates a NavigationItem from |navigation_Item_storage|.
-  std::unique_ptr<NavigationItemImpl> BuildNavigationItemImpl(
-      CRWNavigationItemStorage* navigation_item_storage) const;
+  // Creates a serialized NavigationItem from `navigation_item`.
+  static CRWNavigationItemStorage* BuildStorage(
+      const NavigationItemImpl& navigation_item);
+
+  // Creates a NavigationItem from `navigation_item_storage`.
+  static std::unique_ptr<NavigationItemImpl> BuildNavigationItemImpl(
+      CRWNavigationItemStorage* navigation_item_storage);
+
+  NavigationItemStorageBuilder() = delete;
+  ~NavigationItemStorageBuilder() = delete;
 };
 
 }  // namespace web

@@ -1,15 +1,15 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/process/memory.h"
-#include "base/stl_util.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
 #include <new.h>
 #include <psapi.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #if defined(__clang__)
 // This global constructor is trivial and non-racy (per being const).
@@ -66,6 +66,10 @@ void EnableTerminationOnOutOfMemory() {
 bool UncheckedMalloc(size_t size, void** result) {
   *result = malloc_unchecked(size);
   return *result != NULL;
+}
+
+void UncheckedFree(void* ptr) {
+  free(ptr);
 }
 
 }  // namespace base

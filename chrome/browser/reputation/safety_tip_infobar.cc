@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ SafetyTipInfoBar::~SafetyTipInfoBar() {}
 
 SafetyTipInfoBar::SafetyTipInfoBar(
     std::unique_ptr<SafetyTipInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(
     JNIEnv* env,
@@ -49,7 +49,8 @@ ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (delegate->GetIconId() == infobars::InfoBarDelegate::kNoIconID &&
       !delegate->GetIcon().IsEmpty()) {
-    java_bitmap = gfx::ConvertToJavaBitmap(*delegate->GetIcon().ToSkBitmap());
+    java_bitmap = gfx::ConvertToJavaBitmap(
+        *delegate->GetIcon().Rasterize(nullptr).bitmap());
   }
 
   return Java_SafetyTipInfoBar_create(

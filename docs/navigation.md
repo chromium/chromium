@@ -160,5 +160,10 @@ They are typically registered in
 `NavigationThrottleRunner::RegisterNavigationThrottles` or
 `ContentBrowserClient::CreateThrottlesForNavigation`.
 
+NavigationThrottles are only invoked on navigations that require a URLLoader
+(see NavigationRequest::NeedsUrlLoader).  This means they don't typically run in
+cases like same-document navigations, about:blank, etc. They are also not run in
+page-activation navigations, such as activating a prerendered page or restoring
+a page from the back-forward cache.
 
-[WebContentsObserver]: https://source.chromium.org/chromium/chromium/src/+/master:content/public/browser/web_contents_observer.h
+[WebContentsObserver]: https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_contents_observer.h

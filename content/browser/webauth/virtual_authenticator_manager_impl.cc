@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/observer_list.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "device/fido/virtual_u2f_device.h"
@@ -44,28 +45,19 @@ void VirtualAuthenticatorManagerImpl::AddReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateU2FAuthenticator(
-    device::FidoTransportProtocol transport) {
-  if (!device::VirtualU2fDevice::IsTransportSupported(transport)) {
+VirtualAuthenticator*
+VirtualAuthenticatorManagerImpl::AddAuthenticatorAndReturnNonOwningPointer(
+    const blink::test::mojom::VirtualAuthenticatorOptions& options) {
+  const bool known_version =
+      options.protocol == device::ProtocolVersion::kU2f ||
+      options.protocol == device::ProtocolVersion::kCtap2;
+  if (!known_version ||
+      (options.protocol == device::ProtocolVersion::kU2f &&
+       !device::VirtualU2fDevice::IsTransportSupported(options.transport))) {
     return nullptr;
   }
-  return AddAuthenticator(std::make_unique<VirtualAuthenticator>(
-      device::ProtocolVersion::kU2f, /*ignored*/ device::Ctap2Version::kCtap2_0,
-      transport, device::AuthenticatorAttachment::kCrossPlatform,
-      /*has_resident_key=*/false,
-      /*has_user_verification=*/false, /*has_large_blob=*/false));
-}
 
-VirtualAuthenticator* VirtualAuthenticatorManagerImpl::CreateCTAP2Authenticator(
-    device::Ctap2Version ctap2_version,
-    device::FidoTransportProtocol transport,
-    device::AuthenticatorAttachment attachment,
-    bool has_resident_key,
-    bool has_user_verification,
-    bool has_large_blob) {
-  return AddAuthenticator(std::make_unique<VirtualAuthenticator>(
-      device::ProtocolVersion::kCtap2, ctap2_version, transport, attachment,
-      has_resident_key, has_user_verification, has_large_blob));
+  return AddAuthenticator(std::make_unique<VirtualAuthenticator>(options));
 }
 
 VirtualAuthenticator* VirtualAuthenticatorManagerImpl::GetAuthenticator(
@@ -116,20 +108,8 @@ bool VirtualAuthenticatorManagerImpl::RemoveAuthenticator(
 void VirtualAuthenticatorManagerImpl::CreateAuthenticator(
     blink::test::mojom::VirtualAuthenticatorOptionsPtr options,
     CreateAuthenticatorCallback callback) {
-  VirtualAuthenticator* authenticator = nullptr;
-  switch (options->protocol) {
-    case device::ProtocolVersion::kU2f:
-      authenticator = CreateU2FAuthenticator(options->transport);
-      break;
-    case device::ProtocolVersion::kCtap2:
-      authenticator = CreateCTAP2Authenticator(
-          options->ctap2_version, options->transport, options->attachment,
-          options->has_resident_key, options->has_user_verification,
-          options->has_large_blob);
-      break;
-    case device::ProtocolVersion::kUnknown:
-      break;
-  }
+  VirtualAuthenticator* const authenticator =
+      AddAuthenticatorAndReturnNonOwningPointer(*options);
   if (!authenticator) {
     std::move(callback).Run(mojo::NullRemote());
     return;

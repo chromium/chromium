@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 
 namespace blink {
 
-ValueRange LengthPropertyFunctions::GetValueRange(const CSSProperty& property) {
+Length::ValueRange LengthPropertyFunctions::GetValueRange(
+    const CSSProperty& property) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kBorderBottomWidth:
     case CSSPropertyID::kBorderLeftWidth:
@@ -39,9 +40,9 @@ ValueRange LengthPropertyFunctions::GetValueRange(const CSSProperty& property) {
     case CSSPropertyID::kColumnWidth:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kTabSize:
-      return kValueRangeNonNegative;
+      return Length::ValueRange::kNonNegative;
     default:
-      return kValueRangeAll;
+      return Length::ValueRange::kAll;
   }
 }
 
@@ -455,8 +456,6 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
     case CSSPropertyID::kWebkitTransformOriginZ:
     case CSSPropertyID::kWordSpacing:
     case CSSPropertyID::kTabSize:
-      return false;
-
       return false;
 
     default:

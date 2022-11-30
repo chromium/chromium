@@ -1,10 +1,12 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import json
 import logging
-import urllib
+
+import six
+import six.moves.urllib.parse  # pylint: disable=import-error
 
 # TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
@@ -48,7 +50,7 @@ class RequestError(OSError):
     """Attempt to load the content as a json object."""
     try:
       return json.loads(self.content)
-    except StandardError:
+    except Exception:
       return None
 
   @property
@@ -57,19 +59,20 @@ class RequestError(OSError):
     try:
       # Try to find error message within json content.
       return self.json['error']
-    except StandardError:
+    except Exception:
       # Otherwise fall back to entire content itself, converting str to unicode.
-      return self.content.decode('utf-8')
+      rv = self.content
+      if not isinstance(rv, six.text_type):
+        rv = rv.decode('utf-8')
+      return rv
 
 
 class ClientError(RequestError):
   """Exception for 4xx HTTP client errors."""
-  pass
 
 
 class ServerError(RequestError):
   """Exception for 5xx HTTP server errors."""
-  pass
 
 
 def BuildRequestError(request, response, content):
@@ -116,7 +119,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
   del retries  # Handled by the decorator.
 
   if params:
-    url = '%s?%s' % (url, urllib.urlencode(params))
+    url = '%s?%s' % (url, six.moves.urllib.parse.urlencode(params))
 
   body = None
   headers = {}
@@ -131,7 +134,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
       body = json.dumps(data, sort_keys=True, separators=(',', ':'))
       headers['Content-Type'] = 'application/json'
     elif content_type == 'urlencoded':
-      body = urllib.urlencode(data)
+      body = six.moves.urllib.parse.urlencode(data)
       headers['Content-Type'] = 'application/x-www-form-urlencoded'
     else:
       raise NotImplementedError('Invalid content type: %s' % content_type)

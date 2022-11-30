@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_FILE_TRANSFER_RTC_LOG_FILE_OPERATIONS_H_
 #define REMOTING_HOST_FILE_TRANSFER_RTC_LOG_FILE_OPERATIONS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 
 namespace remoting {
@@ -28,7 +29,7 @@ class RtcLogFileOperations : public FileOperations {
   std::unique_ptr<Writer> CreateWriter() override;
 
  private:
-  protocol::ConnectionToClient* connection_;
+  raw_ptr<protocol::ConnectionToClient> connection_;
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ namespace content {
 class FieldTrialRecorder : public mojom::FieldTrialRecorder {
  public:
   FieldTrialRecorder();
+
+  FieldTrialRecorder(const FieldTrialRecorder&) = delete;
+  FieldTrialRecorder& operator=(const FieldTrialRecorder&) = delete;
+
   ~FieldTrialRecorder() override;
 
   static void Create(mojo::PendingReceiver<mojom::FieldTrialRecorder> receiver);
@@ -23,8 +27,6 @@ class FieldTrialRecorder : public mojom::FieldTrialRecorder {
   void FieldTrialActivated(const std::string& trial_name) override;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialRecorder);
 };
 
 }  // namespace content

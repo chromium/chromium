@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- We cannot set android:background to @color/item_chooser_row_background because it is a color
+     state list. This is a framework limitation that we work around by setting
+     android:backgroundTint instead. This in turn requires an android:background value. -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:background="@macro/default_bg_color"
+                android:backgroundTint="@color/item_chooser_row_background">
+    <!-- contentDescription is added at runtime. -->
+    <ImageView
+        android:id="@+id/icon"
+        tools:ignore="ContentDescription"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"/>
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/icon"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:textColor="@color/item_chooser_row_text_color"/>
+</RelativeLayout>

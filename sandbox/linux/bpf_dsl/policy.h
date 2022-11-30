@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_LINUX_BPF_DSL_POLICY_H_
 #define SANDBOX_LINUX_BPF_DSL_POLICY_H_
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/sandbox_export.h"
 
@@ -16,6 +15,10 @@ namespace bpf_dsl {
 class SANDBOX_EXPORT Policy {
  public:
   Policy() {}
+
+  Policy(const Policy&) = delete;
+  Policy& operator=(const Policy&) = delete;
+
   virtual ~Policy() {}
 
   // User extension point for writing custom sandbox policies.
@@ -26,9 +29,6 @@ class SANDBOX_EXPORT Policy {
   // Optional overload for specifying alternate behavior for invalid
   // system calls.  The default is to return ENOSYS.
   virtual ResultExpr InvalidSyscall() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Policy);
 };
 
 }  // namespace bpf_dsl

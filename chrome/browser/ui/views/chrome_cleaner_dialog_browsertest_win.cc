@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_controller_win.h"
@@ -51,6 +50,9 @@ class ChromeCleanerDialogTest : public DialogBrowserTest {
             Return(safe_browsing::ChromeCleanerController::State::kInfected));
   }
 
+  ChromeCleanerDialogTest(const ChromeCleanerDialogTest&) = delete;
+  ChromeCleanerDialogTest& operator=(const ChromeCleanerDialogTest&) = delete;
+
   void ShowUi(const std::string& name) override {
     chrome::ShowChromeCleanerPrompt(browser(), mock_dialog_controller_.get(),
                                     mock_cleaner_controller_.get());
@@ -63,9 +65,6 @@ class ChromeCleanerDialogTest : public DialogBrowserTest {
       mock_dialog_controller_;
   std::unique_ptr<NiceMock<safe_browsing::MockChromeCleanerController>>
       mock_cleaner_controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeCleanerDialogTest, InvokeUi_default) {

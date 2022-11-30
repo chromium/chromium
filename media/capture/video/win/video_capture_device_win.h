@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,14 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "media/capture/video/win/sink_input_pin_win.h"
 #include "media/capture/video_capture_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Location;
@@ -77,9 +77,16 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
   static VideoPixelFormat TranslateMediaSubtypeToPixelFormat(
       const GUID& sub_type);
 
+  VideoCaptureDeviceWin() = delete;
+
   VideoCaptureDeviceWin(const VideoCaptureDeviceDescriptor& device_descriptor,
                         Microsoft::WRL::ComPtr<IBaseFilter> capture_filter);
+
+  VideoCaptureDeviceWin(const VideoCaptureDeviceWin&) = delete;
+  VideoCaptureDeviceWin& operator=(const VideoCaptureDeviceWin&) = delete;
+
   ~VideoCaptureDeviceWin() override;
+
   // Opens the device driver for this device.
   bool Init();
 
@@ -154,11 +161,14 @@ class VideoCaptureDeviceWin : public VideoCaptureDevice,
 
   base::ThreadChecker thread_checker_;
 
+  // Used to guard between race checking capture state between the thread used
+  // in |thread_checker_| and a thread used in
+  // |SinkFilterObserver::SinkFilterObserver| callbacks.
+  base::Lock lock_;
+
   bool enable_get_photo_state_;
 
-  base::Optional<int> camera_rotation_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceWin);
+  absl::optional<int> camera_rotation_;
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
   TestRunner.addResult(
       `Tests Overview pane calculation in FlameChart for different width = 2^n with n in range 4 - 0.
       Also tests loading of a legacy nodes format, where nodes were represented as a tree.\n`);
-  await TestRunner.loadModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
+  await TestRunner.loadLegacyModule('profiler'); await TestRunner.loadTestModule('cpu_profiler_test_runner');
 
   var profileAndExpectations = {
-    _profile: {
+    profile: {
       'head': {
         'callFrame': {'functionName': '(root)', 'scriptId': '0', 'url': '', 'lineNumber': 0, 'columnNumber': 0},
         'hitCount': 0,
@@ -842,24 +842,24 @@
       ]
     }
   };
-  var profile = profileAndExpectations._profile;
+  var profile = profileAndExpectations.profile;
   profile.startTime *= 1000;
   profile.endTime *= 1000;
   var samplingInterval = (profile.endTime - profile.startTime) / (profile.samples.length - 1);
   profile.timeDeltas = [0, ...new Array(profile.samples.length - 1).fill(samplingInterval)];
-  profileAndExpectations._cpuProfilerModel = null;
-  profileAndExpectations._debuggerModel = null;
+  profileAndExpectations.cpuProfilerModel = null;
+  profileAndExpectations.debuggerModel = null;
   profileAndExpectations.debuggerModel = () => null;
   profileAndExpectations.weakTarget = () => new WeakReference(null);
   profileAndExpectations.profileModel = () => new SDK.CPUProfileDataModel(profile);
   var cpuProfileView = new Profiler.CPUProfileView(profileAndExpectations);
   cpuProfileView.viewSelectComboBox.setSelectedIndex(0);
-  cpuProfileView._changeView();
-  var overviewPane = cpuProfileView._flameChart._overviewPane;
-  console.log(Object.values(overviewPane._calculateDrawData(16)));
-  console.log(Object.values(overviewPane._calculateDrawData(8)));
-  console.log(Object.values(overviewPane._calculateDrawData(4)));
-  console.log(Object.values(overviewPane._calculateDrawData(2)));
-  console.log(Object.values(overviewPane._calculateDrawData(1)));
+  cpuProfileView.changeView();
+  var overviewPane = cpuProfileView.flameChart.overviewPane;
+  console.log(Object.values(overviewPane.calculateDrawData(16)));
+  console.log(Object.values(overviewPane.calculateDrawData(8)));
+  console.log(Object.values(overviewPane.calculateDrawData(4)));
+  console.log(Object.values(overviewPane.calculateDrawData(2)));
+  console.log(Object.values(overviewPane.calculateDrawData(1)));
   TestRunner.completeTest();
 })();

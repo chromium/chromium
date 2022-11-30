@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/page_zoom_current_zoom_level"
+        style="@style/TextAppearance.TextMedium"
+        android:background="@drawable/page_zoom_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/page_zoom_view_level_margin"
+        android:padding="@dimen/page_zoom_view_level_padding"
+        android:textAlignment="center"
+        android:accessibilityLiveRegion="assertive" />
+
+    <include layout="@layout/page_zoom_slider" />
+    
+</LinearLayout>

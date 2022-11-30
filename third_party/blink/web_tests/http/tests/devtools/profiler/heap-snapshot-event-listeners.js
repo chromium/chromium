@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
-  TestRunner.addSniffer(heapProfileType, '_snapshotReceived', snapshotReceived);
-  heapProfileType._takeHeapSnapshot();
+  TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
+  heapProfileType.takeHeapSnapshot();
 
   function finishHeapSnapshot(uid) {
     var profiles = heapProfileType.getProfiles();
@@ -37,7 +37,7 @@
   }
 
   async function snapshotReceived(profile) {
-    var snapshotProxy = profile._snapshotProxy;
+    var snapshotProxy = profile.snapshotProxy;
     var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.NodeFilter());
     var found = Object.keys(classNames).includes('EventListenerWrapperTest');
     if (found)

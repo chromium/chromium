@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/watcher_manager.h"
 
@@ -69,12 +68,12 @@ class ArcFileSystemOperationRunner
  public:
   using GetFileSizeCallback = mojom::FileSystemInstance::GetFileSizeCallback;
   using GetMimeTypeCallback = mojom::FileSystemInstance::GetMimeTypeCallback;
-  using OpenFileToReadCallback =
-      mojom::FileSystemInstance::OpenFileToReadCallback;
   using OpenThumbnailCallback =
       mojom::FileSystemInstance::OpenThumbnailCallback;
-  using OpenFileToWriteCallback =
-      mojom::FileSystemInstance::OpenFileToWriteCallback;
+  using OpenFileSessionToWriteCallback =
+      mojom::FileSystemInstance::OpenFileSessionToWriteCallback;
+  using OpenFileSessionToReadCallback =
+      mojom::FileSystemInstance::OpenFileSessionToReadCallback;
   using GetDocumentCallback = mojom::FileSystemInstance::GetDocumentCallback;
   using GetChildDocumentsCallback =
       mojom::FileSystemInstance::GetChildDocumentsCallback;
@@ -125,6 +124,11 @@ class ArcFileSystemOperationRunner
 
   ArcFileSystemOperationRunner(content::BrowserContext* context,
                                ArcBridgeService* bridge_service);
+
+  ArcFileSystemOperationRunner(const ArcFileSystemOperationRunner&) = delete;
+  ArcFileSystemOperationRunner& operator=(const ArcFileSystemOperationRunner&) =
+      delete;
+
   ~ArcFileSystemOperationRunner() override;
 
   // Adds or removes observers.
@@ -134,11 +138,15 @@ class ArcFileSystemOperationRunner
   // Runs file system operations. See file_system.mojom for documentation.
   void GetFileSize(const GURL& url, GetFileSizeCallback callback);
   void GetMimeType(const GURL& url, GetMimeTypeCallback callback);
-  void OpenFileToRead(const GURL& url, OpenFileToReadCallback callback);
   void OpenThumbnail(const GURL& url,
                      const gfx::Size& size,
                      OpenThumbnailCallback callback);
-  void OpenFileToWrite(const GURL& url, OpenFileToWriteCallback callback);
+  void CloseFileSession(const std::string& session_id,
+                        const std::string& error_message);
+  void OpenFileSessionToWrite(const GURL& url,
+                              OpenFileSessionToWriteCallback callback);
+  void OpenFileSessionToRead(const GURL& url,
+                             OpenFileSessionToReadCallback callback);
   void GetDocument(const std::string& authority,
                    const std::string& document_id,
                    GetDocumentCallback callback);
@@ -237,8 +245,6 @@ class ArcFileSystemOperationRunner
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<ArcFileSystemOperationRunner> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcFileSystemOperationRunner);
 };
 
 }  // namespace arc

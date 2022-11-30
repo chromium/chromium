@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,19 @@
 #define UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 
 #include <stddef.h>
+#include <stdint.h>
+#include <xf86drmMode.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -29,6 +35,50 @@ class Point;
 
 namespace ui {
 
+// It is safe to assume there will be no more than 256 connected DRM devices.
+constexpr int kMaxDrmCount = 256u;
+
+// It is safe to assume there will be no more than 256 connectors per DRM.
+constexpr int kMaxDrmConnectors = 256u;
+
+// DRM property names.
+const char kContentProtection[] = "Content Protection";
+const char kHdcpContentType[] = "HDCP Content Type";
+
+constexpr char kPrivacyScreenPropertyNameLegacy[] = "privacy-screen";
+constexpr char kPrivacyScreenHwStatePropertyName[] = "privacy-screen hw-state";
+constexpr char kPrivacyScreenSwStatePropertyName[] = "privacy-screen sw-state";
+
+constexpr char kVrrCapablePropertyName[] = "vrr_capable";
+constexpr char kVrrEnabledPropertyName[] = "VRR_ENABLED";
+
+// DRM property enum to internal type mappings.
+template <typename InternalType>
+struct DrmPropertyEnumToInternalTypeMapping {
+  const char* drm_enum;
+  const InternalType& internal_state;
+};
+
+constexpr std::array<
+    DrmPropertyEnumToInternalTypeMapping<display::ContentProtectionMethod>,
+    2>
+    kHdcpContentTypeStates{
+        {{"HDCP Type0", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0},
+         {"HDCP Type1", display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1}}};
+
+constexpr std::array<DrmPropertyEnumToInternalTypeMapping<display::HDCPState>,
+                     3>
+    kContentProtectionStates{{{"Undesired", display::HDCP_STATE_UNDESIRED},
+                              {"Desired", display::HDCP_STATE_DESIRED},
+                              {"Enabled", display::HDCP_STATE_ENABLED}}};
+
+constexpr std::
+    array<DrmPropertyEnumToInternalTypeMapping<display::PrivacyScreenState>, 4>
+        kPrivacyScreenStates{{{"Disabled", display::kDisabled},
+                              {"Enabled", display::kEnabled},
+                              {"Disabled-locked", display::kDisabledLocked},
+                              {"Enabled-locked", display::kEnabledLocked}}};
+
 // Representation of the information required to initialize and configure a
 // native display. |index| is the position of the connection and will be
 // used to generate a unique identifier for the display.
@@ -36,25 +86,36 @@ class HardwareDisplayControllerInfo {
  public:
   HardwareDisplayControllerInfo(ScopedDrmConnectorPtr connector,
                                 ScopedDrmCrtcPtr crtc,
-                                size_t index);
+                                uint8_t index);
+
+  HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
+  HardwareDisplayControllerInfo& operator=(
+      const HardwareDisplayControllerInfo&) = delete;
+
   ~HardwareDisplayControllerInfo();
 
   drmModeConnector* connector() const { return connector_.get(); }
   drmModeCrtc* crtc() const { return crtc_.get(); }
-  size_t index() const { return index_; }
+  uint8_t index() const { return index_; }
 
  private:
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;
-  size_t index_;
-
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayControllerInfo);
+  uint8_t index_;
 };
 
+using HardwareDisplayControllerInfoList =
+    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>;
+
 // Looks-up and parses the native display configurations returning all available
-// displays.
-std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
-GetAvailableDisplayControllerInfos(int fd);
+// displays and CRTCs that weren't picked as best CRTC for each connector.
+// TODO(markyacoub): Create unit tests that tests the different bits and pieces
+// that this function goes through.
+std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
+GetDisplayInfosAndInvalidCrtcs(int fd);
+
+// Returns the display infos parsed in |GetDisplayInfosAndInvalidCrtcs|
+HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(int fd);
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
@@ -76,7 +137,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
     const base::FilePath& sys_path,
-    size_t device_index,
+    uint8_t device_index,
     const gfx::Point& origin);
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
@@ -98,9 +159,110 @@ float ModeRefreshRate(const drmModeModeInfo& mode);
 
 bool ModeIsInterlaced(const drmModeModeInfo& mode);
 
+bool IsVrrCapable(int fd, drmModeConnector* connector);
+
+bool IsVrrEnabled(int fd, drmModeCrtc* crtc);
+
 uint64_t GetEnumValueForName(int fd, int property_id, const char* str);
 
 std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob);
+
+// Extracts the DRM |property| current value's enum. Returns an empty string
+// upon failure.
+std::string GetEnumNameForProperty(
+    const drmModePropertyRes& property,
+    const drmModeObjectProperties& property_values);
+
+// Extracts the DRM property's numeric value that maps to |internal_state|.
+// Returns the maximal numeric value for uint64_t upon failure.
+template <typename InternalType, typename DrmPropertyToInternalTypeMap>
+uint64_t GetDrmValueForInternalType(const InternalType& internal_state,
+                                    const drmModePropertyRes& property,
+                                    const DrmPropertyToInternalTypeMap& map) {
+  std::string drm_enum;
+  for (const auto& pair : map) {
+    if (pair.internal_state == internal_state) {
+      drm_enum = pair.drm_enum;
+      break;
+    }
+  }
+  DCHECK(!drm_enum.empty())
+      << "Property " << property.name
+      << " has no enum value for the requested internal state (value <"
+      << internal_state << ">).";
+
+  for (int i = 0; i < property.count_enums; ++i) {
+    if (drm_enum == property.enums[i].name)
+      return property.enums[i].value;
+  }
+
+  NOTREACHED() << "Failed to extract DRM value for property '" << property.name
+               << "' and enum '" << drm_enum << "'";
+  return std::numeric_limits<uint64_t>::max();
+}
+
+// Returns the internal type value that maps to the DRM property's current
+// value. Returns nullptr upon failure.
+template <typename InternalType, size_t size>
+const InternalType* GetDrmPropertyCurrentValueAsInternalType(
+    const std::array<DrmPropertyEnumToInternalTypeMapping<InternalType>, size>&
+        array,
+    const drmModePropertyRes& property,
+    const drmModeObjectProperties& property_values) {
+  const std::string drm_enum =
+      GetEnumNameForProperty(property, property_values);
+  if (drm_enum.empty()) {
+    LOG(ERROR) << "Failed to fetch DRM enum for property '" << property.name
+               << "'";
+    return nullptr;
+  }
+
+  for (const auto& pair : array) {
+    if (drm_enum == pair.drm_enum) {
+      VLOG(3) << "Internal state value: " << pair.internal_state << " ("
+              << drm_enum << ")";
+      return &pair.internal_state;
+    }
+  }
+
+  NOTREACHED() << "Failed to extract internal value for DRM property '"
+               << property.name << "'";
+  return nullptr;
+}
+
+// Returns the internal type value that maps to |drm_enum| within |array|.
+// Returns nullptr upon failure.
+template <typename InternalType, size_t size>
+const InternalType* GetInternalTypeValueFromDrmEnum(
+    const std::string& drm_enum,
+    const std::array<DrmPropertyEnumToInternalTypeMapping<InternalType>, size>&
+        array) {
+  if (drm_enum.empty()) {
+    LOG(ERROR) << "DRM property value enum is empty.";
+    return nullptr;
+  }
+
+  for (const auto& pair : array) {
+    if (drm_enum == pair.drm_enum) {
+      VLOG(3) << "Internal state value: " << pair.internal_state << " ("
+              << drm_enum << ")";
+      return &pair.internal_state;
+    }
+  }
+
+  LOG(ERROR) << "Failed to extract internal value for DRM property enum '"
+             << drm_enum << "'";
+  return nullptr;
+}
+
+// Get the DRM driver name.
+absl::optional<std::string> GetDrmDriverNameFromFd(int fd);
+absl::optional<std::string> GetDrmDriverNameFromPath(
+    const char* device_file_name);
+
+// Get an ordered list of preferred DRM driver names for the
+// system. Uses DMI information to determine what the system is.
+std::vector<const char*> GetPreferredDrmDrivers();
 
 }  // namespace ui
 

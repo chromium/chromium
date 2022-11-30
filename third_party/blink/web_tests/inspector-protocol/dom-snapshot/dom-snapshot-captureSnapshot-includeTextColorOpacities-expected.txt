@@ -1,0 +1,10 @@
+Tests DOMSnapshot.getSnapshot reports blended background colors of each node.
+[
+    [0] : 1
+    [1] : 1
+    [2] : 1
+    [3] : 0.5
+    [4] : 1
+    [5] : 1
+]
+

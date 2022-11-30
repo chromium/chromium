@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,12 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -25,10 +26,15 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/prefs/pref_service.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -36,25 +42,26 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "url/url_canon.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "ui/gfx/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -63,7 +70,7 @@
 // Helper methods for transforming and drawing avatar icons.
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int kOldAvatarIconWidth = 38;
 const int kOldAvatarIconHeight = 31;
 
@@ -97,7 +104,7 @@ SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
                              bitmap_copy.rowBytes(), 0, 0);
   return bitmap_copy;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Determine what the scaled height of the avatar icon should be for a
 // specified width, to preserve the aspect ratio.
@@ -118,24 +125,19 @@ class AvatarImageSource : public gfx::CanvasImageSource {
     POSITION_BOTTOM_CENTER,
   };
 
-  enum AvatarBorder {
-    BORDER_NONE,
-    BORDER_NORMAL,
-    BORDER_ETCHED,
-  };
-
   AvatarImageSource(gfx::ImageSkia avatar,
                     const gfx::Size& canvas_size,
                     int width,
                     AvatarPosition position,
-                    AvatarBorder border,
                     profiles::AvatarShape shape);
 
   AvatarImageSource(gfx::ImageSkia avatar,
                     const gfx::Size& canvas_size,
                     int width,
-                    AvatarPosition position,
-                    AvatarBorder border);
+                    AvatarPosition position);
+
+  AvatarImageSource(const AvatarImageSource&) = delete;
+  AvatarImageSource& operator=(const AvatarImageSource&) = delete;
 
   ~AvatarImageSource() override;
 
@@ -148,24 +150,19 @@ class AvatarImageSource : public gfx::CanvasImageSource {
   const int width_;
   const int height_;
   const AvatarPosition position_;
-  const AvatarBorder border_;
   const profiles::AvatarShape shape_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvatarImageSource);
 };
 
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                                      const gfx::Size& canvas_size,
                                      int width,
                                      AvatarPosition position,
-                                     AvatarBorder border,
                                      profiles::AvatarShape shape)
     : gfx::CanvasImageSource(canvas_size),
       canvas_size_(canvas_size),
       width_(width),
       height_(GetScaledAvatarHeightForWidth(width, avatar)),
       position_(position),
-      border_(border),
       shape_(shape) {
   avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
       avatar, skia::ImageOperations::RESIZE_BEST,
@@ -175,13 +172,11 @@ AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
 AvatarImageSource::AvatarImageSource(gfx::ImageSkia avatar,
                                      const gfx::Size& canvas_size,
                                      int width,
-                                     AvatarPosition position,
-                                     AvatarBorder border)
+                                     AvatarPosition position)
     : AvatarImageSource(avatar,
                         canvas_size,
                         width,
                         position,
-                        border,
                         profiles::SHAPE_SQUARE) {}
 
 AvatarImageSource::~AvatarImageSource() {
@@ -200,7 +195,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
     y = canvas_size_.height() - height_ - 1;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Circular shape is only available on desktop platforms.
   DCHECK(shape_ != profiles::SHAPE_CIRCLE);
 #else
@@ -221,73 +216,6 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 #endif
 
   canvas->DrawImageInt(avatar_, x, y);
-
-  // The border should be square.
-  int border_size = std::max(width_, height_);
-  // Reset the x and y for the square border.
-  x = (canvas_size_.width() - border_size) / 2;
-  y = (canvas_size_.height() - border_size) / 2;
-
-  if (border_ == BORDER_NORMAL) {
-    // Draw a gray border on the inside of the avatar.
-    SkColor border_color = SkColorSetARGB(83, 0, 0, 0);
-
-    // Offset the rectangle by a half pixel so the border is drawn within the
-    // appropriate pixels no matter the scale factor. Subtract 1 from the right
-    // and bottom sizes to specify the endpoints, yielding -0.5.
-    SkPath path;
-    path.addRect(SkFloatToScalar(x + 0.5f),  // left
-                 SkFloatToScalar(y + 0.5f),  // top
-                 SkFloatToScalar(x + border_size - 0.5f),   // right
-                 SkFloatToScalar(y + border_size - 0.5f));  // bottom
-
-    cc::PaintFlags flags;
-    flags.setColor(border_color);
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(SkIntToScalar(1));
-
-    canvas->DrawPath(path, flags);
-  } else if (border_ == BORDER_ETCHED) {
-    // Give the avatar an etched look by drawing a highlight on the bottom and
-    // right edges.
-    SkColor shadow_color = SkColorSetARGB(83, 0, 0, 0);
-    SkColor highlight_color = SkColorSetARGB(96, 255, 255, 255);
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(SkIntToScalar(1));
-
-    SkPath path;
-
-    // Left and top shadows. To support higher scale factors than 1, position
-    // the orthogonal dimension of each line on the half-pixel to separate the
-    // pixel. For a vertical line, this means adding 0.5 to the x-value.
-    path.moveTo(SkFloatToScalar(x + 0.5f), SkIntToScalar(y + height_));
-
-    // Draw up to the top-left. Stop with the y-value at a half-pixel.
-    path.rLineTo(SkIntToScalar(0), SkFloatToScalar(-height_ + 0.5f));
-
-    // Draw right to the top-right, stopping within the last pixel.
-    path.rLineTo(SkFloatToScalar(width_ - 0.5f), SkIntToScalar(0));
-
-    flags.setColor(shadow_color);
-    canvas->DrawPath(path, flags);
-
-    path.reset();
-
-    // Bottom and right highlights. Note that the shadows own the shared corner
-    // pixels, so reduce the sizes accordingly.
-    path.moveTo(SkIntToScalar(x + 1), SkFloatToScalar(y + height_ - 0.5f));
-
-    // Draw right to the bottom-right.
-    path.rLineTo(SkFloatToScalar(width_ - 1.5f), SkIntToScalar(0));
-
-    // Draw up to the top-right.
-    path.rLineTo(SkIntToScalar(0), SkFloatToScalar(-height_ + 1.5f));
-
-    flags.setColor(highlight_color);
-    canvas->DrawPath(path, flags);
-  }
 }
 
 class ImageWithBackgroundSource : public gfx::CanvasImageSource {
@@ -296,6 +224,10 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
       : gfx::CanvasImageSource(image.size()),
         image_(image),
         background_(background) {}
+
+  ImageWithBackgroundSource(const ImageWithBackgroundSource&) = delete;
+  ImageWithBackgroundSource& operator=(const ImageWithBackgroundSource&) =
+      delete;
 
   ~ImageWithBackgroundSource() override = default;
 
@@ -308,8 +240,6 @@ class ImageWithBackgroundSource : public gfx::CanvasImageSource {
  private:
   const gfx::ImageSkia image_;
   const SkColor background_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWithBackgroundSource);
 };
 
 }  // namespace
@@ -340,7 +270,7 @@ constexpr base::FilePath::CharType kHighResAvatarFolderName[] =
     FILE_PATH_LITERAL("Avatars");
 
 // The size of the function-static kDefaultAvatarIconResources array below.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr size_t kDefaultAvatarIconsCount = 1;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr size_t kDefaultAvatarIconsCount = 27;
@@ -348,14 +278,14 @@ constexpr size_t kDefaultAvatarIconsCount = 27;
 constexpr size_t kDefaultAvatarIconsCount = 56;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The first 8 icons are generic.
 constexpr size_t kGenericAvatarIconsCount = 8;
 #else
 constexpr size_t kGenericAvatarIconsCount = 0;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The avatar used as a placeholder.
 constexpr size_t kPlaceholderAvatarIndex = 26;
 #else
@@ -363,54 +293,37 @@ constexpr size_t kPlaceholderAvatarIndex = 0;
 #endif
 
 ui::ImageModel GetGuestAvatar(int size) {
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    return ui::ImageModel::FromVectorIcon(
-        kUserAccountAvatarIcon, ui::NativeTheme::kColorId_AvatarIconGuest,
-        size);
-  }
   return ui::ImageModel::FromVectorIcon(kUserAccountAvatarIcon,
-                                        gfx::kGoogleGrey500, size);
+                                        ui::kColorAvatarIconGuest, size);
 }
 
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
                               int width,
                               int height,
                               AvatarShape shape) {
-  if (!is_rectangle && image.Height() <= height)
-    return image;
-
   gfx::Size size(width, height);
 
-  // Source for a centered, sized icon. GAIA images get a border.
+  // Source for a centered, sized icon.
   std::unique_ptr<gfx::ImageSkiaSource> source(
       new AvatarImageSource(*image.ToImageSkia(), size, std::min(width, height),
-                            AvatarImageSource::POSITION_CENTER,
-                            AvatarImageSource::BORDER_NONE, shape));
+                            AvatarImageSource::POSITION_CENTER, shape));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), size));
 }
 
-gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
-                              bool is_rectangle,
-                              int width,
-                              int height) {
-  return GetSizedAvatarIcon(image, is_rectangle, width, height,
-                            profiles::SHAPE_SQUARE);
+gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height) {
+  return GetSizedAvatarIcon(image, width, height, profiles::SHAPE_SQUARE);
 }
 
-gfx::Image GetAvatarIconForWebUI(const gfx::Image& image,
-                                 bool is_rectangle) {
-  return GetSizedAvatarIcon(image, is_rectangle, kAvatarIconSize,
-                            kAvatarIconSize);
+gfx::Image GetAvatarIconForWebUI(const gfx::Image& image) {
+  return GetSizedAvatarIcon(image, kAvatarIconSize, kAvatarIconSize);
 }
 
 gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
-                                    bool is_gaia_image,
                                     int dst_width,
                                     int dst_height) {
   // The image requires no border or resizing.
-  if (!is_gaia_image && image.Height() <= kAvatarIconSize)
+  if (image.Height() <= kAvatarIconSize)
     return image;
 
   int size = std::min({kAvatarIconSize, dst_width, dst_height});
@@ -420,14 +333,12 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
   // with an etched border (for GAIA images).
   std::unique_ptr<gfx::ImageSkiaSource> source(
       new AvatarImageSource(*image.ToImageSkia(), dst_size, size,
-                            AvatarImageSource::POSITION_BOTTOM_CENTER,
-                            is_gaia_image ? AvatarImageSource::BORDER_ETCHED
-                                          : AvatarImageSource::BORDER_NONE));
+                            AvatarImageSource::POSITION_BOTTOM_CENTER));
 
   return gfx::Image(gfx::ImageSkia(std::move(source), dst_size));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -438,28 +349,11 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
     return gfx::Image();
   }
 
-  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
-    // Get a higher res than 16px so it looks good after cropping to a circle.
-    gfx::Image icon =
-        entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
-    return profiles::GetSizedAvatarIcon(
-        icon, /*is_rectangle=*/true, kMenuAvatarIconSize, kMenuAvatarIconSize,
-        profiles::SHAPE_CIRCLE);
-  }
-
-  constexpr int kOldMenuAvatarIconSize = 38;
+  // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon =
-      entry->GetAvatarIcon(kOldMenuAvatarIconSize, /*download_high_res=*/false);
-
-  // The image might be too large and need to be resized, e.g. if this is a
-  // signed-in user using the GAIA profile photo.
-  if (icon.Width() > kOldMenuAvatarIconSize ||
-      icon.Height() > kOldMenuAvatarIconSize) {
-    icon = profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
-                                        kOldMenuAvatarIconSize,
-                                        kOldMenuAvatarIconSize);
-  }
-  return icon;
+      entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
+  return profiles::GetSizedAvatarIcon(
+      icon, kMenuAvatarIconSize, kMenuAvatarIconSize, profiles::SHAPE_CIRCLE);
 }
 #endif
 
@@ -477,7 +371,7 @@ size_t GetPlaceholderAvatarIndex() {
 }
 
 size_t GetModernAvatarIconStartIndex() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   return GetPlaceholderAvatarIndex() + 1;
 #else
   // Only use the placeholder avatar on ChromeOS and Android.
@@ -513,7 +407,7 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
   CHECK_LT(index, kDefaultAvatarIconsCount);
   static const IconResourceInfo resource_info[kDefaultAvatarIconsCount] = {
   // Old avatar icons:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {IDR_PROFILE_AVATAR_0, "avatar_generic.png", IDS_DEFAULT_AVATAR_LABEL_0},
     {IDR_PROFILE_AVATAR_1, "avatar_generic_aqua.png",
      IDS_DEFAULT_AVATAR_LABEL_1},
@@ -556,7 +450,7 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
     // Placeholder avatar icon:
     {IDR_PROFILE_AVATAR_26, nullptr, IDS_DEFAULT_AVATAR_LABEL_26},
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     // Modern avatar icons:
     {IDR_PROFILE_AVATAR_27, "avatar_origami_cat.png",
      IDS_DEFAULT_AVATAR_LABEL_27},
@@ -639,12 +533,12 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
   return GetDefaultAvatarIconResourceInfo(index)->resource_id;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
-  DCHECK_LT(index, base::size(kProfileAvatarIconResources2x));
+  DCHECK_LT(index, std::size(kProfileAvatarIconResources2x));
   return kProfileAvatarIconResources2x[index];
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char* GetDefaultAvatarIconFileNameAtIndex(size_t index) {
   CHECK_NE(index, kPlaceholderAvatarIndex);
@@ -659,7 +553,7 @@ base::FilePath GetPathOfHighResAvatarAtIndex(size_t index) {
 }
 
 std::string GetDefaultAvatarIconUrl(size_t index) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   CHECK(IsDefaultAvatarIconIndex(index));
 #endif
   return base::StringPrintf("%s%" PRIuS, kDefaultUrlPrefix, index);
@@ -692,28 +586,23 @@ bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
   return false;
 }
 
-std::unique_ptr<base::DictionaryValue> GetAvatarIconAndLabelDict(
-    const std::string& url,
-    const std::u16string& label,
-    size_t index,
-    bool selected,
-    bool is_gaia_avatar) {
-  std::unique_ptr<base::DictionaryValue> avatar_info(
-      new base::DictionaryValue());
-  avatar_info->SetStringPath("url", url);
-  avatar_info->SetStringPath("label", label);
-  avatar_info->SetIntPath("index", index);
-  avatar_info->SetBoolPath("selected", selected);
-  avatar_info->SetBoolPath("isGaiaAvatar", is_gaia_avatar);
+base::Value::Dict GetAvatarIconAndLabelDict(const std::string& url,
+                                            const std::u16string& label,
+                                            size_t index,
+                                            bool selected,
+                                            bool is_gaia_avatar) {
+  base::Value::Dict avatar_info;
+  avatar_info.Set("url", url);
+  avatar_info.Set("label", label);
+  avatar_info.Set("index", static_cast<int>(index));
+  avatar_info.Set("selected", selected);
+  avatar_info.Set("isGaiaAvatar", is_gaia_avatar);
   return avatar_info;
 }
 
-std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
-    SkColor fill_color,
-    SkColor stroke_color,
-    bool selected) {
-  std::unique_ptr<base::DictionaryValue> avatar_info(
-      new base::DictionaryValue());
+base::Value::Dict GetDefaultProfileAvatarIconAndLabel(SkColor fill_color,
+                                                      SkColor stroke_color,
+                                                      bool selected) {
   gfx::Image icon = profiles::GetPlaceholderAvatarIconWithColors(
       fill_color, stroke_color, kAvatarIconSize);
   size_t index = profiles::GetPlaceholderAvatarIndex();
@@ -724,13 +613,13 @@ std::unique_ptr<base::DictionaryValue> GetDefaultProfileAvatarIconAndLabel(
       index, selected, /*is_gaia_avatar=*/false);
 }
 
-std::unique_ptr<base::ListValue> GetCustomProfileAvatarIconsAndLabels(
+base::Value::List GetCustomProfileAvatarIconsAndLabels(
     size_t selected_avatar_idx) {
-  std::unique_ptr<base::ListValue> avatars(new base::ListValue());
+  base::Value::List avatars;
 
   for (size_t i = GetModernAvatarIconStartIndex();
        i < GetDefaultAvatarIconCount(); ++i) {
-    avatars->Append(GetAvatarIconAndLabelDict(
+    avatars.Append(GetAvatarIconAndLabelDict(
         profiles::GetDefaultAvatarIconUrl(i),
         l10n_util::GetStringUTF16(
             profiles::GetDefaultAvatarLabelResourceIDAtIndex(i)),
@@ -756,7 +645,63 @@ size_t GetRandomAvatarIconIndex(
   return interval_begin + random_offset;
 }
 
-#if defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID)
+base::Value::List GetIconsAndLabelsForProfileAvatarSelector(
+    const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  DCHECK(entry);
+
+  bool using_gaia = entry->IsUsingGAIAPicture();
+  size_t selected_avatar_idx =
+      using_gaia ? SIZE_MAX : entry->GetAvatarIconIndex();
+
+  // Obtain a list of the modern avatar icons.
+  base::Value::List avatars(
+      GetCustomProfileAvatarIconsAndLabels(selected_avatar_idx));
+
+  if (entry->GetSigninState() == SigninState::kNotSignedIn) {
+    ProfileThemeColors colors = entry->GetProfileThemeColors();
+    auto generic_avatar_info = GetDefaultProfileAvatarIconAndLabel(
+        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
+        selected_avatar_idx == GetPlaceholderAvatarIndex());
+    avatars.Insert(avatars.begin(),
+                   base::Value(std::move(generic_avatar_info)));
+    return avatars;
+  }
+
+  // Add the GAIA picture to the beginning of the list if it is available.
+  const gfx::Image* icon = entry->GetGAIAPicture();
+  if (icon) {
+    gfx::Image avatar_icon = GetAvatarIconForWebUI(*icon);
+    auto gaia_picture_info = GetAvatarIconAndLabelDict(
+        /*url=*/webui::GetBitmapDataUrl(avatar_icon.AsBitmap()),
+        /*label=*/
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CHANGE_PICTURE_PROFILE_PHOTO),
+        /*index=*/0, using_gaia, /*is_gaia_avatar=*/true);
+    avatars.Insert(avatars.begin(), base::Value(std::move(gaia_picture_info)));
+  }
+
+  return avatars;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
+  CHECK(IsDefaultAvatarIconIndex(avatar_icon_index));
+
+  PrefService* pref_service = profile->GetPrefs();
+  pref_service->SetInteger(prefs::kProfileAvatarIndex, avatar_icon_index);
+  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar,
+                           avatar_icon_index == GetPlaceholderAvatarIndex());
+  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
+
+  ProfileMetrics::LogProfileAvatarSelection(avatar_icon_index);
+  ProfileMetrics::LogProfileUpdate(profile->GetPath());
+}
+
+#if BUILDFLAG(IS_WIN)
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
   // Request just one size large enough for all uses.
   return GetSkBitmapCopy(entry->GetAvatarIcon(IconUtil::kLargeIconSize));
@@ -775,7 +720,8 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
   // old avatar icon, shave a couple of columns so the |source_bitmap| is more
   // square. So when resized to a square aspect ratio it looks pretty.
   gfx::Rect frame(gfx::SkIRectToRect(source_bitmap.bounds()));
-  frame.Inset(/*horizontal=*/kIconScaleFactor * 2, /*vertical=*/0);
+  frame.Inset(
+      gfx::Insets::VH(/*vertical=*/0, /*horizontal=*/kIconScaleFactor * 2));
   SkBitmap cropped_bitmap;
   source_bitmap.extractSubset(&cropped_bitmap, gfx::RectToSkIRect(frame));
   return cropped_bitmap;
@@ -796,9 +742,9 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
 
   // Resize the avatar image down to the desired badge size, maintaining aspect
   // ratio (but prefer more square than rectangular when rounding).
-  const int avatar_badge_height =
-      std::ceilf(avatar_badge_width * (float{source_bitmap.height()} /
-                                       float{source_bitmap.width()}));
+  const int avatar_badge_height = base::ClampCeil(
+      avatar_badge_width *
+      (static_cast<float>(source_bitmap.height()) / source_bitmap.width()));
   SkBitmap sk_icon = skia::ImageOperations::Resize(
       source_bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
       avatar_badge_width, avatar_badge_height);
@@ -807,7 +753,9 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   DCHECK_GE(sk_icon.width(), sk_icon.height());
 
   // Overlay the avatar on the icon, anchoring it to the bottom-right of the
-  // icon.
+  // icon on Win 10 and earlier, and the top right on Win 11. Win 11 moved the
+  // taskbar icon badge to the top right from the bottom right, so profile
+  // badging needs to move as well, to avoid double badging.
   SkBitmap badged_bitmap;
   badged_bitmap.allocN32Pixels(app_icon_bitmap.width(),
                                app_icon_bitmap.height());
@@ -819,10 +767,13 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   // it in the circle but favor pushing it further down.
   const int cutout_size = avatar_badge_width;
   const int cutout_left = app_icon_bitmap.width() - cutout_size;
-  const int cutout_top = app_icon_bitmap.height() - cutout_size;
+  const int cutout_top = base::win::GetVersion() >= base::win::Version::WIN11
+                             ? 0
+                             : app_icon_bitmap.height() - cutout_size;
   const int icon_left = cutout_left;
+
   const int icon_top =
-      cutout_top + int{std::ceilf((cutout_size - avatar_badge_height) / 2.0f)};
+      cutout_top + base::ClampCeil((cutout_size - avatar_badge_height) / 2.0f);
   const SkRRect clip_circle = SkRRect::MakeOval(
       SkRect::MakeXYWH(cutout_left, cutout_top, cutout_size, cutout_size));
 
@@ -830,6 +781,6 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   offscreen_canvas.drawImage(sk_icon.asImage(), icon_left, icon_top);
   return badged_bitmap;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace profiles

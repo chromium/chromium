@@ -1,12 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
@@ -19,9 +21,13 @@ bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
 }
 
 content::WebContents::CreateParams GetWebContentsCreateParams(
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    const GURL& webui_url) {
   content::WebContents::CreateParams create_params(browser_context);
   create_params.initially_hidden = true;
+  create_params.site_instance =
+      content::SiteInstance::CreateForURL(browser_context, webui_url);
+
   return create_params;
 }
 
@@ -34,22 +40,19 @@ bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
 }
 
 BubbleContentsWrapper::BubbleContentsWrapper(
+    const GURL& webui_url,
     content::BrowserContext* browser_context,
     int task_manager_string_id,
-    bool enable_extension_apis,
-    bool webui_resizes_host)
+    bool webui_resizes_host,
+    bool esc_closes_ui)
     : webui_resizes_host_(webui_resizes_host),
+      esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
-          GetWebContentsCreateParams(browser_context))) {
+          GetWebContentsCreateParams(browser_context, webui_url))) {
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 
-  if (enable_extension_apis) {
-    // In order for the WebUI in the renderer to use extensions APIs we must
-    // add a ChromeExtensionWebContentsObserver to the WebView's WebContents.
-    extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-        web_contents_.get());
-  }
+  PrefsTabHelper::CreateForWebContents(web_contents_.get());
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
 }
@@ -72,7 +75,7 @@ BubbleContentsWrapper::PreHandleKeyboardEvent(
   DCHECK_EQ(web_contents(), source);
   // Close the bubble if an escape event is detected. Handle this here to
   // prevent the renderer from capturing the event and not propagating it up.
-  if (host_ && IsEscapeEvent(event)) {
+  if (host_ && IsEscapeEvent(event) && esc_closes_ui_) {
     host_->CloseUI();
     return content::KeyboardEventProcessingResult::HANDLED;
   }
@@ -87,7 +90,7 @@ bool BubbleContentsWrapper::HandleKeyboardEvent(
 }
 
 bool BubbleContentsWrapper::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
@@ -105,7 +108,8 @@ void BubbleContentsWrapper::RenderViewHostChanged(
                                             gfx::Size(INT_MAX, INT_MAX));
 }
 
-void BubbleContentsWrapper::RenderProcessGone(base::TerminationStatus status) {
+void BubbleContentsWrapper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   CloseUI();
 }
 
@@ -117,6 +121,18 @@ void BubbleContentsWrapper::ShowUI() {
 void BubbleContentsWrapper::CloseUI() {
   if (host_)
     host_->CloseUI();
+}
+
+void BubbleContentsWrapper::ShowContextMenu(
+    gfx::Point point,
+    std::unique_ptr<ui::MenuModel> menu_model) {
+  if (host_)
+    host_->ShowCustomContextMenu(point, std::move(menu_model));
+}
+
+void BubbleContentsWrapper::HideContextMenu() {
+  if (host_)
+    host_->HideCustomContextMenu();
 }
 
 base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {

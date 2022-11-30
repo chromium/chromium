@@ -1,7 +1,8 @@
+danakj@chromium.org
 dcheng@chromium.org
 haraken@chromium.org
+rakina@chromium.org
 szager@chromium.org
-danakj@chromium.org
 
 # These are for the common case of adding or renaming files. If you're doing
 # structural changes, please get a review from a reviewer in this file.
@@ -27,6 +28,5 @@ per-file browser_exposed_renderer_interfaces.cc=set noparent
 per-file browser_exposed_renderer_interfaces.cc=file://ipc/SECURITY_OWNERS
 
 # AgentSchedulingGroup (MBI)
-per-file agent_scheduling_group*=talp@chromium.org
 per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org

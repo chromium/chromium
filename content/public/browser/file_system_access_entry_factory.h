@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "ipc/ipc_message.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -32,19 +34,19 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
   // parameter. This url will be used for verifications later for SafeBrowsing
   // and Quarantine Service if used for writes.
   struct CONTENT_EXPORT BindingContext {
-    BindingContext(const url::Origin& origin,
+    BindingContext(const blink::StorageKey& storage_key,
                    const GURL& url,
-                   GlobalFrameRoutingId frame_id)
-        : origin(origin), url(url), frame_id(frame_id) {}
-    BindingContext(const url::Origin& origin,
+                   GlobalRenderFrameHostId frame_id)
+        : storage_key(storage_key), url(url), frame_id(frame_id) {}
+    BindingContext(const blink::StorageKey& storage_key,
                    const GURL& url,
                    int worker_process_id)
-        : origin(origin),
+        : storage_key(storage_key),
           url(url),
           frame_id(worker_process_id, MSG_ROUTING_NONE) {}
-    url::Origin origin;
+    blink::StorageKey storage_key;
     GURL url;
-    GlobalFrameRoutingId frame_id;
+    GlobalRenderFrameHostId frame_id;
     bool is_worker() const { return !frame_id; }
     int process_id() const { return frame_id.child_id; }
   };
@@ -64,6 +66,16 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
       PathType path_type,
       const base::FilePath& directory_path,
       UserAction user_action) = 0;
+
+  // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the
+  // callback with a absl::nullopt if the token isn't valid or can't be found
+  // (e.g. a compromised renderer crafts an invalid token).
+  using ResolveTransferTokenCallback =
+      base::OnceCallback<void(absl::optional<storage::FileSystemURL>)>;
+  virtual void ResolveTransferToken(
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+          transfer_token,
+      ResolveTransferTokenCallback callback) = 0;
 
  protected:
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;

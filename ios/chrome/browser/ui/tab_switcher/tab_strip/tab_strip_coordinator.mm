@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 
-#include "base/check_op.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
@@ -40,14 +40,12 @@
     return;
 
   self.tabStripViewController = [[TabStripViewController alloc] init];
-  if (@available(iOS 13, *)) {
-    self.tabStripViewController.overrideUserInterfaceStyle =
-        self.browser->GetBrowserState()->IsOffTheRecord()
-            ? UIUserInterfaceStyleDark
-            : UIUserInterfaceStyleUnspecified;
-    self.tabStripViewController.isOffTheRecord =
-        self.browser->GetBrowserState()->IsOffTheRecord();
-  }
+  self.tabStripViewController.overrideUserInterfaceStyle =
+      self.browser->GetBrowserState()->IsOffTheRecord()
+          ? UIUserInterfaceStyleDark
+          : UIUserInterfaceStyleUnspecified;
+  self.tabStripViewController.isOffTheRecord =
+      self.browser->GetBrowserState()->IsOffTheRecord();
 
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 
 namespace weblayer {
@@ -24,21 +25,33 @@ void SafeBrowsingTokenFetcherImpl::Start(Callback callback) {
     return;
   }
 
-  // NOTE: base::Unretained() is safe below as this object owns
-  // |token_fetch_tracker_|, and the callback will not be invoked after
-  // |token_fetch_tracker_| is destroyed.
+  // NOTE: When a token fetch timeout occurs |token_fetch_tracker_| will invoke
+  // the client callback, which may end up synchronously destroying this object
+  // before this object's own callback is invoked. Hence we bind our own
+  // callback via a WeakPtr.
   const int request_id = token_fetch_tracker_.StartTrackingTokenFetch(
       std::move(callback),
       base::BindOnce(&SafeBrowsingTokenFetcherImpl::OnTokenTimeout,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   request_ids_.insert(request_id);
 
   // In contrast, this object does *not* have a determined lifetime relationship
   // with |delegate|.
   delegate->FetchAccessToken(
-      {safe_browsing::kAPIScope},
+      {GaiaConstants::kChromeSafeBrowsingOAuth2Scope},
       base::BindOnce(&SafeBrowsingTokenFetcherImpl::OnTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), request_id));
+}
+
+void SafeBrowsingTokenFetcherImpl::OnInvalidAccessToken(
+    const std::string& invalid_access_token) {
+  auto* delegate = delegate_getter_.Run();
+
+  if (!delegate)
+    return;
+
+  delegate->OnAccessTokenIdentifiedAsInvalid(
+      {GaiaConstants::kChromeSafeBrowsingOAuth2Scope}, invalid_access_token);
 }
 
 void SafeBrowsingTokenFetcherImpl::OnTokenFetched(
@@ -52,9 +65,14 @@ void SafeBrowsingTokenFetcherImpl::OnTokenFetched(
   request_ids_.erase(request_id);
 
   token_fetch_tracker_.OnTokenFetchComplete(request_id, access_token);
+
+  // NOTE: Calling SafeBrowsingTokenFetchTracker::OnTokenFetchComplete might
+  // have resulted in the synchronous destruction of this object, so there is
+  // nothing safe to do here but return.
 }
 
 void SafeBrowsingTokenFetcherImpl::OnTokenTimeout(int request_id) {
+  DCHECK(request_ids_.count(request_id));
   request_ids_.erase(request_id);
 }
 

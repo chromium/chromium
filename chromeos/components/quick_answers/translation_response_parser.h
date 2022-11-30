@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 struct QuickAnswer;
@@ -48,6 +47,5 @@ class TranslationResponseParser {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TRANSLATION_RESPONSE_PARSER_H_

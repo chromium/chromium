@@ -1,17 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/usb/usb_service_win.h"
 
+// windows.h must be included first.
+#include <windows.h>
+
+#define INITGUID
+
+#include <devpkey.h>
 #include <objbase.h>
 #include <setupapi.h>
 #include <stdint.h>
 #include <usbiodef.h>
-#include "base/strings/string_piece_forward.h"
-
-#define INITGUID
-#include <devpkey.h>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -19,18 +21,19 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_generic.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -48,7 +51,13 @@ bool IsCompositeDevice(const std::wstring& service_name) {
          base::EqualsCaseInsensitiveASCII(service_name, L"dg_ssudbus");
 }
 
-base::Optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
+std::ostream& operator<<(std::ostream& os, const DEVPROPKEY& value) {
+  os << "{" << base::win::WStringFromGUID(value.fmtid) << ", " << value.pid
+     << "}";
+  return os;
+}
+
+absl::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
                                                  SP_DEVINFO_DATA* dev_info_data,
                                                  const DEVPROPKEY& property) {
   // SetupDiGetDeviceProperty() makes an RPC which may block.
@@ -59,15 +68,22 @@ base::Optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
   uint32_t buffer;
   if (!SetupDiGetDeviceProperty(
           dev_info, dev_info_data, &property, &property_type,
-          reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0) ||
-      property_type != DEVPROP_TYPE_UINT32) {
-    return base::nullopt;
+          reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0)) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_UINT32) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_UINT32 << ")";
+    return absl::nullopt;
   }
 
   return buffer;
 }
 
-base::Optional<std::wstring> GetDeviceStringProperty(
+absl::optional<std::wstring> GetDeviceStringProperty(
     HDEVINFO dev_info,
     SP_DEVINFO_DATA* dev_info_data,
     const DEVPROPKEY& property) {
@@ -78,10 +94,22 @@ base::Optional<std::wstring> GetDeviceStringProperty(
   DEVPROPTYPE property_type;
   DWORD required_size;
   if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0) ||
-      GetLastError() != ERROR_INSUFFICIENT_BUFFER ||
-      property_type != DEVPROP_TYPE_STRING) {
-    return base::nullopt;
+                               &property_type, nullptr, 0, &required_size, 0)) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") unexpectedly succeeded";
+    return absl::nullopt;
+  }
+
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_STRING) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_STRING << ")";
+    return absl::nullopt;
   }
 
   std::wstring buffer;
@@ -89,13 +117,14 @@ base::Optional<std::wstring> GetDeviceStringProperty(
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
-    return base::nullopt;
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
   }
 
   return buffer;
 }
 
-base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
+absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
     HDEVINFO dev_info,
     SP_DEVINFO_DATA* dev_info_data,
     const DEVPROPKEY& property) {
@@ -106,10 +135,27 @@ base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
   DEVPROPTYPE property_type;
   DWORD required_size;
   if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0) ||
-      GetLastError() != ERROR_INSUFFICIENT_BUFFER ||
-      property_type != DEVPROP_TYPE_STRING_LIST) {
-    return base::nullopt;
+                               &property_type, nullptr, 0, &required_size, 0)) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") unexpectedly succeeded";
+    return absl::nullopt;
+  }
+
+  if (GetLastError() == ERROR_NOT_FOUND) {
+    // Simplify callers by returning empty list when the property isn't found.
+    return std::vector<std::wstring>();
+  }
+
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_STRING_LIST) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_STRING_LIST << ")";
+    return absl::nullopt;
   }
 
   std::wstring buffer;
@@ -117,7 +163,8 @@ base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
-    return base::nullopt;
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
   }
 
   // Windows string list properties use a NUL character as the delimiter.
@@ -126,7 +173,7 @@ base::Optional<std::vector<std::wstring>> GetDeviceStringListProperty(
 }
 
 std::wstring GetServiceName(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data) {
-  base::Optional<std::wstring> property =
+  absl::optional<std::wstring> property =
       GetDeviceStringProperty(dev_info, dev_info_data, DEVPKEY_Device_Service);
   if (!property.has_value())
     return std::wstring();
@@ -187,75 +234,54 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
   if (bus_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
                                           DEVPKEY_Device_BusNumber);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get device bus number";
+    if (!result.has_value())
       return false;
-    }
     *bus_number = result.value();
   }
 
   if (port_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
                                           DEVPKEY_Device_Address);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get device address";
+    if (!result.has_value())
       return false;
-    }
     *port_number = result.value();
   }
 
   if (instance_id) {
     auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
                                           DEVPKEY_Device_InstanceId);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get the instance ID";
+    if (!result.has_value())
       return false;
-    }
     *instance_id = std::move(result.value());
   }
 
   if (parent_instance_id) {
     auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
                                           DEVPKEY_Device_Parent);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get the device parent";
+    if (!result.has_value())
       return false;
-    }
     *parent_instance_id = std::move(result.value());
   }
 
   if (child_instance_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
                                               DEVPKEY_Device_Children);
-    if (!result.has_value()) {
-      if (GetLastError() == ERROR_NOT_FOUND) {
-        result.emplace();
-      } else {
-        USB_PLOG(ERROR) << "Failed to get device children";
-        return false;
-      }
-    }
+    if (!result.has_value())
+      return false;
     *child_instance_ids = std::move(result.value());
   }
 
   if (hardware_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
                                               DEVPKEY_Device_HardwareIds);
-    if (!result.has_value()) {
-      if (GetLastError() == ERROR_NOT_FOUND) {
-        result.emplace();
-      } else {
-        USB_PLOG(ERROR) << "Failed to get hardware IDs";
-        return false;
-      }
-    }
+    if (!result.has_value())
+      return false;
     *hardware_ids = std::move(result.value());
   }
 
   if (service_name) {
     *service_name = GetServiceName(dev_info, &dev_info_data);
     if (service_name->empty()) {
-      USB_PLOG(ERROR) << "Failed to get device driver name";
       return false;
     }
   }
@@ -349,19 +375,19 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
 
   info.driver = GetServiceName(dev_info.get(), &dev_info_data);
   if (info.driver.empty()) {
-    USB_PLOG(ERROR) << "Could not get child device's service name";
     return info;
   }
 
-  base::Optional<std::vector<std::wstring>> hardware_ids =
+  absl::optional<std::vector<std::wstring>> hardware_ids =
       GetDeviceStringListProperty(dev_info.get(), &dev_info_data,
                                   DEVPKEY_Device_HardwareIds);
-  if (!hardware_ids) {
-    USB_PLOG(ERROR) << "Could not get the child device's hardware IDs";
+  if (!hardware_ids.has_value()) {
     return info;
   }
 
   info.interface_number = GetInterfaceNumber(instance_id, *hardware_ids);
+  if (info.interface_number == -1)
+    return info;
 
   if (!base::EqualsCaseInsensitiveASCII(info.driver, L"winusb"))
     return info;
@@ -415,12 +441,11 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
 
 class UsbServiceWin::BlockingTaskRunnerHelper {
  public:
-  explicit BlockingTaskRunnerHelper(base::WeakPtr<UsbServiceWin> service)
-      : service_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-        service_(service) {}
-  ~BlockingTaskRunnerHelper() {}
-
-  void EnumerateDevices() {
+  BlockingTaskRunnerHelper(
+      base::WeakPtr<UsbServiceWin> service,
+      scoped_refptr<base::SequencedTaskRunner> service_task_runner)
+      : service_task_runner_(std::move(service_task_runner)),
+        service_(std::move(service)) {
     // Boost priority while potentially loading SetupAPI.dll for the following
     // functions on a background thread.
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -441,7 +466,7 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
                                                   &GUID_DEVINTERFACE_USB_DEVICE,
                                                   i, &device_interface_data);
          ++i) {
-      EnumerateDevice(dev_info.get(), &device_interface_data, base::nullopt);
+      EnumerateDevice(dev_info.get(), &device_interface_data, absl::nullopt);
     }
 
     if (GetLastError() != ERROR_NO_MORE_ITEMS)
@@ -450,6 +475,8 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
     service_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&UsbServiceWin::HelperStarted, service_));
   }
+
+  ~BlockingTaskRunnerHelper() = default;
 
   void OnDeviceAdded(const GUID& guid, const std::wstring& device_path) {
     // Boost priority while potentially loading SetupAPI.dll and Ole32.dll on a
@@ -482,7 +509,7 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
  private:
   void EnumerateDevice(HDEVINFO dev_info,
                        SP_DEVICE_INTERFACE_DATA* device_interface_data,
-                       const base::Optional<std::wstring>& opt_device_path) {
+                       const absl::optional<std::wstring>& opt_device_path) {
     std::wstring device_path;
     std::wstring* device_path_ptr = &device_path;
     if (opt_device_path) {
@@ -580,23 +607,19 @@ class UsbServiceWin::BlockingTaskRunnerHelper {
 
   // Calls back to |service_| must be posted to |service_task_runner_|, which
   // runs tasks on the thread where that object lives.
-  scoped_refptr<base::SingleThreadTaskRunner> service_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> service_task_runner_;
   base::WeakPtr<UsbServiceWin> service_;
 };
 
 UsbServiceWin::UsbServiceWin()
-    : UsbService(),
-      blocking_task_runner_(CreateBlockingTaskRunner()),
-      helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      device_observer_(this) {
+    : blocking_task_runner_(CreateBlockingTaskRunner()) {
   DeviceMonitorWin* device_monitor = DeviceMonitorWin::GetForAllInterfaces();
   if (device_monitor)
-    device_observer_.Add(device_monitor);
+    device_observation_.Observe(device_monitor);
 
-  helper_.reset(new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
-  blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::EnumerateDevices,
-                                base::Unretained(helper_.get())));
+  helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
+      blocking_task_runner_, weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunnerHandle::Get());
 }
 
 UsbServiceWin::~UsbServiceWin() {
@@ -613,10 +636,8 @@ void UsbServiceWin::GetDevices(GetDevicesCallback callback) {
 
 void UsbServiceWin::OnDeviceAdded(const GUID& class_guid,
                                   const std::wstring& device_path) {
-  blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BlockingTaskRunnerHelper::OnDeviceAdded,
-                     base::Unretained(helper_.get()), class_guid, device_path));
+  helper_.AsyncCall(&BlockingTaskRunnerHelper::OnDeviceAdded)
+      .WithArgs(class_guid, device_path);
 }
 
 void UsbServiceWin::OnDeviceRemoved(const GUID& class_guid,
@@ -671,9 +692,10 @@ void UsbServiceWin::CreateDeviceObject(
   auto device = base::MakeRefCounted<UsbDeviceWin>(
       device_path, hub_path, functions, bus_number, port_number, driver_type);
   devices_by_path_[device->device_path()] = device;
-  device->ReadDescriptors(base::BindOnce(&UsbServiceWin::DeviceReady,
-                                         weak_factory_.GetWeakPtr(), device,
-                                         driver_name));
+  device->ReadDescriptors(
+      blocking_task_runner_,
+      base::BindOnce(&UsbServiceWin::DeviceReady, weak_factory_.GetWeakPtr(),
+                     device, driver_name));
 }
 
 void UsbServiceWin::UpdateFunction(

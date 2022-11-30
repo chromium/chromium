@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,13 +27,13 @@
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 // Test that SVG content with JavaScript URLs is sanitized by removing
 // the URLs. This sanitization happens when the content is pasted or
@@ -58,7 +58,7 @@ namespace blink {
 // |expected_partial_contents|.
 void PasteAndVerifySanitization(const char* html_to_paste,
                                 const char* expected_partial_contents) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(1, 1));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   LocalFrame& frame = page_holder.get()->GetFrame();
 
   // Setup a mock clipboard host.
@@ -69,7 +69,7 @@ void PasteAndVerifySanitization(const char* html_to_paste,
 
   // Make the body editable, and put the caret in it.
   body->setAttribute(html_names::kContenteditableAttr, "true");
-  body->focus();
+  body->Focus();
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   frame.Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().SelectAllChildren(*body).Build());
@@ -234,7 +234,7 @@ TEST(UnsafeSVGAttributeSanitizationTest, stringsShouldNotSupportAddition) {
 
 TEST(UnsafeSVGAttributeSanitizationTest,
      stripScriptingAttributes_animateElement) {
-  Vector<Attribute> attributes;
+  Vector<Attribute, kAttributePrealloc> attributes;
   attributes.push_back(Attribute(xlink_names::kHrefAttr, "javascript:alert()"));
   attributes.push_back(Attribute(svg_names::kHrefAttr, "javascript:alert()"));
   attributes.push_back(Attribute(svg_names::kFromAttr, "/home"));

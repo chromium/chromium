@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_worker.h"
 
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -33,13 +35,14 @@ void ResourceLoadObserverForWorker::WillSendRequest(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     ResourceType resource_type,
-    const FetchInitiatorInfo& initiator_info,
-    RenderBlockingBehavior render_blocking_behavior) {
+    const ResourceLoaderOptions& options,
+    RenderBlockingBehavior render_blocking_behavior,
+    const Resource* resource) {
   probe::WillSendRequest(
       probe_, nullptr,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
-      request, redirect_response, initiator_info, resource_type,
-      render_blocking_behavior);
+      request, redirect_response, options, resource_type,
+      render_blocking_behavior, base::TimeTicks::Now());
 }
 
 void ResourceLoadObserverForWorker::DidChangePriority(
@@ -47,12 +50,36 @@ void ResourceLoadObserverForWorker::DidChangePriority(
     ResourceLoadPriority priority,
     int intra_priority_value) {}
 
+// Record use counter for private network access.
+void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
+                                       const ResourceResponse& response) {
+  DCHECK(execution_context);
+
+  if (response.RemoteIPEndpoint().address().IsZero()) {
+    execution_context->CountUse(WebFeature::kPrivateNetworkAccessNullIpAddress);
+  }
+
+  if (!network::IsLessPublicAddressSpace(response.AddressSpace(),
+                                         response.ClientAddressSpace()))
+    return;
+  // Only record the feature for worker contexts, not worklets. The address
+  // space of worklets is not yet specified.
+  // TODO(https://crbug.com/1291176): Revisit this if worklets should be subject
+  // to PNA checks.
+  if (!execution_context->IsWorkerGlobalScope())
+    return;
+  execution_context->CountUse(WebFeature::kPrivateNetworkAccessWithinWorker);
+}
+
 void ResourceLoadObserverForWorker::DidReceiveResponse(
     uint64_t identifier,
     const ResourceRequest& request,
     const ResourceResponse& response,
     const Resource* resource,
     ResponseSource) {
+  RecordPrivateNetworkAccessFeature(
+      worker_fetch_context_->GetExecutionContext(), response);
+
   if (response.HasMajorCertificateErrors()) {
     MixedContentChecker::HandleCertificateError(
         response, request.GetRequestContext(),

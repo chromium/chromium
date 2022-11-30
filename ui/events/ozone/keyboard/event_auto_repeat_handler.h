@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
-#define UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
+#ifndef UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_
+#define UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -30,6 +31,10 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   };
 
   explicit EventAutoRepeatHandler(Delegate* delegate);
+
+  EventAutoRepeatHandler(const EventAutoRepeatHandler&) = delete;
+  EventAutoRepeatHandler& operator=(const EventAutoRepeatHandler&) = delete;
+
   ~EventAutoRepeatHandler();
 
   void UpdateKeyRepeat(unsigned int key,
@@ -63,13 +68,11 @@ class COMPONENT_EXPORT(EVENTS_OZONE) EventAutoRepeatHandler {
   base::TimeDelta repeat_delay_;
   base::TimeDelta repeat_interval_;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<EventAutoRepeatHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventAutoRepeatHandler);
 };
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H
+#endif  // UI_EVENTS_OZONE_KEYBOARD_EVENT_AUTO_REPEAT_HANDLER_H_

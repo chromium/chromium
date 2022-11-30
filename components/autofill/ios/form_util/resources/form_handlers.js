@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,7 @@
  * Autofill keyboard accessory.
  */
 
-goog.provide('__crWeb.formHandlers');
-
-goog.require('__crWeb.fill');
-goog.require('__crWeb.form');
+// Requires functions from fill.js and form.js.
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -20,8 +17,6 @@ goog.require('__crWeb.form');
  */
 __gCrWeb.formHandlers = {};
 
-/** Beginning of anonymous object */
-(function() {
 /**
  * The MutationObserver tracking form related changes.
  */
@@ -62,7 +57,7 @@ let formSubmitOriginalFunction = null;
 function sendMessageOnNextLoop_(mesg) {
   if (!messageToSend) {
     setTimeout(function() {
-      __gCrWeb.message.invokeOnHost(messageToSend);
+      __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', messageToSend);
       messageToSend = null;
     }, 0);
   }
@@ -127,6 +122,7 @@ function trackPasswordField_(field) {
       if (target.value === '') {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -134,7 +130,7 @@ function trackPasswordField_(field) {
           'fieldType': '',
           'type': 'password_form_cleared',
           'value': __gCrWeb.stringify(formData),
-          'hasUserGesture': false
+          'hasUserGesture': false,
         };
         sendMessageOnNextLoop_(msg);
       }
@@ -222,6 +218,7 @@ function formActivity_(evt) {
 
   const msg = {
     'command': 'form.activity',
+    'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'uniqueFormID': formUniqueId,
     'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
@@ -229,7 +226,7 @@ function formActivity_(evt) {
     'fieldType': fieldType,
     'type': type,
     'value': value,
-    'hasUserGesture': evt.isTrusted
+    'hasUserGesture': evt.isTrusted,
   };
   sendMessageOnNextLoop_(msg);
 }
@@ -251,11 +248,12 @@ function submitHandler_(evt) {
 function formSubmitted_(form) {
   // Default action is to re-submit to same page.
   const action = form.getAttribute('action') || document.location.href;
-  __gCrWeb.message.invokeOnHost({
+  __gCrWeb.common.sendWebKitMessage('FormHandlersMessage', {
     'command': 'form.submit',
+    'frameID': __gCrWeb.message.getFrameId(),
     'formName': __gCrWeb.form.getFormIdentifier(form),
     'href': getFullyQualifiedUrl_(action),
-    'formData': __gCrWeb.fill.autofillSubmissionData(form)
+    'formData': __gCrWeb.fill.autofillSubmissionData(form),
   });
 }
 
@@ -268,7 +266,8 @@ function sendFormMutationMessageAfterDelay_(msg, delay) {
 
   formMutationMessageToSend = msg;
   setTimeout(function() {
-    __gCrWeb.message.invokeOnHost(formMutationMessageToSend);
+    __gCrWeb.common.sendWebKitMessage(
+        'FormHandlersMessage', formMutationMessageToSend);
     formMutationMessageToSend = null;
   }, delay);
 }
@@ -319,6 +318,78 @@ attachListeners_();
 setTimeout(attachListeners_, 1000);
 
 /**
+ * Extracts changed form and input elements.
+ * @param {MutationRecord} An observed mutation.
+ * @return {Element} An extracted form element or null.
+ */
+function extractChangedFormElements_(mutation) {
+  const addedElements = [];
+  for (let j = 0; j < mutation.addedNodes.length; j++) {
+    const node = mutation.addedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    addedElements.push(node);
+    [].push.apply(addedElements, [].slice.call(node.getElementsByTagName('*')));
+  }
+  return addedElements.find(function(element) {
+    return element.tagName.match(/^(FORM|INPUT|SELECT|OPTION|TEXTAREA)$/);
+  });
+}
+
+/**
+ * @param {MutationRecord} An observed mutation.
+ * @return {Array<Element>} Extracted form and input elements.
+ */
+function extractRemovedFormElements_(mutation) {
+  const removedElements = [];
+  for (let j = 0; j < mutation.removedNodes.length; j++) {
+    const node = mutation.removedNodes[j];
+    // Ignore non-element nodes.
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      continue;
+    }
+    removedElements.push(node);
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('FORM')));
+    [].push.apply(
+        removedElements, [].slice.call(node.getElementsByTagName('INPUT')));
+  }
+  return removedElements;
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {HTMLFormElement} Extracted password form.
+ */
+function extractRemovedPasswordForm_(removedElements) {
+  return removedElements.find(function(element) {
+    if (element.tagName !== 'FORM') {
+      return false;
+    }
+    for (let i = 0; i < element.elements.length; i++) {
+      if (isPasswordField_(element.elements[i])) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+/**
+ * @param {Array<Element>} All form and input elements removed from DOM.
+ * @return {Array<String>} Renderer ids of removed formless password fields.
+ */
+function extractRemovedFormlessPasswordFieldsIds_(removedElements) {
+  const formlessPasswordFieldsGone = removedElements.filter(function(element) {
+    return element.tagName === 'INPUT' && !element.form &&
+        isPasswordField_(element);
+  });
+  return formlessPasswordFieldsGone.map(__gCrWeb.fill.getUniqueID);
+}
+
+/**
  * Installs a MutationObserver to track form related changes. Waits |delay|
  * milliseconds before sending a message to browser. A delay is used because
  * form mutations are likely to come in batches. An undefined or zero value for
@@ -340,23 +411,11 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
       if (mutation.type !== 'childList') {
         continue;
       }
-      const addedElements = [];
-      for (let j = 0; j < mutation.addedNodes.length; j++) {
-        const node = mutation.addedNodes[j];
-        // Ignore non-element nodes.
-        if (node.nodeType !== Node.ELEMENT_NODE) {
-          continue;
-        }
-        addedElements.push(node);
-        [].push.apply(
-            addedElements, [].slice.call(node.getElementsByTagName('*')));
-      }
-      const formChanged = addedElements.find(function(element) {
-        return element.tagName.match(/(FORM|INPUT|SELECT|OPTION|TEXTAREA)/);
-      });
+      const formChanged = extractChangedFormElements_(mutation);
       if (formChanged) {
         const msg = {
           'command': 'form.activity',
+          'frameID': __gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'fieldIdentifier': '',
@@ -364,45 +423,34 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
           'fieldType': '',
           'type': 'form_changed',
           'value': '',
-          'hasUserGesture': false
+          'hasUserGesture': false,
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
 
-      const removedElements = [];
-      for (let j = 0; j < mutation.removedNodes.length; j++) {
-        const node = mutation.removedNodes[j];
-        // Ignore non-element nodes.
-        if (node.nodeType !== Node.ELEMENT_NODE) {
-          continue;
-        }
-        removedElements.push(node);
-        [].push.apply(
-            removedElements, [].slice.call(node.getElementsByTagName('FORM')));
-      }
-      const formGone = removedElements.find(function(element) {
-        if (element.tagName.match(/(FORM)/)) {
-          for (let k = 0; k < element.elements.length; k++) {
-            if (isPasswordField_(element.elements[k])) {
-              return true;
-            }
-          }
-          return false;
-        }
-        return false;
-      });
-      const uniqueFormId = __gCrWeb.fill.getUniqueID(formGone);
+      const removedElements = extractRemovedFormElements_(mutation);
+      const formGone = extractRemovedPasswordForm_(removedElements);
       if (formGone) {
+        const uniqueFormId = __gCrWeb.fill.getUniqueID(formGone);
         const msg = {
-          'command': 'form.activity',
-          'formName': '',
+          'command': 'form.removal',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': __gCrWeb.form.getFormIdentifier(formGone),
           'uniqueFormID': uniqueFormId,
-          'fieldIdentifier': '',
           'uniqueFieldID': '',
-          'fieldType': '',
-          'type': 'password_form_removed',
-          'value': '',
-          'hasUserGesture': false
+        };
+        return sendFormMutationMessageAfterDelay_(msg, delay);
+      }
+
+      const removedFormlessPasswordFieldsIds =
+          extractRemovedFormlessPasswordFieldsIds_(removedElements);
+      if (removedFormlessPasswordFieldsIds.length > 0) {
+        const msg = {
+          'command': 'form.removal',
+          'frameID': __gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'uniqueFieldID': __gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
@@ -422,9 +470,3 @@ __gCrWeb.formHandlers['toggleTrackingUserEditedFields'] = function(track) {
     __gCrWeb.form.wasEditedByUser = null;
   }
 };
-/** Flush the message queue. */
-if (__gCrWeb.message) {
-  __gCrWeb.message.invokeQueues();
-}
-
-}());  // End of anonymous object

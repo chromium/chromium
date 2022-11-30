@@ -1,16 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
 
@@ -32,14 +33,14 @@ TEST_F(InputMethodPrefsTest, Constructor) {
 }
 
 TEST_F(InputMethodPrefsTest, GetEnabledImes) {
-  namespace ceiu = chromeos::extension_ime_util;
+  namespace aeiu = ::ash::extension_ime_util;
   using crx_file::id_util::GenerateId;
 
   const std::string component_extension_ime_id =
-      ceiu::GetComponentInputMethodID(
+      aeiu::GetComponentInputMethodID(
           GenerateId("test.component.extension.ime"), "us");
   const std::string arc_ime_id =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+      aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
 
   profile()->GetPrefs()->SetString(
       prefs::kLanguageEnabledImes,
@@ -54,17 +55,17 @@ TEST_F(InputMethodPrefsTest, GetEnabledImes) {
 }
 
 TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
-  namespace ceiu = chromeos::extension_ime_util;
-  using chromeos::input_method::InputMethodDescriptor;
+  namespace aeiu = ::ash::extension_ime_util;
+  using ::ash::input_method::InputMethodDescriptor;
   using crx_file::id_util::GenerateId;
 
   const std::string component_extension_ime_id =
-      ceiu::GetComponentInputMethodID(
+      aeiu::GetComponentInputMethodID(
           GenerateId("test.component.extension.ime"), "us");
   const std::string arc_ime_id1 =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
+      aeiu::GetArcInputMethodID(GenerateId("test.arc.ime"), "us");
   const std::string arc_ime_id2 =
-      ceiu::GetArcInputMethodID(GenerateId("test.arc.ime2"), "us");
+      aeiu::GetArcInputMethodID(GenerateId("test.arc.ime2"), "us");
 
   PrefService* pref_service = profile()->GetPrefs();
 

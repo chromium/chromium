@@ -1,15 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_
 #define CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_
 
-#include <string>
-
 #include "chrome/browser/ash/login/oobe_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 // Shows the Chrome OS out-of-box / login UI.
 void ShowLoginWizard(OobeScreenId start_screen);
@@ -18,6 +16,6 @@ void ShowLoginWizard(OobeScreenId start_screen);
 // instead.
 void SwitchWebUItoMojo();
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_WIZARD_H_

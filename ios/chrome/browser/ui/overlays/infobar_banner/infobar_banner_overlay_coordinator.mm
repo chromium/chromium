@@ -1,12 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/no_destructor.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
@@ -16,12 +15,16 @@
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_positioner.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_banner_transition_driver.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/save_password_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/passwords/update_password_infobar_banner_overlay_mediator.h"
-#import "ios/chrome/browser/ui/overlays/infobar_banner/save_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/permissions/permissions_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/reading_list/reading_list_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/sync_error/sync_error_infobar_banner_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/infobar_banner/tailored_security/tailored_security_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
@@ -54,6 +57,10 @@
     [TranslateInfobarBannerOverlayMediator class],
     [SaveCardInfobarBannerOverlayMediator class],
     [SaveAddressProfileInfobarBannerOverlayMediator class],
+    [AddToReadingListInfobarBannerOverlayMediator class],
+    [PermissionsBannerOverlayMediator class],
+    [TailoredSecurityInfobarBannerOverlayMediator class],
+    [SyncErrorInfobarBannerOverlayMediator class],
   ];
 }
 
@@ -119,13 +126,12 @@
   if (!UIAccessibilityIsVoiceOverRunning()) {
     // Auto-dismiss the banner after timeout if VoiceOver is off (banner should
     // persist until user explicitly swipes it away).
-    NSTimeInterval timeout =
-        config->is_high_priority()
-            ? kInfobarBannerLongPresentationDurationInSeconds
-            : kInfobarBannerDefaultPresentationDurationInSeconds;
+    const base::TimeDelta timeout =
+        config->is_high_priority() ? kInfobarBannerLongPresentationDuration
+                                   : kInfobarBannerDefaultPresentationDuration;
     [self performSelector:@selector(dismissBannerIfReady)
                withObject:nil
-               afterDelay:timeout];
+               afterDelay:timeout.InSecondsF()];
   }
 }
 
@@ -136,15 +142,10 @@
   // stopAnimated: executions.
   self.started = NO;
   __weak InfobarBannerOverlayCoordinator* weakSelf = self;
-  [self.baseViewController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           InfobarBannerOverlayCoordinator* strongSelf =
-                               weakSelf;
-                           if (strongSelf) {
-                             [strongSelf finishDismissal];
-                           }
-                         }];
+  [self.baseViewController dismissViewControllerAnimated:animated
+                                              completion:^{
+                                                [weakSelf finishDismissal];
+                                              }];
 }
 
 - (UIViewController*)viewController {

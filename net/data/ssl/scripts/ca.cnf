@@ -37,32 +37,6 @@ subjectKeyIdentifier   = hash
 authorityKeyIdentifier = keyid:always
 extendedKeyUsage       = serverAuth,clientAuth
 
-[name_constraint_bad]
-# A leaf cert that will violate the root's imposed name constraints
-basicConstraints       = critical, CA:false
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always
-extendedKeyUsage       = serverAuth,clientAuth
-subjectAltName         = @san_name_constraint_bad
-
-[name_constraint_good]
-# A leaf cert that will match the root's imposed name constraints
-basicConstraints       = critical, CA:false
-subjectKeyIdentifier   = hash
-authorityKeyIdentifier = keyid:always
-extendedKeyUsage       = serverAuth,clientAuth
-subjectAltName         = @san_name_constraint_good
-
-[san_name_constraint_bad]
-DNS.1 = test.ExAmPlE.CoM
-DNS.2 = test.ExAmPlE.OrG
-
-[san_name_constraint_good]
-DNS.1 = test.ExAmPlE.CoM
-DNS.2 = example.notarealtld
-DNS.3 = *.test2.ExAmPlE.CoM
-DNS.4 = *.example2.notarealtld
-
 [ca_cert]
 # Extensions to add when signing a request for an intermediate/CA cert
 basicConstraints       = critical, CA:true
@@ -118,8 +92,3 @@ CN = $ENV::CA_COMMON_NAME
 basicConstraints       = critical, CA:true
 keyUsage               = critical, keyCertSign, cRLSign
 subjectKeyIdentifier   = hash
-
-[ev_multi_oid]
-basicConstraints = critical, CA:false
-extendedKeyUsage = serverAuth, clientAuth
-certificatePolicies = 2.23.140.1.1, 1.2.3.4

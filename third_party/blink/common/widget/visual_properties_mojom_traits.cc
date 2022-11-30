@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "cc/mojom/browser_controls_params.mojom.h"
 #include "services/viz/public/mojom/compositing/local_surface_id.mojom.h"
-#include "third_party/blink/public/mojom/widget/screen_infos.mojom.h"
+#include "ui/display/mojom/screen_infos.mojom.h"
 
 namespace mojo {
 
@@ -24,6 +24,7 @@ bool StructTraits<
       !data.ReadBrowserControlsParams(&out->browser_controls_params) ||
       !data.ReadLocalSurfaceId(&out->local_surface_id) ||
       !data.ReadRootWidgetWindowSegments(&out->root_widget_window_segments) ||
+      !data.ReadWindowControlsOverlayRect(&out->window_controls_overlay_rect) ||
       data.page_scale_factor() <= 0 || data.compositing_scale_factor() <= 0)
     return false;
   out->auto_resize_enabled = data.auto_resize_enabled();

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,21 @@
 
 #include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/url_formatter/url_formatter.h"
+#include "url/android/gurl_android.h"
 
 using history::BrowsingHistoryService;
 
@@ -34,7 +35,7 @@ BrowsingHistoryBridge::BrowsingHistoryBridge(
   history::HistoryService* local_history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+      SyncServiceFactory::GetForProfile(profile_);
   browsing_history_service_ = std::make_unique<BrowsingHistoryService>(
       this, local_history, sync_service);
 
@@ -51,13 +52,15 @@ void BrowsingHistoryBridge::QueryHistory(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
-    jstring j_query) {
+    jstring j_query,
+    jboolean j_host_only) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
   history::QueryOptions options;
   options.max_count = kMaxQueryCount;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+  options.host_only = j_host_only;
 
   browsing_history_service_->QueryHistory(
       base::android::ConvertJavaStringToUTF16(env, j_query), options);
@@ -70,6 +73,17 @@ void BrowsingHistoryBridge::QueryHistoryContinuation(
   DCHECK(query_history_continuation_);
   j_query_result_obj_.Reset(env, j_result_obj);
   std::move(query_history_continuation_).Run();
+}
+
+void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jstring j_host_name,
+    const JavaParamRef<jobject>& jcallback) {
+  browsing_history_service_->GetLastVisitToHostBeforeRecentNavigations(
+      base::android::ConvertJavaStringToUTF8(env, j_host_name),
+      base::BindOnce(&base::android::RunTimeCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void BrowsingHistoryBridge::OnQueryComplete(
@@ -97,7 +111,7 @@ void BrowsingHistoryBridge::OnQueryComplete(
 
     Java_BrowsingHistoryBridge_createHistoryItemAndAddToList(
         env, j_query_result_obj_,
-        base::android::ConvertUTF8ToJavaString(env, entry.url.spec()),
+        url::GURLAndroid::FromNativeGURL(env, entry.url),
         base::android::ConvertUTF16ToJavaString(env, domain),
         base::android::ConvertUTF16ToJavaString(env, entry.title),
         most_recent_java_timestamp,
@@ -113,10 +127,10 @@ void BrowsingHistoryBridge::OnQueryComplete(
 void BrowsingHistoryBridge::MarkItemForRemoval(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jstring j_url,
+    const JavaParamRef<jobject>& j_url,
     const JavaParamRef<jlongArray>& j_native_timestamps) {
   BrowsingHistoryService::HistoryEntry entry;
-  entry.url = GURL(base::android::ConvertJavaStringToUTF16(env, j_url));
+  entry.url = *url::GURLAndroid::ToNativeGURL(env, j_url);
 
   std::vector<int64_t> timestamps;
   base::android::JavaLongArrayToInt64Vector(env, j_native_timestamps,

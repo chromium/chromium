@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_LOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_LOCATION_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -33,6 +32,7 @@
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/remote/request_throttler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -69,6 +69,10 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
       std::unique_ptr<RemoteSuggestionsDatabase> database,
       std::unique_ptr<RemoteSuggestionsStatusService> status_service,
       std::unique_ptr<base::OneShotTimer> fetch_timeout_timer);
+
+  RemoteSuggestionsProviderImpl(const RemoteSuggestionsProviderImpl&) = delete;
+  RemoteSuggestionsProviderImpl& operator=(
+      const RemoteSuggestionsProviderImpl&) = delete;
 
   ~RemoteSuggestionsProviderImpl() override;
 
@@ -396,7 +400,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // fetches at most |count_to_fetch| suggestions only from |fetched_category|.
   // TODO(vitaliii): Also support |count_to_fetch| when |fetched_category| is
   // nullopt.
-  RequestParams BuildFetchParams(base::Optional<Category> fetched_category,
+  RequestParams BuildFetchParams(absl::optional<Category> fetched_category,
                                  int count_to_fetch) const;
 
   bool AreArticlesEmpty() const;
@@ -408,7 +412,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
 
   State state_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   const Category articles_category_;
 
@@ -418,10 +422,10 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   const std::string application_language_code_;
 
   // Ranker that orders the categories. Not owned.
-  CategoryRanker* category_ranker_;
+  raw_ptr<CategoryRanker> category_ranker_;
 
   // Scheduler to inform about scheduling-related events. Not owned.
-  RemoteSuggestionsScheduler* remote_suggestions_scheduler_;
+  raw_ptr<RemoteSuggestionsScheduler> remote_suggestions_scheduler_;
 
   // The suggestions fetcher.
   std::unique_ptr<RemoteSuggestionsFetcher> suggestions_fetcher_;
@@ -447,7 +451,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   bool clear_cached_suggestions_when_initialized_;
 
   // A clock for getting the time. This allows to inject a clock in tests.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // A Timer for canceling too long fetches.
   std::unique_ptr<base::OneShotTimer> fetch_timeout_timer_;
@@ -457,8 +461,6 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   // tracked by this variable (as they do not need any special actions on
   // completion).
   FetchRequestStatus request_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsProviderImpl);
 };
 
 }  // namespace ntp_snippets

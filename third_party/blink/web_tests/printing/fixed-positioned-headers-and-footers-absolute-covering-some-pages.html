@@ -1,23 +1,13 @@
 <!DOCTYPE html>
-<style media="print">
-#myheader
-{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 500px;
-    border: 5px solid black;
+<style>
+body {
+  margin: 0;
 }
 </style>
 <script>
-if (window.testRunner)
+  if (window.testRunner)
     testRunner.setPrinting();
 </script>
-<div id="myheader">
-    <div>
-        crbug.com/303728: Header Line should be repeated on every page except where it's clipped by the absolute element on pages 3 and 4.
-        <hr/>
-    </div>
-</div>
-<div style="position: absolute; left: 0px; top: 1000px; width: 600px; height: 2000px; background-color: black; z-index: 2">Absolute</div>
-<div style="height: 5000px"></div>
+<div style="position:fixed; top:0;">Should repeat at the top on every page, except page 3 and 4</div>
+<div style="position:absolute; z-index:2; left:0; top:200vh; width:100vh; height:200vh; background:black;">Absolute</div>
+<div style="height:500vh;"></div>

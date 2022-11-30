@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/assistant/assistant_state_base.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,16 +22,17 @@ class ASH_PUBLIC_EXPORT AssistantState : public AssistantStateBase {
   static AssistantState* Get();
 
   AssistantState();
+
+  AssistantState(const AssistantState&) = delete;
+  AssistantState& operator=(const AssistantState&) = delete;
+
   ~AssistantState() override;
 
-  void NotifyStatusChanged(chromeos::assistant::AssistantStatus status);
-  void NotifyFeatureAllowed(chromeos::assistant::AssistantAllowedState state);
+  void NotifyStatusChanged(assistant::AssistantStatus status);
+  void NotifyFeatureAllowed(assistant::AssistantAllowedState state);
   void NotifyLocaleChanged(const std::string& locale);
   void NotifyArcPlayStoreEnabledChanged(bool enabled);
   void NotifyLockedFullScreenStateChanged(bool enabled);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AssistantState);
 };
 
 }  // namespace ash

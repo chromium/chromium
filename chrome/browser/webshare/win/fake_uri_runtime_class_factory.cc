@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
 
 #include <string>
+#include <tuple>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/win/scoped_hstring.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,7 +151,7 @@ FakeUriRuntimeClassFactory::CreateUri(HSTRING uri,
   // and release ownership of the original 'back' to the caller.
   base::win::ScopedHString holder(uri);
   auto uri_string = holder.GetAsUTF8();
-  ignore_result(holder.release());
+  std::ignore = holder.release();
 
   if (uri_string.empty()) {
     ADD_FAILURE() << "CreateUri called with empty uri.";

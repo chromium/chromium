@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,9 @@ class TestPropertyResolver : public WMHelper::AppPropertyResolver {
 
   // AppPropertyResolver:
   void PopulateProperties(
-      const std::string& app_id,
-      const std::string& startup_id,
-      bool for_creation,
+      const Params& params,
       ui::PropertyHandler& out_properties_container) override {
-    if (app_id == "arc")
+    if (params.app_id == "arc")
       out_properties_container.SetProperty(aura::client::kAppType,
                                            (int)ash::AppType::ARC_APP);
   }

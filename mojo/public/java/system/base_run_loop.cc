@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/java/system/system_impl_java_jni_headers/BaseRunLoop_jni.h"
 
 using base::android::JavaParamRef;
@@ -61,7 +61,7 @@ static void JNI_BaseRunLoop_PostDelayedTask(
       ->task_runner()
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&RunJavaRunnable, runnable_ref),
-                        base::TimeDelta::FromMicroseconds(delay));
+                        base::Microseconds(delay));
 }
 
 static void JNI_BaseRunLoop_DeleteMessageLoop(

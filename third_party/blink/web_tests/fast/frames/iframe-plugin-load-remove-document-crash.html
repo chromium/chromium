@@ -1,5 +1,5 @@
 <html>
-<body onload="runTest()">
+<body>
 <script>
     if (window.testRunner)
     {
@@ -15,7 +15,7 @@
             testRunner.notifyDone();
     }
 </script>
-<iframe src="data:application/x-blink-test-plugin,foo"></iframe>
+<iframe src="data:application/x-blink-test-plugin,foo" onload="runTest()"></iframe>
 </body>
 </html>
 

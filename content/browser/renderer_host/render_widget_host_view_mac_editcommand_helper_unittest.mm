@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #import "content/browser/renderer_host/render_widget_host_view_mac_editcommand_helper.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
@@ -14,10 +15,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/site_instance_group.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -27,6 +29,7 @@
 #include "testing/platform_test.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/layout.h"
+#include "ui/display/screen.h"
 
 using content::RenderWidgetHostViewMac;
 
@@ -40,7 +43,7 @@ using content::RenderWidgetHostViewMac;
 // Class that owns a RenderWidgetHostViewMac.
 @interface RenderWidgetHostNSViewHostOwner
     : NSObject <RenderWidgetHostNSViewHostOwner> {
-  RenderWidgetHostViewMac* _rwhvm;
+  raw_ptr<RenderWidgetHostViewMac> _rwhvm;
 }
 
 - (id)initWithRenderWidgetHostViewMac:(RenderWidgetHostViewMac*)rwhvm;
@@ -88,7 +91,7 @@ class RenderWidgetHostDelegateEditCommandCounter
  private:
   void ExecuteEditCommand(
       const std::string& command,
-      const base::Optional<std::u16string>& value) override {
+      const absl::optional<std::u16string>& value) override {
     edit_command_message_count_++;
   }
   void Undo() override {}
@@ -122,6 +125,7 @@ class RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest
   void TearDown() override { ImageTransportFactory::Terminate(); }
 
  private:
+  display::ScopedNativeScreen screen_;
   // This has a MessageLoop for ImageTransportFactory and enables
   // BrowserThread::UI for RecyclableCompositorMac used by
   // RenderWidgetHostViewMac.
@@ -139,19 +143,21 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
   MockRenderProcessHostFactory process_host_factory;
   RenderProcessHost* process_host =
       process_host_factory.CreateRenderProcessHost(&browser_context, nullptr);
-  auto agent_scheduling_group_host =
-      std::make_unique<AgentSchedulingGroupHost>(*process_host);
+  scoped_refptr<SiteInstanceGroup> site_instance_group =
+      base::WrapRefCounted(new SiteInstanceGroup(
+          SiteInstanceImpl::NextBrowsingInstanceId(), process_host));
   // Populates |g_supported_scale_factors|.
-  std::vector<ui::ScaleFactor> supported_factors;
-  supported_factors.push_back(ui::SCALE_FACTOR_100P);
-  ui::test::ScopedSetSupportedScaleFactors scoped_supported(supported_factors);
+  std::vector<ui::ResourceScaleFactor> supported_factors;
+  supported_factors.push_back(ui::k100Percent);
+  ui::test::ScopedSetSupportedResourceScaleFactors scoped_supported(
+      supported_factors);
 
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
         RenderWidgetHostImpl::Create(
-            /*frmae_tree=*/nullptr, &delegate, *agent_scheduling_group_host,
-            routing_id,
+            /*frmae_tree=*/nullptr, &delegate,
+            site_instance_group->GetSafeRef(), routing_id,
             /*hidden=*/false, /*renderer_initiated_creation=*/false,
             std::make_unique<FrameTokenMessageQueue>());
 

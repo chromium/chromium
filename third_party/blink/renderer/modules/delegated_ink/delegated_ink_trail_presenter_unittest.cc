@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_trail_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -63,7 +64,7 @@ class TestDelegatedInkMetadata {
 
 DelegatedInkTrailPresenter* CreatePresenter(Element* element,
                                             LocalFrame* frame) {
-  return DelegatedInkTrailPresenter::CreatePresenter(element, frame);
+  return MakeGarbageCollected<DelegatedInkTrailPresenter>(element, frame);
 }
 
 }  // namespace
@@ -172,10 +173,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorBLUE);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(100, 100);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(pt);
 
@@ -233,10 +235,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   expected_metadata.SetDiameter(style.diameter() * kZoom);
   expected_metadata.SetColor(SK_ColorMAGENTA);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(87, 113);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
   expected_metadata.SetHovering(true);
   pt.Scale(kZoom);
   expected_metadata.SetPoint(pt);
@@ -298,10 +301,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasNotAtOrigin) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorRED);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 175);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(pt);
 
@@ -397,10 +401,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, CanvasInIFrame) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorCYAN);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -524,10 +529,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport, NestedIframe) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorYELLOW);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(350, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(gfx::PointF(pt.x() + kInnerIframeLeftOffset,
                                          pt.y() + kInnerIframeTopOffset));
@@ -608,10 +614,11 @@ TEST_P(DelegatedInkTrailPresenterCanvasBeyondViewport,
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorWHITE);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(380, 375);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -626,6 +633,9 @@ INSTANTIATE_TEST_SUITE_P(,
 // Confirm that presentation area defaults to the size of the viewport.
 // Numbers and color used were chosen arbitrarily.
 TEST_F(DelegatedInkTrailPresenterUnitTest, PresentationAreaNotProvided) {
+  LoadURL("about:blank");
+  Compositor().BeginFrame();
+
   const int kViewportHeight = 555;
   const int kViewportWidth = 333;
   SetWebViewSize(kViewportWidth, kViewportHeight);
@@ -643,10 +653,11 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, PresentationAreaNotProvided) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorYELLOW);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(70, 109);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(GetDocument().GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(pt);
 
@@ -728,10 +739,11 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasExtendsOutsideOfIframe) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorGREEN);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(102, 67);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -819,10 +831,11 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, CanvasLeftAndAboveIframeBoundaries) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorGREEN);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(102, 67);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ true), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ true), &style, exception_state);
   expected_metadata.SetHovering(true);
   expected_metadata.SetPoint(
       gfx::PointF(pt.x() + kIframeLeftOffset, pt.y() + kIframeTopOffset));
@@ -941,10 +954,11 @@ TEST_F(DelegatedInkTrailPresenterUnitTest, OuterIframeClipsInnerIframe) {
   expected_metadata.SetDiameter(style.diameter());
   expected_metadata.SetColor(SK_ColorRED);
 
+  DummyExceptionStateForTesting exception_state;
   gfx::PointF pt(357, 401);
   presenter->updateInkTrailStartPoint(
       ToScriptStateForMainWorld(iframe_document->GetFrame()),
-      CreatePointerMoveEvent(pt, /*hovering*/ false), &style);
+      CreatePointerMoveEvent(pt, /*hovering*/ false), &style, exception_state);
   expected_metadata.SetHovering(false);
   expected_metadata.SetPoint(gfx::PointF(pt.x() + kInnerIframeLeftOffset,
                                          pt.y() + kInnerIframeTopOffset));

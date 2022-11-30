@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -17,6 +16,9 @@ class SimpleFactoryKey;
 class KEYED_SERVICE_EXPORT SimpleDependencyManager : public DependencyManager {
  public:
   SimpleDependencyManager();
+
+  SimpleDependencyManager(const SimpleDependencyManager&) = delete;
+  SimpleDependencyManager& operator=(const SimpleDependencyManager&) = delete;
 
   // Called by each owners of SimpleFactoryKey before it is destroyed in order
   // to destroy all services associated with |key|.
@@ -47,8 +49,6 @@ class KEYED_SERVICE_EXPORT SimpleDependencyManager : public DependencyManager {
   // DependencyManager:
   void DumpContextDependencies(void* context) const final;
 #endif  // NDEBUG
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleDependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_

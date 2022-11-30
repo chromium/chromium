@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,9 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
+  if (!source_l || !source_r || !destination_l || !destination_r) {
     return;
+  }
 
   double gain_l, gain_r, pan_radian;
 
@@ -53,7 +54,7 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
   if (number_of_input_channels == 1) {  // For mono source case.
     while (n--) {
       float input_l = *source_l++;
-      double pan = clampTo(*pan_values++, -1.0, 1.0);
+      double pan = ClampTo(*pan_values++, -1.0, 1.0);
       // Pan from left to right [-1; 1] will be normalized as [0; 1].
       pan_radian = (pan * 0.5 + 0.5) * kPiOverTwoDouble;
       gain_l = fdlibm::cos(pan_radian);
@@ -65,7 +66,7 @@ void StereoPanner::PanWithSampleAccurateValues(const AudioBus* input_bus,
     while (n--) {
       float input_l = *source_l++;
       float input_r = *source_r++;
-      double pan = clampTo(*pan_values++, -1.0, 1.0);
+      double pan = ClampTo(*pan_values++, -1.0, 1.0);
       // Normalize [-1; 0] to [0; 1]. Do nothing when [0; 1].
       pan_radian = (pan <= 0 ? pan + 1 : pan) * kPiOverTwoDouble;
       gain_l = fdlibm::cos(pan_radian);
@@ -104,10 +105,11 @@ void StereoPanner::PanToTargetValue(const AudioBus* input_bus,
   float* destination_r =
       output_bus->ChannelByType(AudioBus::kChannelRight)->MutableData();
 
-  if (!source_l || !source_r || !destination_l || !destination_r)
+  if (!source_l || !source_r || !destination_l || !destination_r) {
     return;
+  }
 
-  float target_pan = clampTo(pan_value, -1.0, 1.0);
+  float target_pan = ClampTo(pan_value, -1.0, 1.0);
 
   int n = frames_to_process;
 

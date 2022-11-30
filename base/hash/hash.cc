@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,13 @@ namespace {
 size_t FastHashImpl(base::span<const uint8_t> data) {
   // We use the updated CityHash within our namespace (not the deprecated
   // version from third_party/smhasher).
-#if defined(ARCH_CPU_64_BITS)
-  return base::internal::cityhash_v111::CityHash64(
-      reinterpret_cast<const char*>(data.data()), data.size());
-#else
-  return base::internal::cityhash_v111::CityHash32(
-      reinterpret_cast<const char*>(data.data()), data.size());
-#endif
+  if constexpr (sizeof(size_t) > 4) {
+    return base::internal::cityhash_v111::CityHash64(
+        reinterpret_cast<const char*>(data.data()), data.size());
+  } else {
+    return base::internal::cityhash_v111::CityHash32(
+        reinterpret_cast<const char*>(data.data()), data.size());
+  }
 }
 
 // Implement hashing for pairs of at-most 32 bit integer values.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,32 +7,27 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace web_app {
 
-std::unique_ptr<TestFileUtils> TestFileUtils::Create(
+scoped_refptr<TestFileUtils> TestFileUtils::Create(
     std::map<base::FilePath, base::FilePath> read_file_rerouting) {
-  return std::make_unique<TestFileUtils>(read_file_rerouting);
+  return base::MakeRefCounted<TestFileUtils>(std::move(read_file_rerouting));
 }
 
 TestFileUtils::TestFileUtils(
     std::map<base::FilePath, base::FilePath> read_file_rerouting)
-    : read_file_rerouting_(read_file_rerouting) {}
-
-TestFileUtils::TestFileUtils(const TestFileUtils&) = default;
+    : read_file_rerouting_(std::move(read_file_rerouting)) {}
 
 TestFileUtils::~TestFileUtils() = default;
-
-std::unique_ptr<FileUtilsWrapper> TestFileUtils::Clone() const {
-  return std::make_unique<TestFileUtils>(*this);
-}
 
 void TestFileUtils::SetRemainingDiskSpaceSize(int remaining_disk_space) {
   remaining_disk_space_ = remaining_disk_space;
 }
 
 void TestFileUtils::SetNextDeleteFileRecursivelyResult(
-    base::Optional<bool> delete_result) {
+    absl::optional<bool> delete_result) {
   delete_file_recursively_result_ = delete_result;
 }
 

@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 18: SUCCESS: paste DID NOT keep float:left style.
+CONSOLE MESSAGE: SUCCESS: paste DID NOT keep float:left style.
 This test is to see if text within a floating block is put onto the paste board wihtout the float style.
 
 First LI

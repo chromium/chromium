@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <map>
 #include <string>
 
-#include "base/optional.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -20,7 +20,7 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
  public:
   using FieldDataMap =
       std::map<FieldRendererId,
-               std::pair<base::Optional<std::u16string>, FieldPropertiesMask>>;
+               std::pair<absl::optional<std::u16string>, FieldPropertiesMask>>;
 
   FieldDataManager();
 

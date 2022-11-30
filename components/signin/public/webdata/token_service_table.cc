@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,8 +96,7 @@ bool TokenServiceTable::SetTokenForService(const std::string& service,
       db_->GetUniqueStatement("INSERT OR REPLACE INTO token_service "
                               "(service, encrypted_token) VALUES (?, ?)"));
   s.BindString(0, service);
-  s.BindBlob(1, encrypted_token.data(),
-             static_cast<int>(encrypted_token.length()));
+  s.BindBlob(1, encrypted_token);
 
   bool result = s.Run();
   LOG_IF(ERROR, !result) << "Failed to insert or replace token for " << service;

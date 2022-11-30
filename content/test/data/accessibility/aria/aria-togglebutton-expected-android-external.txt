@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++Button text:"Regular button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="button"]
+++ToggleButton text:"Toggle button" stateDescription:"Off" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]
+++ToggleButton text:"Toggle button" stateDescription:"On" checkable checked clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]
+++ToggleButton text:"Toggle button" stateDescription:"Partially Checked" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="toggleButton", roleDescription="toggle button"]

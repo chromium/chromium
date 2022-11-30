@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,15 +14,14 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "crypto/random.h"
 #include "net/base/elements_upload_data_stream.h"
-#include "net/base/escape.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -51,6 +50,9 @@ class TokenValidatorImpl : public TokenValidatorBase {
       const std::string& remote_jid,
       scoped_refptr<net::URLRequestContextGetter> request_context_getter);
 
+  TokenValidatorImpl(const TokenValidatorImpl&) = delete;
+  TokenValidatorImpl& operator=(const TokenValidatorImpl&) = delete;
+
  protected:
   void StartValidateRequest(const std::string& token) override;
 
@@ -60,8 +62,6 @@ class TokenValidatorImpl : public TokenValidatorBase {
 
   std::string post_body_;
   scoped_refptr<RsaKeyPair> key_pair_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenValidatorImpl);
 };
 
 TokenValidatorImpl::TokenValidatorImpl(
@@ -75,17 +75,16 @@ TokenValidatorImpl::TokenValidatorImpl(
                          request_context_getter),
       key_pair_(key_pair) {
   DCHECK(key_pair_.get());
-  token_scope_ = CreateScope(local_jid, remote_jid);
 }
 
 // TokenValidator interface.
 void TokenValidatorImpl::StartValidateRequest(const std::string& token) {
-  post_body_ = "code=" + net::EscapeUrlEncodedData(token, true) +
-      "&client_id=" + net::EscapeUrlEncodedData(
-          key_pair_->GetPublicKey(), true) +
-      "&client_secret=" + net::EscapeUrlEncodedData(
-          key_pair_->SignMessage(token), true) +
-      "&grant_type=authorization_code";
+  post_body_ = "code=" + base::EscapeUrlEncodedData(token, true) +
+               "&client_id=" +
+               base::EscapeUrlEncodedData(key_pair_->GetPublicKey(), true) +
+               "&client_secret=" +
+               base::EscapeUrlEncodedData(key_pair_->SignMessage(token), true) +
+               "&grant_type=authorization_code";
 
   request_ = request_context_getter_->GetURLRequestContext()->CreateRequest(
       third_party_auth_config_.token_validation_url, net::DEFAULT_PRIORITY,
@@ -123,6 +122,13 @@ std::string TokenValidatorImpl::CreateScope(
                     kNonceLength);
   std::string nonce;
   base::Base64Encode(nonce_bytes, &nonce);
+  // Note that because of how FTL signaling IDs are managed, |local_jid| will
+  // not change between connections to a given host instance. We do expect that
+  // |remote_jid| will be different for each connection (clients should not
+  // reuse the same channel for connections) but the host does not control this.
+  // Since at least one of the JIDs will be reused between connections, we rely
+  // on the nonce to guarantee that the scope string is unique and cannot be
+  // reused for multiple connections.
   return "client:" + remote_jid + " host:" + local_jid + " nonce:" + nonce;
 }
 

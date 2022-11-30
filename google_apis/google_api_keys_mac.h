@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_API_KEYS_MAC_H_
-#define GOOGLE_API_KEYS_MAC_H_
+#ifndef GOOGLE_APIS_GOOGLE_API_KEYS_MAC_H_
+#define GOOGLE_APIS_GOOGLE_API_KEYS_MAC_H_
 
 #include <string>
 
@@ -13,4 +13,4 @@ std::string GetAPIKeyFromInfoPlist(const std::string& key_name);
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_API_KEYS_MAC_H_
+#endif  // GOOGLE_APIS_GOOGLE_API_KEYS_MAC_H_

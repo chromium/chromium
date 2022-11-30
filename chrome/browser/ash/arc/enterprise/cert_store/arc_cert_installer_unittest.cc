@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/policy.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/mojom/policy.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/rsa_private_key.h"
@@ -50,6 +50,11 @@ constexpr char kFakeName1[] = "fake1";
 constexpr char kFakeName2[] = "fake2";
 constexpr char kFakeName3[] = "fake3";
 
+// Arbitrary label and ID. Note IDs can be any byte blob, not necessarily
+// human readable.
+constexpr char kLabel[] = "some label";
+constexpr char kId[] = "some ID";
+
 class MockRemoteCommandsQueueObserver
     : public StrictMock<policy::RemoteCommandsQueue::Observer> {
  public:
@@ -76,7 +81,8 @@ void AddCert(const std::string& cn, std::vector<CertDescription>* certs) {
   cert = net::x509_util::CreateCERTCertificateFromBytes(
       reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size());
   ASSERT_TRUE(cert);
-  certs->push_back(CertDescription(key.release(), cert.release()));
+  certs->emplace_back(key.release(), cert.release(),
+                      keymaster::mojom::ChapsSlot::kUser, kLabel, kId);
 }
 
 }  // namespace
@@ -92,6 +98,9 @@ class ArcCertInstallerTest : public testing::Test {
     arc_service_manager_->arc_bridge_service()->policy()->SetInstance(
         policy_instance_.get());
   }
+
+  ArcCertInstallerTest(const ArcCertInstallerTest&) = delete;
+  ArcCertInstallerTest& operator=(const ArcCertInstallerTest&) = delete;
 
   ~ArcCertInstallerTest() override {
     arc_service_manager_->arc_bridge_service()->policy()->CloseInstance(
@@ -142,8 +151,6 @@ class ArcCertInstallerTest : public testing::Test {
   policy::RemoteCommandsQueue* queue_;
   std::unique_ptr<ArcCertInstaller> installer_;
   MockRemoteCommandsQueueObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcCertInstallerTest);
 };
 
 // Tests that installation of an empty cert list completes successfully.

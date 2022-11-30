@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,28 @@
 
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/dns/dns_test_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/doh_provider_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+
+namespace {
+// Returns the DoH provider entry in `DohProviderEntry::GetList()` that matches
+// `provider`. Crashes if there is no matching entry.
+const DohProviderEntry& GetDohProviderEntry(base::StringPiece provider) {
+  auto provider_list = DohProviderEntry::GetList();
+  auto it =
+      base::ranges::find(provider_list, provider, &DohProviderEntry::provider);
+  CHECK(it != provider_list.end());
+  return **it;
+}
+}  // namespace
 
 using testing::Eq;
 
@@ -92,22 +107,22 @@ TEST_F(DNSUtilTest, DNSDomainFromUnrestrictedDot) {
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleSimpleNames) {
   std::string dns_name = "\003foo";
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("foo")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader), testing::Optional(Eq("foo")));
 
   dns_name += "\003bar";
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("foo.bar")));
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader1), testing::Optional(Eq("foo.bar")));
 
   dns_name += "\002uk";
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("foo.bar.uk")));
-  base::BigEndianReader reader2(dns_name.c_str(), dns_name.size());
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader2), testing::Optional(Eq("foo.bar.uk")));
 
   dns_name += '\0';
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("foo.bar.uk")));
-  base::BigEndianReader reader3(dns_name.c_str(), dns_name.size());
+  auto reader3 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader3), testing::Optional(Eq("foo.bar.uk")));
 }
 
@@ -115,13 +130,13 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleEmpty) {
   std::string dns_name;
 
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader), testing::Optional(Eq("")));
 
   dns_name += '\0';
 
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("")));
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader1), testing::Optional(Eq("")));
 }
 
@@ -130,15 +145,15 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyIncomplete) {
 
   EXPECT_THAT(DnsDomainToString(dns_name, false /* require_complete */),
               testing::Optional(Eq("")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader, false /* require_complete */),
               testing::Optional(Eq("")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+            absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_EQ(DnsDomainToString(reader1, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 }
 
 // Test `require_complete` functionality given an input with terminating zero-
@@ -149,13 +164,13 @@ TEST_F(DNSUtilTest, DnsDomainToStringComplete) {
 
   EXPECT_THAT(DnsDomainToString(dns_name, false /* require_complete */),
               testing::Optional(Eq("foo.test")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader, false /* require_complete */),
               testing::Optional(Eq("foo.test")));
 
   EXPECT_THAT(DnsDomainToString(dns_name, true /* require_complete */),
               testing::Optional(Eq("foo.test")));
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader1, true /* require_complete */),
               testing::Optional(Eq("foo.test")));
 }
@@ -167,15 +182,15 @@ TEST_F(DNSUtilTest, DnsDomainToStringNotComplete) {
 
   EXPECT_THAT(DnsDomainToString(dns_name, false /* require_complete */),
               testing::Optional(Eq("boo.test")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader, false /* require_complete */),
               testing::Optional(Eq("boo.test")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
-  base::BigEndianReader reader2(dns_name.c_str(), dns_name.size());
+            absl::nullopt);
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_EQ(DnsDomainToString(reader2, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
@@ -183,21 +198,21 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
 
   EXPECT_THAT(DnsDomainToString(dns_name, false /* require_complete */),
               testing::Optional(Eq("")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader, false /* require_complete */),
               testing::Optional(Eq("")));
 
   EXPECT_EQ(DnsDomainToString(dns_name, true /* require_complete */),
-            base::nullopt);
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+            absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_EQ(DnsDomainToString(reader1, true /* require_complete */),
-            base::nullopt);
+            absl::nullopt);
 
   dns_name += '\0';
 
   EXPECT_THAT(DnsDomainToString(dns_name, true /* require_complete */),
               testing::Optional(Eq("")));
-  base::BigEndianReader reader2(dns_name.c_str(), dns_name.size());
+  auto reader2 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader2, true /* require_complete */),
               testing::Optional(Eq("")));
 }
@@ -205,16 +220,16 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectEmptyWhenRequiringComplete) {
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectCompression) {
   std::string dns_name = CreateNamePointer(152);
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 
   dns_name = "\005hello";
   dns_name += CreateNamePointer(152);
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader1), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader1), absl::nullopt);
 }
 
 // Test that extra input past the terminating zero-length label are ignored.
@@ -225,7 +240,7 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleExcessInput) {
 
   EXPECT_THAT(DnsDomainToString(dns_name),
               testing::Optional(Eq("cool.name.test")));
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader),
               testing::Optional(Eq("cool.name.test")));
 
@@ -234,7 +249,7 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleExcessInput) {
   dns_name += "goodbye";
 
   EXPECT_THAT(DnsDomainToString(dns_name), testing::Optional(Eq("hi")));
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
   EXPECT_THAT(DnsDomainToString(reader1), testing::Optional(Eq("hi")));
 }
 
@@ -242,15 +257,15 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleExcessInput) {
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTruncatedNames) {
   std::string dns_name = "\07cheese";
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 
   dns_name = "\006cheesy\05test";
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader1(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader1), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader1 = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader1), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSingleLabel) {
@@ -259,9 +274,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSingleLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSecondLabel) {
@@ -271,9 +286,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongSecondLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSingleLabel) {
@@ -282,9 +297,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSingleLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSecondLabel) {
@@ -294,9 +309,9 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongSecondLabel) {
     dns_name += 'a';
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 #if CHAR_MIN < 0
@@ -313,32 +328,13 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectCharMinLabels) {
     }
   }
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 #endif  // if CHAR_MIN < 0
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongName) {
-  std::string dns_name;
-  for (int i = 0; i < dns_protocol::kMaxNameLength - 1;
-       i += (dns_protocol::kMaxLabelLength + 1)) {
-    int label_size = std::min(dns_protocol::kMaxNameLength - 2 - i,
-                              dns_protocol::kMaxLabelLength);
-    dns_name += static_cast<char>(label_size);
-    for (int j = 0; j < label_size; ++j) {
-      dns_name += 'a';
-    }
-  }
-  ASSERT_EQ(dns_name.size(),
-            static_cast<size_t>(dns_protocol::kMaxNameLength - 1));
-
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
-}
-
-TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   std::string dns_name;
   for (int i = 0; i < dns_protocol::kMaxNameLength;
        i += (dns_protocol::kMaxLabelLength + 1)) {
@@ -351,31 +347,31 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   }
   ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
 }
 
-TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
+TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   std::string dns_name;
-  for (int i = 0; i < dns_protocol::kMaxNameLength - 1;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
        i += (dns_protocol::kMaxLabelLength + 1)) {
-    int label_size = std::min(dns_protocol::kMaxNameLength - 2 - i,
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
                               dns_protocol::kMaxLabelLength);
     dns_name += static_cast<char>(label_size);
     for (int j = 0; j < label_size; ++j) {
       dns_name += 'a';
     }
   }
-  dns_name += '\0';
-  ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
-TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
+TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
   std::string dns_name;
   for (int i = 0; i < dns_protocol::kMaxNameLength;
        i += (dns_protocol::kMaxLabelLength + 1)) {
@@ -390,9 +386,29 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
   ASSERT_EQ(dns_name.size(),
             static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_NE(DnsDomainToString(reader), absl::nullopt);
+}
+
+TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  dns_name += '\0';
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 2));
+
+  EXPECT_EQ(DnsDomainToString(dns_name), absl::nullopt);
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
+  EXPECT_EQ(DnsDomainToString(reader), absl::nullopt);
 }
 
 TEST_F(DNSUtilTest, IsValidDNSDomain) {
@@ -402,8 +418,8 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "noodles.blorg`",      "www.-noodles.blorg",
   };
 
-  for (size_t i = 0; i < base::size(bad_hostnames); ++i) {
-    EXPECT_FALSE(IsValidDNSDomain(bad_hostnames[i]));
+  for (const auto* bad_hostname : bad_hostnames) {
+    EXPECT_FALSE(IsValidDNSDomain(bad_hostname));
   }
 
   const char* const good_hostnames[] = {
@@ -412,8 +428,8 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "www_.noodles.blorg",  "www.noodles.blorg.", "_privet._tcp.local",
   };
 
-  for (size_t i = 0; i < base::size(good_hostnames); ++i) {
-    EXPECT_TRUE(IsValidDNSDomain(good_hostnames[i]));
+  for (const auto* good_hostname : good_hostnames) {
+    EXPECT_TRUE(IsValidDNSDomain(good_hostname));
   }
 }
 
@@ -426,8 +442,8 @@ TEST_F(DNSUtilTest, IsValidUnrestrictedDNSDomain) {
       "www.nood(les).blorg", "noo dl(es)._tcp.local",
   };
 
-  for (size_t i = 0; i < base::size(good_hostnames); ++i) {
-    EXPECT_TRUE(IsValidUnrestrictedDNSDomain(good_hostnames[i]));
+  for (const auto* good_hostname : good_hostnames) {
+    EXPECT_TRUE(IsValidUnrestrictedDNSDomain(good_hostname));
   }
 }
 
@@ -439,22 +455,24 @@ TEST_F(DNSUtilTest, GetURLFromTemplateWithoutParameters) {
 
 TEST_F(DNSUtilTest, GetDohUpgradeServersFromDotHostname) {
   std::vector<DnsOverHttpsServerConfig> doh_servers =
-      GetDohUpgradeServersFromDotHostname("", std::vector<std::string>());
+      GetDohUpgradeServersFromDotHostname("");
   EXPECT_EQ(0u, doh_servers.size());
 
-  doh_servers = GetDohUpgradeServersFromDotHostname("unrecognized",
-                                                    std::vector<std::string>());
+  doh_servers = GetDohUpgradeServersFromDotHostname("unrecognized");
   EXPECT_EQ(0u, doh_servers.size());
 
   doh_servers = GetDohUpgradeServersFromDotHostname(
-      "family-filter-dns.cleanbrowsing.org", std::vector<std::string>());
+      "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(1u, doh_servers.size());
   EXPECT_EQ("https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-            doh_servers[0].server_template);
+            doh_servers[0].server_template());
 
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          GetDohProviderEntry("CleanBrowsingFamily").feature});
   doh_servers = GetDohUpgradeServersFromDotHostname(
-      "family-filter-dns.cleanbrowsing.org",
-      std::vector<std::string>({"CleanBrowsingFamily"}));
+      "family-filter-dns.cleanbrowsing.org");
   EXPECT_EQ(0u, doh_servers.size());
 }
 
@@ -472,46 +490,43 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
   // None-upgradeable IP
   IPAddress dns_ip4(1, 2, 3, 4);
 
-  nameservers.push_back(IPEndPoint(dns_ip0, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip1, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip2, 54));
-  nameservers.push_back(IPEndPoint(dns_ip3, dns_protocol::kDefaultPort));
-  nameservers.push_back(IPEndPoint(dns_ip4, dns_protocol::kDefaultPort));
+  nameservers.emplace_back(dns_ip0, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip1, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip2, 54);
+  nameservers.emplace_back(dns_ip3, dns_protocol::kDefaultPort);
+  nameservers.emplace_back(dns_ip4, dns_protocol::kDefaultPort);
 
   std::vector<DnsOverHttpsServerConfig> doh_servers =
-      GetDohUpgradeServersFromNameservers(std::vector<IPEndPoint>(),
-                                          std::vector<std::string>());
+      GetDohUpgradeServersFromNameservers(std::vector<IPEndPoint>());
   EXPECT_EQ(0u, doh_servers.size());
 
-  doh_servers = GetDohUpgradeServersFromNameservers(nameservers,
-                                                    std::vector<std::string>());
-  EXPECT_THAT(
-      doh_servers,
-      testing::ElementsAre(
-          DnsOverHttpsServerConfig(
-              "https://chrome.cloudflare-dns.com/dns-query", true),
-          DnsOverHttpsServerConfig(
-              "https://doh.cleanbrowsing.org/doh/family-filter{?dns}", false),
-          DnsOverHttpsServerConfig(
-              "https://doh.cleanbrowsing.org/doh/security-filter{?dns}",
-              false)));
+  doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
+  auto expected_config = *DnsOverHttpsConfig::FromTemplatesForTesting(
+      {"https://chrome.cloudflare-dns.com/dns-query",
+       "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
+       "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
+  EXPECT_EQ(expected_config.servers(), doh_servers);
 
-  doh_servers = GetDohUpgradeServersFromNameservers(
-      nameservers, std::vector<std::string>(
-                       {"CleanBrowsingSecure", "Cloudflare", "Unexpected"}));
-  EXPECT_THAT(
-      doh_servers,
-      testing::ElementsAre(DnsOverHttpsServerConfig(
-          "https://doh.cleanbrowsing.org/doh/family-filter{?dns}", false)));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{GetDohProviderEntry("CleanBrowsingSecure").feature,
+                             GetDohProviderEntry("Cloudflare").feature});
+
+  doh_servers = GetDohUpgradeServersFromNameservers(nameservers);
+  EXPECT_THAT(doh_servers,
+              testing::ElementsAre(*DnsOverHttpsServerConfig::FromString(
+                  "https://doh.cleanbrowsing.org/doh/family-filter{?dns}")));
 }
 
-TEST_F(DNSUtilTest, GetDohProviderIdForHistogramFromDohConfig) {
-  EXPECT_EQ("Cloudflare", GetDohProviderIdForHistogramFromDohConfig(
-                              {"https://chrome.cloudflare-dns.com/dns-query",
-                               true /* use_post */}));
-  EXPECT_EQ("Other", GetDohProviderIdForHistogramFromDohConfig(
-                         {"https://unexpected.dohserver.com/dns-query",
-                          true /* use_post */}));
+TEST_F(DNSUtilTest, GetDohProviderIdForHistogramFromServerConfig) {
+  EXPECT_EQ("Cloudflare",
+            GetDohProviderIdForHistogramFromServerConfig(
+                *DnsOverHttpsServerConfig::FromString(
+                    "https://chrome.cloudflare-dns.com/dns-query")));
+  EXPECT_EQ("Other", GetDohProviderIdForHistogramFromServerConfig(
+                         *DnsOverHttpsServerConfig::FromString(
+                             "https://unexpected.dohserver.com/dns-query")));
 }
 
 TEST_F(DNSUtilTest, GetDohProviderIdForHistogramFromNameserver) {

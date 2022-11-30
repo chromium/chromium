@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_PLUGIN_VM_FAKE_PLUGIN_VM_FEATURES_H_
 #define CHROME_BROWSER_ASH_PLUGIN_VM_FAKE_PLUGIN_VM_FEATURES_H_
 
-#include "base/optional.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -38,10 +38,10 @@ class FakePluginVmFeatures : public PluginVmFeatures {
   // FakePluginVmFeatures is created and replaced at destruction.
   PluginVmFeatures* original_features_;
 
-  base::Optional<bool> allowed_;
+  absl::optional<bool> allowed_;
   std::string disallowed_reason_;
-  base::Optional<bool> configured_;
-  base::Optional<bool> enabled_;
+  absl::optional<bool> configured_;
+  absl::optional<bool> enabled_;
 };
 
 }  // namespace plugin_vm

@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -19,13 +19,23 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/aura/client/cursor_shape_client.h"
+#include "ui/wm/core/cursor_loader.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
+
 namespace {
 
-class FakeOverlay : public MouseCursorOverlayController::Overlay {
+class FakeOverlay final : public MouseCursorOverlayController::Overlay {
  public:
   FakeOverlay() = default;
-  ~FakeOverlay() final = default;
+
+  FakeOverlay(const FakeOverlay&) = delete;
+  FakeOverlay& operator=(const FakeOverlay&) = delete;
+
+  ~FakeOverlay() override = default;
 
   const SkBitmap& image() const { return image_; }
   const gfx::RectF& bounds() const { return bounds_; }
@@ -41,8 +51,6 @@ class FakeOverlay : public MouseCursorOverlayController::Overlay {
  private:
   SkBitmap image_;
   gfx::RectF bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOverlay);
 };
 
 }  // namespace
@@ -50,10 +58,24 @@ class FakeOverlay : public MouseCursorOverlayController::Overlay {
 class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
  public:
   MouseCursorOverlayControllerBrowserTest() = default;
+
+  MouseCursorOverlayControllerBrowserTest(
+      const MouseCursorOverlayControllerBrowserTest&) = delete;
+  MouseCursorOverlayControllerBrowserTest& operator=(
+      const MouseCursorOverlayControllerBrowserTest&) = delete;
+
   ~MouseCursorOverlayControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() final {
     ContentBrowserTest::SetUpOnMainThread();
+
+    // On Ash content browsertests, ash::Shell isn't initialized and thus
+    // neither NativeCursorManagerAsh, the owner of CursorLoader.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    cursor_loader_ = std::make_unique<wm::CursorLoader>();
+    aura::client::SetCursorShapeClient(cursor_loader_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     controller_.SetTargetView(shell()->web_contents()->GetNativeView());
     controller_.DisconnectFromToolkitForTesting();
     base::RunLoop().RunUntilIdle();
@@ -170,7 +192,9 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
 
   MouseCursorOverlayController controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorOverlayControllerBrowserTest);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<wm::CursorLoader> cursor_loader_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,

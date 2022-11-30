@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,20 +36,19 @@
             "name": "args",
             "optional": true,
             "description": "Command line arguments to pass to the process."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Returns id of the launched process. If no process was launched returns -1.",
-            "parameters": [
-              {
-                "name": "id",
-                "description": "Id of the launched process.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns id of the launched process. If no process was launched returns -1.",
+          "parameters": [
+            {
+              "name": "id",
+              "description": "Id of the launched process.",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "openVmshellProcess",
@@ -64,20 +63,19 @@
             "name": "args",
             "optional": true,
             "description": "Command line arguments to pass to vmshell."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
-            "parameters": [
-              {
-                "name": "id",
-                "description": "Id of the launched vmshell process.",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns id of the launched vmshell process. If no process was launched returns -1.",
+          "parameters": [
+            {
+              "name": "id",
+              "description": "Id of the launched vmshell process.",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "closeTerminalProcess",
@@ -88,20 +86,19 @@
             "name": "id",
             "type": "string",
             "description": "Unique id of the process we want to close."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Function that gets called when close operation is started for the process. Returns success of the function.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Function that gets called when close operation is started for the process. Returns success of the function.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "sendInput",
@@ -117,20 +114,19 @@
             "name": "input",
             "type": "string",
             "description": "Input we are sending to the process."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback that will be called when sendInput method ends. Returns success.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "onTerminalResize",
@@ -151,20 +147,19 @@
             "name": "height",
             "type": "integer",
             "description": "New window height (as row count)."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "description": "Callback that will be called when sendInput method ends. Returns success.",
-            "parameters": [
-              {
-                "name": "success",
-                "type": "boolean"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Callback that will be called when sendInput method ends. Returns success.",
+          "parameters": [
+            {
+              "name": "success",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "ackOutput",
@@ -181,13 +176,24 @@
       {
         "name": "openWindow",
         "type": "function",
-        "description": "Open the Terminal tabbed window.",
+        "description": "Open a Terminal app window/tab",
         "parameters": [
           {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
+            "name": "data",
+            "type": "object",
+	    "optional": true,
+            "properties": {
+              "url": {
+                "description": "The url for the new Terminal window.",
+                "optional": true,
+		"type": "string"
+              },
+	      "asTab": {
+		"description": "Instead of openning a new window, open it as a new tab in the current app window.",
+                "optional": true,
+		"type": "boolean"
+	      }
+	    }
           }
         ]
       },
@@ -195,82 +201,115 @@
         "name": "openOptionsPage",
         "type": "function",
         "description": "Open the Terminal Settings page.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       },
       {
-        "name": "getSettings",
+        "name": "openSettingsSubpage",
         "type": "function",
-        "description": "Returns an object (DictionaryValue) containing UI settings such as font style and colors used by terminal and stored as a syncable pref.  The UI currently has ~70 properties and we wish to allow flexibility for these to change in the UI without updating this API, so we allow any properties.",
+        "description": "Open the System Settings at the specified subpage.",
         "parameters": [
           {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called with settings.",
-            "parameters": [
-              {
-                "name": "settings",
-                "type": "object",
-                "additionalProperties":
-                  {
-                    "type": "any" ,
-                    "preserveNull": true
-                  },
-                "description": "Settings from prefs.",
-                "preserveNull": true
-              }
-            ]
+            "type": "string",
+            "name": "subpage",
+            "description": "Name of subpage to open.  Currently only 'crostini' supported."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       },
       {
-        "name": "setSettings",
+        "name": "getOSInfo",
         "type": "function",
-        "description": "Sets terminal UI settings which are stored as a syncable pref.",
+        "description": "Returns an object containing info about ChromeOS settings that affect the Terminal, e.g. which feature flags are enabled.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with the info object.",
+          "parameters": [
+            {
+              "name": "info",
+              "type": "object",
+              "properties": {
+                "alternative_emulator": {
+                  "description": "True if alternative emulator flag is enabled.",
+                  "type": "boolean"
+                },
+                "multi_profile": {
+                  "description": "True if multi profile settings is enabled.",
+                  "type": "boolean"
+                },
+                "tmux_integration": {
+                  "description": "True if tmux control mode integration is enabled.",
+                  "type": "boolean"
+                }
+              },
+              "description": "Information about which features are enabled."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getPrefs",
+        "type": "function",
+        "description": "Returns specified pref values, ignoring any not in allowlist.",
         "parameters": [
           {
-            "name": "settings",
+            "name": "paths",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Paths of prefs to fetch."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with prefs.",
+          "parameters": [
+            {
+              "name": "prefs",
+              "type": "object",
+              "additionalProperties":
+                {
+                  "type": "any" ,
+                  "preserveNull": true
+                },
+              "description": "prefs keyed by paths.",
+              "preserveNull": true
+            }
+          ]
+        }
+      },
+      {
+        "name": "setPrefs",
+        "type": "function",
+        "description": "Sets specified prefs, ignoring any not in allowlist.",
+        "parameters": [
+          {
+            "name": "prefs",
             "type": "object",
-            "description": "Settings to update into prefs.",
+            "description": "Prefs to update keyed by paths.",
             "additionalProperties":
               {
                 "type": "any" ,
                 "preserveNull": true
               },
             "preserveNull": true
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called when complete.",
-            "parameters": []
           }
-        ]
-      },
-      {
-        "name": "getA11yStatus",
-        "type": "function",
-        "description": "Returns a boolean indicating whether the accessibility spoken feedback is on.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Callback that will be called with the a11y status.",
-            "parameters": [
-              {
-                "name": "a11yStatus",
-                "type": "boolean",
-                "description": "True if a11y spoken feedback is on."
-              }
-            ]
-          }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called when complete.",
+          "parameters": []
+        }
       }
     ],
     "events": [
@@ -290,39 +329,27 @@
             "description": "Type of the output stream from which output came. When process exits, output type will be set to exit"
           },
           {
-            "name": "text",
-            "type": "string",
-            "description": "Text that was written to the output stream."
+            "name": "data",
+            "type": "binary",
+            "description": "Data that was written to the output stream."
           }
         ]
       },
       {
-        "name": "onSettingsChanged",
+        "name": "onPrefChanged",
         "type": "function",
-        "description": "Fired when terminal UI settings change.",
+        "description": "Fired when pref changes.",
         "parameters": [
           {
-            "name": "settings",
+            "name": "prefs",
             "type": "object",
-            "description": "Terminal UI Settings with updated values.",
+            "description": "Prefs keyed by paths.",
             "additionalProperties":
               {
                 "type": "any" ,
                 "preserveNull": true
               },
             "preserveNull": true
-          }
-        ]
-      },
-      {
-        "name": "onA11yStatusChanged",
-        "type": "function",
-        "description": "Fired when a11y spoken feedback is enabled/disabled.",
-        "parameters": [
-          {
-            "name": "status",
-            "type": "boolean",
-            "description": "True if a11y spoken feedback is on."
           }
         ]
       }

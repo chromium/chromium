@@ -1,0 +1,18 @@
+Tests test response bodies are evicted in accordance with configured max retention sizes.
+Before further Network.enable commands
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=1024, response body: body size: 1024
+#1: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=2048, response body: body size: 2048
+#2: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=4096, response body: body size: 4096
+After duplicate Network.enable with default buffer sizes
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=1024, response body: body size: 1024
+#1: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=2048, response body: body size: 2048
+#2: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=4096, response body: body size: 4096
+After max resource size update
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=1024, response body: Request content was evicted from inspector cache
+#1: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=2048, response body: body size: 2048
+#2: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=4096, response body: Request content was evicted from inspector cache
+After Network.disable and Network.enable
+#0: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=1024, response body: No resource with given identifier found
+#1: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=2048, response body: No resource with given identifier found
+#2: http://127.0.0.1:8000/devtools/network/resources/resource.php?size=4096, response body: No resource with given identifier found
+

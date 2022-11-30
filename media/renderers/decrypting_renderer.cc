@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,7 +107,7 @@ void DecryptingRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void DecryptingRenderer::SetLatencyHint(
-    base::Optional<base::TimeDelta> latency_hint) {
+    absl::optional<base::TimeDelta> latency_hint) {
   renderer_->SetLatencyHint(latency_hint);
 }
 
@@ -115,8 +115,9 @@ void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
   renderer_->SetPreservesPitch(preserves_pitch);
 }
 
-void DecryptingRenderer::SetAutoplayInitiated(bool autoplay_initiated) {
-  renderer_->SetAutoplayInitiated(autoplay_initiated);
+void DecryptingRenderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
+  renderer_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
 }
 
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {
@@ -178,7 +179,7 @@ void DecryptingRenderer::InitializeRenderer(bool success) {
   // encrypted streams.
   MediaResource* const maybe_decrypting_media_resource =
       decrypting_media_resource_ ? decrypting_media_resource_.get()
-                                 : media_resource_;
+                                 : media_resource_.get();
   renderer_->Initialize(maybe_decrypting_media_resource, client_,
                         std::move(init_cb_));
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,14 +34,6 @@
 
 namespace {
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL GetViewSourceURL(const char* path) {
-  GURL::Replacements replace_path;
-  replace_path.SetPathStr(path);
-  return GURL("view-source:").ReplaceComponents(replace_path);
-}
-
 struct TestItem {
   GURL url;
   const std::string expected_formatted_full_url;
@@ -53,16 +44,23 @@ struct TestItem {
 const std::vector<TestItem>& TestItems() {
   static base::NoDestructor<std::vector<TestItem>> items{{
       {
-          GetViewSourceURL("http://www.google.com"),
-          "view-source:www.google.com",
+          GURL("view-source:http://www.google.com"),
           "view-source:www.google.com",
       },
       {
           GURL(chrome::kChromeUINewTabURL),
           "",
       },
+      // After executing the associated JS code, the "javascript:" scheme
+      // will cause the address in the location bar to revert to whatever
+      // it was prior to execution of the JS code (i.e. the URL of the
+      // previous test case)
       {
-          GetViewSourceURL(chrome::kChromeUINewTabURL),
+          GURL("javascript:alert(1);"),
+          "",
+      },
+      {
+          GURL(std::string("view-source:") + chrome::kChromeUINewTabURL),
           "view-source:" +
               content::GetWebUIURLString(chrome::kChromeUINewTabHost),
       },
@@ -84,9 +82,53 @@ const std::vector<TestItem>& TestItems() {
           "google.com/search?q=tractor+supply",
       },
       {
+          GURL("https://www.google.com/search?q=tractor+supply"),
+          "https://www.google.com/search?q=tractor+supply",
+          "google.com/search?q=tractor+supply",
+      },
+      {
           GURL("https://m.google.ca/search?q=tractor+supply"),
           "https://m.google.ca/search?q=tractor+supply",
           "m.google.ca/search?q=tractor+supply",
+      },
+      {
+          GURL("http://m.google.ca/search?q=tractor+supply"),
+          "m.google.ca/search?q=tractor+supply",
+      },
+      {
+          GURL("http://en.wikipedia.org"),
+          "en.wikipedia.org",
+      },
+      {
+          GURL("https://en.wikipedia.org"),
+          "https://en.wikipedia.org",
+          "en.wikipedia.org",
+      },
+      {
+          GURL("http://www3.nhk.or.jp/nhkworld"),
+          "www3.nhk.or.jp/nhkworld",
+      },
+      {
+          GURL("https://www3.nhk.or.jp/nhkworld"),
+          "https://www3.nhk.or.jp/nhkworld",
+          "www3.nhk.or.jp/nhkworld",
+      },
+#if BUILDFLAG(IS_WIN)
+      {
+          GURL("file:///c:/path/to/file"),
+          "file:///C:/path/to/file",
+          "C:/path/to/file",
+      },
+#else
+      {
+          GURL("file:///path/to/file"),
+          "file:///path/to/file",
+          "/path/to/file",
+      },
+#endif
+      {
+          GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="),
+          "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       },
   }};
   return *items;
@@ -100,6 +142,10 @@ const std::vector<TestItem>& TestItems() {
 class LocationBarModelTest : public BrowserWithTestWindowTest {
  public:
   LocationBarModelTest();
+
+  LocationBarModelTest(const LocationBarModelTest&) = delete;
+  LocationBarModelTest& operator=(const LocationBarModelTest&) = delete;
+
   ~LocationBarModelTest() override;
 
   // BrowserWithTestWindowTest:
@@ -111,9 +157,6 @@ class LocationBarModelTest : public BrowserWithTestWindowTest {
       const std::u16string& expected_formatted_full_url,
       const std::u16string& expected_elided_url_for_display);
   void NavigateAndCheckElided(const GURL& https_url);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationBarModelTest);
 };
 
 LocationBarModelTest::LocationBarModelTest() {}

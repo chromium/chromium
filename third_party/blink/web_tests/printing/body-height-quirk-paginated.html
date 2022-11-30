@@ -1,0 +1,17 @@
+<!-- quirks mode -->
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+</script>
+<style>
+  body {
+    margin: 8px;
+    border: solid;
+  }
+</style>
+first page.
+<div style="break-before:page;">
+  second page.<br>
+  The block-end border should be right below this text, not at the bottom of
+  the page.
+</div>

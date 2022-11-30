@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CRASH_CONTENT_BROWSER_CHILD_PROCESS_CRASH_OBSERVER_ANDROID_H_
 #define COMPONENTS_CRASH_CONTENT_BROWSER_CHILD_PROCESS_CRASH_OBSERVER_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 
 namespace crash_reporter {
@@ -18,6 +17,11 @@ class ChildProcessCrashObserver
     : public crash_reporter::ChildExitObserver::Client {
  public:
   ChildProcessCrashObserver();
+
+  ChildProcessCrashObserver(const ChildProcessCrashObserver&) = delete;
+  ChildProcessCrashObserver& operator=(const ChildProcessCrashObserver&) =
+      delete;
+
   ~ChildProcessCrashObserver() override;
 
   // crash_reporter::ChildExitObserver::Client implementation:
@@ -27,8 +31,6 @@ class ChildProcessCrashObserver
   void OnChildExitImpl(const ChildExitObserver::TerminationInfo& info);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessCrashObserver);
 };
 
 }  // namespace crash_reporter

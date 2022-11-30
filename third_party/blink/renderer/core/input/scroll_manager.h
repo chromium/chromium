@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -69,14 +69,14 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // startNode - Optional. If provided, start chaining from the given node.
   //             If not, use the current focus or last clicked node.
   bool LogicalScroll(mojom::blink::ScrollDirection,
-                     ScrollGranularity,
+                     ui::ScrollGranularity,
                      Node* start_node,
                      Node* mouse_press_node);
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
   bool BubblingScroll(mojom::blink::ScrollDirection,
-                      ScrollGranularity,
+                      ui::ScrollGranularity,
                       Node* starting_node,
                       Node* mouse_press_node);
 
@@ -100,14 +100,14 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // Clears |m_resizeScrollableArea|. if |shouldNotBeNull| is true this
   // function DCHECKs to make sure that variable is indeed not null.
   void ClearResizeScrollableArea(bool should_not_be_null);
-  void SetResizeScrollableArea(PaintLayer*, IntPoint);
+  void SetResizeScrollableArea(PaintLayer*, gfx::Point);
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement,
-      gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position) const override;
-  gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) override;
+      gfx::PointF* out_initial_position,
+      gfx::PointF* out_target_position) const override;
+  gfx::PointF ScrollByForSnapFling(const gfx::Vector2dF& delta) override;
   void ScrollEndForSnapFling(bool did_finish) override;
   void RequestAnimationForSnapFling() override;
 
@@ -154,9 +154,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   uint32_t GetNonCompositedMainThreadScrollingReasons() const;
   void RecordScrollRelatedMetrics(WebGestureDevice) const;
 
-  WebGestureEvent SynthesizeGestureScrollBegin(
-      const WebGestureEvent& update_event);
-
   bool SnapAtGestureScrollEnd(const WebGestureEvent& end_event,
                               base::ScopedClosureRunner callback);
 
@@ -186,7 +183,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // customization.
   Member<Node> previous_gesture_scrolled_node_;
 
-  FloatSize last_scroll_delta_for_scroll_gesture_;
+  ScrollOffset last_scroll_delta_for_scroll_gesture_;
 
   // True iff some of the delta has been consumed for the current
   // scroll sequence in this frame, or any child frames. Only used

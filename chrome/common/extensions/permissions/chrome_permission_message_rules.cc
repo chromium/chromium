@@ -1,18 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/common/extensions/permissions/chrome_permission_message_rules.h"
 
+#include <initializer_list>
 #include <iterator>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/device_signals/core/common/signals_features.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::APIPermissionID;
@@ -28,6 +33,12 @@ class DefaultPermissionMessageFormatter
  public:
   explicit DefaultPermissionMessageFormatter(int message_id)
       : message_id_(message_id) {}
+
+  DefaultPermissionMessageFormatter(const DefaultPermissionMessageFormatter&) =
+      delete;
+  DefaultPermissionMessageFormatter& operator=(
+      const DefaultPermissionMessageFormatter&) = delete;
+
   ~DefaultPermissionMessageFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -38,8 +49,6 @@ class DefaultPermissionMessageFormatter
 
  private:
   int message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultPermissionMessageFormatter);
 };
 
 // A formatter that substitutes the parameter into the message using string
@@ -48,6 +57,10 @@ class DefaultPermissionMessageFormatter
 class SingleParameterFormatter : public ChromePermissionMessageFormatter {
  public:
   explicit SingleParameterFormatter(int message_id) : message_id_(message_id) {}
+
+  SingleParameterFormatter(const SingleParameterFormatter&) = delete;
+  SingleParameterFormatter& operator=(const SingleParameterFormatter&) = delete;
+
   ~SingleParameterFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -63,8 +76,6 @@ class SingleParameterFormatter : public ChromePermissionMessageFormatter {
 
  private:
   int message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleParameterFormatter);
 };
 
 // Adds each parameter to a growing list, with the given |root_message_id| as
@@ -73,6 +84,10 @@ class SimpleListFormatter : public ChromePermissionMessageFormatter {
  public:
   explicit SimpleListFormatter(int root_message_id)
       : root_message_id_(root_message_id) {}
+
+  SimpleListFormatter(const SimpleListFormatter&) = delete;
+  SimpleListFormatter& operator=(const SimpleListFormatter&) = delete;
+
   ~SimpleListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -85,8 +100,6 @@ class SimpleListFormatter : public ChromePermissionMessageFormatter {
 
  private:
   int root_message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleListFormatter);
 };
 
 // Creates a space-separated list of permissions with the given PermissionID.
@@ -100,6 +113,11 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
                               int message_id_for_multiple_hosts)
       : message_id_for_one_host_(message_id_for_one_host),
         message_id_for_multiple_hosts_(message_id_for_multiple_hosts) {}
+
+  SpaceSeparatedListFormatter(const SpaceSeparatedListFormatter&) = delete;
+  SpaceSeparatedListFormatter& operator=(const SpaceSeparatedListFormatter&) =
+      delete;
+
   ~SpaceSeparatedListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -119,8 +137,6 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
  private:
   int message_id_for_one_host_;
   int message_id_for_multiple_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpaceSeparatedListFormatter);
 };
 
 // Creates a list of host permissions. If there are 1-3 hosts, they are inserted
@@ -136,6 +152,10 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
         message_id_for_two_hosts_(message_id_for_two_hosts),
         message_id_for_three_hosts_(message_id_for_three_hosts),
         message_id_for_many_hosts_(message_id_for_many_hosts) {}
+
+  HostListFormatter(const HostListFormatter&) = delete;
+  HostListFormatter& operator=(const HostListFormatter&) = delete;
+
   ~HostListFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -188,13 +208,15 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
   int message_id_for_two_hosts_;
   int message_id_for_three_hosts_;
   int message_id_for_many_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostListFormatter);
 };
 
 class USBDevicesFormatter : public ChromePermissionMessageFormatter {
  public:
   USBDevicesFormatter() {}
+
+  USBDevicesFormatter(const USBDevicesFormatter&) = delete;
+  USBDevicesFormatter& operator=(const USBDevicesFormatter&) = delete;
+
   ~USBDevicesFormatter() override {}
 
   PermissionMessage GetPermissionMessage(
@@ -210,16 +232,16 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
     const PermissionID& permission = *permissions.begin();
     std::u16string msg;
     switch (permission.id()) {
-      case APIPermission::kUsbDevice:
+      case APIPermissionID::kUsbDevice:
         msg = l10n_util::GetStringFUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE, permission.parameter());
         break;
-      case APIPermission::kUsbDeviceUnknownProduct:
+      case APIPermissionID::kUsbDeviceUnknownProduct:
         msg = l10n_util::GetStringFUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_PRODUCT,
             permission.parameter());
         break;
-      case APIPermission::kUsbDeviceUnknownVendor:
+      case APIPermissionID::kUsbDeviceUnknownVendor:
         msg = l10n_util::GetStringUTF16(
             IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_VENDOR);
         break;
@@ -254,9 +276,21 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST),
         permissions, submessages);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(USBDevicesFormatter);
 };
+
+int GetEnterpriseReportingPrivatePermissionMessageId() {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_signals::features::kNewEvSignalsEnabled)) {
+    return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE;
+  }
+#if BUILDFLAG(IS_WIN)
+  return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE_ENABLED_WIN;
+#elif BUILDFLAG(IS_LINUX) or BUILDFLAG(IS_MAC)
+  return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE_ENABLED_LINUX_AND_MACOS;
+#else
+  return IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REPORTING_PRIVATE;
+#endif
+}
 
 }  // namespace
 
@@ -363,6 +397,16 @@ ChromePermissionMessageRule::GetAllRules() {
         APIPermissionID::kHostReadOnly, APIPermissionID::kHostReadWrite,
         APIPermissionID::kProcesses, APIPermissionID::kTab,
         APIPermissionID::kTopSites, APIPermissionID::kWebNavigation,
+        APIPermissionID::kDeclarativeNetRequest,
+        APIPermissionID::kWebAuthenticationProxy}},
+      {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS,
+       {APIPermissionID::kWebAuthenticationProxy},
+       {APIPermissionID::kDeclarativeWebRequest,
+        APIPermissionID::kDeclarativeNetRequestFeedback,
+        APIPermissionID::kFavicon, APIPermissionID::kHostsAllReadOnly,
+        APIPermissionID::kHostReadOnly, APIPermissionID::kHostReadWrite,
+        APIPermissionID::kProcesses, APIPermissionID::kTab,
+        APIPermissionID::kTopSites, APIPermissionID::kWebNavigation,
         APIPermissionID::kDeclarativeNetRequest}},
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS_READ_ONLY,
        {APIPermissionID::kHostsAllReadOnly},
@@ -401,6 +445,10 @@ ChromePermissionMessageRule::GetAllRules() {
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_VIDEO_CAPTURE,
        {APIPermissionID::kVideoCapture},
+       {}},
+
+      {IDS_EXTENSION_PROMPT_WARNING_SPEECH_RECOGNITION,
+       {APIPermissionID::kSpeechRecognitionPrivate},
        {}},
 
       {IDS_EXTENSION_PROMPT_WARNING_GEOLOCATION,
@@ -631,9 +679,6 @@ ChromePermissionMessageRule::GetAllRules() {
        {APIPermissionID::kNativeMessaging},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_PRIVACY, {APIPermissionID::kPrivacy}, {}},
-      {IDS_EXTENSION_PROMPT_WARNING_SIGNED_IN_DEVICES,
-       {APIPermissionID::kSignedInDevices},
-       {}},
       {IDS_EXTENSION_PROMPT_WARNING_SYNCFILESYSTEM,
        {APIPermissionID::kSyncFileSystem},
        {}},
@@ -656,9 +701,6 @@ ChromePermissionMessageRule::GetAllRules() {
       {IDS_EXTENSION_PROMPT_WARNING_ACTIVITY_LOG_PRIVATE,
        {APIPermissionID::kActivityLogPrivate},
        {}},
-      {IDS_EXTENSION_PROMPT_WARNING_MUSIC_MANAGER_PRIVATE,
-       {APIPermissionID::kMusicManagerPrivate},
-       {}},
       {IDS_EXTENSION_PROMPT_WARNING_SETTINGS_PRIVATE,
        {APIPermissionID::kSettingsPrivate},
        {}},
@@ -670,6 +712,9 @@ ChromePermissionMessageRule::GetAllRules() {
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_USERS_PRIVATE,
        {APIPermissionID::kUsersPrivate},
+       {}},
+      {GetEnterpriseReportingPrivatePermissionMessageId(),
+       {APIPermissionID::kEnterpriseReportingPrivate},
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_HARDWARE_PLATFORM,
        {APIPermissionID::kEnterpriseHardwarePlatform},
@@ -690,10 +735,26 @@ ChromePermissionMessageRule::GetAllRules() {
       {IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_STORAGE,
        {APIPermissionID::kLoginScreenStorage},
        {}},
+      {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_REMOTE_APPS,
+       {APIPermissionID::kEnterpriseRemoteApps},
+       {}},
       {IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND,
        {APIPermissionID::kTransientBackground},
        {}},
-  };
+
+      // Telemetry System Extension permission messages.
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS,
+       {APIPermissionID::kChromeOSDiagnostics},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY,
+       {APIPermissionID::kChromeOSTelemetry},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER,
+       {APIPermissionID::kChromeOSTelemetrySerialNumber},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION,
+       {APIPermissionID::kChromeOSTelemetryNetworkInformation},
+       {}}};
 
   return std::vector<ChromePermissionMessageRule>(
       std::make_move_iterator(std::begin(rules_arr)),

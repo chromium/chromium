@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 @class ChromeBroadcaster;
 @class TestMainContentUIState;
 
-// Checks whether |ui_state|'s broadcast properties are being broadcast through
-// |broadcaster|. Verifies broadcast setup according to |should_broadcast|.
+// Checks whether `ui_state`'s broadcast properties are being broadcast through
+// `broadcaster`. Verifies broadcast setup according to `should_broadcast`.
 void VerifyMainContentUIBroadcast(TestMainContentUIState* ui_state,
                                   ChromeBroadcaster* broadcaster,
                                   bool should_broadcast);

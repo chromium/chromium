@@ -1,22 +1,25 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {util} from '../../common/js/util.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {renameEntry, validateEntryName} from './file_rename.js';
+import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import {FilesAlertDialog} from './ui/files_alert_dialog.js';
 
 /**
  * Naming controller for directory tree.
  */
-/* #export */ class DirectoryTreeNamingController {
+export class DirectoryTreeNamingController {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!DirectoryTree} directoryTree
-   * @param {!cr.ui.dialogs.AlertDialog} alertDialog
+   * @param {!FilesAlertDialog} alertDialog
    */
   constructor(directoryModel, directoryTree, alertDialog) {
     /** @private @const {!DirectoryModel} */
@@ -25,7 +28,7 @@
     /** @private @const {!DirectoryTree} */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const {!cr.ui.dialogs.AlertDialog} */
+    /** @private @const {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
     /** @private {?DirectoryItem} */
@@ -34,18 +37,15 @@
     /** @private {boolean} */
     this.editing_ = false;
 
-    /** @private {boolean} */
+    /**
+     * Whether the entry being renamed is a root of a removable
+     * partition/volume.
+     * @private {boolean}
+     */
     this.isRemovableRoot_ = false;
 
     /** @private {?VolumeInfo} */
     this.volumeInfo_ = null;
-
-    /**
-     * Controls if a context menu is shown for the rename input, so it shouldn't
-     * commit the new name.
-     * @private {boolean}
-     */
-    this.showingContextMenu_ = false;
 
     /** @private @const {!HTMLInputElement} */
     this.inputElement_ = /** @type {!HTMLInputElement} */
@@ -59,9 +59,6 @@
       // directory item and current directory is changed to editing item.
       event.stopPropagation();
     });
-    this.inputElement_.addEventListener(
-        'contextmenu', this.onContextMenu_.bind(this));
-    this.inputElement_.addEventListener('focus', this.onFocus_.bind(this));
   }
 
   /**
@@ -87,9 +84,9 @@
    * Attaches naming controller to specified directory item and start rename.
    * @param {!DirectoryItem} directoryItem An html element of a node of the
    *     target.
-   * @param {boolean} isRemovableRoot Indicates whether the target is removable
-   *     node or not.
-   * @param {VolumeInfo} volumeInfo A volume information about the target node.
+   * @param {boolean} isRemovableRoot Indicates whether the target is a
+   *     removable volume root or not.
+   * @param {VolumeInfo} volumeInfo A volume information about the target entry.
    *     |volumeInfo| can be null if method is invoked on a folder that is in
    *     the tree view and is not root of an external drive.
    */
@@ -122,22 +119,13 @@
     this.editing_ = true;
   }
 
-  /** @private */
-  onContextMenu_() {
-    this.showingContextMenu_ = true;
-  }
-
-  /** @private */
-  onFocus_() {
-    this.showingContextMenu_ = false;
-  }
-
   /**
    * Commits rename.
    * @private
    */
-  commitRename_() {
-    if (!this.editing_ || this.showingContextMenu_) {
+  async commitRename_() {
+    const contextMenu = this.inputElement_.contextMenu;
+    if (!this.editing_ || (contextMenu && !contextMenu.hidden)) {
       return;
     }
     this.editing_ = false;
@@ -151,32 +139,15 @@
       return;
     }
 
-    if (this.isRemovableRoot_) {
-      // Validate new name.
-      util.validateExternalDriveName(
-              newName,
-              assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType))
-          .then(
-              this.performExternalDriveRename_.bind(this, entry, newName),
-              errorMessage => {
-                this.alertDialog_.show(
-                    /** @type {string} */ (errorMessage),
-                    this.detach_.bind(this));
-              });
-    } else {
-      // Validate new name.
-      new Promise(entry.getParent.bind(entry))
-          .then(parentEntry => {
-            return util.validateFileName(
-                parentEntry, newName,
-                !this.directoryModel_.getFileFilter().isHiddenFilesVisible());
-          })
-          .then(
-              this.performRename_.bind(this, entry, newName), errorMessage => {
-                this.alertDialog_.show(
-                    /** @type {string} */ (errorMessage),
-                    this.detach_.bind(this));
-              });
+    try {
+      await validateEntryName(
+          entry, newName,
+          this.directoryModel_.getFileFilter().isHiddenFilesVisible(),
+          this.volumeInfo_, this.isRemovableRoot_);
+      await this.performRename_(entry, newName);
+    } catch (error) {
+      await this.alertDialog_.showAsync(/** @type {string} */ (error.message));
+      this.editing_ = true;
     }
   }
 
@@ -186,7 +157,7 @@
    * @param {string} newName Validated name.
    * @private
    */
-  performRename_(entry, newName) {
+  async performRename_(entry, newName) {
     const renamingCurrentDirectory =
         util.isSameEntry(entry, this.directoryModel_.getCurrentDirEntry());
     if (renamingCurrentDirectory) {
@@ -196,52 +167,42 @@
 
     // TODO(yawano): Rename might take time on some volumes. Optimistically show
     // new name in the UI before actual rename is completed.
-    new Promise(util.rename.bind(null, entry, newName))
-        .then(
-            newEntry => {
-              // Put the new name in the .label element before detaching the
-              // <input> to prevent showing the old name.
-              this.getLabelElement_().textContent = newName;
+    try {
+      const newEntry = await renameEntry(
+          entry, newName, this.volumeInfo_, this.isRemovableRoot_);
 
-              this.currentDirectoryItem_.entry = newEntry;
-              this.currentDirectoryItem_.updateSubDirectories(
-                  true /* recursive */);
+      // Put the new name in the .label element before detaching the
+      // <input> to prevent showing the old name.
+      this.getLabelElement_().textContent = newName;
 
-              this.detach_();
+      // We currently don't have promises/callbacks for when removableRoots are
+      // successfully renamed, so we can't update their subdirectories or
+      // update the current directory to them at this point.
+      if (this.isRemovableRoot_) {
+        return;
+      }
 
-              // If renamed directory was current directory, change it to new
-              // one.
-              if (renamingCurrentDirectory) {
-                this.directoryModel_.changeDirectoryEntry(
-                    newEntry,
-                    this.directoryModel_.setIgnoringCurrentDirectoryDeletion
-                        .bind(this.directoryModel_, false /* not ignore */));
-              }
-            },
-            error => {
-              this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
-                  false /* not ignore */);
-              this.detach_();
+      this.currentDirectoryItem_.entry = newEntry;
+      this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
+      if (window.IN_TEST) {
+        this.currentDirectoryItem_.setAttribute('entry-label', newName);
+      }
 
-              this.alertDialog_.show(util.getRenameErrorMessage(
-                  /** @type {DOMError} */ (error), entry, newName));
-            });
-  }
+      // If renamed directory was current directory, change it to new one.
+      if (renamingCurrentDirectory) {
+        this.directoryModel_.changeDirectoryEntry(
+            /** @type {!DirectoryEntry} */ (newEntry),
+            this.directoryModel_.setIgnoringCurrentDirectoryDeletion.bind(
+                this.directoryModel_, /* ignore= */ false));
+      }
+    } catch (error) {
+      this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
+          /* ignore= */ false);
 
-  /**
-   * Performs external drive rename operation.
-   * @param {!DirectoryEntry} entry
-   * @param {string} newName Validated name.
-   * @private
-   */
-  performExternalDriveRename_(entry, newName) {
-    // Invoke external drive rename
-    chrome.fileManagerPrivate.renameVolume(this.volumeInfo_.volumeId, newName);
-
-    // Put the new name in the .label element before detaching the <input> to
-    // prevent showing the old name.
-    this.getLabelElement_().textContent = newName;
-    this.detach_();
+      this.alertDialog_.show(/** @type {string} */ (error.message));
+    } finally {
+      this.detach_();
+    }
   }
 
   /**

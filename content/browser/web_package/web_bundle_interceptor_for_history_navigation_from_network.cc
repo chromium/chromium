@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,8 +117,7 @@ bool WebBundleInterceptorForHistoryNavigationFromNetwork::
   DCHECK(browser_context);
   reader_ = base::MakeRefCounted<WebBundleReader>(
       std::move(source_), length_hint, std::move(*response_body),
-      url_loader->Unbind(),
-      BrowserContext::GetBlobStorageContext(browser_context));
+      url_loader->Unbind(), browser_context->GetBlobStorageContext());
   reader_->ReadMetadata(base::BindOnce(
       &WebBundleInterceptorForHistoryNavigationFromNetwork::OnMetadataReady,
       weak_factory_.GetWeakPtr(), request));
@@ -135,6 +134,19 @@ void WebBundleInterceptorForHistoryNavigationFromNetwork::OnMetadataReady(
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         web_bundle_utils::GetMetadataParseErrorMessage(error));
+    return;
+  }
+  if (!web_bundle_utils::IsAllowedExchangeUrl(reader_->GetPrimaryURL())) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kInvalidPrimaryUrlErrorMessage);
+    return;
+  }
+  if (!base::ranges::all_of(reader_->GetEntries(),
+                            &web_bundle_utils::IsAllowedExchangeUrl)) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kInvalidExchangeUrlErrorMessage);
     return;
   }
   if (!reader_->HasEntry(target_inner_url_)) {

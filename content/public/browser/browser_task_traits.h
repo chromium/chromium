@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,17 +36,26 @@ enum class BrowserTaskType {
   // Critical startup tasks.
   kBootstrap,
 
-  // A subset of network tasks related to preconnection.
-  kPreconnect,
+  // A subset of tasks related to user input.
+  kUserInput,
+
+  // Tasks processing navigation network request's response from the network
+  // service.
+  // NOTE: This task type should not be used for other navigation-related tasks
+  // as they should be ordered w.r.t. IPC channel and the UI thread's default
+  // task runner. Reach out to navigation-dev@ before adding new usages.
+  // TODO(altimin): Make this content-internal.
+  kNavigationNetworkResponse,
+
+  // Tasks processing ServiceWorker's storage control's response.
+  // TODO(chikamune): Make this content-internal.
+  kServiceWorkerStorageControlResponse,
 
   // Used to validate values in Java
   kBrowserTaskType_Last
 };
 
 // TaskTraits for running tasks on the browser threads.
-//
-// These traits enable the use of the //base/task/post_task.h APIs to post tasks
-// to a BrowserThread.
 //
 // To post a task to the UI thread (analogous for IO thread):
 //     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, task);
@@ -57,8 +66,6 @@ enum class BrowserTaskType {
 // Tasks posted to the same BrowserThread with the same traits will be executed
 // in the order they were posted, regardless of the TaskRunners they were
 // posted via.
-//
-// See //base/task/post_task.h for more detailed documentation.
 //
 // Posting to a BrowserThread must only be done after it was initialized (ref.
 // BrowserMainLoop::CreateThreads() phase).

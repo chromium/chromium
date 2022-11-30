@@ -1,14 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -40,13 +42,30 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     /**
      * Returns the current visibility constraints for the display of browser controls.
      * {@link BrowserControlsState} defines the valid return options.
-     * @param tab Tab whose browser constrol state is looked into.
+     * @param tab Tab whose browser controls state is looked into.
      * @return The current visibility constraints.
      */
     @BrowserControlsState
     public static int getConstraints(Tab tab) {
         if (tab == null || get(tab) == null) return BrowserControlsState.BOTH;
         return get(tab).getConstraints();
+    }
+
+    /**
+     * Returns the constraints delegate for a particular tab. The returned supplier will always be
+     * associated with that tab, even if it stops being the active tab.
+     * @param tab Tab whose browser controls state is looked into.
+     * @return Observable supplier for the current visibility constraints.
+     */
+    public static ObservableSupplier<Integer> getObservableConstraints(Tab tab) {
+        if (tab == null) {
+            return null;
+        }
+        TabBrowserControlsConstraintsHelper helper = get(tab);
+        if (helper == null) {
+            return null;
+        }
+        return helper.mVisibilityDelegate;
     }
 
     /**
@@ -107,13 +126,17 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInMainFrame()) return;
-
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
                 // At this point, we might have switched renderer processes, so push the existing
                 // constraints to the new renderer (has the potential to be slightly spammy, but
                 // the renderer has logic to suppress duplicate calls).
                 updateAfterRendererProcessSwitch(tab, navigationHandle.hasCommitted());
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
             }
 
             @Override
@@ -182,6 +205,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     @BrowserControlsState
     private int getConstraints() {
         return mVisibilityDelegate == null ? BrowserControlsState.BOTH : mVisibilityDelegate.get();
+    }
+
+    @VisibleForTesting
+    public static void setForTesting(Tab tab, TabBrowserControlsConstraintsHelper helper) {
+        tab.getUserDataHost().setUserData(USER_DATA_KEY, helper);
     }
 
     @NativeMethods

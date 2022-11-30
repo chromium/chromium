@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,15 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
       !data.ReadArrayBufferContentsArray(&out->array_buffer_contents_array) ||
       !data.ReadImageBitmapContentsArray(&out->image_bitmap_contents_array) ||
       !data.ReadPorts(&ports) || !data.ReadStreamChannels(&stream_channels) ||
-      !data.ReadUserActivation(&out->user_activation)) {
+      !data.ReadUserActivation(&out->user_activation) ||
+      !data.ReadParentTaskId(&out->parent_task_id)) {
     return false;
   }
 
   out->ports = blink::MessagePortChannel::CreateFromHandles(std::move(ports));
   out->stream_channels =
       blink::MessagePortChannel::CreateFromHandles(std::move(stream_channels));
-  out->delegate_payment_request = data.delegate_payment_request();
+  out->delegated_capability = data.delegated_capability();
   return true;
 }
 

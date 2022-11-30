@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_MANIFEST_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom-blink.h"
 #include "third_party/blink/public/web/web_manifest_manager.h"
@@ -41,6 +39,10 @@ class MODULES_EXPORT ManifestManager
   static ManifestManager* From(LocalDOMWindow&);
 
   explicit ManifestManager(LocalDOMWindow&);
+
+  ManifestManager(const ManifestManager&) = delete;
+  ManifestManager& operator=(const ManifestManager&) = delete;
+
   ~ManifestManager() override;
 
   void DidChangeManifest();
@@ -62,7 +64,7 @@ class MODULES_EXPORT ManifestManager
   void Trace(Visitor*) const override;
 
  private:
-  enum ResolveState { ResolveStateSuccess, ResolveStateFailure };
+  enum class ResolveState { kSuccess, kFailure };
 
   using InternalRequestManifestCallback =
       base::OnceCallback<void(const KURL&,
@@ -111,8 +113,6 @@ class MODULES_EXPORT ManifestManager
 
   HeapMojoReceiverSet<mojom::blink::ManifestManager, ManifestManager>
       receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestManager);
 };
 
 }  // namespace blink

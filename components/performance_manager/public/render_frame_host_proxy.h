@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ class FrameNodeImpl;
 // A RenderFrameHostProxy is used to post messages out of the performance
 // manager sequence that are bound for a RenderFrameHostProxy running on the UI
 // thread. The object is bound to the UI thread. A RenderFrameHostProxy is
-// conceptually equivalent to a WeakPtr<RenderProcessHost>. Copy and assignment
+// conceptually equivalent to a WeakPtr<RenderFrameHost>. Copy and assignment
 // are explicitly allowed for this object.
 class RenderFrameHostProxy {
  public:
@@ -33,7 +33,7 @@ class RenderFrameHostProxy {
   content::RenderFrameHost* Get() const;
 
   // Returns the global routing ID.
-  const content::GlobalFrameRoutingId& global_frame_routing_id() const {
+  const content::GlobalRenderFrameHostId& global_frame_routing_id() const {
     return global_frame_routing_id_;
   }
 
@@ -41,10 +41,10 @@ class RenderFrameHostProxy {
   friend class FrameNodeImpl;
 
   explicit RenderFrameHostProxy(
-      const content::GlobalFrameRoutingId& global_frame_routing_id);
+      const content::GlobalRenderFrameHostId& global_frame_routing_id);
 
  private:
-  content::GlobalFrameRoutingId global_frame_routing_id_;
+  content::GlobalRenderFrameHostId global_frame_routing_id_;
 };
 
 }  // namespace performance_manager

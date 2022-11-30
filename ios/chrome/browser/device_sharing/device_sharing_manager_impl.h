@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #import <memory>
 
 #include "base/gtest_prod_util.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 
 class Browser;
 class ChromeBrowserState;
-class PrefChangeRegistrar;
 @class HandoffManager;
 
 class DeviceSharingManagerImpl : public DeviceSharingManager {
@@ -26,6 +26,8 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
 
   void SetActiveBrowser(Browser* browser) override;
   void UpdateActiveUrl(Browser* browser, const GURL& active_url) override;
+  void UpdateActiveTitle(Browser* browser,
+                         const std::u16string& title) override;
   void ClearActiveUrl(Browser* browser) override;
 
  private:
@@ -36,10 +38,10 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
 
   void UpdateHandoffManager();
 
-  ChromeBrowserState* browser_state_;
+  ChromeBrowserState* browser_state_ = nullptr;
 
   // Registrar for pref change notifications to the active browser state.
-  std::unique_ptr<PrefChangeRegistrar> prefs_change_observer_;
+  PrefChangeRegistrar prefs_change_observer_;
 
   // Responsible for maintaining all state related to the Handoff feature.
   __strong HandoffManager* handoff_manager_;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,10 @@
 class DevToolsAutoOpener : public TabStripModelObserver {
  public:
   DevToolsAutoOpener();
+
+  DevToolsAutoOpener(const DevToolsAutoOpener&) = delete;
+  DevToolsAutoOpener& operator=(const DevToolsAutoOpener&) = delete;
+
   ~DevToolsAutoOpener() override;
 
  private:
@@ -21,8 +25,6 @@ class DevToolsAutoOpener : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsAutoOpener);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_AUTO_OPENER_H_

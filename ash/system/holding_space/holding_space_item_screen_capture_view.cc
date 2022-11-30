@@ -1,75 +1,96 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
 
-#include "ash/public/cpp/holding_space/holding_space_color_provider.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/bind.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace ash {
+namespace {
 
 // Appearance.
-constexpr gfx::Insets kCheckmarkAndPinButtonContainerPadding(4);
-constexpr gfx::Size kPinButtonSize(24, 24);
+constexpr int kBorderThickness = 1;
+constexpr gfx::Insets kCheckmarkAndPrimaryActionContainerPadding(4);
 constexpr gfx::Size kPlayIconSize(32, 32);
+constexpr gfx::Size kPrimaryActionSize(24, 24);
+
+}  // namespace
 
 HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
-    HoldingSpaceItemViewDelegate* delegate,
+    HoldingSpaceViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : HoldingSpaceItemView(delegate, item) {
-  SetPreferredSize(kHoldingSpaceScreenCaptureSize);
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  using CrossAxisAlignment = views::BoxLayout::CrossAxisAlignment;
+  using MainAxisAlignment = views::BoxLayout::MainAxisAlignment;
 
-  image_ = AddChildView(std::make_unique<RoundedImageView>(
-      kHoldingSpaceCornerRadius, RoundedImageView::Alignment::kLeading));
-  image_->SetID(kHoldingSpaceItemImageId);
+  views::Builder<HoldingSpaceItemScreenCaptureView> builder(this);
+  builder.SetPreferredSize(kHoldingSpaceScreenCaptureSize)
+      .SetLayoutManager(std::make_unique<views::FillLayout>())
+      .AddChild(views::Builder<RoundedImageView>()
+                    .CopyAddressTo(&image_)
+                    .SetID(kHoldingSpaceItemImageId)
+                    .SetCornerRadius(kHoldingSpaceCornerRadius));
 
-  // Subscribe to be notified of changes to `item_`'s image.
-  image_subscription_ = item->image().AddImageSkiaChangedCallback(
+  if (item->type() == HoldingSpaceItem::Type::kScreenRecording) {
+    builder.AddChild(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetMainAxisAlignment(MainAxisAlignment::kCenter)
+            .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
+            .SetFocusBehavior(views::View::FocusBehavior::NEVER)
+            .AddChild(views::Builder<views::ImageView>()
+                          .CopyAddressTo(&play_icon_)
+                          .SetID(kHoldingSpaceScreenCapturePlayIconId)
+                          .SetPreferredSize(kPlayIconSize)
+                          .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
+                                                  kHoldingSpaceIconSize))));
+  }
+
+  std::move(builder)
+      .AddChild(
+          views::Builder<views::FlexLayoutView>()
+              .SetOrientation(views::LayoutOrientation::kHorizontal)
+              .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+              .SetInteriorMargin(kCheckmarkAndPrimaryActionContainerPadding)
+              .AddChild(CreateCheckmarkBuilder())
+              .AddChild(views::Builder<views::View>().SetProperty(
+                  views::kFlexBehaviorKey,
+                  views::FlexSpecification(
+                      views::MinimumFlexSizeRule::kScaleToZero,
+                      views::MaximumFlexSizeRule::kUnbounded)))
+              .AddChild(CreatePrimaryActionBuilder(kPrimaryActionSize)))
+      .AddChild(views::Builder<views::View>()
+                    .CopyAddressTo(&border_)
+                    .SetCanProcessEventsWithinSubtree(false))
+      .BuildChildren();
+
+  // Subscribe to be notified of changes to `item`'s image.
+  image_skia_changed_subscription_ = item->image().AddImageSkiaChangedCallback(
       base::BindRepeating(&HoldingSpaceItemScreenCaptureView::UpdateImage,
                           base::Unretained(this)));
 
   UpdateImage();
-
-  if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
-    AddPlayIcon();
-
-  views::View* checkmark_and_pin_button_container =
-      AddChildView(std::make_unique<views::View>());
-  auto* layout = checkmark_and_pin_button_container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kCheckmarkAndPinButtonContainerPadding));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-
-  // Checkmark.
-  AddCheckmark(/*parent=*/checkmark_and_pin_button_container);
-
-  // Spacer.
-  views::View* spacer = checkmark_and_pin_button_container->AddChildView(
-      std::make_unique<views::View>());
-  layout->SetFlexForView(spacer, 1);
-
-  // Pin.
-  auto* pin = AddPin(/*parent=*/checkmark_and_pin_button_container);
-  pin->SetPreferredSize(kPinButtonSize);
 }
 
 HoldingSpaceItemScreenCaptureView::~HoldingSpaceItemScreenCaptureView() =
@@ -83,49 +104,59 @@ views::View* HoldingSpaceItemScreenCaptureView::GetTooltipHandlerForPoint(
 
 std::u16string HoldingSpaceItemScreenCaptureView::GetTooltipText(
     const gfx::Point& point) const {
-  return item()->text();
+  return item() ? item()->GetText() : base::EmptyString16();
 }
 
 void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
-    const HoldingSpaceItem* item) {
-  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item);
+    const HoldingSpaceItem* item,
+    uint32_t updated_fields) {
+  HoldingSpaceItemView::OnHoldingSpaceItemUpdated(item, updated_fields);
   if (this->item() == item)
     TooltipTextChanged();
 }
 
 void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
   HoldingSpaceItemView::OnThemeChanged();
-  pin()->SetBackground(holding_space_util::CreateCircleBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
-}
 
-void HoldingSpaceItemScreenCaptureView::UpdateImage() {
-  image_->SetImage(
-      item()->image().GetImageSkia(kHoldingSpaceScreenCaptureSize));
-  SchedulePaint();
-}
+  // Border.
+  border_->SetBorder(views::CreateRoundedRectBorder(
+      kBorderThickness, kHoldingSpaceCornerRadius,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kSeparatorColor)));
 
-void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
-  auto* play_icon_container = AddChildView(std::make_unique<views::View>());
-  play_icon_container->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  // Image.
+  UpdateImage();
 
-  auto* layout =
-      play_icon_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  // Primary action.
+  primary_action_container()->SetBackground(
+      holding_space_util::CreateCircleBackground(
+          AshColorProvider::Get()->GetBaseLayerColor(
+              AshColorProvider::BaseLayerType::kTransparent80)));
 
-  auto* play_icon =
-      play_icon_container->AddChildView(std::make_unique<views::ImageView>());
-  play_icon->SetID(kHoldingSpaceScreenCapturePlayIconId);
-  play_icon->SetBackground(holding_space_util::CreateCircleBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
-  play_icon->SetImage(gfx::CreateVectorIcon(
+  if (!play_icon_)
+    return;
+
+  // Play icon.
+  play_icon_->SetBackground(holding_space_util::CreateCircleBackground(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80)));
+  play_icon_->SetImage(gfx::CreateVectorIcon(
       vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor)));
-  play_icon->SetPreferredSize(kPlayIconSize);
+}
+
+void HoldingSpaceItemScreenCaptureView::UpdateImage() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
+  image_->SetImage(item()->image().GetImageSkia(
+      kHoldingSpaceScreenCaptureSize,
+      /*dark_background=*/DarkLightModeControllerImpl::Get()
+          ->IsDarkModeEnabled()));
+  SchedulePaint();
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)

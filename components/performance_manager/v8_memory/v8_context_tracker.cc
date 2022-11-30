@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -38,7 +38,7 @@ using V8ContextData = internal::V8ContextData;
 
 // A function that can be bound to as a mojo::ReportBadMessage
 // callback. Only used in testing.
-void FakeReportBadMessageForTesting(const std::string& error) {
+void FakeReportBadMessageForTesting(base::StringPiece error) {
   // This is used in DCHECK death tests, so must use a DCHECK.
   DCHECK(false) << "Bad mojo message: " << error;
 }
@@ -105,7 +105,7 @@ void V8ContextTracker::OnV8ContextCreated(
 
   // Validate the |iframe_attribution_data|.
   {
-    base::Optional<bool> result =
+    absl::optional<bool> result =
         ExpectIframeAttributionDataForV8ContextDescription(
             description, process_node->graph());
     if (result) {
@@ -507,14 +507,26 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
     raw_ec_data = ec_data.get();
   }
 
-  if (raw_ec_data->remote_frame_data() ||
-      raw_ec_data->iframe_attribution_data) {
+  if (raw_ec_data->remote_frame_data()) {
     std::move(bad_message_callback).Run("unexpected OnRemoteIframeAttached");
     return;
   }
 
-  // Attach the iframe data to the ExecutionContextData.
-  raw_ec_data->iframe_attribution_data = std::move(iframe_attribution_data);
+  // This used to assert that `raw_ec_data` had no `iframe_attribution_data`
+  // already attached. In general, the renderer should not send multiple updates
+  // for a given RenderFrameHost parent <-> RenderFrameProxyHost child pairing.
+  // However, when //content needs to undo a `CommitNavigation()` sent to a
+  // speculative RenderFrameHost, the renderer ends up swapping in a
+  // RenderFrameProxy with the same RemoteFrameToken back in. Allow it as an
+  // unfortunate exception--but ignore the update to retain the previous
+  // behavior. See https://crbug.com/1221955 for more background.
+  if (!raw_ec_data->iframe_attribution_data) {
+    // Attach the iframe data to the ExecutionContextData.
+    // If there was already iframe data, keep the original data, to be
+    // consistent with the behaviour of all other paths that ignore changes to
+    // the `src` and `id` attributes.
+    raw_ec_data->iframe_attribution_data = std::move(iframe_attribution_data);
+  }
 
   // Create the RemoteFrameData reference to this context.
   auto* parent_process_data =

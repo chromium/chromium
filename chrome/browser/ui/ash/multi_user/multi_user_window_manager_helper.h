@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,6 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
-
-#include "base/macros.h"
 
 class AccountId;
 class MultiProfileSupport;
@@ -33,6 +30,10 @@ class Window;
 // which internally owns the real ash::MultiUserWindowManager implementation.
 class MultiUserWindowManagerHelper {
  public:
+  MultiUserWindowManagerHelper(const MultiUserWindowManagerHelper&) = delete;
+  MultiUserWindowManagerHelper& operator=(const MultiUserWindowManagerHelper&) =
+      delete;
+
   // Creates an instance of the MultiUserWindowManagerHelper.
   static MultiUserWindowManagerHelper* CreateInstance();
 
@@ -95,8 +96,6 @@ class MultiUserWindowManagerHelper {
   // The MultiUserWindowManager implementation to use. If null, the
   // MultiUserWindowManager comes from |multi_profile_support_|.
   std::unique_ptr<ash::MultiUserWindowManager> multi_user_window_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiUserWindowManagerHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MULTI_USER_MULTI_USER_WINDOW_MANAGER_HELPER_H_

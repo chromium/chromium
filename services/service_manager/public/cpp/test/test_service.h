@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_TEST_TEST_SERVICE_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_TEST_TEST_SERVICE_H_
 
-#include "base/macros.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
@@ -45,14 +44,16 @@ namespace service_manager {
 class TestService : public Service {
  public:
   explicit TestService(mojo::PendingReceiver<mojom::Service> receiver);
+
+  TestService(const TestService&) = delete;
+  TestService& operator=(const TestService&) = delete;
+
   ~TestService() override;
 
   Connector* connector() { return receiver_.GetConnector(); }
 
  private:
   ServiceReceiver receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService);
 };
 
 }  // namespace service_manager

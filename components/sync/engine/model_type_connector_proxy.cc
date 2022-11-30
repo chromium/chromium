@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ ModelTypeConnectorProxy::ModelTypeConnectorProxy(
     const base::WeakPtr<ModelTypeConnector>& model_type_connector)
     : task_runner_(task_runner), model_type_connector_(model_type_connector) {}
 
-ModelTypeConnectorProxy::~ModelTypeConnectorProxy() {}
+ModelTypeConnectorProxy::~ModelTypeConnectorProxy() = default;
 
 void ModelTypeConnectorProxy::ConnectDataType(
     ModelType type,
@@ -34,16 +34,11 @@ void ModelTypeConnectorProxy::DisconnectDataType(ModelType type) {
                                         model_type_connector_, type));
 }
 
-void ModelTypeConnectorProxy::ConnectProxyType(ModelType type) {
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&ModelTypeConnector::ConnectProxyType,
-                                        model_type_connector_, type));
-}
-
-void ModelTypeConnectorProxy::DisconnectProxyType(ModelType type) {
+void ModelTypeConnectorProxy::SetProxyTabsDatatypeEnabled(bool enabled) {
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ModelTypeConnector::DisconnectProxyType,
-                                model_type_connector_, type));
+      FROM_HERE,
+      base::BindOnce(&ModelTypeConnector::SetProxyTabsDatatypeEnabled,
+                     model_type_connector_, enabled));
 }
 
 }  // namespace syncer

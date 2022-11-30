@@ -1,0 +1,40 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group ignored invisible
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++group hasAriaAttribute=true
+++++++splitter horizontal
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer ignored invisible
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true
+++++++genericContainer hasAriaAttribute=true

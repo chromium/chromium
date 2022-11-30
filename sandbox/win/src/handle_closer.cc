@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,6 @@
 #include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/interceptors.h"
-#include "sandbox/win/src/internal_types.h"
-#include "sandbox/win/src/nt_internals.h"
-#include "sandbox/win/src/process_thread_interception.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace {
@@ -46,6 +42,11 @@ ResultCode HandleCloser::AddHandle(const wchar_t* handle_type,
                                    const wchar_t* handle_name) {
   if (!handle_type)
     return SBOX_ERROR_BAD_PARAMS;
+
+  // Cannot call AddHandle if the cache has been initialized.
+  DCHECK(serialized_map_.empty());
+  if (!serialized_map_.empty())
+    return SBOX_ERROR_UNEXPECTED_CALL;
 
   std::wstring resolved_name;
   if (handle_name) {
@@ -97,17 +98,20 @@ bool HandleCloser::InitializeTargetHandles(TargetProcess& target) {
   if (handles_to_close_.empty())
     return true;
 
-  size_t bytes_needed = GetBufferSize();
-  std::unique_ptr<size_t[]> local_buffer(
-      new size_t[bytes_needed / sizeof(size_t)]);
+  // Cache the serialized form as we might be used by shared configs.
+  if (serialized_map_.empty()) {
+    size_t bytes_needed = GetBufferSize();
+    serialized_map_.resize(bytes_needed);
 
-  if (!SetupHandleList(local_buffer.get(), bytes_needed))
-    return false;
+    if (!SetupHandleList(serialized_map_.data(), bytes_needed))
+      return false;
+  }
 
   void* remote_data;
-  if (!CopyToChildMemory(target.Process(), local_buffer.get(), bytes_needed,
-                         &remote_data))
+  if (!CopyToChildMemory(target.Process(), serialized_map_.data(),
+                         serialized_map_.size(), &remote_data)) {
     return false;
+  }
 
   g_handles_to_close = reinterpret_cast<HandleCloserInfo*>(remote_data);
 
@@ -155,31 +159,6 @@ bool HandleCloser::SetupHandleList(void* buffer, size_t buffer_bytes) {
 
   DCHECK_EQ(reinterpret_cast<size_t>(output), reinterpret_cast<size_t>(end));
   return output <= end;
-}
-
-bool GetHandleName(HANDLE handle, std::wstring* handle_name) {
-  static NtQueryObject QueryObject = nullptr;
-  if (!QueryObject)
-    ResolveNTFunctionPtr("NtQueryObject", &QueryObject);
-
-  ULONG size = MAX_PATH;
-  std::unique_ptr<UNICODE_STRING, base::FreeDeleter> name;
-  NTSTATUS result;
-
-  do {
-    name.reset(static_cast<UNICODE_STRING*>(malloc(size)));
-    DCHECK(name.get());
-    result =
-        QueryObject(handle, ObjectNameInformation, name.get(), size, &size);
-  } while (result == STATUS_INFO_LENGTH_MISMATCH ||
-           result == STATUS_BUFFER_OVERFLOW);
-
-  if (NT_SUCCESS(result) && name->Buffer && name->Length)
-    handle_name->assign(name->Buffer, name->Length / sizeof(wchar_t));
-  else
-    handle_name->clear();
-
-  return NT_SUCCESS(result);
 }
 
 }  // namespace sandbox

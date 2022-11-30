@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,10 @@
 #include <map>
 #include <memory>
 #include <queue>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blocklist {
 
@@ -31,6 +29,9 @@ class OptOutBlocklistItem {
                       int opt_out_block_list_threshold,
                       base::TimeDelta block_list_duration);
 
+  OptOutBlocklistItem(const OptOutBlocklistItem&) = delete;
+  OptOutBlocklistItem& operator=(const OptOutBlocklistItem&) = delete;
+
   ~OptOutBlocklistItem();
 
   // Adds a new navigation at the specified |entry_time|.
@@ -39,7 +40,7 @@ class OptOutBlocklistItem {
   // Whether the action corresponding to |this| should be disallowed.
   bool IsBlockListed(base::Time now) const;
 
-  base::Optional<base::Time> most_recent_opt_out_time() const {
+  absl::optional<base::Time> most_recent_opt_out_time() const {
     return most_recent_opt_out_time_;
   }
 
@@ -51,6 +52,10 @@ class OptOutBlocklistItem {
   class OptOutRecord {
    public:
     OptOutRecord(base::Time entry_time, bool opt_out);
+
+    OptOutRecord(const OptOutRecord&) = delete;
+    OptOutRecord& operator=(const OptOutRecord&) = delete;
+
     ~OptOutRecord();
     OptOutRecord(OptOutRecord&&) noexcept;
     OptOutRecord& operator=(OptOutRecord&&) noexcept;
@@ -69,8 +74,6 @@ class OptOutBlocklistItem {
     base::Time entry_time_;
     // Whether the user opted out of the action.
     bool opt_out_;
-
-    DISALLOW_COPY_AND_ASSIGN(OptOutRecord);
   };
 
   // The number of entries to store to determine action eligibility.
@@ -86,12 +89,10 @@ class OptOutBlocklistItem {
   std::priority_queue<OptOutRecord> opt_out_records_;
 
   // Time of the most recent opt out.
-  base::Optional<base::Time> most_recent_opt_out_time_;
+  absl::optional<base::Time> most_recent_opt_out_time_;
 
   // The total number of opt outs currently in |opt_out_records_|.
   int total_opt_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklistItem);
 };
 
 }  // namespace blocklist

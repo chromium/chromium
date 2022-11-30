@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
  * served from chrome://bluetooth-internals/.
  */
 
-import {$} from 'chrome://resources/js/util.m.js';
+import './service_list.js';
 
+import {$} from 'chrome://resources/js/util.js';
+
+import {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
+import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
-import {ServiceList} from './service_list.js';
 import {Snackbar, SnackbarType} from './snackbar.js';
 
 /**
@@ -26,7 +29,8 @@ const PROPERTY_NAMES = {
   address: 'Address',
   isGattConnected: 'GATT Connected',
   'rssi.value': 'Latest RSSI',
-  'services.length': 'Services',
+  serviceUuids: 'Services',
+  manufacturerDataMap: 'Manufacturer Data',
 };
 
 /**
@@ -39,18 +43,18 @@ const PROPERTY_NAMES = {
 export class DeviceDetailsPage extends Page {
   /**
    * @param {string} id
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    */
   constructor(id, deviceInfo) {
     super(id, deviceInfo.nameForDisplay, id);
 
-    /** @type {!bluetooth.mojom.DeviceInfo} */
+    /** @type {!DeviceInfo} */
     this.deviceInfo = deviceInfo;
 
-    /** @type {?Array<bluetooth.mojom.ServiceInfo>} */
+    /** @type {?Array<ServiceInfo>} */
     this.services = null;
 
-    /** @private {?bluetooth.mojom.DeviceRemote} */
+    /** @private {?DeviceRemote} */
     this.device_ = null;
 
     /** @private {!ObjectFieldSet} */
@@ -58,7 +62,7 @@ export class DeviceDetailsPage extends Page {
     this.deviceFieldSet_.setPropertyDisplayNames(PROPERTY_NAMES);
 
     /** @private {!ServiceList} */
-    this.serviceList_ = new ServiceList();
+    this.serviceList_ = document.createElement('service-list');
 
     /** @private {!ConnectionStatus} */
     this.status_ = ConnectionStatus.DISCONNECTED;
@@ -154,33 +158,32 @@ export class DeviceDetailsPage extends Page {
     const connectedText = isConnected ? 'Connected' : 'Not Connected';
 
     const rssi = this.deviceInfo.rssi || {};
-    const services = this.services;
 
     let rssiValue = 'Unknown';
     if (rssi.value != null && rssi.value <= 0) {
       rssiValue = rssi.value;
     }
 
-    let serviceCount = 'Unknown';
-    if (services != null && services.length >= 0) {
-      serviceCount = services.length;
-    }
+    const serviceUuidsText = formatServiceUuids(this.deviceInfo.serviceUuids);
+
+    const manufacturerDataMapText =
+        formatManufacturerDataMap(this.deviceInfo.manufacturerDataMap);
 
     const deviceViewObj = {
       name: this.deviceInfo.nameForDisplay,
       address: this.deviceInfo.address,
       isGattConnected: connectedText,
       'rssi.value': rssiValue,
-      'services.length': serviceCount,
+      serviceUuids: serviceUuidsText,
+      manufacturerDataMap: manufacturerDataMapText,
     };
 
     this.deviceFieldSet_.setObject(deviceViewObj);
-    this.serviceList_.redraw();
   }
 
   /**
    * Sets the page's device info and forces a redraw.
-   * @param {!bluetooth.mojom.DeviceInfo} info
+   * @param {!DeviceInfo} info
    */
   setDeviceInfo(info) {
     this.deviceInfo = info;
@@ -229,7 +232,7 @@ export class DeviceDetailsPage extends Page {
       detail: {
         address: this.deviceInfo.address,
         status: status,
-      }
+      },
     }));
   }
 }

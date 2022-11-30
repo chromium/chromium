@@ -1,7 +1,7 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: f93ca3e140a371b26366f747a408588c631e0fd1
-CPEPrefix: cpe:/a:xmlsoft:libxml2:2.9.9
+Version: ad338ca737c4df5a4d1c28f8ee18b878572f2964
+CPEPrefix: cpe:/a:xmlsoft:libxml2:2.9.13
 License: MIT
 License File: src/Copyright
 Security Critical: yes
@@ -12,7 +12,6 @@ libxml2 from libxml.org.
 
 Modifications:
 
-- chromium-issue-599427.patch: workaround for VS 2015 Update 2 code-gen bug
 - chromium-issue-628581.patch: See https://crbug.com/628581#c18
 - chromium-issue-894933.patch: Use ptrdiff_t instead of unsigned long for
     pointer differences in parser.c
@@ -20,10 +19,10 @@ Modifications:
     See https://crbug.com/708433
 - libxml2-2.9.4-security-xpath-nodetab-uaf.patch: See https://crbug.com/705445
 - chromium-issue-708434.patch: Guard against input counter overflow.
-- revert-non-recursive-xml-parsing.patch: Making parts of the XML parser
-    non-recursive broke a few web platform tests.
 - chromium-issue-1138555.patch: Change TRUE to 1 for ICU68 which remove the
   #define of TRUE.
+- undo-sax-deprecation.patch: Un-deprecate xmlSAXParseMemory because it is used
+  in chromium's copy of maldoca. See https://github.com/google/maldoca/issues/87
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 

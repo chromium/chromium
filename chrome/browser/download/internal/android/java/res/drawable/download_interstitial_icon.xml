@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <aapt:attr name="android:drawable">
+
+        <vector
+            android:width="32dp"
+            android:height="32dp"
+            android:viewportWidth="32"
+            android:viewportHeight="32">
+
+            <group>
+                <path android:pathData="M28 22V28H4V22H0V28C0 30.2 1.8 32 4 32H28C30.2 32 32 30.2 32 28V22H28ZM26 14L23.18 11.18L18 16.34V0H14V16.34L8.82 11.18L6 14L16 24L26 14Z"
+                    android:fillColor="@macro/default_icon_color"/>
+            </group>
+        </vector>
+    </aapt:attr>
+</animated-vector>

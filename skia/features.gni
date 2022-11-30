@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,12 @@ declare_args() {
   skia_use_gl = true
 
   # Enable gtests using SkiaRenderer Dawn.
-  # TODO(sgilhuly): Remove this and enable the tests by default once a software
+  # TODO(rivr): Remove this and enable the tests by default once a software
   # path for D3D12 is available.
   enable_skia_dawn_gtests = false
 }
+
+# Skottie is not used on Android. To keep apk size small the skottie library is
+# excluded from the binary. At the time this comment was written, it adds ~200KB
+# to the APK.
+skia_support_skottie = !is_android

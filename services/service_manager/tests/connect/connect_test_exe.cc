@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -30,6 +29,9 @@ class Target : public service_manager::Service,
     registry_.AddInterface<ConnectTestService>(
         base::BindRepeating(&Target::Create, base::Unretained(this)));
   }
+
+  Target(const Target&) = delete;
+  Target& operator=(const Target&) = delete;
 
   ~Target() override = default;
 
@@ -57,8 +59,6 @@ class Target : public service_manager::Service,
   service_manager::ServiceReceiver service_receiver_;
   service_manager::BinderRegistry registry_;
   mojo::ReceiverSet<ConnectTestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Target);
 };
 
 }  // namespace

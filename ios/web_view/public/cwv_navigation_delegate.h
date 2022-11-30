@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVDownloadTask;
-@class CWVSSLStatus;
+@class CWVLookalikeURLHandler;
+@class CWVSSLErrorHandler;
+@class CWVUnsafeURLHandler;
 @class CWVWebView;
-
-// The decision to pass back to the decision handler from
-// -webView:didFailNavigationWithSSLError:overridable:decisionHandler:.
-typedef NS_ENUM(NSInteger, CWVSSLErrorDecision) {
-  // Leave the failure as is and take no further action.
-  CWVSSLErrorDecisionDoNothing = 0,
-  // Ignore the error and reload the page.
-  CWVSSLErrorDecisionOverrideErrorAndReload,
-};
-
-// A key of NSError.userInfo. The corresponding value is CWVCertStatus which
-// indicates the type of the SSL error.
-FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
 
 // Navigation delegate protocol for CWVWebViews.  Allows embedders to hook
 // page loading and receive events for navigation.
@@ -62,30 +51,28 @@ FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
 - (void)webViewDidFinishNavigation:(CWVWebView*)webView;
 
 // Notifies the delegate that page load has failed.
-// When the page load has failed due to an SSL certification error,
-// -webView:didFailNavigationWithSSLError:overridable:decisionHandler:
 // is called instead of this method.
 - (void)webView:(CWVWebView*)webView didFailNavigationWithError:(NSError*)error;
 
-// Notifies the delegate that the page load has failed due to an SSL error. If
-// |overridable| is YES, the method can ignore the error and reload the page by
-// calling |decisionHandler| with CWVSSLErrorDecisionOverrideErrorAndReload. The
-// method can leave the failure as is by calling |decisionHandler| with
-// CWVSSLErrorDecisionDoNothing.
-//
-// error.localizedDescription contains localized description of the SSL error.
-// error.userInfo[CWVCertStatusKey] contains CWVCertStatus which indicates the
-// type of the SSL error.
-//
-// Note: When |decisionHandler| is called with
-// CWVSSLErrorDecisionOverrideErrorAndReload, it must not be called
-// synchronously in the method. It breaks status management and causes an
-// assertion failure. It must be called asynchronously to avoid it.
+// Notifies the delegate that page load failed due to a SSL error.
+// |handler| can be used to help with communicating the error to the user, and
+// potentially override and ignore it.
 - (void)webView:(CWVWebView*)webView
-    didFailNavigationWithSSLError:(NSError*)error
-                      overridable:(BOOL)overridable
-                  decisionHandler:
-                      (void (^)(CWVSSLErrorDecision))decisionHandler;
+    handleSSLErrorWithHandler:(CWVSSLErrorHandler*)handler;
+
+// Notifies the delegate of an attempt to load a lookalike URL.
+// |handler| used to communicate the attempt to the user, and allow them to
+// override if desired.
+// If this method is not implemented, the lookalike URL will load normally.
+- (void)webView:(CWVWebView*)webView
+    handleLookalikeURLWithHandler:(CWVLookalikeURLHandler*)handler;
+
+// Notifies the delegate of an attempt to load an unsafe URL.
+// |handler| used to communicate the attempt to the user, and allow them to
+// override if desired.
+// If this method is not implemented, the URL will continue to load normally.
+- (void)webView:(CWVWebView*)webView
+    handleUnsafeURLWithHandler:(CWVUnsafeURLHandler*)handler;
 
 // Called when the web view requests to start downloading a file.
 //

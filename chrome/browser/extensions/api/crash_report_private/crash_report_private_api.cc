@@ -1,12 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/renderer_uptime_tracker.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -25,7 +27,7 @@ WindowType GetWindowType(content::WebContents* web_contents) {
     return WindowType::kNoBrowser;
   if (!browser->app_controller())
     return WindowType::kRegularTabbed;
-  if (browser->app_controller()->is_for_system_web_app())
+  if (browser->app_controller()->system_app())
     return WindowType::kSystemWebApp;
   return WindowType::kWebApp;
 }
@@ -46,8 +48,7 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.
-  const auto params = crash_report_private::ReportError::Params::Create(*args_);
+  const auto params = crash_report_private::ReportError::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   auto processor = JsErrorReportProcessor::Get();
@@ -77,6 +78,10 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
     error_report.column_number = *params->info.column_number;
   }
 
+  if (params->info.debug_id) {
+    error_report.debug_id = *params->info.debug_id;
+  }
+
   if (params->info.stack_trace) {
     error_report.stack_trace = std::move(*params->info.stack_trace);
   }
@@ -84,17 +89,18 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
   if (web_contents) {
     error_report.window_type = GetWindowType(web_contents);
 
-    if (web_contents->GetMainFrame() &&
-        web_contents->GetMainFrame()->GetProcess()) {
-      int pid = web_contents->GetMainFrame()->GetProcess()->GetID();
-      base::TimeDelta render_process_uptime =
-          metrics::RendererUptimeTracker::Get()->GetProcessUptime(pid);
-      // Note: This can be 0 in tests or if the process can't be found (implying
-      // process fails to start up or terminated). Report this anyways as it can
-      // hint at race conditions.
-      error_report.renderer_process_uptime_ms =
-          render_process_uptime.InMilliseconds();
+    base::TimeTicks render_process_start_time =
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetLastInitTime();
+    base::TimeDelta render_process_uptime;
+    if (!render_process_start_time.is_null()) {
+      render_process_uptime =
+          base::TimeTicks::Now() - render_process_start_time;
     }
+    // Note: This can be 0 in tests or if the process isn't live (implying
+    // process fails to start up or terminated). Report this anyways as it can
+    // hint at race conditions.
+    error_report.renderer_process_uptime_ms =
+        render_process_uptime.InMilliseconds();
   }
 
   error_report.app_locale = g_browser_process->GetApplicationLocale();

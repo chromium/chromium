@@ -11,20 +11,24 @@
     {urlPattern: '*', interceptionStage: 'HeadersReceived'}
   ]});
 
-  await dp.Network.onRequestIntercepted(event => {
-    const params = event.params;
-    testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
-    dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
-  });
 
   testRunner.log('Regular navigation: ');
-  await dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php'});
+  dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php'});
+  let {params} = await dp.Network.onceRequestIntercepted();
+  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
+  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
 
   testRunner.log('Download via content-disposition: ');
-  await dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1'});
+  dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?download=1'});
+  ({params} = await dp.Network.onceRequestIntercepted());
+  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
+  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
 
   testRunner.log('Download via unhandled MIME type: ');
-  await dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?mime_type=application/octet-stream'});
+  dp.Page.navigate({url: 'http://127.0.0.1:8000/devtools/network/resources/resource.php?mime_type=application/octet-stream'});
+  ({params} = await dp.Network.onceRequestIntercepted());
+  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
+  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
 
   testRunner.log('Now downloading by clicking a link: ');
   session.evaluate(`
@@ -34,7 +38,9 @@
     document.body.appendChild(a);
     a.click();
   `);
-  await dp.Network.onceRequestIntercepted();
+  ({params} = await dp.Network.onceRequestIntercepted());
+  testRunner.log(`Intercepted ${params.request.url}, download: ${params.isDownload}`);
+  dp.Network.continueInterceptedRequest({interceptionId: params.interceptionId});
 
   testRunner.completeTest();
 })

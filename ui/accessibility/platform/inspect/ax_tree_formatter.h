@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,17 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace base {
-class Value;
-}
 
 namespace ui {
 
 class AXNode;
+class AXScriptInstruction;
 class AXTreeID;
 class AXPlatformNodeDelegate;
+class AXInspectScenario;
 
 // A utility class for formatting platform-specific accessibility information,
 // for use in testing, debugging, and developer tools.
@@ -44,7 +43,7 @@ class AX_EXPORT AXTreeFormatter {
 
   // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
   static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
-                                 const base::Value& dict);
+                                 const base::Value::Dict& dict);
 
   // Formats a given web content accessible tree.
   // |root| must be non-null and must be in web content.
@@ -55,9 +54,10 @@ class AX_EXPORT AXTreeFormatter {
 
   // Similar to BuildTree, but generates a dictionary just for the current
   // web node (i.e. without children).
-  virtual base::Value BuildNode(AXPlatformNodeDelegate* node) const = 0;
+  virtual base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const = 0;
 
-  // Build an accessibility tree for any window.
+  // Build an accessibility tree for any window or pattern supplied by
+  // the selector object.
   //
   // Returns a dictionary value with the accessibility tree populated.
   // The dictionary contains a key/value pair for each attribute of a node,
@@ -79,15 +79,11 @@ class AX_EXPORT AXTreeFormatter {
   //     "children": [ ]
   //   } ]
   // }
-  virtual base::Value BuildTreeForWindow(
-      gfx::AcceleratedWidget widget) const = 0;
-
-  // Build an accessibility tree for an application with a name matching the
-  // given pattern.
-  virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
+  virtual base::Value::Dict BuildTreeForSelector(
+      const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for an application with |node| as the root.
-  virtual base::Value BuildTreeForNode(ui::AXNode* node) const = 0;
+  virtual base::Value::Dict BuildTreeForNode(ui::AXNode* node) const = 0;
 
   // Returns a string representing the internal tree represented by |tree_id|.
   virtual std::string DumpInternalAccessibilityTree(
@@ -95,9 +91,21 @@ class AX_EXPORT AXTreeFormatter {
       const std::vector<AXPropertyFilter>& property_filters) = 0;
 
   // Dumps accessibility tree.
-  virtual std::string FormatTree(const base::Value& tree_node) const = 0;
+  virtual std::string FormatTree(const base::Value::Dict& tree_node) const = 0;
 
-  // Propery filter predefined sets.
+  // Evaluates script instructions for the window returned by the selector.
+  virtual std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const AXInspectScenario& scenario) const = 0;
+
+  // Evaluates script instructions between the given indices.
+  virtual std::string EvaluateScript(
+      AXPlatformNodeDelegate* root,
+      const std::vector<AXScriptInstruction>& instructions,
+      size_t start_index,
+      size_t end_index) const = 0;
+
+  // Property filter predefined sets.
   enum PropertyFilterSet {
     // Empty set.
     kFiltersEmptySet,

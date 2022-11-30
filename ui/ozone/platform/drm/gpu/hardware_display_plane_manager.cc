@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 
 #include <drm_fourcc.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -20,6 +22,21 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 
 namespace ui {
+
+namespace {
+
+gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
+  const gfx::Size& size = plane.buffer->size();
+  gfx::RectF crop_rectf = plane.crop_rect;
+  crop_rectf.Scale(size.width(), size.height());
+  // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
+  gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
+  // Convert to 16.16 fixed point required by the DRM overlay APIs.
+  return gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
+                   crop_rect.width() << 16, crop_rect.height() << 16);
+}
+
+}  // namespace
 
 HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
   atomic_property_set.reset(drmModeAtomicAlloc());
@@ -35,6 +52,19 @@ HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(
     const PageFlipInfo& other) = default;
 
 HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
+
+void HardwareDisplayPlaneList::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("plane_list", plane_list);
+  dict.Add("old_plane_list", old_plane_list);
+}
+
+HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties() = default;
+HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties(
+    const CrtcProperties& other) = default;
+HardwareDisplayPlaneManager::CrtcProperties::~CrtcProperties() = default;
 
 HardwareDisplayPlaneManager::CrtcState::CrtcState() = default;
 
@@ -78,42 +108,40 @@ std::unique_ptr<HardwareDisplayPlane> HardwareDisplayPlaneManager::CreatePlane(
   return std::make_unique<HardwareDisplayPlane>(id);
 }
 
-HardwareDisplayPlane* HardwareDisplayPlaneManager::FindNextUnusedPlane(
-    size_t* index,
-    uint32_t crtc_index,
-    const DrmOverlayPlane& overlay) const {
-  for (size_t i = *index; i < planes_.size(); ++i) {
-    auto* plane = planes_[i].get();
-    if (!plane->in_use() && IsCompatible(plane, overlay, crtc_index)) {
-      *index = i + 1;
-      return plane;
-    }
-  }
-  return nullptr;
-}
-
-int HardwareDisplayPlaneManager::LookupCrtcIndex(uint32_t crtc_id) const {
+absl::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
+    uint32_t crtc_id) const {
   for (size_t i = 0; i < crtc_state_.size(); ++i) {
     if (crtc_state_[i].properties.id == crtc_id)
       return i;
   }
-  return -1;
+  return {};
 }
 
-int HardwareDisplayPlaneManager::LookupConnectorIndex(
+absl::optional<int> HardwareDisplayPlaneManager::LookupConnectorIndex(
     uint32_t connector_id) const {
   for (size_t i = 0; i < connectors_props_.size(); ++i) {
     if (connectors_props_[i].id == connector_id)
       return i;
   }
-  return -1;
+  return {};
+}
+
+base::flat_set<uint32_t> HardwareDisplayPlaneManager::CrtcMaskToCrtcIds(
+    uint32_t crtc_mask) const {
+  base::flat_set<uint32_t> crtc_ids;
+  for (uint32_t idx = 0; idx < crtc_state_.size(); idx++) {
+    if (crtc_mask & (1 << idx))
+      crtc_ids.insert(crtc_state_[idx].properties.id);
+  }
+
+  return crtc_ids;
 }
 
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
-                                               uint32_t crtc_index) const {
-  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtc(crtc_index))
+                                               uint32_t crtc_id) const {
+  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
+      !plane->CanUseForCrtcId(crtc_id))
     return false;
 
   const uint32_t format =
@@ -177,33 +205,25 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
     uint32_t crtc_id) {
-  int crtc_index = LookupCrtcIndex(crtc_id);
-  if (crtc_index < 0) {
-    LOG(ERROR) << "Cannot find crtc " << crtc_id;
-    return false;
-  }
-
-  size_t plane_idx = 0;
+  auto hw_planes_iter = planes_.begin();
   for (const auto& plane : overlay_list) {
-    HardwareDisplayPlane* hw_plane =
-        FindNextUnusedPlane(&plane_idx, crtc_index, plane);
+    HardwareDisplayPlane* hw_plane = nullptr;
+    for (; hw_planes_iter != planes_.end(); ++hw_planes_iter) {
+      auto* current = hw_planes_iter->get();
+      if (IsCompatible(current, plane, crtc_id)) {
+        hw_plane = current;
+        ++hw_planes_iter; // bump so we don't assign the same plane twice
+        break;
+      }
+    }
+
     if (!hw_plane) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }
 
-    gfx::Rect fixed_point_rect;
-    const gfx::Size& size = plane.buffer->size();
-    gfx::RectF crop_rectf = plane.crop_rect;
-    crop_rectf.Scale(size.width(), size.height());
-    // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
-    gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
-    // Convert to 16.16 fixed point required by the DRM overlay APIs.
-    fixed_point_rect =
-        gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
-                  crop_rect.width() << 16, crop_rect.height() << 16);
-
-    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, fixed_point_rect)) {
+    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id,
+                      OverlayPlaneToDrmSrcRect(plane))) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }
@@ -223,16 +243,14 @@ const std::vector<uint32_t>& HardwareDisplayPlaneManager::GetSupportedFormats()
 std::vector<uint64_t> HardwareDisplayPlaneManager::GetFormatModifiers(
     uint32_t crtc_id,
     uint32_t format) const {
-  int crtc_index = LookupCrtcIndex(crtc_id);
-
   for (const auto& plane : planes_) {
-    if (plane->CanUseForCrtc(crtc_index) &&
+    if (plane->CanUseForCrtcId(crtc_id) &&
         plane->type() == DRM_PLANE_TYPE_PRIMARY) {
       return plane->ModifiersForFormat(format);
     }
   }
 
-  return std::vector<uint64_t>();
+  return {};
 }
 
 void HardwareDisplayPlaneManager::ResetConnectorsCache(
@@ -252,6 +270,8 @@ void HardwareDisplayPlaneManager::ResetConnectorsCache(
     }
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
     DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
+    GetDrmPropertyForName(drm_, props.get(), "link-status",
+                          &state_props.link_status);
 
     connectors_props_.emplace_back(std::move(state_props));
   }
@@ -267,9 +287,9 @@ bool HardwareDisplayPlaneManager::SetColorMatrix(
     return false;
   }
 
-  const int crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_index, 0);
-  CrtcState* crtc_state = &crtc_state_[crtc_index];
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
 
   ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(color_matrix);
   if (!crtc_state->properties.ctm.id)
@@ -284,9 +304,9 @@ bool HardwareDisplayPlaneManager::SetColorMatrix(
 void HardwareDisplayPlaneManager::SetBackgroundColor(
     uint32_t crtc_id,
     const uint64_t background_color) {
-  const int crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_index, 0);
-  CrtcState* crtc_state = &crtc_state_[crtc_index];
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
 
   crtc_state->properties.background_color.value = background_color;
 }
@@ -295,13 +315,13 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
     uint32_t crtc_id,
     const std::vector<display::GammaRampRGBEntry>& degamma_lut,
     const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  const int crtc_index = LookupCrtcIndex(crtc_id);
-  if (crtc_index < 0) {
+  const auto crtc_index = LookupCrtcIndex(crtc_id);
+  if (!crtc_index) {
     LOG(ERROR) << "Unknown CRTC ID=" << crtc_id;
     return false;
   }
 
-  CrtcState* crtc_state = &crtc_state_[crtc_index];
+  CrtcState* crtc_state = &crtc_state_[*crtc_index];
   CrtcProperties* crtc_props = &crtc_state->properties;
 
   if (!degamma_lut.empty() &&
@@ -437,9 +457,9 @@ HardwareDisplayPlaneManager::GetCrtcStateForCrtcId(uint32_t crtc_id) {
 
 HardwareDisplayPlaneManager::CrtcState&
 HardwareDisplayPlaneManager::CrtcStateForCrtcId(uint32_t crtc_id) {
-  int crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_index, 0);
-  return crtc_state_[crtc_index];
+  auto crtc_index = LookupCrtcIndex(crtc_id);
+  DCHECK(crtc_index.has_value());
+  return crtc_state_[*crtc_index];
 }
 
 void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
@@ -449,9 +469,9 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
   for (const auto& crtc_request : commit_request) {
     bool is_enabled = crtc_request.should_enable();
 
-    int connector_index = LookupConnectorIndex(crtc_request.connector_id());
-    DCHECK_GE(connector_index, 0);
-    ConnectorProperties& connector_props = connectors_props_[connector_index];
+    auto connector_index = LookupConnectorIndex(crtc_request.connector_id());
+    DCHECK(connector_index.has_value());
+    ConnectorProperties& connector_props = connectors_props_[*connector_index];
     connector_props.crtc_id.value = is_enabled ? crtc_request.crtc_id() : 0;
 
     CrtcState& crtc_state = CrtcStateForCrtcId(crtc_request.crtc_id());
@@ -459,8 +479,10 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
 
     if (is_enabled) {
       crtc_state.mode = crtc_request.mode();
-      crtc_state.modeset_framebuffer =
-          DrmOverlayPlane::GetPrimaryPlane(crtc_request.overlays())->buffer;
+      crtc_state.modeset_framebuffers.clear();
+      for (const auto& overlay : crtc_request.overlays())
+        crtc_state.modeset_framebuffers.push_back(overlay.buffer);
+
     } else {
       if (crtc_request.plane_list())
         disable_planes_lists.insert(crtc_request.plane_list());
@@ -483,9 +505,32 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
   }
 }
 
-void HardwareDisplayPlaneManager::ResetModesetBufferOfCrtc(uint32_t crtc_id) {
+void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
   CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
-  crtc_state.modeset_framebuffer = nullptr;
+  crtc_state.modeset_framebuffers.clear();
+}
+
+ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
+    uint32_t crtc_id) {
+  absl::optional<std::string> driver = drm_->GetDriverName();
+  if (!driver.has_value())
+    return {.is_valid = false};
+
+  ui::HardwareCapabilities hc;
+  hc.is_valid = true;
+  hc.num_overlay_capable_planes = std::count_if(
+      planes_.begin(), planes_.end(),
+      [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
+        return plane->type() != DRM_PLANE_TYPE_CURSOR &&
+               plane->CanUseForCrtcId(crtc_id);
+      });
+  // While AMD advertises a cursor plane, it's actually a "fake" plane that the
+  // display hardware blits to the topmost plane at presentation time. If that
+  // topmost plane is scaled/translated (e.g. video), the cursor will then be
+  // transformed along with it, leading to an incorrect cursor location in the
+  // final presentation. For more info, see b/194335274.
+  hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
+  return hc;
 }
 
 }  // namespace ui

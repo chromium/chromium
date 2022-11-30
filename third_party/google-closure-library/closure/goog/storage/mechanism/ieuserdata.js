@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides data persistence using IE userData mechanism.
@@ -20,7 +12,7 @@
  */
 
 
-// TODO(b/130421259): We're trying to migrate all ES5 subclasses of Closure
+// TODO(user): We're trying to migrate all ES5 subclasses of Closure
 // Library to ES6. In ES6 this cannot be referenced before super is called. This
 // file has at least one this before a super call (in ES5) and cannot be
 // automatically upgraded to ES6 as a result. Please fix this if you have a
@@ -51,6 +43,7 @@ goog.require('goog.userAgent');
  * @final
  */
 goog.storage.mechanism.IEUserData = function(storageKey, opt_storageNodeId) {
+  'use strict';
   /**
    * The key to store the data under.
    *
@@ -144,8 +137,10 @@ goog.storage.mechanism.IEUserData.storageMap_ = null;
  * @private
  */
 goog.storage.mechanism.IEUserData.encodeKey_ = function(key) {
+  'use strict';
   // encodeURIComponent leaves - _ . ! ~ * ' ( ) unencoded.
   return '_' + encodeURIComponent(key).replace(/[.!~*'()%]/g, function(c) {
+    'use strict';
     return goog.storage.mechanism.IEUserData.ENCODE_MAP[c];
   });
 };
@@ -160,6 +155,7 @@ goog.storage.mechanism.IEUserData.encodeKey_ = function(key) {
  * @private
  */
 goog.storage.mechanism.IEUserData.decodeKey_ = function(key) {
+  'use strict';
   return decodeURIComponent(key.replace(/\./g, '%')).substr(1);
 };
 
@@ -170,12 +166,14 @@ goog.storage.mechanism.IEUserData.decodeKey_ = function(key) {
  * @return {boolean} True if the mechanism is available.
  */
 goog.storage.mechanism.IEUserData.prototype.isAvailable = function() {
+  'use strict';
   return !!this.storageNode_;
 };
 
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.set = function(key, value) {
+  'use strict';
   this.storageNode_.setAttribute(
       goog.storage.mechanism.IEUserData.encodeKey_(key), value);
   this.saveNode_();
@@ -184,6 +182,7 @@ goog.storage.mechanism.IEUserData.prototype.set = function(key, value) {
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.get = function(key) {
+  'use strict';
   // According to Microsoft, values can be strings, numbers or booleans. Since
   // we only save strings, any other type is a storage error. If we returned
   // nulls for such keys, i.e., treated them as non-existent, this would lead
@@ -200,6 +199,7 @@ goog.storage.mechanism.IEUserData.prototype.get = function(key) {
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.remove = function(key) {
+  'use strict';
   this.storageNode_.removeAttribute(
       goog.storage.mechanism.IEUserData.encodeKey_(key));
   this.saveNode_();
@@ -208,16 +208,19 @@ goog.storage.mechanism.IEUserData.prototype.remove = function(key) {
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.getCount = function() {
+  'use strict';
   return this.getNode_().attributes.length;
 };
 
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.__iterator__ = function(opt_keys) {
+  'use strict';
   var i = 0;
   var attributes = this.getNode_().attributes;
   var newIter = new goog.iter.Iterator();
-  newIter.next = function() {
+  newIter.nextValueOrThrow = function() {
+    'use strict';
     if (i >= attributes.length) {
       throw goog.iter.StopIteration;
     }
@@ -232,12 +235,14 @@ goog.storage.mechanism.IEUserData.prototype.__iterator__ = function(opt_keys) {
     }
     return value;
   };
+
   return newIter;
 };
 
 
 /** @override */
 goog.storage.mechanism.IEUserData.prototype.clear = function() {
+  'use strict';
   var node = this.getNode_();
   for (var left = node.attributes.length; left > 0; left--) {
     node.removeAttribute(node.attributes[left - 1].nodeName);
@@ -252,6 +257,7 @@ goog.storage.mechanism.IEUserData.prototype.clear = function() {
  * @private
  */
 goog.storage.mechanism.IEUserData.prototype.loadNode_ = function() {
+  'use strict';
   // This is a special IE-only method on Elements letting us persist data.
   this.storageNode_['load'](this.storageKey_);
 };
@@ -263,7 +269,7 @@ goog.storage.mechanism.IEUserData.prototype.loadNode_ = function() {
  * @private
  */
 goog.storage.mechanism.IEUserData.prototype.saveNode_ = function() {
-
+  'use strict';
   try {
     // This is a special IE-only method on Elements letting us persist data.
     // Do not try to assign this.storageNode_['save'] to a variable, it does
@@ -282,6 +288,7 @@ goog.storage.mechanism.IEUserData.prototype.saveNode_ = function() {
  * @private
  */
 goog.storage.mechanism.IEUserData.prototype.getNode_ = function() {
+  'use strict';
   // This is a special IE-only property letting us browse persistent data.
   var doc = /** @type {Document} */ (this.storageNode_['XMLDocument']);
   return doc.documentElement;

@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("ash") {
+  sources = [ "ash_attestation_service.cc" ]
+
+  public = [ "ash_attestation_service.h" ]
+
+  deps = [
+    "//chrome/browser/ash",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//chrome/browser/profiles:profile",
+    "//components/device_signals/core/common",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
+  ]
+}

@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("buckets") {
+  sources = [
+    "bucket_id.mojom",
+    "bucket_locator.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//third_party/blink/public/mojom/quota",
+    "//third_party/blink/public/mojom/storage_key",
+  ]
+  overridden_deps = [
+    "//third_party/blink/public/mojom/quota",
+    "//third_party/blink/public/mojom/storage_key",
+  ]
+  component_deps = [ "//third_party/blink/public/common" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "storage.mojom.BucketId"
+          cpp = "::storage::BucketId"
+          nullable_is_same_type = true
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "storage.mojom.BucketLocator"
+          cpp = "::storage::BucketLocator"
+        },
+      ]
+      traits_headers = [
+        "bucket_id_mojom_traits.h",
+        "bucket_locator_mojom_traits.h",
+      ]
+      traits_sources = [
+        "bucket_id_mojom_traits.cc",
+        "bucket_locator_mojom_traits.cc",
+      ]
+      traits_public_deps =
+          [ "//components/services/storage/public/cpp/buckets" ]
+    },
+  ]
+
+  webui_module_path = "/"
+}

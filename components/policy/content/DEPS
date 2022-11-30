@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/prefs",
   "+components/safe_search_api",
+  "+components/url_matcher",
   "+components/user_prefs",
   "+net/base",
 ]

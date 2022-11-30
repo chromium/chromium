@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 
 #ifndef CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
 #define CHROMEOS_HUGEPAGE_TEXT_HUGEPAGE_TEXT_H_
-
-#include <string>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -28,7 +26,7 @@ namespace chromeos {
 
 // A feature which controls remapping the zygotes hot text section as hugepages
 // and locking.
-extern const base::Feature kCrOSHugepageRemapAndLockZygote;
+BASE_DECLARE_FEATURE(kCrOSHugepageRemapAndLockZygote);
 
 // This function will scan ELF segments and attempt to do two things:
 // - Reload some of .text into hugepages

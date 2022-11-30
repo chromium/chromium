@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
-#include "content/public/common/content_features.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
 namespace content {
 
@@ -61,17 +63,16 @@ class FakeEmbeddedWorkerInstanceClient::LoaderClient final
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
   void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {}
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {}
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override {}
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override {}
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override {}
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     auto callback = std::move(callback_);
     std::move(callback).Run();
@@ -158,7 +159,6 @@ void FakeEmbeddedWorkerInstanceClient::StartWorker(
   // which causes the browser to write the script response in service worker
   // storage. We do that manually here.
   if (start_params_->main_script_load_params) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
     // Wait until OnComplete() is called so that the script is stored in the
     // storage and the script cache map is populated by
     // ServiceWorkerNewScriptLoader.
@@ -219,7 +219,8 @@ void FakeEmbeddedWorkerInstanceClient::CallOnConnectionError() {
 void FakeEmbeddedWorkerInstanceClient::EvaluateScript() {
   host_->OnScriptEvaluationStart();
   host_->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
-                   true /* has_fetch_handler */, helper_->GetNextThreadId(),
+                   blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+                   helper_->GetNextThreadId(),
                    blink::mojom::EmbeddedWorkerStartTiming::New());
 }
 

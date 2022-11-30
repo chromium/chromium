@@ -56,8 +56,8 @@ Tests framework event listeners output in the Elements sidebar panel.
           }
 Framework Event Listeners API Errors:
 	fetcher call produced error: Error in fetcher
-	fetcher call produced error: TypeError: Cannot read property 'eventListeners' of null
-	fetcher call produced error: TypeError: Cannot read property 'eventListeners' of undefined
+	fetcher call produced error: TypeError: Cannot read properties of null (reading 'eventListeners')
+	fetcher call produced error: TypeError: Cannot read properties of undefined (reading 'eventListeners')
 	internal handler isn't a function or empty
 	internal handler isn't a function or empty
 	fetcher call produced error: Error in getter

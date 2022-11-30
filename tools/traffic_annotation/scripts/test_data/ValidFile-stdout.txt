@@ -1,0 +1,73 @@
+==== NEW ANNOTATION ====
+ValidFile.java
+12
+Definition
+id1
+
+semantics {
+sender: 'sender1'
+description: 'desc1'
+trigger: 'trigger1'
+data: 'data1 contains \'quotes '
+destination: GOOGLE_OWNED_SERVICE
+}
+policy {
+cookies_allowed: NO
+setting: 'setting1'
+chrome_policy {
+SpellCheckServiceEnabled {
+SpellCheckServiceEnabled: false
+}
+}
+}
+comments: 'comment1'
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+32
+Definition
+id2
+
+semantics {
+sender: "sender1"
+description: "desc1"
+trigger: "trigger1 contains a backslash\
+"
+data: "data1 contains \"quotes "
+destination: GOOGLE_OWNED_SERVICE
+}
+policy {
+cookies_allowed: NO
+setting: "setting1"
+chrome_policy {
+SpellCheckServiceEnabled {
+SpellCheckServiceEnabled: false
+}
+}
+}
+comments: "comment1"
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+61
+Definition
+test
+
+Traffic annotation for unit, browser and other tests
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+60
+Definition
+missing
+
+Function called without traffic annotation.
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+ValidFile.java
+59
+Definition
+undefined
+
+Nothing here yet.
+==== ANNOTATION ENDS ====

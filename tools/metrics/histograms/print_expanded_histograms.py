@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Prints expanded histograms."""
@@ -33,7 +33,7 @@ def ConstructHistogram(doc, name, histogram_dict):
     obsolete_node.appendChild(doc.createTextNode(histogram_dict['obsolete']))
     histogram.appendChild(obsolete_node)
   # Populate owner nodes.
-  for owner in histogram_dict['owners']:
+  for owner in histogram_dict.get('owners', []):
     owner_node = doc.createElement('owner')
     owner_node.appendChild(doc.createTextNode(owner))
     histogram.appendChild(owner_node)

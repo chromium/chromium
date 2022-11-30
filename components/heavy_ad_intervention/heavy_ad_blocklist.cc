@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ bool HeavyAdBlocklist::ShouldUseHostPolicy(base::TimeDelta* duration,
   const int kDefaultHostDurationHours = 24;
   const int kDefaultHostThreshold = 5;
   *max_hosts = GetBlocklistParamValue(kHostsInMemory, kDefaultHostsInMemory);
-  *duration = base::TimeDelta::FromHours(
+  *duration = base::Hours(
       GetBlocklistParamValue(kHostDurationHours, kDefaultHostDurationHours));
   *history = GetBlocklistParamValue(kHostThreshold, kDefaultHostThreshold);
   *threshold = GetBlocklistParamValue(kHostThreshold, kDefaultHostThreshold);

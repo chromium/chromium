@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,25 @@
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "components/policy/core/browser/url_util.h"
 
 namespace enterprise_connectors {
 
+BASE_FEATURE(kExtensionEventsEnabled,
+             "ExtensionEventsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBrowserCrashEventsEnabled,
+             "BrowserCrashEventsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 constexpr char kReportingConnectorUrlFlag[] = "reporting-connector-url";
 
-base::Optional<GURL> GetUrlOverride() {
+absl::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
   if (!g_browser_process || !g_browser_process->browser_policy_connector()
                                  ->IsCommandLineSwitchSupported()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
@@ -33,7 +37,7 @@ base::Optional<GURL> GetUrlOverride() {
       VLOG(1) << "--reporting-connector-url is set to an invalid URL";
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -50,15 +54,21 @@ ReportingServiceSettings::ReportingServiceSettings(
       settings_value.FindStringKey(kKeyServiceProvider);
   if (service_provider_name) {
     service_provider_name_ = *service_provider_name;
-    service_provider_ =
-        service_provider_config.GetServiceProvider(*service_provider_name);
+    if (service_provider_config.count(service_provider_name_)) {
+      reporting_config_ =
+          service_provider_config.at(service_provider_name_).reporting;
+    }
+  }
+  if (!reporting_config_) {
+    DLOG(ERROR) << "No reporting config for corresponding service provider";
+    return;
   }
 
   const base::Value* enabled_event_name_list_value =
       settings_value.FindListKey(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
-         enabled_event_name_list_value->GetList()) {
+         enabled_event_name_list_value->GetListDeprecated()) {
       if (enabled_event_name_value.is_string())
         enabled_event_names_.insert(enabled_event_name_value.GetString());
       else
@@ -71,34 +81,57 @@ ReportingServiceSettings::ReportingServiceSettings(
     // when new events may be added in the future. And this is also to support
     // existing customer policies that were created before we introduced the
     // concept of enabling/disabling events.
-    for (auto* event_name :
-         extensions::SafeBrowsingPrivateEventRouter::kAllEvents) {
-      enabled_event_names_.insert(event_name);
+    for (const char* event : kAllReportingEvents) {
+      enabled_event_names_.insert(event);
+    }
+  }
+
+  const base::Value* enabled_opt_in_events_value =
+      settings_value.FindListKey(kKeyEnabledOptInEvents);
+  if (enabled_opt_in_events_value) {
+    for (const base::Value& event :
+         enabled_opt_in_events_value->GetListDeprecated()) {
+      DCHECK(event.is_dict());
+      const std::string* name = event.FindStringKey(kKeyOptInEventName);
+      const base::Value* url_patterns_value =
+          event.FindListKey(kKeyOptInEventUrlPatterns);
+
+      DCHECK(url_patterns_value->is_list());
+      for (const base::Value& url_pattern :
+           url_patterns_value->GetListDeprecated()) {
+        DCHECK(url_pattern.is_string());
+
+        enabled_opt_in_events_[*name].push_back(url_pattern.GetString());
+      }
     }
   }
 }
 
-base::Optional<ReportingSettings>
+absl::optional<ReportingSettings>
 ReportingServiceSettings::GetReportingSettings() const {
   if (!IsValid())
-    return base::nullopt;
+    return absl::nullopt;
 
   ReportingSettings settings;
 
   settings.reporting_url =
-      GetUrlOverride().value_or(GURL(service_provider_->reporting_url()));
+      GetUrlOverride().value_or(GURL(reporting_config_->url));
   DCHECK(settings.reporting_url.is_valid());
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
                                       enabled_event_names_.end());
+
+  settings.enabled_opt_in_events.insert(enabled_opt_in_events_.begin(),
+                                        enabled_opt_in_events_.end());
+
   return settings;
 }
 
 bool ReportingServiceSettings::IsValid() const {
-  // The settings are valid only if a provider was given, and events are
-  // enabled. The list could be empty. The absence of a list means "all events",
-  // but the presence of an empty list means "no events".
-  return service_provider_ && !enabled_event_names_.empty();
+  // The settings are valid only if a provider with a reporting config was used,
+  // and events are enabled. The list could be empty. The absence of a list
+  // means "all events", but the presence of an empty list means "no events".
+  return reporting_config_ && !enabled_event_names_.empty();
 }
 
 ReportingServiceSettings::ReportingServiceSettings(ReportingServiceSettings&&) =

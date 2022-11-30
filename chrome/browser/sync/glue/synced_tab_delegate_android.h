@@ -1,15 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 
 namespace content {
@@ -27,24 +23,25 @@ namespace browser_sync {
 class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
  public:
   explicit SyncedTabDelegateAndroid(TabAndroid* owning_tab_);
+
+  SyncedTabDelegateAndroid(const SyncedTabDelegateAndroid&) = delete;
+  SyncedTabDelegateAndroid& operator=(const SyncedTabDelegateAndroid&) = delete;
+
   ~SyncedTabDelegateAndroid() override;
 
   // SyncedTabDelegate:
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
-  bool ShouldSync(sync_sessions::SyncSessionsClient* sessions_client) override;
 
-  // Set the web contents for this tab and handles source tab ID initialization.
-  void SetWebContents(content::WebContents* web_contents, int source_tab_id);
+  // Set the web contents for this tab.
+  void SetWebContents(content::WebContents* web_contents);
 
   // Set web contents to null.
   void ResetWebContents();
 
  private:
-  TabAndroid* tab_android_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedTabDelegateAndroid);
+  raw_ptr<TabAndroid> tab_android_;
 };
 }  // namespace browser_sync
 

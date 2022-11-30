@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -42,6 +43,13 @@ HTMLFormElement* HTMLLegendElement::form() const {
   if (auto* fieldset = DynamicTo<HTMLFieldSetElement>(parentNode()))
     return fieldset->formOwner();
   return nullptr;
+}
+
+void HTMLLegendElement::DetachLayoutTree(bool performing_reattach) {
+  LayoutObject* object = GetLayoutObject();
+  if (!performing_reattach && object && object->IsRenderedLegend())
+    object->Parent()->GetNode()->SetForceReattachLayoutTree();
+  HTMLElement::DetachLayoutTree(performing_reattach);
 }
 
 LayoutObject* HTMLLegendElement::CreateLayoutObject(const ComputedStyle& style,

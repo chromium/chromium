@@ -1,0 +1,44 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page equal-panes>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('calibrationFailedTitleText')]]</h1>
+    <div class="instructions">
+      [[i18n('calibrationFailedInstructionsText')]]
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="scroll-container">
+      <div id="componentList" class="component-grid calibration">
+        <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+          <calibration-component-chip id="[[component.id]]"
+            unique-id="[[component.uniqueId]]"
+            checked="{{component.checked}}"
+            failed="[[component.failed]]"
+            component-name="[[component.name]]"
+            disabled$="[[isComponentDisabled_(component.disabled,
+                allButtonsDisabled)]]"
+            is-first-clickable-component="[[component.isFirstClickableComponent]]">
+          </calibration-component-chip>
+        </template>
+      </div>
+      <div class="gradient equal-panes"></div>
+    </div>
+  </div>
+</base-page>
+
+<cr-dialog id="failedComponentsDialog" on-cancel="closeDialog_" ignore-popstate>
+  <div slot="title">[[i18n('calibrationFailedDialogTitle')]]</div>
+  <div slot="body" id="dialogBody">[[i18n('calibrationFailedDialogText')]]</div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="dialogSkipButton" class="cancel-button"
+        on-click="onSkipDialogButtonClicked_">
+      [[i18n('calibrationFailedSkipCalibrationButtonLabel')]]
+    </cr-button>
+    <cr-button id="dialogRetryButton" class="action-button"
+        on-click="closeDialog_">
+      [[i18n('retryButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

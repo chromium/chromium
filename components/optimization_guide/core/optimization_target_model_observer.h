@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 
@@ -18,15 +19,12 @@ class OptimizationTargetModelObserver : public base::CheckedObserver {
  public:
   // Invoked when a model for |optimization_target| has been updated. It is
   // guaranteed that this method will only be invoked for targets that |this|
-  // is added as an observer for. |model_metadata| will contain metadata that
-  // the server has attached to this model, if applicable.
+  // is added as an observer for.
   //
   // When this observer is first added, it will call this function with the
-  // file path it already has on device, if applicable.
-  virtual void OnModelFileUpdated(
-      proto::OptimizationTarget optimization_target,
-      const base::Optional<proto::Any>& model_metadata,
-      const base::FilePath& file_path) = 0;
+  // model it already has on device, if applicable.
+  virtual void OnModelUpdated(proto::OptimizationTarget optimization_target,
+                              const ModelInfo& model_info) = 0;
 };
 
 }  // namespace optimization_guide

@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drive.mojom;
+
+import "url/mojom/url.mojom";
+
+// A Google Drive File.
+struct File {
+  // The ID of the Drive Item.
+  string id;
+  // Information on why the Drive Item was returned.
+  string justification_text;
+  // The mime type of the Drive Item.
+  string mime_type;
+  // The name of the Drive Item.
+  string title;
+  // The URL to navigate to the Drive Item.
+  url.mojom.Url item_url;
+};
+
+// Browser-side handler for requests from NTP Module UI.
+interface DriveHandler {
+  // Fetches document suggestions from ItemSuggest API.
+  GetFiles() => (array<File> files);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
+};

@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_UI_DISPLAY_SETTINGS_SCREEN_POWER_CONTROLLER_AURA_H_
 #define CHROMECAST_UI_DISPLAY_SETTINGS_SCREEN_POWER_CONTROLLER_AURA_H_
 
-#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/ui/display_settings/screen_power_controller.h"
 

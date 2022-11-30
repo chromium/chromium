@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -286,7 +287,7 @@ bool RegistryKeyBackup::Initialize(HKEY root,
   // Does the key exist?
   LONG result = key.Open(root, key_path, kKeyReadNoNotify | wow64_access);
   if (result == ERROR_SUCCESS) {
-    key_data.reset(new KeyData());
+    key_data = std::make_unique<KeyData>();
     if (!key_data->Initialize(key)) {
       LOG(ERROR) << "Failed to backup key at " << key_path;
       return false;

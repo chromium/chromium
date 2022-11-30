@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,14 @@
 #include <sstream>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
+#include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,7 +32,7 @@
 #endif
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include <asm/hwcap.h>
 #include <sys/auxv.h>
 #include "base/files/file_util.h"
@@ -40,9 +41,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-// Temporary definitions until a new hwcap.h is pulled in.
+// Temporary definitions until a new hwcap.h is pulled in everywhere.
+// https://crbug.com/1265965
+#ifndef HWCAP2_MTE
 #define HWCAP2_MTE (1 << 18)
 #define HWCAP2_BTI (1 << 17)
+#endif
 
 struct ProcCpuInfo {
   std::string brand;
@@ -63,13 +67,13 @@ namespace base {
 #if defined(ARCH_CPU_X86_FAMILY)
 namespace internal {
 
-std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
-    const std::string& vendor,
-    int signature) {
-  int family = (signature >> 8) & 0xf;
-  int model = (signature >> 4) & 0xf;
-  int ext_family = 0;
-  int ext_model = 0;
+X86ModelInfo ComputeX86FamilyAndModel(const std::string& vendor,
+                                      int signature) {
+  X86ModelInfo results;
+  results.family = (signature >> 8) & 0xf;
+  results.model = (signature >> 4) & 0xf;
+  results.ext_family = 0;
+  results.ext_model = 0;
 
   // The "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
   // specifies the Extended Model is defined only when the Base Family is
@@ -78,21 +82,22 @@ std::tuple<int, int, int, int> ComputeX86FamilyAndModel(
   // defined only when Base Family is 0Fh.
   // Both manuals define the display model as
   // {ExtendedModel[3:0],BaseModel[3:0]} in that case.
-  if (family == 0xf || (family == 0x6 && vendor == "GenuineIntel")) {
-    ext_model = (signature >> 16) & 0xf;
-    model += ext_model << 4;
+  if (results.family == 0xf ||
+      (results.family == 0x6 && vendor == "GenuineIntel")) {
+    results.ext_model = (signature >> 16) & 0xf;
+    results.model += results.ext_model << 4;
   }
   // Both the "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
   // and the "AMD CPUID Specification" specify that the Extended Family is
   // defined only when the Base Family is 0Fh.
   // Both manuals define the display family as {0000b,BaseFamily[3:0]} +
   // ExtendedFamily[7:0] in that case.
-  if (family == 0xf) {
-    ext_family = (signature >> 20) & 0xff;
-    family += ext_family;
+  if (results.family == 0xf) {
+    results.ext_family = (signature >> 20) & 0xff;
+    results.family += results.ext_family;
   }
 
-  return {family, model, ext_family, ext_model};
+  return results;
 }
 
 }  // namespace internal
@@ -150,7 +155,7 @@ uint64_t xgetbv(uint32_t xcr) {
 #endif  // ARCH_CPU_X86_FAMILY
 
 #if defined(ARCH_CPU_ARM_FAMILY) && \
-    (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 StringPairs::const_iterator FindFirstProcCpuKey(const StringPairs& pairs,
                                                 StringPiece key) {
   return ranges::find_if(pairs, [key](const StringPairs::value_type& pair) {
@@ -214,8 +219,8 @@ const ProcCpuInfo& ParseProcCpu() {
 
   return *info;
 }
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) ||
-        // defined(OS_LINUX) || defined(OS_CHROMEOS))
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
 }  // namespace
 
@@ -239,7 +244,7 @@ void CPU::Initialize(bool require_branding) {
   int num_ids = cpu_info[0];
   std::swap(cpu_info[2], cpu_info[3]);
   static constexpr size_t kVendorNameSize = 3 * sizeof(cpu_info[1]);
-  static_assert(kVendorNameSize < base::size(cpu_string),
+  static_assert(kVendorNameSize < std::size(cpu_string),
                 "cpu_string too small");
   memcpy(cpu_string, &cpu_info[1], kVendorNameSize);
   cpu_string[kVendorNameSize] = '\0';
@@ -255,8 +260,12 @@ void CPU::Initialize(bool require_branding) {
     signature_ = cpu_info[0];
     stepping_ = cpu_info[0] & 0xf;
     type_ = (cpu_info[0] >> 12) & 0x3;
-    std::tie(family_, model_, ext_family_, ext_model_) =
+    internal::X86ModelInfo results =
         internal::ComputeX86FamilyAndModel(cpu_vendor_, signature_);
+    family_ = results.family;
+    model_ = results.model;
+    ext_family_ = results.ext_family;
+    ext_model_ = results.ext_model;
     has_mmx_ =   (cpu_info[3] & 0x00800000) != 0;
     has_sse_ =   (cpu_info[3] & 0x02000000) != 0;
     has_sse2_ =  (cpu_info[3] & 0x04000000) != 0;
@@ -271,7 +280,7 @@ void CPU::Initialize(bool require_branding) {
     // This is checking for any hypervisor. Hypervisors may choose not to
     // announce themselves. Hypervisors trap CPUID and sometimes return
     // different results to underlying hardware.
-    is_running_in_vm_ = (cpu_info[2] & 0x80000000) != 0;
+    is_running_in_vm_ = (static_cast<uint32_t>(cpu_info[2]) & 0x80000000) != 0;
 
     // AVX instructions will generate an illegal instruction exception unless
     //   a) they are supported by the CPU,
@@ -289,24 +298,28 @@ void CPU::Initialize(bool require_branding) {
         (cpu_info[2] & 0x08000000) != 0 /* OSXSAVE */ &&
         (xgetbv(0) & 6) == 6 /* XSAVE enabled by kernel */;
     has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
+    has_fma3_ = (cpu_info[2] & 0x00001000) != 0;
     has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
+
+    has_pku_ = (cpu_info7[2] & 0x00000008) != 0;
   }
 
   // Get the brand string of the cpu.
-  __cpuid(cpu_info, 0x80000000);
-  const int max_parameter = cpu_info[0];
+  __cpuid(cpu_info, static_cast<int>(0x80000000));
+  const uint32_t max_parameter = static_cast<uint32_t>(cpu_info[0]);
 
-  static constexpr int kParameterStart = 0x80000002;
-  static constexpr int kParameterEnd = 0x80000004;
-  static constexpr int kParameterSize = kParameterEnd - kParameterStart + 1;
-  static_assert(kParameterSize * sizeof(cpu_info) + 1 == base::size(cpu_string),
+  static constexpr uint32_t kParameterStart = 0x80000002;
+  static constexpr uint32_t kParameterEnd = 0x80000004;
+  static constexpr uint32_t kParameterSize =
+      kParameterEnd - kParameterStart + 1;
+  static_assert(kParameterSize * sizeof(cpu_info) + 1 == std::size(cpu_string),
                 "cpu_string has wrong size");
 
   if (max_parameter >= kParameterEnd) {
     size_t i = 0;
-    for (int parameter = kParameterStart; parameter <= kParameterEnd;
+    for (uint32_t parameter = kParameterStart; parameter <= kParameterEnd;
          ++parameter) {
-      __cpuid(cpu_info, parameter);
+      __cpuid(cpu_info, static_cast<int>(parameter));
       memcpy(&cpu_string[i], cpu_info, sizeof(cpu_info));
       i += sizeof(cpu_info);
     }
@@ -314,9 +327,11 @@ void CPU::Initialize(bool require_branding) {
     cpu_brand_ = cpu_string;
   }
 
-  static constexpr int kParameterContainingNonStopTimeStampCounter = 0x80000007;
+  static constexpr uint32_t kParameterContainingNonStopTimeStampCounter =
+      0x80000007;
   if (max_parameter >= kParameterContainingNonStopTimeStampCounter) {
-    __cpuid(cpu_info, kParameterContainingNonStopTimeStampCounter);
+    __cpuid(cpu_info,
+            static_cast<int>(kParameterContainingNonStopTimeStampCounter));
     has_non_stop_time_stamp_counter_ = (cpu_info[3] & (1 << 8)) != 0;
   }
 
@@ -337,7 +352,7 @@ void CPU::Initialize(bool require_branding) {
     }
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (require_branding) {
     const ProcCpuInfo& info = ParseProcCpu();
     cpu_brand_ = info.brand;
@@ -352,7 +367,7 @@ void CPU::Initialize(bool require_branding) {
   has_bti_ = hwcap2 & HWCAP2_BTI;
 #endif
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Windows makes high-resolution thread timing information available in
   // user-space.
   has_non_stop_time_stamp_counter_ = true;
@@ -360,8 +375,10 @@ void CPU::Initialize(bool require_branding) {
 #endif
 }
 
+#if defined(ARCH_CPU_X86_FAMILY)
 CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_avx2()) return AVX2;
+  if (has_fma3()) return FMA3;
   if (has_avx()) return AVX;
   if (has_sse42()) return SSE42;
   if (has_sse41()) return SSE41;
@@ -371,31 +388,33 @@ CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_sse()) return SSE;
   return PENTIUM;
 }
+#endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-  defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
 namespace {
 
 constexpr char kTimeInStatePath[] =
-    "/sys/devices/system/cpu/cpu%d/cpufreq/stats/time_in_state";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/cpufreq/stats/time_in_state";
 constexpr char kPhysicalPackageIdPath[] =
-    "/sys/devices/system/cpu/cpu%d/topology/physical_package_id";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/topology/physical_package_id";
 constexpr char kCoreIdleStateTimePath[] =
-    "/sys/devices/system/cpu/cpu%d/cpuidle/state%d/time";
+    "/sys/devices/system/cpu/cpu%" PRIuS "/cpuidle/state%d/time";
 
 bool SupportsTimeInState() {
   // Reading from time_in_state doesn't block (it amounts to reading a struct
   // from the cpufreq-stats kernel driver).
   ThreadRestrictions::ScopedAllowIO allow_io;
   // Check if the time_in_state path for the first core is readable.
-  FilePath time_in_state_path(StringPrintf(kTimeInStatePath, /*core_index=*/0));
+  FilePath time_in_state_path(
+      StringPrintf(kTimeInStatePath, /*core_index=*/size_t{0}));
   ScopedFILE file_stream(OpenFile(time_in_state_path, "rb"));
   return static_cast<bool>(file_stream);
 }
 
 bool ParseTimeInState(const std::string& content,
                       CPU::CoreType core_type,
-                      uint32_t core_index,
+                      size_t core_index,
                       CPU::TimeInState& time_in_state) {
   const char* begin = content.data();
   size_t max_pos = content.size() - 1;
@@ -414,8 +433,8 @@ bool ParseTimeInState(const std::string& content,
     // Each line should have two integer fields, frequency (kHz) and time (in
     // jiffies), separated by a space, e.g. "2419200 132".
     uint64_t frequency;
-    uint64_t time;
-    int matches = sscanf(begin + pos, "%" PRIu64 " %" PRIu64 "\n%n", &frequency,
+    int64_t time;
+    int matches = sscanf(begin + pos, "%" PRIu64 " %" PRId64 "\n%n", &frequency,
                          &time, &num_chars);
     if (matches != 2)
       return false;
@@ -429,7 +448,7 @@ bool ParseTimeInState(const std::string& content,
 
     // Advance line.
     DCHECK_GT(num_chars, 0);
-    pos += num_chars;
+    pos += static_cast<size_t>(num_chars);
   }
 
   return true;
@@ -439,8 +458,8 @@ bool SupportsCoreIdleTimes() {
   // Reading from the cpuidle driver doesn't block.
   ThreadRestrictions::ScopedAllowIO allow_io;
   // Check if the path for the idle time in state 0 for core 0 is readable.
-  FilePath idle_state0_path(
-      StringPrintf(kCoreIdleStateTimePath, /*core_index=*/0, /*idle_state=*/0));
+  FilePath idle_state0_path(StringPrintf(
+      kCoreIdleStateTimePath, /*core_index=*/size_t{0}, /*idle_state=*/0));
   ScopedFILE file_stream(OpenFile(idle_state0_path, "rb"));
   return static_cast<bool>(file_stream);
 }
@@ -449,8 +468,8 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
   // Try to guess the CPU architecture and cores of each cluster by comparing
   // the maximum frequencies of the available (online and offline) cores.
   const char kCPUMaxFreqPath[] =
-      "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq";
-  int num_cpus = SysInfo::NumberOfProcessors();
+      "/sys/devices/system/cpu/cpu%" PRIuS "/cpufreq/cpuinfo_max_freq";
+  size_t num_cpus = static_cast<size_t>(SysInfo::NumberOfProcessors());
   std::vector<CPU::CoreType> core_index_to_type(num_cpus,
                                                 CPU::CoreType::kUnknown);
 
@@ -461,7 +480,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
     // Reading from cpuinfo_max_freq doesn't block (it amounts to reading a
     // struct field from the cpufreq kernel driver).
     ThreadRestrictions::ScopedAllowIO allow_io;
-    for (int core_index = 0; core_index < num_cpus; ++core_index) {
+    for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
       std::string content;
       uint32_t frequency_khz = 0;
       auto path = StringPrintf(kCPUMaxFreqPath, core_index);
@@ -476,7 +495,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
 
   size_t num_frequencies = frequencies_mhz.size();
 
-  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+  for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
     uint32_t core_frequency_mhz = max_core_frequencies_mhz[core_index];
 
     CPU::CoreType core_type = CPU::CoreType::kOther;
@@ -486,7 +505,7 @@ std::vector<CPU::CoreType> GuessCoreTypes() {
       auto it = frequencies_mhz.find(core_frequency_mhz);
       if (it != frequencies_mhz.end()) {
         // flat_set is sorted.
-        size_t frequency_index = it - frequencies_mhz.begin();
+        ptrdiff_t frequency_index = it - frequencies_mhz.begin();
         switch (frequency_index) {
           case 0:
             core_type = num_frequencies == 2u
@@ -535,10 +554,11 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
 
   // time_in_state is reported per cluster. Identify the first cores of each
   // cluster.
-  static NoDestructor<std::vector<int>> kFirstCoresIndexes([]() {
-    std::vector<int> first_cores;
+  static NoDestructor<std::vector<size_t>> kFirstCoresIndexes([]() {
+    std::vector<size_t> first_cores;
     int last_core_package_id = 0;
-    for (int core_index = 0; core_index < SysInfo::NumberOfProcessors();
+    for (size_t core_index = 0;
+         core_index < static_cast<size_t>(SysInfo::NumberOfProcessors());
          core_index++) {
       // Reading from physical_package_id doesn't block (it amounts to reading a
       // struct field from the kernel).
@@ -548,12 +568,12 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
           StringPrintf(kPhysicalPackageIdPath, core_index));
       std::string package_id_str;
       if (!ReadFileToString(package_id_path, &package_id_str))
-        return std::vector<int>();
+        return std::vector<size_t>();
       int package_id;
       base::StringPiece trimmed = base::TrimWhitespaceASCII(
           package_id_str, base::TrimPositions::TRIM_ALL);
       if (!base::StringToInt(trimmed, &package_id))
-        return std::vector<int>();
+        return std::vector<size_t>();
 
       if (last_core_package_id != package_id || core_index == 0)
         first_cores.push_back(core_index);
@@ -572,7 +592,7 @@ bool CPU::GetTimeInState(TimeInState& time_in_state) {
 
   // Read the time_in_state for each cluster from the /sys directory of the
   // cluster's first core.
-  for (int cluster_core_index : *kFirstCoresIndexes) {
+  for (size_t cluster_core_index : *kFirstCoresIndexes) {
     FilePath time_in_state_path(
         StringPrintf(kTimeInStatePath, cluster_core_index));
 
@@ -601,10 +621,10 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
   // Reading from the cpuidle driver doesn't block.
   ThreadRestrictions::ScopedAllowIO allow_io;
 
-  int num_cpus = SysInfo::NumberOfProcessors();
+  size_t num_cpus = static_cast<size_t>(SysInfo::NumberOfProcessors());
 
   bool success = false;
-  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+  for (size_t core_index = 0; core_index < num_cpus; ++core_index) {
     std::string content;
     TimeDelta idle_time;
 
@@ -616,19 +636,25 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
       if (!ReadFileToString(FilePath(path), &content))
         break;
       StringToUint64(content, &idle_state_time);
-      idle_time += TimeDelta::FromMicroseconds(idle_state_time);
+      idle_time += Microseconds(idle_state_time);
     }
 
     idle_times.push_back(idle_time);
 
     // At least one of the cores should have some idle time, otherwise we report
     // a failure.
-    success |= idle_time > base::TimeDelta();
+    success |= idle_time.is_positive();
   }
 
   return success;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) ||
-        // defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
+
+const CPU& CPU::GetInstanceNoAllocation() {
+  static const base::NoDestructor<const CPU> cpu(CPU(false));
+
+  return *cpu;
+}
 
 }  // namespace base

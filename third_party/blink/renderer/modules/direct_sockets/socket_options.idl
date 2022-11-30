@@ -1,20 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md#tcp
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#tcp
 
 dictionary SocketOptions {
-  DOMString localAddress;
-  unsigned short localPort;
+  [EnforceRange] unsigned long sendBufferSize;
+  [EnforceRange] unsigned long receiveBufferSize;
+};
 
-  DOMString remoteAddress;
-  unsigned short remotePort;
+dictionary TCPSocketOptions : SocketOptions {
+  boolean noDelay = false;
+  [EnforceRange] unsigned long keepAliveDelay;
+};
 
-  unsigned long sendBufferSize;
-  unsigned long receiveBufferSize;
-
-  // These are only relevant for TCP:
-  boolean keepAlive;
-  boolean noDelay;
+dictionary UDPSocketOptions : SocketOptions {
+  required DOMString remoteAddress;
+  required [EnforceRange] unsigned short remotePort;
 };

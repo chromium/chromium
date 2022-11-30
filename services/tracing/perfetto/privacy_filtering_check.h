@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define SERVICES_TRACING_PERFETTO_PRIVACY_FILTERING_CHECK_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace tracing {
 
@@ -25,6 +23,10 @@ class PrivacyFilteringCheck {
   };
 
   PrivacyFilteringCheck();
+
+  PrivacyFilteringCheck(const PrivacyFilteringCheck&) = delete;
+  PrivacyFilteringCheck& operator=(const PrivacyFilteringCheck&) = delete;
+
   ~PrivacyFilteringCheck();
 
   // Removes disallowed fields from the trace.
@@ -36,8 +38,6 @@ class PrivacyFilteringCheck {
 
  private:
   TraceStats stats_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivacyFilteringCheck);
 };
 
 }  // namespace tracing

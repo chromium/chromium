@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ash/wm/wm_highlight_item_border.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace gfx {
 class Size;
@@ -38,10 +38,11 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  const views::View::Views& GetTabSliderButtonsForTesting() const;
   bool is_focused() const { return is_focused_; }
 
  private:
+  friend class WindowCycleListTestApi;
+
   // Updates the active button selector with moving animation from the
   // currently selected button to the target button representing |per_desk|
   // mode.

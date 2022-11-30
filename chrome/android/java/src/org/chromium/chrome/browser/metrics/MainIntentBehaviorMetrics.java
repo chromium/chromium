@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,13 +23,7 @@ public class MainIntentBehaviorMetrics {
 
     private static long sTimeoutDurationMs = TIMEOUT_DURATION_MS;
     private static boolean sLoggedLaunchBehavior;
-    static {
-        ApplicationStatus.registerApplicationStateListener(newState -> {
-            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
-                sLoggedLaunchBehavior = false;
-            }
-        });
-    }
+    private static boolean sHasRegisteredApplicationStateListener;
 
     // Constants used to log UMA "enum" histogram about launch type.
     private static final int LAUNCH_FROM_ICON = 0;
@@ -43,6 +37,16 @@ public class MainIntentBehaviorMetrics {
      */
     public MainIntentBehaviorMetrics() {
         mLogLaunchRunnable = () -> logLaunchBehavior(false);
+    }
+
+    private void ensureApplicationStateListenerRegistered() {
+        if (sHasRegisteredApplicationStateListener) return;
+        sHasRegisteredApplicationStateListener = true;
+        ApplicationStatus.registerApplicationStateListener(newState -> {
+            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+                sLoggedLaunchBehavior = false;
+            }
+        });
     }
 
     /**
@@ -78,11 +82,13 @@ public class MainIntentBehaviorMetrics {
      * and the type of each launch.
      */
     public void logLaunchBehavior() {
+        ensureApplicationStateListenerRegistered();
         if (sLoggedLaunchBehavior) return;
         ThreadUtils.getUiThreadHandler().postDelayed(mLogLaunchRunnable, sTimeoutDurationMs);
     }
 
     private void logLaunchBehavior(boolean isLaunchFromIcon) {
+        ensureApplicationStateListenerRegistered();
         if (sLoggedLaunchBehavior) return;
         sLoggedLaunchBehavior = true;
 
@@ -95,7 +101,7 @@ public class MainIntentBehaviorMetrics {
         if (current - timestamp > DateUtils.DAY_IN_MILLIS) {
             // Log count if it's not first launch of Chrome.
             if (timestamp != 0) {
-                RecordHistogram.recordCountHistogram("MobileStartup.DailyLaunchCount", count);
+                RecordHistogram.recordCount1MHistogram("MobileStartup.DailyLaunchCount", count);
             }
             count = 0;
             prefs.writeLong(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, current);

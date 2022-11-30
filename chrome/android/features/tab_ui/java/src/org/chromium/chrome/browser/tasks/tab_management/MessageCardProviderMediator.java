@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.IPH;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.PRICE_MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.TAB_SUGGESTION;
@@ -93,6 +94,13 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
         return message;
     }
 
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        if (!mShownMessageItems.containsKey(messageType)) return false;
+        return mShownMessageItems.get(messageType)
+                       .model.get(MessageCardViewProperties.MESSAGE_IDENTIFIER)
+                == identifier;
+    }
+
     private PropertyModel buildModel(int messageType, MessageService.MessageData data) {
         switch (messageType) {
             case TAB_SUGGESTION:
@@ -108,6 +116,11 @@ public class MessageCardProviderMediator implements MessageService.MessageObserv
                 assert data instanceof PriceMessageService.PriceMessageData;
                 return PriceMessageCardViewModel.create(mContext, this::invalidateShownMessage,
                         (PriceMessageService.PriceMessageData) data);
+            case INCOGNITO_REAUTH_PROMO_MESSAGE:
+                assert data
+                        instanceof IncognitoReauthPromoMessageService.IncognitoReauthMessageData;
+                return IncognitoReauthPromoViewModel.create(mContext, this::invalidateShownMessage,
+                        (IncognitoReauthPromoMessageService.IncognitoReauthMessageData) data);
             default:
                 return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                         .with(MessageCardViewProperties.IS_INCOGNITO, false)

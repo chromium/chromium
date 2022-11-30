@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,11 @@
 #include <shobjidl.h>
 #include <wininet.h>
 
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -31,7 +29,6 @@
 #include "base/win/windows_version.h"
 #include "components/services/quarantine/common.h"
 #include "components/services/quarantine/common_win.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "url/gurl.h"
 
 namespace quarantine {
@@ -228,16 +225,19 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
              : QuarantineFileResult::ANNOTATION_FAILED;
 }
 
-QuarantineFileResult QuarantineFile(const base::FilePath& file,
-                                    const GURL& source_url_unsafe,
-                                    const GURL& referrer_url_unsafe,
-                                    const std::string& client_guid) {
+void QuarantineFile(const base::FilePath& file,
+                    const GURL& source_url_unsafe,
+                    const GURL& referrer_url_unsafe,
+                    const std::string& client_guid,
+                    mojom::Quarantine::QuarantineFileCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   int64_t file_size = 0;
-  if (!base::PathExists(file) || !base::GetFileSize(file, &file_size))
-    return QuarantineFileResult::FILE_MISSING;
+  if (!base::PathExists(file) || !base::GetFileSize(file, &file_size)) {
+    std::move(callback).Run(QuarantineFileResult::FILE_MISSING);
+    return;
+  }
 
   std::string braces_guid = "{" + client_guid + "}";
   GUID guid = GUID_NULL;
@@ -254,16 +254,20 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
     // Calling InvokeAttachmentServices on an empty file can result in the file
     // being deleted.  Also an anti-virus scan doesn't make a lot of sense to
     // perform on an empty file.
-    return SetInternetZoneIdentifierDirectly(file, source_url, referrer_url);
+    std::move(callback).Run(
+        SetInternetZoneIdentifierDirectly(file, source_url, referrer_url));
+    return;
   }
 
   QuarantineFileResult attachment_services_result = QuarantineFileResult::OK;
   if (InvokeAttachmentServices(file, source_url, referrer_url, guid,
                                &attachment_services_result)) {
-    return attachment_services_result;
+    std::move(callback).Run(attachment_services_result);
+    return;
   }
 
-  return SetInternetZoneIdentifierDirectly(file, source_url, referrer_url);
+  std::move(callback).Run(
+      SetInternetZoneIdentifierDirectly(file, source_url, referrer_url));
 }
 
 }  // namespace quarantine

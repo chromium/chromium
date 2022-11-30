@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+using media_router::MediaRoute;
+using testing::NiceMock;
 
 class FakeCastToolbarIcon : public MediaRouterActionController::Observer {
  public:
@@ -38,28 +41,31 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
       : issue_(media_router::IssueInfo(
             "title notification",
             media_router::IssueInfo::Action::DISMISS,
-            media_router::IssueInfo::Severity::NOTIFICATION)),
-        source1_("fakeSource1"),
-        source2_("fakeSource2") {}
+            media_router::IssueInfo::Severity::NOTIFICATION)) {}
 
-  ~MediaRouterActionControllerUnitTest() override {}
+  MediaRouterActionControllerUnitTest(
+      const MediaRouterActionControllerUnitTest&) = delete;
+  MediaRouterActionControllerUnitTest& operator=(
+      const MediaRouterActionControllerUnitTest&) = delete;
+
+  ~MediaRouterActionControllerUnitTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-    router_ = std::make_unique<media_router::MockMediaRouter>();
+    router_ = std::make_unique<NiceMock<media_router::MockMediaRouter>>();
     controller_ =
         std::make_unique<MediaRouterActionController>(profile(), router_.get());
     controller_->AddObserver(&icon_);
 
     SetAlwaysShowActionPref(false);
 
-    local_display_route_list_.emplace_back("routeId1", source1_, "sinkId1",
-                                           "description", true, true);
-    non_local_display_route_list_.emplace_back("routeId2", source1_, "sinkId2",
-                                               "description", false, true);
-    non_local_display_route_list_.emplace_back("routeId3", source2_, "sinkId3",
-                                               "description", true, false);
+    local_mirroring_route_ = MediaRoute("routeId1", mirroring_source_,
+                                        "sinkId1", "description", true);
+    local_cast_route_ =
+        MediaRoute("routeId2", cast_source_, "sinkId2", "description", true);
+    non_local_mirroring_route_ = MediaRoute("routeId3", mirroring_source_,
+                                            "sinkId3", "description", false);
   }
 
   void TearDown() override {
@@ -73,6 +79,20 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
     return icon_.IsShown();
   }
 
+  void UpdateRoutesAndExpectIconShown(
+      std::vector<media_router::MediaRoute> routes) {
+    controller_->OnRoutesUpdated(routes);
+    EXPECT_TRUE(controller_->has_local_display_route_);
+    EXPECT_TRUE(IsIconShown());
+  }
+
+  void UpdateRoutesAndExpectIconHidden(
+      std::vector<media_router::MediaRoute> routes) {
+    controller_->OnRoutesUpdated(routes);
+    EXPECT_FALSE(controller_->has_local_display_route_);
+    EXPECT_FALSE(IsIconShown());
+  }
+
   void SetAlwaysShowActionPref(bool always_show) {
     MediaRouterActionController::SetAlwaysShowActionPref(profile(),
                                                          always_show);
@@ -83,51 +103,36 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
   std::unique_ptr<media_router::MockMediaRouter> router_;
   FakeCastToolbarIcon icon_;
 
-  const media_router::Issue issue_;
-
   // Fake Sources, used for the Routes.
-  const media_router::MediaSource source1_;
-  const media_router::MediaSource source2_;
+  const media_router::MediaSource cast_source_{"cast:1234"};
+  const media_router::MediaSource mirroring_source_{
+      "urn:x-org.chromium.media:source:tab:*"};
 
-  std::vector<media_router::MediaRoute> local_display_route_list_;
-  std::vector<media_router::MediaRoute> non_local_display_route_list_;
-  std::vector<media_router::MediaRoute::Id> empty_route_id_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterActionControllerUnitTest);
+  MediaRoute local_mirroring_route_;
+  MediaRoute local_cast_route_;
+  MediaRoute non_local_mirroring_route_;
+  const media_router::Issue issue_;
 };
 
-// TODO(b/161612403): Remove this class once
-// |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
-class MediaRouterActionControllerGMCUnitTest
-    : public MediaRouterActionControllerUnitTest {
- public:
-  MediaRouterActionControllerGMCUnitTest() : cast_source_("cast:1234") {}
-  void SetUp() override {
-    MediaRouterActionControllerUnitTest::SetUp();
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-
-    local_display_cast_route_list_.emplace_back(
-        "routeId4", cast_source_, "sinkId4", "description", true, true);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  const media_router::MediaSource cast_source_;
-  std::vector<media_router::MediaRoute> local_display_cast_route_list_;
-};
-
-TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
+TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutes) {
   EXPECT_FALSE(IsIconShown());
+  // A local mirroring route should show the action icon.
+  UpdateRoutesAndExpectIconShown({local_mirroring_route_});
 
-  // Creating a local route should show the action icon.
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
-  EXPECT_TRUE(controller_->has_local_display_route_);
-  EXPECT_TRUE(IsIconShown());
-  // Removing the local route should hide the icon.
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
-  EXPECT_FALSE(controller_->has_local_display_route_);
+// The GlobalMediaControlsCastStartStop flag is disabled on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+  // A local cast route should show the action icon.
+  UpdateRoutesAndExpectIconShown({local_cast_route_});
+#else
+  // A cast route should hide the action icon.
+  UpdateRoutesAndExpectIconHidden({local_cast_route_});
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // A non local route should hide the action icon.
+  UpdateRoutesAndExpectIconHidden({non_local_mirroring_route_});
+}
+
+TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForIssues) {
   EXPECT_FALSE(IsIconShown());
 
   // Creating an issue should show the action icon.
@@ -139,15 +144,13 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForRoutesAndIssues) {
   EXPECT_FALSE(controller_->has_issue_);
   EXPECT_FALSE(IsIconShown());
 
-  controller_->OnIssue(issue_);
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
-  controller_->OnIssuesCleared();
   // When the issue disappears, the icon should remain visible if there's
-  // a local route.
+  // a local mirroring route.
+  controller_->OnIssue(issue_);
+  controller_->OnRoutesUpdated({local_mirroring_route_});
+  controller_->OnIssuesCleared();
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(std::vector<media_router::MediaRoute>(),
-                               empty_route_id_list_);
-  EXPECT_FALSE(IsIconShown());
+  UpdateRoutesAndExpectIconHidden({});
 }
 
 TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForDialog) {
@@ -166,15 +169,14 @@ TEST_F(MediaRouterActionControllerUnitTest, EphemeralIconForDialog) {
   controller_->OnDialogHidden();
   EXPECT_FALSE(IsIconShown());
 
+  // Hiding the dialog while there are local mirroring routes shouldn't hide the
+  // icon.
   controller_->OnDialogShown();
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
-  // Hiding the dialog while there are local routes shouldn't hide the icon.
+  controller_->OnRoutesUpdated({local_mirroring_route_});
   controller_->OnDialogHidden();
   EXPECT_TRUE(IsIconShown());
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
-  EXPECT_FALSE(IsIconShown());
+  UpdateRoutesAndExpectIconHidden({});
 
   controller_->OnDialogShown();
   EXPECT_TRUE(IsIconShown());
@@ -208,30 +210,16 @@ TEST_F(MediaRouterActionControllerUnitTest, ObserveAlwaysShowPrefChange) {
   SetAlwaysShowActionPref(true);
   EXPECT_TRUE(IsIconShown());
 
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
-  SetAlwaysShowActionPref(false);
   // Unchecking the option while having a local route shouldn't hide the icon.
+  controller_->OnRoutesUpdated({local_mirroring_route_});
+  SetAlwaysShowActionPref(false);
   EXPECT_TRUE(IsIconShown());
 
+  // Removing the local mirroring route should not hide the icon.
   SetAlwaysShowActionPref(true);
-  controller_->OnRoutesUpdated(non_local_display_route_list_,
-                               empty_route_id_list_);
-  // Removing the local route should not hide the icon.
+  controller_->OnRoutesUpdated({});
   EXPECT_TRUE(IsIconShown());
 
   SetAlwaysShowActionPref(false);
   EXPECT_FALSE(IsIconShown());
-}
-
-TEST_F(MediaRouterActionControllerGMCUnitTest,
-       EphemeralIconForRoutesAndIssues) {
-  EXPECT_FALSE(IsIconShown());
-  // Creating a cast route should not show the action icon.
-  controller_->OnRoutesUpdated({local_display_cast_route_list_},
-                               empty_route_id_list_);
-  EXPECT_FALSE(IsIconShown());
-
-  // Creating a local mirroring route should show the action icon.
-  controller_->OnRoutesUpdated(local_display_route_list_, empty_route_id_list_);
-  EXPECT_TRUE(IsIconShown());
 }

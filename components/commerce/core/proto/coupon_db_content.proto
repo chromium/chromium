@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package coupon_db;
+
+// Used for storing information of a FreeListing coupon.
+message FreeListingCouponInfoProto {
+  // Description of the coupon. It's a combination of coupon_title and
+  // coupon_description fields from server response.
+  string coupon_description = 1;
+  // The promo coupon code that can be applied.
+  string coupon_code = 2;
+  // The ID to identify the coupon.
+  int64 coupon_id = 3;
+  // The expiry time of this coupon.
+  double expiry_time = 4;
+  // Timestamp of the last time that a coupon displays in bubble.
+  int64 last_display_time = 5;
+}
+
+// Used for storing coupon data for one merchant website.
+message CouponContentProto {
+  // Merchant origin indicating source of the coupons.
+  string key = 1;
+
+  // All the FreeListing coupons of this merchant.
+  repeated FreeListingCouponInfoProto free_listing_coupons = 2;
+}

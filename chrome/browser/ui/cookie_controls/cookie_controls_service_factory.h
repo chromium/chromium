@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_UI_COOKIE_CONTROLS_COOKIE_CONTROLS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class CookieControlsService;
 
 // Factory to get or create an instance of CookieControlsService from
 // a Profile.
-class CookieControlsServiceFactory : public BrowserContextKeyedServiceFactory {
+class CookieControlsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static CookieControlsService* GetForProfile(Profile* profile);
 
@@ -29,8 +29,6 @@ class CookieControlsServiceFactory : public BrowserContextKeyedServiceFactory {
   ~CookieControlsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

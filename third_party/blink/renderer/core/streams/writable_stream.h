@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "v8/include/v8.h"
 
@@ -78,6 +76,15 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
   // Called by Create().
   WritableStream();
   ~WritableStream() override;
+
+  // This should only be used with freshly-constructed streams. It expects to be
+  // called in a valid microtask scope.
+  void InitWithCountQueueingStrategy(
+      ScriptState*,
+      UnderlyingSinkBase*,
+      size_t high_water_mark,
+      std::unique_ptr<WritableStreamTransferringOptimizer>,
+      ExceptionState&);
 
   // IDL defined functions
 
@@ -230,6 +237,7 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
  protected:
   // Used when creating a stream from JavaScript. Called from Create().
   // https://streams.spec.whatwg.org/#ws-constructor
+  // TODO(ricea): Port external callers to InitWithCountQueuingStrategy().
   void InitInternal(ScriptState*,
                     ScriptValue raw_underlying_sink,
                     ScriptValue raw_strategy,

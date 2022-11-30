@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@ namespace syncer {
 
 ExtensionsActivity::Record::Record() : bookmark_write_count(0U) {}
 
-ExtensionsActivity::Record::~Record() {}
+ExtensionsActivity::Record::~Record() = default;
 
-ExtensionsActivity::ExtensionsActivity() {}
+ExtensionsActivity::ExtensionsActivity() = default;
 
-ExtensionsActivity::~ExtensionsActivity() {}
+ExtensionsActivity::~ExtensionsActivity() = default;
 
 void ExtensionsActivity::GetAndClearRecords(Records* buffer) {
   base::AutoLock lock(records_lock_);
@@ -22,9 +22,9 @@ void ExtensionsActivity::GetAndClearRecords(Records* buffer) {
 
 void ExtensionsActivity::PutRecords(const Records& records) {
   base::AutoLock lock(records_lock_);
-  for (auto i = records.begin(); i != records.end(); ++i) {
-    records_[i->first].extension_id = i->second.extension_id;
-    records_[i->first].bookmark_write_count += i->second.bookmark_write_count;
+  for (const auto& [id, record] : records) {
+    records_[id].extension_id = record.extension_id;
+    records_[id].bookmark_write_count += record.bookmark_write_count;
   }
 }
 

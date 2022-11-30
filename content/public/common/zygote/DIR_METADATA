@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>Sandbox"
-}
+mixins: "//content/zygote/COMMON_METADATA"
 
-team_email: "security-dev@chromium.org"

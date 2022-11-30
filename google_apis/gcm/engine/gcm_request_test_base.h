@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 #define GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,6 +23,10 @@ namespace gcm {
 class GCMRequestTestBase : public testing::Test {
  public:
   GCMRequestTestBase();
+
+  GCMRequestTestBase(const GCMRequestTestBase&) = delete;
+  GCMRequestTestBase& operator=(const GCMRequestTestBase&) = delete;
+
   ~GCMRequestTestBase() override;
 
   const net::BackoffEntry::Policy& GetBackoffPolicy() const;
@@ -69,8 +72,6 @@ class GCMRequestTestBase : public testing::Test {
 
   // Tracks the number of retries so far.
   int retry_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMRequestTestBase);
 };
 
 }  // namespace gcm

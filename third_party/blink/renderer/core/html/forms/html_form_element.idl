@@ -34,6 +34,8 @@
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect] attribute boolean noValidate;
     [CEReactions, Reflect] attribute DOMString target;
+    [RuntimeEnabled=FormRelAttribute, CEReactions, Reflect] attribute DOMString rel;
+    [RuntimeEnabled=FormRelAttribute, SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
 
     readonly attribute HTMLFormControlsCollection elements;
     readonly attribute long length;
@@ -42,7 +44,7 @@
     [NotEnumerable] getter (RadioNodeList or Element) (DOMString name);
 
     [ImplementedAs=submitFromJavaScript] void submit();
-    [RaisesException] void requestSubmit(optional HTMLElement submitter);
+    [RaisesException] void requestSubmit(optional HTMLElement? submitter = null);
     [CEReactions] void reset();
     boolean checkValidity();
     boolean reportValidity();

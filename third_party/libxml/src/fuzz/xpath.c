@@ -45,6 +45,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     xmlFreeDoc(doc);
 
     xmlFuzzDataCleanup();
+    xmlResetLastError();
 
     return(0);
 }

@@ -1,13 +1,6 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-
-<dom-module id="cr-icon-button">
-  <template>
     <style>
       :host {
-        --cr-icon-button-fill-color: var(--google-grey-refresh-700);
+        --cr-icon-button-fill-color: var(--google-grey-700);
         --cr-icon-button-icon-start-offset: 0;
         --cr-icon-button-icon-size: 20px;
         --cr-icon-button-size: 36px;
@@ -41,6 +34,14 @@
       :host(:focus-visible:focus) {
         box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
             var(--cr-focus-outline-color));
+      }
+
+      @media (forced-colors: active) {
+        :host(:focus-visible:focus) {
+          /* Use outline instead of box-shadow (which does not work) in Windows
+             HCM. */
+          outline: var(--cr-focus-outline-hcm);
+        }
       }
 
       :host(:active) {
@@ -80,6 +81,12 @@
         width: 100%;
       }
 
+      @media (forced-colors: active) {
+        :host(:not([iron-icon])) #maskedImage {
+          background-color: ButtonText;
+        }
+      }
+
       #icon {
         align-items: center;
         border-radius: 4px;
@@ -103,13 +110,10 @@
 
       @media (prefers-color-scheme: dark) {
         :host {
-          --cr-icon-button-fill-color: var(--google-grey-refresh-500);
+          --cr-icon-button-fill-color: var(--google-grey-500);
         }
       }
     </style>
     <div id="icon">
       <div id="maskedImage"></div>
     </div>
-  </template>
-  <script src="cr_icon_button.js"></script>
-</dom-module>

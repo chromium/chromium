@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,16 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/test/mock_cma_backend.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "chromecast/media/cma/test/mock_multiroom_manager.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
@@ -29,9 +32,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/audio/android/audio_track_output_stream.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using testing::_;
 using testing::AnyNumber;
@@ -44,13 +47,13 @@ namespace {
 
 const ::media::AudioParameters kDefaultAudioParams(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_STEREO,
+    ::media::ChannelLayoutConfig::Stereo(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 
 const ::media::AudioParameters kAudioParamsInvalidLayout(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_NONE,
+    ::media::ChannelLayoutConfig::FromLayout<::media::CHANNEL_LAYOUT_NONE>(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 
@@ -60,10 +63,6 @@ int OnMoreData(base::TimeDelta delay,
                ::media::AudioBus* dest) {
   dest->Zero();
   return kDefaultAudioParams.frames_per_buffer();
-}
-
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "";
 }
 
 }  // namespace
@@ -101,12 +100,6 @@ class CastAudioManagerTest : public testing::Test,
     return mock_backend_factory_.get();
   }
 
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector;
-    connector_receivers_.Add(this, connector.InitWithNewPipeAndPassReceiver());
-    return connector;
-  }
-
   void CreateAudioManagerForTesting(bool use_mixer = false) {
     // Only one AudioManager may exist at a time, so destroy the one we're
     // currently holding before creating a new one.
@@ -122,11 +115,11 @@ class CastAudioManagerTest : public testing::Test,
     mock_backend_factory_ = std::make_unique<MockCmaBackendFactory>();
     audio_manager_ = base::WrapUnique(new CastAudioManager(
         std::make_unique<::media::TestAudioThread>(), &fake_audio_log_factory_,
+        &mock_delegate_,
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
-        base::BindRepeating(&DummyGetSessionId),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), CreateConnector(), use_mixer,
+        audio_thread_.task_runner(), &connector_, use_mixer,
         true /* force_use_cma_backend_for_output*/
         ));
     // A few AudioManager implementations post initialization tasks to
@@ -170,11 +163,13 @@ class CastAudioManagerTest : public testing::Test,
   base::Thread audio_thread_;
   base::test::TaskEnvironment task_environment_;
   ::media::FakeAudioLogFactory fake_audio_log_factory_;
+  MockCastAudioManagerHelperDelegate mock_delegate_;
   std::unique_ptr<MockCmaBackendFactory> mock_backend_factory_;
   ::media::MockAudioSourceCallback mock_source_callback_;
   std::unique_ptr<MockCmaBackend> mock_cma_backend_;
   std::unique_ptr<MockCmaBackend::AudioDecoder> mock_audio_decoder_;
 
+  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<CastAudioManager> audio_manager_;
   std::unique_ptr<::media::AudioDeviceInfoAccessorForTests>
       device_info_accessor_;
@@ -208,7 +203,7 @@ TEST_F(CastAudioManagerTest, CanMakeStream) {
   RunThreadsUntilIdle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   const ::media::AudioParameters kAC3AudioParams(
       ::media::AudioParameters::AUDIO_BITSTREAM_AC3,
@@ -219,7 +214,6 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   EXPECT_TRUE(stream);
   // Only run the rest of the test if the device supports AC3.
   if (stream->Open()) {
-    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
     EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
         .WillRepeatedly(Invoke(OnMoreData));
     EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
@@ -231,7 +225,31 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   }
   stream->Close();
 }
-#endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
+  const ::media::AudioParameters kDTSAudioParams(
+      ::media::AudioParameters::AUDIO_BITSTREAM_DTS,
+      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
+      256);
+  ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
+      kDTSAudioParams, "", ::media::AudioManager::LogCallback());
+  EXPECT_TRUE(stream);
+  // Only run the rest of the test if the device supports DTS.
+  if (stream->Open()) {
+    EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
+        .WillRepeatedly(Invoke(OnMoreData));
+    EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
+    stream->Start(&mock_source_callback_);
+    RunThreadsUntilIdle();
+
+    stream->Stop();
+    RunThreadsUntilIdle();
+  }
+  stream->Close();
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO))
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
   SetUpBackendAndDecoder();

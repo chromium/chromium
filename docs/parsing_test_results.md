@@ -41,7 +41,7 @@ effectively a Python script. Each recipe is divided into *steps*. Each *step*
 represents a well-defined action, such as updating the repository to point to
 tip of tree, or compiling the necessary build artifacts.
 
-[recipe]: https://chromium.googlesource.com/external/github.com/luci/recipes-py/+/master/doc/user_guide.md
+[recipe]: https://chromium.googlesource.com/external/github.com/luci/recipes-py/+/main/doc/user_guide.md
 
 ![Example 1 Build Results UI](images/parsing_test_results_build_results_1.png)
 

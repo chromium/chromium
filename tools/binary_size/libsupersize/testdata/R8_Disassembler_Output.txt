@@ -1,0 +1,138 @@
+# Bytecode for
+# Class: 'org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory$$Lambda$5'
+
+
+#
+# Method: '<init>':
+# public
+#
+
+void Xa0.<init>()
+registers: 1, inputs: 1, outputs: 1
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+    0:   0x00: InvokeDirect        { v0 } org.chromium.base.supplier.Supplier$$CC void <init>()
+    1:   0x03: ReturnVoid
+
+#
+# Method: 'get':
+# public
+#
+
+java.lang.Object Xa0.get()
+registers: 2, inputs: 1, outputs: 0
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+    0:   0x00: Const4              v0, 0x0 (0)
+    1:   0x01: ReturnObject        v0
+
+# Bytecode for
+# Class: 'org.chromium.chrome.browser.app.appmenu.IncognitoMenuItemViewBinder$1'
+
+
+# Bytecode for
+# Class: 'com.youtube.elements.fbs.AnimatedVectorType'
+
+
+#
+# Method: '<init>':
+# public
+#
+
+void Xa.<init>()
+registers: 1, inputs: 1, outputs: 1
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+         0x00, line 1, locals: [0 -> this]
+    0:   0x00: InvokeDirect        { v0 } com.google.flatbuffers.Table void <init>()
+    1:   0x03: ReturnVoid
+
+#
+# Method: 'animation':
+# public
+#
+
+bb Xa.h()
+registers: 4, inputs: 1, outputs: 3
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+         0x00, line 1, locals: [3 -> this]
+    0:   0x00: NewInstance         v0, com.youtube.elements.fbs.AnimatedVectorTypeSource
+    1:   0x02: InvokeDirect        { v0 } com.youtube.elements.fbs.AnimatedVectorTypeSource void <init>()
+    2:   0x05: Const4              v1, 0x4 (4)
+         0x06, line 2, locals: [3 -> this]
+    3:   0x06: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __offset(int)
+    4:   0x09: MoveResult          v1
+    5:   0x0a: IfEqz               v1, 0x19 (+15)
+    6:   0x0c: Iget                v2, v3, com.google.flatbuffers.Table int bb_pos
+    7:   0x0e: AddInt2Addr         v1, v2
+    8:   0x0f: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __indirect(int)
+    9:   0x12: MoveResult          v1
+   10:   0x13: IgetObject          v2, v3, com.google.flatbuffers.Table java.nio.ByteBuffer bb
+         0x15, line 3, locals: [3 -> this]
+   11:   0x15: InvokeVirtual       { v0 v1 v2 } com.google.flatbuffers.Table void __reset(int,java.nio.ByteBuffer)
+   12:   0x18: Goto                0x1a (+2)
+   13:   0x19: Const4              v0, 0x0 (0)
+   14:   0x1a: ReturnObject        v0
+
+#
+# Method: 'frameState':
+# public
+#
+
+Va Xa.i(java.lang.Object, int, byte[])
+registers: 4, inputs: 1, outputs: 3
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+         0x00, line 1, locals: [3 -> this]
+    0:   0x00: NewInstance         v0, com.youtube.elements.fbs.AnimatedVectorFrameState
+    1:   0x02: InvokeDirect        { v0 } com.youtube.elements.fbs.AnimatedVectorFrameState void <init>()
+    2:   0x05: Const16             v1, 0x0014 (20)
+         0x07, line 2, locals: [3 -> this]
+    3:   0x07: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __offset(int)
+    4:   0x0a: MoveResult          v1
+    5:   0x0b: IfEqz               v1, 0x1a (+15)
+    6:   0x0d: Iget                v2, v3, com.google.flatbuffers.Table int bb_pos
+    7:   0x0f: AddInt2Addr         v1, v2
+    8:   0x10: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __indirect(int)
+    9:   0x13: MoveResult          v1
+   10:   0x14: IgetObject          v2, v3, com.google.flatbuffers.Table java.nio.ByteBuffer bb
+         0x16, line 3, locals: [3 -> this]
+   11:   0x16: InvokeVirtual       { v0 v1 v2 } com.google.flatbuffers.Table void __reset(int,java.nio.ByteBuffer)
+   12:   0x19: Goto                0x1b (+2)
+   13:   0x1a: Const4              v0, 0x0 (0)
+   14:   0x1b: ReturnObject        v0
+
+#
+# Method: 'progressState':
+# public
+#
+
+Wa Xa.j(java.lang.Object)
+registers: 4, inputs: 1, outputs: 3
+------------------------------------------------------------
+inst#  offset  instruction         arguments
+------------------------------------------------------------
+         0x00, line 1, locals: [3 -> this]
+    0:   0x00: NewInstance         v0, com.youtube.elements.fbs.AnimatedVectorProgressState
+    1:   0x02: InvokeDirect        { v0 } com.youtube.elements.fbs.AnimatedVectorProgressState void <init>()
+    2:   0x05: Const16             v1, 0x0012 (18)
+         0x07, line 2, locals: [3 -> this]
+    3:   0x07: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __offset(int)
+    4:   0x0a: MoveResult          v1
+    5:   0x0b: IfEqz               v1, 0x1a (+15)
+    6:   0x0d: Iget                v2, v3, com.google.flatbuffers.Table int bb_pos
+    7:   0x0f: AddInt2Addr         v1, v2
+    8:   0x10: InvokeVirtual       { v3 v1 } com.google.flatbuffers.Table int __indirect(int)
+    9:   0x13: MoveResult          v1
+   10:   0x14: IgetObject          v2, v3, com.google.flatbuffers.Table java.nio.ByteBuffer bb
+         0x16, line 3, locals: [3 -> this]
+   11:   0x16: InvokeVirtual       { v0 v1 v2 } com.google.flatbuffers.Table void __reset(int,java.nio.ByteBuffer)
+   12:   0x19: Goto                0x1b (+2)
+   13:   0x1a: Const4              v0, 0x0 (0)
+   14:   0x1b: ReturnObject        v0

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 
@@ -29,6 +28,12 @@ class BluetoothRemoteGattServiceCast : public BluetoothRemoteGattService {
   BluetoothRemoteGattServiceCast(
       BluetoothDeviceCast* device,
       scoped_refptr<chromecast::bluetooth::RemoteService> remote_service);
+
+  BluetoothRemoteGattServiceCast(const BluetoothRemoteGattServiceCast&) =
+      delete;
+  BluetoothRemoteGattServiceCast& operator=(
+      const BluetoothRemoteGattServiceCast&) = delete;
+
   ~BluetoothRemoteGattServiceCast() override;
 
   // BluetoothGattService implementation:
@@ -43,8 +48,6 @@ class BluetoothRemoteGattServiceCast : public BluetoothRemoteGattService {
  private:
   BluetoothDeviceCast* const device_;
   scoped_refptr<chromecast::bluetooth::RemoteService> remote_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceCast);
 };
 
 }  // namespace device

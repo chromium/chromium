@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,9 @@ class AwURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
       blink::URLLoaderThrottleProviderType type);
 
+  AwURLLoaderThrottleProvider& operator=(const AwURLLoaderThrottleProvider&) =
+      delete;
+
   ~AwURLLoaderThrottleProvider() override;
 
   // blink::URLLoaderThrottleProvider implementation.
@@ -42,8 +45,6 @@ class AwURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(AwURLLoaderThrottleProvider);
 };
 
 }  // namespace android_webview

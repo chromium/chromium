@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 #import "base/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/test/js_test_util_internal.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gtest_mac.h"
 
@@ -42,7 +45,7 @@ class ScopedWKScriptMessageHandlerTest : public WebTestWithWebState {
   ScopedWKScriptMessageHandlerTest() = default;
   ~ScopedWKScriptMessageHandlerTest() override = default;
 
-  // Returns the user content controller associated with |GetBrowserState()|.
+  // Returns the user content controller associated with `GetBrowserState()`.
   WKUserContentController* GetUserContentController() {
     WKWebViewConfigurationProvider& configuration_provider =
         WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
@@ -116,30 +119,26 @@ TEST_F(ScopedWKScriptMessageHandlerTest,
 // Tests that the ScopedWKScriptMessageHandler block is called for an isolated
 // content world.
 TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageReceivedIsolatedWorld) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   __block bool handler_called = false;
   __block WKScriptMessage* message = nil;
 
-  if (@available(iOS 14.0, *)) {
-    std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
-        std::make_unique<ScopedWKScriptMessageHandler>(
-            GetUserContentController(), kScriptHandlerName,
-            WKContentWorld.defaultClientWorld,
-            base::BindRepeating(^(WKScriptMessage* callback_message) {
-              message = callback_message;
-              handler_called = true;
-            }));
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message) {
+            message = callback_message;
+            handler_called = true;
+          }));
 
-    ASSERT_TRUE(LoadHtml("<p>"));
+  ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result = ExecuteJavaScript(WKContentWorld.defaultClientWorld,
-                                  GetPostMessageScript());
-    ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
-    ASSERT_TRUE([result boolValue]);
-  }
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteJavaScript(
+      web_view, WKContentWorld.defaultClientWorld, GetPostMessageScript());
+  ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
+  ASSERT_TRUE([result boolValue]);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
     return handler_called;
@@ -153,60 +152,50 @@ TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageReceivedIsolatedWorld) {
 // Tests that a script message handler registered in the page content world
 // does not receive messages from an isolated world.
 TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageCrossWorldPageContent) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   __block bool handler_called = false;
 
-  if (@available(iOS 14.0, *)) {
-    std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
-        std::make_unique<ScopedWKScriptMessageHandler>(
-            GetUserContentController(), kScriptHandlerName,
-            WKContentWorld.pageWorld,
-            base::BindRepeating(^(WKScriptMessage* callback_message) {
-              handler_called = true;
-            }));
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerName,
+          WKContentWorld.pageWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message) {
+            handler_called = true;
+          }));
 
-    ASSERT_TRUE(LoadHtml("<p>"));
+  ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result = ExecuteJavaScript(WKContentWorld.defaultClientWorld,
-                                  GetPostMessageScript());
-    // JavaScript exception should be thrown and false value returned if script
-    // message handler was not registered.
-    ASSERT_FALSE([result boolValue]);
-  }
-
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteJavaScript(
+      web_view, WKContentWorld.defaultClientWorld, GetPostMessageScript());
+  // JavaScript exception should be thrown and false value returned if script
+  // message handler was not registered.
+  ASSERT_FALSE([result boolValue]);
   EXPECT_FALSE(handler_called);
 }
 
 // Tests that a script message handler registered on an isolated world does not
 // receive messages from the page content world.
 TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageCrossWorldIsolated) {
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   __block bool handler_called = false;
 
-  if (@available(iOS 14.0, *)) {
-    std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
-        std::make_unique<ScopedWKScriptMessageHandler>(
-            GetUserContentController(), kScriptHandlerName,
-            WKContentWorld.defaultClientWorld,
-            base::BindRepeating(^(WKScriptMessage* callback_message) {
-              handler_called = true;
-            }));
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message) {
+            handler_called = true;
+          }));
 
-    ASSERT_TRUE(LoadHtml("<p>"));
+  ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result =
-        ExecuteJavaScript(WKContentWorld.pageWorld, GetPostMessageScript());
-    // JavaScript exception should be thrown and false value returned if script
-    // message handler was not registered.
-    ASSERT_FALSE([result boolValue]);
-  }
-
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
+                                           GetPostMessageScript());
+  // JavaScript exception should be thrown and false value returned if script
+  // message handler was not registered.
+  ASSERT_FALSE([result boolValue]);
   EXPECT_FALSE(handler_called);
 }
 

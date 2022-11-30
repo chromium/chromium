@@ -9,7 +9,8 @@
              way and crashes in Android Marshmallow.
              https://plus.google.com/105051985738280261832/posts/LjnRzJKWPGW -->
         <activity android:name="CronetPerfTestActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar">
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

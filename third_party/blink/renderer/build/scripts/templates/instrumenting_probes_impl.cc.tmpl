@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,22 @@
 
 {% set sink_class = (name | to_singular) + "Sink" %}
 {% set sink_class_header = (header | to_singular) + "_sink" %}
-{% for file in files %}
+{% for file in files|sort %}
 #include "{{output_path_in_gen_dir}}{{file.name}}_inl.h"
 {% endfor %}
 #include "{{output_path_in_gen_dir}}{{sink_class_header}}.h"
-{% for agent in agents %}
+{% for agent in agents|sort %}
 #include "{{agent | agent_name_to_include}}"
 {% endfor %}
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "base/synchronization/lock.h"
 
 namespace blink {
 
 namespace {
 
-Mutex& AgentCountMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+base::Lock& AgentCountLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 }  // namespace
@@ -33,14 +33,14 @@ std::atomic<unsigned> {{sink_class}}::s_existingAgents;
 {{sink_class}}::{{sink_class}}() {}
 
 {{sink_class}}::~{{sink_class}}() {
-  MutexLocker lock(AgentCountMutex());
-{% for agent in agents %}
+  base::AutoLock locker(AgentCountLock());
+{% for agent in agents|sort %}
   if (Has{{agent}}s() && --s_numSinksWith{{agent}} == 0)
     s_existingAgents &= ~k{{agent}};
 {% endfor %}
 }
 
-{% for agent in agents %}
+{% for agent in agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
 {% set getter_name = agent | to_snake_case %}
 
@@ -49,10 +49,10 @@ unsigned {{sink_class}}::s_numSinksWith{{agent}} = 0;
 
 void {{sink_class}}::Add{{agent}}({{class_name}}* agent) {
   bool already_had_agent = Has{{agent}}s();
-  {{getter_name}}s_.insert(agent);
+  {{getter_name}}s_.AddAgent(agent);
 
   if (!already_had_agent) {
-    MutexLocker lock(AgentCountMutex());
+    base::AutoLock locker(AgentCountLock());
     if (++s_numSinksWith{{agent}} == 1)
       s_existingAgents |= k{{agent}};
   }
@@ -64,10 +64,10 @@ void {{sink_class}}::Remove{{agent}}({{class_name}}* agent) {
   if (!Has{{agent}}s())
     return;
 
-  {{getter_name}}s_.erase(agent);
+  {{getter_name}}s_.RemoveAgent(agent);
 
   if (!Has{{agent}}s()) {
-    MutexLocker lock(AgentCountMutex());
+    base::AutoLock locker(AgentCountLock());
     if (--s_numSinksWith{{agent}} == 0)
       s_existingAgents &= ~k{{agent}};
   }
@@ -80,7 +80,7 @@ void {{sink_class}}::Remove{{agent}}({{class_name}}* agent) {
 
 void {{sink_class}}::Trace(Visitor* visitor) const
 {
-{% for agent in agents %}
+{% for agent in agents|sort %}
 {% set getter_name = agent | to_snake_case %}
   visitor->Trace({{getter_name}}s_);
 {% endfor %}
@@ -98,16 +98,17 @@ namespace probe {
 {% set agent_probe_name = method_name(common_name or probe.name) %}
   if (!probe_sink)
     return;
-{% for agent in probe.agents %}
+{% for agent in probe.agents|sort %}
 {% set class_name = agent | agent_name_to_class %}
   if (probe_sink->Has{{agent}}s()) {
-    for ({{class_name}}* agent : probe_sink->{{class_name}}s())
+    probe_sink->{{class_name}}s().ForEachAgent([&]({{class_name}}* agent) {
       agent->{{agent_probe_name}}({{caller()}});
+    });
   }
 {% endfor %}
 {% endmacro -%}
 
-{% for file in files %}
+{% for file in files|sort %}
 {% for probe in file.declarations %}
 {% if probe.is_scoped %}
 {{probe.name}}::{{probe.name}}({{ params_list(probe) }}) :

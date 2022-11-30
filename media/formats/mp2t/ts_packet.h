@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define MEDIA_FORMATS_MP2T_TS_PACKET_H_
 
 #include <stdint.h>
-
-#include "base/macros.h"
 
 namespace media {
 
@@ -27,6 +25,9 @@ class TsPacket {
   // Return a TsPacket only when parsing was successful.
   // Return NULL otherwise.
   static TsPacket* Parse(const uint8_t* buf, int size);
+
+  TsPacket(const TsPacket&) = delete;
+  TsPacket& operator=(const TsPacket&) = delete;
 
   ~TsPacket();
 
@@ -64,8 +65,6 @@ class TsPacket {
   // Params from the adaptation field.
   bool discontinuity_indicator_;
   bool random_access_indicator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsPacket);
 };
 
 }  // namespace mp2t

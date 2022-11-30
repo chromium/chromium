@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,21 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
@@ -21,25 +28,30 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
+#import "ios/chrome/browser/ui/toolbar/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/web/public/navigation/referrer.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/navigation/referrer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate> {
-  // Observer that updates |toolbarViewController| for fullscreen events.
+@interface PrimaryToolbarCoordinator () <PrimaryToolbarMediatorDelegate,
+                                         PrimaryToolbarViewControllerDelegate> {
+  // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+  PrerenderService* _prerenderService;
 }
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+// Mediator for this toolbar.
+@property(nonatomic, strong) PrimaryToolbarMediator* primaryToolbarMediator;
 // Redefined as PrimaryToolbarViewController.
 @property(nonatomic, strong) PrimaryToolbarViewController* viewController;
 // The coordinator for the location bar in the toolbar.
@@ -70,21 +82,30 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
+  self.primaryToolbarMediator = [[PrimaryToolbarMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()];
+  self.primaryToolbarMediator.delegate = self;
+
+  // LocationBarCoordinator dispatches OmniboxCommands therefore Location Bar
+  // setup should be done before using OmniboxCommands handler (below).
+  [self setUpLocationBar];
+
   self.viewController = [[PrimaryToolbarViewController alloc] init];
   self.viewController.shouldHideOmniboxOnNTP =
       !self.browser->GetBrowserState()->IsOffTheRecord();
-  self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.viewController.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands>>(
-          self.browser->GetCommandDispatcher());
+  self.viewController.omniboxCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.viewController.delegate = self;
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
   self.orchestrator.toolbarAnimatee = self.viewController;
 
-  [self setUpLocationBar];
+  // Button factory requires that the omnibox commands are set up, which is
+  // done by the location bar.
+  self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
+
   self.viewController.locationBarViewController =
       self.locationBarCoordinator.locationBarViewController;
   self.orchestrator.locationBarAnimatee =
@@ -93,8 +114,10 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-    _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-        FullscreenController::FromBrowser(self.browser), self.viewController);
+  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenController::FromBrowser(self.browser), self.viewController);
+  _prerenderService = PrerenderServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
 
   [super start];
   self.started = YES;
@@ -104,6 +127,8 @@
   if (!self.started)
     return;
   [super stop];
+  self.primaryToolbarMediator.delegate = nil;
+  [self.primaryToolbarMediator disconnect];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.locationBarCoordinator stop];
   _fullscreenUIUpdater = nullptr;
@@ -148,6 +173,52 @@
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler {
   self.viewController.panGestureHandler = panGestureHandler;
+}
+
+- (void)updateToolbar {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState)
+    return;
+
+  BOOL isPrerendered =
+      (_prerenderService && _prerenderService->IsLoadingPrerender());
+
+  // Please note, this notion of isLoading is slightly different from WebState's
+  // IsLoading().
+  BOOL isToolbarLoading =
+      webState->IsLoading() &&
+      !webState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
+
+  if (isPrerendered && isToolbarLoading)
+    [self showPrerenderingAnimation];
+
+  id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), FindInPageCommands);
+  [findInPageCommandsHandler showFindUIIfActive];
+
+  id<TextZoomCommands> textZoomCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TextZoomCommands);
+  [textZoomCommandsHandler showTextZoomUIIfActive];
+
+  // There are times when the NTP can be hidden but before the visibleURL
+  // changes.  This can leave the BVC in a blank state where only the bottom
+  // toolbar is visible. Instead, if possible, use the NewTabPageTabHelper
+  // IsActive() value rather than checking -IsVisibleURLNewTabPage.
+  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
+  BOOL isNTP = NTPHelper && NTPHelper->IsActive();
+  BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.viewController);
+
+  // Hide the toolbar when displaying content suggestions without the tab
+  // strip, without the focused omnibox, and for UI Refresh, only when in
+  // split toolbar mode.
+  BOOL hideToolbar = isNTP && !isOffTheRecord &&
+                     ![self isOmniboxFirstResponder] &&
+                     ![self showingOmniboxPopup] && !canShowTabStrip &&
+                     IsSplitToolbarMode(self.viewController);
+
+  [self.viewController.view setHidden:hideToolbar];
 }
 
 #pragma mark - PrimaryToolbarViewControllerDelegate
@@ -199,6 +270,12 @@
   if (webState && IsVisibleURLNewTabPage(webState)) {
     self.viewController.view.hidden = IsSplitToolbarMode(self.viewController);
   }
+}
+
+#pragma mark - ToolbarCommands
+
+- (void)triggerToolbarSlideInAnimation {
+  [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
 }
 
 - (void)onFakeboxAnimationComplete {

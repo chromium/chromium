@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,9 +30,10 @@ struct WebMemoryAttribution {
   // Specifies the scope (or type) of the context.
   enum Scope {
     kCrossOriginAggregated, // Dummy scope for cross-origin iframes.
-    kDedicatedWorker,
     kWindow,
-    // TODO(1085129): Add worker scopes once they are implemented.
+    kDedicatedWorker,
+    kServiceWorker,
+    kSharedWorker
   };
   Scope scope;
   // The current URL of the context. It is null for cross-origin contexts.
@@ -61,6 +62,10 @@ struct WebMemoryBreakdownEntry {
   // have a memory measurement (for example a frame that was added after the
   // measurement started).
   WebMemoryUsage? memory;
+  // The memory used by canvas elements in this breakdown. It is null for
+  // breakdowns that did not have a memory measurement (for example a frame
+  // that was added after the measurement started).
+  WebMemoryUsage? canvas_memory;
 
   array<WebMemoryAttribution> attribution;
 };

@@ -1,11 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_RANKER_WINDOW_FEATURES_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_RANKER_WINDOW_FEATURES_H_
-
-#include <string>
 
 #include "chrome/browser/resource_coordinator/tab_metrics_event.pb.h"
 #include "components/sessions/core/session_id.h"

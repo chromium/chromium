@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,13 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SERVICES_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 class Profile;
-class ProxyConfigMonitor;
 
 namespace content {
 class DownloadManager;
@@ -33,14 +30,13 @@ class TrackedPreferenceValidationDelegate;
 
 namespace safe_browsing {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class DownloadProtectionService;
 #endif
 class IncidentReportingService;
 class SafeBrowsingService;
 class SafeBrowsingDatabaseManager;
 struct V4ProtocolConfig;
-class SafeBrowsingNetworkContext;
 
 // Abstraction to help organize code for mobile vs full safe browsing modes.
 // This helper class should be owned by a SafeBrowsingService, and it handles
@@ -56,7 +52,7 @@ class ServicesDelegate {
   class ServicesCreator {
    public:
     virtual bool CanCreateDatabaseManager() = 0;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     virtual bool CanCreateDownloadProtectionService() = 0;
 #endif
     virtual bool CanCreateIncidentReportingService() = 0;
@@ -64,7 +60,7 @@ class ServicesDelegate {
     // Caller takes ownership of the returned object. Cannot use std::unique_ptr
     // because services may not be implemented for some build configs.
     virtual SafeBrowsingDatabaseManager* CreateDatabaseManager() = 0;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     virtual DownloadProtectionService* CreateDownloadProtectionService() = 0;
 #endif
     virtual IncidentReportingService* CreateIncidentReportingService() = 0;
@@ -108,14 +104,13 @@ class ServicesDelegate {
       content::DownloadManager* download_manager) = 0;
 
   // Returns nullptr for any service that is not available.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   virtual DownloadProtectionService* GetDownloadService() = 0;
 #endif
 
-  // Takes a SharedURLLoaderFactory with the Safe Browsing NetworkContext and
-  // one from the BrowserProcess.
+  // Takes a SharedURLLoaderFactory from the BrowserProcess, for use in the
+  // database manager.
   virtual void StartOnIOThread(
-      scoped_refptr<network::SharedURLLoaderFactory> sb_url_loader_factory,
       scoped_refptr<network::SharedURLLoaderFactory> browser_url_loader_factory,
       const V4ProtocolConfig& v4_config) = 0;
   virtual void StopOnIOThread(bool shutdown) = 0;
@@ -123,29 +118,14 @@ class ServicesDelegate {
   virtual void CreateTelemetryService(Profile* profile) {}
   virtual void RemoveTelemetryService(Profile* profile) {}
 
-  virtual void CreateSafeBrowsingNetworkContext(Profile* profile);
-  virtual void RemoveSafeBrowsingNetworkContext(Profile* profile);
-  virtual SafeBrowsingNetworkContext* GetSafeBrowsingNetworkContext(
-      Profile* profile) const;
+  virtual void OnProfileWillBeDestroyed(Profile* profile) {}
 
  protected:
-  network::mojom::NetworkContextParamsPtr CreateNetworkContextParams(
-      Profile* profile);
+  // Unowned pointer
+  const raw_ptr<SafeBrowsingService> safe_browsing_service_;
 
   // Unowned pointer
-  SafeBrowsingService* const safe_browsing_service_;
-
-  // Unowned pointer
-  ServicesCreator* const services_creator_;
-
-  std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
-
-  // Tracks existing Profiles, and their corresponding
-  // SafeBrowsingNetworkContexts. Accessed on UI thread.
-  base::flat_map<Profile*, std::unique_ptr<SafeBrowsingNetworkContext>>
-      network_context_map_;
-  base::flat_map<Profile*, std::unique_ptr<ProxyConfigMonitor>>
-      proxy_config_monitor_map_;
+  const raw_ptr<ServicesCreator> services_creator_;
 };
 
 }  // namespace safe_browsing

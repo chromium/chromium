@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
-import org.chromium.chrome.browser.metrics.WebApkUma;
+import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,7 +75,7 @@ public class WebappDirectoryManager {
             }
         }
 
-        WebApkUma.recordNumberOfStaleWebApkUpdateRequestFiles(count);
+        WebApkUmaRecorder.recordNumberOfStaleWebApkUpdateRequestFiles(count);
     }
 
     /** Returns the directory containing all of Chrome's web app data, creating it if needed. */

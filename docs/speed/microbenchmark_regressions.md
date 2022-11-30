@@ -35,7 +35,7 @@ https://crbug.com/889742 is has more details and many duped bugs.
 
 ### No-op refactors that prevent AFDO
 
-It's also possible to make no-op changes to code, cauing the previous AFDO data
+It's also possible to make no-op changes to code, causing the previous AFDO data
 to be inapplicable (e.g. function name change). This can result in apparent
 regressions which recover spontaneously once new AFDO data is generated based on
 the new code. E.g. https://crbug.com/855544 was a specific case of this. One way

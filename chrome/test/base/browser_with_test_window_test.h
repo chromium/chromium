@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,50 +25,59 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
-#include "chromeos/ui/base/tablet_state.h"
-#endif
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
 class GURL;
 
+namespace chromeos {
+class ScopedLacrosServiceTestHelper;
+class TabletState;
+}  // namespace chromeos
+
 namespace content {
 class NavigationController;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace crosapi {
+class CrosapiManager;
+}
+
+namespace user_manager {
+class ScopedUserManager;
+}  // namespace user_manager
+#endif
 
 class TestingProfileManager;
 
 // Base class for browser based unit tests. BrowserWithTestWindowTest creates a
 // Browser with a TestingProfile and TestBrowserWindow. To add a tab use
-// AddTab. For example, the following adds a tab and navigates to
-// two URLs that target the TestWebContents:
+// AddTab. For example, the following adds a tab and navigates to two URLs:
 //
 //   // Add a new tab and navigate it. This will be at index 0.
+//   // WARNING: this creates a real WebContents. If you want to add a test
+//   // WebContents create it directly and insert it into the TabStripModel.
 //   AddTab(browser(), GURL("http://foo/1"));
-//   NavigationController* controller =
-//       &browser()->tab_strip_model()->GetWebContentsAt(0)->GetController();
+//   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
 //
 //   // Navigate somewhere else.
 //   GURL url2("http://foo/2");
-//   NavigateAndCommit(controller, url2);
+//   NavigateAndCommit(contents, url2);
 //
 //   // This is equivalent to the above, and lets you test pending navigations.
 //   browser()->OpenURL(OpenURLParams(
 //       GURL("http://foo/2"), GURL(), WindowOpenDisposition::CURRENT_TAB,
 //       ui::PAGE_TRANSITION_TYPED, false));
-//   CommitPendingLoad(controller);
+//   CommitPendingLoad(&contents->GetController());
 //
 // Subclasses must invoke BrowserWithTestWindowTest::SetUp as it is responsible
 // for creating the various objects of this class.
@@ -118,7 +128,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   Browser* browser() const { return browser_.get(); }
   void set_browser(Browser* browser) { browser_.reset(browser); }
-  Browser* release_browser() WARN_UNUSED_RESULT { return browser_.release(); }
+  [[nodiscard]] Browser* release_browser() { return browser_.release(); }
 
   TestingProfile* profile() const { return profile_; }
 
@@ -134,7 +144,7 @@ class BrowserWithTestWindowTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-  BrowserWindow* release_browser_window() WARN_UNUSED_RESULT {
+  [[nodiscard]] BrowserWindow* release_browser_window() {
     return window_.release();
   }
 
@@ -147,18 +157,18 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   // Adds a tab to |browser| with the given URL and commits the load.
   // This is a convenience function. The new tab will be added at index 0.
+  // WARNING: this creates a real WebContents. If you want to add a test
+  // WebContents create it directly and insert it into the TabStripModel.
   void AddTab(Browser* browser, const GURL& url);
 
   // Commits the pending load on the given controller. It will keep the
   // URL of the pending load. If there is no pending load, this does nothing.
   void CommitPendingLoad(content::NavigationController* controller);
 
-  // Creates a pending navigation on the given navigation controller to the
-  // given URL with the default parameters and the commits the load with a page
-  // ID one larger than any seen. This emulates what happens on a new
-  // navigation.
-  void NavigateAndCommit(content::NavigationController* controller,
-                         const GURL& url);
+  // Creates a pending navigation on the given WebContents to the given URL with
+  // the default parameters and the commits the load with a page ID one larger
+  // than any seen. This emulates what happens on a new navigation.
+  void NavigateAndCommit(content::WebContents* web_contents, const GURL& url);
 
   // Navigates the current tab. This is a wrapper around NavigateAndCommit.
   void NavigateAndCommitActiveTab(const GURL& url);
@@ -200,7 +210,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
-  chromeos::StubInstallAttributes* GetInstallAttributes();
+  ash::StubInstallAttributes* GetInstallAttributes();
 #endif
 
  private:
@@ -215,15 +225,17 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
+      lacros_service_test_helper_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.
@@ -250,7 +262,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   // The existence of this object enables tests via RenderViewHostTester.
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 

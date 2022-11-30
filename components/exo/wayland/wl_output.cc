@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,8 +37,9 @@ void bind_output(wl_client* client,
   wl_resource* resource =
       wl_resource_create(client, &wl_output_interface,
                          std::min(version, kWlOutputVersion), output_id);
-  SetImplementation(resource, &output_implementation,
-                    std::make_unique<WaylandDisplayHandler>(output, resource));
+  auto handler = std::make_unique<WaylandDisplayHandler>(output, resource);
+  handler->Initialize();
+  SetImplementation(resource, &output_implementation, std::move(handler));
 }
 
 }  // namespace wayland

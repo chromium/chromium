@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include "base/containers/queue.h"
 #include "base/memory/free_deleter.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
@@ -57,6 +56,11 @@ bool IsDhcpCapableAdapter(IP_ADAPTER_ADDRESSES* adapter) {
 // GetCandidateAdapterNames() performed, for output to NetLog.
 struct DhcpAdapterNamesLoggingInfo {
   DhcpAdapterNamesLoggingInfo() = default;
+
+  DhcpAdapterNamesLoggingInfo(const DhcpAdapterNamesLoggingInfo&) = delete;
+  DhcpAdapterNamesLoggingInfo& operator=(const DhcpAdapterNamesLoggingInfo&) =
+      delete;
+
   ~DhcpAdapterNamesLoggingInfo() = default;
 
   // The error that iphlpapi!GetAdaptersAddresses returned.
@@ -79,9 +83,6 @@ struct DhcpAdapterNamesLoggingInfo {
   // The time when control returned to the origin thread
   // (OnGetCandidateAdapterNamesDone)
   base::TimeTicks origin_thread_end_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DhcpAdapterNamesLoggingInfo);
 };
 
 namespace {
@@ -104,14 +105,16 @@ constexpr int kMaxConcurrentDhcpLookupTasks = 12;
 // How long to wait at maximum after we get results (a PAC file or
 // knowledge that no PAC file is configured) from whichever network
 // adapter finishes first.
-constexpr base::TimeDelta kMaxWaitAfterFirstResult =
-    base::TimeDelta::FromMilliseconds(400);
+constexpr base::TimeDelta kMaxWaitAfterFirstResult = base::Milliseconds(400);
 
 // A TaskRunner that never schedules more than |kMaxConcurrentDhcpLookupTasks|
 // tasks concurrently.
 class TaskRunnerWithCap : public base::TaskRunner {
  public:
   TaskRunnerWithCap() = default;
+
+  TaskRunnerWithCap(const TaskRunnerWithCap&) = delete;
+  TaskRunnerWithCap& operator=(const TaskRunnerWithCap&) = delete;
 
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -195,69 +198,65 @@ class TaskRunnerWithCap : public base::TaskRunner {
 
   // Tasks that are waiting to be scheduled.
   base::queue<LocationAndTask> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerWithCap);
 };
 
 base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
   // Add information on each of the adapters enumerated (including those that
   // were subsequently skipped).
-  base::Value adapters_value(base::Value::Type::LIST);
+  base::Value::List adapters_list;
   for (IP_ADAPTER_ADDRESSES* adapter = info->adapters.get(); adapter;
        adapter = adapter->Next) {
-    base::Value adapter_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict adapter_value;
 
-    adapter_value.SetStringKey("AdapterName", adapter->AdapterName);
-    adapter_value.SetIntKey("IfType", adapter->IfType);
-    adapter_value.SetIntKey("Flags", adapter->Flags);
-    adapter_value.SetIntKey("OperStatus", adapter->OperStatus);
-    adapter_value.SetIntKey("TunnelType", adapter->TunnelType);
+    adapter_value.Set("AdapterName", adapter->AdapterName);
+    adapter_value.Set("IfType", static_cast<int>(adapter->IfType));
+    adapter_value.Set("Flags", static_cast<int>(adapter->Flags));
+    adapter_value.Set("OperStatus", static_cast<int>(adapter->OperStatus));
+    adapter_value.Set("TunnelType", static_cast<int>(adapter->TunnelType));
 
     // "skipped" means the adapter was not ultimately chosen as a candidate for
     // testing WPAD.
     bool skipped = !IsDhcpCapableAdapter(adapter);
-    adapter_value.SetKey("skipped", base::Value(skipped));
+    adapter_value.Set("skipped", base::Value(skipped));
 
-    adapters_value.Append(std::move(adapter_value));
+    adapters_list.Append(std::move(adapter_value));
   }
-  result.SetKey("adapters", std::move(adapters_value));
+  result.Set("adapters", std::move(adapters_list));
 
-  result.SetIntKey(
-      "origin_to_worker_thread_hop_dt",
-      (info->worker_thread_start_time - info->origin_thread_start_time)
-          .InMilliseconds());
-  result.SetIntKey("worker_to_origin_thread_hop_dt",
-                   (info->origin_thread_end_time - info->worker_thread_end_time)
-                       .InMilliseconds());
-  result.SetIntKey("worker_dt", (info->worker_thread_end_time -
-                                 info->worker_thread_start_time)
-                                    .InMilliseconds());
+  result.Set("origin_to_worker_thread_hop_dt",
+             static_cast<int>((info->worker_thread_start_time -
+                               info->origin_thread_start_time)
+                                  .InMilliseconds()));
+  result.Set("worker_to_origin_thread_hop_dt",
+             static_cast<int>(
+                 (info->origin_thread_end_time - info->worker_thread_end_time)
+                     .InMilliseconds()));
+  result.Set("worker_dt", static_cast<int>((info->worker_thread_end_time -
+                                            info->worker_thread_start_time)
+                                               .InMilliseconds()));
 
   if (info->error != ERROR_SUCCESS)
-    result.SetIntKey("error", info->error);
+    result.Set("error", static_cast<int>(info->error));
 
-  return result;
+  return base::Value(std::move(result));
 }
 
 base::Value NetLogFetcherDoneParams(int fetcher_index, int net_error) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
-  result.SetIntKey("fetcher_index", fetcher_index);
-  result.SetIntKey("net_error", net_error);
+  result.Set("fetcher_index", fetcher_index);
+  result.Set("net_error", net_error);
 
-  return result;
+  return base::Value(std::move(result));
 }
 
 }  // namespace
 
 DhcpPacFileFetcherWin::DhcpPacFileFetcherWin(
     URLRequestContext* url_request_context)
-    : state_(STATE_START),
-      num_pending_fetchers_(0),
-      destination_string_(nullptr),
-      url_request_context_(url_request_context),
+    : url_request_context_(url_request_context),
       task_runner_(base::MakeRefCounted<TaskRunnerWithCap>()) {
   DCHECK(url_request_context_);
 }
@@ -420,12 +419,12 @@ void DhcpPacFileFetcherWin::OnFetcherDone(size_t fetcher_index,
        it != fetchers_.end();
        ++it) {
     bool did_finish = (*it)->DidFinish();
-    int result = (*it)->GetResult();
-    if (did_finish && result == OK) {
+    int fetch_result = (*it)->GetResult();
+    if (did_finish && fetch_result == OK) {
       TransitionToDone();
       return;
     }
-    if (!did_finish || result != ERR_PAC_NOT_IN_DHCP) {
+    if (!did_finish || fetch_result != ERR_PAC_NOT_IN_DHCP) {
       break;
     }
   }
@@ -508,13 +507,15 @@ scoped_refptr<base::TaskRunner> DhcpPacFileFetcherWin::GetTaskRunner() {
   return task_runner_;
 }
 
-DhcpPacFileAdapterFetcher* DhcpPacFileFetcherWin::ImplCreateAdapterFetcher() {
-  return new DhcpPacFileAdapterFetcher(url_request_context_, task_runner_);
+std::unique_ptr<DhcpPacFileAdapterFetcher>
+DhcpPacFileFetcherWin::ImplCreateAdapterFetcher() {
+  return std::make_unique<DhcpPacFileAdapterFetcher>(url_request_context_,
+                                                     task_runner_);
 }
 
-DhcpPacFileFetcherWin::AdapterQuery*
+scoped_refptr<DhcpPacFileFetcherWin::AdapterQuery>
 DhcpPacFileFetcherWin::ImplCreateAdapterQuery() {
-  return new AdapterQuery();
+  return base::MakeRefCounted<AdapterQuery>();
 }
 
 base::TimeDelta DhcpPacFileFetcherWin::ImplGetMaxWait() {
@@ -576,7 +577,7 @@ bool DhcpPacFileFetcherWin::GetCandidateAdapterNames(
 }
 
 DhcpPacFileFetcherWin::AdapterQuery::AdapterQuery()
-    : logging_info_(new DhcpAdapterNamesLoggingInfo()) {}
+    : logging_info_(std::make_unique<DhcpAdapterNamesLoggingInfo>()) {}
 
 void DhcpPacFileFetcherWin::AdapterQuery::GetCandidateAdapterNames() {
   logging_info_->error = ERROR_NO_DATA;
@@ -600,6 +601,6 @@ bool DhcpPacFileFetcherWin::AdapterQuery::ImplGetCandidateAdapterNames(
                                                          info);
 }
 
-DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() {}
+DhcpPacFileFetcherWin::AdapterQuery::~AdapterQuery() = default;
 
 }  // namespace net

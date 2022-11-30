@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 #define CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_client.h"
 
 class GURL;
@@ -15,6 +15,10 @@ class Profile;
 class ChromeFaviconClient : public favicon::FaviconClient {
  public:
   explicit ChromeFaviconClient(Profile* profile);
+
+  ChromeFaviconClient(const ChromeFaviconClient&) = delete;
+  ChromeFaviconClient& operator=(const ChromeFaviconClient&) = delete;
+
   ~ChromeFaviconClient() override;
 
  private:
@@ -28,9 +32,7 @@ class ChromeFaviconClient : public favicon::FaviconClient {
       favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) override;
 
-  Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFaviconClient);
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_

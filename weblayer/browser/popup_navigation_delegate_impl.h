@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef WEBLAYER_BROWSER_POPUP_NAVIGATION_DELEGATE_IMPL_H_
 #define WEBLAYER_BROWSER_POPUP_NAVIGATION_DELEGATE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,7 +25,7 @@ class PopupNavigationDelegateImpl
   const GURL& GetURL() override;
   NavigateResult NavigateWithGesture(
       const blink::mojom::WindowFeatures& window_features,
-      base::Optional<WindowOpenDisposition> updated_disposition) override;
+      absl::optional<WindowOpenDisposition> updated_disposition) override;
   void OnPopupBlocked(content::WebContents* web_contents,
                       int total_popups_blocked_on_page) override;
 
@@ -32,8 +33,8 @@ class PopupNavigationDelegateImpl
 
  private:
   content::OpenURLParams params_;
-  content::WebContents* source_contents_;
-  content::RenderFrameHost* opener_;
+  raw_ptr<content::WebContents> source_contents_;
+  raw_ptr<content::RenderFrameHost> opener_;
   const bool original_user_gesture_;
 };
 

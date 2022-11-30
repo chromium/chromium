@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include "base/threading/thread_checker.h"
 #include "components/remote_cocoa/browser/remote_cocoa_browser_export.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace remote_cocoa {
 
@@ -26,6 +28,10 @@ class REMOTE_COCOA_BROWSER_EXPORT ScopedCGWindowID final {
     // This is invoked in the ScopedCGWindowID destructor, after all of its
     // weak pointers have been destroyed.
     virtual void OnScopedCGWindowIDDestroyed(uint32_t cg_window_id) {}
+    virtual void OnScopedCGWindowIDMouseMoved(
+        uint32_t cg_window_id,
+        const gfx::PointF& location_in_window_dips,
+        const gfx::Size& window_size_dips) {}
   };
   ScopedCGWindowID(uint32_t cg_window_id,
                    const viz::FrameSinkId& frame_sink_id);
@@ -37,6 +43,11 @@ class REMOTE_COCOA_BROWSER_EXPORT ScopedCGWindowID final {
   // observers after invalidating its weak pointers during its destruction.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Inform frame sink capturers of where the mouse is, so that they can draw
+  // a cursor.
+  void OnMouseMoved(const gfx::PointF& location_in_window_dips,
+                    const gfx::Size& window_size_dips);
 
   // Query the frame sink id for this window, which can be used for optimized
   // video capture.

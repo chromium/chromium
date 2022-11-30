@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -57,7 +57,7 @@ class PopupOpenerTabHelperBrowserTest : public InProcessBrowserTest {
     int active_index = browser()->tab_strip_model()->active_index();
     content::WebContentsDestroyedWatcher destroyed_watcher(popup);
     browser()->tab_strip_model()->CloseWebContentsAt(
-        active_index, TabStripModel::CLOSE_USER_GESTURE);
+        active_index, TabCloseTypes::CLOSE_USER_GESTURE);
     destroyed_watcher.Wait();
   }
 
@@ -68,11 +68,11 @@ class PopupOpenerTabHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
                        UserDefaultPopupBlockerSetting_MetricLoggedOnPopup) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      ukm::GetSourceIdForWebContentsDocument(GetActiveWebContents());
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
                        UserAllowsAllPopups_MetricLoggedOnPopup) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
-      ukm::GetSourceIdForWebContentsDocument(GetActiveWebContents());
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   OpenAndClosePopup();
   OpenAndClosePopup();
 

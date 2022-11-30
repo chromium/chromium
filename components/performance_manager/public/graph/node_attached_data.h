@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 
 namespace performance_manager {
 
@@ -23,14 +22,15 @@ class Node;
 class NodeAttachedData {
  public:
   NodeAttachedData();
+
+  NodeAttachedData(const NodeAttachedData&) = delete;
+  NodeAttachedData& operator=(const NodeAttachedData&) = delete;
+
   virtual ~NodeAttachedData();
 
   // Returns the 'key' associated with this type of NodeAttachedData. This needs
   // to be unique per data type or bad things happen.
   virtual const void* GetKey() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NodeAttachedData);
 };
 
 // Implements NodeAttachedData for a given UserDataType.
@@ -41,6 +41,11 @@ template <typename UserDataType>
 class ExternalNodeAttachedDataImpl : public NodeAttachedData {
  public:
   ExternalNodeAttachedDataImpl() = default;
+
+  ExternalNodeAttachedDataImpl(const ExternalNodeAttachedDataImpl&) = delete;
+  ExternalNodeAttachedDataImpl& operator=(const ExternalNodeAttachedDataImpl&) =
+      delete;
+
   ~ExternalNodeAttachedDataImpl() override = default;
 
   // NodeAttachedData implementation:
@@ -62,10 +67,8 @@ class ExternalNodeAttachedDataImpl : public NodeAttachedData {
   static bool Destroy(const NodeType* node);
 
  private:
-  static constexpr int kUserDataKey = 0;
+  static const int kUserDataKey = 0;
   static const void* UserDataKey() { return &kUserDataKey; }
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalNodeAttachedDataImpl);
 };
 
 // Everything below this point is pure implementation detail.

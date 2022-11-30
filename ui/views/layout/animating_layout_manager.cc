@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,12 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -90,7 +95,7 @@ struct AnimatingLayoutManager::LayoutFadeInfo {
   // The view next (trailing side) to the fading view which is in both the
   // starting and target layout, or null if none.
   View* next_view = nullptr;
-  // The full-size bounds, normalized to the orientation of the layout manaer,
+  // The full-size bounds, normalized to the orientation of the layout manager,
   // that |child_view| starts with, if fading out, or ends with, if fading in.
   NormalizedRect reference_bounds;
   // The offset from the end of |prev_view| and the start of |next_view|. Insets
@@ -150,7 +155,7 @@ class AnimatingLayoutManager::AnimationDelegate
     }
 
    private:
-    AnimationDelegate* const animation_delegate_;
+    const raw_ptr<AnimationDelegate> animation_delegate_;
   };
   friend class Observer;
 
@@ -161,7 +166,7 @@ class AnimatingLayoutManager::AnimationDelegate
 
   bool ready_to_animate_ = false;
   bool resetting_animation_ = false;
-  AnimatingLayoutManager* const target_layout_manager_;
+  const raw_ptr<AnimatingLayoutManager> target_layout_manager_;
   std::unique_ptr<gfx::SlideAnimation> animation_;
   ViewWidgetObserver view_widget_observer_{this};
   base::ScopedObservation<View, ViewObserver> scoped_observation_{
@@ -366,6 +371,11 @@ gfx::Size AnimatingLayoutManager::GetPreferredSize(const View* host) const {
   if (!target_layout_manager())
     return gfx::Size();
 
+  // If animation is disabled, preferred size does not change with current
+  // animation state.
+  if (!gfx::Animation::ShouldRenderRichAnimation())
+    return target_layout_manager()->GetPreferredSize(host);
+
   switch (bounds_animation_mode_) {
     case BoundsAnimationMode::kUseHostBounds:
       return target_layout_manager()->GetPreferredSize(host);
@@ -463,7 +473,7 @@ bool AnimatingLayoutManager::OnViewRemoved(View* host, View* view) {
 
 void AnimatingLayoutManager::PostOrQueueAction(base::OnceClosure action) {
   queued_actions_.push_back(std::move(action));
-  if (!is_animating())
+  if (!is_animating() && !hold_queued_actions_for_layout_)
     PostQueuedActions();
 }
 
@@ -529,11 +539,13 @@ void AnimatingLayoutManager::LayoutImpl() {
   const gfx::Size host_size = host_view()->size();
 
   if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds) {
-    if (!cached_layout_size() || host_size != *cached_layout_size()) {
-      // Host size changed, so reset the layout.
+    if (!cached_layout_size()) {
+      // No previous layout, so snap to the target.
       ResetLayoutToTargetSize();
+    } else if (host_size != *cached_layout_size()) {
+      // Host size changed, so animate.
+      RecalculateTarget();
     }
-
   } else {
     const SizeBounds available_size = GetAvailableHostSize();
 
@@ -554,8 +566,8 @@ void AnimatingLayoutManager::LayoutImpl() {
       const int current_main =
           GetMainAxis(orientation(), current_layout_.host_size);
       if ((current_main > host_main) || (current_main > bounds_main)) {
-        // Reset the layout immediately if the current or target layout exceeds
-        // the host size or the available space.
+        // Reset the layout immediately if the current layout exceeds the host
+        // size or the available space.
         last_available_host_size_ = available_size;
         ResetLayoutToSize(host_size);
       } else if (available_size != last_available_host_size_) {
@@ -574,15 +586,19 @@ void AnimatingLayoutManager::LayoutImpl() {
   // Send animating stopped events on layout so the current layout during the
   // event represents the final state instead of an intermediate state.
   if (is_animating_ && current_offset_ == 1.0)
-    OnAnimationEnded();
+    EndAnimation();
+
+  if (hold_queued_actions_for_layout_ && !is_animating_) {
+    hold_queued_actions_for_layout_ = false;
+    PostQueuedActions();
+  }
 }
 
-void AnimatingLayoutManager::OnAnimationEnded() {
-  DCHECK(is_animating_);
-  is_animating_ = false;
+void AnimatingLayoutManager::EndAnimation() {
   fade_infos_.clear();
-  PostQueuedActions();
-  NotifyIsAnimatingChanged();
+  hold_queued_actions_for_layout_ = true;
+  if (std::exchange(is_animating_, false))
+    NotifyIsAnimatingChanged();
 }
 
 void AnimatingLayoutManager::ResetLayoutToTargetSize() {
@@ -598,12 +614,9 @@ void AnimatingLayoutManager::ResetLayoutToSize(const gfx::Size& target_size) {
   target_layout_ = target_layout_manager()->GetProposedLayout(target_size);
   current_layout_ = target_layout_;
   starting_layout_ = current_layout_;
-  fade_infos_.clear();
   current_offset_ = 1.0;
   set_cached_layout_size(target_size);
-
-  if (is_animating_)
-    OnAnimationEnded();
+  EndAnimation();
 }
 
 bool AnimatingLayoutManager::RecalculateTarget() {
@@ -619,19 +632,6 @@ bool AnimatingLayoutManager::RecalculateTarget() {
   }
 
   const gfx::Size target_size = GetAvailableTargetLayoutSize();
-
-  // For layouts that are confined to available space, changing the available
-  // space causes a fresh layout, not an animation.
-  // TODO(dfried): define a way for views to animate into and out of empty
-  // space as adjacent child views appear/disappear. This will be useful in
-  // animating tab titles, which currently slide over when the favicon
-  // disappears.
-  if (bounds_animation_mode_ == BoundsAnimationMode::kUseHostBounds &&
-      *cached_layout_size() != target_size) {
-    ResetLayoutToSize(target_size);
-    return true;
-  }
-
   set_cached_layout_size(target_size);
 
   // If there has been no appreciable change in layout, there's no reason to
@@ -666,7 +666,15 @@ bool AnimatingLayoutManager::RecalculateTarget() {
     return false;
   }
   CalculateFadeInfos();
-  UpdateCurrentLayout(0.0);
+
+  // We've calculated all of the targets and fades. Start the layout process if
+  // we are animating, but if animations are disabled, snap to the final
+  // layout.
+  if (gfx::Animation::ShouldRenderRichAnimation()) {
+    UpdateCurrentLayout(0.0);
+  } else {
+    ResetLayoutToSize(target_size);
+  }
 
   return true;
 }
@@ -711,7 +719,7 @@ void AnimatingLayoutManager::PostQueuedActions() {
 
   // Post to self (instead of posting the queued actions directly) which lets
   // us:
-  // * Keep "AnimatingLayoutManager::RunDelayedActions" in the stack frame.
+  // * Keep "AnimatingLayoutManager::RunQueuedActions" in the stack frame.
   // * Tie the task lifetimes to AnimatingLayoutManager.
   run_queued_actions_is_pending_ =
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -727,7 +735,7 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent) {
 
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
     // This shouldn't happen but we should ensure that with a check.
-    DCHECK_NE(-1, host_view()->GetIndexOf(fade_info.child_view));
+    DCHECK(host_view()->GetIndexOf(fade_info.child_view).has_value());
 
     // Views that were previously fading are animated as normal, so nothing to
     // do here.
@@ -802,10 +810,10 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   fade_infos_.clear();
 
   struct ChildInfo {
-    base::Optional<size_t> start;
+    absl::optional<size_t> start;
     NormalizedRect start_bounds;
     bool start_visible = false;
-    base::Optional<size_t> target;
+    absl::optional<size_t> target;
     NormalizedRect target_bounds;
     bool target_visible = false;
   };
@@ -939,7 +947,7 @@ void AnimatingLayoutManager::ResolveFades() {
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
     View* const child = fade_info.child_view;
     if (fade_info.fade_type == LayoutFadeType::kFadingOut &&
-        host_view()->GetIndexOf(child) >= 0 &&
+        host_view()->GetIndexOf(child).has_value() &&
         !IsChildViewIgnoredByLayout(child) && !IsChildIncludedInLayout(child)) {
       SetViewVisibility(child, false);
     }
@@ -979,9 +987,9 @@ ChildLayout AnimatingLayoutManager::CalculateScaleFade(
   }
   trailing_reference_point -= fade_info.offsets.trailing();
 
-  const int new_size =
-      std::min(int{scale_percent * fade_info.reference_bounds.size_main()},
-               trailing_reference_point - leading_reference_point);
+  const int new_size = std::min(
+      base::ClampRound(scale_percent * fade_info.reference_bounds.size_main()),
+      trailing_reference_point - leading_reference_point);
 
   child_layout.child_view = fade_info.child_view;
   if (new_size > 0 &&

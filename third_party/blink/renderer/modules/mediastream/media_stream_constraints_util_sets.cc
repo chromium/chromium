@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,7 +97,7 @@ bool IsPositiveFiniteAspectRatio(double aspect_ratio) {
 // outside a polygon and |vertices| is the vertex or side closest to |point|.
 Point GetClosestPointToVertexOrSide(const Vector<Point> vertices,
                                     const Point& point) {
-  DCHECK(!vertices.IsEmpty());
+  DCHECK(!vertices.empty());
   // If only a single vertex closest to |point|, return that vertex.
   if (vertices.size() == 1U)
     return vertices[0];
@@ -437,7 +437,7 @@ Vector<Point> ResolutionSet::GetClosestVertices(double (Point::*accessor)()
       closest_vertices.push_back(vertex);
     }
   }
-  DCHECK(!closest_vertices.IsEmpty());
+  DCHECK(!closest_vertices.empty());
   DCHECK_LE(closest_vertices.size(), 2U);
   return closest_vertices;
 }
@@ -529,7 +529,7 @@ void ResolutionSet::TryAddVertex(Vector<Point>* vertices,
   // Add the point to the |vertices| if not already added.
   // This is to prevent duplicates in case an aspect ratio intersects a width
   // or height right on a vertex.
-  if (vertices->IsEmpty() ||
+  if (vertices->empty() ||
       (*(vertices->end() - 1) != point && *vertices->begin() != point)) {
     vertices->push_back(point);
   }
@@ -573,7 +573,7 @@ DiscreteSet<bool> RescaleSetFromConstraint(
       WebString::FromASCII(WebMediaStreamTrack::kResizeModeNone));
   bool contains_rescale = resize_mode_constraint.Matches(
       WebString::FromASCII(WebMediaStreamTrack::kResizeModeRescale));
-  if (resize_mode_constraint.Exact().IsEmpty() ||
+  if (resize_mode_constraint.Exact().empty() ||
       (contains_none && contains_rescale)) {
     return DiscreteSet<bool>::UniversalSet();
   }

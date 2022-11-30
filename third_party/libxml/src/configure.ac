@@ -2,13 +2,12 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.63])
 
 m4_define([MAJOR_VERSION], 2)
-m4_define([MINOR_VERSION], 9)
-m4_define([MICRO_VERSION], 10)
+m4_define([MINOR_VERSION], 11)
+m4_define([MICRO_VERSION], 0)
 
 AC_INIT([libxml2],[MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([entities.c])
 AC_CONFIG_HEADERS([config.h])
-AM_MAINTAINER_MODE([enable])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 
@@ -21,21 +20,7 @@ LIBXML_VERSION_INFO=`expr $LIBXML_MAJOR_VERSION + $LIBXML_MINOR_VERSION`:$LIBXML
 
 LIBXML_VERSION_NUMBER=`expr $LIBXML_MAJOR_VERSION \* 10000 + $LIBXML_MINOR_VERSION \* 100 + $LIBXML_MICRO_VERSION`
 
-if test -f CVS/Entries ; then
-  extra=`grep ChangeLog CVS/Entries | grep -v LIBXML | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXML_VERSION_EXTRA="-CVS$extra"
-  fi
-else if test -d .svn ; then
-  extra=`svn info | grep Revision | sed 's+Revision: ++'`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXML_VERSION_EXTRA="-SVN$extra"
-  fi
-else if test -d .git ; then
+if test -d .git ; then
   extra=`git describe 2>/dev/null | sed 's+LIBXML[[0-9.]]*-++'`
   echo extra=$extra
   if test "$extra" != ""
@@ -43,8 +28,7 @@ else if test -d .git ; then
       LIBXML_VERSION_EXTRA="-GIT$extra"
   fi
 fi
-fi
-fi
+
 AC_SUBST(LIBXML_MAJOR_VERSION)
 AC_SUBST(LIBXML_MINOR_VERSION)
 AC_SUBST(LIBXML_MICRO_VERSION)
@@ -55,12 +39,9 @@ AC_SUBST(LIBXML_VERSION_EXTRA)
 
 VERSION=${LIBXML_VERSION}
 
-AM_INIT_AUTOMAKE([foreign])
-
-# Support silent build rules, requires at least automake-1.11. Disable
-# by either passing --disable-silent-rules to configure or passing V=1
-# to make
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -76,7 +57,8 @@ AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
 AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
 PKG_PROG_PKG_CONFIG
 
-LT_INIT
+LT_INIT([disable-static])
+LT_LIB_M
 
 dnl
 dnl if the system support linker version scripts for symbol versioning
@@ -112,26 +94,14 @@ AC_ARG_WITH(catalog,
 [  --with-catalog          add the Catalog support (on)])
 AC_ARG_WITH(debug,
 [  --with-debug            add the debugging module (on)])
-AC_ARG_WITH(docbook,
-[  --with-docbook          add Docbook SGML support (on)])
 AC_ARG_WITH(fexceptions,
 [  --with-fexceptions      add GCC flag -fexceptions for C++ exceptions (off)])
 AC_ARG_WITH(ftp,
-[  --with-ftp              add the FTP support (on)])
+[  --with-ftp              add the FTP support (off)])
 AC_ARG_WITH(history,
 [  --with-history          add history support to xmllint shell(off)])
 AC_ARG_WITH(html,
 [  --with-html             add the HTML support (on)])
-dnl Specific dir for HTML output ?
-AC_ARG_WITH(html-dir, AS_HELP_STRING([--with-html-dir=path],
-            [path to base html directory, default $datadir/doc/html]),
-            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
-
-AC_ARG_WITH(html-subdir, AS_HELP_STRING([--with-html-subdir=path],
-            [directory used under html-dir, default $PACKAGE-$VERSION/html]),
-            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
-            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
-AC_SUBST(HTML_DIR)
 AC_ARG_WITH(http,
 [  --with-http             add the HTTP support (on)])
 AC_ARG_WITH(iconv,
@@ -141,7 +111,7 @@ AC_ARG_WITH(icu,
 AC_ARG_WITH(iso8859x,
 [  --with-iso8859x         add ISO8859X support if no iconv (on)])
 AC_ARG_WITH(legacy,
-[  --with-legacy           add deprecated APIs for compatibility (on)])
+[  --with-legacy           add deprecated APIs for compatibility (off)])
 AC_ARG_WITH(mem_debug,
 [  --with-mem-debug        add the memory debugging module (off)])
 AC_ARG_WITH(minimum,
@@ -153,15 +123,12 @@ AC_ARG_WITH(pattern,
 AC_ARG_WITH(push,
 [  --with-push             add the PUSH parser interfaces (on)])
 AC_ARG_WITH(python,
-[  --with-python[[=DIR]]     build Python bindings if found])
-AC_ARG_WITH(python_install_dir,
-[  --with-python-install-dir=DIR
-                          install Python bindings in DIR])
+[  --with-python           build Python bindings (on)])
 AC_ARG_WITH(reader,
 [  --with-reader           add the xmlReader parsing interface (on)])
 AC_ARG_WITH(readline,
 [  --with-readline=DIR     use readline in DIR],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
+  if test "$withval" != "no" && test "$withval" != "yes"; then
     RDL_DIR=$withval
     CPPFLAGS="${CPPFLAGS} -I$withval/include"
     LDFLAGS="${LDFLAGS} -L$withval/lib"
@@ -193,11 +160,13 @@ AC_ARG_WITH(xpath,
 [  --with-xpath            add the XPATH support (on)])
 AC_ARG_WITH(xptr,
 [  --with-xptr             add the XPointer support (on)])
+AC_ARG_WITH(xptr-locs,
+[  --with-xptr-locs        add support for XPointer locations (off)])
 AC_ARG_WITH(modules,
 [  --with-modules          add the dynamic modules support (on)])
 AC_ARG_WITH(zlib,
 [  --with-zlib[[=DIR]]       use libz in DIR],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
+  if test "$withval" != "no" && test "$withval" != "yes"; then
     Z_DIR=$withval
     CPPFLAGS="${CPPFLAGS} -I$withval/include"
     LDFLAGS="${LDFLAGS} -L$withval/lib"
@@ -205,7 +174,7 @@ AC_ARG_WITH(zlib,
 ])
 AC_ARG_WITH(lzma,
 [  --with-lzma[[=DIR]]       use liblzma in DIR],[
-  if test "$withval" != "no" -a "$withval" != "yes"; then
+  if test "$withval" != "no" && test "$withval" != "yes"; then
     LZMA_DIR=$withval
     CPPFLAGS="${CPPFLAGS} -I$withval/include"
     LDFLAGS="${LDFLAGS} -L$withval/lib"
@@ -213,13 +182,6 @@ AC_ARG_WITH(lzma,
 ])
 AC_ARG_WITH(coverage,
 [  --with-coverage         build for code coverage with GCC (off)])
-
-AC_ARG_ENABLE(rebuild-docs,
-[  --enable-rebuild-docs[[=yes/no]]  rebuild some generated docs [[default=no]]])
-if test "$enable_rebuild_docs" = "yes" -a "$srcdir" != "."; then
-  AC_MSG_ERROR([cannot rebuild docs when builddir != srcdir])
-fi
-AM_CONDITIONAL([REBUILD_DOCS], [test "$enable_rebuild_docs" = "yes" -o "$USER" = "veillard"])
 
 dnl
 dnl hard dependencies on options
@@ -238,6 +200,10 @@ fi
 if test "$with_reader" = "yes"
 then
     with_push=yes
+fi
+if test "$with_xptr_locs" = "yes"
+then
+    with_xptr=yes
 fi
 if test "$with_xptr" = "yes"
 then
@@ -262,17 +228,9 @@ then
     then
       with_debug=no
     fi
-    if test "$with_docbook" = ""
-    then
-      with_docbook=no
-    fi
     if test "$with_fexceptions" = ""
     then
       with_fexceptions=no
-    fi
-    if test "$with_ftp" = ""
-    then
-      with_ftp=no 
     fi
     if test "$with_history" = ""
     then
@@ -293,10 +251,6 @@ then
     if test "$with_iso8859x" = ""
     then
       with_iso8859x=no
-    fi
-    if test "$with_legacy" = ""
-    then
-      with_legacy=no
     fi
     if test "$with_mem_debug" = ""
     then 
@@ -470,24 +424,12 @@ LIBS=${_libs}
 echo Checking headers
 
 dnl Checks for header files.
-AC_HEADER_DIRENT
-AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([unistd.h])
-AC_CHECK_HEADERS([ctype.h])
-AC_CHECK_HEADERS([dirent.h])
-AC_CHECK_HEADERS([errno.h])
-AC_CHECK_HEADERS([malloc.h])
-AC_CHECK_HEADERS([stdarg.h])
 AC_CHECK_HEADERS([sys/stat.h])
 AC_CHECK_HEADERS([sys/types.h])
 AC_CHECK_HEADERS([stdint.h])
 AC_CHECK_HEADERS([inttypes.h])
-AC_CHECK_HEADERS([time.h])
-AC_CHECK_HEADERS([math.h])
-AC_CHECK_HEADERS([limits.h])
-AC_CHECK_HEADERS([float.h])
-AC_CHECK_HEADERS([stdlib.h])
 AC_CHECK_HEADERS([sys/socket.h], [], [],
 [#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -512,7 +454,6 @@ AC_CHECK_HEADERS([sys/select.h])
 AC_CHECK_HEADERS([poll.h])
 AC_CHECK_HEADERS([sys/mman.h])
 AC_CHECK_HEADERS([sys/timeb.h])
-AC_CHECK_HEADERS([signal.h])
 AC_CHECK_HEADERS([arpa/nameser.h], [], [],
 [#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -541,10 +482,9 @@ AC_TYPE_UINT32_T
 echo Checking libraries
 
 dnl Checks for library functions.
-AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(strftime localtime gettimeofday ftime)
-AC_CHECK_FUNCS(stat signal)
-AC_CHECK_FUNCS(rand rand_r srand time)
+AC_CHECK_FUNCS(gettimeofday ftime)
+AC_CHECK_FUNCS(stat)
+AC_CHECK_FUNCS(rand_r)
 AC_CHECK_FUNCS(isascii mmap munmap putenv)
 
 AH_VERBATIM([HAVE_MUNMAP_AFTER],[/* mmap() is no good without munmap() */
@@ -741,13 +681,6 @@ fi
 
 dnl ******************************End IPv6 checks******************************
 
-dnl Checks for isnan in libm if not in libc
-AC_CHECK_FUNC(isnan, AC_DEFINE([HAVE_ISNAN],[], [Define if isnan is there]) , AC_CHECK_LIB(m, isnan,
-  [AC_DEFINE([HAVE_ISNAN],[], [Define if isnan is there])]))
-
-AC_CHECK_FUNC(isinf, AC_DEFINE([HAVE_ISINF], [], [Define if isinf is there]) , AC_CHECK_LIB(m, isinf,
-  [AC_DEFINE([HAVE_ISINF], [], [Define if isinf is there])]))
-
 XML_LIBDIR='-L${libdir}'
 XML_INCLUDEDIR='-I${includedir}/libxml2'
 
@@ -822,107 +755,15 @@ dnl
 dnl check for python
 dnl
 
-PYTHON_VERSION=
-PYTHON_INCLUDES=
-PYTHON_SITE_PACKAGES=
 PYTHON_TESTS=
-pythondir=
-if test "$with_python" != "no" ; then
-    if test -x "$with_python/bin/python"
-    then
-        echo Found python in $with_python/bin/python
-        PYTHON="$with_python/bin/python"
-    else
-        if test -x "$with_python/python.exe"
-        then
-            echo Found python in $with_python/python.exe
-            PYTHON="$with_python/python.exe"
-        else
-            if test -x "$with_python"
-            then
-                echo Found python in $with_python
-                PYTHON="$with_python"
-            else
-                if test -x "$PYTHON"
-                then
-                    echo Found python in environment PYTHON=$PYTHON
-                    with_python=`$PYTHON -c "import sys; print(sys.exec_prefix)"`
-                else
-                    AC_PATH_PROG(PYTHON, python python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python1.6 python1.5)
-		fi
-	    fi
-	fi
-    fi
-    if test "$PYTHON" != ""
-    then
-        PYTHON_VERSION=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_version())"`
-	PYTHON_INCLUDES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_inc())"`
-# does not work as it produce a /usr/lib/python path instead of/usr/lib64/python
-#
-#	PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
-	echo Found Python version $PYTHON_VERSION
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_INCLUDES" = ""
-    then
-	if test -r $with_python/include/python$PYTHON_VERSION/Python.h
-	then
-	    PYTHON_INCLUDES=$with_python/include/python$PYTHON_VERSION
-	else
-	    if test -r $prefix/include/python$PYTHON_VERSION/Python.h
-	    then
-	        PYTHON_INCLUDES=$prefix/include/python$PYTHON_VERSION
-	    else
-		if test -r /usr/include/python$PYTHON_VERSION/Python.h
-		then
-		    PYTHON_INCLUDES=/usr/include/python$PYTHON_VERSION
-		else
-	            if test -r $with_python/include/Python.h
-	            then
-	                PYTHON_INCLUDES=$with_python/include
-	            else
-		        echo could not find python$PYTHON_VERSION/Python.h or $with_python/include/Python.h
-		    fi
-		fi
-	    fi
-	fi
-    fi
-    if test "$with_python_install_dir" != ""
-    then
-	PYTHON_SITE_PACKAGES="$with_python_install_dir"
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_SITE_PACKAGES" = ""
-    then
-	if test -d $libdir/python$PYTHON_VERSION/site-packages
-	then
-	    PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
-	else
-	    if test -d $with_python/lib/site-packages
-	    then
-		PYTHON_SITE_PACKAGES=$with_python/lib/site-packages
-	    else
-		PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
-	    fi
-	fi
-    fi
-    pythondir='$(PYTHON_SITE_PACKAGES)'
-    PYTHON_LIBS=`python$PYTHON_VERSION-config --ldflags`
-else
-    PYTHON=
-fi
-AM_CONDITIONAL(WITH_PYTHON, test "$PYTHON_INCLUDES" != "")
-if test "$PYTHON_INCLUDES" != ""
-then
-    PYTHON_SUBDIR=python
-else
-    PYTHON_SUBDIR=
-fi
-AC_SUBST(pythondir)
-AC_SUBST(PYTHON_SUBDIR)
-AC_SUBST(PYTHON_LIBS)
+AS_IF([test "x$with_python" != "xno"], [
+    AM_PATH_PYTHON
+    PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}])
+])
+AM_CONDITIONAL([WITH_PYTHON], [test "x$with_python" != "xno"])
 
 dnl check for dso support
 WITH_MODULES=0
-TEST_MODULES=
 
 if test "$with_modules" != "no" ; then
  case "$host" in
@@ -971,47 +812,9 @@ if test "$with_modules" != "no" ; then
  esac
 fi
 
-if test "${WITH_MODULES}" = "1"; then
-  TEST_MODULES="ModuleTests"
-fi  
-
 AC_SUBST(WITH_MODULES)
 AC_SUBST(MODULE_PLATFORM_LIBS)
 AC_SUBST(MODULE_EXTENSION)
-AC_SUBST(TEST_MODULES)
-
-dnl
-dnl Tester makes use of readline if present
-dnl
-
-dnl
-dnl specific tests to setup DV and Bill's devel environments with debug etc ...
-dnl (-Wunreachable-code)
-dnl
-if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/XML" ]] || \
-   [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/home/veillard/libxml2" ]] || \
-   [[ "${LOGNAME}" = "bill" -a "`pwd`" = "/home/bill/gnomesvn/libxml2" ]]
-   then
-    if test "$with_minimum" != "yes"
-    then
-	if test "${with_mem_debug}" = "" ; then
-	    echo Activating memory debugging
-	    with_mem_debug="yes"
-	    with_run_debug="yes"
-	fi
-	if test "${with_docbook}" = "" ; then
-	    with_docbook="yes"
-	fi
-    fi
-    if test "${GCC}" = "yes" ; then
-    EXTRA_CFLAGS="-g -O -pedantic -W -Wformat -Wno-format-extra-args -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
-    fi
-    STATIC_BINARIES="-static"
-dnl -Wcast-qual -ansi
-else
-    STATIC_BINARIES=
-fi
-AC_SUBST(STATIC_BINARIES)
 
 dnl
 dnl Check for trio string functions
@@ -1038,7 +841,6 @@ THREAD_LIBS=""
 BASE_THREAD_LIBS=""
 WITH_THREADS=0
 THREAD_CFLAGS=""
-TEST_THREADS=""
 THREADS_W32=""
 WITH_THREAD_ALLOC=0
 
@@ -1063,7 +865,6 @@ else
             AC_CHECK_HEADER(pthread.h,
                 AC_CHECK_LIB(pthread, pthread_join,[
                 THREAD_LIBS="-lpthread"
-                AC_DEFINE([HAVE_LIBPTHREAD], [], [Define if pthread library is there (-lpthread)])
                 AC_DEFINE([HAVE_PTHREAD_H], [], [Define if <pthread.h> is there])
                 WITH_THREADS="1"]))
         fi
@@ -1100,10 +901,9 @@ else
     esac
     if test "$WITH_THREADS" = "1" ; then
 	THREAD_CFLAGS="$THREAD_CFLAGS -D_REENTRANT"
-	TEST_THREADS="Threadtests"
     fi
 fi
-if test "$with_thread_alloc" = "yes" -a "$WITH_THREADS" = "1" ; then
+if test "$with_thread_alloc" = "yes" && test "$WITH_THREADS" = "1" ; then
     WITH_THREAD_ALLOC=1
 fi
 
@@ -1111,7 +911,6 @@ AC_SUBST(THREAD_LIBS)
 AC_SUBST(BASE_THREAD_LIBS)
 AC_SUBST(WITH_THREADS)
 AC_SUBST(THREAD_CFLAGS)
-AC_SUBST(TEST_THREADS)
 AC_SUBST(WITH_THREAD_ALLOC)
 AM_CONDITIONAL([THREADS_W32],[test -n "$THREADS_W32"])
 
@@ -1136,7 +935,7 @@ if test "$with_history" = "yes" ; then
 	AC_CHECK_LIB(readline, readline,[
 	   RDL_LIBS="-lreadline $RDL_LIBS $tcap"
 	   AC_DEFINE([HAVE_LIBREADLINE], [], [Define if readline library is there (-lreadline)])], , $tcap))
-    if test -n "$RDL_DIR" -a -n "$RDL_LIBS"; then
+    if test -n "$RDL_DIR" && test -n "$RDL_LIBS"; then
 	CPPFLAGS="$CPPFLAGS -I${RDL_DIR}/include"
 	RDL_LIBS="-L${RDL_DIR}/lib $RDL_LIBS"
     fi
@@ -1153,7 +952,7 @@ else
 fi
 AC_SUBST(WITH_TREE)
 
-if test "$with_ftp" = "no" ; then
+if test "$with_ftp" != "yes" ; then
     echo Disabling FTP support
     WITH_FTP=0
     FTP_OBJ=
@@ -1175,7 +974,7 @@ fi
 AC_SUBST(WITH_HTTP)
 AC_SUBST(HTTP_OBJ)
 
-if test "$with_legacy" = "no" ; then
+if test "$with_legacy" != "yes" ; then
     echo Disabling deprecated APIs
     WITH_LEGACY=0
 else    
@@ -1186,17 +985,14 @@ AC_SUBST(WITH_LEGACY)
 if test "$with_reader" = "no" ; then
     echo Disabling the xmlReader parsing interface
     WITH_READER=0
-    READER_TEST=
 else    
     WITH_READER=1
-    READER_TEST=Readertests
     if test "$with_push" = "no" ; then
         echo xmlReader requires Push interface - enabling it
 	with_push=yes
     fi
 fi
 AC_SUBST(WITH_READER)
-AC_SUBST(READER_TEST)
 
 if test "$with_writer" = "no" ; then
     echo Disabling the xmlWriter saving interface
@@ -1220,65 +1016,44 @@ AC_SUBST(WITH_WRITER)
 if test "$with_pattern" = "no" ; then
     echo Disabling the xmlPattern parsing interface
     WITH_PATTERN=0
-    TEST_PATTERN=
 else    
     WITH_PATTERN=1
-    TEST_PATTERN=Patterntests
 fi
 AC_SUBST(WITH_PATTERN)
-AC_SUBST(TEST_PATTERN)
 
 if test "$with_sax1" = "no" ; then
     echo Disabling the older SAX1 interface
     WITH_SAX1=0
-    TEST_SAX=
 else    
     WITH_SAX1=1
-    TEST_SAX=SAXtests
 fi
 AC_SUBST(WITH_SAX1)
-AM_CONDITIONAL(WITH_SAX1_SOURCES, test "${WITH_TRIO}" = "1")
-AC_SUBST(TEST_SAX)
 
 if test "$with_push" = "no" ; then
     echo Disabling the PUSH parser interfaces
     WITH_PUSH=0
-    TEST_PUSH=
 else    
     WITH_PUSH=1
-    TEST_PUSH="XMLPushtests"
 fi
 AC_SUBST(WITH_PUSH)
-AC_SUBST(TEST_PUSH)
 
 if test "$with_html" = "no" ; then
     echo Disabling HTML support
     WITH_HTML=0
     HTML_OBJ=
-    TEST_HTML=
 else    
     WITH_HTML=1
     HTML_OBJ="HTMLparser.o HTMLtree.o"
-    TEST_HTML=HTMLtests
-    if test "$with_push" != "no" ; then
-        TEST_PHTML=HTMLPushtests
-    else
-        TEST_PHTML=
-    fi
 fi
 AC_SUBST(WITH_HTML)
 AC_SUBST(HTML_OBJ)
-AC_SUBST(TEST_HTML)
-AC_SUBST(TEST_PHTML)
 
 if test "$with_valid" = "no" ; then
     echo Disabling DTD validation support
     WITH_VALID=0
-    TEST_VALID=
     TEST_VTIME=
 else    
     WITH_VALID=1
-    TEST_VALID=Validtests
     TEST_VTIME=VTimingtests
 fi
 AC_SUBST(WITH_VALID)
@@ -1299,45 +1074,35 @@ AC_SUBST(WITH_CATALOG)
 AC_SUBST(CATALOG_OBJ)
 AC_SUBST(TEST_CATALOG)
 
-if test "$with_docbook" = "no" ; then
-    echo Disabling Docbook support
-    WITH_DOCB=0
-    DOCB_OBJ=
-else    
-    WITH_DOCB=1
-    DOCB_OBJ="DOCBparser.o"
-fi
-AC_SUBST(WITH_DOCB)
-AC_SUBST(DOCB_OBJ)
-
-
 if test "$with_xptr" = "no" ; then
     echo Disabling XPointer support
     WITH_XPTR=0
+    WITH_XPTR_LOCS=0
     XPTR_OBJ=
-    TEST_XPTR=
 else    
     WITH_XPTR=1
     XPTR_OBJ=xpointer.o
-    TEST_XPTR=XPtrtests
     if test "$with_xpath" = "no" ; then
         echo XPointer requires XPath support - enabling it
 	with_xpath=yes
     fi
+    if test "$with_xptr_locs" = "yes" ; then
+        WITH_XPTR_LOCS=1
+    else
+        WITH_XPTR_LOCS=0
+    fi
 fi
 AC_SUBST(WITH_XPTR)
+AC_SUBST(WITH_XPTR_LOCS)
 AC_SUBST(XPTR_OBJ)
-AC_SUBST(TEST_XPTR)
 
 if test "$with_c14n" = "no" ; then
     echo Disabling C14N support
     WITH_C14N=0
     C14N_OBJ=
-    TEST_C14N=
 else    
     WITH_C14N=1
     C14N_OBJ="c14n.c"
-    TEST_C14N=C14Ntests
     if test "$with_xpath" = "no" ; then
         echo C14N requires XPath support - enabling it
 	with_xpath=yes
@@ -1345,18 +1110,15 @@ else
 fi
 AC_SUBST(WITH_C14N)
 AC_SUBST(C14N_OBJ)
-AC_SUBST(TEST_C14N)
 
 if test "$with_xinclude" = "no" ; then
     echo Disabling XInclude support
     WITH_XINCLUDE=0
     XINCLUDE_OBJ=
     with_xinclude="no"
-    TEST_XINCLUDE=
 else    
     WITH_XINCLUDE=1
     XINCLUDE_OBJ=xinclude.o
-    TEST_XINCLUDE=XIncludetests
     if test "$with_xpath" = "no" ; then
         echo XInclude requires XPath support - enabling it
 	with_xpath=yes
@@ -1364,13 +1126,12 @@ else
 fi
 AC_SUBST(WITH_XINCLUDE)
 AC_SUBST(XINCLUDE_OBJ)
-AC_SUBST(TEST_XINCLUDE)
 
-if test "$with_xptr" = "" -a "$with_xpath" = "no" ; then
+if test "$with_xptr" = "" && test "$with_xpath" = "no" ; then
     with_xptr=no
 fi
 
-if test "$with_schematron" = "" -a "$with_xpath" = "no" ; then
+if test "$with_schematron" = "" && test "$with_xpath" = "no" ; then
     with_schematron=no
 fi
 
@@ -1393,15 +1154,12 @@ if test "$with_xpath" = "no" ; then
     echo Disabling XPATH support
     WITH_XPATH=0
     XPATH_OBJ=
-    TEST_XPATH=
 else    
     WITH_XPATH=1
     XPATH_OBJ=xpath.o
-    TEST_XPATH=XPathtests
 fi
 AC_SUBST(WITH_XPATH)
 AC_SUBST(XPATH_OBJ)
-AC_SUBST(TEST_XPATH)
 
 dnl
 dnl output functions
@@ -1418,7 +1176,7 @@ WITH_ICONV=0
 if test "$with_iconv" = "no" ; then
     echo Disabling ICONV support
 else
-    if test "$with_iconv" != "yes" -a "$with_iconv" != "" ; then
+    if test "$with_iconv" != "yes" && test "$with_iconv" != "" ; then
 	CPPFLAGS="${CPPFLAGS} -I$with_iconv/include"
 	# Export this since our headers include iconv.h
 	XML_INCLUDEDIR="${XML_INCLUDEDIR} -I$with_iconv/include"
@@ -1453,40 +1211,7 @@ iconv (cd, NULL, NULL, NULL, NULL);]])],[
 		AC_MSG_RESULT(no)
 		LIBS="${_libs}"
 		LDFLAGS="${_ldflags}"])]))
-
-	if test "$WITH_ICONV" = "1" ; then
-		AC_MSG_CHECKING([for iconv declaration])
-		AC_CACHE_VAL(xml_cv_iconv_arg2, [
-			AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-#include <iconv.h>
-extern
-#ifdef __cplusplus
-"C"
-#endif
-#if defined(__STDC__) || defined(__cplusplus)
-size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
-#else
-size_t iconv();
-#endif
-]], [])], xml_cv_iconv_arg2="", xml_cv_iconv_arg2="const")])
-
-		xml_cv_iconv_decl="extern size_t iconv (iconv_t cd, $xml_cv_iconv_arg2 char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);"
-		AC_MSG_RESULT([${xml_xxx:-
-	}$xml_cv_iconv_decl])
-		AC_DEFINE_UNQUOTED(ICONV_CONST, $xml_cv_iconv_arg2,
-			[Define as const if the declaration of iconv() needs const.])
-	fi
 fi
-case "$host" in
-	*mingw*) M_LIBS=""
-	;;
-	*beos*) M_LIBS=""
-	;;
-        *haiku*) M_LIBS=""
-        ;;
-	*) M_LIBS="-lm"
-	;;
-esac
 AC_SUBST(WITH_ICONV)
 
 WITH_ICU=0
@@ -1500,6 +1225,14 @@ else
         [have_libicu=yes],
         [have_libicu=no])
 
+    if test "x$have_libicu" = "xyes"; then
+        m4_ifdef([PKG_CHECK_VAR],
+            [PKG_CHECK_VAR([ICU_DEFS], [icu-i18n], [DEFS])])
+        if test "x$ICU_DEFS" != "x"; then
+            CPPFLAGS="$CPPFLAGS $ICU_DEFS"
+        fi
+    fi
+
     # If pkg-config failed, fall back to AC_CHECK_LIB. This
     # will not pick up the necessary LIBS flags for liblzma's
     # private dependencies, though, so static linking may fail.
@@ -1511,10 +1244,8 @@ else
             have_libicu=yes
             echo Enabling ICU support
         else
-            if test "$with_icu" != "yes" -a "$with_iconv" != "" ; then
+            if test "$with_icu" != "yes" && test "$with_iconv" != "" ; then
                 CPPFLAGS="${CPPFLAGS} -I$with_icu"
-                # Export this since our headers include icu.h
-                XML_INCLUDEDIR="${XML_INCLUDEDIR} -I$with_icu"
             fi
 
             AC_CHECK_HEADER(unicode/ucnv.h,
@@ -1550,7 +1281,6 @@ else
     fi
 fi
 XML_LIBS="-lxml2"
-XML_PRIVATE_LIBS="$Z_LIBS $LZMA_LIBS $THREAD_LIBS $ICONV_LIBS $ICU_LIBS $M_LIBS $LIBS"
 XML_LIBTOOLLIBS="libxml2.la"
 AC_SUBST(WITH_ICU)
 
@@ -1566,18 +1296,15 @@ AC_SUBST(WITH_ISO8859X)
 if test "$with_schemas" = "no" ; then
     echo "Disabling Schemas/Relax-NG support"
     WITH_SCHEMAS=0
-    TEST_SCHEMAS=
 else    
     echo "Enabled Schemas/Relax-NG support"
     WITH_SCHEMAS=1
-    TEST_SCHEMAS="Schemastests Relaxtests"
-    if test "$PYTHON_INCLUDES" != "" ; then
+    AS_IF([test "x$with_python" != "xno"], [
         PYTHON_TESTS="$PYTHON_TESTS RelaxNGPythonTests SchemasPythonTests"
-    fi
+    ])
     with_regexps=yes
 fi
 AC_SUBST(WITH_SCHEMAS)
-AC_SUBST(TEST_SCHEMAS)
 
 if test "$with_regexps" = "no" ; then
     echo Disabling Regexps support
@@ -1585,7 +1312,7 @@ if test "$with_regexps" = "no" ; then
     TEST_REGEXPS=
 else    
     WITH_REGEXPS=1
-    TEST_REGEXPS="Regexptests Automatatests"
+    TEST_REGEXPS="Automatatests"
 fi
 AC_SUBST(WITH_REGEXPS)
 AC_SUBST(TEST_REGEXPS)
@@ -1655,6 +1382,9 @@ case "$host" in
  fi
  ;;
 esac
+
+XML_PRIVATE_LIBS="$Z_LIBS $LZMA_LIBS $THREAD_LIBS $ICONV_LIBS $ICU_LIBS $LIBM $WIN32_EXTRA_LIBADD"
+
 AC_SUBST(WIN32_EXTRA_LIBADD)
 AC_SUBST(WIN32_EXTRA_LDFLAGS)
 AC_SUBST(WIN32_EXTRA_PYTHON_LIBADD)
@@ -1676,10 +1406,10 @@ dnl  AC_DEFINE([snprintf],[_snprintf],[Win32 Std C name mangling work-around])
 dnl  AC_DEFINE([vsnprintf],[_vsnprintf],[Win32 Std C name mangling work-around])
 dnl and do not redefine those functions is C-source files.
 dnl
-AC_CHECK_FUNCS(printf sprintf fprintf snprintf vfprintf vsprintf vsnprintf sscanf,,
+AC_CHECK_FUNCS(snprintf vsnprintf,,
 	NEED_TRIO=1)
 
-if test "$with_coverage" = "yes" -a "${GCC}" = "yes"
+if test "$with_coverage" = "yes" && test "${GCC}" = "yes"
 then
     echo Enabling code coverage for GCC
     EXTRA_CFLAGS="$EXTRA_CFLAGS -fprofile-arcs -ftest-coverage"
@@ -1688,9 +1418,7 @@ else
     echo Disabling code coverage for GCC
 fi
 
-AC_SUBST(CPPFLAGS)
 AC_SUBST(EXTRA_CFLAGS)
-AC_SUBST(LDFLAGS)
 AC_SUBST(XML_CFLAGS)
 
 AC_SUBST(XML_LIBDIR)
@@ -1700,15 +1428,7 @@ AC_SUBST(XML_LIBTOOLLIBS)
 AC_SUBST(ICONV_LIBS)
 AC_SUBST(ICU_LIBS)
 AC_SUBST(XML_INCLUDEDIR)
-AC_SUBST(HTML_DIR)
-AC_SUBST(HAVE_ISNAN)
-AC_SUBST(HAVE_ISINF)
-AC_SUBST(PYTHON)
-AC_SUBST(PYTHON_VERSION)
-AC_SUBST(PYTHON_INCLUDES)
-AC_SUBST(PYTHON_SITE_PACKAGES)
 
-AC_SUBST(M_LIBS)
 AC_SUBST(RDL_LIBS)
 
 dnl for the spec file
@@ -1716,11 +1436,8 @@ RELDATE=`date +'%a %b %e %Y'`
 AC_SUBST(RELDATE)
 AC_SUBST(PYTHON_TESTS)
 
-rm -f COPYING.LIB COPYING
-ln -s $srcdir/Copyright COPYING
-
 # keep on one line for cygwin c.f. #130896
-AC_CONFIG_FILES([libxml2.spec:libxml.spec.in Makefile include/Makefile include/libxml/Makefile doc/Makefile doc/examples/Makefile doc/devhelp/Makefile example/Makefile fuzz/Makefile python/Makefile python/tests/Makefile xstc/Makefile include/libxml/xmlversion.h libxml-2.0.pc libxml-2.0-uninstalled.pc libxml2-config.cmake])
+AC_CONFIG_FILES([libxml2.spec:libxml.spec.in Makefile include/Makefile include/libxml/Makefile include/private/Makefile doc/Makefile doc/examples/Makefile doc/devhelp/Makefile example/Makefile fuzz/Makefile python/Makefile python/tests/Makefile xstc/Makefile include/libxml/xmlversion.h libxml-2.0.pc libxml-2.0-uninstalled.pc libxml2-config.cmake])
 AC_CONFIG_FILES([python/setup.py], [chmod +x python/setup.py])
 AC_CONFIG_FILES([xml2-config], [chmod +x xml2-config])
 AC_OUTPUT

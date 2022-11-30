@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
     <style name="NavigationPopupDialog" parent="Widget.AppCompat.Light.ListPopupWindow">
@@ -12,70 +14,27 @@
         <!-- Set android alert dialog attributes because the context menu dialog is
              OS-dependent. Not setting alertDialogTheme pre-v21 because the window background
              causes bad visual states with alert dialog list. -->
-        <item name="android:alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
     </style>
     <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
-
-    <!-- Web Notifications -->
-    <style name="WebNotificationTitle"
-        parent="@android:style/TextAppearance.Material.Notification.Title"/>
-    <style name="WebNotificationBody"
-        parent="@android:style/TextAppearance.Material.Notification.Line2"/>
-    <style name="WebNotificationBodyBig"
-        parent="@android:style/TextAppearance.Material.Notification"/>
-    <style name="WebNotificationOrigin"
-        parent="@android:style/TextAppearance.Material.Notification.Info"/>
-    <style name="WebNotificationTime"
-        parent="@android:style/TextAppearance.Material.Notification.Time"/>
-    <style name="WebNotificationDivider">
-        <!-- From the non-public Drawable notification_template_divider -->
-        <item name="android:background">#29000000</item>
-    </style>
-    <style name="WebNotificationButtons">
-        <item name="android:layout_marginStart">-8dp</item>
-    </style>
-    <style name="WebNotificationButton"
-        parent="@android:style/Widget.DeviceDefault.Light.Button.Borderless.Small">
-        <item name="android:background">@drawable/web_notification_button_background</item>
-        <item name="android:textAppearance">@style/TextAppearance.WebNotificationButton</item>
-    </style>
-    <style name="TextAppearance.WebNotificationButton"
-        parent="android:TextAppearance.DeviceDefault.Widget.Button">
-        <item name="android:textColor">@color/secondary_text_default_material_light</item>
-    </style>
-    <style name="WebNotificationSettingsButton"
-        parent="@style/WebNotificationButton">
-        <item name="android:textAppearance">@android:style/TextAppearance.Material.Notification.Info</item>
-        <item name="android:paddingStart">32dp</item>
-    </style>
-    <style name="WebNotificationSettingsIcon">
-        <!-- This is a blank override of the v17 style. -->
-    </style>
-    <style name="WebNotificationLargeIcon">
-        <item name="android:padding">12dp</item>
-    </style>
-    <style name="WebNotificationSmallIcon">
-        <item name="android:background">@drawable/web_notification_small_icon_background</item>
-        <item name="android:padding">3dp</item>
-    </style>
 
     <!-- Theme variation for low-end devices.
 
         Since ChromeActivities are not HW accelerated, they don't get fancy
         material shadows for popups. This theme sets drawable with pre-baked
         shadows to those popups to make them look better.
-        'popup_bg_tinted' is a 9-patch similar to 'abc_popup_background_mtrl_mult'
+        '*_bg_tinted' are a 9-patchs similar to 'abc_popup_background_mtrl_mult'
         drawable from Android support library, where it's used to simulate
         material design on earlier Android versions.
     -->
     <style name="ListPopupWindow.LowEnd" parent="android:Widget.Material.Light.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
     </style>
     <style name="Spinner.LowEnd" parent="android:Widget.Material.Light.Spinner">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
     </style>
     <style name="AutoCompleteTextView.LowEnd" parent="android:Widget.Material.Light.AutoCompleteTextView">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
     </style>
     <style name="Theme.Chromium.WithWindowAnimation.LowEnd"
         parent="Theme.Chromium.WithWindowAnimation">
@@ -89,10 +48,8 @@
         <item name="android:textCursorDrawable">@drawable/text_cursor_lowend</item>
     </style>
 
-    <!-- This overrides the v17 style in order to use button_borderless_compat foreground -->
-    <!-- Card for General Use -->
-    <style name="Card">
-        <item name="android:background">@drawable/hairline_border_card_background</item>
-        <item name="android:foreground">@drawable/button_borderless_compat</item>
+    <!-- Match the fontFamily in ui/android/java/res/values-v21/styles.xml -->
+    <style name="TextAppearance.FreFirstFrameButton" parent="TextAppearance.Button.Text.Filled">
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
   </resources>

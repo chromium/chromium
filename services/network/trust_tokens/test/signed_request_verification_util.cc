@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -16,23 +17,22 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
-#include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
+#include "services/network/trust_tokens/ecdsa_sha256_trust_token_request_signer.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
-namespace network {
-namespace test {
+namespace network::test {
 namespace {
 
-base::Optional<
+absl::optional<
     base::flat_map<std::string, net::structured_headers::ParameterizedMember>>
 DeserializeSecSignatureHeader(base::StringPiece header) {
-  base::Optional<net::structured_headers::Dictionary> maybe_dictionary =
+  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
       net::structured_headers::ParseDictionary(header);
   if (!maybe_dictionary)
-    return base::nullopt;
+    return absl::nullopt;
 
   base::flat_map<std::string, net::structured_headers::ParameterizedMember> ret;
   for (const auto& kv : *maybe_dictionary) {
@@ -57,8 +57,7 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
                                  const std::string& sig_alg)> verifier,
     mojom::TrustTokenSignRequestData sign_request_data,
     std::string* error_out,
-    std::map<std::string, std::string>* verification_keys_out,
-    const std::string& sig_alg) {
+    std::map<std::string, std::string>* verification_keys_out) {
   if (!issuer_and_params.item.is_string()) {
     *error_out = "type-unsafe issuer in Sec-Signature header";
     return false;
@@ -66,9 +65,9 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
   std::string issuer = issuer_and_params.item.GetString();  // for debugging
 
   auto find_key = [&issuer_and_params](base::StringPiece key) {
-    return std::find_if(issuer_and_params.params.begin(),
-                        issuer_and_params.params.end(),
-                        [key](auto& param) { return param.first == key; });
+    return base::ranges::find(
+        issuer_and_params.params, key,
+        &net::structured_headers::Parameters::value_type::first);
   };
 
   auto sig_it = find_key("sig");
@@ -103,7 +102,23 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
   }
   base::StringPiece public_key = public_key_it->second.GetString();
 
-  base::Optional<std::vector<uint8_t>> written_reconstructed_cbor =
+  auto alg_it = find_key("alg");
+  if (alg_it == issuer_and_params.params.end()) {
+    *error_out = base::ReplaceStringPlaceholders(
+        "'alg' element in Sec-Signature header missing for issuer $1", {issuer},
+        /*offsets=*/nullptr);
+    return false;
+  }
+  if (!alg_it->second.is_string()) {
+    *error_out = base::ReplaceStringPlaceholders(
+        "'alg' element in Sec-Signature header for issuer $1 is "
+        "not a string",
+        {issuer}, /*offsets=*/nullptr);
+    return false;
+  }
+  std::string alg = alg_it->second.GetString();
+
+  absl::optional<std::vector<uint8_t>> written_reconstructed_cbor =
       TrustTokenRequestCanonicalizer().Canonicalize(
           destination, headers, public_key, sign_request_data);
   if (!written_reconstructed_cbor) {
@@ -124,8 +139,8 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
         [](base::span<const uint8_t> data, base::span<const uint8_t> signature,
            base::span<const uint8_t> verification_key,
            const std::string& signing_alg) {
-          std::unique_ptr<Ed25519TrustTokenRequestSigner> signer =
-              std::make_unique<Ed25519TrustTokenRequestSigner>();
+          std::unique_ptr<EcdsaSha256TrustTokenRequestSigner> signer =
+              std::make_unique<EcdsaSha256TrustTokenRequestSigner>();
           return signer->Verify(data, signature, verification_key) &&
                  signing_alg == signer->GetAlgorithmIdentifier();
         });
@@ -133,7 +148,7 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
 
   if (!verifier.Run(base::make_span(reconstructed_signing_data),
                     base::as_bytes(base::make_span(signature)),
-                    base::as_bytes(base::make_span(public_key)), sig_alg)) {
+                    base::as_bytes(base::make_span(public_key)), alg)) {
     *error_out = "Error verifying signature";
     return false;
   }
@@ -200,33 +215,13 @@ bool ExtractIssuersAndParametersFromSignatureHeaderMap(
   return true;
 }
 
-bool ExtractSigningAlgorithmIdentifierFromSignatureHeaderMap(
-    const SignatureHeaderMap& map,
-    std::string* sig_alg_out,
-    std::string* error_out) {
-  auto it = map.find("alg");
-  if (it == map.end()) {
-    *error_out = "Missing 'alg' element in the Sec-Signature header";
-    return false;
-  }
-
-  if (it->second.member_is_inner_list) {
-    *error_out = "'alg' element should not be a list";
-    return false;
-  }
-
-  *sig_alg_out = it->second.member.front().item.GetString();
-  return true;
-}
-
 bool ValidateSignatureHeaderMapAndExtractFields(
     const SignatureHeaderMap& map,
     std::vector<net::structured_headers::ParameterizedItem>*
         issuers_and_parameters_out,
     mojom::TrustTokenSignRequestData* sign_request_data_out,
-    std::string* sig_alg_out,
     std::string* error_out) {
-  if (map.size() != 3) {
+  if (map.size() != 2) {
     *error_out = "Unexpected number of members in Sec-Signature header map";
     return false;
   }
@@ -238,11 +233,6 @@ bool ValidateSignatureHeaderMapAndExtractFields(
 
   if (!ExtractIssuersAndParametersFromSignatureHeaderMap(
           map, issuers_and_parameters_out, error_out)) {
-    return false;
-  }
-
-  if (!ExtractSigningAlgorithmIdentifierFromSignatureHeaderMap(map, sig_alg_out,
-                                                               error_out)) {
     return false;
   }
 
@@ -274,7 +264,7 @@ bool ReconstructSigningDataAndVerifySignatures(
     return false;
   }
 
-  base::Optional<
+  absl::optional<
       base::flat_map<std::string, net::structured_headers::ParameterizedMember>>
       signature_header_map = DeserializeSecSignatureHeader(signature_header);
   if (!signature_header_map) {
@@ -285,10 +275,9 @@ bool ReconstructSigningDataAndVerifySignatures(
   std::vector<net::structured_headers::ParameterizedItem>
       issuers_and_parameters;
   mojom::TrustTokenSignRequestData sign_request_data;
-  std::string sig_alg;
   if (!ValidateSignatureHeaderMapAndExtractFields(
           *signature_header_map, &issuers_and_parameters, &sign_request_data,
-          &sig_alg, error_out)) {
+          error_out)) {
     return false;
   }
   if (sign_request_data_out)
@@ -300,7 +289,7 @@ bool ReconstructSigningDataAndVerifySignatures(
     // |error_out| on failure.
     if (!ReconstructSigningDataAndVerifyForIndividualIssuer(
             issuer_and_parameters, destination, headers, verifier,
-            sign_request_data, error_out, verification_keys_out, sig_alg)) {
+            sign_request_data, error_out, verification_keys_out)) {
       return false;
     }
   }
@@ -313,7 +302,7 @@ bool ExtractRedemptionRecordsFromHeader(
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {
-  base::Optional<net::structured_headers::List> maybe_list =
+  absl::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(sec_redemption_record_header);
 
   std::string dummy;
@@ -356,7 +345,7 @@ bool ExtractRedemptionRecordsFromHeader(
       return false;
     }
 
-    base::Optional<SuitableTrustTokenOrigin> maybe_issuer =
+    absl::optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
     if (!maybe_issuer) {
       *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";
@@ -370,5 +359,4 @@ bool ExtractRedemptionRecordsFromHeader(
   return true;
 }
 
-}  // namespace test
-}  // namespace network
+}  // namespace network::test

@@ -1,14 +1,14 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-#include <stddef.h>
-
-#include "base/stl_util.h"
 #import "ios/web/navigation/nscoder_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+
+#import <Foundation/Foundation.h>
+#import <stddef.h>
+
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +29,7 @@ const char* testStrings[] = {
 };
 
 TEST_F(NSCoderStdStringTest, encodeDecode) {
-  for (size_t i = 0; i < base::size(testStrings); ++i) {
+  for (size_t i = 0; i < std::size(testStrings); ++i) {
     NSKeyedArchiver* archiver =
         [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
     nscoder_util::EncodeString(archiver, @"test", testStrings[i]);

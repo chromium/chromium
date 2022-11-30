@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/vr/util/fps_meter.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -14,7 +13,7 @@ namespace {
 static constexpr double kTolerance = 0.01;
 
 base::TimeTicks MicrosecondsToTicks(uint64_t us) {
-  return base::TimeDelta::FromMicroseconds(us) + base::TimeTicks();
+  return base::Microseconds(us) + base::TimeTicks();
 }
 
 }  // namespace
@@ -39,7 +38,7 @@ TEST(FPSMeter, AccurateFPSWithManyFrames) {
   EXPECT_FLOAT_EQ(0.0, meter.GetFPS());
 
   base::TimeTicks now = MicrosecondsToTicks(1);
-  base::TimeDelta frame_time = base::TimeDelta::FromMicroseconds(16666);
+  base::TimeDelta frame_time = base::Microseconds(16666);
 
   meter.AddFrame(now);
   EXPECT_FALSE(meter.CanComputeFPS());
@@ -59,7 +58,7 @@ TEST(FPSMeter, AccurateFPSWithHigherFramerate) {
   EXPECT_FLOAT_EQ(0.0, meter.GetFPS());
 
   base::TimeTicks now = MicrosecondsToTicks(1);
-  base::TimeDelta frame_time = base::TimeDelta::FromSecondsD(1.0 / 90.0);
+  base::TimeDelta frame_time = base::Seconds(1.0 / 90.0);
 
   meter.AddFrame(now);
   EXPECT_FALSE(meter.CanComputeFPS());

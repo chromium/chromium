@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import abc
 import inspect
 import os
@@ -9,7 +7,7 @@ MYPY = False
 if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Any, List, Match, Optional, Pattern, Text, Tuple, cast
-    Error = Tuple[Text, Text, Text, Optional[int]]
+    Error = Tuple[str, str, str, Optional[int]]
 
 
 def collapse(text):
@@ -34,8 +32,8 @@ class Rule(metaclass=abc.ABCMeta):
     def error(cls, path, context=(), line_no=None):
         # type: (Text, Tuple[Any, ...], Optional[int]) -> Error
         if MYPY:
-            name = cast(Text, cls.name)
-            description = cast(Text, cls.description)
+            name = cast(str, cls.name)
+            description = cast(str, cls.description)
         else:
             name = cls.name
             description = cls.description
@@ -357,6 +355,14 @@ class DuplicateBasenamePath(Rule):
             other file(s) (found extensions: %s)
     """)
     to_fix = "rename files so they have unique basename paths"
+
+
+class DuplicatePathCaseInsensitive(Rule):
+    name = "DUPLICATE-CASE-INSENSITIVE-PATH"
+    description = collapse("""
+            Path differs from path %s only in case
+    """)
+    to_fix = "rename files so they are unique irrespective of case"
 
 
 class TentativeDirectoryName(Rule):

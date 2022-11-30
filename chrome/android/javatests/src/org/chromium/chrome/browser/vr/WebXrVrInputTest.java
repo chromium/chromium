@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@ import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_V
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import android.graphics.PointF;
-import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +31,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -56,8 +54,10 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+// TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
+// failures has been fixed.
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=LogJsConsoleMessages", "allow-pre-commit-input"})
 public class WebXrVrInputTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -91,14 +91,10 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
-    @DisableIf
-            .Build(message = "Flaky on K/L crbug.com/762126",
-                    sdk_is_less_than = Build.VERSION_CODES.M)
-            @Restriction(RESTRICTION_TYPE_SVR)
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void
-            testScreenTapsNotRegistered_WebXr() throws InterruptedException {
+    @Restriction(RESTRICTION_TYPE_SVR)
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testScreenTapsNotRegistered_WebXr() throws InterruptedException {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
 
@@ -267,15 +263,20 @@ public class WebXrVrInputTest {
         // Android doesn't seem to like sending touch events too quickly, so have a short delay
         // between events.
         for (int i = 0; i < iterations; i++) {
-            long downTime = sendScreenTouchDown(view, x, y);
-            SystemClock.sleep(100);
-            sendScreenTouchUp(view, x, y, downTime);
-            SystemClock.sleep(100);
+            sendScreenTap(view, x, y);
         }
     }
 
+    private void sendScreenTap(final View view, final int x, final int y) {
+        long downTime = sendScreenTouchDown(view, x, y);
+        SystemClock.sleep(100);
+        sendScreenTouchUp(view, x, y, downTime);
+        SystemClock.sleep(100);
+    }
+
     /**
-     * Tests that screen touches are registered as XR input when the viewer is Cardboard.
+     * Tests that screen touches are registered as XR input in immersive sessions,
+     *  when the viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -286,31 +287,20 @@ public class WebXrVrInputTest {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_input", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
-        // Make it so that the webpage doesn't try to finish the JavaScript step after each input
-        // since we don't need to ack each one like with the Daydream controller.
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "finishAfterEachInput = false", POLL_TIMEOUT_SHORT_MS);
-        int numIterations = 10;
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "stepSetupListeners(" + String.valueOf(numIterations) + ")", POLL_TIMEOUT_SHORT_MS);
 
-        int x = mWebXrVrTestFramework.getCurrentContentView().getWidth() / 2;
-        int y = mWebXrVrTestFramework.getCurrentContentView().getHeight() / 2;
         // TODO(mthiesse, https://crbug.com/758374): Injecting touch events into the root GvrLayout
         // (VrShell) is flaky. Sometimes the events just don't get routed to the presentation
         // view for no apparent reason. We should figure out why this is and see if it's fixable.
-        final View presentationView =
-                TestVrShellDelegate.getVrShellForTesting().getPresentationViewForTesting();
-
-        // Tap the screen a bunch of times and make sure that they're all registered.
-        spamScreenTaps(presentationView, x, y, numIterations);
-
-        mWebXrVrTestFramework.waitOnJavaScriptStep();
-        mWebXrVrTestFramework.endTest();
+        // Note that we only use 5 iterations, vs the 10 used in the inline test, because it seems
+        // that on M, we get enough memory pressure that the yet-to-be-processed taps get GC'd.
+        // See https://crbug.com/1194906 for more details.
+        testScreenTapsRegisteredOnCardboardImpl(
+                TestVrShellDelegate.getVrShellForTesting().getPresentationViewForTesting(), 5);
     }
 
     /**
-     * Tests that screen touches are registered as transient XR input when the viewer is Cardboard.
+     * Tests that screen touches are registered as transient XR input in inline sessions,
+     * when the viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -320,22 +310,27 @@ public class WebXrVrInputTest {
     public void testTransientScreenTapsRegisteredOnCardboard_WebXr() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_transient_input", PAGE_LOAD_TIMEOUT_S);
-        // Make it so that the webpage doesn't try to finish the JavaScript step after each input
-        // since we don't need to ack each one like with the Daydream controller.
-        mWebXrVrTestFramework.runJavaScriptOrFail(
-                "finishAfterEachInput = false", POLL_TIMEOUT_SHORT_MS);
-        int numIterations = 10;
+
+        testScreenTapsRegisteredOnCardboardImpl(mWebXrVrTestFramework.getCurrentContentView(), 10);
+    }
+
+    // Note that the page should load the appropriate test page and enter any relevant session
+    // before calling this.
+    private void testScreenTapsRegisteredOnCardboardImpl(View presentationView, int numIterations) {
         mWebXrVrTestFramework.runJavaScriptOrFail(
                 "stepSetupListeners(" + String.valueOf(numIterations) + ")", POLL_TIMEOUT_SHORT_MS);
 
-        int x = mWebXrVrTestFramework.getCurrentContentView().getWidth() / 2;
-        int y = mWebXrVrTestFramework.getCurrentContentView().getHeight() / 2;
-        final View presentationView = mWebXrVrTestFramework.getCurrentContentView();
+        int x = presentationView.getWidth() / 2;
+        int y = presentationView.getHeight() / 2;
 
-        // Tap the screen a bunch of times and make sure that they're all registered.
-        spamScreenTaps(presentationView, x, y, numIterations);
+        // Tap the screen a bunch of times and make sure that they're all registered. Ideally, we
+        // shouldn't have to ack each one, but it's possible for inputs to get eaten by garbage
+        // collection if there are multiple in flight, so only send one at a time.
+        for (int i = 0; i < numIterations; i++) {
+            sendScreenTap(presentationView, x, y);
+            mWebXrVrTestFramework.waitOnJavaScriptStep();
+        }
 
-        mWebXrVrTestFramework.waitOnJavaScriptStep();
         mWebXrVrTestFramework.endTest();
     }
 
@@ -498,7 +493,8 @@ public class WebXrVrInputTest {
         }
 
         WebXrVrTestFramework.waitOnJavaScriptStep(mTestRule.getWebContents());
-        mWebXrVrTestFramework.enterSessionWithUserGestureOrFail(mTestRule.getWebContents());
+        mWebXrVrTestFramework.enterSessionWithUserGestureOrFail(
+                mTestRule.getWebContents(), /*needsCameraPermission=*/false);
         // The permission toasts automatically show for ~5 seconds when entering an immersive
         // session, so wait for that to disappear
         NativeUiUtils.performActionAndWaitForVisibilityStatus(

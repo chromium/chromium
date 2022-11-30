@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++menuItemRadio editable name='x' checkedState=false editableRoot=true
+++++++menuItemRadio editable multiline name='x' value='x' checkedState=false nonAtomicTextFieldRoot=true
 ++++++++staticText editable name='x'
-++++++++++inlineTextBox name='x'
+++++++++++inlineTextBox editable name='x'

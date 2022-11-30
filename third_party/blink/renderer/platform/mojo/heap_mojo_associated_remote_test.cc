@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -90,14 +91,15 @@ class HeapMojoAssociatedRemoteDisconnectWithReasonHandlerBaseTest
     impl_.associated_receiver().Bind(
         owner_->associated_remote().BindNewEndpointAndPassReceiver(
             null_task_runner));
-    impl_.associated_receiver().set_disconnect_with_reason_handler(WTF::Bind(
-        [](HeapMojoAssociatedRemoteDisconnectWithReasonHandlerBaseTest*
-               associated_remote_test,
-           const uint32_t custom_reason, const std::string& description) {
-          associated_remote_test->run_loop().Quit();
-          associated_remote_test->disconnected_with_reason() = true;
-        },
-        WTF::Unretained(this)));
+    impl_.associated_receiver().set_disconnect_with_reason_handler(
+        WTF::BindOnce(
+            [](HeapMojoAssociatedRemoteDisconnectWithReasonHandlerBaseTest*
+                   associated_remote_test,
+               const uint32_t custom_reason, const std::string& description) {
+              associated_remote_test->run_loop().Quit();
+              associated_remote_test->disconnected_with_reason() = true;
+            },
+            WTF::Unretained(this)));
   }
 
   ServiceImpl impl_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,13 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace gfx {
 
 namespace {
-
-static constexpr float kTolerance = 1e-5f;
 
 static int s_next_keyframe_model_id = 1;
 static int s_next_group_id = 1;
@@ -83,52 +80,6 @@ base::TimeDelta GetEndTime(KeyframeModel* keyframe_model) {
   }
   return keyframe_model->curve()->Duration();
 }
-
-bool SufficientlyEqual(float lhs, float rhs) {
-  return base::IsApproximatelyEqual(lhs, rhs, kTolerance);
-}
-
-bool SufficientlyEqual(const gfx::TransformOperations& lhs,
-                       const gfx::TransformOperations& rhs) {
-  return lhs.ApproximatelyEqual(rhs, kTolerance);
-}
-
-bool SufficientlyEqual(const gfx::SizeF& lhs, const gfx::SizeF& rhs) {
-  return base::IsApproximatelyEqual(lhs.width(), rhs.width(), kTolerance) &&
-         base::IsApproximatelyEqual(lhs.height(), rhs.height(), kTolerance);
-}
-
-bool SufficientlyEqual(SkColor lhs, SkColor rhs) {
-  return lhs == rhs;
-}
-
-template <typename T>
-struct AnimationTraits {};
-
-#define DEFINE_ANIMATION_TRAITS(value_type, name)                         \
-  template <>                                                             \
-  struct AnimationTraits<value_type> {                                    \
-    typedef value_type ValueType;                                         \
-    typedef name##AnimationCurve::Target TargetType;                      \
-    typedef name##AnimationCurve CurveType;                               \
-    typedef Keyframed##name##AnimationCurve KeyframedCurveType;           \
-    typedef name##Keyframe KeyframeType;                                  \
-    static const CurveType* ToDerivedCurve(const AnimationCurve* curve) { \
-      return name##AnimationCurve::To##name##AnimationCurve(curve);       \
-    }                                                                     \
-    static void OnValueAnimated(name##AnimationCurve::Target* target,     \
-                                const ValueType& target_value,            \
-                                int target_property) {                    \
-      target->On##name##Animated(target_value, target_property, nullptr); \
-    }                                                                     \
-  }
-
-DEFINE_ANIMATION_TRAITS(float, Float);
-DEFINE_ANIMATION_TRAITS(gfx::TransformOperations, Transform);
-DEFINE_ANIMATION_TRAITS(gfx::SizeF, Size);
-DEFINE_ANIMATION_TRAITS(SkColor, Color);
-
-#undef DEFINE_ANIMATION_TRAITS
 
 template <typename ValueType>
 void TransitionValueTo(KeyframeEffect* animator,
@@ -199,8 +150,9 @@ int KeyframeEffect::GetNextGroupId() {
   return s_next_group_id++;
 }
 
-KeyframeEffect::KeyframeEffect() {}
-KeyframeEffect::~KeyframeEffect() {}
+KeyframeEffect::KeyframeEffect() = default;
+KeyframeEffect::KeyframeEffect(KeyframeEffect&&) = default;
+KeyframeEffect::~KeyframeEffect() = default;
 
 void KeyframeEffect::AddKeyframeModel(
     std::unique_ptr<KeyframeModel> keyframe_model) {

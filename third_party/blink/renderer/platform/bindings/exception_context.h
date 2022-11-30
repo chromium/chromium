@@ -1,11 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -122,6 +123,13 @@ class PLATFORM_EXPORT ExceptionContext final {
   const char* GetClassName() const { return class_name_; }
   const char* GetPropertyName() const { return property_name_; }
   int16_t GetArgumentIndex() const { return argument_index_; }
+
+  // This is used for a performance hack to reduce the number of construction
+  // and destruction times of ExceptionContext when iterating over properties.
+  // Only the generated bindings code is allowed to use this hack.
+  void ChangePropertyNameAsOptimizationHack(const char* property_name) {
+    property_name_ = property_name;
+  }
 
  private:
   Context context_ = Context::kEmpty;

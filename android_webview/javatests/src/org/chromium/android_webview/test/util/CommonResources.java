@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -135,8 +135,9 @@ public class CommonResources {
     public static String makeHtmlPageWithSimpleLinkTo(String headers, String destination) {
         return makeHtmlPageFrom(headers,
                 "<a href=\"" + destination + "\" id=\"link\">"
-                        + "  <img class=\"big\" /><p>Some text</p>"
-                        + "</a>");
+                        + "  <img class=\"big\" />"
+                        + "</a>"
+                        + "<div>Some text</div>");
     }
 
     public static String makeHtmlPageWithSimpleLinkTo(String destination) {

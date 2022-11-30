@@ -1,0 +1,7 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer
+++++++textField multiline value='xyz'
+++++++++genericContainer
+++++++++++staticText name='xyz'
+++++++++++++inlineTextBox name='xyz'

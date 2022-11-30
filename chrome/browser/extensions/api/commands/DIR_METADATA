@@ -1,4 +1,3 @@
 monorail {
   component: "Platform>Extensions>API"
 }
-team_email: "extensions-dev@chromium.org"

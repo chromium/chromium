@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ TEST(CBORDiagnosticWriterTest, InvalidUTF8) {
   static const uint8_t kInvalidUTF8[] = {0x62, 0xe2, 0x80};
   cbor::Reader::Config config;
   config.allow_invalid_utf8 = true;
-  base::Optional<cbor::Value> maybe_value =
+  absl::optional<cbor::Value> maybe_value =
       cbor::Reader::Read(kInvalidUTF8, config);
 
   ASSERT_TRUE(maybe_value);

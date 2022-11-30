@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS #container height measured with 500px width. Both container children visible
+PASS #container width 400px after padding is applied.
+PASS #container width 400px after padding is applied. #second is removed from the rendering
+PASS #container height measured with 499px width. Both container children visible
+FAIL #container width 399px after padding is applied. #second is removed from the rendering assert_equals: expected 399 but got 400
+PASS #container width 399x after padding is applied. #second is removed from the rendering
+Harness: the test ran to completion.
+

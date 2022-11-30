@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,17 @@
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -28,6 +30,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
       Client* const client,
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
+      const VideoColorSpace& color_space,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~V4L2StatefulVideoDecoderBackend() override;
 
@@ -48,8 +51,8 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   bool ApplyResolution(const gfx::Size& pic_size,
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
-  void OnChangeResolutionDone(bool success) override;
-  void ClearPendingRequests(DecodeStatus status) override;
+  void OnChangeResolutionDone(CroStatus status) override;
+  void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
  private:
@@ -70,6 +73,9 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
                   VideoDecoder::DecodeCB cb,
                   int32_t id);
 
+    DecodeRequest(const DecodeRequest&) = delete;
+    DecodeRequest& operator=(const DecodeRequest&) = delete;
+
     // Allow move, but not copy
     DecodeRequest(DecodeRequest&&);
     DecodeRequest& operator=(DecodeRequest&&);
@@ -77,8 +83,6 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
     ~DecodeRequest();
 
     bool IsCompleted() const;
-
-    DISALLOW_COPY_AND_ASSIGN(DecodeRequest);
   };
 
   bool IsSupportedProfile(VideoCodecProfile profile);
@@ -87,7 +91,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   static void ReuseOutputBufferThunk(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::Optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
+      absl::optional<base::WeakPtr<V4L2StatefulVideoDecoderBackend>> weak_this,
       V4L2ReadableBufferRef buffer);
   void ReuseOutputBuffer(V4L2ReadableBufferRef buffer);
 
@@ -116,8 +120,14 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // Process all the event in the event queue
   void ProcessEventQueue();
 
+  // The name of the running driver.
+  const std::string driver_name_;
+
   // Video profile we are decoding.
   VideoCodecProfile profile_;
+
+  // Video color space we are decoding.
+  VideoColorSpace color_space_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -129,14 +139,17 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   base::queue<DecodeRequest> decode_request_queue_;
 
   // The decode request which is currently processed.
-  base::Optional<DecodeRequest> current_decode_request_;
+  absl::optional<DecodeRequest> current_decode_request_;
   // V4L2 input buffer currently being prepared.
-  base::Optional<V4L2WritableBufferRef> current_input_buffer_;
+  absl::optional<V4L2WritableBufferRef> current_input_buffer_;
 
   std::unique_ptr<v4l2_vda_helpers::InputBufferFragmentSplitter>
       frame_splitter_;
 
-  base::Optional<gfx::Rect> visible_rect_;
+  absl::optional<gfx::Rect> visible_rect_;
+
+  // Map of enqueuing timecodes to system timestamp, for histogramming purposes.
+  std::map<int64_t, base::TimeTicks> encoding_timestamps_;
 
   // Callback of the buffer that triggered a flush, to be called when the
   // flush completes.
@@ -150,6 +163,17 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // This flag is set on the first decode request, and reset after a successful
   // flush or reset.
   bool has_pending_requests_ = false;
+
+  // The venus driver is the only implementation that requires the client
+  // to inform the driver of the framerate.
+  std::unique_ptr<V4L2FrameRateControl> framerate_control_;
+
+  // If the resolution change is interrupted and aborted by reset, then V4L2
+  // stateful API won't send the resolution change event again when the decoder
+  // receives the input buffer with the same resolution after reset.
+  // Set |need_resume_resolution_change_| to true in this scenario to resume the
+  // resolution change after the reset is done.
+  bool need_resume_resolution_change_ = false;
 
   base::WeakPtr<V4L2StatefulVideoDecoderBackend> weak_this_;
   base::WeakPtrFactory<V4L2StatefulVideoDecoderBackend> weak_this_factory_{

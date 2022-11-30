@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
@@ -37,11 +36,12 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
-        ":wyhash",
+        ":low_level_hash",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
         "//absl/container:fixed_array",
+        "//absl/functional:function_ref",
         "//absl/meta:type_traits",
         "//absl/numeric:int128",
         "//absl/strings",
@@ -75,7 +75,11 @@ cc_test(
         ":hash_testing",
         ":spy_hash_state",
         "//absl/base:core_headers",
+        "//absl/container:btree",
+        "//absl/container:flat_hash_map",
         "//absl/container:flat_hash_set",
+        "//absl/container:node_hash_map",
+        "//absl/container:node_hash_set",
         "//absl/meta:type_traits",
         "//absl/numeric:int128",
         "//absl/strings:cord_test_helpers",
@@ -94,6 +98,7 @@ cc_binary(
     deps = [
         ":hash",
         "//absl/base:core_headers",
+        "//absl/container:flat_hash_set",
         "//absl/random",
         "//absl/strings",
         "//absl/strings:cord",
@@ -143,27 +148,28 @@ cc_test(
 )
 
 cc_library(
-    name = "wyhash",
-    srcs = ["internal/wyhash.cc"],
-    hdrs = ["internal/wyhash.h"],
+    name = "low_level_hash",
+    srcs = ["internal/low_level_hash.cc"],
+    hdrs = ["internal/low_level_hash.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
         "//absl/base:endian",
+        "//absl/numeric:bits",
         "//absl/numeric:int128",
     ],
 )
 
 cc_test(
-    name = "wyhash_test",
-    srcs = ["internal/wyhash_test.cc"],
+    name = "low_level_hash_test",
+    srcs = ["internal/low_level_hash_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
     deps = [
-        ":wyhash",
+        ":low_level_hash",
         "//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],

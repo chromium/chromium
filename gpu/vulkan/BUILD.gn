@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//build_overrides/wayland.gni")
 import("//testing/test.gni")
 import("features.gni")
 
@@ -16,11 +17,14 @@ buildflag_header("buildflags") {
 }
 
 if (enable_vulkan) {
-  use_vulkan_xcb = use_x11 || ozone_platform_x11
+  use_vulkan_xcb = ozone_platform_x11
   config("vulkan_config") {
     defines = [ "VK_NO_PROTOTYPES" ]
     if (use_vulkan_xcb) {
       defines += [ "USE_VULKAN_XCB" ]
+    }
+    if (ozone_platform_wayland && !use_system_libwayland) {
+      configs = [ "//third_party/wayland:wayland_config" ]
     }
   }
 
@@ -102,14 +106,18 @@ if (enable_vulkan) {
 
     defines = [ "IS_VULKAN_IMPL" ]
 
+    if (ozone_platform == "x11") {
+      defines += [ "OZONE_PLATFORM_IS_X11" ]
+    }
+
     deps = [
       ":buildflags",
       "//base",
-      "//base/util/type_safety",
       "//build:chromeos_buildflags",
       "//components/crash/core/common:crash_key",
       "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/gfx",
+      "//ui/gl",
     ]
 
     public_deps = [
@@ -132,6 +140,10 @@ if (enable_vulkan) {
       sources += [ "vulkan_image_android.cc" ]
     }
 
+    if (is_fuchsia) {
+      sources += [ "vulkan_util_fuchsia.cc" ]
+    }
+
     if (is_win) {
       sources += [
         "vulkan_image_win.cc",
@@ -144,15 +156,19 @@ if (enable_vulkan) {
 
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
 
-      data_deps += [ "//third_party/fuchsia-sdk:vulkan_base" ]
+      data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan" ]
 
       # VulkanInstance enables validation layer in Debug builds and when DCHECKs
       # are enabled in Release builds. In these cases the validation layer
       # libraries and configs need to be included in the generated Fuchsia
       # package.
       if (is_debug || dcheck_always_on) {
-        data_deps += [ "//third_party/fuchsia-sdk:vulkan_validation" ]
+        data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_khronos_validation" ]
       }
+    }
+
+    if (is_apple) {
+      sources += [ "vulkan_image_mac.cc" ]
     }
   }
 
@@ -166,15 +182,12 @@ if (enable_vulkan) {
       "//ui/gfx:native_widget_types",
     ]
 
-    if (use_x11 || use_ozone) {
+    if (use_ozone) {
       sources += [ "tests/native_window.cc" ]
-      deps += [ "//ui/platform_window" ]
-      if (use_x11) {
-        deps += [ "//ui/platform_window/x11" ]
-      }
-      if (use_ozone) {
-        deps += [ "//ui/ozone" ]
-      }
+      deps += [
+        "//ui/ozone",
+        "//ui/platform_window",
+      ]
     }
 
     if (is_win) {
@@ -192,7 +205,7 @@ if (enable_vulkan) {
 
   # TODO(penghuang): support more platforms
   # https://crbug.com/1065499
-  if (is_android || use_x11 || is_win || use_ozone) {
+  if (is_android || is_win || use_ozone) {
     test("vulkan_tests") {
       use_xvfb = use_xvfb_in_this_config
 
@@ -201,7 +214,10 @@ if (enable_vulkan) {
         "tests/basic_vulkan_test.h",
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
-        "vulkan_cxx_unittest.cc",
+
+        # TODO(crbug.com/1234132): fix compile problem with the latest vulkan
+        # headers.
+        # "vulkan_cxx_unittest.cc",
         "vulkan_fence_helper_unittest.cc",
         "vulkan_image_unittest.cc",
       ]
@@ -224,10 +240,6 @@ if (enable_vulkan) {
 
       if (is_android) {
         deps += [ "//ui/android:ui_java_test_support" ]
-      }
-
-      if (use_x11) {
-        deps += [ "//ui/events/platform/x11" ]
       }
 
       if (use_ozone) {

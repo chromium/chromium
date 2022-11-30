@@ -1,21 +1,22 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_
 
-#include <string>
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/simple_web_view_dialog.h"
 
-namespace chromeos {
-
+namespace ash {
 class CaptivePortalWindowProxy;
 
 class CaptivePortalView : public SimpleWebViewDialog {
  public:
   CaptivePortalView(Profile* profile, CaptivePortalWindowProxy* proxy);
+
+  CaptivePortalView(const CaptivePortalView&) = delete;
+  CaptivePortalView& operator=(const CaptivePortalView&) = delete;
+
   ~CaptivePortalView() override;
 
   // Starts loading.
@@ -36,10 +37,8 @@ class CaptivePortalView : public SimpleWebViewDialog {
   CaptivePortalWindowProxy* proxy_;
 
   bool redirected_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalView);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_VIEW_H_

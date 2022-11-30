@@ -5,7 +5,7 @@ if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.dumpChildFrames();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function runTest() {

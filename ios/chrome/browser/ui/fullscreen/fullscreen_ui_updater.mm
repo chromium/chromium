@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@ FullscreenUIUpdater::FullscreenUIUpdater(FullscreenController* controller,
                                          id<FullscreenUIElement> ui_element)
     : controller_(controller),
       forwarder_(this, ui_element),
-      observer_(&forwarder_) {
+      observation_(&forwarder_) {
   DCHECK(controller_);
-  observer_.Add(controller_);
+  observation_.Observe(controller_);
 }
 
 FullscreenUIUpdater::~FullscreenUIUpdater() = default;
@@ -26,7 +26,8 @@ FullscreenUIUpdater::~FullscreenUIUpdater() = default;
 void FullscreenUIUpdater::Disconnect() {
   if (!controller_)
     return;
-  observer_.Remove(controller_);
+  DCHECK(observation_.IsObservingSource(controller_));
+  observation_.Reset();
   controller_ = nullptr;
 }
 

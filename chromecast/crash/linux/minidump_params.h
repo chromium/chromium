@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,10 @@ struct MinidumpParams {
                  const std::string& p_cast_build_number,
                  const std::string& p_reason,
                  const std::string& p_stadia_session_id,
-                 const std::string& p_extra_info = "");
+                 const std::string& p_extra_info = "",
+                 const std::string& p_exec_name = "",
+                 const std::string& p_signature = "",
+                 const std::string& p_crash_product_name = "");
   MinidumpParams(const MinidumpParams& params);
   ~MinidumpParams();
 
@@ -40,6 +43,10 @@ struct MinidumpParams {
   // Stadia Session ID, if a Stadia session was running at the time of crash.
   std::string stadia_session_id;
   std::string extra_info;
+  std::string exec_name;
+  std::string signature;
+  // Crash Product name, used to identify/group crash reports in go/crash.
+  std::string crash_product_name;
 };
 
 }  // namespace chromecast

@@ -1,26 +1,25 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './emoji_variants.html.js';
 import {createCustomEvent, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Emoji} from './types.js';
 
-const GENDER_FEMALE = 9792;       // U+2640 FEMALE_SIGN
-const SKIN_TONE_MEDIUM = 127997;  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
-const FAMILY = 128106;            // U+1F46A FAMILY
-const COUPLE = 128107;            // U+1F46B MAN AND WOMAN HOLDING HANDS
+const SKIN_TONE_MEDIUM = '🏽';  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
+const FAMILY = '👪';           // U+1F46A FAMILY
 
 /**
  * Determines if the given list of variants has any variant which contains
  * the given codepoint.
  * @param {!Array<!Emoji>} variants
- * @param {!number} codepoint
+ * @param {!string} codepoint
  * @return {boolean}
  */
 function hasVariation(variants, codepoint) {
-  const codepointString = String.fromCodePoint(codepoint);
-  return variants.findIndex(x => x.string.includes(codepointString)) !== -1;
+  return variants.findIndex(x => x.string.includes(codepoint)) !== -1;
 }
 
 
@@ -53,7 +52,7 @@ export class EmojiVariants extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -67,7 +66,9 @@ export class EmojiVariants extends PolymerElement {
       /** @private {boolean} */
       showSkinTones: {type: Boolean},
       /** @private {boolean} */
-      showBaseEmoji: {type: Boolean}
+      showBaseEmoji: {type: Boolean},
+      /** @private {!string} */
+      tooltip: {type: String},
     };
   }
 
@@ -79,7 +80,8 @@ export class EmojiVariants extends PolymerElement {
     super.ready();
 
     // family picker is basic 5x5 grid.
-    const isFamily = this.variants.length === 26 && this.variants[0] == FAMILY;
+    const isFamily =
+        this.variants.length === 26 && this.variants[0].string === FAMILY;
     // two people is 5x5 grid with 5 skin tones per person.
     const isTwoPeople = this.variants.length === 26 &&
         hasVariation(this.variants, SKIN_TONE_MEDIUM);
@@ -98,9 +100,7 @@ export class EmojiVariants extends PolymerElement {
   }
 
   connectedCallback() {
-    beforeNextRender(
-        this,
-        () => this.shadowRoot.querySelector('emoji-button').focusButton());
+    beforeNextRender(this, () => this.$['fake-focus-target'].focus());
   }
 
   computeVariantRowLengths(variants) {
@@ -126,8 +126,9 @@ export class EmojiVariants extends PolymerElement {
    * @param {!KeyboardEvent} ev
    */
   onKeyDown(ev) {
-    if (ev.key !== 'Escape')
+    if (ev.key !== 'Escape') {
       return;
+    }
 
     // hide visible variants when escape is pressed.
     // TODO(crbug.com/1177020): does not work (whole dialog is closed instead).

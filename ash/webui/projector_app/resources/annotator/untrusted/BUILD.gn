@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Projector Annotator is ChromeOS only")
+
+js_library("untrusted_annotator_library") {
+  sources = [ "untrusted_annotator_comm_factory.js" ]
+  deps = [
+    "//ash/webui/common/resources/post_message_api:post_message_api_client",
+    "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
+    "//ash/webui/projector_app/resources/common:message_types",
+  ]
+  externs_list = [ "../../common/projector_app.externs.js" ]
+}
+
+generate_grd("build_untrusted_grd") {
+  input_files = [
+    "annotator.html",
+    "untrusted_annotator_comm_factory.js",
+  ]
+
+  input_files_base_dir = rebase_path(".", "//")
+  grd_prefix = "ash_projector_annotator_untrusted"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

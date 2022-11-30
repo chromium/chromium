@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,8 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -35,6 +36,12 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   HoldingSpaceTrayIcon& operator=(const HoldingSpaceTrayIcon&) = delete;
   ~HoldingSpaceTrayIcon() override;
 
+  // Updates whether or not this holding space icon is in drop target state.
+  // If `did_drop_to_pin` is true, the user has just performed a drag-and-drop
+  // to pin action. Otherwise a drag may still be in progress or the user action
+  // did not result in an item being pinned to holding space.
+  void UpdateDropTargetState(bool is_drop_target, bool did_drop_to_pin);
+
   // Updates the list of previews shown in the icon. The icon will be changed to
   // show previews for holding space items in `items`. The order of previews in
   // the icon will match the order in `items`.
@@ -48,9 +55,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // Clears the icon.
   void Clear();
 
-  // Returns the shelf associated with this holding space tray icon.
-  Shelf* shelf() { return shelf_; }
-
   // Called from HoldingSpaceTray when holding space model changes:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model);
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model);
@@ -58,12 +62,18 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item);
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
 
+  // Sets if updates should be animated.
+  void set_should_animate_updates(bool should_animate_updates) {
+    should_animate_updates_ = should_animate_updates;
+  }
+
  private:
   class ResizeAnimation;
 
   // views::View:
   int GetHeightForWidth(int width) const override;
   gfx::Size CalculatePreferredSize() const override;
+  void OnThemeChanged() override;
 
   // ShellObserver:
   void OnShellDestroying() override;
@@ -80,19 +90,34 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void OnOldItemAnimatedOut(HoldingSpaceTrayIconPreview*,
                             const base::RepeatingClosure& callback);
 
-  // Called when all obsolete previews have been animated out during previews
-  // update.
+  // Called when all obsolete previews have been removed during previews update.
   void OnOldItemsRemoved();
 
-  // Starts shift animation for existing items. Done while updating the previews
-  // shown in the icon.
-  void ShiftExistingItems();
+  // Defines parameters for how to animate a given `preview`.
+  struct PreviewAnimationParams {
+    HoldingSpaceTrayIconPreview* preview;
+    base::TimeDelta delay;
+  };
 
-  // Animates new items in. Done while updating the previews shown in the icon.
-  void AnimateInNewItems();
+  // Calculates parameters for how to animate shift/in existing/new items.
+  std::vector<PreviewAnimationParams> CalculateAnimateShiftParams();
+  std::vector<PreviewAnimationParams> CalculateAnimateInParams();
+
+  // Ensures that preview layers are stacked to match ordering in `item_ids_`.
+  void EnsurePreviewLayerStackingOrder();
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
+
+  // Whether or not this holding space tray icon is currently in drop target
+  // state. When in drop target state, preview indices are offset from their
+  // standard positions by a fixed amount.
+  bool is_drop_target_ = false;
+
+  // True if updates should be animated, false otherwise. Generally speaking,
+  // updates are animated only if they occur mid-session. Updates that occur
+  // during session start/unlock or on profile change should not be animated.
+  bool should_animate_updates_ = false;
 
   // A preview is added to the tray icon to visually represent each holding
   // space item. Upon creation, previews are added to `previews_by_id_` where

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ scoped_refptr<CATransactionGPUCoordinator> CATransactionGPUCoordinator::Create(
       new CATransactionGPUCoordinator(host));
   // Avoid modifying result's refcount in the constructor by performing this
   // PostTask afterward.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -40,7 +40,7 @@ CATransactionGPUCoordinator::~CATransactionGPUCoordinator() {
 }
 
 void CATransactionGPUCoordinator::HostWillBeDestroyed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -63,10 +63,8 @@ void CATransactionGPUCoordinator::RemovePostCommitObserverOnUIThread() {
 
 void CATransactionGPUCoordinator::OnActivateForTransaction() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CATransactionGPUCoordinator::OnActivateForTransactionOnIO,
-                     this));
+  if (host_)
+    host_->gpu_service()->BeginCATransaction();
 }
 
 void CATransactionGPUCoordinator::OnEnterPostCommit() {
@@ -77,10 +75,9 @@ void CATransactionGPUCoordinator::OnEnterPostCommit() {
   // (and removed from the list of post-commit observers) soon after.
   pending_commit_count_++;
 
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CATransactionGPUCoordinator::OnEnterPostCommitOnIO,
-                     this));
+  if (host_)
+    host_->gpu_service()->CommitCATransaction(base::BindOnce(
+        &CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread, this));
 }
 
 bool CATransactionGPUCoordinator::ShouldWaitInPostCommit() {
@@ -88,21 +85,8 @@ bool CATransactionGPUCoordinator::ShouldWaitInPostCommit() {
   return pending_commit_count_ > 0;
 }
 
-void CATransactionGPUCoordinator::OnActivateForTransactionOnIO() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (host_)
-    host_->gpu_service()->BeginCATransaction();
-}
-
-void CATransactionGPUCoordinator::OnEnterPostCommitOnIO() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (host_)
-    host_->gpu_service()->CommitCATransaction(base::BindOnce(
-        &CATransactionGPUCoordinator::OnCommitCompletedOnIO, this));
-}
-
-void CATransactionGPUCoordinator::OnCommitCompletedOnIO() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CATransactionGPUCoordinator::OnCommitCompletedOnUI,

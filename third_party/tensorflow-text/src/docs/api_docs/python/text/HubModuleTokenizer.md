@@ -24,7 +24,10 @@ description: Tokenizer that uses a Hub module.
 
 Tokenizer that uses a Hub module.
 
-Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md), [`Tokenizer`](../text/Tokenizer.md), [`Splitter`](../text/Splitter.md)
+Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md),
+[`Tokenizer`](../text/Tokenizer.md),
+[`SplitterWithOffsets`](../text/SplitterWithOffsets.md),
+[`Splitter`](../text/Splitter.md)
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.HubModuleTokenizer(
@@ -39,6 +42,29 @@ Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md), [`Toke
 This class is just a wrapper around an internal HubModuleSplitter.  It offers
 the same functionality, but with 'token'-based method names: e.g., one can use
 tokenize() instead of the more general and less informatively named split().
+
+#### Example:
+
+```
+>>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+>>> segmenter = HubModuleTokenizer(HUB_MODULE)
+>>> segmenter.tokenize(["新华社北京"])
+<tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                   b'\xe5\x8c\x97\xe4\xba\xac']]>
+```
+
+You can also use this tokenizer to return the split strings and their offsets:
+
+```
+>>> HUB_MODULE = "https://tfhub.dev/google/zh_segmentation/1"
+>>> segmenter = HubModuleTokenizer(HUB_MODULE)
+>>> pieces, starts, ends = segmenter.tokenize_with_offsets(["新华社北京"])
+>>> print("pieces: %s starts: %s ends: %s" % (pieces, starts, ends))
+pieces: <tf.RaggedTensor [[b'\xe6\x96\xb0\xe5\x8d\x8e\xe7\xa4\xbe',
+                           b'\xe5\x8c\x97\xe4\xba\xac']]>
+starts: <tf.RaggedTensor [[0, 9]]>
+ends: <tf.RaggedTensor [[9, 15]]>
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">
@@ -71,42 +97,8 @@ cases include (1) a local path to a directory containing a module, and
 )
 </code></pre>
 
-Splits the strings from the input tensor.
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-An N+1-dimensional UTF-8 string or integer `Tensor` or `RaggedTensor`.
-For each string from the input tensor, the final, extra dimension contains
-the pieces that string was split into.
-</td>
-</tr>
-
-</table>
-
-
+Alias for
+<a href="../text/Tokenizer.md#tokenize"><code>Tokenizer.tokenize</code></a>.
 
 <h3 id="split_with_offsets"><code>split_with_offsets</code></h3>
 
@@ -118,49 +110,8 @@ the pieces that string was split into.
 )
 </code></pre>
 
-Splits the input tensor, returns the resulting pieces with offsets.
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-A tuple `(pieces, start_offsets, end_offsets)` where:
-
-* `pieces` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-`RaggedTensor`.
-* `start_offsets` is an N+1-dimensional integer `Tensor` or
-`RaggedTensor` containing the starting indices of each piece (byte
-indices for input strings).
-* `end_offsets` is an N+1-dimensional integer `Tensor` or
-`RaggedTensor` containing the exclusive ending indices of each piece
-(byte indices for input strings).
-</td>
-</tr>
-
-</table>
-
-
+Alias for
+<a href="../text/TokenizerWithOffsets.md#tokenize_with_offsets"><code>TokenizerWithOffsets.tokenize_with_offsets</code></a>.
 
 <h3 id="tokenize"><code>tokenize</code></h3>
 
@@ -235,8 +186,6 @@ An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
 </tr>
 </table>
 
-
-
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -245,13 +194,13 @@ An N-dimensional `Tensor` or `RaggedTensor` of UTF-8 strings.
 <td colspan="2">
 A tuple `(tokens, start_offsets, end_offsets)` where:
 * `tokens` is a `RaggedTensor` of strings where `tokens[i1...iN, j]` is
-the string content of the `j-th` token in `input_strs[i1...iN]`
+  the string content of the `j-th` token in `input_strs[i1...iN]`
 * `start_offsets` is a `RaggedTensor` of int64s where
-`start_offsets[i1...iN, j]` is the byte offset for the start of the
-`j-th` token in `input_strs[i1...iN]`.
+  `start_offsets[i1...iN, j]` is the byte offset for the start of the
+  `j-th` token in `input_strs[i1...iN]`.
 * `end_offsets` is a `RaggedTensor` of int64s where
-`end_offsets[i1...iN, j]` is the byte offset immediately after the
-end of the `j-th` token in `input_strs[i...iN]`.
+  `end_offsets[i1...iN, j]` is the byte offset immediately after the
+  end of the `j-th` token in `input_strs[i...iN]`.
 </td>
 </tr>
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/media_switches.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_legacy_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
@@ -154,7 +153,7 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
           [[[DeviceNameAndTransportType alloc]
                initWithName:[device localizedName]
               transportType:[device transportType]] autorelease];
-      [deviceNames setObject:nameAndTransportType forKey:[device uniqueID]];
+      deviceNames[[device uniqueID]] = nameAndTransportType;
     }
   }
   MaybeWriteUma([deviceNames count], number_of_suspended_devices);
@@ -164,12 +163,13 @@ base::scoped_nsobject<NSDictionary> GetDeviceNames() {
 }  // namespace
 
 std::string MacFourCCToString(OSType fourcc) {
-  char arr[] = {fourcc >> 24, (fourcc >> 16) & 255, (fourcc >> 8) & 255,
-                fourcc & 255, 0};
+  char arr[] = {static_cast<char>(fourcc >> 24),
+                static_cast<char>(fourcc >> 16), static_cast<char>(fourcc >> 8),
+                static_cast<char>(fourcc), 0};
   return arr;
 }
 
-void ExtractBaseAddressAndLength(char** base_address,
+bool ExtractBaseAddressAndLength(char** base_address,
                                  size_t* length,
                                  CMSampleBufferRef sample_buffer) {
   CMBlockBufferRef block_buffer = CMSampleBufferGetDataBuffer(sample_buffer);
@@ -182,6 +182,7 @@ void ExtractBaseAddressAndLength(char** base_address,
   // Expect the (M)JPEG data to be available as a contiguous reference, i.e.
   // not covered by multiple memory blocks.
   DCHECK_EQ(length_at_offset, *length);
+  return status == noErr && length_at_offset == *length;
 }
 
 base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {
@@ -189,48 +190,6 @@ base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {
   // this might cause instabilities (it did in QTKit), so keep an eye here.
   return base::scoped_nsobject<NSDictionary>(GetDeviceNames(),
                                              base::scoped_policy::RETAIN);
-}
-
-media::VideoCaptureFormats GetDeviceSupportedFormats(
-    Class implementation,
-    const media::VideoCaptureDeviceDescriptor& descriptor) {
-  media::VideoCaptureFormats formats;
-  NSArray* devices = [AVCaptureDevice devices];
-  AVCaptureDevice* device = nil;
-  for (device in devices) {
-    if (base::SysNSStringToUTF8([device uniqueID]) == descriptor.device_id)
-      break;
-  }
-  if (device == nil)
-    return media::VideoCaptureFormats();
-  for (AVCaptureDeviceFormat* format in device.formats) {
-    // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
-    // as well according to CMFormatDescription.h
-    const media::VideoPixelFormat pixelFormat = [implementation
-        FourCCToChromiumPixelFormat:CMFormatDescriptionGetMediaSubType(
-                                        [format formatDescription])];
-
-    CMVideoDimensions dimensions =
-        CMVideoFormatDescriptionGetDimensions([format formatDescription]);
-
-    for (AVFrameRateRange* frameRate in
-         [format videoSupportedFrameRateRanges]) {
-      media::VideoCaptureFormat format(
-          gfx::Size(dimensions.width, dimensions.height),
-          frameRate.maxFrameRate, pixelFormat);
-      DVLOG(2) << descriptor.display_name() << " "
-               << media::VideoCaptureFormat::ToString(format);
-      formats.push_back(std::move(format));
-    }
-  }
-  return formats;
-}
-
-Class GetVideoCaptureDeviceAVFoundationImplementationClass() {
-  if (base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2)) {
-    return [VideoCaptureDeviceAVFoundation class];
-  }
-  return [VideoCaptureDeviceAVFoundationLegacy class];
 }
 
 gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {

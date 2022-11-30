@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,24 +12,37 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 // static
 GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     GPUDevice* device,
-    const GPURenderBundleEncoderDescriptor* webgpu_desc) {
+    const GPURenderBundleEncoderDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
   uint32_t color_formats_count =
       static_cast<uint32_t>(webgpu_desc->colorFormats().size());
+
+  for (const auto& color_format : webgpu_desc->colorFormats()) {
+    if (color_format.has_value() &&
+        !device->ValidateTextureFormatUsage(color_format.value(),
+                                            exception_state)) {
+      return nullptr;
+    }
+  }
 
   std::unique_ptr<WGPUTextureFormat[]> color_formats =
       AsDawnEnum<WGPUTextureFormat>(webgpu_desc->colorFormats());
 
   WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
-    depth_stencil_format =
-        AsDawnEnum<WGPUTextureFormat>(webgpu_desc->depthStencilFormat());
+    if (!device->ValidateTextureFormatUsage(webgpu_desc->depthStencilFormat(),
+                                            exception_state)) {
+      return nullptr;
+    }
+
+    depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
   std::string label;
@@ -39,6 +52,8 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
   dawn_desc.colorFormats = color_formats.get();
   dawn_desc.depthStencilFormat = depth_stencil_format;
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
+  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
+  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
   if (webgpu_desc->hasLabel()) {
     label = webgpu_desc->label().Utf8();
     dawn_desc.label = label.c_str();
@@ -48,7 +63,8 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
       MakeGarbageCollected<GPURenderBundleEncoder>(
           device, device->GetProcs().deviceCreateRenderBundleEncoder(
                       device->GetHandle(), &dawn_desc));
-  encoder->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    encoder->setLabel(webgpu_desc->label());
   return encoder;
 }
 
@@ -56,12 +72,6 @@ GPURenderBundleEncoder::GPURenderBundleEncoder(
     GPUDevice* device,
     WGPURenderBundleEncoder render_bundle_encoder)
     : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
-
-void GPURenderBundleEncoder::setBindGroup(uint32_t index,
-                                          GPUBindGroup* bindGroup) {
-  GetProcs().renderBundleEncoderSetBindGroup(
-      GetHandle(), index, bindGroup->GetHandle(), 0, nullptr);
-}
 
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
@@ -91,70 +101,6 @@ void GPURenderBundleEncoder::setBindGroup(
   GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index,
                                              bind_group->GetHandle(),
                                              dynamic_offsets_data_length, data);
-}
-
-void GPURenderBundleEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().renderBundleEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPURenderBundleEncoder::popDebugGroup() {
-  GetProcs().renderBundleEncoderPopDebugGroup(GetHandle());
-}
-
-void GPURenderBundleEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().renderBundleEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPURenderBundleEncoder::setPipeline(GPURenderPipeline* pipeline) {
-  GetProcs().renderBundleEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
-}
-
-void GPURenderBundleEncoder::setIndexBuffer(GPUBuffer* buffer,
-                                            const V8GPUIndexFormat& format,
-                                            uint64_t offset,
-                                            uint64_t size) {
-  GetProcs().renderBundleEncoderSetIndexBufferWithFormat(
-      GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
-}
-
-void GPURenderBundleEncoder::setVertexBuffer(uint32_t slot,
-                                             const GPUBuffer* buffer,
-                                             uint64_t offset,
-                                             uint64_t size) {
-  GetProcs().renderBundleEncoderSetVertexBuffer(
-      GetHandle(), slot, buffer->GetHandle(), offset, size);
-}
-
-void GPURenderBundleEncoder::draw(uint32_t vertexCount,
-                                  uint32_t instanceCount,
-                                  uint32_t firstVertex,
-                                  uint32_t firstInstance) {
-  GetProcs().renderBundleEncoderDraw(GetHandle(), vertexCount, instanceCount,
-                                     firstVertex, firstInstance);
-}
-
-void GPURenderBundleEncoder::drawIndexed(uint32_t indexCount,
-                                         uint32_t instanceCount,
-                                         uint32_t firstIndex,
-                                         int32_t baseVertex,
-                                         uint32_t firstInstance) {
-  GetProcs().renderBundleEncoderDrawIndexed(GetHandle(), indexCount,
-                                            instanceCount, firstIndex,
-                                            baseVertex, firstInstance);
-}
-
-void GPURenderBundleEncoder::drawIndirect(GPUBuffer* indirectBuffer,
-                                          uint64_t indirectOffset) {
-  GetProcs().renderBundleEncoderDrawIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
-void GPURenderBundleEncoder::drawIndexedIndirect(GPUBuffer* indirectBuffer,
-                                                 uint64_t indirectOffset) {
-  GetProcs().renderBundleEncoderDrawIndexedIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
 }
 
 GPURenderBundle* GPURenderBundleEncoder::finish(

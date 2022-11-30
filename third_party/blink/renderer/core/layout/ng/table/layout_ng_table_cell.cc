@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -99,7 +98,6 @@ LayoutNGTable* LayoutNGTableCell::Table() const {
 
 void LayoutNGTableCell::UpdateBlockLayout(bool relayout_children) {
   NOT_DESTROYED();
-  LayoutAnalyzer::BlockScope analyzer(*this);
 
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
@@ -114,9 +112,7 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
-                          StyleRef().GetWritingDirection()) ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor())) {
+                          StyleRef().GetWritingDirection())) {
       table->GridBordersChanged();
     }
   }
@@ -167,12 +163,6 @@ bool LayoutNGTableCell::BackgroundIsKnownToBeOpaqueInRect(
     return false;
   return LayoutNGBlockFlowMixin<
       LayoutBlockFlow>::BackgroundIsKnownToBeOpaqueInRect(local_rect);
-}
-
-Length LayoutNGTableCell::StyleOrColLogicalWidth() const {
-  NOT_DESTROYED();
-  // TODO(atotic) TablesNG cannot easily get col width before layout.
-  return StyleRef().LogicalWidth();
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::RowIndex,

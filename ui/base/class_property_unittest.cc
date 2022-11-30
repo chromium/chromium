@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,21 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(int)
+DEFINE_UI_CLASS_PROPERTY_TYPE(float)
 
 namespace {
 
 class TestProperty {
  public:
-  TestProperty() {}
+  TestProperty() = default;
+  TestProperty(const TestProperty&) = delete;
+  TestProperty& operator=(const TestProperty&) = delete;
   ~TestProperty() {
     last_deleted_ = this;
   }
@@ -30,7 +33,18 @@ class TestProperty {
 
  private:
   static void* last_deleted_;
-  DISALLOW_COPY_AND_ASSIGN(TestProperty);
+};
+
+class TestCascadingProperty {
+ public:
+  explicit TestCascadingProperty(ui::PropertyHandler* handler)
+      : handler_(handler) {}
+  ~TestCascadingProperty() = default;
+
+  ui::PropertyHandler* handler() { return handler_; }
+
+ private:
+  raw_ptr<ui::PropertyHandler> handler_;
 };
 
 void* TestProperty::last_deleted_ = nullptr;
@@ -66,11 +80,15 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TestProperty, kOwnedKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(AssignableTestProperty,
                                    kAssignableKey,
                                    nullptr)
+DEFINE_CASCADING_OWNED_UI_CLASS_PROPERTY_KEY(TestCascadingProperty,
+                                             kCascadingOwnedKey,
+                                             nullptr)
 
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(TestProperty*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AssignableTestProperty*)
+DEFINE_UI_CLASS_PROPERTY_TYPE(TestCascadingProperty*)
 
 namespace ui {
 namespace test {
@@ -79,23 +97,30 @@ namespace {
 
 class TestPropertyHandler : public PropertyHandler {
  public:
+  TestPropertyHandler() = default;
+  explicit TestPropertyHandler(TestPropertyHandler* parent) : parent_(parent) {}
+  ~TestPropertyHandler() override = default;
   int num_events() const { return num_events_; }
 
  protected:
   void AfterPropertyChange(const void* key, int64_t old_value) override {
     ++num_events_;
   }
+  PropertyHandler* GetParentHandler() const override { return parent_; }
 
  private:
   int num_events_ = 0;
+  raw_ptr<TestPropertyHandler> parent_ = nullptr;
 };
 
 const int kDefaultIntValue = -2;
 const char* kDefaultStringValue = "squeamish";
 const char* kTestStringValue = "ossifrage";
+const float kDefaultFloatValue = 3.0;
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, kDefaultIntValue)
 DEFINE_UI_CLASS_PROPERTY_KEY(const char*, kStringKey, kDefaultStringValue)
+DEFINE_UI_CLASS_PROPERTY_KEY(float, kFloatKey, kDefaultFloatValue)
 }
 
 TEST(PropertyTest, Property) {
@@ -104,6 +129,7 @@ TEST(PropertyTest, Property) {
   // Non-existent properties should return the default values.
   EXPECT_EQ(kDefaultIntValue, h.GetProperty(kIntKey));
   EXPECT_EQ(std::string(kDefaultStringValue), h.GetProperty(kStringKey));
+  EXPECT_EQ(kDefaultFloatValue, h.GetProperty(kFloatKey));
 
   // A set property value should be returned again (even if it's the default
   // value).
@@ -121,6 +147,13 @@ TEST(PropertyTest, Property) {
   h.SetProperty(kStringKey, kTestStringValue);
   EXPECT_EQ(std::string(kTestStringValue), h.GetProperty(kStringKey));
 
+  h.SetProperty(kFloatKey, 3.14f);
+  EXPECT_EQ(3.14f, h.GetProperty(kFloatKey));
+  h.SetProperty(kFloatKey, kDefaultFloatValue);
+  EXPECT_EQ(kDefaultFloatValue, h.GetProperty(kFloatKey));
+  h.SetProperty(kFloatKey, -234.5678f);
+  EXPECT_EQ(-234.5678f, h.GetProperty(kFloatKey));
+
   // ClearProperty should restore the default value.
   h.ClearProperty(kIntKey);
   EXPECT_EQ(kDefaultIntValue, h.GetProperty(kIntKey));
@@ -133,24 +166,23 @@ TEST(PropertyTest, OwnedProperty) {
   {
     PropertyHandler h;
 
-    EXPECT_EQ(NULL, h.GetProperty(kOwnedKey));
+    EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
     void* last_deleted = TestProperty::last_deleted();
-    TestProperty* p1 = new TestProperty();
-    h.SetProperty(kOwnedKey, p1);
+    TestProperty* p1 =
+        h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p1, h.GetProperty(kOwnedKey));
     EXPECT_EQ(last_deleted, TestProperty::last_deleted());
 
-    TestProperty* p2 = new TestProperty();
-    h.SetProperty(kOwnedKey, p2);
+    TestProperty* p2 =
+        h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p2, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p1, TestProperty::last_deleted());
 
     h.ClearProperty(kOwnedKey);
-    EXPECT_EQ(NULL, h.GetProperty(kOwnedKey));
+    EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p2, TestProperty::last_deleted());
 
-    p3 = new TestProperty();
-    h.SetProperty(kOwnedKey, p3);
+    p3 = h.SetProperty(kOwnedKey, std::make_unique<TestProperty>());
     EXPECT_EQ(p3, h.GetProperty(kOwnedKey));
     EXPECT_EQ(p2, TestProperty::last_deleted());
   }
@@ -162,8 +194,8 @@ TEST(PropertyTest, AcquireAllPropertiesFrom) {
   std::unique_ptr<PropertyHandler> src = std::make_unique<PropertyHandler>();
   void* last_deleted = TestProperty::last_deleted();
   EXPECT_FALSE(src->GetProperty(kOwnedKey));
-  TestProperty* p1 = new TestProperty();
-  src->SetProperty(kOwnedKey, p1);
+  TestProperty* p1 =
+      src->SetProperty(kOwnedKey, std::make_unique<TestProperty>());
   src->SetProperty(kIntKey, INT_MAX);
 
   // dest will take ownership of the owned property. Existing properties with
@@ -288,12 +320,41 @@ TEST(PropertyTest, PropertyChangedEvent) {
   EXPECT_EQ(4, h.num_events());
 
   // Verify that setting a heap-allocated value also ticks the event counter.
-  h.SetProperty(kAssignableKey, new AssignableTestProperty{4});
+  h.SetProperty(kAssignableKey, std::make_unique<AssignableTestProperty>(4));
   EXPECT_EQ(5, h.num_events());
 
   // Verify that overwriting a heap-allocated value ticks the event counter.
-  h.SetProperty(kAssignableKey, new AssignableTestProperty{5});
+  h.SetProperty(kAssignableKey, std::make_unique<AssignableTestProperty>(5));
   EXPECT_EQ(6, h.num_events());
+}
+
+TEST(PropertyTest, CascadingProperties) {
+  TestPropertyHandler h;
+  TestPropertyHandler h2(&h);
+
+  // Set the property on the parent handler.
+  h.SetProperty(kCascadingOwnedKey,
+                std::make_unique<TestCascadingProperty>(&h));
+
+  // Get the property value from the child handler.
+  auto* value = h2.GetProperty(kCascadingOwnedKey);
+
+  EXPECT_TRUE(value);
+  // The property value should have a reference to |h|.
+  EXPECT_EQ(&h, value->handler());
+}
+
+// TODO(kylixrd, pbos): Once all the call-sites are fixed to only use the
+// unique_ptr version for owned properties, enable the following test to ensure
+// that passing raw pointers for owned properties will, in fact, DCHECK.
+TEST(PropertyTest, DISABLED_CheckedOwnedProperties) {
+  PropertyHandler h;
+
+  EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
+  // The following SetProperty call should DCHECK if it's enabled. NOTE: This
+  // will leak the TestProperty!
+  EXPECT_DEATH_IF_SUPPORTED(h.SetProperty(kOwnedKey, new TestProperty()), "");
+  EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
 }
 
 } // namespace test

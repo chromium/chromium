@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test ws connection</title>
+<script>
+
+const query = new URL(location.href).searchParams;
+
+async function test() {
+  try {
+    const port = query.get('port');
+    const ws = new WebSocket(`ws://127.0.0.1:${port}/check-origin`);
+    const ev = await new Promise((resolve, reject) => {
+      ws.onmessage = resolve;
+      ws.onclose = reject;
+    });
+    if (ev.data == 'file://') {
+      document.title = 'FILE';
+    } else if (ev.data == 'null') {
+      document.title = 'NULL';
+    } else {
+      document.title = 'FAIL';
+    }
+  } catch (e) {
+    document.title = 'FAIL';
+  }
+}
+
+test();
+
+</script>
+</head>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,20 @@
 #include <utility>
 #include <vector>
 
-#include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -38,19 +42,9 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case SinkIconType::kCast:
       return kSystemMenuCastDeviceIcon;
-    case SinkIconType::kEducation:
-      return kSystemMenuCastEducationIcon;
-    case SinkIconType::kHangout:
-      return kSystemMenuCastHangoutIcon;
-    case SinkIconType::kMeeting:
-      return kSystemMenuCastMeetingIcon;
 #else
     case SinkIconType::kCast:
-    case SinkIconType::kEducation:
       return kSystemMenuCastGenericIcon;
-    case SinkIconType::kHangout:
-    case SinkIconType::kMeeting:
-      return kSystemMenuCastMessageIcon;
 #endif
     case SinkIconType::kGeneric:
       return kSystemMenuCastGenericIcon;
@@ -67,8 +61,6 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
 }
 
 }  // namespace
-
-namespace tray {
 
 CastDetailedView::CastDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
@@ -120,7 +112,16 @@ const char* CastDetailedView::GetClassName() const {
 void CastDetailedView::UpdateReceiverListFromCachedData() {
   // Remove all of the existing views.
   view_to_sink_map_.clear();
-  scroll_content()->RemoveAllChildViews(true);
+  scroll_content()->RemoveAllChildViews();
+
+  // Per product requirement, access code receiver should be shown before other
+  // receivers.
+  if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
+    add_access_code_device_ = AddScrollListItem(
+        vector_icons::kKeyboardIcon,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
+  }
 
   // Add a view for each receiver.
   for (auto& it : sinks_and_routes_) {
@@ -139,10 +140,14 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
   auto it = view_to_sink_map_.find(view);
   if (it != view_to_sink_map_.end()) {
     CastConfigController::Get()->CastToSink(it->second);
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_DETAILED_CAST_VIEW_LAUNCH_CAST);
+    base::RecordAction(
+        base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
+  } else if (view == add_access_code_device_) {
+    base::RecordAction(base::UserMetricsAction(
+        "StatusArea_Cast_Detailed_Launch_AccesCastDialog"));
+    Shell::Get()->system_tray_model()->client()-> ShowAccessCodeCastingDialog(
+        AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu);
   }
 }
 
-}  // namespace tray
 }  // namespace ash

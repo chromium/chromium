@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module proxy_resolver_win.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/proxy_config.mojom";
+import "url/mojom/url.mojom";
+
+// Keep in sync with net::WinHttpStatus. See /net code for details.
+enum WinHttpStatus {
+  kOk,
+  kAborted,
+  kFunctionsNotLoaded,
+  kWinHttpOpenFailed,
+  kWinHttpSetTimeoutsFailed,
+  kWinHttpSetStatusCallbackFailed,
+  kWinHttpGetIEProxyConfigForCurrentUserFailed,
+  kWinHttpCreateProxyResolverFailed,
+  kWinHttpGetProxyForURLExFailed,
+  kStatusCallbackFailed,
+  kWinHttpGetProxyResultFailed,
+  kEmptyProxyList,
+};
+
+// This defines a simple interface for asynchronously resolving a proxy using
+// WinHttp APIs.
+[ServiceSandbox=sandbox.mojom.Sandbox.kWindowsSystemProxyResolver]
+interface WindowsSystemProxyResolver {
+  // Only a `url` is needed to resolve a proxy. All OS proxy configurations will
+  // be read when this is called. This assumes that there are no Chrome-specific
+  // proxy configurations. The result, successful or otherwise, will be provided
+  // in the callback.
+  // The `proxy_list` is the set of proxies that can be used for a given URL
+  // provided by WinHttp. If there was an error, `proxy_list` will be empty. The
+  // `winhttp_status` contains any relevant error and will be OK if the call
+  // succeeded. If `winhttp_status` is not OK, there may also be a corresponding
+  // `windows_error` for a failed WinHttp API call.
+  GetProxyForUrl(url.mojom.Url url) => (network.mojom.ProxyList proxy_list,
+                                        WinHttpStatus winhttp_status,
+                                        int32 windows_error);
+};

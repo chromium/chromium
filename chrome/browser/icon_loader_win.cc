@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/win/icon_reader_service.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -29,13 +30,18 @@ class IconLoaderHelper {
   static void ExecuteLoadIcon(
       base::FilePath filename,
       chrome::mojom::IconSize size,
+      float scale,
       gfx::Image default_icon,
       scoped_refptr<base::SingleThreadTaskRunner> target_task_runner,
       IconLoader::IconLoadedCallback icon_loaded_callback);
 
   IconLoaderHelper(base::FilePath filename,
                    chrome::mojom::IconSize size,
+                   float scale,
                    gfx::Image default_icon);
+
+  IconLoaderHelper(const IconLoaderHelper&) = delete;
+  IconLoaderHelper& operator=(const IconLoaderHelper&) = delete;
 
  private:
   void StartReadIconRequest();
@@ -54,23 +60,23 @@ class IconLoaderHelper {
   mojo::Remote<chrome::mojom::UtilReadIcon> remote_read_icon_;
   base::FilePath filename_;
   chrome::mojom::IconSize size_;
+  const float scale_;
   // This callback owns the object until work is done.
   IconLoaderHelperCallback finally_;
   gfx::Image default_icon_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IconLoaderHelper);
 };
 
 void IconLoaderHelper::ExecuteLoadIcon(
     base::FilePath filename,
     chrome::mojom::IconSize size,
+    float scale,
     gfx::Image default_icon,
     scoped_refptr<base::SingleThreadTaskRunner> target_task_runner,
     IconLoader::IconLoadedCallback icon_loaded_callback) {
   // Self-deleting helper manages service lifetime.
-  auto helper = std::make_unique<IconLoaderHelper>(filename, size,
+  auto helper = std::make_unique<IconLoaderHelper>(filename, size, scale,
                                                    std::move(default_icon));
   auto* helper_raw = helper.get();
   // This callback owns the helper and extinguishes itself once work is done.
@@ -91,8 +97,12 @@ void IconLoaderHelper::ExecuteLoadIcon(
 
 IconLoaderHelper::IconLoaderHelper(base::FilePath filename,
                                    chrome::mojom::IconSize size,
+                                   float scale,
                                    gfx::Image default_icon)
-    : filename_(filename), size_(size), default_icon_(std::move(default_icon)) {
+    : filename_(filename),
+      size_(size),
+      scale_(scale),
+      default_icon_(std::move(default_icon)) {
   remote_read_icon_ = LaunchIconReaderInstance();
   remote_read_icon_.set_disconnect_handler(base::BindOnce(
       &IconLoaderHelper::OnConnectionError, base::Unretained(this)));
@@ -100,7 +110,7 @@ IconLoaderHelper::IconLoaderHelper(base::FilePath filename,
 
 void IconLoaderHelper::StartReadIconRequest() {
   remote_read_icon_->ReadIcon(
-      filename_, size_,
+      filename_, size_, scale_,
       base::BindOnce(&IconLoaderHelper::OnReadIconExecuted,
                      base::Unretained(this)));
 }
@@ -145,6 +155,12 @@ gfx::Image GetIconForFileExtension(const std::wstring& group,
   }
 
   gfx::Image image;
+
+  // Not only is GetFileInfo a blocking call, it's also known to hang
+  // (crbug.com/1249943), add a ScopedBlockingCall to let the scheduler know
+  // when this hangs and to explicitly label this call in tracing.
+  base::ScopedBlockingCall blocking_call(FROM_HERE,
+                                         base::BlockingType::MAY_BLOCK);
 
   SHFILEINFO file_info = {0};
   if (SHGetFileInfo(group.c_str(), FILE_ATTRIBUTE_NORMAL, &file_info,
@@ -231,9 +247,10 @@ void IconLoader::ReadIconInSandbox() {
   }
 
   target_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&IconLoaderHelper::ExecuteLoadIcon,
-                                std::move(path), size, std::move(default_icon),
-                                target_task_runner_, std::move(callback_)));
+      FROM_HERE,
+      base::BindOnce(&IconLoaderHelper::ExecuteLoadIcon, std::move(path), size,
+                     scale_, std::move(default_icon), target_task_runner_,
+                     std::move(callback_)));
 
   delete this;
 }

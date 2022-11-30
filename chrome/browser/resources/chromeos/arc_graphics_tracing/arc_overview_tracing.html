@@ -1,16 +1,16 @@
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!doctype html>
 <html>
   <head>
     <meta charset=utf-8>
     <link rel="stylesheet" href="arc_tracing.css">
-    <script src="chrome://resources/js/cr.js"></script>
-    <script src="chrome://resources/js/cr/ui.js"></script>
-    <script src="chrome://resources/js/assert.js"></script>
-    <script src="chrome://resources/js/util.js"></script>
+    <script src="chrome://resources/ash/common/cr.js"></script>
+    <script src="chrome://resources/js/util_deprecated.js"></script>
     <script src="arc_tracing_ui.js"></script>
     <script src="arc_overview_tracing_ui.js"></script>
     <script src="arc_overview_tracing.js"></script>
@@ -45,13 +45,15 @@
       Render quality: <span class="arc-tracing-app-render-quality"></span>
       Commit deviation: <span class="arc-tracing-app-commit-deviation"></span>
       <span class="arc-tracing-new-line"></span>
-      Average power:
-      <span class="arc-tracing-app-power-total"></span> watts.
-      <span class="arc-tracing-new-line"></span>
-      CPU: <span class="arc-tracing-app-power-cpu"></span>,
-      GPU: <span class="arc-tracing-app-power-gpu"></span>,
-      Memory: <span class="arc-tracing-app-power-memory"></span> watts.
-      <span class="arc-tracing-new-line"></span>
+      <div class="arc-overview-tracing-power">
+        Average power:
+        <span class="arc-tracing-app-power-total"></span> watts.
+        <span class="arc-tracing-new-line"></span>
+        CPU: <span class="arc-tracing-app-power-cpu"></span>,
+        GPU: <span class="arc-tracing-app-power-gpu"></span>,
+        Memory: <span class="arc-tracing-app-power-memory"></span> watts.
+        <span class="arc-tracing-new-line"></span>
+      </div>
     </div>
     <div id="arc-overview-tracing-models"></div>
     <hr>

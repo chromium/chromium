@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 @property(nonatomic, weak) id<ContainedPresenterDelegate> delegate;
 
 // It's an error to call any of the following methods when
-// |presentedViewController| is nil. It's the responsibility of the object that
+// `presentedViewController` is nil. It's the responsibility of the object that
 // owns an implementation of this protocol to ensure that doesn't happen.
 
 // Prepares the view controllers for presentation. The presented view controller
@@ -30,17 +30,17 @@
 - (void)prepareForPresentation;
 
 // Presents the presented view controller, animating the presentation if
-// |animated| is YES. If |animated| is NO, any layout changes should execute
+// `animated` is YES. If `animated` is NO, any layout changes should execute
 // synchronously. This is a no-op if the presented view controller is already
 // being presented. It's an error to call this without calling
 // -prepareForPresentation first.
 - (void)presentAnimated:(BOOL)animated;
 
 // Dismisses the presented view controller, animating the dismissal if
-// |animated| is YES. If |animated| is NO, any layout changes should execute
+// `animated` is YES. If `animated` is NO, any layout changes should execute
 // synchronously. This is a no-op if the presented view controller is already
 // dismissed, or hasn't been presented. Once the presentation completes (or
-// synchronously if |animated| is NO), |delegate| should have its
+// synchronously if `animated` is NO), `delegate` should have its
 // -containedPresenterDidDismiss: method called, and the presented view
 // controller should stop being a child of the base view controller.
 - (void)dismissAnimated:(BOOL)animated;

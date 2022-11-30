@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 // visible or not visible.
 - (BOOL)isTabStripFullyVisible;
 
-// Asks the implementer to show the given |tabStripView|.
+// Asks the implementer to show the given `tabStripView`.
 - (void)showTabStripView:(UIView<TabStripContaining>*)tabStripView;
 
 @end

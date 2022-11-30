@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 #define CHROME_INSTALL_STATIC_INSTALL_UTIL_H_
 
-#include <windows.h>
-
 #include <string>
 #include <vector>
+
+#include "base/win/windows_types.h"
 
 namespace version_info {
 enum class Channel;
@@ -249,14 +249,6 @@ std::wstring GetChromeChannelName(bool with_extended_stable);
 
 // Returns true if the current Chrome process is on the extended stable channel.
 bool IsExtendedStableChannel();
-
-// Returns true if the |source| string matches the |pattern|. The pattern
-// may contain wildcards like '?', which matches one character or a '*'
-// which matches 0 or more characters.
-// Please note that pattern matches the whole string. If you want to find
-// something in the middle of the string then you need to specify the pattern
-// as '*xyz*'.
-bool MatchPattern(const std::wstring& source, const std::wstring& pattern);
 
 // UTF8 to Wide and vice versa conversion helpers.
 std::wstring UTF8ToWide(const std::string& source);

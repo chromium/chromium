@@ -35,11 +35,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -95,8 +95,8 @@ class CORE_EXPORT ErrorEvent final : public Event {
 
   // Not exposed to JavaScript, prefers |unsanitized_message_|.
   const String& MessageForConsole() const {
-    return !unsanitized_message_.IsEmpty() ? unsanitized_message_
-                                           : sanitized_message_;
+    return !unsanitized_message_.empty() ? unsanitized_message_
+                                         : sanitized_message_;
   }
   SourceLocation* Location() const { return location_.get(); }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
@@ -23,18 +25,12 @@ class FrameNode;
 
 namespace v8_memory {
 
+class V8DetailedMemoryRequestQueue;
+
 // A decorator that queries each renderer process for the amount of memory used
 // by V8 in each frame. The public interface to create requests for this
 // decorator is in
 // //components/performance_manager/public/v8_detailed_memory.h.
-
-class V8DetailedMemoryRequest;
-
-// A priority queue of memory requests. The decorator will hold a global queue
-// of requests that measure every process, and each ProcessNode will have a
-// queue of requests that measure only that process.
-class V8DetailedMemoryRequestQueue;
-
 class V8DetailedMemoryDecorator
     : public GraphOwned,
       public GraphRegisteredImpl<V8DetailedMemoryDecorator>,
@@ -85,6 +81,22 @@ class V8DetailedMemoryDecorator
       base::PassKey<ObserverNotifier>,
       const ProcessNode* process_node) const;
 
+  // The following functions retrieve data maintained by the decorator.
+  static const V8DetailedMemoryExecutionContextData* GetExecutionContextData(
+      const FrameNode* node);
+  static const V8DetailedMemoryExecutionContextData* GetExecutionContextData(
+      const WorkerNode* node);
+  static const V8DetailedMemoryExecutionContextData* GetExecutionContextData(
+      const execution_context::ExecutionContext* ec);
+  static V8DetailedMemoryExecutionContextData*
+  CreateExecutionContextDataForTesting(const FrameNode* node);
+  static V8DetailedMemoryExecutionContextData*
+  CreateExecutionContextDataForTesting(const WorkerNode* node);
+  static const V8DetailedMemoryProcessData* GetProcessData(
+      const ProcessNode* node);
+  static V8DetailedMemoryProcessData* CreateProcessDataForTesting(
+      const ProcessNode* node);
+
  private:
   using RequestQueueCallback =
       base::RepeatingCallback<void(V8DetailedMemoryRequestQueue*)>;
@@ -95,7 +107,7 @@ class V8DetailedMemoryDecorator
 
   void UpdateProcessMeasurementSchedules() const;
 
-  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   std::unique_ptr<V8DetailedMemoryRequestQueue> measurement_requests_
       GUARDED_BY_CONTEXT(sequence_checker_);

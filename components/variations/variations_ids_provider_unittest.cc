@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,8 @@ class VariationsIdsProviderTestWithRestrictedVisibility
 };
 
 TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
@@ -75,7 +76,8 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
 }
 
 TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
@@ -97,7 +99,8 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
 }
 
 TEST_F(VariationsIdsProviderTest, ForceVariationIds_Invalid) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
   // Invalid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
@@ -116,10 +119,29 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Invalid) {
             provider.ForceVariationIds({"12", "50"}, "tabc456"));
   provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+
+  // Duplicate experiment ids.
+  EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
+            provider.ForceVariationIds({"1", "2", "t1"}, ""));
+  provider.InitVariationIDsCacheIfNeeded();
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+
+  // Duplicate command-line ids.
+  EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
+            provider.ForceVariationIds({}, "t10,11,10"));
+  provider.InitVariationIDsCacheIfNeeded();
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+
+  // Duplicate experiment and command-line ids.
+  EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
+            provider.ForceVariationIds({"20", "t21"}, "21"));
+  provider.InitVariationIDsCacheIfNeeded();
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
 TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
@@ -146,7 +168,8 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
 }
 
 TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_Invalid) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
   // Invalid command-line ids.
   EXPECT_FALSE(provider.ForceDisableVariationIds("abc"));
@@ -161,9 +184,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        LowEntropySourceValue_Valid) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
-  base::Optional<int> valid_low_entropy_source_value = 5;
+  absl::optional<int> valid_low_entropy_source_value = 5;
   provider.SetLowEntropySourceValue(valid_low_entropy_source_value);
   provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
@@ -198,9 +222,10 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
 
 TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        LowEntropySourceValue_Null) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
 
-  base::Optional<int> null_low_entropy_source_value = base::nullopt;
+  absl::optional<int> null_low_entropy_source_value = absl::nullopt;
   provider.SetLowEntropySourceValue(null_low_entropy_source_value);
 
   // Valid experiment ids.
@@ -243,7 +268,8 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
 
 TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        OnFieldTrialGroupFinalized) {
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.InitVariationIDsCacheIfNeeded();
 
   const std::string default_name = "default";
@@ -384,7 +410,8 @@ TEST_F(VariationsIdsProviderTest, GetGoogleAppVariationsString) {
   // GOOGLE_APP ids should be included.
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_APP, 126);
 
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "200"}, "");
   EXPECT_EQ(" 126 ", provider.GetGoogleAppVariationsString());
 }
@@ -406,7 +433,8 @@ TEST_F(VariationsIdsProviderTest, GetVariationsString) {
   // GOOGLE_APP ids shouldn't be included.
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_APP, 126);
 
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "200"}, "");
   EXPECT_EQ(" 100 123 124 200 ", provider.GetVariationsString());
 }
@@ -421,7 +449,8 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVector) {
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_WEB_PROPERTIES_SIGNED_IN, 125);
   CreateTrialAndAssociateId("t7", "g7", GOOGLE_APP, 126);
 
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "200", "t101"}, "");
 
   EXPECT_EQ((std::vector<VariationID>{100, 121, 200}),
@@ -459,7 +488,8 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVectorForWebPropertiesKeys) {
   // GOOGLE_APP ids shouldn't be included.
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_APP, 126);
 
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "t101"}, "");
   EXPECT_EQ((std::vector<VariationID>{100, 101, 121, 122, 123, 124, 125}),
             provider.GetVariationsVectorForWebPropertiesKeys());
@@ -475,7 +505,8 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVectorImpl) {
   CreateTrialAndAssociateId("t5", "g5", GOOGLE_WEB_PROPERTIES_SIGNED_IN, 125);
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_APP, 125);  // Duplicate.
 
-  VariationsIdsProvider provider;
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "200", "t101"}, "");
 
   EXPECT_EQ(

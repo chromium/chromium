@@ -27,15 +27,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_text_track.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -243,7 +245,7 @@ CORE_EXPORT bool DictionaryHelper::Get(const Dictionary& dictionary,
     return false;
 
   DCHECK(dictionary.GetIsolate());
-  DCHECK_EQ(dictionary.GetIsolate(), v8::Isolate::GetCurrent());
+  DCHECK(dictionary.GetIsolate()->IsCurrent());
   value =
       ArrayValue(v8::Local<v8::Array>::Cast(v8_value), dictionary.GetIsolate());
   return true;
@@ -257,7 +259,13 @@ CORE_EXPORT bool DictionaryHelper::Get(const Dictionary& dictionary,
   if (!dictionary.Get(key, v8_value))
     return false;
 
-  value = V8Uint8Array::ToImplWithTypeCheck(dictionary.GetIsolate(), v8_value);
+  if (!v8_value->IsUint8Array())
+    return false;
+
+  NonThrowableExceptionState exception_state;
+  value = NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
+              dictionary.GetIsolate(), v8_value, exception_state)
+              .Get();
   return true;
 }
 

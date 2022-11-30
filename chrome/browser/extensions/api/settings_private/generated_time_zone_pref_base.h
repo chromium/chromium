@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
@@ -21,6 +20,10 @@ class GeneratedTimeZonePrefBase
     : public GeneratedPref,
       public ash::system::TimeZoneResolverManager::Observer {
  public:
+  GeneratedTimeZonePrefBase(const GeneratedTimeZonePrefBase&) = delete;
+  GeneratedTimeZonePrefBase& operator=(const GeneratedTimeZonePrefBase&) =
+      delete;
+
   ~GeneratedTimeZonePrefBase() override;
 
   // chromeos::system::TimeZoneResolverManager::Observer
@@ -35,8 +38,6 @@ class GeneratedTimeZonePrefBase
   const std::string pref_name_;
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedTimeZonePrefBase);
 };
 
 }  // namespace settings_private

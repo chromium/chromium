@@ -3,6 +3,8 @@
 <script type="text/javascript">
 var gl;
 var contextLostReceived = false;
+var contextRestored = false;
+var numContextLosses = 0;
 
 function sendToAutomationController(msg) {
   if (window.domAutomationController) {
@@ -16,13 +18,26 @@ function init()
   var canvas = document.getElementById('c');
   canvas.addEventListener('webglcontextlost', function(e) {
     e.preventDefault();
-    // Make 100% sure that we can't fetch a WebGL context at this point.
-    var c2 = document.getElementById('c2');
-    if (c2.getContext('webgl') != null) {
-      sendToAutomationController("FAILED");
-      console.log('TEST FAILED - WebGL should have been blocked');
+    ++numContextLosses;
+    // This bakes in knowledge that GpuDataManagerImplPrivate blocks
+    // WebGL contexts from restoration after two context losses on the
+    // same domain.
+
+    if (numContextLosses > 1) {
+      // Make 100% sure that we can't fetch a WebGL context at this point.
+      var c2 = document.getElementById('c2');
+      if (c2.getContext('webgl') != null) {
+        sendToAutomationController("FAILED");
+        console.log('TEST FAILED - WebGL should have been blocked');
+      }
     }
     window.contextLostReceived = true;
+    window.contextRestored = false;
+  }, false);
+  canvas.addEventListener('webglcontextrestored', function(e) {
+    e.preventDefault();
+    window.contextLostReceived = false;
+    window.contextRestored = true;
   }, false);
   gl = canvas.getContext('webgl');
   if (gl) {

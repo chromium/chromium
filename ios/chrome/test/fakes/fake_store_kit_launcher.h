@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 // Implementation of StoreKitLauncher that whenever openAppStore with productID
 // is called, launchedProductID will be set to that productID. Users need to
-// reset |launchedProductID| between uses.
+// reset `launchedProductID` between uses.
 @interface FakeStoreKitLauncher : NSObject<StoreKitLauncher>
 // This string will have the product id that store kit with launched for, if
 // openAppStore was called with string ID.

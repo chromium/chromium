@@ -1,0 +1,28 @@
+caption: Force WebSQL in non-secure contexts to be enabled.
+default: false
+desc: |-
+  WebSQL in non-secure contexts is on by default as of M105, but can be disabled via Chrome flag.
+            If this policy is set to false or unset, WebSQL in non-secure contexts can be disabled.
+            If this policy is set to true, WebSQL cannot be disabled.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Force WebSQL in non-secure contexts to be enabled.
+  value: true
+- caption: Disable WebSQL in non-secure contexts unless enabled by Chrome flag.
+  value: false
+owners:
+- ayui@chromium.org
+- chrome-owp-storage@google.com
+schema:
+  type: boolean
+supported_on:
+- android:105-
+- chrome.*:105-
+- chrome_os:105-
+tags: []
+type: main

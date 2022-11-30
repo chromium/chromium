@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.chrome.browser.incognito.IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
@@ -69,19 +68,27 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         mModelDelegate = modelDelegate;
     }
 
-    private @NonNull Profile getOTRProfile() {
-        // The |mWindowAndroidSupplier| is null only for {@link ChromeTabbedActivity} in which case
-        // we should return the primary OTR profile.
-        if (mWindowAndroidSupplier == null) {
-            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+    private Profile getOTRProfile() {
+        if (mActivityType == ActivityType.TABBED) {
+            // The Incognito profile hasn't been created yet when this method is called for the
+            // first time. The {@link IncognitoTabModelImpl} class creates an {@link EmptyTabModel}
+            // in the beginning and only later creates the profile when a user switches from a
+            // regular {@link TabModel} to Incognito {@link TabModel}.
+            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                    /*createIfNeeded=*/true);
+        } else if (mActivityType == ActivityType.CUSTOM_TAB) {
+            assert (mWindowAndroidSupplier != null)
+                : "Incognito CCT relies on a non null instance of WindowAndroidSupplier "
+                  + "to fetch non primary OTR profile.";
+            Profile otrProfile =
+                    getNonPrimaryOTRProfileFromWindowAndroid(mWindowAndroidSupplier.get());
+            assert (otrProfile != null)
+                : "Failed to find the non-primary OTR profile associated with the Incognito CCT.";
+            return otrProfile;
+        } else {
+            assert false : "Incognito is currently only supported for a Tabbed/CustomTab Activity.";
+            return null;
         }
-
-        // The |mWindowAndroidSupplier| is not null only for {@link CustomTabActivity} where we
-        // support Incognito CCT which uses the non-primary OTR profile that is associated with the
-        // Activity's {@link WindowAndroid} instance.
-        Profile otrProfile = getNonPrimaryOTRProfileFromWindowAndroid(mWindowAndroidSupplier.get());
-        assert (otrProfile != null);
-        return otrProfile;
     }
 
     @Override

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/shell.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "base/observer_list.h"
 #include "ui/message_center/message_center.h"
@@ -14,6 +15,12 @@
 
 namespace ash {
 
+namespace {
+// The duration used to log the number of notifications shown
+// right after a user logs in.
+constexpr base::TimeDelta kLoginNotificationLogDuration = base::Minutes(1);
+}  // namespace
+
 MessageCenterUiController::MessageCenterUiController(
     MessageCenterUiDelegate* delegate)
     : message_center_(message_center::MessageCenter::Get()),
@@ -21,10 +28,12 @@ MessageCenterUiController::MessageCenterUiController(
       popups_visible_(false),
       delegate_(delegate) {
   message_center_->AddObserver(this);
+  session_observer_.Observe(Shell::Get()->session_controller());
 }
 
 MessageCenterUiController::~MessageCenterUiController() {
   message_center_->RemoveObserver(this);
+  session_observer_.Reset();
 }
 
 bool MessageCenterUiController::ShowMessageCenterBubble() {
@@ -119,8 +128,8 @@ void MessageCenterUiController::OnNotificationUpdated(
 
 void MessageCenterUiController::OnNotificationClicked(
     const std::string& notification_id,
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   if (popups_visible_)
     OnMessageCenterChanged();
 
@@ -138,6 +147,9 @@ void MessageCenterUiController::OnNotificationClicked(
 void MessageCenterUiController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource source) {
+  if (login_notification_logging_timer_.IsRunning())
+    notifications_displayed_in_first_minute_count_++;
+
   NotifyUiControllerChanged();
 }
 
@@ -156,6 +168,25 @@ void MessageCenterUiController::OnNotificationPopupShown(
   // Timed out popup notifications are not marked as read.
   if (!mark_notification_as_read)
     metrics_utils::LogPopupExpiredToTray(notification_id);
+}
+
+void MessageCenterUiController::OnMessageViewHovered(
+    const std::string& notification_id) {
+  // Note: we use |message_center_visible_| instead of |popups_visible_| here
+  // due to timing issues when dismissing the last popup notification.
+  bool is_popup = !message_center_visible_;
+  metrics_utils::LogHover(notification_id, is_popup);
+}
+
+void MessageCenterUiController::OnFirstSessionStarted() {
+  login_notification_logging_timer_.Start(
+      FROM_HERE, kLoginNotificationLogDuration, this,
+      &MessageCenterUiController::OnLoginTimerEnded);
+}
+
+void MessageCenterUiController::OnLoginTimerEnded() {
+  metrics_utils::LogNotificationsShownInFirstMinute(
+      notifications_displayed_in_first_minute_count_);
 }
 
 void MessageCenterUiController::OnMessageCenterChanged() {

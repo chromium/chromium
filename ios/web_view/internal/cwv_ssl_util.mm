@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,9 +57,6 @@ CWVCertStatus CWVCertStatusFromNetCertStatus(net::CertStatus cert_status) {
   }
   if (cert_status & net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED) {
     cwv_status |= CWVCertStatusKnownInterceptionBlocked;
-  }
-  if (cert_status & net::CERT_STATUS_LEGACY_TLS) {
-    cwv_status |= CWVCertStatusLegacyTLS;
   }
   return cwv_status;
 }

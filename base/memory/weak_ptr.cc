@@ -1,10 +1,12 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/weak_ptr.h"
 
 #if DCHECK_IS_ON()
+#include <ostream>
+
 #include "base/debug/stack_trace.h"
 #endif
 
@@ -42,9 +44,11 @@ bool WeakReference::Flag::MaybeValid() const {
   return !invalidated_.IsSet();
 }
 
+#if DCHECK_IS_ON()
 void WeakReference::Flag::DetachFromSequence() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+#endif
 
 WeakReference::Flag::~Flag() = default;
 
@@ -74,9 +78,11 @@ WeakReferenceOwner::~WeakReferenceOwner() {
 }
 
 WeakReference WeakReferenceOwner::GetRef() const {
+#if DCHECK_IS_ON()
   // If we hold the last reference to the Flag then detach the SequenceChecker.
   if (!HasRefs())
     flag_->DetachFromSequence();
+#endif
 
   return WeakReference(flag_);
 }

@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/system/system_monitor.h"
 #include "build/build_config.h"
@@ -45,7 +47,7 @@ class MediaNotificationDeviceMonitor {
   base::ObserverList<DevicesChangedObserver> observers_;
 };
 
-#if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV))
+#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV))
 // Monitors device changes by observing the SystemMonitor
 class SystemMonitorDeviceMonitorImpl
     : public MediaNotificationDeviceMonitor,
@@ -81,13 +83,14 @@ class PollingDeviceMonitorImpl : public MediaNotificationDeviceMonitor {
       media::AudioDeviceDescriptions descriptions);
   void NotifyObservers();
 
-  MediaNotificationDeviceProvider* const device_provider_;
+  const raw_ptr<MediaNotificationDeviceProvider> device_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::vector<std::string> device_ids_;
   bool is_task_posted_ = false;
 
   base::WeakPtrFactory<PollingDeviceMonitorImpl> weak_ptr_factory_{this};
 };
-#endif  // !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV))
+#endif  // !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(USE_UDEV))
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_

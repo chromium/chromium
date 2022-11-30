@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -361,13 +361,18 @@ void TraceEventETWExport::AddEvent(char phase,
   std::string arg_values_string[3];
   size_t num_args = args ? args->size() : 0;
   for (size_t i = 0; i < num_args; i++) {
-    if (args->types()[i] == TRACE_VALUE_TYPE_CONVERTABLE) {
-      // Temporarily do nothing here. This function consumes 1/3 to 1/2 of
-      // *total* process CPU time when ETW tracing, and many of the strings
-      // created exceed WPA's 4094 byte limit and are shown as:
-      // "Unable to parse data". See crbug.com/488257
+    const auto type = args->types()[i];
+    if (type == TRACE_VALUE_TYPE_CONVERTABLE ||
+        type == TRACE_VALUE_TYPE_PROTO) {
+      // For convertable types, temporarily do nothing here. This function
+      // consumes 1/3 to 1/2 of *total* process CPU time when ETW tracing, and
+      // many of the strings created exceed WPA's 4094 byte limit and are shown
+      // as "Unable to parse data". See crbug.com/488257.
+      //
+      // For protobuf-based values, there is no string serialization so skip
+      // those as well.
     } else {
-      args->values()[i].AppendAsString(args->types()[i], arg_values_string + i);
+      args->values()[i].AppendAsString(type, arg_values_string + i);
     }
   }
 

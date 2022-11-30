@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -23,11 +25,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/repeating_test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
@@ -45,6 +47,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/websockets/websocket_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,8 +66,8 @@ class TestHttpClient {
   int ConnectAndWait(const IPEndPoint& address) {
     AddressList addresses(address);
     NetLogSource source;
-    socket_.reset(
-        new TCPClientSocket(addresses, nullptr, nullptr, nullptr, source));
+    socket_ = std::make_unique<TCPClientSocket>(addresses, nullptr, nullptr,
+                                                nullptr, source);
 
     TestCompletionCallback callback;
     int rv = socket_->Connect(callback.callback());
@@ -165,19 +168,23 @@ class TestHttpClient {
   std::unique_ptr<TCPClientSocket> socket_;
 };
 
+struct ReceivedRequest {
+  HttpServerRequestInfo info;
+  int connection_id;
+};
+
 }  // namespace
 
 class HttpServerTest : public TestWithTaskEnvironment,
                        public HttpServer::Delegate {
  public:
-  HttpServerTest()
-      : quit_after_request_count_(0), quit_on_close_connection_(-1) {}
+  HttpServerTest() = default;
 
   void SetUp() override {
-    std::unique_ptr<ServerSocket> server_socket(
-        new TCPServerSocket(nullptr, NetLogSource()));
+    auto server_socket =
+        std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
     server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
-    server_.reset(new HttpServer(std::move(server_socket), this));
+    server_ = std::make_unique<HttpServer>(std::move(server_socket), this);
     ASSERT_THAT(server_->GetLocalAddress(&server_address_), IsOk());
   }
 
@@ -197,9 +204,7 @@ class HttpServerTest : public TestWithTaskEnvironment,
 
   void OnHttpRequest(int connection_id,
                      const HttpServerRequestInfo& info) override {
-    requests_.push_back(std::make_pair(info, connection_id));
-    if (requests_.size() == quit_after_request_count_)
-      std::move(run_loop_quit_func_).Run();
+    received_requests_.AddValue({.info = info, .connection_id = connection_id});
   }
 
   void OnWebSocketRequest(int connection_id,
@@ -218,18 +223,9 @@ class HttpServerTest : public TestWithTaskEnvironment,
       std::move(run_loop_quit_func_).Run();
   }
 
-  void RunUntilRequestsReceived(size_t count) {
-    quit_after_request_count_ = count;
-    if (requests_.size() == count)
-      return;
+  ReceivedRequest WaitForRequest() { return received_requests_.Take(); }
 
-    base::RunLoop run_loop;
-    base::AutoReset<base::OnceClosure> run_loop_quit_func(
-        &run_loop_quit_func_, run_loop.QuitClosure());
-    run_loop.Run();
-
-    ASSERT_EQ(requests_.size(), count);
-  }
+  bool HasRequest() const { return !received_requests_.IsEmpty(); }
 
   // Connections should only be created using this method, which waits until
   // both the server and the client have received the connected socket.
@@ -259,16 +255,6 @@ class HttpServerTest : public TestWithTaskEnvironment,
     ASSERT_FALSE(iter->second);
   }
 
-  HttpServerRequestInfo GetRequest(size_t request_index) {
-    return requests_[request_index].first;
-  }
-
-  size_t num_requests() const { return requests_.size(); }
-
-  int GetConnectionId(size_t request_index) {
-    return requests_[request_index].second;
-  }
-
   void HandleAcceptResult(std::unique_ptr<StreamSocket> socket) {
     ASSERT_FALSE(quit_on_create_loop_);
     quit_on_create_loop_ = std::make_unique<base::RunLoop>();
@@ -284,14 +270,13 @@ class HttpServerTest : public TestWithTaskEnvironment,
   std::unique_ptr<HttpServer> server_;
   IPEndPoint server_address_;
   base::OnceClosure run_loop_quit_func_;
-  std::vector<std::pair<HttpServerRequestInfo, int> > requests_;
   std::unordered_map<int /* connection_id */, bool /* connected */>
       connection_map_;
 
  private:
-  size_t quit_after_request_count_;
+  base::test::RepeatingTestFuture<ReceivedRequest> received_requests_;
   std::unique_ptr<base::RunLoop> quit_on_create_loop_;
-  int quit_on_close_connection_;
+  int quit_on_close_connection_ = -1;
 };
 
 namespace {
@@ -310,16 +295,56 @@ class WebSocketTest : public HttpServerTest {
   void OnWebSocketMessage(int connection_id, std::string data) override {}
 };
 
+class WebSocketAcceptingTest : public WebSocketTest {
+ public:
+  void OnWebSocketRequest(int connection_id,
+                          const HttpServerRequestInfo& info) override {
+    HttpServerTest::OnHttpRequest(connection_id, info);
+    server_->AcceptWebSocket(connection_id, info, TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+
+  void OnWebSocketMessage(int connection_id, std::string data) override {
+    messages_.AddValue(data);
+  }
+
+  std::string GetMessage() { return messages_.Take(); }
+
+ private:
+  base::test::RepeatingTestFuture<std::string> messages_;
+};
+
+std::string EncodeFrame(std::string message,
+                        WebSocketFrameHeader::OpCodeEnum op_code,
+                        bool mask,
+                        bool finish) {
+  WebSocketFrameHeader header(op_code);
+  header.final = finish;
+  header.masked = mask;
+  header.payload_length = message.size();
+  const int header_size = GetWebSocketFrameHeaderSize(header);
+  std::string frame_header;
+  frame_header.resize(header_size);
+  if (mask) {
+    WebSocketMaskingKey masking_key = GenerateWebSocketMaskingKey();
+    WriteWebSocketFrameHeader(header, &masking_key, &frame_header[0],
+                              header_size);
+    MaskWebSocketFramePayload(masking_key, 0, &message[0], message.size());
+  } else {
+    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0], header_size);
+  }
+  return frame_header + message;
+}
+
 TEST_F(HttpServerTest, Request) {
   TestHttpClient client;
   CreateConnection(&client);
   client.Send("GET /test HTTP/1.1\r\n\r\n");
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ("GET", GetRequest(0).method);
-  ASSERT_EQ("/test", GetRequest(0).path);
-  ASSERT_EQ("", GetRequest(0).data);
-  ASSERT_EQ(0u, GetRequest(0).headers.size());
-  ASSERT_TRUE(base::StartsWith(GetRequest(0).peer.ToString(), "127.0.0.1",
+  ReceivedRequest request = WaitForRequest();
+  ASSERT_EQ("GET", request.info.method);
+  ASSERT_EQ("/test", request.info.path);
+  ASSERT_EQ("", request.info.data);
+  ASSERT_EQ(0u, request.info.headers.size());
+  ASSERT_TRUE(base::StartsWith(request.info.peer.ToString(), "127.0.0.1",
                                base::CompareCase::SENSITIVE));
 }
 
@@ -328,7 +353,7 @@ TEST_F(HttpServerTest, RequestBrokenTermination) {
   CreateConnection(&client);
   client.Send("GET /test HTTP/1.1\r\n\r)");
   RunUntilConnectionIdClosed(1);
-  EXPECT_EQ(0u, num_requests());
+  EXPECT_FALSE(HasRequest());
   client.ExpectUsedThenDisconnectedWithNoData();
 }
 
@@ -345,20 +370,19 @@ TEST_F(HttpServerTest, RequestWithHeaders) {
       {"HeaderWithNonASCII", ":  ", "\xf7"},
   };
   std::string headers;
-  for (size_t i = 0; i < base::size(kHeaders); ++i) {
-    headers +=
-        std::string(kHeaders[i][0]) + kHeaders[i][1] + kHeaders[i][2] + "\r\n";
+  for (const auto& header : kHeaders) {
+    headers += std::string(header[0]) + header[1] + header[2] + "\r\n";
   }
 
   client.Send("GET /test HTTP/1.1\r\n" + headers + "\r\n");
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ("", GetRequest(0).data);
+  auto request = WaitForRequest();
+  ASSERT_EQ("", request.info.data);
 
-  for (size_t i = 0; i < base::size(kHeaders); ++i) {
-    std::string field = base::ToLowerASCII(std::string(kHeaders[i][0]));
-    std::string value = kHeaders[i][2];
-    ASSERT_EQ(1u, GetRequest(0).headers.count(field)) << field;
-    ASSERT_EQ(value, GetRequest(0).headers[field]) << kHeaders[i][0];
+  for (const auto& header : kHeaders) {
+    std::string field = base::ToLowerASCII(std::string(header[0]));
+    std::string value = header[2];
+    ASSERT_EQ(1u, request.info.headers.count(field)) << field;
+    ASSERT_EQ(value, request.info.headers[field]) << header[0];
   }
 }
 
@@ -366,27 +390,28 @@ TEST_F(HttpServerTest, RequestWithDuplicateHeaders) {
   TestHttpClient client;
   CreateConnection(&client);
   const char* const kHeaders[][3] = {
+      // clang-format off
       {"FirstHeader", ": ", "1"},
       {"DuplicateHeader", ": ", "2"},
       {"MiddleHeader", ": ", "3"},
       {"DuplicateHeader", ": ", "4"},
       {"LastHeader", ": ", "5"},
+      // clang-format on
   };
   std::string headers;
-  for (size_t i = 0; i < base::size(kHeaders); ++i) {
-    headers +=
-        std::string(kHeaders[i][0]) + kHeaders[i][1] + kHeaders[i][2] + "\r\n";
+  for (const auto& header : kHeaders) {
+    headers += std::string(header[0]) + header[1] + header[2] + "\r\n";
   }
 
   client.Send("GET /test HTTP/1.1\r\n" + headers + "\r\n");
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ("", GetRequest(0).data);
+  auto request = WaitForRequest();
+  ASSERT_EQ("", request.info.data);
 
-  for (size_t i = 0; i < base::size(kHeaders); ++i) {
-    std::string field = base::ToLowerASCII(std::string(kHeaders[i][0]));
-    std::string value = (field == "duplicateheader") ? "2,4" : kHeaders[i][2];
-    ASSERT_EQ(1u, GetRequest(0).headers.count(field)) << field;
-    ASSERT_EQ(value, GetRequest(0).headers[field]) << kHeaders[i][0];
+  for (const auto& header : kHeaders) {
+    std::string field = base::ToLowerASCII(std::string(header[0]));
+    std::string value = (field == "duplicateheader") ? "2,4" : header[2];
+    ASSERT_EQ(1u, request.info.headers.count(field)) << field;
+    ASSERT_EQ(value, request.info.headers[field]) << header[0];
   }
 }
 
@@ -405,41 +430,40 @@ TEST_F(HttpServerTest, HasHeaderValueTest) {
       "HeaderWithNonASCII:  \xf7",
   };
   std::string headers;
-  for (size_t i = 0; i < base::size(kHeaders); ++i) {
-    headers += std::string(kHeaders[i]) + "\r\n";
+  for (const char* header : kHeaders) {
+    headers += std::string(header) + "\r\n";
   }
 
   client.Send("GET /test HTTP/1.1\r\n" + headers + "\r\n");
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ("", GetRequest(0).data);
+  auto request = WaitForRequest();
+  ASSERT_EQ("", request.info.data);
 
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("header", "abcd"));
-  ASSERT_FALSE(GetRequest(0).HasHeaderValue("header", "bc"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithnowhitespace", "e"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithwhitespace", "f"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("duplicateheader", "g"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithcomma", "h"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithcomma", "i"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithcomma", "j"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("duplicateheader", "k"));
-  ASSERT_FALSE(GetRequest(0).HasHeaderValue("emptyheader", "x"));
-  ASSERT_FALSE(GetRequest(0).HasHeaderValue("emptyheaderwithwhitespace", "x"));
-  ASSERT_TRUE(GetRequest(0).HasHeaderValue("headerwithnonascii", "\xf7"));
+  ASSERT_TRUE(request.info.HasHeaderValue("header", "abcd"));
+  ASSERT_FALSE(request.info.HasHeaderValue("header", "bc"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithnowhitespace", "e"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithwhitespace", "f"));
+  ASSERT_TRUE(request.info.HasHeaderValue("duplicateheader", "g"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithcomma", "h"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithcomma", "i"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithcomma", "j"));
+  ASSERT_TRUE(request.info.HasHeaderValue("duplicateheader", "k"));
+  ASSERT_FALSE(request.info.HasHeaderValue("emptyheader", "x"));
+  ASSERT_FALSE(request.info.HasHeaderValue("emptyheaderwithwhitespace", "x"));
+  ASSERT_TRUE(request.info.HasHeaderValue("headerwithnonascii", "\xf7"));
 }
 
 TEST_F(HttpServerTest, RequestWithBody) {
   TestHttpClient client;
   CreateConnection(&client);
   std::string body = "a" + std::string(1 << 10, 'b') + "c";
-  client.Send(base::StringPrintf(
-      "GET /test HTTP/1.1\r\n"
-      "SomeHeader: 1\r\n"
-      "Content-Length: %" PRIuS "\r\n\r\n%s",
-      body.length(),
-      body.c_str()));
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ(2u, GetRequest(0).headers.size());
-  ASSERT_EQ(body.length(), GetRequest(0).data.length());
+  client.Send(
+      base::StringPrintf("GET /test HTTP/1.1\r\n"
+                         "SomeHeader: 1\r\n"
+                         "Content-Length: %" PRIuS "\r\n\r\n%s",
+                         body.length(), body.c_str()));
+  auto request = WaitForRequest();
+  ASSERT_EQ(2u, request.info.headers.size());
+  ASSERT_EQ(body.length(), request.info.data.length());
   ASSERT_EQ('a', body[0]);
   ASSERT_EQ('c', *body.rbegin());
 }
@@ -454,7 +478,7 @@ TEST_F(HttpServerTest, UpgradeIgnored) {
       "Upgrade: h2c\r\n"
       "Connection: SomethingElse, Upgrade\r\n"
       "\r\n");
-  RunUntilRequestsReceived(1);
+  WaitForRequest();
 }
 
 TEST_F(WebSocketTest, RequestWebSocket) {
@@ -467,7 +491,7 @@ TEST_F(WebSocketTest, RequestWebSocket) {
       "Sec-WebSocket-Version: 8\r\n"
       "Sec-WebSocket-Key: key\r\n"
       "\r\n");
-  RunUntilRequestsReceived(1);
+  WaitForRequest();
 }
 
 TEST_F(WebSocketTest, RequestWebSocketTrailingJunk) {
@@ -482,6 +506,365 @@ TEST_F(WebSocketTest, RequestWebSocketTrailingJunk) {
       "\r\nHello? Anyone");
   RunUntilConnectionIdClosed(1);
   client.ExpectUsedThenDisconnectedWithNoData();
+}
+
+TEST_F(WebSocketAcceptingTest, SendPingFrameWithNoMessage) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string message = "";
+  const std::string ping_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
+}
+
+TEST_F(WebSocketAcceptingTest, SendPingFrameWithMessage) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string message = "hello";
+  const std::string ping_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
+}
+
+TEST_F(WebSocketAcceptingTest, SendPongFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string ping_frame = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_send = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_receive = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+  client.Send(pong_frame_send);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame_receive.length()));
+  EXPECT_EQ(response, pong_frame_receive);
+}
+
+TEST_F(WebSocketAcceptingTest, SendLongTextFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+  constexpr int kFrameSize = 100000;
+  const std::string text_frame(kFrameSize, 'a');
+  const std::string continuation_frame(kFrameSize, 'b');
+  const std::string text_encoded_frame =
+      EncodeFrame(text_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_encoded_frame = EncodeFrame(
+      continuation_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+      /* mask= */ true, /* finish= */ true);
+  client.Send(text_encoded_frame);
+  client.Send(continuation_encoded_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message.size(),
+            text_frame.size() + continuation_frame.size());
+  EXPECT_EQ(received_message, text_frame + continuation_frame);
+}
+
+TEST_F(WebSocketAcceptingTest, SendTwoTextFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+  const std::string text_frame_first = "foo";
+  const std::string continuation_frame_first = "bar";
+  const std::string text_encoded_frame_first = EncodeFrame(
+      text_frame_first, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+      /* mask= */ true,
+      /* finish= */ false);
+  const std::string continuation_encoded_frame_first =
+      EncodeFrame(continuation_frame_first,
+                  WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+                  /* mask= */ true, /* finish= */ true);
+
+  const std::string text_frame_second = "FOO";
+  const std::string continuation_frame_second = "BAR";
+  const std::string text_encoded_frame_second = EncodeFrame(
+      text_frame_second, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+      /* mask= */ true,
+      /* finish= */ false);
+  const std::string continuation_encoded_frame_second =
+      EncodeFrame(continuation_frame_second,
+                  WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+                  /* mask= */ true, /* finish= */ true);
+
+  // text_encoded_frame_first -> text_encoded_frame_second
+  client.Send(text_encoded_frame_first);
+  client.Send(continuation_encoded_frame_first);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message, "foobar");
+  client.Send(text_encoded_frame_second);
+  client.Send(continuation_encoded_frame_second);
+  received_message = GetMessage();
+  EXPECT_EQ(received_message, "FOOBAR");
+}
+
+TEST_F(WebSocketAcceptingTest, SendPingPongFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+
+  const std::string ping_message_first = "";
+  const std::string ping_frame_first = EncodeFrame(
+      ping_message_first, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_receive_first = EncodeFrame(
+      ping_message_first, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+  const std::string pong_frame_send = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ true, /* finish= */ true);
+  const std::string ping_message_second = "hello";
+  const std::string ping_frame_second = EncodeFrame(
+      ping_message_second, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_receive_second = EncodeFrame(
+      ping_message_second, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+
+  // ping_frame_first -> pong_frame_send -> ping_frame_second
+  client.Send(ping_frame_first);
+  ASSERT_TRUE(client.Read(&response, pong_frame_receive_first.length()));
+  EXPECT_EQ(response, pong_frame_receive_first);
+  client.Send(pong_frame_send);
+  client.Send(ping_frame_second);
+  ASSERT_TRUE(client.Read(&response, pong_frame_receive_second.length()));
+  EXPECT_EQ(response, pong_frame_receive_second);
+}
+
+TEST_F(WebSocketAcceptingTest, SendTextAndPingFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+
+  const std::string text_frame = "foo";
+  const std::string continuation_frame = "bar";
+  const std::string text_encoded_frame =
+      EncodeFrame(text_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_encoded_frame = EncodeFrame(
+      continuation_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+      /* mask= */ true, /* finish= */ true);
+  const std::string ping_message = "ping";
+  const std::string ping_frame =
+      EncodeFrame(ping_message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(ping_message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+
+  // text_encoded_frame -> ping_frame -> continuation_encoded_frame
+  client.Send(text_encoded_frame);
+  client.Send(ping_frame);
+  client.Send(continuation_encoded_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message, "foobar");
+}
+
+TEST_F(WebSocketAcceptingTest, SendTextAndPingFrameWithMessage) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+
+  const std::string text_frame = "foo";
+  const std::string continuation_frame = "bar";
+  const std::string text_encoded_frame =
+      EncodeFrame(text_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_encoded_frame = EncodeFrame(
+      continuation_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+      /* mask= */ true, /* finish= */ true);
+  const std::string ping_message = "hello";
+  const std::string ping_frame =
+      EncodeFrame(ping_message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(ping_message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+
+  // text_encoded_frame -> ping_frame -> continuation_frame
+  client.Send(text_encoded_frame);
+  client.Send(ping_frame);
+  client.Send(continuation_encoded_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message, "foobar");
+}
+
+TEST_F(WebSocketAcceptingTest, SendTextAndPongFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+
+  const std::string text_frame = "foo";
+  const std::string continuation_frame = "bar";
+  const std::string text_encoded_frame =
+      EncodeFrame(text_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_encoded_frame = EncodeFrame(
+      continuation_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_message = "pong";
+  const std::string pong_frame =
+      EncodeFrame(pong_message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ true, /* finish= */ true);
+
+  // text_encoded_frame -> pong_frame -> continuation_encoded_frame
+  client.Send(text_encoded_frame);
+  client.Send(pong_frame);
+  client.Send(continuation_encoded_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message, "foobar");
+}
+
+TEST_F(WebSocketAcceptingTest, SendTextPingPongFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  WaitForRequest();
+  ASSERT_TRUE(client.ReadResponse(&response));
+
+  const std::string text_frame = "foo";
+  const std::string continuation_frame = "bar";
+  const std::string text_encoded_frame =
+      EncodeFrame(text_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_encoded_frame = EncodeFrame(
+      continuation_frame, WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+      /* mask= */ true, /* finish= */ true);
+
+  const std::string ping_message_first = "hello";
+  const std::string ping_frame_first = EncodeFrame(
+      ping_message_first, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_first = EncodeFrame(
+      ping_message_first, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+
+  const std::string ping_message_second = "HELLO";
+  const std::string ping_frame_second = EncodeFrame(
+      ping_message_second, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_second = EncodeFrame(
+      ping_message_second, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+
+  // text_encoded_frame -> ping_frame_first -> ping_frame_second ->
+  // continuation_encoded_frame
+  client.Send(text_encoded_frame);
+  client.Send(ping_frame_first);
+  ASSERT_TRUE(client.Read(&response, pong_frame_first.length()));
+  EXPECT_EQ(response, pong_frame_first);
+  client.Send(ping_frame_second);
+  ASSERT_TRUE(client.Read(&response, pong_frame_second.length()));
+  EXPECT_EQ(response, pong_frame_second);
+  client.Send(continuation_encoded_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message, "foobar");
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {
@@ -504,8 +887,8 @@ TEST_F(HttpServerTest, Send200) {
   TestHttpClient client;
   CreateConnection(&client);
   client.Send("GET /test HTTP/1.1\r\n\r\n");
-  RunUntilRequestsReceived(1);
-  server_->Send200(GetConnectionId(0), "Response!", "text/plain",
+  auto request = WaitForRequest();
+  server_->Send200(request.connection_id, "Response!", "text/plain",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
 
   std::string response;
@@ -520,12 +903,12 @@ TEST_F(HttpServerTest, SendRaw) {
   TestHttpClient client;
   CreateConnection(&client);
   client.Send("GET /test HTTP/1.1\r\n\r\n");
-  RunUntilRequestsReceived(1);
-  server_->SendRaw(GetConnectionId(0), "Raw Data ",
+  auto request = WaitForRequest();
+  server_->SendRaw(request.connection_id, "Raw Data ",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
-  server_->SendRaw(GetConnectionId(0), "More Data",
+  server_->SendRaw(request.connection_id, "More Data",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
-  server_->SendRaw(GetConnectionId(0), "Third Piece of Data",
+  server_->SendRaw(request.connection_id, "Third Piece of Data",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
 
   const std::string expected_response("Raw Data More DataThird Piece of Data");
@@ -541,17 +924,17 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
       "GET /test \r\n\r\n",
   };
 
-  for (size_t i = 0; i < base::size(kBadProtocolRequests); ++i) {
+  for (const char* bad_request : kBadProtocolRequests) {
     TestHttpClient client;
     CreateConnection(&client);
 
-    client.Send(kBadProtocolRequests[i]);
+    client.Send(bad_request);
     client.ExpectUsedThenDisconnectedWithNoData();
 
     // Assert that the delegate was updated properly.
     ASSERT_EQ(1u, connection_map().size());
     ASSERT_FALSE(connection_map().begin()->second);
-    EXPECT_EQ(0ul, requests_.size());
+    EXPECT_FALSE(HasRequest());
 
     // Reset the state of the connection map.
     connection_map().clear();
@@ -560,7 +943,12 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
 
 class MockStreamSocket : public StreamSocket {
  public:
-  MockStreamSocket() : connected_(true), read_buf_(nullptr), read_buf_len_(0) {}
+  MockStreamSocket() = default;
+
+  MockStreamSocket(const MockStreamSocket&) = delete;
+  MockStreamSocket& operator=(const MockStreamSocket&) = delete;
+
+  ~MockStreamSocket() override = default;
 
   // StreamSocket
   int Connect(CompletionOnceCallback callback) override {
@@ -587,11 +975,6 @@ class MockStreamSocket : public StreamSocket {
   bool WasAlpnNegotiated() const override { return false; }
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
-  void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    out->clear();
-  }
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -612,8 +995,8 @@ class MockStreamSocket : public StreamSocket {
       return ERR_IO_PENDING;
     }
     DCHECK_GT(buf_len, 0);
-    int read_len = std::min(static_cast<int>(pending_read_data_.size()),
-                            buf_len);
+    int read_len =
+        std::min(static_cast<int>(pending_read_data_.size()), buf_len);
     memcpy(buf->data(), pending_read_data_.data(), read_len);
     pending_read_data_.erase(0, read_len);
     return read_len;
@@ -644,33 +1027,29 @@ class MockStreamSocket : public StreamSocket {
   }
 
  private:
-  ~MockStreamSocket() override = default;
-
-  bool connected_;
+  bool connected_ = true;
   scoped_refptr<IOBuffer> read_buf_;
-  int read_buf_len_;
+  int read_buf_len_ = 0;
   CompletionOnceCallback read_callback_;
   std::string pending_read_data_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamSocket);
 };
 
 TEST_F(HttpServerTest, RequestWithBodySplitAcrossPackets) {
-  MockStreamSocket* socket = new MockStreamSocket();
-  HandleAcceptResult(base::WrapUnique<StreamSocket>(socket));
+  auto socket = std::make_unique<MockStreamSocket>();
+  auto* socket_ptr = socket.get();
+  HandleAcceptResult(std::move(socket));
   std::string body("body");
   std::string request_text = base::StringPrintf(
       "GET /test HTTP/1.1\r\n"
       "SomeHeader: 1\r\n"
       "Content-Length: %" PRIuS "\r\n\r\n%s",
-      body.length(),
-      body.c_str());
-  socket->DidRead(request_text.c_str(), request_text.length() - 2);
-  ASSERT_EQ(0u, requests_.size());
-  socket->DidRead(request_text.c_str() + request_text.length() - 2, 2);
-  ASSERT_EQ(1u, requests_.size());
-  ASSERT_EQ(body, GetRequest(0).data);
+      body.length(), body.c_str());
+  socket_ptr->DidRead(request_text.c_str(), request_text.length() - 2);
+  ASSERT_FALSE(HasRequest());
+  socket_ptr->DidRead(request_text.c_str() + request_text.length() - 2, 2);
+  ASSERT_TRUE(HasRequest());
+  ASSERT_EQ(body, WaitForRequest().info.data);
 }
 
 TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
@@ -679,15 +1058,14 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
   TestHttpClient client;
   CreateConnection(&client);
   std::string body = "body";
-  client.Send(base::StringPrintf(
-      "GET /test HTTP/1.1\r\n"
-      "Content-Length: %" PRIuS "\r\n\r\n%s",
-      body.length(),
-      body.c_str()));
-  RunUntilRequestsReceived(1);
-  ASSERT_EQ(body, GetRequest(0).data);
+  client.Send(
+      base::StringPrintf("GET /test HTTP/1.1\r\n"
+                         "Content-Length: %" PRIuS "\r\n\r\n%s",
+                         body.length(), body.c_str()));
+  auto first_request = WaitForRequest();
+  ASSERT_EQ(body, first_request.info.data);
 
-  int client_connection_id = GetConnectionId(0);
+  int client_connection_id = first_request.connection_id;
   server_->Send200(client_connection_id, "Content for /test", "text/plain",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response1;
@@ -698,10 +1076,10 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
                              base::CompareCase::SENSITIVE));
 
   client.Send("GET /test2 HTTP/1.1\r\n\r\n");
-  RunUntilRequestsReceived(2);
-  ASSERT_EQ("/test2", GetRequest(1).path);
+  auto second_request = WaitForRequest();
+  ASSERT_EQ("/test2", second_request.info.path);
 
-  ASSERT_EQ(client_connection_id, GetConnectionId(1));
+  ASSERT_EQ(client_connection_id, second_request.connection_id);
   server_->Send404(client_connection_id, TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response2;
   ASSERT_TRUE(client.ReadResponse(&response2));
@@ -709,10 +1087,10 @@ TEST_F(HttpServerTest, MultipleRequestsOnSameConnection) {
                                base::CompareCase::SENSITIVE));
 
   client.Send("GET /test3 HTTP/1.1\r\n\r\n");
-  RunUntilRequestsReceived(3);
-  ASSERT_EQ("/test3", GetRequest(2).path);
+  auto third_request = WaitForRequest();
+  ASSERT_EQ("/test3", third_request.info.path);
 
-  ASSERT_EQ(client_connection_id, GetConnectionId(2));
+  ASSERT_EQ(client_connection_id, third_request.connection_id);
   server_->Send200(client_connection_id, "Content for /test3", "text/plain",
                    TRAFFIC_ANNOTATION_FOR_TESTS);
   std::string response3;
@@ -749,7 +1127,7 @@ TEST_F(CloseOnConnectHttpServerTest, ServerImmediatelyClosesConnection) {
   EXPECT_EQ(1ul, connection_ids_.size());
   // OnHttpRequest() should never have been called, since the connection was
   // closed without reading from it.
-  EXPECT_EQ(0ul, requests_.size());
+  EXPECT_FALSE(HasRequest());
 }
 
 }  // namespace

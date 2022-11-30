@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 #define CHROME_BROWSER_SHARING_SHARING_UTILS_H_
 
-#include <string>
-
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_browser_sharing {
 class FCMChannelConfiguration;
@@ -33,7 +31,7 @@ bool IsSyncEnabledForSharing(syncer::SyncService* sync_service);
 bool IsSyncDisabledForSharing(syncer::SyncService* sync_service);
 
 // Returns the FCMChannelConfiguration of device with specified |device_info|.
-base::Optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
+absl::optional<chrome_browser_sharing::FCMChannelConfiguration> GetFCMChannel(
     const syncer::DeviceInfo& device_info);
 
 // Returns the SharingDevicePlatform of device with specified |device_info|.

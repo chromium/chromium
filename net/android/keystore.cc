@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,7 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
-namespace net {
-namespace android {
+namespace net::android {
 
 std::string GetPrivateKeyClassName(const JavaRef<jobject>& key) {
   JNIEnv* env = AttachCurrentThread();
@@ -111,5 +110,4 @@ bool EncryptWithPrivateKey(const JavaRef<jobject>& private_key_ref,
   return true;
 }
 
-}  // namespace android
-}  // namespace net
+}  // namespace net::android

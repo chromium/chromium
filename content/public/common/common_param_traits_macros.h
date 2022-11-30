@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #define CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/webplugininfo_param_traits.h"
@@ -17,9 +18,10 @@
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/security_style.h"
+#include "third_party/blink/public/common/user_agent/user_agent_brand_version_type.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/page_state/page_state.mojom.h"
+#include "third_party/blink/public/mojom/page_state/page_state.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -27,9 +29,9 @@
 #include "ui/accessibility/ax_param_traits.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/transform.h"
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
@@ -44,7 +46,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ReferrerPolicy,
                           network::mojom::ReferrerPolicy::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollRestorationType,
                           blink::mojom::ScrollRestorationType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,
@@ -56,13 +57,10 @@ IPC_STRUCT_TRAITS_BEGIN(content::Referrer)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(blink::mojom::WindowFeatures)
-  IPC_STRUCT_TRAITS_MEMBER(x)
+  IPC_STRUCT_TRAITS_MEMBER(bounds)
   IPC_STRUCT_TRAITS_MEMBER(has_x)
-  IPC_STRUCT_TRAITS_MEMBER(y)
   IPC_STRUCT_TRAITS_MEMBER(has_y)
-  IPC_STRUCT_TRAITS_MEMBER(width)
   IPC_STRUCT_TRAITS_MEMBER(has_width)
-  IPC_STRUCT_TRAITS_MEMBER(height)
   IPC_STRUCT_TRAITS_MEMBER(has_height)
   IPC_STRUCT_TRAITS_MEMBER(menu_bar_visible)
   IPC_STRUCT_TRAITS_MEMBER(status_bar_visible)
@@ -77,18 +75,24 @@ IPC_ENUM_TRAITS_MAX_VALUE(gfx::FontRenderParams::SubpixelRendering,
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentBrandVersion)
   IPC_STRUCT_TRAITS_MEMBER(brand)
-  IPC_STRUCT_TRAITS_MEMBER(major_version)
+  IPC_STRUCT_TRAITS_MEMBER(version)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentMetadata)
   IPC_STRUCT_TRAITS_MEMBER(brand_version_list)
+  IPC_STRUCT_TRAITS_MEMBER(brand_full_version_list)
   IPC_STRUCT_TRAITS_MEMBER(full_version)
   IPC_STRUCT_TRAITS_MEMBER(platform)
   IPC_STRUCT_TRAITS_MEMBER(platform_version)
   IPC_STRUCT_TRAITS_MEMBER(architecture)
   IPC_STRUCT_TRAITS_MEMBER(model)
   IPC_STRUCT_TRAITS_MEMBER(mobile)
+  IPC_STRUCT_TRAITS_MEMBER(bitness)
+  IPC_STRUCT_TRAITS_MEMBER(wow64)
 IPC_STRUCT_TRAITS_END()
+
+IPC_ENUM_TRAITS_MAX_VALUE(blink::UserAgentBrandVersionType,
+                          blink::UserAgentBrandVersionType::kMaxValue)
 
 IPC_STRUCT_TRAITS_BEGIN(blink::UserAgentOverride)
   IPC_STRUCT_TRAITS_MEMBER(ua_string_override)
@@ -121,10 +125,10 @@ IPC_STRUCT_TRAITS_BEGIN(blink::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(accept_languages)
   IPC_STRUCT_TRAITS_MEMBER(plugin_fullscreen_allowed)
   IPC_STRUCT_TRAITS_MEMBER(caret_browsing_enabled)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   IPC_STRUCT_TRAITS_MEMBER(system_font_family_name)
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   IPC_STRUCT_TRAITS_MEMBER(caption_font_family_name)
   IPC_STRUCT_TRAITS_MEMBER(caption_font_height)
   IPC_STRUCT_TRAITS_MEMBER(small_caption_font_family_name)
@@ -140,7 +144,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::RendererPreferences)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_height_vertical_scroll_bar_in_dips)
   IPC_STRUCT_TRAITS_MEMBER(arrow_bitmap_width_horizontal_scroll_bar_in_dips)
 #endif
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
   IPC_STRUCT_TRAITS_MEMBER(selection_clipboard_buffer_available)
 #endif
 IPC_STRUCT_TRAITS_END()

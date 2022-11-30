@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: shared element with overflow</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<link rel="match" href="content-with-overflow-zoomed-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+.target {
+  width: 80px;
+  height: 80px;
+  contain: paint;
+  background: blue;
+  overflow-clip-margin: 50px;
+  page-transition-tag: target;
+  zoom: 1.5;
+}
+.child {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  top: 50px;
+  left: 50px;
+  background: green;
+  zoom: 1.2;
+}
+
+html::page-transition-container(target) { animation-duration: 300s; }
+html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
+html::page-transition-outgoing-image(target) {
+  animation: unset;
+  opacity: 1;
+  border: 3px solid black;
+}
+
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+</style>
+
+<div class=ancestor>
+  <div class=target>
+    <div class=child>
+    </div>
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  document.createDocumentTransition().start(() =>
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot)));
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

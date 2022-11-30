@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/udp_socket.h"
@@ -21,17 +20,34 @@ struct NetLogSource;
 // A client socket that uses UDP as the transport layer.
 class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
  public:
-  UDPClientSocket(DatagramSocket::BindType bind_type,
-                  net::NetLog* net_log,
-                  const net::NetLogSource& source);
+  // If `network` is specified, the socket will be bound to it. All data traffic
+  // on the socket will be sent and received via `network`. Communication using
+  // this socket will fail if `network` disconnects.
+  UDPClientSocket(
+      DatagramSocket::BindType bind_type,
+      net::NetLog* net_log,
+      const net::NetLogSource& source,
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+
+  UDPClientSocket(const UDPClientSocket&) = delete;
+  UDPClientSocket& operator=(const UDPClientSocket&) = delete;
+
   ~UDPClientSocket() override;
 
   // DatagramClientSocket implementation.
   int Connect(const IPEndPoint& address) override;
-  int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override;
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
-  NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override;
+  int ConnectAsync(const IPEndPoint& address,
+                   CompletionOnceCallback callback) override;
+  int ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                               const IPEndPoint& address,
+                               CompletionOnceCallback callback) override;
+  int ConnectUsingDefaultNetworkAsync(const IPEndPoint& address,
+                                      CompletionOnceCallback callback) override;
+
+  handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   int Read(IOBuffer* buf,
            int buf_len,
@@ -40,18 +56,6 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
             int buf_len,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
-
-  int WriteAsync(
-      const char* buffer,
-      size_t buf_len,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
-  int WriteAsync(
-      DatagramBuffers buffers,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
-
-  DatagramBuffers GetUnwrittenBuffers() override;
 
   void Close() override;
   int GetPeerAddress(IPEndPoint* address) const override;
@@ -66,20 +70,14 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   const NetLogWithSource& NetLog() const override;
   void EnableRecvOptimization() override;
 
-  void SetWriteAsyncEnabled(bool enabled) override;
-  bool WriteAsyncEnabled() override;
-  void SetMaxPacketSize(size_t max_packet_size) override;
-  void SetWriteMultiCoreEnabled(bool enabled) override;
-  void SetSendmmsgEnabled(bool enabled) override;
-  void SetWriteBatchingActive(bool active) override;
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
 
  private:
   UDPSocket socket_;
-  NetworkChangeNotifier::NetworkHandle network_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPClientSocket);
+  // The network the socket is currently bound to.
+  handles::NetworkHandle network_;
+  handles::NetworkHandle connect_using_network_;
 };
 
 }  // namespace net

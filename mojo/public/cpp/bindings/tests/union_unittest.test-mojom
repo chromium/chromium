@@ -1,0 +1,72 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.union_unittest.mojom;
+
+union TestUnionV1 {
+  bool flag@0;
+  uint32 integer@1;
+  string? name@2;
+};
+
+// Equivalent to TestUnionV1, but extensible with the bool field as a default.
+[Extensible]
+union ExtensibleTestUnionV1WithBoolDefault {
+  [Default] bool flag@0;
+  uint32 integer@1;
+  string? name@2;
+};
+
+// Equivalent to TestUnionV1, but extensible with the uint32 field as a default.
+[Extensible]
+union ExtensibleTestUnionV1WithIntDefault {
+  bool flag@0;
+  [Default] uint32 integer@1;
+  string? name@2;
+};
+
+// Equivalent to TestUnionV1, but extensible with the nullable string field as a
+// default.
+[Extensible]
+union ExtensibleTestUnionV1WithNullableDefault {
+  bool flag@0;
+  uint32 integer@1;
+  [Default] string? name@2;
+};
+
+// An equivalent to the above TestUnionV1, but with an additional field which is
+// unknown to the original.
+union TestUnionV2 {
+  bool flag@0;
+  uint32 integer@1;
+  string? name@2;
+  array<uint8> blob@3;
+};
+
+// An interface used to reflect extensible variants of TestUnionV1.
+interface ExtensibleTestUnionExchangeV1 {
+  [Sync] ExchangeWithBoolDefault@0(ExtensibleTestUnionV1WithBoolDefault u)
+      => (ExtensibleTestUnionV1WithBoolDefault u);
+  [Sync] ExchangeWithIntDefault@1(ExtensibleTestUnionV1WithIntDefault u)
+      => (ExtensibleTestUnionV1WithIntDefault u);
+  [Sync] ExchangeWithNullableDefault@2(
+      ExtensibleTestUnionV1WithNullableDefault u)
+      => (ExtensibleTestUnionV1WithNullableDefault u);
+};
+
+// An interface used to reflect TestUnionV2 values back as one of the various
+// extensible TestUnionV1 variants. For tests, we use a Remote for this
+// interface to communicate with a Receiver for the above interface.
+//
+// For such tests to provide useful coverage, these interfaces must be
+// identical, except that outgoing references to ExtensibleTestUnionV1* types in
+// the above interface are replaced with references to TestUnionV2 here.
+interface ExtensibleTestUnionExchangeV2 {
+  [Sync] ExchangeWithBoolDefault@0(TestUnionV2 u)
+      => (ExtensibleTestUnionV1WithBoolDefault u);
+  [Sync] ExchangeWithIntDefault@1(TestUnionV2 u)
+      => (ExtensibleTestUnionV1WithIntDefault u);
+  [Sync] ExchangeWithNullableDefault@2(TestUnionV2 u)
+      => (ExtensibleTestUnionV1WithNullableDefault u);
+};

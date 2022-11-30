@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,23 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+namespace ash {
+namespace enterprise_user_session_metrics {
 namespace {
 
 // Returns true if the device is enterprise managed, false otherwise.
-bool IsEnterpriseManaged() {
+bool IsDeviceEnterpriseManaged() {
   return g_browser_process->platform_part()
-      ->browser_policy_connector_chromeos()
-      ->IsEnterpriseManaged();
+      ->browser_policy_connector_ash()
+      ->IsDeviceEnterpriseManaged();
 }
 
 // Returns the duration in minutes, capped at `max_duration` and rounded down to
@@ -39,16 +41,13 @@ int GetMinutesToReport(base::TimeDelta duration,
 
 }  // namespace
 
-namespace chromeos {
-namespace enterprise_user_session_metrics {
-
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastSessionType, 0);
   registry->RegisterInt64Pref(prefs::kLastSessionLength, 0);
 }
 
 void RecordSignInEvent(SignInEventType sign_in_event_type) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   UMA_HISTOGRAM_ENUMERATION(
       "Enterprise.UserSession.Logins", static_cast<int>(sign_in_event_type),
@@ -56,7 +55,7 @@ void RecordSignInEvent(SignInEventType sign_in_event_type) {
 }
 
 void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   const user_manager::UserType session_type = user_context.GetUserType();
   if (session_type == user_manager::USER_TYPE_REGULAR) {
@@ -72,7 +71,7 @@ void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
 
 void StoreSessionLength(user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   if (session_type != user_manager::USER_TYPE_REGULAR &&
       session_type != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
@@ -88,7 +87,7 @@ void StoreSessionLength(user_manager::UserType session_type,
 }
 
 void RecordStoredSessionLength() {
-  DCHECK(IsEnterpriseManaged());
+  DCHECK(IsDeviceEnterpriseManaged());
 
   PrefService* local_state = g_browser_process->local_state();
   if (!local_state->HasPrefPath(prefs::kLastSessionType) ||
@@ -124,17 +123,16 @@ void RecordStoredSessionLength() {
   // (i.e. every 10 minute). Note that sparse histogram is used here. It is
   // important to limit the number of buckets to something reasonable.
   base::UmaHistogramSparse(
-      metric_name,
-      GetMinutesToReport(session_length, 10, base::TimeDelta::FromHours(24)));
+      metric_name, GetMinutesToReport(session_length, 10, base::Hours(24)));
 
-  if (chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (DemoSession::IsDeviceInDemoMode()) {
     // Demo mode sessions will have shorter durations. Report session length
     // rounded down to the nearest minute, up to two hours.
     base::UmaHistogramSparse(
         "DemoMode.SessionLength",
-        GetMinutesToReport(session_length, 1, base::TimeDelta::FromHours(2)));
+        GetMinutesToReport(session_length, 1, base::Hours(2)));
   }
 }
 
 }  // namespace enterprise_user_session_metrics
-}  // namespace chromeos
+}  // namespace ash

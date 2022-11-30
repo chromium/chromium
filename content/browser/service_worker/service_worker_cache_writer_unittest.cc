@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +28,12 @@ class MockServiceWorkerCacheWriterObserver
     : public ServiceWorkerCacheWriter::WriteObserver {
  public:
   MockServiceWorkerCacheWriterObserver() : data_length_(0), result_(net::OK) {}
+
+  MockServiceWorkerCacheWriterObserver(
+      const MockServiceWorkerCacheWriterObserver&) = delete;
+  MockServiceWorkerCacheWriterObserver& operator=(
+      const MockServiceWorkerCacheWriterObserver&) = delete;
+
   ~MockServiceWorkerCacheWriterObserver() {}
 
   int WillWriteResponseHead(
@@ -60,8 +65,6 @@ class MockServiceWorkerCacheWriterObserver
   size_t data_length_;
   base::OnceCallback<void(net::Error)> callback_;
   net::Error result_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerCacheWriterObserver);
 };
 
 class ServiceWorkerCacheWriterTest : public ::testing::Test {
@@ -74,6 +77,11 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
   };
 
   ServiceWorkerCacheWriterTest() {}
+
+  ServiceWorkerCacheWriterTest(const ServiceWorkerCacheWriterTest&) = delete;
+  ServiceWorkerCacheWriterTest& operator=(const ServiceWorkerCacheWriterTest&) =
+      delete;
+
   ~ServiceWorkerCacheWriterTest() override {}
 
   MockServiceWorkerResourceReader* ExpectReader() {
@@ -160,7 +168,7 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
     auto response_head = network::mojom::URLResponseHead::New();
     const char data[] = "HTTP/1.1 200 OK\0\0";
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        std::string(data, base::size(data)));
+        std::string(data, std::size(data)));
     response_head->content_length = len;
     net::Error error = cache_writer_->MaybeWriteHeaders(
         std::move(response_head), CreateWriteCallback());
@@ -175,9 +183,6 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
     return error;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerCacheWriterTest);
 };
 
 // Passthrough tests:

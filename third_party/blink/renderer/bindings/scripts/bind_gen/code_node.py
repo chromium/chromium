@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -486,6 +486,14 @@ class _TextNode(CodeNode):
 
     def __init__(self, template_text):
         CodeNode.__init__(self, template_text=template_text)
+
+
+def FormatNode(format_string, *args, **argv):
+    """
+    Represents a template text node, which is produced by applying
+    codegen_format.format_template to the arguments.
+    """
+    return TextNode(format_template(format_string, *args, **argv))
 
 
 class CompositeNode(CodeNode):

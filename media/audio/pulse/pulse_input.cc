@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,25 +56,25 @@ PulseAudioInputStream::~PulseAudioInputStream() {
   DCHECK(!handle_);
 }
 
-bool PulseAudioInputStream::Open() {
+AudioInputStream::OpenOutcome PulseAudioInputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
   SendLogMessage("%s()", __func__);
   if (device_name_ == AudioDeviceDescription::kDefaultDeviceId &&
       audio_manager_->DefaultSourceIsMonitor()) {
     SendLogMessage("%s => (ERROR: can't open monitor device)", __func__);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   AutoPulseLock auto_lock(pa_mainloop_);
   if (!pulse::CreateInputStream(pa_mainloop_, pa_context_, &handle_, params_,
                                 device_name_, &StreamNotifyCallback, this)) {
     SendLogMessage("%s => (ERROR: failed to open PA stream)", __func__);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   DCHECK(handle_);
 
-  return true;
+  return OpenOutcome::kSuccess;
 }
 
 void PulseAudioInputStream::Start(AudioInputCallback* callback) {
@@ -371,7 +371,7 @@ void PulseAudioInputStream::ReadData() {
     // TODO(dalecurtis): Delete all this. It shouldn't be necessary now that we
     // have a ring buffer and FIFO on the actual shared memory.,
     if (fifo_.available_blocks())
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(5));
   }
 
   pa_threaded_mainloop_signal(pa_mainloop_, 0);

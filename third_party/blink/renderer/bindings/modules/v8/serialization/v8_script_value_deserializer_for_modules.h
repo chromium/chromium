@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,13 @@
 
 namespace blink {
 
-class AudioFrame;
+class AudioData;
+class CropTarget;
 class CryptoKey;
+class EncodedAudioChunk;
+class EncodedVideoChunk;
 class FileSystemHandle;
+class MediaSourceHandleImpl;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
 class VideoFrame;
@@ -50,8 +54,13 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   FileSystemHandle* ReadFileSystemHandle(SerializationTag tag);
   RTCEncodedAudioFrame* ReadRTCEncodedAudioFrame();
   RTCEncodedVideoFrame* ReadRTCEncodedVideoFrame();
-  AudioFrame* ReadAudioFrame();
+  AudioData* ReadAudioData();
   VideoFrame* ReadVideoFrame();
+  EncodedAudioChunk* ReadEncodedAudioChunk();
+  EncodedVideoChunk* ReadEncodedVideoChunk();
+  MediaStreamTrack* ReadMediaStreamTrack();
+  CropTarget* ReadCropTarget();
+  MediaSourceHandleImpl* ReadMediaSourceHandle();
 };
 
 }  // namespace blink

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_MATCHERS_H_
 #define IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_MATCHERS_H_
 
-#include <string>
 
 #import <Foundation/Foundation.h>
 
@@ -15,14 +14,11 @@ namespace web {
 
 class WebState;
 
-// Matcher for WKWebView which belogs to the given |webState|.
+// Matcher for WKWebView which belogs to the given `webState`.
 id<GREYMatcher> WebViewInWebState(WebState* web_state);
 
 // Matcher for WKWebView's scroll view.
 id<GREYMatcher> WebViewScrollView(WebState* web_state);
-
-// Matcher for an interstitial page. Does not wait if the page is not displayed.
-id<GREYMatcher> Interstitial(WebState* web_state);
 
 }  // namespace web
 

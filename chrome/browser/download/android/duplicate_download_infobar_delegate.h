@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class DuplicateDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   virtual std::string GetPageURL() const;
 
   // The OTRProfileID of the download. Null if for regular mode.
-  virtual base::Optional<Profile::OTRProfileID> GetOTRProfileID() const;
+  virtual absl::optional<Profile::OTRProfileID> GetOTRProfileID() const;
 
   // Whether the duplicate is an in-progress request or completed download.
   virtual bool DuplicateRequestExists() const;

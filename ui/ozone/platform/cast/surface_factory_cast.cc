@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/public/cast_egl_platform.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -23,12 +22,16 @@ namespace {
 class DummySurface : public SurfaceOzoneCanvas {
  public:
   DummySurface() {}
+
+  DummySurface(const DummySurface&) = delete;
+  DummySurface& operator=(const DummySurface&) = delete;
+
   ~DummySurface() override {}
 
   // SurfaceOzoneCanvas implementation:
   SkCanvas* GetCanvas() override { return surface_->getCanvas(); }
 
-  void ResizeCanvas(const gfx::Size& viewport_size) override {
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
     surface_ =
         SkSurface::MakeNull(viewport_size.width(), viewport_size.height());
   }
@@ -41,13 +44,14 @@ class DummySurface : public SurfaceOzoneCanvas {
 
  private:
   sk_sp<SkSurface> surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummySurface);
 };
 
 class CastPixmap : public gfx::NativePixmap {
  public:
   CastPixmap() {}
+
+  CastPixmap(const CastPixmap&) = delete;
+  CastPixmap& operator=(const CastPixmap&) = delete;
 
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
@@ -59,16 +63,17 @@ class CastPixmap : public gfx::NativePixmap {
     return gfx::BufferFormat::BGRA_8888;
   }
   size_t GetNumberOfPlanes() const override { return 1; }
+  bool SupportsZeroCopyWebGPUImport() const override {
+    // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap
+    // into WebGPU without copy.
+    return false;
+  }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
 
   bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
+      const gfx::OverlayPlaneData& overlay_plane_data,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) override {
     return false;
@@ -79,8 +84,6 @@ class CastPixmap : public gfx::NativePixmap {
 
  private:
   ~CastPixmap() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(CastPixmap);
 };
 
 }  // namespace
@@ -97,11 +100,12 @@ SurfaceFactoryCast::SurfaceFactoryCast(
 
 SurfaceFactoryCast::~SurfaceFactoryCast() {}
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 SurfaceFactoryCast::GetAllowedGLImplementations() {
-  std::vector<gl::GLImplementation> impls;
+  std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_)
-    impls.push_back(gl::kGLImplementationEGLGLES2);
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   return impls;
 }
 
@@ -129,7 +133,7 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryCast::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    base::Optional<gfx::Size> framebuffer_size) {
+    absl::optional<gfx::Size> framebuffer_size) {
   DCHECK(!framebuffer_size || framebuffer_size == size);
   return base::MakeRefCounted<CastPixmap>();
 }

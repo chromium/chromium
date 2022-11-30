@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,47 +6,22 @@
 
 #include <algorithm>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_IOS)
-#include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_APPLE)
-#include <ApplicationServices/ApplicationServices.h>
-#endif
-
 #include "base/check.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 
-namespace gfx {
-
-#if defined(OS_WIN)
-Rect::Rect(const RECT& r)
-    : origin_(r.left, r.top),
-      size_(std::abs(r.right - r.left), std::abs(r.bottom - r.top)) {
-}
-#elif defined(OS_APPLE)
-Rect::Rect(const CGRect& r)
-    : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {
-}
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#elif BUILDFLAG(IS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif BUILDFLAG(IS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#if defined(OS_WIN)
-RECT Rect::ToRECT() const {
-  RECT r;
-  r.left = x();
-  r.right = right();
-  r.top = y();
-  r.bottom = bottom();
-  return r;
-}
-#elif defined(OS_APPLE)
-CGRect Rect::ToCGRect() const {
-  return CGRectMake(x(), y(), width(), height());
-}
-#endif
+namespace {
 
 void AdjustAlongAxis(int dst_origin, int dst_size, int* origin, int* size) {
   *size = std::min(dst_size, *size);
@@ -56,13 +31,9 @@ void AdjustAlongAxis(int dst_origin, int dst_size, int* origin, int* size) {
     *origin = std::min(dst_origin + dst_size, *origin + *size) - *size;
 }
 
-}  // namespace
-
-namespace gfx {
-
 // This is the per-axis heuristic for picking the most useful origin and
 // width/height to represent the input range.
-static void SaturatedClampRange(int min, int max, int* origin, int* span) {
+void SaturatedClampRange(int min, int max, int* origin, int* span) {
   if (max < min) {
     *span = 0;
     *origin = min;
@@ -99,50 +70,66 @@ static void SaturatedClampRange(int min, int max, int* origin, int* span) {
   }
 }
 
-void Rect::SetByBounds(int left, int top, int right, int bottom) {
-  int x, y;
-  int width, height;
-  SaturatedClampRange(left, right, &x, &width);
-  SaturatedClampRange(top, bottom, &y, &height);
-  origin_.SetPoint(x, y);
-  size_.SetSize(width, height);
+}  // namespace
+
+namespace gfx {
+
+#if BUILDFLAG(IS_WIN)
+
+Rect::Rect(const RECT& r)
+    : origin_(r.left, r.top),
+      size_(std::abs(r.right - r.left), std::abs(r.bottom - r.top)) {}
+
+RECT Rect::ToRECT() const {
+  RECT r;
+  r.left = x();
+  r.right = right();
+  r.top = y();
+  r.bottom = bottom();
+  return r;
+}
+
+#elif BUILDFLAG(IS_APPLE)
+
+Rect::Rect(const CGRect& r)
+    : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {}
+
+CGRect Rect::ToCGRect() const {
+  return CGRectMake(x(), y(), width(), height());
+}
+
+#endif
+
+void Rect::AdjustForSaturatedRight(int right) {
+  int new_x, width;
+  SaturatedClampRange(x(), right, &new_x, &width);
+  set_x(new_x);
+  size_.set_width(width);
+}
+
+void Rect::AdjustForSaturatedBottom(int bottom) {
+  int new_y, height;
+  SaturatedClampRange(y(), bottom, &new_y, &height);
+  set_y(new_y);
+  size_.set_height(height);
 }
 
 void Rect::Inset(const Insets& insets) {
-  Inset(insets.left(), insets.top(), insets.right(), insets.bottom());
+  origin_ += Vector2d(insets.left(), insets.top());
+  set_width(base::ClampSub(width(), insets.width()));
+  set_height(base::ClampSub(height(), insets.height()));
 }
 
-void Rect::Inset(int left, int top, int right, int bottom) {
-  origin_ += Vector2d(left, top);
-  // left+right might overflow/underflow, but width() - (left+right) might
-  // overflow as well.
-  set_width(base::ClampSub(width(), base::ClampAdd(left, right)));
-  set_height(base::ClampSub(height(), base::ClampAdd(top, bottom)));
-}
-
-void Rect::Offset(int horizontal, int vertical) {
-  origin_ += Vector2d(horizontal, vertical);
+void Rect::Offset(const Vector2d& distance) {
+  origin_ += distance;
   // Ensure that width and height remain valid.
   set_width(width());
   set_height(height());
-}
-
-void Rect::operator+=(const Vector2d& offset) {
-  origin_ += offset;
-  // Ensure that width and height remain valid.
-  set_width(width());
-  set_height(height());
-}
-
-void Rect::operator-=(const Vector2d& offset) {
-  origin_ -= offset;
 }
 
 Insets Rect::InsetsFrom(const Rect& inner) const {
-  return Insets(inner.y() - y(),
-                inner.x() - x(),
-                bottom() - inner.bottom(),
-                right() - inner.right());
+  return Insets::TLBR(inner.y() - y(), inner.x() - x(),
+                      bottom() - inner.bottom(), right() - inner.right());
 }
 
 bool Rect::operator<(const Rect& other) const {
@@ -191,6 +178,22 @@ void Rect::Intersect(const Rect& rect) {
   SetByBounds(left, top, new_right, new_bottom);
 }
 
+bool Rect::InclusiveIntersect(const Rect& rect) {
+  int left = std::max(x(), rect.x());
+  int top = std::max(y(), rect.y());
+  int new_right = std::min(right(), rect.right());
+  int new_bottom = std::min(bottom(), rect.bottom());
+
+  // Return a clean empty rectangle for non-intersecting cases.
+  if (left > new_right || top > new_bottom) {
+    SetRect(0, 0, 0, 0);
+    return false;
+  }
+
+  SetByBounds(left, top, new_right, new_bottom);
+  return true;
+}
+
 void Rect::Union(const Rect& rect) {
   if (IsEmpty()) {
     *this = rect;
@@ -199,6 +202,10 @@ void Rect::Union(const Rect& rect) {
   if (rect.IsEmpty())
     return;
 
+  UnionEvenIfEmpty(rect);
+}
+
+void Rect::UnionEvenIfEmpty(const Rect& rect) {
   SetByBounds(std::min(x(), rect.x()), std::min(y(), rect.y()),
               std::max(right(), rect.right()),
               std::max(bottom(), rect.bottom()));
@@ -332,6 +339,12 @@ Rect UnionRects(const Rect& a, const Rect& b) {
   return result;
 }
 
+Rect UnionRectsEvenIfEmpty(const Rect& a, const Rect& b) {
+  Rect result = a;
+  result.UnionEvenIfEmpty(b);
+  return result;
+}
+
 Rect SubtractRects(const Rect& a, const Rect& b) {
   Rect result = a;
   result.Subtract(b);
@@ -343,6 +356,39 @@ Rect BoundingRect(const Point& p1, const Point& p2) {
   result.SetByBounds(std::min(p1.x(), p2.x()), std::min(p1.y(), p2.y()),
                      std::max(p1.x(), p2.x()), std::max(p1.y(), p2.y()));
   return result;
+}
+
+Rect MaximumCoveredRect(const Rect& a, const Rect& b) {
+  // Check a or b by itself.
+  Rect maximum = a;
+  uint64_t maximum_area = a.size().Area64();
+  if (b.size().Area64() > maximum_area) {
+    maximum = b;
+    maximum_area = b.size().Area64();
+  }
+  // Check the regions that include the intersection of a and b. This can be
+  // done by taking the intersection and expanding it vertically and
+  // horizontally. These expanded intersections will both still be covered by
+  // a or b.
+  Rect intersection = a;
+  intersection.InclusiveIntersect(b);
+  if (!intersection.size().IsZero()) {
+    Rect vert_expanded_intersection = intersection;
+    vert_expanded_intersection.SetVerticalBounds(
+        std::min(a.y(), b.y()), std::max(a.bottom(), b.bottom()));
+    if (vert_expanded_intersection.size().Area64() > maximum_area) {
+      maximum = vert_expanded_intersection;
+      maximum_area = vert_expanded_intersection.size().Area64();
+    }
+    Rect horiz_expanded_intersection = intersection;
+    horiz_expanded_intersection.SetHorizontalBounds(
+        std::min(a.x(), b.x()), std::max(a.right(), b.right()));
+    if (horiz_expanded_intersection.size().Area64() > maximum_area) {
+      maximum = horiz_expanded_intersection;
+      maximum_area = horiz_expanded_intersection.size().Area64();
+    }
+  }
+  return maximum;
 }
 
 }  // namespace gfx

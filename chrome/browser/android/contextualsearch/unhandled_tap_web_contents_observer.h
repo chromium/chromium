@@ -1,23 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_UNHANDLED_TAP_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace contextual_search {
 
-typedef base::RepeatingCallback<
-    void(int x_px, int y_px, int font_size_dips, int text_run_length)>
-    UnhandledTapCallback;
+typedef base::RepeatingCallback<void(int x_px, int y_px)> UnhandledTapCallback;
 
 // Binds a Mojo unhandled-tap notifier message-handler to the frame host
 // observed by this observer.
-// TODO(donnd): remove this as part of removal of all Tap gesture support
-// after a migration to triggering using Longpress.
 class UnhandledTapWebContentsObserver
     : public content::WebContentsUserData<UnhandledTapWebContentsObserver> {
  public:
@@ -26,6 +21,11 @@ class UnhandledTapWebContentsObserver
   // instance of the contextual_search::CreateUnhandledTapNotifierImpl to handle
   // those messages.
   explicit UnhandledTapWebContentsObserver(content::WebContents* web_contents);
+
+  UnhandledTapWebContentsObserver(const UnhandledTapWebContentsObserver&) =
+      delete;
+  UnhandledTapWebContentsObserver& operator=(
+      const UnhandledTapWebContentsObserver&) = delete;
 
   ~UnhandledTapWebContentsObserver() override;
 
@@ -50,8 +50,6 @@ class UnhandledTapWebContentsObserver
   UnhandledTapCallback unhandled_tap_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledTapWebContentsObserver);
 };
 
 }  // namespace contextual_search

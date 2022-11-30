@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,34 +7,56 @@
 #include <linux/input.h>
 #include <wayland-client-protocol.h>
 #include <weston-test-client-protocol.h>
+#include <weston-test-server-protocol.h>
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/time/time.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 
 namespace wl {
 
 WaylandInputEmulate::PendingEvent::PendingEvent(
     ui::EventType event_type,
-    gfx::AcceleratedWidget target_widget)
+    gfx::AcceleratedWidget target_widget,
+    WaylandInputEmulate* emulate)
     : type(event_type), widget(target_widget) {
   DCHECK(type == ui::EventType::ET_MOUSE_MOVED ||
          type == ui::EventType::ET_MOUSE_PRESSED ||
          type == ui::EventType::ET_MOUSE_RELEASED ||
          type == ui::EventType::ET_KEY_PRESSED ||
-         type == ui::EventType::ET_KEY_RELEASED);
+         type == ui::EventType::ET_KEY_RELEASED ||
+         type == ui::EventType::ET_TOUCH_PRESSED ||
+         type == ui::EventType::ET_TOUCH_MOVED ||
+         type == ui::EventType::ET_TOUCH_RELEASED);
+  auto it = emulate->windows_.find(widget);
+  if (it != emulate->windows_.end()) {
+    test_window = it->second->weak_factory.GetWeakPtr();
+  }
 }
+
+namespace {
+
+int EventTypeToWaylandTouchType(ui::EventType event_type) {
+  switch (event_type) {
+    case ui::EventType::ET_TOUCH_PRESSED:
+      return WL_TOUCH_DOWN;
+    case ui::EventType::ET_TOUCH_MOVED:
+      return WL_TOUCH_MOTION;
+    default:
+      return WL_TOUCH_UP;
+  }
+}
+
+}  // namespace
 
 WaylandInputEmulate::PendingEvent::~PendingEvent() = default;
 
-WaylandInputEmulate::TestWindow::TestWindow(
-    gfx::AcceleratedWidget target_widget,
-    WaylandInputEmulate* input_emulate)
-    : widget(target_widget), emulate(input_emulate) {}
-
+WaylandInputEmulate::TestWindow::TestWindow() = default;
 WaylandInputEmulate::TestWindow::~TestWindow() = default;
 
 WaylandInputEmulate::WaylandInputEmulate() {
@@ -43,7 +65,7 @@ WaylandInputEmulate::WaylandInputEmulate() {
 
   wayland_proxy->SetDelegate(this);
 
-  registry_ = wl_display_get_registry(wayland_proxy->GetDisplay());
+  registry_ = wl_display_get_registry(wayland_proxy->GetDisplayWrapper());
   if (!registry_)
     LOG(FATAL) << "Failed to get Wayland registry";
 
@@ -53,7 +75,7 @@ WaylandInputEmulate::WaylandInputEmulate() {
   wl_registry_add_listener(registry_, &registry_listener, this);
 
   // Roundtrip one time to get the weston-test global.
-  wl_display_roundtrip(wayland_proxy->GetDisplay());
+  wayland_proxy->RoundTripQueue();
   if (!weston_test_)
     LOG(FATAL) << "weston-test is not available.";
 
@@ -61,6 +83,8 @@ WaylandInputEmulate::WaylandInputEmulate() {
       &WaylandInputEmulate::HandlePointerPosition,
       &WaylandInputEmulate::HandlePointerButton,
       &WaylandInputEmulate::HandleKeyboardKey,
+      nullptr,  // capture_screenshot_done
+      &WaylandInputEmulate::HandleTouchReceived,
   };
   weston_test_add_listener(weston_test_, &test_listener, this);
 }
@@ -83,41 +107,50 @@ void WaylandInputEmulate::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void WaylandInputEmulate::EmulatePointerMotion(gfx::AcceleratedWidget widget,
-                                               gfx::Point mouse_surface_loc) {
-  auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
-
-  auto* test_window = it->second.get();
-  if (!test_window->buffer_attached_and_configured) {
-    auto pending_event =
-        std::make_unique<PendingEvent>(ui::EventType::ET_MOUSE_MOVED, widget);
-    pending_event->pointer_surface_location_in_px = mouse_surface_loc;
-    test_window->pending_events.emplace_back(std::move(pending_event));
+void WaylandInputEmulate::EmulatePointerMotion(
+    gfx::AcceleratedWidget widget,
+    const gfx::Point& mouse_surface_loc,
+    const gfx::Point& mouse_screen_loc_in_px) {
+  if (AnyWindowWaitingForBufferCommit()) {
+    auto pending_event = std::make_unique<PendingEvent>(
+        ui::EventType::ET_MOUSE_MOVED, widget, this);
+    pending_event->pointer_surface_location = mouse_surface_loc;
+    pending_event->pointer_screen_location_in_px = mouse_screen_loc_in_px;
+    pending_events_.emplace_back(std::move(pending_event));
     return;
+  }
+
+  // If the widget does not have a buffer, pretend it doesn't exist. It is
+  // treated similarly on the server.
+  auto it = windows_.find(widget);
+  if (it != windows_.end()) {
+    if (!it->second->buffer_attached_and_configured)
+      widget = 0;
   }
 
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   DCHECK(wayland_proxy);
 
-  auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
+  wl_surface* target_surface = nullptr;
+  gfx::Point target_location = mouse_screen_loc_in_px;
+  if (widget) {
+    auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
+    bool screen_coordinates =
+        wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget)
+            ->IsScreenCoordinatesEnabled();
 
-  // If it's a toplevel window, activate it. This results in raising the the
-  // parent window and its children windows.
-  auto window_type = wayland_proxy->GetWindowType(widget);
-  if (window_type != ui::PlatformWindowType::kTooltip &&
-      window_type != ui::PlatformWindowType::kMenu &&
-      window_type != ui::PlatformWindowType::kPopup &&
-      !wayland_proxy->WindowHasPointerFocus(widget)) {
-    weston_test_activate_surface(weston_test_, wlsurface);
+    target_surface = screen_coordinates ? nullptr : wlsurface;
+    target_location =
+        screen_coordinates ? mouse_screen_loc_in_px : mouse_surface_loc;
   }
 
+  // TODO(crbug.com/1306688): The coordinate should be in DIP.
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
-  weston_test_move_pointer(weston_test_, wlsurface,
+  weston_test_move_pointer(weston_test_, target_surface,
                            static_cast<uint64_t>(ts.tv_sec) >> 32,
                            ts.tv_sec & 0xffffffff, ts.tv_nsec,
-                           mouse_surface_loc.x(), mouse_surface_loc.y());
-  wayland_proxy->ScheduleDisplayFlush();
+                           target_location.x(), target_location.y());
+  wayland_proxy->FlushForTesting();
 }
 
 void WaylandInputEmulate::EmulatePointerButton(gfx::AcceleratedWidget widget,
@@ -125,16 +158,12 @@ void WaylandInputEmulate::EmulatePointerButton(gfx::AcceleratedWidget widget,
                                                uint32_t changed_button) {
   DCHECK(event_type == ui::EventType::ET_MOUSE_PRESSED ||
          event_type == ui::EventType::ET_MOUSE_RELEASED);
-  // A button press/release event uses previous location that Ozone/Wayland got
-  // when OnPointerMotionEvent was called.
-  auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
 
-  auto* test_window = it->second.get();
-  if (!test_window->buffer_attached_and_configured) {
-    auto pending_event = std::make_unique<PendingEvent>(event_type, widget);
+  if (AnyWindowWaitingForBufferCommit()) {
+    auto pending_event =
+        std::make_unique<PendingEvent>(event_type, widget, this);
     pending_event->mouse_button = changed_button;
-    test_window->pending_events.emplace_back(std::move(pending_event));
+    pending_events_.emplace_back(std::move(pending_event));
     return;
   }
 
@@ -145,6 +174,8 @@ void WaylandInputEmulate::EmulatePointerButton(gfx::AcceleratedWidget widget,
                           (event_type == ui::EventType::ET_MOUSE_PRESSED
                                ? WL_POINTER_BUTTON_STATE_PRESSED
                                : WL_POINTER_BUTTON_STATE_RELEASED));
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  wayland_proxy->FlushForTesting();
 }
 
 void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
@@ -153,25 +184,13 @@ void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
   DCHECK(event_type == ui::EventType::ET_KEY_PRESSED ||
          event_type == ui::EventType::ET_KEY_RELEASED);
 
-  auto it = windows_.find(widget);
-  DCHECK(it != windows_.end());
-
-  auto* test_window = it->second.get();
-  if (!test_window->buffer_attached_and_configured) {
-    auto pending_event = std::make_unique<PendingEvent>(event_type, widget);
+  if (AnyWindowWaitingForBufferCommit()) {
+    auto pending_event =
+        std::make_unique<PendingEvent>(event_type, widget, this);
     pending_event->key_dom_code = dom_code;
-    test_window->pending_events.emplace_back(std::move(pending_event));
+    pending_events_.emplace_back(std::move(pending_event));
     return;
   }
-
-  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
-  DCHECK(wayland_proxy);
-
-  auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
-
-  // Raise the window and set keyboard focus.
-  if (!wayland_proxy->WindowHasKeyboardFocus(widget))
-    weston_test_activate_surface(weston_test_, wlsurface);
 
   timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
   weston_test_send_key(weston_test_, static_cast<uint64_t>(ts.tv_sec) >> 32,
@@ -180,17 +199,65 @@ void WaylandInputEmulate::EmulateKeyboardKey(gfx::AcceleratedWidget widget,
                        (event_type == ui::EventType::ET_KEY_PRESSED
                             ? WL_KEYBOARD_KEY_STATE_PRESSED
                             : WL_KEYBOARD_KEY_STATE_RELEASED));
-  wayland_proxy->ScheduleDisplayFlush();
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  wayland_proxy->FlushForTesting();
 }
 
-void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget) {
+void WaylandInputEmulate::EmulateTouch(gfx::AcceleratedWidget widget,
+                                       ui::EventType event_type,
+                                       int id,
+                                       const gfx::Point& touch_screen_loc) {
+  if (AnyWindowWaitingForBufferCommit()) {
+    auto pending_event =
+        std::make_unique<PendingEvent>(event_type, widget, this);
+    pending_event->touch_screen_location = touch_screen_loc;
+    pending_event->touch_id = id;
+    pending_events_.emplace_back(std::move(pending_event));
+    return;
+  }
+
+  timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
+  weston_test_send_touch(weston_test_, static_cast<uint64_t>(ts.tv_sec) >> 32,
+                         ts.tv_sec & 0xffffffff, ts.tv_nsec, id,
+                         wl_fixed_from_int(touch_screen_loc.x()),
+                         wl_fixed_from_int(touch_screen_loc.y()),
+                         EventTypeToWaylandTouchType(event_type));
+  auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+  wayland_proxy->FlushForTesting();
+}
+
+void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
+                                             bool is_configured) {
   auto it = windows_.find(widget);
   DCHECK(it != windows_.end());
 
   auto* test_surface = it->second.get();
+  // The buffer is no longer attached as the window lost its role. Wait until
+  // the configuration event comes.
+  if (!is_configured) {
+    test_surface->buffer_attached_and_configured = false;
+    test_surface->waiting_for_buffer_commit = false;
+    // Also destroy the frame callback...
+    if (test_surface->frame_callback) {
+      wl_callback_destroy(test_surface->frame_callback);
+      test_surface->frame_callback = nullptr;
+    }
+    // ... and the buffer.
+    if (test_surface->buffer) {
+      auto* wayland_proxy = wl::WaylandProxy::GetInstance();
+      DCHECK(wayland_proxy);
+      wayland_proxy->DestroyShmForWlBuffer(test_surface->buffer);
+      wayland_proxy->FlushForTesting();
+      test_surface->buffer = nullptr;
+    }
+    DispatchPendingEvents();
+    return;
+  }
+
   if (test_surface->buffer_attached_and_configured)
     return;
 
+  test_surface->waiting_for_buffer_commit = true;
   auto* wayland_proxy = wl::WaylandProxy::GetInstance();
   DCHECK(wayland_proxy);
 
@@ -199,9 +266,13 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget) {
   // will be size of the last attached buffer or 0x0).
   //
   // This is needed as running some tests doesn't result in sending frames that
-  // require buffers to be created.;
-  auto buffer_size = wayland_proxy->GetWindowBounds(widget).size();
-  DCHECK(!buffer_size.IsEmpty());
+  // require buffers to be created.
+  auto* wayland_window =
+      wayland_proxy->GetWaylandWindowForAcceleratedWidget(widget);
+  auto buffer_size = wayland_window->GetBoundsInPixels().size();
+  // Adjust the buffer size in case if the window was created with empty size.
+  if (buffer_size.IsEmpty())
+    buffer_size.SetSize(1, 1);
   test_surface->buffer = wayland_proxy->CreateShmBasedWlBuffer(buffer_size);
 
   auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
@@ -220,7 +291,17 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget) {
 
   wl_surface_commit(wlsurface);
 
-  wayland_proxy->ScheduleDisplayFlush();
+  wayland_proxy->FlushForTesting();
+}
+
+void WaylandInputEmulate::OnWindowRoleAssigned(gfx::AcceleratedWidget widget) {
+  auto it = windows_.find(widget);
+  DCHECK(it != windows_.end());
+
+  // If a window has been assigned a popup role, then we must wait for a buffer
+  // to be committed before any events can be processed.
+  auto* test_surface = it->second.get();
+  test_surface->waiting_for_buffer_commit = true;
 }
 
 void WaylandInputEmulate::OnWindowRemoved(gfx::AcceleratedWidget widget) {
@@ -238,7 +319,7 @@ void WaylandInputEmulate::OnWindowRemoved(gfx::AcceleratedWidget widget) {
     auto* wayland_proxy = wl::WaylandProxy::GetInstance();
     DCHECK(wayland_proxy);
     wayland_proxy->DestroyShmForWlBuffer(it->second->buffer);
-    wayland_proxy->ScheduleDisplayFlush();
+    wayland_proxy->FlushForTesting();
   }
   windows_.erase(it);
 }
@@ -249,13 +330,28 @@ void WaylandInputEmulate::OnWindowAdded(gfx::AcceleratedWidget widget) {
   // a button pressed state left if the previous test crashed.
   if (windows_.empty()) {
     weston_test_reset_pointer(weston_test_);
+
+    // Release all meta-keys to deal with carry-over state from previous tests.
+    std::vector<ui::DomCode> meta_keys = {
+        ui::DomCode::CONTROL_LEFT,  ui::DomCode::SHIFT_LEFT,
+        ui::DomCode::ALT_LEFT,      ui::DomCode::META_LEFT,
+        ui::DomCode::CONTROL_RIGHT, ui::DomCode::SHIFT_RIGHT,
+        ui::DomCode::ALT_RIGHT,     ui::DomCode::META_RIGHT,
+    };
+    for (auto key : meta_keys) {
+      timespec ts = (base::TimeTicks::Now() - base::TimeTicks()).ToTimeSpec();
+      weston_test_send_key(weston_test_, static_cast<uint64_t>(ts.tv_sec) >> 32,
+                           ts.tv_sec & 0xffffffff, ts.tv_nsec,
+                           ui::KeycodeConverter::DomCodeToEvdevCode(key),
+                           WL_KEYBOARD_KEY_STATE_RELEASED);
+    }
+
     auto* wayland_proxy = wl::WaylandProxy::GetInstance();
     DCHECK(wayland_proxy);
-    wayland_proxy->ScheduleDisplayFlush();
+    wayland_proxy->FlushForTesting();
   }
 
-  windows_.emplace(
-      widget, std::make_unique<WaylandInputEmulate::TestWindow>(widget, this));
+  windows_.emplace(widget, std::make_unique<WaylandInputEmulate::TestWindow>());
 }
 
 // static
@@ -264,8 +360,8 @@ void WaylandInputEmulate::HandlePointerPosition(void* data,
                                                 wl_fixed_t x,
                                                 wl_fixed_t y) {
   WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
-  auto mouse_position_on_screen_px =
-      gfx::Point(wl_fixed_to_int(x), wl_fixed_to_int(y));
+  gfx::Point mouse_position_on_screen_px(wl_fixed_to_int(x),
+                                         wl_fixed_to_int(y));
   for (WaylandInputEmulate::Observer& observer : emulate->observers_)
     observer.OnPointerMotionGlobal(mouse_position_on_screen_px);
 }
@@ -293,6 +389,18 @@ void WaylandInputEmulate::HandleKeyboardKey(void* data,
 }
 
 // static
+void WaylandInputEmulate::HandleTouchReceived(void* data,
+                                              struct weston_test* weston_test,
+                                              wl_fixed_t x,
+                                              wl_fixed_t y) {
+  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
+  auto touch_position_on_screen_px =
+      gfx::Point(wl_fixed_to_int(x), wl_fixed_to_int(y));
+  for (WaylandInputEmulate::Observer& observer : emulate->observers_)
+    observer.OnTouchReceived(touch_position_on_screen_px);
+}
+
+// static
 void WaylandInputEmulate::Global(void* data,
                                  wl_registry* registry,
                                  uint32_t name,
@@ -300,10 +408,10 @@ void WaylandInputEmulate::Global(void* data,
                                  uint32_t version) {
   auto* emulate = static_cast<WaylandInputEmulate*>(data);
   if (strcmp(interface, "weston_test") == 0) {
-    const struct wl_interface* interface =
+    const struct wl_interface* wayland_interface =
         static_cast<const struct wl_interface*>(&weston_test_interface);
     emulate->weston_test_ = static_cast<struct weston_test*>(
-        wl_registry_bind(registry, name, interface, version));
+        wl_registry_bind(registry, name, wayland_interface, version));
   }
 }
 
@@ -323,36 +431,57 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
     }
   }
 
-  if (!window)
-    return;
+  if (window) {
+    wl_callback_destroy(window->frame_callback);
+    window->frame_callback = nullptr;
 
-  wl_callback_destroy(window->frame_callback);
-  window->frame_callback = nullptr;
+    DCHECK(!window->buffer_attached_and_configured);
+    window->buffer_attached_and_configured = true;
+    window->waiting_for_buffer_commit = false;
+  }
 
-  DCHECK(!window->buffer_attached_and_configured);
-  window->buffer_attached_and_configured = true;
+  emulate->DispatchPendingEvents();
+}
 
-  while (!window->pending_events.empty()) {
-    auto event = std::move(window->pending_events.front());
-    window->pending_events.pop_front();
+bool WaylandInputEmulate::AnyWindowWaitingForBufferCommit() {
+  for (auto& it : windows_) {
+    if (it.second->waiting_for_buffer_commit)
+      return true;
+  }
+  return false;
+}
 
-    auto* input_emulate = window->emulate;
-    DCHECK(input_emulate);
+void WaylandInputEmulate::DispatchPendingEvents() {
+  while (!pending_events_.empty()) {
+    // Cannot dispatch pending events if there's a window waiting for a buffer
+    // commit.
+    if (AnyWindowWaitingForBufferCommit())
+      return;
+    auto event = std::move(pending_events_.front());
+    pending_events_.pop_front();
 
     switch (event->type) {
       case ui::EventType::ET_MOUSE_MOVED:
-        input_emulate->EmulatePointerMotion(
-            window->widget, event->pointer_surface_location_in_px);
+        // If the test window has been destroyed then do not use a widget.
+        if (!event->test_window)
+          event->widget = 0;
+        EmulatePointerMotion(
+            /*widget=*/event->widget, event->pointer_surface_location,
+            event->pointer_screen_location_in_px);
         break;
       case ui::EventType::ET_MOUSE_PRESSED:
       case ui::EventType::ET_MOUSE_RELEASED:
-        input_emulate->EmulatePointerButton(window->widget, event->type,
-                                            event->mouse_button);
+        EmulatePointerButton(/*widget=*/0, event->type, event->mouse_button);
         break;
       case ui::EventType::ET_KEY_PRESSED:
       case ui::EventType::ET_KEY_RELEASED:
-        input_emulate->EmulateKeyboardKey(window->widget, event->type,
-                                          event->key_dom_code);
+        EmulateKeyboardKey(/*widget=*/0, event->type, event->key_dom_code);
+        break;
+      case ui::EventType::ET_TOUCH_PRESSED:
+      case ui::EventType::ET_TOUCH_MOVED:
+      case ui::EventType::ET_TOUCH_RELEASED:
+        EmulateTouch(/*widget=*/0, event->type, event->touch_id,
+                     event->touch_screen_location);
         break;
       default:
         NOTREACHED();

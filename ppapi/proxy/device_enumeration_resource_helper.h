@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ppapi/c/dev/ppb_device_ref_dev.h"
@@ -38,6 +37,12 @@ class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
  public:
   // |owner| must outlive this object.
   explicit DeviceEnumerationResourceHelper(PluginResource* owner);
+
+  DeviceEnumerationResourceHelper(const DeviceEnumerationResourceHelper&) =
+      delete;
+  DeviceEnumerationResourceHelper& operator=(
+      const DeviceEnumerationResourceHelper&) = delete;
+
   ~DeviceEnumerationResourceHelper();
 
   int32_t EnumerateDevices(const PP_ArrayOutput& output,
@@ -74,8 +79,6 @@ class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
   std::unique_ptr<ThreadAwareCallback<PP_MonitorDeviceChangeCallback>>
       monitor_callback_;
   void* monitor_user_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEnumerationResourceHelper);
 };
 
 }  // namespace proxy

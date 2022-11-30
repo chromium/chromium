@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,29 +6,25 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/offer_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using autofill::AutofillOfferData;
-using autofill::features::kAutofillEnableOffersInDownstream;
 using autofill::test::GetCardLinkedOfferData1;
 using autofill::test::GetCardLinkedOfferData2;
 using offer_helper::CreateDefaultSyncCardLinkedOffer;
 using offer_helper::CreateSyncCardLinkedOffer;
-using switches::kSyncAutofillWalletOfferData;
 using wallet_helper::GetPersonalDataManager;
 using wallet_helper::GetWalletModelTypeState;
 
@@ -45,12 +41,7 @@ const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
 
 class SingleClientOfferSyncTest : public SyncTest {
  public:
-  SingleClientOfferSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletOfferData,
-                              kAutofillEnableOffersInDownstream},
-        /*disabled_features=*/{});
-  }
+  SingleClientOfferSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   ~SingleClientOfferSyncTest() override = default;
 
@@ -71,7 +62,7 @@ class SingleClientOfferSyncTest : public SyncTest {
 
   void WaitForNumberOfOffers(size_t expected_count,
                              autofill::PersonalDataManager* pdm) {
-    while (pdm->GetCreditCardOffers().size() != expected_count ||
+    while (pdm->GetAutofillOffers().size() != expected_count ||
            pdm->HasPendingQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
@@ -86,9 +77,6 @@ class SingleClientOfferSyncTest : public SyncTest {
                                                syncer::AUTOFILL_WALLET_OFFER)
         .Wait();
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // Ensures that the offer sync type is enabled by default.
@@ -106,12 +94,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the offer data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Disable sync, the offer data should be gone.
   GetSyncService(0)->StopAndClear();
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
@@ -121,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
       kSetSourceFromTest);
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
-  EXPECT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());
 }
 
 // Ensures that offer data should get cleared from the database when sync is
@@ -134,18 +122,18 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the offer data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Stop sync, the offer data should be gone.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
-  EXPECT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());
 }
 
 // ChromeOS does not sign out, so the test below does not apply.
@@ -157,12 +145,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the data & metadata is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Signout, the data & metadata should be gone.
   GetClient(0)->SignOutPrimaryAccount();
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -170,45 +158,42 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
 // replaced when synced down.
 IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
-  AutofillOfferData offer1 = GetCardLinkedOfferData1();
-  offer1.offer_id = 999;
+  AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetCreditCardOffers();
+  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(999, offers[0]->offer_id);
+  EXPECT_EQ(999, offers[0]->GetOfferId());
 
   // Put some completely new data in the sync server.
-  AutofillOfferData offer2 = GetCardLinkedOfferData2();
-  offer2.offer_id = 888;
+  AutofillOfferData offer2 = GetCardLinkedOfferData2(/*offer_id=*/888);
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer2)});
   WaitForOnPersonalDataChanged(pdm);
 
   // Make sure only the new data is present.
-  offers = pdm->GetCreditCardOffers();
+  offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(888, offers[0]->offer_id);
+  EXPECT_EQ(888, offers[0]->GetOfferId());
 }
 
 // Offer is not using incremental updates. The server either sends a non-empty
 // update with deletion gc directives and with the (possibly empty) full data
 // set, or (more often) an empty update.
 IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
-  AutofillOfferData offer1 = GetCardLinkedOfferData1();
-  offer1.offer_id = 999;
+  AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetCreditCardOffers();
+  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(999, offers[0]->offer_id);
+  EXPECT_EQ(999, offers[0]->GetOfferId());
 
   // Trigger a sync and wait for the new data to arrive.
   sync_pb::ModelTypeState state_before =
@@ -231,41 +216,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   }
 
   // Make sure the same data is present on the client.
-  offers = pdm->GetCreditCardOffers();
+  offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(999, offers[0]->offer_id);
+  EXPECT_EQ(999, offers[0]->GetOfferId());
 }
 
 // If the server sends the same offers with changed data, they should change on
 // the client.
 IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
-  AutofillOfferData offer = GetCardLinkedOfferData1();
-  offer.offer_id = 999;
-  offer.eligible_instrument_id.clear();
-  offer.eligible_instrument_id.push_back(111111);
+  AutofillOfferData offer = GetCardLinkedOfferData1(/*offer_id=*/999);
+  offer.SetEligibleInstrumentIdForTesting({111111});
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers = pdm->GetCreditCardOffers();
+  std::vector<AutofillOfferData*> offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(999, offers[0]->offer_id);
-  EXPECT_EQ(1U, offers[0]->eligible_instrument_id.size());
+  EXPECT_EQ(999, offers[0]->GetOfferId());
+  EXPECT_EQ(1U, offers[0]->GetEligibleInstrumentIds().size());
 
   // Update the data.
-  offer.eligible_instrument_id.push_back(222222);
+  offer.SetEligibleInstrumentIdForTesting({111111, 222222});
   GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer)});
   WaitForOnPersonalDataChanged(pdm);
 
   // Make sure the data is present on the client.
   pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  offers = pdm->GetCreditCardOffers();
+  offers = pdm->GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
-  EXPECT_EQ(999, offers[0]->offer_id);
-  EXPECT_EQ(2U, offers[0]->eligible_instrument_id.size());
+  EXPECT_EQ(999, offers[0]->GetOfferId());
+  EXPECT_EQ(2U, offers[0]->GetEligibleInstrumentIds().size());
 }
 
 // Offer data should get cleared from the database when the Autofill sync type
@@ -277,11 +260,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
   // Make sure the data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCardOffers().size());
+  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Turn off autofill sync, the data should be gone.
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kAutofill));
   WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetCreditCardOffers().size());
+  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 }

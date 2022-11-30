@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -41,10 +40,12 @@ import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.android_webview.devui.util.WebViewCrashInfoCollector;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.version_info.Channel;
@@ -498,10 +499,8 @@ public class CrashesListFragment extends DevUiBaseFragment {
             // Open Google Settings activity, "Usage & diagnostics" activity is not exported and
             // cannot be opened directly.
             Intent settingsIntent = new Intent(USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION);
-            List<ResolveInfo> intentResolveInfo =
-                    mContext.getPackageManager().queryIntentActivities(settingsIntent, 0);
             // Show a button to open GMS settings activity only if it exists.
-            if (intentResolveInfo.size() > 0) {
+            if (PackageManagerUtils.canResolveActivity(settingsIntent)) {
                 logCrashCollectionState(CollectionState.DISABLED_BY_USER_CONSENT);
                 errorView.setActionButton(
                         "Open Settings", v -> mContext.startActivity(settingsIntent));
@@ -521,7 +520,9 @@ public class CrashesListFragment extends DevUiBaseFragment {
         dialogBuilder.setMessage(CRASH_BUG_DIALOG_MESSAGE);
         dialogBuilder.setPositiveButton("Provide more info", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_PROCEED);
-            mContext.startActivity(new CrashBugUrlFactory(crashInfo).getReportIntent());
+            SafeIntentUtils.startActivityOrShowError(mContext,
+                    new CrashBugUrlFactory(crashInfo).getReportIntent(),
+                    SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
         });
         dialogBuilder.setNegativeButton("Dismiss", (dialog, id) -> {
             logCrashInteraction(CrashInteraction.FILE_BUG_REPORT_DIALOG_DISMISS);

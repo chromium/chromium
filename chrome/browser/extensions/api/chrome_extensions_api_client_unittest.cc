@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
-#include "base/macros.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -19,9 +18,12 @@ class ChromeExtensionsAPIClientTest : public testing::Test {
  public:
   ChromeExtensionsAPIClientTest() = default;
 
+  ChromeExtensionsAPIClientTest(const ChromeExtensionsAPIClientTest&) = delete;
+  ChromeExtensionsAPIClientTest& operator=(
+      const ChromeExtensionsAPIClientTest&) = delete;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsAPIClientTest);
 };
 
 TEST_F(ChromeExtensionsAPIClientTest, ShouldHideResponseHeader) {

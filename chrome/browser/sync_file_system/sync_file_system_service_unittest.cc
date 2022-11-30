@@ -1,18 +1,20 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -132,9 +134,9 @@ class SyncFileSystemServiceTest : public testing::Test {
 
   void SetUp() override {
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncFileSystemServiceTest");
-    file_system_.reset(new CannedSyncableFileSystem(
+    file_system_ = std::make_unique<CannedSyncableFileSystem>(
         GURL(kOrigin), in_memory_env_.get(), content::GetIOThreadTaskRunner({}),
-        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()})));
+        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()}));
 
     std::unique_ptr<LocalFileSyncService> local_service =
         LocalFileSyncService::CreateForTesting(&profile_, in_memory_env_.get());
@@ -159,7 +161,7 @@ class SyncFileSystemServiceTest : public testing::Test {
     EXPECT_CALL(*mock_remote_service(), SetSyncEnabled(false)).Times(1);
     sync_service_->SetSyncEnabledForTesting(false);
 
-    file_system_->SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_->SetUp();
   }
 
   void TearDown() override {
@@ -266,7 +268,7 @@ class SyncFileSystemServiceTest : public testing::Test {
   std::unique_ptr<CannedSyncableFileSystem> file_system_;
 
   // Their ownerships are transferred to SyncFileSystemService.
-  StrictMock<MockRemoteFileSyncService>* remote_service_;
+  raw_ptr<StrictMock<MockRemoteFileSyncService>> remote_service_;
   StrictMock<MockLocalChangeProcessor> local_change_processor_;
 
   std::unique_ptr<SyncFileSystemService> sync_service_;
@@ -301,7 +303,8 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithNetworkFailure) {
       SYNC_STATUS_NETWORK_ERROR);
 }
 
-TEST_F(SyncFileSystemServiceTest, InitializeForAppWithError) {
+// Disabled due to flakiness: crbug.com/1222929
+TEST_F(SyncFileSystemServiceTest, DISABLED_InitializeForAppWithError) {
   std::vector<SyncServiceState> expected_states;
   expected_states.push_back(SYNC_SERVICE_DISABLED);
 
@@ -314,7 +317,8 @@ TEST_F(SyncFileSystemServiceTest, InitializeForAppWithError) {
       SYNC_STATUS_FAILED);
 }
 
-TEST_F(SyncFileSystemServiceTest, SimpleLocalSyncFlow) {
+// Disabled due to flakiness: crbug.com/1345010
+TEST_F(SyncFileSystemServiceTest, DISABLED_SimpleLocalSyncFlow) {
   InitializeApp();
 
   StrictMock<MockSyncStatusObserver> status_observer;

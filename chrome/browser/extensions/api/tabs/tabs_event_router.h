@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -43,6 +43,10 @@ class TabsEventRouter : public TabStripModelObserver,
                         public resource_coordinator::TabLifecycleObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
+
+  TabsEventRouter(const TabsEventRouter&) = delete;
+  TabsEventRouter& operator=(const TabsEventRouter&) = delete;
+
   ~TabsEventRouter() override;
 
   // BrowserTabStripTrackerDelegate:
@@ -63,7 +67,7 @@ class TabsEventRouter : public TabStripModelObserver,
   void TabPinnedStateChanged(TabStripModel* tab_strip_model,
                              content::WebContents* contents,
                              int index) override;
-  void TabGroupedStateChanged(base::Optional<tab_groups::TabGroupId> group,
+  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
 
@@ -98,8 +102,7 @@ class TabsEventRouter : public TabStripModelObserver,
                              int index,
                              bool was_active);
   void DispatchActiveTabChanged(content::WebContents* old_contents,
-                                content::WebContents* new_contents,
-                                int index);
+                                content::WebContents* new_contents);
   void DispatchTabSelectionChanged(TabStripModel* tab_strip_model,
                                    const ui::ListSelectionModel& old_model);
   void DispatchTabMoved(content::WebContents* contents,
@@ -128,7 +131,7 @@ class TabsEventRouter : public TabStripModelObserver,
   void DispatchEvent(Profile* profile,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     std::unique_ptr<base::ListValue> args,
+                     base::Value::List args,
                      EventRouter::UserGestureState user_gesture);
 
   // Packages |changed_property_names| as a tab updated event for the tab
@@ -157,6 +160,9 @@ class TabsEventRouter : public TabStripModelObserver,
     // Create a TabEntry associated with, and tracking state changes to,
     // |contents|.
     TabEntry(TabsEventRouter* router, content::WebContents* contents);
+
+    TabEntry(const TabEntry&) = delete;
+    TabEntry& operator=(const TabEntry&) = delete;
 
     // Indicate via a list of property names if a tab is loading based on its
     // WebContents. Whether the state has changed or not is used to determine if
@@ -190,9 +196,7 @@ class TabsEventRouter : public TabStripModelObserver,
     GURL url_;
 
     // Event router that the WebContents's noficiations are forwarded to.
-    TabsEventRouter* router_;
-
-    DISALLOW_COPY_AND_ASSIGN(TabEntry);
+    raw_ptr<TabsEventRouter> router_;
   };
 
   // Gets the TabEntry for the given |contents|. Returns TabEntry* if found,
@@ -203,7 +207,7 @@ class TabsEventRouter : public TabStripModelObserver,
   TabEntryMap tab_entries_;
 
   // The main profile that owns this event router.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
@@ -214,8 +218,6 @@ class TabsEventRouter : public TabStripModelObserver,
   base::ScopedObservation<resource_coordinator::TabManager,
                           resource_coordinator::TabLifecycleObserver>
       tab_manager_scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabsEventRouter);
 };
 
 }  // namespace extensions

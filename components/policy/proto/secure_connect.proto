@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+import "policy_common_definitions.proto";
+
+package enterprise_management;
+
+// Response message for GetManagedAccountsSigninRestriction.
+message GetManagedAccountsSigninRestrictionResponse {
+  optional string policy_value = 1;
+  optional PolicyOptions policy_options = 2;
+  optional bool has_error = 3;
+}

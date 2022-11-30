@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -49,7 +49,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/icon_loader.h"
@@ -58,6 +57,10 @@
 class IconManager {
  public:
   IconManager();
+
+  IconManager(const IconManager&) = delete;
+  IconManager& operator=(const IconManager&) = delete;
+
   ~IconManager();
 
   // Synchronous call to examine the internal caches for the icon. Returns the
@@ -66,7 +69,8 @@ class IconManager {
   // must not be free'd by the caller. If the caller needs to modify the icon,
   // it must make a copy and modify the copy.
   gfx::Image* LookupIconFromFilepath(const base::FilePath& file_path,
-                                     IconLoader::IconSize size);
+                                     IconLoader::IconSize size,
+                                     float scale);
 
   using IconRequestCallback = base::OnceCallback<void(gfx::Image)>;
 
@@ -83,32 +87,39 @@ class IconManager {
   base::CancelableTaskTracker::TaskId LoadIcon(
       const base::FilePath& file_name,
       IconLoader::IconSize size,
+      float scale,
       IconRequestCallback callback,
       base::CancelableTaskTracker* tracker);
 
  private:
+  gfx::Image* DoLookupIconFromFilepath(const base::FilePath& file_path,
+                                       IconLoader::IconSize size,
+                                       float scale);
+
   void OnIconLoaded(IconRequestCallback callback,
                     base::FilePath file_path,
                     IconLoader::IconSize size,
+                    float scale,
                     gfx::Image result,
                     const IconLoader::IconGroup& group);
 
   struct CacheKey {
-    CacheKey(const IconLoader::IconGroup& group, IconLoader::IconSize size);
+    CacheKey(const IconLoader::IconGroup& group,
+             IconLoader::IconSize size,
+             float scale);
 
     // Used as a key in the map below, so we need this comparator.
     bool operator<(const CacheKey &other) const;
 
     IconLoader::IconGroup group;
     IconLoader::IconSize size;
+    float scale;
   };
 
   std::map<base::FilePath, IconLoader::IconGroup> group_cache_;
   std::map<CacheKey, gfx::Image> icon_cache_;
 
   base::WeakPtrFactory<IconManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconManager);
 };
 
 #endif  // CHROME_BROWSER_ICON_MANAGER_H_

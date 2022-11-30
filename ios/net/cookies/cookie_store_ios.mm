@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,12 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -35,6 +33,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/log/net_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,6 +54,9 @@ class NotificationTrampoline {
  public:
   static NotificationTrampoline* GetInstance();
 
+  NotificationTrampoline(const NotificationTrampoline&) = delete;
+  NotificationTrampoline& operator=(const NotificationTrampoline&) = delete;
+
   void AddObserver(CookieNotificationObserver* obs);
   void RemoveObserver(CookieNotificationObserver* obs);
 
@@ -66,8 +68,6 @@ class NotificationTrampoline {
   ~NotificationTrampoline();
 
   base::ObserverList<CookieNotificationObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationTrampoline);
 
   static NotificationTrampoline* g_notification_trampoline;
 };
@@ -170,14 +170,20 @@ std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForCookie(
     const GURL& gurl,
     const std::string& name,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   return cookie_store_->AddCallbackForCookie(gurl, name, std::move(callback));
 }
 
 std::unique_ptr<CookieChangeSubscription>
 CookieStoreIOS::CookieChangeDispatcherIOS::AddCallbackForUrl(
     const GURL& gurl,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
+  // iOS does not support Partitioned cookies.
+  DCHECK(!cookie_partition_key);
   // Implement when needed by iOS consumers.
   NOTIMPLEMENTED();
   return nullptr;
@@ -235,7 +241,8 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
     std::unique_ptr<net::CanonicalCookie> cookie,
     const GURL& source_url,
     const net::CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    absl::optional<net::CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
@@ -250,12 +257,18 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
 
+  net::CookieAccessResult access_result;
+  if (cookie_access_result) {
+    access_result = *cookie_access_result;
+  }
+
   if (cookie->IsSecure() &&
       access_scheme == CookieAccessScheme::kNonCryptographic) {
-    if (!callback.is_null())
-      std::move(callback).Run(
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY)));
+    if (!callback.is_null()) {
+      access_result.status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      std::move(callback).Run(access_result);
+    }
     return;
   }
 
@@ -264,24 +277,30 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   if (ns_cookie != nil) {
     system_store_->SetCookieAsync(
         ns_cookie, &cookie->CreationDate(),
-        BindSetCookiesCallback(&callback, net::CookieAccessResult()));
+        BindSetCookiesCallback(&callback, access_result));
     return;
   }
 
-  if (!callback.is_null())
-    std::move(callback).Run(net::CookieAccessResult(net::CookieInclusionStatus(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE)));
+  if (!callback.is_null()) {
+    access_result.status.AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    std::move(callback).Run(access_result);
+  }
 }
 
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
   // instead.
   DCHECK(SystemCookiesAllowed());
+
+  // TODO(crbug.com/1225444): Include cookie partition key when/if iOS supports
+  // it.
 
   // TODO(mkwst): If/when iOS supports Same-Site cookies, we'll need to pass
   // options in here as well. https://crbug.com/459154
@@ -332,9 +351,6 @@ void CookieStoreIOS::DeleteAllCreatedInTimeRangeAsync(
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
-
   CookieDeletionInfo delete_info(creation_range.start(), creation_range.end());
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
 }
@@ -347,9 +363,6 @@ void CookieStoreIOS::DeleteAllMatchingInfoAsync(CookieDeletionInfo delete_info,
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
-
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
 }
 
@@ -360,13 +373,22 @@ void CookieStoreIOS::DeleteSessionCookiesAsync(DeleteCallback callback) {
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  if (metrics_enabled())
-    ResetCookieCountMetrics();
-
   CookieDeletionInfo delete_info;
   delete_info.session_control =
       CookieDeletionInfo::SessionControl::SESSION_COOKIES;
   DeleteCookiesMatchingInfoAsync(std::move(delete_info), std::move(callback));
+}
+
+void CookieStoreIOS::DeleteMatchingCookiesAsync(DeletePredicate predicate,
+                                                DeleteCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // If cookies are not allowed, a CookieStoreIOS subclass should be used
+  // instead.
+  DCHECK(SystemCookiesAllowed());
+
+  DeleteCookiesMatchingPredicateAsync(std::move(predicate),
+                                      std::move(callback));
 }
 
 void CookieStoreIOS::FlushStore(base::OnceClosure closure) {
@@ -394,8 +416,7 @@ CookieStoreIOS::CookieStoreIOS(
     net::CookieMonster::PersistentCookieStore* persistent_store,
     std::unique_ptr<SystemCookieStore> system_store,
     NetLog* net_log)
-    : cookie_monster_(new net::CookieMonster(persistent_store,
-                                             net_log)),
+    : cookie_monster_(new net::CookieMonster(persistent_store, net_log)),
       system_store_(std::move(system_store)),
       metrics_enabled_(false),
       cookie_cache_(new CookieCache()),
@@ -538,7 +559,7 @@ void CookieStoreIOS::OnSystemCookiesChanged() {
                                       weak_factory_.GetWeakPtr(),
                                       base::OnceClosure()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, flush_closure_.callback(), base::TimeDelta::FromSeconds(10));
+      FROM_HERE, flush_closure_.callback(), base::Seconds(10));
 }
 
 CookieChangeDispatcher& CookieStoreIOS::GetChangeDispatcher() {
@@ -657,7 +678,8 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
     GetCookieListCallback callback = base::BindOnce(
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
-        key.first, net::CookieOptions::MakeAllInclusive(), std::move(callback));
+        key.first, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeyCollection::Todo(), std::move(callback));
   }
 }
 

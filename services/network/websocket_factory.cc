@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ WebSocketFactory::WebSocketFactory(NetworkContext* context)
 WebSocketFactory::~WebSocketFactory() {
   // Subtle: This is important to avoid WebSocketFactory::Remove calls during
   // |connections_| destruction.
-  connections_.clear();
+  WebSocketSet connections = std::move(connections_);
 }
 
 void WebSocketFactory::CreateWebSocket(
@@ -41,7 +41,8 @@ void WebSocketFactory::CreateWebSocket(
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
-    mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) {
+    mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
+    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
   if (isolation_info.request_type() !=
       net::IsolationInfo::RequestType::kOther) {
     mojo::ReportBadMessage(
@@ -73,7 +74,7 @@ void WebSocketFactory::CreateWebSocket(
       std::move(url_loader_network_observer), std::move(auth_handler),
       std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
-      throttler_.CalculateDelay(process_id)));
+      throttler_.CalculateDelay(process_id), throttling_profile_id));
 }
 
 net::URLRequestContext* WebSocketFactory::GetURLRequestContext() {

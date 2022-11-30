@@ -41,9 +41,22 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_touch_action.h"
-#include "third_party/blink/public/web/web_swap_result.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/gfx/ca_layer_result.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace cc {
+struct ApplyViewportChangesArgs;
+class LayerTreeHost;
+}  // namespace cc
+
+namespace gfx {
+class PointF;
+class RectF;
+}  // namespace gfx
 
 namespace blink {
 
@@ -96,12 +109,14 @@ class WebFrameWidget : public WebWidget {
   virtual void DragTargetDrop(const WebDragData&,
                               const gfx::PointF& point_in_viewport,
                               const gfx::PointF& screen_point,
-                              uint32_t key_modifiers) = 0;
+                              uint32_t key_modifiers,
+                              base::OnceClosure callback) = 0;
 
   // Notifies the WebFrameWidget that a drag has terminated.
   virtual void DragSourceEndedAt(const gfx::PointF& point_in_viewport,
                                  const gfx::PointF& screen_point,
-                                 ui::mojom::DragOperation) = 0;
+                                 ui::mojom::DragOperation,
+                                 base::OnceClosure callback) = 0;
 
   // Notifies the WebFrameWidget that the system drag and drop operation has
   // ended.
@@ -130,11 +145,16 @@ class WebFrameWidget : public WebWidget {
       const cc::ApplyViewportChangesArgs& args) = 0;
 
   // The |callback| will be fired when the corresponding renderer frame is
-  // submitted (still called "swapped") to the display compositor (either with
-  // DidSwap or DidNotSwap).
-  virtual void NotifySwapAndPresentationTime(
-      WebReportTimeCallback swap_callback,
-      WebReportTimeCallback presentation_callback) = 0;
+  // presented to the user. If the presentation is successful, the argument
+  // passed to the callback is the presentation timestamp; otherwise, it would
+  // be timestamp of when the failure is detected.
+  virtual void NotifyPresentationTime(
+      base::OnceCallback<void(base::TimeTicks)> callback) = 0;
+
+#if BUILDFLAG(IS_MAC)
+  virtual void NotifyCoreAnimationErrorCode(
+      base::OnceCallback<void(gfx::CALayerResult)> callback) = 0;
+#endif
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client.
@@ -195,6 +215,10 @@ class WebFrameWidget : public WebWidget {
   // `FrameWidgetTestHelper::CreateTestWebFrameWidget()`.
   virtual FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() = 0;
 
+  // This should be called for the local root frame before calling the final
+  // UpdateAllLifecyclePhases() just before dumping pixels.
+  virtual void PrepareForFinalLifecyclUpdateForTesting() = 0;
+
  private:
   // This is a private virtual method so we don't expose cc::LayerTreeHost
   // outside of this class. Friend classes may be added in order to access it.
@@ -228,7 +252,8 @@ using CreateWebFrameWidgetCallback = base::RepeatingCallback<WebFrameWidget*(
     bool hidden,
     bool never_composited,
     bool is_for_child_local_root,
-    bool is_for_nested_main_frame)>;
+    bool is_for_nested_main_frame,
+    bool is_for_scalable_page)>;
 // Allows tests to inject their own type of WebFrameWidget in order to
 // override methods of the WebFrameWidgetImpl.
 void BLINK_EXPORT
@@ -236,4 +261,4 @@ InstallCreateWebFrameWidgetHook(CreateWebFrameWidgetCallback* create_widget);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_WIDGET_H_

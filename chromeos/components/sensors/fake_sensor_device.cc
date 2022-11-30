@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
@@ -52,11 +53,43 @@ void FakeSensorDevice::RemoveReceiver(mojo::ReceiverId id) {
   receiver_set_.Remove(id);
 }
 
+void FakeSensorDevice::RemoveReceiverWithReason(
+    mojo::ReceiverId id,
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(receiver_set_.HasReceiver(id));
+
+  uint32_t custom_reason_code = base::checked_cast<uint32_t>(reason);
+
+  auto it = clients_.find(id);
+  if (it != clients_.end()) {
+    it->second.observer.ResetWithReason(custom_reason_code, description);
+    clients_.erase(it);
+  }
+
+  receiver_set_.RemoveWithReason(id, custom_reason_code, description);
+}
+
 void FakeSensorDevice::ClearReceivers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   clients_.clear();
   receiver_set_.Clear();
+}
+
+void FakeSensorDevice::ClearReceiversWithReason(
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  uint32_t custom_reason_code = base::checked_cast<uint32_t>(reason);
+
+  for (auto& client : clients_)
+    client.second.observer.ResetWithReason(custom_reason_code, description);
+  clients_.clear();
+
+  receiver_set_.ClearWithReason(custom_reason_code, description);
 }
 
 bool FakeSensorDevice::HasReceivers() const {
@@ -88,18 +121,50 @@ void FakeSensorDevice::ResetObserverRemote(mojo::ReceiverId id) {
   it->second.observer.reset();
 }
 
+void FakeSensorDevice::ResetObserverRemoteWithReason(
+    mojo::ReceiverId id,
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = clients_.find(id);
+  if (it == clients_.end())
+    return;
+
+  it->second.observer.ResetWithReason(base::checked_cast<uint32_t>(reason),
+                                      description);
+}
+
+void FakeSensorDevice::SetChannelsEnabledWithId(
+    mojo::ReceiverId id,
+    const std::vector<int32_t>& iio_chn_indices,
+    bool en) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = clients_.find(id);
+  DCHECK(it != clients_.end());
+
+  for (int32_t index : iio_chn_indices) {
+    DCHECK_LT(static_cast<size_t>(index), it->second.channels_enabled.size());
+
+    it->second.channels_enabled[index] = en;
+  }
+
+  SendSampleIfReady(it->second);
+}
+
 void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
                                      GetAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<base::Optional<std::string>> values;
+  std::vector<absl::optional<std::string>> values;
   values.reserve(attr_names.size());
   for (const auto& attr_name : attr_names) {
     auto it = attributes_.find(attr_name);
     if (it != attributes_.end())
       values.push_back(it->second);
     else
-      values.push_back(base::nullopt);
+      values.push_back(absl::nullopt);
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -226,12 +291,12 @@ void FakeSensorDevice::GetChannelsAttributes(
     GetChannelsAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<base::Optional<std::string>> attrs;
+  std::vector<absl::optional<std::string>> attrs;
 
   for (const ChannelData& channel : channels_) {
     auto it = channel.attrs.find(attr_name);
     if (it == channel.attrs.end()) {
-      attrs.push_back(base::nullopt);
+      attrs.push_back(absl::nullopt);
       continue;
     }
 

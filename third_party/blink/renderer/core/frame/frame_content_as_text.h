@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class LocalFrame;
 
 // Recursively dumps the text inside |frame| and its local subtree to
 // |output|, up to the length of |max_chars|.
-CORE_EXPORT void FrameContentAsText(size_t max_chars,
+CORE_EXPORT void FrameContentAsText(wtf_size_t max_chars,
                                     LocalFrame* frame,
                                     StringBuilder& output);
 

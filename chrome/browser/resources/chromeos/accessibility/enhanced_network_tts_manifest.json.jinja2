@@ -1,0 +1,756 @@
+{
+{%if key is defined %}
+  "key": "{{key}}",
+{% endif %}
+  "manifest_version": 2,
+  "name": "__MSG_ENHANCED_NETWORK_TTS_NAME__",
+  "version": "{{set_version}}",
+  "description": "__MSG_ENHANCED_NETWORK_TTS_DESCRIPTION__",
+{% if is_guest_manifest == '1' %}
+  "incognito": "split",
+{% endif %}
+  "background": {
+    "page": "enhanced_network_tts/background.html"
+  },
+  "permissions": [
+    "ttsEngine"
+  ],
+  "default_locale": "en",
+  "tts_engine": {
+    "voices": [
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "voice_name": "default-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "bn_in",
+          "voice_name": "bnm",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "bn_in",
+          "voice_name": "bnx",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "cs_cz",
+          "voice_name": "jfs",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "cs_cz",
+          "voice_name": "jfs-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "da_dk",
+          "voice_name": "kfm",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "da_dk",
+          "voice_name": "kfm-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "da_dk",
+          "voice_name": "vfb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "da_dk",
+          "voice_name": "nmm-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "da_dk",
+          "voice_name": "sfp-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "dea-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "deb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "dec-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "ded-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "deg-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "de_de",
+          "voice_name": "nfh-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "el_gr",
+          "voice_name": "vfz-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_au",
+          "voice_name": "aua-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_au",
+          "voice_name": "aub-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_au",
+          "voice_name": "auc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_au",
+          "voice_name": "aud-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "rjs",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "gba-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "gbb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "gbc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "gbd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_gb",
+          "voice_name": "gbg-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_in",
+          "voice_name": "ena-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_in",
+          "voice_name": "enc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_in",
+          "voice_name": "end-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_in",
+          "voice_name": "ene-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "iob-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "iog-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "iol-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "iom-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpa-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpe-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "en_us",
+          "voice_name": "tpf-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_es",
+          "voice_name": "es-es-server-iris-wavenet#eea",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_es",
+          "voice_name": "es-es-server-iris-wavenet#eec",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_es",
+          "voice_name": "es-es-server-iris-wavenet#eed",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_us",
+          "voice_name": "es-us-iris-wavenet#sfb",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_us",
+          "voice_name": "es-us-iris-wavenet#esc",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_us",
+          "voice_name": "es-us-iris-wavenet#esd",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "es_us",
+          "voice_name": "es-us-iris-wavenet#esf",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fi_fi",
+          "voice_name": "afi-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fil_ph",
+          "voice_name": "cfc",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fil_ph",
+          "voice_name": "cfc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fil_ph",
+          "voice_name": "fic-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fil_ph",
+          "voice_name": "fid-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fil_ph",
+          "voice_name": "fie-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_ca",
+          "voice_name": "caa-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_ca",
+          "voice_name": "cab-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_ca",
+          "voice_name": "cac-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_ca",
+          "voice_name": "cad-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_fr",
+          "voice_name": "fra-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_fr",
+          "voice_name": "frb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_fr",
+          "voice_name": "frc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_fr",
+          "voice_name": "frd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "fr_fr",
+          "voice_name": "vlf-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "hi_in",
+          "voice_name": "hia-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "hi_in",
+          "voice_name": "hic-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "hi_in",
+          "voice_name": "hid-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "hi_in",
+          "voice_name": "hie-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "hu_hu",
+          "voice_name": "kfl-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "id_id",
+          "voice_name": "dfz",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "id_id",
+          "voice_name": "dfz-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "id_id",
+          "voice_name": "idc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "id_id",
+          "voice_name": "idd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "id_id",
+          "voice_name": "ide-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "it_it",
+          "voice_name": "itb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "it_it",
+          "voice_name": "itc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "it_it",
+          "voice_name": "itd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "it_it",
+          "voice_name": "kda-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ja_jp",
+          "voice_name": "htm-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ja_jp",
+          "voice_name": "jab-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ja_jp",
+          "voice_name": "jac-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ja_jp",
+          "voice_name": "jad-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ko_kr",
+          "voice_name": "ism-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ko_kr",
+          "voice_name": "kob-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ko_kr",
+          "voice_name": "koc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ko_kr",
+          "voice_name": "kod-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "nl_nl",
+          "voice_name": "tfb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "nl_nl",
+          "voice_name": "lfc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "nl_nl",
+          "voice_name": "bmh-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "nl_nl",
+          "voice_name": "yfr-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "nl_nl",
+          "voice_name": "dma-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "oda",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "oda-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "afb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "bmg-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "jmk-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pl_pl",
+          "voice_name": "zfg-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_br",
+          "voice_name": "afs",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_br",
+          "voice_name": "afs-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_pt",
+          "voice_name": "jfb-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_pt",
+          "voice_name": "pmj-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_pt",
+          "voice_name": "sfs-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "pt_pt",
+          "voice_name": "jmn-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ru_ru",
+          "voice_name": "dfc",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ru_ru",
+          "voice_name": "ruc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ru_ru",
+          "voice_name": "rud-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ru_ru",
+          "voice_name": "rue-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "ru_ru",
+          "voice_name": "ruf-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "sk_sk",
+          "voice_name": "sfk",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "sk_sk",
+          "voice_name": "sfk-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "sv_se",
+          "voice_name": "lfs-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "tr_tr",
+          "voice_name": "ama-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "tr_tr",
+          "voice_name": "cfs-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "tr_tr",
+          "voice_name": "efu-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "tr_tr",
+          "voice_name": "mfm-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "tr_tr",
+          "voice_name": "tmc-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "uk_ua",
+          "voice_name": "hfd",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "uk_ua",
+          "voice_name": "hfd-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "vi_vn",
+          "voice_name": "gft",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "vi_vn",
+          "voice_name": "vic-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "vi_vn",
+          "voice_name": "vid-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "vi_vn",
+          "voice_name": "vie-wavenet",
+          "remote": true
+      },
+      {
+          "event_types": [ "start", "end", "error", "word" ],
+          "lang": "vi_vn",
+          "voice_name": "vif-wavenet",
+          "remote": true
+      }
+    ],
+    "sample_rate": 44100,
+    "buffer_size": 128
+  }
+}

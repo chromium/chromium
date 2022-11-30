@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,15 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/auth.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "components/arc/mojom/auth.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -42,11 +42,17 @@ class ArcBackgroundAuthCodeFetcher;
 class ArcBridgeService;
 class ArcFetcherBase;
 
+constexpr char kArcAuthRequestAccountInfoResultPrimaryHistogramName[] =
+    "Arc.Auth.RequestAccountInfoResult.Primary";
+constexpr char kArcAuthRequestAccountInfoResultSecondaryHistogramName[] =
+    "Arc.Auth.RequestAccountInfoResult.Secondary";
+
 // Implementation of ARC authorization.
 class ArcAuthService : public KeyedService,
                        public mojom::AuthHost,
                        public ConnectionObserver<mojom::AuthInstance>,
                        public signin::IdentityManager::Observer,
+                       public ash::AccountAppsAvailability::Observer,
                        public ArcSessionManagerObserver {
  public:
   using GetGoogleAccountsInArcCallback =
@@ -58,6 +64,10 @@ class ArcAuthService : public KeyedService,
 
   ArcAuthService(content::BrowserContext* profile,
                  ArcBridgeService* bridge_service);
+
+  ArcAuthService(const ArcAuthService&) = delete;
+  ArcAuthService& operator=(const ArcAuthService&) = delete;
+
   ~ArcAuthService() override;
 
   // Gets the list of Google accounts currently stored in ARC. This is used by
@@ -79,8 +89,9 @@ class ArcAuthService : public KeyedService,
                              mojom::ArcSignInAccountPtr account) override;
   void ReportMetrics(mojom::MetricsType metrics_type, int32_t value) override;
   void ReportAccountCheckStatus(mojom::AccountCheckStatus status) override;
-  void ReportSupervisionChangeStatus(
-      mojom::SupervisionChangeStatus status) override;
+  void ReportAccountReauthReason(mojom::ReauthReason reason) override;
+  void ReportManagementChangeStatus(
+      mojom::ManagementChangeStatus status) override;
   void RequestPrimaryAccountInfo(
       RequestPrimaryAccountInfoCallback callback) override;
   void RequestAccountInfo(const std::string& account_name,
@@ -91,6 +102,9 @@ class ArcAuthService : public KeyedService,
   void HandleRemoveAccountRequest(const std::string& email) override;
   void HandleUpdateCredentialsRequest(const std::string& email) override;
 
+ private:
+  friend class ArcAuthServiceTest;
+
   void SetURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
@@ -99,13 +113,27 @@ class ArcAuthService : public KeyedService,
       const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& account_info) override;
 
+  // ash::AccountAppsAvailability::Observer:
+  void OnAccountAvailableInArc(
+      const account_manager::Account& account) override;
+  void OnAccountUnavailableInArc(
+      const account_manager::Account& account) override;
+
   // ArcSessionManagerObserver:
   void OnArcInitialStart() override;
 
   // KeyedService:
   void Shutdown() override;
 
- private:
+  // Calls `mojom::OnAccountUpdated` with update type
+  // `mojom::AccountUpdateType::UPSERT` if the account with provided
+  // `account_info` doesn't have refresh token in persistent error state.
+  void UpsertAccountToArc(const CoreAccountInfo& account_info);
+
+  // Calls `mojom::OnAccountUpdated` with update type
+  // `mojom::AccountUpdateType::REMOVAL` for the provided email.
+  void RemoveAccountFromArc(const std::string& email);
+
   // Callback when Active Directory Enrollment Token is fetched.
   // |callback| is completed with |ArcAuthCodeStatus| and |AccountInfo|
   // depending on the success / failure of the operation.
@@ -177,6 +205,14 @@ class ArcAuthService : public KeyedService,
   // OS Account Manager will not be pushed to ARC as part of this call.
   void TriggerAccountsPushToArc(bool filter_primary_account);
 
+  // Pushes accounts in the `accounts` set to ARC. `accounts` set must contain
+  // only Gaia accounts. If `filter_primary_account` is set to `true`, the
+  // Primary Account in Chrome OS Account Manager will not be pushed to ARC as
+  // part of this call.
+  void CompleteAccountsPushToArc(
+      bool filter_primary_account,
+      const base::flat_set<account_manager::Account>& accounts);
+
   // Issues a request to ARC, which will complete callback with the list of
   // Google accounts in ARC.
   void DispatchAccountsInArc(GetGoogleAccountsInArcCallback callback);
@@ -188,6 +224,7 @@ class ArcAuthService : public KeyedService,
   Profile* const profile_;
   signin::IdentityManager* const identity_manager_;
   ArcBridgeService* const arc_bridge_service_;
+  ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool url_loader_factory_for_testing_set_ = false;
@@ -200,8 +237,6 @@ class ArcAuthService : public KeyedService,
   GetGoogleAccountsInArcCallback pending_get_arc_accounts_callback_;
 
   base::WeakPtrFactory<ArcAuthService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAuthService);
 };
 
 }  // namespace arc

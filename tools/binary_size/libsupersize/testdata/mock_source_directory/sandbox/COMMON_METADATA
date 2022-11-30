@@ -1,0 +1,5 @@
+# This exists under //sandbox because there is currently a gclient runhook
+# that will check that all DIR_METADATA files point to valid files.
+monorail {
+  component: "UI>Browser"
+}

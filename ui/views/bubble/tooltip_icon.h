@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -39,14 +40,21 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
 
   explicit TooltipIcon(const std::u16string& tooltip,
                        int tooltip_icon_size = 16);
+
+  TooltipIcon(const TooltipIcon&) = delete;
+  TooltipIcon& operator=(const TooltipIcon&) = delete;
+
   ~TooltipIcon() override;
 
   // ImageView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // MouseWatcherListener:
   void MouseMovedOutOfHost() override;
@@ -91,7 +99,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   bool mouse_inside_;
 
   // A bubble shown on hover. Weak; owns itself. NULL while hiding.
-  InfoBubble* bubble_;
+  raw_ptr<InfoBubble> bubble_;
 
   // The width the tooltip prefers to be. Default is 0 (no preference).
   int preferred_width_;
@@ -105,8 +113,6 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipIcon);
 };
 
 }  // namespace views

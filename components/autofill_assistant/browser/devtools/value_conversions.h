@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "components/autofill_assistant/browser/devtools/error_reporter.h"
 
 namespace autofill_assistant {
@@ -55,16 +56,16 @@ std::unique_ptr<base::Value> ToValueImpl(const std::string& value, T*) {
 
 template <typename T>
 std::unique_ptr<base::Value> ToValueImpl(const base::Value& value, T*) {
-  return value.CreateDeepCopy();
+  return std::make_unique<base::Value>(value.Clone());
 }
 
 template <typename T>
 std::unique_ptr<base::Value> ToValueImpl(const std::vector<T>& vector,
                                          const std::vector<T>*) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+  base::Value::List result;
   for (const auto& it : vector)
-    result->Append(ToValue(it));
-  return std::move(result);
+    result.Append(base::Value::FromUniquePtrValue(ToValue(it)));
+  return std::make_unique<base::Value>(std::move(result));
 }
 
 template <typename T>
@@ -135,7 +136,7 @@ template <>
 struct FromValue<base::Value> {
   static std::unique_ptr<base::Value> Parse(const base::Value& value,
                                             ErrorReporter* errors) {
-    return value.CreateDeepCopy();
+    return base::Value::ToUniquePtrValue(value.Clone());
   }
 };
 

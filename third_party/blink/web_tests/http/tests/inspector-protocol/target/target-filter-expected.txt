@@ -1,0 +1,240 @@
+Tests target filter.
+type: frame [
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+        type : iframe
+        url : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+    }
+]
+type: service_worker [
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+    }
+]
+type: frames and service workers [
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+        type : iframe
+        url : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+    }
+    [1] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+    }
+]
+type: all but frames [
+    [0] : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [1] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+    [2] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+    }
+    [3] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 
+        type : shared_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+    }
+    [4] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [5] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+]
+default filter [
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+        type : iframe
+        url : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+    }
+    [1] : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [2] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+    [3] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+    }
+    [4] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 
+        type : shared_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+    }
+]
+wildcard pattern [
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+        type : iframe
+        url : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+    }
+    [1] : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [2] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : page
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+    [3] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js
+    }
+    [4] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 
+        type : shared_worker
+        url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+    }
+    [5] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    [6] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+]
+Discovered targets with type = shared_worker [
+    [0] : {
+        targetInfo : {
+            attached : false
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 
+            type : shared_worker
+            url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+        }
+    }
+]
+Auto-attached targets with type = iframe [
+    [0] : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+            type : iframe
+            url : http://devtools.oopif-b.test:8000/inspector-protocol/page.html
+        }
+        waitingForDebugger : false
+    }
+]
+

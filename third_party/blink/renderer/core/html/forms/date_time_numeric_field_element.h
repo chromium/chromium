@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_NUMERIC_FIELD_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_NUMERIC_FIELD_ELEMENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -60,6 +59,10 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
     int minimum;
     int maximum;
   };
+
+  DateTimeNumericFieldElement(const DateTimeNumericFieldElement&) = delete;
+  DateTimeNumericFieldElement& operator=(const DateTimeNumericFieldElement&) =
+      delete;
 
  protected:
   DateTimeNumericFieldElement(Document&,
@@ -116,10 +119,8 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
   int value_;
   bool has_value_;
   mutable StringBuilder type_ahead_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeNumericFieldElement);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_NUMERIC_FIELD_ELEMENT_H_

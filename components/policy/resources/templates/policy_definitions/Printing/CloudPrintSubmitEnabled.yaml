@@ -1,0 +1,29 @@
+caption: Enable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud
+  Print</ph>
+deprecated: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset lets users print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can submit documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> for printing. This doesn't prevent users from submitting print jobs on websites.
+
+        Setting the policy to Disabled means users can't print to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> from the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> print dialog.
+
+        In order to keep <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> destinations discoverable, this policy must be set to Enabled and <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD">cloud</ph> must not be included in the <ph name="PRINTER_TYPE_DENY_LIST_POLICY_NAME">PrinterTypeDenyList</ph> policy.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud
+    Print</ph>
+  value: true
+- caption: Disable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud
+    Print</ph>
+  value: false
+owners:
+- file://printing/OWNERS
+- weili@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:17-101
+tags: []
+type: main

@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_INPUT_TOUCH_INPUT_SCALER_H_
 #define REMOTING_CLIENT_INPUT_TOUCH_INPUT_SCALER_H_
 
-#include "base/macros.h"
 #include "remoting/protocol/input_filter.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -22,6 +21,10 @@ class TouchInputScaler : public protocol::InputFilter {
  public:
   TouchInputScaler() = default;
   explicit TouchInputScaler(InputStub* input_stub);
+
+  TouchInputScaler(const TouchInputScaler&) = delete;
+  TouchInputScaler& operator=(const TouchInputScaler&) = delete;
+
   ~TouchInputScaler() override;
 
   // Set input and output desktop sizes.
@@ -40,8 +43,6 @@ class TouchInputScaler : public protocol::InputFilter {
   // These hold the max-X,Y coordinates and not the actual width and height.
   webrtc::DesktopSize input_size_;
   webrtc::DesktopSize output_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInputScaler);
 };
 
 }  // namespace remoting

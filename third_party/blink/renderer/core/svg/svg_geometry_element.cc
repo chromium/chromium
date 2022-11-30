@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -109,13 +109,10 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
     return false;
   const auto& layout_shape = To<LayoutSVGShape>(*layout_object);
 
-  StrokeData stroke_data;
-  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-      stroke_data, layout_shape.StyleRef(), layout_shape,
-      PathLengthScaleFactor());
+  AffineTransform root_transform;
 
   Path path = AsPath();
-  FloatPoint local_point(point->Target()->Value());
+  gfx::PointF local_point = point->Target()->Value();
   if (layout_shape.HasNonScalingStroke()) {
     const AffineTransform transform =
         layout_shape.ComputeNonScalingStrokeTransform();
@@ -124,14 +121,19 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
 
     // Un-scale to get back to the root-transform (cheaper than re-computing
     // the root transform from scratch).
-    AffineTransform root_transform;
     root_transform.Scale(layout_shape.StyleRef().EffectiveZoom())
-        .Multiply(transform);
-    return path.StrokeContains(local_point, stroke_data, root_transform);
+        .PreConcat(transform);
+  } else {
+    root_transform = layout_shape.ComputeRootTransform();
   }
+
+  StrokeData stroke_data;
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
+      stroke_data, layout_shape.StyleRef(), layout_shape,
+      PathLengthScaleFactor());
+
   // Path::StrokeContains will reject points with a non-finite component.
-  return path.StrokeContains(local_point, stroke_data,
-                             layout_shape.ComputeRootTransform());
+  return path.StrokeContains(local_point, stroke_data, root_transform);
 }
 
 Path SVGGeometryElement::ToClipPath() const {
@@ -185,7 +187,7 @@ SVGPointTearOff* SVGGeometryElement::getPointAtLength(
     if (length > computed_length)
       length = computed_length;
   }
-  FloatPoint point = path.PointAtLength(length);
+  gfx::PointF point = path.PointAtLength(length);
 
   return SVGPointTearOff::CreateDetached(point);
 }
@@ -228,7 +230,7 @@ float SVGGeometryElement::PathLengthScaleFactor(float computed_path_length,
   // However, since 0 * Infinity is not zero (but rather NaN) per
   // IEEE, we need to make sure to clamp the result below - avoiding
   // the actual Infinity (and using max()) instead.
-  return clampTo<float>(computed_path_length / author_path_length);
+  return ClampTo<float>(computed_path_length / std::fabs(author_path_length));
 }
 
 void SVGGeometryElement::GeometryPresentationAttributeChanged(
@@ -250,7 +252,7 @@ void SVGGeometryElement::GeometryAttributeChanged() {
 LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&,
                                                      LegacyLayout) {
   // By default, any subclass is expected to do path-based drawing.
-  return new LayoutSVGPath(this);
+  return MakeGarbageCollected<LayoutSVGPath>(this);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
@@ -28,6 +28,10 @@ class SANDBOX_EXPORT PolicyCompiler {
   using PanicFunc = bpf_dsl::ResultExpr (*)(const char* error);
 
   PolicyCompiler(const Policy* policy, TrapRegistry* registry);
+
+  PolicyCompiler(const PolicyCompiler&) = delete;
+  PolicyCompiler& operator=(const PolicyCompiler&) = delete;
+
   ~PolicyCompiler();
 
   // Compile registers any trap handlers needed by the policy and
@@ -136,15 +140,13 @@ class SANDBOX_EXPORT PolicyCompiler {
   // attempted to pass a 64bit value in a 32bit system call argument.
   CodeGen::Node Unexpected64bitArgument();
 
-  const Policy* policy_;
-  TrapRegistry* registry_;
+  raw_ptr<const Policy> policy_;
+  raw_ptr<TrapRegistry> registry_;
   uint64_t escapepc_;
   PanicFunc panic_func_;
 
   CodeGen gen_;
   bool has_unsafe_traps_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyCompiler);
 };
 
 }  // namespace bpf_dsl

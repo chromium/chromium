@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -32,6 +32,9 @@ struct MessageTarget {
   };
 
   static MessageTarget ForTab(int tab_id, int frame_id);
+  static MessageTarget ForTab(int tab_id,
+                              int frame_id,
+                              const std::string& document_id);
   static MessageTarget ForExtension(const ExtensionId& extension_id);
   static MessageTarget ForNativeApp(const std::string& native_app_name);
 
@@ -41,12 +44,13 @@ struct MessageTarget {
 
   Type type;
   // Only valid for Type::EXTENSION.
-  base::Optional<ExtensionId> extension_id;
+  absl::optional<ExtensionId> extension_id;
   // Only valid for Type::NATIVE_APP.
-  base::Optional<std::string> native_application_name;
+  absl::optional<std::string> native_application_name;
   // Only valid for Type::TAB.
-  base::Optional<int> tab_id;
-  base::Optional<int> frame_id;
+  absl::optional<int> tab_id;
+  absl::optional<int> frame_id;
+  absl::optional<std::string> document_id;
 
   bool operator==(const MessageTarget& other) const;
 

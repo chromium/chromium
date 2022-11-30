@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "ui/events/blink/fling_booster.h"
 #include "ui/events/gestures/physics_based_fling_curve.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/test/scoped_screen_win.h"
 #endif
 
@@ -49,6 +49,9 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   FlingControllerTest()
       : needs_begin_frame_for_fling_progress_(GetParam()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  FlingControllerTest(const FlingControllerTest&) = delete;
+  FlingControllerTest& operator=(const FlingControllerTest&) = delete;
 
   ~FlingControllerTest() override {}
 
@@ -167,7 +170,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool FlingInProgress() { return fling_controller_->fling_in_progress(); }
 
   void AdvanceTime(double time_delta_ms = kFrameDelta) {
-    mock_clock_.Advance(base::TimeDelta::FromMillisecondsD(time_delta_ms));
+    mock_clock_.Advance(base::Milliseconds(time_delta_ms));
   }
 
   base::TimeTicks NowTicks() const { return mock_clock_.NowTicks(); }
@@ -212,7 +215,8 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool notified_client_after_fling_stop_ = false;
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 
@@ -226,7 +230,6 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   // https://crrev.com/c/1181521.
   bool needs_begin_frame_for_fling_progress_;
   base::test::TaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(FlingControllerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FlingControllerTest, testing::Bool());
@@ -760,11 +763,15 @@ class FlingControllerWithPhysicsBasedFlingTest : public FlingControllerTest {
         features::kExperimentalFlingAnimation);
   }
 
+  FlingControllerWithPhysicsBasedFlingTest(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+  FlingControllerWithPhysicsBasedFlingTest& operator=(
+      const FlingControllerWithPhysicsBasedFlingTest&) = delete;
+
   ~FlingControllerWithPhysicsBasedFlingTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(FlingControllerWithPhysicsBasedFlingTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -781,7 +788,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)
@@ -828,7 +835,7 @@ TEST_P(FlingControllerWithPhysicsBasedFlingTest,
   // Android and Chromecast use Mobile fling curve so they are ignored
   // for this test
   bool use_mobile_fling_curve = false;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CASTOS)
   use_mobile_fling_curve = true;
 #endif
   if (use_mobile_fling_curve)

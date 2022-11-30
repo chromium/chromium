@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 
 namespace cc {
 namespace {
@@ -19,9 +20,12 @@ TEST(PaintOpHelper, AnnotateToString) {
 }
 
 TEST(PaintOpHelper, ClipPathToString) {
-  ClipPathOp op(SkPath(), SkClipOp::kDifference, true);
+  ClipPathOp op(SkPath(), SkClipOp::kDifference, true,
+                UsePaintCache::kDisabled);
   std::string str = PaintOpHelper::ToString(&op);
-  EXPECT_EQ(str, "ClipPathOp(path=<SkPath>, op=kDifference, antialias=true)");
+  EXPECT_EQ(str,
+            "ClipPathOp(path=<SkPath>, op=kDifference, antialias=true, "
+            "use_cache=false)");
 }
 
 TEST(PaintOpHelper, ClipRectToString) {
@@ -52,9 +56,11 @@ TEST(PaintOpHelper, ConcatToString) {
 }
 
 TEST(PaintOpHelper, DrawColorToString) {
-  DrawColorOp op(SkColorSetARGB(11, 22, 33, 44), SkBlendMode::kSrc);
+  DrawColorOp op({0.1, 0.2, 0.3, 0.4}, SkBlendMode::kSrc);
   std::string str = PaintOpHelper::ToString(&op);
-  EXPECT_EQ(str, "DrawColorOp(color=rgba(22, 33, 44, 11), mode=kSrc)");
+  EXPECT_EQ(str,
+            "DrawColorOp(color=rgba(0.100000, 0.200000, 0.300000, 0.400000), "
+            "mode=kSrc)");
 }
 
 TEST(PaintOpHelper, DrawDRRectToString) {
@@ -156,7 +162,7 @@ TEST(PaintOpHelper, DrawOvalToString) {
 
 TEST(PaintOpHelper, DrawPathToString) {
   SkPath path;
-  DrawPathOp op(path, PaintFlags());
+  DrawPathOp op(path, PaintFlags(), UsePaintCache::kDisabled);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "DrawPathOp(path=<SkPath>, flags=[color=rgba(0, 0, 0, 255), "
@@ -167,7 +173,7 @@ TEST(PaintOpHelper, DrawPathToString) {
             "shader=(nil), hasShader=false, shaderIsOpaque=false, "
             "pathEffect=(nil), imageFilter=(nil), drawLooper=(nil), "
             "isSimpleOpacity=true, supportsFoldingAlpha=true, isValid=true, "
-            "hasDiscardableImages=false])");
+            "hasDiscardableImages=false], use_cache=false)");
 }
 
 TEST(PaintOpHelper, DrawRecordToString) {
@@ -266,7 +272,7 @@ TEST(PaintOpHelper, SaveLayerToString) {
 
 TEST(PaintOpHelper, SaveLayerAlphaToString) {
   SkRect bounds = SkRect::MakeXYWH(1, 2, 3, 4);
-  SaveLayerAlphaOp op(&bounds, 255);
+  SaveLayerAlphaOp op(&bounds, 1.0f);
   std::string str = PaintOpHelper::ToString(&op);
   EXPECT_EQ(str,
             "SaveLayerAlphaOp(bounds=[1.000,2.000 3.000x4.000], alpha=255)");

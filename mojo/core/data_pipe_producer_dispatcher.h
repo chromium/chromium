@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -19,6 +17,7 @@
 #include "mojo/core/ports/port_ref.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watcher_set.h"
+#include "mojo/public/c/system/data_pipe.h"
 
 namespace mojo {
 namespace core {
@@ -38,13 +37,19 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeProducerDispatcher final
       const MojoCreateDataPipeOptions& options,
       uint64_t pipe_id);
 
+  DataPipeProducerDispatcher(const DataPipeProducerDispatcher&) = delete;
+  DataPipeProducerDispatcher& operator=(const DataPipeProducerDispatcher&) =
+      delete;
+
   // Dispatcher:
   Type GetType() const override;
   MojoResult Close() override;
   MojoResult WriteData(const void* elements,
                        uint32_t* num_bytes,
                        const MojoWriteDataOptions& options) override;
-  MojoResult BeginWriteData(void** buffer, uint32_t* buffer_num_bytes) override;
+  MojoResult BeginWriteData(void** buffer,
+                            uint32_t* buffer_num_bytes,
+                            MojoBeginWriteDataFlags flags) override;
   MojoResult EndWriteData(uint32_t num_bytes_written) override;
   HandleSignalsState GetHandleSignalsState() const override;
   MojoResult AddWatcherRef(const scoped_refptr<WatcherDispatcher>& watcher,
@@ -88,7 +93,7 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeProducerDispatcher final
   void UpdateSignalsStateNoLock();
 
   const MojoCreateDataPipeOptions options_;
-  NodeController* const node_controller_;
+  const raw_ptr<NodeController> node_controller_;
   const ports::PortRef control_port_;
   const uint64_t pipe_id_;
 
@@ -109,8 +114,6 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeProducerDispatcher final
 
   uint32_t write_offset_ = 0;
   uint32_t available_capacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeProducerDispatcher);
 };
 
 }  // namespace core

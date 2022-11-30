@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -84,13 +83,12 @@ class ProfileReportGenerator {
 
  private:
   std::unique_ptr<Delegate> delegate_;
-  base::Value policies_;
+  base::Value::Dict policies_;
 
   bool extensions_enabled_ = true;
   bool policies_enabled_ = true;
 
-  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> report_ =
-      nullptr;
+  std::unique_ptr<enterprise_management::ChromeUserProfileInfo> report_;
 };
 
 }  // namespace enterprise_reporting

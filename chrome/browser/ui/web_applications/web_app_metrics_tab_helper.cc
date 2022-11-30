@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
-#include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 
 namespace content {
 class WebContents;
@@ -28,7 +28,8 @@ bool WebAppMetricsTabHelper::IsEnabled(content::WebContents* contents) {
 }
 
 WebAppMetricsTabHelper::WebAppMetricsTabHelper(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {
+    : content::WebContentsUserData<WebAppMetricsTabHelper>(*contents),
+      content::WebContentsObserver(contents) {
   DCHECK(IsEnabled(contents));
   DCHECK(web_app::WebAppMetrics::Get(
       Profile::FromBrowserContext(contents->GetBrowserContext())));
@@ -58,6 +59,6 @@ void WebAppMetricsTabHelper::OnInstallableWebAppStatusUpdated() {
   metrics->NotifyInstallableWebAppStatusUpdated(contents);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppMetricsTabHelper);
 
 }  // namespace web_app

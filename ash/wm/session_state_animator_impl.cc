@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
 #include "base/barrier_closure.h"
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -167,6 +169,11 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
  public:
   explicit CallbackAnimationObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
+
+  CallbackAnimationObserver(const CallbackAnimationObserver&) = delete;
+  CallbackAnimationObserver& operator=(const CallbackAnimationObserver&) =
+      delete;
+
   ~CallbackAnimationObserver() override = default;
 
  private:
@@ -186,8 +193,6 @@ class CallbackAnimationObserver : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(ui::LayerAnimationSequence* seq) override {}
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackAnimationObserver);
 };
 
 bool IsLayerAnimated(ui::Layer* layer,
@@ -266,7 +271,7 @@ void GetContainersInRootWindow(int container_mask,
     };
     if (non_lock_screen_containers) {
       for (aura::Window* window : non_lock_screen_containers->children()) {
-        if ((base::Contains(ContainersToAnimate, window->id()) ||
+        if ((base::Contains(ContainersToAnimate, window->GetId()) ||
              desks_util::IsActiveDeskContainer(window))) {
           containers->push_back(window);
         }
@@ -331,11 +336,14 @@ class SessionStateAnimatorImpl::AnimationSequence
       public ui::LayerAnimationObserver {
  public:
   explicit AnimationSequence(SessionStateAnimatorImpl* animator,
-                             base::OnceClosure callback)
+                             AnimationCallback callback)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
         animator_(animator),
         sequences_attached_(0),
         sequences_completed_(0) {}
+
+  AnimationSequence(const AnimationSequence&) = delete;
+  AnimationSequence& operator=(const AnimationSequence&) = delete;
 
   // SessionStateAnimator::AnimationSequence:
   void StartAnimation(int container_mask,
@@ -375,8 +383,6 @@ class SessionStateAnimatorImpl::AnimationSequence
 
   // Number of sequences either ended or aborted.
   int sequences_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
 };
 
 bool SessionStateAnimatorImpl::TestApi::ContainersAreAnimated(
@@ -449,7 +455,7 @@ void SessionStateAnimatorImpl::StartAnimationWithCallback(
 }
 
 SessionStateAnimator::AnimationSequence*
-SessionStateAnimatorImpl::BeginAnimationSequence(base::OnceClosure callback) {
+SessionStateAnimatorImpl::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(this, std::move(callback));
 }
 

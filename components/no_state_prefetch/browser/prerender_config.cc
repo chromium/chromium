@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@ Config::Config()
       max_link_concurrency(1),
       max_link_concurrency_per_launcher(1),
       rate_limit_enabled(true),
-      max_wait_to_launch(base::TimeDelta::FromMinutes(4)),
-      time_to_live(base::TimeDelta::FromMinutes(5)),
-      abandon_time_to_live(base::TimeDelta::FromSeconds(3)),
+      max_wait_to_launch(base::Minutes(4)),
+      time_to_live(base::Minutes(5)),
+      abandon_time_to_live(base::Seconds(3)),
       default_tab_bounds(640, 480) {}
 
 Config::~Config() {}

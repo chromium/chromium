@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/icu_string_conversions.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/tools/convert_dict/aff_reader.h"
@@ -147,9 +145,8 @@ TEST(ConvertDictTest, English) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(std::make_pair<std::u16string, bool>(
-        base::WideToUTF16(kWords[i]), true));
+  for (size_t i = 0; i < std::size(kWords); ++i) {
+    word_list.insert({base::WideToUTF16(kWords[i]), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -170,9 +167,8 @@ TEST(ConvertDictTest, Russian) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(std::make_pair<std::u16string, bool>(
-        base::WideToUTF16(kWords[i]), true));
+  for (size_t i = 0; i < std::size(kWords); ++i) {
+    word_list.insert({base::WideToUTF16(kWords[i]), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);
@@ -195,9 +191,8 @@ TEST(ConvertDictTest, Hungarian) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
-    word_list.insert(std::make_pair<std::u16string, bool>(
-        base::WideToUTF16(kWords[i]), true));
+  for (size_t i = 0; i < std::size(kWords); ++i) {
+    word_list.insert({base::WideToUTF16(kWords[i]), true});
   }
 
   RunDictionaryTest(kCodepage, word_list);

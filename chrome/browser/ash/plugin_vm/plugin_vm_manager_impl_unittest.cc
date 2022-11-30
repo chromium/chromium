@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_metrics_util.h"
@@ -17,17 +18,21 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
-#include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/dbus/fake_concierge_client.h"
-#include "chromeos/dbus/fake_seneschal_client.h"
-#include "chromeos/dbus/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,7 +50,12 @@ using MockLaunchPluginVmCallback =
 class PluginVmManagerImplTest : public testing::Test {
  public:
   PluginVmManagerImplTest() {
-    chromeos::DBusThreadManager::Initialize();
+    ash::ChunneldClient::InitializeFake();
+    ash::CiceroneClient::InitializeFake();
+    ash::ConciergeClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
+    ash::SeneschalClient::InitializeFake();
+    ash::VmPluginDispatcherClient::InitializeFake();
     testing_profile_ = std::make_unique<TestingProfile>();
     test_helper_ = std::make_unique<PluginVmTestHelper>(testing_profile_.get());
     plugin_vm_manager_ = static_cast<PluginVmManagerImpl*>(
@@ -53,43 +63,58 @@ class PluginVmManagerImplTest : public testing::Test {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         testing_profile_.get());
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    chrome_launcher_controller_ = std::make_unique<ChromeLauncherController>(
-        testing_profile_.get(), shelf_model_.get());
-    chrome_launcher_controller_->SetProfileForTest(testing_profile_.get());
-    chrome_launcher_controller_->SetLauncherControllerHelperForTest(
-        std::make_unique<LauncherControllerHelper>(testing_profile_.get()));
-    chrome_launcher_controller_->Init();
+    chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
+        testing_profile_.get(), shelf_model_.get(),
+        /*shelf_item_factory=*/nullptr);
+    chrome_shelf_controller_->SetProfileForTest(testing_profile_.get());
+    chrome_shelf_controller_->SetShelfControllerHelperForTest(
+        std::make_unique<ShelfControllerHelper>(testing_profile_.get()));
+    chrome_shelf_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    chromeos::DlcserviceClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
+
+    // Make StartVm succeed by default, tests can override as needed.
+    VmPluginDispatcherClient().set_start_vm_response(
+        vm_tools::plugin_dispatcher::StartVmResponse());
+
+    // Borealis makes a call, unrelated to this test so just reset it.
+    DCHECK_EQ(ConciergeClient().get_vm_info_call_count(), 1);
+    ConciergeClient().reset_get_vm_info_call_count();
   }
 
+  PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;
+  PluginVmManagerImplTest& operator=(const PluginVmManagerImplTest&) = delete;
+
   ~PluginVmManagerImplTest() override {
+    ash::DlcserviceClient::Shutdown();
     histogram_tester_.reset();
-    chrome_launcher_controller_.reset();
+    chrome_shelf_controller_.reset();
     shelf_model_.reset();
     display_service_.reset();
     test_helper_.reset();
     testing_profile_.reset();
-    chromeos::DBusThreadManager::Shutdown();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::VmPluginDispatcherClient::Shutdown();
+    ash::SeneschalClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::CiceroneClient::Shutdown();
+    ash::ChunneldClient::Shutdown();
   }
 
  protected:
-  chromeos::FakeVmPluginDispatcherClient& VmPluginDispatcherClient() {
-    return *static_cast<chromeos::FakeVmPluginDispatcherClient*>(
-        chromeos::DBusThreadManager::Get()->GetVmPluginDispatcherClient());
+  ash::FakeVmPluginDispatcherClient& VmPluginDispatcherClient() {
+    return *static_cast<ash::FakeVmPluginDispatcherClient*>(
+        ash::VmPluginDispatcherClient::Get());
   }
-  chromeos::FakeConciergeClient& ConciergeClient() {
-    return *static_cast<chromeos::FakeConciergeClient*>(
-        chromeos::DBusThreadManager::Get()->GetConciergeClient());
+  ash::FakeConciergeClient& ConciergeClient() {
+    return *ash::FakeConciergeClient::Get();
   }
-  chromeos::FakeSeneschalClient& SeneschalClient() {
-    return *static_cast<chromeos::FakeSeneschalClient*>(
-        chromeos::DBusThreadManager::Get()->GetSeneschalClient());
+  ash::FakeSeneschalClient& SeneschalClient() {
+    return *ash::FakeSeneschalClient::Get();
   }
 
   ShelfSpinnerController* SpinnerController() {
-    return chrome_launcher_controller_->GetShelfSpinnerController();
+    return chrome_shelf_controller_->GetShelfSpinnerController();
   }
 
   void SetListVmsResponse(vm_tools::plugin_dispatcher::VmState state) {
@@ -102,8 +127,7 @@ class PluginVmManagerImplTest : public testing::Test {
       vm_tools::plugin_dispatcher::VmToolsState state) {
     vm_tools::plugin_dispatcher::VmToolsStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_tools_state(state);
     VmPluginDispatcherClient().NotifyVmToolsStateChanged(state_changed_signal);
@@ -112,11 +136,18 @@ class PluginVmManagerImplTest : public testing::Test {
   void NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState state) {
     vm_tools::plugin_dispatcher::VmStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_state(state);
     VmPluginDispatcherClient().NotifyVmStateChanged(state_changed_signal);
+  }
+
+  void NotifyVmStarted() {
+    vm_tools::concierge::VmStartedSignal signal;
+    signal.set_name(kPluginVmName);
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
+    ConciergeClient().NotifyVmStarted(signal);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -125,11 +156,8 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   PluginVmManagerImpl* plugin_vm_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
-  std::unique_ptr<ChromeLauncherController> chrome_launcher_controller_;
+  std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmManagerImplTest);
 };
 
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
@@ -141,7 +169,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmRequiresPluginVmAllowed) {
   EXPECT_FALSE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_FALSE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -162,7 +190,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmStartAndShow) {
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -217,7 +245,7 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmShowAndStop) {
   EXPECT_FALSE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -236,11 +264,12 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   // Signals for RUNNING, then STOPPED.
   test_helper_->OpenShelfItem();
   EXPECT_TRUE(
-      chrome_launcher_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
+      chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
+  NotifyVmStarted();
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(ConciergeClient().get_vm_info_called());
+  EXPECT_GE(ConciergeClient().get_vm_info_call_count(), 1);
   EXPECT_TRUE(base::DirectoryExists(
       file_manager::util::GetMyFilesFolderForProfile(testing_profile_.get())));
   EXPECT_TRUE(SeneschalClient().share_path_called());
@@ -250,7 +279,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
   EXPECT_FALSE(
-      chrome_launcher_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
+      chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
   // Signals for RUNNING, then SUSPENDED.
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
@@ -321,6 +350,34 @@ TEST_F(PluginVmManagerImplTest, LaunchPluginVmFromSuspending) {
       vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED);
 }
 
+TEST_F(PluginVmManagerImplTest, LaunchPluginVmInterrupted) {
+  test_helper_->AllowPluginVm();
+
+  // Skip StartVm call.
+  SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
+  NotifyVmToolsStateChanged(
+      vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_OUTDATED);
+  MockLaunchPluginVmCallback callback1;
+  plugin_vm_manager_->LaunchPluginVm(callback1.Get());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
+
+  // VM is shown, but we are waiting for tools to be installed. If the VM is
+  // suspended now, we consider the launch to have failed.
+  EXPECT_CALL(callback1, Run(false));
+  NotifyVmStateChanged(
+      vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
+  SetListVmsResponse(vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
+  task_environment_.RunUntilIdle();
+
+  MockLaunchPluginVmCallback callback2;
+  EXPECT_CALL(callback2, Run(true));
+  plugin_vm_manager_->LaunchPluginVm(callback2.Get());
+  NotifyVmToolsStateChanged(
+      vm_tools::plugin_dispatcher::VmToolsState::VM_TOOLS_STATE_INSTALLED);
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(PluginVmManagerImplTest, LaunchPluginVmInvalidLicense) {
   test_helper_->AllowPluginVm();
   EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
@@ -356,7 +413,7 @@ TEST_F(PluginVmManagerImplTest, RelaunchPluginVm) {
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().start_vm_called());
   EXPECT_TRUE(VmPluginDispatcherClient().show_vm_called());
-  EXPECT_FALSE(ConciergeClient().get_vm_info_called());
+  EXPECT_EQ(ConciergeClient().get_vm_info_call_count(), 0);
   EXPECT_FALSE(SeneschalClient().share_path_called());
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
 
@@ -386,7 +443,7 @@ TEST_F(PluginVmManagerImplTest, UninstallRunningPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_TRUE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(
@@ -412,7 +469,7 @@ TEST_F(PluginVmManagerImplTest, UninstallStoppedPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(
@@ -438,7 +495,7 @@ TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_EQ(ConciergeClient().destroy_disk_image_call_count(), 0);
   EXPECT_NE(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_TRUE(testing_profile_->GetPrefs()->GetBoolean(
@@ -447,7 +504,7 @@ TEST_F(PluginVmManagerImplTest, UninstallSuspendingPluginVm) {
   NotifyVmStateChanged(
       vm_tools::plugin_dispatcher::VmState::VM_STATE_SUSPENDED);
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_TRUE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_GE(ConciergeClient().destroy_disk_image_call_count(), 1);
   EXPECT_NE(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_TRUE(testing_profile_->GetPrefs()->GetBoolean(
@@ -464,7 +521,8 @@ TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   test_helper_->AllowPluginVm();
   EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
-  VmPluginDispatcherClient().set_list_vms_response({});  // An empty list.
+  VmPluginDispatcherClient().set_list_vms_response(
+      vm_tools::plugin_dispatcher::ListVmResponse());
   testing_profile_->GetPrefs()->SetBoolean(
       plugin_vm::prefs::kPluginVmImageExists, true);
 
@@ -479,7 +537,7 @@ TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(VmPluginDispatcherClient().list_vms_called());
   EXPECT_FALSE(VmPluginDispatcherClient().stop_vm_called());
-  EXPECT_FALSE(ConciergeClient().destroy_disk_image_called());
+  EXPECT_EQ(ConciergeClient().destroy_disk_image_call_count(), 0);
   EXPECT_EQ(plugin_vm_manager_->uninstaller_notification_for_testing(),
             nullptr);
   EXPECT_FALSE(testing_profile_->GetPrefs()->GetBoolean(

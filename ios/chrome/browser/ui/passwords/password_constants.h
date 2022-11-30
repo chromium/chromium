@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,5 +12,8 @@ extern NSString* const kPasswordBreachViewAccessibilityIdentifier;
 
 // A11y ID for the password protection view controller.
 extern NSString* const kPasswordProtectionViewAccessibilityIdentifier;
+
+// A11y ID for the suggest password view controller.
+extern NSString* const kPasswordSuggestionViewAccessibilityIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_CONSTANTS_H_

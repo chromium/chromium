@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class WebContents;
@@ -34,6 +31,10 @@ class SecurityInterstitialPage {
       content::WebContents* web_contents,
       const GURL& request_url,
       std::unique_ptr<SecurityInterstitialControllerClient> controller);
+
+  SecurityInterstitialPage(const SecurityInterstitialPage&) = delete;
+  SecurityInterstitialPage& operator=(const SecurityInterstitialPage&) = delete;
+
   virtual ~SecurityInterstitialPage();
 
   // Prevents creating the actual interstitial view for testing.
@@ -59,7 +60,7 @@ class SecurityInterstitialPage {
  protected:
   // Populates the strings used to generate the HTML from the template.
   virtual void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) = 0;
+      base::Value::Dict& load_time_data) = 0;
 
   virtual int GetHTMLTemplateId();
 
@@ -80,7 +81,7 @@ class SecurityInterstitialPage {
   // The WebContents with which this interstitial page is
   // associated. Not available in ~SecurityInterstitialPage, since it
   // can be destroyed before this class is destroyed.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   const GURL request_url_;
   // Whether the interstitial should create a view.
   bool create_view_;
@@ -91,8 +92,6 @@ class SecurityInterstitialPage {
 
   // For subclasses that don't have their own ControllerClients yet.
   std::unique_ptr<SecurityInterstitialControllerClient> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityInterstitialPage);
 };
 
 }  // security_interstitials

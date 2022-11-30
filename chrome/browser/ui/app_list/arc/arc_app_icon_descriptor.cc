@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 namespace {
 
-int GetScalePercent(ui::ScaleFactor scale_factor) {
-  return roundf(100.0f * ui::GetScaleForScaleFactor(scale_factor));
+int GetScalePercent(ui::ResourceScaleFactor scale_factor) {
+  return roundf(100.0f * ui::GetScaleForResourceScaleFactor(scale_factor));
 }
 
 // Template for the icon name. First part is scale percent and second is
@@ -24,15 +24,15 @@ constexpr char kBackgroundIconNameTemplate[] = "background_icon_%dp_%d.png";
 }  // namespace
 
 ArcAppIconDescriptor::ArcAppIconDescriptor(int dip_size,
-                                           ui::ScaleFactor scale_factor)
+                                           ui::ResourceScaleFactor scale_factor)
     : dip_size(dip_size), scale_factor(scale_factor) {
   DCHECK_GT(dip_size, 0);
-  DCHECK_GT(scale_factor, ui::ScaleFactor::SCALE_FACTOR_NONE);
-  DCHECK_LE(scale_factor, ui::ScaleFactor::SCALE_FACTOR_300P);
+  DCHECK_GT(scale_factor, ui::ResourceScaleFactor::kScaleFactorNone);
+  DCHECK_LE(scale_factor, ui::ResourceScaleFactor::k300Percent);
 }
 
 int ArcAppIconDescriptor::GetSizeInPixels() const {
-  return roundf(dip_size * ui::GetScaleForScaleFactor(scale_factor));
+  return roundf(dip_size * ui::GetScaleForResourceScaleFactor(scale_factor));
 }
 
 std::string ArcAppIconDescriptor::GetName() const {

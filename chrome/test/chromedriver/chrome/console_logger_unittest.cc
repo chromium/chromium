@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -43,11 +44,11 @@ class FakeDevToolsClient : public StubDevToolsClient {
   // Overridden from DevToolsClient:
   Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::Value::Dict& params,
+                                 base::Value* result) override {
     sent_command_queue_.push(method);
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
 
@@ -61,7 +62,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
  private:
   const std::string id_;  // WebView id.
   base::queue<std::string> sent_command_queue_;  // Commands that were sent.
-  DevToolsEventListener* listener_;  // The fake allows only one event listener.
+  raw_ptr<DevToolsEventListener>
+      listener_;  // The fake allows only one event listener.
 };
 
 struct LogEntry {
@@ -122,16 +124,18 @@ void ConsoleLogParams(base::DictionaryValue* out_params,
                       const char* level,
                       int lineNumber,
                       const char* text) {
+  base::Value::Dict* out_dict = out_params->GetIfDict();
+  CHECK(out_dict);
   if (source)
-    out_params->SetString("entry.source", source);
+    out_dict->SetByDottedPath("entry.source", source);
   if (url)
-    out_params->SetString("entry.url", url);
+    out_dict->SetByDottedPath("entry.url", url);
   if (level)
-    out_params->SetString("entry.level", level);
+    out_dict->SetByDottedPath("entry.level", level);
   if (lineNumber != -1)
-    out_params->SetInteger("entry.lineNumber", lineNumber);
+    out_dict->SetByDottedPath("entry.lineNumber", lineNumber);
   if (text)
-    out_params->SetString("entry.text", text);
+    out_dict->SetByDottedPath("entry.text", text);
 }
 
 }  // namespace
@@ -178,7 +182,7 @@ TEST(ConsoleLogger, ConsoleMessages) {
             client.TriggerEvent("Log.entryAdded", params7).code());
 
   base::DictionaryValue params8;  // No message object.
-  params8.SetInteger("gaga", 8);
+  params8.GetDict().Set("gaga", 8);
   ASSERT_EQ(kUnknownError,
             client.TriggerEvent("Log.entryAdded", params8).code());
 

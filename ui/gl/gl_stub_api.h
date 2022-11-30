@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace gl {
 class GL_EXPORT GLStubApi: public GLStubApiBase {
  public:
   GLStubApi();
+
+  GLStubApi(const GLStubApi&) = delete;
+  GLStubApi& operator=(const GLStubApi&) = delete;
+
   ~GLStubApi() override;
 
   void set_version(std::string version) { version_ = std::move(version); }
@@ -83,8 +87,6 @@ class GL_EXPORT GLStubApi: public GLStubApiBase {
   std::string version_;
   std::string extensions_;
   GLuint next_id_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(GLStubApi);
 };
 
 }  // namespace gl

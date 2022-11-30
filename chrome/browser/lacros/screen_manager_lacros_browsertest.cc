@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,17 +35,10 @@ const char* kLacrosPageTitleHTMLFormat =
     "<body>This page has a title.</body></html>";
 
 mojo::Remote<crosapi::mojom::SnapshotCapturer> GetWindowCapturer() {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-
-  mojo::PendingRemote<crosapi::mojom::ScreenManager> pending_screen_manager;
-  lacros_chrome_service->BindScreenManagerReceiver(
-      pending_screen_manager.InitWithNewPipeAndPassReceiver());
-
-  mojo::Remote<crosapi::mojom::ScreenManager> screen_manager;
-  screen_manager.Bind(std::move(pending_screen_manager));
-
+  auto* lacros_chrome_service = chromeos::LacrosService::Get();
   mojo::Remote<crosapi::mojom::SnapshotCapturer> capturer;
-  screen_manager->GetWindowCapturer(capturer.BindNewPipeAndPassReceiver());
+  lacros_chrome_service->GetRemote<crosapi::mojom::ScreenManager>()
+      ->GetWindowCapturer(capturer.BindNewPipeAndPassReceiver());
 
   return capturer;
 }
@@ -82,8 +75,7 @@ uint64_t WaitForWindow(std::string title) {
   // When the browser test start, there is no guarantee that the window is
   // open from ash's perspective.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
-              std::move(look_for_window));
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(look_for_window));
   run_loop.Run();
 
   return window_id;
@@ -99,7 +91,7 @@ uint64_t WaitForLacrosToBeAvailableInAsh(Browser* browser) {
   std::string html =
       base::StringPrintf(kLacrosPageTitleHTMLFormat, title.c_str());
   GURL url(std::string("data:text/html,") + html);
-  ui_test_utils::NavigateToURL(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
   return WaitForWindow(std::move(title));
 }
@@ -116,27 +108,14 @@ class ScreenManagerLacrosBrowserTest : public InProcessBrowserTest {
       const ScreenManagerLacrosBrowserTest&) = delete;
 
   ~ScreenManagerLacrosBrowserTest() override = default;
-
-  void BindScreenManager() {
-    auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-    ASSERT_TRUE(lacros_chrome_service);
-
-    mojo::PendingRemote<crosapi::mojom::ScreenManager> pending_screen_manager;
-    lacros_chrome_service->BindScreenManagerReceiver(
-        pending_screen_manager.InitWithNewPipeAndPassReceiver());
-
-    screen_manager_.Bind(std::move(pending_screen_manager));
-  }
-
-  mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
 };
 
 // Tests that taking a screen snapshot via crosapi works.
 IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest, ScreenCapturer) {
-  BindScreenManager();
-
   mojo::Remote<crosapi::mojom::SnapshotCapturer> capturer;
-  screen_manager_->GetScreenCapturer(capturer.BindNewPipeAndPassReceiver());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  lacros_service->GetRemote<crosapi::mojom::ScreenManager>()->GetScreenCapturer(
+      capturer.BindNewPipeAndPassReceiver());
 
   std::vector<crosapi::mojom::SnapshotSourcePtr> screens;
   {
@@ -164,10 +143,10 @@ IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest, ScreenCapturer) {
 // in lacros_chrome_browsertests, different browser tests share the same
 // ash-chrome, so a window could come from any one of them.
 IN_PROC_BROWSER_TEST_F(ScreenManagerLacrosBrowserTest, WindowCapturer) {
-  BindScreenManager();
-
   mojo::Remote<crosapi::mojom::SnapshotCapturer> capturer;
-  screen_manager_->GetWindowCapturer(capturer.BindNewPipeAndPassReceiver());
+  auto* lacros_service = chromeos::LacrosService::Get();
+  lacros_service->GetRemote<crosapi::mojom::ScreenManager>()->GetWindowCapturer(
+      capturer.BindNewPipeAndPassReceiver());
 
   uint64_t window_id = WaitForLacrosToBeAvailableInAsh(browser());
 

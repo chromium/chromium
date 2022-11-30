@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "ui/base/cocoa/weak_ptr_nsobject.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/event_monitor.h"
@@ -19,6 +18,10 @@ class EventMonitorMac : public EventMonitor {
   EventMonitorMac(ui::EventObserver* event_observer,
                   gfx::NativeWindow target_window,
                   const std::set<ui::EventType>& types);
+
+  EventMonitorMac(const EventMonitorMac&) = delete;
+  EventMonitorMac& operator=(const EventMonitorMac&) = delete;
+
   ~EventMonitorMac() override;
 
   // EventMonitor:
@@ -28,8 +31,6 @@ class EventMonitorMac : public EventMonitor {
   id monitor_;
   ui::WeakPtrNSObjectFactory<EventMonitorMac> factory_;
   const std::set<ui::EventType> types_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorMac);
 };
 
 }  // namespace views

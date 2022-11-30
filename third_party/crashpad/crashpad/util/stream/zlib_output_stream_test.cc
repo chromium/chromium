@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/stream/test_output_stream.h"
@@ -41,6 +41,9 @@ class ZlibOutputStreamTest : public testing::Test {
         std::make_unique<ZlibOutputStream>(ZlibOutputStream::Mode::kDecompress,
                                            std::move(test_output_stream)));
   }
+
+  ZlibOutputStreamTest(const ZlibOutputStreamTest&) = delete;
+  ZlibOutputStreamTest& operator=(const ZlibOutputStreamTest&) = delete;
 
   const uint8_t* BuildDeterministicInput(size_t size) {
     deterministic_input_ = std::make_unique<uint8_t[]>(size);
@@ -69,8 +72,6 @@ class ZlibOutputStreamTest : public testing::Test {
   std::unique_ptr<uint8_t[]> input_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
   TestOutputStream* test_output_stream_;  // weak, owned by zlib_output_stream_
-
-  DISALLOW_COPY_AND_ASSIGN(ZlibOutputStreamTest);
 };
 
 TEST_F(ZlibOutputStreamTest, WriteDeterministicShortData) {
@@ -101,7 +102,7 @@ TEST_F(ZlibOutputStreamTest, WriteDeterministicLongDataMultipleTimes) {
       4, 96, 40, kLongDataLength - 4 - 96 - 40};
 
   size_t offset = 0;
-  for (size_t index = 0; index < base::size(kWriteLengths); ++index) {
+  for (size_t index = 0; index < std::size(kWriteLengths); ++index) {
     const size_t write_length = kWriteLengths[index];
     SCOPED_TRACE(base::StringPrintf(
         "offset %zu, write_length %zu", offset, write_length));

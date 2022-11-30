@@ -1,9 +1,10 @@
 <!--
-Copyright(c) 2021 The Chromium Authors.All rights reserved.
-Use of this source code is governed by a BSD - style license that can be
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <html>
+
 <head>
   <title>WebGpu MxN Video playbacks</title>
   <style>
@@ -15,6 +16,8 @@ found in the LICENSE file.
       left: 400px;
     }
   </style>
+  <script type="text/javascript" src="../third_party/stats-js/stats.js"></script>
+  <script type="text/javascript" src="video_utils.js"></script>
   <script type="text/javascript" src="webgpu_video.js"></script>
   <script>
     const _defaultRows = 7;
@@ -22,52 +25,12 @@ found in the LICENSE file.
     const _totalVideoWidth = 1600;
     const _totalVideoHeight = 900;
     var hasUIOnTop = true;
-    var useWebGpuForUI = true;
+    var hasFPSOnTop = true;
     var useImportTextureApi = true;
+    var capUIFPS = true;
+    var useLargeSizeVideo = false;
+    var enableBackPressureWorkaround = true;
     var codec = 'vp9';
-
-    const parsedString = (function (names) {
-      const pairs = {};
-      for (let i = 0; i < names.length; ++i) {
-        var keyValue = names[i].split('=', 2);
-        if (keyValue.length == 1)
-          pairs[keyValue[0]] = '';
-        else
-          pairs[keyValue[0]] = decodeURIComponent(keyValue[1].replace(/\+/g, ' '));
-      }
-      return pairs;
-    })(window.location.search.substr(1).split('&'));
-
-    function GetVideoSource(videoCount, index, codec) {
-      switch (codec) {
-        case 'vp8':
-          if (videoCount <= 4) {
-            return './teddy1_vp8_640x360_30fps.webm';
-          } else {
-            if (index < 4)
-              return './teddy3_vp8_320x180_30fps.webm';
-            else if (index < 16)
-              return './teddy2_vp8_320x180_15fps.webm';
-            else
-              return './teddy1_vp8_320x180_7fps.webm';
-          }
-          break;
-
-        case 'vp9':
-        default:
-          if (videoCount <= 4) {
-            return './teddy1_vp9_640x360_30fps.webm';
-          } else {
-            if (index < 4)
-              return './teddy3_vp9_320x180_30fps.webm';
-            else if (index < 16)
-              return './teddy2_vp9_320x180_15fps.webm';
-            else
-              return './teddy1_vp9_320x180_7fps.webm';
-          }
-          break;
-      }
-    }
 
     async function startMxNVideos() {
       const container = document.getElementById('container');
@@ -77,7 +40,7 @@ found in the LICENSE file.
       const gpuSetting = await webGpuInit(_totalVideoWidth, _totalVideoHeight);
       if (!gpuSetting) {
         p.innerHTML = "Webgpu not supported!" + "<br />" + "<br />" +
-          "Did you forget to add command line switch --enable-unsafe-webgpu --enable-experimental-web-platform-features?" +
+          "Did you forget to add command line switch --enable-unsafe-webgpu?" +
           "<br />" +
           "Are you running on the latest Canary or Chromium build?"
         return;
@@ -87,8 +50,10 @@ found in the LICENSE file.
       const uiOption = parsedString['ui'];
       if (uiOption == 'none')
         hasUIOnTop = false;
-      else if (uiOption == 'css')
-        useWebGpuForUI = false;
+
+      const fpsOption = parsedString['fps'];
+      if (fpsOption == 'none')
+        hasFPSOnTop = false;
 
       const api = parsedString['import_texture_api']
       if (api == '0')
@@ -101,6 +66,24 @@ found in the LICENSE file.
         codec = 'vp8';
       else if (codecString != 'vp9' && codecString != undefined)
         console.warn('Unsupported video codec format! Switch to default VP9.');
+
+      const capFPSOption = parsedString['cap_ui_fps']
+      if (capFPSOption == '0')
+        capUIFPS = false;
+      else if (capFPSOption == '1')
+        capUIFPS = true;
+
+      const useLargeSizeVideoOption = parsedString['use_large_size_video']
+      if (useLargeSizeVideoOption == '0')
+        useLargeSizeVideo = false;
+      else if (useLargeSizeVideoOption == '1')
+        useLargeSizeVideo = true;
+
+      const backPressureWorkaroundOption = parsedString['back_pressure_workaround']
+      if (backPressureWorkaroundOption == '0')
+        enableBackPressureWorkaround = false;
+      else if (backPressureWorkaroundOption == '1')
+        enableBackPressureWorkaround = true;
 
       // Get the number of video rows and columns from the string.
       var videoRows = parsedString['rows'];
@@ -135,57 +118,33 @@ found in the LICENSE file.
         video.autoplay = true;
         video.muted = true;
         video.display = "none";
-        video.src = GetVideoSource(videoCount, i, codec);
+        video.src = GetVideoSource(videoCount, i, codec, useLargeSizeVideo);
         video.width = videoWidth;
         video.height = videoHeight;
         video.crossorigin = "anonymous";
         videos.push(video);
       }
-      // For the small video.
-      videos[videoRows * videoColumns].width = 89;
-      videos[videoRows * videoColumns].height = 50;
+      // For the small video at the upper right corner.
+      videos[videoRows * videoColumns].width = videoWidth / 3;
+      videos[videoRows * videoColumns].height = videoHeight / 3;
+      // Use the 640x360 source to simulate the local camera.
+      videos[videoRows * videoColumns].src = GetVideoSource(1, 1, codec);
 
       await Promise.all(videos.map(video => video.play()));
       p.remove();
 
       // Simulate video playback by WebGpu rendering.
       webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
-        hasUIOnTop && useWebGpuForUI, useImportTextureApi);
-
-      // Add CSS icons on top of videos if this is preferred.
-      if (hasUIOnTop && !useWebGpuForUI) {
-        for (let row = 0; row < videoRows; ++row) {
-          for (let column = 0; column < videoColumns; ++column) {
-            const video_top = row * videoHeight;
-            const video_left = column * videoWidth;
-            // Create an icon on top of each video.
-            createOneIcon(video_top, video_left, videoWidth, videoHeight);
-          }
-        }
-      }
-      // Create an icon for the samll video at the corner.
-      createOneIcon(0, _totalVideoWidth - 89, 89, 50);
+        hasUIOnTop, hasFPSOnTop, useImportTextureApi, capUIFPS, enableBackPressureWorkaround);
     }
 
-    function createOneIcon(video_top, video_left, video_width, video_height) {
-      const icon = document.createElement('icon');
-      const icon_width = video_width / 10;
-      const icon_height = video_height / 10;
-
-      icon.style.backgroundColor = "red";
-      icon.style.position = "absolute";
-      icon.style.width = icon_width;
-      icon.style.height = icon_height;
-      icon.style.top = video_top + video_height - icon_height * 2;
-      icon.style.left = video_left + icon_width;
-
-      container.appendChild(icon);
-    }
   </script>
 </head>
+
 <body onload="startMxNVideos()">
   <div id="container" style="position:absolute; top:0px; left:0px">
     <p id="message"></p>
   </div>
 </body>
+
 </html>

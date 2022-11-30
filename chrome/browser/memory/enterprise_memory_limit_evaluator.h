@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_MEMORY_ENTERPRISE_MEMORY_LIMIT_EVALUATOR_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/util/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/system_node.h"
 
@@ -25,7 +27,13 @@ class EnterpriseMemoryLimitEvaluator {
 
  public:
   explicit EnterpriseMemoryLimitEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
+
+  EnterpriseMemoryLimitEvaluator(const EnterpriseMemoryLimitEvaluator&) =
+      delete;
+  EnterpriseMemoryLimitEvaluator& operator=(
+      const EnterpriseMemoryLimitEvaluator&) = delete;
+
   ~EnterpriseMemoryLimitEvaluator();
 
   // Starts/stops observing the resident set of Chrome processes and notifying
@@ -51,17 +59,15 @@ class EnterpriseMemoryLimitEvaluator {
   // RSS. This is only meant to be used as a key to remove the observer once
   // it's not necessary anymore, do not call functions directly from this
   // pointer.
-  GraphObserver* observer_ = nullptr;
+  raw_ptr<GraphObserver> observer_ = nullptr;
 
   uint64_t resident_set_limit_mb_ = 0;
 
-  const std::unique_ptr<util::MemoryPressureVoter> voter_;
+  const std::unique_ptr<memory_pressure::MemoryPressureVoter> voter_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<EnterpriseMemoryLimitEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseMemoryLimitEvaluator);
 };
 
 // Instances of this class are constructed and destructed on the main thread.
@@ -91,6 +97,10 @@ class EnterpriseMemoryLimitEvaluator::GraphObserver
 
  private:
   const base::RepeatingCallback<void(uint64_t)> on_sample_callback_;
+
+  std::unique_ptr<
+      performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>
+      metrics_interest_token_;
 
   // The task runner on which |on_sample_callback_| should be invoked.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

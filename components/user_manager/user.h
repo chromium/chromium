@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_info.h"
@@ -22,14 +21,14 @@ namespace ash {
 class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class MockUserManager;
+class UserAddingScreenTest;
+class UserSessionManager;
 class UserImageManagerImpl;
 }  // namespace ash
 
 namespace chromeos {
 class SupervisedUserManagerImpl;
-class UserAddingScreenTest;
-class UserSessionManager;
-}  // namespace chromeos
+}
 
 namespace gfx {
 class ImageSkia;
@@ -63,6 +62,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
     OAUTH2_TOKEN_STATUS_VALID = 4,
   } OAuthTokenStatus;
 
+  // TODO(jasontt): Explore adding a new value for image taken from camera.
   // These special values are used instead of actual default image indices.
   typedef enum {
     USER_IMAGE_INVALID = -3,
@@ -78,7 +78,14 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // Returns true if user type has gaia account.
   static bool TypeHasGaiaAccount(UserType user_type);
 
+  // Returns true if user represents any type of the kiosk.
+  static bool TypeIsKiosk(UserType user_type);
+
   explicit User(const AccountId& account_id);
+
+  User(const User&) = delete;
+  User& operator=(const User&) = delete;
+
   ~User() override;
 
   // UserInfo
@@ -100,10 +107,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // Returns true if it's Active Directory user.
   virtual bool IsActiveDirectoryUser() const;
-
-  // Returns true if user is child or deprecated legacy supervised.
-  // TODO(crbug/1155729): Remove and replace with IsChild().
-  virtual bool IsChildOrDeprecatedSupervised() const;
 
   // Returns true if user is child.
   virtual bool IsChild() const;
@@ -216,13 +219,13 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;
-  friend class chromeos::UserSessionManager;
+  friend class ash::UserSessionManager;
 
   // For testing:
   friend class FakeUserManager;
   friend class ash::FakeChromeUserManager;
   friend class ash::MockUserManager;
-  friend class chromeos::UserAddingScreenTest;
+  friend class ash::UserAddingScreenTest;
   friend class policy::ProfilePolicyConnectorTest;
   FRIEND_TEST_ALL_PREFIXES(UserTest, DeviceLocalAccountAffiliation);
   FRIEND_TEST_ALL_PREFIXES(UserTest, UserSessionInitialized);
@@ -234,7 +237,6 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   static User* CreateKioskAppUser(const AccountId& kiosk_app_account_id);
   static User* CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id);
   static User* CreateWebKioskAppUser(const AccountId& web_kiosk_account_id);
-  static User* CreateSupervisedUser(const AccountId& account_id);
   static User* CreatePublicAccountUser(const AccountId& account_id,
                                        bool is_using_saml = false);
 
@@ -338,13 +340,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool profile_is_created_ = false;
 
   // True if the user is affiliated to the device.
-  base::Optional<bool> is_affiliated_;
+  absl::optional<bool> is_affiliated_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
   std::vector<base::OnceCallback<void(bool is_affiliated)>>
       on_affiliation_set_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(User);
 };
 
 // List of known users.

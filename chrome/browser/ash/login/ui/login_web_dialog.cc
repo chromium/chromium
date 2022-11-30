@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,13 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
-using content::WebContents;
-using content::WebUIMessageHandler;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
 
-constexpr gfx::Insets kMinMargins{64, 64};
+using ::content::WebContents;
+using ::content::WebUIMessageHandler;
+
+constexpr gfx::Insets kMinMargins{64};
 constexpr gfx::Size kMinSize{128, 128};
 constexpr gfx::Size kMaxSize{512, 512};
 
@@ -45,23 +44,17 @@ ui::Accelerator GetCloseAccelerator() {
 ///////////////////////////////////////////////////////////////////////////////
 // LoginWebDialog, public:
 
-void LoginWebDialog::Delegate::OnDialogClosed() {}
-
 LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
-                               Delegate* delegate,
                                gfx::NativeWindow parent_window,
                                const std::u16string& title,
                                const GURL& url)
     : browser_context_(browser_context),
       parent_window_(parent_window),
-      delegate_(delegate),
       title_(title),
       url_(url) {
-  if (!parent_window_ && chromeos::LoginDisplayHost::default_host()) {
-    parent_window_ =
-        chromeos::LoginDisplayHost::default_host()->GetNativeWindow();
-  }
-  LOG_IF(WARNING, !parent_window)
+  if (!parent_window_ && LoginDisplayHost::default_host())
+    parent_window_ = LoginDisplayHost::default_host()->GetNativeWindow();
+  LOG_IF(WARNING, !parent_window_)
       << "No parent window. Dialog sizes could be wrong";
 }
 
@@ -127,8 +120,6 @@ void LoginWebDialog::OnDialogShown(content::WebUI* webui) {
 
 void LoginWebDialog::OnDialogClosed(const std::string& json_retval) {
   dialog_window_ = nullptr;
-  if (delegate_)
-    delegate_->OnDialogClosed();
   delete this;
 }
 
@@ -147,7 +138,7 @@ bool LoginWebDialog::ShouldShowDialogTitle() const {
 }
 
 bool LoginWebDialog::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Disable context menu.
   return true;
@@ -185,4 +176,4 @@ bool LoginWebDialog::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

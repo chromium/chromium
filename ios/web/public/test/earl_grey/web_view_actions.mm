@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,17 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/logging.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/logging.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/public/test/earl_grey/web_view_matchers.h"
-#include "ios/web/public/test/element_selector.h"
+#import "ios/web/public/test/element_selector.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -38,8 +38,8 @@ const NSTimeInterval kContextMenuLongPressDuration = 1.0;
 const NSTimeInterval kWaitForVerificationTimeout = 8.0;
 
 // Generic verification injector. Injects one-time mousedown verification into
-// |web_state| that will set the boolean pointed to by |verified| to true when
-// |web_state|'s webview registers the mousedown event.
+// `web_state` that will set the boolean pointed to by `verified` to true when
+// `web_state`'s webview registers the mousedown event.
 base::CallbackListSubscription AddVerifierToElementWithPrefix(
     web::WebState* web_state,
     ElementSelector* selector,
@@ -74,15 +74,13 @@ base::CallbackListSubscription AddVerifierToElementWithPrefix(
 
   bool success = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
-        bool verifier_added = false;
         std::unique_ptr<base::Value> value =
             web::test::ExecuteJavaScript(web_state, kAddVerifierScript);
         if (value) {
-          std::string error;
-          if (value->GetAsString(&error)) {
-            DLOG(ERROR) << "Verifier injection failed: " << error
+          if (value->is_string()) {
+            DLOG(ERROR) << "Verifier injection failed: " << value->GetString()
                         << ", retrying.";
-          } else if (value->GetAsBoolean(&verifier_added)) {
+          } else if (value->is_bool()) {
             return true;
           }
         }
@@ -95,7 +93,7 @@ base::CallbackListSubscription AddVerifierToElementWithPrefix(
   // The callback doesn't care about any of the parameters, just whether it is
   // called or not.
   auto callback = base::BindRepeating(
-      ^(const base::DictionaryValue& /* json */, const GURL& /* origin_url */,
+      ^(const base::Value& /* json */, const GURL& /* origin_url */,
         bool /* user_is_interacting */, web::WebFrame* /* sender_frame */) {
         *verified = true;
       });
@@ -161,8 +159,8 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
       base::StringPrintf("__web_test_%p_interaction", &selector);
 
   GREYPerformBlock verified_tap = ^BOOL(id element, __strong NSError** error) {
-    // A pointer to |verified| is passed into AddVerifierToElementWithPrefix()
-    // so the verifier can update its value, but |verified| also needs to be
+    // A pointer to `verified` is passed into AddVerifierToElementWithPrefix()
+    // so the verifier can update its value, but `verified` also needs to be
     // marked as __block so that waitUntilCondition(), below, can access it by
     // reference.
     __block bool verified = false;
@@ -202,7 +200,7 @@ id<GREYAction> WebViewVerifiedActionOnElement(WebState* state,
     }
     [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 
-    // Wait for the verified to trigger and set |verified|.
+    // Wait for the verified to trigger and set `verified`.
     NSString* verification_timeout_message =
         [NSString stringWithFormat:@"The action (%@) on element %@ wasn't "
                                    @"verified before timing out.",
@@ -304,9 +302,9 @@ id<GREYAction> WebViewScrollElementToVisible(WebState* state,
             // Wait until the element is visible.
             bool check = base::test::ios::WaitUntilConditionOrTimeout(
                 base::test::ios::kWaitForUIElementTimeout, ^{
-                  CGRect rect =
+                  CGRect newRect =
                       web::test::GetBoundingRectOfElement(state, selector);
-                  return IsRectVisibleInView(rect, web_view);
+                  return IsRectVisibleInView(newRect, web_view);
                 });
 
             if (!check) {

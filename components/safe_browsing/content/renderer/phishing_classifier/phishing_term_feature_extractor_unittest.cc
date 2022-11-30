@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -29,7 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -86,10 +85,22 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
     ResetExtractor(3 /* max shingles per page */);
   }
 
+  bool has_page_term(const std::string& str) const {
+    return term_hashes_.find(str) != term_hashes_.end();
+  }
+
+  bool has_page_word(uint32_t page_word_hash) const {
+    return word_hashes_.find(page_word_hash) != word_hashes_.end();
+  }
+
   void ResetExtractor(size_t max_shingles_per_page) {
     extractor_ = std::make_unique<PhishingTermFeatureExtractor>(
-        &term_hashes_, &word_hashes_, 3 /* max_words_per_term */,
-        kMurmurHash3Seed, max_shingles_per_page, 4 /* shingle_size */);
+        base::BindRepeating(&PhishingTermFeatureExtractorTest::has_page_term,
+                            base::Unretained(this)),
+        base::BindRepeating(&PhishingTermFeatureExtractorTest::has_page_word,
+                            base::Unretained(this)),
+        3 /* max_words_per_term */, kMurmurHash3Seed, max_shingles_per_page,
+        4 /* shingle_size */);
   }
 
   // Runs the TermFeatureExtractor on |page_text|, waiting for the
@@ -202,9 +213,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
   // Test various separators.
-  page_text = ASCIIToUTF16(
-      "Capitalization plus non-space\n"
-      "separator... punctuation!");
+  page_text = u"Capitalization plus non-space\nseparator... punctuation!";
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("capitalization"));
@@ -259,26 +268,22 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   ExpectFeatureMapsAreEqual(features, expected_features);
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // The test code is disabled due to http://crbug.com/392234
   // The client-side detection feature is not enabled on Android yet.
   // If we decided to enable the feature, we need to fix the bug first.
 
   // Chinese translation of the phrase "hello goodbye hello goodbye". This tests
   // that we can correctly separate terms in languages that don't use spaces.
-  page_text = base::UTF8ToUTF16(
-      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81"
-      "\xe4\xbd\xa0\xe5\xa5\xbd\xe5\x86\x8d\xe8\xa7\x81");
+  page_text = u"你好再见你好再见";
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("\xe4\xbd\xa0\xe5\xa5\xbd"));
+                                      std::string("你好"));
   expected_features.AddBooleanFeature(features::kPageTerm +
-                                      std::string("\xe5\x86\x8d\xe8\xa7\x81"));
+                                      std::string("再见"));
   expected_shingle_hashes.clear();
   expected_shingle_hashes.insert(
-      MurmurHash3String("\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 "
-                        "\xe4\xbd\xa0\xe5\xa5\xbd \xe5\x86\x8d\xe8\xa7\x81 ",
-                        kMurmurHash3Seed));
+      MurmurHash3String("你好 再见 你好 再见 ", kMurmurHash3Seed));
 
   features.Clear();
   shingle_hashes.clear();
@@ -297,7 +302,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
   // correctly, the extractor has to process the entire string of text.
   std::u16string page_text(u"one ");
   for (int i = 0; i < 28; ++i) {
-    page_text.append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text.append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
   page_text.append(u"two");
 
@@ -312,22 +317,22 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(3)))
+      .WillOnce(Return(now + base::Milliseconds(3)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(6)))
+      .WillOnce(Return(now + base::Milliseconds(6)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(9)))
+      .WillOnce(Return(now + base::Milliseconds(9)))
       // Time check after the next 5 words.  This is over the chunk
       // time limit, so a continuation task will be posted.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(12)))
+      .WillOnce(Return(now + base::Milliseconds(12)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(22)))
+      .WillOnce(Return(now + base::Milliseconds(22)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(25)))
+      .WillOnce(Return(now + base::Milliseconds(25)))
       // Time check after the next 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(28)))
+      .WillOnce(Return(now + base::Milliseconds(28)))
       // A final check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(30)));
+      .WillOnce(Return(now + base::Milliseconds(30)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -407,13 +412,13 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words,
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(300)))
+      .WillOnce(Return(now + base::Milliseconds(300)))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(350)))
+      .WillOnce(Return(now + base::Milliseconds(350)))
       // Time check after the next 5 words.  This is over the limit.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(600)))
+      .WillOnce(Return(now + base::Milliseconds(600)))
       // A final time check for the histograms.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(620)));
 
   features.Clear();
   shingle_hashes.clear();
@@ -423,7 +428,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
 TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
   std::unique_ptr<std::u16string> page_text(new std::u16string(u"one "));
   for (int i = 0; i < 28; ++i) {
-    page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text->append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
 
   base::TimeTicks now = base::TimeTicks::Now();
@@ -434,10 +439,10 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
       // Time check at the start of the first chunk of work.
       .WillOnce(Return(now))
       // Time check after the first 5 words.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(7)))
+      .WillOnce(Return(now + base::Milliseconds(7)))
       // Time check after the next 5 words. This should be greater than
       // kMaxTimePerChunkMs so that we stop and schedule extraction for later.
-      .WillOnce(Return(now + base::TimeDelta::FromMilliseconds(14)));
+      .WillOnce(Return(now + base::Milliseconds(14)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap features;
@@ -445,9 +450,9 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
   // Extract first 10 words then stop.
   PartialExtractFeatures(page_text.get(), &features, &shingle_hashes);
 
-  page_text.reset(new std::u16string());
+  page_text = std::make_unique<std::u16string>();
   for (int i = 30; i < 58; ++i) {
-    page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
+    page_text->append(base::ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
   page_text->append(u"multi word test ");
   features.Clear();

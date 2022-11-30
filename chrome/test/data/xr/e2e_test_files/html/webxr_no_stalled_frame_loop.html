@@ -17,6 +17,7 @@ WebXR page that only submits one frame.
       onImmersiveXRFrameCallback = function() {
         assert_true(frame_expected);
         frame_count++;
+        console.log('Got frame number ' + frame_count);
 
         if (frame_count === 1) {
           // No need to request an animationFrame because it should've been

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,9 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync.pb.h"
@@ -43,6 +44,7 @@ namespace blink {
 namespace mojom {
 enum class PermissionStatus;
 }  // namespace mojom
+class StorageKey;
 }  // namespace blink
 
 namespace content {
@@ -54,9 +56,8 @@ class ServiceWorkerContextWrapper;
 // registrations across all registered service workers for a profile.
 // Registrations are stored along with their associated Service Worker
 // registration in ServiceWorkerStorage. If the ServiceWorker is unregistered,
-// the sync registrations are removed. This class must be run on the service
-// worker core thread (ServiceWorkerContext::GetCoreThreadId()). The
-// asynchronous methods are executed sequentially.
+// the sync registrations are removed. This class runs on the UI thread.
+// The asynchronous methods are executed sequentially.
 class CONTENT_EXPORT BackgroundSyncManager
     : public ServiceWorkerContextCoreObserver {
  public:
@@ -74,6 +75,10 @@ class CONTENT_EXPORT BackgroundSyncManager
   static std::unique_ptr<BackgroundSyncManager> Create(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
+
+  BackgroundSyncManager(const BackgroundSyncManager&) = delete;
+  BackgroundSyncManager& operator=(const BackgroundSyncManager&) = delete;
+
   ~BackgroundSyncManager() override;
 
   // Stores the given background sync registration and adds it to the scheduling
@@ -84,6 +89,7 @@ class CONTENT_EXPORT BackgroundSyncManager
   // parameters if the user or UA chose different parameters than those
   // supplied.
   void Register(int64_t sw_registration_id,
+                int render_process_host_id,
                 blink::mojom::SyncRegistrationOptions options,
                 StatusAndRegistrationCallback callback);
 
@@ -117,7 +123,8 @@ class CONTENT_EXPORT BackgroundSyncManager
 
   // ServiceWorkerContextCoreObserver overrides.
   void OnRegistrationDeleted(int64_t sw_registration_id,
-                             const GURL& pattern) override;
+                             const GURL& pattern,
+                             const blink::StorageKey& key) override;
   void OnStorageWiped() override;
 
   BackgroundSyncNetworkObserver* GetNetworkObserverForTesting() {
@@ -125,12 +132,12 @@ class CONTENT_EXPORT BackgroundSyncManager
   }
 
   void set_clock(base::Clock* clock) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     clock_ = clock;
   }
 
   void set_proxy_for_testing(std::unique_ptr<BackgroundSyncProxy> proxy) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     proxy_ = std::move(proxy);
   }
 
@@ -190,6 +197,10 @@ class CONTENT_EXPORT BackgroundSyncManager
   // Revive any pending periodic Background Sync registrations for |origin|.
   void RevivePeriodicSyncRegistrations(url::Origin origin);
 
+  const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context() {
+    return service_worker_context_;
+  }
+
  protected:
   BackgroundSyncManager(
       scoped_refptr<ServiceWorkerContextWrapper> context,
@@ -217,7 +228,7 @@ class CONTENT_EXPORT BackgroundSyncManager
       const std::string& tag,
       scoped_refptr<ServiceWorkerVersion> active_version,
       ServiceWorkerVersion::StatusCallback callback);
-  virtual void HasMainFrameWindowClient(const url::Origin& origin,
+  virtual void HasMainFrameWindowClient(const blink::StorageKey& key,
                                         BoolCallback callback);
 
  private:
@@ -286,14 +297,17 @@ class CONTENT_EXPORT BackgroundSyncManager
   // Register callbacks
   void RegisterCheckIfHasMainFrame(
       int64_t sw_registration_id,
+      int render_process_host_id,
       blink::mojom::SyncRegistrationOptions options,
       StatusAndRegistrationCallback callback);
   void RegisterDidCheckIfMainFrame(
       int64_t sw_registration_id,
+      int render_process_host_id,
       blink::mojom::SyncRegistrationOptions options,
       StatusAndRegistrationCallback callback,
       bool has_main_frame_client);
   void RegisterImpl(int64_t sw_registration_id,
+                    int render_process_host_id,
                     blink::mojom::SyncRegistrationOptions options,
                     StatusAndRegistrationCallback callback);
   void RegisterDidAskForPermission(
@@ -430,8 +444,10 @@ class CONTENT_EXPORT BackgroundSyncManager
   // associated with |origin|.
   void UnregisterForOriginImpl(const url::Origin& origin,
                                base::OnceClosure callback);
-  void UnregisterForOriginDidStore(base::OnceClosure done_closure,
-                                   blink::ServiceWorkerStatusCode status);
+  void UnregisterForOriginDidStore(
+      int64_t service_worker_registration_id_to_remove,
+      base::OnceClosure done_closure,
+      blink::ServiceWorkerStatusCode status);
   void UnregisterForOriginScheduleDelayedProcessing(base::OnceClosure callback);
 
   base::OnceClosure MakeEmptyCompletion();
@@ -495,13 +511,13 @@ class CONTENT_EXPORT BackgroundSyncManager
 
   std::unique_ptr<BackgroundSyncNetworkObserver> network_observer_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::map<int64_t, int> emulated_offline_sw_;
 
-  base::WeakPtrFactory<BackgroundSyncManager> weak_ptr_factory_{this};
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncManager);
+  base::WeakPtrFactory<BackgroundSyncManager> weak_ptr_factory_{this};
 };
 
 }  // namespace content

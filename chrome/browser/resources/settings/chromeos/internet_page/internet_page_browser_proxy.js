@@ -1,86 +1,112 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @fileoverview A helper object used for Internet page. */
-cr.define('settings', function() {
-  /** @interface */
-  /* #export */ class InternetPageBrowserProxy {
-    /**
-     * Shows the Cellular activation UI.
-     * @param {string} guid
-     */
-    showCellularSetupUI(guid) {}
 
-    /**
-     * Shows configuration for external VPNs. Includes ThirdParty (extension
-     * configured) VPNs, and Arc VPNs.
-     * @param {string} guid
-     */
-    configureThirdPartyVpn(guid) {}
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 
-    /**
-     * Sends an add VPN request to the external VPN provider (ThirdParty VPN
-     * extension or Arc VPN provider app).
-     * @param {string} appId
-     */
-    addThirdPartyVpn(appId) {}
-
-    /**
-     * Requests that Chrome send the list of devices whose "Google Play
-     * Services" notifications are disabled (these notifications must be enabled
-     * to utilize Instant Tethering). The names will be provided via
-     * setGmsCoreNotificationsDisabledDeviceNamesCallback().
-     */
-    requestGmsCoreNotificationsDisabledDeviceNames() {}
-
-    /**
-     * Sets the callback to be used to receive the list of devices whose "Google
-     * Play Services" notifications are disabled. |callback| is invoked with an
-     * array of the names of these devices; note that if no devices have this
-     * property, the provided list of device names is empty.
-     * @param {function(!Array<string>):void} callback
-     */
-    setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
-  }
+/** @interface */
+export class InternetPageBrowserProxy {
+  /**
+   * Shows the account details page of a cellular network.
+   * @param {string} guid
+   */
+  showCarrierAccountDetail(guid) {}
 
   /**
-   * @implements {settings.InternetPageBrowserProxy}
+   * Shows the Cellular activation UI.
+   * @param {string} guid
    */
-  /* #export */ class InternetPageBrowserProxyImpl {
-    /** @override */
-    showCellularSetupUI(guid) {
-      chrome.send('showCellularSetupUI', [guid]);
-    }
+  showCellularSetupUI(guid) {}
 
-    /** @override */
-    configureThirdPartyVpn(guid) {
-      chrome.send('configureThirdPartyVpn', [guid]);
-    }
+  /**
+   * Shows the Portal Signin.
+   * @param {string} guid
+   */
+  showPortalSignin(guid) {}
 
-    /** @override */
-    addThirdPartyVpn(appId) {
-      chrome.send('addThirdPartyVpn', [appId]);
-    }
+  /**
+   * Shows configuration for external VPNs. Includes ThirdParty (extension
+   * configured) VPNs, and Arc VPNs.
+   * @param {string} guid
+   */
+  configureThirdPartyVpn(guid) {}
 
-    /** @override */
-    requestGmsCoreNotificationsDisabledDeviceNames() {
-      chrome.send('requestGmsCoreNotificationsDisabledDeviceNames');
-    }
+  /**
+   * Sends an add VPN request to the external VPN provider (ThirdParty VPN
+   * extension or Arc VPN provider app).
+   * @param {string} appId
+   */
+  addThirdPartyVpn(appId) {}
 
-    /** @override */
-    setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {
-      cr.addWebUIListener(
-          'sendGmsCoreNotificationsDisabledDeviceNames', callback);
-    }
+  /**
+   * Requests that Chrome send the list of devices whose "Google Play
+   * Services" notifications are disabled (these notifications must be enabled
+   * to utilize Instant Tethering). The names will be provided via
+   * setGmsCoreNotificationsDisabledDeviceNamesCallback().
+   */
+  requestGmsCoreNotificationsDisabledDeviceNames() {}
+
+  /**
+   * Sets the callback to be used to receive the list of devices whose "Google
+   * Play Services" notifications are disabled. |callback| is invoked with an
+   * array of the names of these devices; note that if no devices have this
+   * property, the provided list of device names is empty.
+   * @param {function(!Array<string>):void} callback
+   */
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {}
+}
+
+/** @type {?InternetPageBrowserProxy} */
+let instance = null;
+
+/**
+ * @implements {InternetPageBrowserProxy}
+ */
+export class InternetPageBrowserProxyImpl {
+  /** @return {!InternetPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new InternetPageBrowserProxyImpl());
   }
 
-  cr.addSingletonGetter(InternetPageBrowserProxyImpl);
+  /** @param {!InternetPageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 
-  // #cr_define_end
-  return {InternetPageBrowserProxy, InternetPageBrowserProxyImpl};
-});
+  /** @override */
+  showCarrierAccountDetail(guid) {
+    chrome.send('showCarrierAccountDetail', [guid]);
+  }
+
+  /** @override */
+  showCellularSetupUI(guid) {
+    chrome.send('showCellularSetupUI', [guid]);
+  }
+
+  /** @override */
+  showPortalSignin(guid) {
+    chrome.send('showPortalSignin', [guid]);
+  }
+
+  /** @override */
+  configureThirdPartyVpn(guid) {
+    chrome.send('configureThirdPartyVpn', [guid]);
+  }
+
+  /** @override */
+  addThirdPartyVpn(appId) {
+    chrome.send('addThirdPartyVpn', [appId]);
+  }
+
+  /** @override */
+  requestGmsCoreNotificationsDisabledDeviceNames() {
+    chrome.send('requestGmsCoreNotificationsDisabledDeviceNames');
+  }
+
+  /** @override */
+  setGmsCoreNotificationsDisabledDeviceNamesCallback(callback) {
+    addWebUIListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
+  }
+}

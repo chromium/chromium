@@ -20,10 +20,11 @@
 
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/html_script_element_or_svg_script_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -80,11 +81,6 @@ void SVGScriptElement::DidNotifySubtreeInsertionsToDocument() {
 void SVGScriptElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
   loader_->ChildrenChanged();
-}
-
-void SVGScriptElement::DidMoveToNewDocument(Document& old_document) {
-  ScriptRunner::MovePendingScript(old_document, GetDocument(), loader_.Get());
-  SVGElement::DidMoveToNewDocument(old_document);
 }
 
 bool SVGScriptElement::IsURLAttribute(const Attribute& attribute) const {
@@ -170,12 +166,6 @@ void SVGScriptElement::DispatchErrorEvent() {
   DispatchEvent(*Event::Create(event_type_names::kError), "SVGScriptElement::DispatchErrorEvent");
 }
 
-void SVGScriptElement::SetScriptElementForBinding(
-    HTMLScriptElementOrSVGScriptElement& element) {
-  if (!IsInShadowTree())
-    element.SetSVGScriptElement(this);
-}
-
 ScriptElementBase::Type SVGScriptElement::GetScriptElementType() {
   return ScriptElementBase::Type::kSVGScriptElement;
 }
@@ -197,6 +187,16 @@ const AttrNameToTrustedType& SVGScriptElement::GetCheckedAttributeTypes()
           {svg_names::kHrefAttr.LocalName(), SpecificTrustedType::kScriptURL},
       }));
   return attribute_map;
+}
+
+V8HTMLOrSVGScriptElement* SVGScriptElement::AsV8HTMLOrSVGScriptElement() {
+  if (IsInShadowTree())
+    return nullptr;
+  return MakeGarbageCollected<V8HTMLOrSVGScriptElement>(this);
+}
+
+DOMNodeId SVGScriptElement::GetDOMNodeId() {
+  return DOMNodeIds::IdForNode(this);
 }
 
 void SVGScriptElement::Trace(Visitor* visitor) const {

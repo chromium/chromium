@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,17 @@
 
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/glow_hover_controller.h"
+#include "ui/base/metadata/base_type_conversion.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/views/metadata/type_conversion.h"
 
 template <>
-struct views::metadata::TypeConverter<TabStyle::TabColors>
-    : BaseTypeConverter<true> {
+struct ui::metadata::TypeConverter<TabStyle::TabColors>
+    : ui::metadata::BaseTypeConverter<true> {
   static std::u16string ToString(
-      views::metadata::ArgType<TabStyle::TabColors> source_value);
-  static base::Optional<TabStyle::TabColors> FromString(
+      ui::metadata::ArgType<TabStyle::TabColors> source_value);
+  static absl::optional<TabStyle::TabColors> FromString(
       const std::u16string& source_value);
-  static views::metadata::ValidStrings GetValidStrings();
+  static ui::metadata::ValidStrings GetValidStrings();
 };
 
 class Tab;

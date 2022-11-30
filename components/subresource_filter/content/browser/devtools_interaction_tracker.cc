@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 namespace subresource_filter {
 
 DevtoolsInteractionTracker::DevtoolsInteractionTracker(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<DevtoolsInteractionTracker>(*web_contents) {}
 
 DevtoolsInteractionTracker::~DevtoolsInteractionTracker() = default;
 
@@ -20,6 +21,6 @@ void DevtoolsInteractionTracker::ToggleForceActivation(bool force_activation) {
   activated_via_devtools_ = force_activation;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DevtoolsInteractionTracker)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DevtoolsInteractionTracker);
 
 }  // namespace subresource_filter

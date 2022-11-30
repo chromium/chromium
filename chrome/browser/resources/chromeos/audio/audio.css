@@ -1,0 +1,277 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+:root {
+  --divider-border: 1px solid #bdbdbd;
+}
+
+body {
+  font-family: Roboto, sans-serif;
+  font-size: 80%;
+}
+
+.content {
+  margin: auto;
+  max-width: 500px;
+}
+
+h {
+  font-size: 200%
+}
+
+p {
+  font-size: 120%
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Device Table */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th,
+table td {
+  border: var(--divider-border);
+  padding: 7px;
+}
+
+table th {
+  background-color: #f0f0f0;
+  font-weight: normal;
+}
+
+/* Device Page */
+#devices {
+  margin: auto;
+  width: 70%;
+}
+#warning-banner {
+  background: rgb(255,255,102);
+  position: relative;
+}
+
+#warning-msg {
+  padding: 10px;
+}
+
+.feedback-btn {
+  background: none;
+  border: none;
+  color: blue;
+  font-size: 120%;
+  font-weight: bold;
+  padding: 0;
+  position: absolute;
+  text-decoration: underline;
+}
+
+#banner-feedback {
+  right: 645px;
+  top: 28px;
+}
+
+#test-buttons {
+  margin: auto;
+  position: relative;
+}
+
+#device-not-present {
+  position: absolute;
+}
+
+#input-btn {
+  font-weight: bold;
+  position: absolute;
+  top: 40px;
+}
+
+#output-btn {
+  font-weight: bold;
+  position: absolute;
+  top: 70px;
+}
+
+#no-device-feedback {
+  left: 300px;
+  top: 15px;
+}
+
+/* Output Page */
+#output-explainer {
+  margin: auto;
+  margin-top: 30px;
+  width: 50%;
+}
+
+.audio-player {
+  box-shadow: 0 10px 16px 0 rgba(0,0,0,0.2);
+  height: 250px;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  width: 50%;
+}
+
+.audio-player button {
+  background: none;
+  border: none;
+  font-size: 120%;
+  padding: 0;
+  position: absolute;
+}
+
+#play-btn {
+  border: 3px solid #dcdcdc;
+  border-radius: 6px;
+  color: rgb(78, 76, 76);
+  font-size: 120%;
+  font-weight: bold;
+  left: -100px;
+  padding: 6px 24px;
+  position: relative;
+  top: 90px;
+  width: 50%;
+}
+
+#back {
+  left: 10px;
+  top: 10px;
+}
+
+#output-yes {
+  bottom: 40px;
+  right: 20px;
+}
+
+#output-no {
+  bottom: 15px;
+  right: 20px;
+}
+
+#output-qs p {
+  bottom: 50px;
+  font-size: 120%;
+  position: absolute;
+  right: 20px;
+}
+
+.advice-label {
+  margin-top: -15px;
+}
+
+#audio-name {
+  left: 40px;
+  position: absolute;
+  top: 25px;
+}
+
+#audio-expectation {
+  left: 40px;
+  position: absolute;
+  top: 45px;
+}
+
+/* Input Page */
+
+#input {
+  margin: auto;
+  width: 50%;
+}
+
+#input-explainer {
+  margin-top: 30px;
+}
+
+#channel-l,
+#channel-r {
+  height: 60px;
+  width: 100%;
+}
+
+#record-btn {
+  border: 3px solid #dcdcdc;
+  border-radius: 6px;
+  color: rgb(78, 76, 76);
+  display: inline-block;
+  font-size: 120%;
+  font-weight: bold;
+  margin-top: 10px;
+  padding: 6px 24px;
+}
+
+.on-record {
+  background: linear-gradient(to bottom, #fff 5%, #f6f6f6 100%);
+  background-color: #fff;
+}
+
+.on-stop {
+  background-color: #c7c7c7;
+}
+
+#button-section {
+  position: relative;
+}
+
+#counter {
+  color: red;
+  left: 100px;
+  position: absolute;
+  top: 5px;
+}
+
+#audio-file {
+  margin-top: 15px;
+}
+
+#input-qs button {
+  background: none;
+  border: none;
+  font-size: 120%;
+}
+
+/*Feedback Page*/
+#feedback {
+  margin: auto;
+  width: 50%;
+}
+
+#feedback-explainer {
+  margin-top: 30px;
+}
+
+.instruction {
+  margin-top: -15px;
+  padding-inline-start: 17px;
+}
+
+.feedback-list {
+  margin-bottom: 20px;
+}
+
+.feedback-step {
+  margin-bottom: 30px;
+}
+
+#copy-btn {
+  position: absolute;
+}
+
+#input-replay {
+  margin-top: 10px;
+}
+
+#audio-info {
+  margin-inline-start: 55px;
+}
+
+#download-btn {
+  bottom: 20px;
+  position: relative;
+  right: 5px;
+}

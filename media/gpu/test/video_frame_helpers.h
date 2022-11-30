@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,9 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace gpu {
-class GpuMemoryBufferFactory;
-}
 
 namespace media {
 namespace test {
@@ -62,18 +59,15 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 // If |dst_storage_type| is STORAGE_DMABUFS, this function creates DMABUF-backed
 // VideoFrame with |dst_layout|. If |dst_storage_type| is STORAGE_OWNED_MEMORY,
 // this function creates memory-backed VideoFrame with |dst_layout|.
-// |dst_buffer_usage| and |gpu_memory_buffer_factory| must be specified if
-// |dst_storage_type| is STORAGE_DMABUFS or STORAGE_GPU_MEMORY_BUFFER, and in
-// that case the |gpu_memory_buffer_factory| will be used for the allocation to
-// create a graphic buffer with the requested usage.
+// |dst_buffer_usage| must be specified if |dst_storage_type| is STORAGE_DMABUFS
+// or STORAGE_GPU_MEMORY_BUFFER.
 // The created VideoFrame's content is the same as |src_frame|. The created
 // VideoFrame owns the buffer. Returns nullptr on failure.
 scoped_refptr<VideoFrame> CloneVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const src_frame,
     const VideoFrameLayout& dst_layout,
     VideoFrame::StorageType dst_storage_type = VideoFrame::STORAGE_OWNED_MEMORY,
-    base::Optional<gfx::BufferUsage> dst_buffer_usage = base::nullopt);
+    absl::optional<gfx::BufferUsage> dst_buffer_usage = absl::nullopt);
 
 // Create Dmabuf-backed VideoFrame from |src_frame|. The created VideoFrame
 // doesn't depend on |src_frame|'s lifetime. |src_frame| should be a
@@ -88,7 +82,6 @@ scoped_refptr<VideoFrame> CreateDmabufVideoFrame(
 // |buffer_usage|.
 // This function works on ChromeOS only.
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     const VideoFrame* const frame,
     gfx::BufferUsage buffer_usage);
 
@@ -100,7 +93,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image);
 // and |alignment|. |plane_rows| is optional. If it is not nullptr, this fills
 // the number of rows of each plane into it. The created VideoFrameLayout
 // represents all the planes stored in a single physical buffer.
-base::Optional<VideoFrameLayout> CreateVideoFrameLayout(
+absl::optional<VideoFrameLayout> CreateVideoFrameLayout(
     VideoPixelFormat pixel_format,
     const gfx::Size& dimension,
     const uint32_t alignment = VideoFrame::kFrameAddressAlignment,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,17 @@ import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-enum PrerenderRelType {
+enum PrerenderTriggerType {
   // https://html.spec.whatwg.org/C/#link-type-prerender
-  kPrerender,
+  kLinkRelPrerender,
 
   // https://html.spec.whatwg.org/C/#link-type-next
-  kNext,
+  kLinkRelNext,
 };
 
 struct PrerenderAttributes {
   url.mojom.Url url;
-  PrerenderRelType rel_type;
+  PrerenderTriggerType trigger_type;
   blink.mojom.Referrer referrer;
   gfx.mojom.Size view_size;
 };
@@ -34,25 +34,6 @@ interface NoStatePrefetchProcessor {
   Start(PrerenderAttributes prerender_attribute);
 
   // Cancels the ongoing prefetching. This is supposed to be called when the
-  // <link rel=prerender> element is removed, the element's href is changed,
-  // etc. This must be called after Start().
-  Cancel();
-};
-
-// Prerender2 (https://crbug.com/1132746):
-// This interface is used only when blink::features::kPrerender2 is enabled.
-//
-// This interface is used to request prerendering from a renderer process to the
-// browser process. This is created per prerender request, for example, when a
-// new <link rel=prerender> element is added, when the element's href is
-// changed, etc.
-interface PrerenderProcessor {
-  // Requests the browesr process to start prerendering with
-  // |prerender_attribute|. This must be called only one time before any other
-  // functions.
-  Start(PrerenderAttributes prerender_attribute);
-
-  // Cancels the ongoing prerendering. This is supposed to be called when the
   // <link rel=prerender> element is removed, the element's href is changed,
   // etc. This must be called after Start().
   Cancel();

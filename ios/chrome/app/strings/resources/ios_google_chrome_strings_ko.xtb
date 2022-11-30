@@ -1,26 +1,39 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="1282031177488366470">Chrome의 기능 및 성능 개선에 참여</translation>
-<translation id="1314663809820920746">북마크, 방문 기록, 비밀번호 및 기타 설정은 모두 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 Google 계정에 동기화되지는 않습니다.</translation>
+<translation id="1462727070346936664">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
 <translation id="1479202195792305274">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
+<translation id="1493827051843127077">Chrome을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="1504372625950710826">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
+<translation id="1511320244449497906">현재 로그인되어 있으며 <ph name="DOMAIN" />에서 관리하는 계정과 데이터를 동기화하려고 합니다. 이 도메인의 관리자는 이제 해당 계정에 적용되는 사용자 정책을 설정할 수 있으며 이로 인해 Chrome의 동작이 변경될 수 있습니다</translation>
 <translation id="1682483655351012182">Chrome 데이터 동기화</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">사용 통계 및 비정상 종료 보고서를 Google에 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="1917964099031477364">이 계정 및 저장되지 않은 모든 데이터가 Chrome 및 이 기기의 기타 Google 앱에서 삭제됩니다.</translation>
+<translation id="1968388653333775699">Chrome으로 더 다양한 작업 처리하기</translation>
 <translation id="2009224836393115614">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
+<translation id="2056123005618757196">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chrome을 더욱 다양하게 활용하세요</translation>
 <translation id="2147651015520127414">Chrome이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="2199719347983604670">Chrome 동기화 데이터</translation>
+<translation id="2313070403598893276">간편하고 안전하며 더 빨라진 Chrome을 사용해 보세요</translation>
+<translation id="2339201583852607431">비밀번호가 Google 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="2342919707875585281">Chrome은 사용자가 허용한 사이트와 위치 정보를 공유합니다.</translation>
 <translation id="2347208864470321755">이 기능을 사용하면 Chrome에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="2415682770504543561">Chrome을 기본 브라우저로 설정하세요</translation>
+<translation id="2427791862912929107">Chrome에는 사용자가 간편하게 인터넷 데이터를 관리하고 웹페이지 로드 시간을 제어할 수 있도록 돕는 기능이 있습니다.
+<ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="2561231791489583059">Chrome을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2576431527583832481">한층 개선된 Chrome의 최신 버전이 출시되었습니다.</translation>
 <translation id="257708665678654955">다음에 Chrome에서 이 사이트의 <ph name="LANGUAGE_NAME" /> 페이지를 번역하시겠습니까?</translation>
+<translation id="2671426118752779020">Google 비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
+<translation id="2689064829982324496">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chrome에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="2695886661449553974">Chrome에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2732745070297234559">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
-<translation id="2740105938841089077">Chrome을 사용하여 링크 열기</translation>
+<translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2919738076569633423">Chrome을 사용하면 <ph name="BEGIN_LINK_TOS" />서비스 약관<ph name="END_LINK_TOS" />에 동의하게 됩니다.</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chrome 데이터가 기기에서 삭제됩니다. Google 계정에 저장된 데이터는 그대로 유지됩니다.</translation>
 <translation id="3167189358072330585">계정이 Chrome에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정으로 로그인하세요.</translation>
 <translation id="3173834708294760622">Chrome 페이지</translation>
@@ -29,66 +42,102 @@
 <translation id="3345341804167540816">어디서나 Chrome 사용</translation>
 <translation id="3522659714780527202">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="3533694711092285624">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
+<translation id="3641179212828090796">Chrome에 저장한 비밀번호를 사용하여 더 빠르게 로그인하세요</translation>
+<translation id="3655656110921623717">Chrome에서 모바일 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="3706101708757577809">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="3720541637541300822">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="384394811301901750">지금 Chrome에서 카메라를 사용할 수 없습니다.</translation>
-<translation id="38949020760388809">기기에서 Chrome 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
-<translation id="415767770115540173">위치 정보를 기반으로 Chrome에서 더 나은 Google 환경을 이용할 수 있습니다.</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
+<translation id="4192781968753717021">비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 지금 바로 비밀번호를 변경하는 것이 좋습니다.</translation>
+<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 계정이 Chrome을 사용했으며 이 기기에 북마크, 비밀번호, 기타 설정을 남겼습니다</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4249068189593983585">Chrome 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
 <translation id="4523886039239821078">일부 부가기능이 Chrome을 비정상 종료시킵니다. 다음 항목을 제거하세요.</translation>
 <translation id="4633328489441962921">Chrome에서 업데이트를 확인할 수 없습니다.</translation>
+<translation id="4636900170638246267">이 사이트 및 Chrome에 로그인하세요.</translation>
 <translation id="4698415050768537821">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
+<translation id="4802922164792993118">Chrome 도움말입니다. 키보드 상단에서 저장된 비밀번호를 선택하여 더 빠르게 로그인하세요.</translation>
+<translation id="4819268619367838612">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
 <translation id="5030102366287574140">Chrome에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
+<translation id="5108659628347594808">Chrome 개선에 참여</translation>
+<translation id="5119391094379141756">Chrome을 선택합니다.</translation>
 <translation id="5162467219239570114">Chrome이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chrome의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
 <translation id="5389212809648216794">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chrome에서 카메라를 사용할 수 없습니다.</translation>
+<translation id="5460571915754665838">4. Chrome을 선택합니다.</translation>
+<translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5639704535586432836">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chrome을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="5642200033778930880">Chrome에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">오프라인 상태이므로 Chrome에서 업데이트를 확인할 수 없습니다.</translation>
+<translation id="5716154293141027663">다른 앱에서 링크를 탭할 때마다 Chrome을 엽니다.</translation>
 <translation id="5854621639439811139">Chrome 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
-<translation id="6036420186814142909">Chrome에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
-<ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="5998675059699164418">조직에서 Chrome을 사용하려면 로그인해야 합니다.</translation>
+<translation id="6054613632208573261">Chrome을 기본 브라우저로 사용</translation>
+<translation id="6063091872902370735">Chrome 로그인 허용</translation>
+<translation id="6110625574506755980">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다</translation>
 <translation id="6181930887571472871">Chrome으로 전환</translation>
 <translation id="6238746320622508509">Chrome에서 시크릿 탭을 잠그도록 허용합니다.</translation>
-<translation id="6573431926118603307">다른 기기의 Chrome에서 연 탭이 여기에 표시됩니다.</translation>
+<translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
+<translation id="6427126399757991875">조직에서 Chrome을 설정하는 중...</translation>
+<translation id="651403856614361404">비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 지금 바로 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="6600954340915313787">Chrome에 복사됨</translation>
 <translation id="6634107063912726160">로그아웃하면 Chrome에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="6676840375528380067">기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
 <translation id="6822673484890854830">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
+<translation id="701356708427365932">새로운 Chrome 메뉴를 알아보세요.</translation>
+<translation id="7059914902409643750">나만의 Chrome 만들기</translation>
 <translation id="7124339256045485976">Chrome을 최신 상태로 유지합니다.</translation>
 <translation id="7161390184744336561">Chrome이 최신 버전이 아닙니다.</translation>
 <translation id="7165736900384873061">Chrome QR 스캐너 사용 시작</translation>
-<translation id="7172660552945675509">도움말: <ph name="BEGIN_LINK" />Chrome을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
+<translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
+<translation id="72119412072970160">Google 비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="7261678641327190792">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
-<translation id="7265369419224458312">여기에서 컴퓨터에서 열어 둔 탭에 바로 액세스할 수 있습니다. 컴퓨터에서 Chrome을 열고 메뉴로 이동하여 'Chrome에 로그인...'을 선택하세요.</translation>
 <translation id="7272930098487145294">이미지를 저장하려면 '설정'을 탭하여 Chrome에 사진 추가 권한을 부여하세요.</translation>
+<translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
 <translation id="7400722733683201933">Chrome 정보</translation>
 <translation id="7501046334262221972">Chrome을 기본 브라우저로 설정하려면 Settings(설정)를 여세요. Default Browser App(기본 브라우저 앱)을 탭한 다음 Chrome을 선택합니다.</translation>
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
-<translation id="766361182512894255">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
+<translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
+<translation id="7754633291442704733"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chrome 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chrome의 동작을 변경할 수도 있습니다.</translation>
+<translation id="7780154209050837198">Chrome을 최대한 활용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
-<translation id="8109233255338845204"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
+<translation id="8022947259858476807">Chrome을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
+<translation id="81358522153858150">이제 Chrome에서 관리 계정에 대한 사용자 정책을 지원합니다</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
+<translation id="8357607116237445042">이 기기에서 내 Chrome 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">일부 부가기능으로 Chrome이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>
+<translation id="8414886616817913619">조직에서 Chrome을 사용하려면 로그인할 것을 요구합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. history.google.com에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="850555388806794946">Chrome을 기본 브라우저로 설정하려면 다음 단계를 따르세요.
   1. 설정을 엽니다.
   2. 기본 브라우저 앱을 탭합니다.
   3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
-<translation id="9135668017386497357">위치 정보 사용을 허용하면 Chrome이 기본 검색엔진 및 권한이 부여된 사이트에 위치 정보를 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
+<translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>
+<translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
+<translation id="8788269841521769222">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
+<translation id="8897749957032330183">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
+<translation id="8969290730818637510">사용 설정되어 있을 때:
+<ph name="BEGIN_INDENT" />  • 나와 비슷한 사용자를 위한 Chrome 개선에 도움이 됩니다.<ph name="END_INDENT" />
+
+알아야 할 것:
+<ph name="BEGIN_INDENT" />  • Chrome 사용에 관한 정보가 Google로 전송되지만 나와 연결되지는 않습니다.
+
+  • Chrome이 다운되면 관련 세부정보에 일부 개인 정보가 포함될 수 있습니다.
+
+  • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
+<translation id="9112744793181547300">Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
+<translation id="9122931302567044771">Chrome에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 </translationbundle>

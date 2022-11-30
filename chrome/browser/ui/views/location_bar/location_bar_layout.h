@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace gfx {
 class Rect;
@@ -29,6 +27,10 @@ class LocationBarLayout {
   };
 
   LocationBarLayout(Position position, int item_edit_padding);
+
+  LocationBarLayout(const LocationBarLayout&) = delete;
+  LocationBarLayout& operator=(const LocationBarLayout&) = delete;
+
   virtual ~LocationBarLayout();
 
   // Add a decoration, specifying:
@@ -49,21 +51,21 @@ class LocationBarLayout {
                      views::View* view);
 
   // First pass of decoration layout process. Pass the full width of the
-  // location bar in |entry_width|. This pass will adjust it to account for
+  // location bar in `entry_width`. This pass will decrease it to account for
   // non-collapsible and non-resizable decorations.
   void LayoutPass1(int* entry_width);
 
-  // Second pass of decoration layout process. Pass the |entry_width| computed
-  // by the first pass. This pass will adjust it to account for resizable
+  // Second pass of decoration layout process. Pass the `entry_width` computed
+  // by the first pass. This pass will decrease it to account for resizable
   // decorations.
   void LayoutPass2(int* entry_width);
 
-  // Third and final pass of decoration layout process. Pass the |bounds|
+  // Third and final pass of decoration layout process. Pass the `bounds`
   // corresponding to the entire space available in the location bar. This pass
-  // will update it as decorations are laid out. |available_width| measures the
+  // will update it as decorations are laid out. `available_width` measures the
   // empty space within the location bar, taking the decorations and text into
-  // account. |decorations| must always be ordered from the edge of the location
-  // bar towards the middle.
+  // account. `decorations_` must always be ordered from the edge of the
+  // location bar towards the middle.
   void LayoutPass3(gfx::Rect* bounds, int* available_width);
 
  private:
@@ -76,8 +78,6 @@ class LocationBarLayout {
 
   // The list of decorations to layout.
   std::vector<std::unique_ptr<DecorationInfo>> decorations_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocationBarLayout);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_LAYOUT_H_

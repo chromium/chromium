@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//headless/headless.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -22,8 +23,8 @@ if (headless_use_policy) {
          "'headless_use_policy' requires 'headless_use_prefs'.")
 }
 
-# Headless Policy config applied to every target below.
-config("headless_policy_config") {
+# Headless defines config applied to every target below.
+config("headless_defines_config") {
   defines = []
 
   if (headless_use_prefs) {
@@ -32,6 +33,10 @@ config("headless_policy_config") {
 
   if (headless_use_policy) {
     defines += [ "HEADLESS_USE_POLICY" ]
+  }
+
+  if (headless_mode_policy_supported) {
+    defines += [ "HEADLESS_MODE_POLICY_SUPPORTED" ]
   }
 }
 
@@ -44,24 +49,37 @@ group("headless_lib") {
   deps = [ ":headless_non_renderer" ]
 }
 
-repack("pak") {
+repack("resource_pack_data") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/strings/components_strings_en-US.pak",
-    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
-    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/dev_ui_content_resources.pak",
-    "$root_gen_dir/headless/headless_lib_resources.pak",
-    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
+  ]
+
+  deps = [
+    "//components/resources:components_resources",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
+    "//net:net_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//ui/resources",
+  ]
+
+  output = "$root_out_dir/headless_lib_data.pak"
+}
+
+repack("resource_pack_strings") {
+  sources = [
+    "$root_gen_dir/components/strings/components_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
@@ -72,19 +90,8 @@ repack("pak") {
   }
 
   deps = [
-    ":resources",
-    "//components/resources:components_resources",
     "//components/strings",
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-    "//content/app/resources",
-    "//content/browser/tracing:resources",
-    "//mojo/public/js:resources",
-    "//net:net_resources",
-    "//third_party/blink/public:resources",
-    "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
-    "//ui/resources",
     "//ui/strings",
   ]
 
@@ -94,51 +101,70 @@ repack("pak") {
     deps += [ "//content/browser/devtools:devtools_resources" ]
   }
 
-  output = "$root_out_dir/headless_lib.pak"
+  output = "$root_out_dir/headless_lib_strings.pak"
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("embed_resources") {
+action("embedded_resource_pack_data") {
   # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
   script = "lib/embed_data.py"
 
-  inputs = [ "$root_out_dir/headless_lib.pak" ]
+  inputs = [ "$root_out_dir/headless_lib_data.pak" ]
 
   outputs = [
-    "$root_gen_dir/headless/embedded_resource_pak.cc",
-    "$root_gen_dir/headless/embedded_resource_pak.h",
+    "$root_gen_dir/headless/embedded_resource_pack_data.cc",
+    "$root_gen_dir/headless/embedded_resource_pack_data.h",
   ]
 
   args = [
     "--data_file",
-    rebase_path("$root_out_dir/headless_lib.pak", root_build_dir),
+    rebase_path("$root_out_dir/headless_lib_data.pak", root_build_dir),
     "--gendir",
     rebase_path("$root_gen_dir", root_build_dir),
     "--header_file",
-    "headless/embedded_resource_pak.h",
+    "headless/embedded_resource_pack_data.h",
     "--source_file",
-    "headless/embedded_resource_pak.cc",
+    "headless/embedded_resource_pack_data.cc",
     "--namespace",
     "headless",
     "--variable_name",
-    "kHeadlessResourcePak",
+    "kHeadlessResourcePackData",
   ]
 
-  deps = [ ":pak" ]
+  deps = [ ":resource_pack_data" ]
 }
 
-grit("resources") {
-  source = "lib/resources/headless_lib_resources.grd"
+action("embedded_resource_pack_strings") {
+  # TODO(altimin): Consider zipping file here, it can reduce size up to 80%.
+  script = "lib/embed_data.py"
+
+  inputs = [ "$root_out_dir/headless_lib_strings.pak" ]
+
   outputs = [
-    "grit/headless_lib_resources.h",
-    "$root_gen_dir/headless/headless_lib_resources.pak",
+    "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
+    "$root_gen_dir/headless/embedded_resource_pack_strings.h",
   ]
+
+  args = [
+    "--data_file",
+    rebase_path("$root_out_dir/headless_lib_strings.pak", root_build_dir),
+    "--gendir",
+    rebase_path("$root_gen_dir", root_build_dir),
+    "--header_file",
+    "headless/embedded_resource_pack_strings.h",
+    "--source_file",
+    "headless/embedded_resource_pack_strings.cc",
+    "--namespace",
+    "headless",
+    "--variable_name",
+    "kHeadlessResourcePackStrings",
+  ]
+
+  deps = [ ":resource_pack_strings" ]
 }
 
 devtools_domains = [
   "accessibility",
   "animation",
-  "application_cache",
   "browser",
   "cache_storage",
   "console",
@@ -172,28 +198,34 @@ devtools_domains = [
   "tracing",
 ]
 
-generated_devtools_api = []
+generated_devtools_api_sources = []
+generated_devtools_api_headers = []
 foreach(domain, devtools_domains) {
-  generated_devtools_api += [
-    "$target_gen_dir/public/devtools/domains/" + domain + ".cc",
+  generated_devtools_api_headers += [
     "$target_gen_dir/public/devtools/domains/" + domain + ".h",
     "$target_gen_dir/public/devtools/domains/types_" + domain + ".h",
-    "$target_gen_dir/public/devtools/domains/types_" + domain + ".cc",
     "$target_gen_dir/public/devtools/internal/type_conversions_" + domain +
         ".h",
     "$target_gen_dir/public/devtools/internal/" +
         "types_forward_declarations_" + domain + ".h",
   ]
+  generated_devtools_api_sources += [
+    "$target_gen_dir/public/devtools/domains/" + domain + ".cc",
+    "$target_gen_dir/public/devtools/domains/types_" + domain + ".cc",
+  ]
 }
 
 action("gen_devtools_client_api") {
   script = "lib/browser/devtools_api/client_api_generator.py"
-  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  deps = [
+    ":protocol_sources",
+    "//third_party/blink/public/devtools_protocol:protocol_version",
+  ]
   inputs = [
     "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
   ]
 
-  outputs = generated_devtools_api
+  outputs = generated_devtools_api_headers + generated_devtools_api_sources
   sources = [
     "lib/browser/devtools_api/domain_cc.template",
     "lib/browser/devtools_api/domain_h.template",
@@ -211,24 +243,11 @@ action("gen_devtools_client_api") {
   ]
 }
 
-if (headless_fontconfig_utils && !is_fuchsia) {
-  static_library("headless_fontconfig_utils") {
-    sources = [
-      "public/util/fontconfig.cc",
-      "public/util/fontconfig.h",
-    ]
-
-    deps = [
-      "//build/config/freetype",
-      "//third_party/fontconfig",
-    ]
-
-    configs += [ ":inside_headless_component" ]
-  }
-}
-
 inspector_protocol_generate("protocol_sources") {
-  visibility = [ "//headless:headless_shared_sources" ]
+  visibility = [
+    ":backend_cdp_bindings",
+    ":gen_devtools_client_api",
+  ]
   deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
   _blink_protocol_path = rebase_path(
           "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
@@ -238,6 +257,7 @@ inspector_protocol_generate("protocol_sources") {
   out_dir = target_gen_dir
   config_file = "protocol_config.json"
   config_values = [ "protocol.path=$_blink_protocol_path" ]
+  use_embedder_types = true
 
   inputs = [
     "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
@@ -246,27 +266,38 @@ inspector_protocol_generate("protocol_sources") {
 
   # These are relative to $target_gen_dir.
   outputs = [
-    "lib/browser/protocol/base_string_adapter.cc",
-    "lib/browser/protocol/base_string_adapter.h",
-    "lib/browser/protocol/dp_browser.cc",
-    "lib/browser/protocol/dp_browser.h",
-    "lib/browser/protocol/dp_headless_experimental.cc",
-    "lib/browser/protocol/dp_headless_experimental.h",
-    "lib/browser/protocol/dp_page.cc",
-    "lib/browser/protocol/dp_page.h",
-    "lib/browser/protocol/dp_target.cc",
-    "lib/browser/protocol/dp_target.h",
-    "lib/browser/protocol/protocol.cc",
+    "lib/browser/protocol/browser.cc",
+    "lib/browser/protocol/browser.h",
+    "lib/browser/protocol/headless_experimental.cc",
+    "lib/browser/protocol/headless_experimental.h",
+    "lib/browser/protocol/page.cc",
+    "lib/browser/protocol/page.h",
+    "lib/browser/protocol/target.cc",
+    "lib/browser/protocol/target.h",
     "lib/browser/protocol/protocol.h",
   ]
 }
 
-# Code needed in both processes. Only exposed through |headless| and
-# |headless_non_renderer| components.
+static_library("backend_cdp_bindings") {
+  deps = [
+    ":protocol_sources",
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
+  ]
+  sources = get_target_outputs(":protocol_sources")
+  visibility = [ ":headless_non_renderer" ]
+  configs += [
+    ":headless_defines_config",
+    ":inside_headless_component",
+  ]
+}
+
+# Code needed in both processes. Only exposed through the |headless_renderer|
+# target and the |headless_non_renderer| component.
 source_set("headless_shared_sources") {
   visibility = [
-    "//headless:headless",
-    "//headless:headless_non_renderer",
+    ":headless_non_renderer",
+    ":headless_renderer",
   ]
   defines = []
 
@@ -275,6 +306,8 @@ source_set("headless_shared_sources") {
     "app/headless_shell_switches.h",
     "lib/headless_content_client.cc",
     "lib/headless_content_client.h",
+    "lib/headless_content_main_delegate.cc",
+    "lib/headless_content_main_delegate.h",
     "public/headless_browser.cc",
     "public/headless_browser.h",
     "public/headless_export.h",
@@ -287,8 +320,7 @@ source_set("headless_shared_sources") {
     "public/util/user_agent.h",
   ]
 
-  sources += generated_devtools_api
-  sources += get_target_outputs(":protocol_sources")
+  sources += generated_devtools_api_headers + generated_devtools_api_sources
 
   if (!is_fuchsia) {
     sources += [
@@ -299,30 +331,42 @@ source_set("headless_shared_sources") {
 
   deps = [
     ":gen_devtools_client_api",
-    ":protocol_sources",
     ":version_header",
     "//base:base_static",
     "//components/embedder_support/origin_trials",
     "//content/public/common",
-    "//third_party/inspector_protocol:crdtp",
     "//ui/base",
     "//url",
   ]
 
   if (!is_fuchsia) {
-    deps += [ "//components/crash/content/browser" ]
+    deps += [
+      "//components/crash/content/browser",
+      "//components/crash/core/app",
+    ]
   }
-  if (is_component_build && is_win) {
-    deps += [ "//components/crash/core/app:crash_export_thunks" ]
+  if (is_win) {
+    deps += [ "//sandbox" ]
   }
 
   configs += [ ":inside_headless_component" ]
-  configs += [ ":headless_policy_config" ]
-}
+  configs += [ ":headless_defines_config" ]
 
-# Code that is needed in a renderer process.
-component("headless") {
-  deps = [ ":headless_shared_sources" ]
+  # TODO(caseq): this is only here because headless_content_main_delegate.cc is here.
+  # Move it to the browser-specific part.
+  if (headless_use_embedded_resources) {
+    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    deps += [
+      ":embedded_resource_pack_data",
+      ":embedded_resource_pack_strings",
+    ]
+    sources += [
+      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_data.h",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
+    ]
+  }
 }
 
 # Code that is not needed in a renderer process.
@@ -351,6 +395,10 @@ component("headless_non_renderer") {
     "lib/browser/headless_quota_permission_context.h",
     "lib/browser/headless_request_context_manager.cc",
     "lib/browser/headless_request_context_manager.h",
+    "lib/browser/headless_select_file_dialog_factory.cc",
+    "lib/browser/headless_select_file_dialog_factory.h",
+    "lib/browser/headless_web_contents_impl.cc",
+    "lib/browser/headless_web_contents_impl.h",
     "lib/browser/headless_window_tree_host.h",
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
@@ -385,10 +433,14 @@ component("headless_non_renderer") {
 
   if (headless_use_policy) {
     sources += [
+      "lib/browser/headless_pref_names.cc",
+      "lib/browser/headless_pref_names.h",
       "lib/browser/policy/headless_browser_policy_connector.cc",
       "lib/browser/policy/headless_browser_policy_connector.h",
       "lib/browser/policy/headless_mode_policy.cc",
       "lib/browser/policy/headless_mode_policy.h",
+      "lib/browser/policy/headless_policies.cc",
+      "lib/browser/policy/headless_policies.h",
     ]
   }
 
@@ -407,14 +459,8 @@ component("headless_non_renderer") {
     ]
   }
 
-  if (enable_basic_printing) {
-    sources += [
-      "lib/browser/headless_print_manager.cc",
-      "lib/browser/headless_print_manager.h",
-    ]
-  }
-
   public_deps = [
+    ":headless_shared_sources",
     "//base",
     "//net",
   ]
@@ -428,37 +474,64 @@ component("headless_non_renderer") {
   }
 
   deps = [
-    ":headless_shared_sources",
+    ":backend_cdp_bindings",
     ":version_header",
     "//base:base_static",
+    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/cookie_config",
+    "//components/embedder_support",
+    "//components/keyed_service/content",
+    "//components/os_crypt:os_crypt",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/profile_metrics",
     "//components/security_state/core",
+    "//content/public/app",
     "//content/public/browser",
     "//content/public/common",
+    "//printing/buildflags",
     "//services/cert_verifier/public/mojom",
+    "//services/device/public/cpp/geolocation",
     "//services/service_manager/public/cpp",
+    "//third_party/inspector_protocol:crdtp",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/compositor",
     "//ui/display",
     "//ui/events/devices",
     "//ui/gfx",
+    "//ui/shell_dialogs",
     "//url",
   ]
 
   if (enable_basic_printing) {
-    deps += [ "//components/printing/browser" ]
+    deps += [
+      "//components/printing/browser",
+      "//components/printing/browser/headless",
+      "//components/printing/browser/print_to_pdf:print_to_pdf",
+      "//components/printing/common:mojo_interfaces",
+      "//printing",
+      "//printing/mojom",
+    ]
+  }
+
+  if (headless_use_prefs) {
+    deps += [
+      "//components/origin_trials:browser",
+      "//components/origin_trials:common",
+      "//components/user_prefs",
+      "//third_party/blink/public/common",
+    ]
   }
 
   if (is_component_build) {
     sources += [
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
-      "lib/browser/headless_web_contents_impl.cc",
-      "lib/browser/headless_web_contents_impl.h",
-      "lib/headless_content_main_delegate.cc",
-      "lib/headless_content_main_delegate.h",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",
@@ -481,16 +554,15 @@ component("headless_non_renderer") {
       "//components/security_state/content",
       "//gin",
       "//third_party/blink/public:blink",
-      "//third_party/blink/public:blink_headers",
       "//ui/gl",
       "//v8",
     ]
 
     if (!is_fuchsia) {
-      deps += [ "//components/crash/content/browser" ]
-    }
-    if (is_win) {
-      deps += [ "//components/crash/core/app:crash_export_thunks" ]
+      deps += [
+        "//components/crash/content/browser",
+        "//components/crash/core/app",
+      ]
     }
 
     if (enable_basic_printing) {
@@ -501,19 +573,29 @@ component("headless_non_renderer") {
         "//components/services/print_compositor/public/mojom",
       ]
     }
+
+    if (headless_use_prefs) {
+      deps += [ "//components/os_crypt" ]
+    }
+
+    if (headless_use_policy) {
+      deps += [ "//components/policy/content" ]
+    }
+  }
+
+  if (is_linux || is_chromeos) {
+    data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
   }
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
   # use external v8 startup data too.
-  if ((is_win && is_component_build) || !is_win) {
-    if (v8_use_external_startup_data) {
-      public_deps += [ "//v8" ]
-      if (use_v8_context_snapshot) {
-        data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
-        data_deps += [ "//tools/v8_context_snapshot" ]
-      } else {
-        data += [ "$root_out_dir/snapshot_blob.bin" ]
-      }
+  if ((!is_win || is_component_build) && v8_use_external_startup_data) {
+    public_deps += [ "//v8" ]
+    if (use_v8_context_snapshot) {
+      data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
+      data_deps += [ "//tools/v8_context_snapshot" ]
+    } else {
+      data += [ "$root_out_dir/snapshot_blob.bin" ]
     }
   }
 
@@ -528,14 +610,22 @@ component("headless_non_renderer") {
   }
 
   if (headless_use_embedded_resources) {
-    defines = [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    deps += [ ":embed_resources" ]
+    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    deps += [
+      ":embedded_resource_pack_data",
+      ":embedded_resource_pack_strings",
+    ]
     sources += [
-      "$root_gen_dir/headless/embedded_resource_pak.cc",
-      "$root_gen_dir/headless/embedded_resource_pak.h",
+      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_data.h",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
     ]
   } else {
-    deps += [ ":pak" ]
+    deps += [
+      ":resource_pack_data",
+      ":resource_pack_strings",
+    ]
   }
 
   if (use_ozone) {
@@ -547,12 +637,8 @@ component("headless_non_renderer") {
     deps += [ "//device/bluetooth" ]
   }
 
-  if (headless_fontconfig_utils && !is_fuchsia) {
-    deps += [ ":headless_fontconfig_utils" ]
-  }
-
   configs += [ ":inside_headless_component" ]
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 # Headless renderer is a convenience library for non component builds that
@@ -563,8 +649,6 @@ if (!is_component_build) {
     sources = [
       "lib/browser/headless_web_contents_impl.cc",
       "lib/browser/headless_web_contents_impl.h",
-      "lib/headless_content_main_delegate.cc",
-      "lib/headless_content_main_delegate.h",
       "lib/renderer/headless_content_renderer_client.cc",
       "lib/renderer/headless_content_renderer_client.h",
       "lib/utility/headless_content_utility_client.cc",
@@ -575,10 +659,6 @@ if (!is_component_build) {
       sources += [ "lib/headless_content_main_delegate_mac.mm" ]
     }
 
-    if (headless_use_embedded_resources) {
-      defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    }
-
     if (enable_basic_printing) {
       sources += [
         "lib/renderer/headless_print_render_frame_helper_delegate.cc",
@@ -586,27 +666,45 @@ if (!is_component_build) {
       ]
     }
 
+    public_deps = [ ":headless_shared_sources" ]
+
     deps = [
-      ":headless",
+      "//build:chromeos_buildflags",
       "//components/crash/core/common",
+      "//components/security_state/content",
+      "//components/security_state/core",
+      "//content/public/app",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/public/renderer",
+      "//content/public/utility",
+      "//printing/buildflags",
       "//third_party/blink/public:blink_headers",
       "//ui/base",
+      "//ui/compositor",
       "//v8",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
     if (enable_basic_printing) {
       deps += [
+        "//components/printing/browser/headless:headless",
         "//components/printing/renderer",
         "//components/services/print_compositor",
         "//components/services/print_compositor/public/mojom",
       ]
     }
-    configs += [ ":headless_policy_config" ]
+    configs += [ ":headless_defines_config" ]
+    if (is_mac || is_win || is_linux || is_chromeos) {
+      deps += [ "//components/crash/core/app" ]
+    }
   }
 } else {
   # For component builds all dependencies are already included in the headless
   # component.
   group("headless_renderer") {
-    deps = [ ":headless_non_renderer" ]
+    public_deps = [ ":headless_non_renderer" ]
   }
 }
 
@@ -624,10 +722,20 @@ test("headless_unittests") {
   sources = [
     "public/domains/types_unittest.cc",
     "public/util/error_reporter_unittest.cc",
+
+    # Headers for code under test that aren't normally exposed.
+    "public/headless_export.h",
+    "public/util/error_reporter.h",
   ]
+
+  # Headers for generated API code under test.
+  sources += generated_devtools_api_headers
+
   defines = []
 
   deps = [
+    ":gen_devtools_client_api",
+    ":headless_non_renderer",
     ":headless_shell_lib",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
@@ -644,14 +752,16 @@ test("headless_unittests") {
   }
 
   if (enable_basic_printing) {
-    sources += [ "lib/browser/headless_printing_unittest.cc" ]
     deps += [
       "//components/printing/browser",
+      "//components/printing/browser/headless",
+      "//printing",
+      "//printing/buildflags",
       "//third_party/blink/public:blink",
     ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 if (is_mac) {
@@ -665,7 +775,11 @@ if (is_mac) {
 }
 
 test("headless_browsertests") {
-  configs += [ "//net:net_test_config" ]
+  configs += [
+    "//net:net_test_config",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
   sources = [
     "test/headless_browser_browsertest.cc",
     "test/headless_browser_context_browsertest.cc",
@@ -680,7 +794,18 @@ test("headless_browsertests") {
     "test/test_network_interceptor.h",
   ]
 
-  # TODO(https://crbug.com/1107396): These tests flakily timeout on fuchsia.
+  if (enable_basic_printing && enable_pdf) {
+    sources += [ "test/headless_printtopdf_browsertest.cc" ]
+  }
+
+  if (headless_use_policy) {
+    sources += [
+      "test/headless_policy_browsertest.cc",
+      "test/headless_policy_browsertest.h",
+    ]
+  }
+
+  # TODO(crbug.com/1318548): Enable on Fuchsia when no longer flakily timeout.
   if (!is_fuchsia) {
     sources += [
       "test/headless_compositor_browsertest.cc",
@@ -693,15 +818,30 @@ test("headless_browsertests") {
     "test/data/",
     "test/dom_tree_extraction_expected_nodes.txt",
     "test/dom_tree_extraction_expected_styles.txt",
-    "$root_out_dir/headless_lib.pak",
+    "$root_out_dir/headless_lib_data.pak",
+    "$root_out_dir/headless_lib_strings.pak",
     "//net/tools/testserver/",
     "//third_party/blink/web_tests/http/tests/inspector-protocol/",
     "//third_party/pywebsocket3/",
-    "//third_party/tlslite/",
   ]
 
+  data_deps = []
+
+  if (is_fuchsia) {
+    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
+    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/fonts.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+      "//build/config/fuchsia/test/network.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+    ]
+  }
+
   if (is_mac) {
-    data_deps = [ ":mac_helpers" ]
+    data_deps += [ ":mac_helpers" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -710,30 +850,46 @@ test("headless_browsertests") {
     ":headless_shell_lib",
     "//base",
     "//cc:test_support",
+    "//components/policy/core/browser",
     "//components/security_state/content",
+    "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//gin",
+    "//net:test_support",
+    "//pdf:buildflags",
+    "//printing/buildflags",
+    "//services/device/public/cpp:test_support",
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/clipboard",
+    "//ui/shell_dialogs",
   ]
 
   if (is_mac) {
+    deps += [ "//services/device/public/cpp:test_support" ]
+  }
+
+  if (!is_fuchsia) {
     deps += [ "//third_party/crashpad/crashpad/client" ]
   }
 
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser",
-      "//pdf",
+      "//printing",
     ]
+
+    if (enable_pdf) {
+      deps += [ "//pdf" ]
+    }
   }
 
   if (headless_use_policy) {
     deps += [ "//components/policy/core/common:test_support" ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 if (is_win) {
@@ -743,6 +899,7 @@ if (is_win) {
     sources = [
       "app/headless_shell.cc",
       "app/headless_shell.h",
+      "app/headless_shell_switches.h",
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
       "public/headless_shell.h",
@@ -750,13 +907,24 @@ if (is_win) {
     deps = [
       ":headless_non_renderer",
       "//build:branding_buildflags",
+      "//components/crash/core/app:app",
+      "//components/crash/core/app:run_as_crashpad_handler",
+      "//components/embedder_support",
       "//content:sandbox_helper_win",
+      "//content/public/app",
       "//content/public/browser",
       "//content/public/common",
       "//net",
+      "//printing/buildflags",
       "//sandbox",
     ]
-    configs += [ ":headless_policy_config" ]
+    if (headless_use_policy) {
+      deps += [ "//components/policy/content" ]
+    }
+    if (enable_basic_printing) {
+      deps += [ "//components/printing/browser/headless:headless" ]
+    }
+    configs += [ ":headless_defines_config" ]
   }
 }
 
@@ -766,6 +934,7 @@ static_library("headless_shell_lib") {
   sources = [
     "app/headless_shell.cc",
     "app/headless_shell.h",
+    "app/headless_shell_switches.h",
     "public/headless_shell.h",
   ]
   defines = []
@@ -780,16 +949,24 @@ static_library("headless_shell_lib") {
   }
 
   deps = [
-    ":headless_renderer",
     "//build:branding_buildflags",
+    "//components/embedder_support",
+    "//components/policy/content",
     "//components/security_state/content",
+    "//content",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/child:child",
     "//content/public/common",
+    "//content/public/utility",
+    "//printing/buildflags",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":headless_renderer",
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
+  ]
 
   if (!is_component_build) {
     public_deps += [ ":headless_non_renderer" ]
@@ -802,17 +979,21 @@ static_library("headless_shell_lib") {
   if (enable_basic_printing) {
     deps += [
       "//components/printing/browser",
+      "//components/printing/browser/headless:headless",
       "//components/printing/renderer",
       "//components/services/print_compositor",
       "//components/services/print_compositor/public/mojom",
     ]
   }
 
+  if (headless_use_policy && !is_component_build) {
+    deps += [ "//components/policy/content" ]
+  }
+
   if (is_win) {
     defines = [ "HEADLESS_USE_CRASHPAD" ]
 
     deps += [
-      "//components/crash/core/app:crash_export_thunks",
       "//components/crash/core/app:run_as_crashpad_handler",
       "//content:sandbox_helper_win",
       "//sandbox",
@@ -823,41 +1004,41 @@ static_library("headless_shell_lib") {
     deps += [ "//components/os_crypt" ]
   }
 
-  configs += [ ":headless_policy_config" ]
-}
-
-if (is_fuchsia) {
-  cr_fuchsia_package("headless_shell_pkg") {
-    binary = ":headless_shell"
-    package_name_override = "headless_shell"
-    manifest = "//build/config/fuchsia/tests.cmx"
+  if (is_win || (is_posix && !is_mac)) {
+    deps += [ "//components/crash/core/app" ]
   }
 
-  fuchsia_package_runner("headless_shell_fuchsia") {
-    package = ":headless_shell_pkg"
-    package_name_override = "headless_shell"
-  }
+  configs += [ ":headless_defines_config" ]
 }
 
 executable("headless_shell") {
+  configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
   sources = [ "app/headless_shell_main.cc" ]
   defines = []
 
   deps = [ ":headless_shell_lib" ]
 
   if (!headless_use_embedded_resources) {
-    data = [ "$root_out_dir/headless_lib.pak" ]
+    data = [
+      "$root_out_dir/headless_lib_data.pak",
+      "$root_out_dir/headless_lib_strings.pak",
+    ]
   }
 
   if (is_win) {
-    deps += [ "//build/win:default_exe_manifest" ]
+    deps += [
+      "//build/win:default_exe_manifest",
+      "//content/public/app",
+    ]
   }
 
   if (is_mac) {
     deps += [ "//sandbox/mac:seatbelt" ]
   }
 
-  configs += [ ":headless_policy_config" ]
+  configs += [ ":headless_defines_config" ]
 }
 
 process_version("version_header") {
@@ -875,8 +1056,15 @@ executable("headless_example") {
 
   deps = [
     ":headless_shell_lib",
+    "//content",
+    "//sandbox",
     "//skia",  # we need this to override font render hinting in headless build
+    "//ui/gfx/geometry",
   ]
 
-  configs += [ ":headless_policy_config" ]
+  if (is_win) {
+    deps += [ "//content/public/app" ]
+  }
+
+  configs += [ ":headless_defines_config" ]
 }

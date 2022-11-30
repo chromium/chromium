@@ -1,5 +1,4 @@
 (async function() {
-  await TestRunner.loadModule('quick_open');
   await TestRunner.loadLegacyModule('quick_open');
 
   TestRunner.addResult(
@@ -38,23 +37,23 @@
   ]);
 
   function setProvider(provider) {
-    var promise = TestRunner.addSnifferPromise(filteredListWidget, "_itemsFilteredForTest").then(dump);
+    var promise = TestRunner.addSnifferPromise(filteredListWidget, "itemsFilteredForTest").then(dump);
     filteredListWidget.setProvider(provider);
     return promise;
   }
 
   function dump() {
-    if (filteredListWidget._bottomElementsContainer.classList.contains('hidden')) {
+    if (filteredListWidget.bottomElementsContainer.classList.contains('hidden')) {
       TestRunner.addResult('Output: <hidden>');
       return;
     }
-    if (filteredListWidget._list.element.classList.contains('hidden')) {
-      TestRunner.addResult('Output: ' + filteredListWidget._notFoundElement.textContent);
+    if (filteredListWidget.list.element.classList.contains('hidden')) {
+      TestRunner.addResult('Output: ' + filteredListWidget.notFoundElement.textContent);
       return;
     }
     var output = [];
-    for (var item of filteredListWidget._items)
-      output.push(filteredListWidget._provider.itemKeyAt(item));
+    for (var item of filteredListWidget.items)
+      output.push(filteredListWidget.provider.itemKeyAt(item));
     TestRunner.addResult('Output:' + JSON.stringify(output));
   }
 })();

@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 
-#include "base/values.h"
+#import "base/values.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -15,7 +15,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "print_js";
+const char kScriptName[] = "print";
 const char kScriptHandlerName[] = "PrintMessageHandler";
 }  // namespace
 
@@ -31,7 +31,7 @@ PrintJavaScriptFeature::PrintJavaScriptFeature()
 
 PrintJavaScriptFeature::~PrintJavaScriptFeature() = default;
 
-base::Optional<std::string>
+absl::optional<std::string>
 PrintJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kScriptHandlerName;
 }

@@ -1,14 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/wm/core/window_modality_controller.h"
-
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/test_child_modal_parent.h"
 #include "ash/wm/window_util.h"
-#include "base/stl_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -29,7 +27,7 @@ namespace {
 
 bool ValidateStacking(aura::Window* parent, int ids[], int count) {
   for (int i = 0; i < count; ++i) {
-    if (parent->children().at(i)->id() != ids[i])
+    if (parent->children().at(i)->GetId() != ids[i])
       return false;
   }
   return true;
@@ -67,14 +65,14 @@ TEST_F(WindowModalityControllerTest, BasicActivation) {
   EXPECT_TRUE(wm::IsActiveWindow(w11.get()));
 
   int check1[] = {-1, -12, -11};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, base::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
 
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w12.get()));
   // Transient children are always stacked above their transient parent, which
   // is why this order is not -11, -1, -12.
   int check2[] = {-1, -11, -12};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, base::size(check2)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, std::size(check2)));
 
   w12.reset();
   EXPECT_TRUE(wm::IsActiveWindow(w11.get()));
@@ -114,20 +112,20 @@ TEST_F(WindowModalityControllerTest, NestedModals) {
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
   int check1[] = {-2, -1, -11, -111};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, base::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
 
   wm::ActivateWindow(w11.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, base::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
 
   wm::ActivateWindow(w111.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, base::size(check1)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check1, std::size(check1)));
 
   wm::ActivateWindow(w2.get());
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
   int check2[] = {-1, -11, -111, -2};
-  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, base::size(check2)));
+  EXPECT_TRUE(ValidateStacking(w1->parent(), check2, std::size(check2)));
 
   w2.reset();
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
@@ -258,17 +256,17 @@ TEST_F(WindowModalityControllerTest, GetModalTransient) {
   // Parent w2 to w1. It should get parented to the parent of w1.
   ::wm::AddTransientChild(w1.get(), w2.get());
   ASSERT_EQ(2U, w1->parent()->children().size());
-  EXPECT_EQ(-2, w1->parent()->children().at(1)->id());
+  EXPECT_EQ(-2, w1->parent()->children().at(1)->GetId());
 
   // Request the modal transient window for w1, it should be w2.
   wt = ::wm::GetModalTransient(w1.get());
   ASSERT_NE(nullptr, wt);
-  EXPECT_EQ(-2, wt->id());
+  EXPECT_EQ(-2, wt->GetId());
 
   // Request the modal transient window for w11, it should also be w2.
   wt = ::wm::GetModalTransient(w11.get());
   ASSERT_NE(nullptr, wt);
-  EXPECT_EQ(-2, wt->id());
+  EXPECT_EQ(-2, wt->GetId());
 }
 
 // Verifies we generate a capture lost when showing a modal window.
@@ -379,6 +377,11 @@ class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   TouchTrackerWindowDelegate()
       : received_touch_(false), last_event_type_(ui::ET_UNKNOWN) {}
+
+  TouchTrackerWindowDelegate(const TouchTrackerWindowDelegate&) = delete;
+  TouchTrackerWindowDelegate& operator=(const TouchTrackerWindowDelegate&) =
+      delete;
+
   ~TouchTrackerWindowDelegate() override = default;
 
   void reset() {
@@ -399,8 +402,6 @@ class TouchTrackerWindowDelegate : public aura::test::TestWindowDelegate {
 
   bool received_touch_;
   ui::EventType last_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchTrackerWindowDelegate);
 };
 
 // Modality should prevent events from being passed to transient window tree

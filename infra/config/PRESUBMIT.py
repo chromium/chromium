@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,32 +9,76 @@ for more details on the presubmit API built into depot_tools.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
+USE_PYTHON3 = True
+
+_IGNORE_FREEZE_FOOTER = 'Ignore-Freeze'
+
+# The time module's handling of timezones is abysmal, so the boundaries are
+# precomputed in UNIX time
+_FREEZE_START = 1639641600  # 2021/12/16 00:00 -0800
+_FREEZE_END = 1641196800  # 2022/01/03 00:00 -0800
+
+
+def CheckFreeze(input_api, output_api):
+  if _FREEZE_START <= input_api.time.time() < _FREEZE_END:
+    footers = input_api.change.GitFootersFromDescription()
+    if _IGNORE_FREEZE_FOOTER not in footers:
+
+      def convert(t):
+        ts = input_api.time.localtime(t)
+        return input_api.time.strftime('%Y/%m/%d %H:%M %z', ts)
+
+      return [
+          output_api.PresubmitError(
+              'There is a prod freeze in effect from {} until {},'
+              ' files in //infra/config cannot be modified'.format(
+                  convert(_FREEZE_START), convert(_FREEZE_END)))
+      ]
+
+  return []
+
+
+def CheckTests(input_api, output_api):
+  glob = input_api.os_path.join(input_api.PresubmitLocalPath(), '*_test.py')
+  tests = input_api.canned_checks.GetUnitTests(input_api,
+                                               output_api,
+                                               input_api.glob(glob),
+                                               run_on_python2=False,
+                                               run_on_python3=True,
+                                               skip_shebang_check=True)
+  return input_api.RunTests(tests)
 
 
 def CheckLintLuciMilo(input_api, output_api):
-  if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
-      'infra/config/lint-luci-milo.py' in input_api.LocalPaths()):
+  if ('infra/config/generated/luci/luci-milo.cfg' in input_api.LocalPaths()
+      or 'infra/config/lint-luci-milo.py' in input_api.LocalPaths()):
     return input_api.RunTests([
         input_api.Command(
             name='lint-luci-milo',
-            cmd=[input_api.python_executable, 'lint-luci-milo.py'],
+            cmd=[input_api.python3_executable, 'lint-luci-milo.py'],
             kwargs={},
             message=output_api.PresubmitError),
     ])
   return []
 
 def CheckTestingBuildbot(input_api, output_api):
-  if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
-      'infra/config/generated/luci-milo-dev.cfg' in input_api.LocalPaths()):
+  if ('infra/config/generated/luci/luci-milo.cfg' in input_api.LocalPaths() or
+      'infra/config/generated/luci/luci-milo-dev.cfg' in input_api.LocalPaths()
+      ):
     return input_api.RunTests([
-        input_api.Command(
-            name='testing/buildbot config checks',
-            cmd=[input_api.python_executable, input_api.os_path.join(
-                '..', '..', 'testing', 'buildbot',
-                'generate_buildbot_json.py',),
-                 '--check'],
-            kwargs={},
-            message=output_api.PresubmitError),
+        input_api.Command(name='testing/buildbot config checks',
+                          cmd=[
+                              input_api.python3_executable,
+                              input_api.os_path.join(
+                                  '..',
+                                  '..',
+                                  'testing',
+                                  'buildbot',
+                                  'generate_buildbot_json.py',
+                              ), '--check'
+                          ],
+                          kwargs={},
+                          message=output_api.PresubmitError),
     ])
   return []
 
@@ -122,19 +166,19 @@ def CheckOutagesConfigOnCommit(input_api, output_api):
                               for k, v in sorted(outages_config.items())]
       return [
           output_api.PresubmitError('\n'.join([
-              'The following outages configuration is in effect:\n  {}'
-              .format('\n  '.join(outages_config_lines)),
+              'The following outages configuration is in effect:\n  {}'.format(
+                  '\n  '.join(outages_config_lines)),
               ('The effect of your change may not be visible '
                'in the generated configuration.'),
               ('If your change is addressing the outage, '
-               'please add the footer {} with a link for the outage.')
-              .format(_OUTAGE_ACTION_FOOTER),
+               'please add the footer {} with a link for the outage.'
+               ).format(_OUTAGE_ACTION_FOOTER),
               ('If your change is not addressing the outage '
                'but you still wish to land it, please add the footer '
-               '{} with a reason.')
-              .format(_IGNORE_OUTAGE_FOOTER),
+               '{} with a reason.').format(_IGNORE_OUTAGE_FOOTER),
               ('For more information on outages configuration, '
-               'see https://chromium.googlesource.com/chromium/src/+/refs/heads/master/infra/config/outages'),
+               'see https://chromium.googlesource.com/chromium/src/+/HEAD/infra/config/outages'
+               ),
           ])),
       ]
 

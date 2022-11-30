@@ -56,40 +56,18 @@
 int opus_select_arch(void);
 # endif
 
-/*gcc appears to emit MOVDQA's to load the argument of an _mm_cvtepi8_epi32()
-  or _mm_cvtepi16_epi32() when optimizations are disabled, even though the
-  actual PMOVSXWD instruction takes an m32 or m64. Unlike a normal memory
-  reference, these require 16-byte alignment and load a full 16 bytes (instead
-  of 4 or 8), possibly reading out of bounds.
+/*MOVD should not impose any alignment restrictions, but the C standard does,
+   and UBSan will report errors if we actually make unaligned accesses.
+  Use this to work around those restrictions (which should hopefully all get
+   optimized to a single MOVD instruction).*/
+#define OP_LOADU_EPI32(x) \
+  (int)((*(unsigned char *)(x) | *((unsigned char *)(x) + 1) << 8U |\
+   *((unsigned char *)(x) + 2) << 16U | (opus_uint32)*((unsigned char *)(x) + 3) << 24U))
 
-  We can insert an explicit MOVD or MOVQ using _mm_cvtsi32_si128() or
-  _mm_loadl_epi64(), which should have the same semantics as an m32 or m64
-  reference in the PMOVSXWD instruction itself, but gcc is not smart enough to
-  optimize this out when optimizations ARE enabled.
+#define OP_CVTEPI8_EPI32_M32(x) \
+ (_mm_cvtepi8_epi32(_mm_cvtsi32_si128(OP_LOADU_EPI32(x))))
 
-  Clang, in contrast, requires us to do this always for _mm_cvtepi8_epi32
-  (which is fair, since technically the compiler is always allowed to do the
-  dereference before invoking the function implementing the intrinsic).
-  However, it is smart enough to eliminate the extra MOVD instruction.
-  For _mm_cvtepi16_epi32, it does the right thing, though does *not* optimize out
-  the extra MOVQ if it's specified explicitly */
-
-# if defined(__clang__) || !defined(__OPTIMIZE__)
-#  define OP_CVTEPI8_EPI32_M32(x) \
- (_mm_cvtepi8_epi32(_mm_cvtsi32_si128(*(int *)(x))))
-# else
-#  define OP_CVTEPI8_EPI32_M32(x) \
- (_mm_cvtepi8_epi32(*(__m128i *)(x)))
-#endif
-
-/* similar reasoning about the instruction sequence as in the 32-bit macro above,
- */
-# if defined(__clang__) || !defined(__OPTIMIZE__)
-#  define OP_CVTEPI16_EPI32_M64(x) \
+#define OP_CVTEPI16_EPI32_M64(x) \
  (_mm_cvtepi16_epi32(_mm_loadl_epi64((__m128i *)(x))))
-# else
-#  define OP_CVTEPI16_EPI32_M64(x) \
- (_mm_cvtepi16_epi32(*(__m128i *)(x)))
-# endif
 
 #endif

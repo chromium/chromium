@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 
@@ -22,13 +22,15 @@ class PlatformSensorChromeOS
     : public PlatformSensor,
       public chromeos::sensors::mojom::SensorDeviceSamplesObserver {
  public:
-  PlatformSensorChromeOS(int32_t iio_device_id,
-                         mojom::SensorType type,
-                         SensorReadingSharedBuffer* reading_buffer,
-                         PlatformSensorProvider* provider,
-                         double scale,
-                         mojo::Remote<chromeos::sensors::mojom::SensorDevice>
-                             sensor_device_remote);
+  PlatformSensorChromeOS(
+      int32_t iio_device_id,
+      mojom::SensorType type,
+      SensorReadingSharedBuffer* reading_buffer,
+      PlatformSensorProvider* provider,
+      mojo::ConnectionErrorWithReasonCallback sensor_device_disconnect_callback,
+      double scale,
+      mojo::Remote<chromeos::sensors::mojom::SensorDevice>
+          sensor_device_remote);
   PlatformSensorChromeOS(const PlatformSensorChromeOS&) = delete;
   PlatformSensorChromeOS& operator=(const PlatformSensorChromeOS&) = delete;
 
@@ -38,8 +40,6 @@ class PlatformSensorChromeOS
   bool CheckSensorConfiguration(
       const PlatformSensorConfiguration& configuration) override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
-  // Called by PlatformSensorProviderChromeOS when this PlatformSensor is
-  // overridden by a late-present sensor of the same type.
   void SensorReplaced() override;
 
   // chromeos::sensors::mojom::SensorDeviceSamplesObserver overrides:
@@ -62,12 +62,15 @@ class PlatformSensorChromeOS
   static constexpr uint32_t kNumRecoveryReads = 2;
 
   void ResetOnError();
+  void OnSensorDeviceDisconnect(uint32_t custom_reason_code,
+                                const std::string& description);
 
   void StartReadingIfReady();
 
   mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
   BindNewPipeAndPassRemote();
-  void OnObserverDisconnect();
+  void OnObserverDisconnect(uint32_t custom_reason_code,
+                            const std::string& description);
 
   void SetRequiredChannels();
   void GetAllChannelIdsCallback(
@@ -84,6 +87,7 @@ class PlatformSensorChromeOS
   void OnReadFailure();
 
   int32_t iio_device_id_;
+  mojo::ConnectionErrorWithReasonCallback sensor_device_disconnect_callback_;
   const PlatformSensorConfiguration default_configuration_;
   PlatformSensorConfiguration current_configuration_;
 
@@ -99,11 +103,6 @@ class PlatformSensorChromeOS
   std::vector<std::string> iio_channel_ids_;
   // Channel indices of |required_channel_ids_| to enable.
   std::vector<int32_t> channel_indices_;
-
-  // Stores previously read values that are used to
-  // determine whether the recent values are changed
-  // and IPC can be notified that updates are available.
-  SensorReading old_values_;
 
   // Number of failed reads. Triggers an error if it reaches
   // kNumFailedReadsBeforeGivingUp.

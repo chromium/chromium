@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ class HttpVersion {
   HttpVersion() : value_(0) { }
 
   // Build from unsigned major/minor pair.
-  HttpVersion(uint16_t major, uint16_t minor) : value_(major << 16 | minor) {}
+  HttpVersion(uint16_t major, uint16_t minor)
+      : value_(static_cast<uint32_t>(major << 16) | minor) {}
 
   // Major version number.
   uint16_t major_value() const { return value_ >> 16; }

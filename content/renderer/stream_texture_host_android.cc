@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,21 @@
 #include "content/renderer/render_thread_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 
 namespace content {
 
-StreamTextureHost::StreamTextureHost(scoped_refptr<gpu::GpuChannelHost> channel,
-                                     int32_t route_id)
-    : route_id_(route_id), listener_(nullptr), channel_(std::move(channel)) {
+StreamTextureHost::StreamTextureHost(
+    scoped_refptr<gpu::GpuChannelHost> channel,
+    int32_t route_id,
+    mojo::PendingAssociatedRemote<gpu::mojom::StreamTexture> texture)
+    : route_id_(route_id),
+      listener_(nullptr),
+      channel_(std::move(channel)),
+      pending_texture_(std::move(texture)) {
   DCHECK(channel_);
   DCHECK(route_id_);
 }
@@ -27,48 +33,61 @@ StreamTextureHost::~StreamTextureHost() {
     // to ensure this is ordered correctly with regards to previous deferred
     // messages, such as CreateSharedImage.
     uint32_t flush_id = channel_->EnqueueDeferredMessage(
-        GpuStreamTextureMsg_Destroy(route_id_));
+        gpu::mojom::DeferredRequestParams::NewDestroyStreamTexture(route_id_));
     channel_->EnsureFlush(flush_id);
-    channel_->RemoveRoute(route_id_);
   }
 }
 
 bool StreamTextureHost::BindToCurrentThread(Listener* listener) {
   listener_ = listener;
+  if (!pending_texture_)
+    return false;
 
-  if (channel_) {
-    channel_->AddRoute(route_id_, weak_ptr_factory_.GetWeakPtr());
-    channel_->Send(new GpuStreamTextureMsg_StartListening(route_id_));
-    return true;
-  }
+  // Disable artificial limitations of Channel-associated interface bindings.
+  // Normally such interfaces can only be bound on the main or IO threads to
+  // prevent various classes of bugs that can arise from a Channel-associated
+  // endpoint being bound too late to receive messages already sent to it.
+  //
+  // Without this scoped allowance, binding from the compositor thread will
+  // actually still bind to the main thread, leading to potential memory bugs
+  // and other racy behavior since `this` is still destroyed on the compositor
+  // thread.
+  //
+  // The allowance is safe because binding these endpoints to the compositor
+  // thread cannot cause such late-binding bugs: remotes can only receive
+  // replies, but `texture_remote_` can't have made any calls yet; and
+  // `receiver_` doesn't even have a corresponding remote to call into it until
+  // the StartListening() line below.
+  //
+  // SUBTLE: If any message on StreamTextureClient (or any reply on
+  // StreamTexture) were to be added which accepts another associated interface
+  // endpoint, *that* could render this all unsafe since the new endpoint might
+  // get bound too late.
+  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_off_thread_binding;
 
-  return false;
+  texture_remote_.Bind(std::move(pending_texture_));
+  texture_remote_->StartListening(receiver_.BindNewEndpointAndPassRemote());
+  texture_remote_.set_disconnect_handler(
+      base::BindOnce(&StreamTextureHost::OnDisconnectedFromGpuProcess,
+                     base::Unretained(this)));
+  return true;
 }
 
-bool StreamTextureHost::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(StreamTextureHost, message)
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_FrameWithInfoAvailable,
-                        OnFrameWithInfoAvailable);
-    IPC_MESSAGE_HANDLER(GpuStreamTextureMsg_FrameAvailable, OnFrameAvailable);
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  DCHECK(handled);
-  return handled;
-}
-
-void StreamTextureHost::OnChannelError() {
+void StreamTextureHost::OnDisconnectedFromGpuProcess() {
   channel_ = nullptr;
+  texture_remote_.reset();
+  receiver_.reset();
 }
 
 void StreamTextureHost::OnFrameWithInfoAvailable(
     const gpu::Mailbox& mailbox,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
-    const base::Optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  if (listener_)
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info) {
+  if (listener_) {
     listener_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
                                         ycbcr_info);
+  }
 }
 
 void StreamTextureHost::OnFrameAvailable() {
@@ -78,22 +97,18 @@ void StreamTextureHost::OnFrameAvailable() {
 
 void StreamTextureHost::ForwardStreamTextureForSurfaceRequest(
     const base::UnguessableToken& request_token) {
-  if (channel_) {
-    channel_->Send(new GpuStreamTextureMsg_ForwardForSurfaceRequest(
-        route_id_, request_token));
-  }
+  if (texture_remote_)
+    texture_remote_->ForwardForSurfaceRequest(request_token);
 }
 
 void StreamTextureHost::UpdateRotatedVisibleSize(const gfx::Size& size) {
-  if (channel_) {
-    channel_->Send(
-        new GpuStreamTextureMsg_UpdateRotatedVisibleSize(route_id_, size));
-  }
+  if (texture_remote_)
+    texture_remote_->UpdateRotatedVisibleSize(size);
 }
 
 gpu::SyncToken StreamTextureHost::GenUnverifiedSyncToken() {
-  // |channel_| can be set to null via OnChannelError() which means
-  // StreamTextureHost could still be alive when |channel_| is gone.
+  // |channel_| can be set to null via OnDisconnectedFromGpuProcess() which
+  // means StreamTextureHost could still be alive when |channel_| is gone.
   if (!channel_)
     return gpu::SyncToken();
 

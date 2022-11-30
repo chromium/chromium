@@ -31,6 +31,15 @@ the provided replacement character codepoint (default 65533). If you plan on
 overriding the default, use a single byte replacement character codepoint to
 preserve alignment to the source input string.
 
+In this example, the character \xDEB2 is an invalid UTF-8 bit sequence; the call
+to `coerce_to_structurally_valid_utf8` replaces it with \xef\xbf\xbd, which is
+the default replacement character encoding. ```
+
+> > > input_data = ["A", b"\xDEB2", "C"]
+> > > coerce_to_structurally_valid_utf8(input_data)
+> > > <tf.Tensor: shape=(3,), dtype=string, numpy=array([b'A', b'\xef\xbf\xbdB2', b'C'], dtype=object)>
+> > > ```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>

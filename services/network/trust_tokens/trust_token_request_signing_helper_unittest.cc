@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -12,10 +11,10 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time_to_iso8601.h"
@@ -24,6 +23,7 @@
 #include "components/cbor/writer.h"
 #include "net/base/request_priority.h"
 #include "net/http/structured_headers.h"
+#include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -31,13 +31,14 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/test/signed_request_verification_util.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -58,7 +59,7 @@ using TrustTokenRequestSigningHelperTest = TrustTokenRequestHelperTest;
 // not verification.
 class FakeSigner : public TrustTokenRequestSigningHelper::Signer {
  public:
-  base::Optional<std::vector<uint8_t>> Sign(
+  absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> key,
       base::span<const uint8_t> data) override {
     return std::vector<uint8_t>{'s', 'i', 'g', 'n', 'e', 'd'};
@@ -70,7 +71,7 @@ class FakeSigner : public TrustTokenRequestSigningHelper::Signer {
     return false;
   }
 
-  std::string GetAlgorithmIdentifier() override { return "fake-signer"; }
+  std::string GetAlgorithmIdentifier() const override { return "fake-signer"; }
 };
 
 // IdentitySigner returns a "signature" over given signing data whose value
@@ -79,7 +80,7 @@ class FakeSigner : public TrustTokenRequestSigningHelper::Signer {
 // be signing over.
 class IdentitySigner : public TrustTokenRequestSigningHelper::Signer {
  public:
-  base::Optional<std::vector<uint8_t>> Sign(
+  absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> key,
       base::span<const uint8_t> data) override {
     return std::vector<uint8_t>(data.begin(), data.end());
@@ -89,23 +90,27 @@ class IdentitySigner : public TrustTokenRequestSigningHelper::Signer {
               base::span<const uint8_t> verification_key) override {
     return std::equal(data.begin(), data.end(), signature.begin());
   }
-  std::string GetAlgorithmIdentifier() override { return "identity-signer"; }
+  std::string GetAlgorithmIdentifier() const override {
+    return "identity-signer";
+  }
 };
 
 // FailingSigner always fails the Sign and Verify options.
 class FailingSigner : public TrustTokenRequestSigningHelper::Signer {
  public:
-  base::Optional<std::vector<uint8_t>> Sign(
+  absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> key,
       base::span<const uint8_t> data) override {
-    return base::nullopt;
+    return absl::nullopt;
   }
   bool Verify(base::span<const uint8_t> data,
               base::span<const uint8_t> signature,
               base::span<const uint8_t> verification_key) override {
     return false;
   }
-  std::string GetAlgorithmIdentifier() override { return "failing-signer"; }
+  std::string GetAlgorithmIdentifier() const override {
+    return "failing-signer";
+  }
 };
 
 // Reconstructs |request|'s canonical request data, extracts the signatures from
@@ -143,7 +148,7 @@ void AssertHasSignaturesAndExtract(
   ASSERT_TRUE(request.extra_request_headers().GetHeader("Sec-Signature",
                                                         &signature_header));
 
-  base::Optional<net::structured_headers::Dictionary> maybe_dictionary =
+  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
       net::structured_headers::ParseDictionary(signature_header);
   ASSERT_TRUE(maybe_dictionary);
   ASSERT_TRUE(maybe_dictionary->contains("signatures"));
@@ -152,9 +157,9 @@ void AssertHasSignaturesAndExtract(
     net::structured_headers::Item& issuer_item = issuer_and_params.item;
     ASSERT_TRUE(issuer_item.is_string());
 
-    auto signature_iterator = std::find_if(
-        issuer_and_params.params.begin(), issuer_and_params.params.end(),
-        [](auto& param) { return param.first == "sig"; });
+    auto signature_iterator = base::ranges::find(
+        issuer_and_params.params, "sig",
+        &net::structured_headers::Parameters::value_type::first);
 
     ASSERT_TRUE(signature_iterator != issuer_and_params.params.end())
         << "Missing signature";
@@ -171,11 +176,11 @@ void AssertHasSignaturesAndExtract(
 void AssertDecodesToCborAndExtractField(base::StringPiece signing_data,
                                         base::StringPiece field_name,
                                         std::string* field_value_out) {
-  base::Optional<cbor::Value> parsed = cbor::Reader::Read(base::as_bytes(
+  absl::optional<cbor::Value> parsed = cbor::Reader::Read(base::as_bytes(
       // Skip over the domain separator (e.g. "Trust Token v0").
       base::make_span(signing_data)
-          .subspan(base::size(TrustTokenRequestSigningHelper::
-                                  kRequestSigningDomainSeparator))));
+          .subspan(std::size(TrustTokenRequestSigningHelper::
+                                 kRequestSigningDomainSeparator))));
   ASSERT_TRUE(parsed);
 
   const cbor::Value::MapValue& map = parsed->GetMap();
@@ -202,7 +207,7 @@ MATCHER_P2(Header,
 }
 
 SuitableTrustTokenOrigin CreateSuitableOriginOrDie(base::StringPiece spec) {
-  base::Optional<SuitableTrustTokenOrigin> maybe_origin =
+  absl::optional<SuitableTrustTokenOrigin> maybe_origin =
       SuitableTrustTokenOrigin::Create(GURL(spec));
   CHECK(maybe_origin) << "Failed to create a SuitableTrustTokenOrigin!";
   return *maybe_origin;
@@ -399,6 +404,36 @@ TEST_F(TrustTokenRequestSigningHelperTestWithMockTime, ProvidesTimeHeader) {
   EXPECT_THAT(
       *my_request,
       Header("Sec-Time", StrEq(base::TimeToISO8601(base::Time::Now()))));
+}
+
+TEST_F(TrustTokenRequestSigningHelperTest, ProvidesMajorVersionHeader) {
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+
+  TrustTokenRequestSigningHelper::Params params(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")));
+  params.sign_request_data = mojom::TrustTokenSignRequestData::kHeadersOnly;
+  params.should_add_timestamp = true;
+
+  TrustTokenRedemptionRecord my_record;
+  my_record.set_public_key("key");
+  my_record.set_body("look at me, I'm an RR body");
+  store->SetRedemptionRecord(params.issuers.front(), params.toplevel,
+                             my_record);
+
+  TrustTokenRequestSigningHelper helper(
+      store.get(), std::move(params), std::make_unique<FakeSigner>(),
+      std::make_unique<TrustTokenRequestCanonicalizer>());
+
+  auto my_request = MakeURLRequest("https://destination.com/");
+  my_request->set_initiator(url::Origin::Create(GURL("https://issuer.com/")));
+  mojom::TrustTokenOperationStatus result =
+      ExecuteBeginOperationAndWaitForResult(&helper, my_request.get());
+
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+  // This test's expectation should change whenever the supported Trust Tokens
+  // major version changes.
+  EXPECT_THAT(*my_request, Header("Sec-Trust-Token-Version", "TrustTokenV3"));
 }
 
 // Test RR attachment without request signing:
@@ -658,11 +693,11 @@ TEST_F(TrustTokenRequestSigningHelperTest, CatchesSignatureFailure) {
 
   // FailingSigner will fail to sign the request, so we should see the operation
   // fail.
-  net::RecordingTestNetLog net_log;
+  net::RecordingNetLogObserver net_log_observer;
   TrustTokenRequestSigningHelper helper(
       store.get(), std::move(params), std::make_unique<FailingSigner>(),
       std::make_unique<TrustTokenRequestCanonicalizer>(),
-      net::NetLogWithSource::Make(&net_log,
+      net::NetLogWithSource::Make(net::NetLog::Get(),
                                   net::NetLogSourceType::URL_REQUEST));
 
   auto my_request = MakeURLRequest("https://destination.com/");
@@ -677,12 +712,12 @@ TEST_F(TrustTokenRequestSigningHelperTest, CatchesSignatureFailure) {
   EXPECT_THAT(*my_request, Not(Header("Sec-Signature")));
   EXPECT_THAT(*my_request, Header("Sec-Redemption-Record", IsEmpty()));
   EXPECT_TRUE(base::ranges::any_of(
-      net_log.GetEntriesWithType(
+      net_log_observer.GetEntriesWithType(
           net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING),
       [](const net::NetLogEntry& entry) {
-        base::Optional<std::string> key = net::GetOptionalStringValueFromParams(
+        absl::optional<std::string> key = net::GetOptionalStringValueFromParams(
             entry, "failed_signing_params.key");
-        base::Optional<std::string> issuer =
+        absl::optional<std::string> issuer =
             net::GetOptionalStringValueFromParams(
                 entry, "failed_signing_params.issuer");
         return key && *key == "signing key" && issuer &&

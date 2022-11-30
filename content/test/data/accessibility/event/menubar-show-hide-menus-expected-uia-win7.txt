@@ -1,0 +1,32 @@
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
+MenuOpened on role=region
+MenuOpened on role=region
+Name changed on role=group, name=open file and new done
+=== Start Continuation ===
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
+Name changed on role=group, name=close file and new done
+=== Start Continuation ===
+Name changed on role=group, name=open new done
+=== Start Continuation ===
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+ExpandCollapseExpandCollapseState changed on role=menuitem, name=New
+MenuOpened on role=menu, name=File
+MenuOpened on role=menu, name=New
+MenuOpened on role=region
+MenuOpened on role=region
+Name changed on role=group, name=open file done
+=== Start Continuation ===
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
+Name changed on role=group, name=hide menubar done
+=== Start Continuation ===
+Name changed on role=group, name=show menubar done

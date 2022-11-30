@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,8 +28,8 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/file_type_policies.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "crypto/sha2.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -57,15 +58,15 @@ bool IsBinaryDownloadForCurrentOS(
   // should also be updated so that the IsBinaryDownloadForCurrentOS() will
   // return true for that DownloadType as appropriate.
   static_assert(ClientDownloadRequest::DownloadType_MAX ==
-                    ClientDownloadRequest::DOCUMENT,
+                    ClientDownloadRequest::INVALID_SEVEN_ZIP,
                 "Update logic below");
 
 // Platform-specific types are relevant only for their own platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (download_type == ClientDownloadRequest::MAC_EXECUTABLE ||
       download_type == ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING)
     return true;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (download_type == ClientDownloadRequest::ANDROID_APK)
     return true;
 #endif
@@ -83,7 +84,10 @@ bool IsBinaryDownloadForCurrentOS(
       download_type == ClientDownloadRequest::RAR_COMPRESSED_ARCHIVE ||
       download_type == ClientDownloadRequest::INVALID_RAR ||
       download_type == ClientDownloadRequest::ARCHIVE ||
-      download_type == ClientDownloadRequest::PPAPI_SAVE_REQUEST) {
+      download_type == ClientDownloadRequest::PPAPI_SAVE_REQUEST ||
+      download_type == ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE ||
+      download_type == ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_ARCHIVE ||
+      download_type == ClientDownloadRequest::INVALID_SEVEN_ZIP) {
     return true;
   }
 
@@ -186,7 +190,7 @@ void PopulateDetailsFromRow(const history::DownloadRow& download,
   download_request->set_url(download.url_chain.back().spec());
   // digests is a required field, so force it to exist.
   // TODO(grt): Include digests in reports; http://crbug.com/389123.
-  ignore_result(download_request->mutable_digests());
+  std::ignore = download_request->mutable_digests();
   download_request->set_length(download.received_bytes);
   for (size_t i = 0; i < download.url_chain.size(); ++i) {
     const GURL& url = download.url_chain[i];
@@ -249,7 +253,7 @@ std::unique_ptr<LastDownloadFinder> LastDownloadFinder::Create(
           std::move(download_details_getter), std::move(callback))));
   // Return NULL if there is no work to do.
   if (finder->profile_states_.empty())
-    return std::unique_ptr<LastDownloadFinder>();
+    return nullptr;
   return finder;
 }
 
@@ -326,7 +330,7 @@ void LastDownloadFinder::OnMetadataQuery(
                        weak_ptr_factory_.GetWeakPtr(), profile));
   } else {
     // else wait until history is loaded.
-    history_service_observer_.Add(history_service);
+    history_service_observations_.AddObservation(history_service);
   }
 }
 
@@ -378,21 +382,21 @@ void LastDownloadFinder::RemoveProfileAndReportIfDone(
 void LastDownloadFinder::ReportResults() {
   DCHECK(profile_states_.empty());
 
-  std::unique_ptr<ClientIncidentReport_DownloadDetails> binary_details =
-      nullptr;
+  std::unique_ptr<ClientIncidentReport_DownloadDetails> binary_details;
   std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
-      non_binary_details = nullptr;
+      non_binary_details;
 
   if (details_) {
-    binary_details.reset(new ClientIncidentReport_DownloadDetails(*details_));
+    binary_details =
+        std::make_unique<ClientIncidentReport_DownloadDetails>(*details_);
   } else if (!most_recent_binary_row_.end_time.is_null()) {
-    binary_details.reset(new ClientIncidentReport_DownloadDetails());
+    binary_details = std::make_unique<ClientIncidentReport_DownloadDetails>();
     PopulateDetailsFromRow(most_recent_binary_row_, binary_details.get());
   }
 
   if (!most_recent_non_binary_row_.end_time.is_null()) {
-    non_binary_details.reset(
-        new ClientIncidentReport_NonBinaryDownloadDetails());
+    non_binary_details =
+        std::make_unique<ClientIncidentReport_NonBinaryDownloadDetails>();
     PopulateNonBinaryDetailsFromRow(most_recent_non_binary_row_,
                                     non_binary_details.get());
   }
@@ -435,7 +439,7 @@ void LastDownloadFinder::OnHistoryServiceLoaded(
 
 void LastDownloadFinder::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.Remove(history_service);
+  history_service_observations_.RemoveObservation(history_service);
 }
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -30,6 +29,10 @@ class ManagePasswordsState {
       base::OnceCallback<void(const password_manager::PasswordForm*)>;
 
   ManagePasswordsState();
+
+  ManagePasswordsState(const ManagePasswordsState&) = delete;
+  ManagePasswordsState& operator=(const ManagePasswordsState&) = delete;
+
   ~ManagePasswordsState();
 
   // The embedder of this class has to set the client for logging.
@@ -160,13 +163,11 @@ class ManagePasswordsState {
   password_manager::ui::State state_;
 
   // The client used for logging.
-  password_manager::PasswordManagerClient* client_;
+  raw_ptr<password_manager::PasswordManagerClient> client_;
 
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.
   bool auth_for_account_storage_opt_in_failed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagePasswordsState);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_

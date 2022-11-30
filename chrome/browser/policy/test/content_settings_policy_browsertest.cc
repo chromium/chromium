@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,10 +20,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/private_network_settings.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -33,6 +33,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,7 +50,7 @@ constexpr int kBlockAll = 2;
 
 bool IsJavascriptEnabled(content::WebContents* contents) {
   base::Value value =
-      content::ExecuteScriptAndGetValue(contents->GetMainFrame(), "123");
+      content::ExecuteScriptAndGetValue(contents->GetPrimaryMainFrame(), "123");
   return value.is_int() && value.GetInt() == 123;
 }
 
@@ -106,9 +107,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WebsiteCookiesSetting) {
   EXPECT_EQ(kCookieValue, GetCookies(browser()->profile(), GURL(kURL)));
   // Now set the policy and the cookie should be gone after another restart.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetWebsiteSettingDefaultScope(
-          GURL(kURL), GURL(kURL), ContentSettingsType::COOKIES,
-          std::make_unique<base::Value>(CONTENT_SETTING_SESSION_ONLY));
+      ->SetContentSettingDefaultScope(GURL(kURL), GURL(kURL),
+                                      ContentSettingsType::COOKIES,
+                                      CONTENT_SETTING_SESSION_ONLY);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WebsiteCookiesSetting) {
@@ -132,24 +133,28 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, Javascript) {
                nullptr);
   UpdateProviderPolicy(policies);
   // Reload the page.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(IsJavascriptEnabled(contents));
   // Developer tools still work when javascript is disabled.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS_CONSOLE));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_DEV_TOOLS_DEVICES));
   // Javascript is always enabled for the internal pages.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
   EXPECT_TRUE(IsJavascriptEnabled(contents));
 
   // The javascript content setting policy overrides the javascript policy.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(IsJavascriptEnabled(contents));
   policies.Set(key::kDefaultJavaScriptSetting, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(CONTENT_SETTING_ALLOW), nullptr);
   UpdateProviderPolicy(policies);
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_TRUE(IsJavascriptEnabled(contents));
 }
 
@@ -165,7 +170,13 @@ class WebBluetoothPolicyTest : public PolicyTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, Block) {
+// crbug.com/1061063
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_Block DISABLED_Block
+#else
+#define MAYBE_Block Block
+#endif  // BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, MAYBE_Block) {
   // Fake the BluetoothAdapter to say it's present.
   scoped_refptr<device::MockBluetoothAdapter> adapter =
       new testing::NiceMock<device::MockBluetoothAdapter>;
@@ -178,13 +189,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothPolicyTest, Block) {
   // Navigate to a secure context.
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("localhost", "/simple_page.html"));
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
       testing::StartsWith("http://localhost:"));
 
   // Set the policy to block Web Bluetooth.
@@ -344,11 +355,12 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
   GURL target_text_url(embedded_test_server()->GetURL(
       "/scroll/scrollable_page_with_content.html#:~:text=text"));
 
-  ui_test_utils::NavigateToURL(browser(), target_text_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target_text_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
-  ASSERT_TRUE(content::WaitForRenderFrameReady(contents->GetMainFrame()));
+  ASSERT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
 
   content::RenderFrameSubmissionObserver frame_observer(contents);
   if (IsScrollToTextFragmentEnabled()) {
@@ -357,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(ScrollToTextFragmentPolicyTest, RunPolicyTest) {
     // Force a frame - if it were going to happen, the scroll would complete
     // before this forced frame makes its way through the pipeline.
     content::RunUntilInputProcessed(
-        contents->GetMainFrame()->GetView()->GetRenderWidgetHost());
+        contents->GetPrimaryMainFrame()->GetView()->GetRenderWidgetHost());
   }
   EXPECT_EQ(IsScrollToTextFragmentEnabled(),
             !frame_observer.LastRenderFrameMetadata().is_scroll_offset_at_top);
@@ -376,14 +388,16 @@ class SensorsPolicyTest : public PolicyTest {
     PolicyTest::SetUpCommandLine(command_line);
   }
 
-  void VerifyPermission(const char* url, ContentSetting content_setting_type) {
-    permissions::PermissionManager* permission_manager =
-        PermissionManagerFactory::GetForProfile(browser()->profile());
-    EXPECT_EQ(permission_manager
-                  ->GetPermissionStatus(ContentSettingsType::SENSORS, GURL(url),
-                                        GURL(url))
-                  .content_setting,
-              content_setting_type);
+  void VerifyPermission(const char* url,
+                        blink::mojom::PermissionStatus status) {
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    EXPECT_EQ(
+        permission_controller
+            ->GetPermissionResultForOriginWithoutContext(
+                blink::PermissionType::SENSORS, url::Origin::Create(GURL(url)))
+            .status,
+        status);
   }
 
   void AllowUrl(const char* url) {
@@ -424,13 +438,13 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, BlockSensorApi) {
   // Navigate to a secure context.
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("localhost", "/simple_page.html"));
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_THAT(
-      web_contents->GetMainFrame()->GetLastCommittedOrigin().Serialize(),
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
       testing::StartsWith("http://localhost:"));
 
   // Set the policy to block Sensors.
@@ -457,27 +471,27 @@ IN_PROC_BROWSER_TEST_F(SensorsPolicyTest, DynamicRefresh) {
   constexpr int kAllowAll = 1;
 
   BlockUrl(kFooUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_BLOCK);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::DENIED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 
   BlockUrl(kBarUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_BLOCK);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::DENIED);
 
   SetDefault(kBlockAll);
   ClearLists();
   AllowUrl(kFooUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_BLOCK);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::DENIED);
 
   AllowUrl(kBarUrl);
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_BLOCK);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::DENIED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 
   SetDefault(kAllowAll);
   ClearLists();
-  VerifyPermission(kFooUrl, ContentSetting::CONTENT_SETTING_ALLOW);
-  VerifyPermission(kBarUrl, ContentSetting::CONTENT_SETTING_ALLOW);
+  VerifyPermission(kFooUrl, blink::mojom::PermissionStatus::GRANTED);
+  VerifyPermission(kBarUrl, blink::mojom::PermissionStatus::GRANTED);
 }
 
 }  // namespace policy

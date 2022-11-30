@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define UI_EVENTS_DEVICES_DEVICE_DATA_MANAGER_TEST_API_H_
 
 #include <vector>
-
-#include "base/macros.h"
 
 namespace ui {
 struct InputDevice;
@@ -23,6 +21,10 @@ enum class StylusState;
 class DeviceDataManagerTestApi {
  public:
   DeviceDataManagerTestApi();
+
+  DeviceDataManagerTestApi(const DeviceDataManagerTestApi&) = delete;
+  DeviceDataManagerTestApi& operator=(const DeviceDataManagerTestApi&) = delete;
+
   ~DeviceDataManagerTestApi();
 
   void NotifyObserversDeviceListsComplete();
@@ -43,9 +45,6 @@ class DeviceDataManagerTestApi {
   void SetTouchscreenDevices(
       const std::vector<TouchscreenDevice>& devices,
       bool are_touchscreen_target_displays_valid = false);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDataManagerTestApi);
 };
 
 }  // namespace ui

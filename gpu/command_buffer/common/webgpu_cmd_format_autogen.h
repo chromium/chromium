@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 
 #ifndef GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_
-
-#define GL_SCANOUT_CHROMIUM 0x6000
 
 struct DawnCommands {
   typedef DawnCommands ValueType;
@@ -80,6 +78,7 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            MailboxFlags _flags,
             const GLbyte* _mailbox) {
     SetHeader();
     device_id = _device_id;
@@ -87,6 +86,7 @@ struct AssociateMailboxImmediate {
     id = _id;
     generation = _generation;
     usage = _usage;
+    flags = _flags;
     memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
   }
 
@@ -96,9 +96,10 @@ struct AssociateMailboxImmediate {
             GLuint _id,
             GLuint _generation,
             GLuint _usage,
+            MailboxFlags _flags,
             const GLbyte* _mailbox) {
     static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation, _id,
-                                       _generation, _usage, _mailbox);
+                                       _generation, _usage, _flags, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }
@@ -109,10 +110,11 @@ struct AssociateMailboxImmediate {
   uint32_t id;
   uint32_t generation;
   uint32_t usage;
+  uint32_t flags;
 };
 
-static_assert(sizeof(AssociateMailboxImmediate) == 24,
-              "size of AssociateMailboxImmediate should be 24");
+static_assert(sizeof(AssociateMailboxImmediate) == 28,
+              "size of AssociateMailboxImmediate should be 28");
 static_assert(offsetof(AssociateMailboxImmediate, header) == 0,
               "offset of AssociateMailboxImmediate header should be 0");
 static_assert(offsetof(AssociateMailboxImmediate, device_id) == 4,
@@ -126,6 +128,8 @@ static_assert(offsetof(AssociateMailboxImmediate, generation) == 16,
               "offset of AssociateMailboxImmediate generation should be 16");
 static_assert(offsetof(AssociateMailboxImmediate, usage) == 20,
               "offset of AssociateMailboxImmediate usage should be 20");
+static_assert(offsetof(AssociateMailboxImmediate, flags) == 24,
+              "offset of AssociateMailboxImmediate flags should be 24");
 
 struct DissociateMailbox {
   typedef DissociateMailbox ValueType;
@@ -164,9 +168,9 @@ static_assert(offsetof(DissociateMailbox, texture_id) == 4,
 static_assert(offsetof(DissociateMailbox, texture_generation) == 8,
               "offset of DissociateMailbox texture_generation should be 8");
 
-struct RequestAdapter {
-  typedef RequestAdapter ValueType;
-  static const CommandId kCmdId = kRequestAdapter;
+struct DissociateMailboxForPresent {
+  typedef DissociateMailboxForPresent ValueType;
+  static const CommandId kCmdId = kDissociateMailboxForPresent;
   static const cmd::ArgFlags kArgFlags = cmd::kFixed;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
 
@@ -176,110 +180,106 @@ struct RequestAdapter {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(uint64_t _request_adapter_serial, uint32_t _power_preference) {
+  void Init(GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _texture_id,
+            GLuint _texture_generation) {
     SetHeader();
-    request_adapter_serial = _request_adapter_serial;
-    power_preference = _power_preference;
-  }
-
-  void* Set(void* cmd,
-            uint64_t _request_adapter_serial,
-            uint32_t _power_preference) {
-    static_cast<ValueType*>(cmd)->Init(_request_adapter_serial,
-                                       _power_preference);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t request_adapter_serial;
-  uint32_t power_preference;
-};
-
-static_assert(sizeof(RequestAdapter) == 12,
-              "size of RequestAdapter should be 12");
-static_assert(offsetof(RequestAdapter, header) == 0,
-              "offset of RequestAdapter header should be 0");
-static_assert(offsetof(RequestAdapter, request_adapter_serial) == 4,
-              "offset of RequestAdapter request_adapter_serial should be 4");
-static_assert(offsetof(RequestAdapter, power_preference) == 8,
-              "offset of RequestAdapter power_preference should be 8");
-
-struct RequestDevice {
-  typedef RequestDevice ValueType;
-  static const CommandId kCmdId = kRequestDevice;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(uint64_t _request_device_serial,
-            uint32_t _adapter_service_id,
-            uint32_t _device_id,
-            uint32_t _device_generation,
-            uint32_t _request_device_properties_shm_id,
-            uint32_t _request_device_properties_shm_offset,
-            uint32_t _request_device_properties_size) {
-    SetHeader();
-    request_device_serial = _request_device_serial;
-    adapter_service_id = _adapter_service_id;
     device_id = _device_id;
     device_generation = _device_generation;
-    request_device_properties_shm_id = _request_device_properties_shm_id;
-    request_device_properties_shm_offset =
-        _request_device_properties_shm_offset;
-    request_device_properties_size = _request_device_properties_size;
+    texture_id = _texture_id;
+    texture_generation = _texture_generation;
   }
 
   void* Set(void* cmd,
-            uint64_t _request_device_serial,
-            uint32_t _adapter_service_id,
-            uint32_t _device_id,
-            uint32_t _device_generation,
-            uint32_t _request_device_properties_shm_id,
-            uint32_t _request_device_properties_shm_offset,
-            uint32_t _request_device_properties_size) {
-    static_cast<ValueType*>(cmd)->Init(
-        _request_device_serial, _adapter_service_id, _device_id,
-        _device_generation, _request_device_properties_shm_id,
-        _request_device_properties_shm_offset, _request_device_properties_size);
+            GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _texture_id,
+            GLuint _texture_generation) {
+    static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation,
+                                       _texture_id, _texture_generation);
     return NextCmdAddress<ValueType>(cmd);
   }
 
   gpu::CommandHeader header;
-  uint32_t request_device_serial;
-  uint32_t adapter_service_id;
   uint32_t device_id;
   uint32_t device_generation;
-  uint32_t request_device_properties_shm_id;
-  uint32_t request_device_properties_shm_offset;
-  uint32_t request_device_properties_size;
+  uint32_t texture_id;
+  uint32_t texture_generation;
 };
 
-static_assert(sizeof(RequestDevice) == 32,
-              "size of RequestDevice should be 32");
-static_assert(offsetof(RequestDevice, header) == 0,
-              "offset of RequestDevice header should be 0");
-static_assert(offsetof(RequestDevice, request_device_serial) == 4,
-              "offset of RequestDevice request_device_serial should be 4");
-static_assert(offsetof(RequestDevice, adapter_service_id) == 8,
-              "offset of RequestDevice adapter_service_id should be 8");
-static_assert(offsetof(RequestDevice, device_id) == 12,
-              "offset of RequestDevice device_id should be 12");
-static_assert(offsetof(RequestDevice, device_generation) == 16,
-              "offset of RequestDevice device_generation should be 16");
+static_assert(sizeof(DissociateMailboxForPresent) == 20,
+              "size of DissociateMailboxForPresent should be 20");
+static_assert(offsetof(DissociateMailboxForPresent, header) == 0,
+              "offset of DissociateMailboxForPresent header should be 0");
+static_assert(offsetof(DissociateMailboxForPresent, device_id) == 4,
+              "offset of DissociateMailboxForPresent device_id should be 4");
 static_assert(
-    offsetof(RequestDevice, request_device_properties_shm_id) == 20,
-    "offset of RequestDevice request_device_properties_shm_id should be 20");
-static_assert(offsetof(RequestDevice, request_device_properties_shm_offset) ==
-                  24,
-              "offset of RequestDevice request_device_properties_shm_offset "
-              "should be 24");
+    offsetof(DissociateMailboxForPresent, device_generation) == 8,
+    "offset of DissociateMailboxForPresent device_generation should be 8");
+static_assert(offsetof(DissociateMailboxForPresent, texture_id) == 12,
+              "offset of DissociateMailboxForPresent texture_id should be 12");
 static_assert(
-    offsetof(RequestDevice, request_device_properties_size) == 28,
-    "offset of RequestDevice request_device_properties_size should be 28");
+    offsetof(DissociateMailboxForPresent, texture_generation) == 16,
+    "offset of DissociateMailboxForPresent texture_generation should be 16");
+
+struct SetWebGPUExecutionContextToken {
+  typedef SetWebGPUExecutionContextToken ValueType;
+  static const CommandId kCmdId = kSetWebGPUExecutionContextToken;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(uint32_t _type,
+            uint32_t _high_high,
+            uint32_t _high_low,
+            uint32_t _low_high,
+            uint32_t _low_low) {
+    SetHeader();
+    type = _type;
+    high_high = _high_high;
+    high_low = _high_low;
+    low_high = _low_high;
+    low_low = _low_low;
+  }
+
+  void* Set(void* cmd,
+            uint32_t _type,
+            uint32_t _high_high,
+            uint32_t _high_low,
+            uint32_t _low_high,
+            uint32_t _low_low) {
+    static_cast<ValueType*>(cmd)->Init(_type, _high_high, _high_low, _low_high,
+                                       _low_low);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t type;
+  uint32_t high_high;
+  uint32_t high_low;
+  uint32_t low_high;
+  uint32_t low_low;
+};
+
+static_assert(sizeof(SetWebGPUExecutionContextToken) == 24,
+              "size of SetWebGPUExecutionContextToken should be 24");
+static_assert(offsetof(SetWebGPUExecutionContextToken, header) == 0,
+              "offset of SetWebGPUExecutionContextToken header should be 0");
+static_assert(offsetof(SetWebGPUExecutionContextToken, type) == 4,
+              "offset of SetWebGPUExecutionContextToken type should be 4");
+static_assert(offsetof(SetWebGPUExecutionContextToken, high_high) == 8,
+              "offset of SetWebGPUExecutionContextToken high_high should be 8");
+static_assert(offsetof(SetWebGPUExecutionContextToken, high_low) == 12,
+              "offset of SetWebGPUExecutionContextToken high_low should be 12");
+static_assert(offsetof(SetWebGPUExecutionContextToken, low_high) == 16,
+              "offset of SetWebGPUExecutionContextToken low_high should be 16");
+static_assert(offsetof(SetWebGPUExecutionContextToken, low_low) == 20,
+              "offset of SetWebGPUExecutionContextToken low_low should be 20");
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_

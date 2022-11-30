@@ -1,0 +1,421 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+// Suspicious external dlls.
+// Example:
+//   This means the VBA code wants to call the "LoadLibraryW" function in
+//   kernel32.dll:
+//
+//   Declare Function LoadLibraryW Lib "Kernel32.dll"
+//
+enum VbaDllName {
+  VBA_DLL_NAME_advapi32 = 0;
+  VBA_DLL_NAME_kernel32 = 1;
+  VBA_DLL_NAME_ole32 = 2;
+  VBA_DLL_NAME_shell32 = 3;
+  VBA_DLL_NAME_urlmon = 4;
+  VBA_DLL_NAME_user32 = 5;
+  VBA_DLL_NAME_wininet = 6;
+  VBA_DLL_NAME_ws2_32 = 7;
+}
+
+// Suspicious functions in external dlls.
+// Example:
+//   This means the VBA code wants to call the "LoadLibraryW" function in
+//   kernel32.dll:
+//
+//   Declare Function LoadLibraryW Lib "Kernel32.dll"
+//
+// Many functions have extra suffixes like "A" or "W". We will match prefixes of
+// referenced function names. For example, "LoadLibraryW" will match
+// "LoadLibrary" in the list.
+enum VbaDllFunctionName {
+  // advapi32.dll can interact with Windows Registry.
+  // Authorization Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa375742(v=vs.85).aspx
+  // Event Logging Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa363654(v=vs.85).aspx
+  // Registry Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724875(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_RegCreateKey = 0;
+  VBA_DLL_FUNCTION_NAME_RegCreateKeyTransacted = 1;
+  VBA_DLL_FUNCTION_NAME_RegDeleteKey = 2;
+  VBA_DLL_FUNCTION_NAME_RegDeleteKeyTransacted = 3;
+  VBA_DLL_FUNCTION_NAME_RegDeleteKeyValue = 4;
+  VBA_DLL_FUNCTION_NAME_RegDeleteTree = 5;
+  VBA_DLL_FUNCTION_NAME_RegDeleteValue = 6;
+  VBA_DLL_FUNCTION_NAME_RegLoadKey = 7;
+  VBA_DLL_FUNCTION_NAME_RegReplaceKey = 8;
+  VBA_DLL_FUNCTION_NAME_RegRestoreKey = 9;
+  VBA_DLL_FUNCTION_NAME_RegSetKeyValue = 10;
+  VBA_DLL_FUNCTION_NAME_RegSetValue = 11;
+
+  // kernel32.dll has a large set of functionalities.
+  // Atom Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ff468795(v=vs.85).aspx
+  // Backup Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa362512(v=vs.85).aspx
+  // Communications Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724875(v=vs.85).aspx
+  // Debugging Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms679303(v=vs.85).aspx
+  // Device Management Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa363234(v=vs.85).aspx
+  // Dynamic-Link Library Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682599(v=vs.85).aspx
+  // File Management Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa364232(v=vs.85).aspx
+  // Memory Management Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa366781(v=vs.85).aspx
+  // Process and Thread Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms684847(v=vs.85).aspx
+  // Registry Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724875(v=vs.85).aspx
+  // Resource Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ff468902(v=vs.85).aspx
+  // Synchronization Functions
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms686360(v=vs.85).aspx
+  // System Information Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724953(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_CopyMemory = 12;
+  VBA_DLL_FUNCTION_NAME_CreateProcess = 13;
+  VBA_DLL_FUNCTION_NAME_CreateProcessAsUser = 14;
+  VBA_DLL_FUNCTION_NAME_CreateProcessInternal = 15;
+  VBA_DLL_FUNCTION_NAME_CreateProcessWithLogon = 16;
+  VBA_DLL_FUNCTION_NAME_CreateProcessWithToken = 17;
+  VBA_DLL_FUNCTION_NAME_CreateRemoteThread = 18;
+  VBA_DLL_FUNCTION_NAME_LoadLibrary = 19;
+  VBA_DLL_FUNCTION_NAME_MoveMemory = 20;
+  VBA_DLL_FUNCTION_NAME_ReadProcessMemory = 21;
+  VBA_DLL_FUNCTION_NAME_RtlCopyMemory = 22;
+  VBA_DLL_FUNCTION_NAME_RtlMoveMemory = 23;
+  VBA_DLL_FUNCTION_NAME_SetComputerName = 24;
+  VBA_DLL_FUNCTION_NAME_SetFirmwareEnvironmentVariable = 25;
+  VBA_DLL_FUNCTION_NAME_TerminateProcess = 26;
+  VBA_DLL_FUNCTION_NAME_TerminateThread = 27;
+  VBA_DLL_FUNCTION_NAME_WinExec = 28;
+  VBA_DLL_FUNCTION_NAME_WriteFile = 29;
+  VBA_DLL_FUNCTION_NAME_WriteFileGather = 30;
+  VBA_DLL_FUNCTION_NAME_WriteProcessMemory = 31;
+
+  // ole32.dll can interact with objects.
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680586(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_CoCreateInstance = 32;
+  VBA_DLL_FUNCTION_NAME_CoCreateInstanceFromApp = 33;
+  VBA_DLL_FUNCTION_NAME_CoGetClassObject = 34;
+  VBA_DLL_FUNCTION_NAME_CoGetInstanceFromFile = 35;
+  VBA_DLL_FUNCTION_NAME_CoGetInstanceFromIStorage = 36;
+  VBA_DLL_FUNCTION_NAME_CoGetObject = 37;
+  VBA_DLL_FUNCTION_NAME_CoLoadLibrary = 38;
+  VBA_DLL_FUNCTION_NAME_DllGetClassObject = 39;
+
+  // shell32.dll can interact with files.
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/bb776426(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_ShellExecute = 40;
+  VBA_DLL_FUNCTION_NAME_SHFileOperation = 41;
+  VBA_DLL_FUNCTION_NAME_SHLoadInProc = 42;
+
+  // urlmon.dll can perform URL-related operations.
+  // https://msdn.microsoft.com/en-us/library/ms775126(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_URLDownloadToCacheFile = 43;
+  VBA_DLL_FUNCTION_NAME_URLDownloadToFile = 44;
+
+  // user32.dll has a large set of functionalities.
+  // Cursor Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ff468815(v=vs.85).aspx
+  // Keyboard Input Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ff468859(v=vs.85).aspx
+  // Painting and Drawing Functions:
+  // https://msdn.microsoft.com/en-us/library/dd162760(v=vs.85).aspx
+  // Shell Functions (WinHelp):
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/bb776426(v=vs.85).aspx
+  // Window Procedure Functions:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ff468930(v=vs.85).aspx
+  VBA_DLL_FUNCTION_NAME_CallWindowProc = 45;
+}
+
+// Suspicious object names used in CreateObject().
+//
+// Example:
+//   This creates an object of the type "bzwhll.whllobj":
+//
+//   Set obj = CreateObject("bzwhll.whllobj")
+//
+// Note that we need to change "_" to "." when matching strings. For example,
+// we have "bzwhll_whllobj" as an enum member, but it actually means
+// "bzwhll.whllobj".
+//
+enum VbaObjectName {
+  VBA_OBJECT_NAME_bzwhll_whllobj = 0;
+  VBA_OBJECT_NAME_excel_application = 1;
+  VBA_OBJECT_NAME_internetexplorer_application = 2;
+  VBA_OBJECT_NAME_microsoft_xmldom = 3;
+  VBA_OBJECT_NAME_microsoft_xmlhttp = 4;
+  VBA_OBJECT_NAME_msxml2_7 = 5;
+  VBA_OBJECT_NAME_powerpoint_application = 6;
+  VBA_OBJECT_NAME_scripting_dictionary = 7;
+  VBA_OBJECT_NAME_scripting_filesystemobject = 8;
+  VBA_OBJECT_NAME_scripting_regex = 9;
+  VBA_OBJECT_NAME_shell_application = 10;
+  VBA_OBJECT_NAME_vbscript_regexp = 11;
+  VBA_OBJECT_NAME_winhttp_winhttprequest_5_1 = 12;
+  VBA_OBJECT_NAME_word_application = 13;
+  VBA_OBJECT_NAME_wscript_shell = 14;
+}
+
+// Suspicious object name substrings used in CreateObject().
+//
+// Example:
+//   This creates an object whose type is specified by an ID:
+//
+//   Set obj = CreateObject("clsid:D27CDB6E-AE6D-11cf-96B8-444553540000")
+//
+enum VbaObjectNameSubstr {
+  VBA_OBJECT_NAME_SUBSTR_clsid = 0;
+  VBA_OBJECT_NAME_SUBSTR_file = 1;
+  VBA_OBJECT_NAME_SUBSTR_http = 2;
+  VBA_OBJECT_NAME_SUBSTR_internet = 3;
+  VBA_OBJECT_NAME_SUBSTR_msxml = 4;
+  VBA_OBJECT_NAME_SUBSTR_network = 5;
+  VBA_OBJECT_NAME_SUBSTR_new = 6;
+  VBA_OBJECT_NAME_SUBSTR_shell = 7;
+  VBA_OBJECT_NAME_SUBSTR_stream = 8;
+}
+
+// All VBA standard library functions.
+enum VbaStandardLibraryFunction {
+  VBA_STANDARD_LIBRARY_CBool = 0;
+  VBA_STANDARD_LIBRARY_CByte = 1;
+  VBA_STANDARD_LIBRARY_CCur = 2;
+  VBA_STANDARD_LIBRARY_CDate = 3;
+  VBA_STANDARD_LIBRARY_CVDate = 4;
+  VBA_STANDARD_LIBRARY_CDbl = 5;
+  VBA_STANDARD_LIBRARY_CDec = 6;
+  VBA_STANDARD_LIBRARY_CInt = 7;
+  VBA_STANDARD_LIBRARY_CLng = 8;
+  VBA_STANDARD_LIBRARY_ClngLng = 9;
+  VBA_STANDARD_LIBRARY_CLngPtr = 10;
+  VBA_STANDARD_LIBRARY_CSng = 11;
+  VBA_STANDARD_LIBRARY_CStr = 12;
+  VBA_STANDARD_LIBRARY_CVar = 13;
+  VBA_STANDARD_LIBRARY_CVErr = 14;
+  VBA_STANDARD_LIBRARY_Error = 15;
+  VBA_STANDARD_LIBRARY_Fix = 16;
+  VBA_STANDARD_LIBRARY_Hex = 17;
+  VBA_STANDARD_LIBRARY_Int = 18;
+  VBA_STANDARD_LIBRARY_Oct = 19;
+  VBA_STANDARD_LIBRARY_Str = 20;
+  VBA_STANDARD_LIBRARY_Val = 21;
+  VBA_STANDARD_LIBRARY_DateAdd = 22;
+  VBA_STANDARD_LIBRARY_DateDiff = 23;
+  VBA_STANDARD_LIBRARY_DatePart = 24;
+  VBA_STANDARD_LIBRARY_DateSerial = 25;
+  VBA_STANDARD_LIBRARY_DateValue = 26;
+  VBA_STANDARD_LIBRARY_Day = 27;
+  VBA_STANDARD_LIBRARY_Hour = 28;
+  VBA_STANDARD_LIBRARY_Minute = 29;
+  VBA_STANDARD_LIBRARY_Month = 30;
+  VBA_STANDARD_LIBRARY_Second = 31;
+  VBA_STANDARD_LIBRARY_TimeSerial = 32;
+  VBA_STANDARD_LIBRARY_TimeValue = 33;
+  VBA_STANDARD_LIBRARY_Weekday = 34;
+  VBA_STANDARD_LIBRARY_Year = 35;
+  VBA_STANDARD_LIBRARY_Calendar = 36;
+  VBA_STANDARD_LIBRARY_Date = 37;
+  VBA_STANDARD_LIBRARY_Now = 38;
+  VBA_STANDARD_LIBRARY_Time = 39;
+  VBA_STANDARD_LIBRARY_Timer = 40;
+  VBA_STANDARD_LIBRARY_CurDir = 41;
+  VBA_STANDARD_LIBRARY_Dir = 42;
+  VBA_STANDARD_LIBRARY_EOF = 43;
+  VBA_STANDARD_LIBRARY_FileAttr = 44;
+  VBA_STANDARD_LIBRARY_FileDateTime = 45;
+  VBA_STANDARD_LIBRARY_FileLen = 46;
+  VBA_STANDARD_LIBRARY_FreeFile = 47;
+  VBA_STANDARD_LIBRARY_Loc = 48;
+  VBA_STANDARD_LIBRARY_LOF = 49;
+  VBA_STANDARD_LIBRARY_Seek = 50;
+  VBA_STANDARD_LIBRARY_ChDir = 51;
+  VBA_STANDARD_LIBRARY_ChDrive = 52;
+  VBA_STANDARD_LIBRARY_FileCopy = 53;
+  VBA_STANDARD_LIBRARY_Kill = 54;
+  VBA_STANDARD_LIBRARY_MkDir = 55;
+  VBA_STANDARD_LIBRARY_RmDir = 56;
+  VBA_STANDARD_LIBRARY_SetAttr = 57;
+  VBA_STANDARD_LIBRARY_DDB = 58;
+  VBA_STANDARD_LIBRARY_FV = 59;
+  VBA_STANDARD_LIBRARY_IPmt = 60;
+  VBA_STANDARD_LIBRARY_IRR = 61;
+  VBA_STANDARD_LIBRARY_MIRR = 62;
+  VBA_STANDARD_LIBRARY_NPer = 63;
+  VBA_STANDARD_LIBRARY_NPV = 64;
+  VBA_STANDARD_LIBRARY_Pmt = 65;
+  VBA_STANDARD_LIBRARY_PPmt = 66;
+  VBA_STANDARD_LIBRARY_PV = 67;
+  VBA_STANDARD_LIBRARY_Rate = 68;
+  VBA_STANDARD_LIBRARY_SLN = 69;
+  VBA_STANDARD_LIBRARY_SYD = 70;
+  VBA_STANDARD_LIBRARY_IMEStatus = 71;
+  VBA_STANDARD_LIBRARY_IsArray = 72;
+  VBA_STANDARD_LIBRARY_IsDate = 73;
+  VBA_STANDARD_LIBRARY_IsEmpty = 74;
+  VBA_STANDARD_LIBRARY_IsError = 75;
+  VBA_STANDARD_LIBRARY_IsMissing = 76;
+  VBA_STANDARD_LIBRARY_IsNull = 77;
+  VBA_STANDARD_LIBRARY_IsNumeric = 78;
+  VBA_STANDARD_LIBRARY_IsObject = 79;
+  VBA_STANDARD_LIBRARY_QBColor = 80;
+  VBA_STANDARD_LIBRARY_RGB = 81;
+  VBA_STANDARD_LIBRARY_TypeName = 82;
+  VBA_STANDARD_LIBRARY_VarType = 83;
+  VBA_STANDARD_LIBRARY_CallByName = 84;
+  VBA_STANDARD_LIBRARY_Choose = 85;
+  VBA_STANDARD_LIBRARY_Command = 86;
+  VBA_STANDARD_LIBRARY_CreateObject = 87;
+  VBA_STANDARD_LIBRARY_DoEvents = 88;
+  VBA_STANDARD_LIBRARY_Environ = 89;
+  VBA_STANDARD_LIBRARY_GetAllSettings = 90;
+  VBA_STANDARD_LIBRARY_GetAttr = 91;
+  VBA_STANDARD_LIBRARY_GetObject = 92;
+  VBA_STANDARD_LIBRARY_GetString = 93;
+  VBA_STANDARD_LIBRARY_IIf = 94;
+  VBA_STANDARD_LIBRARY_InputBox = 95;
+  VBA_STANDARD_LIBRARY_MsgBox = 96;
+  VBA_STANDARD_LIBRARY_Partition = 97;
+  VBA_STANDARD_LIBRARY_Shell = 98;
+  VBA_STANDARD_LIBRARY_Switch = 99;
+  VBA_STANDARD_LIBRARY_AppActivate = 100;
+  VBA_STANDARD_LIBRARY_Beep = 101;
+  VBA_STANDARD_LIBRARY_DeleteSetting = 102;
+  VBA_STANDARD_LIBRARY_SaveSetting = 103;
+  VBA_STANDARD_LIBRARY_SendKeys = 104;
+  VBA_STANDARD_LIBRARY_Abs = 105;
+  VBA_STANDARD_LIBRARY_Atn = 106;
+  VBA_STANDARD_LIBRARY_Cos = 107;
+  VBA_STANDARD_LIBRARY_Exp = 108;
+  VBA_STANDARD_LIBRARY_Log = 109;
+  VBA_STANDARD_LIBRARY_Rnd = 110;
+  VBA_STANDARD_LIBRARY_Round = 111;
+  VBA_STANDARD_LIBRARY_Sgn = 112;
+  VBA_STANDARD_LIBRARY_Sin = 113;
+  VBA_STANDARD_LIBRARY_Sqr = 114;
+  VBA_STANDARD_LIBRARY_Tan = 115;
+  VBA_STANDARD_LIBRARY_Randomize = 116;
+  VBA_STANDARD_LIBRARY_Asc = 117;
+  VBA_STANDARD_LIBRARY_Chr = 118;
+  VBA_STANDARD_LIBRARY_Filter = 119;
+  VBA_STANDARD_LIBRARY_Format = 120;
+  VBA_STANDARD_LIBRARY_FormatCurrency = 121;
+  VBA_STANDARD_LIBRARY_FormatDateTime = 122;
+  VBA_STANDARD_LIBRARY_FormatNumber = 123;
+  VBA_STANDARD_LIBRARY_FormatPercent = 124;
+  VBA_STANDARD_LIBRARY_InStr = 125;
+  VBA_STANDARD_LIBRARY_InStrRev = 126;
+  VBA_STANDARD_LIBRARY_Join = 127;
+  VBA_STANDARD_LIBRARY_LCase = 128;
+  VBA_STANDARD_LIBRARY_Left = 129;
+  VBA_STANDARD_LIBRARY_Len = 130;
+  VBA_STANDARD_LIBRARY_LTrim = 131;
+  VBA_STANDARD_LIBRARY_RTrim = 132;
+  VBA_STANDARD_LIBRARY_Trim = 133;
+  VBA_STANDARD_LIBRARY_Mid = 134;
+  VBA_STANDARD_LIBRARY_MonthName = 135;
+  VBA_STANDARD_LIBRARY_Replace = 136;
+  VBA_STANDARD_LIBRARY_Right = 137;
+  VBA_STANDARD_LIBRARY_Space = 138;
+  VBA_STANDARD_LIBRARY_Split = 139;
+  VBA_STANDARD_LIBRARY_StrComp = 140;
+  VBA_STANDARD_LIBRARY_StrConv = 141;
+  VBA_STANDARD_LIBRARY_String = 142;
+  VBA_STANDARD_LIBRARY_StrReverse = 143;
+  VBA_STANDARD_LIBRARY_UCase = 144;
+  VBA_STANDARD_LIBRARY_WeekdayName = 145;
+  VBA_STANDARD_LIBRARY_Count = 146;
+  VBA_STANDARD_LIBRARY_Item = 147;
+  VBA_STANDARD_LIBRARY_Add = 148;
+  VBA_STANDARD_LIBRARY_Remove = 149;
+  VBA_STANDARD_LIBRARY_Clear = 150;
+  VBA_STANDARD_LIBRARY_Raise = 151;
+  VBA_STANDARD_LIBRARY_Description = 152;
+  VBA_STANDARD_LIBRARY_HelpContext = 153;
+  VBA_STANDARD_LIBRARY_HelpFile = 154;
+  VBA_STANDARD_LIBRARY_LastDllError = 155;
+  VBA_STANDARD_LIBRARY_Number = 156;
+  VBA_STANDARD_LIBRARY_Source = 157;
+  VBA_STANDARD_LIBRARY_Load = 158;
+  VBA_STANDARD_LIBRARY_Unload = 159;
+
+  VBA_STANDARD_LIBRARY_Open = 160;
+  VBA_STANDARD_LIBRARY_Close = 161;
+  VBA_STANDARD_LIBRARY_Reset = 162;
+  // Seek already covered.
+  VBA_STANDARD_LIBRARY_Lock = 163;
+  VBA_STANDARD_LIBRARY_Unlock = 164;
+  VBA_STANDARD_LIBRARY_Width = 165;
+  VBA_STANDARD_LIBRARY_Print = 166;
+  VBA_STANDARD_LIBRARY_Write = 167;
+  VBA_STANDARD_LIBRARY_Input = 168;
+  VBA_STANDARD_LIBRARY_Put = 169;
+  VBA_STANDARD_LIBRARY_Get = 170;
+}
+
+message VbaFeature {
+  reserved 1 to 23;
+
+  // Number of times external functions are declared.
+  optional int32 declare_stmt_count = 24;
+
+  // VbaDllName -> int32
+  // Number of times a suspicious dll is referenced.
+  map<int32, int32> dll_name_count = 25;
+
+  // VbaDllFunctionName -> int32
+  // Number of times a suspicious external function is referenced.
+  map<int32, int32> dll_function_name_count = 26;
+
+  // Number of times an external dll is referenced but we don't know what it is.
+  optional int32 non_literal_dll_name_count = 27;
+
+  // Number of calls to CreateObject().
+  optional int32 create_object_count = 28;
+
+  // Number of times CreateObject() is called with non-literal object type.
+  optional int32 create_object_non_literal_count = 29;
+
+  // VbaObjectName -> int32
+  // Number of times a suspicious object is created.
+  map<int32, int32> object_name_count = 30;
+
+  // VbaObjectNameSubstr -> int32
+  // Number of times an object with a partial suspicious name is created.
+  map<int32, int32> object_name_substr_count = 31;
+
+  // Number of times GetObject() is called.
+  optional int32 get_object_count = 32;
+
+  // Number of times GetObject() is called with non-literal object type.
+  optional int32 get_object_non_literal_count = 33;
+
+  // VbaStandardLibraryFunction -> int32
+  // Number of times a standard library function is called.
+  map<int32, int32> standard_library_function_count = 34;
+
+  reserved 35;
+}

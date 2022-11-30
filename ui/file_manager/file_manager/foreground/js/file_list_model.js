@@ -1,20 +1,66 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {strf, str, util} from '../../common/js/util.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {ArrayDataModel} from '../../common/js/array_data_model.js';
+import {FileExtensionType, FileType} from '../../common/js/file_type.js';
+import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {MetadataModel} from './metadata/metadata_model.js';
+
+export const GROUP_BY_FIELD_MODIFICATION_TIME = 'modificationTime';
+export const GROUP_BY_FIELD_DIRECTORY = 'isDirectory';
+
+const FIELDS_SUPPORT_GROUP_BY = new Set([
+  GROUP_BY_FIELD_MODIFICATION_TIME,
+  GROUP_BY_FIELD_DIRECTORY,
+]);
+
+/**
+ * Currently we only support group by modificationTime or isDirectory, so the
+ * group value can only be one of them.
+ * @typedef {!chrome.fileManagerPrivate.RecentDateBucket|boolean}
+ */
+export let GroupValue;
+
+/**
+ * This represents a group header.
+ *  * startIndex: the start index of this group.
+ *  * endIndex: the end index of this group.
+ *  * group: the actual group value.
+ *  * label: the group label.
+ *
+ * @typedef {{
+ *   startIndex: number,
+ *   endIndex: number,
+ *   group: (GroupValue|undefined),
+ *   label: string,
+ * }}
+ */
+export let GroupHeader;
+
+/**
+ * This represents the snapshot of a groupBy result.
+ *  * sortDirection: when groupBy is calculated, what the sort order is.
+ *  * groups: the groupBy results, each item is a `GroupHeader` type.
+ *
+ * @typedef {{
+ *   sortDirection: string,
+ *   groups: !Array<!GroupHeader>,
+ * }}
+ */
+let GroupBySnapshot;
 
 /**
  * File list.
  */
-/* #export */ class FileListModel extends cr.ui.ArrayDataModel {
+export class FileListModel extends ArrayDataModel {
   /** @param {!MetadataModel} metadataModel */
   constructor(metadataModel) {
     super([]);
@@ -78,10 +124,36 @@
      *     by label.
      */
     this.locationInfo_ = null;
+
+    /**
+     * @type {boolean}
+     */
+    this.hasGroupHeadingBeforeSort = false;
+
+    /**
+     * @private {string|null} The field to do group by on.
+     */
+    this.groupByField_ = null;
+
+    /**
+     * The key is the field name which is used by groupBy. The value is a
+     * object with type GroupBySnapshot.
+     *
+     * @private {!Object<string, !GroupBySnapshot>}
+     */
+    this.groupBySnapshot_ =
+        Array.from(FIELDS_SUPPORT_GROUP_BY).reduce((acc, field) => {
+          acc[field] = {
+            sortDirection: 'asc',
+            groups: [],
+          };
+          return acc;
+        }, {});
   }
 
   /**
-   * @param {!Object} fileType Type object returned by FileType.getType().
+   * @param {!FileExtensionType} fileType Type object returned by
+   *     FileType.getType().
    * @return {string} Localized string representation of file type.
    */
   static getFileTypeString(fileType) {
@@ -91,9 +163,9 @@
       return fileType.subtype;
     }
     if (fileType.subtype) {
-      return strf(fileType.name, fileType.subtype);
+      return strf(fileType.translationKey, fileType.subtype);
     } else {
-      return str(fileType.name);
+      return str(fileType.translationKey);
     }
   }
 
@@ -105,8 +177,9 @@
    * @override
    */
   sort(field, direction) {
+    this.hasGroupHeadingBeforeSort = this.shouldShowGroupHeading();
     this.isDescendingOrder_ = direction === 'desc';
-    cr.ui.ArrayDataModel.prototype.sort.call(this, field, direction);
+    ArrayDataModel.prototype.sort.call(this, field, direction);
   }
 
   /**
@@ -127,7 +200,7 @@
   /**
    * Removes and adds items to the model.
    *
-   * The implementation is similar to cr.ui.ArrayDataModel.splice(), but this
+   * The implementation is similar to ArrayDataModel.splice(), but this
    * has a Files app specific optimization, which sorts only the new items and
    * merge sorted lists.
    * Note that this implementation assumes following conditions.
@@ -256,6 +329,8 @@
     spliceEvent.index = spliceIndex;
     this.dispatchEvent(spliceEvent);
 
+    this.updateGroupBySnapshot_();
+
     return deletedItems;
   }
 
@@ -266,7 +341,7 @@
     this.onRemoveEntryFromList_(/** @type {?Entry} */ (oldItem));
     this.onAddEntryToList_(/** @type {?Entry} */ (newItem));
 
-    cr.ui.ArrayDataModel.prototype.replaceItem.apply(this, arguments);
+    ArrayDataModel.prototype.replaceItem.apply(this, arguments);
   }
 
   /**
@@ -479,5 +554,171 @@
     this.setCompareFunction(
         'name',
         /** @type {function(*, *): number} */ (this.compareLabel_.bind(this)));
+  }
+
+  /**
+   * @return {string|null}
+   */
+  get groupByField() {
+    return this.groupByField_;
+  }
+
+  /**
+   * @param {string|null} field the field to group by.
+   */
+  set groupByField(field) {
+    this.groupByField_ = field;
+    if (!field || this.groupBySnapshot_[field].groups.length === 0) {
+      this.updateGroupBySnapshot_();
+    }
+  }
+
+  /**
+   * Should the current list model show group heading or not.
+   * @return {boolean}
+   */
+  shouldShowGroupHeading() {
+    if (!this.groupByField_) {
+      return false;
+    }
+    // GroupBy modification time is only valid when the current sort field is
+    // modification time.
+    if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      return this.sortStatus.field === this.groupByField_;
+    }
+    return FIELDS_SUPPORT_GROUP_BY.has(this.groupByField_);
+  }
+
+  /**
+   * @param {!Entry} item Item in the file list model.
+   * @param {number} now Timestamp represents now.
+   * @return {!chrome.fileManagerPrivate.RecentDateBucket}
+   * @private
+   */
+  getGroupForModificationTime_(item, now) {
+    const properties = this.metadataModel_.getCache(
+        [item], ['modificationTime', 'modificationByMeTime']);
+    return getRecentDateBucket(
+        new Date(this.getMtime_(properties[0])), new Date(now));
+  }
+
+  /**
+   * @param {!Entry} item Item in the file list model.
+   * @return {boolean}
+   * @private
+   */
+  getGroupForDirectory_(item) {
+    return item.isDirectory;
+  }
+
+  /**
+   * @param {GroupValue|undefined} value
+   * @return {string}
+   * @private
+   */
+  getGroupLabel_(value) {
+    switch (this.groupByField_) {
+      case GROUP_BY_FIELD_MODIFICATION_TIME:
+        const dateBucket =
+            /** @type {chrome.fileManagerPrivate.RecentDateBucket} */ (value);
+        return str(getTranslationKeyForDateBucket(dateBucket));
+      case GROUP_BY_FIELD_DIRECTORY:
+        const isDirectory = /** @type {boolean} */ (value);
+        return isDirectory ? str('GRID_VIEW_FOLDERS_TITLE') :
+                             str('GRID_VIEW_FILES_TITLE');
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Update the GroupBy snapshot by the existing sort field.
+   * @private
+   */
+  updateGroupBySnapshot_() {
+    if (!this.shouldShowGroupHeading()) {
+      return;
+    }
+    assert(this.groupByField_);
+    /** @type {!GroupBySnapshot} */
+    const snapshot = this.groupBySnapshot_[this.groupByField_];
+    snapshot.sortDirection = this.sortStatus.direction;
+    snapshot.groups = [];
+
+    const now = Date.now();
+    let prevItemGroup = null;
+    for (let i = 0; i < this.length; i++) {
+      const item = /** @type {!Entry} */ (this.item(i));
+      let curItemGroup;
+      if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+        curItemGroup = this.getGroupForModificationTime_(item, now);
+      } else if (this.groupByField_ === GROUP_BY_FIELD_DIRECTORY) {
+        curItemGroup = this.getGroupForDirectory_(item);
+      }
+      if (prevItemGroup !== curItemGroup) {
+        if (i > 0) {
+          snapshot.groups[snapshot.groups.length - 1].endIndex = i - 1;
+        }
+        snapshot.groups.push({
+          startIndex: i,
+          endIndex: -1,
+          group: curItemGroup,
+          label: this.getGroupLabel_(curItemGroup),
+        });
+      }
+      prevItemGroup = curItemGroup;
+    }
+    if (snapshot.groups.length > 0) {
+      // The last element is always the end of the last group.
+      snapshot.groups[snapshot.groups.length - 1].endIndex = this.length - 1;
+    }
+  }
+
+  /**
+   * Refresh the group by data, e.g. when date modified changes due to
+   * timezone change.
+   */
+  refreshGroupBySnapshot() {
+    if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      this.updateGroupBySnapshot_();
+    }
+  }
+
+  /**
+   * Return the groupBy snapshot.
+   * @return {!Array<!GroupHeader>}
+   */
+  getGroupBySnapshot() {
+    if (!this.shouldShowGroupHeading()) {
+      return [];
+    }
+    assert(this.groupByField_);
+    /** @type {GroupBySnapshot} */
+    const snapshot = this.groupBySnapshot_[this.groupByField_];
+    if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      if (this.sortStatus.direction === snapshot.sortDirection) {
+        return snapshot.groups;
+      }
+      // Why are we calculating reverse order data in the snapshot instead
+      // of calculating it inside sort() function? It's because redraw can
+      // happen before sort() finishes, if we generate reverse order data
+      // at the end of sort(), that might be too late for redraw.
+      const reversedGroups = Array.from(snapshot.groups);
+      reversedGroups.reverse();
+      return reversedGroups.map(group => {
+        return {
+          startIndex: this.length - 1 - group.endIndex,
+          endIndex: this.length - 1 - group.startIndex,
+          group: group.group,
+          label: group.label,
+        };
+      });
+    }
+    // Grid view Folders/Files group order never changes, e.g. Folders group
+    // always shows first, and then Files group.
+    if (this.groupByField_ === GROUP_BY_FIELD_DIRECTORY) {
+      return snapshot.groups;
+    }
+    return [];
   }
 }

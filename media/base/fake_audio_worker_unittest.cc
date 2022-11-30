@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -33,12 +32,18 @@ using testing::SizeIs;
 class FakeAudioWorkerTest : public testing::Test {
  public:
   FakeAudioWorkerTest()
-      : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_STEREO, 44100, 128),
+      : params_(AudioParameters::AUDIO_FAKE,
+                ChannelLayoutConfig::Stereo(),
+                44100,
+                128),
         fake_worker_(task_environment_.GetMainThreadTaskRunner(), params_) {
-    time_between_callbacks_ = base::TimeDelta::FromMicroseconds(
+    time_between_callbacks_ = base::Microseconds(
         params_.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
         static_cast<float>(params_.sample_rate()));
   }
+
+  FakeAudioWorkerTest(const FakeAudioWorkerTest&) = delete;
+  FakeAudioWorkerTest& operator=(const FakeAudioWorkerTest&) = delete;
 
   ~FakeAudioWorkerTest() override = default;
 
@@ -93,9 +98,6 @@ class FakeAudioWorkerTest : public testing::Test {
   FakeAudioWorker fake_worker_;
   base::TimeDelta time_between_callbacks_;
   std::vector<base::TimeTicks> callbacks_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioWorkerTest);
 };
 
 TEST_F(FakeAudioWorkerTest, FakeBasicCallback) {
@@ -177,16 +179,23 @@ TEST_F(FakeAudioWorkerTest, StartStopClearsCallbacks) {
 class FakeAudioWorkerMockTaskTest : public testing::Test {
  public:
   FakeAudioWorkerMockTaskTest()
-      : params_(AudioParameters::AUDIO_FAKE, CHANNEL_LAYOUT_STEREO, 44100, 128),
+      : params_(AudioParameters::AUDIO_FAKE,
+                ChannelLayoutConfig::Stereo(),
+                44100,
+                128),
         fake_worker_(task_runner_, params_) {
     DCHECK(!global_clock_);
     global_clock_ = task_runner_->GetMockTickClock();
-    time_between_callbacks_ = base::TimeDelta::FromMicroseconds(
+    time_between_callbacks_ = base::Microseconds(
         params_.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
         static_cast<float>(params_.sample_rate()));
     clock_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
         nullptr, TimeTicksOverride, nullptr);
   }
+
+  FakeAudioWorkerMockTaskTest(const FakeAudioWorkerMockTaskTest&) = delete;
+  FakeAudioWorkerMockTaskTest& operator=(const FakeAudioWorkerMockTaskTest&) =
+      delete;
 
   ~FakeAudioWorkerMockTaskTest() override { global_clock_ = nullptr; }
 
@@ -225,9 +234,6 @@ class FakeAudioWorkerMockTaskTest : public testing::Test {
     DCHECK(global_clock_);
     return global_clock_->NowTicks();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioWorkerMockTaskTest);
 };
 
 const base::TickClock* FakeAudioWorkerMockTaskTest::global_clock_ = nullptr;

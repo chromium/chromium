@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #include <map>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 #include "util/misc/reinterpret_bytes.h"
 #include "util/process/process_memory_range.h"
@@ -31,6 +30,10 @@ namespace crashpad {
 class ElfDynamicArrayReader {
  public:
   ElfDynamicArrayReader();
+
+  ElfDynamicArrayReader(const ElfDynamicArrayReader&) = delete;
+  ElfDynamicArrayReader& operator=(const ElfDynamicArrayReader&) = delete;
+
   ~ElfDynamicArrayReader();
 
   //! \brief Initializes the reader.
@@ -66,8 +69,6 @@ class ElfDynamicArrayReader {
 
  private:
   std::map<uint64_t, uint64_t> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElfDynamicArrayReader);
 };
 
 }  // namespace crashpad

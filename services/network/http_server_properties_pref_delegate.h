@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_HTTP_SERVER_PROPERTIES_PREF_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/http/http_server_properties.h"
 
@@ -20,6 +20,12 @@ class HttpServerPropertiesPrefDelegate
  public:
   // The created object must be destroyed before |pref_service|.
   explicit HttpServerPropertiesPrefDelegate(PrefService* pref_service);
+
+  HttpServerPropertiesPrefDelegate(const HttpServerPropertiesPrefDelegate&) =
+      delete;
+  HttpServerPropertiesPrefDelegate& operator=(
+      const HttpServerPropertiesPrefDelegate&) = delete;
+
   ~HttpServerPropertiesPrefDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
@@ -31,10 +37,8 @@ class HttpServerPropertiesPrefDelegate
   void WaitForPrefLoad(base::OnceClosure callback) override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesPrefDelegate);
 };
 
 }  // namespace network

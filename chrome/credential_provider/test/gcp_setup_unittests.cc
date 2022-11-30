@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <atlbase.h>
-#include <atlcom.h>
+#include "base/win/atl.h"
+
 #include <atlcomcli.h>
 #include <datetimeapi.h>
 #include <lmerr.h>
@@ -181,9 +181,9 @@ class GcpSetupTest : public ::testing::Test {
  private:
   std::wstring GetCurrentDateForTesting() {
     static const wchar_t kDateFormat[] = L"yyyyMMdd";
-    wchar_t date_str[base::size(kDateFormat)] = {0};
+    wchar_t date_str[std::size(kDateFormat)] = {0};
     int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat,
-                             date_str, base::size(date_str));
+                             date_str, std::size(date_str));
     if (len) {
       --len;  // Subtract terminating \0.
     } else {
@@ -343,16 +343,16 @@ void GcpSetupTest::SetUp() {
   ASSERT_NE(nullptr, env.get());
 
   ASSERT_TRUE(scoped_temp_prog_dir_.CreateUniqueTempDir());
-  program_files_override_.reset(new base::ScopedPathOverride(
-      base::DIR_PROGRAM_FILES, scoped_temp_prog_dir_.GetPath()));
+  program_files_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_PROGRAM_FILES, scoped_temp_prog_dir_.GetPath());
 
   ASSERT_TRUE(scoped_temp_start_menu_dir_.CreateUniqueTempDir());
-  start_menu_override_.reset(new base::ScopedPathOverride(
-      base::DIR_COMMON_START_MENU, scoped_temp_start_menu_dir_.GetPath()));
+  start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_START_MENU, scoped_temp_start_menu_dir_.GetPath());
 
   ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
-  programdata_override_.reset(new base::ScopedPathOverride(
-      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath()));
+  programdata_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath());
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -360,9 +360,9 @@ void GcpSetupTest::SetUp() {
   // to base.dll because of the way CURRENT_MODULE works.  Therefore overriding
   // to point to gaia1_0.dll's destination path (i.e. after it is installed).
   // The actual file name is not important, just the directory.
-  dll_path_override_.reset(new base::ScopedPathOverride(
+  dll_path_override_ = std::make_unique<base::ScopedPathOverride>(
       base::FILE_MODULE, installed_path().Append(FILE_PATH_LITERAL("foo.dll")),
-      true /*=is_absolute*/, false /*=create*/));
+      true /*=is_absolute*/, false /*=create*/);
 
   base::FilePath startup_path =
       scoped_temp_start_menu_dir_.GetPath().Append(L"StartUp");
@@ -517,8 +517,8 @@ TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
   base::FilePath dll_path = installed_path_for_version(old_version)
                                 .Append(FILE_PATH_LITERAL("Gaia1_0.dll"));
   base::File lock(dll_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                base::File::FLAG_EXCLUSIVE_READ |
-                                base::File::FLAG_EXCLUSIVE_WRITE);
+                                base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 
   logging::ResetEventSourceForTesting();
 
@@ -551,8 +551,8 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
                                 .Append(FILE_PATH_LITERAL("Gaia1_0.dll"));
   base::File locked_file(dll_path, base::File::FLAG_OPEN |
                                        base::File::FLAG_READ |
-                                       base::File::FLAG_EXCLUSIVE_READ |
-                                       base::File::FLAG_EXCLUSIVE_WRITE);
+                                       base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 
   logging::ResetEventSourceForTesting();
 

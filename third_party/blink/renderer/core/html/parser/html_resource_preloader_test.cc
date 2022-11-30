@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class PreloaderNetworkHintsMock : public WebPrescientNetworking {
 class HTMLResourcePreloaderTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetFrame().SetPrescientNetworkingForTesting(
         std::make_unique<PreloaderNetworkHintsMock>());
     mock_network_hints_ = static_cast<PreloaderNetworkHintsMock*>(
@@ -58,9 +58,8 @@ class HTMLResourcePreloaderTest : public PageTestBase {
     auto preload_request = PreloadRequest::CreateIfNeeded(
         String(), TextPosition::MinimumPosition(), test_case.url,
         KURL(test_case.base_url), ResourceType::kImage,
-        network::mojom::ReferrerPolicy(), PreloadRequest::kDocumentIsReferrer,
-        ResourceFetcher::kImageNotImageSet, nullptr /* exclusion_info */,
-        FetchParameters::ResourceWidth(), ClientHintsPreferences(),
+        network::mojom::ReferrerPolicy(), ResourceFetcher::kImageNotImageSet,
+        nullptr /* exclusion_info */, FetchParameters::ResourceWidth(),
         PreloadRequest::kRequestTypePreconnect);
     DCHECK(preload_request);
     if (test_case.is_cors)

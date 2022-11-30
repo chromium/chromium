@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <set>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -26,13 +25,13 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::mojom::SubmissionIndicatorEvent;
-using base::ASCIIToUTF16;
 
 namespace password_manager {
 
@@ -42,7 +41,7 @@ using UsernameDetectionMethod = FormDataParser::UsernameDetectionMethod;
 
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
 // generated in GetFormDataAndExpectation().
-constexpr char kNonimportantValue[] = "non-important unique";
+constexpr char16_t kNonimportantValue[] = u"non-important unique";
 
 // Use this in FieldDataDescription below to mark the expected username and
 // password fields.
@@ -51,7 +50,9 @@ enum class ElementRole {
   USERNAME,
   CURRENT_PASSWORD,
   NEW_PASSWORD,
-  CONFIRMATION_PASSWORD
+  CONFIRMATION_PASSWORD,
+  // Used for fields tagged only for webauthn autocomplete.
+  WEBAUTHN,
 };
 
 // Expected FormFieldData are constructed based on these descriptions.
@@ -70,9 +71,9 @@ struct FieldDataDescription {
   autofill::FieldPropertiesMask properties_mask =
       FieldPropertiesFlags::kNoFlags;
   const char* autocomplete_attribute = nullptr;
-  const char* value = kNonimportantValue;
-  const char* user_input = nullptr;
-  const char* name = kNonimportantValue;
+  const std::u16string value = kNonimportantValue;
+  const std::u16string user_input = u"";
+  const base::StringPiece16 name = kNonimportantValue;
   const char* form_control_type = "text";
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
   // If not -1, indicates on which rank among predicted usernames this should
@@ -88,20 +89,21 @@ struct FormParsingTestCase {
   int number_of_all_possible_passwords = -1;
   int number_of_all_possible_usernames = -1;
   // null means no checking
-  const ValueElementVector* all_possible_passwords = nullptr;
-  const ValueElementVector* all_possible_usernames = nullptr;
+  raw_ptr<const ValueElementVector> all_possible_passwords = nullptr;
+  raw_ptr<const ValueElementVector> all_possible_usernames = nullptr;
   bool server_side_classification_successful = true;
   bool username_may_use_prefilled_placeholder = false;
-  base::Optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
-  base::Optional<FormDataParser::ReadonlyPasswordFields>
+  absl::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
+  absl::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_saving;
-  base::Optional<FormDataParser::ReadonlyPasswordFields>
+  absl::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_filling;
   // If the result should be marked as only useful for fallbacks.
   bool fallback_only = false;
   SubmissionIndicatorEvent submission_event = SubmissionIndicatorEvent::NONE;
-  base::Optional<bool> is_new_password_reliable;
+  absl::optional<bool> is_new_password_reliable;
   bool form_has_autofilled_value = false;
+  bool accepts_webauthn_credentials = false;
 };
 
 // Returns numbers which are distinct from each other within the scope of one
@@ -112,8 +114,8 @@ autofill::FieldRendererId GetUniqueId() {
 }
 
 // Use to add a number suffix which is unique in the scope of the test.
-std::u16string StampUniqueSuffix(const char* base_str) {
-  return ASCIIToUTF16(base_str) + u"_" +
+std::u16string StampUniqueSuffix(const char16_t* base_str) {
+  return base_str + std::u16string(u"_") +
          base::NumberToString16(GetUniqueId().value());
 }
 
@@ -124,10 +126,12 @@ struct ParseResultIds {
   autofill::FieldRendererId password_id;
   autofill::FieldRendererId new_password_id;
   autofill::FieldRendererId confirmation_password_id;
+  std::vector<autofill::FieldRendererId> webauthn_ids;
 
   bool IsEmpty() const {
     return username_id.is_null() && password_id.is_null() &&
-           new_password_id.is_null() && confirmation_password_id.is_null();
+           new_password_id.is_null() && confirmation_password_id.is_null() &&
+           webauthn_ids.empty();
   }
 };
 
@@ -143,6 +147,9 @@ void UpdateResultWithIdByRole(ParseResultIds* result,
     case ElementRole::USERNAME:
       DCHECK(result->username_id.is_null());
       result->username_id = id;
+      break;
+    case ElementRole::WEBAUTHN:
+      result->webauthn_ids.push_back(id);
       break;
     case ElementRole::CURRENT_PASSWORD:
       DCHECK(result->password_id.is_null());
@@ -175,30 +182,27 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     FormFieldData field;
     const autofill::FieldRendererId renderer_id = GetUniqueId();
     field.unique_renderer_id = renderer_id;
-    field.id_attribute = StampUniqueSuffix("html_id");
+    field.id_attribute = StampUniqueSuffix(u"html_id");
     if (field_description.name == kNonimportantValue) {
-      field.name = StampUniqueSuffix("html_name");
+      field.name = StampUniqueSuffix(u"html_name");
     } else {
-      field.name = ASCIIToUTF16(field_description.name);
+      field.name = std::u16string(field_description.name);
     }
     field.name_attribute = field.name;
-#if defined(OS_IOS)
-    field.unique_id = StampUniqueSuffix("unique_id");
-#endif
     field.form_control_type = field_description.form_control_type;
     field.is_focusable = field_description.is_focusable;
     field.is_enabled = field_description.is_enabled;
     field.is_readonly = field_description.is_readonly;
     field.properties_mask = field_description.properties_mask;
     if (field_description.value == kNonimportantValue) {
-      field.value = StampUniqueSuffix("value");
+      field.value = StampUniqueSuffix(u"value");
     } else {
-      field.value = ASCIIToUTF16(field_description.value);
+      field.value = field_description.value;
     }
     if (field_description.autocomplete_attribute)
       field.autocomplete_attribute = field_description.autocomplete_attribute;
-    if (field_description.user_input)
-      field.user_input = ASCIIToUTF16(field_description.user_input);
+    if (!field_description.user_input.empty())
+      field.user_input = field_description.user_input;
     form_data.fields.push_back(field);
     if (field_description.role == ElementRole::NONE) {
       UpdateResultWithIdByRole(fill_result, renderer_id,
@@ -214,9 +218,6 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
     if (field_description.prediction.type != autofill::MAX_VALID_FIELD_TYPE) {
       predictions->fields.push_back(field_description.prediction);
       predictions->fields.back().renderer_id = renderer_id;
-#if defined(OS_IOS)
-      predictions->fields.back().unique_id = field.unique_id;
-#endif
     }
     if (field_description.predicted_username >= 0) {
       size_t index = static_cast<size_t>(field_description.predicted_username);
@@ -257,20 +258,12 @@ void CheckField(const std::vector<FormFieldData>& fields,
     return;
   }
 
-  auto field_it = std::find_if(fields.begin(), fields.end(),
-                               [renderer_id](const FormFieldData& field) {
-                                 return field.unique_renderer_id == renderer_id;
-                               });
+  auto field_it = base::ranges::find(fields, renderer_id,
+                                     &FormFieldData::unique_renderer_id);
   ASSERT_TRUE(field_it != fields.end())
       << "Could not find a field with renderer ID " << renderer_id;
 
-// On iOS |unique_id| is used for identifying DOM elements, so the parser should
-// return it. See crbug.com/896594
-#if defined(OS_IOS)
-  EXPECT_EQ(element_name, field_it->unique_id);
-#else
   EXPECT_EQ(element_name, field_it->name);
-#endif
 
   std::u16string expected_value =
       field_it->user_input.empty() ? field_it->value : field_it->user_input;
@@ -358,7 +351,7 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
         ASSERT_TRUE(parsed_form) << "Expected successful parsing";
         EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
         EXPECT_FALSE(parsed_form->blocked_by_user);
-        EXPECT_EQ(PasswordForm::Type::kManual, parsed_form->type);
+        EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
         EXPECT_EQ(test_case.server_side_classification_successful,
                   parsed_form->server_side_classification_successful);
         EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
@@ -369,6 +362,9 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
           EXPECT_EQ(*test_case.is_new_password_reliable,
                     parsed_form->is_new_password_reliable);
         }
+        EXPECT_EQ(test_case.accepts_webauthn_credentials &&
+                      mode == FormDataParser::Mode::kFilling,
+                  parsed_form->accepts_webauthn_credentials);
         EXPECT_EQ(test_case.form_has_autofilled_value,
                   parsed_form->form_has_autofilled_value);
 
@@ -400,7 +396,7 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
       if (test_case.readonly_status) {
         EXPECT_EQ(*test_case.readonly_status, parser.readonly_status());
       } else {
-        const base::Optional<FormDataParser::ReadonlyPasswordFields>*
+        const absl::optional<FormDataParser::ReadonlyPasswordFields>*
             expected_readonly_status =
                 mode == FormDataParser::Mode::kSaving
                     ? &test_case.readonly_status_for_saving
@@ -450,9 +446,6 @@ TEST(FormParserTest, SkipNotTextFields) {
 }
 
 TEST(FormParserTest, OnlyPasswordFields) {
-  const bool kTreatNewPasswordHeuristicsAsReliable =
-      base::FeatureList::IsEnabled(
-          features::kTreatNewPasswordHeuristicsAsReliable);
   CheckTestData({
       {
           .description_for_logging = "1 password field",
@@ -470,13 +463,13 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging =
@@ -484,13 +477,13 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw1",
+                   .value = u"pw1",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging =
@@ -498,26 +491,26 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw1",
+                   .value = u"pw1",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
               },
-          .is_new_password_reliable = kTreatNewPasswordHeuristicsAsReliable,
+          .is_new_password_reliable = false,
       },
       {
           .description_for_logging = "3 password fields with different values",
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw1",
+                   .value = u"pw1",
                    .form_control_type = "password"},
-                  {.value = "pw2", .form_control_type = "password"},
-                  {.value = "pw3", .form_control_type = "password"},
+                  {.value = u"pw2", .form_control_type = "password"},
+                  {.value = u"pw3", .form_control_type = "password"},
               },
           .number_of_all_possible_passwords = 3,
       },
@@ -527,15 +520,15 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw1",
+                   .value = u"pw1",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
-                  {.value = "pw3", .form_control_type = "password"},
+                  {.value = u"pw3", .form_control_type = "password"},
               },
       },
       {
@@ -545,15 +538,15 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw1",
+                   .value = u"pw1",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
-                   .value = "pw2",
+                   .value = u"pw2",
                    .form_control_type = "password"},
-                  {.value = "pw2", .form_control_type = "password"},
+                  {.value = u"pw2", .form_control_type = "password"},
               },
       },
       {
@@ -561,11 +554,11 @@ TEST(FormParserTest, OnlyPasswordFields) {
           .fields =
               {
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
-                  {.value = "pw", .form_control_type = "password"},
-                  {.value = "pw", .form_control_type = "password"},
-                  {.value = "pw", .form_control_type = "password"},
+                  {.value = u"pw", .form_control_type = "password"},
+                  {.value = u"pw", .form_control_type = "password"},
+                  {.value = u"pw", .form_control_type = "password"},
               },
       },
   });
@@ -637,7 +630,7 @@ TEST(FormParserTest, TestFocusability) {
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .is_focusable = true,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
                   {.is_focusable = false, .form_control_type = "password"},
                   {.is_focusable = false, .form_control_type = "password"},
@@ -645,7 +638,7 @@ TEST(FormParserTest, TestFocusability) {
                   {.is_focusable = false, .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .is_focusable = true,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
                   {.is_focusable = false, .form_control_type = "password"},
                   {.is_focusable = false, .form_control_type = "password"},
@@ -665,10 +658,10 @@ TEST(FormParserTest, TextAndPasswordFields) {
           .fields =
               {
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
               },
           // all_possible_* only count fields with non-empty values.
@@ -690,12 +683,12 @@ TEST(FormParserTest, TextAndPasswordFields) {
               "Empty sign-in form with an extra text field",
           .fields =
               {
-                  {.value = "", .form_control_type = "text"},
+                  {.value = u"", .form_control_type = "text"},
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
               },
       },
@@ -707,7 +700,7 @@ TEST(FormParserTest, TextAndPasswordFields) {
                   {.role_saving = ElementRole::USERNAME,
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
@@ -719,13 +712,13 @@ TEST(FormParserTest, TextAndPasswordFields) {
           .fields =
               {
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.is_focusable = false,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
               },
       },
@@ -748,7 +741,7 @@ TEST(FormParserTest, TextAndPasswordFields) {
           .fields =
               {
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
@@ -763,7 +756,7 @@ TEST(FormParserTest, TextAndPasswordFields) {
                   {.role_filling = ElementRole::USERNAME,
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
               },
       },
@@ -777,10 +770,10 @@ TEST(FormParserTest, TextFieldValueIsNotUsername) {
       .fields =
           {
               {.role_filling = ElementRole::USERNAME,
-               .value = "12",
+               .value = u"12",
                .form_control_type = "text"},
               {.role = ElementRole::CURRENT_PASSWORD,
-               .value = "strong_pw",
+               .value = u"strong_pw",
                .form_control_type = "password"},
           },
   }});
@@ -804,12 +797,12 @@ TEST(FormParserTest, TestAutocomplete) {
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
-                   .value = "np",
+                   .value = u"np",
                    .form_control_type = "password"},
                   {.form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .autocomplete_attribute = "new-password",
-                   .value = "np",
+                   .value = u"np",
                    .form_control_type = "password"},
               },
           // 4 distinct password values in 5 password fields
@@ -827,10 +820,10 @@ TEST(FormParserTest, TestAutocomplete) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
-                   .value = "pw",
+                   .value = u"pw",
                    .form_control_type = "password"},
                   // NB: 'password' is not a valid autocomplete type hint.
                   {.autocomplete_attribute = "password",
@@ -956,6 +949,13 @@ TEST(FormParserTest, TestAutocomplete) {
                    .autocomplete_attribute = "current-password",
                    .form_control_type = "password"},
               },
+      },
+      {
+          .description_for_logging = "Autocomplete single username",
+          .fields = {{.role = ElementRole::USERNAME,
+                      .is_focusable = false,
+                      .autocomplete_attribute = "username",
+                      .form_control_type = "text"}},
       },
   });
 }
@@ -1088,14 +1088,17 @@ TEST(FormParserTest, ReadonlyFields) {
                   {.role = ElementRole::NEW_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "new-password",
+                   .value = u"newpass",
                    .form_control_type = "password"},
                   {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "new-password",
+                   .value = u"newpass",
                    .form_control_type = "password"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .is_readonly = true,
                    .autocomplete_attribute = "current-password",
+                   .value = u"oldpass",
                    .form_control_type = "password"},
               },
           .is_new_password_reliable = true,
@@ -1148,7 +1151,7 @@ TEST(FormParserTest, ReadonlyFields) {
 TEST(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::KEnablePasswordGenerationForClearTextFields);
+      password_manager::features::kEnablePasswordGenerationForClearTextFields);
   CheckTestData({
       {
           .description_for_logging = "Server prediction for account change "
@@ -1238,14 +1241,14 @@ TEST(FormParserTest, InferConfirmationPasswordField) {
               {
                   {
                       .role = ElementRole::NEW_PASSWORD,
-                      .value = "pw",
+                      .value = u"pw",
                       .form_control_type = "password",
                       .prediction = {.type =
                                          autofill::ACCOUNT_CREATION_PASSWORD},
                   },
                   {
                       .role_saving = ElementRole::CONFIRMATION_PASSWORD,
-                      .value = "pw",
+                      .value = u"pw",
                       .form_control_type = "password",
                   },
               },
@@ -1258,14 +1261,14 @@ TEST(FormParserTest, InferConfirmationPasswordField) {
                   {
                       .role = ElementRole::NEW_PASSWORD,
                       .autocomplete_attribute = "new-password",
-                      .value = "pw",
+                      .value = u"pw",
                       .form_control_type = "password",
                   },
                   {
                       .role_filling = ElementRole::NONE,
                       .role_saving = ElementRole::CONFIRMATION_PASSWORD,
                       .autocomplete_attribute = "off",
-                      .value = "pw",
+                      .value = u"pw",
                       .form_control_type = "password",
                   },
               },
@@ -1279,14 +1282,14 @@ TEST(FormParserTest, InferConfirmationPasswordField) {
                   {
                       .role_filling = ElementRole::NEW_PASSWORD,
                       .role_saving = ElementRole::CURRENT_PASSWORD,
-                      .value = "pw1",
+                      .value = u"pw1",
                       .form_control_type = "password",
                       .prediction = {.type =
                                          autofill::ACCOUNT_CREATION_PASSWORD},
                   },
                   {
                       .role_saving = ElementRole::NEW_PASSWORD,
-                      .value = "pw2",
+                      .value = u"pw2",
                       .form_control_type = "password",
                   },
               },
@@ -1300,12 +1303,12 @@ TEST(FormParserTest, InferConfirmationPasswordField) {
                   {
                       .role = ElementRole::NEW_PASSWORD,
                       .autocomplete_attribute = "new-password",
-                      .value = "pw1",
+                      .value = u"pw1",
                       .form_control_type = "password",
                   },
                   {
                       .role = ElementRole::NONE,
-                      .value = "pw2",
+                      .value = u"pw2",
                       .form_control_type = "password",
                   },
               },
@@ -1490,7 +1493,7 @@ TEST(FormParserTest, Interactability) {
                    .properties_mask = FieldPropertiesFlags::kAutofilled,
                    .form_control_type = "password"},
                   {.is_focusable = true,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
               },
           .form_has_autofilled_value = true,
@@ -1530,20 +1533,26 @@ TEST(FormParserTest, AllPossiblePasswords) {
                                      "value",
           .fields =
               {
-                  {.value = "a", .name = "p1", .form_control_type = "password"},
+                  {.value = u"a",
+                   .name = u"p1",
+                   .form_control_type = "password"},
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
-                   .value = "b",
-                   .name = "chosen",
+                   .value = u"b",
+                   .name = u"chosen",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = "a",
+                   .value = u"a",
                    .form_control_type = "password"},
-                  {.value = "a", .name = "first", .form_control_type = "text"},
-                  {.value = "a", .form_control_type = "text"},
-                  {.value = "b", .name = "p3", .form_control_type = "password"},
-                  {.value = "b", .form_control_type = "password"},
+                  {.value = u"a",
+                   .name = u"first",
+                   .form_control_type = "text"},
+                  {.value = u"a", .form_control_type = "text"},
+                  {.value = u"b",
+                   .name = u"p3",
+                   .form_control_type = "password"},
+                  {.value = u"b", .form_control_type = "password"},
               },
           .number_of_all_possible_passwords = 2,
           .number_of_all_possible_usernames = 2,
@@ -1555,18 +1564,19 @@ TEST(FormParserTest, AllPossiblePasswords) {
               "Empty values don't get added to all_possible_passwords",
           .fields =
               {
-                  {.value = "", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
                   {.role_filling = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
                   {.form_control_type = "text"},
                   {.form_control_type = "text"},
-                  {.value = "", .form_control_type = "password"},
-                  {.value = "", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
               },
           .number_of_all_possible_passwords = 0,
       },
@@ -1576,7 +1586,7 @@ TEST(FormParserTest, AllPossiblePasswords) {
                                      "parsed",
           .fields =
               {
-                  {.value = "", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
                    .form_control_type = "text"},
@@ -1585,8 +1595,8 @@ TEST(FormParserTest, AllPossiblePasswords) {
                    .form_control_type = "password"},
                   {.form_control_type = "text"},
                   {.form_control_type = "text"},
-                  {.value = "", .form_control_type = "password"},
-                  {.value = "", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
+                  {.value = u"", .form_control_type = "password"},
               },
           .number_of_all_possible_passwords = 1,
       },
@@ -1646,7 +1656,7 @@ TEST(FormParserTest, UsernamePredictions) {
           .fields =
               {
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text",
                    .predicted_username = 2},
                   {.role_saving = ElementRole::USERNAME,
@@ -1790,12 +1800,11 @@ TEST(FormParserTest, CVC) {
       },
       {
           .description_for_logging = "Name of 'verification_type' matches the "
-                                     "CVC pattern, ignore that "
-                                     "one.",
+                                     "CVC pattern, ignore that one.",
           .fields =
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
-                  {.name = "verification_type",
+                  {.name = u"verification_type",
                    .form_control_type = "password"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
@@ -1811,8 +1820,70 @@ TEST(FormParserTest, CVC) {
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
-                   .name = "verification_type",
+                   .name = u"verification_type",
                    .form_control_type = "password"},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
+// The parser should avoid identifying Credit Card Number fields as passwords
+// if the server identifies the fields as CC Number fields. This should be
+// relatively safe as it should be unlikely that the server misclassifies a
+// field as a CC Number field.
+TEST(FormParserTest, CCNumber) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: CREDIT_CARD_NUMBER.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
+              },
+          .fallback_only = true,
+      },
+      {
+          .description_for_logging =
+              "Name of 'ccnumber' matches the CC Number regex pattern (but "
+              "there is no confirmation from the server), ignore that one.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .name = u"ccnumber",
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      // The following describes the status quo for documentation purposes. It
+      // is probably not desirable. If we have high confidence in all credit
+      // card fields, the password manager should probably ignore those fields
+      // entirely.
+      {
+          .description_for_logging = "Example where CC Number and Expiration "
+                                     "date are both password fields.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .name = u"cardholder",
+                   .form_control_type = "text",
+                   .prediction = {.type = autofill::CREDIT_CARD_NAME_FULL}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .name = u"ccnumber",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
+                  {.name = u"expiration",
+                   .form_control_type = "text",
+                   .prediction =
+                       {.type = autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .name = u"cvc",
+                   .form_control_type = "password",
+                   .prediction = {.type =
+                                      autofill::CREDIT_CARD_VERIFICATION_CODE}},
               },
           .fallback_only = true,
       },
@@ -1822,8 +1893,8 @@ TEST(FormParserTest, CVC) {
 // The parser should avoid identifying Social Security number and
 // one time password fields as passwords.
 TEST(FormParserTest, SSN_and_OTP) {
-  for (const char* field_name :
-       {"SocialSecurityNumber", "OneTimePassword", "SMS-token"}) {
+  for (const char16_t* field_name :
+       {u"SocialSecurityNumber", u"OneTimePassword", u"SMS-token"}) {
     CheckTestData({
         {
             .description_for_logging = "Field name matches the SSN/OTP pattern,"
@@ -2101,7 +2172,7 @@ TEST(FormParserTest, NoEmptyValues) {
           .fields =
               {
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text",
                    .prediction = {.type = autofill::USERNAME}},
                   {.role_saving = ElementRole::USERNAME,
@@ -2109,7 +2180,7 @@ TEST(FormParserTest, NoEmptyValues) {
                   {.role_saving = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
                   {.role_filling = ElementRole::NEW_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password",
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
               },
@@ -2122,13 +2193,13 @@ TEST(FormParserTest, NoEmptyValues) {
               {
                   {.role_filling = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role_saving = ElementRole::USERNAME,
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
@@ -2144,12 +2215,12 @@ TEST(FormParserTest, NoEmptyValues) {
                   {.role_saving = ElementRole::USERNAME,
                    .form_control_type = "text"},
                   {.role_filling = ElementRole::USERNAME,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = "password"},
                   {.role_filling = ElementRole::NEW_PASSWORD,
-                   .value = "",
+                   .value = u"",
                    .form_control_type = "password"},
               },
       },
@@ -2498,18 +2569,18 @@ TEST(FormParserTest, TypedValues) {
               {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
-                   .value = "js_username",
-                   .user_input = "typed_username",
+                   .value = u"js_username",
+                   .user_input = u"typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = "js_password",
-                   .user_input = "typed_password",
+                   .value = u"js_password",
+                   .user_input = u"typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
-                   .value = "js_new_password",
-                   .user_input = "typed_new_password",
+                   .value = u"js_new_password",
+                   .user_input = u"typed_new_password",
                    .form_control_type = "password"},
               },
       },
@@ -2521,18 +2592,40 @@ TEST(FormParserTest, TypedValues) {
               {
                   {.role = ElementRole::USERNAME,
                    .autocomplete_attribute = "username",
-                   .value = "",
-                   .user_input = "typed_username",
+                   .value = u"",
+                   .user_input = u"typed_username",
                    .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .autocomplete_attribute = "current-password",
-                   .value = "",
-                   .user_input = "typed_password",
+                   .value = u"",
+                   .user_input = u"typed_password",
                    .form_control_type = "password"},
                   {.role = ElementRole::NEW_PASSWORD,
                    .autocomplete_attribute = "new-password",
-                   .value = "",
-                   .user_input = "typed_new_password",
+                   .value = u"",
+                   .user_input = u"typed_new_password",
+                   .form_control_type = "password"},
+              },
+      },
+      {
+          .description_for_logging = "Form autocomplete with cleared by JavaScript values",
+          // Username autocomplete tests that typed values are taken as username, password and
+          // new password instead of values that are cleared by JavaScript.
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"",
+                   .user_input = u"typed_username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password",
+                   .value = u"",
+                   .user_input = u"typed_password",
+                   .form_control_type = "password"},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .autocomplete_attribute = "new-password",
+                   .value = u"",
+                   .user_input = u"typed_new_password",
                    .form_control_type = "password"},
               },
       },
@@ -2613,11 +2706,11 @@ TEST(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   // Create a form containing username, email, id, password, submit.
   const FormParsingTestCase form_desc = {
       .fields = {
-          {.name = "username", .form_control_type = "text"},
-          {.name = "email", .form_control_type = "text"},
-          {.name = "id", .form_control_type = "text"},
-          {.name = "password", .form_control_type = "password"},
-          {.name = "submit", .form_control_type = "submit"},
+          {.name = u"username", .form_control_type = "text"},
+          {.name = u"email", .form_control_type = "text"},
+          {.name = u"id", .form_control_type = "text"},
+          {.name = u"password", .form_control_type = "password"},
+          {.name = u"submit", .form_control_type = "submit"},
       }};
 
   FormPredictions no_predictions;
@@ -2649,6 +2742,243 @@ TEST(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
       predictions, processed_fields, Interactability::kCertain);
   ASSERT_TRUE(field_data);
   EXPECT_EQ(u"id", field_data->name);
+}
+
+// Tests that the form parser is not considering fields with values consisting
+// of one repeated non alphanumeric symbol for saving.
+TEST(FormParserTest, SkipHiddenValueField) {
+  std::vector<FormParsingTestCase> test_cases = {
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u"***********",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      },
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u"**",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      },
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u"••••••••",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      }};
+  for (const auto& form_desc : test_cases) {
+    FormPredictions no_predictions;
+    ParseResultIds dummy;
+    FormData form_data =
+        GetFormDataAndExpectation(form_desc, &no_predictions, &dummy, &dummy);
+    FormDataParser parser;
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
+    EXPECT_FALSE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
+  }
+}
+
+// Tests that the form parser is not considering fields with values consisting
+// of one repeated non alphanumeric symbol for saving.
+TEST(FormParserTest, DontSkipNotHiddenValues) {
+  std::vector<FormParsingTestCase> test_cases = {
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u"a*******a",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      },
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u".....*****",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      },
+      {
+          .fields =
+              {
+                  {.value = u"foo",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.value = u"0 0 0 0 0",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+      }};
+
+  for (const auto& form_desc : test_cases) {
+    FormPredictions no_predictions;
+    ParseResultIds dummy;
+    FormData form_data =
+        GetFormDataAndExpectation(form_desc, &no_predictions, &dummy, &dummy);
+    FormDataParser parser;
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling));
+    EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kSaving));
+  }
+}
+
+// Tests that 'new-password' autocomplete attribute is ignored when two
+// or more fields that have it have different values.
+TEST(FormParserTest, AutocompleteAttributesError) {
+  CheckTestData(
+      {{
+           .description_for_logging =
+               "Wrong autocomplete attributes, 2 fields.",
+           .fields =
+               {
+                   {.role_filling = ElementRole::NEW_PASSWORD,
+                    .role_saving = ElementRole::CURRENT_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"oldpass",
+                    .name = u"password1",
+                    .form_control_type = "password"},
+                   {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                    .role_saving = ElementRole::NEW_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password2",
+                    .form_control_type = "password"},
+               },
+       },
+       {
+           .description_for_logging =
+               "Wrong autocomplete attributes, 3 fields.",
+           .fields =
+               {
+                   {.role_filling = ElementRole::NEW_PASSWORD,
+                    .role_saving = ElementRole::CURRENT_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"oldpass",
+                    .name = u"password1",
+                    .form_control_type = "password"},
+                   {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                    .role_saving = ElementRole::NEW_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password2",
+                    .form_control_type = "password"},
+                   {.role_saving = ElementRole::CONFIRMATION_PASSWORD,
+                    .autocomplete_attribute = "new-password",
+                    .value = u"newpass",
+                    .name = u"password3",
+                    .form_control_type = "password"},
+               },
+       }});
+}
+
+// Tests that if the field is parsed as username based on server predictions,
+// than it cannot be picked as password based on local heuristics.
+TEST(FormParserTest, UsernameWithTypePasswordAndServerPredictions) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Username with server predictions and type 'password'",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"testusername",
+                   .name = u"field1",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::USERNAME}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"testpass",
+                   .name = u"field2",
+                   .form_control_type = "password"},
+              },
+      },
+  });
+}
+
+// Tests that if a field is marked as autofill="webauthn" then the
+// `accepts_webauthn_credentials` flag is set.
+TEST(FormParserTest, AcceptsWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging = "Field tagged with autofill=\"webauthn\"",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"luma",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
+// Tests that if there is a single field marked as autofill="webauthn" then the
+// form is parsed and the `accepts_webauthn_credentials` flag is set.
+// Regression test for crbug.com/1366006.
+TEST(FormParserTest, SingleFieldAcceptsWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Single field tagged with autofill=\"webauthn\"",
+          .fields =
+              {
+                  {.role_filling = ElementRole::WEBAUTHN,
+                   .autocomplete_attribute = "webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
+// Tests that if a field is marked as autofill="username webauthn" then the
+// `accepts_webauthn_credentials` flag is set.
+TEST(FormParserTest, AcceptsUsernameWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Field tagged with autofill=\"username webauthn\"",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "username webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"luma",
+                   .name = u"password",
+                   .form_control_type = "password"},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
 }
 
 }  // namespace

@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/mac/test/fake_av_capture_device_format.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,8 +31,7 @@ namespace media {
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      OutputsNv12WithoutScalingByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -76,7 +77,6 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingIsIgnoredWhenInCapturerScalingIsNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInCaptureConvertToNv12);
   // By default, kInCapturerScaling is false.
   EXPECT_FALSE(base::FeatureList::IsEnabled(kInCapturerScaling));
 
@@ -127,8 +127,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
 TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -183,8 +182,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, SpecifiedScalingOutputsNv12) {
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingCanChangeDuringCapture) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
@@ -254,8 +252,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 TEST(VideoCaptureDeviceAVFoundationMacTest,
      SpecifiedScalingUsesGoodSizesButNotBadSizes) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kInCaptureConvertToNv12, kInCapturerScaling}, {});
+  scoped_feature_list.InitAndEnableFeature(kInCapturerScaling);
 
   RunTestCase(base::BindOnce([] {
     VideoCaptureDeviceFactoryMac video_capture_device_factory;
@@ -266,8 +263,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
       return;
     }
     const auto& device_info = device_infos.front();
-    NSString* deviceId = [NSString
-        stringWithUTF8String:device_info.descriptor.device_id.c_str()];
+    NSString* deviceId =
+        base::SysUTF8ToNSString(device_info.descriptor.device_id);
     VideoCaptureFormat camera_format = device_info.supported_formats.front();
 
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
@@ -363,15 +360,15 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
                                     capture_resolution.height() * 2);
     // Bad resolution because it is the same as the captured resolution.
     scaled_resolutions.push_back(capture_resolution);
+    // Good resolution because it causes downscale in one dimension (stretch).
+    scaled_resolutions.emplace_back(capture_resolution.width() / 2,
+                                    capture_resolution.height());
     // Good resolution because it causes downscale in both dimensions.
     scaled_resolutions.emplace_back(capture_resolution.width() / 2,
                                     capture_resolution.height() / 2);
     // Good resolution because it causes downscale in both dimensions.
     scaled_resolutions.emplace_back(capture_resolution.width() / 4,
                                     capture_resolution.height() / 4);
-    // Good resolution because it causes downscale in one dimension (stretch).
-    scaled_resolutions.emplace_back(capture_resolution.width() / 2,
-                                    capture_resolution.height());
     [captureDevice setScaledResolutions:scaled_resolutions];
 
     // Create a blank NV12 pixel buffer that we pretend was captured.
@@ -630,6 +627,41 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
                                        colorSpace:gfx::ColorSpace::CreateSRGB()
                                         timestamp:base::TimeDelta()];
         })];
+  }));
+}
+
+TEST(VideoCaptureDeviceAVFoundationMacTest, FrameRateFloatInaccuracyIsHandled) {
+  // See crbug/1299812.
+  RunTestCase(base::BindOnce([] {
+    double max_frame_rate = 30.000030;
+    AVCaptureDeviceFormat* format1 =
+        [[FakeAVCaptureDeviceFormat alloc] initWithWidth:100
+                                                  height:100
+                                                  fourCC:'420v'
+                                               frameRate:max_frame_rate];
+    AVCaptureDeviceFormat* format2 =
+        [[FakeAVCaptureDeviceFormat alloc] initWithWidth:100
+                                                  height:100
+                                                  fourCC:'420v'
+                                               frameRate:10];
+
+    NSArray<AVCaptureDeviceFormat*>* formats = @[ format1, format2 ];
+    // Cast the actual max_frame_rate to a float, to match what would be
+    // requested once the true max has been cast when crossing our mojo etc
+    // interfaces which use float rather than double.
+    float desired_frame_rate = (float)max_frame_rate;
+    // For these values, the float version will be higher than the double max,
+    // due to loss of precision.
+    ASSERT_LT(max_frame_rate, desired_frame_rate);
+
+    AVCaptureDeviceFormat* chosen_format =
+        FindBestCaptureFormat(formats, 100, 100, desired_frame_rate);
+
+    ASSERT_EQ(1UL, [[chosen_format videoSupportedFrameRateRanges] count]);
+    // The actual max_frame_rate should be chosen, even though the desired rate
+    // was very slightly larger.
+    EXPECT_EQ(max_frame_rate, [[[chosen_format videoSupportedFrameRateRanges]
+                                  firstObject] minFrameRate]);
   }));
 }
 

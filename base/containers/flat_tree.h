@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,16 @@
 #define BASE_CONTAINERS_FLAT_TREE_H_
 
 #include <algorithm>
+#include <array>
+#include <initializer_list>
 #include <iterator>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/not_fn.h"
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
-#include "base/template_util.h"
 
 namespace base {
 
@@ -50,7 +50,7 @@ using is_multipass = std::is_base_of<
 template <typename T, typename = void>
 struct IsTransparentCompare : std::false_type {};
 template <typename T>
-struct IsTransparentCompare<T, void_t<typename T::is_transparent>>
+struct IsTransparentCompare<T, std::void_t<typename T::is_transparent>>
     : std::true_type {};
 
 // Helper inspired by C++20's std::to_array to convert a C-style array to a
@@ -70,6 +70,16 @@ constexpr std::array<U, N> ToArrayImpl(const T (&data)[N],
 template <typename U, typename T, size_t N>
 constexpr std::array<U, N> ToArray(const T (&data)[N]) {
   return ToArrayImpl<U>(data, std::make_index_sequence<N>());
+}
+
+// Helper that calls `container.reserve(std::size(source))`.
+template <typename T, typename U>
+constexpr void ReserveIfSupported(const T&, const U&) {}
+
+template <typename T, typename U>
+auto ReserveIfSupported(T& container, const U& source)
+    -> decltype(container.reserve(std::size(source)), void()) {
+  container.reserve(std::size(source));
 }
 
 // std::pair's operator= is not constexpr prior to C++20. Thus we need this
@@ -126,7 +136,7 @@ constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
 // sorted vector as the backing store. Do not use directly.
 //
 // The use of "value" in this is like std::map uses, meaning it's the thing
-// contained (in the case of map it's a <Kay, Mapped> pair). The Key is how
+// contained (in the case of map it's a <Key, Mapped> pair). The Key is how
 // things are looked up. In the case of a set, Key == Value. In the case of
 // a map, the Key is a component of a Value.
 //
@@ -814,10 +824,12 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Provide a convenience lambda to obtain an iterator pointing past the last
   // old element. This needs to be dymanic due to possible re-allocations.
-  auto middle = [this, size = size()] { return std::next(begin(), size); };
+  auto middle = [this, size = size()] {
+    return std::next(begin(), static_cast<difference_type>(size));
+  };
 
   // For batch updates initialize the first insertion point.
-  difference_type pos_first_new = size();
+  auto pos_first_new = static_cast<difference_type>(size());
 
   // Loop over the input range while appending new values and overwriting
   // existing ones, if applicable. Keep track of the first insertion point.
@@ -893,7 +905,8 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(const K& val)
     -> size_type {
   auto eq_range = equal_range(val);
-  auto res = std::distance(eq_range.first, eq_range.second);
+  auto res =
+      static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
   erase(eq_range.first, eq_range.second);
   return res;
 }
@@ -930,14 +943,14 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::count(
     const K& key) const -> size_type {
   auto eq_range = equal_range(key);
-  return std::distance(eq_range.first, eq_range.second);
+  return static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(const K& key)
     -> iterator {
-  return const_cast_it(base::as_const(*this).find(key));
+  return const_cast_it(std::as_const(*this).find(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -960,7 +973,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
     const K& key) -> std::pair<iterator, iterator> {
-  auto res = base::as_const(*this).equal_range(key);
+  auto res = std::as_const(*this).equal_range(key);
   return {const_cast_it(res.first), const_cast_it(res.second)};
 }
 
@@ -981,7 +994,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const K& key) -> iterator {
-  return const_cast_it(base::as_const(*this).lower_bound(key));
+  return const_cast_it(std::as_const(*this).lower_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1002,7 +1015,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const K& key) -> iterator {
-  return const_cast_it(base::as_const(*this).upper_bound(key));
+  return const_cast_it(std::as_const(*this).upper_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

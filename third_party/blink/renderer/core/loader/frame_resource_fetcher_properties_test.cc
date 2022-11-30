@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace blink {
 class FrameResourceFetcherPropertiesTest : public testing::Test {
  public:
   FrameResourceFetcherPropertiesTest()
-      : dummy_page_holder_(std::make_unique<DummyPageHolder>(IntSize(1, 1))),
+      : dummy_page_holder_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))),
         properties_(MakeGarbageCollected<FrameResourceFetcherProperties>(
             *dummy_page_holder_->GetDocument().Loader(),
             dummy_page_holder_->GetDocument())) {}

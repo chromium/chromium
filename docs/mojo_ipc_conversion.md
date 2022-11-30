@@ -273,7 +273,7 @@ Occasionally it is useful to do partial IPC conversions, where you want to
 convert a message to a Mojo interface method but you don't want to necessarily
 convert every structure passed by the message. In this case, you can leverage
 Mojo's
-[type-mapping](https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/bindings/README.md#Type-Mapping)
+[type-mapping](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings/README.md#Type-Mapping)
 system to repurpose existing `IPC::ParamTraits`.
 
 *** aside
@@ -420,7 +420,7 @@ documentation.
 ### Binding callbacks
 
 Mojo methods that return a value take an instance of `base::OnceCallback`.
-Use `WTF::Bind()` and an appropriate wrapper function depending on the type of
+Use `WTF::BindOnce()` and an appropriate wrapper function depending on the type of
 object and the callback.
 
 For garbage-collected (Oilpan) classes owning the `mojo::Remote`, it is recommended
@@ -433,11 +433,11 @@ the response is received, use `WrapWeakPersistent(this)` for binding the respons
 
 ``` cpp
 // src/third_party/blink/renderer/modules/device_orientation/device_sensor_entry.cc
-sensor_.set_connection_error_handler(WTF::Bind(
+sensor_.set_connection_error_handler(WTF::BindOnce(
     &DeviceSensorEntry::HandleSensorError, WrapWeakPersistent(this)));
 sensor_->ConfigureReadingChangeNotifications(/*enabled=*/false);
 sensor_->AddConfiguration(
-    std::move(config), WTF::Bind(&DeviceSensorEntry::OnSensorAddConfiguration,
+    std::move(config), WTF::BindOnce(&DeviceSensorEntry::OnSensorAddConfiguration,
                                  WrapWeakPersistent(this)));
 ```
 
@@ -448,7 +448,7 @@ use `WrapPersistent(this)` to keep the object alive:
 // src/third_party/blink/renderer/modules/nfc/nfc.cc
 ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
 ... 
-nfc_->CancelAllWatches(WTF::Bind(&NFC::OnRequestCompleted,
+nfc_->CancelAllWatches(WTF::BindOnce(&NFC::OnRequestCompleted,
                                  WrapPersistent(this),
                                  WrapPersistent(resolver)));
 ```

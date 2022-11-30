@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/external_loader.h"
@@ -49,6 +48,9 @@ class ExternalPrefLoader : public ExternalLoader {
   // |options| is combination of |Options|.
   ExternalPrefLoader(int base_path_id, int options, Profile* profile);
 
+  ExternalPrefLoader(const ExternalPrefLoader&) = delete;
+  ExternalPrefLoader& operator=(const ExternalPrefLoader&) = delete;
+
   const base::FilePath GetBaseCrxFilePath() override;
 
  protected:
@@ -78,7 +80,7 @@ class ExternalPrefLoader : public ExternalLoader {
   // |path| is only used for informational purposes (outputted when an error
   // occurs). An empty dictionary is returned in case of failure (e.g. invalid
   // path or json content).
-  static std::unique_ptr<base::DictionaryValue> ExtractExtensionPrefs(
+  static base::Value::Dict ExtractExtensionPrefs(
       base::ValueDeserializer* deserializer,
       const base::FilePath& path);
 
@@ -98,14 +100,14 @@ class ExternalPrefLoader : public ExternalLoader {
   // regarding which extensions to install. |prefs| will be modified to
   // receive the extracted extension information.
   // Must be called from the File thread.
-  void ReadExternalExtensionPrefFile(base::DictionaryValue* prefs);
+  void ReadExternalExtensionPrefFile(base::Value::Dict& prefs);
 
   // Extracts the information contained in standalone external extension
   // json files (<extension id>.json) regarding what external extensions
   // to install. |prefs| will be modified to receive the extracted extension
   // information.
   // Must be called from the File thread.
-  void ReadStandaloneExtensionPrefFiles(base::DictionaryValue* prefs);
+  void ReadStandaloneExtensionPrefFiles(base::Value::Dict& prefs);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnPrioritySyncReady(PrioritySyncReadyWaiter* waiter);
@@ -117,7 +119,7 @@ class ExternalPrefLoader : public ExternalLoader {
 
   // Profile that loads these external prefs.
   // Needed for waiting for waiting priority sync.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // User type determined by |profile_|. Used to filter extensions. In some unit
   // tests may not be set.
@@ -129,8 +131,6 @@ class ExternalPrefLoader : public ExternalLoader {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<PrioritySyncReadyWaiter>> pending_waiter_list_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoader);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,7 +16,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/threading/thread_restrictions.h"
@@ -32,7 +32,7 @@ namespace {
 // RegEnumValue() reports the number of characters from the name that were
 // written to the buffer, not how many there are. This constant is the maximum
 // name size, such that a buffer with this size should read any name.
-const DWORD MAX_REGISTRY_NAME_SIZE = 16384;
+constexpr DWORD MAX_REGISTRY_NAME_SIZE = 16384;
 
 // Registry values are read as BYTE* but can have wchar_t* data whose last
 // wchar_t is truncated. This function converts the reported |byte_size| to
@@ -42,7 +42,9 @@ inline DWORD to_wchar_size(DWORD byte_size) {
 }
 
 // Mask to pull WOW64 access flags out of REGSAM access.
-const REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
+constexpr REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
+
+constexpr DWORD kInvalidIterValue = static_cast<DWORD>(-1);
 
 }  // namespace
 
@@ -50,14 +52,18 @@ const REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
 class RegKey::Watcher : public ObjectWatcher::Delegate {
  public:
   Watcher() = default;
+
+  Watcher(const Watcher&) = delete;
+  Watcher& operator=(const Watcher&) = delete;
+
   ~Watcher() override = default;
 
   bool StartWatching(HKEY key, ChangeCallback callback);
 
   // ObjectWatcher::Delegate:
   void OnObjectSignaled(HANDLE object) override {
-    DCHECK(watch_event_.IsValid());
-    DCHECK_EQ(watch_event_.Get(), object);
+    DCHECK(watch_event_.is_valid());
+    DCHECK_EQ(watch_event_.get(), object);
     std::move(callback_).Run();
   }
 
@@ -65,33 +71,34 @@ class RegKey::Watcher : public ObjectWatcher::Delegate {
   ScopedHandle watch_event_;
   ObjectWatcher object_watcher_;
   ChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
 
 bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   DCHECK(key);
   DCHECK(callback_.is_null());
 
-  if (!watch_event_.IsValid())
+  if (!watch_event_.is_valid())
     watch_event_.Set(CreateEvent(nullptr, TRUE, FALSE, nullptr));
 
-  if (!watch_event_.IsValid())
+  if (!watch_event_.is_valid())
     return false;
 
-  const DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
-                       REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
+                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    filter |= REG_NOTIFY_THREAD_AGNOSTIC;
 
   // Watch the registry key for a change of value.
   LONG result =
       RegNotifyChangeKeyValue(key, /*bWatchSubtree=*/TRUE, filter,
-                              watch_event_.Get(), /*fAsynchronous=*/TRUE);
+                              watch_event_.get(), /*fAsynchronous=*/TRUE);
   if (result != ERROR_SUCCESS) {
     watch_event_.Close();
     return false;
   }
 
   callback_ = std::move(callback);
-  return object_watcher_.StartWatchingOnce(watch_event_.Get(), this);
+  return object_watcher_.StartWatchingOnce(watch_event_.get(), this);
 }
 
 // RegKey ----------------------------------------------------------------------
@@ -252,9 +259,17 @@ DWORD RegKey::GetValueCount() const {
   return (result == ERROR_SUCCESS) ? count : 0;
 }
 
-LONG RegKey::GetValueNameAt(int index, std::wstring* name) const {
+FILETIME RegKey::GetLastWriteTime() const {
+  FILETIME last_write_time;
+  LONG result = RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr,
+                                nullptr, nullptr, nullptr, nullptr, nullptr,
+                                nullptr, &last_write_time);
+  return (result == ERROR_SUCCESS) ? last_write_time : FILETIME{};
+}
+
+LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   wchar_t buf[256];
-  DWORD bufsize = size(buf);
+  DWORD bufsize = std::size(buf);
   LONG r = ::RegEnumValue(key_, index, buf, &bufsize, nullptr, nullptr, nullptr,
                           nullptr);
   if (r == ERROR_SUCCESS)
@@ -559,11 +574,12 @@ DWORD RegistryValueIterator::ValueCount() const {
 }
 
 bool RegistryValueIterator::Valid() const {
-  return key_ != nullptr && index_ >= 0;
+  return key_ != nullptr && index_ != kInvalidIterValue;
 }
 
 void RegistryValueIterator::operator++() {
-  --index_;
+  if (index_ != kInvalidIterValue)
+    --index_;
   Read();
 }
 
@@ -637,17 +653,18 @@ DWORD RegistryKeyIterator::SubkeyCount() const {
 }
 
 bool RegistryKeyIterator::Valid() const {
-  return key_ != nullptr && index_ >= 0;
+  return key_ != nullptr && index_ != kInvalidIterValue;
 }
 
 void RegistryKeyIterator::operator++() {
-  --index_;
+  if (index_ != kInvalidIterValue)
+    --index_;
   Read();
 }
 
 bool RegistryKeyIterator::Read() {
   if (Valid()) {
-    DWORD ncount = static_cast<DWORD>(size(name_));
+    DWORD ncount = static_cast<DWORD>(std::size(name_));
     FILETIME written;
     LONG r = ::RegEnumKeyEx(key_, index_, name_, &ncount, nullptr, nullptr,
                             nullptr, &written);

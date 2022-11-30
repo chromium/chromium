@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/browsing_data/content/service_worker_helper.h"
 
 namespace content {
@@ -24,6 +23,9 @@ namespace browsing_data {
 class MockServiceWorkerHelper : public ServiceWorkerHelper {
  public:
   explicit MockServiceWorkerHelper(content::BrowserContext* browser_context);
+
+  MockServiceWorkerHelper(const MockServiceWorkerHelper&) = delete;
+  MockServiceWorkerHelper& operator=(const MockServiceWorkerHelper&) = delete;
 
   // Adds some ServiceWorkerInfo samples.
   void AddServiceWorkerSamples();
@@ -48,8 +50,6 @@ class MockServiceWorkerHelper : public ServiceWorkerHelper {
   FetchCallback callback_;
   std::map<url::Origin, bool> origins_;
   std::list<content::StorageUsageInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerHelper);
 };
 
 }  // namespace browsing_data

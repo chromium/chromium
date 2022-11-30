@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
@@ -30,10 +31,18 @@ class BulkLeakCheckService::MetricsReporter {
   base::ElapsedTimer timer_since_start_;
   size_t credential_count_ = 0;
   size_t leaked_credential_count_ = 0;
+  bool error_or_canceled_ = false;
 };
 
 BulkLeakCheckService::MetricsReporter::~MetricsReporter() {
-  if (credential_count_) {
+  if (!credential_count_)
+    return;
+
+  if (error_or_canceled_) {
+    base::UmaHistogramCounts1000(
+        "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
+        credential_count_);
+  } else {
     base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.Time",
                                   timer_since_start_.Elapsed());
     base::UmaHistogramTimes("PasswordManager.BulkCheck.TimePerCredential",
@@ -57,20 +66,16 @@ void BulkLeakCheckService::MetricsReporter::OnCredentialChecked(
 }
 
 void BulkLeakCheckService::MetricsReporter::OnCancelCheck() {
-  base::UmaHistogramCounts1000("PasswordManager.BulkCheck.CanceledCredentials",
-                               credential_count_);
   base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.CanceledTime",
                                 timer_since_start_.Elapsed());
 
-  credential_count_ = 0;
-  leaked_credential_count_ = 0;
+  error_or_canceled_ = true;
 }
 
 void BulkLeakCheckService::MetricsReporter::OnError(LeakDetectionError error) {
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.BulkCheck.Error", error);
 
-  credential_count_ = 0;
-  leaked_credential_count_ = 0;
+  error_or_canceled_ = true;
 }
 
 BulkLeakCheckService::BulkLeakCheckService(

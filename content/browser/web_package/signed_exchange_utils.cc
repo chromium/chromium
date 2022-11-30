@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -23,19 +23,25 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
 namespace signed_exchange_utils {
 
 namespace {
-base::Optional<base::Time> g_verification_time_for_testing;
+constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
+absl::optional<base::Time> g_verification_time_for_testing;
 }  // namespace
+
+void RecordLoadResultHistogram(SignedExchangeLoadResult result) {
+  base::UmaHistogramEnumeration(kLoadResultHistogram, result);
+}
 
 void ReportErrorAndTraceEvent(
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::string& error_message,
-    base::Optional<SignedExchangeError::FieldIndexPair> error_field) {
+    absl::optional<SignedExchangeError::FieldIndexPair> error_field) {
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                        "SignedExchangeError", TRACE_EVENT_SCOPE_THREAD, "error",
                        error_message);
@@ -77,7 +83,7 @@ bool ShouldHandleAsSignedHTTPExchange(
   return true;
 }
 
-base::Optional<SignedExchangeVersion> GetSignedExchangeVersion(
+absl::optional<SignedExchangeVersion> GetSignedExchangeVersion(
     const std::string& content_type) {
   // https://wicg.github.io/webpackage/loading.html#signed-exchange-version
   // Step 1. Let mimeType be the supplied MIME type of response. [spec text]
@@ -89,7 +95,7 @@ base::Optional<SignedExchangeVersion> GetSignedExchangeVersion(
   const std::string essence = base::ToLowerASCII(base::TrimWhitespaceASCII(
       content_type.substr(0, semicolon), base::TRIM_ALL));
   if (essence != "application/signed-exchange")
-    return base::nullopt;
+    return absl::nullopt;
 
   // Step 4.Let params be mimeType's parameters. [spec text]
   std::map<std::string, std::string> params;
@@ -101,17 +107,17 @@ base::Optional<SignedExchangeVersion> GetSignedExchangeVersion(
       params[base::ToLowerASCII(name)] = parser.value();
     }
     if (!parser.valid())
-      return base::nullopt;
+      return absl::nullopt;
   }
   // Step 5. If params["v"] exists, return it. Otherwise, return undefined.
   //        [spec text]
   auto iter = params.find("v");
   if (iter != params.end()) {
     if (iter->second == "b3")
-      return base::make_optional(SignedExchangeVersion::kB3);
-    return base::make_optional(SignedExchangeVersion::kUnknown);
+      return absl::make_optional(SignedExchangeVersion::kB3);
+    return absl::make_optional(SignedExchangeVersion::kUnknown);
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 SignedExchangeLoadResult GetLoadResultFromSignatureVerifierResult(
@@ -254,9 +260,9 @@ int MakeRequestID() {
   // uninitialized variables.) This way, we no longer have the unlikely (but
   // observed in the real world!) event where we have two requests with the same
   // request_id_.
-  static base::NoDestructor<std::atomic_int> request_id(-1);
+  static std::atomic_int request_id(-1);
 
-  return --*request_id;
+  return --request_id;
 }
 
 base::Time GetVerificationTime() {
@@ -266,8 +272,18 @@ base::Time GetVerificationTime() {
 }
 
 void SetVerificationTimeForTesting(
-    base::Optional<base::Time> verification_time_for_testing) {
+    absl::optional<base::Time> verification_time_for_testing) {
   g_verification_time_for_testing = verification_time_for_testing;
+}
+
+bool IsCookielessOnlyExchange(const net::HttpResponseHeaders& inner_headers) {
+  std::string value;
+  size_t iter = 0;
+  while (inner_headers.EnumerateHeader(&iter, "Vary", &value)) {
+    if (base::EqualsCaseInsensitiveASCII(value, "cookie"))
+      return true;
+  }
+  return false;
 }
 
 }  // namespace signed_exchange_utils

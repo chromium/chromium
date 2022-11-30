@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,9 @@
 #include "components/consent_auditor/consent_auditor_impl.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/consent_auditor/consent_sync_bridge_impl.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/version_info/version_info.h"
@@ -44,9 +42,7 @@ consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
 }
 
 ConsentAuditorFactory::ConsentAuditorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ConsentAuditor",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ConsentAuditor") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 

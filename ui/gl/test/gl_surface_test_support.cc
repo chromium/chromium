@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
@@ -22,28 +22,20 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(USE_X11)
-#endif
-
-#if defined(USE_X11) || defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace gl {
 
 namespace {
-void InitializeOneOffHelper(bool init_extensions) {
+
+GLDisplay* InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
@@ -56,36 +48,18 @@ void InitializeOneOffHelper(bool init_extensions) {
     use_software_gl = false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android we always use hardware GL.
   use_software_gl = false;
 #endif
 
-  std::vector<GLImplementation> allowed_impls =
+  std::vector<GLImplementationParts> allowed_impls =
       init::GetAllowedGLImplementations();
   DCHECK(!allowed_impls.empty());
 
-  GLImplementationParts impl = GLImplementationParts(allowed_impls[0]);
+  GLImplementationParts impl = allowed_impls[0];
   if (use_software_gl) {
-    impl = gl::GetLegacySoftwareGLImplementation();
-
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-#if defined(USE_OZONE)
-    if (!features::IsUsingOzonePlatform())
-#endif
-    {
-      // If ANGLE is available use it with SwiftShader Vulkan instead of using
-      // SwiftShader GL
-      for (auto i : allowed_impls) {
-        if (i == kGLImplementationEGLANGLE) {
-          impl = gl::GetSoftwareGLImplementation();
-          base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-              switches::kUseANGLE, kANGLEImplementationSwiftShaderName);
-          break;
-        }
-      }
-    }
-#endif
+    impl = gl::GetSoftwareGLImplementation();
   }
 
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
@@ -96,71 +70,70 @@ void InitializeOneOffHelper(bool init_extensions) {
 
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
-  CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, init_extensions));
+  GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
+      fallback_to_software_gl, disable_gl_drawing, init_extensions,
+      /*system_device_id=*/0);
+  CHECK(display);
+  return display;
 }
 }  // namespace
 
 // static
-void GLSurfaceTestSupport::InitializeOneOff() {
-  InitializeOneOffHelper(true);
+GLDisplay* GLSurfaceTestSupport::InitializeOneOff() {
+  return InitializeOneOffHelper(true);
 }
 
 // static
-void GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
-  InitializeOneOffHelper(false);
+GLDisplay* GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
+  return InitializeOneOffHelper(false);
 }
 
 // static
-void GLSurfaceTestSupport::InitializeOneOffImplementation(
+GLDisplay* GLSurfaceTestSupport::InitializeOneOffImplementation(
     GLImplementationParts impl,
     bool fallback_to_software_gl) {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
 
-  // This method may be called multiple times in the same process to set up
-  // bindings in different ways.
-  init::ShutdownGL(false);
-
   bool disable_gl_drawing = false;
+  bool init_extensions = true;
 
   CHECK(gl::init::InitializeStaticGLBindingsImplementation(
       impl, fallback_to_software_gl));
-  CHECK(gl::init::InitializeGLOneOffPlatformImplementation(
-      fallback_to_software_gl, disable_gl_drawing, true));
+  GLDisplay* display = gl::init::InitializeGLOneOffPlatformImplementation(
+      fallback_to_software_gl, disable_gl_drawing, init_extensions,
+      /*system_device_id=*/0);
+  CHECK(display);
+  return display;
 }
 
 // static
-void GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
+GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationMockGL),
-                                 false);
+  return InitializeOneOffImplementation(
+      GLImplementationParts(kGLImplementationMockGL), false);
 }
 
 // static
-void GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
+GLDisplay* GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForGPU(params);
-  }
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationStubGL),
-                                 false);
+  return InitializeOneOffImplementation(
+      GLImplementationParts(kGLImplementationStubGL), false);
 }
 
 // static
-void GLSurfaceTestSupport::ShutdownGL() {
-  init::ShutdownGL(false);
+void GLSurfaceTestSupport::ShutdownGL(GLDisplay* display) {
+  init::ShutdownGL(display, false);
 }
 
 }  // namespace gl

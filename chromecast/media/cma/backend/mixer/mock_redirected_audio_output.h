@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/audio/mixer_service/redirected_audio_connection.h"
 #include "chromecast/public/volume_control.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,6 +28,11 @@ class MockRedirectedAudioOutput
  public:
   explicit MockRedirectedAudioOutput(
       const mixer_service::RedirectedAudioConnection::Config& config);
+
+  MockRedirectedAudioOutput(const MockRedirectedAudioOutput&) = delete;
+  MockRedirectedAudioOutput& operator=(const MockRedirectedAudioOutput&) =
+      delete;
+
   ~MockRedirectedAudioOutput() override;
 
   ::media::AudioBus* last_buffer() const { return last_buffer_.get(); }
@@ -50,8 +54,6 @@ class MockRedirectedAudioOutput
 
   std::unique_ptr<::media::AudioBus> last_buffer_;
   int64_t last_output_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRedirectedAudioOutput);
 };
 
 }  // namespace media

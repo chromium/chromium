@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
-
-class GaiaPasswordChangedView;
+namespace ash {
 
 // Controller for the tpm error screen.
 class GaiaPasswordChangedScreen : public BaseScreen {
@@ -28,8 +28,9 @@ class GaiaPasswordChangedScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  explicit GaiaPasswordChangedScreen(const ScreenExitCallback& exit_callback,
-                                     GaiaPasswordChangedView* view);
+  explicit GaiaPasswordChangedScreen(
+      const ScreenExitCallback& exit_callback,
+      base::WeakPtr<GaiaPasswordChangedView> view);
   GaiaPasswordChangedScreen(const GaiaPasswordChangedScreen&) = delete;
   GaiaPasswordChangedScreen& operator=(const GaiaPasswordChangedScreen&) =
       delete;
@@ -47,10 +48,6 @@ class GaiaPasswordChangedScreen : public BaseScreen {
     kMaxValue = kIncorrectOldPassword
   };
 
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(GaiaPasswordChangedView* view);
-
   void MigrateUserData(const std::string& old_password);
 
   void Configure(const AccountId& account_id, bool after_incorrect_attempt);
@@ -59,7 +56,7 @@ class GaiaPasswordChangedScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void CancelPasswordChangedFlow();
   void OnCookiesCleared();
@@ -67,12 +64,18 @@ class GaiaPasswordChangedScreen : public BaseScreen {
   AccountId account_id_;
   bool show_error_ = false;
 
-  GaiaPasswordChangedView* view_ = nullptr;
+  base::WeakPtr<GaiaPasswordChangedView> view_;
   ScreenExitCallback exit_callback_;
 
   base::WeakPtrFactory<GaiaPasswordChangedScreen> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::GaiaPasswordChangedScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GAIA_PASSWORD_CHANGED_SCREEN_H_

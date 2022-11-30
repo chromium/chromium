@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL detaching the iframe during the cancel event promise_test: Unhandled rejection with value: object "TypeError: i.contentWindow.CloseWatcher is not a constructor"
+FAIL detaching the iframe during the close event promise_test: Unhandled rejection with value: object "TypeError: i.contentWindow.CloseWatcher is not a constructor"
+FAIL detaching the iframe then calling destroy() promise_test: Unhandled rejection with value: object "TypeError: i.contentWindow.CloseWatcher is not a constructor"
+FAIL detaching the iframe then calling close() promise_test: Unhandled rejection with value: object "TypeError: i.contentWindow.CloseWatcher is not a constructor"
+FAIL detaching the iframe then constructing a CloseWatcher assert_throws_dom: function "() => new iCloseWatcher()" threw object "TypeError: iCloseWatcher is not a constructor" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+Harness: the test ran to completion.
+

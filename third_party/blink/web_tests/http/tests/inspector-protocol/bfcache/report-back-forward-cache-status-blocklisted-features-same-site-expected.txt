@@ -1,0 +1,52 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : IdleManager
+            type : SupportPending
+        }
+        [1] : {
+            reason : BrowsingInstanceNotSwapped
+            type : Circumstantial
+        }
+    ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : IdleManager
+                type : SupportPending
+            }
+            [1] : {
+                reason : BrowsingInstanceNotSwapped
+                type : Circumstantial
+            }
+        ]
+        url : https://devtools.test:8443/inspector-protocol/resources/empty.html
+    }
+}
+{
+    frameId : <string>
+    loaderId : <string>
+    notRestoredExplanations : [
+        [0] : {
+            reason : BrowsingInstanceNotSwapped
+            type : Circumstantial
+        }
+    ]
+    notRestoredExplanationsTree : {
+        children : [
+        ]
+        explanations : [
+            [0] : {
+                reason : BrowsingInstanceNotSwapped
+                type : Circumstantial
+            }
+        ]
+        url : https://devtools.test:8443/inspector-protocol/resources/hellow-world.html
+    }
+}
+

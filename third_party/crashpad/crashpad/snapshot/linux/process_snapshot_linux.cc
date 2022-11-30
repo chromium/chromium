@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "util/linux/exception_information.h"
 
 namespace crashpad {
@@ -39,10 +40,12 @@ bool ProcessSnapshotLinux::Initialize(PtraceConnection* connection) {
     return false;
   }
 
+  client_id_.InitializeToZero();
   system_.Initialize(&process_reader_, &snapshot_time_);
 
-  InitializeThreads();
   InitializeModules();
+  GetCrashpadOptionsInternal((&options_));
+  InitializeThreads();
   InitializeAnnotations();
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
@@ -80,11 +83,17 @@ bool ProcessSnapshotLinux::InitializeException(
     info.thread_id = exception_thread_id;
   }
 
+  uint32_t* budget_remaining_pointer =
+      options_.gather_indirectly_referenced_memory == TriState::kEnabled
+          ? &options_.indirectly_referenced_memory_cap
+          : nullptr;
+
   exception_.reset(new internal::ExceptionSnapshotLinux());
   if (!exception_->Initialize(&process_reader_,
                               info.siginfo_address,
                               info.context_address,
-                              info.thread_id)) {
+                              info.thread_id,
+                              budget_remaining_pointer)) {
     exception_.reset();
     return false;
   }
@@ -100,7 +109,7 @@ bool ProcessSnapshotLinux::InitializeException(
 
       auto exc_thread_snapshot =
           std::make_unique<internal::ThreadSnapshotLinux>();
-      if (!exc_thread_snapshot->Initialize(&process_reader_, thread)) {
+      if (!exc_thread_snapshot->Initialize(&process_reader_, thread, nullptr)) {
         return false;
       }
 
@@ -124,7 +133,11 @@ bool ProcessSnapshotLinux::InitializeException(
 void ProcessSnapshotLinux::GetCrashpadOptions(
     CrashpadInfoClientOptions* options) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  *options = options_;
+}
 
+void ProcessSnapshotLinux::GetCrashpadOptionsInternal(
+    CrashpadInfoClientOptions* options) {
   CrashpadInfoClientOptions local_options;
 
   for (const auto& module : modules_) {
@@ -262,10 +275,17 @@ const ProcessMemory* ProcessSnapshotLinux::Memory() const {
 void ProcessSnapshotLinux::InitializeThreads() {
   const std::vector<ProcessReaderLinux::Thread>& process_reader_threads =
       process_reader_.Threads();
+  uint32_t* budget_remaining_pointer =
+      options_.gather_indirectly_referenced_memory == TriState::kEnabled
+          ? &options_.indirectly_referenced_memory_cap
+          : nullptr;
+
   for (const ProcessReaderLinux::Thread& process_reader_thread :
        process_reader_threads) {
     auto thread = std::make_unique<internal::ThreadSnapshotLinux>();
-    if (thread->Initialize(&process_reader_, process_reader_thread)) {
+    if (thread->Initialize(&process_reader_,
+                           process_reader_thread,
+                           budget_remaining_pointer)) {
       threads_.push_back(std::move(thread));
     }
   }
@@ -287,7 +307,7 @@ void ProcessSnapshotLinux::InitializeModules() {
 }
 
 void ProcessSnapshotLinux::InitializeAnnotations() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const std::string& abort_message = process_reader_.AbortMessage();
   if (!abort_message.empty()) {
     annotations_simple_map_["abort_message"] = abort_message;

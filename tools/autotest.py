@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Builds and runs a test by filename.
@@ -53,14 +53,16 @@ _OTHER_TEST_TARGETS = [
 ]
 
 _TEST_TARGET_REGEX = re.compile(
-    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests)$')
+    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests|' +
+    r'_wpr_tests)$')
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include
 # files that use <...> for #includes instead of quotes.
-GTEST_INCLUDE_REGEX = re.compile(r'#include.*(gtest|gmock|_test_utils)\.h("|>)')
+GTEST_INCLUDE_REGEX = re.compile(
+    r'#include.*(gtest|gmock|_test_utils|browser_test)\.h("|>)')
 
 
 def ExitWithMessage(*args):
@@ -347,13 +349,21 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
   return (test_targets, used_cache)
 
 
-def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
+def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
+                   no_try_android_wrappers, no_fast_local_dev):
+
   for target in targets:
+
     # Look for the Android wrapper script first.
     path = os.path.join(out_dir, 'bin', f'run_{target}')
-    if not os.path.isfile(path):
-      # Otherwise, use the Desktop target which is an executable.
+    if no_try_android_wrappers or not os.path.isfile(path):
+      # If the wrapper is not found or disabled use the Desktop target
+      # which is an executable.
       path = os.path.join(out_dir, target)
+    elif not no_fast_local_dev:
+      # Usually want this flag when developing locally.
+      extra_args = extra_args + ['--fast-local-dev']
+
     cmd = [path, f'--gtest_filter={gtest_filter}'] + extra_args
     print('Running test: ' + ' '.join(cmd))
     if not dry_run:
@@ -362,7 +372,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
 
 def BuildCppTestFilter(filenames, line):
   make_filter_command = [
-      sys.executable, SRC_DIR / 'tools' / 'make-gtest-filter.py'
+      sys.executable, SRC_DIR / 'tools' / 'make_gtest_filter.py'
   ]
   if line:
     make_filter_command += ['--line', str(line)]
@@ -411,15 +421,18 @@ def main():
       '-n',
       action='store_true',
       help='Print ninja and test run commands without executing them.')
+  parser.add_argument(
+      '--no-try-android-wrappers',
+      action='store_true',
+      help='Do not try to use Android test wrappers to run tests.')
+  parser.add_argument('--no-fast-local-dev',
+                      action='store_true',
+                      help='Do not add --fast-local-dev for Android tests.')
   parser.add_argument('file',
                       metavar='FILE_NAME',
                       help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
-
-  # Use CWD as out_dir when build.ninja exists.
-  if not args.out_dir and os.path.exists('build.ninja'):
-    args.out_dir = '.'
 
   if args.out_dir:
     constants.SetOutputDirectory(args.out_dir)
@@ -456,12 +469,12 @@ def main():
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      if not BuildTestTargetsWithNinja(out_dir, targets, args.dry_run):
-        sys.exit(1)
-  else:  # cache still valid, quit if the build failed
-    if not build_ok: sys.exit(1)
+      build_ok = BuildTestTargetsWithNinja(out_dir, targets, args.dry_run)
 
-  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run)
+  if not build_ok: sys.exit(1)
+
+  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run,
+                 args.no_try_android_wrappers, args.no_fast_local_dev)
 
 
 if __name__ == '__main__':

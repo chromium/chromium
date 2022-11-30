@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,6 +46,9 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
   virtual void OnUpdateRefreshRate(float refresh_rate) = 0;
   virtual void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) = 0;
+  virtual std::unique_ptr<ui::CompositorLock> GetCompositorLock(
+      base::TimeDelta timeout) = 0;
+  virtual void OnUpdateOverlayTransform() = 0;
 };
 
 }  // namespace ui

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PythonUtils, SetPythonPathInEnvironment) {
@@ -20,7 +21,7 @@ TEST(PythonUtils, SetPythonPathInEnvironment) {
   SetPythonPathInEnvironment({base::FilePath(FILE_PATH_LITERAL("test/path1")),
                               base::FilePath(FILE_PATH_LITERAL("test/path2"))},
                              &env);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(FILE_PATH_LITERAL("test/path1;test/path2"),
             env[FILE_PATH_LITERAL("PYTHONPATH")]);
 #else
@@ -31,9 +32,9 @@ TEST(PythonUtils, SetPythonPathInEnvironment) {
             env[FILE_PATH_LITERAL("VPYTHON_CLEAR_PYTHONPATH")]);
 }
 
-TEST(PythonUtils, PythonRunTime) {
+TEST(PythonUtils, Python3RunTime) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
-  EXPECT_TRUE(GetPythonCommand(&cmd_line));
+  EXPECT_TRUE(GetPython3Command(&cmd_line));
 
   // Run a python command to print a string and make sure the output is what
   // we want.

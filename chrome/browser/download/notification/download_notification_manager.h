@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/notification/download_item_notification.h"
@@ -21,6 +22,11 @@ class DownloadNotificationManager : public DownloadUIController::Delegate,
                                     public DownloadItemNotification::Observer {
  public:
   explicit DownloadNotificationManager(Profile* profile);
+
+  DownloadNotificationManager(const DownloadNotificationManager&) = delete;
+  DownloadNotificationManager& operator=(const DownloadNotificationManager&) =
+      delete;
+
   ~DownloadNotificationManager() override;
 
   // DownloadUIController::Delegate overrides.
@@ -32,11 +38,8 @@ class DownloadNotificationManager : public DownloadUIController::Delegate,
  private:
   friend class test::DownloadItemNotificationTest;
 
-  Profile* profile_;
-  std::map<ContentId, DownloadItemNotification::DownloadItemNotificationPtr>
-      items_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadNotificationManager);
+  raw_ptr<Profile> profile_;
+  std::map<ContentId, std::unique_ptr<DownloadItemNotification>> items_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_NOTIFICATION_DOWNLOAD_NOTIFICATION_MANAGER_H_

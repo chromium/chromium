@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_request_queue_callback_installer.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/overlays/overlay_request_queue_impl.h"
 
 class OverlayRequestQueueCallbackInstallerImpl
@@ -26,7 +26,7 @@ class OverlayRequestQueueCallbackInstallerImpl
     RequestAddedObserver(web::WebState* web_state, OverlayModality modality);
     ~RequestAddedObserver() override;
 
-    // Adds |installer| to be executed for every request added to the queue.
+    // Adds `installer` to be executed for every request added to the queue.
     void AddInstaller(
         std::unique_ptr<OverlayRequestCallbackInstaller> installer);
 
@@ -39,8 +39,9 @@ class OverlayRequestQueueCallbackInstallerImpl
 
     // The installers for the queue.
     std::vector<std::unique_ptr<OverlayRequestCallbackInstaller>> installers_;
-    ScopedObserver<OverlayRequestQueueImpl, OverlayRequestQueueImpl::Observer>
-        scoped_observer_;
+    base::ScopedObservation<OverlayRequestQueueImpl,
+                            OverlayRequestQueueImpl::Observer>
+        scoped_observation_{this};
   };
 
   // OverlayRequestQueueCallbackInstaller:

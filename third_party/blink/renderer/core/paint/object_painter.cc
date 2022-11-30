@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -35,22 +36,16 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
     return;
   }
 
+  LayoutObject::OutlineInfo info;
   auto outline_rects = layout_object_.OutlineRects(
-      paint_offset,
+      &info, paint_offset,
       style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow());
-  if (outline_rects.IsEmpty())
+  if (outline_rects.empty())
     return;
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          paint_info.context, layout_object_, paint_info.phase))
-    return;
-
-  IntRect visual_rect =
-      PixelSnappedIntRect(UnionRectEvenIfEmpty(outline_rects));
-  visual_rect.Inflate(style_to_use.OutlineOutsetExtent());
-  DrawingRecorder recorder(paint_info.context, layout_object_, paint_info.phase,
-                           visual_rect);
-  PaintOutlineRects(paint_info, outline_rects, style_to_use);
+  OutlinePainter::PaintOutlineRects(paint_info, layout_object_, outline_rects,
+                                    info, style_to_use,
+                                    layout_object_.GetDocument());
 }
 
 void ObjectPainter::PaintInlineChildrenOutlines(const PaintInfo& paint_info) {
@@ -78,8 +73,8 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   auto outline_rects = layout_object_.OutlineRects(
-      paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  IntRect rect = PixelSnappedIntRect(UnionRect(outline_rects));
+      nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
+  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;
 

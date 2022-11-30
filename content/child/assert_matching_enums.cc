@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Use this file to assert that *_list.h enums that are meant to do the bridge
 // from Blink are valid.
 
-#include "base/macros.h"
 #include "media/base/mime_util.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"

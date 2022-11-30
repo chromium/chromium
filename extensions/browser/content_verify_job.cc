@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,7 +45,7 @@ class ScopedElapsedTimer {
  private:
   // Some total amount of time we should add our elapsed time to at
   // destruction.
-  base::TimeDelta* total_;
+  raw_ptr<base::TimeDelta> total_;
 
   // A timer for how long this object has been alive.
   base::ElapsedTimer timer;
@@ -199,13 +198,13 @@ bool ContentVerifyJob::FinishBlock() {
     current_hash_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   }
   std::string final(crypto::kSHA256Length, 0);
-  current_hash_->Finish(base::data(final), final.size());
+  current_hash_->Finish(std::data(final), final.size());
   current_hash_.reset();
   current_hash_byte_count_ = 0;
 
   int block = current_block_++;
 
-  const std::string* expected_hash = NULL;
+  const std::string* expected_hash = nullptr;
   if (!hash_reader_->GetHashForBlock(block, &expected_hash) ||
       *expected_hash != final) {
     return false;
@@ -236,7 +235,7 @@ void ContentVerifyJob::OnHashesReady(
     }
     case ContentHashReader::InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE: {
       // Ignore verification of non-existent resources.
-      scoped_refptr<TestObserver> test_observer = GetTestObserver();
+      test_observer = GetTestObserver();
       if (test_observer)
         test_observer->JobFinished(extension_id_, relative_path_, NONE);
       return;
@@ -257,7 +256,7 @@ void ContentVerifyJob::OnHashesReady(
   if (!queue_.empty()) {
     std::string tmp;
     queue_.swap(tmp);
-    ReadImpl(base::data(tmp), tmp.size(), MOJO_RESULT_OK);
+    ReadImpl(std::data(tmp), tmp.size(), MOJO_RESULT_OK);
     if (failed_)
       return;
   }
@@ -266,7 +265,7 @@ void ContentVerifyJob::OnHashesReady(
     if (!has_ignorable_read_error_ && !FinishBlock()) {
       DispatchFailureCallback(HASH_MISMATCH);
     } else {
-      scoped_refptr<TestObserver> test_observer = GetTestObserver();
+      test_observer = GetTestObserver();
       if (test_observer)
         test_observer->JobFinished(extension_id_, relative_path_, NONE);
     }

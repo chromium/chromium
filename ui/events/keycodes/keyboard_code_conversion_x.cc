@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -648,12 +647,12 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
       !IsCursorKey(keysym) && !IsPFKey(keysym) && !IsFunctionKey(keysym) &&
       !IsModifierKey(keysym)) {
     MAP0 key0 = {keysym & 0xFFFF, 0};
-    keycode = FindVK(key0, map0, base::size(map0));
+    keycode = FindVK(key0, map0, std::size(map0));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
     MAP1 key1 = {keysym & 0xFFFF, xkeycode, 0};
-    keycode = FindVK(key1, map1, base::size(map1));
+    keycode = FindVK(key1, map1, std::size(map1));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -661,7 +660,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     modifiers |= static_cast<int>(x11::KeyButMask::Shift);
     keysym_shift = TranslateKey(xkeycode, modifiers);
     MAP2 key2 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0};
-    keycode = FindVK(key2, map2, base::size(map2));
+    keycode = FindVK(key2, map2, std::size(map2));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -671,7 +670,7 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     keysym_altgr = TranslateKey(xkeycode, modifiers);
     MAP3 key3 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF,
                  keysym_altgr & 0xFFFF, 0};
-    keycode = FindVK(key3, map3, base::size(map3));
+    keycode = FindVK(key3, map3, std::size(map3));
     if (keycode != VKEY_UNKNOWN)
       return keycode;
 
@@ -680,9 +679,9 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
     // to just find VKEY with (ch0+sc+ch1). This is the best we could do.
     MAP3 key4 = {keysym & 0xFFFF, xkeycode, keysym_shift & 0xFFFF, 0, 0};
     const MAP3* p =
-        std::lower_bound(map3, map3 + base::size(map3), key4, MAP3());
-    if (p != map3 + base::size(map3) && p->ch0 == key4.ch0 &&
-        p->sc == key4.sc && p->ch1 == key4.ch1)
+        std::lower_bound(map3, map3 + std::size(map3), key4, MAP3());
+    if (p != map3 + std::size(map3) && p->ch0 == key4.ch0 && p->sc == key4.sc &&
+        p->ch1 == key4.ch1)
       return static_cast<KeyboardCode>(p->vk);
   }
 
@@ -1167,7 +1166,7 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       VKEY_COMPOSE,            // 0x87: KEY_COMPOSE          Menu
   };
 
-  if (hardware_code >= base::size(kHardwareKeycodeMap)) {
+  if (hardware_code >= std::size(kHardwareKeycodeMap)) {
     // Additional keycodes used by the Chrome OS top row special function keys.
     switch (hardware_code) {
       case 0xA6:  // KEY_BACK
@@ -1177,7 +1176,12 @@ KeyboardCode DefaultKeyboardCodeFromHardwareKeycode(
       case 0xB5:  // KEY_REFRESH
         return VKEY_BROWSER_REFRESH;
       case 0xD4:  // KEY_DASHBOARD
-        return VKEY_MEDIA_LAUNCH_APP2;
+        // This was changed from VKEY_MEDIA_LAUNCH_APP2 when the full screen
+        // key was moved to VKEY_ZOOM with crbug.com/1204710. In order to
+        // maintain existing behavior this was kept consistent but it
+        // seems like this should have been VKEY_MEDIA_LAUNCH_APP1 aka
+        // overview in the first place.
+        return VKEY_ZOOM;
       case 0xE8:  // KEY_BRIGHTNESSDOWN
         return VKEY_BRIGHTNESS_DOWN;
       case 0xE9:  // KEY_BRIGHTNESSUP

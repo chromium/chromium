@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module crosapi.mojom;
+
+// A copy of PolicyDomain from components/policy/core/common/policy_namespace.h.
+[Stable, Extensible]
+enum PolicyDomain {
+  // The component ID for chrome policies is always the empty string.
+  kPolicyDomainChrome = 0,
+
+  // The component ID for the extension policies is equal to the extension ID.
+  kPolicyDomainExtensions = 1,
+
+  // The namespace that corresponds to the policies for extensions running
+  // under Chrome OS signin profile. The component ID is equal to the extension
+  // ID.
+  kPolicyDomainSigninExtensions = 2,
+};
+
+// Corresponds to PolicyNamespace from
+// components/policy/core/common/policy_namespace.h.
+[Stable]
+struct PolicyNamespace {
+  PolicyDomain domain@0;
+  string component_id@1;
+};

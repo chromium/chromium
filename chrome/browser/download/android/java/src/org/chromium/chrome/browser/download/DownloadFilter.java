@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ public class DownloadFilter {
         Integer type = filterForSpecialMimeTypes(mimeType);
         if (type != null) return type;
 
-        String[] pieces = mimeType.toLowerCase(Locale.getDefault()).split("/");
+        String[] pieces = mimeType.toLowerCase(Locale.ROOT).split("/");
         if (pieces.length != 2) return Type.OTHER;
 
         if (MIMETYPE_VIDEO.equals(pieces[0])) {

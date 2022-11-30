@@ -1,14 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "android_webview/browser/permission/media_access_permission_request.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "android_webview/browser/permission/aw_permission_request.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 using blink::MediaStreamDevice;
 using blink::MediaStreamDevices;
@@ -47,14 +49,18 @@ MediaAccessPermissionRequest::~MediaAccessPermissionRequest() {}
 
 void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
   std::unique_ptr<content::MediaStreamUI> ui;
-  MediaStreamDevices devices;
   if (!allowed) {
     std::move(callback_).Run(
-        devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::move(ui));
     return;
   }
 
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& devices = *stream_devices_set.stream_devices[0];
   if (request_.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
     const MediaStreamDevices& audio_devices =
@@ -64,7 +70,7 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
     const MediaStreamDevice* device = GetDeviceByIdOrFirstAvailable(
         audio_devices, request_.requested_audio_device_id);
     if (device)
-      devices.push_back(*device);
+      devices.audio_device = *device;
   }
 
   if (request_.video_type ==
@@ -76,11 +82,17 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
     const MediaStreamDevice* device = GetDeviceByIdOrFirstAvailable(
         video_devices, request_.requested_video_device_id);
     if (device)
-      devices.push_back(*device);
+      devices.video_device = *device;
+  }
+
+  const bool has_no_hardware =
+      !devices.audio_device.has_value() && !devices.video_device.has_value();
+  if (has_no_hardware) {
+    stream_devices_set.stream_devices.clear();
   }
   std::move(callback_).Run(
-      devices,
-      devices.empty() ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
+      stream_devices_set,
+      has_no_hardware ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
                       : blink::mojom::MediaStreamRequestResult::OK,
       std::move(ui));
 }

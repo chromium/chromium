@@ -3,9 +3,3 @@ include_rules = [
   "+third_party/icu/source/i18n/unicode/ulocdata.h",
   "+ui/base/l10n/l10n_util.h",
 ]
-
-specific_include_rules = {
-  "document_properties_unittest.cc": [
-    "+ui/base/resource",
-  ],
-}

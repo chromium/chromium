@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/download/internal/background_service/blob_task_proxy.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/download_params.h"
@@ -97,6 +98,9 @@ class InMemoryDownload {
     COMPLETE,
   };
 
+  InMemoryDownload(const InMemoryDownload&) = delete;
+  InMemoryDownload& operator=(const InMemoryDownload&) = delete;
+
   virtual ~InMemoryDownload();
 
   // Send the download request.
@@ -148,9 +152,6 @@ class InMemoryDownload {
   uint64_t bytes_downloaded_;
 
   uint64_t bytes_uploaded_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownload);
 };
 
 // Implementation of InMemoryDownload and uses SimpleURLLoader as network
@@ -172,6 +173,9 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
       Delegate* delegate,
       network::mojom::URLLoaderFactory* url_loader_factory,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  InMemoryDownloadImpl(const InMemoryDownloadImpl&) = delete;
+  InMemoryDownloadImpl& operator=(const InMemoryDownloadImpl&) = delete;
 
   ~InMemoryDownloadImpl() override;
 
@@ -233,7 +237,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
   // Used to handle network response.
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Worker that does blob related task on IO thread.
   std::unique_ptr<BlobTaskProxy> blob_task_proxy_;
@@ -245,7 +249,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   // Used to access blob storage context.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Data downloaded from network, should be moved to avoid extra copy.
   std::string data_;
@@ -261,8 +265,6 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
 
   // Bounded to main thread task runner.
   base::WeakPtrFactory<InMemoryDownloadImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadImpl);
 };
 
 }  // namespace download

@@ -1,19 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/test/fake_server.h"
 
 ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
-    fake_server::FakeServer* fake_server,
     const Matcher& matcher)
-    : fake_server_(fake_server), matcher_(matcher) {
-  fake_server->AddObserver(this);
-}
+    : matcher_(matcher) {}
 
-ServerDeviceInfoMatchChecker::~ServerDeviceInfoMatchChecker() {
-  fake_server_->RemoveObserver(this);
-}
+ServerDeviceInfoMatchChecker::~ServerDeviceInfoMatchChecker() = default;
 
 void ServerDeviceInfoMatchChecker::OnCommit(
     const std::string& committer_invalidator_client_id,
@@ -25,7 +22,7 @@ void ServerDeviceInfoMatchChecker::OnCommit(
 
 bool ServerDeviceInfoMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
 
   testing::StringMatchResultListener result_listener;
   const bool matches =
@@ -33,3 +30,14 @@ bool ServerDeviceInfoMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << result_listener.str();
   return matches;
 }
+
+namespace device_info_helper {
+
+bool WaitForFullDeviceInfoCommitted(const std::string& cache_guid) {
+  return ServerDeviceInfoMatchChecker(
+             testing::Contains(
+                 testing::AllOf(HasCacheGuid(cache_guid), HasSharingFields())))
+      .Wait();
+}
+
+}  // namespace device_info_helper

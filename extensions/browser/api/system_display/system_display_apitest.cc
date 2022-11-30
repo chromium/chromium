@@ -1,233 +1,40 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
-
-#include <set>
-#include <utility>
+#include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/browser/api/system_display/system_display_api.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/mock_display_info_provider.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/result_catcher.h"
-#include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/display/test/scoped_screen_override.h"
 
 namespace extensions {
 
-using api::system_display::Bounds;
-using api::system_display::DisplayUnitInfo;
-using display::Screen;
-using display::test::ScopedScreenOverride;
-
-class MockScreen : public Screen {
- public:
-  MockScreen() {
-    for (int i = 0; i < 4; i++) {
-      gfx::Rect bounds(0, 0, 1280, 720);
-      gfx::Rect work_area(0, 0, 960, 720);
-      display::Display display(i, bounds);
-      display.set_work_area(work_area);
-      displays_.push_back(display);
-    }
-  }
-  ~MockScreen() override {}
-
- protected:
-  // Overridden from display::Screen:
-  gfx::Point GetCursorScreenPoint() override { return gfx::Point(); }
-  bool IsWindowUnderCursor(gfx::NativeWindow window) override { return false; }
-  gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
-    return gfx::NativeWindow();
-  }
-  gfx::NativeWindow GetLocalProcessWindowAtPoint(
-      const gfx::Point& point,
-      const std::set<gfx::NativeWindow>& ignore) override {
-    return nullptr;
-  }
-  int GetNumDisplays() const override {
-    return static_cast<int>(displays_.size());
-  }
-  const std::vector<display::Display>& GetAllDisplays() const override {
-    return displays_;
-  }
-  display::Display GetDisplayNearestWindow(
-      gfx::NativeWindow window) const override {
-    return display::Display(0);
-  }
-  display::Display GetDisplayNearestPoint(
-      const gfx::Point& point) const override {
-    return display::Display(0);
-  }
-  display::Display GetDisplayMatching(
-      const gfx::Rect& match_rect) const override {
-    return display::Display(0);
-  }
-  display::Display GetPrimaryDisplay() const override { return displays_[0]; }
-  void AddObserver(display::DisplayObserver* observer) override {}
-  void RemoveObserver(display::DisplayObserver* observer) override {}
-
- private:
-  std::vector<display::Display> displays_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockScreen);
-};
-
-class MockDisplayInfoProvider : public DisplayInfoProvider {
- public:
-  MockDisplayInfoProvider() {}
-
-  ~MockDisplayInfoProvider() override {}
-
-  void SetDisplayProperties(
-      const std::string& display_id,
-      const api::system_display::DisplayProperties& properties,
-      ErrorCallback callback) override {
-    // Should get called only once per test case.
-    EXPECT_FALSE(set_info_value_);
-    set_info_value_ = properties.ToValue();
-    set_info_display_id_ = display_id;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
-  }
-
-  void EnableUnifiedDesktop(bool enable) override {
-    unified_desktop_enabled_ = enable;
-  }
-
-  bool OverscanCalibrationStart(const std::string& id) override {
-    if (base::Contains(overscan_started_, id))
-      return false;
-    overscan_started_.insert(id);
-    return true;
-  }
-
-  bool OverscanCalibrationAdjust(
-      const std::string& id,
-      const api::system_display::Insets& delta) override {
-    if (!base::Contains(overscan_started_, id))
-      return false;
-    overscan_adjusted_.insert(id);
-    return true;
-  }
-
-  bool OverscanCalibrationReset(const std::string& id) override {
-    if (!base::Contains(overscan_started_, id))
-      return false;
-    overscan_adjusted_.erase(id);
-    return true;
-  }
-
-  bool OverscanCalibrationComplete(const std::string& id) override {
-    if (!base::Contains(overscan_started_, id))
-      return false;
-    overscan_started_.erase(id);
-    return true;
-  }
-
-  std::unique_ptr<base::DictionaryValue> GetSetInfoValue() {
-    return std::move(set_info_value_);
-  }
-
-  std::string GetSetInfoDisplayId() const { return set_info_display_id_; }
-
-  bool unified_desktop_enabled() const { return unified_desktop_enabled_; }
-
-  bool calibration_started(const std::string& id) const {
-    return base::Contains(overscan_started_, id);
-  }
-
-  bool calibration_changed(const std::string& id) const {
-    return base::Contains(overscan_adjusted_, id);
-  }
-
-  const api::system_display::MirrorMode& mirror_mode() const {
-    return mirror_mode_;
-  }
-
-  void SetTouchCalibrationWillSucceed(bool success) {
-    native_touch_calibration_success_ = success;
-  }
-
-  void ShowNativeTouchCalibration(const std::string& id,
-                                  ErrorCallback callback) override {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  native_touch_calibration_success_
-                                      ? base::nullopt
-                                      : base::Optional<std::string>("failed")));
-  }
-
-  void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
-                     ErrorCallback callback) override {
-    mirror_mode_ = info.mode;
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
-  }
-
- private:
-  // Update the content of the |unit| obtained for |display| using
-  // platform specific method.
-  void UpdateDisplayUnitInfoForPlatform(
-      const display::Display& display,
-      extensions::api::system_display::DisplayUnitInfo* unit) override {
-    int64_t id = display.id();
-    unit->name = "DISPLAY NAME FOR " + base::NumberToString(id);
-    if (id == 1)
-      unit->mirroring_source_id = "0";
-    unit->is_primary = id == 0 ? true : false;
-    unit->is_internal = id == 0 ? true : false;
-    unit->is_enabled = true;
-    unit->rotation = (90 * id) % 360;
-    unit->dpi_x = 96.0;
-    unit->dpi_y = 96.0;
-    if (id == 0) {
-      unit->overscan.left = 20;
-      unit->overscan.top = 40;
-      unit->overscan.right = 60;
-      unit->overscan.bottom = 80;
-    }
-  }
-
-  std::unique_ptr<base::DictionaryValue> set_info_value_;
-  std::string set_info_display_id_;
-  bool unified_desktop_enabled_ = false;
-  std::set<std::string> overscan_started_;
-  std::set<std::string> overscan_adjusted_;
-
-  bool native_touch_calibration_success_ = false;
-
-  api::system_display::MirrorMode mirror_mode_ =
-      api::system_display::MIRROR_MODE_OFF;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDisplayInfoProvider);
-};
-
 class SystemDisplayApiTest : public ShellApiTest {
  public:
-  SystemDisplayApiTest()
-      : provider_(new MockDisplayInfoProvider), screen_(new MockScreen) {}
+  SystemDisplayApiTest() : provider_(new MockDisplayInfoProvider) {}
 
-  ~SystemDisplayApiTest() override {}
+  SystemDisplayApiTest(const SystemDisplayApiTest&) = delete;
+  SystemDisplayApiTest& operator=(const SystemDisplayApiTest&) = delete;
+
+  ~SystemDisplayApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ShellApiTest::SetUpOnMainThread();
-    ANNOTATE_LEAKING_OBJECT_PTR(display::Screen::GetScreen());
-    scoped_screen_override_ =
-        std::make_unique<ScopedScreenOverride>(screen_.get());
     DisplayInfoProvider::InitializeForTesting(provider_.get());
   }
 
@@ -236,39 +43,12 @@ class SystemDisplayApiTest : public ShellApiTest {
                const api::system_display::DisplayProperties& properties) {
     provider_->SetDisplayProperties(
         display_id, properties,
-        base::BindOnce([](base::Optional<std::string>) {}));
+        base::BindOnce([](absl::optional<std::string>) {}));
   }
   std::unique_ptr<MockDisplayInfoProvider> provider_;
-  std::unique_ptr<display::Screen> screen_;
-  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemDisplayApiTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, GetDisplayInfo) {
-  ASSERT_TRUE(RunAppTest("system/display/info")) << message_;
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-
-IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplay) {
-  scoped_refptr<SystemDisplaySetDisplayPropertiesFunction> set_info_function(
-      new SystemDisplaySetDisplayPropertiesFunction());
-
-  set_info_function->set_has_callback(true);
-
-  EXPECT_EQ(
-      SystemDisplayCrOSRestrictedFunction::kCrosOnlyError,
-      api_test_utils::RunFunctionAndReturnError(
-          set_info_function.get(), "[\"display_id\", {}]", browser_context()));
-
-  std::unique_ptr<base::DictionaryValue> set_info =
-      provider_->GetSetInfoValue();
-  EXPECT_FALSE(set_info);
-}
-
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(stevenjb): Add API tests for {GS}etDisplayLayout. That code currently
 // lives in src/chrome but should be getting moved soon.
@@ -317,17 +97,18 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "}]",
       browser_context()));
 
-  std::unique_ptr<base::DictionaryValue> set_info =
+  std::unique_ptr<base::DictionaryValue> set_info_value =
       provider_->GetSetInfoValue();
-  ASSERT_TRUE(set_info);
-  EXPECT_TRUE(api_test_utils::GetBoolean(set_info.get(), "isPrimary"));
+  ASSERT_TRUE(set_info_value);
+  base::Value::Dict set_info = std::move(*set_info_value).TakeDict();
+
+  EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
-            api_test_utils::GetString(set_info.get(), "mirroringSourceId"));
-  EXPECT_EQ(100, api_test_utils::GetInteger(set_info.get(), "boundsOriginX"));
-  EXPECT_EQ(200, api_test_utils::GetInteger(set_info.get(), "boundsOriginY"));
-  EXPECT_EQ(90, api_test_utils::GetInteger(set_info.get(), "rotation"));
-  base::DictionaryValue* overscan;
-  ASSERT_TRUE(set_info->GetDictionary("overscan", &overscan));
+            api_test_utils::GetString(set_info, "mirroringSourceId"));
+  EXPECT_EQ(100, api_test_utils::GetInteger(set_info, "boundsOriginX"));
+  EXPECT_EQ(200, api_test_utils::GetInteger(set_info, "boundsOriginY"));
+  EXPECT_EQ(90, api_test_utils::GetInteger(set_info, "rotation"));
+  base::Value::Dict overscan = api_test_utils::GetDict(set_info, "overscan");
   EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
   EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
   EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));
@@ -475,9 +256,8 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ShowNativeTouchCalibration) {
           show_native_calibration.get(), "[\"" + id + "\"]",
           browser_context()));
 
-  bool callback_result;
-  ASSERT_TRUE(result->GetAsBoolean(&callback_result));
-  ASSERT_TRUE(callback_result);
+  ASSERT_TRUE(result->is_bool());
+  EXPECT_TRUE(result->GetBool());
 }
 
 IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
@@ -532,6 +312,71 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that Overscan is reset only when the primary main frame is removed.
+IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, ResetDisplayIds) {
+  const std::string id = "display0";
+  api::system_display::DisplayProperties params;
+  SetInfo(id, params);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadApp("system/display/overscan_no_complete");
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ExtensionHost* host = ProcessManager::Get(browser_context())
+                            ->GetBackgroundHostForExtension(extension->id());
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->host_contents());
+
+  // Add a sub frame.
+  ASSERT_TRUE(content::ExecJs(host->host_contents(), R"(
+          var bar_frame = document.createElement('iframe');
+          document.body.appendChild(bar_frame);
+      )"));
+  content::RenderFrameHostWrapper sub_frame_rfh_wrapper(
+      ChildFrameAt(host->host_contents()->GetPrimaryMainFrame(), 0));
+
+  // By loading the app, calibration is started.
+  ASSERT_TRUE(provider_->calibration_started(id));
+
+  EXPECT_TRUE(ExecJs(host->host_contents()->GetPrimaryMainFrame(),
+                     "const iframe = document.querySelector('iframe');\
+                     iframe.remove();"));
+  ASSERT_TRUE(sub_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  // Removing the sub frame doesn't affect calibration.
+  ASSERT_TRUE(provider_->calibration_started(id));
+
+  content::RenderFrameHostWrapper main_frame_rfh_wrapper(
+      host->host_contents()->GetPrimaryMainFrame());
+  host->host_contents()->ClosePage();
+  ASSERT_TRUE(main_frame_rfh_wrapper.WaitUntilRenderFrameDeleted());
+
+  ASSERT_FALSE(provider_->calibration_started(id));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN)
+using SystemDisplayGetInfoTest = ShellApiTest;
+
+IN_PROC_BROWSER_TEST_F(SystemDisplayGetInfoTest, GetInfo) {
+  DisplayInfoProvider::ResetForTesting();
+  scoped_refptr<const Extension> test_extension =
+      ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP).Build();
+
+  scoped_refptr<SystemDisplayGetInfoFunction> get_info_function(
+      new SystemDisplayGetInfoFunction());
+
+  get_info_function->set_has_callback(true);
+  get_info_function->set_extension(test_extension.get());
+
+  // Verify that the GetInfo function runs successfully. This uses the real
+  // DisplayInfoProvider to verify that DisplayInfoProvider::GetAllDisplaysInfo
+  // calls its callback.
+  ASSERT_TRUE(api_test_utils::RunFunction(get_info_function.get(), "[]",
+                                          browser_context()));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace extensions

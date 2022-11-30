@@ -1,15 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/mirroring/service/receiver_setup_querier.h"
 
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/mirroring/service/value_util.h"
 #include "components/version_info/version_info.h"
@@ -36,7 +34,7 @@ constexpr char kSetupQueryMethod[] = "GET";
 bool ParseReceiverSetupInfo(const std::string& response,
                             std::string* build_version,
                             std::string* name) {
-  const base::Optional<base::Value> root = base::JSONReader::Read(response);
+  const absl::optional<base::Value> root = base::JSONReader::Read(response);
 
   return root && root->is_dict() &&
          GetString(*root, "cast_build_revision", build_version) &&

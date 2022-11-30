@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -16,12 +15,6 @@
 #include "ppapi/nacl_irt/irt_manifest.h"
 #include "ppapi/nacl_irt/plugin_startup.h"
 #include "ppapi/proxy/ppapi_messages.h"
-
-#if !defined(OS_NACL_SFI)
-#include <pthread.h>
-#include <map>
-#include <string>
-#endif
 
 namespace ppapi {
 
@@ -35,6 +28,9 @@ class ManifestMessageFilter : public IPC::SyncMessageFilter {
       : SyncMessageFilter(shutdown_event),
         connected_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  ManifestMessageFilter(const ManifestMessageFilter&) = delete;
+  ManifestMessageFilter& operator=(const ManifestMessageFilter&) = delete;
 
   bool Send(IPC::Message* message) override {
     // Wait until set up is actually done.
@@ -63,8 +59,6 @@ class ManifestMessageFilter : public IPC::SyncMessageFilter {
 
  private:
   base::WaitableEvent connected_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestMessageFilter);
 };
 
 ManifestService::ManifestService(
@@ -110,7 +104,6 @@ bool ManifestService::OpenResource(const char* file, int* fd) {
 
   // File tokens are used internally by NaClIPCAdapter and should have
   // been cleared from the message when it is received here.
-  // These tokens should never be set for Non-SFI mode.
   CHECK(file_token_lo == 0);
   CHECK(file_token_hi == 0);
 
@@ -124,42 +117,10 @@ bool ManifestService::OpenResource(const char* file, int* fd) {
   return true;
 }
 
-#if !defined(OS_NACL_SFI)
-namespace {
-
-pthread_mutex_t g_mu = PTHREAD_MUTEX_INITIALIZER;
-std::map<std::string, int>* g_prefetched_fds;
-
-}  // namespace
-
-void RegisterPreopenedDescriptorsNonSfi(
-    std::map<std::string, int>* key_fd_map) {
-  pthread_mutex_lock(&g_mu);
-  DCHECK(!g_prefetched_fds);
-  g_prefetched_fds = key_fd_map;
-  pthread_mutex_unlock(&g_mu);
-}
-#endif
-
 int IrtOpenResource(const char* file, int* fd) {
   // Remove leading '/' character.
   if (file[0] == '/')
     ++file;
-
-#if !defined(OS_NACL_SFI)
-  // Fast path for prefetched FDs.
-  pthread_mutex_lock(&g_mu);
-  if (g_prefetched_fds) {
-    std::map<std::string, int>::iterator it = g_prefetched_fds->find(file);
-    if (it != g_prefetched_fds->end()) {
-      *fd = it->second;
-      g_prefetched_fds->erase(it);
-      pthread_mutex_unlock(&g_mu);
-      return 0;
-    }
-  }
-  pthread_mutex_unlock(&g_mu);
-#endif
 
   ManifestService* manifest_service = GetManifestService();
   if (manifest_service == NULL ||

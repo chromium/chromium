@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,11 @@ enum class ActivityScenario {
   MostVisitedEntry = 5,
   RecentTabsEntry = 6,
   SharedHighlight = 7,
+  TabGridItem = 8,
+  TabGridSelectionMode = 9,
+  ShareChrome = 10,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = SharedHighlight
+  kMaxValue = ShareChrome
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_ACTIVITY_SCENARIO_H_

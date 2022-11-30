@@ -1,19 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer_private.payments;
 
-import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
 
-import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.PaymentApp;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppService;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestService.Delegate;
 import org.chromium.components.payments.PaymentRequestSpec;
@@ -56,6 +52,13 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {}
+
+    @Override
+    public boolean onPaymentAppCreated(PaymentApp paymentApp) {
+        // Ignores the service worker payment apps in WebLayer until -
+        // TODO(crbug.com/1224420): WebLayer supports Service worker payment apps.
+        return paymentApp.getPaymentAppType() != PaymentAppType.SERVICE_WORKER_APP;
+    }
 
     // Implements BrowserPaymentRequest:
     @Override
@@ -102,13 +105,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void addPaymentAppFactories(
-            PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        // WebLayer only adds the GPay factory, but not using this method.
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
     @Nullable
     public String showOrSkipAppSelector(boolean isShowWaitingForUpdatedDetails, PaymentItem total,
             boolean shouldSkipAppSelector) {
@@ -124,15 +120,15 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     // Implements BrowserPaymentRequest:
     @Override
     @Nullable
-    public String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    public String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         assert !mAvailableApps.isEmpty()
             : "triggerPaymentAppUiSkipIfApplicable() should be called only when there is any "
                 + "available app.";
         PaymentApp selectedPaymentApp = mAvailableApps.get(0);
         if (mShouldSkipAppSelector) {
             mJourneyLogger.setSkippedShow();
-            PaymentResponseHelperInterface paymentResponseHelper = new PaymentResponseHelper(
-                    selectedPaymentApp.handlesShippingAddress(), mSpec.getPaymentOptions());
+            PaymentResponseHelperInterface paymentResponseHelper =
+                    new PaymentResponseHelper(selectedPaymentApp, mSpec.getPaymentOptions());
             mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         }
         return null;
@@ -154,14 +150,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     @Override
     public boolean hasAnyCompleteApp() {
         return !mAvailableApps.isEmpty() && mAvailableApps.get(0).isComplete();
-    }
-
-    // Implements BrowserPaymentRequest:
-    @Override
-    public void onInstrumentDetailsError(String errorMessage) {
-        assert !TextUtils.isEmpty(errorMessage);
-        mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-        disconnectFromClientWithDebugMessage(errorMessage);
     }
 
     private void disconnectFromClientWithDebugMessage(String debugMessage) {

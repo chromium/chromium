@@ -69,6 +69,8 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
       LayoutFlowThread&,
       const ComputedStyle& parent_style);
 
+  void Trace(Visitor*) const override;
+
   const MultiColumnFragmentainerGroup& FirstFragmentainerGroup() const {
     NOT_DESTROYED();
     return fragmentainer_groups_.First();
@@ -270,7 +272,6 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void FinishLayoutFromNG();
 
- protected:
   LayoutMultiColumnSet(LayoutFlowThread*);
 
  private:
@@ -298,7 +299,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
   void AddLayoutOverflowFromChildren() override;
 
   MultiColumnFragmentainerGroupList fragmentainer_groups_;
-  LayoutFlowThread* flow_thread_;
+  Member<LayoutFlowThread> flow_thread_;
 
   // Height of the tallest piece of unbreakable content. This is the minimum
   // column logical height required to avoid fragmentation where it shouldn't

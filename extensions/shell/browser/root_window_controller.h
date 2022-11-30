@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -59,6 +59,10 @@ class RootWindowController : public aura::client::WindowParentingClient,
   RootWindowController(DesktopDelegate* desktop_delegate,
                        const gfx::Rect& bounds,
                        content::BrowserContext* browser_context);
+
+  RootWindowController(const RootWindowController&) = delete;
+  RootWindowController& operator=(const RootWindowController&) = delete;
+
   ~RootWindowController() override;
 
   // Attaches a NativeAppWindow's window to our root window.
@@ -90,10 +94,10 @@ class RootWindowController : public aura::client::WindowParentingClient,
  private:
   void DestroyWindowTreeHost();
 
-  DesktopDelegate* const desktop_delegate_;
+  const raw_ptr<DesktopDelegate> desktop_delegate_;
 
   // The BrowserContext used to create AppWindows.
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
 
@@ -104,8 +108,6 @@ class RootWindowController : public aura::client::WindowParentingClient,
   // when |host_| is closed or |this| is destroyed.
   // Note: Pointers are unowned. NativeAppWindow::Close() will delete them.
   std::list<AppWindow*> app_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowController);
 };
 
 }  // namespace extensions

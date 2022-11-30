@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/power/power_data_collector.h"
-#include "chrome/browser/chromeos/power/process_data_collector.h"
+#include "chrome/browser/ash/power/power_data_collector.h"
+#include "chrome/browser/ash/power/process_data_collector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -35,17 +35,8 @@ namespace chromeos {
 namespace {
 
 const char kRequestBatteryChargeDataCallback[] = "requestBatteryChargeData";
-const char kOnRequestBatteryChargeDataFunction[] =
-    "powerUI.showBatteryChargeData";
-
 const char kRequestCpuIdleDataCallback[] = "requestCpuIdleData";
-const char kOnRequestCpuIdleDataFunction[] =
-    "powerUI.showCpuIdleData";
-
 const char kRequestCpuFreqDataCallback[] = "requestCpuFreqData";
-const char kOnRequestCpuFreqDataFunction[] =
-    "powerUI.showCpuFreqData";
-
 const char kRequestProcessUsageDataCallback[] = "requestProcessUsageData";
 
 class PowerMessageHandler : public content::WebUIMessageHandler {
@@ -57,15 +48,14 @@ class PowerMessageHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void OnGetBatteryChargeData(const base::ListValue* value);
-  void OnGetCpuIdleData(const base::ListValue* value);
-  void OnGetCpuFreqData(const base::ListValue* value);
-  void OnGetProcessUsageData(const base::ListValue* value);
-  void GetJsStateOccupancyData(
+  void OnGetBatteryChargeData(const base::Value::List& value);
+  void OnGetCpuIdleData(const base::Value::List& value);
+  void OnGetCpuFreqData(const base::Value::List& value);
+  void OnGetProcessUsageData(const base::Value::List& value);
+  base::Value::List GetJsStateOccupancyData(
       const std::vector<CpuDataCollector::StateOccupancySampleDeque>& data,
-      const std::vector<std::string>& state_names,
-      base::ListValue* js_data);
-  void GetJsSystemResumedData(base::ListValue* value);
+      const std::vector<std::string>& state_names);
+  base::Value::List GetJsSystemResumedData();
 };
 
 PowerMessageHandler::PowerMessageHandler() {
@@ -93,30 +83,36 @@ void PowerMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetBatteryChargeData(
+    const base::Value::List& args) {
+  AllowJavascript();
+
   const base::circular_deque<PowerDataCollector::PowerSupplySample>&
       power_supply = PowerDataCollector::Get()->power_supply_data();
-  base::ListValue js_power_supply_data;
+  base::Value::List js_power_supply_data;
   for (size_t i = 0; i < power_supply.size(); ++i) {
     const PowerDataCollector::PowerSupplySample& sample = power_supply[i];
-    std::unique_ptr<base::DictionaryValue> element(new base::DictionaryValue);
-    element->SetDouble("batteryPercent", sample.battery_percent);
-    element->SetDouble("batteryDischargeRate", sample.battery_discharge_rate);
-    element->SetBoolean("externalPower", sample.external_power);
-    element->SetDouble("time", sample.time.ToJsTime());
+    base::Value::Dict element;
+    element.Set("batteryPercent", sample.battery_percent);
+    element.Set("batteryDischargeRate", sample.battery_discharge_rate);
+    element.Set("externalPower", sample.external_power);
+    element.Set("time", sample.time.ToJsTime());
 
     js_power_supply_data.Append(std::move(element));
   }
 
-  base::ListValue js_system_resumed_data;
-  GetJsSystemResumedData(&js_system_resumed_data);
+  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestBatteryChargeDataFunction,
-                                         js_power_supply_data,
-                                         js_system_resumed_data);
+  base::Value::Dict data;
+  data.Set("powerSupplyData", std::move(js_power_supply_data));
+  data.Set("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
+  AllowJavascript();
+
   const CpuDataCollector& cpu_data_collector =
       PowerDataCollector::Get()->cpu_data_collector();
 
@@ -124,17 +120,21 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* value) {
       cpu_data_collector.cpu_idle_state_data();
   const std::vector<std::string>& idle_state_names =
       cpu_data_collector.cpu_idle_state_names();
-  base::ListValue js_idle_data;
-  GetJsStateOccupancyData(idle_data, idle_state_names, &js_idle_data);
+  base::Value::List js_idle_data =
+      GetJsStateOccupancyData(idle_data, idle_state_names);
 
-  base::ListValue js_system_resumed_data;
-  GetJsSystemResumedData(&js_system_resumed_data);
+  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestCpuIdleDataFunction,
-                                         js_idle_data, js_system_resumed_data);
+  base::Value::Dict data;
+  data.Set("idleStateData", std::move(js_idle_data));
+  data.Set("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
+  AllowJavascript();
+
   const CpuDataCollector& cpu_data_collector =
       PowerDataCollector::Get()->cpu_data_collector();
 
@@ -142,84 +142,82 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* value) {
       cpu_data_collector.cpu_freq_state_data();
   const std::vector<std::string>& freq_state_names =
       cpu_data_collector.cpu_freq_state_names();
-  base::ListValue js_freq_data;
-  GetJsStateOccupancyData(freq_data, freq_state_names, &js_freq_data);
+  base::Value::List js_freq_data =
+      GetJsStateOccupancyData(freq_data, freq_state_names);
 
-  base::ListValue js_system_resumed_data;
-  GetJsSystemResumedData(&js_system_resumed_data);
+  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestCpuFreqDataFunction,
-                                         js_freq_data, js_system_resumed_data);
+  base::Value::Dict data;
+  data.Set("freqStateData", std::move(js_freq_data));
+  data.Set("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
+void PowerMessageHandler::OnGetProcessUsageData(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args.size());
 
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args[0];
 
   const std::vector<ProcessDataCollector::ProcessUsageData>& process_list =
       ProcessDataCollector::Get()->GetProcessUsages();
 
-  base::ListValue js_process_usages;
+  base::Value::List js_process_usages;
   for (const auto& process_info : process_list) {
-    std::unique_ptr<base::DictionaryValue> element =
-        std::make_unique<base::DictionaryValue>();
-    element->SetInteger("pid", process_info.process_data.pid);
-    element->SetString("name", process_info.process_data.name);
-    element->SetString("cmdline", process_info.process_data.cmdline);
-    element->SetInteger("type",
-                        static_cast<int>(process_info.process_data.type));
-    element->SetDouble("powerUsageFraction", process_info.power_usage_fraction);
+    base::Value::Dict element;
+    element.Set("pid", process_info.process_data.pid);
+    element.Set("name", process_info.process_data.name);
+    element.Set("cmdline", process_info.process_data.cmdline);
+    element.Set("type", static_cast<int>(process_info.process_data.type));
+    element.Set("powerUsageFraction", process_info.power_usage_fraction);
     js_process_usages.Append(std::move(element));
   }
 
-  ResolveJavascriptCallback(*callback_id, js_process_usages);
+  ResolveJavascriptCallback(callback_id, js_process_usages);
 }
 
-void PowerMessageHandler::GetJsSystemResumedData(base::ListValue *data) {
-  DCHECK(data);
+base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
+  base::Value::List data;
 
   const base::circular_deque<PowerDataCollector::SystemResumedSample>&
       system_resumed = PowerDataCollector::Get()->system_resumed_data();
   for (size_t i = 0; i < system_resumed.size(); ++i) {
     const PowerDataCollector::SystemResumedSample& sample = system_resumed[i];
-    std::unique_ptr<base::DictionaryValue> element(new base::DictionaryValue);
-    element->SetDouble("sleepDuration",
-                       sample.sleep_duration.InMillisecondsF());
-    element->SetDouble("time", sample.time.ToJsTime());
+    base::Value::Dict element;
+    element.Set("sleepDuration", sample.sleep_duration.InMillisecondsF());
+    element.Set("time", sample.time.ToJsTime());
 
-    data->Append(std::move(element));
+    data.Append(std::move(element));
   }
+  return data;
 }
 
-void PowerMessageHandler::GetJsStateOccupancyData(
+base::Value::List PowerMessageHandler::GetJsStateOccupancyData(
     const std::vector<CpuDataCollector::StateOccupancySampleDeque>& data,
-    const std::vector<std::string>& state_names,
-    base::ListValue *js_data) {
+    const std::vector<std::string>& state_names) {
+  base::Value::List js_data;
   for (unsigned int cpu = 0; cpu < data.size(); ++cpu) {
     const CpuDataCollector::StateOccupancySampleDeque& sample_deque = data[cpu];
-    std::unique_ptr<base::ListValue> js_sample_list(new base::ListValue);
+    base::Value::List js_sample_list;
     for (unsigned int i = 0; i < sample_deque.size(); ++i) {
       const CpuDataCollector::StateOccupancySample& sample = sample_deque[i];
-      std::unique_ptr<base::DictionaryValue> js_sample(
-          new base::DictionaryValue);
-      js_sample->SetDouble("time", sample.time.ToJsTime());
-      js_sample->SetBoolean("cpuOnline", sample.cpu_online);
+      base::Value::Dict js_sample;
+      js_sample.Set("time", sample.time.ToJsTime());
+      js_sample.Set("cpuOnline", sample.cpu_online);
 
-      std::unique_ptr<base::DictionaryValue> state_dict(
-          new base::DictionaryValue);
+      base::Value::Dict state_dict;
       for (size_t index = 0; index < sample.time_in_state.size(); ++index) {
-        state_dict->SetDouble(state_names[index],
-                              sample.time_in_state[index].InMillisecondsF());
+        state_dict.Set(state_names[index],
+                       sample.time_in_state[index].InMillisecondsF());
       }
-      js_sample->Set("timeInState", std::move(state_dict));
+      js_sample.Set("timeInState", std::move(state_dict));
 
-      js_sample_list->Append(std::move(js_sample));
+      js_sample_list.Append(std::move(js_sample));
     }
-    js_data->Append(std::move(js_sample_list));
+    js_data.Append(std::move(js_sample_list));
   }
+  return js_data;
 }
 
 }  // namespace

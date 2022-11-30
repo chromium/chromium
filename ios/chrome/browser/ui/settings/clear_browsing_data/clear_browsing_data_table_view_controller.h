@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ class Browser;
 @interface ClearBrowsingDataTableViewController
     : SettingsRootTableViewController <UIAdaptivePresentationControllerDelegate>
 
-// Initializers. |browser| can't be nil.
+// Initializers. `browser` can't be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
@@ -34,4 +34,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_HISTORY_CLEAR_BROWSING_DATA_TABLE_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_TABLE_VIEW_CONTROLLER_H_

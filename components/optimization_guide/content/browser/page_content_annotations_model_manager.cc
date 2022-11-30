@@ -1,14 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/page_entities_model_executor.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "components/optimization_guide/core/page_entities_model_executor_impl.h"
+#endif
 
 namespace optimization_guide {
 
@@ -18,206 +31,264 @@ const char kPageTopicsModelMetadataTypeUrl[] =
     "type.googleapis.com/"
     "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
 
-// The ID of the NONE category in the taxonomy. This node always exists.
-// Semantically, the none category is attached to data for which we can say
-// with certainty that no single label in the taxonomy is appropriate.
-const int kNoneCategoryId = -2;
+// The current version the client supports for the topics model. This
+// should be incremented any time there is a client code change to how the
+// topics model works that needs to be side-channeled to the server.
+extern const int32_t kTopicsModelVersion = 2;
+
+base::TaskTraits GetTaskTraits() {
+  base::TaskTraits task_traits = {base::MayBlock(),
+                                  base::TaskPriority::BEST_EFFORT};
+  if (base::FeatureList::IsEnabled(
+          features::
+              kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations)) {
+    task_traits = {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                   base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+  }
+  return task_traits;
+}
 
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider) {
-  proto::Any model_metadata;
-  model_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
-  proto::PageTopicsModelMetadata page_topics_model_metadata;
-  page_topics_model_metadata.add_supported_output(
-      proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED);
-  page_topics_model_metadata.add_supported_output(
-      proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
-  page_topics_model_metadata.SerializeToString(model_metadata.mutable_value());
-
-  page_topics_model_executor_ = std::make_unique<BertModelExecutor>(
-      optimization_guide_decider, proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
-      model_metadata,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
-}
+    OptimizationGuideModelProvider* optimization_guide_model_provider)
+    : optimization_guide_model_provider_(optimization_guide_model_provider) {}
 
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
     default;
 
+void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider,
+    base::OnceCallback<void(bool)> callback) {
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelRequested",
+      true);
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits());
+
+  page_entities_model_executor_ =
+      std::make_unique<PageEntitiesModelExecutorImpl>(
+          optimization_guide_model_provider, background_task_runner);
+
+  page_entities_model_executor_->AddOnModelUpdatedCallback(
+      base::BindOnce(std::move(callback), true));
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
+void PageContentAnnotationsModelManager::
+    OverridePageEntitiesModelExecutorForTesting(
+        std::unique_ptr<PageEntitiesModelExecutor>
+            page_entities_model_executor) {
+  page_entities_model_executor_ = std::move(page_entities_model_executor);
+}
+
+void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  if (!features::PageTopicsBatchAnnotationsEnabled())
+    return;
+
+  if (page_topics_model_executor_)
+    return;
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(kTopicsModelVersion);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  page_topics_model_executor_ = std::make_unique<PageTopicsModelExecutor>(
+      optimization_guide_model_provider,
+      base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
+      any_metadata);
+}
+
+void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  if (!features::PageVisibilityBatchAnnotationsEnabled())
+    return;
+
+  if (page_visibility_model_executor_)
+    return;
+
+  page_visibility_model_executor_ =
+      std::make_unique<PageVisibilityModelExecutor>(
+          optimization_guide_model_provider,
+          base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
+          absl::nullopt);
+}
+
+void PageContentAnnotationsModelManager::GetMetadataForEntityId(
+    const std::string& entity_id,
+    EntityMetadataRetrievedCallback callback) {
+  if (page_entities_model_executor_) {
+    page_entities_model_executor_->GetMetadataForEntityId(entity_id,
+                                                          std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
+}
+
+void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
+    AnnotationType type,
+    base::OnceCallback<void(bool)> callback) {
+  if (type == AnnotationType::kPageTopics) {
+    // No-op if the executor is already setup.
+    SetUpPageTopicsV2Model(optimization_guide_model_provider_);
+
+    if (page_topics_model_executor_) {
+      page_topics_model_executor_->AddOnModelUpdatedCallback(
+          base::BindOnce(std::move(callback), true));
+      return;
+    }
+  }
+
+  if (type == AnnotationType::kContentVisibility) {
+    // No-op if the executor is already setup.
+    SetUpPageVisibilityModel(optimization_guide_model_provider_);
+
+    if (page_visibility_model_executor_) {
+      page_visibility_model_executor_->AddOnModelUpdatedCallback(
+          base::BindOnce(std::move(callback), true));
+      return;
+    }
+  }
+
+  if (type == AnnotationType::kPageEntities) {
+    if (page_entities_model_executor_) {
+      page_entities_model_executor_->AddOnModelUpdatedCallback(
+          base::BindOnce(std::move(callback), true));
+    } else {
+      SetUpPageEntitiesModel(optimization_guide_model_provider_,
+                             std::move(callback));
+    }
+    return;
+  }
+
+  std::move(callback).Run(false);
+}
+
+absl::optional<ModelInfo>
+PageContentAnnotationsModelManager::GetModelInfoForType(
+    AnnotationType type) const {
+  if (type == AnnotationType::kPageTopics && page_topics_model_executor_) {
+    return page_topics_model_executor_->GetModelInfo();
+  }
+  if (type == AnnotationType::kContentVisibility &&
+      page_visibility_model_executor_) {
+    return page_visibility_model_executor_->GetModelInfo();
+  }
+  if (type == AnnotationType::kPageEntities && page_entities_model_executor_) {
+    return page_entities_model_executor_->GetModelInfo();
+  }
+  return absl::nullopt;
+}
+
 void PageContentAnnotationsModelManager::Annotate(
-    const std::string& text,
-    PageContentAnnotatedCallback callback) {
-  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_->ParsedSupportedFeaturesForLoadedModel<
-          proto::PageTopicsModelMetadata>();
-  if (!model_metadata) {
-    // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
-    // model isn't ready, but if we call this when the model isn't ready, it
-    // will just return base::nullopt for now.
+    BatchAnnotationCallback callback,
+    const std::vector<std::string>& inputs,
+    AnnotationType annotation_type) {
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize." +
+          AnnotationTypeToString(annotation_type),
+      inputs.size());
+
+  std::unique_ptr<PageContentAnnotationJob> job =
+      std::make_unique<PageContentAnnotationJob>(std::move(callback), inputs,
+                                                 annotation_type);
+  job_queue_.Insert(std::move(job), static_cast<size_t>(JobPriority::kNormal));
+
+  MaybeStartNextAnnotationJob();
+}
+
+void PageContentAnnotationsModelManager::OnJobExecutionComplete() {
+  DCHECK_EQ(job_state_, JobExecutionState::kRunning);
+  job_state_ = JobExecutionState::kComplete;
+
+  MaybeStartNextAnnotationJob();
+}
+
+void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
+  if (job_state_ == JobExecutionState::kRunning) {
     return;
   }
-  bool has_supported_output = false;
-  for (const auto supported_output : model_metadata->supported_output()) {
-    if (supported_output == proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES ||
-        supported_output ==
-            proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED) {
-      has_supported_output = true;
-      break;
+
+  JobQueue::Pointer job_ptr = job_queue_.FirstMax();
+  if (job_ptr.is_null()) {
+    // There are no more jobs to run, so unload all models.
+    if (page_topics_model_executor_) {
+      page_topics_model_executor_->UnloadModel();
     }
-  }
-  if (!has_supported_output) {
-    // TODO(crbug/1177102): Add histogram.
+    if (page_visibility_model_executor_) {
+      page_visibility_model_executor_->UnloadModel();
+    }
     return;
   }
-  page_topics_model_executor_->ExecuteModelWithInput(
-      base::BindOnce(&PageContentAnnotationsModelManager::
-                         OnPageTopicsModelExecutionCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     *model_metadata),
-      text);
-}
 
-void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
-    PageContentAnnotatedCallback callback,
-    const proto::PageTopicsModelMetadata& model_metadata,
-    const base::Optional<std::vector<tflite::task::core::Category>>& output) {
-  base::Optional<history::VisitContentAnnotations> content_annotations;
-  if (output) {
-    content_annotations =
-        GetContentAnnotationsFromModelOutput(model_metadata, *output);
+  DCHECK(job_state_ == JobExecutionState::kIdle ||
+         job_state_ == JobExecutionState::kComplete);
+  job_state_ = JobExecutionState::kRunning;
+
+  std::unique_ptr<PageContentAnnotationJob> job = job_queue_.Erase(job_ptr);
+
+  base::OnceClosure on_job_complete_callback = base::BindOnce(
+      &PageContentAnnotationsModelManager::OnJobExecutionComplete,
+      weak_ptr_factory_.GetWeakPtr());
+
+  // Reset every other model from memory so that there aren't a bunch of models
+  // all loaded at the same time.
+  if (job->type() != AnnotationType::kPageTopics &&
+      page_topics_model_executor_) {
+    page_topics_model_executor_->UnloadModel();
   }
-  std::move(callback).Run(content_annotations);
-}
-
-base::Optional<int64_t>
-PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
-  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_->ParsedSupportedFeaturesForLoadedModel<
-          proto::PageTopicsModelMetadata>();
-  if (model_metadata)
-    return model_metadata->version();
-  return base::nullopt;
-}
-
-history::VisitContentAnnotations
-PageContentAnnotationsModelManager::GetContentAnnotationsFromModelOutput(
-    const proto::PageTopicsModelMetadata& model_metadata,
-    const std::vector<tflite::task::core::Category>& model_output) const {
-  base::Optional<std::string> floc_protected_category_name;
-  if (model_metadata.output_postprocessing_params()
-          .has_floc_protected_params()) {
-    floc_protected_category_name = model_metadata.output_postprocessing_params()
-                                       .floc_protected_params()
-                                       .category_name();
+  if (job->type() != AnnotationType::kContentVisibility &&
+      page_visibility_model_executor_) {
+    page_visibility_model_executor_->UnloadModel();
   }
-  float floc_protected_score = -1.0;
-  std::vector<std::pair<int, float>> category_candidates;
-  for (const auto& category : model_output) {
-    if (floc_protected_category_name &&
-        category.class_name == *floc_protected_category_name) {
-      floc_protected_score = static_cast<float>(category.score);
-      if (!model_metadata.output_postprocessing_params()
-               .has_category_params()) {
-        break;
-      }
-      continue;
+
+  if (job->type() == AnnotationType::kPageTopics) {
+    if (!page_topics_model_executor_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
     }
+    page_topics_model_executor_->ExecuteJob(std::move(on_job_complete_callback),
+                                            std::move(job));
+    return;
+  }
 
-    // Assume everything else is for categories.
-    int category_id;
-    if (base::StringToInt(category.class_name, &category_id)) {
-      category_candidates.emplace_back(
-          std::make_pair(category_id, static_cast<float>(category.score)));
+  if (job->type() == AnnotationType::kContentVisibility) {
+    if (!page_visibility_model_executor_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
     }
+    page_visibility_model_executor_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
+    return;
   }
 
-  // Postprocess categories.
-  if (!model_metadata.output_postprocessing_params().has_category_params()) {
-    // No parameters for postprocessing, so just return.
-    return history::VisitContentAnnotations(
-        floc_protected_score, /*categories=*/{}, model_metadata.version());
-  }
-  const proto::PageTopicsCategoryPostprocessingParams category_params =
-      model_metadata.output_postprocessing_params().category_params();
-
-  // Determine the categories with the highest weights.
-  std::sort(category_candidates.begin(), category_candidates.end(),
-            [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
-              return a.second > b.second;
-            });
-  size_t max_categories = static_cast<size_t>(category_params.max_categories());
-  float total_weight = 0.0;
-  float sum_positive_scores = 0.0;
-  base::Optional<std::pair<size_t, float>> none_idx_and_weight;
-  std::vector<std::pair<int, float>> categories;
-  categories.reserve(max_categories);
-  for (size_t i = 0; i < category_candidates.size() && i < max_categories;
-       i++) {
-    std::pair<int, float> candidate = category_candidates[i];
-    categories.push_back(candidate);
-    total_weight += candidate.second;
-
-    if (candidate.second > 0)
-      sum_positive_scores += candidate.second;
-
-    if (candidate.first == kNoneCategoryId) {
-      none_idx_and_weight = std::make_pair(i, candidate.second);
+  if (job->type() == AnnotationType::kPageEntities) {
+    if (!page_entities_model_executor_) {
+      job->FillWithNullOutputs();
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
     }
+    page_entities_model_executor_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
+    return;
   }
-
-  // Prune out categories that do not meet the minimum threshold.
-  if (category_params.min_category_weight() > 0) {
-    categories.erase(
-        std::remove_if(categories.begin(), categories.end(),
-                       [&](const std::pair<int, float>& category) {
-                         return category.second <
-                                category_params.min_category_weight();
-                       }),
-        categories.end());
-  }
-
-  // Prune out none weights.
-  if (total_weight == 0) {
-    return history::VisitContentAnnotations(
-        floc_protected_score, /*categories=*/{}, model_metadata.version());
-  }
-  if (none_idx_and_weight) {
-    if ((none_idx_and_weight->second / total_weight) >
-        category_params.min_none_weight()) {
-      // None weight is too strong -
-      return history::VisitContentAnnotations(
-          floc_protected_score, /*categories=*/{}, model_metadata.version());
-    }
-    // None weight doesn't matter, so prune it out.
-    categories.erase(categories.begin() + none_idx_and_weight->first);
-  }
-
-  // Normalize category weights.
-  float normalization_factor =
-      sum_positive_scores > 0 ? sum_positive_scores : 1.0;
-  categories.erase(
-      std::remove_if(
-          categories.begin(), categories.end(),
-          [&](const std::pair<int, float>& category) {
-            return (category.second / normalization_factor) <
-                   category_params.min_normalized_weight_within_top_n();
-          }),
-      categories.end());
-
-  std::vector<history::VisitContentAnnotations::Category> final_categories;
-  final_categories.reserve(categories.size());
-  for (const auto& category : categories) {
-    // We expect the weight to be between 0 and 1, so that the normalization
-    // from 0 to 100 makes sense.
-    DCHECK(category.second >= 0.0 && category.second <= 1.0);
-    final_categories.emplace_back(history::VisitContentAnnotations::Category(
-        category.first, static_cast<int>(100 * category.second)));
-  }
-  DCHECK_LE(final_categories.size(), max_categories);
-  return history::VisitContentAnnotations(
-      floc_protected_score, final_categories, model_metadata.version());
+  NOTREACHED();
 }
 
 }  // namespace optimization_guide

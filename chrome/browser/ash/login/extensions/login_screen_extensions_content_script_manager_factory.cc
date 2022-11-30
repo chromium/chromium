@@ -1,0 +1,62 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
+
+#include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "extensions/browser/extension_registry_factory.h"
+
+namespace ash {
+
+LoginScreenExtensionsContentScriptManager*
+LoginScreenExtensionsContentScriptManagerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<LoginScreenExtensionsContentScriptManager*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+LoginScreenExtensionsContentScriptManagerFactory*
+LoginScreenExtensionsContentScriptManagerFactory::GetInstance() {
+  static base::NoDestructor<LoginScreenExtensionsContentScriptManagerFactory>
+      instance;
+  return instance.get();
+}
+
+LoginScreenExtensionsContentScriptManagerFactory::
+    LoginScreenExtensionsContentScriptManagerFactory()
+    : BrowserContextKeyedServiceFactory(
+          "LoginScreenExtensionsContentScriptManager",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+  DependsOn(extensions::ExtensionSystemFactory::GetInstance());
+}
+
+LoginScreenExtensionsContentScriptManagerFactory::
+    ~LoginScreenExtensionsContentScriptManagerFactory() = default;
+
+KeyedService*
+LoginScreenExtensionsContentScriptManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return nullptr;
+  if (!ProfileHelper::IsSigninProfile(profile)) {
+    // The manager should only be created for the sign-in profile.
+    return nullptr;
+  }
+  return new LoginScreenExtensionsContentScriptManager(profile);
+}
+
+bool LoginScreenExtensionsContentScriptManagerFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  // The manager works in the background, regardless of whether something tried
+  // to access it via the factory.
+  return true;
+}
+
+}  // namespace ash

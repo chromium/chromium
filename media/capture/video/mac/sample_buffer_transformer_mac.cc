@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,6 @@
 #include "third_party/libyuv/include/libyuv/scale.h"
 
 namespace media {
-
-const base::Feature kInCaptureConvertToNv12{"InCaptureConvertToNv12",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -479,7 +476,7 @@ void SampleBufferTransformer::Reconfigure(
     Transformer transformer,
     OSType destination_pixel_format,
     const gfx::Size& destination_size,
-    base::Optional<size_t> buffer_pool_size) {
+    absl::optional<size_t> buffer_pool_size) {
   DCHECK(transformer != Transformer::kLibyuv ||
          destination_pixel_format == kPixelFormatI420 ||
          destination_pixel_format == kPixelFormatNv12)

@@ -1,0 +1,126 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(b/250633393): This proto will need to be moved to the events directory.
+// It is not currently possible because the events directory is not yet
+// replicated to ChromeOS.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package cros_xdr.reporting;
+
+// The building blocks for the event types.
+
+// Attributes that are common to the entire event.
+message CommonEventDataFields {
+  optional string local_timezone = 1;
+  optional int64 device_boot_time = 2;
+}
+
+// Trusted Computing Base attributes.
+message TcbAttributes {
+  optional string system_firmware_version = 1;
+  enum FirmwareSecureBoot {
+    NONE = 0;
+    CROS_FLEX_UEFI_SECURE_BOOT = 1;
+    CROS_VERIFIED_BOOT = 2;
+  }
+  optional FirmwareSecureBoot firmware_secure_boot = 2;
+  // Attributes of the security chip.
+  message SecurityChip {
+    enum Kind {
+      NONE = 0;
+      TPM = 1;
+      GOOGLE_SECURITY_CHIP = 2;
+    }
+    optional Kind kind = 1;
+    optional string chip_version = 2;
+    optional string spec_family = 3;
+    optional string spec_level = 4;
+    optional string manufacturer = 5;
+    optional string vendor_id = 6;
+    optional string tpm_model = 7;
+    optional string firmware_version = 8;
+  }
+  optional SecurityChip security_chip = 3;
+  optional string linux_kernel_version = 4;
+}
+
+// The attributes of a file image.
+message FileImage {
+  optional string pathname = 1;
+  optional uint64 mnt_ns = 2;
+  optional uint64 inode_device_id = 3;
+  optional uint64 inode = 4;
+  optional string sha256 = 5;
+  optional uint64 canonical_uid = 6;
+  optional uint64 canonical_gid = 7;
+  optional uint32 mode = 8;
+}
+
+// The attributes of a process.
+message Process {
+  optional string process_uuid = 1;
+  optional uint64 canonical_pid = 2;
+  optional uint64 canonical_uid = 3;
+  optional string commandline = 4;
+  optional FileImage image = 5;
+}
+
+// Namespaces for a process.
+message Namespaces {
+  optional uint64 cgroup_ns = 1;
+  optional uint64 ipc_ns = 2;
+  optional uint64 pid_ns = 3;
+  optional uint64 user_ns = 4;
+  optional uint64 uts_ns = 5;
+  optional uint64 mnt_ns = 6;
+  optional uint64 net_ns = 7;
+}
+
+// The composed event types.
+
+// Event emitted at the start of execution of an agent process.
+message AgentStartEvent {
+  optional TcbAttributes tcb = 1;
+}
+
+// Periodic event to indicate that an agent is running.
+message AgentHeartbeatEvent {
+  optional TcbAttributes tcb = 1;
+}
+
+// Agent Events wrapper.
+message XdrAgentEvent {
+  optional CommonEventDataFields common = 1;
+  oneof message_type {
+    AgentStartEvent agent_start = 2;
+    AgentHeartbeatEvent agent_heartbeat = 3;
+  }
+}
+
+// Acting process (forked and) exec'd a new child process.
+message ProcessExecEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional Process spawn_process = 3;
+  optional Namespaces spawn_namespaces = 4;
+}
+
+// Acting process (was) terminated.
+message ProcessTerminateEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+}
+
+// Process Events wrapper.
+message XdrProcessEvent {
+  optional CommonEventDataFields common = 1;
+  oneof message_type {
+    ProcessExecEvent process_exec = 2;
+    ProcessTerminateEvent process_terminate = 3;
+  }
+}

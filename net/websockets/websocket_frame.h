@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
@@ -67,6 +66,9 @@ struct NET_EXPORT WebSocketFrameHeader {
   // Constructor to avoid a lot of repetitive initialisation.
   explicit WebSocketFrameHeader(OpCode opCode) : opcode(opCode) {}
 
+  WebSocketFrameHeader(const WebSocketFrameHeader&) = delete;
+  WebSocketFrameHeader& operator=(const WebSocketFrameHeader&) = delete;
+
   // Create a clone of this object on the heap.
   std::unique_ptr<WebSocketFrameHeader> Clone() const;
 
@@ -83,9 +85,6 @@ struct NET_EXPORT WebSocketFrameHeader {
   bool masked = false;
   WebSocketMaskingKey masking_key = {};
   uint64_t payload_length = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameHeader);
 };
 
 // Contains an entire WebSocket frame including payload. This is used by APIs
@@ -94,6 +93,10 @@ struct NET_EXPORT WebSocketFrameHeader {
 struct NET_EXPORT_PRIVATE WebSocketFrame {
   // A frame must always have an opcode, so this parameter is compulsory.
   explicit WebSocketFrame(WebSocketFrameHeader::OpCode opcode);
+
+  WebSocketFrame(const WebSocketFrame&) = delete;
+  WebSocketFrame& operator=(const WebSocketFrame&) = delete;
+
   ~WebSocketFrame();
 
   // |header| is always present.
@@ -107,9 +110,6 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   // object.
   // TODO(yoicho): Find more better way to clarify the life cycle.
   const char* payload = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrame);
 };
 
 // Structure describing one chunk of a WebSocket frame.
@@ -131,6 +131,10 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
 // WebSocketFrameParser). To construct WebSocket frames, use functions below.
 struct NET_EXPORT WebSocketFrameChunk {
   WebSocketFrameChunk();
+
+  WebSocketFrameChunk(const WebSocketFrameChunk&) = delete;
+  WebSocketFrameChunk& operator=(const WebSocketFrameChunk&) = delete;
+
   ~WebSocketFrameChunk();
 
   // Non-null |header| is provided only if this chunk is the first part of
@@ -138,7 +142,7 @@ struct NET_EXPORT WebSocketFrameChunk {
   std::unique_ptr<WebSocketFrameHeader> header;
 
   // Indicates this part is the last chunk of a frame.
-  bool final_chunk;
+  bool final_chunk = false;
 
   // |payload| is always unmasked even if the frame is masked. |payload| might
   // be empty in the first chunk.
@@ -148,9 +152,6 @@ struct NET_EXPORT WebSocketFrameChunk {
   // object.
   // TODO(yoicho): Find more better way to clarify the life cycle.
   base::span<const char> payload;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketFrameChunk);
 };
 
 using WebSocketMaskingKey = WebSocketFrameHeader::WebSocketMaskingKey;

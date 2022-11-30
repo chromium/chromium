@@ -1,2 +1,2 @@
 # BUG: The expected result is 'foo bar baz'
-textField name='bar' nameFrom=relatedElement
+textField name='foo baz' nameFrom=relatedElement

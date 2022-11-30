@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos/ash")
+
+component("resourced") {
+  defines = [ "IS_RESOURCED_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_resourced_client.cc",
+    "fake_resourced_client.h",
+    "resourced_client.cc",
+    "resourced_client.h",
+  ]
+}

@@ -1,0 +1,82 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+js_library("files_media_content") {
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
+}
+
+js_library("files_browsable_content") {
+}
+
+js_library("url_constants") {
+}
+
+js_type_check("closure_compile") {
+  deps = [
+    ":files_browsable_content",
+    ":files_media_content",
+    ":url_constants",
+  ]
+}
+
+generated_untrusted_grd = "$target_gen_dir/file_manager_untrusted_resources.grd"
+
+generate_grd("build_file_manager_untrusted_grd") {
+  grd_prefix = "file_manager_untrusted"
+  out_grd = generated_untrusted_grd
+
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [
+    "files_audio_content.css",
+    "files_audio_content.html",
+    "files_browsable_content.html",
+    "files_browsable_content.js",
+    "files_text_content.css",
+    "files_text_content.html",
+    "files_img_content.css",
+    "files_img_content.html",
+    "files_media_content.js",
+    "files_video_content.css",
+    "files_video_content.html",
+    "url_constants.js",
+  ]
+  resource_path_rewrites = [
+    "files_audio_content.css|untrusted_resources/files_audio_content.css",
+    "files_audio_content.html|untrusted_resources/files_audio_content.html",
+    "files_browsable_content.html|untrusted_resources/files_browsable_content.html",
+    "files_browsable_content.js|untrusted_resources/files_browsable_content.js",
+    "files_text_content.css|untrusted_resources/files_text_content.css",
+    "files_text_content.html|untrusted_resources/files_text_content.html",
+    "files_img_content.css|untrusted_resources/files_img_content.css",
+    "files_img_content.html|untrusted_resources/files_img_content.html",
+    "files_media_content.js|untrusted_resources/files_media_content.js",
+    "files_video_content.css|untrusted_resources/files_video_content.css",
+    "files_video_content.html|untrusted_resources/files_video_content.html",
+    "url_constants.js|untrusted_resources/url_constants.js",
+  ]
+}
+
+# Resources used by chrome-untrusted://file-manager.
+grit("file_manager_untrusted_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  source = generated_untrusted_grd
+  deps = [ ":build_file_manager_untrusted_grd" ]
+
+  outputs = [
+    "grit/file_manager_untrusted_resources.h",
+    "grit/file_manager_untrusted_resources_map.cc",
+    "grit/file_manager_untrusted_resources_map.h",
+    "file_manager_untrusted_resources.pak",
+  ]
+  output_dir = target_gen_dir
+}

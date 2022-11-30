@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_
+
+#include "base/memory/singleton.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class KeyedService;
+class Profile;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace ash {
+
+// Singleton that creates |RemoteAppsManager|s and associates them with a
+// |Profile|.
+class RemoteAppsManagerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  static RemoteAppsManager* GetForProfile(Profile* profile);
+
+  static RemoteAppsManagerFactory* GetInstance();
+
+ private:
+  friend struct base::DefaultSingletonTraits<RemoteAppsManagerFactory>;
+
+  RemoteAppsManagerFactory();
+  RemoteAppsManagerFactory(const RemoteAppsManagerFactory&) = delete;
+  RemoteAppsManagerFactory& operator=(const RemoteAppsManagerFactory&) = delete;
+  ~RemoteAppsManagerFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+};
+
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_FACTORY_H_

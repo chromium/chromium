@@ -1,3 +1,5 @@
 include_rules = [
-  "+components/safe_browsing",
+  "+components/safe_browsing/content/browser",
+  "+components/safe_browsing/content/common",
+  "+services/network/test",
 ]

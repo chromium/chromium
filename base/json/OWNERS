@@ -1,1 +1,3 @@
 file://base/SECURITY_OWNERS
+
+per-file values_util*=alancutter@chromium.org,jdoerrie@chromium.org

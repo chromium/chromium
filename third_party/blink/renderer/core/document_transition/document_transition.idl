@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,27 @@
     Exposed=Window,
     RuntimeEnabled=DocumentTransition
 ] interface DocumentTransition {
-  // - This should only be called after any previous start() calls have resolved.
-  // - Rejects any previous unresolved prepare() promises.
-  // - Returns a promise that resolves after the transition has been
-  //   prepared.
-  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionPrepareOptions options = {});
+  // Starts the transition with the captured elements.
+  // |callback| is used to asynchronously initialize the new DOM for the
+  // transition. Animations are started when this callback returns.
+  // The returned promise is resolved when all animations for this transition
+  // are finished.
+  //
+  // Note that this is deprecated in favor of `finished` and `prepare`. This
+  // function is roughly equivalent to the following:
+  // transition.start(params) {
+  //   transition.prepare(params)
+  //   return transition.finished
+  // }
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionCallback callback);
 
-  // Can only be called after prepare(), during the task during
-  // which prepare() most recently resolved.
-  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionStartOptions options = {});
+  // Abandons the transition.
+  [CallWith=ScriptState, RaisesException] void abandon();
+
+  // A promise that is available after the prepare call, which is resolved when
+  // the corresponding transition is finished.
+  readonly attribute Promise<void> finished;
+
+  // Prepare and begin a transition.
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionCallback callback);
 };

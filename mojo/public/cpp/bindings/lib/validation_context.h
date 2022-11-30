@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
-static const int kMaxRecursionDepth = 100;
+static const int kMaxRecursionDepth = 200;
 
 namespace mojo {
 
@@ -55,6 +55,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   ValidationContext(Message* message,
                     const char* description,
                     ValidatorType validator_type);
+
+  ValidationContext(const ValidationContext&) = delete;
+  ValidationContext& operator=(const ValidationContext&) = delete;
 
   ~ValidationContext();
 
@@ -134,16 +137,19 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
       ++ctx_->stack_depth_;
     }
 
+    ScopedDepthTracker(const ScopedDepthTracker&) = delete;
+    ScopedDepthTracker& operator=(const ScopedDepthTracker&) = delete;
+
     ~ScopedDepthTracker() { --ctx_->stack_depth_; }
 
    private:
-    ValidationContext* ctx_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDepthTracker);
+    // `ctx_` is not a raw_ptr<...> for performance reasons: On-stack pointee
+    // (i.e. not covered by BackupRefPtr protection).
+    RAW_PTR_EXCLUSION ValidationContext* ctx_;
   };
 
   // Returns true if the recursion depth limit has been reached.
-  bool ExceedsMaxDepth() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool ExceedsMaxDepth() {
     return stack_depth_ > kMaxRecursionDepth;
   }
 
@@ -156,7 +162,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
     return end > begin && begin >= data_begin_ && end <= data_end_;
   }
 
-  Message* const message_;
+  const raw_ptr<Message> message_;
   const char* const description_;
   const ValidatorType validator_type_;
 
@@ -174,8 +180,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
   uint32_t associated_endpoint_handle_end_;
 
   int stack_depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidationContext);
 };
 
 }  // namespace internal

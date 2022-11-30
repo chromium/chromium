@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -23,9 +24,7 @@
 
 namespace storage {
 
-// A callback shim that provides storage for the 'backend_ptr' value
-// and will delete a resulting ptr if completion occurs after the
-// callback has been canceled.
+// A callback shim that keeps track of cancellation of backend creation.
 class ServiceWorkerDiskCache::CreateBackendCallbackShim
     : public base::RefCounted<CreateBackendCallbackShim> {
  public:
@@ -34,19 +33,18 @@ class ServiceWorkerDiskCache::CreateBackendCallbackShim
 
   void Cancel() { service_worker_disk_cache_ = nullptr; }
 
-  void Callback(int return_value) {
+  void Callback(disk_cache::BackendResult result) {
     if (service_worker_disk_cache_)
-      service_worker_disk_cache_->OnCreateBackendComplete(return_value);
+      service_worker_disk_cache_->OnCreateBackendComplete(std::move(result));
   }
-
-  std::unique_ptr<disk_cache::Backend> backend_ptr_;  // Accessed directly.
 
  private:
   friend class base::RefCounted<CreateBackendCallbackShim>;
 
   ~CreateBackendCallbackShim() = default;
 
-  ServiceWorkerDiskCache* service_worker_disk_cache_;  // Unowned pointer.
+  raw_ptr<ServiceWorkerDiskCache>
+      service_worker_disk_cache_;  // Unowned pointer.
 };
 
 ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(
@@ -135,7 +133,8 @@ void ServiceWorkerDiskCache::Disable() {
   if (create_backend_callback_.get()) {
     create_backend_callback_->Cancel();
     create_backend_callback_ = nullptr;
-    OnCreateBackendComplete(net::ERR_ABORTED);
+    OnCreateBackendComplete(
+        disk_cache::BackendResult::MakeError(net::ERR_ABORTED));
   }
 
   // We need to close open file handles in order to reinitialize the
@@ -270,30 +269,31 @@ net::Error ServiceWorkerDiskCache::Init(net::CacheType cache_type,
   create_backend_callback_ =
       base::MakeRefCounted<CreateBackendCallbackShim>(this);
 
-  net::Error return_value = disk_cache::CreateCacheBackend(
-      cache_type, net::CACHE_BACKEND_SIMPLE, cache_directory, cache_size,
-      disk_cache::ResetHandling::kNeverReset, nullptr,
-      &(create_backend_callback_->backend_ptr_),
-      std::move(post_cleanup_callback),
+  disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
+      cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr,
+      cache_directory, cache_size, disk_cache::ResetHandling::kNeverReset,
+      /*net_log=*/nullptr, std::move(post_cleanup_callback),
       base::BindOnce(&CreateBackendCallbackShim::Callback,
                      create_backend_callback_));
-  if (return_value == net::ERR_IO_PENDING)
+  net::Error rv = result.net_error;
+  if (rv == net::ERR_IO_PENDING)
     init_callback_ = std::move(callback);
   else
-    OnCreateBackendComplete(return_value);
-  return return_value;
+    OnCreateBackendComplete(std::move(result));
+  return rv;
 }
 
-void ServiceWorkerDiskCache::OnCreateBackendComplete(int return_value) {
+void ServiceWorkerDiskCache::OnCreateBackendComplete(
+    disk_cache::BackendResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (return_value == net::OK) {
-    disk_cache_ = std::move(create_backend_callback_->backend_ptr_);
+  if (result.net_error == net::OK) {
+    disk_cache_ = std::move(result.backend);
   }
   create_backend_callback_ = nullptr;
 
   // Invoke our clients callback function.
   if (!init_callback_.is_null()) {
-    std::move(init_callback_).Run(return_value);
+    std::move(init_callback_).Run(result.net_error);
   }
 
   // Service pending calls that were queued up while we were initializing.

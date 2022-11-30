@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <cstddef>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/content_suggestion.h"
@@ -42,6 +41,8 @@ class CachedImageFetcher {
   CachedImageFetcher(std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
                      PrefService* pref_service,
                      RemoteSuggestionsDatabase* database);
+  CachedImageFetcher(const CachedImageFetcher&) = delete;
+  CachedImageFetcher& operator=(const CachedImageFetcher&) = delete;
   virtual ~CachedImageFetcher();
 
   // Fetches the image for a suggestion. The fetcher will first issue a lookup
@@ -90,13 +91,11 @@ class CachedImageFetcher {
       const image_fetcher::RequestMetadata& request_metadata);
 
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-  RemoteSuggestionsDatabase* database_;
+  raw_ptr<RemoteSuggestionsDatabase> database_;
   // Request throttler for limiting requests to thumbnail images.
   RequestThrottler thumbnail_requests_throttler_;
 
   base::WeakPtrFactory<CachedImageFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CachedImageFetcher);
 };
 
 }  // namespace ntp_snippets

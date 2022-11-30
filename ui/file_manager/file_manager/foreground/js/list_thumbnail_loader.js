@@ -1,18 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {FileListModel} from './file_list_model.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {LRUCache} from '../../common/js/lru_cache.m.js';
-// #import {ThumbnailLoader} from './thumbnail_loader.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {LRUCache} from '../../common/js/lru_cache.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {FileListModel} from './file_list_model.js';
+import {ThumbnailModel} from './metadata/thumbnail_model.js';
+import {ThumbnailLoader} from './thumbnail_loader.js';
 
 /**
  * A thumbnail loader for list style UI.
@@ -22,7 +22,7 @@
  * is responsible to return dataUrls of thumbnails and fetch them with proper
  * priority.
  */
-/* #export */ class ListThumbnailLoader extends cr.EventTarget {
+export class ListThumbnailLoader extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel A directory model.
    * @param {!ThumbnailModel} thumbnailModel Thumbnail metadata model.
@@ -442,7 +442,7 @@ ListThumbnailLoader.Task = class {
         .then(metadata => {
           const loadTargets = [
             ThumbnailLoader.LoadTarget.CONTENT_METADATA,
-            ThumbnailLoader.LoadTarget.EXTERNAL_METADATA
+            ThumbnailLoader.LoadTarget.EXTERNAL_METADATA,
           ];
 
           // If the file is on a network filesystem, don't generate thumbnails

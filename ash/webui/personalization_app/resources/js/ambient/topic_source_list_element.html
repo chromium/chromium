@@ -1,0 +1,30 @@
+<style include="common">
+  topic-source-item {
+    align-items: center;
+    height: 64px;
+  }
+
+  iron-list > *:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+
+<h3 id="topicSourceTitle" class="ambient-subpage-element-title">
+  $i18n{ambientModeTopicSourceTitle}
+</h3>
+
+<iron-list id="topicSourceList" items="[[topicSources]]"
+    aria-describedby="topicSourceTitle" role="radiogroup">
+  <template>
+    <topic-source-item topic-source="[[item]]"
+        role="radio"
+        tabindex$="[[tabIndex]]"
+        has-google-photos-albums="[[hasGooglePhotosAlbums]]"
+        checked="[[isSelected_(item, selectedTopicSource)]]">
+    </topic-source-item>
+  </template>
+</iron-list>

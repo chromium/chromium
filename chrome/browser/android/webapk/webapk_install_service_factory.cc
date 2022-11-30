@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 
 #include "chrome/browser/android/webapk/webapk_install_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 WebApkInstallServiceFactory* WebApkInstallServiceFactory::GetInstance() {
@@ -21,18 +19,13 @@ WebApkInstallService* WebApkInstallServiceFactory::GetForBrowserContext(
 }
 
 WebApkInstallServiceFactory::WebApkInstallServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "WebApkInstallService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 WebApkInstallServiceFactory::~WebApkInstallServiceFactory() {}
 
 KeyedService* WebApkInstallServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new WebApkInstallService(context);
-}
-
-content::BrowserContext* WebApkInstallServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

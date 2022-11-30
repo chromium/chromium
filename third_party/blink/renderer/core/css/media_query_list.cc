@@ -24,12 +24,18 @@
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 MediaQueryList::MediaQueryList(ExecutionContext* context,
                                MediaQueryMatcher* matcher,
-                               scoped_refptr<MediaQuerySet> media)
+                               MediaQuerySet* media)
     : ExecutionContextLifecycleObserver(context),
       matcher_(matcher),
       media_(media),
@@ -42,6 +48,9 @@ MediaQueryList::MediaQueryList(ExecutionContext* context,
 MediaQueryList::~MediaQueryList() = default;
 
 String MediaQueryList::media() const {
+  if (media_->HasUnknown()) {
+    UseCounter::Count(GetExecutionContext(), WebFeature::kCSSMatchMediaUnknown);
+  }
   return media_->MediaText();
 }
 
@@ -90,7 +99,7 @@ bool MediaQueryList::MediaFeaturesChanged(
 
 bool MediaQueryList::UpdateMatches() {
   matches_dirty_ = false;
-  if (matches_ != matcher_->Evaluate(media_.get())) {
+  if (matches_ != matcher_->Evaluate(media_.Get())) {
     matches_ = !matches_;
     return true;
   }
@@ -98,12 +107,22 @@ bool MediaQueryList::UpdateMatches() {
 }
 
 bool MediaQueryList::matches() {
+  // If this is an iframe, viewport size depends on the layout of the embedding
+  // document.
+  if (matcher_->GetDocument() && matcher_->GetDocument()->GetFrame()) {
+    if (auto* owner =
+            matcher_->GetDocument()->GetFrame()->OwnerLayoutObject()) {
+      owner->GetDocument().UpdateStyleAndLayout(
+          DocumentUpdateReason::kJavaScript);
+    }
+  }
   UpdateMatches();
   return matches_;
 }
 
 void MediaQueryList::Trace(Visitor* visitor) const {
   visitor->Trace(matcher_);
+  visitor->Trace(media_);
   visitor->Trace(listeners_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);

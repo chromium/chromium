@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 namespace {
 
@@ -17,7 +18,7 @@ constexpr char kUserActionPowerwash[] = "powerwash";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 std::string DemoSetupScreen::GetResultString(Result result) {
@@ -29,31 +30,23 @@ std::string DemoSetupScreen::GetResultString(Result result) {
   }
 }
 
-DemoSetupScreen::DemoSetupScreen(DemoSetupScreenView* view,
+DemoSetupScreen::DemoSetupScreen(base::WeakPtr<DemoSetupScreenView> view,
                                  const ScreenExitCallback& exit_callback)
     : BaseScreen(DemoSetupScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  DCHECK(view_);
-  view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-DemoSetupScreen::~DemoSetupScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+DemoSetupScreen::~DemoSetupScreen() = default;
 
 void DemoSetupScreen::ShowImpl() {
   if (view_)
     view_->Show();
 }
 
-void DemoSetupScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
-}
+void DemoSetupScreen::HideImpl() {}
 
-void DemoSetupScreen::OnUserAction(const std::string& action_id) {
+void DemoSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionStartSetup) {
     StartEnrollment();
   } else if (action_id == kUserActionClose) {
@@ -61,10 +54,9 @@ void DemoSetupScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionPowerwash) {
     SessionManagerClient::Get()->StartDeviceWipe();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
-
 
 void DemoSetupScreen::StartEnrollment() {
   // Demo setup screen is only shown in OOBE.
@@ -82,6 +74,8 @@ void DemoSetupScreen::StartEnrollment() {
 
 void DemoSetupScreen::SetCurrentSetupStep(
     const DemoSetupController::DemoSetupStep current_step) {
+  if (!view_)
+    return;
   view_->SetCurrentSetupStep(current_step);
 }
 
@@ -92,6 +86,8 @@ void DemoSetupScreen::SetCurrentSetupStepForTest(
 
 void DemoSetupScreen::OnSetupError(
     const DemoSetupController::DemoSetupError& error) {
+  if (!view_)
+    return;
   view_->OnSetupFailed(error);
 }
 
@@ -99,9 +95,4 @@ void DemoSetupScreen::OnSetupSuccess() {
   exit_callback_.Run(Result::COMPLETED);
 }
 
-void DemoSetupScreen::OnViewDestroyed(DemoSetupScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
-
-}  // namespace chromeos
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_send_message_result.h"
@@ -57,7 +58,7 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
 
   if (!device) {
     std::move(callback).Run(
-        static_cast<int>(SharingSendMessageResult::kDeviceNotFound));
+        static_cast<int32_t>(SharingSendMessageResult::kDeviceNotFound));
     return;
   }
 
@@ -66,8 +67,7 @@ void SharingServiceProxyAndroid::SendSharedClipboardMessage(
   sharing_message.mutable_shared_clipboard_message()->set_text(std::move(text));
 
   sharing_service_->SendMessageToDevice(
-      *device, base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get()),
-      std::move(sharing_message),
+      *device, kSharingMessageTTL, std::move(sharing_message),
       base::BindOnce(
           [](base::OnceCallback<void(int)> callback,
              SharingSendMessageResult result,

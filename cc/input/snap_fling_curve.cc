@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 namespace cc {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr double kDistanceEstimatorScalar = 40;
 // The delta to be scrolled in next frame is 0.9 of the delta in last frame.
 constexpr double kRatio = 0.9;
@@ -20,9 +20,8 @@ constexpr double kDistanceEstimatorScalar = 25;
 // The delta to be scrolled in next frame is 0.92 of the delta in last frame.
 constexpr double kRatio = 0.92;
 #endif
-constexpr auto kFrameTime = base::TimeDelta::FromMilliseconds(16);
-constexpr base::TimeDelta kMaximumSnapDuration =
-    base::TimeDelta::FromSecondsD(5);
+constexpr auto kFrameTime = base::Milliseconds(16);
+constexpr base::TimeDelta kMaximumSnapDuration = base::Seconds(5);
 
 double GetDistanceFromDisplacement(gfx::Vector2dF displacement) {
   return std::hypot(displacement.x(), displacement.y());
@@ -58,8 +57,8 @@ gfx::Vector2dF SnapFlingCurve::EstimateDisplacement(
   return destination;
 }
 
-SnapFlingCurve::SnapFlingCurve(const gfx::Vector2dF& start_offset,
-                               const gfx::Vector2dF& target_offset,
+SnapFlingCurve::SnapFlingCurve(const gfx::PointF& start_offset,
+                               const gfx::PointF& target_offset,
                                base::TimeTicks first_gsu_time)
     : start_offset_(start_offset),
       total_displacement_(target_offset - start_offset),
@@ -105,7 +104,7 @@ gfx::Vector2dF SnapFlingCurve::GetScrollDelta(base::TimeTicks time_stamp) {
   return new_displacement - current_displacement_;
 }
 
-void SnapFlingCurve::UpdateCurrentOffset(const gfx::Vector2dF& current_offset) {
+void SnapFlingCurve::UpdateCurrentOffset(const gfx::PointF& current_offset) {
   current_displacement_ = current_offset - start_offset_;
 }
 

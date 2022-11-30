@@ -1,23 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -26,8 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kFakePassword[] = "p4zzw0r(|";
@@ -40,8 +37,6 @@ class TestUserSessionManager : public UserSessionManager {
   TestUserSessionManager() = default;
   ~TestUserSessionManager() override = default;
 };
-
-}  // namespace
 
 class UserSessionManagerTest : public testing::Test {
  public:
@@ -58,6 +53,9 @@ class UserSessionManagerTest : public testing::Test {
   }
 
   void SetUp() override { ASSERT_TRUE(profile_manager_->SetUp()); }
+
+  UserSessionManagerTest(const UserSessionManagerTest&) = delete;
+  UserSessionManagerTest& operator=(const UserSessionManagerTest&) = delete;
 
   ~UserSessionManagerTest() override {
     profile_manager_->DeleteAllTestingProfiles();
@@ -94,11 +92,8 @@ class UserSessionManagerTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
-        std::string() /* supervised_user_id */,
-        TestingProfile::TestingFactories());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        test_user_, profile);
+        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
 
     user_manager->LoginUser(account_id);
     return profile;
@@ -115,9 +110,6 @@ class UserSessionManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   user_manager::User* test_user_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserSessionManagerTest);
 };
 
 // Calling VoteForSavingLoginPassword() with `save_password` set to false for
@@ -125,6 +117,8 @@ class UserSessionManagerTest : public testing::Test {
 // and clear it from the user context.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave) {
   InitLoginPassword();
+  user_session_manager_->set_start_session_type_for_testing(
+      UserSessionManager::StartSessionType::kPrimary);
 
   // First service votes no: Should keep password in user context.
   user_session_manager_->VoteForSavingLoginPassword(
@@ -144,6 +138,8 @@ TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave) {
 // all services have voted.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_Save) {
   InitLoginPassword();
+  user_session_manager_->set_start_session_type_for_testing(
+      UserSessionManager::StartSessionType::kPrimary);
 
   // First service votes yes: Should send password and remove from user context.
   user_session_manager_->VoteForSavingLoginPassword(
@@ -163,6 +159,8 @@ TEST_F(UserSessionManagerTest, PasswordConsumerService_Save) {
 // SessionManager on the second service and clear it from the user context.
 TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave_Save) {
   InitLoginPassword();
+  user_session_manager_->set_start_session_type_for_testing(
+      UserSessionManager::StartSessionType::kPrimary);
 
   // First service votes no: Should keep password in user context.
   user_session_manager_->VoteForSavingLoginPassword(
@@ -176,6 +174,20 @@ TEST_F(UserSessionManagerTest, PasswordConsumerService_NoSave_Save) {
       UserSessionManager::PasswordConsumingService::kKerberos, true);
   EXPECT_EQ(kFakePassword, FakeSessionManagerClient::Get()->login_password());
   EXPECT_TRUE(GetUserSessionManagerLoginPassword().empty());
+}
+
+// Calling VoteForSavingLoginPassword() with `save_password` set to true should
+// be ignored if a secondary user session is being started.
+TEST_F(UserSessionManagerTest,
+       PasswordConsumerService_NoSave_SecondarySession) {
+  InitLoginPassword();
+  user_session_manager_->set_start_session_type_for_testing(
+      UserSessionManager::StartSessionType::kSecondary);
+
+  // First service votes yes: Should send password and remove from user context.
+  user_session_manager_->VoteForSavingLoginPassword(
+      UserSessionManager::PasswordConsumingService::kNetwork, true);
+  EXPECT_TRUE(FakeSessionManagerClient::Get()->login_password().empty());
 }
 
 TEST_F(UserSessionManagerTest, RespectLocale_WithProfileLocale) {
@@ -214,8 +226,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_WithoutProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
+  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   profile->GetPrefs()->SetString(language::prefs::kApplicationLocale, "fr-CA");
   g_browser_process->SetApplicationLocale("fr");
@@ -234,8 +245,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
-  chromeos::DemoSession::SetDemoConfigForTesting(
-      chromeos::DemoSession::DemoModeConfig::kOnline);
+  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   g_browser_process->SetApplicationLocale("fr");
 
@@ -251,4 +261,5 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   EXPECT_EQ("fr-CA", profile->requested_locale().value());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,6 @@ function FrameworkUnitTest() {}
 FrameworkUnitTest.prototype = {
   __proto__: testing.Test.prototype,
 };
-
-TEST_F('FrameworkUnitTest', 'testExpectTrueOk', function() {
-  expectTrue(true);
-});
 
 TEST_F('FrameworkUnitTest', 'testAssertTrueOk', function() {
   assertTrue(true);
@@ -32,10 +28,6 @@ FrameworkUnitTestFail.prototype = {
   /** inheritDoc */
   testShouldFail: true,
 };
-
-TEST_F('FrameworkUnitTestFail', 'testExpectFailFails', function() {
-  expectNotReached();
-});
 
 TEST_F('FrameworkUnitTestFail', 'testAssertFailFails', function() {
   assertNotReached();

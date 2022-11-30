@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("mf_arrow_down") {
+  sources = [
+    "mf_arrow_down.imageset/Contents.json",
+    "mf_arrow_down.imageset/mf_arrow_down.png",
+    "mf_arrow_down.imageset/mf_arrow_down@2x.png",
+    "mf_arrow_down.imageset/mf_arrow_down@3x.png",
+  ]
+}
+
+imageset("mf_arrow_up") {
+  sources = [
+    "mf_arrow_up.imageset/Contents.json",
+    "mf_arrow_up.imageset/mf_arrow_up.png",
+    "mf_arrow_up.imageset/mf_arrow_up@2x.png",
+    "mf_arrow_up.imageset/mf_arrow_up@3x.png",
+  ]
+}

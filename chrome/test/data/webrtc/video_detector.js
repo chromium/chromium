@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -38,7 +38,7 @@ function startDetection(videoElementId, width, height) {
 
   gFingerprints = [];
   gDetectorInterval = setInterval(function() {
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {willReadFrequently: true});
     if (video.videoWidth == 0)
       return;  // The video element isn't playing anything.
 
@@ -86,12 +86,15 @@ function isVideoPlaying() {
 function isVideoStopped() {
   // Video is considered to be stopped if the last 5 fingerprints are the same.
   // We only check for rough equality though to account for rounding errors.
-  if (gFingerprints.length < 5)
+  if (gFingerprints.length < 5) {
     silentReturnToTest('video-not-stopped');
+    return;
+  }
 
   if (allElementsRoughlyEqualTo_(gFingerprints.slice(-5),
                                  gFingerprints[gFingerprints.length - 1])) {
     silentReturnToTest('video-stopped');
+    return;
   }
 
   silentReturnToTest('video-not-stopped');

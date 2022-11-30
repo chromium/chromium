@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.robolectric.annotation.LooperMode;
 
 import android.app.Activity;
 
@@ -51,6 +52,8 @@ public class GoogleApiClientHelperTest {
     /** Tests that connection attempts are delayed. */
     @Test
     @Feature({"GCore"})
+    // TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
+    @LooperMode(LooperMode.Mode.LEGACY)
     public void connectionAttemptDelayTest() {
         GoogleApiClientHelper helper = new GoogleApiClientHelper(mMockClient);
 

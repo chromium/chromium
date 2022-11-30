@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
@@ -63,7 +62,6 @@ std::unique_ptr<Video> Video::Expand(const gfx::Size& resolution,
       << "An odd origin point is not supported";
   auto new_video = std::make_unique<Video>(file_path_, metadata_file_path_);
   new_video->frame_checksums_ = frame_checksums_;
-  new_video->thumbnail_checksums_ = thumbnail_checksums_;
   new_video->profile_ = profile_;
   new_video->codec_ = codec_;
   new_video->frame_rate_ = frame_rate_;
@@ -128,7 +126,6 @@ std::unique_ptr<Video> Video::ConvertToNV12() const {
       << "The pixel format of source video is not I420";
   auto new_video = std::make_unique<Video>(file_path_, metadata_file_path_);
   new_video->frame_checksums_ = frame_checksums_;
-  new_video->thumbnail_checksums_ = thumbnail_checksums_;
   new_video->profile_ = profile_;
   new_video->codec_ = codec_;
   new_video->bit_depth_ = bit_depth_;
@@ -177,7 +174,7 @@ bool Video::Load(const size_t max_frames) {
   DCHECK(!file_path_.empty());
   DCHECK(data_.empty());
 
-  base::Optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
+  absl::optional<base::FilePath> resolved_path = ResolveFilePath(file_path_);
   if (!resolved_path) {
     LOG(ERROR) << "Video file not found: " << file_path_;
     return false;
@@ -236,7 +233,7 @@ bool Video::Load(const size_t max_frames) {
 }
 
 bool Video::Decode() {
-  if (codec_ != VideoCodec::kCodecVP9) {
+  if (codec_ != VideoCodec::kVP9) {
     LOG(ERROR) << "Decoding is currently only supported for VP9 videos";
     return false;
   }
@@ -270,7 +267,7 @@ bool Video::Decode() {
   // data will be replaced with the decompressed video stream.
   pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_I420;
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
-  codec_ = kUnknownVideoCodec;
+  codec_ = VideoCodec::kUnknown;
   data_ = std::move(decompressed_data);
   return true;
 }
@@ -328,16 +325,12 @@ gfx::Rect Video::VisibleRect() const {
 }
 
 base::TimeDelta Video::GetDuration() const {
-  return base::TimeDelta::FromSecondsD(static_cast<double>(num_frames_) /
-                                       static_cast<double>(frame_rate_));
+  return base::Seconds(static_cast<double>(num_frames_) /
+                       static_cast<double>(frame_rate_));
 }
 
 const std::vector<std::string>& Video::FrameChecksums() const {
   return frame_checksums_;
-}
-
-const std::vector<std::string>& Video::ThumbnailChecksums() const {
-  return thumbnail_checksums_;
 }
 
 // static
@@ -355,7 +348,7 @@ bool Video::LoadMetadata() {
   if (metadata_file_path_.empty())
     metadata_file_path_ = file_path_.AddExtension(kMetadataSuffix);
 
-  base::Optional<base::FilePath> resolved_path =
+  absl::optional<base::FilePath> resolved_path =
       ResolveFilePath(metadata_file_path_);
   if (!resolved_path) {
     LOG(ERROR) << "Video metadata file not found: " << metadata_file_path_;
@@ -371,17 +364,17 @@ bool Video::LoadMetadata() {
 
   auto metadata_result =
       base::JSONReader::ReadAndReturnValueWithError(json_data);
-  if (!metadata_result.value) {
+  if (!metadata_result.has_value()) {
     LOG(ERROR) << "Failed to parse video metadata: " << metadata_file_path_
-               << ": " << metadata_result.error_message;
+               << ": " << metadata_result.error().message;
     return false;
   }
-  base::Optional<base::Value> metadata = std::move(metadata_result.value);
+  base::Value& metadata = *metadata_result;
 
   // Find the video's profile, only required for encoded video streams.
   profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   const base::Value* profile =
-      metadata->FindKeyOfType("profile", base::Value::Type::STRING);
+      metadata.FindKeyOfType("profile", base::Value::Type::STRING);
   if (profile) {
     auto converted_profile = ConvertStringtoProfile(profile->GetString());
     if (!converted_profile) {
@@ -401,7 +394,7 @@ bool Video::LoadMetadata() {
   // Find the video's bit depth. This is optional and only required for encoded
   // video streams.
   const base::Value* bit_depth =
-      metadata->FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("bit_depth", base::Value::Type::INTEGER);
   if (bit_depth) {
     bit_depth_ = base::checked_cast<uint8_t>(bit_depth->GetInt());
   } else {
@@ -416,7 +409,7 @@ bool Video::LoadMetadata() {
   // Find the video's pixel format, only required for raw video streams.
   pixel_format_ = VideoPixelFormat::PIXEL_FORMAT_UNKNOWN;
   const base::Value* pixel_format =
-      metadata->FindKeyOfType("pixel_format", base::Value::Type::STRING);
+      metadata.FindKeyOfType("pixel_format", base::Value::Type::STRING);
   if (pixel_format) {
     auto converted_pixel_format =
         ConvertStringtoPixelFormat(pixel_format->GetString());
@@ -441,7 +434,7 @@ bool Video::LoadMetadata() {
   }
 
   const base::Value* frame_rate =
-      metadata->FindKeyOfType("frame_rate", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("frame_rate", base::Value::Type::INTEGER);
   if (!frame_rate) {
     LOG(ERROR) << "Key \"frame_rate\" is not found in " << metadata_file_path_;
     return false;
@@ -449,7 +442,7 @@ bool Video::LoadMetadata() {
   frame_rate_ = static_cast<uint32_t>(frame_rate->GetInt());
 
   const base::Value* num_frames =
-      metadata->FindKeyOfType("num_frames", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("num_frames", base::Value::Type::INTEGER);
   if (!num_frames) {
     LOG(ERROR) << "Key \"num_frames\" is not found in " << metadata_file_path_;
     return false;
@@ -461,7 +454,7 @@ bool Video::LoadMetadata() {
   if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
       (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX)) {
     const base::Value* num_fragments =
-        metadata->FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
+        metadata.FindKeyOfType("num_fragments", base::Value::Type::INTEGER);
     if (!num_fragments) {
       LOG(ERROR) << "Key \"num_fragments\" is required for H.264/HEVC video "
                     "streams but could not be found in "
@@ -472,13 +465,13 @@ bool Video::LoadMetadata() {
   }
 
   const base::Value* width =
-      metadata->FindKeyOfType("width", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("width", base::Value::Type::INTEGER);
   if (!width) {
     LOG(ERROR) << "Key \"width\" is not found in " << metadata_file_path_;
     return false;
   }
   const base::Value* height =
-      metadata->FindKeyOfType("height", base::Value::Type::INTEGER);
+      metadata.FindKeyOfType("height", base::Value::Type::INTEGER);
   if (!height) {
     LOG(ERROR) << "Key \"height\" is not found in " << metadata_file_path_;
     return false;
@@ -492,22 +485,10 @@ bool Video::LoadMetadata() {
   // Find optional frame checksums. These are only required when using the frame
   // validator.
   const base::Value* md5_checksums =
-      metadata->FindKeyOfType("md5_checksums", base::Value::Type::LIST);
+      metadata.FindKeyOfType("md5_checksums", base::Value::Type::LIST);
   if (md5_checksums) {
-    for (const base::Value& checksum : md5_checksums->GetList()) {
+    for (const base::Value& checksum : md5_checksums->GetListDeprecated()) {
       frame_checksums_.push_back(checksum.GetString());
-    }
-  }
-
-  // Find optional thumbnail checksums. These are only required when using the
-  // thumbnail test on older platforms that don't support the frame validator.
-  const base::Value* thumbnail_checksums =
-      metadata->FindKeyOfType("thumbnail_checksums", base::Value::Type::LIST);
-  if (thumbnail_checksums) {
-    for (const base::Value& checksum : thumbnail_checksums->GetList()) {
-      const std::string& checksum_str = checksum.GetString();
-      if (checksum_str.size() > 0 && checksum_str[0] != '#')
-        thumbnail_checksums_.push_back(checksum_str);
     }
   }
 
@@ -518,7 +499,7 @@ bool Video::IsMetadataLoaded() const {
   return profile_ != VIDEO_CODEC_PROFILE_UNKNOWN || num_frames_ != 0;
 }
 
-base::Optional<base::FilePath> Video::ResolveFilePath(
+absl::optional<base::FilePath> Video::ResolveFilePath(
     const base::FilePath& file_path) {
   base::FilePath resolved_path = file_path;
 
@@ -531,8 +512,8 @@ base::Optional<base::FilePath> Video::ResolveFilePath(
   }
 
   return PathExists(resolved_path)
-             ? base::Optional<base::FilePath>(resolved_path)
-             : base::Optional<base::FilePath>();
+             ? absl::optional<base::FilePath>(resolved_path)
+             : absl::optional<base::FilePath>();
 }
 
 // static
@@ -571,12 +552,12 @@ void Video::DecodeTask(const std::vector<uint8_t> data,
   }
 
   // Setup the VP9 decoder.
-  media::Status init_result;
+  DecoderStatus init_result;
   VpxVideoDecoder decoder(
       media::OffloadableVideoDecoder::OffloadState::kOffloaded);
   media::VideoDecoder::InitCB init_cb =
-      base::BindOnce([](media::Status* save_to,
-                        media::Status save_from) { *save_to = save_from; },
+      base::BindOnce([](DecoderStatus* save_to,
+                        DecoderStatus save_from) { *save_to = save_from; },
                      &init_result);
   decoder.Initialize(config, false, nullptr, std::move(init_cb),
                      base::BindRepeating(&Video::OnFrameDecoded, resolution,
@@ -594,7 +575,7 @@ void Video::DecodeTask(const std::vector<uint8_t> data,
          num_decoded_frames < num_frames) {
     if (packet.stream_index == stream_index) {
       media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* success, media::Status status) {
+          [](bool* success, DecoderStatus status) {
             *success = (status.is_ok());
           },
           success);
@@ -637,7 +618,7 @@ void Video::OnFrameDecoded(const gfx::Size& resolution,
 }
 
 // static
-base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
+absl::optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     const std::string& profile) {
   if (profile == "H264PROFILE_BASELINE") {
     return H264PROFILE_BASELINE;
@@ -659,31 +640,31 @@ base::Optional<VideoCodecProfile> Video::ConvertStringtoProfile(
     return HEVCPROFILE_MAIN10;
   } else {
     VLOG(2) << profile << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 
 // static
-base::Optional<VideoCodec> Video::ConvertProfileToCodec(
+absl::optional<VideoCodec> Video::ConvertProfileToCodec(
     VideoCodecProfile profile) {
   if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    return kCodecH264;
+    return VideoCodec::kH264;
   } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    return kCodecVP8;
+    return VideoCodec::kVP8;
   } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    return kCodecVP9;
+    return VideoCodec::kVP9;
   } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    return kCodecAV1;
+    return VideoCodec::kAV1;
   } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
-    return kCodecHEVC;
+    return VideoCodec::kHEVC;
   } else {
     VLOG(2) << GetProfileName(profile) << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 
 // static
-base::Optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
+absl::optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
     const std::string& pixel_format) {
   if (pixel_format == "I420") {
     return VideoPixelFormat::PIXEL_FORMAT_I420;
@@ -691,7 +672,7 @@ base::Optional<VideoPixelFormat> Video::ConvertStringtoPixelFormat(
     return VideoPixelFormat::PIXEL_FORMAT_NV12;
   } else {
     VLOG(2) << pixel_format << " is not supported";
-    return base::nullopt;
+    return absl::nullopt;
   }
 }
 }  // namespace test

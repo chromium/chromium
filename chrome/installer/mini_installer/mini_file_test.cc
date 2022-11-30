@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ TEST_F(MiniFileTest, DeleteOnClose) {
   // NT status code is STATUS_DELETE_PENDING. Since base::PathExists will return
   // false in this case, confirm the file's existence by trying to open it.
   base::File the_file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                     base::File::FLAG_SHARE_DELETE);
+                                     base::File::FLAG_WIN_SHARE_DELETE);
   ASSERT_FALSE(the_file.IsValid());
   ASSERT_EQ(the_file.error_details(), base::File::FILE_ERROR_ACCESS_DENIED);
 
@@ -77,8 +77,8 @@ TEST_F(MiniFileTest, Close) {
   EXPECT_EQ(*file.path(), 0);
   ASSERT_TRUE(base::PathExists(file_path));
   base::File f(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                              base::File::FLAG_EXCLUSIVE_READ |
-                              base::File::FLAG_EXCLUSIVE_WRITE);
+                              base::File::FLAG_WIN_EXCLUSIVE_READ |
+                              base::File::FLAG_WIN_EXCLUSIVE_WRITE);
   ASSERT_TRUE(f.IsValid());
 }
 

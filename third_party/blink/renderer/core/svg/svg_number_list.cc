@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/svg/svg_number_list.h"
 
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -47,7 +47,7 @@ SVGParsingError SVGNumberList::Parse(const CharType*& ptr,
 SVGParsingError SVGNumberList::SetValueAsString(const String& value) {
   Clear();
 
-  if (value.IsEmpty())
+  if (value.empty())
     return SVGParseStatus::kNoError;
 
   // Don't call |clear()| if an error is encountered. SVG policy is to use

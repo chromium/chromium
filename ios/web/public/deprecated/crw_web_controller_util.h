@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@ class WebState;
 // slim navigation launching.
 namespace web_deprecated {
 
-// Sets side swipe recognizer for the |web_state|.
-// |web_state| can't be null.
+// Sets side swipe recognizer for the `web_state`.
+// `web_state` can't be null.
 void SetSwipeRecognizerProvider(web::WebState* web_state,
                                 id<CRWSwipeRecognizerProvider> delegate);
 

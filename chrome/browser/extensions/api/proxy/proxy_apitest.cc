@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,9 @@ class ProxySettingsApiTest : public ExtensionApiTest {
  public:
   ProxySettingsApiTest() {}
 
+  ProxySettingsApiTest(const ProxySettingsApiTest&) = delete;
+  ProxySettingsApiTest& operator=(const ProxySettingsApiTest&) = delete;
+
  protected:
   void ValidateSettings(int expected_mode,
                         const std::string& expected_server,
@@ -40,11 +43,13 @@ class ProxySettingsApiTest : public ExtensionApiTest {
                         PrefService* pref_service) {
     const PrefService::Preference* pref =
         pref_service->FindPreference(proxy_config::prefs::kProxy);
-    ASSERT_TRUE(pref != NULL);
+    ASSERT_TRUE(pref != nullptr);
     EXPECT_TRUE(pref->IsExtensionControlled());
 
+    // TODO(https://crbug.com/1348219) This should call
+    // `PrefService::GetDict`.
     ProxyConfigDictionary dict(
-        pref_service->GetDictionary(proxy_config::prefs::kProxy)->Clone());
+        pref_service->GetDict(proxy_config::prefs::kProxy).Clone());
 
     ProxyPrefs::ProxyMode mode;
     ASSERT_TRUE(dict.GetMode(&mode));
@@ -76,7 +81,7 @@ class ProxySettingsApiTest : public ExtensionApiTest {
   void ExpectNoSettings(PrefService* pref_service) {
     const PrefService::Preference* pref =
         pref_service->FindPreference(proxy_config::prefs::kProxy);
-    ASSERT_TRUE(pref != NULL);
+    ASSERT_TRUE(pref != nullptr);
     EXPECT_FALSE(pref->IsExtensionControlled());
   }
 
@@ -94,15 +99,12 @@ class ProxySettingsApiTest : public ExtensionApiTest {
   extensions::ManagementPolicy* GetManagementPolicy() {
     return ExtensionSystem::Get(profile())->management_policy();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxySettingsApiTest);
 };
 
 // Tests direct connection settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyDirectSettings) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -113,7 +115,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyDirectSettings) {
 
   // As the extension is executed with incognito permission, the settings
   // should propagate to incognito mode.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_DIRECT, kNoServer, kNoBypass, kNoPac,
                    pref_service);
 }
@@ -122,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyDirectSettings) {
 // disabled or enabled.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -143,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
 // the extension is uninstalled.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -162,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        PRE_SettingsRemovedOnPolicyBlocklist) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/direct"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -202,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnPolicyBlocklist) {
 
 // Tests auto-detect settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyAutoSettings) {
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/auto"}, {.allow_in_incognito = true}))
+  ASSERT_TRUE(RunExtensionTest("proxy/auto", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -225,7 +229,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyPacScript) {
 
   // As the extension is not executed with incognito permission, the settings
   // should not propagate to incognito mode.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ExpectNoSettings(pref_service);
 
   // Now we enable the extension in incognito mode and verify that settings
@@ -295,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxySystem) {
 
 // Tests setting separate proxies for each scheme.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividual) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual"},
-                               {.allow_in_incognito = true}))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/individual", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -312,7 +319,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividual) {
                    pref_service);
 
   // Now check the incognito preferences.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_FIXED_SERVERS,
                    "http=quic://1.1.1.1:443;"
                        "https=2.2.2.2:80;"
@@ -326,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividual) {
 // Tests setting values only for incognito mode
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        ProxyFixedIndividualIncognitoOnly) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual_incognito_only"},
+  ASSERT_TRUE(RunExtensionTest("proxy/individual_incognito_only", {},
                                {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -336,7 +346,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
   ExpectNoSettings(pref_service);
 
   // Now check the incognito preferences.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_FIXED_SERVERS,
                    "http=1.1.1.1:80;"
                        "https=socks5://2.2.2.2:1080;"
@@ -350,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
 // Tests setting values also for incognito mode
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                        ProxyFixedIndividualIncognitoAlso) {
-  ASSERT_TRUE(RunExtensionTest({.name = "proxy/individual_incognito_also"},
+  ASSERT_TRUE(RunExtensionTest("proxy/individual_incognito_also", {},
                                {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
@@ -367,7 +380,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                    pref_service);
 
   // Now check the incognito preferences.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_FIXED_SERVERS,
                    "http=5.5.5.5:80;"
                        "https=socks5://6.6.6.6:1080;"
@@ -391,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyFixedIndividualRemove) {
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
     ProxyBypass) {
   ASSERT_TRUE(
-      RunExtensionTest({.name = "proxy/bypass"}, {.allow_in_incognito = true}))
+      RunExtensionTest("proxy/bypass", {}, {.allow_in_incognito = true}))
       << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
@@ -404,7 +420,10 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
                    pref_service);
 
   // Now check the incognito preferences.
-  pref_service = browser()->profile()->GetPrimaryOTRProfile()->GetPrefs();
+  pref_service = browser()
+                     ->profile()
+                     ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                     ->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_FIXED_SERVERS,
                    "http=1.1.1.1:80",
                    "localhost,::1,foo.bar,<local>",
@@ -417,19 +436,22 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
 // chrome.proxy.onProxyError to fire with ERR_PROXY_CONNECTION_FAILED.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsInvalidProxy) {
   ASSERT_TRUE(
-      RunExtensionSubtest("proxy/events", "invalid_proxy.html")) << message_;
+      RunExtensionTest("proxy/events", {.extension_url = "invalid_proxy.html"}))
+      << message_;
 }
 
 // Tests error events: PAC script parse error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsParseError) {
   ASSERT_TRUE(
-      RunExtensionSubtest("proxy/events", "parse_error.html")) << message_;
+      RunExtensionTest("proxy/events", {.extension_url = "parse_error.html"}))
+      << message_;
 }
 
 // Tests that chrome.proxy.onProxyError is NOT called in the case of a
 // non-proxy error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsOtherError) {
-  ASSERT_TRUE(RunExtensionSubtest("proxy/events", "other_error.html"))
+  ASSERT_TRUE(
+      RunExtensionTest("proxy/events", {.extension_url = "other_error.html"}))
       << message_;
 }
 

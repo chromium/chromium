@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,6 +35,10 @@ class MockAudioManager : public AudioManager {
           const std::string& device_id)>;
 
   explicit MockAudioManager(std::unique_ptr<AudioThread> audio_thread);
+
+  MockAudioManager(const MockAudioManager&) = delete;
+  MockAudioManager& operator=(const MockAudioManager&) = delete;
+
   ~MockAudioManager() override;
 
   AudioOutputStream* MakeAudioOutputStream(
@@ -61,6 +64,9 @@ class MockAudioManager : public AudioManager {
 
   void InitializeDebugRecording() override;
   AudioDebugRecordingManager* GetAudioDebugRecordingManager() override;
+
+  void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
+                                      aecdump_recording_manager) override;
 
   const char* GetName() override;
 
@@ -116,8 +122,6 @@ class MockAudioManager : public AudioManager {
   GetDeviceDescriptionsCallback get_output_device_descriptions_cb_;
   GetAssociatedOutputDeviceIDCallback get_associated_output_device_id_cb_;
   std::unique_ptr<AudioDebugRecordingManager> debug_recording_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAudioManager);
 };
 
 }  // namespace media.

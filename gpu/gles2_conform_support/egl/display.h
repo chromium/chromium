@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 
-namespace gles2_conform_support {
-namespace egl {
+namespace gles2_conform_support::egl {
 
 class Config;
 class Context;
@@ -27,6 +25,10 @@ class ThreadState;
 class Display {
  public:
   explicit Display();
+
+  Display(const Display&) = delete;
+  Display& operator=(const Display&) = delete;
+
   ~Display();
 
   bool is_initialized() const { return is_initialized_; }
@@ -100,11 +102,8 @@ class Display {
   bool next_create_window_surface_creates_pbuffer_;
   EGLint window_surface_pbuffer_width_;
   EGLint window_surface_pbuffer_height_;
-
-  DISALLOW_COPY_AND_ASSIGN(Display);
 };
 
-}  // namespace egl
-}  // namespace gles2_conform_support
+}  // namespace gles2_conform_support::egl
 
 #endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_DISPLAY_H_

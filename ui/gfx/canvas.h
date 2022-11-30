@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,14 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "cc/paint/skottie_color_map.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_text_property_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/text_constants.h"
@@ -96,12 +99,13 @@ class GFX_EXPORT Canvas {
   // RecreateBackingCanvas is called.
   Canvas(cc::PaintCanvas* sk_canvas, float image_scale);
 
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+
   virtual ~Canvas();
 
   // Recreates the backing platform canvas with DIP |size| and |image_scale_|.
   // If the canvas is not opaque, it is explicitly cleared.
-  // This method is public so that canvas_skia_paint can recreate the platform
-  // canvas after having initialized the canvas.
   // TODO(pkotwicz): Push the image_scale into skia::PlatformCanvas such that
   // this method can be private.
   void RecreateBackingCanvas(const Size& size,
@@ -356,10 +360,15 @@ class GFX_EXPORT Canvas {
 
   // Draws the frame of the |skottie| animation specified by the normalized time
   // instant t [0->first frame .. 1->last frame] onto the region corresponded by
-  // |dst| in the canvas.
+  // |dst| in the canvas. |images| is a map from asset id to the corresponding
+  // image to use when rendering this frame; it may be empty if this animation
+  // frame does not contain any images in it.
   void DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                    const Rect& dst,
-                   float t);
+                   float t,
+                   cc::SkottieFrameDataMap images,
+                   const cc::SkottieColorMap& color_map,
+                   cc::SkottieTextPropertyValueMap text_map);
 
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the
@@ -457,11 +466,9 @@ class GFX_EXPORT Canvas {
   // in which case bitmap_ and owned_canvas_ will be set. Other times we are
   // just borrowing someone else's canvas, in which case canvas_ will point
   // there but bitmap_ and owned_canvas_ will not exist.
-  base::Optional<SkBitmap> bitmap_;
-  base::Optional<cc::SkiaPaintCanvas> owned_canvas_;
-  cc::PaintCanvas* canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
+  absl::optional<SkBitmap> bitmap_;
+  absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
+  raw_ptr<cc::PaintCanvas> canvas_;
 };
 
 }  // namespace gfx

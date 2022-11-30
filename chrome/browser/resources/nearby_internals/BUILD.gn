@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -30,13 +32,13 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "nearby_contact_browser_proxy.js",
     "nearby_http_browser_proxy.js",
     "nearby_logs_browser_proxy.js",
+    "nearby_prefs_browser_proxy.js",
     "nearby_ui_trigger_browser_proxy.js",
     "types.js",
   ]
@@ -91,6 +93,7 @@ js_type_check("closure_compile") {
     ":nearby_http_browser_proxy",
     ":nearby_internals",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
@@ -109,6 +112,7 @@ js_library("nearby_internals") {
     ":nearby_contact_browser_proxy",
     ":nearby_http_browser_proxy",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":nearby_ui_trigger_browser_proxy",
     ":types",
     ":ui_trigger_list_object",
@@ -122,10 +126,11 @@ js_library("logging_tab") {
   deps = [
     ":log_object",
     ":nearby_logs_browser_proxy",
+    ":nearby_prefs_browser_proxy",
     ":types",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
@@ -138,6 +143,13 @@ js_library("log_object") {
 }
 
 js_library("nearby_logs_browser_proxy") {
+  deps = [
+    ":types",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("nearby_prefs_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",

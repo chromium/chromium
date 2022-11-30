@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,7 +28,8 @@ from py_trace_event import trace_event
 # Modules to exclude by default (to avoid problems like infinite loops)
 DEFAULT_EXCLUDE = [r'py_trace_event\..*']
 
-class _TraceArguments(object):
+
+class _TraceArguments:
   def __init__(self):
     """Wraps a dictionary to ensure safe evaluation of repr()."""
     self._arguments = {}
@@ -75,7 +76,7 @@ def _shouldTrace(frame, to_include, to_exclude, included, excluded):
   if module_name in included:
     includes = True
   elif to_include:
-    includes = any([pattern.match(module_name) for pattern in to_include])
+    includes = any(pattern.match(module_name) for pattern in to_include)
   else:
     includes = True
 
@@ -161,6 +162,7 @@ def _generate_trace_function(to_include, to_exclude):
       if event == "return":
         trace_event.trace_end(function_name)
         return None
+    return None
 
   return traceFunction
 

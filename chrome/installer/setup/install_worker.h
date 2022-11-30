@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -65,12 +65,18 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
 void AddInstallWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list);
 
-// Adds work items to |list| to register a COM server with the OS after deleting
+// Adds work items to `list` to register a COM server with the OS after deleting
 // the old ones, which is used to handle the toast notification activation.
 void AddNativeNotificationWorkItems(
     HKEY root,
     const base::FilePath& notification_helper_path,
     WorkItemList* list);
+
+// Adds work items to `list` to register a WER runtime exception helper module
+// in the registry. The wer module should be located at `wer_helper_path`.
+void AddWerHelperRegistration(HKEY root,
+                              const base::FilePath& wer_helper_path,
+                              WorkItemList* list);
 
 void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
                              bool set,
@@ -92,7 +98,7 @@ void AppendUninstallCommandLineFlags(const InstallerState& installer_state,
 
 // Adds work items to add or remove the "on-os-upgrade" command to Chrome's
 // version key on the basis of the current operation (represented in
-// |installer_state|).  |new_version| is the version currently being installed
+// `installer_state`).  `new_version` is the version currently being installed
 // -- can be empty on uninstall.
 void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::FilePath& setup_path,
@@ -105,6 +111,14 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
 void AddChannelWorkItems(HKEY root,
                          const std::wstring& clients_key,
                          WorkItemList* list);
+
+// Adds a best-effort item to update the "ap" value if the channel was dictated
+// by --channel on the command line. This is done so that such channel changes
+// are "sticky" -- once an install or update succeeds in this way, all
+// subsequent update checks will be on that same channel until --channel is used
+// to switch once again.
+void AddChannelSelectionWorkItems(const InstallerState& installer_state,
+                                  WorkItemList* list);
 
 // Adds work items to be done when finalizing an update. This happens both
 // after the executables get renamed for an in-use update or as the last steps

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/ime_keymap.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -27,7 +28,7 @@ namespace {
 // Android.
 // TODO(yhanada): Implement a way to observe an IME operation completion and
 // send the current text input state right after the IME operation completion.
-constexpr base::TimeDelta kStateUpdateTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kStateUpdateTimeout = base::Seconds(1);
 
 // Characters which should be sent as a KeyEvent and attributes of generated
 // KeyEvent.
@@ -49,8 +50,7 @@ bool IsControlChar(const std::u16string& text) {
 ui::TextInputClient* GetTextInputClient() {
   ui::IMEBridge* bridge = ui::IMEBridge::Get();
   DCHECK(bridge);
-  ui::IMEInputContextHandlerInterface* handler =
-      bridge->GetInputContextHandler();
+  ui::TextInputTarget* handler = bridge->GetInputContextHandler();
   if (!handler)
     return nullptr;
   ui::TextInputClient* client = handler->GetInputMethod()->GetTextInputClient();
@@ -69,7 +69,7 @@ ui::KeyEvent CreateKeyEvent(ui::EventType type,
 }  // namespace
 
 InputConnectionImpl::InputConnectionImpl(
-    chromeos::InputMethodEngine* ime_engine,
+    ash::input_method::InputMethodEngine* ime_engine,
     ArcInputMethodManagerBridge* imm_bridge,
     int input_context_id)
     : ime_engine_(ime_engine),
@@ -100,11 +100,11 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   ui::TextInputClient* client = GetTextInputClient();
   gfx::Range text_range = gfx::Range();
   gfx::Range selection_range = gfx::Range();
-  base::Optional<gfx::Range> composition_text_range = gfx::Range();
+  absl::optional<gfx::Range> composition_text_range = gfx::Range();
   std::u16string text;
 
   if (!client) {
-    return mojom::TextInputStatePtr(base::in_place, 0, text, text_range,
+    return mojom::TextInputStatePtr(absl::in_place, 0, text, text_range,
                                     selection_range, ui::TEXT_INPUT_TYPE_NONE,
                                     false, 0, is_input_state_update_requested,
                                     composition_text_range);
@@ -117,7 +117,7 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   client->GetTextFromRange(text_range, &text);
 
   return mojom::TextInputStatePtr(
-      base::in_place, selection_range.start(), text, text_range,
+      absl::in_place, selection_range.start(), text, text_range,
       selection_range, client->GetTextInputType(), client->ShouldDoLearning(),
       client->GetTextInputFlags(), is_input_state_update_requested,
       composition_text_range);
@@ -200,7 +200,7 @@ void InputConnectionImpl::FinishComposingText() {
 void InputConnectionImpl::SetComposingText(
     const std::u16string& text,
     int new_cursor_pos,
-    const base::Optional<gfx::Range>& new_selection_range) {
+    const absl::optional<gfx::Range>& new_selection_range) {
   // It's relative to the last character of the composing text,
   // so 0 means the cursor should be just before the last character of the text.
   new_cursor_pos += text.length() - 1;
@@ -231,7 +231,7 @@ void InputConnectionImpl::SetComposingText(
   if (!ime_engine_->SetComposition(
           input_context_id_, base::UTF16ToUTF8(text).c_str(), selection_start,
           selection_end, new_cursor_pos,
-          std::vector<chromeos::InputMethodEngineBase::SegmentInfo>(),
+          std::vector<ash::input_method::InputMethodEngine::SegmentInfo>(),
           &error)) {
     LOG(ERROR) << "SetComposingText failed: pos=" << new_cursor_pos
                << ", error=\"" << error << "\"";
@@ -287,13 +287,14 @@ void InputConnectionImpl::SetCompositionRange(
 
   const int before = selection_range.start() - new_composition_range.start();
   const int after = new_composition_range.end() - selection_range.end();
-  chromeos::InputMethodEngineBase::SegmentInfo segment_info;
+  ash::input_method::InputMethodEngine::SegmentInfo segment_info;
   segment_info.start = 0;
   segment_info.end = new_composition_range.length();
-  segment_info.style = chromeos::InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
+  segment_info.style =
+      ash::input_method::InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
 
   std::string error;
-  if (!ime_engine_->chromeos::InputMethodEngineBase::SetCompositionRange(
+  if (!ime_engine_->ash::input_method::InputMethodEngine::SetCompositionRange(
           input_context_id_, before, after, {segment_info}, &error)) {
     LOG(ERROR) << "SetCompositionRange failed: range="
                << new_composition_range.ToString() << ", error=\"" << error

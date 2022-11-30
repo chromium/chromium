@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="36dp"
+        android:height="36dp"
+        android:viewportWidth="36.0"
+        android:viewportHeight="36.0">
+    <path
+        android:pathData="M18,0L18,0C27.94,-0 36,8.06 36,18L36,18C36,27.94 27.94,36 18,36L18,36C8.06,36 0,27.94 0,18L0,18C-0,8.06 8.06,0 18,0Z"
+      android:fillColor="@macro/default_control_color_active"
+        />
+    <path
+        android:pathData="M18.87,21.07L16.33,18.56L16.36,18.53C18.1,16.59 19.34,14.36 20.07,12L23,12L23,10L16,10L16,8L14,8L14,10L7,10L7,11.99L18.17,11.99C17.5,13.92 16.44,15.75 15,17.35C14.07,16.32 13.3,15.19 12.69,14L10.69,14C11.42,15.63 12.42,17.17 13.67,18.56L8.58,23.58L10,25L15,20L18.11,23.11L18.87,21.07Z"
+        android:fillColor="@macro/default_icon_color_inverse"
+        />
+    <path
+        android:pathData="M24.5,16l-2,0l-4.5,12l2,0l1.12,-3l4.75,0l1.13,3l2,0z"
+        android:fillColor="@macro/default_icon_color_inverse"
+        />
+    <path
+        android:pathData="M21.88,23l1.62,-4.33l1.62,4.33z"
+        android:fillColor="@macro/default_control_color_active"
+        />
+</vector>

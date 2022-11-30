@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -24,6 +26,9 @@ struct JsObjectIdentifier {
   // context of the frame. Might be empty if no frame id needs to be
   // specified.
   std::string node_frame_id;
+
+  // The node id of this object. This is only available for nodes.
+  absl::optional<int> backend_node_id;
 };
 
 // DomObjectFrameStack contains all data required to use an object including
@@ -36,9 +41,34 @@ struct DomObjectFrameStack {
   // The data for the final object.
   JsObjectIdentifier object_data;
 
+  // The id of the render frame host that contains the element.
+  // Note: This is not part of JsObjectIdentifier, because it is not set
+  // throughout the frame stack and only assigned to the final element.
+  content::GlobalRenderFrameHostId render_frame_id;
+
   // This holds the information of all the frames that were traversed until
   // the final element was reached.
   std::vector<JsObjectIdentifier> frame_stack;
+};
+
+// GlobalBackendNodeId contains all data required to uniquely identify a node.
+class GlobalBackendNodeId {
+ public:
+  GlobalBackendNodeId(content::RenderFrameHost* render_frame_host,
+                      int backend_node_id);
+  GlobalBackendNodeId(content::GlobalRenderFrameHostId host_id,
+                      int backend_node_id);
+  ~GlobalBackendNodeId();
+  GlobalBackendNodeId(const GlobalBackendNodeId&);
+
+  bool operator==(const GlobalBackendNodeId& other) const;
+
+  content::GlobalRenderFrameHostId host_id() const;
+  int backend_node_id() const;
+
+ private:
+  content::GlobalRenderFrameHostId host_id_;
+  int backend_node_id_ = -1;
 };
 
 // Find the frame host in the set of known frames matching the |frame_id|. This

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -25,6 +24,10 @@ class TimeTicks;
 class UserActionTester {
  public:
   UserActionTester();
+
+  UserActionTester(const UserActionTester&) = delete;
+  UserActionTester& operator=(const UserActionTester&) = delete;
+
   ~UserActionTester();
 
   // Returns the number of times the given |user_action| occurred.
@@ -51,8 +54,6 @@ class UserActionTester {
 
   // The callback that is added to the global action callback list.
   base::ActionCallback action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActionTester);
 };
 
 }  // namespace base

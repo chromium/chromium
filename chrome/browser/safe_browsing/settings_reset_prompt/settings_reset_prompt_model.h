@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
@@ -54,6 +52,10 @@ class SettingsResetPromptModel {
       Profile* profile,
       std::unique_ptr<SettingsResetPromptConfig> prompt_config,
       std::unique_ptr<ProfileResetter> profile_resetter);
+
+  SettingsResetPromptModel(const SettingsResetPromptModel&) = delete;
+  SettingsResetPromptModel& operator=(const SettingsResetPromptModel&) = delete;
+
   virtual ~SettingsResetPromptModel();
 
   Profile* profile() const;
@@ -110,7 +112,7 @@ class SettingsResetPromptModel {
 
   bool SomeSettingIsManaged() const;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   SettingsResetPromptPrefsManager prefs_manager_;
   std::unique_ptr<SettingsResetPromptConfig> prompt_config_;
@@ -143,8 +145,6 @@ class SettingsResetPromptModel {
   std::unordered_set<int> domain_ids_for_startup_urls_to_reset_;
   ResetState startup_urls_reset_state_ =
       NO_RESET_REQUIRED_DUE_TO_DOMAIN_NOT_MATCHED;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetPromptModel);
 };
 
 }  // namespace safe_browsing

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 
 // Interface for getting the cause of page loads to blink. This service lives
 // in blink and is used to implement the File Handling proposal:
-// https://github.com/WICG/file-handling/blob/master/explainer.md
+// https://github.com/WICG/file-handling/blob/main/explainer.md
 // TODO(crbug.com/829689): Replace link to explainer with link to spec, when
 // available.
 //
@@ -18,4 +18,9 @@ interface WebLaunchService {
   // Used to notify a frame that it was opened with |files|. This
   // method is fire-and-forget.
   SetLaunchFiles(array<FileSystemAccessEntry> files);
+
+  // Used to notify a frame that it was opened as a web app. This method is
+  // fire-and-forget.
+  // TODO(crbug.com/1250225): Unify SetLaunchFiles() into this method.
+  EnqueueLaunchParams(url.mojom.Url launch_url);
 };

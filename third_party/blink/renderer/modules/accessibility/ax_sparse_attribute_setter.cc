@@ -1,10 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/accessibility/ax_sparse_attribute_setter.h"
+
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -21,6 +25,18 @@ void SetBoolAttribute(ax::mojom::blink::BoolAttribute attribute,
                       AXObject* object,
                       ui::AXNodeData* node_data,
                       const AtomicString& value) {
+  // Don't set kTouchPassthrough unless the feature is enabled in this
+  // context.
+  if (attribute == ax::mojom::blink::BoolAttribute::kTouchPassthrough) {
+    auto* context = object->AXObjectCache().GetDocument().GetExecutionContext();
+    if (RuntimeEnabledFeatures::AccessibilityAriaTouchPassthroughEnabled(
+            context)) {
+      UseCounter::Count(context, WebFeature::kAccessibilityTouchPassthroughSet);
+    } else {
+      return;
+    }
+  }
+
   // ARIA booleans are true if not "false" and not specifically undefined.
   bool is_true = !AccessibleNode::IsUndefinedAttrValue(value) &&
                  !EqualIgnoringASCIICase(value, "false");
@@ -32,7 +48,17 @@ void SetStringAttribute(ax::mojom::blink::StringAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
   node_data->AddStringAttribute(attribute, value.Utf8());
+}
+
+void SetNotEmptyStringAttribute(ax::mojom::blink::StringAttribute attribute,
+                                AXObject* object,
+                                ui::AXNodeData* node_data,
+                                const AtomicString& value) {
+  if (value.length() != 0)
+    SetStringAttribute(attribute, object, node_data, value);
 }
 
 void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
@@ -40,6 +66,9 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
                         AXObject* object,
                         ui::AXNodeData* node_data,
                         const AtomicString& value) {
+  if (object->IsProhibited(attribute))
+    return;
+
   Element* element = object->GetElement();
   if (!element)
     return;
@@ -68,13 +97,13 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   Element* element = object->GetElement();
   if (!element)
     return;
-  base::Optional<HeapVector<Member<Element>>> attr_associated_elements =
+  HeapVector<Member<Element>>* attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
-  if (!attr_associated_elements)
+  if (!attr_associated_elements || attr_associated_elements->empty())
     return;
   std::vector<int32_t> ax_ids;
 
-  for (const auto& associated_element : attr_associated_elements.value()) {
+  for (const auto& associated_element : *attr_associated_elements) {
     AXObject* ax_element =
         object->AXObjectCache().GetOrCreate(associated_element);
     if (!ax_element)
@@ -87,12 +116,22 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
 
 AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
   DEFINE_STATIC_LOCAL(AXSparseAttributeSetterMap, ax_sparse_setter_map, ());
-  if (ax_sparse_setter_map.IsEmpty()) {
+  if (ax_sparse_setter_map.empty()) {
     ax_sparse_setter_map.Set(
         html_names::kAriaActivedescendantAttr,
         WTF::BindRepeating(&SetObjectAttribute,
                            ax::mojom::blink::IntAttribute::kActivedescendantId,
                            html_names::kAriaActivedescendantAttr));
+    ax_sparse_setter_map.Set(
+        html_names::kAriaBraillelabelAttr,
+        WTF::BindRepeating(
+            &SetStringAttribute,
+            ax::mojom::blink::StringAttribute::kAriaBrailleLabel));
+    ax_sparse_setter_map.Set(
+        html_names::kAriaBrailleroledescriptionAttr,
+        WTF::BindRepeating(
+            &SetNotEmptyStringAttribute,
+            ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription));
     ax_sparse_setter_map.Set(
         html_names::kAriaBusyAttr,
         WTF::BindRepeating(&SetBoolAttribute,
@@ -172,6 +211,13 @@ void AXNodeDataAOMPropertyClient::AddStringProperty(AOMStringProperty property,
                                                     const String& value) {
   ax::mojom::blink::StringAttribute attribute;
   switch (property) {
+    case AOMStringProperty::kAriaBrailleLabel:
+      attribute = ax::mojom::blink::StringAttribute::kAriaBrailleLabel;
+      break;
+    case AOMStringProperty::kAriaBrailleRoleDescription:
+      attribute =
+          ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription;
+      break;
     case AOMStringProperty::kKeyShortcuts:
       attribute = ax::mojom::blink::StringAttribute::kKeyShortcuts;
       break;

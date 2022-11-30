@@ -1,0 +1,15 @@
+{
+  "NetworkConfigurations": [
+    {
+      "GUID": "policy_cellular2",
+      "Type": "Cellular",
+      "Name": "Managed cellular",
+      "Cellular": {
+        "AutoConnect": true,
+        "SMDPAddress": "1$SMDP.GSMA.COM$00000-00000-00000-000-0001",
+        "ICCID": "1000000000000000000",
+      }
+    }
+  ],
+  "Type": "UnencryptedConfiguration"
+}

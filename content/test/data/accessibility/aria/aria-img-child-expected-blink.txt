@@ -2,3 +2,6 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++image
+++++++++genericContainer
+++++++++++staticText name='Img.jpg'
+++++++++++++inlineTextBox name='Img.jpg'

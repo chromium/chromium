@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/time/time.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 
 // Values for the UMA Mobile.Messages.Banner.Event histogram. These values
@@ -78,23 +79,23 @@ enum class MobileMessagesBadgeState {
 @interface InfobarMetricsRecorder : NSObject
 
 // Designated initializer. InfobarMetricsRecorder will record metrics for
-// |infobarType|.
+// `infobarType`.
 - (instancetype)initWithType:(InfobarType)infobarType NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Records histogram for Banner |event|.
+// Records histogram for Banner `event`.
 - (void)recordBannerEvent:(MobileMessagesBannerEvent)event;
 
-// Records histogram for Banner |dismissType|.
+// Records histogram for Banner `dismissType`.
 - (void)recordBannerDismissType:(MobileMessagesBannerDismissType)dismissType;
 
 // Records histogram for Banner On Screen duration.
-- (void)recordBannerOnScreenDuration:(double)duration;
+- (void)recordBannerOnScreenDuration:(base::TimeDelta)duration;
 
-// Records histogram for Modal |event|.
+// Records histogram for Modal `event`.
 - (void)recordModalEvent:(MobileMessagesModalEvent)event;
 
-// Records histogram for Badge Tapped in |state|.
+// Records histogram for Badge Tapped in `state`.
 - (void)recordBadgeTappedInState:(MobileMessagesBadgeState)state;
 
 @end

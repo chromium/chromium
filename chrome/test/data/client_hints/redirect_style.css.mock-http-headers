@@ -1,0 +1,2 @@
+HTTP/1.1 307 Temporary Redirect
+Location: https://yet-another-site.com:44445/style.css

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,11 +82,29 @@ TEST(ConditionValidatorResultTest, TestDisplayLockFailed) {
   EXPECT_FALSE(result.NoErrors());
 }
 
+TEST(ConditionValidatorResultTest, TestPriorityNotificationFailed) {
+  ConditionValidator::Result result(true);
+  result.priority_notification_ok = false;
+  EXPECT_FALSE(result.NoErrors());
+}
+
 TEST(ConditionValidatorResultTest, TestMultipleErrors) {
   ConditionValidator::Result result(true);
   result.preconditions_ok = false;
   result.session_rate_ok = false;
   EXPECT_FALSE(result.NoErrors());
+}
+
+TEST(ConditionValidatorResultTest, TestSnoozeExpirationFailed) {
+  ConditionValidator::Result result(true);
+  result.snooze_expiration_ok = false;
+  EXPECT_FALSE(result.NoErrors());
+}
+
+TEST(ConditionValidatorResultTest, TestShouldShowSnoozeFailed) {
+  ConditionValidator::Result result(true);
+  result.should_show_snooze = false;
+  EXPECT_TRUE(result.NoErrors());
 }
 
 }  // namespace feature_engagement

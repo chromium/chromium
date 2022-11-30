@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "base/atomicops.h"
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -21,10 +21,10 @@
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
 
-namespace perfetto {
-class SharedMemoryArbiter;
-class SharedMemory;
-}  // namespace perfetto
+#if BUILDFLAG(IS_FUCHSIA)
+#include "services/tracing/public/cpp/perfetto/fuchsia_perfetto_producer_connector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
 
 namespace tracing {
 
@@ -40,6 +40,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   };
   PosixSystemProducer(const char* socket,
                       base::tracing::PerfettoTaskRunner* task_runner);
+
+  PosixSystemProducer(const PosixSystemProducer&) = delete;
+  PosixSystemProducer& operator=(const PosixSystemProducer&) = delete;
+
   ~PosixSystemProducer() override;
 
   // Functions needed for PosixSystemProducer only.
@@ -47,9 +51,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // Lets tests ignore the SDK check (Perfetto only runs on post Android Pie
   // devices by default, so for trybots on older OSs we need to ignore the check
   // for our test system service).
-  //
-  // TODO(nuskos): We need to make this possible for telemetry as well, since
-  // they might have side loaded the app.
   void SetDisallowPreAndroidPieForTesting(bool disallow);
   // |socket| must remain alive as long as PosixSystemProducer is around
   // trying to connect to it.
@@ -124,6 +125,12 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
 
   perfetto::TracingService::ProducerEndpoint* GetService();
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Client object for establishing connections with the system tracing
+  // service on Fuchsia.
+  std::unique_ptr<FuchsiaPerfettoProducerConnector> fuchsia_connector_;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
   bool retrying_ = false;
   std::string socket_name_;
   uint32_t connection_backoff_ms_;
@@ -156,7 +163,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PosixSystemProducer
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // and thus must be the last member variable.
   base::WeakPtrFactory<PosixSystemProducer> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(PosixSystemProducer);
 };
 
 }  // namespace tracing

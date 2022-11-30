@@ -1,15 +1,33 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/hid/hid_device_info.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 
 namespace device {
+
+namespace {
+
+const std::vector<mojom::HidReportDescriptionPtr>& ReportsForType(
+    const mojom::HidCollectionInfoPtr& collection,
+    HidReportType report_type) {
+  switch (report_type) {
+    case HidReportType::kInput:
+      return collection->input_reports;
+    case HidReportType::kOutput:
+      return collection->output_reports;
+    case HidReportType::kFeature:
+      return collection->feature_reports;
+  }
+}
+
+}  // namespace
 
 HidDeviceInfo::PlatformDeviceIdEntry::PlatformDeviceIdEntry(
     base::flat_set<uint8_t> report_ids,
@@ -52,6 +70,8 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
       HidBlocklist::kReportTypeOutput, vendor_id, product_id, collections);
   auto protected_feature_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeFeature, vendor_id, product_id, collections);
+  auto is_excluded_by_blocklist =
+      HidBlocklist::Get().IsVendorProductBlocked(vendor_id, product_id);
 
   std::vector<uint8_t> report_ids;
   if (has_report_id) {
@@ -71,47 +91,142 @@ HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
       std::move(collections), has_report_id, max_input_report_size,
       max_output_report_size, max_feature_report_size, device_node,
       protected_input_report_ids, protected_output_report_ids,
-      protected_feature_report_ids);
+      protected_feature_report_ids, is_excluded_by_blocklist);
 }
 
-HidDeviceInfo::HidDeviceInfo(
-    PlatformDeviceIdMap platform_device_id_map,
-    const std::string& physical_device_id,
-    uint16_t vendor_id,
-    uint16_t product_id,
-    const std::string& product_name,
-    const std::string& serial_number,
-    mojom::HidBusType bus_type,
-    std::vector<mojom::HidCollectionInfoPtr> collections,
-    size_t max_input_report_size,
-    size_t max_output_report_size,
-    size_t max_feature_report_size)
-    : platform_device_id_map_(std::move(platform_device_id_map)) {
-  bool has_report_id = false;
-  for (const auto& collection : collections) {
-    if (!collection->report_ids.empty()) {
-      has_report_id = true;
-      break;
-    }
+HidDeviceInfo::HidDeviceInfo(HidPlatformDeviceId platform_device_id,
+                             const std::string& physical_device_id,
+                             const std::string& interface_id,
+                             uint16_t vendor_id,
+                             uint16_t product_id,
+                             const std::string& product_name,
+                             const std::string& serial_number,
+                             mojom::HidBusType bus_type,
+                             mojom::HidCollectionInfoPtr collection,
+                             size_t max_input_report_size,
+                             size_t max_output_report_size,
+                             size_t max_feature_report_size)
+    : interface_id_(interface_id) {
+  bool has_report_id = !collection->report_ids.empty();
+  if (has_report_id) {
+    platform_device_id_map_.emplace_back(collection->report_ids,
+                                         platform_device_id);
+  } else {
+    platform_device_id_map_.emplace_back(std::vector<uint8_t>{0},
+                                         platform_device_id);
   }
-
+  std::vector<mojom::HidCollectionInfoPtr> collections;
+  collections.push_back(std::move(collection));
   auto protected_input_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeInput, vendor_id, product_id, collections);
   auto protected_output_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeOutput, vendor_id, product_id, collections);
   auto protected_feature_report_ids = HidBlocklist::Get().GetProtectedReportIds(
       HidBlocklist::kReportTypeFeature, vendor_id, product_id, collections);
+  auto is_excluded_by_blocklist =
+      HidBlocklist::Get().IsVendorProductBlocked(vendor_id, product_id);
 
-  std::vector<uint8_t> report_descriptor;
   device_ = mojom::HidDeviceInfo::New(
       base::GenerateGUID(), physical_device_id, vendor_id, product_id,
-      product_name, serial_number, bus_type, report_descriptor,
-      std::move(collections), has_report_id, max_input_report_size,
-      max_output_report_size, max_feature_report_size, "",
-      protected_input_report_ids, protected_output_report_ids,
-      protected_feature_report_ids);
+      product_name, serial_number, bus_type,
+      /*report_descriptor=*/std::vector<uint8_t>{}, std::move(collections),
+      has_report_id, max_input_report_size, max_output_report_size,
+      max_feature_report_size, /*device_node=*/"", protected_input_report_ids,
+      protected_output_report_ids, protected_feature_report_ids,
+      is_excluded_by_blocklist);
 }
 
 HidDeviceInfo::~HidDeviceInfo() = default;
+
+void HidDeviceInfo::AppendDeviceInfo(scoped_refptr<HidDeviceInfo> device_info) {
+  // Check that |device_info| has an interface ID and it matches ours.
+  DCHECK(interface_id_);
+  DCHECK(device_info->interface_id());
+  DCHECK_EQ(*interface_id_, *device_info->interface_id());
+
+  // Check that the device-level properties are identical.
+  DCHECK_EQ(device_->physical_device_id, device_info->physical_device_id());
+  DCHECK_EQ(device_->vendor_id, device_info->vendor_id());
+  DCHECK_EQ(device_->product_id, device_info->product_id());
+  DCHECK_EQ(device_->product_name, device_info->product_name());
+  DCHECK_EQ(device_->serial_number, device_info->serial_number());
+  DCHECK_EQ(device_->bus_type, device_info->bus_type());
+
+  // Append collections from |device_info|.
+  for (const auto& collection : device_info->collections())
+    device_->collections.push_back(collection->Clone());
+
+  // Append platform device IDs from |device_info|.
+  for (const auto& entry : device_info->platform_device_id_map()) {
+    platform_device_id_map_.push_back(
+        {entry.report_ids, entry.platform_device_id});
+  }
+
+  // Update the maximum report sizes.
+  device_->max_input_report_size = std::max(
+      device_->max_input_report_size, device_info->max_input_report_size());
+  device_->max_output_report_size = std::max(
+      device_->max_output_report_size, device_info->max_output_report_size());
+  device_->max_feature_report_size = std::max(
+      device_->max_feature_report_size, device_info->max_feature_report_size());
+
+  // Update the protected report IDs.
+  device_->protected_input_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeInput, device_->vendor_id,
+          device_->product_id, device_->collections);
+  device_->protected_output_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeOutput, device_->vendor_id,
+          device_->product_id, device_->collections);
+  device_->protected_feature_report_ids =
+      HidBlocklist::Get().GetProtectedReportIds(
+          HidBlocklist::kReportTypeFeature, device_->vendor_id,
+          device_->product_id, device_->collections);
+
+  device_->is_excluded_by_blocklist =
+      HidBlocklist::Get().IsVendorProductBlocked(device_->vendor_id,
+                                                 device_->product_id);
+}
+
+const mojom::HidCollectionInfo* HidDeviceInfo::FindCollectionWithReport(
+    uint8_t report_id,
+    HidReportType report_type) {
+  if (!device_->has_report_id) {
+    // `report_id` must be zero if the device does not use numbered reports.
+    if (report_id != 0)
+      return nullptr;
+
+    // Return the first collection with a report of type `report_type`, or
+    // nullptr if there is no report of that type.
+    auto find_it = base::ranges::find_if(
+        device_->collections, [=](const auto& collection) {
+          return !ReportsForType(collection, report_type).empty();
+        });
+    if (find_it == device_->collections.end())
+      return nullptr;
+
+    DCHECK(find_it->get());
+    return find_it->get();
+  }
+
+  // `report_id` must be non-zero if the device uses numbered reports.
+  if (report_id == 0)
+    return nullptr;
+
+  // Return the collection containing a report with `report_id` and type
+  // `report_type`, or nullptr if it is not in any collection.
+  auto find_it =
+      base::ranges::find_if(device_->collections, [=](const auto& collection) {
+        return base::Contains(ReportsForType(collection, report_type),
+                              report_id,
+                              &mojom::HidReportDescription::report_id);
+      });
+  if (find_it == device_->collections.end())
+    return nullptr;
+
+  DCHECK(find_it->get());
+  return find_it->get();
+}
 
 }  // namespace device

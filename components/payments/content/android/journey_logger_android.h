@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_JOURNEY_LOGGER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/payments/core/journey_logger.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -16,6 +15,10 @@ namespace payments {
 class JourneyLoggerAndroid {
  public:
   JourneyLoggerAndroid(bool is_incognito, ukm::SourceId source_id);
+
+  JourneyLoggerAndroid(const JourneyLoggerAndroid&) = delete;
+  JourneyLoggerAndroid& operator=(const JourneyLoggerAndroid&) = delete;
+
   ~JourneyLoggerAndroid();
 
   // Message from Java to destroy this object.
@@ -70,17 +73,9 @@ class JourneyLoggerAndroid {
   void SetNotShown(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jcaller,
                    jint jreason);
-  void RecordTransactionAmount(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jstring>& jcurrency,
-      const base::android::JavaParamRef<jstring>& jvalue,
-      jboolean jcompleted);
   void RecordCheckoutStep(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jcaller,
                           jint jstep);
-  void SetTriggerTime(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jcaller);
   void SetPaymentAppUkmSourceId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
@@ -88,8 +83,6 @@ class JourneyLoggerAndroid {
 
  private:
   JourneyLogger journey_logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(JourneyLoggerAndroid);
 };
 
 }  // namespace payments

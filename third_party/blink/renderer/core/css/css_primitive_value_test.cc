@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,41 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
 
-class CSSPrimitiveValueTest : public PageTestBase,
-                              private ScopedCSSCalcInfinityAndNaNForTest {
+class CSSPrimitiveValueTest : public PageTestBase {
  public:
-  CSSPrimitiveValueTest() : ScopedCSSCalcInfinityAndNaNForTest(true) {}
+  const CSSPrimitiveValue* ParseValue(const char* text) {
+    const CSSPrimitiveValue* value = To<CSSPrimitiveValue>(
+        css_test_helpers::ParseValue(GetDocument(), "<length>", text));
+    DCHECK(value);
+    return value;
+  }
+
+  bool HasContainerRelativeUnits(const char* text) {
+    return ParseValue(text)->HasContainerRelativeUnits();
+  }
+
+  bool HasStaticViewportUnits(const char* text) {
+    const CSSPrimitiveValue* value = ParseValue(text);
+    CSSPrimitiveValue::LengthTypeFlags length_type_flags;
+    value->AccumulateLengthUnitTypes(length_type_flags);
+    return CSSPrimitiveValue::HasStaticViewportUnits(length_type_flags);
+  }
+
+  bool HasDynamicViewportUnits(const char* text) {
+    const CSSPrimitiveValue* value = ParseValue(text);
+    CSSPrimitiveValue::LengthTypeFlags length_type_flags;
+    value->AccumulateLengthUnitTypes(length_type_flags);
+    return CSSPrimitiveValue::HasDynamicViewportUnits(length_type_flags);
+  }
+
+  CSSPrimitiveValueTest() = default;
 };
 
 using UnitType = CSSPrimitiveValue::UnitType;
@@ -33,19 +57,25 @@ CSSNumericLiteralValue* Create(UnitValue v) {
 }
 
 CSSPrimitiveValue* CreateAddition(UnitValue a, UnitValue b) {
-  return CSSMathFunctionValue::Create(CSSMathExpressionBinaryOperation::Create(
-      CSSMathExpressionNumericLiteral::Create(Create(a)),
-      CSSMathExpressionNumericLiteral::Create(Create(b)),
-      CSSMathOperator::kAdd));
+  return CSSMathFunctionValue::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionNumericLiteral::Create(Create(a)),
+          CSSMathExpressionNumericLiteral::Create(Create(b)),
+          CSSMathOperator::kAdd));
 }
 
 CSSPrimitiveValue* CreateNonNegativeSubtraction(UnitValue a, UnitValue b) {
   return CSSMathFunctionValue::Create(
-      CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
           CSSMathExpressionNumericLiteral::Create(Create(a)),
           CSSMathExpressionNumericLiteral::Create(Create(b)),
           CSSMathOperator::kSubtract),
-      kValueRangeNonNegative);
+      CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
+UnitType ToCanonicalUnit(CSSPrimitiveValue::UnitType unit) {
+  return CSSPrimitiveValue::CanonicalUnitTypeForCategory(
+      CSSPrimitiveValue::UnitTypeToUnitCategory(unit));
 }
 
 TEST_F(CSSPrimitiveValueTest, IsTime) {
@@ -201,5 +231,106 @@ TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
   EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
 }
+
+TEST_F(CSSPrimitiveValueTest, TestCanonicalizingNumberUnitCategory) {
+  UnitType canonicalized_from_num = ToCanonicalUnit(UnitType::kNumber);
+  EXPECT_EQ(canonicalized_from_num, UnitType::kNumber);
+
+  UnitType canonicalized_from_int = ToCanonicalUnit(UnitType::kInteger);
+  EXPECT_EQ(canonicalized_from_int, UnitType::kNumber);
+}
+
+TEST_F(CSSPrimitiveValueTest, HasContainerRelativeUnits) {
+  ScopedCSSContainerQueriesForTest scoped_feature(true);
+
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqw"));
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqh"));
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqi"));
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqb"));
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqmin"));
+  EXPECT_TRUE(HasContainerRelativeUnits("1cqmax"));
+  EXPECT_TRUE(HasContainerRelativeUnits("calc(1px + 1cqw)"));
+  EXPECT_TRUE(HasContainerRelativeUnits("min(1px, 1cqw)"));
+
+  EXPECT_FALSE(HasContainerRelativeUnits("1px"));
+  EXPECT_FALSE(HasContainerRelativeUnits("1em"));
+  EXPECT_FALSE(HasContainerRelativeUnits("1vh"));
+  EXPECT_FALSE(HasContainerRelativeUnits("1svh"));
+  EXPECT_FALSE(HasContainerRelativeUnits("calc(1px + 1px)"));
+  EXPECT_FALSE(HasContainerRelativeUnits("calc(1px + 1em)"));
+  EXPECT_FALSE(HasContainerRelativeUnits("calc(1px + 1svh)"));
+}
+
+TEST_F(CSSPrimitiveValueTest, HasStaticViewportUnits) {
+  ScopedCSSViewportUnits4ForTest scoped_feature(true);
+
+  // v*
+  EXPECT_TRUE(HasStaticViewportUnits("1vw"));
+  EXPECT_TRUE(HasStaticViewportUnits("1vh"));
+  EXPECT_TRUE(HasStaticViewportUnits("1vi"));
+  EXPECT_TRUE(HasStaticViewportUnits("1vb"));
+  EXPECT_TRUE(HasStaticViewportUnits("1vmin"));
+  EXPECT_TRUE(HasStaticViewportUnits("1vmax"));
+  EXPECT_TRUE(HasStaticViewportUnits("calc(1px + 1vw)"));
+  EXPECT_TRUE(HasStaticViewportUnits("min(1px, 1vw)"));
+  EXPECT_FALSE(HasStaticViewportUnits("1px"));
+  EXPECT_FALSE(HasStaticViewportUnits("1em"));
+  EXPECT_FALSE(HasStaticViewportUnits("1dvh"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1px)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1em)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1dvh)"));
+
+  // sv*
+  EXPECT_TRUE(HasStaticViewportUnits("1svw"));
+  EXPECT_TRUE(HasStaticViewportUnits("1svh"));
+  EXPECT_TRUE(HasStaticViewportUnits("1svi"));
+  EXPECT_TRUE(HasStaticViewportUnits("1svb"));
+  EXPECT_TRUE(HasStaticViewportUnits("1svmin"));
+  EXPECT_TRUE(HasStaticViewportUnits("1svmax"));
+  EXPECT_TRUE(HasStaticViewportUnits("calc(1px + 1svw)"));
+  EXPECT_TRUE(HasStaticViewportUnits("min(1px, 1svw)"));
+  EXPECT_FALSE(HasStaticViewportUnits("1px"));
+  EXPECT_FALSE(HasStaticViewportUnits("1em"));
+  EXPECT_FALSE(HasStaticViewportUnits("1dvh"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1px)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1em)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1dvh)"));
+
+  // lv*
+  EXPECT_TRUE(HasStaticViewportUnits("1lvw"));
+  EXPECT_TRUE(HasStaticViewportUnits("1lvh"));
+  EXPECT_TRUE(HasStaticViewportUnits("1lvi"));
+  EXPECT_TRUE(HasStaticViewportUnits("1lvb"));
+  EXPECT_TRUE(HasStaticViewportUnits("1lvmin"));
+  EXPECT_TRUE(HasStaticViewportUnits("1lvmax"));
+  EXPECT_TRUE(HasStaticViewportUnits("calc(1px + 1lvw)"));
+  EXPECT_TRUE(HasStaticViewportUnits("min(1px, 1lvw)"));
+  EXPECT_FALSE(HasStaticViewportUnits("1px"));
+  EXPECT_FALSE(HasStaticViewportUnits("1em"));
+  EXPECT_FALSE(HasStaticViewportUnits("1dvh"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1px)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1em)"));
+  EXPECT_FALSE(HasStaticViewportUnits("calc(1px + 1dvh)"));
+}
+
+TEST_F(CSSPrimitiveValueTest, HasDynamicViewportUnits) {
+  ScopedCSSViewportUnits4ForTest scoped_feature(true);
+  // dv*
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvw"));
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvh"));
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvi"));
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvb"));
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvmin"));
+  EXPECT_TRUE(HasDynamicViewportUnits("1dvmax"));
+  EXPECT_TRUE(HasDynamicViewportUnits("calc(1px + 1dvw)"));
+  EXPECT_TRUE(HasDynamicViewportUnits("min(1px, 1dvw)"));
+  EXPECT_FALSE(HasDynamicViewportUnits("1px"));
+  EXPECT_FALSE(HasDynamicViewportUnits("1em"));
+  EXPECT_FALSE(HasDynamicViewportUnits("1svh"));
+  EXPECT_FALSE(HasDynamicViewportUnits("calc(1px + 1px)"));
+  EXPECT_FALSE(HasDynamicViewportUnits("calc(1px + 1em)"));
+  EXPECT_FALSE(HasDynamicViewportUnits("calc(1px + 1svh)"));
+}
+
 }  // namespace
 }  // namespace blink

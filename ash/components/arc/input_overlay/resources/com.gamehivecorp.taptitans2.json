@@ -1,0 +1,29 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": [
+    {
+      "id": 0,
+      "input_sources": [
+        "keyboard"
+      ],
+      "name": "attack",
+      "key": "Space",
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            0
+          ],
+          "anchor_to_target": [
+            0.48058254,
+            0.5464481
+          ]
+        }
+      ]
+    }
+  ]
+}

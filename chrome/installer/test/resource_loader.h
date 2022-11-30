@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
-
 namespace base {
 class FilePath;
 }
@@ -26,6 +24,10 @@ namespace upgrade_test {
 class ResourceLoader {
  public:
   ResourceLoader();
+
+  ResourceLoader(const ResourceLoader&) = delete;
+  ResourceLoader& operator=(const ResourceLoader&) = delete;
+
   ~ResourceLoader();
 
   // Loads |pe_image_path| in preparation for loading its resources.
@@ -47,8 +49,6 @@ class ResourceLoader {
 
  private:
   HMODULE module_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceLoader);
 };  // class ResourceLoader
 
 }  // namespace upgrade_test

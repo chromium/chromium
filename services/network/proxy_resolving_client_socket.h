@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -29,10 +29,11 @@
 
 namespace net {
 struct CommonConnectJobParams;
+class ConnectJobFactory;
 class HttpAuthController;
 class HttpResponseInfo;
 class HttpNetworkSession;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ProxyResolutionRequest;
 }  // namespace net
 
@@ -45,20 +46,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
     : public net::StreamSocket,
       public net::ConnectJob::Delegate {
  public:
-  // Constructs a new ProxyResolvingClientSocket. |url|'s host and port specify
+  // Constructs a new ProxyResolvingClientSocket. `url`'s host and port specify
   // where a connection will be established to. The full URL will be only used
   // for proxy resolution. Caller doesn't need to explicitly sanitize the url,
   // any sensitive data (like embedded usernames and passwords), and local data
   // (i.e. reference fragment) will be sanitized by net::ProxyResolutionService
-  // before the url is disclosed to the PAC script. If |use_tls|, this will try
-  // to do a tls connect instead of a regular tcp connect. |network_session| and
-  // |common_connect_job_params| must outlive |this|.
+  // before the url is disclosed to the PAC script. If `use_tls`, this will try
+  // to do a tls connect instead of a regular tcp connect. `network_session`,
+  // `common_connect_job_params`, and `connect_job_factory` must outlive `this`.
   ProxyResolvingClientSocket(
       net::HttpNetworkSession* network_session,
       const net::CommonConnectJobParams* common_connect_job_params,
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
-      bool use_tls);
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      bool use_tls,
+      const net::ConnectJobFactory* connect_job_factory);
+
+  ProxyResolvingClientSocket(const ProxyResolvingClientSocket&) = delete;
+  ProxyResolvingClientSocket& operator=(const ProxyResolvingClientSocket&) =
+      delete;
+
   ~ProxyResolvingClientSocket() override;
 
   // net::StreamSocket implementation.
@@ -87,10 +94,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   bool WasAlpnNegotiated() const override;
   net::NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(net::SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(net::ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const net::ConnectionAttempts& attempts) override {
-  }
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const net::SocketTag& tag) override;
 
@@ -126,16 +129,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
 
   int ReconsiderProxyAfterError(int error);
 
-  net::HttpNetworkSession* network_session_;
+  raw_ptr<net::HttpNetworkSession> network_session_;
 
-  const net::CommonConnectJobParams* common_connect_job_params_;
+  raw_ptr<const net::CommonConnectJobParams> common_connect_job_params_;
+  raw_ptr<const net::ConnectJobFactory> connect_job_factory_;
   std::unique_ptr<net::ConnectJob> connect_job_;
   std::unique_ptr<net::StreamSocket> socket_;
 
   std::unique_ptr<net::ProxyResolutionRequest> proxy_resolve_request_;
   net::ProxyInfo proxy_info_;
   const GURL url_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   const bool use_tls_;
 
   net::NetLogWithSource net_log_;
@@ -146,8 +150,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   State next_state_;
 
   base::WeakPtrFactory<ProxyResolvingClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingClientSocket);
 };
 
 }  // namespace network

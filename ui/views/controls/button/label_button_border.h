@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -20,6 +18,10 @@ namespace views {
 class VIEWS_EXPORT LabelButtonBorder : public Border {
  public:
   LabelButtonBorder();
+
+  LabelButtonBorder(const LabelButtonBorder&) = delete;
+  LabelButtonBorder& operator=(const LabelButtonBorder&) = delete;
+
   ~LabelButtonBorder() override;
 
   void set_insets(const gfx::Insets& insets) { insets_ = insets; }
@@ -35,14 +37,16 @@ class VIEWS_EXPORT LabelButtonBorder : public Border {
 
  private:
   gfx::Insets insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonBorder);
 };
 
 // A Border that paints a LabelButton's background frame using image assets.
 class VIEWS_EXPORT LabelButtonAssetBorder : public LabelButtonBorder {
  public:
   LabelButtonAssetBorder();
+
+  LabelButtonAssetBorder(const LabelButtonAssetBorder&) = delete;
+  LabelButtonAssetBorder& operator=(const LabelButtonAssetBorder&) = delete;
+
   ~LabelButtonAssetBorder() override;
 
   // Returns the default insets.
@@ -65,8 +69,6 @@ class VIEWS_EXPORT LabelButtonAssetBorder : public LabelButtonBorder {
  private:
   // The painters used for each unfocused or focused button state.
   std::unique_ptr<Painter> painters_[2][Button::STATE_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(LabelButtonAssetBorder);
 };
 
 }  // namespace views

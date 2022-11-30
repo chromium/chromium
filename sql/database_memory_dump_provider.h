@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_provider.h"
 
 struct sqlite3;
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
+struct MemoryDumpArgs;
 class ProcessMemoryDump;
-}
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace sql {
 
@@ -25,6 +25,11 @@ class DatabaseMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
   DatabaseMemoryDumpProvider(sqlite3* db, const std::string& name);
+
+  DatabaseMemoryDumpProvider(const DatabaseMemoryDumpProvider&) = delete;
+  DatabaseMemoryDumpProvider& operator=(const DatabaseMemoryDumpProvider&) =
+      delete;
+
   ~DatabaseMemoryDumpProvider() override;
 
   void ResetDatabase();
@@ -40,15 +45,19 @@ class DatabaseMemoryDumpProvider
                          const std::string& dump_name);
 
  private:
-  bool GetDbMemoryUsage(int* cache_size, int* schema_size, int* statement_size);
+  struct MemoryUsageResult {
+    bool is_valid = false;
+    int cache_size = 0;
+    int schema_size = 0;
+    int statement_size = 0;
+  };
+  MemoryUsageResult GetDbMemoryUsage();
 
   std::string FormatDumpName() const;
 
-  sqlite3* db_;  // not owned.
   base::Lock lock_;
-  std::string connection_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseMemoryDumpProvider);
+  raw_ptr<sqlite3> db_ GUARDED_BY_CONTEXT(lock_);  // not owned.
+  const std::string connection_name_;
 };
 
 }  // namespace sql

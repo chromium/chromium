@@ -1,13 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_CONTEXT_H_
 #define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_CONTEXT_H_
 
-#include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
+#include <memory>
 
 namespace media {
+
+class SysmemBufferStream;
 
 // Interface for Fuchsia-specific extensions to the CdmContext interface.
 class FuchsiaCdmContext {
@@ -15,10 +17,8 @@ class FuchsiaCdmContext {
   FuchsiaCdmContext() = default;
 
   // Creates FuchsiaSecureStreamDecryptor instance for the CDM context.
-  virtual std::unique_ptr<FuchsiaSecureStreamDecryptor> CreateVideoDecryptor(
-      FuchsiaSecureStreamDecryptor::Client* client) = 0;
-  virtual std::unique_ptr<FuchsiaClearStreamDecryptor>
-  CreateAudioDecryptor() = 0;
+  virtual std::unique_ptr<SysmemBufferStream> CreateStreamDecryptor(
+      bool secure_mode) = 0;
 
  protected:
   virtual ~FuchsiaCdmContext() = default;

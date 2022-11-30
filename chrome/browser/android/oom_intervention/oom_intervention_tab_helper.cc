@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/ui/android/infobars/near_oom_reduction_infobar.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/messages/android/messages_feature.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -25,7 +26,7 @@
 namespace {
 
 constexpr base::TimeDelta kRendererHighMemoryUsageDetectionWindow =
-    base::TimeDelta::FromSeconds(60);
+    base::Seconds(60);
 
 content::WebContents* g_last_visible_web_contents = nullptr;
 
@@ -47,10 +48,11 @@ bool OomInterventionTabHelper::IsEnabled() {
 OomInterventionTabHelper::OomInterventionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OomInterventionTabHelper>(*web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
-          web_contents->GetBrowserContext())),
-      scoped_observer_(this) {
-  scoped_observer_.Add(crash_reporter::CrashMetricsReporter::GetInstance());
+          web_contents->GetBrowserContext())) {
+  scoped_observation_.Observe(
+      crash_reporter::CrashMetricsReporter::GetInstance());
 }
 
 OomInterventionTabHelper::~OomInterventionTabHelper() = default;
@@ -60,7 +62,11 @@ void OomInterventionTabHelper::OnHighMemoryUsage() {
   if (config->is_renderer_pause_enabled() ||
       config->is_navigate_ads_enabled() ||
       config->is_purge_v8_memory_enabled()) {
-    NearOomReductionInfoBar::Show(web_contents(), this);
+    if (messages::IsNearOomReductionMessagesUiEnabled()) {
+      near_oom_reduction_message_delegate_.ShowMessage(web_contents(), this);
+    } else {
+      NearOomReductionInfoBar::Show(web_contents(), this);
+    }
     intervention_state_ = InterventionState::UI_SHOWN;
   }
   if (!last_navigation_timestamp_.is_null()) {
@@ -112,7 +118,7 @@ void OomInterventionTabHelper::WebContentsDestroyed() {
   StopMonitoring();
 }
 
-void OomInterventionTabHelper::RenderProcessGone(
+void OomInterventionTabHelper::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   ResetInterfaces();
 
@@ -122,10 +128,6 @@ void OomInterventionTabHelper::RenderProcessGone(
     return;
   }
 
-  // OOM crash is handled in OnForegroundOOMDetected().
-  if (status == base::TERMINATION_STATUS_OOM_PROTECTED)
-    return;
-
   if (near_oom_detected_time_) {
     ResetInterventionState();
   }
@@ -133,11 +135,9 @@ void OomInterventionTabHelper::RenderProcessGone(
 
 void OomInterventionTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  load_finished_ = false;
-
-  // Filter out sub-frame's navigation or if the navigation happens without
-  // changing document.
-  if (!navigation_handle->IsInMainFrame() ||
+  // Filter out sub-frame's navigation, non-primary page's navigation, or if the
+  // navigation happens without changing document.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -163,6 +163,13 @@ void OomInterventionTabHelper::DidStartNavigation(
   }
 }
 
+void OomInterventionTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInMainFrame())
+    return;
+  if (IsLastVisibleWebContents(web_contents()))
+    StartMonitoringIfNeeded();
+}
+
 void OomInterventionTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
@@ -173,9 +180,7 @@ void OomInterventionTabHelper::OnVisibilityChanged(
   }
 }
 
-void OomInterventionTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
-  load_finished_ = true;
+void OomInterventionTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();
 }
@@ -184,7 +189,8 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
     int rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
         reported_counts) {
-  if (rph_id != web_contents()->GetMainFrame()->GetProcess()->GetID())
+  if (rph_id !=
+      web_contents()->GetPrimaryPage().GetMainDocument().GetProcess()->GetID())
     return;
   if (!reported_counts.count(
           crash_reporter::CrashMetricsReporter::ProcessedCrashCounts::
@@ -224,7 +230,7 @@ void OomInterventionTabHelper::StartMonitoringIfNeeded() {
   if (near_oom_detected_time_)
     return;
 
-  if (!load_finished_)
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
   auto* config = OomInterventionConfig::GetInstance();
@@ -265,17 +271,17 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
 
   start_monitor_timestamp_ = base::TimeTicks::Now();
 
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  DCHECK(main_frame);
+  content::RenderFrameHost& main_frame =
+      web_contents()->GetPrimaryPage().GetMainDocument();
 
   // Connections to the renderer will not be recreated when coming out of the
   // cache so prevent us from getting in there in the first place.
   content::BackForwardCache::DisableForRenderFrameHost(
-      main_frame,
+      &main_frame,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kOomInterventionTabHelper));
 
-  content::RenderProcessHost* render_process_host = main_frame->GetProcess();
+  content::RenderProcessHost* render_process_host = main_frame.GetProcess();
   DCHECK(render_process_host);
   render_process_host->BindReceiver(intervention_.BindNewPipeAndPassReceiver());
   DCHECK(!receiver_.is_bound());
@@ -319,4 +325,4 @@ void OomInterventionTabHelper::ResetInterfaces() {
   receiver_.reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper);

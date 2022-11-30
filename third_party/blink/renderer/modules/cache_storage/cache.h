@@ -1,17 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_CACHE_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cache_query_options.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -48,8 +47,6 @@ class Request;
 class ScriptPromiseResolver;
 class ScriptState;
 
-typedef RequestOrUSVString RequestInfo;
-
 class MODULES_EXPORT Cache : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -59,33 +56,38 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
         mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>,
         scoped_refptr<base::SingleThreadTaskRunner>);
 
+  Cache(const Cache&) = delete;
+  Cache& operator=(const Cache&) = delete;
+
   // From Cache.idl:
-  ScriptPromise match(ScriptState*,
-                      const RequestInfo&,
-                      const CacheQueryOptions*,
-                      ExceptionState&);
+  ScriptPromise match(ScriptState* script_state,
+                      const V8RequestInfo* request,
+                      const CacheQueryOptions* options,
+                      ExceptionState& exception_state);
   ScriptPromise matchAll(ScriptState*, ExceptionState&);
-  ScriptPromise matchAll(ScriptState*,
-                         const RequestInfo&,
-                         const CacheQueryOptions*,
-                         ExceptionState&);
-  ScriptPromise add(ScriptState*, const RequestInfo&, ExceptionState&);
-  ScriptPromise addAll(ScriptState*,
-                       const HeapVector<RequestInfo>&,
-                       ExceptionState&);
-  ScriptPromise Delete(ScriptState*,
-                       const RequestInfo&,
-                       const CacheQueryOptions*,
-                       ExceptionState&);
-  ScriptPromise put(ScriptState*,
-                    const RequestInfo&,
-                    Response*,
-                    ExceptionState&);
+  ScriptPromise matchAll(ScriptState* script_state,
+                         const V8RequestInfo* request,
+                         const CacheQueryOptions* options,
+                         ExceptionState& exception_state);
+  ScriptPromise add(ScriptState* script_state,
+                    const V8RequestInfo* request,
+                    ExceptionState& exception_state);
+  ScriptPromise addAll(ScriptState* script_state,
+                       const HeapVector<Member<V8RequestInfo>>& requests,
+                       ExceptionState& exception_state);
+  ScriptPromise Delete(ScriptState* script_state,
+                       const V8RequestInfo* request,
+                       const CacheQueryOptions* options,
+                       ExceptionState& exception_state);
+  ScriptPromise put(ScriptState* script_state,
+                    const V8RequestInfo* request,
+                    Response* response,
+                    ExceptionState& exception_state);
   ScriptPromise keys(ScriptState*, ExceptionState&);
-  ScriptPromise keys(ScriptState*,
-                     const RequestInfo&,
-                     const CacheQueryOptions*,
-                     ExceptionState&);
+  ScriptPromise keys(ScriptState* script_state,
+                     const V8RequestInfo* request,
+                     const CacheQueryOptions* options,
+                     ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 
@@ -128,8 +130,6 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
   Member<CacheStorageBlobClientList> blob_client_list_;
 
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(Cache);
 };
 
 }  // namespace blink

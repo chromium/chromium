@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 namespace client {
@@ -56,7 +57,7 @@ TEST_F(ScreenPositionClientTest, ConvertPointToRootWindowIgnoringTransforms) {
   EXPECT_EQ(gfx::Point(300, 300), point);
 
   point = gfx::Point(100, 100);
-  child->SetTransform(gfx::Transform(1, 0, 0, 1, 100, 100));
+  child->SetTransform(gfx::Transform::MakeTranslation(100, 100));
   test_client.ConvertPointToRootWindowIgnoringTransforms(child.get(), &point);
   EXPECT_EQ(gfx::Point(300, 300), point);
 }

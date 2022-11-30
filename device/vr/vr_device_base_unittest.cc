@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,30 +25,21 @@ namespace {
 class VRDeviceBaseForTesting : public VRDeviceBase {
  public:
   VRDeviceBaseForTesting() : VRDeviceBase(mojom::XRDeviceId::FAKE_DEVICE_ID) {}
-  ~VRDeviceBaseForTesting() override = default;
 
-  void SetVRDisplayInfoForTest(mojom::VRDisplayInfoPtr display_info) {
-    SetVRDisplayInfo(std::move(display_info));
-  }
+  VRDeviceBaseForTesting(const VRDeviceBaseForTesting&) = delete;
+  VRDeviceBaseForTesting& operator=(const VRDeviceBaseForTesting&) = delete;
+
+  ~VRDeviceBaseForTesting() override = default;
 
   void RequestSession(
       mojom::XRRuntimeSessionOptionsPtr options,
       mojom::XRRuntime::RequestSessionCallback callback) override {}
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceBaseForTesting);
 };
 
 class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
  public:
   StubVRDeviceEventListener() = default;
   ~StubVRDeviceEventListener() override = default;
-
-  MOCK_METHOD1(DoOnChanged, void(mojom::VRDisplayInfo* vr_device_info));
-  void OnDisplayInfoChanged(mojom::VRDisplayInfoPtr vr_device_info) override {
-    DoOnChanged(vr_device_info.get());
-  }
 
   MOCK_METHOD0(OnExitPresent, void());
   MOCK_METHOD1(OnVisibilityStateChanged, void(mojom::XRVisibilityState));
@@ -66,19 +57,20 @@ class StubVRDeviceEventListener : public mojom::XRRuntimeEventListener {
 class VRDeviceTest : public testing::Test {
  public:
   VRDeviceTest() {}
+
+  VRDeviceTest(const VRDeviceTest&) = delete;
+  VRDeviceTest& operator=(const VRDeviceTest&) = delete;
+
   ~VRDeviceTest() override {}
 
  protected:
   std::unique_ptr<VRDeviceBaseForTesting> MakeVRDevice() {
     std::unique_ptr<VRDeviceBaseForTesting> device =
         std::make_unique<VRDeviceBaseForTesting>();
-    device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
     return device;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(VRDeviceTest);
 };
 
 // Tests VRDevice class default behaviour when it dispatches "vrdevicechanged"
@@ -88,12 +80,8 @@ TEST_F(VRDeviceTest, DeviceChangedDispatched) {
   auto device = MakeVRDevice();
   mojo::Remote<mojom::XRRuntime> device_remote(device->BindXRRuntime());
   StubVRDeviceEventListener listener;
-  device_remote->ListenToDeviceChanges(
-      listener.BindPendingRemote(),
-      base::DoNothing());  // TODO: consider getting initial info
+  device_remote->ListenToDeviceChanges(listener.BindPendingRemote());
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(listener, DoOnChanged(testing::_)).Times(1);
-  device->SetVRDisplayInfoForTest(mojom::VRDisplayInfo::New());
   base::RunLoop().RunUntilIdle();
 }
 

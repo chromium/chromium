@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,15 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/ping_manager.h"
 #include "components/update_client/protocol_parser.h"
-#include "components/update_client/task_send_registration_ping.h"
 #include "components/update_client/task_send_uninstall_ping.h"
 #include "components/update_client/task_update.h"
 #include "components/update_client/update_checker.h"
@@ -38,20 +35,19 @@
 
 namespace update_client {
 
-CrxInstaller::InstallParams::InstallParams(const std::string& run,
-                                           const std::string& arguments)
-    : run(run), arguments(arguments) {}
+CrxInstaller::InstallParams::InstallParams(
+    const std::string& run,
+    const std::string& arguments,
+    const std::string& server_install_data)
+    : run(run),
+      arguments(arguments),
+      server_install_data(server_install_data) {}
 
 CrxUpdateItem::CrxUpdateItem() : state(ComponentState::kNew) {}
 CrxUpdateItem::~CrxUpdateItem() = default;
 CrxUpdateItem::CrxUpdateItem(const CrxUpdateItem& other) = default;
 
-CrxComponent::CrxComponent()
-    : allows_background_download(true),
-      requires_network_encryption(true),
-      crx_format_requirement(
-          crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF),
-      supports_group_policy_enable_component_updates(false) {}
+CrxComponent::CrxComponent() = default;
 CrxComponent::CrxComponent(const CrxComponent& other) = default;
 CrxComponent::~CrxComponent() = default;
 
@@ -83,15 +79,16 @@ UpdateClientImpl::~UpdateClientImpl() {
   config_ = nullptr;
 }
 
-void UpdateClientImpl::Install(const std::string& id,
-                               CrxDataCallback crx_data_callback,
-                               CrxStateChangeCallback crx_state_change_callback,
-                               Callback callback) {
+base::RepeatingClosure UpdateClientImpl::Install(
+    const std::string& id,
+    CrxDataCallback crx_data_callback,
+    CrxStateChangeCallback crx_state_change_callback,
+    Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (IsUpdating(id)) {
     std::move(callback).Run(Error::UPDATE_IN_PROGRESS);
-    return;
+    return base::DoNothing();
   }
 
   std::vector<std::string> ids = {id};
@@ -99,11 +96,14 @@ void UpdateClientImpl::Install(const std::string& id,
   // Install tasks are run concurrently and never queued up. They are always
   // considered foreground tasks.
   constexpr bool kIsForeground = true;
-  RunTask(base::MakeRefCounted<TaskUpdate>(
-      update_engine_.get(), kIsForeground, ids, std::move(crx_data_callback),
-      crx_state_change_callback,
+  constexpr bool kIsInstall = true;
+  auto task = base::MakeRefCounted<TaskUpdate>(
+      update_engine_.get(), kIsForeground, kIsInstall, ids,
+      std::move(crx_data_callback), crx_state_change_callback,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
-                     std::move(callback))));
+                     std::move(callback)));
+  RunTask(task);
+  return base::BindRepeating(&Task::Cancel, task);
 }
 
 void UpdateClientImpl::Update(const std::vector<std::string>& ids,
@@ -113,9 +113,10 @@ void UpdateClientImpl::Update(const std::vector<std::string>& ids,
                               Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  constexpr bool kIsInstall = false;
   auto task = base::MakeRefCounted<TaskUpdate>(
-      update_engine_.get(), is_foreground, ids, std::move(crx_data_callback),
-      crx_state_change_callback,
+      update_engine_.get(), is_foreground, kIsInstall, ids,
+      std::move(crx_data_callback), crx_state_change_callback,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback)));
 
@@ -155,9 +156,9 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
   // Pick up a task from the queue if the queue has pending tasks and no other
   // task is running.
   if (tasks_.empty() && !task_queue_.empty()) {
-    auto task = task_queue_.front();
+    auto queued_task = task_queue_.front();
     task_queue_.pop_front();
-    RunTask(task);
+    RunTask(queued_task);
   }
 }
 
@@ -228,25 +229,13 @@ void UpdateClientImpl::Stop() {
   }
 }
 
-void UpdateClientImpl::SendUninstallPing(const std::string& id,
-                                         const base::Version& version,
+void UpdateClientImpl::SendUninstallPing(const CrxComponent& crx_component,
                                          int reason,
                                          Callback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   RunTask(base::MakeRefCounted<TaskSendUninstallPing>(
-      update_engine_.get(), id, version, reason,
-      base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
-                     std::move(callback))));
-}
-
-void UpdateClientImpl::SendRegistrationPing(const std::string& id,
-                                            const base::Version& version,
-                                            Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  RunTask(base::MakeRefCounted<TaskSendRegistrationPing>(
-      update_engine_.get(), id, version,
+      update_engine_.get(), crx_component, reason,
       base::BindOnce(&UpdateClientImpl::OnTaskComplete, this,
                      std::move(callback))));
 }

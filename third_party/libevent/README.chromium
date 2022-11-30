@@ -1,0 +1,35 @@
+Name: libevent
+URL: http://libevent.org/
+Version: 1.4.15
+License: BSD
+Security Critical: yes
+
+Local Modifications:
+Rather than use libevent's own build system, we just build a Chrome
+static library using GYP.
+
+1) Run configure and "make event-config.h" on Linux, FreeBSD, Solaris,
+   and Mac and copy config.h and event-config.h to linux/, freebsd/,
+   solaris/, and mac/ respectively.
+2) Add libevent.gyp.
+3) chromium.patch is applied to make the following changes:
+   - Allow libevent to be used without being installed by changing <...>
+     #includes to "...".
+   - Fix a race condition in event_del.
+   - Optimistically assume CLOCK_MONOTONIC is available and fallback if it
+     fails, rather than explicitly testing for it.
+   - Remove an unneeded variable that causes a -Werror build failure.
+   - Add an #ifndef to fix a preprocessor redefined -Werror build failure.
+   - Revert the patch from http://sourceforge.net/p/levent/bugs/223/ that
+     introduces use-after-free memory corruption when an event callback frees
+     the struct event memory.
+   - Remove deprecated global variables, event_sigcb and event_gotsig
+     (essentially unused) that trigger tsan errors. (crbug/605894)
+4) The directories WIN32-Code and WIN32-Prj are not included.
+5) The configs for android were copied from Linux's which were very close to
+   android one with the exception of HAVE_FD_MASK and HAVE_STRLCPY.
+6) Remove an unnecessary workaround for OS X 10.4 from kqueue.c. It was causing
+   problems on macOS Sierra.
+7) Change buffer.c to not redefine _GNU_SOURCE.
+8) Change _event_strlcpy in strlcpy.c to not use K&R syntax.
+9) Change a bitfield in evhttp.h from int to unsigned int.

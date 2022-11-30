@@ -57,7 +57,7 @@ crash handler, we observe some rules:
     `memcpy`. Since the compiler can emit calls to `memcpy` we can't really
     avoid it.
 1.  We don't allocate memory via malloc as the heap may be corrupt. Instead we
-    use a custom allocator (in `breadpad/linux/memory.h`) which gets clean pages
+    use a custom allocator (in `breakpad/linux/memory.h`) which gets clean pages
     directly from the kernel.
 
 In order to avoid calling into libc we have a couple of header files which wrap

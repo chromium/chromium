@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
@@ -88,7 +89,7 @@ class MetadataDatabaseIndexTest : public testing::Test {
     leveldb::Status status = leveldb_env::OpenDB(options, "", &db);
     ASSERT_TRUE(status.ok());
 
-    db_.reset(new LevelDBWrapper(std::move(db)));
+    db_ = std::make_unique<LevelDBWrapper>(std::move(db));
   }
 
   std::unique_ptr<DatabaseContents> contents_;

@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/services/mojo_audio_output_stream_provider.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -91,12 +92,12 @@ TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
       std::make_unique<FakeObserver>());
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_1;
-  ignore_result(client_1.InitWithNewPipeAndPassReceiver());
+  std::ignore = client_1.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
                            std::move(client_1));
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_2;
-  ignore_result(client_2.InitWithNewPipeAndPassReceiver());
+  std::ignore = client_2.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
                            std::move(client_2));
 
@@ -129,10 +130,10 @@ TEST(MojoAudioOutputStreamProviderTest,
       std::make_unique<FakeObserver>());
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(params, std::move(client));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::RunLoop().RunUntilIdle();
   // Creating bitstream streams is allowed on Android.
   EXPECT_FALSE(got_bad_message);

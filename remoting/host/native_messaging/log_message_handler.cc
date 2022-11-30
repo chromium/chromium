@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 
 namespace remoting {
 
@@ -74,16 +75,24 @@ void LogMessageHandler::PostLogMessageToCorrectThread(
     int line,
     size_t message_start,
     const std::string& str) {
-  // Don't process this message if we're already logging and on the caller
-  // thread. This guards against an infinite loop if any code called by this
-  // class logs something.
-  if (suppress_logging_ && caller_task_runner_->BelongsToCurrentThread()) {
-    return;
+  if (caller_task_runner_->BelongsToCurrentThread()) {
+    // Don't process this message if we're already logging and on the caller
+    // thread. This guards against an infinite loop if any code called by this
+    // class logs something.
+    if (suppress_logging_) {
+      return;
+    }
+
+    if (log_synchronously_if_possible_) {
+      SendLogMessageToClient(severity, file, line, message_start, str);
+      return;
+    }
   }
 
   // This method is always called under the global lock, so post a task to
-  // handle the log message, even if we're already on the correct thread.
-  // This alows the lock to be released quickly.
+  // handle the log message, even if we're already on the correct thread, unless
+  // it is explicitly configured not to do so. This allows the lock to be
+  // released quickly.
   //
   // Note that this means that LOG(FATAL) messages will be lost because the
   // process will exit before the message is sent to the client.
@@ -115,12 +124,12 @@ void LogMessageHandler::SendLogMessageToClient(
   std::string message = str.substr(message_start);
   base::TrimWhitespaceASCII(message, base::TRIM_ALL, &message);
 
-  std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
-  dictionary->SetString("type", kDebugMessageTypeName);
-  dictionary->SetString("severity", severity_string);
-  dictionary->SetString("message", message);
-  dictionary->SetString("file", file);
-  dictionary->SetInteger("line", line);
+  base::Value::Dict dictionary;
+  dictionary.Set("type", kDebugMessageTypeName);
+  dictionary.Set("severity", severity_string);
+  dictionary.Set("message", message);
+  dictionary.Set("file", file);
+  dictionary.Set("line", line);
 
   // Protect against this instance being torn down after the delegate is run.
   base::WeakPtr<LogMessageHandler> self = weak_ptr_factory_.GetWeakPtr();

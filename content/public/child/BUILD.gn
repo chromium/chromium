@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,7 +13,7 @@ group("child") {
     if (!is_android) {
       public_deps += [ "//content/gpu" ]
     }
-    if (enable_plugins) {
+    if (enable_ppapi) {
       public_deps += [ "//content/ppapi_plugin" ]
     }
   }
@@ -41,7 +41,6 @@ source_set("child_sources") {
     "//content/child",  # Must not be public_deps!
     "//content/public/common:common_sources",
     "//gin",
-    "//ppapi/c",
   ]
 
   allow_circular_includes_from = [

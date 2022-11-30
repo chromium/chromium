@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace android {
@@ -25,14 +25,16 @@ class BASE_EXPORT ScopedJavaLocalFrame {
  public:
   explicit ScopedJavaLocalFrame(JNIEnv* env);
   ScopedJavaLocalFrame(JNIEnv* env, int capacity);
+
+  ScopedJavaLocalFrame(const ScopedJavaLocalFrame&) = delete;
+  ScopedJavaLocalFrame& operator=(const ScopedJavaLocalFrame&) = delete;
+
   ~ScopedJavaLocalFrame();
 
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  JNIEnv* env_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedJavaLocalFrame);
+  raw_ptr<JNIEnv> env_;
 };
 
 // Forward declare the generic java reference template class.
@@ -52,6 +54,9 @@ class BASE_EXPORT JavaRef<jobject> {
   // empty JavaRef just to pass null to a function, and makes C++ "nullptr" and
   // Java "null" equivalent.
   constexpr JavaRef(std::nullptr_t) {}
+
+  JavaRef(const JavaRef&) = delete;
+  JavaRef& operator=(const JavaRef&) = delete;
 
   // Public to allow destruction of null JavaRef objects.
   ~JavaRef() {}
@@ -92,8 +97,6 @@ class BASE_EXPORT JavaRef<jobject> {
 
  private:
   jobject obj_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaRef);
 };
 
 // Forward declare the object array reader for the convenience function.
@@ -108,6 +111,10 @@ class JavaRef : public JavaRef<jobject> {
  public:
   constexpr JavaRef() {}
   constexpr JavaRef(std::nullptr_t) {}
+
+  JavaRef(const JavaRef&) = delete;
+  JavaRef& operator=(const JavaRef&) = delete;
+
   ~JavaRef() {}
 
   T obj() const { return static_cast<T>(JavaRef<jobject>::obj()); }
@@ -125,9 +132,6 @@ class JavaRef : public JavaRef<jobject> {
 
  protected:
   JavaRef(JNIEnv* env, T obj) : JavaRef<jobject>(env, obj) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(JavaRef);
 };
 
 // Holds a local reference to a JNI method parameter.
@@ -147,14 +151,14 @@ class JavaParamRef : public JavaRef<T> {
   // working.
   JavaParamRef(std::nullptr_t) {}
 
+  JavaParamRef(const JavaParamRef&) = delete;
+  JavaParamRef& operator=(const JavaParamRef&) = delete;
+
   ~JavaParamRef() {}
 
   // TODO(torne): remove this cast once we're using JavaRef consistently.
   // http://crbug.com/506850
   operator T() const { return JavaRef<T>::obj(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(JavaParamRef);
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
@@ -278,7 +282,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  JNIEnv* env_ = nullptr;
+  raw_ptr<JNIEnv> env_ = nullptr;
 
   // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
   // ownership of a JavaParamRef's underlying object - parameters are not
@@ -491,7 +495,7 @@ class JavaObjectArrayReader {
    private:
     iterator(const JavaObjectArrayReader* reader, jsize i)
         : reader_(reader), i_(i) {}
-    const JavaObjectArrayReader* reader_;
+    raw_ptr<const JavaObjectArrayReader<T>> reader_;
     jsize i_;
 
     friend JavaObjectArrayReader;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ void RecordExtensionResourceAccessResult(ukm::SourceIdObj ukm_source_id,
 
   ExtensionId extension_id = ExtensionSet::GetExtensionIdByURL(gurl);
   blink::IdentifiabilityMetricBuilder(ukm_source_id)
-      .Set(SurfaceForExtension(
+      .Add(SurfaceForExtension(
                blink::IdentifiableSurface::Type::kExtensionFileAccess,
                extension_id),
            result)
@@ -38,7 +38,7 @@ void RecordContentScriptInjection(ukm::SourceIdObj ukm_source_id,
   if (ukm_source_id == ukm::kInvalidSourceIdObj)
     return;
   blink::IdentifiabilityMetricBuilder(ukm_source_id)
-      .Set(SurfaceForExtension(
+      .Add(SurfaceForExtension(
                blink::IdentifiableSurface::Type::kExtensionContentScript,
                extension_id),
            /* Succeeded= */ true)
@@ -50,7 +50,7 @@ void RecordNetworkRequestBlocked(ukm::SourceIdObj ukm_source_id,
   if (ukm_source_id == ukm::kInvalidSourceIdObj)
     return;
   blink::IdentifiabilityMetricBuilder(ukm_source_id)
-      .Set(SurfaceForExtension(
+      .Add(SurfaceForExtension(
                blink::IdentifiableSurface::Type::kExtensionCancelRequest,
                extension_id),
            /* Succeeded= */ true)

@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "dbus/dbus_statistics.h"
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace dbus {
@@ -13,6 +12,9 @@ namespace dbus {
 class DBusStatisticsTest : public testing::Test {
  public:
   DBusStatisticsTest() = default;
+
+  DBusStatisticsTest(const DBusStatisticsTest&) = delete;
+  DBusStatisticsTest& operator=(const DBusStatisticsTest&) = delete;
 
   void SetUp() override { statistics::Initialize(); }
 
@@ -50,9 +52,6 @@ class DBusStatisticsTest : public testing::Test {
     statistics::AddSentMethodCall(
         "service2", "service2.interface1", "method1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DBusStatisticsTest);
 };
 
 TEST_F(DBusStatisticsTest, TestDBusStatsBasic) {

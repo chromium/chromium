@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/values.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -29,7 +26,7 @@ class DataDecoder;
 // Section 2.3 Device description.
 class SafeDialDeviceDescriptionParser {
  public:
-  enum class ParsingError : int32_t {
+  enum class ParsingError {
     kNone = 0,
     kInvalidXml = 1,
     kFailedToReadUdn = 2,
@@ -41,13 +38,16 @@ class SafeDialDeviceDescriptionParser {
     kMissingAppUrl = 8,
     kInvalidAppUrl = 9,
     kUtilityProcessError = 10,
-
-    // Note: Add entries only immediately above this line.
-    // TODO(https://crbug.com/742517): remove this enum value.
-    kTotalCount = 11,
+    kMaxValue = kUtilityProcessError,
   };
 
   SafeDialDeviceDescriptionParser();
+
+  SafeDialDeviceDescriptionParser(const SafeDialDeviceDescriptionParser&) =
+      delete;
+  SafeDialDeviceDescriptionParser& operator=(
+      const SafeDialDeviceDescriptionParser&) = delete;
+
   ~SafeDialDeviceDescriptionParser();
 
   // Callback function invoked when done parsing some device description XML.
@@ -79,8 +79,6 @@ class SafeDialDeviceDescriptionParser {
                         data_decoder::DataDecoder::ValueOrError result);
 
   base::WeakPtrFactory<SafeDialDeviceDescriptionParser> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SafeDialDeviceDescriptionParser);
 };
 
 }  // namespace media_router

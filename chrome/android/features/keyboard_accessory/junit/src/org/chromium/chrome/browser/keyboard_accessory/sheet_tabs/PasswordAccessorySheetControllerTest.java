@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,11 +42,9 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordHistogramJni;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -68,29 +66,23 @@ import java.util.concurrent.atomic.AtomicReference;
  * Controller tests for the password accessory sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
 @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class PasswordAccessorySheetControllerTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private RecyclerView mMockView;
     @Mock
     private ListObservable.ListObserver<Void> mMockItemListObserver;
-    @Mock
-    private RecordHistogram.Natives mMockRecordHistogramNatives;
 
     private PasswordAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabModel mSheetDataPieces;
 
     @Before
     public void setUp() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator = new PasswordAccessorySheetCoordinator(RuntimeEnvironment.application, null);
         assertNotNull(mCoordinator);
@@ -150,7 +142,7 @@ public class PasswordAccessorySheetControllerTest {
         final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.PASSWORDS, "Passwords for this site", "");
-        testData.getUserInfoList().add(new UserInfo("www.example.com", false));
+        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
         testData.getUserInfoList().get(0).addField(
                 new UserInfoField("Name", "Name", "", false, null));
         testData.getUserInfoList().get(0).addField(
@@ -187,7 +179,7 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(mSheetDataPieces.get(0).getDataPiece(), is(equalTo("No passwords for this")));
 
         // As soon UserInfo is available, discard the title.
-        testData.getUserInfoList().add(new UserInfo("www.example.com", false));
+        testData.getUserInfoList().add(new UserInfo("www.example.com", true));
         testData.getUserInfoList().get(0).addField(
                 new UserInfoField("Name", "Name", "", false, null));
         testData.getUserInfoList().get(0).addField(
@@ -286,15 +278,15 @@ public class PasswordAccessorySheetControllerTest {
         assertThat(getSuggestionsImpressions(AccessoryTabType.ALL, 0), is(1));
 
         // If the tab is shown with X interactive item, record "X" samples.
-        UserInfo userInfo1 = new UserInfo("www.example.com", false);
+        UserInfo userInfo1 = new UserInfo("www.example.com", true);
         userInfo1.addField(new UserInfoField("Interactive 1", "", "", false, (v) -> {}));
         userInfo1.addField(new UserInfoField("Non-Interactive 1", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo1);
-        UserInfo userInfo2 = new UserInfo("www.example.com", false);
+        UserInfo userInfo2 = new UserInfo("www.example.com", true);
         userInfo2.addField(new UserInfoField("Interactive 2", "", "", false, (v) -> {}));
         userInfo2.addField(new UserInfoField("Non-Interactive 2", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo2);
-        UserInfo userInfo3 = new UserInfo("other.origin.eg", true);
+        UserInfo userInfo3 = new UserInfo("other.origin.eg", false);
         userInfo3.addField(new UserInfoField("Interactive 3", "", "", false, (v) -> {}));
         userInfo3.addField(new UserInfoField("Non-Interactive 3", "", "", true, null));
         accessorySheetData.getUserInfoList().add(userInfo3);

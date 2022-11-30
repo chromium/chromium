@@ -1,23 +1,23 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {$} from 'chrome://resources/js/util.js';
+import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {FeedOrder, LastFetchProperties, PageHandler, PageHandlerRemote, Properties} from './feed_internals.mojom-webui.js';
 
 /**
  * Reference to the backend.
- * @type {feedInternals.mojom.PageHandlerRemote}
+ * @type {PageHandlerRemote}
  */
 let pageHandler = null;
-
-(function() {
 
 /**
  * Get and display general properties.
  */
 function updatePageWithProperties() {
   pageHandler.getGeneralProperties().then(response => {
-    /** @type {!feedInternals.mojom.Properties} */
+    /** @type {!Properties} */
     const properties = response.properties;
     $('is-feed-enabled').textContent = properties.isFeedEnabled;
     $('is-feed-visible').textContent = properties.isFeedVisible;
@@ -26,20 +26,25 @@ function updatePageWithProperties() {
     $('load-stream-status').textContent = properties.loadStreamStatus;
     $('feed-fetch-url').textContent = properties.feedFetchUrl.url;
     $('feed-actions-url').textContent = properties.feedActionsUrl.url;
-    $('webfeed-ui-enabled-status').textContent = properties.isWebFeedUiEnabled;
-  });
-}
+    $('enable-webfeed-follow-intro-debug').checked =
+        properties.isWebFeedFollowIntroDebugEnabled;
+    $('enable-webfeed-follow-intro-debug').disabled = false;
+    $('use-feed-query-requests').checked = properties.useFeedQueryRequests;
 
-/**
- * Get and display user classifier properties.
- */
-function updatePageWithUserClass() {
-  pageHandler.getUserClassifierProperties().then(response => {
-    /** @type {!feedInternals.mojom.UserClassifier} */
-    const properties = response.properties;
-    $('user-class-description').textContent = properties.userClassDescription;
-    $('avg-hours-between-views').textContent = properties.avgHoursBetweenViews;
-    $('avg-hours-between-uses').textContent = properties.avgHoursBetweenUses;
+    switch (properties.followingFeedOrder) {
+      case FeedOrder.kUnspecified:
+        $('following-feed-order-unset').checked = true;
+        break;
+      case FeedOrder.kGrouped:
+        $('following-feed-order-grouped').checked = true;
+        break;
+      case FeedOrder.kReverseChron:
+        $('following-feed-order-reverse-chron').checked = true;
+        break;
+    }
+    $('following-feed-order-grouped').disabled = false;
+    $('following-feed-order-reverse-chron').disabled = false;
+    $('following-feed-order-unset').disabled = false;
   });
 }
 
@@ -48,7 +53,7 @@ function updatePageWithUserClass() {
  */
 function updatePageWithLastFetchProperties() {
   pageHandler.getLastFetchProperties().then(response => {
-    /** @type {!feedInternals.mojom.LastFetchProperties} */
+    /** @type {!LastFetchProperties} */
     const properties = response.properties;
     $('last-fetch-status').textContent = properties.lastFetchStatus;
     $('last-fetch-trigger').textContent = properties.lastFetchTrigger;
@@ -60,37 +65,6 @@ function updatePageWithLastFetchProperties() {
         properties.lastActionUploadStatus;
     $('last-action-upload-time').textContent =
         toDateString(properties.lastActionUploadTime);
-  });
-}
-
-/**
- * Get and display last known content.
- */
-function updatePageWithCurrentContent() {
-  pageHandler.getCurrentContent().then(response => {
-    const before = $('current-content');
-    const after = before.cloneNode(false);
-
-    /** @type {!Array<feedInternals.mojom.Suggestion>} */
-    const suggestions = response.suggestions;
-
-    for (const suggestion of suggestions) {
-      // Create new content item from template.
-      const item = document.importNode($('suggestion-template').content, true);
-
-      // Populate template with text metadata.
-      item.querySelector('.title').textContent = suggestion.title;
-      item.querySelector('.publisher').textContent = suggestion.publisherName;
-
-      // Populate template with link metadata.
-      setLinkNode(item.querySelector('a.url'), suggestion.url.url);
-      setLinkNode(item.querySelector('a.image'), suggestion.imageUrl.url);
-      setLinkNode(item.querySelector('a.favicon'), suggestion.faviconUrl.url);
-
-      after.appendChild(item);
-    }
-
-    before.replaceWith(after);
   });
 }
 
@@ -108,7 +82,7 @@ function setLinkNode(node, url) {
 /**
  * Convert timeSinceEpoch to string for display.
  *
- * @param {mojoBase.mojom.TimeDelta} timeSinceEpoch
+ * @param {TimeDelta} timeSinceEpoch
  * @return {string}
  */
 function toDateString(timeSinceEpoch) {
@@ -121,17 +95,16 @@ function toDateString(timeSinceEpoch) {
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  $('clear-user-classification').addEventListener('click', function() {
-    pageHandler.clearUserClassifierProperties();
-    updatePageWithUserClass();
+  $('refresh-for-you').addEventListener('click', function() {
+    pageHandler.refreshForYouFeed();
   });
 
-  $('clear-cached-data').addEventListener('click', function() {
-    pageHandler.clearCachedDataAndRefreshFeed();
+  $('refresh-following').addEventListener('click', function() {
+    pageHandler.refreshFollowingFeed();
   });
 
-  $('refresh-feed').addEventListener('click', function() {
-    pageHandler.refreshFeed();
+  $('refresh-webfeed-suggestions').addEventListener('click', () => {
+    pageHandler.refreshWebFeedSuggestions();
   });
 
   $('dump-feed-process-scope').addEventListener('click', function() {
@@ -153,12 +126,13 @@ function setupEventListeners() {
   });
 
   $('discover-api-override-apply').addEventListener('click', function() {
-    pageHandler.overrideFeedHost({url: $('discover-api-override').value});
+    pageHandler.overrideDiscoverApiEndpoint(
+        {url: $('discover-api-override').value});
   });
 
   $('feed-stream-data-override').addEventListener('click', function() {
     const file = $('feed-stream-data-file').files[0];
-    if (file && typeof pageHandler.overrideFeedStreamData == 'function') {
+    if (file && typeof pageHandler.overrideFeedStreamData === 'function') {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onload = function(e) {
@@ -168,25 +142,44 @@ function setupEventListeners() {
     }
   });
 
-  $('enable-webfeed-ui-apply').addEventListener('click', function() {
-    pageHandler.setWebFeedUIEnabled($('enable-webfeed-ui').checked);
+  $('enable-webfeed-follow-intro-debug').addEventListener('click', function() {
+    pageHandler.setWebFeedFollowIntroDebugEnabled(
+        $('enable-webfeed-follow-intro-debug').checked);
+    $('enable-webfeed-follow-intro-debug').disabled = true;
   });
+
+  $('use-feed-query-requests').addEventListener('click', function() {
+    pageHandler.setUseFeedQueryRequests($('use-feed-query-requests').checked);
+  });
+
+  const orderRadioClickListener = function(order) {
+    $('following-feed-order-grouped').disabled = true;
+    $('following-feed-order-reverse-chron').disabled = true;
+    $('following-feed-order-unset').disabled = true;
+    pageHandler.setFollowingFeedOrder(order);
+  };
+  $('following-feed-order-unset')
+      .addEventListener(
+          'click', () => orderRadioClickListener(FeedOrder.kUnspecified));
+  $('following-feed-order-grouped')
+      .addEventListener(
+          'click', () => orderRadioClickListener(FeedOrder.kGrouped));
+  $('following-feed-order-reverse-chron')
+      .addEventListener(
+          'click', () => orderRadioClickListener(FeedOrder.kReverseChron));
 }
 
 function updatePage() {
   updatePageWithProperties();
-  updatePageWithUserClass();
   updatePageWithLastFetchProperties();
-  updatePageWithCurrentContent();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup backend mojo.
-  pageHandler = feedInternals.mojom.PageHandler.getRemote();
+  pageHandler = PageHandler.getRemote();
 
   setInterval(updatePage, 2000);
   updatePage();
 
   setupEventListeners();
 });
-})();

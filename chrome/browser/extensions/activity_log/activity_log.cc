@@ -1,10 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -25,9 +25,8 @@
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/counting_policy.h"
 #include "chrome/browser/extensions/activity_log/fullstream_ui_policy.h"
-#include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,6 +47,9 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_provider.h"
+#include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -103,23 +105,23 @@ struct ApiInfo {
 
 static const ApiInfo kApiInfoTable[] = {
     // Tabs APIs that require tab ID translation
-    {Action::ACTION_API_CALL, "tabs.connect", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.duplicate", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.executeScript", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.get", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.move", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.reload", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.remove", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.sendMessage", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_CALL, "tabs.update", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onDetached", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onAttached", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0, LOOKUP_TAB_ID, NULL},
-    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0, LOOKUP_TAB_ID, NULL},
+    {Action::ACTION_API_CALL, "tabs.connect", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.detectLanguage", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.duplicate", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.executeScript", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.get", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.insertCSS", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.move", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.reload", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.remove", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.sendMessage", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_CALL, "tabs.update", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onUpdated", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onMoved", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onDetached", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onAttached", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onRemoved", 0, LOOKUP_TAB_ID, nullptr},
+    {Action::ACTION_API_EVENT, "tabs.onReplaced", 0, LOOKUP_TAB_ID, nullptr},
 
     // Other APIs that accept URLs as strings
     {Action::ACTION_API_CALL, "bookmarks.create", 0, DICT_LOOKUP, "url"},
@@ -132,40 +134,46 @@ static const ApiInfo kApiInfoTable[] = {
     {Action::ACTION_API_CALL, "history.addUrl", 0, DICT_LOOKUP, "url"},
     {Action::ACTION_API_CALL, "history.deleteUrl", 0, DICT_LOOKUP, "url"},
     {Action::ACTION_API_CALL, "history.getVisits", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_API_CALL, "webstore.install", 0, NONE, NULL},
+    {Action::ACTION_API_CALL, "webstore.install", 0, NONE, nullptr},
     {Action::ACTION_API_CALL, "windows.create", 0, DICT_LOOKUP, "url"},
-    {Action::ACTION_DOM_ACCESS, "Document.location", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "Window.location", 0, NONE, NULL},
-    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, NONE, NULL}};
+    {Action::ACTION_DOM_ACCESS, "Document.location", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLAnchorElement.href", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLButtonElement.formAction", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLEmbedElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFormElement.action", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLFrameElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLHtmlElement.manifest", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLIFrameElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.longDesc", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLImageElement.lowsrc", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.formAction", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLInputElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLLinkElement.href", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLMediaElement.currentSrc", 0, NONE,
+     nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLModElement.cite", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLObjectElement.data", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLQuoteElement.cite", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLScriptElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLSourceElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLTrackElement.src", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "HTMLVideoElement.poster", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.assign", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Location.replace", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "Window.location", 0, NONE, nullptr},
+    {Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open", 1, NONE, nullptr}};
 
 // A singleton class which provides lookups into the kApiInfoTable data
 // structure.  It inserts all data into a map on first lookup.
 class ApiInfoDatabase {
  public:
+  ApiInfoDatabase(const ApiInfoDatabase&) = delete;
+  ApiInfoDatabase& operator=(const ApiInfoDatabase&) = delete;
+
   static ApiInfoDatabase* GetInstance() {
     return base::Singleton<ApiInfoDatabase>::get();
   }
@@ -176,15 +184,15 @@ class ApiInfoDatabase {
                         const std::string& api_name) const {
     auto i = api_database_.find(api_name);
     if (i == api_database_.end())
-      return NULL;
+      return nullptr;
     if (i->second->action_type != action_type)
-      return NULL;
+      return nullptr;
     return i->second;
   }
 
  private:
   ApiInfoDatabase() {
-    for (size_t i = 0; i < base::size(kApiInfoTable); i++) {
+    for (size_t i = 0; i < std::size(kApiInfoTable); i++) {
       const ApiInfo* info = &kApiInfoTable[i];
       api_database_[info->api_name] = info;
     }
@@ -197,7 +205,6 @@ class ApiInfoDatabase {
   std::map<std::string, const ApiInfo*> api_database_;
 
   friend struct base::DefaultSingletonTraits<ApiInfoDatabase>;
-  DISALLOW_COPY_AND_ASSIGN(ApiInfoDatabase);
 };
 
 // Gets the URL for a given tab ID.  Helper method for ExtractUrls.  Returns
@@ -207,16 +214,12 @@ bool GetUrlForTabId(int tab_id,
                     Profile* profile,
                     GURL* url,
                     bool* is_incognito) {
-  content::WebContents* contents = NULL;
-  Browser* browser = NULL;
-  bool found = ExtensionTabUtil::GetTabById(
-      tab_id,
-      profile,
-      true,  // Search incognito tabs, too.
-      &browser,
-      NULL,
-      &contents,
-      NULL);
+  content::WebContents* contents = nullptr;
+  Browser* browser = nullptr;
+  bool found =
+      ExtensionTabUtil::GetTabById(tab_id, profile,
+                                   true,  // Search incognito tabs, too.
+                                   &browser, nullptr, &contents, nullptr);
 
   if (found) {
     *url = contents->GetURL();
@@ -252,19 +255,21 @@ bool ResolveUrl(const GURL& base, const std::string& arg, GURL* arg_out) {
 void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   const ApiInfo* api_info = ApiInfoDatabase::GetInstance()->Lookup(
       action->action_type(), action->api_name());
-  if (api_info == NULL)
+  if (api_info == nullptr)
     return;
 
   int url_index = api_info->arg_url_index;
 
   if (!action->args() || url_index < 0 ||
-      static_cast<size_t>(url_index) >= action->args()->GetSize())
+      static_cast<size_t>(url_index) >= action->args()->size())
     return;
 
   // Do not overwrite an existing arg_url value in the Action, so that callers
   // have the option of doing custom arg_url extraction.
   if (action->arg_url().is_valid())
     return;
+
+  base::Value::List& args_list = action->mutable_args();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -274,11 +279,10 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // No translation needed; just extract the URL directly from a raw string
       // or from a dictionary.  Succeeds if we can find a string in the
       // argument list and that the string resolves to a valid URL.
-      std::string url_string;
-      if (action->args()->GetString(url_index, &url_string) &&
-          ResolveUrl(action->page_url(), url_string, &arg_url)) {
-        action->mutable_args()->Set(
-            url_index, std::make_unique<base::Value>(kArgUrlPlaceholder));
+      if (args_list[url_index].is_string() &&
+          ResolveUrl(action->page_url(), args_list[url_index].GetString(),
+                     &arg_url)) {
+        args_list[url_index] = base::Value(kArgUrlPlaceholder);
       }
       break;
     }
@@ -289,12 +293,15 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // if we can find a dictionary in the argument list, the dictionary
       // contains the specified key, and the corresponding value resolves to a
       // valid URL.
-      base::DictionaryValue* dict = NULL;
-      std::string url_string;
-      if (action->mutable_args()->GetDictionary(url_index, &dict) &&
-          dict->GetString(api_info->arg_url_dict_path, &url_string) &&
-          ResolveUrl(action->page_url(), url_string, &arg_url)) {
-        dict->SetString(api_info->arg_url_dict_path, kArgUrlPlaceholder);
+      if (args_list[url_index].is_dict()) {
+        const std::string* url_string =
+            args_list[url_index].GetDict().FindStringByDottedPath(
+                api_info->arg_url_dict_path);
+        if (url_string &&
+            ResolveUrl(action->page_url(), *url_string, &arg_url)) {
+          args_list[url_index].GetDict().SetByDottedPath(
+              api_info->arg_url_dict_path, kArgUrlPlaceholder);
+        }
       }
       break;
     }
@@ -304,30 +311,30 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // cases to consider: either a single integer or a list of integers (when
       // multiple tabs are manipulated).
       int tab_id;
-      base::ListValue* tab_list = NULL;
-      if (action->args()->GetInteger(url_index, &tab_id)) {
+
+      if (args_list[url_index].is_int()) {
+        tab_id = args_list[url_index].GetInt();
         // Single tab ID to translate.
         GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito);
-        if (arg_url.is_valid()) {
-          action->mutable_args()->Set(
-              url_index, std::make_unique<base::Value>(kArgUrlPlaceholder));
-        }
-      } else if (action->mutable_args()->GetList(url_index, &tab_list)) {
+        if (arg_url.is_valid())
+          args_list[url_index] = base::Value(kArgUrlPlaceholder);
+      } else if (args_list[url_index].is_list()) {
+        base::Value::List& tab_list = args_list[url_index].GetList();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?
-        for (int i = tab_list->GetSize() - 1; i >= 0; --i) {
-          if (tab_list->GetInteger(i, &tab_id) &&
-              GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito)) {
-            if (!arg_incognito)
-              tab_list->Set(i, std::make_unique<base::Value>(arg_url.spec()));
-            extracted_index = i;
-          }
+        for (int i = tab_list.size() - 1; i >= 0; --i) {
+          if (!tab_list[i].is_int())
+            continue;
+          tab_id = tab_list[i].GetInt();
+          if (!GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito))
+            continue;
+          if (!arg_incognito)
+            tab_list[i] = base::Value(arg_url.spec());
+          extracted_index = i;
         }
-        if (extracted_index >= 0) {
-          tab_list->Set(extracted_index,
-                        std::make_unique<base::Value>(kArgUrlPlaceholder));
-        }
+        if (extracted_index >= 0)
+          tab_list[extracted_index] = base::Value(kArgUrlPlaceholder);
       }
       break;
     }
@@ -356,14 +363,21 @@ ActivityLog* SafeGetActivityLog(content::BrowserContext* browser_context) {
   return ActivityLog::GetInstance(browser_context);
 }
 
+bool IsExtensionAllowlisted(const std::string& extension_id) {
+  // TODO(devlin): Pass in a HashedExtensionId to avoid this conversion.
+  return FeatureProvider::GetPermissionFeatures()
+      ->GetFeature("activityLogPrivate")
+      ->IsIdInAllowlist(HashedExtensionId(extension_id));
+}
+
 // Calls into the ActivityLog to log an api event or function call.
 void LogApiActivity(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& activity_name,
-                    const base::ListValue& args,
+                    const base::Value::List& args,
                     Action::ActionType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ActivityLogAPI::IsExtensionAllowlisted(extension_id))
+  if (IsExtensionAllowlisted(extension_id))
     return;
 
   ActivityLog* activity_log = SafeGetActivityLog(browser_context);
@@ -372,7 +386,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
 
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
-  action->set_args(args.CreateDeepCopy());
+  action->set_args(args.Clone());
   activity_log->LogAction(action);
 }
 
@@ -380,7 +394,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
 void LogApiEvent(content::BrowserContext* browser_context,
                  const std::string& extension_id,
                  const std::string& event_name,
-                 const base::ListValue& args) {
+                 const base::Value::List& args) {
   LogApiActivity(browser_context, extension_id, event_name, args,
                  Action::ACTION_API_EVENT);
 }
@@ -389,7 +403,7 @@ void LogApiEvent(content::BrowserContext* browser_context,
 void LogApiFunction(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& event_name,
-                    const base::ListValue& args) {
+                    const base::Value::List& args) {
   LogApiActivity(browser_context, extension_id, event_name, args,
                  Action::ACTION_API_CALL);
 }
@@ -402,7 +416,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
                            const std::string& api_call,
                            std::unique_ptr<base::DictionaryValue> details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ActivityLogAPI::IsExtensionAllowlisted(extension_id))
+  if (IsExtensionAllowlisted(extension_id))
     return;
 
   ActivityLog* activity_log = SafeGetActivityLog(browser_context);
@@ -413,8 +427,9 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
       extension_id, base::Time::Now(), Action::ACTION_WEB_REQUEST, api_call);
   action->set_page_url(url);
   action->set_page_incognito(is_incognito);
-  action->mutable_other()->Set(activity_log_constants::kActionWebRequest,
-                               std::move(details));
+  action->mutable_other().Set(
+      activity_log_constants::kActionWebRequest,
+      base::Value::FromUniquePtrValue(std::move(details)));
   activity_log->LogAction(action);
 }
 
@@ -565,7 +580,7 @@ void ActivityLog::SetHasListeners(bool has_listeners) {
 
 void ActivityLog::OnExtensionLoaded(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  if (!ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
+  if (!IsExtensionAllowlisted(extension->id()))
     return;
 
   ++active_consumers_;
@@ -580,7 +595,7 @@ void ActivityLog::OnExtensionLoaded(content::BrowserContext* browser_context,
 void ActivityLog::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                       const Extension* extension,
                                       UnloadedExtensionReason reason) {
-  if (!ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
+  if (!IsExtensionAllowlisted(extension->id()))
     return;
   --active_consumers_;
 
@@ -596,7 +611,7 @@ void ActivityLog::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (ActivityLogAPI::IsExtensionAllowlisted(extension->id()) &&
+  if (IsExtensionAllowlisted(extension->id()) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableExtensionActivityLogging) &&
       active_consumers_ == 0) {
@@ -634,12 +649,10 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
       base::StartsWith(action->api_name(), kDomXhrPrefix,
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
-    base::DictionaryValue* other = action->mutable_other();
-    int dom_verb = -1;
-    if (other->GetInteger(constants::kActionDomVerb, &dom_verb) &&
-        dom_verb == DomActionType::METHOD) {
-      other->SetInteger(constants::kActionDomVerb, DomActionType::XHR);
-    }
+    base::Value::Dict& other = action->mutable_other();
+    absl::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
+    if (dom_verb == DomActionType::METHOD)
+      other.Set(constants::kActionDomVerb, DomActionType::XHR);
   }
   if (IsDatabaseEnabled() && database_policy_)
     database_policy_->ProcessAction(action);
@@ -653,7 +666,7 @@ bool ActivityLog::ShouldLog(const std::string& extension_id) const {
   // Do not log for activities from the browser/WebUI, which is indicated by an
   // empty extension ID.
   return is_active_ && !extension_id.empty() &&
-         !ActivityLogAPI::IsExtensionAllowlisted(extension_id);
+         !IsExtensionAllowlisted(extension_id);
 }
 
 void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
@@ -665,17 +678,16 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
   for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
     const Extension* extension =
         registry->GetExtensionById(it->first, ExtensionRegistry::ENABLED);
-    if (!extension || ActivityLogAPI::IsExtensionAllowlisted(extension->id()))
+    if (!extension || IsExtensionAllowlisted(extension->id()))
       continue;
 
     // If OnScriptsExecuted is fired because of tabs.executeScript, the list
     // of content scripts will be empty.  We don't want to log it because
     // the call to tabs.executeScript will have already been logged anyway.
     if (!it->second.empty()) {
-      scoped_refptr<Action> action;
-      action = base::MakeRefCounted<Action>(extension->id(), base::Time::Now(),
-                                            Action::ACTION_CONTENT_SCRIPT,
-                                            "");  // no API call here
+      auto action = base::MakeRefCounted<Action>(
+          extension->id(), base::Time::Now(), Action::ACTION_CONTENT_SCRIPT,
+          "");  // no API call here
       action->set_page_url(on_url);
       action->set_page_title(base::UTF16ToUTF8(web_contents->GetTitle()));
       action->set_page_incognito(
@@ -685,10 +697,10 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
           prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
               profile_);
       if (no_state_prefetch_manager &&
-          no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
-        action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
+          no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
+        action->mutable_other().Set(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-        action->mutable_args()->AppendString(*it2);
+        action->mutable_args().Append(*it2);
       }
       LogAction(action);
     }

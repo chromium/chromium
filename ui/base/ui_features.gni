@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,11 @@ import("//build/config/ui.gni")
 
 declare_args() {
   # Optional system library.
-  use_xkbcommon = use_ozone && (is_linux || is_chromeos) && !is_chromecast
+  use_xkbcommon =
+      use_ozone && (is_linux || is_chromeos) && !is_castos &&
+      # Avoid needing the 32-bit version of this library when Android is
+      # building things via secondary toolchains.
+      target_os != "android"
 
   # Whether the platform provides a native accessibility toolkit, in other words
   # the platform has a C/C++ interface for accessibility that Chrome
@@ -24,11 +28,12 @@ declare_args() {
   # Whether the message center should be included for displaying notifications.
   enable_message_center =
       is_win || is_mac || is_linux || is_chromeos || is_fuchsia
+
+  enable_hidpi = !is_android
 }
 
 # Android does have platform accessibility support that's implemented using
 # BrowserAccessibilityManager. But unlike Windows, Mac and Linux it does not use
 # AXPlatformNode to implement a native C++ API, instead it bridges to a Java API.
-has_platform_accessibility_support = has_native_accessibility || is_android
-
-enable_hidpi = is_mac || is_win || is_linux || is_chromeos || is_ios
+has_platform_accessibility_support =
+    has_native_accessibility || is_android || is_fuchsia

@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.TooltipTest');
 goog.setTestOnly();
@@ -87,6 +79,7 @@ testSuite({
     handler.listen(tt, PopupBase.EventType.HIDE, eventQueue.enqueue);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   tearDown() {
     // tooltip needs to be hidden as well as disposed of so that it doesn't
     // leave global state hanging around to trip up other tests.
@@ -139,6 +132,7 @@ testSuite({
     assertTrue(eventQueue.isEmpty());
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testMultipleTargets() {
     const firstTarget = dom.getElement('hovertarget');
     const secondTarget = dom.getElement('second');
@@ -203,6 +197,7 @@ testSuite({
     assertTrue(eventQueue.isEmpty());
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testRequireInteraction() {
     const hoverTarget = dom.getElement('hovertarget');
     const elsewhere = dom.getElement('notpopup');
@@ -258,6 +253,10 @@ testSuite({
         element.parentNode);
   },
 
+  /**
+     @suppress {checkTypes,visibility} suppression added to enable type
+     checking
+   */
   testNested() {
     let ttNested;
     tt.getElement().appendChild(
@@ -336,7 +335,9 @@ testSuite({
     const tooltip = new Tooltip(anchor, 'foo');
     tooltip.getElement().style.position = 'absolute';
 
+    /** @suppress {visibility} suppression added to enable type checking */
     tooltip.cursorPosition.x = 100;
+    /** @suppress {visibility} suppression added to enable type checking */
     tooltip.cursorPosition.y = 100;
     tooltip.showForElement(anchor);
 
@@ -383,6 +384,7 @@ testSuite({
     tt.setElement(null);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testFocusBlurElementsInTooltip() {
     const anchorEl = dom.getElement('hovertarget');
     googDom.setFocusableTabIndex(anchorEl, true);
@@ -408,6 +410,7 @@ testSuite({
     assertEquals('hidden', tt.getElement().style.visibility);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testFocusElementInTooltipThenBackToAnchor() {
     const anchorEl = dom.getElement('hovertarget');
     googDom.setFocusableTabIndex(anchorEl, true);

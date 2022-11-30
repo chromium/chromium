@@ -1,0 +1,40 @@
+<style>
+  educational-banner {
+    --feature-icon-bg: url(/foreground/images/files/ui/holding_space_welcome_image.svg);
+  }
+
+  .tablet-mode-enabled {
+    display: none;
+  }
+
+  :host-context(body.tablet-mode-enabled) .tablet-mode-disabled {
+    display: none;
+  }
+
+  :host-context(body.tablet-mode-enabled) .tablet-mode-enabled {
+    display: block;
+    height: auto;
+    line-height: 20px;
+  }
+
+  .icon {
+    -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--cros-text-color-primary);
+    display: inline-block;
+    height: 20px;
+    vertical-align: middle;
+    width: 13px;
+  }
+</style>
+<educational-banner>
+  <span slot="title">$i18n{HOLDING_SPACE_WELCOME_TITLE}</span>
+  <span slot="subtitle" class="tablet-mode-disabled">
+    $i18n{HOLDING_SPACE_WELCOME_TEXT}
+  </span>
+  <span slot="subtitle" class="tablet-mode-enabled">
+    $i18nRaw{HOLDING_SPACE_WELCOME_TEXT_IN_TABLET_MODE_HTML}
+  </span>
+</educational-banner>

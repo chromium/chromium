@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Abrir la app de Archivos</translation>
 <translation id="1122869341872663659">Se muestran <ph name="N" /> resultados de búsqueda para <ph name="QUERY" /></translation>
 <translation id="1195667586424773550">Arrastrar el vínculo a la barra de direcciones de la pestaña</translation>
-<translation id="1204450209689312104">Abrir una ventana nueva en modo de navegación incógnito</translation>
 <translation id="1251638888133819822">Activar o desactivar la lupa en pantalla completa</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Ir al final de la línea</translation>
 <translation id="1499072997694708844">Cierra cualquier ventana de búsqueda abierta o detiene la carga de la página actual</translation>
 <translation id="1510238584712386396">Selector</translation>
+<translation id="1516966594427080024">Abrir una ventana nueva en modo Incógnito</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1652741121070700329">Ir al principio de la palabra anterior</translation>
 <translation id="1679841710523778799">Aumentar el brillo</translation>
 <translation id="168356808214100546">Mantén presionado <ph name="ALT" /> y, luego, presiona <ph name="TAB" /> hasta que se muestre la ventana que deseas abrir; a continuación, suelta las teclas.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Desplazarse hacia abajo por la página web</translation>
 <translation id="2530896289327917474">Activar o desactivar la navegación por cursor de texto</translation>
 <translation id="2574014812750545982">Restablecer el nivel de zoom en la página</translation>
-<translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="TAB" /> o <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Volver a cargar la página actual</translation>
 <translation id="2764005613199379871">Hacer foco en la barra de direcciones en la búsqueda</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3084301071537457911">Destacar el elemento siguiente en la biblioteca</translation>
 <translation id="309173601632226815">Destacar el botón del Selector en la biblioteca</translation>
-<translation id="3105917916468784889">Tomar captura de pantalla</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Enfocar la barra de direcciones</translation>
 <translation id="3256109297135787951">Dejar de destacar un elemento en la biblioteca</translation>
 <translation id="3288816184963444640">Cerrar la ventana actual</translation>
+<translation id="3322797428033495633">Enfocar la ventana pantalla en pantalla</translation>
+<translation id="3350805006883559974">Fijar la ventana activa en la parte superior</translation>
 <translation id="3407560819924487926">Mostrar el Administrador de tareas</translation>
+<translation id="3417835166382867856">Buscar pestañas</translation>
 <translation id="3422679037938588196">Ir a la coincidencia de búsqueda anterior</translation>
 <translation id="353037708190149633">Guardar todas las páginas abiertas en la ventana actual como marcadores en una nueva carpeta</translation>
 <translation id="355103131818127604">Abrir el vínculo en una nueva pestaña en segundo plano</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">coma</translation>
 <translation id="3976863468609830880">Hacer clic en el último ícono de la biblioteca</translation>
 <translation id="3994783594793697310">Restablecer el nivel de zoom de la pantalla</translation>
+<translation id="4026837045671473537">Activa el modo de inversión de colores</translation>
 <translation id="4026843240379844265">Mover la ventana activa de una pantalla a otra</translation>
 <translation id="4035482366624727273">Seleccionar toda la página</translation>
 <translation id="4060703249685950734">Volver a abrir la última pestaña o ventana que cerraste</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">Mostrar el asistente de combinaciones de teclas</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> o <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Abrir el área de estado (donde aparece la imagen de tu cuenta)</translation>
-<translation id="4642092649622328492">Realizar una captura de pantalla parcial</translation>
 <translation id="4698850295812410683">Mostrar herramientas de pluma stylus</translation>
 <translation id="4801989101741319327">Ir al final de la palabra siguiente</translation>
 <translation id="4866066940972151697">Activar el escritorio de la derecha</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Seleccionar el texto hasta el principio de la línea</translation>
 <translation id="5316716239522500219">Reflejar monitores</translation>
 <translation id="539072479502328326">Activar o desactivar la lupa con vista acoplada</translation>
+<translation id="5466615362193675484">Activar o desactivar el menú del modo de bloqueo de cambio de tamaño</translation>
 <translation id="5541719484267030947">Mientras arrastras la pestaña, presiona <ph name="ESC" /></translation>
 <translation id="5554139136362089836">Buscar en la página actual</translation>
 <translation id="5563050856984839829">Presiona <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> y haz clic en un vínculo</translation>
 <translation id="561814908794220892">Abrir la página web en una pestaña nueva</translation>
 <translation id="5620219513321115856">Mover la ventana activa al escritorio de la derecha</translation>
+<translation id="5699366815052349604">Asignar la ventana activa a todos los escritorios</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Abrir el vínculo en la pestaña</translation>
 <translation id="5757474750054631686">Atenuar el teclado (solo para teclados retroiluminados)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Rotar la ventana</translation>
 <translation id="5926306472221400972">Capturar pantalla completa</translation>
 <translation id="6022924867608035986">Borrar el texto en el cuadro de búsqueda</translation>
-<translation id="6045998054441862242">Activar el modo de contraste alto</translation>
 <translation id="6052614013050385269">Hacer clic con el botón derecho en un vínculo</translation>
 <translation id="6129953537138746214">Espacio</translation>
 <translation id="6143669479988153888">Acercar la página</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">Ver el código fuente de la página</translation>
 <translation id="6321940490215594447">Abrir la página Historial</translation>
 <translation id="6340769215862220182">Acercar la pantalla</translation>
+<translation id="634687982629734605">Alternar el foco entre el área de estado (donde se muestra la imagen de tu cuenta), el Selector, la barra de direcciones, la barra de favoritos (si está visible), la página web que se abre y la barra de descargas (si está visible) Si se muestra el diálogo enfocable, cambia el foco a ese elemento.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Seleccionar el texto hasta el final de la línea</translation>
 <translation id="6425378783626925378">Hacer clic en los íconos 1 a 8 de la biblioteca</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">Volver a colocar la pestaña en su posición original</translation>
 <translation id="6474744297082284761">Alejar (cuando esté activada la lupa acoplada O de pantalla completa)</translation>
 <translation id="649811797655257835">Selecciona el archivo y, luego, presiona <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Abrir o cerrar el widget del Calendario.</translation>
 <translation id="6551886416582667425">Capturar o grabar pantalla de forma parcial</translation>
 <translation id="6556040137485212400">Abrir la ventana que más tiempo estuvo sin usarse</translation>
 <translation id="666343722268997814">Abrir el menú contextual del elemento destacado</translation>
@@ -177,7 +182,7 @@
 <translation id="7422707470576323858">Cambiar al siguiente método de entrada disponible</translation>
 <translation id="743754632698445141">Dejar de fijar una app</translation>
 <translation id="7439718573248533901">Borrar la letra siguiente (borrar siguiente)</translation>
-<translation id="7500368597227394048">guión</translation>
+<translation id="7500368597227394048">guion</translation>
 <translation id="7611271430932669992">Mover el foco a ventanas emergentes y diálogos</translation>
 <translation id="7635348532214572995">Mueve el ícono de una app en la grilla de apps</translation>
 <translation id="766326951329901120">Pegar el contenido del portapapeles como texto sin formato</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8130528849632411619">Ir al principio del documento</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> o <ph name="E" /></translation>
-<translation id="8232835244134740473">Alternar el foco entre el área de estado (donde se muestra la imagen de tu cuenta), el Selector, la barra de direcciones, la barra de favoritos (si está visible), la página web que se abre y la barra de descargas (si está visible)</translation>
 <translation id="8234414138295101081">Rotar la pantalla 90 grados</translation>
 <translation id="8241665785394195545">corchete de cierre</translation>
 <translation id="8264941229485248811">Mostrar u ocultar el inspector de herramientas para programadores</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Arrastra el vínculo al área en blanco de la barra de pestañas</translation>
 <translation id="8389638407792712197">Abrir una ventana nueva</translation>
 <translation id="8429696719963529183">Usar las teclas de función (F1 a F12)</translation>
-<translation id="8537650670971624753">Salir del modo de búsqueda</translation>
 <translation id="85690795166292698">Abrir el vínculo en una pestaña nueva</translation>
 <translation id="8609384513243082612">Abrir una pestaña nueva</translation>
 <translation id="8644639153978066712">Mostrar archivos ocultos en la app de Archivos</translation>
 <translation id="8717459106217102612">Seleccionar la palabra o letra anterior</translation>
 <translation id="8727232706774971183">Ver tus notificaciones</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Mover la ventana activa al escritorio de la izquierda</translation>
 <translation id="88986195241502842">Avanzar página</translation>
 <translation id="8924883688469390268">Cambiar al usuario anterior</translation>
+<translation id="8941626538514548667">Enfocar el contenido web del navegador</translation>
 <translation id="8977648847395357314">Seleccionar el contenido en la barra de direcciones</translation>
 <translation id="8982190978301344584">Mostrar el menú que incluye una lista de los IME disponibles</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 a 8</translation>

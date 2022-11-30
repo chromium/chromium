@@ -3,7 +3,8 @@ This test checks that styles edited through inspector are correctly shown upon r
 ==== Original: Matching rules for #test ====
 Dumping matched rules: 
 *#test* {    regular
-    background-color: blue;
+    background-color: blue; @[1:2-1:25]
+    background-color: blue; @[undefined-undefined]
 }
 Dumping inherited rules: 
 
@@ -21,10 +22,12 @@ CSS.addRule(...) to new stylesheet
 ==== Modified: Matching rules for #test ====
 Dumping matched rules: 
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[1:4-1:22]
+    content: "EDITED"; @[undefined-undefined]
 }
 #inspected, *#test* {    inspector
-    height: 1;
+    height: 1; @[0:20-0:30]
+    height: 1px; @[undefined-undefined]
 }
 Dumping inherited rules: 
 
@@ -35,10 +38,12 @@ Reattaching devtools
 ==== Reattached: Matching rules for #test ====
 Dumping matched rules: 
 *#test* {    regular
-    content: 'EDITED';
+    content: 'EDITED'; @[1:4-1:22]
+    content: "EDITED"; @[undefined-undefined]
 }
 #inspected, *#test* {    inspector
-    height: 1;
+    height: 1; @[0:20-0:30]
+    height: 1px; @[undefined-undefined]
 }
 Dumping inherited rules: 
 

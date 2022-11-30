@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,19 +22,21 @@ source_set("common") {
   ]
 
   configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
   ]
 
   deps = [
     "//base",
+    "//extensions/browser/api/messaging:native_messaging",
     "//google_apis",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
+    "//remoting/base:base",
     "//remoting/host:common",
+    "//remoting/host:resources",
     "//remoting/host/native_messaging",
+    "//remoting/protocol:protocol",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -51,7 +53,11 @@ source_set("common") {
       "daemon_controller_delegate_mac.h",
       "daemon_controller_delegate_mac.mm",
     ]
-    deps += [ "//remoting/host/mac:permission_checking" ]
+    deps += [
+      "//remoting/host/mac:permission_checking",
+      "//remoting/resources:strings_grit",
+      "//ui/base:base",
+    ]
   }
 
   if (is_apple) {
@@ -63,6 +69,87 @@ source_set("common") {
       "daemon_controller_delegate_win.cc",
       "daemon_controller_delegate_win.h",
     ]
-    deps += [ "//remoting/host/win:remoting_lib_idl" ]
+    deps += [
+      "//remoting/host/win:elevated_native_messaging_host",
+      "//remoting/host/win:remoting_lib_idl",
+      "//remoting/host/win:security_descriptor",
+    ]
   }
+}
+
+source_set("start_host_main_headers") {
+  sources = [ "start_host_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("start_host_main") {
+  sources = [
+    "host_starter.cc",
+    "host_starter.h",
+    "host_stopper.cc",
+    "host_stopper.h",
+    "start_host_main.cc",
+  ]
+
+  if (!is_win) {
+    sources += [
+      "start_host_as_root.cc",
+      "start_host_as_root.h",
+    ]
+  }
+
+  deps = [
+    "//google_apis",
+    "//mojo/core/embedder",
+    "//net",
+    "//remoting/base:base",
+    "//remoting/base:breakpad",
+    "//remoting/host:common",
+    "//remoting/host/setup",
+    "//remoting/host/setup:start_host_main_headers",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
+}
+
+source_set("native_messaging_host_main_headers") {
+  sources = [ "me2me_native_messaging_host_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("native_messaging_host_main") {
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
+
+  sources = [ "me2me_native_messaging_host_main.cc" ]
+
+  deps = [
+    ":native_messaging_host_main_headers",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
+    "//net",
+    "//remoting/base",
+    "//remoting/base:authorization",
+    "//remoting/base:breakpad",
+    "//remoting/host",
+    "//remoting/host:common",
+    "//remoting/host/base",
+    "//remoting/host/native_messaging",
+    "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
 }

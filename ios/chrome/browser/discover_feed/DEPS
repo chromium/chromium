@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^discover_feed_service_factory.mm": [
+    "+ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h",
+  ],
+}
+

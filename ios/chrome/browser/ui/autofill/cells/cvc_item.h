@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,15 +20,15 @@
 // The optional error message to display.
 @property(nonatomic, copy) NSString* errorMessage;
 
-// The month text appearing in the |monthInput| of the cell, if |showDateInput|
+// The month text appearing in the `monthInput` of the cell, if `showDateInput`
 // is true.
 @property(nonatomic, copy) NSString* monthText;
 
-// The year text appearing in the |yearInput| of the cell, if |showDateInput|
+// The year text appearing in the `yearInput` of the cell, if `showDateInput`
 // is true.
 @property(nonatomic, copy) NSString* yearText;
 
-// The CVC text appearing in the |CVCInput| of the cell.
+// The CVC text appearing in the `CVCInput` of the cell.
 @property(nonatomic, copy) NSString* CVCText;
 
 // Whether the cell should show the date inputs.
@@ -36,9 +36,6 @@
 
 // Whether the cell should show the "New Card?" button.
 @property(nonatomic, assign) BOOL showNewCardButton;
-
-// Whether the CVC input contains erroneous data.
-@property(nonatomic, assign) BOOL showCVCInputError;
 
 // The resource ID of the CVC image to use.
 @property(nonatomic, assign) int CVCImageResourceID;
@@ -69,7 +66,7 @@
 // The text field for entering the CVC.
 @property(nonatomic, readonly, strong) UITextField* CVCInput;
 
-// The image view to display the CVC image with the |CVCResourceID|.
+// The image view to display the CVC image with the `CVCResourceID`.
 @property(nonatomic, readonly, strong) UIImageView* CVCImageView;
 
 // The "New Card?" button.

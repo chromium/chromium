@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -43,19 +43,4 @@ source_set("hid") {
       "fake_input_service_linux.h",
     ]
   }
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "fake_hid_manager.cc",
-    "fake_hid_manager.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//services/device/public/cpp/hid",
-    "//services/device/public/mojom",
-  ]
 }

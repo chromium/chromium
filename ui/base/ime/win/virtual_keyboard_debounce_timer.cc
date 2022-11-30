@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ void VirtualKeyboardDebounceTimer::RequestRun(base::OnceClosure callback) {
   // Null callback isn't a valid scenario.
   DCHECK(callback);
   callback_ = std::move(callback);
-  base::TimeDelta delay(base::TimeDelta::FromMilliseconds(delay_ms_));
+  base::TimeDelta delay(base::Milliseconds(delay_ms_));
   delay -= base::TimeTicks::Now() - time_last_run_;
   // If delay is <= 0, then it is run immediately asynchronously.
   timer_.Start(

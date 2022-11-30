@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,18 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
-// Returns the text insertion caret blink period, if one is configured in
-// NSUserDefaults.
+// Returns a text insertion caret blink period derived from insertion point
+// flash rate settings in NSUserDefaults. If no settings exist in defaults,
+// returns absl::nullopt.
 COMPONENT_EXPORT(UI_BASE)
-bool TextInsertionCaretBlinkPeriod(base::TimeDelta* period);
+absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults();
+
+COMPONENT_EXPORT(UI_BASE)
+bool& BlinkPeriodRefreshFlagForTesting();
 }
 
-#endif
+#endif  // UI_BASE_COCOA_DEFAULTS_UTILS_H_

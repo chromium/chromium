@@ -1,16 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_PAINT_DRAW_IMAGE_H_
 #define CC_PAINT_DRAW_IMAGE_H_
 
-#include "base/optional.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
+#include "cc/paint/target_color_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
@@ -29,18 +30,22 @@ class CC_PAINT_EXPORT DrawImage {
   DrawImage(PaintImage image,
             bool use_dark_mode,
             const SkIRect& src_rect,
-            SkFilterQuality filter_quality,
-            const SkMatrix& matrix,
-            base::Optional<size_t> frame_index = base::nullopt,
-            const base::Optional<gfx::ColorSpace>& color_space = base::nullopt,
-            float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
-  // Constructs a DrawImage from |other| by adjusting its scale and setting a
-  // new color_space.
+            PaintFlags::FilterQuality filter_quality,
+            const SkM44& matrix,
+            absl::optional<size_t> frame_index = absl::nullopt);
+  DrawImage(PaintImage image,
+            bool use_dark_mode,
+            const SkIRect& src_rect,
+            PaintFlags::FilterQuality filter_quality,
+            const SkM44& matrix,
+            absl::optional<size_t> frame_index,
+            const TargetColorParams& target_color_params);
+  // Constructs a DrawImage from |other| by adjusting its scale and setting new
+  // color params.
   DrawImage(const DrawImage& other,
             float scale_adjustment,
             size_t frame_index,
-            const gfx::ColorSpace& color_space,
-            float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
+            const TargetColorParams& target_color_params);
   DrawImage(const DrawImage& other);
   DrawImage(DrawImage&& other);
   ~DrawImage();
@@ -54,12 +59,8 @@ class CC_PAINT_EXPORT DrawImage {
   bool use_dark_mode() const { return use_dark_mode_; }
   const SkSize& scale() const { return scale_; }
   const SkIRect& src_rect() const { return src_rect_; }
-  SkFilterQuality filter_quality() const { return filter_quality_; }
+  PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   bool matrix_is_decomposable() const { return matrix_is_decomposable_; }
-  const gfx::ColorSpace& target_color_space() const {
-    DCHECK(target_color_space_.has_value());
-    return *target_color_space_;
-  }
   PaintImage::FrameKey frame_key() const {
     return paint_image_.GetKeyForFrame(frame_index());
   }
@@ -67,23 +68,29 @@ class CC_PAINT_EXPORT DrawImage {
     DCHECK(frame_index_.has_value());
     return frame_index_.value();
   }
-  float sdr_white_level() const { return sdr_white_level_; }
+
+  const TargetColorParams& target_color_params() const {
+    DCHECK(target_color_params_.has_value());
+    return *target_color_params_;
+  }
+  const gfx::ColorSpace& target_color_space() const {
+    DCHECK(target_color_params_.has_value());
+    return target_color_params_->color_space;
+  }
+  float sdr_white_level() const {
+    DCHECK(target_color_params_.has_value());
+    return target_color_params_->sdr_max_luminance_nits;
+  }
 
  private:
   PaintImage paint_image_;
   bool use_dark_mode_;
   SkIRect src_rect_;
-  SkFilterQuality filter_quality_;
+  PaintFlags::FilterQuality filter_quality_;
   SkSize scale_;
   bool matrix_is_decomposable_;
-  base::Optional<size_t> frame_index_;
-  base::Optional<gfx::ColorSpace> target_color_space_;
-
-  // The SDR white level in nits for the display. Only if |target_color_space_|
-  // is HDR will this have a value other than kDefaultSDRWhiteLevel. Used by the
-  // ImageDecodeCache to prevent HDR images from being affected by variable SDR
-  // white levels since rasterization is always treated as SDR at present.
-  float sdr_white_level_ = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  absl::optional<size_t> frame_index_;
+  absl::optional<TargetColorParams> target_color_params_;
 };
 
 }  // namespace cc

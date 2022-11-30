@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -97,15 +98,13 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleIsNetworkReady(const base::ListValue* args);
-  void HandleGetParents(const base::ListValue* args);
-  void HandleCloseDialog(const base::ListValue* args);
-  void HandleParentSignin(const base::ListValue* args);
-  void HandleUpdateEduCoexistenceFlowResult(const base::ListValue* args);
+  void HandleIsNetworkReady(const base::Value::List& args);
+  void HandleGetParents(const base::Value::List& args);
+  void HandleParentSignin(const base::Value::List& args);
 
   virtual void FetchFamilyMembers();
   virtual void FetchParentImages(
-      base::ListValue parents,
+      base::Value::List parents,
       std::map<std::string, GURL> profile_image_urls);
   virtual void FetchAccessToken(const std::string& obfuscated_gaia_id,
                                 const std::string& password);
@@ -122,7 +121,7 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(
-      base::ListValue parents,
+      base::Value::List parents,
       std::map<std::string, gfx::Image> profile_images);
 
   // signin::PrimaryAccountAccessTokenFetcher callback

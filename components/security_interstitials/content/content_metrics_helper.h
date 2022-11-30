@@ -1,13 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "url/gurl.h"
@@ -33,6 +30,10 @@ class ContentMetricsHelper : public security_interstitials::MetricsHelper {
       history::HistoryService* history_service,
       const GURL& url,
       const security_interstitials::MetricsHelper::ReportDetails settings);
+
+  ContentMetricsHelper(const ContentMetricsHelper&) = delete;
+  ContentMetricsHelper& operator=(const ContentMetricsHelper&) = delete;
+
   ~ContentMetricsHelper() override;
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -49,8 +50,6 @@ class ContentMetricsHelper : public security_interstitials::MetricsHelper {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   std::unique_ptr<CaptivePortalMetricsRecorder> captive_portal_recorder_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ContentMetricsHelper);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CONTENT_METRICS_HELPER_H_

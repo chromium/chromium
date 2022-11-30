@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+proto_library("fastpair_proto") {
+  sources = [
+    "context_fence.proto",
+    "enums.proto",
+    "fastpair.proto",
+    "fastpair_data.proto",
+    "message_set.proto",
+  ]
+  cc_generator_options = "lite"
+}

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,8 @@ static_library("browser_util") {
   sources = [
     "content_settings_utils.cc",
     "content_settings_utils.h",
+    "permission_context_utils.cc",
+    "permission_context_utils.h",
     "user_agent_utils.cc",
     "user_agent_utils.h",
   ]
@@ -23,7 +25,12 @@ static_library("browser_util") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
-    "//components/content_settings/core/browser:browser",
+    "//components/background_sync",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
   ]
@@ -41,6 +48,7 @@ source_set("unit_tests") {
     ":browser_util",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/component_updater/installer_policies",
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
@@ -55,6 +63,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//third_party/re2",
   ]
 
   if (is_android) {

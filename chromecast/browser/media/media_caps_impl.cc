@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,17 +44,23 @@ void MediaCapsImpl::AddReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void MediaCapsImpl::ScreenResolutionChanged(unsigned width, unsigned height) {
+mojo::PendingRemote<mojom::MediaCaps> MediaCapsImpl::GetPendingRemote() {
+  mojo::PendingRemote<mojom::MediaCaps> pending_remote;
+  AddReceiver(pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
+}
+
+void MediaCapsImpl::ScreenResolutionChanged(uint32_t width, uint32_t height) {
   screen_resolution_ = gfx::Size(width, height);
   for (auto& observer : observers_)
     observer->ScreenResolutionChanged(width, height);
 }
 
-void MediaCapsImpl::ScreenInfoChanged(int hdcp_version,
-                                      int supported_eotfs,
-                                      int dolby_vision_flags,
-                                      int screen_width_mm,
-                                      int screen_height_mm,
+void MediaCapsImpl::ScreenInfoChanged(int32_t hdcp_version,
+                                      int32_t supported_eotfs,
+                                      int32_t dolby_vision_flags,
+                                      int32_t screen_width_mm,
+                                      int32_t screen_height_mm,
                                       bool current_mode_supports_hdr,
                                       bool current_mode_supports_dv) {
   hdcp_version_ = hdcp_version;

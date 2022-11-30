@@ -15,7 +15,7 @@
 
   #feedback-footer {
     border: none;
-    border-top: 1px solid var(--google-grey-refresh-500);
+    border-top: 1px solid var(--google-grey-500);
     height: 40px;
     width: 100%;
   }
@@ -26,14 +26,14 @@
   }
 
   #feedback-icon {
-    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    --iron-icon-fill-color: var(--google-grey-700);
     height: var(--mwb-icon-size);
     width: var(--mwb-icon-size);
   }
 
   @media (prefers-color-scheme: dark) {
     #feedback-icon {
-      --iron-icon-fill-color: var(--google-blue-refresh-300);
+      --iron-icon-fill-color: var(--google-blue-300);
     }
   }
 
@@ -43,35 +43,47 @@
     color: var(--cr-secondary-text-color);
     display: flex;
     font-size: var(--mwb-list-section-title-font-size);
+    font-weight: bolder;
     height: var(--mwb-list-section-title-height);
-    padding-inline-start: 8px;
+    padding-inline-end: 24px;
+    padding-inline-start: 16px;
     position: sticky;
     text-transform: uppercase;
     top: 0;
+    user-select: none;
     z-index: 1000;
   }
+
+  cr-expand-button {
+    --cr-expand-button-size: 24px;
+    --cr-expand-button-icon-size: 16px;
+    --cr-section-vertical-padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    flex-grow: 1;
+  }
 </style>
-<iron-iconset-svg name="ts" size="24">
-  <svg>
-    <defs>
-      <g id="feedback">
-        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z">
-        </path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
 <tab-search-search-field id="searchField" autofocus
     clear-label="$i18n{clearSearch}" label="$i18n{searchTabs}"
-    on-focus="onSearchFocus_" on-keydown="onSearchKeyDown_"
+    on-keydown="onSearchKeyDown_"
     on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
-<div hidden="[[!filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+<div hidden="[[!filteredItems_.length]]">
   <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
-      items="[[listItems_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+      items="[[filteredItems_]]">
     <template data-type="TitleItem">
-      <div class="list-section-title">[[item.title]]</div>
+      <div class="list-section-title">
+        <div>[[item.title]]</div>
+        <template is="dom-if" if="[[item.expandable]]">
+          <cr-expand-button aria-label="$i18n{recentlyClosedExpandA11yLabel}"
+              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up"
+              expanded="[[item.expanded]]"
+              expand-title="$i18n{expandRecentlyClosed}"
+              collapse-title="$i18n{collapseRecentlyClosed}"
+              on-expanded-changed="onTitleExpandChanged_" no-hover>
+          </cr-expand-button>
+        </template>
+      </div>
     </template>
     <template data-type="TabData" data-selectable>
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
@@ -81,15 +93,15 @@
           tabindex="0">
       </tab-search-item>
     </template>
+    <template data-type="TabGroupData" data-selectable>
+      <tab-search-group-item class="mwb-list-item" index="[[index]]"
+          data="[[item]]" aria-label="[[ariaLabel_(item)]]"
+          on-click="onItemClick_" on-focus="onItemFocus_"
+          on-keydown="onItemKeyDown_" role="option" tabindex="0">
+      </tab-search-group-item>
+    </template>
   </infinite-list>
 </div>
-<div id="no-results" hidden="[[filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
+<div id="no-results" hidden="[[filteredItems_.length]]">
   $i18n{noResultsFound}
 </div>
-<template is="dom-if" if="[[feedbackButtonEnabled_]]">
-  <button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_"
-      on-focus="onFeedbackFocus_">
-    <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
-    <div id="feedback-text">$i18n{submitFeedback}</div>
-  </button>
-</template>

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,6 +22,7 @@ static_library("renderer") {
     "//content/public/common",
     "//content/public/renderer",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
     "//url",
   ]
   public_deps = [ "//ipc" ]

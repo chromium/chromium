@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "url/gurl.h"
 
 class AutocompleteInput;
@@ -29,15 +32,15 @@ namespace network {
 class SimpleURLLoader;
 }
 
+// Returns the omnibox::SuggestSubtype enum object corresponding to `value`.
+omnibox::SuggestSubtype SuggestSubtypeForNumber(int value);
+
 class SearchSuggestionParser {
  public:
   // Disallow implicit constructors.
   SearchSuggestionParser() = delete;
   SearchSuggestionParser(const SearchSuggestionParser&) = delete;
   SearchSuggestionParser& operator=(const SearchSuggestionParser&) = delete;
-
-  // Indicates a missing suggestion group Id.
-  static const int kNoSuggestionGroupId;
 
   // The Result classes are intermediate representations of AutocompleteMatches,
   // simply containing relevance-ranked search and navigation suggestions.
@@ -141,6 +144,7 @@ class SearchSuggestionParser {
                   const std::u16string& match_contents_prefix,
                   const std::u16string& annotation,
                   const std::string& additional_query_params,
+                  const std::string& entity_id,
                   const std::string& deletion_url,
                   const std::string& image_dominant_color,
                   const std::string& image_url,
@@ -148,6 +152,7 @@ class SearchSuggestionParser {
                   int relevance,
                   bool relevance_from_server,
                   bool should_prefetch,
+                  bool should_prerender,
                   const std::u16string& input_text);
     SuggestResult(const SuggestResult& result);
     ~SuggestResult() override;
@@ -162,16 +167,18 @@ class SearchSuggestionParser {
     const std::string& additional_query_params() const {
       return additional_query_params_;
     }
+    const std::string& entity_id() const { return entity_id_; }
 
-    void set_suggestion_group_id(int suggestion_group_id) {
+    void set_suggestion_group_id(
+        absl::optional<omnibox::GroupId> suggestion_group_id) {
       suggestion_group_id_ = suggestion_group_id;
     }
-    base::Optional<int> suggestion_group_id() const {
+    absl::optional<omnibox::GroupId> suggestion_group_id() const {
       return suggestion_group_id_;
     }
 
     void SetAnswer(const SuggestionAnswer& answer);
-    const base::Optional<SuggestionAnswer>& answer() const { return answer_; }
+    const absl::optional<SuggestionAnswer>& answer() const { return answer_; }
 
     const std::string& image_dominant_color() const {
       return image_dominant_color_;
@@ -179,6 +186,7 @@ class SearchSuggestionParser {
     const GURL& image_url() const { return image_url_; }
 
     bool should_prefetch() const { return should_prefetch_; }
+    bool should_prerender() const { return should_prerender_; }
 
     // Fills in |match_contents_class_| to reflect how |match_contents_| should
     // be displayed and bolded against the current |input_text|.  If
@@ -209,16 +217,16 @@ class SearchSuggestionParser {
     // Optional additional parameters to be added to the search URL.
     std::string additional_query_params_;
 
-    // The suggestion group Id based on the SuggestionGroupIds enum in
-    // suggestion_config.proto
-    // Used to look up the header this suggestion must appear under from the
-    // server supplied map of suggestion group Ids to headers.
-    // Note: Use kNoSuggestionGroupId in place of a missing suggestion group Id
-    // when this is to be converted to a primitive type.
-    base::Optional<int> suggestion_group_id_;
+    // Optional entity id for entity suggestions. Empty string means no entity
+    // ID.
+    std::string entity_id_;
+
+    // The optional suggestion group ID used to look up the suggestion group
+    // config for the group this suggestion belongs to from the server response.
+    absl::optional<omnibox::GroupId> suggestion_group_id_;
 
     // Optional short answer to the input that produced this suggestion.
-    base::Optional<SuggestionAnswer> answer_;
+    absl::optional<SuggestionAnswer> answer_;
 
     // Optional image information. Used for entity suggestions. The dominant
     // color can be used to paint the image placeholder while fetching the
@@ -228,6 +236,10 @@ class SearchSuggestionParser {
 
     // Should this result be prefetched?
     bool should_prefetch_;
+
+    // Should this result trigger Prerender2? See
+    // content/browser/preloading/prerender/README.md for more information.
+    bool should_prerender_;
   };
 
   class NavigationResult : public Result {
@@ -278,10 +290,10 @@ class SearchSuggestionParser {
     ACMatchClassifications description_class_;
   };
 
-  typedef std::map<int, std::u16string> HeadersMap;
   typedef std::vector<SuggestResult> SuggestResults;
   typedef std::vector<NavigationResult> NavigationResults;
-  typedef std::vector<base::Value> ExperimentStats;
+  typedef std::vector<metrics::ChromeSearchboxStats::ExperimentStatsV2>
+      ExperimentStatsV2s;
 
   // A simple structure bundling most of the information (including
   // both SuggestResults and NavigationResults) returned by a call to
@@ -324,18 +336,15 @@ class SearchSuggestionParser {
     // If the active suggest field trial (if any) has triggered.
     bool field_trial_triggered;
 
-    // The list of experiment stats which needs to be logged to SearchboxStats
-    // as part of a GWS experiment, if any.
-    ExperimentStats experiment_stats;
+    // The ExperimentStatsV2 containing GWS experiment details, if any. To be
+    // logged to SearchboxStats.
+    ExperimentStatsV2s experiment_stats_v2s;
 
     // If the relevance values of the results are from the server.
     bool relevances_from_server;
 
-    // The server supplied map of suggestion group IDs to header labels.
-    HeadersMap headers_map;
-
-    // The server supplied list of group IDs that should be hidden-by-default.
-    std::vector<int> hidden_group_ids;
+    // The map of suggestion group IDs to suggestion group information.
+    omnibox::GroupConfigMap suggestion_groups_map;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the

@@ -1,0 +1,28 @@
+diff --git a/BUILD b/BUILD
+index 0e7ccdd..9bc6260 100644
+--- a/BUILD
++++ b/BUILD
+@@ -6,6 +6,11 @@ licenses(["notice"])
+
+ exports_files(["src/gflags_completions.sh", "COPYING.txt"])
+
++config_setting(
++    name = "android",
++    values = {"crosstool_top": "//external:android/crosstool"},
++)
++
+ config_setting(
+     name = "x64_windows",
+     values = {"cpu": "x64_windows"},
+diff --git a/bazel/gflags.bzl b/bazel/gflags.bzl
+index 533fd61..df7f201 100644
+--- a/bazel/gflags.bzl
++++ b/bazel/gflags.bzl
+@@ -87,6 +87,7 @@ def gflags_library(hdrs=[], srcs=[], threads=1):
+     if threads:
+         linkopts += select({
+             "//:x64_windows": [],
++            "//:android": [],
+             "//conditions:default": ["-lpthread"],
+         })
+     else:

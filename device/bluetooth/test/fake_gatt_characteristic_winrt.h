@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
@@ -37,6 +37,10 @@ class FakeGattCharacteristicWinrt
                               int properties,
                               base::StringPiece uuid,
                               uint16_t attribute_handle);
+
+  FakeGattCharacteristicWinrt(const FakeGattCharacteristicWinrt&) = delete;
+  FakeGattCharacteristicWinrt& operator=(const FakeGattCharacteristicWinrt&) =
+      delete;
 
   ~FakeGattCharacteristicWinrt() override;
 
@@ -163,7 +167,7 @@ class FakeGattCharacteristicWinrt
   void SimulateGattCharacteristicChanged(const std::vector<uint8_t>& value);
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_;
   ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
       GattCharacteristicProperties properties_;
   GUID uuid_;
@@ -192,8 +196,6 @@ class FakeGattCharacteristicWinrt
   std::vector<Microsoft::WRL::ComPtr<FakeGattDescriptorWinrt>>
       fake_descriptors_;
   uint16_t last_descriptor_attribute_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattCharacteristicWinrt);
 };
 
 }  // namespace device

@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_CONTROLLER_IMPL_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_CHROME_CLEANER_CONTROLLER_IMPL_WIN_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 
 #include <memory>
@@ -14,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_runner_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/component_updater/component_updater_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -55,6 +58,10 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // Returns the global controller object.
   static ChromeCleanerControllerImpl* GetInstance();
 
+  ChromeCleanerControllerImpl(const ChromeCleanerControllerImpl&) = delete;
+  ChromeCleanerControllerImpl& operator=(const ChromeCleanerControllerImpl&) =
+      delete;
+
   // ChromeCleanerController overrides.
   State state() const override;
   IdleReason idle_reason() const override;
@@ -67,13 +74,15 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void OnReporterSequenceStarted() override;
   void OnReporterSequenceDone(SwReporterInvocationResult result) override;
   void RequestUserInitiatedScan(Profile* profile) override;
-  void OnSwReporterReady(SwReporterInvocationSequence&& invocations) override;
+  void OnSwReporterReady(const std::string& prompt_seed,
+                         SwReporterInvocationSequence&& invocations) override;
   void Scan(const SwReporterInvocation& reporter_invocation) override;
   void ReplyWithUserResponse(Profile* profile,
                              UserResponse user_response) override;
   void Reboot() override;
   bool IsAllowedByPolicy() override;
   bool IsReportingManagedByPolicy(Profile* profile) override;
+  std::string GetIncomingPromptSeed() override;
 
   static void ResetInstanceForTesting();
   // Passing in a nullptr as |delegate| resets the delegate to a default
@@ -122,7 +131,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
 
   std::unique_ptr<ChromeCleanerControllerDelegate> real_delegate_;
   // Pointer to either real_delegate_ or one set by tests.
-  ChromeCleanerControllerDelegate* delegate_;
+  raw_ptr<ChromeCleanerControllerDelegate> delegate_;
 
   State state_ = State::kIdle;
   // Whether Cleanup is powered by an external partner.
@@ -152,11 +161,12 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // to a |ReporterRunner| more than once.
   std::unique_ptr<SwReporterInvocationSequence> cached_reporter_invocations_;
 
+  // The prompt seed specified in the component manifest.
+  absl::optional<std::string> manifest_prompt_seed_;
+
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ChromeCleanerControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerControllerImpl);
 };
 
 }  // namespace safe_browsing

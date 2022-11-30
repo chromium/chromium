@@ -1,1 +1,1 @@
-os: ANDROID
+mixins: "//components/content_capture/COMMON_METADATA"

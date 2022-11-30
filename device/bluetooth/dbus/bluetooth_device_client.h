@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
-#include "base/values.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -174,6 +171,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
                                        const std::string& property_name) {}
   };
 
+  BluetoothDeviceClient(const BluetoothDeviceClient&) = delete;
+  BluetoothDeviceClient& operator=(const BluetoothDeviceClient&) = delete;
+
   ~BluetoothDeviceClient() override;
 
   // Adds and removes observers for events on all remote bluetooth
@@ -198,6 +198,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
   virtual void Connect(const dbus::ObjectPath& object_path,
                        base::OnceClosure callback,
                        ErrorCallback error_callback) = 0;
+
+  // Connects to the device with object path |object_path| via classic
+  // Bluetooth, connecting any profiles that can be connected to and have been
+  // flagged as auto-connected; may be used to connect additional profiles for
+  // an already connected device, and succeeds if at least one profile is
+  // connected.
+  virtual void ConnectClassic(const dbus::ObjectPath& object_path,
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) = 0;
 
   // Connects to the device with object path |object_path| via BLE,
   // connecting any profiles that can be connected to and have been flagged as
@@ -294,9 +303,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
 
  protected:
   BluetoothDeviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceClient);
 };
 
 }  // namespace bluez

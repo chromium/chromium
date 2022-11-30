@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,16 +20,9 @@
   return self;
 }
 
-- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context
-    API_AVAILABLE(ios(13)) {
+- (instancetype)initWithUIOpenURLContext:(UIOpenURLContext*)context {
   return [self initWithURL:context.URL
          sourceApplication:context.options.sourceApplication];
-}
-
-- (instancetype)initWithOpenURL:(NSURL*)URL options:(NSDictionary*)options {
-  return [self initWithURL:URL
-         sourceApplication:
-             options[UIApplicationOpenURLOptionsSourceApplicationKey]];
 }
 
 - (instancetype)initWithLaunchOptions:(NSDictionary*)options {

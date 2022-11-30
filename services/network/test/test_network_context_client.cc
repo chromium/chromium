@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 
 #include <utility>
 
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -25,6 +24,7 @@ void TestNetworkContextClient::OnFileUploadRequested(
     int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
+    const GURL& destination_url,
     OnFileUploadRequestedCallback callback) {
   if (upload_files_invalid_) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED, std::vector<base::File>());
@@ -51,5 +51,12 @@ void TestNetworkContextClient::OnFileUploadRequested(
 
   std::move(callback).Run(net::OK, std::move(files));
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+void TestNetworkContextClient::OnCanSendSCTAuditingReport(
+    OnCanSendSCTAuditingReportCallback callback) {
+  std::move(callback).Run(true);
+}
+#endif
 
 }  // namespace network

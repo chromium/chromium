@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 const base::FilePath::CharType kTokenFileName[] =
@@ -36,6 +36,10 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
  public:
   TestTokenStorageOnDisk(const std::string& user_name,
                          const base::FilePath& tokens_file_path);
+
+  TestTokenStorageOnDisk(const TestTokenStorageOnDisk&) = delete;
+  TestTokenStorageOnDisk& operator=(const TestTokenStorageOnDisk&) = delete;
+
   ~TestTokenStorageOnDisk() override;
 
   // TestTokenStorage interface.
@@ -61,8 +65,6 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
 
   // Path used to retrieve the tokens file.
   base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTokenStorageOnDisk);
 };
 
 TestTokenStorageOnDisk::TestTokenStorageOnDisk(const std::string& user_name,
@@ -121,21 +123,20 @@ std::string TestTokenStorageOnDisk::FetchTokenFromKey(const std::string& key) {
     return std::string();
   }
 
-  base::Optional<base::Value> token_data(base::JSONReader::Read(file_contents));
-  base::DictionaryValue* tokens = nullptr;
-  if (!token_data.has_value() || !token_data->GetAsDictionary(&tokens)) {
+  absl::optional<base::Value> token_data(base::JSONReader::Read(file_contents));
+  if (!token_data.has_value() || !token_data->is_dict()) {
     LOG(ERROR) << "File contents were not valid JSON, "
                << "could not retrieve token.";
     return std::string();
   }
 
-  base::Value* token = tokens->FindPath({user_name_, key});
+  const std::string* token = token_data->FindStringPath(user_name_ + '.' + key);
   if (!token) {
     VLOG(1) << "Could not find token for: " << key;
     return std::string();
   }
 
-  return token->GetString();
+  return *token;
 }
 
 bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
@@ -160,15 +161,14 @@ bool TestTokenStorageOnDisk::StoreTokenForKey(const std::string& key,
     }
   }
 
-  base::Optional<base::Value> token_data(base::JSONReader::Read(file_contents));
-  base::DictionaryValue* tokens = nullptr;
-  if (!token_data.has_value() || !token_data->GetAsDictionary(&tokens)) {
+  absl::optional<base::Value> token_data(base::JSONReader::Read(file_contents));
+  if (!token_data.has_value() || !token_data->is_dict()) {
     LOG(ERROR) << "Invalid token file format, could not store token.";
     return false;
   }
 
   std::string json_string;
-  tokens->SetPath({user_name_, key}, base::Value(value));
+  token_data->SetStringPath(user_name_ + '.' + key, value);
   if (!base::JSONWriter::Write(*token_data, &json_string)) {
     LOG(ERROR) << "Couldn't convert JSON data to string";
     return false;

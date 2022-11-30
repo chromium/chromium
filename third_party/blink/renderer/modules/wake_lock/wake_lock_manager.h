@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WAKE_LOCK_WAKE_LOCK_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
-#include "services/device/public/mojom/wake_lock.mojom-blink-forward.h"
+#include "services/device/public/mojom/wake_lock.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
@@ -19,12 +21,12 @@ class ExecutionContext;
 class ScriptPromiseResolver;
 class WakeLockSentinel;
 
-// https://w3c.github.io/screen-wake-lock/#concepts-and-state-record
+// https://w3c.github.io/screen-wake-lock/#dfn-activelocks
 // Per-document and per-wake lock type internal data.
 class MODULES_EXPORT WakeLockManager final
     : public GarbageCollected<WakeLockManager> {
  public:
-  WakeLockManager(ExecutionContext*, WakeLockType);
+  WakeLockManager(ExecutionContext*, V8WakeLockType::Enum);
 
   void AcquireWakeLock(ScriptPromiseResolver*);
   void ClearWakeLocks();
@@ -44,7 +46,7 @@ class MODULES_EXPORT WakeLockManager final
   // An actual platform WakeLock. If bound, it means there is an active wake
   // lock for a given type.
   HeapMojoRemote<device::mojom::blink::WakeLock> wake_lock_;
-  WakeLockType wake_lock_type_;
+  V8WakeLockType::Enum wake_lock_type_;
 
   // ExecutionContext from which we will connect to |wake_lock_service_|.
   Member<ExecutionContext> execution_context_;

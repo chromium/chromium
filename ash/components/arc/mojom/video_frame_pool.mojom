@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/video_common.mojom";
+
+// Mojo structure representing a single video frame.
+// Next ordinal: 6
+struct VideoFrame {
+  int32 id@0;
+  handle<platform> handle_fd@1;
+  Size coded_size@2;
+  HalPixelFormat format@3;
+  array<VideoFramePlane> planes@4;
+  // These modifier flags are platform-specific and are assigned upon buffer
+  // allocation. They are passed through unmodified to the hardware.
+  uint64 modifier@5;
+};
+
+// Video frame pool service, managing a set of video frames for the remote mojo
+// client. The client is responsible for creating and adding video frames to the
+// pool, so they can be used by the associated video decoder.
+// Next Method ID: 2
+interface VideoFramePool {
+  // Initialize the video frame pool, connecting it to the specified |client|.
+  Initialize@0(pending_associated_remote<VideoFramePoolClient> client);
+
+  // Add the specified |video_frame| to the pool.
+  AddVideoFrame@1(VideoFrame video_frame) => (bool result);
+};
+
+// Video frame pool client, needs to provide video frames to the pool.
+// Next Method ID: 1
+interface VideoFramePoolClient {
+  // Request a set of video frames from the client with specified properties.
+  // The pool client needs to add frames to the pool using AddVideoFrame().
+  RequestVideoFrames@0(VideoPixelFormat format, Size coded_size,
+                       Rect visible_rect, uint32 num_frames);
+};

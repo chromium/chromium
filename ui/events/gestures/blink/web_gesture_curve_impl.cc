@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,9 @@
 #include "ui/events/gestures/physics_based_fling_curve.h"
 #include "ui/events/mobile_scroller.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using blink::WebGestureCurve;
 
@@ -49,17 +49,18 @@ std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
 #endif
     auto scroller = std::make_unique<MobileScroller>(config);
     scroller->Fling(0, 0, initial_velocity.x(), initial_velocity.y(), INT_MIN,
-                    INT_MAX, INT_MIN, INT_MAX, base::TimeTicks());
+                    static_cast<float>(INT_MAX), INT_MIN,
+                    static_cast<float>(INT_MAX), base::TimeTicks());
     return std::move(scroller);
   }
 
   if (base::FeatureList::IsEnabled(features::kExperimentalFlingAnimation)) {
     gfx::Vector2dF pixels_per_inch(kDefaultPixelsPerInch,
                                    kDefaultPixelsPerInch);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     pixels_per_inch =
         display::win::ScreenWin::GetPixelsPerInch(position_in_screen);
-#endif  // define(OS_WIN)
+#endif
     return std::make_unique<PhysicsBasedFlingCurve>(
         initial_velocity, base::TimeTicks(), pixels_per_inch, boost_multiplier,
         bounding_size);
@@ -126,8 +127,7 @@ bool WebGestureCurveImpl::Advance(double time,
     ++ticks_since_first_animate_;
   }
 
-  const base::TimeTicks time_ticks =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(time);
+  const base::TimeTicks time_ticks = base::TimeTicks() + base::Seconds(time);
   gfx::Vector2dF offset;
   bool still_active =
       curve_->ComputeScrollOffset(time_ticks, &offset, &out_current_velocity);

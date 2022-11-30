@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 
 namespace gfx {
@@ -29,14 +30,17 @@ class TestLocationBarModel : public LocationBarModel {
   std::u16string GetURLForDisplay() const override;
   GURL GetURL() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source) override;
+      OmniboxFocusSource focus_source,
+      bool is_prefetch = false) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetSecureDisplayText() const override;
   std::u16string GetSecureAccessibilityText() const override;
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
   bool ShouldPreventElision() const override;
+  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
   void set_formatted_full_url(const std::u16string& url) {
     formatted_full_url_ = std::make_unique<std::u16string>(url);
@@ -47,6 +51,9 @@ class TestLocationBarModel : public LocationBarModel {
   void set_url(const GURL& url) { url_ = url; }
   void set_security_level(security_state::SecurityLevel security_level) {
     security_level_ = security_level;
+  }
+  void set_cert_status(net::CertStatus cert_status) {
+    cert_status_ = cert_status;
   }
   void set_icon(const gfx::VectorIcon& icon) { icon_ = &icon; }
   void set_should_display_url(bool should_display_url) {
@@ -68,7 +75,8 @@ class TestLocationBarModel : public LocationBarModel {
 
   GURL url_;
   security_state::SecurityLevel security_level_ = security_state::NONE;
-  const gfx::VectorIcon* icon_ = nullptr;
+  net::CertStatus cert_status_ = 0;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   bool should_display_url_ = false;
   bool offline_page_ = false;
   std::u16string secure_display_text_ = std::u16string();

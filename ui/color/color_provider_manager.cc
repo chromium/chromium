@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "ui/color/color_mixers.h"
 #endif
 
@@ -23,9 +23,13 @@ namespace ui {
 
 namespace {
 
+// Cache at most 5 ColorProviders to prevent unbounded storage from user_color.
+constexpr size_t kCacheSize = 5;
+
 class GlobalManager : public ColorProviderManager {
  public:
-  GlobalManager() = default;
+  explicit GlobalManager(size_t cache_size = kCacheSize)
+      : ColorProviderManager(cache_size) {}
   GlobalManager(const GlobalManager&) = delete;
   GlobalManager& operator=(const GlobalManager&) = delete;
   ~GlobalManager() override = default;
@@ -33,48 +37,79 @@ class GlobalManager : public ColorProviderManager {
 
 static_assert(sizeof(GlobalManager) == sizeof(ColorProviderManager),
               "Global manager is intended to provide constructor visibility to "
-              "base::Optional, nothing more.");
+              "absl::optional, nothing more.");
 
-base::Optional<GlobalManager>& GetGlobalManager() {
-  static base::NoDestructor<base::Optional<GlobalManager>> manager;
+absl::optional<GlobalManager>& GetGlobalManager() {
+  static base::NoDestructor<absl::optional<GlobalManager>> manager;
   return *manager;
 }
 
 }  // namespace
 
-ColorProviderManager::ColorProviderManager() = default;
+ColorProviderManager::InitializerSupplier::InitializerSupplier() = default;
+
+ColorProviderManager::InitializerSupplier::~InitializerSupplier() = default;
+
+ColorProviderManager::ThemeInitializerSupplier::ThemeInitializerSupplier(
+    ThemeType theme_type)
+    : theme_type_(theme_type) {}
+
+ColorProviderManager::Key::Key()
+    : Key(ColorMode::kLight,
+          ContrastMode::kNormal,
+          SystemTheme::kDefault,
+          FrameType::kChromium,
+          absl::nullopt,
+          nullptr) {}
+
+ColorProviderManager::Key::Key(
+    ColorMode color_mode,
+    ContrastMode contrast_mode,
+    SystemTheme system_theme,
+    FrameType frame_type,
+    absl::optional<SkColor> user_color,
+    scoped_refptr<ThemeInitializerSupplier> custom_theme)
+    : color_mode(color_mode),
+      contrast_mode(contrast_mode),
+      elevation_mode(ElevationMode::kLow),
+      system_theme(system_theme),
+      frame_type(frame_type),
+      user_color(user_color),
+      custom_theme(std::move(custom_theme)) {}
+
+ColorProviderManager::Key::Key(const Key&) = default;
+
+ColorProviderManager::Key& ColorProviderManager::Key::operator=(const Key&) =
+    default;
+
+ColorProviderManager::Key::~Key() = default;
+
+ColorProviderManager::ColorProviderManager(size_t cache_size)
+    : color_providers_(cache_size) {
+  ResetColorProviderInitializerList();
+}
+
 ColorProviderManager::~ColorProviderManager() = default;
 
 // static
 ColorProviderManager& ColorProviderManager::Get() {
-  base::Optional<GlobalManager>& manager = GetGlobalManager();
+  absl::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
-#if !defined(OS_ANDROID)
-    manager.value().SetColorProviderInitializer(base::BindRepeating(
-        [](ColorProvider* provider, ColorProviderManager::ColorMode color_mode,
-           ColorProviderManager::ContrastMode contrast_mode) {
-          const bool dark_mode =
-              color_mode == ColorProviderManager::ColorMode::kDark;
-          const bool high_contrast =
-              contrast_mode == ColorProviderManager::ContrastMode::kHigh;
-          ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
-          ui::AddUiColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
-          ui::AddNativePostprocessingMixer(provider);
-        }));
-#endif  // !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+    manager.value().AppendColorProviderInitializer(
+        base::BindRepeating(AddColorMixers));
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   return manager.value();
 }
 
 // static
-ColorProviderManager& ColorProviderManager::GetForTesting() {
-  base::Optional<GlobalManager>& manager = GetGlobalManager();
+ColorProviderManager& ColorProviderManager::GetForTesting(size_t cache_size) {
+  absl::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value())
-    manager.emplace();
+    manager.emplace(cache_size);
   return manager.value();
 }
 
@@ -83,27 +118,38 @@ void ColorProviderManager::ResetForTesting() {
   GetGlobalManager().reset();
 }
 
-void ColorProviderManager::SetColorProviderInitializer(
-    ColorProviderInitializer initializer) {
-  DCHECK(initializer_.is_null());
-  DCHECK(color_providers_.empty());
-  initializer_ = std::move(initializer);
+void ColorProviderManager::ResetColorProviderInitializerList() {
+  ResetColorProviderCache();
+  initializer_list_ = std::make_unique<ColorProviderInitializerList>();
+  initializer_subscriptions_.clear();
 }
 
-ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
-  auto iter = color_providers_.find(key);
+void ColorProviderManager::ResetColorProviderCache() {
+  if (!color_providers_.empty())
+    color_providers_.Clear();
+}
+
+void ColorProviderManager::AppendColorProviderInitializer(
+    ColorProviderInitializerList::CallbackType initializer) {
+  DCHECK(initializer_list_);
+  ResetColorProviderCache();
+
+  initializer_subscriptions_.push_back(
+      initializer_list_->Add(std::move(initializer)));
+}
+
+ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
+  auto iter = color_providers_.Get(key);
   if (iter == color_providers_.end()) {
     auto provider = std::make_unique<ColorProvider>();
-    if (!initializer_.is_null()) {
-      DVLOG(2) << "ColorProviderManager: Initializing Color Provider"
-               << " - ColorMode: " << ColorModeName(std::get<ColorMode>(key))
-               << " - ContrastMode: "
-               << ContrastModeName(std::get<ContrastMode>(key));
-      initializer_.Run(provider.get(), std::get<ColorMode>(key),
-                       std::get<ContrastMode>(key));
-    }
+    DCHECK(initializer_list_);
+    if (!initializer_list_->empty())
+      initializer_list_->Notify(provider.get(), key);
 
-    iter = color_providers_.emplace(key, std::move(provider)).first;
+    provider->GenerateColorMap();
+    iter = color_providers_.Put(key, std::move(provider));
+    base::UmaHistogramExactLinear("Views.ColorProviderCacheSize",
+                                  color_providers_.size(), kCacheSize);
   }
   ColorProvider* provider = iter->second.get();
   DCHECK(provider);

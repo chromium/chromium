@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,11 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
     : public VulkanImplementation {
  public:
   VulkanImplementationAndroid();
+
+  VulkanImplementationAndroid(const VulkanImplementationAndroid&) = delete;
+  VulkanImplementationAndroid& operator=(const VulkanImplementationAndroid&) =
+      delete;
+
   ~VulkanImplementationAndroid() override;
 
   // VulkanImplementation:
@@ -43,12 +48,14 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
                                      VkSemaphore vk_semaphore) override;
   VkExternalMemoryHandleTypeFlagBits GetExternalImageHandleType() override;
   bool CanImportGpuMemoryBuffer(
+      VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferType memory_buffer_type) override;
   std::unique_ptr<VulkanImage> CreateImageFromGpuMemoryHandle(
       VulkanDeviceQueue* device_queue,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size size,
-      VkFormat vk_formae) override;
+      VkFormat vk_format,
+      const gfx::ColorSpace& color_space) override;
   bool GetSamplerYcbcrConversionInfo(
       const VkDevice& vk_device,
       base::android::ScopedHardwareBufferHandle ahb_handle,
@@ -56,8 +63,6 @@ class COMPONENT_EXPORT(VULKAN_ANDROID) VulkanImplementationAndroid
 
  private:
   VulkanInstance vulkan_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanImplementationAndroid);
 };
 
 }  // namespace gpu

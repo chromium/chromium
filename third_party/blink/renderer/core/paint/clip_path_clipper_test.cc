@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ TEST_F(ClipPathClipperTest, ClipPathBoundingBoxClamped) {
     </div>
   )HTML");
   auto& object = *GetLayoutObjectByElementId("e");
-  base::Optional<FloatRect> bounding_box =
+  absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(object);
   ASSERT_TRUE(bounding_box.has_value());
-  EXPECT_EQ(FloatRect(LayoutRect::InfiniteIntRect()), *bounding_box);
+  EXPECT_EQ(gfx::RectF(LayoutRect::InfiniteIntRect()), *bounding_box);
 }
 
 }  // unnamed namespace

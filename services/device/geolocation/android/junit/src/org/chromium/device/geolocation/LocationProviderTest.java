@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,25 @@ package org.chromium.device.geolocation;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
 
 import android.content.Context;
 import android.location.LocationManager;
+import android.os.Build;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.FusedLocationProviderClient;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLocationManager;
-import org.robolectric.shadows.ShadowLog; // remove me ?
+import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
@@ -41,7 +37,7 @@ import java.util.Collection;
  * Test suite for Java Geolocation.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = 21, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
 public class LocationProviderTest {
     static {
         // Setting robolectric.offline which tells Robolectric to look for runtime dependency
@@ -57,15 +53,6 @@ public class LocationProviderTest {
                 {LocationProviderType.ANDROID}, {LocationProviderType.GMS_CORE}});
     }
 
-    @Mock
-    private Context mContext;
-
-    // Member variables for LocationProviderType.GMS_CORE case.
-    @Mock
-    private GoogleApiClient mGoogleApiClient;
-    private boolean mGoogleApiClientIsConnected;
-
-    // Member variables for LocationProviderType.ANDROID case.
     private LocationManager mLocationManager;
     private ShadowLocationManager mShadowLocationManager;
 
@@ -81,8 +68,7 @@ public class LocationProviderTest {
     public void setUp() {
         ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
-
-        mContext = Mockito.mock(Context.class);
+        mLocationManager = RuntimeEnvironment.application.getSystemService(LocationManager.class);
     }
 
     /**
@@ -142,51 +128,18 @@ public class LocationProviderTest {
 
         // Robolectric has a ShadowLocationManager class that mocks the behaviour of the real
         // class very closely. Use it here.
-        mLocationManager = Shadow.newInstanceOf(LocationManager.class);
         mShadowLocationManager = Shadows.shadowOf(mLocationManager);
         locationProviderAndroid.setLocationManagerForTesting(mLocationManager);
         LocationProviderFactory.setLocationProviderImpl(locationProviderAndroid);
     }
 
     private void setLocationProviderGmsCore() {
-        // Robolectric has a ShadowGoogleApiClientBuilder class that mocks the behaviour of the real
-        // class very closely, but it's not available in our build
-        mGoogleApiClient = Mockito.mock(GoogleApiClient.class);
-        mGoogleApiClientIsConnected = false;
-        doAnswer(new Answer<Boolean>() {
-            @Override
-            public Boolean answer(InvocationOnMock invocation) {
-                return mGoogleApiClientIsConnected;
-            }
-        })
-                .when(mGoogleApiClient)
-                .isConnected();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                mGoogleApiClientIsConnected = true;
-                return null;
-            }
-        })
-                .when(mGoogleApiClient)
-                .connect();
-
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                mGoogleApiClientIsConnected = false;
-                return null;
-            }
-        })
-                .when(mGoogleApiClient)
-                .disconnect();
-
-        FusedLocationProviderApi fusedLocationProviderApi =
-                Mockito.mock(FusedLocationProviderApi.class);
+        Context context = Mockito.mock(Context.class);
+        FusedLocationProviderClient fusedLocationProviderClient =
+                Mockito.mock(FusedLocationProviderClient.class);
 
         LocationProviderGmsCore locationProviderGmsCore =
-                new LocationProviderGmsCore(mGoogleApiClient, fusedLocationProviderApi);
+                new LocationProviderGmsCore(context, fusedLocationProviderClient);
 
         LocationProviderFactory.setLocationProviderImpl(locationProviderGmsCore);
     }

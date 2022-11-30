@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,15 +17,13 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_updater.h"
@@ -33,19 +31,21 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/extensions/external_cache_impl.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -61,8 +61,6 @@
 namespace ash {
 
 namespace {
-
-using ::chromeos::InstallAttributes;
 
 // Domain that is used for kiosk-app account IDs.
 constexpr char kKioskAppAccountDomain[] = "kiosk-apps";
@@ -81,7 +79,7 @@ std::string GenerateKioskAppAccountId(const std::string& app_id) {
 }
 
 // Check for presence of machine owner public key file.
-void CheckOwnerFilePresence(bool *present) {
+void CheckOwnerFilePresence(bool* present) {
   scoped_refptr<ownership::OwnerKeyUtil> util =
       OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil();
   *present = util.get() && util->IsPublicKeyPresent();
@@ -118,15 +116,16 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
   auto cache = std::make_unique<chromeos::ExternalCacheImpl>(
       GetCrxCacheDir(), shared_url_loader_factory, GetBackgroundTaskRunner(),
       delegate, true /* always_check_updates */,
-      false /* wait_for_cache_initialization */);
+      false /* wait_for_cache_initialization */,
+      true /* allow_scheduled_updates */);
   cache->set_flush_on_put(true);
   return cache;
 }
 
-std::unique_ptr<AppSession> CreateAppSession() {
+std::unique_ptr<AppSessionAsh> CreateAppSession() {
   if (g_test_overrides)
     return g_test_overrides->CreateAppSession();
-  return std::make_unique<AppSession>();
+  return std::make_unique<AppSessionAsh>();
 }
 
 base::Version GetPlatformVersion() {
@@ -141,38 +140,75 @@ std::string GetSwitchString(const std::string& flag_name) {
   return cmd_line.argv()[1];
 }
 
+bool IsWebstoreUpdateUrl(const std::string* url) {
+  return url && extension_urls::IsWebstoreUpdateUrl(GURL(*url));
+}
+
 }  // namespace
 
 // static
 const char KioskAppManager::kKioskDictionaryName[] = "kiosk";
 const char KioskAppManager::kKeyAutoLoginState[] = "auto_login_state";
 
+class GlobalManager : public KioskAppManager {
+ public:
+  GlobalManager() = default;
+  GlobalManager(const GlobalManager&) = delete;
+  GlobalManager& operator=(const GlobalManager&) = delete;
+  ~GlobalManager() override = default;
+};
+
+static_assert(sizeof(GlobalManager) == sizeof(KioskAppManager),
+              "Global manager is intended to provide constructor visibility to "
+              "absl::optional, nothing more.");
+
+absl::optional<GlobalManager>& GetGlobalManager() {
+  static base::NoDestructor<absl::optional<GlobalManager>> manager;
+  return *manager;
+}
+
 // static
-static base::LazyInstance<KioskAppManager>::DestructorAtExit instance =
-    LAZY_INSTANCE_INITIALIZER;
 KioskAppManager* KioskAppManager::Get() {
-  return instance.Pointer();
+  absl::optional<GlobalManager>& manager = GetGlobalManager();
+  if (!manager.has_value())
+    manager.emplace();
+
+  return &manager.value();
 }
 
 // static
 void KioskAppManager::InitializeForTesting(Overrides* overrides) {
-  DCHECK(!instance.IsCreated());
+  DCHECK(!GetGlobalManager().has_value());
   g_test_overrides = overrides;
 }
 
 // static
 void KioskAppManager::Shutdown() {
-  if (!instance.IsCreated())
+  if (!GetGlobalManager().has_value())
     return;
 
-  instance.Pointer()->CleanUp();
+  ChromeKioskExternalLoaderBroker::Shutdown();
 
+  KioskAppManager::Get()->CleanUp();
   g_test_overrides = nullptr;
 }
 
 // static
-void KioskAppManager::RegisterPrefs(PrefRegistrySimple* registry) {
+void KioskAppManager::ResetForTesting() {
+  GetGlobalManager().reset();
+  g_test_overrides = nullptr;
+}
+
+// static
+void KioskAppManager::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kKioskDictionaryName);
+  chromeos::AppSession::RegisterLocalStatePrefs(registry);
+}
+
+// static
+void KioskAppManager::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  chromeos::AppSession::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -208,8 +244,7 @@ void KioskAppManager::SetAppWasAutoLaunchedWithZeroDelay(
   auto_launched_with_zero_delay_ = true;
 }
 
-void KioskAppManager::InitSession(Profile* profile,
-                                   const std::string& app_id) {
+void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
   base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
@@ -222,10 +257,9 @@ void KioskAppManager::InitSession(Profile* profile,
     // set here is to be able to properly restore session if the session is
     // restarted - e.g. due to crash. For example, this will ensure restarted
     // app session restores auto-launched state.
-    chromeos::UserSessionManager::GetInstance()->SetSwitchesForUser(
+    UserSessionManager::GetInstance()->SetSwitchesForUser(
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-        chromeos::UserSessionManager::CommandLineSwitchesType::
-            kPolicyAndKioskControl,
+        UserSessionManager::CommandLineSwitchesType::kPolicyAndKioskControl,
         flags);
   }
 
@@ -252,9 +286,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
   // should not be present for kiosk sessions.
   bool in_policy_switches_block = false;
   const std::string policy_switches_begin =
-      GetSwitchString(switches::kPolicySwitchesBegin);
+      GetSwitchString(chromeos::switches::kPolicySwitchesBegin);
   const std::string policy_switches_end =
-      GetSwitchString(switches::kPolicySwitchesEnd);
+      GetSwitchString(chromeos::switches::kPolicySwitchesEnd);
 
   for (const auto& it : current_command_line->argv()) {
     if (it == policy_switches_begin) {
@@ -311,8 +345,8 @@ void KioskAppManager::EnableConsumerKioskAutoLaunch(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   connector->GetInstallAttributes()->LockDevice(
       policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,
       std::string(),  // domain
@@ -330,16 +364,16 @@ void KioskAppManager::GetConsumerKioskAutoLaunchStatus(
     return;
   }
 
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   connector->GetInstallAttributes()->ReadImmutableAttributes(
       base::BindOnce(&KioskAppManager::OnReadImmutableAttributes,
                      base::Unretained(this), std::move(callback)));
 }
 
 bool KioskAppManager::IsConsumerKioskDeviceWithAutoLaunch() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetInstallAttributes() &&
          connector->GetInstallAttributes()
              ->IsConsumerKioskDeviceWithAutoLaunch();
@@ -377,8 +411,8 @@ void KioskAppManager::OnReadImmutableAttributes(
 
   ConsumerKioskAutoLaunchStatus status =
       ConsumerKioskAutoLaunchStatus::kDisabled;
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   InstallAttributes* attributes = connector->GetInstallAttributes();
   switch (attributes->GetMode()) {
     case policy::DEVICE_MODE_NOT_SET: {
@@ -417,9 +451,9 @@ bool KioskAppManager::IsAutoLaunchRequested() const {
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged())
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (connector->IsDeviceEnterpriseManaged())
     return false;
 
   return GetAutoLoginState() == AutoLoginState::kRequested;
@@ -431,9 +465,9 @@ bool KioskAppManager::IsAutoLaunchEnabled() const {
 
   // Apps that were installed by the policy don't require machine owner
   // consent through UI.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->IsEnterpriseManaged())
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (connector->IsDeviceEnterpriseManaged())
     return true;
 
   return GetAutoLoginState() == AutoLoginState::kApproved;
@@ -454,8 +488,8 @@ void KioskAppManager::AddApp(const std::string& app_id,
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
 
   // Don't insert the app if it's already in the list.
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
         it->kiosk_app_id == app_id) {
@@ -466,9 +500,7 @@ void KioskAppManager::AddApp(const std::string& app_id,
   // Add the new account.
   device_local_accounts.push_back(policy::DeviceLocalAccount(
       policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-      GenerateKioskAppAccountId(app_id),
-      app_id,
-      std::string()));
+      GenerateKioskAppAccountId(app_id), app_id, std::string()));
 
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }
@@ -485,8 +517,8 @@ void KioskAppManager::RemoveApp(const std::string& app_id,
     return;
 
   // Remove entries that match |app_id|.
-  for (std::vector<policy::DeviceLocalAccount>::iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
         it->kiosk_app_id == app_id) {
@@ -564,69 +596,32 @@ bool KioskAppManager::GetCachedCrx(const std::string& app_id,
   return external_cache_->GetExtension(app_id, file_path, version);
 }
 
-void KioskAppManager::UpdatePrimaryAppLoaderPrefs(const std::string& id) {
-  primary_app_id_ = id;
-
-  if (primary_app_changed_handler_)
-    primary_app_changed_handler_.Run();
-}
-
-std::unique_ptr<base::DictionaryValue>
-KioskAppManager::GetPrimaryAppLoaderPrefs() {
-  if (!primary_app_id_.has_value())
-    return nullptr;
-
-  const std::string& id = primary_app_id_.value();
-  auto prefs = std::make_unique<base::DictionaryValue>();
-
-  const base::DictionaryValue* extension = nullptr;
-  if (external_cache_->GetCachedExtensions()->GetDictionary(id, &extension)) {
-    prefs->SetKey(id, extension->Clone());
-  } else {
-    LOG(ERROR) << "Can't find app in the cached externsions"
-               << " id = " << id;
+crosapi::mojom::AppInstallParams KioskAppManager::CreatePrimaryAppInstallData(
+    const std::string& id) const {
+  const base::Value::Dict* extension =
+      external_cache_->GetCachedExtensions().FindDict(id);
+  if (!extension) {
+    return crosapi::mojom::AppInstallParams(id, std::string(), std::string(),
+                                            false);
   }
-  return prefs;
-}
 
-void KioskAppManager::SetPrimaryAppLoaderPrefsChangedHandler(
-    base::RepeatingClosure handler) {
-  CHECK(handler.is_null() || primary_app_changed_handler_.is_null());
+  const absl::optional<bool> is_store_app_maybe =
+      extension->FindBool(extensions::ExternalProviderImpl::kIsFromWebstore);
+  const std::string* external_update_url_value = extension->FindString(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl);
+  bool is_store_app_bool = is_store_app_maybe.value_or(false) ||
+                           IsWebstoreUpdateUrl(external_update_url_value);
 
-  primary_app_changed_handler_ = std::move(handler);
-}
+  const std::string* crx_file_location =
+      extension->FindString(extensions::ExternalProviderImpl::kExternalCrx);
+  DCHECK(crx_file_location);
 
-void KioskAppManager::UpdateSecondaryAppsLoaderPrefs(
-    const std::vector<std::string>& ids) {
-  secondary_app_ids_ = ids;
+  const std::string* external_version =
+      extension->FindString(extensions::ExternalProviderImpl::kExternalVersion);
+  DCHECK(external_version);
 
-  if (secondary_apps_changed_handler_)
-    secondary_apps_changed_handler_.Run();
-}
-
-std::unique_ptr<base::DictionaryValue>
-KioskAppManager::GetSecondaryAppsLoaderPrefs() {
-  if (!secondary_app_ids_.has_value())
-    return nullptr;
-
-  auto prefs = std::make_unique<base::DictionaryValue>();
-  for (const std::string& id : secondary_app_ids_.value()) {
-    base::Value extension_entry(base::Value::Type::DICTIONARY);
-    extension_entry.SetKey(
-        extensions::ExternalProviderImpl::kExternalUpdateUrl,
-        base::Value(extension_urls::GetWebstoreUpdateUrl().spec()));
-    extension_entry.SetKey(extensions::ExternalProviderImpl::kIsFromWebstore,
-                           base::Value(true));
-    prefs->SetKey(id, std::move(extension_entry));
-  }
-  return prefs;
-}
-
-void KioskAppManager::SetSecondaryAppsLoaderPrefsChangedHandler(
-    base::RepeatingClosure handler) {
-  CHECK(handler.is_null() || secondary_apps_changed_handler_.is_null());
-
-  secondary_apps_changed_handler_ = std::move(handler);
+  return crosapi::mojom::AppInstallParams(id, *crx_file_location,
+                                          *external_version, is_store_app_bool);
 }
 
 void KioskAppManager::UpdateExternalCache() {
@@ -716,8 +711,10 @@ void KioskAppManager::CleanUp() {
   apps_.clear();
   usb_stick_updater_.reset();
   external_cache_.reset();
-  primary_app_id_.reset();
-  secondary_app_ids_.reset();
+
+  if (!app_session_)
+    return;
+  app_session_->ShuttingDown();
 }
 
 const KioskAppData* KioskAppManager::GetAppData(
@@ -749,8 +746,8 @@ void KioskAppManager::UpdateAppsFromPolicy() {
   // Re-populates |apps_| and reuses existing KioskAppData when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type != policy::DeviceLocalAccount::TYPE_KIOSK_APP)
       continue;
@@ -794,22 +791,23 @@ void KioskAppManager::UpdateAppsFromPolicy() {
 }
 
 void KioskAppManager::UpdateExternalCachePrefs() {
-  // Request external_cache_ to download new apps and update the existing apps.
-  std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
-  for (size_t i = 0; i < apps_.size(); ++i) {
-    std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
+  // Request external_cache_ to download new apps and update the existing
+  // apps.
+  base::Value::Dict prefs;
+  for (const auto& app : apps_) {
+    base::Value::Dict entry;
 
-    if (apps_[i]->update_url().is_valid()) {
-      entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                       apps_[i]->update_url().spec());
+    if (app->update_url().is_valid()) {
+      entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                app->update_url().spec());
     } else {
-      entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                       extension_urls::GetWebstoreUpdateUrl().spec());
+      entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                extension_urls::GetWebstoreUpdateUrl().spec());
     }
 
-    prefs->Set(apps_[i]->app_id(), std::move(entry));
+    prefs.SetByDottedPath(app->app_id(), std::move(entry));
   }
-  external_cache_->UpdateExtensionsList(std::move(prefs));
+  external_cache_->UpdateExtensionsListWithDict(std::move(prefs));
 }
 
 void KioskAppManager::OnExtensionLoadedInCache(
@@ -838,20 +836,20 @@ void KioskAppManager::OnExtensionDownloadFailed(
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
   PrefService* prefs = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
-      prefs->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  int value;
-  if (!dict->GetInteger(kKeyAutoLoginState, &value))
+  const base::Value::Dict& dict =
+      prefs->GetDict(KioskAppManager::kKioskDictionaryName);
+  absl::optional<int> value = dict.FindInt(kKeyAutoLoginState);
+  if (!value.has_value())
     return AutoLoginState::kNone;
 
-  return static_cast<AutoLoginState>(value);
+  return static_cast<AutoLoginState>(value.value());
 }
 
 void KioskAppManager::SetAutoLoginState(AutoLoginState state) {
   PrefService* prefs = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(prefs,
+  ScopedDictPrefUpdate dict_update(prefs,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetInteger(kKeyAutoLoginState, static_cast<int>(state));
+  dict_update->Set(kKeyAutoLoginState, static_cast<int>(state));
   prefs->CommitPendingWrite();
 }
 
@@ -861,7 +859,7 @@ base::TimeDelta KioskAppManager::GetAutoLaunchDelay() const {
           kAccountsPrefDeviceLocalAccountAutoLoginDelay, &delay)) {
     return base::TimeDelta();  // Default delay is 0ms.
   }
-  return base::TimeDelta::FromMilliseconds(delay);
+  return base::Milliseconds(delay);
 }
 
 }  // namespace ash

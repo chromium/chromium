@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include <string>
+#include <tuple>
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -82,8 +83,8 @@ void Die::LogToStderr(const char* msg, const char* file, int line) {
 
     // No need to loop. Short write()s are unlikely and if they happen we
     // probably prefer them over a loop that blocks.
-    ignore_result(
-        HANDLE_EINTR(Syscall::Call(__NR_write, 2, s.c_str(), s.length())));
+    std::ignore =
+        HANDLE_EINTR(Syscall::Call(__NR_write, 2, s.c_str(), s.length()));
   }
 }
 

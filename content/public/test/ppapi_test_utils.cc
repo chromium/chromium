@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/pepper_tcp_server_socket_message_filter.h"
@@ -17,7 +16,6 @@
 #include "content/browser/renderer_host/pepper/pepper_udp_socket_message_filter.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 
 using CharType = base::FilePath::CharType;
@@ -73,20 +71,6 @@ bool RegisterPluginWithDefaultMimeType(
   return RegisterPlugins(command_line, plugins);
 }
 
-bool RegisterFakePdfPluginLibrary(base::CommandLine* command_line,
-                                  const StringType& library_name) {
-  std::vector<PluginInfo> plugins;
-  // Register a fake PDF plugin with 100.0 version (to avoid outdated checks).
-  base::FilePath::StringType fake_pdf_parameter =
-      base::FilePath::FromUTF8Unsafe(std::string("#") + "Fake PDF" +
-                                     "#Description#100.0")
-          .value();
-  plugins.push_back(
-      PluginInfo(library_name, fake_pdf_parameter,
-                 FILE_PATH_LITERAL("application/x-fake-pdf-for-testing")));
-  return RegisterPlugins(command_line, plugins);
-}
-
 }  // namespace
 
 bool RegisterTestPlugin(base::CommandLine* command_line) {
@@ -97,33 +81,27 @@ bool RegisterTestPlugin(base::CommandLine* command_line) {
 bool RegisterTestPluginWithExtraParameters(
     base::CommandLine* command_line,
     const base::FilePath::StringType& extra_registration_parameters) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType plugin_library = L"ppapi_tests.dll";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::FilePath::StringType plugin_library = "ppapi_tests.plugin";
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath::StringType plugin_library = "libppapi_tests.so";
 #endif
   return RegisterPluginWithDefaultMimeType(command_line, plugin_library,
                                            extra_registration_parameters);
 }
 
-bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
-  StringType library_name =
-      base::FilePath::FromUTF8Unsafe(ppapi::kCorbTestPluginName).value();
-  return RegisterFakePdfPluginLibrary(command_line, library_name);
-}
-
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const CharType kPluginLibrary[] = L"blink_test_plugin.dll";
   static const CharType kDeprecatedPluginLibrary[] =
       L"blink_deprecated_test_plugin.dll";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   static const CharType kPluginLibrary[] = "blink_test_plugin.plugin";
   static const CharType kDeprecatedPluginLibrary[] =
       "blink_deprecated_test_plugin.plugin";
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   static const CharType kPluginLibrary[] = "libblink_test_plugin.so";
   static const CharType kDeprecatedPluginLibrary[] =
       "libblink_deprecated_test_plugin.so";

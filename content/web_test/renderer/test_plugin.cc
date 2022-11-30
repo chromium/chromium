@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common//shared_image_usage.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -253,7 +253,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     mailbox_ = sii->CreateSharedImage(
         viz::ResourceFormat::RGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY,
+        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         gpu::kNullSurfaceHandle);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -316,17 +316,17 @@ void TestPlugin::ReleaseSharedImage(
 bool TestPlugin::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
+    viz::ReleaseCallback* release_callback) {
   if (!content_changed_)
     return false;
   gfx::Size size(rect_.size());
   if (!mailbox_.IsZero()) {
-    *resource = viz::TransferableResource::MakeGL(
-        mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size,
+    *resource = viz::TransferableResource::MakeGpu(
+        mailbox_, GL_LINEAR, GL_TEXTURE_2D, sync_token_, size, viz::RGBA_8888,
         false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
-    *release_callback = viz::SingleReleaseCallback::Create(
-        base::BindOnce(&ReleaseSharedImage, context_provider_, mailbox_));
+    *release_callback =
+        base::BindOnce(&ReleaseSharedImage, context_provider_, mailbox_);
     mailbox_ = gpu::Mailbox();
     sync_token_ = gpu::SyncToken();
   } else if (shared_bitmap_) {
@@ -338,9 +338,9 @@ bool TestPlugin::PrepareTransferableResource(
 
     *resource = viz::TransferableResource::MakeSoftware(
         shared_bitmap_->id(), shared_bitmap_->size(), viz::RGBA_8888);
-    *release_callback = viz::SingleReleaseCallback::Create(
+    *release_callback =
         base::BindOnce(&ReleaseSharedMemory, std::move(shared_bitmap_),
-                       std::move(registration)));
+                       std::move(registration));
   }
   resource->size = size;
   content_changed_ = false;
@@ -574,6 +574,12 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
   const blink::WebInputEvent& event = coalesced_event.Event();
+
+  // Don't log gesture events, which aren't exposed to the Pepper API (see
+  // ClassifyInputEvent in content/renderer/pepper/event_conversion.cc).
+  if (blink::WebInputEvent::IsGestureEventType(event.GetType()))
+    return blink::WebInputEventResult::kNotHandled;
+
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
   if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
     event_name = "unknown";

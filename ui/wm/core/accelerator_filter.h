@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,23 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "ui/events/event_handler.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 class AcceleratorDelegate;
 
 // AcceleratorFilter filters key events for AcceleratorControler handling global
 // keyboard accelerators.
-class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
+class COMPONENT_EXPORT(UI_WM) AcceleratorFilter : public ui::EventHandler {
  public:
   // AcceleratorFilter doesn't own |accelerator_history|, it's owned by
   // AcceleratorController.
   explicit AcceleratorFilter(std::unique_ptr<AcceleratorDelegate> delegate);
+
+  AcceleratorFilter(const AcceleratorFilter&) = delete;
+  AcceleratorFilter& operator=(const AcceleratorFilter&) = delete;
+
   ~AcceleratorFilter() override;
 
   // If the return value is true, |event| should be filtered out.
@@ -31,8 +34,6 @@ class WM_CORE_EXPORT AcceleratorFilter : public ui::EventHandler {
 
  private:
   std::unique_ptr<AcceleratorDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceleratorFilter);
 };
 
 }  // namespace wm

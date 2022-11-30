@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class GURLAndroid {
   static base::android::ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfGURLs(
       JNIEnv* env,
       base::span<base::android::ScopedJavaLocalRef<jobject>> v);
+  static void JavaGURLArrayToGURLVector(
+      JNIEnv* env,
+      const base::android::JavaRef<jobjectArray>& gurl_array,
+      std::vector<GURL>* out);
 };
 
 }  // namespace url

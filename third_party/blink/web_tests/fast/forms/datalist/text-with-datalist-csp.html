@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>crbug.com/1225808: Datalist picker indicator should be shown even if CSP disallows inline style</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https:;style-src 'self';">
+</head>
+<body>
+<input autofocus list="datalist1" type="text">
+<datalist id="datalist1">
+<option value="value" label="label"></option>
+</datalist>
+</body>
+</html>

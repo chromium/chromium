@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,6 +47,9 @@ public class MessageCardProviderMediatorUnitTest {
     private Context mContext;
 
     @Mock
+    private Resources mResourcesMock;
+
+    @Mock
     private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
 
     @Mock
@@ -52,6 +57,13 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Mock
     private Supplier<Boolean> mIsIncognitoSupplier;
+
+    @Mock
+    private IphMessageService.IphMessageData mIphMessageData;
+
+    @Mock
+    private IncognitoReauthPromoMessageService
+            .IncognitoReauthMessageData mIncognitoReauthMessageData;
 
     @Before
     public void setUp() {
@@ -79,6 +91,15 @@ public class MessageCardProviderMediatorUnitTest {
                 when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 when(mPriceMessageData.getType()).thenReturn(PriceMessageType.PRICE_WELCOME);
                 mMediator.messageReady(type, mPriceMessageData);
+                break;
+            case MessageService.MessageType.IPH:
+                when(mIphMessageData.getDismissActionProvider()).thenReturn((messageType) -> {});
+                when(mIphMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(type, mIphMessageData);
+                break;
+            case MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE:
+                when(mIncognitoReauthMessageData.getReviewActionProvider()).thenReturn(() -> {});
+                mMediator.messageReady(type, mIncognitoReauthMessageData);
                 break;
             default:
                 mMediator.messageReady(type, new MessageService.MessageData() {});
@@ -322,6 +343,46 @@ public class MessageCardProviderMediatorUnitTest {
     }
 
     @Test
+    public void buildModel_ForIphMessage() {
+        enqueueMessageItem(MessageService.MessageType.IPH, -1);
+
+        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
+                                      .get(MessageService.MessageType.IPH)
+                                      .get(0)
+                                      .model;
+        Assert.assertEquals(
+                MessageService.MessageType.IPH, model.get(MessageCardViewProperties.MESSAGE_TYPE));
+    }
+
+    @Test
+    public void buildModel_ForIncognitoReauthPromoMessage() {
+        final int height = 1;
+        final int width = 2;
+        when(mResourcesMock.getDimensionPixelSize(
+                     R.dimen.incognito_reauth_promo_message_icon_height))
+                .thenReturn(height);
+        when(mResourcesMock.getDimensionPixelSize(
+                     R.dimen.incognito_reauth_promo_message_icon_width))
+                .thenReturn(width);
+        when(mContext.getResources()).thenReturn(mResourcesMock);
+
+        enqueueMessageItem(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, -1);
+
+        PropertyModel model =
+                mMediator.getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
+                        .get(0)
+                        .model;
+        Assert.assertEquals(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+                model.get(MessageCardViewProperties.MESSAGE_TYPE));
+        verify(mResourcesMock, times(1))
+                .getDimensionPixelSize(R.dimen.incognito_reauth_promo_message_icon_height);
+        verify(mResourcesMock, times(1))
+                .getDimensionPixelSize(R.dimen.incognito_reauth_promo_message_icon_width);
+        verify(mContext, times(2)).getResources();
+    }
+
+    @Test
     public void getMessageItemsTest_UpdateIncognito() {
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
@@ -349,5 +410,19 @@ public class MessageCardProviderMediatorUnitTest {
                 mMediator.getNextMessageItemForType(MessageService.MessageType.TAB_SUGGESTION)
                         .model;
         Assert.assertTrue(messageModel.get(MessageCardViewProperties.IS_INCOGNITO));
+    }
+
+    @Test
+    public void isMessageShownTest() {
+        Assert.assertFalse(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        enqueueMessageItem(MessageService.MessageType.PRICE_MESSAGE, -1);
+        // Mock pulling this message, which will move the message from mMessageItems to
+        // mShownMessageItems.
+        mMediator.getNextMessageItemForType(MessageService.MessageType.PRICE_MESSAGE);
+        Assert.assertTrue(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        Assert.assertFalse(mMediator.isMessageShown(
+                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
     }
 }

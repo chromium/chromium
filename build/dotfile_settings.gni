@@ -1,4 +1,4 @@
-# Copyright (c) 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,7 +25,6 @@ build_dotfile_settings = {
     "//build/config/mac/mac_sdk.gni",
     "//build/config/mac/rules.gni",
     "//build/config/posix/BUILD.gn",
-    "//build/config/python.gni",
     "//build/config/sysroot.gni",
     "//build/config/win/BUILD.gn",
     "//build/config/win/visual_studio_version.gni",
@@ -37,7 +36,8 @@ build_dotfile_settings = {
     "//build/toolchain/nacl/BUILD.gn",
     "//build/toolchain/toolchain.gni",
     "//build/toolchain/win/BUILD.gn",
+    "//build/toolchain/win/toolchain.gni",
+    "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
-    "//build/util/version.gni",
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp.search;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -54,7 +53,7 @@ public class SearchBoxCoordinator {
     }
 
     public void destroy() {
-        mMediator.destroy();
+        mMediator.onDestroy();
     }
 
     public void setAlpha(float alpha) {
@@ -69,8 +68,8 @@ public class SearchBoxCoordinator {
         mModel.set(SearchBoxProperties.VISIBILITY, visible);
     }
 
-    public void setSearchText(String text, boolean fromQueryTiles) {
-        mModel.set(SearchBoxProperties.SEARCH_TEXT, Pair.create(text, fromQueryTiles));
+    public void setSearchText(String text) {
+        mModel.set(SearchBoxProperties.SEARCH_TEXT, text);
     }
 
     public void setSearchBoxClickListener(OnClickListener listener) {
@@ -101,19 +100,6 @@ public class SearchBoxCoordinator {
         mMediator.addLensButtonClickListener(listener);
     }
 
-    public void setChipText(String chipText) {
-        mMediator.setChipText(chipText);
-    }
-
-    public void setChipDelegate(SearchBoxChipDelegate chipDelegate) {
-        mMediator.setChipDelegate(chipDelegate);
-    }
-
-    public boolean isTextChangeFromTiles() {
-        Pair<String, Boolean> searchText = mModel.get(SearchBoxProperties.SEARCH_TEXT);
-        return searchText == null ? false : searchText.second;
-    }
-
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
         return mMediator.isLensEnabled(
                 lensEntryPoint, mIsIncognito, DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
@@ -125,5 +111,33 @@ public class SearchBoxCoordinator {
 
     public void setIncognitoMode(boolean isIncognito) {
         mIsIncognito = isIncognito;
+    }
+
+    public void setHeight(int height) {
+        mMediator.setHeight(height);
+    }
+
+    public void setTopMargin(int topMargin) {
+        mMediator.setTopMargin(topMargin);
+    }
+
+    public void setEndPadding(int endPadding) {
+        mMediator.setEndPadding(endPadding);
+    }
+
+    public void setTextViewTranslationX(float translationX) {
+        mMediator.setTextViewTranslationX(translationX);
+    }
+
+    public void setButtonsHeight(int height) {
+        mMediator.setButtonsHeight(height);
+    }
+
+    public void setButtonsWidth(int width) {
+        mMediator.setButtonsWidth(width);
+    }
+
+    public void setLensButtonLeftMargin(int leftMargin) {
+        mMediator.setLensButtonLeftMargin(leftMargin);
     }
 }

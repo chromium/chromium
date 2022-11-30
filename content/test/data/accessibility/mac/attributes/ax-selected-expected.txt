@@ -1,0 +1,2 @@
+selected_option.accessibilityAttributeNames.has(AXSelected)='yes'
+div.accessibilityAttributeNames.has(AXSelected)='yes'

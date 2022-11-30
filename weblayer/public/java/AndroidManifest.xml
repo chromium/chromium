@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
- -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.weblayer.client">
@@ -12,6 +13,18 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!--
+      Bluetooth scanning is used to implement the Web Bluetooth API, which is
+      not intended to allow sites to derive location and so can accept a
+      filtered view of devices.
+    -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN"
+                            android:usesPermissionFlags="neverForLocation"/>
+
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -22,6 +35,21 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!-- Augmented reality support.
+         A note to clients: for AR to work, there must be manifest entries present for
+         com.google.ar.core and com.google.ar.core.min_apk_version. These can be merged
+         from the arcore client library or added manually. If being added manually,
+         the following is recommended:
+
+           <meta-data android:name="com.google.ar.core"
+                      android:value="optional" />
+           <meta-data android:name="com.google.ar.core.min_apk_version"
+                      android:value="1" />
+    -->
+    <queries>
+        <package android:name="com.google.ar.core" />
+    </queries>
 
     <application>
         <!-- The following service entries exist in order to allow us to
@@ -115,15 +143,25 @@
             </intent-filter>
         </service>
 
+        <!-- GooglePay payment app support -->
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
+
+        <!-- Service used by payment apps to notify the browser about changes in user selected
+             payment method, shipping address, or shipping option. -->
+        <service
+            android:name="org.chromium.weblayer.PaymentDetailsUpdateServiceWrapper"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+            </intent-filter>
+        </service>
+
         <!-- Cast support -->
         <!-- TODO(crbug.com/1148410): remove this. -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
-
-        <!-- GooglePay payment app support -->
-        <meta-data
-            android:name="com.google.android.gms.wallet.api.enabled"
-            android:value="true" />
     </application>
 </manifest>

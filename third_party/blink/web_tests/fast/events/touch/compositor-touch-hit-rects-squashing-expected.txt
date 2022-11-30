@@ -2,8 +2,8 @@ This test verifies the hit test regions given to the compositor for composited l
 
 behind: layer(52x52) has hit test rect (0,0 52x52)
 
-middle: layer(132x132) has hit test rect (0,0 52x52)
+middle: layer(52x52) has hit test rect (0,0 52x52)
 
-top: layer(132x132) has hit test rect (80,80 52x52)
+top: layer(52x52) has hit test rect (0,0 52x52)
 
 

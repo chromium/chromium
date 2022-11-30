@@ -1,0 +1,10 @@
+include_rules = [
+  "+chromeos/ash/components/network",
+  "+chromeos/login",
+  "+components/device_event_log",
+  "+components/onc",
+  "+components/user_manager",
+  "+dbus",
+  "+third_party/cros_system_api/dbus/service_constants.h",
+  "+third_party/cros_system_api/dbus/shill",
+]

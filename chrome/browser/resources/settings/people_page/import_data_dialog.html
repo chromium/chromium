@@ -51,31 +51,41 @@
             </template>
           </select>
           <div class="description">$i18n{importDescription}</div>
-          <settings-checkbox id="importDialogHistory"
-              hidden="[[!selected_.history]]"
-              pref="{{prefs.import_dialog_history}}"
-              label="$i18n{importHistory}" no-set-pref>
-          </settings-checkbox>
-          <settings-checkbox id="importDialogBookmarks"
-              hidden="[[!selected_.favorites]]"
-              pref="{{prefs.import_dialog_bookmarks}}"
-              label="$i18n{importFavorites}" no-set-pref>
-          </settings-checkbox>
-          <settings-checkbox id="importDialogSavedPasswords"
-              hidden="[[!selected_.passwords]]"
-              pref="{{prefs.import_dialog_saved_passwords}}"
-              label="$i18n{importPasswords}" no-set-pref>
-          </settings-checkbox>
-          <settings-checkbox id="importDialogSearchEngine"
-              hidden="[[!selected_.search]]"
-              pref="{{prefs.import_dialog_search_engine}}"
-              label="$i18n{importSearch}" no-set-pref>
-          </settings-checkbox>
-          <settings-checkbox id="importDialogAutofillFormData"
-              hidden="[[!selected_.autofillFormData]]"
-              pref="{{prefs.import_dialog_autofill_form_data}}"
-              label="$i18n{importAutofillFormData}" no-set-pref>
-          </settings-checkbox>
+
+          <!--
+            A parent div is needed here to prevent bugs caused by elements
+            becoming hidden interfering with NVDA reading out changes to the
+            select menu. The checkboxes just need to have a different parent
+            than the select menu.
+            See https://github.com/nvaccess/nvda/issues/13116.
+          -->
+          <div>
+            <settings-checkbox id="importDialogHistory"
+                hidden="[[!selected_.history]]"
+                pref="{{prefs.import_dialog_history}}"
+                label="$i18n{importHistory}" no-set-pref>
+            </settings-checkbox>
+            <settings-checkbox id="importDialogBookmarks"
+                hidden="[[!selected_.favorites]]"
+                pref="{{prefs.import_dialog_bookmarks}}"
+                label="$i18n{importFavorites}" no-set-pref>
+            </settings-checkbox>
+            <settings-checkbox id="importDialogSavedPasswords"
+                hidden="[[!selected_.passwords]]"
+                pref="{{prefs.import_dialog_saved_passwords}}"
+                label="$i18n{importPasswords}" no-set-pref>
+            </settings-checkbox>
+            <settings-checkbox id="importDialogSearchEngine"
+                hidden="[[!selected_.search]]"
+                pref="{{prefs.import_dialog_search_engine}}"
+                label="$i18n{importSearch}" no-set-pref>
+            </settings-checkbox>
+            <settings-checkbox id="importDialogAutofillFormData"
+                hidden="[[!selected_.autofillFormData]]"
+                pref="{{prefs.import_dialog_autofill_form_data}}"
+                label="$i18n{importAutofillFormData}" no-set-pref>
+            </settings-checkbox>
+          </div>
         </div>
       </div>
       <div slot="button-container">

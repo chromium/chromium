@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,32 +25,16 @@
 
 namespace favicon {
 
-// static
-void WebFaviconDriver::CreateForWebState(web::WebState* web_state,
-                                         CoreFaviconService* favicon_service) {
-  if (FromWebState(web_state))
-    return;
-
-  web_state->SetUserData(UserDataKey(), base::WrapUnique(new WebFaviconDriver(
-                                            web_state, favicon_service)));
-}
-
 gfx::Image WebFaviconDriver::GetFavicon() const {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  return item ? item->GetFavicon().image : gfx::Image();
+  return web_state_->GetFaviconStatus().image;
 }
 
 bool WebFaviconDriver::FaviconIsValid() const {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  return item ? item->GetFavicon().valid : false;
+  return web_state_->GetFaviconStatus().valid;
 }
 
 GURL WebFaviconDriver::GetActiveURL() {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  return item ? item->GetURL() : GURL();
+  return web_state_->GetLastCommittedURL();
 }
 
 int WebFaviconDriver::DownloadImage(const GURL& url,
@@ -75,6 +59,7 @@ int WebFaviconDriver::DownloadImage(const GURL& url,
           for (const auto& frame : frames) {
             sizes.push_back(gfx::Size(frame.width(), frame.height()));
           }
+          DCHECK_EQ(frames.size(), sizes.size());
         }
         std::move(local_callback)
             .Run(local_download_id, metadata.http_response_code, local_url,
@@ -101,41 +86,20 @@ void WebFaviconDriver::OnFaviconUpdated(
     const GURL& icon_url,
     bool icon_url_changed,
     const gfx::Image& image) {
-  // Check whether the active URL has changed since FetchFavicon() was called.
-  // On iOS, the active URL can change between calls to FetchFavicon(). For
-  // instance, FetchFavicon() is not synchronously called when the active URL
-  // changes as a result of CRWSessionController::goToEntry().
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetVisibleItem();
-  if (!item || item->GetURL() != page_url)
-    return;
-
-  web::FaviconStatus& favicon_status = item->GetFavicon();
+  web::FaviconStatus favicon_status;
   favicon_status.valid = true;
   favicon_status.image = image;
   favicon_status.url = icon_url;
 
-  NotifyFaviconUpdatedObservers(notification_icon_type, icon_url,
-                                icon_url_changed, image);
+  SetFaviconStatus(page_url, favicon_status, notification_icon_type,
+                   icon_url_changed);
 }
 
 void WebFaviconDriver::OnFaviconDeleted(
     const GURL& page_url,
     FaviconDriverObserver::NotificationIconType notification_icon_type) {
-  // Check whether the active URL has changed since FetchFavicon() was called.
-  // On iOS, the active URL can change between calls to FetchFavicon(). For
-  // instance, FetchFavicon() is not synchronously called when the active URL
-  // changes as a result of CRWSessionController::goToEntry().
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetVisibleItem();
-  if (!item || item->GetURL() != page_url)
-    return;
-
-  item->GetFavicon() = web::FaviconStatus();
-
-  NotifyFaviconUpdatedObservers(notification_icon_type, /*icon_url=*/GURL(),
-                                /*icon_url_changed=*/true,
-                                item->GetFavicon().image);
+  SetFaviconStatus(page_url, web::FaviconStatus(), notification_icon_type,
+                   /*icon_url_changed=*/true);
 }
 
 WebFaviconDriver::WebFaviconDriver(web::WebState* web_state,
@@ -173,6 +137,23 @@ void WebFaviconDriver::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void WebFaviconDriver::SetFaviconStatus(
+    const GURL& page_url,
+    const web::FaviconStatus& favicon_status,
+    FaviconDriverObserver::NotificationIconType notification_icon_type,
+    bool icon_url_changed) {
+  // Check whether the active URL has changed since FetchFavicon() was called.
+  // On iOS, the active URL can change between calls to FetchFavicon(). For
+  // instance, FetchFavicon() is not synchronously called when the active URL
+  // changes as a result of CRWSessionController::goToEntry().
+  if (web_state_->GetLastCommittedURL() != page_url)
+    return;
+
+  web_state_->SetFaviconStatus(favicon_status);
+  NotifyFaviconUpdatedObservers(notification_icon_type, favicon_status.url,
+                                icon_url_changed, favicon_status.image);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WebFaviconDriver)

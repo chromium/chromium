@@ -1,0 +1,78 @@
+From 740c39a00040ae0dd3c7fe46f2962ffafc5dbd1a Mon Sep 17 00:00:00 2001
+From: Rohit Rao <rohitrao@chromium.org>
+Date: Thu, 25 Aug 2022 16:03:07 -0400
+Subject: [PATCH] Replace usage of sprintf with snprintf.
+
+---
+ third_party/libzip/src/lib/zip_error_strerror.c        |  7 ++++---
+ .../libzip/src/lib/zip_source_file_stdio_named.c       | 10 ++++++----
+ 2 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/third_party/libzip/src/lib/zip_error_strerror.c b/third_party/libzip/src/lib/zip_error_strerror.c
+index 93b24eab1786e..895a51e6fa63a 100644
+--- a/third_party/libzip/src/lib/zip_error_strerror.c
++++ b/third_party/libzip/src/lib/zip_error_strerror.c
+@@ -48,7 +48,7 @@ zip_error_strerror(zip_error_t *err) {
+     zip_error_fini(err);
+ 
+     if (err->zip_err < 0 || err->zip_err >= _zip_nerr_str) {
+-	sprintf(buf, "Unknown error %d", err->zip_err);
++	snprintf(buf, 128, "Unknown error %d", err->zip_err);
+ 	zs = NULL;
+ 	ss = buf;
+     }
+@@ -72,10 +72,11 @@ zip_error_strerror(zip_error_t *err) {
+     if (ss == NULL)
+ 	return zs;
+     else {
+-	if ((s = (char *)malloc(strlen(ss) + (zs ? strlen(zs) + 2 : 0) + 1)) == NULL)
++	size_t length = strlen(ss) + (zs ? strlen(zs) + 2 : 0) + 1;
++	if ((s = (char *)malloc(length)) == NULL)
+ 	    return _zip_err_str[ZIP_ER_MEMORY];
+ 
+-	sprintf(s, "%s%s%s", (zs ? zs : ""), (zs ? ": " : ""), ss);
++	snprintf(s, length, "%s%s%s", (zs ? zs : ""), (zs ? ": " : ""), ss);
+ 	err->str = s;
+ 
+ 	return s;
+diff --git a/third_party/libzip/src/lib/zip_source_file_stdio_named.c b/third_party/libzip/src/lib/zip_source_file_stdio_named.c
+index dae8177c49697..97c1301ab460d 100644
+--- a/third_party/libzip/src/lib/zip_source_file_stdio_named.c
++++ b/third_party/libzip/src/lib/zip_source_file_stdio_named.c
+@@ -129,7 +129,8 @@ _zip_stdio_op_create_temp_output(zip_source_file_context_t *ctx) {
+     FILE *tfp;
+     struct stat st;
+ 
+-    if ((temp = (char *)malloc(strlen(ctx->fname) + 8)) == NULL) {
++    size_t temp_size = strlen(ctx->fname) + 8;
++    if ((temp = (char *)malloc(temp_size)) == NULL) {
+ 	zip_error_set(&ctx->error, ZIP_ER_MEMORY, 0);
+ 	return -1;
+     }
+@@ -141,7 +142,7 @@ _zip_stdio_op_create_temp_output(zip_source_file_context_t *ctx) {
+ 	mode = -1;
+     }
+ 
+-    sprintf(temp, "%s.XXXXXX", ctx->fname);
++    snprintf(temp, temp_size, "%s.XXXXXX", ctx->fname);
+ 
+     if ((tfd = _zip_mkstempm(temp, mode)) == -1) {
+ 	zip_error_set(&ctx->error, ZIP_ER_TMPOPEN, errno);
+@@ -174,11 +175,12 @@ _zip_stdio_op_create_temp_output_cloning(zip_source_file_context_t *ctx, zip_uin
+ 	return -1;
+     }
+ 
+-    if ((temp = (char *)malloc(strlen(ctx->fname) + 8)) == NULL) {
++    size_t temp_size = strlen(ctx->fname) + 8;
++    if ((temp = (char *)malloc(temp_size)) == NULL) {
+ 	zip_error_set(&ctx->error, ZIP_ER_MEMORY, 0);
+ 	return -1;
+     }
+-    sprintf(temp, "%s.XXXXXX", ctx->fname);
++    snprintf(temp, temp_size, "%s.XXXXXX", ctx->fname);
+ 
+ #ifdef HAVE_CLONEFILE
+ #ifndef __clang_analyzer__
+-- 
+2.37.2.672.g94769d06f0-goog
+

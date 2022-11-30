@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,14 +87,14 @@ Measurement MeasurementTimers::GetAsMeasurement(
             wall_time_);  // At least wall_time_ has been set.
 
   if (!base::ThreadTicks::IsSupported()) {
-    cpu_time_ = base::TimeDelta::FromMicroseconds(-1);
+    cpu_time_ = base::Microseconds(-1);
   }
   int64_t gpu_time = -1;
   if (gpu_timer_.get() != nullptr && gpu_timer_->IsAvailable()) {
     gpu_time = gpu_timer_->GetDeltaElapsed();
   }
   return Measurement(metric_basename, wall_time_, cpu_time_,
-                     base::TimeDelta::FromMicroseconds(gpu_time));
+                     base::Microseconds(gpu_time));
 }
 
 MeasurementTimers::~MeasurementTimers() {

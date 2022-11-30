@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,19 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
   MockGpuMemoryBufferManager();
 
+  MockGpuMemoryBufferManager(const MockGpuMemoryBufferManager&) = delete;
+  MockGpuMemoryBufferManager& operator=(const MockGpuMemoryBufferManager&) =
+      delete;
+
   ~MockGpuMemoryBufferManager() override;
 
-  MOCK_METHOD4(
-      CreateGpuMemoryBuffer,
-      std::unique_ptr<gfx::GpuMemoryBuffer>(const gfx::Size& size,
-                                            gfx::BufferFormat format,
-                                            gfx::BufferUsage usage,
-                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD5(CreateGpuMemoryBuffer,
+               std::unique_ptr<gfx::GpuMemoryBuffer>(
+                   const gfx::Size& size,
+                   gfx::BufferFormat format,
+                   gfx::BufferUsage usage,
+                   gpu::SurfaceHandle surface_handle,
+                   base::WaitableEvent* shutdown_event));
 
   MOCK_METHOD2(SetDestructionSyncToken,
                void(gfx::GpuMemoryBuffer* buffer,
@@ -43,10 +48,8 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGpuMemoryBufferManager);
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event);
 };
 
 }  // namespace unittest_internal

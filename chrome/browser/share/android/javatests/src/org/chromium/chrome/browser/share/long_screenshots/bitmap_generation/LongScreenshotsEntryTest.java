@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -23,16 +23,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 
 /** Tests for the LongScreenshotsEntry. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
 public class LongScreenshotsEntryTest {
     @Mock
     private Context mContext;
@@ -101,9 +98,7 @@ public class LongScreenshotsEntryTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, 100, 0, 1000));
-        when(mBoundsManager.calculateBoundsRelativeToCapture(any(Rect.class)))
-                .thenReturn(new Rect(0, 100, 0, 500));
+        when(mBoundsManager.getCaptureBounds()).thenReturn(new Rect(0, -1, 0, 1000));
     }
 
     @Test
@@ -123,6 +118,7 @@ public class LongScreenshotsEntryTest {
 
         assertEquals(mTestBitmap, entry.getBitmap());
         assertEquals(EntryStatus.BITMAP_GENERATED, entryListener.getReturnedStatus());
+        entry.destroy();
     }
 
     @Test
@@ -143,5 +139,24 @@ public class LongScreenshotsEntryTest {
 
         assertNull(entry.getBitmap());
         assertEquals(EntryStatus.GENERATION_ERROR, entryListener.getReturnedStatus());
+        assertNotEquals(-1, entry.getId());
+        entry.destroy();
+    }
+
+    @Test
+    public void testCreateEntryWithStatus() {
+        LongScreenshotsEntry entry =
+                LongScreenshotsEntry.createEntryWithStatus(EntryStatus.INSUFFICIENT_MEMORY);
+        assertEquals(-1, entry.getId());
+        assertEquals(-1, entry.getEndYAxis());
+        assertEquals(EntryStatus.INSUFFICIENT_MEMORY, entry.getStatus());
+        assertNull(entry.getBitmap());
+        entry.generateBitmap();
+        assertEquals(EntryStatus.GENERATION_ERROR, entry.getStatus());
+        entry.destroy();
+
+        entry = LongScreenshotsEntry.createEntryWithStatus(EntryStatus.BOUNDS_ABOVE_CAPTURE);
+        assertEquals(EntryStatus.BOUNDS_ABOVE_CAPTURE, entry.getStatus());
+        entry.destroy();
     }
 }

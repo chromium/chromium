@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,11 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -65,13 +66,15 @@ public class MultiInstanceMigrationTest {
         FileUtils.recursivelyDeleteFile(
                 TabStateDirectory.getOrCreateBaseStateDirectory(), FileUtils.DELETE_ALL);
         TabbedModeTabPersistencePolicy.resetMigrationTaskForTesting();
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
     private void buildPersistentStoreAndWaitForMigration() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             MockTabModelSelector selector = new MockTabModelSelector(0, 0, null);
             TabbedModeTabPersistencePolicy persistencePolicy =
-                    new TabbedModeTabPersistencePolicy(0, false);
+                    new TabbedModeTabPersistencePolicy(0, false, true,
+                            TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
             TabPersistentStore store = new TabPersistentStore(persistencePolicy, selector, null);
             store.waitForMigrationToFinish();
         });
@@ -85,7 +88,7 @@ public class MultiInstanceMigrationTest {
     @Feature({"TabPersistentStore"})
     public void testMigrateData() throws IOException {
         // Write old state files.
-        File[] stateDirs = createOldStateDirs(TabWindowManager.MAX_SIMULTANEOUS_SELECTORS, true);
+        File[] stateDirs = createOldStateDirs(TabWindowManager.MAX_SELECTORS_LEGACY, true);
         File stateFile0 = new File(
                 stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
         File stateFile1 = new File(
@@ -185,7 +188,7 @@ public class MultiInstanceMigrationTest {
     /**
      * Tests that the state file migration skips unrelated files. Also tests that migration works
      * if the number of tab state subdirectories to migrate is less than
-     * {@code TabWindowManager.MAX_SIMULTANEOUS_SELECTORS}
+     * {@code TabWindowManagerSingleton.getMaxSimultaneousSelectors()}
      */
     @Test
     @MediumTest
@@ -304,9 +307,11 @@ public class MultiInstanceMigrationTest {
     @Test
     @MediumTest
     @Feature({"TabPersistentStore"})
-    public void testNewMetataFileExists() throws IOException {
+    public void testNewMetataFileExists() throws Exception {
         // Set up two old metadata files.
-        File[] stateDirs = createOldStateDirs(TabWindowManager.MAX_SIMULTANEOUS_SELECTORS, true);
+        int maxCount = TestThreadUtils.runOnUiThreadBlocking(
+                () -> TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
+        File[] stateDirs = createOldStateDirs(maxCount, true);
         File stateFile0 = new File(
                 stateDirs[0], TabbedModeTabPersistencePolicy.LEGACY_SAVED_STATE_FILE);
         File stateFile1 = new File(

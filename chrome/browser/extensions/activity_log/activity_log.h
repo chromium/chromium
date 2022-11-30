@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread.h"
@@ -53,6 +53,9 @@ class ActivityLog : public BrowserContextKeyedAPI,
    public:
     virtual void OnExtensionActivity(scoped_refptr<Action> activity) = 0;
   };
+
+  ActivityLog(const ActivityLog&) = delete;
+  ActivityLog& operator=(const ActivityLog&) = delete;
 
   static BrowserContextKeyedAPIFactory<ActivityLog>* GetFactoryInstance();
 
@@ -190,12 +193,12 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // The database policy object takes care of recording & looking up data:
   // data summarization, compression, and logging. There should only be a
   // database_policy_ if the Watchdog app is installed or flag is set.
-  ActivityLogDatabasePolicy* database_policy_;
+  raw_ptr<ActivityLogDatabasePolicy> database_policy_;
   ActivityLogPolicy::PolicyType database_policy_type_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  ExtensionSystem* extension_system_;
+  raw_ptr<ExtensionSystem> extension_system_;
 
   bool db_enabled_;  // Whether logging to disk is currently enabled.
   // testing_mode_ controls which policy is selected.
@@ -240,7 +243,6 @@ class ActivityLog : public BrowserContextKeyedAPI,
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, NoSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, PrefSwitch);
   FRIEND_TEST_ALL_PREFIXES(ActivityLogEnabledTest, WatchdogSwitch);
-  DISALLOW_COPY_AND_ASSIGN(ActivityLog);
 };
 
 template <>

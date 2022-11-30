@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/third_party_host_authenticator.h"
@@ -44,6 +43,11 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
       scoped_refptr<TokenValidatorFactory> token_validator_factory);
 
   Me2MeHostAuthenticatorFactory();
+
+  Me2MeHostAuthenticatorFactory(const Me2MeHostAuthenticatorFactory&) = delete;
+  Me2MeHostAuthenticatorFactory& operator=(
+      const Me2MeHostAuthenticatorFactory&) = delete;
+
   ~Me2MeHostAuthenticatorFactory() override;
 
   // AuthenticatorFactory interface.
@@ -66,8 +70,6 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
 
   // Used only for pairing host authenticators.
   scoped_refptr<PairingRegistry> pairing_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(Me2MeHostAuthenticatorFactory);
 };
 
 }  // namespace protocol

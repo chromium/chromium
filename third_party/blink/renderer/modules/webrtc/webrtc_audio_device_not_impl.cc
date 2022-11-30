@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ int32_t WebRtcAudioDeviceNotImpl::InitSpeaker() {
 }
 
 bool WebRtcAudioDeviceNotImpl::SpeakerIsInitialized() const {
-  return 0;
+  return false;
 }
 
 int32_t WebRtcAudioDeviceNotImpl::InitMicrophone() {
@@ -74,7 +74,7 @@ int32_t WebRtcAudioDeviceNotImpl::InitMicrophone() {
 }
 
 bool WebRtcAudioDeviceNotImpl::MicrophoneIsInitialized() const {
-  return 0;
+  return false;
 }
 
 int32_t WebRtcAudioDeviceNotImpl::SpeakerVolumeIsAvailable(bool* available) {
@@ -98,6 +98,24 @@ int32_t WebRtcAudioDeviceNotImpl::MinSpeakerVolume(uint32_t* min_volume) const {
 }
 
 int32_t WebRtcAudioDeviceNotImpl::MicrophoneVolumeIsAvailable(bool* available) {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::SetMicrophoneVolume(uint32_t volume) {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MicrophoneVolume(uint32_t* volume) const {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MaxMicrophoneVolume(
+    uint32_t* max_volume) const {
+  return 0;
+}
+
+int32_t WebRtcAudioDeviceNotImpl::MinMicrophoneVolume(
+    uint32_t* min_volume) const {
   return 0;
 }
 
@@ -177,7 +195,7 @@ int32_t WebRtcAudioDeviceNotImpl::EnableBuiltInNS(bool enable) {
   return 0;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 int WebRtcAudioDeviceNotImpl::GetPlayoutAudioParameters(
     AudioParameters* params) const {
   return 0;
@@ -187,6 +205,6 @@ int WebRtcAudioDeviceNotImpl::GetRecordAudioParameters(
     AudioParameters* params) const {
   return 0;
 }
-#endif  // OS_IOS
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace blink

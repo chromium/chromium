@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <stddef.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace query_tiles {
 class TileService;
@@ -56,7 +57,7 @@ class QueryTileProvider : public AutocompleteProvider {
   // Callback invoked in response to fetching subtiles of a selected query tile
   // from TileService.
   void OnSubTilesFetched(const AutocompleteInput& input,
-                         base::Optional<query_tiles::Tile> tile);
+                         absl::optional<query_tiles::Tile> tile);
 
   // For the given |input| and optionally a selected tile denoted by
   // |tile_query_text|, checks if a suggestion should be shown. If yes, builds a
@@ -65,11 +66,10 @@ class QueryTileProvider : public AutocompleteProvider {
                        const std::string& tile_query_text,
                        std::vector<query_tiles::Tile> tiles);
 
-  AutocompleteProviderClient* const client_;
-  AutocompleteProviderListener* const listener_;
+  const raw_ptr<AutocompleteProviderClient> client_;
 
   // The backend providing query tiles.
-  query_tiles::TileService* const tile_service_;
+  const raw_ptr<query_tiles::TileService> tile_service_;
 
   base::WeakPtrFactory<QueryTileProvider> weak_ptr_factory_{this};
 };

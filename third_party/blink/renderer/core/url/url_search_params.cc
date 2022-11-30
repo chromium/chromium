@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequencesequence_usvstringusvstringrecord.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
@@ -18,7 +19,8 @@ namespace blink {
 namespace {
 
 class URLSearchParamsIterationSource final
-    : public PairIterable<String, String>::IterationSource {
+    : public PairIterable<String, IDLString, String, IDLString>::
+          IterationSource {
  public:
   explicit URLSearchParamsIterationSource(URLSearchParams* params)
       : params_(params), current_(0) {}
@@ -38,12 +40,13 @@ class URLSearchParamsIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(params_);
-    PairIterable<String, String>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, String, IDLString>::IterationSource::Trace(
+        visitor);
   }
 
  private:
   Member<URLSearchParams> params_;
-  size_t current_;
+  wtf_size_t current_;
 };
 
 bool CompareParams(const std::pair<String, String>& a,
@@ -53,25 +56,25 @@ bool CompareParams(const std::pair<String, String>& a,
 
 }  // namespace
 
-URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit& init,
+URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
                                          ExceptionState& exception_state) {
-  if (init.IsUSVString()) {
-    const String& query_string = init.GetAsUSVString();
-    if (query_string.StartsWith('?'))
-      return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
-    return MakeGarbageCollected<URLSearchParams>(query_string);
+  DCHECK(init);
+  switch (init->GetContentType()) {
+    case URLSearchParamsInit::ContentType::kUSVString: {
+      const String& query_string = init->GetAsUSVString();
+      if (query_string.StartsWith('?'))
+        return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
+      return MakeGarbageCollected<URLSearchParams>(query_string);
+    }
+    case URLSearchParamsInit::ContentType::kUSVStringSequenceSequence:
+      return URLSearchParams::Create(init->GetAsUSVStringSequenceSequence(),
+                                     exception_state);
+    case URLSearchParamsInit::ContentType::kUSVStringUSVStringRecord:
+      return URLSearchParams::Create(init->GetAsUSVStringUSVStringRecord(),
+                                     exception_state);
   }
-  if (init.IsUSVStringUSVStringRecord()) {
-    return URLSearchParams::Create(init.GetAsUSVStringUSVStringRecord(),
-                                   exception_state);
-  }
-  if (init.IsUSVStringSequenceSequence()) {
-    return URLSearchParams::Create(init.GetAsUSVStringSequenceSequence(),
-                                   exception_state);
-  }
-
-  DCHECK(init.IsNull());
-  return MakeGarbageCollected<URLSearchParams>(String());
+  NOTREACHED();
+  return nullptr;
 }
 
 URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
@@ -94,7 +97,7 @@ URLSearchParams* URLSearchParams::Create(const Vector<Vector<String>>& init,
 
 URLSearchParams::URLSearchParams(const String& query_string, DOMURL* url_object)
     : url_object_(url_object) {
-  if (!query_string.IsEmpty())
+  if (!query_string.empty())
     SetInputWithoutUpdate(query_string);
 }
 
@@ -102,7 +105,7 @@ URLSearchParams* URLSearchParams::Create(
     const Vector<std::pair<String, String>>& init,
     ExceptionState& exception_state) {
   URLSearchParams* instance = MakeGarbageCollected<URLSearchParams>(String());
-  if (init.IsEmpty())
+  if (init.empty())
     return instance;
   for (const auto& item : init)
     instance->AppendWithoutUpdate(item.first, item.second);
@@ -142,15 +145,15 @@ static String DecodeString(String input) {
 void URLSearchParams::SetInputWithoutUpdate(const String& query_string) {
   params_.clear();
 
-  size_t start = 0;
-  size_t query_string_length = query_string.length();
+  wtf_size_t start = 0;
+  wtf_size_t query_string_length = query_string.length();
   while (start < query_string_length) {
-    size_t name_start = start;
-    size_t name_value_end = query_string.find('&', start);
+    wtf_size_t name_start = start;
+    wtf_size_t name_value_end = query_string.find('&', start);
     if (name_value_end == kNotFound)
       name_value_end = query_string_length;
     if (name_value_end > start) {
-      size_t end_of_name = query_string.find('=', start);
+      wtf_size_t end_of_name = query_string.find('=', start);
       if (end_of_name == kNotFound || end_of_name > name_value_end)
         end_of_name = name_value_end;
       String name = DecodeString(
@@ -184,7 +187,7 @@ void URLSearchParams::append(const String& name, const String& value) {
 }
 
 void URLSearchParams::deleteAllWithName(const String& name) {
-  for (size_t i = 0; i < params_.size();) {
+  for (wtf_size_t i = 0; i < params_.size();) {
     if (params_[i].first == name)
       params_.EraseAt(i);
     else
@@ -220,7 +223,7 @@ bool URLSearchParams::has(const String& name) const {
 
 void URLSearchParams::set(const String& name, const String& value) {
   bool found_match = false;
-  for (size_t i = 0; i < params_.size();) {
+  for (wtf_size_t i = 0; i < params_.size();) {
     // If there are any name-value whose name is 'name', set
     // the value of the first such name-value pair to 'value'
     // and remove the others.
@@ -260,9 +263,8 @@ scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
   return EncodedFormData::Create(encoded_data.data(), encoded_data.size());
 }
 
-PairIterable<String, String>::IterationSource* URLSearchParams::StartIteration(
-    ScriptState*,
-    ExceptionState&) {
+PairIterable<String, IDLString, String, IDLString>::IterationSource*
+URLSearchParams::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<URLSearchParamsIterationSource>(this);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,19 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
-#include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/component_updater/updater_state.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
@@ -37,8 +36,9 @@
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "chrome/installer/util/google_update_settings.h"
 #endif
@@ -62,7 +62,6 @@ class ChromeConfigurator : public update_client::Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -74,7 +73,6 @@ class ChromeConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -82,12 +80,15 @@ class ChromeConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
   ConfiguratorImpl configurator_impl_;
-  PrefService* pref_service_;  // This member is not owned by this class.
+  raw_ptr<PrefService>
+      pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
@@ -144,12 +145,6 @@ std::string ChromeConfigurator::GetChannel() const {
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
-std::string ChromeConfigurator::GetBrand() const {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return brand;
-}
-
 std::string ChromeConfigurator::GetLang() const {
   return ChromeUpdateQueryParamsDelegate::GetLang();
 }
@@ -164,9 +159,9 @@ ChromeConfigurator::ExtraRequestParams() const {
 }
 
 std::string ChromeConfigurator::GetDownloadPreference() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This group policy is supported only on Windows and only for enterprises.
-  return base::IsMachineExternallyManaged()
+  return base::IsEnterpriseDevice()
              ? base::SysWideToUTF8(
                    GoogleUpdateSettings::GetDownloadPreference())
              : std::string();
@@ -221,10 +216,6 @@ bool ChromeConfigurator::EnabledDeltas() const {
   return configurator_impl_.EnabledDeltas();
 }
 
-bool ChromeConfigurator::EnabledComponentUpdates() const {
-  return pref_service_->GetBoolean(prefs::kComponentUpdatesEnabled);
-}
-
 bool ChromeConfigurator::EnabledBackgroundDownloader() const {
   return configurator_impl_.EnabledBackgroundDownloader();
 }
@@ -251,13 +242,20 @@ ChromeConfigurator::GetProtocolHandlerFactory() const {
   return configurator_impl_.GetProtocolHandlerFactory();
 }
 
-}  // namespace
-
-void RegisterPrefsForChromeComponentUpdaterConfigurator(
-    PrefRegistrySimple* registry) {
-  // The component updates are enabled by default, if the preference is not set.
-  registry->RegisterBooleanPref(prefs::kComponentUpdatesEnabled, true);
+absl::optional<bool> ChromeConfigurator::IsMachineExternallyManaged() const {
+  return configurator_impl_.IsMachineExternallyManaged();
 }
+
+update_client::UpdaterStateProvider
+ChromeConfigurator::GetUpdaterStateProvider() const {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return base::BindRepeating(&UpdaterState::GetState);
+#else
+  return configurator_impl_.GetUpdaterStateProvider();
+#endif
+}
+
+}  // namespace
 
 scoped_refptr<update_client::Configurator>
 MakeChromeComponentUpdaterConfigurator(

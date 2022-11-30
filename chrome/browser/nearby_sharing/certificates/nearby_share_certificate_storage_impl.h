@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
@@ -66,9 +67,9 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   // NearbyShareCertificateStorage
   std::vector<std::string> GetPublicCertificateIds() const override;
   void GetPublicCertificates(PublicCertificateCallback callback) override;
-  base::Optional<std::vector<NearbySharePrivateCertificate>>
+  absl::optional<std::vector<NearbySharePrivateCertificate>>
   GetPrivateCertificates() const override;
-  base::Optional<base::Time> NextPublicCertificateExpirationTime()
+  absl::optional<base::Time> NextPublicCertificateExpirationTime()
       const override;
   void ReplacePrivateCertificates(
       const std::vector<NearbySharePrivateCertificate>& private_certificates)
@@ -89,7 +90,8 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
   enum class InitStatus { kUninitialized, kInitialized, kFailed };
 
   void Initialize();
-  void OnDatabaseInitialized(leveldb_proto::Enums::InitStatus status);
+  void OnDatabaseInitialized(base::TimeTicks initialize_start_time,
+                             leveldb_proto::Enums::InitStatus status);
   void FinishInitialization(bool success);
 
   void OnDatabaseDestroyedReinitialize(bool success);

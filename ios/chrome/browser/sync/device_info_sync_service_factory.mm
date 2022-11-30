@@ -1,30 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/memory/singleton.h"
-#include "base/time/default_clock.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/send_tab_to_self/features.h"
-#include "components/signin/public/base/device_id_helper.h"
-#include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/model_type_store_service.h"
-#include "components/sync_device_info/device_info_prefs.h"
-#include "components/sync_device_info/device_info_sync_client.h"
-#include "components/sync_device_info/device_info_sync_service_impl.h"
-#include "components/sync_device_info/local_device_info_provider_impl.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "ios/chrome/common/channel_info.h"
+#import "base/bind.h"
+#import "base/memory/singleton.h"
+#import "base/time/default_clock.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/signin/public/base/device_id_helper.h"
+#import "components/sync/invalidations/sync_invalidations_service.h"
+#import "components/sync/model/model_type_store_service.h"
+#import "components/sync_device_info/device_info_prefs.h"
+#import "components/sync_device_info/device_info_sync_client.h"
+#import "components/sync_device_info/device_info_sync_service_impl.h"
+#import "components/sync_device_info/local_device_info_provider_impl.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,42 +48,48 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   bool GetSendTabToSelfReceivingEnabled() const override {
-    return send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(prefs_);
+    // Always true starting with M101, see crbug.com/1299833. Older clients and
+    // clients from other embedders might still return false.
+    return true;
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
+  absl::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+  absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
   GetPhoneAsASecurityKeyInfo() const override {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<std::string> GetFCMRegistrationToken() const override {
+  absl::optional<std::string> GetFCMRegistrationToken() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetFCMRegistrationToken();
     }
     // If the service is not enabled, then the registration token must be empty,
-    // not unknown (base::nullopt). This is needed to reset previous token if
+    // not unknown (absl::nullopt). This is needed to reset previous token if
     // the invalidations have been turned off.
     return std::string();
   }
 
   // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  absl::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
-    // unknown (base::nullopt). This is needed to reset previous types if the
+    // unknown (absl::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
     return syncer::ModelTypeSet();
   }
+
+  // syncer::DeviceInfoSyncClient:
+  // Returns false since we only care about Chrome OS devices
+  bool IsUmaEnabledOnCrOSDevice() const override { return false; }
 
  private:
   PrefService* const prefs_;

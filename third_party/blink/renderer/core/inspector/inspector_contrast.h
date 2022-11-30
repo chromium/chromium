@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CONTRAST_H_
 
 #include "cc/base/rtree.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
@@ -45,8 +46,8 @@ class CORE_EXPORT InspectorContrast {
 
  private:
   void SortElementsByPaintOrder(HeapVector<Member<Node>>&, Document*);
-  std::vector<Member<Node>> ElementsFromRect(const PhysicalRect& rect,
-                                             Document& document);
+  std::vector<Node*> ElementsFromRect(const PhysicalRect& rect,
+                                      Document& document);
   bool GetColorsFromRect(PhysicalRect rect,
                          Document& document,
                          Element* top_element,
@@ -54,7 +55,11 @@ class CORE_EXPORT InspectorContrast {
                          float* text_opacity);
   void CollectNodesAndBuildRTreeIfNeeded();
 
-  cc::RTree<Member<Node>> rtree_;
+  // It is safe to keep raw pointers to Node because rtree_
+  // only operates on nodes retained in the elements_ HeapVector below.
+  // See InspectorContrast::CollectNodesAndBuildRTreeIfNeeded and
+  // crbug.com/1222445.
+  cc::RTree<Node*> rtree_;
   HeapVector<Member<Node>> elements_;
   Document* document_;
   bool rtree_built_ = false;

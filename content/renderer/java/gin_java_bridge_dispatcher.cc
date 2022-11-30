@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,9 +95,9 @@ bool GinJavaBridgeDispatcher::HasJavaMethod(ObjectID object_id,
 std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
     ObjectID object_id,
     const std::string& method_name,
-    const base::ListValue& arguments,
+    const base::Value::List& arguments,
     GinJavaBridgeError* error) {
-  base::ListValue result_wrapper;
+  base::Value::List result_wrapper;
   render_frame()->Send(
       new GinJavaBridgeHostMsg_InvokeMethod(routing_id(),
                                             object_id,
@@ -105,12 +105,9 @@ std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
                                             arguments,
                                             &result_wrapper,
                                             error));
-  base::Value* result;
-  if (result_wrapper.Get(0, &result)) {
-    return std::unique_ptr<base::Value>(result->DeepCopy());
-  } else {
-    return std::unique_ptr<base::Value>();
-  }
+  if (result_wrapper.empty())
+    return nullptr;
+  return base::Value::ToUniquePtrValue(result_wrapper[0].Clone());
 }
 
 GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,6 +181,12 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::AddIndexedPropertyInterceptor() {
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
     const base::StringPiece& name, v8::Local<v8::Data> val) {
   template_->Set(StringToSymbol(isolate_, name), val);
+  return *this;
+}
+
+ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(v8::Local<v8::Name> name,
+                                                      v8::Local<v8::Data> val) {
+  template_->Set(name, val);
   return *this;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,6 @@ using net::test_server::HttpResponse;
 void TestDispatcherHostDelegate::RequestBeginning(
     net::URLRequest* request,
     content::ResourceContext* resource_context,
-    content::AppCacheService* appcache_service,
     blink::mojom::ResourceType resource_type,
     std::vector<std::unique_ptr<content::ResourceThrottle>>* throttles) {
   // This checks the same condition as the one for PNaCl in
@@ -78,7 +77,8 @@ void PnaclHeaderTest::RunLoadTest(const std::string& url,
   // in the background).
   base::ScopedPathOverride component_dir(chrome::DIR_PNACL_COMPONENT);
 
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(url)));
 
   // Wait until the NMF and pexe are also loaded, not just the HTML.
   // Do this by waiting till the LoadTestMessageHandler responds.
@@ -106,7 +106,7 @@ std::unique_ptr<HttpResponse> PnaclHeaderTest::WatchForPexeFetch(
   // Skip other non-pexe files and let ServeFilesFromDirectory handle it.
   GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
   if (absolute_url.path().find(".pexe") == std::string::npos)
-    return std::unique_ptr<HttpResponse>();
+    return nullptr;
 
   // For pexe files, check for the special Accept header,
   // along with the expected ResourceType of the URL request.

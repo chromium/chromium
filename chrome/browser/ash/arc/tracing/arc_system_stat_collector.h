@@ -1,21 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_TRACING_ARC_SYSTEM_STAT_COLLECTOR_H_
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_SYSTEM_STAT_COLLECTOR_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
 namespace base {
-class TimeDelta;
 class SequencedTaskRunner;
+class TimeDelta;
+class Value;
 }  // namespace base
 
 namespace arc {
@@ -67,6 +68,10 @@ class ArcSystemStatCollector {
   };
 
   ArcSystemStatCollector();
+
+  ArcSystemStatCollector(const ArcSystemStatCollector&) = delete;
+  ArcSystemStatCollector& operator=(const ArcSystemStatCollector&) = delete;
+
   ~ArcSystemStatCollector();
 
   // Starts sample collection, |max_interval| defines the maximum interval and
@@ -81,6 +86,15 @@ class ArcSystemStatCollector {
              const base::TimeTicks& max_timestamp,
              ArcSystemModel* system_model);
 
+  // Serializes the model to |base::Value|.
+  std::unique_ptr<base::Value> Serialize() const;
+  // Serializes the model to Json string.
+  std::string SerializeToJson() const;
+  // Loads the model from |base::Value|.
+  bool LoadFromValue(const base::Value& root);
+  // Loads the model from Json string.
+  bool LoadFromJson(const std::string& json_data);
+
   base::TimeDelta max_interval() const { return max_interval_; }
 
  private:
@@ -92,11 +106,11 @@ class ArcSystemStatCollector {
 
     base::TimeTicks timestamp;
     // read, written sectors and total time in milliseconds.
-    int64_t zram_stat[base::size(kZramStatColumns) - 1] = {0};
+    int64_t zram_stat[std::size(kZramStatColumns) - 1] = {0};
     // total, available.
-    int64_t mem_info[base::size(kMemInfoColumns) - 1] = {0};
+    int64_t mem_info[std::size(kMemInfoColumns) - 1] = {0};
     // objects, used bytes.
-    int64_t gem_info[base::size(kGemInfoColumns) - 1] = {0};
+    int64_t gem_info[std::size(kGemInfoColumns) - 1] = {0};
     // Temperature of CPU, Core 0.
     int64_t cpu_temperature = std::numeric_limits<int>::min();
     // CPU Frequency.
@@ -151,8 +165,6 @@ class ArcSystemStatCollector {
   std::unique_ptr<SystemReadersContext> context_;
 
   base::WeakPtrFactory<ArcSystemStatCollector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSystemStatCollector);
 };
 
 // Helper that reads and parses stat file containing decimal number separated by

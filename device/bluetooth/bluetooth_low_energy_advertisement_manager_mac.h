@@ -1,13 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_ADVERTISEMENT_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_ADVERTISEMENT_MANAGER_MAC_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_advertisement_mac.h"
 
 namespace device {
@@ -18,6 +17,12 @@ namespace device {
 class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdvertisementManagerMac {
  public:
   BluetoothLowEnergyAdvertisementManagerMac();
+
+  BluetoothLowEnergyAdvertisementManagerMac(
+      const BluetoothLowEnergyAdvertisementManagerMac&) = delete;
+  BluetoothLowEnergyAdvertisementManagerMac& operator=(
+      const BluetoothLowEnergyAdvertisementManagerMac&) = delete;
+
   ~BluetoothLowEnergyAdvertisementManagerMac();
 
   // Initializes the advertisement manager.
@@ -45,15 +50,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdvertisementManagerMac {
  private:
   void StartAdvertising();
 
-  CBPeripheralManagerState GetPeripheralManagerState();
-
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   CBPeripheralManager* peripheral_manager_;
 
   scoped_refptr<BluetoothAdvertisementMac> active_advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyAdvertisementManagerMac);
 };
 
 }  // namespace device

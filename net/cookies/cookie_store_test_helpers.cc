@@ -1,17 +1,22 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cookies/cookie_store_test_helpers.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 using net::registry_controlled_domains::GetDomainAndRegistry;
@@ -46,6 +51,7 @@ std::unique_ptr<CookieChangeSubscription>
 DelayedCookieMonsterChangeDispatcher::AddCallbackForCookie(
     const GURL& url,
     const std::string& name,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   ADD_FAILURE();
   return nullptr;
@@ -53,6 +59,7 @@ DelayedCookieMonsterChangeDispatcher::AddCallbackForCookie(
 std::unique_ptr<CookieChangeSubscription>
 DelayedCookieMonsterChangeDispatcher::AddCallbackForUrl(
     const GURL& url,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieChangeCallback callback) {
   ADD_FAILURE();
   return nullptr;
@@ -65,9 +72,8 @@ DelayedCookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 }
 
 DelayedCookieMonster::DelayedCookieMonster()
-    : cookie_monster_(
-          new CookieMonster(nullptr /* store */, nullptr /* netlog */)),
-      did_run_(false),
+    : cookie_monster_(std::make_unique<CookieMonster>(nullptr /* store */,
+                                                      nullptr /* netlog */)),
       result_(CookieAccessResult(CookieInclusionStatus(
           CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE))) {}
 
@@ -91,27 +97,30 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
     std::unique_ptr<CanonicalCookie> cookie,
     const GURL& source_url,
     const CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    absl::optional<CookieAccessResult> cookie_access_result) {
   did_run_ = false;
   cookie_monster_->SetCanonicalCookieAsync(
       std::move(cookie), source_url, options,
       base::BindOnce(&DelayedCookieMonster::SetCookiesInternalCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      std::move(cookie_access_result));
   DCHECK_EQ(did_run_, true);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeSetCookiesCallback,
                      base::Unretained(this), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kDelayedTime));
+      base::Milliseconds(kDelayedTime));
 }
 
 void DelayedCookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
+    const CookiePartitionKeyCollection& cookie_partition_key_collection,
     CookieMonster::GetCookieListCallback callback) {
   did_run_ = false;
   cookie_monster_->GetCookieListWithOptionsAsync(
-      url, options,
+      url, options, cookie_partition_key_collection,
       base::BindOnce(
           &DelayedCookieMonster::GetCookieListWithOptionsInternalCallback,
           base::Unretained(this)));
@@ -120,7 +129,7 @@ void DelayedCookieMonster::GetCookieListWithOptionsAsync(
       FROM_HERE,
       base::BindOnce(&DelayedCookieMonster::InvokeGetCookieListCallback,
                      base::Unretained(this), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kDelayedTime));
+      base::Milliseconds(kDelayedTime));
 }
 
 void DelayedCookieMonster::GetAllCookiesAsync(GetAllCookiesCallback callback) {
@@ -155,6 +164,11 @@ void DelayedCookieMonster::DeleteAllCreatedInTimeRangeAsync(
 void DelayedCookieMonster::DeleteAllMatchingInfoAsync(
     net::CookieDeletionInfo delete_info,
     DeleteCallback callback) {
+  ADD_FAILURE();
+}
+
+void DelayedCookieMonster::DeleteMatchingCookiesAsync(DeletePredicate,
+                                                      DeleteCallback) {
   ADD_FAILURE();
 }
 
@@ -200,7 +214,7 @@ std::string CookieURLHelper::Format(const std::string& format_string) const {
 //
 // FlushablePersistentStore
 //
-FlushablePersistentStore::FlushablePersistentStore() : flush_count_(0) {}
+FlushablePersistentStore::FlushablePersistentStore() = default;
 
 void FlushablePersistentStore::Load(LoadedCallback loaded_callback,
                                     const NetLogWithSource& /* net_log */) {
@@ -243,7 +257,7 @@ FlushablePersistentStore::~FlushablePersistentStore() = default;
 //
 // CallbackCounter
 //
-CallbackCounter::CallbackCounter() : callback_count_(0) {}
+CallbackCounter::CallbackCounter() = default;
 
 void CallbackCounter::Callback() {
   base::AutoLock lock(callback_count_lock_);
@@ -256,5 +270,10 @@ int CallbackCounter::callback_count() {
 }
 
 CallbackCounter::~CallbackCounter() = default;
+
+std::string FutureCookieExpirationString() {
+  return "; expires=" +
+         base::TimeFormatHTTP(base::Time::Now() + base::Days(365));
+}
 
 }  // namespace net

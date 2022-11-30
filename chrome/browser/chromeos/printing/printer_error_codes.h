@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ struct PrinterStatus;
 
 namespace chromeos {
 
+// PrinterErrorCode can be derived either from PrinterStatus or JobStateReason.
 enum class PrinterErrorCode {
   NO_ERROR,
   PAPER_JAM,
@@ -23,6 +24,7 @@ enum class PrinterErrorCode {
   STOPPED,
   FILTER_FAILED,
   UNKNOWN_ERROR,
+  CLIENT_UNAUTHORIZED,
 };
 
 // Extracts an PrinterErrorCode from PrinterStatus#reasons. Returns NO_ERROR if

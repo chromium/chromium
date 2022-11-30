@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@ package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Site Settings features.
@@ -16,8 +16,9 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("browser_ui")
 @MainDex
 public class SiteSettingsFeatureList {
-    public static final String APP_NOTIFICATION_STATUS_MESSAGING = "AppNotificationStatusMessaging";
-    public static final String ACTIONABLE_CONTENT_SETTINGS = "ActionableContentSettings";
+    public static final String SITE_DATA_IMPROVEMENTS = "SiteDataImprovements";
+    public static final String REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE =
+            "RequestDesktopSiteExceptionsDowngrade";
 
     private SiteSettingsFeatureList() {}
 

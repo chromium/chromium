@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,33 +6,30 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/client_cert_util.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/client_cert_util.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash::enrollment {
 
 namespace {
 
@@ -71,7 +68,6 @@ class EnrollmentDialogView : public views::DialogDelegateView {
   std::string network_name_;
   Profile* profile_;
   GURL target_uri_;
-  bool added_cert_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,18 +79,24 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
     : accepted_(false),
       network_name_(network_name),
       profile_(profile),
-      target_uri_(target_uri),
-      added_cert_(false) {
+      target_uri_(target_uri) {
   SetTitle(l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_TITLE));
   DialogDelegate::SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ENROLLMENT);
+      views::DialogContentType::kText, views::DialogContentType::kText));
+
+  SetUseDefaultFillLayout(true);
+  auto* label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS,
+                                 base::UTF8ToUTF16(network_name_))));
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetMultiLine(true);
+  label->SetAllowCharacterBreak(true);
 }
 
-EnrollmentDialogView::~EnrollmentDialogView() {}
+EnrollmentDialogView::~EnrollmentDialogView() = default;
 
 // static
 void EnrollmentDialogView::ShowDialog(const std::string& network_name,
@@ -111,7 +113,6 @@ void EnrollmentDialogView::ShowDialog(const std::string& network_name,
       &params, ash_util::GetSystemModalDialogContainerId());
   views::Widget* widget = new views::Widget;  // Owned by native widget.
   widget->Init(std::move(params));
-  dialog_view->InitDialog();
   widget->Show();
 }
 
@@ -137,50 +138,6 @@ gfx::Size EnrollmentDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDefaultWidth, kDefaultHeight);
 }
 
-void EnrollmentDialogView::InitDialog() {
-  added_cert_ = false;
-  // Create the views and layout manager and set them up.
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringFUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS,
-                                 base::UTF8ToUTF16(network_name_)));
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
-  label->SetAllowCharacterBreak(true);
-
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* columns = grid_layout->AddColumnSet(0);
-  columns->AddColumn(
-      views::GridLayout::FILL,                       // Horizontal resize.
-      views::GridLayout::FILL,                       // Vertical resize.
-      1,                                             // Resize weight.
-      views::GridLayout::ColumnSize::kUsePreferred,  // Size type.
-      0,                                             // Ignored for USE_PREF.
-      0);                                            // Minimum size.
-  columns = grid_layout->AddColumnSet(1);
-
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-
-  columns->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL));
-  columns->AddColumn(
-      views::GridLayout::LEADING,                    // Horizontal leading.
-      views::GridLayout::FILL,                       // Vertical resize.
-      1,                                             // Resize weight.
-      views::GridLayout::ColumnSize::kUsePreferred,  // Size type.
-      0,                                             // Ignored for USE_PREF.
-      0);                                            // Minimum size.
-
-  grid_layout->StartRow(views::GridLayout::kFixedSize, 0);
-  grid_layout->AddView(std::move(label));
-  grid_layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  grid_layout->Layout(this);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Handler for certificate enrollment.
 
@@ -190,6 +147,10 @@ class DialogEnrollmentDelegate {
   DialogEnrollmentDelegate(const std::string& network_guid,
                            const std::string& network_name,
                            Profile* profile);
+
+  DialogEnrollmentDelegate(const DialogEnrollmentDelegate&) = delete;
+  DialogEnrollmentDelegate& operator=(const DialogEnrollmentDelegate&) = delete;
+
   ~DialogEnrollmentDelegate();
 
   bool Enroll(const std::vector<std::string>& uri_list);
@@ -198,8 +159,6 @@ class DialogEnrollmentDelegate {
   std::string network_guid_;
   std::string network_name_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogEnrollmentDelegate);
 };
 
 DialogEnrollmentDelegate::DialogEnrollmentDelegate(
@@ -210,7 +169,7 @@ DialogEnrollmentDelegate::DialogEnrollmentDelegate(
       network_name_(network_name),
       profile_(profile) {}
 
-DialogEnrollmentDelegate::~DialogEnrollmentDelegate() {}
+DialogEnrollmentDelegate::~DialogEnrollmentDelegate() = default;
 
 bool DialogEnrollmentDelegate::Enroll(
     const std::vector<std::string>& uri_list) {
@@ -260,25 +219,18 @@ bool EnrollmentDialogAllowed(Profile* profile) {
     case LoginState::LOGGED_IN_USER_GUEST:
       return true;
     case LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT:
-    case LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED:
       return false;
-    case LoginState::LOGGED_IN_USER_SUPERVISED_DEPRECATED:
-      return true;
-    case LoginState::LOGGED_IN_USER_KIOSK_APP:
+    case LoginState::LOGGED_IN_USER_KIOSK:
       return false;
     case LoginState::LOGGED_IN_USER_CHILD:
       return true;
   }
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // Factory function.
-
-namespace enrollment {
 
 bool CreateEnrollmentDialog(const std::string& network_id) {
   const NetworkState* network =
@@ -295,7 +247,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   std::string username_hash = ProfileHelper::GetUserIdHashFromProfile(profile);
 
   onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
-  const base::DictionaryValue* policy =
+  const base::Value* policy =
       NetworkHandler::Get()
           ->managed_network_configuration_handler()
           ->FindPolicyByGUID(username_hash, network_id, &onc_source);
@@ -304,7 +256,7 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
     return false;
 
   client_cert::ClientCertConfig cert_config;
-  OncToClientCertConfig(onc_source, *policy, &cert_config);
+  OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
 
   if (cert_config.client_cert_type != onc::client_cert::kPattern)
     return false;
@@ -325,6 +277,4 @@ bool CreateEnrollmentDialog(const std::string& network_id) {
   return enrollment->Enroll(cert_config.pattern.enrollment_uri_list());
 }
 
-}  // namespace enrollment
-
-}  // namespace chromeos
+}  // namespace ash::enrollment

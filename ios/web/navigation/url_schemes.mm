@@ -1,14 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/navigation/url_schemes.h"
+#import "ios/web/public/navigation/url_schemes.h"
 
-#include <algorithm>
-#include <vector>
+#import <algorithm>
+#import <vector>
 
 #import "ios/web/public/web_client.h"
-#include "url/url_util.h"
+#import "url/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

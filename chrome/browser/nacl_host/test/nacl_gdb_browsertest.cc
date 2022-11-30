@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@
 #include "components/nacl/common/nacl_switches.h"
 #include "content/public/test/browser_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
 static const base::FilePath::CharType kMockNaClGdb[] =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FILE_PATH_LITERAL("mock_nacl_gdb.exe");
 #else
     FILE_PATH_LITERAL("mock_nacl_gdb");
@@ -52,10 +52,9 @@ class NaClGdbTest : public PPAPINaClNewlibTest {
     // base::LaunchProcess doesn't support creating suspended processes. We need
     // to either add suspended process support to base::LaunchProcess or use
     // Win API.
-#if defined(OS_WIN)
-    if (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_DISABLED) {
-        return;
+#if BUILDFLAG(IS_WIN)
+    if (base::win::OSInfo::GetInstance()->IsWowDisabled()) {
+      return;
     }
 #endif
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -80,7 +79,7 @@ class NaClGdbTest : public PPAPINaClNewlibTest {
 
 // Fails on the ASAN test bot. See http://crbug.com/122219
 // Flaky on Linux and CrOS test bots. See http://crbug.com/1126321
-#if defined(ADDRESS_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Empty DISABLED_Empty
 #else
 #define MAYBE_Empty Empty

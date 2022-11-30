@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,11 @@ LayoutNGTableColumn::LayoutNGTableColumn(Element* element)
   UpdateFromElement();
 }
 
+void LayoutNGTableColumn::Trace(Visitor* visitor) const {
+  visitor->Trace(children_);
+  LayoutBox::Trace(visitor);
+}
+
 void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
                                          const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -23,11 +28,8 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
     if (LayoutNGTable* table = Table()) {
       if (old_style && diff.NeedsPaintInvalidation()) {
         // Regenerate table borders if needed
-        if (!old_style->BorderVisuallyEqual(StyleRef()) ||
-            (diff.TextDecorationOrColorChanged() &&
-             StyleRef().HasBorderColorReferencingCurrentColor())) {
+        if (!old_style->BorderVisuallyEqual(StyleRef()))
           table->GridBordersChanged();
-        }
         // Table paints column background. Tell table to repaint.
         if (StyleRef().HasBackground() || old_style->HasBackground())
           table->SetBackgroundNeedsFullPaintInvalidation();
@@ -35,12 +37,13 @@ void LayoutNGTableColumn::StyleDidChange(StyleDifference diff,
       if (diff.NeedsLayout()) {
         table->SetIntrinsicLogicalWidthsDirty();
         if (old_style &&
-            NGTableTypes::CreateColumn(*old_style,
-                                       /* default_inline_size */ base::nullopt,
-                                       table->IsFixedTableLayout()) !=
+            NGTableTypes::CreateColumn(
+                *old_style,
+                /* default_inline_size */ absl::nullopt,
+                table->StyleRef().IsFixedTableLayout()) !=
                 NGTableTypes::CreateColumn(
-                    StyleRef(), /* default_inline_size */ base::nullopt,
-                    table->IsFixedTableLayout())) {
+                    StyleRef(), /* default_inline_size */ absl::nullopt,
+                    table->StyleRef().IsFixedTableLayout())) {
           table->GridBordersChanged();
         }
       }
@@ -121,6 +124,8 @@ void LayoutNGTableColumn::UpdateFromElement() {
   if (span_ != old_span && Style() && Parent()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
+    if (LayoutNGTable* table = Table())
+      table->GridBordersChanged();
   }
 }
 

@@ -1,3 +1,1 @@
-monorail: {
-  component: "UI>Shell>Containers>PluginVM"
-}
+mixins: "//chrome/browser/ash/plugin_vm/COMMON_METADATA"

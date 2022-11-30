@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,19 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/icc_profile.h"
-#include "ui/gfx/transform.h"
 
 namespace display {
 namespace {
@@ -32,7 +34,7 @@ int g_has_forced_device_scale_factor = -1;
 // -1.0, we read the forced device scale factor again.
 float g_forced_device_scale_factor = -1.0;
 
-// An alloance error epsilon cauesd by fractional scale factor to produce
+// An allowance error epsilon caused by fractional scale factor to produce
 // expected DP display size.
 constexpr float kDisplaySizeAllowanceEpsilon = 0.01f;
 
@@ -55,36 +57,6 @@ float GetForcedDeviceScaleFactorImpl() {
   return static_cast<float>(scale_in_double);
 }
 
-int64_t internal_display_id_ = -1;
-
-gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
-  if (value == "srgb")
-    return gfx::ColorSpace::CreateSRGB();
-  if (value == "display-p3-d65")
-    return gfx::ColorSpace::CreateDisplayP3D65();
-  if (value == "scrgb-linear")
-    return gfx::ColorSpace::CreateSCRGBLinear();
-  if (value == "hdr10")
-    return gfx::ColorSpace::CreateHDR10();
-  if (value == "extended-srgb")
-    return gfx::ColorSpace::CreateExtendedSRGB();
-  if (value == "generic-rgb") {
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
-                           gfx::ColorSpace::TransferID::GAMMA18);
-  }
-  if (value == "color-spin-gamma24") {
-    // Run this color profile through an ICC profile. The resulting color space
-    // is slightly different from the input color space, and removing the ICC
-    // profile would require rebaselineing many layout tests.
-    gfx::ColorSpace color_space(
-        gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN,
-        gfx::ColorSpace::TransferID::GAMMA24);
-    return gfx::ICCProfile::FromColorSpace(color_space).GetColorSpace();
-  }
-  LOG(ERROR) << "Invalid forced color profile: \"" << value << "\"";
-  return gfx::ColorSpace::CreateSRGB();
-}
-
 const char* ToRotationString(display::Display::Rotation rotation) {
   switch (rotation) {
     case display::Display::ROTATE_0:
@@ -101,18 +73,6 @@ const char* ToRotationString(display::Display::Rotation rotation) {
 }
 
 }  // namespace
-
-bool CompareDisplayIds(int64_t id1, int64_t id2) {
-  if (id1 == id2)
-    return false;
-  // Output index is stored in the first 8 bits. See GetDisplayIdFromEDID
-  // in edid_parser.cc.
-  int index_1 = id1 & 0xFF;
-  int index_2 = id2 & 0xFF;
-  DCHECK_NE(index_1, index_2) << id1 << " and " << id2;
-  return Display::IsInternalDisplayId(id1) ||
-         (index_1 < index_2 && !Display::IsInternalDisplayId(id2));
-}
 
 // static
 float Display::GetForcedDeviceScaleFactor() {
@@ -142,21 +102,6 @@ void Display::SetForceDeviceScaleFactor(double dsf) {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor, base::StringPrintf("%.2f", dsf));
-}
-
-// static
-gfx::ColorSpace Display::GetForcedDisplayColorProfile() {
-  DCHECK(HasForceDisplayColorProfile());
-  std::string value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kForceDisplayColorProfile);
-  return ForcedColorProfileStringToColorSpace(value);
-}
-
-// static
-bool Display::HasForceDisplayColorProfile() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceDisplayColorProfile);
 }
 
 // static
@@ -230,7 +175,7 @@ Display::Display(int64_t id, const gfx::Rect& bounds)
   // using it. Using a not supported profile can result in fatal errors in the
   // GPU process.
   auto color_space = gfx::ColorSpace::CreateSRGB();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (HasForceDisplayColorProfile())
     color_space = GetForcedDisplayColorProfile();
 #endif
@@ -273,6 +218,17 @@ int Display::RotationAsDegree() const {
   return 0;
 }
 
+void Display::set_color_spaces(const gfx::DisplayColorSpaces& color_spaces) {
+  color_spaces_ = color_spaces;
+  if (color_spaces.SupportsHDR()) {
+    color_depth_ = kHDR10BitsPerPixel;
+    depth_per_component_ = kHDR10BitsPerComponent;
+  } else {
+    color_depth_ = kDefaultBitsPerPixel;
+    depth_per_component_ = kDefaultBitsPerComponent;
+  }
+}
+
 void Display::SetRotationAsDegree(int rotation) {
   switch (rotation) {
     case 0:
@@ -298,16 +254,27 @@ int Display::PanelRotationAsDegree() const {
 }
 
 gfx::Insets Display::GetWorkAreaInsets() const {
-  return gfx::Insets(work_area_.y() - bounds_.y(), work_area_.x() - bounds_.x(),
-                     bounds_.bottom() - work_area_.bottom(),
-                     bounds_.right() - work_area_.right());
+  return gfx::Insets::TLBR(work_area_.y() - bounds_.y(),
+                           work_area_.x() - bounds_.x(),
+                           bounds_.bottom() - work_area_.bottom(),
+                           bounds_.right() - work_area_.right());
 }
 
 void Display::SetScaleAndBounds(float device_scale_factor,
                                 const gfx::Rect& bounds_in_pixel) {
   gfx::Insets insets = bounds_.InsetsFrom(work_area_);
+  SetScale(device_scale_factor);
+
+  gfx::RectF f(bounds_in_pixel);
+  f.Scale(1.f / device_scale_factor_);
+  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
+  size_in_pixels_ = bounds_in_pixel.size();
+  UpdateWorkAreaFromInsets(insets);
+}
+
+void Display::SetScale(float device_scale_factor) {
   if (!HasForceDeviceScaleFactor()) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Unless an explicit scale factor was provided for testing, ensure the
     // scale is integral.
     device_scale_factor = static_cast<int>(device_scale_factor);
@@ -315,12 +282,6 @@ void Display::SetScaleAndBounds(float device_scale_factor,
     device_scale_factor_ = device_scale_factor;
   }
   device_scale_factor_ = std::max(0.5f, device_scale_factor_);
-
-  gfx::RectF f(bounds_in_pixel);
-  f.Scale(1.f / device_scale_factor_);
-  bounds_ = gfx::ToEnclosedRectIgnoringError(f, kDisplaySizeAllowanceEpsilon);
-  size_in_pixels_ = bounds_in_pixel.size();
-  UpdateWorkAreaFromInsets(insets);
 }
 
 void Display::SetSize(const gfx::Size& size_in_pixel) {
@@ -353,29 +314,14 @@ std::string Display::ToString() const {
 }
 
 bool Display::IsInternal() const {
-  return is_valid() && (id_ == internal_display_id_);
+  return is_valid() && display::IsInternalDisplayId(id_);
 }
 
 // static
 int64_t Display::InternalDisplayId() {
-  DCHECK_NE(kInvalidDisplayId, internal_display_id_);
-  return internal_display_id_;
-}
-
-// static
-void Display::SetInternalDisplayId(int64_t internal_display_id) {
-  internal_display_id_ = internal_display_id;
-}
-
-// static
-bool Display::IsInternalDisplayId(int64_t display_id) {
-  DCHECK_NE(kInvalidDisplayId, display_id);
-  return HasInternalDisplay() && internal_display_id_ == display_id;
-}
-
-// static
-bool Display::HasInternalDisplay() {
-  return internal_display_id_ != kInvalidDisplayId;
+  auto& ids = GetInternalDisplayIds();
+  DCHECK_EQ(1u, ids.size());
+  return ids.size() ? *ids.begin() : kInvalidDisplayId;
 }
 
 bool Display::operator==(const Display& rhs) const {
@@ -390,7 +336,7 @@ bool Display::operator==(const Display& rhs) const {
          color_depth_ == rhs.color_depth_ &&
          depth_per_component_ == rhs.depth_per_component_ &&
          is_monochrome_ == rhs.is_monochrome_ &&
-         display_frequency_ == rhs.display_frequency_;
+         display_frequency_ == rhs.display_frequency_ && label_ == rhs.label_;
 }
 
 }  // namespace display

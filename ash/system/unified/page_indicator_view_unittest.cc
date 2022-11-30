@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 
@@ -20,12 +21,16 @@ int kPageCount = 10;
 class PageIndicatorViewTest : public NoSessionAshTestBase {
  public:
   PageIndicatorViewTest() = default;
+
+  PageIndicatorViewTest(const PageIndicatorViewTest&) = delete;
+  PageIndicatorViewTest& operator=(const PageIndicatorViewTest&) = delete;
+
   ~PageIndicatorViewTest() override = default;
 
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
 
     unified_view_ = std::make_unique<UnifiedSystemTrayView>(
@@ -48,8 +53,6 @@ class PageIndicatorViewTest : public NoSessionAshTestBase {
     return page_indicator_view()->IsPageSelectedForTesting(index);
   }
 
-  void Layout() { unified_view_->Layout(); }
-
   PaginationModel* pagination_model() { return model_->pagination_model(); }
   PageIndicatorView* page_indicator_view() {
     return unified_view_->page_indicator_view_for_test();
@@ -57,11 +60,9 @@ class PageIndicatorViewTest : public NoSessionAshTestBase {
   UnifiedSystemTrayView* unified_view() { return unified_view_.get(); }
 
  private:
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemTrayView> unified_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageIndicatorViewTest);
 };
 
 // Number of buttons is equal to total pages in PaginationModel.

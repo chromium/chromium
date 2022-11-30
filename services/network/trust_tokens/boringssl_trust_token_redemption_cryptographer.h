@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ class BoringsslTrustTokenRedemptionCryptographer
   // TrustTokenRequestRedemptionHelper::Cryptographer implementation:
   bool Initialize(mojom::TrustTokenProtocolVersion issuer_configured_version,
                   int issuer_configured_batch_size) override;
-  base::Optional<std::string> BeginRedemption(
+  absl::optional<std::string> BeginRedemption(
       TrustToken token,
       base::StringPiece verification_key,
       const url::Origin& top_level_origin) override;
-  base::Optional<std::string> ConfirmRedemption(
+  absl::optional<std::string> ConfirmRedemption(
       base::StringPiece response_header) override;
 
  private:

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
-#include "components/download/public/background_service/download_service.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace plugin_vm {
@@ -35,8 +35,9 @@ void PluginVmImageDownloadClient::OnServiceInitialized(
   // TODO(timloh): It appears that only completed downloads (aka previous
   // successful installations) surface here, so this logic might not be needed.
   for (const auto& download : downloads) {
-    VLOG(1) << "Download tracked by DownloadService: " << download.guid;
-    DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
+    VLOG(1) << "Download tracked by BackgroundDownloadService: "
+            << download.guid;
+    BackgroundDownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(download.guid);
   }
 }
@@ -51,12 +52,14 @@ void PluginVmImageDownloadClient::OnDownloadStarted(
   // We do not want downloads that are tracked by download service from its
   // initialization to proceed.
   if (!IsCurrentDownload(guid)) {
-    DownloadServiceFactory::GetForKey(profile_->GetProfileKey())
+    BackgroundDownloadServiceFactory::GetForKey(profile_->GetProfileKey())
         ->CancelDownload(guid);
     return;
   }
 
   content_length_ = headers ? headers->GetContentLength() : -1;
+  response_code_ = headers ? headers->response_code() : -1;
+
   GetInstaller()->OnDownloadStarted();
 }
 
@@ -76,8 +79,17 @@ void PluginVmImageDownloadClient::OnDownloadFailed(
       PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_UNKNOWN;
   switch (clientReason) {
     case download::Client::FailureReason::NETWORK:
-      VLOG(1) << "Failure reason: NETWORK";
-      failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_NETWORK;
+      VLOG(1) << "Failure reason: NETWORK, response_code: " << response_code_;
+      if (response_code_ == 401) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_401;
+      } else if (response_code_ == 403) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_403;
+      } else if (response_code_ == 404) {
+        failureReason = PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_404;
+      } else {
+        failureReason =
+            PluginVmInstaller::FailureReason::DOWNLOAD_FAILED_NETWORK;
+      }
       break;
     case download::Client::FailureReason::UPLOAD_TIMEDOUT:
       VLOG(1) << "Failure reason: UPLOAD_TIMEDOUT";

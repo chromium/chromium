@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_TEST_FAKE_ICE_CONNECTION_H_
 #define REMOTING_TEST_FAKE_ICE_CONNECTION_H_
 
-#include "base/macros.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/ice_transport.h"
 
@@ -18,6 +17,10 @@ class FakeIceConnection final
  public:
   FakeIceConnection(scoped_refptr<protocol::TransportContext> transport_context,
                     base::OnceClosure on_closed);
+
+  FakeIceConnection(const FakeIceConnection&) = delete;
+  FakeIceConnection& operator=(const FakeIceConnection&) = delete;
+
   ~FakeIceConnection() override;
 
   void OnAuthenticated();
@@ -41,7 +44,6 @@ class FakeIceConnection final
   std::unique_ptr<protocol::IceTransport> transport_;
   std::unique_ptr<protocol::ChannelDispatcherBase> control_dispatcher_;
   base::OnceClosure on_closed_;
-  DISALLOW_COPY_AND_ASSIGN(FakeIceConnection);
 };
 
 }  // namespace test

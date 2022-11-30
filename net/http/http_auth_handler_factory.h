@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,23 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_mechanism.h"
+#include "net/http/http_auth_scheme.h"
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-class GURL;
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -28,7 +33,7 @@ class HttpAuthHandler;
 class HttpAuthHandlerRegistryFactory;
 class HttpAuthPreferences;
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 
 // An HttpAuthHandlerFactory is used to create HttpAuthHandler objects.
 // The HttpAuthHandlerFactory object _must_ outlive any of the HttpAuthHandler
@@ -40,8 +45,12 @@ class NET_EXPORT HttpAuthHandlerFactory {
     CREATE_PREEMPTIVE,  // Create a handler preemptively.
   };
 
-  HttpAuthHandlerFactory() : http_auth_preferences_(nullptr) {}
-  virtual ~HttpAuthHandlerFactory() {}
+  HttpAuthHandlerFactory() = default;
+
+  HttpAuthHandlerFactory(const HttpAuthHandlerFactory&) = delete;
+  HttpAuthHandlerFactory& operator=(const HttpAuthHandlerFactory&) = delete;
+
+  virtual ~HttpAuthHandlerFactory() = default;
 
   // Sets the source of the HTTP authentication preferences.
   // HttpAuthHandlerFactory doesn't own the preferences, and the
@@ -53,7 +62,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
   }
 
   // Retrieves the associated URL security manager.
-  const HttpAuthPreferences* http_auth_preferences() {
+  const HttpAuthPreferences* http_auth_preferences() const {
     return http_auth_preferences_;
   }
 
@@ -95,8 +104,8 @@ class NET_EXPORT HttpAuthHandlerFactory {
       HttpAuthChallengeTokenizer* challenge,
       HttpAuth::Target target,
       const SSLInfo& ssl_info,
-      const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
       CreateReason create_reason,
       int digest_nonce_count,
       const NetLogWithSource& net_log,
@@ -112,8 +121,8 @@ class NET_EXPORT HttpAuthHandlerFactory {
       const std::string& challenge,
       HttpAuth::Target target,
       const SSLInfo& ssl_info,
-      const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,
       std::unique_ptr<HttpAuthHandler>* handler);
@@ -126,8 +135,8 @@ class NET_EXPORT HttpAuthHandlerFactory {
   int CreatePreemptiveAuthHandlerFromString(
       const std::string& challenge,
       HttpAuth::Target target,
-      const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
       int digest_nonce_count,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,
@@ -154,9 +163,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
 
  private:
   // The preferences for HTTP authentication.
-  const HttpAuthPreferences* http_auth_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandlerFactory);
+  raw_ptr<const HttpAuthPreferences> http_auth_preferences_ = nullptr;
 };
 
 // The HttpAuthHandlerRegistryFactory dispatches create requests out
@@ -164,7 +171,14 @@ class NET_EXPORT HttpAuthHandlerFactory {
 class NET_EXPORT HttpAuthHandlerRegistryFactory
     : public HttpAuthHandlerFactory {
  public:
-  HttpAuthHandlerRegistryFactory();
+  explicit HttpAuthHandlerRegistryFactory(
+      const HttpAuthPreferences* http_auth_preferences);
+
+  HttpAuthHandlerRegistryFactory(const HttpAuthHandlerRegistryFactory&) =
+      delete;
+  HttpAuthHandlerRegistryFactory& operator=(
+      const HttpAuthHandlerRegistryFactory&) = delete;
+
   ~HttpAuthHandlerRegistryFactory() override;
 
   // Sets the preferences into the factory associated with |scheme|.
@@ -180,14 +194,7 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // for |scheme|. If a factory object used to exist for |scheme|, it will be
   // deleted.
   void RegisterSchemeFactory(const std::string& scheme,
-                             HttpAuthHandlerFactory* factory);
-
-  // Retrieve the factory for the specified |scheme|. If no factory exists
-  // for the |scheme|, nullptr is returned. The returned factory must not be
-  // deleted by the caller, and it is guaranteed to be valid until either
-  // a new factory is registered for the same scheme, or until this
-  // registry factory is destroyed.
-  HttpAuthHandlerFactory* GetSchemeFactory(const std::string& scheme) const;
+                             std::unique_ptr<HttpAuthHandlerFactory> factory);
 
   // Creates an HttpAuthHandlerRegistryFactory.
   //
@@ -195,14 +202,10 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // That object tracks preference, and hence policy, updates relevant to HTTP
   // authentication, and provides the current values of the preferences.
   //
-  // |auth_schemes| is a list of authentication schemes to support. Unknown
-  // schemes are ignored.
-  //
   // |negotiate_auth_system_factory| is used to override the default auth system
   // used by the Negotiate authentication handler.
   static std::unique_ptr<HttpAuthHandlerRegistryFactory> Create(
-      const HttpAuthPreferences* prefs,
-      const std::vector<std::string>& auth_schemes
+      const HttpAuthPreferences* prefs
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
       ,
       const std::string& gssapi_library_name = ""
@@ -222,23 +225,47 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // scheme is used and the factory was created with
   // |negotiate_disable_cname_lookup| false, |host_resolver| must not be null,
   // and it must remain valid for the lifetime of the created |handler|.
-  int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
-                        HttpAuth::Target target,
-                        const SSLInfo& ssl_info,
-                        const NetworkIsolationKey& network_isolation_key,
-                        const GURL& origin,
-                        CreateReason reason,
-                        int digest_nonce_count,
-                        const NetLogWithSource& net_log,
-                        HostResolver* host_resolver,
-                        std::unique_ptr<HttpAuthHandler>* handler) override;
+  int CreateAuthHandler(
+      HttpAuthChallengeTokenizer* challenge,
+      HttpAuth::Target target,
+      const SSLInfo& ssl_info,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
+      CreateReason reason,
+      int digest_nonce_count,
+      const NetLogWithSource& net_log,
+      HostResolver* host_resolver,
+      std::unique_ptr<HttpAuthHandler>* handler) override;
+
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
+  absl::optional<std::string> GetNegotiateLibraryNameForTesting() const;
+#endif
+
+  // Returns true if the scheme is allowed to be used for all origins. An auth
+  // handler may still be created for an origin if that origin is allowed by
+  // policy to use all supported auth handlers.
+  bool IsSchemeAllowedForTesting(const std::string& scheme) const;
 
  private:
+  bool IsSchemeAllowed(const std::string& scheme) const;
+
+  // Retrieve the factory for the specified |scheme|. If no factory exists
+  // for the |scheme|, nullptr is returned. The returned factory must not be
+  // deleted by the caller, and it is guaranteed to be valid until either
+  // a new factory is registered for the same scheme, or until this
+  // registry factory is destroyed.
+  HttpAuthHandlerFactory* GetSchemeFactory(const std::string& scheme) const;
+
   using FactoryMap =
       std::map<std::string, std::unique_ptr<HttpAuthHandlerFactory>>;
-
+  std::set<std::string> default_auth_schemes_ {
+    kBasicAuthScheme, kDigestAuthScheme,
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
+        kNegotiateAuthScheme,
+#endif
+        kNtlmAuthScheme
+  };
   FactoryMap factory_map_;
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandlerRegistryFactory);
 };
 
 }  // namespace net

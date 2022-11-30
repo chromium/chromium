@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@color/default_bg_color_elev_3">
+        android:background="@macro/default_bg_color">
 
         <ImageView
             android:id="@+id/show_keyboard"

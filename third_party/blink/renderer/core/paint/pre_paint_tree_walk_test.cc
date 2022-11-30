@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 
   // Artifically change the transform node.
@@ -78,7 +78,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   // Should have changed back.
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 }
 
@@ -90,7 +90,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithFrameScroll) {
   GetDocument().domWindow()->scrollTo(0, 100);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(FloatSize(0, -100), FrameScrollTranslation()->Translation2D());
+  EXPECT_EQ(gfx::Vector2dF(0, -100), FrameScrollTranslation()->Translation2D());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
@@ -106,7 +106,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(FloatSize(100, 100),
+  EXPECT_EQ(gfx::Vector2dF(100, 100),
             transformed_properties->Transform()->Translation2D());
 
   // Invalidate the CSS transform property.
@@ -114,7 +114,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   // The transform should have changed.
-  EXPECT_EQ(FloatSize(200, 200),
+  EXPECT_EQ(gfx::Vector2dF(200, 200),
             transformed_properties->Transform()->Translation2D());
 }
 
@@ -397,8 +397,6 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
 }
 
 TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kWheelEventRegions);
   SetBodyInnerHTML(R"HTML(
     <div id='ancestor' style='width: 100px; height: 100px;'>
       <div id='handler' style='width: 100px; height: 100px;'>
@@ -453,9 +451,6 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
 }
 
 TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <svg style="width: 200px; height: 200px">
       <rect id="rect"/>
@@ -464,19 +459,19 @@ TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
   )HTML");
 
   auto& foreign = *GetLayoutObjectByElementId("foreign");
-  EXPECT_EQ(IntRect(0, 0, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
   GetDocument().getElementById("rect")->setAttribute(
       html_names::kStyleAttr, "transform: translateX(20px)");
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(IntRect(0, 0, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
   GetDocument().getElementById("g")->setAttribute(
       html_names::kStyleAttr, "transform: translateY(20px)");
   UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_EQ(IntRect(0, -20, 200, 200),
+  EXPECT_EQ(gfx::Rect(0, -20, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 }
 

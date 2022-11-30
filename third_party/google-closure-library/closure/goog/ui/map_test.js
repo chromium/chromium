@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.MapTest');
 goog.setTestOnly();
@@ -74,6 +66,7 @@ testSuite({
         'cleared so it should not contain \'a\' key', !m.containsKey('a'));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testAddAll() {
     const m = new StructsMap;
     m.addAll({a: 0, b: 1, c: 2, d: 3});
@@ -97,16 +90,19 @@ testSuite({
   },
 
   testConstructorWithVarArgs() {
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let m = new StructsMap('a', 1);
     assertTrue('constr with var_args so it should not be empty', !m.isEmpty());
     assertEquals('constr with var_args', 1, m.get('a'));
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     m = new StructsMap('a', 1, 'b', 2);
     assertTrue('constr with var_args so it should not be empty', !m.isEmpty());
     assertEquals('constr with var_args', 1, m.get('a'));
     assertEquals('constr with var_args', 2, m.get('b'));
 
     assertThrows('Odd number of arguments is not allowed', () => {
+      /** @suppress {checkTypes} suppression added to enable type checking */
       const m = new StructsMap('a', 1, 'b');
     });
   },

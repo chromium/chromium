@@ -1,0 +1,90 @@
+<style>
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+#articles {
+  display: block;
+  margin: 16px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+}
+
+.left-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 3;
+}
+
+.title {
+  color: var(--color-new-tab-page-primary-foreground);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+.info {
+  color: var(--color-new-tab-page-secondary-foreground);
+  display: inline;
+}
+
+.favicon {
+  display: inline;
+  float: left;
+  margin-inline-end: 1em;
+  max-height: 14px;
+}
+
+.info-text {
+  font-size: 12px;
+}
+
+.thumbnail {
+  aspect-ratio: 1.33;
+  border-radius: 12px;
+  margin-inline-start: 1em;
+  object-fit: cover;
+  width: 25%;
+}
+
+.card-divider {
+  margin: 16px 0 16px 0;
+}
+
+.card-divider:last-of-type {
+  display: none;
+}
+
+</style>
+<ntp-module-header icon-src="modules/feed/icons/plus.svg">
+  $i18n{modulesFeedTitle}
+</ntp-module-header>
+<div id="articles">
+  <template id="articleRepeat" is="dom-repeat" items="[[articles]]">
+    <a class="card" href="[[item.url.url]]" on-click="onArticleClick_"
+        on-auxclick="onArticleClick_">
+      <div class="left-text">
+        <div class="title" dir="auto">[[item.title]]</div>
+        <div class="info">
+          <img is="cr-auto-img" class="favicon"
+              auto-src="[[item.faviconUrl.url]]" draggable="false"></img>
+          <div class="info-text">[[item.publisher]]</div>
+        </div>
+      </div>
+      <img is="cr-auto-img"
+          class="thumbnail" auto-src="[[item.thumbnailUrl.url]]"
+          draggable="false"></img>
+    </a>
+    <hr class="card-divider">
+  </template>
+</div>

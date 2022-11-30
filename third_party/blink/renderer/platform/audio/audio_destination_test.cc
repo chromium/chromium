@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,11 +37,10 @@ class MockWebAudioDevice : public WebAudioDevice {
 class TestPlatform : public TestingPlatformSupport {
  public:
   std::unique_ptr<WebAudioDevice> CreateAudioDevice(
-      unsigned number_of_input_channels,
-      unsigned number_of_channels,
+      const WebAudioSinkDescriptor& sink_descriptor,
+      unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
-      WebAudioDevice::RenderCallback*,
-      const WebString& device_id) override {
+      WebAudioDevice::RenderCallback*) override {
     return std::make_unique<MockWebAudioDevice>(AudioHardwareSampleRate(),
                                                 AudioHardwareBufferSize());
   }
@@ -60,11 +59,11 @@ class AudioCallback : public blink::AudioIOCallback {
     frames_processed_ += frames_to_process;
   }
 
-  AudioCallback() : frames_processed_(0) {}
-  int frames_processed_;
+  AudioCallback() = default;
+  int frames_processed_ = 0;
 };
 
-void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
+void CountWASamplesProcessedForRate(absl::optional<float> sample_rate) {
   WebAudioLatencyHint latency_hint(WebAudioLatencyHint::kCategoryInteractive);
   AudioCallback callback;
 
@@ -99,7 +98,7 @@ void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
 TEST(AudioDestinationTest, ResamplingTest) {
   ScopedTestingPlatformSupport<TestPlatform> platform;
 
-  CountWASamplesProcessedForRate(base::Optional<float>());
+  CountWASamplesProcessedForRate(absl::optional<float>());
   CountWASamplesProcessedForRate(8000);
   CountWASamplesProcessedForRate(24000);
   CountWASamplesProcessedForRate(44100);

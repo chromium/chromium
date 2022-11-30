@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,12 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -174,7 +170,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string client_data_header;
   if (!is_frame_resource && render_frame_id != MSG_ROUTING_NONE) {
     client_data_header =
@@ -183,9 +179,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #endif
 
   throttles.emplace_back(std::make_unique<GoogleURLLoaderThrottle>(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       client_data_header,
-      /* night_mode_enabled= */ false,
       /* is_tab_large_enough= */ false,
 #endif
       ChromeRenderThreadObserver::GetDynamicParams()));
@@ -195,18 +190,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       chrome_content_renderer_client_->GetChromeObserver()
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  auto throttle = subresource_redirect::SubresourceRedirectURLLoaderThrottle::
-      MaybeCreateThrottle(request, render_frame_id);
-  if (throttle)
-    throttles.emplace_back(std::move(throttle));
-
-  if (render_frame_id != MSG_ROUTING_NONE) {
-    auto throttle = lite_video::LiteVideoURLLoaderThrottle::MaybeCreateThrottle(
-        request, render_frame_id);
-    if (throttle)
-      throttles.emplace_back(std::move(throttle));
-  }
 
   return throttles;
 }

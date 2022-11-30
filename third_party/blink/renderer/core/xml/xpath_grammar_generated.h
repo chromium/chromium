@@ -182,7 +182,7 @@
 # define YYDEBUG 0
 #endif
 
-#line 69 "third_party/blink/renderer/core/xml/xpath_grammar.y"
+#line 77 "third_party/blink/renderer/core/xml/xpath_grammar.y"
 namespace xpathyy {
 #line 185 "third_party/blink/renderer/core/xml/xpath_grammar_generated.h"
 
@@ -1704,7 +1704,7 @@ switch (yykind)
   };
 
 
-#line 69 "third_party/blink/renderer/core/xml/xpath_grammar.y"
+#line 77 "third_party/blink/renderer/core/xml/xpath_grammar.y"
 } // xpathyy
 #line 1707 "third_party/blink/renderer/core/xml/xpath_grammar_generated.h"
 

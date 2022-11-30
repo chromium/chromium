@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,15 @@
 
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
+#include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/version/version_loader.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +25,8 @@ namespace {
 
 const char kGAPSCookie[] = "GAPS";
 const char kOAUTHCodeCookie[] = "oauth_code";
-constexpr base::TimeDelta kCookieDelay = base::TimeDelta::FromSeconds(20);
+const char kRAPTCookie[] = "RAPT";
+constexpr base::TimeDelta kCookieDelay = base::Seconds(20);
 
 }  // namespace
 
@@ -71,10 +71,11 @@ void SetCookieForPartition(
 
   std::string gaps_cookie_value(kGAPSCookie);
   gaps_cookie_value += "=" + context.gaps_cookie;
-  const GURL& gaia_url = GaiaUrls::GetInstance()->gaia_url();
+  const GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       gaia_url, gaps_cookie_value, base::Time::Now(),
-      base::nullopt /* server_time */));
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */));
   if (!cc)
     return;
 
@@ -110,11 +111,11 @@ bool BuildUserContextForGaiaSignIn(
     bool using_saml_api,
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
-    const base::Optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
+    const absl::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
     const LoginClientCertUsageObserver&
         extension_provided_client_cert_usage_observer,
     UserContext* user_context,
-    std::string* error_message) {
+    SigninError* error) {
   *user_context = UserContext(user_type, account_id);
   if (using_saml &&
       extension_provided_client_cert_usage_observer.ClientCertsWereUsed()) {
@@ -123,15 +124,15 @@ bool BuildUserContextForGaiaSignIn(
     std::string extension_id;
     if (!extension_provided_client_cert_usage_observer.GetOnlyUsedClientCert(
             &saml_client_cert, &signature_algorithms, &extension_id)) {
-      *error_message = l10n_util::GetStringUTF8(
-          IDS_CHALLENGE_RESPONSE_AUTH_MULTIPLE_CLIENT_CERTS_ERROR);
+      if (error)
+        *error = SigninError::kChallengeResponseAuthMultipleClientCerts;
       return false;
     }
     ChallengeResponseKey challenge_response_key;
     if (!ExtractChallengeResponseKeyFromCert(
             *saml_client_cert, signature_algorithms, &challenge_response_key)) {
-      *error_message = l10n_util::GetStringUTF8(
-          IDS_CHALLENGE_RESPONSE_AUTH_INVALID_CLIENT_CERT_ERROR);
+      if (error)
+        *error = SigninError::kChallengeResponseAuthInvalidClientCert;
       return false;
     }
     challenge_response_key.set_extension_id(extension_id);
@@ -172,7 +173,7 @@ OnlineLoginHelper::OnlineLoginHelper(
       on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)),
       complete_login_callback_(std::move(complete_login_callback)) {}
 
-OnlineLoginHelper::~OnlineLoginHelper() {}
+OnlineLoginHelper::~OnlineLoginHelper() = default;
 
 void OnlineLoginHelper::SetUserContext(
     std::unique_ptr<UserContext> pending_user_context) {
@@ -207,6 +208,7 @@ void OnlineLoginHelper::RequestCookiesAndCompleteAuthentication() {
       net::CookieOptions::MakeAllInclusive();
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(), cookie_options,
+      net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&OnlineLoginHelper::OnGetCookiesForCompleteAuthentication,
                      weak_factory_.GetWeakPtr()));
 }
@@ -226,13 +228,15 @@ void OnlineLoginHelper::OnCookieWaitTimeout() {
 void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  std::string auth_code, gaps_cookie;
+  std::string auth_code, gaps_cookie, rapt;
   for (const auto& cookie_with_access_result : cookies) {
     const auto& cookie = cookie_with_access_result.cookie;
     if (cookie.Name() == login::kOAUTHCodeCookie)
       auth_code = cookie.Value();
     else if (cookie.Name() == login::kGAPSCookie)
       gaps_cookie = cookie.Value();
+    else if (cookie.Name() == login::kRAPTCookie)
+      rapt = cookie.Value();
   }
 
   if (auth_code.empty()) {
@@ -241,16 +245,18 @@ void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
   }
 
   DCHECK(pending_user_context_);
-  UserContext user_context = *pending_user_context_;
+  auto user_context = std::move(pending_user_context_);
   pending_user_context_.reset();
   oauth_code_listener_.reset();
   cookie_waiting_timer_.reset();
 
-  user_context.SetAuthCode(auth_code);
+  user_context->SetAuthCode(auth_code);
   if (!gaps_cookie.empty())
-    user_context.SetGAPSCookie(gaps_cookie);
+    user_context->SetGAPSCookie(gaps_cookie);
+  if (!rapt.empty())
+    user_context->SetReauthProofToken(rapt);
 
-  std::move(complete_login_callback_).Run(user_context);
+  std::move(complete_login_callback_).Run(std::move(user_context));
 }
 
 }  // namespace chromeos

@@ -1,13 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_RESPONSE_INTERCEPTOR_URL_LOADER_THROTTLE_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_RESPONSE_INTERCEPTOR_URL_LOADER_THROTTLE_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -26,6 +23,12 @@ class PluginResponseInterceptorURLLoaderThrottle
   PluginResponseInterceptorURLLoaderThrottle(
       network::mojom::RequestDestination request_destination,
       int frame_tree_node_id);
+
+  PluginResponseInterceptorURLLoaderThrottle(
+      const PluginResponseInterceptorURLLoaderThrottle&) = delete;
+  PluginResponseInterceptorURLLoaderThrottle& operator=(
+      const PluginResponseInterceptorURLLoaderThrottle&) = delete;
+
   ~PluginResponseInterceptorURLLoaderThrottle() override;
 
  private:
@@ -42,8 +45,6 @@ class PluginResponseInterceptorURLLoaderThrottle
 
   base::WeakPtrFactory<PluginResponseInterceptorURLLoaderThrottle>
       weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResponseInterceptorURLLoaderThrottle);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_RESPONSE_INTERCEPTOR_URL_LOADER_THROTTLE_H_

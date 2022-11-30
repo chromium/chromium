@@ -1,0 +1,24 @@
+{% from 'templates/macros.tmpl' import source_files_for_generated_file, trie_length_switch %}
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/{{namespace|lower}}_element_attribute_name_lookup_trie.h"
+
+#include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
+
+namespace blink {
+
+const QualifiedName& Lookup{{namespace}}AttributeName(const UChar* data, unsigned length) {
+  DCHECK(data);
+  DCHECK(length);
+  {% macro trie_return_statement(tag) -%}
+  {{namespace|lower}}_names::{{tag|symbol}}Attr
+  {%- endmacro %}
+  {{ trie_length_switch(length_tries, trie_return_statement, false) | indent(4) }}
+  return g_null_name;
+}
+
+}  // namespace blink

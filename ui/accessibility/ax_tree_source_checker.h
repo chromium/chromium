@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/accessibility/ax_tree_source.h"
@@ -17,6 +18,10 @@ template <typename AXSourceNode>
 class AXTreeSourceChecker {
  public:
   explicit AXTreeSourceChecker(AXTreeSource<AXSourceNode>* tree);
+
+  AXTreeSourceChecker(const AXTreeSourceChecker&) = delete;
+  AXTreeSourceChecker& operator=(const AXTreeSourceChecker&) = delete;
+
   ~AXTreeSourceChecker();
 
   // Returns true if everything reachable from the root of the tree is
@@ -28,11 +33,9 @@ class AXTreeSourceChecker {
   bool Check(AXSourceNode node, std::string indent, std::string* output);
   std::string NodeToString(AXSourceNode node);
 
-  AXTreeSource<AXSourceNode>* tree_;
+  raw_ptr<AXTreeSource<AXSourceNode>> tree_;
 
   std::map<AXNodeID, AXNodeID> node_id_to_parent_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceChecker);
 };
 
 template <typename AXSourceNode>
@@ -150,9 +153,9 @@ bool AXTreeSourceChecker<AXSourceNode>::Check(AXSourceNode node,
   for (size_t i = 0; i < children.size(); i++) {
     auto& child = children[i];
     if (!tree_->IsValid(child)) {
-      std::string msg =
-          base::StringPrintf("Node %d has an invalid child (index %d): %s\n",
-                             node_id, int{i}, NodeToString(node).c_str());
+      std::string msg = base::StringPrintf(
+          "Node %d has an invalid child (index %d): %s\n", node_id,
+          static_cast<int>(i), NodeToString(node).c_str());
       *output = msg + *output;
       return false;
     }

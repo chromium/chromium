@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">发生意外错误。请将此问题报告给开发者。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1742469581923031760">正在连接…</translation>
+<translation id="177040763384871009">若要允许远程设备上被点击的链接在客户端浏览器中打开，您需将系统的网络浏览器改为“<ph name="URL_FORWARDER_NAME" />”。</translation>
 <translation id="177096447311351977">客户端信道 IP：<ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'。</translation>
 <translation id="1897488610212723051">删除</translation>
 <translation id="2009755455353575666">连接失败</translation>
@@ -24,7 +25,7 @@
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
 <translation id="225614027745146050">欢迎</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
-<translation id="2333212046079545895">版权所有 2021 Google LLC。保留所有权利。</translation>
+<translation id="2329392777730037872">未能在客户端上打开 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2366718077645204424">无法连接到主机，这可能是由您所使用网络的配置导致的。</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />上次在线时间：<ph name="RELATIVE_TIMESTAMP" />。</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">此服务允许来自 Chrome 远程桌面客户端的连接。</translation>
 <translation id="2647232381348739934">Chrome 远程访问服务</translation>
 <translation id="2676780859508944670">运行中…</translation>
+<translation id="2692522824157224199">版权所有 2022 Google LLC。保留所有权利。</translation>
 <translation id="2699970397166997657">Chrome 远程访问</translation>
 <translation id="2758123043070977469">验证您的身份时出问题了，请重新登录。</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">离线。</translation>
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3776024066357219166">您的 Chrome 远程桌面会话已结束。</translation>
+<translation id="3858860766373142691">名称</translation>
 <translation id="3897092660631435901">菜单</translation>
 <translation id="3905196214175737742">主机所有者所在网域无效。</translation>
 <translation id="3931191050278863510">主机已停止运行。</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">访问代码</translation>
 <translation id="4227991223508142681">主机配置实用程序</translation>
 <translation id="4240294130679914010">Chrome 远程访问主机卸载程序</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" />地址转发工具</translation>
 <translation id="4277736576214464567">访问代码无效，请重试。</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4372650392690220936">版权所有 2022 The Chromium Authors。保留所有权利。</translation>
 <translation id="4405930547258349619">核心数据库</translation>
 <translation id="443560535555262820">打开“无障碍”偏好设置</translation>
 <translation id="4450893287417543264">不再显示</translation>
-<translation id="4512952200932940229">版权所有 2021 The Chromium Authors。保留所有权利。</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4563926062592110512">与下列客户端的连接已中断：<ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />未正确配置。请选择其他默认网络浏览器，然后重新启用网址转发功能。</translation>
 <translation id="4635770493235256822">远程设备</translation>
 <translation id="4660011489602794167">显示键盘</translation>
 <translation id="4703799847237267011">您的 Chrome 远程访问会话已结束。</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">发送PrtScn</translation>
 <translation id="4974476491460646149">与“<ph name="HOSTNAME" />”的连接已关闭</translation>
 <translation id="4985296110227979402">您需要先设置计算机，然后才能进行远程访问</translation>
+<translation id="4987330545941822761">Chrome 远程桌面无法确定应使用哪款浏览器在本地打开网址。请从下面的列表中选择。</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" />（离线）</translation>
 <translation id="507204348399810022">确定要停用与“<ph name="HOSTNAME" />”的远程连接吗？</translation>
 <translation id="5170982930780719864">主机 ID 无效。</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5308380583665731573">连接</translation>
-<translation id="5327248766486351172">名称</translation>
 <translation id="533625276787323658">没有可连接到的计算机</translation>
 <translation id="5397086374758643919">Chrome 远程桌面主机卸载程序</translation>
 <translation id="5419418238395129586">上次在线日期：<ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682">以 <ph name="EMAIL_ADDRESS" /> 的身份登录。</translation>
 <translation id="579702532610384533">重新连接</translation>
 <translation id="5810269635982033450">屏幕充当触控板</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。如果您不愿批准这项请求，请按“<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”。否则，请在准备就绪后选择“<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”以允许建立这项关联。</translation>
 <translation id="5823658491130719298">在您要远程访问的计算机上，打开 Chrome 并访问 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">显示选项</translation>
 <translation id="6033507038939587647">键盘选项</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">发送Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">共享</translation>
 <translation id="677755392401385740">已为用户<ph name="HOST_USERNAME" />启动主机。</translation>
+<translation id="6902524959760471898">助手应用，用于在 <ph name="PRODUCT_NAME" />客户端打开网址</translation>
 <translation id="6939719207673461467">显示/隐藏键盘。</translation>
 <translation id="6963936880795878952">与远程计算机的连接已被暂时阻止，因为有人试图使用无效的 PIN 码连接到该计算机。请稍后重试。</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">重试</translation>
 <translation id="7312846573060934304">主机未连接到网络。</translation>
 <translation id="7319983568955948908">停止共享</translation>
+<translation id="7359298090707901886">无法使用所选浏览器在本地计算机上打开网址。</translation>
 <translation id="7401733114166276557">Chrome 远程桌面</translation>
 <translation id="7434397035092923453"><ph name="CLIENT_USERNAME" /> 访问客户端的请求遭拒。</translation>
 <translation id="7444276978508498879">已连接客户端：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7526139040829362392">更改帐号</translation>
+<translation id="7535110896613603182">打开默认应用设置</translation>
 <translation id="7628469622942688817">在此设备上记住我的 PIN 码。</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -161,6 +170,7 @@
 要授予此权限，请先点击下面的“<ph name="BUTTON_NAME" />”，然后在随即打开的“无障碍”偏好设置窗格中勾选“<ph name="SERVICE_SCRIPT_NAME" />”旁边的复选框。
 
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
+<translation id="8305209735512572429">网络身份验证远程处理</translation>
 <translation id="8383794970363966105">要使用Chrome远程访问，您需要先为自己的设备添加一个Google帐号。</translation>
 <translation id="8386846956409881180">为主机指定的 OAuth 凭据无效。</translation>
 <translation id="8397385476380433240">向 <ph name="PRODUCT_NAME" />授予权限</translation>

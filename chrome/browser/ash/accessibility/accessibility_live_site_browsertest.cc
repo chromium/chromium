@@ -1,6 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "ash/shell.h"
 #include "base/strings/pattern.h"
@@ -12,12 +14,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
@@ -28,40 +28,37 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_FALSE(AccessibilityManager::Get()->IsSelectToSpeakEnabled());
 
-    content::WindowedNotificationObserver extension_load_waiter(
-        extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-        content::NotificationService::AllSources());
+    extensions::ExtensionHostTestHelper host_helper(browser()->profile());
     AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-    extension_load_waiter.Wait();
+    host_helper.WaitForHostCompletedFirstLoad();
 
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
-    generator_.reset(new ui::test::EventGenerator(root_window));
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // TODO: this logic currently doesn't work and the test never passes due to
-    // inability to lookup docs.google.com. To avoid depending on external
-    // resources, browser tests don't allow non-local DNS queries by default.
-    // Override this for this specific manual test suite.
-    scoped_refptr<net::RuleBasedHostResolverProc> resolver =
-        new net::RuleBasedHostResolverProc(host_resolver());
-    resolver->AllowDirectLookup("*.google.com");
-    resolver->AllowDirectLookup("*.gstatic.com");
-    mock_host_resolver_override_.reset(
-        new net::ScopedDefaultHostResolverProc(resolver.get()));
-  }
+    // To avoid depending on external resources, browser tests don't allow
+    // non-local DNS queries by default. Override this for this specific manual
+    // test suite.
+    host_resolver()->AllowDirectLookup("*.google.com");
+    host_resolver()->AllowDirectLookup("*.gstatic.com");
 
-  void TearDownInProcessBrowserTestFixture() override {
-    mock_host_resolver_override_.reset();
+    // TODO (accessibility): Provide a way to disable the pop up dialog.
+    // Disable kEnhancedNetworkVoices to avoid its pop up dialog.
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kEnhancedNetworkVoices);
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   test::SpeechMonitor speech_monitor_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
-  std::unique_ptr<net::ScopedDefaultHostResolverProc>
-      mock_host_resolver_override_;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This is a sanity check / integration test that Select-to-speak works
@@ -83,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
 
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDocsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDocsUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::EnableAccessibilityForWebContents(web_contents);

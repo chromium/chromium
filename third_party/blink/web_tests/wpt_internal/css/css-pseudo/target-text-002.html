@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: ::target-text - This test ensures link style can be controlled by author.</title>
+<link rel="help" href="https://drafts.csswg.org/css-pseudo/#selectordef-target-text">
+<link rel="match" href="target-text-lime-green-link-no-underline-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+  .ahem { font-family: Ahem; }
+  :any-link::target-text {
+    /* The default ::target-text should add back in underlines for links, but author style should be able to remove it" */
+    color: lime;
+    background-color: green;
+    text-decoration: none;
+  }
+  a:any-link{
+    text-decoration: none;
+  }
+</style>
+<p>PASS if there are two segments of lime squares with a green square, without an underline, between them below.</p>
+<a class="ahem" href="example.html"> match me </a>
+<script>
+  window.location.hash = "#:~:text=match%20me";
+</script>

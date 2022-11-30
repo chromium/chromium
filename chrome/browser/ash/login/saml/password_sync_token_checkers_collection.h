@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 #include "components/user_manager/user.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
+namespace ash {
 
 // Helper class to handle PasswordSyncTokenLoginChecker objects for all users
 // on the login screen.
@@ -40,8 +41,8 @@ class PasswordSyncTokenCheckersCollection
   void OnInvalidSyncToken(const AccountId& account_id) override;
 
  private:
-  friend class PasswordSyncTokenLoginCheckerTest;
   friend class ExistingUserControllerForcedOnlineAuthTest;
+  friend class PasswordSyncTokenLoginCheckerTest;
 
   std::unordered_map<std::string,
                      std::unique_ptr<PasswordSyncTokenLoginChecker>>
@@ -49,6 +50,12 @@ class PasswordSyncTokenCheckersCollection
   net::BackoffEntry sync_token_retry_backoff_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::PasswordSyncTokenCheckersCollection;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_CHECKERS_COLLECTION_H_

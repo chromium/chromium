@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 
@@ -33,12 +32,18 @@ class RemoteTestServerSpawnerRequest {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const GURL& url,
       const std::string& post_data);
+
+  RemoteTestServerSpawnerRequest(const RemoteTestServerSpawnerRequest&) =
+      delete;
+  RemoteTestServerSpawnerRequest& operator=(
+      const RemoteTestServerSpawnerRequest&) = delete;
+
   ~RemoteTestServerSpawnerRequest();
 
   // Blocks until request is finished. If |response| isn't nullptr then server
   // response is copied to *response. Returns true if the request was completed
   // successfully.
-  bool WaitForCompletion(std::string* response) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitForCompletion(std::string* response);
 
  private:
   class Core;
@@ -55,8 +60,6 @@ class RemoteTestServerSpawnerRequest {
   std::unique_ptr<ScopedPortException> allowed_port_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteTestServerSpawnerRequest);
 };
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,18 @@ std::pair<base::StringPiece, base::StringPiece> SplitIntoMainAndTail(
 // Example: from "en-US", extract "en".
 base::StringPiece ExtractBaseLanguage(base::StringPiece language_code);
 
+// DEPRECATED. Use:
+// - |l10n_util::CheckAndResolveLocale| to deterministically convert an input
+//   locale to a UI locale. This matches the previous behaviour of
+//   |ConvertToActualUILocale|, and is used internally in
+//   |ConvertToActualUILocale|.
+// - |l10n_util::IsUserFacingUILocale| to deterministically determine whether we
+//   should show a user that a locale can be set as a UI locale.
+// - |l10n_util::GetApplicationLocale| to get the application locale given an
+//   input locale, with the correct fallbacks in case the provided locale is not
+//   a UI locale. Note that this requires I/O, but can be modified to avoid I/O
+//   when possible (by passing a perform_io argument to
+//   |l10n_util::CheckAndResolveLocale| and |l10n_util::HasStringsForLocale|).
 // Converts the input locale into its corresponding actual UI locale that
 // Chrome should use for display and returns whether such locale exist.
 // This method must be called whenever the display locale preference is

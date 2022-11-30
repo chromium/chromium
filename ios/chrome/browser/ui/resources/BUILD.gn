@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,23 @@ imageset("menu_shadow") {
     "menu_shadow.imageset/menu_shadow.png",
     "menu_shadow.imageset/menu_shadow@2x.png",
     "menu_shadow.imageset/menu_shadow@3x.png",
+  ]
+}
+
+imageset("module_shadow") {
+  sources = [
+    "module_shadow.imageset/Contents.json",
+    "module_shadow.imageset/module_shadow.png",
+    "module_shadow.imageset/module_shadow@2x.png",
+    "module_shadow.imageset/module_shadow@3x.png",
+  ]
+}
+
+imageset("legacy_password_key") {
+  sources = [
+    "legacy_password_key.imageset/Contents.json",
+    "legacy_password_key.imageset/password_key@2x.png",
+    "legacy_password_key.imageset/password_key@3x.png",
   ]
 }
 

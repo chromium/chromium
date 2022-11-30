@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<title>Tests the TextDirective type in fragmentDirective</title>
+<meta charset="utf-8">
+<link rel="help" href="https://wicg.github.io/ScrollToTextFragment/issues/160">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+</style>
+<body>
+  <p id="p1">The quick brown fox jumped over the lazy dog</p>
+  <p id="p2">The quick brown fox jumped over the industrious beaver</p>
+  <p id="p3">-,&amp;percent-encoding,isn't-all-fun &amp; games -- unless, you know 100% what-you're-doing &amp; love-it,?</p>
+  <script>
+    onload = () => {
+      promise_test(async (t) => {
+        // Invalid since this is a suffix without any match text.
+        location.hash = ':~:text=-industrious';
+        assert_equals(document.fragmentDirective.items.length, 0, 'items.length');
+
+        // Invalid since match text is empty string.
+        location.hash = ':~:text=,,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 0, 'items.length');
+
+        // Invalid since there's three terms and none are suffix/prefix hyphenated.
+        location.hash = ':~:text=quick,brown,fox';
+        assert_equals(document.fragmentDirective.items.length, 0, 'items.length');
+
+        // Invalid since there's multiple prefixes.
+        location.hash = ':~:text=quick-,brown-,fox';
+        assert_equals(document.fragmentDirective.items.length, 0, 'items.length');
+      }, 'Invalid text directive isn\'t added');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=lazy';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'lazy', 'textStart');
+        assert_equals(directive.textEnd, '', 'textEnd');
+        assert_equals(directive.prefix, '', 'prefix');
+        assert_equals(directive.suffix, '', 'suffix');
+        assert_equals(directive.toString(), 'text=lazy', 'toString()');
+      }, 'textStart-only TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=lazy,industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'lazy', 'textStart');
+        assert_equals(directive.textEnd, 'industrious', 'textEnd');
+        assert_equals(directive.prefix, '', 'prefix');
+        assert_equals(directive.suffix, '', 'suffix');
+        assert_equals(directive.toString(), 'text=lazy,industrious', 'toString()');
+      }, 'Range-based TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=dog-,The';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'The', 'textStart');
+        assert_equals(directive.textEnd, '', 'textEnd');
+        assert_equals(directive.prefix, 'dog', 'prefix');
+        assert_equals(directive.suffix, '', 'suffix');
+        assert_equals(directive.toString(), 'text=dog-,The', 'toString()');
+      }, 'Prefix TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=the,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'the', 'textStart');
+        assert_equals(directive.textEnd, '', 'textEnd');
+        assert_equals(directive.prefix, '', 'prefix');
+        assert_equals(directive.suffix, 'industrious', 'suffix');
+        assert_equals(directive.toString(), 'text=the,-industrious', 'toString()');
+      }, 'Suffix TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=over-,the,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'the', 'textStart');
+        assert_equals(directive.textEnd, '', 'textEnd');
+        assert_equals(directive.prefix, 'over', 'prefix');
+        assert_equals(directive.suffix, 'industrious', 'suffix');
+        assert_equals(directive.toString(), 'text=over-,the,-industrious', 'toString()');
+      }, 'Prefix+Suffix TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=quick-,brown,the,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, 'brown', 'textStart');
+        assert_equals(directive.textEnd, 'the', 'textEnd');
+        assert_equals(directive.prefix, 'quick', 'prefix');
+        assert_equals(directive.suffix, 'industrious', 'suffix');
+        assert_equals(directive.toString(), 'text=quick-,brown,the,-industrious', 'toString()');
+      }, 'Prefix+Suffix range-based TextDirective is correctly parsed.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=%2D%2C%26percent%2Dencoding-,%2Cisn%27t%2Dall%2Dfun%20%26,%2D%20unless%2C%20you%20know%20100%25,-what%2Dyou%27re%2Ddoing%20%26%20love%2Dit%2C%3F';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const directive = document.fragmentDirective.items[0];
+        assert_equals(directive.type, 'text', 'type');
+        assert_equals(directive.textStart, ',isn\'t-all-fun &', 'textStart');
+        assert_equals(directive.textEnd, '- unless, you know 100%', 'textEnd');
+        assert_equals(directive.prefix, '-,&percent-encoding', 'prefix');
+        assert_equals(directive.suffix, 'what-you\'re-doing & love-it,?', 'suffix');
+        assert_equals(directive.toString(), 'text=%2D%2C%26percent%2Dencoding-,%2Cisn%27t%2Dall%2Dfun%20%26,%2D%20unless%2C%20you%20know%20100%25,-what%2Dyou%27re%2Ddoing%20%26%20love%2Dit%2C%3F', 'toString()');
+      }, 'Percent-decode the parsed terms but not toString().');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=the,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const promise = document.fragmentDirective.items[0].getMatchingRange();
+        assert_true(promise instanceof Promise);
+
+        const range = await promise;
+
+        assert_not_equals(range, null, 'Range is non-null');
+        assert_true(range instanceof Range, 'Returned value is Range');
+        assert_equals(range.toString(), 'the', 'Found correct text');
+        assert_equals(range.startContainer.parentElement, document.getElementById('p2'), 'Found correct instance');
+      }, 'getMatchingRange() for found text.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=textthatdoesntexist';
+        assert_equals(document.fragmentDirective.items.length, 1, 'items.length');
+
+        const promise = document.fragmentDirective.items[0].getMatchingRange();
+        assert_true(promise instanceof Promise);
+
+        return promise_rejects_dom(t, 'NotFoundError', promise);
+      }, 'getMatchingRange() for non existent text rejects.');
+
+      // Calls getMatchingRange multiple times on a text directive.
+      promise_test(async (t) => {
+        location.hash = ':~:text=the,-industrious';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items.length');
+
+        let promise = document.fragmentDirective.items[0].getMatchingRange();
+        let range = await promise;
+
+        promise = document.fragmentDirective.items[0].getMatchingRange();
+        range = await promise;
+
+        assert_not_equals(range, null, 'Range is non-null');
+        assert_true(range instanceof Range, 'Returned value is Range');
+        assert_equals(range.toString(), 'the', 'Found correct text');
+        assert_equals(range.startContainer.parentElement, document.getElementById('p2'), 'Found correct instance');
+      }, 'getMatchingRange() multiple times.');
+
+      // Calls getMatchingRange multiple times on a non-existent text directive.
+      promise_test(async (t) => {
+        location.hash = ':~:text=textthatdoesntexist';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items.length');
+
+        let promise = document.fragmentDirective.items[0].getMatchingRange();
+        try {
+          await promise;
+          assert_unreached('Promise must reject first time.');
+        } catch(e) {
+          assert_true(e instanceof DOMException);
+          assert_equals(e.name, 'NotFoundError');
+        }
+
+        promise = document.fragmentDirective.items[0].getMatchingRange();
+        try {
+          await promise;
+          assert_unreached('Promise must reject second time.');
+        } catch(e) {
+          assert_true(e instanceof DOMException);
+          assert_equals(e.name, 'NotFoundError');
+        }
+      }, 'failed getMatchingRange() multiple times.');
+
+      // Calls getMatchingRange a second time after the initially matched Range changes.
+      promise_test(async (t) => {
+        const new_text = document.createElement('p');
+        new_text.innerText = "this text will be removed after matching";
+        document.body.appendChild(new_text);
+
+        location.hash = ':~:text=removed%20after%20matching';
+        assert_equals(document.fragmentDirective.items.length, 1,
+                      '[PRECONDITION] items.length');
+
+        let promise = document.fragmentDirective.items[0].getMatchingRange();
+        let range = await promise;
+
+        assert_equals(range.toString(), 'removed after matching',
+                      '[PRECONDITION] Found correct text');
+
+        new_text.remove();
+
+        // The range should change but exactly how should be tested as part of
+        // Range (or implementation defined?).
+        const updated_range_text = range.toString();
+        assert_not_equals(updated_range_text, 'removed after matching',
+                          '[PRECONDITION] Range updated after element removal');
+
+        promise = document.fragmentDirective.items[0].getMatchingRange();
+        let new_range = await promise;
+
+        // The returned range should point to the same location as the one froj
+        // the inital call to getMatchingRange().
+        assert_not_equals(range, null, 'Range is non-null');
+        assert_true(range instanceof Range, 'Returned value is Range');
+        assert_equals(range.toString(), updated_range_text,
+                      'getMatchingRange returns the same range');
+      }, 'getMatchingRange() after element in Range removed.');
+
+      promise_test(async (t) => {
+        let null_directive = new TextDirective({});
+        assert_equals(null_directive.textStart, '', 'null_directive textStart');
+        assert_equals(null_directive.textEnd, '', 'null_directive textEnd');
+        assert_equals(null_directive.prefix, '', 'null_directive prefix');
+        assert_equals(null_directive.suffix, '', 'null_directive suffix');
+
+        let exact_directive = new TextDirective({textStart: 'hello'});
+        assert_equals(exact_directive.textStart, 'hello', 'exact_directive textStart');
+        assert_equals(exact_directive.textEnd, '', 'exact_directive textEnd');
+        assert_equals(exact_directive.prefix, '', 'exact_directive prefix');
+        assert_equals(exact_directive.suffix, '', 'exact_directive suffix');
+
+        let range_directive = new TextDirective({textStart: 'hello', textEnd: 'world'});
+        assert_equals(range_directive.textStart, 'hello', 'range_directive textStart');
+        assert_equals(range_directive.textEnd, 'world', 'range_directive textEnd');
+        assert_equals(range_directive.prefix, '', 'range_directive prefix');
+        assert_equals(range_directive.suffix, '', 'range_directive suffix');
+
+        let full_directive = new TextDirective(
+            {textStart: 'hello', textEnd: 'world', prefix: 'foo', suffix: 'bar'});
+        assert_equals(full_directive.textStart, 'hello', 'full_directive textStart');
+        assert_equals(full_directive.textEnd, 'world', 'full_directive textEnd');
+        assert_equals(full_directive.prefix, 'foo', 'full_directive prefix');
+        assert_equals(full_directive.suffix, 'bar', 'full_directive suffix');
+      }, 'Construct TextDirective.');
+
+      promise_test(async (t) => {
+        location.hash = ':~:text=foo-,start,end,-bar';
+        assert_equals(document.fragmentDirective.items.length, 1, '[PRECONDITION] items.length');
+
+        let directive = document.fragmentDirective.items[0];
+        assert_equals(directive.textStart, 'start', '[PRECONDITION] textStart');
+        assert_equals(directive.textEnd, 'end', '[PRECONDITION] textEnd');
+        assert_equals(directive.prefix, 'foo', '[PRECONDITION] prefix');
+        assert_equals(directive.suffix, 'bar', '[PRECONDITION] suffix');
+
+        directive.textStart = 'write';
+        assert_equals(directive.textStart, 'start', 'textStart');
+
+        directive.textEnd = 'write';
+        assert_equals(directive.textEnd, 'end', 'textEnd');
+
+        directive.prefix = 'write';
+        assert_equals(directive.prefix, 'foo', 'prefix');
+
+        directive.suffix = 'write';
+        assert_equals(directive.suffix, 'bar', 'suffix');
+      }, 'Text directives are read-only.');
+    };
+  </script>

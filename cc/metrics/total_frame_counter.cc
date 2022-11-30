@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/metrics/total_frame_counter.h"
+
+#include <cmath>
 
 #include "base/logging.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -66,7 +68,7 @@ size_t TotalFrameCounter::ComputeTotalVisibleFrames(
 
   DCHECK_GE(until, last_shown_timestamp_);
   auto frames_since =
-      std::round((until - last_shown_timestamp_) / latest_interval_);
+      std::ceil((until - last_shown_timestamp_) / latest_interval_);
   return total_frames_ + frames_since;
 }
 

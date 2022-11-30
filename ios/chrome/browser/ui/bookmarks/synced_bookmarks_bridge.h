@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 
 class ChromeBrowserState;
@@ -24,17 +23,20 @@ class SyncedBookmarksObserverBridge : public SyncObserverBridge {
  public:
   SyncedBookmarksObserverBridge(id<SyncObserverModelBridge> delegate,
                                 ChromeBrowserState* browserState);
+
+  SyncedBookmarksObserverBridge(const SyncedBookmarksObserverBridge&) = delete;
+  SyncedBookmarksObserverBridge& operator=(
+      const SyncedBookmarksObserverBridge&) = delete;
+
   ~SyncedBookmarksObserverBridge() override;
-  // Returns true if user is signed in.
-  bool IsSignedIn();
+  // Returns true if the user has consented to sync.
+  bool HasSyncConsent();
   // Returns true if it is undergoing the first sync cycle.
   bool IsPerformingInitialSync();
 
  private:
   signin::IdentityManager* identity_manager_;
   ChromeBrowserState* browser_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedBookmarksObserverBridge);
 };
 
 }  // namespace sync_bookmarks

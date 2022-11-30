@@ -31,11 +31,12 @@
 
 #include <string.h>
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -49,6 +50,8 @@ class AudioArray {
       : allocation_(nullptr), aligned_data_(nullptr), size_(0) {
     Allocate(n);
   }
+  AudioArray(const AudioArray&) = delete;
+  AudioArray& operator=(const AudioArray&) = delete;
 
   ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
 
@@ -70,8 +73,9 @@ class AudioArray {
     const unsigned kAlignment = 16;
 #endif
 
-    if (allocation_)
+    if (allocation_) {
       WTF::Partitions::FastFree(allocation_);
+    }
 
     // Always allocate extra space so that we are guaranteed to get
     // the desired alignment.  Some memory is wasted, but it should be
@@ -101,29 +105,31 @@ class AudioArray {
 
   void Zero() {
     // This multiplication is made safe by the check in Allocate().
-    memset(this->Data(), 0, sizeof(T) * this->size());
+    memset(Data(), 0, sizeof(T) * size());
   }
 
   void ZeroRange(unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
-    if (!is_safe)
+    if (!is_safe) {
       return;
+    }
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memset(this->Data() + start, 0, sizeof(T) * (end - start));
+    memset(Data() + start, 0, sizeof(T) * (end - start));
   }
 
   void CopyToRange(const T* source_data, unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
-    if (!is_safe)
+    if (!is_safe) {
       return;
+    }
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memcpy(this->Data() + start, source_data, sizeof(T) * (end - start));
+    memcpy(Data() + start, source_data, sizeof(T) * (end - start));
   }
 
  private:
@@ -137,8 +143,6 @@ class AudioArray {
   T* allocation_;
   T* aligned_data_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioArray);
 };
 
 typedef AudioArray<float> AudioFloatArray;

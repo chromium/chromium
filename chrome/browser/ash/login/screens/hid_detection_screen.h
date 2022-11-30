@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,23 +13,24 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/wizard_context.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
+#include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/input_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-class HIDDetectionView;
-class WizardContext;
+namespace ash {
 
 // Representation independent class that controls screen showing warning about
 // HID absence to users.
@@ -37,24 +38,30 @@ class HIDDetectionScreen : public BaseScreen,
                            public device::BluetoothAdapter::Observer,
                            public device::BluetoothDevice::PairingDelegate,
                            public device::mojom::InputDeviceManagerClient,
-                           public DemoModeDetector::Observer {
+                           public hid_detection::HidDetectionManager::Delegate {
  public:
   using TView = HIDDetectionView;
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  enum class Result { NEXT, START_DEMO, SKIP, SKIPPED_FOR_TESTS };
+  enum class Result { NEXT, SKIPPED_FOR_TESTS };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  HIDDetectionScreen(HIDDetectionView* view,
+  HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
                      const ScreenExitCallback& exit_callback);
+
+  HIDDetectionScreen(const HIDDetectionScreen&) = delete;
+  HIDDetectionScreen& operator=(const HIDDetectionScreen&) = delete;
+
   ~HIDDetectionScreen() override;
 
   static std::string GetResultString(Result result);
 
-  // This method is called when the view is being destroyed.
-  void OnViewDestroyed(HIDDetectionView* view);
+  // The HID detection screen is only allowed for form factors without built-in
+  // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
+  // Also different testing flags might forcefully skip the screen
+  static bool CanShowScreen();
 
   // Checks if this screen should be displayed. `on_check_done` should be
   // invoked with the result; true if the screen should be displayed, false
@@ -67,8 +74,14 @@ class HIDDetectionScreen : public BaseScreen,
   static void OverrideInputDeviceManagerBinderForTesting(
       InputDeviceManagerBinder binder);
 
+  // Allows tests to override what HidDetectionManager implementation is used
+  // when the kOobeHidDetectionRevamp flag is enabled.
+  static void OverrideHidDetectionManagerForTesting(
+      std::unique_ptr<hid_detection::HidDetectionManager>
+          hid_detection_manager);
+
   void InputDeviceAddedForTesting(InputDeviceInfoPtr info);
-  const base::Optional<Result>& get_exit_result_for_testing() const {
+  const absl::optional<Result>& get_exit_result_for_testing() const {
     return exit_result_for_testing_;
   }
 
@@ -76,10 +89,10 @@ class HIDDetectionScreen : public BaseScreen,
   friend class HIDDetectionScreenChromeboxTest;
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // device::BluetoothDevice::PairingDelegate:
   void RequestPinCode(device::BluetoothDevice* device) override;
@@ -107,8 +120,9 @@ class HIDDetectionScreen : public BaseScreen,
   void InputDeviceAdded(InputDeviceInfoPtr info) override;
   void InputDeviceRemoved(const std::string& id) override;
 
-  // DemoModeDetector::Observer:
-  void OnShouldStartDemoMode() override;
+  // hid_detection::HidDetectionManager::Delegate:
+  void OnHidDetectionStatusChanged(
+      hid_detection::HidDetectionManager::HidDetectionStatus status) override;
 
   // Called when continue button was clicked.
   void OnContinueButtonClicked();
@@ -116,21 +130,6 @@ class HIDDetectionScreen : public BaseScreen,
   void CleanupOnExit();
 
   bool ShouldEnableContinueButton();
-
-  // Types of dialog leaving scenarios for UMA metric.
-  enum ContinueScenarioType {
-    // Only pointing device detected, user pressed 'Continue'.
-    POINTING_DEVICE_ONLY_DETECTED,
-
-    // Only keyboard detected, user pressed 'Continue'.
-    KEYBOARD_DEVICE_ONLY_DETECTED,
-
-    // All devices detected.
-    All_DEVICES_DETECTED,
-
-    // Must be last enum element.
-    CONTINUE_SCENARIO_TYPE_SIZE
-  };
 
   void InitializeAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
@@ -199,16 +198,12 @@ class HIDDetectionScreen : public BaseScreen,
   // Tries to connect given BT device.
   void ConnectBTDevice(device::BluetoothDevice* device);
 
-  // Called by device::BluetoothDevice on a successful pairing and connection
-  // to a device.
-  void BTConnected(device::BluetoothDeviceType device_type);
-
-  // Called by device::BluetoothDevice in response to a failure to
-  // connect to the device with bluetooth address `address` due to an error
-  // encoded in `error_code`.
-  void BTConnectError(const std::string& address,
-                      device::BluetoothDeviceType device_type,
-                      device::BluetoothDevice::ConnectErrorCode error_code);
+  // Response callback for device::BluetoothDevice::Connect().
+  void OnConnect(
+      const std::string& address,
+      device::BluetoothDeviceType device_type,
+      uint16_t device_id,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Sends a notification to the Web UI of the status of available Bluetooth/USB
   // pointing device.
@@ -230,12 +225,10 @@ class HIDDetectionScreen : public BaseScreen,
   scoped_refptr<device::BluetoothAdapter> GetAdapterForTesting();
   void SetAdapterInitialPoweredForTesting(bool powered);
 
-  HIDDetectionView* view_;
+  base::WeakPtr<HIDDetectionView> view_;
 
   const ScreenExitCallback exit_callback_;
-  base::Optional<Result> exit_result_for_testing_;
-
-  std::unique_ptr<DemoModeDetector> demo_mode_detector_;
+  absl::optional<Result> exit_result_for_testing_;
 
   // Default bluetooth adapter, used for all operations.
   scoped_refptr<device::BluetoothAdapter> adapter_;
@@ -277,11 +270,29 @@ class HIDDetectionScreen : public BaseScreen,
 
   bool devices_enumerated_ = false;
 
-  base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
+  size_t num_pairing_attempts_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreen);
+  std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager_;
+
+  // Map that contains the start times of pairings for devices.
+  base::flat_map<uint16_t, std::unique_ptr<base::ElapsedTimer>>
+      pairing_device_id_to_timer_map_;
+
+  base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::HIDDetectionScreen;
+}
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::HIDDetectionScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_HID_DETECTION_SCREEN_H_

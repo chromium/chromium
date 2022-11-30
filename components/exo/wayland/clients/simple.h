@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@ class Simple : public wayland::clients::ClientBase {
  public:
   Simple();
 
+  Simple(const Simple&) = delete;
+  Simple& operator=(const Simple&) = delete;
+
   struct PresentationFeedback {
     // Total presentation latency of all presented frames.
     base::TimeDelta total_presentation_latency;
@@ -27,9 +30,6 @@ class Simple : public wayland::clients::ClientBase {
   void Run(int frames,
            const bool log_vsync_timing_updates = false,
            PresentationFeedback* feedback = nullptr);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Simple);
 };
 
 }  // namespace clients

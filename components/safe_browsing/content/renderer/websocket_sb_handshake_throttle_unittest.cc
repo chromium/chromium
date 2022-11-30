@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ class FakeCallback {
 
   FakeCallback() : result_(RESULT_NOT_CALLED) {}
 
-  void OnCompletion(const base::Optional<blink::WebString>& message) {
+  void OnCompletion(const absl::optional<blink::WebString>& message) {
     if (message) {
       result_ = RESULT_ERROR;
       message_ = *message;

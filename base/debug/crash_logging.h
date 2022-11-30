@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <stddef.h>
 
+#include <iosfwd>
 #include <memory>
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 
@@ -25,13 +25,43 @@ namespace debug {
 //
 // The preferred API is //components/crash/core/common:crash_key, however not
 // all clients can hold a direct dependency on that target. The API provided
-// in this file indirects the dependency.
+// in this file indirects the dependency and adds some convenience helpers that
+// make the API a bit less clunky.
 //
-// Example usage:
-//   static CrashKeyString* crash_key =
-//       AllocateCrashKeyString("name", CrashKeySize::Size32);
-//   SetCrashKeyString(crash_key, "value");
-//   ClearCrashKeyString(crash_key);
+// TODO(dcheng): Some of the nicer APIs should probably be upstreamed into
+// //components/crash.
+//
+// Preferred usage when a crash key value only needs to be set within a scope:
+//
+//   SCOPED_CRASH_KEY_STRING32("category", "name", "value");
+//   base::debug::DumpWithoutCrashing();
+//
+// If the crash key is pre-allocated elsewhere, but the value only needs to be
+// set within a scope:
+//
+//   base::debug::ScopedCrashKeyString scoper(
+//       GetCrashKeyForComponent(),
+//       "value");
+//
+// Otherwise, if the crash key needs to persist (e.g. the actual crash dump is
+// triggered some time later asynchronously):
+//
+//   static auto* const crash_key = base::debug::AllocateCrashKeyString(
+//       "name", base::debug::CrashKeySize::Size32);
+//   base::debug::SetCrashKeyString(crash_key, "value");
+//
+//   // Do other work before calling `base::debug::DumpWithoutCrashing()` later.
+//
+// ***WARNING***
+//
+// Do *not* write this:
+//
+//   base::debug::SetCrashKeyString(
+//       base::debug::AllocateCrashKeyString(
+//           "name", base::debug::CrashKeySize::Size32),
+//       "value");
+//
+// As this will leak a heap allocation every time the crash key is set!
 
 // The maximum length for a crash key's value must be one of the following
 // pre-determined values.
@@ -39,6 +69,7 @@ enum class CrashKeySize {
   Size32 = 32,
   Size64 = 64,
   Size256 = 256,
+  Size1024 = 1024,
 };
 
 struct CrashKeyString;
@@ -46,6 +77,10 @@ struct CrashKeyString;
 // Allocates a new crash key with the specified |name| with storage for a
 // value up to length |size|. This will return null if the crash key system is
 // not initialized.
+//
+// Note: this internally allocates, so the returned pointer should always
+// be cached in a variable with static storage duration, e.g.:
+//   static auto* const crash_key = base::debug::AllocateCrashKeyString(...);
 BASE_EXPORT CrashKeyString* AllocateCrashKeyString(const char name[],
                                                    CrashKeySize size);
 
@@ -58,6 +93,9 @@ BASE_EXPORT void SetCrashKeyString(CrashKeyString* crash_key,
 // Clears any value that was stored in |crash_key|. The |crash_key| may be
 // null.
 BASE_EXPORT void ClearCrashKeyString(CrashKeyString* crash_key);
+
+// Outputs current (i.e. allocated and non-empty) crash keys to `out`.
+BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out);
 
 // A scoper that sets the specified key to value for the lifetime of the
 // object, and clears it on destruction.
@@ -77,7 +115,7 @@ class BASE_EXPORT ScopedCrashKeyString {
   ScopedCrashKeyString& operator=(ScopedCrashKeyString&&) = delete;
 
  private:
-  CrashKeyString* crash_key_;
+  raw_ptr<CrashKeyString> crash_key_;
 };
 
 // Internal helpers for the SCOPED_CRASH_KEY_... helper macros defined below.
@@ -87,7 +125,7 @@ class BASE_EXPORT ScopedCrashKeyString {
 // that restricts the name of a crash key to 40 characters.
 #define SCOPED_CRASH_KEY_STRING_INTERNAL2(category, name, nonce, data,  \
                                           key_size)                     \
-  static_assert(::base::size(category "-" name) < 40,                   \
+  static_assert(::std::size(category "-" name) < 40,                    \
                 "Crash key names must be shorter than 40 characters."); \
   ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
       [] {                                                              \
@@ -122,6 +160,10 @@ class BASE_EXPORT ScopedCrashKeyString {
   SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
                                    ::base::debug::CrashKeySize::Size256)
 
+#define SCOPED_CRASH_KEY_STRING1024(category, name, data)               \
+  SCOPED_CRASH_KEY_STRING_INTERNAL(category, name, __COUNTER__, (data), \
+                                   ::base::debug::CrashKeySize::Size1024)
+
 #define SCOPED_CRASH_KEY_BOOL(category, name, data)                       \
   static_assert(std::is_same<std::decay_t<decltype(data)>, bool>::value,  \
                 "SCOPED_CRASH_KEY_BOOL must be passed a boolean value."); \
@@ -144,6 +186,7 @@ class CrashKeyImplementation {
   virtual CrashKeyString* Allocate(const char name[], CrashKeySize size) = 0;
   virtual void Set(CrashKeyString* crash_key, base::StringPiece value) = 0;
   virtual void Clear(CrashKeyString* crash_key) = 0;
+  virtual void OutputCrashKeysToStream(std::ostream& out) = 0;
 };
 
 // Initializes the crash key system in base by replacing the existing

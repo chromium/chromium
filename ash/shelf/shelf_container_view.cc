@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/shelf/shelf_container_view.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 
@@ -24,7 +25,7 @@ void ShelfContainerView::Initialize() {
 }
 
 gfx::Size ShelfContainerView::CalculateIdealSize(int button_size) const {
-  const int button_strip_size = ShelfView::GetSizeOfAppButtons(
+  const int button_strip_size = shelf_view_->GetSizeOfAppButtons(
       shelf_view_->number_of_visible_apps(), button_size);
   return shelf_view_->shelf()->IsHorizontalAlignment()
              ? gfx::Size(button_strip_size, button_size)

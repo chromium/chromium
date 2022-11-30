@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
@@ -55,6 +54,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
       Permissions permissions,
       BluetoothLocalGattService* service);
 
+  BluetoothLocalGattCharacteristic(const BluetoothLocalGattCharacteristic&) =
+      delete;
+  BluetoothLocalGattCharacteristic& operator=(
+      const BluetoothLocalGattCharacteristic&) = delete;
+
   // Notify the remote device |device| that the value of characteristic
   // |characteristic| has changed and the new value is |new_value|. |indicate|
   // should be set to true if we want to use an indication instead of a
@@ -70,9 +74,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristic
  protected:
   BluetoothLocalGattCharacteristic();
   ~BluetoothLocalGattCharacteristic() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattCharacteristic);
 };
 
 }  // namespace device

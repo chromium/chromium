@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 // This class gets redirect chain for urls from the history service.
 
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner_helpers.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,12 +22,16 @@ namespace safe_browsing {
 
 typedef std::vector<GURL> RedirectChain;
 
-class ThreatDetailsRedirectsCollector
-    : public base::RefCounted<ThreatDetailsRedirectsCollector>,
-      public history::HistoryServiceObserver {
+class ThreatDetailsRedirectsCollector : public history::HistoryServiceObserver {
  public:
   explicit ThreatDetailsRedirectsCollector(
       const base::WeakPtr<history::HistoryService>& history_service);
+  ~ThreatDetailsRedirectsCollector() override;
+
+  ThreatDetailsRedirectsCollector(const ThreatDetailsRedirectsCollector&) =
+      delete;
+  ThreatDetailsRedirectsCollector& operator=(
+      const ThreatDetailsRedirectsCollector&) = delete;
 
   // Collects urls' redirects chain information from the history service.
   // We get access to history service via web_contents in UI thread.
@@ -48,8 +50,6 @@ class ThreatDetailsRedirectsCollector
 
  private:
   friend class base::RefCounted<ThreatDetailsRedirectsCollector>;
-
-  ~ThreatDetailsRedirectsCollector() override;
 
   void StartGetRedirects(const std::vector<GURL>& urls);
   void GetRedirects(const GURL& url);
@@ -80,7 +80,7 @@ class ThreatDetailsRedirectsCollector
                           history::HistoryServiceObserver>
       history_service_observation_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ThreatDetailsRedirectsCollector);
+  base::WeakPtrFactory<ThreatDetailsRedirectsCollector> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

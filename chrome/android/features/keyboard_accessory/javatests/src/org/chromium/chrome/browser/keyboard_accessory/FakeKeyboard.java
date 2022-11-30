@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -35,12 +38,23 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     private static final int KEYBOARD_HEIGHT_DP = 234;
     private boolean mIsShowing;
 
-    public FakeKeyboard(WeakReference<Activity> activity) {
-        super(activity);
+    public FakeKeyboard(WeakReference<Activity> activity,
+            @NonNull Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
+        super(activity, manualFillingComponentSupplier);
     }
 
     protected int getStaticKeyboardHeight() {
         return (int) getActivity().getResources().getDisplayMetrics().density * KEYBOARD_HEIGHT_DP;
+    }
+
+    @Override
+    public boolean hideSoftKeyboardOnly(View view) {
+        return hideAndroidSoftKeyboard(view);
+    }
+
+    @Override
+    public boolean isSoftKeyboardShowing(Context context, View view) {
+        return mIsShowing;
     }
 
     @Override

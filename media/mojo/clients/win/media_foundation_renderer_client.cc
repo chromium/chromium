@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,33 +7,49 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
+#include "media/base/media_log.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/renderers/win/media_foundation_renderer.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
 MediaFoundationRendererClient::MediaFoundationRendererClient(
-    mojo::PendingRemote<RendererExtension> renderer_extension_remote,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    std::unique_ptr<media::MojoRenderer> mojo_renderer,
-    media::VideoRendererSink* sink)
-    : mojo_renderer_(std::move(mojo_renderer)),
+    std::unique_ptr<MediaLog> media_log,
+    std::unique_ptr<MojoRenderer> mojo_renderer,
+    mojo::PendingRemote<RendererExtension> pending_renderer_extension,
+    mojo::PendingReceiver<ClientExtension> client_extension_receiver,
+    std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+    ObserveOverlayStateCB observe_overlay_state_cb,
+    VideoRendererSink* sink,
+    mojo::PendingRemote<media::mojom::MediaFoundationRendererObserver>
+        media_foundation_renderer_observer)
+    : media_task_runner_(std::move(media_task_runner)),
+      media_log_(std::move(media_log)),
+      mojo_renderer_(std::move(mojo_renderer)),
+      pending_renderer_extension_(std::move(pending_renderer_extension)),
+      dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
+      observe_overlay_state_cb_(std::move(observe_overlay_state_cb)),
       sink_(sink),
-      media_task_runner_(std::move(media_task_runner)),
-      compositor_task_runner_(std::move(compositor_task_runner)),
-      delayed_bind_renderer_extension_remote_(
-          std::move(renderer_extension_remote)) {
+      pending_client_extension_receiver_(std::move(client_extension_receiver)),
+      client_extension_receiver_(this),
+      pending_media_foundation_renderer_observer_(
+          std::move(media_foundation_renderer_observer)) {
   DVLOG_FUNC(1);
 }
 
 MediaFoundationRendererClient::~MediaFoundationRendererClient() {
   DVLOG_FUNC(1);
-  if (video_rendering_started_) {
-    sink_->Stop();
-  }
+  SignalMediaPlayingStateChange(false);
 }
+
+// Renderer implementation.
 
 void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
                                                RendererClient* client,
@@ -42,24 +58,51 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb_);
 
-  // Consume and bind the delayed PendingRemote now that we
-  // are on |media_task_runner_|.
-  renderer_extension_remote_.Bind(
-      std::move(delayed_bind_renderer_extension_remote_), media_task_runner_);
+  // Consume and bind the delayed PendingRemote and PendingReceiver now that
+  // we are on |media_task_runner_|.
+  renderer_extension_.Bind(std::move(pending_renderer_extension_),
+                           media_task_runner_);
+
+  media_foundation_renderer_observer_.Bind(
+      std::move(pending_media_foundation_renderer_observer_),
+      media_task_runner_);
+  client_extension_receiver_.Bind(std::move(pending_client_extension_receiver_),
+                                  media_task_runner_);
 
   // Handle unexpected mojo pipe disconnection such as "mf_cdm" utility process
   // crashed or killed in Browser task manager.
-  renderer_extension_remote_.set_disconnect_handler(
+  renderer_extension_.set_disconnect_handler(
       base::BindOnce(&MediaFoundationRendererClient::OnConnectionError,
                      base::Unretained(this)));
 
   client_ = client;
   init_cb_ = std::move(init_cb);
 
-  const std::vector<media::DemuxerStream*> media_streams =
-      media_resource->GetAllStreams();
-  for (const media::DemuxerStream* stream : media_streams) {
-    if (stream->type() == media::DemuxerStream::Type::VIDEO) {
+  auto media_streams = media_resource->GetAllStreams();
+
+  // Check the rendering strategy & whether we're operating on clear or
+  // protected content to determine the starting 'rendering_mode_'.
+  // If the Direct Composition strategy is specified or if we're operating on
+  // protected content then start in Direct Composition mode, else start in
+  // Frame Server mode. This behavior must match the logic in
+  // MediaFoundationRenderer::Initialize.
+  rendering_strategy_ = kMediaFoundationClearRenderingStrategyParam.Get();
+  rendering_mode_ =
+      rendering_strategy_ ==
+              MediaFoundationClearRenderingStrategy::kDirectComposition
+          ? MediaFoundationRenderingMode::DirectComposition
+          : MediaFoundationRenderingMode::FrameServer;
+
+  // Start off at 60 fps for our render interval, however it will be updated
+  // later in OnVideoFrameRateChange
+  render_interval_ = base::Microseconds(16666);
+  for (DemuxerStream* stream : media_streams) {
+    if (stream->type() == DemuxerStream::Type::VIDEO) {
+      if (stream->video_decoder_config().is_encrypted()) {
+        // This is protected content which only supports Direct Composition
+        // mode, update 'rendering_mode_' accordingly.
+        rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+      }
       has_video_ = true;
       break;
     }
@@ -72,193 +115,80 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
           weak_factory_.GetWeakPtr()));
 }
 
-void MediaFoundationRendererClient::OnConnectionError() {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+void MediaFoundationRendererClient::InitializeFramePool(
+    mojom::FramePoolInitializationParametersPtr pool_info) {
+  DCHECK_GT(pool_info->frame_textures.size(), static_cast<size_t>(0));
 
-  if (waiting_for_dcomp_surface_handle_) {
-    OnReceivedRemoteDCOMPSurface(mojo::ScopedHandle());
-  }
-}
+  // Release our references to the video pool so that once the
+  // rendering is complete the memory will be freed.
+  video_frame_pool_.clear();
 
-void MediaFoundationRendererClient::OnRemoteRendererInitialized(
-    PipelineStatus status) {
-  DVLOG_FUNC(1) << "status=" << status;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
-
-  if (status != media::PipelineStatus::PIPELINE_OK) {
-    std::move(init_cb_).Run(status);
-    return;
-  }
-
-  if (has_video_) {
-    // TODO(frankli): Add code to init DCOMPTextureWrapper.
-    NOTIMPLEMENTED() << "Video compositing not implemented yet";
-  }
-
-  std::move(init_cb_).Run(status);
-}
-
-void MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated(bool success) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
+  for (const auto& frame_info : pool_info->frame_textures) {
+    dcomp_texture_wrapper_->CreateVideoFrame(
+        pool_info->texture_size, std::move(frame_info->texture_handle),
         base::BindOnce(
-            &MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated,
-            weak_factory_.GetWeakPtr(), success));
-    return;
+            [](base::flat_map<base::UnguessableToken,
+                              scoped_refptr<VideoFrame>>& video_frame_pool,
+               const base::UnguessableToken& token,
+               scoped_refptr<VideoFrame> video_frame) {
+              video_frame_pool.insert({token, std::move(video_frame)});
+            },
+            std::ref(video_frame_pool_), frame_info->token));
   }
-
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  dcomp_surface_handle_bound_ = true;
-  return;
 }
 
-void MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface(
-    mojo::ScopedHandle surface_handle) {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-  DCHECK(surface_handle.is_valid());
+bool MediaFoundationRendererClient::IsFrameServerMode() const {
+  return rendering_mode_ == MediaFoundationRenderingMode::FrameServer;
+}
+
+void MediaFoundationRendererClient::OnFrameAvailable(
+    const base::UnguessableToken& frame_token,
+    const gfx::Size& size,
+    base::TimeDelta timestamp) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
 
-  waiting_for_dcomp_surface_handle_ = false;
-  base::win::ScopedHandle local_handle =
-      mojo::UnwrapPlatformHandle(std::move(surface_handle)).TakeHandle();
-  RegisterDCOMPSurfaceHandleInGPUProcess(std::move(local_handle));
-}
-
-void MediaFoundationRendererClient::RegisterDCOMPSurfaceHandleInGPUProcess(
-    base::win::ScopedHandle surface_handle) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::
-                           RegisterDCOMPSurfaceHandleInGPUProcess,
-                       weak_factory_.GetWeakPtr(), std::move(surface_handle)));
+  auto video_frame = video_frame_pool_.find(frame_token);
+  // It is possible to become unsynced when we are reinitializing the frame
+  // pool so we are just checking to make sure the frame has been acquired.
+  if (video_frame == video_frame_pool_.end()) {
     return;
   }
 
-  DVLOG_FUNC(1) << "surface_handle=" << surface_handle.Get();
-  DCHECK(has_video_);
+  scoped_refptr<VideoFrame> texture_pool_video_frame = video_frame->second;
 
-  mojo::ScopedHandle mojo_surface_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(surface_handle)));
+  texture_pool_video_frame->set_timestamp(timestamp);
 
-  // TODO(frankli): Pass the |mojo_surface_handle| to Gpu process.
+  // The Video Frame object's Destruction Observer is called when the video
+  // frame is no longer needed and the underlying texture can be reused. We
+  // cannot use the video frame we created in InitializeFramePool() directly
+  // because we hold onto a reference in our video frame pool so the callback
+  // would not be called, and for those their callback is to destroy the shared
+  // image anyway. Therefore we wrap the shared image based video frame in
+  // another video frame and add the callback which allows us to reuse the
+  // texture for a new video frame.
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapVideoFrame(
+      texture_pool_video_frame, texture_pool_video_frame->format(),
+      gfx::Rect(size), size);
+  frame->metadata().wants_promotion_hint = true;
+  frame->metadata().allow_overlay = true;
+  frame->AddDestructionObserver(base::BindPostTask(
+      media_task_runner_,
+      base::BindOnce(&MediaFoundationRendererClient::OnPaintComplete,
+                     weak_factory_.GetWeakPtr(), frame_token)));
+
+  // The sink needs a frame ASAP so the first frame will be painted, all
+  // following frames will be returned in the Render callback.
+  if (!next_video_frame_) {
+    sink_->PaintSingleFrame(frame);
+  }
+  next_video_frame_ = frame;
 }
 
-void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
+void MediaFoundationRendererClient::OnPaintComplete(
     const base::UnguessableToken& token) {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  return;
-}
-
-void MediaFoundationRendererClient::OnDCOMPSurfaceTextureReleased() {
-  DCHECK(has_video_);
-  return;
-}
-
-void MediaFoundationRendererClient::OnDCOMPStreamTextureInitialized(
-    bool success) {
-  DVLOG_FUNC(1) << "success=" << success;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(!init_cb_.is_null());
-  DCHECK(has_video_);
-
-  media::PipelineStatus status = media::PipelineStatus::PIPELINE_OK;
-  if (!success) {
-    status = media::PipelineStatus::PIPELINE_ERROR_INITIALIZATION_FAILED;
-  }
-  if (natural_size_.width() != 0 || natural_size_.height() != 0) {
-    InitializeDCOMPRendering();
-  }
-  std::move(init_cb_).Run(status);
-}
-
-void MediaFoundationRendererClient::OnVideoFrameCreated(
-    scoped_refptr<media::VideoFrame> video_frame) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
-                       weak_factory_.GetWeakPtr(), video_frame));
-    return;
-  }
-
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  video_frame->metadata().protected_video = true;
-  video_frame->metadata().allow_overlay = true;
-
-  dcomp_frame_ = video_frame;
-
-  sink_->PaintSingleFrame(dcomp_frame_, true);
-}
-
-void MediaFoundationRendererClient::OnCompositionParamsReceived(
-    gfx::Rect output_rect) {
-  DVLOG_FUNC(1) << "output_rect=" << output_rect.ToString();
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(has_video_);
-
-  renderer_extension_remote_->SetOutputParams(output_rect);
-  return;
-}
-
-bool MediaFoundationRendererClient::MojoSetDCOMPMode(bool enabled) {
-  DVLOG_FUNC(1) << "enabled=" << enabled;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(renderer_extension_remote_.is_bound());
-
-  bool success = false;
-  if (!renderer_extension_remote_->SetDCOMPMode(enabled, &success)) {
-    return false;
-  }
-  return success;
-}
-
-void MediaFoundationRendererClient::MojoGetDCOMPSurface() {
-  DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(renderer_extension_remote_.is_bound());
-
-  if (!renderer_extension_remote_.is_connected()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface,
-            weak_factory_.GetWeakPtr(), mojo::ScopedHandle()));
-    return;
-  }
-  waiting_for_dcomp_surface_handle_ = true;
-  renderer_extension_remote_->GetDCOMPSurface(base::BindOnce(
-      &MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface,
-      weak_factory_.GetWeakPtr()));
-}
-
-void MediaFoundationRendererClient::InitializeDCOMPRendering() {
-  DVLOG_FUNC(1);
-  DCHECK(has_video_);
-
-  if (dcomp_rendering_initialized_) {
-    return;
-  }
-
-  if (!MojoSetDCOMPMode(true)) {
-    DLOG(ERROR) << "Failed to initialize DCOMP mode on remote renderer. this="
-                << this;
-    return;
-  }
-  MojoGetDCOMPSurface();
-
-  dcomp_rendering_initialized_ = true;
-  return;
+  renderer_extension_->NotifyFrameReleased(token);
 }
 
 void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
@@ -267,7 +197,7 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
   DCHECK(cdm_context);
 
   if (cdm_context_) {
-    DLOG(ERROR) << "Switching CDM not supported. this=" << this;
+    DLOG(ERROR) << "Switching CDM not supported";
     std::move(cdm_attached_cb).Run(false);
     return;
   }
@@ -282,13 +212,8 @@ void MediaFoundationRendererClient::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRendererClient::SetLatencyHint(
-    base::Optional<base::TimeDelta> /*latency_hint*/) {
-  // We do not use the latency hint today
-}
-
-void MediaFoundationRendererClient::OnCdmAttached(bool success) {
-  DCHECK(cdm_attached_cb_);
-  std::move(cdm_attached_cb_).Run(success);
+    absl::optional<base::TimeDelta> /*latency_hint*/) {
+  NOTIMPLEMENTED() << "Latency hint not supported in MediaFoundationRenderer";
 }
 
 void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {
@@ -296,6 +221,9 @@ void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {
 }
 
 void MediaFoundationRendererClient::StartPlayingFrom(base::TimeDelta time) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  SignalMediaPlayingStateChange(true);
+  next_video_frame_.reset();
   mojo_renderer_->StartPlayingFrom(time);
 }
 
@@ -312,31 +240,53 @@ base::TimeDelta MediaFoundationRendererClient::GetMediaTime() {
 }
 
 void MediaFoundationRendererClient::OnSelectedVideoTracksChanged(
-    const std::vector<media::DemuxerStream*>& enabled_tracks,
+    const std::vector<DemuxerStream*>& enabled_tracks,
     base::OnceClosure change_completed_cb) {
   bool video_track_selected = (enabled_tracks.size() > 0);
   DVLOG_FUNC(1) << "video_track_selected=" << video_track_selected;
-  renderer_extension_remote_->SetVideoStreamEnabled(video_track_selected);
+  renderer_extension_->SetVideoStreamEnabled(video_track_selected);
   std::move(change_completed_cb).Run();
 }
 
+void MediaFoundationRendererClient::OnExternalVideoFrameRequest() {
+  // A frame read back signal is currently treated as a permanent signal for
+  // the session so we only need to handle it the first time it is encountered.
+  if (!has_frame_read_back_signal_) {
+    has_frame_read_back_signal_ = true;
+    MEDIA_LOG(INFO, media_log_) << "Frame read back signal";
+    UpdateRenderMode();
+  }
+}
+
+// RendererClient implementation.
+
 void MediaFoundationRendererClient::OnError(PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
+
+  SignalMediaPlayingStateChange(false);
+  // Do not call MediaFoundationRenderer::ReportErrorReason() since it should've
+  // already been reported in MediaFoundationRenderer.
   client_->OnError(status);
 }
 
+void MediaFoundationRendererClient::OnFallback(PipelineStatus fallback) {
+  SignalMediaPlayingStateChange(false);
+  client_->OnFallback(std::move(fallback).AddHere());
+}
+
 void MediaFoundationRendererClient::OnEnded() {
+  SignalMediaPlayingStateChange(false);
   client_->OnEnded();
 }
 
 void MediaFoundationRendererClient::OnStatisticsUpdate(
-    const media::PipelineStatistics& stats) {
+    const PipelineStatistics& stats) {
   client_->OnStatisticsUpdate(stats);
 }
 
 void MediaFoundationRendererClient::OnBufferingStateChange(
-    media::BufferingState state,
-    media::BufferingStateChangeReason reason) {
+    BufferingState state,
+    BufferingStateChangeReason reason) {
   client_->OnBufferingStateChange(state, reason);
 }
 
@@ -345,11 +295,11 @@ void MediaFoundationRendererClient::OnWaiting(WaitingReason reason) {
 }
 
 void MediaFoundationRendererClient::OnAudioConfigChange(
-    const media::AudioDecoderConfig& config) {
+    const AudioDecoderConfig& config) {
   client_->OnAudioConfigChange(config);
 }
 void MediaFoundationRendererClient::OnVideoConfigChange(
-    const media::VideoDecoderConfig& config) {
+    const VideoDecoderConfig& config) {
   client_->OnVideoConfigChange(config);
 }
 
@@ -360,13 +310,11 @@ void MediaFoundationRendererClient::OnVideoNaturalSizeChange(
   DCHECK(has_video_);
 
   natural_size_ = size;
-  // Skip creation of a new video frame if the DCOMP surface has not yet been
-  // bound to the DCOMP texture as we will create a new frame after binding has
-  // completed.
-  if (dcomp_surface_handle_bound_) {
-    // TODO(frankli): Add code to call DCOMPTextureWrapper::CreateVideoFrame().
-  }
-  InitializeDCOMPRendering();
+  dcomp_texture_wrapper_->CreateVideoFrame(
+      natural_size_,
+      base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
+                     weak_factory_.GetWeakPtr()));
+
   client_->OnVideoNaturalSizeChange(natural_size_);
 }
 
@@ -377,28 +325,319 @@ void MediaFoundationRendererClient::OnVideoOpacityChange(bool opaque) {
 }
 
 void MediaFoundationRendererClient::OnVideoFrameRateChange(
-    base::Optional<int> fps) {
+    absl::optional<int> fps) {
   DVLOG_FUNC(1) << "fps=" << (fps ? *fps : -1);
   DCHECK(has_video_);
+
+  if (fps.has_value()) {
+    // We use microseconds as that is the max resolution of TimeDelta
+    render_interval_ = base::Microseconds(1000000 / *fps);
+  }
+
   client_->OnVideoFrameRateChange(fps);
 }
 
-scoped_refptr<media::VideoFrame> MediaFoundationRendererClient::Render(
+// RenderCallback implementation.
+scoped_refptr<VideoFrame> MediaFoundationRendererClient::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
     RenderingMode mode) {
-  // Returns no video frame as it is rendered independently by Windows Direct
-  // Composition.
-  return nullptr;
+  // Sends a frame request if in frame server mode, otherwise return nothing as
+  // it is rendered independently by Windows Direct Composition.
+  if (!IsFrameServerMode()) {
+    return nullptr;
+  }
+
+  auto callback =
+      [](base::WeakPtr<MediaFoundationRendererClient> renderer_client) {
+        if (renderer_client) {
+          renderer_client->renderer_extension_->RequestNextFrame();
+        }
+      };
+
+  media_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(callback, weak_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/1298093): Need to report underflow when we don't have a
+  // frame ready for presentation by calling OnBufferingStateChange
+
+  return next_video_frame_;
 }
 
 void MediaFoundationRendererClient::OnFrameDropped() {
+  // TODO(crbug.com/1298093): Need to notify when frames were not presented.
   return;
 }
 
 base::TimeDelta MediaFoundationRendererClient::GetPreferredRenderInterval() {
-  // TODO(frankli): use 'viz::BeginFrameArgs::MinInterval()'.
-  return base::TimeDelta::FromSeconds(0);
+  return render_interval_;
+}
+
+// private
+
+void MediaFoundationRendererClient::OnRemoteRendererInitialized(
+    PipelineStatus status) {
+  DVLOG_FUNC(1) << "status=" << status;
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(!init_cb_.is_null());
+
+  if (status != PIPELINE_OK) {
+    std::move(init_cb_).Run(status);
+    return;
+  }
+
+  if (!has_video_) {
+    std::move(init_cb_).Run(PIPELINE_OK);
+    return;
+  }
+
+  // For playback with video, initialize `dcomp_texture_wrapper_` for direct
+  // composition.
+  bool success = dcomp_texture_wrapper_->Initialize(
+      gfx::Size(1, 1),
+      base::BindRepeating(&MediaFoundationRendererClient::OnOutputRectChange,
+                          weak_factory_.GetWeakPtr()));
+  if (!success) {
+    std::move(init_cb_).Run(PipelineStatus(PIPELINE_ERROR_INITIALIZATION_FAILED,
+                                           "DComTextureWrapper init failed"));
+    return;
+  }
+
+  // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
+  // that the video output size is not yet known.
+  if (output_size_.IsEmpty())
+    dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
+
+  std::move(init_cb_).Run(PIPELINE_OK);
+}
+
+void MediaFoundationRendererClient::OnOutputRectChange(gfx::Rect output_rect) {
+  DVLOG_FUNC(1) << "output_rect=" << output_rect.ToString();
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  renderer_extension_->SetOutputRect(
+      output_rect,
+      base::BindOnce(&MediaFoundationRendererClient::OnSetOutputRectDone,
+                     weak_factory_.GetWeakPtr(), output_rect.size()));
+}
+
+void MediaFoundationRendererClient::OnSetOutputRectDone(
+    const gfx::Size& output_size,
+    bool success) {
+  DVLOG_FUNC(1) << "output_size=" << output_size.ToString();
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  if (!success) {
+    DLOG(ERROR) << "Failed to SetOutputRect";
+    MEDIA_LOG(WARNING, media_log_) << "Failed to SetOutputRect";
+    // Ignore this error as video can possibly be seen but displayed incorrectly
+    // against the video output area.
+    return;
+  }
+
+  output_size_ = output_size;
+  if (output_size_updated_)
+    return;
+
+  if (IsFrameServerMode()) {
+    return;
+  }
+
+  // Call UpdateTextureSize() only 1 time to indicate DCOMP rendering is
+  // ready. The actual size does not matter as long as it is not empty and not
+  // (1x1).
+  if (!output_size_.IsEmpty() && output_size_ != gfx::Size(1, 1)) {
+    dcomp_texture_wrapper_->UpdateTextureSize(output_size_);
+    output_size_updated_ = true;
+  }
+
+  InitializeDCOMPRenderingIfNeeded();
+
+  // Ensures `SwapChainPresenter::PresentDCOMPSurface()` is invoked to add
+  // video into DCOMP visual tree if needed.
+  if (dcomp_video_frame_) {
+    sink_->PaintSingleFrame(dcomp_video_frame_, true);
+  }
+}
+
+void MediaFoundationRendererClient::InitializeDCOMPRenderingIfNeeded() {
+  DVLOG_FUNC(1);
+  DCHECK(has_video_);
+
+  if (dcomp_rendering_initialized_)
+    return;
+
+  dcomp_rendering_initialized_ = true;
+
+  // Set DirectComposition mode and get DirectComposition surface from
+  // MediaFoundationRenderer.
+  renderer_extension_->GetDCOMPSurface(
+      base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceReceived,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
+    const absl::optional<base::UnguessableToken>& token,
+    const std::string& error) {
+  DVLOG_FUNC(1);
+  DCHECK(has_video_);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+
+  // The error should've already been handled in MediaFoundationRenderer.
+  if (!token) {
+    DLOG(ERROR) << "GetDCOMPSurface failed: " + error;
+    return;
+  }
+
+  dcomp_texture_wrapper_->SetDCOMPSurfaceHandle(
+      token.value(),
+      base::BindOnce(&MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  if (!success) {
+    MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
+    MediaFoundationRenderer::ReportErrorReason(
+        MediaFoundationRenderer::ErrorReason::kOnDCompSurfaceHandleSetError);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+  }
+}
+
+void MediaFoundationRendererClient::OnVideoFrameCreated(
+    scoped_refptr<VideoFrame> video_frame,
+    const gpu::Mailbox& mailbox) {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(has_video_);
+
+  video_frame->metadata().allow_overlay = true;
+
+  if (cdm_context_) {
+    video_frame->metadata().protected_video = true;
+  } else {
+    DCHECK(SupportMediaFoundationClearPlayback());
+    // This video frame is for clear content: setup observation of the mailbox
+    // overlay state changes.
+    video_frame->metadata().wants_promotion_hint = true;
+    ObserveMailboxForOverlayState(mailbox);
+  }
+
+  dcomp_video_frame_ = video_frame;
+  if (!IsFrameServerMode()) {
+    sink_->PaintSingleFrame(dcomp_video_frame_, true);
+  }
+}
+
+void MediaFoundationRendererClient::OnCdmAttached(bool success) {
+  DCHECK(cdm_attached_cb_);
+  std::move(cdm_attached_cb_).Run(success);
+}
+
+void MediaFoundationRendererClient::OnConnectionError() {
+  DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
+  MediaFoundationRenderer::ReportErrorReason(
+      MediaFoundationRenderer::ErrorReason::kOnConnectionError);
+  OnError(PIPELINE_ERROR_DISCONNECTED);
+}
+
+void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
+    bool is_playing) {
+  // Skip if we are already in the same playing state
+  if (is_playing == is_playing_) {
+    return;
+  }
+
+  // Only start the render loop if we are in frame server mode
+  if (IsFrameServerMode()) {
+    if (is_playing) {
+      sink_->Start(this);
+    } else {
+      sink_->Stop();
+    }
+  }
+  is_playing_ = is_playing;
+}
+
+void MediaFoundationRendererClient::OnOverlayStateChanged(
+    const gpu::Mailbox& mailbox,
+    bool promoted) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  promoted_to_overlay_signal_ = promoted;
+  MEDIA_LOG(INFO, media_log_)
+      << "Overlay state signal, promoted = " << promoted;
+  UpdateRenderMode();
+}
+
+void MediaFoundationRendererClient::UpdateRenderMode() {
+  // We only change modes if we're using the dynamic rendering strategy and
+  // presenting clear content, so return early otherwise.
+  if (rendering_strategy_ != MediaFoundationClearRenderingStrategy::kDynamic ||
+      cdm_context_) {
+    return;
+  }
+
+  // Frame Server mode is required if we are not promoted to an overlay or if
+  // frame readback is required.
+  bool needs_frame_server =
+      has_frame_read_back_signal_ || !promoted_to_overlay_signal_;
+
+  if (!needs_frame_server && IsFrameServerMode()) {
+    MEDIA_LOG(INFO, media_log_) << "Switching to Direct Composition.";
+    // Switch to Frame Server Mode
+    // Switch to Direct Composition mode.
+    rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+    renderer_extension_->SetMediaFoundationRenderingMode(rendering_mode_);
+    if (is_playing_) {
+      sink_->Stop();
+    }
+    // If we don't have a DComp Visual then create one, otherwise paint
+    // DComp frame again.
+    if (!dcomp_video_frame_) {
+      InitializeDCOMPRenderingIfNeeded();
+    } else {
+      sink_->PaintSingleFrame(dcomp_video_frame_, true);
+    }
+  } else if (needs_frame_server && !IsFrameServerMode()) {
+    // Switch to Frame Server mode.
+    MEDIA_LOG(INFO, media_log_) << "Switching to Frame Server.";
+    rendering_mode_ = MediaFoundationRenderingMode::FrameServer;
+    renderer_extension_->SetMediaFoundationRenderingMode(rendering_mode_);
+    if (is_playing_) {
+      sink_->Start(this);
+    }
+  }
+}
+
+void MediaFoundationRendererClient::ObserveMailboxForOverlayState(
+    const gpu::Mailbox& mailbox) {
+  // If the rendering strategy is dynamic then setup an OverlayStateObserver to
+  // respond to promotion changes. If the rendering strategy is Direct
+  // Composition or Frame Server then we do not need to listen & respond to
+  // overlay state changes.
+  if (rendering_strategy_ == MediaFoundationClearRenderingStrategy::kDynamic) {
+    mailbox_ = mailbox;
+    // 'observe_overlay_state_cb_' creates a content::OverlayStateObserver to
+    // subscribe to overlay state information for the given 'mailbox' from the
+    // Viz layer in the GPU process. We hold an OverlayStateObserverSubscription
+    // since a direct dependency on a content object is not allowed. Once the
+    // OverlayStateObserverSubscription is destroyed the OnOverlayStateChanged
+    // callback will no longer be invoked, so base::Unretained(this) is safe to
+    // use.
+    observer_subscription_ = observe_overlay_state_cb_.Run(
+        mailbox, base::BindRepeating(
+                     &MediaFoundationRendererClient::OnOverlayStateChanged,
+                     base::Unretained(this), mailbox));
+    DCHECK(observer_subscription_);
+  }
 }
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,23 @@
 #include <cmath>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/power/ml/recent_events_counter.h"
-#include "chrome/browser/chromeos/power/ml/user_activity_ukm_logger_helpers.h"
+#include "chrome/browser/ash/power/ml/recent_events_counter.h"
+#include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger_helper.h"
-#include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "components/arc/arc_prefs.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "extensions/common/extension.h"
@@ -37,8 +36,9 @@ namespace app_list {
 const int kEmptyTotal = -1;
 const int kTopRank = 1;
 
-const base::Feature kUkmAppLaunchEventLogging{"UkmAppLaunchEventLogging",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kUkmAppLaunchEventLogging,
+             "UkmAppLaunchEventLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Keys for Arc app specific preferences. Defined in
 // chrome/browser/ui/app_list/arc/arc_app_list_prefs.cc.
@@ -49,8 +49,8 @@ namespace {
 
 constexpr unsigned int kNumRandomAppsToLog = 25;
 
-constexpr base::TimeDelta kHourDuration = base::TimeDelta::FromHours(1);
-constexpr base::TimeDelta kDayDuration = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kHourDuration = base::Hours(1);
+constexpr base::TimeDelta kDayDuration = base::Days(1);
 constexpr int kMinutesInAnHour = 60;
 constexpr int kQuarterHoursInADay = 24 * 4;
 
@@ -76,17 +76,19 @@ std::vector<std::string> Sample(const std::vector<std::string>& population,
 
 }  // namespace
 
-AppLaunchEventLogger::AppLaunchEventLogger()
+AppLaunchEventLogger::AppLaunchEventLogger(Profile* profile)
     : start_time_(base::Time::Now()),
       all_clicks_last_hour_(
-          std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+          std::make_unique<ash::power::ml::RecentEventsCounter>(
               kHourDuration,
               kMinutesInAnHour)),
       all_clicks_last_24_hours_(
-          std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+          std::make_unique<ash::power::ml::RecentEventsCounter>(
               kDayDuration,
               kQuarterHoursInADay)),
+      profile_(profile),
       weak_factory_(this) {
+  DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
@@ -149,11 +151,6 @@ std::string AppLaunchEventLogger::RemoveScheme(const std::string& id) {
   return app_id;
 }
 
-const GURL& AppLaunchEventLogger::GetLaunchWebURL(
-    const extensions::Extension* extension) {
-  return extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-}
-
 void AppLaunchEventLogger::EnforceLoggingPolicy() {
   SetRegistryAndArcInfo();
 
@@ -161,7 +158,7 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
     app.second.set_is_policy_compliant(false);
   }
 
-  // Store all Chrome, PWA and bookmark apps.
+  // Store all Chrome apps.
   // registry_ can be nullptr in tests.
   if (registry_) {
     std::unique_ptr<extensions::ExtensionSet> extensions =
@@ -171,12 +168,6 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
       if (extension->from_webstore()) {
         AddAppIfMissing(AppLaunchEvent_AppType_CHROME, extension->id(),
                         base::EmptyString(), base::EmptyString(), true);
-        // PWA apps have from_bookmark() true. This will also categorize
-        // bookmark apps as AppLaunchEvent_AppType_PWA.
-      } else if (extension->from_bookmark()) {
-        AddAppIfMissing(AppLaunchEvent_AppType_PWA, extension->id(),
-                        base::EmptyString(),
-                        GetLaunchWebURL(extension.get()).spec(), true);
         // Other extensions are not to be logged to UKM.
       } else {
         AddAppIfMissing(AppLaunchEvent_AppType_OTHER, extension->id(),
@@ -185,16 +176,26 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
     }
   }
 
+  const web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  // Store all PWAs.
+  if (provider) {
+    for (const web_app::WebApp& web_app : provider->registrar().GetApps()) {
+      AddAppIfMissing(AppLaunchEvent_AppType_PWA, web_app.app_id(),
+                      base::EmptyString(), web_app.start_url().spec(), true);
+    }
+  }
+
   // Store all Arc apps.
   // arc_apps_ and arc_packages_ can be nullptr in tests.
   if (arc_apps_ && arc_packages_) {
-    for (const auto& app : arc_apps_->DictItems()) {
+    for (const auto app : *arc_apps_) {
       const base::Value* package_name_value = app.second.FindKey(kPackageName);
       if (!package_name_value) {
         continue;
       }
       const base::Value* package =
-          arc_packages_->FindKey(package_name_value->GetString());
+          arc_packages_->Find(package_name_value->GetString());
       if (!package) {
         continue;
       }
@@ -222,8 +223,8 @@ void AppLaunchEventLogger::SetRegistryAndArcInfo() {
 
   PrefService* pref_service = profile->GetPrefs();
   if (pref_service) {
-    arc_apps_ = pref_service->GetDictionary(arc::prefs::kArcApps);
-    arc_packages_ = pref_service->GetDictionary(arc::prefs::kArcPackages);
+    arc_apps_ = &pref_service->GetDict(arc::prefs::kArcApps);
+    arc_packages_ = &pref_service->GetDict(arc::prefs::kArcPackages);
   }
 }
 
@@ -286,10 +287,10 @@ void AppLaunchEventLogger::ProcessClick(const AppLaunchEvent& event,
   if (!app_launch_features->has_most_recently_used_index()) {
     // Handle first click on an id.
     app_clicks_last_hour_[event.app_id()] =
-        std::make_unique<chromeos::power::ml::RecentEventsCounter>(
-            kHourDuration, kMinutesInAnHour);
+        std::make_unique<ash::power::ml::RecentEventsCounter>(kHourDuration,
+                                                              kMinutesInAnHour);
     app_clicks_last_24_hours_[event.app_id()] =
-        std::make_unique<chromeos::power::ml::RecentEventsCounter>(
+        std::make_unique<ash::power::ml::RecentEventsCounter>(
             kDayDuration, kQuarterHoursInADay);
     for (int hour = 0; hour < 24; hour++) {
       app_launch_features->add_clicks_each_hour(0);
@@ -444,22 +445,23 @@ void AppLaunchEventLogger::LogClicksEachHour(
 }
 
 void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
-  auto app = app_features_map_.find(app_launch_event.app_id());
-  if (app == app_features_map_.end()) {
+  auto app_iter = app_features_map_.find(app_launch_event.app_id());
+  if (app_iter == app_features_map_.end()) {
     RecordAppTypeClicked(AppLaunchEvent_AppType_OTHER);
     return;
   }
-  RecordAppTypeClicked(app->second.app_type());
+  const AppLaunchFeatures& features = app_iter->second;
+  RecordAppTypeClicked(features.app_type());
   ukm::SourceId launch_source_id =
-      GetSourceId(app->second.app_type(), app_launch_event.app_id(),
-                  app->second.arc_package_name(), app->second.pwa_url());
+      GetSourceId(features.app_type(), app_launch_event.app_id(),
+                  features.arc_package_name(), features.pwa_url());
 
   base::Time now(base::Time::Now());
   const base::TimeDelta duration = now - start_time_;
   all_clicks_last_hour_->Log(duration);
   all_clicks_last_24_hours_->Log(duration);
 
-  if (app->second.is_policy_compliant() &&
+  if (features.is_policy_compliant() &&
       launch_source_id != ukm::kInvalidSourceId) {
     ukm::builders::AppListAppLaunch app_launch(launch_source_id);
     if (app_launch_event.launched_from() ==
@@ -468,7 +470,7 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
             AppLaunchEvent_LaunchedFrom_SEARCH_BOX) {
       app_launch.SetPositionIndex(app_launch_event.index());
     }
-    app_launch.SetAppType(app->second.app_type())
+    app_launch.SetAppType(features.app_type())
         .SetLaunchedFrom(app_launch_event.launched_from())
         .SetDayOfWeek(DayOfWeek(now))
         .SetHourOfDay(HourOfDay(now))
@@ -502,6 +504,7 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
         app_click_data.SetAppType(app->second.app_type())
             .SetAppLaunchId(launch_source_id)
             .Record(ukm::UkmRecorder::Get());
+        ukm::AppSourceUrlRecorder::MarkSourceForDeletion(click_data_source_id);
         continue;
       }
       app->second.set_time_since_last_click_sec(
@@ -524,8 +527,12 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
           .SetClickRank(app->second.click_rank())
           .SetLastLaunchedFrom(app->second.last_launched_from())
           .Record(ukm::UkmRecorder::Get());
+      ukm::AppSourceUrlRecorder::MarkSourceForDeletion(click_data_source_id);
     }
   }
+  if (launch_source_id != ukm::kInvalidSourceId)
+    ukm::AppSourceUrlRecorder::MarkSourceForDeletion(launch_source_id);
+
   ProcessClick(app_launch_event, now);
 }
 

@@ -34,11 +34,11 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
@@ -112,7 +112,7 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   // host.
   DCHECK(!((relevant_url.ProtocolIsInHTTPFamily() ||
             relevant_url.ProtocolIs("ftp")) &&
-           relevant_url.Host().IsEmpty()));
+           relevant_url.Host().empty()));
 
   if (base::Contains(url::GetNoAccessSchemes(),
                      relevant_url.Protocol().Ascii()))
@@ -165,11 +165,14 @@ SecurityOrigin::SecurityOrigin(const url::Origin::Nonce& nonce,
                                const SecurityOrigin* precursor)
     : nonce_if_opaque_(nonce), precursor_origin_(precursor) {}
 
+SecurityOrigin::SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor)
+    : nonce_if_opaque_(absl::in_place), precursor_origin_(precursor) {}
+
 SecurityOrigin::SecurityOrigin(const SecurityOrigin* other,
                                ConstructIsolatedCopy)
-    : protocol_(other->protocol_.IsolatedCopy()),
-      host_(other->host_.IsolatedCopy()),
-      domain_(other->domain_.IsolatedCopy()),
+    : protocol_(other->protocol_),
+      host_(other->host_),
+      domain_(other->domain_),
       port_(other->port_),
       nonce_if_opaque_(other->nonce_if_opaque_),
       universal_access_(other->universal_access_),
@@ -235,8 +238,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::Create(const KURL& url) {
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateUniqueOpaque() {
-  scoped_refptr<SecurityOrigin> origin =
-      base::AdoptRef(new SecurityOrigin(url::Origin::Nonce(), nullptr));
+  scoped_refptr<SecurityOrigin> origin = base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce, nullptr));
   DCHECK(origin->IsOpaque());
   DCHECK(!origin->precursor_origin_);
   return origin;
@@ -263,9 +266,9 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateFromUrlOrigin(
         CreateFromValidTuple(String::FromUTF8(tuple.scheme()),
                              String::FromUTF8(tuple.host()), tuple.port());
   }
-  base::Optional<base::UnguessableToken> nonce_if_opaque =
+  const base::UnguessableToken* nonce_if_opaque =
       origin.GetNonceForSerialization();
-  DCHECK_EQ(nonce_if_opaque.has_value(), origin.opaque());
+  DCHECK_EQ(!!nonce_if_opaque, origin.opaque());
   if (nonce_if_opaque) {
     return base::AdoptRef(new SecurityOrigin(
         url::Origin::Nonce(*nonce_if_opaque), tuple_origin.get()));
@@ -308,74 +311,13 @@ String SecurityOrigin::RegistrableDomain() const {
   OriginAccessEntry entry(
       *this, network::mojom::CorsDomainMatchMode::kAllowRegistrableDomains);
   String domain = entry.registrable_domain();
-  return domain.IsEmpty() ? String() : domain;
+  return domain.empty() ? String() : domain;
 }
 
-// TODO(crbug.com/1153336): Remove this method and make existing call sites rely
-// on network::IsUrlPotentiallyTrustworthy() instead.
-bool SecurityOrigin::IsSecure(const KURL& url) {
-  GURL gurl = GURL(url);
-
-  // 1. If url is "about:blank" or "about:srcdoc", return "Potentially
-  //    Trustworthy".
-  if (gurl.IsAboutBlank() || gurl.IsAboutSrcdoc())
-    return true;
-
-  // 2. If url’s scheme is "data", return "Potentially Trustworthy".
-  if (gurl.SchemeIs(url::kDataScheme))
-    return true;
-
-  // 3. Return the result of executing §3.2 Is origin potentially trustworthy?
-  //    on url’s origin.
-  //    Note: The origin of blob: and filesystem: URLs is the origin of the
-  //    context in which they were created. Therefore, blobs created in a
-  //    trustworthy origin will themselves be potentially trustworthy.
-  url::Origin origin = url::Origin::Create(gurl);
-  if (origin.opaque() &&
-      base::Contains(url::GetSecureSchemes(), gurl.scheme_piece())) {
-    // Authenticated schemes should be treated as trustworthy, even if they
-    // translate into an opaque origin (e.g. because some of them might also be
-    // registered as a no-access, like the //content-layer chrome-error:// or
-    // the //chrome-layer chrome-native://).
-    return true;
-  }
-
-  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
-  // 1. If origin is an opaque origin, return "Not Trustworthy".
-  if (origin.opaque())
-    return false;
-
-  // 2. Assert: origin is a tuple origin.
-  DCHECK(!origin.opaque());
-
-  // 3. If origin’s scheme is either "https" or "wss", return "Potentially
-  //    Trustworthy".
-  // This is handled by the url::GetSecureSchemes() call below.
-
-  // 7. If origin’s scheme component is one which the user agent considers to be
-  //    authenticated, return "Potentially Trustworthy".
-  //    Note: See §7.1 Packaged Applications for detail here.
-  if (base::Contains(url::GetSecureSchemes(), origin.scheme()))
-    return true;
-
-  // 8. If origin has been configured as a trustworthy origin, return
-  //    "Potentially Trustworthy".
-  //    Note: See §7.2 Development Environments for detail here.
-  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(origin))
-    return true;
-
-  // 9. Return "Not Trustworthy".
-  return false;
-}
-
-base::Optional<base::UnguessableToken>
-SecurityOrigin::GetNonceForSerialization() const {
+const base::UnguessableToken* SecurityOrigin::GetNonceForSerialization() const {
   // The call to token() forces initialization of the |nonce_if_opaque_| if
   // not already initialized.
-  // TODO(nasko): Consider not making a copy here, but return a reference to
-  // the nonce.
-  return nonce_if_opaque_ ? base::make_optional(nonce_if_opaque_->token())
-                          : base::nullopt;
+  return nonce_if_opaque_ ? &nonce_if_opaque_->token() : nullptr;
 }
 
 bool SecurityOrigin::CanAccess(const SecurityOrigin* other,
@@ -421,8 +363,8 @@ bool SecurityOrigin::CanRequest(const KURL& url) const {
     // (e.g., top-level worker script loading) because SecurityOrigin and
     // BlobURLNullOriginMap are thread-specific. For the case, check
     // BlobURLOpaqueOriginNonceMap.
-    base::Optional<base::UnguessableToken> nonce = GetNonceForSerialization();
-    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == nonce)
+    const base::UnguessableToken* nonce = GetNonceForSerialization();
+    if (nonce && BlobURLOpaqueOriginNonceMap::GetInstance().Get(url) == *nonce)
       return true;
     return false;
   }
@@ -733,8 +675,9 @@ void SecurityOrigin::SetOpaqueOriginIsPotentiallyTrustworthy(
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::DeriveNewOpaqueOrigin() const {
-  return base::AdoptRef(new SecurityOrigin(
-      url::Origin::Nonce(), GetOriginOrPrecursorOriginIfOpaque()));
+  return base::AdoptRef(
+      new SecurityOrigin(NewUniqueOpaque::kWithLazyInitNonce,
+                         GetOriginOrPrecursorOriginIfOpaque()));
 }
 
 const SecurityOrigin* SecurityOrigin::GetOriginOrPrecursorOriginIfOpaque()

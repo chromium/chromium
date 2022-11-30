@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_decoder.h"
@@ -31,6 +30,10 @@ class MojoAudioDecoder final : public AudioDecoder,
  public:
   MojoAudioDecoder(scoped_refptr<base::SequencedTaskRunner> task_runner,
                    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder);
+
+  MojoAudioDecoder(const MojoAudioDecoder&) = delete;
+  MojoAudioDecoder& operator=(const MojoAudioDecoder&) = delete;
+
   ~MojoAudioDecoder() final;
 
   // Decoder implementation
@@ -63,15 +66,15 @@ class MojoAudioDecoder final : public AudioDecoder,
   void OnConnectionError();
 
   // Fail an initialization with a Status.
-  void FailInit(InitCB init_cb, Status err);
+  void FailInit(InitCB init_cb, DecoderStatus err);
 
   // Called when |remote_decoder_| finished initialization.
-  void OnInitialized(const Status& status,
+  void OnInitialized(const DecoderStatus& status,
                      bool needs_bitstream_conversion,
                      AudioDecoderType decoder_type);
 
   // Called when |remote_decoder_| accepted or rejected DecoderBuffer.
-  void OnDecodeStatus(const Status& decode_status);
+  void OnDecodeStatus(const DecoderStatus& decode_status);
 
   // called when |remote_decoder_| finished Reset() sequence.
   void OnResetDone();
@@ -106,8 +109,6 @@ class MojoAudioDecoder final : public AudioDecoder,
   // Passed from |remote_decoder_| as a result of its initialization.
   bool needs_bitstream_conversion_ = false;
   AudioDecoderType decoder_type_ = AudioDecoderType::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoAudioDecoder);
 };
 
 }  // namespace media

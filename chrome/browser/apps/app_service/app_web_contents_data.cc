@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@ namespace apps {
 
 AppWebContentsData::AppWebContentsData(content::WebContents* web_contents,
                                        Client* client)
-    : content::WebContentsObserver(web_contents), client_(client) {
-  DCHECK(web_contents);
+    : content::WebContentsUserData<AppWebContentsData>(*web_contents),
+      content::WebContentsObserver(web_contents),
+      client_(client) {
   DCHECK(client);
 }
 
@@ -20,6 +21,6 @@ void AppWebContentsData::WebContentsDestroyed() {
   client_ = nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppWebContentsData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AppWebContentsData);
 
 }  // namespace apps

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -56,28 +56,24 @@ void CloseNotification(Profile* profile) {
 const char QuitWithAppsController::kQuitWithAppsNotificationID[] =
     "quit-with-apps";
 
-QuitWithAppsController::QuitWithAppsController()
-    : hosted_app_quit_notification_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kHostedAppQuitNotification)) {
+QuitWithAppsController::QuitWithAppsController() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   message_center::ButtonInfo quit_apps_button_info(
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_QUIT_LABEL));
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(quit_apps_button_info);
-  if (!hosted_app_quit_notification_) {
-    message_center::ButtonInfo suppression_button_info(
-        l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_SUPPRESSION_LABEL));
-    rich_notification_data.buttons.push_back(suppression_button_info);
-  }
+  message_center::ButtonInfo suppression_button_info(
+      l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_SUPPRESSION_LABEL));
+  rich_notification_data.buttons.push_back(suppression_button_info);
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kQuitWithAppsNotificationID,
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_TITLE),
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_EXPLANATION),
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_PRODUCT_LOGO_128),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_PRODUCT_LOGO_128)),
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_NOTIFICATION_DISPLAY_SOURCE),
       GURL(kQuitWithAppsOriginUrl),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -89,28 +85,20 @@ QuitWithAppsController::~QuitWithAppsController() {}
 
 void QuitWithAppsController::Close(bool by_user) {
   if (by_user)
-    suppress_for_session_ = !hosted_app_quit_notification_;
+    suppress_for_session_ = true;
 }
 
 void QuitWithAppsController::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<std::u16string>& reply) {
+    const absl::optional<int>& button_index,
+    const absl::optional<std::u16string>& reply) {
   CloseNotification(notification_profile_);
 
   if (!button_index)
     return;
 
   if (*button_index == kQuitAllAppsButtonIndex) {
-    if (hosted_app_quit_notification_) {
-      content::NotificationService::current()->Notify(
-          chrome::NOTIFICATION_CLOSE_ALL_BROWSERS_REQUEST,
-          content::NotificationService::AllSources(),
-          content::NotificationService::NoDetails());
-      chrome::CloseAllBrowsers();
-    }
     AppWindowRegistryUtil::CloseAllAppWindows();
-  } else if (*button_index == kDontShowAgainButtonIndex &&
-             !hosted_app_quit_notification_) {
+  } else if (*button_index == kDontShowAgainButtonIndex) {
     g_browser_process->local_state()->SetBoolean(
         prefs::kNotifyWhenAppsKeepChromeAlive, false);
   }
@@ -132,35 +120,10 @@ bool QuitWithAppsController::ShouldQuit() {
     return true;
   }
 
-  if (hosted_app_quit_notification_) {
-    bool hosted_apps_open = false;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (!browser->deprecated_is_app())
-        continue;
-
-      ExtensionRegistry* registry = ExtensionRegistry::Get(browser->profile());
-      const extensions::Extension* extension = registry->GetExtensionById(
-          web_app::GetAppIdFromApplicationName(browser->app_name()),
-          ExtensionRegistry::ENABLED);
-      if (extension->is_hosted_app()) {
-        hosted_apps_open = true;
-        break;
-      }
-    }
-
-    // Quit immediately if there are no packaged app windows or hosted apps open
-    // or the confirmation has been suppressed. Ignore panels.
-    if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
-            extensions::AppWindow::WINDOW_TYPE_DEFAULT) &&
-        !hosted_apps_open) {
-      return true;
-    }
-  } else {
-    // Quit immediately if there are no windows or the confirmation has been
-    // suppressed.
-    if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
-            extensions::AppWindow::WINDOW_TYPE_DEFAULT))
-      return true;
+  // Quit immediately if there are no windows.
+  if (!AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(
+          extensions::AppWindow::WINDOW_TYPE_DEFAULT)) {
+    return true;
   }
 
   // If there are browser windows, and this notification has been suppressed for

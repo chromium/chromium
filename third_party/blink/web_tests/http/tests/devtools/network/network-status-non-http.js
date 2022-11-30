@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,8 @@
   var seenRequests = 0;
 
   function dumpRequests() {
-    var logView = UI.panels.network._networkLogView;
-    logView._refresh();
+    var logView = UI.panels.network.networkLogView;
+    logView.refresh();
     var dataGrid = logView.element.querySelector('table.data');
     var urls = document.evaluate(
         '//tbody/tr/td[position()=1]/@title', dataGrid, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);

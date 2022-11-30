@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/services/storage/test_api/test_api.h"
@@ -27,13 +26,14 @@
 #include "content/shell/common/power_monitor_test_impl.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "sandbox/policy/sandbox.h"
 #include "services/test/echo/echo_service.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/test/sandbox_status_service.h"
 #endif
 
@@ -43,10 +43,14 @@ namespace {
 
 class TestUtilityServiceImpl : public mojom::TestService {
  public:
-  static void Create(mojo::PendingReceiver<mojom::TestService> receiver) {
-    mojo::MakeSelfOwnedReceiver(base::WrapUnique(new TestUtilityServiceImpl),
-                                std::move(receiver));
-  }
+  explicit TestUtilityServiceImpl(
+      mojo::PendingReceiver<mojom::TestService> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  TestUtilityServiceImpl(const TestUtilityServiceImpl&) = delete;
+  TestUtilityServiceImpl& operator=(const TestUtilityServiceImpl&) = delete;
+
+  ~TestUtilityServiceImpl() override = default;
 
   // mojom::TestService implementation:
   void DoSomething(DoSomethingCallback callback) override {
@@ -111,10 +115,12 @@ class TestUtilityServiceImpl : public mojom::TestService {
   }
 
  private:
-  TestUtilityServiceImpl() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUtilityServiceImpl);
+  mojo::Receiver<mojom::TestService> receiver_;
 };
+
+auto RunTestService(mojo::PendingReceiver<mojom::TestService> receiver) {
+  return std::make_unique<TestUtilityServiceImpl>(std::move(receiver));
+}
 
 auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {
   return std::make_unique<echo::EchoService>(std::move(receiver));
@@ -137,12 +143,10 @@ ShellContentUtilityClient::~ShellContentUtilityClient() = default;
 
 void ShellContentUtilityClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
-  binders->Add(base::BindRepeating(&TestUtilityServiceImpl::Create),
-               base::ThreadTaskRunnerHandle::Get());
   binders->Add<mojom::PowerMonitorTest>(
       base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),
       base::ThreadTaskRunnerHandle::Get());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (register_sandbox_status_helper_) {
     binders->Add<content::mojom::SandboxStatusService>(
         base::BindRepeating(
@@ -154,6 +158,7 @@ void ShellContentUtilityClient::ExposeInterfacesToBrowser(
 
 void ShellContentUtilityClient::RegisterIOThreadServices(
     mojo::ServiceFactory& services) {
+  services.Add(RunTestService);
   services.Add(RunEchoService);
 }
 

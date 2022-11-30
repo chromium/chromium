@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,7 +112,8 @@ bool AccessibilityNodeInfoDataWrapper::IsAccessibilityFocusableContainer()
     return false;
 
   return GetProperty(AXBooleanProperty::SCREEN_READER_FOCUSABLE) ||
-         IsFocusable() || IsClickable() || IsToplevelScrollItem();
+         IsFocusable() || IsClickable() || IsLongClickable() ||
+         IsToplevelScrollItem();
   // TODO(hirokisato): probably check long clickable as well.
 }
 
@@ -249,6 +250,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   MAP_ROLE(ui::kAXPagerClassname, ax::mojom::Role::kGroup);
   MAP_ROLE(ui::kAXProgressBarClassname, ax::mojom::Role::kProgressIndicator);
   MAP_ROLE(ui::kAXRadioButtonClassname, ax::mojom::Role::kRadioButton);
+  MAP_ROLE(ui::kAXRadioGroupClassname, ax::mojom::Role::kRadioGroup);
   MAP_ROLE(ui::kAXScrollViewClassname, ax::mojom::Role::kScrollView);
   MAP_ROLE(ui::kAXSeekBarClassname, ax::mojom::Role::kSlider);
   MAP_ROLE(ui::kAXSpinnerClassname, ax::mojom::Role::kPopUpButton);
@@ -401,8 +403,13 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
   if (IsClickable())
     out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kClickable, true);
 
+  if (IsLongClickable()) {
+    out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kLongClickable, true);
+    out_data->AddAction(ax::mojom::Action::kLongClick);
+  }
+
   if (GetProperty(AXBooleanProperty::SELECTED)) {
-    if (ui::SupportsSelected(out_data->role)) {
+    if (ui::IsSelectSupported(out_data->role)) {
       out_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
     } else {
       descriptions.push_back(
@@ -436,15 +443,12 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
   if (GetProperty(AXIntProperty::LIVE_REGION, &val) && val >= 0 &&
       static_cast<mojom::AccessibilityLiveRegionType>(val) !=
           mojom::AccessibilityLiveRegionType::NONE) {
+    const std::string& live_status = ToLiveStatusString(
+        static_cast<mojom::AccessibilityLiveRegionType>(val));
+    out_data->AddStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
+                                 live_status);
     out_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kLiveStatus,
-        ToLiveStatusString(
-            static_cast<mojom::AccessibilityLiveRegionType>(val)));
-  }
-  if (container_live_status_ != mojom::AccessibilityLiveRegionType::NONE) {
-    out_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kContainerLiveStatus,
-        ToLiveStatusString(container_live_status_));
+        ax::mojom::StringAttribute::kContainerLiveStatus, live_status);
   }
 
   // Standard actions.
@@ -464,15 +468,50 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
     out_data->AddState(ax::mojom::State::kExpanded);
   }
 
+  if (node_ptr_->standard_actions) {
+    for (mojom::AccessibilityActionInAndroidPtr& android_action :
+         node_ptr_->standard_actions.value()) {
+      if (android_action->label.has_value()) {
+        const std::string& label = android_action->label.value();
+        const auto action_id =
+            static_cast<mojom::AccessibilityActionType>(android_action->id);
+        if (action_id == mojom::AccessibilityActionType::CLICK) {
+          out_data->AddStringAttribute(
+              ax::mojom::StringAttribute::kDoDefaultLabel, label);
+        }
+        if (action_id == mojom::AccessibilityActionType::LONG_CLICK) {
+          out_data->AddStringAttribute(
+              ax::mojom::StringAttribute::kLongClickLabel, label);
+        }
+      }
+    }
+  }
+
   // Custom actions.
-  std::vector<int32_t> custom_action_ids;
-  if (GetProperty(AXIntListProperty::CUSTOM_ACTION_IDS, &custom_action_ids)) {
+  if (node_ptr_->custom_actions) {
+    std::vector<int32_t> custom_action_ids;
+    std::vector<std::string> custom_action_descriptions;
+
+    for (auto& action : node_ptr_->custom_actions.value()) {
+      custom_action_ids.push_back(action->id);
+      custom_action_descriptions.push_back(action->label.value());
+    }
+
+    out_data->AddAction(ax::mojom::Action::kCustomAction);
+    out_data->AddIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds,
+                                  custom_action_ids);
+    out_data->AddStringListAttribute(
+        ax::mojom::StringListAttribute::kCustomActionDescriptions,
+        custom_action_descriptions);
+  } else if (std::vector<int32_t> custom_action_ids;
+             GetProperty(AXIntListProperty::CUSTOM_ACTION_IDS_DEPRECATED,
+                         &custom_action_ids)) {
     std::vector<std::string> custom_action_descriptions;
 
     CHECK(GetProperty(AXStringListProperty::CUSTOM_ACTION_DESCRIPTIONS,
                       &custom_action_descriptions));
-    CHECK(!custom_action_ids.empty());
-    CHECK_EQ(custom_action_ids.size(), custom_action_descriptions.size());
+    DCHECK(!custom_action_ids.empty());
+    DCHECK_EQ(custom_action_ids.size(), custom_action_descriptions.size());
 
     out_data->AddAction(ax::mojom::Action::kCustomAction);
     out_data->AddIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds,
@@ -548,12 +587,18 @@ void AccessibilityNodeInfoDataWrapper::GetChildren(
     std::vector<AccessibilityInfoDataWrapper*>* children) const {
   if (!node_ptr_->int_list_properties)
     return;
-  auto it =
+  const auto& it =
       node_ptr_->int_list_properties->find(AXIntListProperty::CHILD_NODE_IDS);
   if (it == node_ptr_->int_list_properties->end())
     return;
-  for (int32_t id : it->second)
-    children->push_back(tree_source_->GetFromId(id));
+  for (const int32_t id : it->second) {
+    auto* child = tree_source_->GetFromId(id);
+    if (child != nullptr) {
+      children->push_back(child);
+    } else {
+      LOG(WARNING) << "Unexpected nullptr found while GetChildren";
+    }
+  }
 }
 
 int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {
@@ -595,11 +640,19 @@ bool AccessibilityNodeInfoDataWrapper::GetProperty(
 
 bool AccessibilityNodeInfoDataWrapper::HasStandardAction(
     AXActionType action) const {
+  if (node_ptr_->standard_actions) {
+    for (const auto& supported_action : node_ptr_->standard_actions.value()) {
+      if (static_cast<AXActionType>(supported_action->id) == action)
+        return true;
+    }
+    return false;
+  }
+
   if (!node_ptr_->int_list_properties)
     return false;
 
   auto itr = node_ptr_->int_list_properties->find(
-      AXIntListProperty::STANDARD_ACTION_IDS);
+      AXIntListProperty::STANDARD_ACTION_IDS_DEPRECATED);
   if (itr == node_ptr_->int_list_properties->end())
     return false;
 
@@ -638,6 +691,9 @@ bool AccessibilityNodeInfoDataWrapper::HasCoveringSpan(
 }
 
 bool AccessibilityNodeInfoDataWrapper::HasText() const {
+  if (!IsImportantInAndroid())
+    return false;
+
   for (const auto it : text_properties_) {
     if (HasNonEmptyStringProperty(node_ptr_, it))
       return true;
@@ -679,12 +735,14 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
   if (IsVirtualNode() || IsAccessibilityFocusableContainer())
     return;
 
-  std::string name;
-  for (const auto it : text_properties_) {
-    if (GetProperty(it, &name) && !name.empty()) {
-      // Stop when we get a name for this subtree.
-      names->push_back(name);
-      return;
+  if (IsImportantInAndroid()) {
+    std::string name;
+    for (const auto it : text_properties_) {
+      if (GetProperty(it, &name) && !name.empty()) {
+        // Stop when we get a name for this subtree.
+        names->push_back(name);
+        return;
+      }
     }
   }
 
@@ -700,6 +758,11 @@ void AccessibilityNodeInfoDataWrapper::ComputeNameFromContentsInternal(
 bool AccessibilityNodeInfoDataWrapper::IsClickable() const {
   return GetProperty(AXBooleanProperty::CLICKABLE) ||
          HasStandardAction(AXActionType::CLICK);
+}
+
+bool AccessibilityNodeInfoDataWrapper::IsLongClickable() const {
+  return GetProperty(AXBooleanProperty::LONG_CLICKABLE) ||
+         HasStandardAction(AXActionType::LONG_CLICK);
 }
 
 bool AccessibilityNodeInfoDataWrapper::IsFocusable() const {
@@ -749,7 +812,7 @@ bool AccessibilityNodeInfoDataWrapper::HasImportantPropertyInternal() const {
     return true;
   }
 
-  if (IsFocusable() || IsClickable())
+  if (IsFocusable() || IsClickable() || IsLongClickable())
     return true;
 
   // These properties are sorted in the same order of mojom file.

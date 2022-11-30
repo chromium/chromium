@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,10 @@ class MockHyphenation : public Hyphenation {
  public:
   wtf_size_t LastHyphenLocation(const StringView&,
                                 wtf_size_t before_index) const override;
+
+  static scoped_refptr<MockHyphenation> Create() {
+    return base::AdoptRef(new MockHyphenation);
+  }
 };
 
 }  // namespace blink

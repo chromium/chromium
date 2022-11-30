@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace notifications {
 namespace features {
 
 // The feature flag to determine whether to use Chime Android SDK.
-extern const base::Feature kUseChimeAndroidSdk;
+BASE_DECLARE_FEATURE(kUseChimeAndroidSdk);
 
 }  // namespace features
 

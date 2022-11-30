@@ -1,0 +1,38 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_status") {
+  packages = [ "absl_status" ]
+}
+
+pkg_config("system_absl_statusor") {
+  packages = [ "absl_statusor" ]
+}
+
+shim_headers("status_shim") {
+  root_path = "."
+  prefix = "absl/status/"
+  headers = [
+    "status.h",
+    "status_payload_printer.h",
+  ]
+}
+
+source_set("status") {
+  deps = [ ":status_shim" ]
+  public_configs = [ ":system_absl_status" ]
+}
+
+shim_headers("statusor_shim") {
+  root_path = "."
+  prefix = "absl/status/"
+  headers = [ "statusor.h" ]
+}
+
+source_set("statusor") {
+  deps = [ ":statusor_shim" ]
+  public_configs = [ ":system_absl_statusor" ]
+}
+
+source_set("statusor_test") {
+}

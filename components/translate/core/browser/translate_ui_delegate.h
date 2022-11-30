@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -42,13 +43,17 @@ class TranslateUIDelegate {
   TranslateUIDelegate(const base::WeakPtr<TranslateManager>& translate_manager,
                       const std::string& source_language,
                       const std::string& target_language);
+
+  TranslateUIDelegate(const TranslateUIDelegate&) = delete;
+  TranslateUIDelegate& operator=(const TranslateUIDelegate&) = delete;
+
   virtual ~TranslateUIDelegate();
 
   // Handles when an error message is shown.
-  void OnErrorShown(TranslateErrors::Type error_type);
+  void OnErrorShown(TranslateErrors error_type);
 
   // Returns the LanguageState associated with this object.
-  const LanguageState& GetLanguageState();
+  const LanguageState* GetLanguageState();
 
   // Returns the number of languages supported.
   size_t GetNumberOfLanguages() const;
@@ -115,12 +120,12 @@ class TranslateUIDelegate {
 
   // Returns true if the site of the current webpage can be put on the never
   // prompt list.
-  bool CanAddToNeverPromptList() const;
+  bool CanAddSiteToNeverPromptList() const;
 
   // Sets the never-prompt state for the host of the current page. If
   // value is true, the current host will be blocklisted and translation
   // prompts will not show for that site.
-  void SetNeverPrompt(bool value);
+  void SetNeverPromptSite(bool value);
 
   // Returns true if the webpage in the current source language should be
   // translated into the current target language automatically.
@@ -149,9 +154,28 @@ class TranslateUIDelegate {
   // Records a high level UI interaction.
   void ReportUIInteraction(UIInteraction ui_interaction);
 
+  // Updates TranslateMetricsLogger state of whether Translate UI is currently
+  // shown.
+  void ReportUIChange(bool is_ui_shown);
+
   // If kContentLanguagesinLanguagePicker is on, build a vector of content
   // languages data.
   void MaybeSetContentLanguages();
+
+  static std::u16string GetUnknownLanguageDisplayName();
+
+  // Returns whether or not the current session is off-the-record.
+  bool IsIncognito() const;
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Returns whether "Always Translate Language" should automatically trigger.
+  // If true, this method has the side effect of mutating some prefs.
+  bool ShouldAutoAlwaysTranslate();
+
+  // Returns whether "Never Translate Language" should automatically trigger.
+  // If true, this method has the side effect of mutating some prefs.
+  bool ShouldAutoNeverTranslate();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, GetPageHost);
@@ -161,7 +185,7 @@ class TranslateUIDelegate {
   // associated with the current page.
   std::string GetPageHost() const;
 
-  TranslateDriver* translate_driver_;
+  raw_ptr<TranslateDriver> translate_driver_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // ISO code (en, fr...) -> displayable name in the current locale
@@ -193,8 +217,6 @@ class TranslateUIDelegate {
 
   // Listens to accept languages changes.
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateUIDelegate);
 };
 
 }  // namespace translate

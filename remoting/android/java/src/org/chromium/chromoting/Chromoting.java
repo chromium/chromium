@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ public class Chromoting extends AppCompatActivity
     private static final String ACCOUNT_TYPE = "com.google";
 
     /** Scope to use when fetching the OAuth token. */
-    // To use these scopes in a debug build, your development account will need to be whitelisted.
+    // To use these scopes in a debug build, your development account will need to be allowlisted.
     private static final String TOKEN_SCOPE =
             "oauth2:https://www.googleapis.com/auth/chromoting.directory "
             + "https://www.googleapis.com/auth/tachyon";

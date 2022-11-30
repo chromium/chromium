@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <chrono>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/test/test_utils.h"
@@ -31,6 +30,10 @@ struct SpeechMonitorUtterance {
 class SpeechMonitor : public content::TtsPlatform {
  public:
   SpeechMonitor();
+
+  SpeechMonitor(const SpeechMonitor&) = delete;
+  SpeechMonitor& operator=(const SpeechMonitor&) = delete;
+
   virtual ~SpeechMonitor();
 
   // Use these apis if you want to write an async test e.g.
@@ -67,6 +70,8 @@ class SpeechMonitor : public content::TtsPlatform {
   // Delayed utterances.
   double GetDelayForLastUtteranceMS();
 
+  int stop_count() { return stop_count_; }
+
  private:
   typedef std::pair<std::function<bool()>, std::string> ReplayArgs;
 
@@ -92,6 +97,9 @@ class SpeechMonitor : public content::TtsPlatform {
   void ClearError() override;
   void SetError(const std::string& error) override;
   void Shutdown() override;
+  void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
+  void RefreshVoices() override;
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
   void MaybeContinueReplay();
   void MaybePrintExpectations();
@@ -125,9 +133,10 @@ class SpeechMonitor : public content::TtsPlatform {
   // Whether |Replay| was called.
   bool replay_called_ = false;
 
-  base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
+  // The number of times StopSpeaking() has been called.
+  int stop_count_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(SpeechMonitor);
+  base::WeakPtrFactory<SpeechMonitor> weak_factory_{this};
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/test/browser_task_environment.h"
@@ -413,7 +413,8 @@ TEST_F(DownloadRequestMakerTest, CreatesFromDownloadItem) {
   EXPECT_CALL(mock_download_item, HasUserGesture()).WillOnce(Return(true));
   EXPECT_CALL(mock_download_item, GetRemoteAddress())
       .WillRepeatedly(Return(std::string("remote_ip")));
-  content::DownloadItemUtils::AttachInfo(&mock_download_item, nullptr, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&mock_download_item, nullptr,
+                                                   nullptr);
 
   base::RunLoop run_loop;
   base::FilePath tmp_path(FILE_PATH_LITERAL("full_path.exe"));

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -42,6 +41,9 @@ class DnsSdRegistry : public DnsSdDelegate {
 
   static DnsSdRegistry* GetInstance();
 
+  DnsSdRegistry(const DnsSdRegistry&) = delete;
+  DnsSdRegistry& operator=(const DnsSdRegistry&) = delete;
+
   // Publishes the current device list for |service_type| to event listeners
   // whose event filter matches the service type.
   virtual void Publish(const std::string& service_type);
@@ -64,6 +66,10 @@ class DnsSdRegistry : public DnsSdDelegate {
   class ServiceTypeData {
    public:
     explicit ServiceTypeData(std::unique_ptr<DnsSdDeviceLister> lister);
+
+    ServiceTypeData(const ServiceTypeData&) = delete;
+    ServiceTypeData& operator=(const ServiceTypeData&) = delete;
+
     virtual ~ServiceTypeData();
 
     // Notify the data class of listeners so that it can be reference counted.
@@ -90,7 +96,6 @@ class DnsSdRegistry : public DnsSdDelegate {
     int ref_count;
     std::unique_ptr<DnsSdDeviceLister> lister_;
     DnsSdRegistry::DnsSdServiceList service_list_;
-    DISALLOW_COPY_AND_ASSIGN(ServiceTypeData);
   };
 
   virtual DnsSdDeviceLister* CreateDnsSdDeviceLister(
@@ -124,8 +129,6 @@ class DnsSdRegistry : public DnsSdDelegate {
       service_discovery_client_;
   base::ObserverList<DnsSdObserver>::Unchecked observers_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsSdRegistry);
 };
 
 }  // namespace media_router

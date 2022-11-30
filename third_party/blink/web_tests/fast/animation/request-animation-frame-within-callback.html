@@ -1,11 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../resources/js-test.js"></script>
-</head>
-<body>
-<span id="e"></span>
-<span id="f"></span>
-<script src="script-tests/request-animation-frame-within-callback.js"></script>
-</body>
-</html>
+<title>Tests adding one callback within another</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+  async_test(t => {
+    var sameFrame;
+    window.requestAnimationFrame(function() {
+      sameFrame = true;
+    });
+    window.requestAnimationFrame(function() {
+      window.requestAnimationFrame(function() {
+        t.step(function() {
+          assert_false(sameFrame);
+        });
+      });
+      requestAnimationFrame(function() {
+        t.done();
+      });
+    });
+    window.requestAnimationFrame(function() {
+      sameFrame = false;
+    });
+  }, "Test adding one rAF callback within another");
+</script>

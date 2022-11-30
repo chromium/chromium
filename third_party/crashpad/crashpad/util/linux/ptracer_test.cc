@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,10 @@ namespace {
 class SameBitnessTest : public Multiprocess {
  public:
   SameBitnessTest() : Multiprocess() {}
+
+  SameBitnessTest(const SameBitnessTest&) = delete;
+  SameBitnessTest& operator=(const SameBitnessTest&) = delete;
+
   ~SameBitnessTest() {}
 
  private:
@@ -65,8 +69,6 @@ class SameBitnessTest : public Multiprocess {
 
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SameBitnessTest);
 };
 
 TEST(Ptracer, SameBitness) {

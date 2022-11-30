@@ -1,8 +1,9 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//cc/cc.gni")
+import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 cc_component("paint") {
@@ -81,10 +82,27 @@ cc_component("paint") {
     "skia_paint_canvas.h",
     "skia_paint_image_generator.cc",
     "skia_paint_image_generator.h",
+    "skottie_color_map.h",
+    "skottie_frame_data.cc",
+    "skottie_frame_data.h",
+    "skottie_frame_data_provider.h",
+    "skottie_marker.h",
+    "skottie_resource_metadata.cc",
+    "skottie_resource_metadata.h",
+    "skottie_serialization_history.cc",
+    "skottie_serialization_history.h",
+    "skottie_text_property_value.cc",
+    "skottie_text_property_value.h",
+    "skottie_transfer_cache_entry.cc",
+    "skottie_transfer_cache_entry.h",
+    "skottie_transform_property_value.cc",
+    "skottie_transform_property_value.h",
     "skottie_wrapper.cc",
     "skottie_wrapper.h",
     "solid_color_analyzer.cc",
     "solid_color_analyzer.h",
+    "target_color_params.cc",
+    "target_color_params.h",
     "texture_backing.h",
     "transfer_cache_deserialize_helper.h",
     "transfer_cache_entry.cc",
@@ -103,23 +121,34 @@ cc_component("paint") {
     "//cc/debug",
     "//skia",
     "//skia:skcms",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/common:mailbox",
     "//ui/gfx/animation",
     "//ui/gfx/ipc/color",
   ]
 
-  if (!is_android) {
+  if (skia_support_skottie) {
+    # All source files that depend on the actual Skottie module within Skia
+    # should go here. If a source file is Skottie-related but depends only on
+    # Chromium and/or "common" Skia dependencies, it is fine to include that
+    # in the main "sources" list. Note that ultimately, all dependencies on
+    # the Skottie library should be contained in some way/shape/form within
+    # skottie_wrapper_impl.cc
     sources += [
-      "skottie_transfer_cache_entry.cc",
-      "skottie_transfer_cache_entry.h",
+      "skottie_mru_resource_provider.cc",
+      "skottie_mru_resource_provider.h",
+      "skottie_wrapper_impl.cc",
     ]
+  } else {
+    sources += [ "skottie_wrapper_stub.cc" ]
   }
 }
 

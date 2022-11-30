@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -35,7 +36,7 @@ class DrawerLayoutHandlerTest : public testing::Test,
   class TestAXTreeSourceArc : public AXTreeSourceArc {
    public:
     explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate) {}
+        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
 
     // AXTreeSourceArc overrides.
     AccessibilityInfoDataWrapper* GetFromId(int32_t id) const override {
@@ -153,10 +154,12 @@ TEST_F(DrawerLayoutHandlerTest, CreateAndSerializeWithoutText) {
   ASSERT_EQ(2, create_result.value().first);
 
   ui::AXNodeData data;
+  // A valid role must be set prior to calling SetName.
+  data.role = ax::mojom::Role::kMenu;
   data.SetName("node description");
   create_result.value().second->PostSerializeNode(&data);
 
-  // Modifier doesn't override the name by an empty string.
+  // Modifier doesn't override the name by an empty string, or change the role.
   ASSERT_EQ(ax::mojom::Role::kMenu, data.role);
   ASSERT_EQ("node description",
             data.GetStringAttribute(ax::mojom::StringAttribute::kName));

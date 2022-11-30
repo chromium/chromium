@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Class for managing the interactions between a rich autocomplete
@@ -37,6 +29,7 @@ goog.require('goog.ui.ac.InputHandler');
  */
 goog.ui.ac.RichInputHandler = function(
     opt_separators, opt_literals, opt_multi, opt_throttleTime) {
+  'use strict';
   goog.ui.ac.InputHandler.call(
       this, opt_separators, opt_literals, opt_multi, opt_throttleTime);
 };
@@ -50,6 +43,7 @@ goog.inherits(goog.ui.ac.RichInputHandler, goog.ui.ac.InputHandler);
  * @override
  */
 goog.ui.ac.RichInputHandler.prototype.selectRow = function(row) {
+  'use strict';
   var suppressUpdate =
       goog.ui.ac.RichInputHandler.superClass_.selectRow.call(this, row);
   row.select(this.ac_.getTarget());

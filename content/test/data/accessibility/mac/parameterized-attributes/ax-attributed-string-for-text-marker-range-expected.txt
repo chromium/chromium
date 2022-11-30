@@ -1,0 +1,4 @@
+input.accessibilityParameterizedAttributeNames.has(AXAttributedStringForTextMarkerRange)='yes'
+text_range={anchor: {:3, 0, down}, focus: {:3, 8, down}}
+input.accessibilityAttributeValue(AXAttributedStringForTextMarkerRange, text_range)='mispeled{
+}'

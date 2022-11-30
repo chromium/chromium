@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_REMOVER_HELPER_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
@@ -22,9 +21,13 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   using Callback = base::OnceCallback<void(bool)>;
 
   explicit BookmarkRemoverHelper(ChromeBrowserState* browser_state);
+
+  BookmarkRemoverHelper(const BookmarkRemoverHelper&) = delete;
+  BookmarkRemoverHelper& operator=(const BookmarkRemoverHelper&) = delete;
+
   ~BookmarkRemoverHelper() override;
 
-  // Removes all bookmarks and asynchronously invoke |completion| with
+  // Removes all bookmarks and asynchronously invoke `completion` with
   // boolean indicating success or failure.
   void RemoveAllUserBookmarksIOS(Callback completion);
 
@@ -38,7 +41,7 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
 
  private:
   // Invoked when the bookmark entries have been deleted. Invoke the
-  // completion callback with |success| (invocation is asynchronous so
+  // completion callback with `success` (invocation is asynchronous so
   // the object won't be deleted immediately).
   void BookmarksRemoved(bool success);
 
@@ -46,8 +49,6 @@ class BookmarkRemoverHelper : public bookmarks::BaseBookmarkModelObserver {
   ChromeBrowserState* browser_state_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkRemoverHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_REMOVER_HELPER_H_

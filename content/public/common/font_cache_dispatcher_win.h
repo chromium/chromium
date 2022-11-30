@@ -1,14 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_FONT_CACHE_DISPATCHER_WIN_H_
-#define CONTENT_COMMON_FONT_CACHE_DISPATCHER_WIN_H_
+#ifndef CONTENT_PUBLIC_COMMON_FONT_CACHE_DISPATCHER_WIN_H_
+#define CONTENT_PUBLIC_COMMON_FONT_CACHE_DISPATCHER_WIN_H_
 
 #include <windows.h>
 
-#include "base/macros.h"
-#include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/common/font_cache_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -21,6 +19,10 @@ namespace content {
 class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
  public:
   FontCacheDispatcher();
+
+  FontCacheDispatcher(const FontCacheDispatcher&) = delete;
+  FontCacheDispatcher& operator=(const FontCacheDispatcher&) = delete;
+
   ~FontCacheDispatcher() override;
 
   static void Create(mojo::PendingReceiver<mojom::FontCacheWin> receiver);
@@ -30,10 +32,8 @@ class CONTENT_EXPORT FontCacheDispatcher : public mojom::FontCacheWin {
   void PreCacheFont(const LOGFONT& log_font,
                     PreCacheFontCallback callback) override;
   void ReleaseCachedFonts() override;
-
-  DISALLOW_COPY_AND_ASSIGN(FontCacheDispatcher);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_COMMON_FONT_CACHE_DISPATCHER_WIN_H_
+#endif  // CONTENT_PUBLIC_COMMON_FONT_CACHE_DISPATCHER_WIN_H_

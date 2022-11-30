@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/token.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -45,6 +44,10 @@ class TestConnectorFactory : public mojom::ServiceControl {
   // Creates a simple TestConnectorFactory which can be used register Service
   // instances and vend Connectors which can connect to them.
   TestConnectorFactory();
+
+  TestConnectorFactory(const TestConnectorFactory&) = delete;
+  TestConnectorFactory& operator=(const TestConnectorFactory&) = delete;
+
   ~TestConnectorFactory() override;
 
   // A mapping from service names to Service proxies for registered instances.
@@ -116,8 +119,6 @@ class TestConnectorFactory : public mojom::ServiceControl {
 
   bool ignore_unknown_service_requests_ = false;
   bool ignore_quit_requests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectorFactory);
 };
 
 }  // namespace service_manager

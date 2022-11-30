@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,50 +6,71 @@
 #define MEDIA_MOJO_MOJOM_STATUS_MOJOM_TRAITS_H_
 
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "media/base/decoder_status.h"
+#include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<media::mojom::StatusDataView, media::Status> {
-  static media::StatusCode code(const media::Status& input) {
-    return input.code();
+struct StructTraits<media::mojom::StatusDataDataView,
+                    media::internal::StatusData> {
+  static media::StatusCodeType code(const media::internal::StatusData& input) {
+    return input.code;
   }
 
-  static base::Optional<std::string> message(const media::Status& input) {
-    if (input.is_ok())
-      return base::nullopt;
-    DCHECK(input.data_);
-    return input.message();
+  static media::StatusGroupType group(
+      const media::internal::StatusData& input) {
+    return input.group;
   }
 
-  static base::span<base::Value> frames(const media::Status& input) {
-    if (input.is_ok())
-      return {};
-    DCHECK(input.data_);
-    return input.data_->frames;
+  static const std::string& message(const media::internal::StatusData& input) {
+    return input.message;
   }
 
-  static base::span<media::Status> causes(const media::Status& input) {
-    if (input.is_ok())
-      return {};
-    DCHECK(input.data_);
-    return input.data_->causes;
+  static base::span<const base::Value> frames(
+      const media::internal::StatusData& input) {
+    return input.frames;
   }
 
-  static base::Optional<base::Value> data(const media::Status& input) {
-    if (!input.is_ok()) {
-      DCHECK(input.data_);
-      return input.data_->data.Clone();
-    }
-    return base::nullopt;
+  static mojo::OptionalAsPointer<const media::internal::StatusData> cause(
+      const media::internal::StatusData& input) {
+    return mojo::MakeOptionalAsPointer(input.cause.get());
   }
 
-  static bool Read(media::mojom::StatusDataView data, media::Status* output);
+  static const base::Value& data(const media::internal::StatusData& input) {
+    return input.data;
+  }
+
+  static media::UKMPackedType packed_root_cause(
+      const media::internal::StatusData& input) {
+    return input.packed_root_cause;
+  }
+
+  static bool Read(media::mojom::StatusDataDataView data,
+                   media::internal::StatusData* output);
+};
+
+template <typename StatusEnum, typename DataView>
+struct StructTraits<DataView, media::TypedStatus<StatusEnum>> {
+  static mojo::OptionalAsPointer<const media::internal::StatusData> internal(
+      const media::TypedStatus<StatusEnum>& input) {
+    return mojo::MakeOptionalAsPointer(input.data_.get());
+  }
+
+  static bool Read(DataView data, media::TypedStatus<StatusEnum>* output) {
+    absl::optional<media::internal::StatusData> internal;
+    if (!data.ReadInternal(&internal))
+      return false;
+    if (internal)
+      output->data_ = internal->copy();
+    return true;
+  }
 };
 
 }  // namespace mojo

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 
 namespace content {
@@ -71,13 +71,24 @@ class PerformanceManager {
   static void PassToGraph(const base::Location& from_here,
                           std::unique_ptr<GraphOwned> graph_owned);
 
-  // Returns a WeakPtr to the PageNode associated with a given WebContents,
-  // or a null WeakPtr if there's no PageNode for this WebContents.
+  // Returns a WeakPtr to the *primary* PageNode associated with a given
+  // WebContents, or a null WeakPtr if there's no PageNode for this WebContents.
   // Valid to call from the main thread only, the returned WeakPtr should only
   // be dereferenced on the PM sequence (e.g. it can be used in a
   // CallOnGraph callback).
-  static base::WeakPtr<PageNode> GetPageNodeForWebContents(
+  // NOTE: Consider using GetPageNodeForRenderFrameHost if you are in the
+  // context of a specific RenderFrameHost.
+  static base::WeakPtr<PageNode> GetPrimaryPageNodeForWebContents(
       content::WebContents* wc);
+
+  // Returns a WeakPtr to the PageNode associated with a given RenderFrameHost,
+  // or nullptr if no such page node exists. Valid to call from the main thread
+  // only, the returned WeakPtr should only be dereferenced on the PM sequence
+  // (e.g. it can be used in a CallOnGraph callback). This is equivalent to
+  // calling `GetFrameNodeForRenderFrameHost()` and subsequently calling
+  // `FrameNode::GetPageNode()`.
+  static base::WeakPtr<PageNode> GetPageNodeForRenderFrameHost(
+      content::RenderFrameHost* rfh);
 
   // Returns a WeakPtr to the FrameNode associated with a given
   // RenderFrameHost, or a null WeakPtr if there's no FrameNode for this RFH.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,22 +16,22 @@
 namespace device {
 
 // static
-base::Optional<AttestationObject> AttestationObject::Parse(
+absl::optional<AttestationObject> AttestationObject::Parse(
     const cbor::Value& value) {
   if (!value.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const cbor::Value::MapValue& map = value.GetMap();
 
   const auto& format_it = map.find(cbor::Value(kFormatKey));
   if (format_it == map.end() || !format_it->second.is_string()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   const std::string& fmt = format_it->second.GetString();
 
   const auto& att_stmt_it = map.find(cbor::Value(kAttestationStatementKey));
   if (att_stmt_it == map.end() || !att_stmt_it->second.is_map()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   std::unique_ptr<AttestationStatement> attestation_statement =
       std::make_unique<OpaqueAttestationStatement>(
@@ -39,13 +39,13 @@ base::Optional<AttestationObject> AttestationObject::Parse(
 
   const auto& auth_data_it = map.find(cbor::Value(kAuthDataKey));
   if (auth_data_it == map.end() || !auth_data_it->second.is_bytestring()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  base::Optional<AuthenticatorData> authenticator_data =
+  absl::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
           auth_data_it->second.GetBytestring());
   if (!authenticator_data) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   return AttestationObject(std::move(*authenticator_data),
                            std::move(attestation_statement));
@@ -67,11 +67,16 @@ std::vector<uint8_t> AttestationObject::GetCredentialId() const {
   return authenticator_data_.GetCredentialId();
 }
 
-void AttestationObject::EraseAttestationStatement(
+bool AttestationObject::EraseAttestationStatement(
     AttestationObject::AAGUID erase_aaguid) {
-  attestation_statement_ = std::make_unique<NoneAttestationStatement>();
+  bool did_make_change = false;
+  if (!attestation_statement_->IsNoneAttestation()) {
+    attestation_statement_ = std::make_unique<NoneAttestationStatement>();
+    did_make_change = true;
+  }
+
   if (erase_aaguid == AAGUID::kErase) {
-    authenticator_data_.DeleteDeviceAaguid();
+    did_make_change |= authenticator_data_.DeleteDeviceAaguid();
   }
 
 // Attested credential data is optional section within authenticator data. But
@@ -79,11 +84,17 @@ void AttestationObject::EraseAttestationStatement(
 // be set to zeros for none attestation statement format, unless explicitly
 // requested otherwise (we make an exception for platform authenticators).
 #if DCHECK_IS_ON()
-  if (!authenticator_data_.attested_data())
-    return;
-  DCHECK(erase_aaguid == AAGUID::kInclude ||
-         authenticator_data_.attested_data()->IsAaguidZero());
+  if (authenticator_data_.attested_data()) {
+    DCHECK(erase_aaguid == AAGUID::kInclude ||
+           authenticator_data_.attested_data()->IsAaguidZero());
+  }
 #endif
+
+  return did_make_change;
+}
+
+bool AttestationObject::EraseExtension(base::StringPiece name) {
+  return authenticator_data_.EraseExtension(name);
 }
 
 bool AttestationObject::IsSelfAttestation() {

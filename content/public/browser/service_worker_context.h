@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,28 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_external_request_result.h"
+#include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom-forward.h"
-#include "url/gurl.h"
 
 namespace blink {
+class StorageKey;
+}  // namespace blink
 
-struct TransferableMessage;
-
+namespace service_manager {
+class InterfaceProvider;
 }
+
+namespace url {
+class Origin;
+}  // namespace url
+
+class GURL;
 
 namespace content {
 
@@ -59,17 +70,19 @@ enum class StartServiceWorkerForNavigationHintResult {
   kMaxValue = FAILED,
 };
 
+// A callback invoked with the result of executing script in a service worker
+// context.
+using ServiceWorkerScriptExecutionCallback =
+    base::OnceCallback<void(base::Value value,
+                            const absl::optional<std::string>& error)>;
+
 // Represents the per-StoragePartition service worker data.
 //
 // See service_worker_context_wrapper.cc for the implementation
 // of ServiceWorkerContext and ServiceWorkerContextWrapper (the
 // primary implementation of this abstract class).
 //
-// All methods are basically expected to be called on the UI thread.
-// Currently, only two methods are allowed to be called on any threads but it's
-// discouraged.
-// TODO(https://crbug.com/1161153): Disallow methods to be called on any
-// threads.
+// All methods must be called on the UI thread.
 class CONTENT_EXPORT ServiceWorkerContext {
  public:
   using ResultCallback = base::OnceCallback<void(bool success)>;
@@ -96,10 +109,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
 
-  // Returns BrowserThread::UI always.
-  // TODO(https://crbug.com/1138155): Remove this.
-  static content::BrowserThread::ID GetCoreThreadId();
-
   // Returns true if |url| is within the service worker |scope|.
   static bool ScopeMatches(const GURL& scope, const GURL& url);
 
@@ -114,27 +123,29 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual void RemoveObserver(ServiceWorkerContextObserver* observer) = 0;
 
   // Equivalent to calling navigator.serviceWorker.register(script_url,
-  // options). |callback| is passed true when the JS promise is fulfilled or
-  // false when the JS promise is rejected.
+  // options) for a given `key`. `callback` is passed true when the JS promise
+  // is fulfilled or false when the JS promise is rejected.
   //
   // The registration can fail if:
-  //  * |script_url| is on a different origin from |scope|
-  //  * Fetching |script_url| fails.
-  //  * |script_url| fails to parse or its top-level execution fails.
+  //  * `script_url` is on a different origin from `scope`
+  //  * Fetching `script_url` fails.
+  //  * `script_url` fails to parse or its top-level execution fails.
   //  * Something unexpected goes wrong, like a renderer crash or a full disk.
   virtual void RegisterServiceWorker(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       StatusCodeCallback callback) = 0;
 
   // Equivalent to calling ServiceWorkerRegistration#unregister on the
-  // registration for |scope|. |callback| is passed true when the JS promise is
+  // registration for `scope`. `callback` is passed true when the JS promise is
   // fulfilled or false when the JS promise is rejected.
   //
   // Unregistration can fail if:
-  //  * No registration exists for |scope|.
+  //  * No registration exists for `scope`.
   //  * Something unexpected goes wrong, like a renderer crash.
   virtual void UnregisterServiceWorker(const GURL& scope,
+                                       const blink::StorageKey& key,
                                        ResultCallback callback) = 0;
 
   // Mechanism for embedder to increment/decrement ref count of a service
@@ -147,38 +158,48 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // alive.
   virtual ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) = 0;
   virtual ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) = 0;
 
   // Returns the pending external request count for the worker with the
-  // specified |origin|.
-  virtual size_t CountExternalRequestsForTest(const url::Origin& origin) = 0;
+  // specified `key`.
+  virtual size_t CountExternalRequestsForTest(const blink::StorageKey& key) = 0;
 
-  // Whether |origin| has any registrations. Uninstalling and uninstalled
+  // Executes the given `script` in the context of the worker specified by the
+  // given `service_worker_version_id`. If non-empty, `callback` is invoked
+  // with the result of the script. See also service_worker.mojom.
+  virtual bool ExecuteScriptForTest(
+      const std::string& script,
+      int64_t service_worker_version_id,
+      ServiceWorkerScriptExecutionCallback callback) = 0;
+
+  // Whether `key` has any registrations. Uninstalling and uninstalled
   // registrations do not cause this to return true, that is, only registrations
   // with status ServiceWorkerRegistration::Status::kIntact are considered, such
   // as even if the corresponding live registrations may still exist. Also,
   // returns true if it doesn't know (registrations are not yet initialized).
-  virtual bool MaybeHasRegistrationForOrigin(const url::Origin& origin) = 0;
+  virtual bool MaybeHasRegistrationForStorageKey(
+      const blink::StorageKey& key) = 0;
 
+  // TODO(crbug.com/1199077): Update name when StorageUsageInfo uses StorageKey.
   virtual void GetAllOriginsInfo(GetUsageInfoCallback callback) = 0;
 
-  // Deletes all registrations in the origin and clears all service workers
+  // Deletes all registrations for `key` and clears all service workers
   // belonging to the registrations. All clients controlled by those service
   // workers will lose their controllers immediately after this operation.
-  // This function can be called from any thread, and the callback is called on
-  // that thread.
-  virtual void DeleteForOrigin(const url::Origin& origin_url,
-                               ResultCallback callback) = 0;
+  virtual void DeleteForStorageKey(const blink::StorageKey& key,
+                                   ResultCallback callback) = 0;
 
   // Returns ServiceWorkerCapability describing existence and properties of a
-  // Service Worker registration matching |url|. In case the service
+  // Service Worker registration matching `url` and `key`. In case the service
   // worker is being installed as of calling this method, it will wait for the
   // installation to finish before coming back with the result.
   virtual void CheckHasServiceWorker(
       const GURL& url,
+      const blink::StorageKey& key,
       CheckHasServiceWorkerCallback callback) = 0;
 
   // Simulates a navigation request in the offline state and dispatches a fetch
@@ -189,6 +210,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // |ServiceWorkerContext::CheckHasServiceWorker|.
   virtual void CheckOfflineCapability(
       const GURL& url,
+      const blink::StorageKey& key,
       CheckOfflineCapabilityCallback callback) = 0;
 
   // Stops all running service workers and unregisters all service worker
@@ -196,37 +218,39 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // existing service worker will not affect the succeeding tests.
   virtual void ClearAllServiceWorkersForTest(base::OnceClosure callback) = 0;
 
-  // Starts the active worker of the registration for the given |scope|. If
-  // there is no active worker, starts the installing worker.
-  // |info_callback| is passed information about the started worker if
-  // successful, otherwise |failure_callback| is passed information about the
+  // Starts the active worker of the registration for the given `scope` and
+  // `key`. If there is no active worker, starts the installing worker.
+  // `info_callback` is passed information about the started worker if
+  // successful, otherwise `failure_callback` is passed information about the
   // error.
   //
   // There is no guarantee about whether the callback is called synchronously or
   // asynchronously.
   virtual void StartWorkerForScope(const GURL& scope,
+                                   const blink::StorageKey& key,
                                    StartWorkerCallback info_callback,
                                    StatusCodeCallback failure_callback) = 0;
 
-  // Starts the active worker of the registration for the given |scope| and
-  // dispatches the given |message| to the service worker. |result_callback|
-  // is passed a success boolean indicating whether the message was dispatched
-  // successfully.
-  //
-  // May be called on any thread, and the callback is called on that thread.
+  // Starts the active worker of the registration for the given `scope` and
+  // `key` and dispatches the given `message` to the service worker.
+  // `result_callback` is passed a success boolean indicating whether the
+  // message was dispatched successfully.
   virtual void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
+      const blink::StorageKey& key,
       blink::TransferableMessage message,
       ResultCallback result_callback) = 0;
 
-  // Starts the service worker for |document_url|. Called when a navigation to
-  // that URL is predicted to occur soon.
+  // Starts the service worker for `document_url` and `key`. Called when a
+  // navigation to that URL is predicted to occur soon.
   virtual void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
+      const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) = 0;
 
-  // Stops all running workers on the given |origin|.
-  virtual void StopAllServiceWorkersForOrigin(const url::Origin& origin) = 0;
+  // Stops all running workers on the given `key`.
+  virtual void StopAllServiceWorkersForStorageKey(
+      const blink::StorageKey& key) = 0;
 
   // Stops all running service workers.
   virtual void StopAllServiceWorkers(base::OnceClosure callback) = 0;
@@ -235,6 +259,18 @@ class CONTENT_EXPORT ServiceWorkerContext {
   virtual const base::flat_map<int64_t /* version_id */,
                                ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() = 0;
+
+  // Returns true if the ServiceWorkerVersion for `service_worker_version_id` is
+  // live and running.
+  virtual bool IsLiveRunningServiceWorker(
+      int64_t service_worker_version_id) = 0;
+
+  // Returns the InterfaceProvider for the worker specified by
+  // `service_worker_version_id`. The caller can use InterfaceProvider to bind
+  // interfaces exposed by the Service Worker. CHECKs if
+  // `IsLiveRunningServiceWorker()` returns false.
+  virtual service_manager::InterfaceProvider& GetRemoteInterfaces(
+      int64_t service_worker_version_id) = 0;
 
  protected:
   ServiceWorkerContext() {}

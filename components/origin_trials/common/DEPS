@@ -1,0 +1,7 @@
+include_rules = [
+
+  "+content/public/common/content_features.h",
+
+  # Specific import to get the trial_token UsageRestriction enum
+  "+third_party/blink/public/common/origin_trials/trial_token.h",
+]

@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.proto";
+option java_multiple_files = true;
+
+package autofill_assistant;
+
+import "components/autofill_assistant/browser/action_value.proto";
+
+message RequiredDataPiece {
+  optional string error_message = 1;
+  optional Condition condition = 2;
+
+  message Condition {
+    // The key to evaluate the condition on. This must match one of Chromium's
+    // field_types.h or our own additions AutofillAssistantCustomField.
+    optional int32 key = 1;
+
+    oneof condition {
+      NotEmptyCondition not_empty = 2;
+      RegexpCondition regexp = 3;
+    }
+  }
+
+  message NotEmptyCondition {}
+
+  message RegexpCondition { optional TextFilter text_filter = 1; }
+}

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -39,12 +39,13 @@ static_library("signaling") {
     "signaling_id_util.cc",
     "signaling_id_util.h",
     "signaling_tracker.h",
+    "xmpp_constants.cc",
+    "xmpp_constants.h",
     "xmpp_log_to_server.cc",
     "xmpp_log_to_server.h",
   ]
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
   ]
@@ -52,7 +53,7 @@ static_library("signaling") {
   public_deps = [
     "//remoting/proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
-    "//third_party/libjingle_xmpp",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
@@ -61,10 +62,10 @@ static_library("signaling") {
     "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//services/network/public/cpp:cpp",
   ]

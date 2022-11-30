@@ -5,7 +5,7 @@
 <translation id="1140871961407805696">Camera aan achterzijde</translation>
 <translation id="1196338895211115272">Exporteren van persoonlijke sleutel is mislukt.</translation>
 <translation id="1420684932347524586">O nee! Kan geen willekeurige persoonlijke RSA-sleutel genereren.</translation>
-<translation id="1445572445564823378"><ph name="PRODUCT_NAME" /> wordt door deze extensie vertraagd. Schakel de extensie uit om de prestaties van <ph name="PRODUCT_NAME" /> te verbeteren.</translation>
+<translation id="1445572445564823378"><ph name="PRODUCT_NAME" /> wordt door deze extensie vertraagd. Zet de extensie uit om de prestaties van <ph name="PRODUCT_NAME" /> te verbeteren.</translation>
 <translation id="1468038450257740950">WebGL wordt niet ondersteund.</translation>
 <translation id="1803557475693955505">Kan achtergrondpagina '<ph name="BACKGROUND_PAGE" />' niet laden.</translation>
 <translation id="2159915644201199628">Kan afbeelding niet decoderen: '<ph name="IMAGE_NAME" />'</translation>
@@ -25,7 +25,7 @@
 <translation id="388442998277590542">Kan optiepagina '<ph name="OPTIONS_PAGE" />' niet laden.</translation>
 <translation id="3984413272403535372">Fout bij ondertekenen van extensie.</translation>
 <translation id="39964277676607559">Kan JavaScript '<ph name="RELATIVE_PATH" />' niet laden voor het inhoudsscript.</translation>
-<translation id="4115165561519362854">De beheerder van dit apparaat vereist dat minimaal versie <ph name="EXTENSION_VERSION" /> van <ph name="EXTENSION_NAME" /> moet zijn geïnstalleerd. De extensie kan pas worden ingeschakeld nadat deze is geüpdatet naar die versie (of hoger).</translation>
+<translation id="4115165561519362854">De beheerder van dit apparaat vereist dat minimaal versie <ph name="EXTENSION_VERSION" /> van <ph name="EXTENSION_NAME" /> moet zijn geïnstalleerd. De extensie kan pas worden aangezet nadat deze is geüpdatet naar die versie (of hoger).</translation>
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>
 <translation id="4811956658694082538">Kan pakket niet installeren, omdat het proces van een hulpprogramma is gecrasht. Start Chrome opnieuw en probeer het nogmaals.</translation>

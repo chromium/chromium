@@ -29,8 +29,10 @@
 
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 
+#include <utility>
+
+#include "base/json/json_reader.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -48,6 +50,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -119,19 +122,10 @@ void DevToolsHost::Trace(Visitor* visitor) const {
 void DevToolsHost::EvaluateScript(const String& expression) {
   if (ScriptForbiddenScope::IsScriptForbidden())
     return;
-  if (!frontend_frame_)
-    return;
-  ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
-  if (!script_state)
-    return;
-  ScriptState::Scope scope(script_state);
-  v8::MicrotasksScope microtasks(script_state->GetIsolate(),
-                                 v8::MicrotasksScope::kRunMicrotasks);
-  ScriptSourceCode source_code(expression, ScriptSourceLocationType::kInternal,
-                               nullptr, KURL(),
-                               TextPosition::MinimumPosition());
-  V8ScriptRunner::CompileAndRunInternalScript(script_state->GetIsolate(),
-                                              script_state, source_code);
+  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
+  ClassicScript::CreateUnspecifiedScript(expression,
+                                         ScriptSourceLocationType::kInternal)
+      ->RunScriptOnScriptState(ToScriptStateForMainWorld(frontend_frame_));
 }
 
 void DevToolsHost::DisconnectClient() {
@@ -147,8 +141,7 @@ float DevToolsHost::zoomFactor() {
   if (!frontend_frame_)
     return 1;
   float zoom_factor = frontend_frame_->PageZoomFactor();
-  // Cancel the device scale factor applied to the zoom factor in
-  // use-zoom-for-dsf mode.
+  // Cancel the device scale factor applied to the zoom factor.
   const ChromeClient* client =
       frontend_frame_->View()->GetChromeClient();
   float window_to_viewport_ratio =
@@ -161,33 +154,28 @@ void DevToolsHost::copyText(const String& text) {
   frontend_frame_->GetSystemClipboard()->CommitWrite();
 }
 
-static String EscapeUnicodeNonCharacters(const String& str) {
-  const UChar kNonChar = 0xD800;
-
-  unsigned i = 0;
-  while (i < str.length() && str[i] < kNonChar)
-    ++i;
-  if (i == str.length())
-    return str;
-
-  StringBuilder dst;
-  dst.Append(str, 0, i);
-  for (; i < str.length(); ++i) {
-    UChar c = str[i];
-    if (c >= kNonChar) {
-      unsigned symbol = static_cast<unsigned>(c);
-      String symbol_code = String::Format("\\u%04X", symbol);
-      dst.Append(symbol_code);
-    } else {
-      dst.Append(c);
+void DevToolsHost::sendMessageToEmbedder(const String& message) {
+  if (client_) {
+    // Strictly convert, as we expect message to be serialized JSON.
+    auto value = base::JSONReader::Read(
+        message.Utf8(WTF::UTF8ConversionMode::kStrictUTF8Conversion));
+    if (!value || !value->is_dict()) {
+      ScriptState* script_state = ToScriptStateForMainWorld(frontend_frame_);
+      if (!script_state)
+        return;
+      V8ThrowException::ThrowTypeError(
+          script_state->GetIsolate(),
+          value ? "Message to embedder must deserialize to a dictionary value"
+                : "Message to embedder couldn't be JSON-deserialized");
+      return;
     }
+    client_->SendMessageToEmbedder(std::move(*value).TakeDict());
   }
-  return dst.ToString();
 }
 
-void DevToolsHost::sendMessageToEmbedder(const String& message) {
+void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
   if (client_)
-    client_->SendMessageToEmbedder(EscapeUnicodeNonCharacters(message));
+    client_->SendMessageToEmbedder(std::move(message));
 }
 
 void DevToolsHost::ShowContextMenu(LocalFrame* target_frame,

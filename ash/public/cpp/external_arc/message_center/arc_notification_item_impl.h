@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -28,6 +27,10 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
                           message_center::MessageCenter* message_center,
                           const std::string& notification_key,
                           const AccountId& profile_id);
+
+  ArcNotificationItemImpl(const ArcNotificationItemImpl&) = delete;
+  ArcNotificationItemImpl& operator=(const ArcNotificationItemImpl&) = delete;
+
   ~ArcNotificationItemImpl() override;
 
   // ArcNotificationItem overrides:
@@ -91,8 +94,6 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ArcNotificationItemImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationItemImpl);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@ namespace ash {
 namespace {
 
 class LoginPinViewTest : public LoginTestBase {
+ public:
+  LoginPinViewTest(const LoginPinViewTest&) = delete;
+  LoginPinViewTest& operator=(const LoginPinViewTest&) = delete;
+
  protected:
   LoginPinViewTest() = default;
   ~LoginPinViewTest() override = default;
@@ -28,14 +32,14 @@ class LoginPinViewTest : public LoginTestBase {
   // Creates login pin view with the specified keyboard |style| and sets it up
   // in a widget.
   void CreateLoginPinViewWithStyle(LoginPinView::Style style) {
-    view_ =
-        new LoginPinView(style, CreateDefaultLoginPalette(),
-                         base::BindRepeating(&LoginPinViewTest::OnPinKey,
-                                             base::Unretained(this)),
-                         base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
-                                             base::Unretained(this)),
-                         base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
-                                             base::Unretained(this)));
+    view_ = new LoginPinView(
+        style, CreateDefaultLoginPalette(/*color_provider=*/nullptr),
+        base::BindRepeating(&LoginPinViewTest::OnPinKey,
+                            base::Unretained(this)),
+        base::BindRepeating(&LoginPinViewTest::OnPinBackspace,
+                            base::Unretained(this)),
+        base::BindRepeating(&LoginPinViewTest::OnPinSubmit,
+                            base::Unretained(this)));
 
     SetWidget(CreateWidgetWithContent(view_));
   }
@@ -46,14 +50,11 @@ class LoginPinViewTest : public LoginTestBase {
   void OnPinSubmit() { ++submit_; }
 
   LoginPinView* view_ = nullptr;  // Owned by test widget view hierarchy.
-  base::Optional<int> value_;
+  absl::optional<int> value_;
   // Number of times the backspace event has been fired.
   int backspace_ = 0;
   // Number of times the submit event has been fired.
   int submit_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginPinViewTest);
 };
 
 }  // namespace

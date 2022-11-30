@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/sync/model/sync_metadata_store.h"
 
@@ -18,18 +16,17 @@ namespace syncer {
 class MetadataBatch;
 }
 
+namespace sync_pb {
+class PasswordSpecificsData;
+}
+
 namespace password_manager {
 
-struct PasswordForm;
-struct InsecureCredential;
-
-using ForceInitialSyncCycle =
-    base::StrongAlias<class ForceInitialSyncCycleTag, bool>;
-using PrimaryKeyToFormMap =
-    std::map<FormPrimaryKey, std::unique_ptr<PasswordForm>>;
+using PrimaryKeyToPasswordSpecificsDataMap =
+    std::map<FormPrimaryKey, std::unique_ptr<sync_pb::PasswordSpecificsData>>;
 
 // This enum is used to determine result status when deleting undecryptable
-// logins from database.
+// credentials from database.
 enum class DatabaseCleanupResult {
   kSuccess,
   kItemFailure,
@@ -45,15 +42,17 @@ enum class FormRetrievalResult {
   kDbError,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure,
+  kEncryptionServiceFailure,
+  // A service-level failure, but some forms can be retrieved successfully.
+  kEncryptionServiceFailureWithPartialData,
 };
 
-// Error values for adding a login to the store.
+// Error values for adding a credential to the store.
 // Used in metrics: "PasswordManager.MergeSyncData.AddLoginSyncError" and
 // "PasswordManager.ApplySyncChanges.AddLoginSyncError". These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class AddLoginError {
+enum class AddCredentialError {
   // Success.
   kNone = 0,
   // Database not available.
@@ -62,19 +61,19 @@ enum class AddLoginError {
   kConstraintViolation = 2,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure = 3,
+  kEncryptionServiceFailure = 3,
   // Database error.
   kDbError = 4,
 
   kMaxValue = kDbError,
 };
 
-// Error values for updating a login in the store.
+// Error values for updating a credential in the store.
 // Used in metrics: "PasswordManager.MergeSyncData.UpdateLoginSyncError" and
 // "PasswordManager.ApplySyncChanges.UpdateLoginSyncError". These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class UpdateLoginError {
+enum class UpdateCredentialError {
   // Success.
   kNone = 0,
   // Database not available.
@@ -83,7 +82,7 @@ enum class UpdateLoginError {
   kNoUpdatedRecords = 2,
   // A service-level failure (e.g., on a platform using a keyring, the keyring
   // is temporarily unavailable).
-  kEncrytionServiceFailure = 3,
+  kEncryptionServiceFailure = 3,
   // Database error.
   kDbError = 4,
 
@@ -121,52 +120,35 @@ class PasswordStoreSync {
 
   PasswordStoreSync();
 
-  // Overwrites |key_to_form_map| with a map from the DB primary key to the
+  PasswordStoreSync(const PasswordStoreSync&) = delete;
+  PasswordStoreSync& operator=(const PasswordStoreSync&) = delete;
+
+  // Overwrites |key_to_specifics_map| with a map from the DB primary key to the
   // corresponding form for all stored credentials. Returns true on success.
-  virtual FormRetrievalResult ReadAllLogins(
-      PrimaryKeyToFormMap* key_to_form_map) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual FormRetrievalResult ReadAllCredentials(
+      PrimaryKeyToPasswordSpecificsDataMap* key_to_specifics_map) = 0;
 
-  // Returns insecure credentials for the provided |parent_key|.
-  virtual std::vector<InsecureCredential> ReadSecurityIssues(
-      FormPrimaryKey parent_key) = 0;
+  // Deletes credentials that cannot be decrypted.
+  virtual DatabaseCleanupResult DeleteUndecryptableCredentials() = 0;
 
-  // Deletes logins that cannot be decrypted.
-  virtual DatabaseCleanupResult DeleteUndecryptableLogins() = 0;
+  // Synchronous implementation to add the given credential.
+  virtual PasswordStoreChangeList AddCredentialSync(
+      const sync_pb::PasswordSpecificsData& specifics,
+      AddCredentialError* error = nullptr) = 0;
 
-  // Synchronous implementation to add the given login.
-  virtual PasswordStoreChangeList AddLoginSync(
-      const PasswordForm& form,
-      AddLoginError* error = nullptr) = 0;
+  // Synchronous implementation to update the given credential.
+  virtual PasswordStoreChangeList UpdateCredentialSync(
+      const sync_pb::PasswordSpecificsData& specifics,
+      UpdateCredentialError* error = nullptr) = 0;
 
-  // Synchronous implementation to add insecure credentials. Operation will
-  // be terminated if any insertion into the database fails. Returns whether
-  // operation was successful.
-  virtual bool AddInsecureCredentialsSync(
-      base::span<const InsecureCredential> credentials) = 0;
-
-  // Synchronous implementation to update the given login.
-  virtual PasswordStoreChangeList UpdateLoginSync(
-      const PasswordForm& form,
-      UpdateLoginError* error = nullptr) = 0;
-
-  // Synchronous implementation to replace existing insecure credentials for
-  // the |form| with |credentials|.
-  virtual bool UpdateInsecureCredentialsSync(
-      const PasswordForm& form,
-      base::span<const InsecureCredential> credentials) = 0;
-
-  // Synchronous implementation to remove the given login.
-  virtual PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) = 0;
-
-  // Synchronous implementation to remove the login with the given primary key.
-  virtual PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
+  // Synchronous implementation to remove the credential with the given primary
+  // key.
+  virtual PasswordStoreChangeList RemoveCredentialByPrimaryKeySync(
       FormPrimaryKey primary_key) = 0;
 
   // Notifies observers that password store data may have been changed.
-  virtual void NotifyLoginsChanged(const PasswordStoreChangeList& changes) = 0;
-
-  // Notifies observers that local list of insecure credentials changed.
-  virtual void NotifyInsecureCredentialsChanged() = 0;
+  virtual void NotifyCredentialsChanged(
+      const PasswordStoreChangeList& changes) = 0;
 
   // Notifies any waiting callback that all pending deletions have been
   // committed to the Sync server now, or that Sync definitely won't commit
@@ -182,8 +164,8 @@ class PasswordStoreSync {
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.
   // TODO(crbug.com/902349): The introduction of the three functions below
-  // question the existence of NotifyLoginsChanged() above and all the round
-  // trips with PasswordStoreChangeList in the earlier functions. Instead,
+  // question the existence of NotifyCredentialsChanged() above and all the
+  // round trips with PasswordStoreChangeList in the earlier functions. Instead,
   // observers could be notified inside CommitTransaction().
   virtual bool BeginTransaction() = 0;
   virtual void RollbackTransaction() = 0;
@@ -204,9 +186,6 @@ class PasswordStoreSync {
 
  protected:
   virtual ~PasswordStoreSync();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreSync);
 };
 
 }  // namespace password_manager

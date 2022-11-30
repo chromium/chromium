@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill_assistant.mojom;
+
+import "components/autofill_assistant/content/common/autofill_assistant_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// There is one instance of this interface per render frame in the renderer
+// process. All methods are called by browser on renderer.
+interface AutofillAssistantAgent {
+  // Evaluates all input, textarea and select nodes in the frame's document and
+  // returns all that match the given semantic role and objective.
+  GetSemanticNodes(int32 role, int32 objective, bool ignore_objective,
+                   mojo_base.mojom.TimeDelta timeout)
+      => (NodeDataStatus status,
+          array<autofill_assistant.mojom.NodeData> nodes);
+
+  // Set the value of a web element. The target needs to be a form control
+  // element, otherwise the call fails. This works for input, textarea and
+  // select. For a select element it finds the option with a value matching
+  // the given parameter (exactly) and makes that option the current selection.
+  SetElementValue(int32 backend_node_id, mojo_base.mojom.String16 value,
+                  bool send_events)
+      => (bool success);
+
+  // Set the checked property on a web input element.
+  // The element should be a checkable WebInputElement: a checkbox or a
+  // radio button.
+  SetElementChecked(int32 backend_node_id, bool checked, bool send_events)
+      => (bool success);
+};

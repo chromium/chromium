@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,17 @@
 #include <memory>
 #include <vector>
 
+#include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/zoom_level_delegate.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 
 class GURL;
@@ -28,6 +29,7 @@ class AutocompleteHistoryManager;
 }
 
 namespace content {
+class ClientHintsControllerDelegate;
 class PermissionControllerDelegate;
 class ResourceContext;
 class SSLHostStateDelegate;
@@ -44,6 +46,7 @@ class VisitedLinkWriter;
 
 namespace android_webview {
 
+class AwContentsOriginMatcher;
 class AwFormDatabaseService;
 class AwQuotaManagerBridge;
 
@@ -51,6 +54,10 @@ class AwBrowserContext : public content::BrowserContext,
                          public visitedlink::VisitedLinkDelegate {
  public:
   AwBrowserContext();
+
+  AwBrowserContext(const AwBrowserContext&) = delete;
+  AwBrowserContext& operator=(const AwBrowserContext&) = delete;
+
   ~AwBrowserContext() override;
 
   // Currently only one instance per process is supported.
@@ -85,6 +92,11 @@ class AwBrowserContext : public content::BrowserContext,
   // TODO(amalova): implement for non-default browser context
   bool IsDefaultBrowserContext() { return true; }
 
+  base::android::ScopedJavaLocalRef<jobjectArray>
+  UpdateServiceWorkerXRequestedWithAllowListOriginMatcher(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobjectArray>& rules);
+
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
@@ -92,6 +104,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -103,8 +117,12 @@ class AwBrowserContext : public content::BrowserContext,
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
+  content::ReduceAcceptLanguageControllerDelegate*
+  GetReduceAcceptLanguageControllerDelegate() override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
+  std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
+      const base::FilePath& partition_path) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
@@ -121,6 +139,8 @@ class AwBrowserContext : public content::BrowserContext,
           cert_verifier_creation_params);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaBrowserContext();
+
+  scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
  private:
   void CreateUserPrefService();
@@ -140,12 +160,14 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<PrefService> user_pref_service_;
   std::unique_ptr<AwSSLHostStateDelegate> ssl_host_state_delegate_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
+  std::unique_ptr<content::ClientHintsControllerDelegate>
+      client_hints_controller_delegate_;
 
   SimpleFactoryKey simple_factory_key_;
 
-  base::android::ScopedJavaGlobalRef<jobject> obj_;
+  scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher_;
 
-  DISALLOW_COPY_AND_ASSIGN(AwBrowserContext);
+  base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 
 }  // namespace android_webview

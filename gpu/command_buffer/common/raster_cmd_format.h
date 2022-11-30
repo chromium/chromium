@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,13 @@
 #include <string.h>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "gpu/command_buffer/common/bitfield_helpers.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/raster_cmd_ids.h"
 #include "ui/gfx/buffer_types.h"
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace base {
@@ -27,6 +26,9 @@ class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
   static PrefetchServiceFactory* GetInstance();
   static PrefetchService* GetForKey(SimpleFactoryKey* key);
 
+  PrefetchServiceFactory(const PrefetchServiceFactory&) = delete;
+  PrefetchServiceFactory& operator=(const PrefetchServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<PrefetchServiceFactory>;
 
@@ -35,8 +37,6 @@ class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchServiceFactory);
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,128 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.ui.touch_selection.SelectionEventType;
 
 /**
- * Tests the ContextualSearchSelectionController#isSelectionPartOfUrl() method.
+ * Tests a few methods of the ContextualSearchSelectionController. <ul>
+ * <li>That the ContextualSearchSelectionController#handleSelectionmethod supports usages
+ * from Smart Text Selection and from normal user driven selection.</li>
+ * <li>That the ContextualSearchSelectionController#isSelectionPartOfUrl handles all the different
+ * URL cases.</li>
+ * </ul>
  */
-@RunWith(BlockJUnit4ClassRunner.class)
-public class ContextualSearchSelectionControllerTest {
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ContextualSearchSelectionControllerTest.ShadowContextualSearchSelectionController
+                           .class})
+public final class ContextualSearchSelectionControllerTest {
+    private static final String USER_SELECTION = "user selection";
+
+    /** Stores the selection set by ContextualSearchSelectionController#handleSelection. */
+    private static String sSelectionSetByHandleSelection;
+
+    /** The instance under test, which is also shadowed. */
+    private ContextualSearchSelectionController mSelectionControllerUnderTest;
+
+    @Before
+    public void setUp() throws Exception {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mSelectionControllerUnderTest =
+                new ContextualSearchSelectionController(activity, null, null);
+        mSelectionControllerUnderTest.setSelectedText(USER_SELECTION);
+        sSelectionSetByHandleSelection = null;
+    }
+
+    /**
+     * Shadows the class that we are testing: ContextualSearchSelectionController.
+     * This allows us to stub out some methods without needing to make mocks or stubs for the things
+     * those methods call.
+     */
+    @Implements(ContextualSearchSelectionController.class)
+    public static class ShadowContextualSearchSelectionController {
+        public ShadowContextualSearchSelectionController() {}
+
+        /**
+         * Implements #handleSelection by remembering the selection param, which can later be
+         * retrieved by calling #getSelectionSetByHandleSelection
+         * @param selection The text that was selected.
+         * @param type The type of selection made by the user.
+         */
+        @Implementation
+        protected void handleSelection(
+                String selection, @ContextualSearchSelectionController.SelectionType int type) {
+            sSelectionSetByHandleSelection = selection;
+        }
+
+        /** Returns the selection that was set by the call to #handleSelection. */
+        static String getSelectionSetByHandleSelection() {
+            return sSelectionSetByHandleSelection;
+        }
+    }
+
+    /**
+     * Returns the string that the selection controller has sent to the Contextual Search Manager
+     * in #handleSelection.
+     */
+    private String getSelectionSetByHandleSelection() {
+        return ShadowContextualSearchSelectionController.getSelectionSetByHandleSelection();
+    }
+
+    //============================================================================================
+    // Selection manipulation with and without Smart Text Selection
+    //============================================================================================
+
+    @Test
+    @Feature({"ContextualSearchSelectionController"})
+    public void testUserDrivenSelectionSequence() {
+        mSelectionControllerUnderTest.handleSelectionEvent(
+                SelectionEventType.SELECTION_HANDLE_DRAG_STARTED, 0f, 0f);
+        final String unexpectedSelectionSent =
+                "User flow for ContextualSearchSelectionController#handleSelectionEvent sent a "
+                + "selection to the Manager that was unexpected.";
+        Assert.assertNull(unexpectedSelectionSent, getSelectionSetByHandleSelection());
+        mSelectionControllerUnderTest.handleSelectionEvent(
+                SelectionEventType.SELECTION_HANDLES_MOVED, 0f, 0f);
+        Assert.assertNull(unexpectedSelectionSent, getSelectionSetByHandleSelection());
+        mSelectionControllerUnderTest.handleSelectionEvent(
+                SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0f, 0f);
+        Assert.assertEquals(
+                "User flow for ContextualSearchSelectionController#handleSelectionEvent "
+                        + "sent an unexpected selection to the Manager. Maybe something broke "
+                        + "longpress selection modification for Contextual Search.",
+                USER_SELECTION, getSelectionSetByHandleSelection());
+    }
+
+    @Test
+    @Feature({"ContextualSearchSelectionController"})
+    public void testSmartTextSelectionIntegration() {
+        // When Smart Text Selection is active a SELECTION_HANDLES_MOVED event is sent without a
+        // SELECTION_HANDLE_DRAG_STARTED event.
+        mSelectionControllerUnderTest.handleSelectionEvent(
+                SelectionEventType.SELECTION_HANDLES_MOVED, 0f, 0f);
+        // Make sure we did not establish any selection.
+        Assert.assertNull("Smart Text Selection interaction with Contextual Search "
+                        + "through the ContextualSearchSelectionController#handleSelectionEvent "
+                        + "sent a selection to the Manager that was unexpected. Smart Text "
+                        + "Selection with the intelligent Long-press gesture may be broken.",
+                getSelectionSetByHandleSelection());
+    }
+
+    //============================================================================================
+    // isSelectionPartOfUrl test cases
+    //============================================================================================
 
     @Test
     @Feature({"ContextualSearchSelectionController"})

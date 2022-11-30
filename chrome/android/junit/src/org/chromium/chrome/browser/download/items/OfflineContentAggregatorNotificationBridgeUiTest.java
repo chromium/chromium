@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Bitmap;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,20 @@ public class OfflineContentAggregatorNotificationBridgeUiTest {
         item.id = id;
         item.state = state;
         return item;
+    }
+
+    @Before
+    public void setUp() {
+        ContextualNotificationPermissionRequester.setInstance(
+                new ContextualNotificationPermissionRequester() {
+                    @Override
+                    public void requestPermissionIfNeeded() {}
+
+                    @Override
+                    public boolean doesAppLevelSettingsAllowSiteNotifications() {
+                        return false;
+                    }
+                });
     }
 
     @Test

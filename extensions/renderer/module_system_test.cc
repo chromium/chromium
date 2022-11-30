@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,13 @@
 #include "extensions/renderer/utils_native_handler.h"
 #include "gin/converter.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-statistics.h"
 
 namespace extensions {
 namespace {
@@ -53,6 +60,10 @@ class GetAPINatives : public ObjectBackedNativeHandler {
       : ObjectBackedNativeHandler(context), bindings_system_(bindings_system) {
     DCHECK(bindings_system_);
   }
+
+  GetAPINatives(const GetAPINatives&) = delete;
+  GetAPINatives& operator=(const GetAPINatives&) = delete;
+
   ~GetAPINatives() override {}
 
   // ObjectBackedNativeHandler:
@@ -89,8 +100,6 @@ class GetAPINatives : public ObjectBackedNativeHandler {
 
  private:
   NativeExtensionBindingsSystem* bindings_system_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GetAPINatives);
 };
 
 }  // namespace
@@ -239,6 +248,8 @@ void ModuleSystemTestEnvironment::ShutdownModuleSystem() {
 v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
     const std::string& name) {
   v8::EscapableHandleScope handle_scope(isolate_);
+  v8::MicrotasksScope microtasks(isolate_,
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Object> object = v8::Object::New(isolate_);
   isolate_->GetCurrentContext()
       ->Global()
@@ -251,8 +262,18 @@ v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
   return handle_scope.Escape(object);
 }
 
+void ModuleSystemTestEnvironment::SetLazyField(
+    v8::Local<v8::Object> object,
+    const std::string& field,
+    const std::string& module_name,
+    const std::string& module_field) {
+  module_system()->SetLazyField(object, field, module_name, module_field);
+}
+
 ModuleSystemTest::ModuleSystemTest()
-    : isolate_(v8::Isolate::GetCurrent()),
+    : isolate_holder_(task_environment_.GetMainThreadTaskRunner(),
+                      gin::IsolateHolder::IsolateType::kTest),
+      isolate_(isolate_holder_.isolate()),
       context_set_(&extension_ids_),
       should_assertions_be_made_(true) {}
 
@@ -260,6 +281,7 @@ ModuleSystemTest::~ModuleSystemTest() {
 }
 
 void ModuleSystemTest::SetUp() {
+  isolate_->Enter();
   extension_ = CreateExtension();
   env_ = CreateEnvironment();
   base::CommandLine::ForCurrentProcess()->AppendSwitch("test-type");
@@ -286,6 +308,7 @@ void ModuleSystemTest::TearDown() {
         v8::Isolate::kFullGarbageCollection);
     isolate_->GetHeapStatistics(&stats);
   }
+  isolate_->Exit();
 }
 
 scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {

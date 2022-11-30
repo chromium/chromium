@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
@@ -30,6 +30,8 @@ class ClickBasedCategoryRanker : public CategoryRanker {
  public:
   explicit ClickBasedCategoryRanker(PrefService* pref_service,
                                     base::Clock* clock);
+  ClickBasedCategoryRanker(const ClickBasedCategoryRanker&) = delete;
+  ClickBasedCategoryRanker& operator=(const ClickBasedCategoryRanker&) = delete;
   ~ClickBasedCategoryRanker() override;
 
   // CategoryRanker implementation.
@@ -90,10 +92,8 @@ class ClickBasedCategoryRanker : public CategoryRanker {
   bool DecayClicksIfNeeded();
 
   std::vector<RankedCategory> ordered_categories_;
-  PrefService* pref_service_;
-  base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClickBasedCategoryRanker);
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace ntp_snippets

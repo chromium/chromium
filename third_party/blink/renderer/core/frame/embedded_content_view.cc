@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 
 namespace blink {
 
-void EmbeddedContentView::SetFrameRect(const IntRect& unsaturated_frame_rect) {
-  IntRect frame_rect(SaturatedRect(unsaturated_frame_rect));
+void EmbeddedContentView::SetFrameRect(const gfx::Rect& frame_rect) {
   if (frame_rect == frame_rect_)
     return;
-  IntRect old_rect = frame_rect_;
+  gfx::Rect old_rect = frame_rect_;
   frame_rect_ = frame_rect;
   FrameRectsChanged(old_rect);
 }
 
-IntPoint EmbeddedContentView::Location() const {
-  IntPoint location(frame_rect_.Location());
+gfx::Point EmbeddedContentView::Location() const {
+  gfx::Point location(frame_rect_.origin());
 
   // As an optimization, we don't include the root layer's scroll offset in the
   // frame rect.  As a result, we don't need to recalculate the frame rect every
@@ -29,11 +28,10 @@ IntPoint EmbeddedContentView::Location() const {
     LayoutView* owner_layout_view = owner->View();
     DCHECK(owner_layout_view);
     if (owner_layout_view->IsScrollContainer()) {
-      // Floored because the frame_rect in a content view is an IntRect. We may
-      // want to reevaluate that since scroll offsets/layout can be fractional.
-      IntSize scroll_offset(
-          FlooredIntSize(owner_layout_view->ScrolledContentOffset()));
-      location.SaturatedMove(-scroll_offset.Width(), -scroll_offset.Height());
+      // Floored because the frame_rect in a content view is an gfx::Rect. We
+      // may want to reevaluate that since scroll offsets/layout can be
+      // fractional.
+      location -= ToFlooredVector2d(owner_layout_view->ScrolledContentOffset());
     }
   }
   return location;

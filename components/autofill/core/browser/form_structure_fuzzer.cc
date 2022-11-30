@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   form_data.fields.back().autocomplete_attribute.assign(
       reinterpret_cast<const char*>(data), size);
   FormStructure form_structure(form_data);
-  form_structure.ParseFieldTypesFromAutocompleteAttributes();
+  form_structure.SetFieldTypesFromAutocompleteAttribute();
   return 0;
 }
 

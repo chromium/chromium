@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,12 @@ const int kTravelCategoryNtpShownCount = 15;
 class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
  public:
   ExploreSitesImportCatalogTaskTest() = default;
+
+  ExploreSitesImportCatalogTaskTest(const ExploreSitesImportCatalogTaskTest&) =
+      delete;
+  ExploreSitesImportCatalogTaskTest& operator=(
+      const ExploreSitesImportCatalogTaskTest&) = delete;
+
   ~ExploreSitesImportCatalogTaskTest() override = default;
 
   void SetUp() override {
@@ -77,8 +83,6 @@ class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesImportCatalogTaskTest);
 };
 
 TEST_F(ExploreSitesImportCatalogTaskTest, StoreFailure) {

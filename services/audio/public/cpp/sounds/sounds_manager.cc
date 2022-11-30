@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class SoundsManagerImpl : public SoundsManager {
  public:
   SoundsManagerImpl(StreamFactoryBinder stream_factory_binder)
       : stream_factory_binder_(std::move(stream_factory_binder)) {}
+
+  SoundsManagerImpl(const SoundsManagerImpl&) = delete;
+  SoundsManagerImpl& operator=(const SoundsManagerImpl&) = delete;
+
   ~SoundsManagerImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -45,8 +49,6 @@ class SoundsManagerImpl : public SoundsManager {
   };
   std::vector<StreamEntry> handlers_;
   StreamFactoryBinder stream_factory_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoundsManagerImpl);
 };
 
 bool SoundsManagerImpl::Initialize(SoundKey key,

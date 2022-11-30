@@ -29,8 +29,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -56,11 +56,10 @@ class PLATFORM_EXPORT ImageDecoderFactory {
 
  public:
   ImageDecoderFactory() = default;
+  ImageDecoderFactory(const ImageDecoderFactory&) = delete;
+  ImageDecoderFactory& operator=(const ImageDecoderFactory&) = delete;
   virtual ~ImageDecoderFactory() = default;
   virtual std::unique_ptr<ImageDecoder> Create() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageDecoderFactory);
 };
 
 class PLATFORM_EXPORT ImageFrameGenerator final
@@ -75,6 +74,8 @@ class PLATFORM_EXPORT ImageFrameGenerator final
         full_size, is_multi_frame, color_behavior, std::move(supported_sizes)));
   }
 
+  ImageFrameGenerator(const ImageFrameGenerator&) = delete;
+  ImageFrameGenerator& operator=(const ImageFrameGenerator&) = delete;
   ~ImageFrameGenerator();
 
   // Decodes and scales the specified frame at |index|. The dimensions and
@@ -83,7 +84,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // successful.
   bool DecodeAndScale(SegmentReader*,
                       bool all_data_received,
-                      size_t index,
+                      wtf_size_t index,
                       const SkImageInfo&,
                       void* pixels,
                       size_t row_bytes,
@@ -96,11 +97,12 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   // ImageDecoder needs something analogous to its ImageFrame cache to hold
   // partial planes, and the GPU code needs to handle them.
   bool DecodeToYUV(SegmentReader*,
-                   size_t index,
+                   wtf_size_t index,
                    SkColorType color_type,
                    const SkISize component_sizes[cc::kNumYUVPlanes],
                    void* planes[cc::kNumYUVPlanes],
-                   const size_t row_bytes[cc::kNumYUVPlanes]);
+                   const wtf_size_t row_bytes[cc::kNumYUVPlanes],
+                   cc::PaintImage::GeneratorClientId);
 
   const SkISize& GetFullSize() const { return full_size_; }
 
@@ -108,11 +110,11 @@ class PLATFORM_EXPORT ImageFrameGenerator final
 
   bool IsMultiFrame() const { return is_multi_frame_; }
   bool DecodeFailed() const {
-    MutexLocker lock(generator_mutex_);
+    base::AutoLock lock(generator_lock_);
     return decode_failed_;
   }
 
-  bool HasAlpha(size_t index);
+  bool HasAlpha(wtf_size_t index);
 
   // TODO(crbug.com/943519): Do not call unless the SkROBuffer has all the data.
   bool GetYUVAInfo(
@@ -121,18 +123,25 @@ class PLATFORM_EXPORT ImageFrameGenerator final
       SkYUVAPixmapInfo* info);
 
  private:
-  class ClientMutexLocker {
+  // Used in UMA histogram, please do not remove or re-order entries.
+  enum class DecodeTimesType {
+    kRequestByAtLeastOneClient = 0,
+    kRequestByMoreThanOneClient = 1,
+    kMaxValue = kRequestByMoreThanOneClient,
+  };
+
+  class ClientAutoLock {
     STACK_ALLOCATED();
 
    public:
-    ClientMutexLocker(ImageFrameGenerator* generator,
-                      cc::PaintImage::GeneratorClientId client_id);
-    ~ClientMutexLocker();
+    ClientAutoLock(ImageFrameGenerator* generator,
+                   cc::PaintImage::GeneratorClientId client_id);
+    ~ClientAutoLock();
 
    private:
     ImageFrameGenerator* generator_;
     cc::PaintImage::GeneratorClientId client_id_;
-    Mutex* mutex_;
+    base::Lock* lock_;
   };
 
   ImageFrameGenerator(const SkISize& full_size,
@@ -148,7 +157,11 @@ class PLATFORM_EXPORT ImageFrameGenerator final
     image_decoder_factory_ = std::move(factory);
   }
 
-  void SetHasAlpha(size_t index, bool has_alpha);
+  void SetHasAlpha(wtf_size_t index, bool has_alpha);
+
+  // Records in UMA whether an image has been decoded by a single client or
+  // by multiple clients (determined by `GeneratorClientId`).
+  void RecordWhetherMultiDecoded(cc::PaintImage::GeneratorClientId client_id);
 
   const SkISize full_size_;
   // Parameters used to create internal ImageDecoder objects.
@@ -156,29 +169,31 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   const bool is_multi_frame_;
   const Vector<SkISize> supported_sizes_;
 
-  mutable Mutex generator_mutex_;
-  bool decode_failed_ GUARDED_BY(generator_mutex_) = false;
-  bool yuv_decoding_failed_ GUARDED_BY(generator_mutex_) = false;
-  size_t frame_count_ GUARDED_BY(generator_mutex_) = 0u;
-  Vector<bool> has_alpha_ GUARDED_BY(generator_mutex_);
+  mutable base::Lock generator_lock_;
+  bool decode_failed_ GUARDED_BY(generator_lock_) = false;
+  bool yuv_decoding_failed_ GUARDED_BY(generator_lock_) = false;
+  wtf_size_t frame_count_ GUARDED_BY(generator_lock_) = 0u;
+  Vector<bool> has_alpha_ GUARDED_BY(generator_lock_);
 
-  struct ClientMutex {
+  struct ClientLock {
     int ref_count = 0;
-    Mutex mutex;
+    base::Lock lock;
   };
 
   // Note that it is necessary to use HashMap here to ensure that references
-  // to entries in the map, stored in ClientMutexLocker, remain valid across
+  // to entries in the map, stored in ClientAutoLock, remain valid across
   // insertions into the map.
   HashMap<cc::PaintImage::GeneratorClientId,
-          std::unique_ptr<ClientMutex>,
+          std::unique_ptr<ClientLock>,
           WTF::IntHash<cc::PaintImage::GeneratorClientId>,
           WTF::UnsignedWithZeroKeyHashTraits<cc::PaintImage::GeneratorClientId>>
-      mutex_map_ GUARDED_BY(generator_mutex_);
+      lock_map_ GUARDED_BY(generator_lock_);
 
   std::unique_ptr<ImageDecoderFactory> image_decoder_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(ImageFrameGenerator);
+  cc::PaintImage::GeneratorClientId last_client_id_
+      GUARDED_BY(generator_lock_) = cc::PaintImage::kDefaultGeneratorClientId;
+  bool has_logged_multi_clients_ GUARDED_BY(generator_lock_) = false;
 };
 
 }  // namespace blink

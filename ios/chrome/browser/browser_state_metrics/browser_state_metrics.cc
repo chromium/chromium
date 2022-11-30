@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,11 +33,4 @@ void LogNumberOfBrowserStates(ios::ChromeBrowserStateManager* manager) {
   profile_metrics::Counts counts;
   CountBrowserStateInformation(manager, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
-}
-
-profile_metrics::BrowserProfileType GetBrowserStateType(
-    web::BrowserState* browser_state) {
-  return browser_state->IsOffTheRecord()
-             ? profile_metrics::BrowserProfileType::kIncognito
-             : profile_metrics::BrowserProfileType::kRegular;
 }

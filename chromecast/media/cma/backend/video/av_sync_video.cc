@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromecast/base/statistics/weighted_moving_linear_regression.h"
 #include "chromecast/media/audio/rate_adjuster.h"
@@ -21,16 +20,14 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kLinearRegressionWindow =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kLinearRegressionWindow = base::Seconds(20);
 
 // Time interval between AV sync upkeeps.
-constexpr base::TimeDelta kAvSyncUpkeepInterval =
-    base::TimeDelta::FromMilliseconds(16);
+constexpr base::TimeDelta kAvSyncUpkeepInterval = base::Milliseconds(16);
 
 // Threshold where the audio and video PTS are far enough apart such that we
 // want to do a hard correction.
-constexpr base::TimeDelta kMaxAptsError = base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kMaxAptsError = base::Milliseconds(50);
 
 // Minimum samples of video PTS before we start doing A/V sync.
 const int kMinVideoPtsSamples = 60;

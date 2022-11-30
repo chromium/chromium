@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/chrome_cleaner/components/reset_shortcuts_component.h"
 
+#include <stdint.h>
 #include <windows.h>
 
-#include <stdint.h>
-
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -20,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -99,10 +98,11 @@ void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
     };
     base::CommandLine desired_args(base::CommandLine::NO_PROGRAM);
     desired_args.CopySwitchesFrom(current_args, kept_switches,
-                                  base::size(kept_switches));
+                                  std::size(kept_switches));
     updated_properties.set_arguments(desired_args.GetArgumentsString());
     bool success = base::win::CreateOrUpdateShortcutLink(
-        shortcut_path, updated_properties, base::win::SHORTCUT_CREATE_ALWAYS);
+        shortcut_path, updated_properties,
+        base::win::ShortcutOperation::kCreateAlways);
     if (!success)
       LOG(ERROR) << "Reset shortcut failed on: "
                  << SanitizePath(shortcut.lnk_path);

@@ -1,0 +1,99 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.sectionTitle {
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-right: 10px;
+  background-color: white;
+  display: inline-block;
+  font-family: Roboto;
+}
+
+.section {
+  margin-top: -10px;
+  padding-top: 10px;
+  border: 1px dashed silver;
+  font-family: Roboto;
+  padding-left: 5px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}
+
+.modalContainer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(100, 100, 100, 0.4);
+  display: none;
+}
+
+:root {
+  --mdc-theme-primary: rgb(69, 69, 85);
+  --mdc-theme-secondary: rgb(141, 157, 177);
+  --mdc-theme-on-primary: rgb(208, 219, 166);
+  --mdc-theme-on-secondary: rgb(231, 233, 205);
+  --mdc-theme-surface: rgb(238, 235, 235);
+  --mdc-theme-on-surface: black;
+}
+
+.mdc-button {
+  font-size:x-small;
+  border: 1px solid #725b44;
+}
+
+.mdc-text-field {
+  font-size:small;
+}
+
+.mdc-chip {
+  z-index: 2;
+}
+
+.mdc-list {
+  padding: 4px 0;
+}
+
+.mdc-list-item {
+  padding: 0 8px;
+}
+
+.mdc-list-item__text {
+  font-size:small;
+  line-height: 1.25rem;
+}
+
+.material-icons-outlined {
+  font-size:18px;
+}
+
+button#connect {
+  --mdc-theme-primary:green;
+  --mdc-theme-on-primary: white;
+}
+
+button#disconnect {
+  --mdc-theme-primary:darkred;
+  --mdc-theme-on-primary: white;
+}
+
+.default-orientation {
+  background: white;
+  color: black;
+}
+
+.selected-orientation {
+  background: rgba(255, 0, 0, 0.2);;
+  color: black;
+}
+
+button#live {
+  outline-color: black;
+  --mdc-theme-primary:#FF0000;
+  --mdc-theme-on-primary:black;
+  opacity: 0.8;
+}

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
 
 namespace gfx {
 namespace {
@@ -22,7 +22,7 @@ static const char* const s_runStateNames[] = {"WAITING_FOR_TARGET_AVAILABILITY",
                                               "ABORTED_BUT_NEEDS_COMPLETION"};
 
 static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
-                  base::size(s_runStateNames),
+                  std::size(s_runStateNames),
               "RunStateEnumSize should equal the number of elements in "
               "s_runStateNames");
 
@@ -118,7 +118,7 @@ KeyframeModel::Phase KeyframeModel::CalculatePhase(
   return KeyframeModel::Phase::ACTIVE;
 }
 
-base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
+absl::optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     base::TimeTicks monotonic_time) const {
   base::TimeDelta local_time = ConvertMonotonicTimeToLocalTime(monotonic_time);
   KeyframeModel::Phase phase = CalculatePhase(local_time);
@@ -127,7 +127,7 @@ base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
     case KeyframeModel::Phase::BEFORE:
       if (fill_mode_ == FillMode::BACKWARDS || fill_mode_ == FillMode::BOTH)
         return std::max(local_time + time_offset_, base::TimeDelta());
-      return base::nullopt;
+      return absl::nullopt;
     case KeyframeModel::Phase::ACTIVE:
       return local_time + time_offset_;
     case KeyframeModel::Phase::AFTER:
@@ -138,10 +138,10 @@ base::Optional<base::TimeDelta> KeyframeModel::CalculateActiveTime(
         return std::max(std::min(local_time + time_offset_, active_duration),
                         base::TimeDelta());
       }
-      return base::nullopt;
+      return absl::nullopt;
     default:
       NOTREACHED();
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -178,7 +178,7 @@ base::TimeDelta KeyframeModel::TrimTimeToCurrentIteration(
   base::TimeDelta start_offset = curve_->Duration() * iteration_start_;
 
   // Return start offset if we are before the start of the keyframe model
-  if (active_time < base::TimeDelta())
+  if (active_time.is_negative())
     return start_offset;
   // Always return zero if we have no iterations.
   if (!iterations_)

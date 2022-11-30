@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge.DayNight. -->
+    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI">
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_200</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
+        <item name="colorOnPrimary">@color/baseline_primary_800</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
+        <item name="android:colorBackground">@color/baseline_neutral_900</item>
+        <item name="colorOnBackground">@color/baseline_neutral_100</item>
+        <item name="colorSurface">@color/baseline_neutral_900</item>
+        <item name="colorOnSurface">@color/baseline_neutral_100</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorError">@color/baseline_error_200</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+    </style>
+
+    <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
+    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge">
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_200</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
+        <item name="colorOnPrimary">@color/baseline_primary_800</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
+        <item name="android:colorBackground">@color/baseline_neutral_900</item>
+        <item name="colorOnBackground">@color/baseline_neutral_100</item>
+        <item name="colorSurface">@color/baseline_neutral_900</item>
+        <item name="colorOnSurface">@color/baseline_neutral_100</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_700</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_200</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_800</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_400</item>
+        <item name="colorError">@color/baseline_error_200</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
+    </style>
+</resources>

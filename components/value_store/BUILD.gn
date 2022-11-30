@@ -1,0 +1,70 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("value_store") {
+  sources = [
+    "lazy_leveldb.cc",
+    "lazy_leveldb.h",
+    "leveldb_value_store.cc",
+    "leveldb_value_store.h",
+    "value_store.cc",
+    "value_store.h",
+    "value_store_change.cc",
+    "value_store_change.h",
+    "value_store_factory.h",
+    "value_store_factory_impl.cc",
+    "value_store_factory_impl.h",
+    "value_store_frontend.cc",
+    "value_store_frontend.h",
+    "value_store_task_runner.cc",
+    "value_store_task_runner.h",
+  ]
+
+  public_deps = [ "//third_party/leveldatabase" ]
+
+  deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_value_store_factory.cc",
+    "test_value_store_factory.h",
+    "testing_value_store.cc",
+    "testing_value_store.h",
+    "value_store_test_suite.cc",
+    "value_store_test_suite.h",
+  ]
+
+  deps = [
+    ":value_store",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "leveldb_value_store_unittest.cc",
+    "testing_value_store_unittest.cc",
+    "value_store_change_unittest.cc",
+    "value_store_frontend_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":value_store",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gtest",
+  ]
+}

@@ -50,24 +50,24 @@ void WebTimeRanges::Add(double start, double end) {
 
   for (overlapping_arc_index = 0; overlapping_arc_index < size();
        overlapping_arc_index++) {
-    if (added_range.IsOverlappingRange(Data()[overlapping_arc_index]) ||
-        added_range.IsContiguousWithRange(Data()[overlapping_arc_index])) {
+    if (added_range.IsOverlappingRange((*this)[overlapping_arc_index]) ||
+        added_range.IsContiguousWithRange((*this)[overlapping_arc_index])) {
       // We need to merge the addedRange and that range.
       added_range = added_range.UnionWithOverlappingOrContiguousRange(
-          Data()[overlapping_arc_index]);
+          (*this)[overlapping_arc_index]);
       EraseAt(overlapping_arc_index);
       overlapping_arc_index--;
     } else {
       // Check the case for which there is no more to do
       if (!overlapping_arc_index) {
-        if (added_range.IsBeforeRange(Data()[0])) {
+        if (added_range.IsBeforeRange((*this)[0])) {
           // First index, and we are completely before that range (and not
           // contiguous, nor overlapping).  We just need to be inserted here.
           break;
         }
       } else {
-        if (Data()[overlapping_arc_index - 1].IsBeforeRange(added_range) &&
-            added_range.IsBeforeRange(Data()[overlapping_arc_index])) {
+        if ((*this)[overlapping_arc_index - 1].IsBeforeRange(added_range) &&
+            added_range.IsBeforeRange((*this)[overlapping_arc_index])) {
           // We are exactly after the current previous range, and before the
           // current range, while not overlapping with none of them. Insert
           // here.
@@ -102,7 +102,7 @@ void WebTimeRanges::Invert() {
       inverted.Add(neg_inf, start);
 
     for (size_t index = 0; index + 1 < size(); ++index)
-      inverted.Add(Data()[index].end, Data()[index + 1].start);
+      inverted.Add((*this)[index].end, (*this)[index + 1].start);
 
     double end = back().end;
     if (end != pos_inf)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
@@ -21,15 +20,20 @@ namespace declarative_net_request {
 // Holds the result of indexing a JSON ruleset.
 class ParseInfo {
  public:
+  struct RuleWarning {
+    int rule_id;
+    std::string message;
+  };
+
   // Constructor to be used on success.
   ParseInfo(size_t rules_count,
             size_t regex_rules_count,
-            std::vector<int> regex_limit_exceeded_rules,
+            std::vector<RuleWarning> rule_ignored_warnings,
             flatbuffers::DetachedBuffer buffer,
             int ruleset_checksum);
 
   // Constructor to be used on error.
-  ParseInfo(ParseResult error_reason, const int* rule_id);
+  ParseInfo(ParseResult error_reason, int rule_id);
 
   ParseInfo(ParseInfo&&);
   ParseInfo& operator=(ParseInfo&&);
@@ -46,11 +50,9 @@ class ParseInfo {
     return error_;
   }
 
-  // Rules which exceed the per-rule regex memory limit. These are ignored
-  // during indexing.
-  const std::vector<int>& regex_limit_exceeded_rules() const {
+  const std::vector<RuleWarning>& rule_ignored_warnings() const {
     DCHECK(!has_error_);
-    return regex_limit_exceeded_rules_;
+    return rule_ignored_warnings_;
   }
 
   size_t rules_count() const {
@@ -82,9 +84,11 @@ class ParseInfo {
   // Only valid iff |has_error_| is false.
   size_t rules_count_ = 0;
   size_t regex_rules_count_ = 0;
-  std::vector<int> regex_limit_exceeded_rules_;
   flatbuffers::DetachedBuffer buffer_;
   int ruleset_checksum_ = -1;
+
+  // Warnings for rules which could not be parsed and were therefore ignored.
+  std::vector<RuleWarning> rule_ignored_warnings_;
 };
 
 }  // namespace declarative_net_request

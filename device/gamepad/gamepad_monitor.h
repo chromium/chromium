@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define DEVICE_GAMEPAD_GAMEPAD_MONITOR_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "device/gamepad/gamepad_consumer.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -19,6 +18,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
                                              public mojom::GamepadMonitor {
  public:
   GamepadMonitor();
+
+  GamepadMonitor(const GamepadMonitor&) = delete;
+  GamepadMonitor& operator=(const GamepadMonitor&) = delete;
+
   ~GamepadMonitor() override;
 
   static void Create(mojo::PendingReceiver<mojom::GamepadMonitor> receiver);
@@ -26,8 +29,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
   // GamepadConsumer implementation.
   void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) override;
   void OnGamepadDisconnected(uint32_t index, const Gamepad& gamepad) override;
-  void OnGamepadButtonOrAxisChanged(uint32_t index,
-                                    const Gamepad& gamepad) override;
+  void OnGamepadChanged(const mojom::GamepadChanges& change) override;
 
   // mojom::GamepadMonitor implementation.
   void GamepadStartPolling(GamepadStartPollingCallback callback) override;
@@ -43,8 +45,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
 
   // True if this monitor has been registered with the gamepad service.
   bool is_registered_consumer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadMonitor);
 };
 
 }  // namespace device

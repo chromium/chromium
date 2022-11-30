@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,7 @@
  * @fileoverview Utilities for strings.
  */
 
-goog.provide('StringUtil');
-
-StringUtil = class {
-  constructor() {}
-
+export class StringUtil {
   /**
    * Returns the length of the longest common prefix of two strings.
    * @param {string} first The first string.
@@ -84,8 +80,7 @@ StringUtil = class {
     }
     return result;
   }
-};
-
+}
 
 /**
  * The last code point of the Unicode basic multilingual plane.

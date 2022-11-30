@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 (async function() {
@@ -17,7 +17,7 @@
   // Load the test signed exchange first, to cache the certificate file.
   await TestRunner.addIframe(outerUrl);
 
-  SDK.NetworkLog.instance().reset();
+  NetworkTestRunner.networkLog().reset();
 
   await TestRunner.NetworkAgent.setCacheDisabled(true);
   await TestRunner.addIframe(outerUrl + '?iframe-1');
@@ -27,7 +27,7 @@
   await TestRunner.addIframe(outerUrl + '?iframe-2');
   await addPrefetchAndWait(outerUrl + '?prefetch-2', innerUrl);
 
-  for (var request of SDK.NetworkLog.instance().requests()) {
+  for (var request of NetworkTestRunner.networkLog().requests()) {
     if (request.url() != certUrl)
       continue;
     TestRunner.addResult(`* ${request.url()}`);
@@ -38,8 +38,9 @@
   async function addPrefetchAndWait(prefetchUrl, waitUrl) {
     const promise = new Promise(resolve => {
         TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFinished', loadingFinished);
-        function loadingFinished(requestId, finishTime, encodedDataLength) {
-          var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+        function loadingFinished(event) {
+          var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+              TestRunner.networkManager, event.requestId);
           if (request.url() == waitUrl) {
             resolve();
           } else {

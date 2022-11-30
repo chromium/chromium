@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/client.h"
 #include "content/public/browser/background_fetch_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SimpleFactoryKey;
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 }  // namespace download
 
 namespace content {
@@ -25,13 +25,16 @@ class BrowserContext;
 class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
  public:
   explicit WebTestBackgroundFetchDelegate(BrowserContext* browser_context);
+
+  WebTestBackgroundFetchDelegate(const WebTestBackgroundFetchDelegate&) =
+      delete;
+  WebTestBackgroundFetchDelegate& operator=(
+      const WebTestBackgroundFetchDelegate&) = delete;
+
   ~WebTestBackgroundFetchDelegate() override;
 
   // BackgroundFetchDelegate implementation:
   void GetIconDisplaySize(GetIconDisplaySizeCallback callback) override;
-  void GetPermissionForOrigin(const url::Origin& origin,
-                              const WebContents::Getter& wc_getter,
-                              GetPermissionForOriginCallback callback) override;
   void CreateDownloadJob(
       base::WeakPtr<Client> client,
       std::unique_ptr<BackgroundFetchDescription> fetch_description) override;
@@ -39,28 +42,27 @@ class WebTestBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    const std::string& download_guid,
                    const std::string& method,
                    const GURL& url,
+                   ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
                    bool has_request_body) override;
   void Abort(const std::string& job_unique_id) override;
   void MarkJobComplete(const std::string& job_unique_id) override;
   void UpdateUI(const std::string& job_unique_id,
-                const base::Optional<std::string>& title,
-                const base::Optional<SkBitmap>& icon) override;
+                const absl::optional<std::string>& title,
+                const absl::optional<SkBitmap>& icon) override;
 
  private:
   class WebTestBackgroundFetchDownloadClient;
 
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
 
   // In-memory instance of the Download Service lazily created by the delegate.
-  std::unique_ptr<download::DownloadService> download_service_;
+  std::unique_ptr<download::BackgroundDownloadService> download_service_;
 
   // Weak reference to an instance of our download client.
-  WebTestBackgroundFetchDownloadClient* background_fetch_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBackgroundFetchDelegate);
+  raw_ptr<WebTestBackgroundFetchDownloadClient> background_fetch_client_;
 };
 
 }  // namespace content

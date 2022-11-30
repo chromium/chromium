@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.policy.EnterpriseInfo;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.components.policy.PolicyService;
 
 /**
@@ -27,7 +27,7 @@ import org.chromium.components.policy.PolicyService;
  *  - Supplies [True] if the ToS dialog is not enabled by policy while device is fully managed;
  *  - Supplies [False] otherwise.
  */
-class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
+public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private static final String TAG = "SkipTosPolicy";
     /**
      * Interface that provides histogram to be recorded when signals are available in this listener.
@@ -140,7 +140,11 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
 
     @Override
     public Boolean onAvailable(Callback<Boolean> callback) {
-        return mSkipTosDialogPolicySupplier.onAvailable(callback);
+        // This supplier posts callbacks to an inner Handler to avoid reentrancy, but this opens the
+        // possibility of set -> destroy -> callback run, which would violate our public interface.
+        // Wrapping incoming callback to ensure it cannot be run after destroy().
+        return mSkipTosDialogPolicySupplier.onAvailable(
+                mCallbackController.makeCancelable(callback));
     }
 
     /**

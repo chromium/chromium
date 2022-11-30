@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,15 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/win/worker_process_launcher.h"
 
 namespace base {
@@ -38,12 +41,19 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   UnprivilegedProcessDelegate(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       std::unique_ptr<base::CommandLine> target_command);
+
+  UnprivilegedProcessDelegate(const UnprivilegedProcessDelegate&) = delete;
+  UnprivilegedProcessDelegate& operator=(const UnprivilegedProcessDelegate&) =
+      delete;
+
   ~UnprivilegedProcessDelegate() override;
 
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
-  void Send(IPC::Message* message) override;
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver) override;
   void CloseChannel() override;
+  void CrashProcess(const base::Location& location) override;
   void KillProcess() override;
 
  private:
@@ -51,6 +61,9 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   void ReportFatalError();
   void ReportProcessLaunched(base::win::ScopedHandle worker_process);
@@ -65,14 +78,14 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   // process.
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
-  WorkerProcessLauncher* event_handler_;
+  raw_ptr<WorkerProcessLauncher> event_handler_;
 
   // The handle of the worker process, if launched.
   base::win::ScopedHandle worker_process_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+  mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
-  DISALLOW_COPY_AND_ASSIGN(UnprivilegedProcessDelegate);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace remoting

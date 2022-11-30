@@ -40,13 +40,8 @@ AXSlider::AXSlider(LayoutObject* layout_object,
                    AXObjectCacheImpl& ax_object_cache)
     : AXLayoutObject(layout_object, ax_object_cache) {}
 
-ax::mojom::Role AXSlider::DetermineAccessibilityRole() {
-  native_role_ = ax::mojom::blink::Role::kSlider;
-
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  return native_role_;
+ax::mojom::blink::Role AXSlider::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kSlider;
 }
 
 AccessibilityOrientation AXSlider::Orientation() const {
@@ -78,10 +73,10 @@ AccessibilityOrientation AXSlider::Orientation() const {
 bool AXSlider::OnNativeSetValueAction(const String& value) {
   HTMLInputElement* input = GetInputElement();
 
-  if (input->value() == value)
+  if (input->Value() == value)
     return false;
 
-  input->setValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+  input->SetValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 
   // Fire change event manually, as SliderThumbElement::StopDragging does.
   input->DispatchFormControlChangeEvent();
@@ -92,7 +87,7 @@ bool AXSlider::OnNativeSetValueAction(const String& value) {
     return false;
 
   // Ensure the AX node is updated.
-  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this, false);
+  AXObjectCache().MarkAXObjectDirty(this);
 
   return true;
 }

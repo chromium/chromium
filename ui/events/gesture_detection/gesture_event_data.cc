@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/gesture_detection/gesture_event_data.h"
+
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -56,6 +58,8 @@ GestureEventData::GestureEventData(const GestureEventDetails& details,
   DCHECK_GE(motion_event_id, 0);
   DCHECK_NE(0U, touch_point_count);
   this->details.set_primary_pointer_type(ToEventPointerType(primary_tool_type));
+  this->details.set_primary_unique_touch_event_id(
+      details.primary_unique_touch_event_id());
   this->details.set_touch_points(static_cast<int>(touch_point_count));
   this->details.set_bounding_box(bounding_box);
 }
@@ -73,11 +77,16 @@ GestureEventData::GestureEventData(EventType type,
       flags(other.flags),
       unique_touch_event_id(other.unique_touch_event_id) {
   details.set_primary_pointer_type(other.details.primary_pointer_type());
+  details.set_primary_unique_touch_event_id(
+      other.details.primary_unique_touch_event_id());
   details.set_touch_points(other.details.touch_points());
   details.set_bounding_box(other.details.bounding_box_f());
 }
 
 GestureEventData::GestureEventData(const GestureEventData& other) = default;
+
+GestureEventData& GestureEventData::operator=(const GestureEventData& other) =
+    default;
 
 GestureEventData::GestureEventData()
     : motion_event_id(0),

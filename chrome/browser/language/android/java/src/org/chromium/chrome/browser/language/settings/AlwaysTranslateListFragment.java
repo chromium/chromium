@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,35 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
     @Override
     protected String getLanguageListTitle(Context context) {
         return context.getResources().getString(R.string.languages_settings_automatic_title);
+    }
+
+    @Override
+    protected @LanguagesManager.LanguageListType int getPotentialLanguageType() {
+        return LanguagesManager.LanguageListType.ALWAYS_LANGUAGES;
+    }
+
+    @Override
+    protected void recordFragmentImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.VIEW_ALWAYS_TRANSLATE_LANGUAGES);
+    }
+
+    @Override
+    protected void recordAddLanguageImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.ALWAYS_TRANSLATE_ADD_LANGUAGE);
+    }
+
+    @Override
+    protected void recordAddAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.ADD_TO_ALWAYS_TRANSLATE);
+    }
+
+    @Override
+    protected void recordRemoveAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE);
     }
 
     @Override

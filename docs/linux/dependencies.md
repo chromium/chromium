@@ -57,7 +57,7 @@ that we need `libdbus-1-dev` and `libdbus-1-3`. Add these both to the
 `DEBIAN_PACKAGES` list in
 [`//build/linux/sysroot_scripts/sysroot-creator-sid.sh`](https://cs.chromium.org/chromium/src/build/linux/sysroot_scripts/sysroot-creator-sid.sh).
 Building and uploading the sysroot images is detailed in [Linux sysroot
-images](https://chromium.googlesource.com/chromium/src.git/+/master/docs/sysroot.md).
+images](https://chromium.googlesource.com/chromium/src.git/+/main/docs/sysroot.md).
 You may need to add additional dependent libraries for your new library.
 
 ## Whitelist the new dependencies
@@ -194,5 +194,5 @@ Then add `:libdbus-1-3` to
 `//third_party/instrumented_libraries:locally_built`'s `deps`.
 
 See [Linux Instrumented
-Libraries](https://chromium.googlesource.com/chromium/src.git/+/master/docs/instrumented_libraries.md)
+Libraries](https://chromium.googlesource.com/chromium/src.git/+/main/docs/instrumented_libraries.md)
 for instructions on building and uploading the instrumented libraries.

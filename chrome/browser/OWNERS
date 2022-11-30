@@ -4,6 +4,7 @@ per-file about_flags.cc=*
 per-file flag_descriptions.*=*
 per-file flag-metadata.json=*
 
+per-file about_flags.h=file://components/flags_ui/OWNERS
 per-file about_flags_unittest.cc=file://components/flags_ui/OWNERS
 per-file about_flags_browsertest.cc=file://components/flags_ui/OWNERS
 
@@ -12,7 +13,7 @@ per-file about_flags_browsertest.cc=file://components/flags_ui/OWNERS
 per-file BUILD.gn=*
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
 per-file *_android.*=file://chrome/browser/android/OWNERS
 per-file *.java=file://chrome/browser/android/OWNERS
@@ -55,6 +56,8 @@ per-file exo_parts.*=oshima@chromium.org
 per-file flag-never-expire-list.json=avi@chromium.org
 per-file flag-never-expire-list.json=ellyjones@chromium.org
 
+per-file load_library_perf_test.*=xhwang@chromium.org
+
 per-file *.mm=avi@chromium.org
 per-file *.mm=mark@chromium.org
 per-file *.mm=rsesek@chromium.org
@@ -81,13 +84,11 @@ per-file chrome_content_browser_client_receiver_bindings.*=file://ipc/SECURITY_O
 per-file chrome_content_browser_client_binder_policies.*=set noparent
 per-file chrome_content_browser_client_binder_policies.*=file://ipc/SECURITY_OWNERS
 
-# Changes to service sandbox configuration require a security review.
-per-file service_sandbox_type.h=file://ipc/SECURITY_OWNERS
-
 # BackForwardCache
-per-file chrome_back_forward_cache_browsertest.cc=arthursonzogni@chromium.org
-per-file chrome_back_forward_cache_browsertest.cc=altimin@chromium.org
+per-file chrome_back_forward_cache_browsertest.cc=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 per-file chrome_back_forward_cache_browsertest.cc=file://content/OWNERS
 
 # Web Platform security metrics tests:
 per-file chrome_web_platform_security_metrics_browsertest.cc=file://content/OWNERS
+
+per-file universal_web_contents_helpers.*=file://content/OWNERS

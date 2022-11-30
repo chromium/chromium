@@ -1,15 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_challenge_wrapper.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kSalt[] =
@@ -32,6 +31,12 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
                                    kChannelBindingData,
                                    AccountId::FromUserEmail(kUserId),
                                    nullptr) {}
+
+  TestableEasyUnlockChallengeWrapper(
+      const TestableEasyUnlockChallengeWrapper&) = delete;
+  TestableEasyUnlockChallengeWrapper& operator=(
+      const TestableEasyUnlockChallengeWrapper&) = delete;
+
   ~TestableEasyUnlockChallengeWrapper() override {}
 
  private:
@@ -56,11 +61,7 @@ class TestableEasyUnlockChallengeWrapper : public EasyUnlockChallengeWrapper {
 
     std::move(callback).Run(kSignature);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestableEasyUnlockChallengeWrapper);
 };
-
-}  // namespace
 
 TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   TestableEasyUnlockChallengeWrapper wrapper;
@@ -77,4 +78,5 @@ TEST(EasyUnlockChallengeWrapperTest, TestWrapChallenge) {
   EXPECT_EQ(kSignature, signature_secure_message.signature());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

@@ -1,0 +1,151 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+symbolset("arrow_clockwise") {
+  sources = [
+    "arrow_clockwise.symbolset/Contents.json",
+    "arrow_clockwise.symbolset/arrow.clockwise.cr.svg",
+  ]
+}
+
+symbolset("checkerboard_shield") {
+  sources = [
+    "checkerboard_shield.symbolset/Contents.json",
+    "checkerboard_shield.symbolset/checkerboard.shield.cr.svg",
+  ]
+}
+
+symbolset("checkermark_shield") {
+  sources = [
+    "checkermark_shield.symbolset/Contents.json",
+    "checkermark_shield.symbolset/checkermark.shield.cr.svg",
+  ]
+}
+
+symbolset("incognito") {
+  sources = [
+    "incognito.symbolset/Contents.json",
+    "incognito.symbolset/incognito.cr.svg",
+  ]
+}
+
+symbolset("incognito_circle_fill") {
+  sources = [
+    "incognito_circle_fill.symbolset/Contents.json",
+    "incognito_circle_fill.symbolset/incognito.circle.fill.cr.svg",
+  ]
+}
+
+symbolset("incognito_circle_fill_ios14") {
+  sources = [
+    "incognito_circle_fill_ios14.symbolset/Contents.json",
+    "incognito_circle_fill_ios14.symbolset/incognito.circle.fill.ios14.cr.svg",
+  ]
+}
+
+symbolset("password") {
+  sources = [
+    "password.symbolset/Contents.json",
+    "password.symbolset/password.cr.svg",
+  ]
+}
+
+symbolset("square_number") {
+  sources = [
+    "square_number.symbolset/Contents.json",
+    "square_number.symbolset/square.number.cr.svg",
+  ]
+}
+
+symbolset("translate") {
+  sources = [
+    "translate.symbolset/Contents.json",
+    "translate.symbolset/translate.cr.svg",
+  ]
+}
+
+symbolset("camera") {
+  sources = [
+    "camera.symbolset/Contents.json",
+    "camera.symbolset/camera.cr.svg",
+  ]
+}
+
+symbolset("camera_fill") {
+  sources = [
+    "camera_fill.symbolset/Contents.json",
+    "camera_fill.symbolset/camera.fill.cr.svg",
+  ]
+}
+
+symbolset("plus_circle_fill") {
+  sources = [
+    "plus_circle_fill.symbolset/Contents.json",
+    "plus_circle_fill.symbolset/plus.circle.fill.cr.svg",
+  ]
+}
+
+symbolset("arrow_triangle_slash_circlepath") {
+  sources = [
+    "arrow_triangle_slash_circlepath.symbolset/Contents.json",
+    "arrow_triangle_slash_circlepath.symbolset/arrow.triangle.slash.circlepath.cr.svg",
+  ]
+}
+
+symbolset("popup_badge_minus") {
+  sources = [
+    "popup_badge_minus.symbolset/Contents.json",
+    "popup_badge_minus.symbolset/popup.badge.minus.cr.svg",
+  ]
+}
+
+symbolset("photo_badge_plus") {
+  sources = [
+    "photo_badge_plus.symbolset/Contents.json",
+    "photo_badge_plus.symbolset/photo.badge.plus.cr.svg",
+  ]
+}
+symbolset("photo_badge_magnifyingglass") {
+  sources = [
+    "photo_badge_magnifyingglass.symbolset/Contents.json",
+    "photo_badge_magnifyingglass.symbolset/photo.badge.magnifyingglass.cr.svg",
+  ]
+}
+
+symbolset("square_bullet_square") {
+  sources = [
+    "square_bullet_square.symbolset/Contents.json",
+    "square_bullet_square.symbolset/square.bullet.square.cr.svg",
+  ]
+}
+
+symbolset("laptopcomputer_and_phone") {
+  sources = [
+    "laptopcomputer_and_phone.symbolset/Contents.json",
+    "laptopcomputer_and_phone.symbolset/laptopcomputer.and.phone.cr.svg",
+  ]
+}
+
+symbolset("language") {
+  sources = [
+    "language.symbolset/Contents.json",
+    "language.symbolset/language.cr.svg",
+  ]
+}
+
+symbolset("camera_lens") {
+  sources = [
+    "camera_lens.symbolset/Contents.json",
+    "camera_lens.symbolset/camera.lens.cr.svg",
+  ]
+}
+
+symbolset("line_downtrend") {
+  sources = [
+    "line_downtrend.symbolset/Contents.json",
+    "line_downtrend.symbolset/line.downtrend.cr.svg",
+  ]
+}

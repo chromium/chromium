@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_prefs_scope.h"
@@ -79,6 +78,10 @@ class ExtensionPrefValueMap : public KeyedService {
   };
 
   ExtensionPrefValueMap();
+
+  ExtensionPrefValueMap(const ExtensionPrefValueMap&) = delete;
+  ExtensionPrefValueMap& operator=(const ExtensionPrefValueMap&) = delete;
+
   ~ExtensionPrefValueMap() override;
 
   // KeyedService implementation.
@@ -204,8 +207,6 @@ class ExtensionPrefValueMap : public KeyedService {
   bool destroyed_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrefValueMap);
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_VALUE_MAP_H_

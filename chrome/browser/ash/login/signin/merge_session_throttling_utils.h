@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,13 @@ namespace content {
 class WebContents;
 }
 
+namespace ash {
+namespace merge_session_throttling_utils {
+
 // A set of helper functions used by the MergeSessionNavigationThrottle and the
 // RendererUpdater to determine if an interstitial page should be
 // shown for a request when the merge session process (cookie reconstruction
 // from OAuth2 refresh token in ChromeOS login) is still in progress.
-namespace merge_session_throttling_utils {
 
 // Policy for when it is valid to attach a MergeSessionNavigationThrottle.
 // Namely, this will be false for unit tests, where the UserManager is not
@@ -44,5 +46,6 @@ bool ShouldDelayUrl(const GURL& url);
 bool IsSessionRestorePending(Profile* profile);
 
 }  // namespace merge_session_throttling_utils
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_MERGE_SESSION_THROTTLING_UTILS_H_

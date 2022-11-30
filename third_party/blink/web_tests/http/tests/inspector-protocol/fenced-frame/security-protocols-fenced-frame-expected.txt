@@ -1,0 +1,6 @@
+Tests that Security.enable() doesn't work with a fenced frame page.
+Security.enable() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+Security.enable() from a top level frame:
+PASS: no error
+

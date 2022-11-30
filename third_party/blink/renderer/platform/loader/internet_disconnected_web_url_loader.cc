@@ -1,18 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
 
 #include "base/bind.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -41,13 +44,12 @@ InternetDisconnectedWebURLLoader::~InternetDisconnectedWebURLLoader() = default;
 void InternetDisconnectedWebURLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    int requestor_id,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     WebURLLoaderClient*,
     WebURLResponse&,
-    base::Optional<WebURLError>&,
+    absl::optional<WebURLError>&,
     WebData&,
     int64_t& encoded_data_length,
     int64_t& encoded_body_length,
@@ -60,7 +62,6 @@ void InternetDisconnectedWebURLLoader::LoadSynchronously(
 void InternetDisconnectedWebURLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
-    int requestor_id,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
@@ -78,7 +79,7 @@ void InternetDisconnectedWebURLLoader::LoadAsynchronously(
           WebURLError(net::ERR_INTERNET_DISCONNECTED, KURL(request->url))));
 }
 
-void InternetDisconnectedWebURLLoader::SetDefersLoading(DeferType defers) {}
+void InternetDisconnectedWebURLLoader::Freeze(WebLoaderFreezeMode) {}
 
 void InternetDisconnectedWebURLLoader::DidChangePriority(
     WebURLRequest::Priority,

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "base/mac/scoped_typeref.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace internal {
 
@@ -32,7 +31,6 @@ template <typename T>
 using ScopedIOPluginInterface =
     ScopedTypeRef<T**, internal::ScopedIOPluginInterfaceTraits<T**>>;
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_IOPLUGININTERFACE_H_

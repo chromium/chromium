@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,16 @@ struct MediaPipelineDeviceParams {
     kModeIgnorePts = 1,
     // In addition to the constraints above, also do not wait for vsync.
     kModeIgnorePtsAndVSync = 2,
+    // Almost same as kModeSyncPts except two things:
+    // 1. When pushing silence to the backend decoder, set an invalid timestamp
+    // to the silence buffer. We always play the silence, but if the stream uses
+    // hardware av sync mode, the invalid timestamp will not be used to do av
+    // sync.
+    // 2. When pushing non-silence buffers, do not adjust the timestamp. When
+    // calculating the rendering delay, the silence buffer will be counted. But
+    // when calculating the current playback position of the real audio data,
+    // buffers without timestamp, like silence buffer, will not be counted.
+    kModeApkSyncPts = 3,
   };
 
   enum AudioStreamType {
@@ -175,4 +185,4 @@ inline std::ostream& operator<<(std::ostream& os, AudioChannel audio_channel) {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_MEDIA_PIPELINE_DEVICE_PARAMS_H_
+#endif  // CHROMECAST_PUBLIC_MEDIA_MEDIA_PIPELINE_DEVICE_PARAMS_H_

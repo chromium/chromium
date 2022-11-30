@@ -1,0 +1,799 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//build/config/fuchsia/generate_runner_scripts.gni")
+import("//build/config/fuchsia/packaged_content_embedder_excluded_dirs.gni")
+import("//build/config/locales.gni")
+import("//testing/test.gni")
+import("//third_party/fuchsia-sdk/sdk/build/component.gni")
+import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+import("//tools/grit/repack.gni")
+
+# Only allow use by targets in this directory unless explicitly specified.
+visibility = [ ":*" ]
+
+config("web_engine_implementation") {
+  defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
+}
+
+_disallowed_extensions_deps = [
+  # Although `enable_extensions` is true for Fuchsia, extensions code should
+  # not be linked into WebEngine because it cannot be used and this would
+  # unnecessarily increase the package size.
+  # Exclude everything except "//extensions/buildflags/*", which is allowed,
+  # and //extensions/common:common_constants and
+  # //extensions/common:constants_impl", which are dependencies.
+  # //extensions:extensions is addressed below.
+  "//extensions:extensions_resources",
+  "//extensions/browser/*",
+  "//extensions/common:common",
+  "//extensions/common:core_api_provider",
+  "//extensions/common:export",
+  "//extensions/common:mojom",
+  "//extensions/renderer/*",
+  "//extensions/strings/*",
+]
+
+# //extensions:extensions is used by common_constants in component builds.
+if (!is_component_build) {
+  _disallowed_extensions_deps += [ "//extensions:*" ]
+}
+
+# Although `enable_pdf` is true for Fuchsia, PDF code should not be linked
+# into WebEngine because it does not have the necessary infrastructure and
+# this would unnecessarily increase the package size.
+_disallowed_pdf_deps = [
+  "//components/pdf/*",
+  "//components/plugins/*",
+  "//pdf/*",
+]
+
+# Ppapi code should not be included as enable_ppapi is false.
+# Exclude everything except "//ppapi/buildflags/*", which is allowed.
+_disallowed_ppapi_deps = [
+  "//ppapi:*",
+  "//ppapi/c/*",
+  "//ppapi/cpp/*",
+  "//ppapi/host/*",
+  "//ppapi/lib/*",
+  "//ppapi/native_client/*",
+  "//ppapi/proxy/*",
+  "//ppapi/shared_impl/*",
+  "//ppapi/thunk/*",
+]
+
+# Although `enable_basic_printing` is true on Fuchsia, no code should be linked.
+# "//printing:metafile" is used by //third_party/blink/renderer/core and
+# uses "//printing/common/*".
+# "//printing/mojom/*" is allowed because Blink public APIs use its types.
+_disallowed_printing_deps = [
+  "//printing:printing",
+  "//printing:printing_base",
+  "//printing/backend/*",
+]
+
+# TODO(crbug.com/1311822): Replace the uses of this in each target with a group
+# that depends on those targets once this is correctly supported.
+_disallowed_deps = _disallowed_extensions_deps + _disallowed_pdf_deps +
+                   _disallowed_ppapi_deps + _disallowed_printing_deps
+
+source_set("web_engine_export_from_implementation") {
+  public = [ "web_engine_export.h" ]
+  public_configs = [ ":web_engine_implementation" ]
+}
+
+repack("web_engine_pak") {
+  sources = [
+    "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+    "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/content/dev_ui_content_resources.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+    "$root_gen_dir/net/net_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+  ]
+
+  deps = [
+    "//components/resources:components_resources",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
+    "//content/browser/tracing:resources",
+    "//gpu/command_buffer/service",
+    "//mojo/public/js:resources",
+    "//net:net_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//ui/resources",
+  ]
+
+  # TODO(crbug.com/1092804): Move this into ${target_gen_dir} and have a
+  # GN SDK fuchsia_resource() rule map it into place in the web_engine package.
+  output = "$root_gen_dir/web_engine_common_resources.pak"
+}
+
+foreach(locale, locales_with_pseudolocales) {
+  repack("web_engine_locale_${locale}_pak") {
+    # WebEngine requires the following locale-specific resources:
+    # 1. Locale settings (e.g. default encoding, accept-languages per locale).
+    # 2. Blink strings for UI elements, e.g. drop-down lists.
+    # 3. //ui strings used to configure e.g. preferred font family.
+
+    sources = [
+      "$root_gen_dir/components/strings/components_locale_settings_${locale}.pak",
+      "$root_gen_dir/third_party/blink/public/strings/blink_strings_${locale}.pak",
+      "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+    ]
+
+    deps = [
+      "//components/strings:components_locale_settings",
+      "//third_party/blink/public/strings",
+      "//ui/strings:app_locale_settings",
+    ]
+
+    output = "$root_gen_dir/locales/${locale}.pak"
+  }
+}
+
+component("web_engine_core") {
+  assert_no_deps = _disallowed_deps
+
+  deps = [
+    ":cast_streaming_receiver",
+    ":context_provider",
+    ":switches",
+    ":web_engine_export_from_implementation",
+    "//base",
+    "//base:base_static",
+    "//components/cast_streaming/renderer",
+    "//components/cdm/renderer",
+    "//components/client_hints/browser:in_memory",
+    "//components/embedder_support",
+    "//components/embedder_support:browser_util",
+    "//components/embedder_support/origin_trials",
+    "//components/favicon/content",
+    "//components/favicon/core",
+    "//components/fuchsia_component_support",
+    "//components/fuchsia_legacymetrics",
+    "//components/keyed_service/content",
+    "//components/media_control/browser",
+    "//components/media_control/renderer",
+    "//components/memory_pressure",
+    "//components/network_session_configurator/common",
+    "//components/on_load_script_injector/browser",
+    "//components/on_load_script_injector/renderer",
+    "//components/permissions",
+    "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/profile_metrics",
+    "//components/site_isolation",
+    "//components/strings:components_locale_settings",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
+    "//components/url_rewrite/mojom",
+    "//components/url_rewrite/renderer",
+    "//components/version_info",
+    "//content/public/app",
+    "//content/public/browser",
+    "//content/public/child",
+    "//content/public/common",
+    "//content/public/renderer",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webengine/mojom",
+    "//google_apis",
+    "//gpu/command_buffer/service",
+    "//media",
+    "//media/fuchsia/cdm/service",
+    "//media/mojo/common",
+    "//media/mojo/services",
+    "//mojo/public/cpp/bindings",
+    "//services/media_session/public/mojom",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//skia",
+    "//skia/public/mojom",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.sessions2",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+    "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+    "//third_party/widevine/cdm:headers",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/ime",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/ozone",
+    "//ui/platform_window",
+    "//ui/wm",
+    "//ui/wm/public",
+  ]
+
+  # Technically the PAK files are only data dependencies, but specifying them
+  # as |data_deps| causes metadata (.info) files to also be pulled-in to the
+  # package.
+  deps += [ ":web_engine_pak" ]
+
+  data = [ "$root_gen_dir/web_engine_common_resources.pak" ]
+  foreach(locale, locales_with_pseudolocales) {
+    deps += [ ":web_engine_locale_${locale}_pak" ]
+    data += [ "$root_gen_dir/locales/${locale}.pak" ]
+  }
+
+  public_deps = [
+    "//content/public/browser",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+
+    # Public because tests include Context, Frame, etc headers, which include
+    # Inspect properties.
+    "//third_party/fuchsia-sdk/sdk/pkg/inspect",
+  ]
+
+  sources = [
+    "browser/accessibility_bridge.cc",
+    "browser/accessibility_bridge.h",
+    "browser/ax_tree_converter.cc",
+    "browser/ax_tree_converter.h",
+    "browser/content_directory_loader_factory.cc",
+    "browser/content_directory_loader_factory.h",
+    "browser/context_impl.cc",
+    "browser/context_impl.h",
+    "browser/cookie_manager_impl.cc",
+    "browser/cookie_manager_impl.h",
+    "browser/event_filter.cc",
+    "browser/event_filter.h",
+    "browser/frame_impl.cc",
+    "browser/frame_impl.h",
+    "browser/frame_layout_manager.cc",
+    "browser/frame_layout_manager.h",
+    "browser/frame_permission_controller.cc",
+    "browser/frame_permission_controller.h",
+    "browser/frame_window_tree_host.cc",
+    "browser/frame_window_tree_host.h",
+    "browser/media_player_impl.cc",
+    "browser/media_player_impl.h",
+    "browser/message_port.cc",
+    "browser/message_port.h",
+    "browser/navigation_controller_impl.cc",
+    "browser/navigation_controller_impl.h",
+    "browser/navigation_policy_handler.cc",
+    "browser/navigation_policy_handler.h",
+    "browser/navigation_policy_throttle.cc",
+    "browser/navigation_policy_throttle.h",
+    "browser/theme_manager.cc",
+    "browser/theme_manager.h",
+    "browser/url_request_rewrite_type_converters.cc",
+    "browser/url_request_rewrite_type_converters.h",
+    "browser/web_engine_browser_context.cc",
+    "browser/web_engine_browser_context.h",
+    "browser/web_engine_browser_interface_binders.cc",
+    "browser/web_engine_browser_interface_binders.h",
+    "browser/web_engine_browser_main.cc",
+    "browser/web_engine_browser_main.h",
+    "browser/web_engine_browser_main_parts.cc",
+    "browser/web_engine_browser_main_parts.h",
+    "browser/web_engine_config.cc",
+    "browser/web_engine_config.h",
+    "browser/web_engine_content_browser_client.cc",
+    "browser/web_engine_content_browser_client.h",
+    "browser/web_engine_devtools_controller.cc",
+    "browser/web_engine_devtools_controller.h",
+    "browser/web_engine_media_resource_provider_impl.cc",
+    "browser/web_engine_media_resource_provider_impl.h",
+    "browser/web_engine_memory_inspector.cc",
+    "browser/web_engine_memory_inspector.h",
+    "browser/web_engine_net_log_observer.cc",
+    "browser/web_engine_net_log_observer.h",
+    "browser/web_engine_permission_delegate.cc",
+    "browser/web_engine_permission_delegate.h",
+    "common/cors_exempt_headers.cc",
+    "common/cors_exempt_headers.h",
+    "common/web_engine_content_client.cc",
+    "common/web_engine_content_client.h",
+    "renderer/web_engine_audio_device_factory.cc",
+    "renderer/web_engine_audio_device_factory.h",
+    "renderer/web_engine_audio_output_device.cc",
+    "renderer/web_engine_audio_output_device.h",
+    "renderer/web_engine_audio_renderer.cc",
+    "renderer/web_engine_audio_renderer.h",
+    "renderer/web_engine_content_renderer_client.cc",
+    "renderer/web_engine_content_renderer_client.h",
+    "renderer/web_engine_media_renderer_factory.cc",
+    "renderer/web_engine_media_renderer_factory.h",
+    "renderer/web_engine_render_frame_observer.cc",
+    "renderer/web_engine_render_frame_observer.h",
+    "renderer/web_engine_url_loader_throttle_provider.cc",
+    "renderer/web_engine_url_loader_throttle_provider.h",
+    "web_engine_main_delegate.cc",
+    "web_engine_main_delegate.h",
+  ]
+}
+
+source_set("context_provider") {
+  assert_no_deps = _disallowed_deps
+  sources = [
+    "context_provider_impl.cc",
+    "context_provider_impl.h",
+    "context_provider_main.cc",
+    "context_provider_main.h",
+  ]
+  deps = [
+    ":switches",
+    ":web_engine_export_from_implementation",
+    "//base",
+    "//components/fuchsia_component_support",
+    "//fuchsia_web/common",
+    "//fuchsia_web/webinstance_host",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
+  ]
+}
+
+# TODO(crbug.com/1081525): Rename to features_and_switches or collapse into
+# common. Consider moving these and other files in engine/ to common/ or
+# elsewhere.
+source_set("switches") {
+  visibility += [
+    "//fuchsia_web/shell:cast_streaming_shell_exe",
+    "//fuchsia_web/webinstance_host",
+  ]
+  deps = [ "//base" ]
+  sources = [
+    "features.h",
+    "switches.cc",
+    "switches.h",
+  ]
+}
+
+executable("web_engine_exe") {
+  assert_no_deps = _disallowed_deps
+  deps = [
+    ":context_provider",
+    ":switches",
+    ":web_engine_core",
+    "//base",
+    "//components/fuchsia_component_support",
+    "//content/public/app",
+  ]
+  sources = [ "web_engine_main.cc" ]
+}
+
+source_set("webui_resources") {
+  data = [ "$root_gen_dir/ui/resources/webui_generated_resources.pak" ]
+  deps = [ "//ui/resources" ]
+}
+
+_web_engine_excluded_files = [
+  # TODO(crbug.com/1022542): SwiftShader is used only in tests. It should
+  # not be included in the WebEngine package.
+  # Whenever this list is updated the exclusions in the cast_runner package
+  # should be updated as well (see fuchsia_web/runners/BUILD.gn).
+  "lib/libvk_swiftshader.so",
+  "vk_swiftshader_icd.json",
+]
+
+# Definitions for the main web_engine package. The package contains the
+# context_provider component definition, and its dependencies.  An installer
+# script is declared for the package, for ease of development.
+
+# Component definition for WebEngine instances, each hosting one or more
+# browsing contexts, accessed via fuchsia.web.Context or fuchsia.web.FrameHost
+# capabilities.
+fuchsia_component("web_instance_component") {
+  manifest = "web_instance.cml"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_component("web_instance_component_cfv1") {
+  manifest = "web_instance.cmx"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+# Component definition for the legacy fuchsia.web.ContextProvider service.
+# TODO(crbug.com/1010222): Remove once all callers have migrated to launching
+# instances directly as Components.
+fuchsia_component("context_provider_component_v1") {
+  manifest = "context_provider.cmx"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_component("context_provider_component") {
+  manifest = "context_provider.cml"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_package("web_engine") {
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
+  deps = [
+    ":context_provider_component",
+    ":context_provider_component_v1",
+    ":web_instance_component",
+    ":web_instance_component_cfv1",
+  ]
+  excluded_files = _web_engine_excluded_files
+  excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
+}
+
+fuchsia_package_installer("web_engine_installer") {
+  # Force this template to apply visibility. See the bug below.
+  # TODO(crbug.com/1328459): Remove once the bug is fixed.
+  visibility += []
+  package = ":web_engine"
+}
+
+# Definitions for a variant of the web_engine package that bundles the WebUI
+# resources, to allow e.g. chrome://gpu to be used.  An installer script is
+# defined, for ease of development.
+
+# TODO(crbug.com/1010222): Remove the with-WebUI ContextProvider component
+# definition once all callers have migrated to launching instances directly as
+# Components, or the launcher supports relative component URLs.
+cmc_merge("context_provider_v1_with_webui_manifest") {
+  sources = [
+    "context_provider.cmx",
+    "context_provider_with_webui.test-cmx-fragment",
+  ]
+  output_name = "context_provider_with_webui.cmx"
+}
+
+fuchsia_component("context_provider_v1_with_webui_component") {
+  deps = [ ":context_provider_v1_with_webui_manifest" ]
+  manifest = "$target_out_dir/context_provider_with_webui.cmx"
+  manifest_output_name = "context_provider"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_package("web_engine_with_webui") {
+  # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
+  deps = [
+    ":context_provider_v1_with_webui_component",
+    ":web_instance_component_cfv1",
+    ":webui_resources",
+  ]
+  excluded_files = _web_engine_excluded_files
+  excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
+}
+
+fuchsia_package_installer("web_engine_with_webui_installer") {
+  visibility += [
+    "//chrome/test/*",
+    "//content/test/*",
+  ]
+  package = ":web_engine_with_webui"
+}
+
+# TODO(crbug.com/1081525): Move to ../common/test.
+source_set("browsertest_core") {
+  visibility += [
+    "//fuchsia_web/runners:*",
+    "//fuchsia_web/webinstance_host:*",
+  ]
+  testonly = true
+  sources = [
+    "test/frame_for_test.cc",
+    "test/frame_for_test.h",
+    "test/scenic_test_helper.cc",
+    "test/scenic_test_helper.h",
+    "test/scoped_connection_checker.h",
+    "test/test_data.cc",
+    "test/test_data.h",
+    "test/web_engine_browser_test.cc",
+    "test/web_engine_browser_test.h",
+    "test/web_engine_test_launcher.cc",
+  ]
+  data = [ "test/data" ]
+  deps = [
+    ":switches",
+    ":web_engine_core",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//fuchsia_web/common/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//ui/ozone",
+  ]
+}
+
+test("web_engine_browsertests") {
+  sources = [
+    "browser/accessibility_bridge_browsertest.cc",
+    "browser/accessibility_browsertest.cc",
+    "browser/autoplay_browsertest.cc",
+    "browser/client_hints_browsertest.cc",
+    "browser/content_directory_browsertest.cc",
+    "browser/context_impl_browsertest.cc",
+    "browser/fake_navigation_policy_provider.cc",
+    "browser/fake_navigation_policy_provider.h",
+    "browser/fake_semantic_tree.cc",
+    "browser/fake_semantic_tree.h",
+    "browser/fake_semantics_manager.cc",
+    "browser/fake_semantics_manager.h",
+    "browser/favicon_browsertest.cc",
+    "browser/frame_host_impl_browsertest.cc",
+    "browser/frame_impl_browser_test_base.cc",
+    "browser/frame_impl_browser_test_base.h",
+    "browser/frame_impl_browsertest.cc",
+    "browser/headless_browsertest.cc",
+    "browser/input_browsertest.cc",
+    "browser/javascript_browsertest.cc",
+    "browser/media_browsertest.cc",
+    "browser/mock_virtual_keyboard.cc",
+    "browser/mock_virtual_keyboard.h",
+    "browser/navigation_policy_browsertest.cc",
+    "browser/permissions_browsertest.cc",
+    "browser/popup_browsertest.cc",
+    "browser/post_message_browsertest.cc",
+    "browser/request_monitoring_browsertest.cc",
+    "browser/theme_manager_browsertest.cc",
+    "browser/url_request_invalidation_browsertest.cc",
+    "browser/virtual_keyboard_browsertest.cc",
+  ]
+
+  # TODO(crbug.com/1157909): Move to the list above when the bug is fixed.
+  if (!is_component_build) {
+    sources += [ "browser/explicit_sites_filter_browsertest.cc" ]
+  }
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":browsertest_core",
+    ":cast_streaming_receiver_browsertests",
+    ":switches",
+    ":web_engine_core",
+    "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/safe_search_api:safe_search_api",
+    "//components/safe_search_api:test_support",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//fuchsia_web/common",
+    "//fuchsia_web/common/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//ui/gfx",
+    "//ui/ozone",
+  ]
+
+  test_runner_shard =
+      "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+  ]
+}
+
+# Creates a component manifest based on the production web_instance.cmx, with
+# the program name replaced with the web_engine_unittests binary name.
+action("web_engine_unittests_fake_instance_manifest") {
+  _manifest_input = "web_instance.cmx"
+  _manifest_output = "$target_gen_dir/web_engine_unittests_fake_instance.cmx"
+
+  script = "//build/config/fuchsia/build_cmx_from_fragment.py"
+
+  inputs = [ _manifest_input ]
+  outputs = [ _manifest_output ]
+
+  args = [
+    "--cmx-fragment",
+    rebase_path(_manifest_input),
+    "--cmx",
+    rebase_path(_manifest_output),
+    "--program",
+    "web_engine_unittests__exec",
+  ]
+}
+
+test("web_engine_unittests") {
+  sources = [
+    "browser/ax_tree_converter_unittest.cc",
+    "browser/cookie_manager_impl_unittest.cc",
+    "browser/event_filter_unittest.cc",
+    "browser/fake_navigation_policy_provider.cc",
+    "browser/fake_navigation_policy_provider.h",
+    "browser/media_player_impl_unittest.cc",
+    "browser/navigation_controller_impl_unittest.cc",
+    "browser/navigation_policy_throttle_unittest.cc",
+    "browser/url_request_rewrite_type_converters_unittest.cc",
+    "browser/web_engine_config_unittest.cc",
+    "context_provider_impl_unittest.cc",
+    "fake_context.cc",
+    "fake_context.h",
+    "renderer/web_engine_audio_output_device_test.cc",
+    "renderer/web_engine_audio_renderer_test.cc",
+    "test/run_all_unittests.cc",
+  ]
+  deps = [
+    ":context_provider",
+    ":switches",
+    ":web_engine_core",
+    ":web_engine_unittests_fake_instance_manifest",
+    "//base/test:test_support",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
+    "//components/url_rewrite/mojom",
+    "//content/test:test_support",
+    "//fuchsia_web/common/test:test_support",
+    "//media/fuchsia/audio:test_support",
+    "//mojo/core/embedder",
+    "//services/media_session/public/mojom",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//ui/events:test_support",
+    "//ui/ozone",
+  ]
+
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//media/fuchsia/test_support.shard.test-cml",
+  ]
+  additional_manifests = [
+    # Required by ContextProvider unit-tests to launch the FakeContext process.
+    "$target_gen_dir/web_engine_unittests_fake_instance.cmx",
+  ]
+}
+
+test("web_engine_integration_tests") {
+  sources = [
+    "test_debug_listener.cc",
+    "test_debug_listener.h",
+    "web_engine_debug_integration_test.cc",
+    "web_engine_integration_logging_test.cc",
+    "web_engine_integration_test.cc",
+    "web_engine_integration_test_base.cc",
+    "web_engine_integration_test_base.h",
+  ]
+  data = [ "test/data" ]
+  deps = [
+    ":browsertest_core",
+    ":context_provider_component",
+    "//base",
+    "//base:test_log_listener_safe",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//fuchsia_web/common/test:run_all_integration_tests",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine/test:integration",
+    "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
+    "//media",
+    "//media/fuchsia/audio:test_support",
+    "//media/fuchsia/camera:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+  package_deps = [ [
+        ":web_engine",
+        "web_engine",
+      ] ]
+
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/archivist.shard.test-cml",
+    "//build/config/fuchsia/test/audio_output.shard.test-cml",
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//build/config/fuchsia/test/web_instance_host.shard.test-cml",
+    "//fuchsia_web/webengine/web_engine_integration_tests.shard.test-cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys/component/realm_builder_absolute.shard.cml",
+    "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
+  ]
+}
+
+test("web_engine_integration_tests_cfv1") {
+  sources = [
+    "test_debug_listener.cc",
+    "test_debug_listener.h",
+
+    # Disabled due to challenges connecting to fuchsia.web.Debug.
+    # "web_engine_debug_integration_test.cc",
+    "web_engine_integration_logging_test.cc",
+    "web_engine_integration_test.cc",
+    "web_engine_integration_test_base.cc",
+    "web_engine_integration_test_base.h",
+  ]
+  data = [ "test/data" ]
+  deps = [
+    ":browsertest_core",
+    "//base",
+    "//base:test_log_listener_safe",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//fuchsia_web/common/test:run_all_integration_tests",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine/test:cfv1_integration",
+    "//fuchsia_web/webinstance_host:webinstance_host_integration_test",
+    "//media",
+    "//media/fuchsia/audio:test_support",
+    "//media/fuchsia/camera:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+  package_deps = [ [
+        ":web_engine",
+        "web_engine",
+      ] ]
+  additional_manifest_fragments = [
+    "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
+    "//build/config/fuchsia/test/web_instance.shard.test-cml",
+    "//build/config/fuchsia/test/web_instance_host.shard.test-cml",
+  ]
+}
+
+source_set("cast_streaming_receiver") {
+  public_deps = [
+    "//base",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/public/mojom",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+  deps = [
+    ":switches",
+    "//components/cast/message_port",
+    "//components/cast_streaming/public:config_conversions",
+    "//url",
+  ]
+  sources = [
+    "browser/receiver_session_client.cc",
+    "browser/receiver_session_client.h",
+    "common/cast_streaming.cc",
+    "common/cast_streaming.h",
+  ]
+}
+
+source_set("cast_streaming_receiver_browsertests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "browser/cast_streaming_browsertest.cc" ]
+  deps = [
+    ":browsertest_core",
+    ":web_engine_core",
+    "//components/cast/message_port",
+    "//components/cast_streaming/test:test_sender",
+    "//content/test:test_support",
+    "//fuchsia_web/common/test:test_support",
+  ]
+}

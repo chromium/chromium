@@ -1,0 +1,19 @@
+# This shim can only be used if you build Chromium without DAWN
+
+import("//build/shim_headers.gni")
+
+shim_headers("vulkan-SPIRV-Headers_shim") {
+  root_path = "include"
+  headers = [
+    "spirv/unified1/GLSL.std.450.h",
+    "spirv/unified1/NonSemanticClspvReflection.h",
+    "spirv/unified1/NonSemanticDebugPrintf.h",
+    "spirv/unified1/OpenCL.std.h",
+    "spirv/unified1/spirv.h",
+    "spirv/unified1/spirv.hpp",
+  ]
+}
+
+source_set("spv_headers") {
+  deps = [ ":vulkan-SPIRV-Headers_shim" ]
+}

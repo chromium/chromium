@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -111,9 +110,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
 
         ToolbarUtils.setupTrackerForDownloadSettingsIPH(tracker, mToolbar);
 
-        mShadow.init(ApiCompatibilityUtils.getColor(
-                             context.getResources(), R.color.toolbar_shadow_color),
-                FadingShadow.POSITION_TOP);
+        mShadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
         if (!hasCloseButton) mToolbar.removeMenuItem(R.id.close_menu_id);
     }
@@ -184,7 +181,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
             UmaUtils.recordTopMenuShareCount(itemsShared);
             return true;
         } else if (item.getItemId() == R.id.search_menu_id) {
-            mToolbar.showSearchView();
+            mToolbar.showSearchView(true);
             updateShadowVisibility();
             return true;
         } else if (item.getItemId() == R.id.settings_menu_id) {

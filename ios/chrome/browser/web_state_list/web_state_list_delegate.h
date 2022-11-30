@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
-
-#include "base/macros.h"
 
 namespace web {
 class WebState;
@@ -18,6 +16,10 @@ class WebState;
 class WebStateListDelegate {
  public:
   WebStateListDelegate() = default;
+
+  WebStateListDelegate(const WebStateListDelegate&) = delete;
+  WebStateListDelegate& operator=(const WebStateListDelegate&) = delete;
+
   virtual ~WebStateListDelegate() = default;
 
   // Notifies the delegate that the specified WebState will be added to the
@@ -29,9 +31,6 @@ class WebStateListDelegate {
   // the WebStateList (via detaching/closing/replacing existing) and allows it
   // to do any clean up that it deems necessary.
   virtual void WebStateDetached(web::WebState* web_state) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateListDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_

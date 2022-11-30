@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+
+#include "base/strings/string_piece.h"
 
 namespace blink {
 
@@ -32,7 +34,7 @@ void ThreadSafeBrowserInterfaceBrokerProxy::GetInterface(
 bool ThreadSafeBrowserInterfaceBrokerProxy::SetBinderForTesting(
     base::StringPiece interface_name,
     Binder binder) {
-  std::string name = interface_name.as_string();
+  std::string name(interface_name);
 
   base::AutoLock lock(binder_map_lock_);
   if (!binder) {

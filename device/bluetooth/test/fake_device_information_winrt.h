@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
 
 namespace device {
@@ -32,6 +31,11 @@ class FakeDeviceInformationWinrt
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Enumeration::IDeviceInformationPairing>
           pairing);
+
+  FakeDeviceInformationWinrt(const FakeDeviceInformationWinrt&) = delete;
+  FakeDeviceInformationWinrt& operator=(const FakeDeviceInformationWinrt&) =
+      delete;
+
   ~FakeDeviceInformationWinrt() override;
 
   // IDeviceInformation:
@@ -69,8 +73,6 @@ class FakeDeviceInformationWinrt
   Microsoft::WRL::ComPtr<
       ABI::Windows::Devices::Enumeration::IDeviceInformationPairing>
       pairing_ = Microsoft::WRL::Make<FakeDeviceInformationPairingWinrt>(false);
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInformationWinrt);
 };
 
 class FakeDeviceInformationStaticsWinrt
@@ -83,6 +85,12 @@ class FakeDeviceInformationStaticsWinrt
       Microsoft::WRL::ComPtr<
           ABI::Windows::Devices::Enumeration::IDeviceInformation>
           device_information);
+
+  FakeDeviceInformationStaticsWinrt(const FakeDeviceInformationStaticsWinrt&) =
+      delete;
+  FakeDeviceInformationStaticsWinrt& operator=(
+      const FakeDeviceInformationStaticsWinrt&) = delete;
+
   ~FakeDeviceInformationStaticsWinrt() override;
 
   // IDeviceInformationStatics:
@@ -138,8 +146,6 @@ class FakeDeviceInformationStaticsWinrt
  private:
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformation>
       device_information_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDeviceInformationStaticsWinrt);
 };
 
 }  // namespace device

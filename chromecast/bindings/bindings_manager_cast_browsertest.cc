@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,20 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/bindings/bindings_manager_cast.h"
+#include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
+#include "chromecast/browser/cast_web_contents_observer.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -63,30 +65,33 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path.Append(GetTestDataPath()).AppendASCII(name);
 }
 
-class TitleChangeObserver : public CastWebContents::Observer {
+class TitleChangeObserver : public CastWebContentsObserver {
  public:
   TitleChangeObserver() = default;
+
+  TitleChangeObserver(const TitleChangeObserver&) = delete;
+  TitleChangeObserver& operator=(const TitleChangeObserver&) = delete;
+
   ~TitleChangeObserver() override = default;
 
   // Spins a Runloop until the title of the page matches the |expected_title|
   // that have been set.
   void RunUntilTitleEquals(base::StringPiece expected_title) {
-    expected_title_ = expected_title.as_string();
+    expected_title_ = std::string(expected_title);
     // Spin the runloop until the expected conditions are met.
     if (current_title_ != expected_title_) {
-      expected_title_ = expected_title.as_string();
+      expected_title_ = std::string(expected_title);
       base::RunLoop run_loop;
       quit_closure_ = run_loop.QuitClosure();
       run_loop.Run();
     }
   }
 
-  // CastWebContents::Observer implementation:
-  void UpdateTitle(const std::u16string& title) override {
+  // CastWebContentsObserver implementation:
+  void UpdateTitle(const std::string& title) override {
     // Resumes execution of RunUntilTitleEquals() if |title| matches
     // expectations.
-    std::string title_utf8 = base::UTF16ToUTF8(title);
-    current_title_ = title_utf8;
+    current_title_ = title;
     if (!quit_closure_.is_null() && current_title_ == expected_title_) {
       std::move(quit_closure_).Run();
     }
@@ -97,8 +102,6 @@ class TitleChangeObserver : public CastWebContents::Observer {
   std::string expected_title_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TitleChangeObserver);
 };
 
 // =============================================================================
@@ -107,27 +110,13 @@ class TitleChangeObserver : public CastWebContents::Observer {
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
   MockWebContentsDelegate() = default;
+
+  MockWebContentsDelegate(const MockWebContentsDelegate&) = delete;
+  MockWebContentsDelegate& operator=(const MockWebContentsDelegate&) = delete;
+
   ~MockWebContentsDelegate() override = default;
 
   MOCK_METHOD1(CloseContents, void(content::WebContents* source));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebContentsDelegate);
-};
-
-class MockCastWebContentsDelegate
-    : public base::SupportsWeakPtr<MockCastWebContentsDelegate>,
-      public CastWebContents::Delegate {
- public:
-  MockCastWebContentsDelegate() {}
-  ~MockCastWebContentsDelegate() override = default;
-
-  MOCK_METHOD2(InnerContentsCreated,
-               void(CastWebContents* inner_contents,
-                    CastWebContents* outer_contents));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCastWebContentsDelegate);
 };
 
 }  // namespace
@@ -136,6 +125,12 @@ class MockCastWebContentsDelegate
 // Test class
 // =============================================================================
 class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
+ public:
+  BindingsManagerCastBrowserTest(const BindingsManagerCastBrowserTest&) =
+      delete;
+  BindingsManagerCastBrowserTest& operator=(
+      const BindingsManagerCastBrowserTest&) = delete;
+
  protected:
   BindingsManagerCastBrowserTest() = default;
   ~BindingsManagerCastBrowserTest() override = default;
@@ -161,15 +156,15 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
 
     // CastWebContents::Delegate must be set for receiving PageStateChanged
     // event.
-    CastWebContents::InitParams init_params;
-    init_params.delegate = mock_cast_wc_delegate_.AsWeakPtr();
-    init_params.is_root_window = true;
+    mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+    params->is_root_window = true;
 
-    cast_web_contents_ =
-        std::make_unique<CastWebContentsImpl>(web_contents_.get(), init_params);
+    cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
+        web_contents_.get(), std::move(params));
     title_change_observer_.Observe(cast_web_contents_.get());
-    bindings_manager_ = std::make_unique<bindings::BindingsManagerCast>(
-        cast_web_contents_.get());
+    bindings_manager_ = std::make_unique<bindings::BindingsManagerCast>();
+    cast_web_contents_->ConnectToBindingsService(
+        bindings_manager_->CreateRemote());
   }
 
   void PostRunTestOnMainThread() override {
@@ -183,16 +178,12 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
     embedded_test_server()->StartAcceptingConnections();
   }
 
-  NiceMock<MockCastWebContentsDelegate> mock_cast_wc_delegate_;
   NiceMock<MockWebContentsDelegate> mock_wc_delegate_;
   TitleChangeObserver title_change_observer_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<CastWebContentsImpl> cast_web_contents_;
 
   std::unique_ptr<bindings::BindingsManagerCast> bindings_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BindingsManagerCastBrowserTest);
 };
 
 // Handles connected ports from the NamedMessagePortConnector and
@@ -279,6 +270,26 @@ IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, EndToEnd) {
   bindings_manager_->UnregisterPortHandler("hello");
 }
 
+IN_PROC_BROWSER_TEST_F(BindingsManagerCastBrowserTest, OrderedBindings) {
+  bindings_manager_->AddBinding("foo", "bar");
+  bindings_manager_->AddBinding("hello", "world");
+
+  // A repeated binding should have its order preserved
+  bindings_manager_->AddBinding("foo", "BAR");
+
+  std::vector<std::string> received_bindings;
+  static_cast<chromecast::mojom::ApiBindings*>(bindings_manager_.get())
+      ->GetAll(base::BindLambdaForTesting(
+          [&](std::vector<chromecast::mojom::ApiBindingPtr> bindings) {
+            for (auto& entry : bindings) {
+              received_bindings.push_back(entry->script);
+            }
+          }));
+
+  EXPECT_EQ(2UL, received_bindings.size());
+  EXPECT_EQ("BAR", received_bindings[0]);
+  EXPECT_EQ("world", received_bindings[1]);
+}
 }  // namespace chromecast
 
 #endif  // CHROMECAST_BINDINGS_BINDINGS_MANAGER_CAST_BROWSERTEST_H_

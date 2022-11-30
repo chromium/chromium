@@ -1,27 +1,53 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
+#include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
+#include "net/ssl/client_cert_identity_test_util.h"
+#include "net/ssl/client_cert_store.h"
+#include "net/test/cert_test_util.h"
+#include "net/test/test_data_directory.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/dm_token_utils.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/policy/dm_token_utils.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 namespace enterprise_reporting_private =
@@ -66,6 +92,31 @@ constexpr char kAnotherServiceProvider[] = R"({
       ]
     })";
 
+constexpr char kAndAnotherServiceProvider[] = R"({
+      "service_provider": "and_another",
+      "enable": [
+        {
+          "url_list": ["*"],
+          "tags": ["dlp", "malware"]
+        }
+      ]
+    })";
+
+constexpr char kRequestingUrl[] = "https://www.example.com";
+
+class MockClientCertStore : public net::ClientCertStore {
+ public:
+  explicit MockClientCertStore(net::ClientCertIdentityList certs)
+      : certs_(std::move(certs)) {}
+
+  void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
+                      ClientCertListCallback callback) override {
+    std::move(callback).Run(std::move(certs_));
+  }
+
+  net::ClientCertIdentityList certs_;
+};
+
 }  // namespace
 
 // Base class for non-parametrized GetContextInfo test cases. This class enables
@@ -82,7 +133,7 @@ class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
 #endif
 
   void SetupDMToken() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
 #else
@@ -112,6 +163,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     if (browser_managed()) {
       SetupDMToken();
     }
+    feature_list_.InitAndEnableFeature(features::kAsyncDns);
   }
 
   bool browser_managed() const { return testing::get<0>(GetParam()); }
@@ -125,7 +177,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     if (browser_managed()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       auto* browser_policy_manager = g_browser_process->platform_part()
-                                         ->browser_policy_connector_chromeos()
+                                         ->browser_policy_connector_ash()
                                          ->GetDeviceCloudPolicyManager();
 #else
       auto* browser_policy_manager =
@@ -143,7 +195,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     if (profile_managed()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       auto* profile_policy_manager =
-          browser()->profile()->GetUserCloudPolicyManagerChromeOS();
+          browser()->profile()->GetUserCloudPolicyManagerAsh();
       profile_policy_manager->core()->client()->SetupRegistration(
           "dm_token", "client_id", {});
 #else
@@ -159,14 +211,159 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
           std::move(profile_policy_data));
     }
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+class EnterpriseReportingPrivateGetContextInfoSiteIsolationTest
+    : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool site_isolation_enabled() { return GetParam(); }
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (site_isolation_enabled()) {
+      command_line->AppendSwitch(switches::kSitePerProcess);
+    } else {
+      command_line->RemoveSwitch(switches::kSitePerProcess);
+      command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoSiteIsolationTest,
+    testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(,
                          EnterpriseReportingPrivateGetContextInfoBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
+IN_PROC_BROWSER_TEST_P(
+    EnterpriseReportingPrivateGetContextInfoSiteIsolationTest,
+    Test) {
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_TRUE(info.on_print_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(site_isolation_enabled(), info.site_isolation_enabled);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
+    : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool dev_mode_enabled() { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (dev_mode_enabled()) {
+      command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    } else {
+      command_line->RemoveSwitch(chromeos::switches::kSystemDevMode);
+    }
+  }
+
+  bool BuiltInDnsClientPlatformDefault() {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+    return true;
+#else
+    return false;
+#endif
+  }
+
+  void ExpectDefaultChromeCleanupEnabled(
+      const enterprise_reporting_private::ContextInfo& info) {
+#if BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(*info.chrome_cleanup_enabled);
+#else
+    EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
+#endif
+  }
+
+  void ExpectDefaultThirdPartyBlockingEnabled(
+      const enterprise_reporting_private::ContextInfo& info) {
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    EXPECT_TRUE(*info.third_party_blocking_enabled);
+#else
+    EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest,
+    Test) {
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_TRUE(info.on_print_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
+  EXPECT_EQ(BuiltInDnsClientPlatformDefault(),
+            info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
+  ExpectDefaultChromeCleanupEnabled(info);
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+  ExpectDefaultThirdPartyBlockingEnabled(info);
+  EXPECT_EQ(dev_mode_enabled() ? api::enterprise_reporting_private::
+                                     SettingValue::SETTING_VALUE_UNKNOWN
+                               : api::enterprise_reporting_private::
+                                     SettingValue::SETTING_VALUE_ENABLED,
+            info.os_firewall);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest,
+    testing::Bool());
+#endif
+
+// crbug.com/1230268 not working on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AffiliationIDs DISABLED_AffiliationIDs
+#else
+#define MAYBE_AffiliationIDs AffiliationIDs
+#endif
 IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
-                       AffiliationIDs) {
+                       MAYBE_AffiliationIDs) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
   auto context_info_value = std::unique_ptr<base::Value>(
@@ -198,10 +395,28 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_TRUE(info.on_file_attached_providers.empty());
   EXPECT_TRUE(info.on_file_downloaded_providers.empty());
   EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_TRUE(info.on_print_providers.empty());
   EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
   EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
+  EXPECT_EQ(enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD,
+            info.safe_browsing_protection_level);
+  EXPECT_TRUE(info.built_in_dns_client_enabled);
+  EXPECT_EQ(
+      enterprise_reporting_private::PASSWORD_PROTECTION_TRIGGER_POLICY_UNSET,
+      info.password_protection_warning_trigger);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(*info.chrome_cleanup_enabled);
+#else
+  EXPECT_FALSE(info.chrome_cleanup_enabled.has_value());
+#endif
+  EXPECT_FALSE(info.chrome_remote_desktop_app_blocked);
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(*info.third_party_blocking_enabled);
+#else
+  EXPECT_FALSE(info.third_party_blocking_enabled.has_value());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
@@ -225,6 +440,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
 
   EXPECT_EQ(0UL, info.on_file_downloaded_providers.size());
   EXPECT_EQ(0UL, info.on_bulk_data_entry_providers.size());
+  EXPECT_EQ(0UL, info.on_print_providers.size());
 
   EXPECT_EQ(1UL, info.on_file_attached_providers.size());
   EXPECT_EQ("google", info.on_file_attached_providers[0]);
@@ -251,6 +467,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
 
   EXPECT_EQ(0UL, info.on_file_attached_providers.size());
   EXPECT_EQ(0UL, info.on_bulk_data_entry_providers.size());
+  EXPECT_EQ(0UL, info.on_print_providers.size());
 
   EXPECT_EQ(1UL, info.on_file_downloaded_providers.size());
   EXPECT_EQ("google", info.on_file_downloaded_providers[0]);
@@ -277,9 +494,37 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
 
   EXPECT_EQ(0UL, info.on_file_downloaded_providers.size());
   EXPECT_EQ(0UL, info.on_file_attached_providers.size());
+  EXPECT_EQ(0UL, info.on_print_providers.size());
 
   EXPECT_EQ(1UL, info.on_bulk_data_entry_providers.size());
   EXPECT_EQ("google", info.on_bulk_data_entry_providers[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
+                       TestPrintProviderName) {
+  SetupDMToken();
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::PRINT,
+                                      kGoogleServiceProvider);
+
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  auto context_info_value = std::unique_ptr<base::Value>(
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(),
+          /*args*/ "[]", browser()));
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_EQ(0UL, info.on_file_downloaded_providers.size());
+  EXPECT_EQ(0UL, info.on_file_attached_providers.size());
+  EXPECT_EQ(0UL, info.on_bulk_data_entry_providers.size());
+
+  EXPECT_EQ(1UL, info.on_print_providers.size());
+  EXPECT_EQ("google", info.on_print_providers[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
@@ -294,6 +539,9 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
   safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
                                       enterprise_connectors::FILE_DOWNLOADED,
                                       kAnotherServiceProvider);
+  safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                      enterprise_connectors::PRINT,
+                                      kAndAnotherServiceProvider);
 
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
@@ -315,6 +563,9 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
 
   EXPECT_EQ(1UL, info.on_file_downloaded_providers.size());
   EXPECT_EQ("another", info.on_file_downloaded_providers[0]);
+
+  EXPECT_EQ(1UL, info.on_print_providers.size());
+  EXPECT_EQ("and_another", info.on_print_providers[0]);
 }
 
 IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
@@ -357,6 +608,167 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
   EXPECT_EQ(1UL, info.on_security_event_providers.size());
   // SetOnSecurityEventReporting sets the provider name to google
   EXPECT_EQ("google", info.on_security_event_providers[0]);
+}
+
+class EnterpriseReportingPrivateGetCertificateTest : public policy::PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
+        ->set_client_cert_store_factory_for_testing(base::BindRepeating(
+            &EnterpriseReportingPrivateGetCertificateTest::CreateCertStore,
+            base::Unretained(this)));
+  }
+
+  void SetPolicyValue(const std::string& policy_value) {
+    EXPECT_FALSE(chrome::enterprise_util::IsMachinePolicyPref(
+        prefs::kManagedAutoSelectCertificateForUrls));
+
+    base::Value list(base::Value::Type::LIST);
+    list.Append(policy_value);
+
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kAutoSelectCertificateForUrls,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, std::move(list), nullptr);
+    UpdateProviderPolicy(policies);
+
+    EXPECT_TRUE(chrome::enterprise_util::IsMachinePolicyPref(
+        prefs::kManagedAutoSelectCertificateForUrls));
+  }
+
+  enterprise_reporting_private::Certificate GetCertificate() {
+    auto function = base::MakeRefCounted<
+        EnterpriseReportingPrivateGetCertificateFunction>();
+
+    std::string params = "[\"";
+    params += kRequestingUrl;
+    params += "\"]";
+
+    std::unique_ptr<base::Value> certificate_value =
+        std::unique_ptr<base::Value>(
+            extension_function_test_utils::RunFunctionAndReturnSingleResult(
+                function.get(), params, browser()));
+    EXPECT_TRUE(certificate_value.get());
+
+    enterprise_reporting_private::Certificate cert;
+    EXPECT_TRUE(enterprise_reporting_private::Certificate::Populate(
+        *certificate_value, &cert));
+
+    return cert;
+  }
+
+  void SetupDefaultClientCertList() {
+    EXPECT_EQ(0UL, client_certs_.size());
+
+    client_certs_.push_back(
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_1.pem"));
+    client_certs_.push_back(
+        net::ImportCertFromFile(net::GetTestCertsDirectory(), "client_2.pem"));
+  }
+
+  std::vector<scoped_refptr<net::X509Certificate>>& client_certs() {
+    return client_certs_;
+  }
+
+ private:
+  std::unique_ptr<net::ClientCertStore> CreateCertStore() {
+    return std::make_unique<MockClientCertStore>(
+        net::FakeClientCertIdentityListFromCertificateList(client_certs_));
+  }
+
+  std::vector<scoped_refptr<net::X509Certificate>> client_certs_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicyUnset) {
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_POLICY_UNSET,
+            cert.status);
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySet) {
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentButNotMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "BAD CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentUrlNotMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.bad.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_FALSE(cert.encoded_certificate.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateGetCertificateTest,
+                       TestPolicySetCertsPresentAndMatching) {
+  SetupDefaultClientCertList();
+
+  constexpr char kPolicyValue[] = R"({
+      "pattern": "https://www.example.com",
+      "filter": {
+        "ISSUER": {
+          "CN": "B CA"
+        }
+      }
+    })";
+  SetPolicyValue(kPolicyValue);
+
+  auto cert = GetCertificate();
+
+  EXPECT_EQ(enterprise_reporting_private::CERTIFICATE_STATUS_OK, cert.status);
+  EXPECT_TRUE(cert.encoded_certificate.has_value());
+
+  base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+      client_certs()[0]->cert_buffer());
+  std::vector<uint8_t> expected_der_bytes(der_cert.begin(), der_cert.end());
+
+  EXPECT_EQ(expected_der_bytes, *cert.encoded_certificate);
 }
 
 }  // namespace extensions

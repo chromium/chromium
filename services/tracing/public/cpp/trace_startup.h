@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,10 @@ bool COMPONENT_EXPORT(TRACING_CPP)
 
 // Initialize tracing components that require task runners. Will switch
 // IsTracingInitialized() to return true.
+// |enable_consumer| should be true if the system consumer can be enabled.
+// Currently this is only the case if this is running in the browser process.
 void COMPONENT_EXPORT(TRACING_CPP)
-    InitTracingPostThreadPoolStartAndFeatureList();
+    InitTracingPostThreadPoolStartAndFeatureList(bool enable_consumer);
 
 // If tracing is enabled, grabs the current trace config & mode and tells the
 // child to begin tracing right away via startup tracing command line flags.

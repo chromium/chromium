@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_INTERFACE_PROVIDER_H_
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,12 +24,13 @@ namespace service_manager {
 // Connection.
 class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
  public:
-  using ForwardCallback =
-      base::RepeatingCallback<void(const std::string&,
-                                   mojo::ScopedMessagePipeHandle)>;
   class TestApi {
    public:
     explicit TestApi(InterfaceProvider* provider) : provider_(provider) {}
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi() {}
 
     void SetBinderForName(
@@ -50,8 +52,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
     }
 
    private:
-    InterfaceProvider* provider_;
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
+    raw_ptr<InterfaceProvider> provider_;
   };
 
   // Constructs an InterfaceProvider which is usable immediately despite not
@@ -68,6 +69,9 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
       mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  InterfaceProvider(const InterfaceProvider&) = delete;
+  InterfaceProvider& operator=(const InterfaceProvider&) = delete;
+
   ~InterfaceProvider();
 
   // Closes the currently bound mojo::PendingRemote<InterfaceProvider> for this
@@ -76,15 +80,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   void Close();
 
   // Binds this InterfaceProvider to an actual mojom::InterfaceProvider pipe.
-  // It is an error to call this on a forwarding InterfaceProvider, i.e. this
-  // call is exclusive to Forward().
   void Bind(mojo::PendingRemote<mojom::InterfaceProvider> interface_provider);
-
-  // Sets this InterfaceProvider to forward all GetInterface() requests to
-  // |callback|. It is an error to call this on a bound InterfaceProvider, i.e.
-  // this call is exclusive to Bind(). In addition, and unlike Bind(), this MUST
-  // be called before any calls to GetInterface() are made.
-  void Forward(const ForwardCallback& callback);
 
   // Sets a closure to be run when the remote InterfaceProvider pipe is closed.
   void SetConnectionLostClosure(base::OnceClosure connection_lost_closure);
@@ -122,13 +118,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   mojo::PendingReceiver<mojom::InterfaceProvider> pending_receiver_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // A callback to receive all GetInterface() requests in lieu of the
-  // InterfaceProvider pipe.
-  ForwardCallback forward_callback_;
-
   base::WeakPtrFactory<InterfaceProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceProvider);
 };
 
 }  // namespace service_manager

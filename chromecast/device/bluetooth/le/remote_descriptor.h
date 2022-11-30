@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/device/bluetooth/le/ble_types.h"
 #include "chromecast/public/bluetooth/gatt.h"
@@ -33,6 +32,9 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
   using ReadCallback =
       base::OnceCallback<void(bool, const std::vector<uint8_t>&)>;
   using StatusCallback = base::OnceCallback<void(bool)>;
+
+  RemoteDescriptor(const RemoteDescriptor&) = delete;
+  RemoteDescriptor& operator=(const RemoteDescriptor&) = delete;
 
   // Read the descriptor with |auth_req|. When completed, |callback| will be
   // called.
@@ -62,9 +64,6 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
 
   RemoteDescriptor() = default;
   virtual ~RemoteDescriptor() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDescriptor);
 };
 
 }  // namespace bluetooth

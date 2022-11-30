@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/accessibility_panel.h"
 
+#include <memory>
+
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/macros.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/webview/webview.h"
@@ -28,6 +29,12 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
   AccessibilityPanelWebContentsObserver(content::WebContents* web_contents,
                                         AccessibilityPanel* panel)
       : content::WebContentsObserver(web_contents), panel_(panel) {}
+
+  AccessibilityPanelWebContentsObserver(
+      const AccessibilityPanelWebContentsObserver&) = delete;
+  AccessibilityPanelWebContentsObserver& operator=(
+      const AccessibilityPanelWebContentsObserver&) = delete;
+
   ~AccessibilityPanelWebContentsObserver() override = default;
 
   // content::WebContentsObserver overrides.
@@ -37,8 +44,6 @@ class AccessibilityPanel::AccessibilityPanelWebContentsObserver
 
  private:
   AccessibilityPanel* panel_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPanelWebContentsObserver);
 };
 
 AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
@@ -48,13 +53,12 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
 
   views::WebView* web_view = new views::WebView(browser_context);
   web_contents_ = web_view->GetWebContents();
-  web_contents_observer_.reset(
-      new AccessibilityPanelWebContentsObserver(web_contents_, this));
+  web_contents_observer_ =
+      std::make_unique<AccessibilityPanelWebContentsObserver>(web_contents_,
+                                                              this);
   web_contents_->SetDelegate(this);
   extensions::SetViewType(web_contents_,
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_);
   web_view->LoadInitialURL(GURL(content_url));
   web_view_ = web_view;
 
@@ -67,10 +71,14 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
       &params, ShellWindowId::kShellWindowId_AccessibilityPanelContainer);
   params.bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   params.delegate = this;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.name = widget_name;
   params.shadow_elevation = wm::kShadowElevationInactiveWindow;
   widget_->Init(std::move(params));
+  // We rely on being able to set the bounds of the panel to control when it
+  // captures input rather than hiding the widget because we need to continue to
+  // receive key events. crbug.com/1251129.
+  widget_->GetNativeWindow()->layer()->SetMasksToBounds(true);
 }
 
 AccessibilityPanel::~AccessibilityPanel() = default;
@@ -102,7 +110,7 @@ views::View* AccessibilityPanel::GetContentsView() {
 }
 
 bool AccessibilityPanel::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Eat all requests as context menus are disallowed.
   return true;

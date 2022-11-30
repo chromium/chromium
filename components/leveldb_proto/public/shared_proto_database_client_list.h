@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,9 @@ const char* const kFeatureEngagementName = "FeatureEngagement";
 // The enum values are used to index into the shared database. Do not rearrange
 // or reuse the integer values. Add new database types at the end of the enum,
 // and update the string mapping in ProtoDbTypeToString(). Also update the
-// suffix LevelDBClients in histogram_suffixes_list.xml to match the strings for
-// the types.
+// variant LevelDBClient in
+// //tools/metrics/histograms/metadata/leveldb_proto/histograms.xml to match the
+// strings for the types.
 enum class ProtoDbType {
   TEST_DATABASE0 = 0,
   TEST_DATABASE1 = 1,
@@ -57,6 +58,16 @@ enum class ProtoDbType {
   FEED_KEY_VALUE_DATABASE = 31,
   CART_DATABASE = 32,
   COMMERCE_SUBSCRIPTION_DATABASE = 33,
+  MERCHANT_TRUST_SIGNAL_DATABASE = 34,
+  SHARE_HISTORY_DATABASE = 35,
+  SHARE_RANKING_DATABASE = 36,
+  SEGMENT_INFO_DATABASE = 37,
+  SIGNAL_DATABASE = 38,
+  SIGNAL_STORAGE_CONFIG_DATABASE = 39,
+  VIDEO_TUTORIALS_V2_DATABASE = 40,
+  COUPON_DATABASE = 41,
+  PAGE_ENTITY_METADATA_STORE = 42,
+  WEBRTC_VIDEO_STATS_DB = 43,
   LAST,
 };
 
@@ -74,8 +85,10 @@ constexpr ProtoDbType kBlocklistedDbForSharedImpl[]{
 // Add any obsolete databases in this list so that, if the data is no longer
 // needed.
 constexpr ProtoDbType kObsoleteSharedProtoDbTypeClients[] = {
-    ProtoDbType::DOM_DISTILLER_STORE, ProtoDbType::FEED_CONTENT_DATABASE,
+    ProtoDbType::DOM_DISTILLER_STORE,
+    ProtoDbType::FEED_CONTENT_DATABASE,
     ProtoDbType::FEED_JOURNAL_DATABASE,
+    ProtoDbType::VIDEO_TUTORIALS_DATABASE,
     ProtoDbType::LAST,  // Marks the end of list.
 };
 

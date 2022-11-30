@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Download Internals</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="download_internals.css">
+
+    <script type="module" src="download_internals.js"></script>
+    <script type="module" src="download_internals_visuals.js"></script>
+  </head>
+  <body>
+    <h1>Download Internals</h1>
+    <h4>Start Download</h4>
+    <div id="download-service-request-info">
+      <input id="download-url" type="url"
+          placeholder="http://www.example.com">
+      <button id="start-download">Download</button>
+    </div>
+    <h4>Service State</h4>
+    <div>
+      State: <span id="service-state" class="status"></span>
+      Model: <span id="service-status-model" class="status"></span>
+      Driver: <span id="service-status-driver" class="status"></span>
+      File Monitor: <span id="service-status-file" class="status"></span>
+    </div>
+    <h4>Entry Requests</h4>
+    <div class="sub-text">
+      The entry URLs have been modified to strip query params so that possibly
+      private information is hidden from view.
+    </div>
+    <div id="download-service-request-info">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Result</th>
+            <th>Client</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr jsselect="requests"
+              jsvalues=".className: downloadInternalsVisuals.getServiceRequestClass($this)">
+            <td jscontent="result"></td>
+            <td jscontent="client"></td>
+            <td jscontent="guid"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>Completed/Failed Downloads</h4>
+    <div id="download-service-finished-entries-info">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Result</th>
+            <th>Client</th>
+            <th>ID</th>
+            <th>URL</th>
+            <th>Size</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr jsselect="entries"
+              jsvalues=".className: downloadInternalsVisuals.getFinishedServiceEntryClass($this)">
+            <td jscontent="result"></td>
+            <td jscontent="client"></td>
+            <td jscontent="guid"></td>
+            <td>
+              <div jscontent="url"></div>
+              <div jscontent="file_path"></div>
+            </td>
+            <td jscontent="bytes_downloaded"></td>
+            <td jscontent="time_downloaded"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h4>In-Progress Downloads</h4>
+    <div id="download-service-ongoing-entries-info">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>State</th>
+            <th>Client</th>
+            <th>ID</th>
+            <th>URL</th>
+            <th>Bytes Downloaded</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr jsselect="entries"
+              jsvalues=".className: downloadInternalsVisuals.getOngoingServiceEntryClass($this)">
+            <td>
+              <div jscontent="state"></div>
+              <div jsdisplay="typeof driver != 'undefined'">
+                <span jscontent="driver.state"></span>
+              </div>
+            </td>
+            <td jscontent="client"></td>
+            <td jscontent="guid"></td>
+            <td jscontent="url"></td>
+            <td jscontent="bytes_downloaded"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="chrome://resources/js/jstemplate_compiled.js"></script>
+  </body>
+</html>

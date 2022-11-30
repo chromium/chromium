@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,16 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/cursor/cursor_lookup.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace {
 
@@ -72,35 +76,22 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
     return;
   }
 
-  std::unique_ptr<SkBitmap> cursor_bitmap =
-      std::make_unique<SkBitmap>(GetCursorBitmap(cursor));
-  gfx::Point cursor_hotspot = GetCursorHotspot(cursor);
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (!cursor_data) {
+    LOG(ERROR) << "Failed to load bitmap for cursor type: " << cursor.type();
+    return;
+  }
 
-  if (cursor_bitmap->isNull()) {
-    LOG(ERROR) << "Failed to load bitmap for cursor type:"
-               << static_cast<int>(cursor.type());
+  const SkBitmap& cursor_bitmap = cursor_data->bitmaps[0];
+  if (cursor_bitmap.drawsNothing()) {
     callback_->OnMouseCursor(CreateEmptyMouseCursor());
     return;
   }
 
-  // There is a bug (crbug.com/436993) in aura::GetCursorBitmap() such that it
-  // it would return a scale-factor-100 bitmap with a scale-factor-200 hotspot.
-  // This causes the hotspot to go out of range.  As a result, we would need to
-  // manually downscale the hotspot.
-  float scale_factor = cursor.image_scale_factor();
-  cursor_hotspot.SetPoint(cursor_hotspot.x() / scale_factor,
-                          cursor_hotspot.y() / scale_factor);
-
-  if (cursor_hotspot.x() >= cursor_bitmap->width() ||
-      cursor_hotspot.y() >= cursor_bitmap->height()) {
-    LOG(WARNING) << "Cursor hotspot is out of bounds for type: "
-                 << static_cast<int>(cursor.type())
-                 << ".  Setting to (0,0) instead";
-    cursor_hotspot.SetPoint(0, 0);
-  }
-
-  std::unique_ptr<webrtc::DesktopFrame> image(
-      SkiaBitmapDesktopFrame::Create(std::move(cursor_bitmap)));
+  const gfx::Point& cursor_hotspot = cursor_data->hotspot;
+  std::unique_ptr<webrtc::DesktopFrame> image(SkiaBitmapDesktopFrame::Create(
+      std::make_unique<SkBitmap>(cursor_bitmap)));
   std::unique_ptr<webrtc::MouseCursor> cursor_shape(new webrtc::MouseCursor(
       image.release(),
       webrtc::DesktopVector(cursor_hotspot.x(), cursor_hotspot.y())));

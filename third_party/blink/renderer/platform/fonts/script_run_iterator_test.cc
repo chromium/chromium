@@ -1,11 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
+#include "base/logging.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -23,7 +24,16 @@ struct ScriptExpectedRun {
 
   ScriptExpectedRun(unsigned the_limit, UScriptCode the_code)
       : limit(the_limit), code(the_code) {}
+
+  bool operator==(const ScriptExpectedRun& other) const {
+    return limit == other.limit && code == other.code;
+  }
 };
+
+std::ostream& operator<<(std::ostream& output, const ScriptExpectedRun& run) {
+  return output << String::Format("%d:%d (%s)", run.limit, run.code,
+                                  uscript_getName(run.code));
+}
 
 class MockScriptData : public ScriptData {
  public:
@@ -51,7 +61,7 @@ class MockScriptData : public ScriptData {
         break;
     }
     int list_bits = kTable[code & kCodeListIndexMask];
-    if (dst.IsEmpty() && list_bits == 0) {
+    if (dst.empty() && list_bits == 0) {
       dst.push_back(USCRIPT_UNKNOWN);
       return;
     }
@@ -317,16 +327,12 @@ class ScriptRunIteratorTest : public testing::Test {
 
   void VerifyRuns(ScriptRunIterator* script_run_iterator,
                   const Vector<ScriptExpectedRun>& expect) {
+    Vector<ScriptExpectedRun> actual;
     unsigned limit;
     UScriptCode code;
-    size_t run_count = 0;
-    while (script_run_iterator->Consume(&limit, &code)) {
-      ASSERT_LT(run_count, expect.size());
-      ASSERT_EQ(expect[run_count].limit, limit);
-      ASSERT_EQ(expect[run_count].code, code);
-      ++run_count;
-    }
-    ASSERT_EQ(expect.size(), run_count);
+    while (script_run_iterator->Consume(&limit, &code))
+      actual.emplace_back(limit, code);
+    EXPECT_THAT(actual, testing::ContainerEq(expect));
   }
 };
 
@@ -471,6 +477,114 @@ TEST_F(ScriptRunIteratorTest, ParenChineseParenLatin) {
 TEST_F(ScriptRunIteratorTest, QuoteParenChineseParenLatinQuote) {
   CHECK_SCRIPT_RUNS(
       {{"\"(萬國碼) ", USCRIPT_HAN}, {"Unicode\"", USCRIPT_LATIN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens1) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国。」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens2) {
+  CHECK_SCRIPT_RUNS({{"あ「あ", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国（国）」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens3) {
+  CHECK_SCRIPT_RUNS({{"国「国", USCRIPT_HAN},
+                     {"ア（", USCRIPT_HIRAGANA},
+                     {"A", USCRIPT_LATIN},
+                     // The consecutive punctuation should not be split.
+                     {"）」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens4) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     // CJK puncutuation after non-CJK resolves to Bopomofo,
+                     // because it's the first script extension in the Unicode
+                     // data. It's not correct but ok because GPOS/GSUB in CJK
+                     // fonts usually include the same features for all CJK
+                     // scripts including Bopomofo, even when they are not
+                     // intended for Traditional Chinese.
+                     {"「", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     // The consecutive punctuation should not be split.
+                     {"国）」", USCRIPT_HAN}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens5) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     {"国", USCRIPT_HAN},
+                     {"A", USCRIPT_LATIN},
+                     {"」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens6) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     {"国）", USCRIPT_HAN},
+                     {"A", USCRIPT_LATIN},
+                     {"」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens7) {
+  CHECK_SCRIPT_RUNS({
+      {"「あ", USCRIPT_HIRAGANA},
+      {"国1」", USCRIPT_HAN},
+  });
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens8) {
+  CHECK_SCRIPT_RUNS({
+      {"A", USCRIPT_LATIN},
+      {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+      {"A", USCRIPT_LATIN},
+      {"あ（", USCRIPT_HIRAGANA},
+      {"国）1」", USCRIPT_HAN},
+  });
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens9) {
+  CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
+                     {"国", USCRIPT_HAN},
+                     {"A1", USCRIPT_LATIN},
+                     {"」", USCRIPT_HIRAGANA}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
+  CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"あ（", USCRIPT_HIRAGANA},
+                     {"国）", USCRIPT_HAN},
+                     {"A1", USCRIPT_LATIN},
+                     {"」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin1) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"」」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin2) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"）」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin3) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（国）」", USCRIPT_HAN}});
 }
 
 // Emojies are resolved to the leading script.

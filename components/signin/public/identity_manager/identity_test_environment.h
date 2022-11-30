@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,24 +10,32 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FakeProfileOAuth2TokenService;
 class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace account_manager {
+class AccountManagerFacade;
+}
+
 namespace ash {
 class AccountManagerFactory;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;
@@ -98,6 +106,9 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
           AccountConsistencyMethod::kDisabled,
       TestSigninClient* test_signin_client = nullptr);
 
+  IdentityTestEnvironment(const IdentityTestEnvironment&) = delete;
+  IdentityTestEnvironment& operator=(const IdentityTestEnvironment&) = delete;
+
   ~IdentityTestEnvironment() override;
 
   // The IdentityManager instance associated with this instance.
@@ -106,16 +117,17 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Returns the |TestIdentityManagerObserver| watching the IdentityManager.
   TestIdentityManagerObserver* identity_manager_observer();
 
+  // Blocks until LoadCredentials is complete and OnRefreshTokensLoaded is
+  // invoked.
+  void WaitForRefreshTokensLoaded();
+
   // Sets the primary account for the given email address, generating a GAIA ID
   // that corresponds uniquely to that email address. On non-ChromeOS, results
   // in the firing of the IdentityManager and PrimaryAccountManager callbacks
   // for signin success. Blocks until the primary account is set. Returns the
   // CoreAccountInfo of the newly-set account.
-  CoreAccountInfo SetPrimaryAccount(const std::string& email);
-
-  // As above, but adds an "unconsented" primary account. See ./README.md for
-  // the distinction between primary and unconsented primary accounts.
-  CoreAccountInfo SetUnconsentedPrimaryAccount(const std::string& email);
+  CoreAccountInfo SetPrimaryAccount(const std::string& email,
+                                    ConsentLevel consent_level);
 
   // Sets a refresh token for the primary account (which must already be set).
   // Before updating the refresh token, blocks until refresh tokens are loaded.
@@ -141,22 +153,29 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // IdentityManager and PrimaryAccountManager callbacks for signin success. On
   // all platforms, this method blocks until the primary account is available.
   // Returns the AccountInfo of the newly-available account.
-  AccountInfo MakePrimaryAccountAvailable(const std::string& email);
+  AccountInfo MakePrimaryAccountAvailable(const std::string& email,
+                                          ConsentLevel consent_level);
 
-  // Like MakeAccountAvailable(), but adds an "unconsented" primary account. See
-  // ./README.md for the distinction between primary account and unconsented
-  // primary account.
-  // TODO(crbug.com/1046746): Rename/Refactor |*PrimaryAccount*| functions to
-  // take |ConsentLevel| instead.
-  AccountInfo MakeUnconsentedPrimaryAccountAvailable(const std::string& email);
-
-  // Combination of MakeAccountAvailable() and SetCookieAccounts() for a single
-  // account. It makes an account available for the given email address, and
-  // GAIA ID, setting the cookies and the refresh token that correspond uniquely
-  // to that email address. Blocks until the account is available. Returns the
-  // AccountInfo of the newly-available account.
+  // Combination of `MakeAccountAvailable()` and `SetCookieAccounts()` for a
+  // single account. It makes an account available for the given email address,
+  // and GAIA ID, setting the cookies and the refresh token that correspond
+  // uniquely to that email address. Blocks until the account is available. For
+  // multiple accounts, use `MakeAccountsAvailableWithCookies()` instead, as
+  // sequentially calling `SetCookieAccounts()` will not preserve previously set
+  // cookies.
+  // Returns the AccountInfo of the newly-available account.
   AccountInfo MakeAccountAvailableWithCookies(const std::string& email,
                                               const std::string& gaia_id);
+
+  // Combination of MakeAccountAvailable() and SetCookieAccounts() for a
+  // multiple accounts. It makes accounts available for the given email address,
+  // generates a GAIA ID, settings the cookies and refresh tokens that
+  // correspond to these email addresses. Blocks until the accounts are
+  // available.
+  // Returns the AccountInfo of the newly-available accounts, in the
+  // same order as the given `emails`.
+  std::vector<AccountInfo> MakeAccountsAvailableWithCookies(
+      const std::vector<std::string>& emails);
 
   // Revokes sync consent from the primary account: the primary account is left
   // at ConsentLevel::kSignin.
@@ -342,7 +361,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
       kPending,
       kAvailable,
     } state;
-    base::Optional<CoreAccountId> account_id;
+    absl::optional<CoreAccountId> account_id;
     base::OnceClosure on_available;
   };
 
@@ -370,30 +389,26 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   void Initialize();
 
   // Create an IdentityManager instance for tests.
+  static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
+      SigninClient* signin_client,
+      PrefService* pref_service,
+      base::FilePath user_data_dir,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
-      SigninClient* signin_client,
-      PrefService* pref_service,
-      base::FilePath user_data_dir,
       ash::AccountManagerFactory* account_manager_factory,
-      AccountConsistencyMethod account_consistency =
-          AccountConsistencyMethod::kDisabled);
-#else
-  static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
-      SigninClient* signin_client,
-      PrefService* pref_service,
-      base::FilePath user_data_dir,
-      AccountConsistencyMethod account_consistency =
-          AccountConsistencyMethod::kDisabled);
+      account_manager::AccountManagerFacade* account_manager_facade,
 #endif
+      AccountConsistencyMethod account_consistency =
+          AccountConsistencyMethod::kDisabled);
 
   static std::unique_ptr<IdentityManager> FinishBuildIdentityManagerForTests(
-      IdentityManager::InitParameters&& init_params,
       std::unique_ptr<AccountTrackerService> account_tracker_service,
       std::unique_ptr<ProfileOAuth2TokenService> token_service,
       SigninClient* signin_client,
       PrefService* pref_service,
       base::FilePath user_data_dir,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      account_manager::AccountManagerFacade* account_manager_facade,
+#endif
       AccountConsistencyMethod account_consistency =
           AccountConsistencyMethod::kDisabled);
 
@@ -417,7 +432,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Otherwise and runs a nested runloop until a matching access token request
   // is observed.
   void WaitForAccessTokenRequestIfNecessary(
-      base::Optional<CoreAccountId> account_id);
+      absl::optional<CoreAccountId> account_id);
 
   // Returns the FakeProfileOAuth2TokenService owned by IdentityManager.
   FakeProfileOAuth2TokenService* fake_token_service();
@@ -431,17 +446,17 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   std::unique_ptr<IdentityManagerDependenciesOwner> dependencies_owner_;
 
   // Non-owning pointer to the TestURLLoaderFactory.
-  network::TestURLLoaderFactory* test_url_loader_factory_ = nullptr;
+  raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_ = nullptr;
 
   // If IdentityTestEnvironment doesn't use TestSigninClient, stores a
   // non-owning pointer to the SigninClient.
-  SigninClient* raw_signin_client_ = nullptr;
+  raw_ptr<SigninClient> raw_signin_client_ = nullptr;
 
   // Depending on which constructor is used, exactly one of these will be
   // non-null. See the documentation on the constructor wherein IdentityManager
   // is passed in for required lifetime invariants in that case.
   std::unique_ptr<IdentityManager> owned_identity_manager_;
-  IdentityManager* raw_identity_manager_ = nullptr;
+  raw_ptr<IdentityManager> raw_identity_manager_ = nullptr;
 
   std::unique_ptr<TestIdentityManagerObserver> test_identity_manager_observer_;
 
@@ -457,8 +472,6 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   std::vector<AccessTokenRequestState> requesters_;
 
   base::WeakPtrFactory<IdentityTestEnvironment> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityTestEnvironment);
 };
 
 }  // namespace signin

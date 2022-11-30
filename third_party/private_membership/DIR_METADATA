@@ -1,3 +1,6 @@
-monorail: {
-  component: "OS>Software>Enterprise>Enrollment"
+buganizer {
+  component_id: 1111632
+}
+buganizer_public {
+  component_id: 1185302
 }

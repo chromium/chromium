@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/indexed_db/cursor_impl.h"
@@ -44,6 +43,10 @@ class SafeConnectionWrapper {
       std::unique_ptr<IndexedDBConnection> connection)
       : connection_(std::move(connection)),
         idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  SafeConnectionWrapper(const SafeConnectionWrapper&) = delete;
+  SafeConnectionWrapper& operator=(const SafeConnectionWrapper&) = delete;
+
   ~SafeConnectionWrapper() {
     if (connection_) {
       idb_runner_->PostTask(
@@ -58,9 +61,6 @@ class SafeConnectionWrapper {
 
   std::unique_ptr<IndexedDBConnection> connection_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeConnectionWrapper);
 };
 
 class SafeCursorWrapper {
@@ -68,6 +68,10 @@ class SafeCursorWrapper {
   explicit SafeCursorWrapper(std::unique_ptr<IndexedDBCursor> cursor)
       : cursor_(std::move(cursor)),
         idb_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+
+  SafeCursorWrapper(const SafeCursorWrapper&) = delete;
+  SafeCursorWrapper& operator=(const SafeCursorWrapper&) = delete;
+
   ~SafeCursorWrapper() {
     if (cursor_)
       idb_runner_->DeleteSoon(FROM_HERE, cursor_.release());
@@ -76,21 +80,18 @@ class SafeCursorWrapper {
 
   std::unique_ptr<IndexedDBCursor> cursor_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SafeCursorWrapper);
 };
 
 }  // namespace
 
 IndexedDBCallbacks::IndexedDBCallbacks(
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
-    const url::Origin& origin,
+    const storage::BucketLocator& bucket_locator,
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
     scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : data_loss_(blink::mojom::IDBDataLoss::None),
       dispatcher_host_(std::move(dispatcher_host)),
-      origin_(origin),
+      bucket_locator_(bucket_locator),
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,9 +176,9 @@ void IndexedDBCallbacks::OnUpgradeNeeded(
     return;
   }
 
-  auto database =
-      std::make_unique<DatabaseImpl>(std::move(wrapper.connection_), origin_,
-                                     dispatcher_host_.get(), idb_runner_);
+  auto database = std::make_unique<DatabaseImpl>(
+      std::move(wrapper.connection_), bucket_locator_, dispatcher_host_.get(),
+      idb_runner_);
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   dispatcher_host_->AddDatabaseBinding(
@@ -213,9 +214,9 @@ void IndexedDBCallbacks::OnSuccess(
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
-    auto database =
-        std::make_unique<DatabaseImpl>(std::move(wrapper.connection_), origin_,
-                                       dispatcher_host_.get(), idb_runner_);
+    auto database = std::make_unique<DatabaseImpl>(
+        std::move(wrapper.connection_), bucket_locator_, dispatcher_host_.get(),
+        idb_runner_);
     dispatcher_host_->AddDatabaseBinding(
         std::move(database),
         pending_remote.InitWithNewEndpointAndPassReceiver());

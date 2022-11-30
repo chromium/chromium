@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +26,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -38,13 +38,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/session_storage_namespace.h"
-#include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
-#endif
-
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
@@ -58,6 +53,10 @@ namespace {
 
 // Every kWritesPerReset commands triggers recreating the file.
 const int kWritesPerReset = 250;
+
+// User data key for WebContents to derive their types.
+const void* const kSessionServiceBaseUserDataKey =
+    &kSessionServiceBaseUserDataKey;
 
 // User data key for BrowserContextData.
 const void* const kProfileTaskRunnerKey = &kProfileTaskRunnerKey;
@@ -106,6 +105,22 @@ class TaskRunnerData : public base::SupportsUserData::Data {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
+// SessionServiceBaseUserData
+// -------------------------------------------------------------
+class SessionServiceBaseUserData : public base::SupportsUserData::Data {
+ public:
+  explicit SessionServiceBaseUserData(Browser::Type type) : type_(type) {}
+  ~SessionServiceBaseUserData() override = default;
+  SessionServiceBaseUserData(const SessionServiceBaseUserData&) = delete;
+  SessionServiceBaseUserData& operator=(const SessionServiceBaseUserData&) =
+      delete;
+
+  Browser::Type type() const { return type_; }
+
+ private:
+  const Browser::Type type_;
+};
+
 }  // namespace
 
 // SessionServiceBase
@@ -122,7 +137,6 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
 
   command_storage_manager_ = std::make_unique<sessions::CommandStorageManager>(
       backend_type, profile->GetPath(), this,
-      /* use_marker */ true,
       /* enable_crypto */ false, std::vector<uint8_t>(),
       TaskRunnerData::GetBackendTaskRunnerForProfile(profile, type));
 
@@ -141,6 +155,21 @@ SessionServiceBase::~SessionServiceBase() {
   DCHECK(command_storage_manager_ == nullptr);
 }
 
+// static
+Browser::Type SessionServiceBase::GetBrowserTypeFromWebContents(
+    content::WebContents* web_contents) {
+  SessionServiceBaseUserData* data = static_cast<SessionServiceBaseUserData*>(
+      web_contents->GetUserData(&kSessionServiceBaseUserDataKey));
+
+  // Browser tab WebContents will have the UserData set on them. However, it is
+  // possible that WebContents that are not tabs call into this code.
+  // In that case, data will be null and we just return TYPE_NORMAL.
+  if (!data)
+    return Browser::Type::TYPE_NORMAL;
+
+  return data->type();
+}
+
 void SessionServiceBase::SetWindowVisibleOnAllWorkspaces(
     const SessionID& window_id,
     bool visible_on_all_workspaces) {
@@ -152,7 +181,8 @@ void SessionServiceBase::SetWindowVisibleOnAllWorkspaces(
 }
 
 void SessionServiceBase::ResetFromCurrentBrowsers() {
-  ScheduleResetCommands();
+  if (is_saving_enabled_)
+    ScheduleResetCommands();
 }
 
 void SessionServiceBase::SetTabWindow(const SessionID& window_id,
@@ -216,6 +246,12 @@ void SessionServiceBase::TabInserted(WebContents* contents) {
   ScheduleCommand(sessions::CreateSessionStorageAssociatedCommand(
       session_tab_helper->session_id(), session_storage_namespace->id()));
   session_storage_namespace->SetShouldPersist(true);
+
+  // The tab being inserted is most likely already registered by
+  // Browser::WebContentsCreated, but just register the UserData again.
+  contents->SetUserData(&kSessionServiceBaseUserDataKey,
+                        std::make_unique<SessionServiceBaseUserData>(
+                            GetDesiredBrowserTypeForWebContents()));
 }
 
 void SessionServiceBase::TabClosing(WebContents* contents) {
@@ -227,6 +263,20 @@ void SessionServiceBase::TabClosing(WebContents* contents) {
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(contents);
   TabClosed(session_tab_helper->window_id(), session_tab_helper->session_id());
+}
+
+void SessionServiceBase::TabRestored(WebContents* tab, bool pinned) {
+  if (!is_saving_enabled_)
+    return;
+
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(tab);
+  if (!ShouldTrackChangesToWindow(session_tab_helper->window_id()))
+    return;
+
+  BuildCommandsForTab(session_tab_helper->window_id(), tab, -1, absl::nullopt,
+                      pinned, nullptr);
+  command_storage_manager()->StartSaveTimer();
 }
 
 void SessionServiceBase::SetSelectedTabInWindow(const SessionID& window_id,
@@ -273,20 +323,25 @@ void SessionServiceBase::GetLastSession(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool SessionServiceBase::ShouldUseDelayedSave() {
-  return should_use_delayed_save_;
-}
-
-void SessionServiceBase::OnWillSaveCommands() {
-  RebuildCommandsIfRequired();
-}
-
 void SessionServiceBase::SetWindowAppName(const SessionID& window_id,
                                           const std::string& app_name) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
   ScheduleCommand(sessions::CreateSetWindowAppNameCommand(window_id, app_name));
+}
+
+bool SessionServiceBase::ShouldUseDelayedSave() {
+  return should_use_delayed_save_;
+}
+
+void SessionServiceBase::OnWillSaveCommands() {
+  if (!is_saving_enabled_)
+    return;
+
+  RebuildCommandsIfRequired();
+  did_save_commands_at_least_once_ |=
+      !command_storage_manager()->pending_commands().empty();
 }
 
 void SessionServiceBase::OnErrorWritingSessionCommands() {
@@ -418,8 +473,6 @@ void SessionServiceBase::OnGotSessionCommands(
     sessions::GetLastSessionCallback callback,
     std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
     bool read_error) {
-  // TODO(stahon@microsoft.com) We need to remove unexpected types for
-  // AppSessionService related migration purposes.
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
   SessionID active_window_id = SessionID::InvalidValue();
 
@@ -435,7 +488,7 @@ void SessionServiceBase::BuildCommandsForTab(
     const SessionID& window_id,
     WebContents* tab,
     int index_in_window,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
   DCHECK(tab);
@@ -477,7 +530,11 @@ void SessionServiceBase::BuildCommandsForTab(
                                  ? tab->GetController().GetPendingEntry()
                                  : tab->GetController().GetEntryAtIndex(i);
     DCHECK(entry);
-    if (ShouldTrackURLForRestore(entry->GetVirtualURL())) {
+    if (ShouldTrackURLForRestore(entry->GetVirtualURL()) &&
+        !entry->IsInitialEntry()) {
+      // Don't try to persist initial NavigationEntry, as it is not actually
+      // associated with any navigation and will just result in about:blank on
+      // session restore.
       const SerializedNavigationEntry navigation =
           ContentSerializedNavigationBuilder::FromNavigationEntry(i, entry);
       command_storage_manager()->AppendRebuildCommand(
@@ -505,6 +562,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
     Browser* browser,
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
+  DCHECK(is_saving_enabled_);
   DCHECK(browser);
   DCHECK(browser->session_id().is_valid());
 
@@ -523,6 +581,12 @@ void SessionServiceBase::BuildCommandsForBrowser(
                                                 browser->app_name()));
   }
 
+  if (!browser->user_title().empty()) {
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreateSetWindowUserTitleCommand(browser->session_id(),
+                                                  browser->user_title()));
+  }
+
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetWindowWorkspaceCommand(
           browser->session_id(), browser->window()->GetWorkspace()));
@@ -535,11 +599,36 @@ void SessionServiceBase::BuildCommandsForBrowser(
   command_storage_manager()->AppendRebuildCommand(
       sessions::CreateSetSelectedTabInWindowCommand(
           browser->session_id(), browser->tab_strip_model()->active_index()));
+
+  // Set the visual data for each tab group.
+  TabStripModel* tab_strip = browser->tab_strip_model();
+  if (tab_strip->SupportsTabGroups()) {
+    TabGroupModel* group_model = tab_strip->group_model();
+    for (const tab_groups::TabGroupId& group_id :
+         group_model->ListTabGroups()) {
+      const tab_groups::TabGroupVisualData* visual_data =
+          group_model->GetTabGroup(group_id)->visual_data();
+      command_storage_manager()->AppendRebuildCommand(
+          sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
+    }
+  }
+
+  for (int i = 0; i < tab_strip->count(); ++i) {
+    WebContents* tab = tab_strip->GetWebContentsAt(i);
+    DCHECK(tab);
+    const absl::optional<tab_groups::TabGroupId> group_id =
+        tab_strip->GetTabGroupForTab(i);
+    BuildCommandsForTab(browser->session_id(), tab, i, group_id,
+                        tab_strip->IsTabPinned(i), tab_to_available_range);
+  }
+
+  windows_to_track->insert(browser->session_id());
 }
 
 void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
+  DCHECK(is_saving_enabled_);
   for (auto* browser : *BrowserList::GetInstance()) {
     // Make sure the browser has tabs and a window. Browser's destructor
     // removes itself from the BrowserList. When a browser is closed the
@@ -557,6 +646,9 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
 
 void SessionServiceBase::ScheduleCommand(
     std::unique_ptr<sessions::SessionCommand> command) {
+  if (!is_saving_enabled_)
+    return;
+
   DCHECK(command);
   if (ReplacePendingCommand(command_storage_manager_.get(), &command))
     return;
@@ -570,6 +662,30 @@ void SessionServiceBase::ScheduleCommand(
       !is_closing_command) {
     ScheduleResetCommands();
   }
+  DidScheduleCommand();
+}
+
+bool SessionServiceBase::ShouldTrackChangesToWindow(
+    const SessionID& window_id) const {
+  return windows_tracking_.find(window_id) != windows_tracking_.end();
+}
+
+bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
+  if (browser->profile() != profile())
+    return false;
+
+  if (browser->omit_from_session_restore())
+    return false;
+
+  // Never track app popup windows that do not have a trusted source (i.e.
+  // popup windows spawned by an app). If this logic changes, be sure to also
+  // change SessionRestoreImpl::CreateRestoredBrowser().
+  if ((browser->is_type_app() || browser->is_type_app_popup()) &&
+      !browser->is_trusted_source()) {
+    return false;
+  }
+
+  return ShouldRestoreWindowOfType(WindowTypeForBrowserType(browser->type()));
 }
 
 sessions::CommandStorageManager*
@@ -593,35 +709,18 @@ bool SessionServiceBase::GetAvailableRangeForTest(const SessionID& tab_id,
   return true;
 }
 
-bool SessionServiceBase::ShouldTrackBrowser(Browser* browser) const {
-  if (browser->profile() != profile())
-    return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Do not track Crostini apps or terminal.  Apps will fail since VMs are not
-  // restarted on restore, and we don't want terminal to force the VM to start.
-  if (crostini::CrostiniAppIdFromAppName(browser->app_name()) ||
-      web_app::GetAppIdFromApplicationName(browser->app_name()) ==
-          crostini::kCrostiniTerminalSystemAppId) {
-    return false;
+void SessionServiceBase::SetSavingEnabled(bool enabled) {
+  if (is_saving_enabled_ == enabled)
+    return;
+  is_saving_enabled_ = enabled;
+  if (!is_saving_enabled_) {
+    // Transitioning from enabled to disabled should happen very early on,
+    // before any commands are actually written. If commands are written, then
+    // the purpose of disabling will have failed (because by writing some
+    // commands the previous session is going to be lost on exit).
+    DCHECK(!did_save_commands_at_least_once_);
+    command_storage_manager()->ClearPendingCommands();
+  } else {
+    ScheduleResetCommands();
   }
-
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented we skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps.
-  if (browser->app_controller() &&
-      browser->app_controller()->is_for_system_web_app()) {
-    return false;
-  }
-
-  // Don't track custom_tab browser. It doesn't need to be restored.
-  if (browser->is_type_custom_tab())
-    return false;
-#endif
-  // Never track app popup windows that do not have a trusted source (i.e.
-  // popup windows spawned by an app). If this logic changes, be sure to also
-  // change SessionRestoreImpl::CreateRestoredBrowser().
-  if (browser->deprecated_is_app() && !browser->is_trusted_source())
-    return false;
-
-  return ShouldRestoreWindowOfType(WindowTypeForBrowserType(browser->type()));
 }

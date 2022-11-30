@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "base/bind.h"
 #include "base/notreached.h"
 
 namespace ash {
@@ -60,8 +61,10 @@ void VpnList::OnGetVpnProviders(std::vector<VpnProviderPtr> providers) {
   // Add Third Party (Extension and Arc) providers.
   for (auto& provider : providers) {
     switch (provider->type) {
+      case VpnType::kIKEv2:
       case VpnType::kL2TPIPsec:
       case VpnType::kOpenVPN:
+      case VpnType::kWireGuard:
         // Only third party VpnProvider instances should exist.
         NOTREACHED();
         break;

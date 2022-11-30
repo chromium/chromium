@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ using base::ScopedCFTypeRef;
 
 namespace {
 
-// Rotate a page by |num_rotations| * 90 degrees, counter-clockwise.
+// Rotate a page by `num_rotations` * 90 degrees, counter-clockwise.
 void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
   switch (num_rotations) {
     case 0:
@@ -144,7 +144,7 @@ bool PdfMetafileCg::FinishDocument() {
   DCHECK(!page_is_open_);
 
 #ifndef NDEBUG
-  // Check that the context will be torn down properly; if it's not, |pdf_data|
+  // Check that the context will be torn down properly; if it's not, `pdf_data`
   // will be incomplete and generate invalid PDF files/documents.
   if (context_.get()) {
     CFIndex extra_retain_count = CFGetRetainCount(context_.get()) - 1;
@@ -285,6 +285,15 @@ bool PdfMetafileCg::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
   CFDataGetBytes(pdf_data_, CFRangeMake(0, dst_buffer_size),
                  static_cast<UInt8*>(dst_buffer));
   return true;
+}
+
+bool PdfMetafileCg::ShouldCopySharedMemoryRegionData() const {
+  // Since `InitFromData()` copies the data, the caller doesn't have to.
+  return false;
+}
+
+mojom::MetafileDataType PdfMetafileCg::GetDataType() const {
+  return mojom::MetafileDataType::kPDF;
 }
 
 CGContextRef PdfMetafileCg::context() const {

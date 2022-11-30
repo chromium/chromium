@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,13 +31,13 @@ const void* const ProfileTypeUserData::kKey = &ProfileTypeUserData::kKey;
 
 namespace profile_metrics {
 
-void SetBrowserContextType(base::SupportsUserData* browser_context,
+void SetBrowserProfileType(base::SupportsUserData* browser_context,
                            BrowserProfileType type) {
   browser_context->SetUserData(ProfileTypeUserData::kKey,
                                std::make_unique<ProfileTypeUserData>(type));
 }
 
-BrowserProfileType GetBrowserContextType(
+BrowserProfileType GetBrowserProfileType(
     const base::SupportsUserData* browser_context) {
   base::SupportsUserData::Data* data =
       browser_context->GetUserData(ProfileTypeUserData::kKey);

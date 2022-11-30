@@ -13,6 +13,7 @@
 #define BROTLI_ENC_ENCODE_H_
 
 #include <brotli/port.h>
+#include <brotli/shared_dictionary.h>
 #include <brotli/types.h>
 
 #if defined(__cplusplus) || defined(c_plusplus)
@@ -269,6 +270,51 @@ BROTLI_ENC_API BrotliEncoderState* BrotliEncoderCreateInstance(
  */
 BROTLI_ENC_API void BrotliEncoderDestroyInstance(BrotliEncoderState* state);
 
+/* Opaque type for pointer to different possible internal structures containing
+   dictionary prepared for the encoder */
+typedef struct BrotliEncoderPreparedDictionaryStruct
+    BrotliEncoderPreparedDictionary;
+
+/**
+ * Prepares a shared dictionary from the given file format for the encoder.
+ *
+ * @p alloc_func and @p free_func @b MUST be both zero or both non-zero. In the
+ * case they are both zero, default memory allocators are used. @p opaque is
+ * passed to @p alloc_func and @p free_func when they are called. @p free_func
+ * has to return without doing anything when asked to free a NULL pointer.
+ *
+ * @param type type of dictionary stored in data
+ * @param data_size size of @p data buffer
+ * @param data pointer to the dictionary data
+ * @param quality the maximum Brotli quality to prepare the dictionary for,
+ *        use BROTLI_MAX_QUALITY by default
+ * @param alloc_func custom memory allocation function
+ * @param free_func custom memory free function
+ * @param opaque custom memory manager handle
+ */
+BROTLI_ENC_API BrotliEncoderPreparedDictionary*
+BrotliEncoderPrepareDictionary(BrotliSharedDictionaryType type,
+    size_t data_size, const uint8_t data[BROTLI_ARRAY_PARAM(data_size)],
+    int quality,
+    brotli_alloc_func alloc_func, brotli_free_func free_func, void* opaque);
+
+BROTLI_ENC_API void BrotliEncoderDestroyPreparedDictionary(
+    BrotliEncoderPreparedDictionary* dictionary);
+
+/**
+ * Attaches a prepared dictionary of any type to the encoder. Can be used
+ * multiple times to attach multiple dictionaries. The dictionary type was
+ * determined by BrotliEncoderPrepareDictionary. Multiple raw prefix
+ * dictionaries and/or max 1 serialized dictionary with custom words can be
+ * attached.
+ *
+ * @returns ::BROTLI_FALSE in case of error
+ * @returns ::BROTLI_TRUE otherwise
+ */
+BROTLI_ENC_API BROTLI_BOOL BrotliEncoderAttachPreparedDictionary(
+    BrotliEncoderState* state,
+    const BrotliEncoderPreparedDictionary* dictionary);
+
 /**
  * Calculates the output size bound for the given @p input_size.
  *
@@ -433,6 +479,13 @@ BROTLI_ENC_API BROTLI_BOOL BrotliEncoderHasMoreOutput(
 BROTLI_ENC_API const uint8_t* BrotliEncoderTakeOutput(
     BrotliEncoderState* state, size_t* size);
 
+/* Returns the estimated peak memory usage (in bytes) of the BrotliCompress()
+   function, not counting the memory needed for the input and output. */
+BROTLI_ENC_EXTRA_API size_t BrotliEncoderEstimatePeakMemoryUsage(
+    int quality, int lgwin, size_t input_size);
+/* Returns 0 if dictionary is not valid; otherwise returns allocation size. */
+BROTLI_ENC_EXTRA_API size_t BrotliEncoderGetPreparedDictionarySize(
+    const BrotliEncoderPreparedDictionary* dictionary);
 
 /**
  * Gets an encoder library version.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ void TopicInvalidationMap::Insert(const Invalidation& invalidation) {
 
 TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
     const Topics& topics) const {
-  std::map<Topic, SingleObjectInvalidationSet> new_map;
+  std::map<Topic, SingleTopicInvalidationSet> new_map;
   for (const auto& topic : topics) {
     auto lookup = map_.find(topic.first);
     if (lookup != map_.end()) {
@@ -49,7 +49,7 @@ TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
 
 TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
     const TopicSet& topics) const {
-  std::map<Topic, SingleObjectInvalidationSet> new_map;
+  std::map<Topic, SingleTopicInvalidationSet> new_map;
   for (const auto& topic : topics) {
     auto lookup = map_.find(topic);
     if (lookup != map_.end()) {
@@ -59,7 +59,7 @@ TopicInvalidationMap TopicInvalidationMap::GetSubsetWithTopics(
   return TopicInvalidationMap(new_map);
 }
 
-const SingleObjectInvalidationSet& TopicInvalidationMap::ForTopic(
+const SingleTopicInvalidationSet& TopicInvalidationMap::ForTopic(
     Topic topic) const {
   auto lookup = map_.find(topic);
   DCHECK(lookup != map_.end());
@@ -91,14 +91,14 @@ std::unique_ptr<base::ListValue> TopicInvalidationMap::ToValue() const {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
   for (const auto& topic_to_invalidations : map_) {
     for (const Invalidation& invalidation : topic_to_invalidations.second) {
-      value->Append(invalidation.ToValue());
+      value->GetList().Append(invalidation.ToValue());
     }
   }
   return value;
 }
 
 TopicInvalidationMap::TopicInvalidationMap(
-    const std::map<Topic, SingleObjectInvalidationSet>& map)
+    const std::map<Topic, SingleTopicInvalidationSet>& map)
     : map_(map) {}
 
 }  // namespace invalidation

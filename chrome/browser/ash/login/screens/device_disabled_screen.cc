@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,35 +6,29 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 system::DeviceDisablingManager* DeviceDisablingManager() {
   return g_browser_process->platform_part()->device_disabling_manager();
 }
+
 }  // namespace
 
-DeviceDisabledScreen::DeviceDisabledScreen(DeviceDisabledScreenView* view)
+DeviceDisabledScreen::DeviceDisabledScreen(
+    base::WeakPtr<DeviceDisabledScreenView> view)
     : BaseScreen(DeviceDisabledScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DISABLED),
-      view_(view) {
-  view_->Bind(this);
-}
+      view_(std::move(view)) {}
 
-DeviceDisabledScreen::~DeviceDisabledScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
-
-void DeviceDisabledScreen::OnViewDestroyed(DeviceDisabledScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+DeviceDisabledScreen::~DeviceDisabledScreen() = default;
 
 void DeviceDisabledScreen::ShowImpl() {
   if (!view_ || !is_hidden())
@@ -50,8 +44,7 @@ void DeviceDisabledScreen::HideImpl() {
   if (is_hidden())
     return;
 
-  if (view_)
-    view_->Hide();
+  NOTREACHED() << "Device disabled screen can't be hidden";
   DeviceDisablingManager()->RemoveObserver(this);
 }
 
@@ -61,4 +54,4 @@ void DeviceDisabledScreen::OnDisabledMessageChanged(
     view_->UpdateMessage(disabled_message);
 }
 
-}  // namespace chromeos
+}  // namespace ash

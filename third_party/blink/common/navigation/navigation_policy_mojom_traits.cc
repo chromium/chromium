@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,11 +119,9 @@ bool StructTraits<blink::mojom::NavigationDownloadPolicyDataView,
     Read(blink::mojom::NavigationDownloadPolicyDataView in,
          blink::NavigationDownloadPolicy* out) {
   if (!in.ReadObservedTypes(&out->observed_types) ||
-      !in.ReadDisallowedTypes(&out->disallowed_types))
+      !in.ReadDisallowedTypes(&out->disallowed_types)) {
     return false;
-
-  out->blocking_downloads_in_sandbox_enabled =
-      in.blocking_downloads_in_sandbox_enabled();
+  }
   return true;
 }
 

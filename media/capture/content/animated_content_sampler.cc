@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+
+#include "base/containers/adapters.h"
 
 namespace media {
 
@@ -22,23 +24,23 @@ namespace {
 // These values were established by experimenting with a wide variety of
 // scenarios, including 24/25/30 FPS videos, 60 FPS WebGL demos, and the
 // transitions between static and animated content.
-constexpr auto kMinObservationWindow = base::TimeDelta::FromSeconds(1);
-constexpr auto kMaxObservationWindow = base::TimeDelta::FromSeconds(2);
+constexpr auto kMinObservationWindow = base::Seconds(1);
+constexpr auto kMaxObservationWindow = base::Seconds(2);
 
 // The maximum amount of time that can elapse before declaring two subsequent
 // events as "not animating."  This is the same value found in
 // cc::FrameRateCounter.
-constexpr auto kNonAnimatingThreshold = base::TimeDelta::FromSeconds(1) / 4;
+constexpr auto kNonAnimatingThreshold = base::Seconds(1) / 4;
 
 // The slowest that content can be animating in order for AnimatedContentSampler
 // to lock-in.  This is the threshold at which the "smoothness" problem is no
 // longer relevant.
-constexpr auto kMaxLockInPeriod = base::TimeDelta::FromSeconds(1) / 12;
+constexpr auto kMaxLockInPeriod = base::Seconds(1) / 12;
 
 // The amount of time over which to fully correct the drift of the rewritten
 // frame timestamps from the presentation event timestamps.  The lower the
 // value, the higher the variance in frame timestamps.
-constexpr auto kDriftCorrection = base::TimeDelta::FromSeconds(2);
+constexpr auto kDriftCorrection = base::Seconds(2);
 
 }  // anonymous namespace
 
@@ -202,27 +204,27 @@ bool AnimatedContentSampler::AnalyzeObservations(
   size_t count_frame_durations = 0;
   base::TimeTicks first_event_time;
   base::TimeTicks last_event_time;
-  for (ObservationFifo::const_reverse_iterator i = observations_.rbegin();
-       i != observations_.rend(); ++i) {
-    const int area = i->damage_rect.size().GetArea();
+  for (const auto& observation : base::Reversed(observations_)) {
+    const int area = observation.damage_rect.size().GetArea();
     num_pixels_damaged_in_all += area;
-    if (i->damage_rect != elected_rect)
+    if (observation.damage_rect != elected_rect)
       continue;
     num_pixels_damaged_in_chosen += area;
     if (last_event_time.is_null()) {
-      last_event_time = i->event_time;
+      last_event_time = observation.event_time;
       if ((event_time - last_event_time) >= kNonAnimatingThreshold) {
         return false;  // Content animation has recently ended.
       }
     } else {
-      const base::TimeDelta frame_duration = first_event_time - i->event_time;
+      const base::TimeDelta frame_duration =
+          first_event_time - observation.event_time;
       if (frame_duration >= kNonAnimatingThreshold) {
         break;  // Content not animating before this point.
       }
       sum_frame_durations += frame_duration;
       ++count_frame_durations;
     }
-    first_event_time = i->event_time;
+    first_event_time = observation.event_time;
   }
 
   if ((last_event_time - first_event_time) < kMinObservationWindow) {
@@ -246,9 +248,6 @@ base::TimeTicks AnimatedContentSampler::ComputeNextFrameTimestamp(
   // clock relative to the video hardware, which affects the event times; and
   // 2) The small error introduced by this frame timestamp rewriting, as it is
   // based on averaging over recent events.
-  //
-  // TODO(miu): This is similar to the ClockSmoother in
-  // media/base/audio_shifter.cc.  Consider refactor-and-reuse here.
   const base::TimeDelta drift = ideal_timestamp - event_time;
   const int64_t correct_over_num_frames =
       kDriftCorrection.IntDiv(sampling_period_);

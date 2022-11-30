@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -23,12 +23,6 @@ class Source;
 // Contains UKM URL data for a single source id.
 class METRICS_EXPORT UkmSource {
  public:
-  enum CustomTabState {
-    kCustomTabUnset,
-    kCustomTabTrue,
-    kCustomTabFalse,
-  };
-
   // Extra navigation data associated with a particular Source. Currently, all
   // of these members except |url| are only set for navigation id sources.
   //
@@ -81,13 +75,38 @@ class METRICS_EXPORT UkmSource {
     // and same page history navigation.
     bool is_same_document_navigation = false;
 
+    // Represents the same origin status of the navigation compared to the
+    // previous document.
+    enum SameOriginStatus {
+      UNSET = 0,
+      SAME_ORIGIN,
+      CROSS_ORIGIN,
+    };
+
+    // Whether this is the same origin as the previous document.
+    //
+    // This is set to the NavigationHandle's same origin state when the
+    // navigation is committed, is not a same document navigation and is not
+    // committed as an error page. Otherwise, this remains unset.
+    SameOriginStatus same_origin_status = SameOriginStatus::UNSET;
+
+    // Whether this navigation is initiated by the renderer.
+    bool is_renderer_initiated = false;
+
+    // Whether the navigation committed an error page.
+    bool is_error_page = false;
+
     // The navigation start time relative to session start. The navigation
     // time within session should be monotonically increasing.
-    base::Optional<base::TimeTicks> navigation_time;
+    absl::optional<base::TimeTicks> navigation_time;
   };
 
   UkmSource(SourceId id, const GURL& url);
   UkmSource(SourceId id, const NavigationData& data);
+
+  UkmSource(const UkmSource&) = delete;
+  UkmSource& operator=(const UkmSource&) = delete;
+
   ~UkmSource();
 
   ukm::SourceId id() const { return id_; }
@@ -108,8 +127,8 @@ class METRICS_EXPORT UkmSource {
   // Serializes the members of the class into the supplied proto.
   void PopulateProto(Source* proto_source) const;
 
-  // Sets the current "custom tab" state. This can be called from any thread.
-  static void SetCustomTabVisible(bool visible);
+  // Sets the current "android_activity_type" state.
+  static void SetAndroidActivityTypeState(int32_t android_activity_type);
 
  private:
   const ukm::SourceId id_;
@@ -117,15 +136,13 @@ class METRICS_EXPORT UkmSource {
 
   NavigationData navigation_data_;
 
-  // A flag indicating if metric was collected in a custom tab. This is set
-  // automatically when the object is created and so represents the state when
-  // the metric was created.
-  const CustomTabState custom_tab_state_;
+  // The type of the visible activity when the metric was collected. This is
+  // set automatically when the object is created and so represents the state
+  // when the metric was created.
+  const int32_t android_activity_type_state_ = -1;
 
   // When this object was created.
   const base::TimeTicks creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmSource);
 };
 
 }  // namespace ukm

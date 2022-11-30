@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,15 @@
 
 #include "base/bind.h"
 #include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}
+
+namespace {
+using StoragePressureNotificationCallback =
+    base::RepeatingCallback<void(const blink::StorageKey)>;
+}
 
 namespace content {
 
@@ -17,17 +26,22 @@ namespace content {
 class StorageNotificationService {
  public:
   StorageNotificationService() = default;
+
+  StorageNotificationService(const StorageNotificationService&) = delete;
+  StorageNotificationService& operator=(const StorageNotificationService&) =
+      delete;
+
   ~StorageNotificationService() = default;
 
-  // This pure virtual function should be implemented in the embedder layer
+  // These pure virtual functions should be implemented in the embedder layer
   // where calls to UI and notification code can be implemented. This closure
   // is passed to QuotaManager in StoragePartitionImpl, where it is called
   // when QuotaManager determines appropriate to alert the user that the device
   // is in a state of storage pressure.
-  virtual void MaybeShowStoragePressureNotification(const url::Origin) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StorageNotificationService);
+  virtual void MaybeShowStoragePressureNotification(
+      const blink::StorageKey) = 0;
+  virtual StoragePressureNotificationCallback
+  CreateThreadSafePressureNotificationCallback() = 0;
 };
 
 }  // namespace content

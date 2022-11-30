@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
 
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
@@ -31,15 +31,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -49,18 +47,17 @@ import org.chromium.content_public.common.ContentUrlConstants;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
 public class IdentityDiscControllerTest {
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+    private final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
     // observers registered in the AccountManagerFacade mock.
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAccountManagerTestRule).around(mActivityTestRule);
+            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
     private Tab mTab;
 
@@ -75,7 +72,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithNavigation() {
         // User is signed in.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should be hidden on navigation away from NTP.
@@ -88,7 +85,6 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testIdentityDiscWithSignin() {
         // When user is signed out, Identity Disc should not be visible on the NTP.
         onView(withId(R.id.optional_toolbar_button)).check((view, noViewException) -> {
@@ -99,17 +95,14 @@ public class IdentityDiscControllerTest {
         });
 
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         // TODO(https://crbug.com/1132291): Remove the reload once the sign-in without sync observer
         //  is implemented.
         TestThreadUtils.runOnUiThreadBlocking(mTab::reload);
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
+                withContentDescription(R.string.accessibility_toolbar_btn_identity_disc)));
 
-        onView(withId(R.id.optional_toolbar_button))
-                .check(matches(
-                        withContentDescription(R.string.accessibility_toolbar_btn_identity_disc)));
-
-        mAccountManagerTestRule.signOut();
+        mSigninTestRule.signOut();
         waitForView(allOf(withId(R.id.optional_toolbar_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
@@ -126,14 +119,12 @@ public class IdentityDiscControllerTest {
         });
 
         // Identity Disc should be shown on sign-in state change without NTP refresh.
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withContentDescription(R.string.accessibility_toolbar_btn_identity_disc),
+                isDisplayed()));
 
-        onView(withId(R.id.optional_toolbar_button))
-                .check(matches(
-                        withContentDescription(R.string.accessibility_toolbar_btn_identity_disc)));
-
-        mAccountManagerTestRule.signOut();
+        mSigninTestRule.signOut();
         waitForView(allOf(withId(R.id.optional_toolbar_button),
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
@@ -141,7 +132,7 @@ public class IdentityDiscControllerTest {
     @Test
     @MediumTest
     public void testIdentityDiscWithSwitchToIncognito() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should not be visible, when switched from sign in state to incognito NTP.

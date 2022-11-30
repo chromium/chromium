@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FOCUS_WATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/views/focus/focus_manager.h"
@@ -24,6 +25,10 @@ class ImmersiveFocusWatcher
       public ::wm::ActivationChangeObserver {
  public:
   explicit ImmersiveFocusWatcher(ImmersiveFullscreenController* controller);
+
+  ImmersiveFocusWatcher(const ImmersiveFocusWatcher&) = delete;
+  ImmersiveFocusWatcher& operator=(const ImmersiveFocusWatcher&) = delete;
+
   ~ImmersiveFocusWatcher() override;
 
   // Forces updating the status of the lock. That is, this determines whether
@@ -62,7 +67,7 @@ class ImmersiveFocusWatcher
       aura::Window* gaining_active,
       aura::Window* losing_active) override;
 
-  ImmersiveFullscreenController* immersive_fullscreen_controller_;
+  raw_ptr<ImmersiveFullscreenController> immersive_fullscreen_controller_;
 
   // Lock which keeps the top-of-window views revealed based on the focused view
   // and the active widget. Acquiring the lock never triggers a reveal because
@@ -72,8 +77,6 @@ class ImmersiveFocusWatcher
   // Manages bubbles which are anchored to a child of
   // |ImmersiveFullscreenController::top_container_|.
   std::unique_ptr<BubbleObserver> bubble_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveFocusWatcher);
 };
 
 }  // namespace chromeos

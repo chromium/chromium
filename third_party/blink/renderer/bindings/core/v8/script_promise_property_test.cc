@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,64 +11,48 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/core/testing/gc_observation.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 namespace {
 
-class NotReached : public ScriptFunction {
+class NotReachedFunction : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    NotReached* self = MakeGarbageCollected<NotReached>(script_state);
-    return self->BindToV8Function();
-  }
+  NotReachedFunction() = default;
 
-  explicit NotReached(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-
- private:
-  ScriptValue Call(ScriptValue) override;
+  ScriptValue Call(ScriptState*, ScriptValue) override;
 };
 
-ScriptValue NotReached::Call(ScriptValue) {
+ScriptValue NotReachedFunction::Call(ScriptState*, ScriptValue) {
   EXPECT_TRUE(false) << "'Unreachable' code was reached";
   return ScriptValue();
 }
 
-class StubFunction : public ScriptFunction {
+class StubFunction : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                ScriptValue& value,
-                                                size_t& call_count) {
-    StubFunction* self =
-        MakeGarbageCollected<StubFunction>(script_state, value, call_count);
-    return self->BindToV8Function();
-  }
+  StubFunction(ScriptValue& value, size_t& call_count)
+      : value_(value), call_count_(call_count) {}
 
-  StubFunction(ScriptState* script_state,
-               ScriptValue& value,
-               size_t& call_count)
-      : ScriptFunction(script_state), value_(value), call_count_(call_count) {}
-
- private:
-  ScriptValue Call(ScriptValue arg) override {
+  ScriptValue Call(ScriptState*, ScriptValue arg) override {
     value_ = arg;
     call_count_++;
     return ScriptValue();
   }
 
+ private:
   ScriptValue& value_;
   size_t& call_count_;
 };
@@ -96,39 +80,33 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
   Member<Property> property_;
 };
 
-class ScriptPromisePropertyResetter : public ScriptFunction {
+class ScriptPromisePropertyResetter : public ScriptFunction::Callable {
  public:
   using Property =
       ScriptPromiseProperty<Member<GarbageCollectedScriptWrappable>,
                             Member<GarbageCollectedScriptWrappable>>;
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                Property* property) {
-    auto* self = MakeGarbageCollected<ScriptPromisePropertyResetter>(
-        script_state, property);
-    return self->BindToV8Function();
-  }
 
-  ScriptPromisePropertyResetter(ScriptState* script_state, Property* property)
-      : ScriptFunction(script_state), property_(property) {}
+  explicit ScriptPromisePropertyResetter(Property* property)
+      : property_(property) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(property_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptValue arg) override {
+  ScriptValue Call(ScriptState*, ScriptValue arg) override {
     property_->Reset();
     return ScriptValue();
   }
 
+ private:
   const Member<Property> property_;
 };
 
 class ScriptPromisePropertyTestBase {
  public:
   ScriptPromisePropertyTestBase()
-      : page_(std::make_unique<DummyPageHolder>(IntSize(1, 1))) {
+      : page_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))) {
     v8::HandleScope handle_scope(GetIsolate());
     other_script_state_ = MakeGarbageCollected<ScriptState>(
         v8::Context::New(GetIsolate()),
@@ -150,6 +128,19 @@ class ScriptPromisePropertyTestBase {
     return ScriptState::Current(GetIsolate());
   }
 
+  void PerformMicrotaskCheckpoint() {
+    {
+      ScriptState::Scope scope(MainScriptState());
+      MainScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+          GetIsolate());
+    }
+    {
+      ScriptState::Scope scope(OtherScriptState());
+      OtherScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+          GetIsolate());
+    }
+  }
+
   void DestroyContext() {
     page_.reset();
     if (other_script_state_) {
@@ -161,12 +152,17 @@ class ScriptPromisePropertyTestBase {
   void Gc() { ThreadState::Current()->CollectAllGarbageForTesting(); }
 
   v8::Local<v8::Function> NotReached(ScriptState* script_state) {
-    return NotReached::CreateFunction(script_state);
+    return MakeGarbageCollected<ScriptFunction>(
+               script_state, MakeGarbageCollected<NotReachedFunction>())
+        ->V8Function();
   }
   v8::Local<v8::Function> Stub(ScriptState* script_state,
                                ScriptValue& value,
                                size_t& call_count) {
-    return StubFunction::CreateFunction(script_state, value, call_count);
+    return MakeGarbageCollected<ScriptFunction>(
+               script_state,
+               MakeGarbageCollected<StubFunction>(value, call_count))
+        ->V8Function();
   }
 
   template <typename T>
@@ -228,7 +224,7 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
                 NotReached(CurrentScriptState()));
     }
     property->Resolve(value);
-    v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+    PerformMicrotaskCheckpoint();
     {
       ScriptState::Scope scope(MainScriptState());
       actual = ToCoreString(actual_value.V8Value()
@@ -254,7 +250,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   ASSERT_FALSE(v.IsEmpty());
   {
     ScriptState::Scope scope(MainScriptState());
-    EXPECT_EQ(v.V8Value().As<v8::Object>()->CreationContext(),
+    EXPECT_EQ(v.V8Value().As<v8::Object>()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), MainWorld()));
   }
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
@@ -273,12 +269,12 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   ASSERT_FALSE(v.IsEmpty());
   {
     ScriptState::Scope scope(OtherScriptState());
-    EXPECT_EQ(u.V8Value().As<v8::Object>()->CreationContext(),
+    EXPECT_EQ(u.V8Value().As<v8::Object>()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), OtherWorld()));
   }
   {
     ScriptState::Scope scope(MainScriptState());
-    EXPECT_EQ(v.V8Value().As<v8::Object>()->CreationContext(),
+    EXPECT_EQ(v.V8Value().As<v8::Object>()->GetCreationContextChecked(),
               ToV8Context(DomWindow(), MainWorld()));
   }
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
@@ -347,7 +343,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   GetProperty()->Resolve(value);
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_resolve_calls);
   EXPECT_EQ(1u, n_other_resolve_calls);
   EXPECT_EQ(Wrap(MainWorld(), value), actual);
@@ -375,7 +371,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   GetProperty()->Resolve(value);
   EXPECT_EQ(Property::kResolved, GetProperty()->GetState());
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_resolve_calls);
   EXPECT_EQ(0u, n_other_resolve_calls);
 
@@ -386,7 +382,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
         NotReached(CurrentScriptState()));
   }
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_resolve_calls);
   EXPECT_EQ(1u, n_other_resolve_calls);
   EXPECT_EQ(Wrap(MainWorld(), value), actual);
@@ -419,7 +415,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reject_RejectsScriptPromise) {
               Stub(CurrentScriptState(), other_actual, n_other_reject_calls));
   }
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_reject_calls);
   EXPECT_EQ(Wrap(MainWorld(), reason), actual);
   EXPECT_EQ(1u, n_other_reject_calls);
@@ -453,8 +449,6 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Resolve_DeadContext) {
   GetProperty()->Resolve(
       MakeGarbageCollected<GarbageCollectedScriptWrappable>("value"));
   EXPECT_EQ(Property::kPending, GetProperty()->GetState());
-
-  v8::MicrotasksScope::PerformCheckpoint(v8::Isolate::GetCurrent());
 }
 
 TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
@@ -470,7 +464,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   size_t n_new_reject_calls = 0;
 
   {
-    ScriptState::Scope scope(MainScriptState());
+    ScriptState::Scope scope2(MainScriptState());
     GetProperty()->Resolve(old_value);
     old_promise = GetProperty()->Promise(MainWorld());
     old_promise.Then(
@@ -481,7 +475,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   GetProperty()->Reset();
 
   {
-    ScriptState::Scope scope(MainScriptState());
+    ScriptState::Scope scope2(MainScriptState());
     new_promise = GetProperty()->Promise(MainWorld());
     new_promise.Then(
         NotReached(CurrentScriptState()),
@@ -492,7 +486,7 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, Reset) {
   EXPECT_EQ(0u, n_old_resolve_calls);
   EXPECT_EQ(0u, n_new_reject_calls);
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
   EXPECT_EQ(1u, n_old_resolve_calls);
   EXPECT_EQ(1u, n_new_reject_calls);
   EXPECT_NE(old_promise, new_promise);
@@ -554,10 +548,18 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   v8::Local<v8::Object> other_v8_resolution;
   {
     ScriptState::Scope scope(MainScriptState());
-    main_v8_resolution = ToV8(resolution, MainScriptState()).As<v8::Object>();
+    v8::MicrotasksScope microtasks_scope(
+        GetIsolate(), ToMicrotaskQueue(MainScriptState()),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
+                             MainScriptState(), resolution)
+                             .ToLocalChecked()
+                             .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
-        ScriptPromisePropertyResetter::CreateFunction(MainScriptState(),
-                                                      GetProperty()),
+        MakeGarbageCollected<ScriptFunction>(
+            MainScriptState(),
+            MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty()))
+            ->V8Function(),
         v8::Undefined(GetIsolate()));
     ASSERT_EQ(
         v8::Just(true),
@@ -567,10 +569,18 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   }
   {
     ScriptState::Scope scope(OtherScriptState());
-    other_v8_resolution = ToV8(resolution, OtherScriptState()).As<v8::Object>();
+    v8::MicrotasksScope microtasks_scope(
+        GetIsolate(), ToMicrotaskQueue(OtherScriptState()),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
+                              OtherScriptState(), resolution)
+                              .ToLocalChecked()
+                              .As<v8::Object>();
     v8::PropertyDescriptor descriptor(
-        ScriptPromisePropertyResetter::CreateFunction(OtherScriptState(),
-                                                      GetProperty()),
+        MakeGarbageCollected<ScriptFunction>(
+            OtherScriptState(),
+            MakeGarbageCollected<ScriptPromisePropertyResetter>(GetProperty()))
+            ->V8Function(),
         v8::Undefined(GetIsolate()));
     ASSERT_EQ(
         v8::Just(true),

@@ -14,6 +14,8 @@ Tests that WebXR head poses are properly surfaced.
       let expectedMatrix = null;
 
       function matricesApproximatelyEqual(a, b) {
+        console.log('Given matrix: ' + JSON.stringify(a));
+        console.log('Expected matrix: ' + JSON.stringify(b));
         if (a === null || b === null) {
           return false;
         }
@@ -31,6 +33,7 @@ Tests that WebXR head poses are properly surfaced.
       function stepWaitForMatchingPose(m) {
         expectedMatrix = m;
         onPoseCallback = function(pose) {
+          console.log('Got pose');
           if (matricesApproximatelyEqual(
               pose.transform.matrix, expectedMatrix)) {
             onPoseCallback = null;

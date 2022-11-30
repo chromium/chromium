@@ -1,21 +1,25 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
-  'testing/assert_additions.js', '../chromevox/testing/snippets.js',
-  'rect_util.js'
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
+  'testing/assert_additions.js',
+  '../chromevox/testing/snippets.js',
 ]);
 
 /**
  * Test fixture for automation_util.js.
  */
 AccessibilityExtensionAutomationUtilE2ETest =
-    class extends ChromeVoxNextE2ETest {
+    class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('RectUtil', '/common/rect_util.js');
+    await importModule('AutomationUtil', '/common/automation_util.js');
+
     window.Dir = constants.Dir;
     window.RoleType = chrome.automation.RoleType;
 
@@ -63,206 +67,182 @@ AccessibilityExtensionAutomationUtilE2ETest =
 };
 
 
-TEST_F(
-    'AccessibilityExtensionAutomationUtilE2ETest', 'GetAncestors', function() {
-      this.runWithLoadedTree(this.basicDoc(), function(root) {
-        let expectedLength = 1;
-        while (root) {
-          const ancestors = getNonDesktopAncestors(root);
-          assertEquals(expectedLength++, ancestors.length);
-          root = root.firstChild;
-        }
-      });
+AX_TEST_F(
+    'AccessibilityExtensionAutomationUtilE2ETest', 'GetAncestors',
+    async function() {
+      let current = await this.runWithLoadedTree(this.basicDoc());
+      let expectedLength = 1;
+      while (current) {
+        const ancestors = getNonDesktopAncestors(current);
+        assertEquals(expectedLength++, ancestors.length);
+        current = current.firstChild;
+      }
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetFirstAncestorWithRole',
-    function() {
-      this.runWithLoadedTree(
-          `
-    <div aria-label="x">
-      <div aria-label="y">
+    async function() {
+      const root = await this.runWithLoadedTree(`
+    <div tabindex="0" aria-label="x">
+      <div tabindex="0" aria-label="y">
         <p>
           <button>Hello world</div>
         </p>
       </div>
-    </div>`,
-          function(root) {
-            const buttonNode = root.firstChild.firstChild.firstChild;
-            const containerNode = AutomationUtil.getFirstAncestorWithRole(
-                buttonNode, RoleType.GENERIC_CONTAINER);
-            assertEquals(containerNode.name, 'y');
+    </div>`);
+      const buttonNode = root.firstChild.firstChild.firstChild;
+      const containerNode = AutomationUtil.getFirstAncestorWithRole(
+          buttonNode, RoleType.GENERIC_CONTAINER);
+      assertEquals(containerNode.name, 'y');
 
-            const parentContainerNode = AutomationUtil.getFirstAncestorWithRole(
-                containerNode, RoleType.GENERIC_CONTAINER);
-            assertEquals(parentContainerNode.name, 'x');
-          });
+      const parentContainerNode = AutomationUtil.getFirstAncestorWithRole(
+          containerNode, RoleType.GENERIC_CONTAINER);
+      assertEquals(parentContainerNode.name, 'x');
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'GetUniqueAncestors',
-    function() {
-      this.runWithLoadedTree(this.basicDoc(), function(root) {
-        let leftmost = root, rightmost = root;
-        while (leftmost.firstChild) {
-          leftmost = leftmost.firstChild;
-        }
-        while (rightmost.lastChild) {
-          rightmost = rightmost.lastChild;
-        }
+    async function() {
+      const root = await this.runWithLoadedTree(this.basicDoc());
+      let leftmost = root;
+      let rightmost = root;
+      while (leftmost.firstChild) {
+        leftmost = leftmost.firstChild;
+      }
+      while (rightmost.lastChild) {
+        rightmost = rightmost.lastChild;
+      }
 
-        const leftAncestors = getNonDesktopAncestors(leftmost);
-        const rightAncestors = getNonDesktopAncestors(rightmost);
-        assertEquals(RoleType.LINK, leftmost.role);
-        assertEquals(RoleType.BUTTON, rightmost.role);
-        assertEquals(
-            1, AutomationUtil.getDivergence(leftAncestors, rightAncestors));
+      const leftAncestors = getNonDesktopAncestors(leftmost);
+      const rightAncestors = getNonDesktopAncestors(rightmost);
+      assertEquals(RoleType.LINK, leftmost.role);
+      assertEquals(RoleType.BUTTON, rightmost.role);
+      assertEquals(
+          1, AutomationUtil.getDivergence(leftAncestors, rightAncestors));
 
-        assertEquals(
-            -1, AutomationUtil.getDivergence(leftAncestors, leftAncestors));
+      assertEquals(
+          -1, AutomationUtil.getDivergence(leftAncestors, leftAncestors));
 
-        const uniqueAncestorsLeft =
-            getNonDesktopUniqueAncestors(rightmost, leftmost);
-        const uniqueAncestorsRight =
-            getNonDesktopUniqueAncestors(leftmost, rightmost);
+      const uniqueAncestorsLeft =
+          getNonDesktopUniqueAncestors(rightmost, leftmost);
+      const uniqueAncestorsRight =
+          getNonDesktopUniqueAncestors(leftmost, rightmost);
 
-        assertEquals(2, uniqueAncestorsLeft.length);
-        assertEquals(RoleType.PARAGRAPH, uniqueAncestorsLeft[0].role);
-        assertEquals(RoleType.LINK, uniqueAncestorsLeft[1].role);
+      assertEquals(2, uniqueAncestorsLeft.length);
+      assertEquals(RoleType.PARAGRAPH, uniqueAncestorsLeft[0].role);
+      assertEquals(RoleType.LINK, uniqueAncestorsLeft[1].role);
 
-        assertEquals(3, uniqueAncestorsRight.length);
-        assertEquals(RoleType.HEADING, uniqueAncestorsRight[0].role);
-        assertEquals(RoleType.GROUP, uniqueAncestorsRight[1].role);
-        assertEquals(RoleType.BUTTON, uniqueAncestorsRight[2].role);
+      assertEquals(3, uniqueAncestorsRight.length);
+      assertEquals(RoleType.HEADING, uniqueAncestorsRight[0].role);
+      assertEquals(RoleType.GROUP, uniqueAncestorsRight[1].role);
+      assertEquals(RoleType.BUTTON, uniqueAncestorsRight[2].role);
 
-        assertEquals(
-            1, getNonDesktopUniqueAncestors(leftmost, leftmost).length);
-      }.bind(this));
+      assertEquals(1, getNonDesktopUniqueAncestors(leftmost, leftmost).length);
     });
 
-TEST_F(
-    'AccessibilityExtensionAutomationUtilE2ETest', 'GetDirection', function() {
-      this.runWithLoadedTree(this.basicDoc(), function(root) {
-        let left = root, right = root;
+AX_TEST_F(
+    'AccessibilityExtensionAutomationUtilE2ETest', 'GetDirection',
+    async function() {
+      const root = await this.runWithLoadedTree(this.basicDoc());
+      let left = root;
+      let right = root;
 
-        // Same node.
-        assertEquals(Dir.FORWARD, AutomationUtil.getDirection(left, right));
+      // Same node.
+      assertEquals(Dir.FORWARD, AutomationUtil.getDirection(left, right));
 
-        // Ancestry.
-        left = left.firstChild;
-        // Upward movement is backward (in dfs).
-        assertEquals(Dir.BACKWARD, AutomationUtil.getDirection(left, right));
-        // Downward movement is forward.
-        assertEquals(Dir.FORWARD, AutomationUtil.getDirection(right, left));
+      // Ancestry.
+      left = left.firstChild;
+      // Upward movement is backward (in dfs).
+      assertEquals(Dir.BACKWARD, AutomationUtil.getDirection(left, right));
+      // Downward movement is forward.
+      assertEquals(Dir.FORWARD, AutomationUtil.getDirection(right, left));
 
-        // Ordered.
-        right = right.lastChild;
-        assertEquals(Dir.BACKWARD, AutomationUtil.getDirection(right, left));
-        assertEquals(Dir.FORWARD, AutomationUtil.getDirection(left, right));
-      });
+      // Ordered.
+      right = right.lastChild;
+      assertEquals(Dir.BACKWARD, AutomationUtil.getDirection(right, left));
+      assertEquals(Dir.FORWARD, AutomationUtil.getDirection(left, right));
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'VisitContainer',
-    function() {
-      this.runWithLoadedTree(toolbarDoc(), function(r) {
-        const pred = function(n) {
-          return n.role !== 'rootWebArea';
-        };
+    async function() {
+      const r = await this.runWithLoadedTree(toolbarDoc());
+      const pred = function(n) {
+        return n.role !== 'rootWebArea';
+      };
 
-        const toolbar = AutomationUtil.findNextNode(r, 'forward', pred);
-        assertEquals('toolbar', toolbar.role);
+      const toolbar = AutomationUtil.findNextNode(r, 'forward', pred);
+      assertEquals('toolbar', toolbar.role);
 
-        const back = AutomationUtil.findNextNode(toolbar, 'forward', pred);
-        assertEquals('Back', back.name);
-        assertEquals(
-            toolbar, AutomationUtil.findNextNode(back, 'backward', pred));
+      const back = AutomationUtil.findNextNode(toolbar, 'forward', pred);
+      assertEquals('Back', back.name);
+      assertEquals(
+          toolbar, AutomationUtil.findNextNode(back, 'backward', pred));
 
-        const forward = AutomationUtil.findNextNode(back, 'forward', pred);
-        assertEquals('Forward', forward.name);
-        assertEquals(
-            back, AutomationUtil.findNextNode(forward, 'backward', pred));
-      });
+      const forward = AutomationUtil.findNextNode(back, 'forward', pred);
+      assertEquals('Forward', forward.name);
+      assertEquals(
+          back, AutomationUtil.findNextNode(forward, 'backward', pred));
     });
 
-TEST_F('AccessibilityExtensionAutomationUtilE2ETest', 'HitTest', function() {
-  this.runWithLoadedTree(headingDoc, function(r) {
-    const [h1, h2, a] = r.findAll({role: 'inlineTextBox'});
+AX_TEST_F(
+    'AccessibilityExtensionAutomationUtilE2ETest', 'HitTest', async function() {
+      const r = await this.runWithLoadedTree(headingDoc);
+      const [h1, h2, a] = r.findAll({role: 'inlineTextBox'});
 
-    assertEquals(h1, AutomationUtil.hitTest(r, RectUtil.center(h1.location)));
-    assertEquals(
-        h1, AutomationUtil.hitTest(r, RectUtil.center(h1.parent.location)));
-    assertEquals(
-        h1.parent.parent,
-        AutomationUtil.hitTest(r, RectUtil.center(h1.parent.parent.location)));
+      assertEquals(h1, AutomationUtil.hitTest(r, RectUtil.center(h1.location)));
+      assertEquals(
+          h1, AutomationUtil.hitTest(r, RectUtil.center(h1.parent.location)));
+      assertEquals(
+          h1.parent.parent,
+          AutomationUtil.hitTest(
+              r, RectUtil.center(h1.parent.parent.location)));
 
-    assertEquals(a, AutomationUtil.hitTest(r, RectUtil.center(a.location)));
-    assertEquals(
-        a, AutomationUtil.hitTest(r, RectUtil.center(a.parent.location)));
-    assertEquals(
-        a.parent.parent,
-        AutomationUtil.hitTest(r, RectUtil.center(a.parent.parent.location)));
-  });
-});
+      assertEquals(a, AutomationUtil.hitTest(r, RectUtil.center(a.location)));
+      assertEquals(
+          a, AutomationUtil.hitTest(r, RectUtil.center(a.parent.location)));
+      assertEquals(
+          a.parent.parent,
+          AutomationUtil.hitTest(r, RectUtil.center(a.parent.parent.location)));
+    });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'FindLastNodeSimple',
-    function() {
-      this.runWithLoadedTree(
-          `<p aria-label=" "><div aria-label="x"></div></p>`, function(r) {
-            assertEquals(
-                'x',
-                AutomationUtil
-                    .findLastNode(
-                        r,
-                        function(n) {
-                          return n.role === RoleType.GENERIC_CONTAINER;
-                        })
-                    .name);
-          });
+    async function() {
+      const r = await this.runWithLoadedTree(
+          `<p aria-label=" "><div tabindex="0" aria-label="x"></div></p>`);
+      assertEquals(
+          'x',
+          AutomationUtil
+              .findLastNode(r, n => n.role === RoleType.GENERIC_CONTAINER)
+              .name);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'FindLastNodeNonLeaf',
-    function() {
-      this.runWithLoadedTree(
-          `
+    async function() {
+      const r = await this.runWithLoadedTree(`
     <div role="button" aria-label="outer">
       <div role="heading" aria-label="inner">
       </div>
     </div>
-    `,
-          function(r) {
-            assertEquals(
-                'outer',
-                AutomationUtil
-                    .findLastNode(
-                        r,
-                        function(n) {
-                          return n.role === RoleType.BUTTON;
-                        })
-                    .name);
-          });
+    `);
+      assertEquals(
+          'outer',
+          AutomationUtil.findLastNode(r, n => n.role === RoleType.BUTTON).name);
     });
 
-TEST_F(
+AX_TEST_F(
     'AccessibilityExtensionAutomationUtilE2ETest', 'FindLastNodeLeaf',
-    function() {
-      this.runWithLoadedTree(
-          `
+    async function() {
+      const r = await this.runWithLoadedTree(`
     <p>start</p>
-    <div aria-label="outer"><div aria-label="inner"></div></div>
+    <div aria-label="outer"><div tabindex="0" aria-label="inner"></div></div>
     <p>end</p>
-    `,
-          function(r) {
-            assertEquals(
-                'inner',
-                AutomationUtil
-                    .findLastNode(
-                        r,
-                        function(n) {
-                          return n.role === RoleType.GENERIC_CONTAINER;
-                        })
-                    .name);
-          });
+    `);
+      assertEquals(
+          'inner',
+          AutomationUtil
+              .findLastNode(r, n => n.role === RoleType.GENERIC_CONTAINER)
+              .name);
     });

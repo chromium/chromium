@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"
@@ -67,6 +67,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
                    const base::FilePath& extension_root,
                    const base::FilePath& relative_path,
                    FailureCallback failure_callback);
+
+  ContentVerifyJob(const ContentVerifyJob&) = delete;
+  ContentVerifyJob& operator=(const ContentVerifyJob&) = delete;
 
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
@@ -173,8 +176,6 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // Used to synchronize all public methods.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJob);
 };
 
 }  // namespace extensions

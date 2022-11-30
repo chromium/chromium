@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
 
@@ -44,6 +44,10 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     virtual void OnManagerInitialized(content::DownloadManager* manager) {}
@@ -56,17 +60,19 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
                                   download::DownloadItem* item) {}
     virtual void OnDownloadRemoved(content::DownloadManager* manager,
                                    download::DownloadItem* item) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
+    virtual void OnDownloadDestroyed(content::DownloadManager* manager,
+                                     download::DownloadItem* item) {}
   };
 
   AllDownloadItemNotifier(content::DownloadManager* manager,
                           Observer* observer);
 
+  AllDownloadItemNotifier(const AllDownloadItemNotifier&) = delete;
+  AllDownloadItemNotifier& operator=(const AllDownloadItemNotifier&) = delete;
+
   ~AllDownloadItemNotifier() override;
 
-  // Returns NULL if the manager has gone down.
+  // Returns nullptr if the manager has gone down.
   content::DownloadManager* GetManager() const { return manager_; }
 
   // Returns the estimate of dynamically allocated memory in bytes.
@@ -85,11 +91,10 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
   void OnDownloadRemoved(DownloadItem* item) override;
   void OnDownloadDestroyed(DownloadItem* item) override;
 
-  content::DownloadManager* manager_;
-  AllDownloadItemNotifier::Observer* observer_;
+  raw_ptr<content::DownloadManager> manager_;
+  raw_ptr<AllDownloadItemNotifier::Observer> observer_;
   std::set<DownloadItem*> observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllDownloadItemNotifier);
+  base::WeakPtrFactory<AllDownloadItemNotifier> weak_factory_{this};
 };
 
 }  // namespace download

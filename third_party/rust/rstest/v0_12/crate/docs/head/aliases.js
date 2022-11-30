@@ -1,0 +1,2 @@
+var ALIASES = {};
+ALIASES["rstest"] = {};

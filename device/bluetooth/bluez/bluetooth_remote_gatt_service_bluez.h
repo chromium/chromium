@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
@@ -41,6 +41,11 @@ class BluetoothRemoteGattServiceBlueZ
       public BluetoothGattCharacteristicClient::Observer,
       public device::BluetoothRemoteGattService {
  public:
+  BluetoothRemoteGattServiceBlueZ(const BluetoothRemoteGattServiceBlueZ&) =
+      delete;
+  BluetoothRemoteGattServiceBlueZ& operator=(
+      const BluetoothRemoteGattServiceBlueZ&) = delete;
+
   ~BluetoothRemoteGattServiceBlueZ() override;
 
   // device::BluetoothRemoteGattService overrides.
@@ -94,13 +99,11 @@ class BluetoothRemoteGattServiceBlueZ
 
   // The device this GATT service belongs to. It's ok to store a raw pointer
   // here since |device_| owns this instance.
-  BluetoothDeviceBlueZ* device_;
+  raw_ptr<BluetoothDeviceBlueZ> device_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothRemoteGattServiceBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceBlueZ);
 };
 
 }  // namespace bluez

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,16 +58,18 @@ class DomDistillerDistillablePageUtilsTest : public content::ContentBrowserTest,
   void AddComponentsResources() {
     base::FilePath pak_file;
     base::FilePath pak_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
     pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#else
+#elif BUILDFLAG(IS_MAC)
     base::PathService::Get(base::DIR_MODULE, &pak_dir);
-#endif  // OS_ANDROID
+#else
+    base::PathService::Get(base::DIR_ASSETS, &pak_dir);
+#endif  // BUILDFLAG(IS_ANDROID)
     pak_file =
         pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_file, ui::SCALE_FACTOR_NONE);
+        pak_file, ui::kScaleFactorNone);
   }
 
   void SetUpTestServer() {

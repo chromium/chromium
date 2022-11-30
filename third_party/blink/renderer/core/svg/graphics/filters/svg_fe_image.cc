@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -62,23 +63,24 @@ void FEImage::Trace(Visitor* visitor) const {
   FilterEffect::Trace(visitor);
 }
 
-static FloatRect GetLayoutObjectRepaintRect(const LayoutObject& layout_object) {
+static gfx::RectF GetLayoutObjectRepaintRect(
+    const LayoutObject& layout_object) {
   return layout_object.LocalToSVGParentTransform().MapRect(
       layout_object.VisualRectInLocalSVGCoordinates());
 }
 
-static AffineTransform MakeMapBetweenRects(const FloatRect& source,
-                                           const FloatRect& dest) {
+static AffineTransform MakeMapBetweenRects(const gfx::RectF& source,
+                                           const gfx::RectF& dest) {
   AffineTransform transform;
-  transform.Translate(dest.X() - source.X(), dest.Y() - source.Y());
-  transform.Scale(dest.Width() / source.Width(),
-                  dest.Height() / source.Height());
+  transform.Translate(dest.x() - source.x(), dest.y() - source.y());
+  transform.Scale(dest.width() / source.width(),
+                  dest.height() / source.height());
   return transform;
 }
 
-static base::Optional<AffineTransform> ComputeViewportAdjustmentTransform(
+static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
     const SVGElement* element,
-    const FloatRect& target_rect) {
+    const gfx::RectF& target_rect) {
   // If we're referencing an element with percentage units, eg. <rect
   // with="30%"> those values were resolved against the viewport.  Build up a
   // transformation that maps from the viewport space to the filter primitive
@@ -86,18 +88,17 @@ static base::Optional<AffineTransform> ComputeViewportAdjustmentTransform(
   // TODO(crbug/260709): This fixes relative lengths but breaks non-relative
   // ones.
   SVGLengthContext length_context(element);
-  FloatSize viewport_size;
+  gfx::SizeF viewport_size;
   if (!length_context.DetermineViewport(viewport_size))
-    return base::nullopt;
-  return MakeMapBetweenRects(FloatRect(FloatPoint(), viewport_size),
-                             target_rect);
+    return absl::nullopt;
+  return MakeMapBetweenRects(gfx::RectF(viewport_size), target_rect);
 }
 
-FloatRect FEImage::MapInputs(const FloatRect&) const {
-  FloatRect dest_rect =
+gfx::RectF FEImage::MapInputs(const gfx::RectF&) const {
+  gfx::RectF dest_rect =
       GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
   if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
-    FloatRect src_rect = GetLayoutObjectRepaintRect(*layout_object);
+    gfx::RectF src_rect = GetLayoutObjectRepaintRect(*layout_object);
     if (element_->HasRelativeLengths()) {
       auto viewport_transform =
           ComputeViewportAdjustmentTransform(element_, dest_rect);
@@ -105,17 +106,17 @@ FloatRect FEImage::MapInputs(const FloatRect&) const {
         src_rect = viewport_transform->MapRect(src_rect);
     } else {
       src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-      src_rect.Move(dest_rect.X(), dest_rect.Y());
+      src_rect.Offset(dest_rect.x(), dest_rect.y());
     }
     dest_rect.Intersect(src_rect);
     return dest_rect;
   }
   if (image_) {
-    FloatRect src_rect = FloatRect(FloatPoint(), FloatSize(image_->Size()));
+    gfx::RectF src_rect(gfx::SizeF(image_->Size()));
     preserve_aspect_ratio_->TransformRect(dest_rect, src_rect);
     return dest_rect;
   }
-  return FloatRect();
+  return gfx::RectF();
 }
 
 const LayoutObject* FEImage::ReferencedLayoutObject() const {
@@ -126,36 +127,37 @@ const LayoutObject* FEImage::ReferencedLayoutObject() const {
 
 WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
                                                  int indent) const {
-  IntSize image_size;
+  gfx::Size image_size;
   if (image_) {
     image_size = image_->Size();
   } else if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
     image_size =
-        EnclosingIntRect(GetLayoutObjectRepaintRect(*layout_object)).Size();
+        gfx::ToEnclosingRect(GetLayoutObjectRepaintRect(*layout_object)).size();
   }
   WriteIndent(ts, indent);
   ts << "[feImage";
   FilterEffect::ExternalRepresentation(ts);
-  ts << " image-size=\"" << image_size.Width() << "x" << image_size.Height()
+  ts << " image-size=\"" << image_size.width() << "x" << image_size.height()
      << "\"]\n";
   // FIXME: should this dump also object returned by SVGFEImage::image() ?
   return ts;
 }
 
-static FloatRect IntersectWithFilterRegion(const Filter* filter,
-                                           const FloatRect& rect) {
-  FloatRect filter_region = filter->FilterRegion();
+static gfx::RectF IntersectWithFilterRegion(const Filter* filter,
+                                            const gfx::RectF& rect) {
+  gfx::RectF filter_region = filter->FilterRegion();
   // Workaround for crbug.com/512453.
   if (filter_region.IsEmpty())
     return rect;
-  return Intersection(rect, filter->MapLocalRectToAbsoluteRect(filter_region));
+  return IntersectRects(rect,
+                        filter->MapLocalRectToAbsoluteRect(filter_region));
 }
 
 sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     const LayoutObject& layout_object) {
-  FloatRect dst_rect =
+  gfx::RectF dst_rect =
       GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
-  FloatRect src_rect = GetLayoutObjectRepaintRect(layout_object);
+  gfx::RectF src_rect = GetLayoutObjectRepaintRect(layout_object);
 
   AffineTransform transform;
   if (element_->HasRelativeLengths()) {
@@ -167,8 +169,8 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
     }
   } else {
     src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
-    src_rect.Move(dst_rect.X(), dst_rect.Y());
-    transform.Translate(dst_rect.X(), dst_rect.Y());
+    src_rect.Offset(dst_rect.x(), dst_rect.y());
+    transform.Translate(dst_rect.x(), dst_rect.y());
   }
   // Intersect with the (transformed) source rect to remove "empty" bits of the
   // image.
@@ -176,17 +178,18 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
 
   // Clip the filter primitive rect by the filter region and use that as the
   // cull rect for the paint record.
-  FloatRect crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
+  gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
   PaintRecorder paint_recorder;
-  cc::PaintCanvas* canvas = paint_recorder.beginRecording(crop_rect);
+  cc::PaintCanvas* canvas =
+      paint_recorder.beginRecording(gfx::RectFToSkRect(crop_rect));
   canvas->concat(AffineTransformToSkMatrix(transform));
   {
-    PaintRecordBuilder builder;
-    SVGObjectPainter(layout_object).PaintResourceSubtree(builder.Context());
-    builder.EndRecording(*canvas);
+    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+    SVGObjectPainter(layout_object).PaintResourceSubtree(builder->Context());
+    builder->EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
-      paint_recorder.finishRecordingAsPicture(), crop_rect);
+      paint_recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(crop_rect));
 }
 
 sk_sp<PaintFilter> FEImage::CreateImageFilter() {
@@ -198,17 +201,18 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
 
   if (PaintImage image =
           image_ ? image_->PaintImageForCurrentFrame() : PaintImage()) {
-    FloatRect src_rect = FloatRect(FloatPoint(), FloatSize(image_->Size()));
-    FloatRect dst_rect =
+    gfx::RectF src_rect(gfx::SizeF(image_->Size()));
+    gfx::RectF dst_rect =
         GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);
     // Clip the filter primitive rect by the filter region and adjust the source
     // rectangle if needed.
-    FloatRect crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
+    gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
     if (crop_rect != dst_rect)
-      src_rect = blink::MapRect(crop_rect, dst_rect, src_rect);
-    return sk_make_sp<ImagePaintFilter>(std::move(image), src_rect, crop_rect,
-                                        kHigh_SkFilterQuality);
+      src_rect = gfx::MapRect(crop_rect, dst_rect, src_rect);
+    return sk_make_sp<ImagePaintFilter>(
+        std::move(image), gfx::RectFToSkRect(src_rect),
+        gfx::RectFToSkRect(crop_rect), cc::PaintFlags::FilterQuality::kHigh);
   }
   // "A href reference that is an empty image (zero width or zero height),
   //  that fails to download, is non-existent, or that cannot be displayed

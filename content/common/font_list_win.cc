@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,10 @@
 
 namespace content {
 
-std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
+base::Value::List GetFontList_SlowBlocking() {
   TRACE_EVENT0("fonts", "GetFontList_SlowBlocking");
 
-  std::unique_ptr<base::ListValue> font_list(new base::ListValue);
+  base::Value::List font_list;
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   gfx::win::CreateDWriteFactory(&factory);
@@ -47,7 +47,7 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
 
     // Retrieve the native font family name. Try the "en-us" locale and if it's
     // not present, used the first available localized name.
-    base::Optional<std::string> native_name =
+    absl::optional<std::string> native_name =
         gfx::win::RetrieveLocalizedString(family_names.Get(), "en-us");
     if (!native_name) {
       native_name = gfx::win::RetrieveLocalizedString(family_names.Get(), "");
@@ -55,15 +55,15 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
         continue;
     }
 
-    base::Optional<std::string> localized_name =
+    absl::optional<std::string> localized_name =
         gfx::win::RetrieveLocalizedString(family_names.Get(), locale);
     if (!localized_name)
       localized_name = native_name;
 
-    auto font_item = std::make_unique<base::ListValue>();
-    font_item->AppendString(native_name.value());
-    font_item->AppendString(localized_name.value());
-    font_list->Append(std::move(font_item));
+    base::Value::List font_item;
+    font_item.Append(native_name.value());
+    font_item.Append(localized_name.value());
+    font_list.Append(std::move(font_item));
   }
 
   return font_list;

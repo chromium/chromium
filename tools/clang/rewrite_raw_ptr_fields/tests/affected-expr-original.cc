@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,11 +74,11 @@ void foo() {
   // No rewrite expected.
   auto* not_affected_field_var = ConvertSomeClassToSomeClass(my_struct.ptr);
 
-  // Test for pointer |auto| assigned from non-CheckedPtr-elligible field.
+  // Test for pointer |auto| assigned from non-raw_ptr-elligible field.
   // No rewrite expected.
   auto* func_ptr_var = my_struct.func_ptr_field;
 
-  // Test for non-pointer |auto| assigned from CheckedPtr-elligible field.
+  // Test for non-pointer |auto| assigned from raw_ptr-elligible field.
   // No rewrite expected.
   auto non_pointer_auto_var = my_struct.ptr;
 
@@ -151,7 +151,7 @@ void foo(int x) {
   SomeClass* other_ptr = nullptr;
 
   // To avoid the following error type:
-  //     conditional expression is ambiguous; 'const CheckedPtr<SomeClass>'
+  //     conditional expression is ambiguous; 'const raw_ptr<SomeClass>'
   //     can be converted to 'SomeClass *' and vice versa
   // we need to append |.get()| to |my_struct.ptr| below.
   //
@@ -180,7 +180,7 @@ void foo(int x) {
 
   // To avoid the following error type:
   //   error: invalid operands to binary expression ... basic_string ... and ...
-  //   CheckedPtr ...
+  //   raw_ptr ...
   // we need to append |.get()| to |my_struct.const_char_ptr| below.
   //
   // Expected rewrite: ... my_struct.const_char_ptr.get() ...
@@ -220,16 +220,22 @@ class MyTemplate {
 // We also want to append |.get()| for |T| parameters (i.e. not just for |T*|
 // parameters).
 //
-// One motivating example is ActivityLogDatabasePolicy::ScheduleAndForget which
-// passes its argument to base::Unretained.
-//
-// Another motivating example, is the following pattern from
+// One motivating example is the following pattern from
 // //components/variations/service/ui_string_overrider.cc where the type of the
 // 2 arguments needs to be kept consistent:
 //     const uint32_t* end = ptr_field_ + num_resources_;
 //     const uint32_t* element = std::lower_bound(ptr_field_, end, hash);
 template <typename T>
 void AffectedNonPointerFunction(T t) {}
+
+// base::Unretained has a template specialization that accepts `const
+// raw_ptr<T>&` as an argument (since https://crrev.com/c/3283196).  Therefore
+// we expect that `.get()` is *not* used when calling base::Unretained.
+//
+// Originally, ActivityLogDatabasePolicy::ScheduleAndForget was used as a
+// motivating example - passes a raw_ptr to base::Unretained.
+template <typename T>
+void Unretained(T* t) {}
 
 // AffectedFunctionWithDeepT mimics ConvertPPResourceArrayToObjects from
 // //ppapi/cpp/array_output.h
@@ -238,7 +244,7 @@ void AffectedFunctionWithDeepT(MyTemplate<T>* blah) {}
 
 // StructWithPointerToTemplate is used to test AffectedFunctionWithDeepT.
 // StructWithPointerToTemplate mimics ResourceArrayOutputAdapter<T>
-// (and its |output_| field that will be converted to a CheckedPtr)
+// (and its |output_| field that will be converted to a raw_ptr)
 // from //ppapi/cpp/array_output.h
 template <typename T>
 struct StructWithPointerToTemplate {
@@ -269,6 +275,11 @@ void foo() {
   // No rewrite expected - T& parameter.
   std::swap(my_struct.ptr, my_struct.ptr2);
   std::tie(my_struct.ptr, my_struct.ptr2) = std::make_pair(nullptr, nullptr);
+
+  // No rewrite expected - functions named "Unretained" are excluded (they have
+  // been manually modified to also provide a template specialization that
+  // accepts `const raw_ptr<T>&` as an argument).
+  Unretained(my_struct.ptr);
 }
 
 }  // namespace templated_functions
@@ -302,7 +313,7 @@ void foo() {
   // Expected rewrite - appending: .get().  This avoids the following error:
   // error: no matching function for call to 'FunctionTakingBasicStringPiece'
   // note: candidate function not viable: no known conversion from
-  // 'base::CheckedPtr<const char>' to 'templated_functions::StringPiece' (aka
+  // 'base::raw_ptr<const char>' to 'templated_functions::StringPiece' (aka
   // 'BasicStringPiece<char>') for 1st argument
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr);
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr);

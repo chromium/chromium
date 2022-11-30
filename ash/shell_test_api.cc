@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/hud_display/hud_display.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/public/cpp/autotest_private_api_utils.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
@@ -24,12 +27,15 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/workspace_controller.h"
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -44,6 +50,9 @@ class PointerMoveLoopWaiter : public ui::CompositorObserver {
       : window_tree_host_(window_tree_host) {
     window_tree_host_->compositor()->AddObserver(this);
   }
+
+  PointerMoveLoopWaiter(const PointerMoveLoopWaiter&) = delete;
+  PointerMoveLoopWaiter& operator=(const PointerMoveLoopWaiter&) = delete;
 
   ~PointerMoveLoopWaiter() override {
     window_tree_host_->compositor()->RemoveObserver(this);
@@ -69,8 +78,6 @@ class PointerMoveLoopWaiter : public ui::CompositorObserver {
  private:
   aura::WindowTreeHost* window_tree_host_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PointerMoveLoopWaiter);
 };
 
 class WindowAnimationWaiter : public ui::LayerAnimationObserver {
@@ -95,9 +102,7 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
-  void Wait() {
-    run_loop_.Run();
-  }
+  void Wait() { run_loop_.Run(); }
 
  private:
   ui::LayerAnimator* animator_;
@@ -152,6 +157,7 @@ display::DisplayManager* ShellTestApi::display_manager() {
 
 void ShellTestApi::ResetPowerButtonControllerForTest() {
   shell_->backlights_forced_off_setter_->ResetForTest();
+  shell_->power_button_controller_.reset();
   shell_->power_button_controller_ = std::make_unique<PowerButtonController>(
       shell_->backlights_forced_off_setter_.get());
 }
@@ -252,7 +258,7 @@ base::OnceClosure ShellTestApi::CreateWaiterForFinishingWindowAnimation(
 
 PaginationModel* ShellTestApi::GetAppListPaginationModel() {
   AppListView* view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   if (!view)
     return nullptr;
   return view->GetAppsPaginationModel();
@@ -260,6 +266,22 @@ PaginationModel* ShellTestApi::GetAppListPaginationModel() {
 
 bool ShellTestApi::IsContextMenuShown() const {
   return Shell::GetPrimaryRootWindowController()->IsContextMenuShown();
+}
+
+bool ShellTestApi::IsActionForAcceleratorEnabled(
+    const ui::Accelerator& accelerator) const {
+  auto* controller = Shell::Get()->accelerator_controller();
+  return AcceleratorControllerImpl::TestApi(controller)
+      .IsActionForAcceleratorEnabled(accelerator);
+}
+
+bool ShellTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
+  return Shell::Get()->accelerator_controller()->AcceleratorPressed(
+      accelerator);
+}
+
+bool ShellTestApi::IsHUDShown() {
+  return hud_display::HUDDisplayView::IsShown();
 }
 
 }  // namespace ash

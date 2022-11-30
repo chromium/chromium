@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,9 @@
 
 #include <algorithm>
 
+#include "base/i18n/rtl.h"
 #include "base/notreached.h"
+#include "ui/base/models/table_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
@@ -29,7 +31,7 @@ int WidthForContent(const gfx::FontList& header_font_list,
     width =
         gfx::GetStringWidth(column.title, header_font_list) + header_padding;
 
-  for (int i = 0, row_count = model->RowCount(); i < row_count; ++i) {
+  for (size_t i = 0, row_count = model->RowCount(); i < row_count; ++i) {
     const int cell_width =
         gfx::GetStringWidth(model->GetText(i, column.id), content_font_list);
     width = std::max(width, cell_width);
@@ -109,14 +111,32 @@ int TableColumnAlignmentToCanvasAlignment(
   return gfx::Canvas::TEXT_ALIGN_LEFT;
 }
 
-int GetClosestVisibleColumnIndex(const TableView* table, int x) {
+absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView* table,
+                                                    int x) {
   const std::vector<TableView::VisibleColumn>& columns(
       table->visible_columns());
+  if (columns.empty())
+    return absl::nullopt;
   for (size_t i = 0; i < columns.size(); ++i) {
     if (x <= columns[i].x + columns[i].width)
-      return static_cast<int>(i);
+      return i;
   }
-  return static_cast<int>(columns.size()) - 1;
+  return columns.size() - 1;
+}
+
+ui::TableColumn::Alignment GetMirroredTableColumnAlignment(
+    ui::TableColumn::Alignment alignment) {
+  if (!base::i18n::IsRTL())
+    return alignment;
+
+  switch (alignment) {
+    case ui::TableColumn::LEFT:
+      return ui::TableColumn::RIGHT;
+    case ui::TableColumn::RIGHT:
+      return ui::TableColumn::LEFT;
+    case ui::TableColumn::CENTER:
+      return ui::TableColumn::CENTER;
+  }
 }
 
 }  // namespace views

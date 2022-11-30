@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,9 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <utility>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
@@ -42,6 +40,10 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
                                  PrefService* local_state_prefs,
                                  base::Clock* clock);
 
+  RemoteSuggestionsSchedulerImpl(const RemoteSuggestionsSchedulerImpl&) =
+      delete;
+  RemoteSuggestionsSchedulerImpl& operator=(
+      const RemoteSuggestionsSchedulerImpl&) = delete;
   ~RemoteSuggestionsSchedulerImpl() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -142,16 +144,16 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
 
   // Interface for scheduling hard fetches, OS dependent. Not owned, may be
   // null.
-  PersistentScheduler* persistent_scheduler_;
+  raw_ptr<PersistentScheduler> persistent_scheduler_;
 
   // Interface for doing all the actual work (apart from scheduling). Not owned.
-  RemoteSuggestionsProvider* provider_;
+  raw_ptr<RemoteSuggestionsProvider> provider_;
 
   FetchingSchedule schedule_;
   bool background_fetch_in_progress_;
 
   // Used to adapt the schedule based on usage activity of the user. Not owned.
-  const UserClassifier* user_classifier_;
+  raw_ptr<const UserClassifier> user_classifier_;
 
   // Request throttlers for limiting requests for different classes of users.
   RequestThrottler request_throttler_rare_ntp_user_;
@@ -166,14 +168,12 @@ class RemoteSuggestionsSchedulerImpl : public RemoteSuggestionsScheduler {
   // We should not fetch in background before EULA gets accepted.
   std::unique_ptr<EulaState> eula_state_;
 
-  PrefService* profile_prefs_;
-  base::Clock* clock_;
+  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<base::Clock> clock_;
   std::set<TriggerType> enabled_triggers_;
   std::set<TriggerType> queued_triggers_;
 
   base::Time background_fetches_allowed_after_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsSchedulerImpl);
 };
 
 }  // namespace ntp_snippets

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,22 +16,23 @@
 namespace viz {
 namespace {
 
-// Expire saved frames after 5 seconds.
+// Expire saved frames after 15 seconds.
 // TODO(vmpstr): Figure out if we need to change this for cross-origin
 // animations, since the network delay can cause us to wait longer.
-constexpr base::TimeDelta kExpiryTime = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kExpiryTime = base::Seconds(15);
 
 }  // namespace
 
-SurfaceSavedFrameStorage::SurfaceSavedFrameStorage(Surface* surface)
-    : surface_(surface) {}
-
+SurfaceSavedFrameStorage::SurfaceSavedFrameStorage() = default;
 SurfaceSavedFrameStorage::~SurfaceSavedFrameStorage() = default;
 
-void SurfaceSavedFrameStorage::ProcessSaveDirective(
+base::flat_set<SharedElementResourceId>
+SurfaceSavedFrameStorage::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
     SurfaceSavedFrame::TransitionDirectiveCompleteCallback
         directive_finished_callback) {
+  DCHECK(has_active_surface());
+
   // Create a new saved frame, destroying the old one if it existed.
   // TODO(vmpstr): This may need to change if the directive refers to a local
   // subframe (RP) of the compositor frame. However, as of now, the save
@@ -50,11 +51,17 @@ void SurfaceSavedFrameStorage::ProcessSaveDirective(
       &SurfaceSavedFrameStorage::ExpireSavedFrame, base::Unretained(this)));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, expiry_closure_.callback(), kExpiryTime);
+
+  return saved_frame_->GetEmptyResourceIds();
 }
 
 std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
   expiry_closure_.Cancel();
   return std::move(saved_frame_);
+}
+
+bool SurfaceSavedFrameStorage::HasValidFrame() const {
+  return saved_frame_ && saved_frame_->IsValid();
 }
 
 void SurfaceSavedFrameStorage::ExpireSavedFrame() {
@@ -69,8 +76,7 @@ void SurfaceSavedFrameStorage::ExpireForTesting() {
 
 void SurfaceSavedFrameStorage::CompleteForTesting() {
   if (saved_frame_) {
-    saved_frame_->CompleteSavedFrameForTesting(  // IN-TEST
-        base::BindOnce([](const gpu::SyncToken&, bool) {}));
+    saved_frame_->CompleteSavedFrameForTesting();  // IN-TEST
   }
 }
 

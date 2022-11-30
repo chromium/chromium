@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,11 @@ std::string ElideGoAwayDebugDataForNetLogAsString(
     NetLogCaptureMode capture_mode,
     base::StringPiece debug_data) {
   auto value = ElideGoAwayDebugDataForNetLog(capture_mode, debug_data);
-  std::string str;
-  EXPECT_TRUE(value.GetAsString(&str));
-  return str;
+  if (!value.is_string()) {
+    ADD_FAILURE() << "'value' should be string.";
+    return std::string();
+  }
+  return value.GetString();
 }
 
 TEST(SpdyLogUtilTest, ElideGoAwayDebugDataForNetLog) {
@@ -35,29 +37,27 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLog) {
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
-  base::ListValue list =
+  base::Value::List list =
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
-  ASSERT_FALSE(list.is_none());
-  ASSERT_EQ(2u, list.GetList().size());
+  ASSERT_EQ(2u, list.size());
 
-  ASSERT_TRUE(list.GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", list.GetList()[0].GetString());
+  ASSERT_TRUE(list[0].is_string());
+  EXPECT_EQ("foo: bar", list[0].GetString());
 
-  ASSERT_TRUE(list.GetList()[1].is_string());
-  EXPECT_EQ("cookie: [10 bytes were stripped]", list.GetList()[1].GetString());
+  ASSERT_TRUE(list[1].is_string());
+  EXPECT_EQ("cookie: [10 bytes were stripped]", list[1].GetString());
 
   list = ElideHttp2HeaderBlockForNetLog(headers,
                                         NetLogCaptureMode::kIncludeSensitive);
 
-  ASSERT_FALSE(list.is_none());
-  ASSERT_EQ(2u, list.GetList().size());
+  ASSERT_EQ(2u, list.size());
 
-  ASSERT_TRUE(list.GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", list.GetList()[0].GetString());
+  ASSERT_TRUE(list[0].is_string());
+  EXPECT_EQ("foo: bar", list[0].GetString());
 
-  ASSERT_TRUE(list.GetList()[1].is_string());
-  EXPECT_EQ("cookie: name=value", list.GetList()[1].GetString());
+  ASSERT_TRUE(list[1].is_string());
+  EXPECT_EQ("cookie: name=value", list[1].GetString());
 }
 
 TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
@@ -70,37 +70,34 @@ TEST(SpdyLogUtilTest, Http2HeaderBlockNetLogParams) {
 
   ASSERT_TRUE(dict);
   ASSERT_TRUE(dict->is_dict());
-  ASSERT_EQ(1u, dict->DictSize());
+  ASSERT_EQ(1u, dict->GetDict().size());
 
-  auto* header_list = dict->FindKey("headers");
+  auto* header_list = dict->GetDict().FindList("headers");
   ASSERT_TRUE(header_list);
-  ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(2u, header_list->GetList().size());
+  ASSERT_EQ(2u, header_list->size());
 
-  ASSERT_TRUE(header_list->GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", header_list->GetList()[0].GetString());
+  ASSERT_TRUE((*header_list)[0].is_string());
+  EXPECT_EQ("foo: bar", (*header_list)[0].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[1].is_string());
-  EXPECT_EQ("cookie: [10 bytes were stripped]",
-            header_list->GetList()[1].GetString());
+  ASSERT_TRUE((*header_list)[1].is_string());
+  EXPECT_EQ("cookie: [10 bytes were stripped]", (*header_list)[1].GetString());
 
   dict = base::Value::ToUniquePtrValue(Http2HeaderBlockNetLogParams(
       &headers, NetLogCaptureMode::kIncludeSensitive));
 
   ASSERT_TRUE(dict);
   ASSERT_TRUE(dict->is_dict());
-  ASSERT_EQ(1u, dict->DictSize());
+  ASSERT_EQ(1u, dict->GetDict().size());
 
-  header_list = dict->FindKey("headers");
+  header_list = dict->GetDict().FindList("headers");
   ASSERT_TRUE(header_list);
-  ASSERT_TRUE(header_list->is_list());
-  ASSERT_EQ(2u, header_list->GetList().size());
+  ASSERT_EQ(2u, header_list->size());
 
-  ASSERT_TRUE(header_list->GetList()[0].is_string());
-  EXPECT_EQ("foo: bar", header_list->GetList()[0].GetString());
+  ASSERT_TRUE((*header_list)[0].is_string());
+  EXPECT_EQ("foo: bar", (*header_list)[0].GetString());
 
-  ASSERT_TRUE(header_list->GetList()[1].is_string());
-  EXPECT_EQ("cookie: name=value", header_list->GetList()[1].GetString());
+  ASSERT_TRUE((*header_list)[1].is_string());
+  EXPECT_EQ("cookie: name=value", (*header_list)[1].GetString());
 }
 
 // Regression test for https://crbug.com/800282.
@@ -110,17 +107,16 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
   headers["O\xe2"] = "bar";
   headers["\xde\xad"] = "\xbe\xef";
 
-  base::ListValue list =
+  base::Value::List list =
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
-  ASSERT_EQ(3u, list.GetSize());
-  std::string field;
-  EXPECT_TRUE(list.GetString(0, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", field);
-  EXPECT_TRUE(list.GetString(1, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B O%E2: bar", field);
-  EXPECT_TRUE(list.GetString(2, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B %DE%AD: %BE%EF", field);
+  ASSERT_EQ(3u, list.size());
+  ASSERT_TRUE(list[0].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", list[0].GetString());
+  ASSERT_TRUE(list[1].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B O%E2: bar", list[1].GetString());
+  ASSERT_TRUE(list[2].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B %DE%AD: %BE%EF", list[2].GetString());
 }
 
 }  // namespace net

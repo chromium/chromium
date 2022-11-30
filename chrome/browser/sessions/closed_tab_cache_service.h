@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ClosedTabCache;
@@ -25,7 +26,7 @@ class ClosedTabCacheService : public KeyedService {
   void Shutdown() override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<ClosedTabCache> cache_;
 };

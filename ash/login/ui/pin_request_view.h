@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ struct ASH_EXPORT PinRequest {
   // Whether the help button is displayed.
   bool help_button_enabled = false;
 
-  base::Optional<int> pin_length;
+  absl::optional<int> pin_length;
 
   // When |pin_keyboard_always_enabled| is set, the PIN keyboard is displayed at
   // all times. Otherwise, it is only displayed when the device is in tablet
@@ -87,7 +87,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
    public:
     virtual SubmissionResult OnPinSubmitted(const std::string& pin) = 0;
     virtual void OnBack() = 0;
-    virtual void OnHelp(gfx::NativeWindow parent_window) = 0;
+    virtual void OnHelp() = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -121,6 +121,10 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   // Creates pin request view that will enable the user to enter a pin.
   // |request| is used to configure callbacks and UI details.
   PinRequestView(PinRequest request, Delegate* delegate);
+
+  PinRequestView(const PinRequestView&) = delete;
+  PinRequestView& operator=(const PinRequestView&) = delete;
+
   ~PinRequestView() override;
 
   // views::View:
@@ -128,6 +132,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   void RequestFocus() override;
   gfx::Size CalculatePreferredSize() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
@@ -207,8 +212,6 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
       tablet_mode_observation_{this};
 
   base::WeakPtrFactory<PinRequestView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PinRequestView);
 };
 
 }  // namespace ash

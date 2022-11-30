@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/hid/fake_input_service_linux.h"
 
-using testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 void SetUpBluetoothMock(
@@ -73,6 +70,7 @@ void HIDControllerMixin::AddMouse(device::mojom::InputDeviceType type) {
   mouse->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
   mouse->type = type;
   mouse->is_mouse = true;
+  mouse->name = "pointer";
   fake_input_service_manager_->AddDevice(std::move(mouse));
   if (wait_until_idle_after_device_update_)
     base::RunLoop().RunUntilIdle();
@@ -84,6 +82,7 @@ void HIDControllerMixin::AddKeyboard(device::mojom::InputDeviceType type) {
   keyboard->subsystem = device::mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
   keyboard->type = type;
   keyboard->is_keyboard = true;
+  keyboard->name = "keyboard";
   fake_input_service_manager_->AddDevice(std::move(keyboard));
   if (wait_until_idle_after_device_update_)
     base::RunLoop().RunUntilIdle();
@@ -128,4 +127,4 @@ void HIDControllerMixin::RemoveDevices() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -38,12 +39,13 @@ ExtensionInstalledWaiter::ExtensionInstalledWaiter(
     : extension_(extension),
       browser_(browser),
       done_callback_(std::move(done_callback)) {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser->profile()));
   removal_watcher_ = std::make_unique<ExtensionRemovalWatcher>(
       browser, extension,
-      base::BindOnce(&ExtensionInstalledWaiter::OnExtensionRemoved,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &ExtensionInstalledWaiter::OnExtensionRemovedOrBrowserClosed,
+          weak_factory_.GetWeakPtr()));
 }
 
 ExtensionInstalledWaiter::~ExtensionInstalledWaiter() {
@@ -79,6 +81,6 @@ void ExtensionInstalledWaiter::OnExtensionLoaded(
                      weak_factory_.GetWeakPtr()));
 }
 
-void ExtensionInstalledWaiter::OnExtensionRemoved() {
+void ExtensionInstalledWaiter::OnExtensionRemovedOrBrowserClosed() {
   delete this;
 }

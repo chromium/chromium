@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromecast/crash/linux/synchronized_minidump_manager.h"
 
 class PrefService;
@@ -31,6 +30,10 @@ class MinidumpUploader : public SynchronizedMinidumpManager {
                    const std::string& server_url,
                    CastCrashdumpUploader* const uploader,
                    PrefServiceGeneratorCallback callback);
+
+  MinidumpUploader(const MinidumpUploader&) = delete;
+  MinidumpUploader& operator=(const MinidumpUploader&) = delete;
+
   ~MinidumpUploader() override;
 
   // Attempts to upload all minidumps in the minidumps directory. Acquires a
@@ -65,8 +68,6 @@ class MinidumpUploader : public SynchronizedMinidumpManager {
   // Used for injecting mocks/inducing different behavior in unittests.
   CastCrashdumpUploader* const uploader_;
   PrefServiceGeneratorCallback pref_service_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpUploader);
 };
 
 }  // namespace chromecast

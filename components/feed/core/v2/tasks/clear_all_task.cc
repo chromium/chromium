@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,19 +14,19 @@
 
 namespace feed {
 
-ClearAllTask::ClearAllTask(FeedStream* stream) : stream_(stream) {}
+ClearAllTask::ClearAllTask(FeedStream* stream) : stream_(*stream) {}
 ClearAllTask::~ClearAllTask() = default;
 
 void ClearAllTask::Run() {
-  stream_->UnloadModels();
-  stream_->GetPersistentKeyValueStore()->ClearAll(base::DoNothing());
-  stream_->GetStore()->ClearAll(
+  stream_.UnloadModels();
+  stream_.GetPersistentKeyValueStore().ClearAll(base::DoNothing());
+  stream_.GetStore().ClearAll(
       base::BindOnce(&ClearAllTask::StoreClearComplete, GetWeakPtr()));
 }
 
 void ClearAllTask::StoreClearComplete(bool ok) {
   DLOG_IF(ERROR, !ok) << "FeedStore::ClearAll failed";
-  stream_->FinishClearAll();
+  stream_.FinishClearAll();
   TaskComplete();
 }
 

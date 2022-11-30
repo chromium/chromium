@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 
@@ -69,12 +68,17 @@ struct FillData {
 class AccountSelectFillData {
  public:
   AccountSelectFillData();
+
+  AccountSelectFillData(const AccountSelectFillData&) = delete;
+  AccountSelectFillData& operator=(const AccountSelectFillData&) = delete;
+
   ~AccountSelectFillData();
 
   // Adds form structure from |form_data| to internal lists of known forms and
   // overrides known credentials with credentials from |form_data|. So only the
   // credentials from the latest |form_data| will be shown to the user.
-  void Add(const autofill::PasswordFormFillData& form_data);
+  void Add(const autofill::PasswordFormFillData& form_data,
+           bool is_cross_origin_iframe);
   void Reset();
   bool Empty() const;
 
@@ -122,8 +126,6 @@ class AccountSelectFillData {
   const FormInfo* GetFormInfo(autofill::FormRendererId form_identifier,
                               autofill::FieldRendererId field_identifier,
                               bool is_password_field) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountSelectFillData);
 };
 
 }  // namespace  password_manager

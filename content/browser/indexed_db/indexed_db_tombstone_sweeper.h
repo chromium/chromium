@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -82,6 +82,11 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   IndexedDBTombstoneSweeper(int round_iterations,
                             int max_iterations,
                             leveldb::DB* database);
+
+  IndexedDBTombstoneSweeper(const IndexedDBTombstoneSweeper&) = delete;
+  IndexedDBTombstoneSweeper& operator=(const IndexedDBTombstoneSweeper&) =
+      delete;
+
   ~IndexedDBTombstoneSweeper() override;
 
   bool RequiresMetadata() const override;
@@ -111,16 +116,16 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
 
     // Stores the random starting database seed. Not bounded.
     size_t start_database_seed = 0;
-    base::Optional<WrappingIterator<DatabaseMetadataVector>> database_it;
+    absl::optional<WrappingIterator<DatabaseMetadataVector>> database_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_object_store_seed = 0;
-    base::Optional<WrappingIterator<ObjectStoreMetadataMap>> object_store_it;
+    absl::optional<WrappingIterator<ObjectStoreMetadataMap>> object_store_it;
 
     // Stores the random starting object store seed. Not bounded.
     size_t start_index_seed = 0;
-    base::Optional<WrappingIterator<IndexMetadataMap>> index_it;
-    base::Optional<IndexDataKey> index_it_key;
+    absl::optional<WrappingIterator<IndexMetadataMap>> index_it;
+    absl::optional<IndexDataKey> index_it_key;
   };
 
   // Accumulated metrics that are reported at the end of sweeping.
@@ -149,8 +154,8 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   // of the sweeper.
   // Exactly one optional argument must be populated.
   void RecordUMAStats(
-      base::Optional<IndexedDBPreCloseTaskQueue::StopReason> stop_reason,
-      base::Optional<Status> status,
+      absl::optional<IndexedDBPreCloseTaskQueue::StopReason> stop_reason,
+      absl::optional<Status> status,
       const leveldb::Status& leveldb_error);
 
   leveldb::Status FlushDeletions();
@@ -177,22 +182,21 @@ class CONTENT_EXPORT IndexedDBTombstoneSweeper
   int total_indices_ = 0;
 
   // Used to measure total time of the task.
-  const base::TickClock* clock_for_testing_ = nullptr;
-  base::Optional<base::TimeTicks> start_time_;
+  raw_ptr<const base::TickClock> clock_for_testing_ = nullptr;
+  absl::optional<base::TimeTicks> start_time_;
 
   bool has_writes_ = false;
   leveldb::WriteBatch round_deletion_batch_;
   base::TimeDelta total_deletion_time_;
 
-  std::vector<blink::IndexedDBDatabaseMetadata> const* database_metadata_ =
-      nullptr;
+  raw_ptr<const std::vector<blink::IndexedDBDatabaseMetadata>>
+      database_metadata_ = nullptr;
   std::unique_ptr<leveldb::Iterator> iterator_;
 
   SweepState sweep_state_;
   SweepMetrics metrics_;
 
   base::WeakPtrFactory<IndexedDBTombstoneSweeper> ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBTombstoneSweeper);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,8 @@ namespace {
 // Constant string values to indicate UMA names. All entries should have
 // a corresponding index in MetricsNameIndex and an entry in |kMetricsEntries|.
 const char kTranslateInitiationStatus[] = "Translate.InitiationStatus.v2";
-const char kTranslateReportLanguageDetectionError[] =
-    "Translate.ReportLanguageDetectionError";
 const char kTranslateLanguageDetectionContentLength[] =
     "Translate.LanguageDetection.ContentLength";
-const char kTranslateLocalesOnDisabledByPrefs[] =
-    "Translate.LocalesOnDisabledByPrefs";
 const char kTranslateUnsupportedLanguageAtInitiation[] =
     "Translate.UnsupportedLanguageAtInitiation";
 const char kTranslateSourceLanguage[] = "Translate.SourceLanguage";
@@ -42,10 +38,6 @@ void ReportInitiationStatus(InitiationStatusType type) {
                             INITIATION_STATUS_MAX);
 }
 
-void ReportLanguageDetectionError() {
-  UMA_HISTOGRAM_BOOLEAN(kTranslateReportLanguageDetectionError, true);
-}
-
 void ReportMenuTranslationUnavailableReason(
     MenuTranslationUnavailableReason reason) {
   UMA_HISTOGRAM_ENUMERATION(kTranslateMenuTranslationUnavailableReasons,
@@ -57,14 +49,9 @@ void ReportLanguageDetectionContentLength(size_t length) {
                                  length);
 }
 
-void ReportLocalesOnDisabledByPrefs(base::StringPiece locale) {
-  base::UmaHistogramSparse(
-      kTranslateLocalesOnDisabledByPrefs,
-      language::LanguageUsageMetrics::ToLanguageCode(locale));
-}
-
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language) {
-  int language_code = language::LanguageUsageMetrics::ToLanguageCode(language);
+  int language_code =
+      language::LanguageUsageMetrics::ToLanguageCodeHash(language);
   base::UmaHistogramSparse(kTranslateUnsupportedLanguageAtInitiation,
                            language_code);
 }

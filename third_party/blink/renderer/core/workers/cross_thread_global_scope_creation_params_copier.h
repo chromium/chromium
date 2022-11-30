@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,4 +28,4 @@ struct CrossThreadCopier<std::unique_ptr<blink::GlobalScopeCreationParams>> {
 
 }  // namespace WTF
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_CROSS_THREAD_GLOBAL_SCOPE_CREATION_PARAMS_COPIER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_CROSS_THREAD_GLOBAL_SCOPE_CREATION_PARAMS_COPIER_H_

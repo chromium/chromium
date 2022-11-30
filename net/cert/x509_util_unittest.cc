@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 
-namespace net {
-
-namespace x509_util {
+namespace net::x509_util {
 
 // This test creates a self-signed cert and a private key and then verifies the
 // content of the certificate.
@@ -31,13 +29,12 @@ TEST(X509UtilTest, CreateKeyAndSelfSigned) {
   std::string der_cert;
   ASSERT_TRUE(x509_util::CreateKeyAndSelfSignedCert(
       "CN=subject, OU=org unit, O=org, C=CA", 1, base::Time::Now(),
-      base::Time::Now() + base::TimeDelta::FromDays(1), &private_key,
-      &der_cert));
+      base::Time::Now() + base::Days(1), &private_key, &der_cert));
 
   ASSERT_TRUE(private_key.get());
 
   scoped_refptr<X509Certificate> cert(X509Certificate::CreateFromBytes(
-      der_cert.data(), der_cert.size()));
+      base::as_bytes(base::make_span(der_cert))));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ("subject", cert->subject().common_name);
@@ -143,11 +140,10 @@ TEST(X509UtilTest, CreateSelfSigned) {
   std::string der_cert;
   ASSERT_TRUE(x509_util::CreateSelfSignedCert(
       private_key->key(), x509_util::DIGEST_SHA256, "CN=subject", 1,
-      base::Time::Now(), base::Time::Now() + base::TimeDelta::FromDays(1), {},
-      &der_cert));
+      base::Time::Now(), base::Time::Now() + base::Days(1), {}, &der_cert));
 
-  scoped_refptr<X509Certificate> cert =
-      X509Certificate::CreateFromBytes(der_cert.data(), der_cert.size());
+  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
+      base::as_bytes(base::make_span(der_cert)));
   ASSERT_TRUE(cert.get());
 
   EXPECT_EQ("subject", cert->subject().GetDisplayName());
@@ -219,9 +215,8 @@ TEST(X509UtilTest, CreateChannelBindings_SHA1) {
       0x4c, 0x85, 0x62, 0x1b, 0x99, 0x83, 0x47, 0x5f, 0x95,
   };
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(kCertificateDataDER),
-      sizeof(kCertificateDataDER));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(kCertificateDataDER);
   ASSERT_TRUE(cert);
 
   std::string channel_bindings;
@@ -328,9 +323,8 @@ TEST(X509UtilTest, CreateChannelBindings_SHA256) {
       0x75, 0x57, 0x0e, 0xaf, 0xa3, 0x10, 0xbf, 0xf1, 0xbb,
   };
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(kCertificateDataDER),
-      sizeof(kCertificateDataDER));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(kCertificateDataDER);
   ASSERT_TRUE(cert);
 
   std::string channel_bindings;
@@ -445,9 +439,8 @@ TEST(X509UtilTest, CreateChannelBindings_SHA384) {
       0x7d, 0x7d, 0x18, 0xa8, 0xee, 0x80, 0x26, 0xb2, 0x1f,
   };
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(kCertificateDataDER),
-      sizeof(kCertificateDataDER));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(kCertificateDataDER);
   ASSERT_TRUE(cert);
 
   std::string channel_bindings;
@@ -557,9 +550,8 @@ TEST(X509UtilTest, CreateChannelBindings_SHA512) {
       0xaa, 0x65, 0x51, 0x51, 0x60, 0x4f, 0x58, 0x28,
   };
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(kCertificateDataDER),
-      sizeof(kCertificateDataDER));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(kCertificateDataDER);
   ASSERT_TRUE(cert);
 
   std::string channel_bindings;
@@ -658,9 +650,8 @@ TEST(X509UtilTest, CreateChannelBindings_Unsupported_MD4) {
       0xef, 0xba, 0x6d, 0x5e, 0x88, 0x01, 0xaf,
   };
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBytes(
-      reinterpret_cast<const char*>(kCertificateDataDER),
-      sizeof(kCertificateDataDER));
+  scoped_refptr<X509Certificate> cert =
+      X509Certificate::CreateFromBytes(kCertificateDataDER);
   ASSERT_TRUE(cert);
 
   std::string channel_bindings;
@@ -797,20 +788,18 @@ TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
   }
 }
 
-TEST(X509UtilTest, HasSHA1Signature) {
+TEST(X509UtilTest, HasRsaPkcs1Sha1Signature) {
   base::FilePath certs_dir = GetTestCertsDirectory();
 
   scoped_refptr<X509Certificate> sha1_leaf =
       ImportCertFromFile(certs_dir, "sha1_leaf.pem");
   ASSERT_TRUE(sha1_leaf);
-  EXPECT_TRUE(HasSHA1Signature(sha1_leaf->cert_buffer()));
+  EXPECT_TRUE(HasRsaPkcs1Sha1Signature(sha1_leaf->cert_buffer()));
 
   scoped_refptr<X509Certificate> ok_cert =
       ImportCertFromFile(certs_dir, "ok_cert.pem");
   ASSERT_TRUE(ok_cert);
-  EXPECT_FALSE(HasSHA1Signature(ok_cert->cert_buffer()));
+  EXPECT_FALSE(HasRsaPkcs1Sha1Signature(ok_cert->cert_buffer()));
 }
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util

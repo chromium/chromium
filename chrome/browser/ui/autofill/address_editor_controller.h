@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -85,7 +84,7 @@ class AddressEditorController {
 
   autofill::AutofillProfile profile_to_edit_;
 
-  autofill::PersonalDataManager* pdm_;
+  raw_ptr<autofill::PersonalDataManager> pdm_;
 
   // The currently chosen country. Defaults to an invalid constant until
   // |countries_| is properly initialized and then 0 as the first entry in

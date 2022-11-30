@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -36,6 +37,11 @@ class NotificationPlatformBridge {
 
   // Returns a unique string identifier for |profile|.
   static std::string GetProfileId(Profile* profile);
+
+  // Returns the basename for the profile corresponding to `profile_id`. This is
+  // the reverse of GetProfileId().
+  static base::FilePath GetProfileBaseNameFromProfileId(
+      const std::string& profile_id);
 
   NotificationPlatformBridge(const NotificationPlatformBridge&) = delete;
   NotificationPlatformBridge& operator=(const NotificationPlatformBridge&) =

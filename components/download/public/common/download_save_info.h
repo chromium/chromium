@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/download/public/common/download_export.h"
 #include "crypto/secure_hash.h"
 
 namespace download {
+
+// Invalid offset for http range request.
+constexpr int64_t kInvalidRange = -1;
 
 // Holds the information about how to save a download file.
 // In the case of download continuation, |file_path| is set to the current file
@@ -27,10 +29,17 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
   static const int64_t kLengthFullContent;
 
   DownloadSaveInfo();
-  ~DownloadSaveInfo();
+
+  DownloadSaveInfo(const DownloadSaveInfo&) = delete;
+  DownloadSaveInfo& operator=(const DownloadSaveInfo&) = delete;
+
   DownloadSaveInfo(DownloadSaveInfo&& that);
 
-  int64_t GetStartingFileWriteOffset();
+  ~DownloadSaveInfo();
+
+  int64_t GetStartingFileWriteOffset() const;
+
+  bool IsArbitraryRangeRequest() const;
 
   // If non-empty, contains the full target path of the download that has been
   // determined prior to download initiation. This is considered to be a trusted
@@ -44,16 +53,25 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
   // If valid, contains the source data stream for the file contents.
   base::File file;
 
-  // The offset sent to the server when requesting the download. During
-  // resumption, |offset| could be smaller than the downloaded content length.
-  // This is because download may request some data to validate whether the
-  // content has changed.
+  // Represents the offset for http range request header. e.g, "Range:
+  // bytes=0-1023". |kInvalidRange| is used as initial value or open ended
+  // range. e.g, |range_request_to| with |kInvalidRange| can result in the
+  // following header:  "Range: bytes=100-". Notice this could be different than
+  // |offset|.
+  int64_t range_request_from = kInvalidRange;
+  int64_t range_request_to = kInvalidRange;
+
+  // The file offset to start receiving download data, could be different from
+  // the network offset when |range_request_from| and |range_request_to| are
+  // used. During resumption, |offset| could be smaller than the downloaded
+  // content length. This is because download may request some data(from
+  // |offset| to |file_offset|) to validate whether the content has changed.
   int64_t offset = 0;
 
   // The file offset to start writing to disk. If this value is negative,
   // download stream will be writing to the disk starting at |offset|.
   // Otherwise, this value will be used. Data received before |file_offset| are
-  // used for validation purpose.
+  // used for validation purpose, and will not be written to disk.
   int64_t file_offset = -1;
 
   // The state of the hash. If specified, this hash state must indicate the
@@ -71,9 +89,6 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
   // the location will be determined automatically using |file_path| as a
   // basis if |file_path| is not empty.
   bool prompt_for_save_location = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DownloadSaveInfo);
 };
 
 }  // namespace download

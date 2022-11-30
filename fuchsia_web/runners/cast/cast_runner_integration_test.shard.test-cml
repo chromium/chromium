@@ -1,0 +1,42 @@
+{
+  offer: [
+    {
+      directory: "config-data",
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      protocol: [
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.net.interfaces.State",
+        "fuchsia.posix.socket.Provider",
+        "fuchsia.scheduler.ProfileProvider",
+        "fuchsia.settings.Display",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Loader",
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.tracing.provider.Registry",
+        "fuchsia.vulkan.loader.Loader",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+    },
+    {
+      protocol: [ "fuchsia.buildinfo.Provider" ],
+      from: "#build-info-service",
+      to: "#realm_builder",
+    },
+    {
+      protocol: [ "fuchsia.intl.PropertyProvider" ],
+      from: "#intl_property_manager",
+      to: "#realm_builder",
+    },
+    {
+      storage: "cache",
+      from: "parent",
+      to: "#realm_builder",
+    }
+  ]
+}

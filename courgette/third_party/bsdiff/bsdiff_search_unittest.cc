@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <cstring>
 
-#include "base/stl_util.h"
 #include "courgette/third_party/bsdiff/paged_array.h"
 #include "courgette/third_party/divsufsort/divsufsort.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +56,7 @@ TEST(BSDiffSearchTest, Search) {
       {-1, 0, "(the"},
   };
 
-  for (size_t idx = 0; idx < base::size(test_cases); ++idx) {
+  for (size_t idx = 0; idx < std::size(test_cases); ++idx) {
     const auto& test_case = test_cases[idx];
     int query_size = static_cast<int>(::strlen(test_case.query_str));
     const unsigned char* query_buf =
@@ -97,7 +96,7 @@ TEST(BSDiffSearchTest, SearchExact) {
       "elephantelephantelephantelephantelephant",
       "011010011001011010010110011010010",
   };
-  for (size_t idx = 0; idx < base::size(test_cases); ++idx) {
+  for (size_t idx = 0; idx < std::size(test_cases); ++idx) {
     int size = static_cast<int>(::strlen(test_cases[idx]));
     const unsigned char* buf =
         reinterpret_cast<const unsigned char*>(test_cases[idx]);

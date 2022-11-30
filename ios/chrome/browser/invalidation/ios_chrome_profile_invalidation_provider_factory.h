@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -22,12 +21,17 @@ class ProfileInvalidationProvider;
 class IOSChromeProfileInvalidationProviderFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the ProfileInvalidationProvider for the given |browser_state|,
+  // Returns the ProfileInvalidationProvider for the given `browser_state`,
   // lazily creating one first if required.
   static invalidation::ProfileInvalidationProvider* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
+
+  IOSChromeProfileInvalidationProviderFactory(
+      const IOSChromeProfileInvalidationProviderFactory&) = delete;
+  IOSChromeProfileInvalidationProviderFactory& operator=(
+      const IOSChromeProfileInvalidationProviderFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>;
@@ -40,8 +44,6 @@ class IOSChromeProfileInvalidationProviderFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeProfileInvalidationProviderFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_INVALIDATION_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_

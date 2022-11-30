@@ -1,4 +1,1 @@
-monorail {
-  component: "Internals>Permissions>Model"
-}
-team_email: "permissions-dev@chromium.org"
+mixins: "//components/content_settings/COMMON_METADATA"

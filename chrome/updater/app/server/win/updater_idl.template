@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,17 +26,8 @@ interface IUpdateState : IUnknown {
   [propget] HRESULT errorCategory([out, retval] LONG*);
   [propget] HRESULT errorCode([out, retval] LONG*);
   [propget] HRESULT extraCode1([out, retval] LONG*);
-};
-
-[
-  object,
-  dual,
-  uuid(PLACEHOLDER-GUID-3FDEC4CB-8501-4ECD-A4CF-BF70326218D0),
-  helpstring("IUpdaterRegisterAppCallback Interface"),
-  pointer_default(unique)
-]
-interface IUpdaterRegisterAppCallback : IUnknown {
-  HRESULT Run([in] LONG status_code);
+  [propget] HRESULT installerText([out, retval] BSTR*);
+  [propget] HRESULT installerCommandLine([out, retval] BSTR*);
 };
 
 [
@@ -83,18 +74,41 @@ interface IUpdaterCallback : IUnknown {
 ]
 interface IUpdater : IUnknown {
   HRESULT GetVersion([out, retval] BSTR* version);
+  HRESULT FetchPolicies([in] IUpdaterCallback* callback);
   HRESULT CheckForUpdate([in, string] const WCHAR* app_id);
   HRESULT RegisterApp([in, string] const WCHAR* app_id,
                       [in, string] const WCHAR* brand_code,
+                      [in, string] const WCHAR* brand_path,
                       [in, string] const WCHAR* tag,
                       [in, string] const WCHAR* version,
                       [in, string] const WCHAR* existence_checker_path,
-                      [in] IUpdaterRegisterAppCallback* callback);
+                      [in] IUpdaterCallback* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
-  HRESULT Update([ in, string ] const WCHAR* app_id,
+  HRESULT Update([in, string] const WCHAR* app_id,
+                 [in, string] const WCHAR* install_data_index,
+                 [in] LONG priority,
+                 [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);
-};
+  HRESULT Install([in, string] const WCHAR* app_id,
+                  [in, string] const WCHAR* brand_code,
+                  [in, string] const WCHAR* brand_path,
+                  [in, string] const WCHAR* tag,
+                  [in, string] const WCHAR* version,
+                  [in, string] const WCHAR* existence_checker_path,
+                  [in, string] const WCHAR* client_install_data,
+                  [in, string] const WCHAR* install_data_index,
+                  [in] LONG priority,
+                  [in] IUpdaterObserver* observer);
+  HRESULT CancelInstalls([in, string] const WCHAR* app_id);
+  HRESULT RunInstaller(
+      [in, string] const WCHAR* app_id,
+      [in, string] const WCHAR* installer_path,
+      [in, string] const WCHAR* install_args,
+      [in, string] const WCHAR* install_data,
+      [in, string] const WCHAR* install_settings,
+      [in] IUpdaterObserver* observer);
+  };
 
 [
   uuid(PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC),
@@ -106,18 +120,18 @@ library UpdaterLib {
 
   [
     uuid(PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791),
-    helpstring("Updater Class")
+    helpstring("Updater Class for per-user applications")
   ]
-  coclass UpdaterClass
+  coclass UpdaterUserClass
   {
     [default] interface IUnknown;
   }
 
   [
     uuid(PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93),
-    helpstring("UpdaterService Class")
+    helpstring("Updater Class for per-system applications")
   ]
-  coclass UpdaterServiceClass
+  coclass UpdaterSystemClass
   {
     [default] interface IUnknown;
   }

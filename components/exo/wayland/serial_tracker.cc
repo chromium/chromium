@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,13 +40,13 @@ uint32_t SerialTracker::GetNextSerial(EventType type) {
       pointer_down_serial_ = serial;
       break;
     case EventType::POINTER_BUTTON_UP:
-      pointer_down_serial_ = base::nullopt;
+      pointer_down_serial_ = absl::nullopt;
       break;
     case EventType::TOUCH_DOWN:
       touch_down_serial_ = serial;
       break;
     case EventType::TOUCH_UP:
-      touch_down_serial_ = base::nullopt;
+      touch_down_serial_ = absl::nullopt;
       break;
     default:
       break;
@@ -55,34 +55,44 @@ uint32_t SerialTracker::GetNextSerial(EventType type) {
   return serial;
 }
 
-base::Optional<SerialTracker::EventType> SerialTracker::GetEventType(
+absl::optional<SerialTracker::EventType> SerialTracker::GetEventType(
     uint32_t serial) const {
   if (max_event_ < min_event_) {
     // The valid range has partially overflowed the 32 bit space, so we should
     // only reject if the serial number is in neither the upper nor lower parts
     // of the space.
     if (!((serial < max_event_) || (serial >= min_event_)))
-      return base::nullopt;
+      return absl::nullopt;
   } else {
     // Normal, non-overflowed case. Reject the serial number if it isn't in the
     // interval.
     if (!((serial < max_event_) && (serial >= min_event_)))
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   return events_[serial % kMaxEventsTracked];
 }
 
-base::Optional<uint32_t> SerialTracker::GetPointerDownSerial() {
+absl::optional<uint32_t> SerialTracker::GetPointerDownSerial() {
   return pointer_down_serial_;
 }
 
-base::Optional<uint32_t> SerialTracker::GetTouchDownSerial() {
+absl::optional<uint32_t> SerialTracker::GetTouchDownSerial() {
   return touch_down_serial_;
 }
 
 void SerialTracker::ResetTouchDownSerial() {
-  touch_down_serial_ = base::nullopt;
+  touch_down_serial_ = absl::nullopt;
+}
+
+uint32_t SerialTracker::MaybeNextKeySerial() {
+  if (!key_serial_.has_value())
+    key_serial_ = GetNextSerial(OTHER_EVENT);
+  return key_serial_.value();
+}
+
+void SerialTracker::ResetKeySerial() {
+  key_serial_ = absl::nullopt;
 }
 
 }  // namespace wayland

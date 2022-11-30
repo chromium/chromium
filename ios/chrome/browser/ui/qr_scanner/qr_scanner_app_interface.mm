@@ -1,31 +1,30 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_app_interface.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/version_info/version_info.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/chrome/browser/ui/icons/chrome_icon.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
-#include "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
-#include "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
-#include "ios/chrome/browser/ui/scanner/camera_controller.h"
+#import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
+#import "ios/chrome/browser/ui/qr_scanner/qr_scanner_view_controller.h"
+#import "ios/chrome/browser/ui/scanner/camera_controller.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/mac/url_conversions.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -183,7 +182,7 @@ using scanner::CameraState;
   return waitingBlock;
 }
 
-// Returns the expected title for the dialog which is presented for |state|.
+// Returns the expected title for the dialog which is presented for `state`.
 + (NSString*)dialogTitleForState:(CameraState)state {
   std::u16string appName = base::UTF8ToUTF16(version_info::GetProductName());
   switch (state) {

@@ -1,73 +1,100 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/ios/ios_util.h"
-#include "base/macros.h"
-#import "ios/web/public/test/web_js_test.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "ui/base/device_form_factor.h"
+#import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 // Test fixture for accessibility.js testing.
-class FontSizeJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+class FontSizeJsTest : public PlatformTest {
  public:
-  FontSizeJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(@[ @"accessibility" ]) {}
+  FontSizeJsTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
+    PlatformTest::SetUp();
 
-  // Find DOM element by |element_id| and get computed font size in px.
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
+
+  FontSizeJsTest(const FontSizeJsTest&) = delete;
+  FontSizeJsTest& operator=(const FontSizeJsTest&) = delete;
+
+  // Find DOM element by `element_id` and get computed font size in px.
   float GetElementFontSize(NSString* element_id) {
-    NSNumber* res = ExecuteJavaScriptWithFormat(
-        @"parseFloat(getComputedStyle(document.getElementById('%@'))."
-        @"getPropertyValue('font-size'));",
-        element_id);
+    NSNumber* res = web::test::ExecuteJavaScript(
+        [NSString
+            stringWithFormat:
+                @"parseFloat(getComputedStyle(document.getElementById('%@'))."
+                @"getPropertyValue('font-size'));",
+                element_id],
+        web_state());
     return res.floatValue;
   }
 
-  // Wraps |html| in <html> and loads. Adds <meta name='viewport'
+  // Wraps `html` in <html> and loads. Adds <meta name='viewport'
   // content='initial-scale=1.0'> to avoid implicit font size inflation (e.g.
   // for <div style='font-size:10px'>d<div style='font-size:10px'>d</div></div>
-  // the |GetElementFontSize| returns 17px instead of 10px under default
+  // the `GetElementFontSize` returns 17px instead of 10px under default
   // viewport and '-webkit-text-size-adjust=auto'). Setting
   // '-webkit-text-size-adjust=none' also works.
   void LoadHtml(NSString* html) {
-    LoadHtmlAndInject(
+    web::test::LoadHtml(
         [NSString stringWithFormat:@"<html><style>"
                                    @"html { -webkit-text-size-adjust: none }"
                                    @"</style><meta name='viewport' "
                                    @"content='initial-scale=1.0'>%@</html>",
-                                   html]);
+                                   html],
+        web_state());
+
+    // Main web injection should have occurred.
+    ASSERT_NSEQ(@"object",
+                web::test::ExecuteJavaScript(@"typeof __gCrWeb", web_state()));
+    web::test::ExecuteJavaScript(web::test::GetPageScript(@"font_size"),
+                                 web_state());
   }
 
-  // Executes JavaScript "__gCrWeb.accessibility.adjustFontSize(|scale|)" to
-  // adjust font size to |scale|% and return if it is executed without
+  // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(`scale`)" to
+  // adjust font size to `scale|% and return if it is executed without
   // exception.
-  bool AdjustFontSize(int scale) WARN_UNUSED_RESULT {
-    id script_result = ExecuteJavaScriptWithFormat(
-        @"__gCrWeb.accessibility.adjustFontSize(%d); true;", scale);
+  [[nodiscard]] bool AdjustFontSize(int scale) {
+    id script_result = web::test::ExecuteJavaScript(
+        [NSString
+            stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
+                             scale],
+        web_state());
     return [script_result isEqual:@YES];
   }
 
-  DISALLOW_COPY_AND_ASSIGN(FontSizeJsTest);
+ protected:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests that __gCrWeb.accessibility.adjustFontSize works for any scale.
+// Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
-  // TODO(crbug.com/983776): This test fails on ipad since beta5 due to a
-  // simulator bug. Re-enable this once the bug is fixed.
-  if (base::ios::IsRunningOnIOS13OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -180,15 +207,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
   EXPECT_FLOAT_EQ(current_size, original_size * 200 / 100);
 }
 
-// Tests that __gCrWeb.accessibility.adjustFontSize works for any CSS unit.
+// Tests that __gCrWeb.font_size.adjustFontSize works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
-  // TODO(crbug.com/983776): This test fails on ipad since beta5 due to a
-  // simulator bug. Re-enable this once the bug is fixed.
-  if (base::ios::IsRunningOnIOS13OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size = 0;
   float current_size = 0;
 
@@ -253,15 +273,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
   EXPECT_FLOAT_EQ(current_size, original_size * 110 / 100);
 }
 
-// Tests that __gCrWeb.accessibility.adjustFontSize works for nested elements.
+// Tests that __gCrWeb.font_size.adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
-  // TODO(crbug.com/983776): This test fails on ipad since beta5 due to a
-  // simulator bug. Re-enable this once the bug is fixed.
-  if (base::ios::IsRunningOnIOS13OrLater() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-
   float original_size_1 = 0;
   float original_size_2 = 0;
   float current_size_1 = 0;

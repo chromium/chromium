@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(embedded_test_server()->GetURL("/accessibility/lines/lines.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -84,11 +84,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
       web_contents->GetRootBrowserAccessibilityManager();
 
   // There should be at least 2 links between nodes on the same line.
-  int line_link_count = CountNextPreviousOnLineLinks(manager->GetRoot(), false);
+  int line_link_count = CountNextPreviousOnLineLinks(
+      manager->GetBrowserAccessibilityRoot(), false);
   ASSERT_GE(line_link_count, 2);
 
   // Find the button and click it.
-  BrowserAccessibility* button = FindButton(manager->GetRoot());
+  BrowserAccessibility* button =
+      FindButton(manager->GetBrowserAccessibilityRoot());
   ASSERT_NE(nullptr, button);
   manager->DoDefaultAction(*button);
 
@@ -97,7 +99,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
 
   // There should be at least 2 links between nodes on the same line,
   // though not necessarily the same as before.
-  line_link_count = CountNextPreviousOnLineLinks(manager->GetRoot(), false);
+  line_link_count = CountNextPreviousOnLineLinks(
+      manager->GetBrowserAccessibilityRoot(), false);
   ASSERT_GE(line_link_count, 2);
 }
 
@@ -105,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
 // performance regression.  (Android doesn't generate InlineTextBoxes
 // immediately; we can wait for them but without the aforementioned fix the
 // updated tree isn't processed to create the Next/PreviousOnLine links.)
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
                        NestedLayoutNGInlineFormattingContext) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -116,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/lines/lines-inline-nested.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  waiter.WaitForNotification();
+  ASSERT_TRUE(waiter.WaitForNotification());
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -126,12 +129,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
                                           ui::kAXModeComplete,
                                           ax::mojom::Event::kTreeChanged);
-  manager->LoadInlineTextBoxes(*manager->GetRoot());
-  waiter2.WaitForNotification();
+  manager->LoadInlineTextBoxes(*manager->GetBrowserAccessibilityRoot());
+  ASSERT_TRUE(waiter2.WaitForNotification());
 
   // There are three pieces of text, and they should be cross-linked:
   //   before <-> inside <-> after
-  int line_link_count = CountNextPreviousOnLineLinks(manager->GetRoot(), true);
+  int line_link_count = CountNextPreviousOnLineLinks(
+      manager->GetBrowserAccessibilityRoot(), true);
   ASSERT_EQ(line_link_count, 4);
 }
 #endif

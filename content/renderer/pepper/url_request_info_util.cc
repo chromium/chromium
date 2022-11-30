@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/pepper_file_ref_renderer_host.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
 #include "ppapi/c/pp_bool.h"
@@ -24,8 +25,9 @@
 #include "ppapi/shared_impl/url_request_info_data.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/enter.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_http_body.h"
@@ -51,10 +53,14 @@ namespace content {
 
 namespace {
 
-mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager() {
+mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
+    RendererPpapiHost* renderer_ppapi_host,
+    PP_Instance instance) {
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager;
-  ChildThreadImpl::current()->BindHostReceiver(
-      file_system_manager.BindNewPipeAndPassReceiver());
+  RenderFrame* frame = renderer_ppapi_host->GetRenderFrameForInstance(instance);
+  if (frame)
+    frame->GetBrowserInterfaceBroker()->GetInterface(
+        file_system_manager.BindNewPipeAndPassReceiver());
   return file_system_manager;
 }
 
@@ -80,6 +86,12 @@ bool AppendFileRefToBody(PP_Instance instance,
       renderer_ppapi_host->GetPpapiHost()->GetResourceHost(resource);
   if (!resource_host || !resource_host->IsFileRefHost())
     return false;
+
+  mojo::Remote<blink::mojom::FileSystemManager> file_system_manager =
+      GetFileSystemManager(renderer_ppapi_host, instance);
+  CHECK(file_system_manager)
+      << "No FileSystemManager exists for this PepperPluginInstance";
+
   PepperFileRefRendererHost* file_ref_host =
       static_cast<PepperFileRefRendererHost*>(resource_host);
   switch (file_ref_host->GetFileSystemType()) {
@@ -87,8 +99,8 @@ bool AppendFileRefToBody(PP_Instance instance,
     case PP_FILESYSTEMTYPE_LOCALPERSISTENT:
       // TODO(kinuko): remove this sync IPC when we fully support
       // AppendURLRange for FileSystem URL.
-      GetFileSystemManager()->GetPlatformPath(file_ref_host->GetFileSystemURL(),
-                                              &platform_path);
+      file_system_manager->GetPlatformPath(file_ref_host->GetFileSystemURL(),
+                                           &platform_path);
       break;
     case PP_FILESYSTEMTYPE_EXTERNAL:
       platform_path = file_ref_host->GetExternalFilePath();
@@ -96,7 +108,7 @@ bool AppendFileRefToBody(PP_Instance instance,
     default:
       NOTREACHED();
   }
-  base::Optional<base::Time> optional_modified_time;
+  absl::optional<base::Time> optional_modified_time;
   if (expected_last_modified_time != 0)
     optional_modified_time =
         base::Time::FromDoubleT(expected_last_modified_time);
@@ -209,7 +221,6 @@ bool CreateWebURLRequest(PP_Instance instance,
   if (!data->body.empty()) {
     WebHTTPBody http_body;
     http_body.Initialize();
-    int file_index = 0;
     for (size_t i = 0; i < data->body.size(); ++i) {
       const URLRequestInfoData::BodyItem& item = data->body[i];
       if (item.is_file) {
@@ -220,7 +231,6 @@ bool CreateWebURLRequest(PP_Instance instance,
                                  item.expected_last_modified_time,
                                  &http_body))
           return false;
-        file_index++;
       } else {
         DCHECK(!item.data.empty());
         http_body.AppendData(WebData(item.data));

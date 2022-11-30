@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,8 +89,15 @@ namespace identity {
     boolean? interactive;
   };
 
-  callback GetAuthTokenCallback = void (optional DOMString token,
-                                        optional DOMString[] grantedScopes);
+  dictionary GetAuthTokenResult {
+    // The specific token associated with the request.
+    DOMString? token;
+
+    // A list of OAuth2 scopes granted to the extension.
+    DOMString[]? grantedScopes;
+  };
+
+  callback GetAuthTokenCallback = void (GetAuthTokenResult result);
   callback GetAccountsCallback = void (AccountInfo[] accounts);
   callback GetProfileUserInfoCallback = void (ProfileUserInfo userInfo);
   callback InvalidateAuthTokenCallback = void ();
@@ -102,7 +109,7 @@ namespace identity {
     // present on the profile.
     //
     // <code>getAccounts</code> is only supported on dev channel.
-    static void getAccounts(GetAccountsCallback callback);
+    [supportsPromises] static void getAccounts(GetAccountsCallback callback);
 
     // Gets an OAuth2 access token using the client ID and scopes
     // specified in the <a
@@ -120,14 +127,19 @@ namespace identity {
     // context. In particular, do not use <code>getAuthToken</code>
     // interactively when your app is first launched.
     //
+    // Note: When called with a callback, instead of returning an object this
+    // function will return the two properties as separate arguments passed to
+    // the callback.
+    //
     // |details| : Token options.
     // |callback| : Called with an OAuth2 access token as specified by the
     // manifest, or undefined if there was an error. The
     // <code>grantedScopes</code> parameter is populated since Chrome 87. When
     // available, this parameter contains the list of granted scopes
     // corresponding with the returned token.
-    static void getAuthToken(optional TokenDetails details,
-                             optional GetAuthTokenCallback callback);
+    [supportsPromises] static void getAuthToken(
+        optional TokenDetails details,
+        optional GetAuthTokenCallback callback);
 
     // Retrieves email address and obfuscated gaia id of the user
     // signed into a profile.
@@ -143,7 +155,7 @@ namespace identity {
     // |callback|: Called with the <code>ProfileUserInfo</code> of the primary
     // Chrome account, of an empty <code>ProfileUserInfo</code> if the account
     // with given <code>details</code> doesn't exist.
-    static void getProfileUserInfo(
+    [supportsPromises] static void getProfileUserInfo(
         optional ProfileDetails details,
         GetProfileUserInfoCallback callback);
 
@@ -156,7 +168,7 @@ namespace identity {
     //
     // |details| : Token information.
     // |callback| : Called when the token has been removed from the cache.
-    static void removeCachedAuthToken(
+    [supportsPromises] static void removeCachedAuthToken(
         InvalidTokenDetails details,
         optional InvalidateAuthTokenCallback callback);
 
@@ -168,7 +180,7 @@ namespace identity {
     // </ul>
     //
     // |callback| : Called when the state has been cleared.
-    static void clearAllCachedAuthTokens(
+    [supportsPromises] static void clearAllCachedAuthTokens(
         ClearAllCachedAuthTokensCallback callback);
 
     // Starts an auth flow at the specified URL.
@@ -189,8 +201,9 @@ namespace identity {
     //
     // |details| : WebAuth flow options.
     // |callback| : Called with the URL redirected back to your application.
-    static void launchWebAuthFlow(WebAuthFlowDetails details,
-                                  LaunchWebAuthFlowCallback callback);
+    [supportsPromises] static void launchWebAuthFlow(
+        WebAuthFlowDetails details,
+        LaunchWebAuthFlowCallback callback);
 
     // Generates a redirect URL to be used in |launchWebAuthFlow|.
     //

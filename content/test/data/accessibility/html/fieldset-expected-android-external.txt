@@ -1,0 +1,7 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="section"]
+++++View text:"Browser Engines:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++++++View text:"Browser Engines:" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="legend"]
+++View text:"Which cake do you prefer?" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="legend"]
+++++++TextView text:"Which cake do you prefer?" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 2"]

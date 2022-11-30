@@ -1,0 +1,532 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+preprocessed_dir = "preprocessed"
+preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
+preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
+
+polymer_element_files = [
+  "base_page.js",
+  "calibration_component_chip.js",
+  "icons.js",
+  "critical_error_page.js",
+  "hardware_error_page.js",
+  "onboarding_choose_destination_page.js",
+  "onboarding_choose_wp_disable_method_page.js",
+  "onboarding_choose_wipe_device_page.js",
+  "onboarding_enter_rsu_wp_disable_code_page.js",
+  "onboarding_landing_page.js",
+  "onboarding_network_page.js",
+  "onboarding_select_components_page.js",
+  "onboarding_update_page.js",
+  "onboarding_wait_for_manual_wp_disable_page.js",
+  "onboarding_wp_disable_complete_page.js",
+  "reboot_page.js",
+  "reimaging_calibration_failed_page.js",
+  "reimaging_calibration_run_page.js",
+  "reimaging_calibration_setup_page.js",
+  "reimaging_device_information_page.js",
+  "reimaging_firmware_update_page.js",
+  "reimaging_provisioning_page.js",
+  "repair_component_chip.js",
+  "shimless_rma.js",
+  "shimless_rma_fonts_css.js",
+  "shimless_rma_shared_css.js",
+  "splash_screen.js",
+  "wrapup_finalize_page.js",
+  "wrapup_repair_complete_page.js",
+  "wrapup_restock_page.js",
+  "wrapup_wait_for_manual_wp_enable_page.js",
+]
+
+generate_grd("build_grd") {
+  input_files = [
+    "app_icon_192.png",
+    "data.js",
+    "fake_data.js",
+    "fake_shimless_rma_service.js",
+    "index.html",
+    "mojo_interface_provider.js",
+    "illustrations/base_on_flat_surface.svg",
+    "illustrations/downloading.svg",
+    "illustrations/error.svg",
+    "illustrations/insert_usb.svg",
+    "illustrations/lid_on_flat_surface.svg",
+    "illustrations/repair_start.svg",
+    "illustrations/success.svg",
+    "illustrations/update_os.svg",
+    "shimless_rma_types.js",
+    "shimless_rma_util.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [
+    ":preprocess_external_mojo",
+    ":preprocess_generated",
+    ":preprocess_mojo",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocessed_gen_manifest",
+    "$target_gen_dir/$preprocessed_mojo_manifest",
+    "$target_gen_dir/$preprocess_external_mojo_manifest",
+  ]
+  resource_path_rewrites = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js|file_path.mojom-lite.js",
+  ]
+  grd_prefix = "ash_shimless_rma"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [
+    ":base_page",
+    ":calibration_component_chip",
+    ":critical_error_page",
+    ":fake_shimless_rma_service",
+    ":hardware_error_page",
+    ":mojo_interface_provider",
+    ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
+    ":onboarding_choose_wp_disable_method_page",
+    ":onboarding_enter_rsu_wp_disable_code_page",
+    ":onboarding_landing_page",
+    ":onboarding_network_page",
+    ":onboarding_select_components_page",
+    ":onboarding_update_page",
+    ":onboarding_wait_for_manual_wp_disable_page",
+    ":onboarding_wp_disable_complete_page",
+    ":reboot_page",
+    ":reimaging_calibration_failed_page",
+    ":reimaging_calibration_run_page",
+    ":reimaging_calibration_setup_page",
+    ":reimaging_device_information_page",
+    ":reimaging_firmware_update_page",
+    ":reimaging_provisioning_page",
+    ":repair_component_chip",
+    ":shimless_rma",
+    ":shimless_rma_types",
+    ":shimless_rma_util",
+    ":splash_screen",
+    ":wrapup_finalize_page",
+    ":wrapup_repair_complete_page",
+    ":wrapup_restock_page",
+    ":wrapup_wait_for_manual_wp_enable_page",
+  ]
+}
+
+js_library("shimless_rma") {
+  deps = [
+    ":critical_error_page",
+    ":hardware_error_page",
+    ":mojo_interface_provider",
+    ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
+    ":onboarding_choose_wp_disable_method_page",
+    ":onboarding_enter_rsu_wp_disable_code_page",
+    ":onboarding_landing_page",
+
+    # TODO(gavindodd): A dependency on ":onboarding_network_page" causes closure
+    # errors in browser tests targets that depend on this target.
+    # Error:
+    # onc_mojo.js:492:4: ERROR - [JSC_NOT_FUNCTION_TYPE]
+    # expressions are not callable
+    # 492|     assert(source !== undefined, 'OncSource undefined');
+    ":onboarding_select_components_page",
+    ":onboarding_update_page",
+    ":onboarding_wait_for_manual_wp_disable_page",
+    ":onboarding_wp_disable_complete_page",
+    ":reboot_page",
+    ":reimaging_calibration_failed_page",
+    ":reimaging_calibration_run_page",
+    ":reimaging_calibration_setup_page",
+    ":reimaging_device_information_page",
+    ":reimaging_firmware_update_page",
+    ":reimaging_provisioning_page",
+    ":shimless_rma_types",
+    ":splash_screen",
+    ":wrapup_finalize_page",
+    ":wrapup_repair_complete_page",
+    ":wrapup_restock_page",
+    ":wrapup_wait_for_manual_wp_enable_page",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+}
+
+js_library("base_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("critical_error_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("hardware_error_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("data") {
+  deps = [
+    ":shimless_rma_types",
+    "//ash/webui/common/resources/network:onc_mojo",
+  ]
+}
+
+js_library("fake_data") {
+  deps = [
+    ":shimless_rma_types",
+    "//ash/webui/common/resources/network:onc_mojo",
+  ]
+}
+
+js_library("fake_shimless_rma_service") {
+  deps = [
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("mojo_interface_provider") {
+  deps = [
+    ":fake_data",
+    ":fake_shimless_rma_service",
+    ":shimless_rma_types",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("onboarding_choose_destination_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
+}
+
+js_library("onboarding_choose_wipe_device_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_choose_wp_disable_method_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_enter_rsu_wp_disable_code_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+}
+
+js_library("onboarding_landing_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_select_components_page") {
+  deps = [
+    ":base_page",
+    ":data",
+    ":mojo_interface_provider",
+    ":repair_component_chip",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("onboarding_network_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:network_config",
+    "//ash/webui/common/resources/network:network_list",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
+}
+
+js_library("onboarding_update_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("onboarding_wait_for_manual_wp_disable_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+}
+
+js_library("onboarding_wp_disable_complete_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("reboot_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("reimaging_calibration_failed_page") {
+  deps = [
+    ":base_page",
+    ":calibration_component_chip",
+    ":data",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("reimaging_calibration_setup_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("reimaging_calibration_run_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("reimaging_firmware_update_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("reimaging_device_information_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("reimaging_provisioning_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("calibration_component_chip") {
+  deps = [
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("repair_component_chip") {
+  deps = [
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("splash_screen") {
+  deps = [
+    ":base_page",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("wrapup_repair_complete_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
+}
+
+js_library("wrapup_restock_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+}
+
+js_library("wrapup_finalize_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
+}
+
+js_library("wrapup_wait_for_manual_wp_enable_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
+}
+
+js_library("shimless_rma_types") {
+  deps = [
+    "//ash/webui/shimless_rma/mojom:mojom_js_library_for_compile",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+  ]
+}
+
+js_library("shimless_rma_util") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
+  in_files = polymer_element_files
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  deps = [ "//ash/webui/shimless_rma/mojom:mojom_js" ]
+  in_folder = "$root_gen_dir/ash/webui/shimless_rma/"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_mojo_manifest"
+  in_files = [ "mojom/shimless_rma.mojom-lite.js" ]
+}
+
+preprocess_if_expr("preprocess_external_mojo") {
+  deps = [ "//mojo/public/mojom/base:base_js__generator" ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/preprocessed_external_mojo"
+  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  in_files = [ "mojo/public/mojom/base/file_path.mojom-lite.js" ]
+}
+
+html_to_js("web_components") {
+  js_files = polymer_element_files
+}

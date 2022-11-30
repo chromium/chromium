@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,10 @@
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,8 +47,9 @@ class MockReleaseCallback {
 };
 
 static void CollectResources(std::vector<ReturnedResource>* array,
-                             const std::vector<ReturnedResource>& returned) {
-  array->insert(array->end(), returned.begin(), returned.end());
+                             std::vector<ReturnedResource> returned) {
+  array->insert(array->end(), std::make_move_iterator(returned.begin()),
+                std::make_move_iterator(returned.end()));
 }
 
 static SharedBitmapId CreateAndFillSharedBitmap(SharedBitmapManager* manager,
@@ -95,28 +96,6 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
   std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
 };
 
-TEST_F(DisplayResourceProviderSoftwareTest, LostMailboxInParent) {
-  gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
-                            gpu::CommandBufferId::FromUnsafeValue(0x12), 0x34);
-  auto tran = CreateResource(RGBA_8888);
-  tran.id = ResourceId(11u);
-
-  std::vector<ReturnedResource> returned_to_child;
-  int child_id = resource_provider_->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
-
-  // Receive a resource then lose the gpu context.
-  resource_provider_->ReceiveFromChild(child_id, {tran});
-  resource_provider_->DidLoseContextProvider();
-
-  // Transfer resources back from the parent to the child.
-  resource_provider_->DeclareUsedResourcesFromChild(child_id, {});
-  ASSERT_EQ(1u, returned_to_child.size());
-
-  // Losing an output surface only loses hardware resources.
-  EXPECT_EQ(returned_to_child[0].lost, false);
-}
-
 TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   gfx::Size size(64, 64);
   ResourceFormat format = RGBA_8888;
@@ -129,16 +108,15 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
 
   MockReleaseCallback release;
   ResourceId resource_id = child_resource_provider_->ImportResource(
-      resource,
-      SingleReleaseCallback::Create(base::BindOnce(
-          &MockReleaseCallback::Released, base::Unretained(&release))));
+      resource, base::BindOnce(&MockReleaseCallback::Released,
+                               base::Unretained(&release)));
   EXPECT_NE(kInvalidResourceId, resource_id);
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> send_to_parent;
   std::vector<ReturnedResource> returned_to_child;
   int child_id = resource_provider_->CreateChild(
-      base::BindRepeating(&CollectResources, &returned_to_child));
+      base::BindRepeating(&CollectResources, &returned_to_child), SurfaceId());
   child_resource_provider_->PrepareSendToParent(
       {resource_id}, &send_to_parent,
       static_cast<RasterContextProvider*>(nullptr));
@@ -151,7 +129,7 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
 
   {
     DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-        resource_provider_.get(), mapped_resource_id);
+        resource_provider_.get(), mapped_resource_id, kPremul_SkAlphaType);
     const SkImage* sk_image = lock.sk_image();
     SkBitmap sk_bitmap;
     sk_image->asLegacyBitmap(&sk_bitmap);
@@ -165,7 +143,8 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
   // being in use.
   resource_provider_->DeclareUsedResourcesFromChild(child_id, ResourceIdSet());
   EXPECT_EQ(1u, returned_to_child.size());
-  child_resource_provider_->ReceiveReturnsFromParent(returned_to_child);
+  child_resource_provider_->ReceiveReturnsFromParent(
+      std::move(returned_to_child));
 
   EXPECT_CALL(release, Released(_, false));
   child_resource_provider_->RemoveImportedResource(resource_id);

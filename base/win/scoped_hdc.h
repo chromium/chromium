@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/debug/gdi_debug_util_win.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 
 namespace base {
@@ -32,6 +31,9 @@ class ScopedGetDC {
     }
   }
 
+  ScopedGetDC(const ScopedGetDC&) = delete;
+  ScopedGetDC& operator=(const ScopedGetDC&) = delete;
+
   ~ScopedGetDC() {
     if (hdc_)
       ReleaseDC(hwnd_, hdc_);
@@ -42,8 +44,6 @@ class ScopedGetDC {
  private:
   HWND hwnd_;
   HDC hdc_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGetDC);
 };
 
 // Like ScopedHandle but for HDC.  Only use this on HDCs returned from
@@ -52,14 +52,15 @@ class CreateDCTraits {
  public:
   typedef HDC Handle;
 
+  CreateDCTraits() = delete;
+  CreateDCTraits(const CreateDCTraits&) = delete;
+  CreateDCTraits& operator=(const CreateDCTraits&) = delete;
+
   static bool CloseHandle(HDC handle) { return ::DeleteDC(handle) != FALSE; }
 
   static bool IsHandleValid(HDC handle) { return handle != NULL; }
 
   static HDC NullHandle() { return NULL; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CreateDCTraits);
 };
 
 typedef GenericScopedHandle<CreateDCTraits, DummyVerifierTraits> ScopedCreateDC;

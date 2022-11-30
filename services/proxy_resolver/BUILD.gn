@@ -1,7 +1,8 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//v8/gni/v8.gni")
 
 source_set("lib") {
@@ -11,6 +12,8 @@ source_set("lib") {
     "mojo_proxy_resolver_v8_tracing_bindings.h",
     "pac_js_library.h",
     "proxy_host_resolver.h",
+    "proxy_host_resolver_cache.cc",
+    "proxy_host_resolver_cache.h",
     "proxy_resolver_factory_impl.cc",
     "proxy_resolver_factory_impl.h",
     "proxy_resolver_impl.cc",
@@ -24,6 +27,7 @@ source_set("lib") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//v8:external_startup_data",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
 
   deps = [
@@ -51,6 +55,7 @@ source_set("tests") {
     "mock_proxy_host_resolver.cc",
     "mock_proxy_host_resolver.h",
     "mojo_proxy_resolver_v8_tracing_bindings_unittest.cc",
+    "proxy_host_resolver_cache_unittest.cc",
     "proxy_resolver_factory_impl_unittest.cc",
     "proxy_resolver_impl_unittest.cc",
     "proxy_resolver_v8_tracing_unittest.cc",
@@ -72,7 +77,11 @@ source_set("tests") {
   }
 
   if (is_android) {
-    deps += [ "//v8:v8_external_startup_data_assets" ]
+    if (use_v8_context_snapshot) {
+      deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
+    } else {
+      deps += [ "//v8:v8_external_startup_data_assets" ]
+    }
   }
 
   configs += [ "//v8:external_startup_data" ]

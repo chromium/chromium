@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/common/url_constants.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "net/base/load_flags.h"
 #include "url/gurl.h"
 

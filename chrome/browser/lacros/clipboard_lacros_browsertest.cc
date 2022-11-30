@@ -1,18 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "ui/aura/window.h"
@@ -30,8 +32,7 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     auto look_for_clipboard_text = base::BindRepeating(
         [](base::RunLoop* run_loop, std::string text) {
-          auto* lacros_chrome_service =
-              chromeos::LacrosChromeServiceImpl::Get();
+          auto* lacros_chrome_service = chromeos::LacrosService::Get();
           std::string read_text = "";
           {
             mojo::ScopedAllowSyncCallForTesting allow_sync_call;
@@ -43,7 +44,7 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
         },
         &run_loop, text);
     base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1),
+    timer.Start(FROM_HERE, base::Milliseconds(1),
                 std::move(look_for_clipboard_text));
     run_loop.Run();
   }
@@ -55,7 +56,7 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
 // TODO(https://crbug.com/1157314): This test is not safe to run in parallel
 // with other clipboard tests since there's a single exo clipboard.
 IN_PROC_BROWSER_TEST_F(ClipboardLacrosBrowserTest, GetCopyPasteText) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_chrome_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_chrome_service);
 
   if (!lacros_chrome_service->IsAvailable<crosapi::mojom::Clipboard>())
@@ -64,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardLacrosBrowserTest, GetCopyPasteText) {
   aura::Window* window = BrowserView::GetBrowserViewForBrowser(browser())
                              ->frame()
                              ->GetNativeWindow();
-  std::string id = browser_test_util::GetWindowId(window->GetRootWindow());
+  std::string id =
+      lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
   browser_test_util::WaitForWindowCreation(id);
   browser_test_util::SendAndWaitForMouseClick(window->GetRootWindow());
 

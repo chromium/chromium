@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_util.h"
@@ -71,10 +71,10 @@ void ConditionalCacheDeletionHelper::IterateOverEntries(
     // won't be invalidated. Always close the previous entry so it does not
     // leak.
     if (previous_entry_) {
-      if (condition_.Run(previous_entry_)) {
+      if (condition_.Run(previous_entry_.get())) {
         previous_entry_->Doom();
       }
-      previous_entry_->Close();
+      previous_entry_.ExtractAsDangling()->Close();
     }
 
     if (result.net_error() == net::ERR_FAILED) {

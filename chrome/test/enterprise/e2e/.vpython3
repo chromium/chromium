@@ -1,0 +1,190 @@
+# This file defines all the extra packages we need to install to run the python
+# scripts in our repo and is used in LUCI to create reproducible bubbles in
+# which to run our ./test.py script.
+#
+# You can also use this locally by invoking `vpython3` instead of `python3` when
+# running the test scripts.
+#
+# More information:
+# https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
+python_version: "3.8"
+
+verify_pep425_tag: [
+    {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
+    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
+    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "win32"},
+    {python: "cp38", abi: "cp38", platform: "win_amd64"}
+]
+
+wheel: <
+  name: "infra/celab/celab/windows-amd64"
+  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8802565225411928929
+  version: "cCgd-5Z3S4B448lws5gGriMXRvCKBvXhzxOlDSn6VlEC"
+>
+
+# googleapiclient
+wheel: <
+  name: "infra/python/wheels/google-api-python-client-py2_py3"
+  version: "version:1.12.8"
+>
+
+# googleapiclient's dependencies
+wheel: <
+  name: "infra/python/wheels/cachetools-py2_py3"
+  version: "version:2.0.1"
+>
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:1.31.5"
+>
+wheel: <
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:1.35.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-auth-httplib2-py2_py3"
+  version: "version:0.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/httplib2-py3"
+  version: "version:0.19.1"
+>
+wheel: <
+  name: "infra/python/wheels/oauth2client-py2_py3"
+  version: "version:1.5.2"
+>
+wheel: <
+  name: "infra/python/wheels/packaging-py2_py3"
+  version: "version:16.8"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1-py2_py3"
+  version: "version:0.4.8"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1_modules-py2_py3"
+  version: "version:0.2.8"
+>
+wheel: <
+  name: "infra/python/wheels/pytz-py2_py3"
+  version: "version:2021.1"
+>
+wheel: <
+  name: "infra/python/wheels/pyparsing-py2_py3"
+  version: "version:2.4.7"
+>
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.26.0"
+>
+wheel: <
+  name: "infra/python/wheels/idna-py2_py3"
+  version: "version:2.8"
+>
+wheel: <
+  name: "infra/python/wheels/charset_normalizer-py3"
+  version: "version:2.0.4"
+>
+wheel: <
+  name: "infra/python/wheels/certifi-py2_py3"
+  version: "version:2021.5.30"
+>
+wheel: <
+  name: "infra/python/wheels/urllib3-py2_py3"
+  version: "version:1.26.6"
+>
+wheel: <
+  name: "infra/python/wheels/rsa-py2_py3"
+  version: "version:3.4.2"
+>
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.16.0"
+>
+wheel: <
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.0"
+>
+
+# google.cloud pubsub
+wheel: <
+  name: "infra/python/wheels/google-cloud-pubsub-py3"
+  version: "version:2.9.0"
+>
+wheel: <
+  name: "infra/python/wheels/libcst-py3"
+  version: "version:0.3.19"
+>
+wheel: <
+  name: "infra/python/wheels/mypy-extensions-py3"
+  version: "version:0.4.3"
+>
+wheel: <
+  name: "infra/python/wheels/pyyaml-py3"
+  version: "version:5.3.1"
+>
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:3.7.4.3"
+>
+wheel: <
+  name: "infra/python/wheels/typing-inspect-py3"
+  version: "version:0.7.1"
+>
+
+# google.protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py2_py3"
+  version: "version:3.18.1"
+>
+
+# iam.admin.v1
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-admin-v1-py2_py3"
+  version: "version:0.10.0"
+>
+
+# iam.admin.v1's dependencies
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py3"
+  version: "version:0.12.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.52.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.44.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/futures-py2_py3"
+  version: "version:3.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/enum34-py2_py3"
+  version: "version:1.1.6"
+>
+
+wheel: <
+  name: "infra/python/wheels/absl-py-py2_py3"
+  version: "version:0.7.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.13.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/wheel-py2_py3"
+  version: "version:0.33.1"
+>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,18 +10,40 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/virtual_ctap2_device.h"
 
-namespace device {
-namespace test {
+namespace device::test {
 
 // A FidoDeviceDiscovery that always vends a single |VirtualFidoDevice|.
 class VirtualFidoDeviceDiscovery
     : public FidoDeviceDiscovery,
       public base::SupportsWeakPtr<VirtualFidoDeviceDiscovery> {
  public:
-  VirtualFidoDeviceDiscovery(FidoTransportProtocol transport,
-                             scoped_refptr<VirtualFidoDevice::State> state,
-                             ProtocolVersion supported_protocol,
-                             const VirtualCtap2Device::Config& ctap2_config);
+  // Trace contains a history of the discovery objects that have been created by
+  // a given factory. VirtualFidoDeviceDiscovery gets a reference to this object
+  // and keeps its information up to date.
+  struct Trace : public base::RefCounted<Trace> {
+    Trace();
+    Trace(const Trace&) = delete;
+    Trace& operator=(const Trace&) = delete;
+
+    struct Discovery {
+      bool is_stopped = false;
+      bool is_destroyed = false;
+    };
+    std::vector<Discovery> discoveries;
+
+   private:
+    friend class base::RefCounted<Trace>;
+    ~Trace();
+  };
+
+  VirtualFidoDeviceDiscovery(
+      scoped_refptr<Trace> trace,
+      size_t trace_index,
+      FidoTransportProtocol transport,
+      scoped_refptr<VirtualFidoDevice::State> state,
+      ProtocolVersion supported_protocol,
+      const VirtualCtap2Device::Config& ctap2_config,
+      std::unique_ptr<EventStream<bool>> disconnect_events);
   ~VirtualFidoDeviceDiscovery() override;
   VirtualFidoDeviceDiscovery(const VirtualFidoDeviceDiscovery& other) = delete;
   VirtualFidoDeviceDiscovery& operator=(
@@ -29,14 +51,20 @@ class VirtualFidoDeviceDiscovery
 
  protected:
   void StartInternal() override;
+  bool MaybeStop() override;
 
  private:
+  void Disconnect(bool _);
+
+  scoped_refptr<Trace> trace_;
+  const size_t trace_index_;
   scoped_refptr<VirtualFidoDevice::State> state_;
   const ProtocolVersion supported_protocol_;
   const VirtualCtap2Device::Config ctap2_config_;
+  std::unique_ptr<EventStream<bool>> disconnect_events_;
+  std::string id_;
 };
 
-}  // namespace test
-}  // namespace device
+}  // namespace device::test
 
 #endif  // DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_DISCOVERY_H_

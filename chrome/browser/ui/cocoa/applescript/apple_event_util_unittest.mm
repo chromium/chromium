@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/mac/scoped_aedesc.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -229,11 +228,11 @@ TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
       typeAEList },
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
-    std::unique_ptr<base::Value> value =
-        base::JSONReader::ReadDeprecated(cases[i].json_input);
+  for (size_t i = 0; i < std::size(cases); ++i) {
+    absl::optional<base::Value> value =
+        base::JSONReader::Read(cases[i].json_input);
     NSAppleEventDescriptor* descriptor =
-        chrome::mac::ValueToAppleEventDescriptor(value.get());
+        chrome::mac::ValueToAppleEventDescriptor(&*value);
 
     EXPECT_EQ(cases[i].expected_aedesc_dump,
               AEDescToString([descriptor aeDesc]))

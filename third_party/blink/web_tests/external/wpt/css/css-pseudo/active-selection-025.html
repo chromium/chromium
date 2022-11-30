@@ -8,7 +8,6 @@
   <link rel="help" href="https://www.w3.org/TR/css-pseudo-4/#highlight-selectors">
   <link rel="match" href="reference/active-selection-025-ref.html">
 
-  <meta content="" name="flags">
   <meta name="assert" content="In this test, the div::selection selector has no 'color' declaration. The div::selection selector should use the 'color' declaration from the div rule and, for the first letter only, it should use the 'color' declaration from the ::first-letter pseudo-element. Therefore the first letter 'S' should be purple and the rest of the words should be green.">
 
   <!--
@@ -23,6 +22,7 @@
 
   -->
 
+  <link rel="stylesheet" href="support/highlights.css">
   <style>
   div
     {
@@ -57,4 +57,4 @@
 
   <p>Test passes if background color of "Selected Text" is yellow, if the "S" glyph is purple and if the other glyphs are green.
 
-  <div id="test">Selected Text</div>
+  <div id="test" class="highlight_reftest">Selected Text</div>

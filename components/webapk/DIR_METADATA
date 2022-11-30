@@ -1,5 +1,2 @@
-monorail {
-  component: "Mobile>WebAPKs"
-}
+mixins: "//components/webapk/COMMON_METADATA"
 
-team_email: "webapk-team@chromium.org"

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,9 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -38,7 +41,9 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
     registration_ = base::MakeRefCounted<ServiceWorkerRegistration>(
-        options, 1L /* registration_id */, context->AsWeakPtr());
+        options, blink::StorageKey(url::Origin::Create(scope_)),
+        1L /* registration_id */, context->AsWeakPtr(),
+        blink::mojom::AncestorFrameType::kNormalFrame);
     version_ = CreateNewServiceWorkerVersion(
         context->registry(), registration_.get(), script_url_,
         blink::mojom::ScriptType::kClassic);
@@ -122,8 +127,7 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, ContextDestroyed) {
 }
 
 // This tests copying script and creating resume type
-// ServiceWorkerNewScriptLoaders when ServiceWorkerImportedScriptUpdateCheck
-// is enabled.
+// ServiceWorkerNewScriptLoaders.
 class ServiceWorkerScriptLoaderFactoryCopyResumeTest
     : public ServiceWorkerScriptLoaderFactoryTest {
  public:

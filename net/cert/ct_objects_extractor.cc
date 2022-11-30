@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,7 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
-namespace net {
-
-namespace ct {
+namespace net::ct {
 
 namespace {
 
@@ -92,10 +90,8 @@ bool CopyAfter(const CBS& outer, const CBS& inner, CBB* out) {
 bool SkipTBSCertificateToExtensions(CBS* tbs_cert) {
   constexpr unsigned kVersionTag =
       CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 0;
-  constexpr unsigned kIssuerUniqueIDTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 1;
-  constexpr unsigned kSubjectUniqueIDTag =
-      CBS_ASN1_CONTEXT_SPECIFIC | CBS_ASN1_CONSTRUCTED | 2;
+  constexpr unsigned kIssuerUniqueIDTag = CBS_ASN1_CONTEXT_SPECIFIC | 1;
+  constexpr unsigned kSubjectUniqueIDTag = CBS_ASN1_CONTEXT_SPECIFIC | 2;
   return SkipOptionalElement(tbs_cert, kVersionTag) &&
          SkipElements(tbs_cert,
                       6 /* serialNumber through subjectPublicKeyInfo */) &&
@@ -427,6 +423,4 @@ bool ExtractSCTListFromOCSPResponse(const CRYPTO_BUFFER* issuer,
                                     sizeof(kOCSPExtensionOid), sct_list);
 }
 
-}  // namespace ct
-
-}  // namespace net
+}  // namespace net::ct

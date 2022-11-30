@@ -1,25 +1,19 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
-#include "third_party/blink/renderer/platform/theme_types.h"
 {% for include in includes %}
 #include "{{include}}"
 {% endfor %}
 
 namespace blink {
 
-class ShapeValue;
 class StyleImage;
-class StyleInheritedVariables;
-class StyleNonInheritedVariables;
 {% for forward_declaration in forward_declarations %}
 class {{forward_declaration}};
 {% endfor %}
@@ -50,9 +44,12 @@ class ComputedStyleInitialValues{
   }
 
   // Grid properties.
-  static size_t InitialGridAutoRepeatInsertionPoint() { return 0; }
+  static wtf_size_t InitialGridAutoRepeatInsertionPoint() { return 0; }
   static AutoRepeatType InitialGridAutoRepeatType() {
     return AutoRepeatType::kNoAutoRepeat;
+  }
+  static GridAxisType InitialGridAxisType() {
+    return GridAxisType::kStandaloneAxis;
   }
 
   // FIXME: Remove letter-spacing/word-spacing and replace them with respective
@@ -108,6 +105,7 @@ class ComputedStyleInitialValues{
     {% endif %}
   {% elif property.field_template == "keyword" or
         property.field_template == "multi_keyword" or
+        property.field_template == "bitset_keyword" or
         property.field_template == "primitive" %}
 
   static {{property.type_name}} {{property.initial}}() {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,12 +35,6 @@ public abstract class ChromeSwitches {{
 
     /** Disable promos shown on startup. */
     public static final String DISABLE_STARTUP_PROMOS = "disable-startup-promos-for-testing";
-
-    /**
-     * Forces the First Run Experience (FRE) flow complete check to always return true.
-     */
-    public static final String FORCE_FIRST_RUN_FLOW_COMPLETE_FOR_TESTING =
-            "force-first-run-flow-complete";
 
     /** Force the crash dump to be uploaded regardless of preferences. */
     public static final String FORCE_CRASH_DUMP_UPLOAD = "force-dump-upload";
@@ -113,12 +107,6 @@ public abstract class ChromeSwitches {{
      */
     public static final String PARTNER_HOMEPAGE_FOR_TESTING = "partner-homepage-for-testing";
 
-    /**
-     * Forces the WebAPK runtime dex to be extracted each time that Chrome is started.
-     */
-    public static final String ALWAYS_EXTRACT_WEBAPK_RUNTIME_DEX_ON_STARTUP =
-            "always-extract-webapk-dex-on-startup";
-
     /** Treats all WebAPKs as valid - useful only for local testing. */
     public static final String SKIP_WEBAPK_VERIFICATION = "skip-webapk-verification";
 
@@ -132,19 +120,7 @@ public abstract class ChromeSwitches {{
     /** Enable Vr Shell development environment. */
     public static final String ENABLE_VR_SHELL_DEV = "enable-vr-shell-dev";
 
-    /** Command line switch for Chrome Home's swipe logic. */
-    public static final String CHROME_HOME_SWIPE_LOGIC = "chrome-home-swipe-logic";
-
-    /** Switch for enabling "restricted area" swipe logic for Chrome Home. */
-    public static final String CHROME_HOME_SWIPE_LOGIC_RESTRICT_AREA = "restrict-area";
-
-    /**
-     * Switch for enabling "velocity" swipe logic for Chrome Home. This means the flings will not
-     * open the sheet; the user must slide up the sheet relatively slowly.
-     */
-    public static final String CHROME_HOME_SWIPE_LOGIC_VELOCITY = "velocity";
-
-    /** Switch for enabling the Chrome Survey. */
+    /** Switch for enabling the Chrome Survey. Only works when UMA is accepted. */
     public static final String CHROME_FORCE_ENABLE_SURVEY = "force-enable-chrome-survey";
 
     /** Switch to enable incognito tabs to be seen in Android Recents. */

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -11,9 +12,11 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/border.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -28,8 +31,7 @@ StatusAreaOverflowButtonTray::IconView::IconView()
     : slide_animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   slide_animation_->Reset(1.0);
   slide_animation_->SetTweenType(gfx::Tween::EASE_OUT);
-  slide_animation_->SetSlideDuration(
-      base::TimeDelta::FromMilliseconds(kAnimationDurationMs));
+  slide_animation_->SetSlideDuration(base::Milliseconds(kAnimationDurationMs));
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -43,7 +45,7 @@ StatusAreaOverflowButtonTray::IconView::IconView()
   const int vertical_padding = (kTrayHeight - image.height()) / 2;
   const int horizontal_padding = (kTrayWidth - image.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
 
   UpdateRotation();
 }
@@ -90,8 +92,12 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
 }
 
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new IconView()) {
+    : TrayBackgroundView(
+          shelf,
+          TrayBackgroundViewCatalogName::kStatusAreaOverflowButton),
+      icon_(new IconView()) {
   tray_container()->AddChildView(icon_);
+  set_use_bounce_in_animation(false);
 }
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}

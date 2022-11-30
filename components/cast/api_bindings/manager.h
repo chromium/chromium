@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,10 @@ class CAST_COMPONENT_EXPORT Manager {
       std::unique_ptr<cast_api_bindings::MessagePort>)>;
 
   Manager();
+
+  Manager(const Manager&) = delete;
+  Manager& operator=(const Manager&) = delete;
+
   virtual ~Manager();
 
   // Registers a |handler| which will receive MessagePorts originating from
@@ -53,8 +57,6 @@ class CAST_COMPONENT_EXPORT Manager {
 
  private:
   base::flat_map<std::string, MessagePortConnectedHandler> port_handlers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Manager);
 };
 
 }  // namespace cast_api_bindings

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "components/nacl/browser/nacl_broker_service_win.h"
 #include "components/nacl/browser/nacl_browser.h"
@@ -24,6 +23,7 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 namespace {
 // NOTE: changes to this class need to be reviewed by the security team.
@@ -32,12 +32,20 @@ class NaClBrokerSandboxedProcessLauncherDelegate
  public:
   NaClBrokerSandboxedProcessLauncherDelegate() {}
 
-  sandbox::policy::SandboxType GetSandboxType() override {
-    return sandbox::policy::SandboxType::kNoSandbox;
+  NaClBrokerSandboxedProcessLauncherDelegate(
+      const NaClBrokerSandboxedProcessLauncherDelegate&) = delete;
+  NaClBrokerSandboxedProcessLauncherDelegate& operator=(
+      const NaClBrokerSandboxedProcessLauncherDelegate&) = delete;
+
+  sandbox::mojom::Sandbox GetSandboxType() override {
+    return sandbox::mojom::Sandbox::kNoSandbox;
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClBrokerSandboxedProcessLauncherDelegate);
+  std::string GetSandboxTag() override {
+    // kNoSandbox does not use a TargetPolicy, if the sandbox type is changed
+    // then provide a unique tag here.
+    return "";
+  }
 };
 }  // namespace
 

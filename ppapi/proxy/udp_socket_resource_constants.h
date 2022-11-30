@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,15 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace ppapi {
 namespace proxy {
 
 class UDPSocketResourceConstants {
  public:
+  UDPSocketResourceConstants(const UDPSocketResourceConstants&) = delete;
+  UDPSocketResourceConstants& operator=(const UDPSocketResourceConstants&) =
+      delete;
+
   // The maximum number of bytes that each
   // PpapiPluginMsg_PPBUDPSocket_PushRecvResult message is allowed to carry.
   enum { kMaxReadSize = 128 * 1024 };
@@ -38,9 +40,6 @@ class UDPSocketResourceConstants {
   // The maximum number of buffers that we allow instances of this class to be
   // sending before we block the plugin.
   enum { kPluginSendBufferSlots = 8u };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResourceConstants);
 };
 
 }  // namespace proxy

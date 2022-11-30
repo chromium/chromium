@@ -12,16 +12,13 @@ index b4298d2..7ce779f 100644
              "@com_google_absl//absl/memory",
              "@com_google_absl//absl/strings",
              "@com_google_absl//absl/container:flat_hash_map",
-@@ -81,7 +78,20 @@ cc_library(
+@@ -81,7 +78,17 @@ cc_library(
              "//third_party/darts_clone",
              "//src/deps:threadpool",
              "//src/deps:status",
 -        ],
 +        ] + select({
-+            "@org_tensorflow//tensorflow:android": [
-+              "@org_tensorflow//tensorflow/core:tflite_portable_logging",
-+           ],
-+            "@org_tensorflow//tensorflow:ios": [
++            "@org_tensorflow//tensorflow:mobile": [
 +              "@org_tensorflow//tensorflow/core:tflite_portable_logging",
 +            ],
 +            "//conditions:default": [

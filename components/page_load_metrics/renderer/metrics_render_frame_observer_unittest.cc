@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,12 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
     fake_timing_ = timing.Clone();
   }
 
+  void ExpectMainFrameIntersectionRect(
+      const gfx::Rect& main_frame_intersection_rect) {
+    validator_.UpdateExpectedMainFrameIntersectionRect(
+        main_frame_intersection_rect);
+  }
+
   Timing GetTiming() const override {
     EXPECT_NE(nullptr, fake_timing_.get());
     return Timing(std::move(fake_timing_),
@@ -87,15 +93,35 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
 
-  timing.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+  timing.parse_timing->parse_start = base::Milliseconds(10);
   observer.ExpectPageLoadTiming(timing);
 
   observer.DidChangePerformanceTiming();
+  observer.GetMockTimer()->Fire();
+}
+
+TEST_F(MetricsRenderFrameObserverTest,
+       MainFrameIntersectionUpdateBeforeMetricsSenderCreated) {
+  base::Time nav_start = base::Time::FromDoubleT(10);
+
+  TestMetricsRenderFrameObserver observer;
+  observer.OnMainFrameIntersectionChanged(gfx::Rect(1, 2, 3, 4));
+
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = nav_start;
+  observer.ExpectPageLoadTiming(timing);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
+  observer.ReadyToCommitNavigation(nullptr);
+  observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
+
+  observer.ExpectMainFrameIntersectionRect(gfx::Rect(1, 2, 3, 4));
+
   observer.GetMockTimer()->Fire();
 }
 
@@ -110,21 +136,21 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
 
   // Send cpu timing updates and verify the expected result.
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(110));
-  observer.DidChangeCpuTiming(base::TimeDelta::FromMilliseconds(50));
-  observer.ExpectCpuTiming(base::TimeDelta::FromMilliseconds(160));
+  observer.DidChangeCpuTiming(base::Milliseconds(110));
+  observer.DidChangeCpuTiming(base::Milliseconds(50));
+  observer.ExpectCpuTiming(base::Milliseconds(160));
   observer.GetMockTimer()->Fire();
 }
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -132,7 +158,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
@@ -169,8 +195,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   base::Time nav_start = base::Time::FromDoubleT(10);
-  base::TimeDelta dom_event = base::TimeDelta::FromMillisecondsD(2);
-  base::TimeDelta load_event = base::TimeDelta::FromMillisecondsD(2);
+  base::TimeDelta dom_event = base::Milliseconds(2);
+  base::TimeDelta load_event = base::Milliseconds(2);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -178,7 +204,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = nav_start;
   observer.ExpectPageLoadTiming(timing);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();
@@ -195,8 +221,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.VerifyExpectedTimings();
 
   base::Time nav_start_2 = base::Time::FromDoubleT(100);
-  base::TimeDelta dom_event_2 = base::TimeDelta::FromMillisecondsD(20);
-  base::TimeDelta load_event_2 = base::TimeDelta::FromMillisecondsD(20);
+  base::TimeDelta dom_event_2 = base::Milliseconds(20);
+  base::TimeDelta load_event_2 = base::Milliseconds(20);
   mojom::PageLoadTiming timing_2;
   page_load_metrics::InitPageLoadTimingForTest(&timing_2);
   timing_2.navigation_start = nav_start_2;
@@ -204,7 +230,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   observer.SetMockTimer(nullptr);
 
   observer.ExpectPageLoadTiming(timing_2);
-  observer.DidStartNavigation(GURL(), base::nullopt);
+  observer.DidStartNavigation(GURL(), absl::nullopt);
   observer.ReadyToCommitNavigation(nullptr);
   observer.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
   observer.GetMockTimer()->Fire();

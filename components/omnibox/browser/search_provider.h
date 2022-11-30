@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -78,8 +79,17 @@ class SearchProvider : public BaseSearchProvider,
   // AutocompleteProvider:
   void ResetSession() override;
 
-  // The verbatim score for an input which is not an URL.
+  // The verbatim score for an input which is not a URL.
   static const int kNonURLVerbatimRelevance = 1300;
+
+  // Returns whether the current page URL can be sent in the suggest requests.
+  // This method is virtual to mock for testing.
+  virtual bool CanSendCurrentPageURLInRequest(
+      const GURL& current_page_url,
+      const TemplateURL* template_url,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      const SearchTermsData& search_terms_data,
+      const AutocompleteProviderClient* client);
 
  protected:
   ~SearchProvider() override;
@@ -87,7 +97,6 @@ class SearchProvider : public BaseSearchProvider,
  private:
   friend class AutocompleteProviderTest;
   friend class BaseSearchProviderTest;
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, CanSendURL);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontInlineAutocompleteAsynchronously);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationInline);
@@ -102,13 +111,15 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, AnswersCache);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, RemoveExtraAnswers);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoesNotProvideOnFocus);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SendsWarmUpRequestOnFocus);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontTrimHttpSchemeIfInputHasScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontTrimHttpsSchemeIfInputHasScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpsScheme);
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderWarmUpTest, SendsWarmUpRequestOnFocus);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithURL);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderRequestTest, SendRequestWithoutURL);
 
   // Manages the providers (TemplateURLs) used by SearchProvider. Two providers
   // may be used:
@@ -148,7 +159,7 @@ class SearchProvider : public BaseSearchProvider,
     bool has_keyword_provider() const { return !keyword_provider_.empty(); }
 
    private:
-    TemplateURLService* template_url_service_;
+    raw_ptr<TemplateURLService> template_url_service_;
 
     // Cached across the life of a query so we behave consistently even if the
     // user changes their default while the query is running.
@@ -158,7 +169,8 @@ class SearchProvider : public BaseSearchProvider,
 
   class CompareScoredResults;
 
-  typedef std::vector<history::KeywordSearchTermVisit> HistoryResults;
+  typedef std::vector<std::unique_ptr<history::KeywordSearchTermVisit>>
+      HistoryResults;
 
   // A helper function for UpdateAllOldResults().
   static void UpdateOldResults(bool minimal_changes,
@@ -170,14 +182,20 @@ class SearchProvider : public BaseSearchProvider,
             bool due_to_user_inactivity) override;
 
   // BaseSearchProvider:
-  const TemplateURL* GetTemplateURL(bool is_keyword) const override;
-  const AutocompleteInput GetInput(bool is_keyword) const override;
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
 
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
+
+  // Returns the TemplateURL corresponding to the keyword or default
+  // provider based on the value of |is_keyword|.
+  const TemplateURL* GetTemplateURL(bool is_keyword) const;
+
+  // Returns the AutocompleteInput for keyword provider or default provider
+  // based on the value of |is_keyword|.
+  const AutocompleteInput GetInput(bool is_keyword) const;
 
   // Called back from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,
@@ -265,12 +283,10 @@ class SearchProvider : public BaseSearchProvider,
 
   // Starts a new SimpleURLLoader requesting suggest results from
   // |template_url|; callers own the returned SimpleURLLoader, which is NULL for
-  // invalid providers. Note the request will never time out unless the given
-  // |timeout| is greater than 0.
+  // invalid providers.
   std::unique_ptr<network::SimpleURLLoader> CreateSuggestLoader(
       const TemplateURL* template_url,
-      const AutocompleteInput& input,
-      const base::TimeDelta& timeout);
+      const AutocompleteInput& input);
 
   // Converts the parsed results to a set of AutocompleteMatches, |matches_|.
   void ConvertResultsToAutocompleteMatches();
@@ -381,8 +397,6 @@ class SearchProvider : public BaseSearchProvider,
 
   // Finds image URLs in most relevant results and uses client to prefetch them.
   void PrefetchImages(SearchSuggestionParser::Results* results);
-
-  AutocompleteProviderListener* listener_;
 
   // Maintains the TemplateURLs used.
   Providers providers_;

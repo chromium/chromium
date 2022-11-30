@@ -1,30 +1,29 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "components/prefs/pref_service.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/chrome_constants.h"
-#include "ios/chrome/browser/chrome_paths_internal.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "base/bind.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/location.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/chrome_constants.h"
+#import "ios/chrome/browser/paths/paths_internal.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,7 +40,7 @@ NSString* const kHasBrowserStateBeenRemovedKey = @"HasBrowserStateBeenRemoved";
 const char kGmailDomain[] = "gmail.com";
 
 // Removes from disk the directories used by the browser states in
-// |browser_states_paths|.
+// `browser_states_paths`.
 void NukeBrowserStates(const std::vector<base::FilePath>& browser_states_path) {
   for (const base::FilePath& browser_state_path : browser_states_path) {
     // Delete both the browser state directory and its corresponding cache.
@@ -52,7 +51,7 @@ void NukeBrowserStates(const std::vector<base::FilePath>& browser_states_path) {
   }
 }
 
-// Returns the GAIA Id of the given |browser_state_path| using the |info_cache|.
+// Returns the GAIA Id of the given `browser_state_path` using the `info_cache`.
 std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
                                      BrowserStateInfoCache* info_cache) {
   base::FilePath path = info_cache->GetUserDataDir().Append(browser_state_path);
@@ -62,15 +61,20 @@ std::string GetGaiaIdForBrowserState(const std::string& browser_state_path,
   return info_cache->GetGAIAIdOfBrowserStateAtIndex(index);
 }
 
-// Returns the email's domain of the identity associated with |gaia_id|.
-std::string GetDomainForGaiaId(const std::string& gaia_id) {
-  ChromeIdentity* identity = ios::GetChromeBrowserProvider()
-                                 ->GetChromeIdentityService()
-                                 ->GetIdentityWithGaiaID(gaia_id);
-  if (![identity userEmail])
+// Returns the email's domain of the identity associated with `gaia_id`.
+std::string GetDomainForGaiaId(ChromeBrowserState* browser_state,
+                               const std::string& gaia_id) {
+  ChromeAccountManagerService* account_manager_service =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  id<SystemIdentity> identity =
+      account_manager_service->GetIdentityWithGaiaID(gaia_id);
+
+  NSString* user_email = identity.userEmail;
+  if (!user_email.length)
     return std::string();
+
   return gaia::ExtractDomainName(
-      gaia::SanitizeEmail(base::SysNSStringToUTF8([identity userEmail])));
+      gaia::SanitizeEmail(base::SysNSStringToUTF8(user_email)));
 }
 }
 
@@ -109,7 +113,8 @@ void ChromeBrowserStateRemovalController::RemoveBrowserStatesIfNecessary() {
         GetGaiaIdForBrowserState(browser_state_to_keep, info_cache);
     std::string last_used_gaia_id =
         GetGaiaIdForBrowserState(browser_state_last_used, info_cache);
-    std::string last_used_domain = GetDomainForGaiaId(last_used_gaia_id);
+    std::string last_used_domain = GetDomainForGaiaId(
+        manager->GetLastUsedBrowserState(), last_used_gaia_id);
     if (gaia_id.empty() && last_used_domain == kGmailDomain) {
       // If browser state to keep is not the last used one, wasn't
       // authenticated, and the last used browser state was a normal account

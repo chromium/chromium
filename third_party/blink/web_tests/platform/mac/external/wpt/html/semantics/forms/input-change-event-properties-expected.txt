@@ -9,6 +9,6 @@ PASS <input type="email"> typing
 PASS <input type="password"> typing
 PASS <input type="number"> typing
 PASS <textarea></textarea> typing
-FAIL <select> pressing down arrow promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'bubbles' of undefined"
+FAIL <select> pressing down arrow promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'bubbles')"
 Harness: the test ran to completion.
 

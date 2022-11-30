@@ -23,6 +23,10 @@
         <span>Fetch handler existence:</span>
         <span jscontent="$this.fetch_handler_existence"></span>
       </div>
+      <div class="serviceworker-fetch-handler-type">
+        <span>Fetch handler type:</span>
+        <span jscontent="$this.fetch_handler_type"></span>
+      </div>
       <div class="serviceworker-script_url">
         <span>Script:</span>
         <span jscontent="$this.script_url"></span>
@@ -69,6 +73,33 @@
         <span>Scope:</span>
         <span jscontent="scope"></span>
       </div>
+      <!-- Storage Partitioning -->
+      <div class="serviceworker-storage-key-wrapper"
+        jsdisplay="$this.third_party_storage_partitioning_enabled">
+        Storage key:
+        <div class="serviceworker-storage-key">
+          <div class="serviceworker-origin"
+            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
+            <span>origin:</span>
+            <span jscontent="$this.origin"></span>
+          </div>
+          <div class="serviceworker-top-level-site"
+            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
+            <span>Top level site:</span>
+            <span jscontent="$this.top_level_site"></span>
+          </div>
+          <div class="serviceworker-ancestor-chain-bit">
+            <span>Ancestor chain bit:</span>
+            <span jscontent="$this.ancestor_chain_bit"></span>
+          </div>
+          <div class="serviceworker-nonce"
+            jsdisplay="$this.ancestor_chain_bit == 'CrossSite'">
+            <span>nonce:</span>
+            <span jscontent="$this.nonce"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Storage Partitioning ends -->
       <div class="serviceworker-rid">
         <span>Registration ID:</span>
         <span jscontent="registration_id"></span>
@@ -92,12 +123,12 @@
       </div>
       <div class="registration-controls" jsdisplay="!$this.unregistered">
         <button href="#" class="unregister"
-            jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope}">
+            jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope,storage_key:storage_key}">
           Unregister
         </button>
         <button href="#" class="start"
             jsdisplay="$this.active.running_status != 'RUNNING'"
-             jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope}">
+             jsvalues=".cmdArgs:{partition_id:$partition_id,scope:scope,storage_key:storage_key}">
           Start
         </button>
         <span class="operation-status" style="display: none">Running...</span>
@@ -147,7 +178,8 @@
         <span>URL: </span><span jscontent="$this.url"></span>
       </div>
     </div>
-  </div> <!-- templates end -->
+  </div>
+  <!-- templates end -->
   <h1>ServiceWorker</h1>
   <div class="content">
     <div id="serviceworker-options"></div>

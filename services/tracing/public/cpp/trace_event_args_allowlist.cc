@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,7 +137,8 @@ bool IsTraceEventArgsAllowlisted(
       category_group_name, category_group_name + strlen(category_group_name),
       ",");
   while (category_group_tokens.GetNext()) {
-    const std::string& category_group_token = category_group_tokens.token();
+    base::StringPiece category_group_token =
+        category_group_tokens.token_piece();
     for (int i = 0; kEventArgsAllowlist[i].category_name != nullptr; ++i) {
       const AllowlistEntry& allowlist_entry = kEventArgsAllowlist[i];
       DCHECK(allowlist_entry.event_name);

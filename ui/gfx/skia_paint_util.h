@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,4 +55,4 @@ GFX_EXPORT sk_sp<SkDrawLooper> CreateShadowDrawLooper(
 
 }  // namespace gfx
 
-#endif  // UI_GFX_SKIA_UTIL_H_
+#endif  // UI_GFX_SKIA_PAINT_UTIL_H_

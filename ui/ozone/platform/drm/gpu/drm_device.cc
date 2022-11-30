@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,25 @@
 #include <unistd.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
@@ -105,10 +108,10 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         DCHECK_EQ(base::TimeTicks::GetClock(),
                   base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
         const base::TimeTicks timestamp =
-            base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                    static_cast<int64_t>(vblank.tv_sec) *
-                                        base::Time::kMicrosecondsPerSecond +
-                                    vblank.tv_usec);
+            base::TimeTicks() +
+            base::Microseconds(static_cast<int64_t>(vblank.tv_sec) *
+                                   base::Time::kMicrosecondsPerSecond +
+                               vblank.tv_usec);
         callback.Run(vblank.sequence, timestamp, vblank.user_data);
       } break;
       case DRM_EVENT_VBLANK:
@@ -146,11 +149,14 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 class DrmDevice::PageFlipManager {
  public:
   PageFlipManager() : next_id_(0) {}
+
+  PageFlipManager(const PageFlipManager&) = delete;
+  PageFlipManager& operator=(const PageFlipManager&) = delete;
+
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
-    auto it =
-        std::find_if(callbacks_.begin(), callbacks_.end(), FindCallback(id));
+    auto it = base::ranges::find(callbacks_, id, &PageFlip::id);
     if (it == callbacks_.end()) {
       LOG(WARNING) << "Could not find callback for page flip id=" << id;
       return;
@@ -170,7 +176,8 @@ class DrmDevice::PageFlipManager {
   void RegisterCallback(uint64_t id,
                         uint64_t pending_calls,
                         DrmDevice::PageFlipCallback callback) {
-    callbacks_.push_back({id, pending_calls, std::move(callback)});
+    callbacks_.push_back(
+        {id, static_cast<uint32_t>(pending_calls), std::move(callback)});
   }
 
  private:
@@ -180,19 +187,9 @@ class DrmDevice::PageFlipManager {
     DrmDevice::PageFlipCallback callback;
   };
 
-  struct FindCallback {
-    explicit FindCallback(uint64_t id) : id(id) {}
-
-    bool operator()(const PageFlip& flip) const { return flip.id == id; }
-
-    const uint64_t id;
-  };
-
   uint64_t next_id_;
 
   std::vector<PageFlip> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageFlipManager);
 };
 
 class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
@@ -201,6 +198,9 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
       : page_flip_manager_(page_flip_manager), controller_(FROM_HERE), fd_(fd) {
     Register();
   }
+
+  IOWatcher(const IOWatcher&) = delete;
+  IOWatcher& operator=(const IOWatcher&) = delete;
 
   ~IOWatcher() override { Unregister(); }
 
@@ -234,8 +234,6 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
   base::MessagePumpLibevent::FdWatchController controller_;
 
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWatcher);
 };
 
 DrmDevice::DrmDevice(const base::FilePath& device_path,
@@ -275,8 +273,8 @@ bool DrmDevice::Initialize() {
   allow_addfb2_modifiers_ =
       GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
 
-  watcher_.reset(
-      new IOWatcher(file_.GetPlatformFile(), page_flip_manager_.get()));
+  watcher_ = std::make_unique<IOWatcher>(file_.GetPlatformFile(),
+                                         page_flip_manager_.get());
 
   return true;
 }
@@ -430,7 +428,7 @@ ScopedDrmPropertyBlob DrmDevice::CreatePropertyBlob(const void* blob,
   int ret = drmModeCreatePropertyBlob(file_.GetPlatformFile(), blob, size, &id);
   DCHECK(!ret && id);
 
-  return ScopedDrmPropertyBlob(new DrmPropertyBlobMetadata(this, id));
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void DrmDevice::DestroyPropertyBlob(uint32_t id) {
@@ -614,6 +612,13 @@ bool DrmDevice::DropMaster() {
   return (drmDropMaster(file_.GetPlatformFile()) == 0);
 }
 
+void DrmDevice::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("device_path", device_path_.value());
+  dict.Add("planes", plane_manager_->planes());
+}
+
 bool DrmDevice::SetGammaRamp(
     uint32_t crtc_id,
     const std::vector<display::GammaRampRGBEntry>& lut) {
@@ -661,6 +666,10 @@ bool DrmDevice::SetGammaRamp(
   TRACE_EVENT0("drm", "DrmDevice::SetGamma");
   return (drmModeCrtcSetGamma(file_.GetPlatformFile(), crtc_id, r.size(), &r[0],
                               &g[0], &b[0]) == 0);
+}
+
+absl::optional<std::string> DrmDevice::GetDriverName() const {
+  return GetDrmDriverNameFromFd(file_.GetPlatformFile());
 }
 
 }  // namespace ui

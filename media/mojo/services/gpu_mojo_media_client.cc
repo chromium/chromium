@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,15 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
@@ -22,52 +26,12 @@
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
-
-#if defined(OS_ANDROID)
-#include "base/memory/ptr_util.h"
-#include "media/base/android/android_cdm_factory.h"
-#include "media/filters/android/media_codec_audio_decoder.h"
-#include "media/gpu/android/android_video_surface_chooser_impl.h"
-#include "media/gpu/android/codec_allocator.h"
-#include "media/gpu/android/direct_shared_image_video_provider.h"
-#include "media/gpu/android/maybe_render_early_manager.h"
-#include "media/gpu/android/media_codec_video_decoder.h"
-#include "media/gpu/android/pooled_shared_image_video_provider.h"
-#include "media/gpu/android/video_frame_factory_impl.h"
-#include "media/mojo/mojom/media_drm_storage.mojom.h"
-#include "media/mojo/mojom/provision_fetcher.mojom.h"
-#include "media/mojo/services/mojo_media_drm_storage.h"
-#include "media/mojo/services/mojo_provision_fetcher.h"
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_WIN)
-#include "media/gpu/windows/d3d11_video_decoder.h"
-#include "ui/gl/direct_composition_surface_win.h"
-#include "ui/gl/gl_angle_util_win.h"
-#endif  // defined(OS_WIN)
-
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
-#include "media/gpu/chromeos/mailbox_video_frame_converter.h"
-#include "media/gpu/chromeos/platform_video_frame_pool.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-
-#if defined(OS_ANDROID)
-#include "media/mojo/services/android_mojo_util.h"
-using media::android_mojo_util::CreateMediaDrmStorage;
-using media::android_mojo_util::CreateProvisionFetcher;
-#endif  // defined(OS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 namespace {
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_LINUX)
 gpu::CommandBufferStub* GetCommandBufferStub(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
@@ -93,36 +57,58 @@ gpu::CommandBufferStub* GetCommandBufferStub(
 
   return stub;
 }
-#endif
 
-#if defined(OS_WIN)
-// Return a callback to get the D3D11 device for D3D11VideoDecoder.  Since it
-// only supports the ANGLE device right now, that's what we return.
-D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
-  return base::BindRepeating(
-      []() { return gl::QueryD3D11DeviceObjectFromANGLE(); });
+SupportedVideoDecoderConfigs GetVDAVideoDecoderConfigs(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
+  VideoDecodeAccelerator::Capabilities capabilities =
+      GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
+          GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
+              gpu_preferences, gpu_workarounds));
+  return ConvertFromSupportedProfiles(
+      capabilities.supported_profiles,
+      capabilities.flags &
+          VideoDecodeAccelerator::Capabilities::SUPPORTS_ENCRYPTED_STREAMS);
 }
-#endif
-
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-// Returns true if |gpu_preferences| says that the direct video decoder is in
-// use.
-bool ShouldUseChromeOSDirectVideoDecoder(
-    const gpu::GpuPreferences& gpu_preferences) {
-#if defined(OS_CHROMEOS)
-  return gpu_preferences.enable_chromeos_direct_video_decoder;
-#else
-  return false;
-#endif
-}
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 }  // namespace
+
+VideoDecoderTraits::~VideoDecoderTraits() = default;
+VideoDecoderTraits::VideoDecoderTraits(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    std::unique_ptr<MediaLog> media_log,
+    RequestOverlayInfoCB request_overlay_info_cb,
+    const gfx::ColorSpace* target_color_space,
+    gpu::GpuPreferences gpu_preferences,
+    gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info,
+    const gpu::GpuDriverBugWorkarounds* gpu_workarounds,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+    GetConfigCacheCB get_cached_configs_cb,
+    GetCommandBufferStubCB get_command_buffer_stub_cb,
+    AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+    : task_runner(std::move(task_runner)),
+      gpu_task_runner(std::move(gpu_task_runner)),
+      media_log(std::move(media_log)),
+      request_overlay_info_cb(request_overlay_info_cb),
+      target_color_space(target_color_space),
+      gpu_preferences(gpu_preferences),
+      gpu_feature_info(gpu_feature_info),
+      gpu_info(gpu_info),
+      gpu_workarounds(gpu_workarounds),
+      gpu_memory_buffer_factory(gpu_memory_buffer_factory),
+      get_cached_configs_cb(std::move(get_cached_configs_cb)),
+      get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
+      android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
+      oop_video_decoder(std::move(oop_video_decoder)) {}
 
 GpuMojoMediaClient::GpuMojoMediaClient(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::GPUInfo& gpu_info,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
@@ -130,221 +116,118 @@ GpuMojoMediaClient::GpuMojoMediaClient(
     : gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       gpu_feature_info_(gpu_feature_info),
+      gpu_info_(gpu_info),
       gpu_task_runner_(std::move(gpu_task_runner)),
       media_gpu_channel_manager_(std::move(media_gpu_channel_manager)),
-      android_overlay_factory_cb_(std::move(android_overlay_factory_cb))
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      ,
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory)
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-{
-}
+      android_overlay_factory_cb_(std::move(android_overlay_factory_cb)),
+      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {}
 
 GpuMojoMediaClient::~GpuMojoMediaClient() = default;
 
 std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreateAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-#if defined(OS_ANDROID)
-  return std::make_unique<MediaCodecAudioDecoder>(task_runner);
-#else
-  return nullptr;
-#endif  // defined(OS_ANDROID)
+  return CreatePlatformAudioDecoder(std::move(task_runner));
 }
 
-SupportedVideoDecoderConfigMap
+std::unique_ptr<AudioEncoder> GpuMojoMediaClient::CreateAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  return base::FeatureList::IsEnabled(kPlatformAudioEncoder)
+             ? CreatePlatformAudioEncoder(std::move(task_runner))
+             : nullptr;
+}
+
+VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
+  return GetPlatformDecoderImplementationType(gpu_workarounds_,
+                                              gpu_preferences_, gpu_info_);
+}
+
+SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
-#if defined(OS_ANDROID)
-  static SupportedVideoDecoderConfigMap supported_configs{
-      {VideoDecoderImplementation::kDefault,
-       MediaCodecVideoDecoder::GetSupportedConfigs()},
-  };
-  return supported_configs;
-#else
-  SupportedVideoDecoderConfigMap supported_config_map;
+  if (!supported_config_cache_) {
+    supported_config_cache_ = GetSupportedVideoDecoderConfigsStatic(
+        gpu_preferences_, gpu_workarounds_, gpu_info_);
 
-#if defined(OS_WIN)
-  // Start with the configurations supported by D3D11VideoDecoder.
-  // VdaVideoDecoder is still used as a fallback.
-
-  if (base::FeatureList::IsEnabled(kD3D11VideoDecoder)) {
-    if (!d3d11_supported_configs_) {
-      d3d11_supported_configs_ =
-          D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
-              gpu_preferences_, gpu_workarounds_, GetD3D11DeviceCallback());
+    // Once per GPU process record accelerator information. Profile support is
+    // often just manufactured and not tested, so just record the base codec.
+    bool has_accelerated_h264 = false;
+    bool has_accelerated_h265 = false;
+    bool has_accelerated_vp9 = false;
+    bool has_accelerated_av1 = false;
+    if (supported_config_cache_) {
+      for (const auto& config : *supported_config_cache_) {
+        if (config.profile_min >= H264PROFILE_MIN &&
+            config.profile_max <= H264PROFILE_MAX) {
+          has_accelerated_h264 = true;
+        } else if (config.profile_min >= VP9PROFILE_MIN &&
+                   config.profile_max <= VP9PROFILE_MAX) {
+          has_accelerated_vp9 = true;
+        } else if (config.profile_min >= AV1PROFILE_MIN &&
+                   config.profile_max <= AV1PROFILE_MAX) {
+          has_accelerated_av1 = true;
+        } else if ((config.profile_min >= HEVCPROFILE_MIN &&
+                    config.profile_max <= HEVCPROFILE_MAX) ||
+                   (config.profile_min >= HEVCPROFILE_EXT_MIN &&
+                    config.profile_max <= HEVCPROFILE_EXT_MAX)) {
+          has_accelerated_h265 = true;
+        }
+      }
     }
-    supported_config_map[VideoDecoderImplementation::kAlternate] =
-        *d3d11_supported_configs_;
+
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.H264",
+                              has_accelerated_h264);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.H265",
+                              has_accelerated_h265);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.VP9",
+                              has_accelerated_vp9);
+    base::UmaHistogramBoolean("Media.HasAcceleratedVideoDecode.AV1",
+                              has_accelerated_av1);
   }
+  return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
+}
 
-#elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences_)) {
-    if (!cros_supported_configs_) {
-      cros_supported_configs_ =
-          ChromeosVideoDecoderFactory::GetSupportedConfigs(gpu_workarounds_);
-    }
-
-    supported_config_map[VideoDecoderImplementation::kDefault] =
-        *cros_supported_configs_;
-    return supported_config_map;
-  }
-#endif
-
-#if defined(OS_WIN)
-  if (gpu_workarounds_.disable_dxva_video_decoder) {
-    // If DXVA isn't supported, then return without any supported configs for
-    // the |kDefault| decoder.
-    return supported_config_map;
-  }
-#endif  // defined(OS_WIN)
-
-  auto& default_configs =
-      supported_config_map[VideoDecoderImplementation::kDefault];
-
-  // VdaVideoDecoder will be used to wrap a VDA. Add the configs supported
-  // by the VDA implementation.
-  // TODO(sandersd): Move conversion code into VdaVideoDecoder.
-  VideoDecodeAccelerator::Capabilities capabilities =
-      GpuVideoAcceleratorUtil::ConvertGpuToMediaDecodeCapabilities(
-          GpuVideoDecodeAcceleratorFactory::GetDecoderCapabilities(
-              gpu_preferences_, gpu_workarounds_));
-  bool allow_encrypted =
-      capabilities.flags &
-      VideoDecodeAccelerator::Capabilities::SUPPORTS_ENCRYPTED_STREAMS;
-  SupportedVideoDecoderConfigs supported_configs = ConvertFromSupportedProfiles(
-      capabilities.supported_profiles, allow_encrypted);
-  default_configs.insert(default_configs.end(), supported_configs.begin(),
-                         supported_configs.end());
-
-  return supported_config_map;
-#endif  // defined(OS_ANDROID)
+absl::optional<SupportedVideoDecoderConfigs>
+GpuMojoMediaClient::GetSupportedVideoDecoderConfigsStatic(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+    const gpu::GPUInfo& gpu_info) {
+  return GetPlatformSupportedVideoDecoderConfigs(
+      gpu_workarounds, gpu_preferences, gpu_info,
+      base::BindOnce(&GetVDAVideoDecoderConfigs, gpu_preferences,
+                     gpu_workarounds));
 }
 
 std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
-    VideoDecoderImplementation implementation,
     RequestOverlayInfoCB request_overlay_info_cb,
-    const gfx::ColorSpace& target_color_space) {
+    const gfx::ColorSpace& target_color_space,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   // All implementations require a command buffer.
   if (!command_buffer_id)
     return nullptr;
-
-  std::unique_ptr<VideoDecoder> video_decoder;
-
-  switch (implementation) {
-    case VideoDecoderImplementation::kDefault: {
-#if defined(OS_ANDROID)
-      auto get_stub_cb = base::BindRepeating(
+  std::unique_ptr<MediaLog> log =
+      media_log ? media_log->Clone() : std::make_unique<media::NullMediaLog>();
+  VideoDecoderTraits traits(
+      task_runner, gpu_task_runner_, std::move(log),
+      std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
+      gpu_feature_info_, gpu_info_, &gpu_workarounds_,
+      gpu_memory_buffer_factory_,
+      // CreatePlatformVideoDecoder does not keep a reference to |traits|
+      // so this bound method will not outlive |this|
+      base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,
+                          base::Unretained(this)),
+      base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
-          command_buffer_id->channel_token, command_buffer_id->route_id);
-      std::unique_ptr<SharedImageVideoProvider> image_provider;
-      image_provider = std::make_unique<DirectSharedImageVideoProvider>(
-          gpu_task_runner_, get_stub_cb);
-      if (base::FeatureList::IsEnabled(kUsePooledSharedImageVideoProvider)) {
-        // Wrap |image_provider| in a pool.
-        image_provider = PooledSharedImageVideoProvider::Create(
-            gpu_task_runner_, get_stub_cb, std::move(image_provider));
-      }
-      // TODO(liberato): Create this only if we're using Vulkan, else it's
-      // ignored.  If we can tell that here, then VideoFrameFactory can use it
-      // as a signal about whether it's supposed to get YCbCrInfo rather than
-      // requiring the provider to set |is_vulkan| in the ImageRecord.
-      auto frame_info_helper =
-          FrameInfoHelper::Create(gpu_task_runner_, std::move(get_stub_cb));
-      video_decoder = MediaCodecVideoDecoder::Create(
-          gpu_preferences_, gpu_feature_info_, media_log->Clone(),
-          DeviceInfo::GetInstance(),
-          CodecAllocator::GetInstance(gpu_task_runner_),
-          std::make_unique<AndroidVideoSurfaceChooserImpl>(
-              DeviceInfo::GetInstance()->IsSetOutputSurfaceSupported()),
-          android_overlay_factory_cb_, std::move(request_overlay_info_cb),
-          std::make_unique<VideoFrameFactoryImpl>(
-              gpu_task_runner_, gpu_preferences_, std::move(image_provider),
-              MaybeRenderEarlyManager::Create(gpu_task_runner_),
-              std::move(frame_info_helper)));
+          command_buffer_id->channel_token, command_buffer_id->route_id),
+      android_overlay_factory_cb_, std::move(oop_video_decoder));
 
-#elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-      if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences_)) {
-        auto frame_pool = std::make_unique<PlatformVideoFramePool>(
-            gpu_memory_buffer_factory_);
-        auto frame_converter = MailboxVideoFrameConverter::Create(
-            base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
-                                base::Unretained(frame_pool.get())),
-            gpu_task_runner_,
-            base::BindRepeating(&GetCommandBufferStub, gpu_task_runner_,
-                                media_gpu_channel_manager_,
-                                command_buffer_id->channel_token,
-                                command_buffer_id->route_id));
-        video_decoder = ChromeosVideoDecoderFactory::Create(
-            task_runner, std::move(frame_pool), std::move(frame_converter),
-            media_log->Clone());
-      } else {
-        video_decoder = VdaVideoDecoder::Create(
-            task_runner, gpu_task_runner_, media_log->Clone(),
-            target_color_space, gpu_preferences_, gpu_workarounds_,
-            base::BindRepeating(&GetCommandBufferStub, gpu_task_runner_,
-                                media_gpu_channel_manager_,
-                                command_buffer_id->channel_token,
-                                command_buffer_id->route_id));
-      }
-
-#elif defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-#if defined(OS_WIN)
-      // Don't instantiate the DXVA decoder if it's not supported.
-      if (gpu_workarounds_.disable_dxva_video_decoder)
-        return nullptr;
-#endif  // defined(OS_WIN)
-      video_decoder = VdaVideoDecoder::Create(
-          task_runner, gpu_task_runner_, media_log->Clone(), target_color_space,
-          gpu_preferences_, gpu_workarounds_,
-          base::BindRepeating(&GetCommandBufferStub, gpu_task_runner_,
-                              media_gpu_channel_manager_,
-                              command_buffer_id->channel_token,
-                              command_buffer_id->route_id));
-#endif  // defined(OS_ANDROID)
-    } break;
-
-    case VideoDecoderImplementation::kAlternate:
-#if defined(OS_WIN)
-      if (base::FeatureList::IsEnabled(kD3D11VideoDecoder)) {
-        // If nothing has cached the configs yet, then do so now.
-        if (!d3d11_supported_configs_)
-          GetSupportedVideoDecoderConfigs();
-
-        const bool enable_hdr =
-            gl::DirectCompositionSurfaceWin::IsHDRSupported() ||
-            base::FeatureList::IsEnabled(kD3D11VideoDecoderForceEnableHDR);
-
-        video_decoder = D3D11VideoDecoder::Create(
-            gpu_task_runner_, media_log->Clone(), gpu_preferences_,
-            gpu_workarounds_,
-            base::BindRepeating(&GetCommandBufferStub, gpu_task_runner_,
-                                media_gpu_channel_manager_,
-                                command_buffer_id->channel_token,
-                                command_buffer_id->route_id),
-            GetD3D11DeviceCallback(), *d3d11_supported_configs_, enable_hdr);
-      }
-#endif  // defined(OS_WIN)
-      break;
-  };  // switch
-
-  // |video_decoder| may be null if we don't support |implementation|.
-  return video_decoder;
+  return CreatePlatformVideoDecoder(traits);
 }
 
 std::unique_ptr<CdmFactory> GpuMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
-#if defined(OS_ANDROID)
-  return std::make_unique<AndroidCdmFactory>(
-      base::BindRepeating(&CreateProvisionFetcher, frame_interfaces),
-      base::BindRepeating(&CreateMediaDrmStorage, frame_interfaces));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<chromeos::ChromeOsCdmFactory>(frame_interfaces);
-#else
-  return nullptr;
-#endif
+  return CreatePlatformCdmFactory(frame_interfaces);
 }
 
 }  // namespace media

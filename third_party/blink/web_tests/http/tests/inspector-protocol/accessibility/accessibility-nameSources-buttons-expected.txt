@@ -1,5 +1,10 @@
 Tests name sources in buttons.
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button1
     ignored : false
     name : {
@@ -28,6 +33,7 @@ Tests name sources in buttons.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -50,6 +56,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button2
     ignored : false
     name : {
@@ -83,6 +94,7 @@ Tests name sources in buttons.
         value : button2-content
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -105,6 +117,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button3
     ignored : false
     name : {
@@ -133,6 +150,7 @@ Tests name sources in buttons.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -155,6 +173,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button4
     ignored : false
     name : {
@@ -188,6 +211,7 @@ Tests name sources in buttons.
         value : cake
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -210,6 +234,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button5
     ignored : false
     name : {
@@ -243,6 +272,7 @@ Tests name sources in buttons.
         value : I love !
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -265,6 +295,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button6
     ignored : false
     name : {
@@ -298,6 +333,7 @@ Tests name sources in buttons.
         value : I love cake !
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -320,6 +356,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button7
     ignored : false
     name : {
@@ -352,6 +393,7 @@ Tests name sources in buttons.
         value : button7-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -374,6 +416,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button8-title
@@ -415,6 +462,7 @@ Tests name sources in buttons.
         value : button8-content
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -437,6 +485,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button9
     ignored : false
     name : {
@@ -469,6 +522,7 @@ Tests name sources in buttons.
         value : button9-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -491,6 +545,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button10-title
@@ -532,6 +591,7 @@ Tests name sources in buttons.
         value : cake
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -554,6 +614,11 @@ Tests name sources in buttons.
     }
 }
 {
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button11
     ignored : false
     name : {
@@ -601,6 +666,7 @@ Tests name sources in buttons.
         value : label-for-button11
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
     return;
 
   NSString* key = base::SysUTF8ToNSString(name_);
-  NSString* value_ns = base::SysUTF8ToNSString(value.as_string());
+  NSString* value_ns = base::SysUTF8ToNSString(value);
 
   [[BreakpadController sharedInstance] addUploadParameter:value_ns forKey:key];
   [[PreviousSessionInfo sharedInstance] setReportParameterValue:value_ns

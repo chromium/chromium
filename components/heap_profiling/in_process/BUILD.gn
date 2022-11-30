@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,12 +11,16 @@ source_set("in_process") {
     sources = [
       "heap_profiler_controller.cc",
       "heap_profiler_controller.h",
+      "heap_profiler_parameters.cc",
+      "heap_profiler_parameters.h",
     ]
 
     deps = [
       "//base",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
+      "//components/services/heap_profiling/public/cpp:cpp",
+      "//components/version_info",
     ]
   }
 }
@@ -27,12 +31,18 @@ source_set("unit_tests") {
   # HeapProfilerController's dependencies are not compiled on iOS unless
   # use_allocator_shim is true.
   if (!is_ios || use_allocator_shim) {
-    sources = [ "heap_profiler_controller_unittest.cc" ]
+    sources = [
+      "heap_profiler_controller_unittest.cc",
+      "heap_profiler_parameters_unittest.cc",
+    ]
     deps = [
       ":in_process",
       "//base/test:test_support",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
+      "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//components/version_info",
+      "//mojo/public/cpp/bindings",
     ]
   }
 }

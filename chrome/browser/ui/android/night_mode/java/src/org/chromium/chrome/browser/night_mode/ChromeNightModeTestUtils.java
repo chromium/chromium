@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ public class ChromeNightModeTestUtils {
      */
     public static void tearDownNightModeAfterChromeActivityDestroyed() {
         NightModeUtils.setNightModeSupportedForTesting(null);
-        GlobalNightModeStateProviderHolder.resetInstanceForTesting();
+        GlobalNightModeStateProviderHolder.setInstanceForTesting(null);
         SharedPreferencesManager.getInstance().removeKey(ChromePreferenceKeys.UI_THEME_SETTING);
     }
 }

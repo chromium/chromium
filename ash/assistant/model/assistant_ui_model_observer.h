@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,17 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 enum class AssistantEntryPoint;
 enum class AssistantExitPoint;
 }  // namespace assistant
-}  // namespace chromeos
 
-namespace ash {
-
-enum class AssistantUiMode;
 enum class AssistantVisibility;
 
 // A checked observer which receives notification of changes to the Assistant UI
@@ -28,13 +24,14 @@ enum class AssistantVisibility;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
     : public base::CheckedObserver {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
 
-  // Invoked when the UI mode is changed. If |due_to_interaction| is true, the
-  // UI mode was changed as a result of an Assistant interaction.
-  virtual void OnUiModeChanged(AssistantUiMode ui_mode,
-                               bool due_to_interaction) {}
+  AssistantUiModelObserver(const AssistantUiModelObserver&) = delete;
+  AssistantUiModelObserver& operator=(const AssistantUiModelObserver&) = delete;
+
+  // Invoked when keyboard traversal mode is changed (enabled/disabled).
+  virtual void OnKeyboardTraversalModeChanged(bool keyboard_traversal_mode) {}
 
   // Invoked when the UI visibility is changed from |old_visibility| to
   // |new_visibility|. The |source| of the visibility change event is provided
@@ -42,8 +39,8 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
   virtual void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) {}
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) {}
 
   // Invoked when the usable display work area is changed. Observers should
   // respond to this event by ensuring they are sized/positioned within the
@@ -53,8 +50,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
  protected:
   AssistantUiModelObserver() = default;
   ~AssistantUiModelObserver() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantUiModelObserver);
 };
 
 }  // namespace ash

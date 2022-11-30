@@ -1,11 +1,16 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/media/router/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+
+declare_args() {
+  # Set to true to build code that supports the Open Screen Protocol.
+  # OSP is experimental and not yet feature-complete.
+  enable_openscreen_protocol = false
+}
 
 source_set("data_decoder_util") {
   deps = [
@@ -18,6 +23,19 @@ source_set("data_decoder_util") {
   ]
 }
 
+source_set("logger_list") {
+  sources = [
+    "logger_list.cc",
+    "logger_list.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/media_router/browser",
+    "//content/public/browser",
+  ]
+}
+
 static_library("media_router_feature") {
   sources = [
     "media_router_feature.cc",
@@ -25,16 +43,15 @@ static_library("media_router_feature") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles",
     "//chrome/common:constants",
+    "//components/media_router/common:common",
     "//components/prefs:prefs",
     "//components/user_prefs:user_prefs",
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
-    "//extensions/buildflags:buildflags",
     "//media",
-    "//ui/base:buildflags",
   ]
 }
 
@@ -44,11 +61,12 @@ static_library("router") {
     ":media_router_feature",
     "//base",
     "//chrome:strings",
+    "//chrome/browser/profiles",
     "//chrome/common:constants",
-    "//components/cast_channel",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
-    "//components/openscreen_platform:openscreen_platform_network_service",
+    "//components/media_router/common/providers/cast/channel",
+    "//components/openscreen_platform",
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
@@ -63,7 +81,6 @@ static_library("router") {
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
-    "//components/sessions:sessions",
   ]
   sources = [
     "chrome_media_router_factory.cc",
@@ -72,42 +89,30 @@ static_library("router") {
     "presentation/chrome_local_presentation_manager_factory.h",
   ]
 
-  if (enable_extensions) {
+  if (!is_android) {
     deps += [
-      "discovery",
-      "//build:chromeos_buildflags",
+      # We can't depend on //chrome/browser/ui due to introducing a cyclic
+      # dependency. Remove this target from the `allow_circular_includes_from`
+      # list in chrome/browser/ui/BUILD.gn once the issues is resolved.
+      # TODO(crbug.com/1030821): Resolve circular dependencies.
+
+      "discovery:discovery",
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//components/embedder_support:browser_util",
       "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
-
-      # We can't depend on //chrome/browser/ui due to introducing a cyclic
-      # dependency, so we have to depend on this directly to fix include
-      # resolution for browser.h, which is used in multiple extension-only
-      # files.
-      # TODO(crbug.com/1030821): Resolve circular dependencies
-      "//components/paint_preview/buildflags",
-      "//components/signin/public/base:signin_buildflags",
-      "//components/translate/content/common",
       "//components/ukm/content:content",
       "//components/version_info:version_info",
-      "//extensions/browser",
-      "//extensions/buildflags",
-      "//extensions/common",
+      "//media/remoting:remoting_device_capability",
       "//mojo/public/cpp/bindings",
       "//services/metrics/public/cpp:ukm_builders",
       "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
-      "//ui/base:buildflags",
     ]
 
     public_deps += [ "//components/media_router/common/mojom:logger" ]
 
     sources += [
-      "event_page_request_manager.cc",
-      "event_page_request_manager.h",
-      "event_page_request_manager_factory.cc",
-      "event_page_request_manager_factory.h",
       "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
       "mojo/media_router_mojo_impl.cc",
@@ -156,14 +161,14 @@ static_library("router") {
       "providers/dial/dial_media_route_provider.h",
       "providers/dial/dial_media_route_provider_metrics.cc",
       "providers/dial/dial_media_route_provider_metrics.h",
-      "providers/extension/extension_media_route_provider_proxy.cc",
-      "providers/extension/extension_media_route_provider_proxy.h",
       "providers/wired_display/wired_display_media_route_provider.cc",
       "providers/wired_display/wired_display_media_route_provider.h",
       "providers/wired_display/wired_display_presentation_receiver.h",
       "providers/wired_display/wired_display_presentation_receiver_factory.cc",
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
+
+    deps += [ ":logger_list" ]
 
     if (is_win) {
       sources += [
@@ -174,7 +179,7 @@ static_library("router") {
       deps += [ "//chrome/installer/util:with_no_strings" ]
     }
 
-    if (enable_openscreen) {
+    if (enable_openscreen_protocol) {
       sources += [
         "providers/openscreen/discovery/open_screen_listener.cc",
         "providers/openscreen/discovery/open_screen_listener.h",
@@ -187,9 +192,15 @@ static_library("router") {
       deps += [
         "//third_party/openscreen/src/osp/public",
         "//third_party/openscreen/src/platform",
-        "//third_party/openscreen/src/util",
       ]
     }
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//extensions/buildflags:buildflags",
+      "//extensions/common",
+    ]
   }
 }
 
@@ -197,17 +208,24 @@ if (!is_android) {
   static_library("test_support") {
     testonly = true
     deps = [
-      "discovery",
+      "discovery:discovery",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/media_router/browser:test_support",
+      "//components/media_router/common:test_support",
       "//components/media_router/common/mojom:media_router",
       "//components/media_router/common/mojom:media_router_test_interfaces",
-      "//extensions/browser",
-      "//extensions/common",
+      "//components/media_router/common/providers/cast/channel",
+      "//components/media_router/common/providers/cast/channel:test_support",
       "//testing/gmock",
     ]
     public_deps = [ ":router" ]
     sources = [
+      "discovery/access_code/access_code_test_util.cc",
+      "discovery/access_code/access_code_test_util.h",
+      "discovery/mdns/cast_media_sink_service_test_helpers.cc",
+      "discovery/mdns/cast_media_sink_service_test_helpers.h",
       "providers/test/test_media_route_provider.cc",
       "providers/test/test_media_route_provider.h",
       "test/media_router_mojo_test.cc",
@@ -238,10 +256,11 @@ source_set("unittests") {
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",
-    "//components/cast_channel:cast_channel",
-    "//components/cast_channel:test_support",
+    "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
+    "//components/media_router/common/providers/cast/channel",
+    "//components/media_router/common/providers/cast/channel:test_support",
     "//content/test:test_support",
     "//media:test_support",
     "//services/data_decoder/public/cpp:test_support",
@@ -253,13 +272,19 @@ source_set("unittests") {
   if (!is_android) {
     sources += [
       # In-browser discovery is not used by Android for now.
+      "discovery/access_code/access_code_cast_discovery_interface_unittest.cc",
+      "discovery/access_code/access_code_cast_feature_unittest.cc",
+      "discovery/access_code/access_code_cast_pref_updater_unittest.cc",
+      "discovery/access_code/access_code_cast_sink_service_factory_unittest.cc",
+      "discovery/access_code/access_code_cast_sink_service_unittest.cc",
+      "discovery/access_code/access_code_media_sink_util_unittest.cc",
       "discovery/dial/device_description_fetcher_unittest.cc",
       "discovery/dial/device_description_service_unittest.cc",
       "discovery/dial/dial_app_discovery_service_unittest.cc",
       "discovery/dial/dial_device_data_unittest.cc",
       "discovery/dial/dial_media_sink_service_impl_unittest.cc",
       "discovery/dial/dial_registry_unittest.cc",
-      "discovery/dial/dial_service_unittest.cc",
+      "discovery/dial/dial_service_impl_unittest.cc",
       "discovery/dial/dial_url_fetcher_unittest.cc",
       "discovery/dial/safe_dial_app_info_parser_unittest.cc",
       "discovery/dial/safe_dial_device_description_parser_unittest.cc",
@@ -269,11 +294,9 @@ source_set("unittests") {
       "discovery/mdns/cast_media_sink_service_unittest.cc",
       "discovery/mdns/dns_sd_registry_unittest.cc",
       "discovery/media_sink_discovery_metrics_unittest.cc",
-      "event_page_request_manager_unittest.cc",
+      "logger_list_unittest.cc",
       "media_router_feature_unittest.cc",
-      "mojo/media_router_desktop_unittest.cc",
       "mojo/media_router_mojo_impl_unittest.cc",
-      "mojo/media_router_mojo_metrics_unittest.cc",
       "mojo/media_sink_service_status_unittest.cc",
       "providers/cast/app_activity_unittest.cc",
       "providers/cast/cast_activity_manager_unittest.cc",
@@ -296,21 +319,25 @@ source_set("unittests") {
       "providers/dial/dial_activity_manager_unittest.cc",
       "providers/dial/dial_internal_message_util_unittest.cc",
       "providers/dial/dial_media_route_provider_unittest.cc",
-      "providers/extension/extension_media_route_provider_proxy_unittest.cc",
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
     deps += [
+      ":logger_list",
       ":test_support",
       "//chrome/browser/media/router/discovery:discovery",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
+      "//services/preferences/public/cpp:cpp",
+      "//third_party/openscreen/src/cast/common:public",
     ]
   }
 
-  if (enable_openscreen) {
+  if (enable_openscreen_protocol) {
     include_dirs = [ "//third_party/openscreen/src" ]
-
     sources += [
       "providers/openscreen/discovery/open_screen_listener_unittest.cc",
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
@@ -318,16 +345,16 @@ source_set("unittests") {
   }
 }
 
-if (enable_openscreen) {
+# TODO(crbug.com/1290541): Fails to link on Fuchsia builds.
+# TODO(https://issuetracker.google.com/236160471): CDDL compiler doesn't build
+# on Windows.
+if (!is_fuchsia && !is_win) {
   test("openscreen_unittests") {
     deps = [
       "//base/test:run_all_unittests",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/test:test_support",
-      "//components/openscreen_platform:openscreen_platform_network_service",
+      "//components/media_router/common/providers/cast/certificate:openscreen_certificate_verifier",
+      "//components/openscreen_platform",
       "//testing/gmock",
-      "//third_party/blink/public/mojom:mojom_platform_headers",
       "//third_party/openscreen/src:openscreen_unittests_all",
     ]
   }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/values.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
@@ -19,32 +18,31 @@ namespace content {
 
 // Returns true if zero-copy uploads is on (via flags, or platform default).
 // Only one of one-copy and zero-copy can be enabled at a time.
-CONTENT_EXPORT bool IsZeroCopyUploadEnabled();
+bool IsZeroCopyUploadEnabled();
 
 // Returns true if a partial raster is on (via flags).
-CONTENT_EXPORT bool IsPartialRasterEnabled();
+bool IsPartialRasterEnabled();
 
 // Returns true if all compositor resources should use GPU memory buffers.
-CONTENT_EXPORT bool IsGpuMemoryBufferCompositorResourcesEnabled();
+bool IsGpuMemoryBufferCompositorResourcesEnabled();
 
 // Returns the number of multisample antialiasing samples (via flags) for
 // GPU rasterization.
-CONTENT_EXPORT int GpuRasterizationMSAASampleCount();
+int GpuRasterizationMSAASampleCount();
 
 // Returns the number of raster threads to use for compositing.
-CONTENT_EXPORT int NumberOfRendererRasterThreads();
+int NumberOfRendererRasterThreads();
 
 // Returns true if main thread can be pipelined with activation.
-CONTENT_EXPORT bool IsMainFrameBeforeActivationEnabled();
+bool IsMainFrameBeforeActivationEnabled();
 
-CONTENT_EXPORT std::unique_ptr<base::DictionaryValue> GetFeatureStatus();
-CONTENT_EXPORT std::unique_ptr<base::ListValue> GetProblems();
-CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkarounds();
+base::Value GetFeatureStatus();
+base::Value GetProblems();
+std::vector<std::string> GetDriverBugWorkarounds();
 
-CONTENT_EXPORT std::unique_ptr<base::DictionaryValue>
-GetFeatureStatusForHardwareGpu();
-CONTENT_EXPORT std::unique_ptr<base::ListValue> GetProblemsForHardwareGpu();
-CONTENT_EXPORT std::vector<std::string> GetDriverBugWorkaroundsForHardwareGpu();
+base::Value GetFeatureStatusForHardwareGpu();
+base::Value GetProblemsForHardwareGpu();
+std::vector<std::string> GetDriverBugWorkaroundsForHardwareGpu();
 
 }  // namespace content
 

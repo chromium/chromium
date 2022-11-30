@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,18 +22,18 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kInactive";
     case WindowStateType::kFullscreen:
       return stream << "kFullscreen";
-    case WindowStateType::kLeftSnapped:
+    case WindowStateType::kPrimarySnapped:
       return stream << "kLeftSnapped";
-    case WindowStateType::kRightSnapped:
+    case WindowStateType::kSecondarySnapped:
       return stream << "kRightSnapped";
-    case WindowStateType::kAutoPositioned:
-      return stream << "kAutoPositioned";
     case WindowStateType::kPinned:
       return stream << "kPinned";
     case WindowStateType::kTrustedPinned:
       return stream << "kTrustedPinned";
     case WindowStateType::kPip:
       return stream << "kPip";
+    case WindowStateType::kFloated:
+      return stream << "kFloated";
   }
 
   NOTREACHED();
@@ -65,10 +65,10 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kDefault:
       return ui::SHOW_STATE_DEFAULT;
     case WindowStateType::kNormal:
-    case WindowStateType::kRightSnapped:
-    case WindowStateType::kLeftSnapped:
-    case WindowStateType::kAutoPositioned:
+    case WindowStateType::kSecondarySnapped:
+    case WindowStateType::kPrimarySnapped:
     case WindowStateType::kPip:
+    case WindowStateType::kFloated:
       return ui::SHOW_STATE_NORMAL;
 
     case WindowStateType::kMinimized:
@@ -86,10 +86,13 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
   return ui::SHOW_STATE_DEFAULT;
 }
 
-bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
-  return type == WindowStateType::kFullscreen ||
-         type == WindowStateType::kPinned ||
+bool IsPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kPinned ||
          type == WindowStateType::kTrustedPinned;
+}
+
+bool IsFullscreenOrPinnedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kFullscreen || IsPinnedWindowStateType(type);
 }
 
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type) {
@@ -105,19 +108,9 @@ bool IsNormalWindowStateType(WindowStateType type) {
   return type == WindowStateType::kNormal || type == WindowStateType::kDefault;
 }
 
-bool IsValidWindowStateType(int64_t value) {
-  return value == int64_t(WindowStateType::kDefault) ||
-         value == int64_t(WindowStateType::kNormal) ||
-         value == int64_t(WindowStateType::kMinimized) ||
-         value == int64_t(WindowStateType::kMaximized) ||
-         value == int64_t(WindowStateType::kInactive) ||
-         value == int64_t(WindowStateType::kFullscreen) ||
-         value == int64_t(WindowStateType::kLeftSnapped) ||
-         value == int64_t(WindowStateType::kRightSnapped) ||
-         value == int64_t(WindowStateType::kAutoPositioned) ||
-         value == int64_t(WindowStateType::kPinned) ||
-         value == int64_t(WindowStateType::kTrustedPinned) ||
-         value == int64_t(WindowStateType::kPip);
+bool IsSnappedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kPrimarySnapped ||
+         type == WindowStateType::kSecondarySnapped;
 }
 
 }  // namespace chromeos

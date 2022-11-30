@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,13 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/loopback_server.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+
+namespace sync_pb {
+class SyncEntity;
+class LoopbackServerEntity;
+enum LoopbackServerEntity_Type : int;
+}  // namespace sync_pb
 
 namespace syncer {
 

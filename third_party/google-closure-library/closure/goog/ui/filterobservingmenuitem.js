@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Menu item observing the filter text in a
@@ -24,6 +16,9 @@ goog.provide('goog.ui.FilterObservingMenuItem');
 goog.require('goog.ui.FilterObservingMenuItemRenderer');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.registry');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.ui.ControlContent');
+goog.requireType('goog.ui.MenuItemRenderer');
 
 
 
@@ -42,12 +37,12 @@ goog.require('goog.ui.registry');
  */
 goog.ui.FilterObservingMenuItem = function(
     content, opt_model, opt_domHelper, opt_renderer) {
+  'use strict';
   goog.ui.MenuItem.call(
       this, content, opt_model, opt_domHelper,
       opt_renderer || new goog.ui.FilterObservingMenuItemRenderer());
 };
 goog.inherits(goog.ui.FilterObservingMenuItem, goog.ui.MenuItem);
-goog.tagUnsealableClass(goog.ui.FilterObservingMenuItem);
 
 
 /**
@@ -60,6 +55,7 @@ goog.ui.FilterObservingMenuItem.prototype.observer_ = null;
 
 /** @override */
 goog.ui.FilterObservingMenuItem.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.FilterObservingMenuItem.superClass_.enterDocument.call(this);
   this.callObserver();
 };
@@ -70,6 +66,7 @@ goog.ui.FilterObservingMenuItem.prototype.enterDocument = function() {
  * @param {Function} f function(goog.ui.FilterObservingMenuItem, string).
  */
 goog.ui.FilterObservingMenuItem.prototype.setObserver = function(f) {
+  'use strict';
   this.observer_ = f;
   this.callObserver();
 };
@@ -80,6 +77,7 @@ goog.ui.FilterObservingMenuItem.prototype.setObserver = function(f) {
  * @param {?string=} opt_str Filter string.
  */
 goog.ui.FilterObservingMenuItem.prototype.callObserver = function(opt_str) {
+  'use strict';
   if (this.observer_) {
     this.observer_(this, opt_str || '');
   }
@@ -90,6 +88,7 @@ goog.ui.FilterObservingMenuItem.prototype.callObserver = function(opt_str) {
 // goog.ui.FilterObservingMenuItemRenderer.
 goog.ui.registry.setDecoratorByClassName(
     goog.ui.FilterObservingMenuItemRenderer.CSS_CLASS, function() {
+      'use strict';
       // FilterObservingMenuItem defaults to using
       // FilterObservingMenuItemRenderer.
       return new goog.ui.FilterObservingMenuItem(null);

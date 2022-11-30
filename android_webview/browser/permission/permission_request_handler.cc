@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ void PermissionRequestHandler::PreauthorizePermission(const GURL& origin,
   if (!resources)
     return;
 
-  std::string key = origin.GetOrigin().spec();
+  std::string key = origin.DeprecatedGetOriginAsURL().spec();
   if (key.empty()) {
     LOG(ERROR) << "The origin of preauthorization is empty, ignore it.";
     return;
@@ -133,7 +133,7 @@ void PermissionRequestHandler::PruneRequests() {
 bool PermissionRequestHandler::Preauthorized(const GURL& origin,
                                              int64_t resources) {
   std::map<std::string, int64_t>::iterator i =
-      preauthorized_permission_.find(origin.GetOrigin().spec());
+      preauthorized_permission_.find(origin.DeprecatedGetOriginAsURL().spec());
 
   return i != preauthorized_permission_.end() &&
          (resources & i->second) == resources;

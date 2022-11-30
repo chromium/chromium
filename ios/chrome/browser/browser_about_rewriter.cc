@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "components/url_formatter/url_fixer.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "url/url_constants.h"
 
@@ -48,7 +47,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
 
   // Translate chrome://newtab back into about://newtab so the WebState shows a
   // blank page under the NTP.
-  if (url->GetOrigin() == kChromeUINewTabURL) {
+  if (url->DeprecatedGetOriginAsURL() == kChromeUINewTabURL) {
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kAboutScheme);
     *url = url->ReplaceComponents(replacements);
@@ -56,7 +55,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
   }
 
   std::string host(url->host());
-  for (size_t i = 0; i < base::size(kHostReplacements); ++i) {
+  for (size_t i = 0; i < std::size(kHostReplacements); ++i) {
     if (host != kHostReplacements[i].old_host_name)
       continue;
 

@@ -1,0 +1,43 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds cannot depend on //chromeos/ash")
+
+component("session_manager") {
+  defines = [ "IS_SESSION_MANAGER_IMPL" ]
+
+  public_deps = [ ":login_manager_proto" ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/arc:arc_proto",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/constants",
+    "//components/policy/proto",
+    "//crypto",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_session_manager_client.cc",
+    "fake_session_manager_client.h",
+    "session_manager_client.cc",
+    "session_manager_client.h",
+  ]
+}
+
+proto_library("login_manager_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/login_manager/login_screen_storage.proto",
+    "//third_party/cros_system_api/dbus/login_manager/policy_descriptor.proto",
+  ]
+
+  proto_out_dir = "chromeos/ash/components/dbus/login_manager"
+}

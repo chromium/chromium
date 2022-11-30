@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,14 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
 
@@ -37,7 +37,6 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-class NetworkIsolationKey;
 
 namespace android_webview {
 
@@ -72,14 +71,6 @@ int AndroidGetAddrInfoForNetwork(net_handle_t network,
   return getaddrinfofornetwork(network, node, service, hints, res);
 }
 
-net::IPAddress StringToIPAddress(const std::string& address) {
-  net::IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(std::string(address))) {
-    LOG(ERROR) << "Not a supported IP literal: " << std::string(address);
-  }
-  return ip_address;
-}
-
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
   struct ThreadHolder {
     base::Thread thread_;
@@ -111,7 +102,7 @@ class HostResolver : public proxy_resolver::ProxyHostResolver {
   std::unique_ptr<proxy_resolver::ProxyHostResolver::Request> CreateRequest(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey&) override {
+      const net::NetworkAnonymizationKey&) override {
     return std::make_unique<RequestImpl>(hostname, operation, net_handle_,
                                          link_addresses_);
   }
@@ -275,7 +266,7 @@ class Bindings : public proxy_resolver::ProxyResolverV8Tracing::Bindings {
   }
 
  private:
-  HostResolver* host_resolver_;
+  raw_ptr<HostResolver> host_resolver_;
 };
 
 
@@ -333,7 +324,7 @@ class Job {
   base::OnceClosure task_;
   int net_error_ = net::ERR_ABORTED;
   base::WaitableEvent event_;
-  AwPacProcessor* processor_;
+  raw_ptr<AwPacProcessor> processor_;
 };
 
 class SetProxyScriptJob : public Job {
@@ -429,8 +420,9 @@ void AwPacProcessor::MakeProxyRequestNative(
 
   if (proxy_resolver_) {
     proxy_resolver_->GetProxyForURL(
-        GURL(url), net::NetworkIsolationKey(), proxy_info, std::move(complete),
-        request, std::make_unique<Bindings>(host_resolver_.get()));
+        GURL(url), net::NetworkAnonymizationKey(), proxy_info,
+        std::move(complete), request,
+        std::make_unique<Bindings>(host_resolver_.get()));
   } else {
     std::move(complete).Run(net::ERR_FAILED);
   }
@@ -438,10 +430,7 @@ void AwPacProcessor::MakeProxyRequestNative(
 
 bool AwPacProcessor::SetProxyScript(std::string script) {
   SetProxyScriptJob job(this, script);
-  bool success = job.ExecSync();
-
-  DCHECK(proxy_resolver_);
-  return success;
+  return job.ExecSync();
 }
 
 jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
@@ -451,10 +440,14 @@ jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
   return SetProxyScript(script);
 }
 
-std::string AwPacProcessor::MakeProxyRequest(std::string url) {
+bool AwPacProcessor::MakeProxyRequest(std::string url, std::string* result) {
   MakeProxyRequestJob job(this, url);
-  bool success = job.ExecSync();
-  return success ? job.proxy_info().ToPacString() : nullptr;
+  if (job.ExecSync()) {
+    *result = job.proxy_info().ToPacString();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
@@ -462,7 +455,12 @@ ScopedJavaLocalRef<jstring> AwPacProcessor::MakeProxyRequest(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jurl) {
   std::string url = ConvertJavaStringToUTF8(env, jurl);
-  return ConvertUTF8ToJavaString(env, MakeProxyRequest(url));
+  std::string result;
+  if (MakeProxyRequest(url, &result)) {
+    return ConvertUTF8ToJavaString(env, result);
+  } else {
+    return nullptr;
+  }
 }
 
 void AwPacProcessor::SetNetworkAndLinkAddresses(
@@ -473,8 +471,13 @@ void AwPacProcessor::SetNetworkAndLinkAddresses(
   base::android::AppendJavaStringArrayToStringVector(env, jlink_addresses,
                                                      &string_link_addresses);
   std::vector<net::IPAddress> link_addresses;
-  for (std::string const& address : string_link_addresses) {
-    link_addresses.push_back(StringToIPAddress(address));
+  for (const std::string& address : string_link_addresses) {
+    net::IPAddress ip_address;
+    if (ip_address.AssignFromIPLiteral(address)) {
+      link_addresses.push_back(ip_address);
+    } else {
+      LOG(ERROR) << "Not a supported IP literal: " << address;
+    }
   }
 
   GetTaskRunner()->PostTask(

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,18 +7,20 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("profiler") {
   public = [
     "main_thread_stack_sampling_profiler.h",
+    "process_type.h",
     "thread_profiler.h",
     "thread_profiler_configuration.h",
+    "unwind_util.h",
   ]
 
   sources = [
     "main_thread_stack_sampling_profiler.cc",
     "process_type.cc",
-    "process_type.h",
     "thread_profiler.cc",
     "thread_profiler_configuration.cc",
     "thread_profiler_platform_configuration.cc",
     "thread_profiler_platform_configuration.h",
+    "unwind_util.cc",
   ]
 
   deps = [
@@ -53,11 +55,14 @@ source_set("unit_tests") {
     "process_type_unittest.cc",
     "thread_profiler_platform_configuration_unittest.cc",
     "thread_profiler_unittest.cc",
+    "unwind_util_unittest.cc",
   ]
 
   deps = [
     ":profiler",
     "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",

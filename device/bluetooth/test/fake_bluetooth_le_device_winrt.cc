@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -52,6 +53,10 @@ using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
 using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformation;
 using ABI::Windows::Devices::Enumeration::IDeviceInformation;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds::
+    DevicePairingKinds_ConfirmOnly;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds::
+    DevicePairingKinds_ConfirmPinMatch;
 using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::ITypedEventHandler;
 using ABI::Windows::Foundation::Collections::IVectorView;
@@ -259,10 +264,22 @@ void FakeBluetoothLEDeviceWinrt::SimulatePairingPinCode(std::string pin_code) {
       Make<FakeDeviceInformationPairingWinrt>(std::move(pin_code)));
 }
 
-base::Optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
+void FakeBluetoothLEDeviceWinrt::SimulateConfirmOnly() {
+  device_information_ = Make<FakeDeviceInformationWinrt>(
+      Make<FakeDeviceInformationPairingWinrt>(DevicePairingKinds_ConfirmOnly));
+}
+
+void FakeBluetoothLEDeviceWinrt::SimulateDisplayPin(
+    base::StringPiece display_pin) {
+  device_information_ =
+      Make<FakeDeviceInformationWinrt>(Make<FakeDeviceInformationPairingWinrt>(
+          DevicePairingKinds_ConfirmPinMatch, display_pin));
+}
+
+absl::optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
     const {
   if (!service_uuid_)
-    return base::nullopt;
+    return absl::nullopt;
   return BluetoothUUID(*service_uuid_);
 }
 
@@ -353,10 +370,9 @@ void FakeBluetoothLEDeviceWinrt::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
   auto* device_service = static_cast<BluetoothRemoteGattServiceWinrt*>(service)
                              ->GetDeviceServiceForTesting();
-  auto iter = std::find_if(fake_services_.begin(), fake_services_.end(),
-                           [device_service](const auto& fake_service) {
-                             return device_service == fake_service.Get();
-                           });
+  auto iter = base::ranges::find(
+      fake_services_, device_service,
+      &Microsoft::WRL::ComPtr<FakeGattDeviceServiceWinrt>::Get);
   DCHECK(iter != fake_services_.end());
   fake_services_.erase(iter);
   SimulateGattServicesChanged();

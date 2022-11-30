@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
@@ -78,6 +77,9 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
 
   static std::unique_ptr<DocumentPolicy> CopyStateFrom(const DocumentPolicy*);
 
+  DocumentPolicy(const DocumentPolicy&) = delete;
+  DocumentPolicy& operator=(const DocumentPolicy&) = delete;
+
   // Returns true if the feature is unrestricted (has its default value for the
   // platform)
   bool IsFeatureEnabled(mojom::DocumentPolicyFeature feature) const;
@@ -91,8 +93,8 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
   PolicyValue GetFeatureValue(mojom::DocumentPolicyFeature feature) const;
 
   // Returns the endpoint the given feature should report to.
-  // Returns base::nullopt if the endpoint is unspecified for given feature.
-  const base::Optional<std::string> GetFeatureEndpoint(
+  // Returns absl::nullopt if the endpoint is unspecified for given feature.
+  const absl::optional<std::string> GetFeatureEndpoint(
       mojom::DocumentPolicyFeature feature) const;
 
   // Returns true if the incoming policy is compatible with the given required
@@ -102,12 +104,12 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
       const DocumentPolicyFeatureState& incoming_policy);
 
   // Serialize document policy according to http_structured_header.
-  // returns base::nullopt when http structured header serializer encounters
+  // returns absl::nullopt when http structured header serializer encounters
   // problems, e.g. double value out of the range supported.
-  static base::Optional<std::string> Serialize(
+  static absl::optional<std::string> Serialize(
       const DocumentPolicyFeatureState& policy);
 
-  static base::Optional<std::string> SerializeInternal(
+  static absl::optional<std::string> SerializeInternal(
       const DocumentPolicyFeatureState& policy,
       const DocumentPolicyFeatureInfoMap&);
 
@@ -139,8 +141,6 @@ class BLINK_COMMON_EXPORT DocumentPolicy {
       internal_feature_state_;
 
   FeatureEndpointMap endpoint_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentPolicy);
 };
 
 bool inline operator==(const DocumentPolicy::ParsedDocumentPolicy& lhs,

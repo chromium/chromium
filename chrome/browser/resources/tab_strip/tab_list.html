@@ -8,16 +8,16 @@
         0 2px 3px 0 rgba(var(--google-grey-800-rgb), .3),
         0 6px 10px 4px rgba(var(--google-grey-800-rgb), .15);
 
-<if expr="not chromeos">
+<if expr="not is_chromeos">
     --tabstrip-tab-drag-image-scale: 1.1;
 </if>
-<if expr="chromeos">
+<if expr="is_chromeos">
     /* ChromeOS scales drag images by 1.2, so this variable multiplied by
      * 1.2 should be around 1.1. */
     --tabstrip-tab-drag-image-scale: calc(1.1 / 1.2);
 </if>
 
-    background: var(--tabstrip-background-color);
+    background: var(--color-web-ui-tab-strip-background);
     box-sizing: border-box;
     display: flex;
     height: 100%;
@@ -30,9 +30,6 @@
     display: flex;
     min-width: fit-content;
     overflow: hidden;
-    padding-inline-end: calc(
-        var(--tabstrip-new-tab-button-width) +
-        var(--tabstrip-new-tab-button-margin));
     width: 100%;
   }
 
@@ -93,33 +90,8 @@
     margin-inline-start: 0;
   }
 
-  #newTabButton {
-    --cr-icon-button-size: var(--tabstrip-new-tab-button-width);
-    --cr-icon-button-icon-size: 32px;
-    --cr-icon-button-fill-color: var(--tabstrip-tab-text-color);
-    --cr-icon-button-margin-end: var(--tabstrip-new-tab-button-margin);
-    --cr-icon-button-margin-start: 0px;
-    background: var(--tabstrip-tab-background-color);
-    border-radius: 50%;
-    box-shadow: 0 1px 3px 0 rgba(var(--google-grey-800-rgb), .3),
-                0 4px 8px 3px rgba(var(--google-grey-800-rgb), .15);
-    height: var(--tabstrip-new-tab-button-width);
-    margin: 0;
-    position: fixed;
-    right: var(--tabstrip-new-tab-button-margin);
-    top: calc((var(--tabstrip-tab-height) / 2)
-                  + var(--tabstrip-tab-list-vertical-padding));
-    transform: translateY(-50%);
-    width: var(--tabstrip-new-tab-button-width);
-  }
-
-  :host-context([dir='rtl']) #newTabButton {
-    left: var(--tabstrip-new-tab-button-margin);
-    right: auto;
-  }
-
   #dropPlaceholder {
-    background: var(--tabstrip-tab-background-color);
+    background: var(--color-web-ui-tab-strip-tab-background);
     border-radius: var(--tabstrip-tab-border-radius);
     height: var(--tabstrip-tab-height);
     margin-inline-end: var(--tabstrip-tab-spacing);
@@ -132,7 +104,3 @@
   <div id="pinnedTabs"></div>
   <div id="unpinnedTabs"></div>
 </div>
-<cr-icon-button aria-label="$i18n{newTab}"
-    id="newTabButton"
-    iron-icon="cr:add">
-</cr-icon-button>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
+#include "base/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/desktop_capture_device.h"
 #endif
 
@@ -47,8 +51,7 @@ InProcessLaunchedVideoCaptureDevice::~InProcessLaunchedVideoCaptureDevice() {
       FROM_HERE,
       base::BindOnce(
           &StopAndReleaseDeviceOnDeviceThread, device_ptr,
-          base::BindOnce(base::DoNothing::Once<
-                             scoped_refptr<base::SingleThreadTaskRunner>>(),
+          base::BindOnce([](scoped_refptr<base::SingleThreadTaskRunner>) {},
                          device_task_runner_)));
 }
 
@@ -113,6 +116,25 @@ void InProcessLaunchedVideoCaptureDevice::ResumeDevice() {
                                 base::Unretained(device_.get())));
 }
 
+void InProcessLaunchedVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    uint32_t crop_version,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Unretained() is safe to use here because |device| would be null if it
+  // was scheduled for shutdown and destruction, and because this task is
+  // guaranteed to run before the task that destroys the |device|.
+  //
+  // Explicitly bind the callback to the I/O thread since the VideoCaptureDevice
+  // Crop method runs the callback on an unspecified thread.
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&media::VideoCaptureDevice::Crop,
+                     base::Unretained(device_.get()), crop_id, crop_version,
+                     base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                        std::move(callback))));
+}
+
 void InProcessLaunchedVideoCaptureDevice::RequestRefreshFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Unretained() is safe to use here because |device| would be null if it
@@ -138,16 +160,14 @@ void InProcessLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
 }
 
 void InProcessLaunchedVideoCaptureDevice::OnUtilizationReport(
-    int frame_feedback_id,
-    media::VideoFrameFeedback feedback) {
+    media::VideoCaptureFeedback feedback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   // Unretained() is safe to use here because |device| would be null if it
   // was scheduled for shutdown and destruction, and because this task is
   // guaranteed to run before the task that destroys the |device|.
   device_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&media::VideoCaptureDevice::OnUtilizationReport,
-                                base::Unretained(device_.get()),
-                                frame_feedback_id, feedback));
+                                base::Unretained(device_.get()), feedback));
 }
 
 void InProcessLaunchedVideoCaptureDevice::
@@ -155,7 +175,7 @@ void InProcessLaunchedVideoCaptureDevice::
                                             gfx::NativeViewId window_id,
                                             base::OnceClosure done_cb) {
   DCHECK(device_task_runner_->BelongsToCurrentThread());
-#if defined(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
+#if defined(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
   DesktopCaptureDevice* desktop_device =
       static_cast<DesktopCaptureDevice*>(device);
   desktop_device->SetNotificationWindowId(window_id);

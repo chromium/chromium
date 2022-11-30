@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_ITEM_RENAME_HANDLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 
 namespace base {
 class FilePath;
@@ -25,8 +27,14 @@ class DownloadItem;
 // Instances of DownloadItemRenameHandler are owned by DownloadItem.
 class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
  public:
-  using Callback = base::OnceCallback<void(DownloadInterruptReason reason,
-                                           const base::FilePath& path)>;
+  // Callback to update the DownloadItem and send some info into databases.
+  using ProgressUpdateCallback = base::RepeatingCallback<void(
+      const download::DownloadItemRenameProgressUpdate&)>;
+  // Callback when the rename handler processing completes. Args indicate
+  // processing result to be updated to UX, and the final file name validated at
+  // rerouted location.
+  using DownloadCallback =
+      base::OnceCallback<void(DownloadInterruptReason, const base::FilePath&)>;
 
   explicit DownloadItemRenameHandler(DownloadItem* download_item);
   virtual ~DownloadItemRenameHandler();
@@ -35,16 +43,17 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemRenameHandler {
 
   // Starts the process of renaming the file and invokes |callback| when
   // done.
-  virtual void Start(Callback callback);
+  virtual void Start(ProgressUpdateCallback progress_update_cb,
+                     DownloadCallback upload_complete_cb) = 0;
 
   // Opens the file associated with this download.
-  virtual void OpenDownload();
+  virtual void OpenDownload() = 0;
 
   // Shows the download in the context of its container.
-  virtual void ShowDownloadInContext();
+  virtual void ShowDownloadInContext() = 0;
 
  private:
-  DownloadItem* download_item_;
+  raw_ptr<DownloadItem> download_item_;
 };
 
 }  // namespace download

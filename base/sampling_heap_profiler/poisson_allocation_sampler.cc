@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,69 +9,21 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/macros.h"
+#include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/reentry_guard.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE) || defined(OS_ANDROID)
-#include <pthread.h>
-#endif
-
 namespace base {
-
-using allocator::AllocatorDispatch;
 
 namespace {
 
-#if defined(OS_APPLE) || defined(OS_ANDROID)
-
-// The macOS implementation of libmalloc sometimes calls malloc recursively,
-// delegating allocations between zones. That causes our hooks being called
-// twice. The scoped guard allows us to detect that.
-//
-// Besides that the implementations of thread_local on macOS and Android
-// seem to allocate memory lazily on the first access to thread_local variables.
-// Make use of pthread TLS instead of C++ thread_local there.
-class ReentryGuard {
- public:
-  ReentryGuard() : allowed_(!pthread_getspecific(entered_key_)) {
-    pthread_setspecific(entered_key_, reinterpret_cast<void*>(true));
-  }
-
-  ~ReentryGuard() {
-    if (LIKELY(allowed_))
-      pthread_setspecific(entered_key_, nullptr);
-  }
-
-  operator bool() { return allowed_; }
-
-  static void Init() {
-    int error = pthread_key_create(&entered_key_, nullptr);
-    CHECK(!error);
-  }
-
- private:
-  bool allowed_;
-  static pthread_key_t entered_key_;
-};
-
-pthread_key_t ReentryGuard::entered_key_;
-
-#else
-
-class ReentryGuard {
- public:
-  operator bool() { return true; }
-  static void Init() {}
-};
-
-#endif
+using ::base::allocator::dispatcher::ReentryGuard;
 
 const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
@@ -98,255 +50,134 @@ const size_t kDefaultSamplingIntervalBytes = 128 * 1024;
 
 // The guard protects against reentering on platforms other the macOS and
 // Android.
-thread_local bool g_internal_reentry_guard;
+thread_local bool g_tls_internal_reentry_guard = false;
 
 // Accumulated bytes towards sample thread local key.
-thread_local intptr_t g_accumulated_bytes_tls;
+thread_local intptr_t g_tls_accumulated_bytes = 0;
 
 // Used as a workaround to avoid bias from muted samples. See
 // ScopedMuteThreadSamples for more details.
-thread_local intptr_t g_accumulated_bytes_tls_snapshot;
+thread_local intptr_t g_tls_accumulated_bytes_snapshot = 0;
 const intptr_t kAccumulatedBytesOffset = 1 << 29;
 
 // A boolean used to distinguish first allocation on a thread:
 //   false - first allocation on the thread;
 //   true  - otherwise.
-// Since g_accumulated_bytes_tls is initialized with zero the very first
+// Since g_tls_accumulated_bytes is initialized with zero the very first
 // allocation on a thread would always trigger the sample, thus skewing the
 // profile towards such allocations. To mitigate that we use the flag to
 // ensure the first allocation is properly accounted.
-thread_local bool g_sampling_interval_initialized_tls;
+thread_local bool g_tls_sampling_interval_initialized = false;
 
 // Controls if sample intervals should not be randomized. Used for testing.
-bool g_deterministic;
+bool g_deterministic = false;
+
+// Controls if hooked samples should be ignored. Used for testing.
+std::atomic_bool g_mute_hooked_samples{false};
 
 // A positive value if profiling is running, otherwise it's zero.
-std::atomic_bool g_running;
+std::atomic_bool g_running{false};
 
 // Pointer to the current |LockFreeAddressHashSet|.
-std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set;
+std::atomic<LockFreeAddressHashSet*> g_sampled_addresses_set{nullptr};
 
 // Sampling interval parameter, the mean value for intervals between samples.
 std::atomic_size_t g_sampling_interval{kDefaultSamplingIntervalBytes};
 
-void (*g_hooks_install_callback)();
-std::atomic_bool g_hooks_installed;
+void (*g_hooks_install_callback)() = nullptr;
 
-void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
-  ReentryGuard guard;
-  void* address = self->next->alloc_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocUncheckedFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_unchecked_function(self->next, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                             size_t n,
-                             size_t size,
-                             void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_zero_initialized_function(self->next, n, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, n * size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* AllocAlignedFn(const AllocatorDispatch* self,
-                     size_t alignment,
-                     size_t size,
-                     void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->alloc_aligned_function(self->next, alignment, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void* ReallocFn(const AllocatorDispatch* self,
-                void* address,
-                size_t size,
-                void* context) {
-  ReentryGuard guard;
-  // Note: size == 0 actually performs free.
-  PoissonAllocationSampler::RecordFree(address);
-  address = self->next->realloc_function(self->next, address, size, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  // Note: The RecordFree should be called before free_function
-  // (here and in other places).
-  // That is because we need to remove the recorded allocation sample before
-  // free_function, as once the latter is executed the address becomes available
-  // and can be allocated by another thread. That would be racy otherwise.
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->free_function(self->next, address, context);
-}
-
-size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                         void* address,
-                         void* context) {
-  return self->next->get_size_estimate_function(self->next, address, context);
-}
-
-unsigned BatchMallocFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void** results,
-                       unsigned num_requested,
-                       void* context) {
-  ReentryGuard guard;
-  unsigned num_allocated = self->next->batch_malloc_function(
-      self->next, size, results, num_requested, context);
-  if (LIKELY(guard)) {
-    for (unsigned i = 0; i < num_allocated; ++i) {
-      PoissonAllocationSampler::RecordAlloc(
-          results[i], size, PoissonAllocationSampler::kMalloc, nullptr);
-    }
-  }
-  return num_allocated;
-}
-
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {
-  for (unsigned i = 0; i < num_to_be_freed; ++i)
-    PoissonAllocationSampler::RecordFree(to_be_freed[i]);
-  self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                  context);
-}
-
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->free_definite_size_function(self->next, address, size, context);
-}
-
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
-  ReentryGuard guard;
-  void* address =
-      self->next->aligned_malloc_function(self->next, size, alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
-  ReentryGuard guard;
-  // Note: size == 0 actually performs free.
-  PoissonAllocationSampler::RecordFree(address);
-  address = self->next->aligned_realloc_function(self->next, address, size,
-                                                 alignment, context);
-  if (LIKELY(guard)) {
-    PoissonAllocationSampler::RecordAlloc(
-        address, size, PoissonAllocationSampler::kMalloc, nullptr);
-  }
-  return address;
-}
-
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
-  PoissonAllocationSampler::RecordFree(address);
-  self->next->aligned_free_function(self->next, address, context);
-}
-
-AllocatorDispatch g_allocator_dispatch = {&AllocFn,
-                                          &AllocUncheckedFn,
-                                          &AllocZeroInitializedFn,
-                                          &AllocAlignedFn,
-                                          &ReallocFn,
-                                          &FreeFn,
-                                          &GetSizeEstimateFn,
-                                          &BatchMallocFn,
-                                          &BatchFreeFn,
-                                          &FreeDefiniteSizeFn,
-                                          &AlignedMallocFn,
-                                          &AlignedReallocFn,
-                                          &AlignedFreeFn,
-                                          nullptr};
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-
-void PartitionAllocHook(void* address, size_t size, const char* type) {
-  PoissonAllocationSampler::RecordAlloc(
-      address, size, PoissonAllocationSampler::kPartitionAlloc, type);
-}
-
-void PartitionFreeHook(void* address) {
-  PoissonAllocationSampler::RecordFree(address);
-}
-
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-
+// This will be true if *either* InstallAllocatorHooksOnce or
+// SetHooksInstallerCallback has run. `g_hooks_install_callback` should be
+// invoked when *both* have run, so each of them checks the value and, if it is
+// true, knows that the other function has already run so it's time to invoke
+// the callback.
+std::atomic_bool g_hooks_installed{false};
 }  // namespace
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::ScopedMuteThreadSamples() {
-  DCHECK(!g_internal_reentry_guard);
-  g_internal_reentry_guard = true;
+  DCHECK(!g_tls_internal_reentry_guard);
+  g_tls_internal_reentry_guard = true;
 
   // We mute thread samples immediately after taking a sample, which is when we
-  // reset g_accumulated_bytes_tls. This breaks the random sampling requirement
+  // reset g_tls_accumulated_bytes. This breaks the random sampling requirement
   // of the poisson process, and causes us to systematically overcount all other
   // allocations. That's because muted allocations rarely trigger a sample
   // [which would cause them to be ignored] since they occur right after
-  // g_accumulated_bytes_tls is reset.
+  // g_tls_accumulated_bytes is reset.
   //
-  // To counteract this, we drop g_accumulated_bytes_tls by a large, fixed
+  // To counteract this, we drop g_tls_accumulated_bytes by a large, fixed
   // amount to lower the probability that a sample is taken to close to 0. Then
   // we reset it after we're done muting thread samples.
-  g_accumulated_bytes_tls_snapshot = g_accumulated_bytes_tls;
-  g_accumulated_bytes_tls -= kAccumulatedBytesOffset;
+  g_tls_accumulated_bytes_snapshot = g_tls_accumulated_bytes;
+  g_tls_accumulated_bytes -= kAccumulatedBytesOffset;
 }
 
 PoissonAllocationSampler::ScopedMuteThreadSamples::~ScopedMuteThreadSamples() {
-  DCHECK(g_internal_reentry_guard);
-  g_internal_reentry_guard = false;
-  g_accumulated_bytes_tls = g_accumulated_bytes_tls_snapshot;
+  DCHECK(g_tls_internal_reentry_guard);
+  g_tls_internal_reentry_guard = false;
+  g_tls_accumulated_bytes = g_tls_accumulated_bytes_snapshot;
 }
 
 // static
 bool PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted() {
-  return g_internal_reentry_guard;
+  return g_tls_internal_reentry_guard;
 }
 
-PoissonAllocationSampler* PoissonAllocationSampler::instance_;
+PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    ScopedSuppressRandomnessForTesting() {
+  DCHECK(!g_deterministic);
+  g_deterministic = true;
+  // The g_tls_accumulated_bytes may contain a random value from previous
+  // test runs, which would make the behaviour of the next call to
+  // RecordAlloc unpredictable.
+  g_tls_accumulated_bytes = 0;
+}
+
+PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    ~ScopedSuppressRandomnessForTesting() {
+  DCHECK(g_deterministic);
+  g_deterministic = false;
+}
+
+// static
+bool PoissonAllocationSampler::ScopedSuppressRandomnessForTesting::
+    IsSuppressed() {
+  return g_deterministic;
+}
+
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
+    ScopedMuteHookedSamplesForTesting() {
+  DCHECK(!g_mute_hooked_samples);
+  g_mute_hooked_samples = true;
+
+  // `g_hooks_install_callback` can't be used with
+  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
+  DCHECK(!g_hooks_install_callback);
+
+  // Make sure hooks have been installed, so that the only order of operations
+  // that needs to be handled is Install Hooks -> Remove Hooks For Testing ->
+  // Reinstall Hooks.
+  PoissonAllocationSampler::Get()->InstallAllocatorHooksOnce();
+
+  allocator::dispatcher::RemoveStandardAllocatorHooksForTesting();  // IN-TEST
+
+  // Reset the accumulated bytes to 0 on this thread.
+  accumulated_bytes_snapshot_ = g_tls_accumulated_bytes;
+  g_tls_accumulated_bytes = 0;
+}
+
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
+    ~ScopedMuteHookedSamplesForTesting() {
+  DCHECK(g_mute_hooked_samples);
+  // Restore the allocator hooks and accumulated bytes.
+  g_tls_accumulated_bytes = accumulated_bytes_snapshot_;
+
+  allocator::dispatcher::InstallStandardAllocatorHooks();
+
+  g_mute_hooked_samples = false;
+}
+
+PoissonAllocationSampler* PoissonAllocationSampler::instance_ = nullptr;
 
 PoissonAllocationSampler::PoissonAllocationSampler() {
   CHECK_EQ(nullptr, instance_);
@@ -358,56 +189,58 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
 
 // static
 void PoissonAllocationSampler::Init() {
-  static bool init_once = []() {
-    ReentryGuard::Init();
+  [[maybe_unused]] static bool init_once = []() {
+    ReentryGuard::InitTLSSlot();
     return true;
   }();
-  ignore_result(init_once);
 }
 
-// static
 void PoissonAllocationSampler::InstallAllocatorHooksOnce() {
-  static bool hook_installed = InstallAllocatorHooks();
-  ignore_result(hook_installed);
-}
+  [[maybe_unused]] static bool hook_installed = [] {
+    allocator::dispatcher::InstallStandardAllocatorHooks();
 
-// static
-bool PoissonAllocationSampler::InstallAllocatorHooks() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-  allocator::InsertAllocatorDispatch(&g_allocator_dispatch);
-#else
-  // If the allocator shim isn't available, then we don't install any hooks.
-  // There's no point in printing an error message, since this can regularly
-  // happen for tests.
-  ignore_result(g_allocator_dispatch);
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
-
-#if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-  PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
-                                        &PartitionFreeHook);
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-
-  bool expected = false;
-  if (!g_hooks_installed.compare_exchange_strong(expected, true))
-    g_hooks_install_callback();
-
-  return true;
+    bool expected = false;
+    if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
+      // SetHooksInstallCallback already ran, so run the callback now.
+      g_hooks_install_callback();
+    }
+    // The allocator hooks use `g_sampled_address_set` so it had better be
+    // initialized.
+    DCHECK(g_sampled_addresses_set.load(std::memory_order_acquire));
+    return true;
+  }();
 }
 
 // static
 void PoissonAllocationSampler::SetHooksInstallCallback(
     void (*hooks_install_callback)()) {
+  // `g_hooks_install_callback` can't be used with
+  // ScopedMuteHookedSamplesForTesting because there's no way to remove it.
+  DCHECK(!g_mute_hooked_samples);
+
   CHECK(!g_hooks_install_callback && hooks_install_callback);
   g_hooks_install_callback = hooks_install_callback;
 
   bool expected = false;
-  if (!g_hooks_installed.compare_exchange_strong(expected, true))
+  if (!g_hooks_installed.compare_exchange_strong(expected, true)) {
+    // InstallAllocatorHooksOnce already ran, so run the callback now.
     g_hooks_install_callback();
+  }
 }
 
-void PoissonAllocationSampler::SetSamplingInterval(size_t sampling_interval) {
+// static
+bool PoissonAllocationSampler::AreHookedSamplesMuted() {
+  return g_mute_hooked_samples;
+}
+
+void PoissonAllocationSampler::SetSamplingInterval(
+    size_t sampling_interval_bytes) {
   // TODO(alph): Reset the sample being collected if running.
-  g_sampling_interval = sampling_interval;
+  g_sampling_interval = sampling_interval_bytes;
+}
+
+size_t PoissonAllocationSampler::SamplingInterval() const {
+  return g_sampling_interval.load(std::memory_order_relaxed);
 }
 
 // static
@@ -421,7 +254,9 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   // between samples.
   // Let u be a uniformly distributed random number between 0 and 1, then
   // next_sample = -ln(u) / λ
-  double uniform = RandDouble();
+  // The allocator shim uses the PoissonAllocationSampler, hence avoid
+  // allocation to avoid infinite recursion.
+  double uniform = internal::RandDoubleAvoidAllocation();
   double value = -log(uniform) * interval;
   size_t min_value = sizeof(intptr_t);
   // We limit the upper bound of a sample interval to make sure we don't have
@@ -440,8 +275,8 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
                                            size_t size,
                                            AllocatorType type,
                                            const char* context) {
-  g_accumulated_bytes_tls += size;
-  intptr_t accumulated_bytes = g_accumulated_bytes_tls;
+  g_tls_accumulated_bytes += size;
+  intptr_t accumulated_bytes = g_tls_accumulated_bytes;
   if (LIKELY(accumulated_bytes < 0))
     return;
 
@@ -449,8 +284,8 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
     // Sampling is in fact disabled. Reset the state of the sampler.
     // We do this check off the fast-path, because it's quite a rare state when
     // allocation hooks are installed but the sampler is not running.
-    g_sampling_interval_initialized_tls = false;
-    g_accumulated_bytes_tls = 0;
+    g_tls_sampling_interval_initialized = false;
+    g_tls_accumulated_bytes = 0;
     return;
   }
 
@@ -467,21 +302,23 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     return;
 
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
-  if (UNLIKELY(!g_sampling_interval_initialized_tls)) {
-    g_sampling_interval_initialized_tls = true;
+  if (UNLIKELY(!g_tls_sampling_interval_initialized)) {
+    g_tls_sampling_interval_initialized = true;
     // This is the very first allocation on the thread. It always makes it
-    // passing the condition at |RecordAlloc|, because g_accumulated_bytes_tls
+    // passing the condition at |RecordAlloc|, because g_tls_accumulated_bytes
     // is initialized with zero due to TLS semantics.
     // Generate proper sampling interval instance and make sure the allocation
     // has indeed crossed the threshold before counting it as a sample.
     accumulated_bytes -= GetNextSampleInterval(mean_interval);
     if (accumulated_bytes < 0) {
-      g_accumulated_bytes_tls = accumulated_bytes;
+      g_tls_accumulated_bytes = accumulated_bytes;
       return;
     }
   }
 
-  size_t samples = accumulated_bytes / mean_interval;
+  // This cast is safe because this function is only called with a positive
+  // value of `accumulated_bytes`.
+  size_t samples = static_cast<size_t>(accumulated_bytes) / mean_interval;
   accumulated_bytes %= mean_interval;
 
   do {
@@ -489,7 +326,7 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     ++samples;
   } while (accumulated_bytes >= 0);
 
-  g_accumulated_bytes_tls = accumulated_bytes;
+  g_tls_accumulated_bytes = accumulated_bytes;
 
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
     return;
@@ -563,12 +400,12 @@ PoissonAllocationSampler* PoissonAllocationSampler::Get() {
   return instance.get();
 }
 
-// static
-void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
-  g_deterministic = suppress;
-}
-
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
+  // The following implementation (including ScopedMuteThreadSamples) will use
+  // `thread_local`, which may cause a reentrancy issue.  So, temporarily
+  // disable the sampling by having a ReentryGuard.
+  ReentryGuard guard;
+
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   DCHECK(ranges::find(observers_, observer) == observers_.end());
@@ -579,6 +416,11 @@ void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
 
 void PoissonAllocationSampler::RemoveSamplesObserver(
     SamplesObserver* observer) {
+  // The following implementation (including ScopedMuteThreadSamples) will use
+  // `thread_local`, which may cause a reentrancy issue.  So, temporarily
+  // disable the sampling by having a ReentryGuard.
+  ReentryGuard guard;
+
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   auto it = ranges::find(observers_, observer);

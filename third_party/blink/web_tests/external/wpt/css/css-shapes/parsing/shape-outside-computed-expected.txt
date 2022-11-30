@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS Property shape-outside value 'circle(at 10% 20%)'
+PASS Property shape-outside value 'circle(at calc(75% + 0px) calc(75% + 0px))'
 PASS Property shape-outside value 'circle(calc(10px + 0.5em) at -50% 50%) border-box'
 PASS Property shape-outside value 'circle(calc(10px - 0.5em) at 50% -50%) border-box'
 PASS Property shape-outside value 'ellipse(60% closest-side at 50% 50%)'

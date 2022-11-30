@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry.h"
@@ -30,29 +31,31 @@ class PrefDelegateImpl
       : pref_service_(pref_service), path_(net::nqe::kNetworkQualities) {
     DCHECK(pref_service_);
   }
+
+  PrefDelegateImpl(const PrefDelegateImpl&) = delete;
+  PrefDelegateImpl& operator=(const PrefDelegateImpl&) = delete;
+
   ~PrefDelegateImpl() override {}
 
-  void SetDictionaryValue(const base::DictionaryValue& value) override {
+  void SetDictionaryValue(const base::Value::Dict& dict) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    pref_service_->Set(path_, value);
+    pref_service_->SetDict(path_, dict.Clone());
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.WriteCount", 1, 2);
   }
 
-  std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
+  base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return pref_service_->GetDictionary(path_)->CreateDeepCopy();
+    return pref_service_->GetDict(path_).Clone();
   }
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // |path_| is the location of the network quality estimator prefs.
   const std::string path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PrefDelegateImpl);
 };
 
 // Returns true if |pref_service| has been initialized.

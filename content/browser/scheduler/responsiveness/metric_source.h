@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/time/time.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -66,6 +65,10 @@ class CONTENT_EXPORT MetricSource {
   };
 
   explicit MetricSource(Delegate* delegate);
+
+  MetricSource(const MetricSource&) = delete;
+  MetricSource& operator=(const MetricSource&) = delete;
+
   virtual ~MetricSource();
 
   // Must be called immediately after the constructor. This cannot be called
@@ -90,7 +93,7 @@ class CONTENT_EXPORT MetricSource {
   void TearDownOnIOThread(base::ScopedClosureRunner on_finish_destroy);
   void TearDownOnUIThread(base::ScopedClosureRunner on_finish_destroy);
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // The following members are all affine to the UI thread.
   std::unique_ptr<MessageLoopObserver> message_loop_observer_ui_;
@@ -100,8 +103,6 @@ class CONTENT_EXPORT MetricSource {
   std::unique_ptr<MessageLoopObserver> message_loop_observer_io_;
 
   bool destroy_was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricSource);
 };
 
 }  // namespace responsiveness

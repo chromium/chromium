@@ -1,4 +1,5 @@
-from __future__ import unicode_literals
+# mypy: allow-untyped-defs
+
 from six import ensure_text
 
 from .node import NodeVisitor, ValueNode, ListNode, BinaryExpressionNode
@@ -34,6 +35,7 @@ class ManifestSerializer(NodeVisitor):
         rv = "\n".join(self.visit(root))
         if not rv:
             return rv
+        rv = rv.strip()
         if rv[-1] != "\n":
             rv = rv + "\n"
         return rv

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,12 +44,17 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, copy) NSString* identifyingIconAccessibilityLabel;
 
 // Whether to hide or display the trailing icon.
+// Changing this value can change the text color for the text field.
 @property(nonatomic, assign) BOOL hideIcon;
 
 // Whether this field is required. If YES, an "*" is appended to the name of the
 // text field to indicate that the field is required. It is also used for
 // validation purposes.
 @property(nonatomic, getter=isRequired) BOOL required;
+
+// Boolean value that indicates whether the text entered by the user in the text
+// field is hidden.
+@property(nonatomic, assign) BOOL textFieldSecureTextEntry;
 
 // Whether the text field is enabled for editing.
 @property(nonatomic, getter=isTextFieldEnabled) BOOL textFieldEnabled;
@@ -81,21 +86,21 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, strong) UILabel* textLabel;
 
 // Text field at the trailing edge of the cell. It displays the item's
-// |textFieldValue|.
+// `textFieldValue`.
 @property(nonatomic, readonly, strong) UITextField* textField;
 
 // Identifying button. UIButton containing the icon
-// identifying |textField| or its current value. It is located at the most
+// identifying `textField` or its current value. It is located at the most
 // trailing position of the Cell.
 @property(nonatomic, readonly, strong) UIButton* identifyingIconButton;
 
-// UIImageView containing the icon indicating that |textField| is editable.
+// UIImageView containing the icon indicating that `textField` is editable.
 @property(nonatomic, strong) UIImageView* iconView;
 
-// Sets |self.identifyingIconButton| icon.
+// Sets `self.identifyingIconButton` icon.
 - (void)setIdentifyingIcon:(UIImage*)icon;
 
-// Sets the icon view image to the type specified by |iconType|.
+// Sets the icon view image to the type specified by `iconType`.
 - (void)setIcon:(TableViewTextEditItemIconType)iconType;
 
 @end

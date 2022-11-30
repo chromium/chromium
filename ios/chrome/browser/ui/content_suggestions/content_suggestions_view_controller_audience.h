@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,19 @@
 // Audience for the ContentSuggestions, getting informations from it.
 @protocol ContentSuggestionsViewControllerAudience
 
-// Notifies the audience that the promo has been shown.
-- (void)promoShown;
-
-// Notifies the audience that the Discover feed header menu has been shown, and
-// provides a reference to the button.
-- (void)discoverHeaderMenuButtonShown:(UIView*)menuButton;
-
-// Notifies the audience that the Discover Feed has been shown.
-// TODO(crbug.com/1126940): This is still a best effort approach and might be
-// called multiple times.
-- (void)discoverFeedShown;
-
 // Notifies the audience of the UIKit viewDidDisappear: callback.
 - (void)viewDidDisappear;
+
+// Notifies the audience that the Return to Recent Tab tile has been added.
+- (void)returnToRecentTabWasAdded;
+
+// Notifies the audience that a module was removed.
+- (void)moduleWasRemoved;
+
+// Returns current safe area insets for the window owning this discover feed.
+// TODO:(crbug.com/1285378) Remove this after Content Suggestions header is
+// moved out the Content Suggestions CollectionView.
+- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed;
 
 @end
 

@@ -28,7 +28,31 @@
 
 namespace blink {
 
-enum FontBaseline { kAlphabeticBaseline, kIdeographicBaseline };
+enum FontBaseline {
+  // https://drafts.csswg.org/css-inline/#alphabetic-baseline
+  kAlphabeticBaseline,
+
+  // https://drafts.csswg.org/css-inline/#central-baseline
+  kCentralBaseline,
+
+  // https://drafts.csswg.org/css-inline/#text-under-baseline
+  kTextUnderBaseline,
+
+  // https://drafts.csswg.org/css-inline/#ideographic-under-baseline
+  kIdeographicUnderBaseline,
+
+  // https://drafts.csswg.org/css-inline/#x-middle-baseline
+  kXMiddleBaseline,
+
+  // https://drafts.csswg.org/css-inline/#math-baseline
+  kMathBaseline,
+
+  // https://drafts.csswg.org/css-inline/#hanging-baseline
+  kHangingBaseline,
+
+  // https://drafts.csswg.org/css-inline/#text-over-baseline
+  kTextOverBaseline
+};
 
 }  // namespace blink
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@ class MenuModel;
 
 // Computes properties for the menu item with index |i| in |menu|.
 COMPONENT_EXPORT(DBUS)
-MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu, int i);
+MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
+                                                    size_t i);
 
 // Given inputs |old_properties| and |new_properties|, computes outputs
 // |item_updated_props| and |item_removed_props| suitable for use in

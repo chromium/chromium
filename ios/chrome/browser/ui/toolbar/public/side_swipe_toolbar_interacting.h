@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // Protocol used by SideSwipe to interact with the toolbar.
 @protocol SideSwipeToolbarInteracting
 
-// Returns whether the |point| is inside a toolbar's frame. The |point| must be
+// Returns whether the `point` is inside a toolbar's frame. The `point` must be
 // in the window coordinates.
 - (BOOL)isInsideToolbar:(CGPoint)point;
 

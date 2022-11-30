@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -38,7 +38,7 @@ namespace blink {
 
 SVGPoint::SVGPoint() = default;
 
-SVGPoint::SVGPoint(const FloatPoint& point) : value_(point) {}
+SVGPoint::SVGPoint(const gfx::PointF& point) : value_(point) {}
 
 SVGPoint* SVGPoint::Clone() const {
   return MakeGarbageCollected<SVGPoint>(value_);

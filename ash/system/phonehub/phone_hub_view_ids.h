@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,9 +18,11 @@ enum PhoneHubViewID {
   kTaskContinuationView,
 
   // Notification opt in view and its components.
-  kNotificationOptInView,
-  kNotificationOptInSetUpButton,
-  kNotificationOptInDismissButton,
+  kMultideviceFeatureOptInView,
+
+  // Sub feature opt in view buttons
+  kSubFeatureOptInConfirmButton,
+  kSubFeatureOptInDismissButton,
 
   // Onboarding view and its components.
   kOnboardingView,
@@ -42,6 +44,11 @@ enum PhoneHubViewID {
   kPhoneConnectedView,
   kPhoneConnectingView,
   kTetherConnectionPendingView,
+
+  kPhoneHubRecentAppsView,
+
+  // Camera roll view and its components.
+  kCameraRollView,
 };
 
 }  // namespace ash

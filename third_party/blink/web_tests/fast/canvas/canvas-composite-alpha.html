@@ -314,7 +314,7 @@
                   tdElement.appendChild(messageElement);
                   trMessageElement.appendChild(tdElement);
 
-                  var ctx = expectedCanvasElement.getContext("2d");
+                  var ctx = expectedCanvasElement.getContext("2d", {willReadFrequently: true});
                   // Draw expected image.
                   ctx.globalCompositeOperation = "copy";
                   ctx.fillStyle = getRGBAString(expectedColor.destination);
@@ -327,7 +327,7 @@
                   ctx.strokeStyle = getRGBAString(expectedColor.composition);
                   drawPolicy.drawComposition(ctx);
 
-                  ctx = actualCanvasElement.getContext("2d");
+                  ctx = actualCanvasElement.getContext("2d", {willReadFrequently: true});
 
                   // Draw destination rectangle.
                   ctx.globalCompositeOperation = "copy";

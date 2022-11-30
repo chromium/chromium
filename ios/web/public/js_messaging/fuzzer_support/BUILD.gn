@@ -1,0 +1,26 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("fuzzer_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fuzzer_env_with_java_script_feature.h",
+    "fuzzer_env_with_java_script_feature.mm",
+    "fuzzer_util.cc",
+    "fuzzer_util.h",
+  ]
+  deps = [
+    ":js_message_proto",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test:fuzzer_support",
+  ]
+}
+
+proto_library("js_message_proto") {
+  sources = [ "js_message.proto" ]
+}

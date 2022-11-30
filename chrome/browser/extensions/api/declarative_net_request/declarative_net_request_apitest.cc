@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,23 +7,30 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
 using ContextType = extensions::ExtensionApiTest::ContextType;
 using extensions::ScopedCurrentChannel;
 
-class DeclarativeNetRequestAPItest
-    : public extensions::ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
+class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
  public:
-  DeclarativeNetRequestAPItest() = default;
+  DeclarativeNetRequestApiTest() = default;
+  explicit DeclarativeNetRequestApiTest(ContextType context_type)
+      : ExtensionApiTest(context_type) {}
+  ~DeclarativeNetRequestApiTest() override = default;
+  DeclarativeNetRequestApiTest(const DeclarativeNetRequestApiTest&) = delete;
+  DeclarativeNetRequestApiTest& operator=(const DeclarativeNetRequestApiTest&) =
+      delete;
 
  protected:
   // ExtensionApiTest override.
@@ -49,30 +56,30 @@ class DeclarativeNetRequestAPItest
     test_data_dir_ = temp_dir_.GetPath().AppendASCII("declarative_net_request");
   }
 
-  bool RunTest(const std::string& extension_path) {
-    return RunExtensionTest(
-        {.name = extension_path.c_str()},
-        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
-  }
-
  private:
   base::ScopedTempDir temp_dir_;
 };
 
-using DeclarativeNetRequestLazyAPItest = DeclarativeNetRequestAPItest;
+class DeclarativeNetRequestLazyApiTest
+    : public DeclarativeNetRequestApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  DeclarativeNetRequestLazyApiTest()
+      : DeclarativeNetRequestApiTest(GetParam()) {}
+};
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         DeclarativeNetRequestAPItest,
+                         DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
-                         DeclarativeNetRequestLazyAPItest,
+                         DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kEventPage));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         DeclarativeNetRequestLazyAPItest,
+                         DeclarativeNetRequestLazyApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, DynamicRules) {
-  ASSERT_TRUE(RunTest("dynamic_rules")) << message_;
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, DynamicRules) {
+  ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
 }
 
 // Flaky on ASAN/MSAN: https://crbug.com/1167168
@@ -81,27 +88,94 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, DynamicRules) {
 #else
 #define MAYBE_DynamicRulesLimits DynamicRulesLimits
 #endif
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest,
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest,
                        MAYBE_DynamicRulesLimits) {
-  ASSERT_TRUE(RunTest("dynamic_rules_limits")) << message_;
+  ASSERT_TRUE(RunExtensionTest("dynamic_rules_limits")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, OnRulesMatchedDebug) {
-  ASSERT_TRUE(RunTest("on_rules_matched_debug")) << message_;
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, OnRulesMatchedDebug) {
+  ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
 }
 
 // This test uses webRequest/webRequestBlocking, so it's not currently
 // supported for service workers.
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAPItest, ModifyHeaders) {
-  ASSERT_TRUE(RunTest("modify_headers")) << message_;
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestApiTest, ModifyHeaders) {
+  ASSERT_TRUE(RunExtensionTest("modify_headers")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, GetMatchedRules) {
-  ASSERT_TRUE(RunTest("get_matched_rules")) << message_;
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, GetMatchedRules) {
+  ASSERT_TRUE(RunExtensionTest("get_matched_rules")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyAPItest, IsRegexSupported) {
-  ASSERT_TRUE(RunTest("is_regex_supported")) << message_;
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, IsRegexSupported) {
+  ASSERT_TRUE(RunExtensionTest("is_regex_supported")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, TestMatchOutcome) {
+  ASSERT_TRUE(RunExtensionTest("test_match_outcome")) << message_;
+}
+
+class DeclarativeNetRequestApiFencedFrameTest
+    : public DeclarativeNetRequestApiTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  DeclarativeNetRequestApiFencedFrameTest()
+      : DeclarativeNetRequestApiTest(ContextType::kPersistentBackground) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFencedFrames,
+          {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}}},
+        {/* disabled_features */});
+    // Fenced frames are only allowed in secure contexts.
+    UseHttpsTestServer();
+  }
+
+  ~DeclarativeNetRequestApiFencedFrameTest() override = default;
+
+  void SetUpOnMainThread() override {
+    DeclarativeNetRequestApiTest::SetUpOnMainThread();
+    // Give the test knowledge if we are in MPArch or not. As the frame
+    // ids will be different because of ShadowDOM.
+    if (!GetParam()) {
+      SetCustomArg("MPArch");
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiFencedFrameTest, Load) {
+  ASSERT_TRUE(RunExtensionTest("fenced_frames")) << message_;
+}
+
+INSTANTIATE_TEST_SUITE_P(DeclarativeNetRequestApiFencedFrameTest,
+                         DeclarativeNetRequestApiFencedFrameTest,
+                         testing::Bool());
+
+class DeclarativeNetRequestApiPrerenderingTest
+    : public DeclarativeNetRequestLazyApiTest {
+ public:
+  DeclarativeNetRequestApiPrerenderingTest() = default;
+  ~DeclarativeNetRequestApiPrerenderingTest() override = default;
+
+ private:
+  content::test::ScopedPrerenderFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         DeclarativeNetRequestApiPrerenderingTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         DeclarativeNetRequestApiPrerenderingTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         DeclarativeNetRequestApiPrerenderingTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestApiPrerenderingTest,
+                       PrerenderedPageInterception) {
+  ASSERT_TRUE(RunExtensionTest("prerendering")) << message_;
 }
 
 }  // namespace

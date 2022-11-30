@@ -31,40 +31,35 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
-
-// ==== Functions defined in third_party/blink/public/web/blink.h. ====
-
-void SetWebTestMode(bool value) {
-  WebTestSupport::SetIsRunningWebTest(value);
-}
-
-bool WebTestMode() {
-  return WebTestSupport::IsRunningWebTest();
-}
-
-void SetFontAntialiasingEnabledForTest(bool value) {
-  WebTestSupport::SetFontAntialiasingEnabledForTest(value);
-}
-
-bool FontAntialiasingEnabledForTest() {
-  return WebTestSupport::IsFontAntialiasingEnabledForTest();
-}
-
-// ==== State methods defined in WebTestSupport. ====
 
 static bool g_is_running_web_test = false;
 static bool g_is_font_antialiasing_enabled = false;
 static bool g_is_subpixel_positioning_allowed = true;
 
-bool WebTestSupport::IsRunningWebTest() {
+// ==== Functions declared in third_party/blink/public/web/blink.h. ====
+
+void SetWebTestMode(bool value) {
+  g_is_running_web_test = value;
+}
+
+bool WebTestMode() {
   return g_is_running_web_test;
 }
 
-void WebTestSupport::SetIsRunningWebTest(bool value) {
-  g_is_running_web_test = value;
+void SetFontAntialiasingEnabledForTest(bool value) {
+  g_is_font_antialiasing_enabled = value;
+}
+
+bool FontAntialiasingEnabledForTest() {
+  return g_is_font_antialiasing_enabled;
+}
+
+// ==== State methods declared in WebTestSupport. ====
+
+bool WebTestSupport::IsRunningWebTest() {
+  return g_is_running_web_test;
 }
 
 bool WebTestSupport::IsFontAntialiasingEnabledForTest() {
@@ -82,5 +77,8 @@ bool WebTestSupport::IsTextSubpixelPositioningAllowedForTest() {
 void WebTestSupport::SetTextSubpixelPositioningAllowedForTest(bool value) {
   g_is_subpixel_positioning_allowed = value;
 }
+
+ScopedWebTestMode::ScopedWebTestMode(bool enable_web_test_mode)
+    : auto_reset_(&g_is_running_web_test, enable_web_test_mode) {}
 
 }  // namespace blink

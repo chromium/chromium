@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,13 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+#include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
@@ -89,44 +92,6 @@ namespace blink {
 // |PermissionsPolicyFeatureDefault| in permissions_policy_features.h for
 // details)
 
-// This struct holds permissions policy allowlist data that needs to be
-// replicated between a RenderFrame and any of its associated
-// RenderFrameProxies. A list of these form a ParsedPermissionsPolicy. NOTE:
-// These types are used for replication frame state between processes.
-struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
-  ParsedPermissionsPolicyDeclaration();
-  explicit ParsedPermissionsPolicyDeclaration(
-      mojom::PermissionsPolicyFeature feature);
-  ParsedPermissionsPolicyDeclaration(mojom::PermissionsPolicyFeature feature,
-                                     const std::vector<url::Origin>& values,
-                                     bool matches_all_origins,
-                                     bool matches_opaque_src);
-  ParsedPermissionsPolicyDeclaration(
-      const ParsedPermissionsPolicyDeclaration& rhs);
-  ParsedPermissionsPolicyDeclaration& operator=(
-      const ParsedPermissionsPolicyDeclaration& rhs);
-  ~ParsedPermissionsPolicyDeclaration();
-
-  mojom::PermissionsPolicyFeature feature;
-
-  // An alphabetically sorted list of all the origins allowed.
-  std::vector<url::Origin> allowed_origins;
-  // Fallback value is used when feature is enabled for all or disabled for all.
-  bool matches_all_origins{false};
-  // This flag is set true for a declared policy on an <iframe sandbox>
-  // container, for a feature which is supposed to be allowed in the sandboxed
-  // document. Usually, the 'src' keyword in a declaration will cause the origin
-  // of the iframe to be present in |origins|, but for sandboxed iframes, this
-  // flag is set instead.
-  bool matches_opaque_src{false};
-};
-
-using ParsedPermissionsPolicy = std::vector<ParsedPermissionsPolicyDeclaration>;
-
-bool BLINK_COMMON_EXPORT
-operator==(const ParsedPermissionsPolicyDeclaration& lhs,
-           const ParsedPermissionsPolicyDeclaration& rhs);
-
 class BLINK_COMMON_EXPORT PermissionsPolicy {
  public:
   // Represents a collection of origins which make up an allowlist in a
@@ -139,8 +104,8 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     Allowlist(const Allowlist& rhs);
     ~Allowlist();
 
-    // Adds a single origin to the allowlist.
-    void Add(const url::Origin& origin);
+    // Adds a single origin with possible wildcards to the allowlist.
+    void Add(const blink::OriginWithPossibleWildcards& origin);
 
     // Adds all origins to the allowlist.
     void AddAll();
@@ -155,20 +120,35 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     // Returns true if the allowlist matches all origins.
     bool MatchesAll() const;
 
+    // Sets matches_all_origins_ to false for Isolated Apps that have a more
+    // restrictive Permissions-Policy HTTP header than the permissions policy
+    // declared in its Web App Manifest.
+    void RemoveMatchesAll();
+
     // Returns true if the allowlist should match the opaque origin implied by
     // the 'src' keyword.
     bool MatchesOpaqueSrc() const;
 
-    const std::vector<url::Origin>& AllowedOrigins() const {
+    const std::vector<OriginWithPossibleWildcards>& AllowedOrigins() const {
       return allowed_origins_;
     }
 
+    // Overwrite allowed_origins_ for Isolated Apps that have a more restrictive
+    // Permissions-Policy HTTP header than the permissions policy declared in
+    // its Web App Manifest.
+    void SetAllowedOrigins(
+        const std::vector<OriginWithPossibleWildcards> allowed_origins) {
+      allowed_origins_ = allowed_origins;
+    }
+
    private:
-    std::vector<url::Origin> allowed_origins_;
+    std::vector<OriginWithPossibleWildcards> allowed_origins_;
     bool matches_all_origins_{false};
     bool matches_opaque_src_{false};
   };
 
+  PermissionsPolicy(const PermissionsPolicy&) = delete;
+  PermissionsPolicy& operator=(const PermissionsPolicy&) = delete;
   ~PermissionsPolicy();
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
@@ -178,6 +158,18 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
 
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
+
+  // Creates a PermissionsPolicy for a fenced frame. All permissions are
+  // disabled in fenced frames except for attribution reporting (which are only
+  // enabled for opaque-ads fenced frames). Permissions do not inherit from the
+  // parent to prevent cross-channel communication.
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin,
+      blink::mojom::FencedFrameMode mode);
+
+  static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
+      const ParsedPermissionsPolicy& parsed_policy,
+      const url::Origin& origin);
 
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
@@ -196,9 +188,29 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   const Allowlist GetAllowlistForFeature(
       mojom::PermissionsPolicyFeature feature) const;
 
+  // Returns the allowlist of a given feature if it already exists. Doesn't
+  // build a default allow list based on the policy if not.
+  absl::optional<const Allowlist> GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature feature) const;
+
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.
   // Unrecognized features will be ignored.
   void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
+
+  // Further restricts the policy for Isolated Apps that have a
+  // Permissions-Policy HTTP header, |parsed_header|, that might be more
+  // restrictive than its permissions policy declared in the Web App Manifest.
+  // TODO(crbug.com/1336701): Rename to something more generic so Permissions
+  // Policy remains unaware of isolated apps.
+  void SetHeaderPolicyForIsolatedApp(
+      const ParsedPermissionsPolicy& parsed_header);
+
+  // Used to update a client hint header policy set via the accept-ch meta tag.
+  // It will fail if header policies not for client hints are included in
+  // `parsed_header` or if allowlists_ has already been used for a check.
+  // TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
+  void OverwriteHeaderPolicyForClientHints(
+      const ParsedPermissionsPolicy& parsed_header);
 
   // Returns the current state of permissions policies for |origin_|. This
   // includes the |inherited_policies_| as well as the header policies.
@@ -223,6 +235,16 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
+  static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
+      const ParsedPermissionsPolicy& parsed_policy,
+      const url::Origin& origin,
+      const PermissionsPolicyFeatureList& features);
+
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin,
+      const PermissionsPolicyFeatureList& features,
+      blink::mojom::FencedFrameMode mode);
+
   bool InheritedValueForFeature(
       const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
@@ -240,13 +262,18 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // from this map should use the inherited policy.
   std::map<mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
 
+  // Set this to true if `allowlists_` have already been checked.
+  mutable bool allowlists_checked_;
+
+  // Set this to true if `allowlists_` was populated by web app manifest
+  // declared permissions policy.
+  bool allowlists_set_by_manifest_{false};
+
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
   PermissionsPolicyFeatureState inherited_policies_;
 
   const PermissionsPolicyFeatureList& feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionsPolicy);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,14 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -36,9 +37,9 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -63,8 +64,8 @@ class MockThreadableLoaderClient final
   MOCK_METHOD2(DidReceiveData, void(const char*, unsigned));
   MOCK_METHOD1(DidReceiveCachedMetadata, void(mojo_base::BigBuffer));
   MOCK_METHOD1(DidFinishLoading, void(uint64_t));
-  MOCK_METHOD1(DidFail, void(const ResourceError&));
-  MOCK_METHOD0(DidFailRedirectCheck, void());
+  MOCK_METHOD2(DidFail, void(uint64_t, const ResourceError&));
+  MOCK_METHOD1(DidFailRedirectCheck, void(uint64_t));
   MOCK_METHOD1(DidDownloadData, void(uint64_t));
 };
 
@@ -77,13 +78,13 @@ bool IsNotCancellation(const ResourceError& error) {
 }
 
 KURL SuccessURL() {
-  return KURL("http://example.com/success").Copy();
+  return KURL("http://example.com/success");
 }
 KURL ErrorURL() {
-  return KURL("http://example.com/error").Copy();
+  return KURL("http://example.com/error");
 }
 KURL RedirectURL() {
-  return KURL("http://example.com/redirect").Copy();
+  return KURL("http://example.com/redirect");
 }
 
 void SetUpSuccessURL() {
@@ -132,7 +133,7 @@ enum ThreadableLoaderToTest {
 class ThreadableLoaderTestHelper final {
  public:
   ThreadableLoaderTestHelper()
-      : dummy_page_holder_(std::make_unique<DummyPageHolder>(IntSize(1, 1))) {
+      : dummy_page_holder_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))) {
     KURL url("http://fake.url/");
     dummy_page_holder_->GetFrame().Loader().CommitNavigation(
         WebNavigationParams::CreateWithHTMLBufferForTesting(
@@ -190,6 +191,7 @@ class ThreadableLoaderTest : public testing::Test {
     ResourceRequest request(url);
     request.SetRequestContext(mojom::blink::RequestContextType::OBJECT);
     request.SetMode(request_mode);
+    request.SetTargetAddressSpace(network::mojom::IPAddressSpace::kUnknown);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
     helper_->StartLoader(std::move(request));
   }
@@ -232,7 +234,7 @@ TEST_F(ThreadableLoaderTest, CancelAfterStart) {
 
   EXPECT_CALL(GetCheckpoint(), Call(2))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
   EXPECT_CALL(GetCheckpoint(), Call(3));
 
   StartLoader(SuccessURL());
@@ -250,7 +252,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearAfterStart) {
   EXPECT_CALL(GetCheckpoint(), Call(2))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
   EXPECT_CALL(GetCheckpoint(), Call(3));
 
   StartLoader(SuccessURL());
@@ -268,7 +270,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidReceiveResponse) {
   EXPECT_CALL(GetCheckpoint(), Call(2));
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -285,7 +287,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearInDidReceiveResponse) {
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -302,7 +304,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidReceiveData) {
   EXPECT_CALL(*Client(), DidReceiveResponse(_, _));
   EXPECT_CALL(*Client(), DidReceiveData(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -320,7 +322,7 @@ TEST_F(ThreadableLoaderTest, CancelAndClearInDidReceiveData) {
   EXPECT_CALL(*Client(), DidReceiveData(_, _))
       .WillOnce(
           InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelAndClearLoader));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsCancellation)));
 
   StartLoader(SuccessURL());
   CallCheckpoint(2);
@@ -384,7 +386,7 @@ TEST_F(ThreadableLoaderTest, DidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(Truly(IsNotCancellation)));
+  EXPECT_CALL(*Client(), DidFail(_, Truly(IsNotCancellation)));
 
   StartLoader(ErrorURL());
   CallCheckpoint(2);
@@ -398,7 +400,7 @@ TEST_F(ThreadableLoaderTest, CancelInDidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(_))
+  EXPECT_CALL(*Client(), DidFail(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
 
   StartLoader(ErrorURL());
@@ -413,7 +415,7 @@ TEST_F(ThreadableLoaderTest, ClearInDidFail) {
   CallCheckpoint(1);
 
   EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFail(_))
+  EXPECT_CALL(*Client(), DidFail(_, _))
       .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
 
   StartLoader(ErrorURL());

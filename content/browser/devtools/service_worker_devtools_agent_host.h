@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
@@ -32,6 +32,12 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   using Map = std::map<std::string,
                        scoped_refptr<ServiceWorkerDevToolsAgentHost>>;
 
+  // Instantiates an agent host for the service worker identified by
+  // `worker_process_id` and `worker_route_id`.
+  //
+  // `client_security_state` may be nullptr if the worker script headers have
+  // not been fetched yet. In that case, `UpdateClientSecurityState()` should be
+  // called once the headers have been fetched.
   ServiceWorkerDevToolsAgentHost(
       int worker_process_id,
       int worker_route_id,
@@ -40,11 +46,15 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
       const GURL& url,
       const GURL& scope,
       bool is_installed_version,
-      base::Optional<network::CrossOriginEmbedderPolicy>
-          cross_origin_embedder_policy,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const base::UnguessableToken& devtools_worker_token);
+
+  ServiceWorkerDevToolsAgentHost(const ServiceWorkerDevToolsAgentHost&) =
+      delete;
+  ServiceWorkerDevToolsAgentHost& operator=(
+      const ServiceWorkerDevToolsAgentHost&) = delete;
 
   // DevToolsAgentHost overrides.
   BrowserContext* GetBrowserContext() override;
@@ -57,20 +67,31 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   NetworkLoaderFactoryParamsAndInfo CreateNetworkFactoryParamsForDevTools()
       override;
   RenderProcessHost* GetProcessHost() override;
-  base::Optional<network::CrossOriginEmbedderPolicy>
+  absl::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
 
-  void WorkerRestarted(int worker_process_id, int worker_route_id);
+  void WorkerStarted(int worker_process_id, int worker_route_id);
   void WorkerReadyForInspection(
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
-  void UpdateCrossOriginEmbedderPolicy(
-      network::CrossOriginEmbedderPolicy cross_origin_embedder_policy,
+
+  // Sets the client security state of the linked service worker.
+  // Called when the worker starts, once the client security state is known.
+  // `client_security_state` must not be nullptr.
+  void UpdateClientSecurityState(
+      network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter);
+
   void WorkerStopped();
   void WorkerVersionInstalled();
   void WorkerVersionDoomed();
+
+  // This a niche function used when failing a ServiceWorker main script fetch
+  // with PlzServiceWorker. Since the worker did not have the opportunity to
+  // boot up, some messages will be left unanswered. This makes sure they are
+  // answered with an error message, avoid time outs in WPTs.
+  void WorkerMainScriptFetchingFailed();
 
   const GURL& scope() const { return scope_; }
   const base::UnguessableToken& devtools_worker_token() const {
@@ -86,9 +107,12 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   base::Time version_doomed_time() const { return version_doomed_time_; }
 
   int64_t version_id() const { return version_id_; }
-  const ServiceWorkerContextWrapper* context_wrapper() const {
+  ServiceWorkerContextWrapper* context_wrapper() {
     return context_wrapper_.get();
   }
+
+  bool should_pause_on_start() { return should_pause_on_start_; }
+  void set_should_pause_on_start(bool should_pause_on_start);
 
  private:
   ~ServiceWorkerDevToolsAgentHost() override;
@@ -98,11 +122,14 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
+  protocol::TargetAutoAttacher* auto_attacher() override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   void UpdateLoaderFactories(base::OnceClosure callback);
+
+  std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
 
   enum WorkerState {
     WORKER_NOT_READY,
@@ -119,14 +146,26 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   GURL scope_;
   base::Time version_installed_time_;
   base::Time version_doomed_time_;
-  base::Optional<network::CrossOriginEmbedderPolicy>
-      cross_origin_embedder_policy_;
+
+  // `should_pause_on_start_` is set by DevTools auto-attachers if any that
+  // asked for execution to be paused so that they could attach asynchronously
+  // to the new ServiceWorker target. If true, we throttle the main script fetch
+  // and pause the renderer when starting.
+  // Note: This is only used with PlzServiceWorker. If PlzServiceWorker is off,
+  // this state is not stored but passed directly into the starting parameters
+  // of the ServiceWorker as `should_wait_for_debugger`.
+  bool should_pause_on_start_ = false;
+
+  // The client security state of the linked service worker.
+  // This is passed to network URL loader factories used for fetches initiated
+  // by the service worker.
+  network::mojom::ClientSecurityStatePtr client_security_state_;
+
   mojo::Remote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter_;
+
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       process_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDevToolsAgentHost);
 };
 
 }  // namespace content

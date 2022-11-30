@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/geolocation/fake_position_cache.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "services/device/geolocation/wifi_data.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 
@@ -36,8 +35,8 @@ void FakePositionCache::CachePosition(const WifiData& wifi_data,
 
 const mojom::Geoposition* FakePositionCache::FindPosition(
     const WifiData& wifi_data) const {
-  auto it = std::find_if(
-      data.begin(), data.end(), [&wifi_data](const auto& candidate_pair) {
+  auto it =
+      base::ranges::find_if(data, [&wifi_data](const auto& candidate_pair) {
         return SetsEqual(wifi_data.access_point_data,
                          candidate_pair.first.access_point_data);
       });

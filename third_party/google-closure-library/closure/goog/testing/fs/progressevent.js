@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Mock ProgressEvent object.
@@ -19,9 +11,9 @@
 goog.setTestOnly('goog.testing.fs.ProgressEvent');
 goog.provide('goog.testing.fs.ProgressEvent');
 
-goog.forwardDeclare('goog.fs.FileReader.EventType');
-goog.forwardDeclare('goog.fs.FileSaver.EventType');
 goog.require('goog.events.Event');
+goog.requireType('goog.fs.FileReader.EventType');
+goog.requireType('goog.fs.FileSaver.EventType');
 
 
 
@@ -37,6 +29,7 @@ goog.require('goog.events.Event');
  * @final
  */
 goog.testing.fs.ProgressEvent = function(type, loaded, total) {
+  'use strict';
   goog.testing.fs.ProgressEvent.base(this, 'constructor', type);
 
   /**
@@ -62,6 +55,7 @@ goog.inherits(goog.testing.fs.ProgressEvent, goog.events.Event);
  * @return {boolean} True if the length is known.
  */
 goog.testing.fs.ProgressEvent.prototype.isLengthComputable = function() {
+  'use strict';
   return true;
 };
 
@@ -71,6 +65,7 @@ goog.testing.fs.ProgressEvent.prototype.isLengthComputable = function() {
  * @return {number} The number of bytes loaded or written.
  */
 goog.testing.fs.ProgressEvent.prototype.getLoaded = function() {
+  'use strict';
   return this.loaded_;
 };
 
@@ -80,5 +75,6 @@ goog.testing.fs.ProgressEvent.prototype.getLoaded = function() {
  * @return {number} The total bytes to load or write.
  */
 goog.testing.fs.ProgressEvent.prototype.getTotal = function() {
+  'use strict';
   return this.total_;
 };

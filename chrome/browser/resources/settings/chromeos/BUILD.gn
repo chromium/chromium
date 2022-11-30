@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,112 +6,220 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
 import("./os_settings.gni")
 
-preprocess_folder_v3 = "preprocess_v3"
+assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
-preprocess_v3_manifest = "preprocessed_manifest.json"
-preprocess_gen_v3_manifest = "preprocessed_gen_manifest.json"
-preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+# root_gen_dir is "gen"
+# target_gen_dir is "gen/chrome/browser/resources/settings/chromeos"
+
+preprocessed_folder = "preprocessed"
+preprocessed_ts_folder = "preprocessed_ts"
+browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
+external_mojo_manifest = "external_mojo_manifest.json"
 
 if (optimize_webui) {
   build_manifest_v3 = "build_v3_manifest.json"
 
-  optimize_webui("build_polymer3") {
+  optimize_webui("optimize_bundle") {
     host = "os-settings"
-    input = rebase_path("$target_gen_dir/$preprocess_folder_v3", root_build_dir)
+    input = rebase_path("$target_gen_dir/$preprocessed_folder", root_build_dir)
     js_module_in_files = [
-      "chromeos/os_settings.js",
       "chromeos/lazy_load.js",
+      "chromeos/os_settings.js",
     ]
     js_out_files = [
-      "os_settings.rollup.js",
       "lazy_load.rollup.js",
+      "os_settings.rollup.js",
       "shared.rollup.js",
     ]
     out_manifest = "$target_gen_dir/$build_manifest_v3"
 
     deps = [
-      ":preprocess_gen_v3",
-      ":preprocess_mojo_v3",
-      ":preprocess_v3",
-      "../../../../../ui/webui/resources:preprocess",
-      "../../nearby_share/shared:preprocess_v3",
+      ":build_ts",
+      ":preprocess_browser_settings_tsc",
+      "//chrome/browser/resources/nearby_share/shared:preprocess_v3",
+      "//ui/webui/resources:preprocess",
+      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     excludes = [
-      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
-      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
-      "chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js",
-      "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/chromeos/colors/cros_colors.generated.css",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
-      "chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js",
-      "chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js",
       "app-management/app_management.mojom-lite.js",
       "app-management/bitmap.mojom-lite.js",
       "app-management/file_path.mojom-lite.js",
       "app-management/image_info.mojom-lite.js",
       "app-management/image.mojom-lite.js",
+      "app-management/safe_base_name.mojom-lite.js",
       "app-management/types.mojom-lite.js",
+      "chrome://resources/cr_components/app_management/app_management.mojom-lite.js",
+      "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
+      "chrome://resources/cr_components/app_management/types.mojom-webui.js",
+      "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
+      "chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js",
+      "chrome://resources/ash/common/network/mojo_interface_provider.js",
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/js/bindings.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
+      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js",
+      "chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js",
+      "chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
       "mojo/nearby_share.mojom-lite.js",
+      "mojo/nearby_share_settings.mojom-lite.js",
       "mojo/nearby_share_share_type.mojom-lite.js",
       "mojo/nearby_share_target_types.mojom-lite.js",
-      "mojo/nearby_share_settings.mojom-lite.js",
+      "os_apps_page/app_notification_handler.mojom-lite.js",
     ]
   }
 }
 
-# OS Settings specific mojo files, bundled in optimized builds.
-preprocess_if_expr("preprocess_mojo_v3") {
+# TypeScript Build Configuration
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js",
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/app_management:build_ts",
+    "//ui/webui/resources/mojo:library",
   ]
-  in_folder = get_path_info("../../../ui/webui/settings/chromeos/", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocess_folder_v3"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [
-    "constants/routes.mojom-lite.js",
-    "constants/setting.mojom-lite.js",
-    "search/search.mojom-lite.js",
-    "search/search_result_icon.mojom-lite.js",
-    "search/user_action_recorder.mojom-lite.js",
+  extra_deps = [
+    ":generate_mojom_webui",
+    ":preprocess_gen_ts_files",
+    ":preprocess_src_ts_files",
+    "//ash/webui/common/resources:generate_definitions",
   ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/bluetooth.d.ts",
+    "//tools/typescript/definitions/bluetooth_private.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+  root_dir = "$target_gen_dir/$preprocessed_ts_folder"
+  in_files = src_ts_files + gen_ts_files + mojom_webui_files
+  out_dir = "$target_gen_dir/$preprocessed_folder"
+}
+
+preprocess_if_expr("preprocess_src_ts_files") {
+  defines = chrome_grit_defines
+  in_folder = "../"
+  in_files = src_ts_files
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+}
+
+preprocess_if_expr("preprocess_gen_ts_files") {
+  defines = chrome_grit_defines
+  deps = [
+    ":generate_web_component_css_wrapper_files",
+    ":generate_web_component_html_wrapper_files",
+    ":generate_web_components",
+  ]
+  in_folder = get_path_info("../", "gen_dir")
+  in_files = gen_ts_files
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+}
+
+html_to_wrapper("generate_web_component_html_wrapper_files") {
+  in_folder = "../"
+  in_files = web_component_html_files
+  out_folder = get_path_info("../", "gen_dir")
+}
+
+css_to_wrapper("generate_web_component_css_wrapper_files") {
+  in_folder = "../"
+  in_files = css_files
+  out_folder = get_path_info("../", "gen_dir")
+}
+
+# Generate all WebUI mojom files and copy them to preprocessed_ts_folder to be
+# input to ts_library(). These files are bundled in optimized builds.
+group("generate_mojom_webui") {
+  public_deps = [
+    ":generate_ash_search_mojo_webui",
+    ":generate_cros_audio_config_mojo_webui",
+    ":generate_personalization_search_mojo_webui",
+    ":generate_settings_mojo_webui",
+  ]
+}
+
+copy("generate_cros_audio_config_mojo_webui") {
+  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/audio/{{source_file_part}}" ]
+}
+
+copy("generate_settings_mojo_webui") {
+  deps =
+      [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-webui.js",
+  ]
+  outputs = [
+    "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/{{source_file_part}}",
+  ]
+}
+
+copy("generate_personalization_search_mojo_webui") {
+  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/search/search.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/personalization/{{source_file_part}}" ]
+}
+
+copy("generate_ash_search_mojo_webui") {
+  deps =
+      [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/search.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/$preprocessed_ts_folder/mojom-webui/search/{{source_file_part}}" ]
 }
 
 # Mojo files generated by non-OS-settings targets, not bundled.
 preprocess_if_expr("preprocess_external_mojo") {
   deps = [
-    "//chrome/browser/ui/webui/app_management:mojo_bindings_js",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js",
     "//components/services/app_service/public/mojom:mojom_js",
     "//mojo/public/mojom/base",
     "//ui/gfx/image/mojom:mojom_js",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js",
   ]
-  in_folder = "$root_gen_dir"
+  in_folder = root_gen_dir
 
   # It does not matter which preprocess folder these files are pasted into, as
   # they are not used for bundling; the purpose of this build rule is to
   # include them in the generated grd file.
-  out_folder = "$target_gen_dir/$preprocess_folder_v3"
-  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  out_folder = "$target_gen_dir/$preprocessed_folder"
+  out_manifest = "$target_gen_dir/$external_mojo_manifest"
   in_files = [
-    "mojo/public/mojom/base/file_path.mojom-lite.js",
-    "ui/gfx/image/mojom/image.mojom-lite.js",
-    "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js",
+    "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-lite.js",
     "components/services/app_service/public/mojom/types.mojom-lite.js",
+    "mojo/public/mojom/base/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js",
+    "ui/gfx/image/mojom/image.mojom-lite.js",
+    "ui/webui/resources/cr_components/app_management/app_management.mojom-lite.js",
   ]
 }
 
@@ -136,17 +244,49 @@ generate_grd("build_grd") {
   grd_prefix = "os_settings"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
-    "os_settings_v3.html",
+    "images/computer_and_bluetooth_switch_dark.svg",
     "images/computer_and_bluetooth_switch.svg",
+    "images/error_badge_dark.svg",
     "images/error_badge.svg",
+    "images/icon_add_cellular.svg",
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
-    "images/icon_add_cellular.svg",
+    "images/icon_pair_bluetooth.svg",
+    "images/keyboard_shortcut_dark.svg",
+    "images/keyboard_shortcut.svg",
+    "images/multidevice_permission_setup_connecting.svg",
+    "images/multidevice_permission_setup_connecting_dark.svg",
+    "images/notification_access_connecting_dark.svg",
     "images/notification_access_connecting.svg",
+    "images/notification_access_error_dark.svg",
     "images/notification_access_error.svg",
+    "images/notification_access_finished_dark.svg",
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
-    "../../nearby_share/shared/nearby_share_pulse_animation.json",
+    "images/notification_access_setup_dark.svg",
+    "images/smart_privacy.svg",
+    "images/smart_privacy_dark.svg",
+    "images/switch_access_setup_guide_assign_next.svg",
+    "images/switch_access_setup_guide_assign_next_dark.svg",
+    "images/switch_access_setup_guide_assign_previous.svg",
+    "images/switch_access_setup_guide_assign_previous_dark.svg",
+    "images/switch_access_setup_guide_assign_select.svg",
+    "images/switch_access_setup_guide_assign_select_dark.svg",
+    "images/switch_access_setup_guide_auto_scan_enabled.svg",
+    "images/switch_access_setup_guide_auto_scan_enabled_dark.svg",
+    "images/switch_access_setup_guide_choose_one_switch.svg",
+    "images/switch_access_setup_guide_choose_one_switch_dark.svg",
+    "images/switch_access_setup_guide_choose_three_switches.svg",
+    "images/switch_access_setup_guide_choose_three_switches_dark.svg",
+    "images/switch_access_setup_guide_choose_two_switches.svg",
+    "images/switch_access_setup_guide_choose_two_switches_dark.svg",
+    "images/switch_access_setup_guide_closing.svg",
+    "images/switch_access_setup_guide_closing_dark.svg",
+    "os_settings_v3.html",
+    "../../nearby_share/shared/nearby_share_progress_bar_dark.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_light.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_light.json",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -154,397 +294,185 @@ generate_grd("build_grd") {
     "../../nearby_share:build_mojo_grdp",
   ]
   grdp_files = [ "$root_gen_dir/chrome/browser/resources/nearby_share/nearby_share_mojo_resources.grdp" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_external_mojo_manifest" ]
+  manifest_files = [ "$target_gen_dir/$external_mojo_manifest" ]
   resource_path_rewrites = [
-    "os_settings_v3.html|chromeos/os_settings_v3.html",
-    "mojo/public/mojom/base/file_path.mojom-lite.js|app-management/file_path.mojom-lite.js",
-    "ui/gfx/image/mojom/image.mojom-lite.js|app-management/image.mojom-lite.js",
-    "chrome/browser/ui/webui/app_management/app_management.mojom-lite.js|app-management/app_management.mojom-lite.js",
+    "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-lite.js|os_apps_page/app_notification_handler.mojom-lite.js",
     "components/services/app_service/public/mojom/types.mojom-lite.js|app-management/types.mojom-lite.js",
-    "../../nearby_share/shared/nearby_share_pulse_animation.json|nearby_share_pulse_animation.json",
+    "mojo/public/mojom/base/file_path.mojom-lite.js|app-management/file_path.mojom-lite.js",
+    "mojo/public/mojom/base/safe_base_name.mojom-lite.js|app-management/safe_base_name.mojom-lite.js",
+    "os_settings_v3.html|chromeos/os_settings_v3.html",
+    "ui/gfx/image/mojom/image.mojom-lite.js|app-management/image.mojom-lite.js",
+    "ui/webui/resources/cr_components/app_management/app_management.mojom-lite.js|app-management/app_management.mojom-lite.js",
+    "../../nearby_share/shared/nearby_share_progress_bar_dark.json|nearby_share_progress_bar_dark.json",
+    "../../nearby_share/shared/nearby_share_progress_bar_light.json|nearby_share_progress_bar_light.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_dark.json|nearby_share_pulse_animation_dark.json",
+    "../../nearby_share/shared/nearby_share_pulse_animation_light.json|nearby_share_pulse_animation_light.json",
   ]
 
   if (optimize_webui) {
-    deps += [ ":build_polymer3" ]
+    deps += [ ":optimize_bundle" ]
     manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
     input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
-      "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
+      "lazy_load.rollup.js|chromeos/lazy_load.js",
       "lazy_load.vulcanized.html|chromeos/lazy_load.html",
       "os_settings.rollup.js|chromeos/os_settings.js",
       "shared.rollup.js|chromeos/shared.rollup.js",
-      "lazy_load.rollup.js|chromeos/lazy_load.js",
+      "../../nearby_share/shared/nearby_shared_icons.html|shared/nearby_shared_icons.html",
     ]
   } else {
     deps += [
-      ":preprocess_gen_v3",
-      ":preprocess_mojo_v3",
-      ":preprocess_v3",
-      "../../nearby_share/shared:build_v3_grdp",
+      ":build_ts",
+      ":preprocess_browser_settings_tsc",
+      "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
+      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [
-      "$target_gen_dir/$preprocess_gen_v3_manifest",
-      "$target_gen_dir/$preprocess_v3_manifest",
-      "$target_gen_dir/$preprocess_mojo_manifest",
+      "$target_gen_dir/$browser_settings_tsc_manifest",
+      "$target_gen_dir/build_ts.manifest",
     ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
   }
 }
 
-preprocess_if_expr("preprocess_v3") {
+# Since Browser Settings is migrating to TypeScript (crbug.com/1234307), and
+# some files are still shared with CrOS Settings, need to copy the transpiled
+# JS files from TS compiler's output.
+preprocess_if_expr("preprocess_browser_settings_tsc") {
   defines = chrome_grit_defines
-  in_folder = "../"
-  out_folder = "$target_gen_dir/$preprocess_folder_v3"
-  out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
-  in_files = [
-    "appearance_page/fonts_browser_proxy.js",
-    "about_page/about_page_browser_proxy.js",
-    "chromeos/ensure_lazy_loaded.m.js",
-    "chromeos/lazy_load.js",
-    "chromeos/os_settings.js",
-    "controls/pref_control_behavior.js",
-    "controls/settings_boolean_control_behavior.js",
-    "extension_control_browser_proxy.js",
-    "global_scroll_target_behavior.js",
-    "i18n_setup.js",
-    "languages_page/languages.js",
-    "languages_page/languages_browser_proxy.js",
-    "lifetime_browser_proxy.js",
-    "page_visibility.js",
-    "people_page/account_manager_browser_proxy.js",
-    "people_page/profile_info_browser_proxy.js",
-    "people_page/sync_browser_proxy.js",
-    "prefs/prefs_behavior.js",
-    "prefs/prefs.js",
-    "prefs/prefs_types.js",
-    "prefs/pref_util.js",
-    "privacy_page/privacy_page_browser_proxy.js",
-    "router.js",
-    "search_engines_page/search_engines_browser_proxy.js",
-    "search_settings.js",
-    "setting_id_param_util.js",
-  ]
-}
+  deps = [ "..:build_ts" ]
+  in_folder = "$root_gen_dir/chrome/browser/resources/settings/tsc"
+  out_folder = "$target_gen_dir/$preprocessed_folder"
+  out_manifest = "$target_gen_dir/$browser_settings_tsc_manifest"
 
-preprocess_if_expr("preprocess_gen_v3") {
-  defines = chrome_grit_defines
-  deps = [ ":polymer3_elements" ]
-  in_folder = get_path_info("../", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocess_folder_v3"
-  out_manifest = "$target_gen_dir/$preprocess_gen_v3_manifest"
-  in_files = [
+  # Files that have a corresponding HTML wrapper file.
+  browser_settings_web_component_files = [
     "a11y_page/captions_subpage.js",
     "a11y_page/live_caption_section.js",
-    "chromeos/ambient_mode_page/album_item.m.js",
-    "chromeos/ambient_mode_page/album_list.m.js",
-    "chromeos/ambient_mode_page/ambient_mode_browser_proxy.m.js",
-    "chromeos/ambient_mode_page/ambient_mode_page.m.js",
-    "chromeos/ambient_mode_page/ambient_mode_photos_page.m.js",
-    "chromeos/ambient_mode_page/text_with_tooltip.m.js",
-    "chromeos/ambient_mode_page/art_album_dialog.m.js",
-    "chromeos/ambient_mode_page/constants.m.js",
-    "chromeos/ambient_mode_page/topic_source_item.m.js",
-    "chromeos/ambient_mode_page/topic_source_list.m.js",
-    "chromeos/bluetooth_page/bluetooth_device_list_item.m.js",
-    "chromeos/bluetooth_page/bluetooth_page.m.js",
-    "chromeos/bluetooth_page/bluetooth_subpage.m.js",
-    "chromeos/crostini_page/crostini_arc_adb.m.js",
-    "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.m.js",
-    "chromeos/crostini_page/crostini_browser_proxy.m.js",
-    "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.m.js",
-    "chromeos/crostini_page/crostini_disk_resize_dialog.m.js",
-    "chromeos/crostini_page/crostini_export_import.m.js",
-    "chromeos/crostini_page/crostini_import_confirmation_dialog.m.js",
-    "chromeos/crostini_page/crostini_mic_sharing_dialog.m.js",
-    "chromeos/crostini_page/crostini_page.m.js",
-    "chromeos/crostini_page/crostini_port_forwarding.m.js",
-    "chromeos/crostini_page/crostini_port_forwarding_add_port_dialog.m.js",
-    "chromeos/crostini_page/crostini_subpage.m.js",
-    "chromeos/date_time_page/date_time_page.m.js",
-    "chromeos/date_time_page/date_time_types.m.js",
-    "chromeos/date_time_page/timezone_browser_proxy.m.js",
-    "chromeos/date_time_page/timezone_selector.m.js",
-    "chromeos/date_time_page/timezone_subpage.m.js",
-    "chromeos/deep_linking_behavior.m.js",
-    "chromeos/device_page/device_page.m.js",
-    "chromeos/device_page/device_page_browser_proxy.m.js",
-    "chromeos/device_page/display.m.js",
-    "chromeos/device_page/display_layout.m.js",
-    "chromeos/device_page/display_overscan_dialog.m.js",
-    "chromeos/device_page/drag_behavior.m.js",
-    "chromeos/device_page/keyboard.m.js",
-    "chromeos/device_page/layout_behavior.m.js",
-    "chromeos/device_page/night_light_slider.m.js",
-    "chromeos/device_page/pointers.m.js",
-    "chromeos/device_page/power.m.js",
-    "chromeos/device_page/storage.m.js",
-    "chromeos/device_page/storage_external.m.js",
-    "chromeos/device_page/storage_external_entry.m.js",
-    "chromeos/device_page/stylus.m.js",
-    "chromeos/google_assistant_page/google_assistant_browser_proxy.m.js",
-    "chromeos/google_assistant_page/google_assistant_page.m.js",
-    "chromeos/guest_os/guest_os_browser_proxy.m.js",
-    "chromeos/guest_os/guest_os_shared_paths.m.js",
-    "chromeos/guest_os/guest_os_shared_usb_devices.m.js",
-    "chromeos/internet_page/esim_install_error_dialog.m.js",
-    "chromeos/internet_page/esim_remove_profile_dialog.m.js",
-    "chromeos/internet_page/esim_rename_dialog.m.js",
-    "chromeos/internet_page/cellular_banner.m.js",
-    "chromeos/internet_page/cellular_networks_list.m.js",
-    "chromeos/internet_page/cellular_setup_dialog.m.js",
-    "chromeos/internet_page/cellular_setup_settings_delegate.m.js",
-    "chromeos/internet_page/internet_config.m.js",
-    "chromeos/internet_page/internet_detail_menu.m.js",
-    "chromeos/internet_page/internet_detail_page.m.js",
-    "chromeos/internet_page/internet_known_networks_page.m.js",
-    "chromeos/internet_page/internet_page.m.js",
-    "chromeos/internet_page/internet_page_browser_proxy.m.js",
-    "chromeos/internet_page/internet_shared_css.m.js",
-    "chromeos/internet_page/internet_subpage.m.js",
-    "chromeos/internet_page/network_proxy_section.m.js",
-    "chromeos/internet_page/network_summary.m.js",
-    "chromeos/internet_page/network_summary_item.m.js",
-    "chromeos/internet_page/tether_connection_dialog.m.js",
-    "chromeos/kerberos_page/kerberos_accounts.m.js",
-    "chromeos/kerberos_page/kerberos_accounts_browser_proxy.m.js",
-    "chromeos/kerberos_page/kerberos_add_account_dialog.m.js",
-    "chromeos/kerberos_page/kerberos_page.m.js",
-    "chromeos/localized_link/localized_link.m.js",
-    "chromeos/metrics_recorder.m.js",
-    "chromeos/multidevice_page/multidevice_browser_proxy.m.js",
-    "chromeos/multidevice_page/multidevice_constants.m.js",
-    "chromeos/multidevice_page/multidevice_feature_behavior.m.js",
-    "chromeos/multidevice_page/multidevice_feature_item.m.js",
-    "chromeos/multidevice_page/multidevice_feature_toggle.m.js",
-    "chromeos/multidevice_page/multidevice_notification_access_setup_dialog.m.js",
-    "chromeos/multidevice_page/multidevice_page.m.js",
-    "chromeos/multidevice_page/multidevice_radio_button.m.js",
-    "chromeos/multidevice_page/multidevice_smartlock_subpage.m.js",
-    "chromeos/multidevice_page/multidevice_subpage.m.js",
-    "chromeos/multidevice_page/multidevice_tether_item.m.js",
-    "chromeos/multidevice_page/multidevice_task_continuation_disabled_link.m.js",
-    "chromeos/multidevice_page/multidevice_task_continuation_item.m.js",
-    "chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.m.js",
-    "chromeos/multidevice_page/multidevice_wifi_sync_item.m.js",
-    "chromeos/nearby_share_page/nearby_account_manager_browser_proxy.m.js",
-    "chromeos/nearby_share_page/nearby_share_confirm_page.m.js",
-    "chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.m.js",
-    "chromeos/nearby_share_page/nearby_share_data_usage_dialog.m.js",
-    "chromeos/nearby_share_page/nearby_share_device_name_dialog.m.js",
-    "chromeos/nearby_share_page/nearby_share_high_visibility_page.m.js",
-    "chromeos/nearby_share_page/nearby_share_receive_dialog.m.js",
-    "chromeos/nearby_share_page/nearby_share_receive_manager.m.js",
-    "chromeos/nearby_share_page/nearby_share_subpage.m.js",
-    "chromeos/nearby_share_page/types.m.js",
-    "chromeos/on_startup_page/on_startup_page.m.js",
-    "chromeos/os_a11y_page/manage_a11y_page.m.js",
-    "chromeos/os_a11y_page/os_a11y_page.m.js",
-    "chromeos/os_a11y_page/os_a11y_page_browser_proxy.m.js",
-    "chromeos/os_a11y_page/switch_access_action_assignment_dialog.m.js",
-    "chromeos/os_a11y_page/switch_access_constants.m.js",
-    "chromeos/os_a11y_page/switch_access_setup_guide_dialog.m.js",
-    "chromeos/os_a11y_page/switch_access_subpage_browser_proxy.m.js",
-    "chromeos/os_a11y_page/switch_access_subpage.m.js",
-    "chromeos/os_a11y_page/manage_a11y_page_browser_proxy.m.js",
-    "chromeos/os_a11y_page/tts_subpage.m.js",
-    "chromeos/os_a11y_page/tts_subpage_browser_proxy.m.js",
-    "chromeos/os_about_page/channel_switcher_dialog.m.js",
-    "chromeos/os_about_page/detailed_build_info.m.js",
-    "chromeos/os_about_page/device_name_browser_proxy.m.js",
-    "chromeos/os_about_page/edit_hostname_dialog.m.js",
-    "chromeos/os_about_page/os_about_page.m.js",
-    "chromeos/os_about_page/update_warning_dialog.m.js",
-    "chromeos/os_apps_page/android_apps_browser_proxy.m.js",
-    "chromeos/os_apps_page/android_apps_subpage.m.js",
-    "chromeos/os_apps_page/app_management_page/actions.m.js",
-    "chromeos/os_apps_page/app_management_page/api_listener.m.js",
-    "chromeos/os_apps_page/app_management_page/app_detail_view.m.js",
-    "chromeos/os_apps_page/app_management_page/app_item.m.js",
-    "chromeos/os_apps_page/app_management_page/app_management_page.m.js",
-    "chromeos/os_apps_page/app_management_page/arc_detail_view.m.js",
-    "chromeos/os_apps_page/app_management_page/browser_proxy.m.js",
-    "chromeos/os_apps_page/app_management_page/chrome_app_detail_view.m.js",
-    "chromeos/os_apps_page/app_management_page/constants.m.js",
-    "chromeos/os_apps_page/app_management_page/dom_switch.m.js",
-    "chromeos/os_apps_page/app_management_page/fake_page_handler.m.js",
-    "chromeos/os_apps_page/app_management_page/icons.m.js",
-    "chromeos/os_apps_page/app_management_page/main_view.m.js",
-    "chromeos/os_apps_page/app_management_page/permission_item.m.js",
-    "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.m.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.m.js",
-    "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.m.js",
-    "chromeos/os_apps_page/app_management_page/pwa_detail_view.m.js",
-    "chromeos/os_apps_page/app_management_page/reducers.m.js",
-    "chromeos/os_apps_page/app_management_page/shared_style.m.js",
-    "chromeos/os_apps_page/app_management_page/shared_vars.m.js",
-    "chromeos/os_apps_page/app_management_page/store.m.js",
-    "chromeos/os_apps_page/app_management_page/store_client.m.js",
-    "chromeos/os_apps_page/app_management_page/toggle_row.m.js",
-    "chromeos/os_apps_page/app_management_page/types.m.js",
-    "chromeos/os_apps_page/app_management_page/uninstall_button.m.js",
-    "chromeos/os_apps_page/app_management_page/util.m.js",
-    "chromeos/os_apps_page/os_apps_page.m.js",
-    "chromeos/os_files_page/os_files_page.m.js",
-    "chromeos/os_files_page/smb_shares_page.m.js",
-    "chromeos/os_icons.m.js",
-    "chromeos/os_languages_page/add_input_methods_dialog.m.js",
-    "chromeos/os_languages_page/change_device_language_dialog.m.js",
-    "chromeos/os_languages_page/input_method_options_page.m.js",
-    "chromeos/os_languages_page/input_method_util.m.js",
-    "chromeos/os_languages_page/input_page.m.js",
-    "chromeos/os_languages_page/languages_metrics_proxy.m.js",
-    "chromeos/os_languages_page/manage_input_methods_page.m.js",
-    "chromeos/os_languages_page/os_add_languages_dialog.m.js",
-    "chromeos/os_languages_page/os_edit_dictionary_page.m.js",
-    "chromeos/os_languages_page/os_languages_page.m.js",
-    "chromeos/os_languages_page/os_languages_page_v2.m.js",
-    "chromeos/os_languages_page/os_languages_section.m.js",
-    "chromeos/os_languages_page/shared_style.m.js",
-    "chromeos/os_languages_page/shared_vars.m.js",
-    "chromeos/os_languages_page/smart_inputs_page.m.js",
-    "chromeos/os_page_visibility.m.js",
-    "chromeos/os_people_page/account_manager.m.js",
-    "chromeos/os_people_page/fingerprint_browser_proxy.m.js",
-    "chromeos/os_people_page/fingerprint_list.m.js",
-    "chromeos/os_people_page/lock_screen.m.js",
-    "chromeos/os_people_page/lock_screen_password_prompt_dialog.m.js",
-    "chromeos/os_people_page/lock_state_behavior.m.js",
-    "chromeos/os_people_page/os_people_page.m.js",
-    "chromeos/os_people_page/os_sync_browser_proxy.m.js",
-    "chromeos/os_people_page/os_sync_controls.m.js",
-    "chromeos/os_people_page/pin_autosubmit_dialog.m.js",
-    "chromeos/os_people_page/setup_fingerprint_dialog.m.js",
-    "chromeos/os_people_page/setup_pin_dialog.m.js",
-    "chromeos/os_people_page/user_list.m.js",
-    "chromeos/os_people_page/users_add_user_dialog.m.js",
-    "chromeos/os_people_page/users_page.m.js",
-    "chromeos/os_printing_page/cups_add_print_server_dialog.m.js",
-    "chromeos/os_printing_page/cups_add_printer_dialog.m.js",
-    "chromeos/os_printing_page/cups_add_printer_manually_dialog.m.js",
-    "chromeos/os_printing_page/cups_add_printer_manufacturer_model_dialog.m.js",
-    "chromeos/os_printing_page/cups_edit_printer_dialog.m.js",
-    "chromeos/os_printing_page/cups_nearby_printers.m.js",
-    "chromeos/os_printing_page/cups_printer_dialog_error.m.js",
-    "chromeos/os_printing_page/cups_printer_dialog_util.m.js",
-    "chromeos/os_printing_page/cups_printer_shared_css.m.js",
-    "chromeos/os_printing_page/cups_printer_types.m.js",
-    "chromeos/os_printing_page/cups_printers.m.js",
-    "chromeos/os_printing_page/cups_printers_browser_proxy.m.js",
-    "chromeos/os_printing_page/cups_printers_entry.m.js",
-    "chromeos/os_printing_page/cups_printers_entry_list_behavior.m.js",
-    "chromeos/os_printing_page/cups_printers_entry_manager.m.js",
-    "chromeos/os_printing_page/cups_saved_printers.m.js",
-    "chromeos/os_printing_page/cups_settings_add_printer_dialog.m.js",
-    "chromeos/os_printing_page/os_printing_page.m.js",
-    "chromeos/os_privacy_page/os_privacy_page.m.js",
-    "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.m.js",
-    "chromeos/os_privacy_page/peripheral_data_access_protection_dialog.m.js",
-    "chromeos/os_reset_page/os_powerwash_dialog.m.js",
-    "chromeos/os_reset_page/os_reset_browser_proxy.m.js",
-    "chromeos/os_reset_page/os_reset_page.m.js",
-    "chromeos/os_route.m.js",
-    "chromeos/os_search_page/os_search_page.m.js",
-    "chromeos/os_search_page/os_search_selection_dialog.m.js",
-    "chromeos/os_settings_icons_css.m.js",
-    "chromeos/os_settings_menu/os_settings_menu.m.js",
-    "chromeos/os_settings_main/os_settings_main.m.js",
-    "chromeos/os_settings_page/main_page_behavior.m.js",
-    "chromeos/os_settings_page/settings_idle_load.m.js",
-    "chromeos/os_settings_page/os_settings_page.m.js",
-    "chromeos/os_settings_ui/os_settings_ui.m.js",
-    "chromeos/os_settings_routes.m.js",
-    "chromeos/os_settings_search_box/os_search_result_row.m.js",
-    "chromeos/os_settings_search_box/os_settings_search_box.m.js",
-    "chromeos/os_toolbar/os_toolbar.m.js",
-    "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
-    "chromeos/parental_controls_page/parental_controls_page.m.js",
-    "chromeos/personalization_page/change_picture.m.js",
-    "chromeos/personalization_page/change_picture_browser_proxy.m.js",
-    "chromeos/personalization_page/personalization_page.m.js",
-    "chromeos/personalization_page/wallpaper_browser_proxy.m.js",
-    "chromeos/pref_to_setting_metric_converter.m.js",
-    "chromeos/route_origin_behavior.m.js",
-    "chromeos/search_handler.m.js",
     "controls/controlled_button.js",
-    "controls/controlled_radio_button.js",
     "controls/extension_controlled_indicator.js",
     "controls/password_prompt_dialog.js",
-    "controls/settings_dropdown_menu.js",
-    "controls/settings_radio_group.js",
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
-    "controls/settings_toggle_button.js",
-    "icons.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
     "privacy_page/personalization_options.js",
+    "privacy_page/secure_dns_input.js",
+    "privacy_page/secure_dns.js",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
-    "settings_page/settings_subpage.js",
-    "settings_page_css.js",
-    "settings_shared_css.js",
-    "settings_vars_css.js",
+    "site_favicon.js",
+  ]
+
+  # Files that don't have a corresponding HTML file.
+  in_files = [
+    "appearance_page/fonts_browser_proxy.js",
+    "extension_control_browser_proxy.js",
+    "icons.html.js",
+    "people_page/profile_info_browser_proxy.js",
+    "people_page/sync_browser_proxy.js",
+    "prefs/prefs_mixin.js",
+    "privacy_page/autofill_assistant_browser_proxy.js",
+    "privacy_page/privacy_page_browser_proxy.js",
+    "relaunch_mixin.js",
+    "settings_page_styles.css.js",
+    "settings_shared.css.js",
+    "settings_vars.css.js",
+  ]
+
+  foreach(f, browser_settings_web_component_files) {
+    in_files += [
+      f,
+      string_replace(f, ".js", ".html.js"),
+    ]
+  }
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "os_icons.js",
+    "os_settings_icons_css.js",
   ]
 }
 
+group("generate_web_components") {
+  public_deps = [
+    ":web_components",
+
+    # Sub-folder targets
+    "crostini_page:web_components",
+    "device_page:web_components",
+    "guest_os:web_components",
+    "internet_page:web_components",
+    "kerberos_page:web_components",
+    "multidevice_page:web_components",
+    "nearby_share_page:web_components",
+    "os_a11y_page:web_components",
+    "os_apps_page:web_components",
+    "os_apps_page/app_management_page:web_components",
+    "os_apps_page/app_management_page/borealis_page:web_components",
+    "os_apps_page/app_management_page/plugin_vm_page:web_components",
+    "os_apps_page/app_notifications_page:web_components",
+    "os_bluetooth_page:web_components",
+    "os_people_page:web_components",
+    "os_printing_page:web_components",
+    "os_privacy_page:web_components",
+  ]
+}
+
+# TODO(crbug/1315757) Gradually remove closure compilation for subfolders/pages
+# that are migrated to TypeScript
 group("closure_compile_module") {
   deps = [
     ":closure_compile_local_module",
-    "ambient_mode_page:closure_compile_module",
-    "bluetooth_page:closure_compile_module",
     "crostini_page:closure_compile_module",
-    "date_time_page:closure_compile_module",
     "device_page:closure_compile_module",
-    "google_assistant_page:closure_compile_module",
     "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
-    "localized_link:closure_compile_module",
     "multidevice_page:closure_compile_module",
-    "nearby_share_page:closure_compile_module",
-    "on_startup_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
-    "os_about_page:closure_compile_module",
     "os_apps_page:closure_compile_module",
     "os_apps_page/app_management_page:closure_compile_module",
+    "os_apps_page/app_management_page/borealis_page:closure_compile_module",
     "os_apps_page/app_management_page/plugin_vm_page:closure_compile_module",
-    "os_files_page:closure_compile_module",
+    "os_apps_page/app_notifications_page:closure_compile",
+    "os_bluetooth_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",
     "os_printing_page:closure_compile_module",
     "os_privacy_page:closure_compile_module",
-    "os_reset_page:closure_compile_module",
-    "os_search_page:closure_compile_module",
-    "os_settings_main:closure_compile_module",
-    "os_settings_menu:closure_compile_module",
-    "os_settings_page:closure_compile_module",
-    "os_settings_search_box:closure_compile_module",
-    "os_settings_ui:closure_compile_module",
-    "os_toolbar:closure_compile_module",
-    "parental_controls_page:closure_compile_module",
-    "personalization_page:closure_compile_module",
   ]
 }
 
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
   closure_flags = os_settings_closure_flags
+
   deps = [
+    ":combined_search_handler",
+    ":deep_linking_behavior",
+    ":find_shortcut_behavior",
+    ":global_scroll_target_behavior",
     ":lazy_load",
-    ":metrics_recorder.m",
-    ":os_icons.m",
-    ":os_page_visibility.m",
-    ":os_route.m",
+    ":main_page_behavior",
+    ":metrics_recorder",
+    ":os_icons",
+    ":os_page_visibility",
+    ":os_route",
     ":os_settings",
-    ":os_settings_icons_css.m",
-    ":os_settings_routes.m",
-    ":pref_to_setting_metric_converter.m",
-    ":route_origin_behavior.m",
-    ":search_handler.m",
+    ":os_settings_icons_css",
+    ":os_settings_routes",
+    ":personalization_search_handler",
+    ":pref_to_setting_metric_converter",
+    ":prefs_behavior",
+    ":route_observer_behavior",
+    ":route_origin_behavior",
+    ":settings_search_handler",
   ]
 }
 
@@ -554,169 +482,120 @@ js_library("os_settings") {
 js_library("lazy_load") {
 }
 
-js_library("deep_linking_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/deep_linking_behavior.m.js" ]
+js_library("deep_linking_behavior") {
   deps = [
     "..:router",
-    "..:setting_id_param_util",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("metrics_recorder.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/metrics_recorder.m.js" ]
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("os_icons.m") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_icons.m.js",
+js_library("find_shortcut_behavior") {
+  deps = [
+    "//ash/webui/common/resources:keyboard_shortcut_list_js",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util",
   ]
+}
+
+js_library("global_scroll_target_behavior") {
+  deps = [
+    ":route_observer_behavior",
+    "..:router",
+    "//ui/webui/resources/js:promise_resolver",
+  ]
+}
+
+js_library("main_page_behavior") {
+  deps = [
+    "..:router",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("metrics_recorder") {
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
+  ]
+}
+
+js_library("os_icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":os_icons_module" ]
 }
 
-js_library("os_page_visibility.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_page_visibility.m.js" ]
+js_library("os_page_visibility") {
   deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("os_route.m") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_route.m.js",
-  ]
+js_library("os_route") {
   deps = [
-    ":os_settings_routes.m",
+    ":os_settings_routes",
     "..:router",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("os_settings_icons_css.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_icons_css.m.js" ]
-  extra_deps = [ ":os_settings_icons_css_module" ]
+js_library("os_settings_icons_css") {
 }
 
-js_library("os_settings_routes.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_routes.m.js" ]
+js_library("os_settings_routes") {
   deps = [
     "..:router",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("pref_to_setting_metric_converter.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/pref_to_setting_metric_converter.m.js" ]
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile" ]
-  extra_deps = [ ":modulize" ]
+js_library("prefs_behavior") {
+  deps = [ "//ui/webui/resources/js:assert" ]
+  externs_list = [ "$externs_path/settings_private.js" ]
 }
 
-js_library("route_origin_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/route_origin_behavior.m.js" ]
+js_library("pref_to_setting_metric_converter") {
   deps = [
-    ":os_route.m",
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
+  ]
+}
+
+js_library("route_observer_behavior") {
+  deps = [
+    "..:router",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("route_origin_behavior") {
+  deps = [
+    ":os_route",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("search_handler.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/search_handler.m.js" ]
+js_library("combined_search_handler") {
   deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    ":personalization_search_handler",
+    ":settings_search_handler",
+    "//ash/webui/personalization_app/search:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
+  ]
+}
+
+js_library("personalization_search_handler") {
+  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_webui_js" ]
+}
+
+js_library("settings_search_handler") {
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
-}
-
-import("//tools/polymer/polymer.gni")
-
-group("polymer3_elements") {
-  public_deps = [
-    # Sub-folder targets
-    "ambient_mode_page:polymer3_elements",
-    "bluetooth_page:polymer3_elements",
-    "crostini_page:polymer3_elements",
-    "date_time_page:polymer3_elements",
-    "device_page:polymer3_elements",
-    "google_assistant_page:polymer3_elements",
-    "guest_os:polymer3_elements",
-    "internet_page:polymer3_elements",
-    "kerberos_page:polymer3_elements",
-    "localized_link:polymer3_elements",
-    "multidevice_page:polymer3_elements",
-    "nearby_share_page:polymer3_elements",
-    "on_startup_page:polymer3_elements",
-    "os_a11y_page:polymer3_elements",
-    "os_about_page:polymer3_elements",
-    "os_apps_page:polymer3_elements",
-    "os_apps_page/app_management_page:polymer3_elements",
-    "os_apps_page/app_management_page/plugin_vm_page:polymer3_elements",
-    "os_files_page:polymer3_elements",
-    "os_languages_page:polymer3_elements",
-    "os_people_page:polymer3_elements",
-    "os_printing_page:polymer3_elements",
-    "os_privacy_page:polymer3_elements",
-    "os_reset_page:polymer3_elements",
-    "os_search_page:polymer3_elements",
-    "os_settings_main:polymer3_elements",
-    "os_settings_menu:polymer3_elements",
-    "os_settings_page:polymer3_elements",
-    "os_settings_search_box:polymer3_elements",
-    "os_settings_ui:polymer3_elements",
-    "os_toolbar:polymer3_elements",
-    "parental_controls_page:polymer3_elements",
-    "personalization_page:polymer3_elements",
-
-    # Local targets
-    ":modulize",
-    ":os_icons_module",
-    ":os_settings_icons_css_module",
-
-    # Shared with browser settings
-    "..:web_components_local",
-    "../a11y_page:web_components",
-    "../settings_page:web_components",
-  ]
-}
-
-polymer_modulizer("os_icons") {
-  js_file = "os_icons.m.js"
-  html_file = "os_icons.html"
-  html_type = "iron-iconset"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("os_settings_icons_css") {
-  js_file = "os_settings_icons_css.m.js"
-  html_file = "os_settings_icons_css.html"
-  html_type = "style-module"
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "deep_linking_behavior.js",
-    "metrics_recorder.js",
-    "os_settings_routes.js",
-    "route_origin_behavior.js",
-    "search_handler.js",
-    "os_route.js",
-    "os_page_visibility.js",
-    "pref_to_setting_metric_converter.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

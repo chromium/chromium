@@ -1,0 +1,71 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #css_wrapper_metadata_end */
+
+/*
+ * TODO(romanarora): Move to cr_elements folder when another component needs
+ * to reference the file.
+ */
+
+/* Matches colors specified in ThemeHelper::GetTabGroupColors. */
+html {
+  /* TODO(romanarora): Consider moving colors to shared_vars_css.html. Only
+   * adds colors not already present in shared_vars_css.html.
+   */
+  --google-blue-300-rgb: 123, 170, 247;
+  --google-blue-300: rgb(var(--google-blue-300-rgb));
+  --google-cyan-300-rgb: 120, 217, 236; /* #78d9ec */
+  --google-cyan-300: rgb(var(--google-cyan-300-rgb));
+  --google-cyan-900-rgb: 0, 123, 131; /* #007b83 */
+  --google-cyan-900: rgb(var(--google-cyan-900-rgb));
+  --google-green-300-rgb: 87, 187, 138;  /* #57bb8a */
+  --google-green-300: rgb(var(--google-green-300-rgb));
+  --google-green-600-rgb: 30, 142, 62; /* #1e8e3e */
+  --google-green-600: rgb(var(--google-green-600-rgb));
+  --google-pink-300-rgb: 255, 139, 203; /* #ff8bcb */
+  --google-pink-300: rgb(var(--google-pink-300-rgb));
+  --google-pink-700-rgb: 208, 24, 132; /* #d01884 */
+  --google-pink-700: rgb(var(--google-pink-700-rgb));
+  --google-purple-200-rgb: 215, 174, 251; /* #d7aefb */
+  --google-purple-200: rgb(var(--google-purple-200-rgb));
+  --google-purple-600-rgb: 147, 52, 230; /* #9334e6 */
+  --google-purple-600: rgb(var(--google-purple-600-rgb));
+  --google-red-300-rgb: 230, 124, 115;  /* #e67c73 */
+  --google-red-300: rgb(var(--google-red-300-rgb));
+  --google-yellow-300-rgb: 247, 203, 77;  /* #f7cb4d */
+  --google-yellow-300: rgb(var(--google-yellow-300-rgb));
+  --google-yellow-900-rgb: 227, 116, 0; /* #e37400 */
+  --google-yellow-900: rgb(var(--google-yellow-900-rgb));
+  --google-orange-300-rgb: 252, 173, 112; /* #fcad70 */
+  --google-orange-300: rgb(var(--google-orange-300-rgb));
+  --google-orange-400-rgb: 250, 144, 62; /* #fa903e */
+  --google-orange-400: rgb(var(--google-orange-400-rgb));
+
+  --tab-group-color-grey: var(--google-grey-700);
+  --tab-group-color-blue: var(--google-blue-600);
+  --tab-group-color-red: var(--google-red-600);
+  --tab-group-color-yellow: var(--google-yellow-900);
+  --tab-group-color-green: var(--google-green-600);
+  --tab-group-color-pink: var(--google-pink-700);
+  --tab-group-color-purple: var(--google-purple-600);
+  --tab-group-color-cyan: var(--google-cyan-900);
+  --tab-group-color-orange: var(--google-orange-400);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --tab-group-color-grey: var(--google-grey-400);
+    --tab-group-color-blue: var(--google-blue-300);
+    --tab-group-color-red: var(--google-red-300);
+    --tab-group-color-yellow: var(--google-yellow-300);
+    --tab-group-color-green: var(--google-green-300);
+    --tab-group-color-pink: var(--google-pink-300);
+    --tab-group-color-purple: var(--google-purple-200);
+    --tab-group-color-cyan: var(--google-cyan-300);
+    --tab-group-color-orange: var(--google-orange-300);
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ template <HeapMojoWrapperMode Mode>
 class HeapMojoRemoteSetGCBaseTest;
 
 template <HeapMojoWrapperMode Mode>
-class GCOwner : public GarbageCollected<GCOwner<Mode>> {
+class GCOwner final : public GarbageCollected<GCOwner<Mode>> {
  public:
   explicit GCOwner(MockContextLifecycleNotifier* context,
                    HeapMojoRemoteSetGCBaseTest<Mode>* test)

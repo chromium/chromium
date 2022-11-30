@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -39,6 +38,10 @@ class PepperMediaDeviceManager
  public:
   static base::WeakPtr<PepperMediaDeviceManager> GetForRenderFrame(
       RenderFrame* render_frame);
+
+  PepperMediaDeviceManager(const PepperMediaDeviceManager&) = delete;
+  PepperMediaDeviceManager& operator=(const PepperMediaDeviceManager&) = delete;
+
   ~PepperMediaDeviceManager() override;
 
   // PepperDeviceEnumerationHostHelper::Delegate implementation:
@@ -122,8 +125,6 @@ class PepperMediaDeviceManager
       media_devices_dispatcher_;
 
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperMediaDeviceManager);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,20 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chromeos/dbus/biod/biod_client.h"
+#include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace device {
 
 namespace {
 
-chromeos::BiodClient* GetBiodClient() {
-  return chromeos::BiodClient::Get();
+ash::BiodClient* GetBiodClient() {
+  return ash::BiodClient::Get();
 }
 
 // Helper functions to convert between dbus and mojo types. The dbus type comes
@@ -56,11 +57,36 @@ device::mojom::ScanResult ToMojom(biod::ScanResult type) {
       return device::mojom::ScanResult::TOO_FAST;
     case biod::SCAN_RESULT_IMMOBILE:
       return device::mojom::ScanResult::IMMOBILE;
+    case biod::SCAN_RESULT_NO_MATCH:
+      return device::mojom::ScanResult::NO_MATCH;
     case biod::SCAN_RESULT_MAX:
       return device::mojom::ScanResult::kMaxValue;
   }
   NOTREACHED();
   return device::mojom::ScanResult::INSUFFICIENT;
+}
+
+device::mojom::FingerprintError ToMojom(biod::FingerprintError type) {
+  switch (type) {
+    case biod::ERROR_HW_UNAVAILABLE:
+      return device::mojom::FingerprintError::HW_UNAVAILABLE;
+    case biod::ERROR_UNABLE_TO_PROCESS:
+      return device::mojom::FingerprintError::UNABLE_TO_PROCESS;
+    case biod::ERROR_TIMEOUT:
+      return device::mojom::FingerprintError::TIMEOUT;
+    case biod::ERROR_NO_SPACE:
+      return device::mojom::FingerprintError::NO_SPACE;
+    case biod::ERROR_CANCELED:
+      return device::mojom::FingerprintError::CANCELED;
+    case biod::ERROR_UNABLE_TO_REMOVE:
+      return device::mojom::FingerprintError::UNABLE_TO_REMOVE;
+    case biod::ERROR_LOCKOUT:
+      return device::mojom::FingerprintError::LOCKOUT;
+    case biod::ERROR_NO_TEMPLATES:
+      return device::mojom::FingerprintError::NO_TEMPLATES;
+  }
+  NOTREACHED();
+  return device::mojom::FingerprintError::UNKNOWN;
 }
 
 }  // namespace
@@ -137,9 +163,8 @@ void FingerprintChromeOS::CancelCurrentEnrollSession(
 void FingerprintChromeOS::RequestRecordLabel(
     const std::string& record_path,
     RequestRecordLabelCallback callback) {
-  GetBiodClient()->RequestRecordLabel(
-      dbus::ObjectPath(record_path),
-      base::AdaptCallbackForRepeating(std::move(callback)));
+  GetBiodClient()->RequestRecordLabel(dbus::ObjectPath(record_path),
+                                      std::move(callback));
 }
 
 void FingerprintChromeOS::SetRecordLabel(const std::string& new_label,
@@ -232,8 +257,8 @@ void FingerprintChromeOS::BiodEnrollScanDoneReceived(
 }
 
 void FingerprintChromeOS::BiodAuthScanDoneReceived(
-    biod::ScanResult scan_result,
-    const chromeos::AuthScanMatches& matches) {
+    const biod::FingerprintMessage& msg,
+    const ash::AuthScanMatches& matches) {
   // Convert ObjectPath to string, since mojom doesn't know definition of
   // dbus ObjectPath.
   std::vector<std::pair<std::string, std::vector<std::string>>> entries;
@@ -245,12 +270,28 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
     entries.emplace_back(std::move(item.first), std::move(paths));
   }
 
-  auto casted_scan_result = static_cast<device::mojom::ScanResult>(scan_result);
-  CHECK(device::mojom::IsKnownEnumValue(casted_scan_result));
+  device::mojom::FingerprintMessage converted_msg;
+
+  switch (msg.msg_case()) {
+    case biod::FingerprintMessage::MsgCase::kScanResult:
+      converted_msg.set_scan_result(ToMojom(msg.scan_result()));
+      CHECK(device::mojom::IsKnownEnumValue(converted_msg.get_scan_result()));
+      break;
+    case biod::FingerprintMessage::MsgCase::kError:
+      converted_msg.set_fingerprint_error(ToMojom(msg.error()));
+      CHECK(device::mojom::IsKnownEnumValue(
+          converted_msg.get_fingerprint_error()));
+      break;
+    default:
+      LOG(ERROR) << "Unsupported fingerprint message received";
+      NOTREACHED();
+      return;
+  }
 
   for (auto& observer : observers_) {
     observer->OnAuthScanDone(
-        casted_scan_result,
+        {absl::in_place, converted_msg},
+        // TODO(patrykd): Construct the map at the beginning of this function.
         base::flat_map<std::string, std::vector<std::string>>(entries));
   }
 }

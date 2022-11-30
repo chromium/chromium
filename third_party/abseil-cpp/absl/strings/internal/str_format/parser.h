@@ -41,10 +41,7 @@ std::string LengthModToString(LengthMod v);
 
 // The analyzed properties of a single specified conversion.
 struct UnboundConversion {
-  UnboundConversion()
-      : flags() /* This is required to zero all the fields of flags. */ {
-    flags.basic = true;
-  }
+  UnboundConversion() {}
 
   class InputValue {
    public:
@@ -79,7 +76,7 @@ struct UnboundConversion {
   InputValue width;
   InputValue precision;
 
-  Flags flags;
+  Flags flags = Flags::kBasic;
   LengthMod length_mod = LengthMod::none;
   FormatConversionChar conv = FormatConversionCharInternal::kNone;
 };
@@ -93,32 +90,43 @@ const char* ConsumeUnboundConversion(const char* p, const char* end,
                                      UnboundConversion* conv, int* next_arg);
 
 // Helper tag class for the table below.
-// It allows fast `char -> ConversionChar/LengthMod` checking and
+// It allows fast `char -> ConversionChar/LengthMod/Flags` checking and
 // conversions.
 class ConvTag {
  public:
   constexpr ConvTag(FormatConversionChar conversion_char)  // NOLINT
-      : tag_(static_cast<int8_t>(conversion_char)) {}
-  // We invert the length modifiers to make them negative so that we can easily
-  // test for them.
+      : tag_(static_cast<uint8_t>(conversion_char)) {}
   constexpr ConvTag(LengthMod length_mod)  // NOLINT
-      : tag_(~static_cast<std::int8_t>(length_mod)) {}
-  // Everything else is -128, which is negative to make is_conv() simpler.
-  constexpr ConvTag() : tag_(-128) {}
+      : tag_(0x80 | static_cast<uint8_t>(length_mod)) {}
+  constexpr ConvTag(Flags flags)  // NOLINT
+      : tag_(0xc0 | static_cast<uint8_t>(flags)) {}
+  constexpr ConvTag() : tag_(0xFF) {}
 
-  bool is_conv() const { return tag_ >= 0; }
-  bool is_length() const { return tag_ < 0 && tag_ != -128; }
+  bool is_conv() const { return (tag_ & 0x80) == 0; }
+  bool is_length() const { return (tag_ & 0xC0) == 0x80; }
+  bool is_flags() const { return (tag_ & 0xE0) == 0xC0; }
+
   FormatConversionChar as_conv() const {
     assert(is_conv());
+    assert(!is_length());
+    assert(!is_flags());
     return static_cast<FormatConversionChar>(tag_);
   }
   LengthMod as_length() const {
+    assert(!is_conv());
     assert(is_length());
-    return static_cast<LengthMod>(~tag_);
+    assert(!is_flags());
+    return static_cast<LengthMod>(tag_ & 0x3F);
+  }
+  Flags as_flags() const {
+    assert(!is_conv());
+    assert(!is_length());
+    assert(is_flags());
+    return static_cast<Flags>(tag_ & 0x1F);
   }
 
  private:
-  std::int8_t tag_;
+  uint8_t tag_;
 };
 
 extern const ConvTag kTags[256];
@@ -143,13 +151,15 @@ bool ParseFormatString(string_view src, Consumer consumer) {
   const char* p = src.data();
   const char* const end = p + src.size();
   while (p != end) {
-    const char* percent = static_cast<const char*>(memchr(p, '%', end - p));
+    const char* percent =
+        static_cast<const char*>(memchr(p, '%', static_cast<size_t>(end - p)));
     if (!percent) {
       // We found the last substring.
-      return consumer.Append(string_view(p, end - p));
+      return consumer.Append(string_view(p, static_cast<size_t>(end - p)));
     }
     // We found a percent, so push the text run then process the percent.
-    if (ABSL_PREDICT_FALSE(!consumer.Append(string_view(p, percent - p)))) {
+    if (ABSL_PREDICT_FALSE(!consumer.Append(
+            string_view(p, static_cast<size_t>(percent - p))))) {
       return false;
     }
     if (ABSL_PREDICT_FALSE(percent + 1 >= end)) return false;
@@ -180,7 +190,8 @@ bool ParseFormatString(string_view src, Consumer consumer) {
       p = ConsumeUnboundConversion(percent + 1, end, &conv, &next_arg);
       if (ABSL_PREDICT_FALSE(p == nullptr)) return false;
       if (ABSL_PREDICT_FALSE(!consumer.ConvertOne(
-          conv, string_view(percent + 1, p - (percent + 1))))) {
+              conv, string_view(percent + 1,
+                                static_cast<size_t>(p - (percent + 1)))))) {
         return false;
       }
     } else {
@@ -234,7 +245,8 @@ class ParsedFormatBase {
     string_view text(base, 0);
     for (const auto& item : items_) {
       const char* const end = text.data() + text.size();
-      text = string_view(end, (base + item.text_end) - end);
+      text =
+          string_view(end, static_cast<size_t>((base + item.text_end) - end));
       if (item.is_conversion) {
         if (!consumer.ConvertOne(item.conv, text)) return false;
       } else {

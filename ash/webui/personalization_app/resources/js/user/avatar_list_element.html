@@ -1,0 +1,111 @@
+<style>
+  iron-list {
+    height: 100%;
+    width: 100%;
+  }
+  .hidden {
+    display: none;
+  }
+  .option-container {
+    height: 80px;
+    padding: 8px;
+    width: 80px;
+  }
+  .image-container {
+    background-color: var(--personalization-app-grid-item-background-color);
+    border-radius: 50%;
+    cursor: pointer;
+    height: 64px;
+    position: relative;
+    width: 64px;
+  }
+  .image-container:hover {
+    filter: brightness(0.94);
+  }
+  .image-container img {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 62px;
+    width: 62px;
+  }
+  paper-ripple {
+    color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  avatar-camera {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+  .avatar-button-container {
+    background-color: var(--cros-highlight-color);
+    border-radius: 100%;
+    cursor: pointer;
+    display: inline-block;
+    height: 64px;
+    line-height: 64px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    width: 64px;
+  }
+  .avatar-button-container:hover {
+    background-color: var(--cros-text-highlight-color);
+  }
+  .avatar-button-container:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+  .avatar-button-container paper-ripple {
+    color: rgba(var(--cros-ripple-color-prominent-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  .avatar-button-container iron-icon {
+    line-height: inherit;
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    --iron-icon-fill-color: var(--cros-link-color);
+  }
+  .image-container:focus-visible {
+    border-radius: 50%;
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+  .image-container iron-icon[icon='personalization:checkmark'] {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    bottom: 0;
+    position: absolute;
+    right: 0;
+  }
+  .image-container:not([aria-selected='true'])
+      iron-icon[icon='personalization:checkmark'] {
+    display: none;
+  }
+</style>
+<iron-list items="[[options_]]" role="listbox"
+    aria-setsize$="[[options_.length]]" grid>
+  <template>
+    <div class="option-container">
+      <div id$="[[item.id]]"
+          class$="[[getOptionInnerContainerClass_(item, image_)]]"
+          role="option"
+          on-click="onOptionSelected_" on-keypress="onOptionSelected_"
+          tabindex$="[[tabIndex]]"
+          aria-posinset$="[[getAriaIndex_(index)]]"
+          aria-selected$="[[getAriaSelected_(item, image_)]]"
+          aria-label$="[[item.title]]"
+          title$="[[item.title]]"
+          data-id$="[[item.defaultImageIndex]]">
+        <paper-ripple class="circle"></paper-ripple>
+        <img class$="[[getImageClassForOption_(item)]]"
+            src="[[item.imgSrc]]">
+        <iron-icon icon$="[[item.icon]]"></iron-icon>
+      </div>
+  </div>
+  </template>
+</iron-list>
+<template is="dom-if" if="[[cameraMode_]]" restamp>
+  <avatar-camera on-close="onCameraClosed_" mode="[[cameraMode_]]">
+  </avatar-camera>
+</template>

@@ -21,7 +21,7 @@ function load()
     if (window.testRunner)
     {
         testRunner.dumpAsText();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
         testRunner.waitUntilDone();
     }
     win = window.open();

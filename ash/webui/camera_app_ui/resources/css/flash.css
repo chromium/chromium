@@ -1,0 +1,41 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body.view-flash #view-flash {
+  backdrop-filter: blur(30px);
+  background: rgba(var(--grey-900-rgb), 0.8);
+  transition: opacity var(--moderate2-duration);
+}
+
+#processing-indicator {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+#processing-indicator .icon {
+  background-image: url(/images/document_mode_spinner.svg);
+  height: 40px;
+  width: 40px;
+}
+
+#processing-indicator .msg {
+  color: var(--grey-200);
+  font: 14px/20px Roboto;
+  margin-top: 16px;
+}
+
+@keyframes show-processing-indicator-with-delay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body.gif-capture-post-processing.view-flash #processing-indicator {
+  animation: show-processing-indicator-with-delay var(--fast1-duration) ease-in 500ms 1 normal forwards;
+  opacity: 0;
+}

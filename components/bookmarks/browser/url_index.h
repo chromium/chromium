@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/history_bookmark_model.h"
@@ -20,6 +19,7 @@ namespace bookmarks {
 
 class BookmarkNode;
 
+struct UrlLoadStats;
 struct UrlAndTitle;
 
 // UrlIndex maintains the bookmark nodes of type url. The nodes are ordered by
@@ -37,6 +37,9 @@ struct UrlAndTitle;
 class UrlIndex : public HistoryBookmarkModel {
  public:
   explicit UrlIndex(std::unique_ptr<BookmarkNode> root);
+
+  UrlIndex(const UrlIndex&) = delete;
+  UrlIndex& operator=(const UrlIndex&) = delete;
 
   BookmarkNode* root() { return root_.get(); }
 
@@ -65,24 +68,8 @@ class UrlIndex : public HistoryBookmarkModel {
   // Returns true if there is at least one bookmark.
   bool HasBookmarks() const;
 
-  // Returns some stats about number of URL bookmarks stored, for UMA purposes.
-  struct Stats {
-    // Number of bookmark in the index excluding folders.
-    size_t total_url_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with a URL that is used by at
-    // least one other bookmark, excluding one bookmark per unique URL (i.e. all
-    // except one are considered duplicates).
-    size_t duplicate_url_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with the pair <URL, title> that
-    // is used by at least one other bookmark, excluding one bookmark per unique
-    // URL (i.e. all except one are considered duplicates).
-    size_t duplicate_url_and_title_bookmark_count = 0;
-    // Number of bookmarks (excluding folders) with the triple <URL, title,
-    // parent> that is used by at least one other bookmark, excluding one
-    // bookmark per unique URL (i.e. all except one are considered duplicates).
-    size_t duplicate_url_and_title_and_parent_bookmark_count = 0;
-  };
-  Stats ComputeStats() const;
+  // Compute stats from the load.
+  UrlLoadStats ComputeStats() const;
 
   // HistoryBookmarkModel:
   bool IsBookmarked(const GURL& url) override;
@@ -115,8 +102,6 @@ class UrlIndex : public HistoryBookmarkModel {
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
   mutable base::Lock url_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlIndex);
 };
 
 }  // namespace bookmarks

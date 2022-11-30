@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <limits>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/file/file_io.h"
 
 namespace crashpad {
@@ -35,6 +34,9 @@ namespace internal {
 //!     file.
 class MinidumpWritable {
  public:
+  MinidumpWritable(const MinidumpWritable&) = delete;
+  MinidumpWritable& operator=(const MinidumpWritable&) = delete;
+
   virtual ~MinidumpWritable();
 
   //! \brief Writes an object and all of its children to a minidump file.
@@ -68,6 +70,7 @@ class MinidumpWritable {
   // This is public instead of protected because objects of derived classes need
   // to be able to register their own pointers with distinct objects.
   void RegisterRVA(RVA* rva);
+  void RegisterRVA(RVA64* rva);
 
   //! \brief Registers a location descriptor as one that should point to the
   //!     object on which this method is called.
@@ -86,6 +89,8 @@ class MinidumpWritable {
   // to be able to register their own pointers with distinct objects.
   void RegisterLocationDescriptor(
       MINIDUMP_LOCATION_DESCRIPTOR* location_descriptor);
+  void RegisterLocationDescriptor(
+      MINIDUMP_LOCATION_DESCRIPTOR64* location_descriptor64);
 
  protected:
   //! \brief Identifies the state of an object.
@@ -265,13 +270,17 @@ class MinidumpWritable {
  private:
   std::vector<RVA*> registered_rvas_;  // weak
 
+  std::vector<RVA64*> registered_rva64s_;  // weak
+
   // weak
   std::vector<MINIDUMP_LOCATION_DESCRIPTOR*> registered_location_descriptors_;
 
+  // weak
+  std::vector<MINIDUMP_LOCATION_DESCRIPTOR64*>
+      registered_location_descriptor64s_;
+
   size_t leading_pad_bytes_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpWritable);
 };
 
 }  // namespace internal

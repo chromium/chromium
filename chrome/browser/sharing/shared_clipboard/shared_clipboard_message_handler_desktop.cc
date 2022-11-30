@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ void SharedClipboardMessageHandlerDesktop::ShowNotification(
       notification_title,
       l10n_util::GetStringUTF16(
           IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_DESCRIPTION),
-      /* icon= */ gfx::Image(),
+      /* icon= */ ui::ImageModel(),
       /* display_source= */ std::u16string(),
       /* origin_url= */ GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace mojo {
 
@@ -26,7 +26,7 @@ class CopyableType {
  private:
   bool copied_;
   static size_t num_instances_;
-  CopyableType* ptr_;
+  raw_ptr<CopyableType> ptr_;
 };
 
 class MoveOnlyType {
@@ -35,6 +35,10 @@ class MoveOnlyType {
   MoveOnlyType();
   MoveOnlyType(MoveOnlyType&& other);
   MoveOnlyType& operator=(MoveOnlyType&& other);
+
+  MoveOnlyType(const MoveOnlyType&) = delete;
+  MoveOnlyType& operator=(const MoveOnlyType&) = delete;
+
   ~MoveOnlyType();
 
   bool moved() const { return moved_; }
@@ -45,9 +49,7 @@ class MoveOnlyType {
  private:
   bool moved_;
   static size_t num_instances_;
-  MoveOnlyType* ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnlyType);
+  raw_ptr<MoveOnlyType> ptr_;
 };
 
 }  // namespace mojo

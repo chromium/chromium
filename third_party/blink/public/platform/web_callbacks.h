@@ -59,4 +59,4 @@ class WebCallbacks<S, void> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CALLBACKS_H_

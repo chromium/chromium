@@ -1,18 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 class FeedbackHandler : public content::WebUIMessageHandler {
  public:
@@ -25,10 +21,15 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  // JS message handler for chrome.send("showDialog")
-  void HandleShowDialog(const base::ListValue* args);
+  void HandleShowDialog(const base::Value::List& args);
+#if BUILDFLAG(IS_CHROMEOS)
+  void HandleShowAssistantLogsInfo(const base::Value::List& args);
+  void HandleShowBluetoothLogsInfo(const base::Value::List& args);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  void HandleShowMetrics(const base::Value::List& args);
+  void HandleShowSystemInfo(const base::Value::List& args);
 
-  const FeedbackDialog* dialog_;
+  raw_ptr<const FeedbackDialog> dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_HANDLER_H_

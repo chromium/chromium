@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
 // other words, the dialogs use another native html rendering engine. In the
 // case of Windows it is the the Internet Explorer control.
+
+#include "base/memory/raw_ptr.h"
 
 namespace installer {
 
@@ -73,6 +73,10 @@ class EulaHTMLDialog {
   // |param| is a string that will be passed to the dialog as a parameter via
   //         the window.dialogArguments property.
   EulaHTMLDialog(const std::wstring& file, const std::wstring& param);
+
+  EulaHTMLDialog(const EulaHTMLDialog&) = delete;
+  EulaHTMLDialog& operator=(const EulaHTMLDialog&) = delete;
+
   ~EulaHTMLDialog();
 
   enum Outcome {
@@ -92,8 +96,7 @@ class EulaHTMLDialog {
     void OnBeforeDisplay(void* window) override;
   };
 
-  HTMLDialog* dialog_;
-  DISALLOW_COPY_AND_ASSIGN(EulaHTMLDialog);
+  raw_ptr<HTMLDialog> dialog_;
 };
 
 }  // namespace installer

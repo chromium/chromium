@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
+#include "components/autofill_assistant/browser/actions/wait_for_dom_test_base.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -24,6 +27,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -35,18 +39,12 @@ using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
 
-class PromptActionTest : public testing::Test {
+class PromptActionTest : public WaitForDomTestBase {
  public:
-  PromptActionTest()
-      : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  PromptActionTest() = default;
 
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnFindElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(
-            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-    EXPECT_CALL(mock_action_delegate_, OnWaitForDom(_, _, _, _))
-        .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
-    ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
+    ON_CALL(mock_action_delegate_, Prompt)
         .WillByDefault(
             [this](std::unique_ptr<std::vector<UserAction>> user_actions,
                    bool disable_force_expand_sheet,
@@ -58,92 +56,10 @@ class PromptActionTest : public testing::Test {
   }
 
  protected:
-  // Fakes ActionDelegate::WaitForDom.
-  //
-  // This simulates a WaitForDom that calls |check_elements_| every seconds
-  // until it gets a successful callback, then calls done_waiting_callback.
-  void FakeWaitForDom(
-      base::TimeDelta max_wait_time,
-      bool allow_interrupt,
-      base::RepeatingCallback<
-          void(BatchElementChecker*,
-               base::OnceCallback<void(const ClientStatus&)>)>& check_elements,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&
-          done_waiting_callback) {
-    fake_wait_for_dom_done_ = std::move(done_waiting_callback);
-    RunFakeWaitForDom(check_elements);
-  }
-
-  void RunFakeWaitForDom(
-      base::RepeatingCallback<
-          void(BatchElementChecker*,
-               base::OnceCallback<void(const ClientStatus&)>)> check_elements) {
-    if (!fake_wait_for_dom_done_)
-      return;
-
-    checker_ = std::make_unique<BatchElementChecker>();
-    has_check_elements_result_ = false;
-    check_elements.Run(checker_.get(),
-                       base::BindOnce(&PromptActionTest::OnCheckElementsDone,
-                                      base::Unretained(this)));
-    task_env_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(fake_check_time_));
-    checker_->AddAllDoneCallback(
-        base::BindOnce(&PromptActionTest::OnWaitForDomDone,
-                       base::Unretained(this), check_elements));
-    checker_->Run(&mock_web_controller_);
-  }
-
-  // Called from the check_elements callback passed to FakeWaitForDom.
-  void OnCheckElementsDone(const ClientStatus& result) {
-    ASSERT_FALSE(has_check_elements_result_);  // Duplicate calls
-    has_check_elements_result_ = true;
-    check_elements_result_ = result;
-  }
-
-  // Called by |checker_| once it's done and either ends the WaitForDom or
-  // schedule another run.
-  void OnWaitForDomDone(
-      base::RepeatingCallback<
-          void(BatchElementChecker*,
-               base::OnceCallback<void(const ClientStatus&)>)> check_elements) {
-    ASSERT_TRUE(
-        has_check_elements_result_);  // OnCheckElementsDone() not called
-
-    if (!fake_wait_for_dom_done_)
-      return;
-
-    if (check_elements_result_.ok()) {
-      std::move(fake_wait_for_dom_done_)
-          .Run(check_elements_result_,
-               base::TimeDelta::FromMilliseconds(fake_wait_time_));
-    } else {
-      wait_for_dom_timer_ = std::make_unique<base::OneShotTimer>();
-      wait_for_dom_timer_->Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(1),
-          base::BindOnce(&PromptActionTest::RunFakeWaitForDom,
-                         base::Unretained(this), check_elements));
-    }
-  }
-
-  // task_env_ must be first to guarantee other field
-  // creation run in that environment.
-  base::test::TaskEnvironment task_env_;
-
-  MockActionDelegate mock_action_delegate_;
-  MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
-  base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
-      fake_wait_for_dom_done_;
   ActionProto proto_;
-  PromptProto* prompt_proto_;
+  raw_ptr<PromptProto> prompt_proto_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
-  std::unique_ptr<BatchElementChecker> checker_;
-  bool has_check_elements_result_ = false;
-  ClientStatus check_elements_result_;
-  std::unique_ptr<base::OneShotTimer> wait_for_dom_timer_;
-  int fake_wait_time_ = 0;
-  int fake_check_time_ = 0;
 };
 
 TEST_F(PromptActionTest, ChoicesMissing) {
@@ -160,6 +76,7 @@ TEST_F(PromptActionTest, SelectButtons) {
   chip->set_text("Ok");
   chip->set_type(HIGHLIGHTED_ACTION);
   ok_proto->set_server_payload("ok");
+  ok_proto->set_tag("oktag");
 
   auto* cancel_proto = prompt_proto_->add_choices();
   cancel_proto->mutable_chip()->set_text("Cancel");
@@ -184,34 +101,11 @@ TEST_F(PromptActionTest, SelectButtons) {
           Property(&ProcessedActionProto::prompt_choice,
                    Property(&PromptProto::Result::navigation_ended, false)),
           Property(&ProcessedActionProto::prompt_choice,
-                   Property(&PromptProto::Result::server_payload, "ok"))))));
+                   Property(&PromptProto::Result::server_payload, "ok")),
+          Property(&ProcessedActionProto::prompt_choice,
+                   Property(&PromptProto::Result::choice_tag, "oktag"))))));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
-}
-
-TEST_F(PromptActionTest, ReportDirectAction) {
-  // Ok has a chip and a direct action.
-  auto* ok_proto = prompt_proto_->add_choices();
-  ok_proto->mutable_chip()->set_text("Ok");
-  ok_proto->mutable_direct_action()->add_names("ok");
-  ok_proto->set_server_payload("ok");
-
-  // Maybe only has a mappings to direct actions.
-  auto* maybe_proto = prompt_proto_->add_choices();
-  maybe_proto->mutable_direct_action()->add_names("maybe");
-  maybe_proto->mutable_direct_action()->add_names("I_guess");
-  maybe_proto->set_server_payload("maybe");
-
-  PromptAction action(&mock_action_delegate_, proto_);
-  action.ProcessAction(callback_.Get());
-
-  ASSERT_THAT(user_actions_, Pointee(SizeIs(2)));
-
-  EXPECT_THAT((*user_actions_)[0].direct_action().names, ElementsAre("ok"));
-  EXPECT_FALSE((*user_actions_)[0].chip().empty());
-  EXPECT_THAT((*user_actions_)[1].direct_action().names,
-              UnorderedElementsAre("maybe", "I_guess"));
-  EXPECT_TRUE((*user_actions_)[1].chip().empty());
+  (*user_actions_)[0].RunCallback();
 }
 
 TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
@@ -227,18 +121,20 @@ TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
 
   ASSERT_THAT(user_actions_, Pointee(IsEmpty()));
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinderResult>());
+      }));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(IsEmpty()));
 }
 
@@ -250,31 +146,31 @@ TEST_F(PromptActionTest, TimingStatsUserAction) {
   *ok_proto->mutable_show_only_when()->mutable_match() =
       ToSelectorProto("element");
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillOnce(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }))
-      .WillOnce(WithArgs<1>([](auto&& callback) {
+      .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
   fake_check_time_ = 200;
   PromptAction action(&mock_action_delegate_, proto_);
   action.ProcessAction(callback_.Get());
 
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(3));
+  task_env_.FastForwardBy(base::Seconds(3));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
+  (*user_actions_)[0].RunCallback();
   EXPECT_EQ(capture.timing_stats().active_time_ms(), 700);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 2500);
 }
@@ -291,19 +187,21 @@ TEST_F(PromptActionTest, DisabledUnlessElementExists) {
   PromptAction action(&mock_action_delegate_, proto_);
   action.ProcessAction(callback_.Get());
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_TRUE((*user_actions_)[0].enabled());
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinderResult>());
+      }));
+  task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_FALSE((*user_actions_)[0].enabled());
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
@@ -319,20 +217,20 @@ TEST_F(PromptActionTest, AutoSelectWhenElementExists) {
   action.ProcessAction(callback_.Get());
   EXPECT_THAT(user_actions_, Pointee(SizeIs(0)));
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(Property(&ProcessedActionProto::status, ACTION_APPLIED),
                         Property(&ProcessedActionProto::prompt_choice,
                                  Property(&PromptProto::Result::server_payload,
                                           "auto-select"))))));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(PromptActionTest, TimingStatsAutoSelect) {
@@ -346,16 +244,16 @@ TEST_F(PromptActionTest, TimingStatsAutoSelect) {
   action.ProcessAction(callback_.Get());
   EXPECT_THAT(user_actions_, Pointee(SizeIs(0)));
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
 
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(capture.timing_stats().active_time_ms(), 500);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 500);
 }
@@ -376,10 +274,10 @@ TEST_F(PromptActionTest, AutoSelectWithButton) {
 
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
-                                std::make_unique<ElementFinder::Result>());
+                                std::make_unique<ElementFinderResult>());
       }));
   EXPECT_CALL(
       callback_,
@@ -387,7 +285,7 @@ TEST_F(PromptActionTest, AutoSelectWithButton) {
                         Property(&ProcessedActionProto::prompt_choice,
                                  Property(&PromptProto::Result::server_payload,
                                           "auto-select"))))));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(PromptActionTest, Terminate) {
@@ -403,7 +301,7 @@ TEST_F(PromptActionTest, Terminate) {
   // Chips pointing to a deleted action do nothing.
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
+  (*user_actions_)[0].RunCallback();
 }
 
 TEST_F(PromptActionTest, NoMessageSet) {
@@ -504,7 +402,7 @@ TEST_F(PromptActionTest, ForwardInterruptFailure) {
   EXPECT_THAT(user_actions_, Pointee(SizeIs(0)));
 
   // First round of element checks: element doesn't exist.
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_env_.FastForwardBy(base::Seconds(1));
 
   // Second round of element checks: an interrupt ran and failed. No choice was
   // selected.
@@ -517,7 +415,7 @@ TEST_F(PromptActionTest, ForwardInterruptFailure) {
                        Property(&PromptProto::Result::server_payload, ""))))));
   ASSERT_TRUE(fake_wait_for_dom_done_);
   std::move(fake_wait_for_dom_done_)
-      .Run(ClientStatus(INTERRUPT_FAILED), base::TimeDelta::FromSeconds(0));
+      .Run(ClientStatus(INTERRUPT_FAILED), base::Seconds(0));
 }
 
 TEST_F(PromptActionTest, EndActionOnNavigation) {
@@ -536,7 +434,7 @@ TEST_F(PromptActionTest, EndActionOnNavigation) {
   PromptAction action(&mock_action_delegate_, proto_);
 
   // Set new expectations for when the navigation event arrives.
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
@@ -556,8 +454,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
                          base::OnceCallback<void()> callback, bool browse_mode,
                          bool browse_mode_invisible) {
             user_actions_ = std::move(user_actions);
-            timer->Start(FROM_HERE, base::TimeDelta::FromSeconds(1),
-                         std::move(callback));
+            timer->Start(FROM_HERE, base::Seconds(1), std::move(callback));
           });
 
   prompt_proto_->set_end_on_navigation(true);
@@ -567,7 +464,7 @@ TEST_F(PromptActionTest, TimingStatsEndActionOnNavigation) {
   PromptAction action(&mock_action_delegate_, proto_);
 
   // Set new expectations for when the navigation event arrives.
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt());
+  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true)));
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   action.ProcessAction(callback_.Get());

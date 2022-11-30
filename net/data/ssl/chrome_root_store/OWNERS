@@ -1,0 +1,9 @@
+# For bot updates to Chrome Root Store
+# TODO(crbug.com/1342998): Remove mdb.chrome-pki-metadata@google.com once the
+# pod batch migration is complete.
+per-file root_store.certs=mdb.chrome-pki-metadata@google.com
+per-file root_store.textproto=mdb.chrome-pki-metadata@google.com
+
+per-file root_store.certs=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file root_store.textproto=mdb.chrome-pki-metadata-release-jobs@google.com
+per-file root_store.md=mdb.chrome-pki-metadata-release-jobs@google.com

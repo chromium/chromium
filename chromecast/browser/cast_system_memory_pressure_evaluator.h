@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/util/memory_pressure/system_memory_pressure_evaluator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,11 +22,17 @@ namespace chromecast {
 // Memory pressure evaluator for Cast: polls for current memory
 // usage periodically and sends memory pressure notifications.
 class CastSystemMemoryPressureEvaluator
-    : public util::SystemMemoryPressureEvaluator,
+    : public memory_pressure::SystemMemoryPressureEvaluator,
       public CastSystemMemoryPressureEvaluatorAdjuster {
  public:
   explicit CastSystemMemoryPressureEvaluator(
-      std::unique_ptr<util::MemoryPressureVoter> voter);
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
+
+  CastSystemMemoryPressureEvaluator(const CastSystemMemoryPressureEvaluator&) =
+      delete;
+  CastSystemMemoryPressureEvaluator& operator=(
+      const CastSystemMemoryPressureEvaluator&) = delete;
+
   ~CastSystemMemoryPressureEvaluator() override;
 
   // CastSystemMemoryPressureEvaluatorAdjuster implementation:
@@ -63,8 +68,6 @@ class CastSystemMemoryPressureEvaluator
   const int system_reserved_kb_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<CastSystemMemoryPressureEvaluator> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastSystemMemoryPressureEvaluator);
 };
 
 }  // namespace chromecast

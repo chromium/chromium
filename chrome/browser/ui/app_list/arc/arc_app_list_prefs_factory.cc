@@ -1,17 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 bool ArcAppListPrefsFactory::is_sync_test_ = false;
@@ -45,9 +43,11 @@ void ArcAppListPrefsFactory::RecreateServiceInstanceForTesting(
 }
 
 ArcAppListPrefsFactory::ArcAppListPrefsFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ArcAppListPrefs",
-          BrowserContextDependencyManager::GetInstance()) {
+          // This matches the logic in ExtensionSyncServiceFactory, which uses
+          // the original browser context.
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
@@ -73,11 +73,4 @@ KeyedService* ArcAppListPrefsFactory::BuildServiceInstanceFor(
     return nullptr;  // ARC is not supported
 
   return ArcAppListPrefs::Create(profile);
-}
-
-content::BrowserContext* ArcAppListPrefsFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // This matches the logic in ExtensionSyncServiceFactory, which uses the
-  // orginal browser context.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

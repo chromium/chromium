@@ -557,4 +557,4 @@ inline ElementType* Traversal<ElementType>::NextSibling(const Node& current,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_TRAVERSAL_H_

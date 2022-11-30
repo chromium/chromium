@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_RANKER_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -26,6 +24,9 @@ class TranslateMetricsLogger;
 class TranslateRanker : public KeyedService {
  public:
   TranslateRanker() = default;
+
+  TranslateRanker(const TranslateRanker&) = delete;
+  TranslateRanker& operator=(const TranslateRanker&) = delete;
 
   // Returns the version id for the ranker model.
   virtual uint32_t GetModelVersion() const = 0;
@@ -51,22 +52,16 @@ class TranslateRanker : public KeyedService {
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) = 0;
 
-  // If override for the given |event_type| is enabled, will return true and add
-  // |event_type| to |translate_event.decision_overrides()|. If override is
-  // disabled, returns false and finalize and record |translate_event| with
-  // |event_type| as |translate_event.event_type()|.  |event_type|
-  // must be one of the values defined by
-  // metrics::TranslateEventProto::EventType.
-  virtual bool ShouldOverrideDecision(
-      int event_type,
+  // If override of MATCHES_PREVIOUS_LANGUAGE is enabled, will return true and
+  // add MATCHES_PREVIOUS_LANGUAGE to |translate_event.decision_overrides()|. If
+  // override is disabled, returns false and finalizes and records
+  // |translate_event| with MATCHES_PREVIOUS_LANGUAGE event type.
+  virtual bool ShouldOverrideMatchesPreviousLanguageDecision(
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) = 0;
 
   // Override the default enabled/disabled state of translate event logging.
   virtual void EnableLogging(bool enable_logging) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TranslateRanker);
 };
 
 }  // namespace translate

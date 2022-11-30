@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <sys/time.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/system_snapshot.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -33,6 +32,10 @@ namespace internal {
 class SystemSnapshotFuchsia final : public SystemSnapshot {
  public:
   SystemSnapshotFuchsia();
+
+  SystemSnapshotFuchsia(const SystemSnapshotFuchsia&) = delete;
+  SystemSnapshotFuchsia& operator=(const SystemSnapshotFuchsia&) = delete;
+
   ~SystemSnapshotFuchsia() override;
 
   //! \brief Initializes the object.
@@ -77,8 +80,6 @@ class SystemSnapshotFuchsia final : public SystemSnapshot {
   CpuidReader cpuid_;
 #endif  // ARCH_CPU_X86_FAMILY
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotFuchsia);
 };
 
 }  // namespace internal

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 
@@ -29,6 +28,10 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   // |input_queue_capacity| is a capacity for each contiguous block in the
   // input queue. The input queue can grow without limit.
   WebSocketInflater(size_t input_queue_capacity, size_t output_buffer_capacity);
+
+  WebSocketInflater(const WebSocketInflater&) = delete;
+  WebSocketInflater& operator=(const WebSocketInflater&) = delete;
+
   ~WebSocketInflater();
 
   // Returns true if there is no error.
@@ -86,8 +89,8 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
 
     const size_t capacity_;
     std::vector<char> buffer_;
-    size_t head_;
-    size_t tail_;
+    size_t head_ = 0;
+    size_t tail_ = 0;
   };
 
   class InputQueue {
@@ -111,8 +114,8 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
     size_t PushToLastBuffer(const char* data, size_t size);
 
     const size_t capacity_;
-    size_t head_of_first_buffer_;
-    size_t tail_of_last_buffer_;
+    size_t head_of_first_buffer_ = 0;
+    size_t tail_of_last_buffer_ = 0;
     base::circular_deque<scoped_refptr<IOBufferWithSize>> buffers_;
   };
 
@@ -123,8 +126,6 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   std::unique_ptr<z_stream_s> stream_;
   InputQueue input_queue_;
   OutputBuffer output_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketInflater);
 };
 
 }  // namespace net

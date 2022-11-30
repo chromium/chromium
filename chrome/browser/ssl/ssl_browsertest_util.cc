@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -136,19 +136,21 @@ void SecurityStateWebContentsObserver::DidChangeVisibleSecurityState() {
 }
 
 bool UsingBuiltinCertVerifier() {
-#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(net::features::kCertVerifierBuiltinFeature))
+#else
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed))
     return true;
 #endif
   return false;
+#endif
 }
 
 bool SystemSupportsHardFailRevocationChecking() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
@@ -168,14 +170,12 @@ bool SystemUsesChromiumEVMetadata() {
 bool SystemSupportsOCSPStapling() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // The SecTrustSetOCSPResponse function exists since macOS 10.9+, but does
   // not actually do anything until 10.12.
-  if (base::mac::IsAtLeastOS10_12())
-    return true;
-  return false;
+  return true;
 #else
   return true;
 #endif
@@ -184,7 +184,7 @@ bool SystemSupportsOCSPStapling() {
 bool CertVerifierSupportsCRLSetBlocking() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
@@ -193,11 +193,10 @@ bool CertVerifierSupportsCRLSetBlocking() {
 
 void SetHSTSForHostName(content::BrowserContext* context,
                         const std::string& hostname) {
-  const base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+  const base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(context);
+  content::StoragePartition* partition = context->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(hostname, expiry, include_subdomains,
                                           run_loop.QuitClosure());

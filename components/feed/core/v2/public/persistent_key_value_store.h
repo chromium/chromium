@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
 
@@ -28,7 +28,7 @@ class PersistentKeyValueStore {
     // database error, or a missing key/value pair.
     bool success = false;
     // For `Get()` operations, the value of the key if it exists.
-    base::Optional<std::string> get_result;
+    absl::optional<std::string> get_result;
   };
 
   using ResultCallback = base::OnceCallback<void(Result)>;

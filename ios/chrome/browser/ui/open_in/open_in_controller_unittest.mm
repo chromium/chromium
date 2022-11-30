@@ -1,32 +1,30 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/files/file_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
+#import "base/files/file_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
+#import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/test_web_thread.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_url_loader_factory.h"
-#include "testing/platform_test.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-
-const char kOpenInDownloadResultHistogram[] = "IOS.OpenIn.DownloadResult";
 
 class OpenInControllerTest : public PlatformTest {
  public:
@@ -56,7 +54,8 @@ class OpenInControllerTest : public PlatformTest {
     open_in_controller_ = [[OpenInController alloc]
         initWithBaseViewController:base_view_controller
                   URLLoaderFactory:test_shared_url_loader_factory_
-                          webState:&web_state_];
+                          webState:&web_state_
+                           browser:nullptr];
     [open_in_controller_ enableWithDocumentURL:documentURL
                              suggestedFilename:@"doc.pdf"];
   }
@@ -84,17 +83,13 @@ class OpenInControllerTest : public PlatformTest {
 };
 
 TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 0);
-
-  // Pointer to allow us to grab the VC instance in our validation callback.
-  __block UIActivityViewController* activityViewController;
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 0);
 
   id vc_partial_mock = OCMPartialMock(base_view_controller);
   [[vc_partial_mock expect]
       presentViewController:[OCMArg checkWithBlock:^BOOL(
                                         UIViewController* viewController) {
         if ([viewController isKindOfClass:[UIActivityViewController class]]) {
-          activityViewController = (UIActivityViewController*)viewController;
           return YES;
         }
         return NO;
@@ -110,17 +105,17 @@ TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), pdf_str);
   task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(kOpenInDownloadResultHistogram,
+  histogram_tester_.ExpectBucketCount(kOpenInDownloadHistogram,
                                       static_cast<base::HistogramBase::Sample>(
                                           OpenInDownloadResult::kSucceeded),
                                       1);
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 1);
 
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
 }
 
 TEST_F(OpenInControllerTest, TestCorruptedPDFDownload) {
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 0);
 
   id vc_partial_mock = OCMPartialMock(base_view_controller);
   [[vc_partial_mock reject] presentViewController:[OCMArg any]
@@ -137,10 +132,10 @@ TEST_F(OpenInControllerTest, TestCorruptedPDFDownload) {
       pending_request->request.url.spec(), pdf_str.substr(pdf_str.size() / 2));
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
-      kOpenInDownloadResultHistogram,
+      kOpenInDownloadHistogram,
       static_cast<base::HistogramBase::Sample>(OpenInDownloadResult::kFailed),
       1);
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 1);
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
 }
 

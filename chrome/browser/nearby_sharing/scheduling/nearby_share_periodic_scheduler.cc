@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,16 +25,16 @@ NearbySharePeriodicScheduler::NearbySharePeriodicScheduler(
 
 NearbySharePeriodicScheduler::~NearbySharePeriodicScheduler() = default;
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 NearbySharePeriodicScheduler::TimeUntilRecurringRequest(base::Time now) const {
-  base::Optional<base::Time> last_success_time = GetLastSuccessTime();
+  absl::optional<base::Time> last_success_time = GetLastSuccessTime();
 
   // Immediately run a first-time request.
   if (!last_success_time)
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
 
   base::TimeDelta time_elapsed_since_last_success = now - *last_success_time;
 
-  return std::max(base::TimeDelta::FromSeconds(0),
+  return std::max(base::Seconds(0),
                   request_period_ - time_elapsed_since_last_success);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -23,6 +22,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/fake_statistics_provider.h"
@@ -46,8 +46,6 @@ constexpr char kStatusCode[] = "status";
 constexpr char kDummyToken[] = "dm_token";
 constexpr char kPackage[] = "unitTestPackage";
 
-const base::Value empty_response;
-
 class MockCallbackObserver {
  public:
   MockCallbackObserver() = default;
@@ -55,13 +53,9 @@ class MockCallbackObserver {
   MOCK_METHOD4(OnURLLoadComplete,
                void(DeviceManagementService::Job* job,
                     DeviceManagementStatus code,
-                    int net_error,
-                    const base::Value&));
+                    int response_code,
+                    absl::optional<base::Value::Dict>));
 };
-
-MATCHER_P(MatchDict, expected, "matches DictionaryValue") {
-  return arg == expected;
-}
 
 class RealtimeReportingJobConfigurationTest : public testing::Test {
  public:
@@ -82,15 +76,15 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
         /*include_device_info=*/true, /*add_connector_url_params=*/false,
         base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
                        base::Unretained(&callback_observer_)));
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetStringPath("browser.userAgent", "dummyAgent");
-    base::Value events(base::Value::Type::LIST);
+    base::Value::Dict context;
+    context.SetByDottedPath("browser.userAgent", "dummyAgent");
+    base::Value::List events;
     for (size_t i = 0; i < ids.size(); ++i) {
       base::Value event = CreateEvent(ids[i], i);
       events.Append(std::move(event));
     }
 
-    base::Value report = RealtimeReportingJobConfiguration::BuildReport(
+    base::Value::Dict report = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
     configuration_->AddReport(std::move(report));
   }
@@ -106,23 +100,23 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     return wrapper;
   }
 
-  static base::Value CreateResponse(
+  static base::Value::Dict CreateResponse(
       const std::set<std::string>& success_ids,
       const std::set<std::string>& failed_ids,
       const std::set<std::string>& permanent_failed_ids) {
-    base::Value response(base::Value::Type::DICTIONARY);
+    base::Value::Dict response;
     if (success_ids.size()) {
       base::Value* list =
-          response.SetKey(RealtimeReportingJobConfiguration::kUploadedEventsKey,
-                          base::Value(base::Value::Type::LIST));
+          response.Set(RealtimeReportingJobConfiguration::kUploadedEventsKey,
+                       base::Value(base::Value::Type::LIST));
       for (const auto& id : success_ids) {
         list->Append(id);
       }
     }
     if (failed_ids.size()) {
       base::Value* list =
-          response.SetKey(RealtimeReportingJobConfiguration::kFailedUploadsKey,
-                          base::Value(base::Value::Type::LIST));
+          response.Set(RealtimeReportingJobConfiguration::kFailedUploadsKey,
+                       base::Value(base::Value::Type::LIST));
       for (const auto& id : failed_ids) {
         base::Value failure(base::Value::Type::DICTIONARY);
         failure.SetStringKey(kEventId, id);
@@ -131,7 +125,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
       }
     }
     if (permanent_failed_ids.size()) {
-      base::Value* list = response.SetKey(
+      base::Value* list = response.Set(
           RealtimeReportingJobConfiguration::kPermanentFailedUploadsKey,
           base::Value(base::Value::Type::LIST));
       for (const auto& id : permanent_failed_ids) {
@@ -145,14 +139,15 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
     return response;
   }
 
-  static std::string CreateResponseString(const base::Value& response) {
+  static std::string CreateResponseString(const base::Value::Dict& response) {
     std::string response_string;
     base::JSONWriter::Write(response, &response_string);
     return response_string;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockDeviceManagementService service_;
+  StrictMock<MockJobCreationHandler> job_creation_handler_;
+  FakeDeviceManagementService service_{&job_creation_handler_};
   MockCloudPolicyClient client_;
   StrictMock<MockCallbackObserver> callback_observer_;
   DeviceManagementService::Job job_;
@@ -160,8 +155,9 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:
-    ScopedFakeSerialNumber(chromeos::system::ScopedFakeStatisticsProvider*
-                               fake_statistics_provider) {
+    explicit ScopedFakeSerialNumber(
+        chromeos::system::ScopedFakeStatisticsProvider*
+            fake_statistics_provider) {
       // The fake serial number must be set before |configuration_| is
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(
@@ -174,7 +170,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
 };
 
 TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
-  base::Optional<base::Value> payload =
+  absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
   EXPECT_TRUE(payload.has_value());
   EXPECT_EQ(kDummyToken, *payload->FindStringPath(
@@ -218,9 +214,10 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
-  base::Value response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
+  base::Value::Dict response = CreateResponse({ids[0], ids[1], ids[2]}, {}, {});
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_SUCCESS, net::OK,
+              OnURLLoadComplete(&job_, DM_STATUS_SUCCESS,
+                                DeviceManagementService::kSuccess,
                                 testing::Eq(testing::ByRef(response))));
   configuration_->OnURLLoadComplete(&job_, net::OK,
                                     DeviceManagementService::kSuccess,
@@ -228,18 +225,19 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_Success) {
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NetError) {
-  int net_error = net::ERR_CONNECTION_RESET;
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_FAILED, net_error,
-                                testing::Eq(testing::ByRef(empty_response))));
-  configuration_->OnURLLoadComplete(&job_, net_error, 0, "");
+              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_FAILED, _,
+                                testing::Eq(absl::nullopt)));
+  configuration_->OnURLLoadComplete(&job_, net::ERR_CONNECTION_RESET,
+                                    0 /* ignored */, "");
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest,
        OnURLLoadComplete_InvalidRequest) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_INVALID, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+              OnURLLoadComplete(&job_, DM_STATUS_REQUEST_INVALID,
+                                DeviceManagementService::kInvalidArgument,
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidArgument, "");
 }
@@ -249,7 +247,8 @@ TEST_F(RealtimeReportingJobConfigurationTest,
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
-                        net::OK, testing::Eq(testing::ByRef(empty_response))));
+                        DeviceManagementService::kInvalidAuthCookieOrDMToken,
+                        testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kInvalidAuthCookieOrDMToken, "");
 }
@@ -258,23 +257,26 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_NotSupported) {
   EXPECT_CALL(
       callback_observer_,
       OnURLLoadComplete(&job_, DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED,
-                        net::OK, testing::Eq(testing::ByRef(empty_response))));
+                        DeviceManagementService::kDeviceManagementNotAllowed,
+                        testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kDeviceManagementNotAllowed, "");
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_TempError) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_TEMPORARY_UNAVAILABLE, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+              OnURLLoadComplete(&job_, DM_STATUS_TEMPORARY_UNAVAILABLE,
+                                DeviceManagementService::kServiceUnavailable,
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(
       &job_, net::OK, DeviceManagementService::kServiceUnavailable, "");
 }
 
 TEST_F(RealtimeReportingJobConfigurationTest, OnURLLoadComplete_UnknownError) {
   EXPECT_CALL(callback_observer_,
-              OnURLLoadComplete(&job_, DM_STATUS_HTTP_STATUS_ERROR, net::OK,
-                                testing::Eq(testing::ByRef(empty_response))));
+              OnURLLoadComplete(&job_, DM_STATUS_HTTP_STATUS_ERROR,
+                                DeviceManagementService::kInvalidURL,
+                                testing::Eq(absl::nullopt)));
   configuration_->OnURLLoadComplete(&job_, net::OK,
                                     DeviceManagementService::kInvalidURL, "");
 }
@@ -320,7 +322,7 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
       CreateResponseString(CreateResponse({ids[0]}, {ids[1]}, {ids[2]}));
   configuration_->OnBeforeRetry(DeviceManagementService::kSuccess,
                                 response_string);
-  base::Optional<base::Value> payload =
+  absl::optional<base::Value> payload =
       base::JSONReader::Read(configuration_->GetPayload());
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);

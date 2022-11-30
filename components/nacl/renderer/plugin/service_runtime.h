@@ -1,9 +1,6 @@
-/* -*- c++ -*- */
-/*
- * Copyright (c) 2012 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
+// Copyright 2012 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // A class containing information regarding a socket connection to a
 // service runtime instance.
@@ -13,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "ipc/ipc_sync_channel.h"
@@ -39,15 +35,18 @@ struct SelLdrStartParams {
   PP_NaClAppProcessType process_type;
 };
 
-//  ServiceRuntime abstracts a NativeClient sel_ldr instance.
+// ServiceRuntime abstracts a NativeClient sel_ldr instance.
 // TODO(dschuff): Merge this with NaClSubprocess, since, that now only contains
 // a ServiceRuntime.
 class ServiceRuntime {
  public:
   ServiceRuntime(Plugin* plugin,
                  PP_Instance pp_instance,
-                 bool main_service_runtime,
-                 bool uses_nonsfi_mode);
+                 bool main_service_runtime);
+
+  ServiceRuntime(const ServiceRuntime&) = delete;
+  ServiceRuntime& operator=(const ServiceRuntime&) = delete;
+
   // The destructor terminates the sel_ldr process.
   ~ServiceRuntime();
 
@@ -68,11 +67,8 @@ class ServiceRuntime {
   Plugin* plugin_;
   PP_Instance pp_instance_;
   bool main_service_runtime_;
-  bool uses_nonsfi_mode_;
 
   std::unique_ptr<IPC::SyncChannel> translator_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceRuntime);
 };
 
 }  // namespace plugin

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,18 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace ui {
 
 const char kEnrollmentStepSignin[] = "signin";
 const char kEnrollmentStepWorking[] = "working";
+const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
 const char kEnrollmentStepADJoin[] = "ad-join";
 const char kEnrollmentStepError[] = "error";
+const char kEnrollmentStepKioskEnrollment[] = "kiosk-enrollment";
 const char kEnrollmentStepDeviceAttributesError[] = "attribute-prompt-error";
 const char kEnrollmentStepADJoinError[] = "active-directory-join-error";
 
@@ -38,26 +39,29 @@ namespace {
 const char kEnrollmentUI[] = "enterprise-enrollment";
 
 const char* const kAllSteps[] = {
-    ui::kEnrollmentStepSignin,           ui::kEnrollmentStepWorking,
-    ui::kEnrollmentStepDeviceAttributes, ui::kEnrollmentStepSuccess,
-    ui::kEnrollmentStepADJoin,           ui::kEnrollmentStepError};
+    ui::kEnrollmentStepSignin,      ui::kEnrollmentStepWorking,
+    ui::kEnrollmentStepTPMChecking, ui::kEnrollmentStepDeviceAttributes,
+    ui::kEnrollmentStepSuccess,     ui::kEnrollmentStepADJoin,
+    ui::kEnrollmentStepError,       ui::kEnrollmentStepKioskEnrollment};
 
 std::string StepElementID(const std::string& step) {
   return "step-" + step;
 }
 
-const test::UIPath kEnrollmentErrorMsg = {kEnrollmentUI, "errorMsg"};
-const test::UIPath kEnrollmentErrorButtonPath = {kEnrollmentUI,
-                                                 "errorRetryButton"};
-const test::UIPath kEnrollmentSuccessButtonPath = {kEnrollmentUI,
-                                                   "successDoneButton"};
-const test::UIPath kEnrollmentAttributeErrorButtonPath = {
-    kEnrollmentUI, "attributeErrorButton"};
-const test::UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
-const test::UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
-const test::UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI,
-                                                  "attributesSubmit"};
-
+const UIPath kEnrollmentErrorMsg = {kEnrollmentUI, "errorMsg"};
+const UIPath kEnrollmentErrorRetryButtonPath = {kEnrollmentUI,
+                                                "errorRetryButton"};
+const UIPath kEnrollmentErrorCancelButtonPath = {kEnrollmentUI,
+                                                 "errorGenericCancelButton"};
+const UIPath kEnrollmentSuccessButtonPath = {kEnrollmentUI,
+                                             "successDoneButton"};
+const UIPath kEnrollmentAttributeErrorButtonPath = {kEnrollmentUI,
+                                                    "attributeErrorButton"};
+const UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
+const UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
+const UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI, "attributesSubmit"};
+const UIPath kConfirmKioskEnrollmentButton = {kEnrollmentUI,
+                                              "enrollKioskButton"};
 }  // namespace
 
 EnrollmentUIMixin::EnrollmentUIMixin(InProcessBrowserTestMixinHost* host)
@@ -91,15 +95,21 @@ void EnrollmentUIMixin::ExpectErrorMessage(int error_message_id,
   OobeJS().ExpectElementContainsText(l10n_util::GetStringUTF8(error_message_id),
                                      kEnrollmentErrorMsg);
   if (can_retry) {
-    OobeJS().ExpectVisiblePath(kEnrollmentErrorButtonPath);
+    OobeJS().ExpectVisiblePath(kEnrollmentErrorRetryButtonPath);
   } else {
-    OobeJS().ExpectHiddenPath(kEnrollmentErrorButtonPath);
+    OobeJS().ExpectHiddenPath(kEnrollmentErrorRetryButtonPath);
   }
 }
 
 void EnrollmentUIMixin::RetryAfterError() {
-  OobeJS().ClickOnPath(kEnrollmentErrorButtonPath);
+  OobeJS().ClickOnPath(kEnrollmentErrorRetryButtonPath);
   WaitForStep(ui::kEnrollmentStepSignin);
+}
+
+void EnrollmentUIMixin::CancelAfterError() {
+  SetExitHandler();
+  OobeJS().ClickOnPath(kEnrollmentErrorCancelButtonPath);
+  WaitForScreenExit();
 }
 
 void EnrollmentUIMixin::LeaveDeviceAttributeErrorScreen() {
@@ -108,6 +118,10 @@ void EnrollmentUIMixin::LeaveDeviceAttributeErrorScreen() {
 
 void EnrollmentUIMixin::LeaveSuccessScreen() {
   OobeJS().ClickOnPath(kEnrollmentSuccessButtonPath);
+}
+
+void EnrollmentUIMixin::ConfirmKioskEnrollment() {
+  OobeJS().ClickOnPath(kConfirmKioskEnrollmentButton);
 }
 
 void EnrollmentUIMixin::SubmitDeviceAttributes(const std::string& asset_id,
@@ -148,4 +162,4 @@ void EnrollmentUIMixin::HandleScreenExit(EnrollmentScreen::Result result) {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

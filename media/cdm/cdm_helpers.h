@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
@@ -22,6 +22,10 @@ class VideoFrame;
 class DecryptedBlockImpl final : public cdm::DecryptedBlock {
  public:
   DecryptedBlockImpl();
+
+  DecryptedBlockImpl(const DecryptedBlockImpl&) = delete;
+  DecryptedBlockImpl& operator=(const DecryptedBlockImpl&) = delete;
+
   ~DecryptedBlockImpl() final;
 
   // cdm::DecryptedBlock implementation.
@@ -31,16 +35,18 @@ class DecryptedBlockImpl final : public cdm::DecryptedBlock {
   int64_t Timestamp() const final;
 
  private:
-  cdm::Buffer* buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   int64_t timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecryptedBlockImpl);
 };
 
 class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
                                     public cdm::VideoFrame_2 {
  public:
   VideoFrameImpl();
+
+  VideoFrameImpl(const VideoFrameImpl&) = delete;
+  VideoFrameImpl& operator=(const VideoFrameImpl&) = delete;
+
   ~VideoFrameImpl() override;
 
   // cdm::VideoFrame and cdm::VideoFrame_2 common implementation.
@@ -85,7 +91,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   cdm::Size size_;
 
   // The video frame buffer.
-  cdm::Buffer* frame_buffer_;
+  raw_ptr<cdm::Buffer> frame_buffer_;
 
   // Array of data pointers to each plane in the video frame buffer.
   uint32_t plane_offsets_[cdm::kMaxPlanes];
@@ -97,14 +103,15 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
 
   // Presentation timestamp in microseconds.
   int64_t timestamp_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameImpl);
 };
 
 class AudioFramesImpl final : public cdm::AudioFrames {
  public:
   AudioFramesImpl();
+
+  AudioFramesImpl(const AudioFramesImpl&) = delete;
+  AudioFramesImpl& operator=(const AudioFramesImpl&) = delete;
+
   ~AudioFramesImpl() final;
 
   // cdm::AudioFrames implementation.
@@ -116,10 +123,8 @@ class AudioFramesImpl final : public cdm::AudioFrames {
   cdm::Buffer* PassFrameBuffer();
 
  private:
-  cdm::Buffer* buffer_;
+  raw_ptr<cdm::Buffer> buffer_;
   cdm::AudioFormat format_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFramesImpl);
 };
 
 }  // namespace media

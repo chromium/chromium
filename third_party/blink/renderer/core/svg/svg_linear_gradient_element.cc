@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/svg/linear_gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -87,7 +87,7 @@ void SVGLinearGradientElement::SvgAttributeChanged(
 
 LayoutObject* SVGLinearGradientElement::CreateLayoutObject(const ComputedStyle&,
                                                            LegacyLayout) {
-  return new LayoutSVGResourceLinearGradient(this);
+  return MakeGarbageCollected<LayoutSVGResourceLinearGradient>(this);
 }
 
 static void SetGradientAttributes(const SVGGradientElement& element,

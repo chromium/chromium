@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,18 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "ui/aura/window.h"
+#endif
 
 using content::BrowserThread;
 
@@ -80,7 +89,17 @@ void OpenItem(Profile* profile,
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  aura::Window* window = browser->window()->GetNativeWindow();
+  // |window| can be nullptr inside of unit tests.
+  if (!window)
+    return false;
+
+  return window->GetProperty(lacros::kWindowPinTypeKey) ==
+         chromeos::WindowPinType::kTrustedPinned;
+#else
   return false;
+#endif
 }
 
 }  // namespace platform_util

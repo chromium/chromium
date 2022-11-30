@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace userfeedback {
 class ExtensionSubmit;
@@ -49,6 +52,10 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // Fill in |feedback_data| with all the data that we have collected.
   // CompressLogs() must have already been called.
   void PrepareReport(userfeedback::ExtensionSubmit* feedback_data) const;
+
+  // Return true if we want to include the feedback item with a key of |key| in
+  // the feedback report's system logs.
+  static bool IncludeInSystemLogs(const std::string& key, bool is_google_email);
 
   // Getters
   const std::string& category_tag() const { return category_tag_; }

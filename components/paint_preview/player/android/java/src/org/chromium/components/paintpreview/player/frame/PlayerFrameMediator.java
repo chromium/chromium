@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.paintpreview.player.frame;
 
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
@@ -12,9 +14,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,7 +29,7 @@ import java.util.List;
  * <li>Maintaining a viewport {@link Rect} that represents the current user-visible section of this
  * frame. The dimension of the viewport is constant and is equal to the initial values received on
  * {@link #setLayoutDimensions}.</li>
- * <li>Constructing a matrix of {@link CompressibleBitmap} tiles that represents the content of this
+ * <li>Constructing a matrix of {@link Bitmap} tiles that represents the content of this
  * frame for a given scale factor. Each tile is as big as the view port.</li>
  * <li>Requesting bitmaps from Paint Preview compositor.</li>
  * <li>Updating the viewport on touch gesture notifications (scrolling and scaling).<li/>
@@ -65,18 +64,25 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     private final PlayerFrameViewport mViewport;
 
     private boolean mIsSubframe;
+    /** Transient object to avoid allocation. */
+    private Rect mScaledRectIntersection = new Rect();
     private float mInitialScaleFactor;
+    private float mMinScaleFactor;
     /** Handles scaling of bitmaps. */
     private final Matrix mBitmapScaleMatrix;
+    private final Point mOffsetForScaling;
 
     private final PlayerFrameBitmapStateController mBitmapStateController;
 
     private PlayerGestureListener mGestureListener;
+    private Runnable mInitialViewportSizeAvailable;
 
     PlayerFrameMediator(PropertyModel model, PlayerCompositorDelegate compositorDelegate,
             PlayerGestureListener gestureListener, UnguessableToken frameGuid, Size contentSize,
-            int initialScrollX, int initialScrollY) {
+            int initialScrollX, int initialScrollY, float initialScaleFactor,
+            Runnable initialViewportSizeAvailable) {
         mBitmapScaleMatrix = new Matrix();
+        mOffsetForScaling = new Point();
         mModel = model;
         mModel.set(PlayerFrameProperties.SCALE_MATRIX, mBitmapScaleMatrix);
 
@@ -84,15 +90,14 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mGestureListener = gestureListener;
         mViewport = new PlayerFrameViewport();
         mIsSubframe = false;
-        mInitialScaleFactor = 0f;
+        mInitialScaleFactor = initialScaleFactor;
         mGuid = frameGuid;
         mContentSize = contentSize;
-        SequencedTaskRunner taskRunner =
-                PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
         mBitmapStateController = new PlayerFrameBitmapStateController(
-                mGuid, mViewport, mContentSize, mCompositorDelegate, this, taskRunner);
+                mGuid, mViewport, mContentSize, mCompositorDelegate, this);
         mViewport.offset(initialScrollX, initialScrollY);
-        mViewport.setScale(0f);
+        mViewport.setScale(mInitialScaleFactor);
+        mInitialViewportSizeAvailable = initialViewportSizeAvailable;
     }
 
     void destroy() {
@@ -114,6 +119,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         final int top = Math.max(0,
                 Math.min(Math.round(mViewport.getTransY()),
                         Math.round(mContentSize.getHeight() * scaleFactor) - height));
+
         mViewport.setTrans(left, top);
         mViewport.setSize(width, height);
         final float oldScaleFactor = mViewport.getScale();
@@ -141,9 +147,22 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     void setBitmapScaleMatrixOfSubframe(Matrix matrix, float scaleFactor) {
         // Don't update the subframes if the matrix is identity as it will be forcibly recalculated.
         if (!matrix.isIdentity()) {
-            updateSubframes(mViewport.asRect(), scaleFactor);
+            float relativeScale = scaleFactor / mViewport.getScale();
+            mModel.set(PlayerFrameProperties.OFFSET,
+                    new Point(Math.round(mOffsetForScaling.x / relativeScale),
+                            Math.round(mOffsetForScaling.y / relativeScale)));
+            updateSubframes(mViewport.getVisibleViewport(mIsSubframe), scaleFactor);
         }
         setBitmapScaleMatrix(matrix, scaleFactor);
+    }
+
+    private void updateSubframeBitmapTileSizeRecursive(Size size) {
+        if (mIsSubframe) {
+            mViewport.overrideTileSize(size.getWidth(), size.getHeight());
+        }
+        for (int i = 0; i < mSubFrameViews.size(); i++) {
+            mSubFrameMediators.get(i).updateSubframeBitmapTileSizeRecursive(size);
+        }
     }
 
     // PlayerFrameViewDelegate
@@ -159,11 +178,17 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         // Set initial scale so that content width fits within the layout dimensions.
         if (!mIsSubframe) {
             adjustInitialScaleFactor(width);
+            updateSubframeBitmapTileSizeRecursive(new Size(width, Math.round(height / 2f)));
         }
 
         final float scaleFactor = mViewport.getScale();
-        updateViewportSize(
-                width, height, (scaleFactor == 0f) ? getInitialScaleFactor() : scaleFactor);
+        // Ensure subframes use their assigned initial scale factor.
+        updateViewportSize(width, height, (scaleFactor == 0f) ? mInitialScaleFactor : scaleFactor);
+
+        if (mInitialViewportSizeAvailable != null) {
+            mInitialViewportSizeAvailable.run();
+            mInitialViewportSizeAvailable = null;
+        }
     }
 
     @Override
@@ -196,22 +221,28 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public float getInitialScaleFactor() {
-        return mInitialScaleFactor;
+    public float getMinScaleFactor() {
+        return mMinScaleFactor;
     }
 
     @Override
     public void onStartScaling() {
+        mOffsetForScaling.set(mViewport.getOffset().x, mViewport.getOffset().y);
         mBitmapStateController.onStartScaling();
+        for (int i = 0; i < mSubFrameViews.size(); i++) {
+            mSubFrameMediators.get(i).onStartScaling();
+        }
     }
 
     @Override
     public void onSwapState() {
         PlayerFrameBitmapState bitmapState = mBitmapStateController.getBitmapState(false);
         mBitmapScaleMatrix.reset();
+        mOffsetForScaling.set(0, 0);
         setBitmapScaleMatrix(mBitmapScaleMatrix, 1f);
         mModel.set(PlayerFrameProperties.TILE_DIMENSIONS, bitmapState.getTileDimensions());
-        mModel.set(PlayerFrameProperties.VIEWPORT, mViewport.asRect());
+        mModel.set(PlayerFrameProperties.OFFSET, mViewport.getOffset());
+        mModel.set(PlayerFrameProperties.VIEWPORT, mViewport.getVisibleViewport(mIsSubframe));
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapState.getMatrix());
     }
 
@@ -238,6 +269,10 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     @Override
     public void updateVisuals(boolean scaleUpdated) {
         final float scaleFactor = mViewport.getScale();
+
+        // Prevent updates before the viewport is ready.
+        if (scaleFactor == 0f || mViewport.getWidth() == 0 || mViewport.getHeight() == 0) return;
+
         PlayerFrameBitmapState activeLoadingState =
                 mBitmapStateController.getBitmapState(scaleUpdated);
 
@@ -246,15 +281,17 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         // a new state is present.
         if (activeLoadingState.isLocked()) return;
 
-        Rect viewportRect = mViewport.asRect();
+        Rect viewportRect = mViewport.getVisibleViewport(mIsSubframe);
         updateSubframes(viewportRect, scaleFactor);
         // Let the view know |mViewport| changed. PropertyModelChangeProcessor is smart about
         // this and will only update the view if |mViewport|'s rect is actually changed.
         if (mBitmapStateController.isVisible(activeLoadingState)) {
             mModel.set(
                     PlayerFrameProperties.TILE_DIMENSIONS, activeLoadingState.getTileDimensions());
+            mModel.set(PlayerFrameProperties.OFFSET, mViewport.getOffset());
             mModel.set(PlayerFrameProperties.VIEWPORT, viewportRect);
         }
+        if (viewportRect.isEmpty()) return;
 
         // Request bitmaps for tiles inside the view port that don't already have a bitmap.
         activeLoadingState.requestBitmapForRect(viewportRect);
@@ -277,23 +314,31 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    public void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapMatrix);
     }
 
     @Override
     public void updateSubframes(Rect viewport, float scaleFactor) {
+        Point offset = mViewport.getOffset();
         for (int i = 0; i < mSubFrameRects.size(); i++) {
             Rect subFrameScaledRect = mSubFrameScaledRects.get(i);
             scaleRect(mSubFrameRects.get(i), subFrameScaledRect, scaleFactor);
-            if (!Rect.intersects(subFrameScaledRect, viewport)) {
+            mScaledRectIntersection.set(subFrameScaledRect);
+            if (!mScaledRectIntersection.intersect(viewport)) {
                 mSubFrameViews.get(i).setVisibility(View.GONE);
+                mSubFrameMediators.get(i).setVisibleRegion(0, 0, 0, 0);
                 subFrameScaledRect.set(0, 0, 0, 0);
                 continue;
             }
+            int visibleLeft = mScaledRectIntersection.left - subFrameScaledRect.left;
+            int visibleTop = mScaledRectIntersection.top - subFrameScaledRect.top;
+            mSubFrameMediators.get(i).setVisibleRegion(visibleLeft, visibleTop,
+                    visibleLeft + mScaledRectIntersection.width(),
+                    visibleTop + mScaledRectIntersection.height());
 
-            int transformedLeft = subFrameScaledRect.left - viewport.left;
-            int transformedTop = subFrameScaledRect.top - viewport.top;
+            int transformedLeft = offset.x + subFrameScaledRect.left - viewport.left;
+            int transformedTop = offset.y + subFrameScaledRect.top - viewport.top;
             subFrameScaledRect.set(transformedLeft, transformedTop,
                     transformedLeft + subFrameScaledRect.width(),
                     transformedTop + subFrameScaledRect.height());
@@ -332,13 +377,25 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         }
     }
 
+    void setVisibleRegion(int left, int top, int right, int bottom) {
+        mViewport.setVisibleRegion(left, top, right, bottom);
+
+        // The region is no longer visible delete all the bitmaps.
+        if (!mViewport.isVisible(mIsSubframe)) {
+            mBitmapStateController.deleteAll();
+        }
+    }
+
     private void markAsSubframe() {
         mIsSubframe = true;
     }
 
     @VisibleForTesting
     void updateScaleFactor(float scaleFactor) {
+        float relativeScale = scaleFactor / mViewport.getScale();
         mViewport.setScale(scaleFactor);
+        mViewport.setTrans(
+                mViewport.getTransX() * relativeScale, mViewport.getTransY() * relativeScale);
         for (int i = 0; i < mSubFrameViews.size(); i++) {
             mSubFrameMediators.get(i).updateScaleFactor(scaleFactor);
         }
@@ -366,7 +423,11 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
      * @param width The viewport width.
      */
     private void adjustInitialScaleFactor(float width) {
-        mInitialScaleFactor = width / ((float) mContentSize.getWidth());
+        mMinScaleFactor = width / ((float) mContentSize.getWidth());
+        if (mInitialScaleFactor == 0f) {
+            mInitialScaleFactor = mMinScaleFactor;
+        }
+
         for (int i = 0; i < mSubFrameViews.size(); i++) {
             mSubFrameMediators.get(i).setInitialScaleFactor(mInitialScaleFactor);
         }

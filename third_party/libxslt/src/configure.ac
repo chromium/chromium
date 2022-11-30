@@ -3,11 +3,12 @@ AC_PREREQ(2.63)
 
 m4_define([MAJOR_VERSION], [1])
 m4_define([MINOR_VERSION], [1])
-m4_define([MICRO_VERSION], [34])
+m4_define([MICRO_VERSION], [37])
 
 AC_INIT([libxslt], [MAJOR_VERSION.MINOR_VERSION.MICRO_VERSION])
 AC_CONFIG_SRCDIR([libxslt/xslt.c])
 AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
 AC_USE_SYSTEM_EXTENSIONS
 
@@ -30,29 +31,14 @@ LIBXSLT_VERSION_INFO=`expr $LIBXSLT_MAJOR_VERSION + $LIBXSLT_MINOR_VERSION`:$LIB
 LIBXSLT_VERSION_NUMBER=`expr $LIBXSLT_MAJOR_VERSION \* 10000 + $LIBXSLT_MINOR_VERSION \* 100 + $LIBXSLT_MICRO_VERSION`
 LIBXSLT_MAJOR_MINOR_VERSION=$LIBXSLT_MAJOR_VERSION.$LIBXSLT_MINOR_VERSION
 
-if test -f CVS/Entries; then
-  extra=`grep ChangeLog CVS/Entries | grep -v LIBXSLT | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXSLT_VERSION_EXTRA="-CVS$extra"
-  fi
-else if test -d .svn ; then
-  extra=`svn info | grep Revision | sed 's+Revision: ++'`
-  echo extra=$extra
-  if test "$extra" != ""
-  then
-      LIBXSLT_VERSION_EXTRA="-SVN$extra"
-  fi
-else if test -d .git ; then
+if test -d .git ; then
   extra=`git describe | sed 's+LIBXSLT[[0-9.]]*-++'`
   echo extra=$extra
   if test "$extra" != ""
   then
       LIBXSLT_VERSION_EXTRA="-GIT$extra"
+      LIBEXSLT_VERSION_EXTRA="-GIT$extra"
   fi
-fi
-fi
 fi
 
 AC_SUBST(LIBXSLT_MAJOR_VERSION)
@@ -73,10 +59,6 @@ LIBEXSLT_VERSION_INFO=`expr $LIBEXSLT_MAJOR_VERSION + $LIBEXSLT_MINOR_VERSION`:$
 
 LIBEXSLT_VERSION_NUMBER=`expr $LIBEXSLT_MAJOR_VERSION \* 10000 + $LIBEXSLT_MINOR_VERSION \* 100 + $LIBEXSLT_MICRO_VERSION`
 
-if test -f CVS/Entries; then
-  LIBEXSLT_VERSION_EXTRA=-CVS`grep ChangeLog CVS/Entries | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
-fi
-
 AC_SUBST(LIBEXSLT_MAJOR_VERSION)
 AC_SUBST(LIBEXSLT_MINOR_VERSION)
 AC_SUBST(LIBEXSLT_MICRO_VERSION)
@@ -85,29 +67,9 @@ AC_SUBST(LIBEXSLT_VERSION_INFO)
 AC_SUBST(LIBEXSLT_VERSION_NUMBER)
 AC_SUBST(LIBEXSLT_VERSION_EXTRA)
 
-AM_INIT_AUTOMAKE([foreign])
-
-# AM_MAINTAINER_MODE
-
-# Support silent build rules, requires at least automake-1.11. Disable
-# by either passing --disable-silent-rules to configure or passing V=1
-# to make
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
-dnl
-dnl Specific dir for HTML output ?
-dnl
-
-AC_ARG_WITH(html-dir, AS_HELP_STRING([--with-html-dir=path],
-            [path to base html directory, default $datadir/doc/html]),
-            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
-
-AC_ARG_WITH(html-subdir, AS_HELP_STRING([--with-html-subdir=path],
-            [directory used under html-dir, default $PACKAGE-$VERSION/html]),
-            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
-            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
-
-AC_SUBST(HTML_DIR)
+AM_INIT_AUTOMAKE([1.16.3 foreign no-dist-gzip dist-xz])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
 
 dnl
 dnl Check the environment
@@ -120,12 +82,11 @@ AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
 AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
 PKG_PROG_PKG_CONFIG
 
-AC_HEADER_STDC
+LT_INIT([disable-static win32-dll])
+LT_LIB_M
 
-LT_INIT(win32-dll)
 
-
-AC_CHECK_HEADERS(sys/types.h sys/time.h stdlib.h unistd.h string.h)
+AC_CHECK_HEADERS(sys/types.h sys/time.h unistd.h)
 
 dnl
 dnl if the system support linker version scripts for symbol versioning
@@ -171,25 +132,14 @@ dnl
 dnl Math detection
 dnl
 
-AC_CHECK_HEADERS(ieeefp.h nan.h math.h fp_class.h float.h)
-AC_CHECK_HEADERS(sys/timeb.h time.h sys/stat.h sys/select.h stdarg.h)
-AC_CHECK_HEADERS(errno.h)
+AC_CHECK_HEADERS(sys/timeb.h sys/stat.h sys/select.h)
 AC_CHECK_FUNCS(stat _stat)
-AC_CHECK_FUNC(pow, , AC_CHECK_LIB(m, pow,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_POW],[], [Define if pow is there])]))
-
-AC_CHECK_FUNC(floor, , AC_CHECK_LIB(m, floor,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_FLOOR],[], [Define if floor is there])]))
-
-AC_CHECK_FUNC(fabs, , AC_CHECK_LIB(m, fabs,
-  [M_LIBS="-lm"; AC_DEFINE([HAVE_FABS],[], [Define if fabs is there])]))
-
 
 AC_CHECK_FUNCS(gettimeofday)
-AC_CHECK_FUNCS(localtime localtime_r time gmtime gmtime_r ftime)
+AC_CHECK_FUNCS(localtime_r gmtime_r ftime)
 
 dnl Checking the standard string functions availability
-AC_CHECK_FUNCS(printf sprintf fprintf snprintf vfprintf vsprintf vsnprintf sscanf,,
+AC_CHECK_FUNCS(snprintf vsnprintf,,
                NEED_TRIO=1)
 
 dnl Checking for POSIX timers
@@ -230,121 +180,14 @@ dnl
 dnl check for python
 dnl
 
-PYTHON_VERSION=
-PYTHON_INCLUDES=
-PYTHON_SITE_PACKAGES=
-PYTHON_TESTS=
-pythondir=
 AC_ARG_WITH(python,
-[  --with-python[[=DIR]]     build Python bindings if found])
-AC_ARG_WITH(python_install_dir,
-[  --with-python-install-dir=DIR
-                          install Python bindings in DIR])
-if test "$with_python" != "no" ; then
-    if test -x "$with_python/bin/python"
-    then
-        echo Found python in $with_python/bin/python
-        PYTHON="$with_python/bin/python"
-    else
-        if test -x "$with_python/python.exe"
-        then
-            echo Found python in $with_python/python.exe
-            PYTHON="$with_python/python.exe"
-        else
-            if test -x "$with_python"
-            then
-                echo Found python in $with_python
-                PYTHON="$with_python"
-            else
-                if test -x "$PYTHON"
-                then
-                    echo Found python in environment PYTHON=$PYTHON
-                    with_python=`$PYTHON -c "import sys; print(sys.exec_prefix)"`
-                else
-                    AC_PATH_PROG(PYTHON, python python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0 python1.6 python1.5)
-		fi
-	    fi
-	fi
-    fi
-    if test "$PYTHON" != ""
-    then
-        PYTHON_VERSION=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_version())"`
-	PYTHON_INCLUDES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_inc())"`
-# does not work as it produce a /usr/lib/python path instead of/usr/lib64/python
-#
-#	PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
-	echo Found Python version $PYTHON_VERSION
-  LIBXML2_PYTHON=`$PYTHON -c "import sys
-try:
-    import libxml2
-    sys.stdout.write('1')
-except:
-    sys.stdout.write('0')
-"`
-	if test "$LIBXML2_PYTHON" = "1"
-	then
-	    echo Found libxml2-python module
-	else
-	    echo Warning: Missing libxml2-python
-  fi
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_INCLUDES" = ""
-    then
-	if test -r $with_python/include/python$PYTHON_VERSION/Python.h
-	then
-	    PYTHON_INCLUDES=$with_python/include/python$PYTHON_VERSION
-	else
-	    if test -r $prefix/include/python$PYTHON_VERSION/Python.h
-	    then
-	        PYTHON_INCLUDES=$prefix/include/python$PYTHON_VERSION
-	    else
-		if test -r /usr/include/python$PYTHON_VERSION/Python.h
-		then
-		    PYTHON_INCLUDES=/usr/include/python$PYTHON_VERSION
-		else
-	            if test -r $with_python/include/Python.h
-	            then
-	                PYTHON_INCLUDES=$with_python/include
-	            else
-		        echo could not find python$PYTHON_VERSION/Python.h or $with_python/include/Python.h
-		    fi
-		fi
-	    fi
-	fi
-    fi
-    if test "$with_python_install_dir" != ""
-    then
-	PYTHON_SITE_PACKAGES="$with_python_install_dir"
-    fi
-    if test "$PYTHON_VERSION" != "" -a "$PYTHON_SITE_PACKAGES" = ""
-    then
-	if test -d $libdir/python$PYTHON_VERSION/site-packages
-	then
-	    PYTHON_SITE_PACKAGES=$libdir/python$PYTHON_VERSION/site-packages
-	else
-	    if test -d $with_python/lib/site-packages
-	    then
-		PYTHON_SITE_PACKAGES=$with_python/lib/site-packages
-	    else
-		PYTHON_SITE_PACKAGES=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_lib())"`
-	    fi
-	fi
-    fi
-    pythondir='$(PYTHON_SITE_PACKAGES)'
-    PYTHON_LIBS=`python$PYTHON_VERSION-config --ldflags`
-else
-    PYTHON=
-fi
-AM_CONDITIONAL(WITH_PYTHON, test "$PYTHON_INCLUDES" != "")
-if test "$PYTHON_INCLUDES" != ""
-then
-    PYTHON_SUBDIR=python
-else
-    PYTHON_SUBDIR=
-fi
-AC_SUBST(pythondir)
-AC_SUBST(PYTHON_SUBDIR)
-AC_SUBST(PYTHON_LIBS)
+[  --with-python           build Python bindings (on)])
+
+AS_IF([test "x$with_python" != "xno"], [
+    AM_PATH_PYTHON
+    PKG_CHECK_MODULES([PYTHON], [python-${PYTHON_VERSION}])
+])
+AM_CONDITIONAL([WITH_PYTHON], [test "x$with_python" != "xno"])
 
 AC_ARG_WITH(crypto, [  --with-crypto           Add crypto support to exslt (on)])
 WITH_CRYPTO=0
@@ -390,19 +233,6 @@ AC_SUBST(WITH_CRYPTO)
 AC_SUBST(CRYPTO_TESTDIR)
 AC_SUBST(LIBGCRYPT_CFLAGS)
 AC_SUBST(LIBGCRYPT_LIBS)
-
-dnl
-dnl Debug for DV (-Wunreachable-code)
-dnl
-if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/XSLT" ]] || \
-   [[ "${LOGNAME}" = "bill" -a "`pwd`" = "/home/bill/gnomesvn/libxslt" ]]
-   then
-    if test "${with_mem_debug}" = "" ;
-    then
-	with_mem_debug="yes"
-    fi
-    CFLAGS="-Wall -g -O -ansi -pedantic -W -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat=2 -Wmissing-format-attribute -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline "
-fi
 
 AC_ARG_WITH(debug, [  --with-debug            Add the debugging code (on)])
 if test "$with_debug" = "no" ; then
@@ -508,7 +338,7 @@ if test "${GCC}" != "yes" ; then
                ;;
     esac
 else
-    CFLAGS="${CFLAGS} -Wall -Wextra -Wformat=2 -Wmissing-format-attribute -Wshadow"
+    CFLAGS="${CFLAGS} -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls"
     case "${host}" in
           alpha*-*-linux* )
 	       CFLAGS="${CFLAGS} -mieee"
@@ -535,7 +365,7 @@ if test "$enable_static" = "no"; then
     build_static_libs="no"
 fi
 
-if test "$build_shared_libs" = "no" -a "$build_static_libs" = "no"; then
+if test "$build_shared_libs" = "no" && test "$build_static_libs" = "no"; then
     build_static_libs="yes"
 fi
 
@@ -566,8 +396,8 @@ dnl
 dnl Try pkg-config first if nothing is set
 dnl
 
-if test "x$LIBXML_CONFIG_PREFIX" = "x" -a "x$LIBXML_LIBS" = "x"; then
-    if test "$build_static_libs" = "no"; then
+if test "x$LIBXML_CONFIG_PREFIX" = "x" && test "x$LIBXML_LIBS" = "x"; then
+    if test "$build_shared_libs" = "yes"; then
         PKG_CHECK_MODULES([LIBXML], [libxml-2.0 >= $LIBXML_REQUIRED_VERSION], [
             WITH_MODULES="`$PKG_CONFIG --variable=modules libxml-2.0`"
         ], [ ])
@@ -604,13 +434,9 @@ fi
 
 if test "x$LIBXML_LIBS" = "x"
 then
-	AC_MSG_ERROR([Could not find libxml2 anywhere, check ftp://xmlsoft.org/.])
+	AC_MSG_ERROR([Could not find libxml2 anywhere.])
 fi
 
-
-AC_SUBST(CFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(LDFLAGS)
 
 AC_ARG_WITH(plugins,
 [  --with-plugins          Add plugin extension support (on)])
@@ -620,7 +446,7 @@ then
 fi
 
 AC_MSG_CHECKING([whether shared libraries will be built (required for plugins)])
-if test "$build_shared_libs" = "no" -a "$with_plugins" = "yes"; then
+if test "$build_shared_libs" = "no" && test "$with_plugins" = "yes"; then
 	 AC_MSG_RESULT(no)
 	 AC_MSG_WARN([Disabling plugin support.])
 	 AC_MSG_WARN([Plugins require that shared libraries be built.])
@@ -666,43 +492,46 @@ case "$host" in
 esac
 
 
-AC_SUBST(XSLTPROCDV)
-AC_SUBST(PYTHONSODV)
 AC_SUBST(XML_CONFIG)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
-AC_SUBST(PYTHON)
-AC_SUBST(PYTHON_VERSION)
-AC_SUBST(PYTHON_INCLUDES)
-AC_SUBST(PYTHON_SITE_PACKAGES)
 
 XSLT_LIBDIR='-L${libdir}'
 XSLT_INCLUDEDIR='-I${includedir}'
 XSLT_LIBS="-lxslt $LIBXML_LIBS"
-XSLT_PRIVATE_LIBS="$M_LIBS"
+XSLT_PRIVATE_LIBS="$LIBM"
 AC_SUBST(XSLT_LIBDIR)
 AC_SUBST(XSLT_INCLUDEDIR)
 AC_SUBST(XSLT_LIBS)
 AC_SUBST(XSLT_PRIVATE_LIBS)
 
+LIBXSLT_CFLAGS=""
+case ${host} in
+    *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+        # If the host is Windows, and shared libraries are disabled, we
+        # need to add -DLIBXML_STATIC to EXTRA_CFLAGS in order for linking to
+        # work properly (without it, xmlexports.h would force the use of
+        # DLL imports, which obviously aren't present in a static
+        # library).
+        if test "x$enable_shared" = "xno"; then
+           LIBXSLT_CFLAGS="$LIBXSLT_CFLAGS -DLIBXSLT_STATIC -DLIBEXSLT_STATIC"
+        fi
+        ;;
+esac
+AC_SUBST(LIBXSLT_CFLAGS)
+
 EXSLT_LIBDIR='-L${libdir}'
 EXSLT_INCLUDEDIR='-I${includedir}'
-EXSLT_LIBS="-lexslt $XSLT_LIBS"
 EXSLT_PRIVATE_LIBS="$XSLT_PRIVATE_LIBS $LIBGCRYPT_LIBS"
 AC_SUBST(EXSLT_LIBDIR)
 AC_SUBST(EXSLT_INCLUDEDIR)
-AC_SUBST(EXSLT_LIBS)
 AC_SUBST(EXSLT_PRIVATE_LIBS)
 
 AC_SUBST(EXTRA_LIBS)
 
-AC_SUBST(M_LIBS)
-
 dnl for the spec file
 RELDATE=`date +'%a %b %e %Y'`
 AC_SUBST(RELDATE)
-
-rm -f COPYING.LIB COPYING 2>/dev/null && $LN_S $srcdir/Copyright COPYING
 
 
 AC_CONFIG_FILES([
@@ -712,7 +541,6 @@ libexslt.pc
 libxslt-config.cmake
 libxslt/Makefile
 libxslt/xsltconfig.h
-libxslt/xsltwin32config.h
 libexslt/Makefile
 libexslt/exsltconfig.h
 xsltproc/Makefile
@@ -744,16 +572,15 @@ tests/exslt/sets/Makefile
 tests/exslt/strings/Makefile
 tests/exslt/date/Makefile
 tests/exslt/dynamic/Makefile
+tests/exslt/crypto/Makefile
 tests/plugins/Makefile
 tests/fuzz/Makefile
 doc/Makefile
+doc/devhelp/Makefile
+doc/EXSLT/devhelp/Makefile
 xslt-config
 libxslt.spec
 ])
-if test "$CRYPTO_TESTDIR" != ""
-then
-  AC_CONFIG_FILES(["tests/exslt/$CRYPTO_TESTDIR/Makefile"])
-fi
 AC_CONFIG_LINKS([tests/fuzz/xpath.xml:tests/fuzz/xpath.xml])
 AC_CONFIG_LINKS([tests/fuzz/xslt.xml:tests/fuzz/xslt.xml])
 

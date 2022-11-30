@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
+#include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/video_capture_device.h"
 
@@ -48,6 +48,9 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       const base::FilePath& file_path,
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
+  FileVideoCaptureDevice(const FileVideoCaptureDevice&) = delete;
+  FileVideoCaptureDevice& operator=(const FileVideoCaptureDevice&) = delete;
+
   // VideoCaptureDevice implementation, class methods.
   ~FileVideoCaptureDevice() override;
   void AllocateAndStart(
@@ -67,9 +70,18 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
       const base::FilePath& file_path,
       VideoCaptureFormat* video_format);
 
+  // Crops frame with respect to PTZ settings.
+  std::unique_ptr<uint8_t[]> CropPTZRegion(
+      const uint8_t* frame,
+      size_t frame_buffer_size,
+      VideoPixelFormat* final_pixel_format);
+
   // Called on the |capture_thread_|.
   void OnAllocateAndStart(const VideoCaptureParams& params,
                           std::unique_ptr<Client> client);
+  void OnGetPhotoState(GetPhotoStateCallback callback);
+  void OnSetPhotoOptions(mojom::PhotoSettingsPtr settings,
+                         SetPhotoOptionsCallback callback);
   void OnStopAndDeAllocate();
   const uint8_t* GetNextFrame();
   void OnCaptureTask();
@@ -86,6 +98,21 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   const base::FilePath file_path_;
   std::unique_ptr<VideoFileParser> file_parser_;
   VideoCaptureFormat capture_format_;
+
+  // The max zoom-able integer level that can be zoomed-in with respect to
+  // aspect ratio of original file.
+  int zoom_max_levels_;
+  // Numerator of file aspect ratio.
+  int aspect_ratio_numerator_;
+  // Denominator of file aspect ratio.
+  int aspect_ratio_denominator_;
+  // Current zoom values.
+  int zoom_;
+  // Current pan values.
+  int pan_;
+  // Current tilt values.
+  int tilt_;
+
   // Target time for the next frame.
   base::TimeTicks next_frame_time_;
   // The system time when we receive the first frame.
@@ -99,8 +126,6 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   // on the main thread and |capture_thread_|.
   base::Lock lock_;
   base::queue<TakePhotoCallback> take_photo_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVideoCaptureDevice);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,13 +85,17 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
       : client_(client),
         data_source_resource_(source) {}
 
+  WaylandDataSourceDelegate(const WaylandDataSourceDelegate&) = delete;
+  WaylandDataSourceDelegate& operator=(const WaylandDataSourceDelegate&) =
+      delete;
+
   // Overridden from DataSourceDelegate:
   void OnDataSourceDestroying(DataSource* device) override { delete this; }
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
     return surface &&
            wl_resource_get_client(GetSurfaceResource(surface)) == client_;
   }
-  void OnTarget(const base::Optional<std::string>& mime_type) override {
+  void OnTarget(const absl::optional<std::string>& mime_type) override {
     wl_data_source_send_target(data_source_resource_,
                                mime_type ? mime_type->c_str() : nullptr);
     wl_client_flush(wl_resource_get_client(data_source_resource_));
@@ -131,8 +135,6 @@ class WaylandDataSourceDelegate : public DataSourceDelegate {
  private:
   wl_client* const client_;
   wl_resource* const data_source_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataSourceDelegate);
 };
 
 void data_source_offer(wl_client* client,
@@ -163,6 +165,9 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
   explicit WaylandDataOfferDelegate(wl_resource* offer)
       : data_offer_resource_(offer) {}
 
+  WaylandDataOfferDelegate(const WaylandDataOfferDelegate&) = delete;
+  WaylandDataOfferDelegate& operator=(const WaylandDataOfferDelegate&) = delete;
+
   // Overridden from DataOfferDelegate:
   void OnDataOfferDestroying(DataOffer* device) override { delete this; }
   void OnOffer(const std::string& mime_type) override {
@@ -190,8 +195,6 @@ class WaylandDataOfferDelegate : public DataOfferDelegate {
 
  private:
   wl_resource* const data_offer_resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOfferDelegate);
 };
 
 void data_offer_accept(wl_client* client,
@@ -245,6 +248,10 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       : client_(client),
         data_device_resource_(device_resource),
         serial_tracker_(serial_tracker) {}
+
+  WaylandDataDeviceDelegate(const WaylandDataDeviceDelegate&) = delete;
+  WaylandDataDeviceDelegate& operator=(const WaylandDataDeviceDelegate&) =
+      delete;
 
   // Overridden from DataDeviceDelegate:
   void OnDataDeviceDestroying(DataDevice* device) override { delete this; }
@@ -302,9 +309,9 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                  Surface* origin,
                  Surface* icon,
                  uint32_t serial) {
-    base::Optional<wayland::SerialTracker::EventType> event_type =
+    absl::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
-    if (event_type == base::nullopt) {
+    if (event_type == absl::nullopt) {
       LOG(ERROR) << "The serial passed to StartDrag does not exist.";
       return;
     }
@@ -327,9 +334,9 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
   void SetSelection(DataDevice* data_device,
                     DataSource* source,
                     uint32_t serial) {
-    base::Optional<wayland::SerialTracker::EventType> event_type =
+    absl::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
-    if (event_type == base::nullopt) {
+    if (event_type == absl::nullopt) {
       LOG(ERROR) << "The serial passed to SetSelection does not exist.";
       return;
     }
@@ -343,8 +350,6 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
 
   // Owned by Server, which always outlives this delegate.
   SerialTracker* const serial_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceDelegate);
 };
 
 void data_device_start_drag(wl_client* client,

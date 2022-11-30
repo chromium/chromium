@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 
 namespace content {
@@ -25,6 +24,8 @@ class WebContentsTag;
 class WebContentsTaskProvider : public TaskProvider {
  public:
   WebContentsTaskProvider();
+  WebContentsTaskProvider(const WebContentsTaskProvider&) = delete;
+  WebContentsTaskProvider& operator=(const WebContentsTaskProvider&) = delete;
   ~WebContentsTaskProvider() override;
 
   // This will be called every time we're notified that a new |WebContentsTag|
@@ -62,8 +63,6 @@ class WebContentsTaskProvider : public TaskProvider {
   // True if this provider is listening to WebContentsTags and updating its
   // observers, false otherwise.
   bool is_updating_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTaskProvider);
 };
 
 }  // namespace task_manager

@@ -1,8 +1,7 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import doctest
@@ -13,28 +12,10 @@ import re
 import subprocess
 import sys
 
-if sys.version_info.major < 3:
-  basestring_compat = basestring
-else:
-  basestring_compat = str
-
-# src directory
-ROOT_SRC_DIR = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.realpath(__file__)))))
 
 # This script prints information about the build system, the operating
 # system and the iOS or Mac SDK (depending on the platform "iphonesimulator",
 # "iphoneos" or "macosx" generally).
-
-
-def LoadPList(path):
-  """Loads Plist at |path| and returns it as a dictionary."""
-  # Cloned from //build/apple/plist_util.py.
-  if sys.version_info.major == 2:
-    return plistlib.readPlist(path)
-  with open(path, 'rb') as f:
-    return plistlib.load(f)
 
 
 def SplitVersion(version):
@@ -70,7 +51,8 @@ def FillXcodeVersion(settings, developer_dir):
   if developer_dir:
     xcode_version_plist_path = os.path.join(developer_dir,
                                             'Contents/version.plist')
-    version_plist = LoadPList(xcode_version_plist_path)
+    with open(xcode_version_plist_path, 'rb') as f:
+      version_plist = plistlib.load(f)
     settings['xcode_version'] = FormatVersion(
         version_plist['CFBundleShortVersionString'])
     settings['xcode_version_int'] = int(settings['xcode_version'], 10)
@@ -110,14 +92,14 @@ def FillSDKPathAndVersion(settings, platform, xcode_version):
       'Toolchains/XcodeDefault.xctoolchain')
 
 
-def CreateXcodeSymlinkAt(src, dst):
+def CreateXcodeSymlinkAt(src, dst, root_build_dir):
   """Create symlink to Xcode directory at target location."""
 
   if not os.path.isdir(dst):
     os.makedirs(dst)
 
   dst = os.path.join(dst, os.path.basename(src))
-  updated_value = '//' + os.path.relpath(dst, ROOT_SRC_DIR)
+  updated_value = os.path.join(root_build_dir, dst)
 
   # Update the symlink only if it is different from the current destination.
   if os.path.islink(dst):
@@ -131,47 +113,48 @@ def CreateXcodeSymlinkAt(src, dst):
   return updated_value
 
 
-if __name__ == '__main__':
+def main():
   doctest.testmod()
 
   parser = argparse.ArgumentParser()
-  parser.add_argument("--developer_dir", dest="developer_dir", required=False)
-  parser.add_argument("--get_sdk_info",
-                      action="store_true",
-                      dest="get_sdk_info",
+  parser.add_argument('--developer_dir')
+  parser.add_argument('--get_sdk_info',
+                      action='store_true',
                       default=False,
-                      help="Returns SDK info in addition to xcode info.")
-  parser.add_argument("--get_machine_info",
-                      action="store_true",
-                      dest="get_machine_info",
+                      help='Returns SDK info in addition to xcode info.')
+  parser.add_argument('--get_machine_info',
+                      action='store_true',
                       default=False,
-                      help="Returns machine info in addition to xcode info.")
-  parser.add_argument("--create_symlink_at",
-                      action="store",
-                      dest="create_symlink_at",
-                      help="Create symlink of SDK at given location and "
-                      "returns the symlinked paths as SDK info instead "
-                      "of the original location.")
-  args, unknownargs = parser.parse_known_args()
+                      help='Returns machine info in addition to xcode info.')
+  parser.add_argument('--create_symlink_at',
+                      help='Create symlink of SDK at given location and '
+                      'returns the symlinked paths as SDK info instead '
+                      'of the original location.')
+  parser.add_argument('--root_build_dir',
+                      default='.',
+                      help='Value of gn $root_build_dir')
+  parser.add_argument('platform',
+                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
+  args = parser.parse_args()
   if args.developer_dir:
     os.environ['DEVELOPER_DIR'] = args.developer_dir
-
-  if len(unknownargs) != 1:
-    sys.stderr.write('usage: %s [iphoneos|iphonesimulator|macosx]\n' %
-                     os.path.basename(sys.argv[0]))
-    sys.exit(1)
 
   settings = {}
   if args.get_machine_info:
     FillMachineOSBuild(settings)
   FillXcodeVersion(settings, args.developer_dir)
   if args.get_sdk_info:
-    FillSDKPathAndVersion(settings, unknownargs[0], settings['xcode_version'])
+    FillSDKPathAndVersion(settings, args.platform, settings['xcode_version'])
 
   for key in sorted(settings):
     value = settings[key]
     if args.create_symlink_at and '_path' in key:
-      value = CreateXcodeSymlinkAt(value, args.create_symlink_at)
-    if isinstance(value, basestring_compat):
+      value = CreateXcodeSymlinkAt(value, args.create_symlink_at,
+                                   args.root_build_dir)
+    if isinstance(value, str):
       value = '"%s"' % value
     print('%s=%s' % (key, value))
+
+
+if __name__ == '__main__':
+  sys.exit(main())

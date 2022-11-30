@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ namespace test {
 //!   uint8_t expected[10];
 //!   uint8_t observed[10];
 //!   // …
-//!   EXPECT_EQ(BytesToHexString(observed, base::size(observed)),
-//!             BytesToHexString(expected, base::size(expected)));
+//!   EXPECT_EQ(BytesToHexString(observed, std::size(observed)),
+//!             BytesToHexString(expected, std::size(expected)));
 //! \endcode
 std::string BytesToHexString(const void* bytes, size_t length);
 

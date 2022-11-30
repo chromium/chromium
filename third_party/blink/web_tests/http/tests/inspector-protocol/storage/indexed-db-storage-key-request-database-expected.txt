@@ -1,0 +1,11 @@
+Tests that requesting database works for IndexedDB with storageKey
+
+Open database, some object stores and add a value
+database, object stores created and value added
+
+Request database for storage key
+database object store names[
+    [0] : test-store
+    [1] : another-test-store
+]
+

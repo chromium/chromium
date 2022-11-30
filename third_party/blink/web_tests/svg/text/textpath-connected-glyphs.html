@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<meta charset="UTF-8">
+
+<p>The two lines of text should look same.</p>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">
+  <text x="100" y="100" font-size="28">سلام  ชุตินันท์</text>
+  <path fill="transparent" id="f" d="m100 150 L 300 150Z"/>
+  <text font-size="28">
+    <textPath xlink:href="#f">سلام  ชุตินันท์</textPath>
+  </text>
+</svg>
+
+<p>Connected glyphs on a path should be rotated together.</p>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+  <path id="p2" stroke="blue" fill="transparent" transform="translate(0, 50)"
+               d="M 100 100 C100 -50 200 -50 200 100"/>
+  <text font-size="28" letter-spacing="16">
+    <textPath xlink:href="#p2" startOffset="50">سلام  ชุตินันท์</textPath>
+  </text>
+</svg>

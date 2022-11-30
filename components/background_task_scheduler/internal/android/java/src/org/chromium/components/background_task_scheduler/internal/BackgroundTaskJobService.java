@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.annotation.TargetApi;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.os.Build;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Delegates calls out to various tasks that need to run in the background. */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BackgroundTaskJobService extends JobService {
     private static final String TAG = "BkgrdTaskJS";
 
@@ -37,12 +35,17 @@ public class BackgroundTaskJobService extends JobService {
         private final BackgroundTaskJobService mJobService;
         private final BackgroundTask mBackgroundTask;
         private final JobParameters mParams;
+        private final long mTaskStartTimeMs;
 
         TaskFinishedCallbackJobService(BackgroundTaskJobService jobService,
                 BackgroundTask backgroundTask, JobParameters params) {
             mJobService = jobService;
             mBackgroundTask = backgroundTask;
             mParams = params;
+
+            // We are using uptimeMillis here to record the exact amount of time needed for the task
+            // to run that excludes the time spent during deep sleep.
+            mTaskStartTimeMs = SystemClock.uptimeMillis();
         }
 
         @Override
@@ -63,6 +66,8 @@ public class BackgroundTaskJobService extends JobService {
 
                     mJobService.mCurrentTasks.remove(mParams.getJobId());
                     mJobService.jobFinished(mParams, needsReschedule);
+                    BackgroundTaskSchedulerUma.getInstance().reportTaskFinished(
+                            mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
                 }
             });
         }

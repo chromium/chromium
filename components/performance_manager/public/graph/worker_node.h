@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/util/type_safety/token_type.h"
+#include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -62,6 +61,10 @@ class WorkerNode : public Node {
   class ObserverDefaultImpl;
 
   WorkerNode();
+
+  WorkerNode(const WorkerNode&) = delete;
+  WorkerNode& operator=(const WorkerNode&) = delete;
+
   ~WorkerNode() override;
 
   // Returns the worker type. Note that this is different from the NodeTypeEnum.
@@ -114,8 +117,10 @@ class WorkerNode : public Node {
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerNode);
+  // Returns the most recently estimated resident set of the worker, in
+  // kilobytes. This is an estimate because RSS is computed by process, and a
+  // process can host multiple workers.
+  virtual uint64_t GetResidentSetKbEstimate() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -123,6 +128,10 @@ class WorkerNode : public Node {
 class WorkerNodeObserver {
  public:
   WorkerNodeObserver();
+
+  WorkerNodeObserver(const WorkerNodeObserver&) = delete;
+  WorkerNodeObserver& operator=(const WorkerNodeObserver&) = delete;
+
   virtual ~WorkerNodeObserver();
 
   // Node lifetime notifications.
@@ -165,9 +174,6 @@ class WorkerNodeObserver {
   virtual void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WorkerNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -176,6 +182,10 @@ class WorkerNodeObserver {
 class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // WorkerNodeObserver implementation:
@@ -197,9 +207,6 @@ class WorkerNode::ObserverDefaultImpl : public WorkerNodeObserver {
   void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

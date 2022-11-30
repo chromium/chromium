@@ -1,13 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_GAMEPAD_GAMEPAD_TEST_HELPERS_H_
 #define DEVICE_GAMEPAD_GAMEPAD_TEST_HELPERS_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -24,6 +22,9 @@ class MockGamepadDataFetcher : public GamepadDataFetcher {
   // Initializes the fetcher with the given gamepad data, which will be
   // returned when the provider queries us.
   explicit MockGamepadDataFetcher(const Gamepads& test_data);
+
+  MockGamepadDataFetcher(const MockGamepadDataFetcher&) = delete;
+  MockGamepadDataFetcher& operator=(const MockGamepadDataFetcher&) = delete;
 
   ~MockGamepadDataFetcher() override;
 
@@ -48,21 +49,21 @@ class MockGamepadDataFetcher : public GamepadDataFetcher {
   base::Lock lock_;
   Gamepads test_data_;
   base::WaitableEvent read_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockGamepadDataFetcher);
 };
 
 // Base class for the other test helpers. This just sets up the system monitor.
 class GamepadTestHelper {
  public:
   GamepadTestHelper();
+
+  GamepadTestHelper(const GamepadTestHelper&) = delete;
+  GamepadTestHelper& operator=(const GamepadTestHelper&) = delete;
+
   virtual ~GamepadTestHelper();
 
  private:
   // This must be constructed before the system monitor.
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadTestHelper);
 };
 
 // Constructs a GamepadService with a mock data source. This bypasses the
@@ -70,6 +71,11 @@ class GamepadTestHelper {
 class GamepadServiceTestConstructor : public GamepadTestHelper {
  public:
   explicit GamepadServiceTestConstructor(const Gamepads& test_data);
+
+  GamepadServiceTestConstructor(const GamepadServiceTestConstructor&) = delete;
+  GamepadServiceTestConstructor& operator=(
+      const GamepadServiceTestConstructor&) = delete;
+
   ~GamepadServiceTestConstructor() override;
 
   GamepadService* gamepad_service() { return gamepad_service_; }
@@ -77,12 +83,10 @@ class GamepadServiceTestConstructor : public GamepadTestHelper {
 
  private:
   // Owning pointer (can't be a scoped_ptr due to private destructor).
-  GamepadService* gamepad_service_;
+  raw_ptr<GamepadService> gamepad_service_;
 
   // Pointer owned by the provider (which is owned by the gamepad service).
-  MockGamepadDataFetcher* data_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadServiceTestConstructor);
+  raw_ptr<MockGamepadDataFetcher> data_fetcher_;
 };
 
 }  // namespace device

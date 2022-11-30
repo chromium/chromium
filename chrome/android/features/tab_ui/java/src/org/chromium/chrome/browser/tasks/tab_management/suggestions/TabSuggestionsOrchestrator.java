@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion.TabSuggestionAction;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * Represents the entry point for the TabSuggestions component. Responsible for
  * registering and invoking the different {@link TabSuggestionsFetcher}.
  */
-public class TabSuggestionsOrchestrator implements TabSuggestions, Destroyable {
+public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserver {
     public static final String TAB_SUGGESTIONS_UMA_PREFIX = "TabSuggestionsOrchestrator";
     private static final String LAST_TIMESTAMP_KEY = "LastTimestamp";
     private static final String BACKOFF_COUNT_KEY = "BackoffCountKey";
@@ -61,21 +61,21 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, Destroyable {
     private long mNextPrefetchTime;
     private int mMinTimeBetweenPrefetchesMs = MIN_TIME_BETWEEN_PREFETCHES_DEFAULT_MS;
 
-    public TabSuggestionsOrchestrator(
-            TabModelSelector selector, ActivityLifecycleDispatcher activityLifecycleDispatcher) {
-        this(selector, activityLifecycleDispatcher,
+    public TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        this(context, selector, activityLifecycleDispatcher,
                 ContextUtils.getApplicationContext().getSharedPreferences(
                         SHARED_PREFERENCES_ID, Context.MODE_PRIVATE));
     }
 
     @VisibleForTesting
-    TabSuggestionsOrchestrator(TabModelSelector selector,
+    TabSuggestionsOrchestrator(Context context, TabModelSelector selector,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             SharedPreferences sharedPreferences) {
         mTabModelSelector = selector;
         mTabSuggestionsFetchers = new LinkedList<>();
         mTabSuggestionsFetchers.add(new TabSuggestionsClientFetcher());
-        mTabSuggestionsFetchers.add(new TabSuggestionsServerFetcher());
+        mTabSuggestionsFetchers.add(new TabSuggestionsServerFetcher(context));
         mTabSuggestionsObservers = new ObserverList<>();
         mTabContextObserver = new TabContextObserver(selector) {
             @Override
@@ -130,7 +130,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, Destroyable {
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mTabContextObserver.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }

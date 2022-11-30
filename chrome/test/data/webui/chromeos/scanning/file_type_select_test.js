@@ -1,19 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://scanning/file_type_select.js';
-
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {changeSelect} from './scanning_app_test_utils.js';
 
 const FileType = {
-  JPG: chromeos.scanning.mojom.FileType.kJpg,
-  PDF: chromeos.scanning.mojom.FileType.kPdf,
-  PNG: chromeos.scanning.mojom.FileType.kPng,
+  JPG: ash.scanning.mojom.FileType.kJpg,
+  PDF: ash.scanning.mojom.FileType.kPdf,
+  PNG: ash.scanning.mojom.FileType.kPng,
 };
 
 export function fileTypeSelectTest() {
@@ -32,9 +30,9 @@ export function fileTypeSelectTest() {
     fileTypeSelect = null;
   });
 
+  // Verify the dropdown is initialized as enabled with three options. The
+  // default option should be PDF.
   test('initializeFileTypeSelect', () => {
-    // The dropdown should be initialized as enabled with three options. The
-    // default option should be PDF.
     const select =
         /** @type {!HTMLSelectElement} */ (fileTypeSelect.$$('select'));
     assertTrue(!!select);

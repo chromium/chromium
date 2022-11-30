@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ public class MediaNotificationInfo {
         private Bitmap mNotificationLargeIcon;
         private int mDefaultNotificationLargeIcon;
         private Bitmap mMediaSessionImage;
-        private int mActions = ACTION_PLAY_PAUSE | ACTION_SWIPEAWAY;
+        private int mActions = ACTION_PLAY_PAUSE | ACTION_SWIPEAWAY | ACTION_STOP;
         private int mId = INVALID_ID;
         private Intent mContentIntent;
         private MediaNotificationListener mListener;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,9 @@ namespace exo {
 namespace test {
 
 ClientControlledShellSurfaceDelegate::ClientControlledShellSurfaceDelegate(
-    ClientControlledShellSurface* shell_surface)
-    : shell_surface_(shell_surface) {}
+    ClientControlledShellSurface* shell_surface,
+    bool delay_commit)
+    : shell_surface_(shell_surface), delay_commit_(delay_commit) {}
 ClientControlledShellSurfaceDelegate::~ClientControlledShellSurfaceDelegate() =
     default;
 
@@ -58,7 +59,7 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
       NOTIMPLEMENTED();
       break;
   }
-  shell_surface_->OnSurfaceCommit();
+  Commit();
 }
 void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
     chromeos::WindowStateType current_state,
@@ -93,16 +94,16 @@ void ClientControlledShellSurfaceDelegate::OnBoundsChanged(
   shell_surface_->SetBounds(display_id, bounds_in_display);
 
   if (requested_state != window_state->GetStateType()) {
-    DCHECK(requested_state == chromeos::WindowStateType::kLeftSnapped ||
-           requested_state == chromeos::WindowStateType::kRightSnapped);
+    DCHECK(requested_state == chromeos::WindowStateType::kPrimarySnapped ||
+           requested_state == chromeos::WindowStateType::kSecondarySnapped);
 
-    if (requested_state == chromeos::WindowStateType::kLeftSnapped)
-      shell_surface_->SetSnappedToLeft();
+    if (requested_state == chromeos::WindowStateType::kPrimarySnapped)
+      shell_surface_->SetSnappedToPrimary();
     else
-      shell_surface_->SetSnappedToRight();
+      shell_surface_->SetSnappedToSecondary();
   }
 
-  shell_surface_->OnSurfaceCommit();
+  Commit();
 }
 void ClientControlledShellSurfaceDelegate::OnDragStarted(int component) {}
 void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
@@ -110,6 +111,11 @@ void ClientControlledShellSurfaceDelegate::OnDragFinished(int x,
                                                           bool canceled) {}
 void ClientControlledShellSurfaceDelegate::OnZoomLevelChanged(
     ZoomChange zoom_change) {}
+
+void ClientControlledShellSurfaceDelegate::Commit() {
+  if (!delay_commit_)
+    shell_surface_->OnSurfaceCommit();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExoTestHelper, public:
@@ -127,26 +133,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
       ->context_factory()
       ->GetGpuMemoryBufferManager()
       ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
-                              gpu::kNullSurfaceHandle);
-}
-
-std::unique_ptr<ClientControlledShellSurface>
-ExoTestHelper::CreateClientControlledShellSurface(
-    Surface* surface,
-    bool is_modal,
-    bool default_scale_cancellation) {
-  int container = is_modal ? ash::kShellWindowId_SystemModalContainer
-                           : ash::desks_util::GetActiveDeskContainerId();
-  auto shell_surface = Display().CreateClientControlledShellSurface(
-      surface, container,
-      WMHelper::GetInstance()->GetDefaultDeviceScaleFactor(),
-      default_scale_cancellation);
-  shell_surface->SetApplicationId("arc");
-  shell_surface->set_delegate(
-      std::make_unique<ClientControlledShellSurfaceDelegate>(
-          shell_surface.get()));
-
-  return shell_surface;
+                              gpu::kNullSurfaceHandle, nullptr);
 }
 
 std::unique_ptr<InputMethodSurface> ExoTestHelper::CreateInputMethodSurface(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,7 +150,7 @@ unsigned GetTextOffsetBefore(const Node& node) {
   // atomic inline box.
   DCHECK(node.GetLayoutObject()->IsAtomicInlineLevel());
   const Position before_node = Position::BeforeNode(node);
-  base::Optional<unsigned> maybe_offset_before =
+  absl::optional<unsigned> maybe_offset_before =
       NGOffsetMapping::GetFor(before_node)->GetTextContentOffset(before_node);
   // We should have offset mapping for atomic inline boxes.
   DCHECK(maybe_offset_before.has_value());
@@ -180,7 +180,7 @@ CaretPositionResolution TryResolveCaretPositionByBoxFragmentSide(
   const NGCaretPositionType position_type =
       offset == offset_before ? NGCaretPositionType::kBeforeBox
                               : NGCaretPositionType::kAfterBox;
-  NGCaretPosition candidate{cursor, position_type, base::nullopt};
+  NGCaretPosition candidate{cursor, position_type, absl::nullopt};
 
   if (offset == offset_before &&
       CanResolveCaretPositionBeforeFragment(cursor, affinity)) {
@@ -268,6 +268,89 @@ NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
   return current;
 }
 
+NGCaretPosition ComputeNGCaretPositionAfterInline(
+    const PositionWithAffinity& position_with_affinity) {
+  const Position& position = position_with_affinity.GetPosition();
+  const LayoutInline& layout_inline =
+      *To<LayoutInline>(position.AnchorNode()->GetLayoutObject());
+
+  NGInlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(layout_inline);
+  // This DCHECK can fail with the <area> element.
+  // DCHECK(cursor);
+  if (!cursor)
+    return NGCaretPosition();
+  NGInlineCursor line = cursor;
+  line.MoveToContainingLine();
+  DCHECK(line);
+
+  if (IsLtr(line.Current().BaseDirection()))
+    cursor.MoveToVisualLastForSameLayoutObject();
+  else
+    cursor.MoveToVisualFirstForSameLayoutObject();
+
+  if (cursor.Current().IsText()) {
+    const unsigned offset =
+        line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
+            ? cursor.Current()->EndOffset()
+            : cursor.Current()->StartOffset();
+    return AdjustCaretPositionForBidiText(
+        {cursor, NGCaretPositionType::kAtTextOffset, offset});
+  }
+
+  if (cursor.Current().IsAtomicInline()) {
+    const NGCaretPositionType type =
+        line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
+            ? NGCaretPositionType::kAfterBox
+            : NGCaretPositionType::kBeforeBox;
+    return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
+  }
+
+  return AdjustCaretPositionForBidiText(
+      {cursor, NGCaretPositionType::kAfterBox, absl::nullopt});
+}
+NGCaretPosition ComputeNGCaretPositionBeforeInline(
+    const PositionWithAffinity& position_with_affinity) {
+  const Position& position = position_with_affinity.GetPosition();
+  const LayoutInline& layout_inline =
+      *To<LayoutInline>(position.AnchorNode()->GetLayoutObject());
+
+  NGInlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(layout_inline);
+  // This DCHECK can fail with the <area> element.
+  // DCHECK(cursor);
+  if (!cursor)
+    return NGCaretPosition();
+  NGInlineCursor line = cursor;
+  line.MoveToContainingLine();
+  DCHECK(line);
+
+  if (IsLtr(line.Current().BaseDirection()))
+    cursor.MoveToVisualFirstForSameLayoutObject();
+  else
+    cursor.MoveToVisualLastForSameLayoutObject();
+
+  if (cursor.Current().IsText()) {
+    const unsigned offset =
+        line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
+            ? cursor.Current()->StartOffset()
+            : cursor.Current()->EndOffset();
+    return AdjustCaretPositionForBidiText(
+        {cursor, NGCaretPositionType::kAtTextOffset, offset});
+  }
+
+  if (cursor.Current().IsAtomicInline()) {
+    const NGCaretPositionType type =
+        line.Current().BaseDirection() == cursor.Current().ResolvedDirection()
+            ? NGCaretPositionType::kBeforeBox
+            : NGCaretPositionType::kAfterBox;
+    return AdjustCaretPositionForBidiText({cursor, type, absl::nullopt});
+  }
+
+  return AdjustCaretPositionForBidiText(
+      {cursor, NGCaretPositionType::kBeforeBox, absl::nullopt});
+}
+
 }  // namespace
 
 // The main function for compute an NGCaretPosition. See the comments at the top
@@ -281,7 +364,7 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
   NGCaretPosition candidate;
   if (layout_text && layout_text->HasInlineFragments())
     cursor.MoveTo(*layout_text);
-  for (; cursor; cursor.MoveToNext()) {
+  for (; cursor; cursor.MoveToNextIncludingFragmentainer()) {
     const CaretPositionResolution resolution =
         TryResolveCaretPositionWithFragment(cursor, offset, affinity);
 
@@ -310,18 +393,40 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
 NGCaretPosition ComputeNGCaretPosition(
     const PositionWithAffinity& position_with_affinity) {
   const Position& position = position_with_affinity.GetPosition();
-  LayoutBlockFlow* context = NGInlineFormattingContextOf(position);
-  if (!context)
+
+  if (position.IsNull())
     return NGCaretPosition();
 
-  const NGOffsetMapping* mapping = NGInlineNode::GetOffsetMapping(context);
+  const LayoutObject* layout_object = position.AnchorNode()->GetLayoutObject();
+  if (!layout_object || !layout_object->IsInLayoutNGInlineFormattingContext())
+    return NGCaretPosition();
+
+  if (layout_object->IsLayoutInline()) {
+    if (position.IsBeforeAnchor())
+      return ComputeNGCaretPositionBeforeInline(position_with_affinity);
+    if (position.IsAfterAnchor())
+      return ComputeNGCaretPositionAfterInline(position_with_affinity);
+    NOTREACHED() << "Caller should not pass a position inside inline: "
+                 << position;
+    return NGCaretPosition();
+  }
+
+  LayoutBlockFlow* const context = NGInlineFormattingContextOf(position);
+  if (!context) {
+    // We reach here for empty <div>[1].
+    // [1] third_party/blink/web_tests/editing/caret/caret-in-inline-block.html
+    return NGCaretPosition();
+  }
+
+  const NGOffsetMapping* const mapping =
+      NGInlineNode::GetOffsetMapping(context);
   if (!mapping) {
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
     NOTREACHED() << context;
     return NGCaretPosition();
   }
-  const base::Optional<unsigned> maybe_offset =
+  const absl::optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
     // We can reach here with empty text nodes.

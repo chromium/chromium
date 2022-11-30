@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,15 @@ namespace headless {
 class HeadlessContentRendererClient : public content::ContentRendererClient {
  public:
   HeadlessContentRendererClient();
+
+  HeadlessContentRendererClient(const HeadlessContentRendererClient&) = delete;
+  HeadlessContentRendererClient& operator=(
+      const HeadlessContentRendererClient&) = delete;
+
   ~HeadlessContentRendererClient() override;
 
  private:
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessContentRendererClient);
 };
 
 }  // namespace headless

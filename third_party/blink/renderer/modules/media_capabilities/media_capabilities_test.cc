@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
@@ -21,6 +20,7 @@
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-blink.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_capabilities_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_decoding_configuration.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_encoding_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -82,6 +83,30 @@ class MockPerfHistoryService
   mojo::Receiver<media::mojom::blink::VideoDecodePerfHistory> receiver_{this};
 };
 
+class MockWebrtcPerfHistoryService
+    : public media::mojom::blink::WebrtcVideoPerfHistory {
+ public:
+  void BindRequest(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(
+        mojo::PendingReceiver<media::mojom::blink::WebrtcVideoPerfHistory>(
+            std::move(handle)));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&MockWebrtcPerfHistoryService::OnConnectionError,
+                       base::Unretained(this)));
+  }
+
+  void OnConnectionError() { receiver_.reset(); }
+
+  // media::mojom::blink::WebrtcVideoPerfHistory implementation:
+  MOCK_METHOD3(GetPerfInfo,
+               void(media::mojom::blink::WebrtcPredictionFeaturesPtr features,
+                    int frames_per_second,
+                    GetPerfInfoCallback got_info_cb));
+
+ private:
+  mojo::Receiver<media::mojom::blink::WebrtcVideoPerfHistory> receiver_{this};
+};
+
 class MockLearningTaskControllerService
     : public media::learning::mojom::blink::LearningTaskController {
  public:
@@ -102,14 +127,14 @@ class MockLearningTaskControllerService
   MOCK_METHOD3(BeginObservation,
                void(const base::UnguessableToken& id,
                     const WTF::Vector<FeatureValue>& features,
-                    const base::Optional<TargetValue>& default_target));
+                    const absl::optional<TargetValue>& default_target));
   MOCK_METHOD2(CompleteObservation,
                void(const base::UnguessableToken& id,
                     const ObservationCompletion& completion));
   MOCK_METHOD1(CancelObservation, void(const base::UnguessableToken& id));
   MOCK_METHOD2(UpdateDefaultTarget,
                void(const base::UnguessableToken& id,
-                    const base::Optional<TargetValue>& default_target));
+                    const absl::optional<TargetValue>& default_target));
   MOCK_METHOD2(PredictDistribution,
                void(const WTF::Vector<FeatureValue>& features,
                     PredictDistributionCallback callback));
@@ -176,21 +201,26 @@ class FakeMediaMetricsProvider
   void Initialize(bool is_mse,
                   media::mojom::MediaURLScheme url_scheme,
                   media::mojom::MediaStreamType media_stream_type) override {}
-  void OnError(media::mojom::PipelineStatus status) override {}
+  void OnError(media::mojom::blink::PipelineStatusPtr status) override {}
+  void OnFallback(::media::mojom::blink::PipelineStatusPtr status) override {}
   void SetIsEME() override {}
   void SetTimeToMetadata(base::TimeDelta elapsed) override {}
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
   void SetTimeToPlayReady(base::TimeDelta elapsed) override {}
   void SetContainerName(
       media::mojom::blink::MediaContainerName container_name) override {}
+  void SetRendererType(
+      media::mojom::blink::RendererType renderer_type) override {}
+  void SetKeySystem(const String& key_system) override {}
+  void SetIsHardwareSecure() override {}
   void SetHasPlayed() override {}
   void SetHaveEnough() override {}
   void SetHasAudio(media::mojom::AudioCodec audio_codec) override {}
   void SetHasVideo(media::mojom::VideoCodec video_codec) override {}
   void SetVideoPipelineInfo(
-      media::mojom::blink::VideoDecoderInfoPtr info) override {}
+      media::mojom::blink::VideoPipelineInfoPtr info) override {}
   void SetAudioPipelineInfo(
-      media::mojom::blink::AudioDecoderInfoPtr info) override {}
+      media::mojom::blink::AudioPipelineInfoPtr info) override {}
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};
@@ -268,6 +298,8 @@ class MediaCapabilitiesTestContext {
  public:
   MediaCapabilitiesTestContext() {
     perf_history_service_ = std::make_unique<MockPerfHistoryService>();
+    webrtc_perf_history_service_ =
+        std::make_unique<MockWebrtcPerfHistoryService>();
     bad_window_service_ = std::make_unique<MockLearningTaskControllerService>();
     nnr_service_ = std::make_unique<MockLearningTaskControllerService>();
     fake_metrics_provider_ = std::make_unique<FakeMediaMetricsProvider>(
@@ -289,6 +321,14 @@ class MediaCapabilitiesTestContext {
                       &MockPerfHistoryService::BindRequest,
                       base::Unretained(perf_history_service_.get()))));
 
+    CHECK(v8_scope_.GetExecutionContext()
+              ->GetBrowserInterfaceBroker()
+              .SetBinderForTesting(
+                  media::mojom::blink::WebrtcVideoPerfHistory::Name_,
+                  base::BindRepeating(
+                      &MockWebrtcPerfHistoryService::BindRequest,
+                      base::Unretained(webrtc_perf_history_service_.get()))));
+
     media_capabilities_ = MediaCapabilities::mediaCapabilities(
         *v8_scope_.GetWindow().navigator());
   }
@@ -303,6 +343,11 @@ class MediaCapabilitiesTestContext {
               ->GetBrowserInterfaceBroker()
               .SetBinderForTesting(
                   media::mojom::blink::VideoDecodePerfHistory::Name_, {}));
+
+    CHECK(v8_scope_.GetExecutionContext()
+              ->GetBrowserInterfaceBroker()
+              .SetBinderForTesting(
+                  media::mojom::blink::WebrtcVideoPerfHistory::Name_, {}));
   }
 
   ExceptionState& GetExceptionState() { return v8_scope_.GetExceptionState(); }
@@ -319,6 +364,10 @@ class MediaCapabilitiesTestContext {
     return perf_history_service_.get();
   }
 
+  MockWebrtcPerfHistoryService* GetWebrtcPerfHistoryService() const {
+    return webrtc_perf_history_service_.get();
+  }
+
   MockLearningTaskControllerService* GetBadWindowService() const {
     return bad_window_service_.get();
   }
@@ -331,6 +380,7 @@ class MediaCapabilitiesTestContext {
 
   void VerifyAndClearMockExpectations() {
     testing::Mock::VerifyAndClearExpectations(GetPerfHistoryService());
+    testing::Mock::VerifyAndClearExpectations(GetWebrtcPerfHistoryService());
     testing::Mock::VerifyAndClearExpectations(GetNnrService());
     testing::Mock::VerifyAndClearExpectations(GetBadWindowService());
     testing::Mock::VerifyAndClearExpectations(&GetMockPlatform());
@@ -340,44 +390,85 @@ class MediaCapabilitiesTestContext {
   V8TestingScope v8_scope_;
   ScopedTestingPlatformSupport<MockPlatform> mock_platform_;
   std::unique_ptr<MockPerfHistoryService> perf_history_service_;
+  std::unique_ptr<MockWebrtcPerfHistoryService> webrtc_perf_history_service_;
   std::unique_ptr<FakeMediaMetricsProvider> fake_metrics_provider_;
   Persistent<MediaCapabilities> media_capabilities_;
   std::unique_ptr<MockLearningTaskControllerService> bad_window_service_;
   std::unique_ptr<MockLearningTaskControllerService> nnr_service_;
 };
 
-// |kContentType|, |kCodec|, and |kCodecProfile| must match.
-const char kContentType[] = "video/webm; codecs=\"vp09.00.10.08\"";
+// |kVideoContentType|, |kCodec|, and |kCodecProfile| must match.
+const char kVideoContentType[] = "video/webm; codecs=\"vp09.00.10.08\"";
 const char kAudioContentType[] = "audio/webm; codecs=\"opus\"";
 const media::VideoCodecProfile kCodecProfile = media::VP9PROFILE_PROFILE0;
-const media::VideoCodec kCodec = media::kCodecVP9;
+const media::VideoCodec kCodec = media::VideoCodec::kVP9;
 const double kFramerate = 20.5;
 const int kWidth = 3840;
 const int kHeight = 2160;
 const int kBitrate = 2391000;
+const char kWebrtcVideoContentType[] = "video/VP9; profile-id=\"0\"";
+const char kWebrtcAudioContentType[] = "audio/opus";
 
-// Construct VideoConfig using the constants above.
-MediaDecodingConfiguration* CreateAudioDecodingConfig() {
+// Construct AudioConfig using the constants above.
+template <class T>
+T* CreateAudioConfig(const char content_type[], const char type[]) {
   auto* audio_config = MakeGarbageCollected<AudioConfiguration>();
-  audio_config->setContentType(kAudioContentType);
-  auto* decoding_config = MakeGarbageCollected<MediaDecodingConfiguration>();
-  decoding_config->setType("media-source");
+  audio_config->setContentType(content_type);
+  auto* decoding_config = MakeGarbageCollected<T>();
+  decoding_config->setType(type);
   decoding_config->setAudio(audio_config);
   return decoding_config;
 }
 
+// Construct media-source AudioConfig using the constants above.
+MediaDecodingConfiguration* CreateAudioDecodingConfig() {
+  return CreateAudioConfig<MediaDecodingConfiguration>(kAudioContentType,
+                                                       "media-source");
+}
+
+// Construct webrtc decoding AudioConfig using the constants above.
+MediaDecodingConfiguration* CreateWebrtcAudioDecodingConfig() {
+  return CreateAudioConfig<MediaDecodingConfiguration>(kWebrtcAudioContentType,
+                                                       "webrtc");
+}
+
+// Construct webrtc decoding AudioConfig using the constants above.
+MediaEncodingConfiguration* CreateWebrtcAudioEncodingConfig() {
+  return CreateAudioConfig<MediaEncodingConfiguration>(kWebrtcAudioContentType,
+                                                       "webrtc");
+}
+
 // Construct VideoConfig using the constants above.
-MediaDecodingConfiguration* CreateDecodingConfig() {
+template <class T>
+T* CreateVideoConfig(const char content_type[], const char type[]) {
   auto* video_config = MakeGarbageCollected<VideoConfiguration>();
   video_config->setFramerate(kFramerate);
-  video_config->setContentType(kContentType);
+  video_config->setContentType(content_type);
   video_config->setWidth(kWidth);
   video_config->setHeight(kHeight);
   video_config->setBitrate(kBitrate);
-  auto* decoding_config = MakeGarbageCollected<MediaDecodingConfiguration>();
-  decoding_config->setType("media-source");
+  auto* decoding_config = MakeGarbageCollected<T>();
+  decoding_config->setType(type);
   decoding_config->setVideo(video_config);
   return decoding_config;
+}
+
+// Construct media-source VideoConfig using the constants above.
+MediaDecodingConfiguration* CreateDecodingConfig() {
+  return CreateVideoConfig<MediaDecodingConfiguration>(kVideoContentType,
+                                                       "media-source");
+}
+
+// Construct webrtc decoding VideoConfig using the constants above.
+MediaDecodingConfiguration* CreateWebrtcDecodingConfig() {
+  return CreateVideoConfig<MediaDecodingConfiguration>(kWebrtcVideoContentType,
+                                                       "webrtc");
+}
+
+// Construct webrtc encoding VideoConfig using the constants above.
+MediaEncodingConfiguration* CreateWebrtcEncodingConfig() {
+  return CreateVideoConfig<MediaEncodingConfiguration>(kWebrtcVideoContentType,
+                                                       "webrtc");
 }
 
 // Construct PredicitonFeatures matching the CreateDecodingConfig, using the
@@ -404,12 +495,24 @@ Vector<media::learning::FeatureValue> CreateFeaturesML() {
   // WebMediaPlayerImpl::UpdateSmoothnessHelper().
   // TODO(chcunningham): refactor into something more robust.
   Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(kCodec),
+      {media::learning::FeatureValue(static_cast<int>(kCodec)),
        media::learning::FeatureValue(kCodecProfile),
        media::learning::FeatureValue(kWidth),
        media::learning::FeatureValue(kFramerate)});
 
   return ml_features;
+}
+
+// Construct WebrtcPredicitonFeatures matching the CreateWebrtc{Decoding,
+// Encoding}Config, using the constants above.
+media::mojom::blink::WebrtcPredictionFeatures CreateWebrtcFeatures(
+    bool is_decode) {
+  media::mojom::blink::WebrtcPredictionFeatures features;
+  features.is_decode_stats = is_decode;
+  features.profile =
+      static_cast<media::mojom::blink::VideoCodecProfile>(kCodecProfile);
+  features.video_pixels = kWidth * kHeight;
+  return features;
 }
 
 // Types of smoothness predictions.
@@ -458,6 +561,25 @@ MlCallback(const Vector<media::learning::FeatureValue>& expected_features,
   };
 }
 
+// Makes DB (WebrtcPerfHistoryService) callback for use with gtest WillOnce().
+// Callback will verify |features| and |framerate| matches |expected_features|
+// and |expected_framreate| and run with provided values for |is_smooth|.
+testing::Action<void(media::mojom::blink::WebrtcPredictionFeaturesPtr,
+                     int,
+                     MockWebrtcPerfHistoryService::GetPerfInfoCallback)>
+WebrtcDbCallback(
+    const media::mojom::blink::WebrtcPredictionFeatures& expected_features,
+    int expected_framerate,
+    bool is_smooth) {
+  return [=](media::mojom::blink::WebrtcPredictionFeaturesPtr features,
+             int framerate,
+             MockWebrtcPerfHistoryService::GetPerfInfoCallback got_info_cb) {
+    EXPECT_TRUE(features->Equals(expected_features));
+    EXPECT_EQ(framerate, expected_framerate);
+    std::move(got_info_cb).Run(is_smooth);
+  };
+}
+
 testing::Action<void(base::OnceClosure)> GpuFactoriesNotifyCallback() {
   return [](base::OnceClosure cb) { std::move(cb).Run(); };
 }
@@ -473,7 +595,7 @@ base::FieldTrialParams MakeMlParams(double bad_window_threshold,
   return params;
 }
 
-// Wrapping deocdingInfo() call for readability. Await resolution of the promise
+// Wrapping decodingInfo() call for readability. Await resolution of the promise
 // and return its info.
 MediaCapabilitiesInfo* DecodingInfo(
     const MediaDecodingConfiguration* decoding_config,
@@ -491,6 +613,23 @@ MediaCapabilitiesInfo* DecodingInfo(
       context->GetExceptionState());
 }
 
+// Wrapping encodingInfo() call for readability. Await resolution of the promise
+// and return its info.
+MediaCapabilitiesInfo* EncodingInfo(
+    const MediaEncodingConfiguration* encoding_config,
+    MediaCapabilitiesTestContext* context) {
+  ScriptPromise promise = context->GetMediaCapabilities()->encodingInfo(
+      context->GetScriptState(), encoding_config, context->GetExceptionState());
+
+  ScriptPromiseTester tester(context->GetScriptState(), promise);
+  tester.WaitUntilSettled();
+
+  CHECK(!tester.IsRejected()) << " Cant get info from rejected promise.";
+
+  return NativeValueTraits<MediaCapabilitiesInfo>::NativeValue(
+      context->GetIsolate(), tester.Value().V8Value(),
+      context->GetExceptionState());
+}
 }  // namespace
 
 TEST(MediaCapabilitiesTests, BasicAudio) {
@@ -640,7 +779,7 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
         .Times(2)
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
         .WillOnce(
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
   }
@@ -661,7 +800,7 @@ TEST(MediaCapabilitiesTests, PredictPowerEfficientWithGpuFactories) {
   EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
       .Times(2)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
       .WillRepeatedly(
           Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
 
@@ -938,7 +1077,7 @@ void RunCallbackPermutationTest(std::vector<PredictionType> callback_order) {
     EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
         .Times(2)
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_, _))
+    EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
         .WillRepeatedly(
             Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
   }
@@ -1003,6 +1142,393 @@ TEST(MediaCapabilitiesTests, PredictionCallbackPermutations) {
   do {
     RunCallbackPermutationTest(callback_order);
   } while (std::next_permutation(callback_order.begin(), callback_order.end()));
+}
+
+// WebRTC decodingInfo tests.
+TEST(MediaCapabilitiesTests, WebrtcDecodingBasicAudio) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaDecodingConfiguration* kDecodingConfig =
+      CreateWebrtcAudioDecodingConfig();
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedAudio) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaDecodingConfiguration* kDecodingConfig =
+      CreateAudioConfig<MediaDecodingConfiguration>("audio/FooCodec", "webrtc");
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+// Other tests will assume these match. Test to be sure they stay in sync.
+TEST(MediaCapabilitiesTests, WebrtcConfigMatchesFeatures) {
+  const MediaDecodingConfiguration* kDecodingConfig =
+      CreateWebrtcDecodingConfig();
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateWebrtcEncodingConfig();
+  const media::mojom::blink::WebrtcPredictionFeatures kDecodeFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/true);
+  const media::mojom::blink::WebrtcPredictionFeatures kEncodeFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/false);
+
+  EXPECT_TRUE(kDecodeFeatures.is_decode_stats);
+  EXPECT_FALSE(kEncodeFeatures.is_decode_stats);
+
+  EXPECT_TRUE(kDecodingConfig->video()->contentType().Contains("video/VP9"));
+  EXPECT_TRUE(kEncodingConfig->video()->contentType().Contains("video/VP9"));
+  EXPECT_EQ(static_cast<media::VideoCodecProfile>(kDecodeFeatures.profile),
+            media::VP9PROFILE_PROFILE0);
+  EXPECT_EQ(static_cast<media::VideoCodecProfile>(kEncodeFeatures.profile),
+            media::VP9PROFILE_PROFILE0);
+  EXPECT_EQ(kCodecProfile, media::VP9PROFILE_PROFILE0);
+
+  EXPECT_EQ(
+      kDecodingConfig->video()->width() * kDecodingConfig->video()->height(),
+      static_cast<uint32_t>(kDecodeFeatures.video_pixels));
+  EXPECT_EQ(
+      kEncodingConfig->video()->width() * kEncodingConfig->video()->height(),
+      static_cast<uint32_t>(kEncodeFeatures.video_pixels));
+}
+
+// Test smoothness predictions from DB (WebrtcPerfHistoryService).
+TEST(MediaCapabilitiesTests, WebrtcDecodingBasicVideo) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+  const auto* kDecodingConfig = CreateWebrtcDecodingConfig();
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/true);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat test with smooth=false.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/false));
+  info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaDecodingConfiguration* kDecodingConfig =
+      CreateVideoConfig<MediaDecodingConfiguration>("video/FooCodec", "webrtc");
+
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcDecodingSpatialScalability) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  auto* decoding_config = CreateWebrtcDecodingConfig();
+  auto* video_config = decoding_config->getVideoOr(nullptr);
+  video_config->setSpatialScalability(false);
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/true);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = DecodingInfo(decoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat test with spatialScalability=true.
+  video_config->setSpatialScalability(true);
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/false));
+  info = DecodingInfo(decoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+// WebRTC encodingInfo tests.
+TEST(MediaCapabilitiesTests, WebrtcEncodingBasicAudio) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateWebrtcAudioEncodingConfig();
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedAudio) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateAudioConfig<MediaEncodingConfiguration>("audio/FooCodec", "webrtc");
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+// Test smoothness predictions from DB (WebrtcPerfHistoryService).
+TEST(MediaCapabilitiesTests, WebrtcEncodingBasicVideo) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+  const auto* kEncodingConfig = CreateWebrtcEncodingConfig();
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/false);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat test with smooth=false.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/false));
+  info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+
+  const MediaEncodingConfiguration* kEncodingConfig =
+      CreateVideoConfig<MediaEncodingConfiguration>("video/FooCodec", "webrtc");
+
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingScalabilityMode) {
+  MediaCapabilitiesTestContext context;
+  EXPECT_CALL(context.GetMockPlatform(), GetGpuFactories())
+      .Times(testing::AtMost(1));
+  auto* encoding_config = CreateWebrtcEncodingConfig();
+  auto* video_config = encoding_config->getVideoOr(nullptr);
+  video_config->setScalabilityMode("L3T3_KEY");
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/false);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = EncodingInfo(encoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat with unsupported mode.
+  video_config->setScalabilityMode("L3T2_Foo");
+  info = EncodingInfo(encoding_config, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
+  // Set up a custom decoding info handler with a GPU factory that returns
+  // supported and powerEfficient.
+  MediaCapabilitiesTestContext context;
+  auto mock_gpu_factories =
+      std::make_unique<media::MockGpuVideoAcceleratorFactories>(nullptr);
+  WebrtcDecodingInfoHandler decoding_info_handler(
+      blink::CreateWebrtcVideoDecoderFactory(
+          mock_gpu_factories.get(),
+          Platform::Current()->GetMediaDecoderFactory(),
+          Platform::Current()->MediaThreadTaskRunner(),
+          Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
+      blink::CreateWebrtcAudioDecoderFactory());
+
+  context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
+      &decoding_info_handler);
+
+  EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
+      .WillOnce(Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
+
+  const auto* kDecodingConfig = CreateWebrtcDecodingConfig();
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  // Expect that powerEfficient==true implies that smooth==true without querying
+  // perf history.
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
+  // Override the default behavior using a field trial. Query smooth from perf
+  // history regardless the value of powerEfficient.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      // Enabled features w/ parameters
+      {{media::kWebrtcMediaCapabilitiesParameters,
+        {{MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName,
+          "false"}}}},
+      // Disabled features.
+      {});
+
+  // Set up a custom decoding info handler with a GPU factory that returns
+  // supported and powerEfficient.
+  MediaCapabilitiesTestContext context;
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  WebrtcDecodingInfoHandler decoding_info_handler(
+      blink::CreateWebrtcVideoDecoderFactory(
+          &mock_gpu_factories, Platform::Current()->GetMediaDecoderFactory(),
+          Platform::Current()->MediaThreadTaskRunner(),
+          Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
+      blink::CreateWebrtcAudioDecoderFactory());
+  context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
+      &decoding_info_handler);
+
+  EXPECT_CALL(mock_gpu_factories, IsDecoderSupportKnown())
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_gpu_factories, IsDecoderConfigSupported(_))
+      .WillOnce(Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
+
+  const auto* kDecodingConfig = CreateWebrtcDecodingConfig();
+  media::mojom::blink::WebrtcPredictionFeatures expected_features =
+      CreateWebrtcFeatures(/*is_decode=*/true);
+  expected_features.hardware_accelerated = true;
+
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(
+          WebrtcDbCallback(expected_features, kFramerate, /*is_smooth=*/false));
+  MediaCapabilitiesInfo* info = DecodingInfo(kDecodingConfig, &context);
+  // Expect powerEfficient is true but smooth returned from perf history is
+  // false.
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodePowerEfficientIsSmooth) {
+  // Set up a custom decoding info handler with a GPU factory that returns
+  // supported and powerEfficient.
+  MediaCapabilitiesTestContext context;
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  WebrtcEncodingInfoHandler encoding_info_handler(
+      blink::CreateWebrtcVideoEncoderFactory(&mock_gpu_factories,
+                                             base::DoNothing()),
+      blink::CreateWebrtcAudioEncoderFactory());
+  context.GetMediaCapabilities()->set_webrtc_encoding_info_handler_for_test(
+      &encoding_info_handler);
+
+  EXPECT_CALL(mock_gpu_factories, IsEncoderSupportKnown())
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(media::VideoEncodeAccelerator::SupportedProfiles{
+          {media::VP9PROFILE_PROFILE0, gfx::Size(kWidth, kHeight)}}));
+
+  const auto* kEncodingConfig = CreateWebrtcEncodingConfig();
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  // Expect that powerEfficient==true implies that smooth==true without querying
+  // perf history.
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodeOverridePowerEfficientIsSmooth) {
+  // Override the default behavior using a field trial. Query smooth from perf
+  // history regardless the value of powerEfficient.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      // Enabled features w/ parameters
+      {{media::kWebrtcMediaCapabilitiesParameters,
+        {{MediaCapabilities::kWebrtcEncodeSmoothIfPowerEfficientParamName,
+          "false"}}}},
+      // Disabled features.
+      {});
+
+  // Set up a custom decoding info handler with a GPU factory that returns
+  // supported and powerEfficient.
+  MediaCapabilitiesTestContext context;
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  WebrtcEncodingInfoHandler encoding_info_handler(
+      blink::CreateWebrtcVideoEncoderFactory(&mock_gpu_factories,
+                                             base::DoNothing()),
+      blink::CreateWebrtcAudioEncoderFactory());
+  context.GetMediaCapabilities()->set_webrtc_encoding_info_handler_for_test(
+      &encoding_info_handler);
+
+  EXPECT_CALL(mock_gpu_factories, IsEncoderSupportKnown())
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_gpu_factories, GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(media::VideoEncodeAccelerator::SupportedProfiles{
+          {media::VP9PROFILE_PROFILE0, gfx::Size(kWidth, kHeight)}}));
+
+  const auto* kEncodingConfig = CreateWebrtcEncodingConfig();
+  media::mojom::blink::WebrtcPredictionFeatures expected_features =
+      CreateWebrtcFeatures(/*is_decode=*/false);
+  expected_features.hardware_accelerated = true;
+
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(
+          WebrtcDbCallback(expected_features, kFramerate, /*is_smooth=*/false));
+  MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  // Expect powerEfficient is true but smooth returned from perf history is
+  // false.
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_TRUE(info->powerEfficient());
 }
 
 }  // namespace blink

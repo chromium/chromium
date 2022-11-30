@@ -1,21 +1,24 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 
 #include <string.h>
+
 #include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -62,8 +65,8 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       }
       Chunk* chunk = nullptr;
       if (result == Result::kOk) {
-        chunk = MakeGarbageCollected<Chunk>(buffer,
-                                            SafeCast<wtf_size_t>(available));
+        chunk = MakeGarbageCollected<Chunk>(
+            buffer, base::checked_cast<wtf_size_t>(available));
         result = src_->EndRead(available);
       }
       switch (result) {
@@ -151,7 +154,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       *available = 0;
       if (is_cancelled_ || is_closed_)
         return Result::kDone;
-      if (!chunks_.IsEmpty()) {
+      if (!chunks_.empty()) {
         Chunk* chunk = chunks_[0];
         DCHECK_LE(offset_, chunk->size());
         *buffer = chunk->data() + offset_;
@@ -176,9 +179,9 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
 
     Result EndRead(size_t read) override {
       DCHECK(chunk_in_use_);
-      DCHECK(chunks_.IsEmpty() || chunk_in_use_ == chunks_[0]);
+      DCHECK(chunks_.empty() || chunk_in_use_ == chunks_[0]);
       chunk_in_use_ = nullptr;
-      if (chunks_.IsEmpty()) {
+      if (chunks_.empty()) {
         // This object becomes errored during the two-phase read.
         DCHECK_EQ(PublicState::kErrored, GetPublicState());
         return Result::kOk;
@@ -190,11 +193,11 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
         offset_ = 0;
         chunks_.pop_front();
       }
-      if (chunks_.IsEmpty() && tee_->GetPublicState() == PublicState::kClosed) {
+      if (chunks_.empty() && tee_->GetPublicState() == PublicState::kClosed) {
         // All data has been consumed.
         execution_context_->GetTaskRunner(TaskType::kNetworking)
-            ->PostTask(FROM_HERE,
-                       WTF::Bind(&Destination::Close, WrapPersistent(this)));
+            ->PostTask(FROM_HERE, WTF::BindOnce(&Destination::Close,
+                                                WrapPersistent(this)));
       }
       return Result::kOk;
     }
@@ -241,7 +244,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       chunks_.push_back(chunk);
     }
 
-    bool IsEmpty() const { return chunks_.IsEmpty(); }
+    bool IsEmpty() const { return chunks_.empty(); }
 
     void ClearChunks() {
       chunks_.clear();
@@ -251,7 +254,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     void Notify() {
       if (is_cancelled_ || is_closed_)
         return;
-      if (chunks_.IsEmpty() && tee_->GetPublicState() == PublicState::kClosed) {
+      if (chunks_.empty() && tee_->GetPublicState() == PublicState::kClosed) {
         Close();
         return;
       }
@@ -276,7 +279,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
    private:
     void Close() {
       DCHECK_EQ(PublicState::kClosed, tee_->GetPublicState());
-      DCHECK(chunks_.IsEmpty());
+      DCHECK(chunks_.empty());
       if (is_closed_ || is_cancelled_) {
         // It's possible to reach here because this function can be
         // called asynchronously.

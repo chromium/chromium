@@ -31,9 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+
+#if DCHECK_IS_ON()
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#endif
 
 // This is the way to mark a subtree as needing layout during layout,
 // e.g. for the purposes of doing a multipass layout.
@@ -66,10 +70,10 @@ class SubtreeLayoutScope {
   LayoutObject& root_;
 
 #if DCHECK_IS_ON()
-  HashSet<LayoutObject*> layout_objects_to_layout_;
+  HeapHashSet<Member<LayoutObject>> layout_objects_to_layout_;
 #endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SUBTREE_LAYOUT_SCOPE_H_

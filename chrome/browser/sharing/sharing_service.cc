@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -131,6 +130,11 @@ SharingFCMHandler* SharingService::GetFCMHandlerForTesting() const {
 
 SharingMessageSender* SharingService::GetMessageSenderForTesting() const {
   return message_sender_.get();
+}
+
+SharingMessageHandler* SharingService::GetSharingHandlerForTesting(
+    chrome_browser_sharing::SharingMessage::PayloadCase payload_case) const {
+  return handler_registry_->GetSharingHandler(payload_case);
 }
 
 void SharingService::OnSyncShutdown(syncer::SyncService* sync) {

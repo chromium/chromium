@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -20,7 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -33,16 +34,28 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     const scoped_refptr<StaticBitmapImage>& source,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {
-  if (source->IsTextureBacked())
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, if |source| is not an overlay candidate, it is worth copying it
+  // to a new buffer that is an overlay candidate, even when |source| is
+  // already on the GPU.
+  if (source->IsOverlayCandidate()) {
+#else
+  if (source->IsTextureBacked()) {
+#endif
     return source;
+  }
 
   auto paint_image = source->PaintImageForCurrentFrame();
+  auto image_info = paint_image.GetSkImageInfo().makeWH(
+      source->Size().width(), source->Size().height());
+  // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
+  // if possible. This is safe because the prerequisite capabilities are checked
+  // downstream in CanvasResourceProvider::CreateSharedImageProvider.
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      source->Size(), kLow_SkFilterQuality,
-      CanvasResourceParams(paint_image.GetSkImageInfo()),
+      image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, source->IsOriginTopLeft(),
-      gpu::SHARED_IMAGE_USAGE_DISPLAY);
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
@@ -59,7 +72,8 @@ ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
   layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
-  layer_->SetNearestNeighbor(filter_quality_ == kNone_SkFilterQuality);
+  layer_->SetNearestNeighbor(filter_quality_ ==
+                             cc::PaintFlags::FilterQuality::kNone);
   if (opacity_mode_ == kOpaque) {
     layer_->SetContentsOpaque(true);
     layer_->SetBlendBackgroundColor(false);
@@ -103,8 +117,8 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   has_presented_since_last_set_image_ = false;
 }
 
-void ImageLayerBridge::SetUV(const FloatPoint& left_top,
-                             const FloatPoint& right_bottom) {
+void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
+                             const gfx::PointF& right_bottom) {
   if (disposed_)
     return;
 
@@ -123,7 +137,7 @@ void ImageLayerBridge::Dispose() {
 bool ImageLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   if (disposed_)
     return false;
 
@@ -135,16 +149,13 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
   has_presented_since_last_set_image_ = true;
 
-  bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
-  bool gpu_image = image_->IsTextureBacked();
+  const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
 
-  // Expect software images for software compositing.
-  if (!gpu_compositing && gpu_image)
-    return false;
-
-  // If the texture comes from a software image then it does not need to be
-  // flipped.
-  layer_->SetFlipped(gpu_image);
+  const ImageOrientation origin = image_->IsOriginTopLeft()
+                                      ? ImageOrientationEnum::kOriginTopLeft
+                                      : ImageOrientationEnum::kOriginBottomLeft;
+  const bool image_flipped = image_->CurrentFrameOrientation() != origin;
+  layer_->SetFlipped(image_flipped);
 
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
@@ -154,20 +165,44 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
-    uint32_t filter =
-        filter_quality_ == kNone_SkFilterQuality ? GL_NEAREST : GL_LINEAR;
+    uint32_t filter = filter_quality_ == cc::PaintFlags::FilterQuality::kNone
+                          ? GL_NEAREST
+                          : GL_LINEAR;
     auto mailbox_holder = image_for_compositor->GetMailboxHolder();
+
+    if (mailbox_holder.mailbox.IsZero()) {
+      // This can happen, for example, if an ImageBitmap is produced from a
+      // WebGL-rendered OffscreenCanvas and then the WebGL context is forcibly
+      // lost. This seems to be the only reliable point where this can be
+      // detected.
+      return false;
+    }
+
     auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
     bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &
                                 gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-    *out_resource = viz::TransferableResource::MakeGL(
+    SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
+    *out_resource = viz::TransferableResource::MakeGpu(
         mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
-        mailbox_holder.sync_token, size, is_overlay_candidate);
-    auto func =
-        WTF::Bind(&ImageLayerBridge::ResourceReleasedGpu,
-                  WrapWeakPersistent(this), std::move(image_for_compositor));
-    *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+        mailbox_holder.sync_token, size,
+        viz::SkColorTypeToResourceFormat(color_type), is_overlay_candidate);
+
+    // If the transferred ImageBitmap contained in this ImageLayerBridge was
+    // originated in a WebGPU context, we need to set the layer to be flipped.
+    // Canvas2D and WebGL contexts handle this aspect internally, whereas
+    // WebGPU does not.
+    if (sii->UsageForMailbox(mailbox_holder.mailbox) &
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE) {
+      // Using image_for_compositor->IsOriginTopLeft() and remove
+      // implementation of sii->UsageForMailbox()?
+      layer_->SetFlipped(false);
+    }
+
+    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
+                              WrapWeakPersistent(this),
+                              std::move(image_for_compositor));
+    *out_release_callback = std::move(func);
   } else {
     // Readback if needed and retain the readback in image_ to prevent future
     // readbacks
@@ -181,14 +216,17 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
 
     const gfx::Size size(image_->width(), image_->height());
-    viz::ResourceFormat resource_format = viz::RGBA_8888;
-    if (sk_image->colorType() == SkColorType::kRGBA_F16_SkColorType)
-      resource_format = viz::RGBA_F16;
+
+    // Always convert to N32 format.  This is a constraint of the software
+    // compositor.
+    constexpr SkColorType dst_color_type = kN32_SkColorType;
+    viz::ResourceFormat resource_format =
+        viz::SkColorTypeToResourceFormat(dst_color_type);
     RegisteredBitmap registered =
         CreateOrRecycleBitmap(size, resource_format, bitmap_registrar);
 
     SkImageInfo dst_info =
-        SkImageInfo::Make(size.width(), size.height(), sk_image->colorType(),
+        SkImageInfo::Make(size.width(), size.height(), dst_color_type,
                           kPremul_SkAlphaType, sk_image->refColorSpace());
     void* pixels = registered.bitmap->memory();
 
@@ -198,14 +236,12 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     *out_resource = viz::TransferableResource::MakeSoftware(
         registered.bitmap->id(), size, resource_format);
-    if (RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
-      out_resource->color_space = sk_image->colorSpace()
-                                      ? gfx::ColorSpace(*sk_image->colorSpace())
-                                      : gfx::ColorSpace::CreateSRGB();
-    }
-    auto func = WTF::Bind(&ImageLayerBridge::ResourceReleasedSoftware,
-                          WrapWeakPersistent(this), std::move(registered));
-    *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+    out_resource->color_space = sk_image->colorSpace()
+                                    ? gfx::ColorSpace(*sk_image->colorSpace())
+                                    : gfx::ColorSpace::CreateSRGB();
+    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedSoftware,
+                              WrapWeakPersistent(this), std::move(registered));
+    *out_release_callback = std::move(func);
   }
 
   return true;
@@ -219,14 +255,15 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
       recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
       [&size, &format](const RegisteredBitmap& registered) {
         unsigned src_bytes_per_pixel =
-            (registered.bitmap->format() == viz::RGBA_8888) ? 4 : 8;
-        unsigned target_bytes_per_pixel = (format == viz::RGBA_8888) ? 4 : 8;
+            viz::BitsPerPixel(registered.bitmap->format()) / 8;
+        unsigned target_bytes_per_pixel = viz::BitsPerPixel(format) / 8;
         return (registered.bitmap->size().GetArea() * src_bytes_per_pixel !=
                 size.GetArea() * target_bytes_per_pixel);
       });
-  recycled_bitmaps_.Shrink(it - recycled_bitmaps_.begin());
+  recycled_bitmaps_.Shrink(
+      static_cast<wtf_size_t>(it - recycled_bitmaps_.begin()));
 
-  if (!recycled_bitmaps_.IsEmpty()) {
+  if (!recycled_bitmaps_.empty()) {
     RegisteredBitmap registered = std::move(recycled_bitmaps_.back());
     recycled_bitmaps_.pop_back();
     DCHECK(registered.bitmap->size() == size);

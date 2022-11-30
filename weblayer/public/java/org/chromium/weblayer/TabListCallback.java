@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 /**
  * An interface for observing changes to the set of tabs in a browser.
  */
-public abstract class TabListCallback {
+abstract class TabListCallback {
     /**
      * The active tab has changed.
      *

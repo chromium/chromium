@@ -1,9 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
 #define BASE_THREADING_THREAD_LOCAL_INTERNAL_H_
+
+#include "base/dcheck_is_on.h"
 
 #if DCHECK_IS_ON()
 
@@ -11,7 +13,8 @@
 #include <memory>
 #include <ostream>
 
-#include "base/macros.h"
+#include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_local_storage.h"
 
 namespace base {
@@ -27,6 +30,11 @@ class CheckedThreadLocalOwnedPointer {
  public:
   CheckedThreadLocalOwnedPointer() = default;
 
+  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
+      delete;
+  CheckedThreadLocalOwnedPointer<T>& operator=(
+      const CheckedThreadLocalOwnedPointer<T>&) = delete;
+
   ~CheckedThreadLocalOwnedPointer() {
     Set(nullptr);
 
@@ -40,13 +48,23 @@ class CheckedThreadLocalOwnedPointer {
     return ptr_tracker ? ptr_tracker->ptr_.get() : nullptr;
   }
 
-  void Set(std::unique_ptr<T> ptr) {
-    delete static_cast<PtrTracker*>(slot_.Get());
+  std::unique_ptr<T> Set(std::unique_ptr<T> ptr) {
+    std::unique_ptr<T> existing_ptr;
+    auto existing_tracker = static_cast<PtrTracker*>(slot_.Get());
+    if (existing_tracker) {
+      existing_ptr = std::move(existing_tracker->ptr_);
+      delete existing_tracker;
+    }
+
     if (ptr)
       slot_.Set(new PtrTracker(this, std::move(ptr)));
     else
       slot_.Set(nullptr);
+
+    return existing_ptr;
   }
+
+  T& operator*() { return *Get(); }
 
  private:
   struct PtrTracker {
@@ -60,8 +78,8 @@ class CheckedThreadLocalOwnedPointer {
       outer_->num_assigned_threads_.fetch_sub(1, std::memory_order_relaxed);
     }
 
-    CheckedThreadLocalOwnedPointer<T>* const outer_;
-    const std::unique_ptr<T> ptr_;
+    const raw_ptr<CheckedThreadLocalOwnedPointer<T>> outer_;
+    std::unique_ptr<T> ptr_;
   };
 
   static void DeleteTlsPtr(void* ptr) { delete static_cast<PtrTracker*>(ptr); }
@@ -69,8 +87,6 @@ class CheckedThreadLocalOwnedPointer {
   ThreadLocalStorage::Slot slot_{&DeleteTlsPtr};
 
   std::atomic_int num_assigned_threads_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckedThreadLocalOwnedPointer<T>);
 };
 
 }  // namespace internal

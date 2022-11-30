@@ -64,7 +64,7 @@ static String ConvertAttributeNameToPropertyName(const String& name) {
     }
   }
 
-  return string_builder.ToString();
+  return string_builder.ReleaseString();
 }
 
 template <typename CharType1, typename CharType2>

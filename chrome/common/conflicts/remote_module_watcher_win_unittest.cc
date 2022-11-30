@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ class RemoteModuleWatcherTest : public testing::Test,
                                 public mojom::ModuleEventSink {
  public:
   RemoteModuleWatcherTest() = default;
+
+  RemoteModuleWatcherTest(const RemoteModuleWatcherTest&) = delete;
+  RemoteModuleWatcherTest& operator=(const RemoteModuleWatcherTest&) = delete;
+
   ~RemoteModuleWatcherTest() override = default;
 
   mojo::PendingRemote<mojom::ModuleEventSink> Bind() {
@@ -82,8 +86,6 @@ class RemoteModuleWatcherTest : public testing::Test,
 
   // Total number of module events seen.
   int module_event_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteModuleWatcherTest);
 };
 
 }  // namespace

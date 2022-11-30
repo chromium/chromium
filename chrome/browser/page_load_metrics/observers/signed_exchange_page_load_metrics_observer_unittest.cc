@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,20 +58,18 @@ class SignedExchangePageLoadMetricsObserverTest
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
     timing->navigation_start = base::Time::FromDoubleT(1);
-    timing->interactive_timing->first_input_delay =
-        base::TimeDelta::FromMilliseconds(50);
+    timing->interactive_timing->first_input_delay = base::Milliseconds(50);
+    // Use timestamps larger than 1000ms, so that they will not race with
+    // background time in the WithSignedExchangeBackground test case.
     timing->interactive_timing->first_input_timestamp =
-        base::TimeDelta::FromMilliseconds(712);
-    timing->parse_timing->parse_start = base::TimeDelta::FromMilliseconds(100);
-    timing->paint_timing->first_paint = base::TimeDelta::FromMilliseconds(200);
-    timing->paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing->paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(700);
+        base::Milliseconds(1712);
+    timing->parse_timing->parse_start = base::Milliseconds(1100);
+    timing->paint_timing->first_paint = base::Milliseconds(1200);
+    timing->paint_timing->first_contentful_paint = base::Milliseconds(1300);
+    timing->paint_timing->first_meaningful_paint = base::Milliseconds(1700);
     timing->document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing->document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(1600);
+    timing->document_timing->load_event_start = base::Milliseconds(2000);
     PopulateRequiredTimingFields(timing);
   }
 };
@@ -318,17 +316,8 @@ TEST_F(SignedExchangePageLoadMetricsObserverTest, WithCachedSignedExchange) {
       internal::kHistogramNotCachedSignedExchangePrefix);
 }
 
-// Test is flaky on linux_tsan: crbug.com:1082135.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(THREAD_SANITIZER)
-#define MAYBE_WithSignedExchangeBackground DISABLED_WithSignedExchangeBackground
-#else
-#define MAYBE_WithSignedExchangeBackground WithSignedExchangeBackground
-#endif
 TEST_F(SignedExchangePageLoadMetricsObserverTest,
-       MAYBE_WithSignedExchangeBackground) {
+       WithSignedExchangeBackground) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   PopulateRequiredTimingFields(&timing);

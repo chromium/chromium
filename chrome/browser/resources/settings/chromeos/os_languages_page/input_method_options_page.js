@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,115 +6,198 @@
  * @fileoverview 'settings-input-method-options-page' is the settings sub-page
  * to allow users to change options for each input method.
  */
-Polymer({
-  is: 'settings-input-method-options-page',
+import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '../../settings_shared.css.js';
+import './os_japanese_clear_ime_data_dialog.js';
+import './os_japanese_manage_user_dictionary_page.js';
 
-  behaviors: [
-    I18nBehavior,
-    PrefsBehavior,
-    settings.RouteObserverBehavior,
-  ],
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /** @type {!LanguageHelper} */
-    languageHelper: Object,
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+import {getTemplate} from './input_method_options_page.html.js';
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, shouldStoreNumberAsString, SubmenuButton, UiType} from './input_method_util.js';
+import {LanguageHelper} from './languages_types.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ */
+const SettingsInputMethodOptionsPageElementBase = mixinBehaviors(
+    [I18nBehavior, PrefsBehavior, RouteObserverBehavior], PolymerElement);
+
+/** @polymer */
+class SettingsInputMethodOptionsPageElement extends
+    SettingsInputMethodOptionsPageElementBase {
+  static get is() {
+    return 'settings-input-method-options-page';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /** @type {!LanguageHelper} */
+      languageHelper: Object,
+
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
+      /**
+       * Input method ID.
+       * @private
+       */
+      id_: String,
+
+      /**
+       * Input method engine ID.
+       * @private
+       */
+      engineId_: String,
+
+      /**
+       * The content to be displayed in the page, auto generated every time when
+       * the user enters the page.
+       * @private {!Array<{title: string, options:!Array<!Object<string, *>>}>}
+       */
+      optionSections_: {
+        type: Array,
+        value: [],
+      },
+
+      /** @private */
+      showClearPersonalizedData_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Input method ID.
+     * The root path of input method options in Prefs.
+     * @const {string}
      * @private
      */
-    id_: String,
-
-    /**
-     * Input method engine ID.
-     * @private
-     */
-    engineId_: String,
-
-    /**
-     * The content to be displayed in the page, auto generated every time when
-     * the user enters the page.
-     * @private {!Array<!{title: string, options:!Array<!Object<string, *>>}>}
-     */
-    optionSections_: {
-      type: Array,
-      value: [],
-    },
-  },
+    this.PREFS_PATH = 'settings.language.input_method_specific_settings';
+  }
 
   /**
-   * The root path of input method options in Prefs.
-   * @const {string}
-   * @private
-   */
-  PREFS_PATH: 'settings.language.input_method_specific_settings',
-
-  /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route=} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (route !== settings.routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
+    if (route !== routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS) {
       this.id_ = '';
       this.parentNode.pageTitle = '';
       this.optionSections_ = [];
       return;
     }
 
-    const queryParams = settings.Router.getInstance().getQueryParameters();
+    const queryParams = Router.getInstance().getQueryParameters();
     this.id_ = queryParams.get('id') || '';
     this.parentNode.pageTitle =
         this.languageHelper.getInputMethodDisplayName(this.id_);
-    this.engineId_ =
-        settings.input_method_util.getFirstPartyInputMethodEngineId(this.id_);
+    assert(
+        this.parentNode.pageTitle !== '',
+        `Input method ID '${this.id_}' is invalid`);
+    this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
-  },
+  }
+
+  onSubmenuButtonClick_(e) {
+    if (e.target.getAttribute('submenu-button-type') ===
+        SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
+      this.showClearPersonalizedData_ = true;
+      return;
+    }
+    console.error(`SubmenuButton with invalid type clicked : ${
+        e.target.getAttribute('submenu-button-type')}`);
+  }
+
+  onClearPersonalizedDataClose_() {
+    this.showClearPersonalizedData_ = false;
+  }
 
   /**
    * Get menu items for an option, and enrich the items with selected status and
    * i18n label.
-   * @param {settings.input_method_util.OptionType} name
+   * @param {OptionType} name
    * @param {*} value
    */
   getMenuItems(name, value) {
-    return settings.input_method_util.getOptionMenuItems(name).map(menuItem => {
+    return getOptionMenuItems(name).map(menuItem => {
       menuItem['selected'] = menuItem['value'] === value;
-      menuItem['label'] = this.i18n(menuItem['name']);
+      menuItem['label'] =
+          menuItem['name'] ? this.i18n(menuItem['name']) : menuItem['value'];
       return menuItem;
     });
-  },
+  }
 
   /**
    * Generate the sections of options according to the engine ID and Prefs.
    * @private
    */
   populateOptionSections_() {
-    const options = settings.input_method_util.generateOptions(this.engineId_);
-
+    const options = generateOptions(
+        this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
+        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
+        loadTimeData.getBoolean('languageSettingsUpdateJapanese'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
-    const prefix = this.getPrefsPrefix_();
-    const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
+    const currentSettings =
+        this.engineId_ in prefValue ? prefValue[this.engineId_] : {};
 
-    const makeOption = (name) => {
-      const uiType = settings.input_method_util.getOptionUiType(name);
-      const value = name in currentSettings ?
-          currentSettings[name] :
-          settings.input_method_util.OPTION_DEFAULT[name];
+    const makeOption = (option) => {
+      const name = option.name;
+      const uiType = getOptionUiType(name);
+      let value = name in currentSettings ? currentSettings[name] :
+                                            OPTION_DEFAULT[name];
+      if (!this.isSettingValueValid_(name, value)) {
+        value = OPTION_DEFAULT[name];
+        this.updatePref_(name, value);
+      }
+
+      const label = isOptionLabelTranslated(name) ?
+          this.i18n(getOptionLabelName(name)) :
+          getUntranslatedOptionLabelName(name);
+
+      const subtitleStringName = getOptionSubtitleName(name);
+      const subtitle = subtitleStringName && this.i18n(subtitleStringName);
+
       return {
         name: name,
         uiType: uiType,
         value: value,
-        label: this.i18n(settings.input_method_util.getOptionLabelName(name)),
+        label: label,
+        subtitle: subtitle,
         menuItems: this.getMenuItems(name, value),
-        url: settings.input_method_util.getOptionUrl(name),
+        url: getOptionUrl(name),
+        dependentOptions: option.dependentOptions ?
+            option.dependentOptions.map(t => makeOption({name: t})) :
+            [],
+        submenuButtonType: this.isSubmenuButton_(uiType) ?
+            getSubmenuButtonType(name) :
+            undefined,
       };
     };
 
@@ -125,71 +208,82 @@ Polymer({
             .map(section => {
               return {
                 title: this.getSectionTitleI18n_(section.title),
-                options: section.optionNames.map(makeOption),
+                options: section.optionNames.map(makeOption, false),
               };
             });
-  },
+  }
 
   /**
-   * @return {string} Prefs prefix for the current engine ID, which is usually
-   *     just the engine ID itself, but pinyin and zhuyin are special for legacy
-   *     compatibility reason.
+   *
+   * @param {*} value
    * @private
    */
-  getPrefsPrefix_() {
-    if (this.engineId_ ===
-        settings.input_method_util.InputToolCode.PINYIN_CHINESE_SIMPLIFIED) {
-      return 'pinyin';
-    } else if (
-        this.engineId_ ===
-        settings.input_method_util.InputToolCode.ZHUYIN_CHINESE_TRADITIONAL) {
-      return 'zhuyin';
-    }
-    return this.engineId_;
-  },
+  dependentOptionsDisabled_(value) {
+    // TODO(b/189909728): Sometimes the value comes as a string, other times as
+    // an integer, other times as a boolean, so handle all cases. Try to
+    // understand and fix this.
+    return value === '0' || value === 0 || value === false;
+  }
 
   /**
    * Handler for toggle button and dropdown change. Update the value of the
    * changing option in Cros prefs.
-   * @param {!{model: !{option: Object}}} e
+   * @param {{model: {option: Object}}} e
    * @private
    */
   onToggleButtonOrDropdownChange_(e) {
+    // e.model isn't correctly set for dependent options, due to nested
+    // dom-repeat, so figure out what option was actually set.
+    const option = e.model.dependant ? e.model.dependant : e.model.option;
+    // The value of dropdown is not updated immediately when the event is fired.
+    // Wait for the polymer state to update to make sure we write the latest
+    // to Cros Prefs.
+    afterNextRender(this, () => {
+      this.updatePref_(option.name, option.value);
+    });
+  }
+
+  isSettingValueValid_(name, value) {
+    const uiType = getOptionUiType(name);
+    if (uiType !== UiType.DROPDOWN) {
+      return true;
+    }
+    const menuItems = getOptionMenuItems(name);
+    return menuItems.find((item) => item.value === value);
+  }
+
+  /**
+   * Update an input method pref.
+   * @param {!OptionType} optionName
+   * @param {*} newValue
+   * @private
+   */
+  updatePref_(optionName, newValue) {
     // Get the existing settings dictionary, in order to update it later.
     // |PrefsBehavior.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a
     // new variable.
     const updatedSettings = {};
     Object.assign(updatedSettings, this.getPref(this.PREFS_PATH)['value']);
-    const prefix = this.getPrefsPrefix_();
-    if (!(prefix in updatedSettings)) {
-      updatedSettings[prefix] = {};
+    if (!(this.engineId_ in updatedSettings)) {
+      updatedSettings[this.engineId_] = {};
     }
+    if (shouldStoreNumberAsString(optionName)) {
+      newValue = parseInt(newValue, 10);
+    }
+    updatedSettings[this.engineId_][optionName] = newValue;
 
-    // The value of dropdown is not updated immediately when the event is fired.
-    // Wait for the polymer state to update to make sure we write the latest
-    // to Cros Prefs.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      let newValue = e.model.option.value;
-      // The value of dropdown in html is always string, but some of the prefs
-      // values are used as integer or enum by IME, so we need to store numbers
-      // for them to function correctly.
-      if (settings.input_method_util.isNumberValue(e.model.option.name)) {
-        newValue = parseInt(newValue, 10);
-      }
-      updatedSettings[prefix][e.model.option.name] = newValue;
-      this.setPrefValue(this.PREFS_PATH, updatedSettings);
-    });
-  },
+    this.setPrefValue(this.PREFS_PATH, updatedSettings);
+  }
 
   /**
    * Opens external link in Chrome.
-   * @param {!{model: !{option: !{url: string}}}} e
+   * @param {{model: {option: {url: !Route}}}} e
    * @private
    */
-  onExternalLinkClick_(e) {
-    window.open(e.model.option.url);
-  },
+  navigateToOtherPageInSettings_(e) {
+    Router.getInstance().navigateTo(e.model.option.url);
+  }
 
   /**
    * @param {string} section the name of the section.
@@ -206,35 +300,61 @@ Polymer({
         return this.i18n('inputMethodOptionsPhysicalKeyboardSectionTitle');
       case 'virtualKeyboard':
         return this.i18n('inputMethodOptionsVirtualKeyboardSectionTitle');
+      case 'suggestions':
+        return this.i18n('inputMethodOptionsSuggestionsSectionTitle');
+      // Japanese section
+      case 'inputAssistance':
+        return this.i18n('inputMethodOptionsInputAssistanceSectionTitle');
+      // Japanese section
+      case 'userDictionaries':
+        return this.i18n('inputMethodOptionsUserDictionariesSectionTitle');
+      // Japanese section
+      case 'privacy':
+        return this.i18n('inputMethodOptionsPrivacySectionTitle');
+
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
-   * @param {!settings.input_method_util.UiType} item
+   * @param {!UiType} item
    * @return {boolean} true if |item| is a toggle button.
    * @private
    */
   isToggleButton_(item) {
-    return item === settings.input_method_util.UiType.TOGGLE_BUTTON;
-  },
+    return item === UiType.TOGGLE_BUTTON;
+  }
+
 
   /**
-   * @param {!settings.input_method_util.UiType} item
+   * @param {!UiType} item
+   * @return {boolean} true if |item| is a toggle button.
+   * @private
+   */
+  isSubmenuButton_(item) {
+    return item === UiType.SUBMENU_BUTTON;
+  }
+
+  /**
+   * @param {!UiType} item
    * @return {boolean} true if |item| is a dropdown.
    * @private
    */
   isDropdown_(item) {
-    return item === settings.input_method_util.UiType.DROPDOWN;
-  },
+    return item === UiType.DROPDOWN;
+  }
 
   /**
-   * @param {!settings.input_method_util.UiType} item
+   * @param {!UiType} item
    * @return {boolean} true if |item| is an external link.
    * @private
    */
   isLink_(item) {
-    return item === settings.input_method_util.UiType.LINK;
-  },
-});
+    return item === UiType.LINK;
+  }
+}
+
+customElements.define(
+    SettingsInputMethodOptionsPageElement.is,
+    SettingsInputMethodOptionsPageElement);

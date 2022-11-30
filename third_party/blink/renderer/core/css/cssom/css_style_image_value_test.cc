@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,19 +13,23 @@ namespace {
 
 class FakeCSSStyleImageValue : public CSSStyleImageValue {
  public:
-  FakeCSSStyleImageValue(bool cache_pending, IntSize size)
+  FakeCSSStyleImageValue(bool cache_pending, gfx::Size size)
       : cache_pending_(cache_pending), size_(size) {}
 
   // CSSStyleImageValue
-  base::Optional<IntSize> IntrinsicSize() const final {
+  absl::optional<gfx::Size> IntrinsicSize() const final {
     if (cache_pending_)
-      return base::nullopt;
+      return absl::nullopt;
     return size_;
   }
 
   // CanvasImageSource
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&) final {
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const gfx::SizeF&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final {
+    // Only cover premultiply alpha cases.
+    DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
     return nullptr;
   }
   ResourceStatus Status() const final {
@@ -41,13 +45,13 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
 
  private:
   bool cache_pending_;
-  IntSize size_;
+  gfx::Size size_;
 };
 
 }  // namespace
 
 TEST(CSSStyleImageValueTest, PendingCache) {
-  FakeCSSStyleImageValue style_image_value(true, IntSize(100, 100));
+  FakeCSSStyleImageValue style_image_value(true, gfx::Size(100, 100));
   bool is_null = false;
   EXPECT_EQ(style_image_value.intrinsicWidth(is_null), 0);
   EXPECT_EQ(style_image_value.intrinsicHeight(is_null), 0);
@@ -56,7 +60,7 @@ TEST(CSSStyleImageValueTest, PendingCache) {
 }
 
 TEST(CSSStyleImageValueTest, ValidLoadedImage) {
-  FakeCSSStyleImageValue style_image_value(false, IntSize(480, 120));
+  FakeCSSStyleImageValue style_image_value(false, gfx::Size(480, 120));
   bool is_null = false;
   EXPECT_EQ(style_image_value.intrinsicWidth(is_null), 480);
   EXPECT_EQ(style_image_value.intrinsicHeight(is_null), 120);

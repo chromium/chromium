@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/paint/image_animation_count.h"
@@ -19,7 +20,7 @@ namespace {
 // The maximum number of time an animation can be delayed before it is reset to
 // start from the beginning, instead of fast-forwarding to catch up to the
 // desired frame.
-const base::TimeDelta kAnimationResyncCutoff = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kAnimationResyncCutoff = base::Minutes(5);
 
 // Given the |desired_frame_time|, returns the time of the tick it should be
 // snapped to.
@@ -81,7 +82,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
   DCHECK(images_animated_on_sync_tree_.empty());
 
   scheduler_.WillAnimate();
-  base::Optional<base::TimeTicks> next_invalidation_time;
+  absl::optional<base::TimeTicks> next_invalidation_time;
 
   for (auto id : registered_animations_) {
     auto it = animation_state_map_.find(id);
@@ -134,7 +135,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 void ImageAnimationController::UpdateStateFromDrivers() {
   TRACE_EVENT0("cc", "UpdateStateFromAnimationDrivers");
 
-  base::Optional<base::TimeTicks> next_invalidation_time;
+  absl::optional<base::TimeTicks> next_invalidation_time;
   for (auto image_id : registered_animations_) {
     auto it = animation_state_map_.find(image_id);
     DCHECK(it != animation_state_map_.end());

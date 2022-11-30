@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,13 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_manager.PasswordScriptsFetcherBridge;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher;
+import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -22,7 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
     private SafetyCheckSettingsFragment mSettingsFragment;
     private SafetyCheckUpdatesDelegate mUpdatesClient;
-    private SigninActivityLauncher mSigninLauncher;
+    private SyncConsentActivityLauncher mSigninLauncher;
     private SafetyCheckMediator mMediator;
 
     /**
@@ -33,21 +36,27 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
      * @param updatesClient An instance implementing the {@SafetyCheckUpdatesDelegate} interface.
      * @param settingsLauncher An instance implementing the {@SettingsLauncher} interface.
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
+     * @param modalDialogManagerSupplier An supplier for the {@ModalDialogManager}.
      */
     public static void create(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
-            SigninActivityLauncher signinLauncher) {
-        new SafetyCheckCoordinator(
-                settingsFragment, updatesClient, settingsLauncher, signinLauncher);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
+            SyncConsentActivityLauncher signinLauncher,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        new SafetyCheckCoordinator(settingsFragment, updatesClient, settingsLauncher,
+                signinLauncher, modalDialogManagerSupplier);
+        if (!PasswordManagerHelper.canUseUpm()
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PASSWORD_DOMAIN_CAPABILITIES_FETCHING))) {
             // Triggers pre-fetching the list of password change scripts.
-            PasswordScriptsFetcherBridge.prewarmCache();
+            PasswordCheckFactory.getOrCreate(settingsLauncher).fetchScripts();
         }
     }
 
     private SafetyCheckCoordinator(SafetyCheckSettingsFragment settingsFragment,
             SafetyCheckUpdatesDelegate updatesClient, SettingsLauncher settingsLauncher,
-            SigninActivityLauncher signinLauncher) {
+            SyncConsentActivityLauncher signinLauncher,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         // Create the model and the mediator once the view is created.
@@ -70,8 +79,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
                             // The View is available, so now we can create the Model, MCP, and
                             // Mediator.
                             PropertyModel model = createModelAndMcp(mSettingsFragment);
-                            mMediator = new SafetyCheckMediator(
-                                    model, mUpdatesClient, settingsLauncher, signinLauncher);
+                            mMediator = new SafetyCheckMediator(model, mUpdatesClient,
+                                    settingsLauncher, signinLauncher, modalDialogManagerSupplier);
                         }
                     }
                 });
@@ -80,6 +89,10 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
         mSettingsFragment.getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
             public void onResume(LifecycleOwner lifecycleOwner) {
+                if (mSettingsFragment.shouldRunSafetyCheckImmediately()) {
+                    mMediator.performSafetyCheck();
+                    return;
+                }
                 mMediator.setInitialState();
             }
         });

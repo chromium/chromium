@@ -1,0 +1,14 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Menu is deprecated, but it may still be used semantically with list item children. For more history, see crbug.com/87553.'
+++++++++++UNKNOWN label='Menu is deprecated, but it may still be used semantically with list item children. For more history, see '
+++++++++++UNKNOWN label='crbug.com/87553.'
+++++++LIST list_size=2
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++STATIC_TEXT label='Cats'
+++++++++++++UNKNOWN label='Cats'
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++STATIC_TEXT label='Dogs'
+++++++++++++UNKNOWN label='Dogs'

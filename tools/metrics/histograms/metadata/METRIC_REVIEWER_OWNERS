@@ -1,0 +1,404 @@
+# accessibility
+evliu@google.com
+# account_manager
+sinhak@chromium.org
+# android
+ender@google.com
+mthiesse@chromium.org
+andzaytsev@google.com
+ckitagawa@chromium.org
+sinansahin@google.com
+mvanouwerkerk@chromium.org
+# apps
+nancylingwang@chromium.org
+tby@chromium.org
+# arc
+mhasank@chromium.org
+# ash_clipboard
+ckincaid@chromium.org
+dmblack@google.com
+# ash
+tby@chromium.org
+jimmyxgong@chromium.org
+zentaro@chromium.org
+# assistant
+xiaohuic@chromium.org
+updowndota@chromium.org
+# autofill
+jsaul@google.com
+vidhanj@google.com
+vsemeniuk@google.com
+# auto
+tby@chromium.org
+# background
+rayankans@chromium.org
+# blink
+iclelland@chromium.org
+schenney@chromium.org
+mlippautz@chromium.org
+toyoshim@chromium.org
+yigu@chromium.org
+# bluetooth
+chadduffin@chromium.org
+crisrael@google.com
+julietlevesque@google.com
+khorimoto@chromium.org
+reillyg@chromium.org
+# borealis
+# see crostini
+# browser
+ckitagawa@chromium.org
+joenotcharles@google.com
+# browsing_topics
+# chromeos_hps
+azeemarshad@chromium.org
+chadduffin@chromium.org
+crisrael@google.com
+jorgelo@chromium.org
+julietlevesque@google.com
+khorimoto@chromium.org
+tby@chromium.org
+tsergeant@chromium.org
+jimmyxgong@chromium.org
+gavinwill@chromium.org
+zentaro@chromium.org
+# chromeos
+azeemarshad@chromium.org
+chadduffin@chromium.org
+crisrael@google.com
+jorgelo@chromium.org
+julietlevesque@google.com
+khorimoto@chromium.org
+tsergeant@chromium.org
+zentaro@chromium.org
+# chromeos_settings
+xiaohuic@chromium.org
+# chrome
+tbansal@chromium.org
+# commerce
+wychen@chromium.org
+# compositing
+schenney@chromium.org
+jonross@chromium.org
+# content_creation
+sebsg@chromium.org
+# content
+dewittj@chromium.org
+harrisonsean@chromium.org
+tbansal@chromium.org
+# cookie
+bingler@chromium.org
+cfredric@chromium.org
+# cras
+yuhsuan@chromium.org
+# cros_ml
+tby@chromium.org
+# cros
+nigeltao@chromium.org
+# cross_device
+crisrael@google.com
+hansberry@chromium.org
+julietlevesque@google.com
+# crostini
+davidmunro@google.com
+hollingum@google.com
+danielng@google.com
+# cryptohome
+jorgelo@chromium.org
+# custom_tabs
+eirage@chromium.org
+lizeb@chromium.org
+# data
+tbansal@chromium.org
+# dev
+changhaohan@chromium.org
+# diagnostics
+jimmyxgong@chromium.org
+zentaro@chromium.org
+# direct
+schenney@chromium.org
+# download
+qinmin@chromium.org
+shaktisahu@chromium.org
+# enterprise
+poromov@chromium.org
+zmin@chromium.org
+# event
+jonross@chromium.org
+# extensions
+kelvinjiang@chromium.org
+# families
+tobyhuang@chromium.org
+# feature_engagement
+nyquist@chromium.org
+shaktisahu@chromium.org
+dfried@chromium.org
+# file
+nigeltao@chromium.org
+# gcm
+peter@chromium.org
+# geolocation
+reillyg@chromium.org
+# gpu
+jonross@chromium.org
+# hang_watcher
+olivierli@chromium.org
+# history
+dullweber@chromium.org
+mcrouse@chromium.org
+tbansal@chromium.org
+sophiechang@chromium.org
+# holding_space
+ckincaid@chromium.org
+dmblack@google.com
+# image
+schenney@chromium.org
+# input
+shend@chromium.org
+# interstitial
+cthomp@chromium.org
+# ios
+ajuma@chromium.org
+olivierrobin@chromium.org
+sebsg@chromium.org
+# language
+curranmax@chromium.org
+mcrouse@chromium.org
+# leveldb_proto
+nyquist@chromium.org
+# local
+tby@chromium.org
+# login
+jorgelo@chromium.org
+rsorokin@google.com
+alemate@chromium.org
+# media
+evliu@google.com
+kron@chromium.org
+toyoshim@chromium.org
+# memory
+lizeb@chromium.org
+joenotcharles@google.com
+# mobile
+ender@google.com
+mthiesse@chromium.org
+andzaytsev@google.com
+# na_cl
+dschuff@chromium.org
+fabiansommer@chromium.org
+# navigation
+altimin@chromium.org
+cthomp@chromium.org
+tbansal@chromium.org
+toyoshim@chromium.org
+wanderview@chromium.org
+# nearby
+crisrael@google.com
+hansberry@chromium.org
+julietlevesque@google.com
+# net
+csharrison@chromium.org
+dschinazi@chromium.org
+toyoshim@chromium.org
+# network
+azeemarshad@chromium.org
+chadduffin@chromium.org
+khorimoto@chromium.org
+toyoshim@chromium.org
+# new_tab_page
+dewittj@chromium.org
+tiborg@chromium.org
+# notifications
+peter@chromium.org
+rayankans@chromium.org
+# offline
+curranmax@chromium.org
+tbansal@chromium.org
+# omnibox
+ender@google.com
+manukh@chromium.org
+toyoshim@chromium.org
+# oobe
+rsorokin@google.com
+alemate@chromium.org
+# optimization
+mcrouse@chromium.org
+sophiechang@chromium.org
+tbansal@chromium.org
+# others
+jimmyxgong@chromium.org
+zentaro@chromium.org
+johnidel@chromium.org
+jonross@chromium.org
+dullweber@chromium.org
+olivierli@chromium.org
+alemate@chromium.org
+bzielinski@google.com
+# page
+csharrison@chromium.org
+iclelland@chromium.org
+johnidel@chromium.org
+toyoshim@chromium.org
+# password
+ioanap@chromium.org
+mamir@chromium.org
+vasilii@chromium.org
+vsemeniuk@google.com
+drubery@chromium.org
+thefrog@chromium.org
+xinghuilu@chromium.org
+# payment
+rouslan@chromium.org
+smcgruer@chromium.org
+# pcscan
+mlippautz@chromium.org
+# pdf
+awscreen@chromium.org
+# performance_manager
+chrisha@chromium.org
+fdoray@chromium.org
+# permissions
+andypaicu@chromium.org
+ravjit@chromium.org
+# phonehub
+crisrael@google.com
+hansberry@chromium.org
+julietlevesque@google.com
+# platform
+iby@chromium.org
+mutexlox@chromium.org
+xuhong@chromium.org
+# plugin_vm
+# see crostini
+# power
+olivierli@chromium.org
+tby@chromium.org
+# prefetch
+curranmax@chromium.org
+tbansal@chromium.org
+toyoshim@chromium.org
+# printing
+awscreen@chromium.org
+jimmyxgong@chromium.org
+zentaro@chromium.org
+# print
+awscreen@chromium.org
+jimmyxgong@chromium.org
+zentaro@chromium.org
+# privacy_budget
+antoniosartori@chromium.org
+# privacy
+andzaytsev@google.com
+dullweber@chromium.org
+harrisonsean@chromium.org
+csharrison@chromium.org
+johnidel@chromium.org
+# profile
+alexilin@chromium.org
+# quick_answers
+xiaohuic@chromium.org
+updowndota@chromium.org
+# quota
+ayui@chromium.org
+# renderer4
+schenney@chromium.org
+# renderer
+schenney@chromium.org
+# safe_browsing
+drubery@chromium.org
+thefrog@chromium.org
+xinghuilu@chromium.org
+# sb_client
+drubery@chromium.org
+thefrog@chromium.org
+xinghuilu@chromium.org
+# scanning
+jimmyxgong@chromium.org
+zentaro@chromium.org
+# scheduler
+altimin@chromium.org
+# search
+ender@google.com
+# security
+cthomp@chromium.org
+dullweber@chromium.org
+# segmentation_platform
+nyquist@chromium.org
+shaktisahu@chromium.org
+# service
+wanderview@chromium.org
+ayui@chromium.org
+yyanagisawa@chromium.org
+# session
+alexilin@chromium.org
+dullweber@chromium.org
+# settings
+harrisonsean@chromium.org
+khorimoto@chromium.org
+# sharing
+ellyjones@chromium.org
+knollr@chromium.org
+# signin
+alexilin@chromium.org
+# simple
+wanderview@chromium.org
+# software
+drubery@chromium.org
+thefrog@chromium.org
+xinghuilu@chromium.org
+# startup
+spdonghao@chromium.org
+# storage
+ayui@chromium.org
+wanderview@chromium.org
+# subresource
+csharrison@chromium.org
+johnidel@chromium.org
+tbansal@chromium.org
+# sync
+rushans@google.com
+# tab
+ckitagawa@chromium.org
+joenotcharles@google.com
+olivierli@chromium.org
+dfried@chromium.org
+# translate
+curranmax@chromium.org
+tbansal@chromium.org
+toyoshim@chromium.org
+# update_engine
+poromov@chromium.org
+# v8
+mlippautz@chromium.org
+# video_tutorials
+qinmin@chromium.org
+shaktisahu@chromium.org
+# web_apk
+eirage@chromium.org
+hartmanng@chromium.org
+rayankans@chromium.org
+# webapps
+alancutter@chromium.org
+dmurph@chromium.org
+eirage@chromium.org
+ericwilligers@chromium.org
+glenrob@chromium.org
+hartmanng@chromium.org
+# web_audio
+hongchan@chromium.org
+mjwilson@chromium.org
+# webauthn
+kenrb@chromium.org
+# web_core
+schenney@chromium.org
+# weblayer
+cduvall@chromium.org
+# web_rtc
+kron@chromium.org
+# xr
+alcooper@chromium.org
+# Custom: not in any subdirectory
+hujame@google.com
+jihanli@chromium.org
+lyf@chromium.org
+pwnall@chromium.org

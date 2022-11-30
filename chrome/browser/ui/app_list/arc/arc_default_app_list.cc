@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 
 #include <string.h>
 
+#include <utility>
+#include <vector>
+
+#include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
@@ -14,10 +18,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +28,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_scoped_pref_update.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/arc/arc_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -78,42 +80,33 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
 
     JSONFileValueDeserializer deserializer(file);
     std::string error_msg;
-    std::unique_ptr<base::Value> app_info =
-        deserializer.Deserialize(nullptr, &error_msg);
-    if (!app_info) {
+    auto app_info_ptr = deserializer.Deserialize(nullptr, &error_msg);
+    if (!app_info_ptr) {
       VLOG(2) << "Unable to deserialize json data: " << error_msg << " in file "
               << file.value() << ".";
       continue;
     }
+    base::Value app_info =
+        base::Value::FromUniquePtrValue(std::move(app_info_ptr));
 
-    std::unique_ptr<base::DictionaryValue> app_info_dictionary =
-        base::DictionaryValue::From(std::move(app_info));
-    CHECK(app_info_dictionary);
+    auto* name = app_info.GetDict().FindString(kName);
+    auto* package_name = app_info.GetDict().FindString(kPackageName);
+    auto* activity = app_info.GetDict().FindString(kActivity);
+    auto* app_path = app_info.GetDict().FindString(kAppPath);
+    bool oem = app_info.FindBoolPath(kOem).value_or(false);
 
-    std::string name;
-    std::string package_name;
-    std::string activity;
-    std::string app_path;
-    bool oem = false;
-
-    app_info_dictionary->GetString(kName, &name);
-    app_info_dictionary->GetString(kPackageName, &package_name);
-    app_info_dictionary->GetString(kActivity, &activity);
-    app_info_dictionary->GetString(kAppPath, &app_path);
-    app_info_dictionary->GetBoolean(kOem, &oem);
-
-    if (name.empty() || package_name.empty() || activity.empty() ||
-        app_path.empty()) {
+    if (!name || !package_name || !activity || !app_path || name->empty() ||
+        package_name->empty() || activity->empty() || app_path->empty()) {
       VLOG(2) << "ARC app declaration is incomplete in file " << file.value()
               << ".";
       continue;
     }
 
     const std::string app_id =
-        ArcAppListPrefs::GetAppId(package_name, activity);
+        ArcAppListPrefs::GetAppId(*package_name, *activity);
     std::unique_ptr<ArcDefaultAppList::AppInfo> app =
         std::make_unique<ArcDefaultAppList::AppInfo>(
-            name, package_name, activity, oem, root_dir.Append(app_path));
+            *name, *package_name, *activity, oem, root_dir.Append(*app_path));
     apps.get()->insert(
         std::pair<std::string, std::unique_ptr<ArcDefaultAppList::AppInfo>>(
             app_id, std::move(app)));
@@ -124,12 +117,12 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
 
 // Returns true if default app |app_id| is marked as hidden in the prefs.
 bool IsAppHidden(const PrefService* prefs, const std::string& app_id) {
-  const base::DictionaryValue* apps_dict = prefs->GetDictionary(kDefaultApps);
-  const base::DictionaryValue* app_dict;
-  if (!apps_dict || !apps_dict->GetDictionary(app_id, &app_dict))
+  const base::Value::Dict& apps_dict = prefs->GetDict(kDefaultApps);
+
+  const base::Value::Dict* app_dict = apps_dict.FindDict(app_id);
+  if (!app_dict)
     return false;
-  bool hidden = false;
-  return app_dict->GetBoolean(kHidden, &hidden) && hidden;
+  return app_dict->FindBool(kHidden).value_or(false);
 }
 
 std::string GetBoardName(const base::FilePath& build_prop_path) {
@@ -200,13 +193,12 @@ void ArcDefaultAppList::OnPropertyFilesExpanded(bool result) {
   }
 
   VLOG(1) << "Getting the board name";
-  const char* source_dir = arc::IsArcVmEnabled()
-                               ? arc::kGeneratedPropertyFilesPathVm
-                               : arc::kGeneratedPropertyFilesPath;
+  const char* source_file = arc::IsArcVmEnabled()
+                                ? arc::kGeneratedCombinedPropertyFilePathVm
+                                : arc::kGeneratedBuildPropertyFilePath;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&GetBoardName,
-                     base::FilePath(source_dir).Append("build.prop")),
+      base::BindOnce(&GetBoardName, base::FilePath(source_file)),
       base::BindOnce(&ArcDefaultAppList::LoadDefaultApps,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -333,19 +325,7 @@ void ArcDefaultAppList::SetAppHidden(const std::string& app_id, bool hidden) {
 
   // Store hidden flag.
   arc::ArcAppScopedPrefUpdate(profile_->GetPrefs(), app_id, kDefaultApps)
-      .Get()
-      ->SetBoolean(kHidden, hidden);
-}
-
-void ArcDefaultAppList::SetAppsHiddenForPackage(
-    const std::string& package_name) {
-  std::unordered_set<std::string> apps_to_hide;
-  for (const auto& app : visible_apps_) {
-    if (app.second->package_name == package_name)
-      apps_to_hide.insert(app.first);
-  }
-  for (const auto& app : apps_to_hide)
-    SetAppHidden(app, true);
+      ->Set(kHidden, hidden);
 }
 
 std::map<std::string, const ArcDefaultAppList::AppInfo*>

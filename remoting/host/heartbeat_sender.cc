@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,11 @@
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
+
+// Needed for GetComputerNameExW/ComputerNameDnsFullyQualified.
+#include <windows.h>
 #endif
 
 namespace remoting {
@@ -69,14 +72,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not implemented."
         })");
 
-constexpr base::TimeDelta kMinimumHeartbeatInterval =
-    base::TimeDelta::FromMinutes(3);
-constexpr base::TimeDelta kHeartbeatResponseTimeout =
-    base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kResendDelayOnHostNotFound =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kResendDelayOnUnauthenticated =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMinimumHeartbeatInterval = base::Minutes(3);
+constexpr base::TimeDelta kHeartbeatResponseTimeout = base::Seconds(30);
+constexpr base::TimeDelta kResendDelayOnHostNotFound = base::Seconds(10);
+constexpr base::TimeDelta kResendDelayOnUnauthenticated = base::Seconds(10);
 
 constexpr int kMaxResendOnHostNotFoundCount =
     12;  // 2 minutes (12 x 10 seconds).
@@ -112,9 +111,9 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 std::string GetHostname() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag
 // switch of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return net::GetHostName();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   wchar_t buffer[MAX_PATH] = {0};
   DWORD size = MAX_PATH;
   if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {
@@ -140,6 +139,10 @@ class HeartbeatSender::HeartbeatClientImpl final
   explicit HeartbeatClientImpl(
       OAuthTokenGetter* oauth_token_getter,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  HeartbeatClientImpl(const HeartbeatClientImpl&) = delete;
+  HeartbeatClientImpl& operator=(const HeartbeatClientImpl&) = delete;
+
   ~HeartbeatClientImpl() override;
 
   void Heartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
@@ -148,7 +151,6 @@ class HeartbeatSender::HeartbeatClientImpl final
 
  private:
   ProtobufHttpClient http_client_;
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatClientImpl);
 };
 
 HeartbeatSender::HeartbeatClientImpl::HeartbeatClientImpl(
@@ -354,7 +356,7 @@ void HeartbeatSender::OnResponse(
   base::TimeDelta delay;
   switch (status.error_code()) {
     case ProtobufHttpStatus::Code::OK:
-      delay = base::TimeDelta::FromSeconds(response->set_interval_seconds());
+      delay = base::Seconds(response->set_interval_seconds());
       if (delay < kMinimumHeartbeatInterval) {
         LOG(WARNING) << "Received suspicious set_interval_seconds: " << delay
                      << ". Using minimum interval: "

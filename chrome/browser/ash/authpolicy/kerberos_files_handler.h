@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/prefs/pref_member.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -38,11 +37,15 @@ extern const char kKrb5ConfFile[];
 class KerberosFilesHandler {
  public:
   explicit KerberosFilesHandler(base::RepeatingClosure get_kerberos_files);
+
+  KerberosFilesHandler(const KerberosFilesHandler&) = delete;
+  KerberosFilesHandler& operator=(const KerberosFilesHandler&) = delete;
+
   virtual ~KerberosFilesHandler();
 
   // Writes the Kerberos credentials to disk asynchronously.
-  void SetFiles(base::Optional<std::string> krb5cc,
-                base::Optional<std::string> krb5conf);
+  void SetFiles(absl::optional<std::string> krb5cc,
+                absl::optional<std::string> krb5conf);
 
   // Deletes the Kerberos credentials from disk asynchronously.
   virtual void DeleteFiles();
@@ -66,7 +69,6 @@ class KerberosFilesHandler {
   base::OnceClosure files_changed_for_testing_;
 
   base::WeakPtrFactory<KerberosFilesHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosFilesHandler);
 };
 
 }  // namespace ash

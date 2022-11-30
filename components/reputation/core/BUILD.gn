@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ static_library("core") {
   ]
   deps = [
     ":proto",
-    "//components/safe_browsing/core/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/security_state/core",
     "//third_party/re2",
     "//url",
@@ -29,6 +29,7 @@ source_set("unit_tests") {
   sources = [ "safety_tips_config_unittest.cc" ]
   deps = [
     ":core",
+    ":proto",
     "//testing/gtest",
     "//url",
   ]

@@ -1,25 +1,27 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/feature_list.h"
-#include "base/guid.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
+#import "base/feature_list.h"
+#import "base/guid.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,18 +29,18 @@
 
 namespace {
 
-const char kTestHonorificPrefix[] = "";
-const char kTestFullName[] = "That Guy John";
-const char kTestCompany[] = "Awesome Inc.";
-const char kTestAddressLine1[] = "Some person's garage";
-const char kTestAddressLine2[] = "Near the lake";
-const char kTestCity[] = "Springfield";
-const char kTestState[] = "IL";
-const char kTestZip[] = "55123";
-const char kTestCountryCode[] = "US";
-const char kTestCountry[] = "United States";
-const char kTestPhone[] = "16502530000";
-const char kTestEmail[] = "test@email.com";
+const char16_t kTestHonorificPrefix[] = u"";
+const char16_t kTestFullName[] = u"That Guy John";
+const char16_t kTestCompany[] = u"Awesome Inc.";
+const char16_t kTestAddressLine1[] = u"Some person's garage";
+const char16_t kTestAddressLine2[] = u"Near the lake";
+const char16_t kTestCity[] = u"Springfield";
+const char16_t kTestState[] = u"IL";
+const char16_t kTestZip[] = u"55123";
+const char16_t kTestCountryCode[] = u"US";
+const char16_t kTestCountry[] = u"United States";
+const char16_t kTestPhone[] = u"16502530000";
+const char16_t kTestEmail[] = u"test@email.com";
 
 static NSArray* FindTextFieldDescendants(UIView* root) {
   NSMutableArray* textFields = [NSMutableArray array];
@@ -62,11 +64,20 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
  protected:
   AutofillProfileEditTableViewControllerTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        ios::WebDataServiceFactory::GetInstance(),
+        ios::WebDataServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    chrome_browser_state_->CreateWebDataService();
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillUseAlternativeStateNameMap)) {
+      personal_data_manager_->personal_data_manager_cleaner_for_testing()
+          ->alternative_state_name_map_updater_for_testing()
+          ->set_local_state_for_testing(local_state_.Get());
+    }
+    personal_data_manager_->OnSyncServiceInitialized(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(
         personal_data_manager_);
 
@@ -76,27 +87,20 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     autofill_profile =
         autofill::AutofillProfile(guid, "https://www.example.com/");
     autofill_profile.SetRawInfo(autofill::NAME_HONORIFIC_PREFIX,
-                                base::UTF8ToUTF16(kTestHonorificPrefix));
-    autofill_profile.SetRawInfo(autofill::NAME_FULL,
-                                base::UTF8ToUTF16(kTestFullName));
-    autofill_profile.SetRawInfo(autofill::COMPANY_NAME,
-                                base::UTF8ToUTF16(kTestCompany));
+                                kTestHonorificPrefix);
+    autofill_profile.SetRawInfo(autofill::NAME_FULL, kTestFullName);
+    autofill_profile.SetRawInfo(autofill::COMPANY_NAME, kTestCompany);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE1,
-                                base::UTF8ToUTF16(kTestAddressLine1));
+                                kTestAddressLine1);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_LINE2,
-                                base::UTF8ToUTF16(kTestAddressLine2));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY,
-                                base::UTF8ToUTF16(kTestCity));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE,
-                                base::UTF8ToUTF16(kTestState));
-    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP,
-                                base::UTF8ToUTF16(kTestZip));
+                                kTestAddressLine2);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_CITY, kTestCity);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_STATE, kTestState);
+    autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_ZIP, kTestZip);
     autofill_profile.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY,
-                                base::UTF8ToUTF16(kTestCountryCode));
-    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                                base::UTF8ToUTF16(kTestPhone));
-    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS,
-                                base::UTF8ToUTF16(kTestEmail));
+                                kTestCountryCode);
+    autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, kTestPhone);
+    autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS, kTestEmail);
     personal_data_manager_->SaveImportedProfile(autofill_profile);
     waiter.Wait();  // Wait for the completion of the asynchronous operation.
 
@@ -109,6 +113,7 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   autofill::PersonalDataManager* personal_data_manager_;
   AutofillProfileEditTableViewController* autofill_profile_edit_controller_;
@@ -132,7 +137,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
-  std::vector<const char*> expected_values = {
+  std::vector<const char16_t*> expected_values = {
       kTestFullName, kTestCompany, kTestAddressLine1, kTestAddressLine2,
       kTestCity,     kTestState,   kTestZip,          kTestCountry,
       kTestPhone,    kTestEmail};
@@ -153,7 +158,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
     UITextField* field = [textFields objectAtIndex:0];
     EXPECT_TRUE([field isKindOfClass:[UITextField class]]);
     EXPECT_TRUE([[field text]
-        isEqualToString:base::SysUTF8ToNSString(expected_values[row])]);
+        isEqualToString:base::SysUTF16ToNSString(expected_values[row])]);
   }
 }
 

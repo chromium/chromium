@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/save_page_request.h"
@@ -24,6 +25,10 @@ class ChangeRequestsStateTask : public Task {
                           const std::vector<int64_t>& request_ids,
                           const SavePageRequest::RequestState new_state,
                           RequestQueueStore::UpdateCallback callback);
+
+  ChangeRequestsStateTask(const ChangeRequestsStateTask&) = delete;
+  ChangeRequestsStateTask& operator=(const ChangeRequestsStateTask&) = delete;
+
   ~ChangeRequestsStateTask() override;
 
  private:
@@ -37,7 +42,7 @@ class ChangeRequestsStateTask : public Task {
   void UpdateCompleted(UpdateRequestsResult update_result);
 
   // Store that this task updates.
-  RequestQueueStore* store_;
+  raw_ptr<RequestQueueStore> store_;
   // Request IDs to be updated. Kept as a set to remove duplicates and simplify
   // the look up of requests that are not found in step 3.
   std::unordered_set<int64_t> request_ids_;
@@ -47,8 +52,6 @@ class ChangeRequestsStateTask : public Task {
   RequestQueueStore::UpdateCallback callback_;
 
   base::WeakPtrFactory<ChangeRequestsStateTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChangeRequestsStateTask);
 };
 
 }  // namespace offline_pages

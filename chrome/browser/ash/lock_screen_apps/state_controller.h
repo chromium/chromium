@@ -1,22 +1,23 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
 
+#include <stdint.h>
 #include <memory>
 #include <string>
 
 #include "ash/public/mojom/tray_action.mojom-forward.h"
-#include "base/callback.h"
+#include "ash/public/mojom/tray_action.mojom-shared.h"
+#include "ash/public/mojom/tray_action.mojom.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -25,6 +26,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -37,7 +39,8 @@ class TickClock;
 
 namespace content {
 class BrowserContext;
-}
+class WebContents;
+}  // namespace content
 
 namespace extensions {
 class AppDelegate;
@@ -51,11 +54,12 @@ class LockScreenItemStorage;
 
 namespace lock_screen_apps {
 
+class AppManager;
 class AppWindowMetricsTracker;
+class FirstAppRunToastManager;
 class FocusCyclerDelegate;
 class LockScreenProfileCreator;
 class StateObserver;
-class FirstAppRunToastManager;
 
 // Manages state of lock screen action handler apps, and notifies
 // interested parties as the state changes.
@@ -76,6 +80,10 @@ class StateController : public ash::mojom::TrayActionClient,
   // StateController will set global instance ptr that can be accessed using
   // |Get|. This pointer will be reset when the StateController is destroyed.
   StateController();
+
+  StateController(const StateController&) = delete;
+  StateController& operator=(const StateController&) = delete;
+
   ~StateController() override;
 
   // Sets the tray action that should be used by |StateController|.
@@ -241,22 +249,22 @@ class StateController : public ash::mojom::TrayActionClient,
   // is first launched for an app.
   // NOTE: The manager can be used for every app launch - before showing the
   // toast dialog, the manager will bail out if it determines that the toast
-  // for the associated app has been previosly seen (and closed) by the user.
+
   std::unique_ptr<FirstAppRunToastManager> first_app_run_toast_manager_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> note_window_observer_{
-      this};
-  ScopedObserver<extensions::AppWindowRegistry,
-                 extensions::AppWindowRegistry::Observer>
-      app_window_observer_{this};
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
-      input_devices_observer_{this};
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      note_window_observation_{this};
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
+      app_window_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      input_devices_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // If set, this callback will be run when the state controller is fully
   // initialized. It can be used to throttle tests until state controller
@@ -269,8 +277,6 @@ class StateController : public ash::mojom::TrayActionClient,
   const base::TickClock* tick_clock_ = nullptr;
 
   base::WeakPtrFactory<StateController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StateController);
 };
 
 }  // namespace lock_screen_apps

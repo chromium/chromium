@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
                                             Window* parent,
                                             bool show_on_creation) {
   Window* window = new Window(delegate, type);
-  window->set_id(id);
+  window->SetId(id);
   window->Init(ui::LAYER_TEXTURED);
   window->SetProperty(
       client::kResizeBehaviorKey,
@@ -86,7 +86,7 @@ std::string ChildWindowIDsAsString(aura::Window* parent) {
        ++i) {
     if (!result.empty())
       result += " ";
-    result += base::NumberToString((*i)->id());
+    result += base::NumberToString((*i)->GetId());
   }
   return result;
 }

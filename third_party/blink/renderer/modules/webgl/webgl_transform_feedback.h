@@ -1,13 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TRANSFORM_FEEDBACK_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -18,9 +18,9 @@ class WebGLTransformFeedback : public WebGLContextObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum TFType {
-    TFTypeDefault,
-    TFTypeUser,
+  enum class TFType {
+    kDefault,
+    kUser,
   };
 
   explicit WebGLTransformFeedback(WebGL2RenderingContextBase*, TFType);
@@ -28,7 +28,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
   GLuint Object() const { return object_; }
 
-  bool IsDefaultObject() const { return type_ == TFTypeDefault; }
+  bool IsDefaultObject() const { return type_ == TFType::kDefault; }
 
   GLenum GetTarget() const { return target_; }
   void SetTarget(GLenum);

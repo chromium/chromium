@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test the set of visible records is correctly update when category filter changes\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '4.20';
@@ -92,30 +92,30 @@
     {'name': 'foooooo', 'ts': 1099999, 'ph': 'E', 'tid': mainThread, 'pid': pid, 'cat': 'toplevel', 'args': {}}
   ];
 
-  const model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   const view = new Timeline.EventsTimelineTreeView(null);
   view.setModel(model, PerformanceTestRunner.mainTrack());
   view.updateContents(Timeline.TimelineSelection.fromRange(
       model.timelineModel().minimumRecordTime(), model.timelineModel().maximumRecordTime()));
-  const filtersControl = view._filtersControl;
+  const filtersControl = view.filtersControl;
 
   TestRunner.addResult('Original records');
-  filtersControl._notifyFiltersChanged();
+  filtersControl.notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'loading' is disabled`);
   Timeline.TimelineUIUtils.categories().loading.hidden = true;
-  filtersControl._notifyFiltersChanged();
+  filtersControl.notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.addResult(`Visible records when 'scripting' is disabled`);
   Timeline.TimelineUIUtils.categories().scripting.hidden = true;
-  filtersControl._notifyFiltersChanged();
+  filtersControl.notifyFiltersChanged();
   await dumpVisibleRecords();
 
   TestRunner.completeTest();
 
   async function dumpVisibleRecords() {
-    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view._currentTree);
+    await PerformanceTestRunner.walkTimelineEventTreeUnderNode(event => TestRunner.addResult(event.name), view.currentTree);
   }
 })();

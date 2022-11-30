@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
-Found 76 tests; 72 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 80 tests; 75 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Historical DOM features must be removed: DOMConfiguration
 PASS Historical DOM features must be removed: DOMCursor
-FAIL Historical DOM features must be removed: DOMError assert_equals: expected (undefined) undefined but got (function) function "function DOMError() { [native code] }"
+FAIL Historical DOM features must be removed: DOMError assert_false: expected false got true
 PASS Historical DOM features must be removed: DOMErrorHandler
 PASS Historical DOM features must be removed: DOMImplementationList
 PASS Historical DOM features must be removed: DOMImplementationSource
@@ -19,10 +19,11 @@ PASS Historical DOM features must be removed: Notation
 PASS Historical DOM features must be removed: TypeInfo
 PASS Historical DOM features must be removed: UserDataHandler
 PASS Historical DOM features must be removed: RangeException
+PASS Historical DOM features must be removed: SVGPathSegList
 PASS Historical DOM features must be removed: createEntityReference
-FAIL Historical DOM features must be removed: xmlEncoding assert_equals: expected (undefined) undefined but got (object) null
-FAIL Historical DOM features must be removed: xmlStandalone assert_equals: expected (undefined) undefined but got (boolean) false
-FAIL Historical DOM features must be removed: xmlVersion assert_equals: expected (undefined) undefined but got (object) null
+FAIL Historical DOM features must be removed: xmlEncoding assert_false: expected false got true
+FAIL Historical DOM features must be removed: xmlStandalone assert_false: expected false got true
+FAIL Historical DOM features must be removed: xmlVersion assert_false: expected false got true
 PASS Historical DOM features must be removed: strictErrorChecking
 PASS Historical DOM features must be removed: domConfig
 PASS Historical DOM features must be removed: normalizeDocument
@@ -59,6 +60,8 @@ PASS Node member must be removed: getUserData
 PASS Node member must be removed: setUserData
 PASS Node member must be removed: rootNode
 PASS Window member must be removed: attachEvent
+PASS Window member must be removed: content
+PASS Window member must be removed: sidebar
 PASS Event should not have this constant: MOUSEDOWN
 PASS Event should not have this constant: MOUSEUP
 PASS Event should not have this constant: MOUSEOVER
@@ -76,5 +79,6 @@ PASS Event should not have this constant: BLUR
 PASS Event should not have this constant: SELECT
 PASS Event should not have this constant: CHANGE
 PASS Event.prototype should not have this property: getPreventDefault
+FAIL Event.prototype should not have this property: path assert_false: expected false got true
 Harness: the test ran to completion.
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,8 +167,8 @@ void SiteDataProviderImpl::GetSiteDataDatabaseSize(
   // Adapt the inspector callback to the mojom callback with this lambda.
   auto inspector_callback = base::BindOnce(
       [](GetSiteDataDatabaseSizeCallback callback,
-         base::Optional<int64_t> num_rows,
-         base::Optional<int64_t> on_disk_size_kb) {
+         absl::optional<int64_t> num_rows,
+         absl::optional<int64_t> on_disk_size_kb) {
         discards::mojom::SiteDataDatabaseSizePtr result =
             discards::mojom::SiteDataDatabaseSize::New();
         result->num_rows = num_rows.has_value() ? num_rows.value() : -1;

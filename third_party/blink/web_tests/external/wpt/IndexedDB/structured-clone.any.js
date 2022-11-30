@@ -1,6 +1,6 @@
 // META: title=Indexed DB and Structured Serializing/Deserializing
 // META: timeout=long
-// META: script=support-promises.js
+// META: script=resources/support-promises.js
 // META: script=/common/subset-tests.js
 // META: variant=?1-20
 // META: variant=?21-40
@@ -120,7 +120,7 @@ const strings = [
   }));
 
 // "Primitive" Objects (Boolean, Number, BigInt, String)
-[].concat(booleans, numbers, strings)
+[].concat(booleans, numbers, bigints, strings)
   .forEach(value => cloneObjectTest(Object(value), (orig, clone) => {
     assert_equals(orig.valueOf(), clone.valueOf());
   }));

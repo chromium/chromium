@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,10 @@
 // Used by the CRWWebViewProxy to set the UIScrollView to be managed.
 - (void)setScrollView:(UIScrollView*)scrollView;
 
-// Adds |observer| to subscribe to change notifications.
+// Adds `observer` to subscribe to change notifications.
 - (void)addObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
 
-// Removes |observer| as a subscriber for change notifications.
+// Removes `observer` as a subscriber for change notifications.
 - (void)removeObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
 
 // Returns a scroll view proxy which can be accessed as UIScrollView.
@@ -65,10 +65,8 @@
 @property(nonatomic, assign) BOOL scrollsToTop;
 @property(nonatomic, assign) BOOL clipsToBounds;
 @property(nonatomic, assign)
-    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior
-        API_AVAILABLE(ios(11.0));
-@property(nonatomic, readonly)
-    UIEdgeInsets adjustedContentInset API_AVAILABLE(ios(11.0));
+    UIScrollViewContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior;
+@property(nonatomic, readonly) UIEdgeInsets adjustedContentInset;
 @property(weak, nonatomic, readonly)
     UIPanGestureRecognizer* panGestureRecognizer;
 // Returns the scrollview's gesture recognizers.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -61,7 +61,7 @@ class BackgroundSyncSchedulerTest : public testing::Test {
     auto* scheduler = BackgroundSyncScheduler::GetFor(&test_browser_context_);
     DCHECK(scheduler);
     auto* storage_partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForUrl(&test_browser_context_, url));
+        test_browser_context_.GetStoragePartitionForUrl(url));
     DCHECK(storage_partition);
 
     scheduler->ScheduleDelayedProcessing(storage_partition, sync_type, delay,
@@ -73,7 +73,7 @@ class BackgroundSyncSchedulerTest : public testing::Test {
     auto* scheduler = BackgroundSyncScheduler::GetFor(&test_browser_context_);
     DCHECK(scheduler);
     auto* storage_partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForUrl(&test_browser_context_, url));
+        test_browser_context_.GetStoragePartitionForUrl(url));
     DCHECK(storage_partition);
 
     scheduler->CancelDelayedProcessing(storage_partition, sync_type);
@@ -106,15 +106,15 @@ class BackgroundSyncSchedulerTest : public testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
+  raw_ptr<ContentBrowserClient> original_client_;
   TestBrowserContext test_browser_context_;
 };
 
 TEST_F(BackgroundSyncSchedulerTest, ScheduleInvokesCallback) {
   base::RunLoop run_loop;
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), run_loop.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -133,7 +133,7 @@ TEST_F(BackgroundSyncSchedulerTest, CancelDoesNotInvokeCallback) {
   bool was_called = false;
   ScheduleDelayedProcessing(
       GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMinutes(1),
+      base::Minutes(1),
       base::BindOnce([](bool* was_called) { *was_called = true; },
                      &was_called));
   base::RunLoop().RunUntilIdle();
@@ -149,16 +149,16 @@ TEST_F(BackgroundSyncSchedulerTest, SchedulingTwiceOverwritesTimer) {
   bool was_called = false;
   ScheduleDelayedProcessing(
       GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromSeconds(1),
+      base::Seconds(1),
       base::BindOnce([](bool* was_called) { *was_called = true; },
                      &was_called));
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(was_called);
 
   base::RunLoop run_loop;
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), run_loop.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_FALSE(was_called);
@@ -166,13 +166,13 @@ TEST_F(BackgroundSyncSchedulerTest, SchedulingTwiceOverwritesTimer) {
 
 TEST_F(BackgroundSyncSchedulerTest, MultipleStoragePartitions) {
   base::RunLoop run_loop_1, run_loop_2;
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromSeconds(1), run_loop_1.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Seconds(1), run_loop_1.QuitClosure());
 
-  ScheduleDelayedProcessing(
-      GURL(kUrl_2), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), run_loop_2.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_2),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), run_loop_2.QuitClosure());
 
   run_loop_1.Run();
   run_loop_2.Run();
@@ -180,74 +180,74 @@ TEST_F(BackgroundSyncSchedulerTest, MultipleStoragePartitions) {
 
 TEST_F(BackgroundSyncSchedulerTest, ScheduleBothTypesOfSync) {
   base::RunLoop run_loop_1, run_loop_2;
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), run_loop_1.QuitClosure());
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::PERIODIC,
-      base::TimeDelta::FromMilliseconds(1), run_loop_2.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), run_loop_1.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::PERIODIC,
+                            base::Milliseconds(1), run_loop_2.QuitClosure());
   run_loop_1.Run();
   run_loop_2.Run();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduled) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromSeconds(1), base::DoNothing());
+                            base::Seconds(1), base::DoNothing());
 
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromSeconds(1));
+            base::Seconds(1));
 
-  ScheduleDelayedProcessing(
-      GURL(kUrl_2), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), base::DoNothing());
+  ScheduleDelayedProcessing(GURL(kUrl_2),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), base::DoNothing());
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
 }
 
 TEST_F(BackgroundSyncSchedulerTest,
        BrowserWakeupScheduleSecondAfterFirstFinishes) {
   base::RunLoop run_loop_1;
-  ScheduleDelayedProcessing(
-      GURL(kUrl_1), blink::mojom::BackgroundSyncType::ONE_SHOT,
-      base::TimeDelta::FromMilliseconds(1), run_loop_1.QuitClosure());
+  ScheduleDelayedProcessing(GURL(kUrl_1),
+                            blink::mojom::BackgroundSyncType::ONE_SHOT,
+                            base::Milliseconds(1), run_loop_1.QuitClosure());
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   run_loop_1.Run();
 
   ScheduleDelayedProcessing(GURL(kUrl_2),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromMinutes(1), base::DoNothing());
+                            base::Minutes(1), base::DoNothing());
   EXPECT_GT(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMinutes(1));
+            base::Minutes(1));
 }
 
 TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduleOneOfEachType) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::PERIODIC,
-                            base::TimeDelta::FromSeconds(1), base::DoNothing());
+                            base::Seconds(1), base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::PERIODIC),
-            base::TimeDelta::FromSeconds(1));
+            base::Seconds(1));
 
   ScheduleDelayedProcessing(GURL(kUrl_2),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromMinutes(1), base::DoNothing());
+                            base::Minutes(1), base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMinutes(1));
+            base::Minutes(1));
 }
 
 TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduleThenCancel) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::PERIODIC,
-                            base::TimeDelta::FromMinutes(1), base::DoNothing());
+                            base::Minutes(1), base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::PERIODIC),
-            base::TimeDelta::FromMinutes(1));
+            base::Minutes(1));
 
   CancelDelayedProcessing(GURL(kUrl_1),
                           blink::mojom::BackgroundSyncType::PERIODIC);
@@ -259,10 +259,10 @@ TEST_F(BackgroundSyncSchedulerTest, BrowserWakeupScheduleThenCancel) {
 TEST_F(BackgroundSyncSchedulerTest, CancelingOneTypeDoesNotAffectAnother) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::PERIODIC,
-                            base::TimeDelta::FromMinutes(1), base::DoNothing());
+                            base::Minutes(1), base::DoNothing());
   ScheduleDelayedProcessing(GURL(kUrl_2),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromSeconds(1), base::DoNothing());
+                            base::Seconds(1), base::DoNothing());
 
   CancelDelayedProcessing(GURL(kUrl_1),
                           blink::mojom::BackgroundSyncType::PERIODIC);
@@ -271,20 +271,20 @@ TEST_F(BackgroundSyncSchedulerTest, CancelingOneTypeDoesNotAffectAnother) {
   EXPECT_EQ(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::PERIODIC),
             base::TimeDelta::Max());
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromSeconds(1));
+            base::Seconds(1));
 }
 
 TEST_F(BackgroundSyncSchedulerTest,
        CancelingProcessingForOneStorageParitionUpdatesBrowserWakeup) {
   ScheduleDelayedProcessing(GURL(kUrl_1),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromMinutes(1), base::DoNothing());
+                            base::Minutes(1), base::DoNothing());
   ScheduleDelayedProcessing(GURL(kUrl_2),
                             blink::mojom::BackgroundSyncType::ONE_SHOT,
-                            base::TimeDelta::FromSeconds(1), base::DoNothing());
+                            base::Seconds(1), base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromSeconds(1));
+            base::Seconds(1));
   auto wakeup_time1 = GetBrowserWakeupTime();
 
   CancelDelayedProcessing(GURL(kUrl_2),
@@ -292,9 +292,9 @@ TEST_F(BackgroundSyncSchedulerTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_LE(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromMinutes(1));
+            base::Minutes(1));
   EXPECT_GT(GetBrowserWakeupDelay(blink::mojom::BackgroundSyncType::ONE_SHOT),
-            base::TimeDelta::FromSeconds(1));
+            base::Seconds(1));
   EXPECT_LT(wakeup_time1, GetBrowserWakeupTime());
 }
 

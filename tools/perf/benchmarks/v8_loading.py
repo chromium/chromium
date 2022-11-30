@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,7 +20,7 @@ class _V8LoadingBenchmark(v8_helper.V8PerfMixin, perf_benchmark.PerfBenchmark):
 
 
 @benchmark.Info(emails=[
-    'mythria@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
+    'cbruni@chromium.org', 'tmrts@chromium.org', 'almuthanna@chromium.org'
 ],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
@@ -41,7 +41,9 @@ class V8DesktopLoadingBenchmark(_V8LoadingBenchmark):
     return 'UNSCHEDULED_v8.loading_desktop'
 
 
-@benchmark.Info(emails=['mythria@chromium.org', 'tmrts@chromium.org'],
+@benchmark.Info(emails=[
+    'cbruni@chromium.org', 'leszeks@chromium.org', 'tmrts@chromium.org'
+],
                 component='Blink>JavaScript',
                 documentation_url='https://bit.ly/system-health-v8-benchmarks')
 class V8MobileLoadingBenchmark(_V8LoadingBenchmark):

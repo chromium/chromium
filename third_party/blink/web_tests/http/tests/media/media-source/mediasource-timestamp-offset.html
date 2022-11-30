@@ -42,6 +42,14 @@
           simpleTimestampOffsetTest('10.5', 10.5, 'a number string');
           simpleTimestampOffsetTest('', 0, 'an empty string');
 
+          // Specific to Chromium's usage of TimeDelta with int64_t range in
+          // microseconds for offsets internally, ensure that setting
+          // timestampOffset to a very small value does not saturate to
+          // internal concept of -Infinity in TimeDelta and then fail DCHECK.
+          simpleTimestampOffsetTest(
+              '-9223372036854.776', -9223372036854.776,
+              'a number less than internal kNoTimestamp, but not -Infinity');
+
           mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
           {
               var initSegment = MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.init);
@@ -83,18 +91,18 @@
               test.expectEvent(sourceBuffer, "updateend", "initSegment append ended.");
               sourceBuffer.appendBuffer(initSegment);
               assert_equals(mediaSource.sourceBuffers[0].timestampOffset, 0, "read initial value");
-              
+
               test.waitForExpectedEvents(function()
               {
                   test.expectEvent(sourceBuffer, "updateend", "mediaSegment append ended.");
                   sourceBuffer.appendBuffer(mediaSegment);
-                  assert_equals(mediaSource.sourceBuffers[0].timestampOffset, 0, 
+                  assert_equals(mediaSource.sourceBuffers[0].timestampOffset, 0,
                       "No change to timestampoffset after segments mode init segment append");
               });
-             
+
               test.waitForExpectedEvents(function()
               {
-                  assert_equals(mediaSource.sourceBuffers[0].timestampOffset, 0, 
+                  assert_equals(mediaSource.sourceBuffers[0].timestampOffset, 0,
                       "No change to timestampoffset after segments mode media segment append");
                   test.done();
               });
@@ -104,18 +112,18 @@
           {
               var sourceBuffer = mediaSource.addSourceBuffer(MediaSourceUtil.AUDIO_VIDEO_TYPE);
               assert_true(sourceBuffer != null, "New SourceBuffer returned");
-             
+
               // FIXME: verify activeSourceBuffers is empty before removeSourceBuffer as well.
-            
-              mediaSource.removeSourceBuffer(sourceBuffer);  
+
+              mediaSource.removeSourceBuffer(sourceBuffer);
               assert_true(mediaSource.sourceBuffers.length == 0, "MediaSource.sourceBuffers is empty");
               assert_true(mediaSource.activeSourceBuffers.length == 0, "MediaSource.activesourceBuffers is empty");
-                          
-              assert_throws_dom("InvalidStateError", function() 
+
+              assert_throws_dom("InvalidStateError", function()
               {
                   sourceBuffer.timestampOffset = 10;
               });
-               
+
               test.done();
           }, "Test setting timestampoffset after removing the sourcebuffer.");
         </script>

@@ -1,0 +1,62 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module connectors_internals.mojom;
+
+// Set of values to represent whether the key manager is supported and, if so,
+// fully initialized or not.
+enum KeyManagerInitializedValue {
+  UNSUPPORTED = 0,
+  KEY_LOADED = 1,
+  NO_KEY = 2,
+};
+
+// Trust level of the signing key which is equivalent to the key provider type.
+enum KeyTrustLevel {
+  UNSPECIFIED = 0,
+  HW = 1,
+  OS = 2,
+};
+
+// Type of the signing key, equivalent to the algorithm used for its generation.
+enum KeyType {
+  UNKNOWN = 0,
+  RSA = 1,
+  EC = 2,
+};
+
+struct KeyInfo {
+  // Whether the key manager has loaded a key successfully.
+  KeyManagerInitializedValue is_key_manager_initialized;
+
+  // Loaded key's trust level, will be UNSPECIFIED if
+  // `is_key_manager_initialized` is not KEY_LOADED.
+  KeyTrustLevel trust_level;
+
+
+  // Key's algorithm, will be UNKNOWN if `is_key_manager_initialized` is not
+  // KEY_LOADED.
+  KeyType key_type;
+
+  // URL Base64 encoded SHA-256 hash value for the loaded key's SPKI.
+  string encoded_spki_hash;
+};
+
+struct DeviceTrustState {
+  // Whether the connector is enabled or not.
+  bool is_enabled;
+
+  // Information around the state of the device trust signing key.
+  KeyInfo key_info;
+
+  // Json string of the device signals.
+  string signals_json;
+};
+
+// Browser interface for the page. Consists of calls for data and hooks for
+// interactivity.
+interface PageHandler {
+  // Get state information about the Device Trust connector.
+  GetDeviceTrustState() => (DeviceTrustState state);
+};

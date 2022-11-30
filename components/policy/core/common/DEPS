@@ -1,4 +1,5 @@
 include_rules = [
+  "+absl/types/variant.h",
   "+chromeos/crosapi",
   "+chromeos/lacros",
   "+chromeos/startup",
@@ -6,11 +7,13 @@ include_rules = [
   "+components/account_id",
   "+components/reporting",
   "-components/policy/core/browser",
+  "+components/signin/public",
   "+components/strings",
   "+extensions/buildflags",
   "+net/http",
   "+net/traffic_annotation",
   "+services/network/test",
+  "+services/network/public/mojom",
   "+third_party/libxml/chromium",
   "+ui/base/l10n",
 ]

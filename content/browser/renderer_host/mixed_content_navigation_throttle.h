@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,18 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
 class FrameTreeNode;
+class RenderFrameHostImpl;
 
 // Responsible for browser-process-side mixed content security checks. It checks
 // only for frame-level resource loads (aka navigation loads). Sub-resources
@@ -40,6 +39,12 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
       NavigationHandle* navigation_handle);
 
   MixedContentNavigationThrottle(NavigationHandle* navigation_handle);
+
+  MixedContentNavigationThrottle(const MixedContentNavigationThrottle&) =
+      delete;
+  MixedContentNavigationThrottle& operator=(
+      const MixedContentNavigationThrottle&) = delete;
+
   ~MixedContentNavigationThrottle() override;
 
   // NavigationThrottle overrides.
@@ -79,8 +84,6 @@ class MixedContentNavigationThrottle : public NavigationThrottle {
   // navigation throttling steps. These values are reported to the respective
   // renderer process after each mixed content check is finished.
   std::set<blink::mojom::WebFeature> mixed_content_features_;
-
-  DISALLOW_COPY_AND_ASSIGN(MixedContentNavigationThrottle);
 };
 
 }  // namespace content

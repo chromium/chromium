@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "extensions/common/constants.h"
@@ -79,8 +80,9 @@ void UrlHandlerServiceProvider::OpenUrl(
 
   VLOG(1) << "Opening url now";
 
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      gurl, false /* from_user_interaction */);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      gurl, NewWindowDelegate::OpenUrlFrom::kUnspecified,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

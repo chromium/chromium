@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,35 @@ package org.chromium.components.messages;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -32,13 +44,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MessageBannerView extends BoundedLinearLayout {
     private ImageView mIconView;
     private TextView mTitle;
-    private TextView mDescription;
+    private TextViewWithCompoundDrawables mDescription;
+    private @PrimaryWidgetAppearance int mPrimaryWidgetAppearance =
+            PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET;
     private TextView mPrimaryButton;
+    private View mPrimaryProgressSpinner;
     private ListMenuButton mSecondaryButton;
     private View mDivider;
-    private String mSecondaryActionText;
+    private String mSecondaryButtonMenuText;
     private Runnable mSecondaryActionCallback;
+    private ListMenuButtonDelegate mSecondaryMenuButtonDelegate;
     private SwipeGestureListener mSwipeGestureDetector;
+    private Runnable mOnTitleChanged;
+    private int mCornerRadius = -1;
+    private PopupMenuShownListener mPopupMenuShownListener;
+    private Drawable mDescriptionDrawable;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -50,28 +70,104 @@ public class MessageBannerView extends BoundedLinearLayout {
         mTitle = findViewById(R.id.message_title);
         mDescription = findViewById(R.id.message_description);
         mPrimaryButton = findViewById(R.id.message_primary_button);
+        mPrimaryProgressSpinner = findViewById(R.id.message_primary_progress_spinner);
         mIconView = findViewById(R.id.message_icon);
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
-        mSecondaryButton.setOnClickListener((View v) -> { displayMenu(); });
+        mSecondaryButton.setOnClickListener((View v) -> { handleSecondaryButtonClick(); });
+        // Elevation does not work on low end device.
+        if (SysUtils.isLowEndDevice()) {
+            setBackgroundResource(R.drawable.popup_bg);
+        }
     }
 
     void setTitle(String title) {
         mTitle.setText(title);
+        if (mOnTitleChanged != null) mOnTitleChanged.run();
     }
 
-    void setDescription(String description) {
-        mDescription.setVisibility(VISIBLE);
+    void setTitleContentDescription(String description) {
+        mTitle.setContentDescription(description);
+    }
+
+    void setDescriptionText(CharSequence description) {
+        mDescription.setVisibility(TextUtils.isEmpty(description) ? GONE : VISIBLE);
         mDescription.setText(description);
+    }
+
+    void setDescriptionIcon(Drawable drawable) {
+        mDescription.setVisibility(drawable == null ? GONE : VISIBLE);
+        mDescriptionDrawable = drawable;
+        mDescription.setDrawableTintColor(AppCompatResources.getColorStateList(
+                getContext(), R.color.default_icon_color_secondary_tint_list));
+        ((TextView) mDescription).setCompoundDrawablesRelative(drawable, null, null, null);
+    }
+
+    void enableDescriptionIconIntrinsicDimensions(boolean enabled) {
+        if (mDescriptionDrawable != null) {
+            int defaultIconSize =
+                    getResources().getDimensionPixelOffset(R.dimen.message_description_icon_size);
+            if (enabled) {
+                int newWidth = defaultIconSize * mDescriptionDrawable.getIntrinsicWidth()
+                        / mDescriptionDrawable.getIntrinsicHeight();
+                mDescription.setDrawableWidth(newWidth);
+            } else {
+                mDescription.setDrawableWidth(defaultIconSize);
+            }
+            ((TextView) mDescription)
+                    .setCompoundDrawablesRelative(mDescriptionDrawable, null, null, null);
+        }
+    }
+
+    void setDescriptionMaxLines(int maxLines) {
+        mDescription.setMaxLines(maxLines);
+        mDescription.setEllipsize(TextUtils.TruncateAt.END);
     }
 
     void setIcon(Drawable icon) {
         mIconView.setImageDrawable(icon);
+        // Reset radius to generate a new drawable with expected radius.
+        if (mCornerRadius >= 0) setIconCornerRadius(mCornerRadius);
+    }
+
+    void setIconTint(@ColorInt int color) {
+        if (color == MessageBannerProperties.TINT_NONE) {
+            ApiCompatibilityUtils.setImageTintList(mIconView, null);
+        } else {
+            ApiCompatibilityUtils.setImageTintList(mIconView, ColorStateList.valueOf(color));
+        }
+    }
+
+    void setIconCornerRadius(int cornerRadius) {
+        mCornerRadius = cornerRadius;
+        if (!(mIconView.getDrawable() instanceof BitmapDrawable)) {
+            return;
+        }
+        BitmapDrawable drawable = (BitmapDrawable) mIconView.getDrawable();
+        RoundedBitmapDrawable bitmap = ViewUtils.createRoundedBitmapDrawable(
+                getResources(), drawable.getBitmap(), cornerRadius);
+        mIconView.setImageDrawable(bitmap);
+    }
+
+    void setPrimaryWidgetAppearance(@PrimaryWidgetAppearance int primaryWidgetAppearance) {
+        mPrimaryWidgetAppearance = primaryWidgetAppearance;
+        updatePrimaryWidgetAppearance();
     }
 
     void setPrimaryButtonText(String text) {
-        mPrimaryButton.setVisibility(VISIBLE);
         mPrimaryButton.setText(text);
+        updatePrimaryWidgetAppearance();
+    }
+
+    private void updatePrimaryWidgetAppearance() {
+        mPrimaryButton.setVisibility(
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
+                                && !TextUtils.isEmpty(mPrimaryButton.getText())
+                        ? VISIBLE
+                        : GONE);
+        mPrimaryProgressSpinner.setVisibility(
+                mPrimaryWidgetAppearance == PrimaryWidgetAppearance.PROGRESS_SPINNER ? VISIBLE
+                                                                                     : GONE);
     }
 
     void setPrimaryButtonClickListener(OnClickListener listener) {
@@ -85,11 +181,28 @@ public class MessageBannerView extends BoundedLinearLayout {
     }
 
     void setSecondaryActionCallback(Runnable callback) {
+        mSecondaryButton.dismiss();
         mSecondaryActionCallback = callback;
     }
 
-    void setSecondaryActionText(String text) {
-        mSecondaryActionText = text;
+    void setSecondaryButtonMenuText(String text) {
+        mSecondaryButton.dismiss();
+        mSecondaryButtonMenuText = text;
+    }
+
+    void setSecondaryMenuMaxSize(@SecondaryMenuMaxSize int maxSize) {
+        int dimenId = R.dimen.message_secondary_menu_max_size_small;
+        if (maxSize == SecondaryMenuMaxSize.MEDIUM) {
+            dimenId = R.dimen.message_secondary_menu_max_size_medium;
+        } else if (maxSize == SecondaryMenuMaxSize.LARGE) {
+            dimenId = R.dimen.message_secondary_menu_max_size_large;
+        }
+        mSecondaryButton.setMenuMaxWidth(getResources().getDimensionPixelSize(dimenId));
+    }
+
+    void setSecondaryMenuButtonDelegate(ListMenuButtonDelegate delegate) {
+        mSecondaryButton.dismiss();
+        mSecondaryMenuButtonDelegate = delegate;
     }
 
     void setSecondaryIconContentDescription(String description) {
@@ -100,13 +213,82 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
     }
 
+    void setOnTitleChanged(Runnable runnable) {
+        mOnTitleChanged = runnable;
+    }
+
+    void dismissSecondaryMenuIfShown() {
+        mSecondaryButton.dismiss();
+    }
+
+    void enableLargeIcon(boolean enabled) {
+        int smallSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size);
+        int largeSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
+        LayoutParams params = (LayoutParams) mIconView.getLayoutParams();
+        if (enabled) {
+            params.height = params.width = largeSize;
+        } else {
+            params.width = LayoutParams.WRAP_CONTENT;
+            params.height = smallSize;
+        }
+        mIconView.setLayoutParams(params);
+    }
+
+    void setPopupMenuShownListener(PopupMenuShownListener popupMenuShownListener) {
+        mPopupMenuShownListener = popupMenuShownListener;
+    }
+
     // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
     // response to the tap on secondary button. The code below implements this logic. Past M88 it
     // will be replaced with modal dialog driven from the feature code.
-    void displayMenu() {
+    void handleSecondaryButtonClick() {
+        if (mSecondaryMenuButtonDelegate == null && mSecondaryButtonMenuText == null) {
+            if (mSecondaryActionCallback != null) {
+                mSecondaryActionCallback.run();
+            }
+            return;
+        }
+
+        mSecondaryButton.setDelegate(mSecondaryMenuButtonDelegate != null
+                        ? mSecondaryMenuButtonDelegate
+                        : buildDelegateForSingleMenuItem());
+
+        if (mPopupMenuShownListener != null) {
+            mSecondaryButton.addPopupListener(mPopupMenuShownListener);
+        }
+        mSecondaryButton.showMenu();
+    }
+
+    void setMarginTop(int val) {
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getLayoutParams();
+        params.topMargin = val;
+        setLayoutParams(params);
+    }
+
+    /**
+     * Overriding onMeasure for set a proper height for primary button. By design, the primary
+     * button should fill all the remaining vertical space. If it includes very long text which
+     * makes its height larger than the main content (title + description), we should manually
+     * increase its height to prevent its text from being clipped.
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        mPrimaryButton.setMinHeight(0); // Reset min height for measuring.
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int containerHeight = getMeasuredHeight();
+        int btnWidth = mPrimaryButton.getMeasuredWidth();
+        var wSpec = MeasureSpec.makeMeasureSpec(btnWidth, MeasureSpec.EXACTLY);
+        var hSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        mPrimaryButton.measure(wSpec, hSpec);
+        int measuredHeight = mPrimaryButton.getMeasuredHeight();
+        mPrimaryButton.setMinHeight(Math.max(measuredHeight, containerHeight));
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {
         final PropertyModel menuItemPropertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(ListMenuItemProperties.TITLE, mSecondaryActionText)
+                        .with(ListMenuItemProperties.TITLE, mSecondaryButtonMenuText)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .build();
 
@@ -123,14 +305,12 @@ public class MessageBannerView extends BoundedLinearLayout {
         };
         BasicListMenu listMenu = new BasicListMenu(getContext(), menuItems, listMenuDelegate);
 
-        ListMenuButtonDelegate delegate = new ListMenuButtonDelegate() {
+        return new ListMenuButtonDelegate() {
             @Override
             public ListMenu getListMenu() {
                 return listMenu;
             }
         };
-        mSecondaryButton.setDelegate(delegate);
-        mSecondaryButton.showMenu();
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_SEMAPHORE_POOL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_EXTERNAL_SEMAPHORE_POOL_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/gpu_gles2_export.h"
@@ -42,7 +43,7 @@ class GPU_GLES2_EXPORT ExternalSemaphorePool {
       std::vector<ExternalSemaphore> semaphores);
 
  private:
-  SharedContextState* const shared_context_state_;
+  const raw_ptr<SharedContextState> shared_context_state_;
   base::circular_deque<ExternalSemaphore> semaphores_;
   base::WeakPtrFactory<ExternalSemaphorePool> weak_ptr_factory_{this};
 };

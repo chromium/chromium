@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -103,7 +106,7 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
   callback_ = std::move(callback);
   client_->AddObserver(this);
 
-  identity_manager_helper_.reset(new IdentityManagerHelper());
+  identity_manager_helper_ = std::make_unique<IdentityManagerHelper>();
   identity_manager_helper_->FetchAccessToken(
       identity_manager, account_id,
       base::BindOnce(&CloudPolicyClientRegistrationHelper::OnTokenFetched,
@@ -113,12 +116,15 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
 void CloudPolicyClientRegistrationHelper::StartRegistrationWithEnrollmentToken(
     const std::string& token,
     const std::string& client_id,
+    const ClientDataDelegate& client_data_delegate,
+    bool is_mandatory,
     base::OnceClosure callback) {
   DVLOG(1) << "Starting registration process with enrollment token";
   DCHECK(!client_->is_registered());
   callback_ = std::move(callback);
   client_->AddObserver(this);
-  client_->RegisterWithToken(token, client_id);
+  client_->RegisterWithToken(token, client_id, client_data_delegate,
+                             is_mandatory);
 }
 
 void CloudPolicyClientRegistrationHelper::OnTokenFetched(
@@ -137,8 +143,8 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
   DVLOG(1) << "Fetched new scoped OAuth token:" << oauth_access_token_;
   // Now we've gotten our access token - contact GAIA to see if this is a
   // hosted domain.
-  user_info_fetcher_.reset(
-      new UserInfoFetcher(this, client_->GetURLLoaderFactory()));
+  user_info_fetcher_ =
+      std::make_unique<UserInfoFetcher>(this, client_->GetURLLoaderFactory());
   user_info_fetcher_->Start(oauth_access_token_);
 }
 
@@ -150,9 +156,9 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoFailure(
 }
 
 void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
-    const base::DictionaryValue* data) {
+    const base::Value::Dict& data) {
   user_info_fetcher_.reset();
-  if (!data->HasKey(kGetHostedDomainKey)) {
+  if (!data.Find(kGetHostedDomainKey)) {
     DVLOG(1) << "User not from a hosted domain - skipping registration";
     RequestCompleted();
     return;

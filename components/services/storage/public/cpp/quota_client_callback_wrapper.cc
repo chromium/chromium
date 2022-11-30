@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@
 
 #include "base/check_op.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
@@ -25,47 +27,33 @@ QuotaClientCallbackWrapper::~QuotaClientCallbackWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void QuotaClientCallbackWrapper::GetOriginUsage(
-    const url::Origin& origin,
-    blink::mojom::StorageType type,
-    GetOriginUsageCallback callback) {
+void QuotaClientCallbackWrapper::GetBucketUsage(
+    const BucketLocator& bucket,
+    GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginUsage(
-      origin, type,
+  wrapped_client_->GetBucketUsage(
+      bucket,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
-void QuotaClientCallbackWrapper::GetOriginsForType(
+void QuotaClientCallbackWrapper::GetStorageKeysForType(
     blink::mojom::StorageType type,
-    GetOriginsForTypeCallback callback) {
+    GetStorageKeysForTypeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginsForType(
+  wrapped_client_->GetStorageKeysForType(
       type, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                std::move(callback), std::vector<url::Origin>()));
+                std::move(callback), std::vector<blink::StorageKey>()));
 }
 
-void QuotaClientCallbackWrapper::GetOriginsForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetOriginsForHostCallback callback) {
+void QuotaClientCallbackWrapper::DeleteBucketData(
+    const BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetOriginsForHost(
-      type, host,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                  std::vector<url::Origin>()));
-}
-
-void QuotaClientCallbackWrapper::DeleteOriginData(
-    const url::Origin& origin,
-    blink::mojom::StorageType type,
-    DeleteOriginDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  wrapped_client_->DeleteOriginData(
-      origin, type,
+  wrapped_client_->DeleteBucketData(
+      bucket,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback), blink::mojom::QuotaStatusCode::kErrorAbort));
 }

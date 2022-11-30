@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,10 @@ String MediaControlsTextTrackManager::GetTextTrackLabel(
 
   String track_label = track->label();
 
-  if (track_label.IsEmpty())
+  if (track_label.empty())
     track_label = track->language();
 
-  if (track_label.IsEmpty()) {
+  if (track_label.empty()) {
     track_label = String(media_element_->GetLocale().QueryString(
         IDS_MEDIA_TRACKS_NO_LABEL, String::Number(track->TrackIndex() + 1)));
   }
@@ -42,15 +42,15 @@ void MediaControlsTextTrackManager::ShowTextTrackAtIndex(
     return;
   TextTrack* track = track_list->AnonymousIndexedGetter(index_to_enable);
   if (track && track->CanBeRendered())
-    track->setMode(TextTrack::ShowingKeyword());
+    track->SetModeEnum(TextTrackMode::kShowing);
 }
 
 void MediaControlsTextTrackManager::DisableShowingTextTracks() {
   TextTrackList* track_list = media_element_->textTracks();
   for (unsigned i = 0; i < track_list->length(); ++i) {
     TextTrack* track = track_list->AnonymousIndexedGetter(i);
-    if (track->mode() == TextTrack::ShowingKeyword())
-      track->setMode(TextTrack::DisabledKeyword());
+    if (track->mode() == TextTrackMode::kShowing)
+      track->SetModeEnum(TextTrackMode::kDisabled);
   }
 }
 

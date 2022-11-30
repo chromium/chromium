@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void EnumHandler(const CupsOptionProvider& printer,
                  AdvancedCapabilities* capabilities);
 
 // Attribute that takes subsets of supported integer values.
-// |none_value| is ignored: it's used since IPP doesn't allow empty sets here.
+// `none_value` is ignored: it's used since IPP doesn't allow empty sets here.
 void MultivalueEnumHandler(int none_value,
                            const CupsOptionProvider& printer,
                            const char* attribute_name,

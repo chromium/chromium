@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
 
@@ -27,6 +26,10 @@ class ActionMessageHandler : public protocol::NamedMessagePipeHandler {
       const std::vector<protocol::ActionRequest::Action>& actions,
       std::unique_ptr<protocol::MessagePipe> pipe,
       std::unique_ptr<ActionExecutor> action_executor);
+
+  ActionMessageHandler(const ActionMessageHandler&) = delete;
+  ActionMessageHandler& operator=(const ActionMessageHandler&) = delete;
+
   ~ActionMessageHandler() override;
 
   // protocol::NamedMessagePipeHandler implementation.
@@ -37,8 +40,6 @@ class ActionMessageHandler : public protocol::NamedMessagePipeHandler {
 
   // Populated via the negotiated capabilities between host and client.
   base::flat_set<protocol::ActionRequest::Action> supported_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActionMessageHandler);
 };
 
 }  // namespace remoting

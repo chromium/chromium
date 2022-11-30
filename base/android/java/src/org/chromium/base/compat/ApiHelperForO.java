@@ -1,15 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.compat;
 
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipData.Item;
 import android.content.ClipDescription;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -23,16 +28,16 @@ import android.view.View;
 import android.view.Window;
 import android.view.autofill.AutofillManager;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.VerifiesOnO;
 
 /**
  * Utility class to use new APIs that were added in O (API level 26). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public final class ApiHelperForO {
     private ApiHelperForO() {}
 
@@ -122,6 +127,11 @@ public final class ApiHelperForO {
         return builder.setChannelId(channelId);
     }
 
+    /** See {@link Notification.Builder#setTimeoutAfter(long)}. */
+    public static Notification.Builder setTimeoutAfter(Notification.Builder builder, long ms) {
+        return builder.setTimeoutAfter(ms);
+    }
+
     /**
      * See {@link
      * ConnectivityManager#registerDefaultNetworkCallback(ConnectivityManager.NetworkCallback,
@@ -135,5 +145,20 @@ public final class ApiHelperForO {
     /** See {@link Notification#getChannelId()}. */
     public static String getNotificationChannelId(Notification notification) {
         return notification.getChannelId();
+    }
+
+    /**
+     * See {@link Context#registerReceiver(BroadcastReceiver, IntentFilter, String, Handler, int)}
+     */
+    public static Intent registerReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter, String permission, Handler scheduler, int flags) {
+        return context.registerReceiver(receiver, filter, permission, scheduler, flags);
+    }
+
+    /**
+     * See {@link ClipData#addItem(ContentResolver, Item)}.
+     */
+    public static void addItem(ClipData clipData, ContentResolver contentResolver, Item item) {
+        clipData.addItem(contentResolver, item);
     }
 }

@@ -1,8 +1,7 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/sync_file_system/logger.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,12 +29,12 @@ class LoggerTest : public testing::Test {
  public:
   LoggerTest() {}
 
+  LoggerTest(const LoggerTest&) = delete;
+  LoggerTest& operator=(const LoggerTest&) = delete;
+
   void SetUp() override {
     util::ClearLog();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoggerTest);
 };
 
 TEST_F(LoggerTest, GetLogHistory) {

@@ -55,7 +55,7 @@
   TestRunner.completeTest();
 
   function pressKey(key) {
-    var element = document.deepActiveElement();
+    var element = Platform.DOMUtilities.deepActiveElement(document);
     if (!element)
       return;
     element.dispatchEvent(TestRunner.createKeyEvent(key));
@@ -72,21 +72,21 @@
     }
     var selection = '';
     var subMenu = menu;
-    var activeElement = document.deepActiveElement();
+    var activeElement = Platform.DOMUtilities.deepActiveElement(document);
     do {
       if (selection)
         selection += ' -> ';
-      const focused = (subMenu._highlightedMenuItemElement || subMenu._contextMenuElement) === activeElement;
+      const focused = (subMenu.highlightedMenuItemElement || subMenu.contextMenuElement) === activeElement;
       if (focused)
         selection += '[';
-      if (subMenu._highlightedMenuItemElement)
-        selection += subMenu._highlightedMenuItemElement.textContent.replace(/[^A-z0-9 ]/g, '');
+      if (subMenu.highlightedMenuItemElement)
+        selection += subMenu.highlightedMenuItemElement.textContent.replace(/[^A-z0-9 ]/g, '');
       else
         selection += 'null'
       if (focused)
         selection += ']';
     }
-    while (subMenu = subMenu._subMenu)
+    while (subMenu = subMenu.subMenu)
     TestRunner.addResult(selection);
   }
 })();

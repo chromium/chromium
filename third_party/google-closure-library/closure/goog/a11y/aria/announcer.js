@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 /**
@@ -19,8 +11,10 @@
  */
 
 goog.provide('goog.a11y.aria.Announcer');
-
 goog.require('goog.Disposable');
+// TODO(user): Fix issue breaking external projects and remove goog.Timer
+// dependency.
+/** @suppress {extraRequire} */
 goog.require('goog.Timer');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.LivePriority');
@@ -28,6 +22,7 @@ goog.require('goog.a11y.aria.State');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.object');
+goog.require('goog.string');
 
 
 
@@ -41,6 +36,7 @@ goog.require('goog.object');
  * @final
  */
 goog.a11y.aria.Announcer = function(opt_domHelper) {
+  'use strict';
   goog.a11y.aria.Announcer.base(this, 'constructor');
 
   /**
@@ -56,12 +52,15 @@ goog.a11y.aria.Announcer = function(opt_domHelper) {
    * @private
    */
   this.liveRegions_ = {};
+  /** @private {string} */
+  this.lastMessageAnnounced_ = '';
 };
 goog.inherits(goog.a11y.aria.Announcer, goog.Disposable);
 
 
 /** @override */
 goog.a11y.aria.Announcer.prototype.disposeInternal = function() {
+  'use strict';
   goog.object.forEach(
       this.liveRegions_, this.domHelper_.removeNode, this.domHelper_);
   this.liveRegions_ = null;
@@ -78,19 +77,29 @@ goog.a11y.aria.Announcer.prototype.disposeInternal = function() {
  *     message. Defaults to POLITE.
  */
 goog.a11y.aria.Announcer.prototype.say = function(message, opt_priority) {
-  var priority = opt_priority || goog.a11y.aria.LivePriority.POLITE;
-  var liveRegion = this.getLiveRegion_(priority);
-  // Resets text content to force a DOM mutation (so that the setTextContent
-  // post-timeout function will be noticed by the screen reader). This is to
-  // avoid the problem of when the same message is "said" twice, which doesn't
-  // trigger a DOM mutation.
-  goog.dom.setTextContent(liveRegion, '');
-  // Uses non-zero timer to make VoiceOver and NVDA work
-  goog.Timer.callOnce(function() {
-    goog.dom.setTextContent(liveRegion, message);
-  }, 1);
+  'use strict';
+  const priority = opt_priority || goog.a11y.aria.LivePriority.POLITE;
+  const liveRegion = this.getLiveRegion_(priority);
+  // TODO(user): Remove the code once Chrome fix the bug on their
+  // end. Add nonbreaking space such that there's a change to aria live region
+  // to verbalize repeated character or text.
+  const announceMessage = this.lastMessageAnnounced_ === message ?
+      message + goog.string.Unicode.NBSP :
+      message;
+  if (message) {
+    this.lastMessageAnnounced_ = announceMessage;
+  }
+  goog.dom.setTextContent(liveRegion, announceMessage);
 };
 
+/**
+ * Returns the id value for an aria-live region for a given priority.
+ * @param {!goog.a11y.aria.LivePriority} priority The required priority.
+ * @return {string} The generated id on the liveRegion.
+ */
+goog.a11y.aria.Announcer.prototype.getLiveRegionId = function(priority) {
+  return this.getLiveRegion_(priority).getAttribute('id');
+};
 
 /**
  * Returns an aria-live region that can be used to communicate announcements.
@@ -99,6 +108,7 @@ goog.a11y.aria.Announcer.prototype.say = function(message, opt_priority) {
  * @private
  */
 goog.a11y.aria.Announcer.prototype.getLiveRegion_ = function(priority) {
+  'use strict';
   var liveRegion = this.liveRegions_[priority];
   if (liveRegion) {
     // Make sure the live region is not aria-hidden.
@@ -107,6 +117,8 @@ goog.a11y.aria.Announcer.prototype.getLiveRegion_ = function(priority) {
   }
 
   liveRegion = this.domHelper_.createElement(goog.dom.TagName.DIV);
+  // Generate a unique id for the live region.
+  liveRegion.id = `goog-lr-${goog.getUid(liveRegion)}`;
   // Note that IE has a habit of declaring things that aren't display:none as
   // invisible to third-party tools like JAWs, so we can't just use height:0.
   liveRegion.style.position = 'absolute';

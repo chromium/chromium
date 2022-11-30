@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "courgette/region.h"
 
 namespace courgette {
@@ -34,6 +33,10 @@ namespace courgette {
 class DifferenceEstimator {
  public:
   DifferenceEstimator();
+
+  DifferenceEstimator(const DifferenceEstimator&) = delete;
+  DifferenceEstimator& operator=(const DifferenceEstimator&) = delete;
+
   ~DifferenceEstimator();
 
   class Base;
@@ -53,7 +56,6 @@ class DifferenceEstimator {
  private:
   std::vector<Base*> owned_bases_;
   std::vector<Subject*> owned_subjects_;
-  DISALLOW_COPY_AND_ASSIGN(DifferenceEstimator);
 };
 
 }  // namespace

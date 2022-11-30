@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,13 @@ FullscreenToolbarAnimationController::FullscreenToolbarAnimationController(
       animation_(this),
       hide_toolbar_timer_(
           FROM_HERE,
-          base::TimeDelta::FromMilliseconds(kTabStripChangesDelay),
+          base::Milliseconds(kTabStripChangesDelay),
           base::BindRepeating(&FullscreenToolbarAnimationController::
                                   AnimateToolbarOutIfPossible,
                               base::Unretained(this))),
       animation_start_value_(0),
       should_hide_toolbar_after_delay_(false) {
-  animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(200));
+  animation_.SetSlideDuration(base::Milliseconds(200));
   animation_.SetTweenType(gfx::Tween::EASE_OUT);
 }
 

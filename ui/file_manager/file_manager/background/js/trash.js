@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,18 @@
  * https://specifications.freedesktop.org/trash-spec/trashspec-1.0.html
  */
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {AUTO_DELETE_INTERVAL_MS, TrashConfig, TrashDirs, TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
 
 /**
  * Implementation of trash.
  */
-/* #export */ class Trash {
+export class Trash {
   constructor() {
     /**
      * Store TrashDirs to avoid repeated lookup, keyed by TrashConfig.id.
@@ -50,7 +50,7 @@
    */
   getConfig_(volumeManager, entry) {
     const info = volumeManager.getLocationInfo(entry);
-    if (!loadTimeData.getBoolean('FILES_TRASH_ENABLED') || !info) {
+    if (!util.isTrashEnabled() || !info) {
       return null;
     }
     const fullPathSlash = entry.fullPath + '/';
@@ -232,7 +232,8 @@
     const infoEntry = await this.writeTrashInfoFile_(
         trashDirs.info, trashInfoName, path, deletionDate);
     const filesEntry = await this.moveTo_(entry, trashDirs.files, name);
-    return new TrashEntry(entry.name, deletionDate, filesEntry, infoEntry);
+    return new TrashEntry(
+        entry.name, deletionDate, filesEntry, infoEntry, entry);
   }
 
   /**
@@ -278,7 +279,10 @@
     const name =
         await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
     await this.moveTo_(trashEntry.filesEntry, dir, name);
-    await this.permanentlyDeleteFileOrDirectory_(infoEntry);
+    // Ignore any error deleting *.trashinfo since DriveFS auto deletes this
+    // file when filesEntry is moved.
+    await this.permanentlyDeleteFileOrDirectory_(infoEntry).catch(
+        e => console.warn(`Error deleting ${infoEntry.toURL()}`, e));
   }
 
   /**
@@ -377,7 +381,7 @@
           }
 
           // Delete entries older than 30d.
-          const ago30d = now - Trash.AUTO_DELETE_INTERVAL_MS;
+          const ago30d = now - AUTO_DELETE_INTERVAL_MS;
           const ago30dStr = new Date(ago30d).toISOString();
           if (d < ago30d) {
             const msg = `Older than ${ago30dStr}, DeletionDate=${found[1]}`;
@@ -397,10 +401,3 @@
     }
   }
 }
-
-/**
- * Interval (ms) until items in trash are permanently deleted. 30 days.
- * @const
- */
-Trash.AUTO_DELETE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
-

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,7 +32,7 @@ def ParseArgs():
                       help='optional prefix to prepend, e.g. --prefix=lldb')
   parser.add_argument(
       '--compiler',
-      help='compiler to override the compiler specied in the compile db')
+      help='compiler to override the compiler specified in the compile db')
   parser.add_argument('--suffix',
                       help='optional suffix to append, e.g.' +
                       ' --suffix="-Xclang -ast-dump -fsyntax-only"')

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/wm/core/base_focus_rules.h"
 
 namespace ash {
@@ -16,6 +15,10 @@ namespace ash {
 class ASH_EXPORT AshFocusRules : public ::wm::BaseFocusRules {
  public:
   AshFocusRules();
+
+  AshFocusRules(const AshFocusRules&) = delete;
+  AshFocusRules& operator=(const AshFocusRules&) = delete;
+
   ~AshFocusRules() override;
 
   // ::wm::BaseFocusRules:
@@ -39,8 +42,6 @@ class ASH_EXPORT AshFocusRules : public ::wm::BaseFocusRules {
   // List of container IDs in the order of actiavation. This list doesn't change
   // for the lifetime of this object.
   const std::vector<int> activatable_container_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshFocusRules);
 };
 
 }  // namespace ash

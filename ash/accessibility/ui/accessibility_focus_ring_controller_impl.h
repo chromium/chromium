@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 #include "ash/accessibility/ui/accessibility_focus_ring.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_group.h"
 #include "ash/accessibility/ui/accessibility_layer.h"
@@ -15,8 +16,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -33,6 +32,12 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
       public AccessibilityFocusRingController {
  public:
   AccessibilityFocusRingControllerImpl();
+
+  AccessibilityFocusRingControllerImpl(
+      const AccessibilityFocusRingControllerImpl&) = delete;
+  AccessibilityFocusRingControllerImpl& operator=(
+      const AccessibilityFocusRingControllerImpl&) = delete;
+
   ~AccessibilityFocusRingControllerImpl() override;
 
   // AccessibilityFocusRingController overrides:
@@ -62,6 +67,9 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   AccessibilityCursorRingLayer* caret_layer_for_testing() {
     return caret_layer_.get();
   }
+  AccessibilityHighlightLayer* highlight_layer_for_testing() {
+    return highlight_layer_.get();
+  }
   const AccessibilityFocusRingGroup* GetFocusRingGroupForTesting(
       const std::string& focus_ring_id);
 
@@ -75,14 +83,13 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
  private:
   // AccessibilityLayerDelegate overrides.
   void OnDeviceScaleFactorChanged() override;
-  void OnAnimationStep(base::TimeTicks timestamp) override;
 
   void UpdateHighlightFromHighlightRects();
 
-  void AnimateFocusRings(base::TimeTicks timestamp,
+  bool AnimateFocusRings(base::TimeTicks timestamp,
                          AccessibilityFocusRingGroup* focus_ring);
-  void AnimateCursorRing(base::TimeTicks timestamp);
-  void AnimateCaretRing(base::TimeTicks timestamp);
+  bool AnimateCursorRing(base::TimeTicks timestamp);
+  bool AnimateCaretRing(base::TimeTicks timestamp);
 
   void OnLayerChange(LayerAnimationInfo* animation_info);
 
@@ -95,10 +102,12 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   LayerAnimationInfo cursor_animation_info_;
   gfx::Point cursor_location_;
   std::unique_ptr<AccessibilityCursorRingLayer> cursor_layer_;
+  std::unique_ptr<AccessibilityAnimationOneShot> cursor_animation_;
 
   LayerAnimationInfo caret_animation_info_;
   gfx::Point caret_location_;
   std::unique_ptr<AccessibilityCursorRingLayer> caret_layer_;
+  std::unique_ptr<AccessibilityAnimationOneShot> caret_animation_;
 
   std::vector<gfx::Rect> highlight_rects_;
   std::unique_ptr<AccessibilityHighlightLayer> highlight_layer_;
@@ -106,8 +115,6 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   float highlight_opacity_ = 0.f;
 
   bool no_fade_for_testing_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingControllerImpl);
 };
 
 }  // namespace ash

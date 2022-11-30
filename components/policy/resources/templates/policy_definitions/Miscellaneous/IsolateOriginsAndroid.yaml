@@ -1,0 +1,28 @@
+caption: Enable Site Isolation for specified origins on Android devices
+desc: |-
+  Setting the policy means each of the named origins in a comma-separated list runs in a dedicated process on Android. Each named origin's process will only be allowed to contain documents from that origin and its subdomains. For example, specifying https://a1.example.com/ allows https://a2.a1.example.com/ in the same process, but not https://example.com or https://b.example.com. Note that Android isolates certain sensitive sites by default starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 77, and this policy extends that mode to isolate specific additional origins.
+
+        Since <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 77, you can also specify a range of origins to isolate using a wildcard. For example, specifying https://[*.]corp.example.com will give every origin underneath https://corp.example.com its own dedicated process, including https://corp.example.com itself, https://a1.corp.example.com, and https://a2.a1.corp.example.com.
+
+        Note that origins isolated by this policy will be unable to script other origins in the same site, which is otherwise possible if two same-site documents modify their document.domain values to match. Administrators should confirm this uncommon behavior is not used on an origin before isolating it.
+
+        Setting the policy to Disabled turns off any form of site isolation, including isolation of sensitive sites and field trials of IsolateOriginsAndroid, SitePerProcessAndroid, and other site isolation modes. Users can still turn on IsolateOrigins manually, through the command line flag.
+
+        Leaving the policy unset lets users change this setting.
+
+        Note: Isolating too many sites on Android may cause performance problems, especially on low-memory devices. This policy applies only to Chrome on Android running on devices with strictly more than 1 GB of RAM. To apply the policy on non-Android platforms, use <ph name="ISOLATE_ORIGINS_POLICY_NAME">IsolateOrigins</ph>.
+device_only: false
+example_value: https://a.example.com/,https://othersite.org/,https://[*.]corp.example.com
+features:
+  dynamic_refresh: false
+  per_profile: false
+owners:
+- alexmos@chromium.org
+- creis@chromium.org
+schema:
+  type: string
+supported_on:
+- android:68-
+tags:
+- system-security
+type: string

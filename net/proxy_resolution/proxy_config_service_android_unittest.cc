@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,8 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
  protected:
   // Note that the current thread's message loop is initialized by the test
   // suite (see net/test/net_test_suite.cc).
-  ProxyConfigServiceAndroidTestBase(const StringMap& initial_configuration)
+  explicit ProxyConfigServiceAndroidTestBase(
+      const StringMap& initial_configuration)
       : configuration_(initial_configuration),
         service_(
             base::ThreadTaskRunnerHandle::Get(),
@@ -72,7 +73,7 @@ class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
             base::BindRepeating(&ProxyConfigServiceAndroidTestBase::GetProperty,
                                 base::Unretained(this))) {}
 
-  ~ProxyConfigServiceAndroidTestBase() override {}
+  ~ProxyConfigServiceAndroidTestBase() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -214,13 +215,12 @@ TEST_F(ProxyConfigServiceAndroidTest, TestClearProxy) {
 
 struct ProxyCallback {
   ProxyCallback()
-      : called(false),
-        callback(base::BindOnce(&ProxyCallback::Call, base::Unretained(this))) {
+      : callback(base::BindOnce(&ProxyCallback::Call, base::Unretained(this))) {
   }
 
   void Call() { called = true; }
 
-  bool called;
+  bool called = false;
   base::OnceClosure callback;
 };
 
@@ -297,16 +297,16 @@ TEST_F(ProxyConfigServiceAndroidTest, TestProxyOverrideMultipleRules) {
 
   // Multiple rules with schemes are valid
   std::vector<ProxyConfigServiceAndroid::ProxyOverrideRule> rules;
-  rules.push_back({"http", "httpoverrideproxy.com"});
-  rules.push_back({"https", "https://httpoverrideproxy.com"});
+  rules.emplace_back("http", "httpoverrideproxy.com");
+  rules.emplace_back("https", "https://httpoverrideproxy.com");
   SetProxyOverride(rules, bypass_rules, false, base::DoNothing());
   TestMapping("https://example.com/", "HTTPS httpoverrideproxy.com:443");
   TestMapping("http://example.com/", "PROXY httpoverrideproxy.com:80");
 
   // Rules with and without scheme can be combined
   rules.clear();
-  rules.push_back({"http", "overrideproxy1.com"});
-  rules.push_back({"*", "overrideproxy2.com"});
+  rules.emplace_back("http", "overrideproxy1.com");
+  rules.emplace_back("*", "overrideproxy2.com");
   SetProxyOverride(rules, bypass_rules, false, base::DoNothing());
   TestMapping("https://example.com/", "PROXY overrideproxy2.com:80");
   TestMapping("http://example.com/", "PROXY overrideproxy1.com:80");
@@ -318,11 +318,11 @@ TEST_F(ProxyConfigServiceAndroidTest, TestProxyOverrideListOfRules) {
   std::vector<std::string> bypass_rules;
 
   std::vector<ProxyConfigServiceAndroid::ProxyOverrideRule> rules;
-  rules.push_back({"http", "httpproxy1"});
-  rules.push_back({"*", "socks5://fallback1"});
-  rules.push_back({"http", "httpproxy2"});
-  rules.push_back({"*", "fallback2"});
-  rules.push_back({"*", "direct://"});
+  rules.emplace_back("http", "httpproxy1");
+  rules.emplace_back("*", "socks5://fallback1");
+  rules.emplace_back("http", "httpproxy2");
+  rules.emplace_back("*", "fallback2");
+  rules.emplace_back("*", "direct://");
   SetProxyOverride(rules, bypass_rules, false, base::DoNothing());
 
   TestMapping("http://example.com", "PROXY httpproxy1:80;PROXY httpproxy2:80");

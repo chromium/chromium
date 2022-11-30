@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/test/mock_widget_input_handler.h"
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
-using base::TimeDelta;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 using blink::WebMouseEvent;
@@ -35,9 +35,9 @@ MockWidgetInputHandler::~MockWidgetInputHandler() {
   receiver_.reset();
 }
 
-void MockWidgetInputHandler::SetFocus(bool focused) {
-  dispatched_messages_.emplace_back(
-      std::make_unique<DispatchedFocusMessage>(focused));
+void MockWidgetInputHandler::SetFocus(blink::mojom::FocusState focus_state) {
+  dispatched_messages_.emplace_back(std::make_unique<DispatchedFocusMessage>(
+      focus_state == blink::mojom::FocusState::kFocused));
 }
 
 void MockWidgetInputHandler::MouseCaptureLost() {
@@ -61,9 +61,12 @@ void MockWidgetInputHandler::ImeSetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) {
+    int32_t end,
+    ImeSetCompositionCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
       "SetComposition", text, ime_text_spans, range, start, end));
+  if (callback)
+    std::move(callback).Run();
 }
 
 void MockWidgetInputHandler::ImeCommitText(
@@ -121,7 +124,7 @@ MockWidgetInputHandler::GetAndResetDispatchedMessages() {
   return dispatched_events;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MockWidgetInputHandler::AttachSynchronousCompositor(
     mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
         control_host,
@@ -225,9 +228,10 @@ MockWidgetInputHandler::DispatchedEventMessage::DispatchedEventMessage(
 
 MockWidgetInputHandler::DispatchedEventMessage::~DispatchedEventMessage() {
   if (callback_) {
-    std::move(callback_).Run(
-        blink::mojom::InputEventResultSource::kUnknown, ui::LatencyInfo(),
-        blink::mojom::InputEventResultState::kNotConsumed, nullptr, nullptr);
+    std::move(callback_).Run(blink::mojom::InputEventResultSource::kUnknown,
+                             ui::LatencyInfo(),
+                             blink::mojom::InputEventResultState::kNotConsumed,
+                             nullptr, nullptr, nullptr);
     base::RunLoop().RunUntilIdle();
   }
 }
@@ -241,7 +245,8 @@ void MockWidgetInputHandler::DispatchedEventMessage::CallCallback(
     blink::mojom::InputEventResultState state) {
   if (callback_) {
     std::move(callback_).Run(blink::mojom::InputEventResultSource::kMainThread,
-                             ui::LatencyInfo(), state, nullptr, nullptr);
+                             ui::LatencyInfo(), state, nullptr, nullptr,
+                             nullptr);
     base::RunLoop().RunUntilIdle();
   }
 }
@@ -251,10 +256,12 @@ void MockWidgetInputHandler::DispatchedEventMessage::CallCallback(
     const ui::LatencyInfo& latency_info,
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
-    blink::mojom::TouchActionOptionalPtr touch_action) {
+    blink::mojom::TouchActionOptionalPtr touch_action,
+    blink::mojom::ScrollResultDataPtr scroll_result_data) {
   if (callback_) {
     std::move(callback_).Run(source, latency_info, state, std::move(overscroll),
-                             std::move(touch_action));
+                             std::move(touch_action),
+                             std::move(scroll_result_data));
     base::RunLoop().RunUntilIdle();
   }
 }

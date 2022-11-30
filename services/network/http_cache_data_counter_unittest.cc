@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
@@ -31,6 +31,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -54,7 +55,8 @@ constexpr CacheTestEntry kCacheEntries[] = {
     {"https://localhost:3456/yoursite", "15 Jun 2018", 512}};
 
 mojom::NetworkContextParamsPtr CreateContextParams() {
-  mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
   // Use a dummy CertVerifier that always passes cert verification, since
   // these unittests don't need to test CertVerifier behavior.
   params->cert_verifier_params =
@@ -131,7 +133,7 @@ class HttpCacheDataCounterTest : public testing::Test {
     return size;
   }
 
-  int SizeAll() { return SizeBetween(0, base::size(kCacheEntries)); }
+  int SizeAll() { return SizeBetween(0, std::size(kCacheEntries)); }
 
   static std::pair<bool, int64_t> CountBetween(NetworkContext* network_context,
                                                base::Time start_time,
@@ -154,9 +156,9 @@ class HttpCacheDataCounterTest : public testing::Test {
 
   void TestCountBetween(int start_index, int end_index) {
     DCHECK_LE(0, start_index);
-    DCHECK_LT(start_index, static_cast<int>(base::size(kCacheEntries)));
+    DCHECK_LT(start_index, static_cast<int>(std::size(kCacheEntries)));
     DCHECK_LE(0, end_index);
-    DCHECK_LT(end_index, static_cast<int>(base::size(kCacheEntries)));
+    DCHECK_LT(end_index, static_cast<int>(std::size(kCacheEntries)));
 
     base::Time start_time;
     ASSERT_TRUE(
@@ -168,7 +170,7 @@ class HttpCacheDataCounterTest : public testing::Test {
 
     // The upper bound is "exclusive" but appropriximately so; make it clearly
     // exclusive.
-    end_time -= base::TimeDelta::FromDays(1);
+    end_time -= base::Days(1);
 
     auto result = CountBetween(network_context_.get(), start_time, end_time);
     ASSERT_GE(result.second, 0);
@@ -183,7 +185,7 @@ class HttpCacheDataCounterTest : public testing::Test {
   void InitNetworkContext() {
     mojom::NetworkContextParamsPtr context_params = CreateContextParams();
     context_params->http_cache_enabled = true;
-    context_params->http_cache_path = cache_dir_.GetPath();
+    context_params->http_cache_directory = cache_dir_.GetPath();
 
     network_context_ = std::make_unique<NetworkContext>(
         network_service_.get(),

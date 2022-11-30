@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -18,12 +19,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -42,7 +47,9 @@ struct StubScriptFunction {
   // The returned ScriptFunction can outlive the StubScriptFunction,
   // but it should not be called after the StubScriptFunction dies.
   v8::Local<v8::Function> GetFunction(ScriptState* script_state) {
-    return ScriptFunctionImpl::CreateFunction(script_state, *this);
+    return MakeGarbageCollected<ScriptFunction>(
+               script_state, MakeGarbageCollected<ScriptFunctionImpl>(*this))
+        ->V8Function();
   }
 
   size_t CallCount() { return call_count_; }
@@ -53,20 +60,11 @@ struct StubScriptFunction {
   size_t call_count_;
   ScriptValue arg_;
 
-  class ScriptFunctionImpl : public ScriptFunction {
+  class ScriptFunctionImpl : public ScriptFunction::Callable {
    public:
-    static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                  StubScriptFunction& owner) {
-      ScriptFunctionImpl* self =
-          MakeGarbageCollected<ScriptFunctionImpl>(script_state, owner);
-      return self->BindToV8Function();
-    }
+    explicit ScriptFunctionImpl(StubScriptFunction& owner) : owner_(owner) {}
 
-    ScriptFunctionImpl(ScriptState* script_state, StubScriptFunction& owner)
-        : ScriptFunction(script_state), owner_(owner) {}
-
-   private:
-    ScriptValue Call(ScriptValue arg) override {
+    ScriptValue Call(ScriptState*, ScriptValue arg) override {
       owner_.arg_ = arg;
       owner_.call_count_++;
       return ScriptValue();
@@ -90,7 +88,8 @@ void ExpectRejected(ScriptState* script_state,
   StubScriptFunction resolved, rejected;
   promise.Then(resolved.GetFunction(script_state),
                rejected.GetFunction(script_state));
-  v8::MicrotasksScope::PerformCheckpoint(promise.GetIsolate());
+  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      script_state->GetIsolate());
   EXPECT_EQ(0ul, resolved.CallCount());
   EXPECT_EQ(1ul, rejected.CallCount());
   if (rejected.CallCount())
@@ -179,7 +178,7 @@ class NotReachedWebServiceWorkerProvider : public WebServiceWorkerProvider {
 
 class ServiceWorkerContainerTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   ~ServiceWorkerContainerTest() override {
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -452,6 +451,63 @@ TEST_F(ServiceWorkerContainerTest, Register_TypeOptionDelegatesToProvider) {
     EXPECT_EQ(mojom::ServiceWorkerUpdateViaCache::kImports,
               stub_provider.UpdateViaCache());
   }
+}
+
+WebServiceWorkerObjectInfo MakeServiceWorkerObjectInfo() {
+  return {1,
+          mojom::blink::ServiceWorkerState::kActivated,
+          WebURL(KURL(KURL(), "http://localhost/x/y/worker.js")),
+          {},
+          {}};
+}
+
+TransferableMessage MakeTransferableMessage() {
+  TransferableMessage message;
+  message.owned_encoded_message = {0xff, 0x09, '0'};
+  message.encoded_message = message.owned_encoded_message;
+  message.sender_agent_cluster_id = base::UnguessableToken::Create();
+  return message;
+}
+
+TEST_F(ServiceWorkerContainerTest, ReceiveMessage) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *GetFrame().DomWindow(), stub_provider.Provider());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(),
+                            MakeTransferableMessage());
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  EXPECT_EQ(event->type(), event_type_names::kMessage);
+}
+
+TEST_F(ServiceWorkerContainerTest, ReceiveMessageLockedToAgentCluster) {
+  SetPageURL("http://localhost/x/index.html");
+
+  StubWebServiceWorkerProvider stub_provider;
+  ServiceWorkerContainer* container = ServiceWorkerContainer::CreateForTesting(
+      *GetFrame().DomWindow(), stub_provider.Provider());
+
+  base::RunLoop run_loop;
+  auto* wait = MakeGarbageCollected<WaitForEvent>();
+  wait->AddEventListener(container, event_type_names::kMessage);
+  wait->AddEventListener(container, event_type_names::kMessageerror);
+  wait->AddCompletionClosure(run_loop.QuitClosure());
+  auto message = MakeTransferableMessage();
+  message.locked_to_sender_agent_cluster = true;
+  container->ReceiveMessage(MakeServiceWorkerObjectInfo(), std::move(message));
+  run_loop.Run();
+
+  auto* event = wait->GetLastEvent();
+  EXPECT_EQ(event->type(), event_type_names::kMessageerror);
 }
 
 }  // namespace

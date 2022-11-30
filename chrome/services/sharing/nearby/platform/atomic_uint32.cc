@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-AtomicUint32::AtomicUint32(std::int32_t initial_value)
+AtomicUint32::AtomicUint32(std::uint32_t initial_value)
     : value_(initial_value) {}
 
 AtomicUint32::~AtomicUint32() = default;

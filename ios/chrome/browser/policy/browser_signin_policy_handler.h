@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,6 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
-// Values for the BrowserSignin policy.
-// VALUES MUST COINCIDE WITH THE BrowserSignin POLICY DEFINITION.
-enum class BrowserSigninMode {
-  kDisabled = 0,
-  kEnabled = 1,
-  kForced = 2,
-};
 
 // Policy handler for the BrowserSignin policy.
 class BrowserSigninPolicyHandler : public SchemaValidatingPolicyHandler {

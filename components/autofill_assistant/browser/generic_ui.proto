@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,9 @@ option java_multiple_files = true;
 
 package autofill_assistant;
 
-import "model.proto";
-import "view_layout.proto";
+import "components/autofill_assistant/browser/action_value.proto";
+import "components/autofill_assistant/browser/model.proto";
+import "components/autofill_assistant/browser/view_layout.proto";
 
 message GenericUserInterfaceProto {
   // The root view, usually a view container.
@@ -53,10 +54,28 @@ message CallbackProto {
     CreateNestedGenericUiProto create_nested_ui = 14;
     ClearViewContainerProto clear_view_container = 15;
     ForEachProto for_each = 16;
+    RequestBackendDataProto request_backend_data = 17;
+    ShowAccountScreenProto show_account_screen = 18;
   }
   // Optional model identifier pointing to a single boolean. If set, the
   // callback will only be invoked if the condition is true.
   optional string condition_model_identifier = 10;
+}
+
+message RequestBackendDataProto {
+  // Store the outcome of the backend data request in this model identifier.
+  // true if the backend request and response parsing was successful, else false
+  optional string output_success_model_identifier = 1;
+
+  // Set if requesting phone numbers from the backend.
+  optional RequestPhoneNumbersProto request_phone_numbers = 2;
+}
+
+message RequestPhoneNumbersProto {
+  // After getting the phone numbers from the backend, model identifier
+  // points to a list of |AutofillProfileProto|, each item pointing to
+  // a profile containing one phone number.
+  optional string output_profiles_model_identifier = 1;
 }
 
 message EventProto {
@@ -138,6 +157,8 @@ message ComputeValueProto {
     CreateLoginOptionResponseProto create_login_option_response = 9;
     // Check if a string value is empty.
     StringEmptyProto string_empty = 10;
+    // Writes the length of array model_identifier to the result.
+    ArrayLengthProto array_length = 11;
   }
 
   // The model identifier to write the result to.
@@ -199,17 +220,22 @@ message AutofillFormatProto {
     CREDIT_CARD_RAW_NUMBER = -3;
     CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS = -4;
     CREDIT_CARD_NETWORK_FOR_DISPLAY = -5;
-    // Currently only US states are supported. The state name is in lower case.
+    // Currently only US states are supported. The state name is in lower case,
+    // starting with a capital.
     ADDRESS_HOME_STATE_NAME = -6;
     CREDIT_CARD_NON_PADDED_EXP_MONTH = -7;
+    // The two letter country code, e.g. CH.
+    ADDRESS_HOME_COUNTRY_CODE = -8;
   }
-  // The format string to use. May contain one or multiple "${key}"
+  // The format string to use. May contain one or multiple key
   // placeholders, where the key is an integer corresponding to
   // entries from field_types.h or AutofillAssistantCustomField.
-  optional string pattern = 1;
+  optional ValueExpression value_expression = 3;
   // The locale to use when stringifying data. Invalid locales will
   // automatically default to "en-US".
   optional string locale = 2;
+
+  reserved 1;
 }
 
 // A comparison of two values in the form |value_a| <mode> |value_b|. EQUAL and
@@ -242,6 +268,15 @@ message IntegerSumProto {
   repeated ValueReferenceProto values = 3;
 
   reserved 1, 2;
+}
+
+// Computes the length of a list |value|.
+// If |value| doesn't point to a list, e.g. if it points to
+// |credit_card_response|, we simply return 1.
+message ArrayLengthProto {
+  // |value| is a required field.
+  // If not present, |result_model_identifier| won't be written.
+  optional ValueReferenceProto value = 1;
 }
 
 // Creates a safe-to-transmit CreditCardResponseProto for the input |value|.
@@ -420,4 +455,9 @@ message ForEachProto {
 
   // The callbacks to invoke for every iteration of the loop.
   repeated CallbackProto callbacks = 3;
+}
+
+message ShowAccountScreenProto {
+  // The id of the the GMS screen to show to the user.
+  optional int32 gms_account_intent_screen_id = 1;
 }

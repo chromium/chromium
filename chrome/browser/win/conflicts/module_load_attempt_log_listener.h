@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
 
   explicit ModuleLoadAttemptLogListener(
       OnModuleBlockedCallback on_module_blocked_callback);
+
+  ModuleLoadAttemptLogListener(const ModuleLoadAttemptLogListener&) = delete;
+  ModuleLoadAttemptLogListener& operator=(const ModuleLoadAttemptLogListener&) =
+      delete;
+
   ~ModuleLoadAttemptLogListener() override;
 
   // base::win::ObjectWatcher::Delegate:
@@ -72,8 +77,6 @@ class ModuleLoadAttemptLogListener : public base::win::ObjectWatcher::Delegate {
       device_to_letter_path_mapping_;
 
   base::WeakPtrFactory<ModuleLoadAttemptLogListener> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleLoadAttemptLogListener);
 };
 
 #endif  // CHROME_BROWSER_WIN_CONFLICTS_MODULE_LOAD_ATTEMPT_LOG_LISTENER_H_

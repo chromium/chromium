@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ const char kMouseLockBubbleReshowsHistogramName[] =
 // The amount of time to disallow repeated pointer lock calls after the user
 // successfully escapes from one lock request.
 constexpr base::TimeDelta kEffectiveUserEscapeDuration =
-    base::TimeDelta::FromMilliseconds(1250);
+    base::Milliseconds(1250);
 
 }  // namespace
 
@@ -55,8 +55,6 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
                                              bool user_gesture,
                                              bool last_unlocked_by_target) {
   DCHECK(!IsMouseLocked());
-  if (lock_state_callback_for_test_)
-    std::move(lock_state_callback_for_test_).Run();
 
   // To prevent misbehaving sites from constantly re-locking the mouse, the
   // lock-requesting page must have transient user activation and it must not
@@ -71,12 +69,16 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     if (!user_gesture) {
       web_contents->GotResponseToLockMouseRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
+      if (lock_state_callback_for_test_)
+        std::move(lock_state_callback_for_test_).Run();
       return;
     }
     if (base::TimeTicks::Now() <
         last_user_escape_time_ + kEffectiveUserEscapeDuration) {
       web_contents->GotResponseToLockMouseRequest(
           blink::mojom::PointerLockResult::kUserRejected);
+      if (lock_state_callback_for_test_)
+        std::move(lock_state_callback_for_test_).Run();
       return;
     }
   }
@@ -97,9 +99,14 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   }
 
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      base::BindOnce(&MouseLockController::OnBubbleHidden,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents));
+  if (!ShouldSuppressBubbleReshowForStateChange()) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        base::BindOnce(&MouseLockController::OnBubbleHidden,
+                       weak_ptr_factory_.GetWeakPtr(), web_contents));
+  }
+
+  if (lock_state_callback_for_test_)
+    std::move(lock_state_callback_for_test_).Run();
 }
 
 void MouseLockController::ExitExclusiveAccessIfNecessary() {
@@ -144,8 +151,11 @@ void MouseLockController::LostMouseLock() {
   RecordExitingUMA();
   mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
+
+  if (!ShouldSuppressBubbleReshowForStateChange()) {
+    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+        ExclusiveAccessBubbleHideCallback());
+  }
 }
 
 void MouseLockController::UnlockMouse() {
@@ -156,7 +166,7 @@ void MouseLockController::UnlockMouse() {
 
   content::RenderWidgetHostView* mouse_lock_view = nullptr;
   RenderViewHost* const rvh =
-      exclusive_access_tab()->GetMainFrame()->GetRenderViewHost();
+      exclusive_access_tab()->GetPrimaryMainFrame()->GetRenderViewHost();
   if (rvh)
     mouse_lock_view = rvh->GetWidget()->GetView();
 
@@ -174,4 +184,15 @@ void MouseLockController::OnBubbleHidden(
   // time and dismissed due to timeout.
   if (reason == ExclusiveAccessBubbleHideReason::kTimeout)
     web_contents_granted_silent_mouse_lock_permission_ = web_contents;
+}
+
+bool MouseLockController::ShouldSuppressBubbleReshowForStateChange() {
+  ExclusiveAccessBubbleType bubble_type =
+      exclusive_access_manager()->GetExclusiveAccessExitBubbleType();
+  return (mouse_lock_state_ == MOUSELOCK_LOCKED &&
+          bubble_type ==
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION) ||
+         (mouse_lock_state_ == MOUSELOCK_UNLOCKED &&
+          bubble_type ==
+              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION);
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
@@ -17,40 +17,52 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
+
+using testing::NiceMock;
 
 namespace {
 
-struct TypeClicks {
-  autofill::PopupItemId id;
-  int click;
+const std::vector<autofill::PopupItemId> kClickablePopupItemIds{
+    autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+    autofill::POPUP_ITEM_ID_PASSWORD_ENTRY,
+    autofill::POPUP_ITEM_ID_CLEAR_FORM,
+    autofill::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
+    autofill::POPUP_ITEM_ID_DATALIST_ENTRY,
+    autofill::POPUP_ITEM_ID_SCAN_CREDIT_CARD,
+    autofill::POPUP_ITEM_ID_TITLE,
+    autofill::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO,
+    autofill::POPUP_ITEM_ID_USERNAME_ENTRY,
+    autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
+    autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
+    autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
+    autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE,
+    autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY,
+    autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY,
 };
 
-const struct TypeClicks kClickTestCase[] = {
-    {autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, 1},
-    {autofill::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE, 0},
-    {autofill::POPUP_ITEM_ID_PASSWORD_ENTRY, 1},
-    {autofill::POPUP_ITEM_ID_SEPARATOR, 0},
-    {autofill::POPUP_ITEM_ID_CLEAR_FORM, 1},
-    {autofill::POPUP_ITEM_ID_AUTOFILL_OPTIONS, 1},
-    {autofill::POPUP_ITEM_ID_DATALIST_ENTRY, 1},
-    {autofill::POPUP_ITEM_ID_SCAN_CREDIT_CARD, 1},
-    {autofill::POPUP_ITEM_ID_TITLE, 1},
-    {autofill::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO, 1},
-    {autofill::POPUP_ITEM_ID_USERNAME_ENTRY, 1},
-    {autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY, 1},
-    {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN, 1},
-    {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN, 1},
-    {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE, 1},
-    {autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY, 1},
+const std::vector<autofill::PopupItemId> kUnclickablePopupItemIds{
+    autofill::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE,
+    autofill::POPUP_ITEM_ID_SEPARATOR,
 };
+
+bool IsClickable(autofill::PopupItemId id) {
+  DCHECK(base::Contains(kClickablePopupItemIds, id) ^
+         base::Contains(kUnclickablePopupItemIds, id));
+  return base::Contains(kClickablePopupItemIds, id);
+}
 
 class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {
  public:
   AutofillPopupViewNativeViewsTest() = default;
+  AutofillPopupViewNativeViewsTest(AutofillPopupViewNativeViewsTest&) = delete;
+  AutofillPopupViewNativeViewsTest& operator=(
+      AutofillPopupViewNativeViewsTest&) = delete;
   ~AutofillPopupViewNativeViewsTest() override = default;
 
   void SetUp() override {
@@ -71,27 +83,72 @@ class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {
   void CreateAndShowView(const std::vector<int>& ids) {
     autofill_popup_controller_.set_suggestions(ids);
     view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-        &autofill_popup_controller_, widget_.get());
+        autofill_popup_controller_.GetWeakPtr(), widget_.get());
     widget_->SetContentsView(view_.get());
 
     widget_->Show();
+    view_->SchedulePaint();
+  }
+
+  void Paint() {
+#if !BUILDFLAG(IS_MAC)
+    Paint(widget_->GetRootView());
+#else
+    // TODO(crbug.com/123): On Mac OS we need to trigger Paint() on the roots of
+    // the individual rows. The reason is that the views::ViewScrollView()
+    // created in AutofillPopupViewNativeViews::CreateChildViews() owns a Layer.
+    // As a consequence, views::View::Paint() does not propagate to the rows
+    // because the recursion stops in views::View::RecursivePaintHelper().
+    for (views::View* row : view()->GetRowsForTesting()) {
+      views::View* root = row;
+      while (!root->layer() && root->parent())
+        root = root->parent();
+      Paint(root);
+    }
+#endif
+  }
+
+  void Paint(views::View* view) {
+    SkBitmap bitmap;
+    gfx::Size size = view->size();
+    ui::CanvasPainter canvas_painter(&bitmap, size, 1.f, SK_ColorTRANSPARENT,
+                                     false);
+    view->Paint(
+        views::PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
   }
 
   autofill::AutofillPopupViewNativeViews* view() { return view_.get(); }
 
+  gfx::Point GetCenterOfSuggestion(int row_index) {
+    return view()
+        ->GetRowsForTesting()[row_index]
+        ->GetBoundsInScreen()
+        .CenterPoint();
+  }
+
  protected:
   std::unique_ptr<autofill::AutofillPopupViewNativeViews> view_;
-  autofill::MockAutofillPopupController autofill_popup_controller_;
+  NiceMock<autofill::MockAutofillPopupController> autofill_popup_controller_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillPopupViewNativeViewsTest);
 };
 
-class AutofillPopupViewNativeViewsForEveryTypeTest
+class AutofillPopupViewNativeViewsTestWithAnyPopupItemId
     : public AutofillPopupViewNativeViewsTest,
-      public ::testing::WithParamInterface<TypeClicks> {};
+      public ::testing::WithParamInterface<autofill::PopupItemId> {
+ public:
+  autofill::PopupItemId popup_item_id() const { return GetParam(); }
+};
+
+class AutofillPopupViewNativeViewsTestWithClickablePopupItemId
+    : public AutofillPopupViewNativeViewsTest,
+      public ::testing::WithParamInterface<autofill::PopupItemId> {
+ public:
+  autofill::PopupItemId popup_item_id() const {
+    DCHECK(IsClickable(GetParam()));
+    return GetParam();
+  }
+};
 
 TEST_F(AutofillPopupViewNativeViewsTest, ShowHideTest) {
   CreateAndShowView({0});
@@ -104,10 +161,11 @@ TEST_F(AutofillPopupViewNativeViewsTest, ShowHideTest) {
 TEST_F(AutofillPopupViewNativeViewsTest,
        ShowViewWithOnlyFooterItemsShouldNotCrash) {
   // Set suggestions to have only a footer item.
-  autofill_popup_controller_.set_suggestions(
-      {autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM});
+  std::vector<int> suggestion_ids = {
+      autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM};
+  autofill_popup_controller_.set_suggestions(suggestion_ids);
   view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-      &autofill_popup_controller_, widget_.get());
+      autofill_popup_controller_.GetWeakPtr(), widget_.get());
   widget_->SetContentsView(view_.get());
   widget_->Show();
   view_->Show();
@@ -221,7 +279,7 @@ TEST_F(AutofillPopupViewNativeViewsTest, ClickDisabledEntry) {
   opt_int_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
   autofill_popup_controller_.set_suggestions({opt_int_suggestion});
   view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-      &autofill_popup_controller_, widget_.get());
+      autofill_popup_controller_.GetWeakPtr(), widget_.get());
   widget_->SetContentsView(view_.get());
   widget_->Show();
 
@@ -235,24 +293,154 @@ TEST_F(AutofillPopupViewNativeViewsTest, ClickDisabledEntry) {
   widget_->OnMouseEvent(&click_mouse_event);
 }
 
-TEST_P(AutofillPopupViewNativeViewsForEveryTypeTest, ShowClickTest) {
-  const TypeClicks& click = GetParam();
-  CreateAndShowView({click.id});
-  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(click.click);
-  gfx::Point center =
-      view()->GetRowsForTesting()[0]->GetBoundsInScreen().CenterPoint();
+// Ensure that the voice_over value of suggestions is presented to the
+// accessibility layer.
+TEST_F(AutofillPopupViewNativeViewsTest, VoiceOverTest) {
+  const std::u16string voice_over_value = u"Password for user@gmail.com";
+  // Create a realistic suggestion for a password.
+  autofill::Suggestion suggestion(u"user@gmail.com");
+  suggestion.labels = {{autofill::Suggestion::Text(u"example.com")}};
+  suggestion.voice_over = voice_over_value;
+  suggestion.additional_label = u"\u2022\u2022\u2022\u2022";
+  suggestion.frontend_id = autofill::POPUP_ITEM_ID_USERNAME_ENTRY;
 
-  // Because we use GetBoundsInScreen above, and because macOS may reposition
-  // the window, we need to turn this bit off or the clicks will miss their
-  // targets.
-  generator_->set_assume_window_at_origin(false);
-  generator_->set_current_screen_location(center);
+  // Create autofill menu.
+  autofill_popup_controller_.set_suggestions({suggestion});
+  view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
+      autofill_popup_controller_.GetWeakPtr(), widget_.get());
+  widget_->SetContentsView(view_.get());
+  widget_->Show();
+  view_->Show();
+
+  // Verify that the accessibility layer gets the right string to read out.
+  ui::AXNodeData node_data;
+  view_->GetRowsForTesting()[0]->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(voice_over_value,
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+// Tests that (only) clickable items trigger an AcceptSuggestion event.
+TEST_P(AutofillPopupViewNativeViewsTestWithAnyPopupItemId, ShowClickTest) {
+  CreateAndShowView({popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion)
+      .Times(IsClickable(popup_item_id()));
+  generator_->MoveMouseTo(gfx::Point(1000, 1000));
+  ASSERT_FALSE(view()->IsMouseHovered());
+  Paint();
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
   generator_->ClickLeftButton();
-  view()->RemoveAllChildViews(true /* delete_children */);
+  view()->RemoveAllChildViews();
+}
+
+// Tests that after the mouse moves into the popup after display, clicking a
+// suggestion triggers an AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       AcceptSuggestionIfUnfocusedAtPaint) {
+  CreateAndShowView({popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(1);
+  generator_->MoveMouseTo(gfx::Point(1000, 1000));
+  ASSERT_FALSE(view()->IsMouseHovered());
+  Paint();
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
+}
+
+// Tests that after the mouse moves from one suggestion to another, clicking the
+// suggestion triggers an AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       AcceptSuggestionIfMouseSelectedAnotherRow) {
+  CreateAndShowView({popup_item_id(), popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(1);
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  ASSERT_TRUE(view()->IsMouseHovered());
+  Paint();
+  generator_->MoveMouseTo(GetCenterOfSuggestion(1));  // Selects another row.
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
+}
+
+// Tests that after the mouse moves from one suggestion to another and back to
+// the first one, clicking the suggestion triggers an AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       AcceptSuggestionIfMouseTemporarilySelectedAnotherRow) {
+  CreateAndShowView({popup_item_id(), popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(1);
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  ASSERT_TRUE(view()->IsMouseHovered());
+  Paint();
+  generator_->MoveMouseTo(GetCenterOfSuggestion(1));  // Selects another row.
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
+}
+
+// Tests that even if the mouse hovers a suggestion when the popup is displayed,
+// after moving the mouse out and back in on the popup, clicking the suggestion
+// triggers an AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       AcceptSuggestionIfMouseExitedPopupSincePaint) {
+  CreateAndShowView({popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(1);
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  ASSERT_TRUE(view()->IsMouseHovered());
+  Paint();
+  generator_->MoveMouseTo(gfx::Point(1000, 1000));  // Exits the popup.
+  ASSERT_FALSE(view()->IsMouseHovered());
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
+}
+
+// Tests that if the mouse hovers a suggestion when the popup is displayed,
+// clicking the suggestion triggers no AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       IgnoreClickIfFocusedAtPaintWithoutExit) {
+  CreateAndShowView({popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(0);
+  generator_->MoveMouseTo(GetCenterOfSuggestion(0));
+  ASSERT_TRUE(view()->IsMouseHovered());
+  Paint();
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
+}
+
+// Tests that if the mouse hovers a suggestion when the popup is displayed and
+// moves around on this suggestion, clicking the suggestion triggers no
+// AcceptSuggestion() event.
+TEST_P(AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+       IgnoreClickIfFocusedAtPaintWithSlightMouseMovement) {
+  CreateAndShowView({popup_item_id()});
+  EXPECT_CALL(autofill_popup_controller_, AcceptSuggestion).Times(0);
+  int width = view()->GetRowsForTesting()[0]->width();
+  int height = view()->GetRowsForTesting()[0]->height();
+  for (int x : {-width / 3, width / 3}) {
+    for (int y : {-height / 3, height / 3}) {
+      generator_->MoveMouseTo(GetCenterOfSuggestion(0) + gfx::Vector2d(x, y));
+      ASSERT_TRUE(view()->IsMouseHovered());
+      Paint();
+    }
+  }
+  generator_->ClickLeftButton();
+  view()->RemoveAllChildViews();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillPopupViewNativeViewsForEveryTypeTest,
-                         ::testing::ValuesIn(kClickTestCase));
+                         AutofillPopupViewNativeViewsTestWithAnyPopupItemId,
+                         testing::ValuesIn([] {
+                           std::vector<autofill::PopupItemId> all_ids;
+                           all_ids.insert(all_ids.end(),
+                                          kClickablePopupItemIds.begin(),
+                                          kClickablePopupItemIds.end());
+                           all_ids.insert(all_ids.end(),
+                                          kUnclickablePopupItemIds.begin(),
+                                          kUnclickablePopupItemIds.end());
+                           return all_ids;
+                         }()));
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillPopupViewNativeViewsTestWithClickablePopupItemId,
+    testing::ValuesIn(kClickablePopupItemIds));
 
 }  // namespace

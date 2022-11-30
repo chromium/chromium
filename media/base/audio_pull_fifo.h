@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -33,6 +32,10 @@ class MEDIA_EXPORT AudioPullFifo {
   // FIFO can contain |channel| number of channels, where each channel is of
   // length |frames| audio frames.
   AudioPullFifo(int channels, int frames, ReadCB read_cb);
+
+  AudioPullFifo(const AudioPullFifo&) = delete;
+  AudioPullFifo& operator=(const AudioPullFifo&) = delete;
+
   virtual ~AudioPullFifo();
 
   // Consumes |frames_to_consume| audio frames from the FIFO and copies
@@ -58,8 +61,6 @@ class MEDIA_EXPORT AudioPullFifo {
   // Temporary audio bus to hold the data from the producer.
   std::unique_ptr<AudioBus> fifo_;
   int fifo_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPullFifo);
 };
 
 }  // namespace media

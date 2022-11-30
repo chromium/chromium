@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,6 @@ class TestOmniboxView : public OmniboxView {
   void GetSelectionBounds(size_t* start, size_t* end) const override;
   size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override;
-  void RevertAll() override {}
   void UpdatePopup() override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
@@ -64,9 +63,11 @@ class TestOmniboxView : public OmniboxView {
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  void OnInlineAutocompleteTextMaybeChanged(const std::u16string& display_text,
-                                            std::vector<gfx::Range> selections,
-                                            size_t user_text_length) override;
+  void OnInlineAutocompleteTextMaybeChanged(
+      const std::u16string& display_text,
+      std::vector<gfx::Range> selections,
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) override;
   void OnInlineAutocompleteTextCleared() override;
   void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override;

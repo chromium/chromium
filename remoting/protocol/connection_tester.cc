@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/connection_tester.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "net/base/io_buffer.h"
@@ -15,8 +16,7 @@
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 StreamConnectionTester::StreamConnectionTester(P2PStreamSocket* client_socket,
                                                P2PStreamSocket* host_socket,
@@ -159,7 +159,7 @@ class MessagePipeConnectionTester::MessageSender
   void OnMessagePipeClosed() override { NOTREACHED(); }
 
  private:
-  MessagePipe* pipe_;
+  raw_ptr<MessagePipe> pipe_;
   int message_size_;
   int message_count_;
 
@@ -204,5 +204,4 @@ void MessagePipeConnectionTester::OnMessagePipeClosed() {
   FAIL();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

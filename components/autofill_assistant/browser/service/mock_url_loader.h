@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
+class SimpleURLLoaderThrottle;
 namespace mojom {
 class URLLoaderFactory;
 }  // namespace mojom
@@ -61,23 +62,30 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_METHOD2(AttachStringForUpload,
                void(const std::string& upload_data,
                     const std::string& upload_content_type));
+  MOCK_METHOD1(AttachStringForUpload, void(const std::string& upload_data));
   MOCK_METHOD4(AttachFileForUpload,
                void(const base::FilePath& upload_file_path,
                     const std::string& upload_content_type,
+                    uint64_t offset,
+                    uint64_t length));
+  MOCK_METHOD3(AttachFileForUpload,
+               void(const base::FilePath& upload_file_path,
                     uint64_t offset,
                     uint64_t length));
   MOCK_METHOD2(SetRetryOptions, void(int max_retries, int retry_mode));
   MOCK_METHOD1(SetURLLoaderFactoryOptions, void(uint32_t options));
   MOCK_METHOD1(SetRequestID, void(int32_t request_id));
   MOCK_METHOD1(SetTimeoutDuration, void(base::TimeDelta timeout_duration));
+  MOCK_METHOD0(SetAllowBatching, void());
   MOCK_CONST_METHOD0(NetError, int());
   MOCK_CONST_METHOD0(ResponseInfo, const ::network::mojom::URLResponseHead*());
   MOCK_CONST_METHOD0(CompletionStatus,
-                     base::Optional<::network::URLLoaderCompletionStatus>&());
+                     absl::optional<::network::URLLoaderCompletionStatus>&());
   MOCK_CONST_METHOD0(GetFinalURL, const GURL&());
   MOCK_CONST_METHOD0(LoadedFromCache, bool());
   MOCK_CONST_METHOD0(GetContentSize, int64_t());
   MOCK_CONST_METHOD0(GetNumRetries, int());
+  MOCK_METHOD0(GetThrottleForTesting, ::network::SimpleURLLoaderThrottle*());
 };
 
 }  // namespace autofill_assistant

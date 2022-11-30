@@ -126,7 +126,7 @@ bool WeekInputType::IsValidFormat(bool has_year,
   return has_year && has_week;
 }
 
-String WeekInputType::AriaRoleForPickerIndicator() const {
+String WeekInputType::AriaLabelForPickerIndicator() const {
   return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_WEEK_PICKER);
 }
 

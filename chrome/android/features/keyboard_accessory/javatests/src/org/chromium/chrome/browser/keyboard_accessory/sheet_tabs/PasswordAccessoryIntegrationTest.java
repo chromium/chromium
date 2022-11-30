@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,9 +30,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
@@ -48,6 +50,7 @@ import java.util.concurrent.TimeoutException;
  * Integration tests for password accessory views.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordAccessoryIntegrationTest {
     @Rule
@@ -94,8 +97,13 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    public void testPasswordSheetDisplaysOptions() throws TimeoutException {
+    @EnableFeatures({ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID,
+            ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void
+    testPasswordSheetDisplaysOptions() throws TimeoutException {
         mHelper.loadTestPage(false);
+        // Marking the origin as denylisted shows only a very minimal accessory.
+        mHelper.cacheCredentials(new String[0], new String[0], true);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();
@@ -131,8 +139,14 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
+    @DisabledTest(message = "crbug/1365613")
+    @EnableFeatures({ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID,
+            ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
+    public void
+    testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
+        // Mark the origin as denylisted to have a reason to show the accessory in the first place.
+        mHelper.cacheCredentials(new String[0], new String[0], true);
 
         // Focus the field to bring up the accessory.
         mHelper.focusPasswordField();

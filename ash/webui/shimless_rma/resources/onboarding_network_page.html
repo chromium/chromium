@@ -1,0 +1,61 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    display: inline-flex;
+  }
+
+  .error {
+    color: var(--cros-text-color-alert);
+    font-weight: 500;
+  }
+
+  #networkList {
+    --cros-icon-color-primary: grey;
+    flex: 1;
+  }
+</style>
+
+<base-page>
+  <div slot="left-pane">
+    <h1 tabindex="-1">[[i18n('connectNetworkTitleText')]]</h1>
+    <div class="instructions">[[i18n('connectNetworkDescriptionText')]]</div>
+  </div>
+  <div id="container" slot="right-pane">
+    <div class="scroll-container">
+      <network-list id="networkList" show-technology-badge
+          networks="[[networks_]]" on-selected="onNetworkSelected_"
+          disabled="[[allButtonsDisabled]]">
+      </network-list>
+    </div>
+    <div class="gradient unequal-panes"></div>
+  </div>
+</base-page>
+
+<cr-dialog id="dialog" close-text="close">
+  <div slot="title">
+    [[getDialogTitle_(networkName_, networkType_, networkShowConnect_)]]
+  </div>
+  <div slot="body">
+    <network-config id="networkConfig" enable-connect="{{enableConnect_}}"
+      error="{{error_}}" on-close="onConfigClose_" name="{{networkName_}}"
+      on-properties-set="onPropertiesSet_" type="{{networkType_}}"
+      connect-on-enter="[[networkShowConnect_]]" guid="[[guid_]]">
+    </network-config>
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <template is="dom-if" if="[[error_]]" restamp>
+      <div class="flex error">[[getError_(error_)]]</div>
+    </template>
+    <cr-button id="cancelButton" on-click="closeConfig_">
+        [[i18n('connectNetworkDialogCancelButtonText')]]
+    </cr-button>
+    <cr-button id="connectButton" class="action-button"
+        on-click="connectNetwork_" disabled="[[!enableConnect_]]"
+        hidden$="[[!networkShowConnect_]]">
+      [[i18n('connectNetworkDialogConnectButtonText')]]
+    </cr-button>
+    <cr-button id="disconnectButton" class="action-button"
+      on-click="disconnectNetwork_"  hidden$="[[networkShowConnect_]]">
+      [[i18n('connectNetworkDialogDisconnectButtonText')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
 
@@ -45,7 +45,6 @@ TEST_F(VulkanImageTest, Create) {
     EXPECT_EQ(image->format(), format);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));
@@ -74,12 +73,11 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
     EXPECT_EQ(image->format(), format);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     EXPECT_TRUE(image->handle_types() &
                 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT)
         << std::hex << "handle_types = 0x" << image->handle_types();
@@ -96,7 +94,7 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
           << std::hex << " handle_types = 0x" << image->handle_types()
           << " handle_type = 0x" << handle_type;
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     EXPECT_TRUE(image->handle_types() &
                 VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT)
         << std::hex << "handle_types = 0x" << image->handle_types();
@@ -116,9 +114,9 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
           << std::hex << " handle_types = 0x" << image->handle_types()
           << " handle_type = 0x" << handle_type;
     }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     EXPECT_TRUE(image->handle_types() &
-                VK_EXTERNAL_MEMORY_HANDLE_TYPE_TEMP_ZIRCON_VMO_BIT_FUCHSIA);
+                VK_EXTERNAL_MEMORY_HANDLE_TYPE_ZIRCON_VMO_BIT_FUCHSIA);
     zx::vmo handle = image->GetMemoryZirconHandle();
     EXPECT_TRUE(handle);
 #endif
@@ -127,7 +125,7 @@ TEST_F(VulkanImageTest, CreateWithExternalMemory) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
   if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
     LOG(ERROR) << "AndroidHardwareBuffer is not supported";
@@ -172,13 +170,14 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
     EXPECT_EQ(gmb_handle.type,
               gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
     auto image = VulkanImage::CreateFromGpuMemoryBufferHandle(
-        device_queue, std::move(gmb_handle), size, format.vk, usage);
+        device_queue, std::move(gmb_handle), size, format.vk, usage,
+        /*flags=*/0, /*image_tiling=*/VK_IMAGE_TILING_OPTIMAL,
+        /*queue_family_index=*/VK_QUEUE_FAMILY_EXTERNAL);
     EXPECT_TRUE(image);
     EXPECT_EQ(image->size(), size);
     EXPECT_EQ(image->format(), format.vk);
     EXPECT_GT(image->device_size(), 0u);
     EXPECT_EQ(image->image_tiling(), VK_IMAGE_TILING_OPTIMAL);
-    EXPECT_EQ(image->image_layout(), VK_IMAGE_LAYOUT_UNDEFINED);
     EXPECT_NE(image->image(), static_cast<VkImage>(VK_NULL_HANDLE));
     EXPECT_NE(image->device_memory(),
               static_cast<VkDeviceMemory>(VK_NULL_HANDLE));

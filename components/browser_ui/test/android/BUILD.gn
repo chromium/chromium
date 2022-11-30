@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("test_support_java") {
+  testonly = true
+
+  sources = [ "src/org/chromium/components/browser_ui/test/BrowserUiDummyFragmentActivity.java" ]
+  deps = [
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//ui/android:ui_java_test_support",
+  ]
+  resources_package = "org.chromium.components.browser_ui.test"
+}

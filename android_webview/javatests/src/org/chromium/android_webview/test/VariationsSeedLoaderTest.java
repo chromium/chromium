@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,11 @@ public class VariationsSeedLoaderTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    private static class TestLoaderResult extends CallbackHelper {
+    /**
+     * Helper class to interact with {@link TestLoader}. This can be used to retrieve whether
+     * TestLoader requested a seed.
+     */
+    public static class TestLoaderResult extends CallbackHelper {
         private volatile boolean mBackgroundWorkFinished;
         private volatile boolean mForegroundWorkFinished;
         private volatile boolean mSeedRequested;
@@ -81,7 +85,13 @@ public class VariationsSeedLoaderTest {
         }
     }
 
-    private static class TestLoader extends VariationsSeedLoader {
+    /**
+     * A {@link VariationsSeedLoader} which is suitable for integration tests. This overrides the
+     * default timeout to be suitable for integration tests, allowing the test to call
+     * startVariationsInit() immediately before finishVariationsInit(). This also overrides the
+     * service Intent to match the test environment.
+     */
+    public static class TestLoader extends VariationsSeedLoader {
         private TestLoaderResult mResult;
 
         public TestLoader(TestLoaderResult result) {
@@ -96,9 +106,10 @@ public class VariationsSeedLoaderTest {
         }
 
         @Override
-        protected void requestSeedFromService(long oldSeedDate) {
-            super.requestSeedFromService(oldSeedDate);
+        protected boolean requestSeedFromService(long oldSeedDate) {
+            boolean result = super.requestSeedFromService(oldSeedDate);
             mResult.markSeedRequested();
+            return result;
         }
 
         @Override

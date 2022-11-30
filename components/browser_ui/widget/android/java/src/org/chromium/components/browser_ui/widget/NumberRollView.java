@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.widget.FrameLayout;
@@ -155,11 +156,11 @@ public class NumberRollView extends FrameLayout {
     }
 
     /**
-     * Update the text appearance for both {@link TextView}.
-     * @param resId The new text appearance to use.
+     * Update the text color with {@link ColorStateList} for both {@link TextView}.
+     * @param resId The new text {@link ColorStateList} to use.
      */
-    public void setTextAppearance(int resId) {
-        mUpNumber.setTextAppearance(mUpNumber.getContext(), resId);
-        mDownNumber.setTextAppearance(mDownNumber.getContext(), resId);
+    public void setTextColorStateList(ColorStateList colorStateList) {
+        mUpNumber.setTextColor(colorStateList);
+        mDownNumber.setTextColor(colorStateList);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "chrome/browser/media/test_license_server_config.h"
 
 namespace base {
@@ -18,13 +17,18 @@ class FilePath;
 class WVTestLicenseServerConfig : public TestLicenseServerConfig {
  public:
   WVTestLicenseServerConfig();
+
+  WVTestLicenseServerConfig(const WVTestLicenseServerConfig&) = delete;
+  WVTestLicenseServerConfig& operator=(const WVTestLicenseServerConfig&) =
+      delete;
+
   ~WVTestLicenseServerConfig() override;
 
   std::string GetServerURL() override;
 
   bool GetServerCommandLine(base::CommandLine* command_line) override;
 
-  base::Optional<base::EnvironmentMap> GetServerEnvironment() override;
+  absl::optional<base::EnvironmentMap> GetServerEnvironment() override;
 
   bool IsPlatformSupported() override;
 
@@ -42,8 +46,6 @@ class WVTestLicenseServerConfig : public TestLicenseServerConfig {
 
   // Sets the server port to a randomly available port within a limited range.
   bool SelectServerPort();
-
-  DISALLOW_COPY_AND_ASSIGN(WVTestLicenseServerConfig);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WV_TEST_LICENSE_SERVER_CONFIG_H_

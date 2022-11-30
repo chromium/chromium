@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ namespace blink {
 InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  size_t underlying_length =
+  wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
       std::make_unique<UnderlyingLengthChecker>(underlying_length));
@@ -27,8 +27,8 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
   ConversionCheckers null_checkers;
 
   auto convert_inner = [this, &null_underlying, &null_checkers](size_t) {
-    return this->inner_interpolation_type_->MaybeConvertNeutral(null_underlying,
-                                                                null_checkers);
+    return inner_interpolation_type_->MaybeConvertNeutral(null_underlying,
+                                                          null_checkers);
   };
 
   return ListInterpolationFunctions::CreateList(underlying_length,
@@ -46,8 +46,8 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertValue(
   ConversionCheckers null_checkers;
 
   return ListInterpolationFunctions::CreateList(
-      list->length(), [this, list, state, &null_checkers](size_t index) {
-        return this->inner_interpolation_type_->MaybeConvertValue(
+      list->length(), [this, list, state, &null_checkers](wtf_size_t index) {
+        return inner_interpolation_type_->MaybeConvertValue(
             list->Item(index), state, null_checkers);
       });
 }
@@ -65,7 +65,7 @@ const CSSValue* CSSCustomListInterpolationType::CreateCSSValue(
   switch (syntax_repeat_) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSyntaxRepeat::kSpaceSeparated:
       list = CSSValueList::CreateSpaceSeparated();
       break;
@@ -77,7 +77,7 @@ const CSSValue* CSSCustomListInterpolationType::CreateCSSValue(
   DCHECK(!non_interpolable_list ||
          interpolable_list.length() == non_interpolable_list->length());
 
-  for (size_t i = 0; i < interpolable_list.length(); ++i) {
+  for (wtf_size_t i = 0; i < interpolable_list.length(); ++i) {
     const NonInterpolableValue* non_interpolable_single_value =
         non_interpolable_list ? non_interpolable_list->Get(i) : nullptr;
     list->Append(*inner_interpolation_type_->CreateCSSValue(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ SigninReauthHandler::SigninReauthHandler(
     : controller_(controller),
       string_to_grd_id_map_(std::move(string_to_grd_id_map)) {
   DCHECK(controller_);
-  controller_observation_.Observe(controller_);
+  controller_observation_.Observe(controller_.get());
 }
 
 SigninReauthHandler::~SigninReauthHandler() = default;
@@ -58,31 +58,28 @@ void SigninReauthHandler::OnGaiaReauthTypeDetermined(
   if (!IsJavascriptAllowed())
     return;
 
-  DCHECK_NE(reauth_type, SigninReauthViewController::GaiaReauthType::kUnknown);
-  bool is_reauth_required =
-      reauth_type != SigninReauthViewController::GaiaReauthType::kAutoApproved;
-  FireWebUIListener("reauth-type-received", base::Value(is_reauth_required));
+  FireWebUIListener("reauth-type-determined");
 }
 
-void SigninReauthHandler::HandleInitialize(const base::ListValue* args) {
+void SigninReauthHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
 }
 
-void SigninReauthHandler::HandleConfirm(const base::ListValue* args) {
+void SigninReauthHandler::HandleConfirm(const base::Value::List& args) {
   if (controller_)
     controller_->OnReauthConfirmed(BuildConsent(args));
 }
 
-void SigninReauthHandler::HandleCancel(const base::ListValue* args) {
+void SigninReauthHandler::HandleCancel(const base::Value::List& args) {
   if (controller_)
     controller_->OnReauthDismissed();
 }
 
 sync_pb::UserConsentTypes::AccountPasswordsConsent
-SigninReauthHandler::BuildConsent(const base::ListValue* args) const {
-  CHECK_EQ(2U, args->GetSize());
-  base::Value::ConstListView consent_description = args->GetList()[0].GetList();
-  const std::string& consent_confirmation = args->GetList()[1].GetString();
+SigninReauthHandler::BuildConsent(const base::Value::List& args) const {
+  CHECK_EQ(2U, args.size());
+  const base::Value::List& consent_description = args[0].GetList();
+  const std::string& consent_confirmation = args[1].GetString();
 
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As

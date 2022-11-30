@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides a convenient API for data persistence with expiration.
@@ -18,8 +10,8 @@
 
 goog.provide('goog.storage.ExpiringStorage');
 
-goog.forwardDeclare('goog.storage.mechanism.Mechanism');
 goog.require('goog.storage.RichStorage');
+goog.requireType('goog.storage.mechanism.Mechanism');
 
 
 
@@ -33,6 +25,7 @@ goog.require('goog.storage.RichStorage');
  * @extends {goog.storage.RichStorage}
  */
 goog.storage.ExpiringStorage = function(mechanism) {
+  'use strict';
   goog.storage.ExpiringStorage.base(this, 'constructor', mechanism);
 };
 goog.inherits(goog.storage.ExpiringStorage, goog.storage.RichStorage);
@@ -63,6 +56,7 @@ goog.storage.ExpiringStorage.CREATION_TIME_KEY = 'creation';
  * @return {number|undefined} Wrapper creation time.
  */
 goog.storage.ExpiringStorage.getCreationTime = function(wrapper) {
+  'use strict';
   return wrapper[goog.storage.ExpiringStorage.CREATION_TIME_KEY];
 };
 
@@ -74,6 +68,7 @@ goog.storage.ExpiringStorage.getCreationTime = function(wrapper) {
  * @return {number|undefined} Wrapper expiration time.
  */
 goog.storage.ExpiringStorage.getExpirationTime = function(wrapper) {
+  'use strict';
   return wrapper[goog.storage.ExpiringStorage.EXPIRATION_TIME_KEY];
 };
 
@@ -85,8 +80,9 @@ goog.storage.ExpiringStorage.getExpirationTime = function(wrapper) {
  * @return {boolean} True if the item has expired.
  */
 goog.storage.ExpiringStorage.isExpired = function(wrapper) {
-  var creation = goog.storage.ExpiringStorage.getCreationTime(wrapper);
-  var expiration = goog.storage.ExpiringStorage.getExpirationTime(wrapper);
+  'use strict';
+  const creation = goog.storage.ExpiringStorage.getCreationTime(wrapper);
+  const expiration = goog.storage.ExpiringStorage.getExpirationTime(wrapper);
   return !!expiration && expiration < goog.now() ||
       !!creation && creation > goog.now();
 };
@@ -104,7 +100,8 @@ goog.storage.ExpiringStorage.isExpired = function(wrapper) {
  */
 goog.storage.ExpiringStorage.prototype.set = function(
     key, value, opt_expiration) {
-  var wrapper = goog.storage.RichStorage.Wrapper.wrapIfNecessary(value);
+  'use strict';
+  const wrapper = goog.storage.RichStorage.Wrapper.wrapIfNecessary(value);
   if (wrapper) {
     if (opt_expiration) {
       if (opt_expiration < goog.now()) {
@@ -129,7 +126,8 @@ goog.storage.ExpiringStorage.prototype.set = function(
  * @override
  */
 goog.storage.ExpiringStorage.prototype.getWrapper = function(key, opt_expired) {
-  var wrapper = goog.storage.ExpiringStorage.base(this, 'getWrapper', key);
+  'use strict';
+  const wrapper = goog.storage.ExpiringStorage.base(this, 'getWrapper', key);
   if (!wrapper) {
     return undefined;
   }

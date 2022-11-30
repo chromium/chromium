@@ -1,0 +1,14 @@
+[
+    ContextEnabled=MojoJSFileSystemAccessHelper,
+    Exposed=(Window),
+    ImplementedAs=MojoFileSystemAccess
+]
+partial interface Mojo {
+  // Allows pages with access to this capability to obtain a message pipe
+  // corresponding to a FileSystemFileHandle's transfer token. This message
+  // pipe corresponds to the FileSystemAccessTransferToken and can be passed
+  // to the browser process over Mojo to identify a file, without requiring
+  // the actual file path to be known to the renderer.
+  static MojoHandle
+        getFileSystemAccessTransferToken(FileSystemFileHandle fileHandle);
+};

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_REQUEST_FETCHER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "url/gurl.h"
@@ -39,6 +38,9 @@ class PrefetchRequestFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FinishedCallback callback);
 
+  PrefetchRequestFetcher(const PrefetchRequestFetcher&) = delete;
+  PrefetchRequestFetcher& operator=(const PrefetchRequestFetcher&) = delete;
+
   ~PrefetchRequestFetcher();
 
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
@@ -64,8 +66,6 @@ class PrefetchRequestFetcher {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   FinishedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchRequestFetcher);
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,1 @@
-monorail: {
-  component: "Services>CloudMessaging"
-}
-team_email: "platform-capabilities@chromium.org"
+mixins: "//chrome/browser/gcm/COMMON_METADATA"

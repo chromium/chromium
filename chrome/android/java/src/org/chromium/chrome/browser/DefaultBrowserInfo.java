@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,7 +170,7 @@ public final class DefaultBrowserInfo {
                     List<ResolveInfo> ris = PackageManagerUtils.queryAllWebBrowsersInfo();
                     if (ris != null) {
                         for (ResolveInfo ri : ris) {
-                            String packageName = ri.activityInfo.applicationInfo.packageName;
+                            String packageName = ri.activityInfo.packageName;
                             if (!uniquePackages.add(packageName)) continue;
 
                             if (isSystemPackage(ri)) {

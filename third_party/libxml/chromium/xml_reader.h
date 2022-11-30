@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,11 +64,13 @@ class XmlReader {
   // Returns false if there are no namespaces declared in the current tag.
   bool GetAllDeclaredNamespaces(std::map<std::string, std::string>* namespaces);
 
-  // Sets |content| to the content of the current node if it is a #text/#cdata
-  // node.
-  // Returns true if the current node is a #text/#cdata node, false otherwise.
+  // Sets |content| to the content of the current node if it is a
+  // text, cdata, or significant-whitespace node, respectively.
+  // Returns true if the current node is a node of the corresponding, false
+  // otherwise.
   bool GetTextIfTextElement(std::string* content);
   bool GetTextIfCDataElement(std::string* content);
+  bool GetTextIfSignificantWhitespaceElement(std::string* content);
 
   // Returns true if the node is an element (e.g. <foo>). Note this returns
   // false for self-closing elements (e.g. <foo/>). Use IsEmptyElement() to
@@ -100,6 +102,11 @@ class XmlReader {
  private:
   // Returns the libxml node type of the current node.
   int NodeType();
+
+  // A helper function for GetTextIf*Element() functions above.
+  // Checks if the node is the specified `node_type`, and, if so, populates
+  // `content` and returns true.
+  bool GetTextFromNodeIfType(int node_type, std::string* content);
 
   // The underlying libxml xmlTextReader.
   _xmlTextReader* reader_;

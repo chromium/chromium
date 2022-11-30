@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "gin/wrappable.h"
@@ -28,6 +27,10 @@ class RenderFrameImpl;
 class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GpuBenchmarking(const GpuBenchmarking&) = delete;
+  GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
+
   static void Install(base::WeakPtr<RenderFrameImpl> frame);
 
  private:
@@ -102,9 +105,17 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
   // The callback is removed once it's executed.
   bool AddSwapCompletionEventListener(gin::Arguments* args);
 
+  // For Mac only, returns the error code why CoreAnimation Renderer is not used
+  // in the requested frame. It's less efficient when this path is not hit.
+  // See "ui/gfx/ca_layer_result.h" for error codes.
+  int AddCoreAnimationStatusEventListener(gin::Arguments* args);
+
+  // Returns true if the argument is a CanvasImageSource whose image data is
+  // stored on the GPU.
+  bool IsAcceleratedCanvasImageSource(gin::Arguments* args);
+
   base::WeakPtr<RenderFrameImpl> render_frame_;
   mojo::Remote<mojom::InputInjector> input_injector_;
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarking);
 };
 
 }  // namespace content

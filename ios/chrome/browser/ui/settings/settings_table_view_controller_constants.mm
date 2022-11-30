@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kAccountProfilePhotoDimension = 40.0f;
-
 NSString* const kSettingsTableViewId = @"kSettingsTableViewId";
 NSString* const kSettingsSignInCellId = @"kSettingsSignInCellId";
 NSString* const kSettingsSignInDisabledCellId =
     @"kSettingsSignInDisabledCellId";
+NSString* const kSettingsSignInDisabledByPolicyCellId =
+    @"kSettingsSignInDisabledByPolicyCellId";
 NSString* const kSettingsAccountCellId = @"kSettingsAccountCellId";
 NSString* const kSettingsSearchEngineCellId = @"kSettingsSearchEngineCellId";
 NSString* const kSettingsManagedSearchEngineCellId =
@@ -42,9 +42,22 @@ NSString* const kSettingsTOSCellId = @"kSettingsTOSCellId";
 NSString* const kSettingsPrivacyNoticeCellId = @"kSettingsPrivacyNoticeCellId";
 NSString* const kSettingsPreloadCellId = @"kSettingsPreloadCellId";
 NSString* const kSettingsBlockPopupsCellId = @"kSettingsBlockPopupsCellId";
+NSString* const kSettingsShowLinkPreviewCellId =
+    @"kSettingsShowLinkPreviewCellId";
 NSString* const kSettingsDefaultAppsCellId = @"kSettingsDefaultAppsCellId";
 NSString* const kSettingsAddLanguageCellId = @"kSettingsAddLanguageCellId";
 NSString* const kSettingsClearBrowsingDataCellId =
     @"kSettingsClearBrowsingDataCellId";
 NSString* const kSettingsHandoffCellId = @"kSettingsHandoffCellId";
 NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";
+NSString* const kSettingsDefaultSiteModeCellId =
+    @"kSettingsDefaultSiteModeCellId";
+NSString* const kDefaultBrowserSettingsTableViewId =
+    @"kDefaultBrowserSettingsTableViewId";
+NSString* const kSettingsHttpsOnlyModeCellId = @"kSettingsHttpsOnlyModeCellId";
+NSString* const kSettingsIncognitoInterstitialId =
+    @"kSettingsIncognitoInterstitialId";
+NSString* const kSettingsIncognitoInterstitialDisabledId =
+    @"kSettingsIncognitoInterstitialDisabledId";
+NSString* const kSettingsPriceNotificationsId =
+    @"kSettingsPriceNotificationsId";

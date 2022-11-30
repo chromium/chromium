@@ -5,10 +5,11 @@
       this._session = session;
     }
 
-    async installSWAndWaitForActivated(swUrl) {
+    async installSWAndWaitForActivated(swUrl, options = {}) {
       await this._session.evaluateAsync(`
         (async function() {
-          const reg = await navigator.serviceWorker.register('${swUrl}');
+          const opt = JSON.parse('${JSON.stringify(options)}');
+          const reg = await navigator.serviceWorker.register('${swUrl}', opt);
           const worker = reg.installing || reg.waiting || reg.active;
           if (worker.state === 'activated')
             return;

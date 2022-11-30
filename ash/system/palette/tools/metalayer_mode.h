@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,28 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/system/palette/common_palette_tool.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
+
+// This will be used for the UMA stats to note deprecation toast events
+// for Assistant stylus features.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Also remember to update the
+// DeprecateStylusFeaturesToastEvent enum listing in
+// tools/metrics/histograms/enums.xml.
+enum DeprecateStylusFeaturesToastEvent {
+  // Features not deprecated, toast not shown.
+  kNotDeprecatedToastNotShown = 0,
+  // Features deprecated, toast shown (first time).
+  kDeprecatedToastShown = 1,
+  // Features deprecated, toast not shown (already shown).
+  kDeprecatedToastNotShown = 2,
+
+  kMaxValue = kDeprecatedToastNotShown
+};
 
 // A palette tool that lets the user select a screen region to be passed
 // to the Assistant framework.
@@ -25,6 +44,10 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
                                  public HighlighterController::Observer {
  public:
   explicit MetalayerMode(Delegate* delegate);
+
+  MetalayerMode(const MetalayerMode&) = delete;
+  MetalayerMode& operator=(const MetalayerMode&) = delete;
+
   ~MetalayerMode() override;
 
  private:
@@ -34,20 +57,20 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   bool feature_enabled() const {
     return assistant_enabled_ && assistant_context_enabled_ &&
            assistant_allowed_state_ ==
-               chromeos::assistant::AssistantAllowedState::ALLOWED;
+               assistant::AssistantAllowedState::ALLOWED;
   }
 
   // Whether the tool is in "loading" state.
   bool loading() const {
     return feature_enabled() &&
-           assistant_status_ == chromeos::assistant::AssistantStatus::NOT_READY;
+           assistant_status_ == assistant::AssistantStatus::NOT_READY;
   }
 
   // Whether the tool can be selected from the menu (only true when enabled
   // by the user and fully loaded).
   bool selectable() const {
     return feature_enabled() &&
-           assistant_status_ != chromeos::assistant::AssistantStatus::NOT_READY;
+           assistant_status_ != assistant::AssistantStatus::NOT_READY;
   }
 
   // PaletteTool:
@@ -66,12 +89,11 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantContextEnabled(bool enabled) override;
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState state) override;
+      assistant::AssistantAllowedState state) override;
 
   // HighlighterController::Observer:
   void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
@@ -85,15 +107,15 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   // Called when the metalayer session is complete.
   void OnMetalayerSessionComplete();
 
-  chromeos::assistant::AssistantStatus assistant_status_ =
-      chromeos::assistant::AssistantStatus::NOT_READY;
+  assistant::AssistantStatus assistant_status_ =
+      assistant::AssistantStatus::NOT_READY;
 
   bool assistant_enabled_ = false;
 
   bool assistant_context_enabled_ = false;
 
-  chromeos::assistant::AssistantAllowedState assistant_allowed_state_ =
-      chromeos::assistant::AssistantAllowedState::ALLOWED;
+  assistant::AssistantAllowedState assistant_allowed_state_ =
+      assistant::AssistantAllowedState::ALLOWED;
 
   base::TimeTicks previous_stroke_end_;
 
@@ -101,8 +123,6 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   bool activated_via_button_ = false;
 
   base::WeakPtrFactory<MetalayerMode> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MetalayerMode);
 };
 
 }  // namespace ash

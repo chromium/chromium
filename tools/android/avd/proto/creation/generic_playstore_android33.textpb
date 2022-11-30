@@ -1,0 +1,36 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86_64 android-13 AVD with playstore (user build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "9lGp8nTUCRRWGMnI_96HcKfzjnxEJKUcfvfwmA3wXNkC"  # 31.2.10
+  dest_path: "generic_playstore_android33"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-33/google_apis_playstore/x86_64"
+  version: "ndvYifhxEbUfsJ0FagczmGFFLE0Lp9ZxBif9P8seZS8C"  # beta 3
+  dest_path: "generic_playstore_android33"
+}
+system_image_name: "system-images;android-33;google_apis_playstore;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-33/google_apis_playstore/x86_64"
+  dest_path: "generic_playstore_android33"
+}
+avd_name: "android_33_google_apis_playstore_x86_64"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+}

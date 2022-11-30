@@ -1,0 +1,679 @@
+<!doctype html>
+<!-- Copyright 2019 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<html>
+  <head>
+    <title>$i18n{name}</title>
+    <meta charset="utf-8">
+    <!-- main.css contains all :root styles require to be loaded first. -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/button.css">
+    <link rel="stylesheet" href="/css/custom_toast.css">
+    <link rel="stylesheet" href="/css/document_mode_dialog.css">
+    <link rel="stylesheet" href="/css/flash.css">
+    <link rel="stylesheet" href="/css/inkdrop.css">
+    <link rel="stylesheet" href="/css/mode/mode.css">
+    <link rel="stylesheet" href="/css/mode/scan.css">
+    <link rel="stylesheet" href="/css/mode/video.css">
+    <link rel="stylesheet" href="/css/ptz_panel.css">
+    <link rel="stylesheet" href="/css/review.css">
+    <link rel="stylesheet" href="/css/views/settings.css">
+    <script type="module" src="/js/init.js"></script>
+  </head>
+  <body class="sound mirror mic view-splash">
+    <div id="spoken_msg" class="centered-overlay" tabindex="-1"
+         aria-live="polite"></div>
+    <div id="view-camera">
+      <div id="preview-box">
+        <div id="preview-viewport">
+          <video id="preview-video" class="preview-content"></video>
+          <div id="expert-controls">
+            <div id="preview-info" class="expert-control-row metadata-row
+              mode-on">
+              <span class="title">Info</span>
+              <div id="preview-resolution" class="metadata value"></div>
+              <div id="preview-device-name" class="metadata value"></div>
+            </div>
+            <div id="preview-stat" class="expert-control-row metadata-row
+              mode-on">
+              <span class="title">Stat</span>
+              <div id="preview-fps" class="metadata value"></div>
+              <div id="preview-num-faces" class="metadata value"></div>
+            </div>
+            <div id="preview-af" class="expert-control-row metadata-row">
+              <span class="title">AF</span>
+              <div id="preview-focus-distance" class="metadata value"></div>
+              <div id="preview-af-state" class="metadata value"></div>
+            </div>
+            <div id="preview-ae" class="expert-control-row metadata-row">
+              <span class="title">AE</span>
+              <div id="preview-sensitivity" class="metadata value"></div>
+              <div id="preview-exposure-time" class="metadata value"></div>
+              <div id="preview-frame-duration" class="metadata value"></div>
+              <div id="preview-ae-antibanding-mode" class="metadata value">
+              </div>
+              <div id="preview-ae-state" class="metadata value"></div>
+            </div>
+            <div id="preview-awb" class="expert-control-row metadata-row">
+              <span class="title">AWB</span>
+              <div id="preview-wb-gain-red" class="metadata value"></div>
+              <div id="preview-wb-gain-blue" class="metadata value"></div>
+              <div id="preview-awb-state" class="metadata value"></div>
+            </div>
+            <div class="video-option-row expert-control-row">
+              <span class="title">Profile</span>
+              <select id="video-profile" tabindex="0">
+                <!-- Generate in runtime -->
+              </select>
+            </div>
+            <div id="bitrate-slider" class="video-option-row
+                     expert-control-row">
+              <span class="title">Bitrate</span>
+              <input type="range" min="1" tabindex="0">
+              <div id="bitrate-multiplier" class="value"></div>
+              <div id="bitrate-number" class="value"></div>
+            </div>
+          </div>
+          <canvas id="preview-face-overlay" class="preview-content"></canvas>
+          <div id="preview-grid">
+            <div id="preview-grid-horizontal"></div>
+            <div id="preview-grid-vertical"></div>
+          </div>
+          <div id="preview-focus">
+            <object id="preview-focus-aim" type="image/svg+xml"
+                    data="/images/camera_focus_aim.svg"
+                    tabindex="-1" hidden></object>
+          </div>
+          <div id="preview-document-corner-overlay">
+            <div class="no-document-toast" tabindex="0" aria-live="polite"
+                 i18n-text="no_document_guide_msg"></div>
+            <div class="corner-container"></div>
+          </div>
+          <div class="barcode-scan-box centered-overlay"></div>
+          <div class="snackbar" aria-live="polite"></div>
+          <div id="camera-mode" class="centered-overlay"></div>
+        </div>
+        <div id="barcode-chip-url-container"
+             class="invisible barcode-chip-container">
+          <div class="barcode-chip-url">
+            <a href="#barcode-chip-url-container"></a>
+          </div>
+          <div class="circle">
+            <button class="barcode-copy-button" tabindex="0"
+              i18n-label="barcode_copy_link_button"></button>
+          </div>
+        </div>
+        <div id="barcode-chip-text-container"
+             class="invisible barcode-chip-container"
+             role="dialog" i18n-label="barcode_text_detected"
+             aria-live="polite" aria-describedby="barcode-chip-text-content">
+          <div class="barcode-chip-text">
+            <div id="barcode-chip-text-content"></div>
+            <button id="barcode-chip-text-expand"
+                    aria-expanded="false"></button>
+          </div>
+          <div class="circle">
+            <button class="barcode-copy-button" tabindex="0"
+              i18n-label="barcode_copy_text_button"></button>
+          </div>
+        </div>
+      </div>
+      <div class="top-stripe left-stripe buttons circle">
+        <button id="open-settings" tabindex="0"
+                i18n-label="settings_button" aria-haspopup="true"></button>
+      </div>
+      <div class="top-stripe left-stripe buttons circle">
+        <button id="back-to-review-document" tabindex="0"
+                i18n-aria="back_button"></button>
+      </div>
+      <div class="top-stripe right-stripe circle buttons">
+        <input id="toggle-mic" type="checkbox" tabindex="0"
+               i18n-label="toggle_mic_button" data-state="mic"
+               i18n-aria="aria_mute_off" data-key="toggleMic" checked>
+      </div>
+      <div id="options-group" class="left-stripe buttons circle">
+        <button id="open-mirror-panel" tabindex="0" aria-haspopup="true">
+        </button>
+        <button id="open-grid-panel" tabindex="0" aria-haspopup="true"></button>
+        <button id="open-timer-panel" tabindex="0" aria-haspopup="true">
+        <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
+                i18n-label="open_ptz_panel_button"
+                i18n-new-feature="new_control_toast"></button>
+        </button>
+      </div>
+      <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
+           i18n-aria="aria_scan_type_group">
+        <div id="scan-document-option" class="item disabled">
+          <input id="scan-document" type="radio" tabindex="0"
+                 name="scan-type" data-scantype="document"
+                 i18n-aria="scan_document_option" disabled>
+          <div class="label" i18n-text="label_scan_document_option"
+               aria-hidden="true"></div>
+        </div>
+        <div class="item">
+          <input id="scan-barcode" type="radio" tabindex="0"
+                 name="scan-type" data-scantype="barcode"
+                 i18n-aria="scan_qrcode_option">
+          <div class="label" i18n-text="label_scan_qrcode_option"
+               aria-hidden="true"></div>
+        </div>
+      </div>
+      <div id="record-types-group" class="mode-subgroup" role="radiogroup"
+           i18n-aria="aria_record_type_group">
+        <div class="item">
+          <input type="radio" tabindex="0" name="record-type"
+                 data-state="record-type-normal"
+                 i18n-aria="record_normal_video_option" checked>
+          <div class="label" i18n-text="label_record_normal_video_option"
+               aria-hidden="true"></div>
+        </div>
+        <div class="item">
+          <input type="radio" tabindex="0" name="record-type"
+                 data-state="record-type-gif"
+                 i18n-aria="record_gif_video_option">
+          <div class="label" i18n-text="label_record_gif_video_option"
+               aria-hidden="true"></div>
+        </div>
+      </div>
+      <div id="video-snapshot-holder" class="buttons right-stripe circle">
+        <button id="video-snapshot" tabindex="0"
+                i18n-label="take_video_snapshot_button"></button>
+      </div>
+      <div id="shutters-group" class="buttons right-stripe circle">
+        <button id="recordvideo" class="shutter" tabindex="0"
+                i18n-label="record_video_start_button">
+          <div class="red-dot"></div>
+          <div class="white-square"></div>
+          <svg id="shutter-progress-bar">
+            <circle></circle>
+          </svg>
+        </button>
+        <button id="start-takephoto" class="shutter" tabindex="0"
+                i18n-label="take_photo_button"></button>
+        <button id="stop-takephoto" class="shutter" tabindex="0"
+                i18n-label="take_photo_cancel_button"></button>
+      </div>
+      <div id="pause-recordvideo-holder" class="buttons right-stripe circle">
+        <button id="pause-recordvideo" tabindex="0"
+                i18n-label="record_video_pause_button">
+          <div class="red-dot"></div>
+          <div class="two-bars"></div>
+        </button>
+      </div>
+      <div class="bottom-stripe left-stripe buttons circle">
+        <button id="switch-device" tabindex="0"
+                i18n-label="switch_camera_button"></button>
+      </div>
+      <div id="mode-selector" class="bottom-stripe">
+        <div id="modes-group" class="buttons" role="radiogroup"
+             i18n-aria="aria_camera_mode_group">
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="video" tabindex="0"
+                 i18n-aria="switch_record_video_button">
+            <span i18n-text="label_switch_record_video_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="photo" tabindex="0"
+                 i18n-aria="switch_take_photo_button">
+            <span i18n-text="label_switch_take_photo_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="scan" tabindex="0"
+                 i18n-aria="switch_scan_mode_button">
+            <span i18n-text="label_switch_scan_mode_button"
+                  aria-hidden="true"></span>
+          </div>
+          <div class="mode-item">
+            <input type="radio" name="mode"
+                 data-mode="portrait" tabindex="0"
+                 i18n-aria="switch_take_portrait_bokeh_photo_button">
+            <span i18n-text="label_switch_take_portrait_bokeh_photo_button"
+                  aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+      <div id="document-page-count" class="bottom-stripe"></div>
+      <div class="bottom-stripe right-stripe buttons circle">
+        <button id="gallery-enter" tabindex="0"
+                i18n-label="gallery_button" hidden>
+          <img>
+        </button>
+      </div>
+      <div id="record-time" class="top-stripe horizontal-center-stripe" hidden>
+        <div class="icon"></div>
+        <div id="paused-msg" i18n-text="record_video_paused_msg"></div>
+        <div id="record-time-msg"></div>
+      </div>
+      <div class="centered-overlay">
+        <div id="timer-tick-msg"></div>
+      </div>
+    </div>
+    <div id="view-settings" class="settings">
+      <div class="menu">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div id="settings-header" i18n-text="settings_button"></div>
+        </div>
+        <button id="settings-photo-resolution" class="menu-item inkdrop
+                expandable" tabindex="0">
+          <div class="icon"></div>
+          <div>
+            <div i18n-text="photo_resolution_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
+          </div>
+        </button>
+        <button id="settings-video-resolution" class="menu-item inkdrop
+                expandable" tabindex="0">
+          <div class="icon"></div>
+          <div>
+            <div i18n-text="video_resolution_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
+          </div>
+        </button>
+        <button id="settings-photo-aspect-ratio" class="menu-item inkdrop
+                expandable" tabindex="0">
+          <div class="icon"></div>
+          <div>
+            <div i18n-text="photo_aspect_ratio_button"></div>
+            <div class="description">
+              <span></span>
+            </div>
+          </div>
+        </button>
+        <button id="settings-expert" class="menu-item inkdrop expandable"
+                tabindex="0">
+          <div class="icon"></div>
+          <div i18n-text="expert_mode_button">
+          </div>
+        </button>
+        <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
+          <div class="icon"></div>
+          <div i18n-text="feedback_button"></div>
+        </button>
+        <button id="settings-help" class="menu-item inkdrop" tabindex="0">
+          <div class="icon"></div>
+          <div i18n-text="help_button"></div>
+        </button>
+      </div>
+    </div>
+    <div id="view-photo-resolution-settings" class="settings">
+      <div class="menu">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="photo_resolution_button"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-photo-aspect-ratio-settings" class="settings">
+      <div class="menu" data-name="aspectratios">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="photo_aspect_ratio_button"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-video-resolution-settings" class="settings">
+      <div class="menu" data-name="videores">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="video_resolution_button"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-expert-settings" class="settings">
+      <div class="menu">
+        <div class="menu-header circle">
+          <button class="icon" tabindex="0" i18n-aria="back_button"></button>
+          <div i18n-text="expert_mode_button"></div>
+        </div>
+        <label class="menu-item inkdrop require-chromeos-vcd">
+          <input id="expert-show-metadata" class="icon" type="checkbox"
+                 tabindex="0" data-state="show-metadata"
+                 data-key="showMetadata">
+          <span i18n-text="expert_preview_metadata"></span>
+        </label>
+        <label class="menu-item inkdrop require-chromeos-vcd">
+          <input id="expert-save-metadata" class="icon" type="checkbox"
+                 tabindex="0" data-state="save-metadata"
+                 data-key="saveMetadata">
+          <span i18n-text="expert_save_metadata"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-print-performance-logs" class="icon" type="checkbox"
+                 tabindex="0" data-state="print-performance-logs"
+                 data-key="printPerformanceLogs">
+          <span i18n-text="expert_print_performance_logs"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input class="icon" id="custom-video-parameters"
+                 type="checkbox" tabindex="0"
+                 data-state="custom-video-parameters"
+                 data-key="customVideoParameters">
+          <span i18n-text="expert_custom_video_parameters"></span>
+        </label>
+        <label class="menu-item inkdrop require-chromeos-vcd">
+          <input class="icon" id="expert-enable-multistream-recording"
+                 type="checkbox" tabindex="0"
+                 data-state="enable-multistream-recording"
+                 data-key="enableMultistreamRecording">
+          <span i18n-text="expert_multistream_recording"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-enable-full-sized-video-snapshot" class="icon"
+                 type="checkbox" tabindex="0"
+                 data-state="enable-full-sized-video-snapshot"
+                 data-key="enableFullSizedVideoSnapshot">
+          <span i18n-text="expert_enable_full_sized_video_snapshot"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-enable-fps-picker-for-builtin" class="icon"
+                 type="checkbox" tabindex="0"
+                 data-state="enable-fps-picker-for-builtin"
+                 data-key="enableFPSPicker">
+          <span i18n-text="expert_enable_fps_picker_for_builtin"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-show-all-resolutions" class="icon"
+                 type="checkbox" tabindex="0"
+                 data-state="show-all-resolutions"
+                 data-key="showAllResolutions">
+          <span i18n-text="expert_show_all_resolutions"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-enable-ptz-for-builtin" class="icon"
+                 type="checkbox" tabindex="0"
+                 data-state="enable-ptz-for-builtin"
+                 data-key="enablePTZForBuiltin">
+          <span i18n-text="expert_enable_ptz_for_builtin"></span>
+        </label>
+        <label class="menu-item inkdrop">
+          <input id="expert-enable-expert-mode" class="icon" type="checkbox"
+                 tabindex="0" data-state="expert"
+                 data-key="expert">
+          <span i18n-text="expert_enable_expert_mode"></span>
+        </label>
+      </div>
+      <div class="spinner centered-overlay"></div>
+    </div>
+    <div id="view-option-panel">
+      <div id="option-panel" class="panel">
+        <div id="option-title" class="text"></div>
+        <div id="options-container"></div>
+      </div>
+    </div>
+    <div id="view-ptz-panel">
+      <div id="ptz-panel">
+        <div id="reset-all-container" class="panel">
+          <button id="ptz-reset-all" class="inkdrop" tabindex="0">
+            <div class="icon"></div>
+            <div class="text" i18n-text="ptz_reset_all_button"></div>
+          </button>
+        </div>
+        <div id="ptz-panel-container" class="panel">
+          <button id="tilt-up" class="inkdrop" i18n-label="tilt_up_button"
+            tabindex="0"></button>
+          <button id="pan-left" class="inkdrop" i18n-label="pan_left_button"
+            tabindex="0"></button>
+          <button id="zoom-out" class="inkdrop" i18n-label="zoom_out_button"
+            tabindex="0"></button>
+          <button id="zoom-in" class="inkdrop" i18n-label="zoom_in_button"
+            tabindex="0"></button>
+          <button id="pan-right" class="inkdrop" i18n-label="pan_right_button"
+            tabindex="0"></button>
+          <button id="tilt-down" class="inkdrop" i18n-label="tilt_down_button"
+            tabindex="0"></button>
+          <div id="ptz-divider1" class="ptz-divider"></div>
+          <div id="ptz-divider2" class="ptz-divider"></div>
+          <div id="ptz-divider3" class="ptz-divider"></div>
+          <div id="ptz-divider4" class="ptz-divider"></div>
+          <div id="ptz-zoom-divider" class="ptz-divider"></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-review" class="review-views">
+      <div class="review-frame">
+        <img class="review-image" hidden>
+        <video class="review-video" hidden controls autoplay></video>
+      </div>
+    </div>
+    <div id="view-crop-document" class="review-views">
+      <div id="document-corner-move-desc" i18n-text="document_corner_move_desc">
+      </div>
+      <div class="review-frame">
+        <div class="review-image" hidden>
+          <svg class="crop-area-container">
+            <polygon class="crop-area"></polygon>
+          </svg>
+        </div>
+        <video class="review-video" hidden></video>
+      </div>
+      <div class="review-crop-rotation-button-group button-group">
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
+      </div>
+    </div>
+    <div id="view-document-review" class="review-views">
+      <div class="document-pages" role="tablist" aria-label="Scanned page list"
+        aria-orientation="vertical"></div>
+      <div class="document-preview" role="tabpanel"></div>
+    </div>
+    <div id="view-document-mode-dialog">
+      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg"
+           aria-live="polite">
+        <div id="icon-scan-area">
+          <div class="scan-line"></div>
+          <div class="scan-corner top left"></div>
+          <div class="scan-corner top right"></div>
+          <div class="scan-corner bottom right"></div>
+          <div class="scan-corner bottom left"></div>
+          <div id="icon-document-area">
+            <div id="icon-document-g"></div>
+          </div>
+        </div>
+        <div class="dialog-title dialog-msg-holder"></div>
+        <div class="dialog-description" i18n-text="document_mode_dialog_msg">
+        </div>
+        <button class="dialog-positive-button text-button pill primary dark
+                inkdrop" tabindex="0" i18n-text="document_mode_dialog_got_it">
+        </button>
+      </div>
+    </div>
+    <div id="view-flash">
+      <div id="processing-indicator" class="centered-overlay">
+        <div class="icon"></div>
+        <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
+      </div>
+    </div>
+    <div id="view-warning">
+      <div id="error-msg" aria-live="polite"></div>
+    </div>
+    <div id="view-message-dialog" class="dialog">
+      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg">
+        <div class="dialog-msg dialog-msg-holder"></div>
+        <div class="dialog-buttons">
+          <button class="dialog-negative-button" tabindex="0"
+                  i18n-text="dialog_cancel_button"></button>
+          <button class="dialog-positive-button" tabindex="0"
+                  i18n-text="dialog_ok_button"></button>
+        </div>
+      </div>
+    </div>
+    <div id="view-splash"></div>
+    <div id="toast" class="centered-overlay" tabindex="-1"
+         aria-live="polite"></div>
+    <div id="tooltip" aria-hidden="true"></div>
+    <audio id="sound-tick-final" src="/sounds/tick_final.ogg"></audio>
+    <audio id="sound-tick-inc" src="/sounds/tick_inc.ogg"></audio>
+    <audio id="sound-tick-start" src="/sounds/tick_start.ogg"></audio>
+    <audio id="sound-shutter" src="/sounds/shutter.ogg"></audio>
+    <audio id="sound-rec-start" src="/sounds/record_start.ogg"></audio>
+    <audio id="sound-rec-end" src="/sounds/record_end.ogg"></audio>
+    <audio id="sound-rec-pause" src="/sounds/record_pause.ogg"></audio>
+    <template id="preview-video-template">
+      <video id="preview-video" class="preview-content" aria-hidden="true"
+        muted></video>
+    </template>
+    <template id="resolution-label-template">
+      <div class="label-item">
+        <span></span>
+      </div>
+    </template>
+    <template id="resolution-text-template">
+      <div class="text-item">
+        <span></span>
+      </div>
+    </template>
+    <template id="resolution-item-template">
+      <label class="menu-item circle resolution-option inkdrop">
+        <input class="icon" type="radio" tabindex="0">
+        <span></span>
+      </label>
+    </template>
+    <template id="video-resolution-item-template">
+      <label class="menu-item circle resolution-option inkdrop">
+        <input class="icon" type="radio" tabindex="0">
+        <span></span>
+        <div class="fps-buttons">
+          <button class="fps-button fps-30" i18n-aria="label_30fps"
+                  tabindex="0"></button>
+          <button class="fps-button fps-60" i18n-aria="label_60fps"
+                  tabindex="0"></button>
+        </div>
+      </label>
+    </template>
+    <template id="video-profile-option-template">
+      <option></option>
+    </template>
+    <template id="document-corner-template">
+      <div class="corner">
+        <div class="dot"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+      </div>
+    </template>
+    <template id="document-side-template">
+      <div class="side line"></div>
+    </template>
+    <template id="document-drag-point-template">
+      <div tabindex="0" class="dot"
+           aria-describedby="document-corner-move-desc">
+      </div>
+    </template>
+    <template id="inkdrop-template">
+      <div class="inkdrop-ripple"></div>
+    </template>
+    <template id="ripple-template">
+      <div class="ripple"></div>
+    </template>
+    <template id="new-feature-toast-template">
+      <div id="new-feature-toast" class="custom-toast" tabindex="0">
+        <span class="custom-toast-text" aria-hidden="true"></span>
+      </div>
+    </template>
+    <template id="indicator-toast-template">
+      <div id="indicator-toast" class="custom-toast" tabindex="0">
+        <div>
+          <img id="indicator-icon" alt>
+        </div>
+        <span class="custom-toast-text" aria-hidden="true"></span>
+      </div>
+      <div id="indicator-dot"></div>
+    </template>
+    <template id="text-button-template">
+      <button class="text-button pill dark inkdrop" tabindex="0"></button>
+    </template>
+    <template id="review-positive-button-group-template">
+      <div class="positive button-group"></div>
+    </template>
+    <template id="review-negative-button-group-template">
+      <div class="negative button-group"></div>
+    </template>
+    <template id="review-intent-button-group-template">
+      <div class="review-intent-button-group buttons right-stripe circle">
+      </div>
+    </template>
+    <template id="review-intent-button-template">
+      <button tabindex="0"></button>
+    </template>
+    <template id="state-option-template">
+      <label class="menu-item circle inkdrop">
+        <input class="icon" type="radio" tabindex="0">
+        <span></span>
+      </label>
+    </template>
+    <template id="document-preview-mode">
+      <div class="document-preview-mode">
+        <div class="preview-area">
+          <img class="image">
+        </div>
+        <div class="buttons-container">
+          <div class="button-group left">
+            <button class="text-button pill dark inkdrop secondary"
+              i18n-text="cancel_review_button" tabindex="0"></button>
+            <div class="separator"></div>
+            <button class="icon-button dark inkdrop"
+              i18n-aria="add_new_page_button" tabindex="0"></button>
+            <button class="icon-button dark inkdrop"
+              i18n-aria="label_share" tabindex="0"></button>
+            <button class="icon-button dark inkdrop"
+              i18n-aria="fix_page_button" tabindex="0"></button>
+          </div>
+          <div class="button-group right">
+            <button class="text-button pill dark inkdrop secondary"
+              i18n-text="label_save_photo_document" tabindex="0"></button>
+            <button class="text-button pill dark inkdrop primary"
+              i18n-text="label_save_pdf_document" tabindex="0"></button>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="document-fix-mode">
+      <div class="document-fix-mode">
+        <div class="preview-area">
+          <div class="image-container">
+            <img class="image">
+            <svg class="crop-area-container">
+              <polygon class="crop-area"></polygon>
+            </svg>
+          </div>
+        </div>
+        <div class="buttons-container">
+          <div class="review-crop-rotation-button-group button-group">
+            <button class="icon-button dark inkdrop"
+              i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+            <button class="icon-button dark inkdrop"
+              i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
+          </div>
+          <div class="button-group right">
+            <button class="text-button pill dark inkdrop primary"
+              i18n-text="label_crop_done" tabindex="0"></button>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="document-review-page">
+      <div class="page" tabindex="-1" aria-selected="false" role="tab"
+        i18n-aria="select_page_button">
+        <div class="delete-container">
+          <button class="delete" i18n-aria="delete_page_button"
+                  tabindex="0"></button>
+        </div>
+        <div class="thumbnail-container">
+          <img class="thumbnail">
+        </div>
+      </div>
+    </template>
+  </body>
+</html>

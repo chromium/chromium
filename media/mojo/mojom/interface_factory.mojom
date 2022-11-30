@@ -1,14 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
 import "media/mojo/mojom/audio_decoder.mojom";
+import "media/mojo/mojom/audio_encoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
+import "media/mojo/mojom/stable/stable_video_decoder.mojom";
 import "media/mojo/mojom/video_decoder.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -17,7 +20,20 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // ContentDecryptionModules created with the same factory.
 interface InterfaceFactory {
   CreateAudioDecoder(pending_receiver<AudioDecoder> audio_decoder);
-  CreateVideoDecoder(pending_receiver<VideoDecoder> video_decoder);
+
+  // Creates a VideoDecoder (|video_decoder|). If |dst_video_decoder| is
+  // provided and supported by the implementation, VideoDecoder calls on
+  // |video_decoder| should be forwarded to |dst_video_decoder|. This is
+  // intended to be used for out-of-process video decoding and LaCrOS in which
+  // the GPU process acts a proxy between a renderer and a video decoder process
+  // so that it can create a gpu::Mailbox for each decoded frame. As such, only
+  // the GPU process should be provided with a valid |dst_video_decoder|.
+  CreateVideoDecoder(
+      pending_receiver<VideoDecoder> video_decoder,
+      pending_remote<media.stable.mojom.StableVideoDecoder>? dst_video_decoder);
+
+  // Creates an AudioEncoder bound to a given receiver.
+  CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);
 
   // Creates a regular media::Renderer (DefaultRendererFactory).
   // TODO(guohuideng): remove |audio_device_id|, it's not used.
@@ -50,9 +66,13 @@ interface InterfaceFactory {
   // Creates a MediaFoundationRenderer (MediaFoundationRendererClientFactory).
   // - |renderer_extension| is bound in MediaFoundationRenderer, and receives
   //   calls from MediaFoundationRendererClient.
+  // - |client_extension| is bound in MediaFoundationRendererClient, and
+  //   received calls from MediaFoundationRenderer.
   CreateMediaFoundationRenderer(
+      pending_remote<MediaLog> media_log,
       pending_receiver<Renderer> renderer,
-      pending_receiver<MediaFoundationRendererExtension> renderer_extension);
+      pending_receiver<MediaFoundationRendererExtension> renderer_extension,
+      pending_remote<MediaFoundationRendererClientExtension> client_extension);
 
   [EnableIf=is_android]
   // Creates a FlingingRenderer (FlingingRendererClientFactory).
@@ -63,17 +83,17 @@ interface InterfaceFactory {
       pending_remote<FlingingRendererClientExtension> client_extension,
       pending_receiver<Renderer> renderer);
 
-  // Creates a CDM based on the |key_system| and |cdm_config| provided. A
-  // |key_system| is a generic term for a decryption mechanism and/or content
+  // Creates a CDM based on the `cdm_config` provided. The `key_system` in the
+  // `cdm_config` is a generic term for a decryption mechanism and/or content
   // protection provider. It should be a reverse domain name,
   // e.g. "com.example.somesystem". However, this call may be initiated by an
   // untrusted process (e.g. renderer), so the implementation must fully
-  // validate |key_system| before creating the CDM. |cdm_config| specifies other
+  // validate `key_system` before creating the CDM. `cdm_config` specifies other
   // properties of the CDM which may influence creation. Upon failure, the
-  // returned |cdm| and |cdm_context| will be null, and |error_message| will
-  // specify the error reason. Upon success, |cdm| and |cdm_context| will be
-  // valid, and |error_message| will be empty.
-  CreateCdm(string key_system, CdmConfig cdm_config) =>
+  // returned `cdm` and `cdm_context` will be null, and `error_message` will
+  // specify the error reason. Upon success, `cdm` and `cdm_context` will be
+  // valid, and `error_message` will be empty.
+  CreateCdm(CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
              CdmContext? cdm_context,
              string error_message);

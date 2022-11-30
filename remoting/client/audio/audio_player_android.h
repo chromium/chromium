@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/audio/audio_player.h"
 
@@ -19,6 +18,10 @@ namespace remoting {
 class AudioPlayerAndroid : public AudioPlayer {
  public:
   AudioPlayerAndroid();
+
+  AudioPlayerAndroid(const AudioPlayerAndroid&) = delete;
+  AudioPlayerAndroid& operator=(const AudioPlayerAndroid&) = delete;
+
   ~AudioPlayerAndroid() override;
 
   base::WeakPtr<AudioPlayerAndroid> GetWeakPtr();
@@ -48,8 +51,6 @@ class AudioPlayerAndroid : public AudioPlayer {
   uint32_t sample_per_frame_ = 0;
 
   base::WeakPtrFactory<AudioPlayerAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlayerAndroid);
 };
 
 }  // namespace remoting

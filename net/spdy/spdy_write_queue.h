@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -30,6 +29,10 @@ class SpdyStream;
 class NET_EXPORT_PRIVATE SpdyWriteQueue {
  public:
   SpdyWriteQueue();
+
+  SpdyWriteQueue(const SpdyWriteQueue&) = delete;
+  SpdyWriteQueue& operator=(const SpdyWriteQueue&) = delete;
+
   ~SpdyWriteQueue();
 
   // Returns whether there is anything in the write queue,
@@ -74,9 +77,6 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
   // Removes all pending writes.
   void Clear();
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
-
   // Returns the number of currently queued capped frames including all
   // priorities.
   int num_queued_capped_frames() const { return num_queued_capped_frames_; }
@@ -96,25 +96,23 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
                  std::unique_ptr<SpdyBufferProducer> frame_producer,
                  const base::WeakPtr<SpdyStream>& stream,
                  const MutableNetworkTrafficAnnotationTag& traffic_annotation);
-    ~PendingWrite();
+
+    PendingWrite(const PendingWrite&) = delete;
+    PendingWrite& operator=(const PendingWrite&) = delete;
+
     PendingWrite(PendingWrite&& other);
     PendingWrite& operator=(PendingWrite&& other);
 
-    size_t EstimateMemoryUsage() const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PendingWrite);
+    ~PendingWrite();
   };
 
-  bool removing_writes_;
+  bool removing_writes_ = false;
 
   // Number of currently queued capped frames including all priorities.
   int num_queued_capped_frames_ = 0;
 
   // The actual write queue, binned by priority.
   base::circular_deque<PendingWrite> queue_[NUM_PRIORITIES];
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyWriteQueue);
 };
 
 }  // namespace net

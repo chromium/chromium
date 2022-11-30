@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/cast_config_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/core/session_manager.h"
@@ -27,6 +26,12 @@ class CastConfigControllerMediaRouter
       public session_manager::SessionManagerObserver {
  public:
   CastConfigControllerMediaRouter();
+
+  CastConfigControllerMediaRouter(const CastConfigControllerMediaRouter&) =
+      delete;
+  CastConfigControllerMediaRouter& operator=(
+      const CastConfigControllerMediaRouter&) = delete;
+
   ~CastConfigControllerMediaRouter() override;
 
   static void SetMediaRouterForTest(media_router::MediaRouter* media_router);
@@ -37,6 +42,7 @@ class CastConfigControllerMediaRouter
   void RemoveObserver(Observer* observer) override;
   bool HasSinksAndRoutes() const override;
   bool HasActiveRoute() const override;
+  bool AccessCodeCastingEnabled() const override;
   void RequestDeviceRefresh() override;
   const std::vector<ash::SinkAndRoute>& GetSinksAndRoutes() override;
   void CastToSink(const std::string& sink_id) override;
@@ -59,8 +65,6 @@ class CastConfigControllerMediaRouter
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastConfigControllerMediaRouter);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CAST_CONFIG_CONTROLLER_MEDIA_ROUTER_H_

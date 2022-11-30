@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,20 +17,38 @@ if (is_mac) {
   import("//third_party/icu/config.gni")
 }
 
+source_set("constants") {
+  sources = [
+    "it2me_constants.cc",
+    "it2me_constants.h",
+  ]
+  deps = [ "//remoting/host/native_messaging" ]
+}
+
+source_set("helpers") {
+  sources = [
+    "it2me_helpers.cc",
+    "it2me_helpers.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//remoting/base",
+  ]
+}
+
 source_set("common") {
   sources = [
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",
     "it2me_confirmation_dialog_proxy.h",
-    "it2me_constants.cc",
-    "it2me_constants.h",
     "it2me_host.cc",
     "it2me_host.h",
     "it2me_native_messaging_host.cc",
     "it2me_native_messaging_host.h",
   ]
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
 
@@ -51,20 +69,34 @@ source_set("common") {
     "//remoting/build/config:version",
   ]
 
+  public_deps = [
+    ":constants",
+    ":helpers",
+  ]
+
   deps = [
     "//base:i18n",
     "//build:chromeos_buildflags",
+    "//components/policy:policy_code_generate",
+    "//components/webrtc:thread_wrapper",
+    "//extensions/browser/api/messaging:native_messaging",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/host:common",
+    "//remoting/host/base",
+    "//remoting/host/native_messaging:native_messaging",
     "//remoting/protocol",
     "//remoting/resources",
     "//remoting/signaling",
+    "//services/network/public/cpp:cpp",
   ]
-  if (is_linux && !is_chromeos_lacros) {
+
+  if (is_linux) {
     deps += [
       "//build/config/linux/gtk",
+      "//ui/base:base",
 
       # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
       # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
@@ -72,9 +104,27 @@ source_set("common") {
       "//third_party:freetype_harfbuzz",
     ]
   }
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ui/vector_icons",
+      "//remoting/host/chromeos",
+      "//remoting/host/chromeos:host_event_reporter_impl",
+      "//ui/message_center",
+      "//ui/message_center/public/cpp",
+    ]
+  }
+  if (is_mac) {
+    deps += [ "//ui/base:base" ]
+  }
+  if (is_win) {
+    deps += [
+      "//remoting/host/win",
+      "//remoting/host/win:elevated_native_messaging_host",
+    ]
+  }
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   source_set("chrome_os_host") {
     sources = [
       "it2me_native_messaging_host_allowed_origins.cc",
@@ -86,16 +136,37 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "it2me_native_messaging_host_lacros.cc",
         "it2me_native_messaging_host_lacros.h",
       ]
+      deps = [
+        ":constants",
+        ":helpers",
+        "//base",
+        "//chromeos/crosapi/mojom",
+        "//chromeos/lacros",
+        "//extensions/browser/api/messaging:native_messaging",
+        "//remoting/host/native_messaging",
+        "//remoting/protocol:errors",
+      ]
     } else {
       sources += [
+        "it2me_native_messaging_host_ash.cc",
+        "it2me_native_messaging_host_ash.h",
         "it2me_native_messaging_host_chromeos.cc",
         "it2me_native_messaging_host_chromeos.h",
       ]
 
       deps = [
         ":common",
+        "//extensions/browser/api/messaging:native_messaging",
+        "//remoting/base:base",
+        "//remoting/host:common",
+        "//remoting/host/chromeos:enterprise_support",
+        "//remoting/host/chromeos:features",
+        "//remoting/host/mojom:mojom",
+        "//remoting/host/native_messaging",
         "//skia",
       ]
+
+      public_deps = [ ":constants" ]
 
       if (use_ozone) {
         deps += [ "//ui/ozone" ]
@@ -105,12 +176,57 @@ if (is_chromeos_ash || is_chromeos_lacros) {
 }
 
 if (!is_chromeos_ash && enable_remoting_host) {
+  source_set("main_headers") {
+    sources = [ "it2me_native_messaging_host_main.h" ]
+    deps = [ "//remoting/host:host_main_headers" ]
+  }
+
+  source_set("main") {
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//remoting/build/config:host_implementation",
+      "//remoting/build/config:version",
+    ]
+    sources = [ "it2me_native_messaging_host_main.cc" ]
+    deps = [
+      ":common",
+      ":main_headers",
+      "//mojo/core/embedder",
+      "//net",
+      "//remoting/base",
+      "//remoting/base:breakpad",
+      "//remoting/host",
+      "//remoting/host:resources",
+      "//remoting/host:settings",
+      "//remoting/host/base",
+      "//remoting/host/native_messaging",
+      "//remoting/proto",
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//ui/gfx",
+    ]
+
+    if (is_linux && remoting_use_x11) {
+      defines = [ "REMOTING_USE_X11" ]
+      deps += [
+        "//build/config/linux/gtk",
+        "//ui/events/platform/x11",
+      ]
+    } else if (remoting_use_wayland) {
+      defines = [ "REMOTING_USE_WAYLAND" ]
+      deps += [ "//ui/gtk:gtk_config" ]
+    }
+
+    if (is_mac) {
+      deps += [ "//remoting/host/mac:permission_checking" ]
+    }
+  }
+
   if (is_win) {
     executable("remote_assistance_host") {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       deps = [
-        "//base/allocator",
+        ":main_headers",
         "//remoting/host/win:dpi_aware_exe_manifest",
         "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
@@ -135,7 +251,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       deps = [
-        "//base/allocator",
+        ":main_headers",
         "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
       ]
@@ -218,20 +334,15 @@ if (!is_chromeos_ash && enable_remoting_host) {
         ]
       }
 
-      sources = [
-        "it2me_native_messaging_host_entry_point.cc",
-        "it2me_native_messaging_host_main.cc",
-        "it2me_native_messaging_host_main.h",
-      ]
+      sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 
-      deps = [
-        ":common",
-        "//remoting/host",
-        "//remoting/host/native_messaging",
-        "//remoting/proto",
-        "//third_party/webrtc_overrides:webrtc_component",
-        "//ui/gfx",
-      ]
+      deps = [ ":main_headers" ]
+      if (is_mac) {
+        deps += [ ":main" ]
+      } else {
+        deps += [ "//remoting/host:remoting_core" ]
+      }
+
       if (is_mac) {
         foreach(locale, remoting_locales_with_underscores) {
           deps += [
@@ -242,16 +353,11 @@ if (!is_chromeos_ash && enable_remoting_host) {
         deps += [
           ":remote_assistance_host_icons",
           "//remoting/host:remoting_infoplist_strings",
-          "//remoting/host/mac:permission_checking",
           "//remoting/resources:copy_locales",
         ]
         if (icu_use_data_file) {
           deps += [ ":remote_assistance_host_resources" ]
         }
-      }
-
-      if (is_linux && !is_chromeos_lacros) {
-        deps += [ "//build/config/linux/gtk" ]
       }
     }
   }

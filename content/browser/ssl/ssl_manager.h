@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,16 @@
 #define CONTENT_BROWSER_SSL_SSL_MANAGER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/ssl/ssl_error_handler.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/ssl_status.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 class SSLInfo;
@@ -26,6 +25,7 @@ namespace content {
 class BrowserContext;
 class NavigationEntryImpl;
 class NavigationControllerImpl;
+class NavigationOrDocumentHandle;
 class SSLHostStateDelegate;
 struct LoadCommittedDetails;
 
@@ -36,27 +36,31 @@ struct LoadCommittedDetails;
 // There is one SSLManager per tab.
 // The security state (secure/insecure) is stored in the navigation entry.
 // Along with it are stored any SSL error code and the associated cert.
-class CONTENT_EXPORT SSLManager {
+class SSLManager {
  public:
   // Entry point for SSLCertificateErrors.  This function begins the process
   // of resolving a certificate error during an SSL connection.  SSLManager
   // will adjust the security UI and either call |CancelSSLRequest| or
-  // |ContinueSSLRequest| of |delegate|. |is_main_frame_request| is true only
-  // when the request is for a navigation in the main frame.
+  // |ContinueSSLRequest| of |delegate|. |is_primary_main_frame_request| is true
+  // only when the request is for a navigation in the primary main frame.
   //
   // This can be called on the UI or IO thread. It will call |delegate| on the
   // same thread.
   static void OnSSLCertificateError(
       const base::WeakPtr<SSLErrorHandler::Delegate>& delegate,
-      bool is_main_frame_request,
+      bool is_primary_main_frame_request,
       const GURL& url,
-      WebContents* web_contents,
+      NavigationOrDocumentHandle* navigation_or_document,
       int net_error,
       const net::SSLInfo& ssl_info,
       bool fatal);
 
   // Construct an SSLManager for the specified tab.
   explicit SSLManager(NavigationControllerImpl* controller);
+
+  SSLManager(const SSLManager&) = delete;
+  SSLManager& operator=(const SSLManager&) = delete;
+
   virtual ~SSLManager();
 
   // The navigation controller associated with this SSLManager.  The
@@ -64,7 +68,8 @@ class CONTENT_EXPORT SSLManager {
   NavigationControllerImpl* controller() { return controller_; }
 
   void DidCommitProvisionalLoad(const LoadCommittedDetails& details);
-  void DidStartResourceResponse(const GURL& url, bool has_certificate_errors);
+  void DidStartResourceResponse(const url::SchemeHostPort& final_response_url,
+                                bool has_certificate_errors);
 
   // The following methods are called when a page includes insecure
   // content. These methods update the SSLStatus on the NavigationEntry
@@ -86,7 +91,8 @@ class CONTENT_EXPORT SSLManager {
   void OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler);
 
   // Updates the NavigationEntry's |content_status| flags according to state in
-  // |ssl_host_state_delegate|. |add_content_status_flags| and
+  // |ssl_host_state_delegate|, and calls NotifyDidChangeVisibleSSLState
+  // according to |notify_changes|. |add_content_status_flags| and
   // |remove_content_status_flags| are bitmasks of SSLStatus::ContentStatusFlags
   // that will be added or removed from the |content_status| field. (Pass 0 to
   // add/remove no content status flags.) |remove_content_status_flags| are
@@ -94,7 +100,8 @@ class CONTENT_EXPORT SSLManager {
   // flags changes, this method will notify the WebContents and return true.
   bool UpdateEntry(NavigationEntryImpl* entry,
                    int add_content_status_flags,
-                   int remove_content_status_flags);
+                   int remove_content_status_flags,
+                   bool notify_changes);
 
   // Helper function for UpdateEntry().
   void UpdateLastCommittedEntry(int add_content_status_flags,
@@ -110,12 +117,10 @@ class CONTENT_EXPORT SSLManager {
 
   // The NavigationController that owns this SSLManager.  We are responsible
   // for the security UI of this tab.
-  NavigationControllerImpl* controller_;
+  raw_ptr<NavigationControllerImpl> controller_;
 
   // Delegate that manages SSL state specific to each host.
-  SSLHostStateDelegate* ssl_host_state_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLManager);
+  raw_ptr<SSLHostStateDelegate> ssl_host_state_delegate_;
 };
 
 }  // namespace content

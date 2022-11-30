@@ -1,0 +1,19 @@
+{
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm6NnMxmC5iaSFAILkuIkGXllW1Tie3AW+7Ty3R3sbQ7EVNG3HtFIG7jbJIvSko+lrTa1U1VveOXZw1u3y1T49ihR2XFU0w6+3OAXzjuUimKUviGao6EN4KfCegtKyDQnMw0zATBisqBxrPLzGBXxP/AhxH2OGgyyioVOzoCF+rnBY7ed+Wh+mPI7s9lrECeisUHHM5xbHXXgr8bnvt3U27jnsctwJWKHfcbd3rpMJwBfOmPfuQ0MZvySVkTr/WYeemkwR8/4mek9/UIGMB8X+mXdU9OV/qhylqy6FzRw/FdV+RcmzAwEgNmhgXP7TwtFBsUdtTIe2Kio26ciK7PSKwIDAQAB",
+    "name": "Test chromeos extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+      "os.diagnostics",
+      "os.telemetry",
+      "os.telemetry.serial_number",
+      "os.telemetry.network_info"
+    ],
+    "chromeos_system_extension": {},
+    "externally_connectable": {
+      "matches": [
+        "https://hpcs-appschr.hpcloud.hp.com/*"
+      ]
+    },
+    "options_page": "options.html"
+}

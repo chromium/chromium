@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <android/sensor.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 extern "C" {
@@ -42,6 +41,10 @@ class BASE_EXPORT AndroidHardwareBufferCompat {
   static bool IsSupportAvailable();
   static AndroidHardwareBufferCompat& GetInstance();
 
+  AndroidHardwareBufferCompat(const AndroidHardwareBufferCompat&) = delete;
+  AndroidHardwareBufferCompat& operator=(const AndroidHardwareBufferCompat&) =
+      delete;
+
   void Allocate(const AHardwareBuffer_Desc* desc, AHardwareBuffer** outBuffer);
   void Acquire(AHardwareBuffer* buffer);
   void Describe(const AHardwareBuffer* buffer, AHardwareBuffer_Desc* outDesc);
@@ -67,8 +70,6 @@ class BASE_EXPORT AndroidHardwareBufferCompat {
   PFAHardwareBuffer_release release_;
   PFAHardwareBuffer_sendHandleToUnixSocket send_handle_;
   PFAHardwareBuffer_unlock unlock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidHardwareBufferCompat);
 };
 
 }  // namespace base

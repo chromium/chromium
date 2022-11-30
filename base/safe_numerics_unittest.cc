@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 // WARNING: This block must come before the base/numerics headers are included.
 // These tests deliberately cause arithmetic boundary errors. If the compiler is
 // aggressive enough, it can const detect these errors, so we disable warnings.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(disable : 4756)  // Arithmetic overflow.
 #pragma warning(disable : 4293)  // Invalid shift.
 #endif
@@ -29,7 +30,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(COMPILER_MSVC) && defined(ARCH_CPU_32_BITS)
@@ -109,6 +109,59 @@ static_assert(FastIntegerArithmeticPromotion<int32_t, uint32_t>::is_contained,
 static_assert(!FastIntegerArithmeticPromotion<intmax_t, int8_t>::is_contained,
               "");
 static_assert(!FastIntegerArithmeticPromotion<uintmax_t, int8_t>::is_contained,
+              "");
+
+// Test compile-time (constexpr) evaluation of checking and saturation.
+constexpr int32_t kIntOne = 1;
+static_assert(1 == checked_cast<uint8_t>(kIntOne), "");
+static_assert(1 == saturated_cast<uint8_t>(kIntOne), "");
+static_assert(2U == MakeClampedNum(kIntOne) + 1, "");
+static_assert(2U == (MakeCheckedNum(kIntOne) + 1).ValueOrDie(), "");
+static_assert(0U == MakeClampedNum(kIntOne) - 1, "");
+static_assert(0U == (MakeCheckedNum(kIntOne) - 1).ValueOrDie(), "");
+static_assert(-1 == -MakeClampedNum(kIntOne), "");
+static_assert(-1 == (-MakeCheckedNum(kIntOne)).ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) * 1, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) * 1).ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) / 1, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) / 1).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(-kIntOne).Abs(), "");
+static_assert(1 == MakeCheckedNum(-kIntOne).Abs().ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) % 2, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) % 2).ValueOrDie(), "");
+static_assert(0U == MakeClampedNum(kIntOne) >> 1U, "");
+static_assert(0U == (MakeCheckedNum(kIntOne) >> 1U).ValueOrDie(), "");
+static_assert(2U == MakeClampedNum(kIntOne) << 1U, "");
+static_assert(2U == (MakeCheckedNum(kIntOne) << 1U).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(kIntOne) & 1U, "");
+static_assert(1 == (MakeCheckedNum(kIntOne) & 1U).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(kIntOne) | 1U, "");
+static_assert(1 == (MakeCheckedNum(kIntOne) | 1U).ValueOrDie(), "");
+static_assert(0 == MakeClampedNum(kIntOne) ^ 1U, "");
+static_assert(0 == (MakeCheckedNum(kIntOne) ^ 1U).ValueOrDie(), "");
+constexpr float kFloatOne = 1.0;
+static_assert(1 == int{checked_cast<int8_t>(kFloatOne)}, "");
+static_assert(1 == int{saturated_cast<int8_t>(kFloatOne)}, "");
+static_assert(2U == unsigned{MakeClampedNum(kFloatOne) + 1}, "");
+static_assert(2U ==
+                  (MakeCheckedNum(kFloatOne) + 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(0U == unsigned{MakeClampedNum(kFloatOne) - 1}, "");
+static_assert(0U ==
+                  (MakeCheckedNum(kFloatOne) - 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(-1 == int{-MakeClampedNum(kFloatOne)}, "");
+static_assert(-1 == (-MakeCheckedNum(kFloatOne)).Cast<int>().ValueOrDie(), "");
+static_assert(1U == unsigned{MakeClampedNum(kFloatOne) * 1}, "");
+static_assert(1U ==
+                  (MakeCheckedNum(kFloatOne) * 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(1U == unsigned{MakeClampedNum(kFloatOne) / 1}, "");
+static_assert(1U ==
+                  (MakeCheckedNum(kFloatOne) / 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(1 == int{MakeClampedNum(-kFloatOne).Abs()}, "");
+static_assert(1 == MakeCheckedNum(-kFloatOne).Abs().Cast<int>().ValueOrDie(),
               "");
 
 template <typename U>
@@ -619,6 +672,14 @@ template <typename Dst>
 static void TestArithmetic(const char* dst, int line) {
   using DstLimits = SaturationDefaultLimits<Dst>;
 
+  // Test C++17 class template argument deduction
+  static_assert(
+      std::is_same_v<Dst, typename decltype(CheckedNumeric(Dst{0}))::type>);
+  static_assert(
+      std::is_same_v<Dst, typename decltype(ClampedNumeric(Dst{0}))::type>);
+  static_assert(
+      std::is_same_v<Dst, typename decltype(StrictNumeric(Dst{0}))::type>);
+
   EXPECT_EQ(true, CheckedNumeric<Dst>().IsValid());
   EXPECT_EQ(false, CheckedNumeric<Dst>(CheckedNumeric<Dst>(DstLimits::max()) *
                                        DstLimits::max())
@@ -997,7 +1058,7 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
         // At least twice larger type.
         TEST_EXPECTED_SUCCESS(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_VALUE(SrcLimits::max() * clamped_dst,
-                            Dst(SrcLimits::max()) * SrcLimits::max());
+                            Dst(SrcLimits::max()) * Dst(SrcLimits::max()));
       } else {  // Larger, but not at least twice as large.
         TEST_EXPECTED_FAILURE(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_SUCCESS(checked_dst + 1);
@@ -1673,7 +1734,7 @@ TEST(SafeNumerics, VariadicNumericOperations) {
 }
 
 TEST(SafeNumerics, CeilInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1697,7 +1758,7 @@ TEST(SafeNumerics, CeilInt) {
 }
 
 TEST(SafeNumerics, FloorInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1721,7 +1782,7 @@ TEST(SafeNumerics, FloorInt) {
 }
 
 TEST(SafeNumerics, RoundInt) {
-  constexpr float kMax = std::numeric_limits<int>::max();
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
   constexpr float kMin = std::numeric_limits<int>::min();
   constexpr float kInfinity = std::numeric_limits<float>::infinity();
   constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
@@ -1749,7 +1810,8 @@ TEST(SafeNumerics, RoundInt) {
 }
 
 TEST(SafeNumerics, Int64) {
-  constexpr double kMax = std::numeric_limits<int64_t>::max();
+  constexpr double kMax =
+      static_cast<double>(std::numeric_limits<int64_t>::max());
   constexpr double kMin = std::numeric_limits<int64_t>::min();
   constexpr double kInfinity = std::numeric_limits<double>::infinity();
   constexpr double kNaN = std::numeric_limits<double>::quiet_NaN();

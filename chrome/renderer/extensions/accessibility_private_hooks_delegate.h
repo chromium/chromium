@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,12 @@ class ScriptContext;
 class AccessibilityPrivateHooksDelegate : public APIBindingHooksDelegate {
  public:
   AccessibilityPrivateHooksDelegate();
+
+  AccessibilityPrivateHooksDelegate(const AccessibilityPrivateHooksDelegate&) =
+      delete;
+  AccessibilityPrivateHooksDelegate& operator=(
+      const AccessibilityPrivateHooksDelegate&) = delete;
+
   ~AccessibilityPrivateHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -35,7 +41,6 @@ class AccessibilityPrivateHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleGetDisplayNameForLocale(
       ScriptContext* script_context,
       const std::vector<v8::Local<v8::Value>>& parsed_arguments);
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPrivateHooksDelegate);
 };
 
 }  // namespace extensions

@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("structured") {
+  sources = [
+    "chrome_structured_metrics_recorder.cc",
+    "chrome_structured_metrics_recorder.h",
+    "cros_events_processor.cc",
+    "cros_events_processor.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_events",
+    "//components/prefs",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "ash_structured_metrics_recorder.cc",
+      "ash_structured_metrics_recorder.h",
+    ]
+
+    deps += [ "//chrome/browser/ash/crosapi" ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "lacros_structured_metrics_recorder.cc",
+      "lacros_structured_metrics_recorder.h",
+    ]
+
+    deps += [ "//chromeos/lacros" ]
+  }
+}

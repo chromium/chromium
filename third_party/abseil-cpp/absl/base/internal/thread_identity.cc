@@ -14,7 +14,7 @@
 
 #include "absl/base/internal/thread_identity.h"
 
-#ifndef _WIN32
+#if !defined(_WIN32) || defined(__MINGW32__)
 #include <pthread.h>
 #include <signal.h>
 #endif
@@ -56,6 +56,7 @@ void AllocateThreadIdentityKey(ThreadIdentityReclaimerFunction reclaimer) {
 // *different* instances of this ptr.
 // Apple platforms have the visibility attribute, but issue a compile warning
 // that protected visibility is unsupported.
+ABSL_CONST_INIT  // Must come before __attribute__((visibility("protected")))
 #if ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
 __attribute__((visibility("protected")))
 #endif  // ABSL_HAVE_ATTRIBUTE(visibility) && !defined(__APPLE__)
@@ -120,10 +121,10 @@ void SetCurrentThreadIdentity(
     ABSL_THREAD_IDENTITY_MODE == ABSL_THREAD_IDENTITY_MODE_USE_CPP11
 
 // Please see the comment on `CurrentThreadIdentityIfPresent` in
-// thread_identity.h. Because DLLs cannot expose thread_local variables in
-// headers, we opt for the correct-but-slower option of placing the definition
-// of this function only in a translation unit inside DLL.
-#if defined(ABSL_BUILD_DLL) || defined(ABSL_CONSUME_DLL)
+// thread_identity.h. When we cannot expose thread_local variables in
+// headers, we opt for the correct-but-slower option of not inlining this
+// function.
+#ifndef ABSL_INTERNAL_INLINE_CURRENT_THREAD_IDENTITY_IF_PRESENT
 ThreadIdentity* CurrentThreadIdentityIfPresent() { return thread_identity_ptr; }
 #endif
 #endif

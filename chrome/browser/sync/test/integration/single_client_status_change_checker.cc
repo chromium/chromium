@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <vector>
 
 SingleClientStatusChangeChecker::SingleClientStatusChangeChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : MultiClientStatusChangeChecker({service}) {}
 
-SingleClientStatusChangeChecker::~SingleClientStatusChangeChecker() {}
+SingleClientStatusChangeChecker::~SingleClientStatusChangeChecker() = default;
 
-syncer::ProfileSyncService* SingleClientStatusChangeChecker::service() {
+syncer::SyncServiceImpl* SingleClientStatusChangeChecker::service() {
   return services()[0];
 }

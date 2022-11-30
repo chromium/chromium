@@ -3,7 +3,7 @@
 <script>
 
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.clearBackForwardList();
     testRunner.dumpAsText();
     testRunner.waitUntilDone();

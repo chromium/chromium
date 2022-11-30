@@ -40,13 +40,13 @@ class ExceptionState;
 class DateTimeLocalInputType final : public BaseTemporalInputType {
  public:
   explicit DateTimeLocalInputType(HTMLInputElement& element)
-      : BaseTemporalInputType(element) {}
+      : BaseTemporalInputType(Type::kDateTimeLocal, element) {}
 
  private:
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
   double ValueAsDate() const override;
-  void SetValueAsDate(const base::Optional<base::Time>&,
+  void SetValueAsDate(const absl::optional<base::Time>&,
                       ExceptionState&) const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
   bool ParseToDateComponentsInternal(const String&,
@@ -54,6 +54,8 @@ class DateTimeLocalInputType final : public BaseTemporalInputType {
   bool SetMillisecondToDateComponents(double, DateComponents*) const override;
   String LocalizeValue(const String&) const override;
   void WarnIfValueIsInvalid(const String&) const override;
+
+  String SanitizeValue(const String&) const override;
 
   // BaseTemporalInputType functions
   String FormatDateTimeFieldsState(const DateTimeFieldsState&) const final;
@@ -67,7 +69,14 @@ class DateTimeLocalInputType final : public BaseTemporalInputType {
                      bool has_hour,
                      bool has_minute,
                      bool has_second) const override;
-  String AriaRoleForPickerIndicator() const override;
+  String AriaLabelForPickerIndicator() const override;
+};
+
+template <>
+struct DowncastTraits<DateTimeLocalInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsDateTimeLocalInputType();
+  }
 };
 
 }  // namespace blink

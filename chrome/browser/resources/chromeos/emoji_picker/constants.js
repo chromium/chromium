@@ -1,19 +1,61 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // height and width should match the dialog size in EmojiPickerDialog.
-export const EMOJI_PICKER_HEIGHT = 390;
-export const EMOJI_PICKER_WIDTH = 340;
-export const EMOJI_ICON_SIZE = 32;
-export const GROUP_ICON_SIZE = 36;
+export const EMOJI_NUM_TABS_IN_FIRST_PAGE = 8;
+export const EMOJI_HIGHLIGHTER_WIDTH = 24;
+export const EMOJI_PICKER_HEIGHT = 454;
+export const EMOJI_PICKER_WIDTH = 396;
+export const EMOJI_ICON_SIZE = 28;
+export const EMOJI_SPACING = 13;
 export const EMOJI_PER_ROW = 9;
 export const GROUP_PER_ROW = 9;
-export const EMOJI_PICKER_SIDE_PADDING = 14;
-export const EMOJI_PICKER_TOP_PADDING = 8;
+export const EMOJI_PICKER_SIDE_PADDING = 20;
+export const EMOJI_PICKER_TOP_PADDING = 20;
+export const GROUP_ICON_SIZE =
+    (EMOJI_PICKER_WIDTH - 2 * EMOJI_PICKER_SIDE_PADDING) / EMOJI_PER_ROW;
 
+export const EMOJI_HIGHLIGHTER_WIDTH_PX = `${EMOJI_HIGHLIGHTER_WIDTH}px`;
 export const EMOJI_PICKER_HEIGHT_PX = `${EMOJI_PICKER_HEIGHT}px`;
 export const EMOJI_PICKER_WIDTH_PX = `${EMOJI_PICKER_WIDTH}px`;
 export const EMOJI_SIZE_PX = `${EMOJI_ICON_SIZE}px`;
+export const EMOJI_SPACING_PX = `${EMOJI_SPACING}px`;
+export const EMOJI_GROUP_SIZE_PX = `${GROUP_ICON_SIZE}px`;
 export const EMOJI_PICKER_SIDE_PADDING_PX = `${EMOJI_PICKER_SIDE_PADDING}px`;
 export const EMOJI_PICKER_TOP_PADDING_PX = `${EMOJI_PICKER_TOP_PADDING}px`;
+export const EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX =
+    `${EMOJI_ICON_SIZE + EMOJI_SPACING}px`;
+export const EMOJI_PICKER_TOTAL_EMOJI_WIDTH = EMOJI_ICON_SIZE + EMOJI_SPACING;
+
+export const V2_EMOJI_PICKER_HEIGHT = 480;
+export const V2_EMOJI_PICKER_WIDTH = 420;
+export const V2_EMOJI_PICKER_SIDE_PADDING = 20;
+export const V2_EMOJI_ICON_SIZE = 32;
+export const V2_GROUP_PER_ROW = 10;
+export const V2_EMOJI_PER_ROW = 9;
+export const V2_EMOJI_GROUP_SPACING =
+    (V2_EMOJI_PICKER_WIDTH - 2 * V2_EMOJI_PICKER_SIDE_PADDING -
+     V2_GROUP_PER_ROW * V2_EMOJI_ICON_SIZE) /
+    (V2_GROUP_PER_ROW - 1);
+export const V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH =
+    V2_EMOJI_ICON_SIZE + V2_EMOJI_GROUP_SPACING;
+export const V2_TAB_BUTTON_MARGIN = 5;
+export const V2_TEXT_GROUP_BUTTON_PADDING = 4;
+export const V2_EMOJI_SPACING =
+    (V2_EMOJI_PICKER_WIDTH - 2 * V2_EMOJI_PICKER_SIDE_PADDING -
+     V2_EMOJI_PER_ROW * V2_EMOJI_ICON_SIZE) /
+    (V2_EMOJI_PER_ROW - 1);
+
+export const V2_EMOJI_PICKER_HEIGHT_PX = `${V2_EMOJI_PICKER_HEIGHT}px`;
+export const V2_EMOJI_PICKER_WIDTH_PX = `${V2_EMOJI_PICKER_WIDTH}px`;
+export const V2_EMOJI_PICKER_SIDE_PADDING_PX =
+    `${V2_EMOJI_PICKER_SIDE_PADDING}px`;
+export const V2_EMOJI_ICON_SIZE_PX = `${V2_EMOJI_ICON_SIZE}px`;
+export const V2_EMOJI_GROUP_SPACING_PX = `${V2_EMOJI_GROUP_SPACING}px`;
+export const V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX =
+    `${V2_EMOJI_PICKER_TOTAL_EMOJI_WIDTH}px`;
+export const V2_TAB_BUTTON_MARGIN_PX = `${V2_TAB_BUTTON_MARGIN}px`;
+export const V2_TEXT_GROUP_BUTTON_PADDING_PX =
+    `${V2_TEXT_GROUP_BUTTON_PADDING}px`;
+export const V2_EMOJI_SPACING_PX = `${V2_EMOJI_SPACING}px`;

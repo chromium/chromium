@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,8 @@ class SharedURLLoaderFactory;
 // Returns the HTTP URL for RetryableURLFetcher to fetch.
 - (NSString*)urlToFetch;
 
-// Callback function after URL has been fetched. |response| is the content of
-// the HTTP response. This method may be called with a nil |response| if the
+// Callback function after URL has been fetched. `response` is the content of
+// the HTTP response. This method may be called with a nil `response` if the
 // HTTP request failed.
 - (void)processSuccessResponse:(NSString*)response;
 
@@ -30,9 +30,9 @@ class SharedURLLoaderFactory;
 
 @interface RetryableURLFetcher : NSObject
 
-// Designated initializer. |shared_url_loader_factory| and |delegate| must not
-// be nil. If |policy| is not null, it specifies how often to retry the URL
-// fetch on a call to -startFetch. If |policy| is null, there is no retry.
+// Designated initializer. `shared_url_loader_factory` and `delegate` must not
+// be nil. If `policy` is not null, it specifies how often to retry the URL
+// fetch on a call to -startFetch. If `policy` is null, there is no retry.
 - (instancetype)
 initWithURLLoaderFactory:
     (scoped_refptr<network::SharedURLLoaderFactory>)shared_url_loader_factory

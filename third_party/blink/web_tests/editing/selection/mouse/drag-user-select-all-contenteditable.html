@@ -10,11 +10,12 @@ test(function(){
         '<div contenteditable="true" style="-webkit-user-select:all">foo<span id="span">bar</span>baz</div>',
         selection => {
             var span = selection.document.getElementById('span');
+            const bounds = span.getBoundingClientRect();
             eventSender.dragMode = false;
-            eventSender.mouseMoveTo(selection.document.offsetLeft + span.offsetLeft, selection.document.offsetTop + span.offsetTop + 5);
+            eventSender.mouseMoveTo(selection.document.offsetLeft + bounds.x, selection.document.offsetTop + bounds.y + 5);
             eventSender.mouseDown();
             eventSender.leapForward(100);
-            eventSender.mouseMoveTo(selection.document.offsetLeft + span.offsetLeft + span.offsetWidth, selection.document.offsetTop + span.offsetTop + 5);
+            eventSender.mouseMoveTo(selection.document.offsetLeft + bounds.x + bounds.width, selection.document.offsetTop + bounds.y + 5);
         },
         '<div contenteditable="true" style="-webkit-user-select:all">foo<span id="span">^bar|</span>baz</div>');
     },

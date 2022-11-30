@@ -1,3 +1,9 @@
+/*
+ * Summary: main header file
+ *
+ * Copy: See Copyright for the status of this software.
+ */
+
 
 #ifndef __EXSLT_H__
 #define __EXSLT_H__

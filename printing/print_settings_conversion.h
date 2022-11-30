@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,27 @@
 
 #include <memory>
 
+#include "base/component_export.h"
+#include "base/values.h"
 #include "printing/page_range.h"
-#include "printing/printing_export.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 namespace printing {
 
 class PrintSettings;
 
-PRINTING_EXPORT PageRanges
-GetPageRangesFromJobSettings(const base::Value& job_settings);
+COMPONENT_EXPORT(PRINTING)
+PageRanges GetPageRangesFromJobSettings(const base::Value::Dict& job_settings);
 
 // Returns nullptr on failure.
-PRINTING_EXPORT std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
-    const base::Value& job_settings);
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
+    const base::Value::Dict& job_settings);
 
-// Use for debug only, because output is not completely consistent with format
-// of |PrintSettingsFromJobSettings| input.
-void PrintSettingsToJobSettingsDebug(const PrintSettings& settings,
-                                     base::DictionaryValue* job_settings);
+// Use for debug/test only, because output is not completely consistent with
+// format of `PrintSettingsFromJobSettings` input.
+COMPONENT_EXPORT(PRINTING)
+base::Value::Dict PrintSettingsToJobSettingsDebug(
+    const PrintSettings& settings);
 
 }  // namespace printing
 

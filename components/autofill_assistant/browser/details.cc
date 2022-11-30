@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,10 +40,18 @@ std::string FormatDateTimeProto(const DateTimeProto& date_time) {
   auto date_proto = date_time.date();
   auto time_proto = date_time.time();
 
-  base::Time::Exploded exploded_time = {
-      date_proto.year(),      date_proto.month(),
-      /* day_of_week = */ -1, date_proto.day(),    time_proto.hour(),
-      time_proto.minute(),    time_proto.second(), 0};
+  // Technically we are setting the wrong |day_of_week|, but it's ignored in
+  // practice and the formatted string will have the correct day for the
+  // date. Setting an invalid value here (e.g. -1) causes issues on Windows.
+  base::Time::Exploded exploded_time = {static_cast<int>(date_proto.year()),
+                                        date_proto.month(),
+                                        /* day_of_week = */ 0,
+                                        date_proto.day(),
+                                        time_proto.hour(),
+                                        time_proto.minute(),
+                                        time_proto.second(),
+                                        /* millisecond = */ 0};
+
   base::Time time;
 
   if (base::Time::FromLocalExploded(exploded_time, &time)) {
@@ -160,12 +171,12 @@ bool Details::UpdateFromShippingAddress(const ShowDetailsProto& proto,
 bool Details::UpdateFromSelectedCreditCard(const ShowDetailsProto& proto,
                                            const UserData* user_data,
                                            Details* details) {
-  if (user_data->selected_card_.get() == nullptr || !proto.credit_card()) {
+  if (!user_data->selected_card() || !proto.credit_card()) {
     return false;
   }
 
   ShowDetailsProto updated_proto = proto;
-  auto* card = user_data->selected_card_.get();
+  const auto* card = user_data->selected_card();
   auto* details_proto = updated_proto.mutable_details();
   details_proto->set_title(
       l10n_util::GetStringUTF8(IDS_PAYMENTS_METHOD_OF_PAYMENT_LABEL));
@@ -229,8 +240,8 @@ base::Value Details::GetDebugContext() const {
 }
 
 bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
-  base::Optional<bool> show_initial = script_parameters.GetDetailsShowInitial();
-  if (show_initial.has_value() && !*show_initial) {
+  if (script_parameters.HasDetailsShowInitial() &&
+      !script_parameters.GetDetailsShowInitial()) {
     return false;
   }
 
@@ -239,48 +250,48 @@ bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
   proto_.mutable_placeholders()->set_show_image_placeholder(true);
   bool details_updated = false;
 
-  base::Optional<std::string> title = script_parameters.GetDetailsTitle();
+  absl::optional<std::string> title = script_parameters.GetDetailsTitle();
   if (title) {
     proto_.set_title(title.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_1 =
+  absl::optional<std::string> description_line_1 =
       script_parameters.GetDetailsDescriptionLine1();
   if (description_line_1) {
     proto_.set_description_line_1(description_line_1.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_2 =
+  absl::optional<std::string> description_line_2 =
       script_parameters.GetDetailsDescriptionLine2();
   if (description_line_2) {
     proto_.set_description_line_2(description_line_2.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> description_line_3 =
+  absl::optional<std::string> description_line_3 =
       script_parameters.GetDetailsDescriptionLine3();
   if (description_line_3) {
     proto_.set_description_line_3(description_line_3.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_url =
+  absl::optional<std::string> image_url =
       script_parameters.GetDetailsImageUrl();
   if (image_url) {
     proto_.set_image_url(image_url.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_accessibility_hint =
+  absl::optional<std::string> image_accessibility_hint =
       script_parameters.GetDetailsImageAccessibilityHint();
   if (image_accessibility_hint) {
     proto_.set_image_accessibility_hint(image_accessibility_hint.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> image_clickthrough_url =
+  absl::optional<std::string> image_clickthrough_url =
       script_parameters.GetDetailsImageClickthroughUrl();
   if (image_clickthrough_url) {
     proto_.mutable_image_clickthrough_data()->set_allow_clickthrough(true);
@@ -289,14 +300,14 @@ bool Details::UpdateFromParameters(const ScriptParameters& script_parameters) {
     details_updated = true;
   }
 
-  base::Optional<std::string> total_price_label =
+  absl::optional<std::string> total_price_label =
       script_parameters.GetDetailsTotalPriceLabel();
   if (total_price_label) {
     proto_.set_total_price_label(total_price_label.value());
     details_updated = true;
   }
 
-  base::Optional<std::string> total_price =
+  absl::optional<std::string> total_price =
       script_parameters.GetDetailsTotalPrice();
   if (total_price) {
     proto_.set_total_price(total_price.value());
@@ -322,11 +333,11 @@ const std::string Details::imageUrl() const {
   return proto_.image_url();
 }
 
-const base::Optional<std::string> Details::imageAccessibilityHint() const {
+const absl::optional<std::string> Details::imageAccessibilityHint() const {
   if (proto_.has_image_accessibility_hint()) {
     return proto_.image_accessibility_hint();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool Details::imageAllowClickthrough() const {

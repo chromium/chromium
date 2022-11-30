@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Nonaktifkan semua animasi gambar.</translation>
 <translation id="1703735871906654364">Penjelajahan dengan Keyboard</translation>
 <translation id="1791496371305830581">Izinkan semua gambar animasi.</translation>
+<translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1996252509865389616">Aktifkan?</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2179565792157161713">Buka Deskripsi Panjang di Tab Baru</translation>
@@ -18,7 +19,7 @@
 <translation id="2648340354586434750">Tahan &lt;span class='key'&gt;Opsi&lt;/span&gt; untuk berpindah berdasarkan kata.</translation>
 <translation id="2795227192542594043">Ekstensi ini memberi Anda kursor yang dapat digerakkan di halaman web, memungkinkan Anda memilih teks dengan keyboard.</translation>
 <translation id="2808027189040546825">Langkah 1: Pilih baris dengan bintang paling redup:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Saat Anda mengjangkau link atau kontrol, link atau kontrol tersebut akan otomatis terfokus.   Tekan &lt;span class='key'&gt;Enter&lt;/span&gt; untuk mengeklik link atau tombol. &lt;/p&gt; &lt;p&gt;   Saat kontrol terfokus (seperti kotak teks atau kotak daftar) menangkap   tombol panah, tekan &lt;span class='key'&gt;Esc&lt;/span&gt; diikuti dengan   tanda panah kiri atau kanan untuk melanjutkan Penjelajahan dengan Keyboard. &lt;/p&gt; &lt;p&gt;   Atau, tekan &lt;span class='key'&gt;Tab&lt;/span&gt; untuk berpindah ke   kontrol yang dapat difokuskan berikutnya. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Saat Anda mengjangkau link atau kontrol, link atau kontrol tersebut akan otomatis terfokus.   Tekan &lt;span class='key'&gt;Enter&lt;/span&gt; untuk mengklik link atau tombol. &lt;/p&gt; &lt;p&gt;   Saat kontrol terfokus (seperti kotak teks atau kotak daftar) menangkap   tombol panah, tekan &lt;span class='key'&gt;Esc&lt;/span&gt; diikuti dengan   tanda panah kiri atau kanan untuk melanjutkan Penjelajahan dengan Keyboard. &lt;/p&gt; &lt;p&gt;   Atau, tekan &lt;span class='key'&gt;Tab&lt;/span&gt; untuk berpindah ke   kontrol yang dapat difokuskan berikutnya. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Penyiapan</translation>
 <translation id="3410969471888629217">Lupakan penyesuaian situs</translation>
 <translation id="3435896845095436175">Aktifkan</translation>
@@ -42,7 +43,7 @@
 <translation id="5558600050691192317">Perintah Keyboard</translation>
 <translation id="5594989420907487559">Menjalankan animasi hanya satu kali, atau menonaktifkan animasi sepenuhnya.</translation>
 <translation id="5631241868147802353">Skema warna default:</translation>
-<translation id="5650358096585648000">Masukan Visual</translation>
+<translation id="5650358096585648000">Efek Visual</translation>
 <translation id="5710185147685935461">Mengubah atau membalikkan skema warna untuk membuat halaman web lebih mudah dibaca.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="595639123821853262">Abu-Abu Terbalik</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Pemekat Warna</translation>
 <translation id="633394792577263429">Tahan &lt;span class='key'&gt;Control&lt;/span&gt; untuk berpindah dari kata ke kata.</translation>
 <translation id="6550675742724504774">Opsi</translation>
+<translation id="6699630355767768222">Langkah 3: Ganti sumbu warna untuk koreksi.</translation>
 <translation id="6838518108677880446">Penyiapan:</translation>
 <translation id="690628312087070417">Saat caret melompat dengan jarak yang jauh:</translation>
 <translation id="6965382102122355670">Oke</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Kebijakan Animasi</translation>
 <translation id="8480209185614411573">Kontras Tinggi</translation>
 <translation id="8609925175482059018">Tekan &lt;span class='key'&gt;F7&lt;/span&gt; untuk mengaktifkan Penjelajahan dengan Keyboard. Tekan lagi untuk menonaktifkannya.</translation>
+<translation id="8798099450830957504">Default</translation>
 <translation id="894241283505723656">Deskripsi Panjang pada Menu Konteks</translation>
 </translationbundle>

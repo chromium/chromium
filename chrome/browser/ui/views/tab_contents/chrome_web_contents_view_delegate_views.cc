@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views.h"
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/defaults.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/drop_data.h"
 #include "ui/views/widget/widget.h"
 
 ChromeWebContentsViewDelegateViews::ChromeWebContentsViewDelegateViews(
@@ -72,18 +74,11 @@ void ChromeWebContentsViewDelegateViews::ResetStoredFocus() {
 
 std::unique_ptr<RenderViewContextMenuBase>
 ChromeWebContentsViewDelegateViews::BuildMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  std::unique_ptr<RenderViewContextMenuBase> menu;
-  content::RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
-  // If the frame tree does not have a focused frame at this point, do not
-  // bother creating RenderViewContextMenuViews.
-  // This happens if the frame has navigated to a different page before
-  // ContextMenu message was received by the current RenderFrameHost.
-  if (focused_frame) {
-    menu.reset(RenderViewContextMenuViews::Create(focused_frame, params));
-    menu->Init();
-  }
+  std::unique_ptr<RenderViewContextMenuBase> menu(
+      RenderViewContextMenuViews::Create(render_frame_host, params));
+  menu->Init();
   return menu;
 }
 
@@ -97,11 +92,19 @@ void ChromeWebContentsViewDelegateViews::ShowMenu(
 }
 
 void ChromeWebContentsViewDelegateViews::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   ShowMenu(BuildMenu(
-      content::WebContents::FromRenderFrameHost(render_frame_host),
+      render_frame_host,
       AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
+}
+
+void ChromeWebContentsViewDelegateViews::ExecuteCommandForTesting(
+    int command_id,
+    int event_flags) {
+  DCHECK(context_menu_);
+  context_menu_->ExecuteCommand(command_id, event_flags);
+  context_menu_.reset();
 }
 
 void ChromeWebContentsViewDelegateViews::OnPerformDrop(
@@ -110,7 +113,7 @@ void ChromeWebContentsViewDelegateViews::OnPerformDrop(
   HandleOnPerformDrop(web_contents_, drop_data, std::move(callback));
 }
 
-content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
+std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
-  return new ChromeWebContentsViewDelegateViews(web_contents);
+  return std::make_unique<ChromeWebContentsViewDelegateViews>(web_contents);
 }

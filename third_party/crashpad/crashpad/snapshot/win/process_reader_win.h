@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 #include <windows.h>
 #include <sys/time.h>
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory_win.h"
@@ -41,17 +41,44 @@ enum class ProcessSuspensionState : bool {
 //! \brief Accesses information about another process, identified by a `HANDLE`.
 class ProcessReaderWin {
  public:
+  //! \brief Helper to make the context copyable and resizable.
+  class ThreadContext {
+   public:
+    ThreadContext();
+    ~ThreadContext() {}
+
+    template <typename T>
+    T* context() const {
+      DCHECK(initialized_);
+      return reinterpret_cast<T*>(
+          const_cast<unsigned char*>(data_.data() + offset_));
+    }
+#if defined(ARCH_CPU_64_BITS)
+    bool InitializeWow64(HANDLE thread_handle);
+#endif  // ARCH_CPU_64_BITS
+#if defined(ARCH_CPU_X86_64)
+    // Initializes internal structures for extended compacted contexts.
+    bool InitializeXState(HANDLE thread_handle, ULONG64 XStateCompactionMask);
+#endif  // ARCH_CPU_X86_64
+    void InitializeFromCurrentThread();
+    bool InitializeNative(HANDLE thread_handle);
+
+   private:
+    // This is usually 0 but Windows might cause it to be positive when
+    // fetching the extended context. This needs to be adjusted after
+    // calls to InitializeContext2().
+    size_t offset_;
+    bool initialized_;
+    std::vector<unsigned char> data_;
+  };
+
   //! \brief Contains information about a thread that belongs to a process.
   struct Thread {
     Thread();
     ~Thread() {}
 
-    union {
-      CONTEXT native;
-#if defined(ARCH_CPU_64_BITS)
-      WOW64_CONTEXT wow64;
-#endif
-    } context;
+    ThreadContext context;
+    std::string name;
     uint64_t id;
     WinVMAddress teb_address;
     WinVMSize teb_size;
@@ -63,6 +90,10 @@ class ProcessReaderWin {
   };
 
   ProcessReaderWin();
+
+  ProcessReaderWin(const ProcessReaderWin&) = delete;
+  ProcessReaderWin& operator=(const ProcessReaderWin&) = delete;
+
   ~ProcessReaderWin();
 
   //! \brief Initializes this object. This method must be called before any
@@ -135,8 +166,6 @@ class ProcessReaderWin {
   ProcessSuspensionState suspension_state_;
   bool initialized_threads_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderWin);
 };
 
 }  // namespace crashpad

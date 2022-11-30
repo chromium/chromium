@@ -7,9 +7,10 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ShortcutHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/download/DownloadController.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/download/FileAccessPermissionHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/init/ChromeBrowserInitializer.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/sync/SyncService.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/notifications",
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/services/qrcode_generator",
@@ -22,4 +23,5 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public/browser/RenderWidgetHostView.java",
   "+content/public/android/java/src/org/chromium/content_public/browser/UiThreadTaskTraits.java",
   "+content/public/android/java/src/org/chromium/content_public/browser/WebContents.java",
+  "+content/public/android/java/src/org/chromium/content_public/browser/RenderFrameHost.java"
 ]

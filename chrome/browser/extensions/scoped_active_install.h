@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -27,6 +27,9 @@ class ScopedActiveInstall : public InstallObserver {
   // is still deregistered upon destruction.
   ScopedActiveInstall(InstallTracker* tracker, const std::string& extension_id);
 
+  ScopedActiveInstall(const ScopedActiveInstall&) = delete;
+  ScopedActiveInstall& operator=(const ScopedActiveInstall&) = delete;
+
   ~ScopedActiveInstall() override;
 
   // Ensures that the active install is not deregistered upon destruction. This
@@ -40,12 +43,10 @@ class ScopedActiveInstall : public InstallObserver {
   // InstallObserver implementation.
   void OnShutdown() override;
 
-  InstallTracker* tracker_;
+  raw_ptr<InstallTracker> tracker_;
   base::ScopedObservation<InstallTracker, InstallObserver> tracker_observation_{
       this};
   const std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActiveInstall);
 };
 
 }  // namespace extensions

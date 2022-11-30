@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -16,7 +15,6 @@
 #import "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 
-@protocol InfobarUIDelegate;
 namespace infobars {
 class InfoBarDelegate;
 }
@@ -27,11 +25,6 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   InfoBarIOS(InfobarType infobar_type,
              std::unique_ptr<infobars::InfoBarDelegate> delegate,
              bool skip_banner = false);
-  // TODO(crbug.com/1030357): InfobarUIDelegate and this constructor can be
-  // removed once overlay-based infobar UI is fully supported.
-  InfoBarIOS(id<InfobarUIDelegate> ui_delegate,
-             std::unique_ptr<infobars::InfoBarDelegate> delegate,
-             bool skip_banner = false);
   ~InfoBarIOS() override;
   InfoBarIOS(const InfoBarIOS&) = delete;
   InfoBarIOS& operator=(const InfoBarIOS&) = delete;
@@ -39,10 +32,10 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   // Observer interface for objects interested in changes to InfoBarIOS.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when |infobar|'s accepted() is set to a new value.
+    // Called when `infobar`'s accepted() is set to a new value.
     virtual void DidUpdateAcceptedState(InfoBarIOS* infobar) {}
 
-    // Called when |infobar| is destroyed.
+    // Called when `infobar` is destroyed.
     virtual void InfobarDestroyed(InfoBarIOS* infobar) {}
   };
 
@@ -68,18 +61,15 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   bool high_priority() const { return high_priority_; }
   void set_high_priority(bool high_priority);
 
-  // Returns the InfobarUIDelegate associated to this Infobar.
-  id<InfobarUIDelegate> InfobarUIDelegate();
-
-  // Remove the infobar view from infobar container view.
-  void RemoveView();
+  // Whether or not this infobar reference has been removed from its owning
+  // InfobarManager.
+  bool removed_from_owner() { return removed_from_owner_; }
+  void set_removed_from_owner() { removed_from_owner_ = true; }
 
   // Returns a weak pointer to the infobar.
   base::WeakPtr<InfoBarIOS> GetWeakPtr();
 
  protected:
-  void PlatformSpecificSetOwner() override;
-  void PlatformSpecificOnCloseSoon() override;
 
  private:
   // InfoBarControllerDelegate overrides:
@@ -87,11 +77,11 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   void RemoveInfoBar() override;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-  id<InfobarUIDelegate> ui_delegate_ = nil;
   InfobarType infobar_type_;
   bool accepted_ = false;
   bool skip_banner_ = false;
   bool high_priority_ = false;
+  bool removed_from_owner_ = false;
   base::WeakPtrFactory<InfoBarIOS> weak_factory_{this};
 };
 

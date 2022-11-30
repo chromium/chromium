@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,13 +47,13 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelSearch) {
 namespace {
 
 bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
-  base::Optional<base::Value> value = base::JSONReader::Read(answer_json);
+  absl::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict())
     return false;
 
   // ParseAnswer previously did not change the default answer type of -1, so
   // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(*value, u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
 }
 
 }  // namespace
@@ -74,7 +74,6 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
   ASSERT_TRUE(ParseAnswer(answer_json, &answer));
   match.answer = answer;
 
-  EXPECT_EQ(kSearch + base::UTF8ToUTF16(
-                          ", answer, sunny with a chance of hail, 4 of 6"),
+  EXPECT_EQ(kSearch + u", answer, sunny with a chance of hail, 4 of 6",
             AutocompleteMatchType::ToAccessibilityLabel(match, kSearch, 3, 6));
 }

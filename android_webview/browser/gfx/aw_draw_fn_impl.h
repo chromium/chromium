@@ -1,11 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_AW_DRAW_FN_IMPL_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_DRAW_FN_IMPL_H_
-
-#include <memory>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
@@ -13,8 +11,7 @@
 #include "android_webview/browser/gfx/vulkan_gl_interop.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace android_webview {
@@ -25,6 +22,10 @@ class AwDrawFnImpl {
   static bool IsUsingVulkan();
 
   AwDrawFnImpl();
+
+  AwDrawFnImpl(const AwDrawFnImpl&) = delete;
+  AwDrawFnImpl& operator=(const AwDrawFnImpl&) = delete;
+
   ~AwDrawFnImpl();
 
   void ReleaseHandle(JNIEnv* env,
@@ -65,12 +66,12 @@ class AwDrawFnImpl {
   // Vulkan context provider for Vk rendering.
   scoped_refptr<AwVulkanContextProvider> vulkan_context_provider_;
 
-  base::Optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
+  absl::optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
       scoped_secondary_cb_draw_;
 
-  base::Optional<VulkanGLInterop> interop_;
+  absl::optional<VulkanGLInterop> interop_;
 
-  DISALLOW_COPY_AND_ASSIGN(AwDrawFnImpl);
+  bool skip_next_post_draw_vk_ = false;
 };
 
 }  // namespace android_webview

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,6 +20,11 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
                                    public KeyedService {
  public:
   explicit RecoveryInstallGlobalError(Profile* profile);
+
+  RecoveryInstallGlobalError(const RecoveryInstallGlobalError&) = delete;
+  RecoveryInstallGlobalError& operator=(const RecoveryInstallGlobalError&) =
+      delete;
+
   ~RecoveryInstallGlobalError() override;
 
  private:
@@ -53,14 +58,12 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
   bool elevation_needed_;
 
   // The Profile this service belongs to.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Monitors registry change for recovery component install.
   PrefChangeRegistrar pref_registrar_;
 
   bool has_shown_bubble_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RecoveryInstallGlobalError);
 };
 
 #endif  // CHROME_BROWSER_RECOVERY_RECOVERY_INSTALL_GLOBAL_ERROR_H_

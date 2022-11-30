@@ -1,6 +1,6 @@
 // This file is generated
 
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "headless/lib/browser/protocol/base_string_adapter.h"
 {% for domain_name in domain.dependencies %}
 #include "headless/public/devtools/domains/types_{{domain_name | camelcase_to_hacker_style}}.h"
 {% endfor %}
@@ -83,6 +82,9 @@ class HEADLESS_EXPORT Observer : public ExperimentalObserver {
 {% endif %}
 class HEADLESS_EXPORT Domain {
  public:
+  Domain(const Domain&) = delete;
+  Domain& operator=(const Domain&) = delete;
+
   {% if "events" in domain %}
   // Add or remove an observer. |observer| must be removed before being
   // destroyed.
@@ -131,12 +133,15 @@ class HEADLESS_EXPORT Domain {
   bool event_handlers_registered_ = false;
 
   {% endif %}
-  DISALLOW_COPY_AND_ASSIGN(Domain);
 };
 
 class ExperimentalDomain : public Domain {
  public:
   ExperimentalDomain(internal::MessageDispatcher* dispatcher);
+
+  ExperimentalDomain(const ExperimentalDomain&) = delete;
+  ExperimentalDomain& operator=(const ExperimentalDomain&) = delete;
+
   ~ExperimentalDomain();
 
   {% if "events" in domain %}
@@ -152,9 +157,6 @@ class ExperimentalDomain : public Domain {
     {% if not command.experimental %}{% continue %}{% endif %}
 {{ command_decl(command) }}
   {% endfor %}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExperimentalDomain);
 };
 
 }  // namespace {{domain.domain | camelcase_to_hacker_style}}

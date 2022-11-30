@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 79 tests; 75 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 79 tests; 77 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -27,7 +27,7 @@ PASS DeviceOrientationEvent interface: attribute alpha
 PASS DeviceOrientationEvent interface: attribute beta
 PASS DeviceOrientationEvent interface: attribute gamma
 PASS DeviceOrientationEvent interface: attribute absolute
-FAIL DeviceOrientationEvent interface: operation requestPermission() assert_own_property: interface object missing static operation expected property "requestPermission" missing
+PASS DeviceOrientationEvent interface: operation requestPermission()
 PASS DeviceOrientationEvent must be primary interface of new DeviceOrientationEvent("foo")
 PASS Stringification of new DeviceOrientationEvent("foo")
 PASS DeviceOrientationEvent interface: new DeviceOrientationEvent("foo") must inherit property "alpha" with the proper type
@@ -63,7 +63,7 @@ PASS DeviceMotionEvent interface: attribute acceleration
 PASS DeviceMotionEvent interface: attribute accelerationIncludingGravity
 PASS DeviceMotionEvent interface: attribute rotationRate
 PASS DeviceMotionEvent interface: attribute interval
-FAIL DeviceMotionEvent interface: operation requestPermission() assert_own_property: interface object missing static operation expected property "requestPermission" missing
+PASS DeviceMotionEvent interface: operation requestPermission()
 PASS DeviceMotionEvent must be primary interface of new DeviceMotionEvent("foo")
 PASS Stringification of new DeviceMotionEvent("foo")
 PASS DeviceMotionEvent interface: new DeviceMotionEvent("foo") must inherit property "acceleration" with the proper type

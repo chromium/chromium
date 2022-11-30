@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@ class TestLocationReportBody : public LocationReportBody {
  public:
   explicit TestLocationReportBody(
       const String& source_file = g_empty_string,
-      base::Optional<uint32_t> line_number = base::nullopt,
-      base::Optional<uint32_t> column_number = base::nullopt)
+      absl::optional<uint32_t> line_number = absl::nullopt,
+      absl::optional<uint32_t> column_number = absl::nullopt)
       : LocationReportBody(source_file, line_number, column_number) {}
 };
 
@@ -25,13 +25,13 @@ class TestLocationReportBody : public LocationReportBody {
 // input will give same return value.
 TEST(LocationReportBodyMatchIdTest, SameInputGeneratesSameMatchId) {
   String url = "";
-  base::Optional<uint32_t> line = base::nullopt, column = base::nullopt;
+  absl::optional<uint32_t> line = absl::nullopt, column = absl::nullopt;
   EXPECT_EQ(TestLocationReportBody(url, line, column).MatchId(),
             TestLocationReportBody(url, line, column).MatchId());
 
   url = "https://example.com";
-  line = base::make_optional<uint32_t>(0);
-  column = base::make_optional<uint32_t>(0);
+  line = absl::make_optional<uint32_t>(0);
+  column = absl::make_optional<uint32_t>(0);
   EXPECT_EQ(TestLocationReportBody(url, line, column).MatchId(),
             TestLocationReportBody(url, line, column).MatchId());
 }
@@ -43,15 +43,15 @@ bool AllDistinct(const std::vector<unsigned>& match_ids) {
 
 const struct {
   const char* url;
-  const base::Optional<uint32_t> line_number;
-  const base::Optional<uint32_t> column_number;
+  const absl::optional<uint32_t> line_number;
+  const absl::optional<uint32_t> column_number;
 } kLocationReportBodyInputs[] = {
-    {"url", base::nullopt, base::nullopt},
-    {"url", 0, base::nullopt},
-    {"url", base::nullopt, 0},
+    {"url", absl::nullopt, absl::nullopt},
+    {"url", 0, absl::nullopt},
+    {"url", absl::nullopt, 0},
     {"url", 0, 0},
-    {"url", 1, base::nullopt},
-    {"url", base::nullopt, 1},
+    {"url", 1, absl::nullopt},
+    {"url", absl::nullopt, 1},
     {"url", 1, 1},
 };
 
@@ -75,13 +75,13 @@ TEST(LocationReportBodyMatchIdTest, MatchIdGeneratedShouldNotBeZero) {
   }
 }
 
-// When URL is empty, LocationReportBody would call |SourceLocation::Capture()|
+// When URL is empty, LocationReportBody would call |CaptureSourceLocation()|
 // to determine the location, and ignore |line_number| and |column_number|
 // specified in constructor params.
 TEST(LocationReportBodyMatchIdTest,
      EmptyURLGenerateSameMatchIdRegardlessOfOtherParams) {
   const unsigned empty_hash =
-      TestLocationReportBody("", base::nullopt, base::nullopt).MatchId();
+      TestLocationReportBody("", absl::nullopt, absl::nullopt).MatchId();
   for (const auto& input : kLocationReportBodyInputs) {
     EXPECT_EQ(TestLocationReportBody("", input.line_number, input.column_number)
                   .MatchId(),

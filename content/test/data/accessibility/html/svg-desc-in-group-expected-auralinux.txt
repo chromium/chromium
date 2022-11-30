@@ -1,0 +1,6 @@
+[document web] tag:#document
+++[section] tag:body
+++++[document frame] tag:svg
+++++++[panel] description='Group with circle and text' description-from:svg-desc-element tag:g
+++++++++[section] tag:text
+++++++++++[static] name='hello world'

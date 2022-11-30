@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -32,10 +31,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mRule =
             new PaymentRequestTestRule("payment_request_update_with_test.html", this);
@@ -60,6 +55,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithEmpty() throws Throwable {
         mRule.triggerUIAndWait("updateWithEmpty", mRule.getReadyToPay());
@@ -83,6 +79,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with total will not cause timeouts in UI. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithTotal() throws Throwable {
         mRule.triggerUIAndWait("updateWithTotal", mRule.getReadyToPay());
@@ -109,6 +106,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with displayItems will not cause timeouts in UI. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithDisplayItems() throws Throwable {
         mRule.triggerUIAndWait("updateWithDisplayItems", mRule.getReadyToPay());
@@ -135,6 +133,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with shipping options will not cause timeouts in UI. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithShippingOptions() throws Throwable {
         mRule.triggerUIAndWait("updateWithShippingOptions", mRule.getReadyToPay());
@@ -161,6 +160,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with modifiers will not cause timeouts in UI. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithModifiers() throws Throwable {
         mRule.triggerUIAndWait("updateWithModifiers", mRule.getReadyToPay());
@@ -190,6 +190,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithError() throws Throwable {
         mRule.triggerUIAndWait("updateWithError", mRule.getReadyToPay());

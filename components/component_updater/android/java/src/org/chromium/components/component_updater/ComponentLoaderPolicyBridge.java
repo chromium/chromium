@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,13 +69,15 @@ public class ComponentLoaderPolicyBridge {
      * file is missing or invalid. Can be called on a background thread.
      *
      * Exactly one of componentLoaded or componentLoadFailed should be called exactly once.
+     *
+     * @param errorCode the code of the error that caused the failure.
      */
-    public void componentLoadFailed() {
+    public void componentLoadFailed(@ComponentLoadResult int errorCode) {
         ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
         ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(
-                mNativeAndroidComponentLoaderPolicy);
+                mNativeAndroidComponentLoaderPolicy, errorCode);
         // Setting it to null, because it is deleted after componentLoadFailed is called.
         mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 
@@ -111,7 +113,7 @@ public class ComponentLoaderPolicyBridge {
     interface Natives {
         void componentLoaded(
                 long nativeAndroidComponentLoaderPolicy, String[] fileNames, int[] fds);
-        void componentLoadFailed(long nativeAndroidComponentLoaderPolicy);
+        void componentLoadFailed(long nativeAndroidComponentLoaderPolicy, int errorCode);
         String getComponentId(long nativeAndroidComponentLoaderPolicy);
     }
 }

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 namespace xpath {
@@ -97,7 +98,7 @@ static void SetUpAxisNamesMap(AxisNamesMap& axis_names) {
 static bool IsAxisName(const String& name, Step::Axis& type) {
   DEFINE_STATIC_LOCAL(AxisNamesMap, axis_names, ());
 
-  if (axis_names.IsEmpty())
+  if (axis_names.empty())
     SetUpAxisNamesMap(axis_names);
 
   AxisNamesMap::iterator it = axis_names.find(name);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -31,13 +32,17 @@ class MediaSessionAndroid final
   struct JavaObjectGetter;
 
   explicit MediaSessionAndroid(MediaSessionImpl* session);
+
+  MediaSessionAndroid(const MediaSessionAndroid&) = delete;
+  MediaSessionAndroid& operator=(const MediaSessionAndroid&) = delete;
+
   ~MediaSessionAndroid() override;
 
   // media_session::mojom::MediaSessionObserver implementation:
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override;
+      const absl::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
       override;
@@ -46,7 +51,7 @@ class MediaSessionAndroid final
                            std::vector<media_session::MediaImage>>& images)
       override;
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   // MediaSession method wrappers.
   void Resume(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
@@ -73,17 +78,15 @@ class MediaSessionAndroid final
   JavaObjectWeakGlobalRef j_media_session_;
   // WebContentsAndroid corresponding to the Java WebContentsImpl that holds a
   // strong reference to |j_media_session_|.
-  WebContentsAndroid* web_contents_android_;
+  raw_ptr<WebContentsAndroid> web_contents_android_;
 
-  MediaSessionImpl* const media_session_;
+  const raw_ptr<MediaSessionImpl> media_session_;
 
   bool is_paused_ = false;
   bool is_controllable_ = false;
 
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionAndroid);
 };
 
 }  // namespace content

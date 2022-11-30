@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,9 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
       blink::URLLoaderThrottleProviderType type,
       ChromeContentRendererClient* chrome_content_renderer_client);
 
+  URLLoaderThrottleProviderImpl& operator=(
+      const URLLoaderThrottleProviderImpl&) = delete;
+
   ~URLLoaderThrottleProviderImpl() override;
 
   // blink::URLLoaderThrottleProvider implementation.
@@ -57,8 +60,6 @@ class URLLoaderThrottleProviderImpl : public blink::URLLoaderThrottleProvider {
 #endif
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(URLLoaderThrottleProviderImpl);
 };
 
 #endif  // CHROME_RENDERER_URL_LOADER_THROTTLE_PROVIDER_IMPL_H_

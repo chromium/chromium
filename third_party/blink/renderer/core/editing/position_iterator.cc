@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/position_iterator.h"
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 
@@ -80,7 +81,11 @@ PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
 template <typename Strategy>
 PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm(
     const PositionTemplate<Strategy>& pos)
-    : PositionIteratorAlgorithm(pos.AnchorNode(), pos.ComputeEditingOffset()) {}
+    : PositionIteratorAlgorithm(
+          pos.IsNull()
+              ? PositionIteratorAlgorithm()
+              : PositionIteratorAlgorithm(pos.AnchorNode(),
+                                          pos.ComputeEditingOffset())) {}
 
 template <typename Strategy>
 PositionIteratorAlgorithm<Strategy>::PositionIteratorAlgorithm()
@@ -96,6 +101,7 @@ PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
   // TODO(yoichio): Share code to check domTreeVersion with EphemeralRange.
   DCHECK(IsValid());
   if (node_after_position_in_anchor_) {
+    DCHECK(anchor_node_);
     DCHECK_EQ(Strategy::Parent(*node_after_position_in_anchor_), anchor_node_);
     DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
     // FIXME: This check is inadaquete because any ancestor could be ignored by
@@ -106,6 +112,8 @@ PositionIteratorAlgorithm<Strategy>::DeprecatedComputePosition() const {
     return PositionTemplate<Strategy>(
         anchor_node_, offsets_in_anchor_node_[depth_to_anchor_node_]);
   }
+  if (!anchor_node_)
+    return PositionTemplate<Strategy>();
   if (Strategy::HasChildren(*anchor_node_)) {
     return PositionTemplate<Strategy>::LastPositionInOrAfterNode(*anchor_node_);
   }
@@ -129,6 +137,7 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
   //   +-H
   if (node_after_position_in_anchor_) {
     // For example, position is before E, F.
+    DCHECK(anchor_node_);
     DCHECK_EQ(Strategy::Parent(*node_after_position_in_anchor_), anchor_node_);
     DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
     // TODO(yoichio): This should be equivalent to PositionTemplate<Strategy>(
@@ -136,6 +145,8 @@ PositionIteratorAlgorithm<Strategy>::ComputePosition() const {
     return PositionTemplate<Strategy>(
         anchor_node_, offsets_in_anchor_node_[depth_to_anchor_node_]);
   }
+  if (!anchor_node_)
+    return PositionTemplate<Strategy>();
   if (ShouldTraverseChildren<Strategy>(*anchor_node_)) {
     // For example, position is the end of B.
     return PositionTemplate<Strategy>::LastPositionInOrAfterNode(*anchor_node_);
@@ -224,7 +235,7 @@ void PositionIteratorAlgorithm<Strategy>::Increment() {
       ++offsets_in_anchor_node_[depth_to_anchor_node_];
     node_after_position_in_anchor_ =
         Strategy::NextSibling(*node_after_position_in_anchor_);
-    offset_in_anchor_ = 0;
+    offset_in_anchor_ = offsets_in_anchor_node_[depth_to_anchor_node_];
   }
 }
 
@@ -335,8 +346,8 @@ void PositionIteratorAlgorithm<Strategy>::Decrement() {
   --depth_to_anchor_node_;
   if (offsets_in_anchor_node_[depth_to_anchor_node_] != kInvalidOffset)
     return;
-  offsets_in_anchor_node_[depth_to_anchor_node_] =
-      Strategy::Index(*node_after_position_in_anchor_);
+  offset_in_anchor_ = Strategy::Index(*node_after_position_in_anchor_);
+  offsets_in_anchor_node_[depth_to_anchor_node_] = offset_in_anchor_;
 }
 
 template <typename Strategy>

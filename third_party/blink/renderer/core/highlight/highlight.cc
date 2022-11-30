@@ -1,4 +1,4 @@
-﻿// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,11 @@
 
 namespace blink {
 
-Highlight* Highlight::Create(const String& name,
-                             HeapVector<Member<AbstractRange>>& ranges) {
-  return MakeGarbageCollected<Highlight>(name, ranges);
+Highlight* Highlight::Create(const HeapVector<Member<AbstractRange>>& ranges) {
+  return MakeGarbageCollected<Highlight>(ranges);
 }
 
-Highlight::Highlight(const String& name,
-                     HeapVector<Member<AbstractRange>>& ranges)
-    : name_(name) {
+Highlight::Highlight(const HeapVector<Member<AbstractRange>>& ranges) {
   for (const auto& range : ranges)
     highlight_ranges_.insert(range);
 }
@@ -27,18 +24,29 @@ Highlight::~Highlight() = default;
 
 void Highlight::Trace(blink::Visitor* visitor) const {
   visitor->Trace(highlight_ranges_);
-  ScriptWrappable::Trace(visitor);
+  visitor->Trace(containing_highlight_registries_);
+  EventTargetWithInlineData::Trace(visitor);
+}
+
+void Highlight::ScheduleRepaintsInContainingHighlightRegistries() const {
+  for (const auto& entry : containing_highlight_registries_) {
+    DCHECK_GT(entry.value, 0u);
+    Member<HighlightRegistry> highlight_registry = entry.key;
+    highlight_registry->ScheduleRepaint();
+  }
 }
 
 Highlight* Highlight::addForBinding(ScriptState*,
                                     AbstractRange* range,
                                     ExceptionState&) {
-  highlight_ranges_.insert(range);
+  if (highlight_ranges_.insert(range).is_new_entry)
+    ScheduleRepaintsInContainingHighlightRegistries();
   return this;
 }
 
 void Highlight::clearForBinding(ScriptState*, ExceptionState&) {
   highlight_ranges_.clear();
+  ScheduleRepaintsInContainingHighlightRegistries();
 }
 
 bool Highlight::deleteForBinding(ScriptState*,
@@ -47,6 +55,7 @@ bool Highlight::deleteForBinding(ScriptState*,
   auto iterator = highlight_ranges_.find(range);
   if (iterator != highlight_ranges_.end()) {
     highlight_ranges_.erase(iterator);
+    ScheduleRepaintsInContainingHighlightRegistries();
     return true;
   }
   return false;
@@ -55,11 +64,50 @@ bool Highlight::deleteForBinding(ScriptState*,
 bool Highlight::hasForBinding(ScriptState*,
                               AbstractRange* range,
                               ExceptionState&) const {
-  return highlight_ranges_.Contains(range);
+  return Contains(range);
 }
 
 wtf_size_t Highlight::size() const {
   return highlight_ranges_.size();
+}
+
+void Highlight::setPriority(const int32_t& priority) {
+  priority_ = priority;
+  ScheduleRepaintsInContainingHighlightRegistries();
+}
+
+bool Highlight::Contains(AbstractRange* range) const {
+  return highlight_ranges_.Contains(range);
+}
+
+const AtomicString& Highlight::InterfaceName() const {
+  // TODO(crbug.com/1346693)
+  NOTIMPLEMENTED();
+  return g_null_atom;
+}
+
+ExecutionContext* Highlight::GetExecutionContext() const {
+  // TODO(crbug.com/1346693)
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+void Highlight::RegisterIn(HighlightRegistry* highlight_registry) {
+  auto map_iterator = containing_highlight_registries_.find(highlight_registry);
+  if (map_iterator == containing_highlight_registries_.end()) {
+    containing_highlight_registries_.insert(highlight_registry, 1);
+  } else {
+    DCHECK_GT(map_iterator->value, 0u);
+    map_iterator->value++;
+  }
+}
+
+void Highlight::DeregisterFrom(HighlightRegistry* highlight_registry) {
+  auto map_iterator = containing_highlight_registries_.find(highlight_registry);
+  DCHECK_NE(map_iterator, containing_highlight_registries_.end());
+  DCHECK_GT(map_iterator->value, 0u);
+  if (--map_iterator->value == 0)
+    containing_highlight_registries_.erase(map_iterator);
 }
 
 Highlight::IterationSource::IterationSource(const Highlight& highlight)

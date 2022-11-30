@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -15,6 +15,10 @@ namespace device {
 class PlatformSensorProviderTestAndroid : public testing::Test {
  public:
   PlatformSensorProviderTestAndroid() = default;
+  PlatformSensorProviderTestAndroid(PlatformSensorProviderTestAndroid&) =
+      delete;
+  PlatformSensorProviderTestAndroid& operator=(
+      PlatformSensorProviderTestAndroid&) = delete;
 
   void SetUp() override {
     provider_ = std::make_unique<PlatformSensorProviderAndroid>();
@@ -28,7 +32,7 @@ class PlatformSensorProviderTestAndroid : public testing::Test {
   std::unique_ptr<PlatformSensorProviderAndroid> provider_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderTestAndroid);
+  base::test::TaskEnvironment task_environment;
 };
 
 TEST_F(PlatformSensorProviderTestAndroid, SensorManagerIsNull) {

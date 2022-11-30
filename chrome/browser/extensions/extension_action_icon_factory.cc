@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,11 +75,6 @@ gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
           extensions::image_util::IsIconSufficientlyVisible(*bitmap);
       UMA_HISTOGRAM_BOOLEAN("Extensions.ManifestIconSetIconWasVisibleForPacked",
                             is_sufficiently_visible);
-      const bool is_sufficiently_visible_rendered = extensions::ui_util::
-          IsRenderedIconSufficientlyVisibleForBrowserContext(*bitmap, profile_);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Extensions.ManifestIconSetIconWasVisibleForPackedRendered",
-          is_sufficiently_visible_rendered);
       if (!is_sufficiently_visible && !g_allow_invisible_icons) {
         icon = action_->GetPlaceholderIconImage();
       }

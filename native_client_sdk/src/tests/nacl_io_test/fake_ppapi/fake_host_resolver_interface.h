@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_
 
 #include <ppapi/c/ppb_host_resolver.h>
 
@@ -19,6 +19,10 @@ class FakePepperInterface;
 class FakeHostResolverInterface : public nacl_io::HostResolverInterface {
  public:
   explicit FakeHostResolverInterface(FakePepperInterface* ppapi);
+
+  FakeHostResolverInterface(const FakeHostResolverInterface&) = delete;
+  FakeHostResolverInterface& operator=(const FakeHostResolverInterface&) =
+      delete;
 
   virtual PP_Resource Create(PP_Instance);
 
@@ -38,8 +42,6 @@ class FakeHostResolverInterface : public nacl_io::HostResolverInterface {
 
  private:
   FakePepperInterface* ppapi_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostResolverInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_

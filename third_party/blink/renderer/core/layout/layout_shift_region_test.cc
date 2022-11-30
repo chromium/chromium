@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/layout_shift_region.h"
 
 #include <gtest/gtest.h>
-#include "third_party/blink/renderer/platform/geometry/region.h"
+#include "cc/base/region.h"
 
 namespace blink {
 
@@ -15,28 +15,28 @@ TEST_F(LayoutShiftRegionTest, Basic) {
   LayoutShiftRegion region;
   EXPECT_EQ(0u, region.Area());
 
-  region.AddRect(IntRect(2, 1, 1, 3));
+  region.AddRect(gfx::Rect(2, 1, 1, 3));
   EXPECT_EQ(3u, region.Area());
 
-  region.AddRect(IntRect(1, 2, 3, 1));
+  region.AddRect(gfx::Rect(1, 2, 3, 1));
   EXPECT_EQ(5u, region.Area());
 
-  region.AddRect(IntRect(1, 2, 1, 1));
-  region.AddRect(IntRect(3, 2, 1, 1));
-  region.AddRect(IntRect(2, 1, 1, 1));
-  region.AddRect(IntRect(2, 3, 1, 1));
+  region.AddRect(gfx::Rect(1, 2, 1, 1));
+  region.AddRect(gfx::Rect(3, 2, 1, 1));
+  region.AddRect(gfx::Rect(2, 1, 1, 1));
+  region.AddRect(gfx::Rect(2, 3, 1, 1));
   EXPECT_EQ(5u, region.Area());
 
-  region.AddRect(IntRect(1, 1, 1, 1));
+  region.AddRect(gfx::Rect(1, 1, 1, 1));
   EXPECT_EQ(6u, region.Area());
 
-  region.AddRect(IntRect(1, 1, 3, 3));
+  region.AddRect(gfx::Rect(1, 1, 3, 3));
   EXPECT_EQ(9u, region.Area());
 
-  region.AddRect(IntRect(0, 0, 2, 2));
+  region.AddRect(gfx::Rect(0, 0, 2, 2));
   EXPECT_EQ(12u, region.Area());
 
-  region.AddRect(IntRect(-1, -1, 2, 2));
+  region.AddRect(gfx::Rect(-1, -1, 2, 2));
   EXPECT_EQ(15u, region.Area());
 
   region.Reset();
@@ -45,7 +45,7 @@ TEST_F(LayoutShiftRegionTest, Basic) {
 
 TEST_F(LayoutShiftRegionTest, LargeRandom) {
   LayoutShiftRegion region;
-  Region naive_region;
+  cc::Region naive_region;
   static const int data[] = {
       52613, 38528, 20785, 40550, 29734, 48229, 37113, 3520,  66776, 26746,
       20527, 11398, 27951, 50399, 37139, 17597, 20593, 57272, 12528, 5907,
@@ -91,12 +91,16 @@ TEST_F(LayoutShiftRegionTest, LargeRandom) {
   uint64_t expected_area = 9201862875ul;
   for (unsigned i = 0; i < 100; i++) {
     const int* d = data + (i * 4);
-    IntRect r(d[0], d[1], d[2], d[3]);
+    gfx::Rect r(d[0], d[1], d[2], d[3]);
     region.AddRect(r);
-    naive_region.Unite(Region(r));
+    naive_region.Union(r);
   }
   EXPECT_EQ(expected_area, region.Area());
-  EXPECT_EQ(expected_area, naive_region.Area());
+
+  uint64_t naive_region_area = 0;
+  for (gfx::Rect rect : naive_region)
+    naive_region_area += rect.size().Area64();
+  EXPECT_EQ(expected_area, naive_region_area);
 }
 
 // Creates a region like this:
@@ -111,8 +115,8 @@ TEST_F(LayoutShiftRegionTest, Waffle) {
   LayoutShiftRegion region;
   unsigned n = 250000;
   for (unsigned i = 2; i <= n; i += 2) {
-    region.AddRect(IntRect(i, 1, 1, n + 1));
-    region.AddRect(IntRect(1, i, n + 1, 1));
+    region.AddRect(gfx::Rect(i, 1, 1, n + 1));
+    region.AddRect(gfx::Rect(1, i, n + 1, 1));
   }
   uint64_t half = n >> 1;
   uint64_t area = n * (half + 1) + half * half;

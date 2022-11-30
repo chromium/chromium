@@ -3,6 +3,9 @@
 <title>RTCPeerConnection.prototype.addTrack</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src='../mediacapture-streams/permission-helper.js'></script>
 <script src="RTCPeerConnection-helper.js"></script>
 <script>
   'use strict';
@@ -171,6 +174,7 @@
     assert_equals(transceiver.sender.track, null);
     assert_equals(transceiver.direction, 'recvonly');
 
+    await setMediaPermission("granted", ["microphone"]);
     const stream = await navigator.mediaDevices.getUserMedia({audio: true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
@@ -286,5 +290,105 @@
       5.1. addTrack
         10. Update the negotiation-needed flag for connection.
 
-   */
+  */
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+    const transceiver = caller.addTransceiver(track);
+    // Note that this test doesn't process canididates.
+    {
+      const offer = await caller.createOffer();
+      await caller.setLocalDescription(offer);
+      await callee.setRemoteDescription(offer);
+      const answer = await callee.createAnswer();
+      await callee.setLocalDescription(answer);
+      await caller.setRemoteDescription(answer);
+    }
+    assert_equals(transceiver.currentDirection, 'sendonly');
+    await waitForIceGatheringState(caller, ['complete']);
+    await waitForIceGatheringState(callee, ['complete']);
+
+    const second_stream = await getNoiseStream({audio: true});
+    t.add_cleanup(() => second_stream.getTracks().forEach(track => track.stop()));
+    // There may be callee candidates in flight. It seems that waiting
+    // for a createOffer() is enough time to let them complete processing.
+    // TODO(https://crbug.com/webrtc/13095): Fix bug and remove.
+    await caller.createOffer();
+
+    const [second_track] = second_stream.getTracks();
+    caller.onicecandidate = t.unreached_func(
+      'No caller candidates should be generated.');
+    callee.onicecandidate = t.unreached_func(
+      'No callee candidates should be generated.');
+    caller.addTrack(second_track);
+    {
+      const offer = await caller.createOffer();
+      await caller.setLocalDescription(offer);
+      await callee.setRemoteDescription(offer);
+      const answer = await callee.createAnswer();
+      await callee.setLocalDescription(answer);
+      await caller.setRemoteDescription(answer);
+    }
+    // Check that we're bundled.
+    const [first_transceiver, second_transceiver] = caller.getTransceivers();
+    assert_equals(first_transceiver.transport, second_transceiver.transport);
+
+  }, 'Adding more tracks does not generate more candidates if bundled');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+
+    const stream = await getNoiseStream({ audio: true });
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+
+    pc1.addTrack(track);
+    const offer = await pc1.createOffer();
+    // We do not await here; we want to ensure that the transceiver this creates
+    // is untouched by addTrack, and that addTrack creates _another_ transceiver
+    const srdPromise = pc2.setRemoteDescription(offer);
+
+    const sender = pc2.addTrack(track);
+
+    await srdPromise;
+
+    assert_equals(pc2.getTransceivers().length, 1, "Should have 1 transceiver");
+    assert_equals(pc2.getTransceivers()[0].sender, sender, "The transceiver should be the one added by addTrack");
+  }, 'Calling addTrack while sRD(offer) is pending should allow the new remote transceiver to be the same one that addTrack creates');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    t.add_cleanup(() => pc2.close());
+    pc1.addTransceiver('video');
+
+    const stream = await getNoiseStream({ audio: true });
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+    const [track] = stream.getTracks();
+
+    const offer = await pc1.createOffer();
+    const srdPromise = pc2.setRemoteDescription(offer);
+    assert_equals(pc2.getTransceivers().length, 0);
+    pc2.addTrack(track);
+    assert_equals(pc2.getTransceivers().length, 1);
+    const transceiver0 = pc2.getTransceivers()[0];
+    assert_equals(transceiver0.mid, null);
+    await srdPromise;
+    assert_equals(pc2.getTransceivers().length, 2);
+    const transceiver1 = pc2.getTransceivers()[1];
+    assert_equals(transceiver0.mid, null);
+    assert_not_equals(transceiver1.mid, null);
+  }, 'When addTrack is called while sRD is in progress, and both addTrack and sRD add a transceiver of different media types, the addTrack transceiver should come first, and then the sRD transceiver.');
+
 </script>

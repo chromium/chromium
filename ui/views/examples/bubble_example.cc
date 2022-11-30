@@ -1,17 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/examples/bubble_example.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -23,7 +24,10 @@ namespace examples {
 
 namespace {
 
-SkColor colors[] = {SK_ColorWHITE, SK_ColorGRAY, SK_ColorCYAN, 0xFFC1B1E1};
+ExamplesColorIds colors[] = {ExamplesColorIds::kColorBubbleExampleBackground1,
+                             ExamplesColorIds::kColorBubbleExampleBackground2,
+                             ExamplesColorIds::kColorBubbleExampleBackground3,
+                             ExamplesColorIds::kColorBubbleExampleBackground4};
 
 BubbleBorder::Arrow arrows[] = {
     BubbleBorder::TOP_LEFT,     BubbleBorder::TOP_CENTER,
@@ -74,15 +78,15 @@ class ExampleBubble : public BubbleDialogDelegateView {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   }
 
+  ExampleBubble(const ExampleBubble&) = delete;
+  ExampleBubble& operator=(const ExampleBubble&) = delete;
+
  protected:
   void Init() override {
     SetLayoutManager(std::make_unique<BoxLayout>(
         BoxLayout::Orientation::kVertical, gfx::Insets(50)));
     AddChildView(std::make_unique<Label>(GetArrowName(arrow())));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExampleBubble);
 };
 
 }  // namespace
@@ -120,7 +124,7 @@ void BubbleExample::ShowBubble(Button** button,
                                bool persistent,
                                const ui::Event& event) {
   static int arrow_index = 0, color_index = 0;
-  static const int count = base::size(arrows);
+  static const int count = std::size(arrows);
   arrow_index = (arrow_index + count + (event.IsShiftDown() ? -1 : 1)) % count;
   BubbleBorder::Arrow arrow = arrows[arrow_index];
   if (event.IsControlDown())
@@ -128,14 +132,16 @@ void BubbleExample::ShowBubble(Button** button,
   else if (event.IsAltDown())
     arrow = BubbleBorder::FLOAT;
 
+  auto* provider = (*button)->GetColorProvider();
   // |bubble| will be destroyed by its widget when the widget is destroyed.
-  ExampleBubble* bubble = new ExampleBubble(*button, arrow);
-  bubble->set_color(colors[(color_index++) % base::size(colors)]);
+  auto bubble = std::make_unique<ExampleBubble>(*button, arrow);
+  bubble->set_color(
+      provider->GetColor(colors[(color_index++) % std::size(colors)]));
   bubble->set_shadow(shadow);
   if (persistent)
     bubble->set_close_on_deactivate(false);
 
-  BubbleDialogDelegateView::CreateBubble(bubble)->Show();
+  BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
 
   LogStatus(
       "Click with optional modifiers: [Ctrl] for set_arrow(NONE), "

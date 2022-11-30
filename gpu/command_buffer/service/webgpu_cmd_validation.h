@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_H_
 #define GPU_COMMAND_BUFFER_SERVICE_WEBGPU_CMD_VALIDATION_H_
 
-#include "base/stl_util.h"
 #include "gpu/command_buffer/common/webgpu_cmd_enums.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "gpu/command_buffer/service/value_validator.h"

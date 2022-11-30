@@ -1,13 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-behaviors/paper-ripple-behavior.html">
-<link rel="import" href="../../html/cr.html">
-<link rel="import" href="../../html/event_tracker.html">
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-
-<dom-module id="cr-slider">
-  <template>
     <style include="cr-hidden-style">
       :host {
         --cr-slider-active-color: var(--google-blue-600);
@@ -33,17 +23,17 @@
 
       @media (prefers-color-scheme: dark) {
         :host {
-          --cr-slider-active-color: var(--google-blue-refresh-300);
+          --cr-slider-active-color: var(--google-blue-300);
           --cr-slider-container-color:
-              rgba(var(--google-blue-refresh-500-rgb), .48);
+              rgba(var(--google-blue-500-rgb), .48);
           --cr-slider-container-disabled-color:
               rgba(var(--google-grey-600-rgb), .48);
           /* --cr-slider-disabled-color is the same in dark mode (GG600). */
-          --cr-slider-knob-color-rgb: var(--google-blue-refresh-300-rgb);
+          --cr-slider-knob-color-rgb: var(--google-blue-300-rgb);
           --cr-slider-knob-disabled-color:
               var(--google-grey-900-white-4-percent);
-          --cr-slider-marker-active-color: var(--google-blue-refresh-300);
-          --cr-slider-marker-color: var(--google-blue-refresh-300);
+          --cr-slider-marker-active-color: var(--google-blue-300);
+          --cr-slider-marker-color: var(--google-blue-300);
           --cr-slider-marker-disabled-color: rgba(255, 255, 255, .54);
           --cr-slider-ripple-color: rgba(var(--cr-slider-knob-color-rgb), .4);
         }
@@ -226,6 +216,3 @@
         <div id="label">[[label_]]</div>
       </div>
     </div>
-  </template>
-  <script src="cr_slider.js"></script>
-</dom-module>

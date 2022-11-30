@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/trace_event.h"
+#include "base/time/time.h"
 #include "sql/database.h"
 
 namespace offline_pages {
@@ -47,13 +47,16 @@ class SqlStoreBase {
 
   // Defines inactivity time of DB after which it is going to be closed.
   // TODO(crbug.com/933369): Derive appropriate value in a scientific way.
-  static constexpr base::TimeDelta kClosingDelay =
-      base::TimeDelta::FromSeconds(20);
+  static constexpr base::TimeDelta kClosingDelay = base::Seconds(20);
 
   // If |file_path| is empty, this constructs an in-memory database.
   SqlStoreBase(const std::string& histogram_tag,
                scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
                const base::FilePath& file_path);
+
+  SqlStoreBase(const SqlStoreBase&) = delete;
+  SqlStoreBase& operator=(const SqlStoreBase&) = delete;
+
   virtual ~SqlStoreBase();
 
   // Gets the initialization status of the store.
@@ -181,8 +184,6 @@ class SqlStoreBase {
 
   base::WeakPtrFactory<SqlStoreBase> weak_ptr_factory_{this};
   base::WeakPtrFactory<SqlStoreBase> closing_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SqlStoreBase);
 };
 
 }  // namespace offline_pages

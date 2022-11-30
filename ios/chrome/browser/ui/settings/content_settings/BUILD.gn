@@ -1,0 +1,151 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_settings") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "block_popups_table_view_controller.h",
+    "block_popups_table_view_controller.mm",
+    "content_settings_table_view_controller.h",
+    "content_settings_table_view_controller.mm",
+    "default_page_mode_coordinator.h",
+    "default_page_mode_coordinator.mm",
+    "default_page_mode_mediator.h",
+    "default_page_mode_mediator.mm",
+  ]
+  deps = [
+    ":content_settings_ui",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/mailto_handler",
+    "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/web/common:features",
+    "//ui/base",
+  ]
+}
+
+source_set("content_settings_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_page_mode.h",
+    "default_page_mode_consumer.h",
+    "default_page_mode_table_view_controller.h",
+    "default_page_mode_table_view_controller.mm",
+    "default_page_mode_table_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "block_popups_table_view_controller_unittest.mm",
+    "content_settings_table_view_controller_unittest.mm",
+    "default_page_mode_mediator_unittest.mm",
+    "default_page_mode_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":content_settings",
+    ":content_settings_ui",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "block_popups_app_interface.h",
+    "block_popups_app_interface.mm",
+  ]
+  deps = [
+    ":content_settings",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "block_popups_app_interface.h",
+    "block_popups_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/common",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "block_popups_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+}

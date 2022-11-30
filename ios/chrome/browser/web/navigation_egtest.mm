@@ -1,27 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "base/ios/ios_util.h"
+#import "base/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/net/url_test_util.h"
+#import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 using base::test::ios::kWaitForUIElementTimeout;
-using chrome_test_util::ContentSuggestionCollectionView;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::OmniboxText;
@@ -31,13 +31,13 @@ namespace {
 // URL for the test window.history.go() test file.  The page at this URL
 // contains several buttons that trigger window.history commands.  Additionally
 // the page contains several divs used to display the state of the page:
-// - A div that is populated with |kOnLoadText| when the onload event fires.
-// - A div that is populated with |kNoOpText| 1s after a button is tapped.
-// - A div that is populated with |kPopStateReceivedText| when a popstate event
+// - A div that is populated with `kOnLoadText` when the onload event fires.
+// - A div that is populated with `kNoOpText` 1s after a button is tapped.
+// - A div that is populated with `kPopStateReceivedText` when a popstate event
 //   is received by the page.
 // - A div that is populated with the state object (if it's a string) upon the
 //   receipt of a popstate event.
-// - A div that is populated with |kHashChangeReceivedText| when a hashchange
+// - A div that is populated with `kHashChangeReceivedText` when a hashchange
 //   event is received.
 // When a button on the page is tapped, all pre-existing div text is cleared,
 // so matching against this webview text after a button is tapped ensures that
@@ -67,8 +67,8 @@ const char kHashChangedWithoutHistoryURL[] =
     "/page1/#hashChangedWithoutHistory";
 const char kNoHashChangeText[] = "No hash change";
 // An HTML page with two links that run JavaScript when they're clicked. The
-// first link updates |window.location.hash|, the second link changes
-// |window.location|.
+// first link updates `window.location.hash`, the second link changes
+// `window.location`.
 const char kHashChangedHTML[] =
     "<html><body>"
     "<a href='javascript:window.location.hash=\"#hashChangedWithHistory\"' "
@@ -133,10 +133,10 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 @interface NavigationTestCase : ChromeTestCase
 
 // Adds hashchange listener to the page that changes the inner html of the page
-// to |content| when a hashchange is detected.
+// to `content` when a hashchange is detected.
 - (void)addHashChangeListenerWithContent:(std::string)content;
 
-// Loads index page for redirect operations, taps the link with |redirectLabel|
+// Loads index page for redirect operations, taps the link with `redirectLabel`
 // and then perform series of back-forward navigations asserting the proper
 // behavior.
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel;
@@ -156,8 +156,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:windowHistoryURL];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
-  // Tap on the window.history.go() button.  This will clear |kOnLoadText|, so
-  // the subsequent check for |kOnLoadText| will only pass if a reload has
+  // Tap on the window.history.go() button.  This will clear `kOnLoadText`, so
+  // the subsequent check for `kOnLoadText` will only pass if a reload has
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoNoParameterID];
 
@@ -174,8 +174,8 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:windowHistoryURL];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
-  // Tap on the window.history.go() button.  This will clear |kOnLoadText|, so
-  // the subsequent check for |kOnLoadText| will only pass if a reload has
+  // Tap on the window.history.go() button.  This will clear `kOnLoadText`, so
+  // the subsequent check for `kOnLoadText` will only pass if a reload has
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoZeroID];
 
@@ -194,13 +194,13 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
   // Tap on the window.history.go(2) button.  This will clear all div text, so
-  // the subsequent check for |kNoOpText| will only pass if no navigations have
+  // the subsequent check for `kNoOpText` will only pass if no navigations have
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kNoOpText];
 
   // Tap on the window.history.go(-2) button.  This will clear all div text, so
-  // the subsequent check for |kNoOpText| will only pass if no navigations have
+  // the subsequent check for `kNoOpText` will only pass if no navigations have
   // occurred.
   [ChromeEarlGrey tapWebStateElementWithID:kGoBackTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kNoOpText];
@@ -251,7 +251,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
 
   // Tap the window.history.go(-2) button.  This will clear the current page's
-  // |kOnLoadText|, so the subsequent check will only pass if another load
+  // `kOnLoadText`, so the subsequent check will only pass if another load
   // occurs.
   [ChromeEarlGrey tapWebStateElementWithID:kGoBackTwoID];
   [ChromeEarlGrey waitForWebStateContainingText:kOnLoadText];
@@ -325,7 +325,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Tap the back button and verify NTP is loaded.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the forward button and verify test page is loaded.
@@ -516,7 +516,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
                      "});",
                     kNoHashChangeText, content.c_str()];
 
-  [ChromeEarlGrey executeJavaScript:script];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
 }
 
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel {
@@ -564,13 +564,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that navigating forward from a WebUI URL works when resuming from
 // session restore. This is a regression test for https://crbug.com/814790.
 - (void)testRestoreHistoryToWebUIAndNavigateForward {
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
@@ -591,19 +584,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that navigating forward from NTP works when resuming from session
 // restore. This is a regression test for https://crbug.com/814790.
 - (void)testRestoreHistoryToNTPAndNavigateForward {
-  // This test fails in iOS 13.4 but is fixed in iOS 14. See crbug.com/1076598.
-  if (base::ios::IsRunningOnOrLater(13, 4, 0) &&
-      !base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.4 but enabled in iOS 14");
-  }
-
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:destinationURL];
@@ -623,19 +603,64 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that restoring a placeholder URL is correctly restored.  This is a
 // regression test from http://crbug.com/1011758.
 - (void)testRestoreHistoryToPlaceholderURL {
-#if TARGET_IPHONE_SIMULATOR
-  if (!base::ios::IsRunningOnIOS13OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
-    // This test is failing on one bot for that very specific configuration. See
-    // https://crbug.com/1059496 for more info.
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone 12 simulator.");
-  }
-#endif
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL("chrome://crash");
   [ChromeEarlGrey loadURL:destinationURL];
   [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
   [[EarlGrey selectElementWithMatcher:OmniboxText("chrome://crash")]
       assertWithMatcher:grey_notNil()];
+}
+
+- (void)testEdgeSwipe {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kSimpleFileBasedTestURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/history.html")];
+
+  // Edge swipes don't work with EG, use XCUI directly.
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  // Swiping back from WKWebView to WKWebView or to NTP seems fine with an edge
+  // of zero.
+  CGFloat leftEdge = 0;
+  XCUICoordinate* leftEdgeCoord =
+      [app coordinateWithNormalizedOffset:CGVectorMake(leftEdge, 0.5)];
+  XCUICoordinate* swipeRight =
+      [leftEdgeCoord coordinateWithOffset:CGVectorMake(600, 0.5)];
+
+  // Swipe back twice.
+  [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Verify the NTP is visible.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Swiping forward on a WKWebView works with an edge of one, but swiping
+  // forward from the NTP seems to fail with one, so use 0.99.
+  CGFloat rightEdgeNTP = 0.99;
+  CGFloat rightEdge = 1;
+  XCUICoordinate* rightEdgeCoordFromNTP =
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdgeNTP, 0.5)];
+  XCUICoordinate* swipeLeftFromNTP =
+      [rightEdgeCoordFromNTP coordinateWithOffset:CGVectorMake(-600, 0.5)];
+
+  // Swiping forward twice and verify each page.
+  [rightEdgeCoordFromNTP pressForDuration:0.1f
+                     thenDragToCoordinate:swipeLeftFromNTP];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+
+  XCUICoordinate* rightEdgeCoord =
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdge, 0.5)];
+  XCUICoordinate* swipeLeft =
+      [rightEdgeCoord coordinateWithOffset:CGVectorMake(-600, 0.5)];
+  [rightEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeLeft];
+  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForWebStateContainingText:"onload"];
 }
 
 @end

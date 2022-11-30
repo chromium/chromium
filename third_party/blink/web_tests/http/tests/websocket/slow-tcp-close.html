@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+async_test(t => {
+  const ws = new WebSocket('ws://127.0.0.1:8880/slow-tcp-close');
+  let start;
+  ws.onopen = t.step_func(() => {
+    ws.close();
+    start = performance.now();
+  });
+  ws.onclose = t.step_func_done(evt => {
+    const elapsed = performance.now() - start;
+    // Chromium closes the connection after waiting 2 seconds. This is not
+    // standardised.
+    assert_less_than(elapsed, 3000, 'browser should have closed connection');
+    assert_true(evt.wasClean, 'wasClean should be correct');
+  });
+}, 'verify that the browser closes TCP connections when the server is slow');
+</script>

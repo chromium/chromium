@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define BASE_THREADING_SEQUENCED_TASK_RUNNER_HANDLE_H_
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 
@@ -17,30 +15,33 @@ class ThreadTaskRunnerHandle;
 
 class BASE_EXPORT SequencedTaskRunnerHandle {
  public:
+  // DEPRECATED: Use SequencedTaskRunner::GetCurrentDefault() instead.
   // Returns a SequencedTaskRunner which guarantees that posted tasks will only
   // run after the current task is finished and will satisfy a SequenceChecker.
   // It should only be called if IsSet() returns true (see the comment there for
   // the requirements).
-  static const scoped_refptr<SequencedTaskRunner>& Get() WARN_UNUSED_RESULT;
+  [[nodiscard]] static const scoped_refptr<SequencedTaskRunner>& Get();
 
+  // DEPRECATED: Use SequencedTaskRunner::HasCurrentDefault() instead.
   // Returns true if one of the following conditions is fulfilled:
   // a) A SequencedTaskRunner has been assigned to the current thread by
   //    instantiating a SequencedTaskRunnerHandle.
   // b) The current thread has a ThreadTaskRunnerHandle (which includes any
   //    thread that has a MessageLoop associated with it).
-  static bool IsSet() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsSet();
 
-  // Binds |task_runner| to the current thread.
   explicit SequencedTaskRunnerHandle(
-      scoped_refptr<SequencedTaskRunner> task_runner);
-  ~SequencedTaskRunnerHandle();
+      scoped_refptr<SequencedTaskRunner> task_runner)
+      : contained_current_default_(std::move(task_runner)) {}
+
+  SequencedTaskRunnerHandle(const SequencedTaskRunnerHandle&) = delete;
+  SequencedTaskRunnerHandle& operator=(const SequencedTaskRunnerHandle&) =
+      delete;
+
+  ~SequencedTaskRunnerHandle() = default;
 
  private:
-  friend class ThreadTaskRunnerHandleOverride;
-
-  scoped_refptr<SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerHandle);
+  SequencedTaskRunner::CurrentDefaultHandle contained_current_default_;
 };
 
 }  // namespace base

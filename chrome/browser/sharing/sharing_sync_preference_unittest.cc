@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
@@ -56,17 +57,17 @@ class SharingSyncPreferenceTest : public testing::Test {
   }
 
   void AddEnabledFeature(int feature) {
-    const base::DictionaryValue* registration =
-        prefs_.GetDictionary(prefs::kSharingLocalSharingInfo);
-    base::Value enabled_features =
-        registration->FindListKey(kSharingInfoEnabledFeatures)->Clone();
+    const base::Value::Dict& registration =
+        prefs_.GetDict(prefs::kSharingLocalSharingInfo);
+    base::Value::List enabled_features =
+        registration.FindList(kSharingInfoEnabledFeatures)->Clone();
 
     enabled_features.Append(feature);
 
-    DictionaryPrefUpdate local_sharing_info_update(
+    ScopedDictPrefUpdate local_sharing_info_update(
         &prefs_, prefs::kSharingLocalSharingInfo);
-    local_sharing_info_update->SetKey(kSharingInfoEnabledFeatures,
-                                      std::move(enabled_features));
+    local_sharing_info_update->Set(kSharingInfoEnabledFeatures,
+                                   std::move(enabled_features));
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -75,7 +76,7 @@ class SharingSyncPreferenceTest : public testing::Test {
 };
 
 TEST_F(SharingSyncPreferenceTest, UpdateVapidKeys) {
-  EXPECT_EQ(base::nullopt, sharing_sync_preference_.GetVapidKey());
+  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
   sharing_sync_preference_.SetVapidKey(kVapidKey);
   EXPECT_EQ(kVapidKey, sharing_sync_preference_.GetVapidKey());
 }
@@ -120,7 +121,7 @@ TEST_F(SharingSyncPreferenceTest, FCMRegistrationGetSet) {
 
   // Set FCM registration without authorized entity.
   sharing_sync_preference_.SetFCMRegistration(
-      SharingSyncPreference::FCMRegistration(base::nullopt, time_now));
+      SharingSyncPreference::FCMRegistration(absl::nullopt, time_now));
 
   fcm_registration = sharing_sync_preference_.GetFCMRegistration();
   EXPECT_TRUE(fcm_registration);

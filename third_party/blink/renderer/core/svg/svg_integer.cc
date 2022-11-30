@@ -32,7 +32,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -49,7 +49,7 @@ String SVGInteger::ValueAsString() const {
 SVGParsingError SVGInteger::SetValueAsString(const String& string) {
   value_ = 0;
 
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGParseStatus::kNoError;
 
   bool valid = true;
@@ -80,7 +80,7 @@ void SVGInteger::CalculateAnimatedValue(
   if (parameters.is_additive)
     result += value_;
 
-  value_ = clampTo<int>(roundf(result));
+  value_ = ClampTo<int>(roundf(result));
 }
 
 float SVGInteger::CalculateDistance(const SVGPropertyBase* other,

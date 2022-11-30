@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("password_protection") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_protection_request_ios.h",
+    "password_protection_request_ios.mm",
+    "password_protection_service.h",
+    "request_canceler_ios.h",
+    "request_canceler_ios.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/safe_browsing/core/browser/password_protection",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//ios/web/public",
+    "//url",
+  ]
+}

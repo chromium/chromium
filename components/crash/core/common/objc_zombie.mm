@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #import <objc/runtime.h>
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
@@ -195,7 +196,7 @@ BOOL GetZombieRecord(id object, ZombieRecord* record) {
 BOOL DumpDeallocTrace(const void* const* array, int size) {
   // Async-signal safe version of fputs, consistent with StackTrace::Print().
   const char message[] = "Backtrace from -dealloc:\n";
-  ignore_result(HANDLE_EINTR(write(STDERR_FILENO, message, strlen(message))));
+  std::ignore = HANDLE_EINTR(write(STDERR_FILENO, message, strlen(message)));
   base::debug::StackTrace(array, size).Print();
 
   return YES;

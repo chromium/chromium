@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,11 @@ struct NativePixmapPlane {
 struct NativePixmapHandle {
   array<NativePixmapPlane> planes;
 
-  [EnableIf=is_linux]
+  [EnableIf=is_linux_or_chromeos_ash]
   uint64 modifier;
-  [EnableIf=is_chromeos]
-  uint64 modifier;
+
+  [EnableIf=is_linux_or_chromeos_ash]
+  bool supports_zero_copy_webgpu_import;
 
   [EnableIf=is_fuchsia]
   mojo_base.mojom.UnguessableToken? buffer_collection_id;
@@ -50,10 +51,23 @@ struct AHardwareBufferHandle {
   handle<message_pipe> tracking_pipe;
 };
 
+// gfx::DXGIHandleToken
 [EnableIf=is_win]
-struct DxgiHandle {
+struct DXGIHandleToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
+[EnableIf=is_win]
+struct DXGIHandle {
   // The actual buffer windows handle.
   handle<platform> buffer_handle;
+
+  // A unique identifier for the texture corresponding to this GMB handle. This
+  // is needed because there's no other way to uniquely identify the underlying
+  // texture. Handles get duplicated and the OS provides no other identifier.
+  // DXGISharedHandleManager in the GPU service uses this as a key to cache
+  // state across calls that reference the same texture via different handles.
+  DXGIHandleToken token;
 
   // Shared memory copy of all the data. Valid only if requested by the
   // consumer. It is included here because DXGI GMBs are unmappable except in
@@ -72,7 +86,7 @@ union GpuMemoryBufferPlatformHandle {
   handle<platform> mach_port;
 
   [EnableIf=is_win]
-  DxgiHandle dxgi_handle;
+  DXGIHandle dxgi_handle;
 
   [EnableIf=is_android]
   AHardwareBufferHandle android_hardware_buffer_handle;

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,8 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -31,6 +29,7 @@
 #include "media/gpu/vp8_decoder.h"
 #include "media/gpu/vp9_decoder.h"
 #include "media/video/video_decode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_fence_egl.h"
 
@@ -53,6 +52,12 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
       EGLDisplay egl_display,
       const BindGLImageCallback& bind_image_cb,
       const MakeGLContextCurrentCallback& make_context_current_cb);
+
+  V4L2SliceVideoDecodeAccelerator(const V4L2SliceVideoDecodeAccelerator&) =
+      delete;
+  V4L2SliceVideoDecodeAccelerator& operator=(
+      const V4L2SliceVideoDecodeAccelerator&) = delete;
+
   ~V4L2SliceVideoDecodeAccelerator() override;
 
   // VideoDecodeAccelerator implementation.
@@ -399,8 +404,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   scoped_refptr<V4L2Queue> input_queue_;
   // Set to true by CreateInputBuffers() if the codec driver supports requests
   bool supports_requests_ = false;
-  // Stores the media file descriptor if request API is used
-  base::ScopedFD media_fd_;
 
   scoped_refptr<V4L2Queue> output_queue_;
   // Buffers that have been allocated but are awaiting an ImportBuffer
@@ -418,7 +421,7 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
 
   VideoCodecProfile video_profile_;
   uint32_t input_format_fourcc_;
-  base::Optional<Fourcc> output_format_fourcc_;
+  absl::optional<Fourcc> output_format_fourcc_;
   gfx::Size coded_size_;
 
   struct BitstreamBufferRef;
@@ -501,7 +504,7 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
   std::unique_ptr<ImageProcessor> image_processor_;
 
   // The format of GLImage.
-  base::Optional<Fourcc> gl_image_format_fourcc_;
+  absl::optional<Fourcc> gl_image_format_fourcc_;
   // The logical dimensions of GLImage buffer in pixels.
   gfx::Size gl_image_size_;
   // Number of planes for GLImage.
@@ -512,8 +515,6 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
 
   // The WeakPtrFactory for |weak_this_|.
   base::WeakPtrFactory<V4L2SliceVideoDecodeAccelerator> weak_this_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2SliceVideoDecodeAccelerator);
 };
 
 }  // namespace media

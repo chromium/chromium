@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,6 +34,7 @@ config("config") {
     "//ios/third_party/earl_grey2/src/UILib/Additions",
     "//ios/third_party/earl_grey2/src/UILib/Provider",
     "//ios/third_party/earl_grey2/src/UILib/Traversal",
+    "//ios/third_party/earl_grey2/src/UILib/Utils",
     "//ios/third_party/earl_grey2/src/UILib/Visibility",
     "//ios/third_party/earl_grey2/src/TestLib",
     "//ios/third_party/earl_grey2/src/TestLib/AlertHandling",
@@ -89,7 +90,6 @@ source_set("common_lib") {
     "src/CommonLib/Config/GREYConfiguration.h",
     "src/CommonLib/Config/GREYConfiguration.m",
     "src/CommonLib/DistantObject/GREYDistantObjectUtils.h",
-    "src/CommonLib/DistantObject/GREYDistantObjectUtils.m",
     "src/CommonLib/DistantObject/GREYHostApplicationDistantObject.h",
     "src/CommonLib/DistantObject/GREYHostBackgroundDistantObject.h",
     "src/CommonLib/DistantObject/GREYTestApplicationDistantObject+Private.h",
@@ -122,6 +122,8 @@ source_set("common_lib") {
     "src/CommonLib/GREYLogger.m",
     "src/CommonLib/GREYObjcRuntime.h",
     "src/CommonLib/GREYObjcRuntime.m",
+    "src/CommonLib/GREYSetup.h",
+    "src/CommonLib/GREYSetup.m",
     "src/CommonLib/GREYStopwatch.h",
     "src/CommonLib/GREYStopwatch.m",
     "src/CommonLib/GREYSwizzler.h",
@@ -207,6 +209,8 @@ source_set("ui_lib") {
     "src/UILib/Traversal/GREYTraversalObject.m",
     "src/UILib/Traversal/GREYTraversalProperties.h",
     "src/UILib/Traversal/GREYTraversalProperties.m",
+    "src/UILib/Utils/GREYUILibUtils.h",
+    "src/UILib/Utils/GREYUILibUtils.m",
     "src/UILib/Visibility/GREYQuickVisibilityChecker.h",
     "src/UILib/Visibility/GREYQuickVisibilityChecker.m",
     "src/UILib/Visibility/GREYThoroughVisibilityChecker.h",
@@ -262,6 +266,8 @@ source_set("app_framework_shared_headers") {
     "src/AppFramework/Matcher/GREYAnyOf.h",
     "src/AppFramework/Matcher/GREYMatchers.h",
     "src/AppFramework/Matcher/GREYMatchersShorthand.h",
+    "src/AppFramework/Matcher/GREYVisibilityMatcher.h",
+    "src/AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.h",
   ]
 }
@@ -276,7 +282,6 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Action/GREYActionBlock+Private.h",
     "src/AppFramework/Action/GREYActionBlock.h",
     "src/AppFramework/Action/GREYActionBlock.m",
-    "src/AppFramework/Action/GREYActions+Private.h",
     "src/AppFramework/Action/GREYActions.m",
     "src/AppFramework/Action/GREYActionsShorthand.m",
     "src/AppFramework/Action/GREYBaseAction.h",
@@ -303,6 +308,8 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Action/GREYTapAction.m",
     "src/AppFramework/Action/GREYTapper.h",
     "src/AppFramework/Action/GREYTapper.m",
+    "src/AppFramework/Action/GREYTwistAction.h",
+    "src/AppFramework/Action/GREYTwistAction.m",
     "src/AppFramework/Additions/CAAnimation+GREYApp.h",
     "src/AppFramework/Additions/CAAnimation+GREYApp.m",
     "src/AppFramework/Additions/CALayer+GREYApp.h",
@@ -360,6 +367,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Delegate/GREYSurrogateDelegate.m",
     "src/AppFramework/Delegate/GREYWKWebViewNavigationDelegate.h",
     "src/AppFramework/Delegate/GREYWKWebViewNavigationDelegate.m",
+    "src/AppFramework/DistantObject/GREYDistantObjectUtils.m",
     "src/AppFramework/DistantObject/GREYHostApplicationDistantObject+GREYTestHelper.m",
     "src/AppFramework/DistantObject/GREYHostApplicationDistantObject.m",
     "src/AppFramework/DistantObject/GREYHostBackgroundDistantObject+GREYApp.m",
@@ -388,8 +396,11 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Matcher/GREYAllOf+Private.h",
     "src/AppFramework/Matcher/GREYAllOf.m",
     "src/AppFramework/Matcher/GREYAnyOf.m",
+    "src/AppFramework/Matcher/GREYMatcherUtil.h",
+    "src/AppFramework/Matcher/GREYMatcherUtil.m",
     "src/AppFramework/Matcher/GREYMatchers.m",
     "src/AppFramework/Matcher/GREYMatchersShorthand.m",
+    "src/AppFramework/Matcher/GREYVisibilityMatcher.m",
     "src/AppFramework/Synchronization/GREYAppStateTracker.h",
     "src/AppFramework/Synchronization/GREYAppStateTracker.m",
     "src/AppFramework/Synchronization/GREYAppStateTrackerObject.h",
@@ -402,8 +413,11 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Synchronization/GREYRunLoopSpinner.m",
     "src/AppFramework/Synchronization/GREYSyncAPI.h",
     "src/AppFramework/Synchronization/GREYSyncAPI.m",
+    "src/AppFramework/Synchronization/GREYUIThreadExecutor+GREYApp.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor+Private.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.m",
+    "src/AppFramework/Synchronization/UIApplication+ActiveRunLoopMode.h",
+    "src/AppFramework/Synchronization/UIApplication+ActiveRunLoopMode.m",
   ]
 
   deps = [
@@ -418,7 +432,7 @@ ios_framework_bundle("app_framework") {
 
   public_deps = [ ":app_framework_shared_headers" ]
 
-  public_headers = [ "src/AppFramework/EarlGreyApp/EarlGreyApp.h" ]
+  public_headers = [ "src/AppFramework/EarlGreyApp.h" ]
 
   frameworks = [
     "CoreData.framework",
@@ -471,6 +485,7 @@ source_set("test_lib") {
     "src/TestLib/Condition/GREYCondition.m",
     "src/TestLib/Config/GREYTestConfiguration.h",
     "src/TestLib/Config/GREYTestConfiguration.m",
+    "src/TestLib/DistantObject/GREYDistantObjectUtils.m",
     "src/TestLib/DistantObject/GREYHostStub.m",
     "src/TestLib/DistantObject/GREYTestApplicationDistantObject+GREYLogger.h",
     "src/TestLib/DistantObject/GREYTestApplicationDistantObject+GREYLogger.m",
@@ -504,13 +519,13 @@ source_set("test_lib") {
   deps = [
     ":app_framework_shared_headers",
     ":ui_lib_shared_headers",
-    "//build/config/ios:xctest",
     "//ios/third_party/edo",
   ]
 
   public_deps = [
     ":common_lib",
     ":test_lib_shared_headers",
+    "//build/config/ios:xctest",
   ]
 
   frameworks = [

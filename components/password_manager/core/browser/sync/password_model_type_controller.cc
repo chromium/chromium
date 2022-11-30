@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,18 +49,16 @@ PasswordModelTypeController::PasswordModelTypeController(
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::ModelTypeControllerDelegate>
         delegate_for_transport_mode,
-    scoped_refptr<PasswordStore> account_password_store_for_cleanup,
+    scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service,
-    const base::RepeatingClosure& state_changed_callback)
+    syncer::SyncService* sync_service)
     : ModelTypeController(syncer::PASSWORDS,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)),
       pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
-      state_changed_callback_(state_changed_callback),
       account_storage_settings_watcher_(
           pref_service_,
           sync_service_,
@@ -70,7 +68,7 @@ PasswordModelTypeController::PasswordModelTypeController(
   identity_manager_->AddObserver(this);
 
   DCHECK_EQ(
-      !!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage),
+      base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage),
       !!account_password_store_for_cleanup);
   if (base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     // Note: Right now, we're still in the middle of SyncService initialization,
@@ -81,10 +79,6 @@ PasswordModelTypeController::PasswordModelTypeController(
         FROM_HERE, base::BindOnce(&PasswordModelTypeController::MaybeClearStore,
                                   weak_ptr_factory_.GetWeakPtr(),
                                   account_password_store_for_cleanup));
-  } else {
-    // If the feature flag is disabled, clear any related prefs that might still
-    // be around.
-    features_util::ClearAccountStorageSettingsForAllUsers(pref_service_);
   }
 }
 
@@ -99,7 +93,6 @@ void PasswordModelTypeController::LoadModels(
   sync_service_->AddObserver(this);
   sync_mode_ = configure_context.sync_mode;
   ModelTypeController::LoadModels(configure_context, model_load_callback);
-  state_changed_callback_.Run();
 }
 
 void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
@@ -113,16 +106,15 @@ void PasswordModelTypeController::Stop(syncer::ShutdownReason shutdown_reason,
   // in the account DB).
   if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
     switch (shutdown_reason) {
-      case syncer::STOP_SYNC:
-        shutdown_reason = syncer::DISABLE_SYNC;
+      case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
+        shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
         break;
-      case syncer::DISABLE_SYNC:
-      case syncer::BROWSER_SHUTDOWN:
+      case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+      case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
         break;
     }
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));
-  state_changed_callback_.Run();
 }
 
 syncer::DataTypeController::PreconditionState
@@ -144,7 +136,7 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     return false;
   }
-  if (sync_service_->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
   return true;
@@ -153,7 +145,6 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
 void PasswordModelTypeController::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
   sync_service_->DataTypePreconditionChanged(syncer::PASSWORDS);
-  state_changed_callback_.Run();
 }
 
 void PasswordModelTypeController::OnAccountsInCookieUpdated(
@@ -205,12 +196,13 @@ void PasswordModelTypeController::OnOptInStateMaybeChanged() {
 }
 
 void PasswordModelTypeController::MaybeClearStore(
-    scoped_refptr<PasswordStore> account_password_store_for_cleanup) {
+    scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup) {
   DCHECK(account_password_store_for_cleanup);
   if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
     RecordClearedOnStartup(ClearedOnStartup::kOptedInSoNoNeedToClear);
   } else {
-    account_password_store_for_cleanup->ClearStore(
+    account_password_store_for_cleanup->RemoveLoginsCreatedBetween(
+        base::Time(), base::Time::Max(),
         base::BindOnce(&PasswordStoreClearDone));
   }
 }

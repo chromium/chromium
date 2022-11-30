@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
@@ -14,88 +16,52 @@
     <!-- Tab Switcher Colors -->
     <color name="tab_switcher_background">#14181C</color>
     <color name="accessibility_tab_switcher_list_item">#252525</color>
-    <color name="tab_back">#F1F1F1</color>
-    <color name="tab_back_incognito">#4F4F4F</color>
 
     <!-- App menu colors -->
     <color name="update_menu_item_text_color">@color/default_red</color>
 
-    <!-- Omnibox Suggestion colors -->
-    <color name="suggestion_url_dark_modern">@color/default_text_color_link</color>
-    <color name="suggestion_url_light_modern">@color/modern_blue_300</color>
-    <color name="answers_description_text_negative">@color/default_red</color>
-    <color name="answers_description_text_positive">@color/default_green</color>
-
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
-    <color name="distilled_page_prefs_unselected">@color/popup_bg_color</color>
-
-    <!-- Data Saver Colors -->
-    <color name="data_reduction_compressed_color">#E1E1E1</color>
-    <color name="data_reduction_original_color">@color/default_control_color_active</color>
-    <color name="data_reduction_chart_background_color">@color/default_bg_color_secondary</color>
-
-    <!-- Compositor Tab Colors -->
-    <color name="compositor_background_tab_bg">@color/modern_grey_300</color>
-    <color name="compositor_background_tab_bg_incognito">@color/modern_grey_900</color>
-    <color name="compositor_background_tab_outline">#ACB1B6</color>
-    <color name="compositor_background_tab_outline_incognito">@android:color/black</color>
+    <color name="distilled_page_prefs_unselected_baseline">@color/dialog_bg_color_baseline</color>
 
     <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color</color>
+    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
     <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
 
     <!-- Account Signin Colors -->
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
-    <color name="signin_head_background">@color/default_bg_color</color>
-    <color name="signin_body_background">@color/default_bg_color</color>
+    <macro name="signin_head_background">@macro/default_bg_color</macro>
+    <macro name="signin_body_background">@macro/default_bg_color</macro>
     <color name="signin_header_animation_background">@color/modern_grey_50</color>
     <color name="signin_header_animation_line_light">#E8E9EB</color>
     <color name="signin_header_animation_line_dark">#BDC0C5</color>
     <color name="signin_header_animation_laptop_screen">#F4F4F4</color>
 
     <!-- NTP and Home sheet colors. Also used on the bookmarks and recent tabs pages. -->
-    <color name="ntp_bg_incognito">@color/default_bg_color_dark_elev_3</color>
-    <color name="suggestions_modern_bg">@color/default_bg_color</color>
-    <color name="google_logo_tint">@android:color/transparent</color>
+    <color name="ntp_bg_incognito">@color/default_bg_color_dark</color>
 
     <!-- Incognito NTP Colors. -->
     <color name="incognito_emphasis">@android:color/white</color>
 
     <!-- Overlay Panel colors -->
-    <color name="overlay_panel_bar_background_color">@color/default_bg_color_elev_4</color>
-    <color name="overlay_panel_separator_line_color">@color/default_bg_color_secondary</color>
-
-    <!-- Contextual Search colors -->
-    <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>
-    <color name="contextual_search_promo_border_color">#C2C2C2</color>
-
-    <!-- LocationBar colors -->
-    <color name="locationbar_dark_hint_text">@color/search_box_hint</color>
-    <color name="locationbar_light_hint_text">@color/white_alpha_70</color>
-    <color name="locationbar_status_offline_color">@color/modern_grey_900</color>
-    <color name="locationbar_status_offline_color_light">@android:color/white</color>
-    <color name="locationbar_status_preview_color">@color/modern_blue_600</color>
-    <color name="locationbar_status_preview_color_light">@color/modern_blue_300</color>
-    <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
-    <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>
+    <macro name="overlay_panel_bar_background_color">@macro/default_bg_color</macro>
 
     <!-- Find in Page colors -->
     <color name="find_in_page_query_white_color">@android:color/white</color>
     <color name="find_in_page_query_incognito_hint_color">@color/white_alpha_70</color>
     <color name="find_in_page_failed_results_status_color">@color/default_red</color>
-    <color name="find_in_page_query_default_hint_color">@color/search_box_hint</color>
+    <color name="find_in_page_query_default_hint_color">@color/default_text_color_secondary_list</color>
+    <color name="find_in_page_background_color">@color/default_bg_color_baseline</color>
 
     <!-- App Background Colors -->
-    <color name="light_background_color">@android:color/white</color>
-    <color name="resizing_background_color">@android:color/white</color>
+    <color name="window_background_color">@color/default_bg_color_baseline</color>
+    <color name="navigation_bar_color">@color/default_bg_color_baseline</color>
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
-    <color name="bookmark_widget_background">@color/default_bg_color</color>
+    <color name="bookmark_widget_background">@color/default_bg_color_baseline</color>
 
     <!-- History Navigation UI colors -->
-    <color name="navigation_bubble_background_color">@color/default_bg_color_elev_2</color>
     <color name="navigation_bubble_arrow">@android:color/black</color>
 
     <!-- Scrollbar colors -->
@@ -106,16 +72,12 @@
 
     <!-- Offline indicator v2 colors -->
     <color name="offline_indicator_offline_color">@android:color/black</color>
-    <color name="offline_indicator_back_online_color">@color/default_bg_color_blue</color>
-
-    <!-- Material colorSurface  See See https://crbug.com/1186712 -->
-    <color name="material_color_surface">@color/default_bg_color_elev_4</color>
 
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>
     <color name="image_viewer_bg">#0E0E0E</color>
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
-    <color name="tab_layout_selected_tab_color">@color/default_text_color_blue</color>
+    <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
     <color name="web_notification_text">#CCCCCC</color>
 
 </resources>

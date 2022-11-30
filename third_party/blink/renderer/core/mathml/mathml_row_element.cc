@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,10 @@ MathMLRowElement::MathMLRowElement(const QualifiedName& tagName,
 
 LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
                                                    LegacyLayout legacy) {
-  DCHECK(!style.IsDisplayMathType() || legacy != LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType())
+      !style.IsDisplayMathType() || legacy == LegacyLayout::kForce)
     return MathMLElement::CreateLayoutObject(style, legacy);
-  return new LayoutNGMathMLBlock(this);
+  return MakeGarbageCollected<LayoutNGMathMLBlock>(this);
 }
 
 void MathMLRowElement::ChildrenChanged(const ChildrenChange& change) {

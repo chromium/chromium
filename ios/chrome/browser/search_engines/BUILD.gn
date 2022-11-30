@@ -1,28 +1,33 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 source_set("search_engines") {
   sources = [
+    "search_engine_java_script_feature.h",
+    "search_engine_java_script_feature.mm",
     "search_engine_observer_bridge.h",
     "search_engine_observer_bridge.mm",
     "search_engine_tab_helper.h",
     "search_engine_tab_helper.mm",
+    "search_engine_tab_helper_factory.h",
+    "search_engine_tab_helper_factory.mm",
     "search_engines_util.cc",
     "search_engines_util.h",
     "template_url_fetcher_factory.cc",
     "template_url_fetcher_factory.h",
     "template_url_service_client_impl.cc",
     "template_url_service_client_impl.h",
-    "template_url_service_factory.cc",
     "template_url_service_factory.h",
-    "ui_thread_search_terms_data.cc",
+    "template_url_service_factory.mm",
     "ui_thread_search_terms_data.h",
+    "ui_thread_search_terms_data.mm",
   ]
   deps = [
+    ":search_engine_js",
     "//base",
     "//components/country_codes",
     "//components/favicon/ios",
@@ -37,11 +42,14 @@ source_set("search_engines") {
     "//components/version_info",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/google",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
-    "//ios/web",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//net",
     "//rlz/buildflags",
     "//ui/base",
@@ -79,7 +87,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":extension_search_engine_data_updater",
-    ":search_engine_js",
     ":search_engines",
     "//base:base",
     "//base/test:test_support",
@@ -89,7 +96,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon:favicon",
-    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common/app_group",
     "//ios/web",
     "//ios/web/public/test",
@@ -99,12 +106,7 @@ source_set("unit_tests") {
   ]
 }
 
-js_compile_checked("search_engine_js") {
+optimize_js("search_engine_js") {
+  primary_script = "resources/search_engine.js"
   sources = [ "resources/search_engine.js" ]
-
-  js_modules = [
-    "//ios/web/web_state/js/resources/base.js",
-    "//ios/web/web_state/js/resources/common.js",
-    "//ios/web/js_messaging/resources/message.js",
-  ]
 }

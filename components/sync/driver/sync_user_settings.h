@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_H_
 
+#include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
@@ -15,6 +15,8 @@
 #include "components/sync/base/user_selectable_type.h"
 
 namespace syncer {
+
+class Nigori;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser
 // These values are persisted to logs. Entries should not be renumbered and
@@ -25,7 +27,8 @@ enum class SyncFirstSetupCompleteSource {
   ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON = 2,
   ADVANCED_FLOW_INTERRUPTED_LEAVE_SYNC_OFF = 3,
   ENGINE_INITIALIZED_WITH_AUTO_START = 4,
-  kMaxValue = ENGINE_INITIALIZED_WITH_AUTO_START,
+  ANDROID_BACKUP_RESTORE = 5,
+  kMaxValue = ANDROID_BACKUP_RESTORE,
 };
 
 // This class encapsulates all the user-configurable bits of Sync.
@@ -59,8 +62,7 @@ class SyncUserSettings {
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
   // Registered user selectable types are derived from registered model types.
-  // UserSelectableType is registered iff main corresponding  ModelType is
-  // registered.
+  // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,20 +73,21 @@ class SyncUserSettings {
   virtual void SetSelectedOsTypes(bool sync_all_os_types,
                                   UserSelectableOsTypeSet types) = 0;
   virtual UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const = 0;
-
-  // Whether the OS sync feature is enabled. Implies the user has consented.
-  // Exists in this interface for easier mocking in tests.
-  virtual bool IsOsSyncFeatureEnabled() const = 0;
-  virtual void SetOsSyncFeatureEnabled(bool enabled) = 0;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, apps sync in the primary profile is controlled by the OS Sync
+  // settings.
+  virtual void SetAppsSyncEnabledByOs(bool apps_sync_enabled) = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Encryption state.
   // Note that all of this state may only be queried or modified if the Sync
   // engine is initialized.
 
-  // Whether the user is allowed to encrypt all their Sync data. For example,
-  // child accounts are not allowed to encrypt their data.
-  virtual bool IsEncryptEverythingAllowed() const = 0;
+  // Whether the user is allowed to set a custom passphrase to encrypt all
+  // their Sync data. For example, child accounts aren't allowed to do.
+  virtual bool IsCustomPassphraseAllowed() const = 0;
   // Whether we are currently set to encrypt all the Sync data.
   virtual bool IsEncryptEverythingEnabled() const = 0;
 
@@ -110,10 +113,10 @@ class SyncUserSettings {
   // Whether recoverability of the trusted vault keys is degraded and user
   // action is required, affecting currently enabled data types.
   virtual bool IsTrustedVaultRecoverabilityDegraded() const = 0;
-  // Whether a "secondary" passphrase is in use (aka explicit passphrase), which
-  // means either a custom or a frozen implicit passphrase.
-  virtual bool IsUsingSecondaryPassphrase() const = 0;
-  // The time the current explicit passphrase (if any) was set. If no secondary
+  // Whether an explicit passphrase is in use, which means either a custom
+  // passphrase or a legacy frozen implicit passphrase.
+  virtual bool IsUsingExplicitPassphrase() const = 0;
+  // The time the current explicit passphrase (if any) was set. If no explicit
   // passphrase is in use, or no time is available, returns an unset base::Time.
   virtual base::Time GetExplicitPassphraseTime() const = 0;
   // The type of the passphrase currently in use.
@@ -123,9 +126,19 @@ class SyncUserSettings {
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
   // Asynchronously decrypts pending keys using |passphrase|. Returns false
   // immediately if the passphrase could not be used to decrypt a locally cached
-  // copy of encrypted keys; returns true otherwise.
-  virtual bool SetDecryptionPassphrase(const std::string& passphrase)
-      WARN_UNUSED_RESULT = 0;
+  // copy of encrypted keys; returns true otherwise. This method shouldn't be
+  // called when passphrase isn't required.
+  [[nodiscard]] virtual bool SetDecryptionPassphrase(
+      const std::string& passphrase) = 0;
+
+  // Asynchronously decrypts pending keys using |nigori|. |nigori| must not be
+  // null. It's safe to call this method with wrong |nigori| and, unlike
+  // SetDecryptionPassphrase(), when passphrase isn't required.
+  virtual void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) = 0;
+  // Returns stored decryption key, corresponding to the last successfully
+  // decrypted explicit passphrase Nigori. Returns nullptr if there is no such
+  // stored decryption key.
+  virtual std::unique_ptr<Nigori> GetDecryptionNigoriKey() const = 0;
 };
 
 }  // namespace syncer

@@ -1,13 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 namespace {
@@ -16,6 +17,12 @@ class ChromeConstrainedWindowViewsClient
     : public constrained_window::ConstrainedWindowViewsClient {
  public:
   ChromeConstrainedWindowViewsClient() {}
+
+  ChromeConstrainedWindowViewsClient(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+  ChromeConstrainedWindowViewsClient& operator=(
+      const ChromeConstrainedWindowViewsClient&) = delete;
+
   ~ChromeConstrainedWindowViewsClient() override {}
 
  private:
@@ -33,13 +40,11 @@ class ChromeConstrainedWindowViewsClient
   gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
     return platform_util::GetViewForWindow(parent);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeConstrainedWindowViewsClient);
 };
 
 }  // namespace
 
 std::unique_ptr<constrained_window::ConstrainedWindowViewsClient>
 CreateChromeConstrainedWindowViewsClient() {
-  return base::WrapUnique(new ChromeConstrainedWindowViewsClient);
+  return std::make_unique<ChromeConstrainedWindowViewsClient>();
 }

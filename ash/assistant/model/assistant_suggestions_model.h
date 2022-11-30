@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 
 namespace base {
 class UnguessableToken;
@@ -23,9 +22,14 @@ class AssistantSuggestionsModelObserver;
 
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantSuggestionsModel {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   AssistantSuggestionsModel();
+
+  AssistantSuggestionsModel(const AssistantSuggestionsModel&) = delete;
+  AssistantSuggestionsModel& operator=(const AssistantSuggestionsModel&) =
+      delete;
+
   ~AssistantSuggestionsModel();
 
   // Adds/removes the specified suggestions model |observer|.
@@ -59,8 +63,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantSuggestionsModel {
   std::vector<AssistantSuggestion> onboarding_suggestions_;
 
   mutable base::ObserverList<AssistantSuggestionsModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantSuggestionsModel);
 };
 
 }  // namespace ash

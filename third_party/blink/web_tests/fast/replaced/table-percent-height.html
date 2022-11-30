@@ -79,7 +79,7 @@ function test()
     shouldBe("getHeight('input-button-75')", "getHeight('input-button-100')");
 
     shouldBe("getWidth('input-checkbox-75')", "getWidth('input-checkbox-100')");
-    shouldBeTrue("getHeight('input-checkbox-75') == '0px'");
+    shouldBeTrue("getHeight('input-checkbox-75') != '0px'");
     shouldBe("getHeight('input-checkbox-75')", "getHeight('input-checkbox-100')");
 
     shouldBe("getWidth('input-file-75')", "getWidth('input-file-100')");
@@ -92,7 +92,7 @@ function test()
     shouldBe("getHeight('input-image-100')", "'100px'");
 
     shouldBe("getWidth('input-radio-75')", "getWidth('input-radio-100')");
-    shouldBeTrue("getHeight('input-radio-75') == '0px'");
+    shouldBeTrue("getHeight('input-radio-75') != '0px'");
     shouldBe("getHeight('input-radio-75')", "getHeight('input-radio-100')");
 
     shouldBe("getWidth('input-reset-75')", "getWidth('input-reset-100')");

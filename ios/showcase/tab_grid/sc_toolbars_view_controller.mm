@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,10 @@
 
   TabGridTopToolbar* topToolbar = [[TabGridTopToolbar alloc] init];
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  topToolbar.leadingButton.title = @"Leading";
-  topToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:topToolbar];
 
   TabGridBottomToolbar* bottomToolbar = [[TabGridBottomToolbar alloc] init];
   bottomToolbar.translatesAutoresizingMaskIntoConstraints = NO;
-  bottomToolbar.leadingButton.title = @"Leading";
-  bottomToolbar.trailingButton.title = @"Trailing";
   [self.view addSubview:bottomToolbar];
 
   NSArray* constraints = @[

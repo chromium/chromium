@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOCAL_GATT_DESCRIPTOR_H_
 
 #include <stdint.h>
-#include <vector>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
@@ -51,14 +49,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptor
       BluetoothGattCharacteristic::Permissions permissions,
       BluetoothLocalGattCharacteristic* characteristic);
 
+  BluetoothLocalGattDescriptor(const BluetoothLocalGattDescriptor&) = delete;
+  BluetoothLocalGattDescriptor& operator=(const BluetoothLocalGattDescriptor&) =
+      delete;
+
   virtual BluetoothLocalGattCharacteristic* GetCharacteristic() const = 0;
 
  protected:
   BluetoothLocalGattDescriptor();
   ~BluetoothLocalGattDescriptor() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattDescriptor);
 };
 
 }  // namespace device

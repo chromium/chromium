@@ -1,0 +1,7 @@
+{
+  "name": "Deleted SW registration test",
+  "version": "1",
+  "manifest_version": 3,
+  "description": "Tests that deleted SW registration re-registers.",
+  "background": {"service_worker": "service_worker_background.js"}
+}

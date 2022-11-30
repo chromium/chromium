@@ -73,16 +73,7 @@ function iterateList(list)
     for (var i in list) {
         temp.push(i);
     }
-    // The enumerated properties may contain non-integer keys which sort before
-    // integer keys, e.g. -webkit prefixed CSS properties. Therefore provide
-    // a custom comparison function which places integer keys first.
-    temp.sort((a, b) => {
-        if (Number.isNaN(parseInt(a)) != Number.isNaN(parseInt(b)))
-            return Number.isNaN(parseInt(a)) ? 1 : -1;
-        if (a == b)
-            return 0;
-        return a < b ? -1 : 1;
-    });
+    temp.sort();
 
     var a = new Array();
     for (var i = 0; i < temp.length; ++i) {

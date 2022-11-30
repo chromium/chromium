@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,11 @@
  *
  */
 
-goog.provide('AbstractEarcons');
-goog.provide('Earcon');
-goog.provide('EarconDescription');
-
-
 /**
  * Earcon names.
  * @enum {string}
  */
-Earcon = {
+export const Earcon = {
   ALERT_MODAL: 'alert_modal',
   ALERT_NONMODAL: 'alert_nonmodal',
   BUTTON: 'button',
@@ -59,7 +54,7 @@ Earcon = {
  * used to generate tutorial content.
  * @type {Object<string, string>}
  */
-const EarconDescription = {
+export const EarconDescription = {
   alert_modal: 'alert_modal_earcon_description',
   alert_nonmodal: 'alert_nonmodal_earcon_description',
   button: 'button_earcon_description',
@@ -76,15 +71,12 @@ const EarconDescription = {
 };
 
 
-AbstractEarcons = class {
-  constructor() {}
-
+export class AbstractEarcons {
   /**
    * Plays the specified earcon sound.
    * @param {Earcon} earcon An earcon identifier.
-   * @param {Object=} opt_location A location associated with the earcon such as
-   *     a
-   * control's bounding rectangle.
+   * @param {chrome.automation.Rect=} opt_location A location associated with
+   *     the earcon such as a control's bounding rectangle.
    */
   playEarcon(earcon, opt_location) {}
 
@@ -112,9 +104,9 @@ AbstractEarcons = class {
 
   /**
    * Set whether or not earcons are enabled.
-   * @param {Boolean} value True turns on earcons, false turns off earcons.
+   * @param {boolean} value True turns on earcons, false turns off earcons.
    */
   set enabled(value) {
     localStorage['earcons'] = value;
   }
-};
+}

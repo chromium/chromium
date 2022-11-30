@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -69,7 +69,7 @@ def GetMissingArchivesInCloudStorage(archive_infos, wpr_sha_files):
     bucket = wpr_archive_info._bucket
     story_archives = wpr_archive_info._data['archives']
     for story in story_archives:
-      for _, archive_path in story_archives[story].iteritems():
+      for _, archive_path in story_archives[story].items():
         archive_path = os.path.join(wpr_archive_info._base_dir,
             archive_path)
         hash_path = NormalizedPath(archive_path + '.sha1')

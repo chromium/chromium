@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/FieldTrialList_jni.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -26,6 +25,9 @@ class TrialLogger : public base::FieldTrialList::Observer {
  public:
   TrialLogger() {}
 
+  TrialLogger(const TrialLogger&) = delete;
+  TrialLogger& operator=(const TrialLogger&) = delete;
+
   void OnFieldTrialGroupFinalized(const std::string& trial_name,
                                   const std::string& group_name) override {
     Log(trial_name, group_name);
@@ -33,15 +35,15 @@ class TrialLogger : public base::FieldTrialList::Observer {
 
   static void Log(const std::string& trial_name,
                   const std::string& group_name) {
+    // Changes to format of the log message below must be accompanied by
+    // changes to finch smoke tests since they look for this log message
+    // in the logcat.
     LOG(INFO) << "Active field trial \"" << trial_name
               << "\" in group \"" << group_name<< '"';
   }
 
  protected:
   ~TrialLogger() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrialLogger);
 };
 
 base::LazyInstance<TrialLogger>::Leaky g_trial_logger =

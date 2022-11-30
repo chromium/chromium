@@ -1,0 +1,26 @@
+caption: Allows the AppCache feature to be re-enabled even if it is off by default.
+deprecated: true
+desc: |-
+  If set to true, this will force AppCache to be enabled, even when AppCache in Chrome is not available by default.
+
+        If unset or set to false, AppCache will follow Chrome's defaults.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Force AppCache to be enabled
+  value: true
+- caption: Use default AppCache behavior
+  value: false
+owners:
+- enne@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:84-95
+- chrome_os:84-95
+- android:84-95
+- webview_android:84-95
+tags: []
+type: main

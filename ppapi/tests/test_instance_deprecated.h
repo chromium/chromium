@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_TESTS_TEST_INSTANCE_H_
-#define PPAPI_TESTS_TEST_INSTANCE_H_
+#ifndef PPAPI_TESTS_TEST_INSTANCE_DEPRECATED_H_
+#define PPAPI_TESTS_TEST_INSTANCE_DEPRECATED_H_
 
 #include <string>
 #include <vector>
@@ -73,4 +73,4 @@ class TestInstance : public TestCase {
   InstanceSO* instance_so_;
 };
 
-#endif  // PPAPI_TESTS_TEST_INSTANCE_H_
+#endif  // PPAPI_TESTS_TEST_INSTANCE_DEPRECATED_H_

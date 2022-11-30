@@ -1,10 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {DriveDialogControllerInterface} from '../drive_dialog_controller.m.js';
-// clang-format on
+import {DriveDialogControllerInterface} from '../drive_dialog_controller.js';
 
 /**
  * Handler of the background page for the Drive sync events. Implementations
@@ -12,7 +10,7 @@
  *
  * @interface
  */
-/* #export */ class DriveSyncHandler extends EventTarget {
+export class DriveSyncHandler extends EventTarget {
   /**
    * Returns the completed event name.
    * @return {string}
@@ -34,6 +32,11 @@
    * @return {boolean} Whether the handler is syncing items or not.
    */
   get syncing() {}
+
+  /**
+   * @param {Object} model
+   */
+  set metadataModel(model) {}
 
   /**
    * Adds a dialog to be controlled by DriveSyncHandler.

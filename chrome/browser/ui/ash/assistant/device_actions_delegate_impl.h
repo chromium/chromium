@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 class DeviceActionsDelegateImpl : public DeviceActionsDelegate {
  public:
@@ -21,7 +21,7 @@ class DeviceActionsDelegateImpl : public DeviceActionsDelegate {
 
   ~DeviceActionsDelegateImpl() override;
 
-  chromeos::assistant::AppStatus GetAndroidAppStatus(
+  ash::assistant::AppStatus GetAndroidAppStatus(
       const std::string& package_name) override;
 };
 

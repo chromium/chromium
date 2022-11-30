@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_ASSISTANT_MODEL_UI_ASSISTANT_ERROR_ELEMENT_H_
 #define ASH_ASSISTANT_MODEL_UI_ASSISTANT_ERROR_ELEMENT_H_
-
-#include <string>
 
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/component_export.h"

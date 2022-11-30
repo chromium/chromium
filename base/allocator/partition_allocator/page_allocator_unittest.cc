@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,40 +6,54 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <vector>
-#include "base/cpu.h"
-#include "base/logging.h"
-#include "base/memory/tagging.h"
-#include "base/notreached.h"
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
-#if defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 #include "base/debug/proc_maps_linux.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <setjmp.h>
 #include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #include "base/allocator/partition_allocator/arm_bti_test_functions.h"
 
-#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if defined(PA_HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MTE_KILLED_BY_SIGNAL_AVAILABLE
 #endif
 #endif
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-namespace base {
+namespace partition_alloc::internal {
+
+#if BUILDFLAG(IS_ANDROID)
+namespace base::debug {
+
+using ::base::debug::MappedMemoryRegion;
+using ::base::debug::ParseProcMaps;
+using ::base::debug::ReadProcMaps;
+
+}  // namespace base::debug
+#endif
 
 namespace {
 
@@ -50,12 +64,13 @@ size_t EasyAllocSize() {
 
 // A huge amount of memory, greater than or equal to the ASLR space.
 size_t HugeMemoryAmount() {
-  return std::max(internal::ASLRMask(), std::size_t{2} * internal::ASLRMask());
+  return std::max(::partition_alloc::internal::ASLRMask(),
+                  std::size_t{2} * ::partition_alloc::internal::ASLRMask());
 }
 
 }  // namespace
 
-TEST(PageAllocatorTest, Rounding) {
+TEST(PartitionAllocPageAllocatorTest, Rounding) {
   EXPECT_EQ(0u, RoundUpToSystemPage(0u));
   EXPECT_EQ(SystemPageSize(), RoundUpToSystemPage(1));
   EXPECT_EQ(SystemPageSize(), RoundUpToSystemPage(SystemPageSize() - 1));
@@ -87,10 +102,20 @@ TEST(PageAllocatorTest, Rounding) {
                 2 * PageAllocationGranularity() - 1));
 }
 
+TEST(PartitionAllocPageAllocatorTest, NextAlignedWithOffset) {
+  EXPECT_EQ(1024u, NextAlignedWithOffset(1024, 1, 0));
+  EXPECT_EQ(2024u, NextAlignedWithOffset(1024, 1024, 1000));
+  EXPECT_EQ(2024u, NextAlignedWithOffset(2024, 1024, 1000));
+  EXPECT_EQ(3048u, NextAlignedWithOffset(2025, 1024, 1000));
+  EXPECT_EQ(2048u, NextAlignedWithOffset(1024, 2048, 0));
+  EXPECT_EQ(2148u, NextAlignedWithOffset(1024, 2048, 100));
+  EXPECT_EQ(2000u, NextAlignedWithOffset(1024, 2048, 2000));
+}
+
 // Test that failed page allocations invoke base::ReleaseReservation().
 // We detect this by making a reservation and ensuring that after failure, we
 // can make a new reservation.
-TEST(PageAllocatorTest, AllocFailure) {
+TEST(PartitionAllocPageAllocatorTest, AllocFailure) {
   // Release any reservation made by another test.
   ReleaseReservation();
 
@@ -105,9 +130,10 @@ TEST(PageAllocatorTest, AllocFailure) {
   if (size == 0)
     return;
 
-  void* result = AllocPages(nullptr, size, PageAllocationGranularity(),
-                            PageInaccessible, PageTag::kChromium);
-  if (result == nullptr) {
+  uintptr_t result = AllocPages(size, PageAllocationGranularity(),
+                                PageAccessibilityConfiguration::kInaccessible,
+                                PageTag::kChromium);
+  if (!result) {
     // We triggered allocation failure. Our reservation should have been
     // released, and we should be able to make a new reservation.
     EXPECT_TRUE(ReserveAddressSpace(EasyAllocSize()));
@@ -119,14 +145,14 @@ TEST(PageAllocatorTest, AllocFailure) {
 }
 
 // TODO(crbug.com/765801): Test failed on chromium.win/Win10 Tests x64.
-#if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 #define MAYBE_ReserveAddressSpace DISABLED_ReserveAddressSpace
 #else
 #define MAYBE_ReserveAddressSpace ReserveAddressSpace
-#endif  // defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 
 // Test that reserving address space can fail.
-TEST(PageAllocatorTest, MAYBE_ReserveAddressSpace) {
+TEST(PartitionAllocPageAllocatorTest, MAYBE_ReserveAddressSpace) {
   // Release any reservation made by another test.
   ReleaseReservation();
 
@@ -144,10 +170,10 @@ TEST(PageAllocatorTest, MAYBE_ReserveAddressSpace) {
   EXPECT_FALSE(ReserveAddressSpace(EasyAllocSize()));
 }
 
-TEST(PageAllocatorTest, AllocAndFreePages) {
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWrite,
-                            PageTag::kChromium);
+TEST(PartitionAllocPageAllocatorTest, AllocAndFreePages) {
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadWrite, PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   *buffer0 = 42;
@@ -155,12 +181,33 @@ TEST(PageAllocatorTest, AllocAndFreePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTagged) {
-  // This test checks that a page allocated with PageReadWriteTagged is
-  // safe to use on all systems (even those which don't support MTE).
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWriteTagged,
-                            PageTag::kChromium);
+TEST(PartitionAllocPageAllocatorTest, AllocPagesAligned) {
+  size_t alignment = 8 * PageAllocationGranularity();
+  size_t sizes[] = {PageAllocationGranularity(),
+                    alignment - PageAllocationGranularity(), alignment,
+                    alignment + PageAllocationGranularity(), alignment * 4};
+  size_t offsets[] = {0, PageAllocationGranularity(), alignment / 2,
+                      alignment - PageAllocationGranularity()};
+  for (size_t size : sizes) {
+    for (size_t offset : offsets) {
+      uintptr_t buffer = AllocPagesWithAlignOffset(
+          0, size, alignment, offset,
+          PageAccessibilityConfiguration::kReadWrite, PageTag::kChromium);
+      EXPECT_TRUE(buffer);
+      EXPECT_EQ(buffer % alignment, offset);
+      FreePages(buffer, size);
+    }
+  }
+}
+
+TEST(PartitionAllocPageAllocatorTest,
+     AllocAndFreePagesWithPageReadWriteTagged) {
+  // This test checks that a page allocated with
+  // PageAccessibilityConfiguration::kReadWriteTagged is safe to use on all
+  // systems (even those which don't support MTE).
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   *buffer0 = 42;
@@ -168,135 +215,168 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTagged) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadExecuteConfirmCFI) {
+TEST(PartitionAllocPageAllocatorTest,
+     AllocAndFreePagesWithPageReadExecuteConfirmCFI) {
   // This test checks that indirect branches to anything other than a valid
-  // branch target in a PageReadExecute-mapped crash on systems which support
-  // the Armv8.5 Branch Target Identification extension.
+  // branch target in a PageAccessibilityConfiguration::kReadExecute-mapped
+  // crash on systems which support the Armv8.5 Branch Target Identification
+  // extension.
   base::CPU cpu;
   if (!cpu.has_bti()) {
-#if !defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
     // see crbug.com/912138 for details.
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   // Next, map some read-write memory and copy the BTI-enabled function there.
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWrite,
-                            PageTag::kChromium);
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadWrite, PageTag::kChromium);
   ptrdiff_t function_range =
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function_end) -
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function);
+      reinterpret_cast<char*>(arm_bti_test_function_end) -
+      reinterpret_cast<char*>(arm_bti_test_function);
   ptrdiff_t invalid_offset =
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function_invalid_offset) -
-      reinterpret_cast<ptrdiff_t>(arm_bti_test_function);
-  memcpy(buffer, reinterpret_cast<void*>(arm_bti_test_function),
-         function_range);
-  uint32_t* bufferi = reinterpret_cast<uint32_t*>(buffer);
+      reinterpret_cast<char*>(arm_bti_test_function_invalid_offset) -
+      reinterpret_cast<char*>(arm_bti_test_function);
+  memcpy(reinterpret_cast<void*>(buffer),
+         reinterpret_cast<void*>(arm_bti_test_function), function_range);
+
   // Next re-protect the page.
-  SetSystemPagesAccess(buffer, PageAllocationGranularity(), PageReadExecute);
+  SetSystemPagesAccess(buffer, PageAllocationGranularity(),
+                       PageAccessibilityConfiguration::kReadExecuteProtected);
+
+  using BTITestFunction = int64_t (*)(int64_t);
+
   // Attempt to call the function through the BTI-enabled entrypoint. Confirm
   // that it works.
-  int64_t (*bti_enabled_fn)(int64_t) =
-      reinterpret_cast<int64_t (*)(int64_t)>(bufferi);
-  int64_t (*bti_invalid_fn)(int64_t) =
-      reinterpret_cast<int64_t (*)(int64_t)>(bufferi + invalid_offset);
+  BTITestFunction bti_enabled_fn = reinterpret_cast<BTITestFunction>(buffer);
+  BTITestFunction bti_invalid_fn =
+      reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
   EXPECT_EQ(bti_enabled_fn(15), 18);
   // Next, attempt to call the function without the entrypoint.
   EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
               "");  // Should crash with SIGILL.
   FreePages(buffer, PageAllocationGranularity());
 #else
-  NOTREACHED();
+  PA_NOTREACHED();
 #endif
 }
 
-TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
-  // This test checks that a page allocated with PageReadWriteTagged
-  // generates tag violations if allocated on a system which supports the
+TEST(PartitionAllocPageAllocatorTest,
+     AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
+  // This test checks that a page allocated with
+  // PageAccessibilityConfiguration::kReadWriteTagged generates tag violations
+  // if allocated on a system which supports the
   // Armv8.5 Memory Tagging Extension.
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if !defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWriteTagged,
-                            PageTag::kChromium);
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   // Assign an 0x1 tag to the first granule of buffer.
-  int* buffer1 = reinterpret_cast<int*>(__arm_mte_increment_tag(buffer, 0x1));
+  int* buffer1 = __arm_mte_increment_tag(buffer0, 0x1);
   EXPECT_NE(buffer0, buffer1);
   __arm_mte_set_tag(buffer1);
   // Retrieve the tag to ensure that it's set.
-  buffer1 = reinterpret_cast<int*>(__arm_mte_get_tag(buffer));
+  buffer1 = __arm_mte_get_tag(buffer0);
   // Prove that the tag is different (if they're the same, the test won't work).
   ASSERT_NE(buffer0, buffer1);
+  TagViolationReportingMode parent_tagging_mode =
+      GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
+  // Switch to synchronous mode.
+#if BUILDFLAG(IS_ANDROID)
+        ChangeMemoryTaggingModeForAllThreadsPerProcess(
+            TagViolationReportingMode::kSynchronous);
+#else
+        ChangeMemoryTaggingModeForCurrentThread(
+            TagViolationReportingMode::kSynchronous);
+#endif  // BUILDFLAG(IS_ANDROID)
+        EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+                  TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
-        // should be delivered (the test should already be running in
-        // synchronous MTE mode due to AndroidManifest.xml or `am compat` (on
-        // Android) or test_runner.cc on Linux.
+        // should be delivered.
         *buffer0 = 42;
       },
       testing::KilledBySignal(SIGSEGV), "");
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(), parent_tagging_mode);
   FreePages(buffer, PageAllocationGranularity());
 #else
-  NOTREACHED();
+  PA_NOTREACHED();
 #endif
 }
 
-TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
-  // This test checks that a page allocated with PageReadWriteTagged
-  // generates tag violations if allocated on a system which supports MTE.
+TEST(PartitionAllocPageAllocatorTest,
+     AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
+  // This test checks that a page allocated with
+  // PageAccessibilityConfiguration::kReadWriteTagged generates tag violations
+  // if allocated on a system which supports MTE.
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if !defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
+    return;
+#else
     GTEST_SKIP();
 #endif
-    return;
   }
 
 #if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadWriteTagged,
-                            PageTag::kChromium);
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadWriteTagged, PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
-  __arm_mte_set_tag(__arm_mte_increment_tag(buffer, 0x1));
-  int* buffer1 = reinterpret_cast<int*>(__arm_mte_get_tag(buffer));
+  __arm_mte_set_tag(__arm_mte_increment_tag(buffer0, 0x1));
+  int* buffer1 = __arm_mte_get_tag(buffer0);
   EXPECT_NE(buffer0, buffer1);
+  TagViolationReportingMode parent_tagging_mode =
+      GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
-        // Switch to asynchronous mode.
-        base::memory::ChangeMemoryTaggingModeForCurrentThread(
-            base::memory::TagViolationReportingMode::kAsynchronous);
+  // Switch to asynchronous mode.
+#if BUILDFLAG(IS_ANDROID)
+        ChangeMemoryTaggingModeForAllThreadsPerProcess(
+            TagViolationReportingMode::kAsynchronous);
+#else
+        ChangeMemoryTaggingModeForCurrentThread(
+            TagViolationReportingMode::kAsynchronous);
+#endif  // BUILDFLAG(IS_ANDROID)
+        EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+                  TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be
         // generated at this point but we may not notice straight away...
         *buffer0 = 42;
         EXPECT_EQ(42, *buffer0);
-        LOG(ERROR) << "=";  // Until we receive control back from the kernel
-                            // (e.g. on a system call).
+        PA_LOG(ERROR) << "=";  // Until we receive control back from the kernel
+                               // (e.g. on a system call).
       },
       testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(), parent_tagging_mode);
 #else
-  NOTREACHED();
+  PA_NOTREACHED();
 #endif
 }
 
 // Test permission setting on POSIX, where we can set a trap handler.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 namespace {
 sigjmp_buf g_continuation;
@@ -307,7 +387,7 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
 }  // namespace
 
 // On Mac, sometimes we get SIGBUS instead of SIGSEGV, so handle that too.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define EXTRA_FAULT_BEGIN_ACTION() \
   struct sigaction old_bus_action; \
   sigaction(SIGBUS, &action, &old_bus_action);
@@ -338,10 +418,10 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
     EXTRA_FAULT_END_ACTION();                 \
   }
 
-TEST(PageAllocatorTest, InaccessiblePages) {
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium);
+TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kChromium);
   EXPECT_TRUE(buffer);
 
   FAULT_TEST_BEGIN()
@@ -357,10 +437,17 @@ TEST(PageAllocatorTest, InaccessiblePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-TEST(PageAllocatorTest, ReadExecutePages) {
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageReadExecute,
-                            PageTag::kChromium);
+// TODO(crbug.com/1291888): Understand why we can't read from Read-Execute pages
+// on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
+#else
+#define MAYBE_ReadExecutePages ReadExecutePages
+#endif  // BUILDFLAG(IS_IOS)
+TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kReadExecute, PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   // Reading from buffer should succeed.
@@ -379,23 +466,23 @@ TEST(PageAllocatorTest, ReadExecutePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
-TEST(PageAllocatorTest, PageTagging) {
-  void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
-                            PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium);
+#if BUILDFLAG(IS_ANDROID)
+TEST(PartitionAllocPageAllocatorTest, PageTagging) {
+  uintptr_t buffer = AllocPages(
+      PageAllocationGranularity(), PageAllocationGranularity(),
+      PageAccessibilityConfiguration::kInaccessible, PageTag::kChromium);
   EXPECT_TRUE(buffer);
 
   std::string proc_maps;
-  EXPECT_TRUE(debug::ReadProcMaps(&proc_maps));
-  std::vector<debug::MappedMemoryRegion> regions;
-  EXPECT_TRUE(debug::ParseProcMaps(proc_maps, &regions));
+  EXPECT_TRUE(base::debug::ReadProcMaps(&proc_maps));
+  std::vector<base::debug::MappedMemoryRegion> regions;
+  EXPECT_TRUE(base::debug::ParseProcMaps(proc_maps, &regions));
 
   bool found = false;
   for (const auto& region : regions) {
-    if (region.start == reinterpret_cast<uintptr_t>(buffer)) {
+    if (region.start == buffer) {
       found = true;
       EXPECT_EQ("[anon:chromium]", region.path);
       break;
@@ -405,22 +492,24 @@ TEST(PageAllocatorTest, PageTagging) {
   FreePages(buffer, PageAllocationGranularity());
   EXPECT_TRUE(found);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-TEST(PageAllocatorTest, DecommitErasesMemory) {
-  if (!kDecommittedPagesAreAlwaysZeroed)
+TEST(PartitionAllocPageAllocatorTest, DecommitErasesMemory) {
+  if (!DecommittedMemoryIsAlwaysZeroed())
     return;
 
   size_t size = PageAllocationGranularity();
-  void* buffer = AllocPages(nullptr, size, PageAllocationGranularity(),
-                            PageReadWrite, PageTag::kChromium);
+  uintptr_t buffer = AllocPages(size, PageAllocationGranularity(),
+                                PageAccessibilityConfiguration::kReadWrite,
+                                PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
-  memset(buffer, 42, size);
+  memset(reinterpret_cast<void*>(buffer), 42, size);
 
-  DecommitSystemPages(buffer, size, PageKeepPermissionsIfPossible);
-  RecommitSystemPages(buffer, size, PageReadWrite,
-                      PageKeepPermissionsIfPossible);
+  DecommitSystemPages(buffer, size,
+                      PageAccessibilityDisposition::kAllowKeepForPerf);
+  RecommitSystemPages(buffer, size, PageAccessibilityConfiguration::kReadWrite,
+                      PageAccessibilityDisposition::kAllowKeepForPerf);
 
   uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
   uint32_t sum = 0;
@@ -432,25 +521,75 @@ TEST(PageAllocatorTest, DecommitErasesMemory) {
   FreePages(buffer, size);
 }
 
-TEST(PageAllocatorTest, MappedPagesAccounting) {
+TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   size_t size = PageAllocationGranularity();
-  size_t mapped_size_before = GetTotalMappedSize();
+  uintptr_t buffer = AllocPages(size, PageAllocationGranularity(),
+                                PageAccessibilityConfiguration::kReadWrite,
+                                PageTag::kChromium);
+  ASSERT_TRUE(buffer);
 
-  // Ask for a large alignment to make sure that trimming doesn't change the
-  // accounting.
-  void* data = AllocPages(nullptr, size, 128 * PageAllocationGranularity(),
-                          PageInaccessible, PageTag::kChromium);
-  ASSERT_TRUE(data);
+  memset(reinterpret_cast<void*>(buffer), 42, size);
 
-  EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+  DecommitAndZeroSystemPages(buffer, size);
 
-  DecommitSystemPages(data, size, PageKeepPermissionsIfPossible);
-  EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+// Test permission setting on POSIX, where we can set a trap handler.
+#if BUILDFLAG(IS_POSIX)
 
-  FreePages(data, size);
-  EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
+  FAULT_TEST_BEGIN()
+
+  // Reading from buffer should now fault.
+  int* buffer0 = reinterpret_cast<int*>(buffer);
+  int buffer0_contents = *buffer0;
+  EXPECT_EQ(buffer0_contents, *buffer0);
+  EXPECT_TRUE(false);
+
+  FAULT_TEST_END()
+
+#endif
+
+  // Clients of the DecommitAndZero API (in particular, V8), currently just
+  // call SetSystemPagesAccess to mark the region as accessible again, so we
+  // use that here as well.
+  SetSystemPagesAccess(buffer, size,
+                       PageAccessibilityConfiguration::kReadWrite);
+
+  uint8_t* recommitted_buffer = reinterpret_cast<uint8_t*>(buffer);
+  uint32_t sum = 0;
+  for (size_t i = 0; i < size; i++) {
+    sum += recommitted_buffer[i];
+  }
+  EXPECT_EQ(0u, sum) << "Data was not erased";
+
+  FreePages(buffer, size);
 }
 
-}  // namespace base
+TEST(PartitionAllocPageAllocatorTest, MappedPagesAccounting) {
+  size_t size = PageAllocationGranularity();
+  // Ask for a large alignment to make sure that trimming doesn't change the
+  // accounting.
+  size_t alignment = 128 * PageAllocationGranularity();
+  size_t offsets[] = {0, PageAllocationGranularity(), alignment / 2,
+                      alignment - PageAllocationGranularity()};
+
+  size_t mapped_size_before = GetTotalMappedSize();
+
+  for (size_t offset : offsets) {
+    uintptr_t data = AllocPagesWithAlignOffset(
+        0, size, alignment, offset,
+        PageAccessibilityConfiguration::kInaccessible, PageTag::kChromium);
+    ASSERT_TRUE(data);
+
+    EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+
+    DecommitSystemPages(data, size,
+                        PageAccessibilityDisposition::kAllowKeepForPerf);
+    EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());
+
+    FreePages(data, size);
+    EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
+  }
+}
+
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

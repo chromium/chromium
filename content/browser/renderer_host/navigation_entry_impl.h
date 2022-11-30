@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,14 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/common/navigation_params.mojom.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -29,18 +28,29 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/ssl_status.h"
 #include "net/base/isolation_info.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/origin.h"
+
+namespace blink {
+struct FramePolicy;
+}  // namespace blink
 
 namespace content {
 
 class FrameTreeNode;
+class NavigationEntryRestoreContext;
+class NavigationEntryRestoreContextImpl;
 class WebBundleNavigationInfo;
 class SubresourceWebBundleNavigationInfo;
 
 class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
  public:
+  // Determines whether CloneAndReplace will share the existing
+  // FrameNavigationEntries in the new NavigationEntry or not.
+  enum class ClonePolicy { kShareFrameEntries, kCloneFrameEntries };
+
   // Represents a tree of FrameNavigationEntries that make up this joint session
   // history item.
   struct TreeNode {
@@ -52,23 +62,27 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     // main frame.  Otherwise, we check if the unique name matches.
     bool MatchesFrame(FrameTreeNode* frame_tree_node) const;
 
-    // Recursively makes a deep copy of TreeNode with copies of each of the
-    // FrameNavigationEntries in the subtree.  Replaces the TreeNode
-    // corresponding to |target_frame_tree_node|, clearing all of its children
-    // unless |clone_children_of_target| is true.  This function omits any
-    // subframe history items that do not correspond to frames actually in the
-    // current page, using |current_frame_tree_node| (if present).
-    // TODO(creis): For --site-per-process, share FrameNavigationEntries between
-    // NavigationEntries of the same tab.
+    // Recursively makes a copy of this TreeNode, either sharing
+    // FrameNavigationEntries or making deep copies depending on |clone_policy|.
+    // Replaces the TreeNode corresponding to |target_frame_tree_node|,
+    // clearing all of its children unless |clone_children_of_target| is true.
+    // This function omits any subframe history items that do not correspond to
+    // frames actually in the current page, using |current_frame_tree_node| (if
+    // present). |restore_context| is used to keep track of the
+    // FrameNavigationEntries that have been created during a deep clone, and to
+    // ensure that multiple copies of the same FrameNavigationEntry in different
+    // NavigationEntries are de-duplicated.
     std::unique_ptr<TreeNode> CloneAndReplace(
         scoped_refptr<FrameNavigationEntry> frame_navigation_entry,
         bool clone_children_of_target,
         FrameTreeNode* target_frame_tree_node,
         FrameTreeNode* current_frame_tree_node,
-        TreeNode* parent_node) const;
+        TreeNode* parent_node,
+        NavigationEntryRestoreContextImpl* restore_context,
+        ClonePolicy clone_policy) const;
 
     // The parent of this node.
-    TreeNode* parent;
+    raw_ptr<TreeNode> parent;
 
     // Ref counted pointer that keeps the FrameNavigationEntry alive as long as
     // it is needed by this node's NavigationEntry.
@@ -89,21 +103,27 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       scoped_refptr<SiteInstanceImpl> instance,
       const GURL& url,
       const Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       const std::u16string& title,
       ui::PageTransition transition_type,
       bool is_renderer_initiated,
-      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
+      bool is_initial_entry);
+
+  NavigationEntryImpl(const NavigationEntryImpl&) = delete;
+  NavigationEntryImpl& operator=(const NavigationEntryImpl&) = delete;
+
   ~NavigationEntryImpl() override;
 
   // NavigationEntry implementation:
+  bool IsInitialEntry() override;
   int GetUniqueID() override;
   PageType GetPageType() override;
   void SetURL(const GURL& url) override;
   const GURL& GetURL() override;
   void SetBaseURLForDataURL(const GURL& url) override;
   const GURL& GetBaseURLForDataURL() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetDataURLAsString(
       scoped_refptr<base::RefCountedString> data_url) override;
   const scoped_refptr<const base::RefCountedString>& GetDataURLAsString()
@@ -115,7 +135,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   const GURL& GetVirtualURL() override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() override;
-  void SetPageState(const blink::PageState& state) override;
+  void SetPageState(const blink::PageState& state,
+                    NavigationEntryRestoreContext* context) override;
   blink::PageState GetPageState() override;
   const std::u16string& GetTitleForDisplay() override;
   bool IsViewSourceMode() override;
@@ -143,7 +164,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   int GetHttpStatusCode() override;
   void SetRedirectChain(const std::vector<GURL>& redirects) override;
   const std::vector<GURL>& GetRedirectChain() override;
-  const base::Optional<ReplacedNavigationEntryData>& GetReplacedEntryData()
+  const absl::optional<ReplacedNavigationEntryData>& GetReplacedEntryData()
       override;
   bool IsRestored() override;
   std::string GetExtraHeaders() override;
@@ -151,22 +172,26 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   int64_t GetMainFrameDocumentSequenceNumber() override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
-  // independently from the original.  Does not copy any value that would be
-  // cleared in ResetForCommit.  Unlike |CloneAndReplace|, this does not check
-  // whether the subframe history items are for frames that are still in the
-  // current page.
+  // independently from the original, but that shares FrameNavigationEntries.
+  // Does not copy any value that would be cleared in ResetForCommit.  Unlike
+  // |CloneAndReplace|, this does not check whether the subframe history items
+  // are for frames that are still in the current page.
   std::unique_ptr<NavigationEntryImpl> Clone() const;
+
+  // Creates a true deep copy of this NavigationEntryImpl. The
+  // FrameNavigationEntries are cloned rather than merely taking a refptr to the
+  // original.
+  // |restore_context| is used when cloning a vector of NavigationEntryImpls to
+  // ensure that FrameNavigationEntries that are shared across multiple entries
+  // retain that relationship in the cloned entries.
+  std::unique_ptr<NavigationEntryImpl> CloneWithoutSharing(
+      NavigationEntryRestoreContextImpl* restore_context) const;
 
   // Like |Clone|, but replaces the FrameNavigationEntry corresponding to
   // |target_frame_tree_node| with |frame_entry|, clearing all of its children
   // unless |clone_children_of_target| is true.  This function omits any
   // subframe history items that do not correspond to frames actually in the
   // current page, using |root_frame_tree_node| (if present).
-  //
-  // TODO(creis): Once we start sharing FrameNavigationEntries between
-  // NavigationEntryImpls, we will need to support two versions of Clone: one
-  // that shares the existing FrameNavigationEntries (for use within the same
-  // tab) and one that draws them from a different pool (for use in a new tab).
   std::unique_ptr<NavigationEntryImpl> CloneAndReplace(
       scoped_refptr<FrameNavigationEntry> frame_entry,
       bool clone_children_of_target,
@@ -175,26 +200,26 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Helper functions to construct NavigationParameters for a navigation to this
   // NavigationEntry.
-  mojom::CommonNavigationParamsPtr ConstructCommonNavigationParams(
+  blink::mojom::CommonNavigationParamsPtr ConstructCommonNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       const GURL& dest_url,
       blink::mojom::ReferrerPtr dest_referrer,
-      mojom::NavigationType navigation_type,
-      blink::PreviewsState previews_state,
+      blink::mojom::NavigationType navigation_type,
       base::TimeTicks navigation_start,
       base::TimeTicks input_start);
-  mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(
+  blink::mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const GURL& original_url,
-      const base::Optional<url::Origin>& origin_to_commit,
+      const absl::optional<url::Origin>& origin_to_commit,
       const std::string& original_method,
       const base::flat_map<std::string, bool>& subframe_unique_names,
       bool intended_as_new_entry,
       int pending_offset_to_send,
       int current_offset_to_send,
       int current_length_to_send,
-      const blink::FramePolicy& frame_policy);
+      const blink::FramePolicy& frame_policy,
+      bool ancestor_or_self_has_cspee);
 
   // Once a navigation entry is committed, we should no longer track several
   // pieces of non-persisted state, as documented on the members below.
@@ -204,9 +229,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Exposes the tree of FrameNavigationEntries that make up this joint session
   // history item.
-  // In default Chrome, this tree only has a root node with an unshared
-  // FrameNavigationEntry.  Subframes are only added to the tree if the
-  // --site-per-process flag is passed.
   TreeNode* root_node() const { return frame_tree_.get(); }
 
   // Finds the TreeNode associated with |frame_tree_node|, if any.
@@ -216,19 +238,23 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Finds the TreeNode associated with |frame_tree_node_id| to add or update
   // its FrameNavigationEntry.  A new FrameNavigationEntry is added if none
   // exists, or else the existing one (which might be shared with other
-  // NavigationEntries) is updated with the given parameters.
+  // NavigationEntries) is updated or replaced (based on |update_policy|) with
+  // the given parameters.
   // Does nothing if there is no entry already and |url| is about:blank, since
   // that does not count as a real commit.
+  enum class UpdatePolicy { kUpdate, kReplace };
   void AddOrUpdateFrameEntry(
       FrameTreeNode* frame_tree_node,
+      UpdatePolicy update_policy,
       int64_t item_sequence_number,
       int64_t document_sequence_number,
+      const std::string& navigation_api_key,
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
-      const base::Optional<url::Origin>& origin,
+      const absl::optional<url::Origin>& origin,
       const Referrer& referrer,
-      const base::Optional<url::Origin>& initiator_origin,
+      const absl::optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -242,6 +268,13 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Returns the FrameNavigationEntry corresponding to |frame_tree_node|, if
   // there is one in this NavigationEntry.
   FrameNavigationEntry* GetFrameEntry(FrameTreeNode* frame_tree_node) const;
+
+  // Calls |on_frame_entry| for each FrameNavigationEntry in this
+  // NavigationEntry. More efficient than calling GetFrameEntry() N times while
+  // iterating over the current tree of FrameTreeNodes.
+  using FrameEntryIterationCallback =
+      base::FunctionRef<void(FrameNavigationEntry*)>;
+  void ForEachFrameEntry(FrameEntryIterationCallback on_frame_entry);
 
   // Returns a map of frame unique names to |is_about_blank| for immediate
   // children of the TreeNode associated with |frame_tree_node|.  The renderer
@@ -259,7 +292,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Walks the tree of FrameNavigationEntries to find entries with |origin| so
   // their isolation status can be registered.
-  void RegisterExistingOriginToPreventOptInIsolation(const url::Origin& origin);
+  void RegisterExistingOriginAsHavingDefaultIsolation(
+      const url::Origin& origin);
 
   // Removes any subframe FrameNavigationEntries that match the unique name of
   // |frame_tree_node|, and all of their children. There should be at most one,
@@ -341,14 +375,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void set_reload_type(ReloadType type) { reload_type_ = type; }
   ReloadType reload_type() const { return reload_type_; }
 
-  // Whether this (pending) navigation needs to replace current entry.
-  // Resets to false after commit.
-  bool should_replace_entry() const { return should_replace_entry_; }
-
-  void set_should_replace_entry(bool should_replace_entry) {
-    should_replace_entry_ = should_replace_entry;
-  }
-
   // Whether this (pending) navigation should clear the session history. Resets
   // to false after commit.
   bool should_clear_history_list() const { return should_clear_history_list_; }
@@ -381,7 +407,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     isolation_info_ = isolation_info;
   }
 
-  const base::Optional<net::IsolationInfo>& isolation_info() const {
+  const absl::optional<net::IsolationInfo>& isolation_info() const {
     return isolation_info_;
   }
 
@@ -411,7 +437,72 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     back_forward_cache_metrics_ = metrics;
   }
 
+  // Whether this NavigationEntry is the initial NavigationEntry or not, and
+  // whether it's for the initial empty document or the synchronously
+  // committed about:blank document. The original initial NavigationEntry is
+  // created when the FrameTree is created, so it might not be associated with
+  // any navigation, but represents a placeholder NavigationEntry for the
+  // "initial empty document", which commits in the renderer on frame creation
+  // but doesn't notify the browser of the commit. However, more initial
+  // NavigationEntries might be created after that in response to navigations,
+  // and update or replace the original NavigationEntry. The initial
+  // NavigationEntry will only get replaced with a non-initial NavigationEntry
+  // by the first navigation that satisfies all of the following conditions:
+  //   1. Happens on the main frame
+  //   2. Classified as NEW_ENTRY (won't reuse the NavigationEntry)
+  //   3. Is not the synchronous about:blank commit
+  // So the "initial" status will be retained/copied to the new
+  // NavigationEntry on subframe navigations, or when the NavigationEntry is
+  // reused/classified as EXISTING_ENTRY (same-document navigations,
+  // renderer-initiated reloads), or on the synchronous about:blank commit.
+  // Some other important properties of initial NavigationEntries:
+  // - The initial NavigationEntry always gets reused or replaced on the next
+  // navigation (potentially by another initial NavigationEntry), so if there
+  // is an initial NavigationEntry in the session history, it must be the only
+  // NavigationEntry (as it is impossible to append to session history if the
+  // initial NavigationEntry exists), which means it's not possible to do
+  // a history navigation to an initial NavigationEntry.
+  // - The initial NavigationEntry never gets restored on session restore,
+  // because we never restore tabs with only the initial NavigationEntry.
+  enum class InitialNavigationEntryState {
+    // An initial NavigationEntry for the initial empty document or a
+    // renderer-reloaded initial empty document.
+    kInitialNotForSynchronousAboutBlank,
+    // An initial NavigationEntry for the synchronously committed about:blank
+    // document.
+    kInitialForSynchronousAboutBlank,
+    // Not an initial NavigationEntry.
+    kNonInitial
+  };
+
+  bool IsInitialEntryNotForSynchronousAboutBlank() {
+    return initial_navigation_entry_state_ ==
+           InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank;
+  }
+
+  bool IsInitialEntryForSynchronousAboutBlank() {
+    return initial_navigation_entry_state_ ==
+           InitialNavigationEntryState::kInitialForSynchronousAboutBlank;
+  }
+
+  void set_initial_navigation_entry_state(
+      InitialNavigationEntryState initial_navigation_entry_state) {
+    initial_navigation_entry_state_ = initial_navigation_entry_state;
+  }
+
+  InitialNavigationEntryState initial_navigation_entry_state() {
+    return initial_navigation_entry_state_;
+  }
+
  private:
+  std::unique_ptr<NavigationEntryImpl> CloneAndReplaceInternal(
+      scoped_refptr<FrameNavigationEntry> frame_entry,
+      bool clone_children_of_target,
+      FrameTreeNode* target_frame_tree_node,
+      FrameTreeNode* root_frame_tree_node,
+      NavigationEntryRestoreContextImpl* restore_context,
+      ClonePolicy clone_policy) const;
+
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
   // Session/Tab restore save portions of this class so that it can be recreated
   // later. If you add a new field that needs to be persisted you'll have to
@@ -421,9 +512,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 
   // Tree of FrameNavigationEntries, one for each frame on the page.
-  // TODO(creis): Once FrameNavigationEntries can be shared across multiple
-  // NavigationEntries, we will need to update Session/Tab restore.  For now,
-  // each NavigationEntry's tree has its own unshared FrameNavigationEntries.
+  // FrameNavigationEntries may be shared with other NavigationEntries;
+  // TreeNodes are not shared.
   std::unique_ptr<TreeNode> frame_tree_;
 
   // See the accessors above for descriptions.
@@ -455,7 +545,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // persisted by Android WebView.
   GURL base_url_for_data_url_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Used for passing really big data URLs from browser to renderers. Only used
   // and persisted by Android WebView.
   scoped_refptr<const base::RefCountedString> data_url_as_string_;
@@ -471,17 +561,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // displayed. When the URL, virtual URL, or title is set, this should be
   // cleared to force a refresh.
   mutable std::u16string cached_display_title_;
-
-  // This is set to true when this entry is being reloaded and due to changes in
-  // the state of the URL, it has to be reloaded in a different site instance.
-  // In such case, we must treat it as an existing navigation in the new site
-  // instance, instead of a new navigation. This value should not be persisted
-  // and is cleared in |ResetForCommit|.
-  //
-  // We also use this flag for cross-process redirect navigations, so that the
-  // browser will replace the current navigation entry (which is the page
-  // doing the redirect).
-  bool should_replace_entry_;
 
   // This is set to true when this entry's navigation should clear the session
   // history both on the renderer and browser side. The browser side history
@@ -519,14 +598,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // determines the IsolationInfo to be used when navigating to this
   // NavigationEntry; otherwise, it is determined based on the navigating frame
   // and top frame origins. For example, this is used for view-source.
-  base::Optional<net::IsolationInfo> isolation_info_;
+  absl::optional<net::IsolationInfo> isolation_info_;
 
   // Stores information about the entry prior to being replaced (e.g.
   // history.replaceState()). It is preserved after commit (session sync for
   // offline analysis) but should not be persisted. The concept is valid for
   // subframe navigations but we only need to track it for main frames, that's
   // why the field is listed here.
-  base::Optional<ReplacedNavigationEntryData> replaced_entry_data_;
+  absl::optional<ReplacedNavigationEntryData> replaced_entry_data_;
 
   // Set to true if this page does a navigation without ever receiving a user
   // gesture. If true, it will be skipped on subsequent back/forward button
@@ -545,7 +624,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
 
-  DISALLOW_COPY_AND_ASSIGN(NavigationEntryImpl);
+  // See comment for the enum for explanation.
+  InitialNavigationEntryState initial_navigation_entry_state_ =
+      InitialNavigationEntryState::kNonInitial;
 };
 
 }  // namespace content

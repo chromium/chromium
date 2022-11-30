@@ -1,0 +1,93 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/ui.gni")
+
+source_set("views") {
+  sources = [
+    "help_bubble_delegate.h",
+    "help_bubble_factory_views.cc",
+    "help_bubble_factory_views.h",
+    "help_bubble_view.cc",
+    "help_bubble_view.h",
+    "new_badge_label.cc",
+    "new_badge_label.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "help_bubble_factory_mac.h",
+      "help_bubble_factory_mac.mm",
+    ]
+  }
+
+  public_deps = [ "//components/user_education/common" ]
+
+  deps = [
+    "//base",
+    "//components/strings",
+    "//components/variations",
+    "//components/vector_icons",
+    "//skia",
+    "//third_party/abseil-cpp:absl",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "help_bubble_views_test_util.cc",
+    "help_bubble_views_test_util.h",
+  ]
+
+  deps = [
+    ":views",
+    "//base",
+    "//components/user_education/common",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "help_bubble_factory_views_unittest.cc",
+    "help_bubble_view_unittest.cc",
+    "new_badge_label_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":views",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/strings",
+    "//components/user_education/common",
+    "//components/user_education/test",
+    "//components/variations",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

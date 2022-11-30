@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,24 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
+#include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/policy/test_support/local_policy_test_server.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 // Handles interaction with Active Directory login screen and Active Directory
 // password change screen.
 class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
  public:
   explicit ActiveDirectoryLoginMixin(InProcessBrowserTestMixinHost* host);
+
+  ActiveDirectoryLoginMixin(const ActiveDirectoryLoginMixin&) = delete;
+  ActiveDirectoryLoginMixin& operator=(const ActiveDirectoryLoginMixin&) =
+      delete;
+
   ~ActiveDirectoryLoginMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -66,7 +68,8 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
   void SubmitActiveDirectoryCredentials(const std::string& username,
                                         const std::string& password);
 
-  // Sets username and password for the Active Directory login and submits it.
+  // Sets old and new passwords for the Active Directory password change and
+  // submits it.
   void SubmitActiveDirectoryPasswordChangeCredentials(
       const std::string& old_password,
       const std::string& new_password1,
@@ -81,10 +84,14 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
 
   std::string autocomplete_realm_;
   std::unique_ptr<content::DOMMessageQueue> message_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ActiveDirectoryLoginMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ACTIVE_DIRECTORY_LOGIN_MIXIN_H_

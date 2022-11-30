@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 
 namespace ui {
@@ -33,11 +31,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformClipboard {
   // the data can be organized differently for each mime type.
   using Data = scoped_refptr<base::RefCountedBytes>;
   using DataMap = std::unordered_map<std::string, Data>;
-
-  // SequenceNumberUpdateCb is a repeating callback, which can be used to tell
-  // a client of the PlatformClipboard to increment clipboard's sequence number
-  using SequenceNumberUpdateCb =
-      base::RepeatingCallback<void(ClipboardBuffer buffer)>;
 
   // Offers a given clipboard data 'data_map' to the host system clipboard.
   //
@@ -84,8 +77,14 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformClipboard {
   // the cached data in order to reply faster to read-clipboard operations.
   virtual bool IsSelectionOwner(ClipboardBuffer buffer) = 0;
 
-  // See comment above SequenceNumberUpdateCb. Can be called once.
-  virtual void SetSequenceNumberUpdateCb(SequenceNumberUpdateCb cb) = 0;
+  // ClipboardDataChangedCallback is used to notify the PlatformClipboard client
+  // that the clipboard content for a given |buffer| has changed, so that it can
+  // take the necessary actions, e.g: to update clipboard's sequence number,
+  // notify observers, etc.
+  using ClipboardDataChangedCallback =
+      base::RepeatingCallback<void(ClipboardBuffer buffer)>;
+  virtual void SetClipboardDataChangedCallback(
+      ClipboardDataChangedCallback callback) = 0;
 
   // Returns whether the kSelection buffer is available.
   virtual bool IsSelectionBufferAvailable() const = 0;

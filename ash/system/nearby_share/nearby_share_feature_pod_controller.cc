@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -12,6 +13,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -21,8 +23,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kOneMinute = base::Minutes(1);
+constexpr base::TimeDelta kOneSecond = base::Seconds(1);
 
 std::u16string RemainingTimeString(base::TimeDelta remaining_time) {
   if (remaining_time > kOneMinute) {
@@ -67,7 +69,7 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
   button_->SetVisible(nearby_share_delegate_->IsPodButtonVisible() &&
                       session_controller->IsActiveUserSessionStarted() &&
                       session_controller->IsUserPrimary() &&
-                      !session_controller->IsScreenLocked());
+                      !session_controller->IsUserSessionBlocked());
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NEARBY_SHARE_BUTTON_LABEL));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(
@@ -79,7 +81,13 @@ FeaturePodButton* NearbyShareFeaturePodController::CreateButton() {
   return button_;
 }
 
+QsFeatureCatalogName NearbyShareFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kNearbyShare;
+}
+
 void NearbyShareFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(
+      /*target_toggle_state=*/!nearby_share_delegate_->IsHighVisibilityOn());
   if (nearby_share_delegate_->IsHighVisibilityOn()) {
     nearby_share_delegate_->DisableHighVisibility();
   } else {
@@ -88,11 +96,8 @@ void NearbyShareFeaturePodController::OnIconPressed() {
 }
 
 void NearbyShareFeaturePodController::OnLabelPressed() {
+  TrackDiveInUMA();
   nearby_share_delegate_->ShowNearbyShareSettings();
-}
-
-SystemTrayItemUmaType NearbyShareFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_NEARBY_SHARE;
 }
 
 void NearbyShareFeaturePodController::OnHighVisibilityEnabledChanged(
@@ -124,8 +129,7 @@ void NearbyShareFeaturePodController::UpdateButton(bool enabled) {
 base::TimeDelta NearbyShareFeaturePodController::RemainingHighVisibilityTime()
     const {
   base::TimeTicks now = base::TimeTicks::Now();
-  return shutoff_time_ > now ? shutoff_time_ - now
-                             : base::TimeDelta::FromSeconds(0);
+  return shutoff_time_ > now ? shutoff_time_ - now : base::Seconds(0);
 }
 
 }  // namespace ash

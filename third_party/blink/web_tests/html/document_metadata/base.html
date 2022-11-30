@@ -5,11 +5,9 @@
 <script>
 
 if (window.testRunner) {
-    // FIXME: setCanOpenWindows needs the test to be async or the Apple port crashes.
-    // https://bugs.webkit.org/show_bug.cgi?id=99465
     window.jsTestIsAsync = true;
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function endsWith(string, substring)

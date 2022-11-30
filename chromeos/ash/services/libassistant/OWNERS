@@ -1,0 +1,4 @@
+file://chromeos/ash/components/assistant/OWNERS
+
+per-file libassistant_sandbox_hook.*=set noparent
+per-file libassistant_sandbox_hook.*=file://sandbox/linux/OWNERS

@@ -1,27 +1,13 @@
 # WebAuthn OWNERS.
 #
-# Any non-emeriti are reasonable reviewers for WebAuthn-related code. Some
+# Any current owners are reasonable reviewers for WebAuthn-related code. Some
 # people are more familiar with certain areas of the code so, if you spot that
 # your area of alteration is listed, you should prefer to select that person.
 
-# esp TouchID, Windows Hello.
-martinkr@google.com
-# (Secondary email; prefer google.com address.)
-martinkr@chromium.org
-
-# esp attestation and legacy U2F implementation.
 agl@chromium.org
-
-# esp Bluetooth.
 kenrb@chromium.org
-
-# esp chrome/ UI and VirtualAuthenticator environment.
+martinkr@google.com
 nsatragno@chromium.org
 
 # For adding or removing languages.
 per-file *.grd=claudiomagni@chromium.org
-
-# Emeriti; for occasional reviews
-
-# General, esp chrome/ UI and Android integration.
-kpaulhamus@chromium.org

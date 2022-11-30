@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,17 @@
 #include "base/debug/activity_tracker.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "components/browser_watcher/activity_data_names.h"
 #include "components/browser_watcher/activity_report.pb.h"
 #include "components/browser_watcher/activity_tracker_annotation.h"
-#include "components/browser_watcher/extended_crash_reporting.h"
 #include "components/browser_watcher/extended_crash_reporting_metrics.h"
 #include "components/browser_watcher/features.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // https://devblogs.microsoft.com/oldnewthing/20041025-00/?p=37483.
 extern "C" IMAGE_DOS_HEADER __ImageBase;
 #endif
@@ -84,7 +85,7 @@ void RecordChromeModuleInfo(
 
   module.file = "chrome.dll";
   module.debug_file =
-      base::StringPiece(pdb_filename, pdb_filename_length).as_string();
+      std::string(base::StringPiece(pdb_filename, pdb_filename_length));
 
   global_tracker->RecordModuleInfo(module);
 }

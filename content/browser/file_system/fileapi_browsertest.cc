@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,8 @@ IN_PROC_BROWSER_TEST_F(FileAPIBrowserTest, FileInputChooserParams) {
     std::unique_ptr<FileChooserDelegate> delegate(
         new FileChooserDelegate(file, run_loop.QuitClosure()));
     shell()->web_contents()->SetDelegate(delegate.get());
-    EXPECT_TRUE(ExecuteScript(shell(),
-                              "document.getElementById('fileinput').click();"));
+    EXPECT_TRUE(
+        ExecJs(shell(), "document.getElementById('fileinput').click();"));
     run_loop.Run();
     EXPECT_TRUE(delegate->params().default_file_name.empty());
   }
@@ -46,8 +46,8 @@ IN_PROC_BROWSER_TEST_F(FileAPIBrowserTest, FileInputChooserParams) {
     std::unique_ptr<FileChooserDelegate> delegate(
         new FileChooserDelegate(file, run_loop.QuitClosure()));
     shell()->web_contents()->SetDelegate(delegate.get());
-    EXPECT_TRUE(ExecuteScript(shell(),
-                              "document.getElementById('fileinput').click();"));
+    EXPECT_TRUE(
+        ExecJs(shell(), "document.getElementById('fileinput').click();"));
     run_loop.Run();
     EXPECT_TRUE(delegate->params().default_file_name.empty());
   }

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_driver.h"
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 
 // static
 constexpr base::TimeDelta ThumbnailCaptureDriver::kCooldownDelay;

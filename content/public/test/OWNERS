@@ -1,13 +1,32 @@
 sky@chromium.org
 
-# For WebRTC files.
-tommi@chromium.org
-
 # For download tests support review.
 per-file *download*=file://components/download/OWNERS
+per-file *test_file_error_injector*=file://components/download/OWNERS
+
+# For threading tests support review.
+per-file *browser_task_environment*=gab@chromium.org
 
 # For Android-specific changes.
 per-file *android*=file://content/public/test/android/OWNERS
+
+# For FakeSpeechRecognitionManager, used by the a11y Dictation feature.
+per-file fake_speech_recognition_manager*=file://ui/accessibility/OWNERS
+
+# For Attribution Reporting API.
+per-file attribution_*=file://content/browser/attribution_reporting/OWNERS
+
+# For Aggregation Service testing tool.
+per-file test_aggregation_service*=file://content/browser/aggregation_service/OWNERS
+
+# Network Service
+per-file network_service_test_helper.*=file://services/network/OWNERS
+
+# Cert Verifier Service
+per-file test_cert_verifier_service_factory.*=file://services/cert_verifier/OWNERS
+
+# DevTools-specific changes
+per-file *devtools*=file://content/browser/devtools/OWNERS
 
 # For security presubmit checks, though test mojom really don't need review.
 per-file *.mojom=set noparent

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,14 @@ MockSystemService::MockSystemService(const std::string& consumer_socket,
 }
 
 MockSystemService::MockSystemService(const base::ScopedTempDir& tmp_dir)
-    : used_tmpdir_(true),
-      task_runner_(std::make_unique<base::tracing::PerfettoTaskRunner>(
-          base::SequencedTaskRunnerHandle::Get())) {
+    : MockSystemService(tmp_dir,
+                        std::make_unique<base::tracing::PerfettoTaskRunner>(
+                            base::SequencedTaskRunnerHandle::Get())) {}
+
+MockSystemService::MockSystemService(
+    const base::ScopedTempDir& tmp_dir,
+    std::unique_ptr<perfetto::base::TaskRunner> task_runner)
+    : used_tmpdir_(true), task_runner_(std::move(task_runner)) {
   // We need to set TMPDIR environment variable because when a new producer
   // connects to the perfetto service it needs to create a memmap'd file for
   // the shared memory buffer. Setting TMPDIR allows the service to know

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -32,7 +30,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -41,22 +39,16 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-using component_updater::FakeCrOSComponentManager;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::component_updater::FakeCrOSComponentManager;
 
 constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
-
-void SetBoolean(bool* value) {
-  *value = true;
-}
-
-}  // namespace
 
 class DemoSessionTest : public testing::Test {
  public:
@@ -67,11 +59,14 @@ class DemoSessionTest : public testing::Test {
             g_browser_process->platform_part()),
         scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
+  DemoSessionTest(const DemoSessionTest&) = delete;
+  DemoSessionTest& operator=(const DemoSessionTest&) = delete;
+
   ~DemoSessionTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_->SetUp());
-    chromeos::DBusThreadManager::Initialize();
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
     InitializeCrosComponentManager();
     session_manager_ = std::make_unique<session_manager::SessionManager>();
@@ -85,7 +80,7 @@ class DemoSessionTest : public testing::Test {
     DemoSession::ResetDemoConfigForTesting();
 
     wallpaper_controller_client_.reset();
-    chromeos::DBusThreadManager::Shutdown();
+    ConciergeClient::Shutdown();
 
     cros_component_manager_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
@@ -124,18 +119,14 @@ class DemoSessionTest : public testing::Test {
         AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
     FakeChromeUserManager* user_manager =
         static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    const user_manager::User* user =
-        user_manager->AddPublicAccountUser(account_id);
+    user_manager->AddPublicAccountUser(account_id);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
-        std::string() /* supervised_user_id */,
-        TestingProfile::TestingFactories());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
+        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
 
     user_manager->LoginUser(account_id);
     return profile;
@@ -152,8 +143,6 @@ class DemoSessionTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
   user_manager::ScopedUserManager scoped_user_manager_;
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoSessionTest);
 };
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
@@ -161,24 +150,7 @@ TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
   DemoSession* demo_session = DemoSession::StartIfInDemoMode();
   ASSERT_TRUE(demo_session);
   EXPECT_TRUE(demo_session->started());
-  EXPECT_FALSE(demo_session->offline_enrolled());
   EXPECT_EQ(demo_session, DemoSession::Get());
-}
-
-TEST_F(DemoSessionTest, StartInitiatesOfflineResourcesLoad) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
 }
 
 TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
@@ -191,226 +163,11 @@ TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
       cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
 }
 
-TEST_F(DemoSessionTest, StartIfInOfflineEnrolledDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOffline);
-
-  EXPECT_FALSE(DemoSession::Get());
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->offline_enrolled());
-  EXPECT_EQ(demo_session, DemoSession::Get());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfInDemoMode) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_FALSE(demo_session->offline_enrolled());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfNotInDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  EXPECT_FALSE(DemoSession::Get());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfInOfflineDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOffline);
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_TRUE(demo_session->offline_enrolled());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
 TEST_F(DemoSessionTest, ShutdownResetsInstance) {
   ASSERT_TRUE(DemoSession::StartIfInDemoMode());
   EXPECT_TRUE(DemoSession::Get());
   DemoSession::ShutDownIfInitialized();
   EXPECT_FALSE(DemoSession::Get());
-}
-
-TEST_F(DemoSessionTest, ShutdownAfterPreload) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  EXPECT_TRUE(DemoSession::Get());
-  DemoSession::ShutDownIfInitialized();
-  EXPECT_FALSE(DemoSession::Get());
-}
-
-TEST_F(DemoSessionTest, StartDemoSessionWhilePreloadingResources) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-
-  ASSERT_TRUE(demo_session);
-  EXPECT_TRUE(demo_session->started());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, StartDemoSessionAfterPreloadingResources) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterStart) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-
-  EXPECT_FALSE(callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterOfflineResourceLoad) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterPreload) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-
-  EXPECT_FALSE(callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, MultipleEnsureOfflineResourcesLoaded) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  bool first_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &first_callback_called));
-
-  bool second_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &second_callback_called));
-
-  bool third_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &third_callback_called));
-
-  EXPECT_FALSE(first_callback_called);
-  EXPECT_FALSE(second_callback_called);
-  EXPECT_FALSE(third_callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(first_callback_called);
-  EXPECT_TRUE(second_callback_called);
-  EXPECT_TRUE(third_callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
 }
 
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
@@ -432,6 +189,8 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
+  // Wait for splash screen image to load and timer to be set
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
   EXPECT_EQ(0,
             test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
@@ -447,7 +206,8 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, new ChromeAppDelegate(profile, true /* keep_alive */),
+      profile,
+      std::make_unique<ChromeAppDelegate>(profile, true /* keep_alive */),
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
   // The splash screen is not removed until active session starts.
@@ -483,6 +243,8 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
 
   ASSERT_TRUE(FinishResourcesComponentLoad(
       base::FilePath(kTestDemoModeResourcesMountPoint)));
+  // Wait for splash screen image to load and timer to be set
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
   EXPECT_EQ(0,
             test_wallpaper_controller_.remove_always_on_top_wallpaper_count());
@@ -507,7 +269,8 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, new ChromeAppDelegate(profile, true /* keep_alive */),
+      profile,
+      std::make_unique<ChromeAppDelegate>(profile, true /* keep_alive */),
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());
@@ -582,4 +345,5 @@ TEST_F(DemoSessionLocaleTest, DefaultAndCurrentLocaleIdentical) {
   EXPECT_FALSE(profile->requested_locale().has_value());
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

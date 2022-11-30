@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,40 +13,45 @@
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_host_resolver.h"
-#include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/base/hash_value.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
-#include "net/cert/test_root_certs.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
+#include "net/log/net_log.h"
 #include "net/nqe/network_quality_estimator.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/network/cookie_manager.h"
+#include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/sct_auditing/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_reporter.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/android/url_utils.h"
-#include "base/test/test_support_android.h"
 #endif
 
 namespace content {
@@ -71,6 +76,333 @@ void CrashResolveHost(const std::string& host_to_crash,
   if (host_to_crash == host)
     base::Process::TerminateCurrentProcessImmediately(1);
 }
+
+class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
+ public:
+  explicit SimpleCacheEntry(disk_cache::ScopedEntryPtr entry)
+      : entry_(std::move(entry)) {}
+  ~SimpleCacheEntry() override = default;
+
+  void WriteData(int32_t index,
+                 int32_t offset,
+                 const std::vector<uint8_t>& data,
+                 bool truncate,
+                 WriteDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(net::ERR_FAILED);
+      return;
+    }
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    memcpy(data_to_pass->data(), data.data(), data.size());
+    int rv = entry_->WriteData(index, offset, data_to_pass.get(), data.size(),
+                               base::BindOnce(&SimpleCacheEntry::OnDataWritten,
+                                              weak_factory_.GetWeakPtr(),
+                                              data_to_pass, callback_holder),
+                               truncate);
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataWritten(std::move(data_to_pass), std::move(callback_holder), rv);
+  }
+
+  void ReadData(int32_t index,
+                int32_t offset,
+                uint32_t length,
+                ReadDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(/*data=*/{}, net::ERR_FAILED);
+      return;
+    }
+
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    int rv = entry_->ReadData(
+        index, offset, buffer.get(), length,
+        base::BindOnce(&SimpleCacheEntry::OnDataRead,
+                       weak_factory_.GetWeakPtr(), buffer, callback_holder));
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataRead(std::move(buffer), std::move(callback_holder), rv);
+  }
+
+  void WriteSparseData(int32_t offset,
+                       const std::vector<uint8_t>& data,
+                       WriteDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(net::ERR_FAILED);
+      return;
+    }
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    memcpy(data_to_pass->data(), data.data(), data.size());
+    int rv =
+        entry_->WriteSparseData(offset, data_to_pass.get(), data.size(),
+                                base::BindOnce(&SimpleCacheEntry::OnDataWritten,
+                                               weak_factory_.GetWeakPtr(),
+                                               data_to_pass, callback_holder));
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataWritten(std::move(data_to_pass), std::move(callback_holder), rv);
+  }
+
+  void ReadSparseData(int32_t offset,
+                      uint32_t length,
+                      ReadDataCallback callback) override {
+    if (!entry_) {
+      std::move(callback).Run(/*data=*/{}, net::ERR_FAILED);
+      return;
+    }
+
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
+    callback_holder->data = std::move(callback);
+
+    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    int rv = entry_->ReadSparseData(
+        offset, buffer.get(), length,
+        base::BindOnce(&SimpleCacheEntry::OnDataRead,
+                       weak_factory_.GetWeakPtr(), buffer, callback_holder));
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnDataRead(std::move(buffer), std::move(callback_holder), rv);
+  }
+
+  void Close(CloseCallback callback) override {
+    entry_.reset();
+    std::move(callback).Run();
+  }
+
+ private:
+  void OnDataWritten(
+      scoped_refptr<net::IOBuffer> buffer,
+      scoped_refptr<base::RefCountedData<WriteDataCallback>> callback_holder,
+      int result) {
+    WriteDataCallback callback = std::move(callback_holder->data);
+    std::move(callback).Run(result);
+  }
+
+  void OnDataRead(
+      scoped_refptr<net::IOBuffer> buffer,
+      scoped_refptr<base::RefCountedData<ReadDataCallback>> callback_holder,
+      int result) {
+    ReadDataCallback callback = std::move(callback_holder->data);
+    if (result < 0) {
+      std::move(callback).Run(/*data=*/{}, result);
+      return;
+    }
+    std::vector<uint8_t> data(result);
+    memcpy(data.data(), buffer->data(), result);
+    std::move(callback).Run(data, result);
+  }
+
+  disk_cache::ScopedEntryPtr entry_;
+  base::WeakPtrFactory<SimpleCacheEntry> weak_factory_{this};
+};
+
+class SimpleCacheEntryEnumerator final
+    : public network::mojom::SimpleCacheEntryEnumerator {
+ public:
+  using GetNextCallbackHolder = base::RefCountedData<GetNextCallback>;
+  explicit SimpleCacheEntryEnumerator(
+      std::unique_ptr<disk_cache::Backend::Iterator> iter)
+      : iter_(std::move(iter)) {}
+  ~SimpleCacheEntryEnumerator() override = default;
+
+  void GetNext(GetNextCallback callback) override {
+    DCHECK(!processing_);
+    processing_ = true;
+    auto callback_holder =
+        base::MakeRefCounted<GetNextCallbackHolder>(std::move(callback));
+    disk_cache::EntryResult result = iter_->OpenNextEntry(
+        base::BindOnce(&SimpleCacheEntryEnumerator::OnEntryOpened,
+                       weak_factory_.GetWeakPtr(), callback_holder));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return;
+    }
+
+    OnEntryOpened(std::move(callback_holder), std::move(result));
+  }
+
+ private:
+  void OnEntryOpened(scoped_refptr<GetNextCallbackHolder> callback_holder,
+                     disk_cache::EntryResult result) {
+    DCHECK(processing_);
+    processing_ = false;
+    auto result_to_pass = network::mojom::SimpleCacheOpenEntryResult::New();
+    result_to_pass->error = result.net_error();
+
+    auto callback = std::move(callback_holder->data);
+    DCHECK(callback);
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(std::move(result_to_pass));
+      return;
+    }
+
+    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+    result_to_pass->key = entry->GetKey();
+
+    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCacheEntry>(std::move(entry)),
+        result_to_pass->entry.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(result_to_pass));
+  }
+
+  std::unique_ptr<disk_cache::Backend::Iterator> iter_;
+  bool processing_ = false;
+
+  base::WeakPtrFactory<SimpleCacheEntryEnumerator> weak_factory_{this};
+};
+
+class SimpleCache : public network::mojom::SimpleCache {
+ public:
+  explicit SimpleCache(std::unique_ptr<disk_cache::Backend> backend)
+      : backend_(std::move(backend)) {
+    DCHECK(backend_);
+  }
+  ~SimpleCache() override = default;
+
+  void CreateEntry(const std::string& key,
+                   CreateEntryCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<CreateEntryCallback>>();
+    callback_holder->data = std::move(callback);
+
+    disk_cache::EntryResult result = backend_->CreateEntry(
+        key, net::DEFAULT_PRIORITY,
+        base::BindOnce(&SimpleCache::OnEntryCreated, weak_factory_.GetWeakPtr(),
+                       callback_holder));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnEntryCreated(std::move(callback_holder), std::move(result));
+  }
+
+  void OpenEntry(const std::string& key, OpenEntryCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<OpenEntryCallback>>();
+    callback_holder->data = std::move(callback);
+
+    disk_cache::EntryResult result = backend_->OpenEntry(
+        key, net::DEFAULT_PRIORITY,
+        base::BindOnce(&SimpleCache::OnEntryOpend, weak_factory_.GetWeakPtr(),
+                       callback_holder));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnEntryOpend(std::move(callback_holder), std::move(result));
+  }
+
+  void DoomEntry(const std::string& key, DoomEntryCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<DoomEntryCallback>>();
+    callback_holder->data = std::move(callback);
+    int rv = backend_->DoomEntry(
+        key, net::IDLE,
+        base::BindOnce(&SimpleCache::OnEntryDoomed, weak_factory_.GetWeakPtr(),
+                       callback_holder));
+
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnEntryDoomed(std::move(callback_holder), rv);
+  }
+
+  void DoomAllEntries(DoomAllEntriesCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<DoomAllEntriesCallback>>(
+            std::move(callback));
+    int rv = backend_->DoomAllEntries(
+        base::BindOnce(&SimpleCache::OnAllEntriesDoomed,
+                       weak_factory_.GetWeakPtr(), callback_holder));
+
+    if (rv == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnAllEntriesDoomed(std::move(callback_holder), rv);
+  }
+
+  void EnumerateEntries(
+      mojo::PendingReceiver<network::mojom::SimpleCacheEntryEnumerator>
+          pending_receiver) override {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<SimpleCacheEntryEnumerator>(
+                                    backend_->CreateIterator()),
+                                std::move(pending_receiver));
+  }
+
+  void Detach(DetachCallback callback) override {
+    backend_ = nullptr;
+    disk_cache::FlushCacheThreadAsynchronouslyForTesting(std::move(callback));
+  }
+
+ private:
+  void OnEntryCreated(
+      scoped_refptr<base::RefCountedData<CreateEntryCallback>> callback_holder,
+      disk_cache::EntryResult result) {
+    CreateEntryCallback callback = std::move(callback_holder->data);
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(mojo::NullRemote(), result.net_error());
+      return;
+    }
+    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+
+    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCacheEntry>(std::move(entry)),
+        remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(remote), net::OK);
+  }
+
+  void OnEntryOpend(
+      scoped_refptr<base::RefCountedData<OpenEntryCallback>> callback_holder,
+      disk_cache::EntryResult result) {
+    OpenEntryCallback callback = std::move(callback_holder->data);
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(mojo::NullRemote(), result.net_error());
+      return;
+    }
+    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+
+    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCacheEntry>(std::move(entry)),
+        remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(remote), net::OK);
+  }
+
+  void OnEntryDoomed(
+      scoped_refptr<base::RefCountedData<DoomEntryCallback>> callback_holder,
+      int result) {
+    DoomEntryCallback callback = std::move(callback_holder->data);
+    std::move(callback).Run(result);
+  }
+
+  void OnAllEntriesDoomed(
+      scoped_refptr<base::RefCountedData<DoomAllEntriesCallback>>
+          callback_holder,
+      int result) {
+    DoomAllEntriesCallback callback = std::move(callback_holder->data);
+    std::move(callback).Run(result);
+  }
+
+  std::unique_ptr<disk_cache::Backend> backend_;
+
+  base::WeakPtrFactory<SimpleCache> weak_factory_{this};
+};
+
 }  // namespace
 
 class NetworkServiceTestHelper::NetworkServiceTestImpl
@@ -102,6 +434,9 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
       }
     }
   }
+
+  NetworkServiceTestImpl(const NetworkServiceTestImpl&) = delete;
+  NetworkServiceTestImpl& operator=(const NetworkServiceTestImpl&) = delete;
 
   ~NetworkServiceTestImpl() override {
     network::NetworkContext::SetCertVerifierForTesting(nullptr);
@@ -160,6 +495,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
+  void ForceNetworkQualityEstimatorReportWifiAsSlow2G(
+      SimulateNetworkChangeCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->network_quality_estimator()
+        ->ForceReportWifiAsSlow2GForTesting();
+    std::move(callback).Run();
+  }
+
   void SimulateCrash() override {
     LOG(ERROR) << "Intentionally terminating current process to simulate"
                   " NetworkService crash for testing.";
@@ -208,7 +551,27 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
 
   void SetAllowNetworkAccessToHostResolutions(
       SetAllowNetworkAccessToHostResolutionsCallback callback) override {
+    DCHECK(!have_test_doh_servers_)
+        << "Cannot allow network access when test DoH servers have been set.";
     test_host_resolver_.reset();
+    std::move(callback).Run();
+  }
+
+  void ReplaceSystemDnsConfig(
+      ReplaceSystemDnsConfigCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ReplaceSystemDnsConfigForTesting();
+    std::move(callback).Run();
+  }
+
+  void SetTestDohConfig(net::SecureDnsMode secure_dns_mode,
+                        const net::DnsOverHttpsConfig& doh_config,
+                        SetTestDohConfigCallback callback) override {
+    DCHECK(test_host_resolver_)
+        << "Network access for host resolutions must be disabled.";
+    have_test_doh_servers_ = true;
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->SetTestDohConfigForTesting(secure_dns_mode, doh_config);
     std::move(callback).Run();
   }
 
@@ -235,12 +598,11 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(count);
   }
 
-  void GetFirstPartySetEntriesCount(
-      GetFirstPartySetEntriesCountCallback callback) override {
-    std::move(callback).Run(
-        network::NetworkService::GetNetworkServiceForTesting()
-            ->first_party_sets()
-            ->size());
+  void SetSCTAuditingRetryDelay(
+      absl::optional<base::TimeDelta> delay,
+      SetSCTAuditingRetryDelayCallback callback) override {
+    network::SCTAuditingReporter::SetRetryDelayForTesting(delay);
+    std::move(callback).Run();
   }
 
   void GetEnvironmentVariableValue(
@@ -260,19 +622,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     base::FieldTrialList::FindFullName(field_trial_name);
   }
 
-  void SetEVPolicy(const std::vector<uint8_t>& fingerprint_sha256,
-                   const std::string& policy_oid,
-                   SetEVPolicyCallback callback) override {
-    CHECK_EQ(fingerprint_sha256.size(), crypto::kSHA256Length);
-    net::SHA256HashValue fingerprint_sha256_hash;
-    memcpy(&fingerprint_sha256_hash.data, fingerprint_sha256.data(),
-           crypto::kSHA256Length);
-    ev_test_policy_ = std::make_unique<net::ScopedTestEVPolicy>(
-        net::EVRootCAMetadata::GetInstance(), fingerprint_sha256_hash,
-        policy_oid.data());
-    std::move(callback).Run();
-  }
-
   void BindReceiver(
       mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver) {
     receivers_.Add(this, std::move(receiver));
@@ -288,13 +637,107 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     receivers_.Clear();
   }
 
+  void OpenFile(const base::FilePath& path,
+                base::OnceCallback<void(bool)> callback) override {
+    base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ);
+    std::move(callback).Run(file.IsValid());
+  }
+
+  void EnumerateFiles(
+      const base::FilePath& path,
+      mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+          factory_remote,
+      EnumerateFilesCallback callback) override {
+    auto task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+    auto factory =
+        base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
+            std::move(factory_remote));
+    auto ops = factory->Create(task_runner);
+
+    using Entry = disk_cache::BackendFileOperations::FileEnumerationEntry;
+
+    task_runner->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](const base::FilePath& path,
+               std::unique_ptr<disk_cache::BackendFileOperations> ops) {
+              base::ScopedAllowBaseSyncPrimitivesForTesting scope;
+              auto enumerator = ops->EnumerateFiles(path);
+              std::vector<Entry> entries;
+              while (auto entry = enumerator->Next()) {
+                entries.push_back(std::move(*entry));
+              }
+              return std::make_pair(entries, enumerator->HasError());
+            },
+            path, std::move(ops)),
+        base::BindOnce(
+            [](EnumerateFilesCallback callback,
+               std::pair<std::vector<Entry>, bool> arg) {
+              std::move(callback).Run(arg.first, arg.second);
+            },
+            std::move(callback)));
+  }
+
+  void CreateSimpleCache(
+      mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+          factory,
+      const base::FilePath& path,
+      bool reset,
+      CreateSimpleCacheCallback callback) override {
+    const auto reset_mode = reset ? disk_cache::ResetHandling::kReset
+                                  : disk_cache::ResetHandling::kResetOnError;
+    disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
+        net::DISK_CACHE, net::CACHE_BACKEND_SIMPLE,
+        base::MakeRefCounted<network::MojoBackendFileOperationsFactory>(
+            std::move(factory)),
+        path, 64 * 1024 * 1024, reset_mode, net::NetLog::Get(),
+        base::BindOnce(&NetworkServiceTestImpl::OnCacheCreated,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    DCHECK_EQ(result.net_error, net::ERR_IO_PENDING);
+  }
+
+  void MakeRequestToServer(network::TransferableSocket transferred,
+                           const net::IPEndPoint& endpoint,
+                           MakeRequestToServerCallback callback) override {
+    net::TCPSocket socket(nullptr, nullptr, net::NetLogSource());
+    socket.AdoptConnectedSocket(transferred.TakeSocket(), endpoint);
+    const std::string kRequest("GET / HTTP/1.0\r\n\r\n");
+    auto io_buffer = base::MakeRefCounted<net::StringIOBuffer>(kRequest);
+
+    int rv = socket.Write(io_buffer.get(), io_buffer->size(), base::DoNothing(),
+                          TRAFFIC_ANNOTATION_FOR_TESTS);
+    // For purposes of tests, this IPC only supports sync Write calls.
+    DCHECK_NE(net::ERR_IO_PENDING, rv);
+    std::move(callback).Run(rv == static_cast<int>(kRequest.size()));
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
     latest_memory_pressure_level_ = memory_pressure_level;
   }
 
+  void OnCacheCreated(CreateSimpleCacheCallback callback,
+                      disk_cache::BackendResult result) {
+    std::unique_ptr<disk_cache::Backend> backend = std::move(result.backend);
+    if (result.net_error != net::OK) {
+      DCHECK(!backend);
+      std::move(callback).Run(mojo::NullRemote());
+      return;
+    }
+    DCHECK(backend);
+    mojo::PendingRemote<network::mojom::SimpleCache> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCache>(std::move(backend)),
+        remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(remote));
+  }
+
+  void OnNetworkDataWritten(int rv) { write_result_ = rv; }
+
   bool registered_as_destruction_observer_ = false;
+  bool have_test_doh_servers_ = false;
   mojo::ReceiverSet<network::mojom::NetworkServiceTest> receivers_;
   std::unique_ptr<TestHostResolver> test_host_resolver_;
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;
@@ -304,9 +747,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   base::MemoryPressureListener::MemoryPressureLevel
       latest_memory_pressure_level_ =
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
-  std::unique_ptr<net::ScopedTestEVPolicy> ev_test_policy_;
+  int write_result_;
+  std::unique_ptr<disk_cache::Backend> disk_cache_backend_;
 
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceTestImpl);
+  base::WeakPtrFactory<NetworkServiceTestImpl> weak_factory_{this};
 };
 
 NetworkServiceTestHelper::NetworkServiceTestHelper()
@@ -319,27 +763,6 @@ void NetworkServiceTestHelper::RegisterNetworkBinders(
   registry->AddInterface(base::BindRepeating(
       &NetworkServiceTestHelper::BindNetworkServiceTestReceiver,
       base::Unretained(this)));
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  auto utility_sub_type =
-      command_line->GetSwitchValueASCII(switches::kUtilitySubType);
-  if (utility_sub_type == network::mojom::NetworkService::Name_) {
-    // Register the EmbeddedTestServer's certs, so that any SSL connections to
-    // it succeed. Only do this when file I/O is allowed in the current process.
-#if defined(OS_ANDROID)
-    base::InitAndroidTestPaths(base::android::GetIsolatedTestRoot());
-#endif
-
-    if (!command_line->HasSwitch(switches::kDisableTestCerts)) {
-      net::EmbeddedTestServer::RegisterTestCerts();
-      net::SpawnedTestServer::RegisterTestCerts();
-
-      // Also add the QUIC test certificate.
-      net::TestRootCerts* root_certs = net::TestRootCerts::GetInstance();
-      root_certs->AddFromFile(
-          net::GetTestCertsDirectory().AppendASCII("quic-root.pem"));
-    }
-  }
 }
 
 void NetworkServiceTestHelper::BindNetworkServiceTestReceiver(

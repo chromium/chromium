@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 
 class PrefService;
@@ -22,6 +23,10 @@ namespace ntp_tiles {
 class CustomLinksStore {
  public:
   explicit CustomLinksStore(PrefService* prefs);
+
+  CustomLinksStore(const CustomLinksStore&) = delete;
+  CustomLinksStore& operator=(const CustomLinksStore&) = delete;
+
   // Virtual for testing.
   virtual ~CustomLinksStore();
 
@@ -45,9 +50,7 @@ class CustomLinksStore {
 
  private:
   // The pref service used to persist the custom link data.
-  PrefService* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomLinksStore);
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace ntp_tiles

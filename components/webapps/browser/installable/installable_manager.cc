@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,20 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -31,10 +34,13 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #endif
 
@@ -56,6 +62,9 @@ const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
 // size for triggering banners.
 const int kMinimumPrimaryIconSizeInPx = 144;
 
+// Maximum number of screenshots allowed, the rest will be ignored.
+const int kMaximumNumOfScreenshots = 8;
+
 // This constant is the smallest possible adaptive launcher icon size for any
 // device density.
 // The ideal icon size is 83dp (see documentation for
@@ -72,7 +81,7 @@ const int kMinimumPrimaryIconSizeInPx = 144;
 const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 int GetIdealPrimaryIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -80,7 +89,7 @@ int GetIdealPrimaryIconSizeInPx() {
 }
 
 int GetMinimumPrimaryIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -88,7 +97,7 @@ int GetMinimumPrimaryIconSizeInPx() {
 }
 
 int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
 #else
   return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
@@ -96,7 +105,7 @@ int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 }
 
 int GetIdealSplashIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -104,7 +113,7 @@ int GetIdealSplashIconSizeInPx() {
 }
 
 int GetMinimumSplashIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -120,10 +129,9 @@ struct ImageTypeDetails {
 
 constexpr ImageTypeDetails kSupportedImageTypes[] = {
     {".png", "image/png"},
-// TODO(https://crbug.com/578122): Add SVG support for Android.
-// TODO(https://crbug.com/466958): Add WebP support for Android.
-#if !defined(OS_ANDROID)
     {".svg", "image/svg+xml"},
+// TODO(https://crbug.com/466958): Add WebP support for Android.
+#if !BUILDFLAG(IS_ANDROID)
     {".webp", "image/webp"},
 #endif
 };
@@ -151,7 +159,7 @@ bool IsIconTypeSupported(const blink::Manifest::ImageResource& icon) {
 
 // Returns whether |manifest| specifies an SVG or PNG icon that has
 // IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any").
-bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
+bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
   for (const auto& icon : manifest.icons) {
     if (!IsIconTypeSupported(icon))
       continue;
@@ -173,12 +181,14 @@ bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
 }
 
 bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
-  return !(
-      display_mode == blink::mojom::DisplayMode::kStandalone ||
-      display_mode == blink::mojom::DisplayMode::kFullscreen ||
-      display_mode == blink::mojom::DisplayMode::kMinimalUi ||
-      (display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay &&
-       base::FeatureList::IsEnabled(features::kWebAppWindowControlsOverlay)));
+  return !(display_mode == blink::mojom::DisplayMode::kStandalone ||
+           display_mode == blink::mojom::DisplayMode::kFullscreen ||
+           display_mode == blink::mojom::DisplayMode::kMinimalUi ||
+           display_mode == blink::mojom::DisplayMode::kWindowControlsOverlay ||
+           (display_mode == blink::mojom::DisplayMode::kBorderless &&
+            base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
+           (display_mode == blink::mojom::DisplayMode::kTabbed &&
+            base::FeatureList::IsEnabled(::features::kDesktopPWAsTabStrip)));
 }
 
 void OnDidCompleteGetAllErrors(
@@ -199,7 +209,7 @@ void OnDidCompleteGetAllErrors(
 void OnDidCompleteGetPrimaryIcon(
     base::OnceCallback<void(const SkBitmap*)> callback,
     const InstallableData& data) {
-  std::move(callback).Run(data.primary_icon);
+  std::move(callback).Run(data.primary_icon.get());
 }
 
 }  // namespace
@@ -212,13 +222,10 @@ InstallableManager::ValidManifestProperty::ValidManifestProperty() = default;
 
 InstallableManager::ValidManifestProperty::~ValidManifestProperty() = default;
 
-InstallableManager::IconProperty::IconProperty()
-    : error(NO_ERROR_DETECTED),
-      purpose(IconPurpose::ANY),
-      icon(),
-      fetched(false) {}
+InstallableManager::IconProperty::IconProperty() = default;
 
-InstallableManager::IconProperty::IconProperty(IconProperty&& other) = default;
+InstallableManager::IconProperty::IconProperty(IconProperty&& other) noexcept =
+    default;
 
 InstallableManager::IconProperty::~IconProperty() = default;
 
@@ -227,6 +234,7 @@ InstallableManager::IconProperty& InstallableManager::IconProperty::operator=(
 
 InstallableManager::InstallableManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<InstallableManager>(*web_contents),
       eligibility_(std::make_unique<EligiblityProperty>()),
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),
@@ -235,8 +243,8 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            web_contents->GetBrowserContext(), web_contents->GetSiteInstance());
+        web_contents->GetBrowserContext()->GetStoragePartition(
+            web_contents->GetSiteInstance());
     DCHECK(storage_partition);
 
     service_worker_context_ = storage_partition->GetServiceWorkerContext();
@@ -328,6 +336,9 @@ void InstallableManager::GetPrimaryIcon(
           base::BindOnce(OnDidCompleteGetPrimaryIcon, std::move(callback)));
 }
 
+InstallableManager::ManifestProperty::ManifestProperty() = default;
+InstallableManager::ManifestProperty::~ManifestProperty() = default;
+
 bool InstallableManager::IsIconFetchComplete(const IconUsage usage) const {
   const auto it = icons_.find(usage);
   if (it == icons_.end() || !it->second.fetched)
@@ -389,12 +400,17 @@ std::vector<InstallableStatusCode> InstallableManager::GetErrors(
   if (params.valid_splash_icon) {
     IconProperty& icon = icons_[IconUsage::kSplash];
 
+    // If the icon is MASKABLE, ignore any error since we want to fallback to
+    // fetch IconPurpose::ANY.
     // If the error is NO_ACCEPTABLE_ICON, there is no icon suitable as a splash
     // icon in the manifest. Ignore this case since we only want to fail the
     // check if there was a suitable splash icon specified and we couldn't fetch
     // it.
-    if (icon.error != NO_ERROR_DETECTED && icon.error != NO_ACCEPTABLE_ICON)
+    if (icon.error != NO_ERROR_DETECTED &&
+        icon.purpose != IconPurpose::MASKABLE &&
+        icon.error != NO_ACCEPTABLE_ICON) {
       errors.push_back(icon.error);
+    }
   }
 
   return errors;
@@ -452,13 +468,14 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          manifest_->fetched &&
          (!params.valid_manifest || valid_manifest_->fetched) &&
          (!params.has_worker || worker_->fetched) &&
+         (!params.fetch_screenshots || is_screenshots_fetch_complete_) &&
          (!params.valid_primary_icon ||
           IsIconFetchComplete(IconUsage::kPrimary)) &&
          (!params.valid_splash_icon || IsIconFetchComplete(IconUsage::kSplash));
 }
 
-void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
-  DCHECK(!error || error.value() != NO_ERROR_DETECTED);
+void InstallableManager::Reset(InstallableStatusCode error) {
+  DCHECK(error != NO_ERROR_DETECTED);
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
   icons_.clear();
@@ -467,11 +484,9 @@ void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
   screenshots_downloading_ = 0;
   is_screenshots_fetch_complete_ = false;
 
-  // If we have paused tasks, we are waiting for a service worker.
-  if (error)
-    task_queue_.ResetWithError(error.value());
-  else
-    task_queue_.Reset();
+  // If we have paused tasks, we are waiting for a service worker. Execute the
+  // callbacks with the status_code being passed for the paused tasks.
+  task_queue_.ResetWithError(error);
 
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
@@ -486,6 +501,7 @@ void InstallableManager::SetManifestDependentTasksComplete() {
   worker_->fetched = true;
   SetIconFetched(IconUsage::kPrimary);
   SetIconFetched(IconUsage::kSplash);
+  is_screenshots_fetch_complete_ = true;
 }
 
 void InstallableManager::CleanupAndStartNextTask() {
@@ -494,6 +510,14 @@ void InstallableManager::CleanupAndStartNextTask() {
   // again.
   if (worker_error() == NO_MATCHING_SERVICE_WORKER)
     worker_ = std::make_unique<ServiceWorkerProperty>();
+
+  // |valid_manifest_| shouldn't be re-used across tasks because its state is
+  // dependent on current task's |params|.
+  valid_manifest_ = std::make_unique<ValidManifestProperty>();
+  if (manifest_->error == NO_MANIFEST || manifest_->error == MANIFEST_EMPTY) {
+    valid_manifest_->fetched = true;
+    valid_manifest_->is_valid = false;
+  }
 
   task_queue_.Next();
   WorkOnTask();
@@ -507,14 +531,19 @@ void InstallableManager::RunCallback(
   IconProperty* primary_icon = &null_icon;
   bool has_maskable_primary_icon = false;
   IconProperty* splash_icon = &null_icon;
+  bool has_maskable_splash_icon = false;
 
   if (params.valid_primary_icon && IsIconFetchComplete(IconUsage::kPrimary)) {
     primary_icon = &icons_[IconUsage::kPrimary];
     has_maskable_primary_icon =
         (primary_icon->purpose == IconPurpose::MASKABLE);
   }
-  if (params.valid_splash_icon && IsIconFetchComplete(IconUsage::kSplash))
+  if (params.valid_splash_icon && IsIconFetchComplete(IconUsage::kSplash)) {
     splash_icon = &icons_[IconUsage::kSplash];
+    has_maskable_splash_icon = (splash_icon->purpose == IconPurpose::MASKABLE);
+  }
+
+  bool worker_check_passed = worker_->has_worker || !params.has_worker;
 
   InstallableData data = {
       std::move(errors),
@@ -525,9 +554,10 @@ void InstallableManager::RunCallback(
       has_maskable_primary_icon,
       splash_icon->url,
       splash_icon->icon.get(),
+      has_maskable_splash_icon,
       screenshots_,
       valid_manifest_->is_valid,
-      worker_->has_worker,
+      worker_check_passed,
   };
 
   std::move(task.callback).Run(data);
@@ -558,6 +588,8 @@ void InstallableManager::WorkOnTask() {
     CheckEligiblity();
   } else if (!manifest_->fetched) {
     FetchManifest();
+  } else if (params.valid_manifest && !valid_manifest_->fetched) {
+    CheckManifestValid(params.check_webapp_manifest_display);
   } else if (params.valid_primary_icon && params.prefer_maskable_icon &&
              !IsMaskableIconFetched(IconUsage::kPrimary)) {
     CheckAndFetchBestIcon(GetIdealPrimaryAdaptiveLauncherIconSizeInPx(),
@@ -568,12 +600,21 @@ void InstallableManager::WorkOnTask() {
     CheckAndFetchBestIcon(GetIdealPrimaryIconSizeInPx(),
                           GetMinimumPrimaryIconSizeInPx(), IconPurpose::ANY,
                           IconUsage::kPrimary);
-  } else if (params.valid_manifest && !valid_manifest_->fetched) {
-    CheckManifestValid(params.check_webapp_manifest_display);
-  } else if (params.fetch_screenshots && !is_screenshots_fetch_complete_) {
-    CheckAndFetchScreenshots();
+  } else if (params.fetch_screenshots && !screenshots_downloading_ &&
+             !is_screenshots_fetch_complete_) {
+    if (base::FeatureList::IsEnabled(
+            webapps::features::kDesktopPWAsDetailedInstallDialog)) {
+      CheckAndFetchScreenshots();
+    } else {
+      CheckAndFetchScreenshots(/*check_form_factor=*/false);
+    }
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
+  } else if (params.valid_splash_icon && params.prefer_maskable_icon &&
+             !IsMaskableIconFetched(IconUsage::kSplash)) {
+    CheckAndFetchBestIcon(GetIdealSplashIconSizeInPx(),
+                          GetMinimumSplashIconSizeInPx(), IconPurpose::MASKABLE,
+                          IconUsage::kSplash);
   } else if (params.valid_splash_icon &&
              !IsIconFetchComplete(IconUsage::kSplash)) {
     CheckAndFetchBestIcon(GetIdealSplashIconSizeInPx(),
@@ -585,7 +626,7 @@ void InstallableManager::WorkOnTask() {
 }
 
 void InstallableManager::CheckEligiblity() {
-  // Fail if this is an incognito window, non-main frame, or insecure context.
+  // Fail if this is an incognito window or insecure context.
   content::WebContents* web_contents = GetWebContents();
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     eligibility_->errors.push_back(IN_INCOGNITO);
@@ -604,25 +645,27 @@ void InstallableManager::FetchManifest() {
   content::WebContents* web_contents = GetWebContents();
   DCHECK(web_contents);
 
-  web_contents->GetManifest(base::BindOnce(
+  // This uses DidFinishNavigation to abort when the primary page changes.
+  // Therefore this should always be the correct page.
+  web_contents->GetPrimaryPage().GetManifest(base::BindOnce(
       &InstallableManager::OnDidGetManifest, weak_factory_.GetWeakPtr()));
 }
 
 void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
-                                          const blink::Manifest& manifest) {
+                                          blink::mojom::ManifestPtr manifest) {
   if (!GetWebContents())
     return;
 
   if (manifest_url.is_empty()) {
     manifest_->error = NO_MANIFEST;
     SetManifestDependentTasksComplete();
-  } else if (manifest.IsEmpty()) {
+  } else if (blink::IsEmptyManifest(manifest)) {
     manifest_->error = MANIFEST_EMPTY;
     SetManifestDependentTasksComplete();
   }
 
   manifest_->url = manifest_url;
-  manifest_->manifest = manifest;
+  manifest_->manifest = std::move(manifest);
   manifest_->fetched = true;
   WorkOnTask();
 }
@@ -630,7 +673,7 @@ void InstallableManager::OnDidGetManifest(const GURL& manifest_url,
 void InstallableManager::CheckManifestValid(
     bool check_webapp_manifest_display) {
   DCHECK(!valid_manifest_->fetched);
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
 
   valid_manifest_->is_valid =
       IsManifestValidForWebApp(manifest(), check_webapp_manifest_display);
@@ -639,10 +682,10 @@ void InstallableManager::CheckManifestValid(
 }
 
 bool InstallableManager::IsManifestValidForWebApp(
-    const blink::Manifest& manifest,
+    const blink::mojom::Manifest& manifest,
     bool check_webapp_manifest_display) {
   bool is_valid = true;
-  if (manifest.IsEmpty()) {
+  if (blink::IsEmptyManifest(manifest)) {
     valid_manifest_->errors.push_back(MANIFEST_EMPTY);
     return false;
   }
@@ -687,7 +730,7 @@ bool InstallableManager::IsManifestValidForWebApp(
 
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
 
   if (!service_worker_context_)
     return;
@@ -695,6 +738,7 @@ void InstallableManager::CheckServiceWorker() {
   // Check to see if there is a service worker for the manifest's scope.
   service_worker_context_->CheckHasServiceWorker(
       manifest().scope,
+      blink::StorageKey(url::Origin::Create(manifest().scope)),
       base::BindOnce(&InstallableManager::OnDidCheckHasServiceWorker,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -725,6 +769,7 @@ void InstallableManager::OnDidCheckHasServiceWorker(
         // environment and see if the site supports an offline page.
         service_worker_context_->CheckOfflineCapability(
             manifest().start_url,
+            blink::StorageKey(url::Origin::Create(manifest().start_url)),
             base::BindOnce(&InstallableManager::OnDidCheckOfflineCapability,
                            weak_factory_.GetWeakPtr(),
                            check_service_worker_start_time,
@@ -803,7 +848,7 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
                                                int minimum_icon_size_in_px,
                                                const IconPurpose purpose,
                                                const IconUsage usage) {
-  DCHECK(!manifest().IsEmpty());
+  DCHECK(!blink::IsEmptyManifest(manifest()));
 
   IconProperty& icon = icons_[usage];
   icon.fetched = true;
@@ -847,25 +892,49 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckAndFetchScreenshots() {
-  DCHECK(!manifest().IsEmpty());
+void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
+  DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
   screenshots_downloading_ = 0;
 
+  int num_of_screenshots = 0;
   for (const auto& url : manifest().screenshots) {
+#if BUILDFLAG(IS_ANDROID)
+    if (check_form_factor &&
+        url->form_factor ==
+            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+      continue;
+    }
+#else
+    if (check_form_factor &&
+        url->form_factor !=
+            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+      continue;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+    if (++num_of_screenshots > kMaximumNumOfScreenshots)
+      break;
+
     // A screenshot URL that's in the map is already taken care of.
-    if (downloaded_screenshots_.count(url.src) > 0)
+    if (downloaded_screenshots_.count(url->image.src) > 0)
       continue;
 
-    int ideal_size_in_px = url.sizes.empty() ? kMinimumScreenshotSizeInPx
-                                             : std::max(url.sizes[0].width(),
-                                                        url.sizes[0].height());
+    int ideal_size_in_px = url->image.sizes.empty()
+                               ? kMinimumScreenshotSizeInPx
+                               : std::max(url->image.sizes[0].width(),
+                                          url->image.sizes[0].height());
+    // Do not pass in a maximum icon size so that screenshots larger than
+    // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
+    // `ManifestIconDownloader::Download`. Screenshots with size larger than
+    // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
     bool can_download = content::ManifestIconDownloader::Download(
-        GetWebContents(), url.src, ideal_size_in_px, kMinimumScreenshotSizeInPx,
-        kMaximumScreenshotSizeInPx,
+        GetWebContents(), url->image.src, ideal_size_in_px,
+        kMinimumScreenshotSizeInPx,
+        /*maximum_icon_size_in_px=*/0,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
-                       weak_factory_.GetWeakPtr(), url.src),
+                       weak_factory_.GetWeakPtr(), url->image.src),
         /*square_only=*/false);
     if (can_download)
       ++screenshots_downloading_;
@@ -877,7 +946,7 @@ void InstallableManager::CheckAndFetchScreenshots() {
   }
 }
 
-void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
+void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
                                              const SkBitmap& bitmap) {
   DCHECK_GT(screenshots_downloading_, 0);
 
@@ -890,8 +959,12 @@ void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
   if (--screenshots_downloading_ == 0) {
     // Now that all images have finished downloading, populate screenshots in
     // the order they are declared in the manifest.
+    int num_of_screenshots = 0;
     for (const auto& url : manifest().screenshots) {
-      auto iter = downloaded_screenshots_.find(url.src);
+      if (++num_of_screenshots > kMaximumNumOfScreenshots)
+        break;
+
+      auto iter = downloaded_screenshots_.find(url->image.src);
       if (iter == downloaded_screenshots_.end())
         continue;
 
@@ -901,24 +974,24 @@ void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
         continue;
       }
 
-      // TODO(crbug.com/1146450): Filter out screenshots by platform.
       // Screenshots must have the same aspect ratio. Cross-multiplying
       // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
       if (screenshots_.size() &&
           screenshot.dimensions().width() *
-                  screenshots_[0].dimensions().height() !=
+                  screenshots_[0].image.dimensions().height() !=
               screenshot.dimensions().height() *
-                  screenshots_[0].dimensions().width()) {
+                  screenshots_[0].image.dimensions().width()) {
         continue;
       }
 
-      // Max dimension can't be twice larger than min dimension.
-      auto dimensions = std::minmax(screenshot.width(), screenshot.height());
-      if (dimensions.second > dimensions.first * 2)
+      std::pair<int, int> dimensions =
+          std::minmax(screenshot.width(), screenshot.height());
+      if (dimensions.second > dimensions.first * kMaximumScreenshotRatio)
         continue;
 
-      screenshots_.push_back(screenshot);
+      screenshots_.emplace_back(std::move(screenshot), url->label);
     }
+
     downloaded_screenshots_.clear();
     is_screenshots_fetch_complete_ = true;
 
@@ -952,23 +1025,20 @@ void InstallableManager::OnDestruct(content::ServiceWorkerContext* context) {
   service_worker_context_ = nullptr;
 }
 
-void InstallableManager::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  if (handle->IsInMainFrame() && handle->HasCommitted() &&
-      !handle->IsSameDocument()) {
-    Reset(USER_NAVIGATED);
-  }
+void InstallableManager::PrimaryPageChanged(content::Page& page) {
+  Reset(USER_NAVIGATED);
 }
 
-void InstallableManager::DidUpdateWebManifestURL(
-    content::RenderFrameHost* rfh,
-    const base::Optional<GURL>& manifest_url) {
+void InstallableManager::DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
+                                                 const GURL& manifest_url) {
   // A change in the manifest URL invalidates our entire internal state.
   Reset(MANIFEST_URL_CHANGED);
 }
 
 void InstallableManager::WebContentsDestroyed() {
-  Reset();
+  // This ensures that we do not just hang callbacks on web_contents being
+  // destroyed.
+  Reset(RENDERER_EXITING);
   Observe(nullptr);
 }
 
@@ -976,8 +1046,9 @@ const GURL& InstallableManager::manifest_url() const {
   return manifest_->url;
 }
 
-const blink::Manifest& InstallableManager::manifest() const {
-  return manifest_->manifest;
+const blink::mojom::Manifest& InstallableManager::manifest() const {
+  DCHECK(manifest_->manifest);
+  return *manifest_->manifest;
 }
 
 bool InstallableManager::valid_manifest() {
@@ -988,6 +1059,6 @@ bool InstallableManager::has_worker() {
   return worker_->has_worker;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(InstallableManager);
 
 }  // namespace webapps

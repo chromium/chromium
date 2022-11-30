@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -93,8 +93,8 @@ enum {
 class DummyComboboxModel : public ui::ComboboxModel {
  public:
   // Overridden from ui::ComboboxModel:
-  int GetItemCount() const override { return 10; }
-  std::u16string GetItemAt(int index) const override {
+  size_t GetItemCount() const override { return 10; }
+  std::u16string GetItemAt(size_t index) const override {
     return u"Item " + base::NumberToString16(index);
   }
 };
@@ -125,7 +125,7 @@ class PaneView : public View, public FocusTraversable {
   View* GetFocusTraversableParentView() override { return nullptr; }
 
  private:
-  FocusSearch* focus_search_ = nullptr;
+  raw_ptr<FocusSearch> focus_search_ = nullptr;
 };
 
 // BorderView is a view containing a native window with its own view hierarchy.
@@ -155,11 +155,12 @@ class BorderView : public NativeViewHost {
 
     if (details.child == this && details.is_add) {
       if (!widget_) {
-        widget_ = std::make_unique<Widget>();
+        auto widget = std::make_unique<Widget>();
+        widget_ = widget.get();
         Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
         params.parent = details.parent->GetWidget()->GetNativeView();
-        params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
         widget_->Init(std::move(params));
+        widget.release();  // Widget now owned by widget hierarchy.
         widget_->SetFocusTraversableParentView(this);
         widget_->SetContentsView(std::move(child_));
       }
@@ -174,7 +175,7 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  std::unique_ptr<Widget> widget_;
+  Widget* widget_ = nullptr;
 };
 
 }  // namespace
@@ -204,7 +205,6 @@ class FocusTraversalTest : public FocusManagerTest {
     return nullptr;
   }
 
- protected:
   // Helper function to advance focus multiple times in a loop. |traversal_ids|
   // is an array of view ids of length |N|. |reverse| denotes the direction in
   // which focus should be advanced.
@@ -224,11 +224,48 @@ class FocusTraversalTest : public FocusManagerTest {
     }
   }
 
-  TabbedPane* style_tab_ = nullptr;
-  BorderView* search_border_view_ = nullptr;
+  // Helper function that will recursively reverse the focus order of all the
+  // children of the provided |parent|.
+  void ReverseChildrenFocusOrder(View* parent) {
+    ReverseChildrenFocusOrderImpl(parent);
+  }
+
+  raw_ptr<TabbedPane> style_tab_ = nullptr;
+  raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  PaneView* left_container_;
-  PaneView* right_container_;
+  raw_ptr<PaneView> left_container_;
+  raw_ptr<PaneView> right_container_;
+
+ private:
+  // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be
+  // passed directly - it will be initialized when called and is used to make
+  // sure there is no cycle while traversing the children views.
+  void ReverseChildrenFocusOrderImpl(View* parent,
+                                     base::flat_set<View*> seen_views = {}) {
+    std::vector<View*> children_views = parent->children();
+    if (children_views.empty())
+      return;
+
+    View* first_child = children_views[0];
+    std::vector<View*> children_in_focus_order;
+
+    // Set each child to be before the first child in the focus list.  Do this
+    // in reverse so that the last child is the first focusable view.
+    for (int i = children_views.size() - 1; i >= 0; i--) {
+      views::View* child = children_views[i];
+      EXPECT_FALSE(seen_views.contains(child));
+
+      seen_views.insert(child);
+      children_in_focus_order.push_back(child);
+
+      if (child != first_child)
+        child->InsertBeforeInFocusList(first_child);
+
+      ReverseChildrenFocusOrderImpl(child, seen_views);
+    }
+
+    EXPECT_EQ(parent->GetChildrenFocusList(), children_in_focus_order);
+  }
 };
 
 FocusTraversalTest::FocusTraversalTest() = default;
@@ -455,10 +492,10 @@ void FocusTraversalTest::InitContentView() {
                              CAMPING_LINK_ID,    BRICE_DE_NICE_LINK_ID,
                              TAXI_LINK_ID,       ASTERIX_LINK_ID};
 
-  DCHECK(base::size(kTitles) == base::size(kIDs));
+  DCHECK(std::size(kTitles) == std::size(kIDs));
 
   y = 5;
-  for (size_t i = 0; i < base::size(kTitles); ++i) {
+  for (size_t i = 0; i < std::size(kTitles); ++i) {
     auto link = std::make_unique<Link>(ASCIIToUTF16(kTitles[i]));
     link->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     link->SetID(kIDs[i]);
@@ -625,7 +662,7 @@ TEST_F(FocusTraversalTest, NormalTraversal) {
   AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
 // Test focus traversal with full keyboard access off on Mac.
 TEST_F(FocusTraversalTest, NormalTraversalMac) {
   GetFocusManager()->SetKeyboardAccessible(false);
@@ -681,7 +718,7 @@ TEST_F(FocusTraversalTest, FullKeyboardToggle) {
   EXPECT_EQ(THUMBNAIL_CONTAINER_ID,
             GetFocusManager()->GetFocusedView()->GetID());
 }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(FocusTraversalTest, TraversalWithNonEnabledViews) {
   const int kDisabledIDs[] = {
@@ -810,6 +847,33 @@ TEST_F(FocusTraversalTest, PaneTraversal) {
   // Traverse in reverse order.
   FindViewByID(BROCCOLI_BUTTON_ID)->RequestFocus();
   AdvanceEntireFocusLoop(kRightTraversalIDs, true);
+}
+
+TEST_F(FocusTraversalTest, TraversesFocusInFocusOrder) {
+  View* parent = GetContentsView();
+
+  ReverseChildrenFocusOrder(parent);
+  const int kTraversalIDs[] = {
+      THUMBNAIL_CONTAINER_ID, THUMBNAIL_SUPER_STAR_ID, THUMBNAIL_STAR_ID,
+      // All views under SEARCH_CONTAINER_ID (SEARCH_TEXTFIELD_ID,
+      // SEARCH_BUTTON_ID, HELP_LINK_ID) will have their original order. This is
+      // because SEARCH_CONTAINER_ID is a NativeView and
+      // `ReverseChildrenFocusOrder` does not reverse the order of native
+      // children.
+      SEARCH_TEXTFIELD_ID, SEARCH_BUTTON_ID, HELP_LINK_ID, STYLE_TEXT_EDIT_ID,
+      STYLE_HELP_LINK_ID, UNDERLINED_CHECKBOX_ID, ITALIC_CHECKBOX_ID,
+      BOLD_CHECKBOX_ID, STYLE_CONTAINER_ID, HELP_BUTTON_ID, CANCEL_BUTTON_ID,
+      OK_BUTTON_ID, ASTERIX_LINK_ID, TAXI_LINK_ID, BRICE_DE_NICE_LINK_ID,
+      CAMPING_LINK_ID, JOYEUX_NOEL_LINK_ID, AMELIE_LINK_ID, VISITING_LINK_ID,
+      CLOSET_LINK_ID, RIDICULE_LINK_ID, DINER_GAME_LINK_ID,
+      STUPEUR_ET_TREMBLEMENT_LINK_ID, ROSETTA_LINK_ID, BROCCOLI_BUTTON_ID,
+      COMBOBOX_ID, FRUIT_CHECKBOX_ID, FRUIT_BUTTON_ID, KIWI_TEXTFIELD_ID,
+      BANANA_TEXTFIELD_ID, ORANGE_TEXTFIELD_ID, APPLE_TEXTFIELD_ID,
+      TOP_CHECKBOX_ID};
+
+  AdvanceEntireFocusLoop(kTraversalIDs, false);
+  GetFocusManager()->ClearFocus();
+  AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
 class FocusTraversalNonFocusableTest : public FocusManagerTest {

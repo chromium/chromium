@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 #include <sstream>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/stream/test_output_stream.h"
@@ -49,6 +48,9 @@ std::string DumpInput(const uint8_t* input, size_t size) {
 class Base94OutputStreamTest : public testing::Test {
  public:
   Base94OutputStreamTest() {}
+
+  Base94OutputStreamTest(const Base94OutputStreamTest&) = delete;
+  Base94OutputStreamTest& operator=(const Base94OutputStreamTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -127,8 +129,6 @@ class Base94OutputStreamTest : public testing::Test {
   TestOutputStream* round_trip_test_output_stream_;
   std::unique_ptr<uint8_t[]> input_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
-
-  DISALLOW_COPY_AND_ASSIGN(Base94OutputStreamTest);
 };
 
 TEST_F(Base94OutputStreamTest, Encoding) {
@@ -237,7 +237,7 @@ TEST_F(Base94OutputStreamTest, WriteDeterministicLongDataMultipleTimes) {
       4, 96, 40, kLongDataLength - 4 - 96 - 40};
 
   size_t offset = 0;
-  for (size_t index = 0; index < base::size(kWriteLengths); ++index) {
+  for (size_t index = 0; index < std::size(kWriteLengths); ++index) {
     const size_t write_length = kWriteLengths[index];
     SCOPED_TRACE(base::StringPrintf(
         "offset %zu, write_length %zu", offset, write_length));

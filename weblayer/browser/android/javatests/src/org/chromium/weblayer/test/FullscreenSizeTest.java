@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -35,6 +36,7 @@ public class FullscreenSizeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1239002")
     public void testOsk() {
         // For this test to function, it *cannot* use {@link TestFullscreenCallback}, as that
         // overrides the fullscreen handling in {@link InstrumentationActivity}.

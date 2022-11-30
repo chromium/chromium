@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Can send empty strings across a WebRTC data channel. assert_equals: Empty message not received expected "" but got "done"
-Harness: the test ran to completion.
-

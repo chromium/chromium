@@ -1,142 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_package/web_bundle_reader.h"
 
-#include <limits>
-
 #include "base/check_op.h"
-#include "base/numerics/safe_math.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/web_package/shared_file.h"
 #include "content/browser/web_package/web_bundle_blob_data_source.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
-#include "mojo/public/cpp/system/file_data_source.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace content {
 
-WebBundleReader::SharedFile::SharedFile(
-    std::unique_ptr<WebBundleSource> source) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](std::unique_ptr<WebBundleSource> source)
-              -> std::unique_ptr<base::File> { return source->OpenFile(); },
-          std::move(source)),
-      base::BindOnce(&SharedFile::SetFile, base::RetainedRef(this)));
-}
-
-void WebBundleReader::SharedFile::DuplicateFile(
-    base::OnceCallback<void(base::File)> callback) {
-  // Basically this interface expects this method is called at most once. Have
-  // a DCHECK for the case that does not work for a clear reason, just in case.
-  // The call site also have another DCHECK for external callers not to cause
-  // such problematic cases.
-  DCHECK(duplicate_callback_.is_null());
-  duplicate_callback_ = std::move(callback);
-
-  if (file_)
-    SetFile(std::move(file_));
-}
-
-base::File* WebBundleReader::SharedFile::operator->() {
-  DCHECK(file_);
-  return file_.get();
-}
-
-WebBundleReader::SharedFile::~SharedFile() {
-  // Move the last reference to |file_| that leads an internal blocking call
-  // that is not permitted here.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce([](std::unique_ptr<base::File> file) {},
-                     std::move(file_)));
-}
-
-void WebBundleReader::SharedFile::SetFile(std::unique_ptr<base::File> file) {
-  file_ = std::move(file);
-
-  if (duplicate_callback_.is_null())
-    return;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](base::File* file) -> base::File { return file->Duplicate(); },
-          file_.get()),
-      std::move(duplicate_callback_));
-}
-
-class WebBundleReader::SharedFileDataSource final
-    : public mojo::DataPipeProducer::DataSource {
- public:
-  SharedFileDataSource(scoped_refptr<WebBundleReader::SharedFile> file,
-                       uint64_t offset,
-                       uint64_t length)
-      : file_(std::move(file)), offset_(offset), length_(length) {
-    error_ = mojo::FileDataSource::ConvertFileErrorToMojoResult(
-        (*file_)->error_details());
-
-    // base::File::Read takes int64_t as an offset. So, offset + length should
-    // not overflow in int64_t.
-    uint64_t max_offset;
-    if (!base::CheckAdd(offset, length).AssignIfValid(&max_offset) ||
-        (std::numeric_limits<int64_t>::max() < max_offset)) {
-      error_ = MOJO_RESULT_INVALID_ARGUMENT;
-    }
-  }
-
- private:
-  // Implements mojo::DataPipeProducer::DataSource. Following methods are called
-  // on a blockable sequenced task runner.
-  uint64_t GetLength() const override { return length_; }
-  ReadResult Read(uint64_t offset, base::span<char> buffer) override {
-    ReadResult result;
-    result.result = error_;
-
-    if (length_ < offset)
-      result.result = MOJO_RESULT_INVALID_ARGUMENT;
-
-    if (result.result != MOJO_RESULT_OK)
-      return result;
-
-    uint64_t readable_size = length_ - offset;
-    uint64_t writable_size = buffer.size();
-    uint64_t copyable_size =
-        std::min(std::min(readable_size, writable_size),
-                 static_cast<uint64_t>(std::numeric_limits<int>::max()));
-
-    int bytes_read =
-        (*file_)->Read(offset_ + offset, buffer.data(), copyable_size);
-    if (bytes_read < 0) {
-      result.result = mojo::FileDataSource::ConvertFileErrorToMojoResult(
-          (*file_)->GetLastFileError());
-    } else {
-      result.bytes_read = bytes_read;
-    }
-    return result;
-  }
-
-  scoped_refptr<WebBundleReader::SharedFile> file_;
-  MojoResult error_;
-  const uint64_t offset_;
-  const uint64_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFileDataSource);
-};
-
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)
     : source_(std::move(source)),
-      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()),
-      file_(base::MakeRefCounted<SharedFile>(source_->Clone())) {
+      parser_(std::make_unique<data_decoder::SafeWebBundleParser>()) {
   DCHECK(source_->is_trusted_file() || source_->is_file());
 }
 
@@ -168,25 +52,32 @@ void WebBundleReader::ReadMetadata(MetadataCallback callback) {
 
   if (!blob_data_source_) {
     DCHECK(source_->is_trusted_file() || source_->is_file());
-    file_->DuplicateFile(base::BindOnce(&WebBundleReader::ReadMetadataInternal,
-                                        this, std::move(callback)));
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            [](std::unique_ptr<WebBundleSource> source)
+                -> std::unique_ptr<base::File> { return source->OpenFile(); },
+            source_->Clone()),
+        base::BindOnce(&WebBundleReader::OnFileOpened, this,
+                       std::move(callback)));
     return;
   }
   DCHECK(source_->is_network());
-  parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
-                                        base::Unretained(this),
-                                        std::move(callback)));
+  parser_->ParseMetadata(
+      /*offset=*/-1,
+      base::BindOnce(&WebBundleReader::OnMetadataParsed, base::Unretained(this),
+                     std::move(callback)));
 }
 
 void WebBundleReader::ReadResponse(
     const network::ResourceRequest& resource_request,
-    const std::string& accept_langs,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);
 
   auto it = entries_.find(net::SimplifyUrlForRequest(resource_request.url));
-  if (it == entries_.end() || it->second->response_locations.empty()) {
+  if (it == entries_.end()) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -196,28 +87,7 @@ void WebBundleReader::ReadResponse(
                 "Not found in Web Bundle file.")));
     return;
   }
-  const web_package::mojom::BundleIndexValuePtr& entry = it->second;
-
-  size_t response_index = 0;
-  if (!entry->variants_value.empty()) {
-    // Select the best variant for the request.
-    blink::WebPackageRequestMatcher matcher(resource_request.headers,
-                                            accept_langs);
-    auto found = matcher.FindBestMatchingIndex(entry->variants_value);
-    if (!found || *found >= entry->response_locations.size()) {
-      base::ThreadPool::PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback), nullptr,
-              web_package::mojom::BundleResponseParseError::New(
-                  web_package::mojom::BundleParseErrorType::
-                      kParserInternalError,
-                  "Cannot find a response that matches request headers.")));
-      return;
-    }
-    response_index = *found;
-  }
-  auto response_location = entry->response_locations[response_index].Clone();
+  auto response_location = it->second.Clone();
 
   if (state_ == State::kDisconnected) {
     // Try reconnecting, if not attempted yet.
@@ -258,12 +128,12 @@ void WebBundleReader::Reconnect() {
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&WebBundleReader::DidReconnect, this,
-                                base::nullopt /* error */));
+                                absl::nullopt /* error */));
 }
 
 void WebBundleReader::ReconnectForFile(base::File file) {
   base::File::Error file_error = parser_->OpenFile(std::move(file));
-  base::Optional<std::string> error;
+  absl::optional<std::string> error;
   if (file_error != base::File::FILE_OK)
     error = base::File::ErrorToString(file_error);
   GetUIThreadTaskRunner({})->PostTask(
@@ -271,7 +141,7 @@ void WebBundleReader::ReconnectForFile(base::File file) {
       base::BindOnce(&WebBundleReader::DidReconnect, this, std::move(error)));
 }
 
-void WebBundleReader::DidReconnect(base::Optional<std::string> error) {
+void WebBundleReader::DidReconnect(absl::optional<std::string> error) {
   DCHECK_EQ(state_, State::kDisconnected);
   DCHECK(parser_);
   auto read_tasks = std::move(pending_read_responses_);
@@ -309,8 +179,8 @@ void WebBundleReader::ReadResponseBody(
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     mojo::DataPipeProducer* raw_producer = data_producer.get();
     raw_producer->Write(
-        std::make_unique<SharedFileDataSource>(file_, response->payload_offset,
-                                               response->payload_length),
+        file_->CreateDataSource(response->payload_offset,
+                                response->payload_length),
         base::BindOnce(
             [](std::unique_ptr<mojo::DataPipeProducer> producer,
                BodyCompletionCallback callback, MojoResult result) {
@@ -334,6 +204,17 @@ bool WebBundleReader::HasEntry(const GURL& url) const {
   return entries_.contains(net::SimplifyUrlForRequest(url));
 }
 
+std::vector<GURL> WebBundleReader::GetEntries() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(state_, State::kInitial);
+
+  std::vector<GURL> entries;
+  entries.reserve(entries_.size());
+  base::ranges::transform(entries_, std::back_inserter(entries),
+                          [](const auto& entry) { return entry.first; });
+  return entries;
+}
+
 const GURL& WebBundleReader::GetPrimaryURL() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kInitial);
@@ -346,8 +227,28 @@ const WebBundleSource& WebBundleReader::source() const {
   return *source_;
 }
 
-void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
-                                           base::File file) {
+void WebBundleReader::OnFileOpened(MetadataCallback callback,
+                                   std::unique_ptr<base::File> file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(source_->is_trusted_file() || source_->is_file());
+  if (!file->IsValid()) {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            web_package::mojom::BundleMetadataParseError::New(
+                web_package::mojom::BundleParseErrorType::kParserInternalError,
+                base::File::ErrorToString(file->error_details()))));
+    return;
+  }
+  file_ = base::MakeRefCounted<web_package::SharedFile>(std::move(file));
+  file_->DuplicateFile(base::BindOnce(&WebBundleReader::OnFileDuplicated, this,
+                                      std::move(callback)));
+}
+
+void WebBundleReader::OnFileDuplicated(MetadataCallback callback,
+                                       base::File file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(source_->is_trusted_file() || source_->is_file());
   base::File::Error error = parser_->OpenFile(std::move(file));
   if (base::File::FILE_OK != error) {
@@ -357,11 +258,12 @@ void WebBundleReader::ReadMetadataInternal(MetadataCallback callback,
             std::move(callback),
             web_package::mojom::BundleMetadataParseError::New(
                 web_package::mojom::BundleParseErrorType::kParserInternalError,
-                GURL() /* fallback_url */, base::File::ErrorToString(error))));
+                base::File::ErrorToString(error))));
   } else {
-    parser_->ParseMetadata(base::BindOnce(&WebBundleReader::OnMetadataParsed,
-                                          base::Unretained(this),
-                                          std::move(callback)));
+    parser_->ParseMetadata(
+        /*offset=*/-1,
+        base::BindOnce(&WebBundleReader::OnMetadataParsed,
+                       base::Unretained(this), std::move(callback)));
   }
 }
 

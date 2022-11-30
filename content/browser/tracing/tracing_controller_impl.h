@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tracing_controller.h"
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perfetto {
 namespace protos {
@@ -36,7 +38,6 @@ namespace trace_event {
 class TraceConfig;
 }  // namespace trace_event
 
-class DictionaryValue;
 }  // namespace base
 
 namespace tracing {
@@ -63,6 +64,9 @@ class TracingControllerImpl : public TracingController,
 
   // Should be called on the UI thread.
   CONTENT_EXPORT TracingControllerImpl();
+
+  TracingControllerImpl(const TracingControllerImpl&) = delete;
+  TracingControllerImpl& operator=(const TracingControllerImpl&) = delete;
 
   // TracingController implementation.
   bool GetCategories(GetCategoriesDoneCallback callback) override;
@@ -91,7 +95,7 @@ class TracingControllerImpl : public TracingController,
   ~TracingControllerImpl() override;
   void AddAgents();
   void ConnectToServiceIfNeeded();
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  absl::optional<base::Value::Dict> GenerateMetadataDict();
   void GenerateMetadataPacket(perfetto::protos::pbzero::TracePacket* packet,
                               bool privacy_filtering_enabled);
 
@@ -127,8 +131,6 @@ class TracingControllerImpl : public TracingController,
   std::string hardware_class_;
   base::WeakPtrFactory<TracingControllerImpl> weak_ptr_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TracingControllerImpl);
 };
 
 }  // namespace content

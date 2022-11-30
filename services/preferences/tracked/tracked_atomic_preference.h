@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/tracked_preference.h"
 #include "services/preferences/tracked/tracked_preference_helper.h"
@@ -35,6 +35,9 @@ class TrackedAtomicPreference : public TrackedPreference {
       prefs::mojom::TrackedPreferenceMetadata::ValueType value_type,
       prefs::mojom::TrackedPreferenceValidationDelegate* delegate);
 
+  TrackedAtomicPreference(const TrackedAtomicPreference&) = delete;
+  TrackedAtomicPreference& operator=(const TrackedAtomicPreference&) = delete;
+
   // TrackedPreference implementation.
   TrackedPreferenceType GetType() const override;
   void OnNewValue(const base::Value* value,
@@ -47,9 +50,7 @@ class TrackedAtomicPreference : public TrackedPreference {
  private:
   const std::string pref_path_;
   const TrackedPreferenceHelper helper_;
-  prefs::mojom::TrackedPreferenceValidationDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedAtomicPreference);
+  raw_ptr<prefs::mojom::TrackedPreferenceValidationDelegate> delegate_;
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_TRACKED_ATOMIC_PREFERENCE_H_

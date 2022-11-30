@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,17 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace mirroring {
+
+namespace {
+
+// Video buffer parameters.
+constexpr bool kNotPremapped = false;
+
+}  // namespace
 
 FakeVideoCaptureHost::FakeVideoCaptureHost(
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver)
@@ -21,15 +29,18 @@ void FakeVideoCaptureHost::Start(
     const media::VideoCaptureParams& params,
     mojo::PendingRemote<media::mojom::VideoCaptureObserver> observer) {
   ASSERT_TRUE(observer);
+  last_params_ = params;
   observer_.Bind(std::move(observer));
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::STARTED));
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   if (!observer_)
     return;
 
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::ENDED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::ENDED));
   observer_.reset();
   OnStopped();
 }
@@ -50,8 +61,13 @@ void FakeVideoCaptureHost::SendOneFrame(const gfx::Size& size,
   media::mojom::ReadyBufferPtr buffer = media::mojom::ReadyBuffer::New(
       0, media::mojom::VideoFrameInfo::New(
              base::TimeDelta(), metadata, media::PIXEL_FORMAT_I420, size,
-             gfx::Rect(size), gfx::ColorSpace::CreateREC709(), nullptr));
+             gfx::Rect(size), kNotPremapped, gfx::ColorSpace::CreateREC709(),
+             nullptr));
   observer_->OnBufferReady(std::move(buffer), {});
+}
+
+media::VideoCaptureParams FakeVideoCaptureHost::GetVideoCaptureParams() const {
+  return last_params_;
 }
 
 }  // namespace mirroring

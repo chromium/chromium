@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream&, const CastInternalMessage&);
 
 // Matcher for CastInternalMessage arguments.
 MATCHER_P(IsCastInternalMessage, json, "") {
-  auto message = CastInternalMessage::From(base::test::ParseJson(json));
+  auto message = CastInternalMessage::From(base::test::ParseJsonDict(json));
   DCHECK(message);
   if (arg.type() != message->type() ||
       arg.client_id() != message->client_id() ||
@@ -35,7 +35,8 @@ MATCHER_P(IsCastInternalMessage, json, "") {
              arg.app_message_body() == message->app_message_body();
     case CastInternalMessage::Type::kV2Message:
       return arg.v2_message_type() == message->v2_message_type() &&
-             testing::Matches(base::test::IsJson(arg.v2_message_body()))(
+             testing::Matches(
+                 base::test::IsJson(arg.v2_message_body().DebugString()))(
                  message->v2_message_body());
     default:
       return true;

@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Media>UI"
+}
+team_email: "media-dev@chromium.org"

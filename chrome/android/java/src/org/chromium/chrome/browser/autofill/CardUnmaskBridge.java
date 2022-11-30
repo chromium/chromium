@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import android.os.Handler;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt.CardUnmaskPromptDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -70,10 +69,9 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     }
 
     @Override
-    public void onUserInput(String cvc, String month, String year, boolean shouldStoreLocally,
-            boolean enableFidoAuth) {
+    public void onUserInput(String cvc, String month, String year, boolean enableFidoAuth) {
         CardUnmaskBridgeJni.get().onUserInput(mNativeCardUnmaskPromptViewAndroid,
-                CardUnmaskBridge.this, cvc, month, year, shouldStoreLocally, enableFidoAuth);
+                CardUnmaskBridge.this, cvc, month, year, enableFidoAuth);
     }
 
     @Override
@@ -94,7 +92,8 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     @CalledByNative
     private void show(WindowAndroid windowAndroid) {
         if (mCardUnmaskPrompt != null) {
-            mCardUnmaskPrompt.show((ChromeActivity) (windowAndroid.getActivity().get()));
+            mCardUnmaskPrompt.show(
+                    windowAndroid.getActivity().get(), windowAndroid.getModalDialogManager());
         }
     }
 
@@ -148,8 +147,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
         boolean checkUserInputValidity(long nativeCardUnmaskPromptViewAndroid,
                 CardUnmaskBridge caller, String userResponse);
         void onUserInput(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller,
-                String cvc, String month, String year, boolean shouldStoreLocally,
-                boolean enableFidoAuth);
+                String cvc, String month, String year, boolean enableFidoAuth);
         void onNewCardLinkClicked(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
         int getExpectedCvcLength(long nativeCardUnmaskPromptViewAndroid, CardUnmaskBridge caller);
     }

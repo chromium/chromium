@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ const char* DownloadsCounter::GetPrefName() const {
 }
 
 void DownloadsCounter::Count() {
-  content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(profile_);
+  content::DownloadManager* download_manager = profile_->GetDownloadManager();
   std::vector<download::DownloadItem*> downloads;
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();

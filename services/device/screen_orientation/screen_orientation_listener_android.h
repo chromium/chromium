@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_SCREEN_ORIENTATION_SCREEN_ORIENTATION_LISTENER_ANDROID_H_
 #define SERVICES_DEVICE_SCREEN_ORIENTATION_SCREEN_ORIENTATION_LISTENER_ANDROID_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 
@@ -17,6 +16,11 @@ class ScreenOrientationListenerAndroid
   static void Create(
       mojo::PendingReceiver<mojom::ScreenOrientationListener> receiver);
 
+  ScreenOrientationListenerAndroid(const ScreenOrientationListenerAndroid&) =
+      delete;
+  ScreenOrientationListenerAndroid& operator=(
+      const ScreenOrientationListenerAndroid&) = delete;
+
   ~ScreenOrientationListenerAndroid() override;
 
  private:
@@ -25,8 +29,6 @@ class ScreenOrientationListenerAndroid
   // mojom::ScreenOrientationListener:
   void IsAutoRotateEnabledByUser(
       IsAutoRotateEnabledByUserCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationListenerAndroid);
 };
 
 }  // namespace device

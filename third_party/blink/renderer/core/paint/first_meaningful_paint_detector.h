@@ -1,14 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIRST_MEANINGFUL_PAINT_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIRST_MEANINGFUL_PAINT_DETECTOR_H_
 
-#include "third_party/blink/public/web/web_swap_result.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace base {
 class TickClock;
@@ -39,9 +40,13 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
                                          double contents_height_before_layout,
                                          double contents_height_after_layout,
                                          int visible_height);
+  void MarkNextPaintAsMeaningfulForTesting() {
+    next_paint_is_meaningful_ = true;
+  }
+
   void NotifyInputEvent();
   void NotifyPaint();
-  void ReportPresentationTime(PaintEvent, WebSwapResult, base::TimeTicks);
+  void ReportPresentationTime(PaintEvent, base::TimeTicks);
   void NotifyFirstContentfulPaint(base::TimeTicks presentation_time);
   void OnNetwork2Quiet();
   bool SeenFirstMeaningfulPaint() const;
@@ -87,4 +92,4 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FIRST_MEANINGFUL_PAINT_DETECTOR_H_

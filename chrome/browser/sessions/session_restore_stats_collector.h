@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "content/public/browser/render_widget_host.h"
@@ -84,6 +84,10 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
       base::TimeTicks restore_started,
       std::unique_ptr<StatsReportingDelegate> reporting_delegate);
 
+  SessionRestoreStatsCollector(const SessionRestoreStatsCollector&) = delete;
+  SessionRestoreStatsCollector& operator=(const SessionRestoreStatsCollector&) =
+      delete;
+
   // Tracks stats for restored tabs. Tabs from overlapping session restores can
   // be tracked by the same SessionRestoreStatsCollector.
   void TrackTabs(const std::vector<SessionRestoreDelegate::RestoredTab>& tabs);
@@ -136,14 +140,16 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   base::ScopedMultiSourceObservation<content::RenderWidgetHost,
                                      content::RenderWidgetHostObserver>
       render_widget_host_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollector);
 };
 
 // An abstract reporting delegate is used as a testing seam.
 class SessionRestoreStatsCollector::StatsReportingDelegate {
  public:
   StatsReportingDelegate() {}
+
+  StatsReportingDelegate(const StatsReportingDelegate&) = delete;
+  StatsReportingDelegate& operator=(const StatsReportingDelegate&) = delete;
+
   virtual ~StatsReportingDelegate() {}
 
   // Called when TabLoader has completed its work.
@@ -152,9 +158,6 @@ class SessionRestoreStatsCollector::StatsReportingDelegate {
   // Called when a tab starts being tracked. Logs the relative time since last
   // use of the tab.
   virtual void ReportTabTimeSinceActive(base::TimeDelta elapsed) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StatsReportingDelegate);
 };
 
 // The default reporting delegate, which reports statistics via UMA.
@@ -162,15 +165,16 @@ class SessionRestoreStatsCollector::UmaStatsReportingDelegate
     : public StatsReportingDelegate {
  public:
   UmaStatsReportingDelegate();
+
+  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+      delete;
+
   ~UmaStatsReportingDelegate() override {}
 
   // StatsReportingDelegate:
   void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) override;
   void ReportTabTimeSinceActive(base::TimeDelta elapsed) override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(UmaStatsReportingDelegate);
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_STATS_COLLECTOR_H_

@@ -1,0 +1,10 @@
+
+
+
+
+
+fake_module`baz+0x21
+fake_module`bar+0x85
+fake_module`foo+0x37
+ 12
+

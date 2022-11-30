@@ -9,7 +9,7 @@
 # CIPD (the "Chrome Infrastructure Package Deployer" service). Unlike `pip`,
 # this never requires the end-user machine to have a working python extension
 # compilation environment. All of these packages are built using:
-#   https://chromium.googlesource.com/infra/infra/+/master/infra/tools/dockerbuild/
+#   https://chromium.googlesource.com/infra/infra/+/main/infra/tools/dockerbuild/
 #
 # All python scripts in the repo share this same spec, to avoid dependency
 # fragmentation.
@@ -20,15 +20,29 @@
 #   vpython path/to/script.py some --arguments
 #
 # Read more about `vpython` and how to modify this file here:
-#   https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
+#   https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
 
 python_version: "3.8"
+
+# The default set of platforms vpython checks does not yet include mac-arm64.
+# Setting `verify_pep425_tag` to the list of platforms we explicitly must support
+# allows us to ensure that vpython specs stay mac-arm64-friendly
+verify_pep425_tag: [
+    {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
+    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
+    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
+
+    {python: "cp38", abi: "cp38", platform: "win32"},
+    {python: "cp38", abi: "cp38", platform: "win_amd64"}
+]
+
 # Used by:
 #   build/android/pylib/local/emulator/avd.py
-#   components/policy/test_support/policy_testserver.py
 wheel: <
-  name: "infra/python/wheels/protobuf-py2_py3"
-  version: "version:3.6.1"
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:3.20.0"
 >
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
@@ -38,14 +52,130 @@ wheel: <
   version: "version:1.15.0"
 >
 
+# These wheels are necessary to run pytype, i.e. enforce Python 3 type hinting.
+# We currently use 2021.11.2 instead of the 2022.5.5 available in CIPD because
+# 2022.5.5 seems to have issues when analyzing code that imports the asyncio
+# module. 2021.11.2 only has Linux wheels available, so restrict to that
+# platform.
+wheel: <
+  name: "infra/python/wheels/pytype/${vpython_platform}"
+  version: "version:2021.11.2"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/importlab-py3"
+  version: "version:0.6.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/networkx-py3"
+  version: "version:2.5"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/decorator-py3"
+  version: "version:5.0.9"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/libcst-py3"
+  version: "version:0.3.19"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/pyyaml/${vpython_platform}"
+  version: "version:5.4.1.chromium.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typing-inspect-py3"
+  version: "version:0.7.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.0.1"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/tabulate-py3"
+  version: "version:0.8.9"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/typed-ast/${vpython_platform}"
+  version: "version:1.5.3"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/ninja/${vpython_platform}"
+  version: "version:1.10.0.post2"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/mypy-extensions-py3"
+  version: "version:0.4.3"
+  match_tag: <
+    platform: "manylinux1_x86_64"
+  >
+>
+
 # Common utilities.
+# Use the same versions specified by //third_party/catapult/.vpython3 so that
+# Chromium tests using Telemetry function properly.
+wheel: <
+  name: "infra/python/wheels/numpy/${vpython_platform}"
+  version: "version:1.2x.supported.1"
+>
+wheel: <
+  name: "infra/python/wheels/pexpect/${vpython_platform}"
+  version: "version:4.8.0.chromium.1"
+>
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.7.2"
+  version: "version:5.8.0.chromium.3"
 >
 wheel: <
   name: "infra/python/wheels/requests-py2_py3"
-  version: "version:2.13.0"
+  version: "version:2.26.0"
+>
+wheel: <
+  name: "infra/python/wheels/pillow/${vpython_platform}"
+  version: "version:8.3.1"
+  # There is currently no Linux arm/arm64 version in CIPD.
+  not_match_tag <
+    platform: "linux_aarch64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/opencv_python/${vpython_platform}"
+  version: "version:4.5.3.56.chromium.4"
+  # There is currently no Linux arm/arm64 version in CIPD.
+  not_match_tag <
+    platform: "linux_aarch64"
+  >
 >
 
 # Used by various python unit tests.
@@ -62,6 +192,11 @@ wheel: <
   version: "version:3.0.0"
 >
 
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py2_py3"
+  version: "version:3.7.2"
+>
+
 # Used by:
 #   build/chromeos/test_runner.py
 wheel: <
@@ -73,15 +208,92 @@ wheel: <
   version: "version:2.7.3"
 >
 
+# Used by WPT importer
+wheel: <
+  name: "infra/python/wheels/charset_normalizer-py3"
+  version: "version:2.0.4"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1-py2_py3"
+  version: "version:0.4.5"
+>
+wheel: <
+  name: "infra/python/wheels/pyasn1_modules-py2_py3"
+  version: "version:0.2.4"
+>
+wheel: <
+  name: "infra/python/wheels/rsa-py2_py3"
+  version: "version:3.4.2"
+>
+wheel: <
+  name: "infra/python/wheels/cachetools-py2_py3"
+  version: "version:2.0.1"
+>
+wheel: <
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:1.25.0"
+>
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.52.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:1.31.5"
+>
+wheel: <
+  name: "infra/python/wheels/google-auth-httplib2-py2_py3"
+  version: "version:0.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/google-api-python-client-py3"
+  version: "version:2.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/oauth2client-py2_py3"
+  version: "version:3.0.0"
+>
+
+# Used by:
+# //third_party/blink/tools/wpt_upload.py
+wheel: <
+  name: "infra/python/wheels/crcmod/${vpython_platform}"
+  version: "version:1.7.chromium.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.44.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py3"
+  version: "version:0.12.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.20.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/google-cloud-kms-py3"
+  version: "version:2.11.1"
+>
+
 # Used by Web Platform Tests (WPT) codebase in
-# //third_party/blink/web_tests/external/wpt/tools/
+# //third_party/wpt_tools
 wheel: <
   name: "infra/python/wheels/html5lib-py2_py3"
   version: "version:1.0.1"
 >
 wheel: <
-  name: "infra/python/wheels/mozdebug-py2_py3"
-  version: "version:0.2"
+  name: "infra/python/wheels/mozdebug-py3"
+  version: "version:0.3.0"
 >
 wheel: <
   name: "infra/python/wheels/mozinfo-py2_py3"
@@ -92,12 +304,12 @@ wheel: <
   version: "version:7.1.0"
 >
 wheel: <
-  name: "infra/python/wheels/mozprocess-py2_py3"
-  version: "version:1.2.1"
+  name: "infra/python/wheels/mozprocess-py3"
+  version: "version:1.3.0"
 >
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
-  version: "version:1.24.3"
+  version: "version:1.26.6"
 >
 wheel: <
   name: "infra/python/wheels/blessings-py2_py3"
@@ -132,8 +344,32 @@ wheel: <
   version: "version:1.4.0"
 >
 wheel: <
-  name: "infra/python/wheels/pillow/linux-amd64_cp38_cp38"
-  version: "version:8.1.2"
+  name: "infra/python/wheels/aioquic/${vpython_platform}"
+  version: "version:0.9.15"
+>
+wheel: <
+  name: "infra/python/wheels/pylsqpack/${vpython_platform}"
+  version: "version:0.3.12"
+>
+wheel: <
+  name: "infra/python/wheels/cryptography/${vpython_platform}"
+  version: "version:3.3.1.chromium.1"
+>
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.14.5.chromium.7"
+>
+wheel: <
+  name: "infra/python/wheels/pycparser-py2_py3"
+  version: "version:2.19"
+>
+wheel: <
+  name: "infra/python/wheels/ecdsa-py2_py3"
+  version: "version:0.17.0"
+>
+wheel: <
+  name: "infra/python/wheels/brotli/${vpython_platform}"
+  version: "version:1.0.9"
 >
 
 # Used by:
@@ -150,7 +386,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/pyparsing-py2_py3"
-  version: "version:2.2.0"
+  version: "version:2.4.7"
 >
 
 wheel: <
@@ -170,7 +406,7 @@ wheel <
 
 wheel <
   name: "infra/python/wheels/attrs-py2_py3"
-  version: "version:20.3.0"
+  version: "version:21.4.0"
 >
 
 wheel <
@@ -190,7 +426,7 @@ wheel <
 
 wheel <
   name: "infra/python/wheels/py-py2_py3"
-  version: "version:1.5.3"
+  version: "version:1.10.0"
 >
 
 wheel <
@@ -201,4 +437,140 @@ wheel <
 wheel: <
   name: "infra/python/wheels/atomicwrites-py2_py3"
   version: "version:1.3.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/colorama-py2_py3"
+  version: "version:0.4.1"
+>
+
+# Used by:
+#   testing/buildbot/generate_buildbot_json_coveragetest.py
+wheel: <
+  name: "infra/python/wheels/coverage/${vpython_platform}"
+  version: "version:5.5.chromium.3"
+>
+
+# Used by:
+#   //content/test/gpu
+wheel: <
+  name: "infra/python/wheels/pathos/${vpython_platform}"
+  version: "version:0.2.7.chromium.5"
+  not_match_tag <
+    abi: "cp27mu"
+    platform: "manylinux1_i686"
+  >
+  not_match_tag <
+    abi: "cp27mu"
+    platform: "linux_mips64"
+  >
+  not_match_tag <
+    abi: "cp27mu"
+    platform: "linux_armv6l"
+  >
+  not_match_tag <
+    abi: "cp27mu"
+    platform: "linux_armv7l"
+  >
+>
+
+wheel: <
+  name: "infra/python/wheels/websockets-py3"
+  version: "version:10.1"
+>
+
+# Used by:
+#   //tools/infra/find_bad_builds.py
+wheel: <
+  name: "infra/python/wheels/pytz-py2_py3"
+  version: "version:2018.4"
+>
+
+# Used by:
+#   //third_party/blink/tools/blinkpy/web_tests/port/server_process.py
+wheel: <
+  name: "infra/python/wheels/pywin32/${vpython_platform}"
+  version: "version:300"
+  match_tag: <
+    platform: "win32"
+  >
+  match_tag: <
+    platform: "win_amd64"
+  >
+>
+
+# Used by:
+#   //content/test/gpu/gpu_tests/color_profile_manager_mac.py
+wheel: <
+  name: "infra/python/wheels/pyobjc/${vpython_platform}"
+  version: "version:7.3.chromium.1"
+  match_tag: <
+    platform: "macosx_10_10_intel"
+  >
+  match_tag: <
+    platform: "macosx_11_0_arm64"
+  >
+>
+
+# Used by:
+#   tools/perf/core/results_dashboard.py
+wheel: <
+  name: "infra/python/wheels/httplib2-py3"
+  version: "version:0.19.1"
+>
+
+# Used by:
+#   tools/perf/flakiness_cli
+wheel: <
+  name: "infra/python/wheels/pandas/${vpython_platform}"
+  version: "version:1.3.2.chromium.1"
+  not_match_tag: <
+    platform: "linux_aarch64"
+  >
+>
+
+# Used by:
+#   chrome/test/mini_installer/test_chrome_with_chromedriver.py
+#   testing/script/run_variations_smoke_tests.py
+# Keep this to the same revision as third_party/webdriver/pylib, which is pulled
+# in via DEPS.
+wheel: <
+  name: "infra/python/wheels/selenium-py3"
+  version: "version:4.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/trio-py3"
+  version: "version:0.20.0"
+>
+wheel: <
+  name: "infra/python/wheels/trio-websocket-py3"
+  version: "version:0.9.2"
+>
+wheel: <
+  name: "infra/python/wheels/outcome-py3"
+  version: "version:1.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/sniffio-py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/async-generator-py3"
+  version: "version:1.10"
+>
+wheel: <
+  name: "infra/python/wheels/wsproto-py3"
+  version: "version:1.1.0"
+>
+wheel: <
+  name: "infra/python/wheels/h11-py3"
+  version: "version:0.13.0"
+>
+wheel: <
+  name: "infra/python/wheels/sortedcontainers-py3"
+  version: "version:2.4.0"
+>
+wheel: <
+  name: "infra/python/wheels/pyopenssl-py2_py3"
+  version: "version:19.0.0"
 >

@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+FAIL 'min(1%)' as a specified value should serialize as 'calc(1%)'. assert_equals: 'min(1%)' and 'calc(1%)' should serialize the same in specified values. expected "calc(1%)" but got "min(1%)"
+PASS 'min(1%)' as a computed value should serialize as '1%'.
+PASS 'min(1%)' as a used value should serialize as '1px'.
+FAIL 'max(1%)' as a specified value should serialize as 'calc(1%)'. assert_equals: 'max(1%)' and 'calc(1%)' should serialize the same in specified values. expected "calc(1%)" but got "max(1%)"
+PASS 'max(1%)' as a computed value should serialize as '1%'.
+PASS 'max(1%)' as a used value should serialize as '1px'.
+PASS 'min(1%, 2%, 3%)' as a specified value should serialize as 'min(1%, 2%, 3%)'.
+FAIL 'min(1%, 2%, 3%)' as a computed value should serialize as 'min(1%, 2%, 3%)'. assert_equals: 'min(1%, 2%, 3%)' should round-trip exactly in computed values. expected "min(1%, 2%, 3%)" but got "1%"
+PASS 'min(1%, 2%, 3%)' as a used value should serialize as '1px'.
+PASS 'min(3%, 2%, 1%)' as a specified value should serialize as 'min(3%, 2%, 1%)'.
+FAIL 'min(3%, 2%, 1%)' as a computed value should serialize as 'min(3%, 2%, 1%)'. assert_equals: 'min(3%, 2%, 1%)' should round-trip exactly in computed values. expected "min(3%, 2%, 1%)" but got "1%"
+PASS 'min(3%, 2%, 1%)' as a used value should serialize as '1px'.
+PASS 'max(1%, 2%, 3%)' as a specified value should serialize as 'max(1%, 2%, 3%)'.
+FAIL 'max(1%, 2%, 3%)' as a computed value should serialize as 'max(1%, 2%, 3%)'. assert_equals: 'max(1%, 2%, 3%)' should round-trip exactly in computed values. expected "max(1%, 2%, 3%)" but got "3%"
+PASS 'max(1%, 2%, 3%)' as a used value should serialize as '3px'.
+PASS 'max(3%, 2%, 1%)' as a specified value should serialize as 'max(3%, 2%, 1%)'.
+FAIL 'max(3%, 2%, 1%)' as a computed value should serialize as 'max(3%, 2%, 1%)'. assert_equals: 'max(3%, 2%, 1%)' should round-trip exactly in computed values. expected "max(3%, 2%, 1%)" but got "3%"
+PASS 'max(3%, 2%, 1%)' as a used value should serialize as '3px'.
+PASS 'min(1%, 2%, 3%) 0px' as a specified value should serialize as 'min(1%, 2%, 3%) 0px'.
+FAIL 'min(1%, 2%, 3%) 0px' as a computed value should serialize as 'min(1%, 2%, 3%) 0px'. assert_equals: 'min(1%, 2%, 3%) 0px' should round-trip exactly in computed values. expected "min(1%, 2%, 3%) 0px" but got "min(1% + 0px, 2% + 0px, 3% + 0px) 0px"
+PASS 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' as a specified value should serialize as 'calc(15%)'.
+PASS 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' as a computed value should serialize as '15%'.
+PASS 'calc(min(1%, 2%) + max(3%, 4%) + 10%)' as a used value should serialize as '15px'.
+Harness: the test ran to completion.
+

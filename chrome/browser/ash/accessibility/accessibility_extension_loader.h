@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class AccessibilityExtensionLoader {
       const base::FilePath::CharType* manifest_filename,
       const base::FilePath::CharType* guest_manifest_filename,
       base::RepeatingClosure unload_callback);
+
+  AccessibilityExtensionLoader(const AccessibilityExtensionLoader&) = delete;
+  AccessibilityExtensionLoader& operator=(const AccessibilityExtensionLoader&) =
+      delete;
+
   ~AccessibilityExtensionLoader();
 
   void SetProfile(Profile* profile, base::OnceClosure done_callback);
@@ -53,8 +58,6 @@ class AccessibilityExtensionLoader {
   base::RepeatingClosure unload_callback_;
 
   base::WeakPtrFactory<AccessibilityExtensionLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityExtensionLoader);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,10 +12,10 @@ static_library("browser_sync") {
     "browser_sync_client.h",
     "browser_sync_switches.cc",
     "browser_sync_switches.h",
-    "profile_sync_components_factory_impl.cc",
-    "profile_sync_components_factory_impl.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
+    "sync_api_component_factory_impl.cc",
+    "sync_api_component_factory_impl.h",
   ]
 
   public_deps = [ "//components/sync" ]
@@ -26,6 +26,7 @@ static_library("browser_sync") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/reading_list/features:flags",
@@ -40,7 +41,10 @@ static_library("browser_sync") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//components/desks_storage",
+    ]
   }
 }
 

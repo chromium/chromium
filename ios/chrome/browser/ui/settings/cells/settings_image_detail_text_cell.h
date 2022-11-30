@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,13 @@
 
 // Cell subtitle.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
+
+// Sets the image view's tint color.
+- (void)setImageViewTintColor:(UIColor*)color;
+
+// If alignImageWithFirstBaseline is YES, activates the constraints to align the
+// image with the first line of text.
+- (void)alignImageWithFirstLineOfText:(BOOL)alignImageWithFirstBaseline;
 
 @end
 

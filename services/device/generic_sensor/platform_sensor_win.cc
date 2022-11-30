@@ -1,17 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/generic_sensor/platform_sensor_win.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 namespace device {
-
-namespace {
-constexpr double kDefaultSensorReportingFrequency = 5.0;
-}  // namespace
 
 PlatformSensorWin::PlatformSensorWin(
     mojom::SensorType type,
@@ -27,7 +25,7 @@ PlatformSensorWin::PlatformSensorWin(
 }
 
 PlatformSensorConfiguration PlatformSensorWin::GetDefaultConfiguration() {
-  return PlatformSensorConfiguration(kDefaultSensorReportingFrequency);
+  return PlatformSensorConfiguration(GetSensorDefaultFrequency(GetType()));
 }
 
 mojom::ReportingMode PlatformSensorWin::GetReportingMode() {
@@ -40,7 +38,7 @@ double PlatformSensorWin::GetMaximumSupportedFrequency() {
   base::TimeDelta minimal_reporting_interval_ms =
       sensor_reader_->GetMinimalReportingInterval();
   if (minimal_reporting_interval_ms.is_zero())
-    return kDefaultSensorReportingFrequency;
+    return GetSensorDefaultFrequency(GetType());
   return 1.0 / minimal_reporting_interval_ms.InSecondsF();
 }
 
@@ -78,7 +76,7 @@ bool PlatformSensorWin::CheckSensorConfiguration(
 
 PlatformSensorWin::~PlatformSensorWin() {
   sensor_reader_->SetClient(nullptr);
-  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_);
+  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_.get());
 }
 
 }  // namespace device

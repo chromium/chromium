@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_CHANGE_MONITOR_H_
 #define CONTENT_BROWSER_SCREEN_ENUMERATION_SCREEN_CHANGE_MONITOR_H_
+
+#include <vector>
 
 #include "base/callback.h"
 #include "ui/display/display_observer.h"
@@ -27,9 +29,11 @@ class ScreenChangeMonitor : public display::DisplayObserver {
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
-  void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDidRemoveDisplays() override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+
+  display::ScopedOptionalDisplayObserver display_observer_{this};
 
   // The callback to run on screen change events.
   base::RepeatingCallback<void(bool)> callback_;

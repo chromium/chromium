@@ -43,8 +43,14 @@ Web Bluetooth implementation details are tested at several layers:
         abstraction layer.
 *   `testing/clusterfuzz`
     *   [Web Bluetooth Fuzzer] runs on cluster fuzz infrastructure.
+*   [Web Bluetooth Manual Tests]
+    *   Not browser-specific.
+    *   Relies on the full Bluetooth hardware stack. Helps find bugs
+        specific to an operating system, or even OS level bugs.
+    *   Can be run by external web-application developers.
 
 [Web Bluetooth Fuzzer]: testing/clusterfuzz/README.md
+[Web Bluetooth Manual Tests]: https://github.com/WebBluetoothCG/manual-tests
 
 
 ## Design Documents

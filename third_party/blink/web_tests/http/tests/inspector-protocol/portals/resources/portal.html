@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>This is a portal</title>
+  </head>
+
+  <body style="background-color: #e0ffe0">
+    <div>Portal content</div>
+    <script>
+      (function() {
+        window.addEventListener("portalactivate", () => {
+          window.portalStatus = "Portal activated";
+          if (window.doAdopt)
+            document.body.appendChild(event.adoptPredecessor());
+        });
+      })()
+    </script>
+  </body>
+</html>

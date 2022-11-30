@@ -1,0 +1,13 @@
+Name: FXDiv
+Short Name: fxdiv
+URL: https://github.com/Maratyszcza/FXdiv
+Version: 63058eff77e11aa15bf531df5dd34395ec3017c8
+Date: 2022-04-22
+License: MIT
+License File: src/LICENSE
+Security Critical: Yes
+
+Description:
+Header-only library for division via fixed-point multiplication by inverse. This
+library supports //third_party/xnnpack, which in turn supports
+//third_party/tflite.

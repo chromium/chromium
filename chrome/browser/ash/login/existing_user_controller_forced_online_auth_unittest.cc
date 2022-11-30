@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,24 +21,22 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Return;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::Return;
 
 const char kSamlToken1[] = "saml-token-1";
 const char kSamlToken2[] = "saml-token-2";
 
-constexpr base::TimeDelta kLoginOnlineShortDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kLoginOnlineShortDelay = base::Seconds(10);
 
 }  // namespace
 
@@ -94,8 +92,8 @@ class ExistingUserControllerForcedOnlineAuthTest
 // them has local copy of password sync token.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
        SyncTokenCheckersCreationWithOneToken) {
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
-                                                 kSamlToken1);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
   set_hide_user_names_on_signin();
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
@@ -110,10 +108,10 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 // sync tokens.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
        SyncTokenCheckersCreationWithTwoTokens) {
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
-                                                 kSamlToken1);
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
-                                                 kSamlToken2);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
+  known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
+
   set_hide_user_names_on_signin();
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
@@ -128,10 +126,10 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 // Tests sync token checkers removal in case of failed token validation.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
        SyncTokenCheckersInvalidPasswordForTwoUsers) {
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
-                                                 kSamlToken1);
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
-                                                 kSamlToken2);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
+  known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
+
   set_hide_user_names_on_signin();
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
@@ -146,14 +144,14 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
 // visible.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
        NoSyncTokenCheckersWhenPodsVisible) {
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account1_id_,
-                                                 kSamlToken1);
-  user_manager::known_user::SetPasswordSyncToken(saml_login_account2_id_,
-                                                 kSamlToken2);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(saml_login_account1_id_, kSamlToken1);
+  known_user.SetPasswordSyncToken(saml_login_account2_id_, kSamlToken2);
+
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

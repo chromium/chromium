@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/location.h"
 #import "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/mac_util.h"
 #include "components/policy/core/common/policy_bundle.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -142,7 +142,7 @@ void PolicyLoaderIOS::LoadNSDictionaryToPolicyBundle(NSDictionary* dictionary,
   base::DictionaryValue* dict = NULL;
   if (value && value->GetAsDictionary(&dict)) {
     PolicyMap& map = bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
-    for (const auto& it : dict->DictItems()) {
+    for (const auto it : dict->DictItems()) {
       map.Set(it.first, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
               POLICY_SOURCE_PLATFORM,
               ConvertPolicyDataIfNecessary(it.first, it.second), nullptr);
@@ -160,8 +160,10 @@ base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
   }
 
   // Handle the case of a JSON-encoded string for a dict policy.
-  if (schema.type() == base::Value::Type::DICTIONARY && value.is_string()) {
-    base::Optional<base::Value> decoded_value = base::JSONReader::Read(
+  if ((schema.type() == base::Value::Type::DICTIONARY ||
+       schema.type() == base::Value::Type::LIST) &&
+      value.is_string()) {
+    absl::optional<base::Value> decoded_value = base::JSONReader::Read(
         value.GetString(), base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (decoded_value.has_value()) {
       return std::move(decoded_value.value());

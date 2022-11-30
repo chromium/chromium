@@ -4,19 +4,8 @@ This folder is responsible for managing WebView's application resources. Please
 also consult [general UI/localization information][1] for the chromium
 repository.
 
-## Adding a WebView-specific string/resource
-
-The process is similar to the [general instructions][1], with the caveat that
-strings should be added to the WebView-specific GRD file
-([`aw_strings.grd`](./aw_strings.grd), translations live in
-[translations/](./translations/)).
-
-WebView-specific file resources should be declared in
-[`aw_resources.grd`](./aw_resources.grd), and the file templates should live
-under [resources/](./resources/)).
-
-No `<if>` clause is generally necessary: it's already implied these are for
-WebView builds only.
+> **Note:** The original grd files located here had no content and were removed
+in [crrev/c/3606985](https://crrev.com/c/3606985).
 
 ## Adding a WebView-specific Android/Java string
 
@@ -31,10 +20,8 @@ resource `drawable-xxxhdpi/ic_play_circle_outline_black_48dp.png` can be
 accessed in Java with
 `org.chromium.android_webview.R.drawable.ic_play_circle_outline_black_48dp`.
 
-*** note
-**Note:** WebView-specific resources are prefixed by the
+> **Note:** WebView-specific resources are prefixed by the
 `org.chromium.android_webview` package name.
-***
 
 ## Shared/common resources
 
@@ -46,10 +33,7 @@ allowlist file: [`grit_strings_allowlist.txt`](./grit_strings_allowlist.txt) for
 [`grit_resources_allowlist.txt`](./grit_resources_allowlist.txt) for `IDR_*`
 resources.
 
-*** note
-**Note:** Inflating a
-non-allowlisted resource triggers a `DCHECK` (in release builds, this usually
-inflates to empty content).
-***
+> **Note:** Inflating a non-allowlisted resource triggers a `DCHECK`
+(in release builds, this usually inflates to empty content).
 
 [1]: http://www.chromium.org/developers/design-documents/ui-localization

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 
 namespace content {
 
-void GlobalRequestID::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void GlobalRequestID::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("child_id", child_id);
   dict.Add("request_id", request_id);

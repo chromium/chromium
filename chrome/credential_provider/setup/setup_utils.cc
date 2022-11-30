@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,9 +125,9 @@ void StandaloneInstallerConfigurator::ConfigureInstallationType(
 
 std::wstring StandaloneInstallerConfigurator::GetCurrentDate() {
   static const wchar_t kDateFormat[] = L"yyyyMMdd";
-  wchar_t date_str[base::size(kDateFormat)] = {0};
+  wchar_t date_str[std::size(kDateFormat)] = {0};
   int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat, date_str,
-                           base::size(date_str));
+                           std::size(date_str));
   if (len) {
     --len;  // Subtract terminating \0.
   } else {

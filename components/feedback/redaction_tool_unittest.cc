@@ -1,47 +1,236 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feedback/redaction_tool.h"
 
 #include <gtest/gtest.h>
+#include <set>
+#include <utility>
 
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/pii_types.h"
 
 namespace feedback {
 
 const char kFakeFirstPartyID[] = "nkoccljplnhpfnfiajclkommnmllphnl";
 const char* const kFakeFirstPartyExtensionIDs[] = {kFakeFirstPartyID, nullptr};
 
+struct StringWithRedaction {
+  // The raw version of the string before redaction. May contain PII sensitive
+  // data.
+  std::string pre_redaction;
+  // The string that's redacted of PII sensitive data.
+  std::string post_redaction;
+  // The PII type that string contains. PIIType::kNone if the string doesn't
+  // contain any PII sensitive data.
+  PIIType pii_type;
+};
+
+// For better readability, put all the pre/post redaction strings in an array of
+// StringWithRedaction struct, and then convert that to two strings which become
+// the input and output of the redactor.
+const StringWithRedaction kStringsWithRedactions[] = {
+    {"aaaaaaaa [SSID=123aaaaaa]aaaaa",  // SSID.
+     "aaaaaaaa [SSID=<SSID: 1>]aaaaa", PIIType::kSSID},
+    {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
+     "aaaaaaaa<URL: 1>", PIIType::kURL},
+    {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux
+                                                  // context.
+     "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
+    {"aaaaaemail@example.comaaa",  // Email address.
+     "<email: 1>", PIIType::kEmail},
+    {"example@@1234",  // No PII, it is not a valid email address.
+     "example@@1234", PIIType::kNone},
+    {"255.255.155.2",  // IP address.
+     "<IPv4: 1>", PIIType::kIPAddress},
+    {"255.255.155.255",  // IP address.
+     "<IPv4: 2>", PIIType::kIPAddress},
+    {"127.0.0.1",  // IPv4 loopback.
+     "<127.0.0.0/8: 3>", PIIType::kIPAddress},
+    {"127.255.0.1",  // IPv4 loopback.
+     "<127.0.0.0/8: 4>", PIIType::kIPAddress},
+    {"0.0.0.0",  // Any IPv4.
+     "<0.0.0.0/8: 5>", PIIType::kIPAddress},
+    {"0.255.255.255",  // Any IPv4.
+     "<0.0.0.0/8: 6>", PIIType::kIPAddress},
+    {"10.10.10.100",  // IPv4 private class A.
+     "<10.0.0.0/8: 7>", PIIType::kIPAddress},
+    {"10.10.10.100",  // Intentional duplicate.
+     "<10.0.0.0/8: 7>", PIIType::kIPAddress},
+    {"10.10.10.101",  // IPv4 private class A.
+     "<10.0.0.0/8: 8>", PIIType::kIPAddress},
+    {"10.255.255.255",  // IPv4 private class A.
+     "<10.0.0.0/8: 9>", PIIType::kIPAddress},
+    {"172.16.0.0",  // IPv4 private class B.
+     "<172.16.0.0/12: 10>", PIIType::kIPAddress},
+    {"172.31.255.255",  // IPv4 private class B.
+     "<172.16.0.0/12: 11>", PIIType::kIPAddress},
+    {"172.11.5.5",  // IP address.
+     "<IPv4: 12>", PIIType::kIPAddress},
+    {"172.111.5.5",  // IP address.
+     "<IPv4: 13>", PIIType::kIPAddress},
+    {"192.168.0.0",  // IPv4 private class C.
+     "<192.168.0.0/16: 14>", PIIType::kIPAddress},
+    {"192.168.255.255",  // IPv4 private class C.
+     "<192.168.0.0/16: 15>", PIIType::kIPAddress},
+    {"192.169.2.120",  // IP address.
+     "<IPv4: 16>", PIIType::kIPAddress},
+    {"169.254.0.1",  // Link local.
+     "<169.254.0.0/16: 17>", PIIType::kIPAddress},
+    {"169.200.0.1",  // IP address.
+     "<IPv4: 18>", PIIType::kIPAddress},
+    {"fe80::",  // Link local.
+     "<fe80::/10: 1>", PIIType::kIPAddress},
+    {"fe80::ffff",  // Link local.
+     "<fe80::/10: 2>", PIIType::kIPAddress},
+    {"febf:ffff::ffff",  // Link local.
+     "<fe80::/10: 3>", PIIType::kIPAddress},
+    {"fecc::1111",  // IP address.
+     "<IPv6: 4>", PIIType::kIPAddress},
+    {"224.0.0.24",  // Multicast.
+     "<224.0.0.0/4: 19>", PIIType::kIPAddress},
+    {"240.0.0.0",  // IP address.
+     "<IPv4: 20>", PIIType::kIPAddress},
+    {"255.255.255.255",  // Broadcast.
+     "255.255.255.255", PIIType::kNone},
+    {"100.115.92.92",  // ChromeOS.
+     "100.115.92.92", PIIType::kNone},
+    {"100.115.91.92",  // IP address.
+     "<IPv4: 21>", PIIType::kIPAddress},
+    {"1.1.1.1",  // DNS
+     "1.1.1.1", PIIType::kNone},
+    {"8.8.8.8",  // DNS
+     "8.8.8.8", PIIType::kNone},
+    {"8.8.4.4",  // DNS
+     "8.8.4.4", PIIType::kNone},
+    {"8.8.8.4",  // IP address.
+     "<IPv4: 22>", PIIType::kIPAddress},
+    {"255.255.259.255",  // Not an IP address.
+     "255.255.259.255", PIIType::kNone},
+    {"255.300.255.255",  // Not an IP address.
+     "255.300.255.255", PIIType::kNone},
+    {"3-1.2.3.4",  // USB path, not an IP address.
+     "3-1.2.3.4", PIIType::kNone},
+    {"Revision: 81600.0000.00.29.19.16_DO",  // Modem firmware
+     "Revision: 81600.0000.00.29.19.16_DO", PIIType::kNone},
+    {"aaaa123.123.45.4aaa",  // IP address.
+     "aaaa<IPv4: 23>aaa", PIIType::kIPAddress},
+    {"11:11;11::11",  // IP address.
+     "11:11;<IPv6: 5>", PIIType::kIPAddress},
+    {"11::11",  // IP address.
+     "<IPv6: 5>", PIIType::kIPAddress},
+    {"11:11:abcdef:0:0:0:0:0",  // No PII.
+     "11:11:abcdef:0:0:0:0:0", PIIType::kNone},
+    {"::",  // Unspecified.
+     "::", PIIType::kNone},
+    {"::1",  // Local host.
+     "::1", PIIType::kNone},
+    {"Instance::Set",  // Ignore match, no PII.
+     "Instance::Set", PIIType::kNone},
+    {"Instant::ff",  // Ignore match, no PII.
+     "Instant::ff", PIIType::kNone},
+    {"net::ERR_CONN_TIMEOUT",  // Ignore match, no PII.
+     "net::ERR_CONN_TIMEOUT", PIIType::kNone},
+    {"ff01::1",  // All nodes address (interface local).
+     "ff01::1", PIIType::kNone},
+    {"ff01::2",  // All routers (interface local).
+     "ff01::2", PIIType::kNone},
+    {"ff01::3",  // Multicast (interface local).
+     "<ff01::/16: 6>", PIIType::kIPAddress},
+    {"ff02::1",  // All nodes address (link local).
+     "ff02::1", PIIType::kNone},
+    {"ff02::2",  // All routers (link local).
+     "ff02::2", PIIType::kNone},
+    {"ff02::3",  // Multicast (link local).
+     "<ff02::/16: 7>", PIIType::kIPAddress},
+    {"ff02::fb",  // mDNSv6 (link local).
+     "<ff02::/16: 8>", PIIType::kIPAddress},
+    {"ff08::fb",  // mDNSv6.
+     "<IPv6: 9>", PIIType::kIPAddress},
+    {"ff0f::101",  // All NTP servers.
+     "<IPv6: 10>", PIIType::kIPAddress},
+    {"::ffff:cb0c:10ea",  // IPv4-mapped IPV6 (IP address).
+     "<IPv6: 11>", PIIType::kIPAddress},
+    {"::ffff:a0a:a0a",  // IPv4-mapped IPV6 (private class A).
+     "<M 10.0.0.0/8: 12>", PIIType::kIPAddress},
+    {"::ffff:a0a:a0a",  // Intentional duplicate.
+     "<M 10.0.0.0/8: 12>", PIIType::kIPAddress},
+    {"::ffff:ac1e:1e1e",  // IPv4-mapped IPV6 (private class B).
+     "<M 172.16.0.0/12: 13>", PIIType::kIPAddress},
+    {"::ffff:c0a8:640a",  // IPv4-mapped IPV6 (private class C).
+     "<M 192.168.0.0/16: 14>", PIIType::kIPAddress},
+    {"::ffff:6473:5c01",  // IPv4-mapped IPV6 (Chrome).
+     "<M 100.115.92.1: 15>", PIIType::kIPAddress},
+    {"64:ff9b::a0a:a0a",  // IPv4-translated 6to4 IPV6 (private class A).
+     "<T 10.0.0.0/8: 16>", PIIType::kIPAddress},
+    {"64:ff9b::6473:5c01",  // IPv4-translated 6to4 IPV6 (Chrome).
+     "<T 100.115.92.1: 17>", PIIType::kIPAddress},
+    {"::0101:ffff:c0a8:640a",  // IP address.
+     "<IPv6: 18>", PIIType::kIPAddress},
+    {"aa:aa:aa:aa:aa:aa",  // MAC address (BSSID).
+     "[MAC OUI=aa:aa:aa IFACE=1]", PIIType::kMACAddress},
+    {"chrome://resources/foo",  // Secure chrome resource, exempt.
+     "chrome://resources/foo", PIIType::kNone},
+    {"chrome://settings/crisper.js",  // Exempt settings URLs.
+     "chrome://settings/crisper.js", PIIType::kNone},
+    // Exempt first party extension.
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
+     PIIType::kNone},
+    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
+     "<URL: 2>", PIIType::kURL},
+    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
+     "<URL: 3>", PIIType::kURL},  // Potentially PII in parameter.
+    {"isolated-app://airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
+     "<URL: 4>", PIIType::kURL},  // URL
+    {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
+     "/root/<HASH:2754 1>/foo", PIIType::kStableIdentifier},  // Hash string.
+    {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "<UID: 1>",
+     PIIType::kStableIdentifier},
+#if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
+    // Allowed android storage path.
+    {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
+     "112K\t/home/root/deadbeef1234/android-data/data/system_de",
+     PIIType::kNone},
+    // Redacted app-specific storage path.
+    {"8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/de",
+     "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/d_",
+     PIIType::kAndroidAppStoragePath},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+};
+
 class RedactionToolTest : public testing::Test {
  protected:
   std::string RedactMACAddresses(const std::string& input) {
-    return redactor_.RedactMACAddresses(input);
+    return redactor_.RedactMACAddresses(input, nullptr);
   }
 
   std::string RedactHashes(const std::string& input) {
-    return redactor_.RedactHashes(input);
+    return redactor_.RedactHashes(input, nullptr);
   }
 
   std::string RedactAndroidAppStoragePaths(const std::string& input) {
-    return redactor_.RedactAndroidAppStoragePaths(input);
+    return redactor_.RedactAndroidAppStoragePaths(input, nullptr);
   }
 
   std::string RedactCustomPatterns(const std::string& input) {
-    return redactor_.RedactCustomPatterns(input);
+    return redactor_.RedactAndKeepSelectedCustomPatterns(
+        input,
+        /*pii_types_to_keep=*/{});
   }
 
   std::string RedactCustomPatternWithContext(
       const std::string& input,
       const CustomPatternWithAlias& pattern) {
-    return redactor_.RedactCustomPatternWithContext(input, pattern);
+    return redactor_.RedactCustomPatternWithContext(input, pattern, nullptr);
   }
 
   std::string RedactCustomPatternWithoutContext(
       const std::string& input,
       const CustomPatternWithAlias& pattern) {
-    return redactor_.RedactCustomPatternWithoutContext(input, pattern);
+    return redactor_.RedactCustomPatternWithoutContext(input, pattern, nullptr);
   }
 
   RedactionTool redactor_{kFakeFirstPartyExtensionIDs};
@@ -175,6 +364,19 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ(
       "a\nb [SSID=<SSID: 3>] [SSID=<SSID: 1>] [SSID=foo\nbar] b",
       RedactCustomPatterns("a\nb [SSID=foo] [SSID=Joe's] [SSID=foo\nbar] b"));
+  EXPECT_EQ("ssid=\"<SSID: 4>\"",
+            RedactCustomPatterns("ssid=\"LittleTsunami\""));
+  EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
+
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 6>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest\""));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 7>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest'"));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 8>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest"));
 
   EXPECT_EQ("SerialNumber: <Serial: 1>",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));
@@ -196,6 +398,23 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("Foo serial number 123"));
   EXPECT_EQ("Foo Serial Number <Serial: 7>",
             RedactCustomPatterns("Foo Serial Number 123"));
+  // redact serial number separated by a | with the label "serial"
+  EXPECT_EQ("serial               | <Serial: 8>",
+            RedactCustomPatterns("serial               | 0x1cc04416"));
+  EXPECT_EQ("serial               |<Serial: 9>",
+            RedactCustomPatterns("serial               |0x1cc04417"));
+  EXPECT_EQ("serial|<Serial: 10>", RedactCustomPatterns("serial|0x1cc04418"));
+  EXPECT_EQ("serial|<Serial: 11>", RedactCustomPatterns("serial|agnagna"));
+  // redact attested device id that is also a serial number
+  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 12>\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ\""));
+  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 13>\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD04-5B0DZ\""));
+  // The dash cannot appear first or last.
+  EXPECT_EQ("\"attested_device_id\"=\"-5CD045B0DZ\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"-5CD045B0DZ\""));
+  EXPECT_EQ("\"attested_device_id\"=\"5CD045B0DZ-\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ-\""));
 
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
@@ -216,7 +435,37 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("[<IPv6: 4>]", RedactCustomPatterns("[aa::bb]"));
   EXPECT_EQ("State::Abort", RedactCustomPatterns("State::Abort"));
 
+  // Real IPv4 address
   EXPECT_EQ("<IPv4: 1>", RedactCustomPatterns("192.160.0.1"));
+
+  // Non-PII IPv4 address (see MaybeScrubIPAddress)
+  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
+
+  // Not an actual IPv4 address
+  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
+
+  // USB Path - not an actual IPv4 Address
+  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
+
+  // ModemManager modem firmware revisions - not actual IPv4 Addresses
+  EXPECT_EQ("Revision: 81600.0000.00.29.19.16_DO",
+            RedactCustomPatterns("Revision: 81600.0000.00.29.19.16_DO"));
+  EXPECT_EQ("Revision: 11.608.09.01.21",
+            RedactCustomPatterns("Revision: 11.608.09.01.21"));
+  EXPECT_EQ("Revision: 11.208.09.01.21",
+            RedactCustomPatterns("Revision: 11.208.09.01.21"));
+  EXPECT_EQ("Revision: BD_3GHAP673A4V1.0.0B02",
+            RedactCustomPatterns("Revision: BD_3GHAP673A4V1.0.0B02"));
+  EXPECT_EQ("Revision: 2.5.21Hd (Date: Jun 17 2008, Time: 12:30:47)",
+            RedactCustomPatterns(
+                "Revision: 2.5.21Hd (Date: Jun 17 2008, Time: 12:30:47)"));
+  EXPECT_EQ(
+      "Revision: 9.5.05.01-02  [2006-10-20 17:19:09]",
+      RedactCustomPatterns("Revision: 9.5.05.01-02  [2006-10-20 17:19:09]"));
+  EXPECT_EQ("Revision: LQA0021.1.1_M573A",
+            RedactCustomPatterns("Revision: LQA0021.1.1_M573A"));
+  EXPECT_EQ("Revision: 10.10.10.10",
+            RedactCustomPatterns("Revision: 10.10.10.10"));
 
   EXPECT_EQ("<URL: 1>", RedactCustomPatterns("http://example.com/foo?test=1"));
   EXPECT_EQ("Foo <URL: 2> Bar",
@@ -240,7 +489,7 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
       "file:///var/log/messages",
       "file:///usr/local/home/iby/web%20page%20test.html",
   };
-  for (size_t i = 0; i < base::size(kURLs); ++i) {
+  for (size_t i = 0; i < std::size(kURLs); ++i) {
     SCOPED_TRACE(kURLs[i]);
     std::string got = RedactCustomPatterns(kURLs[i]);
     EXPECT_TRUE(
@@ -253,9 +502,14 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
 }
 
 TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
-  const CustomPatternWithAlias kPattern1 = {"ID", "(\\b(?i)id:? ')(\\d+)(')"};
-  const CustomPatternWithAlias kPattern2 = {"ID", "(\\b(?i)id=')(\\d+)(')"};
-  const CustomPatternWithAlias kPattern3 = {"IDG", "(\\b(?i)idg=')(\\d+)(')"};
+  // The PIIType for the CustomPatternWithAlias is not relevant, only for
+  // testing.
+  const CustomPatternWithAlias kPattern1 = {"ID", "(\\b(?i)id:? ')(\\d+)(')",
+                                            PIIType::kStableIdentifier};
+  const CustomPatternWithAlias kPattern2 = {"ID", "(\\b(?i)id=')(\\d+)(')",
+                                            PIIType::kStableIdentifier};
+  const CustomPatternWithAlias kPattern3 = {"IDG", "(\\b(?i)idg=')(\\d+)(')",
+                                            PIIType::kLocationInfo};
   EXPECT_EQ("", RedactCustomPatternWithContext("", kPattern1));
   EXPECT_EQ("foo\nbar\n",
             RedactCustomPatternWithContext("foo\nbar\n", kPattern1));
@@ -281,178 +535,179 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
 }
 
 TEST_F(RedactionToolTest, RedactCustomPatternWithoutContext) {
-  CustomPatternWithAlias kPattern = {"pattern", "(o+)"};
+  // The PIIType for the CustomPatternWithAlias here is not relevant, only for
+  // testing.
+  CustomPatternWithAlias kPattern = {"pattern", "(o+)", PIIType::kEmail};
   EXPECT_EQ("", RedactCustomPatternWithoutContext("", kPattern));
   EXPECT_EQ("f<pattern: 1>\nf<pattern: 2>z\nf<pattern: 1>l\n",
             RedactCustomPatternWithoutContext("fo\nfooz\nfol\n", kPattern));
 }
 
 TEST_F(RedactionToolTest, RedactChunk) {
-  // For better readability, put all the pre/post redaction strings in an array
-  // of pairs, and then convert that to two strings which become the input and
-  // output of the redactor.
-  std::pair<std::string, std::string> data[] = {
-    {"aaaaaaaa [SSID=123aaaaaa]aaaaa",  // SSID.
-     "aaaaaaaa [SSID=<SSID: 1>]aaaaa"},
-    {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
-     "aaaaaaaa<URL: 1>"},
-    {"aaaaaemail@example.comaaa",  // Email address.
-     "<email: 1>"},
-    {"example@@1234",  // No PII, it is not invalid email address.
-     "example@@1234"},
-    {"255.255.155.2",  // IP address.
-     "<IPv4: 1>"},
-    {"255.255.155.255",  // IP address.
-     "<IPv4: 2>"},
-    {"127.0.0.1",  // IPv4 loopback.
-     "<127.0.0.0/8: 3>"},
-    {"127.255.0.1",  // IPv4 loopback.
-     "<127.0.0.0/8: 4>"},
-    {"0.0.0.0",  // Any IPv4.
-     "<0.0.0.0/8: 5>"},
-    {"0.255.255.255",  // Any IPv4.
-     "<0.0.0.0/8: 6>"},
-    {"10.10.10.100",  // IPv4 private class A.
-     "<10.0.0.0/8: 7>"},
-    {"10.10.10.100",  // Intentional duplicate.
-     "<10.0.0.0/8: 7>"},
-    {"10.10.10.101",  // IPv4 private class A.
-     "<10.0.0.0/8: 8>"},
-    {"10.255.255.255",  // IPv4 private class A.
-     "<10.0.0.0/8: 9>"},
-    {"172.16.0.0",  // IPv4 private class B.
-     "<172.16.0.0/12: 10>"},
-    {"172.31.255.255",  // IPv4 private class B.
-     "<172.16.0.0/12: 11>"},
-    {"172.11.5.5",  // IP address.
-     "<IPv4: 12>"},
-    {"172.111.5.5",  // IP address.
-     "<IPv4: 13>"},
-    {"192.168.0.0",  // IPv4 private class C.
-     "<192.168.0.0/16: 14>"},
-    {"192.168.255.255",  // IPv4 private class C.
-     "<192.168.0.0/16: 15>"},
-    {"192.169.2.120",  // IP address.
-     "<IPv4: 16>"},
-    {"169.254.0.1",  // Link local.
-     "<169.254.0.0/16: 17>"},
-    {"169.200.0.1",  // IP address.
-     "<IPv4: 18>"},
-    {"fe80::",  // Link local.
-     "<fe80::/10: 1>"},
-    {"fe80::ffff",  // Link local.
-     "<fe80::/10: 2>"},
-    {"febf:ffff::ffff",  // Link local.
-     "<fe80::/10: 3>"},
-    {"fecc::1111",  // IP address.
-     "<IPv6: 4>"},
-    {"224.0.0.24",  // Multicast.
-     "<224.0.0.0/4: 19>"},
-    {"240.0.0.0",  // IP address.
-     "<IPv4: 20>"},
-    {"255.255.255.255",  // Broadcast.
-     "255.255.255.255"},
-    {"100.115.92.92",  // ChromeOS.
-     "100.115.92.92"},
-    {"100.115.91.92",  // IP address.
-     "<IPv4: 21>"},
-    {"1.1.1.1",  // DNS
-     "1.1.1.1"},
-    {"8.8.8.8",  // DNS
-     "8.8.8.8"},
-    {"8.8.4.4",  // DNS
-     "8.8.4.4"},
-    {"8.8.8.4",  // IP address.
-     "<IPv4: 22>"},
-    {"255.255.259.255",  // Not an IP address.
-     "255.255.259.255"},
-    {"255.300.255.255",  // Not an IP address.
-     "255.300.255.255"},
-    {"aaaa123.123.45.4aaa",  // IP address.
-     "aaaa<IPv4: 23>aaa"},
-    {"11:11;11::11",  // IP address.
-     "11:11;<IPv6: 5>"},
-    {"11::11",  // IP address.
-     "<IPv6: 5>"},
-    {"11:11:abcdef:0:0:0:0:0",  // No PII.
-     "11:11:abcdef:0:0:0:0:0"},
-    {"::",  // Unspecified.
-     "::"},
-    {"::1",  // Local host.
-     "::1"},
-    {"Instance::Set",  // Ignore match, no PII.
-     "Instance::Set"},
-    {"Instant::ff",  // Ignore match, no PII.
-     "Instant::ff"},
-    {"net::ERR_CONN_TIMEOUT",  // Ignore match, no PII.
-     "net::ERR_CONN_TIMEOUT"},
-    {"ff01::1",  // All nodes address (interface local).
-     "ff01::1"},
-    {"ff01::2",  // All routers (interface local).
-     "ff01::2"},
-    {"ff01::3",  // Multicast (interface local).
-     "<ff01::/16: 6>"},
-    {"ff02::1",  // All nodes address (link local).
-     "ff02::1"},
-    {"ff02::2",  // All routers (link local).
-     "ff02::2"},
-    {"ff02::3",  // Multicast (link local).
-     "<ff02::/16: 7>"},
-    {"ff02::fb",  // mDNSv6 (link local).
-     "<ff02::/16: 8>"},
-    {"ff08::fb",  // mDNSv6.
-     "<IPv6: 9>"},
-    {"ff0f::101",  // All NTP servers.
-     "<IPv6: 10>"},
-    {"::ffff:cb0c:10ea",  // IPv4-mapped IPV6 (IP address).
-     "<IPv6: 11>"},
-    {"::ffff:a0a:a0a",  // IPv4-mapped IPV6 (private class A).
-     "<M 10.0.0.0/8: 12>"},
-    {"::ffff:a0a:a0a",  // Intentional duplicate.
-     "<M 10.0.0.0/8: 12>"},
-    {"::ffff:ac1e:1e1e",  // IPv4-mapped IPV6 (private class B).
-     "<M 172.16.0.0/12: 13>"},
-    {"::ffff:c0a8:640a",  // IPv4-mapped IPV6 (private class C).
-     "<M 192.168.0.0/16: 14>"},
-    {"::ffff:6473:5c01",  // IPv4-mapped IPV6 (Chrome).
-     "<M 100.115.92.1: 15>"},
-    {"64:ff9b::a0a:a0a",  // IPv4-translated 6to4 IPV6 (private class A).
-     "<T 10.0.0.0/8: 16>"},
-    {"64:ff9b::6473:5c01",  // IPv4-translated 6to4 IPV6 (Chrome).
-     "<T 100.115.92.1: 17>"},
-    {"::0101:ffff:c0a8:640a",  // IP address.
-     "<IPv6: 18>"},
-    {"aa:aa:aa:aa:aa:aa",  // MAC address (BSSID).
-     "[MAC OUI=aa:aa:aa IFACE=1]"},
-    {"chrome://resources/foo",  // Secure chrome resource, exempt.
-     "chrome://resources/foo"},
-    {"chrome://settings/crisper.js",  // Exempt settings URLs.
-     "chrome://settings/crisper.js"},
-    // Exempt first party extension.
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js",
-     "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js"},
-    {"chrome://resources/f?user=bar",  // Potentially PII in parameter.
-     "<URL: 2>"},
-    {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x",
-     "<URL: 3>"},  // Potentially PII in parameter.
+  std::string redaction_input;
+  std::string redaction_output;
+  for (const auto& s : kStringsWithRedactions) {
+    redaction_input.append(s.pre_redaction).append("\n");
+    redaction_output.append(s.post_redaction).append("\n");
+  }
+  EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
+}
+
+TEST_F(RedactionToolTest, RedactAndKeepSelected) {
+  std::string redaction_input;
+  std::string redaction_output;
+  for (const auto& s : kStringsWithRedactions) {
+    redaction_input.append(s.pre_redaction).append("\n");
+    redaction_output.append(s.post_redaction).append("\n");
+  }
+  // Test RedactAndKeepSelected() with no PII type to keep.
+  EXPECT_EQ(redaction_output,
+            redactor_.RedactAndKeepSelected(redaction_input, {}));
+  // Test RedactAndKeepSelected() by only keeping IP addresses in the redacted
+  // output.
+  std::string redaction_output_ip;
+  for (const auto& s : kStringsWithRedactions) {
+    if (s.pii_type == PIIType::kIPAddress) {
+      redaction_output_ip.append(s.pre_redaction).append("\n");
+    } else {
+      redaction_output_ip.append(s.post_redaction).append("\n");
+    }
+  }
+  EXPECT_EQ(redaction_output_ip, redactor_.RedactAndKeepSelected(
+                                     redaction_input, {PIIType::kIPAddress}));
+  // Test RedactAndKeepSelected() by keeping MAC addresses and hashes in the
+  // redacted output. The hashes that URLs and Android storage paths contain
+  // will be redacted with the URL or Android storage path that they're part of.
+  std::string redaction_output_mac_and_hashes;
+  for (const auto& s : kStringsWithRedactions) {
+    if (s.pii_type == PIIType::kMACAddress ||
+        s.pii_type == PIIType::kStableIdentifier) {
+      redaction_output_mac_and_hashes.append(s.pre_redaction).append("\n");
+    } else {
+      redaction_output_mac_and_hashes.append(s.post_redaction).append("\n");
+    }
+  }
+  EXPECT_EQ(
+      redaction_output_mac_and_hashes,
+      redactor_.RedactAndKeepSelected(
+          redaction_input, {PIIType::kMACAddress, PIIType::kStableIdentifier}));
+}
+
+TEST_F(RedactionToolTest, RedactUid) {
+  EXPECT_EQ("<UID: 1>",
+            redactor_.RedactAndKeepSelected(
+                "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+}
+
+TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {
+  // Array of pairs containing pre/post redaction versions of the same string.
+  // Will be appended to create input and expected output for the test. Keep
+  // URLs and Android app storage paths but redact hashes. URLs and Android app
+  // storage paths that contain hashes will be partially redacted.
+  const std::pair<std::string, std::string> redaction_strings_with_hashes[] = {
+    {"chrome://resources/"
+     "f?user="
+     "99887766554433221100ffeeddccbbaaaabbccddeeff00112233445566778899",
+     "chrome://resources/f?user=<HASH:9988 1>"},  // URL that contains a hash.
     {"/root/27540283740a0897ab7c8de0f809add2bacde78f/foo",
-     "/root/<HASH:2754 1>/foo"},  // Hash string.
-#if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
-    // Allowed android storage path.
-    {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
-     "112K\t/home/root/deadbeef1234/android-data/data/system_de"},
-    // Redacted app-specific storage path.
-    {"8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/de",
-     "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/d_"},
+     "/root/<HASH:2754 2>/foo"},  // String that contains a hash.
+    {"this is the user hash that we need to redact "
+     "aabbccddeeff00112233445566778899",
+     "this is the user hash that we need to redact <HASH:aabb 3>"},  // String
+                                                                     // that
+                                                                     // contains
+                                                                     // a hash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"8.0K\t/home/root/aabbccddeeff00112233445566778899/"
+     "android-data/data/data/pa.ckage2/de",  // Android app storage
+                                             // path that contains a
+                                             // hash.
+     "8.0K\t/home/root/<HASH:aabb 3>/android-data/data/data/pa.ckage2/de"}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
   std::string redaction_input;
   std::string redaction_output;
-  for (const auto& s : data) {
+  for (const auto& s : redaction_strings_with_hashes) {
     redaction_input.append(s.first).append("\n");
     redaction_output.append(s.second).append("\n");
   }
-  EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
+  EXPECT_EQ(
+      redaction_output,
+      redactor_.RedactAndKeepSelected(
+          redaction_input, {PIIType::kAndroidAppStoragePath, PIIType::kURL}));
+}
+
+TEST_F(RedactionToolTest, DetectPII) {
+  std::string redaction_input;
+  for (const auto& s : kStringsWithRedactions) {
+    redaction_input.append(s.pre_redaction).append("\n");
+  }
+  std::map<PIIType, std::set<std::string>> pii_in_data {
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only detect Android paths on Chrome OS.
+    {PIIType::kAndroidAppStoragePath, {"/de"}},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        {PIIType::kSSID, {"123aaaaaa"}},
+        {PIIType::kURL,
+         {"http://tets.comaaaaaaa",
+          "isolated-app://"
+          "airugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac/",
+          "chrome://resources/f?user=bar",
+          "chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/"
+          "foobar.js?bar=x"}},
+        {PIIType::kEmail, {"aaaaaemail@example.comaaa"}},
+        {PIIType::kIPAddress,
+         {
+             "255.255.155.2",
+             "255.255.155.255",
+             "127.0.0.1",
+             "127.255.0.1",
+             "0.0.0.0",
+             "0.255.255.255",
+             "10.10.10.100",
+             "10.10.10.101",
+             "10.255.255.255",
+             "172.16.0.0",
+             "172.31.255.255",
+             "172.11.5.5",
+             "172.111.5.5",
+             "192.168.0.0",
+             "192.168.255.255",
+             "192.169.2.120",
+             "169.254.0.1",
+             "169.200.0.1",
+             "224.0.0.24",
+             "240.0.0.0",
+             "100.115.91.92",
+             "8.8.8.4",
+             "123.123.45.4",
+             "fe80::",
+             "fe80::ffff",
+             "febf:ffff::ffff",
+             "fecc::1111",
+             "11::11",
+             "ff01::3",
+             "ff02::3",
+             "ff02::fb",
+             "ff08::fb",
+             "ff0f::101",
+             "::ffff:cb0c:10ea",
+             "::ffff:a0a:a0a",
+             "::ffff:ac1e:1e1e",
+             "::ffff:c0a8:640a",
+             "::ffff:6473:5c01",
+             "64:ff9b::a0a:a0a",
+             "64:ff9b::6473:5c01",
+             "::0101:ffff:c0a8:640a",
+         }},
+        {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
+      PIIType::kStableIdentifier, {
+        "27540283740a0897ab7c8de0f809add2bacde78f",
+        "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+      }
+    }
+  };
+
+  EXPECT_EQ(pii_in_data, redactor_.Detect(redaction_input));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
@@ -473,15 +728,16 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "\xe3\x81\x82\xe3\x81\x83\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/ef\n"
       "24K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2\n"
-      // /data/app won't.
       "8.0K\t/home/root/deadbeef1234/android-data/data/app/pack.age1/a\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/app/pack.age1/bc\n"
       "24K\t/home/root/deadbeef1234/android-data/data/app/pack.age1\n"
-      // /data/user_de will.
       "8.0K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1/a\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1/bc\n"
       "24K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1\n"
-      "78M\t/home/root/deadbeef1234/android-data/data/data\n";
+      "78M\t/home/root/deadbeef1234/android-data/data/data\n"
+      "key=value path=/data/data/pack.age1/bc key=value\n"
+      "key=value path=/data/user_de/0/pack.age1/bc key=value\n"
+      "key=value exe=/data/app/pack.age1/bc key=value\n";
   constexpr char kDuOutputRedacted[] =
       "112K\t/home/root/deadbeef1234/android-data/data/system_de\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/data/pack.age1/a\n"
@@ -494,12 +750,15 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "8.0K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2/e_\n"
       "24K\t/home/root/deadbeef1234/android-data/data/data/pa.ckage2\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/app/pack.age1/a\n"
-      "8.0K\t/home/root/deadbeef1234/android-data/data/app/pack.age1/bc\n"
+      "8.0K\t/home/root/deadbeef1234/android-data/data/app/pack.age1/b_\n"
       "24K\t/home/root/deadbeef1234/android-data/data/app/pack.age1\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1/a\n"
       "8.0K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1/b_\n"
       "24K\t/home/root/deadbeef1234/android-data/data/user_de/0/pack.age1\n"
-      "78M\t/home/root/deadbeef1234/android-data/data/data\n";
+      "78M\t/home/root/deadbeef1234/android-data/data/data\n"
+      "key=value path=/data/data/pack.age1/b_ key=value\n"
+      "key=value path=/data/user_de/0/pack.age1/b_ key=value\n"
+      "key=value exe=/data/app/pack.age1/b_ key=value\n";
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -516,6 +775,16 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
       // Volume labels.
       {"LABEL=\"ntfs\"", "LABEL=\"<Volume Label: 1>\""},
       {"PARTLABEL=\"SD Card\"", "PARTLABEL=\"<Volume Label: 2>\""},
+
+      // LVM UUIDd.
+      {"{\"pv_fmt\":\"lvm2\", "
+       "\"pv_uuid\":\"duD18x-P7QE-sTya-SaeO-aq07-YgEq-xj8UEz\", "
+       "\"dev_size\":\"230.33g\"}",
+       "{\"pv_fmt\":\"lvm2\", \"pv_uuid\":\"<UUID: 4>\", "
+       "\"dev_size\":\"230.33g\"}"},
+      {"{\"lv_uuid\":\"lKYORl-TWDP-OFLT-yDnB-jlQ7-aQrE-AwA8Oa\", "
+       "\"lv_name\":\"[thinpool_tdata]\"",
+       "{\"lv_uuid\":\"<UUID: 5>\", \"lv_name\":\"[thinpool_tdata]\""},
 
       // Removable media paths.
       {"/media/removable/SD Card/", "/media/removable/<Volume Label: 2>/"},

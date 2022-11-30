@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,10 +15,9 @@ import sys
 import tarfile
 import tempfile
 
-
 SELF_FILE = os.path.normpath(os.path.abspath(__file__))
-REPOSITORY_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', '..'))
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
 def Run(*args):
@@ -35,19 +34,9 @@ def EnsureEmptyDir(path):
 
 
 def BuildForArch(arch):
-  build_dir = 'out/release-' + arch
-  Run(
-      'scripts/fx',
-      '--dir',
-      build_dir,
-      'set',
-      'terminal.qemu-' + arch,
-      '--args=cache_package_labels+=["//sdk/bundles:tools"]',
-      '--args=is_debug=false',
-      '--args=build_sdk_archives=true',
-      # Increase the size of the image to allow multiple test runs.
-      # 1 GiB (1024 * 1024 * 1024).
-      '--args=fvm_image_size=1073741824')
+  Run('scripts/fx', '--dir', 'out/release-{}'.format(arch), 'set',
+      'terminal.qemu-{}'.format(arch), '--args=is_debug=false',
+      '--args=build_sdk_archives=true')
   Run('scripts/fx', 'build', 'sdk', 'build/images')
 
 
@@ -83,7 +72,7 @@ def main(args):
   # file. This means that on next gclient runhooks, we'll restore to the
   # real DEPS-determined SDK.
   sdk_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party', 'fuchsia-sdk',
-                            'sdk')
+                                'sdk')
   images_output_dir = os.path.join(REPOSITORY_ROOT, 'third_party',
                                    'fuchsia-sdk', 'images')
   EnsureEmptyDir(sdk_output_dir)
@@ -102,7 +91,7 @@ def main(args):
 
     arch_output_dir = os.path.join(fuchsia_root, 'out', 'release-' + arch)
 
-    sdk_tarballs = ['core.tar.gz']
+    sdk_tarballs = ['core.tar.gz', 'core_testing.tar.gz']
 
     for sdk_tar in sdk_tarballs:
       sdk_tar_path = os.path.join(arch_output_dir, 'sdk', 'archive', sdk_tar)
@@ -144,9 +133,9 @@ def main(args):
       if not entry.get('archive'):
         continue
 
-      shutil.copyfile(os.path.join(arch_output_dir, entry['path']),
-                      os.path.join(arch_image_dir, entry['name']) + '.' +
-                          entry['type'])
+      shutil.copyfile(
+          os.path.join(arch_output_dir, entry['path']),
+          os.path.join(arch_image_dir, entry['name']) + '.' + entry['type'])
 
   # Write merged manifest file.
   with open(manifest_path, 'w') as manifest_file:

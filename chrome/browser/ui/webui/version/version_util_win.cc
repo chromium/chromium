@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,18 +17,26 @@ namespace win {
 std::string GetFullWindowsVersion() {
   std::string version;
   base::win::OSInfo* gi = base::win::OSInfo::GetInstance();
-  const int major = gi->version_number().major;
-  const int minor = gi->version_number().minor;
-  const int build = gi->version_number().build;
-  const int patch = gi->version_number().patch;
+  const uint32_t major = gi->version_number().major;
+  const uint32_t minor = gi->version_number().minor;
+  const uint32_t build = gi->version_number().build;
+  const uint32_t patch = gi->version_number().patch;
   // Server or Desktop
   const bool server =
       gi->version_type() == base::win::VersionType::SUITE_SERVER;
   // Service Pack
   const std::string sp = gi->service_pack_str();
 
-  if (major == 10) {
-    version += (server) ? "Server OS" : "10 OS";
+  if (major == 11) {
+    version += (server) ? "Server OS" : "11";
+  } else if (major == 10) {
+    if (build < 20348) {
+      version += (server) ? "Server OS" : "10";
+    } else if (build < 22000) {
+      version += (server) ? "Server 2022" : "10";
+    } else {
+      version += (server) ? "Server OS" : "11";
+    }
   } else if (major == 6) {
     switch (minor) {
       case 0:
@@ -51,7 +59,7 @@ std::string GetFullWindowsVersion() {
         break;
       default:
         // unknown version
-        return base::StringPrintf("unknown version 6.%d", minor);
+        return base::StringPrintf("unknown version 6.%u", minor);
     }
   } else if ((major == 5) && (minor > 0)) {
     // Windows XP or Server 2003
@@ -59,7 +67,7 @@ std::string GetFullWindowsVersion() {
     version += sp;
   } else {
     // unknown version
-    return base::StringPrintf("unknown version %d.%d", major, minor);
+    return base::StringPrintf("unknown version %u.%u", major, minor);
   }
 
   const std::string release_id = gi->release_id();
@@ -68,9 +76,9 @@ std::string GetFullWindowsVersion() {
     version += " Version " + release_id;
 
   if (patch > 0)
-    version += base::StringPrintf(" (Build %d.%d)", build, patch);
+    version += base::StringPrintf(" (Build %u.%u)", build, patch);
   else
-    version += base::StringPrintf(" (Build %d)", build);
+    version += base::StringPrintf(" (Build %u)", build);
   return version;
 }
 

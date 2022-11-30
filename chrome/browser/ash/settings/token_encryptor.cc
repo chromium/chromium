@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "crypto/encryptor.h"
 #include "crypto/nss_util.h"
 #include "crypto/sha2.h"

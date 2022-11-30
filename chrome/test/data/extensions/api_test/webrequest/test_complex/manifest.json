@@ -1,0 +1,12 @@
+{
+  "name": "test_complex",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "declarativeWebRequest",
+                  "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_complex.js"],
+    "persistent": true
+  }
+}

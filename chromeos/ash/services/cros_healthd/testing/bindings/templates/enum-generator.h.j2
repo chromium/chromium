@@ -1,0 +1,25 @@
+{%- set class_name = enum | get_name_for_kind(flatten_nested_kind=True)
+                                                          ~ "DataGenerator" -%}
+
+class {{class_name}}
+  : public ::ash::cros_healthd::connectivity::DataGeneratorInterface<{{
+      enum | get_name_for_kind}}> {
+ public:
+  {{class_name}}(const {{class_name}}&) = delete;
+  {{class_name}}& operator=(const {{class_name}}&) = delete;
+  virtual ~{{class_name}}() = default;
+
+  static std::unique_ptr<{{class_name}}> Create(
+    ::ash::cros_healthd::connectivity::Context* context);
+
+ public:
+  // DataGeneratorInterface overrides.
+  {{enum | get_name_for_kind}} Generate() override;
+  bool HasNext() override;
+
+ protected:
+  {{class_name}}() = default;
+
+ private:
+  size_t enum_field_counter_ = 0;
+};

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class PropertyHandler;
@@ -25,36 +26,51 @@ class TimeDelta;
 namespace ui {
 class LocatedEvent;
 class KeyEvent;
-}
+}  // namespace ui
 
 namespace exo {
 
+class ClientControlledShellSurface;
 class Surface;
 class ShellSurfaceBase;
 
 // Sets the application ID to the property_handler. The application ID
 // identifies the general class of applications to which the window belongs.
 void SetShellApplicationId(ui::PropertyHandler* property_handler,
-                           const base::Optional<std::string>& id);
+                           const absl::optional<std::string>& id);
 const std::string* GetShellApplicationId(const aura::Window* window);
 
 // Sets the startup ID to the property handler. The startup ID identifies the
 // application using startup notification protocol.
 void SetShellStartupId(ui::PropertyHandler* property_handler,
-                       const base::Optional<std::string>& id);
-const std::string* GetShellStartupId(aura::Window* window);
+                       const absl::optional<std::string>& id);
+const std::string* GetShellStartupId(const aura::Window* window);
 
-// Hides/shows the shelf when fullscreen. If true, shelf is inaccessible
-// (plain fullscreen). If false, shelf auto-hides and can be shown with a
-// mouse gesture (immersive fullscreen).
+// Shows/hides the shelf when fullscreen. If true, titlebar/shelf will show when
+// the mouse moves to the top/bottom of the screen. If false (plain fullscreen),
+// the titlebar and shelf are always hidden.
 void SetShellUseImmersiveForFullscreen(aura::Window* window, bool value);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the client accessibility ID for the window. The accessibility ID
 // identifies the accessibility tree provided by client.
 void SetShellClientAccessibilityId(aura::Window* window,
-                                   const base::Optional<int32_t>& id);
-const base::Optional<int32_t> GetShellClientAccessibilityId(
+                                   const absl::optional<int32_t>& id);
+const absl::optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
+
+// Sets the ClientControlledShellSurface to the property handler.
+void SetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler,
+    const absl::optional<ClientControlledShellSurface*>& shell_surface);
+ClientControlledShellSurface* GetShellClientControlledShellSurface(
+    ui::PropertyHandler* property_handler);
+
+// Returns |index| for the window.
+// Returns -1 for |index| when window is visible on all workspaces,
+// otherwise, 0-based indexing for desk index.
+int GetWindowDeskStateChanged(const aura::Window* window);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Sets the root surface to the property handler.
 void SetShellRootSurface(ui::PropertyHandler* property_handler,
@@ -84,6 +100,10 @@ Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* focused_window);
 // any existing permission.
 void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout);
 
+// Allows the |window| to activate itself indefinitely. Revokes any existing
+// permission.
+void GrantPermissionToActivateIndefinitely(aura::Window* window);
+
 // Revokes the permission for |window| to activate itself.
 void RevokePermissionToActivate(aura::Window* window);
 
@@ -92,6 +112,9 @@ bool HasPermissionToActivate(aura::Window* window);
 
 // Returns true if event is/will be consumed by IME.
 bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event);
+
+// Set aura::client::kSkipImeProcessing to all Surface descendants.
+void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window, bool value);
 
 }  // namespace exo
 

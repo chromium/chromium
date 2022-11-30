@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ComServerModuleTest : public testing::Test {
+ public:
+  ComServerModuleTest(const ComServerModuleTest&) = delete;
+  ComServerModuleTest& operator=(const ComServerModuleTest&) = delete;
+
  protected:
   ComServerModuleTest() = default;
 
@@ -52,8 +56,6 @@ class ComServerModuleTest : public testing::Test {
 
   // A flag indicating if class registration succeeds.
   bool class_registration_succeeded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ComServerModuleTest);
 };
 
 TEST_F(ComServerModuleTest, EventSignalTest) {

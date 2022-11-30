@@ -1,0 +1,12 @@
+<style include="diagnostics-shared">
+</style>
+<div id="resultListContainer" class="grey-container" hidden$="[[hidden]]">
+  <dom-repeat id="resultList" items="[[results_]]">
+    <template>
+      <routine-result-entry item="[[item]]"
+          hide-vertical-lines="[[shouldHideVerticalLines_(item.*)]]"
+          using-routine-groups="[[usingRoutineGroups]]">
+      </routine-result-entry>
+    </template>
+  </dom-repeat>
+</div>

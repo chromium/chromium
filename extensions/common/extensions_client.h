@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -114,12 +114,18 @@ class ExtensionsClient {
   // Returns the base webstore URL prefix.
   virtual const GURL& GetWebstoreBaseURL() const = 0;
 
+  // Returns the base webstore URL prefix for the new webstore. This is defined
+  // separately rather than just changing what GetWebstoreBaseURL returns, as
+  // during the transition some functionality needs to operate across both the
+  // old and the new domain.
+  virtual const GURL& GetNewWebstoreBaseURL() const = 0;
+
   // Returns the URL to use for update manifest queries.
   virtual const GURL& GetWebstoreUpdateURL() const = 0;
 
   // Returns a flag indicating whether or not a given URL is a valid
-  // extension blacklist URL.
-  virtual bool IsBlacklistUpdateURL(const GURL& url) const = 0;
+  // extension blocklist URL.
+  virtual bool IsBlocklistUpdateURL(const GURL& url) const = 0;
 
   // Returns the set of file paths corresponding to any images within an
   // extension's contents that may be displayed directly within the browser UI
@@ -142,9 +148,9 @@ class ExtensionsClient {
       std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const;
 
   // Returns the extended error code used by the embedder when an extension
-  // blocks a request. Returns base::nullopt if the embedder doesn't define such
+  // blocks a request. Returns absl::nullopt if the embedder doesn't define such
   // an error code.
-  virtual base::Optional<int> GetExtensionExtendedErrorCode() const;
+  virtual absl::optional<int> GetExtensionExtendedErrorCode() const;
 
  private:
   // Performs common initialization and calls Initialize() to allow subclasses

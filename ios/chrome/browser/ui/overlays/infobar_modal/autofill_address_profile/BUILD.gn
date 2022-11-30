@@ -1,0 +1,62 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("autofill_address_profile") {
+  sources = [
+    "save_address_profile_infobar_modal_overlay_coordinator.h",
+    "save_address_profile_infobar_modal_overlay_coordinator.mm",
+    "save_address_profile_infobar_modal_overlay_mediator.h",
+    "save_address_profile_infobar_modal_overlay_mediator.mm",
+    "save_address_profile_infobar_modal_overlay_mediator_delegate.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ios/chrome/browser/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources =
+      [ "save_address_profile_infobar_modal_overlay_mediator_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":autofill_address_profile",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
+    "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:modals",
+    "//ios/chrome/browser/ui/infobars/modals/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/overlays/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

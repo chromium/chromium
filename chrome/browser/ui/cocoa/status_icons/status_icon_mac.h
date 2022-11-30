@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
@@ -23,6 +21,10 @@
 class StatusIconMac : public StatusIcon {
  public:
   StatusIconMac();
+
+  StatusIconMac(const StatusIconMac&) = delete;
+  StatusIconMac& operator=(const StatusIconMac&) = delete;
+
   ~StatusIconMac() override;
 
   // Overridden from StatusIcon.
@@ -60,8 +62,6 @@ class StatusIconMac : public StatusIcon {
   // Status menu shown when right-clicking the system icon, if it has been
   // created by |UpdatePlatformContextMenu|.
   base::scoped_nsobject<MenuControllerCocoa> menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconMac);
 };
 
 #endif // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_ICON_MAC_H_

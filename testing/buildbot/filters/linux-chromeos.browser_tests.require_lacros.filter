@@ -1,0 +1,49 @@
+# This file contains tests for browser_tests built for ash, and
+# requires Lacros.
+# For more information, please see //chrome/test/base/chromeos/README.md.
+*Magn*.*
+AccessibilityExtension*
+Autoclick*
+AshTtsApiTest*
+BrowserAppShelfControllerBrowserTest*
+ChromeVox*
+DemoAshRequiresLacrosTest*
+DesksTemplatesClientLacrosTest*
+Dictation*
+SelectToSpeak*
+SwitchAccess*
+VpnExtensionObserverBrowserTest*
+WebAppsCrosapiBrowserTest*
+# TODO(crbug.com/1245416) Enable more accessibility tests.
+-ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
+-ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
+-ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
+-ChromeVoxBackgroundTest.TouchEditingState
+-ChromeVoxDesktopAutomationHandlerTest.TaskManagerTableView
+-ChromeVoxISearchTest.Simple
+-ChromeVoxPanelTest.FormControlsMenu
+-ChromeVoxPanelTest.InternationalFormControlsMenu
+-ChromeVoxPanelTest.LinkMenu
+-ChromeVoxPortalsTest.PortalName
+-ChromeVoxPortalsTest.ShouldFocusPortal
+-SelectToSpeakEnhancedNetworkTtsVoicesTest.*
+-SelectToSpeakNavigationControlTest.*
+-SwitchAccessItemScanManagerTest.*
+-SwitchAccessPointScanManagerTest.PointScanLeftClick
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
+-ChromeVoxTutorialTest.Gestures
+-ChromeVoxTutorialTest.ExitButtonTest
+-ChromeVoxTutorialTest.EscapeTest
+# Flaky (crbug.com/1268842).
+-ChromeVoxBackgroundTest.GestureOnPopUpButton
+-ChromeVoxBackgroundTest.HitTestOnExoSurface
+-ChromeVoxEditingTest.JumpCommandsSyncSelection
+-ChromeVoxBackgroundTest.ListBoxItemsNavigation
+-ChromeVoxLiveRegionsTest.FocusThenLiveRegion
+-ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
+-ChromeVoxUserActionMonitorTest.Gestures
+# TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
+-DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
+# TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
+-SwitchAccessPointScanManagerTest.PointScanRightClick

@@ -1,20 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_TYPES_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_TYPES_UTIL_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class ExecutionContext;
 class ExceptionState;
-class StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL;
-class StringOrTrustedScript;
+class ExecutionContext;
+class QualifiedName;
+class V8UnionStringOrTrustedScript;
+class V8UnionStringTreatNullAsEmptyStringOrTrustedScript;
 
 enum class SpecificTrustedType {
   kNone,
@@ -25,43 +27,57 @@ enum class SpecificTrustedType {
 
 // Perform Trusted Type checks, with the IDL union types as input. All of these
 // will call String& versions below to do the heavy lifting.
-CORE_EXPORT String TrustedTypesCheckFor(
-    SpecificTrustedType,
-    const StringOrTrustedHTMLOrTrustedScriptOrTrustedScriptURL&,
-    const ExecutionContext*,
-    ExceptionState&) WARN_UNUSED_RESULT;
-CORE_EXPORT String TrustedTypesCheckForScript(StringOrTrustedScript,
-                                              const ExecutionContext*,
-                                              ExceptionState&)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckFor(SpecificTrustedType type,
+                     const V8TrustedType* trusted,
+                     const ExecutionContext* execution_context,
+                     ExceptionState& exception_state);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
+                           const ExecutionContext* execution_context,
+                           ExceptionState& exception_state);
+[[nodiscard]] CORE_EXPORT String TrustedTypesCheckForScript(
+    const V8UnionStringTreatNullAsEmptyStringOrTrustedScript* value,
+    const ExecutionContext* execution_context,
+    ExceptionState& exception_state);
 
 // Perform Trusted Type checks, for a dynamically or statically determined
 // type.
 // Returns the effective value (which may have been modified by the "default"
-// policy. We use WARN_UNUSED_RESULT to prevent erroneous usage.
-String TrustedTypesCheckFor(SpecificTrustedType,
-                            String,
-                            const ExecutionContext*,
-                            ExceptionState&) WARN_UNUSED_RESULT;
-CORE_EXPORT String TrustedTypesCheckForHTML(String,
-                                            const ExecutionContext*,
-                                            ExceptionState&) WARN_UNUSED_RESULT;
-CORE_EXPORT String TrustedTypesCheckForScript(String,
-                                              const ExecutionContext*,
-                                              ExceptionState&)
-    WARN_UNUSED_RESULT;
-CORE_EXPORT String TrustedTypesCheckForScriptURL(String,
-                                                 const ExecutionContext*,
-                                                 ExceptionState&)
-    WARN_UNUSED_RESULT;
+// policy.
+[[nodiscard]] String TrustedTypesCheckFor(SpecificTrustedType,
+                                          String,
+                                          const ExecutionContext*,
+                                          ExceptionState&);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForHTML(const String&,
+                         const ExecutionContext*,
+                         ExceptionState&);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForScript(const String&,
+                           const ExecutionContext*,
+                           ExceptionState&);
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForScriptURL(const String&,
+                              const ExecutionContext*,
+                              ExceptionState&);
 
 // Functionally equivalent to TrustedTypesCheckForScript(const String&, ...),
 // but with setup & error handling suitable for the asynchronous execution
 // cases.
-String TrustedTypesCheckForJavascriptURLinNavigation(String, ExecutionContext*);
-CORE_EXPORT String GetStringForScriptExecution(String,
+String TrustedTypesCheckForJavascriptURLinNavigation(const String&,
+                                                     ExecutionContext*);
+CORE_EXPORT String GetStringForScriptExecution(const String&,
                                                ScriptElementBase::Type,
                                                ExecutionContext*);
+
+// Functionally equivalent to TrustedTypesCheckForHTML(const String&, ...),
+// but with separate enable flag and use counter, to ensure this won't break
+// existing sites before enabling it in full.
+[[nodiscard]] CORE_EXPORT String
+TrustedTypesCheckForExecCommand(const String&,
+                                const ExecutionContext*,
+                                ExceptionState&);
 
 // Determine whether a Trusted Types check is needed in this execution context.
 //
@@ -71,6 +87,16 @@ CORE_EXPORT String GetStringForScriptExecution(String,
 // Example: To determine whether 'eval' may pass, one needs to also take CSP
 // into account.
 CORE_EXPORT bool RequireTrustedTypesCheck(const ExecutionContext*);
+
+// Determine whether an attribute is considered an event handler by Trusted
+// Types.
+//
+// Note: This is different from Element::IsEventHandlerAttribute, because
+// Element only needs this distinction for built-in attributes, but not for
+// user-defined property names. But Trusted Types needs this for any built-in or
+// user-defined attribute/property, and thus must check against a list of known
+// event handlers.
+bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
 
 }  // namespace blink
 

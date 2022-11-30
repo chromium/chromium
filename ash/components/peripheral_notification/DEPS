@@ -1,0 +1,17 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/dbus",
+  "+testing",
+  "+services/device/public",
+  "+ash/test",
+  "+ash/constants",
+  "+third_party/cros_system_api/dbus/typecd",
+]
+
+specific_include_rules = {
+  "peripheral_notification_manager_unittest\.cc": [
+    "+ash/test/ash_test_base.h",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,10 @@ namespace blink {
 class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
  public:
   BrowserInterfaceBrokerProxy() = default;
+  BrowserInterfaceBrokerProxy(const BrowserInterfaceBrokerProxy&) = delete;
+  BrowserInterfaceBrokerProxy& operator=(const BrowserInterfaceBrokerProxy&) =
+      delete;
+
   void Bind(mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker,
             scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> Reset(
@@ -53,8 +57,6 @@ class BLINK_COMMON_EXPORT BrowserInterfaceBrokerProxy {
       std::map<std::string,
                base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>>;
   mutable BinderMap binder_map_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserInterfaceBrokerProxy);
 };
 
 // Returns an instance of BrowserInterfaceBrokerProxy that is safe to use but is

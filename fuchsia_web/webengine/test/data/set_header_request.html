@@ -1,0 +1,15 @@
+<html>
+  <head></head>
+  <body>
+    <script>
+      // Start a request with the Test header set.
+      var req = new XMLHttpRequest();
+      req.onload = function() {
+        document.title = 'loaded';
+      };
+      req.open('GET', './image.html');
+      req.setRequestHeader('Test', 'SetByJS');
+      req.send();
+    </script>
+  </body>
+</html>

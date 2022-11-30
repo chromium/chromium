@@ -1,15 +1,15 @@
 This is a testharness.js-based test.
-Found 112 tests; 109 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 124 tests; 118 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
-PASS Partial interface URL: original interface defined
-PASS Partial interface URL: valid exposure set
-PASS Partial interface URL: member names are unique
 PASS Partial interface AudioTrack: original interface defined
+FAIL Partial interface AudioTrack: valid exposure set Partial AudioTrack interface is exposed to 'DedicatedWorker', the original interface is not.
 PASS Partial interface AudioTrack: member names are unique
 PASS Partial interface VideoTrack: original interface defined
+FAIL Partial interface VideoTrack: valid exposure set Partial VideoTrack interface is exposed to 'DedicatedWorker', the original interface is not.
 PASS Partial interface VideoTrack: member names are unique
 PASS Partial interface TextTrack: original interface defined
+FAIL Partial interface TextTrack: valid exposure set Partial TextTrack interface is exposed to 'DedicatedWorker', the original interface is not.
 PASS Partial interface TextTrack: member names are unique
 PASS MediaSource interface: existence and properties of interface object
 PASS MediaSource interface object length
@@ -24,11 +24,13 @@ PASS MediaSource interface: attribute duration
 PASS MediaSource interface: attribute onsourceopen
 PASS MediaSource interface: attribute onsourceended
 PASS MediaSource interface: attribute onsourceclose
+PASS MediaSource interface: attribute canConstructInDedicatedWorker
 PASS MediaSource interface: operation addSourceBuffer(DOMString)
 PASS MediaSource interface: operation removeSourceBuffer(SourceBuffer)
 PASS MediaSource interface: operation endOfStream(optional EndOfStreamError)
 PASS MediaSource interface: operation setLiveSeekableRange(double, double)
 PASS MediaSource interface: operation clearLiveSeekableRange()
+PASS MediaSource interface: operation getHandle()
 PASS MediaSource interface: operation isTypeSupported(DOMString)
 PASS MediaSource must be primary interface of mediaSource
 PASS Stringification of mediaSource
@@ -39,6 +41,7 @@ PASS MediaSource interface: mediaSource must inherit property "duration" with th
 PASS MediaSource interface: mediaSource must inherit property "onsourceopen" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "onsourceended" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "onsourceclose" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "canConstructInDedicatedWorker" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "addSourceBuffer(DOMString)" with the proper type
 PASS MediaSource interface: calling addSourceBuffer(DOMString) on mediaSource with too few arguments must throw TypeError
 PASS MediaSource interface: mediaSource must inherit property "removeSourceBuffer(SourceBuffer)" with the proper type
@@ -48,8 +51,15 @@ PASS MediaSource interface: calling endOfStream(optional EndOfStreamError) on me
 PASS MediaSource interface: mediaSource must inherit property "setLiveSeekableRange(double, double)" with the proper type
 PASS MediaSource interface: calling setLiveSeekableRange(double, double) on mediaSource with too few arguments must throw TypeError
 PASS MediaSource interface: mediaSource must inherit property "clearLiveSeekableRange()" with the proper type
+PASS MediaSource interface: mediaSource must inherit property "getHandle()" with the proper type
 PASS MediaSource interface: mediaSource must inherit property "isTypeSupported(DOMString)" with the proper type
 PASS MediaSource interface: calling isTypeSupported(DOMString) on mediaSource with too few arguments must throw TypeError
+PASS MediaSourceHandle interface: existence and properties of interface object
+PASS MediaSourceHandle interface object length
+PASS MediaSourceHandle interface object name
+PASS MediaSourceHandle interface: existence and properties of interface prototype object
+PASS MediaSourceHandle interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaSourceHandle interface: existence and properties of interface prototype object's @@unscopables property
 PASS SourceBuffer interface: existence and properties of interface object
 PASS SourceBuffer interface object length
 PASS SourceBuffer interface object name
@@ -72,6 +82,7 @@ PASS SourceBuffer interface: attribute onerror
 PASS SourceBuffer interface: attribute onabort
 PASS SourceBuffer interface: operation appendBuffer(BufferSource)
 PASS SourceBuffer interface: operation abort()
+PASS SourceBuffer interface: operation changeType(DOMString)
 PASS SourceBuffer interface: operation remove(double, unrestricted double)
 PASS SourceBuffer must be primary interface of sourceBuffer
 PASS Stringification of sourceBuffer
@@ -92,6 +103,8 @@ PASS SourceBuffer interface: sourceBuffer must inherit property "onabort" with t
 PASS SourceBuffer interface: sourceBuffer must inherit property "appendBuffer(BufferSource)" with the proper type
 PASS SourceBuffer interface: calling appendBuffer(BufferSource) on sourceBuffer with too few arguments must throw TypeError
 PASS SourceBuffer interface: sourceBuffer must inherit property "abort()" with the proper type
+PASS SourceBuffer interface: sourceBuffer must inherit property "changeType(DOMString)" with the proper type
+PASS SourceBuffer interface: calling changeType(DOMString) on sourceBuffer with too few arguments must throw TypeError
 PASS SourceBuffer interface: sourceBuffer must inherit property "remove(double, unrestricted double)" with the proper type
 PASS SourceBuffer interface: calling remove(double, unrestricted double) on sourceBuffer with too few arguments must throw TypeError
 PASS SourceBufferList interface: existence and properties of interface object
@@ -111,6 +124,5 @@ PASS SourceBufferList interface: mediaSource.sourceBuffers must inherit property
 PASS AudioTrack interface: attribute sourceBuffer
 PASS VideoTrack interface: attribute sourceBuffer
 FAIL TextTrack interface: attribute sourceBuffer assert_true: The prototype object must have a property "sourceBuffer" expected true got false
-PASS URL interface: operation createObjectURL(MediaSource)
 Harness: the test ran to completion.
 

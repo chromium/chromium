@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,20 @@
 #include "remoting/proto/video_stats.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FrameStatsTest : public testing::Test {};
 
 TEST_F(FrameStatsTest, ToStatsMessageAndBack_RestoresFrameStats) {
   HostFrameStats stats;
   stats.frame_size = 10;
-  stats.capture_delay = base::TimeDelta::FromSeconds(11);
-  stats.encode_delay = base::TimeDelta::FromSeconds(12);
-  stats.capture_pending_delay = base::TimeDelta::FromSeconds(13);
-  stats.capture_overhead_delay = base::TimeDelta::FromSeconds(14);
-  stats.encode_pending_delay = base::TimeDelta::FromSeconds(15);
-  stats.send_pending_delay = base::TimeDelta::FromSeconds(16);
-  stats.rtt_estimate = base::TimeDelta::FromSeconds(17);
+  stats.capture_delay = base::Seconds(11);
+  stats.encode_delay = base::Seconds(12);
+  stats.capture_pending_delay = base::Seconds(13);
+  stats.capture_overhead_delay = base::Seconds(14);
+  stats.encode_pending_delay = base::Seconds(15);
+  stats.send_pending_delay = base::Seconds(16);
+  stats.rtt_estimate = base::Seconds(17);
   stats.bandwidth_estimate_kbps = 18;
   stats.capturer_id = 19;
   stats.frame_quality = 20;
@@ -42,5 +41,4 @@ TEST_F(FrameStatsTest, ToStatsMessageAndBack_RestoresFrameStats) {
   EXPECT_EQ(stats.frame_quality, newStats.frame_quality);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

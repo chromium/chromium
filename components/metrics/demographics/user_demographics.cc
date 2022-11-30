@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 
@@ -101,48 +101,34 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-base::Optional<int> GetUserBirthYear(
-    const base::DictionaryValue* demographics) {
-  const base::Value* value =
-      demographics->FindPath(kSyncDemographicsBirthYearPath);
-  int birth_year = (value != nullptr && value->is_int())
-                       ? value->GetInt()
-                       : kUserDemographicsBirthYearDefaultValue;
-
-  // Verify that there is a birth year.
-  if (birth_year == kUserDemographicsBirthYearDefaultValue)
-    return base::nullopt;
-
-  return birth_year;
+absl::optional<int> GetUserBirthYear(const base::Value::Dict& demographics) {
+  return demographics.FindInt(kSyncDemographicsBirthYearPath);
 }
 
 // Gets the synced user's gender from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-base::Optional<UserDemographicsProto_Gender> GetUserGender(
-    const base::DictionaryValue* demographics) {
-  const base::Value* value =
-      demographics->FindPath(kSyncDemographicsGenderPath);
-  int gender_int = (value != nullptr && value->is_int())
-                       ? value->GetInt()
-                       : kUserDemographicsGenderDefaultValue;
+absl::optional<UserDemographicsProto_Gender> GetUserGender(
+    const base::Value::Dict& demographics) {
+  const absl::optional<int> gender_int =
+      demographics.FindInt(kSyncDemographicsGenderPath);
 
-  // Verify that the gender is not default.
-  if (gender_int == kUserDemographicsGenderDefaultValue)
-    return base::nullopt;
+  // Verify that the gender is unset.
+  if (!gender_int)
+    return absl::nullopt;
 
   // Verify that the gender number is a valid UserDemographicsProto_Gender
   // encoding.
-  if (!UserDemographicsProto_Gender_IsValid(gender_int))
-    return base::nullopt;
+  if (!UserDemographicsProto_Gender_IsValid(*gender_int))
+    return absl::nullopt;
 
-  auto gender = UserDemographicsProto_Gender(gender_int);
+  const auto gender = UserDemographicsProto_Gender(*gender_int);
 
   // Verify that the gender is in a large enough population set to preserve
   // anonymity.
   if (gender != UserDemographicsProto::GENDER_FEMALE &&
       gender != UserDemographicsProto::GENDER_MALE) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return gender;
@@ -216,19 +202,18 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
-  const base::DictionaryValue* demographics =
-      pref_service->GetDictionary(kSyncDemographicsPrefName);
-  DCHECK(demographics != nullptr);
+  const base::Value::Dict& demographics =
+      pref_service->GetDict(kSyncDemographicsPrefName);
 
   // Get the user's birth year.
-  base::Optional<int> birth_year = GetUserBirthYear(demographics);
+  absl::optional<int> birth_year = GetUserBirthYear(demographics);
   if (!birth_year.has_value()) {
     return UserDemographicsResult::ForStatus(
         UserDemographicsStatus::kIneligibleDemographicsData);
   }
 
   // Get the user's gender.
-  base::Optional<UserDemographicsProto_Gender> gender =
+  absl::optional<UserDemographicsProto_Gender> gender =
       GetUserGender(demographics);
   if (!gender.has_value()) {
     return UserDemographicsResult::ForStatus(

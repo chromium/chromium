@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,8 @@ base::Value CreateRestrictionWithLevel(const std::string& restriction,
 base::Value CreateRule(const std::string& name,
                        const std::string& desc,
                        base::Value src_urls,
-                       base::Value dst_urls,
-                       base::Value dst_components,
+                       absl::optional<base::Value> dst_urls,
+                       absl::optional<base::Value> dst_components,
                        base::Value restrictions);
 
 }  // namespace dlp_test_util

@@ -1,0 +1,19 @@
+caption: Allows users to play media when the device is locked
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset displays media controls on the lock screen if users lock the device when media is playing.
+
+        Setting the policy to Disabled turns media controls on the lock screen off.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://services/media_session/OWNERS
+- mlamouri@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:78-
+tags: []
+type: main

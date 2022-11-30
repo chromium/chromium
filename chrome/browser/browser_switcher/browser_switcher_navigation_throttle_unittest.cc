@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
@@ -27,8 +28,9 @@
 using content::MockNavigationHandle;
 using content::NavigationThrottle;
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace browser_switcher {
 
@@ -40,11 +42,12 @@ class MockBrowserSwitcherSitelist : public BrowserSwitcherSitelist {
   ~MockBrowserSwitcherSitelist() override = default;
 
   MOCK_CONST_METHOD1(GetDecision, Decision(const GURL&));
-  MOCK_METHOD1(SetIeemSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalGreylist, void(ParsedXml&&));
+  MOCK_METHOD1(SetIeemSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalGreylist, void(RawRuleSet&&));
   MOCK_CONST_METHOD0(GetIeemSitelist, const RuleSet*());
   MOCK_CONST_METHOD0(GetExternalSitelist, const RuleSet*());
+  MOCK_CONST_METHOD0(GetExternalGreylist, const RuleSet*());
 };
 
 }  // namespace
@@ -69,7 +72,7 @@ class BrowserSwitcherNavigationThrottleTest
 
   std::unique_ptr<MockNavigationHandle> CreateMockNavigationHandle(
       const GURL& url) {
-    return std::make_unique<MockNavigationHandle>(url, main_rfh());
+    return std::make_unique<NiceMock<MockNavigationHandle>>(url, main_rfh());
   }
 
   std::unique_ptr<NavigationThrottle> CreateNavigationThrottle(
@@ -79,15 +82,20 @@ class BrowserSwitcherNavigationThrottleTest
 
   MockBrowserSwitcherSitelist* sitelist() { return sitelist_; }
 
+  Decision stay() { return {kStay, kDefault, nullptr}; }
+
+  Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
+
  private:
-  MockBrowserSwitcherSitelist* sitelist_;
+  raw_ptr<MockBrowserSwitcherSitelist> sitelist_;
+
+  std::unique_ptr<Rule> bogus_rule_ =
+      CanonicalizeRule("//example.com/", ParsingMode::kDefault);
 };
 
-Decision STAY = {kStay, kDefault, ""};
-Decision GO = {kGo, kSitelist, "example.com"};
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(STAY));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(stay()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -96,7 +104,7 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, ShouldIgnoreNavigation) {
 }
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
-  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(GO));
+  EXPECT_CALL(*sitelist(), GetDecision(_)).WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://example.com/"));
   std::unique_ptr<NavigationThrottle> throttle =
@@ -108,17 +116,39 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnStartRequest) {
 
 TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
   EXPECT_CALL(*sitelist(), GetDecision(_))
-      .WillOnce(Return(STAY))
-      .WillOnce(Return(GO));
+      .WillOnce(Return(stay()))
+      .WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(false));
+
   std::unique_ptr<NavigationThrottle> throttle =
       CreateNavigationThrottle(handle.get());
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest());
+
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(true));
+
   handle->set_url(GURL("https://bing.com/"));
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest());
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(BrowserSwitcherNavigationThrottleTest,
+       DoNotCreateThrottleOnNonPrimaryMainFrame) {
+  std::unique_ptr<MockNavigationHandle> handle =
+      CreateMockNavigationHandle(GURL("https://fencedframe.com/"));
+  handle->set_has_committed(true);
+  handle->set_is_in_primary_main_frame(false);
+
+  std::unique_ptr<NavigationThrottle> throttle_non_primary_main_frame =
+      CreateNavigationThrottle(handle.get());
+  EXPECT_EQ(nullptr, throttle_non_primary_main_frame.get());
+
+  handle->set_is_in_primary_main_frame(true);
+  std::unique_ptr<NavigationThrottle> throttle_in_primary_main_frame =
+      CreateNavigationThrottle(handle.get());
+  EXPECT_NE(nullptr, throttle_in_primary_main_frame.get());
 }
 
 }  // namespace browser_switcher

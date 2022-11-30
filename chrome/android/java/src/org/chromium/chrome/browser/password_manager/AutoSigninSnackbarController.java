@@ -1,18 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -20,10 +18,13 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A controller that triggers an auto sign-in snackbar. Auto sign-in snackbar is
- * triggered on a request credentials call of a Credential Manager API.
+ * triggered on a request credentials call of a Credential Management API.
  */
 public class AutoSigninSnackbarController implements SnackbarManager.SnackbarController {
     private final SnackbarManager mSnackbarManager;
@@ -36,21 +37,22 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
      */
     @CalledByNative
     private static void showSnackbar(Tab tab, String text) {
-        ChromeActivity activity = (ChromeActivity) TabUtils.getActivity(tab);
+        Activity activity = TabUtils.getActivity(tab);
         if (activity == null) return;
-        SnackbarManager snackbarManager = activity.getSnackbarManager();
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return;
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
         AutoSigninSnackbarController snackbarController =
                 new AutoSigninSnackbarController(snackbarManager, tab);
         Snackbar snackbar = Snackbar.make(
                 text, snackbarController, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
-        Context context = tab.getWindowAndroid().getActivity().get();
-        int backgroundColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.default_control_color_active);
-        Drawable icon = AppCompatResources.getDrawable(context, R.drawable.logo_avatar_anonymous);
+        int backgroundColor = SemanticColorUtils.getDefaultControlColorActive(activity);
+        Drawable icon =
+                AppCompatResources.getDrawable(activity, R.drawable.anonymous_account_image);
         snackbar.setSingleLine(false)
                 .setBackgroundColor(backgroundColor)
                 .setProfileImage(icon)
-                .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Light);
+                .setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         snackbarManager.showSnackbar(snackbar);
     }
 

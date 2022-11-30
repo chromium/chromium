@@ -1,16 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tabs/background_tab_animation_view.h"
 
-#include "base/check.h"
-#include "ios/chrome/browser/ui/util/animation_util.h"
+#import "base/check.h"
+#import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -39,11 +38,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   if (self) {
     _incognito = incognito;
 
-    if (@available(iOS 13, *)) {
-      self.overrideUserInterfaceStyle = incognito
-                                            ? UIUserInterfaceStyleDark
-                                            : UIUserInterfaceStyleUnspecified;
-    }
+    self.overrideUserInterfaceStyle =
+        incognito ? UIUserInterfaceStyleDark : UIUserInterfaceStyleUnspecified;
   }
   return self;
 }
@@ -72,7 +68,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   [CATransaction setCompletionBlock:^{
     completion();
   }];
-  CAMediaTimingFunction* easeIn = TimingFunction(ios::material::CurveEaseIn);
+  CAMediaTimingFunction* easeIn = MaterialTimingFunction(MaterialCurveEaseIn);
   CGFloat timing =
       [self animationDurationWithParentSize:self.superview.frame.size
                                       xDiff:xDiff
@@ -119,9 +115,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
   [super didMoveToSuperview];
 
   if (self.subviews.count == 0) {
-    self.backgroundColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kBackgroundColor], self.incognito,
-        [UIColor colorNamed:kBackgroundDarkColor]);
+    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.layer.shadowRadius = 20;
     self.layer.shadowOpacity = 0.4;
     self.layer.shadowOffset = CGSizeMake(0, 3);
@@ -131,9 +125,7 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
             [[UIImage imageNamed:@"open_new_tab_background"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
     linkImage.translatesAutoresizingMaskIntoConstraints = NO;
-    linkImage.tintColor = color::DarkModeDynamicColor(
-        [UIColor colorNamed:kToolbarButtonColor], self.incognito,
-        [UIColor colorNamed:kToolbarButtonDarkColor]);
+    linkImage.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
     [self addSubview:linkImage];
 
@@ -158,8 +150,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
                              fromView:tabGridButtonLayoutGuide.owningView];
 }
 
-// Returns the animation duration, based on the |parentSize| and the |yDiff| and
-// |xDiff| between the origin and destination point. The animation is faster the
+// Returns the animation duration, based on the `parentSize` and the `yDiff` and
+// `xDiff` between the origin and destination point. The animation is faster the
 // closer the origin and destination are.
 - (CGFloat)animationDurationWithParentSize:(CGSize)parentSize
                                      xDiff:(CGFloat)xDiff
@@ -175,8 +167,8 @@ CGFloat kRotationAngleInRadians = 20.0 / 180 * M_PI;
 }
 
 // Returns the BezierPath that should be followed by the animated view, based on
-// the |parentSize| and the |yDiff| and |xDiff| between the |origin| and
-// |destination| point.
+// the `parentSize` and the `yDiff` and `xDiff` between the `origin` and
+// `destination` point.
 - (UIBezierPath*)positionPathWithParentHeight:(CGFloat)parentHeight
                                         xDiff:(CGFloat)xDiff
                                         yDiff:(CGFloat)yDiff

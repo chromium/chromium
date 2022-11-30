@@ -1,0 +1,44 @@
+<?php
+// TODO(iclelland): Generate this sample token during the build. The token
+// below will expire in 2033, but it would be better to always have a token which
+// is guaranteed to be valid when the tests are run.
+// Generate this token with the command:
+// generate_token.py http://127.0.0.1:8000 Frobulate -expire-timestamp=2000000000
+header("Origin-Trial: AlCoOPbezqtrGMzSzbLQC4c+oPqO6yuioemcBPjgcXajF8jtmZr4B8tJRPAARPbsX6hDeVyXCKHzEJfpBXvZgQEAAABReyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9");
+?>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that trial is enabled by header when navigated by window.open</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/window-open-helper.js"></script>
+<script>
+setupWindowOpenTest();
+
+function runTest() {
+  runTestInTarget(() => {
+        return ('testOriginTrialGlobalAttribute' in self &&
+                window.testOriginTrialGlobalAttribute);
+      },
+      'testOriginTrialGlobalAttribute should be defined on window and return true');
+
+  runTestInTarget(() => {
+        const testObject = internals.originTrialsTest();
+        return ('normalAttribute' in testObject && testObject.normalAttribute);
+      },
+      'normalAttribute should be defined and return true');
+}
+</script>
+
+<html>
+
+<body onload="runTest()">
+  <p>
+    This test opens a new window. It passes, if the trial is enabled in the
+    opened window.
+  </p>
+  <script>
+    openCurrentAsTarget();
+  </script>
+</body>
+</html>

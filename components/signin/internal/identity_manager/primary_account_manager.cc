@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,12 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
@@ -30,13 +30,10 @@ using signin::PrimaryAccountChangeEvent;
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
-    AccountTrackerService* account_tracker_service,
-    std::unique_ptr<PrimaryAccountPolicyManager> policy_manager)
+    AccountTrackerService* account_tracker_service)
     : client_(client),
       token_service_(token_service),
-      account_tracker_service_(account_tracker_service),
-      initialized_(false),
-      policy_manager_(std::move(policy_manager)) {
+      account_tracker_service_(account_tracker_service) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
 }
@@ -90,6 +87,7 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
                                     !pref_account_id.empty());
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!pref_account_id.empty()) {
     if (account_tracker_service_->GetMigrationState() ==
         AccountTrackerService::MIGRATION_IN_PROGRESS) {
@@ -103,6 +101,7 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
       }
     }
   }
+#endif
 
   bool consented =
       client_->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync);
@@ -119,14 +118,12 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
     SetPrimaryAccountInternal(account_info, consented);
   }
 
-  if (policy_manager_) {
-    policy_manager_->InitializePolicy(local_state, this);
-  }
   // It is important to only load credentials after starting to observe the
   // token service.
   token_service_->AddObserver(this);
   token_service_->LoadCredentials(
-      GetPrimaryAccountId(signin::ConsentLevel::kSync));
+      GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 bool PrimaryAccountManager::IsInitialized() const {
@@ -145,18 +142,34 @@ CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
   return GetPrimaryAccountInfo(consent_level).account_id;
 }
 
-void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
-    const CoreAccountInfo& account_info) {
+void PrimaryAccountManager::SetPrimaryAccountInfo(
+    const CoreAccountInfo& account_info,
+    signin::ConsentLevel consent_level) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+    DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync))
+        << "Changing the primary sync account is not allowed.";
     return;
   }
+  DCHECK(!account_info.account_id.empty());
+  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.email.empty());
+  DCHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
+              .IsEmpty())
+      << "Account must be seeded before being set as primary account";
 
-  bool account_changed = account_info != primary_account_info();
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
-  if (account_changed)
-    FirePrimaryAccountChanged(previous_state);
+  switch (consent_level) {
+    case signin::ConsentLevel::kSync:
+      SetSyncPrimaryAccountInternal(account_info);
+      FirePrimaryAccountChanged(previous_state);
+      return;
+    case signin::ConsentLevel::kSignin:
+      bool account_changed = account_info != primary_account_info();
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
+      if (account_changed)
+        FirePrimaryAccountChanged(previous_state);
+      return;
+  }
 }
 
 void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
@@ -226,28 +239,6 @@ bool PrimaryAccountManager::HasPrimaryAccount(
   }
 }
 
-void PrimaryAccountManager::SetSyncPrimaryAccountInfo(
-    const CoreAccountInfo& account_info) {
-#if DCHECK_IS_ON()
-  DCHECK(!account_info.account_id.empty());
-  DCHECK(!account_info.gaia.empty());
-  DCHECK(!account_info.email.empty());
-  DCHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
-              .IsEmpty())
-      << "Account should have been seeded before being set as primary account";
-#endif
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(account_info.account_id,
-              GetPrimaryAccountId(signin::ConsentLevel::kSync))
-        << "Changing the primary sync account is not allowed.";
-    return;
-  }
-
-  PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  SetSyncPrimaryAccountInternal(account_info);
-  FirePrimaryAccountChanged(previous_state);
-}
-
 void PrimaryAccountManager::UpdatePrimaryAccountInfo() {
   const CoreAccountId primary_account_id = primary_account_info().account_id;
   DCHECK(!primary_account_id.empty());
@@ -289,36 +280,23 @@ void PrimaryAccountManager::RevokeSyncConsent(
 void PrimaryAccountManager::StartSignOut(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric,
-    RemoveAccountsOption remove_option,
-    bool assert_signout_allowed) {
+    RemoveAccountsOption remove_option) {
   VLOG(1) << "StartSignOut: " << static_cast<int>(signout_source_metric) << ", "
           << static_cast<int>(signout_delete_metric) << ", "
           << static_cast<int>(remove_option);
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    client_->PreSignOut(
-        base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
-                       base::Unretained(this), signout_source_metric,
-                       signout_delete_metric, remove_option,
-                       assert_signout_allowed),
-        signout_source_metric);
-  } else {
-    // Sign-out is always allowed if there's only unconsented primary account
-    // without sync consent, so skip calling PreSignOut.
-    OnSignoutDecisionReached(signout_source_metric, signout_delete_metric,
-                             remove_option, assert_signout_allowed,
-                             SigninClient::SignoutDecision::ALLOW_SIGNOUT);
-  }
+  client_->PreSignOut(
+      base::BindOnce(&PrimaryAccountManager::OnSignoutDecisionReached,
+                     base::Unretained(this), signout_source_metric,
+                     signout_delete_metric, remove_option),
+      signout_source_metric);
 }
 
 void PrimaryAccountManager::OnSignoutDecisionReached(
     signin_metrics::ProfileSignout signout_source_metric,
     signin_metrics::SignoutDelete signout_delete_metric,
     RemoveAccountsOption remove_option,
-    bool assert_signout_allowed,
     SigninClient::SignoutDecision signout_decision) {
   DCHECK(IsInitialized());
-  if (assert_signout_allowed)
-    DCHECK_EQ(SigninClient::SignoutDecision::ALLOW_SIGNOUT, signout_decision);
 
   VLOG(1) << "OnSignoutDecisionReached: "
           << (signout_decision == SigninClient::SignoutDecision::ALLOW_SIGNOUT);
@@ -348,7 +326,7 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
       break;
     case RemoveAccountsOption::kKeepAllAccounts:
       if (previous_state.consent_level == signin::ConsentLevel::kSignin) {
-        // Nothing to update as the primary account is already at kNotRequired
+        // Nothing to update as the primary account is already at kSignin
         // consent level. Prefer returning to avoid firing useless
         // OnPrimaryAccountChanged() notifications.
         return;
@@ -389,19 +367,21 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
   token_service_->RemoveObserver(this);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (account_tracker_service_->GetMigrationState() ==
       AccountTrackerService::MIGRATION_IN_PROGRESS) {
     account_tracker_service_->SetMigrationDone();
   }
+#endif
 
   // Remove account information from the account tracker service if needed.
   if (token_service_->HasLoadCredentialsFinishedWithNoErrors()) {
     std::vector<AccountInfo> accounts_in_tracker_service =
         account_tracker_service_->GetAccounts();
-    const CoreAccountId sync_account_id =
-        GetPrimaryAccountId(signin::ConsentLevel::kSync);
+    const CoreAccountId primary_account_id_ =
+        GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     for (const auto& account : accounts_in_tracker_service) {
-      if (sync_account_id != account.account_id &&
+      if (primary_account_id_ != account.account_id &&
           !token_service_->RefreshTokenIsAvailable(account.account_id)) {
         VLOG(0) << "Removed account from account tracker service: "
                 << account.account_id;
@@ -409,29 +389,4 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       }
     }
   }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(msarda): This code should be removed once migration finishes.
-  // Use histogram Signin.AccountTracker.GaiaIdMigrationState to verify the
-  // migration state.
-  if (!base::FeatureList::IsEnabled(switches::kForceAccountIdMigration))
-    return;
-
-  // On non-ChromeOS platforms, account ID migration started in 2015. Data is
-  // most probably corrupted for profiles that were not migrated. Clear all
-  // accounts to fix this state.
-  if (account_tracker_service_->GetMigrationState() ==
-      AccountTrackerService::MIGRATION_NOT_STARTED) {
-    // Clear the primary account if any.
-    ClearPrimaryAccount(signin_metrics::ACCOUNT_ID_MIGRATION,
-                        signin_metrics::SignoutDelete::IGNORE_METRIC);
-    // Clean all remaining account information from the account tracker.
-    for (const auto& account : account_tracker_service_->GetAccounts())
-      account_tracker_service_->RemoveAccount(account.account_id);
-    account_tracker_service_->SetMigrationDone();
-    client_->GetPrefs()->CommitPendingWrite();
-  }
-  DCHECK_EQ(AccountTrackerService::MIGRATION_DONE,
-            account_tracker_service_->GetMigrationState());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+#include "extensions/shell/test/extensions_render_view_test.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -18,7 +18,7 @@ using blink::WebLocalFrame;
 namespace extensions {
 namespace {
 
-class ScriptContextTest : public ChromeRenderViewTest {
+class ScriptContextTest : public ExtensionsRenderViewTest {
  protected:
   GURL GetEffectiveDocumentURLForContext(WebLocalFrame* frame) {
     return ScriptContext::GetEffectiveDocumentURLForContext(
@@ -52,8 +52,7 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
          <iframe name='frame4' src="data:text/html,<html>Hi</html>"></iframe>
          <iframe name='frame5'
              src="data:text/html,<html>Hi</html>"
-             sandbox=''></iframe>
-         <iframe disallowdocumentaccess name='frame6'></iframe>)";
+             sandbox=''></iframe>)";
 
   const char frame3_html[] =
       R"(<iframe name='frame3_1'></iframe>
@@ -63,7 +62,6 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_TRUE(frame);
-  blink::WebRuntimeFeatures::EnableDisallowDocumentAccess(true);
 
   content::RenderFrame::FromWebFrame(frame)->LoadHTMLStringForTesting(
       frame_html, top_url, "UTF-8", GURL(), false /* replace_current_item */);
@@ -93,9 +91,6 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
   WebLocalFrame* frame5 = frame4->NextSibling()->ToWebLocalFrame();
   ASSERT_TRUE(frame5);
   ASSERT_EQ("frame5", frame5->AssignedName());
-  WebLocalFrame* frame6 = frame5->NextSibling()->ToWebLocalFrame();
-  ASSERT_TRUE(frame6);
-  ASSERT_EQ("frame6", frame6->AssignedName());
 
   // Load a blank document in a frame from a different origin.
   content::RenderFrame::FromWebFrame(frame3)->LoadHTMLStringForTesting(
@@ -159,11 +154,6 @@ TEST_F(ScriptContextTest, GetEffectiveDocumentURL) {
       GetEffectiveDocumentURLForInjection(
           frame5,
           MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree));
-
-  // Documents with disallowed access (disallowdocumentaccess) behave much like
-  // sandboxed documents.
-  EXPECT_EQ(blank_url, GetEffectiveDocumentURLForContext(frame6));
-  EXPECT_EQ(top_url, GetEffectiveDocumentURLForInjection(frame6));
 
   // top -> different origin = different origin
   EXPECT_EQ(different_url, GetEffectiveDocumentURLForContext(frame3));

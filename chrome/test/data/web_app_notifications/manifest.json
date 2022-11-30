@@ -1,0 +1,23 @@
+{
+  "name": "Web App Notifications Test",
+  "short_name": "Notifications Test",
+  "description": "A Web App That Uses The Notifications API",
+  "icons": [
+    {
+      "src": "yellow-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "monochrome-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "start_url": "index.html",
+  "display": "minimal-ui",
+  "theme_color": "#FF0000",
+  "background_color": "#FFFFFF"
+}

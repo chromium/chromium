@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -29,41 +30,45 @@ using testing::_;
 
 namespace content {
 
-class DummyPictureInPictureSessionObserver
+class DummyPictureInPictureSessionObserver final
     : public blink::mojom::PictureInPictureSessionObserver {
  public:
   DummyPictureInPictureSessionObserver() = default;
-  ~DummyPictureInPictureSessionObserver() final = default;
+
+  DummyPictureInPictureSessionObserver(
+      const DummyPictureInPictureSessionObserver&) = delete;
+  DummyPictureInPictureSessionObserver& operator=(
+      const DummyPictureInPictureSessionObserver&) = delete;
+
+  ~DummyPictureInPictureSessionObserver() override = default;
 
   // Implementation of PictureInPictureSessionObserver.
-  void OnWindowSizeChanged(const gfx::Size&) final {}
-  void OnStopped() final {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyPictureInPictureSessionObserver);
+  void OnWindowSizeChanged(const gfx::Size&) override {}
+  void OnStopped() override {}
 };
 
 class PictureInPictureDelegate : public WebContentsDelegate {
  public:
   PictureInPictureDelegate() = default;
 
-  MOCK_METHOD3(EnterPictureInPicture,
-               PictureInPictureResult(WebContents*,
-                                      const viz::SurfaceId&,
-                                      const gfx::Size&));
+  PictureInPictureDelegate(const PictureInPictureDelegate&) = delete;
+  PictureInPictureDelegate& operator=(const PictureInPictureDelegate&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureDelegate);
+  MOCK_METHOD1(EnterPictureInPicture, PictureInPictureResult(WebContents*));
 };
 
-class TestOverlayWindow : public OverlayWindow {
+class TestOverlayWindow : public VideoOverlayWindow {
  public:
   TestOverlayWindow() = default;
+
+  TestOverlayWindow(const TestOverlayWindow&) = delete;
+  TestOverlayWindow& operator=(const TestOverlayWindow&) = delete;
+
   ~TestOverlayWindow() override {}
 
-  static std::unique_ptr<OverlayWindow> Create(
-      PictureInPictureWindowController* controller) {
-    return std::unique_ptr<OverlayWindow>(new TestOverlayWindow());
+  static std::unique_ptr<VideoOverlayWindow> Create(
+      VideoPictureInPictureWindowController* controller) {
+    return std::unique_ptr<VideoOverlayWindow>(new TestOverlayWindow());
   }
 
   bool IsActive() override { return false; }
@@ -73,7 +78,7 @@ class TestOverlayWindow : public OverlayWindow {
   bool IsVisible() override { return false; }
   bool IsAlwaysOnTop() override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
-  void UpdateVideoSize(const gfx::Size& natural_size) override {
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
   }
   void SetPlaybackState(PlaybackState playback_state) override {}
@@ -81,13 +86,16 @@ class TestOverlayWindow : public OverlayWindow {
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetMicrophoneMuted(bool muted) override {}
+  void SetCameraState(bool turned_on) override {}
+  void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
+  void SetToggleCameraButtonVisibility(bool is_visible) override {}
+  void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
   cc::Layer* GetLayerForTesting() override { return nullptr; }
 
  private:
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverlayWindow);
 };
 
 class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
@@ -95,8 +103,8 @@ class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
   PictureInPictureTestBrowserClient() = default;
   ~PictureInPictureTestBrowserClient() override = default;
 
-  std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
-      PictureInPictureWindowController* controller) override {
+  std::unique_ptr<VideoOverlayWindow> CreateWindowForVideoPictureInPicture(
+      VideoPictureInPictureWindowController* controller) override {
     return TestOverlayWindow::Create(controller);
   }
 };
@@ -118,9 +126,6 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
-  void AddMediaPlayerObserver(
-      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
-      override {}
   void RequestPlay() override {}
   void RequestPause(bool triggered_by_user) override {}
   void RequestSeekForward(base::TimeDelta seek_time) override {}
@@ -128,6 +133,7 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   void RequestSeekTo(base::TimeDelta seek_time) override {}
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void RequestMute(bool mute) override {}
   void SetVolumeMultiplier(double multiplier) override {}
   void SetPersistentState(bool persistent) override {}
   void SetPowerExperimentState(bool enabled) override {}
@@ -145,7 +151,7 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
     SetBrowserClientForTesting(&browser_client_);
 
-    TestRenderFrameHost* render_frame_host = contents()->GetMainFrame();
+    TestRenderFrameHost* render_frame_host = contents()->GetPrimaryMainFrame();
     render_frame_host->InitializeRenderFrameIfNeeded();
 
     contents()->SetDelegate(&delegate_);
@@ -174,13 +180,13 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
   PictureInPictureTestBrowserClient browser_client_;
   PictureInPictureDelegate delegate_;
   // Will be deleted when the frame is destroyed.
-  PictureInPictureServiceImpl* service_impl_;
+  raw_ptr<PictureInPictureServiceImpl> service_impl_;
   // Required to pass a valid PendingRemote to StartSession() in the tests.
   PictureInPictureMediaPlayerReceiver media_player_receiver_;
 };
 
 // Flaky on Android. https://crbug.com/970866
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EnterPictureInPicture DISABLED_EnterPictureInPicture
 #else
 #define MAYBE_EnterPictureInPicture EnterPictureInPicture
@@ -188,8 +194,8 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
 TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  const VideoPictureInPictureWindowControllerImpl* controller =
+      VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
           contents());
 
   ASSERT_TRUE(controller);
@@ -209,17 +215,17 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kSuccess));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
   gfx::Size window_size;
 
+  const gfx::Rect source_bounds(1, 2, 3, 4);
   service().StartSession(
       kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
       gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
+      std::move(observer_remote), source_bounds,
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {
@@ -228,9 +234,9 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
             window_size = b;
           }));
 
-  EXPECT_TRUE(controller->active_session_for_testing());
   EXPECT_TRUE(session_remote);
   EXPECT_EQ(gfx::Size(42, 42), window_size);
+  EXPECT_EQ(source_bounds, controller->GetSourceBounds());
 
   // Picture-in-Picture media player id should not be reset when the media is
   // destroyed (e.g. video stops playing). This allows the Picture-in-Picture
@@ -241,8 +247,8 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
 
 TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
   const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  const VideoPictureInPictureWindowControllerImpl* controller =
+      VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
           contents());
 
   ASSERT_TRUE(controller);
@@ -255,59 +261,17 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kNotSupported));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
   gfx::Size window_size;
+  const gfx::Rect source_bounds(1, 2, 3, 4);
 
   service().StartSession(
       kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), surface_id,
       gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
-      base::BindLambdaForTesting(
-          [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
-              const gfx::Size& b) {
-            if (remote.is_valid())
-              session_remote.Bind(std::move(remote));
-            window_size = b;
-          }));
-
-  EXPECT_FALSE(controller->active_session_for_testing());
-
-  // The |session_remote| won't be bound because the |remote| received in the
-  // StartSessionCallback will be invalid due to PictureInPictureSession not
-  // ever being created (meaning the the receiver won't be bound either).
-  EXPECT_FALSE(session_remote);
-  EXPECT_EQ(gfx::Size(), window_size);
-}
-
-// The |surface_id| is an optional parameter in the StartSession() call but
-// needs to be non-null in order to create a session at the moment. The creation
-// will early return if that condition isn't satisfied, failing to create the
-// session.
-TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NoSurfaceId) {
-  const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
-          contents());
-
-  ASSERT_TRUE(controller);
-  EXPECT_FALSE(controller->active_session_for_testing());
-
-  mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>
-      observer_remote;
-
-  EXPECT_CALL(delegate(), EnterPictureInPicture(_, _, _)).Times(0);
-
-  mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
-  gfx::Size window_size;
-
-  service().StartSession(
-      kPlayerVideoOnlyId, BindMediaPlayerReceiverAndPassRemote(), base::nullopt,
-      gfx::Size(42, 42), true /* show_play_pause_button */,
-      std::move(observer_remote),
+      std::move(observer_remote), source_bounds,
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<blink::mojom::PictureInPictureSession> remote,
               const gfx::Size& b) {

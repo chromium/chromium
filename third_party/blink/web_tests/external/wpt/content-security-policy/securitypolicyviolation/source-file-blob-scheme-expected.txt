@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Violations from data:-URL scripts have a sourceFile of 'blob' assert_equals: expected 16 but got 17
+Harness: the test ran to completion.
+

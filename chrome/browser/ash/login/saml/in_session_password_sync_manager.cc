@@ -1,21 +1,29 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 
+#include <utility>
+
 #include "ash/constants/ash_switches.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -23,7 +31,7 @@
 #include "components/user_manager/user_manager_base.h"
 #include "content/public/browser/storage_partition.h"
 
-namespace chromeos {
+namespace ash {
 
 InSessionPasswordSyncManager::InSessionPasswordSyncManager(
     Profile* primary_profile)
@@ -119,8 +127,8 @@ void InSessionPasswordSyncManager::UpdateOnlineAuth() {
 
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
-  user_manager::known_user::SetLastOnlineSignin(primary_user_->GetAccountId(),
-                                                now);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), now);
 }
 
 void InSessionPasswordSyncManager::CreateTokenAsync() {
@@ -130,13 +138,14 @@ void InSessionPasswordSyncManager::CreateTokenAsync() {
 }
 
 void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
+  password_sync_token_fetcher_.reset();
   PrefService* prefs = primary_profile_->GetPrefs();
 
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
   lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
 }
 
@@ -147,12 +156,13 @@ void InSessionPasswordSyncManager::FetchTokenAsync() {
 }
 
 void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
+  password_sync_token_fetcher_.reset();
   if (!token.empty()) {
     // Set token fetched from the endpoint in prefs and local settings.
     PrefService* prefs = primary_profile_->GetPrefs();
     prefs->SetString(prefs::kSamlPasswordSyncToken, token);
-    user_manager::known_user::SetPasswordSyncToken(
-        primary_user_->GetAccountId(), token);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
     lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
   } else {
     // This is the first time a sync token is created for the user: we need to
@@ -167,8 +177,16 @@ void InSessionPasswordSyncManager::OnTokenVerified(bool is_valid) {
 
 void InSessionPasswordSyncManager::OnApiCallFailed(
     PasswordSyncTokenFetcher::ErrorType error_type) {
-  // Ignore API errors since they are logged by TokenFetcher and will be
-  // re-tried after the next verify interval.
+  // If error_type == kGetNoList || kGetNoToken the token API is not
+  // initialized yet and we can fix it by creating a new token on lock
+  // screen re-authentication.
+  // All other API errors will be ignored since they are logged by
+  // TokenFetcher and will be re-tried.
+  password_sync_token_fetcher_.reset();
+  if (error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoList ||
+      error_type == PasswordSyncTokenFetcher::ErrorType::kGetNoToken) {
+    CreateTokenAsync();
+  }
 }
 
 void InSessionPasswordSyncManager::CheckCredentials(
@@ -176,10 +194,36 @@ void InSessionPasswordSyncManager::CheckCredentials(
     PasswordChangedCallback callback) {
   user_context_ = user_context;
   password_changed_callback_ = std::move(callback);
+  content::StoragePartition* lock_screen_partition =
+      login::GetLockScreenPartition();
+  if (!lock_screen_partition) {
+    LOG(ERROR) << "The lock screen partition is not available yet";
+    OnCookiesTransfered();
+    return;
+  }
+
+  bool transfer_saml_auth_cookies_on_subsequent_login = false;
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(primary_profile_);
+  if (user->IsAffiliated()) {
+    CrosSettings::Get()->GetBoolean(
+        kAccountsPrefTransferSAMLCookies,
+        &transfer_saml_auth_cookies_on_subsequent_login);
+  }
+
+  ProfileAuthData::Transfer(
+      lock_screen_partition, primary_profile_->GetDefaultStoragePartition(),
+      false /*transfer_auth_cookies_on_first_login*/,
+      transfer_saml_auth_cookies_on_subsequent_login,
+      base::BindOnce(&InSessionPasswordSyncManager::OnCookiesTransfered,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void InSessionPasswordSyncManager::OnCookiesTransfered() {
   if (!extended_authenticator_) {
     extended_authenticator_ = ExtendedAuthenticator::Create(this);
   }
-  extended_authenticator_.get()->AuthenticateToCheck(user_context,
+  extended_authenticator_.get()->AuthenticateToCheck(user_context_,
                                                      base::OnceClosure());
 }
 
@@ -193,8 +237,7 @@ void InSessionPasswordSyncManager::UpdateUserPassword(
 
 // TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
 // re-authentication.
-void InSessionPasswordSyncManager::OnAuthFailure(
-    const chromeos::AuthFailure& error) {
+void InSessionPasswordSyncManager::OnAuthFailure(const AuthFailure& error) {
   password_changed_callback_.Run();
 }
 
@@ -239,6 +282,62 @@ void InSessionPasswordSyncManager::DismissDialog() {
 void InSessionPasswordSyncManager::ResetDialog() {
   DCHECK(lock_screen_start_reauth_dialog_);
   lock_screen_start_reauth_dialog_.reset();
+  OnReauthDialogClosedForTesting();  // IN-TEST
 }
 
-}  // namespace chromeos
+int InSessionPasswordSyncManager::GetDialogWidth() {
+  if (!lock_screen_start_reauth_dialog_)
+    return 0;
+  return lock_screen_start_reauth_dialog_->GetDialogWidth();
+}
+
+content::WebContents* InSessionPasswordSyncManager::GetDialogWebContents() {
+  if (!lock_screen_start_reauth_dialog_)
+    return nullptr;
+  return lock_screen_start_reauth_dialog_->GetWebContents();
+}
+
+bool InSessionPasswordSyncManager::IsReauthDialogLoadedForTesting(
+    base::OnceClosure callback) {
+  if (is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_loaded_callback_for_testing_);
+  on_dialog_loaded_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+bool InSessionPasswordSyncManager::IsReauthDialogClosedForTesting(
+    base::OnceClosure callback) {
+  if (!is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_closed_callback_for_testing_);
+  on_dialog_closed_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+void InSessionPasswordSyncManager::OnReauthDialogReadyForTesting() {
+  if (is_dialog_loaded_for_testing_)
+    return;
+  is_dialog_loaded_for_testing_ = true;
+  if (on_dialog_loaded_callback_for_testing_) {
+    std::move(on_dialog_loaded_callback_for_testing_).Run();
+  }
+}
+
+void InSessionPasswordSyncManager::OnReauthDialogClosedForTesting() {
+  if (!is_dialog_loaded_for_testing_)
+    return;
+  is_dialog_loaded_for_testing_ = false;
+  if (on_dialog_closed_callback_for_testing_) {
+    std::move(on_dialog_closed_callback_for_testing_).Run();
+  }
+}
+
+void InSessionPasswordSyncManager::OnWebviewLoadAborted() {
+  if (lock_screen_start_reauth_dialog_) {
+    lock_screen_start_reauth_dialog_->UpdateState(
+        NetworkError::ERROR_REASON_FRAME_ERROR);
+  }
+}
+
+}  // namespace ash

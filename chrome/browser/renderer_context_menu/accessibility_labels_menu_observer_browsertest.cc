@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/renderer_context_menu/accessibility_labels_menu_observer.h"
 
-#include "base/macros.h"
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -14,7 +15,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -32,11 +32,6 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
   AccessibilityLabelsMenuObserverTest();
 
   // InProcessBrowserTest overrides:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExperimentalAccessibilityLabels);
-    InProcessBrowserTest::SetUp();
-  }
   void SetUpOnMainThread() override { Reset(false); }
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -45,8 +40,8 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
 
   void Reset(bool incognito) {
     observer_.reset();
-    menu_.reset(new MockRenderViewContextMenu(incognito));
-    observer_.reset(new AccessibilityLabelsMenuObserver(menu_.get()));
+    menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
+    observer_ = std::make_unique<AccessibilityLabelsMenuObserver>(menu_.get());
     menu_->SetObserver(observer_.get());
   }
 
@@ -55,15 +50,18 @@ class AccessibilityLabelsMenuObserverTest : public InProcessBrowserTest {
     observer_->InitMenu(params);
   }
 
+  AccessibilityLabelsMenuObserverTest(
+      const AccessibilityLabelsMenuObserverTest&) = delete;
+  AccessibilityLabelsMenuObserverTest& operator=(
+      const AccessibilityLabelsMenuObserverTest&) = delete;
+
   ~AccessibilityLabelsMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
   AccessibilityLabelsMenuObserver* observer() { return observer_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AccessibilityLabelsMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsMenuObserverTest);
 };
 
 AccessibilityLabelsMenuObserverTest::AccessibilityLabelsMenuObserverTest() {}
@@ -93,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
-  content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+  content::testing::ScopedContentAXModeSetter scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,

@@ -23,6 +23,9 @@ per-file browser_instant_controller*=file://chrome/browser/search/OWNERS
 per-file avatar_*=file://components/signin/OWNERS
 per-file signin_*=file://components/signin/OWNERS
 
+# Profiles
+per-file profile_*=file://chrome/browser/profiles/OWNERS
+
 per-file ui_features.cc=*
 per-file ui_features.h=*
 

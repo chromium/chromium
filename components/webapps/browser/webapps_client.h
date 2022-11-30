@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,10 @@ class WebappsClient {
   virtual AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual bool IsInstallationInProgress(content::WebContents* web_contents,
-                                        const GURL& manifest_url) = 0;
+                                        const GURL& manifest_url,
+                                        const GURL& manifest_id) = 0;
 
   virtual bool CanShowAppBanners(content::WebContents* web_contents) = 0;
 

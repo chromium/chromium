@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@ import "mojo/public/mojom/base/string16.mojom";
 // The events at which taking a text dump are supported.
 enum TextDumpEvent {
   // The first layout on the page. Equal to
-  // blink::WebMeaningfulLayout::kFinishedParsing.
+  // blink::WebMeaningfulLayout::kFinishedParsing. Note that the text dumped at
+  // this event is not deterministic due to races in the renderer. In particular
+  // some text that may have been populated after the "real" first layout event
+  // may also be captured.
   kFirstLayout,
 
   // The page is finished loading. Equal to
@@ -34,6 +37,7 @@ struct PageTextDumpRequest {
 // instance.
 interface PageTextConsumer {
   // Called for each chunk of page text.
+  // Security note: |chunk| should be treated as untrusted data.
   OnTextDumpChunk(mojo_base.mojom.String16 chunk);
 
   // Called when no more chunks will be sent.

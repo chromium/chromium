@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,19 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 
+GEN('#include "build/build_config.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
-GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "services/network/public/cpp/features.h"');
 
-// eslint-disable-next-line no-var
 var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
     return 'chrome://tab-search.top-chrome/test_loader.html?module=tab_search/tab_search_app_focus_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: [
-        'features::kTabSearch',
-      ]
-    };
-  }
 };
 
-GEN('#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
+GEN('#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');

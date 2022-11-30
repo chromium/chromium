@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,9 @@ namespace {
 using mojo::internal::ContainerValidateParams;
 
 // Creates an array of arrays of handles (2 X 3) for testing.
-std::vector<base::Optional<std::vector<ScopedHandle>>>
+std::vector<absl::optional<std::vector<ScopedHandle>>>
 CreateTestNestedHandleArray() {
-  std::vector<base::Optional<std::vector<ScopedHandle>>> array(2);
+  std::vector<absl::optional<std::vector<ScopedHandle>>> array(2);
   for (size_t i = 0; i < array.size(); ++i) {
     std::vector<ScopedHandle> nested_array(3);
     for (size_t j = 0; j < nested_array.size(); ++j) {
@@ -156,7 +156,7 @@ TEST_F(SerializationWarningTest, FixedArrayOfStructsInStruct) {
 TEST_F(SerializationWarningTest, ArrayOfArraysOfHandles) {
   using MojomType = ArrayDataView<ArrayDataView<ScopedHandle>>;
   auto test_array = CreateTestNestedHandleArray();
-  test_array[0] = base::nullopt;
+  test_array[0] = absl::nullopt;
   (*test_array[1])[0] = ScopedHandle();
 
   ContainerValidateParams validate_params_0(
@@ -166,7 +166,7 @@ TEST_F(SerializationWarningTest, ArrayOfArraysOfHandles) {
                               &validate_params_0);
 
   test_array = CreateTestNestedHandleArray();
-  test_array[0] = base::nullopt;
+  test_array[0] = absl::nullopt;
   ContainerValidateParams validate_params_1(
       0, false, new ContainerValidateParams(0, true, nullptr));
   TestArrayWarning<MojomType>(
@@ -197,7 +197,7 @@ TEST_F(SerializationWarningTest, ArrayOfStrings) {
                               mojo::internal::VALIDATION_ERROR_NONE,
                               &validate_params_0);
 
-  std::vector<base::Optional<std::string>> optional_test_array(3);
+  std::vector<absl::optional<std::string>> optional_test_array(3);
   ContainerValidateParams validate_params_1(
       0, false, new ContainerValidateParams(0, false, nullptr));
   TestArrayWarning<MojomType>(
@@ -216,8 +216,7 @@ TEST_F(SerializationWarningTest, ArrayOfStrings) {
 
 TEST_F(SerializationWarningTest, StructInUnion) {
   DummyStructPtr dummy(nullptr);
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_dummy(std::move(dummy));
+  ObjectUnionPtr obj = ObjectUnion::NewFDummy(std::move(dummy));
 
   TestUnionWarning(std::move(obj),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER);
@@ -225,8 +224,7 @@ TEST_F(SerializationWarningTest, StructInUnion) {
 
 TEST_F(SerializationWarningTest, UnionInUnion) {
   PodUnionPtr pod(nullptr);
-  ObjectUnionPtr obj(ObjectUnion::New());
-  obj->set_f_pod_union(std::move(pod));
+  ObjectUnionPtr obj = ObjectUnion::NewFPodUnion(std::move(pod));
 
   TestUnionWarning(std::move(obj),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER);
@@ -234,8 +232,7 @@ TEST_F(SerializationWarningTest, UnionInUnion) {
 
 TEST_F(SerializationWarningTest, HandleInUnion) {
   ScopedMessagePipeHandle pipe;
-  HandleUnionPtr handle(HandleUnion::New());
-  handle->set_f_message_pipe(std::move(pipe));
+  HandleUnionPtr handle = HandleUnion::NewFMessagePipe(std::move(pipe));
 
   TestUnionWarning(std::move(handle),
                    mojo::internal::VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_input_stream.mojom";
 import "media/mojo/mojom/audio_logging.mojom";
 import "media/mojo/mojom/audio_output_stream.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/audio_processing.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -36,7 +37,9 @@ interface AudioStreamFactory {
   // for enabling automatic gain control. |key_press_count_buffer| is an
   // optional readonly shared memory handle for reading the current key press
   // count, updated by browser process in media::UserInputMonitor
-  // implementation.
+  // implementation. When |processing_config| is passed, audio processing is
+  // requested (described by |processing_config|), and the audio service will
+  // apply it, on supported platforms (Win, Mac so far).
   CreateInputStream(
     pending_receiver<media.mojom.AudioInputStream> stream,
     pending_remote<media.mojom.AudioInputStreamClient> client,
@@ -44,7 +47,8 @@ interface AudioStreamFactory {
     pending_remote<media.mojom.AudioLog>? log,
     string device_id, media.mojom.AudioParameters params,
     uint32 shared_memory_count, bool enable_agc,
-    mojo_base.mojom.ReadOnlySharedMemoryRegion? key_press_count_buffer)
+    mojo_base.mojom.ReadOnlySharedMemoryRegion? key_press_count_buffer,
+    media.mojom.AudioProcessingConfig? processing_config)
       => (media.mojom.ReadOnlyAudioDataPipe? data_pipe, bool initially_muted,
           mojo_base.mojom.UnguessableToken? stream_id);
 

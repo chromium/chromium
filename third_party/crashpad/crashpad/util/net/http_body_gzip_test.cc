@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "gtest/gtest.h"
@@ -36,6 +35,10 @@ namespace {
 class ScopedZlibInflateStream {
  public:
   explicit ScopedZlibInflateStream(z_stream* zlib) : zlib_(zlib) {}
+
+  ScopedZlibInflateStream(const ScopedZlibInflateStream&) = delete;
+  ScopedZlibInflateStream& operator=(const ScopedZlibInflateStream&) = delete;
+
   ~ScopedZlibInflateStream() {
     int zr = inflateEnd(zlib_);
     EXPECT_EQ(zr, Z_OK) << "inflateEnd: " << ZlibErrorString(zr);
@@ -43,7 +46,6 @@ class ScopedZlibInflateStream {
 
  private:
   z_stream* zlib_;  // weak
-  DISALLOW_COPY_AND_ASSIGN(ScopedZlibInflateStream);
 };
 
 void GzipInflate(const std::string& compressed,
@@ -133,7 +135,7 @@ void TestGzipDeflateInflate(const std::string& string) {
 std::string MakeString(size_t size) {
   std::string string;
   for (size_t i = 0; i < size; ++i) {
-    string.append(1, (i % 256) ^ ((i >> 8) % 256));
+    string.append(1, static_cast<char>((i % 256) ^ ((i >> 8) % 256)));
   }
   return string;
 }

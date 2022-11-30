@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
@@ -22,8 +21,7 @@ const int kWildcardRule = 2;
 const int kPrivateRule = 4;
 }
 
-namespace net {
-namespace tld_cleanup {
+namespace net::tld_cleanup {
 
 // Writes the list of domain rules contained in the 'rules' set to the
 // 'outfile', with each rule terminated by a LF.  The file must already have
@@ -31,7 +29,7 @@ namespace tld_cleanup {
 bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
   std::string data;
   data.append("%{\n"
-              "// Copyright 2012 The Chromium Authors. All rights reserved.\n"
+              "// Copyright 2012 The Chromium Authors\n"
               "// Use of this source code is governed by a BSD-style license "
               "that can be\n"
               "// found in the LICENSE file.\n\n"
@@ -44,16 +42,16 @@ bool WriteRules(const RuleMap& rules, const base::FilePath& outfile) {
               "};\n"
               "%%\n");
 
-  for (auto i = rules.begin(); i != rules.end(); ++i) {
-    data.append(i->first);
+  for (const auto& rule : rules) {
+    data.append(rule.first);
     data.append(", ");
     int type = 0;
-    if (i->second.exception) {
+    if (rule.second.exception) {
       type = kExceptionRule;
-    } else if (i->second.wildcard) {
+    } else if (rule.second.wildcard) {
       type = kWildcardRule;
     }
-    if (i->second.is_private) {
+    if (rule.second.is_private) {
       type += kPrivateRule;
     }
     data.append(base::NumberToString(type));
@@ -141,8 +139,8 @@ NormalizeResult NormalizeDataToRuleMap(const std::string data,
   size_t line_end = 0;
   bool is_private = false;
   RuleMap extra_rules;
-  int begin_private_length = base::size(kBeginPrivateDomainsComment) - 1;
-  int end_private_length = base::size(kEndPrivateDomainsComment) - 1;
+  int begin_private_length = std::size(kBeginPrivateDomainsComment) - 1;
+  int end_private_length = std::size(kEndPrivateDomainsComment) - 1;
   while (line_start < data.size()) {
     if (line_start + begin_private_length < data.size() &&
         !data.compare(line_start, begin_private_length,
@@ -251,6 +249,4 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
   return result;
 }
 
-
-}  // namespace tld_cleanup
-}  // namespace net
+}  // namespace net::tld_cleanup

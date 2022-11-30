@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -69,13 +69,13 @@ class OriginTest : public ::testing::Test {
     return Origin::Nonce(nonce);
   }
 
-  base::Optional<base::UnguessableToken> GetNonce(const Origin& origin) {
+  const base::UnguessableToken* GetNonce(const Origin& origin) {
     return origin.GetNonceForSerialization();
   }
 
   // Wrappers around url::Origin methods to expose it to tests.
 
-  base::Optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
+  absl::optional<Origin> UnsafelyCreateOpaqueOriginWithoutNormalization(
       base::StringPiece precursor_scheme,
       base::StringPiece precursor_host,
       uint16_t precursor_port,
@@ -84,16 +84,16 @@ class OriginTest : public ::testing::Test {
         precursor_scheme, precursor_host, precursor_port, nonce);
   }
 
-  base::Optional<std::string> SerializeWithNonce(const Origin& origin) {
+  absl::optional<std::string> SerializeWithNonce(const Origin& origin) {
     return origin.SerializeWithNonce();
   }
 
-  base::Optional<std::string> SerializeWithNonceAndInitIfNeeded(
+  absl::optional<std::string> SerializeWithNonceAndInitIfNeeded(
       Origin& origin) {
     return origin.SerializeWithNonceAndInitIfNeeded();
   }
 
-  base::Optional<Origin> Deserialize(const std::string& value) {
+  absl::optional<Origin> Deserialize(const std::string& value) {
     return Origin::Deserialize(value);
   }
 
@@ -172,6 +172,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
   EXPECT_LT(opaque_a, url::Origin::Create(GURL("http://www.google.com")));
   EXPECT_LT(opaque_b, url::Origin::Create(GURL("http://www.google.com")));
 
+  EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL(), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:blank"), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:srcdoc"), opaque_b));
   EXPECT_EQ(opaque_b,
@@ -286,7 +287,7 @@ TEST_F(OriginTest, UnsafelyCreate) {
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()
                  << test.scheme << "://" << test.host << ":" << test.port);
-    base::Optional<url::Origin> origin =
+    absl::optional<url::Origin> origin =
         url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
             test.scheme, test.host, test.port);
     ASSERT_TRUE(origin);
@@ -299,7 +300,7 @@ TEST_F(OriginTest, UnsafelyCreate) {
     ExpectParsedUrlsEqual(GURL(origin->Serialize()), origin->GetURL());
 
     base::UnguessableToken nonce = base::UnguessableToken::Create();
-    base::Optional<url::Origin> opaque_origin =
+    absl::optional<url::Origin> opaque_origin =
         UnsafelyCreateOpaqueOriginWithoutNormalization(
             test.scheme, test.host, test.port, CreateNonce(nonce));
     ASSERT_TRUE(opaque_origin);
@@ -355,7 +356,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
 
   // Opaque origins with unknown precursors are allowed.
   base::UnguessableToken token = base::UnguessableToken::Create();
-  base::Optional<url::Origin> anonymous_opaque =
+  absl::optional<url::Origin> anonymous_opaque =
       UnsafelyCreateOpaqueOriginWithoutNormalization("", "", 0,
                                                      CreateNonce(token));
   ASSERT_TRUE(anonymous_opaque)
@@ -363,7 +364,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
       << "UnsafelyCreateOpaqueOriginWithoutNormalization, so long as it is "
       << "the canonical form of the invalid tuple.";
   EXPECT_TRUE(anonymous_opaque->opaque());
-  EXPECT_EQ(GetNonce(anonymous_opaque.value()), token);
+  EXPECT_EQ(*GetNonce(anonymous_opaque.value()), token);
   EXPECT_EQ(anonymous_opaque->GetTupleOrPrecursorTupleIfOpaque(),
             url::SchemeHostPort());
 }
@@ -495,7 +496,7 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
   // and ensure that it returns |expected_value|
   const struct {
     const char* url;
-    Origin* origin;
+    raw_ptr<Origin> origin;
     bool expected_value;
   } kTestCases[] = {
       {"https://a.com", &regular_origin, true},
@@ -667,10 +668,10 @@ TEST_F(OriginTest, Deserialize) {
   for (const GURL& url : valid_urls) {
     SCOPED_TRACE(url.spec());
     Origin origin = Origin::Create(url);
-    base::Optional<std::string> serialized = SerializeWithNonce(origin);
+    absl::optional<std::string> serialized = SerializeWithNonce(origin);
     ASSERT_TRUE(serialized);
 
-    base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
     ASSERT_TRUE(deserialized.has_value());
 
     EXPECT_TRUE(DoEqualityComparisons(origin, deserialized.value(), true));
@@ -679,11 +680,11 @@ TEST_F(OriginTest, Deserialize) {
 }
 
 TEST_F(OriginTest, DeserializeInvalid) {
-  EXPECT_EQ(base::nullopt, Deserialize(std::string()));
-  EXPECT_EQ(base::nullopt, Deserialize("deadbeef"));
-  EXPECT_EQ(base::nullopt, Deserialize("0123456789"));
-  EXPECT_EQ(base::nullopt, Deserialize("https://a.com"));
-  EXPECT_EQ(base::nullopt, Deserialize("https://192.168.1.1"));
+  EXPECT_EQ(absl::nullopt, Deserialize(std::string()));
+  EXPECT_EQ(absl::nullopt, Deserialize("deadbeef"));
+  EXPECT_EQ(absl::nullopt, Deserialize("0123456789"));
+  EXPECT_EQ(absl::nullopt, Deserialize("https://a.com"));
+  EXPECT_EQ(absl::nullopt, Deserialize("https://192.168.1.1"));
 }
 
 TEST_F(OriginTest, SerializeTBDNonce) {
@@ -695,8 +696,8 @@ TEST_F(OriginTest, SerializeTBDNonce) {
   for (const GURL& url : invalid_urls) {
     SCOPED_TRACE(url.spec());
     Origin origin = Origin::Create(url);
-    base::Optional<std::string> serialized = SerializeWithNonce(origin);
-    base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    absl::optional<std::string> serialized = SerializeWithNonce(origin);
+    absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
     ASSERT_TRUE(deserialized.has_value());
 
     // Can't use DoEqualityComparisons here since empty nonces are never ==
@@ -704,25 +705,27 @@ TEST_F(OriginTest, SerializeTBDNonce) {
     EXPECT_EQ(origin.GetDebugString(), deserialized.value().GetDebugString());
   }
 
-  // Same basic test as above, but without a GURL to create tuple_.
-  Origin opaque;
-  base::Optional<std::string> serialized = SerializeWithNonce(opaque);
-  ASSERT_TRUE(serialized);
+  {
+    // Same basic test as above, but without a GURL to create tuple_.
+    Origin opaque;
+    absl::optional<std::string> serialized = SerializeWithNonce(opaque);
+    ASSERT_TRUE(serialized);
 
-  base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
-  ASSERT_TRUE(deserialized.has_value());
+    absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    ASSERT_TRUE(deserialized.has_value());
 
-  // Can't use DoEqualityComparisons here since empty nonces are never == unless
-  // they are the same object.
-  EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+    // Can't use DoEqualityComparisons here since empty nonces are never ==
+    // unless they are the same object.
+    EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+  }
 
   // Now force initialization of the nonce prior to serialization.
   for (const GURL& url : invalid_urls) {
     SCOPED_TRACE(url.spec());
     Origin origin = Origin::Create(url);
-    base::Optional<std::string> serialized =
+    absl::optional<std::string> serialized =
         SerializeWithNonceAndInitIfNeeded(origin);
-    base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
+    absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
     ASSERT_TRUE(deserialized.has_value());
 
     // The nonce should have been initialized prior to Serialization().
@@ -734,14 +737,37 @@ TEST_F(OriginTest, DeserializeValidNonce) {
   Origin opaque;
   GetNonce(opaque);
 
-  base::Optional<std::string> serialized = SerializeWithNonce(opaque);
+  absl::optional<std::string> serialized = SerializeWithNonce(opaque);
   ASSERT_TRUE(serialized);
 
-  base::Optional<Origin> deserialized = Deserialize(std::move(*serialized));
+  absl::optional<Origin> deserialized = Deserialize(std::move(*serialized));
   ASSERT_TRUE(deserialized.has_value());
 
   EXPECT_TRUE(DoEqualityComparisons(opaque, deserialized.value(), true));
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
+}
+
+TEST_F(OriginTest, IsSameOriginWith) {
+  url::Origin opaque_origin;
+  GURL foo_url = GURL("https://foo.com/path");
+  url::Origin foo_origin = url::Origin::Create(foo_url);
+  GURL bar_url = GURL("https://bar.com/path");
+  url::Origin bar_origin = url::Origin::Create(bar_url);
+
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_origin));
+  EXPECT_FALSE(opaque_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_origin));
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(foo_url));
+
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_origin));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(bar_url));
+
+  // Documenting legacy behavior.  This doesn't necessarily mean that the legacy
+  // behavior is correct (or desirable in the long-term).
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL("about:blank")));
+  EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL()));  // Invalid GURL.
+  EXPECT_TRUE(foo_origin.IsSameOriginWith(GURL("blob:https://foo.com/guid")));
 }
 
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,

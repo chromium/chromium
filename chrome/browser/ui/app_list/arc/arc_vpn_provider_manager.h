@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -53,6 +54,9 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
   static ArcVpnProviderManager* Create(content::BrowserContext* context);
 
+  ArcVpnProviderManager(const ArcVpnProviderManager&) = delete;
+  ArcVpnProviderManager& operator=(const ArcVpnProviderManager&) = delete;
+
   ~ArcVpnProviderManager() override;
 
   // ArcAppListPrefs Observer:
@@ -79,8 +83,6 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVpnProviderManager);
 };
 
 }  // namespace app_list

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "media/learning/impl/model.h"
 
 namespace media {
@@ -20,6 +19,10 @@ namespace learning {
 class COMPONENT_EXPORT(LEARNING_IMPL) VotingEnsemble : public Model {
  public:
   VotingEnsemble(std::vector<std::unique_ptr<Model>> models);
+
+  VotingEnsemble(const VotingEnsemble&) = delete;
+  VotingEnsemble& operator=(const VotingEnsemble&) = delete;
+
   ~VotingEnsemble() override;
 
   // Model
@@ -27,8 +30,6 @@ class COMPONENT_EXPORT(LEARNING_IMPL) VotingEnsemble : public Model {
 
  private:
   std::vector<std::unique_ptr<Model>> models_;
-
-  DISALLOW_COPY_AND_ASSIGN(VotingEnsemble);
 };
 
 }  // namespace learning

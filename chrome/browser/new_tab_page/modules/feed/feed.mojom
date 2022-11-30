@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.feed.mojom;
+
+import "url/mojom/url.mojom";
+
+// A feed article.
+struct Article {
+  // Link to article.
+  url.mojom.Url url;
+  // Article title.
+  string title;
+  // URL for article thumbnail.
+  url.mojom.Url thumbnail_url;
+  // URL for article favicon.
+  url.mojom.Url favicon_url;
+  // Article publisher.
+  string publisher;
+};
+
+// Browser-side handler for requests from NTP Module UI.
+interface FeedHandler {
+  // Fetches articles.
+  GetFollowingFeedArticles() => (array<Article> articles);
+  // Handle a click on a following feed article.
+  ArticleOpened();
+};
+

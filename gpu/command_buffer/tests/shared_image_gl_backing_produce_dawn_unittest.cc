@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,10 +57,8 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 
     gl_context_ = std::make_unique<GLInProcessContext>();
     ContextResult result = gl_context_->Initialize(
-        GetGpuServiceHolder()->task_executor(), nullptr, true,
-        gpu::kNullSurfaceHandle, attributes, option.shared_memory_limits,
-        nullptr, nullptr, nullptr, nullptr,
-        base::ThreadTaskRunnerHandle::Get());
+        GetGpuServiceHolder()->task_executor(), attributes,
+        option.shared_memory_limits, /*image_factory=*/nullptr);
     ASSERT_EQ(result, ContextResult::kSuccess);
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();
@@ -74,13 +72,13 @@ class SharedImageGLBackingProduceDawnTest : public WebGPUTest {
 
   bool ShouldSkipTest() {
 // Windows is the only platform enabled passthrough in this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Skip the test if there is no GPU service holder. It is not created if
     // Dawn is not supported on the platform (Win7).
     return GetGpuServiceHolder() == nullptr;
 #else
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   gles2::GLES2Implementation* gl() { return gl_context_->GetImplementation(); }
@@ -142,11 +140,11 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     gpu::webgpu::ReservedTexture reservation =
         webgpu()->ReserveTexture(device.Get());
 
-    webgpu()->AssociateMailbox(reservation.deviceId,
-                               reservation.deviceGeneration, reservation.id,
-                               reservation.generation, WGPUTextureUsage_CopySrc,
-                               reinterpret_cast<GLbyte*>(&gl_mailbox));
-    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+    webgpu()->AssociateMailbox(
+        reservation.deviceId, reservation.deviceGeneration, reservation.id,
+        reservation.generation, WGPUTextureUsage_CopySrc,
+        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&gl_mailbox));
+    wgpu::Texture wgpu_texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.
     wgpu::BufferDescriptor buffer_desc;
@@ -154,16 +152,15 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
     wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
 
-    wgpu::TextureCopyView copy_src = {};
-    copy_src.texture = texture;
+    wgpu::ImageCopyTexture copy_src = {};
+    copy_src.texture = wgpu_texture;
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 
-    wgpu::BufferCopyView copy_dst = {};
+    wgpu::ImageCopyBuffer copy_dst = {};
     copy_dst.buffer = readback_buffer;
     copy_dst.layout.offset = 0;
     copy_dst.layout.bytesPerRow = 256;
-    copy_dst.layout.rowsPerImage = 0;
 
     wgpu::Extent3D copy_size = {1, 1, 1};
 
@@ -171,7 +168,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
     encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
     wgpu::CommandBuffer commands = encoder.Finish();
 
-    wgpu::Queue queue = device.GetDefaultQueue();
+    wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
     webgpu()->DissociateMailbox(reservation.id, reservation.generation);

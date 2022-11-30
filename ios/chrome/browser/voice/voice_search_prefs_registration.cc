@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 
 void RegisterVoiceSearchBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

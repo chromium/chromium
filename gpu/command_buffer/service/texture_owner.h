@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 
 namespace base {
@@ -24,7 +25,6 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace base
 
 namespace gpu {
-class SharedContextState;
 class TextureBase;
 namespace gles2 {
 class AbstractTexture;
@@ -37,8 +37,11 @@ class AbstractTexture;
 // be called on any thread. It's safe to keep and drop refptrs to it on any
 // thread; it will be automatically destructed on the thread it was constructed
 // on.
+// TextureOwner also is a shared context lost observer to get notified if the
+// TextureOwner's shared context is lost.
 class GPU_GLES2_EXPORT TextureOwner
-    : public base::RefCountedDeleteOnSequence<TextureOwner> {
+    : public base::RefCountedDeleteOnSequence<TextureOwner>,
+      public SharedContextState::ContextLostObserver {
  public:
   // Creates a GL texture using the current platform GL context and returns a
   // new TextureOwner attached to it. Returns null on failure.
@@ -49,18 +52,18 @@ class GPU_GLES2_EXPORT TextureOwner
   // whether SurfaceControl is being used or not.
   enum class Mode {
     kAImageReaderInsecure,
-
-    // This mode indicates that the frame is going to be used in multi-threaded
-    // compositor where compositor is running on a different gpu thread and
-    // context than chrome's gpu main thread/context.
-    kAImageReaderInsecureMultithreaded,
     kAImageReaderInsecureSurfaceControl,
     kAImageReaderSecureSurfaceControl,
     kSurfaceTextureInsecure
   };
   static scoped_refptr<TextureOwner> Create(
       std::unique_ptr<gles2::AbstractTexture> texture,
-      Mode mode);
+      Mode mode,
+      scoped_refptr<SharedContextState> context_state,
+      scoped_refptr<RefCountedLock> drdc_lock);
+
+  TextureOwner(const TextureOwner&) = delete;
+  TextureOwner& operator=(const TextureOwner&) = delete;
 
   // Create a texture that's appropriate for a TextureOwner.
   static std::unique_ptr<gles2::AbstractTexture> CreateTexture(
@@ -82,10 +85,10 @@ class GPU_GLES2_EXPORT TextureOwner
   // Update the texture image using the latest available image data.
   virtual void UpdateTexImage() = 0;
 
-  // Ensures that the latest texture image is bound to the texture target.
-  // Should only be used if the TextureOwner requires explicit binding of the
-  // image after an update.
-  virtual void EnsureTexImageBound() = 0;
+  // Ensures that the latest texture image is bound to the provided texture
+  // service_id. Should only be used if the TextureOwner requires explicit
+  // binding of the image after an update.
+  virtual void EnsureTexImageBound(GLuint service_id) = 0;
 
   // Transformation matrix if any associated with the texture image.
   virtual void ReleaseBackBuffers() = 0;
@@ -116,42 +119,59 @@ class GPU_GLES2_EXPORT TextureOwner
       const base::RepeatingClosure& frame_available_cb) = 0;
 
   // Runs callback when the free buffer is available to render to front buffer.
-  // Can be run before returning from the function.
+  // Can be run before returning from the function. Callback is run on a caller
+  // thread.
   virtual void RunWhenBufferIsAvailable(base::OnceClosure callback) = 0;
 
   bool binds_texture_on_update() const { return binds_texture_on_update_; }
+
+  // SharedContextState::ContextLostObserver implementation.
+  void OnContextLost() override;
 
  protected:
   friend class base::RefCountedDeleteOnSequence<TextureOwner>;
   friend class base::DeleteHelper<TextureOwner>;
 
+  // Used to restore texture binding to GL_TEXTURE_EXTERNAL_OES target.
+  // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
+  class ScopedRestoreTextureBinding {
+   public:
+    ScopedRestoreTextureBinding() {
+      glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &bound_service_id_);
+    }
+    ~ScopedRestoreTextureBinding() {
+      glBindTexture(GL_TEXTURE_EXTERNAL_OES, bound_service_id_);
+    }
+
+   private:
+    GLint bound_service_id_;
+  };
+
   // |texture| is the texture that we'll own.
   TextureOwner(bool binds_texture_on_update,
-               std::unique_ptr<gles2::AbstractTexture> texture);
-  virtual ~TextureOwner();
-
-  // Drop |texture_| immediately.  Will call OnTextureDestroyed immediately if
-  // it hasn't been called before (e.g., due to lost context).
-  // Subclasses must call this before they complete destruction, else
-  // OnTextureDestroyed might be called when we drop |texture_|, which is not
-  // defined once subclass destruction has completed.
-  void ClearAbstractTexture();
+               std::unique_ptr<gles2::AbstractTexture> texture,
+               scoped_refptr<SharedContextState> context_state);
+  ~TextureOwner() override;
 
   // Called when |texture_| signals that the platform texture will be destroyed.
-  // See AbstractTexture::SetCleanupCallback.
-  virtual void OnTextureDestroyed(gles2::AbstractTexture*) = 0;
+  virtual void ReleaseResources() = 0;
 
   gles2::AbstractTexture* texture() const { return texture_.get(); }
 
  private:
+  friend class MockTextureOwner;
+
+  // To be used by MockTextureOwner.
+  TextureOwner(bool binds_texture_on_update,
+               std::unique_ptr<gles2::AbstractTexture> texture);
+
   // Set to true if the updating the image for this owner will automatically
   // bind it to the texture target.
   const bool binds_texture_on_update_;
 
+  scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<gles2::AbstractTexture> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureOwner);
 };
 
 }  // namespace gpu

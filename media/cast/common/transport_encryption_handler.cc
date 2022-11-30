@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/common/transport_encryption_handler.h"
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -52,7 +54,7 @@ bool TransportEncryptionHandler::Initialize(const std::string& aes_key,
   if (aes_iv_mask.size() == kAesKeySize && aes_key.size() == kAesKeySize) {
     iv_mask_ = aes_iv_mask;
     key_ = crypto::SymmetricKey::Import(crypto::SymmetricKey::AES, aes_key);
-    encryptor_.reset(new crypto::Encryptor());
+    encryptor_ = std::make_unique<crypto::Encryptor>();
     encryptor_->Init(key_.get(), crypto::Encryptor::CTR, std::string());
     is_activated_ = true;
   } else if (aes_iv_mask.size() != 0 || aes_key.size() != 0) {

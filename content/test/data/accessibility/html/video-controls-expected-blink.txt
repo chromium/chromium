@@ -1,17 +1,71 @@
 rootWebArea
-++genericContainer
-++++video
-++++++genericContainer
-++++++++toolbar horizontal description='video' name='video' descriptionFrom=uninitialized
-++++++++toolbar horizontal description='video' name='video' descriptionFrom=uninitialized
-++++++++++toolbar horizontal description='video' name='video' descriptionFrom=uninitialized
-++++++++++++toolbar horizontal description='video' name='video' descriptionFrom=uninitialized
-++++++++++++++button name='play' restriction=disabled
-++++++++++++++staticText name='0:00'
-++++++++++++++++inlineTextBox name='0:00'
+++genericContainer ignored
+++++genericContainer
+++++++video name='Unable to play media.' restriction=disabled
+++++++++genericContainer
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer
+++++++++++++button ignored invisible
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer
+++++++++++++++++button name='play' restriction=disabled
+++++++++++++++++++genericContainer
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='0:00'
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='/ 0:00'
+++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
-++++++++++++++++button name='mute' restriction=disabled
-++++++++++++++button name='enter full screen' restriction=disabled
-++++++++++++++button description='more options' name='show more media controls' descriptionFrom=uninitialized restriction=disabled
-++++++++++++slider horizontal description='movie time scrubber' value='0:00' descriptionFrom=uninitialized valueForRange=0.00 minValueForRange=0.00 maxValueForRange=0.00
+++++++++++++++++++genericContainer
+++++++++++++++++++slider ignored invisible
+++++++++++++++++++button name='mute' restriction=disabled
+++++++++++++++++button name='enter full screen' restriction=disabled
+++++++++++++++++++genericContainer
+++++++++++++++++popUpButton description='more options' name='show more media controls' descriptionFrom=title restriction=disabled haspopup=menu
+++++++++++++++++++genericContainer
+++++++++++++++slider horizontal description='total time: 0:00' name='video time scrubber' value='elapsed time: 0:00' descriptionFrom=ariaDescription restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Play'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Fullscreen'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Download'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Mute'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Cast'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Captions'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Playback speed'
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible name='Picture in picture'

@@ -1,22 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -37,8 +36,8 @@ using ::testing::Truly;
 namespace blink {
 namespace {
 
-std::unique_ptr<Thread> CreateThread(const char* name) {
-  return Platform::Current()->CreateThread(
+std::unique_ptr<NonMainThread> CreateThread(const char* name) {
+  return NonMainThread::CreateThread(
       ThreadCreationParams(ThreadType::kTestThread).SetThreadNameForTest(name));
 }
 
@@ -135,7 +134,7 @@ bool OnlyIncludesAnimation1(const AnimationWorkletInput& in) {
 
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        RegisteredAnimatorShouldOnlyReceiveInputForItself) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -155,7 +154,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        RegisteredAnimatorShouldNotBeMutatedWhenNoInput) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -189,7 +188,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplTest,
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        MutationUpdateIsNotInvokedWithNullOutput) {
   // Create a thread to run mutator tasks.
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -208,7 +208,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplTest,
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        MutationUpdateIsInvokedCorrectlyWithSingleRegisteredAnimator) {
   // Create a thread to run mutator tasks.
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -241,7 +242,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        MutationUpdateInvokedCorrectlyWithTwoRegisteredAnimatorsOnSameThread) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -273,12 +275,14 @@ TEST_F(AnimationWorkletMutatorDispatcherImplTest,
 TEST_F(
     AnimationWorkletMutatorDispatcherImplTest,
     MutationUpdateInvokedCorrectlyWithTwoRegisteredAnimatorsOnDifferentThreads) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
 
-  std::unique_ptr<Thread> second_thread = CreateThread("SecondAnimationThread");
+  std::unique_ptr<NonMainThread> second_thread =
+      CreateThread("SecondAnimationThread");
   MockAnimationWorkletMutator* second_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           second_thread->GetTaskRunner());
@@ -329,7 +333,8 @@ TEST_F(
 TEST_F(AnimationWorkletMutatorDispatcherImplTest,
        DispatcherShouldNotHangWhenMutatorGoesAway) {
   // Create a thread to run mutator tasks.
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -412,7 +417,7 @@ class AnimationWorkletMutatorDispatcherImplAsyncTest
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        RegisteredAnimatorShouldOnlyReceiveInputForItself) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -436,7 +441,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        RegisteredAnimatorShouldNotBeMutatedWhenNoInput) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -470,7 +475,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateIsNotInvokedWithNullOutput) {
   // Create a thread to run mutator tasks.
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -494,7 +500,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateIsInvokedCorrectlyWithSingleRegisteredAnimator) {
   // Create a thread to run mutator tasks.
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -529,7 +536,8 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateInvokedCorrectlyWithTwoRegisteredAnimatorsOnSameThread) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -565,12 +573,14 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 TEST_F(
     AnimationWorkletMutatorDispatcherImplAsyncTest,
     MutationUpdateInvokedCorrectlyWithTwoRegisteredAnimatorsOnDifferentThreads) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstAnimationThread");
+  std::unique_ptr<NonMainThread> first_thread =
+      CreateThread("FirstAnimationThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
 
-  std::unique_ptr<Thread> second_thread = CreateThread("SecondAnimationThread");
+  std::unique_ptr<NonMainThread> second_thread =
+      CreateThread("SecondAnimationThread");
   MockAnimationWorkletMutator* second_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           second_thread->GetTaskRunner());
@@ -603,7 +613,7 @@ TEST_F(
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateDroppedWhenBusy) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           first_thread->GetTaskRunner());
@@ -636,7 +646,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateQueuedWhenBusy) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
 
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
@@ -672,7 +682,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateQueueWithReplacementWhenBusy) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
 
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
@@ -713,7 +723,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
 
 TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest,
        MutationUpdateMultipleQueuesWhenBusy) {
-  std::unique_ptr<Thread> first_thread = CreateThread("FirstThread");
+  std::unique_ptr<NonMainThread> first_thread = CreateThread("FirstThread");
 
   MockAnimationWorkletMutator* first_mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
@@ -765,7 +775,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest, HistogramTester) {
       static_cast<base::SimpleTestTickClock*>(mock_clock.get());
   mutator_->SetClockForTesting(std::move(mock_clock));
 
-  std::unique_ptr<Thread> thread = CreateThread("MyThread");
+  std::unique_ptr<NonMainThread> thread = CreateThread("MyThread");
   MockAnimationWorkletMutator* mutator =
       MakeGarbageCollected<MockAnimationWorkletMutator>(
           thread->GetTaskRunner());
@@ -784,7 +794,7 @@ TEST_F(AnimationWorkletMutatorDispatcherImplAsyncTest, HistogramTester) {
   // Block Responses until all requests have been queued.
   mutator->BlockWorkletThread();
 
-  base::TimeDelta time_delta = base::TimeDelta::FromMilliseconds(10);
+  base::TimeDelta time_delta = base::Milliseconds(10);
 
   // Expected Elapsed time is the sum of all clock advancements until unblocked,
   // which totals to 30 ms.

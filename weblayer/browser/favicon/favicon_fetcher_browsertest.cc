@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,7 +56,8 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, Basic) {
   TestFaviconFetcherDelegate fetcher_delegate;
   auto fetcher = shell()->tab()->CreateFaviconFetcher(&fetcher_delegate);
   NavigateAndWaitForCompletion(
-      embedded_test_server()->GetURL("/simple_page_with_favicon.html"),
+      embedded_test_server()->GetURL(
+          "/simple_page_with_favicon_and_before_unload.html"),
       shell());
   fetcher_delegate.WaitForFavicon();
   EXPECT_FALSE(fetcher_delegate.last_image().IsEmpty());
@@ -65,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, Basic) {
   fetcher_delegate.ClearLastImage();
 
   const GURL url2 =
-      embedded_test_server()->GetURL("/simple_page_with_favicon2.html");
+      embedded_test_server()->GetURL("/simple_page_with_favicon.html");
   shell()->tab()->GetNavigationController()->Navigate(url2);
   // Favicon doesn't change immediately on navigation.
   EXPECT_FALSE(fetcher->GetFavicon().IsEmpty());
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest,
 
 // This test creates a Browser and Tab, which doesn't work well with Java when
 // driven from native code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, OffTheRecord) {
   auto otr_profile = Profile::Create(std::string(), true);
   ProfileImpl* otr_profile_impl = static_cast<ProfileImpl*>(otr_profile.get());

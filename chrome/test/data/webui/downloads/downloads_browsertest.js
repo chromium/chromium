@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-// eslint-disable-next-line no-var
 var DownloadsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
@@ -17,7 +16,6 @@ var DownloadsTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var DownloadsItemTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -29,7 +27,6 @@ TEST_F('DownloadsItemTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsManagerTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -41,7 +38,6 @@ TEST_F('DownloadsManagerTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsToolbarTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -53,7 +49,6 @@ TEST_F('DownloadsToolbarTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsUrlTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
@@ -70,7 +65,7 @@ var DownloadsUrlTest = class extends DownloadsTest {
 };
 
 TEST_F('DownloadsUrlTest', 'All', async function() {
-  await import('chrome://test/mojo_webui_test_support.js');
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suite('loading a nonexistent URL of /a/b/', function() {
     test('should load main page with no console errors', function() {
       return customElements.whenDefined('downloads-manager').then(() => {
@@ -81,7 +76,6 @@ TEST_F('DownloadsUrlTest', 'All', async function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsSearchServiceTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {

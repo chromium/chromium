@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_ANDROID_FRAME_INFO_HELPER_H_
 #define MEDIA_GPU_ANDROID_FRAME_INFO_HELPER_H_
 
-#include "base/optional.h"
 #include "media/gpu/android/shared_image_video_provider.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class CodecOutputBufferRenderer;
@@ -25,7 +25,7 @@ class MEDIA_GPU_EXPORT FrameInfoHelper {
 
     gfx::Size coded_size;
     gfx::Rect visible_rect;
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
   };
 
   using FrameInfoReadyCB =
@@ -34,7 +34,8 @@ class MEDIA_GPU_EXPORT FrameInfoHelper {
 
   static std::unique_ptr<FrameInfoHelper> Create(
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
-      SharedImageVideoProvider::GetStubCB get_stub_cb);
+      SharedImageVideoProvider::GetStubCB get_stub_cb,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   virtual ~FrameInfoHelper() = default;
 

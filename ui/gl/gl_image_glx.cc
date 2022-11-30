@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "ui/base/x/visual_picker_glx.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_image_glx.h"
 #include "ui/gl/gl_surface_glx.h"
-#include "ui/gl/gl_visual_picker_glx.h"
 #include "ui/gl/glx_util.h"
 
 namespace gl {
@@ -46,7 +46,7 @@ GLImageGLX::~GLImageGLX() {
 
 bool GLImageGLX::Initialize(x11::Pixmap pixmap) {
   auto fbconfig_id =
-      GLVisualPickerGLX::GetInstance()->GetFbConfigForFormat(format_);
+      ui::VisualPickerGlx::GetInstance()->GetFbConfigForFormat(format_);
 
   auto* connection = x11::Connection::Get();
   GLXFBConfig config = GetGlxFbConfigForXProtoFbConfig(connection, fbconfig_id);
@@ -113,17 +113,6 @@ bool GLImageGLX::CopyTexImage(unsigned target) {
 bool GLImageGLX::CopyTexSubImage(unsigned target,
                                  const gfx::Point& offset,
                                  const gfx::Rect& rect) {
-  return false;
-}
-
-bool GLImageGLX::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
   return false;
 }
 

@@ -1,27 +1,42 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
+#import <string>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/policy/policy_constants.h"
-#import "ios/chrome/browser/chrome_switches.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/base/net_errors.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/base/net_errors.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-// Tests the URLBlocklist and URLWhitelist enterprise policies.
+namespace {
+
+// Waits until `url` has the expected blocked state.
+void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
+  NSString* nsurl = base::SysUTF8ToNSString(url.spec());
+  GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
+                     base::test::ios::kWaitForActionTimeout,
+                     ^{
+                       return
+                           [PolicyAppInterface isURLBlocked:nsurl] == blocked;
+                     }),
+                 @"Waiting for policy url blocklist to update.");
+}
+
+}
+
+// Tests the URLBlocklist and URLAllowlist enterprise policies.
 @interface PolicyURLBlockingTestCase : ChromeTestCase
 @end
 
@@ -32,12 +47,6 @@
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kEnableEnterprisePolicy);
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kInstallURLBlocklistHandlers);
-  config.additional_args.push_back(
-      std::string("--enable-features=URLBlocklistIOS,UseJSForErrorPage"));
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }
@@ -45,6 +54,15 @@
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Check that the policy blocklist is reset.
+  WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), false);
+  WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), false);
+}
+
+- (void)tearDown {
+  [PolicyAppInterface clearPolicies];
+  [super tearDown];
 }
 
 // Tests that pages are not blocked when the blocklist exists, but is empty.
@@ -64,6 +82,7 @@
   [PolicyAppInterface
       setPolicyValue:@"[\"*\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
@@ -77,6 +96,7 @@
   [PolicyAppInterface
       setPolicyValue:@"[\"*\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -88,6 +108,7 @@
   [PolicyAppInterface
       setPolicyValue:@"[\"*/echo\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
@@ -98,12 +119,18 @@
 
 // Tests that pages are loaded when explicitly listed in the URLAllowlist.
 - (void)testAllowlist {
+  // The URLBlocklistPolicyHandler will discard policy updates that occur while
+  // it is already computing a new blocklist, so wait between calls to set new
+  // policy values.
   [PolicyAppInterface
       setPolicyValue:@"[\"*\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), true);
+
   [PolicyAppInterface
       setPolicyValue:@"[\"*/echo\"]"
               forKey:base::SysUTF8ToNSString(policy::key::kURLAllowlist)];
+  WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), false);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 

@@ -43,12 +43,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de:8080/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.pathname, '');
+    var expected = '/path/file';
+    assert_equals(url.pathname, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.pathname, expected);
 
     url.pathname = '/new/path';
-    assert_equals(url.pathname, '');
-    assert_equals(url.href, 'invalid');
+    assert_equals(url.pathname, '/new/path');
+    assert_equals(url.href, 'http://abc.de:8080/new/path?query#fragment');
 }, 'pathname property invalid URL');
 
 test(function() {

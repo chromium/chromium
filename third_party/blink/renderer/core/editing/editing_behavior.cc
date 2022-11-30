@@ -31,7 +31,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -45,7 +44,7 @@ const unsigned kCtrlKey = WebInputEvent::kControlKey;
 const unsigned kAltKey = WebInputEvent::kAltKey;
 const unsigned kShiftKey = WebInputEvent::kShiftKey;
 const unsigned kMetaKey = WebInputEvent::kMetaKey;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Aliases for the generic key defintions to make kbd shortcuts definitions more
 // readable on OS X.
 const unsigned kOptionKey = kAltKey;
@@ -88,7 +87,7 @@ struct DomKeyKeyDownEntry {
 const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_LEFT, 0, "MoveLeft"},
     {VKEY_LEFT, kShiftKey, "MoveLeftAndModifySelection"},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {VKEY_LEFT, kOptionKey, "MoveWordLeft"},
     {VKEY_LEFT, kOptionKey | kShiftKey, "MoveWordLeftAndModifySelection"},
 #else
@@ -97,7 +96,7 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
 #endif
     {VKEY_RIGHT, 0, "MoveRight"},
     {VKEY_RIGHT, kShiftKey, "MoveRightAndModifySelection"},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {VKEY_RIGHT, kOptionKey, "MoveWordRight"},
     {VKEY_RIGHT, kOptionKey | kShiftKey, "MoveWordRightAndModifySelection"},
 #else
@@ -110,7 +109,7 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_DOWN, 0, "MoveDown"},
     {VKEY_DOWN, kShiftKey, "MoveDownAndModifySelection"},
     {VKEY_NEXT, kShiftKey, "MovePageDownAndModifySelection"},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     {VKEY_UP, kCtrlKey, "MoveParagraphBackward"},
     {VKEY_UP, kCtrlKey | kShiftKey, "MoveParagraphBackwardAndModifySelection"},
     {VKEY_DOWN, kCtrlKey, "MoveParagraphForward"},
@@ -120,32 +119,32 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
 #endif
     {VKEY_HOME, 0, "MoveToBeginningOfLine"},
     {VKEY_HOME, kShiftKey, "MoveToBeginningOfLineAndModifySelection"},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {VKEY_PRIOR, kOptionKey, "MovePageUp"},
     {VKEY_NEXT, kOptionKey, "MovePageDown"},
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     {VKEY_HOME, kCtrlKey, "MoveToBeginningOfDocument"},
     {VKEY_HOME, kCtrlKey | kShiftKey,
      "MoveToBeginningOfDocumentAndModifySelection"},
 #endif
     {VKEY_END, 0, "MoveToEndOfLine"},
     {VKEY_END, kShiftKey, "MoveToEndOfLineAndModifySelection"},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     {VKEY_END, kCtrlKey, "MoveToEndOfDocument"},
     {VKEY_END, kCtrlKey | kShiftKey, "MoveToEndOfDocumentAndModifySelection"},
 #endif
     {VKEY_BACK, 0, "DeleteBackward"},
     {VKEY_BACK, kShiftKey, "DeleteBackward"},
     {VKEY_DELETE, 0, "DeleteForward"},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {VKEY_BACK, kOptionKey, "DeleteWordBackward"},
     {VKEY_DELETE, kOptionKey, "DeleteWordForward"},
 #else
     {VKEY_BACK, kCtrlKey, "DeleteWordBackward"},
     {VKEY_DELETE, kCtrlKey, "DeleteWordForward"},
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {'B', kCommandKey, "ToggleBold"},
     {'I', kCommandKey, "ToggleItalic"},
 #else
@@ -165,7 +164,7 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {VKEY_INSERT, kCtrlKey, "Copy"},
     {VKEY_INSERT, kShiftKey, "Paste"},
     {VKEY_DELETE, kShiftKey, "Cut"},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // On OS X, we pipe these back to the browser, so that it can do menu item
     // blinking.
     {'C', kCtrlKey, "Copy"},
@@ -177,7 +176,7 @@ const KeyboardCodeKeyDownEntry kKeyboardCodeKeyDownEntries[] = {
     {'Z', kCtrlKey | kShiftKey, "Redo"},
     {'Y', kCtrlKey, "Redo"},
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {VKEY_BACK, kAltKey, "Undo"},
     {VKEY_BACK, kAltKey | kShiftKey, "Redo"},
 #endif
@@ -236,16 +235,23 @@ const char* EditingBehavior::InterpretKeyEvent(
   unsigned modifiers =
       key_event->GetModifiers() & (kShiftKey | kAltKey | kCtrlKey | kMetaKey);
 
-  if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
-    int map_key = modifiers << 16 | event.keyCode();
-    const char* name = map_key ? key_down_commands_map->at(map_key) : nullptr;
-    if (!name)
-      name = LookupCommandNameFromDomKeyKeyDown(event.key(), modifiers);
-    return name;
-  }
+  auto FindName = [=](HashMap<int, const char*>* map, int code) -> const char* {
+    int map_key = modifiers << 16 | code;
+    if (!map_key)
+      return nullptr;
+    auto it = map->find(map_key);
+    if (it == map->end())
+      return nullptr;
+    DCHECK(it->value);
+    return it->value;
+  };
 
-  int map_key = modifiers << 16 | event.charCode();
-  return map_key ? key_press_commands_map->at(map_key) : nullptr;
+  if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
+    const char* name = FindName(key_down_commands_map, event.keyCode());
+    return name ? name
+                : LookupCommandNameFromDomKeyKeyDown(event.key(), modifiers);
+  }
+  return FindName(key_press_commands_map, event.charCode());
 }
 
 bool EditingBehavior::ShouldInsertCharacter(const KeyboardEvent& event) const {
@@ -274,19 +280,19 @@ bool EditingBehavior::ShouldInsertCharacter(const KeyboardEvent& event) const {
   // unexpected behaviour
   if (ch < ' ')
     return false;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // According to XKB map no keyboard combinations with ctrl key are mapped to
   // printable characters, however we need the filter as the DomKey/text could
   // contain printable characters.
   if (event.ctrlKey())
     return false;
-#elif !defined(OS_WIN)
+#elif !BUILDFLAG(IS_WIN)
   // Don't insert ASCII character if ctrl w/o alt or meta is on.
   // On Mac, we should ignore events when meta is on (Command-<x>).
   if (ch < 0x80) {
     if (event.ctrlKey() && !event.altKey())
       return false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (event.metaKey())
       return false;
 #endif

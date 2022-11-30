@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/speech_recognizer.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
@@ -24,6 +24,10 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
  public:
   SpeechRecognizerImplAndroid(SpeechRecognitionEventListener* listener,
                               int session_id);
+
+  SpeechRecognizerImplAndroid(const SpeechRecognizerImplAndroid&) = delete;
+  SpeechRecognizerImplAndroid& operator=(const SpeechRecognizerImplAndroid&) =
+      delete;
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
@@ -68,8 +72,6 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
 
   base::android::ScopedJavaGlobalRef<jobject> j_recognition_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImplAndroid);
 };
 
 }  // namespace content

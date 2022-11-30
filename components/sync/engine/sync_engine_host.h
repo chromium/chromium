@@ -1,22 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_HOST_H_
 
-#include <string>
-
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 
 namespace syncer {
 
-class DataTypeDebugInfoListener;
-class JsBackend;
 class ProtocolEvent;
 
 // SyncEngineHost is the interface used by SyncEngine to communicate with the
@@ -34,12 +29,8 @@ class SyncEngineHost {
   // |js_backend| is what chrome://sync-internals interacts with. It is
   // initialized only if |success| is true.
 
-  virtual void OnEngineInitialized(
-      ModelTypeSet initial_types,
-      const WeakHandle<JsBackend>& js_backend,
-      const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      bool success,
-      bool is_first_time_sync_configure) = 0;
+  virtual void OnEngineInitialized(bool success,
+                                   bool is_first_time_sync_configure) = 0;
 
   // The engine queried the server recently and received some updates.
   virtual void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) = 0;

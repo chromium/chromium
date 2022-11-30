@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/md5.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_list_filter.h"
 #include "chrome/chrome_elf/third_party_dlls/packed_list_format.h"
@@ -82,7 +82,7 @@ const base::FilePath::CharType kModuleListComponentRelativePath[] =
 
 uint32_t CalculateTimeDateStamp(base::Time time) {
   const auto delta = time.ToDeltaSinceWindowsEpoch();
-  return delta < base::TimeDelta() ? 0 : static_cast<uint32_t>(delta.InHours());
+  return delta.is_negative() ? 0 : static_cast<uint32_t>(delta.InHours());
 }
 
 ReadResult ReadModuleBlocklistCache(
@@ -96,7 +96,7 @@ ReadResult ReadModuleBlocklistCache(
 
   base::File file(module_blocklist_cache_path,
                   base::File::FLAG_OPEN | base::File::FLAG_READ |
-                      base::File::FLAG_SHARE_DELETE);
+                      base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return ReadResult::kFailOpenFile;
 
@@ -126,7 +126,7 @@ ReadResult ReadModuleBlocklistCache(
 
   base::MD5Digest read_md5_digest;
   if (!SafeRead(&file, reinterpret_cast<char*>(&read_md5_digest.a),
-                base::size(read_md5_digest.a))) {
+                std::size(read_md5_digest.a))) {
     return ReadResult::kFailReadMD5;
   }
 
@@ -267,10 +267,10 @@ void RemoveAllowlistedEntries(
         return module_list_filter.IsAllowlisted(
             base::StringPiece(
                 reinterpret_cast<const char*>(&module.basename_hash[0]),
-                base::size(module.basename_hash)),
+                std::size(module.basename_hash)),
             base::StringPiece(
                 reinterpret_cast<const char*>(&module.code_id_hash[0]),
-                base::size(module.code_id_hash)));
+                std::size(module.code_id_hash)));
       });
 }
 

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_AURA_SCOPED_WINDOW_EVENT_TARGETING_BLOCKER_H_
 #define UI_AURA_SCOPED_WINDOW_EVENT_TARGETING_BLOCKER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
 
@@ -19,14 +19,19 @@ class Window;
 class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
  public:
   explicit ScopedWindowEventTargetingBlocker(Window* window);
+
+  ScopedWindowEventTargetingBlocker(const ScopedWindowEventTargetingBlocker&) =
+      delete;
+  ScopedWindowEventTargetingBlocker& operator=(
+      const ScopedWindowEventTargetingBlocker&) = delete;
+
   ~ScopedWindowEventTargetingBlocker() override;
 
   // WindowObserver:
   void OnWindowDestroying(Window* window) override;
 
  private:
-  Window* window_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowEventTargetingBlocker);
+  raw_ptr<Window> window_;
 };
 
 }  // namespace aura

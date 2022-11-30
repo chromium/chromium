@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -173,8 +173,8 @@ class AudioOutputProxyTest : public testing::Test {
     // FakeAudioOutputStream will keep the message loop busy indefinitely; i.e.,
     // RunUntilIdle() will never terminate.
     params_ = AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                              CHANNEL_LAYOUT_STEREO, 8000, 2048);
-    InitDispatcher(base::TimeDelta::FromMilliseconds(kTestCloseDelayMs));
+                              ChannelLayoutConfig::Stereo(), 8000, 2048);
+    InitDispatcher(base::Milliseconds(kTestCloseDelayMs));
   }
 
   void TearDown() override {
@@ -501,8 +501,9 @@ class AudioOutputResamplerTest : public AudioOutputProxyTest {
     // Use a low sample rate and large buffer size when testing otherwise the
     // FakeAudioOutputStream will keep the message loop busy indefinitely; i.e.,
     // RunUntilIdle() will never terminate.
-    resampler_params_ = AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                        CHANNEL_LAYOUT_STEREO, 16000, 1024);
+    resampler_params_ =
+        AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                        ChannelLayoutConfig::Stereo(), 16000, 1024);
     resampler_ = std::make_unique<AudioOutputResampler>(
         &manager(), params_, resampler_params_, std::string(), close_delay,
         base::BindRepeating(&RegisterDebugRecording));
@@ -512,8 +513,7 @@ class AudioOutputResamplerTest : public AudioOutputProxyTest {
     // Let Start() run for a bit.
     base::RunLoop run_loop;
     task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(kStartRunTimeMs));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(kStartRunTimeMs));
     run_loop.Run();
   }
 
@@ -642,7 +642,7 @@ TEST_F(AudioOutputResamplerTest, DispatcherDestroyed_AfterStop) {
 
 TEST_F(AudioOutputProxyTest, DispatcherDeviceChangeClosesIdleStreams) {
   // Set close delay so long that it triggers a test timeout if relied upon.
-  InitDispatcher(base::TimeDelta::FromSeconds(1000));
+  InitDispatcher(base::Seconds(1000));
 
   MockAudioOutputStream stream(&manager_, params_);
 
@@ -710,7 +710,7 @@ TEST_F(AudioOutputResamplerTest, HighLatencyFallbackFailed) {
 
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 2;
 #else
   static const int kFallbackCount = 1;
@@ -746,7 +746,7 @@ TEST_F(AudioOutputResamplerTest, HighLatencyFallbackFailed) {
 TEST_F(AudioOutputResamplerTest, AllFallbackFailed) {
 // Only Windows has a high latency output driver that is not the same as the low
 // latency path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 3;
 #else
   static const int kFallbackCount = 2;
@@ -824,7 +824,7 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
   MockAudioOutputStream fake_stream(&manager_, params_);
 
   // Trigger the fallback mechanism until a fake output stream is created.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const int kFallbackCount = 2;
 #else
   static const int kFallbackCount = 1;
@@ -852,7 +852,7 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(2 * kTestCloseDelayMs));
+      base::Milliseconds(2 * kTestCloseDelayMs));
   run_loop.Run();
 
   // Verify a non-fake stream can be created.

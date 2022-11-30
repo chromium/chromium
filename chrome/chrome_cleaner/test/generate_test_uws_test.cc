@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,9 @@ TEST(GenerateTestUwsTest, WriteTestUwS) {
 
   // Delete the output files on exit, including on early exit.
   base::ScopedClosureRunner delete_uws_file_a(
-      base::BindOnce(base::GetDeleteFileCallback(), uws_file_a));
+      base::GetDeleteFileCallback(uws_file_a));
   base::ScopedClosureRunner delete_uws_file_b(
-      base::BindOnce(base::GetDeleteFileCallback(), uws_file_b));
+      base::GetDeleteFileCallback(uws_file_b));
 
   // Expect generate_test_uws to finish quickly with exit code 0 (success).
   base::Process process(

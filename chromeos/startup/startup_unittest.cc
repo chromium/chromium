@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/startup/startup_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace {
@@ -31,7 +31,7 @@ base::ScopedFD CreateMemoryFile(const base::StringPiece content) {
     return base::ScopedFD();
   }
 
-  if (!base::WriteFileDescriptor(file.get(), content.data(), content.size())) {
+  if (!base::WriteFileDescriptor(file.get(), content)) {
     LOG(ERROR) << "Failed to write the data";
     return base::ScopedFD();
   }
@@ -58,7 +58,7 @@ TEST(ChromeOSStartup, Startup) {
   command_line->AppendSwitchASCII(switches::kCrosStartupDataFD,
                                   base::NumberToString(file.release()));
 
-  base::Optional<std::string> data = ReadStartupData();
+  absl::optional<std::string> data = ReadStartupData();
   EXPECT_EQ(data, kTestData);
 }
 

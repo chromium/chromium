@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NOTIFIER_SETTINGS_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 namespace message_center {
 struct NotifierId;
@@ -22,6 +21,10 @@ class ASH_PUBLIC_EXPORT NotifierSettingsController {
  public:
   // Returns the singleton instance.
   static NotifierSettingsController* Get();
+
+  NotifierSettingsController(const NotifierSettingsController&) = delete;
+  NotifierSettingsController& operator=(const NotifierSettingsController&) =
+      delete;
 
   // Assembles the list of active notifiers and updates all
   // NotifierSettingsObservers via OnNotifiersUpdated.
@@ -40,8 +43,6 @@ class ASH_PUBLIC_EXPORT NotifierSettingsController {
  protected:
   NotifierSettingsController();
   virtual ~NotifierSettingsController();
-
-  DISALLOW_COPY_AND_ASSIGN(NotifierSettingsController);
 };
 
 }  // namespace ash

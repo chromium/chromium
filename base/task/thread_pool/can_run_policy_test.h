@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define BASE_TASK_THREAD_POOL_CAN_RUN_POLICY_TEST_H_
 
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
-#include "base/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -162,7 +162,7 @@ void TestCanRunPolicyLoad(Target* target,
 
     // Post less tasks on iOS to avoid timeouts.
     const size_t kLargeNumber =
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
         16;
 #else
         256;

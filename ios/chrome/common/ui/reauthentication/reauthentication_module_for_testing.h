@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 @interface ReauthenticationModule (ForTesting)
 
-// Allows the replacement of the |LAContext| objects used by
-// |ReauthenticationModule| with a mock to facilitate testing.
+// Allows the replacement of the `LAContext` objects used by
+// `ReauthenticationModule` with a mock to facilitate testing.
 - (void)setCreateLAContext:(LAContext* (^)(void))createLAContext;
 
 @end

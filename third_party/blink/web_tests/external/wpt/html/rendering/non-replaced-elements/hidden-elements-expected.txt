@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS source should not be hidden
+PASS track should not be hidden
+FAIL area should be hidden assert_equals: expected "none" but got "inline"
+PASS base should be hidden
+PASS basefont should be hidden
+PASS datalist should be hidden
+PASS head should be hidden
+PASS link should be hidden
+PASS meta should be hidden
+PASS noembed should be hidden
+PASS noframes should be hidden
+PASS param should be hidden
+PASS rp should be hidden
+PASS script should be hidden
+PASS style should be hidden
+PASS template should be hidden
+PASS title should be hidden
+PASS [hidden] element should be hidden
+Harness: the test ran to completion.
+

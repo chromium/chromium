@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,10 +102,6 @@ class CSSRotateNonInterpolableValue : public NonInterpolableValue {
   OptionalRotation SlerpedRotation(double progress) const {
     DCHECK(!is_start_additive_ && !is_end_additive_);
     DCHECK(!is_single_ || progress == 0);
-    if (progress == 0)
-      return start_;
-    if (progress == 1)
-      return end_;
     return OptionalRotation::Slerp(start_, end_, progress);
   }
 

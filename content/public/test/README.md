@@ -34,7 +34,7 @@ accepts `RenderFrameHost`, `WebContents`, and other types.
   // Executes in the first child frame of the main frame.
   EXPECT_EQ(
       false,
-      EvalJs(ChildFrameAt(shell()->GetWebContents()->GetMainFrame(), 0),
+      EvalJs(ChildFrameAt(shell()->GetWebContents()->GetPrimaryMainFrame(), 0),
              "window.top == window"));
 ```
 
@@ -58,7 +58,7 @@ execution:
 
 A wide range of methods are provided to simulate input such as clicks, touch,
 mouse moves and so on. Many reside in
-https://source.chromium.org/chromium/chromium/src/+/master:content/public/test/browser_test_utils.h.
+https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_utils.h.
 
 When using input in tests, be aware that the renderer drops all input
 received when the main frame is not being updated or rendered immediately
@@ -134,7 +134,7 @@ as if the navigation was renderer-initiated, e.g. by setting `window.location`:
   GURL url_3(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(
       NavigateToURLFromRenderer(
-          ChildFrameAt(shell()->GetWebContents()->GetMainFrame(), 0),
+          ChildFrameAt(shell()->GetWebContents()->GetPrimaryMainFrame(), 0),
           url_3));
 ```
 
@@ -208,5 +208,5 @@ The embedded test server also registers [other default
 handlers][test-server-default-handlers] that may be useful.
 
 [host-resolver-config]: README.md#Cross_origin-navigations
-[cross-site-iframe-factory]: https://source.chromium.org/chromium/chromium/src/+/master:content/test/data/cross_site_iframe_factory.html
-[test-server-default-handlers]: https://source.chromium.org/chromium/chromium/src/+/master:net/test/embedded_test_server/default_handlers.cc
+[cross-site-iframe-factory]: https://source.chromium.org/chromium/chromium/src/+/main:content/test/data/cross_site_iframe_factory.html
+[test-server-default-handlers]: https://source.chromium.org/chromium/chromium/src/+/main:net/test/embedded_test_server/default_handlers.cc

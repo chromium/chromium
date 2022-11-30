@@ -187,7 +187,7 @@ TODO(ellyjones): How does this work?
 
 [Views overview]: ../../../../docs/ui/views/overview.md
 [MenuController]: menu_controller.h
-[MenuController::State]: https://source.chromium.org/chromium/chromium/src/+/master:ui/views/controls/menu/menu_controller.h;drc=ce8d17ff494cf684f35c8ff64cb6bd0947adcf46;bpv=0;bpt=1;l=289
+[MenuController::State]: https://source.chromium.org/chromium/chromium/src/+/main:ui/views/controls/menu/menu_controller.h;drc=ce8d17ff494cf684f35c8ff64cb6bd0947adcf46;bpv=0;bpt=1;l=289
 [MenuHost]: menu_host.h
 [MenuItemView]: menu_item_view.h
 [MenuRunner]: menu_runner.h

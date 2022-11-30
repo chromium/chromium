@@ -1,12 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "shell_tab_handler.h"
 
-#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
@@ -30,10 +29,8 @@ void ShellTabHandler::OnKeyEvent(ui::KeyEvent* key_event) {
   }
 
   // Capture session will process their own tab events.
-  if (features::IsCaptureModeEnabled() &&
-      CaptureModeController::Get()->IsActive()) {
+  if (capture_mode_util::IsCaptureModeActive())
     return;
-  }
 
   aura::Window* root_window_for_new_windows =
       Shell::GetRootWindowForNewWindows();

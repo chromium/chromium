@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ FrameDeadline FrameDeadline::MakeZero() {
 }
 
 base::TimeTicks FrameDeadline::ToWallTime(
-    base::Optional<uint32_t> default_deadline_in_frames) const {
+    absl::optional<uint32_t> default_deadline_in_frames) const {
   uint32_t deadline_in_frames = deadline_in_frames_;
   if (use_default_lower_bound_deadline_) {
     deadline_in_frames =

@@ -1,11 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/permissions/contexts/nfc_permission_context.h"
 
+#include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/permissions/permission_request_id.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace permissions {
 
@@ -19,7 +21,7 @@ NfcPermissionContext::NfcPermissionContext(
 
 NfcPermissionContext::~NfcPermissionContext() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ContentSetting NfcPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -29,7 +31,6 @@ ContentSetting NfcPermissionContext::GetPermissionStatusInternal(
 #endif
 
 void NfcPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -40,7 +41,7 @@ void NfcPermissionContext::DecidePermission(
     return;
   }
   permissions::PermissionContextBase::DecidePermission(
-      web_contents, id, requesting_origin, embedding_origin, user_gesture,
+      id, requesting_origin, embedding_origin, user_gesture,
       std::move(callback));
 }
 
@@ -57,10 +58,6 @@ void NfcPermissionContext::UpdateTabContext(const PermissionRequestID& id,
     content_settings->OnContentAllowed(ContentSettingsType::NFC);
   else
     content_settings->OnContentBlocked(ContentSettingsType::NFC);
-}
-
-bool NfcPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
 }
 
 }  // namespace permissions

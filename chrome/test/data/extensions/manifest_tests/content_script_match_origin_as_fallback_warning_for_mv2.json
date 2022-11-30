@@ -1,0 +1,10 @@
+{
+  "name": "ContentScriptsManifestTest.MatchOriginAsFallback_InvalidCases",
+  "version": "0.1",
+  "manifest_version": 2,
+  "content_scripts": [{
+    "matches": ["https://example.com/*"],
+    "match_origin_as_fallback": true,
+    "js": ["file.js"]
+  }]
+}

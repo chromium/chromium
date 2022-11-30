@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -28,6 +29,7 @@ import java.util.Locale;
 
 /** Tests that translations work correctly for Java strings inside bundles. */
 @RunWith(WebLayerJUnit4ClassRunner.class)
+@DisabledTest(message = "crbug.com/1226712")
 public class BundleLanguageTest {
     private static final String WEBLAYER_SPECIFIC_STRING =
             "string/infobar_missing_location_permission_text";

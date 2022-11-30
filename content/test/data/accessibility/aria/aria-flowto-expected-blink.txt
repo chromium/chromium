@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++section name='current' flowtoIds=footer
+++++++region name='current' flowtoIds=footer
 ++++++++staticText name='Lorem ipsum'
 ++++++++++inlineTextBox name='Lorem ipsum'
 ++++++footer name='next'

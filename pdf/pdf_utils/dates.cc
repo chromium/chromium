@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_pdf {
 
@@ -27,9 +27,9 @@ class DateDeserializer final {
   // Pops the first `num_digits` characters from the string and converts them to
   // an int if possible. Popping too many characters or characters that cannot
   // be converted puts the deserializer in a stopped state.
-  base::Optional<int> PopDigits(size_t num_digits) {
+  absl::optional<int> PopDigits(size_t num_digits) {
     if (stopped_)
-      return base::nullopt;
+      return absl::nullopt;
 
     // `base::StringToUint()` allows leading sign characters, so also verify
     // that the front character is a digit.
@@ -38,7 +38,7 @@ class DateDeserializer final {
         !base::IsAsciiDigit(deserializing_.front()) ||
         !base::StringToUint(deserializing_.substr(0, num_digits), &value)) {
       stopped_ = true;
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // Pop front characters.
@@ -47,14 +47,14 @@ class DateDeserializer final {
   }
 
   // Pops the front character if it is not a digit. Otherwise, does not change
-  // the state of the deserializer and returns `base::nullopt`.
-  base::Optional<char> TryPopNonDigit() {
+  // the state of the deserializer and returns `absl::nullopt`.
+  absl::optional<char> TryPopNonDigit() {
     if (stopped_ || deserializing_.empty())
-      return base::nullopt;
+      return absl::nullopt;
 
     const char front = deserializing_.front();
     if (base::IsAsciiDigit(front))
-      return base::nullopt;
+      return absl::nullopt;
 
     deserializing_ = deserializing_.substr(1);
     return front;
@@ -69,22 +69,22 @@ class DateDeserializer final {
 };
 
 // Parses the offset info in `deserializer`, which is the time offset portion of
-// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1
-// standard. An input is expected to look like "HH'mm", such that "HH" is the
-// hour and "mm" is the minute.
+// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1:2008
+// spec. An input is expected to look like "HH'mm", such that "HH" is the hour
+// and "mm" is the minute.
 base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   base::TimeDelta offset;
 
   // UTC is assumed if no time zone information is provided.
-  const base::Optional<char> sign = deserializer.TryPopNonDigit();
+  const absl::optional<char> sign = deserializer.TryPopNonDigit();
   if (!sign.has_value() || (sign.value() != '+' && sign.value() != '-'))
     return offset;
 
-  offset += base::TimeDelta::FromHours(deserializer.PopDigits(2).value_or(0));
+  offset += base::Hours(deserializer.PopDigits(2).value_or(0));
 
   // The spec requires that the hours offset be followed by an apostrophe, but
   // don't be strict about its presence.
-  const base::Optional<char> apostrophe = deserializer.TryPopNonDigit();
+  const absl::optional<char> apostrophe = deserializer.TryPopNonDigit();
   if (apostrophe.has_value() && apostrophe.value() != '\'')
     return sign.value() == '+' ? offset : -offset;
 
@@ -92,7 +92,7 @@ base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   // following the minutes offset. One reason for the leniency is the apostrophe
   // following the minues, which is only mentioned in earlier versions of the
   // spec.
-  offset += base::TimeDelta::FromMinutes(deserializer.PopDigits(2).value_or(0));
+  offset += base::Minutes(deserializer.PopDigits(2).value_or(0));
 
   return sign.value() == '+' ? offset : -offset;
 }
@@ -108,7 +108,7 @@ base::Time ParsePdfDate(base::StringPiece date) {
   DateDeserializer deserializer(date);
 
   // Year is the only required part of a valid date.
-  const base::Optional<int> deserialized_year = deserializer.PopDigits(4);
+  const absl::optional<int> deserialized_year = deserializer.PopDigits(4);
   if (!deserialized_year.has_value())
     return base::Time();
 

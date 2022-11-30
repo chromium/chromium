@@ -1,0 +1,22 @@
+Tests that DOMSnapshot.captureSnapshot properly reports shadow root types
+node:  value=undefined name=#document shadowRootType=undefined
+node:  value=undefined name=HTML shadowRootType=undefined
+node:  value=undefined name=HEAD shadowRootType=undefined
+node:  value=undefined name=BODY shadowRootType=undefined
+node:  value= name=#text shadowRootType=undefined
+node:  value=undefined name=HOST-ELEMENT shadowRootType=undefined
+node:  value= name=#text shadowRootType=open
+node:  value=undefined name=H2 shadowRootType=open
+node:  value=Open shadow root name=#text shadowRootType=open
+node:  value= name=#text shadowRootType=open
+node:  value= name=#text shadowRootType=undefined
+node:  value=undefined name=HOST-ELEMENT shadowRootType=undefined
+node:  value= name=#text shadowRootType=closed
+node:  value=undefined name=H2 shadowRootType=closed
+node:  value=Closes shadow root name=#text shadowRootType=closed
+node:  value= name=#text shadowRootType=closed
+node:  value= name=#text shadowRootType=undefined
+node:  value=undefined name=TEXTAREA shadowRootType=undefined
+node:  value=test for ua shadow roots are not returned by DOMSnapshot.captureSnapshot name=#text shadowRootType=undefined
+node:  value= name=#text shadowRootType=undefined
+

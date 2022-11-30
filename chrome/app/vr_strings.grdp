@@ -142,19 +142,19 @@
   <message name="IDS_VR_BUTTON_APP_REPOSITION" desc="This is the label for the app button while in reposition mode">
     Finish
   </message>
-  <message name="IDS_VR_MENU_NEW_INCOGNITO_TAB" desc="Menu item for opening a new incognito tab that facilitates pseudononymous browsing. [CHAR-LIMIT=27]">
-    New incognito tab
+  <message name="IDS_VR_MENU_NEW_INCOGNITO_TAB" desc="Menu item for opening a new Incognito tab that facilitates pseudononymous browsing. [CHAR_LIMIT=27]">
+    New Incognito tab
   </message>
-  <message name="IDS_VR_MENU_PREFERENCES" desc="Menu item for opening browser preferences. [CHAR-LIMIT=27]">
+  <message name="IDS_VR_MENU_PREFERENCES" desc="Menu item for opening browser preferences. [CHAR_LIMIT=27]">
     Settings
   </message>
-  <message name="IDS_VR_MENU_CLOSE_INCOGNITO_TABS" desc="Menu item for closing all open incognito tabs. [CHAR-LIMIT=27]">
-    Close incognito tabs
+  <message name="IDS_VR_MENU_CLOSE_INCOGNITO_TABS" desc="Menu item for closing all open Incognito tabs. [CHAR_LIMIT=27]">
+    Close Incognito tabs
   </message>
   <message name="IDS_VR_TABS_BUTTON_REGULAR" desc="Text on button for selecting regular tabs">
     Tabs
   </message>
-  <message name="IDS_VR_TABS_BUTTON_INCOGNITO" desc="Text on button for selecting incognito tabs">
+  <message name="IDS_VR_TABS_BUTTON_INCOGNITO" desc="Text on button for selecting Incognito tabs">
     Incognito
   </message>
 </grit-part>

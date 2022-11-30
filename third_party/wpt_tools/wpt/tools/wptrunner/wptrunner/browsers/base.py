@@ -1,31 +1,19 @@
+# mypy: allow-untyped-defs
+
+import enum
+import errno
 import os
 import platform
 import socket
+import traceback
 from abc import ABCMeta, abstractmethod
-from copy import deepcopy
 
+import mozprocess
+
+from ..environment import wait_for_service
 from ..wptcommandline import require_arg  # noqa: F401
 
 here = os.path.dirname(__file__)
-
-
-def inherit(super_module, child_globals, product_name):
-    super_wptrunner = super_module.__wptrunner__
-    child_globals["__wptrunner__"] = child_wptrunner = deepcopy(super_wptrunner)
-
-    child_wptrunner["product"] = product_name
-
-    for k in ("check_args", "browser", "browser_kwargs", "executor_kwargs",
-              "env_extras", "env_options", "timeout_multiplier"):
-        attr = super_wptrunner[k]
-        child_globals[attr] = getattr(super_module, attr)
-
-    for v in super_module.__wptrunner__["executor"].values():
-        child_globals[v] = getattr(super_module, v)
-
-    if "run_info_extras" in super_wptrunner:
-        attr = super_wptrunner["run_info_extras"]
-        child_globals[attr] = getattr(super_module, attr)
 
 
 def cmd_arg(name, value=None):
@@ -64,7 +52,7 @@ def get_free_port():
         s = socket.socket()
         try:
             s.bind(("127.0.0.1", 0))
-        except socket.error:
+        except OSError:
             continue
         else:
             return s.getsockname()[1]
@@ -95,7 +83,7 @@ class BrowserError(Exception):
     pass
 
 
-class Browser(object):
+class Browser:
     """Abstract class serving as the basis for Browser implementations.
 
     The Browser is used in the TestRunnerManager to start and stop the browser
@@ -171,10 +159,13 @@ class Browser(object):
         log. Returns a boolean indicating whether a crash occured."""
         return False
 
+    @property
+    def pac(self):
+        return None
 
 class NullBrowser(Browser):
     def __init__(self, logger, **kwargs):
-        super(NullBrowser, self).__init__(logger)
+        super().__init__(logger)
 
     def start(self, **kwargs):
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
@@ -191,11 +182,8 @@ class NullBrowser(Browser):
     def is_alive(self):
         return True
 
-    def on_output(self, line):
-        raise NotImplementedError
 
-
-class ExecutorBrowser(object):
+class ExecutorBrowser:
     """View of the Browser used by the Executor object.
     This is needed because the Executor runs in a child process and
     we can't ship Browser instances between processes on Windows.
@@ -207,3 +195,224 @@ class ExecutorBrowser(object):
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+
+@enum.unique
+class OutputHandlerState(enum.IntEnum):
+    BEFORE_PROCESS_START = 1
+    AFTER_PROCESS_START = 2
+    AFTER_HANDLER_START = 3
+    AFTER_PROCESS_STOP = 4
+
+
+class OutputHandler:
+    """Class for handling output from a browser process.
+
+    This class is responsible for consuming the logging from a browser process
+    and passing it into the relevant logger. A class instance is designed to
+    be passed as the processOutputLine argument to mozprocess.ProcessHandler.
+
+    The setup of this class is complex for various reasons:
+
+    * We need to create an instance of the class before starting the process
+    * We want access to data about the running process e.g. the pid
+    * We want to launch the process and later setup additional log handling
+      which is restrospectively applied to any existing output (this supports
+      prelaunching browsers for performance, but having log output depend on the
+      tests that are run e.g. for leak suppression).
+
+    Therefore the lifecycle is as follows::
+
+      output_handler = OutputHandler(logger, command, **output_handler_kwargs)
+      proc = ProcessHandler(command, ..., processOutputLine=output_handler)
+      output_handler.after_process_start(proc.pid)
+      [...]
+      # All logging to this point was buffered in-memory, but after start()
+      # it's actually sent to the logger.
+      output_handler.start(**output_logger_start_kwargs)
+      [...]
+      proc.wait()
+      output_handler.after_process_stop()
+
+    Since the process lifetime and the output handler lifetime are coupled (it doesn't
+    work to reuse an output handler for multiple processes), it might make sense to have
+    a single class that owns the process and the output processing for the process.
+    This is complicated by the fact that we don't always run the process directly,
+    but sometimes use a wrapper e.g. mozrunner.
+    """
+
+    def __init__(self, logger, command, **kwargs):
+        self.logger = logger
+        self.command = command
+        self.pid = None
+        self.state = OutputHandlerState.BEFORE_PROCESS_START
+        self.line_buffer = []
+
+    def after_process_start(self, pid):
+        assert self.state == OutputHandlerState.BEFORE_PROCESS_START
+        self.logger.debug("OutputHandler.after_process_start")
+        self.pid = pid
+        self.state = OutputHandlerState.AFTER_PROCESS_START
+
+    def start(self, **kwargs):
+        assert self.state == OutputHandlerState.AFTER_PROCESS_START
+        self.logger.debug("OutputHandler.start")
+        # Need to change the state here before we try to empty the buffer
+        # or we'll just re-buffer the existing output.
+        self.state = OutputHandlerState.AFTER_HANDLER_START
+        for item in self.line_buffer:
+            self(item)
+        self.line_buffer = None
+
+    def after_process_stop(self, clean_shutdown=True):
+        # If we didn't get as far as configure, just
+        # dump all logs with no configuration
+        self.logger.debug("OutputHandler.after_process_stop")
+        if self.state < OutputHandlerState.AFTER_HANDLER_START:
+            self.start()
+        self.state = OutputHandlerState.AFTER_PROCESS_STOP
+
+    def __call__(self, line):
+        if self.state < OutputHandlerState.AFTER_HANDLER_START:
+            self.line_buffer.append(line)
+            return
+
+        # Could assert that there's no output handled once we're in the
+        # after_process_stop phase, although technically there's a race condition
+        # here because we don't know the logging thread has finished draining the
+        # logs. The solution might be to move this into mozprocess itself.
+
+        self.logger.process_output(self.pid,
+                                   line.decode("utf8", "replace"),
+                                   command=" ".join(self.command) if self.command else "")
+
+
+class WebDriverBrowser(Browser):
+    __metaclass__ = ABCMeta
+
+    def __init__(self, logger, binary=None, webdriver_binary=None,
+                 webdriver_args=None, host="127.0.0.1", port=None, base_path="/",
+                 env=None, supports_pac=True, **kwargs):
+        super().__init__(logger)
+
+        if webdriver_binary is None:
+            raise ValueError("WebDriver server binary must be given "
+                             "to --webdriver-binary argument")
+
+        self.logger = logger
+        self.binary = binary
+        self.webdriver_binary = webdriver_binary
+
+        self.host = host
+        self._port = port
+        self._supports_pac = supports_pac
+
+        self.base_path = base_path
+        self.env = os.environ.copy() if env is None else env
+        self.webdriver_args = webdriver_args if webdriver_args is not None else []
+
+        self.url = f"http://{self.host}:{self.port}{self.base_path}"
+
+        self._output_handler = None
+        self._cmd = None
+        self._proc = None
+        self._pac = None
+
+    def make_command(self):
+        """Returns the full command for starting the server process as a list."""
+        return [self.webdriver_binary] + self.webdriver_args
+
+    def start(self, group_metadata, **kwargs):
+        try:
+            self._run_server(group_metadata, **kwargs)
+        except KeyboardInterrupt:
+            self.stop()
+
+    def create_output_handler(self, cmd):
+        """Return an instance of the class used to handle application output.
+
+        This can be overridden by subclasses which have particular requirements
+        for parsing, or otherwise using, the output."""
+        return OutputHandler(self.logger, cmd)
+
+    def _run_server(self, group_metadata, **kwargs):
+        cmd = self.make_command()
+        self._output_handler = self.create_output_handler(cmd)
+
+        self._proc = mozprocess.ProcessHandler(
+            cmd,
+            processOutputLine=self._output_handler,
+            env=self.env,
+            storeOutput=False)
+
+        self.logger.debug("Starting WebDriver: %s" % ' '.join(cmd))
+        try:
+            self._proc.run()
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                raise OSError(
+                    "WebDriver executable not found: %s" % self.webdriver_binary)
+            raise
+        self._output_handler.after_process_start(self._proc.pid)
+
+        try:
+            wait_for_service(self.logger, self.host, self.port,
+                             timeout=self.init_timeout)
+        except Exception:
+            self.logger.error(
+                "WebDriver was not accessible "
+                f"within the timeout:\n{traceback.format_exc()}")
+            raise
+        self._output_handler.start(group_metadata=group_metadata, **kwargs)
+        self.logger.debug("_run complete")
+
+    def stop(self, force=False):
+        self.logger.debug("Stopping WebDriver")
+        clean = True
+        if self.is_alive():
+            # Pass a timeout value to mozprocess Processhandler.kill()
+            # to ensure it always returns within it.
+            # See https://bugzilla.mozilla.org/show_bug.cgi?id=1760080
+            kill_result = self._proc.kill(timeout=5)
+            if force and kill_result != 0:
+                clean = False
+                self._proc.kill(9, timeout=5)
+        success = not self.is_alive()
+        if success and self._output_handler is not None:
+            # Only try to do output post-processing if we managed to shut down
+            self._output_handler.after_process_stop(clean)
+            self._output_handler = None
+        return success
+
+    def is_alive(self):
+        return hasattr(self._proc, "proc") and self._proc.poll() is None
+
+    @property
+    def pid(self):
+        if self._proc is not None:
+            return self._proc.pid
+
+    @property
+    def port(self):
+        # If no port is supplied, we'll get a free port right before we use it.
+        # Nothing guarantees an absence of race conditions here.
+        if self._port is None:
+            self._port = get_free_port()
+        return self._port
+
+    def cleanup(self):
+        self.stop()
+
+    def executor_browser(self):
+        return ExecutorBrowser, {"webdriver_url": self.url,
+                                 "host": self.host,
+                                 "port": self.port,
+                                 "pac": self.pac}
+
+    def settings(self, test):
+        self._pac = test.environment.get("pac", None) if self._supports_pac else None
+        return {"pac": self._pac}
+
+    @property
+    def pac(self):
+        return self._pac

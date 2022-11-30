@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,9 +18,6 @@ class DocumentPolicyFeatureWriter(json5_generator.Writer):
             'templates/' + self.file_basename + '.cc.tmpl')
         def generate_implementation():
             return {
-                'header_guard':
-                self.make_header_guard(self._relative_output_dir +
-                                       self.file_basename + '.h'),
                 'input_files':
                 self._input_files,
                 'features':

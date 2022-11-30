@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,10 @@
 #include <vector>
 
 class GURL;
+
+namespace net {
+class HttpResponseHeaders;
+}
 
 namespace weblayer {
 class Page;
@@ -50,6 +54,10 @@ class Navigation {
   // Returns the status code of the navigation. Returns 0 if the navigation
   // hasn't completed yet or if a response wasn't received.
   virtual int GetHttpStatusCode() = 0;
+
+  // Returns the HTTP response headers. Returns nullptr if the navigation
+  // hasn't completed yet or if a response wasn't received.
+  virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
 
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:
@@ -117,7 +125,10 @@ class Navigation {
   // function may only be called from NavigationObserver::NavigationStarted().
   // Any value specified during start carries through to a redirect. |value|
   // must not contain any illegal characters as documented in
-  // SetRequestHeader().
+  // SetRequestHeader().  Setting this to a non empty string will cause the
+  // User-Agent Client Hint header values and the values returned by
+  // `navigator.userAgentData` to be empty for requests this override is applied
+  // to.
   virtual void SetUserAgentString(const std::string& value) = 0;
 
   // Disables auto-reload for this navigation if the network is down and comes
@@ -131,9 +142,9 @@ class Navigation {
   //  * changing window.location.href
   //  * redirect via the <meta http-equiv="refresh"> tag
   //  * using window.history.pushState
+  //  * window.history.forward() or window.history.back()
   //
-  // This method returns false for navigations initiated by the WebLayer
-  // API, including using window.history.forward() or window.history.back().
+  // This method returns false for navigations initiated by the WebLayer API.
   virtual bool IsPageInitiated() = 0;
 
   // Whether the navigation is a reload. Examples of reloads include:
@@ -161,6 +172,15 @@ class Navigation {
   // NavigationObserve::NavigationFailed(). It can return null if the navigation
   // didn't commit (e.g. 204/205 or download).
   virtual Page* GetPage() = 0;
+
+  // Returns the offset between the indices of the previous last committed and
+  // the newly committed navigation entries (e.g. -1 for back navigations, 0
+  // for reloads, 1 for forward navigations). This may not cover all corner
+  // cases, and can be incorrect in cases like main frame client redirects.
+  virtual int GetNavigationEntryOffset() = 0;
+
+  // Returns true if the navigation response was fetched from the cache.
+  virtual bool WasFetchedFromCache() = 0;
 };
 
 }  // namespace weblayer

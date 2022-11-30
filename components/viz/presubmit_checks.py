@@ -1,11 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Presubmit checks used in viz"""
 
 import re
-import string
 
 def CheckChangeLintsClean(input_api, output_api, allowlist, denylist=None):
   source_filter = lambda x: input_api.FilterSourceFile(x, allowlist, denylist)
@@ -97,7 +96,7 @@ def CheckPassByValue(input_api,
     contents = input_api.ReadFile(f, 'rb')
     match = re.search(
       r'\bconst +' + '(?P<type>(%s))&' %
-        string.join(pass_by_value_types, '|'),
+        '|'.join(pass_by_value_types),
       contents)
     if match:
       local_errors.append(output_api.PresubmitError(

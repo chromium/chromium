@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@ namespace test {
 
 // Adds an Event count entry for |event|.
 void SetEventCountForDay(Event* event, uint32_t day, uint32_t count);
+
+// Adds a snooze count entry for |event|.
+void SetSnoozeCountForDay(Event* event, uint32_t day, uint32_t count);
 
 // Verifies that the given |event| contains a |day| with the correct |count|,
 // and that the day only exists a single time.

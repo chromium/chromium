@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_support_export.h"
@@ -30,6 +29,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
     : public base::RefCountedThreadSafe<MessageAttachmentSet> {
  public:
   MessageAttachmentSet();
+
+  MessageAttachmentSet(const MessageAttachmentSet&) = delete;
+  MessageAttachmentSet& operator=(const MessageAttachmentSet&) = delete;
 
   // Return the number of attachments
   unsigned size() const;
@@ -58,7 +60,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
   // auto-close.
   void CommitAllDescriptors();
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // This is the maximum number of descriptors per message. We need to know this
   // because the control message kernel interface has to be given a buffer which
   // is large enough to store all the descriptor numbers. Otherwise the kernel
@@ -68,7 +70,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
   // In debugging mode, it's a fatal error to try and add more than this number
   // of descriptors to a MessageAttachmentSet.
   static const size_t kMaxDescriptorsPerMessage = 7;
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   // ---------------------------------------------------------------------------
 
@@ -87,8 +89,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
   // all the descriptors have been read (with GetNthDescriptor). Secondly, we
   // can check that they are read in order.
   unsigned consumed_descriptor_highwater_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageAttachmentSet);
 };
 
 }  // namespace IPC

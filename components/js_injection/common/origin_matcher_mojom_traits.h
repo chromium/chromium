@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_MOJOM_TRAITS_H_
 #define COMPONENTS_JS_INJECTION_COMMON_ORIGIN_MATCHER_MOJOM_TRAITS_H_
 
-#include <string>
 #include <vector>
 
 #include "components/js_injection/common/origin_matcher.h"

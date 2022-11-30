@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,11 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_string_utils.h"
+#include "net/base/hex_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace spdy {
-namespace test {
+namespace spdy::test {
 
 using std::map;
 
@@ -69,7 +67,7 @@ TEST(HpackFuzzUtilTest, ParsesSequenceOfHeaderBlocks) {
       "fin";
 
   HpackFuzzUtil::Input input;
-  input.input.assign(fixture, base::size(fixture) - 1);
+  input.input.assign(fixture, std::size(fixture) - 1);
 
   absl::string_view block;
 
@@ -100,7 +98,7 @@ TEST(HpackFuzzUtilTest, SerializedHeaderBlockPrefixes) {
 
 TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   // Example lifted from HpackDecoderTest.SectionD4RequestHuffmanExamples.
-  std::string input = SpdyHexDecode("828684418cf1e3c2e5f23a6ba0ab90f4ff");
+  std::string input = net::HexDecode("828684418cf1e3c2e5f23a6ba0ab90f4ff");
 
   HpackFuzzUtil::FuzzerContext context;
   HpackFuzzUtil::InitializeFuzzerContext(&context);
@@ -142,13 +140,12 @@ TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
 
 TEST(HpackFuzzUtilTest, FlipBitsMutatesBuffer) {
   char buffer[] = "testbuffer1234567890";
-  std::string unmodified(buffer, base::size(buffer) - 1);
+  std::string unmodified(buffer, std::size(buffer) - 1);
 
   EXPECT_EQ(unmodified, buffer);
   HpackFuzzUtil::FlipBits(reinterpret_cast<uint8_t*>(buffer),
-                          base::size(buffer) - 1, 1);
+                          std::size(buffer) - 1, 1);
   EXPECT_NE(unmodified, buffer);
 }
 
-}  // namespace test
-}  // namespace spdy
+}  // namespace spdy::test

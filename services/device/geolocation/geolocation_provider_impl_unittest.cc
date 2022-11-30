@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -61,6 +61,9 @@ class GeopositionEqMatcher
   explicit GeopositionEqMatcher(const mojom::Geoposition& expected)
       : expected_(expected) {}
 
+  GeopositionEqMatcher(const GeopositionEqMatcher&) = delete;
+  GeopositionEqMatcher& operator=(const GeopositionEqMatcher&) = delete;
+
   bool MatchAndExplain(const mojom::Geoposition& actual,
                        MatchResultListener* listener) const override {
     return actual.latitude == expected_.latitude &&
@@ -85,8 +88,6 @@ class GeopositionEqMatcher
 
  private:
   mojom::Geoposition expected_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeopositionEqMatcher);
 };
 
 Matcher<const mojom::Geoposition&> GeopositionEq(
@@ -105,8 +106,11 @@ class GeolocationProviderTest : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         arbitrator_(new FakeLocationProvider) {
-    provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_));
+    provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_.get()));
   }
+
+  GeolocationProviderTest(const GeolocationProviderTest&) = delete;
+  GeolocationProviderTest& operator=(const GeolocationProviderTest&) = delete;
 
   ~GeolocationProviderTest() override = default;
 
@@ -134,12 +138,10 @@ class GeolocationProviderTest : public testing::Test {
   base::ThreadChecker thread_checker_;
 
   // Owned by the GeolocationProviderImpl class.
-  FakeLocationProvider* arbitrator_;
+  raw_ptr<FakeLocationProvider> arbitrator_;
 
   // True if |arbitrator_| is started.
   bool is_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationProviderTest);
 };
 
 bool GeolocationProviderTest::ProvidersStarted() {

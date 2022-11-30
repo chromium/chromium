@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,9 @@ class WindowDeleter : public aura::WindowObserver {
  public:
   explicit WindowDeleter(aura::Window* window) : target_(window) {}
 
+  WindowDeleter(const WindowDeleter&) = delete;
+  WindowDeleter& operator=(const WindowDeleter&) = delete;
+
   // aura::WindowObserver::
   void OnWindowBoundsChanged(aura::Window* window,
                              const gfx::Rect& old_bounds,
@@ -25,8 +28,6 @@ class WindowDeleter : public aura::WindowObserver {
 
  private:
   aura::Window* target_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowDeleter);
 };
 
 }  // namespace

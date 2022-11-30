@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
 
 namespace blink {
 
-class KeyboardLayoutMap final : public ScriptWrappable,
-                                public Maplike<String, String> {
+class KeyboardLayoutMap final
+    : public ScriptWrappable,
+      public Maplike<String, IDLString, String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,9 +32,8 @@ class KeyboardLayoutMap final : public ScriptWrappable,
 
  private:
   // Maplike implementation.
-  PairIterable<String, String>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, String, IDLString>::IterationSource*
+  StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    String& value,

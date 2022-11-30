@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.contextualsearch;
@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -67,6 +68,15 @@ class ContextualSearchRequest {
      */
     ContextualSearchRequest(String searchTerm, boolean isLowPriorityEnabled) {
         this(searchTerm, null, null, isLowPriorityEnabled, null, null);
+    }
+
+    /**
+     * Creates a search request for the given URL without any alternate term or low priority
+     * loading capability for preload.
+     * @param searchUrlFull The URI for the full search to present in the overlay.
+     */
+    ContextualSearchRequest(@NonNull Uri searchUrlFull) {
+        this(null, null, null, false, searchUrlFull.toString(), null);
     }
 
     /**
@@ -179,15 +189,14 @@ class ContextualSearchRequest {
     }
 
     /**
-     * Adds translation parameters, unless they match.
+     * Adds translation parameters.
      * @param sourceLanguage The language of the original search term.
      * @param targetLanguage The language the that the user prefers.
      */
     void forceTranslation(String sourceLanguage, String targetLanguage) {
         mIsTranslationForced = true;
         // If the server is providing a full URL then we shouldn't alter it.
-        if (mIsFullSearchUrlProvided || TextUtils.isEmpty(targetLanguage)
-                || targetLanguage.equals(sourceLanguage)) {
+        if (mIsFullSearchUrlProvided || TextUtils.isEmpty(targetLanguage)) {
             return;
         }
 

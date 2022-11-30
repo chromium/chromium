@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,7 @@ std::unique_ptr<UsbPrinterManifestData> UsbPrinterManifestData::FromValue(
   auto result = std::make_unique<UsbPrinterManifestData>();
   for (const auto& input : usb_printers->filters) {
     if (input.product_id && input.interface_class) {
-      *error = base::ASCIIToUTF16(
-          "Only one of productId or interfaceClass may be specified.");
+      *error = u"Only one of productId or interfaceClass may be specified.";
       return nullptr;
     }
 

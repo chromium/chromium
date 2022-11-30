@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,24 +8,23 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/it2me/it2me_host.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/signaling/delegating_signal_strategy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "remoting/host/native_messaging/log_message_handler.h"
 #endif
 
 namespace base {
-class DictionaryValue;
-class Value;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -43,6 +42,10 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
                            std::unique_ptr<PolicyWatcher> policy_watcher,
                            std::unique_ptr<ChromotingHostContext> host_context,
                            std::unique_ptr<It2MeHostFactory> host_factory);
+
+  It2MeNativeMessagingHost(const It2MeNativeMessagingHost&) = delete;
+  It2MeNativeMessagingHost& operator=(const It2MeNativeMessagingHost&) = delete;
+
   ~It2MeNativeMessagingHost() override;
 
   // extensions::NativeMessageHost implementation.
@@ -51,10 +54,9 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const override;
 
   // It2MeHost::Observer implementation.
-  void OnClientAuthenticated(const std::string& client_username)
-      override;
+  void OnClientAuthenticated(const std::string& client_username) override;
   void OnStoreAccessCode(const std::string& access_code,
-                                 base::TimeDelta access_code_lifetime) override;
+                         base::TimeDelta access_code_lifetime) override;
   void OnNatPoliciesChanged(bool nat_traversal_enabled,
                             bool relay_connections_allowed) override;
   void OnStateChanged(It2MeHostState state,
@@ -64,47 +66,42 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // processed.
   void SetPolicyErrorClosureForTesting(base::OnceClosure closure);
 
-  static std::string HostStateToString(It2MeHostState host_state);
-
  private:
   // These "Process.." methods handle specific request types. The |response|
   // dictionary is pre-filled by ProcessMessage() with the parts of the
   // response already known ("id" and "type" fields).
-  void ProcessHello(std::unique_ptr<base::DictionaryValue> message,
-                    std::unique_ptr<base::DictionaryValue> response) const;
-  void ProcessConnect(std::unique_ptr<base::DictionaryValue> message,
-                      std::unique_ptr<base::DictionaryValue> response);
-  void ProcessDisconnect(std::unique_ptr<base::DictionaryValue> message,
-                         std::unique_ptr<base::DictionaryValue> response);
-  void ProcessIncomingIq(std::unique_ptr<base::DictionaryValue> message,
-                         std::unique_ptr<base::DictionaryValue> response);
-  void SendErrorAndExit(std::unique_ptr<base::DictionaryValue> response,
+  void ProcessHello(base::Value::Dict message,
+                    base::Value::Dict response) const;
+  void ProcessConnect(base::Value::Dict message, base::Value::Dict response);
+  void ProcessDisconnect(base::Value::Dict message, base::Value::Dict response);
+  void ProcessIncomingIq(base::Value::Dict message, base::Value::Dict response);
+  void SendErrorAndExit(base::Value::Dict response,
                         const protocol::ErrorCode error_code) const;
   void SendPolicyErrorAndExit() const;
-  void SendMessageToClient(std::unique_ptr<base::Value> message) const;
+  void SendMessageToClient(base::Value::Dict message) const;
 
   // Callback for DelegatingSignalStrategy.
   void SendOutgoingIq(const std::string& iq);
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies);
+  void OnPolicyUpdate(base::Value::Dict policies);
 
   // Called when malformed policies are detected.
   void OnPolicyError();
 
   // Returns whether the request was successfully sent to the elevated host.
-  bool DelegateToElevatedHost(std::unique_ptr<base::DictionaryValue> message);
+  bool DelegateToElevatedHost(base::Value::Dict message);
 
   // Creates a delegated signal strategy from the values stored in |message|.
   // Returns nullptr on failure.
   std::unique_ptr<SignalStrategy> CreateDelegatedSignalStrategy(
-      const base::DictionaryValue* message);
+      const base::Value::Dict& message);
 
   // Extracts OAuth access token from the message passed from the client.
-  std::string ExtractAccessToken(const base::DictionaryValue* message);
+  std::string ExtractAccessToken(const base::Value::Dict& message);
 
   // Returns the value of the 'allow_elevated_host' platform policy or empty.
-  base::Optional<bool> GetAllowElevatedHostPolicyValue();
+  absl::optional<bool> GetAllowElevatedHostPolicyValue();
 
   // Indicates whether the current process is already elevated.
   bool is_process_elevated_ = false;
@@ -112,14 +109,14 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // Forward messages to an |elevated_host_|.
   bool use_elevated_host_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Controls the lifetime of the elevated native messaging host process.
   // Note: 'elevated' in this instance means having the UiAccess privilege, not
   // being run as a higher privilege user.
   std::unique_ptr<ElevatedNativeMessagingHost> elevated_host_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   DelegatingSignalStrategy::IqCallback incoming_message_callback_;
   std::unique_ptr<ChromotingHostContext> host_context_;
   std::unique_ptr<It2MeHostFactory> factory_;
@@ -155,8 +152,6 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
 
   base::WeakPtr<It2MeNativeMessagingHost> weak_ptr_;
   base::WeakPtrFactory<It2MeNativeMessagingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(It2MeNativeMessagingHost);
 };
 
 }  // namespace remoting

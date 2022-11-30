@@ -1,0 +1,15 @@
+Verifies that requestWillBeSent.redirectEmittedExtraInfo matches the presence of ExtraInfo events on redirects.
+
+request:
+  url: http://127.0.1.1:8000/whatever
+  !!redirectResponse: false
+  redirectHasExtraInfo: false
+request:
+  url: http://127.0.0.1:8000/devtools/resources/empty.html
+  !!redirectResponse: true
+  redirectHasExtraInfo: false
+response:
+  hasExtraInfo: true
+request ExtraInfo count: 1
+response ExtraInfo count: 1
+

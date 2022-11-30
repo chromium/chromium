@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
-#define MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
+#ifndef MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_
+#define MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
@@ -20,6 +19,7 @@
 #include "media/gpu/android/shared_image_video_provider.h"
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/media_gpu_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {
@@ -31,7 +31,9 @@ class MaybeRenderEarlyManager;
 // decoder as soon as possible. It's not thread safe; it should be created, used
 // and destructed on a single sequence. It's implemented by proxying calls
 // to a helper class hosted on the gpu thread.
-class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
+class MEDIA_GPU_EXPORT VideoFrameFactoryImpl
+    : public VideoFrameFactory,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   // Callback used to return a mailbox and release callback for an image. The
   // release callback may be dropped without being run, and the image will be
@@ -51,7 +53,12 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       const gpu::GpuPreferences& gpu_preferences,
       std::unique_ptr<SharedImageVideoProvider> image_provider,
       std::unique_ptr<MaybeRenderEarlyManager> mre_manager,
-      std::unique_ptr<FrameInfoHelper> frame_info_helper);
+      std::unique_ptr<FrameInfoHelper> frame_info_helper,
+      scoped_refptr<gpu::RefCountedLock> drdc_lock);
+
+  VideoFrameFactoryImpl(const VideoFrameFactoryImpl&) = delete;
+  VideoFrameFactoryImpl& operator=(const VideoFrameFactoryImpl&) = delete;
+
   ~VideoFrameFactoryImpl() override;
 
   void Initialize(OverlayMode overlay_mode, InitCB init_cb) override;
@@ -94,7 +101,7 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
       PromotionHintAggregator::NotifyPromotionHintCB promotion_hint_cb,
       VideoPixelFormat pixel_format,
       OverlayMode overlay_mode,
-      const base::Optional<VideoFrameMetadata::CopyMode>& copy_mode,
+      bool video_frame_copy_required,
       scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info,
@@ -102,7 +109,6 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
 
   void CreateVideoFrame_OnFrameInfoReady(
       ImageWithInfoReadyCB image_ready_cb,
-      scoped_refptr<CodecBufferWaitCoordinator> codec_buffer_wait_coordinator,
       std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer,
       FrameInfoHelper::FrameInfo frame_info);
 
@@ -116,8 +122,8 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
 
   OverlayMode overlay_mode_ = OverlayMode::kDontRequestPromotionHints;
 
-  // Indicates how video frame needs to be copied when required.
-  base::Optional<VideoFrameMetadata::CopyMode> copy_mode_;
+  // Is the video frame copy required?
+  bool video_frame_copy_required_ = false;
 
   // Current group that new CodecImages should belong to.  Do not use this on
   // our thread; everything must be posted to the gpu main thread, including
@@ -135,10 +141,8 @@ class MEDIA_GPU_EXPORT VideoFrameFactoryImpl : public VideoFrameFactory {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoFrameFactoryImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameFactoryImpl);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_
+#endif  // MEDIA_GPU_ANDROID_VIDEO_FRAME_FACTORY_IMPL_H_

@@ -2,7 +2,6 @@ This test documents Blink's web-exposed CSS properties.
 All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 [LONGHANDS]
-    -webkit-app-region
     -webkit-border-horizontal-spacing
     -webkit-border-image
     -webkit-border-vertical-spacing
@@ -16,7 +15,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-reflect
     -webkit-font-smoothing
     -webkit-highlight
-    -webkit-hyphenate-character
     -webkit-line-break
     -webkit-line-clamp
     -webkit-locale
@@ -42,9 +40,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-tap-highlight-color
     -webkit-text-combine
     -webkit-text-decorations-in-effect
-    -webkit-text-emphasis-color
-    -webkit-text-emphasis-position
-    -webkit-text-emphasis-style
     -webkit-text-fill-color
     -webkit-text-orientation
     -webkit-text-security
@@ -56,6 +51,7 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-user-drag
     -webkit-user-modify
     -webkit-writing-mode
+    accent-color
     align-content
     align-items
     align-self
@@ -69,6 +65,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-name
     animation-play-state
     animation-timing-function
+    app-region
     appearance
     aspect-ratio
     backdrop-filter
@@ -151,7 +148,12 @@ All changes to this list should go through Blink's feature review process: http:
     column-span
     column-width
     contain
-    contain-intrinsic-size
+    contain-intrinsic-block-size
+    contain-intrinsic-height
+    contain-intrinsic-inline-size
+    contain-intrinsic-width
+    container-name
+    container-type
     content
     content-visibility
     counter-increment
@@ -181,9 +183,13 @@ All changes to this list should go through Blink's feature review process: http:
     font-feature-settings
     font-kerning
     font-optical-sizing
+    font-palette
     font-size
     font-stretch
     font-style
+    font-synthesis-small-caps
+    font-synthesis-style
+    font-synthesis-weight
     font-variant-caps
     font-variant-east-asian
     font-variant-ligatures
@@ -202,6 +208,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-template-columns
     grid-template-rows
     height
+    hyphenate-character
     hyphens
     image-orientation
     image-rendering
@@ -246,6 +253,7 @@ All changes to this list should go through Blink's feature review process: http:
     mix-blend-mode
     object-fit
     object-position
+    object-view-box
     offset-distance
     offset-path
     offset-rotate
@@ -284,10 +292,12 @@ All changes to this list should go through Blink's feature review process: http:
     r
     resize
     right
+    rotate
     row-gap
     ruby-position
     rx
     ry
+    scale
     scroll-behavior
     scroll-margin-block-end
     scroll-margin-block-start
@@ -308,6 +318,7 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scrollbar-gutter
     shape-image-threshold
     shape-margin
     shape-outside
@@ -335,6 +346,9 @@ All changes to this list should go through Blink's feature review process: http:
     text-decoration-skip-ink
     text-decoration-style
     text-decoration-thickness
+    text-emphasis-color
+    text-emphasis-position
+    text-emphasis-style
     text-indent
     text-orientation
     text-overflow
@@ -354,6 +368,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-duration
     transition-property
     transition-timing-function
+    translate
     unicode-bidi
     user-select
     vector-effect
@@ -399,9 +414,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-repeat
         -webkit-mask-repeat-x
         -webkit-mask-repeat-y
-    -webkit-text-emphasis
-        -webkit-text-emphasis-color
-        -webkit-text-emphasis-style
     -webkit-text-stroke
         -webkit-text-stroke-color
         -webkit-text-stroke-width
@@ -549,6 +561,12 @@ All changes to this list should go through Blink's feature review process: http:
     columns
         column-count
         column-width
+    contain-intrinsic-size
+        contain-intrinsic-height
+        contain-intrinsic-width
+    container
+        container-name
+        container-type
     flex
         flex-basis
         flex-grow
@@ -567,6 +585,10 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-numeric
         font-weight
         line-height
+    font-synthesis
+        font-synthesis-small-caps
+        font-synthesis-style
+        font-synthesis-weight
     font-variant
         font-variant-caps
         font-variant-east-asian
@@ -701,6 +723,9 @@ All changes to this list should go through Blink's feature review process: http:
         text-decoration-line
         text-decoration-style
         text-decoration-thickness
+    text-emphasis
+        text-emphasis-color
+        text-emphasis-style
     transition
         transition-delay
         transition-duration
@@ -713,11 +738,11 @@ All changes to this list should go through Blink's feature review process: http:
     -epub-text-combine
         -webkit-text-combine
     -epub-text-emphasis
-        -webkit-text-emphasis
+        text-emphasis
     -epub-text-emphasis-color
-        -webkit-text-emphasis-color
+        text-emphasis-color
     -epub-text-emphasis-style
-        -webkit-text-emphasis-style
+        text-emphasis-style
     -epub-text-orientation
         -webkit-text-orientation
     -epub-text-transform
@@ -750,6 +775,8 @@ All changes to this list should go through Blink's feature review process: http:
         animation-play-state
     -webkit-animation-timing-function
         animation-timing-function
+    -webkit-app-region
+        app-region
     -webkit-appearance
         appearance
     -webkit-backface-visibility
@@ -844,6 +871,8 @@ All changes to this list should go through Blink's feature review process: http:
         flex-wrap
     -webkit-font-feature-settings
         font-feature-settings
+    -webkit-hyphenate-character
+        hyphenate-character
     -webkit-justify-content
         justify-content
     -webkit-logical-height
@@ -888,6 +917,14 @@ All changes to this list should go through Blink's feature review process: http:
         shape-margin
     -webkit-shape-outside
         shape-outside
+    -webkit-text-emphasis
+        text-emphasis
+    -webkit-text-emphasis-color
+        text-emphasis-color
+    -webkit-text-emphasis-position
+        text-emphasis-position
+    -webkit-text-emphasis-style
+        text-emphasis-style
     -webkit-text-size-adjust
         text-size-adjust
     -webkit-transform

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -17,109 +18,71 @@
 
 namespace viz {
 
-FakeOutputSurface::FakeOutputSurface(
-    scoped_refptr<ContextProvider> context_provider)
-    : OutputSurface(std::move(context_provider)) {
-  DCHECK(OutputSurface::context_provider());
-}
-
-FakeOutputSurface::FakeOutputSurface(
+FakeSoftwareOutputSurface::FakeSoftwareOutputSurface(
     std::unique_ptr<SoftwareOutputDevice> software_device)
     : OutputSurface(std::move(software_device)) {
   DCHECK(OutputSurface::software_device());
 }
 
-FakeOutputSurface::~FakeOutputSurface() = default;
+FakeSoftwareOutputSurface::~FakeSoftwareOutputSurface() = default;
 
-void FakeOutputSurface::Reshape(const gfx::Size& size,
-                                float device_scale_factor,
-                                const gfx::ColorSpace& color_space,
-                                gfx::BufferFormat format,
-                                bool use_stencil) {
-  if (context_provider()) {
-    context_provider()->ContextGL()->ResizeCHROMIUM(
-        size.width(), size.height(), device_scale_factor,
-        color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
-  } else {
-    software_device()->Resize(size, device_scale_factor);
-  }
-  last_reshape_color_space_ = color_space;
+void FakeSoftwareOutputSurface::Reshape(const ReshapeParams& params) {
+  software_device()->Resize(params.size, params.device_scale_factor);
+  last_reshape_color_space_ = params.color_space;
 }
 
-void FakeOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
+void FakeSoftwareOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   last_sent_frame_ = std::make_unique<OutputSurfaceFrame>(std::move(frame));
   ++num_sent_frames_;
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&FakeOutputSurface::SwapBuffersAck,
+      FROM_HERE, base::BindOnce(&FakeSoftwareOutputSurface::SwapBuffersAck,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FakeOutputSurface::SwapBuffersAck() {
+void FakeSoftwareOutputSurface::SwapBuffersAck() {
   base::TimeTicks now = base::TimeTicks::Now();
-  client_->DidReceiveSwapBuffersAck({now, now});
+  client_->DidReceiveSwapBuffersAck({now, now},
+                                    /*release_fence=*/gfx::GpuFenceHandle());
   client_->DidReceivePresentationFeedback({now, base::TimeDelta(), 0});
 }
 
-void FakeOutputSurface::BindFramebuffer() {
-  context_provider_->ContextGL()->BindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+void FakeSoftwareOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
+  NOTREACHED();
 }
 
-void FakeOutputSurface::SetDrawRectangle(const gfx::Rect& rect) {
-  last_set_draw_rectangle_ = rect;
+void FakeSoftwareOutputSurface::SetEnableDCLayers(bool enabled) {
+  NOTREACHED();
 }
 
-void FakeOutputSurface::SetEnableDCLayers(bool enabled) {
-  context_provider_->ContextGL()->SetEnableDCLayersCHROMIUM(enabled);
-}
-
-uint32_t FakeOutputSurface::GetFramebufferCopyTextureFormat() {
-  if (framebuffer_)
-    return framebuffer_format_;
-  else
-    return GL_RGB;
-}
-
-void FakeOutputSurface::BindToClient(OutputSurfaceClient* client) {
+void FakeSoftwareOutputSurface::BindToClient(OutputSurfaceClient* client) {
   DCHECK(client);
   DCHECK(!client_);
   client_ = client;
 }
 
-bool FakeOutputSurface::HasExternalStencilTest() const {
-  return has_external_stencil_test_;
+bool FakeSoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
+  return false;
 }
 
-bool FakeOutputSurface::IsDisplayedAsOverlayPlane() const {
-  return overlay_texture_id_ != 0;
-}
-
-unsigned FakeOutputSurface::GetOverlayTextureId() const {
-  return overlay_texture_id_;
-}
-
-unsigned FakeOutputSurface::UpdateGpuFence() {
-  return gpu_fence_id_;
-}
-
-void FakeOutputSurface::SetUpdateVSyncParametersCallback(
+void FakeSoftwareOutputSurface::SetUpdateVSyncParametersCallback(
     UpdateVSyncParametersCallback callback) {}
 
-void FakeOutputSurface::SetDisplayTransformHint(
+void FakeSoftwareOutputSurface::SetDisplayTransformHint(
     gfx::OverlayTransform transform) {
   if (support_display_transform_hint_)
     display_transform_hint_ = transform;
 }
 
-gfx::OverlayTransform FakeOutputSurface::GetDisplayTransform() {
+gfx::OverlayTransform FakeSoftwareOutputSurface::GetDisplayTransform() {
   return support_display_transform_hint_ ? display_transform_hint_
                                          : gfx::OVERLAY_TRANSFORM_NONE;
 }
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-void FakeOutputSurface::SetNeedsSwapSizeNotifications(
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void FakeSoftwareOutputSurface::SetNeedsSwapSizeNotifications(
     bool needs_swap_size_notifications) {}
 #endif
 

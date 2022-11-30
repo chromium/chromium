@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_BLUETOOTH_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_
-#define DEVICE_BLUETOOTH_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_
+#ifndef DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_
+#define DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_
 
 #include "build/build_config.h"
 
@@ -56,4 +56,4 @@ class BluetoothTestMac;
 
 @end
 
-#endif  // DEVICE_BLUETOOTH_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_
+#endif  // DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_CBPERIPHERAL_MAC_H_

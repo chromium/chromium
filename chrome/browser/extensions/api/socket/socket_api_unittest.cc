@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,6 @@ class SocketUnitTest : public ExtensionApiUnittest {
 TEST_F(SocketUnitTest, Create) {
   // Create SocketCreateFunction and put it on BrowserThread
   SocketCreateFunction* function = new SocketCreateFunction();
-  function->set_work_task_runner(base::SequencedTaskRunnerHandle::Get());
 
   // Run tests
   std::unique_ptr<base::DictionaryValue> result(

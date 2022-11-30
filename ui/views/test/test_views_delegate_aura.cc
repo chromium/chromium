@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/test/test_views_delegate.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/buildflags.h"
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
@@ -17,7 +18,7 @@ TestViewsDelegate::TestViewsDelegate() = default;
 
 TestViewsDelegate::~TestViewsDelegate() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 HICON TestViewsDelegate::GetSmallWindowIcon() const {
   return nullptr;
 }
@@ -26,6 +27,10 @@ HICON TestViewsDelegate::GetSmallWindowIcon() const {
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,
     internal::NativeWidgetDelegate* delegate) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!params->parent && !params->context)
+    params->context = context_;
+#endif
   if (params->opacity == Widget::InitParams::WindowOpacity::kInferred) {
     params->opacity = use_transparent_windows_
                           ? Widget::InitParams::WindowOpacity::kTranslucent

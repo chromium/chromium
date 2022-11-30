@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -140,7 +140,7 @@ void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGFilterElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutSVGResourceFilter(this);
+  return MakeGarbageCollected<LayoutSVGResourceFilter>(this);
 }
 
 bool SVGFilterElement::SelfHasRelativeLengths() const {

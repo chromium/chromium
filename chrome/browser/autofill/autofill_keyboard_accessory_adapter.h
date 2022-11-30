@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,12 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
  public:
   AutofillKeyboardAccessoryAdapter(
       base::WeakPtr<AutofillPopupController> controller);
+
+  AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
+      delete;
+  AutofillKeyboardAccessoryAdapter& operator=(
+      const AutofillKeyboardAccessoryAdapter&) = delete;
+
   ~AutofillKeyboardAccessoryAdapter() override;
 
   // Interface describing the minimal capabilities for the native view.
@@ -54,28 +60,34 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     view_ = std::move(view);
   }
 
+  base::WeakPtr<AutofillKeyboardAccessoryAdapter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // AutofillPopupView implementation.
   void Show() override;
   void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupController implementation.
   // Hidden: void OnSuggestionsChanged() override;
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
-  const std::u16string& GetSuggestionValueAt(int row) const override;
-  const std::u16string& GetSuggestionLabelAt(int row) const override;
+  std::u16string GetSuggestionMainTextAt(int row) const override;
+  std::u16string GetSuggestionMinorTextAt(int row) const override;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override;
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
-  void SetSelectedLine(base::Optional<int> selected_line) override;
-  base::Optional<int> selected_line() const override;
+  void SetSelectedLine(absl::optional<int> selected_line) override;
+  absl::optional<int> selected_line() const override;
   PopupType GetPopupType() const override;
 
   void Hide(PopupHidingReason reason) override;
@@ -102,12 +114,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // Position that the front element has in the suggestion list returned by
   // controller_. It is used to determine the offset suggestions.
-  base::Optional<int> front_element_;
+  absl::optional<int> front_element_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillKeyboardAccessoryAdapter);
 };
 
 }  // namespace autofill

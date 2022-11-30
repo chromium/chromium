@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,16 +23,18 @@ namespace {
 
 void SuccessCallback(bool* did_respond,
                      ExtensionFunction::ResponseType type,
-                     const base::ListValue& results,
-                     const std::string& error) {
+                     base::Value::List results,
+                     const std::string& error,
+                     mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::SUCCEEDED, type);
   *did_respond = true;
 }
 
 void FailCallback(bool* did_respond,
                   ExtensionFunction::ResponseType type,
-                  const base::ListValue& results,
-                  const std::string& error) {
+                  base::Value::List results,
+                  const std::string& error,
+                  mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::FAILED, type);
   *did_respond = true;
 }
@@ -61,7 +63,7 @@ class ValidationFunction : public ExtensionFunction {
 
 using ChromeExtensionFunctionUnitTest = ExtensionServiceTestBase;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SimpleFunctionTest DISABLED_SimpleFunctionTest
 #else
 #define MAYBE_SimpleFunctionTest SimpleFunctionTest
@@ -90,7 +92,7 @@ TEST_F(ChromeExtensionFunctionUnitTest, DestructionWithoutResponseOnUnload) {
 
   auto function = base::MakeRefCounted<ValidationFunction>(false);
   function->set_extension(extension);
-  function->set_browser_context(browser_context());
+  function->SetBrowserContextForTesting(browser_context());
 
   service()->DisableExtension(extension->id(),
                               disable_reason::DISABLE_USER_ACTION);
@@ -118,7 +120,6 @@ TEST_F(ChromeExtensionFunctionDeathTest, DestructionWithoutResponse) {
 
         auto function = base::MakeRefCounted<ValidationFunction>(false);
         function->set_extension(extension);
-        function->set_browser_context(browser_context());
         function.reset();
       },
       "");

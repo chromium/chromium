@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,10 @@ inline void InlineSizesFromStyle(
     const ComputedStyle& style,
     LayoutUnit inline_border_padding,
     bool is_parallel,
-    base::Optional<LayoutUnit>* inline_size,
-    base::Optional<LayoutUnit>* min_inline_size,
-    base::Optional<LayoutUnit>* max_inline_size,
-    base::Optional<float>* percentage_inline_size) {
+    absl::optional<LayoutUnit>* inline_size,
+    absl::optional<LayoutUnit>* min_inline_size,
+    absl::optional<LayoutUnit>* max_inline_size,
+    absl::optional<float>* percentage_inline_size) {
   const Length& length =
       is_parallel ? style.LogicalWidth() : style.LogicalHeight();
   const Length& min_length =
@@ -39,16 +39,23 @@ inline void InlineSizesFromStyle(
     *inline_size = LayoutUnit(length.Value());
     if (is_content_box)
       *inline_size = **inline_size + inline_border_padding;
+    else
+      *inline_size = std::max(**inline_size, inline_border_padding);
   }
   if (min_length.IsFixed()) {
     *min_inline_size = LayoutUnit(min_length.Value());
     if (is_content_box)
       *min_inline_size = **min_inline_size + inline_border_padding;
+    else
+      *min_inline_size = std::max(**min_inline_size, inline_border_padding);
   }
   if (max_length.IsFixed()) {
     *max_inline_size = LayoutUnit(max_length.Value());
     if (is_content_box)
       *max_inline_size = **max_inline_size + inline_border_padding;
+    else
+      *max_inline_size = std::max(**max_inline_size, inline_border_padding);
+
     if (*min_inline_size)
       *max_inline_size = std::max(**min_inline_size, **max_inline_size);
   }
@@ -78,12 +85,12 @@ constexpr LayoutUnit NGTableTypes::kTableMaxInlineSize;
 // "outer min-content and outer max-content widths for colgroups"
 NGTableTypes::Column NGTableTypes::CreateColumn(
     const ComputedStyle& style,
-    base::Optional<LayoutUnit> default_inline_size,
+    absl::optional<LayoutUnit> default_inline_size,
     bool is_table_fixed) {
-  base::Optional<LayoutUnit> inline_size;
-  base::Optional<LayoutUnit> min_inline_size;
-  base::Optional<LayoutUnit> max_inline_size;
-  base::Optional<float> percentage_inline_size;
+  absl::optional<LayoutUnit> inline_size;
+  absl::optional<LayoutUnit> min_inline_size;
+  absl::optional<LayoutUnit> max_inline_size;
+  absl::optional<float> percentage_inline_size;
   InlineSizesFromStyle(style, /* inline_border_padding */ LayoutUnit(),
                        /* is_parallel */ true, &inline_size, &min_inline_size,
                        &max_inline_size, &percentage_inline_size);
@@ -113,28 +120,31 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
 // Note: this method calls NGBlockNode::ComputeMinMaxSizes.
 NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     const NGBlockNode& node,
-    WritingMode table_writing_mode,
+    WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
     const NGBoxStrut& cell_border,
     const NGBoxStrut& cell_padding) {
-  base::Optional<LayoutUnit> css_inline_size;
-  base::Optional<LayoutUnit> css_min_inline_size;
-  base::Optional<LayoutUnit> css_max_inline_size;
-  base::Optional<float> css_percentage_inline_size;
+  absl::optional<LayoutUnit> css_inline_size;
+  absl::optional<LayoutUnit> css_min_inline_size;
+  absl::optional<LayoutUnit> css_max_inline_size;
+  absl::optional<float> css_percentage_inline_size;
   const auto& style = node.Style();
+  const auto table_writing_mode = table_writing_direction.GetWritingMode();
   const bool is_parallel =
       IsParallelWritingMode(table_writing_mode, style.GetWritingMode());
 
   // Be lazy when determining the min/max sizes, as in some circumstances we
   // don't need to call this (relatively) expensive function.
-  base::Optional<MinMaxSizes> cached_min_max_sizes;
+  absl::optional<MinMaxSizes> cached_min_max_sizes;
   auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
     if (!cached_min_max_sizes) {
+      const auto cell_writing_direction = style.GetWritingDirection();
       NGConstraintSpaceBuilder builder(table_writing_mode,
-                                       style.GetWritingDirection(),
+                                       cell_writing_direction,
                                        /* is_new_fc */ true);
-      builder.SetTableCellBorders(cell_border);
-      builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+      builder.SetTableCellBorders(cell_border, cell_writing_direction,
+                                  table_writing_direction);
+      builder.SetIsTableCell(true);
       builder.SetCacheSlot(NGCacheSlot::kMeasure);
       if (!is_parallel) {
         // Only consider the ICB-size for the orthogonal fallback inline-size
@@ -166,16 +176,13 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     resolved_min_inline_size = std::max(
         MinMaxSizesFunc().min_size, css_min_inline_size.value_or(LayoutUnit()));
     // https://quirks.spec.whatwg.org/#the-table-cell-nowrap-minimum-width-calculation-quirk
-    // Has not worked in Legacy, might be pulled out.
-    if (css_inline_size && node.GetDocument().InQuirksMode()) {
-      bool has_nowrap_attribute =
-          !To<Element>(node.GetDOMNode())
-               ->FastGetAttribute(html_names::kNowrapAttr)
-               .IsNull();
-      if (has_nowrap_attribute && style.AutoWrap()) {
-        resolved_min_inline_size =
-            std::max(resolved_min_inline_size, *css_inline_size);
-      }
+    bool has_nowrap_attribute =
+        node.GetDOMNode() && To<Element>(node.GetDOMNode())
+                                 ->FastHasAttribute(html_names::kNowrapAttr);
+    if (css_inline_size && node.GetDocument().InQuirksMode() &&
+        has_nowrap_attribute) {
+      resolved_min_inline_size =
+          std::max(resolved_min_inline_size, *css_inline_size);
     }
   }
 
@@ -208,54 +215,23 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
 NGTableTypes::Section NGTableTypes::CreateSection(
     const NGLayoutInputNode& section,
     wtf_size_t start_row,
-    wtf_size_t rows,
+    wtf_size_t row_count,
     LayoutUnit block_size,
     bool treat_as_tbody) {
   const Length& section_css_block_size = section.Style().LogicalHeight();
   // TODO(crbug.com/1105272): Decide what to do with |Length::IsCalculated()|.
   bool is_constrained =
       section_css_block_size.IsFixed() || section_css_block_size.IsPercent();
-  base::Optional<float> percent;
+  absl::optional<float> percent;
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
   return Section{start_row,
-                 rows,
+                 row_count,
                  block_size,
                  percent,
                  is_constrained,
                  treat_as_tbody,
                  /* needs_redistribution */ false};
-}
-
-NGTableTypes::CellBlockConstraint NGTableTypes::CreateCellBlockConstraint(
-    const NGLayoutInputNode& node,
-    LayoutUnit computed_block_size,
-    LayoutUnit baseline,
-    const NGBoxStrut& border_box_borders,
-    wtf_size_t row_index,
-    wtf_size_t column_index,
-    wtf_size_t rowspan) {
-  bool is_constrained = node.Style().LogicalHeight().IsFixed();
-  return CellBlockConstraint{computed_block_size,
-                             baseline,
-                             border_box_borders,
-                             row_index,
-                             column_index,
-                             rowspan,
-                             node.Style().VerticalAlign(),
-                             is_constrained};
-}
-
-NGTableTypes::RowspanCell NGTableTypes::CreateRowspanCell(
-    wtf_size_t row_index,
-    wtf_size_t rowspan,
-    CellBlockConstraint* cell_block_constraint,
-    base::Optional<LayoutUnit> css_cell_block_size) {
-  if (css_cell_block_size) {
-    cell_block_constraint->min_block_size =
-        std::max(cell_block_constraint->min_block_size, *css_cell_block_size);
-  }
-  return RowspanCell{row_index, rowspan, *cell_block_constraint};
 }
 
 void NGTableTypes::CellInlineConstraint::Encompass(
@@ -283,7 +259,7 @@ void NGTableTypes::CellInlineConstraint::Encompass(
 }
 
 void NGTableTypes::Column::Encompass(
-    const base::Optional<NGTableTypes::CellInlineConstraint>& cell) {
+    const absl::optional<NGTableTypes::CellInlineConstraint>& cell) {
   if (!cell)
     return;
 
@@ -355,6 +331,14 @@ NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table)
   }
 }
 
+void NGTableGroupedChildren::Trace(Visitor* visitor) const {
+  visitor->Trace(captions);
+  visitor->Trace(columns);
+  visitor->Trace(header);
+  visitor->Trace(bodies);
+  visitor->Trace(footer);
+}
+
 NGTableGroupedChildrenIterator NGTableGroupedChildren::begin() const {
   return NGTableGroupedChildrenIterator(*this);
 }
@@ -372,21 +356,43 @@ NGTableGroupedChildrenIterator::NGTableGroupedChildrenIterator(
     return;
   }
   current_section_ = kNone;
-  AdvanceToNonEmptySection();
+  AdvanceForwardToNonEmptySection();
 }
 
 NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator++() {
   switch (current_section_) {
     case kHead:
     case kFoot:
-      AdvanceToNonEmptySection();
+      AdvanceForwardToNonEmptySection();
       break;
     case kBody:
-      ++body_iterator_;
-      if (body_iterator_ == grouped_children_.bodies.end())
-        AdvanceToNonEmptySection();
+      ++position_;
+      if (body_vector_->begin() + position_ == grouped_children_.bodies.end())
+        AdvanceForwardToNonEmptySection();
       break;
     case kEnd:
+      break;
+    case kNone:
+      NOTREACHED();
+      break;
+  }
+  return *this;
+}
+
+NGTableGroupedChildrenIterator& NGTableGroupedChildrenIterator::operator--() {
+  switch (current_section_) {
+    case kHead:
+    case kFoot:
+      AdvanceBackwardToNonEmptySection();
+      break;
+    case kBody:
+      if (position_ == 0)
+        AdvanceBackwardToNonEmptySection();
+      else
+        --position_;
+      break;
+    case kEnd:
+      AdvanceBackwardToNonEmptySection();
       break;
     case kNone:
       NOTREACHED();
@@ -402,7 +408,7 @@ NGBlockNode NGTableGroupedChildrenIterator::operator*() const {
     case kFoot:
       return grouped_children_.footer;
     case kBody:
-      return *body_iterator_;
+      return body_vector_->at(position_);
     case kEnd:
     case kNone:
       NOTREACHED();
@@ -415,7 +421,7 @@ bool NGTableGroupedChildrenIterator::operator==(
   if (current_section_ != rhs.current_section_)
     return false;
   if (current_section_ == kBody)
-    return rhs.body_iterator_ == body_iterator_;
+    return rhs.body_vector_ == body_vector_ && rhs.position_ == position_;
   return true;
 }
 
@@ -424,29 +430,59 @@ bool NGTableGroupedChildrenIterator::operator!=(
   return !(*this == rhs);
 }
 
-void NGTableGroupedChildrenIterator::AdvanceToNonEmptySection() {
+void NGTableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:
       current_section_ = kHead;
       if (!grouped_children_.header)
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kHead:
       current_section_ = kBody;
-      body_iterator_ = grouped_children_.bodies.begin();
-      if (body_iterator_ == grouped_children_.bodies.end())
-        AdvanceToNonEmptySection();
+      body_vector_ = &grouped_children_.bodies;
+      position_ = 0;
+      if (body_vector_->size() == 0)
+        AdvanceForwardToNonEmptySection();
       break;
     case kBody:
       current_section_ = kFoot;
       if (!grouped_children_.footer)
-        AdvanceToNonEmptySection();
+        AdvanceForwardToNonEmptySection();
       break;
     case kFoot:
       current_section_ = kEnd;
       break;
     case kEnd:
       NOTREACHED();
+      break;
+  }
+}
+
+void NGTableGroupedChildrenIterator::AdvanceBackwardToNonEmptySection() {
+  switch (current_section_) {
+    case kNone:
+      NOTREACHED();
+      break;
+    case kHead:
+      current_section_ = kNone;
+      break;
+    case kBody:
+      current_section_ = kHead;
+      if (!grouped_children_.header)
+        AdvanceBackwardToNonEmptySection();
+      break;
+    case kFoot:
+      current_section_ = kBody;
+      body_vector_ = &grouped_children_.bodies;
+      if (body_vector_->size() == 0)
+        AdvanceBackwardToNonEmptySection();
+      else
+        position_ = body_vector_->size() - 1;
+      break;
+    case kEnd:
+      current_section_ = kFoot;
+      if (!grouped_children_.footer)
+        AdvanceBackwardToNonEmptySection();
       break;
   }
 }

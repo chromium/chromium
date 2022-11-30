@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -19,7 +20,7 @@ class TimeDelta;
 }
 
 namespace ui {
-class BitmapCursorOzone;
+class BitmapCursor;
 class DrmWindowHostManager;
 
 // DrmCursor manages all cursor state but is dependent on an injected
@@ -27,7 +28,7 @@ class DrmWindowHostManager;
 // processes. The proxy implementation must satisfy DrmCursorProxy.
 class DrmCursorProxy {
  public:
-  virtual ~DrmCursorProxy() {}
+  virtual ~DrmCursorProxy() = default;
 
   // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay|.
   virtual void CursorSet(gfx::AcceleratedWidget window,
@@ -45,6 +46,10 @@ class DrmCursorProxy {
 class DrmCursor : public CursorDelegateEvdev {
  public:
   explicit DrmCursor(DrmWindowHostManager* window_manager);
+
+  DrmCursor(const DrmCursor&) = delete;
+  DrmCursor& operator=(const DrmCursor&) = delete;
+
   ~DrmCursor() override;
 
   // Sets or the DrmProxy |proxy|. If |proxy| is set, the DrmCursor uses
@@ -53,8 +58,9 @@ class DrmCursor : public CursorDelegateEvdev {
   void SetDrmCursorProxy(std::unique_ptr<DrmCursorProxy> proxy);
   void ResetDrmCursorProxy();
 
-  // Change the cursor over the specifed window.
-  void SetCursor(gfx::AcceleratedWidget window, PlatformCursor platform_cursor);
+  // Change the cursor over the specified window.
+  void SetCursor(gfx::AcceleratedWidget window,
+                 scoped_refptr<BitmapCursor> platform_cursor);
 
   // Handle window lifecycle.
   void OnWindowAdded(gfx::AcceleratedWidget window,
@@ -83,6 +89,9 @@ class DrmCursor : public CursorDelegateEvdev {
   void SendCursorHideLocked();
   void SendCursorMoveLocked();
 
+  void MoveCursorToOnEvdevThread(const gfx::PointF& screen_location);
+  void MoveCursorToOnUiThread(const gfx::PointF& screen_location);
+
   // Lock-testing helpers.
   void CursorSetLockTested(gfx::AcceleratedWidget window,
                            const std::vector<SkBitmap>& bitmaps,
@@ -94,32 +103,33 @@ class DrmCursor : public CursorDelegateEvdev {
   base::Lock lock_;
 
   // Enforce our threading constraints.
-  base::ThreadChecker thread_checker_;
-  base::ThreadChecker evdev_thread_checker_;
+  THREAD_CHECKER(ui_thread_checker_);
+  THREAD_CHECKER(evdev_thread_checker_);
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_thread_;
 
   // The location of the bitmap (the cursor location is the hotspot location).
   gfx::Point GetBitmapLocationLocked();
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> bitmap_;
+  scoped_refptr<BitmapCursor> cursor_ GUARDED_BY(lock_);
 
   // The window under the cursor.
-  gfx::AcceleratedWidget window_;
+  gfx::AcceleratedWidget window_ GUARDED_BY(lock_);
 
   // The location of the cursor within the window.
-  gfx::PointF location_;
+  gfx::PointF location_ GUARDED_BY(lock_);
 
   // The bounds of the display under the cursor.
-  gfx::Rect display_bounds_in_screen_;
+  gfx::Rect display_bounds_in_screen_ GUARDED_BY(lock_);
 
   // The bounds that the cursor is confined to in |window|.
-  gfx::Rect confined_bounds_;
+  gfx::Rect confined_bounds_ GUARDED_BY(lock_);
 
-  DrmWindowHostManager* const window_manager_;  // Not owned.
+  DrmWindowHostManager* const window_manager_
+      GUARDED_BY_CONTEXT(ui_thread_checker_);  // Not owned.
 
-  std::unique_ptr<DrmCursorProxy> proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DrmCursor);
+  std::unique_ptr<DrmCursorProxy> proxy_ GUARDED_BY(lock_);
 };
 
 }  // namespace ui

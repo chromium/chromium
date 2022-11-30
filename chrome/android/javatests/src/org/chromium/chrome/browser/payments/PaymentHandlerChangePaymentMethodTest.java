@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,33 +10,25 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiDisableIf;
 
 /** An integration test for PaymentRequestEvent.changePaymentMethod(). */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-blink-features=PaymentMethodChangeEvent,PaymentHandlerChangePaymentMethod"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-blink-features=PaymentMethodChangeEvent"})
 @MediumTest
 public class PaymentHandlerChangePaymentMethodTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule
@@ -81,21 +73,6 @@ public class PaymentHandlerChangePaymentMethodTest {
     }
 
     /**
-     * Verify that absence of the "paymentmethodchange" event handler in the merchant will cause
-     * PaymentRequestEvent.changePaymentMethod() to resolve with null.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testNoEventHandlerBasicCard() throws Throwable {
-        mRule.clickNode("basicCardMethodName");
-        installPaymentHandler();
-        mRule.triggerUIAndWait("testNoHandler", mRule.getReadyToPay());
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-        mRule.expectResultContains(
-                new String[] {"PaymentRequest.show(): changePaymentMethod() returned: null"});
-    }
-
-    /**
      * Verify that rejecting the promise passed into PaymentMethodChangeEvent.updateWith() will
      * cause PaymentRequest.show() to reject and thus abort the transaction.
      */
@@ -110,22 +87,6 @@ public class PaymentHandlerChangePaymentMethodTest {
     }
 
     /**
-     * Verify that rejecting the promise passed into PaymentMethodChangeEvent.updateWith() will
-     * cause PaymentRequest.show() to reject and thus abort the transaction.
-     */
-    @Test
-    @Feature({"Payments"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1136100.
-    public void testRejectBasicCard() throws Throwable {
-        mRule.clickNode("basicCardMethodName");
-        installPaymentHandler();
-        mRule.triggerUIAndWait("testReject", mRule.getReadyToPay());
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-        mRule.expectResultContains(
-                new String[] {"PaymentRequest.show() rejected with: Error for test"});
-    }
-
-    /**
      * Verify that a JavaScript exception in the "paymentmethodchange" event handler will cause
      * PaymentRequest.show() to reject and thus abort the transaction.
      */
@@ -134,21 +95,6 @@ public class PaymentHandlerChangePaymentMethodTest {
     public void testThrow() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testThrow", mRule.getDismissed());
-        mRule.expectResultContains(
-                new String[] {"PaymentRequest.show() rejected with: Error: Error for test"});
-    }
-
-    /**
-     * Verify that a JavaScript exception in the "paymentmethodchange" event handler will cause
-     * PaymentRequest.show() to reject and thus abort the transaction.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testThrowBasicCard() throws Throwable {
-        mRule.clickNode("basicCardMethodName");
-        installPaymentHandler();
-        mRule.triggerUIAndWait("testThrow", mRule.getReadyToPay());
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
         mRule.expectResultContains(
                 new String[] {"PaymentRequest.show() rejected with: Error: Error for test"});
     }
@@ -175,30 +121,5 @@ public class PaymentHandlerChangePaymentMethodTest {
                                 + "\"label\":\"\",\"pending\":false}}],"
                                 + "\"paymentMethodErrors\":{\"country\":\"Unsupported country\"},"
                                 + "\"total\":{\"currency\":\"GBP\",\"value\":\"0.02\"}}"});
-    }
-
-    /**
-     * Verify that the payment handler receives a subset of the payment details passed into
-     * PaymentMethodChangeEvent.updateWith() when basic-card payment method is used.
-     */
-    @Test
-    @Feature({"Payments"})
-    @DisabledTest(message = "crbug.com/1131674")
-    public void testDetailsBasicCard() throws Throwable {
-        mRule.clickNode("basicCardMethodName");
-        installPaymentHandler();
-        mRule.triggerUIAndWait("testDetails", mRule.getReadyToPay());
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-        // Look for the this exact return value to ensure that the browser redacts some details
-        // before forwarding them to the payment handler.
-        mRule.expectResultContains(
-                new String[] {"PaymentRequest.show(): changePaymentMethod() returned: "
-                        + "{\"error\":\"Error for test\",\"modifiers\":"
-                        + "[{\"data\":{\"soup\":\"potato\"},"
-                        + "\"supportedMethods\":\"basic-card\","
-                        + "\"total\":{\"amount\":{\"currency\":\"EUR\",\"value\":\"0.03\"},"
-                        + "\"label\":\"\",\"pending\":false}}],"
-                        + "\"paymentMethodErrors\":{\"country\":\"Unsupported country\"},"
-                        + "\"total\":{\"currency\":\"GBP\",\"value\":\"0.02\"}}"});
     }
 }

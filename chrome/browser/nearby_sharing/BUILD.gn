@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,13 +14,15 @@ source_set("share_target") {
     "share_target.h",
     "text_attachment.cc",
     "text_attachment.h",
+    "wifi_credentials_attachment.cc",
+    "wifi_credentials_attachment.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/ui/webui/nearby_share:share_type",
-    "//chromeos/services/nearby/public/mojom",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types",
     "//components/drive",
     "//net",
     "//url",

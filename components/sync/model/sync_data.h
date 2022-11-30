@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/immutable.h"
 #include "components/sync/base/model_type.h"
 
 namespace sync_pb {
 class EntitySpecifics;
-class SyncEntity;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -27,10 +25,14 @@ class SyncData {
  public:
   // Creates an empty and invalid SyncData.
   SyncData();
-  SyncData(const SyncData& other);
-  ~SyncData();
 
-  // Default copy and assign welcome.
+  // Copyable and movable, all cheap.
+  SyncData(const SyncData& other);
+  SyncData(SyncData&& other);
+  SyncData& operator=(const SyncData& other);
+  SyncData& operator=(SyncData&& other);
+
+  ~SyncData();
 
   // Helper methods for creating SyncData objects for local data.
   //
@@ -51,12 +53,12 @@ class SyncData {
                                   const sync_pb::EntitySpecifics& specifics);
 
   // Helper method for creating SyncData objects originating from the syncer.
-  static SyncData CreateRemoteData(
-      sync_pb::EntitySpecifics specifics,
-      const ClientTagHash& client_tag_hash = ClientTagHash());
+  static SyncData CreateRemoteData(sync_pb::EntitySpecifics specifics,
+                                   const ClientTagHash& client_tag_hash);
 
-  // Whether this SyncData holds valid data. The only way to have a SyncData
-  // without valid data is to use the default constructor.
+  // Whether this SyncData holds valid data. An instance can be invalid either
+  // if the default value was used upon construction or if an instance was moved
+  // away.
   bool IsValid() const;
 
   // Return the datatype we're holding information about. Derived from the sync
@@ -73,42 +75,16 @@ class SyncData {
   // going TO the syncer, not from.
   const std::string& GetTitle() const;
 
-  // Whether this sync data is for local data or data coming from the syncer.
-  bool IsLocal() const;
-
   std::string ToString() const;
 
  private:
-  // Necessary since we forward-declare sync_pb::SyncEntity; see
-  // comments in immutable.h.
-  struct ImmutableSyncEntityTraits {
-    using Wrapper = sync_pb::SyncEntity*;
+  // Forward-declared to avoid includes for EntitySpecifics.
+  struct InternalData;
 
-    static void InitializeWrapper(Wrapper* wrapper);
+  // Null if data invalid, i.e. default constructor used or moved-away instance.
+  scoped_refptr<InternalData> ptr_;
 
-    static void DestroyWrapper(Wrapper* wrapper);
-
-    static const sync_pb::SyncEntity& Unwrap(const Wrapper& wrapper);
-
-    static sync_pb::SyncEntity* UnwrapMutable(Wrapper* wrapper);
-
-    static void Swap(sync_pb::SyncEntity* t1, sync_pb::SyncEntity* t2);
-  };
-
-  using ImmutableSyncEntity =
-      Immutable<sync_pb::SyncEntity, ImmutableSyncEntityTraits>;
-
-  // The actual shared sync entity being held.
-  ImmutableSyncEntity immutable_entity_;
-
-  // Whether this SyncData represents a local change.
-  bool is_local_;
-
-  // Whether this SyncData holds valid data.
-  bool is_valid_;
-
-  // Clears |entity|.
-  SyncData(bool is_local_, sync_pb::SyncEntity* entity);
+  explicit SyncData(scoped_refptr<InternalData> ptr);
 };
 
 // gmock printer helper.

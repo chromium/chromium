@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
-
-#include <string>
-#include <vector>
 
 namespace content {
 
@@ -27,7 +25,8 @@ class NavigationHandleProxy final {
   NavigationHandle* cpp_navigation_handle() const {
     return cpp_navigation_handle_;
   }
-  base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle() const {
+  const base::android::ScopedJavaGlobalRef<jobject>& java_navigation_handle()
+      const {
     return java_navigation_handle_;
   }
 
@@ -47,7 +46,7 @@ class NavigationHandleProxy final {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle_;
-  NavigationHandle* cpp_navigation_handle_ = nullptr;
+  raw_ptr<NavigationHandle> cpp_navigation_handle_ = nullptr;
 };
 
 }  // namespace content

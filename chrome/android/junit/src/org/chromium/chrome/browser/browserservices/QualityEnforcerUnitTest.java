@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowToast;
 
@@ -33,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -55,6 +57,7 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT,
         ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING})
 @DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
@@ -254,15 +257,19 @@ public class QualityEnforcerUnitTest {
     private void navigateToUrl(GURL url, int httpStatusCode, @NetError int errorCode) {
         when(mTab.getOriginalUrl()).thenReturn(url);
 
-        NavigationHandle navigation =
-                new NavigationHandle(0 /* navigationHandleProxy */, url, true /* isMainFrame */,
-                        false /* isSameDocument */, false /* isRendererInitiated */);
+        NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, url,
+                GURL.emptyGURL() /* referrerUrl */, GURL.emptyGURL() /* baseUrlForDataUrl */,
+                true /* isInPrimaryMainFrame */, false /* isSameDocument */,
+                false /* isRendererInitiated */, null /* initiatorOrigin */, 0 /* pageTransition */,
+                false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
+                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */,
+                false /* isReload */);
         navigation.didFinish(url, false /* isErrorPage */, true /* hasCommitted */,
                 false /* isFragmentNavigation */, false /* isDownload */,
-                false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode,
-                httpStatusCode);
+                false /* isValidSearchFormUrl */, 0 /* pageTransition */, errorCode, httpStatusCode,
+                false /* isExternalProtocol */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
-            tabObserver.onDidFinishNavigation(mTab, navigation);
+            tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }
     }
 

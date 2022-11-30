@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,15 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
 
 FakeInstallableManager::FakeInstallableManager(
     content::WebContents* web_contents)
-    : InstallableManager(web_contents) {}
+    : InstallableManager(web_contents),
+      manifest_(blink::mojom::Manifest::New()) {}
 
 FakeInstallableManager::~FakeInstallableManager() {}
 
@@ -47,13 +50,12 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
     content::WebContents* web_contents,
     InstallableStatusCode installable_code,
     const GURL& manifest_url,
-    std::unique_ptr<blink::Manifest> manifest) {
+    blink::mojom::ManifestPtr manifest) {
   DCHECK(manifest);
-
   FakeInstallableManager* installable_manager =
       FakeInstallableManager::CreateForWebContents(web_contents);
 
-  const bool valid_manifest = !manifest->IsEmpty();
+  const bool valid_manifest = !blink::IsEmptyManifest(manifest);
   installable_manager->manifest_url_ = manifest_url;
   installable_manager->manifest_ = std::move(manifest);
 
@@ -69,8 +71,8 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
       *installable_manager->manifest_, GURL::EmptyGURL(), icon.get(), false,
-      GURL::EmptyGURL(), icon.get(), std::vector<SkBitmap>(), valid_manifest,
-      has_worker);
+      GURL::EmptyGURL(), icon.get(), false, std::vector<Screenshot>(),
+      valid_manifest, has_worker);
 
   installable_manager->data_ = std::move(installable_data);
 

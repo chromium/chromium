@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,13 +34,16 @@ content::WebUIDataSource* CreateTranslateInternalsHTMLSource() {
   source->AddResourcePath("translate_internals.css",
                           IDR_TRANSLATE_INTERNALS_CSS);
   source->AddResourcePath("translate_internals.js", IDR_TRANSLATE_INTERNALS_JS);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types static-types;");
 
-  base::DictionaryValue langs;
-  translate::TranslateInternalsHandler::GetLanguages(&langs);
-  for (base::DictionaryValue::Iterator it(langs); !it.IsAtEnd(); it.Advance()) {
-    std::string key = "language-" + it.key();
-    std::string value;
-    it.value().GetAsString(&value);
+  base::Value::Dict langs =
+      translate::TranslateInternalsHandler::GetLanguages();
+  for (const auto key_value_pair : langs) {
+    DCHECK(key_value_pair.second.is_string());
+    std::string key = "language-" + key_value_pair.first;
+    const std::string& value = key_value_pair.second.GetString();
     source->AddString(key, value);
   }
 

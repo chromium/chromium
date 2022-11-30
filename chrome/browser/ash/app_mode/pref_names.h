@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@ namespace prefs {
 // Prefs related to kiosk mode.
 // ---------------------------------------------------------------------------
 extern const char kAllKioskUsersToRemove[];
-extern const char kRegularKioskUsersToRemove[];
-extern const char kArcKioskUsersToRemove[];
 
 }  // namespace prefs
 }  // namespace ash

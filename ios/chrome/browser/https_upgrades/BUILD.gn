@@ -1,0 +1,143 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("https_upgrades") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "https_only_mode_upgrade_tab_helper.h",
+    "https_only_mode_upgrade_tab_helper.mm",
+    "https_upgrade_service_factory.h",
+    "https_upgrade_service_factory.mm",
+    "https_upgrade_service_impl.h",
+    "https_upgrade_service_impl.mm",
+    "typed_navigation_upgrade_tab_helper.h",
+    "typed_navigation_upgrade_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs:prefs",
+    "//components/security_interstitials/core",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings:content_settings",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/prerender",
+    "//ios/components/security_interstitials",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/web/public:public",
+    "//ios/web/public/navigation",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "https_only_mode_upgrade_tab_helper_unittest.mm" ]
+  deps = [
+    ":https_upgrades",
+    "//base/test:test_support",
+    "//components/keyed_service/ios",
+    "//components/prefs:test_support",
+    "//components/security_interstitials/core",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender:test_support",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:test_util",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "https_upgrade_app_interface.h",
+    "https_upgrade_app_interface_stub.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "https_upgrade_app_interface.h",
+    "https_upgrade_app_interface.mm",
+  ]
+
+  deps = [
+    ":https_upgrades",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/test/app:test_support",
+    "//ios/components/security_interstitials/https_only_mode",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web/public",
+    "//net",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "https_only_mode_egtest.mm",
+    "https_upgrade_test_helper.h",
+    "https_upgrade_test_helper.mm",
+    "typed_navigation_upgrade_tab_helper_egtest.mm",
+  ]
+
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/omnibox/common",
+    "//components/security_interstitials/core",
+    "//components/strings",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/net:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common:features",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -56,7 +56,6 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -69,7 +68,6 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/strings",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/toolbar/accessory:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
@@ -82,7 +80,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -96,11 +93,14 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "find_in_page_controller_app_interface.h" ]
+  sources = [
+    "find_in_page_controller_app_interface.h",
+    "find_in_page_controller_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div style="width:100px;height:100px"><iframe></iframe></div>
+
+<script>
+async_test(t => {
+  let div = document.querySelector('div');
+  let iframe = document.querySelector('iframe');
+  new ResizeObserver(entries => {
+    iframe.remove();
+  }).observe(div);
+  div.style.width = "200px";
+  // No crash is success
+  requestAnimationFrame(() => { t.done(); });
+});
+</script>

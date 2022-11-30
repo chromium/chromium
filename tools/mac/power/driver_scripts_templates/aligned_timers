@@ -1,0 +1,38 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This scripts opens a few staggered windows to spam_tasks.html so that
+-- they are all visible and javascript tasks all execute unthrottled.
+
+tell application "{{ browser }}"
+    -- If {{ browser }} is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    set w to first window
+
+    set bounds of front window to {0, 0, 1920, 1080}
+
+    set base_url to "file:///{{ directory }}/pages/spam_tasks.html?interval=200"
+
+    set num_peers to 4
+    repeat with i from 1 to num_peers
+      make new window
+      set bounds of front window to {1080 / num_peers*i, 0, 1920, 1080}
+      set full_url to base_url & "&numPeers=" & num_peers & "&peerID=" & i
+      open location full_url
+    end repeat
+
+    delay 60
+
+    activate
+
+end tell

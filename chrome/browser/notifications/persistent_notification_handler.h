@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/buildflags.h"
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 class ScopedKeepAlive;
 class ScopedProfileKeepAlive;
@@ -38,14 +43,15 @@ class PersistentNotificationHandler : public NotificationHandler {
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<std::u16string>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
   void DisableNotifications(Profile* profile, const GURL& origin) override;
   void OpenSettings(Profile* profile, const GURL& origin) override;
 
  private:
-  void OnCloseCompleted(base::OnceClosure completed_closure,
+  void OnCloseCompleted(Profile* profile,
+                        base::OnceClosure completed_closure,
                         content::PersistentNotificationStatus status);
   void OnClickCompleted(Profile* profile,
                         const std::string& notification_id,
@@ -53,23 +59,47 @@ class PersistentNotificationHandler : public NotificationHandler {
                         content::PersistentNotificationStatus status);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
-  // Makes sure we keep the browser alive while the event in being processed.
-  // As we have no control on the click handling, the notification could be
-  // closed before a browser is brought up, thus terminating Chrome if it was
-  // the last KeepAlive. (see https://crbug.com/612815)
-  std::unique_ptr<ScopedKeepAlive> click_dispatch_keep_alive_;
+  class NotificationKeepAliveState {
+   public:
+    NotificationKeepAliveState(
+        KeepAliveOrigin keep_alive_origin,
+        ProfileKeepAliveOrigin profile_keep_alive_origin);
+    ~NotificationKeepAliveState();
 
-  // Same as |click_dispatch_keep_alive_|, but prevents Profile* deletion
-  // instead of BrowserProcess teardown.
-  std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
-      click_dispatch_profile_keep_alives_;
+    void AddKeepAlive(Profile* profile);
+    void RemoveKeepAlive(Profile* profile);
 
-  // Number of in-flight notification click events.
-  int pending_click_dispatch_events_ = 0;
+   private:
+    const KeepAliveOrigin keep_alive_origin_;
+    const ProfileKeepAliveOrigin profile_keep_alive_origin_;
 
-  // Number of in-flight notification click events per Profile, for
-  // |click_dispatch_profile_keep_alives_|.
-  std::map<Profile*, int> profile_pending_click_dispatch_events_;
+    // Makes sure we keep the browser alive while the event in being processed.
+    // As we have no control on the click handling, the notification could be
+    // closed before a browser is brought up, thus terminating Chrome if it was
+    // the last KeepAlive (see crbug.com/612815). We also need to wait until
+    // close events got handled as we need to access the profile when removing
+    // notifications from the NotificationDatabase (see crbug.com/1221601).
+    std::unique_ptr<ScopedKeepAlive> event_dispatch_keep_alive_;
+
+    // Same as |event_dispatch_keep_alive_|, but prevent Profile* deletion
+    // instead of BrowserProcess teardown.
+    std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
+        event_dispatch_profile_keep_alives_;
+
+    // Number of in-flight notification events.
+    int pending_dispatch_events_ = 0;
+
+    // Number of in-flight notification events per Profile, for
+    // |event_dispatch_profile_keep_alives_|.
+    std::map<Profile*, int> profile_pending_dispatch_events_;
+  };
+
+  NotificationKeepAliveState click_event_keep_alive_state_{
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT,
+      ProfileKeepAliveOrigin::kPendingNotificationClickEvent};
+  NotificationKeepAliveState close_event_keep_alive_state_{
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT,
+      ProfileKeepAliveOrigin::kPendingNotificationCloseEvent};
 #endif
 
   base::WeakPtrFactory<PersistentNotificationHandler> weak_ptr_factory_{this};

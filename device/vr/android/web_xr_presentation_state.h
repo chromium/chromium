@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,14 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gl {
 class GLFence;
@@ -116,6 +117,10 @@ struct WebXrSharedBuffer {
 
 struct WebXrFrame {
   WebXrFrame();
+
+  WebXrFrame(const WebXrFrame&) = delete;
+  WebXrFrame& operator=(const WebXrFrame&) = delete;
+
   ~WebXrFrame();
 
   bool IsValid() const;
@@ -166,8 +171,6 @@ struct WebXrFrame {
   // That should be updated to use this implementation, at that time a matching
   // bounds_right would need to be added.
   gfx::RectF bounds_left;
-
-  DISALLOW_COPY_AND_ASSIGN(WebXrFrame);
 };
 
 class WebXrPresentationState {
@@ -188,6 +191,10 @@ class WebXrPresentationState {
   static constexpr int kWebXrFrameCount = 3;
 
   WebXrPresentationState();
+
+  WebXrPresentationState(const WebXrPresentationState&) = delete;
+  WebXrPresentationState& operator=(const WebXrPresentationState&) = delete;
+
   ~WebXrPresentationState();
 
   void SetStateMachineType(StateMachineType type);
@@ -258,15 +265,13 @@ class WebXrPresentationState {
 
   StateMachineType state_machine_type_ = StateMachineType::kBrowserComposited;
 
-  WebXrFrame* animating_frame_ = nullptr;
-  WebXrFrame* processing_frame_ = nullptr;
-  WebXrFrame* rendering_frame_ = nullptr;
+  raw_ptr<WebXrFrame> animating_frame_ = nullptr;
+  raw_ptr<WebXrFrame> processing_frame_ = nullptr;
+  raw_ptr<WebXrFrame> rendering_frame_ = nullptr;
   std::vector<WebXrFrame*> rendering_frames_;
   base::queue<WebXrFrame*> idle_frames_;
 
   bool mailbox_bridge_ready_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebXrPresentationState);
 };
 
 }  // namespace device

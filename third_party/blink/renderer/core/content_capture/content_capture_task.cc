@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,25 +17,23 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 ContentCaptureTask::TaskDelay::TaskDelay(
-    const base::TimeDelta& task_short_delay,
-    const base::TimeDelta& task_long_delay)
-    : task_short_delay_(task_short_delay), task_long_delay_(task_long_delay) {}
+    const base::TimeDelta& task_initial_delay)
+    : task_initial_delay_(task_initial_delay) {}
 
 base::TimeDelta ContentCaptureTask::TaskDelay::ResetAndGetInitialDelay() {
   delay_exponent_ = 0;
-  return task_short_delay_;
+  return task_initial_delay_;
 }
 
 base::TimeDelta ContentCaptureTask::TaskDelay::GetNextTaskDelay() const {
-  return base::TimeDelta::FromMilliseconds(task_short_delay_.InMilliseconds() *
-                                           (1 << delay_exponent_));
+  return base::Milliseconds(task_initial_delay_.InMilliseconds() *
+                            (1 << delay_exponent_));
 }
 
 void ContentCaptureTask::TaskDelay::IncreaseDelayExponent() {
@@ -52,13 +50,10 @@ ContentCaptureTask::ContentCaptureTask(LocalFrame& local_frame_root,
           local_frame_root_->GetTaskRunner(TaskType::kInternalContentCapture),
           this,
           &ContentCaptureTask::Run) {
-  base::TimeDelta task_short_delay;
-  base::TimeDelta task_long_delay;
-
-  local_frame_root.Client()
-      ->GetWebContentCaptureClient()
-      ->GetTaskTimingParameters(task_short_delay, task_long_delay);
-  task_delay_ = std::make_unique<TaskDelay>(task_short_delay, task_long_delay);
+  DCHECK(local_frame_root.Client()->GetWebContentCaptureClient());
+  task_delay_ = std::make_unique<TaskDelay>(local_frame_root.Client()
+                                                ->GetWebContentCaptureClient()
+                                                ->GetTaskInitialDelay());
 
   // The histogram is all about time, just disable it if high resolution isn't
   // supported.
@@ -109,7 +104,7 @@ bool ContentCaptureTask::CaptureContent() {
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentStarted();
   bool result = CaptureContent(buffer);
-  if (!buffer.IsEmpty())
+  if (!buffer.empty())
     task_session_->SetCapturedContent(buffer);
   if (histogram_reporter_)
     histogram_reporter_->OnCaptureContentEnded(buffer.size());
@@ -249,22 +244,14 @@ void ContentCaptureTask::Run(TimerBase*) {
 }
 
 base::TimeDelta ContentCaptureTask::GetAndAdjustDelay(ScheduleReason reason) {
-  bool user_activated_delay_enabled =
-      base::FeatureList::IsEnabled(features::kContentCaptureUserActivatedDelay);
   switch (reason) {
     case ScheduleReason::kFirstContentChange:
     case ScheduleReason::kScrolling:
     case ScheduleReason::kRetryTask:
-      return user_activated_delay_enabled
-                 ? task_delay_->ResetAndGetInitialDelay()
-                 : task_delay_->task_short_delay();
     case ScheduleReason::kUserActivatedContentChange:
-      return user_activated_delay_enabled
-                 ? task_delay_->ResetAndGetInitialDelay()
-                 : task_delay_->task_long_delay();
+      return task_delay_->ResetAndGetInitialDelay();
     case ScheduleReason::kNonUserActivatedContentChange:
-      return user_activated_delay_enabled ? task_delay_->GetNextTaskDelay()
-                                          : task_delay_->task_long_delay();
+      return task_delay_->GetNextTaskDelay();
   }
 }
 

@@ -1,0 +1,58 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Chrome OS typography styles.
+ */
+{
+  options: {
+    CSS: {
+      prefix: 'cros',
+    },
+  },
+  typography: {
+    font_families: {
+      font_family_google_sans: "'Google Sans', 'Noto Sans', sans-serif",
+      font_family_roboto: "Roboto, 'Roboto', 'Noto Sans', sans-serif",
+    },
+    typefaces: {
+      headline_1: {
+        font_family: '$font_family_google_sans',
+        font_size: 15,
+        font_weight: 500,
+        line_height: 22,
+      },
+      body_1: {
+        font_family: '$font_family_roboto',
+        font_size: 14,
+        font_weight: 400,
+        line_height: 20,
+      },
+      body_2: {
+        font_family: '$font_family_roboto',
+        font_size: 13,
+        font_weight: 400,
+        line_height: 20,
+      },
+      display_6: {
+        font_family: '$font_family_google_sans',
+        font_size: 22,
+        font_weight: 500,
+        line_height: 28,
+      },
+      display_7: {
+        font_family: '$font_family_google_sans',
+        font_size: 18,
+        font_weight: 500,
+        line_height: 24,
+      },
+      annotation_2: {
+        font_family: '$font_family_google_sans',
+        font_size: 11,
+        font_weight: 400,
+        line_height: 16,
+      }
+    }
+  },
+}

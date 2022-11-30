@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?include=source">
+<meta name=variant content="?include=trigger">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/subset-tests-by-key.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+const debug_key_promise_test = (testCase, forSource) =>
+  attribution_reporting_promise_test(async t => {
+    await registerAttributionSrc(t, {
+      source: {
+        destination: `https://{{host}}`,
+        debug_key: forSource ? testCase.debugKey : undefined,
+      },
+      cookie: testCase.cookie,
+    });
+
+    await registerAttributionSrc(t, {trigger: {
+      event_trigger_data: [{}],
+      debug_key: forSource ? undefined : testCase.debugKey,
+    }});
+
+    const payload = await pollEventLevelReports();
+    assert_equals(payload.reports.length, 1);
+    const report = JSON.parse(payload.reports[0].body);
+
+    let keyUnderTest = 'trigger_debug_key';
+    let otherKey = 'source_debug_key';
+    if (forSource) {
+      [keyUnderTest, otherKey] = [otherKey, keyUnderTest];
+    }
+
+    if (testCase.keyExpected) {
+      assert_equals(report[keyUnderTest], testCase.debugKey);
+    } else {
+      assert_not_own_property(report, keyUnderTest);
+    }
+
+    assert_not_own_property(report, otherKey);
+  }, testCase.testName);
+
+[
+  {
+    testName: 'Valid cookie propagates debug key.',
+    debugKey: '246',
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    keyExpected: true,
+  },
+  {
+    testName: 'Missing cookie clears debug key.',
+    debugKey: '246',
+    cookie: 'foo=1;Secure;HttpOnly;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Cookie without Secure clears debug key.',
+    debugKey: '246',
+    cookie: 'ar_debug=1;HttpOnly;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Cookie without HttpOnly clears debug key.',
+    debugKey: '246',
+    cookie: 'ar_debug=1;Secure;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Cookie without SameSite=None clears debug key.',
+    debugKey: '246',
+    cookie: 'ar_debug=1;Secure;HttpOnly;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Cookie with narrow Path clears debug key.',
+    debugKey: '246',
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None',
+    keyExpected: false,
+  },
+  {
+    testName: 'Field with wrong type is ignored.',
+    debugKey: 246,
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+  {
+    testName: 'Field with invalid format is ignored.',
+    debugKey: '-246',
+    cookie: 'ar_debug=1;Secure;HttpOnly;SameSite=None;Path=/',
+    keyExpected: false,
+  },
+].forEach(testCase => {
+  subsetTestByKey('source', debug_key_promise_test, testCase, /*forSource=*/true);
+  subsetTestByKey('trigger', debug_key_promise_test, testCase, /*forSource=*/false);
+});
+</script>

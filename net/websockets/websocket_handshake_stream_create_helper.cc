@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 
+#include <set>
 #include <utility>
 
 #include "base/check.h"
@@ -49,7 +50,7 @@ WebSocketHandshakeStreamCreateHelper::CreateBasicStream(
 std::unique_ptr<WebSocketHandshakeStreamBase>
 WebSocketHandshakeStreamCreateHelper::CreateHttp2Stream(
     base::WeakPtr<SpdySession> session,
-    std::vector<std::string> dns_aliases) {
+    std::set<std::string> dns_aliases) {
   std::vector<std::string> extensions(
       1, "permessage-deflate; client_max_window_bits");
   auto stream = std::make_unique<WebSocketHttp2HandshakeStream>(

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,20 @@ TEST(DisabledSitesTest, AllPaths) {
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://youtube.com/somepage")));
 }
 
+TEST(DisabledSitesTest, AllowedPaths) {
+  base::test::ScopedFeatureList feature;
+  feature.InitWithFeatures({kSharedHighlightingRefinedBlocklist}, {});
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com/community")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com/about")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.instagram.com/p/")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.reddit.com/comments/")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.twitter.com/status/")));
+}
+
 TEST(DisabledSitesTest, SpecificPages) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(kSharedHighlightingAmp);
+
   // Paths starting with /amp/ are disabled.
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
   EXPECT_FALSE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/foo")));
@@ -43,13 +56,46 @@ TEST(DisabledSitesTest, NonMatchingHost) {
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
 }
 
-TEST(DisabledSitesTest, FeatureDisabled) {
+TEST(DisabledSitesTest, AmpFeatureEnabled) {
   base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(kSharedHighlightingUseBlocklist);
+  feature.InitWithFeatures({kSharedHighlightingAmp}, {});
 
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.youtube.com")));
   EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/")));
-  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.example.com")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://www.google.com/amp/foo")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/amp/")));
+  EXPECT_TRUE(ShouldOfferLinkToText(GURL("https://google.com/amp/foo")));
+}
+
+TEST(DisabledSitesTest, SupportsLinkGenerationInIframe) {
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://www.google.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(
+      SupportsLinkGenerationInIframe(GURL("https://www.example.com/")));
+
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://mobile.google.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://mobile.foo.com")));
+
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://m.google.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://m.foo.com")));
+
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://www.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://www.nyt.com")));
+
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://mobile.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://mobile.nyt.com")));
+
+  EXPECT_TRUE(SupportsLinkGenerationInIframe(
+      GURL("https://m.bing.com/amp/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(GURL("https://m.nyt.com")));
+
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(
+      GURL("https://www.google.com/www.nyt.com/ampthml/blogs.html")));
+  EXPECT_FALSE(SupportsLinkGenerationInIframe(
+      GURL("https://m.bing.com/a/www.nyt.com/ampthml/blogs.html")));
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CC_BENCHMARKS_INVALIDATION_BENCHMARK_H_
 
 #include <stdint.h>
-
-#include <string>
 
 #include "cc/benchmarks/micro_benchmark_controller.h"
 
@@ -21,14 +19,14 @@ class LayerTreeHost;
 // measurement.
 class CC_EXPORT InvalidationBenchmark : public MicroBenchmark {
  public:
-  explicit InvalidationBenchmark(std::unique_ptr<base::Value> value,
+  explicit InvalidationBenchmark(base::Value settings,
                                  MicroBenchmark::DoneCallback callback);
   ~InvalidationBenchmark() override;
 
   // Implements MicroBenchmark interface.
   void DidUpdateLayers(LayerTreeHost* layer_tree_host) override;
   void RunOnLayer(PictureLayer* layer) override;
-  bool ProcessMessage(std::unique_ptr<base::Value> value) override;
+  bool ProcessMessage(base::Value message) override;
 
  private:
   enum Mode { FIXED_SIZE, LAYER, VIEWPORT, RANDOM };

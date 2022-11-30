@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
@@ -575,6 +576,56 @@ public class CronetUrlRequestTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
+    public void testCustomReferer_verbatim() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValue = "http://example.com/";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValue, callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_changeToCanonical() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String refererValueNoTrailingSlash = "http://example.com";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, refererValueNoTrailingSlash);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals(refererValueNoTrailingSlash + "/", callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testCustomReferer_discardInvalid() throws Exception {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        String refererName = "Referer";
+        String invalidRefererValue = "foobar";
+        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                NativeTestServer.getEchoHeaderURL(refererName), callback, callback.getExecutor());
+        builder.addHeader(refererName, invalidRefererValue);
+        builder.build().start();
+        callback.blockForDone();
+        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertEquals("Header not found. :(", callback.mResponseAsString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
     public void testCustomUserAgent() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         String userAgentName = "User-Agent";
@@ -727,11 +778,11 @@ public class CronetUrlRequestTest {
         assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
     }
 
-    @DisabledTest(message = "crbug.com/738183")
     @Test
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet // Java impl doesn't support MockUrlRequestJobFactory
+    @DisabledTest(message = "crbug.com/1315367")
     public void testMockReadDataAsyncError() throws Exception {
         final int arbitraryNetError = -5;
         TestUrlRequestCallback callback =
@@ -2282,21 +2333,20 @@ public class CronetUrlRequestTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    // Used for Android's NetworkSecurityPolicy added in Nougat
     public void testCleartextTrafficBlocked() throws Exception {
-        // This feature only works starting from N.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            final int cleartextNotPermitted = -29;
-            // This hostname needs to match the one in network_security_config.xml and the one used
-            // by QuicTestServer.
-            // https requests to it are tested in QuicTest, so this checks that we're only blocking
-            // cleartext.
-            final String url = "http://example.com/simple.txt";
-            TestUrlRequestCallback callback = startAndWaitForComplete(url);
-            assertNull(callback.mResponseInfo);
-            assertNotNull(callback.mError);
-            assertEquals(cleartextNotPermitted,
-                    ((NetworkException) callback.mError).getCronetInternalErrorCode());
-        }
+        final int cleartextNotPermitted = -29;
+        // This hostname needs to match the one in network_security_config.xml and the one used
+        // by QuicTestServer.
+        // https requests to it are tested in QuicTest, so this checks that we're only blocking
+        // cleartext.
+        final String url = "http://example.com/simple.txt";
+        TestUrlRequestCallback callback = startAndWaitForComplete(url);
+        assertNull(callback.mResponseInfo);
+        assertNotNull(callback.mError);
+        assertEquals(cleartextNotPermitted,
+                ((NetworkException) callback.mError).getCronetInternalErrorCode());
     }
 
     @Test
@@ -2352,6 +2402,7 @@ public class CronetUrlRequestTest {
     @SmallTest
     @Feature({"Cronet"})
     @RequiresMinApi(9) // Tagging support added in API level 9: crrev.com/c/chromium/src/+/930086
+    @RequiresMinAndroidApi(Build.VERSION_CODES.M) // crbug/1301957
     public void testTagging() throws Exception {
         if (!CronetTestUtil.nativeCanGetTaggedBytes()) {
             Log.i(TAG, "Skipping test - GetTaggedBytes unsupported.");
@@ -2412,8 +2463,7 @@ public class CronetUrlRequestTest {
      */
     public void testManyRequests() throws Exception {
         String url = NativeTestServer.getMultiRedirectURL();
-        // Jelly Bean has a 2000 limit on global references, crbug.com/922656.
-        final int numRequests = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? 2000 : 1500;
+        final int numRequests = 2000;
         TestUrlRequestCallback callbacks[] = new TestUrlRequestCallback[numRequests];
         UrlRequest requests[] = new UrlRequest[numRequests];
         for (int i = 0; i < numRequests; i++) {

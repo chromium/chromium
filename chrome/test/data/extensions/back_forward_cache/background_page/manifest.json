@@ -1,0 +1,10 @@
+{
+  "name": "Background Page Extension",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "A minimal extension for testing purposes.",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["*://a.com/*", "*://b.com/*"]
+}

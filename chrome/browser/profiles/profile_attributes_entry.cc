@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,18 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -29,6 +28,7 @@
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -40,7 +40,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
 #endif
 
@@ -50,10 +50,26 @@ const char kGAIAGivenNameKey[] = "gaia_given_name";
 const char kGAIANameKey[] = "gaia_name";
 const char kShortcutNameKey[] = "shortcut_name";
 const char kActiveTimeKey[] = "active_time";
-const char kIsAuthErrorKey[] = "is_auth_error";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
-const char kSigninRequiredKey[] = "signin_required";
+const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kUserAcceptedAccountManagement[] =
+    "user_accepted_account_management";
+
+// All accounts info. This is a dictionary containing sub-dictionaries of
+// account information, keyed by the gaia ID. The sub-dictionaries are empty for
+// now but can be populated in the future. Example for two accounts:
+//
+// "all_accounts": {
+//   "gaia_id1": {},
+//   "gaia_id2": {}
+// }
+const char kAllAccountsKey[] = "all_accounts";
+
+// Avatar info.
+const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
+    "last_downloaded_gaia_picture_url_with_size";
+const char kGAIAPictureFileNameKey[] = "gaia_picture_file_name";
 
 // Profile colors info.
 const char kProfileHighlightColorKey[] = "profile_highlight_color";
@@ -74,6 +90,13 @@ const char kIsOmittedFromProfileListKey[] = "is_omitted_from_profile_list";
 // Deprecated 3/2021.
 const char kAuthCredentialsKey[] = "local_auth_credentials";
 const char kPasswordTokenKey[] = "gaia_password_token";
+
+// Deprecated 6/2021.
+const char kSigninRequiredKey[] = "signin_required";
+const char kIsAuthErrorKey[] = "is_auth_error";
+
+// Deprecated 7/2021.
+const char kProfileIsGuest[] = "is_guest";
 
 constexpr int kIntegerNotSet = -1;
 
@@ -108,7 +131,6 @@ const char ProfileAttributesEntry::kSupervisedUserId[] = "managed_user_id";
 const char ProfileAttributesEntry::kAvatarIconKey[] = "avatar_icon";
 const char ProfileAttributesEntry::kBackgroundAppsKey[] = "background_apps";
 const char ProfileAttributesEntry::kProfileIsEphemeral[] = "is_ephemeral";
-const char ProfileAttributesEntry::kProfileIsGuest[] = "is_guest";
 const char ProfileAttributesEntry::kUserNameKey[] = "user_name";
 const char ProfileAttributesEntry::kGAIAIdKey[] = "gaia_id";
 const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
@@ -116,6 +138,10 @@ const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
 const char ProfileAttributesEntry::kNameKey[] = "name";
 const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
     "is_using_default_name";
+const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
+    "is_using_default_avatar";
+const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
+const char ProfileAttributesEntry::kAccountIdKey[] = "account_id_key";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -127,12 +153,12 @@ void ProfileAttributesEntry::RegisterLocalStatePrefs(
 
 ProfileAttributesEntry::ProfileAttributesEntry() = default;
 
-void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
+void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
                                         const base::FilePath& path,
                                         PrefService* prefs) {
-  DCHECK(!profile_info_cache_);
-  DCHECK(cache);
-  profile_info_cache_ = cache;
+  DCHECK(!profile_attributes_storage_);
+  DCHECK(storage);
+  profile_attributes_storage_ = storage;
 
   DCHECK(profile_path_.empty());
   DCHECK(!path.empty());
@@ -142,34 +168,30 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
   DCHECK(prefs);
   prefs_ = prefs;
 
-  DCHECK(profile_info_cache_->GetUserDataDir() == profile_path_.DirName());
-  storage_key_ = profile_path_.BaseName().MaybeAsASCII();
+  storage_key_ =
+      profile_attributes_storage_->StorageKeyFromProfilePath(profile_path_);
 
   MigrateObsoleteProfileAttributes();
 
-  const base::Value* entry_data = GetEntryData();
+  const base::Value::Dict* entry_data = GetEntryData();
   if (entry_data) {
-    if (!entry_data->FindKey(kIsConsentedPrimaryAccountKey)) {
+    if (!entry_data->contains(kIsConsentedPrimaryAccountKey)) {
       SetBool(kIsConsentedPrimaryAccountKey,
               !GetGAIAId().empty() || !GetUserName().empty());
     }
   }
 
-  is_force_signin_enabled_ = signin_util::IsForceSigninEnabled();
-  if (is_force_signin_enabled_) {
-    if (!IsAuthenticated())
-      is_force_signin_profile_locked_ = true;
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
-  } else if (IsSigninRequired()) {
-    // Profiles that require signin in the absence of an enterprise policy are
-    // left-overs from legacy supervised users. Just unlock them, so users can
-    // keep using them.
-    SetAuthInfo(std::string(), std::u16string(), false);
-    SetIsSigninRequired(false);
-#endif
+  if (signin_util::IsForceSigninEnabled()) {
+    if (!CanBeManaged())
+      SetBool(kForceSigninProfileLockedKey, true);
+  } else {
+    // Reset the locked state to avoid a profile being locked after the force
+    // signin policy has been disabled.
+    SetBool(kForceSigninProfileLockedKey, false);
   }
+}
 
+void ProfileAttributesEntry::InitializeLastNameToDisplay() {
   DCHECK(last_name_to_display_.empty());
   last_name_to_display_ = GetName();
 }
@@ -198,7 +220,7 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
 
   // The profile local name is a default profile name : Person n.
   std::vector<ProfileAttributesEntry*> entries =
-      profile_info_cache_->GetAllProfilesAttributes();
+      profile_attributes_storage_->GetAllProfilesAttributes();
 
   for (ProfileAttributesEntry* entry : entries) {
     if (entry == this)
@@ -226,6 +248,36 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
     }
   }
   return false;
+}
+
+bool ProfileAttributesEntry::ShouldUpdateGAIAPicture(
+    const std::string& image_url_with_size,
+    bool image_is_empty) const {
+  std::string old_file_name = GetString(kGAIAPictureFileNameKey);
+  if (old_file_name.empty() && image_is_empty) {
+    // On Windows, Taskbar and Desktop icons are refreshed every time
+    // |OnProfileAvatarChanged| notification is fired.
+    // Updating from an empty image to a null image is a no-op and it is
+    // important to avoid firing |OnProfileAvatarChanged| in this case.
+    // See http://crbug.com/900374
+    DCHECK(!IsGAIAPictureLoaded());
+    return false;
+  }
+
+  std::string current_gaia_image_url =
+      GetLastDownloadedGAIAPictureUrlWithSize();
+  if (old_file_name.empty() || image_is_empty ||
+      current_gaia_image_url != image_url_with_size) {
+    return true;
+  }
+  const gfx::Image* gaia_picture = GetGAIAPicture();
+  if (gaia_picture && !gaia_picture->IsEmpty()) {
+    return false;
+  }
+
+  // We either did not load the GAIA image or we failed to. In that case, only
+  // update if the GAIA picture is used as the profile avatar.
+  return IsUsingDefaultAvatar() || IsUsingGAIAPicture();
 }
 
 std::u16string ProfileAttributesEntry::GetLastNameToDisplay() const {
@@ -290,15 +342,15 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
       return *image;
   }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
   }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
   // need the high resolution version so no need to fetch it.
   if (use_high_res_file) {
@@ -309,7 +361,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
 #endif
 
   const int icon_index = GetAvatarIconIndex();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!profiles::IsModernAvatarIconIndex(icon_index)) {
     // Return the 2x version of the old avatar, defined specifically for
     // Windows. No special treatment is needed for modern avatars as they
@@ -342,17 +394,33 @@ std::string ProfileAttributesEntry::GetGAIAId() const {
 }
 
 const gfx::Image* ProfileAttributesEntry::GetGAIAPicture() const {
-  return profile_info_cache_->GetGAIAPictureOfProfileAtIndex(profile_index());
+  std::string file_name = GetString(kGAIAPictureFileNameKey);
+
+  // If the picture is not on disk then return nullptr.
+  if (file_name.empty())
+    return nullptr;
+
+  base::FilePath image_path = profile_path_.AppendASCII(file_name);
+  return profile_attributes_storage_->LoadAvatarPictureFromPath(
+      profile_path_, storage_key_, image_path);
 }
 
 bool ProfileAttributesEntry::IsUsingGAIAPicture() const {
-  return profile_info_cache_->IsUsingGAIAPictureOfProfileAtIndex(
-      profile_index());
+  bool result = GetBool(kUseGAIAPictureKey);
+  if (!result) {
+    // Prefer the GAIA avatar over a non-customized avatar.
+    result = IsUsingDefaultAvatar() && GetGAIAPicture();
+  }
+  return result;
 }
 
 bool ProfileAttributesEntry::IsGAIAPictureLoaded() const {
-  return profile_info_cache_->IsGAIAPictureOfProfileAtIndexLoaded(
-      profile_index());
+  return profile_attributes_storage_->IsGAIAPictureLoaded(storage_key_);
+}
+
+std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
+    const {
+  return GetString(kLastDownloadedGAIAPictureUrlWithSizeKey);
 }
 
 bool ProfileAttributesEntry::IsSupervised() const {
@@ -372,7 +440,7 @@ bool ProfileAttributesEntry::IsOmitted() const {
 }
 
 bool ProfileAttributesEntry::IsSigninRequired() const {
-  return GetBool(kSigninRequiredKey) || is_force_signin_profile_locked_;
+  return GetBool(kForceSigninProfileLockedKey);
 }
 
 std::string ProfileAttributesEntry::GetSupervisedUserId() const {
@@ -381,10 +449,6 @@ std::string ProfileAttributesEntry::GetSupervisedUserId() const {
 
 bool ProfileAttributesEntry::IsEphemeral() const {
   return GetBool(kProfileIsEphemeral);
-}
-
-bool ProfileAttributesEntry::IsGuest() const {
-  return GetBool(kProfileIsGuest);
 }
 
 bool ProfileAttributesEntry::IsUsingDefaultName() const {
@@ -406,13 +470,19 @@ bool ProfileAttributesEntry::IsAuthenticated() const {
   return GetBool(kIsConsentedPrimaryAccountKey);
 }
 
-bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
-  return profile_info_cache_->ProfileIsUsingDefaultAvatarAtIndex(
-      profile_index());
+bool ProfileAttributesEntry::CanBeManaged() const {
+  switch (GetSigninState()) {
+    case SigninState::kSignedInWithConsentedPrimaryAccount:
+      return true;
+    case SigninState::kSignedInWithUnconsentedPrimaryAccount:
+      return GetBool(kUserAcceptedAccountManagement);
+    case SigninState::kNotSignedIn:
+      return false;
+  }
 }
 
-bool ProfileAttributesEntry::IsAuthError() const {
-  return GetBool(kIsAuthErrorKey);
+bool ProfileAttributesEntry::IsUsingDefaultAvatar() const {
+  return GetBool(kIsUsingDefaultAvatarKey);
 }
 
 bool ProfileAttributesEntry::IsSignedInWithCredentialProvider() const {
@@ -428,13 +498,13 @@ size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   return icon_index;
 }
 
-base::Optional<ProfileThemeColors>
+absl::optional<ProfileThemeColors>
 ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
-  base::Optional<SkColor> profile_highlight_color =
+  absl::optional<SkColor> profile_highlight_color =
       GetProfileThemeColor(kProfileHighlightColorKey);
-  base::Optional<SkColor> default_avatar_fill_color =
+  absl::optional<SkColor> default_avatar_fill_color =
       GetProfileThemeColor(kDefaultAvatarFillColorKey);
-  base::Optional<SkColor> default_avatar_stroke_color =
+  absl::optional<SkColor> default_avatar_stroke_color =
       GetProfileThemeColor(kDefaultAvatarStrokeColorKey);
 
   DCHECK_EQ(profile_highlight_color.has_value(),
@@ -443,7 +513,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
             default_avatar_fill_color.has_value());
 
   if (!profile_highlight_color.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ProfileThemeColors colors;
@@ -454,18 +524,18 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
 }
 
 ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
   NOTREACHED();
-  return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
+  return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+          gfx::kPlaceholderColor};
 #else
-  base::Optional<ProfileThemeColors> theme_colors =
+  absl::optional<ProfileThemeColors> theme_colors =
       GetProfileThemeColorsIfSet();
   if (theme_colors)
     return *theme_colors;
 
-  return GetDefaultProfileThemeColors(
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
+  return GetDefaultProfileThemeColors();
 #endif
 }
 
@@ -482,12 +552,37 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
 }
 
+std::string ProfileAttributesEntry::GetAccountIdKey() const {
+  return GetString(kAccountIdKey);
+}
+
+base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
+  const base::Value* accounts = GetValue(kAllAccountsKey);
+  if (!accounts || !accounts->is_dict())
+    return base::flat_set<std::string>();
+
+  return base::MakeFlatSet<std::string>(
+      accounts->DictItems(), {}, [](const auto& it) { return it.first; });
+}
+
+void ProfileAttributesEntry::SetGaiaIds(
+    const base::flat_set<std::string>& gaia_ids) {
+  base::Value accounts(base::Value::Type::DICTIONARY);
+  for (const auto& gaia_id : gaia_ids) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    // The dictionary is empty for now, but can hold account-specific info in
+    // the future.
+    accounts.SetKey(gaia_id, std::move(dict));
+  }
+  SetValue(kAllAccountsKey, std::move(accounts));
+}
+
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
                                                  bool is_default_name) {
   bool changed = SetString16(kNameKey, name);
   changed |= SetBool(kIsUsingDefaultNameKey, is_default_name);
   if (changed)
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
@@ -496,28 +591,25 @@ void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
 
 void ProfileAttributesEntry::SetActiveTimeToNow() {
   if (IsDouble(kActiveTimeKey) &&
-      base::Time::Now() - GetActiveTime() < base::TimeDelta::FromHours(1)) {
+      base::Time::Now() - GetActiveTime() < base::Hours(1)) {
     return;
   }
   SetDouble(kActiveTimeKey, base::Time::Now().ToDoubleT());
 }
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
-  if (is_omitted) {
-    DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
-  }
-
   bool old_value = IsOmitted();
-  is_omitted_ = is_omitted;
+  SetIsOmittedInternal(is_omitted);
 
   // Send a notification only if the value has really changed.
   if (old_value != is_omitted_)
-    profile_info_cache_->NotifyProfileIsOmittedChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileIsOmittedChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetSupervisedUserId(const std::string& id) {
   if (SetString(kSupervisedUserId, id))
-    profile_info_cache_->NotifyProfileSupervisedUserIdChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileSupervisedUserIdChanged(
+        GetPath());
 }
 
 void ProfileAttributesEntry::SetBackgroundStatus(bool running_background_apps) {
@@ -526,47 +618,62 @@ void ProfileAttributesEntry::SetBackgroundStatus(bool running_background_apps) {
 
 void ProfileAttributesEntry::SetGAIAName(const std::u16string& name) {
   if (SetString16(kGAIANameKey, name))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetGAIAGivenName(const std::u16string& name) {
   if (SetString16(kGAIAGivenNameKey, name))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+    profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
 }
 
 void ProfileAttributesEntry::SetGAIAPicture(
     const std::string& image_url_with_size,
     gfx::Image image) {
-  profile_info_cache_->SetGAIAPictureOfProfileAtIndex(
-      profile_index(), image_url_with_size, image);
+  if (!ShouldUpdateGAIAPicture(image_url_with_size, image.IsEmpty()))
+    return;
+
+  std::string old_file_name = GetString(kGAIAPictureFileNameKey);
+  std::string new_file_name;
+  if (image.IsEmpty()) {
+    // Delete the old bitmap from disk.
+    base::FilePath image_path = profile_path_.AppendASCII(old_file_name);
+    profile_attributes_storage_->DeleteGAIAImageAtPath(
+        profile_path_, storage_key_, image_path);
+  } else {
+    // Save the new bitmap to disk.
+    new_file_name =
+        old_file_name.empty()
+            ? base::FilePath(profiles::kGAIAPictureFileName).MaybeAsASCII()
+            : old_file_name;
+    base::FilePath image_path = profile_path_.AppendASCII(new_file_name);
+    profile_attributes_storage_->SaveGAIAImageAtPath(
+        profile_path_, storage_key_, image, image_path, image_url_with_size);
+  }
+
+  SetString(kGAIAPictureFileNameKey, new_file_name);
+  profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::SetIsUsingGAIAPicture(bool value) {
-  profile_info_cache_->SetIsUsingGAIAPictureOfProfileAtIndex(
-      profile_index(), value);
+  if (SetBool(kUseGAIAPictureKey, value)) {
+    profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path_);
+  }
 }
 
-void ProfileAttributesEntry::SetIsSigninRequired(bool value) {
-  if (value != GetBool(kSigninRequiredKey)) {
-    SetBool(kSigninRequiredKey, value);
-    profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
-  }
-  if (is_force_signin_enabled_)
-    LockForceSigninProfile(value);
+void ProfileAttributesEntry::SetLastDownloadedGAIAPictureUrlWithSize(
+    const std::string& image_url_with_size) {
+  SetString(kLastDownloadedGAIAPictureUrlWithSizeKey, image_url_with_size);
 }
 
 void ProfileAttributesEntry::SetSignedInWithCredentialProvider(bool value) {
-  if (value != GetBool(prefs::kSignedInWithCredentialProvider)) {
-    SetBool(prefs::kSignedInWithCredentialProvider, value);
-  }
+  SetBool(prefs::kSignedInWithCredentialProvider, value);
 }
 
 void ProfileAttributesEntry::LockForceSigninProfile(bool is_lock) {
-  DCHECK(is_force_signin_enabled_);
-  if (is_force_signin_profile_locked_ == is_lock)
-    return;
-  is_force_signin_profile_locked_ = is_lock;
-  profile_info_cache_->NotifyIsSigninRequiredChanged(GetPath());
+  DCHECK(signin_util::IsForceSigninEnabled());
+  if (SetBool(kForceSigninProfileLockedKey, is_lock)) {
+    profile_attributes_storage_->NotifyIsSigninRequiredChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::RecordAccountMetrics() const {
@@ -583,49 +690,41 @@ void ProfileAttributesEntry::SetIsEphemeral(bool value) {
   SetBool(kProfileIsEphemeral, value);
 }
 
-void ProfileAttributesEntry::SetIsGuest(bool value) {
-  SetBool(kProfileIsGuest, value);
+void ProfileAttributesEntry::SetUserAcceptedAccountManagement(bool value) {
+  if (SetBool(kUserAcceptedAccountManagement, value))
+    profile_attributes_storage_->NotifyProfileUserManagementAcceptanceChanged(
+        GetPath());
 }
 
-void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
-  if (SetBool(kIsUsingDefaultNameKey, value))
-    profile_info_cache_->NotifyIfProfileNamesHaveChanged();
+bool ProfileAttributesEntry::UserAcceptedAccountManagement() const {
+  return GetBool(kUserAcceptedAccountManagement);
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultAvatar(bool value) {
-  profile_info_cache_->SetProfileIsUsingDefaultAvatarAtIndex(
-      profile_index(), value);
-}
-
-void ProfileAttributesEntry::SetIsAuthError(bool value) {
-  SetBool(kIsAuthErrorKey, value);
+  SetBool(kIsUsingDefaultAvatarKey, value);
 }
 
 void ProfileAttributesEntry::SetAvatarIconIndex(size_t icon_index) {
   std::string default_avatar_icon_url =
       profiles::GetDefaultAvatarIconUrl(icon_index);
-  if (default_avatar_icon_url == GetString(kAvatarIconKey)) {
+  if (SetString(kAvatarIconKey, default_avatar_icon_url)) {
     // On Windows, Taskbar and Desktop icons are refreshed every time
     // |OnProfileAvatarChanged| notification is fired.
     // As the current avatar icon is already set to |default_avatar_icon_url|,
     // it is important to avoid firing |OnProfileAvatarChanged| in this case.
     // See http://crbug.com/900374
-    return;
+    base::FilePath profile_path = GetPath();
+    if (!profile_attributes_storage_->GetDisableAvatarDownloadForTesting()) {
+      profile_attributes_storage_->DownloadHighResAvatarIfNeeded(icon_index,
+                                                                 profile_path);
+    }
+
+    profile_attributes_storage_->NotifyOnProfileAvatarChanged(profile_path);
   }
-
-  SetString(kAvatarIconKey, default_avatar_icon_url);
-
-  base::FilePath profile_path = GetPath();
-  if (!profile_info_cache_->GetDisableAvatarDownloadForTesting()) {
-    profile_info_cache_->DownloadHighResAvatarIfNeeded(icon_index,
-                                                       profile_path);
-  }
-
-  profile_info_cache_->NotifyOnProfileAvatarChanged(profile_path);
 }
 
 void ProfileAttributesEntry::SetProfileThemeColors(
-    const base::Optional<ProfileThemeColors>& colors) {
+    const absl::optional<ProfileThemeColors>& colors) {
   bool changed = false;
   if (colors.has_value()) {
     changed |=
@@ -641,15 +740,15 @@ void ProfileAttributesEntry::SetProfileThemeColors(
   }
 
   if (changed) {
-    profile_info_cache_->NotifyProfileThemeColorsChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileThemeColorsChanged(GetPath());
     if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex())
-      profile_info_cache_->NotifyOnProfileAvatarChanged(GetPath());
+      profile_attributes_storage_->NotifyOnProfileAvatarChanged(GetPath());
   }
 }
 
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
   if (SetString(kHostedDomain, hosted_domain))
-    profile_info_cache_->NotifyProfileHostedDomainChanged(GetPath());
+    profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
 }
 
 void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
@@ -661,17 +760,19 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
     return;
   }
 
-  const base::Value* old_data = GetEntryData();
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetStringKey(kGAIAIdKey, gaia_id);
-  new_data.SetStringKey(kUserNameKey, user_name);
-  DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
-         !user_name.empty());
-  new_data.SetBoolKey(kIsConsentedPrimaryAccountKey,
-                      is_consented_primary_account);
-  SetEntryData(std::move(new_data));
-  profile_info_cache_->NotifyProfileAuthInfoChanged(profile_path_);
+  {
+    // Bundle the changes in a single update.
+    ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+    base::Value::Dict& attributes_dict = update.Get();
+    base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+    entry->Set(kGAIAIdKey, gaia_id);
+    entry->Set(kUserNameKey, user_name);
+    DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
+           !user_name.empty());
+    entry->Set(kIsConsentedPrimaryAccountKey, is_consented_primary_account);
+  }
+
+  profile_attributes_storage_->NotifyProfileAuthInfoChanged(profile_path_);
 }
 
 void ProfileAttributesEntry::AddAccountName(const std::string& name) {
@@ -711,10 +812,6 @@ void ProfileAttributesEntry::ClearAccountCategories() {
   ClearValue(kAccountCategories);
 }
 
-size_t ProfileAttributesEntry::profile_index() const {
-  return profile_info_cache_->GetIndexOfProfileWithPath(profile_path_);
-}
-
 const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
   const size_t avatar_index = GetAvatarIconIndex();
 
@@ -729,8 +826,8 @@ const gfx::Image* ProfileAttributesEntry::GetHighResAvatar() const {
       profiles::GetDefaultAvatarIconFileNameAtIndex(avatar_index);
   const base::FilePath image_path =
       profiles::GetPathOfHighResAvatarAtIndex(avatar_index);
-  return profile_info_cache_->LoadAvatarPictureFromPath(GetPath(), key,
-                                                        image_path);
+  return profile_attributes_storage_->LoadAvatarPictureFromPath(GetPath(), key,
+                                                                image_path);
 }
 
 gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(int size) const {
@@ -783,23 +880,15 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
   }
 }
 
-const base::Value* ProfileAttributesEntry::GetEntryData() const {
-  const base::DictionaryValue* cache =
-      prefs_->GetDictionary(prefs::kProfileInfoCache);
-  return cache->FindKeyOfType(storage_key_, base::Value::Type::DICTIONARY);
-}
-
-void ProfileAttributesEntry::SetEntryData(base::Value data) {
-  DCHECK(data.is_dict());
-
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
-  base::DictionaryValue* cache = update.Get();
-  cache->SetKey(storage_key_, std::move(data));
+const base::Value::Dict* ProfileAttributesEntry::GetEntryData() const {
+  const base::Value::Dict& attributes =
+      prefs_->GetDict(prefs::kProfileAttributes);
+  return attributes.FindDict(storage_key_);
 }
 
 const base::Value* ProfileAttributesEntry::GetValue(const char* key) const {
-  const base::Value* entry_data = GetEntryData();
-  return entry_data ? entry_data->FindKey(key) : nullptr;
+  const base::Value::Dict* entry_data = GetEntryData();
+  return entry_data ? entry_data->Find(key) : nullptr;
 }
 
 std::string ProfileAttributesEntry::GetString(const char* key) const {
@@ -835,11 +924,13 @@ int ProfileAttributesEntry::GetInteger(const char* key) const {
   return value->GetInt();
 }
 
-base::Optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
+absl::optional<SkColor> ProfileAttributesEntry::GetProfileThemeColor(
     const char* key) const {
+  // Do not use GetInteger(), as it defaults to kIntegerNotSet which is
+  // undistinguishable from a valid color.
   const base::Value* value = GetValue(key);
   if (!value || !value->is_int())
-    return base::nullopt;
+    return absl::nullopt;
   return value->GetInt();
 }
 
@@ -851,91 +942,55 @@ bool ProfileAttributesEntry::IsDouble(const char* key) const {
 }
 
 // Internal setters using keys;
-bool ProfileAttributesEntry::SetString(const char* key, std::string value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_string() && old_value->GetString() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+bool ProfileAttributesEntry::SetString(const char* key,
+                                       const std::string& value) {
+  std::string old_value = GetString(key);
+  return SetValue(key, base::Value(value)) && old_value != value;
 }
 
 bool ProfileAttributesEntry::SetString16(const char* key,
-                                         std::u16string value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_string() &&
-        base::UTF8ToUTF16(old_value->GetString()) == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+                                         const std::u16string& value) {
+  std::u16string old_value = GetString16(key);
+  return SetValue(key, base::Value(value)) && old_value != value;
 }
 
 bool ProfileAttributesEntry::SetDouble(const char* key, double value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_double() && old_value->GetDouble() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+  double old_value = GetDouble(key);
+  return SetValue(key, base::Value(value)) && old_value != value;
 }
 
 bool ProfileAttributesEntry::SetBool(const char* key, bool value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_bool() && old_value->GetBool() == value)
-      return false;
-  }
-
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
-  return true;
+  bool old_value = GetBool(key);
+  return SetValue(key, base::Value(value)) && old_value != value;
 }
 
 bool ProfileAttributesEntry::SetInteger(const char* key, int value) {
-  const base::Value* old_data = GetEntryData();
-  if (old_data) {
-    const base::Value* old_value = old_data->FindKey(key);
-    if (old_value && old_value->is_int() && old_value->GetInt() == value)
-      return false;
-  }
+  int old_value = GetInteger(key);
+  return SetValue(key, base::Value(value)) && old_value != value;
+}
 
-  base::Value new_data = old_data ? GetEntryData()->Clone()
-                                  : base::Value(base::Value::Type::DICTIONARY);
-  new_data.SetKey(key, base::Value(value));
-  SetEntryData(std::move(new_data));
+bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
+  const base::Value* old_value = GetValue(key);
+  if (old_value && *old_value == value)
+    return false;
+
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes_dict = update.Get();
+  base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+  entry->Set(key, std::move(value));
   return true;
 }
 
 bool ProfileAttributesEntry::ClearValue(const char* key) {
-  const base::Value* old_data = GetEntryData();
-  if (!old_data || !old_data->FindKey(key))
+  const base::Value* old_value = GetValue(key);
+  if (!old_value)
     return false;
 
-  base::Value new_data = GetEntryData()->Clone();
-  new_data.RemoveKey(key);
-  SetEntryData(std::move(new_data));
+  ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  base::Value::Dict& attributes_dict = update.Get();
+  base::Value::Dict* entry = attributes_dict.FindDict(storage_key_);
+  DCHECK(entry);
+  entry->Remove(key);
   return true;
 }
 
@@ -947,4 +1002,19 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 3/2021.
   ClearValue(kAuthCredentialsKey);
   ClearValue(kPasswordTokenKey);
+
+  // Added 6/2021.
+  ClearValue(kSigninRequiredKey);
+  ClearValue(kIsAuthErrorKey);
+
+  // Added 7/2021.
+  ClearValue(kProfileIsGuest);
+}
+
+void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {
+  if (is_omitted) {
+    DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
+  }
+
+  is_omitted_ = is_omitted;
 }

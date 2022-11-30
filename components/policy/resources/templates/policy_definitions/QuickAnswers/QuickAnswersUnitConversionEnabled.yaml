@@ -1,0 +1,25 @@
+caption: Enable Quick Answers Unit Conversion
+default: true
+desc: |-
+  This policy gives Quick Answers permission to access selected content and send the info to the server to get unit conversion results.
+
+        If the policy is enabled or not set, Quick Answers unit conversion will be enabled.
+        If the policy is disabled, Quick Answers unit conversion will be disabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Quick Answers Unit Conversion
+  value: true
+- caption: Disable Quick Answers Unit Conversion
+  value: false
+owners:
+- updowndota@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:97-
+tags:
+- google-sharing
+type: main

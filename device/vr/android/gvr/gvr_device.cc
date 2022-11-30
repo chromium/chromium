@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/android/gvr/gvr_delegate.h"
@@ -20,11 +21,9 @@
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #include "device/vr/android/gvr/gvr_utils.h"
 #include "device/vr/jni_headers/NonPresentingGvrContext_jni.h"
+#include "device/vr/util/transform_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
 
 using base::android::JavaRef;
 
@@ -32,83 +31,23 @@ namespace device {
 
 namespace {
 
-gfx::Size GetMaximumWebVrSize(gvr::GvrApi* gvr_api) {
-  // Get the default, unscaled size for the WebVR transfer surface
-  // based on the optimal 1:1 render resolution. A scalar will be applied to
-  // this value in the renderer to reduce the render load. This size will also
-  // be reported to the client via CreateVRDisplayInfo as the
-  // client-recommended render_width/render_height and for the GVR
-  // framebuffer. If the client chooses a different size or resizes it
-  // while presenting, we'll resize the transfer surface and GVR
-  // framebuffer to match.
-  gvr::Sizei render_target_size =
-      gvr_api->GetMaximumEffectiveRenderTargetSize();
+const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
+  static base::NoDestructor<std::vector<mojom::XRSessionFeature>>
+      kSupportedFeatures{{
+    mojom::XRSessionFeature::REF_SPACE_VIEWER,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL,
+    mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR,
+  }};
 
-  gfx::Size webvr_size(render_target_size.width, render_target_size.height);
-
-  // Ensure that the width is an even number so that the eyes each
-  // get the same size, the recommended render_width is per eye
-  // and the client will use the sum of the left and right width.
-  //
-  // TODO(klausw,crbug.com/699350): should we round the recommended
-  // size to a multiple of 2^N pixels to be friendlier to the GPU? The
-  // exact size doesn't matter, and it might be more efficient.
-  webvr_size.set_width(webvr_size.width() & ~1);
-  return webvr_size;
-}
-
-mojom::VREyeParametersPtr CreateEyeParamater(
-    gvr::GvrApi* gvr_api,
-    gvr::Eye eye,
-    const gvr::BufferViewportList& buffers,
-    const gfx::Size& maximum_size) {
-  mojom::VREyeParametersPtr eye_params = mojom::VREyeParameters::New();
-  eye_params->field_of_view = mojom::VRFieldOfView::New();
-  eye_params->render_width = maximum_size.width() / 2;
-  eye_params->render_height = maximum_size.height();
-
-  gvr::BufferViewport eye_viewport = gvr_api->CreateBufferViewport();
-  buffers.GetBufferViewport(eye, &eye_viewport);
-  gvr::Rectf eye_fov = eye_viewport.GetSourceFov();
-  eye_params->field_of_view->up_degrees = eye_fov.top;
-  eye_params->field_of_view->down_degrees = eye_fov.bottom;
-  eye_params->field_of_view->left_degrees = eye_fov.left;
-  eye_params->field_of_view->right_degrees = eye_fov.right;
-
-  gvr::Mat4f eye_mat = gvr_api->GetEyeFromHeadMatrix(eye);
-  gfx::Transform eye_from_head;
-  gvr_utils::GvrMatToTransform(eye_mat, &eye_from_head);
-  DCHECK(eye_from_head.IsInvertible());
-  gfx::Transform head_from_eye;
-  if (eye_from_head.GetInverse(&head_from_eye)) {
-    eye_params->head_from_eye = head_from_eye;
-  }
-
-  return eye_params;
-}
-
-mojom::VRDisplayInfoPtr CreateVRDisplayInfo(gvr::GvrApi* gvr_api) {
-  TRACE_EVENT0("input", "GvrDelegate::CreateVRDisplayInfo");
-
-  mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
-
-  gvr::BufferViewportList gvr_buffer_viewports =
-      gvr_api->CreateEmptyBufferViewportList();
-  gvr_buffer_viewports.SetToRecommendedBufferViewports();
-
-  gfx::Size maximum_size = GetMaximumWebVrSize(gvr_api);
-  device->left_eye = CreateEyeParamater(gvr_api, GVR_LEFT_EYE,
-                                        gvr_buffer_viewports, maximum_size);
-  device->right_eye = CreateEyeParamater(gvr_api, GVR_RIGHT_EYE,
-                                         gvr_buffer_viewports, maximum_size);
-
-  return device;
+  return *kSupportedFeatures;
 }
 
 }  // namespace
 
 GvrDevice::GvrDevice() : VRDeviceBase(mojom::XRDeviceId::GVR_DEVICE_ID) {
   GvrDelegateProviderFactory::SetDevice(this);
+
+  SetSupportedFeatures(GetSupportedFeatures());
 }
 
 GvrDevice::~GvrDevice() {
@@ -120,8 +59,7 @@ GvrDevice::~GvrDevice() {
   }
 
   if (pending_request_session_callback_) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
   }
 
   GvrDelegateProviderFactory::SetDevice(nullptr);
@@ -136,7 +74,7 @@ void GvrDevice::RequestSession(
     mojom::XRRuntime::RequestSessionCallback callback) {
   // We can only process one request at a time.
   if (pending_request_session_callback_) {
-    std::move(callback).Run(nullptr, mojo::NullRemote());
+    std::move(callback).Run(nullptr);
     return;
   }
   pending_request_session_callback_ = std::move(callback);
@@ -154,8 +92,7 @@ void GvrDevice::OnStartPresentResult(
   DCHECK(pending_request_session_callback_);
 
   if (!session) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
@@ -165,9 +102,12 @@ void GvrDevice::OnStartPresentResult(
   // TODO(billorr): Only do this in OnPresentingControllerMojoConnectionError.
   exclusive_controller_receiver_.reset();
 
-  std::move(pending_request_session_callback_)
-      .Run(std::move(session),
-           exclusive_controller_receiver_.BindNewPipeAndPassRemote());
+  auto session_result = mojom::XRRuntimeSessionResult::New();
+  session_result->controller =
+      exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+  session_result->session = std::move(session);
+
+  std::move(pending_request_session_callback_).Run(std::move(session_result));
 
   // Unretained is safe because the error handler won't be called after the
   // binding has been destroyed.
@@ -243,12 +183,6 @@ GvrDelegateProvider* GvrDevice::GetGvrDelegateProvider() {
   return GvrDelegateProviderFactory::Create();
 }
 
-void GvrDevice::OnDisplayConfigurationChanged(JNIEnv* env,
-                                              const JavaRef<jobject>& obj) {
-  DCHECK(gvr_api_);
-  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get()));
-}
-
 void GvrDevice::Init(base::OnceCallback<void(bool)> on_finished) {
   GvrDelegateProvider* delegate_provider = GetGvrDelegateProvider();
   if (!delegate_provider || delegate_provider->ShouldDisableGvrDevice()) {
@@ -270,7 +204,6 @@ void GvrDevice::CreateNonPresentingContext() {
   jlong context = Java_NonPresentingGvrContext_getNativeGvrContext(
       env, non_presenting_context_);
   gvr_api_ = gvr::GvrApi::WrapNonOwned(reinterpret_cast<gvr_context*>(context));
-  SetVRDisplayInfo(CreateVRDisplayInfo(gvr_api_.get()));
 
   if (paused_) {
     PauseTracking();
@@ -285,15 +218,13 @@ void GvrDevice::OnInitRequestSessionFinished(
   DCHECK(pending_request_session_callback_);
 
   if (!success) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
   GvrDelegateProvider* delegate_provider = GetGvrDelegateProvider();
   if (!delegate_provider) {
-    std::move(pending_request_session_callback_)
-        .Run(nullptr, mojo::NullRemote());
+    std::move(pending_request_session_callback_).Run(nullptr);
     return;
   }
 
@@ -302,9 +233,8 @@ void GvrDevice::OnInitRequestSessionFinished(
   // StartWebXRPresentation is async as we may trigger a DON (Device ON) flow
   // that pauses Chrome.
   delegate_provider->StartWebXRPresentation(
-      GetVRDisplayInfo(), std::move(options),
-      base::BindOnce(&GvrDevice::OnStartPresentResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+      std::move(options), base::BindOnce(&GvrDevice::OnStartPresentResult,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace device

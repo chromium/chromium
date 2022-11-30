@@ -1,0 +1,23 @@
+The test verifies functionality of protocol method CSS.getMatchedStylesForNode for visited links
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#inspected* {    regular
+    color: rgb(0, 0, 1); @[1:4-1:24]
+    color: rgb(0, 0, 1); @[undefined-undefined]
+}
+*#inspected:visited* {    regular
+    color: rgb(0, 0, 2); @[5:4-5:24]
+    color: rgb(0, 0, 2); @[undefined-undefined]
+}
+*#inspected:not(:link)* {    regular
+    color: rgb(0, 0, 3); @[9:4-9:24]
+    color: rgb(0, 0, 3); @[undefined-undefined]
+}
+*#inspected:is(:visited, :link)* {    regular
+    color: rgb(0, 0, 4); @[13:4-13:24]
+    color: rgb(0, 0, 4); @[undefined-undefined]
+}
+Dumping inherited rules: 
+

@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_PAINT_WORKLET_DEFERRED_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_PAINT_WORKLET_DEFERRED_IMAGE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -25,7 +25,7 @@ class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
  public:
   static scoped_refptr<PaintWorkletDeferredImage> Create(
       scoped_refptr<PaintWorkletInput> input,
-      const FloatSize& size) {
+      const gfx::SizeF& size) {
     return base::AdoptRef(new PaintWorkletDeferredImage(input, size));
   }
   ~PaintWorkletDeferredImage() override = default;
@@ -33,23 +33,20 @@ class CORE_EXPORT PaintWorkletDeferredImage : public GeneratedImage {
  protected:
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override;
+            const gfx::RectF& dest_rect,
+            const gfx::RectF& src_rect,
+            const ImageDrawOptions&) override;
   void DrawTile(GraphicsContext&,
-                const FloatRect&,
-                RespectImageOrientationEnum) override;
-  sk_sp<cc::PaintShader> CreateShader(const FloatRect& tile_rect,
+                const gfx::RectF&,
+                const ImageDrawOptions&) override;
+  sk_sp<cc::PaintShader> CreateShader(const gfx::RectF& tile_rect,
                                       const SkMatrix* pattern_matrix,
-                                      const FloatRect& src_rect,
-                                      RespectImageOrientationEnum) final;
+                                      const gfx::RectF& src_rect,
+                                      const ImageDrawOptions&) final;
 
  private:
   PaintWorkletDeferredImage(scoped_refptr<PaintWorkletInput> input,
-                            const FloatSize& size)
+                            const gfx::SizeF& size)
       : GeneratedImage(size) {
     image_ = PaintImageBuilder::WithDefault()
                  .set_paint_worklet_input(std::move(input))

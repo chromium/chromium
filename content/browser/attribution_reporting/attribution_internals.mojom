@@ -1,0 +1,238 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_internals.mojom;
+
+import "content/browser/attribution_reporting/attribution_reporting.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Represents `AttributionReport::EventLevelData::Id`.
+// Will be used to issue commands for individual reports.
+struct EventLevelReportID {
+  int64 value;
+};
+
+// Represents `AttributionReport::AggregatableAttributionData::Id`.
+// Will be used to issue commands for individual reports.
+struct AggregatableAttributionReportID {
+  int64 value;
+};
+
+union ReportID {
+  EventLevelReportID event_level_id;
+  AggregatableAttributionReportID aggregatable_attribution_id;
+};
+
+// Contains event-level data to be displayed.
+struct WebUIReportEventLevelData {
+  int64 priority;
+  bool attributed_truthfully;
+};
+
+// Represents `AggregatableHistogramContribution`.
+struct AggregatableHistogramContribution {
+  // Hex-encoded unsigned 128-bit integer.
+  string key;
+  uint32 value;
+};
+
+// Contains aggregatable attribution data to be displayed.
+struct WebUIReportAggregatableAttributionData {
+  array<AggregatableHistogramContribution> contributions;
+};
+
+union WebUIReportData {
+  WebUIReportEventLevelData event_level_data;
+  WebUIReportAggregatableAttributionData
+      aggregatable_attribution_data;
+};
+
+struct Empty {};
+
+union ReportStatus {
+  Empty pending;
+  // Contains the external report ID of the replacement report.
+  string replaced_by_higher_priority_report;
+  Empty prohibited_by_browser_policy;
+  // Contains the HTTP response code.
+  int32 sent;
+  string network_error;
+  Empty failed_to_assemble;
+};
+
+// Struct containing stored data that will be sent in a future attribution
+// report.
+struct WebUIReport {
+  // Allows the WebUI to issue commands for individual reports.
+  // Not intended to be displayed.
+  ReportID id;
+  url.mojom.Url report_url;
+  double trigger_time;
+  double report_time;
+  string report_body;
+  ReportStatus status;
+  WebUIReportData data;
+};
+
+struct DebugKey {
+  uint64 value;
+};
+
+// Struct representing a stored attribution source that will be displayed by WebUI.
+struct WebUISource {
+  uint64 source_event_id;
+  url.mojom.Origin source_origin;
+  // Replace SchemefulSite with string if this struct is ever reused elsewhere.
+  string attribution_destination;
+  url.mojom.Origin reporting_origin;
+  double source_time;
+  double expiry_time;
+  attribution_reporting.mojom.SourceType source_type;
+  int64 priority;
+  DebugKey? debug_key;
+  array<uint64> dedup_keys;
+  map<string, array<string>> filter_data;
+  // The value is a hex-encoded unsigned 128-bit integer.
+  map<string, string> aggregation_keys;
+  uint64 aggregatable_budget_consumed;
+  array<uint64> aggregatable_dedup_keys;
+
+  // Union of `StorableSource::Result` and `StoredSource::AttributionLogic`.
+  enum Attributability {
+    kAttributable,
+    // The source was dropped due to `CommonSourceInfo::AttributionLogic::kNever`.
+    kNoised,
+    kReachedEventLevelAttributionLimit,
+    kInternalError,
+    kInsufficientSourceCapacity,
+    kInsufficientUniqueDestinationCapacity,
+    kExcessiveReportingOrigins,
+    kProhibitedByBrowserPolicy,
+  };
+  Attributability attributability;
+};
+
+struct DedupKey {
+  uint64 value;
+};
+
+struct WebUIEventTriggerData {
+  uint64 data;
+  int64 priority;
+  DedupKey? dedup_key;
+  map<string, array<string>> filters;
+  map<string, array<string>> not_filters;
+};
+
+struct WebUIAggregatableTriggerData {
+  // Hex-encoded unsigned 128-bit integer.
+  string key_piece;
+  array<string> source_keys;
+  map<string, array<string>> filters;
+  map<string, array<string>> not_filters;
+};
+
+struct WebUITrigger {
+  double trigger_time;
+  url.mojom.Origin destination_origin;
+  url.mojom.Origin reporting_origin;
+  map<string, array<string>> filters;
+  map<string, array<string>> not_filters;
+  DebugKey? debug_key;
+  array<WebUIEventTriggerData> event_triggers;
+  array<WebUIAggregatableTriggerData> aggregatable_triggers;
+  map<string, uint32> aggregatable_values;
+  DedupKey? aggregatable_dedup_key;
+
+  enum Status {
+    // Shared statuses:
+    kSuccess,
+    kInternalError,
+    kNoMatchingSources,
+    kNoMatchingSourceFilterData,
+    kNoReportCapacityForDestinationSite,
+    kExcessiveAttributions,
+    kExcessiveReportingOrigins,
+    kProhibitedByBrowserPolicy,
+    kDeduplicated,
+
+    // Event-level statuses:
+    kLowPriority,
+    kNoised,
+    kNoMatchingConfigurations,
+
+    // Aggregatable statuses:
+    kNoHistograms,
+    kInsufficientBudget,
+    kNotRegistered,
+  };
+
+  Status event_level_status;
+  Status aggregatable_status;
+};
+
+// Struct containing reason for a source registration failure to be displayed
+// as a log by WebUI
+struct FailedSourceRegistration {
+  double time;
+  string header_value;
+  url.mojom.Origin reporting_origin;
+  attribution_reporting.mojom.SourceRegistrationError error;
+};
+
+// Observer for events relevant to the attribution internals WebUI.
+interface Observer {
+  // Called when the sources in storage changed, indicating that the observer
+  // should call `Handler::GetActiveSources()`.
+  OnSourcesChanged();
+
+  // Called when the reports in storage changed, indicating that the observer
+  // should call `Handler::GetReports()`.
+  OnReportsChanged(attribution_reporting.mojom.ReportType report_type);
+
+  // Called when a source-registration attempt fails.
+  OnSourceRejected(WebUISource source);
+
+  // Called when a report is sent, regardless of success.
+  OnReportSent(WebUIReport report);
+
+  // Called when a report is dropped from storage or prevented from being
+  // created in the first place.
+  OnReportDropped(WebUIReport report);
+
+  // Called when a trigger is registered, regardless of success or failure.
+  OnTriggerHandled(WebUITrigger trigger);
+
+  // Called when the source header registration JSON parser fails.
+  OnFailedSourceRegistration(FailedSourceRegistration failure);
+};
+
+// Mojo interface for the attribution internals WebUI to communicate with the
+// storage layer.
+interface Handler {
+  // Returns whether attribution reporting and the debug mode are enabled in
+  // the browsing context the WebUI is in.
+  IsAttributionReportingEnabled() => (bool enabled, bool debug_mode);
+
+  // Returns all active sources that are persisted in storage. This does
+  // not include expired sources, or sources that can no longer be attributed
+  // due to reaching policy limits.
+  GetActiveSources() => (array<WebUISource> sources);
+
+  // Returns all reports of the specified type contained in storage, including
+  // those that are actively being sent.
+  GetReports(attribution_reporting.mojom.ReportType report_type) => (array<WebUIReport> reports);
+
+  // Sends the given reports, ignoring delay, returning when the operation has
+  // been completed and the reports have been cleared from storage.
+  SendReports(array<ReportID> ids) => ();
+
+  // Deletes all persisted data for the attribution reporting API, returning when the
+  // operation has been completed.
+  ClearStorage() => ();
+
+  // Registers an observer to be notified of attribution reporting events.
+  AddObserver(pending_remote<Observer> observer) => (bool success);
+};

@@ -29,32 +29,13 @@
 
 <script src="dynamic_form_utils.js"></script>
 <script>
-
-var notify_on_first_name_input_change = false;
-var first_name_input_changed = false;
-
 function CountryChanged() {
   RemoveForm('form1');
   var new_form = AddNewFormAndFields('form1', '');
 
-  var first_name_input = new_form.elements[0];
-  first_name_input.onchange = function() {
-    if (notify_on_first_name_input_change)
-      window.domAutomationController.send(first_name_input.value != '');
-    else
-      first_name_input_changed = true;
-  }
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 
   document.getElementsByTagName('body')[0].appendChild(new_form);
 }
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname_form1');
-  if (first_name_input && first_name_input_changed) {
-    window.domAutomationController.send(first_name_input.value != '');
-  } else {
-    notify_on_first_name_input_change = true;
-  }
-}
-
 </script>

@@ -1,0 +1,9 @@
+include_rules = [
+    "+components/shared_highlighting/core/common"
+]
+
+specific_include_rules = {
+  "text_fragment_selector_generator_test\.cc": [
+    "+base/run_loop.h",
+  ]
+}

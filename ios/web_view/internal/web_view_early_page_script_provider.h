@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace web {
@@ -23,6 +22,11 @@ namespace ios_web_view {
 // Not threadsafe. Must be used only on the main thread.
 class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
  public:
+  WebViewEarlyPageScriptProvider(const WebViewEarlyPageScriptProvider&) =
+      delete;
+  WebViewEarlyPageScriptProvider& operator=(
+      const WebViewEarlyPageScriptProvider&) = delete;
+
   ~WebViewEarlyPageScriptProvider() override;
 
   // Returns a provider for the given |browser_state|. Lazily attaches one if it
@@ -35,12 +39,13 @@ class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
   void SetScript(NSString* _Nonnull script);
 
  private:
-  WebViewEarlyPageScriptProvider();
+  WebViewEarlyPageScriptProvider(web::BrowserState* _Nonnull browser_state);
+
+  // The associated browser state.
+  web::BrowserState* _Nonnull browser_state_;
 
   // The JavaScript source code.
   NSString* _Nonnull script_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewEarlyPageScriptProvider);
 };
 
 }  // namespace ios_web_view

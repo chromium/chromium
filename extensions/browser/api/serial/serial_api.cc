@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -45,10 +44,10 @@ const char kErrorConnectFailed[] = "Failed to connect to the port.";
 const char kErrorSerialConnectionNotFound[] = "Serial connection not found.";
 const char kErrorGetControlSignalsFailed[] = "Failed to get control signals.";
 
-template <class T>
-void SetDefaultScopedPtrValue(std::unique_ptr<T>& ptr, const T& value) {
-  if (!ptr.get())
-    ptr.reset(new T(value));
+template <typename T>
+void SetDefaultOptionalValue(absl::optional<T>& field, const T& value) {
+  if (!field)
+    field = value;
 }
 
 }  // namespace
@@ -85,29 +84,22 @@ void SerialGetDevicesFunction::OnGotDevices(
   for (const auto& device : devices) {
     extensions::api::serial::DeviceInfo info;
     info.path = device->path.AsUTF8Unsafe();
-    if (device->has_vendor_id)
-      info.vendor_id = std::make_unique<int>(device->vendor_id);
-    if (device->has_product_id)
-      info.product_id = std::make_unique<int>(device->product_id);
-    if (device->display_name)
-      info.display_name = std::make_unique<std::string>(*device->display_name);
+    info.vendor_id = device->vendor_id;
+    info.product_id = device->product_id;
+    info.display_name = device->display_name;
     results.push_back(std::move(info));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (device->alternate_path) {
       extensions::api::serial::DeviceInfo alternate_info;
       alternate_info.path = device->alternate_path->AsUTF8Unsafe();
-      if (device->has_vendor_id)
-        alternate_info.vendor_id = std::make_unique<int>(device->vendor_id);
-      if (device->has_product_id)
-        alternate_info.product_id = std::make_unique<int>(device->product_id);
-      if (device->display_name) {
-        alternate_info.display_name =
-            std::make_unique<std::string>(*device->display_name);
-      }
+      alternate_info.vendor_id = device->vendor_id;
+      alternate_info.product_id = device->product_id;
+      alternate_info.display_name = device->display_name;
+
       results.push_back(std::move(alternate_info));
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
   Respond(ArgumentList(serial::GetDevices::Results::Create(results)));
 }
@@ -117,27 +109,27 @@ SerialConnectFunction::SerialConnectFunction() {}
 SerialConnectFunction::~SerialConnectFunction() {}
 
 ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
-  auto params = serial::Connect::Params::Create(*args_);
+  auto params = serial::Connect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Fill in any omitted options to ensure a known initial configuration.
   if (!params->options)
-    params->options = std::make_unique<serial::ConnectionOptions>();
-  serial::ConnectionOptions* options = params->options.get();
+    params->options.emplace();
+  serial::ConnectionOptions& options = *params->options;
 
-  SetDefaultScopedPtrValue(options->persistent, false);
-  SetDefaultScopedPtrValue(options->buffer_size, kDefaultBufferSize);
-  SetDefaultScopedPtrValue(options->bitrate, kDefaultBitrate);
-  SetDefaultScopedPtrValue(options->cts_flow_control, false);
-  SetDefaultScopedPtrValue(options->receive_timeout, kDefaultReceiveTimeout);
-  SetDefaultScopedPtrValue(options->send_timeout, kDefaultSendTimeout);
+  SetDefaultOptionalValue(options.persistent, false);
+  SetDefaultOptionalValue(options.buffer_size, kDefaultBufferSize);
+  SetDefaultOptionalValue(options.bitrate, kDefaultBitrate);
+  SetDefaultOptionalValue(options.cts_flow_control, false);
+  SetDefaultOptionalValue(options.receive_timeout, kDefaultReceiveTimeout);
+  SetDefaultOptionalValue(options.send_timeout, kDefaultSendTimeout);
 
-  if (options->data_bits == serial::DATA_BITS_NONE)
-    options->data_bits = kDefaultDataBits;
-  if (options->parity_bit == serial::PARITY_BIT_NONE)
-    options->parity_bit = kDefaultParityBit;
-  if (options->stop_bits == serial::STOP_BITS_NONE)
-    options->stop_bits = kDefaultStopBits;
+  if (options.data_bits == serial::DATA_BITS_NONE)
+    options.data_bits = kDefaultDataBits;
+  if (options.parity_bit == serial::PARITY_BIT_NONE)
+    options.parity_bit = kDefaultParityBit;
+  if (options.stop_bits == serial::STOP_BITS_NONE)
+    options.stop_bits = kDefaultStopBits;
 
   auto* manager = SerialPortManager::Get(browser_context());
   DCHECK(manager);
@@ -188,7 +180,7 @@ void SerialConnectFunction::FinishConnect(
     // Start polling.
     auto* port_manager = SerialPortManager::Get(browser_context());
     port_manager->StartConnectionPolling(extension_->id(), id);
-    Respond(OneArgument(base::Value::FromUniquePtrValue(info->ToValue())));
+    Respond(OneArgument(base::Value(info->ToValue())));
   }
 }
 
@@ -196,7 +188,7 @@ SerialUpdateFunction::SerialUpdateFunction() = default;
 SerialUpdateFunction::~SerialUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction SerialUpdateFunction::Run() {
-  auto params = serial::Update::Params::Create(*args_);
+  auto params = serial::Update::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -216,7 +208,7 @@ SerialDisconnectFunction::SerialDisconnectFunction() = default;
 SerialDisconnectFunction::~SerialDisconnectFunction() = default;
 
 ExtensionFunction::ResponseAction SerialDisconnectFunction::Run() {
-  auto params = serial::Disconnect::Params::Create(*args_);
+  auto params = serial::Disconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -237,22 +229,15 @@ SerialSendFunction::SerialSendFunction() = default;
 SerialSendFunction::~SerialSendFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSendFunction::Run() {
-  auto params = serial::Send::Params::Create(*args_);
+  auto params = serial::Send::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
   if (!connection)
     return RespondNow(Error(kErrorSerialConnectionNotFound));
 
-  if (!connection->Send(
-          params->data,
-          base::BindOnce(&SerialSendFunction::OnSendComplete, this))) {
-    serial::SendInfo send_info;
-    send_info.bytes_sent = 0;
-    send_info.error = serial::SEND_ERROR_PENDING;
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(send_info.ToValue())));
-  }
+  connection->Send(params->data,
+                   base::BindOnce(&SerialSendFunction::OnSendComplete, this));
   return RespondLater();
 }
 
@@ -261,14 +246,14 @@ void SerialSendFunction::OnSendComplete(uint32_t bytes_sent,
   serial::SendInfo send_info;
   send_info.bytes_sent = bytes_sent;
   send_info.error = error;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(send_info.ToValue())));
+  Respond(OneArgument(base::Value(send_info.ToValue())));
 }
 
 SerialFlushFunction::SerialFlushFunction() = default;
 SerialFlushFunction::~SerialFlushFunction() = default;
 
 ExtensionFunction::ResponseAction SerialFlushFunction::Run() {
-  auto params = serial::Flush::Params::Create(*args_);
+  auto params = serial::Flush::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -288,7 +273,7 @@ SerialSetPausedFunction::SerialSetPausedFunction() = default;
 SerialSetPausedFunction::~SerialSetPausedFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetPausedFunction::Run() {
-  auto params = serial::SetPaused::Params::Create(*args_);
+  auto params = serial::SetPaused::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -305,7 +290,7 @@ SerialGetInfoFunction::SerialGetInfoFunction() = default;
 SerialGetInfoFunction::~SerialGetInfoFunction() = default;
 
 ExtensionFunction::ResponseAction SerialGetInfoFunction::Run() {
-  auto params = serial::GetInfo::Params::Create(*args_);
+  auto params = serial::GetInfo::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -323,7 +308,7 @@ void SerialGetInfoFunction::OnGotInfo(
     std::unique_ptr<serial::ConnectionInfo> info) {
   DCHECK(info);
   info->connection_id = connection_id;
-  Respond(OneArgument(base::Value::FromUniquePtrValue(info->ToValue())));
+  Respond(OneArgument(base::Value(info->ToValue())));
 }
 
 SerialGetConnectionsFunction::SerialGetConnectionsFunction() = default;
@@ -369,7 +354,7 @@ SerialGetControlSignalsFunction::SerialGetControlSignalsFunction() = default;
 SerialGetControlSignalsFunction::~SerialGetControlSignalsFunction() = default;
 
 ExtensionFunction::ResponseAction SerialGetControlSignalsFunction::Run() {
-  auto params = serial::GetControlSignals::Params::Create(*args_);
+  auto params = serial::GetControlSignals::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -386,7 +371,7 @@ void SerialGetControlSignalsFunction::OnGotControlSignals(
   if (!signals) {
     Respond(Error(kErrorGetControlSignalsFailed));
   } else {
-    Respond(OneArgument(base::Value::FromUniquePtrValue(signals->ToValue())));
+    Respond(OneArgument(base::Value(signals->ToValue())));
   }
 }
 
@@ -394,7 +379,7 @@ SerialSetControlSignalsFunction::SerialSetControlSignalsFunction() = default;
 SerialSetControlSignalsFunction::~SerialSetControlSignalsFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetControlSignalsFunction::Run() {
-  auto params = serial::SetControlSignals::Params::Create(*args_);
+  auto params = serial::SetControlSignals::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -416,7 +401,7 @@ SerialSetBreakFunction::SerialSetBreakFunction() = default;
 SerialSetBreakFunction::~SerialSetBreakFunction() = default;
 
 ExtensionFunction::ResponseAction SerialSetBreakFunction::Run() {
-  auto params = serial::SetBreak::Params::Create(*args_);
+  auto params = serial::SetBreak::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);
@@ -440,7 +425,7 @@ SerialClearBreakFunction::SerialClearBreakFunction() = default;
 SerialClearBreakFunction::~SerialClearBreakFunction() = default;
 
 ExtensionFunction::ResponseAction SerialClearBreakFunction::Run() {
-  auto params = serial::ClearBreak::Params::Create(*args_);
+  auto params = serial::ClearBreak::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   SerialConnection* connection = GetSerialConnection(params->connection_id);

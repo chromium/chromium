@@ -1,8 +1,10 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
+
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,21 +22,32 @@
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "ui/aura/env.h"
 
 namespace metrics {
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 // Use a 2-sec collection duration.
-const base::TimeDelta kCollectionDuration = base::TimeDelta::FromSeconds(2);
-// The timeout in waiting until collection done. 8 sec is a safe value far
+const base::TimeDelta kCollectionDuration = base::Seconds(2);
+// The timeout in waiting until collection done. 20 seconds is a safe value far
 // beyond the collection duration used.
-const base::TimeDelta kCollectionDoneTimeout = base::TimeDelta::FromSeconds(8);
+const base::TimeDelta kCollectionDoneTimeout = base::Seconds(20);
+
+CollectionParams GetTestCollectionParams() {
+  CollectionParams test_params;
+  test_params.collection_duration = kCollectionDuration;
+  test_params.resume_from_suspend.sampling_factor = 1;
+  test_params.resume_from_suspend.max_collection_delay = kMaxCollectionDelay;
+  test_params.restore_session.sampling_factor = 1;
+  test_params.restore_session.max_collection_delay = kMaxCollectionDelay;
+  test_params.periodic_interval = kPeriodicCollectionInterval;
+  return test_params;
+}
 
 class TestPerfCollector : public PerfCollector {
  public:
@@ -58,15 +71,9 @@ class TestMetricProvider : public MetricProvider {
 // Allows access to some private methods for testing.
 class TestProfileProvider : public ProfileProvider {
  public:
-  TestProfileProvider() {
-    CollectionParams test_params;
-    test_params.collection_duration = kCollectionDuration;
-    test_params.resume_from_suspend.sampling_factor = 1;
-    test_params.resume_from_suspend.max_collection_delay = kMaxCollectionDelay;
-    test_params.restore_session.sampling_factor = 1;
-    test_params.restore_session.max_collection_delay = kMaxCollectionDelay;
-    test_params.periodic_interval = kPeriodicCollectionInterval;
+  TestProfileProvider() : TestProfileProvider(GetTestCollectionParams()) {}
 
+  explicit TestProfileProvider(const CollectionParams& test_params) {
     collectors_.clear();
     auto metric_provider = std::make_unique<TestMetricProvider>(
         std::make_unique<TestPerfCollector>(test_params), nullptr);
@@ -75,6 +82,9 @@ class TestProfileProvider : public ProfileProvider {
 
     collectors_.push_back(std::move(metric_provider));
   }
+
+  TestProfileProvider(const TestProfileProvider&) = delete;
+  TestProfileProvider& operator=(const TestProfileProvider&) = delete;
 
   void WaitUntilCollectionDone() {
     // Collection shouldn't be done when this method is called, or the test will
@@ -116,8 +126,6 @@ class TestProfileProvider : public ProfileProvider {
   base::OneShotTimer timeout_timer_;
   base::RunLoop run_loop_;
   bool collection_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileProvider);
 };
 
 // This test doesn't mock any class used indirectly by ProfileProvider to make
@@ -126,8 +134,13 @@ class ProfileProviderRealCollectionTest : public testing::Test {
  public:
   ProfileProviderRealCollectionTest() {}
 
+  ProfileProviderRealCollectionTest(const ProfileProviderRealCollectionTest&) =
+      delete;
+  ProfileProviderRealCollectionTest& operator=(
+      const ProfileProviderRealCollectionTest&) = delete;
+
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    ash::DBusThreadManager::Initialize();
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
@@ -140,16 +153,17 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     std::map<std::string, std::string> field_trial_params;
     // Only "cycles" event is supported.
     field_trial_params.insert(std::make_pair(
-        "PerfCommand::default::0", "50 perf record -a -e cycles -c 1000003"));
-    field_trial_params.insert(
-        std::make_pair("PerfCommand::default::1",
-                       "50 perf record -a -e cycles -g -c 4000037"));
+        "PerfCommand::default::0", "50 -- record -a -e cycles -c 1000003"));
+    field_trial_params.insert(std::make_pair(
+        "PerfCommand::default::1", "50 -- record -a -e cycles -g -c 4000037"));
     ASSERT_TRUE(variations::AssociateVariationParams(
         "ChromeOSWideProfilingCollection", "group_name", field_trial_params));
     field_trial_ = base::FieldTrialList::CreateFieldTrial(
         "ChromeOSWideProfilingCollection", "group_name");
     ASSERT_TRUE(field_trial_.get());
 
+    // JankMonitor requires aura::Env to be initialized.
+    aura_env_ = aura::Env::CreateInstance();
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
 
@@ -172,7 +186,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     TestingBrowserProcess::DeleteInstance();
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::DBusThreadManager::Shutdown();
     variations::testing::ClearAllVariationParams();
   }
 
@@ -203,7 +217,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ASSERT_TRUE(profile.has_perf_data());
 
     // Collection succeeded: don't output the error log.
-    ignore_result(scoped_log_error.Release());
+    std::ignore = scoped_log_error.Release();
   }
 
  protected:
@@ -212,10 +226,18 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   void StartSpinningCPU() {
     spin_cpu_ = true;
     spin_cpu_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    static constexpr auto spin_duration = base::Milliseconds(1);
+    static constexpr auto sleep_duration = base::Milliseconds(9);
     spin_cpu_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(
                        [](ProfileProviderRealCollectionTest* self) {
+                         // Spin the CPU nicely: spin for 1 ms per 10 ms so that
+                         // we don't take more than 10% of a core.
                          while (self->spin_cpu_) {
+                           auto start = base::Time::Now();
+                           while (base::Time::Now() - start < spin_duration) {
+                           }
+                           base::PlatformThread::Sleep(sleep_duration);
                          }
                          // Signal that this task is exiting and won't touch
                          // |this| anymore.
@@ -246,20 +268,14 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   std::atomic_bool spin_cpu_{false};
   base::WaitableEvent spin_cpu_done_;
 
+  std::unique_ptr<aura::Env> aura_env_;
   std::unique_ptr<TestProfileProvider> profile_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderRealCollectionTest);
 };
 
 // Flaky on chromeos: crbug.com/1184119
-#if defined(OS_CHROMEOS)
-#define MAYBE_SuspendDone DISABLED_SuspendDone
-#else
-#define MAYBE_SuspendDone SuspendDone
-#endif
-TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
+TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
   // Trigger a resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
 
   profile_provider_->WaitUntilCollectionDone();
   EXPECT_TRUE(profile_provider_->collection_done());
@@ -269,7 +285,7 @@ TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
 
 TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   // Restored 10 tabs.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
 
   profile_provider_->WaitUntilCollectionDone();
   EXPECT_TRUE(profile_provider_->collection_done());
@@ -277,13 +293,7 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   AssertProfileData(SampledProfile::RESTORE_SESSION);
 }
 
-// Flaky on Chrome OS: crbug.com/1188498.
-#if defined(OS_CHROMEOS)
-#define MAYBE_OnJankStarted DISABLED_OnJankStarted
-#else
-#define MAYBE_OnJankStarted OnJankStarted
-#endif
-TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
+TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
@@ -293,16 +303,26 @@ TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
   AssertProfileData(SampledProfile::JANKY_TASK);
 }
 
-// TODO(crbug.com/1177150) Re-enable test
-TEST_F(ProfileProviderRealCollectionTest, DISABLED_OnJankStopped) {
+TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+  // Override the default collection duration.
+  auto test_params_override = GetTestCollectionParams();
+  auto full_collection_duration = kCollectionDuration * 2;
+  test_params_override.collection_duration = full_collection_duration;
+
+  // Reinitialize |profile_provider_| with the override.
+  profile_provider_ =
+      std::make_unique<TestProfileProvider>(test_params_override);
+  profile_provider_->Init();
+
   profile_provider_->OnJankStarted();
 
   // Call ProfileProvider::OnJankStopped() halfway through the collection
   // duration.
   base::OneShotTimer stop_timer;
   base::RunLoop run_loop;
-  // The jank lasts for 0.75*(collection duration), which is 1.5 sec.
-  stop_timer.Start(FROM_HERE, kCollectionDuration * 3 / 4,
+  // The jank lasts for 0.75*(collection duration). We'd like to stop the
+  // collection before the full duration elapses.
+  stop_timer.Start(FROM_HERE, full_collection_duration * 3 / 4,
                    base::BindLambdaForTesting([&]() {
                      profile_provider_->OnJankStopped();
                      run_loop.Quit();

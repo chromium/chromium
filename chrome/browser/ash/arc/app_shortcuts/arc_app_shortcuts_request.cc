@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
-#include "chrome/common/chrome_features.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 
 namespace arc {
 
@@ -79,33 +80,19 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
     item.rank = shortcut_item_ptr->rank;
     items_->emplace_back(std::move(item));
 
-    if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-      apps::ArcRawIconPngDataToImageSkia(
-          std::move(shortcut_item_ptr->icon), apps::kAppShortcutIconSizeDip,
-          base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                         weak_ptr_factory_.GetWeakPtr(), items_->size() - 1));
-      continue;
-    }
-
     if (!shortcut_item_ptr->icon || !shortcut_item_ptr->icon->icon_png_data ||
         shortcut_item_ptr->icon->icon_png_data->empty()) {
-      // TODO(crbug.com/1083331): Remove the icon_png related change, when the
-      // ARC change is rolled in Chrome OS.
-      icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
-          base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                         weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-          apps::kAppShortcutIconSizeDip));
-      icon_decode_requests_.back()->StartWithOptions(
-          shortcut_item_ptr->icon_png);
-      continue;
+      UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutsRequest.ShortcutStatus",
+                                arc::ArcAppShortcutStatus::kEmpty);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutsRequest.ShortcutStatus",
+                                arc::ArcAppShortcutStatus::kNotEmpty);
     }
 
-    icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
+    apps::ArcRawIconPngDataToImageSkia(
+        std::move(shortcut_item_ptr->icon), apps::kAppShortcutIconSizeDip,
         base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
-                       weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-        apps::kAppShortcutIconSizeDip));
-    icon_decode_requests_.back()->StartWithOptions(
-        shortcut_item_ptr->icon->icon_png_data.value());
+                       weak_ptr_factory_.GetWeakPtr(), items_->size() - 1));
   }
 }
 

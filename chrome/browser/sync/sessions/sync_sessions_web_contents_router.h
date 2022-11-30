@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 #include <set>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
 // Android has no BrowserList or TabStripModel, so we exclude code that refers
 // to those two things. For non-android platforms, this code is used to
@@ -37,6 +39,10 @@ class SyncSessionsWebContentsRouter : public LocalSessionEventRouter,
  public:
   explicit SyncSessionsWebContentsRouter(Profile* profile);
 
+  SyncSessionsWebContentsRouter(const SyncSessionsWebContentsRouter&) = delete;
+  SyncSessionsWebContentsRouter& operator=(
+      const SyncSessionsWebContentsRouter&) = delete;
+
   // Notify the router that the tab corresponding to |web_contents| has been
   // modified in some way.
   void NotifyTabModified(content::WebContents* web_contents,
@@ -59,13 +65,11 @@ class SyncSessionsWebContentsRouter : public LocalSessionEventRouter,
 
  private:
   syncer::SyncableService::StartSyncFlare flare_;
-  LocalSessionEventHandler* handler_ = nullptr;
+  raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserListRouterHelper> browser_list_helper_;
-#endif  // !defined(OS_ANDROID)
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsWebContentsRouter);
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace sync_sessions

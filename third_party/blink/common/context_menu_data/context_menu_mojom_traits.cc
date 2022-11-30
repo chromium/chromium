@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,18 @@
 namespace mojo {
 
 // static
-bool StructTraits<blink::mojom::ImpressionDataView, blink::Impression>::Read(
-    blink::mojom::ImpressionDataView data,
-    blink::Impression* out) {
-  if (!data.ReadConversionDestination(&out->conversion_destination) ||
-      !data.ReadReportingOrigin(&out->reporting_origin) ||
-      !data.ReadExpiry(&out->expiry))
-    return false;
+bool StructTraits<blink::mojom::FormRendererIdDataView, uint64_t>::Read(
+    blink::mojom::FormRendererIdDataView data,
+    uint64_t* out) {
+  *out = data.id();
+  return true;
+}
 
-  out->impression_data = data.impression_data();
+// static
+bool StructTraits<blink::mojom::FieldRendererIdDataView, uint64_t>::Read(
+    blink::mojom::FieldRendererIdDataView data,
+    uint64_t* out) {
+  *out = data.id();
   return true;
 }
 
@@ -45,7 +48,9 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
       !data.ReadCustomItems(&out->custom_items) ||
       !data.ReadSourceType(&out->source_type) ||
       !data.ReadInputFieldType(&out->input_field_type) ||
-      !data.ReadSelectionRect(&out->selection_rect))
+      !data.ReadSelectionRect(&out->selection_rect) ||
+      !data.ReadFormRendererId(&out->form_renderer_id) ||
+      !data.ReadFieldRendererId(&out->field_renderer_id))
     return false;
 
   out->x = data.x();

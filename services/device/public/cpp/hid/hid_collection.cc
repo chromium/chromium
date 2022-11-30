@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "services/device/public/cpp/hid/hid_item_state_table.h"
 
 namespace device {
@@ -79,7 +78,7 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
         // Changes to input, output, and feature reports are propagated to all
         // ancestor collections.
         if (state.collection) {
-          auto* collection = state.collection;
+          auto* collection = state.collection.get();
           while (collection) {
             collection->AddReportItem(current_item->tag(),
                                       current_item->GetShortData(), state);
@@ -107,7 +106,7 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
         // all ancestor collections.
         if (state.collection) {
           state.report_id = current_item->GetShortData();
-          auto* collection = state.collection;
+          auto* collection = state.collection.get();
           while (collection) {
             collection->report_ids_.push_back(state.report_id);
             collection = collection->parent_;
@@ -251,7 +250,7 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
       }
       DCHECK_LE(report_bits, kMaxReasonableReportLengthBits);
       entry.max_report_bits =
-          std::max(entry.max_report_bits, size_t{report_bits});
+          std::max(entry.max_report_bits, static_cast<size_t>(report_bits));
     }
   }
 }

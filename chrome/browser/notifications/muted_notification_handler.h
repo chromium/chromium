@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -25,6 +26,8 @@ class MutedNotificationHandler : public NotificationHandler {
     kBodyClick,
     // The user clicked on the "Show" action button.
     kShowClick,
+    // The user clicked on the "Snooze" action button.
+    kSnoozeClick,
   };
 
   // Delegate for handling muted notification actions.
@@ -45,8 +48,8 @@ class MutedNotificationHandler : public NotificationHandler {
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<std::u16string>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
   void OnClose(Profile* profile,
                const GURL& origin,
@@ -55,8 +58,10 @@ class MutedNotificationHandler : public NotificationHandler {
                base::OnceClosure completed_closure) override;
   void OpenSettings(Profile* profile, const GURL& origin) override;
 
+  Delegate* get_delegate_for_testing() const { return delegate_; }
+
  private:
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MUTED_NOTIFICATION_HANDLER_H_

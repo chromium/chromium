@@ -1,14 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/download/android/download_manager_service.h"
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,6 +40,10 @@ class DownloadManagerServiceTest : public testing::Test {
     service_->UpdateCoordinator(&coordinator_, profile_.GetProfileKey());
   }
 
+  DownloadManagerServiceTest(const DownloadManagerServiceTest&) = delete;
+  DownloadManagerServiceTest& operator=(const DownloadManagerServiceTest&) =
+      delete;
+
   void OnResumptionDone(bool success) {
     success_ = success;
     run_loop_.Quit();
@@ -63,7 +69,7 @@ class DownloadManagerServiceTest : public testing::Test {
   }
 
   void CreateDownloadItem(bool can_resume) {
-    download_.reset(new download::MockDownloadItem());
+    download_ = std::make_unique<download::MockDownloadItem>();
     ON_CALL(*download_, CanResume())
         .WillByDefault(::testing::Return(can_resume));
   }
@@ -74,15 +80,13 @@ class DownloadManagerServiceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  DownloadManagerService* service_;
+  raw_ptr<DownloadManagerService> service_;
   download::SimpleDownloadManagerCoordinator coordinator_;
   std::unique_ptr<download::MockDownloadItem> download_;
   content::MockDownloadManager manager_;
   TestingProfile profile_;
   bool success_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerServiceTest);
 };
 
 // Test that resumption succeeds if the download item is found and can be

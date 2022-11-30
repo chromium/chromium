@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Παρουσιάστηκε μη αναμενόμενο σφάλμα. Αναφέρετε αυτό το πρόβλημα στους προγραμματιστές.</translation>
 <translation id="1697532407822776718">Είστε έτοιμοι!</translation>
 <translation id="1742469581923031760">Γίνεται σύνδεση…</translation>
+<translation id="177040763384871009">Για να επιτρέπεται να ανοίξετε στο πρόγραμμα περιήγησης πελάτη τους συνδέσμους στους οποίους γίνεται κλικ στην απομακρυσμένη συσκευή, πρέπει να αλλάξετε το πρόγραμμα περιήγησης στον ιστό του συστήματος σε "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">Διεύθυνση IP καναλιού για υπολογιστή-πελάτη: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Διαγραφή</translation>
 <translation id="2009755455353575666">Η σύνδεση απέτυχε</translation>
@@ -24,7 +25,7 @@
 Εάν το <ph name="SERVICE_SCRIPT_NAME" /> είναι ήδη επιλεγμένο, καταργήστε την επιλογή του και έπειτα επιλέξτε το ξανά.</translation>
 <translation id="225614027745146050">Καλώς ορίσατε</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
-<translation id="2333212046079545895">Πνευματικά δικαιώματα 2021 Google LLC. Με επιφύλαξη παντός δικαιώματος.</translation>
+<translation id="2329392777730037872">Απέτυχε το άνοιγμα του <ph name="URL" /> στον υπολογιστή πελάτη.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2366718077645204424">Δεν ήταν δυνατή η επικοινωνία με τον κεντρικό υπολογιστή. Αυτό ενδέχεται να οφείλεται στη διαμόρφωση του δικτύου που χρησιμοποιείτε.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Τελευταία φορά στο διαδίκτυο <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">Αυτή η υπηρεσία ενεργοποιεί τις εισερχόμενες συνδέσεις από υπολογιστές-πελάτες Απομακρυσμένης επιφάνειας εργασίας Chrome.</translation>
 <translation id="2647232381348739934">Υπηρεσία Chromoting</translation>
 <translation id="2676780859508944670">Σε λειτουργία…</translation>
+<translation id="2692522824157224199">Πνευματικά δικαιώματα 2022 Google LLC. Με επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Παρουσιάστηκε κάποιο ζήτημα κατά τον έλεγχο ταυτότητας. Συνδεθείτε ξανά.</translation>
 <translation id="2803375539583399270">Εισαγωγή PIN</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">Εκτός σύνδεσης</translation>
 <translation id="3695446226812920698">Μάθετε πώς</translation>
 <translation id="3776024066357219166">Η περίοδος σύνδεσης στην Απομακρυσμένη επιφάνεια εργασίας Chrome τερματίστηκε.</translation>
+<translation id="3858860766373142691">Όνομα</translation>
 <translation id="3897092660631435901">Μενού</translation>
 <translation id="3905196214175737742">Μη έγκυρος τομέας κατόχου κεντρικού υπολογιστή.</translation>
 <translation id="3931191050278863510">Ο κεντρικός υπολογιστής σταμάτησε.</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">Κωδικός πρόσβασης</translation>
 <translation id="4227991223508142681">Βοηθητικό πρόγραμμα παροχής φιλοξενίας</translation>
 <translation id="4240294130679914010">Πρόγραμμα απεγκατάστασης κεντρικού υπολογιστή Chromoting</translation>
+<translation id="4257751272692708833">Εφαρμογή προώθησης URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Ο κωδικός πρόσβασης δεν είναι έγκυρος. Δοκιμάστε ξανά.</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
+<translation id="4372650392690220936">Πνευματικά δικαιώματα 2022 Οι συντάκτες του Chromium. Με επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="4405930547258349619">Βασική βιβλιοθήκη</translation>
 <translation id="443560535555262820">Άνοιγμα προτιμήσεων προσβασιμότητας</translation>
 <translation id="4450893287417543264">Να μην εμφανιστεί ξανά</translation>
-<translation id="4512952200932940229">Copyright 2021 Οι συντάκτες του Chromium. Με επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="4513946894732546136">Σχόλια</translation>
 <translation id="4563926062592110512">Ο υπολογιστής-πελάτης αποσυνδέθηκε: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Το <ph name="URL_FORWARDER_NAME" /> δεν διαμορφώθηκε σωστά. Επιλέξτε διαφορετικό προεπιλεγμένο πρόγραμμα περιήγησης στον ιστό και, στη συνέχεια, ενεργοποιήστε ξανά την προώθηση URL.</translation>
 <translation id="4635770493235256822">Απομακρυσμένες συσκευές</translation>
 <translation id="4660011489602794167">Εμφάνιση πληκτρολογίου</translation>
 <translation id="4703799847237267011">Η περίοδος σύνδεσης του Chromoting έχει λήξει.</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">Αποστολή PrtScn</translation>
 <translation id="4974476491460646149">Η σύνδεση έκλεισε για: <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Θα πρέπει πρώτα να ρυθμίσετε τον υπολογιστή σας για απομακρυσμένη πρόσβαση</translation>
+<translation id="4987330545941822761">Η Απομακρυσμένη επιφάνεια εργασίας Chrome δεν μπορεί να προσδιορίσει το πρόγραμμα περιήγησης για άνοιγμα των URL τοπικά. Επιλέξτε το από την παρακάτω λίστα.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (εκτός σύνδεσης)</translation>
 <translation id="507204348399810022">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τις απομακρυσμένες συνδέσεις στον κεντρικό υπολογιστή <ph name="HOSTNAME" />;</translation>
 <translation id="5170982930780719864">Μη έγκυρο αναγνωριστικό κεντρικού υπολογιστή.</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
-<translation id="5327248766486351172">Όνομα</translation>
 <translation id="533625276787323658">Δεν υπάρχουν συσκευές για σύνδεση</translation>
 <translation id="5397086374758643919">Πρόγραμμα απεγκατάστασης κεντρικού υπολογιστή Απομακρυσμένης επιφάνειας εργασίας Chrome</translation>
 <translation id="5419418238395129586">Τελευταία σύνδεση στο διαδίκτυο: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682">Έχετε συνδεθεί ως <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Επανασύνδεση</translation>
 <translation id="5810269635982033450">Η οθόνη λειτουργεί ως trackpad</translation>
+<translation id="5823554426827907568">Ο χρήστης <ph name="CLIENT_USERNAME" /> ζήτησε πρόσβαση για προβολή της οθόνης σας και έλεγχο του πληκτρολογίου και του ποντικιού σας. Πατήστε ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' εάν δεν περιμένετε αυτό το αίτημα. Διαφορετικά, όταν είστε έτοιμοι, επιλέξτε ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' για να επιτρέψετε τη σύνδεση.</translation>
 <translation id="5823658491130719298">Στον υπολογιστή στον οποίο θέλετε να αποκτήσετε απομακρυσμένη πρόσβαση, ανοίξτε το Chrome και μεταβείτε στη διεύθυνση <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Επιλογές προβολής</translation>
 <translation id="6033507038939587647">Επιλογές πληκτρολογίου</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Αποστολή Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Κοινοποίηση</translation>
 <translation id="677755392401385740">Ο κεντρικός υπολογιστής ξεκίνησε για το χρήστη: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Βοηθητική εφαρμογή για άνοιγμα URL στον υπολογιστή πελάτη <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Εμφάνιση/απόκρυψη πληκτρολογίου.</translation>
 <translation id="6963936880795878952">Οι συνδέσεις στον απομακρυσμένο υπολογιστή έχουν αποκλειστεί προσωρινά, επειδή κάποιος επιχείρησε να συνδεθεί σε αυτόν με μη έγκυρο PIN. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="7312846573060934304">Ο κεντρικός υπολογιστής είναι εκτός σύνδεσης.</translation>
 <translation id="7319983568955948908">Διακοπή κοινής χρήσης</translation>
+<translation id="7359298090707901886">Το επιλεγμένο πρόγραμμα περιήγησης δεν μπορεί να χρησιμοποιηθεί για το άνοιγμα URL στον τοπικό υπολογιστή.</translation>
 <translation id="7401733114166276557">Απομακρυσμένη επιφάνεια εργασίας Chrome</translation>
 <translation id="7434397035092923453">Δεν επιτρέπεται η πρόσβαση για τον υπολογιστή-πελάτη: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Συνδεδεμένος υπολογιστής-πελάτης: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Αλλαγή λογαριασμού</translation>
+<translation id="7535110896613603182">Άνοιγμα ρυθμίσεων προεπιλεγμένων εφαρμογών</translation>
 <translation id="7628469622942688817">Να απομνημονευτεί το PIN μου σε αυτήν τη συσκευή.</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
@@ -161,6 +170,7 @@
 Για να παραχωρήσετε αυτήν την άδεια, κάντε κλικ στο κουμπί <ph name="BUTTON_NAME" /> παρακάτω. Στο πλαίσιο προτιμήσεων για Προσβασιμότητα που θα εμφανιστεί, επιλέξτε το πλαίσιο δίπλα στο στοιχείο <ph name="SERVICE_SCRIPT_NAME" />.
 
 Εάν το στοιχείο <ph name="SERVICE_SCRIPT_NAME" /> είναι ήδη επιλεγμένο, καταργήστε την επιλογή του και έπειτα επιλέξτε το ξανά.</translation>
+<translation id="8305209735512572429">Διαδικασία απομακρυσμένης επικοινωνίας ελέγχου ταυτότητας ιστού</translation>
 <translation id="8383794970363966105">Για να χρησιμοποιήσετε το Chromoting, θα πρέπει να προσθέσετε έναν Λογαριασμό Google στη συσκευή σας.</translation>
 <translation id="8386846956409881180">Ο κεντρικός υπολογιστής διαμορφώθηκε με μη έγκυρα διαπιστευτήρια OAuth.</translation>
 <translation id="8397385476380433240">Εκχώρηση άδειας στο <ph name="PRODUCT_NAME" /></translation>

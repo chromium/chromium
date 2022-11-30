@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the TabModelSelectorTabModelObserver.
+ * Integration tests for the TabModelSelectorTabModelObserver.
+ * See TabModelSelectorTabModelObserverUnitTest.java for unit tests.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -63,6 +64,14 @@ public class TabModelSelectorTabModelObserverTest {
     @SmallTest
     public void testUninitializedSelector() throws TimeoutException {
         mSelector = new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
+            @Override
+            public void requestToShowTab(Tab tab, int type) {}
+
+            @Override
+            public boolean isSessionRestoreInProgress() {
+                return false;
+            }
+
             @Override
             public Tab openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent,
                     boolean incognito) {

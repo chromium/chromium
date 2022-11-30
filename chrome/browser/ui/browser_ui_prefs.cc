@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,14 +25,14 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
 namespace {
 
 uint32_t GetHomeButtonAndHomePageIsNewTabPageFlags() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return PrefRegistry::NO_REGISTRATION_FLAGS;
 #else
   return user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;
@@ -44,14 +44,20 @@ uint32_t GetHomeButtonAndHomePageIsNewTabPageFlags() {
 void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kAllowFileSelectionDialogs, true);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(prefs::kRelaunchNotification, 0);
   registry->RegisterIntegerPref(
       prefs::kRelaunchNotificationPeriod,
       base::saturated_cast<int>(
           UpgradeDetector::GetDefaultHighAnnoyanceThreshold()
               .InMilliseconds()));
-#endif  // !defined(OS_ANDROID)
+  registry->RegisterDictionaryPref(prefs::kRelaunchWindow);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterIntegerPref(
+      prefs::kMacRestoreLocationPermissionsExperimentCount, 0);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -62,7 +68,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterInt64Pref(prefs::kDefaultBrowserLastDeclined, 0);
   bool reset_check_default = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   reset_check_default = base::win::GetVersion() >= base::win::Version::WIN10;
 #endif
   registry->RegisterBooleanPref(prefs::kResetCheckDefaultBrowser,
@@ -71,7 +77,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kWebAppCreateInAppsMenu, true);
   registry->RegisterBooleanPref(prefs::kWebAppCreateInQuickLaunchBar, true);
   registry->RegisterBooleanPref(
-      prefs::kOfferTranslateEnabled, true,
+      translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterStringPref(prefs::kCloudPrintEmail, std::string());
   registry->RegisterBooleanPref(prefs::kCloudPrintProxyEnabled, true);
@@ -82,7 +88,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrack, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kPrintPreviewUseSystemDefaultPrinter,
                                 false);
 #endif
@@ -111,7 +117,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kClickToCallEnabled, true);
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This really belongs in platform code, but there's no good place to
   // initialize it between the time when the AppController is created
   // (where there's no profile) and the time the controller gets another
@@ -131,18 +137,23 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kFullscreenAllowed, true);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kForceMaximizeOnFirstRun, false);
+#endif
+
   registry->RegisterBooleanPref(prefs::kEnterpriseHardwarePlatformAPIEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kUserFeedbackAllowed, true);
-  registry->RegisterBooleanPref(prefs::kAllowSyncXHRInPageDismissal, false);
   registry->RegisterBooleanPref(
       prefs::kExternalProtocolDialogShowAlwaysOpenCheckbox, true);
   registry->RegisterBooleanPref(prefs::kScreenCaptureAllowed, true);
+  registry->RegisterListPref(prefs::kScreenCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kWindowCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kTabCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kSameOriginTabCaptureAllowedByOrigins);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCaretBrowsingEnabled, false);
-  registry->RegisterBooleanPref(prefs::kCloudPrintDeprecationWarningsSuppressed,
-                                false);
   registry->RegisterBooleanPref(prefs::kShowCaretBrowsingDialog, true);
 #endif
 
@@ -150,4 +161,8 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kAccessibilityFocusHighlightEnabled,
                                 false);
 #endif
+
+  registry->RegisterBooleanPref(
+      prefs::kHttpsOnlyModeEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }

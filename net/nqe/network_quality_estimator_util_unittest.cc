@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -19,19 +18,16 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_ReservedHost DISABLED_ReservedHost
 #else
@@ -44,54 +40,51 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHost) {
 
   MockCachingHostResolver mock_host_resolver;
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
-
   // example1.com resolves to a private IP address.
-  rules->AddRule("example1.com", "127.0.0.3");
+  mock_host_resolver.rules()->AddRule("example1.com", "127.0.0.3");
 
   // example2.com resolves to a public IP address.
-  rules->AddRule("example2.com", "27.0.0.3");
-
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example2.com", "27.0.0.3");
 
   EXPECT_EQ(0u, mock_host_resolver.num_resolve());
 
   // Load hostnames into HostResolver cache.
-  int rv = mock_host_resolver.LoadIntoCache(
-      HostPortPair("example1.com", 443), NetworkIsolationKey(), base::nullopt);
+  int rv = mock_host_resolver.LoadIntoCache(HostPortPair("example1.com", 443),
+                                            NetworkAnonymizationKey(),
+                                            absl::nullopt);
   EXPECT_EQ(OK, rv);
   rv = mock_host_resolver.LoadIntoCache(HostPortPair("example2.com", 443),
-                                        NetworkIsolationKey(), base::nullopt);
+                                        NetworkAnonymizationKey(),
+                                        absl::nullopt);
   EXPECT_EQ(OK, rv);
 
   EXPECT_EQ(2u, mock_host_resolver.num_non_local_resolves());
 
   EXPECT_FALSE(IsPrivateHostForTesting(
       &mock_host_resolver, HostPortPair("2607:f8b0:4006:819::200e", 80),
-      NetworkIsolationKey()));
+      NetworkAnonymizationKey()));
 
   EXPECT_TRUE(IsPrivateHostForTesting(&mock_host_resolver,
                                       HostPortPair("192.168.0.1", 443),
-                                      NetworkIsolationKey()));
+                                      NetworkAnonymizationKey()));
 
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("92.168.0.1", 443),
-                                       NetworkIsolationKey()));
+                                       NetworkAnonymizationKey()));
 
   EXPECT_TRUE(IsPrivateHostForTesting(&mock_host_resolver,
                                       HostPortPair("example1.com", 443),
-                                      NetworkIsolationKey()));
+                                      NetworkAnonymizationKey()));
 
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("example2.com", 443),
-                                       NetworkIsolationKey()));
+                                       NetworkAnonymizationKey()));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(2u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_ReservedHostUncached DISABLED_ReservedHostUncached
 #else
@@ -105,46 +98,46 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
 
   MockCachingHostResolver mock_host_resolver;
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
+  auto rules = base::MakeRefCounted<net::RuleBasedHostResolverProc>(nullptr);
 
   // Add example3.com resolution to the DNS cache.
-  rules->AddRule("example3.com", "127.0.0.3");
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example3.com", "127.0.0.3");
 
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("example3.com", 443),
-                                       NetworkIsolationKey()));
+                                       NetworkAnonymizationKey()));
   EXPECT_EQ(0u, mock_host_resolver.num_non_local_resolves());
 
-  int rv = mock_host_resolver.LoadIntoCache(
-      HostPortPair("example3.com", 443), NetworkIsolationKey(), base::nullopt);
+  int rv = mock_host_resolver.LoadIntoCache(HostPortPair("example3.com", 443),
+                                            NetworkAnonymizationKey(),
+                                            absl::nullopt);
   EXPECT_EQ(OK, rv);
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 
   EXPECT_TRUE(IsPrivateHostForTesting(&mock_host_resolver,
                                       HostPortPair("example3.com", 443),
-                                      NetworkIsolationKey()));
+                                      NetworkAnonymizationKey()));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // Flaky on iOS: crbug.com/672917.
+// Flaky on Android: crbug.com/1223950
 #define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
   DISABLED_ReservedHostUncachedWithNetworkIsolationKey
 #else
 #define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
   ReservedHostUncachedWithNetworkIsolationKey
 #endif
-// Make sure that IsPrivateHostForTesting() uses the NetworkIsolationKey
+// Make sure that IsPrivateHostForTesting() uses the NetworkAnonymizationKey
 // provided to it.
 TEST(NetworkQualityEstimatorUtilTest,
      MAYBE_ReservedHostUncachedWithNetworkIsolationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -154,39 +147,36 @@ TEST(NetworkQualityEstimatorUtilTest,
 
   MockCachingHostResolver mock_host_resolver;
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
-
   // Add example3.com resolution to the DNS cache.
-  rules->AddRule("example3.com", "127.0.0.3");
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example3.com", "127.0.0.3");
 
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("example3.com", 443),
-                                       kNetworkIsolationKey));
+                                       kNetworkAnonymizationKey));
   EXPECT_EQ(0u, mock_host_resolver.num_non_local_resolves());
 
-  int rv = mock_host_resolver.LoadIntoCache(
-      HostPortPair("example3.com", 443), kNetworkIsolationKey, base::nullopt);
+  int rv =
+      mock_host_resolver.LoadIntoCache(HostPortPair("example3.com", 443),
+                                       kNetworkAnonymizationKey, absl::nullopt);
   EXPECT_EQ(OK, rv);
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 
   EXPECT_TRUE(IsPrivateHostForTesting(&mock_host_resolver,
                                       HostPortPair("example3.com", 443),
-                                      kNetworkIsolationKey));
+                                      kNetworkAnonymizationKey));
 
   // IsPrivateHostForTesting() should have queried only the resolver's cache.
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 
   // IsPrivateHostForTesting should return false when using a different
-  // NetworkIsolationKey (in this case, any empty one).
+  // NetworkAnonymizationKey (in this case, any empty one).
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("example3.com", 443),
-                                       NetworkIsolationKey()));
+                                       NetworkAnonymizationKey()));
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_Localhost DISABLED_Localhost
 #else
@@ -198,42 +188,36 @@ TEST(NetworkQualityEstimatorUtilTest,
 TEST(NetworkQualityEstimatorUtilTest, MAYBE_Localhost) {
   base::test::TaskEnvironment task_environment;
 
-  std::unique_ptr<RecordingBoundTestNetLog> net_log =
-      std::make_unique<RecordingBoundTestNetLog>();
-  RecordingBoundTestNetLog* net_log_ptr = net_log.get();
-
   // Use actual HostResolver since MockCachingHostResolver does not determine
   // the correct answer for localhosts.
   std::unique_ptr<ContextHostResolver> resolver =
-      HostResolver::CreateStandaloneContextResolver(
-          net_log_ptr->bound().net_log());
+      HostResolver::CreateStandaloneContextResolver(NetLog::Get());
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
+  auto rules = base::MakeRefCounted<net::RuleBasedHostResolverProc>(nullptr);
 
+  EXPECT_TRUE(IsPrivateHostForTesting(resolver.get(),
+                                      HostPortPair("localhost", 443),
+                                      NetworkAnonymizationKey()));
+  EXPECT_TRUE(IsPrivateHostForTesting(resolver.get(),
+                                      HostPortPair("127.0.0.1", 80),
+                                      NetworkAnonymizationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("localhost", 443), NetworkIsolationKey()));
-  EXPECT_TRUE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("127.0.0.1", 80), NetworkIsolationKey()));
-  EXPECT_TRUE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("0.0.0.0", 80), NetworkIsolationKey()));
+      resolver.get(), HostPortPair("0.0.0.0", 80), NetworkAnonymizationKey()));
   EXPECT_TRUE(IsPrivateHostForTesting(resolver.get(), HostPortPair("::1", 80),
-                                      NetworkIsolationKey()));
-  EXPECT_FALSE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("google.com", 80), NetworkIsolationKey()));
+                                      NetworkAnonymizationKey()));
+  EXPECT_FALSE(IsPrivateHostForTesting(resolver.get(),
+                                       HostPortPair("google.com", 80),
+                                       NetworkAnonymizationKey()));
 
   // Legacy localhost names.
-  EXPECT_FALSE(IsPrivateHostForTesting(
-      resolver.get(), HostPortPair("localhost6", 443), NetworkIsolationKey()));
+  EXPECT_FALSE(IsPrivateHostForTesting(resolver.get(),
+                                       HostPortPair("localhost6", 443),
+                                       NetworkAnonymizationKey()));
   EXPECT_FALSE(IsPrivateHostForTesting(
       resolver.get(), HostPortPair("localhost6.localdomain6", 443),
-      NetworkIsolationKey()));
+      NetworkAnonymizationKey()));
 }
 
 }  // namespace
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

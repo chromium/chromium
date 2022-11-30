@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/singleton.h"
-#include "components/arc/mojom/app.mojom-forward.h"
-#include "components/sync/protocol/sync.pb.h"
 
 class Profile;
 class SyncTest;
+
+namespace sync_pb {
+class EntitySpecifics;
+}
 
 namespace arc {
 class FakeAppInstance;
@@ -26,6 +28,9 @@ namespace arc {
 class SyncArcPackageHelper {
  public:
   static SyncArcPackageHelper* GetInstance();
+
+  SyncArcPackageHelper(const SyncArcPackageHelper&) = delete;
+  SyncArcPackageHelper& operator=(const SyncArcPackageHelper&) = delete;
 
   static sync_pb::EntitySpecifics GetTestSpecifics(size_t id);
 
@@ -64,12 +69,10 @@ class SyncArcPackageHelper {
   // informaton as |profile2|.
   bool ArcPackageDetailsMatch(Profile* profile1, Profile* profile2);
 
-  SyncTest* test_;
-  bool setup_completed_;
+  SyncTest* test_ = nullptr;
+  bool setup_completed_ = false;
 
   std::unordered_map<Profile*, std::unique_ptr<FakeAppInstance>> instance_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncArcPackageHelper);
 };
 
 }  // namespace arc

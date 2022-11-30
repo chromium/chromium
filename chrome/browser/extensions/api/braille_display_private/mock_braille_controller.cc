@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
+
+#include <memory>
 
 namespace extensions {
 namespace api {
@@ -15,8 +17,8 @@ std::unique_ptr<DisplayState> MockBrailleController::GetDisplayState() {
   std::unique_ptr<DisplayState> state(new DisplayState());
   state->available = available_;
   if (available_) {
-    state->text_column_count.reset(new int(18));
-    state->text_row_count.reset(new int(18));
+    state->text_column_count = 18;
+    state->text_row_count = 18;
   }
   return state;
 }

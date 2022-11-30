@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 
 using autofill::PasswordAndMetadata;
 using autofill::PasswordFormFillData;
+using url::Origin;
 using Logger = autofill::SavePasswordProgressLogger;
 
 namespace password_manager {
@@ -32,15 +33,15 @@ namespace {
 
 // Controls whether we should suppress the account storage promos for websites
 // that are blocked by the user.
-const base::Feature kSuppressAccountStoragePromosForBlockedWebsite{
-    "SuppressAccountStoragePromosForBlockedWebsite",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSuppressAccountStoragePromosForBlockedWebsite,
+             "SuppressAccountStoragePromosForBlockedWebsite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we should suppress the account storage promos for when the
 // credentials service is disabled.
-const base::Feature kSuppressAccountStoragePromosWhenCredentialServiceDisabled{
-    "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSuppressAccountStoragePromosWhenCredentialServiceDisabled,
+             "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
   return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_realm)
@@ -58,44 +59,15 @@ bool ContainsAndroidCredentials(const PasswordFormFillData& fill_data) {
   return PreferredRealmIsFromAndroid(fill_data);
 }
 
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 bool IsFillOnAccountSelectFeatureEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kFillOnAccountSelect);
 }
+#endif
 
 bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
   return form.is_public_suffix_match || form.is_affiliation_based_match;
-}
-
-// Finds any suggestion in |login| whose username and password match the |form|.
-PasswordFormFillData::LoginCollection::iterator FindDuplicate(
-    PasswordFormFillData::LoginCollection* logins,
-    const PasswordForm& form) {
-  return std::find_if(logins->begin(), logins->end(),
-                      [&form](const PasswordAndMetadata& login) {
-                        return (form.username_value == login.username &&
-                                form.password_value == login.password);
-                      });
-}
-
-// This function takes a |duplicate_form| and the realm and uses_account_store
-// properties of an existing suggestion. Both suggestions have identical
-// username and password.
-// If the duplicate should replace the existing suggestion, this method
-// overrides the realm and uses_account_store properties to achieve that.
-void MaybeReplaceRealmAndStoreWithDuplicate(const PasswordForm& duplicate_form,
-                                            std::string* existing_realm,
-                                            bool* existing_uses_account_store) {
-  DCHECK(existing_realm);
-  DCHECK(existing_uses_account_store);
-  if (*existing_uses_account_store)
-    return;  // No need to replace existing account-stored suggestion.
-  if (!duplicate_form.IsUsingAccountStore())
-    return;  // No need to replace a local suggestion with identical other one.
-  if (IsPublicSuffixMatchOrAffiliationBasedMatch(duplicate_form))
-    return;  // Never replace a possibly exact match with a PSL match.
-  *existing_uses_account_store = duplicate_form.IsUsingAccountStore();
-  existing_realm->clear();  // Reset realm since form cannot be a psl match.
 }
 
 void Autofill(PasswordManagerClient* client,
@@ -115,7 +87,8 @@ void Autofill(PasswordManagerClient* client,
   }
 
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
-      form_for_autofill, best_matches, preferred_match, wait_for_username);
+      form_for_autofill, best_matches, preferred_match,
+      client->GetLastCommittedOrigin(), wait_for_username);
   if (logger)
     logger->LogBoolean(Logger::STRING_WAIT_FOR_USERNAME, wait_for_username);
   UMA_HISTOGRAM_BOOLEAN(
@@ -123,15 +96,19 @@ void Autofill(PasswordManagerClient* client,
       ContainsAndroidCredentials(fill_data));
   metrics_util::LogFilledCredentialIsFromAndroidApp(
       PreferredRealmIsFromAndroid(fill_data));
-  driver->FillPasswordForm(fill_data);
+  driver->SetPasswordFillData(fill_data);
 
-  client->PasswordWasAutofilled(best_matches,
-                                url::Origin::Create(form_for_autofill.url),
-                                &federated_matches);
+  // Matches can be empty when there are only WebAuthn credentials available.
+  // In that case there will be no actual fill so the client doesn't need
+  // to be notified.
+  if (!best_matches.empty() || !federated_matches.empty()) {
+    client->PasswordWasAutofilled(best_matches,
+                                  Origin::Create(form_for_autofill.url),
+                                  &federated_matches, !wait_for_username);
+  }
 }
 
 std::string GetPreferredRealm(const PasswordForm& form) {
-  DCHECK(IsPublicSuffixMatchOrAffiliationBasedMatch(form));
   return form.app_display_name.empty() ? form.signon_realm
                                        : form.app_display_name;
 }
@@ -146,7 +123,8 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<const PasswordForm*>& federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
-    PasswordFormMetricsRecorder* metrics_recorder) {
+    PasswordFormMetricsRecorder* metrics_recorder,
+    bool webauthn_suggestions_available) {
   DCHECK(driver);
   DCHECK_EQ(PasswordForm::Scheme::kHtml, observed_form.scheme);
 
@@ -160,19 +138,19 @@ LikelyFormFilling SendFillInformationToRenderer(
              observed_form.confirmation_password_element_renderer_id});
   }
 
-  if (best_matches.empty()) {
-    bool should_suppres_popup_due_to_blocked_website =
+  if (best_matches.empty() && !webauthn_suggestions_available) {
+    bool should_suppress_popup_due_to_blocked_website =
         blocked_by_user && base::FeatureList::IsEnabled(
                                kSuppressAccountStoragePromosForBlockedWebsite);
 
-    bool should_suppres_popup_due_to_disabled_saving_and_filling =
+    bool should_suppress_popup_due_to_disabled_saving_and_filling =
         base::FeatureList::IsEnabled(
             kSuppressAccountStoragePromosWhenCredentialServiceDisabled) &&
         !client->IsSavingAndFillingEnabled(observed_form.url);
 
     bool should_show_popup_without_passwords =
-        !should_suppres_popup_due_to_blocked_website &&
-        !should_suppres_popup_due_to_disabled_saving_and_filling &&
+        !should_suppress_popup_due_to_blocked_website &&
+        !should_suppress_popup_due_to_disabled_saving_and_filling &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
              client->GetLastCommittedURL()));
@@ -182,7 +160,10 @@ LikelyFormFilling SendFillInformationToRenderer(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);
     return LikelyFormFilling::kNoFilling;
   }
-  DCHECK(preferred_match);
+
+  // The only case in which there is no preferred_match is if there are no
+  // saved passwords but there are WebAuthn credentials that can be presented.
+  DCHECK(preferred_match || webauthn_suggestions_available);
 
   // If the parser of the PasswordFormManager decides that there is no
   // current password field, no filling attempt will be made. In this case the
@@ -191,6 +172,25 @@ LikelyFormFilling SendFillInformationToRenderer(
   const bool no_sign_in_form =
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
+  if (preferred_match) {
+    using FormType = PasswordFormMetricsRecorder::MatchedFormType;
+    FormType preferred_form_type = FormType::kExactMatch;
+    if (preferred_match->is_affiliation_based_match) {
+      preferred_form_type =
+          IsValidAndroidFacetURI(preferred_match->signon_realm)
+              ? FormType::kAffiliatedApp
+              : FormType::kAffiliatedWebsites;
+    } else if (preferred_match->is_public_suffix_match) {
+      preferred_form_type = FormType::kPublicSuffixMatch;
+    }
+
+    if (!no_sign_in_form)
+      metrics_recorder->RecordMatchedFormType(preferred_form_type);
+  }
+
+// This metric will always record kReauthRequired on iOS and Android. So we can
+// drop it there.
+#if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   // Proceed to autofill.
   // Note that we provide the choices but don't actually prefill a value if:
   // (1) we are in Incognito mode, or
@@ -201,14 +201,17 @@ LikelyFormFilling SendFillInformationToRenderer(
       PasswordFormMetricsRecorder::WaitForUsernameReason;
   WaitForUsernameReason wait_for_username_reason =
       WaitForUsernameReason::kDontWait;
-  if (client->RequiresReauthToFill()) {
-    wait_for_username_reason = WaitForUsernameReason::kReauthRequired;
-  } else if (client->IsIncognito()) {
+  if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
-  } else if (preferred_match->is_affiliation_based_match &&
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else if (client->GetPasswordFeatureManager()
+                 ->IsBiometricAuthenticationBeforeFillingEnabled()) {
+    wait_for_username_reason = WaitForUsernameReason::kBiometricAuthentication;
+#endif
+  } else if (preferred_match && preferred_match->is_affiliation_based_match &&
              !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
-  } else if (preferred_match->is_public_suffix_match) {
+  } else if (preferred_match && preferred_match->is_public_suffix_match) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
   } else if (no_sign_in_form) {
     // If the parser did not find a current password element, don't fill.
@@ -222,10 +225,13 @@ LikelyFormFilling SendFillInformationToRenderer(
     wait_for_username_reason = WaitForUsernameReason::kPasswordPrefilled;
   } else if (!client->IsCommittedMainFrameSecure()) {
     wait_for_username_reason = WaitForUsernameReason::kInsecureOrigin;
-  } else if (autofill::IsTouchToFillEnabled()) {
-    wait_for_username_reason = WaitForUsernameReason::kTouchToFill;
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
+  } else if (observed_form.accepts_webauthn_credentials &&
+             client->GetWebAuthnCredentialsDelegateForDriver(driver)
+                 ->IsWebAuthnAutofillEnabled()) {
+    wait_for_username_reason =
+        WaitForUsernameReason::kAcceptsWebAuthnCredentials;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant
@@ -237,6 +243,9 @@ LikelyFormFilling SendFillInformationToRenderer(
 
   bool wait_for_username =
       wait_for_username_reason != WaitForUsernameReason::kDontWait;
+#else
+  bool wait_for_username = true;
+#endif  // !BUILDFLAG(IS_IOS) && !defined(ANDROID)
 
   if (wait_for_username) {
     metrics_recorder->SetManagerAction(
@@ -254,7 +263,9 @@ LikelyFormFilling SendFillInformationToRenderer(
   // Continue with autofilling any password forms as traditionally has been
   // done.
   Autofill(client, driver, observed_form, best_matches, federated_matches,
-           *preferred_match, wait_for_username);
+           preferred_match ? *preferred_match : PasswordForm(),
+           wait_for_username);
+
   return wait_for_username ? LikelyFormFilling::kFillOnAccountSelect
                            : LikelyFormFilling::kFillOnPageLoad;
 }
@@ -263,6 +274,7 @@ PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
     const std::vector<const PasswordForm*>& matches,
     const PasswordForm& preferred_match,
+    const Origin& main_frame_origin,
     bool wait_for_username) {
   PasswordFormFillData result;
 
@@ -297,39 +309,34 @@ PasswordFormFillData CreatePasswordFormFillData(
     result.password_field.unique_renderer_id =
         form_on_page.password_element_renderer_id;
     result.password_field.form_control_type = "password";
-
-    // On iOS, use the unique_id field to refer to elements.
-#if defined(OS_IOS)
-    result.username_field.unique_id = form_on_page.username_element;
-    result.password_field.unique_id = form_on_page.password_element;
-#endif
   }
 
+  Origin credential_origin = Origin::Create(form_on_page.url);
   if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {
+    result.preferred_realm = GetPreferredRealm(preferred_match);
+  } else if (!main_frame_origin.IsSameOriginWith(credential_origin)) {
+    // If the suggestion is for a cross-origin iframe, display the origin of
+    // the suggestion.
     result.preferred_realm = GetPreferredRealm(preferred_match);
   }
 
   // Copy additional username/value pairs.
   for (const PasswordForm* match : matches) {
-    // If any already retained suggestion matches the login, discard the login
-    // or override the existing duplicate with the account-stored match.
     if (match->username_value == preferred_match.username_value &&
         match->password_value == preferred_match.password_value) {
-      MaybeReplaceRealmAndStoreWithDuplicate(*match, &result.preferred_realm,
-                                             &result.uses_account_store);
-      continue;
-    }
-    auto duplicate_iter = FindDuplicate(&result.additional_logins, *match);
-    if (duplicate_iter != result.additional_logins.end()) {
-      MaybeReplaceRealmAndStoreWithDuplicate(
-          *match, &duplicate_iter->realm, &duplicate_iter->uses_account_store);
       continue;
     }
     PasswordAndMetadata value;
     value.username = match->username_value;
     value.password = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
+
+    Origin match_origin = Origin::Create(match->url);
     if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {
+      value.realm = GetPreferredRealm(*match);
+    } else if (!main_frame_origin.IsSameOriginWith(match_origin)) {
+      // If the suggestion is for a cross-origin iframe, display the origin of
+      // the suggestion.
       value.realm = GetPreferredRealm(*match);
     }
     result.additional_logins.push_back(std::move(value));

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace viz {
@@ -51,17 +50,18 @@ SkiaOutputDeviceOffscreen::~SkiaOutputDeviceOffscreen() {
   DiscardBackbuffer();
 }
 
-bool SkiaOutputDeviceOffscreen::Reshape(const gfx::Size& size,
-                                        float device_scale_factor,
-                                        const gfx::ColorSpace& color_space,
-                                        gfx::BufferFormat format,
-                                        gfx::OverlayTransform transform) {
+bool SkiaOutputDeviceOffscreen::Reshape(
+    const SkSurfaceCharacterization& characterization,
+    const gfx::ColorSpace& color_space,
+    float device_scale_factor,
+    gfx::OverlayTransform transform) {
   DCHECK_EQ(transform, gfx::OVERLAY_TRANSFORM_NONE);
 
   DiscardBackbuffer();
-  size_ = size;
-  format_ = format;
-  sk_color_space_ = color_space.ToSkColorSpace();
+  size_ = gfx::SkISizeToSize(characterization.dimensions());
+  sk_color_type_ = characterization.colorType();
+  sk_color_space_ = characterization.refColorSpace();
+  sample_count_ = characterization.sampleCount();
   EnsureBackbuffer();
   return true;
 }
@@ -87,30 +87,29 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
   if (size_.IsEmpty())
     return;
 
-  auto format_index = static_cast<int>(format_);
-  const auto& sk_color_type = capabilities_.sk_color_types[format_index];
-  DCHECK(sk_color_type != kUnknown_SkColorType)
-      << "SkColorType is invalid for format: " << format_index;
-
   if (has_alpha_) {
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), sk_color_type, GrMipMapped::kNo,
+        size_.width(), size_.height(), sk_color_type_, GrMipMapped::kNo,
         GrRenderable::kYes);
   } else {
     is_emulated_rgbx_ = true;
     // Initialize alpha channel to opaque.
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), sk_color_type, SkColors::kBlack,
+        size_.width(), size_.height(), sk_color_type_, SkColors::kBlack,
         GrMipMapped::kNo, GrRenderable::kYes);
   }
   DCHECK(backend_texture_.isValid());
 
   DCHECK(!backbuffer_estimated_size_);
   if (backend_texture_.backend() == GrBackendApi::kVulkan) {
+#if BUILDFLAG(ENABLE_VULKAN)
     GrVkImageInfo vk_image_info;
     bool result = backend_texture_.getVkImageInfo(&vk_image_info);
     DCHECK(result);
     backbuffer_estimated_size_ = vk_image_info.fAlloc.fSize;
+#else
+    DCHECK(false);
+#endif
   } else {
     auto info = SkImageInfo::Make(size_.width(), size_.height(),
                                   kSurfaceColorType, kUnpremul_SkAlphaType);
@@ -134,15 +133,13 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   DCHECK(backend_texture_.isValid());
   if (!sk_surface_) {
-    SkSurfaceProps surface_props =
-        skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
     sk_surface_ = SkSurface::MakeFromBackendTexture(
         context_state_->gr_context(), backend_texture_,
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
             ? kTopLeft_GrSurfaceOrigin
             : kBottomLeft_GrSurfaceOrigin,
-        0 /* sampleCount */, kSurfaceColorType, sk_color_space_,
-        &surface_props);
+        sample_count_, kSurfaceColorType, sk_color_space_, &surface_props);
   }
   return sk_surface_.get();
 }

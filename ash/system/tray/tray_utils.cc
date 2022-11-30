@@ -1,16 +1,25 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_utils.h"
 
+#include <string>
+
+#include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check.h"
+#include "base/strings/string_number_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
@@ -25,9 +34,54 @@ void SetupLabelForTray(views::Label* label) {
       kTrayTextFontSizeIncrease, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
 }
 
+void SetupConnectedScrollListItem(HoverHighlightView* view) {
+  SetupConnectedScrollListItem(view, absl::nullopt /* battery_percentage */);
+}
+
+void SetupConnectedScrollListItem(HoverHighlightView* view,
+                                  absl::optional<uint8_t> battery_percentage) {
+  DCHECK(view->is_populated());
+
+  std::u16string status;
+
+  if (battery_percentage) {
+    view->SetSubText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_LABEL,
+        base::NumberToString16(battery_percentage.value())));
+  } else {
+    view->SetSubText(l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED));
+  }
+
+  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPositive));
+}
+
+void SetupConnectingScrollListItem(HoverHighlightView* view) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING));
+}
+
+void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(subtext);
+  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorWarning));
+}
+
 SkColor TrayIconColor(session_manager::SessionState session_state) {
-  if (session_state == session_manager::SessionState::OOBE)
+  if (!features::IsDarkLightModeEnabled() &&
+      session_state == session_manager::SessionState::OOBE) {
     return kIconColorInOobe;
+  }
+
   return AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 }
@@ -35,9 +89,9 @@ SkColor TrayIconColor(session_manager::SessionState session_state) {
 gfx::Insets GetTrayBubbleInsets() {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
-  gfx::Insets insets = gfx::Insets(
-      kUnifiedMenuPadding, kUnifiedMenuPadding, kUnifiedMenuPadding - 1,
-      kUnifiedMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
+  gfx::Insets insets = gfx::Insets::TLBR(
+      kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding - 1,
+      kBubbleMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
 
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back
@@ -88,16 +142,24 @@ gfx::Insets GetSecondaryBubbleInsets() {
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      insets.set_bottom(kUnifiedMenuPadding);
+      insets.set_bottom(kBubbleMenuPadding);
       break;
     case ShelfAlignment::kLeft:
-      insets.set_left(kUnifiedMenuPadding);
+      insets.set_left(kBubbleMenuPadding);
       break;
     case ShelfAlignment::kRight:
-      insets.set_right(kUnifiedMenuPadding);
+      insets.set_right(kBubbleMenuPadding);
       break;
   }
   return insets;
+}
+
+gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
+  if (ink_drop_style == TrayPopupInkDropStyle::HOST_CENTERED ||
+      ink_drop_style == TrayPopupInkDropStyle::INSET_BOUNDS) {
+    return gfx::Insets(kTrayPopupInkDropInset);
+  }
+  return gfx::Insets();
 }
 
 }  // namespace ash

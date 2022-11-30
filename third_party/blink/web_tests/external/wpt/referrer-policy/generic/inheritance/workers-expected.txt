@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Dedicated worker with local scheme inherits referrer policy from the creating document. assert_equals: expected (undefined) undefined but got (string) "http://web-platform.test:8001/"
+FAIL Shared worker with local scheme inherits referrer policy from the creating document. assert_equals: expected (undefined) undefined but got (string) "http://web-platform.test:8001/"
+Harness: the test ran to completion.
+

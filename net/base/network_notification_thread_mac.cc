@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ class NotificationThreadMac {
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::UI;
     options.joinable = false;
-    thread_.StartWithOptions(options);
+    thread_.StartWithOptions(std::move(options));
     task_runner_ = thread_.task_runner();
     thread_.DetachFromSequence();
   }

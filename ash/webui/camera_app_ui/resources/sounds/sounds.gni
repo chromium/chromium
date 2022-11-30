@@ -1,0 +1,13 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+sound_files = [
+  "record_end.ogg",
+  "record_pause.ogg",
+  "record_start.ogg",
+  "shutter.ogg",
+  "tick_final.ogg",
+  "tick_inc.ogg",
+  "tick_start.ogg",
+]

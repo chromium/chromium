@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
@@ -34,7 +34,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   ProxyLookupRequest(
       mojo::PendingRemote<mojom::ProxyLookupClient> proxy_lookup_client,
       NetworkContext* network_context,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
+
+  ProxyLookupRequest(const ProxyLookupRequest&) = delete;
+  ProxyLookupRequest& operator=(const ProxyLookupRequest&) = delete;
+
   ~ProxyLookupRequest();
 
   // Starts looking up what proxy to use for |url|. On completion, will inform
@@ -50,14 +54,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   // Cancels |request_| and tells |network_context_| to delete |this|.
   void DestroySelf();
 
-  NetworkContext* const network_context_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const raw_ptr<NetworkContext> network_context_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   mojo::Remote<mojom::ProxyLookupClient> proxy_lookup_client_;
 
   net::ProxyInfo proxy_info_;
   std::unique_ptr<net::ProxyResolutionRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyLookupRequest);
 };
 
 }  // namespace network

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -127,11 +126,9 @@ void AddComponents(chrome_cleaner::MainController* main_controller,
       std::make_unique<chrome_cleaner::SystemReportComponent>(json_parser,
                                                               shortcut_parser));
 
-  if (command_line->HasSwitch(chrome_cleaner::kResetShortcutsSwitch)) {
-    main_controller->AddComponent(
-        std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
-            shortcut_parser));
-  }
+  main_controller->AddComponent(
+      std::make_unique<chrome_cleaner::ResetShortcutsComponent>(
+          shortcut_parser));
 }
 
 void SendLogsToSafeBrowsing(chrome_cleaner::ResultCode exit_code,
@@ -586,7 +583,8 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
         executable_path, &registry_logger, nullptr);
   }
 
-  rebooter.reset(new chrome_cleaner::Rebooter(PRODUCT_SHORTNAME_STRING));
+  rebooter =
+      std::make_unique<chrome_cleaner::Rebooter>(PRODUCT_SHORTNAME_STRING);
 
   shutdown_sequence.mojo_task_runner = chrome_cleaner::MojoTaskRunner::Create();
 

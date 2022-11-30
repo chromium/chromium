@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_content_settings_proxy.h"
 
 #include <memory>
+
+#include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
@@ -19,6 +22,7 @@ bool ServiceWorkerContentSettingsProxy::AllowStorageAccessSync(
     StorageType storage_type) {
   bool result = false;
   if (storage_type == StorageType::kIndexedDB) {
+    SCOPED_UMA_HISTOGRAM_TIMER("ServiceWorker.AllowIndexedDBTime");
     GetService()->AllowIndexedDB(&result);
     return result;
   } else if (storage_type == StorageType::kFileSystem) {

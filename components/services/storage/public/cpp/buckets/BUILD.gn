@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("buckets") {
+  output_name = "storage_service_buckets_support"
+
+  public = [
+    "bucket_id.h",
+    "bucket_info.h",
+    "bucket_init_params.h",
+    "bucket_locator.h",
+    "constants.h",
+  ]
+
+  sources = [
+    "bucket_info.cc",
+    "bucket_init_params.cc",
+    "bucket_locator.cc",
+    "constants.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/blink/public/common",
+  ]
+
+  defines = [ "IS_STORAGE_SERVICE_BUCKETS_SUPPORT_IMPL" ]
+}

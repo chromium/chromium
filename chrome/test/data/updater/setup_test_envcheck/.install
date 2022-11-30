@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ "$2" != "xc_path" ]; then exit 1; fi;
+if [ "$SERVER_ARGS" != "arg1 arg2" ]; then exit 3; fi;
+if [ "$KS_TICKET_AP" != "ap" ]; then exit 4; fi;
+if [ "$KS_TICKET_XC_PATH" != "xc_path" ]; then exit 5; fi;
+if [[ "$PATH" != /bin:/usr/bin* ]]; then exit 6; fi;

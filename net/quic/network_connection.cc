@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 
 namespace net {
 
-NetworkConnection::NetworkConnection()
-    : connection_type_(NetworkChangeNotifier::CONNECTION_UNKNOWN),
-      connection_description_(nullptr) {
+NetworkConnection::NetworkConnection() {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
   OnIPAddressChanged();
@@ -62,6 +60,18 @@ void NetworkConnection::OnConnectionTypeChanged(
     case WIFI_PHY_LAYER_PROTOCOL_N:
       // 802.11n, HT rates.
       connection_description_ = "CONNECTION_WIFI_802.11n";
+      break;
+    case WIFI_PHY_LAYER_PROTOCOL_AC:
+      // 802.11ac
+      connection_description_ = "CONNECTION_WIFI_802.11ac";
+      break;
+    case WIFI_PHY_LAYER_PROTOCOL_AD:
+      // 802.11ad
+      connection_description_ = "CONNECTION_WIFI_802.11ad";
+      break;
+    case WIFI_PHY_LAYER_PROTOCOL_AX:
+      // 802.11ax
+      connection_description_ = "CONNECTION_WIFI_802.11ax";
       break;
     case WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
       // Unclassified mode or failure to identify.

@@ -1,7 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /**
@@ -25,9 +26,9 @@ SandboxStatusUITest.prototype = {
 // - If failures of this test are a problem on a bot under your care,
 //   the proper way to address such failures is to install the SUID
 //   sandbox. See:
-//     https://chromium.googlesource.com/chromium/src/+/master/docs/linux/suid_sandbox_development.md
+//     https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
 // - PLEASE DO NOT GLOBALLY DISABLE THIS TEST.
-GEN('#if defined(OS_LINUX) || defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_testSUIDorNamespaceSandboxEnabled \\');
 GEN('     testSUIDorNamespaceSandboxEnabled');
 GEN('#else');
@@ -48,12 +49,12 @@ TEST_F(
       var suidyes = document.body.innerText.match(sandboxsuidstring);
 
       // Exactly one of the namespace or suid sandbox should be enabled.
-      expectTrue(suidyes !== null || namespaceyes !== null);
-      expectFalse(suidyes !== null && namespaceyes !== null);
+      assertTrue(suidyes !== null || namespaceyes !== null);
+      assertFalse(suidyes !== null && namespaceyes !== null);
     });
 
 // The seccomp-bpf sandbox is also not compatible with ASAN.
-GEN('#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_testBPFSandboxEnabled \\');
 GEN('     DISABLED_testBPFSandboxEnabled');
 GEN('#else');
@@ -70,9 +71,9 @@ TEST_F('SandboxStatusUITest', 'MAYBE_testBPFSandboxEnabled', function() {
   var bpfyes = document.body.innerText.match(bpfyesstring);
   var bpfno = document.body.innerText.match(bpfnostring);
 
-  expectEquals(null, bpfno);
+  assertEquals(null, bpfno);
   assertFalse(bpfyes === null);
-  expectEquals(bpfyesstring, bpfyes[0]);
+  assertEquals(bpfyesstring, bpfyes[0]);
 });
 
 /**
@@ -103,20 +104,20 @@ TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
   const gpuyesstring = 'Sandboxed\ttrue';
   const gpunostring = 'Sandboxed\tfalse';
 
-  let observer = new MutationObserver(function(mutations) {
+  const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         // Here we can inspect each of the added nodes. We expect
         // to find one that contains one of the GPU status strings.
-        let addedNode = mutation.addedNodes[i];
+        const addedNode = mutation.addedNodes[i];
         // Check for both. If it contains neither, it's an unrelated
         // mutation event we don't care about. But if it contains one,
         // pass or fail accordingly.
-        let gpuyes = addedNode.innerText.match(gpuyesstring);
-        let gpuno = addedNode.innerText.match(gpunostring);
+        const gpuyes = addedNode.innerText.match(gpuyesstring);
+        const gpuno = addedNode.innerText.match(gpunostring);
         if (gpuyes || gpuno) {
-          expectEquals(null, gpuno);
-          expectTrue(gpuyes && (gpuyes[0] === gpuyesstring));
+          assertEquals(null, gpuno);
+          assertTrue(gpuyes && (gpuyes[0] === gpuyesstring));
           testDone();
         }
       }
@@ -138,11 +139,11 @@ SandboxStatusWindowsUITest.prototype = {
    * Browse to the options page & call our preLoad().
    */
   browsePreload: 'chrome://sandbox',
-  isAsync: true
+  isAsync: true,
 };
 
 // This test is for Windows only.
-GEN('#if defined(OS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN)');
 GEN('# define MAYBE_testSandboxStatus \\');
 // TODO(https://crbug.com/1045564) Flaky on Windows.
 GEN('     DISABLED_testSandboxStatus');
@@ -160,13 +161,13 @@ TEST_F('SandboxStatusWindowsUITest', 'MAYBE_testSandboxStatus', function() {
   var sandboxMitigations = 'platformMitigations';
 
   var titleyes = document.body.innerText.match(sandboxTitle);
-  expectTrue(titleyes !== null);
+  assertTrue(titleyes !== null);
 
   var rawNode = document.getElementById('raw-info');
   var policiesyes = rawNode.innerText.match(sandboxPolicies);
-  expectTrue(policiesyes !== null);
+  assertTrue(policiesyes !== null);
   var mitigationsyes = rawNode.innerText.match(sandboxMitigations);
-  expectTrue(mitigationsyes !== null);
+  assertTrue(mitigationsyes !== null);
 
   testDone();
 });

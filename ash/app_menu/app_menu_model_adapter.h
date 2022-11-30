@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -36,6 +37,10 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
                       ui::MenuSourceType source_type,
                       base::OnceClosure on_menu_closed_callback,
                       bool is_tablet_mode);
+
+  AppMenuModelAdapter(const AppMenuModelAdapter&) = delete;
+  AppMenuModelAdapter& operator=(const AppMenuModelAdapter&) = delete;
+
   ~AppMenuModelAdapter() override;
 
   // Builds the view tree and shows the menu.
@@ -109,8 +114,6 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
 
   // Whether tablet mode is active.
   bool is_tablet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenuModelAdapter);
 };
 
 }  // namespace ash

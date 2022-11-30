@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_ANDROID_VIDEO_TUTORIAL_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/video_tutorials/video_tutorial_service.h"
 
@@ -27,6 +28,11 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
 
   explicit VideoTutorialServiceBridge(
       VideoTutorialService* video_tutorial_service);
+
+  VideoTutorialServiceBridge(const VideoTutorialServiceBridge&) = delete;
+  VideoTutorialServiceBridge& operator=(const VideoTutorialServiceBridge&) =
+      delete;
+
   ~VideoTutorialServiceBridge() override;
 
   // Methods called from Java via JNI.
@@ -57,9 +63,7 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  VideoTutorialService* video_tutorial_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoTutorialServiceBridge);
+  raw_ptr<VideoTutorialService> video_tutorial_service_;
 };
 
 }  // namespace video_tutorials

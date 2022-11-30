@@ -2,7 +2,6 @@
 [content/browser/service_worker]: /content/browser/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
-[content/common/service_worker]: /content/common/service_worker
 [disk_cache]: /net/disk_cache/README.md
 [embedded_worker.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/embedded_worker.mojom
 [service_worker_container.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/service_worker_container.mojom
@@ -127,7 +126,7 @@ renderer process:
 
 In the browser process, `ServiceWorkerContextCore` is root class which all other
 service worker classes are attached to. There is one context per [storage
-partition](/content/browser/public/storage_partition.h).
+partition](/content/public/browser/storage_partition.h).
 
 `ServiceWorkerContextCore` is owned by a thread-safe refcounted wrapper called
 `ServiceWorkerContextWrapper`. `StoragePartition` is the primary owner of this
@@ -207,7 +206,7 @@ with a `blink::ServiceWorkerGlobalScope` global.
 `ServiceWorkerGlobalScope` implements two Mojo interfaces:
 - `mojom.blink.ServiceWorker`, which the browser process uses to dispatch events
   to the service worker.
-- `mojom.blink.ServiceWorkerController`, which renderer processes use to
+- `mojom.blink.ControllerServiceWorker`, which other renderer processes use to
   dispatch fetch events to a service worker that controls a client in that
   process.
 
@@ -245,7 +244,7 @@ message pipe. `ServiceWorkerRegistration` has a remote to a
 `mojom.blink.ServiceWorkerRegistrationObjectHost` and `ServiceWorker` has a
 remote to a `ServiceWorkerObjectHost`. Conversely, the browser process has
 remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
-`mojom.blink.ServiceWorkerRegistration`.
+`mojom.blink.ServiceWorkerObject`.
 
 > After making this design, there's been some realization that asynchronous
 > ownership makes destruction complicated because of non-deterministic
@@ -255,7 +254,7 @@ remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
 > ServiceWorkerRegistration and ServiceWorker, or maybe prohibiting destructions
 > initiated from the renderer may work.
 > In addition, we have a Mojo interface for in-process communication across threads like
-> [this](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/service_worker/controller_service_worker.mojom;l=95;drc=6e8b402a6231405b753919029c9027404325ea00).
+> [this](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/service_worker/controller_service_worker.mojom;l=95;drc=6e8b402a6231405b753919029c9027404325ea00).
 > Mojo is now slightly overused for abstraction of layers for service workers.
 
 #### Browser <-> Renderer (shared worker)
@@ -333,7 +332,6 @@ it can again dispatch fetch events to it.
   these host objects.
 - [content/renderer/service_worker]: Renderer process code. This should move to
   third_party/blink per [Onion Soup].
-- [content/common/service_worker]: Common process code.
 - [third_party/blink/common/service_worker]: Common process code. Contains the
   implementation of [third_party/blink/public/common/service_worker].
 - [third_party/blink/public/common/service_worker]: Header files for common
@@ -371,7 +369,7 @@ For incognito windows, everything is in-memory.
 Service workers storage lasts indefinitely, i.e, there is no periodic deletion
 of old but still installed service workers. Installed service workers are only
 evicted by the [Quota Manager] (or user action). The Quota Manager controls
-several web platform APIs, including sandboxed filesystem, WebSQL, appcache,
+several web platform APIs, including sandboxed filesystem, WebSQL,
 IndexedDB, cache storage, service worker (registration and scripts), and
 background fetch.
 
@@ -471,7 +469,7 @@ Here's the explanation about the each section:
 We run a limited number of
 [Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md)
 benchmark tests for service worker and a few microbenchmarks in
-[blink_perf](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/blink_perf.md#service-worker-perf-tests)
+[blink_perf](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/blink_perf.md#service-worker-perf-tests)
 ([crbug](https://crbug.com/1019097)).
 
 Telemetry tests are part of the [Loading
@@ -513,10 +511,11 @@ Code links and resources:
 - PWA test suite: see 'pwa' in
   [loading_mobile.py](/tools/perf/page_sets/loading_mobile.py), as of March 2019
   [here](https://cs.chromium.org/chromium/src/tools/perf/page_sets/loading_mobile.py?l=88&rcl=e590d4e0ae6d3cbdabee199ea6fabe152a3eea83).
-- [cache_temperature.py](https://chromium.googlesource.com/catapult/+/master/telemetry/telemetry/page/cache_temperature.py)
+- [cache_temperature.py](https://chromium.googlesource.com/catapult/+/main/telemetry/telemetry/page/cache_temperature.py)
 - "Perf benchmark for PWAs using the loading benchmark": [crbug](https://crbug.com/736697) and
   [design doc](https://docs.google.com/document/d/1Nf97CVp1X7aSqvAspyJ7yOCDyr1osUNrnfrGwZ_Yuuo/edit?usp=sharing).
 
 ## Other documentation
 
 - [Service Worker Security FAQ](/docs/security/service-worker-security-faq.md)
+- [ES Modules in Service Workers](/content/browser/service_worker/es_modules.md)

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
@@ -31,7 +32,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -160,7 +161,7 @@ void ProfileWriter::AddBookmarks(
   model->BeginExtensiveChanges();
 
   std::set<const BookmarkNode*> folders_added_to;
-  const BookmarkNode* top_level_folder = NULL;
+  const BookmarkNode* top_level_folder = nullptr;
   for (std::vector<ImportedBookmarkEntry>::const_iterator bookmark =
            reordered_bookmarks.begin();
        bookmark != reordered_bookmarks.end(); ++bookmark) {
@@ -168,7 +169,7 @@ void ProfileWriter::AddBookmarks(
     if (!bookmark->is_folder && !bookmark->url.is_valid())
       continue;
 
-    const BookmarkNode* parent = NULL;
+    const BookmarkNode* parent = nullptr;
     if (import_to_top_level && (add_all_to_top_level || bookmark->in_toolbar)) {
       // Add directly to the bookmarks bar.
       parent = bookmark_bar;
@@ -196,9 +197,8 @@ void ProfileWriter::AddBookmarks(
         continue;
       }
 
-      const auto it = std::find_if(
-          parent->children().cbegin(), parent->children().cend(),
-          [folder_name](const auto& node) {
+      const auto it = base::ranges::find_if(
+          parent->children(), [folder_name](const auto& node) {
             return node->is_folder() && node->GetTitle() == *folder_name;
           });
       parent = (it == parent->children().cend())

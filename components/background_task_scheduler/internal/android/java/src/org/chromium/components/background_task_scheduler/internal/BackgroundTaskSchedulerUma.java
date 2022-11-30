@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.background_task_scheduler.internal;
 
 import android.content.SharedPreferences;
+import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -153,6 +154,13 @@ public class BackgroundTaskSchedulerUma extends BackgroundTaskSchedulerExternalU
     /** Reports metrics for stopping a task. */
     public void reportTaskStopped(int taskId) {
         cacheEvent("Android.BackgroundTaskScheduler.TaskStopped", toUmaEnumValueFromTaskId(taskId));
+    }
+
+    /** Reports metrics for finishing a task. */
+    public void reportTaskFinished(int taskId, long taskDurationMs) {
+        RecordHistogram.recordCustomTimesHistogram("Android.BackgroundTaskScheduler.TaskFinished."
+                        + getHistogramPatternForTaskId(taskId),
+                taskDurationMs, 1, DateUtils.DAY_IN_MILLIS, 50);
     }
 
     /** Reports metrics for rescheduling a task. */

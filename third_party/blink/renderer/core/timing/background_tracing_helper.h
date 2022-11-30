@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/strings/string_piece.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,6 +54,12 @@ class CORE_EXPORT BackgroundTracingHelper final
   // mark hashes for the given |site_hash|. This is threadsafe.
   static const MarkHashSet* GetMarkHashSetForSiteHash(uint32_t site_hash);
 
+  // Splits a string and an optional numeric suffix preceded by an underscore.
+  // This is used by the "sequence number" mechanism for mark names. Returns
+  // the location of the underscore if a split is to occur, otherwise returns
+  // 0.
+  static size_t GetSequenceNumberPos(base::StringPiece string);
+
   // Generates a 32-bit MD5 hash of the given string piece. This will return a
   // value that is equivalent to the first 8 bytes of a full MD5 hash. In bash
   // parlance, the returned 32-bit integer expressed in hex format:
@@ -68,6 +74,13 @@ class CORE_EXPORT BackgroundTracingHelper final
   // base/hash/md5_constexpr.h. This uses base::StringPiece because it is
   // interacting with Finch code, which doesn't use WTF primitives.
   static uint32_t MD5Hash32(base::StringPiece string);
+
+  // Given a mark name with an optional sequence number suffix, parses out the
+  // suffix and hashes the mark name.
+  static void GetMarkHashAndSequenceNumber(base::StringPiece mark_name,
+                                           uint32_t sequence_number_offset,
+                                           uint32_t* mark_hash,
+                                           uint32_t* sequence_number);
 
   // For the given |target_site_hash| (`MD5Hash32()` of eTLD+1 represented in
   // ASCII), and the provided background-tracing performance.mark |allow_list|
@@ -85,6 +98,8 @@ class CORE_EXPORT BackgroundTracingHelper final
  private:
   String site_;
   uint32_t site_hash_ = 0;
+  uint32_t execution_context_id_ = 0;
+  uint32_t sequence_number_offset_ = 0;
   // This points to a thread-safe global singleton.
   const MarkHashSet* mark_hashes_ = nullptr;
 };

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
 
 // References:
-// * ARM32 (32-bit ARM, AKA AArch32):
+// * AArch32 (32-bit ARM, AKA ARM32):
 //     https://static.docs.arm.com/ddi0406/c/DDI0406C_C_arm_architecture_reference_manual.pdf
 // * AArch64 (64-bit ARM):
 //     https://static.docs.arm.com/ddi0487/da/DDI0487D_a_armv8_arm.pdf
@@ -130,7 +129,7 @@ inline int GetThumb2InstructionSize(uint16_t code16) {
 
 // A translator for ARM mode and THUMB2 mode with static functions that
 // translate among |code|, |disp|, and |target_rva|.
-class Arm32Rel32Translator {
+class AArch32Rel32Translator {
  public:
   // Rel32 address types enumeration.
   enum AddrType : uint8_t {
@@ -150,7 +149,10 @@ class Arm32Rel32Translator {
     NUM_ADDR_TYPE
   };
 
-  Arm32Rel32Translator();
+  AArch32Rel32Translator();
+  AArch32Rel32Translator(const AArch32Rel32Translator&) = delete;
+  const AArch32Rel32Translator& operator=(const AArch32Rel32Translator&) =
+      delete;
 
   // Fetches the 32-bit ARM instruction |code| at |view[idx]|.
   static inline uint32_t FetchArmCode32(ConstBufferView view, offset_t idx) {
@@ -211,6 +213,8 @@ class Arm32Rel32Translator {
   //   |instr_rva| as aid.
   static ArmAlign DecodeA24(uint32_t code32, arm_disp_t* disp);
   static bool EncodeA24(arm_disp_t disp, uint32_t* code32);
+  // TODO(huangs): Refactor the Read*() functions: These are identical
+  // except for Decode*() and Get*TargetRvaFromDisp().
   static bool ReadA24(rva_t instr_rva, uint32_t code32, rva_t* target_rva);
   static bool WriteA24(rva_t instr_rva, rva_t target_rva, uint32_t* code32);
 
@@ -324,9 +328,6 @@ class Arm32Rel32Translator {
                                        EncodeT24,
                                        ReadT24,
                                        WriteT24>;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Arm32Rel32Translator);
 };
 
 // Translator for AArch64, which is simpler than 32-bit ARM. Although pointers
@@ -345,6 +346,9 @@ class AArch64Rel32Translator {
   // Although RVA for 64-bit architecture can be 64-bit in length, we make the
   // bold assumption that for ELF images that RVA will stay nicely in 32-bit!
   AArch64Rel32Translator();
+  AArch64Rel32Translator(const AArch64Rel32Translator&) = delete;
+  const AArch64Rel32Translator& operator=(const AArch64Rel32Translator&) =
+      delete;
 
   static inline uint32_t FetchCode32(ConstBufferView view, offset_t idx) {
     return view.read<uint32_t>(idx);
@@ -357,9 +361,11 @@ class AArch64Rel32Translator {
   }
 
   // Conversion functions for |code32| from/to |disp| or |target_rva|, similar
-  // to the counterparts in Arm32Rel32Translator.
+  // to the counterparts in AArch32Rel32Translator.
   static ArmAlign DecodeImmd14(uint32_t code32, arm_disp_t* disp);
   static bool EncodeImmd14(arm_disp_t disp, uint32_t* code32);
+  // TODO(huangs): Refactor the Read*() functions: These are identical
+  // except for Decode*().
   static bool ReadImmd14(rva_t instr_rva, uint32_t code32, rva_t* target_rva);
   static bool WriteImmd14(rva_t instr_rva, rva_t target_rva, uint32_t* code32);
 
@@ -410,9 +416,6 @@ class AArch64Rel32Translator {
                                           EncodeImmd26,
                                           ReadImmd26,
                                           WriteImmd26>;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AArch64Rel32Translator);
 };
 
 }  // namespace zucchini

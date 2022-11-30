@@ -2,7 +2,6 @@
 include_rules = [
   "+components/viz/client",
   "+components/viz/common",
-  "+fuchsia/engine/switches.h",
   "+media/base/audio_buffer.h",
   "+media/base/bind_to_current_loop.h",
   "+media/base/speech_recognition_client.h",

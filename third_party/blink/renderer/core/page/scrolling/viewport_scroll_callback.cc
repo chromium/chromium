@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -34,9 +34,9 @@ void ViewportScrollCallback::Trace(Visitor* visitor) const {
 
 bool ViewportScrollCallback::ShouldScrollBrowserControls(
     const ScrollOffset& delta,
-    ScrollGranularity granularity) const {
-  if (granularity != ScrollGranularity::kScrollByPixel &&
-      granularity != ScrollGranularity::kScrollByPrecisePixel)
+    ui::ScrollGranularity granularity) const {
+  if (granularity != ui::ScrollGranularity::kScrollByPixel &&
+      granularity != ui::ScrollGranularity::kScrollByPrecisePixel)
     return false;
 
   if (!root_frame_viewport_)
@@ -49,7 +49,7 @@ bool ViewportScrollCallback::ShouldScrollBrowserControls(
   // the direction to show the browser controls. If it's in the
   // direction to hide the browser controls, only give the delta to the
   // browser controls when the frame can scroll.
-  return delta.Height() < 0 || scroll_offset.Height() < max_scroll.Height();
+  return delta.y() < 0 || scroll_offset.y() < max_scroll.y();
 }
 
 bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
@@ -58,12 +58,12 @@ bool ViewportScrollCallback::ScrollBrowserControls(ScrollState& state) {
     if (state.isBeginning())
       browser_controls_->ScrollBegin();
 
-    FloatSize delta(state.deltaX(), state.deltaY());
-    ScrollGranularity granularity = state.delta_granularity();
+    ScrollOffset delta(state.deltaX(), state.deltaY());
+    ui::ScrollGranularity granularity = state.delta_granularity();
     if (ShouldScrollBrowserControls(delta, granularity)) {
-      FloatSize remaining_delta = browser_controls_->ScrollBy(delta);
-      FloatSize consumed = delta - remaining_delta;
-      state.ConsumeDeltaNative(consumed.Width(), consumed.Height());
+      ScrollOffset remaining_delta = browser_controls_->ScrollBy(delta);
+      ScrollOffset consumed = delta - remaining_delta;
+      state.ConsumeDeltaNative(consumed.x(), consumed.y());
       return !consumed.IsZero();
     }
   }
@@ -85,8 +85,8 @@ void ViewportScrollCallback::Invoke(ScrollState* state) {
 
   // Handle Overscroll.
   if (overscroll_controller_) {
-    FloatPoint position(state->positionX(), state->positionY());
-    FloatSize velocity(state->velocityX(), state->velocityY());
+    gfx::PointF position(state->positionX(), state->positionY());
+    gfx::Vector2dF velocity(state->velocityX(), state->velocityY());
     overscroll_controller_->HandleOverscroll(result, position, velocity);
   }
 }
@@ -99,8 +99,8 @@ void ViewportScrollCallback::SetScroller(ScrollableArea* scroller) {
 ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   DCHECK(root_frame_viewport_);
 
-  FloatSize delta(state.deltaX(), state.deltaY());
-  ScrollGranularity granularity = state.delta_granularity();
+  ScrollOffset delta(state.deltaX(), state.deltaY());
+  ui::ScrollGranularity granularity = state.delta_granularity();
 
   ScrollResult result = root_frame_viewport_->UserScroll(
       granularity, delta, ScrollableArea::ScrollCallback());
@@ -108,8 +108,8 @@ ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   // The viewport consumes everything.
   // TODO(bokan): This isn't actually consuming everything but doing so breaks
   // the main thread pull-to-refresh action. crbug.com/607210.
-  state.ConsumeDeltaNative(delta.Width() - result.unused_scroll_delta_x,
-                           delta.Height() - result.unused_scroll_delta_y);
+  state.ConsumeDeltaNative(delta.x() - result.unused_scroll_delta_x,
+                           delta.y() - result.unused_scroll_delta_y);
 
   return result;
 }

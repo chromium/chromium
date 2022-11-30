@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>The overflow playback speed button is not visible when infinite duration.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../media-resources/media-controls.js"></script>
+
+<!--Padding ensures the overflow menu is visible for the tests. -->
+<body style="padding-top: 200px; padding-left: 100px">
+<video controls></video>
+<script>
+async_test(function(t) {
+  // Set up video.
+  var video = document.querySelector("video");
+  var mediaSource = new MediaSource();
+  video.src = URL.createObjectURL(mediaSource);
+  video.setAttribute("width", "60");
+  video.setAttribute("height", "100");
+
+  mediaSource.onsourceopen = t.step_func(async function () {
+    var sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+    var response = await fetch('../../media/resources/media-source/webm/test-v-256k-320x240-30fps-10kfr.webm');
+    var data = await response.arrayBuffer();
+
+    assert_equals(mediaSource.duration, NaN);
+    assert_equals(video.duration, NaN);
+    mediaSource.duration = +Infinity;
+    assert_equals(mediaSource.duration, +Infinity);
+    assert_equals(video.duration, +Infinity);
+
+    runAfterLayoutAndPaint(t.step_func(() => {
+      assert_equals(video.readyState, HTMLMediaElement.HAVE_NOTHING);
+      assert_true(isPlaybackSpeedButtonEnabled(video), "has playback speed button before metadata");
+      sourceBuffer.appendBuffer(data);
+      video.onloadedmetadata = t.step_func_done(() => {
+        assert_greater_than(video.readyState, HTMLMediaElement.HAVE_NOTHING);
+        assert_false(isPlaybackSpeedButtonEnabled(video), "does not have playback speed button after metadata");
+      });
+    }));
+  });
+});
+</script>
+</body>

@@ -1,13 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/remoting/remoting_renderer_factory.h"
 
+#include "base/task/bind_post_task.h"
+#include "components/cast_streaming/public/remoting_message_factories.h"
 #include "media/base/demuxer.h"
 #include "media/remoting/receiver.h"
 #include "media/remoting/receiver_controller.h"
 #include "media/remoting/stream_provider.h"
+
+using openscreen::cast::RpcMessenger;
 
 namespace media {
 namespace remoting {
@@ -17,8 +21,8 @@ RemotingRendererFactory::RemotingRendererFactory(
     std::unique_ptr<RendererFactory> renderer_factory,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
     : receiver_controller_(ReceiverController::GetInstance()),
-      rpc_broker_(receiver_controller_->rpc_broker()),
-      renderer_handle_(rpc_broker_->GetUniqueHandle()),
+      rpc_messenger_(receiver_controller_->rpc_messenger()),
+      renderer_handle_(rpc_messenger_->GetUniqueHandle()),
       waiting_for_remote_handle_receiver_(nullptr),
       real_renderer_factory_(std::move(renderer_factory)),
       media_task_runner_(media_task_runner) {
@@ -26,16 +30,22 @@ RemotingRendererFactory::RemotingRendererFactory(
   DCHECK(receiver_controller_);
 
   // Register the callback to listen RPC_ACQUIRE_RENDERER message.
-  rpc_broker_->RegisterMessageReceiverCallback(
-      RpcBroker::kAcquireRendererHandle,
-      base::BindRepeating(&RemotingRendererFactory::OnAcquireRenderer,
-                          weak_factory_.GetWeakPtr()));
+  auto receive_callback = base::BindPostTask(
+      media_task_runner,
+      BindRepeating(&RemotingRendererFactory::OnAcquireRenderer,
+                    weak_factory_.GetWeakPtr()));
+  rpc_messenger_->RegisterMessageReceiverCallback(
+      RpcMessenger::kAcquireRendererHandle,
+      [cb = std::move(receive_callback)](
+          std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        cb.Run(std::move(message));
+      });
   receiver_controller_->Initialize(std::move(remotee));
 }
 
 RemotingRendererFactory::~RemotingRendererFactory() {
-  rpc_broker_->UnregisterMessageReceiverCallback(
-      RpcBroker::kAcquireRendererHandle);
+  rpc_messenger_->UnregisterMessageReceiverCallback(
+      RpcMessenger::kAcquireRendererHandle);
 }
 
 std::unique_ptr<Renderer> RemotingRendererFactory::CreateRenderer(
@@ -59,25 +69,25 @@ std::unique_ptr<Renderer> RemotingRendererFactory::CreateRenderer(
   // If we haven't received a RPC_ACQUIRE_RENDERER yet, keep a reference to
   // |receiver|, and set its remote handle when we get the call to
   // OnAcquireRenderer().
-  if (remote_renderer_handle_ == RpcBroker::kInvalidHandle)
+  if (remote_renderer_handle_ == RpcMessenger::kInvalidHandle)
     waiting_for_remote_handle_receiver_ = receiver->GetWeakPtr();
 
   return std::move(receiver);
 }
 
 void RemotingRendererFactory::OnReceivedRpc(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message);
-  if (message->proc() == pb::RpcMessage::RPC_ACQUIRE_RENDERER)
+  if (message->proc() == openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER)
     OnAcquireRenderer(std::move(message));
   else
     VLOG(1) << __func__ << ": Unknow RPC message. proc=" << message->proc();
 }
 
 void RemotingRendererFactory::OnAcquireRenderer(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(message->has_integer_value());
-  DCHECK(message->integer_value() != RpcBroker::kInvalidHandle);
+  DCHECK(message->integer_value() != RpcMessenger::kInvalidHandle);
 
   remote_renderer_handle_ = message->integer_value();
 
@@ -105,11 +115,10 @@ void RemotingRendererFactory::OnAcquireRendererDone(int receiver_rpc_handle) {
   DVLOG(3) << __func__
            << ": Issues RPC_ACQUIRE_RENDERER_DONE RPC message. remote_handle="
            << remote_renderer_handle_ << " rpc_handle=" << receiver_rpc_handle;
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = cast_streaming::remoting::CreateMessageForAcquireRendererDone(
+      receiver_rpc_handle);
   rpc->set_handle(remote_renderer_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_ACQUIRE_RENDERER_DONE);
-  rpc->set_integer_value(receiver_rpc_handle);
-  rpc_broker_->SendMessageToRemote(std::move(rpc));
+  rpc_messenger_->SendMessageToRemote(*rpc);
 
   // Once RPC_ACQUIRE_RENDERER_DONE is sent, it implies there is no Receiver
   // instance that is waiting the remote handle.

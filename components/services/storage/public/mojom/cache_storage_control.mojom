@@ -1,15 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
-import "url/mojom/origin.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 enum CacheStorageOwner {
   // Caches that can be accessed by the JS CacheStorage API (developer facing).
@@ -22,10 +22,13 @@ enum CacheStorageOwner {
 // Observer interface for receiving callbacks after cache storage changes.
 interface CacheStorageObserver {
   // Called when caches are created or deleted.
-  OnCacheListChanged(url.mojom.Origin origin);
+  // TODO(crbug.com/1218097): Pass bucket information also.
+  OnCacheListChanged(blink.mojom.StorageKey storage_key);
 
   // Called when the content of a cache has been modified.
-  OnCacheContentChanged(url.mojom.Origin origin, string cache_name);
+  // TODO(crbug.com/1218097): Pass bucket information also.
+  OnCacheContentChanged(blink.mojom.StorageKey storage_key,
+                        string cache_name);
 };
 
 // Controls the state of CacheStorage within a partition. This is a privileged
@@ -36,21 +39,23 @@ interface CacheStorageObserver {
 // out-of-process.
 interface CacheStorageControl {
   // Binds a CacheStorage receiver to the CacheStorageControl to access
-  // the cache storage for a particular origin and owner.
+  // the cache storage for a particular storage key and owner. `bucket_locator`
+  // may represent the default bucket (`is_default` will be true), in which case
+  // its ID will not be valid.
   AddReceiver(
       network.mojom.CrossOriginEmbedderPolicy policy,
       pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
           coep_reporter,
-      url.mojom.Origin origin,
+      BucketLocator bucket_locator,
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);
 
-  // Deletes the data for a given origin.
-  DeleteForOrigin(url.mojom.Origin origin);
+  // Deletes the data for a given storage key.
+  DeleteForStorageKey(blink.mojom.StorageKey storage_key);
 
   // Used in response to browsing data and quota manager requests to get
-  // the per-origin size and last time used data.
-  GetAllOriginsInfo() => (array<StorageUsageInfo> usage_info);
+  // the per-StorageKey size and last time used data.
+  GetAllStorageKeysInfo() => (array<StorageUsageInfo> usage_info);
 
   // Adds an observer that will receive cache change callbacks.
   AddObserver(pending_remote<CacheStorageObserver> observer);

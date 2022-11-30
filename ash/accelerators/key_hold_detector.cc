@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/accelerators/key_hold_detector.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/shell.h"
@@ -24,7 +25,7 @@ void DispatchPressedEvent(const ui::KeyEvent& key_event,
     return;
   ui::KeyEvent event(key_event);
   aura::Window* target = *(tracker->windows().begin());
-  ignore_result(target->GetHost()->GetEventSink()->OnEventFromSource(&event));
+  std::ignore = target->GetHost()->GetEventSink()->OnEventFromSource(&event);
 }
 
 void PostPressedEvent(ui::KeyEvent* event) {
@@ -68,7 +69,7 @@ void KeyHoldDetector::OnKeyEvent(ui::KeyEvent* event) {
         break;
       case PRESSED:
         state_ = HOLD;
-        FALLTHROUGH;
+        [[fallthrough]];
       case HOLD:
         delegate_->OnKeyHold(event);
         if (delegate_->ShouldStopEventPropagation())

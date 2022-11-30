@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,7 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
-import("//build/util/version.gni")
+import("//chrome/version.gni")
 import("//components/cronet/native/include/headers.gni")
 import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
@@ -37,6 +37,8 @@ process_version("cronet_version_header") {
 # Cronet common implementation.
 source_set("cronet_common") {
   sources = [
+    "cronet_context.cc",
+    "cronet_context.h",
     "cronet_global_state.h",
     "cronet_prefs_manager.cc",
     "cronet_prefs_manager.h",
@@ -44,8 +46,6 @@ source_set("cronet_common") {
     "cronet_upload_data_stream.h",
     "cronet_url_request.cc",
     "cronet_url_request.h",
-    "cronet_url_request_context.cc",
-    "cronet_url_request_context.h",
     "host_cache_persistence_manager.cc",
     "host_cache_persistence_manager.h",
     "stale_host_resolver.cc",
@@ -59,7 +59,6 @@ source_set("cronet_common") {
     "//base",
     "//components/prefs:prefs",
     "//net",
-    "//third_party/metrics_proto",
   ]
 
   if (!disable_histogram_support) {
@@ -87,6 +86,7 @@ source_set("cronet_common_unittests") {
 
   sources = [
     "host_cache_persistence_manager_unittest.cc",
+    "network_tasks_unittest.cc",
     "stale_host_resolver_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
@@ -109,10 +109,7 @@ if (is_android) {
     if (is_mac && !is_component_build) {
       # Executable targets that depend on the shared libraries below need to have
       # the rpath setup in non-component build configurations.
-      ldflags = [
-        "-rpath",
-        "@executable_path/",
-      ]
+      ldflags = [ "-Wl,-rpath,@executable_path/" ]
     }
   }
 
@@ -164,7 +161,7 @@ if (is_android) {
 
     if (is_fuchsia) {
       additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
+          [ "//build/config/fuchsia/test/network.shard.test-cml" ]
     }
   }
 

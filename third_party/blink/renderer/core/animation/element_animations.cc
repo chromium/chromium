@@ -36,72 +36,12 @@
 
 namespace blink {
 
-namespace {
-
-void UpdateAnimationFlagsForEffect(const KeyframeEffect& effect,
-                                   ComputedStyle& style) {
-  if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
-    style.SetHasCurrentOpacityAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
-    style.SetHasCurrentTransformAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
-    style.SetHasCurrentFilterAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
-    style.SetHasCurrentBackdropFilterAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor())))
-    style.SetHasCurrentBackgroundColorAnimation(true);
-}
-
-}  // namespace
-
-ElementAnimations::ElementAnimations() : animation_style_change_(false) {}
+ElementAnimations::ElementAnimations()
+    : animation_style_change_(false),
+      composited_background_color_status_(static_cast<unsigned>(
+          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)) {}
 
 ElementAnimations::~ElementAnimations() = default;
-
-void ElementAnimations::UpdateAnimationFlags(ComputedStyle& style) {
-  for (const auto& entry : animations_) {
-    const Animation& animation = *entry.key;
-    DCHECK(animation.effect());
-    // FIXME: Needs to consider AnimationGroup once added.
-    DCHECK(IsA<KeyframeEffect>(animation.effect()));
-    const auto& effect = *To<KeyframeEffect>(animation.effect());
-    if (!effect.IsCurrent())
-      continue;
-    UpdateAnimationFlagsForEffect(effect, style);
-  }
-
-  for (const auto& entry : worklet_animations_) {
-    const KeyframeEffect& effect = *entry->GetEffect();
-    // TODO(majidvp): we should check the effect's phase before updating the
-    // style once the timing of effect is ready to use.
-    // https://crbug.com/814851.
-    UpdateAnimationFlagsForEffect(effect, style);
-  }
-
-  if (style.HasCurrentOpacityAnimation()) {
-    style.SetIsRunningOpacityAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyOpacity())));
-  }
-  if (style.HasCurrentTransformAnimation()) {
-    style.SetIsRunningTransformAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyTransform())));
-  }
-  if (style.HasCurrentFilterAnimation()) {
-    style.SetIsRunningFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyFilter())));
-  }
-  if (style.HasCurrentBackdropFilterAnimation()) {
-    style.SetIsRunningBackdropFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyBackdropFilter())));
-  }
-}
 
 void ElementAnimations::RestartAnimationOnCompositor() {
   for (const auto& entry : animations_)
@@ -115,31 +55,8 @@ void ElementAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(worklet_animations_);
 }
 
-const ComputedStyle* ElementAnimations::BaseComputedStyle() const {
-  return base_computed_style_.get();
-}
-
-const CSSBitset* ElementAnimations::BaseImportantSet() const {
-  if (IsAnimationStyleChange())
-    return base_important_set_.get();
-  return nullptr;
-}
-
-void ElementAnimations::UpdateBaseComputedStyle(
-    const ComputedStyle* computed_style,
-    std::unique_ptr<CSSBitset> base_important_set) {
-  DCHECK(computed_style);
-  base_computed_style_ = ComputedStyle::Clone(*computed_style);
-  base_important_set_ = std::move(base_important_set);
-}
-
-void ElementAnimations::ClearBaseComputedStyle() {
-  base_computed_style_ = nullptr;
-  base_important_set_ = nullptr;
-}
-
 bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   bool preserves_axis_alignment = true;
   for (auto& entry : animations_) {
     Animation& animation = *entry.key;
@@ -163,6 +80,28 @@ bool ElementAnimations::IsIdentityOrTranslation() const {
     }
   }
   return true;
+}
+
+void ElementAnimations::SetCompositedBackgroundColorStatus(
+    CompositedPaintStatus status) {
+  if (composited_background_color_status_ == static_cast<unsigned>(status))
+    return;
+
+  if (status == CompositedPaintStatus::kNotComposited) {
+    // Ensure that animation is cancelled on the compositor. We do this ahead
+    // of updating the status since the act of cancelling a background color
+    // animation forces it back into the kNeedsRepaintOrNoAnimation state,
+    // which we then need to stomp with a kNotComposited decision.
+    PropertyHandle background_color_property =
+        PropertyHandle(GetCSSPropertyBackgroundColor());
+    for (auto& entry : Animations()) {
+      KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+      if (effect && effect->Affects(background_color_property)) {
+        entry.key->CancelAnimationOnCompositor();
+      }
+    }
+  }
+  composited_background_color_status_ = static_cast<unsigned>(status);
 }
 
 }  // namespace blink

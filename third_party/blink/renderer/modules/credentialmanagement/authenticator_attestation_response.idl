@@ -1,0 +1,18 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webauthn/#authenticatorattestationresponse
+
+[
+    RuntimeEnabled=WebAuth,
+    SecureContext,
+    Exposed=Window
+] interface AuthenticatorAttestationResponse : AuthenticatorResponse {
+    [SameObject] readonly attribute ArrayBuffer attestationObject;
+    [HighEntropy=Direct, Measure] sequence<DOMString> getTransports();
+
+    ArrayBuffer getAuthenticatorData();
+    ArrayBuffer? getPublicKey();
+    COSEAlgorithmIdentifier getPublicKeyAlgorithm();
+};

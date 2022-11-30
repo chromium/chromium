@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@
 @property(nonatomic, assign) BOOL shouldDisplayNeverTranslateSiteButton;
 
 // YES if the pref is set to configure the Translate button to trigger
-// translateWithNewLanguages().
+// -translateWithNewLanguages.
 @property(nonatomic, assign) BOOL updateLanguageBeforeTranslate;
 
 // YES if the pref is set to always translate for the source language.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ namespace blink {
 
 MediaControlRemainingTimeDisplayElement::
     MediaControlRemainingTimeDisplayElement(MediaControlsImpl& media_controls)
-    : MediaControlTimeDisplayElement(media_controls,
-                                     IDS_AX_MEDIA_TIME_REMAINING_DISPLAY) {
+    : MediaControlTimeDisplayElement(media_controls) {
   SetShadowPseudoId(
       AtomicString("-webkit-media-controls-time-remaining-display"));
 }

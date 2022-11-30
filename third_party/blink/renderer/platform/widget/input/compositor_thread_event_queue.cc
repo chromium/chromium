@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,7 +108,7 @@ void CompositorThreadEventQueue::Queue(
 
   // Extract the second last event in queue IF it's a scroll or a pinch for the
   // same target.
-  std::unique_ptr<EventWithCallback> second_last_event = nullptr;
+  std::unique_ptr<EventWithCallback> second_last_event;
   if (!queue_.empty() && WebGestureEvent::IsCompatibleScrollorPinch(
                              ToWebGestureEvent(new_event->event()),
                              ToWebGestureEvent(queue_.back()->event()))) {

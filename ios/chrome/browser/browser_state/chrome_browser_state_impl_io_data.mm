@@ -1,45 +1,45 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state_impl_io_data.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_impl_io_data.h"
 
-#include <memory>
-#include <set>
-#include <utility>
+#import <memory>
+#import <set>
+#import <utility>
 
-#include "base/barrier_closure.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/check_op.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "components/cookie_config/cookie_store_util.h"
-#include "components/net_log/chrome_net_log.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/pref_filter.h"
-#include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_constants.h"
-#include "ios/chrome/browser/ios_chrome_io_thread.h"
-#include "ios/chrome/browser/net/cookie_util.h"
-#include "ios/chrome/browser/net/http_server_properties_factory.h"
-#include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
-#include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "base/barrier_closure.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/check_op.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
+#import "components/cookie_config/cookie_store_util.h"
+#import "components/net_log/chrome_net_log.h"
+#import "components/prefs/json_pref_store.h"
+#import "components/prefs/pref_filter.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_constants.h"
+#import "ios/chrome/browser/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/net/http_server_properties_factory.h"
+#import "ios/chrome/browser/net/ios_chrome_network_delegate.h"
+#import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/components/cookie_util/cookie_util.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_store.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/base/cache_type.h"
-#include "net/cookies/cookie_store.h"
-#include "net/http/http_cache.h"
-#include "net/http/http_network_session.h"
-#include "net/http/http_server_properties.h"
-#include "net/url_request/url_request_job_factory.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/base/cache_type.h"
+#import "net/cookies/cookie_store.h"
+#import "net/http/http_cache.h"
+#import "net/http/http_network_session.h"
+#import "net/http/http_server_properties.h"
+#import "net/http/transport_security_state.h"
+#import "net/url_request/url_request_context_builder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -108,8 +108,8 @@ void ChromeBrowserStateImplIOData::Handle::ClearNetworkingHistorySince(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   LazyInitialize();
 
-  base::PostTask(
-      FROM_HERE, {web::WebThread::IO},
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread,
           base::Unretained(io_data_), time, std::move(completion)));
@@ -154,9 +154,8 @@ ChromeBrowserStateImplIOData::ChromeBrowserStateImplIOData()
 ChromeBrowserStateImplIOData::~ChromeBrowserStateImplIOData() {}
 
 void ChromeBrowserStateImplIOData::InitializeInternal(
-    std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
-    ProfileParams* profile_params,
-    ProtocolHandlerMap* protocol_handlers) const {
+    net::URLRequestContextBuilder* context_builder,
+    ProfileParams* profile_params) const {
   // Set up a persistent store for use by the network stack on the IO thread.
   base::FilePath network_json_store_filepath(
       profile_path_.Append(kIOSChromeNetworkPersistentStateFilename));
@@ -167,33 +166,11 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   network_json_store_->ReadPrefsAsync(nullptr);
 
-  net::URLRequestContext* main_context = main_request_context();
-
   IOSChromeIOThread* const io_thread = profile_params->io_thread;
-  IOSChromeIOThread::Globals* const io_thread_globals = io_thread->globals();
 
-  ApplyProfileParamsToContext(main_context);
-
-  set_http_server_properties(
+  context_builder->SetHttpServerProperties(
       HttpServerPropertiesFactory::CreateHttpServerProperties(
           network_json_store_, io_thread->net_log()));
-
-  main_context->set_transport_security_state(transport_security_state());
-
-  main_context->set_net_log(io_thread->net_log());
-
-  network_delegate_ = std::move(chrome_network_delegate);
-
-  main_context->set_network_delegate(network_delegate_.get());
-
-  main_context->set_http_server_properties(http_server_properties());
-
-  main_context->set_host_resolver(io_thread_globals->host_resolver.get());
-
-  main_context->set_http_auth_handler_factory(
-      io_thread_globals->http_auth_handler_factory.get());
-
-  main_context->set_proxy_resolution_service(proxy_resolution_service());
 
   DCHECK(!lazy_params_->cookie_path.empty());
   cookie_util::CookieStoreConfig ios_cookie_config(
@@ -201,33 +178,22 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
       cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
       cookie_util::CookieStoreConfig::COOKIE_STORE_IOS,
       cookie_config::GetCookieCryptoDelegate());
-  main_cookie_store_ = cookie_util::CreateCookieStore(
+  auto cookie_store = cookie_util::CreateCookieStore(
       ios_cookie_config, std::move(profile_params->system_cookie_store),
       io_thread->net_log());
 
   if (profile_params->path.BaseName().value() ==
       kIOSChromeInitialBrowserState) {
     // Enable metrics on the default profile, not secondary profiles.
-    static_cast<net::CookieStoreIOS*>(main_cookie_store_.get())
-        ->SetMetricsEnabled();
+    static_cast<net::CookieStoreIOS*>(cookie_store.get())->SetMetricsEnabled();
   }
 
-  main_context->set_cookie_store(main_cookie_store_.get());
-
-  std::unique_ptr<net::HttpCache::BackendFactory> main_backend(
-      new net::HttpCache::DefaultBackend(
-          net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
-          lazy_params_->cache_path, lazy_params_->cache_max_size,
-          /*hard_reset=*/false));
-  http_network_session_ = CreateHttpNetworkSession(*profile_params);
-  main_http_factory_ = CreateMainHttpFactory(http_network_session_.get(),
-                                             std::move(main_backend));
-  main_context->set_http_transaction_factory(main_http_factory_.get());
-
-  main_job_factory_ = std::make_unique<net::URLRequestJobFactory>();
-  InstallProtocolHandlers(main_job_factory_.get(), protocol_handlers);
-
-  main_context->set_job_factory(main_job_factory_.get());
+  context_builder->SetCookieStore(std::move(cookie_store));
+  net::URLRequestContextBuilder::HttpCacheParams cache_params;
+  cache_params.type = net::URLRequestContextBuilder::HttpCacheParams::DISK;
+  cache_params.max_size = lazy_params_->cache_max_size;
+  cache_params.path = lazy_params_->cache_path;
+  context_builder->EnableHttpCache(cache_params);
 
   lazy_params_.reset();
 }
@@ -237,16 +203,16 @@ void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
     base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   DCHECK(initialized());
-  DCHECK(transport_security_state());
-  auto barrier = base::BarrierClosure(
-      2, base::BindOnce(
-             [](base::OnceClosure callback) {
-               base::PostTask(FROM_HERE, base::TaskTraits(web::WebThread::UI),
-                              std::move(callback));
-             },
-             std::move(completion)));
+  auto barrier =
+      base::BarrierClosure(2, base::BindOnce(
+                                  [](base::OnceClosure callback) {
+                                    web::GetUIThreadTaskRunner({})->PostTask(
+                                        FROM_HERE, std::move(callback));
+                                  },
+                                  std::move(completion)));
 
-  transport_security_state()->DeleteAllDynamicDataBetween(
-      time, base::Time::Max(), barrier);
-  http_server_properties()->Clear(barrier);
+  main_request_context()
+      ->transport_security_state()
+      ->DeleteAllDynamicDataBetween(time, base::Time::Max(), barrier);
+  main_request_context()->http_server_properties()->Clear(barrier);
 }

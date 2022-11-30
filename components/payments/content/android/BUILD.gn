@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,8 @@ static_library("android") {
     "byte_buffer_helper.cc",
     "byte_buffer_helper.h",
     "can_make_payment_query_android.cc",
+    "csp_checker_android.cc",
+    "csp_checker_android.h",
     "currency_formatter_android.cc",
     "currency_formatter_android.h",
     "error_message_util.cc",
@@ -20,6 +22,8 @@ static_library("android") {
     "journey_logger_android.cc",
     "journey_logger_android.h",
     "origin_security_checker_android.cc",
+    "payment_app_service_bridge.cc",
+    "payment_app_service_bridge.h",
     "payment_feature_list.cc",
     "payment_feature_list.h",
     "payment_handler_host.cc",
@@ -29,6 +33,8 @@ static_library("android") {
     "payment_manifest_downloader_android.h",
     "payment_manifest_parser_android.cc",
     "payment_manifest_parser_android.h",
+    "payment_manifest_web_data_service_android.cc",
+    "payment_manifest_web_data_service_android.h",
     "payment_request_spec.cc",
     "payment_request_spec.h",
     "payment_request_update_event_listener.cc",
@@ -41,11 +47,16 @@ static_library("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/keyed_service/core",
     "//components/payments/content",
     "//components/payments/content:utils",
     "//components/payments/content/utility",
     "//components/payments/core",
     "//components/ukm/content:content",
+    "//components/url_formatter",
+    "//components/webauthn/android",
+    "//components/webdata/common",
+    "//components/webdata_services",
     "//content/public/browser",
     "//net",
     "//url:gurl_android",
@@ -55,17 +66,20 @@ static_library("android") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
+    "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
     "java/src/org/chromium/components/payments/PaymentFeatureList.java",
     "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
+    "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
@@ -76,9 +90,12 @@ generate_jni("jni_headers") {
 
 android_resources("minimal_java_resources") {
   sources = [
-    "//components/payments/content/android/google_pay_res/drawable/google_pay.xml",
-    "//components/payments/content/android/google_pay_res/values-night/colors.xml",
-    "//components/payments/content/android/google_pay_res/values/colors.xml",
+    "//components/payments/content/android/minimal_java_res/drawable-night/save_card.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/credit_card.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/save_card.xml",
+    "//components/payments/content/android/minimal_java_res/values-night/colors.xml",
+    "//components/payments/content/android/minimal_java_res/values/colors.xml",
   ]
 }
 
@@ -110,6 +127,7 @@ android_library("service_java") {
   deps = [
     ":feature_list_java",
     "//base:base_java",
+    "//base:jni_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -124,15 +142,23 @@ android_library("feature_list_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources =
       [ "java/src/org/chromium/components/payments/PaymentFeatureList.java" ]
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_library("full_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
+    "java/src/org/chromium/components/payments/AndroidPaymentAppFactory.java",
+    "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
+    "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
@@ -141,10 +167,13 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/MojoPaymentRequestGateKeeper.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
+    "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
     "java/src/org/chromium/components/payments/PaymentDetailsConverter.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
+    "java/src/org/chromium/components/payments/PaymentManifestVerifier.java",
+    "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
     "java/src/org/chromium/components/payments/PaymentNotShownError.java",
     "java/src/org/chromium/components/payments/PaymentOptionsUtils.java",
     "java/src/org/chromium/components/payments/PaymentRequestService.java",
@@ -153,22 +182,32 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java",
     "java/src/org/chromium/components/payments/PaymentUiServiceTestInterface.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
-    "java/src/org/chromium/components/payments/SkipToGPayHelper.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/SupportedDelegations.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
     "java/src/org/chromium/components/payments/intent/IsReadyToPayServiceHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperTypeConverter.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnProperties.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
+    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
     ":feature_list_java",
     ":java_resources",
     ":minimal_java",
+    ":pre_purchase_query_enum_java",
     ":service_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/autofill/android:autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
     "//components/payments/mojom:mojom_java",
@@ -180,11 +219,13 @@ android_library("full_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
     "//url:origin_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
   srcjar_deps = [
     ":payments_journey_logger_enum_javagen",
@@ -193,10 +234,16 @@ android_library("full_java") {
   resources_package = "org.chromium.components.payments"
 }
 
+android_library("pre_purchase_query_enum_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  srcjar_deps = [ ":pre_purchase_query_enum_javagen" ]
+}
+
 # Minimal target that only includes what downstream code depends on.
 android_library("minimal_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
+    "java/src/org/chromium/components/payments/CSPChecker.java",
     "java/src/org/chromium/components/payments/MojoStructCollection.java",
     "java/src/org/chromium/components/payments/PaymentApp.java",
     "java/src/org/chromium/components/payments/PaymentAppFactoryDelegate.java",
@@ -210,6 +257,8 @@ android_library("minimal_java") {
   deps = [
     ":service_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/autofill/android:payments_autofill_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -217,9 +266,11 @@ android_library("minimal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//url:gurl_java",
     "//url:origin_java",
   ]
   srcjar_deps = [
+    ":app_creation_failure_reason_generated_enum",
     ":method_strings_generated_srcjar",
     ":payment_app_type_generated_enum",
   ]
@@ -264,14 +315,19 @@ java_cpp_enum("payment_app_type_generated_enum") {
   sources = [ "//components/payments/content/payment_app.h" ]
 }
 
+java_cpp_enum("app_creation_failure_reason_generated_enum") {
+  sources = [ "//components/payments/content/payment_app_factory.h" ]
+}
+
 java_cpp_enum("payments_journey_logger_enum_javagen") {
   sources = [ "//components/payments/core/journey_logger.h" ]
 }
 
-java_library("junit_test_support") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+java_cpp_enum("pre_purchase_query_enum_javagen") {
+  sources = [ "//components/payments/core/pre_purchase_query.h" ]
+}
+
+robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
@@ -279,11 +335,9 @@ java_library("junit_test_support") {
   ]
   deps = [
     ":java",
-    "//base:base_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -291,40 +345,42 @@ java_library("junit_test_support") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 }
 
-java_library("junit") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredTest.java",
   ]
   deps = [
     ":java",
     ":junit_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//mojo/public/java:system_java",
     "//third_party/android_deps:material_design_java",
-    "//third_party/android_deps:robolectric_all_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
+    "//url/mojom:url_mojom_gurl_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
   sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
   deps = [

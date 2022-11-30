@@ -1,0 +1,27 @@
+{ "GUID": "guid",
+  "Type": "VPN",
+  "Name": "MyWireGuard",
+  "IPAddressConfigType": "Static",
+  "NameServersConfigType": "Static",
+  "StaticIPConfig": {
+    "IPAddress": "10.20.30.101",
+    "NameServers": [ "8.8.8.8", "8.8.4.4", "0.0.0.0", "0.0.0.0" ],
+    "Type": "IPv4"
+  },
+  "VPN": {
+    "Type": "WireGuard",
+    "Host": "wireguard",
+    "WireGuard": {
+      "Peers": [
+        {
+          "AllowedIPs": "0.0.0.0/0",
+          "Endpoint": "2.2.2.2:54321",
+          "PersistentKeepalive": "",
+          "PublicKey": "placeholder_peer_public_key"
+        }
+      ],
+      "PublicKey": "placeholder_public_key",
+      "SaveCredentials": true
+    }
+  }
+}

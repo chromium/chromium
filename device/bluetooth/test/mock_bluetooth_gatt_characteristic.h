@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/span.h"
-#include "base/macros.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -35,6 +32,12 @@ class MockBluetoothGattCharacteristic
                                   const BluetoothUUID& uuid,
                                   Properties properties,
                                   Permissions permissions);
+
+  MockBluetoothGattCharacteristic(const MockBluetoothGattCharacteristic&) =
+      delete;
+  MockBluetoothGattCharacteristic& operator=(
+      const MockBluetoothGattCharacteristic&) = delete;
+
   ~MockBluetoothGattCharacteristic() override;
 
   MOCK_CONST_METHOD0(GetIdentifier, std::string());
@@ -48,7 +51,7 @@ class MockBluetoothGattCharacteristic
                      std::vector<BluetoothRemoteGattDescriptor*>());
   MOCK_CONST_METHOD1(GetDescriptor,
                      BluetoothRemoteGattDescriptor*(const std::string&));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void StartNotifySession(NotificationType t,
                           NotifySessionCallback c,
                           ErrorCallback ec) override {
@@ -56,7 +59,7 @@ class MockBluetoothGattCharacteristic
   }
   MOCK_METHOD3(StartNotifySession_,
                void(NotificationType, NotifySessionCallback&, ErrorCallback&));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void StartNotifySession(NotifySessionCallback c, ErrorCallback ec) override {
     StartNotifySession_(c, ec);
   }
@@ -68,10 +71,10 @@ class MockBluetoothGattCharacteristic
   }
   MOCK_METHOD2(StopNotifySession_,
                void(BluetoothGattNotifySession*, base::OnceClosure&));
-  void ReadRemoteCharacteristic(ValueCallback c, ErrorCallback ec) override {
-    ReadRemoteCharacteristic_(c, ec);
+  void ReadRemoteCharacteristic(ValueCallback c) override {
+    ReadRemoteCharacteristic_(c);
   }
-  MOCK_METHOD2(ReadRemoteCharacteristic_, void(ValueCallback&, ErrorCallback&));
+  MOCK_METHOD1(ReadRemoteCharacteristic_, void(ValueCallback&));
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& v,
                                  WriteType t,
                                  base::OnceClosure c,
@@ -92,7 +95,7 @@ class MockBluetoothGattCharacteristic
                void(const std::vector<uint8_t>&,
                     base::OnceClosure&,
                     ErrorCallback&));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
                                         base::OnceClosure c,
                                         ErrorCallback ec) override {
@@ -102,13 +105,13 @@ class MockBluetoothGattCharacteristic
                void(const std::vector<uint8_t>&,
                     base::OnceClosure&,
                     ErrorCallback&));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void AddMockDescriptor(
       std::unique_ptr<MockBluetoothGattDescriptor> mock_descriptor);
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* d,
                                 NotificationType t,
                                 base::OnceClosure c,
@@ -130,7 +133,7 @@ class MockBluetoothGattCharacteristic
                void(BluetoothRemoteGattDescriptor*,
                     base::OnceClosure&,
                     ErrorCallback&));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void UnsubscribeFromNotifications(BluetoothRemoteGattDescriptor* d,
                                     base::OnceClosure c,
                                     ErrorCallback ec) override {
@@ -140,9 +143,6 @@ class MockBluetoothGattCharacteristic
                void(BluetoothRemoteGattDescriptor*,
                     base::OnceClosure&,
                     ErrorCallback&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattCharacteristic);
 };
 
 }  // namespace device

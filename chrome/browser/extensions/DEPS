@@ -1,9 +1,9 @@
 include_rules = [
+  "+components/app_constants/constants.h",
   "+components/crash/content/browser/error_reporting",
+  "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",
-  "+third_party/ink/grit",
-  "+ui/base",
 
   # For access to testing command line switches.
   "+ppapi/shared_impl",
@@ -22,7 +22,7 @@ specific_include_rules = {
   ],
 
   "content_script_apitest.cc": [
-    "+components/web_package/test_support",
+    "+components/web_package",
   ],
   "extension_protocols_unittest\.cc": [
     "+services/network/test",
@@ -73,26 +73,11 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "corb_and_cors_extension_browsertest\.cc": [
-    "+chrome/browser/apps/app_service/app_launch_params.h",
-    "+chrome/browser/apps/app_service/app_service_proxy.h",
-    "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
-    "+chrome/browser/apps/app_service/browser_app_launcher.h",
-  ],
-
-  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
   "extension_apitest\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
     "+chrome/browser/apps/app_service/browser_app_launcher.h",
-  ],
-
-  # This DEPS violation snuck in while there was a bug in the checkdeps tool.
-  # https://crbug.com/1084826
-  "extension_browser_window_helper\.cc": [
-    "+chrome/browser/apps/app_service/launch_utils.h",
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
@@ -108,5 +93,10 @@ specific_include_rules = {
   # https://crbug.com/1084826
   "external_pref_loader\.cc": [
     "+chrome/browser/apps/user_type_filter.h",
+  ],
+
+  "extension_service_unittest.cc" : [
+    "+components/services/storage/privileged/mojom/indexed_db_control.mojom.h",
+    "+components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h",
   ],
 }

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.test.util.browser;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 
 import org.hamcrest.Matchers;
@@ -25,8 +24,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class ThemeTestUtils {
     public static int getDefaultThemeColor(Tab tab) {
-        return ChromeColors.getDefaultThemeColor(
-                tab.getContext().getResources(), tab.isIncognito());
+        return ChromeColors.getDefaultThemeColor(tab.getContext(), tab.isIncognito());
     }
 
     /**
@@ -52,7 +50,6 @@ public class ThemeTestUtils {
      * Method is for Android L+ because it relies on Window#getStatusBarColor() which was introduced
      * in L.
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     public static void assertStatusBarColor(ChromeActivity activity, int expectedColor) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             expectedColor = ColorUtils.getDarkenedColorForStatusBar(expectedColor);

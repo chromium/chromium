@@ -1,0 +1,15 @@
+<!-- TODO(crbug.com/1201535): Move everything to the parent element
+     (<os-settings-languages-page>), as this element is trivial. -->
+
+<os-settings-add-items-dialog
+    items="[[getAllLanguages_(languages.spellCheckOffLanguages.*)]]"
+    suggested-item-ids="[[getSuggestedLanguageCodes_(
+        languages.spellCheckOffLanguages.*, languages.enabled.*,
+        languages.inputMethods.enabled.*)]]"
+    header="$i18n{addSpellCheckLanguagesTitle}"
+    search-label="$i18n{searchSpellCheckLanguagesLabel}"
+    suggested-items-label="$i18n{suggestedSpellcheckLanguages}"
+    all-items-label="$i18n{allSpellcheckLanguages}"
+    policy-tooltip="$i18n{spellCheckLanguageNotAllowed}"
+    on-items-added="onItemsAdded_">
+</os-settings-add-items-dialog>

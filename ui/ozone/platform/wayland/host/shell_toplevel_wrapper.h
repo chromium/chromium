@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
 
 namespace gfx {
 class Rect;
@@ -16,6 +18,7 @@ class Rect;
 namespace ui {
 
 class WaylandConnection;
+enum class ZOrderLevel;
 
 // A wrapper around different versions of xdg toplevels. Allows
 // WaylandToplevelWindow to set window-like properties such as maximize,
@@ -25,11 +28,13 @@ class WaylandConnection;
 class ShellToplevelWrapper {
  public:
   enum class DecorationMode {
+    // Initial mode that the surface has till the first configure event.
+    kNone,
     // Client-side decoration for a window.
     // In this case, the client is responsible for drawing decorations
     // for a window (e.g. caption bar, close button). This is suitable for
     // windows using custom frame.
-    kClientSide = 1,
+    kClientSide,
     // Server-side decoration for a window.
     // In this case, the ash window manager is responsible for drawing
     // decorations. This is suitable for windows using native frame.
@@ -70,8 +75,16 @@ class ShellToplevelWrapper {
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
-  // Sets a desired window geometry once wayland requests client to do so.
+  // Tells if the surface has been AckConfigured at least once.
+  virtual bool IsConfigured() = 0;
+
+  // Sets a desired window geometry in surface local coordinates that specifies
+  // the content area of the surface.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
+
+  // Requests a desired window position and size in global screen coordinates.
+  // The compositor may or may not filfill the request.
+  virtual void RequestWindowBounds(const gfx::Rect& bounds) = 0;
 
   // Sets the minimum size for the top level.
   virtual void SetMinSize(int32_t width, int32_t height) = 0;
@@ -89,6 +102,59 @@ class ShellToplevelWrapper {
   // wayland compositor to update the decoration mode for a surface associated
   // with this top level window.
   virtual void SetDecoration(DecorationMode decoration) = 0;
+
+  // Set session id and restore id for the top level.
+  virtual void SetRestoreInfo(int32_t restore_session_id,
+                              int32_t restore_window_id) = 0;
+
+  virtual void SetRestoreInfoWithWindowIdSource(
+      int32_t restore_session_id,
+      const std::string& restore_window_id_source) = 0;
+
+  // Request that the server set the orientation lock to the provided lock type.
+  // This is only accepted if the requesting window is running in immersive
+  // fullscreen mode and in a tablet configuration.
+  virtual void Lock(WaylandOrientationLockType lock_type) = 0;
+
+  // Request that the server remove the applied orientation lock.
+  virtual void Unlock() = 0;
+
+  // Request that the window be made a system modal.
+  virtual void SetSystemModal(bool modal) = 0;
+
+  // Checks if the server supports chrome to control the window position in
+  // screen coordinates.
+  virtual bool SupportsScreenCoordinates() const = 0;
+
+  // Enables screen coordinates support. This is no-op if the server does not
+  // support the screen coordinates.
+  virtual void EnableScreenCoordinates() = 0;
+
+  // Sets/usets a native window to float state. This places it on top of other
+  // windows.
+  virtual void SetFloat() = 0;
+  virtual void UnSetFloat() = 0;
+
+  // Sets the z order of the window.
+  virtual void SetZOrder(ZOrderLevel z_order) = 0;
+
+  // Activation brings a window to the foreground. Deactivation makes a window
+  // non-foregrounded.
+  virtual bool SupportsActivation() = 0;
+  virtual void Activate() = 0;
+  virtual void Deactivate() = 0;
+
+  DecorationMode decoration_mode() const { return decoration_mode_; }
+
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest, CanSetDecorationInsets);
+
+  void set_decoration_mode(DecorationMode mode) { decoration_mode_ = mode; }
+
+ private:
+  // On client side, it keeps track of the decoration mode currently in
+  // use if xdg-decoration protocol extension is available.
+  DecorationMode decoration_mode_ = DecorationMode::kNone;
 };
 
 // Look for |value| in |wl_array| in C++ style.

@@ -1,13 +1,12 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/python.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
+import("//remoting/host/installer/win/wix_path.gni")
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("remoting_me2me_host_archive") {
+action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
 
   sources = [ "//build/android/gyp/util/build_utils.py" ]
@@ -18,6 +17,8 @@ python2_action("remoting_me2me_host_archive") {
     "//remoting/host/installer:credits",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/it2me:remote_assistance_host_uiaccess",
+    "//remoting/host/remote_open_url",
+    "//remoting/host/webauthn:remote_webauthn",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
     "//remoting/host/win:remoting_me2me_host",
@@ -54,7 +55,9 @@ python2_action("remoting_me2me_host_archive") {
   inputs = [
     "$root_out_dir/remote_assistance_host.exe",
     "$root_out_dir/remote_assistance_host_uiaccess.exe",
+    "$root_out_dir/remote_open_url.exe",
     "$root_out_dir/remote_security_key.exe",
+    "$root_out_dir/remote_webauthn.exe",
     "$root_out_dir/remoting_core.dll",
     "$root_out_dir/remoting_desktop.exe",
     "$root_out_dir/remoting_host.exe",
@@ -65,6 +68,7 @@ python2_action("remoting_me2me_host_archive") {
     "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
     "$root_out_dir/icudtl.dat",
   ]
 
@@ -83,7 +87,9 @@ python2_action("remoting_me2me_host_archive") {
   _generated_dst_files = [
     "files/remote_assistance_host.exe",
     "files/remote_assistance_host_uiaccess.exe",
+    "files/remote_open_url.exe",
     "files/remote_security_key.exe",
+    "files/remote_webauthn.exe",
     "files/remoting_core.dll",
     "files/remoting_desktop.exe",
     "files/remoting_host.exe",
@@ -94,6 +100,7 @@ python2_action("remoting_me2me_host_archive") {
     "files/com.google.chrome.remote_assistance-firefox.json",
     "files/com.google.chrome.remote_desktop.json",
     "files/com.google.chrome.remote_desktop-firefox.json",
+    "files/com.google.chrome.remote_webauthn.json",
     "files/icudtl.dat",
     "files/chromoting.ico",
   ]
@@ -128,7 +135,10 @@ python2_action("remoting_me2me_host_archive") {
 
 # We do not release a 64 bits binary. So to avoid any potential
 # misunderstanding, we only build 32 bits MSI file.
-if (is_chrome_branded && !is_component_build && target_cpu == "x86") {
+# TODO(yuweih): Replace the remoting_wix_path check with is_chrome_branded once
+# everyone is able to use their Google machines again, or remove the check
+# altogether if we decide to build the MSI with non-official builders.
+if (remoting_wix_path != "" && !is_component_build && target_cpu == "x86") {
   # The script uses "ia32" instead of "x86".
   msi_script_arch = "ia32"
 
@@ -138,7 +148,7 @@ if (is_chrome_branded && !is_component_build && target_cpu == "x86") {
     outputs = [ "$root_out_dir/chromoting.msi" ]
     args = [
       "--wix_path",
-      rebase_path("//third_party/wix", root_build_dir),
+      remoting_wix_path,
       "--intermediate_dir",
       rebase_path("$root_gen_dir/remoting_installation", root_build_dir),
       "--target_arch",

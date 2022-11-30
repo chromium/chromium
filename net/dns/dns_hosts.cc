@@ -1,14 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/dns_hosts.h"
 
+#include <string>
+
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "net/dns/dns_util.h"
 
 using base::StringPiece;
@@ -26,9 +29,10 @@ class HostsParser {
       : text_(text),
         data_(text.data()),
         end_(text.size()),
-        pos_(0),
-        token_is_ip_(false),
         comma_mode_(comma_mode) {}
+
+  HostsParser(const HostsParser&) = delete;
+  HostsParser& operator=(const HostsParser&) = delete;
 
   // Advances to the next token (IP or hostname).  Returns whether another
   // token was available.  |token_is_ip| and |token| can be used to find out
@@ -59,7 +63,7 @@ class HostsParser {
           }
 
           // If comma_mode_ is COMMA_IS_TOKEN, fall through:
-          FALLTHROUGH;
+          [[fallthrough]];
 
         default: {
           size_t token_start = pos_;
@@ -121,13 +125,11 @@ class HostsParser {
   const char* data_;
   const size_t end_;
 
-  size_t pos_;
+  size_t pos_ = 0;
   StringPiece token_;
-  bool token_is_ip_;
+  bool token_is_ip_ = false;
 
   const ParseHostsCommaMode comma_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostsParser);
 };
 
 void ParseHostsWithCommaMode(const std::string& contents,
@@ -178,7 +180,7 @@ void ParseHostsWithCommaModeForTesting(const std::string& contents,
 
 void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsCommaMode comma_mode;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac OS X allows commas to separate hostnames.
   comma_mode = PARSE_HOSTS_COMMA_IS_WHITESPACE;
 #else
@@ -189,14 +191,21 @@ void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsWithCommaMode(contents, dns_hosts, comma_mode);
 }
 
-bool ParseHostsFile(const base::FilePath& path, DnsHosts* dns_hosts) {
+DnsHostsParser::~DnsHostsParser() = default;
+
+DnsHostsFileParser::DnsHostsFileParser(base::FilePath hosts_file_path)
+    : hosts_file_path_(std::move(hosts_file_path)) {}
+
+DnsHostsFileParser::~DnsHostsFileParser() = default;
+
+bool DnsHostsFileParser::ParseHosts(DnsHosts* dns_hosts) const {
   dns_hosts->clear();
   // Missing file indicates empty HOSTS.
-  if (!base::PathExists(path))
+  if (!base::PathExists(hosts_file_path_))
     return true;
 
   int64_t size;
-  if (!base::GetFileSize(path, &size))
+  if (!base::GetFileSize(hosts_file_path_, &size))
     return false;
 
   // Reject HOSTS files larger than |kMaxHostsSize| bytes.
@@ -205,10 +214,10 @@ bool ParseHostsFile(const base::FilePath& path, DnsHosts* dns_hosts) {
     return false;
 
   std::string contents;
-  if (!base::ReadFileToString(path, &contents))
+  if (!base::ReadFileToString(hosts_file_path_, &contents))
     return false;
 
-  ParseHosts(contents, dns_hosts);
+  net::ParseHosts(contents, dns_hosts);
   return true;
 }
 

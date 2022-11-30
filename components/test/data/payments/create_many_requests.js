@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Chromium Authors. All rights reserved.
+ * Copyright 2020 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -8,8 +8,7 @@ const supportedInstruments = [{
   supportedMethods: 'secure-payment-confirmation',
   data: {
     'credentialIds': [new ArrayBuffer(4)],
-    'fallbackUrl': 'localhost:8000',
-    'networkData': new ArrayBuffer(4),
+    'challenge': new ArrayBuffer(4),
   },
 }];
 

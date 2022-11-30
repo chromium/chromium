@@ -1,0 +1,28 @@
+<style>
+  [slot='page-body'] {
+    background-image: url(chrome://resources/ash/common/cellular_setup/final_page_success.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 242px;
+  }
+
+  .error[slot='page-body'] {
+      background-image: url(chrome://resources/ash/common/cellular_setup/error.svg);
+      background-size: contain;
+  }
+
+  @media(prefers-color-scheme: dark) {
+    [slot='page-body'] {
+      background-image: url(chrome://resources/ash/common/cellular_setup/final_page_success_dark.svg);
+    }
+
+    .error[slot='page-body'] {
+        background-image: url(chrome://resources/ash/common/cellular_setup/error_dark.svg);
+    }
+  }
+</style>
+<base-page title="[[getTitle_(showError)]]"
+    message="[[getMessage_(showError)]]">
+  <div class$="[[getPageBodyClass_(showError)]]" slot="page-body"></div>
+</base-page>

@@ -1,10 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/dns_hosts.h"
 
-#include "base/stl_util.h"
+#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +71,7 @@ TEST(DnsHostsTest, ParseHosts) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, base::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
   ParseHosts(kContents, &actual_hosts);
   ASSERT_EQ(expected_hosts, actual_hosts);
 }
@@ -84,7 +84,7 @@ TEST(DnsHostsTest, ParseHosts_CommaIsToken) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, base::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
   ParseHostsWithCommaModeForTesting(
       kContents, &actual_hosts, PARSE_HOSTS_COMMA_IS_TOKEN);
   ASSERT_EQ(0UL, actual_hosts.size());
@@ -99,7 +99,7 @@ TEST(DnsHostsTest, ParseHosts_CommaIsWhitespace) {
   };
 
   DnsHosts expected_hosts, actual_hosts;
-  PopulateExpectedHosts(kEntries, base::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
   ParseHostsWithCommaModeForTesting(
       kContents, &actual_hosts, PARSE_HOSTS_COMMA_IS_WHITESPACE);
   ASSERT_EQ(expected_hosts, actual_hosts);
@@ -111,13 +111,13 @@ TEST(DnsHostsTest, ParseHosts_CommaModeByPlatform) {
   DnsHosts actual_hosts;
   ParseHosts(kContents, &actual_hosts);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   const ExpectedHostsEntry kEntries[] = {
     { "comma1", ADDRESS_FAMILY_IPV4, "127.0.0.1" },
     { "comma2", ADDRESS_FAMILY_IPV4, "127.0.0.1" },
   };
   DnsHosts expected_hosts;
-  PopulateExpectedHosts(kEntries, base::size(kEntries), &expected_hosts);
+  PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
   ASSERT_EQ(expected_hosts, actual_hosts);
 #else
   ASSERT_EQ(0UL, actual_hosts.size());

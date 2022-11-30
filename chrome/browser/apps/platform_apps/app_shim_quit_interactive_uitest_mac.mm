@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Tests behavior when quitting apps with app shims.
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 #include <unistd.h>
@@ -56,7 +58,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
 
   void SetUpAppShim() {
     ASSERT_EQ(0u, [[NSApp windows] count]);
-    ExtensionTestMessageListener launched_listener("Launched", false);
+    ExtensionTestMessageListener launched_listener("Launched");
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
     ASSERT_EQ(1u, [[NSApp windows] count]);
 
@@ -69,7 +71,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
         GetExtensionByPath(registry->enabled_extensions(), app_path_)->id();
     mojo::Remote<chrome::mojom::AppShimHost> host;
     auto app_shim_info = chrome::mojom::AppShimInfo::New();
-    app_shim_info->profile_path = profile()->GetPath().BaseName();
+    app_shim_info->profile_path = profile()->GetBaseName();
     app_shim_info->app_id = extension_id_;
     app_shim_info->app_url = GURL("https://example.com");
     app_shim_info->launch_type =
@@ -101,7 +103,7 @@ class AppShimQuitTest : public PlatformAppBrowserTest {
   }
 
   base::FilePath app_path_;
-  AppShimManager* manager_ = nullptr;
+  raw_ptr<AppShimManager> manager_ = nullptr;
   std::string extension_id_;
 };
 
@@ -115,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AppShimQuitTest, QuitWithKeyEvent) {
   // Simulate a Cmd+Q event.
   NSWindow* window = [[NSApp windows] objectAtIndex:0];
   NSEvent* event = cocoa_test_event_utils::KeyEventWithKeyCode(
-      0, 'q', NSKeyDown, NSCommandKeyMask);
+      0, 'q', NSEventTypeKeyDown, NSEventModifierFlagCommand);
   [window postEvent:event atStart:NO];
 
   // This will time out if the event above does not terminate Chrome.

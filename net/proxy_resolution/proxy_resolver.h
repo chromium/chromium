@@ -1,14 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 #define NET_PROXY_RESOLUTION_PROXY_RESOLVER_H_
 
-#include <string>
-
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
@@ -19,7 +16,7 @@
 namespace net {
 
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ProxyInfo;
 
 // Interface for "proxy resolvers". A ProxyResolver fills in a list of proxies
@@ -30,13 +27,16 @@ class NET_EXPORT_PRIVATE ProxyResolver {
  public:
   class Request {
    public:
-    virtual ~Request() {}  // Cancels the request
+    virtual ~Request() = default;  // Cancels the request
     virtual LoadState GetLoadState() = 0;
   };
 
-  ProxyResolver() {}
+  ProxyResolver() = default;
 
-  virtual ~ProxyResolver() {}
+  ProxyResolver(const ProxyResolver&) = delete;
+  ProxyResolver& operator=(const ProxyResolver&) = delete;
+
+  virtual ~ProxyResolver() = default;
 
   // Gets a list of proxy servers to use for |url|. If the request will
   // complete asynchronously returns ERR_IO_PENDING and notifies the result
@@ -47,16 +47,14 @@ class NET_EXPORT_PRIVATE ProxyResolver {
   //
   // |network_isolation_key| is used for any DNS lookups associated with the
   // request, if net's HostResolver is used. If the underlying platform itself
-  // handles proxy resolution, |network_isolation_key| will be ignored.
-  virtual int GetProxyForURL(const GURL& url,
-                             const NetworkIsolationKey& network_isolation_key,
-                             ProxyInfo* results,
-                             CompletionOnceCallback callback,
-                             std::unique_ptr<Request>* request,
-                             const NetLogWithSource& net_log) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolver);
+  // handles proxy resolution, |network_anonymization_key| will be ignored.
+  virtual int GetProxyForURL(
+      const GURL& url,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      ProxyInfo* results,
+      CompletionOnceCallback callback,
+      std::unique_ptr<Request>* request,
+      const NetLogWithSource& net_log) = 0;
 };
 
 }  // namespace net

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/upload_list/text_log_upload_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -104,9 +105,9 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
 
   std::vector<UploadList::UploadInfo> actual;
   combined_upload_list->GetUploads(20, &actual);
-  ASSERT_EQ(actual.size(), base::size(kExpectedUploadTimes));
+  ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
-  for (size_t i = 0; i < base::size(kExpectedUploadTimes); i++) {
+  for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
     EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
     EXPECT_EQ(actual[i].state, UploadList::UploadInfo::State::Uploaded)
@@ -204,9 +205,9 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
 
   std::vector<UploadList::UploadInfo> actual;
   combined_upload_list->GetUploads(20, &actual);
-  ASSERT_EQ(actual.size(), base::size(kExpectedUploadTimes));
+  ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
-  for (size_t i = 0; i < base::size(kExpectedUploadTimes); i++) {
+  for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
     EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
     EXPECT_EQ(actual[i].capture_time, kExpectedCaptureTimes[i])
@@ -274,6 +275,28 @@ TEST_F(CombiningUploadListTest, Clear) {
             R"({"upload_time":"1614003000","upload_id":"ddee0003"}
 {"upload_time":"1614009000","upload_id":"ddee0009"}
 )");
+}
+
+class MockUploadList final : public UploadList {
+ public:
+  MOCK_METHOD0(LoadUploadList, std::vector<UploadInfo>());
+  MOCK_METHOD2(ClearUploadList, void(const base::Time&, const base::Time&));
+  MOCK_METHOD1(RequestSingleUpload, void(const std::string&));
+
+ protected:
+  ~MockUploadList() override = default;
+};
+
+TEST_F(CombiningUploadListTest, RequestSingleUpload) {
+  auto mock_list1 = base::MakeRefCounted<MockUploadList>();
+  auto mock_list2 = base::MakeRefCounted<MockUploadList>();
+  auto combined_lists = base::MakeRefCounted<CombiningUploadList>(
+      std::vector<scoped_refptr<UploadList>>({mock_list1, mock_list2}));
+
+  constexpr char kLocalId[] = "12345";
+  EXPECT_CALL(*mock_list1, RequestSingleUpload(kLocalId));
+  EXPECT_CALL(*mock_list2, RequestSingleUpload(kLocalId));
+  combined_lists->RequestSingleUploadAsync(kLocalId);
 }
 
 }  // namespace

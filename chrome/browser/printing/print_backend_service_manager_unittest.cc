@@ -1,0 +1,333 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/printing/print_backend_service_manager.h"
+
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace printing {
+
+using ClientsSet = PrintBackendServiceManager::ClientsSet;
+using PrintClientsMap = PrintBackendServiceManager::PrintClientsMap;
+
+namespace {
+
+constexpr char kRemoteIdEmpty[] = "";
+constexpr char kRemoteIdTestPrinter[] = "test-printer";
+
+const ClientsSet kTestQueryNoClients;
+const ClientsSet kTestQueryWithOneClient{1};
+const ClientsSet kTestQueryWithTwoClients{1, 2};
+
+const ClientsSet kTestQueryWithUiNoClients;
+const ClientsSet kTestQueryWithUiOneClient{5};
+#if BUILDFLAG(IS_LINUX)
+const ClientsSet kTestQueryWithUiTwoClients{5, 6};
+#endif
+
+const PrintClientsMap kTestPrintDocumentNoClients;
+const PrintClientsMap kTestPrintDocumentOnePrinterWithOneClient{
+    {kRemoteIdEmpty, {10}},
+};
+const PrintClientsMap kTestPrintDocumentOnePrinterWithTwoClients{
+    {kRemoteIdEmpty, {10, 11}},
+};
+const PrintClientsMap kTestPrintDocumentTwoPrintersWithOneClientEach{
+    {kRemoteIdEmpty, {10}},
+    {kRemoteIdTestPrinter, {20}},
+};
+
+constexpr absl::optional<base::TimeDelta> kNoNewTimeoutNeeded;
+constexpr absl::optional<base::TimeDelta> kMaxTimeout = base::TimeDelta::Max();
+
+}  // namespace
+
+TEST(PrintBackendServiceManagerTest,
+     IsIdleTimeoutUpdateNeededForRegisteredClient) {
+  const struct TestData {
+    ClientsSet query_clients;
+    ClientsSet query_with_ui_client;
+    PrintClientsMap print_document_clients;
+    PrintBackendServiceManager::ClientType modified_client_type;
+    absl::optional<base::TimeDelta> new_timeout;
+  } kTestData[] = {
+    // == PrintBackendServiceManager::ClientType::kQuery
+
+    // A single query client should yield a new clients-registered timeout.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        PrintBackendServiceManager::kClientsRegisteredResetOnIdleTimeout,
+    },
+    // An extra query client should yield no new timeout needed.
+    {
+        kTestQueryWithTwoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+    // A single query client should yield no new timeout needed if a query
+    // with UI is present.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+    // A single query client should yield no new timeout needed if a print
+    // document is present.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+
+    // == PrintBackendServiceManager::ClientType::kQueryWithUi
+
+    // A lone query with UI client should yield a new maximum timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kMaxTimeout,
+    },
+    // A new query with UI client with existing regular queries should yield a
+    // new maximum timeout.
+    {
+        kTestQueryWithTwoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kMaxTimeout,
+    },
+#if BUILDFLAG(IS_LINUX)
+    // A new query with UI client with an existing query with UI client
+    // should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiTwoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kNoNewTimeoutNeeded,
+    },
+#endif
+    // A new query with UI client with an existing printing client should
+    // yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kNoNewTimeoutNeeded,
+    },
+
+    // == PrintBackendServiceManager::ClientType::kPrintDocument
+
+    // A lone print document client should yield a new maximum timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kMaxTimeout,
+    },
+    // An extra print document client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithTwoClients,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kNoNewTimeoutNeeded,
+    },
+    // A new print document client with existing regular queries should yield
+    // a new maximum timeout.
+    {
+        kTestQueryWithTwoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kMaxTimeout,
+    },
+    // A new print document client with existing query with UI should yield no
+    // new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kNoNewTimeoutNeeded,
+    },
+    // A new print document client with existing print document for alternate
+    // remote ID should yield a new maximum timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentTwoPrintersWithOneClientEach,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kMaxTimeout,
+    },
+  };
+
+  for (const auto& test_data : kTestData) {
+    PrintBackendServiceManager::ResetForTesting();
+    PrintBackendServiceManager::GetInstance().SetClientsForTesting(
+        test_data.query_clients, test_data.query_with_ui_client,
+        test_data.print_document_clients);
+
+    absl::optional<base::TimeDelta> new_timeout =
+        PrintBackendServiceManager::GetInstance()
+            .DetermineIdleTimeoutUpdateOnRegisteredClient(
+                test_data.modified_client_type, kRemoteIdEmpty);
+    EXPECT_EQ(new_timeout, test_data.new_timeout);
+  }
+}
+
+TEST(PrintBackendServiceManagerTest,
+     IsIdleTimeoutUpdateNeededForUnregisteredClient) {
+  const struct TestData {
+    ClientsSet query_clients;
+    ClientsSet query_with_ui_client;
+    PrintClientsMap print_document_clients;
+    PrintBackendServiceManager::ClientType modified_client_type;
+    absl::optional<base::TimeDelta> new_timeout;
+  } kTestData[] = {
+    // == PrintBackendServiceManager::ClientType::kQuery
+
+    // No remaining clients should yield a new no-clients-registered timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        PrintBackendServiceManager::kNoClientsRegisteredResetOnIdleTimeout,
+    },
+    // Any remaining query client should yield no new timeout needed.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+    // A query with UI client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+    // Any print document client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kQuery,
+        kNoNewTimeoutNeeded,
+    },
+
+    // == PrintBackendServiceManager::ClientType::kQueryWithUi
+
+    // No remaining clients should yield a new no-clients-registered timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        PrintBackendServiceManager::kNoClientsRegisteredResetOnIdleTimeout,
+    },
+    // Any remaining query client should yield a new clients-registered
+    // timeout.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        PrintBackendServiceManager::kClientsRegisteredResetOnIdleTimeout,
+    },
+#if BUILDFLAG(IS_LINUX)
+    // Any remaining query with UI client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kNoNewTimeoutNeeded,
+    },
+#endif
+    // Any print document client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kQueryWithUi,
+        kNoNewTimeoutNeeded,
+    },
+
+    // == PrintBackendServiceManager::ClientType::kPrintDocument
+
+    // No remaining clients should yield a new no-clients-registered timeout.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        PrintBackendServiceManager::kNoClientsRegisteredResetOnIdleTimeout,
+    },
+    // Any remaining print document client should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentOnePrinterWithOneClient,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kNoNewTimeoutNeeded,
+    },
+    // Any remaining query client should yield a new clients-registered
+    // timeout.
+    {
+        kTestQueryWithOneClient,
+        kTestQueryWithUiNoClients,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        PrintBackendServiceManager::kClientsRegisteredResetOnIdleTimeout,
+    },
+    // A remaining query with UI should yield no new timeout needed.
+    {
+        kTestQueryNoClients,
+        kTestQueryWithUiOneClient,
+        kTestPrintDocumentNoClients,
+        PrintBackendServiceManager::ClientType::kPrintDocument,
+        kNoNewTimeoutNeeded,
+    },
+  };
+
+  for (const auto& test_data : kTestData) {
+    PrintBackendServiceManager::ResetForTesting();
+    PrintBackendServiceManager::GetInstance().SetClientsForTesting(
+        test_data.query_clients, test_data.query_with_ui_client,
+        test_data.print_document_clients);
+
+    absl::optional<base::TimeDelta> new_timeout =
+        PrintBackendServiceManager::GetInstance()
+            .DetermineIdleTimeoutUpdateOnUnregisteredClient(
+                test_data.modified_client_type, kRemoteIdEmpty);
+    EXPECT_EQ(new_timeout, test_data.new_timeout);
+  }
+}
+
+}  // namespace printing

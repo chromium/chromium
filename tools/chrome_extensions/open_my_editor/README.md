@@ -44,7 +44,7 @@ select `Open My Editor $file`.
     startup so that you don't have to remember to manually start it.
 
 4. Create a `myeditor` executable to be used for launching your editor, and add 
-   it to your path. See [`myeditor-example/`](https://chromium.googlesource.com/chromium/src.git/+/master/tools/chrome_extensions/open_my_editor/myeditor-example/).
+   it to your path. See [`myeditor-example/`](https://chromium.googlesource.com/chromium/src.git/+/main/tools/chrome_extensions/open_my_editor/myeditor-example/).
 5. Enjoy.
 
 ## How it works

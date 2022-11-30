@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.test.filters.SmallTest;
@@ -21,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.ActionModeCallback;
 import org.chromium.weblayer.ActionModeItemType;
@@ -31,6 +33,7 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -123,18 +126,19 @@ public class TabTest {
 
     private Bitmap captureScreenShot(float scale) throws TimeoutException {
         Bitmap[] bitmapHolder = new Bitmap[1];
+        int[] errorCodeHolder = new int[1];
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab tab = mActivity.getTab();
             tab.captureScreenShot(scale, (Bitmap bitmap, int errorCode) -> {
-                Assert.assertNotNull(bitmap);
-                Assert.assertEquals(0, errorCode);
+                errorCodeHolder[0] = errorCode;
                 bitmapHolder[0] = bitmap;
-                // Failure is ok here, so not checking |bitmap| or |errorCode|.
                 callbackHelper.notifyCalled();
             });
         });
         callbackHelper.waitForFirst();
+        Assert.assertNotNull(bitmapHolder[0]);
+        Assert.assertEquals(0, errorCodeHolder[0]);
         return bitmapHolder[0];
     }
 
@@ -162,6 +166,34 @@ public class TabTest {
         final int allowedError = 10;
         Assert.assertTrue(Math.abs(bitmap.getWidth() / 2 - halfBitmap.getWidth()) < allowedError);
         Assert.assertTrue(Math.abs(bitmap.getHeight() / 2 - halfBitmap.getHeight()) < allowedError);
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(101)
+    @DisabledTest(message = "https://crbug.com/1319845")
+    public void testCaptureScreenShotAfterResize() throws TimeoutException, ExecutionException {
+        String url = mActivityTestRule.getTestDataURL("quadrant_colors.html");
+        mActivity = mActivityTestRule.launchShellWithUrl(url);
+
+        int newHeight = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            View view = mActivity.getFragment().getView();
+            int height = view.getHeight() + 10;
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+            view.setLayoutParams(params);
+            view.requestLayout();
+            return height;
+        });
+
+        CriteriaHelper.pollUiThread(() -> {
+            View view = mActivity.getFragment().getView();
+            int height = view.getHeight();
+            Criteria.checkThat(height, Matchers.is(newHeight));
+        });
+
+        Bitmap bitmap = captureScreenShot(1.f);
+        checkQuadrantColors(bitmap);
     }
 
     @Test
@@ -265,7 +297,7 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(88) // Bug fix in 88.
+    @DisabledTest(message = "https://crbug.com/1248183")
     // This is a regression test for https://crbug.com/1075744 .
     public void testRotationDoesntChangeVisibility() throws Exception {
         String url = mActivityTestRule.getTestDataURL("rotation.html");
@@ -287,7 +319,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(88)
     public void setFloatingActionModeOverride() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -304,7 +335,6 @@ public class TabTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(88) // New API added in 88.
     public void testWillAutomaticallyReloadAfterCrash() throws Exception {
         mActivity = mActivityTestRule.launchShellWithUrl("about:blank");
         Browser browser2 = TestThreadUtils.runOnUiThreadBlocking(() -> {

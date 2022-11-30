@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,22 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 
-namespace net {
-
-namespace nqe {
-
-namespace internal {
+namespace net::nqe::internal {
 
 namespace {
 
 // Generate a compact representation for the first IP in |address_list|. For
 // IPv4, all 32 bits are used and for IPv6, the first 64 bits are used as the
 // remote host identifier.
-base::Optional<IPHash> CalculateIPHash(const AddressList& address_list) {
+absl::optional<IPHash> CalculateIPHash(const AddressList& address_list) {
   if (address_list.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   const IPAddress& ip_addr = address_list.front().address();
 
@@ -71,7 +67,6 @@ SocketWatcher::SocketWatcher(
                         (!address_list.empty() &&
                          address_list.front().address().IsPubliclyRoutable())),
       tick_clock_(tick_clock),
-      first_quic_rtt_notification_received_(false),
       host_(CalculateIPHash(address_list)) {
   DCHECK(tick_clock_);
   DCHECK(last_rtt_notification_.is_null());
@@ -109,7 +104,7 @@ void SocketWatcher::OnUpdatedRTTAvailable(const base::TimeDelta& rtt) {
   // tcp_socket_posix may sometimes report RTT as 1 microsecond when the RTT was
   // actually invalid. See:
   // https://cs.chromium.org/chromium/src/net/socket/tcp_socket_posix.cc?rcl=7ad660e34f2a996e381a85b2a515263003b0c171&l=106.
-  if (rtt <= base::TimeDelta::FromMicroseconds(1))
+  if (rtt <= base::Microseconds(1))
     return;
 
   if (!first_quic_rtt_notification_received_ &&
@@ -130,8 +125,4 @@ void SocketWatcher::OnConnectionChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-}  // namespace internal
-
-}  // namespace nqe
-
-}  // namespace net
+}  // namespace net::nqe::internal

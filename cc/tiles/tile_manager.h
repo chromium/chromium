@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/sequenced_task_runner.h"
-#include "base/values.h"
+#include "base/memory/raw_ptr.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "cc/base/unique_notifier.h"
+#include "cc/paint/target_color_params.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
 #include "cc/raster/raster_source.h"
@@ -44,6 +46,7 @@ class TracedValue;
 
 namespace cc {
 class ImageDecodeCache;
+class TilesWithResourceIterator;
 
 class CC_EXPORT TileManagerClient {
  public:
@@ -77,20 +80,18 @@ class CC_EXPORT TileManagerClient {
   virtual std::unique_ptr<EvictionTilePriorityQueue> BuildEvictionQueue(
       TreePriority tree_priority) = 0;
 
+  // Returns an iterator over all the tiles that have a resource.
+  virtual std::unique_ptr<TilesWithResourceIterator>
+  CreateTilesWithResourceIterator() = 0;
+
   // Informs the client that due to the currently rasterizing (or scheduled to
   // be rasterized) tiles, we will be in a position that will likely require a
   // draw. This can be used to preemptively start a frame.
   virtual void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) = 0;
 
-  // Requests the color space into which tiles should be rasterized.
-  virtual gfx::ColorSpace GetRasterColorSpace(
+  // Requests the color parameters in which the tiles should be rasterized.
+  virtual TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const = 0;
-
-  // Return the SDR white level for rasterization. Some systems have variable
-  // white levels (e.g., Windows SDR brightness slider). This should return the
-  // level of the monitor on which the rasterized content will be displayed (and
-  // changing the SDR white level of the display will trigger a re-raster).
-  virtual float GetSDRWhiteLevel() const = 0;
 
   // Requests that a pending tree be scheduled to invalidate content on the
   // pending on active tree. This is currently used when tiles that are
@@ -181,7 +182,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
                     TaskGraphRunner* task_graph_runner,
                     RasterBufferProvider* raster_buffer_provider,
                     bool use_gpu_rasterization,
-                    bool use_oop_rasterization,
                     RasterQueryQueue* pending_raster_queries);
 
   // This causes any completed raster work to finalize, so that tiles get up to
@@ -220,7 +220,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
           resource_pool_->AcquireResource(
               tiles[i]->desired_texture_size(),
               raster_buffer_provider_->GetResourceFormat(),
-              client_->GetRasterColorSpace(gfx::ContentColorUsage::kSRGB));
+              client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
+                  .color_space);
       raster_buffer_provider_->AcquireBufferForRaster(
           resource, 0, 0,
           /*depends_on_at_raster_decodes=*/false,
@@ -376,12 +377,14 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
     CheckerImageTracker::ImageDecodeQueue checker_image_decode_queue;
   };
 
+  // Frees the resources of all occluded tiles.
+  void FreeResourcesForOccludedTiles();
+
   void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(
       const PrioritizedTile& prioritized_tile,
-      const gfx::ColorSpace& raster_color_space,
-      float sdr_white_level,
+      const TargetColorParams& target_color_params,
       PrioritizedWorkToSchedule* work_to_schedule);
 
   std::unique_ptr<EvictionTilePriorityQueue>
@@ -414,16 +417,14 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   void PartitionImagesForCheckering(
       const PrioritizedTile& prioritized_tile,
-      const gfx::ColorSpace& raster_color_space,
-      float sdr_white_level,
+      const TargetColorParams& target_color_params,
       std::vector<DrawImage>* sync_decoded_images,
       std::vector<PaintImage>* checkered_images,
       const gfx::Rect* invalidated_rect,
       base::flat_map<PaintImage::Id, size_t>* image_to_frame_index = nullptr);
   void AddCheckeredImagesToDecodeQueue(
       const PrioritizedTile& prioritized_tile,
-      const gfx::ColorSpace& raster_color_space,
-      float sdr_white_level,
+      const TargetColorParams& target_color_params,
       CheckerImageTracker::DecodeType decode_type,
       CheckerImageTracker::ImageDecodeQueue* image_decode_queue);
 
@@ -438,18 +439,19 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void ScheduleCheckRasterFinishedQueries();
   void CheckRasterFinishedQueries();
 
-  TileManagerClient* client_;
-  base::SequencedTaskRunner* task_runner_;
-  ResourcePool* resource_pool_;
+  bool ShouldRasterOccludedTiles() const;
+
+  raw_ptr<TileManagerClient, DanglingUntriaged> client_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<ResourcePool, DanglingUntriaged> resource_pool_;
   std::unique_ptr<TileTaskManager> tile_task_manager_;
-  RasterBufferProvider* raster_buffer_provider_;
+  raw_ptr<RasterBufferProvider, DanglingUntriaged> raster_buffer_provider_;
   GlobalStateThatImpactsTilePriority global_state_;
   size_t scheduled_raster_task_limit_;
 
   const TileManagerSettings tile_manager_settings_;
   bool use_gpu_rasterization_;
-  bool use_oop_rasterization_;
-  RasterQueryQueue* pending_raster_queries_ = nullptr;
+  raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
   std::unordered_map<Tile::Id, Tile*> tiles_;
 
@@ -498,6 +500,14 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   // has completed.
   bool has_pending_queries_ = false;
   base::CancelableOnceClosure check_pending_tile_queries_callback_;
+
+  // Signaled inside FinishTasksAndCleanUp() to avoid deadlock.
+  // FinishTasksAndCleanUp() may block waiting for worker thread tasks to finish
+  // and worker thread tasks may block on this thread causing deadlock. Worker
+  // thread tasks can use WaitableEvent::WaitMany() to wait on two events, one
+  // for the original task completion plus this event to cancel waiting on
+  // completion when FinishTasksAndCleanUp() runs.
+  base::WaitableEvent shutdown_event_;
 
   // We need two WeakPtrFactory objects as the invalidation pattern of each is
   // different. The |task_set_finished_weak_ptr_factory_| is invalidated any

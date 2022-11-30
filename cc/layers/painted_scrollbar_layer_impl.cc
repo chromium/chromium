@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ PaintedScrollbarLayerImpl::PaintedScrollbarLayerImpl(
 PaintedScrollbarLayerImpl::~PaintedScrollbarLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> PaintedScrollbarLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return PaintedScrollbarLayerImpl::Create(tree_impl, id(), orientation(),
                                            is_left_side_vertical_scrollbar(),
                                            is_overlay_scrollbar());
@@ -130,7 +130,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
     quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                  scaled_visible_thumb_quad_rect, needs_blending,
                  thumb_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);
@@ -150,18 +150,60 @@ void PaintedScrollbarLayerImpl::AppendQuads(
     quad->SetNew(shared_quad_state, scaled_track_quad_rect,
                  scaled_visible_track_quad_rect, needs_blending,
                  track_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SK_ColorTRANSPARENT, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
     ValidateQuadResources(quad);
   }
 }
 
-gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingRectInTargetSpace() const {
+gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingVisibleRectInTargetSpace()
+    const {
   if (internal_content_bounds_.IsEmpty())
     return gfx::Rect();
   DCHECK_GT(internal_contents_scale_, 0.f);
-  return GetScaledEnclosingRectInTargetSpace(internal_contents_scale_);
+  return GetScaledEnclosingVisibleRectInTargetSpace(internal_contents_scale_);
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::ComputeThumbQuadRect() const {
+  gfx::Rect thumb_rect = ScrollbarLayerImplBase::ComputeThumbQuadRect();
+
+  // Position composited Fluent scrollbar thumb in the center of the track.
+  if (IsFluentScrollbarEnabled()) {
+    const int track_thickness =
+        orientation() == ScrollbarOrientation::HORIZONTAL ? track_rect_.height()
+                                                          : track_rect_.width();
+    const int thumb_offset =
+        static_cast<int>((track_thickness - ThumbThickness()) / 2.0f);
+
+    if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+      thumb_rect.Offset(0, thumb_offset);
+    } else {
+      thumb_rect.Offset(
+          is_left_side_vertical_scrollbar() ? -thumb_offset : thumb_offset, 0);
+    }
+  }
+
+  return thumb_rect;
+}
+
+gfx::Rect PaintedScrollbarLayerImpl::ComputeHitTestableThumbQuadRect() const {
+  if (!IsFluentScrollbarEnabled())
+    return ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect();
+
+  // Expand the scrollbar thumb's hit testable rect to be able to capture
+  // the thumb across the entire width of the track rect.
+  gfx::Rect thumb_rect = ComputeThumbQuadRect();
+  const gfx::Rect back_track_rect = BackTrackRect();
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+    thumb_rect.set_y(back_track_rect.y());
+    thumb_rect.set_height(back_track_rect.height());
+    return thumb_rect;
+  } else {
+    thumb_rect.set_x(back_track_rect.x());
+    thumb_rect.set_width(back_track_rect.width());
+    return thumb_rect;
+  }
 }
 
 void PaintedScrollbarLayerImpl::SetJumpOnTrackClick(bool jump_on_track_click) {

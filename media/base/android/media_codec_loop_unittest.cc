@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include <memory>
 
 #include "base/android/build_info.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/android/media_codec_bridge.h"
@@ -50,6 +49,9 @@ class MediaCodecLoopTest : public testing::Test {
       : task_runner_handle_(mock_task_runner_),
         client_(std::make_unique<MockMediaCodecLoopClient>()) {}
 
+  MediaCodecLoopTest(const MediaCodecLoopTest&) = delete;
+  MediaCodecLoopTest& operator=(const MediaCodecLoopTest&) = delete;
+
   ~MediaCodecLoopTest() override {}
 
  protected:
@@ -85,15 +87,16 @@ class MediaCodecLoopTest : public testing::Test {
 
     // TODO(liberato): assume that MCL doesn't retry for 30 seconds.  Note
     // that this doesn't actually wall-clock wait.
-    mock_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(30));
+    mock_task_runner_->FastForwardBy(base::Seconds(30));
   }
 
-  void ConstructCodecLoop(int sdk_int = base::android::SDK_VERSION_LOLLIPOP) {
-    std::unique_ptr<MediaCodecBridge> codec(new MockMediaCodecBridge());
+  void ConstructCodecLoop() {
+    int sdk_int = base::android::SDK_VERSION_NOUGAT;
+    auto codec = std::make_unique<MockMediaCodecBridge>();
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
-    codec_loop_.reset(new MediaCodecLoop(sdk_int, client_.get(),
-                                         std::move(codec), mock_task_runner_));
+    codec_loop_ = std::make_unique<MediaCodecLoop>(
+        sdk_int, client_.get(), std::move(codec), mock_task_runner_);
     codec_loop_->SetTestTickClock(mock_task_runner_->GetMockTickClock());
     Mock::VerifyAndClearExpectations(client_.get());
   }
@@ -139,7 +142,7 @@ class MediaCodecLoopTest : public testing::Test {
     MediaCodecLoop::InputData data;
     data.memory = reinterpret_cast<const uint8_t*>("big buck bunny");
     data.length = 14;
-    data.presentation_time = base::TimeDelta::FromSeconds(1);
+    data.presentation_time = base::Seconds(1);
     return data;
   }
 
@@ -147,7 +150,7 @@ class MediaCodecLoopTest : public testing::Test {
     int index = 1;
     size_t offset = 0;
     size_t size = 1024;
-    base::TimeDelta pts = base::TimeDelta::FromSeconds(1);
+    base::TimeDelta pts = base::Seconds(1);
     bool eos = false;
     bool key_frame = true;
   };
@@ -191,17 +194,15 @@ class MediaCodecLoopTest : public testing::Test {
 
   std::unique_ptr<MediaCodecLoop> codec_loop_;
   std::unique_ptr<MockMediaCodecLoopClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecLoopTest);
 };
 
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
-  const int sdk_int = base::android::SDK_VERSION_LOLLIPOP;
-  codec_loop_.reset(
-      new MediaCodecLoop(sdk_int, client_.get(), std::move(codec),
-                         scoped_refptr<base::SingleThreadTaskRunner>()));
+  const int sdk_int = base::android::SDK_VERSION_NOUGAT;
+  codec_loop_ = std::make_unique<MediaCodecLoop>(
+      sdk_int, client_.get(), std::move(codec),
+      scoped_refptr<base::SingleThreadTaskRunner>());
   // Do not WaitUntilIdle() here, since that assumes that we have a codec.
 
   ASSERT_FALSE(codec_loop_->GetCodec());
@@ -403,7 +404,7 @@ TEST_F(MediaCodecLoopTest, TestSeveralPendingIOBuffers) {
     OutputBuffer buffer;
     buffer.index = i;
     buffer.size += i;
-    buffer.pts = base::TimeDelta::FromSeconds(i + 1);
+    buffer.pts = base::Seconds(i + 1);
     ExpectDequeueOutputBuffer(buffer);
     ExpectOnDecodedFrame(buffer);
   }

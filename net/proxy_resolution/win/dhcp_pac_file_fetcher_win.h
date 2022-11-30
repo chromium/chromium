@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -36,10 +36,16 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
     : public DhcpPacFileFetcher,
       public base::SupportsWeakPtr<DhcpPacFileFetcherWin> {
  public:
+  DhcpPacFileFetcherWin() = delete;
+
   // Creates a DhcpPacFileFetcherWin that issues requests through
   // |url_request_context|. |url_request_context| must remain valid for
   // the lifetime of DhcpPacFileFetcherWin.
   explicit DhcpPacFileFetcherWin(URLRequestContext* url_request_context);
+
+  DhcpPacFileFetcherWin(const DhcpPacFileFetcherWin&) = delete;
+  DhcpPacFileFetcherWin& operator=(const DhcpPacFileFetcherWin&) = delete;
+
   ~DhcpPacFileFetcherWin() override;
 
   // DhcpPacFileFetcher implementation.
@@ -74,6 +80,9 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
    public:
     AdapterQuery();
 
+    AdapterQuery(const AdapterQuery&) = delete;
+    AdapterQuery& operator=(const AdapterQuery&) = delete;
+
     // This is the method that runs on the worker pool thread.
     void GetCandidateAdapterNames();
 
@@ -98,13 +107,11 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
     // the task has completed on the worker thread. No locking required.
     std::set<std::string> adapter_names_;
     std::unique_ptr<DhcpAdapterNamesLoggingInfo> logging_info_;
-
-    DISALLOW_COPY_AND_ASSIGN(AdapterQuery);
   };
 
   // Virtual methods introduced to allow unit testing.
-  virtual DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher();
-  virtual AdapterQuery* ImplCreateAdapterQuery();
+  virtual std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher();
+  virtual scoped_refptr<AdapterQuery> ImplCreateAdapterQuery();
   virtual base::TimeDelta ImplGetMaxWait();
   virtual void ImplOnGetCandidateAdapterNamesDone() {}
 
@@ -160,12 +167,12 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   FetcherVector fetchers_;
 
   // Current state of this state machine.
-  State state_;
+  State state_ = STATE_START;
 
   // The following members are associated with the latest call to Fetch().
 
   // Number of fetchers we are waiting for.
-  int num_pending_fetchers_;
+  int num_pending_fetchers_ = 0;
 
   // Lets our client know we're done. Not valid in states START or DONE.
   CompletionOnceCallback callback_;
@@ -175,7 +182,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
 
   // Pointer to string we will write results to. Not valid in states
   // START and DONE.
-  std::u16string* destination_string_;
+  raw_ptr<std::u16string> destination_string_ = nullptr;
 
   // PAC URL retrieved from DHCP, if any. Valid only in state STATE_DONE.
   GURL pac_url_;
@@ -183,7 +190,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   base::OneShotTimer wait_timer_;
 
   // Set to nullptr on cancellation.
-  URLRequestContext* url_request_context_;
+  raw_ptr<URLRequestContext> url_request_context_;
 
   // NULL or the AdapterQuery currently in flight.
   scoped_refptr<AdapterQuery> last_query_;
@@ -192,8 +199,6 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   const scoped_refptr<base::TaskRunner> task_runner_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DhcpPacFileFetcherWin);
 };
 
 }  // namespace net

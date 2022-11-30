@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,7 @@ class ReadingListManagerImplTest : public testing::Test {
   ~ReadingListManagerImplTest() override = default;
 
   void SetUp() override {
+    clock_.SetNow(base::Time::Now());
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
     manager_ =
@@ -109,7 +110,7 @@ TEST_F(ReadingListManagerImplTest, Load) {
   const auto* node = manager()->Get(url);
   EXPECT_TRUE(node);
   EXPECT_EQ(url, node->url());
-  EXPECT_EQ(1u, manager()->size());
+  EXPECT_EQ(clock()->Now(), node->date_added());
   EXPECT_EQ(1u, manager()->unread_size());
 }
 
@@ -177,19 +178,19 @@ TEST_F(ReadingListManagerImplTest, GetMatchingNodes) {
   // Search with a multi-word query text.
   std::vector<const BookmarkNode*> results;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new std::u16string(u"dog cat"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"dog cat");
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(1u, results.size());
 
   // Search with a single word query text.
   results.clear();
-  query.word_phrase_query.reset(new std::u16string(u"dog"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"dog");
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(2u, results.size());
 
   // Search with empty string. Shouldn't match anything.
   results.clear();
-  query.word_phrase_query.reset(new std::u16string());
+  query.word_phrase_query = std::make_unique<std::u16string>();
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(0u, results.size());
 }
@@ -202,7 +203,7 @@ TEST_F(ReadingListManagerImplTest, GetMatchingNodesWithMaxCount) {
   // Search with a query text.
   std::vector<const BookmarkNode*> results;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new std::u16string(u"dog"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"dog");
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(2u, results.size());
 
@@ -235,7 +236,7 @@ TEST_F(ReadingListManagerImplTest, AddInvalidTitle) {
   // Use an invalid UTF8 string.
   std::u16string dummy;
   EXPECT_FALSE(
-      base::UTF8ToUTF16(kInvalidUTF8, base::size(kInvalidUTF8), &dummy));
+      base::UTF8ToUTF16(kInvalidUTF8, std::size(kInvalidUTF8), &dummy));
   const auto* new_node = Add(url, std::string(kInvalidUTF8));
   EXPECT_EQ(nullptr, new_node)
       << "Should return nullptr when failed to parse the title.";

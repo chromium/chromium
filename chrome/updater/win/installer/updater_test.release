@@ -1,0 +1,3 @@
+[GENERAL]
+updater_test.exe: %(UpdaterDir)s\updater.exe
+gen\chrome\updater\win\uninstall.cmd: %(UpdaterDir)s\

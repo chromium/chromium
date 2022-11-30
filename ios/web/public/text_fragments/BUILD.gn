@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("text_fragments") {
+  deps = [ "//base" ]
+
+  public_deps = [
+    "//components/shared_highlighting/core/common",
+    "//ios/web/public/",
+  ]
+
+  sources = [ "text_fragments_manager.h" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

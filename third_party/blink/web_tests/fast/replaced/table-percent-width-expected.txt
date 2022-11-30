@@ -13,10 +13,10 @@ PASS getWidth('img-2') is '100px'
 PASS getHeight('img-2') is '100px'
 PASS getWidth('img-3') is '40px'
 PASS getHeight('img-3') is '40px'
-PASS getWidth('img-4') is '102px'
-PASS getHeight('img-4') is '102px'
+PASS getWidth('img-4') is '100px'
+PASS getHeight('img-4') is '100px'
 PASS getWidth('img-5') is '40px'
-PASS getHeight('img-5') is '102px'
+PASS getHeight('img-5') is '40px'
 PASS successfullyParsed is true
 
 TEST COMPLETE

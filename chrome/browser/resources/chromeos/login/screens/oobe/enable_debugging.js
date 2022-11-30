@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,23 @@
  * @fileoverview Enable developer features screen implementation.
  */
 
-'use strict';
+import '//resources/cr_elements/action_link.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
 
-(function() {
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+
 
 /**
  * Possible UI states of the enable debugging screen.
@@ -16,7 +30,7 @@
  * in C++ code and the order of the enum must be the same.
  * @enum {string}
  */
-const UI_STATE = {
+const EnableDebuggingState = {
   ERROR: 'error',
   NONE: 'none',
   REMOVE_PROTECTION: 'remove-protection',
@@ -25,62 +39,92 @@ const UI_STATE = {
   DONE: 'done',
 };
 
-Polymer({
-  is: 'oobe-debugging-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const EnableDebuggingBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   removeProtectionProceedButton:  OobeTextButton,
+ *   password:  CrInputElement,
+ *   okButton:  OobeTextButton,
+ *   errorOkButton: OobeTextButton
+ * }}
+ */
+ EnableDebuggingBase.$;
 
-  EXTERNAL_API: ['updateState'],
+/**
+ * @polymer
+ */
+class EnableDebugging extends EnableDebuggingBase {
+  static get is() {
+    return 'enable-debugging-element';
+  }
 
-  properties: {
-    /**
-     * Current value of password input field.
-     */
-    password_: {type: String, value: ''},
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Current value of repeat password input field.
-     */
-    passwordRepeat_: {type: String, value: ''},
+  get EXTERNAL_API() {
+    return ['updateState'];
+  }
 
-    /**
-     * Whether password input fields are matching.
-     */
-    passwordsMatch_: {
-      type: Boolean,
-      computed: 'computePasswordsMatch_(password_, passwordRepeat_)',
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Current value of password input field.
+       */
+      password_: {type: String, value: ''},
+
+      /**
+       * Current value of repeat password input field.
+       */
+      passwordRepeat_: {type: String, value: ''},
+
+      /**
+       * Whether password input fields are matching.
+       */
+      passwordsMatch_: {
+        type: Boolean,
+        computed: 'computePasswordsMatch_(password_, passwordRepeat_)',
+      },
+    };
+  }
 
   ready() {
-    this.initializeLoginScreen('EnableDebuggingScreen', {
-      resetAllowed: false,
-    });
-  },
+    super.ready();
+    this.initializeLoginScreen('EnableDebuggingScreen');
+  }
 
   defaultUIStep() {
-    return UI_STATE.NONE;
-  },
+    return EnableDebuggingState.NONE;
+  }
 
-  UI_STEPS: UI_STATE,
+  get UI_STEPS() {
+    return EnableDebuggingState;
+  }
 
   /**
    * Returns a control which should receive an initial focus.
    */
   get defaultControl() {
-    if (this.uiStep == UI_STATE.REMOVE_PROTECTION)
+    if (this.uiStep == EnableDebuggingState.REMOVE_PROTECTION) {
       return this.$.removeProtectionProceedButton;
-    else if (this.uiStep == UI_STATE.SETUP)
+    } else if (this.uiStep == EnableDebuggingState.SETUP) {
       return this.$.password;
-    else if (this.uiStep == UI_STATE.DONE)
+    } else if (this.uiStep == EnableDebuggingState.DONE) {
       return this.$.okButton;
-    else if (this.uiStep == UI_STATE.ERROR)
+    } else if (this.uiStep == EnableDebuggingState.ERROR) {
       return this.$.errorOkButton;
-  },
+    } else {
+      return null;
+    }
+  }
 
   /**
    * Cancels the enable debugging screen and drops the user back to the
@@ -88,46 +132,43 @@ Polymer({
    */
   cancel() {
     this.userActed('cancel');
-  },
+  }
 
   /**
    * Update UI for corresponding state of the screen.
    * @param {number} state
-   * @suppress {missingProperties}
    */
   updateState(state) {
-    // Use `state + 1` as index to locate the corresponding UI_STATE
-    this.setUIStep(Object.values(UI_STATE)[state + 1]);
+    // Use `state + 1` as index to locate the corresponding EnableDebuggingState
+    this.setUIStep(Object.values(EnableDebuggingState)[state + 1]);
 
-    if (this.defaultControl)
+    if (this.defaultControl) {
       this.defaultControl.focus();
-
-    if (Oobe.getInstance().currentScreen === this)
-      Oobe.getInstance().updateScreenSize(this);
-  },
+    }
+  }
 
   computePasswordsMatch_(password, password2) {
     return (password.length == 0 && password2.length == 0) ||
         (password == password2 && password.length >= 4);
-  },
+  }
 
   onHelpLinkClicked_() {
     this.userActed('learnMore');
-  },
+  }
 
   onRemoveButtonClicked_() {
     this.userActed('removeRootFSProtection');
-  },
+  }
 
   onEnableButtonClicked_() {
-    chrome.send('enableDebuggingOnSetup', [this.password_]);
+    this.userActed(['setup', this.password_]);
     this.password_ = '';
     this.passwordRepeat_ = '';
-  },
+  }
 
   onOKButtonClicked_() {
     this.userActed('done');
-  },
+  }
+}
 
-});
-})();
+customElements.define(EnableDebugging.is, EnableDebugging);

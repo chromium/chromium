@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "net/base/escape.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/re2/src/re2/re2.h"  // nogncheck
@@ -21,12 +21,12 @@
 
 namespace {
 const char kLeader[] = "$i18n";
-const size_t kLeaderSize = base::size(kLeader) - 1;
+const size_t kLeaderSize = std::size(kLeader) - 1;
 const char kKeyOpen = '{';
 const char kKeyClose = '}';
 const char kHtmlTemplateEnd[] = "<!--_html_template_end_-->";
 const char kHtmlTemplateStart[] = "<!--_html_template_start_-->";
-const size_t kHtmlTemplateStartSize = base::size(kHtmlTemplateStart) - 1;
+const size_t kHtmlTemplateStartSize = std::size(kHtmlTemplateStart) - 1;
 
 enum HtmlTemplateType { INVALID = 0, NONE = 1, VALID = 2 };
 
@@ -94,7 +94,7 @@ std::string PolymerParameterEscape(const std::string& in_string,
 }
 
 bool EscapeForJS(const std::string& in_string,
-                 base::Optional<char> in_previous,
+                 absl::optional<char> in_previous,
                  std::string* out_string) {
   out_string->reserve(in_string.size() * 2);
   bool last_was_dollar = in_previous && in_previous.value() == '$';
@@ -160,8 +160,7 @@ bool ReplaceTemplateExpressionsInternal(
     size_t key_end = source.find(kKeyClose, current_pos);
     CHECK_NE(key_end, std::string::npos);
 
-    std::string key =
-        source.substr(current_pos, key_end - current_pos).as_string();
+    std::string key(source.substr(current_pos, key_end - current_pos));
     CHECK(!key.empty());
 
     auto value = replacements.find(key);
@@ -171,9 +170,9 @@ bool ReplaceTemplateExpressionsInternal(
     std::string replacement = value->second;
     if (is_javascript) {
       // Run JS escaping first.
-      base::Optional<char> last = formatted->empty()
-                                      ? base::nullopt
-                                      : base::make_optional(formatted->back());
+      absl::optional<char> last = formatted->empty()
+                                      ? absl::nullopt
+                                      : absl::make_optional(formatted->back());
       std::string escaped_replacement;
       if (!EscapeForJS(replacement, last, &escaped_replacement))
         return false;
@@ -182,7 +181,7 @@ bool ReplaceTemplateExpressionsInternal(
 
     if (context.empty()) {
       // Make the replacement HTML safe.
-      replacement = net::EscapeForHTML(replacement);
+      replacement = base::EscapeForHTML(replacement);
     } else if (context == "Raw") {
       // Pass the replacement through unchanged.
     } else if (context == "Polymer") {
@@ -213,13 +212,12 @@ bool ReplaceTemplateExpressionsInternal(
 namespace ui {
 
 void TemplateReplacementsFromDictionaryValue(
-    const base::DictionaryValue& dictionary,
+    const base::Value::Dict& dictionary,
     TemplateReplacements* replacements) {
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    std::string str_value;
-    if (it.value().GetAsString(&str_value))
-      (*replacements)[it.key()] = str_value;
+  for (auto pair : dictionary) {
+    const std::string* value = pair.second.GetIfString();
+    if (value)
+      (*replacements)[pair.first] = pair.second.GetString();
   }
 }
 
@@ -240,12 +238,12 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     // If there are no more templates, copy the remaining JS to the output and
     // return true.
     if (current_template.type == NONE) {
-      formatted->append(remaining.as_string());
+      formatted->append(std::string(remaining));
       return true;
     }
 
     // Copy the JS before the template to the output.
-    formatted->append(remaining.substr(0, current_template.start).as_string());
+    formatted->append(std::string(remaining.substr(0, current_template.start)));
 
     // Retrieve the HTML portion of the source.
     base::StringPiece html_template =
@@ -265,7 +263,6 @@ bool ReplaceTemplateExpressionsInJS(base::StringPiece source,
     remaining =
         remaining.substr(current_template.start + current_template.length);
   }
-  return true;
 }
 
 std::string ReplaceTemplateExpressions(base::StringPiece source,

@@ -36,6 +36,7 @@
 
 namespace blink {
 class TextResourceDecoder;
+struct WebEncodingData;
 
 class DocumentEncodingData {
   DISALLOW_NEW();
@@ -43,6 +44,7 @@ class DocumentEncodingData {
  public:
   DocumentEncodingData();
   explicit DocumentEncodingData(const TextResourceDecoder&);
+  explicit DocumentEncodingData(const WebEncodingData&);
 
   const WTF::TextEncoding& Encoding() const { return encoding_; }
   void SetEncoding(const WTF::TextEncoding&);

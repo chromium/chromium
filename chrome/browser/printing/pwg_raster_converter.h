@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ struct PwgRasterSettings;
 class PwgRasterConverter {
  public:
   // Callback for when the PDF is converted to a PWG raster.
-  // |region| contains the PWG raster data.
+  // `region` contains the PWG raster data.
   using ResultCallback =
       base::OnceCallback<void(base::ReadOnlySharedMemoryRegion /*region*/)>;
 

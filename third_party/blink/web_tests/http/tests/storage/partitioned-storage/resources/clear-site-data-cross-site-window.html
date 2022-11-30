@@ -1,0 +1,39 @@
+<!doctype html>
+<head>
+<title>Test Clear-Site-Data and partitioned storage</title>
+<script src="/resources/testharness.js"></script>
+<script src="/storage/resources/testharness-helpers.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(async () => {
+  assert_equals(window.location.hostname, TEST_HOST);
+  assert_equals(localStorage.length, 0);
+
+  localStorage.setItem("cross-site-window", "test");
+  assert_equals(localStorage.length, 1);
+  
+  // Test that Clear-Site-Data deletes the local storage in this partition.
+  const resp = await fetch(
+      "/storage/resources/clear-site-data.php", {method: "GET"});
+  assert_equals(resp.status, 200);
+
+  var totalTime = 0;
+  // 2 second timeout.
+  while ((localStorage.length != 0) && (totalTime < 2000)) {
+      await timePasses(50);
+      totalTime += 50;
+  }
+  assert_equals(localStorage.length, 0);
+
+  const url = new URL(
+      "/storage/partitioned-storage/resources/" +
+          "clear-site-data-same-site-window.html",
+      `https://${ORIGINAL_HOST}:${window.location.port}`);
+  const popup = window.open(String(url));
+  fetch_tests_from_window(popup);
+}, "Clearing partitioned storage in another partition");
+
+</script>
+</body>

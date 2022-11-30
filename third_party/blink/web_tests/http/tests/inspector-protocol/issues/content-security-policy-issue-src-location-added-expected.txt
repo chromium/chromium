@@ -11,7 +11,6 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 0
                     lineNumber : 2
-                    scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-with-src-location.php
                 }
                 violatedDirective : style-src-elem

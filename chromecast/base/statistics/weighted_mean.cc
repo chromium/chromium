@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,14 @@
 
 namespace chromecast {
 
-WeightedMean::WeightedMean()
-    : weighted_mean_(0),
-      variance_sum_(0),
-      sum_weights_(0),
-      sum_squared_weights_(0) {}
+WeightedMean::WeightedMean() = default;
+
+void WeightedMean::Reset() {
+  weighted_mean_ = 0.0;
+  variance_sum_ = 0.0;
+  sum_weights_ = 0.0;
+  sum_squared_weights_ = 0.0;
+}
 
 void WeightedMean::AddDelta(double delta, double weight) {
   double old_sum_weights = sum_weights_;

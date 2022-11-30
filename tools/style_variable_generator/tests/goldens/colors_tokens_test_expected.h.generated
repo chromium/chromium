@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+//   tests/colors_ref_tokens_test.json5
+//   tests/colors_sys_tokens_test.json5
+
+#ifndef NONE_
+#define NONE_
+
+#include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
+
+namespace None {
+
+COMPONENT_EXPORT(None) bool DarkModeEnabled();
+COMPONENT_EXPORT(None) bool DebugColorsEnabled();
+COMPONENT_EXPORT(None) void SetDarkModeEnabled(bool enabled);
+COMPONENT_EXPORT(None) void SetDebugColorsEnabled(bool enabled);
+
+enum class ColorName {
+  kCrosRefPrimary50,
+  kCrosSysPrimary,
+  kCrosSysOnPrimary,
+  kCrosSysPrimaryContainer,
+  kCrosSysOnPrimaryContainer,
+};
+
+enum class OpacityName {
+  kCrosSysDisabledOpacity,
+  kCrosSysReferenceOpacity,
+};
+
+COMPONENT_EXPORT(None) SkAlpha GetOpacity(
+    OpacityName opacity_name,
+    bool is_dark_mode = DarkModeEnabled());
+
+COMPONENT_EXPORT(None) SkColor ResolveColor(
+    ColorName color_name,
+    bool is_dark_mode = DarkModeEnabled(),
+    bool use_debug_colors = DebugColorsEnabled());
+
+COMPONENT_EXPORT(None) extern char kDebugOverrideCssString[];
+
+}  // namespace None
+#endif  // NONE_

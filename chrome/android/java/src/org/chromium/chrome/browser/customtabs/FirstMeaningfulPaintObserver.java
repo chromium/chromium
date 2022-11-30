@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ public class FirstMeaningfulPaintObserver implements PageLoadMetrics.Observer {
 
     @Override
     public void onFirstMeaningfulPaint(WebContents webContents, long navigationId,
-            long navigationStartTick, long firstContentfulPaintMs) {
+            long navigationStartMicros, long firstContentfulPaintMs) {
         if (webContents != mTab.getWebContents()) return;
 
         mCustomTabObserver.onFirstMeaningfulPaint(mTab);

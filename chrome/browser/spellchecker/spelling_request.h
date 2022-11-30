@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SPELLCHECKER_SPELLING_REQUEST_H_
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/gtest_prod_util.h"
 #include "components/spellcheck/browser/platform_spell_checker.h"
 #include "components/spellcheck/browser/spell_check_host_impl.h"
 #include "components/spellcheck/browser/spelling_service_client.h"
@@ -21,6 +22,14 @@ class SpellingRequest {
       spellcheck::mojom::SpellCheckHost::RequestTextCheckCallback;
   using DestructionCallback = base::OnceCallback<void(SpellingRequest*)>;
 
+  // Creates the request, but does not start it. Gives tests finer control over
+  // how the request is executed.
+  static std::unique_ptr<SpellingRequest> CreateForTest(
+      const std::u16string& text,
+      RequestTextCheckCallback callback,
+      DestructionCallback destruction_callback,
+      base::RepeatingClosure completion_barrier);
+
   SpellingRequest(PlatformSpellChecker* platform_spell_checker,
                   SpellingServiceClient* client,
                   const std::u16string& text,
@@ -28,6 +37,9 @@ class SpellingRequest {
                   int document_tag,
                   RequestTextCheckCallback callback,
                   DestructionCallback destruction_callback);
+
+  SpellingRequest(const SpellingRequest&) = delete;
+  SpellingRequest& operator=(const SpellingRequest&) = delete;
 
   ~SpellingRequest();
 
@@ -37,6 +49,16 @@ class SpellingRequest {
       const std::vector<SpellCheckResult>& local_results);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SpellingRequestRemoteCheckUnitTest,
+                           OnRemoteCheckCompleted);
+
+  // Test-only constructor that does not kick off the remote and local checks.
+  // Use the `CreateForTest` static helper.
+  SpellingRequest(const std::u16string& text,
+                  RequestTextCheckCallback callback,
+                  DestructionCallback destruction_callback,
+                  base::RepeatingClosure completion_barrier);
+
   // Request server-side checking for |text_|.
   void RequestRemoteCheck(SpellingServiceClient* client, int render_process_id);
 
@@ -80,8 +102,6 @@ class SpellingRequest {
   DestructionCallback destruction_callback_;
 
   base::WeakPtrFactory<SpellingRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpellingRequest);
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLING_REQUEST_H_

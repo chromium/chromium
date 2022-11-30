@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,21 +32,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::StringPiece input_string(input.get(), size - 1);
 
   const int options = data[size - 1];
-  base::JSONReader::ValueWithError result =
+  auto result =
       base::JSONReader::ReadAndReturnValueWithError(input_string, options);
-  if (!result.value)
+  if (!result.has_value())
     return 0;
 
   std::string parsed_output;
-  bool b = base::JSONWriter::Write(*result.value, &parsed_output);
+  bool b = base::JSONWriter::Write(*result, &parsed_output);
   LOG_ASSERT(b);
 
-  base::JSONReader::ValueWithError double_result =
+  auto double_result =
       base::JSONReader::ReadAndReturnValueWithError(parsed_output, options);
-  LOG_ASSERT(double_result.value);
+  LOG_ASSERT(double_result.has_value());
   std::string double_parsed_output;
-  bool b2 =
-      base::JSONWriter::Write(*double_result.value, &double_parsed_output);
+  bool b2 = base::JSONWriter::Write(*double_result, &double_parsed_output);
   LOG_ASSERT(b2);
 
   LOG_ASSERT(parsed_output == double_parsed_output)

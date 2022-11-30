@@ -62,7 +62,8 @@ std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
 
 {%- macro enum_to_string(enum) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
-std::string {{enum_name}}ToString({{enum_name}} value) {
+static NOINLINE const char* {{enum_name}}ToStringHelper({{enum_name}} value) {
+  // Defined in a helper function to ensure that Clang generates a lookup table.
 {%- if enum.fields %}
   switch(value) {
 {%-   for _, values in enum.fields|groupby('numeric_value') %}
@@ -78,11 +79,19 @@ std::string {{enum_name}}ToString({{enum_name}} value) {
       ";
 {%-   endfor %}
     default:
-      return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
+      return nullptr;
   }
 {%- else %}
-  return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
+  return nullptr;
 {%- endif %}
+}
+
+std::string {{enum_name}}ToString({{enum_name}} value) {
+  const char *str = {{enum_name}}ToStringHelper(value);
+  if (!str) {
+    return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
+  }
+  return str;
 }
 {%- endmacro %}
 
@@ -152,10 +161,8 @@ struct HashTraits<{{enum_name}}>
                 "{{empty_value}} is a reserved enum value");
   static_assert({{deleted_value_unused}},
                 "{{deleted_value}} is a reserved enum value");
-  static const bool hasIsEmptyValueFunction = true;
-  static bool IsEmptyValue(const {{enum_name}}& value) {
-    return value == static_cast<{{enum_name}}>({{empty_value}});
-  }
+  static const bool kEmptyValueIsZero = false;
+  static {{enum_name}} EmptyValue() { return static_cast<{{enum_name}}>({{empty_value}}); }
   static void ConstructDeletedValue({{enum_name}}& slot, bool) {
     slot = static_cast<{{enum_name}}>({{deleted_value}});
   }
@@ -173,7 +180,7 @@ namespace perfetto {
 
 template <>
 struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
- static void WriteIntoTracedValue(perfetto::TracedValue context, {{enum_name}} value);
+ static void WriteIntoTrace(perfetto::TracedValue context, {{enum_name}} value);
 };
 
 } // namespace perfetto
@@ -185,7 +192,7 @@ struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
 namespace perfetto {
 
 // static
-void TraceFormatTraits<{{enum_name}}>::WriteIntoTracedValue(
+void TraceFormatTraits<{{enum_name}}>::WriteIntoTrace(
    perfetto::TracedValue context, {{enum_name}} value) {
   return std::move(context).WriteString({{enum_name}}ToString(value));
 }

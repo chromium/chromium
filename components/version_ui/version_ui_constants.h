@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,9 @@ namespace version_ui {
 // Resource paths.
 // Must match the resource file names.
 extern const char kAboutVersionCSS[];
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+extern const char kAboutVersionMobileCSS[];
+#endif
 extern const char kVersionJS[];
 
 // Message handlers.
@@ -36,24 +39,24 @@ extern const char kCL[];
 extern const char kCommandLine[];
 extern const char kCommandLineName[];
 extern const char kCompany[];
-#if defined(OS_IOS)
-extern const char kCompiler[];
-#endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kUpdateCohortName[];
 #endif
 extern const char kCopyright[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCustomizationId[];
 #endif
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 extern const char kExecutablePath[];
 extern const char kExecutablePathName[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kFirmwareVersion[];
 #endif
-#if !defined(OS_IOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kAshChromeVersion[];
+#endif
+#if !BUILDFLAG(IS_IOS)
 extern const char kJSEngine[];
 extern const char kJSVersion[];
 #endif
@@ -63,7 +66,7 @@ extern const char kOfficial[];
 extern const char kOSName[];
 extern const char kOSType[];
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kOSVersion[];
 extern const char kGmsName[];
 extern const char kGmsVersion[];
@@ -71,10 +74,16 @@ extern const char kGmsVersion[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPlatform[];
 #endif
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 extern const char kProfilePath[];
 extern const char kProfilePathName[];
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kOsVersionHeaderText1[];
+extern const char kOsVersionHeaderText2[];
+extern const char kOsVersionHeaderLink[];
+#endif
+extern const char kCopyLabel[];
 extern const char kRevision[];
 extern const char kSanitizer[];
 extern const char kTitle[];

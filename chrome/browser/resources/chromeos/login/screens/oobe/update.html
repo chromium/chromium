@@ -1,0 +1,199 @@
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="../../components/oobe_cr_lottie.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/oobe_carousel.html">
+<link rel="import" href="../../components/oobe_slide.html">
+
+<dom-module id="update-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      .progress-message {
+        color: var(--oobe-subheader-text-color);
+        margin-top: 32px;
+      }
+
+      .update-illustration {
+        height: 264px;
+        width: 264px;
+      }
+
+      .slide-view {
+        border: 1px solid var(--google-grey-200);
+        border-radius: 16px;
+        height: 380px;
+        margin: auto;
+        overflow: hidden;
+        width: 380px;
+      }
+
+      #checkingAnimation {
+        height: 300px;
+        width: 334px;
+      }
+    </style>
+    <oobe-adaptive-dialog for-step="cellular" tabindex="0"
+        aria-live="polite" footer-shrinkable
+        id="cellular-permission-dialog">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
+                        'productName')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'updateOverCellularPromptMessage')]]
+      </p>
+      <div slot="content" class="flex layout vertical center-justified center">
+        <img class="update-illustration oobe-illustration"
+            srcset="images/updating.svg" aria-hidden="true">
+      </div>
+      <div slot="back-navigation">
+        <oobe-back-button id="cellular-permission-back" inverse
+            on-click="onBackClicked_"></oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="cellular-permission-next" inverse
+            on-click="onNextClicked_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="checking-for-updates-dialog"
+        for-step="checking" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'checkingForUpdates')]]
+      </h1>
+      <paper-progress slot="progress" id="checking-progress" indeterminate>
+      </paper-progress>
+      <div slot="content" class="flex layout vertical center-justified center">
+        <oobe-cr-lottie id="checkingAnimation"
+            animation-url="animations/checking_for_update.json">
+        </oobe-cr-lottie>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="update-in-progress-dialog"
+        for-step="update" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateStatusTitle')]]
+      </h1>
+      <div slot="subtitle">
+        <span id="betterUpdatePercent">[[updateStatusMessagePercent]]</span>
+        <span> | </span>
+        <span id="betterUpdateTimeleft">
+          [[updateStatusMessageTimeLeft]]
+        </span>
+      </div>
+      <paper-progress slot="progress" id="update-progress"
+          value="[[betterUpdateProgressValue]]">
+      </paper-progress>
+      <div hidden="[[!showLowBatteryWarning]]" id="battery-warning"
+          class="slide-view" slot="content">
+        <oobe-slide is-warning>
+          <img slot="slide-img" class="update-illustration oobe-illustration"
+              srcset="images/update-charge.svg" aria-hidden="true">
+          <div slot="title">
+            [[i18nDynamic(locale, 'batteryWarningTitle')]]
+          </div>
+          <div slot="text">
+            [[i18nDynamic(locale, 'batteryWarningText')]]
+          </div>
+        </oobe-slide>
+      </div>
+      <div hidden="[[showLowBatteryWarning]]" id="carousel" class="slide-view"
+          slot="content">
+        <oobe-carousel slide-duration-in-seconds=5
+            auto-transition="[[getAutoTransition_(uiStep, autoTransition)]]"
+            slide-label="slideLabel"
+            selected-button-label="slideSelectedButtonLabel"
+            unselected-button-label="slideUnselectedButtonLabel">
+          <oobe-slide slot="slides">
+            <img slot="slide-img" aria-hidden="true"
+                class="update-illustration oobe-illustration"
+                srcset="images/update-no-waiting.svg">
+            <div slot="title">[[getUpdateSlideTitle_(locale, isOptOutEnabled)]]
+            </div>
+            <div slot="text">[[getUpdateSlideText_(locale, isOptOutEnabled)]]
+            </div>
+          </oobe-slide>
+          <oobe-slide slot="slides">
+            <img slot="slide-img" aria-hidden="true"
+                class="update-illustration oobe-illustration"
+                srcset="images/update-antivirus.svg">
+            <div slot="title">
+              [[i18nDynamic(locale, 'slideAntivirusTitle')]]
+            </div>
+            <div slot="text">
+              [[i18nDynamic(locale, 'slideAntivirusText')]]
+            </div>
+          </oobe-slide>
+          <oobe-slide slot="slides">
+            <img slot="slide-img" aria-hidden="true"
+                class="update-illustration oobe-illustration"
+                srcset="images/update-apps.svg">
+            <div slot="title">[[i18nDynamic(locale, 'slideAppsTitle')]]</div>
+            <div slot="text">[[i18nDynamic(locale, 'slideAppsText')]]</div>
+          </oobe-slide>
+          <oobe-slide slot="slides">
+            <img slot="slide-img" aria-hidden="true"
+                class="update-illustration oobe-illustration"
+                srcset="images/google-accounts.svg">
+            <div slot="title">
+              [[i18nDynamic(locale, 'slideAccountTitle')]]
+            </div>
+            <div slot="text">
+              [[i18nDynamic(locale, 'slideAccountText')]]
+            </div>
+          </oobe-slide>
+        </oobe-carousel>
+      </div>
+    </oobe-adaptive-dialog>
+    <oobe-loading-dialog id="restarting-dialog"
+        title-key="updateCompeletedRebootingMsg" for-step="restart">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+    </oobe-loading-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="better-update-complete-dialog"
+        for-step="reboot" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateCompeletedMsg')]]
+      </h1>
+    </oobe-adaptive-dialog>
+    <oobe-adaptive-dialog footer-shrinkable id="opt-out-info-dialog"
+        for-step="opt-out-info" aria-live="polite">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'noUpdateAvailableTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nRecursive(locale, 'noUpdateAvailableText', 'productName')]]
+      </div>
+      <div slot="content" class="flex layout vertical center-justified center">
+        <img class="update-illustration oobe-illustration"
+            srcset="images/update-not-needed.svg" aria-hidden="true">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-next-button id="opt-out-info-next" class="focus-on-show" inverse
+            on-click="onOptOutInfoNext_"></oobe-next-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="update.js"></script>
+</dom-module>

@@ -1,14 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser.accessibility;
 
 import android.view.View;
+import android.view.ViewStructure;
 
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content_public.browser.AccessibilitySnapshotCallback;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -49,8 +49,8 @@ public class WebContentsAccessibilityDelegate implements AccessibilityDelegate {
     }
 
     @Override
-    public void requestAccessibilitySnapshot(AccessibilitySnapshotCallback callback) {
-        mWebContents.requestAccessibilitySnapshot(callback);
+    public void requestAccessibilitySnapshot(ViewStructure root, Runnable doneCallback) {
+        mWebContents.requestAccessibilitySnapshot(root, doneCallback);
     }
 
     class AccessibilityCoordinatesImpl implements AccessibilityCoordinates {

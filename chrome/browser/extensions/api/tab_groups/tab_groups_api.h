@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ class TabGroupsMoveFunction : public ExtensionFunction {
   // |error| is populated if the group cannot be found or moved.
   bool MoveGroup(int group_id,
                  int new_index,
-                 int* window_id,
+                 const absl::optional<int>& window_id,
                  tab_groups::TabGroupId* group,
                  std::string* error);
 };

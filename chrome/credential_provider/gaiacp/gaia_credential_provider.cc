@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/common/chrome_version.h"
@@ -46,7 +46,7 @@ static const CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR g_field_desc[] = {
      CPFG_CREDENTIAL_PROVIDER_LABEL},
 };
 
-static_assert(base::size(g_field_desc) == FIELD_COUNT,
+static_assert(std::size(g_field_desc) == FIELD_COUNT,
               "g_field_desc does not match FIELDID enum");
 
 namespace {
@@ -75,7 +75,7 @@ HRESULT InitializeReauthCredential(
   // effect is that the user will need to enter their email address manually
   // instead of it being pre-filled.
   wchar_t email[64];
-  ULONG email_length = base::size(email);
+  ULONG email_length = std::size(email);
   hr = GetUserProperty(sid.c_str(), kUserEmail, email, &email_length);
   if (FAILED(hr))
     email[0] = 0;
@@ -133,8 +133,8 @@ class BackgroundTokenHandleUpdater {
   // to notify that token handle validity has changed. Any instance of this
   // class should be owned by the CGaiaCredentialProvider to ensure that
   // this pointer outlives the updater.
-  ICredentialUpdateEventsHandler* event_handler_;
-  const std::vector<std::wstring>* reauth_sids_;
+  raw_ptr<ICredentialUpdateEventsHandler> event_handler_;
+  raw_ptr<const std::vector<std::wstring>> reauth_sids_;
 
   base::win::ScopedHandle token_update_thread_;
   base::WaitableEvent token_update_quit_event_;
@@ -175,9 +175,7 @@ bool BackgroundTokenHandleUpdater::IsAuthEnforcedOnAssociatedUsers() {
     const std::wstring& sid = sid_to_association.first;
     // Checks if the login UI was already refreshed due to
     // auth enforcements on this sid.
-    if (reauth_sids_ != nullptr &&
-        (std::find(reauth_sids_->begin(), reauth_sids_->end(), sid) !=
-         reauth_sids_->end()))
+    if (reauth_sids_ != nullptr && base::Contains(*reauth_sids_, sid))
       continue;
 
     // Return true if the associated user sid has auth enforced.
@@ -388,8 +386,6 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     GaiaCredentialComPtrStorage* auto_logon_credential) {
   std::map<std::wstring, std::pair<std::wstring, std::wstring>> sid_to_username;
 
-  OSUserManager* manager = OSUserManager::Get();
-
   // Get the SIDs of all users being shown in the logon UI.
   if (!users) {
     LOGFN(ERROR) << "hr=" << putHR(E_INVALIDARG);
@@ -434,8 +430,8 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     wchar_t username[kWindowsUsernameBufferLength];
     wchar_t domain[kWindowsDomainBufferLength];
 
-    hr = manager->FindUserBySID(sid.c_str(), username, base::size(username),
-                                domain, base::size(domain));
+    hr = OSUserManager::Get()->FindUserBySidWithFallback(
+        sid.c_str(), username, std::size(username), domain, std::size(domain));
     if (FAILED(hr)) {
       LOGFN(ERROR) << "Can't get sid or username hr=" << putHR(hr);
       continue;
@@ -444,7 +440,7 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     // Get the user's gaia id from registry stored against the sid if it
     // exists.
     wchar_t user_id[64];
-    ULONG user_id_length = base::size(user_id);
+    ULONG user_id_length = std::size(user_id);
     hr = GetUserProperty(sid.c_str(), kUserId, user_id, &user_id_length);
     if (FAILED(hr))
       user_id[0] = L'\0';
@@ -477,8 +473,7 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     }
 
     GaiaCredentialComPtrStorage cred;
-    HRESULT hr =
-        CreateCredentialObject<CReauthCredential>(reauth_cred_creator_, &cred);
+    hr = CreateCredentialObject<CReauthCredential>(reauth_cred_creator_, &cred);
     if (FAILED(hr)) {
       LOG(ERROR) << "Could not create credential hr=" << putHR(hr);
       return hr;
@@ -747,6 +742,8 @@ HRESULT CGaiaCredentialProvider::Advise(ICredentialProviderEvents* pcpe,
 }
 
 HRESULT CGaiaCredentialProvider::UnAdvise() {
+  LOGFN(VERBOSE);
+
   // Kill the updater thread (if any).
   token_handle_updater_.reset();
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -22,8 +22,7 @@ class SafeBrowsingMetricsCollector;
 // Singleton that owns SafeBrowsingMetricsCollector objects, one for each active
 // Profile. It listens to profile destroy events and destroy its associated
 // object. It returns a nullptr in the Incognito mode.
-class SafeBrowsingMetricsCollectorFactory
-    : public BrowserContextKeyedServiceFactory {
+class SafeBrowsingMetricsCollectorFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the object if it doesn't exist already for the given |profile|.
   // If the object already exists, return its pointer.
@@ -31,6 +30,11 @@ class SafeBrowsingMetricsCollectorFactory
 
   // Get the singleton instance.
   static SafeBrowsingMetricsCollectorFactory* GetInstance();
+
+  SafeBrowsingMetricsCollectorFactory(
+      const SafeBrowsingMetricsCollectorFactory&) = delete;
+  SafeBrowsingMetricsCollectorFactory& operator=(
+      const SafeBrowsingMetricsCollectorFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<
@@ -42,8 +46,6 @@ class SafeBrowsingMetricsCollectorFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingMetricsCollectorFactory);
 };
 
 }  // namespace safe_browsing

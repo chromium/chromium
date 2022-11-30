@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,18 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace borealis {
 namespace {
 
 template <typename F>
-class CallbackFactory : public testing::StrictMock<testing::MockFunction<F>> {
- public:
-  base::OnceCallback<F> GetOnce() {
-    return base::BindOnce(&CallbackFactory<F>::Call, base::Unretained(this));
-  }
-};
+using CallbackFactory = StrictCallbackFactory<F>;
 
 struct Foo {
   std::string msg;
@@ -79,8 +75,8 @@ TEST(BorealisStateManagerTest, DefaultStateIsOff) {
   // State managers are created in the "Off" state, so we don't need to
   // transition there.
   EXPECT_CALL(state_manager, GetOffTransition).Times(0);
-  EXPECT_CALL(on_callback_handler, Call(testing::Eq(base::nullopt)));
-  state_manager.TurnOff(on_callback_handler.GetOnce());
+  EXPECT_CALL(on_callback_handler, Call(testing::Eq(absl::nullopt)));
+  state_manager.TurnOff(on_callback_handler.BindOnce());
 }
 
 TEST(BorealisStateManagerTest, CanBeTurnedOnAndOff) {
@@ -98,11 +94,11 @@ TEST(BorealisStateManagerTest, CanBeTurnedOnAndOff) {
   EXPECT_CALL(on_callback_handler, Call(testing::_))
       .WillOnce(testing::Invoke(
           [](Expected<Foo*, Bar> result) { EXPECT_TRUE(result); }));
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
 
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
   task_environment.RunUntilIdle();
-  state_manager.TurnOff(off_callback_handler.GetOnce());
+  state_manager.TurnOff(off_callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 }
 
@@ -115,8 +111,8 @@ TEST(BorealisStateManagerTest, CanHandleMultipleCallbacks) {
     return std::make_unique<SucceedingOnTransition>();
   }));
 
-  state_manager.TurnOn(on_callback_handler.GetOnce());
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
 
   // The above two callbacks will not be run until the sequence gets a chance to
   // execute. We assure this by making the expectations after them.
@@ -127,7 +123,7 @@ TEST(BorealisStateManagerTest, CanHandleMultipleCallbacks) {
 
   // The two callbacks will have a chance to run now.
   task_environment.RunUntilIdle();
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
 }
 
 TEST(BorealisStateManagerTest, TurnOffRejectedWhileTurningOn) {
@@ -140,13 +136,13 @@ TEST(BorealisStateManagerTest, TurnOffRejectedWhileTurningOn) {
   EXPECT_CALL(state_manager, GetIsTurningOnError)
       .WillOnce(testing::Return(Baz{.msg = "rejected"}));
   EXPECT_CALL(off_callback_handler, Call(testing::_))
-      .WillOnce(testing::Invoke([](base::Optional<Baz> err) {
+      .WillOnce(testing::Invoke([](absl::optional<Baz> err) {
         ASSERT_TRUE(err.has_value());
         EXPECT_EQ(err->msg, "rejected");
       }));
 
   state_manager.TurnOn(base::DoNothing());
-  state_manager.TurnOff(off_callback_handler.GetOnce());
+  state_manager.TurnOff(off_callback_handler.BindOnce());
 }
 
 TEST(BorealisStateManagerTest, TurnOnRejectedWhileTurningOff) {
@@ -171,7 +167,7 @@ TEST(BorealisStateManagerTest, TurnOnRejectedWhileTurningOff) {
   state_manager.TurnOn(base::DoNothing());
   task_environment.RunUntilIdle();
   state_manager.TurnOff(base::DoNothing());
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
 }
 
 TEST(BorealisStateManagerTest, FailureToTurnOnProducesAnErrorAndResultsInOff) {
@@ -186,14 +182,14 @@ TEST(BorealisStateManagerTest, FailureToTurnOnProducesAnErrorAndResultsInOff) {
       .WillOnce(testing::Invoke(
           [](Expected<Foo*, Bar> result) { EXPECT_FALSE(result); }));
 
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 
   // Additional call to turn off requires no transition, because the state is
   // off.
   CallbackFactory<MockStateManager::WhenOff> off_callback_handler;
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
-  state_manager.TurnOff(off_callback_handler.GetOnce());
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
+  state_manager.TurnOff(off_callback_handler.BindOnce());
 }
 
 TEST(BorealisStateManagerTest, FailureToTurnOffProducesErrorButDoesTurnOff) {
@@ -212,17 +208,17 @@ TEST(BorealisStateManagerTest, FailureToTurnOffProducesErrorButDoesTurnOff) {
       .WillOnce(testing::Invoke(
           [](Expected<Foo*, Bar> result) { EXPECT_TRUE(result); }));
   EXPECT_CALL(off_callback_handler,
-              Call(testing::Not(testing::Eq(base::nullopt))));
+              Call(testing::Not(testing::Eq(absl::nullopt))));
 
-  state_manager.TurnOn(on_callback_handler.GetOnce());
+  state_manager.TurnOn(on_callback_handler.BindOnce());
   task_environment.RunUntilIdle();
-  state_manager.TurnOff(off_callback_handler.GetOnce());
+  state_manager.TurnOff(off_callback_handler.BindOnce());
   task_environment.RunUntilIdle();
 
   // Additional call to turn off requires no transition, because the state is
   // off.
-  EXPECT_CALL(off_callback_handler, Call(testing::Eq(base::nullopt)));
-  state_manager.TurnOff(off_callback_handler.GetOnce());
+  EXPECT_CALL(off_callback_handler, Call(testing::Eq(absl::nullopt)));
+  state_manager.TurnOff(off_callback_handler.BindOnce());
 }
 
 }  // namespace

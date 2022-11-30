@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: old content captures an empty div</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="old-content-is-empty-div-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+div {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 50px;
+}
+#empty {
+  left: 50px;
+}
+#target {
+  left: 200px;
+  background: green;
+}
+#hidden {
+  background: red;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+
+/* The effect of the following should be position at the outgoing element
+   but contents of the new element.
+*/
+html::page-transition-container(shared) { animation-delay: 100s; }
+html::page-transition-incoming-image(shared) { animation: unset; opacity: 1; }
+html::page-transition-outgoing-image(shared) { animation: unset; opacity: 1; }
+
+html::page-transition-container(root) { animation: unset; opacity: 0; }
+html::page-transition { background: lightpink; }
+
+</style>
+
+<div id=empty></div>
+<div id=target></div>
+<div id=hidden></div>
+
+<script>
+async function runTest() {
+  const t = document.createDocumentTransition();
+  empty.style.pageTransitionTag = "shared";
+  t.start(() => {
+    empty.style.pageTransitionTag = "";
+    target.style.pageTransitionTag = "shared";
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot))
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>

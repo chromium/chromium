@@ -1,0 +1,88 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
+
+// Controls the internal media player of the Libassistant service, which plays
+// podcasts and news.
+interface MediaController {
+  // Resume playback of the Libassistant media player.
+  // No-op if nothing is currently playing.
+  ResumeInternalMediaPlayer();
+
+  // Pause playback of the Libassistant media player.
+  // No-op if nothing is currently playing.
+  PauseInternalMediaPlayer();
+
+  // Sets the current media status of media playing outside of libassistant.
+  // Setting external state will stop any internally playing media.
+  SetExternalPlaybackState(MediaState state);
+};
+
+// Delegate that is responsible for executing the playback changes requested
+// by the user through Libassistant.
+interface MediaDelegate {
+  // Invoked when the playback state changes, for example when the user requests
+  // 'next song'.
+  OnPlaybackStateChanged(MediaState new_state);
+
+  // Invoked to play music in an Android app, for example when the user requests
+  // 'play Madonna on Spotify'.
+  // This will only be invoked when ChromeOS has the given android app
+  // installed. If that's not the case, PlayWebMedia() will be used instead.
+  PlayAndroidMedia(AndroidAppInfo app_info);
+
+  // Invoked to play music in an website.
+  PlayWebMedia(string url);
+
+  // Invoked to play the next track.
+  NextTrack();
+
+  // Invoked to play the previous track.
+  PreviousTrack();
+
+  // Invoked to pause playing audio.
+  Pause();
+
+  // Invoked to resume playing audio.
+  Resume();
+
+  // Invoked to stop playing audio.
+  Stop();
+};
+
+struct MediaState {
+  // Current status of the stream.
+  PlaybackState playback_state;
+
+  // The metadata associated with the current track or empty.
+  MediaMetadata? metadata;
+};
+
+// Metadata associated with a media track.
+struct MediaMetadata {
+  // The name of the album a track belongs to.
+  string album;
+  // The artist associated with a track.
+  string artist;
+  // The title of a given track.
+  string title;
+};
+
+enum PlaybackState {
+  // No track is playing.
+  kIdle,
+  // A track is loading and about to start playing. Information
+  // such as the duration of the track may not be known yet.
+  kNewTrack,
+  // A track is playing audio.
+  kPlaying,
+  // A track was playing audio but has been paused.
+  kPaused,
+  // An error has occurred playing a given track. We will try to
+  // skip ahead to the next track.
+  kError,
+};

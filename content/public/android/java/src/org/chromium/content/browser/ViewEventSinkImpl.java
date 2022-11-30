@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,6 +62,14 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
     @Override
     public void onDetachedFromWindow() {
         WindowEventObserverManager.from(mWebContents).onDetachedFromWindow();
+        // Stylus Writing
+        if (mWebContents.getStylusWritingHandler() != null) {
+            ViewAndroidDelegate viewAndroidDelegate = mWebContents.getViewAndroidDelegate();
+            if (viewAndroidDelegate != null) {
+                mWebContents.getStylusWritingHandler().onDetachedFromWindow(
+                        viewAndroidDelegate.getContainerView().getContext());
+            }
+        }
     }
 
     @Override
@@ -74,6 +82,11 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
         if (mHasViewFocus != null && mHasViewFocus == gainFocus) return;
         mHasViewFocus = gainFocus;
         onFocusChanged();
+
+        // Stylus Writing
+        if (mWebContents.getStylusWritingHandler() != null) {
+            mWebContents.getStylusWritingHandler().onFocusChanged(gainFocus);
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,17 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_goog_media_constraints.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/media_stream_track_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 #include "third_party/blink/renderer/modules/peerconnection/thermal_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
@@ -151,53 +153,39 @@ class MODULES_EXPORT LocalRTCStatsRequest : public rtc::RefCountInterface {
 // the main render thread.
 class MODULES_EXPORT RTCPeerConnectionHandler {
  public:
-  enum class IceConnectionStateVersion {
-    // Only applicable in Unified Plan when the JavaScript-exposed
-    // iceConnectionState is calculated in blink. In this case, kLegacy is used
-    // to report the webrtc::PeerConnectionInterface implementation which is not
-    // visible in JavaScript, but still useful to track for debugging purposes.
-    kLegacy,
-    // The JavaScript-visible iceConnectionState. In Plan B, this is the same as
-    // the webrtc::PeerConnectionInterface implementation.
-    kDefault,
-  };
-
   RTCPeerConnectionHandler(
       RTCPeerConnectionHandlerClient* client,
       blink::PeerConnectionDependencyFactory* dependency_factory,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      bool force_encoded_audio_insertable_streams,
-      bool force_encoded_video_insertable_streams);
+      bool encoded_insertable_streams);
+
+  RTCPeerConnectionHandler(const RTCPeerConnectionHandler&) = delete;
+  RTCPeerConnectionHandler& operator=(const RTCPeerConnectionHandler&) = delete;
+
   virtual ~RTCPeerConnectionHandler();
 
   // Initialize method only used for unit test.
   bool InitializeForTest(
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
-      const MediaConstraints& options,
       PeerConnectionTracker* peer_connection_tracker,
       ExceptionState& exception_state);
 
-  // RTCPeerConnectionHandlerPlatform implementation
   virtual bool Initialize(
+      ExecutionContext* context,
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
-      const MediaConstraints& options,
+      GoogMediaConstraints* media_constraints,
       WebLocalFrame* web_frame,
       ExceptionState& exception_state);
 
-  virtual void Stop();
-  virtual void StopAndUnregister();
+  virtual void Close();
+  virtual void CloseAndUnregister();
 
-  virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
-      RTCSessionDescriptionRequest* request,
-      const MediaConstraints& options);
   virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest* request,
       RTCOfferOptionsPlatform* options);
 
-  virtual void CreateAnswer(blink::RTCSessionDescriptionRequest* request,
-                            const MediaConstraints& options);
   virtual void CreateAnswer(blink::RTCSessionDescriptionRequest* request,
                             blink::RTCAnswerOptionsPlatform* options);
 
@@ -213,7 +201,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   GetConfiguration() const;
   virtual webrtc::RTCErrorType SetConfiguration(
       const webrtc::PeerConnectionInterface::RTCConfiguration& configuration);
-  virtual void AddICECandidate(blink::RTCVoidRequest* request,
+  virtual void AddIceCandidate(blink::RTCVoidRequest* request,
                                RTCIceCandidatePlatform* candidate);
   virtual void RestartIce();
 
@@ -240,12 +228,11 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual void RunSynchronousOnceClosureOnSignalingThread(
       CrossThreadOnceClosure closure,
       const char* trace_event_name);
-  virtual void RunSynchronousRepeatingClosureOnSignalingThread(
-      const base::RepeatingClosure& closure,
+  virtual void RunSynchronousOnceClosureOnSignalingThread(
+      base::OnceClosure closure,
       const char* trace_event_name);
 
   virtual void TrackIceConnectionStateChange(
-      RTCPeerConnectionHandler::IceConnectionStateVersion version,
       webrtc::PeerConnectionInterface::IceConnectionState state);
 
   // Delegate functions to allow for mocking of WebKit interfaces.
@@ -267,6 +254,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Virtual for testing purposes.
   virtual void OnThermalStateChange(
       mojom::blink::DeviceThermalState thermal_state);
+  // Invoked when a new CPU speed limit is received from the OS.
+  virtual void OnSpeedLimitChange(int32_t speed_limit);
 
   // Start recording an event log.
   void StartEventLog(int output_period_ms);
@@ -279,17 +268,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Virtual for testing purposes.
   virtual scoped_refptr<base::SingleThreadTaskRunner> signaling_thread() const;
 
-  bool force_encoded_audio_insertable_streams() {
-    return force_encoded_audio_insertable_streams_;
-  }
-
-  bool force_encoded_video_insertable_streams() {
-    return force_encoded_video_insertable_streams_;
-  }
-
-  bool enable_rtp_data_channel() const {
-    return configuration_.enable_rtp_data_channel;
-  }
+  bool encoded_insertable_streams() { return encoded_insertable_streams_; }
 
  protected:
   // Constructor to be used for constructing mocks only.
@@ -327,15 +306,12 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   void OnIceGatheringChange(
       webrtc::PeerConnectionInterface::IceGatheringState new_state);
   void OnNegotiationNeededEvent(uint32_t event_id);
-  void OnReceiversModifiedPlanB(
-      webrtc::PeerConnectionInterface::SignalingState signaling_state,
-      Vector<blink::RtpReceiverState> receiver_state,
-      Vector<uintptr_t> receiver_id);
   void OnModifySctpTransport(blink::WebRTCSctpTransportSnapshot state);
   void OnModifyTransceivers(
       webrtc::PeerConnectionInterface::SignalingState signaling_state,
       std::vector<blink::RtpTransceiverState> transceiver_states,
-      bool is_remote_description);
+      bool is_remote_description,
+      bool is_rollback);
   void OnDataChannel(scoped_refptr<webrtc::DataChannelInterface> channel);
   void OnIceCandidate(const String& sdp,
                       const String& sdp_mid,
@@ -343,7 +319,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                       int component,
                       int address_family);
   void OnIceCandidateError(const String& address,
-                           base::Optional<uint16_t> port,
+                           absl::optional<uint16_t> port,
                            const String& host_candidate,
                            const String& url,
                            int error_code,
@@ -352,6 +328,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   // Protected for testing.
   ThermalUmaListener* thermal_uma_listener() const;
+  SpeedLimitUmaListener* speed_limit_uma_listener() const;
 
  private:
   // Record info about the first SessionDescription from the local and
@@ -365,11 +342,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
     // If audio or video will use RTCP-mux (if there is no audio or
     // video, then false).
     bool rtcp_mux = false;
-  };
-  enum class CancellableBooleanOperationResult {
-    kCancelled,
-    kSuccess,
-    kFailure,
   };
 
   RTCSessionDescriptionPlatform*
@@ -391,7 +363,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                                       const FirstSessionDescription& remote);
 
   void AddTransceiverWithTrackOnSignalingThread(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track,
+      webrtc::MediaStreamTrackInterface* webrtc_track,
       webrtc::RtpTransceiverInit init,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
@@ -403,21 +375,19 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
           error_or_transceiver);
   void AddTrackOnSignalingThread(
-      rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
+      webrtc::MediaStreamTrackInterface* track,
       std::vector<std::string> stream_ids,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
       webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>*
           error_or_sender);
-  bool RemoveTrackPlanB(blink::RTCRtpSenderPlatform* web_sender);
-  webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
-  RemoveTrackUnifiedPlan(blink::RTCRtpSenderPlatform* web_sender);
-  void RemoveTrackUnifiedPlanOnSignalingThread(
-      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+  // Helper function to remove a track on the signaling thread.
+  // Updates the entire transceiver state.
+  // The result will be absl::nullopt if the operation is cancelled,
+  // and no change to the state will be made.
+  void RemoveTrackOnSignalingThread(
+      webrtc::RtpSenderInterface* sender,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      CancellableBooleanOperationResult* result);
-  Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOfferInternal(
-      blink::RTCSessionDescriptionRequest* request,
-      webrtc::PeerConnectionInterface::RTCOfferAnswerOptions options);
+      absl::optional<webrtc::RTCError>* result);
   void CreateOfferOnSignalingThread(
       webrtc::CreateSessionDescriptionObserver* observer,
       webrtc::PeerConnectionInterface::RTCOfferAnswerOptions offer_options,
@@ -449,14 +419,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // |client_| is a raw pointer to the blink object (blink::RTCPeerConnection)
   // that owns this object.
   // It is valid for the lifetime of this object, but is cleared when
-  // StopAndUnregister() is called, in order to make sure it doesn't
+  // CloseAndUnregister() is called, in order to make sure it doesn't
   // interfere with garbage collection of the owner object.
   RTCPeerConnectionHandlerClient* client_ = nullptr;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
   bool is_closed_ = false;
-  // True if StopAndUnregister has been called.
+  // True if CloseAndUnregister has been called.
   bool is_unregistered_ = false;
 
   // Transition from kHaveLocalOffer to kHaveRemoteOffer indicates implicit
@@ -464,9 +434,12 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   webrtc::PeerConnectionInterface::SignalingState previous_signaling_state_ =
       webrtc::PeerConnectionInterface::kStable;
 
-  // |dependency_factory_| is a raw pointer, and is valid for the lifetime of
-  // RenderThreadImpl.
-  blink::PeerConnectionDependencyFactory* const dependency_factory_ = nullptr;
+  // Will be reset to nullptr when the handler is `CloseAndUnregister()`-ed, so
+  // it doesn't prevent the factory from being garbage-collected.
+  Persistent<PeerConnectionDependencyFactory> dependency_factory_;
+  // Reference that outlives `dependency_factory_`, used to free WebRTC
+  // references on the signaling thread during GC.
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
 
   blink::WebLocalFrame* frame_ = nullptr;
 
@@ -478,10 +451,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // needs to reference it, and automatically disposed when there are no longer
   // any components referencing it.
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map_;
-  // In Plan B, senders and receivers are added or removed independently of one
-  // another. In Unified Plan, senders and receivers are created in pairs as
-  // transceivers. Transceivers may become inactive, but are never removed.
-  // TODO(hbos): Implement transceiver behaviors. https://crbug.com/777617
   // Blink layer correspondents of |webrtc::RtpSenderInterface|.
   std::vector<std::unique_ptr<blink::RTCRtpSenderImpl>> rtp_senders_;
   // Blink layer correspondents of |webrtc::RtpReceiverInterface|.
@@ -514,17 +483,21 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // used when constructing the PeerConnection carry over when
   // SetConfiguration is called.
   webrtc::PeerConnectionInterface::RTCConfiguration configuration_;
-  bool force_encoded_audio_insertable_streams_ = false;
-  bool force_encoded_video_insertable_streams_ = false;
+  bool encoded_insertable_streams_ = false;
 
   // Resources for Adaptation.
   // The Thermal Resource is lazily instantiated on platforms where thermal
   // signals are supported.
-  scoped_refptr<ThermalResource> thermal_resource_ = nullptr;
+  scoped_refptr<ThermalResource> thermal_resource_;
   // ThermalUmaListener is only tracked on peer connection that add a track.
-  std::unique_ptr<ThermalUmaListener> thermal_uma_listener_ = nullptr;
+  std::unique_ptr<ThermalUmaListener> thermal_uma_listener_;
   mojom::blink::DeviceThermalState last_thermal_state_ =
       mojom::blink::DeviceThermalState::kUnknown;
+  // Last received OS speed limit.
+  int32_t last_speed_limit_ = mojom::blink::kSpeedLimitMax;
+  // SpeedLimitUmaListener is only tracked on peer connection that add an audio
+  // or video track.
+  std::unique_ptr<SpeedLimitUmaListener> speed_limit_uma_listener_;
 
   // Record info about the first SessionDescription from the local and
   // remote side to record UMA stats once both are set.  We only check
@@ -541,8 +514,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<RTCPeerConnectionHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RTCPeerConnectionHandler);
 };
 
 }  // namespace blink

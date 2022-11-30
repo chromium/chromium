@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
@@ -10,7 +10,6 @@ The pipeline module orchestrates the entire signing process, which includes:
 """
 
 import os.path
-import plistlib
 
 from . import commands, model, modification, notarize, parts, signing
 
@@ -43,7 +42,7 @@ def _binary_architectures(binary_path):
 
     command = ['lipo', '-archs', binary_path]
     output = commands.run_command_output(command)
-    output = output.strip()
+    output = output.decode('utf-8').strip()
     output = output.replace(' ', ',')
 
     return output
@@ -201,15 +200,30 @@ def _component_property_path(paths, dist_config):
     component_property_path = os.path.join(
         paths.work, '{}.plist'.format(dist_config.app_product))
 
-    plistlib.writePlist([{
+    commands.write_plist([{
         'BundleHasStrictIdentifier': True,
         'BundleIsRelocatable': False,
         'BundleIsVersionChecked': True,
         'BundleOverwriteAction': 'upgrade',
         'RootRelativeBundlePath': dist_config.app_dir
-    }], component_property_path)
+    }], component_property_path, 'xml1')
 
     return component_property_path
+
+
+def _minimum_os_version(app_paths, dist_config):
+    """Returns the minimum OS requirement for the copy of Chrome being packaged.
+
+    Args:
+        app_paths: A |model.Paths| object for the app.
+        dist_config: The |config.CodeSignConfig| object.
+    Returns:
+        The minimum OS requirement.
+    """
+    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                  'Contents', 'Info.plist')
+    with commands.PlistContext(app_plist_path) as app_plist:
+        return app_plist['LSMinimumSystemVersion']
 
 
 def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
@@ -326,12 +340,23 @@ def _package_and_sign_pkg(paths, dist_config):
             pkg_paths, dist_config)
         scripts_path = _create_pkgbuild_scripts(pkg_paths, dist_config)
 
-        commands.run_command([
+        command = [
             'pkgbuild', '--root', root_directory, '--component-plist',
             component_property_path, '--identifier', dist_config.base_bundle_id,
             '--version', dist_config.version, '--install-location',
-            '/Applications', '--scripts', scripts_path, component_pkg_path
-        ])
+            '/Applications', '--scripts', scripts_path
+        ]
+        # The pkgbuild command on macOS 12 Monterey gained the ability to
+        # compress component packages based on the minimum OS requirement for
+        # their contents. If running under at least macOS 12, take advantage of
+        # this.
+        if commands.macos_version() >= [12, 0]:
+            command.append('--compression')
+            command.append('latest')
+            command.append('--min-os-version')
+            command.append(_minimum_os_version(paths, dist_config))
+        command.append(component_pkg_path)
+        commands.run_command(command)
 
         ## The distribution package.
 
@@ -539,11 +564,90 @@ def _intermediate_work_dir_name(dist):
     return '-'.join(customizations)
 
 
+def _filter_distributions(distributions, skip_brands, channels):
+    """Filters |distributions| by filtering out those whose brand code is
+    indicated for skipping by |skip_brands|, and filtering in those whose
+    channel is indicated for inclusion by |channels|. Returns the filtered
+    distribution list.
+
+    Args:
+        distributions: A list of |model.Distribution| objects.
+        skip_brands: A list of brand code strings. If a distribution has a brand
+            code in this list, or if a distribution has a brand code and
+            |skip_brands| contains *, that distribution will be skipped.
+        channels: A list of channel names. If the list is non-empty, then only
+            distributions that match a channel name in this list will be
+            produced. The string 'stable' matches the None channel.
+
+    Returns:
+        The filtered list of |model.Distribution| objects.
+
+    Raises:
+        ValueError: If any value provided in |skip_brands| does not match at
+            least one distribution.
+        ValueError: If any value provided in |channels| does not match at least
+            one distribution.
+        ValueError: If no distribution matching a value provided in |channels|
+            can be returned due to brand filtering.
+    """
+    all_distribution_brands = {dist.branding_code for dist in distributions}
+    invalid_brands = set(skip_brands) - all_distribution_brands
+    invalid_brands.discard('*')
+    if invalid_brands:
+        raise ValueError('Brand codes do not match any distribution: {}'.format(
+            invalid_brands))
+
+    all_distribution_channels = {
+        "stable" if dist.channel is None else dist.channel
+        for dist in distributions
+    }
+    invalid_channels = set(channels) - all_distribution_channels
+    if invalid_channels:
+        raise ValueError('Channels do not match any distribution: {}'.format(
+            invalid_channels))
+
+    def include_brand(dist):
+        if not dist.branding_code:
+            return True
+        if '*' in skip_brands:
+            return False
+        if dist.branding_code in skip_brands:
+            return False
+        return True
+
+    def include_channel(dist):
+        if len(channels) == 0:
+            return True
+
+        channel = dist.channel
+        if channel is None:
+            channel = 'stable'
+        return channel in channels
+
+    filtered_distributions = [
+        dist for dist in distributions
+        if include_brand(dist) and include_channel(dist)
+    ]
+
+    filtered_distribution_channels = {
+        "stable" if dist.channel is None else dist.channel
+        for dist in filtered_distributions
+    }
+    filtered_channels = set(channels) - filtered_distribution_channels
+    if filtered_channels:
+        raise ValueError(
+            'All distributions for channels were filtered out by brand: {}'
+            .format(filtered_channels))
+
+    return filtered_distributions
+
+
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
-             do_notarization=True,
-             skip_brands=[]):
+             notarization=model.NotarizeAndStapleLevel.STAPLE,
+             skip_brands=[],
+             channels=[]):
     """For each distribution in |config|, performs customization, signing, and
     DMG packaging and places the resulting signed DMG in |orig_paths.output|.
     The |paths.input| must contain the products to customize and sign.
@@ -555,13 +659,15 @@ def sign_all(orig_paths,
             unpackaged signed app bundle will be copied to |paths.output|. If
             False, the packaging specified in the distribution will be
             performed.
-        do_notarization: If True, the signed application bundle will be sent for
-            notarization by Apple. The resulting notarization ticket will then
-            be stapled. If |package_dmg| is also True, the stapled application
-            will be packaged in the DMG and then the DMG itself will be
-            notarized and stapled.
+        notarization: The level of notarization to be performed. If
+            |disable_packaging| is False, the packages (dmg/pkg) will undergo
+            the same notarization.
         skip_brands: A list of brand code strings. If a distribution has a brand
-            code in this list, that distribution will be skipped.
+            code in this list, or if a distribution has a brand code and
+            |skip_brands| contains *, that distribution will be skipped.
+        channels: A list of channel names. If the list is non-empty, then only
+            distributions that match a channel name in this list will be
+            produced. The string 'stable' matches the None channel.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign all the distributions and optionally submit the
@@ -569,10 +675,11 @@ def sign_all(orig_paths,
         uuids_to_config = {}
         signed_frameworks = {}
         created_app_bundles = set()
-        for dist in config.distributions:
-            if dist.branding_code in skip_brands:
-                continue
 
+        distributions = _filter_distributions(config.distributions, skip_brands,
+                                              channels)
+
+        for dist in distributions:
             with commands.WorkDirectory(orig_paths) as paths:
                 dist_config = dist.to_config(config)
                 do_packaging = (dist.package_as_dmg or
@@ -580,7 +687,7 @@ def sign_all(orig_paths,
 
                 # If not packaging and not notarizing, then simply drop the
                 # signed bundle in the output directory when done signing.
-                if not do_packaging and not do_notarization:
+                if not do_packaging and not notarization.should_notarize():
                     dest_dir = paths.output
                 else:
                     dest_dir = notary_paths.work
@@ -601,7 +708,7 @@ def sign_all(orig_paths,
 
                 # If the build products are to be notarized, ZIP the app bundle
                 # and submit it for notarization.
-                if do_notarization:
+                if notarization.should_notarize():
                     zip_file = os.path.join(
                         notary_paths.work,
                         dist_config.packaging_basename + '.zip')
@@ -613,23 +720,23 @@ def sign_all(orig_paths,
                     uuid = notarize.submit(zip_file, dist_config)
                     uuids_to_config[uuid] = dist_config
 
-        # Wait for app notarization results to come back, stapling as they do.
-        if do_notarization:
+        # If needed, wait for app notarization results to come back, and staple
+        # if required.
+        if notarization.should_wait():
             for result in notarize.wait_for_results(uuids_to_config.keys(),
                                                     config):
-                dist_config = uuids_to_config[result]
-                dest_dir = os.path.join(
-                    notary_paths.work,
-                    _intermediate_work_dir_name(dist_config.distribution))
-                _staple_chrome(notary_paths.replace_work(dest_dir), dist_config)
+                if notarization.should_staple():
+                    dist_config = uuids_to_config[result]
+                    dest_dir = os.path.join(
+                        notary_paths.work,
+                        _intermediate_work_dir_name(dist_config.distribution))
+                    _staple_chrome(
+                        notary_paths.replace_work(dest_dir), dist_config)
 
         # After all apps are optionally notarized, package as required.
         if not disable_packaging:
             uuids_to_package_path = {}
-            for dist in config.distributions:
-                if dist.branding_code in skip_brands:
-                    continue
-
+            for dist in distributions:
                 dist_config = dist.to_config(config)
                 paths = orig_paths.replace_work(
                     os.path.join(
@@ -647,23 +754,24 @@ def sign_all(orig_paths,
                 if dist.package_as_dmg:
                     dmg_path = _package_and_sign_dmg(paths, dist_config)
 
-                    if do_notarization:
+                    if notarization.should_notarize():
                         uuid = notarize.submit(dmg_path, dist_config)
                         uuids_to_package_path[uuid] = dmg_path
 
                 if dist.package_as_pkg:
                     pkg_path = _package_and_sign_pkg(paths, dist_config)
 
-                    if do_notarization:
+                    if notarization.should_notarize():
                         uuid = notarize.submit(pkg_path, dist_config)
                         uuids_to_package_path[uuid] = pkg_path
 
-            # Wait for packaging notarization results to come back, stapling as
-            # they do.
-            if do_notarization:
+            # If needed, wait for package notarization results to come back, and
+            # staple if required.
+            if notarization.should_wait():
                 for result in notarize.wait_for_results(
                         uuids_to_package_path.keys(), config):
-                    package_path = uuids_to_package_path[result]
-                    notarize.staple(package_path)
+                    if notarization.should_staple():
+                        package_path = uuids_to_package_path[result]
+                        notarize.staple(package_path)
 
     _package_installer_tools(orig_paths, config)

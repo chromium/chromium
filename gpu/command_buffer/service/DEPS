@@ -1,18 +1,16 @@
 include_rules = [
   "+cc/paint",
+  "+net",
   "+skia",
+  "+third_party/libyuv/include/libyuv/planar_functions.h",
   "+third_party/skia",
   "+components/crash/core/common/crash_key.h",
   "+components/viz/common/gpu/dawn_context_provider.h",
   "+components/viz/common/gpu/metal_context_provider.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/resources/resource_format.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/resource_sizes.h",
+  "+components/viz/common/resources/shared_image_format.h",
 ]
-
-specific_include_rules = {
-  "external_vk_image_factory_unittest\.cc": [
-    "+components/viz/common/gpu/vulkan_in_process_context_provider.h",
-  ],
-}

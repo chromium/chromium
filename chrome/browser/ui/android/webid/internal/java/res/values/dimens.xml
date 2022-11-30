@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <dimen name="account_selection_sheet_horizontal_margin">24dp</dimen>
+
+  <!--
+  account_selection_sheet_horizontal_margin - 12dp between 'x' in button and right edge of button.
+  -->
+  <dimen name="account_selection_sheet_close_button_horizontal_margin">12dp</dimen>
+
+  <dimen name="account_selection_sheet_title_height">32dp</dimen>
+
+  <dimen name="account_selection_sheet_item_padding">10dp</dimen>
+
+  <dimen name="account_selection_account_avatar_size">40dp</dimen>
+  <dimen name="account_selection_account_avatar_monogram_text_size">16dp</dimen>
+
+  <dimen name="account_selection_sheet_button_margin">4dp</dimen>
+
+  <dimen name="account_selection_sheet_icon_size">20dp</dimen>
+</resources>

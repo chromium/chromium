@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 #include <stddef.h>
 #include <time.h>
 
+#include <iterator>
+
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 
 namespace crashpad {
@@ -39,7 +41,7 @@ void TimeZone(const timeval& snapshot_time,
 
   bool found_transition = false;
   long probe_gmtoff = local.tm_gmtoff;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Some versions of the timezone database on Android have incorrect
   // information (e.g. Asia/Kolkata and Pacific/Honolulu). These timezones set
   // daylight to a non-zero value and return incorrect, >= 0 values for tm_isdst
@@ -60,8 +62,7 @@ void TimeZone(const timeval& snapshot_time,
     static constexpr int kMonthDeltas[] =
         {0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6,
          7, -7, 8, -8, 9, -9, 10, -10, 11, -11, 12, -12};
-    for (size_t index = 0;
-         index < base::size(kMonthDeltas) && !found_transition;
+    for (size_t index = 0; index < std::size(kMonthDeltas) && !found_transition;
          ++index) {
       // Look at a day of each month at local noon. Set tm_isdst to -1 to avoid
       // giving mktime() any hints about whether to consider daylight saving
@@ -104,14 +105,14 @@ void TimeZone(const timeval& snapshot_time,
   } else {
     *daylight_name = tzname[0];
     *dst_status = SystemSnapshot::kDoesNotObserveDaylightSavingTime;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // timezone is more reliably set correctly on Android.
     *standard_offset_seconds = -timezone;
     *daylight_offset_seconds = -timezone;
 #else
     *standard_offset_seconds = local.tm_gmtoff;
     *daylight_offset_seconds = local.tm_gmtoff;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

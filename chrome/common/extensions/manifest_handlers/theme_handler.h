@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -24,7 +23,7 @@ struct ThemeInfo : public Extension::ManifestData {
   ~ThemeInfo() override;
 
   static const base::DictionaryValue* GetImages(const Extension* extension);
-  static const base::DictionaryValue* GetColors(const Extension* extension);
+  static const base::Value* GetColors(const Extension* extension);
   static const base::DictionaryValue* GetTints(const Extension* extension);
   static const base::DictionaryValue* GetDisplayProperties(
       const Extension* extension);
@@ -33,7 +32,7 @@ struct ThemeInfo : public Extension::ManifestData {
   std::unique_ptr<base::DictionaryValue> theme_images_;
 
   // A map of color names to colors.
-  std::unique_ptr<base::DictionaryValue> theme_colors_;
+  std::unique_ptr<base::Value> theme_colors_;
 
   // A map of color names to colors.
   std::unique_ptr<base::DictionaryValue> theme_tints_;
@@ -46,6 +45,10 @@ struct ThemeInfo : public Extension::ManifestData {
 class ThemeHandler : public ManifestHandler {
  public:
   ThemeHandler();
+
+  ThemeHandler(const ThemeHandler&) = delete;
+  ThemeHandler& operator=(const ThemeHandler&) = delete;
+
   ~ThemeHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
@@ -55,8 +58,6 @@ class ThemeHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHandler);
 };
 
 }  // namespace extensions

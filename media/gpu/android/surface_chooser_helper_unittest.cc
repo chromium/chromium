@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/gpu/android/mock_android_video_surface_chooser.h"
 #include "media/gpu/android/mock_promotion_hint_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 using testing::_;
 using testing::AtLeast;
 
@@ -33,10 +33,10 @@ class SurfaceChooserHelperTest : public testing::Test {
   void TearDown() override {}
 
   void ReplaceHelper(bool is_overlay_required,
-                     bool promote_aggressively,
+                     bool promote_secure_only,
                      bool always_use_texture_owner = false) {
     // Advance the clock so that time 0 isn't recent.
-    tick_clock_.Advance(TimeDelta::FromSeconds(10000));
+    tick_clock_.Advance(base::Seconds(10000));
 
     std::unique_ptr<MockAndroidVideoSurfaceChooser> chooser =
         std::make_unique<MockAndroidVideoSurfaceChooser>();
@@ -45,21 +45,21 @@ class SurfaceChooserHelperTest : public testing::Test {
         std::make_unique<MockPromotionHintAggregator>();
     aggregator_ = aggregator.get();
     helper_ = std::make_unique<SurfaceChooserHelper>(
-        std::move(chooser), is_overlay_required, promote_aggressively,
+        std::move(chooser), is_overlay_required, promote_secure_only,
         always_use_texture_owner, std::move(aggregator), &tick_clock_);
   }
 
   // Convenience function.
   void UpdateChooserState() {
     EXPECT_CALL(*chooser_, MockUpdateState());
-    helper_->UpdateChooserState(base::Optional<AndroidOverlayFactoryCB>());
+    helper_->UpdateChooserState(absl::optional<AndroidOverlayFactoryCB>());
   }
 
   base::SimpleTestTickClock tick_clock_;
 
-  MockPromotionHintAggregator* aggregator_ = nullptr;
+  raw_ptr<MockPromotionHintAggregator> aggregator_ = nullptr;
 
-  MockAndroidVideoSurfaceChooser* chooser_ = nullptr;
+  raw_ptr<MockAndroidVideoSurfaceChooser> chooser_ = nullptr;
 
   std::unique_ptr<SurfaceChooserHelper> helper_;
 };
@@ -152,13 +152,13 @@ TEST_F(SurfaceChooserHelperTest, StillRequiredAfterClearingSecure) {
   ASSERT_TRUE(chooser_->current_state_.is_required);
 }
 
-TEST_F(SurfaceChooserHelperTest, SetPromoteAggressively) {
+TEST_F(SurfaceChooserHelperTest, SetPromoteSecureOnly) {
   UpdateChooserState();
-  ASSERT_FALSE(chooser_->current_state_.promote_aggressively);
+  ASSERT_FALSE(chooser_->current_state_.promote_secure_only);
 
   ReplaceHelper(false, true);
   UpdateChooserState();
-  ASSERT_TRUE(chooser_->current_state_.promote_aggressively);
+  ASSERT_TRUE(chooser_->current_state_.promote_secure_only);
 }
 
 TEST_F(SurfaceChooserHelperTest, SetAlwaysUseTextureOwner) {
@@ -241,7 +241,7 @@ TEST_F(SurfaceChooserHelperTest, PromotionHintsUpdateChooserStatePeriodically) {
   helper_->NotifyPromotionHintAndUpdateChooser(hint, false);
 
   // Advancing the time and using an overlay should not send a hint.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(10));
+  tick_clock_.Advance(base::Seconds(10));
   EXPECT_CALL(*chooser_, MockUpdateState()).Times(0);
   helper_->NotifyPromotionHintAndUpdateChooser(hint, true);
 

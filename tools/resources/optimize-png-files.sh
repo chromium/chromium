@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -23,7 +23,6 @@ chrome/app/theme
 chrome/browser/resources
 chrome/renderer/resources
 content/public/android/java/res
-content/app/resources
 content/shell/resources
 remoting/resources
 ui/android/java/res

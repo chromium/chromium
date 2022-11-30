@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
 
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -25,4 +26,9 @@ void PresentationReceiverWindowFrame::InitReceiverFrame(
 const ui::ThemeProvider* PresentationReceiverWindowFrame::GetThemeProvider()
     const {
   return &ThemeService::GetThemeProviderForProfile(profile_);
+}
+
+ui::ColorProviderManager::ThemeInitializerSupplier*
+PresentationReceiverWindowFrame::GetCustomTheme() const {
+  return ThemeService::GetThemeSupplierForProfile(profile_);
 }

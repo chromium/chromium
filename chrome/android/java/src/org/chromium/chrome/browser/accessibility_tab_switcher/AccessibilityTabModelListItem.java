@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,16 +28,20 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.url.GURL;
 
 /**
  * A widget that shows a single row of the {@link AccessibilityTabModelListView} list.
@@ -219,8 +223,8 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         mDefaultIconColor = ChromeColors.getPrimaryIconTint(context, false);
         mIncognitoIconColor =
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color_dark);
-        mDefaultCloseIconColor =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_secondary);
+        mDefaultCloseIconColor = AppCompatResources.getColorStateList(
+                context, R.color.default_icon_color_secondary_tint_list);
         mIncognitoCloseIconColor =
                 AppCompatResources.getColorStateList(context, R.color.white_alpha_70);
         mDefaultLevel = getResources().getInteger(R.integer.list_item_level_default);
@@ -229,6 +233,8 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         mCloseAnimationDurationMs = CLOSE_ANIMATION_DURATION_MS;
         mDefaultAnimationDurationMs = DEFAULT_ANIMATION_DURATION_MS;
         mCloseTimeoutMs = CLOSE_TIMEOUT_MS;
+
+        setFocusableInTouchMode(true);
     }
 
     @Override
@@ -308,7 +314,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         String url = null;
         if (mTab != null && mTab.isInitialized()) {
             title = mTab.getTitle();
-            url = mTab.getUrlString();
+            url = mTab.getUrl().getSpec();
             if (TextUtils.isEmpty(title)) title = url;
         }
         if (TextUtils.isEmpty(title)) {
@@ -330,12 +336,12 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
             setBackgroundResource(R.color.default_bg_color_dark);
             mFaviconView.getBackground().setLevel(mIncognitoLevel);
             ApiCompatibilityUtils.setTextAppearance(
-                    mTitleView, R.style.TextAppearance_TextLarge_Primary_Light);
+                    mTitleView, R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
             ApiCompatibilityUtils.setTextAppearance(
-                    mDescriptionView, R.style.TextAppearance_TextMedium_Primary_Light);
+                    mDescriptionView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
             ApiCompatibilityUtils.setImageTintList(mCloseButton, mIncognitoCloseIconColor);
         } else {
-            setBackgroundResource(R.color.default_bg_color);
+            setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mFaviconView.getBackground().setLevel(mDefaultLevel);
             ApiCompatibilityUtils.setTextAppearance(
                     mTitleView, R.style.TextAppearance_TextLarge_Primary);
@@ -436,7 +442,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         }
 
         @Override
-        public void onFaviconUpdated(Tab tab, Bitmap icon) {
+        public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
             updateFavicon();
             notifyTabUpdated(tab);
         }

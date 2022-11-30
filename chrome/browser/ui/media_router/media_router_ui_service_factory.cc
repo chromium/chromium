@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 using content::BrowserContext;
 
@@ -29,9 +28,9 @@ MediaRouterUIServiceFactory* MediaRouterUIServiceFactory::GetInstance() {
 }
 
 MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "MediaRouterUIService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(ChromeMediaRouterFactory::GetInstance());
   // MediaRouterUIService owns a MediaRouterActionController that depends on
   // ToolbarActionsModel.
@@ -40,17 +39,12 @@ MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
 
 MediaRouterUIServiceFactory::~MediaRouterUIServiceFactory() {}
 
-BrowserContext* MediaRouterUIServiceFactory::GetBrowserContextToUse(
-    BrowserContext* context) const {
-  return context;
-}
-
 KeyedService* MediaRouterUIServiceFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
   return new MediaRouterUIService(Profile::FromBrowserContext(context));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool MediaRouterUIServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,8 +19,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -52,10 +54,11 @@ class TemplateURLServiceLoader {
     message_loop_runner->Run();
   }
 
- private:
-  TemplateURLService* model_;
+  TemplateURLServiceLoader(const TemplateURLServiceLoader&) = delete;
+  TemplateURLServiceLoader& operator=(const TemplateURLServiceLoader&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceLoader);
+ private:
+  raw_ptr<TemplateURLService> model_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SendResponse(
@@ -93,8 +96,11 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   std::vector<std::unique_ptr<TemplateURLData>> prepopulate_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           browser()->profile()->GetPrefs(), nullptr);
+  std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
+      TemplateURLStarterPackData::GetStarterPackEngines();
 
-  EXPECT_EQ(prepopulate_urls.size(), all_urls.size());
+  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size(),
+            all_urls.size());
 
   std::string port(base::NumberToString(embedded_test_server()->port()));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -111,5 +117,6 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   observer.Wait();
 
   all_urls = template_urls->GetTemplateURLs();
-  EXPECT_EQ(prepopulate_urls.size() + 1, all_urls.size());
+  EXPECT_EQ(prepopulate_urls.size() + starter_pack_urls.size() + 1,
+            all_urls.size());
 }

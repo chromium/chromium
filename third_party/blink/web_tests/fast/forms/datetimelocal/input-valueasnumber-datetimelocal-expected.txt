@@ -7,7 +7,7 @@ PASS valueAsNumberFor("1969-12-31T12:34:56.789") is Date.UTC(1969, 11, 31, 12, 3
 PASS valueAsNumberFor("1970-01-01T00:00:00.000") is Date.UTC(1970, 0, 1, 0, 0, 0)
 PASS valueAsNumberFor("2009-12-22T11:32:11") is Date.UTC(2009, 11, 22, 11, 32, 11)
 PASS setValueAsNumberAndGetValue(1969, 11, 1, 0, 0, 0, 0) is "1969-12-01T00:00"
-PASS setValueAsNumberAndGetValue(1970, 0, 1, 10, 1, 0, 100) is "1970-01-01T10:01:00.100"
+PASS setValueAsNumberAndGetValue(1970, 0, 1, 10, 1, 0, 100) is "1970-01-01T10:01:00.1"
 PASS setValueAsNumberAndGetValue(2009, 11, 31, 23, 59, 59, 999) is "2009-12-31T23:59:59.999"
 PASS setValueAsNumberAndGetValue(10000, 0, 1, 12, 0, 1, 0) is "10000-01-01T12:00:01"
 PASS setValueAsNumberAndGetValue(-1, 0, 1, 0, 0, 0, 0) is ""
@@ -29,8 +29,8 @@ PASS input.valueAsNumber = Number.NEGATIVE_INFINITY threw exception TypeError: F
 PASS input.valueAsNumber = Date.UTC(275760, 8, 13, 0, 0, 0, 1); input.valueAsNumber is NaN
 PASS input.valueAsNumber = Date.UTC(275760, 8, 13, 0, 0, 0, 1); input.value is ""
 Step attribute value and string representation:
-PASS input.step = "1"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0) is "2010-01-21T00:00:00"
-PASS input.step = "0.001"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0) is "2010-01-21T00:00:00.000"
+PASS input.step = "1"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0) is "2010-01-21T00:00"
+PASS input.step = "0.001"; setValueAsNumberAndGetValue(2010, 0, 21, 0, 0, 0, 0) is "2010-01-21T00:00"
 PASS successfullyParsed is true
 
 TEST COMPLETE

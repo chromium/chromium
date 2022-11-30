@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/fuzzy_pattern_matching.h"
@@ -73,7 +73,7 @@ base::StringPiece ConvertString(const flatbuffers::String* string) {
 }
 
 bool HasAnyUpperAscii(base::StringPiece string) {
-  return std::any_of(string.begin(), string.end(), base::IsAsciiUpper<char>);
+  return base::ranges::any_of(string, base::IsAsciiUpper<char>);
 }
 
 // Returns whether |position| within the |url| belongs to its |host| component
@@ -311,6 +311,12 @@ base::StringPiece UrlPattern::UrlInfo::GetLowerCaseSpec() const {
   return *lower_case_spec_cached_;
 }
 
+base::StringPiece UrlPattern::UrlInfo::GetStringHost() const {
+  if (host().len <= 0)
+    return base::StringPiece();
+  return base::StringPiece(&spec_[host().begin], host().len);
+}
+
 UrlPattern::UrlInfo::~UrlInfo() = default;
 
 UrlPattern::UrlPattern() = default;
@@ -377,10 +383,10 @@ std::ostream& operator<<(std::ostream& out, const UrlPattern& pattern) {
   switch (pattern.anchor_left()) {
     case proto::ANCHOR_TYPE_SUBDOMAIN:
       out << '|';
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::ANCHOR_TYPE_BOUNDARY:
       out << '|';
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

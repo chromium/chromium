@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,14 @@ class GFX_EXPORT ImageFamily {
  public:
   // Type for iterating over all images in the family, in order.
   // Dereferencing this iterator returns a gfx::Image.
-  class GFX_EXPORT const_iterator :
-    std::iterator<std::bidirectional_iterator_tag, const gfx::Image> {
+  class GFX_EXPORT const_iterator {
    public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = const gfx::Image;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const gfx::Image*;
+    using reference = const gfx::Image&;
+
     const_iterator();
 
     const_iterator(const const_iterator& other);
@@ -99,6 +104,14 @@ class GFX_EXPORT ImageFamily {
 
   ImageFamily();
   ImageFamily(ImageFamily&& other);
+
+  // Even though the Images in the family are copyable (reference-counted), the
+  // family itself should not be implicitly copied, as it would result in a
+  // shallow clone of the entire map and updates to many reference counts.
+  // ImageFamily can be explicitly Clone()d, but std::move is preferred.
+  ImageFamily(const ImageFamily&) = delete;
+  ImageFamily& operator=(const ImageFamily&) = delete;
+
   ~ImageFamily();
 
   ImageFamily& operator=(ImageFamily&& other);
@@ -169,12 +182,6 @@ class GFX_EXPORT ImageFamily {
 
   // Map from (aspect ratio, width) to image.
   std::map<MapKey, gfx::Image> map_;
-
-  // Even though the Images in the family are copyable (reference-counted), the
-  // family itself should not be implicitly copied, as it would result in a
-  // shallow clone of the entire map and updates to many reference counts.
-  // ImageFamily can be explicitly Clone()d, but std::move is preferred.
-  DISALLOW_COPY_AND_ASSIGN(ImageFamily);
 };
 
 }  // namespace gfx

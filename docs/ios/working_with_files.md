@@ -39,8 +39,10 @@ of any kind), the following general steps need to happen:
 For adding new header or implementation files, the following procedure is
 recommended:
 
-1.  Generate the new files using `tools/boilerplate.py`. This will generate the
-    correct header guard macros and include the copyright boilerplate.
+1.  Generate the new files using `tools/boilerplate.py`. This will generate
+    header guard macros and include the copyright boilerplate. Make sure to run
+    this from root (`src/`) so the header guards include the correct, full
+    path.
 
 2.  Add the newly created files using `git add`.
 

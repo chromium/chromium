@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,18 @@ enum class SnapDirection;
 // Delegate interface for FrameSizeButton.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButtonDelegate {
  public:
-  enum Animate { ANIMATE_YES, ANIMATE_NO };
+  enum class Animate { kYes, kNo };
 
   // Returns whether the minimize button is visible.
   virtual bool IsMinimizeButtonVisible() const = 0;
 
   // Reset the caption button views::Button::ButtonState back to normal. If
-  // |animate| is ANIMATE_YES, the buttons will crossfade back to their
+  // |animate| is Animate::kYes, the buttons will crossfade back to their
   // original icons.
   virtual void SetButtonsToNormal(Animate animate) = 0;
 
   // Sets the minimize and close button icons. The buttons will crossfade to
-  // their new icons if |animate| is ANIMATE_YES.
+  // their new icons if |animate| is Animate::kYes.
   virtual void SetButtonIcons(views::CaptionButtonIcon minimize_button_icon,
                               views::CaptionButtonIcon close_button_icon,
                               Animate animate) = 0;
@@ -51,7 +51,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButtonDelegate {
 
   // Thunks to methods of the same name in FrameCaptionDelegate.
   virtual bool CanSnap() = 0;
-  virtual void ShowSnapPreview(SnapDirection snap) = 0;
+  virtual void ShowSnapPreview(SnapDirection snap,
+                               bool allow_haptic_feedback) = 0;
   virtual void CommitSnap(SnapDirection snap) = 0;
 
  protected:

@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// You can print out the json data source file paths
+//   test/test_data1.json5
+//   test/test_data2.json5
+
+// You can print out the header guard for C++ header files
+#ifndef TEST_TEMPLATE_TEST_
+#define TEST_TEMPLATE_TEST_
+#endif // TEST_TEMPLATE_TEST_
+
+// Access the data
+Name1
+Name2
+30
+game,hiking
+
+// Custom globals/filters
+Mr Name1
+NAME2

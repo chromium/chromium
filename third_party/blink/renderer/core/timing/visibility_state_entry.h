@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,9 @@ class CORE_EXPORT VisibilityStateEntry final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  VisibilityStateEntry(AtomicString name, double start_time);
+  VisibilityStateEntry(AtomicString name,
+                       double start_time,
+                       uint32_t navigation_id);
   ~VisibilityStateEntry() override;
 
   AtomicString entryType() const override;

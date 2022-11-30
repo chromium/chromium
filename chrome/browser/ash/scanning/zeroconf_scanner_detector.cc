@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,26 +10,32 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
+#include "components/device_event_log/device_event_log.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
 // Supported service types for scanners.
 const char ZeroconfScannerDetector::kEsclServiceType[] = "_uscan._tcp.local";
 const char ZeroconfScannerDetector::kEsclsServiceType[] = "_uscans._tcp.local";
+const char ZeroconfScannerDetector::kGenericScannerServiceType[] =
+    "_scanner._tcp.local";
 
-constexpr std::array<const char*, 2> kServiceTypes = {
+constexpr std::array<const char*, 3> kServiceTypes = {
     ZeroconfScannerDetector::kEsclsServiceType,
     ZeroconfScannerDetector::kEsclServiceType,
+    ZeroconfScannerDetector::kGenericScannerServiceType,
 };
 
 namespace {
@@ -38,7 +44,7 @@ using local_discovery::ServiceDescription;
 using local_discovery::ServiceDiscoveryDeviceLister;
 using local_discovery::ServiceDiscoverySharedClient;
 
-// TODO(jschettler): Update this class once the eSCL specification is released.
+// TODO(b/184746628): Update this class using the eSCL specification.
 // These fields (including the default values) come from the eSCL specification.
 // Not all of these will necessarily be specified for a given scanner. Also,
 // unused fields are excluded here.
@@ -54,7 +60,7 @@ class ParsedMetadata {
       const base::StringPiece key = key_value.substr(0, equal_pos);
       const base::StringPiece value = key_value.substr(equal_pos + 1);
       if (key == "rs")
-        rs_ = value.as_string();
+        rs_ = std::string(value);
     }
   }
   ParsedMetadata(const ParsedMetadata&) = delete;
@@ -69,8 +75,8 @@ class ParsedMetadata {
 };
 
 // Attempts to create a Scanner using the information in |service_description|
-// and |metadata|. Returns the Scanner on success, base::nullopt on failure.
-base::Optional<chromeos::Scanner> CreateScanner(
+// and |metadata|. Returns the Scanner on success, absl::nullopt on failure.
+absl::optional<Scanner> CreateScanner(
     const std::string& service_type,
     const ServiceDescription& service_description,
     const ParsedMetadata& metadata) {
@@ -81,12 +87,17 @@ base::Optional<chromeos::Scanner> CreateScanner(
   if (service_description.service_name.empty() ||
       service_description.ip_address.empty() ||
       service_description.address.port() == 0) {
-    return base::nullopt;
+    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                       << " scanner that isn't usable";
+    return absl::nullopt;
   }
 
-  return CreateSaneAirscanScanner(
-      service_description.instance_name(), service_type, metadata.rs(),
-      service_description.ip_address, service_description.address.port());
+  PRINTER_LOG(EVENT) << "Found zeroconf " << service_type
+                     << " scanner: " << service_description.instance_name();
+
+  return CreateSaneScanner(service_description.instance_name(), service_type,
+                           metadata.rs(), service_description.ip_address,
+                           service_description.address.port());
 }
 
 class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
@@ -124,7 +135,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   }
 
   // ScannerDetector:
-  std::vector<chromeos::Scanner> GetScanners() override {
+  std::vector<Scanner> GetScanners() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     return GetDedupedScanners();
   }
@@ -189,27 +200,30 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   }
 
   // Returns the detected scanners after merging duplicates.
-  std::vector<chromeos::Scanner> GetDedupedScanners() {
+  std::vector<Scanner> GetDedupedScanners() {
     // Use a map of display name to Scanner to deduplicate the detected
     // scanners. If a Scanner has the same display name as one that's already
     // been added to the map, merge the two by adding the new Scanner's
     // information to the existing Scanner.
-    base::flat_map<std::string, chromeos::Scanner> deduped_scanners;
+    base::flat_map<std::string, Scanner> deduped_scanners;
     for (const auto& entry : scanners_) {
-      const chromeos::Scanner* scanner = &entry.second;
+      const Scanner* scanner = &entry.second;
       auto it = deduped_scanners.find(scanner->display_name);
       if (it == deduped_scanners.end()) {
         deduped_scanners.insert({scanner->display_name, *scanner});
       } else {
         // Each Scanner in scanners_ should have a single device name
         // corresponding to a known protocol.
-        chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
-        if (scanner->device_names.find(chromeos::ScanProtocol::kEscls) !=
+        ScanProtocol protocol = ScanProtocol::kUnknown;
+        if (scanner->device_names.find(ScanProtocol::kEscls) !=
             scanner->device_names.end()) {
-          protocol = chromeos::ScanProtocol::kEscls;
-        } else if (scanner->device_names.find(chromeos::ScanProtocol::kEscl) !=
+          protocol = ScanProtocol::kEscls;
+        } else if (scanner->device_names.find(ScanProtocol::kEscl) !=
                    scanner->device_names.end()) {
-          protocol = chromeos::ScanProtocol::kEscl;
+          protocol = ScanProtocol::kEscl;
+        } else if (scanner->device_names.find(ScanProtocol::kLegacyNetwork) !=
+                   scanner->device_names.end()) {
+          protocol = ScanProtocol::kLegacyNetwork;
         } else {
           NOTREACHED() << "Zeroconf scanner with unknown protocol.";
         }
@@ -222,7 +236,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
       }
     }
 
-    std::vector<chromeos::Scanner> scanners;
+    std::vector<Scanner> scanners;
     scanners.reserve(deduped_scanners.size());
     for (const auto& entry : deduped_scanners)
       scanners.push_back(entry.second);
@@ -233,7 +247,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
   SEQUENCE_CHECKER(sequence_);
 
   // Map from service name to Scanner.
-  base::flat_map<std::string, chromeos::Scanner> scanners_;
+  base::flat_map<std::string, Scanner> scanners_;
 
   // Keep a reference to the shared device client around for the lifetime of
   // this object.

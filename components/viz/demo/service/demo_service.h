@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,14 @@ class DemoService {
  public:
   DemoService(mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
               mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client);
+
+  DemoService(const DemoService&) = delete;
+  DemoService& operator=(const DemoService&) = delete;
+
   ~DemoService();
 
  private:
   std::unique_ptr<viz::VizCompositorThreadRunnerImpl> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(DemoService);
 };
 
 }  // namespace demo

@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>Storage>CacheStorage"
-}
-team_email: "storage-dev@chromium.org"
+mixins: "//content/browser/cache_storage/COMMON_METADATA"

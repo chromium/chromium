@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 namespace installer {
 
@@ -19,6 +18,9 @@ class SelfCleaningTempDir {
   typedef base::FilePath::StringType StringType;
 
   SelfCleaningTempDir();
+
+  SelfCleaningTempDir(const SelfCleaningTempDir&) = delete;
+  SelfCleaningTempDir& operator=(const SelfCleaningTempDir&) = delete;
 
   // Performs a Delete().
   ~SelfCleaningTempDir();
@@ -48,7 +50,6 @@ class SelfCleaningTempDir {
 
   FRIEND_TEST_ALL_PREFIXES(SelfCleaningTempDirTest, TopLevel);
   FRIEND_TEST_ALL_PREFIXES(SelfCleaningTempDirTest, TopLevelPlusOne);
-  DISALLOW_COPY_AND_ASSIGN(SelfCleaningTempDir);
 };
 
 }  // namespace installer

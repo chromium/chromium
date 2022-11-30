@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,12 +26,78 @@ imageset("checkbox_checked") {
   ]
 }
 
-imageset("first_run_location_permissions") {
+imageset("default_browser_screen_banner") {
   sources = [
-    "first_run_location_permissions.imageset/Contents.json",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_dark@3x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@2x.png",
-    "first_run_location_permissions.imageset/first_run_location_permissions_light@3x.png",
+    "default_browser_screen_banner.imageset/Contents.json",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_dark@3x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@2x.png",
+    "default_browser_screen_banner.imageset/default_browser_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("legacy_signin_screen_banner") {
+  sources = [
+    "legacy_signin_screen_banner.imageset/Contents.json",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@2x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_dark@3x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@2x.png",
+    "legacy_signin_screen_banner.imageset/legacy_signin_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("legacy_forced_signin_screen_banner") {
+  sources = [
+    "legacy_forced_signin_screen_banner.imageset/Contents.json",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@2x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_dark@3x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@2x.png",
+    "legacy_forced_signin_screen_banner.imageset/legacy_forced_signin_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("signin_banner") {
+  sources = [
+    "signin_banner.imageset/Contents.json",
+    "signin_banner.imageset/signin_banner_dark@2x.png",
+    "signin_banner.imageset/signin_banner_dark@3x.png",
+    "signin_banner.imageset/signin_banner_light@2x.png",
+    "signin_banner.imageset/signin_banner_light@3x.png",
+  ]
+}
+
+imageset("sync_screen_banner") {
+  sources = [
+    "sync_screen_banner.imageset/Contents.json",
+    "sync_screen_banner.imageset/sync_screen_banner_dark@2x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_dark@3x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_light@2x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("read_more_arrow") {
+  sources = [
+    "read_more_arrow.imageset/Contents.json",
+    "read_more_arrow.imageset/read_more_arrow@2x.png",
+    "read_more_arrow.imageset/read_more_arrow@3x.png",
+  ]
+}
+
+imageset("welcome_screen_banner") {
+  sources = [
+    "welcome_screen_banner.imageset/Contents.json",
+    "welcome_screen_banner.imageset/welcome_screen_banner_dark@2x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_dark@3x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_light@2x.png",
+    "welcome_screen_banner.imageset/welcome_screen_banner_light@3x.png",
+  ]
+}
+
+imageset("welcome_metrics_checkmark") {
+  sources = [
+    "welcome_metrics_checkmark.imageset/Contents.json",
+    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@2x.png",
+    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@3x.png",
   ]
 }

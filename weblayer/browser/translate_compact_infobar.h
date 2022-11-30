@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_TRANSLATE_COMPACT_INFOBAR_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_step.h"
@@ -24,6 +23,10 @@ class TranslateCompactInfoBar
  public:
   explicit TranslateCompactInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate);
+
+  TranslateCompactInfoBar(const TranslateCompactInfoBar&) = delete;
+  TranslateCompactInfoBar& operator=(const TranslateCompactInfoBar&) = delete;
+
   ~TranslateCompactInfoBar() override;
 
   // JNI method specific to string settings in translate.
@@ -50,9 +53,8 @@ class TranslateCompactInfoBar
                        const base::android::JavaParamRef<jobject>& obj);
 
   // TranslateInfoBarDelegate::Observer implementation.
-  void OnTranslateStepChanged(
-      translate::TranslateStep step,
-      translate::TranslateErrors::Type error_type) override;
+  void OnTranslateStepChanged(translate::TranslateStep step,
+                              translate::TranslateErrors error_type) override;
   void OnTargetLanguageChanged(
       const std::string& target_language_code) override;
   // Returns true if the user didn't take any affirmative action.
@@ -94,8 +96,6 @@ class TranslateCompactInfoBar
     FLAG_NEVER_SITE = 1 << 4,
     FLAG_EXPAND_MENU = 1 << 5,
   };
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateCompactInfoBar);
 };
 
 }  // namespace weblayer

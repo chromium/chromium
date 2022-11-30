@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,10 +47,9 @@ void ParseAndExercise(FuzzedDataProvider& data_provider) {
 
   CHECK_EQ(parsed->Type(), dns_protocol::kTypeHttps);
   if (parsed->IsAlias()) {
-    CHECK(!parsed->IsMalformed());
     AliasFormHttpsRecordRdata* alias = parsed->AsAliasForm();
     alias->alias_name();
-  } else if (!parsed->IsMalformed()) {
+  } else {
     ServiceFormHttpsRecordRdata* service = parsed->AsServiceForm();
     CHECK_GT(service->priority(), 0);
     service->service_name();

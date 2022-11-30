@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,13 +30,18 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
  public:
   LocalGpuMemoryBufferManager();
 
+  LocalGpuMemoryBufferManager(const LocalGpuMemoryBufferManager&) = delete;
+  LocalGpuMemoryBufferManager& operator=(const LocalGpuMemoryBufferManager&) =
+      delete;
+
   // gpu::GpuMemoryBufferManager implementation
   ~LocalGpuMemoryBufferManager() override;
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle) override;
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
@@ -63,8 +68,6 @@ class MEDIA_GPU_EXPORT LocalGpuMemoryBufferManager
 
  private:
   gbm_device* gbm_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalGpuMemoryBufferManager);
 };
 
 }  // namespace media

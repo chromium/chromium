@@ -13,24 +13,29 @@ var t_fail = t.step_func(function(reason) {
 });
 t.step(function() {
 
-var offscreenCanvas = new OffscreenCanvas(100, 50);
-var ctx = offscreenCanvas.getContext('2d');
+var canvas = new OffscreenCanvas(100, 50);
+var ctx = canvas.getContext('2d');
 
-_assertSame(ctx.textLetterSpacing, 0, "ctx.textLetterSpacing", "0");
-_assertSame(ctx.textWordSpacing, 0, "ctx.textWordSpacing", "0");
+_assertSame(ctx.letterSpacing, '0px', "ctx.letterSpacing", "'0px'");
+_assertSame(ctx.wordSpacing, '0px', "ctx.wordSpacing", "'0px'");
 
-ctx.textLetterSpacing = 3;
-_assertSame(ctx.textLetterSpacing, 3, "ctx.textLetterSpacing", "3");
-_assertSame(ctx.textWordSpacing, 0, "ctx.textWordSpacing", "0");
+ctx.letterSpacing = '3px';
+_assertSame(ctx.letterSpacing, '3px', "ctx.letterSpacing", "'3px'");
+_assertSame(ctx.wordSpacing, '0px', "ctx.wordSpacing", "'0px'");
 
-ctx.textWordSpacing = 5;
-_assertSame(ctx.textLetterSpacing, 3, "ctx.textLetterSpacing", "3");
-_assertSame(ctx.textWordSpacing, 5, "ctx.textWordSpacing", "5");
+ctx.wordSpacing = '5px';
+_assertSame(ctx.letterSpacing, '3px', "ctx.letterSpacing", "'3px'");
+_assertSame(ctx.wordSpacing, '5px', "ctx.wordSpacing", "'5px'");
 
-ctx.textLetterSpacing = -1;
-ctx.textWordSpacing = -1;
-_assertSame(ctx.textLetterSpacing, -1, "ctx.textLetterSpacing", "-1");
-_assertSame(ctx.textWordSpacing, -1, "ctx.textWordSpacing", "-1");
+ctx.letterSpacing = '-1px';
+ctx.wordSpacing = '-1px';
+_assertSame(ctx.letterSpacing, '-1px', "ctx.letterSpacing", "'-1px'");
+_assertSame(ctx.wordSpacing, '-1px', "ctx.wordSpacing", "'-1px'");
+
+ctx.letterSpacing = '1PX';
+ctx.wordSpacing = '1EM';
+_assertSame(ctx.letterSpacing, '1px', "ctx.letterSpacing", "'1px'");
+_assertSame(ctx.wordSpacing, '1em', "ctx.wordSpacing", "'1em'");
 t.done();
 
 });

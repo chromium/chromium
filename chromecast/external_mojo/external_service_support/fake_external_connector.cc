@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace external_service_support {
 FakeExternalConnector::FakeExternalConnector() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+FakeExternalConnector::FakeExternalConnector(
+    mojo::PendingRemote<external_mojo::mojom::TestExternalConnector> remote)
+    : parent_(std::move(remote)) {}
 
 FakeExternalConnector::~FakeExternalConnector() = default;
 
@@ -63,6 +67,12 @@ void FakeExternalConnector::BindInterface(
     mojo::ScopedMessagePipeHandle interface_pipe,
     bool async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (parent_.is_bound()) {
+    parent_->BindInterfaceInternal(service_name, interface_name,
+                                   std::move(interface_pipe));
+    return;
+  }
   if (!services_.count(service_name)) {
     return;
   }
@@ -70,12 +80,27 @@ void FakeExternalConnector::BindInterface(
                                            std::move(interface_pipe));
 }
 
-std::unique_ptr<ExternalConnector> FakeExternalConnector::Clone() {
-  return nullptr;
+std::unique_ptr<external_service_support::ExternalConnector>
+FakeExternalConnector::Clone() {
+  mojo::PendingRemote<external_mojo::mojom::TestExternalConnector> remote;
+  child_receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<FakeExternalConnector>(std::move(remote));
+}
+
+mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+FakeExternalConnector::RequestConnector() {
+  return mojo::PendingRemote<external_mojo::mojom::ExternalConnector>();
 }
 
 void FakeExternalConnector::SendChromiumConnectorRequest(
     mojo::ScopedMessagePipeHandle request) {}
+
+void FakeExternalConnector::BindInterfaceInternal(
+    const std::string& service_name,
+    const std::string& interface_name,
+    mojo::ScopedMessagePipeHandle interface_pipe) {
+  BindInterface(service_name, interface_name, std::move(interface_pipe));
+}
 
 }  // namespace external_service_support
 }  // namespace chromecast

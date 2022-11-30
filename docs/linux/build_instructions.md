@@ -15,9 +15,10 @@ Are you a Google employee? See
 *   A 64-bit Intel machine with at least 8GB of RAM. More than 16GB is highly
     recommended.
 *   At least 100GB of free disk space.
-*   You must have Git and Python v2 installed already.
+*   You must have Git and Python v3.6+ installed already (and `python3` must point
+    to a Python v3.6+ binary).
 
-Most development is done on Ubuntu (currently 16.04, Xenial Xerus). There are
+Most development is done on Ubuntu (currently 18.04, Bionic Beaver). There are
 some instructions for other distros below, but they are mostly unsupported.
 
 ## Install `depot_tools`
@@ -110,7 +111,7 @@ development and testing purposes.
 ## Setting up the build
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
-a tool called [GN](https://gn.googlesource.com/gn/+/master/docs/quick_start.md)
+a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
 to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory, run:
 
@@ -127,7 +128,7 @@ $ gn gen out/Default
   The default will be a debug component build matching the current host
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
 
 ### <a name="faster-builds"></a>Faster builds
 
@@ -160,11 +161,12 @@ By default GN produces a build with all of the debug assertions enabled
 line-by-line debugging. Setting `symbol_level=0` will include no debug
 symbols at all. Either will speed up the build compared to full symbols.
 
-#### Disable debug symbols for Blink
+#### Disable debug symbols for Blink and v8
 
 Due to its extensive use of templates, the Blink code produces about half
 of our debug symbols. If you don't ever need to debug Blink, you can set
-the GN arg `blink_symbol_level=0`.
+the GN arg `blink_symbol_level=0`. Similarly, if you don't need to debug v8 you
+can improve build speeds by setting the GN arg `v8_symbol_level=0`.
 
 #### Use Icecc
 
@@ -188,7 +190,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 
 #### ccache
 
-You can use [ccache](https://ccache.samba.org) to speed up local builds (again,
+You can use [ccache](https://ccache.dev) to speed up local builds (again,
 this is not useful if you're using Goma).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
@@ -197,7 +199,7 @@ that the working directories all have in common (e.g.,
 `CCACHE_SLOPPINESS=include_file_mtime` (since if you are using multiple working
 directories, header times in svn sync'ed portions of your trees will be
 different - see
-[the ccache troubleshooting section](http://ccache.samba.org/manual.html#_troubleshooting)
+[the ccache troubleshooting section](https://ccache.dev/manual/latest.html#_troubleshooting)
 for additional information). If you use symbolic links from your home directory
 to get to the local physical disk directory where you keep those working
 development directories, consider putting
@@ -213,7 +215,8 @@ tracking trunk and is up to date with trunk and was gclient sync'ed at about the
 same time should build chrome in about 1/3 the time, and the cache misses as
 reported by `ccache -s` should barely increase.
 
-This is especially useful if you use `git-new-workdir` and keep multiple local
+This is especially useful if you use
+[git-worktree](http://git-scm.com/docs/git-worktree) and keep multiple local
 working directories going at once.
 
 #### Using tmpfs
@@ -238,6 +241,19 @@ hyperthreaded, 12 GB RAM)
     *   12m:20s
 *   Without tmpfs
     *   15m:40s
+
+### Smaller builds
+
+The Chrome binary contains embedded symbols by default. You can reduce its size
+by using the Linux `strip` command to remove this debug information. You can
+also reduce binary size by disabling debug mode, disabling dchecks, and turning
+on all optimizations by enabling official build mode, with these GN args:
+
+```
+is_debug = false
+dcheck_always_on = false
+is_official_build = true
+```
 
 ## Build Chromium
 
@@ -265,8 +281,14 @@ $ out/Default/chrome
 
 ## Running test targets
 
-You can run the tests in the same way. You can also limit which tests are
-run using the `--gtest_filter` arg, e.g.:
+First build the unit_tests binary by running the command:
+
+```shell
+$ autoninja -C out/Default unit_tests
+```
+
+You can run the tests by running the unit_tests binary. You can also limit which
+tests are run using the `--gtest_filter` arg, e.g.:
 
 ```shell
 $ out/Default/unit_tests --gtest_filter="PushClientTest.*"
@@ -286,7 +308,7 @@ $ gclient sync
 
 The first command updates the primary Chromium source repository and rebases
 any of your local branches on top of tip-of-tree (aka the Git branch
-`origin/master`). If you don't want to use this script, you can also just use
+`origin/main`). If you don't want to use this script, you can also just use
 `git pull` or other common Git commands to update the repo.
 
 The second command syncs dependencies to the appropriate versions and re-runs
@@ -345,7 +367,8 @@ Instead of running `install-build-deps.sh` to install build dependencies, run:
 
 ```shell
 $ sudo pacman -S --needed python perl gcc gcc-libs bison flex gperf pkgconfig \
-nss alsa-lib glib2 gtk3 nspr ttf-ms-fonts freetype2 cairo dbus libgnome-keyring
+nss alsa-lib glib2 gtk3 nspr freetype2 cairo dbus libgnome-keyring \
+xorg-server-xvfb xorg-xdpyinfo
 ```
 
 For the optional packages on Arch Linux:
@@ -353,7 +376,6 @@ For the optional packages on Arch Linux:
 *   `php-cgi` is provided with `pacman`
 *   `wdiff` is not in the main repository but `dwdiff` is. You can get `wdiff`
     in AUR/`yaourt`
-*   `sun-java6-fonts` do not seem to be in main repository or AUR.
 
 ### Crostini (Debian based)
 

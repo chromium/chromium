@@ -4,29 +4,107 @@
       }
     </style>
     <div class="cr-row first">
-      <h2>$i18n{searchEnginesDefault}</h2>
+      <div class="secondary">$i18n{searchEnginesPageExplanation}</div>
     </div>
+    <div class="cr-row first">
+      <div class="flex cr-padded-text">
+        <div id="keyboardShortcutsTitle">
+          $i18n{searchEnginesKeyboardShortcutsTitle}
+        </div>
+        <div class="secondary">
+          $i18n{searchEnginesKeyboardShortcutsDescription}
+        </div>
+      </div>
+    </div>
+    <div class="list-frame">
+      <settings-radio-group id="keyboardShortcutSettingGroup"
+          pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+          on-change="onKeyboardShortcutSettingChange_">
+        <controlled-radio-button class="list-item" name="true"
+            pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+            label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
+            aria-labelledby="keyboardShortcutsTitle"
+            no-extension-indicator>
+        </controlled-radio-button>
+        <controlled-radio-button class="list-item" name="false"
+            pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
+            label="$i18n{searchEnginesKeyboardShortcutsTab}"
+            aria-labelledby="keyboardShortcutsTitle"
+            no-extension-indicator>
+        </controlled-radio-button>
+      </settings-radio-group>
+    </div>
+
+    <div class="cr-row first">
+      <div class="flex cr-padded-text">
+        <h2>$i18n{searchEnginesSearchEngines}</h2>
+        <div class="secondary">
+          $i18n{searchEnginesSearchEnginesExplanation}
+        </div>
+      </div>
+    </div>
+    <settings-search-engines-list hidden="[[!matchingDefaultEngines_.length]]"
+        engines="[[matchingDefaultEngines_]]"
+        show-shortcut name-column-header="$i18n{searchEnginesSearchEngine}">
+    </settings-search-engines-list>
+
     <div class="no-search-results list-frame"
         hidden="[[matchingDefaultEngines_.length]]">
       $i18n{searchNoResults}
     </div>
-    <settings-search-engines-list fixed-height
-        hidden="[[!matchingDefaultEngines_.length]]"
-        engines="[[matchingDefaultEngines_]]">
-    </settings-search-engines-list>
-    <template is="dom-if" if="[[showDialog_]]" restamp>
-      <settings-search-engine-dialog model="[[dialogModel_]]"
-          on-close="onCloseDialog_">
-      </settings-search-engine-dialog>
+
+    <template is="dom-if" if="[[showEditDialog_]]" restamp>
+      <settings-search-engine-edit-dialog model="[[dialogModel_]]"
+          on-close="onCloseEditDialog_">
+      </settings-search-engine-edit-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
+      <settings-search-engine-delete-confirmation-dialog
+          model="[[dialogModel_]]" on-close="onCloseDeleteConfirmationDialog_">
+      </settings-search-engine-delete-confirmation-dialog>
     </template>
 
     <div class="cr-row first">
-      <h2 class="flex">$i18n{searchEnginesOther}</h2>
-      <cr-button class="secondary-button header-aligned-button"
-          on-click="onAddSearchEngineTap_" id="addSearchEngine">
-        $i18n{add}
-      </cr-button>
+        <div class="flex cr-padded-text">
+          <h2>$i18n{searchEnginesSiteSearch}</h2>
+          <div class="secondary">$i18n{searchEnginesSiteSearchExplanation}</div>
+        </div>
+        <cr-button class="secondary-button header-aligned-button"
+                   on-click="onAddSearchEngineTap_" id="addSearchEngine">
+          $i18n{add}
+        </cr-button>
     </div>
+    <div id="noActiveEngines" class="list-frame"
+           hidden="[[activeEngines.length]]">
+          $i18n{searchEnginesNoSitesAdded}
+    </div>
+    <div class="no-search-results list-frame"
+           hidden="[[!showNoResultsMessage_(
+          activeEngines, matchingActiveEngines_)]]">
+          $i18n{searchNoResults}
+    </div>
+    <settings-search-engines-list id="activeEngines"
+        hidden="[[!matchingActiveEngines_.length]]"
+        engines="[[matchingActiveEngines_]]"
+        scroll-target="[[subpageScrollTarget]]"
+        show-shortcut collapse-list
+        expand-list-text="$i18n{searchEnginesAdditionalSites}"
+        name-column-header="$i18n{searchEnginesSiteOrPage}">
+    </settings-search-engines-list>
+
+    <div class="cr-row first">
+        <h2>$i18n{searchEnginesInactiveShortcuts}</h2>
+    </div>
+    <settings-search-engines-list
+        hidden="[[!matchingOtherEngines_.length]]"
+        engines="[[matchingOtherEngines_]]"
+        scroll-target="[[subpageScrollTarget]]"
+        show-query-url collapse-list
+        expand-list-text="$i18n{searchEnginesAdditionalInactiveSites}"
+        name-column-header="$i18n{searchEnginesSiteOrPage}">
+    </settings-search-engines-list>
+
     <div id="noOtherEngines" class="list-frame"
         hidden="[[otherEngines.length]]">
       $i18n{searchEnginesNoOtherEngines}
@@ -36,14 +114,13 @@
             otherEngines, matchingOtherEngines_)]]">
       $i18n{searchNoResults}
     </div>
-    <settings-search-engines-list id="otherEngines"
-        hidden="[[!matchingOtherEngines_.length]]"
-        engines="[[matchingOtherEngines_]]"
-        scroll-target="[[subpageScrollTarget]]">
-    </settings-search-engines-list>
+
     <template is="dom-if" if="[[showExtensionsList_]]">
       <div class="cr-row first">
-        <h2>$i18n{searchEnginesExtension}</h2>
+        <div class="flex cr-padded-text">
+          <h2 class="flex">$i18n{searchEnginesExtension}</h2>
+          <div class="secondary"> $i18n{searchEnginesExtensionExplanation}</div>
+        </div>
       </div>
       <div class="no-search-results list-frame"
           hidden="[[matchingExtensions_.length]]">

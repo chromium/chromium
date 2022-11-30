@@ -1,0 +1,27 @@
+<!doctype html>
+<style>
+div {
+  border: solid 1px pink;
+  font-size: 60px;
+  padding: 5px;
+  direction: rtl;
+}
+</style>
+<div id="sample1">&#x628;&#x647; &#x628;&#x647;</div>
+<div id="sample2">AV AV</div>
+<br>
+<div id="target1">&#x647; &#x647;</div>
+<div id="target2">V V</div>
+<script>
+function forceLayout() { document.body.offsetHeight; }
+const target1 = document.getElementById('target1');
+const target2 = document.getElementById('target2');
+const text1 = target1.firstChild;
+const text2 = target2.firstChild;
+forceLayout();
+text1.insertData(0, '\u0628');
+text2.insertData(0, 'A');
+forceLayout();
+text1.insertData(3, '\u0628');
+text2.insertData(3, 'A');
+</script>

@@ -91,12 +91,12 @@ void MarkerPathSegmentProcessor::EmitSegment(
   // Convert a relative arc to absolute.
   if (segment.command == kPathSegArcRel) {
     segment.command = kPathSegArcAbs;
-    segment.target_point += current_point_;
+    segment.target_point += current_point_.OffsetFromOrigin();
   }
   if (segment.command == kPathSegArcAbs) {
     // Decompose and then pass/emit a synthesized cubic with matching tangents.
     Vector<PathSegmentData> decomposed_arc_curves = DecomposeArc(segment);
-    if (decomposed_arc_curves.IsEmpty()) {
+    if (decomposed_arc_curves.empty()) {
       segment.command = kPathSegLineToAbs;
     } else {
       // Use the first control point from the first curve and the second and
@@ -122,7 +122,7 @@ void SVGMarkerDataBuilder::Build(const SVGPathByteStream& stream) {
 
 void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
   PathElement element;
-  FloatPoint points[3];
+  gfx::PointF points[3];
   element.points = points;
   switch (segment.command) {
     case kPathSegClosePath:
@@ -151,8 +151,8 @@ void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
 double SVGMarkerDataBuilder::CurrentAngle(AngleType type) const {
   // For details of this calculation, see:
   // http://www.w3.org/TR/SVG/single-page.html#painting-MarkerElement
-  double in_angle = rad2deg(FloatPoint(in_slope_).SlopeAngleRadians());
-  double out_angle = rad2deg(FloatPoint(out_slope_).SlopeAngleRadians());
+  double in_angle = Rad2deg(in_slope_.SlopeAngleRadians());
+  double out_angle = Rad2deg(out_slope_.SlopeAngleRadians());
   switch (type) {
     case kOutbound:
       return out_angle;
@@ -187,7 +187,7 @@ void SVGMarkerDataBuilder::UpdateAngle(bool ends_subpath) {
   if (last_element_type_ == kPathElementCloseSubpath)
     out_slope_ = last_moveto_out_slope_;
   AngleType type = DetermineAngleType(ends_subpath);
-  float angle = clampTo<float>(CurrentAngle(type));
+  float angle = ClampTo<float>(CurrentAngle(type));
   // When closing a subpath, backpatch the first marker on that subpath.
   if (last_element_type_ == kPathElementCloseSubpath)
     positions_[last_moveto_index_].angle = angle;
@@ -195,9 +195,9 @@ void SVGMarkerDataBuilder::UpdateAngle(bool ends_subpath) {
 }
 
 void SVGMarkerDataBuilder::ComputeQuadTangents(SegmentData& data,
-                                               const FloatPoint& start,
-                                               const FloatPoint& control,
-                                               const FloatPoint& end) {
+                                               const gfx::PointF& start,
+                                               const gfx::PointF& control,
+                                               const gfx::PointF& end) {
   data.start_tangent = control - start;
   data.end_tangent = end - control;
   if (data.start_tangent.IsZero())
@@ -210,7 +210,7 @@ SVGMarkerDataBuilder::SegmentData
 SVGMarkerDataBuilder::ExtractPathElementFeatures(
     const PathElement& element) const {
   SegmentData data;
-  const FloatPoint* points = element.points;
+  const gfx::PointF* points = element.points;
   switch (element.type) {
     case kPathElementAddCurveToPoint:
       data.position = points[2];
@@ -252,7 +252,7 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
 
   // Record the angle for the previous element.
   bool starts_new_subpath = element.type == kPathElementMoveToPoint;
-  if (!positions_.IsEmpty())
+  if (!positions_.empty())
     UpdateAngle(starts_new_subpath);
 
   // Update the incoming slope for this marker position.
@@ -267,7 +267,7 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
     subpath_start_ = element.points[0];
     last_moveto_index_ = positions_.size();
   } else if (element.type == kPathElementCloseSubpath) {
-    subpath_start_ = FloatPoint();
+    subpath_start_ = gfx::PointF();
   }
 
   last_element_type_ = element.type;
@@ -275,12 +275,12 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
   // Output a marker for this element. The angle will be computed at a later
   // stage. Similarly for 'end' markers the marker type will be updated at a
   // later stage.
-  SVGMarkerType marker_type = positions_.IsEmpty() ? kStartMarker : kMidMarker;
+  SVGMarkerType marker_type = positions_.empty() ? kStartMarker : kMidMarker;
   positions_.push_back(MarkerPosition(marker_type, origin_, 0));
 }
 
 void SVGMarkerDataBuilder::Flush() {
-  if (positions_.IsEmpty())
+  if (positions_.empty())
     return;
   const bool kEndsSubpath = true;
   UpdateAngle(kEndsSubpath);

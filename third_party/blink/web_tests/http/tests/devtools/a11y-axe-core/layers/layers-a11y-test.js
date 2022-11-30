@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests accessibility in the layers view using the axe-core linter.`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadTestModule('axe_core_test_runner');
   await TestRunner.loadHTML(`
       <div id="a" style="transform: translateZ(0px); background-color:blue; width:100px; height:100px;">

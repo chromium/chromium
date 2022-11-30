@@ -1,12 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 
-#include "chrome/common/ssl_insecure_content.h"
+#include "build/chromeos_buildflags.h"
+
+// TODO(b/197163596): Remove File Manager constants
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/file_manager/url_constants.h"
+#endif
+#include "base/containers/contains.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -24,8 +30,7 @@ ChromeContentSettingsAgentDelegate::ChromeContentSettingsAgentDelegate(
       RenderFrameObserverTracker<ChromeContentSettingsAgentDelegate>(
           render_frame),
       render_frame_(render_frame) {
-  content::RenderFrame* main_frame =
-      render_frame->GetRenderView()->GetMainRenderFrame();
+  content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
   // TODO(nasko): The main frame is not guaranteed to be in the same process
   // with this frame with --site-per-process. This code needs to be updated
   // to handle this case. See https://crbug.com/496670.
@@ -69,20 +74,25 @@ bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
 #endif
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScriptContext* current_context =
       extension_dispatcher_->script_context_set().GetCurrent();
-  if (current_context && current_context->HasAPIPermission(
-                             extensions::APIPermission::kClipboardRead)) {
+  if (current_context &&
+      current_context->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kClipboardRead)) {
+    return true;
+  }
+
+  if (IsAllowListedSystemWebApp()) {
     return true;
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool>
+absl::optional<bool>
 ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // All blessed extension pages could historically write to the clipboard, so
@@ -96,26 +106,18 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
       return true;
     }
     if (current_context->HasAPIPermission(
-            extensions::APIPermission::kClipboardWrite)) {
+            extensions::mojom::APIPermissionID::kClipboardWrite)) {
       return true;
     }
   }
 #endif
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
+absl::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {
   if (IsPlatformApp())
     return false;
-  return base::nullopt;
-}
-
-void ChromeContentSettingsAgentDelegate::PassiveInsecureContentFound(
-    const blink::WebURL& resource_url) {
-  // Note: this implementation is a mirror of
-  // Browser::PassiveInsecureContentFound.
-  ReportInsecureContent(SslInsecureContentType::DISPLAY);
-  FilteredReportInsecureContentDisplayed(GURL(resource_url));
+  return absl::nullopt;
 }
 
 void ChromeContentSettingsAgentDelegate::DidCommitProvisionalLoad(
@@ -137,6 +139,20 @@ bool ChromeContentSettingsAgentDelegate::IsPlatformApp() {
 #else
   return false;
 #endif
+}
+
+bool ChromeContentSettingsAgentDelegate::IsAllowListedSystemWebApp() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
+  blink::WebSecurityOrigin origin = frame->GetDocument().GetSecurityOrigin();
+  // TODO(crbug.com/1233395): Migrate Files SWA to Clipboard API and remove this
+  // allow-list.
+  if (origin.Protocol().Ascii() == ::content::kChromeUIScheme &&
+      origin.Host().Utf8() == ::ash::file_manager::kChromeUIFileManagerHost) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ std::unique_ptr<base::ListValue> CreateBaseEventArgs(
       scoped_notification_id.substr(index_of_separator);
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendString(unscoped_notification_id);
+  args->Append(unscoped_notification_id);
   return args;
 }
 
@@ -52,7 +52,7 @@ ExtensionNotificationHandler::~ExtensionNotificationHandler() = default;
 std::string ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme))
     return "";
-  return url.GetOrigin().host_piece().as_string();
+  return std::string(url.DeprecatedGetOriginAsURL().host_piece());
 }
 
 void ExtensionNotificationHandler::OnClose(
@@ -69,7 +69,7 @@ void ExtensionNotificationHandler::OnClose(
 
   std::unique_ptr<base::ListValue> args(
       CreateBaseEventArgs(extension_id, notification_id));
-  args->AppendBoolean(by_user);
+  args->Append(by_user);
   SendEvent(profile, extension_id, events::NOTIFICATIONS_ON_CLOSED,
             api::notifications::OnClosed::kEventName, gesture, std::move(args));
 
@@ -85,8 +85,8 @@ void ExtensionNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   DCHECK(!reply.has_value());
 
@@ -94,7 +94,7 @@ void ExtensionNotificationHandler::OnClick(
   std::unique_ptr<base::ListValue> args(
       CreateBaseEventArgs(extension_id, notification_id));
   if (action_index.has_value())
-    args->AppendInteger(action_index.value());
+    args->Append(action_index.value());
   events::HistogramValue histogram_value =
       action_index.has_value() ? events::NOTIFICATIONS_ON_BUTTON_CLICKED
                                : events::NOTIFICATIONS_ON_CLICKED;
@@ -130,8 +130,8 @@ void ExtensionNotificationHandler::SendEvent(
   if (!event_router)
     return;
 
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+  auto event = std::make_unique<Event>(histogram_value, event_name,
+                                       std::move(*args).TakeList());
   event->user_gesture = user_gesture;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }

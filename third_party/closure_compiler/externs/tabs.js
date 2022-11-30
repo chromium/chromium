@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.tabs.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 // IMPORTANT NOTE: Work-around for crbug.com/543822
 // s/chrome.tabs.extensionTypes.ImageDetails/chrome.extensionTypes.ImageDetails/
@@ -15,7 +15,10 @@
 // s/chrome.tabs.runtime.Port/chrome.runtime.Port/
 // s/chrome.tabs.windows.Window/chrome.windows.Window/
 
-/** @fileoverview Externs generated from namespace: tabs */
+/**
+ * @fileoverview Externs generated from namespace: tabs
+ * @externs
+ */
 
 /** @const */
 chrome.tabs = {};

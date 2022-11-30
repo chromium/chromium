@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -19,6 +20,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/painter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -58,6 +60,9 @@ class MockCanvas : public SkCanvas {
   };
 
   MockCanvas(int width, int height) : SkCanvas(width, height) {}
+
+  MockCanvas(const MockCanvas&) = delete;
+  MockCanvas& operator=(const MockCanvas&) = delete;
 
   // Return calls in sorted order.
   std::vector<DrawRectCall> draw_rect_calls() {
@@ -104,14 +109,15 @@ class MockCanvas : public SkCanvas {
   // Stores the onDrawPaint calls in chronological order.
   std::vector<SkPaint> draw_paint_calls_;
   SkRect last_clip_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCanvas);
 };
 
 // Simple Painter that will be used to test BorderPainter.
 class MockPainter : public views::Painter {
  public:
   MockPainter() = default;
+
+  MockPainter(const MockPainter&) = delete;
+  MockPainter& operator=(const MockPainter&) = delete;
 
   // Gets the canvas given to the last call to Paint().
   gfx::Canvas* given_canvas() const { return given_canvas_; }
@@ -132,10 +138,8 @@ class MockPainter : public views::Painter {
   }
 
  private:
-  gfx::Canvas* given_canvas_ = nullptr;
+  raw_ptr<gfx::Canvas> given_canvas_ = nullptr;
   gfx::Size given_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPainter);
 };
 
 }  // namespace
@@ -192,7 +196,7 @@ TEST_F(BorderTest, SolidBorder) {
   const SkColor kBorderColor = SK_ColorMAGENTA;
   std::unique_ptr<Border> border(CreateSolidBorder(3, kBorderColor));
   EXPECT_EQ(gfx::Size(6, 6), border->GetMinimumSize());
-  EXPECT_EQ(gfx::Insets(3, 3, 3, 3), border->GetInsets());
+  EXPECT_EQ(gfx::Insets(3), border->GetInsets());
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
@@ -209,15 +213,15 @@ TEST_F(BorderTest, SolidBorder) {
 
 TEST_F(BorderTest, RoundedRectBorder) {
   std::unique_ptr<Border> border(CreateRoundedRectBorder(
-      3, LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_LOW),
+      3, LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow),
       SK_ColorBLUE));
   EXPECT_EQ(gfx::Size(6, 6), border->GetMinimumSize());
-  EXPECT_EQ(gfx::Insets(3, 3, 3, 3), border->GetInsets());
+  EXPECT_EQ(gfx::Insets(3), border->GetInsets());
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
   SkRRect expected_rrect;
-  expected_rrect.setRectXY(SkRect::MakeLTRB(1.5, 1.5, 98.5, 48.5), 4, 4);
+  expected_rrect.setRectXY(SkRect::MakeLTRB(1.5, 1.5, 98.5, 48.5), 2.5, 2.5);
   EXPECT_TRUE(mock->draw_rect_calls().empty());
   std::vector<MockCanvas::DrawRRectCall> draw_rrect_calls =
       mock->draw_rrect_calls();
@@ -230,10 +234,9 @@ TEST_F(BorderTest, RoundedRectBorder) {
 }
 
 TEST_F(BorderTest, EmptyBorder) {
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
-  std::unique_ptr<Border> border(CreateEmptyBorder(
-      kInsets.top(), kInsets.left(), kInsets.bottom(), kInsets.right()));
+  std::unique_ptr<Border> border(CreateEmptyBorder(kInsets));
   // The EmptyBorder has no minimum size despite nonzero insets.
   EXPECT_EQ(gfx::Size(), border->GetMinimumSize());
   EXPECT_EQ(kInsets, border->GetInsets());
@@ -246,11 +249,9 @@ TEST_F(BorderTest, EmptyBorder) {
 
 TEST_F(BorderTest, SolidSidedBorder) {
   constexpr SkColor kBorderColor = SK_ColorMAGENTA;
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
-  std::unique_ptr<Border> border(
-      CreateSolidSidedBorder(kInsets.top(), kInsets.left(), kInsets.bottom(),
-                             kInsets.right(), kBorderColor));
+  std::unique_ptr<Border> border(CreateSolidSidedBorder(kInsets, kBorderColor));
   EXPECT_EQ(gfx::Size(6, 4), border->GetMinimumSize());
   EXPECT_EQ(kInsets, border->GetInsets());
   border->Paint(*view_, canvas_.get());
@@ -268,7 +269,7 @@ TEST_F(BorderTest, SolidSidedBorder) {
 }
 
 TEST_F(BorderTest, BorderPainter) {
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
   std::unique_ptr<MockPainter> painter(new MockPainter());
   MockPainter* painter_ptr = painter.get();

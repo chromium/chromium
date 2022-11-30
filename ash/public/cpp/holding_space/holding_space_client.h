@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
 
+  // Adds a diagnostics log item backed by the provided `file_path`.
+  virtual void AddDiagnosticsLog(const base::FilePath& file_path) = 0;
+
   // Adds a screenshot item backed by the provided `file_path`.
   virtual void AddScreenshot(const base::FilePath& file_path) = 0;
 
@@ -42,6 +45,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual base::FilePath CrackFileSystemUrl(
       const GURL& file_system_url) const = 0;
 
+  // Returns the value of the `drive::prefs::kDisableDrive` pref, indicating
+  // whether Google Drive has been disabled.
+  virtual bool IsDriveDisabled() const = 0;
+
   // Attempts to open the Downloads folder.
   // Success is returned via the supplied `callback`.
   virtual void OpenDownloads(SuccessCallback callback) = 0;
@@ -55,16 +62,20 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // Success is returned via the supplied `callback`.
   virtual void OpenMyFiles(SuccessCallback callback) = 0;
 
-  // Attempts to show the specified holding space `item` in its folder.
-  // Success is returned via the supplied `callback`.
-  virtual void ShowItemInFolder(const HoldingSpaceItem& item,
-                                SuccessCallback callback) = 0;
-
   // Pins the specified `file_paths`.
   virtual void PinFiles(const std::vector<base::FilePath>& file_paths) = 0;
 
   // Pins the specified holding space `items`.
   virtual void PinItems(const std::vector<const HoldingSpaceItem*>& items) = 0;
+
+  // Remove file suggestions specified by absolute file paths.
+  virtual void RemoveFileSuggestions(
+      const std::vector<base::FilePath>& absolute_file_paths) = 0;
+
+  // Attempts to show the specified holding space `item` in its folder.
+  // Success is returned via the supplied `callback`.
+  virtual void ShowItemInFolder(const HoldingSpaceItem& item,
+                                SuccessCallback callback) = 0;
 
   // Unpins the specified holding space `items`.
   virtual void UnpinItems(

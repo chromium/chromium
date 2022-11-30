@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ std::string ComputeMethodForRedirect(const std::string& method,
 // policy that should be used for the request.
 ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
     ReferrerPolicy original_referrer_policy,
-    const base::Optional<std::string>& referrer_policy_header) {
+    const absl::optional<std::string>& referrer_policy_header) {
   ReferrerPolicy new_policy = original_referrer_policy;
   std::vector<base::StringPiece> policy_tokens;
   if (referrer_policy_header) {
@@ -45,9 +45,6 @@ ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
                                            base::TRIM_WHITESPACE,
                                            base::SPLIT_WANT_NONEMPTY);
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Net.URLRequest.ReferrerPolicyHeaderPresentOnRedirect",
-                        !policy_tokens.empty());
 
   // Per https://w3c.github.io/webappsec-referrer-policy/#unknown-policy-values,
   // use the last recognized policy value, and ignore unknown policies.
@@ -102,12 +99,7 @@ ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
 
 }  // namespace
 
-RedirectInfo::RedirectInfo()
-    : status_code(-1),
-      insecure_scheme_was_upgraded(false),
-      is_signed_exchange_fallback_redirect(false),
-      new_referrer_policy(
-          ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE) {}
+RedirectInfo::RedirectInfo() = default;
 
 RedirectInfo::RedirectInfo(const RedirectInfo& other) = default;
 
@@ -122,7 +114,7 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     const std::string& original_referrer,
     int http_status_code,
     const GURL& new_location,
-    const base::Optional<std::string>& referrer_policy_header,
+    const absl::optional<std::string>& referrer_policy_header,
     bool insecure_scheme_was_upgraded,
     bool copy_fragment,
     bool is_signed_exchange_fallback_redirect) {
@@ -141,8 +133,7 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     GURL::Replacements replacements;
     // Reference the |ref| directly out of the original URL to avoid a
     // malloc.
-    replacements.SetRef(original_url.spec().data(),
-                        original_url.parsed_for_possibly_invalid_spec().ref);
+    replacements.SetRefStr(original_url.ref_piece());
     redirect_info.new_url = new_location.ReplaceComponents(replacements);
   } else {
     redirect_info.new_url = new_location;

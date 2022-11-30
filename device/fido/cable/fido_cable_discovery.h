@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -35,12 +34,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       public BluetoothAdapter::Observer,
       public FidoCableDevice::Observer {
  public:
-  FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data,
-                     FidoDeviceDiscovery::BLEObserver* ble_observer);
+  explicit FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data);
+
+  FidoCableDiscovery(const FidoCableDiscovery&) = delete;
+  FidoCableDiscovery& operator=(const FidoCableDiscovery&) = delete;
+
   ~FidoCableDiscovery() override;
 
   // FidoDeviceDiscovery:
   bool MaybeStop() override;
+
+  // GetV2AdvertStream returns a stream of caBLEv2 BLE adverts. Only a single
+  // stream is supported.
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<
+      base::span<const uint8_t, cablev2::kAdvertSize>>>
+  GetV2AdvertStream();
 
   const std::map<CableEidArray, scoped_refptr<BluetoothAdvertisement>>&
   AdvertisementsForTesting() const {
@@ -68,19 +76,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
     ObservedDeviceData();
     ~ObservedDeviceData();
 
-    base::Optional<CableEidArray> service_data;
+    absl::optional<CableEidArray> service_data;
     std::vector<CableEidArray> uuids;
   };
 
-  static const BluetoothUUID& CableAdvertisementUUID();
+  static const BluetoothUUID& GoogleCableUUID();
+  static const BluetoothUUID& FIDOCableUUID();
   static bool IsCableDevice(const BluetoothDevice* device);
 
   // ResultDebugString returns a string containing a hex dump of |eid| and a
   // description of |result|, if present.
   static std::string ResultDebugString(
       const CableEidArray& eid,
-      const base::Optional<V1DiscoveryDataAndEID>& result);
-  static base::Optional<CableEidArray> MaybeGetEidFromServiceData(
+      const absl::optional<V1DiscoveryDataAndEID>& result);
+  static absl::optional<CableEidArray> MaybeGetEidFromServiceData(
       const BluetoothDevice* device);
   static std::vector<CableEidArray> GetUUIDs(const BluetoothDevice* device);
 
@@ -111,11 +120,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   void ValidateAuthenticatorHandshakeMessage(
       CableDiscoveryData::Version cable_version,
       FidoCableHandshakeHandler* handshake_handler,
-      base::Optional<std::vector<uint8_t>> handshake_response);
+      absl::optional<std::vector<uint8_t>> handshake_response);
 
-  base::Optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
+  absl::optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
       const BluetoothDevice* device);
-  base::Optional<V1DiscoveryDataAndEID>
+  absl::optional<V1DiscoveryDataAndEID>
   GetCableDiscoveryDataFromAuthenticatorEid(CableEidArray authenticator_eid);
   void RecordCableV1DiscoveryEventOnce(CableV1DiscoveryEvent event);
 
@@ -140,7 +149,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   std::unique_ptr<BluetoothDiscoverySession> discovery_session_;
 
   std::vector<CableDiscoveryData> discovery_data_;
-  FidoDeviceDiscovery::BLEObserver* const ble_observer_;
+  base::RepeatingCallback<void(base::span<const uint8_t, cablev2::kAdvertSize>)>
+      advert_callback_;
 
   // active_authenticator_eids_ contains authenticator EIDs for which a
   // handshake is currently running. Further advertisements for the same EIDs
@@ -152,7 +162,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   // will be ignored. However, devices may rotate their BLE address at will so
   // this is not completely effective.
   std::set<std::string> active_devices_;
-  base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
 
   // Note that on Windows, |advertisements_| is the only reference holder of
   // BluetoothAdvertisement.
@@ -172,8 +181,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   base::flat_set<CableV1DiscoveryEvent> recorded_events_;
 
   base::WeakPtrFactory<FidoCableDiscovery> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoCableDiscovery);
 };
 
 }  // namespace device

@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Describes a user affiliated with a Chrome OS Session.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Common information about Session Affiliated User accounts.
+message SessionAffiliatedUser {
+  // Email address associated with the account.
+  optional string user_email = 1;
+}

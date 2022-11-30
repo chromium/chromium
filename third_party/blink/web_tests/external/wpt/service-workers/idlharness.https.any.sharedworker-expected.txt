@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 155 tests; 115 PASS, 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 154 tests; 114 PASS, 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -8,15 +8,13 @@ PASS Partial interface WorkerNavigator: original interface defined
 PASS Partial interface WorkerNavigator: member names are unique
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
 PASS Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Partial interface Window: member names are unique
 PASS ServiceWorker includes AbstractWorker: member names are unique
 PASS Window includes GlobalEventHandlers: member names are unique
 PASS Window includes WindowEventHandlers: member names are unique
 PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS Navigator includes NavigatorID: member names are unique
 PASS Navigator includes NavigatorLanguage: member names are unique
@@ -25,10 +23,13 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
 PASS WorkerNavigator includes NavigatorID: member names are unique
 PASS WorkerNavigator includes NavigatorLanguage: member names are unique
 PASS WorkerNavigator includes NavigatorOnLine: member names are unique
 PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
 FAIL ServiceWorker interface: existence and properties of interface object assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface object length assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface object name assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
@@ -38,7 +39,7 @@ FAIL ServiceWorker interface: existence and properties of interface prototype ob
 FAIL ServiceWorker interface: attribute scriptURL assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: attribute state assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: operation postMessage(any, sequence<object>) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
-FAIL ServiceWorker interface: operation postMessage(any, optional PostMessageOptions) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
+FAIL ServiceWorker interface: operation postMessage(any, optional StructuredSerializeOptions) assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 FAIL ServiceWorker interface: attribute onstatechange assert_own_property: self does not have own property "ServiceWorker" expected property "ServiceWorker" missing
 PASS ServiceWorkerRegistration interface: existence and properties of interface object
 PASS ServiceWorkerRegistration interface object length
@@ -151,8 +152,6 @@ PASS CacheStorage interface: calling open(DOMString) on caches with too few argu
 PASS CacheStorage interface: caches must inherit property "delete(DOMString)" with the proper type
 PASS CacheStorage interface: calling delete(DOMString) on caches with too few arguments must throw TypeError
 PASS CacheStorage interface: caches must inherit property "keys()" with the proper type
-PASS Window interface: existence and properties of interface object
-PASS Navigator interface: existence and properties of interface object
 PASS WorkerGlobalScope interface: attribute caches
 FAIL WorkerNavigator interface: attribute serviceWorker assert_true: The prototype object must have a property "serviceWorker" expected true got false
 Harness: the test ran to completion.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,16 +18,19 @@ class MEDIA_GPU_EXPORT GpuMemoryBufferVideoFrameMapper
   static std::unique_ptr<GpuMemoryBufferVideoFrameMapper> Create(
       VideoPixelFormat format);
 
+  GpuMemoryBufferVideoFrameMapper(const GpuMemoryBufferVideoFrameMapper&) =
+      delete;
+  GpuMemoryBufferVideoFrameMapper& operator=(
+      const GpuMemoryBufferVideoFrameMapper&) = delete;
+
   ~GpuMemoryBufferVideoFrameMapper() override = default;
 
   // VideoFrameMapper implementation.
-  scoped_refptr<VideoFrame> Map(
-      scoped_refptr<const VideoFrame> video_frame) const override;
+  scoped_refptr<VideoFrame> Map(scoped_refptr<const VideoFrame> video_frame,
+                                int permissions) const override;
 
  private:
   explicit GpuMemoryBufferVideoFrameMapper(VideoPixelFormat format);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferVideoFrameMapper);
 };
 
 }  // namespace media

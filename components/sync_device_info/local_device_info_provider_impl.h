@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
@@ -26,6 +26,11 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   LocalDeviceInfoProviderImpl(version_info::Channel channel,
                               const std::string& version,
                               const DeviceInfoSyncClient* sync_client);
+
+  LocalDeviceInfoProviderImpl(const LocalDeviceInfoProviderImpl&) = delete;
+  LocalDeviceInfoProviderImpl& operator=(const LocalDeviceInfoProviderImpl&) =
+      delete;
+
   ~LocalDeviceInfoProviderImpl() override;
 
   // MutableLocalDeviceInfoProvider implementation.
@@ -34,6 +39,7 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
       const std::string& client_name,
       const std::string& manufacturer_name,
       const std::string& model_name,
+      const std::string& full_hardware_class,
       std::unique_ptr<DeviceInfo> device_info_restored_from_store) override;
   void Clear() override;
   void UpdateClientName(const std::string& client_name) override;
@@ -49,16 +55,22 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   // The version string for the current client.
   const std::string version_;
 
-  const DeviceInfoSyncClient* const sync_client_;
+  void ResetFullHardwareClassIfUmaDisabled() const;
 
+  const raw_ptr<const DeviceInfoSyncClient> sync_client_;
+
+  bool IsUmaEnabledOnCrOSDevice() const;
+
+  // The |full_hardware_class| is stored in order to handle UMA toggles
+  // during a users session. Tracking |full_hardware_class| in this class
+  // ensures it's reset/retrieved correctly when GetLocalDeviceInfo() is called.
+  std::string full_hardware_class_;
   std::unique_ptr<DeviceInfo> local_device_info_;
   base::RepeatingClosureList closure_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LocalDeviceInfoProviderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LocalDeviceInfoProviderImpl);
 };
 
 }  // namespace syncer

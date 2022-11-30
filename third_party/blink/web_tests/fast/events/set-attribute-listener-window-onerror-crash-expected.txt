@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 16: Uncaught SyntaxError: Unexpected token ';'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token ';'
 Test passes if it does not crash.

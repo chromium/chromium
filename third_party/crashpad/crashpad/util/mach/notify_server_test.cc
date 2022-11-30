@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,32 +163,44 @@ mach_port_urefs_t DeadNameRightRefCount(mach_port_t port) {
 class NotifyServerTestBase : public testing::Test,
                              public NotifyServer::Interface {
  public:
+  NotifyServerTestBase(const NotifyServerTestBase&) = delete;
+  NotifyServerTestBase& operator=(const NotifyServerTestBase&) = delete;
+
   // NotifyServer::Interface:
 
-  MOCK_METHOD3(DoMachNotifyPortDeleted,
-               kern_return_t(notify_port_t notify,
-                             mach_port_name_t name,
-                             const mach_msg_trailer_t* trailer));
+  MOCK_METHOD(kern_return_t,
+              DoMachNotifyPortDeleted,
+              (notify_port_t notify,
+               mach_port_name_t name,
+               const mach_msg_trailer_t* trailer),
+              (override));
 
-  MOCK_METHOD4(DoMachNotifyPortDestroyed,
-               kern_return_t(notify_port_t notify,
-                             mach_port_t rights,
-                             const mach_msg_trailer_t* trailer,
-                             bool* destroy_request));
+  MOCK_METHOD(kern_return_t,
+              DoMachNotifyPortDestroyed,
+              (notify_port_t notify,
+               mach_port_t rights,
+               const mach_msg_trailer_t* trailer,
+               bool* destroy_request),
+              (override));
 
-  MOCK_METHOD3(DoMachNotifyNoSenders,
-               kern_return_t(notify_port_t notify,
-                             mach_port_mscount_t mscount,
-                             const mach_msg_trailer_t* trailer));
+  MOCK_METHOD(kern_return_t,
+              DoMachNotifyNoSenders,
+              (notify_port_t notify,
+               mach_port_mscount_t mscount,
+               const mach_msg_trailer_t* trailer),
+              (override));
 
-  MOCK_METHOD2(DoMachNotifySendOnce,
-               kern_return_t(notify_port_t notify,
-                             const mach_msg_trailer_t* trailer));
+  MOCK_METHOD(kern_return_t,
+              DoMachNotifySendOnce,
+              (notify_port_t notify, const mach_msg_trailer_t* trailer),
+              (override));
 
-  MOCK_METHOD3(DoMachNotifyDeadName,
-               kern_return_t(notify_port_t notify,
-                             mach_port_name_t name,
-                             const mach_msg_trailer_t* trailer));
+  MOCK_METHOD(kern_return_t,
+              DoMachNotifyDeadName,
+              (notify_port_t notify,
+               mach_port_name_t name,
+               const mach_msg_trailer_t* trailer),
+              (override));
 
  protected:
   NotifyServerTestBase() : testing::Test(), NotifyServer::Interface() {}
@@ -269,14 +281,10 @@ class NotifyServerTestBase : public testing::Test,
   }
 
   // testing::Test:
-  void TearDown() override {
-    server_port_.reset();
-  }
+  void TearDown() override { server_port_.reset(); }
 
  private:
   base::mac::ScopedMachReceiveRight server_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifyServerTestBase);
 };
 
 using NotifyServerTest = StrictMock<NotifyServerTestBase>;
@@ -520,7 +528,7 @@ TEST_F(NotifyServerTest, MachNotifyDeadName) {
                                          ResultOf(DeadNameRightRefCount, 2)),
                                    ResultOf(AuditPIDFromMachMessageTrailer, 0)))
       .WillOnce(
-           DoAll(WithArg<1>(Invoke(MachPortDeallocate)), Return(MIG_NO_REPLY)))
+          DoAll(WithArg<1>(Invoke(MachPortDeallocate)), Return(MIG_NO_REPLY)))
       .RetiresOnSaturation();
 
   receive_right.reset();

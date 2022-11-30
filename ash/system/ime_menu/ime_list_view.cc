@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,22 +18,25 @@
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -57,7 +60,7 @@ class ImeListItemView : public ActionableView {
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
         ime_list_view_(list_view),
         selected_(selected) {
-    SetInkDropMode(InkDropMode::ON);
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
     TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
     AddChildView(tri_view);
@@ -183,7 +186,7 @@ class KeyboardStatusRow : public views::View {
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // The on-screen keyboard toggle button.
-    toggle_ = TrayPopupUtils::CreateToggleButton(
+    toggle_ = new TrayToggleButton(
         std::move(callback),
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD);
     toggle_->SetIsOn(keyboard::IsKeyboardEnabled());
@@ -206,7 +209,7 @@ ImeListView::~ImeListView() = default;
 void ImeListView::Init(bool show_keyboard_toggle,
                        SingleImeBehavior single_ime_behavior) {
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
-  Update(ime_controller->current_ime().id, ime_controller->available_imes(),
+  Update(ime_controller->current_ime().id, ime_controller->GetVisibleImes(),
          ime_controller->current_ime_menu_items(), show_keyboard_toggle,
          single_ime_behavior);
 }
@@ -283,12 +286,12 @@ void ImeListView::AppendImeListAndProperties(
       const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
       // Adds the property items.
-      for (size_t i = 0; i < property_list.size(); i++) {
+      for (const auto& property : property_list) {
         ImeListItemView* property_view =
-            new ImeListItemView(this, std::u16string(), property_list[i].label,
-                                property_list[i].checked, icon_color);
+            new ImeListItemView(this, std::u16string(), property.label,
+                                property.checked, icon_color);
         scroll_content()->AddChildView(property_view);
-        property_map_[property_view] = property_list[i].key;
+        property_map_[property_view] = property.key;
       }
 
       // Adds a separator on the bottom of property items if there are still
@@ -383,6 +386,8 @@ ImeListViewTestApi::ImeListViewTestApi(ImeListView* ime_list_view)
 ImeListViewTestApi::~ImeListViewTestApi() = default;
 
 views::View* ImeListViewTestApi::GetToggleView() const {
+  if (!ime_list_view_->keyboard_status_row_)
+    return nullptr;
   return ime_list_view_->keyboard_status_row_->toggle();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ class OnDeviceHeadModelTest : public testing::Test {
   void SetUp() override {
     base::FilePath file_path = GetTestModelPath();
     ASSERT_TRUE(base::PathExists(file_path));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     model_filename_ = base::WideToUTF8(file_path.value());
 #else
     model_filename_ = file_path.value();

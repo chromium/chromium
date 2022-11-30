@@ -1,149 +1,241 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/partition_lock.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/macros.h"
-#include "base/test/bind.h"
-#include "base/test/gtest_util.h"
-#include "base/threading/platform_thread.h"
-#include "base/time/time.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
+
+TEST(PartitionAllocLockTest, Simple) {
+  Lock lock;
+  lock.Acquire();
+  lock.Release();
+}
+
 namespace {
 
-class LambdaThreadDelegate : public PlatformThread::Delegate {
+Lock g_lock;
+
+}  // namespace
+
+TEST(PartitionAllocLockTest, StaticLockStartsUnlocked) {
+  g_lock.Acquire();
+  g_lock.Release();
+}
+
+namespace {
+
+class ThreadDelegateForContended
+    : public base::PlatformThreadForTesting::Delegate {
  public:
-  explicit LambdaThreadDelegate(RepeatingClosure f) : f_(f) {}
-  void ThreadMain() override { f_.Run(); }
+  explicit ThreadDelegateForContended(Lock& start_lock,
+                                      Lock& lock,
+                                      int iterations,
+                                      int& counter)
+      : start_lock_(start_lock),
+        lock_(lock),
+        iterations_(iterations),
+        counter_(counter) {}
+
+  void ThreadMain() override {
+    start_lock_.Acquire();
+    start_lock_.Release();
+
+    for (int i = 0; i < iterations_; i++) {
+      lock_.Acquire();
+      ++counter_;
+      lock_.Release();
+    }
+  }
 
  private:
-  RepeatingClosure f_;
+  Lock& start_lock_;
+  Lock& lock_;
+  const int iterations_;
+  int& counter_;
 };
 
-TEST(SpinLockTest, Simple) {
-  MaybeSpinLock<true> lock;
-  lock.Lock();
-  lock.Unlock();
-}
+}  // namespace
 
-MaybeSpinLock<true> g_lock;
-TEST(SpinLockTest, StaticLockStartsUnlocked) {
-  g_lock.Lock();
-  g_lock.Unlock();
-}
-
-TEST(SpinLockTest, Contended) {
+TEST(PartitionAllocLockTest, Contended) {
   int counter = 0;  // *Not* atomic.
-  std::vector<PlatformThreadHandle> thread_handles;
+  std::vector<internal::base::PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 1000000;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  Lock lock;
+  Lock start_lock;
 
-  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    start_lock.Lock();
-    start_lock.Unlock();
+  ThreadDelegateForContended delegate(start_lock, lock, iterations_per_thread,
+                                      counter);
 
-    for (int i = 0; i < iterations_per_thread; i++) {
-      lock.Lock();
-      counter++;
-      lock.Unlock();
-    }
-  })};
-
-  start_lock.Lock();  // Make sure that the threads compete, by waiting until
-                      // all of them have at least been created.
-  for (int i = 0; i < num_threads; i++) {
-    PlatformThreadHandle handle;
-    PlatformThread::Create(0, &delegate, &handle);
+  start_lock.Acquire();  // Make sure that the threads compete, by waiting until
+                         // all of them have at least been created.
+  for (int i = 0; i < num_threads; ++i) {
+    base::PlatformThreadHandle handle;
+    base::PlatformThreadForTesting::Create(0, &delegate, &handle);
     thread_handles.push_back(handle);
   }
 
-  start_lock.Unlock();
+  start_lock.Release();
 
-  for (int i = 0; i < num_threads; i++) {
-    PlatformThread::Join(thread_handles[i]);
+  for (int i = 0; i < num_threads; ++i) {
+    base::PlatformThreadForTesting::Join(thread_handles[i]);
   }
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(SpinLockTest, SlowThreads) {
+namespace {
+
+class ThreadDelegateForSlowThreads
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  explicit ThreadDelegateForSlowThreads(Lock& start_lock,
+                                        Lock& lock,
+                                        int iterations,
+                                        int& counter)
+      : start_lock_(start_lock),
+        lock_(lock),
+        iterations_(iterations),
+        counter_(counter) {}
+
+  void ThreadMain() override {
+    start_lock_.Acquire();
+    start_lock_.Release();
+
+    for (int i = 0; i < iterations_; i++) {
+      lock_.Acquire();
+      ++counter_;
+      // Hold the lock for a while, to force futex()-based locks to sleep.
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+      lock_.Release();
+    }
+  }
+
+ private:
+  Lock& start_lock_;
+  Lock& lock_;
+  const int iterations_;
+  int& counter_;
+};
+
+}  // namespace
+
+TEST(PartitionAllocLockTest, SlowThreads) {
   int counter = 0;  // *Not* atomic.
-  std::vector<PlatformThreadHandle> thread_handles;
+  std::vector<base::PlatformThreadHandle> thread_handles;
   constexpr int iterations_per_thread = 100;
   constexpr int num_threads = 4;
 
-  MaybeSpinLock<true> lock;
-  MaybeSpinLock<true> start_lock;
+  Lock lock;
+  Lock start_lock;
 
-  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    start_lock.Lock();
-    start_lock.Unlock();
+  ThreadDelegateForSlowThreads delegate(start_lock, lock, iterations_per_thread,
+                                        counter);
 
-    for (int i = 0; i < iterations_per_thread; i++) {
-      lock.Lock();
-      counter++;
-      // Hold the lock for a while, to force futex()-based locks to sleep.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
-      lock.Unlock();
-    }
-  })};
-
-  start_lock.Lock();  // Make sure that the threads compete, by waiting until
-                      // all of them have at least been created.
+  start_lock.Acquire();  // Make sure that the threads compete, by waiting until
+                         // all of them have at least been created.
   for (int i = 0; i < num_threads; i++) {
-    PlatformThreadHandle handle;
-    PlatformThread::Create(0, &delegate, &handle);
+    base::PlatformThreadHandle handle;
+    base::PlatformThreadForTesting::Create(0, &delegate, &handle);
     thread_handles.push_back(handle);
   }
 
-  start_lock.Unlock();
+  start_lock.Release();
 
   for (int i = 0; i < num_threads; i++) {
-    PlatformThread::Join(thread_handles[i]);
+    base::PlatformThreadForTesting::Join(thread_handles[i]);
   }
   EXPECT_EQ(iterations_per_thread * num_threads, counter);
 }
 
-TEST(SpinLockTest, AssertAcquired) {
-  MaybeSpinLock<true> lock;
-  lock.Lock();
+TEST(PartitionAllocLockTest, AssertAcquired) {
+  Lock lock;
+  lock.Acquire();
   lock.AssertAcquired();
-  lock.Unlock();
+  lock.Release();
 }
 
 // AssertAcquired() is only enforced with DCHECK()s.
-#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#if defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
 
-TEST(SpinLockTest, AssertAcquiredDeathTest) {
-  MaybeSpinLock<true> lock;
+TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
+  Lock lock;
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
 
-TEST(SpinLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
-  MaybeSpinLock<true> lock;
-  // NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the lock
-  // is still held at the end of the function, which is what we want here.
-  LambdaThreadDelegate delegate{
-      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS { lock.Lock(); })};
-  PlatformThreadHandle handle;
-  PlatformThread::Create(0, &delegate, &handle);
-  // Join before the test, otherwise some platforms' gtest have trouble with
-  // EXPECT_DEATH() and multiple live threads.
-  PlatformThread::Join(handle);
+namespace {
 
-  EXPECT_DEATH(lock.AssertAcquired(), "");
-}
+class ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  explicit ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock(Lock& lock)
+      : lock_(lock) {}
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+  void ThreadMain() PA_NO_THREAD_SAFETY_ANALYSIS override { lock_.Acquire(); }
+
+ private:
+  Lock& lock_;
+};
 
 }  // namespace
-}  // namespace internal
-}  // namespace base
+
+TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
+  Lock lock;
+  // PA_NO_THREAD_SAFETY_ANALYSIS: The checker rightfully points out that the
+  // lock is still held at the end of the function, which is what we want here.
+  ThreadDelegateForAssertAcquiredAnotherThreadHoldsTheLock delegate(lock);
+  base::PlatformThreadHandle handle;
+  base::PlatformThreadForTesting::Create(0, &delegate, &handle);
+  // Join before the test, otherwise some platforms' gtest have trouble with
+  // EXPECT_DEATH() and multiple live threads.
+  base::PlatformThreadForTesting::Join(handle);
+
+  EXPECT_DEATH(lock.AssertAcquired(), "");
+}
+
+#if BUILDFLAG(IS_APPLE)
+
+namespace {
+
+class ThreadDelegateForReinitInOtherThread
+    : public base::PlatformThreadForTesting::Delegate {
+ public:
+  explicit ThreadDelegateForReinitInOtherThread(Lock& lock) : lock_(lock) {}
+
+  void ThreadMain() PA_NO_THREAD_SAFETY_ANALYSIS override {
+    lock_.Reinit();
+    lock_.Acquire();
+    lock_.Release();
+  }
+
+ private:
+  Lock& lock_;
+};
+
+}  // namespace
+
+// On Apple OSes, it is not allowed to unlock a lock from another thread, so
+// we need to re-initialize it.
+TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
+  Lock lock;
+  lock.Acquire();
+
+  ThreadDelegateForReinitInOtherThread delegate(lock);
+  base::PlatformThreadHandle handle;
+  base::PlatformThreadForTesting::Create(0, &delegate, &handle);
+  base::PlatformThreadForTesting::Join(handle);
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
+
+}  // namespace partition_alloc::internal

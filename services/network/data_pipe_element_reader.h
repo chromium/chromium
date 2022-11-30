@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -40,6 +37,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
   DataPipeElementReader(
       scoped_refptr<ResourceRequestBody> resource_request_body,
       mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter);
+
+  DataPipeElementReader(const DataPipeElementReader&) = delete;
+  DataPipeElementReader& operator=(const DataPipeElementReader&) = delete;
 
   ~DataPipeElementReader() override;
 
@@ -84,8 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
   net::CompletionOnceCallback read_callback_;
 
   base::WeakPtrFactory<DataPipeElementReader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeElementReader);
 };
 
 }  // namespace network

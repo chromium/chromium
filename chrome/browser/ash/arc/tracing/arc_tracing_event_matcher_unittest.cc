@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@ namespace arc {
 namespace {
 
 ArcTracingEvent MakeEvent(const char* json_str) {
-  return ArcTracingEvent(base::JSONReader::Read(json_str).value());
+  return ArcTracingEvent(
+      std::move(base::JSONReader::Read(json_str)->GetDict()));
 }
 
 }  // namespace
@@ -53,19 +54,19 @@ TEST_F(ArcTracingEventMatcherTest, CategoryNamePrefixMatch) {
 TEST_F(ArcTracingEventMatcherTest, CategoryNamePrefixAndroidInt64) {
   ArcTracingEventMatcher matcher("android:ARC_VSYNC|*");
 
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC"})")));
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC|"})")));
-  EXPECT_EQ(base::nullopt, matcher.ReadAndroidEventInt64(
+  EXPECT_EQ(absl::nullopt, matcher.ReadAndroidEventInt64(
                                MakeEvent(R"({"name":"ARC_VSYNC|abc"})")));
   EXPECT_EQ(
-      base::make_optional(0),
+      absl::make_optional(0),
       matcher.ReadAndroidEventInt64(MakeEvent(R"({"name":"ARC_VSYNC|0"})")));
-  EXPECT_EQ(base::make_optional(777777777777LL),
+  EXPECT_EQ(absl::make_optional(777777777777LL),
             matcher.ReadAndroidEventInt64(
                 MakeEvent(R"({"name":"ARC_VSYNC|777777777777"})")));
-  EXPECT_EQ(base::make_optional(-777777777777LL),
+  EXPECT_EQ(absl::make_optional(-777777777777LL),
             matcher.ReadAndroidEventInt64(
                 MakeEvent(R"({"name":"ARC_VSYNC|-777777777777"})")));
 }

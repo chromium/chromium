@@ -27,30 +27,36 @@
           <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
               on-click="openThemeUrl_" external></cr-link-row>
-<if expr="not is_linux or chromeos or lacros">
+<if expr="not is_linux">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <cr-button id="useDefault" on-click="onUseDefaultTap_">
+            <cr-button id="useDefault" on-click="onUseDefaultClick_">
               $i18n{resetToDefaultTheme}
             </cr-button>
           </template>
 </if>
-<if expr="is_linux and not chromeos and not lacros">
+<if expr="is_linux">
           <div class="settings-row continuation"
               hidden="[[!showThemesSecondary_(
-                  prefs.extensions.theme.id.value, useSystemTheme_)]]"
+                  prefs.extensions.theme.id.value, systemTheme_)]]"
               id="themesSecondaryActions">
             <div class="separator"></div>
             <template is="dom-if" if="[[showUseClassic_(
-                prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <cr-button id="useDefault" on-click="onUseDefaultTap_">
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useDefault" on-click="onUseDefaultClick_">
                 $i18n{useClassicTheme}
               </cr-button>
             </template>
-            <template is="dom-if" if="[[showUseSystem_(
-                prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <cr-button id="useSystem" on-click="onUseSystemTap_">
-                $i18n{useSystemTheme}
+            <template is="dom-if" if="[[showUseGtk_(
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useGtk" on-click="onUseGtkClick_">
+                $i18n{useGtkTheme}
+              </cr-button>
+            </template>
+            <template is="dom-if" if="[[showUseQt_(
+                prefs.extensions.theme.id.value, systemTheme_)]]" restamp>
+              <cr-button id="useQt" on-click="onUseQtClick_">
+                $i18n{useQtTheme}
               </cr-button>
             </template>
           </div>
@@ -71,7 +77,8 @@
                 prefs.homepage.value)]]">
         </settings-toggle-button>
         <template is="dom-if" if="[[prefs.browser.show_home_button.value]]">
-          <div class="list-frame" hidden="[[!pageVisibility.homeButton]]">
+          <div id="home-button-options" class="list-frame"
+              hidden="[[!pageVisibility.homeButton]]">
             <settings-radio-group pref="{{prefs.homepage_is_newtabpage}}">
               <controlled-radio-button class="list-item" name="true"
                   pref="[[prefs.homepage_is_newtabpage]]"
@@ -109,9 +116,36 @@
             pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
-<if expr="is_linux and not chromeos and not lacros">
+
+        <template is="dom-if" if="[[showSidePanelOptions_]]">
+          <div class="cr-row">$i18n{sidePanel}</div>
+          <div class="list-frame">
+            <settings-radio-group
+                id="side-panel"
+                pref="{{prefs.side_panel.is_right_aligned}}"
+                group-aria-label="$i18n{sidePanel}">
+              <controlled-radio-button
+                  class="list-item"
+                  pref="[[prefs.side_panel.is_right_aligned]]"
+                  label="$i18n{sidePanelAlignRight}"
+                  name="true"
+                  no-extension-indicator>
+              </controlled-radio-button>
+              <controlled-radio-button
+                  class="list-item"
+                  pref="[[prefs.side_panel.is_right_aligned]]"
+                  label="$i18n{sidePanelAlignLeft}"
+                  name="false"
+                  no-extension-indicator>
+              </controlled-radio-button>
+            </settings-radio-group>
+          </div>
+        </template>
+
+<if expr="is_linux">
         <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
         <settings-toggle-button
+            hidden="[[!showCustomChromeFrame_]]"
             pref="{{prefs.browser.custom_chrome_frame}}"
             label="$i18n{showWindowDecorations}"
             inverted>
@@ -127,7 +161,7 @@
           </settings-dropdown-menu>
         </div>
         <cr-link-row class="hr" id="customize-fonts-subpage-trigger"
-            label="$i18n{customizeFonts}" on-click="onCustomizeFontsTap_"
+            label="$i18n{customizeFonts}" on-click="onCustomizeFontsClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="cr-row" hidden="[[!pageVisibility.pageZoom]]">
@@ -172,3 +206,9 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
+    <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
+      <managed-dialog on-close="onManagedDialogClosed_"
+          title="$i18n{themeManagedDialogTitle}"
+          body="$i18n{themeManagedDialogBody}">
+      </managed-dialog>
+    </template>

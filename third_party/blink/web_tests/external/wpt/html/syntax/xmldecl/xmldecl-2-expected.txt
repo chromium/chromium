@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS Check encoding windows-1252, encodingencoding.htm
+PASS Check encoding windows-1252, encoding-equals-encoding.htm
+PASS Check encoding windows-1252, ENCODING.htm
+PASS Check encoding windows-1252, gt-between-xml-and-encoding.htm
+FAIL Check encoding windows-1252, kilobyte-plus-one-after.htm assert_equals: Check expected "windows-1252" but got "windows-1251"
+FAIL Check encoding windows-1252, kilobyte-plus-one-before.htm assert_equals: Check expected "windows-1252" but got "windows-1251"
+PASS Check encoding windows-1252, no-quotes.htm
+PASS Check encoding windows-1252, no-quotes-space.htm
+PASS Check encoding windows-1252, one-around-label.htm
+PASS Check encoding windows-1252, space-around-label.htm
+PASS Check encoding windows-1252, space-before.htm
+PASS Check encoding windows-1252, unmatched-quotes.htm
+PASS Check encoding windows-1252, XML.htm
+PASS Check encoding windows-1252, zero-around-label.htm
+PASS Check encoding windows-1252, encodingencoding-trail.htm
+PASS Check encoding windows-1252, encoding-equals-encoding-trail.htm
+PASS Check encoding windows-1252, ENCODING-trail.htm
+PASS Check encoding windows-1252, gt-between-xml-and-encoding-trail.htm
+FAIL Check encoding windows-1252, kilobyte-plus-one-after-trail.htm assert_equals: Check expected "windows-1252" but got "windows-1251"
+FAIL Check encoding windows-1252, kilobyte-plus-one-before-trail.htm assert_equals: Check expected "windows-1252" but got "windows-1251"
+PASS Check encoding windows-1252, no-quotes-trail.htm
+PASS Check encoding windows-1252, no-quotes-space-trail.htm
+PASS Check encoding windows-1252, one-around-label-trail.htm
+PASS Check encoding windows-1252, space-around-label-trail.htm
+PASS Check encoding windows-1252, space-before-trail.htm
+PASS Check encoding windows-1252, unmatched-quotes-trail.htm
+PASS Check encoding windows-1252, XML-trail.htm
+PASS Check encoding windows-1252, zero-around-label-trail.htm
+PASS Check encoding windows-1253, xml-and-meta.htm
+PASS Check encoding windows-1253, incomplete-utf-16le-and-meta.htm
+PASS Check encoding windows-1253, incomplete-utf-16be-and-meta.htm
+PASS Check encoding windows-1253, xml-and-meta-trail.htm
+PASS Check encoding windows-1253, incomplete-utf-16le-and-meta-trail.htm
+PASS Check encoding windows-1253, incomplete-utf-16be-and-meta-trail.htm
+PASS Check encoding UTF-16LE, utf-16le-and-meta.htm
+PASS Check encoding UTF-16LE, utf-16le-and-meta-trail.htm
+PASS Check encoding UTF-16BE, utf-16be-and-meta.htm
+PASS Check encoding UTF-16BE, utf-16be-and-meta-trail.htm
+PASS Check encoding UTF-8, utf-16le-vs-http.html
+PASS Check encoding UTF-8, utf-16be-vs-http.html
+PASS Check encoding UTF-8, xml-vs-http.html
+PASS Check encoding UTF-8, utf-16le-vs-http-trail.html
+PASS Check encoding UTF-8, utf-16be-vs-http-trail.html
+PASS Check encoding UTF-8, xml-vs-http-trail.html
+PASS Check encoding UTF-8, ascii-decl-for-utf-16.htm
+PASS Check encoding replacement, replacement.htm
+PASS Check encoding replacement, replacement-trail.htm
+Harness: the test ran to completion.
+

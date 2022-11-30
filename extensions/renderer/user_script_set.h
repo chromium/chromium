@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -35,23 +34,24 @@ class UserScriptSet {
  public:
   class Observer {
    public:
-    // Called when the set of user scripts is updated. |changed_hosts| contains
-    // the hosts whose scripts have been altered. Note that *all* script objects
-    // are invalidated, even if they aren't in |changed_hosts|.
-    virtual void OnUserScriptsUpdated(
-        const std::set<mojom::HostID>& changed_hosts,
-        const UserScriptList& scripts) = 0;
+    // Called when the set of user scripts is updated, which invalidates all
+    // previous script objects from this UserScriptSet.
+    virtual void OnUserScriptsUpdated() = 0;
+
+    // Called when this UserScriptSet is destroyed.
+    virtual void OnUserScriptSetDestroyed() = 0;
   };
 
-  UserScriptSet();
+  explicit UserScriptSet(mojom::HostID host_id);
+
+  UserScriptSet(const UserScriptSet&) = delete;
+  UserScriptSet& operator=(const UserScriptSet&) = delete;
+
   ~UserScriptSet();
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Appends the ids of the extensions that have user scripts to |ids|.
-  void GetActiveExtensionIds(std::set<std::string>* ids) const;
 
   // Append any ScriptInjections that should run on the given |render_frame| and
   // |tab_id|, at the given |run_location|, to |injections|.
@@ -73,9 +73,12 @@ class UserScriptSet {
 
   // Updates scripts given the shared memory region containing user scripts.
   // Returns true if the scripts were successfully updated.
-  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                         const std::set<mojom::HostID>& changed_hosts,
-                         bool allowlisted_only);
+  bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory);
+
+  bool HasScripts() const { return !scripts_.empty(); }
+
+  // Clears all user scripts managed by this set and notifies observers.
+  void ClearUserScripts();
 
   // Returns the contents of a script file.
   // Note that copying is cheap as this uses WebString.
@@ -104,10 +107,11 @@ class UserScriptSet {
   // Map of user script file url -> source.
   std::map<GURL, blink::WebString> script_sources_;
 
+  // The HostID which |scripts_| is associated with.
+  mojom::HostID host_id_;
+
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptSet);
 };
 
 }  // namespace extensions

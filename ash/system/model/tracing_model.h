@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_MODEL_TRACING_MODEL_H_
 #define ASH_SYSTEM_MODEL_TRACING_MODEL_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -25,6 +22,10 @@ class ASH_EXPORT TracingObserver {
 class ASH_EXPORT TracingModel {
  public:
   TracingModel();
+
+  TracingModel(const TracingModel&) = delete;
+  TracingModel& operator=(const TracingModel&) = delete;
+
   ~TracingModel();
 
   void AddObserver(TracingObserver* observer);
@@ -41,8 +42,6 @@ class ASH_EXPORT TracingModel {
   bool is_tracing_ = false;
 
   base::ObserverList<TracingObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingModel);
 };
 
 }  // namespace ash

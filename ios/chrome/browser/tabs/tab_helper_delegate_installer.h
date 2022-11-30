@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_TABS_TAB_HELPER_DELEGATE_INSTALLER_H_
 
 #include "base/check.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -64,7 +64,7 @@ class TabHelperDelegateInstaller {
         : delegate_(delegate), web_state_list_(web_state_list) {
       DCHECK(delegate_);
       DCHECK(web_state_list_);
-      scoped_observer_.Add(web_state_list_);
+      scoped_observation_.Observe(web_state_list_);
       for (int i = 0; i < web_state_list_->count(); ++i) {
         SetTabHelperDelegate(web_state_list_->GetWebStateAt(i), delegate_);
       }
@@ -78,7 +78,8 @@ class TabHelperDelegateInstaller {
       for (int i = 0; i < web_state_list_->count(); ++i) {
         SetTabHelperDelegate(web_state_list_->GetWebStateAt(i), nullptr);
       }
-      scoped_observer_.Remove(web_state_list_);
+      DCHECK(scoped_observation_.IsObservingSource(web_state_list_));
+      scoped_observation_.Reset();
       web_state_list_ = nullptr;
     }
 
@@ -103,7 +104,7 @@ class TabHelperDelegateInstaller {
       SetTabHelperDelegate(web_state, nullptr);
     }
 
-    // Sets the delegate for |web_state|'s Helper to |delegate|.
+    // Sets the delegate for `web_state`'s Helper to `delegate`.
     void SetTabHelperDelegate(web::WebState* web_state, Delegate* delegate) {
       (Helper::FromWebState(web_state)->*SetDelFn)(delegate);
     }
@@ -112,8 +113,9 @@ class TabHelperDelegateInstaller {
     Delegate* delegate_ = nullptr;
     // The WebStateList whose Helpers's delegates are being installed.
     WebStateList* web_state_list_ = nullptr;
-    // Scoped observer for |web_state_list_|.
-    ScopedObserver<WebStateList, WebStateListObserver> scoped_observer_{this};
+    // Scoped observer for `web_state_list_`.
+    base::ScopedObservation<WebStateList, WebStateListObserver>
+        scoped_observation_{this};
   };
 
   // Helper object that sets up the delegate installer and tears it down
@@ -124,7 +126,7 @@ class TabHelperDelegateInstaller {
         : installer_(installer) {
       DCHECK(installer_);
       DCHECK(browser);
-      scoped_observer_.Add(browser);
+      scoped_observation_.Observe(browser);
     }
     ~BrowserShutdownHelper() override = default;
 
@@ -132,13 +134,14 @@ class TabHelperDelegateInstaller {
     // BrowserObserver:
     void BrowserDestroyed(Browser* browser) override {
       installer_->Disconnect();
-      scoped_observer_.Remove(browser);
+      DCHECK(scoped_observation_.IsObservingSource(browser));
+      scoped_observation_.Reset();
     }
 
     // The installer used to set up the Delegates.
     Installer* installer_ = nullptr;
     // Scoped observer for the Browser.
-    ScopedObserver<Browser, BrowserObserver> scoped_observer_{this};
+    base::ScopedObservation<Browser, BrowserObserver> scoped_observation_{this};
   };
 
   // Helper object that installs delegates for all the Browser's tab helpers.

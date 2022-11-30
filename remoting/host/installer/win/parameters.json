@@ -18,7 +18,9 @@
     "remoting_start_host.exe",
     "remote_assistance_host.exe",
     "remote_assistance_host_uiaccess.exe",
-    "remote_security_key.exe"
+    "remote_open_url.exe",
+    "remote_security_key.exe",
+    "remote_webauthn.exe"
   ],
   "source": "chromoting.wxs",
   "bind_path": "files",

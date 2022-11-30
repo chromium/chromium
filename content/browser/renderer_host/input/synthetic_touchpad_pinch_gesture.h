@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHPAD_PINCH_GESTURE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCHPAD_PINCH_GESTURE_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
@@ -20,6 +19,11 @@ class CONTENT_EXPORT SyntheticTouchpadPinchGesture : public SyntheticGesture {
  public:
   explicit SyntheticTouchpadPinchGesture(
       const SyntheticPinchGestureParams& params);
+
+  SyntheticTouchpadPinchGesture(const SyntheticTouchpadPinchGesture&) = delete;
+  SyntheticTouchpadPinchGesture& operator=(
+      const SyntheticTouchpadPinchGesture&) = delete;
+
   ~SyntheticTouchpadPinchGesture() override;
 
   SyntheticGesture::Result ForwardInputEvents(
@@ -47,9 +51,6 @@ class CONTENT_EXPORT SyntheticTouchpadPinchGesture : public SyntheticGesture {
   base::TimeTicks start_time_;
   base::TimeTicks stop_time_;
   float current_scale_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTouchpadPinchGesture);
 };
 
 }  // namespace content

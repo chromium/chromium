@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -28,7 +29,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
@@ -85,7 +86,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
         if (tab == null || webappExtras == null) return;
 
         // All features provided by the notification are also available in the minimal-ui toolbar.
-        if (webappExtras.displayMode == WebDisplayMode.MINIMAL_UI) {
+        if (webappExtras.displayMode == DisplayMode.MINIMAL_UI) {
             return;
         }
 
@@ -115,9 +116,8 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
                 NotificationUmaTracker.SystemNotificationType.WEBAPP_ACTIONS,
                 null /* notificationTag */, NotificationConstants.NOTIFICATION_ID_WEBAPP_ACTIONS);
         return NotificationWrapperBuilderFactory
-                .createNotificationWrapperBuilder(true /* prefer compat */,
-                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS,
-                        null /* remoteAppPackageName */, metadata)
+                .createNotificationWrapperBuilder(
+                        ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS, metadata)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentTitle(webappExtras.shortName)
                 .setContentText(appContext.getString(R.string.webapp_tap_to_copy_url))
@@ -142,7 +142,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
         Intent intent = new Intent(action);
         intent.setClass(context, WebappLauncherActivity.class);
         IntentHandler.setTabId(intent, tab.getId());
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
         return PendingIntentProvider.getActivity(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
     }
@@ -168,7 +168,6 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
         if (ACTION_SHARE.equals(intent.getAction())) {
             // Not routing through onMenuOrKeyboardAction to control UMA String.
             Tab tab = customTabActivity.getActivityTab();
-            boolean isIncognito = tab.isIncognito();
             customTabActivity.getShareDelegateSupplier().get().share(
                     tab, false, ShareOrigin.WEBAPP_NOTIFICATION);
             RecordUserAction.record("Webapp.NotificationShare");

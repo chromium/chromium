@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
@@ -20,7 +20,7 @@ namespace logging {
 
 namespace {
 constexpr int kBufferSize = 256;
-constexpr int kMaxBuffers = 16;
+constexpr int kMaxBuffers = 32;
 }  // namespace
 
 class AudioLogMessage::StreamBuf : public std::streambuf {

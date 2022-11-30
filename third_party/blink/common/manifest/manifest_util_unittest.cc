@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kFullscreen, "fullscreen"},
       {blink::mojom::DisplayMode::kWindowControlsOverlay,
        "window-controls-overlay"},
+      {blink::mojom::DisplayMode::kTabbed, "tabbed"},
+      {blink::mojom::DisplayMode::kBorderless, "borderless"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {
@@ -96,6 +98,22 @@ TEST(ManifestUtilTest, CaptureLinksFromString) {
   // string isn't known.
   EXPECT_EQ(blink::mojom::CaptureLinks::kUndefined,
             CaptureLinksFromString("unknown-value"));
+}
+
+TEST(ManifestUtilTest, LaunchHandlerClientModeFromString) {
+  using ClientMode = Manifest::LaunchHandler::ClientMode;
+  EXPECT_EQ(absl::nullopt, ClientModeFromString(""));
+  EXPECT_EQ(ClientMode::kAuto, ClientModeFromString("auto"));
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("navigate-new"));
+  EXPECT_EQ(ClientMode::kNavigateExisting,
+            ClientModeFromString("navigate-existing"));
+  EXPECT_EQ(ClientMode::kFocusExisting, ClientModeFromString("focus-existing"));
+
+  // Uppercase spelling.
+  EXPECT_EQ(ClientMode::kNavigateNew, ClientModeFromString("NAVIGATE-NEW"));
+
+  // Unknown value.
+  EXPECT_EQ(absl::nullopt, ClientModeFromString("unknown-value"));
 }
 
 }  // namespace blink

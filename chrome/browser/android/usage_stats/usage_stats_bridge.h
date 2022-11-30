@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
@@ -40,6 +41,10 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
       std::unique_ptr<UsageStatsDatabase> usage_stats_database,
       Profile* profile,
       const JavaRef<jobject>& j_this);
+
+  UsageStatsBridge(const UsageStatsBridge&) = delete;
+  UsageStatsBridge& operator=(const UsageStatsBridge&) = delete;
+
   ~UsageStatsBridge() override;
 
   void Destroy(JNIEnv* j_env, const JavaRef<jobject>& j_this);
@@ -119,7 +124,7 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
 
@@ -128,8 +133,6 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
       scoped_history_service_observer_{this};
 
   base::WeakPtrFactory<UsageStatsBridge> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UsageStatsBridge);
 };
 
 }  // namespace usage_stats
